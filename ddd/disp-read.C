@@ -340,6 +340,15 @@ int possible_begin_of_display (string gdb_answer, GDBAgent *gdb)
     return index;
 }
 
+
+static bool next_is_nl(string& displays)
+{
+    unsigned int i = 0;
+    while (i < displays.length() && displays[i] == ' ')
+	i++;
+    return i < displays.length() && displays[i] == '\n';
+}
+
 // ***************************************************************************
 // gibt den naechsten Display zurueck falls vorhanden, und
 // schneidet diesen von displays vorne ab.
@@ -351,13 +360,9 @@ string read_next_display (string& displays, GDBAgent *)
     // string old_displays = displays;
     // clog << "read_next_display(" << quote(old_displays) << ")...\n";
 
-    static regex RXnl(" *\n");
-
     do {
-
 	next_display += read_token(displays);
-
-    } while (displays != "" && !displays.contains(RXnl, 0));
+    } while (displays != "" && !next_is_nl(displays));
 
     displays = displays.after('\n');
 
