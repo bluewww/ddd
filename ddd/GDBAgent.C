@@ -214,6 +214,8 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_examine_command(tp == GDB || tp == DBX),
       _has_rerun_command(tp == DBX),
       _rerun_clears_args(false),
+      _has_attach_command(tp == GDB || tp == DBX),
+      _has_addproc_command(false),
       _program_language((tp == JDB) ? LANGUAGE_JAVA :
 			(tp == PYDB) ? LANGUAGE_PYTHON : 
 			(tp == PERL) ? LANGUAGE_PERL : 
@@ -296,6 +298,8 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_examine_command(gdb.has_examine_command()),
       _has_rerun_command(gdb.has_rerun_command()),
       _rerun_clears_args(gdb.rerun_clears_args()),
+      _has_attach_command(gdb.has_attach_command()),
+      _has_addproc_command(gdb.has_addproc_command()),
       _program_language(gdb.program_language()),
       _verbatim(gdb.verbatim()),
       _recording(gdb.recording()),
@@ -327,9 +331,10 @@ string GDBAgent::title() const
 	return "GDB";
 
     case DBX:
-	if (path().contains("ladebug") || prompt().contains("ladebug"))
+	if (is_ladebug())
 	    return "Ladebug";
-	return "DBX";
+	else
+	    return "DBX";
 
     case XDB:
 	return "XDB";
@@ -345,6 +350,12 @@ string GDBAgent::title() const
     }
 
     return "debugger";
+}
+
+bool GDBAgent::is_ladebug() const
+{
+    return type() == DBX &&
+	(path().contains("ladebug") || prompt().contains("ladebug"));
 }
 
 // Trace communication
@@ -2013,7 +2024,9 @@ string GDBAgent::enable_command(string bp) const
 	return "enable" + bp;
 
     case DBX:
-	if (has_handler_command())
+	if (is_ladebug())
+	    return "enable" + bp;
+	else if (has_handler_command())
 	    return "handler -enable" + bp;
 	else
 	    return "";
@@ -2042,7 +2055,9 @@ string GDBAgent::disable_command(string bp) const
 	return "disable" + bp;
 
     case DBX:
-	if (has_handler_command())
+	if (is_ladebug())
+	    return "disable" + bp;
+	else if (has_handler_command())
 	    return "handler -disable" + bp;
 	else
 	    return "";
@@ -2245,7 +2260,9 @@ string GDBAgent::debug_command(string program, string args) const
 	return "file " + program;
 
     case DBX:
-	if (has_givenfile_command())
+	if (is_ladebug())
+	    return "load " + program;       // Compaq Ladebug
+	else if (has_givenfile_command())
 	    return "givenfile " + program; // SGI DBX
 	else
 	    return "debug " + program;     // SUN DBX
@@ -2361,6 +2378,60 @@ string GDBAgent::rerun_command() const
     }
 
     return "";			// Never reached
+}
+
+// Attach to process ID
+string GDBAgent::attach_command(int pid, const string& file) const
+{
+    switch (type())
+    {
+    case GDB:
+	return "attach " + itostring(pid);
+
+    case DBX:
+	if (has_handler_command())
+	    return "debug - " + itostring(pid);	           // Sun DBX
+	if (has_addproc_command())
+	    return "addproc " + itostring(pid);	           // SGI DBX
+	else if (is_ladebug() && has_attach_command())
+	    return string("set $stoponattach=1\n") +
+		"attach " + itostring(pid) + " " + file;   // DEC ladebug
+	else if (has_attach_command())
+	    return "attach " + itostring(pid);             // Others
+	else
+	    return "debug " + file + " " + itostring(pid); // Others
+
+    case XDB:
+    case JDB:
+    case PYDB:
+    case PERL:
+	break;
+    }
+
+    return "";			// Unsupported
+}
+
+string GDBAgent::detach_command(int pid) const
+{
+    switch (type())
+    {
+    case GDB:
+	return "detach";
+
+    case DBX:
+	if (has_addproc_command())
+	    return "delproc " + itostring(pid);	// SGI DBX
+	else
+	    return "detach";	// Others
+
+    case XDB:
+    case JDB:
+    case PYDB:
+    case PERL:
+	break;
+    }
+
+    return "";			// Unsupported
 }
 
 

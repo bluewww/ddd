@@ -749,10 +749,47 @@ ProgramInfo::ProgramInfo()
 
     case DBX:
     {
+	if (gdb->is_ladebug())
+	{
+	    string ans = gdb_question("show process");
+	    // typical answers:
+	    // 1:no process 
+	    // There are no processes being debugged.
+	    // 2: process has been paused.
+	    // Current Process: localhost:26177 (a.out) paused.
+	    // 3: process terminated
+	    // Current Process: localhost:13614 (ddd) terminated.
+	    // TODO: treat the terminated case 
+     
+	    if (ans != NO_GDB_ANSWER && 
+		!ans.contains("no processes being debugged"))
+	    {
+		if (ans.contains("Current Process: "))
+		{
+		    ans = ans.after(": ");
+		    {
+			string p = ans.after(":");
+			p = p.before(" ");
+			pid = atoi(p.chars());
+		    }
+		    ans = ans.after(" (");
+		    file = ans.before(")");
+
+		    ans = ans.after(") ");
+		    running = ans.contains("paused");
+		    // ladebug always creates a process.
+		    // It may be "loaded" or attached.
+		    attached = true;
+		}
+	    }	    
+	}
+
 	string ans = gdb_question(gdb->debug_command());
 	if (ans != NO_GDB_ANSWER)
 	{
-	    if (ans.contains("Debugging: ", 0))
+	    if (ans.contains("Current givenfile is ", 0))
+		ans = ans.after("Current givenfile is ");
+	    else if (ans.contains("Debugging: ", 0))
 		ans = ans.after(": ");
 
 	    strip_space(ans);
@@ -988,6 +1025,10 @@ static void update_processes(Widget processes, bool keep_selection)
     // all processes in the `kill' diagnostic -- that is, all
     // processes that `kill' could not send a signal.
     string kill = "kill -0";
+
+    if (gdb->has_handler_command())
+	kill = "/usr/bin/kill -0"; // Bypass built-in SUN DBX command
+
     int i;
     for (i = 0; i < all_process_list.size(); i++)
     {
@@ -1136,32 +1177,19 @@ static void openProcessDone(Widget w, XtPointer client_data,
 	return;
     }
 
-    switch(gdb->type())
+    if (info.file == NO_GDB_ANSWER || info.file == "")
     {
-    case GDB:
-	// GDB does not always detach processes upon opening new
-	// files, so we do it explicitly
-	if (info.attached)
-	    gdb_command("detach");
-
-	// Attach to new process
-	gdb_command("attach " + itostring(pid));
-	break;
-	
-    case DBX:
-	// Attach to new process
-	if (info.file != NO_GDB_ANSWER && info.file != "")
-	    gdb_command("debug " + info.file + " " + itostring(pid));
-	else
-	    post_error("No program.", "no_program", w);
-	break;
-
-    case XDB:
-    case JDB:
-    case PYDB:
-    case PERL:
-	break;		// FIXME
+	post_error("No program.", "no_program", w);
+	return;
     }
+
+    // GDB does not always detach processes upon opening new
+    // files, so we do it explicitly
+    if (info.attached)
+	gdb_command(gdb->detach_command(info.pid));
+
+    // Attach to new process
+    gdb_command(gdb->attach_command(pid, info.file));
 }
 
 // When W is to be destroyed, remove all references in Widget(CLIENT_DATA)

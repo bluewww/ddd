@@ -193,6 +193,8 @@ private:
     bool _has_examine_command;
     bool _has_rerun_command;
     bool _rerun_clears_args;
+    bool _has_attach_command;
+    bool _has_addproc_command;
 
     ProgramLanguage _program_language; // Current program language
 
@@ -404,6 +406,14 @@ public:
     // True if `rerun' command clears current arguments
     bool rerun_clears_args() const   { return _rerun_clears_args; }
     bool rerun_clears_args(bool val) { return _rerun_clears_args = val; }
+
+    // True if debugger has `attach' command
+    bool has_attach_command() const   { return _has_attach_command; }
+    bool has_attach_command(bool val) { return _has_attach_command = val; }
+
+    // True if debugger has `addproc' command
+    bool has_addproc_command() const   { return _has_addproc_command; }
+    bool has_addproc_command(bool val) { return _has_addproc_command = val; }
 
     // Current program language
     ProgramLanguage program_language() const   { return _program_language; }
@@ -626,6 +636,9 @@ public:
 	return has_enable_command() || has_conditions();
     }
 
+    // True if Ladebug
+    bool is_ladebug() const;
+
     // True if a minimum indent is required.  This is true for
     // scripting languages.
     bool requires_script_indent() const
@@ -704,6 +717,10 @@ public:
 
     // Run program, re-using current arguments
     string rerun_command() const;                   // run
+
+    // Attach to process id PID
+    string attach_command(int pid, const string& file) const;  // attach PID
+    string detach_command(int pid) const;                      // detach
 
     // Default history file
     string history_file() const;                    // GDB: ~/.gdb_history

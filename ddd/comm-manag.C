@@ -295,6 +295,8 @@ public:
     bool     config_display;	       // try 'display'
     bool     config_clear;	       // try 'clear'
     bool     config_handler;	       // try 'help handler'
+    bool     config_attach;	       // try 'help attach'
+    bool     config_addproc;	       // try 'help addproc'
     bool     config_pwd;	       // try 'pwd'
     bool     config_setenv;	       // try 'help setenv'
     bool     config_edit;	       // try 'help edit'
@@ -351,6 +353,8 @@ public:
 	  config_display(false),
 	  config_clear(false),
 	  config_handler(false),
+	  config_attach(false),
+	  config_addproc(false),
 	  config_pwd(false),
 	  config_setenv(false),
 	  config_edit(false),
@@ -570,6 +574,10 @@ void start_gdb(bool config)
 	    extra_data->config_clear = true;
 	    cmds += "help handler";
 	    extra_data->config_handler = true;
+	    cmds += "help attach";
+	    extra_data->config_attach = true;
+	    cmds += "help addproc";
+	    extra_data->config_addproc = true;
 	    cmds += "pwd";
 	    extra_data->config_pwd = true;
 	    cmds += "help setenv";
@@ -1476,6 +1484,8 @@ void send_gdb_command(string cmd, Widget origin,
     assert(!extra_data->config_display);
     assert(!extra_data->config_clear);
     assert(!extra_data->config_handler);
+    assert(!extra_data->config_attach);
+    assert(!extra_data->config_addproc);
     assert(!extra_data->config_pwd);
     assert(!extra_data->config_setenv);
     assert(!extra_data->config_edit);
@@ -2507,6 +2517,16 @@ static void process_config_handler(string& answer)
     gdb->has_handler_command(is_known_command(answer));
 }
 
+static void process_config_attach(string& answer)
+{
+    gdb->has_attach_command(is_known_command(answer));
+}
+
+static void process_config_addproc(string& answer)
+{
+    gdb->has_addproc_command(is_known_command(answer));
+}
+
 static void process_config_pwd(string& answer)
 {
     gdb->has_pwd_command(is_known_command(answer));
@@ -2752,6 +2772,12 @@ static void extra_completed (const StringArray& answers,
 
     if (extra_data->config_handler)
 	process_config_handler(answers[qu_count++]);
+
+    if (extra_data->config_attach)
+	process_config_attach(answers[qu_count++]);
+
+    if (extra_data->config_addproc)
+	process_config_addproc(answers[qu_count++]);
 
     if (extra_data->config_pwd)
 	process_config_pwd(answers[qu_count++]);
