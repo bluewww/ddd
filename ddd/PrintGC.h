@@ -42,6 +42,7 @@ struct PrintGC {
 
     virtual bool isFig() const        { return false; }
     virtual bool isPostScript() const { return false; }
+    virtual ~PrintGC() {}
 };
 
 struct FigPrintGC: public PrintGC {
