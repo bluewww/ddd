@@ -79,6 +79,17 @@ enum ProgramLanguage {
 };
 
 //-----------------------------------------------------------------------------
+// Watch modes
+//-----------------------------------------------------------------------------
+
+typedef int WatchMode;
+
+const int WATCH_CHANGE = 1;	// break if value changes
+const int WATCH_READ   = 2;	// break if value is read
+const int WATCH_WRITE  = 4;	// break if value is written
+
+
+//-----------------------------------------------------------------------------
 // Procedure types.
 //-----------------------------------------------------------------------------
 
@@ -166,7 +177,7 @@ private:
     bool _has_make_command;
     bool _has_jump_command;
     bool _has_regs_command;
-    bool _has_watch_command;
+    WatchMode _has_watch_command;
     bool _has_named_values;
     bool _has_when_command;
     bool _has_when_semicolon;
@@ -331,9 +342,17 @@ public:
     bool has_regs_command() const      { return _has_regs_command; }
     bool has_regs_command(bool val)    { return _has_regs_command = val; }
 
-    // True if debugger has `watch' command
-    bool has_watch_command() const     { return _has_watch_command; }
-    bool has_watch_command(bool val)   { return _has_watch_command = val; }
+    // Non-zero if debugger has `watch' command; also indicates
+    // `watch' capabilities
+    WatchMode has_watch_command() const     { return _has_watch_command; }
+    bool has_watch_command(WatchMode w) const
+    {
+	return has_watch_command() & w;
+    }
+    WatchMode has_watch_command(WatchMode val)
+    { 
+	return _has_watch_command = val;
+    }
 
     // True if debugger issues `NAME = VALUE' upon `print' commands
     bool has_named_values() const      { return _has_named_values; }
@@ -505,7 +524,8 @@ public:
     string make_command(string target) const;       // GDB: "make TARGET"
     string jump_command(string pc) const;           // GDB: "jump PC"
     string regs_command(bool all = true) const;	    // GDB: "info registers"
-    string watch_command(string expr) const;	    // GDB: "watch EXPR"
+    string watch_command(string expr, WatchMode w = WATCH_CHANGE) const;
+				                    // GDB: "watch EXPR"
     string kill_command() const;                    // GDB: "kill"
     string enable_command(string bp = "") const;    // GDB: "enable BP"
     string disable_command(string bp = "") const;   // GDB: "disable BP"

@@ -222,7 +222,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_make_command(tp == GDB || tp == DBX),
       _has_jump_command(tp == GDB || tp == DBX || tp == XDB),
       _has_regs_command(tp == GDB),
-      _has_watch_command(tp == GDB || tp == DBX),
+      _has_watch_command(0),	// see below
       _has_named_values(tp == GDB || tp == DBX || tp == JDB),
       _has_when_command(tp == DBX),
       _has_when_semicolon(tp == DBX),
@@ -266,7 +266,16 @@ GDBAgent::GDBAgent (XtAppContext app_context,
     addHandler(Input,  traceInputHP);     // GDB => DDD
     addHandler(Output, traceOutputHP);    // DDD => GDB
     addHandler(Error,  traceErrorHP);     // GDB Errors => DDD
+
+    // Setup watch mode
+    if (type() == GDB)
+	_has_watch_command = WATCH_CHANGE | WATCH_READ | WATCH_WRITE;
+    else if (type() == DBX)
+	_has_watch_command = WATCH_CHANGE;
+    else
+	_has_watch_command = 0;
 }
+
 
 // Copy constructor
 GDBAgent::GDBAgent(const GDBAgent& gdb)
@@ -1575,18 +1584,26 @@ string GDBAgent::regs_command(bool all) const
 }
 
 // Watch expressions
-string GDBAgent::watch_command(string expr) const
+string GDBAgent::watch_command(string expr, WatchMode w) const
 {
-    if (!has_watch_command())
+    if (!has_watch_command(w))
 	return "";
 
     switch (type())
     {
     case GDB:
-	return "watch " + expr;
+	if (w & WATCH_CHANGE)
+	    return "watch " + expr;
+	if ((w & WATCH_WRITE) && (w & WATCH_READ))
+	    return "awatch " + expr;
+	if (w & WATCH_READ)
+	    return "rwatch " + expr;
+	return "";
    
     case DBX:
-	return "stop " + expr;
+	if (w | WATCH_CHANGE)
+	    return "stop " + expr;
+	return "";
 
     case XDB:
 	// Not available.  (There is the `assertion' concept which is

@@ -1219,12 +1219,15 @@ static MMDesc display_menu[] =
 };
 
 struct WatchItems {
-    enum ArgCmd { WatchRef };
+    enum ArgCmd { RWatch, AWatch, Watch };
 };
 
 static MMDesc watch_menu[] =
 {
-    { "watchRef",        MMPush, { gdbWatchRefCB } },
+    { "cwatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_CHANGE) } },
+    { "rwatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_READ) } },
+    { "awatch",       MMPush, { gdbWatchCB, 
+				XtPointer(WATCH_READ | WATCH_WRITE) } },
     MMEnd
 };
 
@@ -1262,7 +1265,8 @@ static MMDesc arg_cmd_area[] =
     {"breakAt",       MMPush,  { gdbToggleBreakCB  }, break_menu   },
     {"print",         MMPush,  { gdbPrintCB        }, print_menu   },
     {"display",       MMPush,  { gdbDisplayCB      }, display_menu },
-    {"watch",         MMPush,  { gdbToggleWatchCB  }, watch_menu },
+    {"watch",         MMPush,  { gdbToggleWatchCB, XtPointer(WATCH_CHANGE) }, 
+                                 watch_menu },
     {"find",          MMPush,  { gdbFindAgainCB    }, find_menu },
     MMEnd
 };
@@ -4221,19 +4225,6 @@ void update_arg_buttons()
 	set_label(arg_cmd_area[ArgItems::Watch].widget, "Unwatch ()");
     else
 	set_label(arg_cmd_area[ArgItems::Watch].widget, "Watch ()");
-
-    string watch_ref;
-    bool have_watch_ref = have_watchpoint_at_ref_arg();
-    if (have_watch_ref)
-	watch_ref = "Watch ";
-    else
-	watch_ref = "Unwatch ";
-
-    watch_ref += gdb->dereferenced_expr("()");
-    MString watch_ref_label(watch_ref);
-    XtVaSetValues(watch_menu[WatchItems::WatchRef].widget,
-		  XmNlabelString, watch_ref_label.xmstring(),
-		  NULL);
 
     MString print_ref_label("Print " + gdb->dereferenced_expr("()"));
     XtVaSetValues(print_menu[PrintItems::PrintRef].widget,

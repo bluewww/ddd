@@ -3595,8 +3595,13 @@ Ddd*arg_cmd_w.arg_cmd_area*contUntil.labelString:	Continue Until ()
 Ddd*arg_cmd_w.arg_cmd_area*enable.labelString:		Enable Breakpoint at ()
 Ddd*arg_cmd_w.arg_cmd_area*setPC.labelString:		\
 Set Execution Position to ()
-Ddd*arg_cmd_w.arg_cmd_area*watch.labelString:		Watch ()
-Ddd*arg_cmd_w.arg_cmd_area*watchRef.labelString:	Watch *()
+Ddd*arg_cmd_w.arg_cmd_area*watch.labelString:		Unwatch ()
+Ddd*arg_cmd_w.arg_cmd_area*cwatch.labelString:	\
+Set watchpoint on ()
+Ddd*arg_cmd_w.arg_cmd_area*rwatch.labelString:	\
+Set read watchpoint on ()
+Ddd*arg_cmd_w.arg_cmd_area*awatch.labelString:	\
+Set access watchpoint on ()
 Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
 Ddd*arg_cmd_w.arg_cmd_area*printRef.labelString:	Print *()
 Ddd*arg_cmd_w.arg_cmd_area*whatis.labelString:		Whatis ()
@@ -3659,9 +3664,7 @@ Print the argument LBL(()) in the @GDB@ console.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
 DESC(Print *(), [print dereferenced argument])\n\
-DESC(Whatis (), [print type of argument])\n\
-DESC(Watch (),  [stop when value changes])\n\
-DESC(Watch *(), [stop when dereferenced value changes])
+DESC(Whatis (), [print type of argument])
 
 Ddd*arg_cmd_w.arg_cmd_area*print.tipString:	\
 @rm Print LBL(()) in the debugger console
@@ -3671,11 +3674,6 @@ Ddd*arg_cmd_w.arg_cmd_area*printRef.documentationString:	\
 @rm Print the dereferenced argument LBL(()) in the @GDB@ console
 Ddd*arg_cmd_w.arg_cmd_area*whatis.documentationString:	\
 @rm Print the type of the argument LBL(()) in the @GDB@ console
-
-Ddd*arg_cmd_w.arg_cmd_area*watch.documentationString: \
-@rm Stop execution whenever the value of LBL(()) changes
-Ddd*arg_cmd_w.arg_cmd_area*watchRef.documentationString: \
-@rm Stop execution whenever the dereferenced value of LBL(()) changes
 
 Ddd*arg_cmd_w.arg_cmd_area*display.helpString:	\
 LBL(Display ())\n\
@@ -3701,20 +3699,24 @@ managed like any other breakpoint, via LBL(Source) | LBL(Edit Breakpoints).\n\
 \n\
 LBL(Unwatch()) deletes the EMPH(watchpoint) associated with LBL(()).\n\
 \n\
-Please note: on most architectures, watchpoints make the debugged program\n\
-execute about two orders of magnitude more slowly, but this can be well\n\
-worth it to catch errors where you have no clue what part of your program\n\
-is the culprit.\n\
-\n\
 ANNOUNCE_PULLDOWN\n\
-DESC(Watch *(), [watch dereferenced argument])
+DESC(Set watchpoint on (), [stop whenever LBL(()) changes; same as LBL(Watch())])\n\
+DESC(Set read watchpoint on (), [stop whenever LBL(()) is read])\n\
+DESC(Set access watchpoint on (), [stop whenever LBL(()) is either read or written])\n\
+\n\
+Unless you have special hardware support, watchpoints slow down the\n\
+debugged program by about two orders of magnitude.
 
 Ddd*arg_cmd_w.arg_cmd_area*watch.tipString:	\
 @rm Stop whenever LBL(()) changes
 Ddd*arg_cmd_w.arg_cmd_area*watch.documentationString:	\
 @rm Stop whenever the value of LBL(()) changes MORE_PULLDOWN()
-Ddd*arg_cmd_w.arg_cmd_area*watchRef.documentationString:	\
-@rm Stop whenever the dereferenced argument LBL(()) changes
+Ddd*arg_cmd_w.arg_cmd_area*cwatch.documentationString:	\
+@rm Stop whenever the value of LBL(()) changes
+Ddd*arg_cmd_w.arg_cmd_area*rwatch.documentationString:	\
+@rm Stop whenever LBL(()) is read (requires hardware support)
+Ddd*arg_cmd_w.arg_cmd_area*awatch.documentationString:	\
+@rm Stop whenever LBL(()) is either read or written (requires hardware support)
 
 Ddd*arg_cmd_w.arg_cmd_area*find.helpString:	\
 LBL(LBL_FIND_PREV / LBL_FIND_NEXT)\n\

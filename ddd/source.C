@@ -215,12 +215,20 @@ bool have_enabled_watchpoint_at_arg()
     return bp != 0 && bp->enabled();
 }
 
-void gdbWatchCB(Widget w, XtPointer, XtPointer)
+void gdbWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     string arg = current_arg();
 
+#if 0
+    if (have_watchpoint_at_arg())
+    {
+	// Don't place multiple watchpoints on one expression
+	gdbUnwatchCB(w, client_data, call_data);
+    }
+#endif
+
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(gdb->watch_command(arg), w);
+	gdb_command(gdb->watch_command(arg, WatchMode(client_data)), w);
 }
 
 void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
