@@ -73,7 +73,7 @@ extern "C" int pclose(FILE *stream);
 void show_version(ostream& os)
 {
     os << "@(#)" DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
-	"Copyright (C) 1997 TU Braunschweig.\n" + 4;
+	"Copyright (C) 1998 TU Braunschweig.\n" + 4;
 }
 
 //-----------------------------------------------------------------------------
