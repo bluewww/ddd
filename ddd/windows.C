@@ -1306,14 +1306,17 @@ const Dimension MIN_PANED_SIZE = 90;
 
 static void paned_changed(Widget /* paned */)
 {
-    // Recenter the tool shell
-    recenter_tool_shell(source_view->source());
+    if (gdb_w != 0)
+    {
+	// Recenter the tool shell
+	recenter_tool_shell(source_view->source());
 
-    // Make sure the current command line is visible
-    end_of_lineAct(gdb_w, 0, 0, 0);
+	// Make sure the current command line is visible
+	end_of_lineAct(gdb_w, 0, 0, 0);
 
-    // Redisplay source and code glyphs
-    source_view->update_glyphs();
+	// Redisplay source and code glyphs
+	source_view->update_glyphs();
+    }
 }
 
 void manage_paned_child(Widget w)
