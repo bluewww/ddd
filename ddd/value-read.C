@@ -733,7 +733,14 @@ string read_member_name (string& value)
     // JDB printing classes uses `:\n' for the interface list.
     // GDB with GNAT support uses `=> '.
     string member_name;
-    if (v.contains(" = "))
+    if (v.contains("Virtual table at ", 0))
+    {
+	// `Virtual table at 0x1234' or likewise.  WDB gives us such things.
+	member_name = v.before(" at ");
+	value = value.after(" at ");
+	strip_qualifiers = false;
+    }
+    else if (v.contains(" = "))
     {
 	member_name = v.before(" = ");
 	value = value.after(" = ");
@@ -752,13 +759,6 @@ string read_member_name (string& value)
     {
 	member_name = v.before("=> ");
 	value = value.after("=> ");
-    }
-    else if (v.contains(" table at "))
-    {
-	// `Virtual table at 0x1234' or likewise.  WDB gives us such things.
-	member_name = v.before(" at ");
-	value = value.after(" at ");
-	strip_qualifiers = false;
     }
     else
     {
