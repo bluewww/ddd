@@ -39,6 +39,7 @@ char ctest_rcsid[] =
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef enum _DayOfWeek {Sun, Mon, Tue, Wed, Thu, Fri, Sat} DayOfWeek;
 
@@ -235,7 +236,11 @@ void in_out_test ()
     char name[80];
     fprintf(stderr, "This is stderr speaking\n");
     printf("What's your name? ");
-    gets(name);
+    fgets(name, sizeof(name), stdin);
+
+    if (name[strlen(name) - 1] == '\n')
+	name[strlen(name) - 1] = '\0';
+
     printf("Hello, %s!\n", name);
 }
 
