@@ -318,7 +318,6 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 		if (info != 0)
 		    info->widget = widget;
 	    }
-	    label = widget;
 	    break;
 
 	case MMToggle:
@@ -326,8 +325,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    label = widget = 
-		verify(XmCreateToggleButton(shell, name, args, arg));
+	    widget = verify(XmCreateToggleButton(shell, name, args, arg));
 	    break;
 
 	case MMLabel:
@@ -355,8 +353,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
-	    label = widget = 
-		verify(XmCreateCascadeButton(shell, name, args, arg));
+	    widget = verify(XmCreateCascadeButton(shell, name, args, arg));
 
             if (lesstif_version <= 79)
 	    {
@@ -400,8 +397,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
-	    label = widget = 
-		verify(XmCreateCascadeButton(shell, name, args, arg));
+	    widget = verify(XmCreateCascadeButton(shell, name, args, arg));
 	    break;
 
 	case MMOptionMenu:
@@ -412,8 +408,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
-	    label = widget = 
-		verify(XmCreateOptionMenu(shell, name, args, arg));
+	    widget = verify(XmCreateOptionMenu(shell, name, args, arg));
 	    break;
 
 	case MMPanel:
