@@ -66,6 +66,9 @@ char SourceView_rcsid[] =
 // but does not refer to a specific project, bug, Sunday,
 // or brand of soft drink.
 
+#ifndef LOG_GLYPHS
+#define LOG_GlYPHS 0
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -2423,6 +2426,15 @@ void SourceView::reload()
     // StatusDelay delay("Reloading " + quote(file));
 
     read_file(file, atoi(line), true);
+
+    // Restore breakpoints
+    refresh_bp_disp();
+
+    // Restore execution position
+    if (last_execution_file != "")
+	show_execution_position(last_execution_file + ":" + 
+				itostring(last_execution_line),
+				at_lowest_frame, signal_received);
 }
 
 // Change tab width
@@ -3554,10 +3566,10 @@ void SourceView::show_execution_position (string position, bool stopped,
 	if (!display_glyphs)
 	{
 	    // Remove old marker
-	    int indent = indent_amount(source_text_w, last_pos);
+	    int indent = indent_amount(source_text_w);
 	    if (indent > 0)
 	    {
-		string no_marker = " ";
+		static const string no_marker = " ";
 		XmTextReplace (source_text_w,
 			       last_pos + indent - no_marker.length(),
 			       last_pos + indent,
@@ -3597,12 +3609,12 @@ void SourceView::show_execution_position (string position, bool stopped,
 
     if (is_current_file(file_name))
     {
-	int indent = indent_amount(source_text_w, last_pos);
+	int indent = indent_amount(source_text_w);
 
 	if (!display_glyphs && indent > 0)
 	{
 	    // Remove old marker
-	    string no_marker = " ";
+	    static const string no_marker = " ";
 	    XmTextReplace (source_text_w,
 			   last_pos + indent - no_marker.length(),
 			   last_pos + indent,
@@ -3642,14 +3654,14 @@ void SourceView::_show_execution_position(string file, int line,
     add_position_to_history(file, line, true);
 
     XmTextPosition pos = pos_of_line(line);
-    int indent = indent_amount(source_text_w, pos);
+    int indent = indent_amount(source_text_w);
     SetInsertionPosition(source_text_w, pos + indent, false);
 
     // Mark current line
     if (!display_glyphs && indent > 0)
     {
 	// Set new marker
-	string marker = ">";
+	static const string marker = ">";
 	XmTextReplace (source_text_w,
 		       pos + indent - marker.length(),
 		       pos + indent,
@@ -7472,7 +7484,7 @@ void SourceView::unmap_glyph(Widget glyph)
 	    // LessTif 0.84 and earlier wants it the hard way.
 	    XtMoveWidget(glyph, invisible_x, invisible_y);
 	}
-	// log_glyph(glyph);
+	log_glyph(glyph);
     }
 
     changed_glyphs += glyph;
@@ -7485,8 +7497,6 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 	CreateGlyphsWorkProc(0);
 
     assert(is_code_widget(glyph) || is_source_widget(glyph));
-
-    // clog << "Mapping glyph at (" << x << ", " << y << ")\n";
 
     Widget text_w;
     if (is_source_widget(glyph))
@@ -7532,7 +7542,7 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 	    }
 
 	    XtVaSetValues(glyph, XmNleftOffset, x, XmNtopOffset, y, NULL);
-	    // log_glyph(glyph);
+	    log_glyph(glyph);
 	}
 	changed_glyphs += glyph;
     }
@@ -7544,7 +7554,7 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
     {
 	XtMapWidget(glyph);
 	XtVaSetValues(glyph, XmNuserData, XtPointer(1), NULL);
-	// log_glyph(glyph);
+	log_glyph(glyph);
 	changed_glyphs += glyph;
     }
 }
@@ -8743,9 +8753,13 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
 // Report glyph state (for debugging)
 void SourceView::log_glyph(Widget glyph, int n)
 {
+    (void) n;			// Use it
+    (void) glyph;
+
+#if LOG_GLYPHS
     if (glyph == 0)
 	return;
-    
+
     int left = 0;
     int top  = 0;
     Position x = 0;
@@ -8770,10 +8784,12 @@ void SourceView::log_glyph(Widget glyph, int n)
 
     clog << " at (" << left << ", " << top << " / "
 	 << x << ", " << y << ")\n";
+#endif
 }
 
 void SourceView::log_glyphs()
 {
+#if LOG_GLYPHS
     for (int k = 0; k < 2; k++)
     {
 	if (k && !disassemble)
@@ -8810,11 +8826,11 @@ void SourceView::log_glyphs()
 	log_glyph(drag_conds[k]);
 	log_glyph(drag_temps[k]);
     }
+#endif
 }
 
 
 // Delete glyph (breakpoints)
-
 void SourceView::deleteGlyphAct(Widget glyph, XEvent *, String *, Cardinal *)
 {
     IntArray bps;
@@ -9184,10 +9200,10 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	{
 	    // Set new marker
 	    int indent = indent_amount(code_text_w);
-	    string marker = ">";
+	    static const string marker = ">";
 	    if (last_pos_pc)
 	    {
-		string no_marker = replicate(' ', marker.length());
+		static const string no_marker = " ";
 		XmTextReplace (code_text_w,
 			       last_pos_pc + indent - no_marker.length(),
 			       last_pos_pc + indent,
@@ -9354,19 +9370,29 @@ bool SourceView::get_state(ostream& os)
     return ok;
 }
 
-void SourceView::reset_done(const string& answer, void *)
+void SourceView::reset_done(const string&, void *)
 {
-    (void) answer;
-
-    // Breakpoints should be deleted now -- clear all other information
+    // All breakpoints should be deleted now -- clear all other information
     clear_file_cache();
     clear_code_cache();
     clear_dbx_lookup_cache();
     current_file_name = "";
+
+    // Reset execution positions
+    last_execution_file = "";
+    last_execution_line = 0;
+    last_execution_pc   = "";
+    last_shown_pc       = "";
+
+    // Reset frame info
+    current_frame   = -1;
+    at_lowest_frame = true;
 }
 
 void SourceView::reset()
 {
+    bool reset_later = false;
+
     // Delete all breakpoints
     if (gdb->has_delete_command())
     {
@@ -9390,6 +9416,8 @@ void SourceView::reset()
 	    c.priority = COMMAND_PRIORITY_INIT;
 	    c.callback = reset_done;
 	    gdb_command(c);
+
+	    reset_later = true;
 	}
     }
     else if (gdb->has_clear_command())
@@ -9403,8 +9431,17 @@ void SourceView::reset()
 	    c.prompt   = false;
 	    c.check    = true;
 	    c.priority = COMMAND_PRIORITY_INIT;
-	    c.callback = reset_done;
+
+	    if (bp_map.next(ref) == 0)
+	    {
+		// Last command
+		c.callback = reset_done;
+		reset_later = true;
+	    }
 	    gdb_command(c);
 	}
     }
+
+    if (!reset_later)
+	reset_done("", 0);
 }
