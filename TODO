@@ -350,8 +350,9 @@ Volunteers for these and other projects are welcome!
     [graph display `print *this` would help.  -AZ]
 
 328*Finish display clustering:
-    - Improve and verify change display in cluster
-    - Allow Show/Hide (especially display disabling/enabling)
+    - Improve and verify change display in cluster (or, more general, Lists).
+    - Allow disabling/enabling displays.
+    - Document it all.
 
 329*Have a Display Editor shortcut from the data popup menu.
 
