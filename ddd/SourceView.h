@@ -382,6 +382,13 @@ class SourceView {
     static XmTextPosition glyph_position(Widget w, XEvent *e, 
 					 bool normalize = true);
 
+    // Data associated with current drag operation
+    // The Glyph being dragged
+    static Widget current_drag_origin;
+
+    // The breakpoint being dragged, or 0 if execution position
+    static int current_drag_breakpoint;
+
 public:
     // Horizontal arrow offset (pixels)
     static int arrow_x_offset;
