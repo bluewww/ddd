@@ -1848,8 +1848,8 @@ source distribution.
 .\" ---------------
 .SH COPYING
 .\" ---------------
-\s-2@DDD@\s+2 is Copyright \(co 1995 Technische Universitaet Braunschweig,
-Germany.
+\s-2@DDD@\s+2 is Copyright \(co 1995, 1996
+Technische Universitaet Braunschweig, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this
 manual page provided the copyright notice and this permission notice
