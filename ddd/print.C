@@ -699,8 +699,8 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     Widget print_portrait;
     static MMDesc orientation_menu[] = 
     {
-	{"portrait",  MMToggle, { SetGCOrientation }},
-	{"landscape", MMToggle, { NopCB }, NULL, &print_portrait },
+	{"portrait",  MMToggle, { SetGCOrientation }, NULL, &print_portrait },
+	{"landscape", MMToggle, { NopCB }},
 	MMEnd
     };
 
