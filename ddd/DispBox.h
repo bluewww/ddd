@@ -58,6 +58,7 @@ public:
     static string  vsllib_name;
     static string  vsllib_path;
     static string  vsllib_defs;
+    static string  vsllib_base_defs;
     static int     max_display_title_length;
     static bool    align_2d_arrays;
 

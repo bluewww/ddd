@@ -5118,10 +5118,11 @@ DataDisp::DataDisp(Widget parent)
     registerOwnConverters();
 
     // Init globals
-    StringBox::fontTable = new FontTable (XtDisplay(parent));
-    DispBox::vsllib_name = app_data.vsl_library;
-    DispBox::vsllib_path = app_data.vsl_path;
-    DispBox::vsllib_defs = string(app_data.vsl_base_defs) + app_data.vsl_defs;
+    StringBox::fontTable      = new FontTable (XtDisplay(parent));
+    DispBox::vsllib_name      = app_data.vsl_library;
+    DispBox::vsllib_path      = app_data.vsl_path;
+    DispBox::vsllib_base_defs = app_data.vsl_base_defs;
+    DispBox::vsllib_defs      = app_data.vsl_defs;
 
     // Create graph
     disp_graph = new DispGraph();

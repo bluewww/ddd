@@ -61,10 +61,11 @@ char DispBox_rcsid[] =
 //-----------------------------------------------------------------------------
 
 VSLLib  DispBox::dummylib;
-VSLLib* DispBox::vsllib_ptr      = &DispBox::dummylib;
-string  DispBox::vsllib_name     = "builtin";
-string  DispBox::vsllib_path     = ".";
-string  DispBox::vsllib_defs     = "";
+VSLLib* DispBox::vsllib_ptr       = &DispBox::dummylib;
+string  DispBox::vsllib_name      = "builtin";
+string  DispBox::vsllib_path      = ".";
+string  DispBox::vsllib_defs      = "";
+string  DispBox::vsllib_base_defs = "";
 int     DispBox::max_display_title_length = 20;
 bool    DispBox::vsllib_initialized = false;
 bool    DispBox::align_2d_arrays = true;
@@ -155,6 +156,8 @@ void DispBox::init_vsllib(void (*background)())
     if (string(vsllib_name) == "builtin")
     {
 	string defs = string(builtin_def)
+	    + "#line 1 \"" Ddd_NAME "*vslBaseDefs\"\n"
+	    + vsllib_base_defs
 	    + "#line 1 \"" Ddd_NAME "*vslDefs\"\n"
 	    + vsllib_defs;
 	istrstream is(defs.chars());
