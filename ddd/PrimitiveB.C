@@ -62,8 +62,24 @@ void RuleBox::_draw(Widget w,
     BoxPoint width(extend(X) ? space[X] : size(X),
 		   extend(Y) ? space[Y] : size(Y));
 
-    XFillRectangle(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
-	width[X], width[Y]);
+    if (width[Y] == 1)
+    {
+	// Horizontal line
+	XDrawLine(XtDisplay(w), XtWindow(w), gc,
+		  origin[X], origin[Y], origin[X] + width[X], origin[Y]);
+    }
+    else if (width[X] == 1)
+    {
+	// Vertical line
+	XDrawLine(XtDisplay(w), XtWindow(w), gc,
+		  origin[X], origin[Y], origin[X], origin[Y] + width[Y]);
+    }
+    else
+    {
+	// Rectangle
+	XFillRectangle(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
+		       width[X], width[Y]);
+    }
 }
 
 void RuleBox::dump(ostream& s) const
