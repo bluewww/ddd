@@ -73,9 +73,6 @@ public:
     // Set new value to DV; if DV == 0, create a `disabled' box
     void set_value (const DispValue* dv = 0);
 
-    // Offset of displays to be merged
-    static const BoxPoint& merge_offset();
-
 private:
     Box*   create_value_box (const DispValue* dv, int member_name_width = 0);
 

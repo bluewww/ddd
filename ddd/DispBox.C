@@ -350,24 +350,6 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
     return vbox;
 }
 
-
-
-// ***************************************************************************
-// Offset of displays to be merged
-const BoxPoint& DispBox::merge_offset ()
-{
-    static BoxPoint offset;
-
-    if (offset == BoxPoint())
-    {
-	Box *box = eval("merge_offset");
-	offset = box->size();
-	box->unlink();
-    }
-
-    return offset;
-}
-
 // ***************************************************************************
 // Duplication with special handling of undefined boxes
 Box *DispBox::dup(const string& func_name, const Box *box)
