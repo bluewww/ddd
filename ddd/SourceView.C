@@ -1394,6 +1394,8 @@ BreakPoint *SourceView::bp_at(string arg)
 void SourceView::ShowPosition(Widget text_w, XmTextPosition pos, bool fromTop)
 {
     string& text = current_text(text_w);
+    if (text.length() == 0)
+	return;			// No position to show
 
     short rows = 0;
     XmTextPosition current_top = 0;
