@@ -651,6 +651,8 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 	case DBX:
 	    if (current_file != NO_GDB_ANSWER && current_file != "")
 		gdb_command("debug " + current_file + " " + corefile);
+	    else
+		post_error("No program.", "no_program", w);
 	    break;
 
 	case XDB:
@@ -734,13 +736,14 @@ static bool valid_ps_line(const string& line, const string& ps_command)
     if (pid == gdb->pid())
 	return false;		// Neither should you debug GDB by itself.
 
-    string ps = ps_command;
-    if (ps.contains(rxwhite))
-	ps = ps.before(rxwhite);
+    string ps = ps_command;	// Don't issue lines containing `ps'...
+    if (ps.contains(rxwhite))	// ... or whatever the first word in
+	ps = ps.before(rxwhite);// ps_command is.
+    ps = basename(ps);
 
     static regex rxps(".*[/ ]" + ps + "($| ).*");
     if (line.matches(rxps))
-	return false;		// Don't issue lines containing `ps'.
+	return false;
 
     return true;
 }
@@ -897,28 +900,30 @@ static void openProcessDone(Widget w, XtPointer client_data,
     bool attached;
     get_current_file(current_file, current_pid, attached);
 
+    if (pid == current_pid)
+    {
+	set_status("Already attached to process " + itostring(pid) + ".");
+	return;
+    }
+
     switch(gdb->type())
     {
     case GDB:
-	if (pid != current_pid)
-	{
-	    // GDB does not always detach processes upon opening new
-	    // files, so we do it explicitly
-	    if (attached)
-		gdb_command("detach");
+	// GDB does not always detach processes upon opening new
+	// files, so we do it explicitly
+	if (attached)
+	    gdb_command("detach");
 
-	    // Attach to new process
-	    gdb_command("attach " + itostring(pid));
-	}
+	// Attach to new process
+	gdb_command("attach " + itostring(pid));
 	break;
 	
     case DBX:
-	if (pid != current_pid)
-	{
-	    // Attach to new process
-	    if (current_file != NO_GDB_ANSWER && current_file != "")
-		gdb_command("debug " + current_file + " " + itostring(pid));
-	}
+	// Attach to new process
+	if (current_file != NO_GDB_ANSWER && current_file != "")
+	    gdb_command("debug " + current_file + " " + itostring(pid));
+	else
+	    post_error("No program.", "no_program", w);
 	break;
 
     case XDB:
@@ -945,9 +950,8 @@ static void warn_if_no_program(Widget popdown)
 
     if (current_file == "")
     {
-	Widget warning = 
-	    post_warning("Please open a program first.", 
-			 "no_program_warning", popdown);
+	Widget warning = post_warning("Please open a program first.", 
+				      "no_program", popdown);
 
 	if (popdown != 0 && warning != 0)
 	{

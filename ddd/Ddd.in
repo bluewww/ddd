@@ -4205,13 +4205,13 @@ Ddd*no_completion_error*helpString:	\
 Command completion requires the GDB `@tt complete@rm' command,\n\
 which is present in GDB 4.13 and later.
 
-Ddd*no_program_warning_popup_title: @DDD@: No Program
-Ddd*no_program_warning*helpString: \
-@rm You have not opened any program yet.  Having a program is necessary\n\
-before accessing core dumps, source files, or attaching to processes.\n\
+Ddd*no_program_popup_title: @DDD@: No Program
+Ddd*no_program*helpString: \
+@rm You have not opened any program yet.  @GDB@ needs a debuggee\n\
+to access core dumps, source files, or attaching to processes.\n\
 \n\
-You can ignore this warning and proceed, but you will be unable to display\n\
-symbolic values and determine locations.\n\
+You can ignore this warning and proceed, but @GDB@ may be unable\n\
+to display symbolic values and determine locations.\n\
 \n\
 To open a program, use @bf Open Program@rm.
 
