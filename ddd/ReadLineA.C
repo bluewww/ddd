@@ -71,14 +71,18 @@ void ReadLineAgent::readline_handler(char *line)
 void ReadLineAgent::prompt(const string& prompt_string)
 {
 #if WITH_READLINE
-    // Prompt using PROMPT_STRING
-    rl_callback_handler_remove();
-    rl_callback_handler_install((char *)prompt_string, readline_handler);
-#else
-    write(prompt_string);
+    if (inputIsTerminal())
+    {
+	// Prompt using PROMPT_STRING
+	rl_callback_handler_remove();
+	rl_callback_handler_install((char *)prompt_string, readline_handler);
+	current_prompter = this;
+	return;
+    }
 #endif
 
-    current_prompter = this;
+    write(prompt_string, prompt_string.length());
+    current_prompter = 0;
 }
 
 void ReadLineAgent::make_sane()
@@ -100,6 +104,7 @@ int ReadLineAgent::_readInput(char *& data)
 {
     if (!running())
     {
+	// Prevent against being called to drain stdin
 	data = "";
 	return 0;
     }
