@@ -116,6 +116,11 @@ echo "Target is $target"
 set -x
 cd $tmpdir
 
+# Create a DDD subdirectory and make its group `ddd'
+mkdir ddd
+chgrp ddd ddd
+chmod g+s ddd
+
 # Get the DDD development tree out of CVS.
 cvs checkout ddd
 cd ddd
