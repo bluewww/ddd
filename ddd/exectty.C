@@ -36,8 +36,14 @@ char exectty_rcsid[] =
 #include "exectty.h"
 
 #include "AppData.h"
+#include "Command.h"
 #include "Delay.h"
 #include "LiterateA.h"
+#include "MString.h"
+#include "SignalB.h"
+#include "charsets.h"
+#include "config.h"
+#include "cook.h"
 #include "ddd.h"
 #include "disp-read.h"
 #include "fonts.h"
@@ -48,11 +54,9 @@ char exectty_rcsid[] =
 #include "shell.h"
 #include "status.h"
 #include "string-fun.h"
+#include "verify.h"
 #include "windows.h"
 #include "wm.h"
-#include "Command.h"
-#include "SignalB.h"
-#include "cook.h"
 
 #include <fstream.h>
 #include <signal.h>
@@ -60,6 +64,10 @@ char exectty_rcsid[] =
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
+
+#include <Xm/Xm.h>
+#include <Xm/MessageB.h>
+
 
 extern "C" {
 // The GNU termcap declarations should also work for non-GNU termcap
@@ -107,6 +115,19 @@ static bool show_starting_line_in_tty    = false;
 pid_t exec_tty_pid()     { return separate_tty_pid; }
 Window exec_tty_window() { return separate_tty_window; }
 
+static void CancelTTYCB(Widget, XtPointer client_data, XtPointer)
+{
+    bool *flag = (bool *)client_data;
+    *flag = true;
+}
+
+static void GotReplyHP(Agent *, void *client_data, void *call_data)
+{
+    DataLength *d = (DataLength *)call_data;
+    string& reply = *(string *)client_data;
+    reply += string(d->data, d->length);
+}
+
 // Create a separate tty window; return its name in TTYNAME, its
 // process id in PID, its terminal type in TERM, and its window id in
 // WINDOWID.
@@ -117,12 +138,41 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     if (pid > 0 && !remote_gdb() && kill(pid, 0) == 0)
 	return;
 
-    StatusDelay delay("Starting execution window");
-
-    string old_ttyname = ttyname;
-
     string term_command = app_data.term_command;
     term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
+
+    static bool canceled;
+    canceled = false;
+
+    static Widget dialog = 0;
+    if (dialog == 0)
+    {
+	Arg args[10];
+	Cardinal arg = 0;
+	XtSetArg(args[arg], XmNdialogStyle, 
+		 XmDIALOG_FULL_APPLICATION_MODAL); arg++;
+	dialog = verify(XmCreateWorkingDialog(find_shell(origin), 
+					      "launch_tty_dialog", args, arg));
+	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
+					     XmDIALOG_OK_BUTTON));
+	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
+					     XmDIALOG_HELP_BUTTON));
+	XtAddCallback(dialog, XmNcancelCallback, CancelTTYCB,
+		      XtPointer(&canceled));
+    }
+
+    string base = term_command;
+    if (base.contains(' '))
+	base = base.before(' ');
+    MString msg = rm("Starting ") + tt(base) + rm("...");
+    XtVaSetValues(dialog, XmNmessageString, msg.xmstring(), NULL);
+    manage_and_raise(dialog);
+
+    StatusDelay delay("Starting Execution Window");
+
+    // Fill in defaults
+    ttyname = "";
+    pid     = -1;
 
     string command = 
 	
@@ -172,26 +222,31 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     command = sh_command(command);
 
     {
-	Agent tty(command);
+	XtAppContext app_context = XtWidgetToApplicationContext(dialog);
+	LiterateAgent tty(app_context, command);
+
+	string reply = "";
+	tty.addHandler(Input, GotReplyHP, (void *)&reply);
 	tty.start();
 
-	FILE *fp = tty.inputfp();
-	if (fp != 0)
-	{
-	    char reply[BUFSIZ];
-	    fgets(reply, BUFSIZ, fp);
+	while (!reply.contains('\n') && !canceled && tty.running())
+	    XtAppProcessEvent(app_context, XtIMAll);
 
-	    if (strlen(reply) > 2)
-	    {
-		istrstream is(reply);
-		is >> ttyname >> pid >> term >> windowid;
-	    }
+	if (reply.length() > 2)
+	{
+	    istrstream is(reply);
+	    is >> ttyname >> pid >> term >> windowid;
 	}
+
+	tty.terminate();
     }
 
     // Sanity check
     if (ttyname == "" || ttyname[0] != '/')
 	pid = -1;
+
+    // Waiting is over
+    XtUnmanageChild(dialog);
 
     if (pid < 0)
     {

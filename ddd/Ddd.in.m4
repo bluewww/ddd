@@ -5665,12 +5665,17 @@ Ddd*lock_dialog.okLabelString:		Continue
 Ddd*lock_dialog.cancelLabelString: 	Exit
 
 
+Ddd*launch_tty_dialog_popup.title: DDD: Starting Execution Window
+Ddd*launch_tty_dialog.messageString:		\
+@rm Starting Execution Window...
+
+
 !-----------------------------------------------------------------------------
 ! Messages
 !-----------------------------------------------------------------------------
 
 ! If we have an old app-defaults file installed, we may see an old
-! version of this warning.  Gee, app-defaults files are plain just stupid.
+! version of this warning.  Gee, app-defaults files are just plain stupid.
 Ddd*bad_version_warning_popup.title: DDD: Version Mismatch
 Ddd*bad_version_warning*helpString:	\
 @rm This DDD version does not match the version of the\n\
