@@ -383,4 +383,6 @@ Volunteers for fixing these and other bugs are welcome!
      execution position is always at the first line of the currently
      active source file.  Reported by Uwe Wark <uw@bruker.de>
 
-204. (Insert your bug here)
+204. Switching from glyphs to text loses the current PC.
+
+205. (Insert your bug here)

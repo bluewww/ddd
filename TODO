@@ -384,4 +384,11 @@ Volunteers for these and other projects are welcome!
        time arranging each "display box". It will cool if we can also
        have a normal text list display for variable values.
 
-218. (Insert your project idea here)
+218. Roy Dragseth <royd@math.uit.no> reports on DDD 2.1.90:
+     1. The source window still pops up when I run ddd from emacs. I want
+        to view the source in emacs. (Can be worked around by fvwm.)
+
+     2. The command buttons come up off screen under fvwm (haven't
+        checked other WM's).
+
+219. (Insert your project idea here)
