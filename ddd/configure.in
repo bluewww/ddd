@@ -227,7 +227,7 @@ dnl
 dnl
 dnl Check for .exe extension (used in the Windows/Cygwin32 environment)
 dnl
-AM_EXEEXT
+AC_EXEEXT
 dnl
 dnl
 dnl The C++ compiler is set up.  Use it for further checks.
