@@ -112,7 +112,8 @@ const unsigned ReadyForQuestion = TTYAgent_NTypes;
 const unsigned ReadyForCmd      = ReadyForQuestion + 1;
 const unsigned LanguageChanged  = ReadyForCmd + 1;
 const unsigned ReplyRequired    = LanguageChanged + 1;
-const unsigned GDBAgent_NTypes  = ReplyRequired + 1;
+const unsigned EchoDetected     = ReplyRequired + 1;
+const unsigned GDBAgent_NTypes  = EchoDetected + 1;
 
 // Handler info
 struct ReplyRequiredInfo {
@@ -136,13 +137,13 @@ protected:
 	BusyOnQuArray,
 	BusyOnInitialCmds
     };
-    State state;
+    State state;		// Current state
 
 private:
-    DebuggerType    _type;
-    void*           _user_data;
+    DebuggerType    _type;	// Debugger type
+    void*           _user_data;	// used in callbacks etc.
 
-    bool _has_frame_command;	
+    bool _has_frame_command;	// Debugger properties
     bool _has_func_command;	
     bool _has_run_io_command;
     bool _has_print_r_option;
@@ -161,13 +162,14 @@ private:
     bool _has_delete_comma;
     bool _has_err_redirection;
 
-    ProgramLanguage _program_language;
+    ProgramLanguage _program_language; // Current program language
 
-    bool _trace_dialog;
-    bool _verbatim;
+    bool _trace_dialog;		// True if dialog is to be traced
+    bool _verbatim;		// True if in verbatim mode
 
     string last_prompt;		// Last prompt received
     string last_written;	// Last command sent
+    int echoed_characters;      // # of echoed characters so far (-1: no echo)
     bool echo_mode_warning;	// True if warned about echo mode
 
 protected:
@@ -371,6 +373,7 @@ public:
     virtual int write(const char *data, int length)
     {
 	last_written = string(data, length);
+	echoed_characters = 0;
 	return TTYAgent::write(data, length);
     }
 
@@ -401,6 +404,7 @@ private:
 			   int      qu_count,
 			   OQACProc on_qu_array_completion,
 			   void*    qa_data);
+
     bool ends_with_prompt(const string& answer);
     bool ends_with_secondary_prompt(const string& answer);
     string requires_reply(const string& answer);

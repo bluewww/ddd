@@ -112,6 +112,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _verbatim(false),
       last_prompt(""),
       last_written(""),
+      echoed_characters(-1),
       echo_mode_warning(false),
       questions_waiting(false),
       _qu_data(0),
@@ -166,6 +167,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _trace_dialog(gdb.trace_dialog()),
       _verbatim(gdb.verbatim()),
       last_written(""),
+      echoed_characters(-1),
       echo_mode_warning(false),
       questions_waiting(false),
       _qu_data(0),
@@ -860,24 +862,60 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
     DataLength* dl = (DataLength *) call_data;
     string answer(dl->data, dl->length);
 
-    // Check for echo
-    if (gdb->last_written != "")
+    // Check for echoed characters.  Every now and then, the TTY setup
+    // fails such that we get characters echoed back.  This may also
+    // happen with remote connections.
+    if (gdb->echoed_characters >= 0)
     {
-	string a = answer;
-	a.gsub('\r', "");
-	if (a.contains(gdb->last_written, 0))
+	int i = 0;
+	int e = gdb->echoed_characters;
+	while (i < int(answer.length()) && e < int(gdb->last_written.length()))
 	{
-	    answer = a.after(gdb->last_written);
+	    if (answer[i] == '\r')
+	    {
+		// Ignore `\r' in comparisons
+		i++;
+	    }
+	    else if (answer[i] == gdb->last_written[e])
+	    {
+		i++, e++;
+	    }
+	    else
+	    {
+		// No echo
+		break;
+	    }
+	}
+
+	if (e >= int(gdb->last_written.length()))
+	{
+	    // All characters last written have been echoed.
+	    // => Remove echoed characters and keep on processing
+	    answer = answer.from(i);
+	    gdb->echoed_characters = -1;
 
 	    if (!gdb->echo_mode_warning)
 	    {
-		gdb->raiseWarning("running in echo mode");
+		gdb->callHandlers(EchoDetected);
 		gdb->echo_mode_warning = true;
 	    }
-
-	    gdb->last_written = "";
+	}
+	else if (i >= int(answer.length()))
+	{
+	    // All characters received so far have been echoed.
+	    // => Wait for next input
+	    answer = "";
+	    gdb->echoed_characters = e;
+	}
+	else
+	{
+	    // No echo.
+	    // => Restore any echoed characters and keep on processing
+	    answer.prepend(gdb->last_written.before(gdb->echoed_characters));
+	    gdb->echoed_characters = -1;
 	}
     }
+
 
     // Check for `More' prompt
     string reply = gdb->requires_reply(answer);
@@ -890,6 +928,7 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	// Ignore the `More' prompt
 	answer += '\r';
     }
+
 
     // Check for secondary prompt
     if (gdb->ends_with_secondary_prompt(answer))
@@ -915,7 +954,8 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	answer = info.question;
     }
 
-    // Handle all other GDB output
+
+    // Handle all other GDB output, depending on current state.
     switch (gdb->state)
     {
     case ReadyWithPrompt:
