@@ -1211,6 +1211,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
 	    entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
 	    XtManageChild(entry);
+
+	    Widget option_label = XmOptionLabelGadget(entry);
+	    XtUnmanageChild(option_label);
 	}
 	break;
 
@@ -1317,6 +1320,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
 	    entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
 	    XtManageChild(entry);
+
+	    Widget option_label = XmOptionLabelGadget(entry);
+	    XtUnmanageChild(option_label);
 	}
 	break;
 
