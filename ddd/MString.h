@@ -2,6 +2,7 @@
 // Simple interface to Motif composite strings
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -52,21 +53,18 @@ private:
 
 public:
     // Constructors
-    MString(const char *text = "",
+    MString():
+	_mstring(XmStringCreateLtoR((char *)"", MSTRING_DEFAULT_CHARSET))
+    {
+	assert(OK());
+    }
+
+    MString(const char *text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
 	_mstring(text ? XmStringCreateLtoR((char *)text, charset) : 0)
     {
 	assert(OK());
     }
-
-#if 0
-    MString(char *text,
-	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
-	_mstring(text ? XmStringCreateLtoR(text, charset) : 0)
-    {
-	assert(OK());
-    }
-#endif
 
     MString(const string& text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):

@@ -6,7 +6,7 @@ DDD 3.3.1
 
 Minor bug fixes:
 
-* DDD should compile using GCC 2.7.2.
+* Minor compilation problems with GCC 2.7.2 and Sun CC are fixed.
 * The option to create new displays `left-to-right' is restored upon startup.
 
 
