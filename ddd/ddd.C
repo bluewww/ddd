@@ -3355,8 +3355,7 @@ void update_options()
     set_toggle(set_button_images_w,        app_data.button_images);
     set_toggle(set_button_captions_w,      app_data.button_captions);
     set_toggle(set_flat_buttons_w,         app_data.flat_buttons);
-    set_toggle(set_color_buttons_w, 
-	       string(initial_app_data.button_color_key) == 'g');
+    set_toggle(set_color_buttons_w, string(app_data.button_color_key) == 'g');
 
     set_toggle(set_tool_buttons_in_toolbar_w,      app_data.command_toolbar);
     set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_toolbar);
