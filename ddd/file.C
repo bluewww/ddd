@@ -481,11 +481,26 @@ static string get_file(Widget w, XtPointer, XtPointer call_data)
 // Get FILENAME and PID of current debuggee.  NO_GDB_ANSWER for
 // FILENAME means debuggee cannot be determined; "" means no debuggee.
 // ATTACHED is true iff we're debugging an attached process.
-void get_current_file(string& filename, int& pid, bool& attached)
+// RUNNING is true iff the program is running.
+// STATE is a verbose description of the program state.
+void get_program_state(string& filename, int& pid, 
+		       bool& attached, bool& running, string& state)
 {
     filename = NO_GDB_ANSWER;
     pid      = 0;
     attached = false;
+    running  = false;
+
+    if (source_view->have_exec_pos())
+    {
+	state = "has stopped";
+	running = true;
+    }
+    else
+    {
+	state = "is not being run";
+	running = false;
+    }
 
     switch(gdb->type())
     {
@@ -511,6 +526,20 @@ void get_current_file(string& filename, int& pid, bool& attached)
 	    }
 
 	    attached = ans.contains("attached process ");
+
+	    ans = gdb_question("info program");
+	    if (ans == NO_GDB_ANSWER)
+		return;
+
+	    if (ans.contains("not being run"))
+		running = false;
+	    else if (ans.contains("\nIt stopped "))
+	    {
+		state = ans.from("\nIt stopped ");
+		state = "has " + state.after("\nIt ");
+		state = state.before('.');
+		running = true;
+	    }
 	}
 	break;
 
@@ -532,6 +561,9 @@ void get_current_file(string& filename, int& pid, bool& attached)
 	break;			// FIXME
     }
 }
+
+
+
 
 // OK pressed in `Open File'
 static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)

@@ -138,47 +138,6 @@ static int passed_to_program(string program_state)
     return -1;
 }
 
-// Return whether the program is still running
-bool program_running(string& state)
-{
-    state = "is not being run";
-
-    switch (gdb->type())
-    {
-    case GDB:
-        {
-	    // In case we have a core dump, treat the program as
-	    // `running' - remember we still have the possibility to
-	    // examine variables, etc.
-	    string ans = gdb_question("info files");
-	    if (ans.contains("core dump"))
-		return true;
-
-	    ans = gdb_question("info program");
-	    if (ans.contains("not being run"))
-		return false;
-
-	    if (ans.contains("\nIt stopped "))
-	    {
-		state = ans.from("\nIt stopped ");
-		state = "has " + state.after("\nIt ");
-		state = state.before('.');
-	    }
-	}
-	break;
-
-    case DBX:
-    case XDB:
-	if (!source_view->have_exec_pos())
-	    return false;
-
-	state = "has stopped";
-	break;
-    }
-
-    return true;
-}
-
 // Give a help dependent on current DDD state
 void WhatNextCB(Widget, XtPointer, XtPointer)
 {

@@ -41,8 +41,5 @@
 extern void WhatNextCB(Widget widget, XtPointer client_data,
  		       XtPointer call_data);
 
-// Return whether the program is still running
-bool program_running(string& state);
-
 #endif // _DDD_WhatNextCB_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
