@@ -588,4 +588,19 @@ Reported by: Martin Opel and Arnaud Desitter
     the normal process fails is to configure manually libiberty by typing
     the proper configure command in the "libiberty" directory.
 
+
+Cygwin
+======
+
+    Build on cygwin with gcc 3.3.x fails as the C++ compiler has a bug related
+    to "#pragma implementation" and "#progma interface".  A workaround consists
+    in commenting out the offending lines.
+    The convenient script below makes it easy.
+
+for f in `grep -rl '^#pragma implementation' .` ; do mv $f $f.old ; sed -e 's:^#pragma implementation://#pragma implementation:' < $f.old > $f ; rm $f.old ; done
+for f in `grep -rl '^#pragma interface' .` ; do mv $f $f.old ; sed -e 's:^#pragma interface://#pragma interface:' < $f.old > $f ; rm $f.old ; done
+
+    Furthermore, recent versions of the autotools are necessary and the configure
+    script and associated files may have to be regenerated.
+
 $Id$
