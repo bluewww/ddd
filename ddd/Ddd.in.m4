@@ -3070,19 +3070,19 @@ Ddd*XmPanedWindow.spacing:		4
 
 ! Motif 1.x, using ScrolledWindow
 Ddd*graph_edit_swindow.width:		622
-Ddd*graph_edit_swindow.height:		200
+Ddd*graph_edit_swindow.height:		180
 
 ! Motif 2.0, using ScrolledWindow
 Ddd*graph_editSW.width:			622
-Ddd*graph_editSW.height:		200
+Ddd*graph_editSW.height:		180
 
 ! Motif 1.x, using Porthole
 Ddd*graph_edit_porthole.width:		622
-Ddd*graph_edit_porthole.height:		200
+Ddd*graph_edit_porthole.height:		180
 
 ! Motif 2.0, using Porthole
 Ddd*graph_edit_form.width:		622
-Ddd*graph_edit_form.height:		200
+Ddd*graph_edit_form.height:		180
 
 Ddd*graph_edit_swindow.spacing:		0
 Ddd*graph_edit_swindow.borderWidth:	0
@@ -3402,7 +3402,7 @@ Ddd*code_text_w.columns:		80
 Ddd*code_text_w.rows:			2
 
 Ddd*source_form_w.width:		622
-Ddd*source_form_w.height:		320
+Ddd*source_form_w.height:		280
 
 Ddd*code_form_w.width:			622
 Ddd*code_form_w.height:			50
@@ -3810,11 +3810,11 @@ Ddd*gdb_w.value: \
 DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
 Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
 
-Ddd*gdb_w.rows:			10
 Ddd*gdb_w.columns:		80
+Ddd*gdb_w.rows:			5
 
-Ddd*gdb_wSW.width:		622
-Ddd*gdb_wSW.height:		124
+Ddd*gdb_wSW.width:		600
+Ddd*gdb_wSW.height:		82
 
 Ddd*gdb_w_swindow.spacing:		0
 Ddd*gdb_w_swindow.borderWidth:		0
