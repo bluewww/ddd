@@ -460,10 +460,18 @@ void DispValue::init(string& value, DispValueType given_type)
 		}
 		else
 		{
+		    string full_name;
+
+		    // If a member name contains `.', quote it.  This
+		    // happens with vtable pointers on Linux (`_vptr.').
+		    if (member_name.contains('.') && gdb->type() == GDB)
+			full_name = member_prefix + quote(member_name, '\'');
+		    else
+			full_name = member_prefix + member_name;
+
 		    v.str_or_cl->members[i] = 
 			new DispValue (this, depth() + 1, value, 
-				       member_prefix + member_name, 
-				       member_name);
+				       full_name, member_name);
 		    more_values = read_str_or_cl_next (value);
 		}
 		i++;
