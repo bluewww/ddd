@@ -4465,9 +4465,12 @@ Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
 .B gdb-previous-history ()
 Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
 .TP
-.B gdb-process ()
+.B gdb-process ([\|\fIaction\fB\|[\|, \fIargs...\fB\|]\|])
 Process the given event in the debugger console.  Bound to key events
-in the source and data window.
+in the source and data window.  If this action is bound to the source
+window, and the source window is editable, perform
+\fIaction\fB(\fIargs...\fB)\fR on the source window instead; if
+\fIaction\fR is not given, perform `\fBself-insert()\fR'.
 .TP
 .B gdb-forward-character ()
 Move one character to the right.  Bound to \fBCtrl+F\fR and \fBRight\fR.

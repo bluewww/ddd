@@ -35,22 +35,24 @@ char editing_rcsid[] =
 
 #include "editing.h"
 
+#include "AppData.h"
 #include "ArgField.h"
-#include "DataDisp.h"
-#include "TimeOut.h"
-#include "status.h"
 #include "Command.h"
-#include "complete.h"
+#include "DataDisp.h"
+#include "SourceView.h"
+#include "TimeOut.h"
 #include "args.h"
+#include "cmdtty.h"
+#include "complete.h"
+#include "cook.h"
 #include "ctrl.h"
 #include "ddd.h"
-#include "cmdtty.h"
-#include "post.h"
 #include "history.h"
-#include "regexps.h"
-#include "string-fun.h"
-#include "cook.h"
 #include "misc.h"
+#include "post.h"
+#include "regexps.h"
+#include "status.h"
+#include "string-fun.h"
 
 #include <iostream.h>
 #include <Xm/Xm.h>
@@ -392,8 +394,25 @@ void commandAct(Widget w, XEvent*, String *params, Cardinal *num_params)
     gdb_keyboard_command = true;
 }
 
-void processAct(Widget w, XEvent *e, String *, Cardinal *)
+void processAct(Widget w, XEvent *e, String *params, Cardinal *num_params)
 {
+    if (app_data.source_editing && w == source_view->source())
+    {
+	// Process event in source window
+	string action = "self-insert";   // Default action
+	String *action_params      = 0;
+	Cardinal num_action_params = 0;
+	if (num_params != 0 && *num_params > 0)
+	{
+	    action = params[0];
+	    action_params = params + 1;
+	    num_action_params = *num_params - 1;
+	}
+
+	XtCallActionProc(w, action, e, action_params, num_action_params);
+	return;
+    }
+
     if (e->type != KeyPress && e->type != KeyRelease)
 	return;
 
@@ -494,11 +513,11 @@ void end_of_lineAct(Widget, XEvent*, String*, Cardinal*)
     XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
 }
 
-void forward_characterAct(Widget w, XEvent *e, 
-			  String *args, Cardinal *num_args)
+void forward_characterAct(Widget, XEvent *e, 
+			  String *params, Cardinal *num_params)
 {
     clear_isearch();
-    XtCallActionProc(w, "forward-character", e, args, *num_args);
+    XtCallActionProc(gdb_w, "forward-character", e, params, *num_params);
 }
 
 void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
@@ -519,16 +538,16 @@ void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
 		  XmTextGetLastPosition(gdb_w), (String)input);
 }
 
-void delete_or_controlAct(Widget w, XEvent *e, 
-			  String *args, Cardinal *num_args)
+void delete_or_controlAct(Widget, XEvent *e, 
+			  String *params, Cardinal *num_params)
 {
     clear_isearch();
     string input = current_line();
     strip_trailing_newlines(input);
     if (input == "")
-	XtCallActionProc(w, "gdb-control", e, args, *num_args);
+	XtCallActionProc(gdb_w, "gdb-control", e, params, *num_params);
     else
-	XtCallActionProc(w, "delete-next-character", e, args, *num_args);
+	XtCallActionProc(gdb_w, "delete-next-character", e, params, *num_params);
 }
 
 //-----------------------------------------------------------------------------
@@ -729,10 +748,10 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
     if (command.contains("..."))
     {
 	command = command.before("...") + " ";
-	String args[1];
-	args[0] = command;
+	String params[1];
+	params[0] = command;
 	gdbClearCB(w, client_data, call_data);
-	XtCallActionProc(gdb_w, "insert-string", cbs->event, args, 1);
+	XtCallActionProc(gdb_w, "insert-string", cbs->event, params, 1);
     }
     else
     {
@@ -798,9 +817,9 @@ void gdbClearCB  (Widget w, XtPointer, XtPointer call_data)
     if (cbs->event == 0)
 	return;
 
-    String args[1] = {""};
-    Cardinal num_args = 1;
-    set_lineAct(w, cbs->event, args, &num_args);
+    String params[1] = {""};
+    Cardinal num_params = 1;
+    set_lineAct(w, cbs->event, params, &num_params);
 }
 
 // Remove any text up to the last GDB prompt
