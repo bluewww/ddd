@@ -41,6 +41,10 @@ private:
     StringArray _patterns;
     bool _active;
 
+protected:
+    // Return true if PATTERN matches EXPR
+    virtual bool matches(const string& pattern, const string& expr) const;
+
 public:
     // Create as empty
     ThemePattern()
@@ -54,6 +58,9 @@ public:
     ThemePattern(const ThemePattern& t)
 	: _patterns(t.patterns()), _active(t.active())
     {}
+
+    // Destructor
+    virtual ~ThemePattern() {}
 
     // True if active
     bool  active() const { return _active; }

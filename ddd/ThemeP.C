@@ -73,11 +73,20 @@ ostream& operator<<(ostream& os, const ThemePattern& p)
     return os;
 }
 
+bool ThemePattern::matches(const string& pattern, const string& expr) const
+{
+    if (pattern.contains('"', 0) || pattern.contains("'", 0))
+	return expr == unquote(pattern);
+
+    const int dot_special = 0;
+    return glob_match(pattern, expr, dot_special);
+}
+
 string ThemePattern::matching_pattern(const string& expr) const
 {
     for (int i = 0; i < patterns().size(); i++)
     {
-	if (glob_match(patterns()[i], expr, 0))
+	if (matches(patterns()[i], expr))
 	{
 #if LOG_THEME_PATTERNS
 	    clog << quote(patterns()[i]) << " matches " << quote(expr) << "\n";
