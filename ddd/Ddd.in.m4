@@ -1118,9 +1118,10 @@ Shift<Key>osfPageUp:	previous-page(extend)	    \n\
 Shift<Key>osfPageDown:	next-page(extend)           \n\
 Shift<Key>Prior:	previous-page(extend)	    \n\
 Shift<Key>Next:		next-page(extend)	    \n\
-~Ctrl Shift<Key>Delete: cut-clipboard()             \n\
-~Shift Ctrl<Key>Insert: copy-clipboard()            \n\
-~Ctrl Shift<Key>Insert: paste-clipboard()           \n\
+~Ctrl Shift<Key>Delete:  cut-clipboard()            \n\
+~Shift Ctrl<Key>Insert:  copy-clipboard()           \n\
+~Ctrl Shift<Key>Insert:  paste-clipboard()          \n\
+~Ctrl ~Shift<Key>Insert: toggle-overstrike()        \n\
 ~Ctrl ~Shift ~Meta<Key>Escape:		gdb-interrupt()         \n\
 ~Ctrl ~Shift ~Meta<Key>osfCancel:	gdb-interrupt()         \n\
 ~Ctrl ~Shift ~Meta<Key>osfUp:		gdb-previous-history()	\n\
@@ -1161,9 +1162,10 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 ~Ctrl ~Shift<Key>osfEndLine:   end-of-line()        \n\
 ~Ctrl ~Shift<Key>osfBeginData: beginning-of-line()  \n\
 ~Ctrl ~Shift<Key>osfEndData:   end-of-line()        \n\
-~Ctrl Shift<Key>Delete: cut-clipboard()             \n\
-~Shift Ctrl<Key>Insert: copy-clipboard()            \n\
-~Ctrl Shift<Key>Insert: paste-clipboard()           \n])dnl
+~Ctrl Shift<Key>Delete:  cut-clipboard()            \n\
+~Shift Ctrl<Key>Insert:  copy-clipboard()           \n\
+~Ctrl Shift<Key>Insert:  paste-clipboard()          \n\
+~Ctrl ~Shift<Key>Insert: toggle-overstrike()        \n])dnl
 dnl
 dnl Emacs + TAB completion.
 define(COMPLETE_TRANSLATIONS, [EMACS_TRANSLATIONS \
@@ -1282,9 +1284,10 @@ Ctrl<Key>V:		next-page()		    \
 			source-update-glyphs()	    \n\
 Meta<Key>V:		previous-page()		    \
 			source-update-glyphs()	    \n\
-~Ctrl Shift<Key>Delete: cut-clipboard()             \n\
-~Shift Ctrl<Key>Insert: copy-clipboard()            \n\
-~Ctrl Shift<Key>Insert: paste-clipboard()           \n\
+~Ctrl Shift<Key>Delete:  cut-clipboard()            \n\
+~Shift Ctrl<Key>Insert:  copy-clipboard()           \n\
+~Ctrl Shift<Key>Insert:  paste-clipboard()          \n\
+~Ctrl ~Shift<Key>Insert: toggle-overstrike()        \n\
 ~Shift <Key>R7:		beginning-of-line()	    \n\
 ~Shift <Key>R13:	end-of-line()		    \n\
 ~Shift <Key>Tab:	PrimitiveNextTabGroup()	    \n\
