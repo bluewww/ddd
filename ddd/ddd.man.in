@@ -82,32 +82,8 @@ but usually just
 .B @ddd@
 .I program
 .ad b
-
-.\" Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-.\" Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
-.\" 
-.\" This file is part of the DDD Library.
-.\" 
-.\" The DDD Library is free software; you can redistribute it and/or
-.\" modify it under the terms of the GNU Library General Public
-.\" License as published by the Free Software Foundation; either
-.\" version 2 of the License, or (at your option) any later version.
-.\" 
-.\" The DDD Library is distributed in the hope that it will be useful,
-.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-.\" See the GNU Library General Public License for more details.
-.\" 
-.\" You should have received a copy of the GNU Library General Public
-.\" License along with the DDD Library -- see the file COPYING.LIB.
-.\" If not, write to the Free Software Foundation, Inc.,
-.\" 675 Mass Ave, Cambridge, MA 02139, USA.
-.\" 
-.\" DDD is the data display debugger.
-.\" For details, see the DDD World-Wide-Web page, 
-.\" `http://www.cs.tu-bs.de/softech/ddd/',
-.\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
-
+.PP
+.\"
 .\" ---------------
 .SH DESCRIPTION
 .\" ---------------
@@ -115,7 +91,7 @@ The purpose of a debugger such as \s-2@DDD@\s+2 is to allow you to see
 what is going on \*(lqinside\*(rq another program while it
 executes\(em\&or what another program was doing at the moment it
 crashed.
-
+.PP
 \s-2@DDD@\s+2 can do four main kinds of things (plus other things in support of
 these) to help you catch bugs in the act:
 .IP \(bu 2
@@ -143,7 +119,7 @@ interface\fR to support common debugging tasks.  The \s-2@DDD@\s+2
 \fIgraphical data display\fR allows for interactive exploration of
 data structures.
 .PP
-
+.\"
 .\" ---------------
 .SH "INVOKING @DDD@"
 .\" ---------------
@@ -197,7 +173,8 @@ To learn more about \s-2@DDD@\s+2 options, run
 .sp
 to get a list of frequently used options, or see the `\fBOPTIONS\fR'
 section, below.
-
+.PP
+.\"
 .\" ---------------
 .SH "GETTING HELP"
 .\" ---------------
@@ -209,7 +186,8 @@ want help for.  Clicking on the item pops up a help text.
 You can get help on \s-2GDB\s+2 and \s-2DBX\s+2 commands by entering
 the `\fBhelp\fR' command at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt
 (see next section).
-
+.PP
+.\"
 .\" ---------------
 .SH "ENTERING COMMANDS"
 .\" ---------------
@@ -289,8 +267,10 @@ The same text is available online as the \c
 .B info\c
 \& program.
 .PP
-For full details on \s-2DBX\s+2 commands, see the \s-2DBX\s+2 documentation.
-
+For full details on \s-2DBX\s+2 commands, see the \s-2DBX\s+2
+documentation.
+.PP
+.\"
 .\" ---------------
 .SH "OPENING FILES"
 .\" ---------------
@@ -307,7 +287,8 @@ To open a core dump for the program, select `\fBOpen Core\fR' from the
 .PP
 To open an arbitrary source file, select `\fBOpen Source\fR' from the
 `\fBFile\fR' menu.
-
+.PP
+.\"
 .\" ---------------
 .SH "BREAKPOINTS"
 .\" ---------------
@@ -449,7 +430,8 @@ the `\fBHelp\fR' button.
 .PP
 More breakpoint features can be invoked through the command window.
 Enter `\fBhelp breakpoints\fR' at the `\fB(gdb)\fR' prompt.
-
+.PP
+.\"
 .\" ---------------
 .SH "LOOKING UP ITEMS"
 .\" ---------------
@@ -507,7 +489,8 @@ button to find its definition.
 .\"
 Use the `\fBBack\fR' and `\fBForward\fR' buttons to lookup previous or
 next looked-up locations.  The location found is underlined.
-
+.PP
+.\"
 .\" ---------------
 .SH "RUNNING THE PROGRAM"
 .\" ---------------
@@ -578,7 +561,8 @@ the current one.
 .PP
 You can also type the \s-2GDB\s+2 and \s-2DBX\s+2 `\fBup\fR' and
 `\fBdown\fR' commands at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt.
-
+.PP
+.\"
 .\" ---------------
 .SH "EXAMINING DATA"
 .\" ---------------
@@ -835,7 +819,8 @@ Typing
 .sp
 .br
 at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt has the same effect.
-
+.PP
+.\"
 .\" ---------------
 .SH "GRAPH EDITING"
 .\" ---------------
@@ -933,8 +918,9 @@ PostScript - suitable for enclosing it in another document;
 \s-2XFIG\s+2 - suitable for editing, using the \s-2XFIG\s+2 graphic
 editor, or for conversion into other formats using the
 \s-2TRANSFIG\s+2 package.
-
-
+.PP
+.\"
+.\"
 .\" ---------------
 .SH "MACHINE-LEVEL DEBUGGING"
 .\" ---------------
@@ -990,8 +976,9 @@ window, select `\fBShow Registers\fR' from the `\fBStack\fR' menu.
 By selecting one of the registers, its name is copied to the argument
 field.  You can use it as value for `\fBDisplay()\fR', for instance,
 to have its value displayed in the data window.
-
-
+.PP
+.\"
+.\"
 .\" ---------------------
 .SH "EDITING SOURCE CODE"
 .\" ---------------------
@@ -1033,8 +1020,9 @@ Source...\fR' item from the `\fBSource\fR' menu.  This reloads the
 source code shown from the source file.  As \s-2@DDD@\s+2
 automatically reloads the source code if the debugged program has been
 recompiled, this should seldom be necessary.
-
-
+.PP
+.\"
+.\"
 .\" ---------------
 .SH "QUITTING @DDD@"
 .\" ---------------
@@ -1057,6 +1045,7 @@ You may also interrupt \s-2@DDD@\s+2 using an interrupt signal
 inferior \s-2GDB\s+2 or \s-2DBX\s+2 debugger is interrupted as well.
 Use this as a last resort in emergencies only\(em\&if \s-2@DDD@\s+2
 hangs, for example.
+.PP
 .\"
 .\"
 .\" ---------------
@@ -1112,6 +1101,7 @@ operation than normal.
 To help you find problems due to remote execution, run \s-2@DDD@\s+2 with the
 `\fB\-\-trace\-shell\-commands\fR' option.  This prints the shell
 commands issued by \s-2@DDD@\s+2 on standard error.
+.PP
 .\"
 .\"
 .\" ---------------
@@ -1194,7 +1184,7 @@ Use `\fBM-x gdb\fR' to start a debugging session.  Proceed as usual.
 Invoke \fBxxgdb\fR as
 .br
 .sp
- \fBxxgdb \-db_name ddd -db_prompt '(gdb) '
+ \fBxxgdb \-db_name ddd \-db_prompt '(gdb) '
 .sp
 .br
 .PP
@@ -1206,7 +1196,7 @@ You can set up your personal \s-2@DDD@\s+2 preferences by using the
 `\fBOptions\fR' menu from the menu bar.  These options affect your
 running \s-2@DDD@\s+2 process only, unless you save these options for
 a later \s-2@DDD@\s+2 invocation.
-
+.\"
 .SS "General Options"
 These items are found in the `\fBOptions\fR' menu:
 .PP
@@ -1233,7 +1223,7 @@ If you want to save the command history for the next \s-2@DDD@\s+2
 invocation, set the `\fBSave Options on Exit\fR' option.  Note: This
 option is always set if your \s-2GDB\s+2 is set up to save its command
 history.
-
+.\"
 .SS "Source Options"
 By default, \s-2@DDD@\s+2 finds only complete words.  This is
 convenient for clicking on an identifier in the source text and search
@@ -1259,7 +1249,7 @@ By default, \s-2@DDD@\s+2 caches machine code in memory.  This is bad
 for memory usage, but convenient for speed, since disassembling a
 function each time it is reached may take time.  If you want to reduce
 memory usage, unset the `\fBCache Machine Code\fR' option.
-
+.\"
 .SS "Data Options"
 By default, \s-2@DDD@\s+2 displays a grid in the data window to
 facilitate display alignment.  If you prefer not to have a grid, unset
@@ -1283,7 +1273,7 @@ suitable for homogeneous data structures only.
 To enforce layout, you can set the `\fBAutomatic Layout\fR' option.
 If `\fBAutomatic Layout\fR' is enabled, the graph is layouted after
 each change.
-
+.\"
 .SS "Startup Options"
 By default, \s-2@DDD@\s+2 uses three separate windows for commands,
 source, and data.  To attach the source and data windows to the
@@ -1314,12 +1304,12 @@ debugger.  To change this default, set the `\fBDebugger Type\fR'
 option to another debugger.  This change takes only effect after you
 have saved options and restarted \s-2@DDD@\s+2.  See also the
 `\fB\-\-gdb\fR' and `\fB\-\-dbx\fR' options, below.
-
+.\"
 .SS "Saving Options"
 You can save the current option settings by selecting `\fBSave
 Options\fR' in the `\fBOptions\fR' menu.  Options are saved in a file
 named `\fB.dddinit\fR' in your home directory.
-
+.\"
 .SS "Other Customizations"
 Other personal \s-2@DDD@\s+2 resources can also be set in your
 `\fB.dddinit\fR' file.  To find out which resources are available, and
@@ -1327,7 +1317,8 @@ how they are set by default, look at the `\fBDdd\fR' application
 defaults file, which is shipped with the \s-2@DDD@\s+2 source.  For
 individual customization, copy the lines of resources you want to 
 change into your `\fB.dddinit\fR' file and modify them as you like.
-
+.PP
+.\"
 .\" ---------------
 .SH "EXTENDING @DDD@"
 .\" ---------------
@@ -1336,26 +1327,23 @@ If you have any contributions to be incorporated into \s-2@DDD@\s+2,
 please send them to `\fBddd@ips.cs.tu-bs.de\fR'.  For suggestions on
 what might be done, see the file `\fBPROJECTS\fR' in the \s-2@DDD@\s+2
 distribution.
-
 .PP
 If you wish something done in \s-2@DDD@\s+2, but cannot do it
 yourself, you can \fIfinance\fR specific \s-2@DDD@\s+2 extensions.
 For details, contact `\fBddd@ips.cs.tu-bs.de\fR'; direct mail is also
 welcome.
-
 .PP
 Some of the people offering \s-2@DDD@\s+2 support may also accept
 offers to extend \s-2@DDD@\s+2.  For a list of people offering
 \s-2@DDD@\s+2 support, see the file `\fBSERVICE\fR' in the
 \s-2@DDD@\s+2 distribution.
-
+.PP
+.\"
 .\" ---------------
 .SH "IF YOU LIKE DDD..."
 .\" ---------------
-
 If you appreciate this software, or have any suggestions, 
 please send us a picture postcard.  Our address is:
-
 .DS
 Technische Universitaet Braunschweig 
 .br
@@ -1370,11 +1358,11 @@ D-38092 Braunschweig
 \s-2GERMANY\s+2 
 .br
 .DE
-
 You may also leave a message in the DDD guestbook (accessible via the
 \s-2@DDD@\s+2 \s-2WWW\s+2 page, 
 `\fBhttp://www.cs.tu-bs.de/softech/ddd/\fR')
-
+.PP
+.\"
 .\" ---------------
 .SH "OPTIONS"
 .\" ---------------
@@ -1383,7 +1371,7 @@ You can use the following options when starting \s-2@DDD@\s+2.  All
 options may be abbreviated, as long as they are unambiguous; single
 dashes may also be used.  Options not listed here are passed to the
 inferior debugger.
-
+.\"
 .TP
 .B \-\-attach\-windows
 Attach the source and data windows to the command window, creating one
@@ -1504,7 +1492,8 @@ directory list).
 See the `\fBDdd\fR' application defaults file for full information
 about customizing \s-2@DDD@\s+2.  The `\fBDdd\fR' file comes with
 the \s-2@DDD@\s+2 distribution.
-
+.PP
+.\"
 .\" ---------------
 .SH "FILES"
 .\" ---------------
@@ -1519,8 +1508,9 @@ Individual \s-2DDD\s+2 resource file.  \s-2DDD\s+2 options are saved here.
 .TP
 .B $HOME/.dbxinit
 \s-2DBX\s+2 initialization file.
+.PD
 .PP
-
+.\"
 .\" ---------------
 .SH "SEE ALSO"
 .\" ---------------
@@ -1529,29 +1519,24 @@ Individual \s-2DDD\s+2 resource file.  \s-2DDD\s+2 options are saved here.
 .BR dbx (1),
 .BR remsh (1),
 .BR rsh (1)
-
 .PP
 .RB "`\|" gdb "\|'"
 entry in
 .B info.
-
 .PP
 .I
 Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
 \&, by Richard M. Stallman and Roland H. Pesch.
-
 .PP
 .I
 \s-2DDD\s+2\(em\&A Free Graphical Front-End for \s-2UNIX\s+2 Debuggers\c
 \&, by Andreas Zeller and Dorothea Luetkehaus, Computer Science Report
 95-07, Technische Universitaet Braunschweig, 1995.
-
 .PP
 .I
 \s-2DDD\s+2 \(em ein Debugger mit graphischer Datendarstellung\c
 \&, by Dorothea Luetkehaus, Diploma Thesis, Technische
 Universitaet Braunschweig, 1994.
-
 .PP
 The \s-2@DDD@\s+2 
 .IR "\s-2FTP\s+2 site" ,
@@ -1560,7 +1545,6 @@ The \s-2@DDD@\s+2
   \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/\fR
 .br
 .sp
-
 .PP
 The \s-2@DDD@\s+2
 .IR "World-Wide-Web page" ,
@@ -1569,7 +1553,6 @@ The \s-2@DDD@\s+2
   \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR
 .br
 .sp
-
 .PP
 The \s-2@DDD@\s+2
 .IR "Mailing List" ,
@@ -1584,7 +1567,8 @@ For more information on this list, send a mail to
    \fBddd-users-request@ips.cs.tu-bs.de\fR
 .br
 .sp
-
+.PP
+.\"
 .\" ---------------
 .SH LIMITATIONS
 .\" ---------------
@@ -1621,7 +1605,8 @@ as inferior debugger, use a `\fBdisplay /x $pc\fR' command to ensure
 the program counter value is updated correctly at each stop.  You may
 also enter the command in \fB$HOME/.gdbinit\fR or (better yet) upgrade
 to the most recent \s-2GDB\s+2 version.
-
+.PP
+.\"
 .SS "Limitations using DBX"
 When used for debugging Modula-2 or Pascal programs,
 \s-2DDD\s+2 always numerates array elements starting with zero,
@@ -1629,11 +1614,12 @@ instead of using correct array subscripts.  This shall be fixed in a
 future \s-2@DDD@\s+2 release.
 .PP
 Using \s-2DBX\s+2 3.x or later as inferior debugger, \s-2@DDD@\s+2
-strips C-style and C++-style comments from the \s-2DBX\2+2 output in
+strips C-style and C++-style comments from the \s-2DBX\s+2 output in
 order to operate properly.  This also affects the output of the
 debugged program when sent to the command window.  Using the separate
 execution window avoids these problems.
-
+.PP
+.\"
 .SS "General Limitations"
 If command output is sent to the command window, it is impossible for
 \s-2@DDD@\s+2 to distinguish between the output of the debugged
@@ -1644,7 +1630,8 @@ problems.
 .PP
 Paper sizes larger than 2,147,483,648pt (757km, 470 miles) can not be
 handled.
-
+.PP
+.\"
 .\" ---------------
 .SH "REPORTING BUGS"
 .\" ---------------
@@ -1655,7 +1642,7 @@ in the \s-2@DDD@\s+2 `\fBBUGS\fR' file, such that others can attempt
 to fix it.  (Instead of sending bug reports, you may also send
 \fIfixes\fR; \s-2@DDD@\s+2 is an excellent tool for debugging itself
 :-)
-
+.\"
 .SS "Where to Send Bug Reports"
 We recommend that you send bug reports for \s-2@DDD@\s+2 via electronic
 mail to
@@ -1665,26 +1652,25 @@ mail to
 .br
 .sp
 As a last resort, send bug reports on paper to:
-
+.sp
+.br
 .DS
-Technische Universitaet Braunschweig 
+  Technische Universitaet Braunschweig 
 .br
-Institut fuer Programmiersprachen und Informationssysteme 
+  Institut fuer Programmiersprachen und Informationssysteme 
 .br
-Abteilung Softwaretechnologie 
+  Abteilung Softwaretechnologie 
 .br
-\s-2DDD\s+2-Bugs 
+  \s-2DDD\s+2-Bugs 
 .br
-Gaussstrasse 17 
+  Gaussstrasse 17 
 .br
-D-38092 Braunschweig 
+  D-38092 Braunschweig 
 .br
-\s-2GERMANY\s+2 
-.br
-Fax: +49 531 391-8140
+  \s-2GERMANY\s+2 
 .br
 .DE
-
+.\"
 .SS "Is it a \s-2@DDD@\s+2 Bug?"
 Before sending in a bug report, try to find out whether the problem
 cause really lies within \s-2@DDD@\s+2.  A common cause of problems
@@ -1711,7 +1697,7 @@ This shows the dialog between \s-2@DDD@\s+2 and the inferior
 debugger on standard error while \s-2@DDD@\s+2 is running.  Compare
 the debugger output to the \s-2@DDD@\s+2 output and determine which
 one is wrong.
-
+.\"
 .SS "How to Report Bugs"
 Here are some guidelines for bug reports:
 .br
@@ -1742,7 +1728,7 @@ someone who can fix the bug.  Do not assume one particular person will
 receive your bug report.
 .br
 .PP
-
+.\"
 .SS "What to Include in a Bug Report"
 To enable us to fix a \s-2@DDD@\s+2 bug, you \fImust\fR include the
 following information:
@@ -1783,11 +1769,11 @@ to the first bug occurrence.
 If you wish to suggest changes to the \s-2@DDD@\s+2 source, send us context
 diffs.  If you even discuss something in the \s-2@DDD@\s+2 source, refer to
 it by context, \fInever\fR by line number.
-
 .PP
 Be sure to include this information in \fIevery\fR single bug report.
-
-
+.PP
+.\"
+.\"
 .\" ---------------
 .SH HISTORY
 .\" ---------------
@@ -1799,7 +1785,6 @@ visualizing data and program structures.  The \s-2VSL\s+2 interpreter
 and the \s-2BOX\s+2 library became part of Andreas' Diploma Thesis, a
 graphical syntax editor based on the Programming System Generator
 \s-2PSG\s+2.
-
 .PP
 In 1992, the \s-2VSL\s+2 and Box libraries were recycled for the
 \s-2NORA\s+2 project.  For \s-2NORA\s+2, an experimental
@@ -1808,7 +1793,6 @@ editor (based on \s-2VSL\s+2 and the \s-2BOX\s+2 libraries) and
 facilities for inter-process knowledge exchange.  Based on these
 tools, \fIDorothea Luetkehaus\fR realized \s-2@DDD@\s+2 as her Diploma
 Thesis, 1994.
-
 .PP
 The original \s-2@DDD@\s+2 had no source window; this was added by
 Dorothea during the winter of 1994/1995.  In the first quarter of
@@ -1817,36 +1801,11 @@ execution windows, extensions for \s-2DBX\s+2 and remote debugging as
 well as configuration support for several architectures.  Since then,
 many people have contributed to the success of \s-2@DDD@\s+2; see the
 file `\fBCONTRIBUTORS\fR' in the \s-2@DDD@\s+2 distribution for details.
-
 .PP
 \s-2@DDD@\s+2 1.0 was released in May, 1995.
-
-
-.\" ---------------
-.SH COPYING
-.\" ---------------
-\s-2@DDD@\s+2 is Copyright \(co 1995 Technische Universitaet Braunschweig,
-Germany.
-
 .PP
-Permission is granted to make and distribute verbatim copies of this
-manual page provided the copyright notice and this permission notice
-are preserved on all copies.
-
-.PP
-Permission is granted to copy and distribute modified versions of this
-manual page under the conditions for verbatim copying, provided that
-the entire resulting derived work is distributed under the terms of a
-permission notice identical to this one.
-
-.PP
-Permission is granted to copy and distribute translations of this
-manual page into another language, under the above conditions for
-modified versions, except that this permission notice may be included
-in translations approved by the Free Software Foundation instead of in
-the original English.
-
-
+.\"
+.\"
 .\" --------------------
 .SH PRINTING THIS MANUAL
 .\" --------------------
@@ -1854,7 +1813,6 @@ Invoke \s-2@DDD@\s+2 with the `\fB\-\-manual\fR' option to show this
 manual page on standard output.  This text output is suitable for
 installation as formatted manual page (as
 `\fB/usr/local/man/cat1/ddd.1\fR' or similar) on \s-2UNIX\s+2 systems.
-
 .PP
 A PostScript copy of this manual page, suitable for printing, is
 included in the DDD source distribution and available separately as
@@ -1869,3 +1827,27 @@ A \s-2ROFF\s+2 copy of this manual page, suitable for installation as
 manual page on \s-2UNIX\s+2 systems (as
 `\fB/usr/local/man/man1/ddd.1\fR' or similar), is included in the DDD
 source distribution.
+.PP
+.\"
+.\"
+.\" ---------------
+.SH COPYING
+.\" ---------------
+\s-2@DDD@\s+2 is Copyright \(co 1995 Technische Universitaet Braunschweig,
+Germany.
+.PP
+Permission is granted to make and distribute verbatim copies of this
+manual page provided the copyright notice and this permission notice
+are preserved on all copies.
+.PP
+Permission is granted to copy and distribute modified versions of this
+manual page under the conditions for verbatim copying, provided that
+the entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+.PP
+Permission is granted to copy and distribute translations of this
+manual page into another language, under the above conditions for
+modified versions, except that this permission notice may be included
+in translations approved by the Free Software Foundation instead of in
+the original English.
+.PP
