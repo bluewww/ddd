@@ -171,6 +171,8 @@ touch ddd/Makedeps
 
 # Create distribution stuff.
 (cd libiberty && test -f Makefile && make)
+(cd termcap   && test -f Makefile && make)
+(cd readline  && test -f Makefile && make)
 (cd ddd; make Makefile)
 (cd ddd; make diststuff)
 
