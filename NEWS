@@ -1,16 +1,21 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 1.3 (not released yet)
+DDD 1.3 (NOT YET RELEASED)
 --------------------------
 
-    More and more minor bugs fixed.  See the `ChangeLog' file for
-    details.
+    More and more minor bugs fixed; see the `ChangeLog' file for
+    details.  Some bugs, especially memory leaks, remain in this
+    release and will be fixed at some random point in future.  The
+    most important bug is that DDD still does not run on Alpha OSF/1
+    machines; it runs fine on every other major UNIX flavour.
 
     Changes to DDD 1.2:
-    - DDD now compiles properly using DDD 2.7.0.  It should also
-      compile using GCC 2.3.3 (lots of warnings, though) \
-      or any later GCC version.
+    - DDD source code has been adapted to recent ANSI/ISO C++
+      resolutions; GCC 2.7.0 should compile DDD without any errors or
+      warnings.  In fact, any GCC release from 2.3.3 onwards should
+      now compile DDD (unjustified commpiler warnings in GCC 2.5 or
+      lower, though).
     - DBX support on Solaris improved.  Thanks to grant@isgtec.com
       (Grant McDorman)
     - Patches for FreeBSD incorporated.  Thanks to
@@ -19,7 +24,7 @@ DDD 1.3 (not released yet)
       defaults.  Thanks to ksfdo0@ksepl.shell.nl (Fred Donck).
     - `Help on Debugging' item.  Written by David A. Lyons
       (dlyons@apple.com).
-    - New GNU librx 0.07.2 library included.
+    - New GNU librx 0.07.2 library included (from libg++-2.7.0).
 
 
 DDD 1.2
@@ -126,224 +131,5 @@ DDD 1.0
       In general, they will be announced in DDD mailing lists only.
     - Feature releases shall be numbered 1.1, 1.2, 1.3 and so on.
       They will be announced in USENET news as well.
-
-
-DDD 0.9.9
----------
-
-    Definitively the last beta release before DDD 1.0, which is scheduled
-    for May 7th, 1995.  This release fixes sime minor bugs introduced by
-    porting DDD on other machines (the AIX patches made DDD not run on
-    HP-UX; the HP-UX patches made DDD not run on ULTRIX, and so on...).
-
-
-DDD 0.9.8
----------
-
-    General Features:
-    - Improved auto-configuration for HP-UX and Solaris.
-    - Pascal and Modula-2 support for DBX completed.
-
-    User Interface:
-    - Foreground color explictly set to black.
-    - New `Stack' menu (the `Source' menu may grow in time).
-
-    Sources are now under CVS revision control.  This implies a large
-    diff to earlier releases, but the DDD distribution itself has
-    shrinked a lot due to stripped RCS Logs.  Changes are now recorded
-    in top-level `ChangeLog' files.
-
-
-DDD 0.9.7
----------
-
-    General Features:
-    - Full DBX support, including graphical data display.  Nearly all
-      features of DDD/GDB could also be realized in DDD/DBX.  With DBX,
-      GDB supports debugging programs written in C, C++, Pascal and
-      Modula-2.  DBX support has only been tested on SUNs yet (SunOS and
-      Solaris); let us share your experiences from other DBX vendors (AIX?).
-    - Improved inter-process communication; DDD gives less spurious
-      warnings and retries failed writing attempts.
-    - DDD can be invoked as `ddd --check-configuration' for a full X
-      configuration check.
-    - Some fixes for HP-UX and AIX were applied.
-
-    User Interface:
-    - Improved help texts.
-    - Global TAB completion is now ``on'' by default.
-
-    Data Display:
-    - Improved expression parser.  Arrays of structs are now parsed
-      correctly; Pascal and Modula-2 expressions are parsed as well.
-    - DDD is much more robust, should display types or sizes change.
-      DDD is also much more robust regarding the debugger output format.
-    - Attempt to dereference illegal pointers is now handled correctly
-      (a bug introduced in DDD 0.9.3).
-    - Minor improvements in display rendering.
-
-
-DDD 0.9.6
----------
-
-    General Features:
-    - DDD now has a menu `General Options', where you can set up defaults
-      for the next invocation of DDD.  This includes keyboard policy,
-      debugger type and some more.
-    - Due to various complaints, the default keyboard focus policy is
-      pointer-driven again.  To change the policy, use the `General
-      Options' menu.
-
-
-
-DDD 0.9.5
----------
-
-    All planned and suggested features are now realized; the only feature
-    still missing is graphical data display for DBX.
-
-    Installation:
-    - The `configure' options for setting paths for Motif and Athena
-      widgets and libraries should now work correctly.
-
-    General Features:
-    - DDD is now more robust when several commands are entered in a row.
-
-    User Interface:
-    - DDD now supports both ``click-to-type'' and ``point-to-type''
-      keyboard focus policies.  Default is taken from user's preference.
-    - Main window menu bar rearranged.
-    - New backtrace viewer for simple stack frame selection.
-    - New command history viewer for simple history navigation.
-    - Dialog titles correctly set-up.
-    - No `mwm' resize handles for transient windows.
-
-    Data Display:
-    - Displays can be selected (Cursor keys) and moved (Shift + Cursor
-      key) using the keyboard.
-    - Panner supports keyboard traversal.
-    - Display auto-selection upon creation and deletion.
-    - Show/Hide Detail can be applied to display groups.
-    - Panner resize policy further improved.
-    - Double-click on a display selects all connected displays.
-
-    Miscellaneous:
-    - Call for picture postcards.  See `Help/On Version...' for details.
-
-
-DDD 0.9.4
----------
-
-    A single minor enhancement, suggested by a Linux user:
-
-    Internals:
-    - To make DDD less dependent on OS-specific signal handling,
-      asynchronous signal processing has been disabled.  This should not
-      make any visible difference (except that running DDD should now
-      cause less problems on some architectures).
-
-
-
-DDD 0.9.3
----------
-
-    Some minor bug fixes and enhancements.  Again, all reported bugs have
-    been fixed (except for those listed in `ddd/BUGS').
-
-    Installation:
-    - DDD is now correctly installed in the $(exec_prefix)/bin directory
-      (usually /usr/local/bin).
-
-    General Features:
-    - A pre-formatted version of the DDD manual is now compiled into DDD.
-      This prevents unwanted dependencies from the local `man' program.
-    - DDD now determines X locations and settings upon start-up.  This
-      facilitates distribution of binaries.
-    - Local file lookup (via the `File' menu) has been sped up
-      considerably.
-    - DDD checks the version of app-defaults and ~/.dddinit files against
-      its own.
-    - The new default for program execution is *not* to use a separate
-      execution window, since this still causes trouble on some systems.
-    - DDD now by default uses the GDB `tty' command to redirect process I/O.
-    - For security reasons, DDD can not be invoked as setuid program.
-    
-    User Interface:
-    - Improved panner geometry and location.  Panners can no longer
-      obscure the entire data window.
-    - Improved selection mechanism.  Detail can now be hidden for
-      arbitrary items, making it possible to hide large string detail.
-    - More options can now be set and changed at run-time, such as group
-      iconification and separate execution window.
-    - DDD has a new logo, showing a real bug.
-    - There is a button for quick and painless application killing.
-    - The run and interrupt buttons have less aggressive colors.
-    - The hourglass is smaller.
-
-
-DDD 0.9.2
----------
-
-    A major bug fix release.  All reported bugs have been fixed (except for
-    those listed in `ddd/BUGS').  This release is very close to final
-    (that is, DDD 1.0); last features being added do DDD 1.0 are marked
-    ``work in progress'' in `ddd/WISHES'.
-
-    Installation:
-    - Improved configuration: looks for Motif and Athena in many popular
-      places.  Several `configure' bugs have been fixed.  DDD should now
-      configure and build out-of-the-box on most systems.
-
-    General Features:
-    - DDD has been prepared for DBX support.  Breakpoints work, displays
-      don't yet.  DBX support will be completed in DDD 1.0.
-    - Persistent options.  Users can set resources in individual
-      ~/.dddinit files.
-    - Improved TTY redirection.  By default, DDD now uses the GDB `tty'
-      command for redirection to the separate execution window.
-
-    User Interface:
-    - Improved command and argument completion a la `zsh': First TAB
-      expands up to common prefix, second TAB lists expansions, third and
-      further TAB skips through expansions.
-    - `Help Index' invokes a DDD manual page browser.
-    - The `Find' buttons have been renamed to `Search'.
-    - DDD has its own logos and icons.
-    - Optionally, all DDD windows may be iconified and deiconified as a
-      group.  See the `separateIcons' resource for details.
-
-    Data Display:
-    - Display placement improved.  New displays no longer obscure existing
-      displays; placement is dependent on parent and parent's descendants.
-    - Layout sorts nodes according to the display strings.
-    - Full color display support.
-
-    Thanks to all who spent time in testing DDD and sending reports.
-
-
-
-DDD 0.9.1 and DDD 0.9.1.a
--------------------------
-
-    A ``first bug fixes'' release.
-
-    Bugs fixed:
-    - Some bugs occurring on SVR4 systems (Solaris, HP-UX) were fixed.
-    - DDD now runs on color displays (DDD 0.9.1a)
-
-    User Interface:
-    - Due to popular request, the `Breakpoints' and `Display' menus have
-      been dropped; editor panels were introduced instead.
-
-
-
-DDD 0.9.0
----------
-
-    First beta DDD release.
-
-
-
-
 
 $Id$
