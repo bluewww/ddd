@@ -687,6 +687,7 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 	XtVaSetValues(text_dialog, XmNdefaultButton, Widget(0), NULL);
 
 	XtManageChild(form);
+	InstallButtonTips(text_dialog);
     }
 
     string stripped_text(text);
@@ -914,6 +915,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 					       XmDIALOG_SELECTION_LABEL));
 
 	XtManageChild(form);
+	InstallButtonTips(text_dialog);
     }
 
     // Setup text for existing dialog
