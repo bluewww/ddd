@@ -47,9 +47,12 @@ char HelpCB_rcsid[] =
 #include <Xm/RowColumn.h>
 #include <Xm/List.h>
 #include <Xm/Text.h>
+#include <Xm/Label.h>
+#include <Xm/Form.h>
 
 #include <X11/cursorfont.h>
 #include <X11/StringDefs.h>
+#include <X11/Shell.h>
 
 #include "strclass.h"
 #include "cook.h"
@@ -61,16 +64,20 @@ char HelpCB_rcsid[] =
 
 struct resource_values {
     XmString helpString;
+    XmString tipString;
     Boolean showTitle;
 };
 
 static XtResource subresources[] = {
-    {"contextHelpString",    "ContextHelpString", 
+    {"helpString", "HelpString",
      XmRXmString, sizeof(XmString),
      XtOffsetOf(resource_values, helpString), XtRImmediate, XtPointer(0) },
-    {"contextHelpShowTitle", "ContextHelpShowTitle", 
+    {"helpShowTitle", "HelpShowTitle",
      XmRBoolean, sizeof(Boolean),
      XtOffsetOf(resource_values, showTitle), XtRImmediate, XtPointer(False) },
+    {"tipString", "TipString",
+     XmRXmString, sizeof(XmString),
+     XtOffsetOf(resource_values, tipString), XtRImmediate, XtPointer(0) },
 };
 
 static Widget help_dialog = 0;
@@ -78,6 +85,7 @@ static Widget help_shell  = 0;
 static Pixmap help_pixmap = 0;
 
 static MString _DefaultHelpText(Widget widget);
+static MString _DefaultTipText(Widget widget);
 static void _MStringHelpCB(Widget widget, 
 			   XtPointer client_data, 
 			   XtPointer call_data,
@@ -103,6 +111,23 @@ static MString get_help_string(Widget widget)
     if (values.showTitle)
 	text = MString("Help for ") + cook(longName(widget)) 
 	    + ":\n\n" + text;
+
+    return text;
+}
+
+static MString get_tip_string(Widget widget)
+{
+    // Get text
+    resource_values values;
+    XtGetApplicationResources(widget, &values, 
+			      subresources, XtNumber(subresources), 
+			      NULL, 0);
+
+    MString text(values.tipString, true);
+    if ((text.xmstring() != 0 && text.isEmpty()) && DefaultTipText != 0)
+	text = DefaultTipText(widget);
+    if (text.xmstring() == 0 || text.isEmpty())
+	text = _DefaultTipText(widget);
 
     return text;
 }
@@ -191,7 +216,14 @@ static MString _DefaultHelpText(Widget widget)
     return text;
 }
 
+static MString _DefaultTipText(Widget /* widget */)
+{
+    return MString(0, true);	// empty string
+}
+
+
 MString (*DefaultHelpText)(Widget widget) = _DefaultHelpText;
+MString (*DefaultTipText)(Widget widget)  = _DefaultTipText;
 Pixmap (*helpOnVersionPixmapProc)(Widget) = 0;
 
 void StringHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
@@ -578,4 +610,401 @@ void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
     // via a menu accelerator; the keyboard remains grabbed. Hence, we
     // ungrab it explicitly.
     XtUngrabKeyboard(toplevel, XtLastTimestampProcessed(XtDisplay(widget)));
+}
+
+//-----------------------------------------------------------------------------
+// Toolbar tips
+//-----------------------------------------------------------------------------
+
+static Widget tip_shell               = 0;
+static Widget tip_label               = 0;
+static bool tip_popped_up             = false;
+static XtIntervalId pending_tip_timer = 0;
+
+static void PopupTip(XtPointer client_data, XtIntervalId *id)
+{
+    assert(*id == pending_tip_timer);
+
+    Widget w = Widget(client_data);
+    pending_tip_timer = 0;
+
+    MString tip = get_tip_string(w);
+    if (tip.xmstring() == 0 || tip.isEmpty())
+	return;
+
+    if (tip_shell == 0)
+    {
+	Arg args[10];
+	int arg;
+
+	arg = 0;
+	XtSetArg(args[arg], XmNallowShellResize, true); arg++;
+	tip_shell = XtCreateWidget("tipShell",
+				   overrideShellWidgetClass, 
+				   findTheTopLevelShell(w), args, arg);
+
+	arg = 0;
+	XtSetArg(args[arg], XmNlabelString, tip.xmstring()); arg++;
+	XtSetArg(args[arg], XmNrecomputeSize, true); arg++;
+	tip_label = XmCreateLabel(tip_shell, "tipLabel", args, arg);
+	XtManageChild(tip_label);
+    }
+
+    XtVaSetValues(tip_label,
+		  XmNlabelString, tip.xmstring(),
+		  NULL);
+
+#if 0
+    clog << "Popup: " << tip.str("rm") << "...";
+#endif
+
+
+    // Find a possible place for the tip.  Consider the alignment of
+    // the parent composite as well as the distance to the screen edge.
+
+    //            TopLeft TopRight
+    // LeftTop    XXXXXXXXXXXXXXXX RightTop
+    //            XXXXXXXXXXXXXXXX
+    // LeftBottom XXXXXXXXXXXXXXXX RightBottom
+    //         BottomLeft BottomRight
+
+    // Use 18 runs to find out the best position:
+    // Run 0: try last placement in same alignment
+    // Run 1-8: try at various sides of W.  Don't hide other widgets
+    //          and don't move tip off the screen.
+    // Run 9-17: same as 0-8, but don't care for hiding other widgets.
+    for (int run = 0; run < 18; run++)
+    {
+	enum Placement { LeftTop, RightTop,
+			 LeftBottom, RightBottom,
+			 BottomLeft, BottomRight,
+			 TopLeft, TopRight };
+
+	static Placement last_placement = BottomRight;
+	static Widget last_parent = 0;
+
+	Widget parent = XtParent(w);
+	if (parent != last_parent)
+	    last_placement = BottomRight;
+
+	Placement placement = last_placement;
+	switch (run % 9)
+	{
+	case 0: placement = last_placement; break;
+	case 1: placement = BottomRight; break;
+	case 2: placement = RightBottom; break;
+	case 3: placement = RightTop;    break;
+	case 4: placement = TopRight;    break;
+	case 5: placement = BottomLeft;  break;
+	case 6: placement = LeftBottom;  break;
+	case 7: placement = LeftTop;     break;
+	case 8: placement = TopLeft;     break;
+	}
+
+	bool ok = false;
+
+	if (XtIsSubclass(parent, xmRowColumnWidgetClass))
+	{
+	    // We're part of a button box: if vertically aligned, place
+	    // tip on the right; otherwise, place it at the bottom.
+	    unsigned char orientation = XmHORIZONTAL;
+	    XtVaGetValues(parent, XmNorientation, &orientation, NULL);
+
+	    switch (placement)
+	    {
+	    case BottomLeft:
+	    case BottomRight:
+	    case TopLeft:
+	    case TopRight:
+		if (orientation == XmHORIZONTAL)
+		    ok = true;
+		break;
+
+	    case LeftBottom:
+	    case LeftTop:
+	    case RightBottom:
+	    case RightTop:
+		if (orientation == XmVERTICAL)
+		    ok = true;
+		break;
+	    }
+	}
+	else if (XtIsSubclass(parent, xmFormWidgetClass))
+	{
+	    // We're part of a form: try to place the tip beyond a form
+	    // boundary.
+
+	    int fraction_base = 100;
+	    XtVaGetValues(parent, XmNfractionBase, &fraction_base, NULL);
+
+	    unsigned char left_attachment   = XmATTACH_NONE;
+	    unsigned char right_attachment  = XmATTACH_NONE;
+	    unsigned char top_attachment    = XmATTACH_NONE;
+	    unsigned char bottom_attachment = XmATTACH_NONE;
+
+	    XtVaGetValues(w, 
+			  XmNleftAttachment,   &left_attachment,
+			  XmNrightAttachment,  &right_attachment,
+			  XmNtopAttachment,    &top_attachment,
+			  XmNbottomAttachment, &bottom_attachment,
+			  NULL);
+
+	    int left_position   = 0;
+	    int right_position  = 0;
+	    int top_position    = 0;
+	    int bottom_position = 0;
+
+	    XtVaGetValues(w, 
+			  XmNleftPosition,   &left_position,
+			  XmNrightPosition,  &right_position,
+			  XmNtopPosition,    &top_position,
+			  XmNbottomPosition, &bottom_position,
+			  NULL);
+
+	    switch (placement)
+	    {
+	    case BottomLeft:
+	    case BottomRight:
+		if (bottom_attachment == XmATTACH_POSITION
+		    && bottom_position >= fraction_base)
+		    ok = true;
+		if (bottom_attachment == XmATTACH_FORM
+		    || top_attachment == XmATTACH_OPPOSITE_FORM)
+		    ok = true;
+		break;
+
+	    case RightBottom:
+	    case RightTop:
+		if (right_attachment == XmATTACH_POSITION
+		    && right_position >= fraction_base)
+		    ok = true;
+		if (right_attachment == XmATTACH_FORM
+		    || left_attachment == XmATTACH_OPPOSITE_FORM)
+		    ok = true;
+		break;
+
+	    case TopLeft:
+	    case TopRight:
+		if (top_attachment == XmATTACH_POSITION
+		    && top_position == 0)
+		    ok = true;
+		if (top_attachment == XmATTACH_FORM
+		    || bottom_attachment == XmATTACH_OPPOSITE_FORM)
+		    ok = true;
+		break;
+
+	    case LeftBottom:
+	    case LeftTop:
+		if (left_attachment == XmATTACH_POSITION
+		    && left_position == 0)
+		    ok = true;
+		if (left_attachment == XmATTACH_FORM
+		    || right_attachment == XmATTACH_OPPOSITE_FORM)
+		    ok = true;
+		break;
+	    }
+	}
+	else
+	{
+	    // Any other alignment
+	    ok = true;
+	}
+
+	if (!ok && run <= 8)
+	    continue;
+
+	// Don't move tip off the screen
+	XWindowAttributes w_attributes;
+	XGetWindowAttributes(XtDisplay(w), XtWindow(w), &w_attributes);
+
+	XtWidgetGeometry tip_geometry;
+	XtQueryGeometry(tip_shell, NULL, &tip_geometry);
+
+	const int offset = 5;	// Distance between W and tip (in pixels)
+
+	int dx;
+	switch (placement)
+	{
+	case LeftBottom:
+	case LeftTop:
+	    dx = -(tip_geometry.width + offset);
+	    break;
+	case RightBottom:
+	case RightTop:
+	    dx = w_attributes.width + offset;
+	    break;
+	case BottomLeft:
+	case TopLeft:
+	    dx = w_attributes.width / 2 - tip_geometry.width;
+	    break;
+	case BottomRight:
+	case TopRight:
+	    dx = w_attributes.width / 2;
+	    break;
+	}
+
+	int dy;
+	switch (placement)
+	{
+	case LeftBottom:
+	case RightBottom:
+	    dy = w_attributes.height / 2;
+	    break;
+	case LeftTop:
+	case RightTop:
+	    dy = w_attributes.height / 2 - tip_geometry.height;
+	    break;
+	case BottomLeft:
+	case BottomRight:
+	    dy = w_attributes.height + offset;
+	    break;
+	case TopLeft:
+	case TopRight:
+	    dy = -(tip_geometry.height + offset);
+	    break;
+	}
+
+	// Don't move tip off the screen
+	Window w_child;
+	int x, y;
+	XTranslateCoordinates(XtDisplay(w), XtWindow(w), w_attributes.root,
+			      dx, dy, &x, &y, &w_child);
+	if (x < 0)
+	    continue;
+	if (y < 0)
+	    continue;
+	if (x + tip_geometry.width >= WidthOfScreen(w_attributes.screen))
+	    continue;
+	if (y + tip_geometry.height >= HeightOfScreen(w_attributes.screen))
+	    continue;
+
+	// Move tip to X, Y...
+	XtVaSetValues(tip_shell,
+		      XmNx, x,
+		      XmNy, y,
+		      NULL);
+	
+	// and pop it up.
+	XtPopup(tip_shell, XtGrabNone);
+	tip_popped_up = true;
+	last_placement = placement;
+	last_parent    = parent;
+
+	return;
+    }
+}
+
+static void PopdownTip()
+{
+    if (pending_tip_timer)
+    {
+	XtRemoveTimeOut(pending_tip_timer);
+	pending_tip_timer = 0;
+    }
+
+    if (tip_popped_up)
+    {
+#if 0
+	clog << "done.\n";
+#endif
+	XtPopdown(tip_shell);
+	tip_popped_up = false;
+    }
+}
+
+static void HandleTipEvent(Widget w,
+			   XtPointer /* client_data */,
+			   XEvent *event, 
+			   Boolean * /* continue_to_dispatch */)
+{
+    if (event->type == EnterNotify || event->type == LeaveNotify)
+	PopdownTip();
+
+    if (event->type == EnterNotify)
+    {
+	if (pending_tip_timer)
+	{
+	    XtRemoveTimeOut(pending_tip_timer);
+	    pending_tip_timer = 0;
+	}
+
+	// Delay before showing the tip (in ms)
+	const int popup_delay = 750;
+
+	pending_tip_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w),
+					    popup_delay, 
+					    PopupTip, XtPointer(w));
+    }
+}
+
+// (Un)install toolbar tips for W
+static void InstallTipEvents(Widget w, bool install)
+{
+#if 0
+    clog << (install ? "Installing" : "Uninstalling")
+	 << " event handler for " << cook(longName(w)) << "\n";
+#endif
+
+    EventMask event_mask = EnterWindowMask | LeaveWindowMask;
+    if (install)
+    {
+	XtAddEventHandler(w, event_mask, False, 
+			  HandleTipEvent, XtPointer(0));
+    }
+    else
+    {
+	XtRemoveEventHandler(w, event_mask, False, 
+			     HandleTipEvent, XtPointer(0));
+    }
+}
+
+// (Un)install toolbar tips for W and all its descendants
+void InstallTipsNow(Widget w, bool install)
+{
+    if (w == 0 || !XtIsWidget(w))
+	return;
+
+    // Install tips for this widget
+    InstallTipEvents(w, install);
+
+    if (XtIsComposite(w))
+    {
+	// Traverse widget tree
+	WidgetList children   = 0;
+	Cardinal num_children = 0;
+
+	XtVaGetValues(w,
+		      XtNchildren, &children,
+		      XtNnumChildren, &num_children,
+		      NULL);
+
+	if (children)
+	    for (int i = 0; i < int(num_children); i++)
+		InstallTipsNow(children[i], install);
+    }
+}
+
+
+static void InstallTipsTimeOut(XtPointer client_data, XtIntervalId *)
+{
+    Widget w = Widget(client_data);
+    InstallTipsNow(w, true);
+}
+
+static void UnInstallTipsTimeOut(XtPointer client_data, XtIntervalId *)
+{
+    Widget w = Widget(client_data);
+    InstallTipsNow(w, false);
+}
+
+// (Un)install tips for W and all its descendants as soon as we are back
+// in the event loop.
+void InstallTips(Widget w, bool install)
+{
+    if (install)
+	XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
+			InstallTipsTimeOut, XtPointer(w));
+    else
+	XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
+			UnInstallTipsTimeOut, XtPointer(w));
 }

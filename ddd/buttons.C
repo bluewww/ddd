@@ -46,10 +46,12 @@ char buttons_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
+#include "GDBAgent.h"
 
 #include <Xm/Xm.h>
 #include <Xm/RowColumn.h>
 #include <Xm/PushB.h>
+#include <Xm/ToggleB.h>
 #include <ctype.h>
 
 //-----------------------------------------------------------------------------
@@ -70,21 +72,65 @@ static void YnButtonCB(Widget dialog,
 // Default help texts (especially buttons)
 //-----------------------------------------------------------------------------
 
-MString gdbDefaultHelp(Widget widget)
+static string gdbHelpName(Widget widget)
 {
     string name = XtName(widget);
     name.gsub('_', ' ');
     strip_final_blanks(name);
 
-    string help = gdb_question("help " + name, 0, true);
+    return name;
+}
+
+static string gdbHelp(string command)
+{
+    if (gdb->type() == XDB)
+    {
+	// XDB is too dumb to find out aliases
+	if (command == "run")
+	    command = "r";
+	else if (command == "cont")
+	    command = "c";
+	else if (command == "next")
+	    command = "S";
+	else if (command == "step")
+	    command = "s";
+	else if (command == "quit")
+	    command = "q";
+    }
+
+    string help = gdb_question("help " + command, 0, true);
+    strip_final_blanks(help);
+    return help;
+}
+
+MString gdbDefaultHelp(Widget widget)
+{
+    string name = gdbHelpName(widget);
+    string help = gdbHelp(name);
     if (help == NO_GDB_ANSWER)
     {
 	help = "No help available now.\n"
 	    "Please try again when the debugger is ready.";
     }
-    strip_final_blanks(help);
 
     return MString(name + "\n", "bf") +	MString(help, "rm");
+}
+
+MString gdbDefaultTip(Widget widget)
+{
+    string help = gdbHelp(gdbHelpName(widget));
+    if (help == NO_GDB_ANSWER)
+	return MString(0, true);
+
+    if (help.contains('\n'))
+	help = help.before('\n');
+    if (help.contains('.'))
+	help = help.before('.');
+
+    static regex RXuppercase("[A-Z]");
+    help = help.from(RXuppercase);
+
+    return MString(help, "rm");
 }
 
 Widget make_buttons(Widget parent, const string& name, 
@@ -213,4 +259,5 @@ void add_buttons(Widget buttons, const string& button_list)
 
     // Register default help command
     DefaultHelpText = gdbDefaultHelp;
+    DefaultTipText  = gdbDefaultTip;
 }

@@ -40,6 +40,7 @@ char Delay_rcsid[] =
 #include "Delay.h"
 #include "assert.h"
 #include "longName.h"
+#include "HelpCB.h"
 #include <X11/cursorfont.h>
 #include <X11/StringDefs.h>
 
@@ -272,6 +273,8 @@ void Delay::register_shell(Widget widget)
 #endif
 
     assert(delays.size() == _shells.size());
+
+    InstallTips(widget);
 }
 
 Delay::~Delay()

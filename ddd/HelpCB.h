@@ -31,6 +31,7 @@
 
 #include <X11/Intrinsic.h>
 #include "MString.h"
+#include "bool.h"
 
 // Select widget and call help on context.
 // May be used in a menu entry "Help On Context".
@@ -81,8 +82,17 @@ extern void TextHelpCB(Widget widget, XtPointer client_data,
 extern void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			       XtPointer call_data);
 
-// Create a help text if the contextHelpString resource is not found
+// Install toolbar tips
+extern void InstallTips(Widget w, bool install = true);
+
+
+// Data
+
+// Create a help text if the `help' resource is not found
 extern MString (*DefaultHelpText)(Widget widget);
+
+// Create a help text if the `tip' resource is not found
+extern MString (*DefaultTipText)(Widget widget);
 
 // Pixmap to display at ``help on version''
 extern Pixmap (*helpOnVersionPixmapProc)(Widget w);

@@ -497,7 +497,6 @@ Ddd*suppressWarnings:		false
 Ddd*highlightThickness:		1
 
 
-
 !-----------------------------------------------------------------------------
 ! Fonts
 !-----------------------------------------------------------------------------
@@ -1291,7 +1290,7 @@ Ddd*text_help_popup.mwmDecorations:   1
 !-----------------------------------------------------------------------------
 
 ! Set this to true to view widget names in help texts.
-Ddd*contextHelpShowTitle: false
+Ddd*helpShowTitle: false
 
 ! Help is never acknowledged, always closed.
 Ddd*help_popup*okLabelString: Close
@@ -1303,7 +1302,7 @@ Ddd*help_popup.title: @DDD@: Help
 Ddd*manual_help_popup.title: @DDD@: Manual
 
 ! Help on help.
-Ddd*help_popup.help*contextHelpString: \
+Ddd*help_popup.help*helpString: \
 @rm This is the @sl Help @rm window.\n\
 \n\
 By pressing @key F1 @rm and clicking on an item,\n\
@@ -1321,7 +1320,7 @@ Ddd*manual_help*text.wordWrap:		true
 Ddd*manual_help*text.scrollHorizontal:	false
 Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
-Ddd*manual_help*contextHelpString: \
+Ddd*manual_help*helpString: \
 @rm This is the @sl @DDD@ Manual@rm.\n\
 \n\
 Select titles from the index on the left\n\
@@ -1334,7 +1333,7 @@ Ddd*text_help*text.wordWrap:	      true
 Ddd*text_help*text.scrollHorizontal:  false
 Ddd*text_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
-Ddd*text_help*contextHelpString: \
+Ddd*text_help*helpString: \
 @rm This is the @sl @DDD@ License@rm.\n\
 \n\
 It describes the terms and conditions\n\
@@ -1342,7 +1341,7 @@ for copying, distributing and modifying @DDD@.
 
 ! The official announcement.
 ! Build information (from `USERINFO') is appended to this text.
-Ddd.contextHelpString:	\
+Ddd.helpString:	\
 @Logo @DDD@@logo, \
 the @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
 @rm by Dorothea L\374tkehaus and Andreas Zeller.\n\
@@ -1351,11 +1350,11 @@ the @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
 Copyright \251 1995, 1996 Technische Universit\344t Braunschweig, Germany.\n
 
 ! The default Help Text.
-Ddd*contextHelpString:	\
+Ddd*helpString:	\
 @rm This item has no function.
 
 ! Some trival help
-Ddd*XmScrollBar.contextHelpString: \
+Ddd*XmScrollBar.helpString: \
 @rm This is a @sl Scroll Bar @rm.\n\
 \n\
 Click or hold the @bf left mouse button @rm on an arrow button\n\
@@ -1363,19 +1362,35 @@ to scroll the window in the arrow direction.\n\
 \n\
 Drag the slider with the @bf left mouse button @rm to select the\n\
 visible part of the window.
+Ddd*XmScrollBar.tipString: \
+@rm Scroll window
 
-Ddd*XmSash.contextHelpString: \
+Ddd*XmSash.helpString: \
 @rm This is a @sl Paned Window Sash @rm.\n\
 \n\
 Drag the sash with the @bf left mouse button @rm to resize window parts.
+Ddd*XmSash.tipString: \
+@rm Resize window
 
+
+!-----------------------------------------------------------------------------
+! Toolbar tips
+!-----------------------------------------------------------------------------
+
+! These colors are taken from NetScape.  The basic idea is that you might
+! have a Netscape already running, so we won't use up another color cell.
+
+Ddd*tipLabel.background:  #FFFFCC
+Ddd*tipLabel.foreground:  Black
+Ddd*tipShell.borderColor: Black
+Ddd*tipShell.borderWidth: 1
 
 
 !-----------------------------------------------------------------------------
 ! Menu Bar
 !-----------------------------------------------------------------------------
 
-Ddd*menubar.contextHelpString:		\
+Ddd*menubar.helpString:		\
 @rm This is the @sl Menu bar@rm.\n\
 \n\
 @tt \267 @bf File @rm - select files and exit @DDD@.\n\
@@ -1392,7 +1407,7 @@ Ddd*menubar.contextHelpString:		\
 
 Ddd*menubar.file.labelString:		File
 Ddd*menubar.file.mnemonic:			F
-Ddd*menubar.file*contextHelpString:	\
+Ddd*menubar.file*helpString:	\
 \
 @rm This is the @sl File menu@rm.\n\
 \n\
@@ -1446,7 +1461,7 @@ Ddd*menubar*fileMenu.exit.acceleratorText:  Alt+Q
 
 Ddd*menubar.edit.labelString:		Edit
 Ddd*menubar.edit.mnemonic:		E
-Ddd*menubar.edit*contextHelpString:	\
+Ddd*menubar.edit*helpString:	\
 \
 @rm This is the @sl Edit menu@rm.\n\
 \n\
@@ -1488,7 +1503,7 @@ Ddd*menubar.options.labelString:	Options
 Ddd*menubar.options.mnemonic:		O
 
 
-Ddd*menubar.options*contextHelpString:	\
+Ddd*menubar.options*helpString:	\
 @rm This is the @sl Options @rm menu.\n\
 \n\
 The @bf Preference @rm menus invoke panels for setting preferences.\n\
@@ -1534,7 +1549,7 @@ Ddd*optionsMenu.saveOptions.mnemonic:		O
 
 Ddd*menubar.view.labelString:		Windows
 Ddd*menubar.view.mnemonic:		W
-Ddd*menubar.view.contextHelpString:	\
+Ddd*menubar.view.helpString:	\
 \
 @rm This is the @sl Windows menu@rm.\n\
 \n\
@@ -1558,7 +1573,7 @@ Ddd*viewMenu.exec.mnemonic:			E
 
 Ddd*menubar.program.labelString:		Program
 Ddd*menubar.program.mnemonic:			P
-Ddd*menubar.program*contextHelpString:	\
+Ddd*menubar.program*helpString:	\
 \
 @rm This is the @sl Program menu@rm.\n\
 \n\
@@ -1637,7 +1652,7 @@ Ddd*menubar*programMenu.quit.acceleratorText:	   Ctrl+\\
 
 Ddd*menubar.commands.labelString:	Commands
 Ddd*menubar.commands.mnemonic:		C
-Ddd*menubar.commands*contextHelpString:	\
+Ddd*menubar.commands*helpString:	\
 \
 @rm This is the @sl Commands menu@rm.\n\
 \n\
@@ -1701,7 +1716,7 @@ Ddd*commandsMenu.clear_window.acceleratorText:  Ctrl+Shift+U
 
 Ddd*menubar.stack.labelString:		Stack
 Ddd*menubar.stack.mnemonic:		t
-Ddd*menubar.stack.contextHelpString:	\
+Ddd*menubar.stack.helpString:	\
 \
 @rm This is the @sl Stack menu@rm.\n\
 \n\
@@ -1732,7 +1747,7 @@ Ddd*stackMenu.down.acceleratorText:	Ctrl+Down
 
 Ddd*menubar.source.labelString:		Source
 Ddd*menubar.source.mnemonic:		S
-Ddd*menubar.source.contextHelpString:	\
+Ddd*menubar.source.helpString:	\
 \
 @rm This is the @sl Source menu@rm.\n\
 @tt \267 @bf Edit Breakpoints... @rm - set, view, and edit breakpoints.\n\
@@ -1770,7 +1785,7 @@ Ddd*sourceMenu.forward.acceleratorText:	Ctrl+Right
 
 Ddd*menubar.data.labelString:		Data
 Ddd*menubar.data.mnemonic:		D
-Ddd*menubar.data*contextHelpString:	\
+Ddd*menubar.data*helpString:	\
 \
 @rm This is the @sl Data menu@rm.\n\
 \n\
@@ -1815,7 +1830,7 @@ Ddd*dataMenu.refresh.acceleratorText:	Ctrl+L
 
 Ddd*menubar.help.labelString:		Help
 Ddd*menubar.help.mnemonic:		H
-Ddd*menubar.help*contextHelpString: \
+Ddd*menubar.help*helpString: \
 \
 @rm This is the @sl Help menu@rm.\n\
 \n\
@@ -1874,7 +1889,7 @@ Ddd*preferences*buttons*source.labelString:  Source Preferences
 Ddd*preferences*buttons*data.labelString:    Data Preferences
 Ddd*preferences*buttons*startup.labelString: Startup Preferences
 
-Ddd*preferences*general*contextHelpString:	\
+Ddd*preferences*general*helpString:	\
 @rm These are the @sl General Preferences@rm.\n\
 \n\
 @tt \267 @rm If @bf Iconify all windows at once @rm is set, all @DDD@ windows \
@@ -1903,7 +1918,7 @@ Ddd*preferences*saveHistoryOnExit.labelString:	 \
 Save command history on exit
 
 
-Ddd*preferences*source*contextHelpString:	\
+Ddd*preferences*source*helpString:	\
 @rm These are the @sl Source Preferences@rm.\n\
 \n\
 @tt \267 @rm If @bf Use glyphs @rm is set, \
@@ -1931,7 +1946,7 @@ Ddd*preferences*useSourcePath.labelString:	 \
 Refer to sources by full path name
 
 
-Ddd*preferences*data*contextHelpString:	\
+Ddd*preferences*data*helpString:	\
 @rm These are the @sl Data Preferences@rm.\n\
 \n\
 @tt \267 @rm If @bf Show grid @rm is set, the grid is displayed.\n\
@@ -1954,7 +1969,7 @@ Ddd*preferences*compactLayout.labelString:     Compact layout
 Ddd*preferences*autoLayout.labelString:	       Automatic layout
 
 
-Ddd*preferences*startup*contextHelpString:   \
+Ddd*preferences*startup*helpString:   \
 @rm These are the @sl Startup Preferences@rm.\n\
 \n\
 @tt \267 @bf Windows @rm sets the window layout.\n\
@@ -2034,12 +2049,15 @@ Ddd*settings*sep.bottomOffset:			10
 Ddd*settings*leader.bottomOffset:		4
 Ddd*settings*leader.separatorType:		XmSINGLE_DASHED_LINE
 
+Ddd*settings*help.tipString:\
+@rm Get help on this setting
+
 ! An empty help string means that the help text for this command
 ! is to be requested from GDB (via the GDB `help' command).
-Ddd*settings*scroll*contextHelpString:
+Ddd*settings*scroll*helpString:
 
 ! The panel itself has a help button, too.
-Ddd*settings*contextHelpString: \
+Ddd*settings*helpString: \
 @rm These are the @sl Debugger Settings@rm.\n\
 \n\
 These settings affect the inferior debugger only.\n\
@@ -2094,7 +2112,7 @@ Shift<Key>Tab:	   ddd-prev-tab-group()\n\
 Ddd*graph_edit.highlightOnEnter:	True
 Ddd*graph_edit.navigationType:		TAB_GROUP
 
-Ddd*graph_edit.contextHelpString:	\
+Ddd*graph_edit.helpString:	\
 @rm This is the @sl Data Window @rm \n\
 showing the data displays of the debugged program.\n\
 \n\
@@ -2117,7 +2135,7 @@ to the selection.\n\
     to modify @sl DISPLAY @rm via a menu.\n\
 @tt \267 @sl Click @rm on the background to create new displays via a menu.
 
-Ddd*data_disp_shell.contextHelpString:	\
+Ddd*data_disp_shell.helpString:	\
 @rm This is the @sl Data Display @rm \n\
 showing the data displays of the debugged program.\n\
 \n\
@@ -2140,10 +2158,12 @@ to the selection.\n\
 modify @sl DISPLAY @rm via a menu.\n\
 @tt \267 @sl Click @rm on the background to create new displays via a menu.
 
-Ddd*graph_edit_panner.contextHelpString:	\
+Ddd*graph_edit_panner.helpString:	\
 @rm The data window is too small to hold all displays.\n\
 Drag the slider with the @bf left mouse button @rm to select\n\
 the visible part of the data window.
+Ddd*graph_edit_panner.tipString:	\
+@rm Scroll window
 
 
 !-----------------------------------------------------------------------------
@@ -2167,7 +2187,7 @@ Ddd*node_popup.disable.labelString:	Disable Display
 ! Graph Buttons
 !-----------------------------------------------------------------------------
 
-Ddd*graph_cmd_w*contextHelpString: \
+Ddd*graph_cmd_w*helpString: \
 @rm Commands related to the data window.
 
 Ddd*graph_cmd_w.marginWidth:	 0
@@ -2178,7 +2198,7 @@ Ddd*graph_cmd_w.graph_arg_label.labelString:	():
 Ddd*graph_cmd_w.graph_arg_label.marginWidth:	0
 Ddd*graph_cmd_w.graph_arg.columns:		20
 Ddd*graph_cmd_w*graph_arg.editable:		false
-Ddd*graph_cmd_w*graph_arg.contextHelpString:	\
+Ddd*graph_cmd_w*graph_arg.helpString:	\
 @rm This is the argument @bf() @rm for the command buttons on the right.\n\
 This is an output-only window which displays the selection\n\
 in the data window above.
@@ -2203,33 +2223,47 @@ Ddd*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable ()
 ! Ddd*graph_cmd_w.graph_cmd_area*marginTop:	  1
 ! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:	  1
 
-Ddd*graph_cmd_w.graph_cmd_area*dependent.contextHelpString:\
+Ddd*graph_cmd_w.graph_cmd_area*dependent.helpString:\
 @bf New Display@rm\n\
 Create a new display dependent on the selected display part.
+Ddd*graph_cmd_w.graph_cmd_area*dependent.tipString:\
+@rm Create new display
 
-Ddd*graph_cmd_w.graph_cmd_area*dereference.contextHelpString:\
+Ddd*graph_cmd_w.graph_cmd_area*dereference.helpString:\
 @bf Display *()@rm\n\
 Dereference the selected display.
+Ddd*graph_cmd_w.graph_cmd_area*dereference.tipString:\
+@rm Dereference selected display
 
-Ddd*graph_cmd_w.graph_cmd_area*detail.contextHelpString:	\
+Ddd*graph_cmd_w.graph_cmd_area*detail.helpString:	\
 @bf Show ()@rm / @bf Hide ()@rm\n\
 Show/Hide details of the selected displays.
+Ddd*graph_cmd_w.graph_cmd_area*detail.tipString:	\
+@em Show/Hide selected details
 
-Ddd*graph_cmd_w.graph_cmd_area*rotate.contextHelpString:	\
+Ddd*graph_cmd_w.graph_cmd_area*rotate.helpString:	\
 @bf Rotate ()@rm\n\
 Rotate the selected displays.
+Ddd*graph_cmd_w.graph_cmd_area*rotate.tipString:	\
+@rm Rotate selected displays
 
-Ddd*graph_cmd_w.graph_cmd_area*set.contextHelpString:	\
+Ddd*graph_cmd_w.graph_cmd_area*set.helpString:	\
 @bf Set ()@rm\n\
 Change the selected display value.
+Ddd*graph_cmd_w.graph_cmd_area*set.tipString:	\
+@rm Set display value
 
-Ddd*graph_cmd_w.graph_cmd_area*disable.contextHelpString:	\
+Ddd*graph_cmd_w.graph_cmd_area*disable.helpString:	\
 @bf Disable ()@rm / @bf Enable ()@rm\n\
 Disable/Enable the selected displays.
+Ddd*graph_cmd_w.graph_cmd_area*disable.tipString:	\
+@rm Disable/Enable selected displays
 
-Ddd*graph_cmd_w.graph_cmd_area*delete.contextHelpString:	\
+Ddd*graph_cmd_w.graph_cmd_area*delete.helpString:	\
 @bf Delete ()@rm\n\
 Delete the selected displays.
+Ddd*graph_cmd_w.graph_cmd_area*delete.tipString:	\
+@rm Delete selected displays
 
 
 !-----------------------------------------------------------------------------
@@ -2237,8 +2271,10 @@ Delete the selected displays.
 !-----------------------------------------------------------------------------
 
 Ddd*status_w.alignment:			XmALIGNMENT_BEGINNING
+Ddd*status_w.marginWidth:		0
+Ddd*status_w.marginHeight:		0
 Ddd*status_w.labelString:		Ready.
-Ddd*status_w.contextHelpString:		\
+Ddd*status_w.helpString:		\
 @rm This @sl status line @rm shows the last message of the inferior debugger.
 
 Ddd*source_text_w.columns:		88
@@ -2274,7 +2310,7 @@ Ddd*code_text_w.cursorPositionVisible:	true
 Ddd*code_text_w.scrollHorizontal:	false
 Ddd*code_text_w.wordWrap:		true
 
-Ddd*source_text_w.contextHelpString:	\
+Ddd*source_text_w.helpString:	\
 @rm This is the @sl source text window @rm showing the source code\n\
 of the debugged program.\n\
 \n\
@@ -2293,7 +2329,7 @@ Click the @bf right mouse button @rm to get a popup menu:\n\
 \n\
 Use the @bf Lookup () @rm button below to view specific functions.
 
-Ddd*code_text_w.contextHelpString:	\
+Ddd*code_text_w.helpString:	\
 @rm This is the @sl machine code window @rm showing the machine code\n\
 of the debugged program.\n\
 \n\
@@ -2312,7 +2348,7 @@ Click the @bf right mouse button @rm to get a popup menu:\n\
 \n\
 Use the @bf Lookup () @rm button below to disassemble specific functions.
 
-Ddd*source_view_shell.contextHelpString:	\
+Ddd*source_view_shell.helpString:	\
 @rm This is the @sl source text window @rm in which the source\n\
 and machine code of the debugged program are displayed.\n\
 \n\
@@ -2342,7 +2378,7 @@ Ddd*bp_popup.delete.labelString:		Delete Breakpoint
 ! Source Text Commands
 !-----------------------------------------------------------------------------
 
-Ddd*arg_cmd_w*contextHelpString: \
+Ddd*arg_cmd_w*helpString: \
 @rm Commands related to the source text.\n\
 Enter arguments for @sl name @rm() commands\n\
 in the @bf() @rm field.
@@ -2353,7 +2389,7 @@ Ddd*arg_cmd_area.marginWidth:  0
 
 Ddd*arg_cmd_w.arg_label.labelString:		():
 Ddd*arg_cmd_w.arg_label.marginWidth:		0
-Ddd*arg_cmd_w.source_arg.contextHelpString:	\
+Ddd*arg_cmd_w.source_arg.helpString:	\
 @rm This is the argument @bf () @rm for the command buttons on the right.\n\
 You can edit this field, or easily change its value\n\
 by selecting something in the source text above.
@@ -2376,7 +2412,7 @@ Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display ()
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.labelString:	Find@small<< @bf()
 Ddd*arg_cmd_w.arg_cmd_area*findForward.labelString:	Find@small>> @bf()
 
-Ddd*arg_cmd_w.arg_cmd_area*lookup.contextHelpString:	\
+Ddd*arg_cmd_w.arg_cmd_area*lookup.helpString:	\
 @bf Lookup ()@rm\n\
 Lookup a line, file, function, variable, or breakpoint.\n\
 @tt \267 @rm If the argument @bf () @rm is empty, \
@@ -2391,32 +2427,46 @@ lookup that line number in the current source.\n\
 lookup that address.\n\
 @tt \267 @rm If @bf () @rm contains a function or variable name, lookup\n\
     the definition of that function or variable.
+Ddd*arg_cmd_w.arg_cmd_area*lookup.tipString:	\
+@rm Lookup () in the source
 
-Ddd*arg_cmd_w.arg_cmd_area*breakAt.contextHelpString:	\
+Ddd*arg_cmd_w.arg_cmd_area*breakAt.helpString:	\
 @bf Break at ()@rm\n\
 Set a breakpoint at the argument @bf ()@rm.
+Ddd*arg_cmd_w.arg_cmd_area*breakAt.tipString:	\
+@rm Set breakpoint at ()
 
-Ddd*arg_cmd_w.arg_cmd_area*clearAt.contextHelpString:	\
+Ddd*arg_cmd_w.arg_cmd_area*clearAt.helpString:	\
 @bf Clear at ()@rm\n\
 Clear the breakpoint at the argument @bf ()@rm.
+Ddd*arg_cmd_w.arg_cmd_area*clearAt.tipString:	\
+@rm Clear breakpoint at ()
 
-Ddd*arg_cmd_w.arg_cmd_area*print.contextHelpString:	\
+Ddd*arg_cmd_w.arg_cmd_area*print.helpString:	\
 @bf Print ()@rm\n\
 Print the argument @bf () @rm in the debugger console.
+Ddd*arg_cmd_w.arg_cmd_area*print.tipString:	\
+@rm Print value of ()
 
-Ddd*arg_cmd_w.arg_cmd_area*display.contextHelpString:	\
+Ddd*arg_cmd_w.arg_cmd_area*display.helpString:	\
 @bf Display ()@rm\n\
 Display the argument @bf () @rm in the data display window.
+Ddd*arg_cmd_w.arg_cmd_area*display.tipString:	\
+@rm Display value of ()
 
-Ddd*arg_cmd_w.arg_cmd_area*findBackward.contextHelpString:	\
+Ddd*arg_cmd_w.arg_cmd_area*findBackward.helpString:	\
 @bf Find@small<< @bf()@rm\n\
 Search the previous occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
+Ddd*arg_cmd_w.arg_cmd_area*findBackward.tipString:	\
+@rm Find previous () in source
 
-Ddd*arg_cmd_w.arg_cmd_area*findForward.contextHelpString:	\
+Ddd*arg_cmd_w.arg_cmd_area*findForward.helpString:	\
 @bf Find@small>> @bf()@rm\n\
 Search the next occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
+Ddd*arg_cmd_w.arg_cmd_area*findForward.tipString:	\
+@rm Find next () in source
 
 
 
@@ -2430,23 +2480,31 @@ Ddd*source_form_w.XmPushButton.marginHeight:	   0
 Ddd*source_form_w.XmPushButton.marginWidth:	   0
 Ddd*source_form_w.XmPushButton.borderWidth:	   0
 
-Ddd*source_form_w.plain_arrow*contextHelpString: \
+Ddd*source_form_w.plain_arrow*helpString: \
 @bf Plain arrow\n\
 @rm shows the current execution position in the lowest frame.
+Ddd*source_form_w.plain_arrow*tipString: \
+@rm Current execution position
 
-Ddd*source_form_w.grey_arrow*contextHelpString: \
+Ddd*source_form_w.grey_arrow*helpString: \
 @bf Grey arrow\n\
 @rm shows the last execution position in the selected frame.
+Ddd*source_form_w.grey_arrow*tipString: \
+@rm Last execution position in selected frame
 
-Ddd*source_form_w.plain_stop*contextHelpString: \
+Ddd*source_form_w.plain_stop*helpString: \
 @bf Plain stop sign\n\
 @rm A breakpoint (enabled).\n\
 Press the @bf right mouse button @rm to change its properties.
+Ddd*source_form_w.plain_stop*tipString: \
+@rm Breakpoint (enabled)
 
-Ddd*source_form_w.grey_stop*contextHelpString: \
+Ddd*source_form_w.grey_stop*helpString: \
 @bf Grey stop sign\n\
 @rm A breakpoint (disabled).\n\
 Press the @bf right mouse button @rm to change its properties.
+Ddd*source_form_w.grey_stop*tipString: \
+@rm Breakpoint (disabled)
 
 
 Ddd*code_form_w.XmPushButton.shadowThickness:	 0
@@ -2455,23 +2513,31 @@ Ddd*code_form_w.XmPushButton.marginHeight:	 0
 Ddd*code_form_w.XmPushButton.marginWidth:	 0
 Ddd*code_form_w.XmPushButton.borderWidth:	 0
 
-Ddd*code_form_w.plain_arrow*contextHelpString: \
+Ddd*code_form_w.plain_arrow*helpString: \
 @bf Plain arrow\n\
 @rm shows the current program counter in the lowest frame.
+Ddd*code_form_w.plain_arrow*tipString: \
+@rm Current program counter
 
-Ddd*code_form_w.grey_arrow*contextHelpString: \
+Ddd*code_form_w.grey_arrow*helpString: \
 @bf Grey arrow\n\
 @rm shows the last program counter in the selected frame.
+Ddd*code_form_w.grey_arrow*tipString: \
+@rm Last program counter in selected frame
 
-Ddd*code_form_w.plain_stop*contextHelpString: \
+Ddd*code_form_w.plain_stop*helpString: \
 @bf Plain stop sign\n\
 @rm A breakpoint (enabled).\n\
 Press the @bf right mouse button @rm to change its properties.
+Ddd*code_form_w.plain_stop*tipString: \
+@rm Breakpoint (enabled)
 
-Ddd*code_form_w.grey_stop*contextHelpString: \
+Ddd*code_form_w.grey_stop*helpString: \
 @bf Grey stop sign\n\
 @rm A breakpoint (disabled).\n\
 Press the @bf right mouse button @rm to change its properties.
+Ddd*code_form_w.grey_stop*tipString: \
+@rm Breakpoint (disabled)
 
 
 !-----------------------------------------------------------------------------
@@ -2496,7 +2562,7 @@ Ddd*gdb_w.wordWrap:		true
 Ddd*gdb_w.autoShowCursorPosition:	true
 Ddd*gdb_w.cursorPositionVisible:	true
 
-Ddd*gdb_w.contextHelpString:		\
+Ddd*gdb_w.helpString:		\
 \
 @rm This is the @sl debugger console window.@rm\n\
 \n\
@@ -2504,7 +2570,7 @@ You can enter debugging commands here.\n\
 Enter ``@tt help@rm'' at the debugger prompt\n\
 to get help on debugging commands.
 
-Ddd*command_shell.contextHelpString:		\
+Ddd*command_shell.helpString:		\
 \
 @rm This is the @sl debugger console window.@rm\n\
 \n\
@@ -2522,7 +2588,7 @@ to get help on debugging commands.
 ! Hence, avoid extra redisplays.
 Ddd*tool_shell*saveUnder: true
 
-Ddd*tool_shell.contextHelpString:		\
+Ddd*tool_shell.helpString:		\
 @rm This is the @sl command tool.@rm\n\
 \n\
 By clicking on one of the buttons,\n\
@@ -2530,7 +2596,7 @@ the corresponding command is sent to the inferior debugger.\n\
 The context sensitive help for the buttons\n\
 gives a short command description.\n
 
-Ddd*tool_buttons.contextHelpString:\
+Ddd*tool_buttons.helpString:\
 @rm This is the @sl command tool @rm.\n\
 \n\
 By clicking on one of the buttons,\n\
@@ -2542,7 +2608,7 @@ gives a short command description.\n
 ! Debugger Buttons
 !-----------------------------------------------------------------------------
 
-Ddd*source_buttons.contextHelpString:\
+Ddd*source_buttons.helpString:\
 @rm This is a @sl command area @rm.\n\
 \n\
 By clicking on one of the buttons,\n\
@@ -2550,7 +2616,7 @@ the corresponding command is sent to the inferior debugger.\n\
 The context sensitive help for the buttons\n\
 gives a short command description.\n
 
-Ddd*command_buttons.contextHelpString:\
+Ddd*command_buttons.helpString:\
 @rm This is a @sl command area @rm.\n\
 \n\
 By clicking on one of the buttons,\n\
@@ -2560,9 +2626,13 @@ gives a short command description.\n
 
 ! An empty help string means that the help text for this button
 ! is to be requested from GDB (via the GDB `help' command).
-Ddd*source_buttons*contextHelpString:
-Ddd*console_buttons*contextHelpString:
-Ddd*tool_buttons*contextHelpString:
+Ddd*source_buttons*XmPushButton.helpString:
+Ddd*console_buttons*XmPushButton.helpString:
+Ddd*tool_buttons*XmPushButton.helpString:
+
+Ddd*source_buttons*XmPushButton.tipString:
+Ddd*console_buttons*XmPushButton.tipString:
+Ddd*tool_buttons*XmPushButton.tipString:
 
 ! Special spacing
 Ddd*source_buttons.spacing:	    0
@@ -2580,56 +2650,81 @@ Ddd*console_buttons*alignment:	    XmALIGNMENT_CENTER
 
 ! Some buttons have a special meaning; 
 ! so we must provide help on ourselves.
-Ddd*?*break.contextHelpString: \
+Ddd*?*break.helpString: \
 @bf Break\n\
 @rm Interrupt the debugged process or current debugger command.\n\
 (Equivalent to @key Ctrl+C@rm).
+Ddd*?*break.tipString: \
+@rm Interrupt debugged program
 
-Ddd*?*Yes.contextHelpString:	\
+
+Ddd*?*Yes.helpString:	\
 @bf Yes\n\
 @rm Confirm the question of the inferior debugger.
+Ddd*?*Yes.tipString: \
+@rm Confirm question
 
-Ddd*?*No.contextHelpString:	\
+Ddd*?*No.helpString:	\
 @bf No\n\
 @rm Do @sl not @rm confirm the question of the inferior debugger.
+Ddd*?*No.tipString: \
+@rm Do @sl not @rm confirm question
 
-Ddd*?*Complete.contextHelpString:	\
+Ddd*?*Complete.helpString:	\
 @bf Complete@rm\n\
 Complete the current debugging command.	 (Equivalent to @key TAB@rm).
+Ddd*?*Complete.tipString: \
+@rm Complete current command
 
-Ddd*?*Clear.contextHelpString:	\
+Ddd*?*Clear.helpString:	\
 @bf Clear@rm\n\
 Clear the current debugging command.  (Equivalent to @key Ctrl+U@rm).
+Ddd*?*Clear.tipString: \
+@rm Clear current command
 
-Ddd*?*Prev.contextHelpString:	\
+Ddd*?*Prev.helpString:	\
 @bf Prev@rm\n\
 Show the previous debugging command \
 (Equivalent to @key Ctrl+P @rm or @key Up@rm).
+Ddd*?*Prev.tipString: \
+@rm Show previous command
 
-Ddd*?*Next.contextHelpString:	\
-@bf Prev@rm\n\
+Ddd*?*Next.helpString:	\
+@bf Next@rm\n\
 Show the next debugging command \
 (Equivalent to @key Ctrl+N @rm or @key Down@rm).
+Ddd*?*Next.tipString: \
+@rm Show next command
 
-Ddd*?*Apply.contextHelpString:	\
+Ddd*?*Apply.helpString:	\
 @bf Apply@rm\n\
 Execute the current debugging command.	(Equivalent to @symbol \277@rm).
+Ddd*?*Apply.tipString: \
+@rm Execute current command
 
-Ddd*?*Back.contextHelpString:	\
+Ddd*?*Back.helpString:	\
 @bf Back@rm\n\
 Go to the previous source position.
+Ddd*?*Back.tipString: \
+@rm Previous source position
 
-Ddd*?*Forward.contextHelpString:	\
+Ddd*?*Forward.helpString:	\
 @bf Forward@rm\n\
 Go to the next source position.
+Ddd*?*Forward.tipString: \
+@rm Next source position
 
-Ddd*?*Edit.contextHelpString:	\
+Ddd*?*Edit.helpString:	\
 @bf Edit@rm\n\
 Invoke an editor for the current source file.
+Ddd*?*Edit.tipString: \
+@rm Edit source file
 
-Ddd*?*Reload.contextHelpString:	\
+Ddd*?*Reload.helpString:	\
 @bf Reload@rm\n\
 Reload the source from file.
+Ddd*?*Reload.tipString: \
+@rm Reload source file
 
 
 
@@ -2703,7 +2798,7 @@ Ddd*print*custom.labelString:		      Other...
 Ddd*print.autoUnmanage:	 false
 Ddd*print*okLabelString: Print
 
-Ddd*print*contextHelpString: \
+Ddd*print*helpString: \
 @rm You can print the graph on a PostScript@symbol \344 @rm printer \
 or print the graph in a file.\n\
 Enter the print command or the file name in the appropriate fields.\n\
@@ -2724,7 +2819,7 @@ Ddd*paper_size_dialog_popup.title:  @DDD@: Paper Size
 Ddd*paper_size_dialog.autoUnmanage:  false
 Ddd*paper_size_dialog.selectionLabelString: \
 @rm Enter paper size (@sl WIDTH @tt x @sl HEIGHT@rm):
-Ddd*paper_size_dialog*contextHelpString: \
+Ddd*paper_size_dialog*helpString: \
 @rm Please enter the paper size in the format \n\
 \n\
        @sl WIDTH @tt x @sl HEIGHT    @rm.\n\
@@ -2746,7 +2841,7 @@ Recognized units include:\n\
 Ddd*exec_files_popup.title:		   @DDD@: Open Program
 Ddd*exec_files_popup*okLabelString:	   Open
 Ddd*exec_files_popup*selectionLabelString: Program
-Ddd*exec_files_popup*contextHelpString:	   \
+Ddd*exec_files_popup*helpString:	   \
 @rm Enter the name of the program to be debugged in the argument field.\n\
 The program is read for its symbols, for getting the contents\
  of pure memory,\n\
@@ -2761,7 +2856,7 @@ Click on @bf Open @rm to open the selected file.
 Ddd*core_files_popup.title:		   @DDD@: Open Core Dump
 Ddd*core_files_popup*okLabelString:	   Open
 Ddd*core_files_popup*selectionLabelString: Core Dump
-Ddd*core_files_popup*contextHelpString:	   \
+Ddd*core_files_popup*helpString:	   \
 @rm  Enter the name of a core dump in the argument field.\n\
 The core dump is used for examining memory and registers.\n\
 No argument means to have no core file.\n\
@@ -2771,7 +2866,7 @@ Click on @bf Open @rm to open the selected core dump.
 Ddd*source_files_popup.title:		   @DDD@: Open Source
 Ddd*source_files_popup*okLabelString:	   Open
 Ddd*source_files_popup*selectionLabelString: Source File
-Ddd*source_files_popup*contextHelpString:    \
+Ddd*source_files_popup*helpString:    \
 @rm  Enter the name of a source file in the argument field.\n\
 The source file is shown in the source window and may be used\n\
 for setting or clearing breakpoints.\n\
@@ -2797,7 +2892,7 @@ Ddd*edit_breakpoints_dialog*buttons.marginWidth:   0
 Ddd*edit_breakpoints_dialog*buttons.marginHeight:  0
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close
 
-Ddd*edit_breakpoints_dialog*contextHelpString:	     \
+Ddd*edit_breakpoints_dialog*helpString:	     \
 @rm This is the @sl Breakpoint editor@rm.\n\
 \n\
 Select breakpoints on the left; operations on the right.\n\
@@ -2814,7 +2909,7 @@ Ddd*new_breakpoint_dialog_popup.title: @DDD@: New Breakpoint
 Ddd*new_breakpoint_dialog.selectionLabelString:	\
 @rm Enter new breakpoint:
 
-Ddd*new_breakpoint_dialog*contextHelpString:	\
+Ddd*new_breakpoint_dialog*helpString:	\
 \
 @rm Please enter a breakpoint you want to set.\n\
 Enter its name in the argument field.\n\
@@ -2835,7 +2930,7 @@ Ddd*edit_breakpoint_condition_dialog_popup.title: @DDD@: Breakpoint Condition
 Ddd*edit_breakpoint_condition_dialog.selectionLabelString:	  \
 @rm Enter breakpoint condition:
 
-Ddd*edit_breakpoint_condition_dialog*contextHelpString:	       \
+Ddd*edit_breakpoint_condition_dialog*helpString:	       \
 @rm Specify a condition @sl COND @rm for the selected breakpoint(s).\n\
 The selected breakpoint(s) break only if @sl COND @rm\n\
 evaluates to a non-zero value.
@@ -2845,40 +2940,54 @@ Ddd*edit_breakpoint_ignore_count_dialog_popup.title: @DDD@: Ignore Count
 Ddd*edit_breakpoint_ignore_count_dialog.selectionLabelString:	     \
 @rm Enter breakpoint ignore count:
 
-Ddd*edit_breakpoint_ignore_count_dialog*contextHelpString:	  \
+Ddd*edit_breakpoint_ignore_count_dialog*helpString:	  \
 @rm Set the ignore count @sl COUNT @rm for the selected breakpoint(s).\n\
 Next @sl COUNT @rm hits of the selected breakpoint(s) will be ignored.
 
 
 Ddd*edit_breakpoints_dialog*buttons*new.labelString:	       New...
-Ddd*edit_breakpoints_dialog*buttons*new.contextHelpString:     \
+Ddd*edit_breakpoints_dialog*buttons*new.helpString:     \
 @rm Set breakpoint at specified line or function.
+Ddd*edit_breakpoints_dialog*buttons*new.tipString:     \
+@rm Set new breakpoint
 
 Ddd*edit_breakpoints_dialog*buttons*lookup.labelString:	       Lookup
-Ddd*edit_breakpoints_dialog*buttons*lookup.contextHelpString:  \
+Ddd*edit_breakpoints_dialog*buttons*lookup.helpString:  \
 @rm Lookup the selected breakpoint.
+Ddd*edit_breakpoints_dialog*buttons*lookup.tipString:     \
+@rm Lookup selected breakpoint
 
 Ddd*edit_breakpoints_dialog*buttons*enable.labelString:	       Enable
-Ddd*edit_breakpoints_dialog*buttons*enable.contextHelpString:  \
+Ddd*edit_breakpoints_dialog*buttons*enable.helpString:  \
 @rm Enable the selected breakpoint(s).
+Ddd*edit_breakpoints_dialog*buttons*enable.tipString:     \
+@rm Enable selected breakpoints
 
 Ddd*edit_breakpoints_dialog*buttons*disable.labelString:       Disable
-Ddd*edit_breakpoints_dialog*buttons*disable.contextHelpString:	\
+Ddd*edit_breakpoints_dialog*buttons*disable.helpString:	\
 @rm Disable the selected breakpoint(s).
+Ddd*edit_breakpoints_dialog*buttons*disable.tipString:     \
+@rm Disable selected breakpoints
 
 Ddd*edit_breakpoints_dialog*buttons*condition.labelString:     Condition...
-Ddd*edit_breakpoints_dialog*buttons*condition*contextHelpString:  \
+Ddd*edit_breakpoints_dialog*buttons*condition*helpString:  \
 @rm Specify a condition @sl COND @rm for the selected breakpoint(s).\n\
 Breakpoints break only if @sl COND @rm evaluates to a non-zero value.
+Ddd*edit_breakpoints_dialog*buttons*condition.tipString:     \
+@rm Set breakpoint condition
 
 Ddd*edit_breakpoints_dialog*buttons*ignore_count.labelString:  Ignore Count...
-Ddd*edit_breakpoints_dialog*buttons*ignore_count*contextHelpString:  \
+Ddd*edit_breakpoints_dialog*buttons*ignore_count*helpString:  \
 @rm Set the ignore count @sl COUNT @rm for the selected breakpoint(s).\n\
 Next @sl COUNT @rm hits of the selected breakpoints will be ignored.
+Ddd*edit_breakpoints_dialog*buttons*ignore_count.tipString:     \
+@rm Set ignore count
 
 Ddd*edit_breakpoints_dialog*buttons*delete.labelString:	       Delete
-Ddd*edit_breakpoints_dialog*buttons*delete.contextHelpString:  \
+Ddd*edit_breakpoints_dialog*buttons*delete.helpString:  \
 @rm Delete the selected breakpoint(s).
+Ddd*edit_breakpoints_dialog*buttons*delete.tipString:     \
+@rm Delete selected breakpoints
 
 
 !-----------------------------------------------------------------------------
@@ -2892,7 +3001,7 @@ Ddd*stack_dialog.applyLabelString:	  Up
 Ddd*stack_dialog.cancelLabelString:	  Down
 Ddd*stack_dialog*visibleItemCount:	  10
 
-Ddd*stack_dialog*contextHelpString:	  \
+Ddd*stack_dialog*helpString:	  \
 @rm This window shows the current @sl backtrace@rm.\n\
 \n\
 The backtrace is a summary of how your program got where it is.\n\
@@ -2923,7 +3032,7 @@ Ddd*register_dialog*box.marginWidth:  0
 Ddd*register_dialog*all_registers.labelString: All registers
 Ddd*register_dialog*int_registers.labelString: Integer registers
 
-Ddd*register_dialog*contextHelpString:	     \
+Ddd*register_dialog*helpString:	     \
 @rm This window shows the @sl machine registers@rm.\n\
 Select any register to have its name copied to the argument @bf()@rm.\n\
 \n\
@@ -2941,7 +3050,7 @@ Ddd*history_dialog.okLabelString:	    Close
 Ddd*history_dialog.applyLabelString:	    Apply
 Ddd*history_dialog*visibleItemCount:	    10
 
-Ddd*history_dialog*contextHelpString:	    \
+Ddd*history_dialog*helpString:	    \
 @rm This window shows the @sl command history@rm.\n\
 \n\
 @DDD@ keeps track of the commands you type during your debugging\n\
@@ -2969,7 +3078,7 @@ Ddd*edit_displays_dialog*buttons.marginWidth:	0
 Ddd*edit_displays_dialog*buttons.marginHeight:	0
 Ddd*edit_displays_dialog.okLabelString:	      Close
 
-Ddd*edit_displays_dialog*contextHelpString:	  \
+Ddd*edit_displays_dialog*helpString:	  \
 @rm This is the @sl Display editor@rm.\n\
 \n\
 Select displays on the left; operations on the right.\n\
@@ -2988,7 +3097,7 @@ Ddd*new_display_dialog_popup.title: @DDD@: New Display
 Ddd*new_display_dialog.selectionLabelString:	\
 @rm Enter new display expression:
 
-Ddd*new_display_dialog*contextHelpString:	\
+Ddd*new_display_dialog*helpString:	\
 \
 @rm Please enter a display expression in the argument field.\n\
 The current value of the expression is shown each time the program stops.\n\
@@ -3030,42 +3139,58 @@ Ddd*dependent_display_dialog_popup.title: @DDD@: Dependent Display
 Ddd*dependent_display_dialog.selectionLabelString:	\
 @rm Modify dependent display expression:
 
-Ddd*dependent_display_dialog*contextHelpString:	\
+Ddd*dependent_display_dialog*helpString:	\
 @rm Please modify the display expression displayed in the argument field.\n\
 The current value of the expression is shown each time the program stops.
 
 Ddd*edit_displays_dialog*buttons*dependent.labelString:	    New Display
-Ddd*edit_displays_dialog*buttons*dependent.contextHelpString:  \
+Ddd*edit_displays_dialog*buttons*dependent.helpString:  \
 @rm Create a data display dependent on the selected data display,\n\
 or a new data display if none is selected.
+Ddd*edit_displays_dialog*buttons*dependent.tipString:  \
+@rm Create new display
 
 Ddd*edit_displays_dialog*buttons*dereference.labelString:   Display *
-Ddd*edit_displays_dialog*buttons*dereference.contextHelpString:	 \
+Ddd*edit_displays_dialog*buttons*dereference.helpString:	 \
 @rm Dereference the selected data display.
+Ddd*edit_displays_dialog*buttons*dereference.tipString:  \
+@rm Dereference selected display
 
 Ddd*edit_displays_dialog*buttons*show_detail.labelString:   Show Detail
-Ddd*edit_displays_dialog*buttons*show_detail.contextHelpString:	 \
+Ddd*edit_displays_dialog*buttons*show_detail.helpString:	 \
 @rm Show detail on the selected data display(s).
+Ddd*edit_displays_dialog*buttons*show_detail.tipString:  \
+@rm Show selected details
 
 Ddd*edit_displays_dialog*buttons*hide_detail.labelString:   Hide Detail
-Ddd*edit_displays_dialog*buttons*hide_detail.contextHelpString:	 \
+Ddd*edit_displays_dialog*buttons*hide_detail.helpString:	 \
 @rm Hide detail on the selected data display(s).
+Ddd*edit_displays_dialog*buttons*hide_detail.tipString:  \
+@rm Hide selected details
 
 Ddd*edit_displays_dialog*buttons*set.labelString:	    Set Value
-Ddd*edit_displays_dialog*buttons*hide_detail.contextHelpString:	 \
+Ddd*edit_displays_dialog*buttons*set.helpString:	 \
 @rm Change a value in the selected data display.
+Ddd*edit_displays_dialog*buttons*set.tipString:  \
+@rm Set display value
 
 Ddd*edit_displays_dialog*buttons*disable.labelString:	    Disable
-Ddd*edit_displays_dialog*buttons*disable.contextHelpString:  \
+Ddd*edit_displays_dialog*buttons*disable.helpString:  \
 @rm Disable the selected data display(s).
+Ddd*edit_displays_dialog*buttons*disable.tipString:  \
+@rm Disable selected displays
 
 Ddd*edit_displays_dialog*buttons*enable.labelString:	    Enable
-Ddd*edit_displays_dialog*buttons*enable.contextHelpString:  \
+Ddd*edit_displays_dialog*buttons*enable.helpString:  \
 @rm Enable the selected data display(s).
+Ddd*edit_displays_dialog*buttons*enable.tipString:  \
+@rm Enable selected displays
 
 Ddd*edit_displays_dialog*buttons*delete.labelString:	    Delete
-Ddd*edit_displays_dialog*buttons*delete.contextHelpString:  \
+Ddd*edit_displays_dialog*buttons*delete.helpString:  \
 @rm Delete the selected data display(s).
+Ddd*edit_displays_dialog*buttons*delete.tipString:  \
+@rm Delete selected displays
 
 
 Ddd*run_dialog_popup.title: @DDD@: Run Program
@@ -3074,7 +3199,7 @@ Ddd*run_dialog.selectionLabelString:	Run with Arguments
 
 Ddd*run_dialog*selectionPolicy:		XmSINGLE_SELECT
 
-Ddd*run_dialog*contextHelpString:	\
+Ddd*run_dialog*helpString:	\
 @rm This window shows the @sl argument history@rm.\n\
 \n\
 @DDD@ keeps track of the arguments you gave to the debugged program,\n\
@@ -3093,7 +3218,7 @@ with the current arguments.
 Ddd*busy_display_dialog_popup.title: @DDD@: Debugger Busy
 Ddd*busy_dialog.messageString:		\
 @rm The debugger is busy!
-Ddd*busy_dialog*contextHelpString:	\
+Ddd*busy_dialog*helpString:	\
 @rm The inferior debugger is busy on some commands.\n\
 Please try again when the `@tt (gdb)@rm' or `@tt (dbx)@rm' \
 or `@tt >@rm' prompt appears.\n\
@@ -3106,7 +3231,7 @@ Ddd*quit_dialog.messageString:	 \
 Ddd*quit_dialog*okLabelString:	     Yes
 Ddd*quit_dialog*cancelLabelString:   No
 Ddd*quit_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
-Ddd*quit_dialog*contextHelpString:	\
+Ddd*quit_dialog*helpString:	\
 @rm The inferior debugger is busy and does not react\n\
 to the ``quit'' command.\n\
 The debugged process is probably still running.\n\
@@ -3119,7 +3244,7 @@ Ddd*terminated_dialog.messageString:   \
 @rm The debugger terminated abnormally.
 Ddd*terminated_dialog*okLabelString:	   Restart
 Ddd*terminated_dialog*cancelLabelString:   Exit
-Ddd*terminated_dialog*contextHelpString:	\
+Ddd*terminated_dialog*helpString:	\
 @rm The inferior debugger terminated abnormally.\n\
 You may wish to examine its final output before exiting @DDD@.
 
@@ -3128,7 +3253,7 @@ Ddd*fatal_dialog.messageString:	  \
 @rm Internal error
 Ddd*fatal_dialog*okLabelString:	      Restart
 Ddd*fatal_dialog*cancelLabelString:   Exit
-Ddd*fatal_dialog*contextHelpString: \
+Ddd*fatal_dialog*helpString: \
 @rm Oops!  You have found a bug in @DDD@.\n\
 You should better save your work immediately; @DDD@ may fail again soon.\n\
 \n\
@@ -3151,19 +3276,19 @@ Ddd*yn_dialog_popup.title: @DDD@: Debugger Question
 Ddd*yn_dialog*okLabelString:	   Yes
 Ddd*yn_dialog*cancelLabelString:   No
 Ddd*yn_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
-Ddd*yn_dialog*contextHelpString:	\
+Ddd*yn_dialog*helpString:	\
 @rm This is a question of the inferior debugger.\n\
 For more details, consult the debugger documentation.
 
 Ddd*gdb_message_dialog_popup.title: @DDD@: Debugger Message
-Ddd*gdb_message_dialog*contextHelpString:	\
+Ddd*gdb_message_dialog*helpString:	\
 @rm This is a message of the inferior debugger.\n\
 For more details, consult the debugger documentation.
 
 Ddd*gdb_selection_dialog_popup.title: @DDD@: Selection
 Ddd*gdb_selection_dialog*okLabelString:	   Select
 Ddd*gdb_selection_dialog*listLabelString:  Choices
-Ddd*gdb_selection_dialog*contextHelpString:	\
+Ddd*gdb_selection_dialog*helpString:	\
 @rm This is a selection menu of the inferior debugger.\n\
 For more details, consult the debugger documentation.
 
@@ -3173,7 +3298,7 @@ Ddd*confirm_overwrite_dialog*messageString:	  \
 Ddd*confirm_overwrite_dialog*okLabelString:	  Yes
 Ddd*confirm_overwrite_dialog*cancelLabelString:	  No
 Ddd*confirm_overwrite_dialog*defaultButtonType:	  XmDIALOG_CANCEL_BUTTON
-Ddd*confirm_overwrite_dialog*contextHelpString:	\
+Ddd*confirm_overwrite_dialog*helpString:	\
 @rm The file already exists.\n\
 Click on @bf Yes @rm to overwrite the existing file.
 
@@ -3184,14 +3309,14 @@ Save them for the next @DDD@ invocation?
 Ddd*save_options_dialog*okLabelString:	     Yes
 Ddd*save_options_dialog*cancelLabelString:   No
 Ddd*save_options_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
-Ddd*save_options_dialog*contextHelpString:	\
+Ddd*save_options_dialog*helpString:	\
 @rm You have changed some @DDD@ startup preferences\n\
 (using the @bf Options @rm menu).\n\
 To save them for the next @DDD@ invocation, click on @bf Yes@rm.\n\
 To discard the changes, click on @bf No@rm.
 
 Ddd*set_dialog_popup.title: @DDD@: Set Value
-Ddd*set_dialog*contextHelpString:	\
+Ddd*set_dialog*helpString:	\
 @rm You can now change a value in the selected display.\n\
 If you want to keep it unchanged, press @bf Cancel @rm.
 
@@ -3201,39 +3326,39 @@ If you want to keep it unchanged, press @bf Cancel @rm.
 !-----------------------------------------------------------------------------
 
 Ddd*source_file_error_popup.title: @DDD@: No Source
-Ddd*source_file_error*contextHelpString:	\
+Ddd*source_file_error*helpString:	\
 @rm The given source file could not be loaded.
 
 Ddd*remote_file_error_popup.title: @DDD@: No Remote Source
-Ddd*remote_file_error*contextHelpString:	\
+Ddd*remote_file_error*helpString:	\
 @rm The given source file could not be loaded from the remote host.\n\
 This message is also caused by attempting to load an empty source file.
 
 Ddd*source_file_from_gdb_warning_popup.title: @DDD@: Source From Debugger
-Ddd*source_file_from_gdb_warning*contextHelpString:	\
+Ddd*source_file_from_gdb_warning*helpString:	\
 @rm The given source file could not be loaded directly.\n\
 Instead, the source was obtained from the inferior debugger,\n\
 via the ``list'' command.
 
 Ddd*source_trunc_error_popup.title: @DDD@: Source Truncated
-Ddd*source_trunc_error*contextHelpString:	\
+Ddd*source_trunc_error*helpString:	\
 @rm The current source file was not be loaded entirely.
 
 Ddd*source_empty_warning.title: @DDD@: Source Empty
-Ddd*source_empty_warning*contextHelpString:	\
+Ddd*source_empty_warning*helpString:	\
 @rm The current source file is empty. \n\
 This is very unusual for source files. \n\
 Please verify your file name and try again.
 
 Ddd*source_binary_warning.title: @DDD@: Source Binary
-Ddd*source_binary_warning*contextHelpString:	\
+Ddd*source_binary_warning*helpString:	\
 @rm The current source file contains NULL characters. \n\
 This is very unusual for source files. \n\
 You probably gave the name of a binary file. \n\
 Please verify the file name and try again.
 
 Ddd*source_position_error_popup.title: @DDD@: No Current Position
-Ddd*source_position_error*contextHelpString:	\
+Ddd*source_position_error*helpString:	\
 @rm The current execution position is not in the displayed source file.\n\
 This may be true for two reasons:\n\
 - The debugged process is not running, or\n\
@@ -3242,44 +3367,44 @@ In the latter case, try the `directory' command to specify\n\
 a directory where source files can be found.
 
 Ddd*source_find_error_popup.title: @DDD@: Not Found
-Ddd*source_find_error*contextHelpString:	\
+Ddd*source_find_error*helpString:	\
 @rm The given argument @bf () @rm can not be found in the source text.
 
 Ddd*no_source_error_popup.title: @DDD@: No Source
-Ddd*no_source_error*contextHelpString:	\
+Ddd*no_source_error*helpString:	\
 @rm There is no current source text in which to search.
 
 Ddd*no_source_edit_error_popup.title: @DDD@: No Source
-Ddd*no_source_edit_error*contextHelpString:	\
+Ddd*no_source_edit_error*helpString:	\
 @rm There is no current source text to edit.
 
 Ddd*no_such_line_error_popup.title: @DDD@: No Such Line
-Ddd*no_such_line_error*contextHelpString:	\
+Ddd*no_such_line_error*helpString:	\
 @rm There is no such line in the current source text.
 
 Ddd*no_such_breakpoint_error_popup.title: @DDD@: No Such Breakpoint
-Ddd*no_such_breakpoint_error*contextHelpString:	\
+Ddd*no_such_breakpoint_error*helpString:	\
 @rm There is no such breakpoint in the current program.
 
 Ddd*no_completion_error_popup.title: @DDD@: No Completion
-Ddd*no_completion_error*contextHelpString:	\
+Ddd*no_completion_error*helpString:	\
 @rm The inferior debugger does not support command and argument completion.\n\
 \n\
 Command completion relies on the GDB `@tt complete@rm' command,\n\
 which is present in GDB 4.13 and later.
 
 Ddd*print_empty_graph_error_popup.title: @DDD@: Nothing to Print
-Ddd*print_empty_graph_error*contextHelpString:	\
+Ddd*print_empty_graph_error*helpString:	\
 @rm There is nothing to print.\n\
 The printing has been cancelled.
 
 Ddd*print_failed_error_popup.title: @DDD@: Printing Failed
-Ddd*print_failed_error*contextHelpString:	\
+Ddd*print_failed_error*helpString:	\
 @rm The file holding the graph picture could not be written.\n\
 The printing has been cancelled.
 
 Ddd*tty_exec_error_popup.title: @DDD@: No Execution TTY
-Ddd*tty_exec_error*contextHelpString:	\
+Ddd*tty_exec_error*helpString:	\
 @rm The terminal emulator for the execution window\n\
 could not be invoked.  The debugged process will execute in the\n\
 debugger console instead.\n\
@@ -3288,7 +3413,7 @@ Please verify the contents of the @bf .termCommand @rm resource\n\
 in the @DDD@ application defaults file.
 
 Ddd*tty_command_error_popup.title: @DDD@: TTY Failed
-Ddd*tty_command_error*contextHelpString:	\
+Ddd*tty_command_error*helpString:	\
 @rm @DDD@ sent a `tty' command to the inferior GDB in order to redirect\n\
 input/output of the debugged process to the execution window.\n\
 This command failed.\n\
@@ -3305,47 +3430,47 @@ To do so, include a line\n\
 @rm in your @tt ~/.dddinit @rm file and restart @DDD@.
 
 Ddd*tty_type_error: @DDD@: Term Failed
-Ddd*tty_type_error*contextHelpString:	\
+Ddd*tty_type_error*helpString:	\
 @rm @DDD@ could not set the TERM environment variable\n\
 to the type of the execution window.  This means that\n\
 your program will execute with a terminal type\n\
 set to @tt dumb @rm instead of @tt xterm @rm.
 
 Ddd*history_save_error_popup.title: @DDD@: Save History Failed
-Ddd*history_save_error*contextHelpString:	\
+Ddd*history_save_error*helpString:	\
 @rm The command history could not be saved.
 
 Ddd*options_save_error_popup.title: @DDD@: Save Options Failed
-Ddd*options_save_error*contextHelpString:	\
+Ddd*options_save_error*helpString:	\
 @rm The @DDD@ options could not be saved.
 
 Ddd*startup_warning.title: @DDD@: New Startup Required
-Ddd*startup_warning*contextHelpString: \
+Ddd*startup_warning*helpString: \
 @rm This setting cannot be changed while @DDD@ is running.\n\
 Please save options and restart @DDD@ to see the effects.
 
 Ddd*print_warning.title: @DDD@: Print Command Output
-Ddd*print_warning*contextHelpString:	\
+Ddd*print_warning*helpString:	\
 @rm This is the output of your printing command.\n\
 For more details, consult your system documentation.
 
 Ddd*paper_size_value_error.title: @DDD@: Unrecognized Paper Size
-Ddd*paper_size_value_error*contextHelpString:	\
+Ddd*paper_size_value_error*helpString:	\
 @rm @DDD@ could not parse your paper size specification.\n\
 Please verify the paper size and try again.
 
 Ddd*paper_size_unit_error.title: @DDD@: Unrecognized Paper Size Unit
-Ddd*paper_size_unit_error*contextHelpString:	\
+Ddd*paper_size_unit_error*helpString:	\
 @rm @DDD@ did not recognize your paper size unit.\n\
 Please verify the paper size unit and try again.
 
 Ddd*paper_size_x_error.title: @DDD@: Unrecognized Paper Size
-Ddd*paper_size_x_error*contextHelpString:	\
+Ddd*paper_size_x_error*helpString:	\
 @rm @DDD@ could not find an `x' in your paper size specification.\n\
 Please verify the paper size and try again.
 
 Ddd*expired_warning.title: @DDD@: @DDD@ expired
-Ddd*expired_warning*contextHelpString: \
+Ddd*expired_warning*helpString: \
 @rm @DDD@ @VERSION@ has been superseded by a newer @DDD@ version.\n\
 It should no longer be used.\n\
 To get a recent @DDD@ version, see the @DDD@ WWW page.
@@ -3362,7 +3487,7 @@ Around you is a forest.  A small stream flows out of the building and\n\
 down a gully.
 Ddd*adventure.okLabelString:		Continue
 
-Ddd*adventure*contextHelpString:	\
+Ddd*adventure*helpString:	\
 @rm The @DDD@ Display Dungeon is a colossal cave where all deleted\n\
 displays of all @DDD@ instantiations go.  Entering the display\n\
 dungeon reveals the internals of all programs ever having been\n\
@@ -3382,7 +3507,7 @@ I feel a draft\n\
 There are tunnels to @bf 12 13 17@rm.
 Ddd*wumpus.okLabelString:		Shoot
 
-Ddd*wumpus*contextHelpString:	\
+Ddd*wumpus*helpString:	\
 @rm The @DDD@ Display Dungeon is a cave of 20 rooms where all deleted\n\
 displays of all @DDD@ instantiations go.  Entering the display\n\
 dungeon reveals the internals of all programs ever having been\n\
@@ -3395,7 +3520,7 @@ hits you, you lose!
 
 Ddd*dungeon_collapse_error_popup.title: \
 @DDD@: Darn! Data Display Dungeon Damaged
-Ddd*dungeon_collapse_error*contextHelpString:	\
+Ddd*dungeon_collapse_error*helpString:	\
 @rm The @DDD@ display dungeon has collapsed.\n\
 Please verify your display dungeon database installation.\n\
 See the @DDD@ dungeon documentation for details.
