@@ -65,6 +65,7 @@ char print_rcsid[] =
 #include <fstream.h>
 #include <string.h>		// strerror()
 #include <errno.h>
+#include <unistd.h>
 
 #include <Xm/Xm.h>
 #include <Xm/ToggleB.h>
@@ -76,9 +77,15 @@ char print_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/PushB.h>
 
+#ifndef R_OK
+/* 3b2 doesn't define these according to jthomas@nmsu.edu. */
+#define R_OK 04
+#define W_OK 02
+#endif
+
 
 //-----------------------------------------------------------------------------
-// Printing Graphs
+// Printing Dialog
 //-----------------------------------------------------------------------------
 
 static string msg(string path, bool displays, bool to_file)
