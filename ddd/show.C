@@ -296,16 +296,24 @@ void show_configuration(ostream& os)
     // Compilation stuff
     s = "@(#)Compiled with "
 #ifdef __GNUC__
-	"GCC " stringize(__GNUC__)
+	"GCC "
+#ifdef __VERSION__
+	__VERSION__
+#else  // !defined(__VERSION__)
+	stringize(__GNUC__)
 #ifdef __GNUC_MINOR__
         "." stringize(__GNUC_MINOR__)
 #endif
-#else
+#endif // !defined(__VERSION__)
+
+#else  // !defined(__GNUC__)
 	"CC"
 #endif
+
 #ifdef _G_LIB_VERSION
 	", libstdc++ " _G_LIB_VERSION
 #endif
+
 #if defined(__GLIBC__)
 	", GNU libc " stringize(__GLIBC__) "." stringize(__GLIBC_MINOR__)
 #elif defined(_LINUX_C_LIB_VERSION)
