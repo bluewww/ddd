@@ -251,10 +251,13 @@ string uncook(const string& cooked) RETURNS(ret)
 		break;
 
 	    case '0':
-		if (*++i == 'x')
+		if (*(i + 1) == 'x')
+		{
+		    i++;
 		    goto hex;
-		else
-		    --i;
+		}
+		// FALL THROUGH
+
 	    case '1': 
 	    case '2': 
 	    case '3':
@@ -264,13 +267,14 @@ string uncook(const string& cooked) RETURNS(ret)
 	    case '7':
 		n = 0;
 		count = 0;
-		while (i++, count++ < 3)
+		while (count++ < 3)
 		{
 		    int d = digit(*i);
-		    if (d >= 0 && d < 8)
-			n = (n << 3) + d;
-		    else
+		    if (d < 0 || d >= 8)
 			break;
+
+		    n = (n << 3) + d;
+		    i++;
 		}
 		ret += char(n);
 		break;
@@ -279,13 +283,15 @@ string uncook(const string& cooked) RETURNS(ret)
 	    case 'x':
 		n = 0;
 		count = 0;
-		while (i++, count++ < 2)
+		i++;
+		while (count++ < 2)
 		{
 		    int d = digit(*i);
-		    if (d >= 0 && d < 16)
-			n = (n << 4) + d;
-		    else
+		    if (d < 0 || d >= 16)
 			break;
+
+		    n = (n << 4) + d;
+		    i++;
 		}
 		ret += char(n);
 		break;
