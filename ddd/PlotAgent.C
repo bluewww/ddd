@@ -364,7 +364,9 @@ void PlotAgent::print(const string& filename, const PrintGC& gc)
 	{
 	case PostScriptPrintGC::PORTRAIT:
 	{
-	    cmd << " portrait";
+	    // Portrait plotting doesn't make too much sense, so we
+	    // use the more useful EPS plotting instead.
+	    cmd << " eps";
 	    break;
 	}
 
@@ -387,20 +389,33 @@ void PlotAgent::print(const string& filename, const PrintGC& gc)
 	cmd << "\n";
 
 
-	// Postscript defaults are: landscape 10" wide and 7" high.
-	// Our `vsize' and `hsize' members assume portrait, so they
-	// are just reversed.
-	const int default_hsize =  7 * 72; // Default width in 1/72"
-	const int default_vsize = 10 * 72; // Default height in 1/72"
+	switch (ps.orientation)
+	{
+	case PostScriptPrintGC::PORTRAIT:
+	{
+	    // Use the default size for EPS.
+	    cmd << "set size\n";
+	    break;
+	}
+	case PostScriptPrintGC::LANDSCAPE:
+	{
+	    // Postscript defaults are: landscape 10" wide and 7" high.
+	    // Our `vsize' and `hsize' members assume portrait, so they
+	    // are just reversed.
+	    const int default_hsize =  7 * 72; // Default width in 1/72"
+	    const int default_vsize = 10 * 72; // Default height in 1/72"
 
-	// Leave 1" extra vertical space
-	const int hoffset = 0;
-	const int voffset = 1 * 72;
+	    // Leave 1" extra vertical space
+	    const int hoffset = 0;
+	    const int voffset = 1 * 72;
 
-	// Set size
-	double xscale = double(ps.hsize - hoffset) / default_hsize;
-	double yscale = double(ps.vsize - voffset) / default_vsize;
-	cmd << "set size " << xscale << ", " << yscale << "\n";
+	    // Set size
+	    double xscale = double(ps.hsize - hoffset) / default_hsize;
+	    double yscale = double(ps.vsize - voffset) / default_vsize;
+
+	    cmd << "set size " << xscale << ", " << yscale << "\n";
+	}
+	}
     }
 
     cmd << "set output " << quote(filename) << "\n"
