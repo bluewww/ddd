@@ -267,4 +267,11 @@ Volunteers for fixing these and other bugs are welcome!
 120* Hitting Ctrl+M while no machine code is displayed results in
      useless `info line :0' commands.
 
-121. (Insert your bug here)
+121. Using DBX 3.0 under Solaris, comments don't show up in the source window.
+
+122. Torsten Metzner <tom@plato.uni-paderborn.de> says: On
+     my sparc-sun-solaris2.5.1, have DDD run with `--exec-window' in
+     the background.  Starting the execution TTY causes DDD to stop
+     with `Suspended (tty output)'.
+
+123. (Insert your bug here)

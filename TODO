@@ -76,6 +76,13 @@ Volunteers for these and other projects are welcome!
 044. Disable pointer grabs from the debugged application as soon as
      the debugger prompt reappears.  But how?
 
+     Vadim Rogozin  <dima@mercury.co.il> suggests to call from GDB:
+
+	call XUngrabPointer(_XHeadOfDisplayList,0)
+        call XFlush(_XHeadOfDisplayList)
+
+     He checked it for Solaris and it does work.
+
 049. albrecht@igpm.rwth-aachen.de (Harald Albrecht):
      The dialog windows (especially the backtrace dialog) should not
      exceed a specific size (at least, they should not be larger than
