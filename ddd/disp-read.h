@@ -56,8 +56,20 @@ bool is_single_display_cmd(const string& cmd, GDBAgent *gdb);
 // True if CMD has no side effects.
 bool is_nop_cmd(const string& cmd);
 
-// True if CMD creates a display output
+// True if CMD creates a data display
 bool is_display_cmd(const string& cmd);
+
+// True if CMD changes a data display
+bool is_data_cmd(const string& cmd);
+
+// True if CMD deletes a data display
+bool is_delete_display_cmd(const string& cmd);
+
+// True if CMD disables a data display
+bool is_disable_display_cmd(const string& cmd);
+
+// True if CMD enables a data display
+bool is_enable_display_cmd(const string& cmd);
 
 // True if CMD executes debuggee and shows new displays
 bool is_running_cmd(const string& cmd, GDBAgent *gdb);

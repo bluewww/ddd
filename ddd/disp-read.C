@@ -147,6 +147,35 @@ bool is_display_cmd (const string& cmd)
     return cmd.matches (RXdisplay_cmd_and_args);
 }
 
+bool is_data_cmd (const string& cmd)
+{
+    // enable display, disable display, delete display, undisplay
+    static regex RXdata("[ \t]*[a-z ]*display([ \t]+-?[0-9][0-9]*.*)?");
+
+    return cmd.matches(RXdata);
+}
+
+bool is_delete_display_cmd (const string& cmd)
+{
+    static regex RXundisplay("[ \t]*(delete[ \t]+|un)display([ \t]+.*)?");
+
+    return cmd.matches(RXundisplay);
+}
+
+bool is_enable_display_cmd (const string& cmd)
+{
+    static regex RXenable("[ \t]*enable[ \t]+display([ \t]+.*)?");
+
+    return cmd.matches(RXenable);
+}
+
+bool is_disable_display_cmd (const string& cmd)
+{
+    static regex RXdisable("[ \t]*disable[ \t]+display([ \t]+.*)?");
+
+    return cmd.matches(RXdisable);
+}
+
 // ***************************************************************************
 // 
 bool is_frame_cmd (const string& cmd)
@@ -301,6 +330,7 @@ string get_display_expression (const string& display_cmd)
     string d(display_cmd);
     return d.after(RXdisplay_cmd);
 }
+
 
 
 //----------------------------------------------------------------------------
