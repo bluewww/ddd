@@ -215,12 +215,13 @@ lists all the lower level nodes in the document.
 @end ifinfo
 
 @menu
+* Creating Displays::           
 * Writing Themes::              
 * DDD VSL Functions::           
 * VSL Library::                 
 * VSL Reference::               
 * Documentation License::       
-* VSL Function Index::          
+* Index::                       
 @end menu
 
 @ifnothtml
@@ -264,6 +265,274 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 
 
 @c The actual content starts here.
+
+
+
+@node Creating Displays
+@chapter Creating Displays
+
+This section discusses how @DDD{} actually creates displays from
+data.
+
+@menu
+* Handling Boxes::              
+* Building Boxes from Data::    
+* Customizing Display Appearance::  
+@end menu
+
+@node Handling Boxes
+@section Handling Boxes
+
+All data displayed in the @DDD{} data window is maintained by the
+inferior debugger.  @GDB{}, for instance, provides a @emph{display list},
+holding symbolic expressions to be evaluated and printed on standard
+output at each program stop.  The @GDB{} command @samp{display tree} adds
+@samp{tree} to the display list and makes @GDB{} print the value of
+@samp{tree} as, say, @samp{tree = (Tree *)0x20e98}, at each program
+stop.  This @GDB{} output is processed by @DDD{} and displayed in the
+data window.
+
+Each element of the display list, as transmitted by the inferior
+debugger, is read by @DDD{} and translated into a @emph{box}.
+Boxes are rectangular entities with a specific content that can be
+displayed in the data window.  We distinguish @emph{atomic} boxes and
+@emph{composite} boxes.  An atomic box holds white or black space, a
+line, or a string.  Composite boxes are horizontal or vertical
+alignments of other boxes.  Each box has a size and an extent that
+determines how it fits into a larger surrounding space.
+
+Through construction of larger and larger boxes, @DDD{} constructs
+a graph node from the @GDB{} data structure in a similar way a typesetting
+system like @TeX{} builds words from letters and pages from paragraphs.
+
+Such constructions are easily expressed by means of functions mapping
+boxes onto boxes.  These @emph{display functions} can be specified by
+the user and interpreted by @DDD{}, using an applicative language
+called @VSL{} for @emph{visual structure language}.  @VSL{} functions can be
+specified by the @DDD{} user, leaving much room for extensions and
+customization.  A @VSL{} display function putting a frame around its
+argument looks like this:
+
+@example
+// Put a frame around TEXT
+frame(text) = hrule() 
+  | vrule() & text & vrule() 
+  | hrule();
+@end example
+
+Here, @code{hrule()} and @code{vrule()} are primitive functions
+returning horizontal and vertical lines, respectively.  The @samp{&} and
+@samp{|} operators construct horizontal and vertical alignments fro
+their arguments.
+
+@VSL{} provides basic facilities like pattern matching and variable numbers
+of function arguments.  The @code{halign()} function, for instance,
+builds a horizontal alignment from an arbitrary number of arguments,
+matched by three dots (@samp{@dots{}}):
+
+@example
+// Horizontal alignment
+halign(x) = x;
+halign(x, @dots{}) = x & halign(@dots{});
+@end example
+
+Frequently needed functions like @code{halign()} are grouped into a
+standard @VSL{} library.
+
+
+@node Building Boxes from Data
+@section Building Boxes from Data
+
+To visualize data structures, each atomic type and each type constructor
+from the programming language is assigned a @VSL{} display function.
+Atomic values like numbers, characters, enumerations, or character
+strings are displayed using string boxes holding their value; the @VSL{}
+function to display them leaves them unchanged:
+
+@example
+// Atomic Values
+simple_value(value) = value;
+@end example
+
+Composite values require more attention.  An array, for instance, may
+be displayed using a horizontal alignment:
+
+@example
+// Array
+array(@dots{}) = frame(halign(@dots{}));
+@end example
+
+When @GDB{} sends @DDD{} the value of an array, the @VSL{} function
+@samp{array()} is invoked with array elements as values.  A @GDB{} array
+expression @samp{@{1, 2, 3@}} is thus evaluated in @VSL{} as
+
+@example
+array(simple_value("1"), simple_value("2"), simple_value("3"))
+@end example
+
+@noindent
+which equals
+
+@example
+"1" & "2" & "3"
+@end example
+
+@noindent
+a composite box holding a horizontal alignment of three string boxes.  The
+actual @VSL{} function used in @DDD{} also puts delimiters between the
+elements and comes in a vertical variant as well.
+
+Nested structures like multi-dimensional arrays are displayed by
+applying the @code{array()} function in a bottom-up fashion.  First,
+@code{array()} is applied to the innermost structures; the resulting
+boxes are then passed as arguments to another @code{array()}
+invocation.  The @GDB{} output
+
+@example
+@{@{"A", "B", "C"@}, @{"D", "E", "F"@}@}
+@end example
+
+@noindent
+representing a 2 * 3 array of character strings, is evaluated
+in @VSL{} as
+
+@example
+array(array("A", "B", "C"), array("A", "B", "C"))
+@end example
+
+@noindent
+resulting in a horizontal alignment of two more alignments representing
+the inner arrays.
+
+Record structures are built in a similar manner, using a display
+function @code{struct\_member} rendering the record members.  Names and
+values are separated by an equality sign:
+
+@example
+// Member of a record structure
+struct_member (name, value) = 
+  name & " = " & value;
+@end example
+
+The display function @code{struct} renders the record itself, using the
+@code{valign()} function.@footnote{@code{valign()} is similar to
+@code{halign()}, but builds a vertical alignment.}
+
+@example
+// Record structure
+struct(@dots{}) = frame(valign(@dots{}));
+@end example
+
+This is a simple example; the actual @VSL{} function used in @DDD{}
+takes additional effort to align the equality signs; also, it ensures
+that language-specific delimiters are used, that collapsed structs are
+rendered properly, and so on.
+
+
+@node Customizing Display Appearance
+@section Customizing Display Appearance
+
+The general pattern to replace a function definition @var{function}
+with a new definition @var{new_def} is:
+
+@example
+#pragma replace @var{function}
+function(@var{args}@dots{}) = @var{new_def};
+@end example
+
+The following @VSL{} functions are frequently used:
+@table @code
+@item color(@var{box}, @var{foreground} [, @var{background}])
+Set the @var{foreground} and @var{background} colors of @var{box}.
+
+@item display_color(@var{box})
+The color used in data displays.
+Default: @samp{color(@var{box}, "black", "white")}
+
+@item title_color(@var{box})
+The color used in the title bar.
+Default: @samp{color(@var{box}, "black")}
+
+@item disabled_color(@var{box})
+The color used for disabled boxes.
+Default: @samp{color(@var{box}, "white", "grey50")}
+
+@item simple_color(@var{box})
+The color used for simple values.
+Default: @samp{color(@var{box}, "black")}
+
+@item pointer_color(@var{box})
+The color used for pointers.
+Default: @samp{color(@var{box}, "blue4")}
+
+@item struct_color(@var{box})
+The color used for structures.
+Default: @samp{color(@var{box}, "black")}
+
+@item array_color(@var{box})
+The color used for arrays.
+Default: @samp{color(@var{box}, "blue4")}
+
+@item reference_color(@var{box})
+The color used for references.
+Default: @samp{color(@var{box}, "blue4")}
+
+@item changed_color(@var{box})
+The color used for changed values.
+Default: @samp{color(@var{box}, "black", "#ffffcc")}
+
+@item stdfontfamily()
+The font family used.  One of @samp{family_times()}, 
+@samp{family_courier()}, @samp{family_helvetica()}, 
+@samp{family_new_century()}, or @samp{family_typewriter()} (default).
+
+@item stdfontsize()
+The font size used (in pixels).  @code{0} (default) means to use
+@samp{stdfontpoints()} instead.
+
+@item stdfontpoints()
+The font size used (in 1/10 points).  @code{0} means to use
+@samp{stdfontsize()} instead.  Default value: @code{90}.
+
+@item stdfontweight()
+The font weight used.  This is either @samp{weight_medium()} (default) or
+@samp{weight_bold()}.
+@end table
+
+To set the pointer color to "red4", use
+
+@example
+Ddd*vslDefs: \
+#pragma replace pointer_color\n\
+pointer_color(box) = color(box, "red4");\n
+@end example
+
+To set the default font size to resolution-independent 10.0 points, use
+
+@example
+Ddd*vslDefs: \
+#pragma replace stdfontsize\n\
+#pragma replace stdfontpoints\n\
+stdfontsize() = 0;\n
+stdfontpoints() = 100;\n
+@end example
+
+To set the default font to 12-pixel courier, use
+
+@example
+Ddd*vslDefs: \
+#pragma replace stdfontsize\n\
+#pragma replace stdfontfamily\n\
+stdfontsize() = 12;\n\
+stdfontfamily() = family_courier();\n
+@end example
+
+See the file @samp{ddd.vsl} for further definitions to override using
+the @samp{vslDefs} resource.
+
+...
+
+
 
 @node Writing Themes
 @chapter Writing Themes

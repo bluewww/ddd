@@ -521,9 +521,9 @@ Displaying Complex Values in the Data Window
 * Arrays::                      Special functions for arrays.
 * Assignment::                  Setting variable values.
 * Examining Structures::        Dereferencing pointers and other references.
+* Customizing Displays::        Data Themes.
 * Layouting the Graph::         Automatic layout.
 * Printing the Graph::          Printing on paper.
-* How Displays are Created::    The technical details.
 
 Display Basics
 
@@ -539,7 +539,6 @@ Display Basics
 * Creating Multiple Displays::  
 * Editing all Displays::        
 * Deleting Displays::           
-* Customizing Displays::        
 
 Arrays
 
@@ -554,6 +553,14 @@ Examining Structures
 * Shared Structures::           Multiple pointers to one display.
 * Display Shortcuts::           Customize your own menus.
 
+Customizing Displays
+
+* Using Data Themes::           
+* Applying Data Themes to Several Values::  
+* Editing Themes::              
+* Writing Data Themes::         
+* Display Resources::           
+
 Layouting the Graph
 
 * Moving Displays::             
@@ -561,12 +568,6 @@ Layouting the Graph
 * Aligning Displays::           
 * Automatic Layout::            
 * Rotating the Graph::          
-
-How Displays are Created
-
-* Handling Boxes::              
-* Building Boxes from Data::    
-* Customizing Display Appearance::  
 
 Plotting Values
 
@@ -718,7 +719,7 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 
 @c The actual content starts here.
 
-@c No idea why this `@node' requires all links...
+@c No idea why this `@node' requires all links.
 @node Summary, Sample Session, Top, Top
 @unnumbered Summary of @value{DDD}
 
@@ -2035,12 +2036,12 @@ for details.
 Use an Athena panner to scroll the data window.  Most people prefer
 panners on scroll bars, since panners allow two-dimensional scrolling.
 However, the panner is off by default, since some M*tif implementations
-do not work well with Athena widgets.  @xref{Customizing Displays}, for
+do not work well with Athena widgets.  @xref{Display Resources}, for
 details; see also @option{--scrolled-graph-editor}, below.
 
 Giving this option is equivalent to setting the @DDD{}
-@samp{pannedGraphEditor} resource to @samp{on}.  @xref{Customizing
-Displays}, for details.
+@samp{pannedGraphEditor} resource to @samp{on}.  @xref{Display
+Resources}, for details.
 
 
 
@@ -2085,12 +2086,12 @@ Debugger}, for details.
 
 @item --scrolled-graph-editor
 Use M*tif scroll bars to scroll the data window.  This is the default in
-most @DDD{} configurations.  @xref{Customizing Displays}, for details;
+most @DDD{} configurations.  @xref{Display Resources}, for details;
 see also @option{--panned-graph-editor}, above.
 
 Giving this option is equivalent to setting the @DDD{}
-@samp{pannedGraphEditor} resource to @samp{off}.  @xref{Customizing
-Displays}, for details.
+@samp{pannedGraphEditor} resource to @samp{off}.  @xref{Display
+Resources}, for details.
 
 
 @item --separate-windows
@@ -2212,17 +2213,15 @@ Load the @VSL{} library @var{library} instead of using the
 @DDD{} built-in library.  This is useful for customizing
 display shapes and fonts.
 
-Giving this option is equivalent to setting the @DDD{}
-@samp{vslLibrary} resource to @var{library}.  @xref{Customizing Display
-Appearance}, for details.
+Giving this option is equivalent to setting the @DDD{} @samp{vslLibrary}
+resource to @var{library}.  @xref{Display Resources}, for details.
 
 
 @item --vsl-path @var{path}
 Search @VSL{} libraries in @var{path} (a colon-separated directory list).
 
-Giving this option is equivalent to setting the @DDD{}
-@samp{vslPath} resource to @var{path}.  @xref{Customizing Display
-Appearance}, for details.
+Giving this option is equivalent to setting the @DDD{} @samp{vslPath}
+resource to @var{path}.  @xref{Display Resources}, for details.
 
 
 @item --vsl-help
@@ -7960,9 +7959,9 @@ graphically.  It is updated each time the program stops.
 * Arrays::                      Special functions for arrays.
 * Assignment::                  Setting variable values.
 * Examining Structures::        Dereferencing pointers and other references.
+* Customizing Displays::        Data Themes.
 * Layouting the Graph::         Automatic layout.
 * Printing the Graph::          Printing on paper.
-* How Displays are Created::    The technical details.
 @end menu
 
 @node Display Basics
@@ -7998,7 +7997,6 @@ Click on @samp{Undisplay} to delete the selected display.
 * Creating Multiple Displays::  
 * Editing all Displays::        
 * Deleting Displays::           
-* Customizing Displays::        
 @end menu
 
 @node Creating Single Displays
@@ -8574,12 +8572,17 @@ The address of the displayed expression.  Used for resolving aliases
 @cindex Deleting displays
 @lbindex Undisp
 
-To delete a single display, select it and click on the @samp{Undisp}
-button.  As an alternative, you can also press @emph{mouse button 3} on
-the display and select the @samp{Undisplay} item.
+To delete a single display, select its title or value and click on the
+@samp{Undisp} button.  As an alternative, you can also press @emph{mouse
+button 3} on the display and select the @samp{Undisplay} item.
 
 When a display is deleted, its immediate ancestors and descendants are
 automatically selected, so that you can easily delete entire graphs.
+
+If you have selected only part of a display, clicking on the
+@samp{Undisp} button allows you to @emph{suppress} this part---by
+applying the @emph{Suppress Values} theme on the part.  You'll be asked
+for confirmation first.  @xref{Using Data Themes}, for details.
 
 To delete several displays at once, use the @samp{Undisp} button in the
 Display Editor (invoked via @samp{Data @result{} Displays}).  Select any
@@ -8630,49 +8633,6 @@ menu.  The clipboard holds the @emph{commands} used to create the
 displays; @samp{Paste} inserts the display commands in the debugger
 console.  This allows you to save displays for later usage or to copy
 displays across multiple @DDD{} instances.
-
-
-@node Customizing Displays
-@subsubsection Customizing Displays
-@cindex Display, customizing
-
-You can use these resources to control display appearance:
-
-@defvr Resource autoCloseDataWindow (class AutoClose)
-If this is @samp{on} (default) and @DDD{} is in stacked window
-mode, deleting the last display automatically closes the data window.
-If this is @samp{off}, the data window stays open even after deleting
-the last display.
-@end defvr
-
-@defvr Resource bumpDisplays (class BumpDisplays)
-If some display @var{d} changes size and this resource is @samp{on}
-(default), @DDD{} assigns new positions to displays below and on
-the right of @var{d} such that the distance between displays remains
-constant.  If this is @samp{off}, other displays are not rearranged.
-@end defvr
-
-@defvr Resource clusterDisplays (class ClusterDisplays)
-If @samp{on}, new independent data displays will automatically be
-clustered.  Default is @samp{off}, meaning to leave new displays
-unclustered.
-@end defvr
-
-@defvr Resource hideInactiveDisplays (class HideInactiveDisplays)
-If some display gets out of scope and this resource is @samp{on}
-(default), @DDD{} removes it from the data display.  If this is
-@samp{off}, it is simply disabled.
-@end defvr
-
-@defvr Resource showBaseDisplayTitles (class ShowDisplayTitles)
-Whether to assign titles to base (independent) displays or not.
-Default is @samp{on}.
-@end defvr
-
-@defvr Resource showDependentDisplayTitles (class ShowDisplayTitles)
-Whether to assign titles to dependent displays or not.  Default is
-@samp{off}.
-@end defvr
 
 
 
@@ -9140,6 +9100,269 @@ A newline-separated list of display expressions to be included in the
 
 
 
+@node Customizing Displays
+@subsection Customizing Displays
+
+@cindex Display, customizing
+
+@menu
+* Using Data Themes::           
+* Applying Data Themes to Several Values::  
+* Editing Themes::              
+* Writing Data Themes::         
+* Display Resources::           
+@end menu
+
+@node Using Data Themes
+@subsubsection Using Data Themes
+
+@cindex Theme, Data
+@cindex Data Theme
+
+@DDD{} provides a simple method to customize displays.  @DDD{} comes
+with a number of @emph{visual modifiers}, called @emph{data themes}.
+
+Each theme modifies a particular aspect of a data display.  It can be
+applied to individual displays or to a number of displays.  The themes
+installed with @DDD{} include:
+
+@table @samp
+@item Small titles
+Apply this theme to show display titles in a smaller font.
+@item Small values
+Apply this theme to display values in a smaller font.
+@item Tiny values
+Apply this theme to display values in a tiny font.
+@item Suppress values
+Apply this theme to display values not at all.
+@end table
+
+Each of these themes can be applied for specific displays.
+
+@lbindex Theme
+To apply a theme on a display,
+@enumerate
+@item
+Press @emph{mouse button 3} on the display.
+@item
+Select @samp{Theme}
+@item
+Select the theme to apply.
+@end enumerate
+
+For instance, to display the variable @code{s} in a tiny font, click
+@emph{mouse button 3} on the display of @code{s}, and select @samp{Theme
+@result{} Tiny Values @result{} Apply}.
+
+To unapply a theme, just click on @samp{Undo} (if you just applied it)
+or repeat the sequence as above.
+
+
+@node Applying Data Themes to Several Values
+@subsubsection Applying Data Themes to Several Values
+
+Whenever you want to apply a theme on a @emph{struct member} or an
+@emph{array element,} you will be asked whether to
+
+@itemize @bullet{}
+@item 
+apply the theme on the single value only, or
+@item 
+apply the theme on all similar values.
+@end itemize
+
+Suppose, for instance, that you don't want to see @samp{vptr} members
+anymore.  Then you'd apply the theme @emph{Suppress Values} on all
+similar values.
+
+On the other hand, if you want to highlight one single value only, you'd
+apply the theme @emph{Red Background} on only one single value.
+
+If you find this confirmation annoying, you can define a command button
+which directly applies the theme.  @xref{Defining Commands}, for details
+on defining commands.
+
+Applying and unapplying themes is associated with the following commands:
+
+@cmindex graph apply theme
+@example
+graph apply theme @var{name} @var{pattern}
+@end example
+applies the theme @var{name} on @var{pattern}.
+
+@cmindex graph unapply theme
+@example
+graph unapply theme @var{name} @var{pattern}
+@end example
+unapplies the theme @var{name} on @var{pattern}.
+
+@cmindex graph toggle theme
+@example
+graph toggle theme @var{name} @var{pattern}
+@end example
+applies the theme @var{name} on @var{pattern} if it was not already
+applied, and unapplies it otherwise.
+
+
+
+@node Editing Themes
+@subsubsection Editing Themes
+
+Each theme can be globally activated or not.  If a theme is activated,
+it is applied to all expressions that match its @emph{pattern}.
+
+Normally, these patterns are automatically maintained by simply
+selecting the themes for the individual displays.  However, you can also
+edit patterns directly.
+
+Patterns are separated by @samp{;} and contain shell-like metacharacters:
+@itemize @bullet{}
+@item
+@samp{*} matches any sequence of characters.
+@item
+@samp{?} matches any single character.
+@item
+@samp{[@var{set}]} matches any character in @var{set}.  Character ranges
+can be expressed using @var{from}-@var{to}: @samp{[0-9a-zA-Z_]} is the
+set of characters allowed in C characters.
+@item
+@samp{[!@var{set}]} matches any character not in @var{set}.
+@item 
+To suppress the special syntactic significance of any metacharacter\n\
+and match the character exactly, precede it with @samp{\} (backslash).
+@item
+To suppress the syntactic significance of @emph{all} metacharacters,\n\
+enclose the pattern in double or single quotes.\n\
+@end itemize
+
+@lbindex Themes
+@lbindex Edit Themes
+To edit the set of themes, invoke @samp{Data @result{} Themes}.
+
+To apply changes you made to the themes, click on @samp{Apply}.
+To revert the themes to the last saved, click on @samp{Reset}.
+
+
+@node Writing Data Themes
+@subsubsection Writing Data Themes
+
+@xref{Top,,, ddd-themes, Writing DDD Themes}, for details on how to
+write your own data themes.
+
+
+@node Display Resources
+@subsubsection Display Resources
+
+You can use these resources to control display appearance:
+
+@defvr Resource autoCloseDataWindow (class AutoClose)
+If this is @samp{on} (default) and @DDD{} is in stacked window
+mode, deleting the last display automatically closes the data window.
+If this is @samp{off}, the data window stays open even after deleting
+the last display.
+@end defvr
+
+@defvr Resource bumpDisplays (class BumpDisplays)
+If some display @var{d} changes size and this resource is @samp{on}
+(default), @DDD{} assigns new positions to displays below and on
+the right of @var{d} such that the distance between displays remains
+constant.  If this is @samp{off}, other displays are not rearranged.
+@end defvr
+
+@defvr Resource clusterDisplays (class ClusterDisplays)
+If @samp{on}, new independent data displays will automatically be
+clustered.  Default is @samp{off}, meaning to leave new displays
+unclustered.
+@end defvr
+
+@defvr Resource hideInactiveDisplays (class HideInactiveDisplays)
+If some display gets out of scope and this resource is @samp{on}
+(default), @DDD{} removes it from the data display.  If this is
+@samp{off}, it is simply disabled.
+@end defvr
+
+@defvr Resource showBaseDisplayTitles (class ShowDisplayTitles)
+Whether to assign titles to base (independent) displays or not.
+Default is @samp{on}.
+@end defvr
+
+@defvr Resource showDependentDisplayTitles (class ShowDisplayTitles)
+Whether to assign titles to dependent displays or not.  Default is
+@samp{off}.
+@end defvr
+
+@defvr Resource suppressTheme (class Theme)
+@flindex suppress.vsl
+The theme to apply when selecting @samp{Undisp} on a data value.
+Default is @file{suppress.vsl}.
+@end defvr
+
+@defvr Resource themes (class Themes)
+A newline-separated list of themes.  Each theme has the format
+@var{name}, tabulator character, @var{pattern}.
+@end defvr
+
+
+
+The following resources control the @VSL{} interpreter:
+
+@defvr Resource vslBaseDefs (class VSLDefs)
+A string with additional @VSL{} definitions that are appended to the
+builtin @VSL{} library.  This resource is prepended to the @samp{vslDefs}
+resource below and set in the @DDD{} application defaults file;
+don't change it.
+@end defvr
+
+@defvr Resource vslDefs (class VSLDefs)
+A string with additional @VSL{} definitions that are appended to the
+builtin @VSL{} library.  The default value is an empty string.  This
+resource can be used to override specific @VSL{} definitions that affect
+the data display.  The preferred method, though, is to write a specific
+data theme (@pxref{Writing Data Themes}).
+@end defvr
+
+@defvr Resource vslLibrary (class VSLLibrary)
+The @VSL{} library to use.  @samp{builtin} (default) means to
+use the built-in library, any other value is used as file name.
+@end defvr
+
+@defvr Resource vslPath (class VSLPath)
+A colon-separated list of directories to search for @VSL{} include
+files.  The following directory names are special:
+@itemize @bullet
+@item
+The special directory name @samp{user_themes} stands for your individual
+theme directory, typically @file{~/.@value{ddd}/themes/}.
+@item
+The special directory name @samp{@value{ddd}_themes} stands for the installed
+theme directory, 
+typically @file{/usr/local/share/@value{ddd}-@value{VERSION}/themes/}.
+@end itemize
+Default is @samp{user_themes:@value{ddd}_themes:.}, which means that @DDD{}
+first searches your theme directory, followed by the system directory
+and the current directory.
+@end defvr
+
+If your @DDD{} source distribution is installed in @file{/opt/src},
+you can use the following settings to read the @VSL{} library from
+@file{/home/joe/ddd.vsl}:
+
+@example
+Ddd*vslLibrary: /home/joe/ddd.vsl
+Ddd*vslPath:    user_themes:.:/opt/src/ddd/ddd:/opt/src/ddd/vsllib
+@end example
+
+@VSL{} include files referenced by @file{/home/joe/ddd.vsl} are searched
+first in the current directory @file{.}, then in your theme directory,
+then in @file{/opt/src/ddd/ddd/}, and then in
+@file{/opt/src/ddd/vsllib/}.
+
+Instead of supplying another @VSL{} library, it is often easier to
+specify some minor changes to the built-in library 
+(@pxref{Writing Data Themes}).
+
+
+
 @node Layouting the Graph
 @subsection Layouting the Graph
 
@@ -9354,329 +9577,6 @@ The command to print a PostScript file.  Usually @samp{lp} or
 The paper size used for printing, in format @samp{@var{width} x
 @var{height}}.  The default is ISO A4 format, or @samp{210mm x 297mm}.
 @end defvr
-
-
-
-
-@node How Displays are Created
-@subsection How Displays are Created
-
-This section discusses how @DDD{} actually creates displays from
-data.
-
-@menu
-* Handling Boxes::              
-* Building Boxes from Data::    
-* Customizing Display Appearance::  
-@end menu
-
-@node Handling Boxes
-@subsubsection Handling Boxes
-
-All data displayed in the @DDD{} data window is maintained by the
-inferior debugger.  @GDB{}, for instance, provides a @emph{display list},
-holding symbolic expressions to be evaluated and printed on standard
-output at each program stop.  The @GDB{} command @samp{display tree} adds
-@samp{tree} to the display list and makes @GDB{} print the value of
-@samp{tree} as, say, @samp{tree = (Tree *)0x20e98}, at each program
-stop.  This @GDB{} output is processed by @DDD{} and displayed in the
-data window.
-
-Each element of the display list, as transmitted by the inferior
-debugger, is read by @DDD{} and translated into a @emph{box}.
-Boxes are rectangular entities with a specific content that can be
-displayed in the data window.  We distinguish @emph{atomic} boxes and
-@emph{composite} boxes.  An atomic box holds white or black space, a
-line, or a string.  Composite boxes are horizontal or vertical
-alignments of other boxes.  Each box has a size and an extent that
-determines how it fits into a larger surrounding space.
-
-Through construction of larger and larger boxes, @DDD{} constructs
-a graph node from the @GDB{} data structure in a similar way a typesetting
-system like @TeX{} builds words from letters and pages from paragraphs.
-
-Such constructions are easily expressed by means of functions mapping
-boxes onto boxes.  These @emph{display functions} can be specified by
-the user and interpreted by @DDD{}, using an applicative language
-called @VSL{} for @emph{visual structure language}.  @VSL{} functions can be
-specified by the @DDD{} user, leaving much room for extensions and
-customization.  A @VSL{} display function putting a frame around its
-argument looks like this:
-
-@example
-// Put a frame around TEXT
-frame(text) = hrule() 
-  | vrule() & text & vrule() 
-  | hrule();
-@end example
-
-Here, @code{hrule()} and @code{vrule()} are primitive functions
-returning horizontal and vertical lines, respectively.  The @samp{&} and
-@samp{|} operators construct horizontal and vertical alignments fro
-their arguments.
-
-@VSL{} provides basic facilities like pattern matching and variable numbers
-of function arguments.  The @code{halign()} function, for instance,
-builds a horizontal alignment from an arbitrary number of arguments,
-matched by three dots (@samp{@dots{}}):
-
-@example
-// Horizontal alignment
-halign(x) = x;
-halign(x, @dots{}) = x & halign(@dots{});
-@end example
-
-Frequently needed functions like @code{halign()} are grouped into a
-standard @VSL{} library.
-
-
-@node Building Boxes from Data
-@subsubsection Building Boxes from Data
-
-To visualize data structures, each atomic type and each type constructor
-from the programming language is assigned a @VSL{} display function.
-Atomic values like numbers, characters, enumerations, or character
-strings are displayed using string boxes holding their value; the @VSL{}
-function to display them leaves them unchanged:
-
-@example
-// Atomic Values
-simple_value(value) = value;
-@end example
-
-Composite values require more attention.  An array, for instance, may
-be displayed using a horizontal alignment:
-
-@example
-// Array
-array(@dots{}) = frame(halign(@dots{}));
-@end example
-
-When @GDB{} sends @DDD{} the value of an array, the @VSL{} function
-@samp{array()} is invoked with array elements as values.  A @GDB{} array
-expression @samp{@{1, 2, 3@}} is thus evaluated in @VSL{} as
-
-@example
-array(simple_value("1"), simple_value("2"), simple_value("3"))
-@end example
-
-@noindent
-which equals
-
-@example
-"1" & "2" & "3"
-@end example
-
-@noindent
-a composite box holding a horizontal alignment of three string boxes.  The
-actual @VSL{} function used in @DDD{} also puts delimiters between the
-elements and comes in a vertical variant as well.
-
-Nested structures like multi-dimensional arrays are displayed by
-applying the @code{array()} function in a bottom-up fashion.  First,
-@code{array()} is applied to the innermost structures; the resulting
-boxes are then passed as arguments to another @code{array()}
-invocation.  The @GDB{} output
-
-@example
-@{@{"A", "B", "C"@}, @{"D", "E", "F"@}@}
-@end example
-
-@noindent
-representing a 2 * 3 array of character strings, is evaluated
-in @VSL{} as
-
-@example
-array(array("A", "B", "C"), array("A", "B", "C"))
-@end example
-
-@noindent
-resulting in a horizontal alignment of two more alignments representing
-the inner arrays.
-
-Record structures are built in a similar manner, using a display
-function @code{struct\_member} rendering the record members.  Names and
-values are separated by an equality sign:
-
-@example
-// Member of a record structure
-struct_member (name, value) = 
-  name & " = " & value;
-@end example
-
-The display function @code{struct} renders the record itself, using the
-@code{valign()} function.@footnote{@code{valign()} is similar to
-@code{halign()}, but builds a vertical alignment.}
-
-@example
-// Record structure
-struct(@dots{}) = frame(valign(@dots{}));
-@end example
-
-This is a simple example; the actual @VSL{} function used in @DDD{}
-takes additional effort to align the equality signs; also, it ensures
-that language-specific delimiters are used, that collapsed structs are
-rendered properly, and so on.
-
-
-@node Customizing Display Appearance
-@subsubsection Customizing Display Appearance
-
-@DDD{} comes with a built-in @VSL{} library that should suffice for
-most, if not all, purposes.  Using the following resources, one can
-change and enhance the @VSL{} definitions:
-
-@defvr Resource vslBaseDefs (class VSLDefs)
-A string with additional @VSL{} definitions that are appended to the
-builtin @VSL{} library.  This resource is prepended to the @samp{vslDefs}
-resource below and set in the @DDD{} application defaults file;
-don't change it.
-@end defvr
-
-@defvr Resource vslDefs (class VSLDefs)
-A string with additional @VSL{} definitions that are appended to the
-builtin @VSL{} library.  The default value is an empty string.  This
-resource can be used to override specific @VSL{} definitions that affect
-the data display.
-
-The general pattern to replace a function definition @var{function}
-with a new definition @var{new_def} is:
-
-@example
-#pragma replace @var{function}
-function(@var{args}@dots{}) = @var{new_def};
-@end example
-
-The following @VSL{} functions are frequently used:
-@table @code
-@item color(@var{box}, @var{foreground} [, @var{background}])
-Set the @var{foreground} and @var{background} colors of @var{box}.
-
-@item display_color(@var{box})
-The color used in data displays.
-Default: @samp{color(@var{box}, "black", "white")}
-
-@item title_color(@var{box})
-The color used in the title bar.
-Default: @samp{color(@var{box}, "black")}
-
-@item disabled_color(@var{box})
-The color used for disabled boxes.
-Default: @samp{color(@var{box}, "white", "grey50")}
-
-@item simple_color(@var{box})
-The color used for simple values.
-Default: @samp{color(@var{box}, "black")}
-
-@item pointer_color(@var{box})
-The color used for pointers.
-Default: @samp{color(@var{box}, "blue4")}
-
-@item struct_color(@var{box})
-The color used for structures.
-Default: @samp{color(@var{box}, "black")}
-
-@item array_color(@var{box})
-The color used for arrays.
-Default: @samp{color(@var{box}, "blue4")}
-
-@item reference_color(@var{box})
-The color used for references.
-Default: @samp{color(@var{box}, "blue4")}
-
-@item changed_color(@var{box})
-The color used for changed values.
-Default: @samp{color(@var{box}, "black", "#ffffcc")}
-
-@item stdfontfamily()
-The font family used.  One of @samp{family_times()}, 
-@samp{family_courier()}, @samp{family_helvetica()}, 
-@samp{family_new_century()}, or @samp{family_typewriter()} (default).
-
-@item stdfontsize()
-The font size used (in pixels).  @code{0} (default) means to use
-@samp{stdfontpoints()} instead.
-
-@item stdfontpoints()
-The font size used (in 1/10 points).  @code{0} means to use
-@samp{stdfontsize()} instead.  Default value: @code{90}.
-
-@item stdfontweight()
-The font weight used.  This is either @samp{weight_medium()} (default) or
-@samp{weight_bold()}.
-@end table
-
-To set the pointer color to "red4", use
-
-@example
-Ddd*vslDefs: \
-#pragma replace pointer_color\n\
-pointer_color(box) = color(box, "red4");\n
-@end example
-
-To set the default font size to resolution-independent 10.0 points, use
-
-@example
-Ddd*vslDefs: \
-#pragma replace stdfontsize\n\
-#pragma replace stdfontpoints\n\
-stdfontsize() = 0;\n
-stdfontpoints() = 100;\n
-@end example
-
-To set the default font to 12-pixel courier, use
-
-@example
-Ddd*vslDefs: \
-#pragma replace stdfontsize\n\
-#pragma replace stdfontfamily\n\
-stdfontsize() = 12;\n\
-stdfontfamily() = family_courier();\n
-@end example
-
-See the file @samp{ddd.vsl} for further definitions to override using
-the @samp{vslDefs} resource.
-@end defvr
-
-@defvr Resource vslLibrary (class VSLLibrary)
-The @VSL{} library to use.  @samp{builtin} (default) means to
-use the built-in library, any other value is used as file name.
-@end defvr
-
-@defvr Resource vslPath (class VSLPath)
-A colon-separated list of directories to search for @VSL{} include
-files.  The following directory names are special:
-@itemize @bullet
-@item
-The special directory name @samp{user_themes} stands for your individual
-theme directory, typically @file{~/.@value{ddd}/themes/}.
-@item
-The special directory name @samp{@value{ddd}_themes} stands for the installed
-theme directory, 
-typically @file{/usr/local/share/@value{ddd}-@value{VERSION}/themes/}.
-@end itemize
-Default is @samp{user_themes:@value{ddd}_themes:.}, which means that @DDD{}
-first searches your theme directory, followed by the system directory
-and the current directory.
-@end defvr
-
-If your @DDD{} source distribution is installed in @file{/opt/src},
-you can use the following settings to read the @VSL{} library from
-@file{/home/joe/ddd.vsl}:
-
-@example
-Ddd*vslLibrary: /home/joe/ddd.vsl
-Ddd*vslPath:    user_themes:.:/opt/src/ddd/ddd:/opt/src/ddd/vsllib
-@end example
-
-@VSL{} include files referenced by @file{/home/joe/ddd.vsl} are searched
-first in the current directory @file{.}, then in your theme directory,
-then in @file{/opt/src/ddd/ddd/}, and then in
-@file{/opt/src/ddd/vsllib/}.
-
-Instead of supplying another @VSL{} library, it is often easier to specify
-some minor changes to the built-in library.  See the @samp{vslDefs}
-resource, above, for details.
 
 
 
