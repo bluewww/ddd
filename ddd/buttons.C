@@ -1456,7 +1456,7 @@ void dddEditButtonsCB(Widget w, XtPointer, XtPointer)
     XtManageChild(button_box);
     XtManageChild(shortcut_w);
 
-    XmToggleButtonSetState(console_w, Boolean(True), True);
+    XmToggleButtonSetState(console_w, True, True);
     ResetTextCB(w, 0, 0);
 
     XtManageChild(button_box);
@@ -1477,7 +1477,7 @@ void dddEditShortcutsCB(Widget w, XtPointer, XtPointer)
     XtManageChild(button_box);
     XtManageChild(shortcut_w);
 
-    XmToggleButtonSetState(shortcut_w, Boolean(True), True);
+    XmToggleButtonSetState(shortcut_w, True, True);
     ResetTextCB(w, 0, 0);
 
     XtManageChild(shortcut_label);
