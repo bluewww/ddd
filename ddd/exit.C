@@ -78,6 +78,7 @@ char exit_rcsid[] =
 #include "TimeOut.h"
 #include "charsets.h"
 #include "Command.h"
+#include "cmdtty.h"
 #include "converters.h"
 #include "ddd.h"
 #include "exectty.h"
@@ -108,6 +109,7 @@ char exit_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 #include <Xm/PushB.h>
+#include <Xm/Text.h>
 
 #if HAVE_RAISE
 #if !HAVE_RAISE_DECL
@@ -845,8 +847,27 @@ void gdb_eofHP(Agent *agent, void *, void *)
 // GDB died
 void gdb_diedHP(Agent *gdb, void *, void *call_data)
 {
-    char *reason = (char *)call_data;
-    post_gdb_died(reason, gdb->lastStatus());
+    if (running_shells() > 0)
+    {
+	char *reason = (char *)call_data;
+	post_gdb_died(reason, gdb->lastStatus());
+    }
+    else
+    {
+	// No shell open (yet).  If we get here, this is usually
+	// because we could not invoke the inferior debugger.
+	
+	if (!tty_running())
+	{
+	    // Forward diagnostics from debugger console to stderr
+	    String s = XmTextGetString(gdb_w);
+	    string message = s + messagePosition;
+	    XtFree(s);
+	    cerr << message;
+	}
+
+	_DDDExitCB(gdb_w, XtPointer(EXIT_FAILURE), XtPointer(0));
+    }
 }
 
 
