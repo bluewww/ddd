@@ -6225,7 +6225,7 @@ Ddd*no_plotter_dialog*helpString:	\
 \n\
 DDD requires the Gnuplot program to create plots.\n\
 Please install Gnuplot (available from any GNU site)\n\
-or verify the value of the SAMP(.plotCommand) resource.
+or enter its path in LBL(Edit, Preferences, Helpers, Plot).
 
 Ddd*fatal_dialog_popup.title: DDD: Oops
 Ddd*fatal_dialog.messageString:	  \
