@@ -111,10 +111,14 @@ string DispValue::add_member_name(const string& base,
 	return base.before('(') + member_name.before(')') + ", " + 
 	    base.after('(');
     }
-    else
+
+    if (gdb->program_language() == LANGUAGE_PERL)
     {
-	return base + member_name;
+	if (base != "" && base[0] != '$')
+	    return '$' + base.after(0) + member_name;
     }
+
+    return base + member_name;
 }
 
 void DispValue::clear_type_cache()
@@ -315,7 +319,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
     case Array:
     {
 #if RUNTIME_REGEX
-	static regex rxsimple("([][a-zA-Z0-9_$().]|->)*");
+	static regex rxsimple("([][a-zA-Z0-9_$@%().]|->)*");
 #endif
 
 	string base = myfull_name;
@@ -430,6 +434,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	clog << mytype << " " << quote(myfull_name) << "\n";
 #endif
 	string member_prefix = myfull_name;
+	string member_suffix = "";
 	if (mytype == List)
 	{
 	    member_prefix = "";
@@ -463,6 +468,13 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		    member_prefix.prepend("(");
 		    member_prefix += ").";
 		}
+	    }
+	    else if (gdb->program_language() == LANGUAGE_PERL)
+	    {
+		member_prefix += "{";
+		if (member_prefix[0] != '$')
+		    member_prefix[0] = '$';
+		member_suffix = "}";
 	    }
 	    else
 	    {
@@ -557,12 +569,13 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		{
 		    // The member name contains `.' => quote it.  This
 		    // happens with vtable pointers on Linux (`_vptr.').
-		    full_name = member_prefix + quote(member_name, '\'');
+		    full_name = member_prefix + quote(member_name, '\'') + 
+			member_suffix;
 		}
 		else
 		{
 		    // Ordinary member
-		    full_name = member_prefix + member_name;
+		    full_name = member_prefix + member_name + member_suffix;
 		}
 
 		_children += parse_child(depth, value, full_name, member_name);

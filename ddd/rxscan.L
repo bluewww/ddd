@@ -314,7 +314,7 @@ J	[A-Za-z_$][A-Za-z0-9_$.]*
 91{_}(set|p|print|output){W}[^=]+=[^=]{C}	RETURN(&rxset2_cmd);
 92{_}set{W}args({W}{C})?		RETURN(&rxset_args_cmd);
 93{_}(set|dbxenv){W}{C}			RETURN(&rxsetting_cmd);
-94([][a-zA-Z0-9_$().]|->)*		RETURN(&rxsimple);
+94([][a-zA-Z0-9_$@%().]|->)*		RETURN(&rxsimple);
 95{_}disp(lay){W}[^ ]+			RETURN(&rxsingle_display_cmd);
 96{C}(--More--|line{w}{d}).* 		RETURN(&rxspace);
 97Breakpoint{W}{P}\,{W}{A}		RETURN(&rxstopped_addr);
