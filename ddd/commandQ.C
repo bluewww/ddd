@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD command queue
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -42,6 +42,7 @@ char commandQueue_rcsid[] =
 #include "findParent.h"
 #include "history.h"
 #include "ddd.h"
+#include "cook.h"
 #include "Queue.h"
 #include "windows.h"
 #include "GDBAgent.h"
@@ -51,6 +52,8 @@ char commandQueue_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <X11/StringDefs.h>
+
+#define LOG_QUEUE 0
 
 // Origin of last command
 static Widget gdb_last_origin;
@@ -199,12 +202,37 @@ void Command::clear_origin(Widget w, XtPointer client_data, XtPointer)
     command->origin = 0;
 }
 
-static Queue<Command> commandQueue;
+typedef Queue<Command> CommandQueue;
+typedef QueueIter<Command> CommandQueueIter;
+
+static CommandQueue commandQueue;
+
+#if LOG_QUEUE
+static ostream& operator<<(ostream& os, const CommandQueue& queue)
+{
+    os << "[";
+    bool first = true;
+    for (CommandQueueIter i = queue; i.ok(); i = i.next())
+    {
+	if (first)
+	    first = false;
+	else
+	    os << ", ";
+
+	os << quote(i().command);
+    }
+    return os << "]";
+}
+#endif
 
 void clearCommandQueue()
 {
     while (!commandQueue.isEmpty())
 	commandQueue -= commandQueue.first();
+
+#if LOG_QUEUE
+    clog << "Command queue: " << commandQueue << "\n";
+#endif
 }
 
 bool emptyCommandQueue()
@@ -235,7 +263,40 @@ void gdb_command(const string& cmd, Widget origin,
 	_gdb_command(cmd, origin, callback, data, verbose, check);
     }
     else
-	commandQueue += Command(cmd, origin, callback, data, verbose, check);
+    {
+	Command c(cmd, origin, callback, data, verbose, check);
+
+	if (callback != 0)
+	{
+	    // Enqueue before first command without callback.  This
+	    // ensures that user commands are placed at the end.
+	    CommandQueueIter pos = commandQueue;
+	    bool have_pos = false;
+
+	    for (CommandQueueIter i = commandQueue; i.ok(); i = i.next())
+	    {
+		if (i().callback == 0)
+		    break;
+
+		pos = i;
+		have_pos = true;
+	    }
+
+	    if (have_pos)
+		commandQueue.enqueue_after(c, pos);
+	    else
+		commandQueue.enqueue_at_start(c);
+	}
+	else
+	{
+	    // Enqueue command at end
+	    commandQueue.enqueue_at_end(c);
+	}
+
+#if LOG_QUEUE
+	clog << "Command queue: " << commandQueue << "\n";
+#endif
+    }
 }
 
 void processCommandQueue(XtPointer, XtIntervalId *)
@@ -250,13 +311,18 @@ void processCommandQueue(XtPointer, XtIntervalId *)
 
     if (!commandQueue.isEmpty())
     {
-	Command& c = commandQueue.first();
+	const Command& c = commandQueue.first();
 	Command cmd(c);
-	commandQueue -= c;
+	commandQueue.dequeue(c);
 
 	add_to_history(cmd.command);
-	_gdb_command(cmd.command, cmd.origin);
+	_gdb_command(cmd.command, cmd.origin, cmd.callback, 
+		     cmd.data, cmd.verbose, cmd.check);
 	gdb_keyboard_command = false;
+
+#if LOG_QUEUE
+	clog << "Command queue: " << commandQueue << "\n";
+#endif
     }
 }
 
