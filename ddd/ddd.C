@@ -403,12 +403,6 @@ static XrmOptionDescRec options[] = {
 { "--trace",                XtCTrace,                XrmoptionNoArg,  S_true },
 { "-trace",                 XtCTrace,                XrmoptionNoArg,  S_true },
 
-{ "--trace-dialog",         XtNtraceDialog,          XrmoptionNoArg,  S_true },
-{ "-trace-dialog",          XtNtraceDialog,          XrmoptionNoArg,  S_true },
-
-{ "--trace-shell-commands", XtNtraceShellCommands,   XrmoptionNoArg,  S_true },
-{ "-trace-shell-commands",  XtNtraceShellCommands,   XrmoptionNoArg,  S_true },
-
 { "--vsl-library",          XtNvslLibrary,           XrmoptionSepArg, NULL },
 { "-vsl-library",           XtNvslLibrary,           XrmoptionSepArg, NULL },
 
@@ -1370,7 +1364,7 @@ const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
 static Atom WM_DELETE_WINDOW;
 
 // Logging stuff
-ofstream dddlog;
+ostream *_dddlog = &clog;
 
 
 //-----------------------------------------------------------------------------
@@ -1721,17 +1715,21 @@ int main(int argc, char *argv[])
 	|| app_data.show_manual)
 	return EXIT_SUCCESS;
 
+    // From this point on, we'll be running under X.
+
     // Create a `~/.ddd/log' file for this session; 
     // log invocation and configuration
-    dddlog.open(session_log_file());
+    if (!app_data.trace)
+    {
+	static ofstream log(session_log_file());
+	_dddlog = &log;
+    }
     show_configuration(dddlog);
     dddlog << "$ ";
     int i;
     for (i = 0; saved_argv()[i] != 0; i++)
 	dddlog << " " << cook(saved_argv()[i]);
     dddlog << '\n';
-
-    // From this point on, we'll be running under X.
 
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
     setup_version_warnings();
@@ -1798,7 +1796,6 @@ int main(int argc, char *argv[])
 
     // Create GDB interface
     gdb = new_gdb(type, app_data, app_context, argc, argv);
-    gdb->trace_dialog(app_data.trace_dialog);
     defineConversionMacro("GDB", gdb->title());
 
     // Set up GDB handlers

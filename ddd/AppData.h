@@ -49,8 +49,7 @@
 #define XtCDebugger              "Debugger"
 #define XtNdebuggerCommand       "debuggerCommand"
 #define XtCDebuggerCommand       "DebuggerCommand"
-#define XtNtraceDialog           "traceDialog"
-#define XtNtraceShellCommands    "traceShellCommands"
+#define XtNtrace                 "trace"
 #define XtCTrace                 "Trace"
 #define XtNgdbInitCommands       "gdbInitCommands"
 #define XtNgdbSettings           "gdbSettings"
@@ -293,8 +292,7 @@ struct AppData {
     String    initial_session;
     String    debugger;
     String    debugger_command;
-    Boolean   trace_dialog;
-    Boolean   trace_shell_commands;
+    Boolean   trace;
     String    gdb_init_commands;
     String    gdb_settings;
     String    dbx_init_commands;

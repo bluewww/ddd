@@ -90,7 +90,8 @@ extern class SourceView *source_view;
 extern class ArgField   *source_arg;
 
 // Where to log DDD I/O
-extern ofstream dddlog;
+extern ostream *_dddlog;
+#define dddlog (*_dddlog)
 
 // Text to ignore upon output
 extern string gdb_out_ignore;

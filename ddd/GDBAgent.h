@@ -189,7 +189,6 @@ private:
 
     ProgramLanguage _program_language; // Current program language
 
-    bool _trace_dialog;		// True if dialog is to be traced
     bool _verbatim;		// True if in verbatim mode
     bool _detect_echos;		// True if echos are to be detected
 
@@ -559,10 +558,6 @@ public:
     {
 	return type() == DBX;
     }
-
-    // True if debugger dialog is traced on clog
-    bool trace_dialog() const    { return _trace_dialog; }
-    bool trace_dialog(bool val);
 
     // True if DBX output is to be processed verbatim
     bool verbatim() const        { return _verbatim; }

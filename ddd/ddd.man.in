@@ -2100,9 +2100,9 @@ dialogs scan remote directories.  This may result in somewhat slower
 operation than normal.
 .br
 .IP \(bu 2
-To help you find problems due to remote execution, run \s-2@DDD@\s+2 with the
-`\fB\-\-trace-shell-commands\fR' option.  This prints the shell
-commands issued by \s-2@DDD@\s+2 on standard error.
+To help you find problems due to remote execution, run \s-2@DDD@\s+2
+with the `\fB\-\-trace\fR' option.  This prints the shell commands
+issued by \s-2@DDD@\s+2 on standard error.
 .\"
 .\"
 .SS "Using @DDD@ with a Remote Program"
@@ -4013,13 +4013,9 @@ exit.  See also the `\fB\-\-news\fR' option, below.
 If `\fBon\fR', show the \s-2@DDD@\s+2 version on standard output and
 exit.  See also the `\fB\-\-version\fR' option, below.
 .TP
-.B "traceDialog (\fPclass\fB Trace)"
+.B "trace (\fPclass\fB Trace)"
 If `\fBon\fR', show the dialog between \s-2@DDD@\s+2 and the
 inferior debugger on standard output.  Default is `\fBoff\fR'.
-.TP
-.B "traceShellCommands (\fPclass\fB Trace)"
-If `\fBon\fR', show the programs invoked by \s-2@DDD@\s+2 on
-standard output.  Default is `\fBoff\fR'.
 .\"
 .\"
 .\"
@@ -4214,16 +4210,9 @@ Place the status line at the top of the source window.
 Do not process X events while the debugger is busy.  This may result
 in slightly better performance on single-processor systems.
 .TP
-.B \-\-trace-dialog
+.B \-\-trace
 Show the interaction between \s-2@DDD@\s+2 and the inferior debugger
 on standard error.  This is useful for debugging \s-2@DDD@\s+2.
-.TP
-.B \-\-trace-shell-commands
-Show the shell commands issued by \s-2@DDD@\s+2 on standard error.  This
-is useful for debugging \s-2@DDD@\s+2.
-.TP
-.B \-\-trace
-Show both interaction and shell commands.
 .TP
 .B \-\-tty
 Enable \s-2TTY\s+2 interface, taking additional debugger commands from

@@ -231,7 +231,6 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_givenfile_command(false),
       _has_cont_sig_command(false),
       _program_language(tp == JDB ? LANGUAGE_JAVA : LANGUAGE_C),
-      _trace_dialog(false),
       _verbatim(false),
       _detect_echos(true),
       last_prompt(""),
@@ -307,7 +306,6 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_givenfile_command(gdb.has_givenfile_command()),
       _has_cont_sig_command(gdb.has_cont_sig_command()),
       _program_language(gdb.program_language()),
-      _trace_dialog(gdb.trace_dialog()),
       _verbatim(gdb.verbatim()),
       _detect_echos(gdb.detect_echos()),
       last_prompt(""),
@@ -365,12 +363,6 @@ void GDBAgent::trace(char *prefix, void *call_data) const
 
     if (s_ends_with_nl)
 	s(s.length() - 1, 0) = "\\n";
-
-    if (_trace_dialog)
-    {
-	clog << prefix << s << '\n';
-	clog.flush();
-    }
 
     dddlog << prefix << s << '\n';
     dddlog.flush();
@@ -570,12 +562,6 @@ bool GDBAgent::send_qu_array (const StringArray& cmds,
     flush();
 
     return true;
-}
-
-// Add handlers for tracing GDB I/O
-bool GDBAgent::trace_dialog (bool val)
-{
-    return _trace_dialog = val;
 }
 
 // Initialize GDB question array
@@ -845,14 +831,6 @@ void GDBAgent::normalize_answer(string& answer) const
     strip_control(answer);
     strip_dbx_comments(answer);
     cut_off_prompt(answer);
-
-#if 0
-    if (trace_dialog())
-    {
-	DataLength dl(answer, answer.length());
-	trace("<< ", &dl);
-    }
-#endif
 }
 
 // Remove GDB prompt
