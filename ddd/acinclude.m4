@@ -2,7 +2,7 @@ dnl $Id$ -*- autoconf -*-
 dnl ICE and DDD autoconf macros
 dnl 
 dnl Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
-dnl Copyright (C) 1999-2000 Universitaet Passau, Germany.
+dnl Copyright (C) 1999-2001 Universitaet Passau, Germany.
 dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
 dnl This file is part of DDD.
@@ -2740,10 +2740,10 @@ dnl
 dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
-VERSION=3.2.93
+VERSION=3.2.95
 dnl
 dnl The version nickname.
-NICKNAME="Wichita Falls"
+NICKNAME="Apollo 13"
 dnl 
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update the product.
