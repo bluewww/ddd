@@ -139,20 +139,14 @@ void initial_popup_shell(Widget w)
 
     if (w == tool_shell)
     {
-	if (iconic)
+	if (!iconic)
 	{
-	    popdown_shell(tool_shell);
-	}
-	else
-	{
-	    XtManageChild(tool_buttons_w);
-	    XtManageChild(tool_shell);
-	    XtPopup(tool_shell, XtGrabNone);
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell), 0,
 			    RecenterToolShellCB, XtPointer(0));
 	}
     }
-    else if (w != toplevel)
+
+    if (w != toplevel)
     {
 	XtPopup(w, XtGrabNone);
     }
@@ -162,9 +156,6 @@ void popup_shell(Widget w)
 {
     if (w == 0 || popups_disabled)
 	return;
-
-    if (w == tool_shell)
-	XtManageChild(tool_buttons_w);
 
     XtPopup(w, XtGrabNone);
 
@@ -196,7 +187,8 @@ void popdown_shell(Widget w)
     else if (w == tool_shell)
 	tool_shell_state        = PoppedDown;
 
-    XtPopdown(w);
+    if (w != command_shell)
+	XtPopdown(w);
 }
 
 void iconify_shell(Widget w)
@@ -225,11 +217,7 @@ void popup_tty(Widget shell)
 	XMapWindow(XtDisplay(shell), exec_tty_window());
 
 	// Place window on top
-	XWindowChanges changes;
-	changes.stack_mode = Above;
-	XReconfigureWMWindow(XtDisplay(shell), exec_tty_window(), 
-			     XScreenNumberOfScreen(XtScreen(shell)),
-			     CWStackMode, &changes);
+	XRaiseWindow(XtDisplay(shell), exec_tty_window());
     }
 }
 
@@ -280,7 +268,11 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    && (w == source_view_shell
 		|| (source_view_shell == 0 && w == command_shell))
 	    && !app_data.tool_bar && app_data.source_window)
+	{
+	    // Popup command tool again
 	    popup_shell(tool_shell);
+	    tool_shell_state = Transient;
+	}
 
 	if (!synthetic && app_data.group_iconify)
 	{
@@ -311,26 +303,38 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	if (w == command_shell
 	    && command_shell_state != Iconic
 	    && command_shell_state != PoppedDown)
+	{
 	    command_shell_state = Iconic;
+	}
 	else if (w == data_disp_shell
 		 && data_disp_shell_state != Iconic
 		 && data_disp_shell_state != PoppedDown)
+	{
 	    data_disp_shell_state = Iconic;
+	}
 	else if (w == source_view_shell
 		 && source_view_shell_state != Iconic
 		 && source_view_shell_state != PoppedDown)
+	{
 	    source_view_shell_state = Iconic;
+	}
 	else if (w == tool_shell
 		 && tool_shell_state != Iconic
 		 && tool_shell_state != PoppedDown)
+	{
 	    tool_shell_state = Iconic;
+	}
 	else
 	    return;
 
 	if (!synthetic
 	    && (w == source_view_shell
 		|| (source_view_shell == 0 && w == command_shell)))
-	    popdown_shell(tool_shell);
+	{
+	    // Iconify command tool, too
+	    iconify_shell(tool_shell);
+	    tool_shell_state = Transient;
+	}
 
 	if (!synthetic && app_data.group_iconify)
 	{
@@ -356,7 +360,6 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 
     case VisibilityNotify:
     {
-	
 	if (w == command_shell)
 	    command_shell_visibility = event->xvisibility.state;
 	else if (w == data_disp_shell)
@@ -751,8 +754,13 @@ static void recenter_tool_shell(Widget ref)
 			  x, y, &root_x, &root_y,
 			  &ref_child);
 
+    ostrstream os;
+    os << "+" << root_x << "+" << root_y;
+    string geometry(os);
+
     // Move tool shell to ROOT_X, ROOT_Y
     XtVaSetValues(tool_shell,
+		  XmNgeometry, geometry.chars(),
 		  XmNx, root_x,
 		  XmNy, root_y,
 		  NULL);

@@ -155,6 +155,7 @@ char ddd_rcsid[] =
 #include <Xm/ToggleB.h>
 #include <Xm/PushB.h>
 #include <Xm/ArrowB.h>
+#include <Xm/MwmUtil.h>
 #include <X11/Shell.h>
 
 #if XmVersion >= 1002
@@ -2008,28 +2009,47 @@ int main(int argc, char *argv[])
     {
 	Widget tool_shell_parent = 
 	    source_view_shell ? source_view_shell : command_shell;
+
+	Position pos_x = WidthOfScreen(XtScreen(tool_shell_parent)) + 1;
+	Position pos_y = HeightOfScreen(XtScreen(tool_shell_parent)) + 1;
+
+	ostrstream os;
+	os << "+" << pos_x << "+" << pos_y;
+	string geometry(os);
+
 	arg = 0;
-	XtSetArg(args[arg], XmNx, 
-		 WidthOfScreen(XtScreen(tool_shell_parent)) + 1);  arg++;
-	XtSetArg(args[arg], XmNy,
-		 HeightOfScreen(XtScreen(tool_shell_parent)) + 1); arg++;
-	XtSetArg(args[arg], XmNallowShellResize, True); arg++;
+	XtSetArg(args[arg], XmNgeometry, geometry.chars());   arg++;
+	XtSetArg(args[arg], XmNx, pos_x);                     arg++;
+	XtSetArg(args[arg], XmNy, pos_y);                     arg++;
+	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+	XtSetArg(args[arg], XmNallowShellResize, False);      arg++;
+	XtSetArg(args[arg], XmNmwmDecorations,
+		 MWM_DECOR_BORDER | MWM_DECOR_TITLE | MWM_DECOR_MENU); arg++;
 	tool_shell = 
-	    verify(XmCreateDialogShell(tool_shell_parent, 
-				       "tool_shell", args, arg));
+	    verify(XtCreateWidget("tool_shell", topLevelShellWidgetClass,
+				  tool_shell_parent, args, arg));
+	XmAddWMProtocolCallback(tool_shell, WM_DELETE_WINDOW, 
+				gdbCloseToolWindowCB, 0);
+
 	Delay::register_shell(tool_shell);
 
 	arg = 0;
 	tool_buttons_w = 
 	    verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
 	add_buttons(tool_buttons_w, app_data.tool_buttons);
+
+	XtManageChild(tool_buttons_w);
+	XtRealizeWidget(tool_shell);
     
 	wm_set_icon(tool_shell,
 		    iconlogo(tool_buttons_w),
 		    iconmask(tool_buttons_w));
+
+#if 0
 	wm_set_group_leader(XtDisplay(tool_shell),
 			    XtWindow(tool_shell),
 			    XtWindow(tool_shell_parent));
+#endif
 
 #if 0
 	XtAddEventHandler(tool_shell, structure_mask, False,
