@@ -6833,7 +6833,7 @@ static void setup_version_info()
 
     helpOnVersionExtraText += cr()
 	+ rm("Send bug reports to <")
-	+ tt("ddd-bugs@gnu.org") + rm(">.") + cr()
+	+ tt("bug-ddd@gnu.org") + rm(">.") + cr()
 	+ rm("Always include the ") + tt(log) + rm(" file;")
 	+ rm(" see the " DDD_NAME " manual for details.") + cr()
 	+ rm("Send comments and suggestions to <")
@@ -6842,7 +6842,7 @@ static void setup_version_info()
     helpOnVersionExtraText += cr()
 	+ rm(DDD_NAME " WWW page: ") + tt(app_data.www_page) + cr()
 	+ rm(DDD_NAME " mailing list: <")
-	+ tt("help-ddd-request@gnu.org") + rm(">") + cr()
+	+ tt("help-ddd-request@gnu.org") + rm(">") + cr();
 }
 
 
