@@ -10,9 +10,10 @@ DDD 1.3c (NOT YET RELEASED)
     - Patches for recent Linux boxes (using ELF format) incorporated.
       Thanks to lee@champion.tcs.co.jp (Lee Hounshell).
     - Patches for DEC Alpha OSF/1 incorporated; see the `PROBLEMS'
-      file for special building instructions.
-      Thanks to tuppa@iue.tuwien.ac.at (Walter Tuppa)
-    - Configuration now uses GNU autoconf 2.6.
+      file for special building instructions.  Thanks to
+      tuppa@iue.tuwien.ac.at (Walter Tuppa)
+    - Configuration scripts reworked for GNU autoconf 2.6; various
+      configuration bugs have been fixed.
 
     - New shortcuts in source popup menus:
       * The breakpoint popup menu allows you to set a temporary 
@@ -20,14 +21,13 @@ DDD 1.3c (NOT YET RELEASED)
 	Suggested by Chris Sterritt <sterritt@mrj.com>
       * The source popup menu allows you to print or display
 	dereferenced names (`print *' and `display *').  Suggested by
-	local DDD users.
+	our local DDD users.
 
     - All DDD source code (except `ddd.C') now comes under the GNU
-      general public *library* license.  This means that 
-      proprietary DDD extensions without supplying source code as well
-      as incorporating DDD code in proprietary applications are now
-      allowed under certain circumstances; notably, these 
-      extensions and applications must be available in object form.  
+      general public *library* license.  This means that the following
+      is now allowed under certain circumstances:
+      * Proprietary DDD extensions without supplying source code, and
+      * Incorporating DDD code in proprietary applications
       See the `COPYING.LIB' file for details.
 
 
