@@ -173,7 +173,7 @@ LineGraphEdgeSelfInfo::LineGraphEdgeSelfInfo(const BoxRegion& region,
     fig_pos[1] = region.origin();
     fig_pos[2] = region.origin();
 
-    int offset = int(sqrt(radius * radius / 2.0));
+    int offset = int(sqrt((radius * radius) / 2));
 
     switch (gc.selfEdgePosition)
     {
