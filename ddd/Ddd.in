@@ -1612,25 +1612,29 @@ Ddd*startup_preferences*adjustMargin:                   false
 
 Ddd*startup_preferences*windows.labelString:            Windows:
 Ddd*startup_preferences*windows.alignment:              XmALIGNMENT_END
-Ddd*startup_preferences*windows.width:                  100
+Ddd*startup_preferences*windows.width:                  120
+Ddd*startup_preferences*windows.recomputeSize:          false
 Ddd*windowsMenu*separate.labelString:			Separate Windows
 Ddd*windowsMenu*attached.labelString:			One Single Window
 
 Ddd*startup_preferences*keyboardFocus.labelString:	Keyboard Focus:
 Ddd*startup_preferences*keyboardFocus.alignment:      	XmALIGNMENT_END
-Ddd*startup_preferences*keyboardFocus.width:      	100
+Ddd*startup_preferences*keyboardFocus.width:      	120
+Ddd*startup_preferences*keyboardFocus.recomputeSize:    false
 Ddd*keyboardFocusMenu*explicit.labelString:		Click To Type
 Ddd*keyboardFocusMenu*pointer.labelString:		Pointer Driven
 
 Ddd*startup_preferences*dataScrolling.labelString:      Data Scrolling:
 Ddd*startup_preferences*dataScrolling.alignment:      	XmALIGNMENT_END
-Ddd*startup_preferences*dataScrolling.width:      	100
+Ddd*startup_preferences*dataScrolling.width:      	120
+Ddd*startup_preferences*dataScrolling.recomputeSize:    false
 Ddd*dataScrollingMenu*panner.labelString:		Panner
 Ddd*dataScrollingMenu*scrollbars.labelString:		Scrollbars
 
 Ddd*startup_preferences*debugger.labelString:           Debugger Type:
 Ddd*startup_preferences*debugger.alignment:           	XmALIGNMENT_END
-Ddd*startup_preferences*debugger.width:           	100
+Ddd*startup_preferences*debugger.width:           	120
+Ddd*startup_preferences*debugger.recomputeSize:		false
 Ddd*debuggerMenu*gdb.labelString:			GDB
 Ddd*debuggerMenu*dbx.labelString:			DBX
 Ddd*debuggerMenu*xdb.labelString:			XDB
