@@ -758,10 +758,12 @@ PICS = \
 	$(picdir)/ddd-attach.ps         \
 	$(picdir)/ddd-backtrace.ps	\
 	$(picdir)/ddd-bp-popup.ps       \
+	$(picdir)/ddd-button-editor.ps  \
 	$(picdir)/ddd-code.ps           \
 	$(picdir)/ddd-cond.ps           \
 	$(picdir)/ddd-console.ps        \
 	$(picdir)/ddd-data-prefs.ps     \
+	$(picdir)/ddd-drag.ps           \
 	$(picdir)/ddd-edit-displays.ps  \
 	$(picdir)/ddd-general-prefs.ps  \
 	$(picdir)/ddd-hide-display.ps   \
@@ -781,6 +783,8 @@ PICS = \
 	$(picdir)/ddd-select-display.ps \
 	$(picdir)/ddd-set.ps	        \
 	$(picdir)/ddd-settings.ps       \
+	$(picdir)/ddd-shortcuts.ps      \
+	$(picdir)/ddd-shortcut-editor.ps \
 	$(picdir)/ddd-source-popup.ps   \
 	$(picdir)/ddd-source-prefs.ps   \
 	$(picdir)/ddd-source.ps         \
@@ -1324,6 +1328,23 @@ $(picdir)/ddd-save-session.ps: \
 $(picdir)/ddd-open-session.ps: \
 	$(picdir)/ddd-open-session.fig $(picdir)/ddd-open-session.xpm
 	cd $(picdir); $(FIG2PS) ddd-open-session.fig > ddd-open-session.ps
+
+$(picdir)/ddd-button-editor.ps: \
+	$(picdir)/ddd-button-editor.fig $(picdir)/ddd-button-editor.xpm
+	cd $(picdir); $(FIG2PS) ddd-button-editor.fig > ddd-button-editor.ps
+
+$(picdir)/ddd-shortcuts.ps: \
+	$(picdir)/ddd-shortcuts.fig $(picdir)/ddd-shortcuts.xpm
+	cd $(picdir); $(FIG2PS) ddd-shortcuts.fig > ddd-shortcuts.ps
+
+$(picdir)/ddd-shortcut-editor.ps: \
+	$(picdir)/ddd-shortcut-editor.fig $(picdir)/ddd-shortcut-editor.xpm
+	cd $(picdir); $(FIG2PS) ddd-shortcut-editor.fig > ddd-shortcut-editor.ps
+
+$(picdir)/ddd-drag.ps: \
+	$(picdir)/ddd-drag.fig \
+	$(picdir)/ddd-drag1.xpm $(picdir)/ddd-drag2.xpm $(picdir)/ddd-drag3.xpm
+	cd $(picdir); $(FIG2PS) ddd-drag.fig > ddd-drag.ps
 
 # The logo comes in XPM source
 $(picdir)/dddlogo.ps: $(icondir)/dddlogo.xpm
