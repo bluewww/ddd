@@ -42,7 +42,7 @@ CONST rcsid =
 
 TYPE DayOfWeek = (Sun, Mon, Tue, Wed, Thu, Fri, Sat);
    Date	       = RECORD
-		    day_of_week	: DayOfWeek;
+		    dayOfWeek	: DayOfWeek;
 		    day		: INTEGER;
 		    month	: INTEGER;
 		    year	: INTEGER;
@@ -61,34 +61,34 @@ TYPE DayOfWeek = (Sun, Mon, Tue, Wed, Thu, Fri, Sat);
 		    right : TreePtr;
 		 END;
 
-VAR main_i: INTEGER;
+VAR mainI: INTEGER;
 
-PROCEDURE set_date(VAR d: Date; day_of_week: DayOfWeek;
-		       day: INTEGER; month: INTEGER; year: INTEGER);
+PROCEDURE setDate(VAR d: Date; dayOfWeek: DayOfWeek;
+		      day: INTEGER; month: INTEGER; year: INTEGER);
 BEGIN
-   d.day_of_week := day_of_week;
-   d.day := day;
-   d.month := month;
-   d.year := year
-END set_date;
+   d.dayOfWeek := dayOfWeek;
+   d.day       := day;
+   d.month     := month;
+   d.year      := year
+END setDate;
 
-PROCEDURE new_date(VAR d: DatePtr; day_of_week: DayOfWeek;
-		       day: INTEGER; month: INTEGER; year: INTEGER);
+PROCEDURE newDate(VAR d: DatePtr; dayOfWeek: DayOfWeek;
+		      day: INTEGER; month: INTEGER; year: INTEGER);
 BEGIN
    NEW(d);
-   set_date(d^, day_of_week, day, month, year)
-END new_date;
+   setDate(d^, dayOfWeek, day, month, year)
+END newDate;
 
-PROCEDURE set_holiday(VAR h: Holiday; day_of_week: DayOfWeek;
-			  day: INTEGER; month: INTEGER; year: INTEGER;
-			  name: ARRAY OF CHAR);
+PROCEDURE setHoliday(VAR h: Holiday; dayOfWeek: DayOfWeek;
+		         day: INTEGER; month: INTEGER; year: INTEGER;
+			 name: ARRAY OF CHAR);
 VAR success: BOOLEAN;
 BEGIN
-   set_date(h.date, day_of_week, day, month, year);
+   setDate(h.date, dayOfWeek, day, month, year);
    Assign(name, h.name, success)
-END set_holiday;
+END setHoliday;
 
-PROCEDURE new_tree(VAR p: TreePtr; value: INTEGER; name: ARRAY OF CHAR);
+PROCEDURE newTree(VAR p: TreePtr; value: INTEGER; name: ARRAY OF CHAR);
 VAR success: BOOLEAN;
 BEGIN
    NEW(p);
@@ -96,50 +96,50 @@ BEGIN
    Assign(name, p^.name, success);
    p^.left  := NIL;
    p^.right := NIL
-END new_tree;
+END newTree;
 
-PROCEDURE dispose_tree(p: TreePtr);
+PROCEDURE disposeTree(p: TreePtr);
 BEGIN
    IF p^.left <> NIL THEN
-      dispose_tree(p^.left);
+      disposeTree(p^.left);
    END;	
    IF p^.right <> NIL THEN
-      dispose_tree(p^.right);
+      disposeTree(p^.right);
    END;
 
    DISPOSE(p)
-END dispose_tree;
+END disposeTree;
 
-PROCEDURE tree_test;
+PROCEDURE treeTest;
 VAR tree : TreePtr;
 BEGIN
    tree := NIL;
-   new_tree(tree,              7, 'Ada');      (*Byron Lovelace*)
-   new_tree(tree^.left,        1, 'Grace');    (*Murray Hopper*)
-   new_tree(tree^.left^.left,  5, 'Judy');     (*Clapp*)
-   new_tree(tree^.left^.right, 6, 'Kathleen'); (*McNulty*)
-   new_tree(tree^.right,       9, 'Mildred');  (*Koss*)
+   newTree(tree,              7, 'Ada');      (*Byron Lovelace*)
+   newTree(tree^.left,        1, 'Grace');    (*Murray Hopper*)
+   newTree(tree^.left^.left,  5, 'Judy');     (*Clapp*)
+   newTree(tree^.left^.right, 6, 'Kathleen'); (*McNulty*)
+   newTree(tree^.right,       9, 'Mildred');  (*Koss*)
 
-   set_date(tree^.date, Tue, 29, 11, 1994);
-   set_date(tree^.date, Wed, 30, 11, 1994);
+   setDate(tree^.date, Tue, 29, 11, 1994);
+   setDate(tree^.date, Wed, 30, 11, 1994);
 
-   dispose_tree(tree)
-END tree_test;
+   disposeTree(tree)
+END treeTest;
 
-PROCEDURE array_test;
+PROCEDURE arrayTest;
 VAR i		: INTEGER;
-   days_of_week	: ARRAY[1..7] OF DayOfWeek;
+   daysOfWeek	: ARRAY[1..7] OF DayOfWeek;
    twodim	: ARRAY[1..2] OF ARRAY [1..3] OF ARRAY[1..20] OF CHAR;
    dates	: ARRAY[1..4] OF Date;
-   date_ptrs	: ARRAY[1..4] OF DatePtr;
+   datePtrs	: ARRAY[1..4] OF DatePtr;
 BEGIN
-   days_of_week[1] := Sun;
-   days_of_week[2] := Mon;
-   days_of_week[3] := Tue;
-   days_of_week[4] := Wed;
-   days_of_week[5] := Thu;
-   days_of_week[6] := Fri;
-   days_of_week[7] := Sat;
+   daysOfWeek[1] := Sun;
+   daysOfWeek[2] := Mon;
+   daysOfWeek[3] := Tue;
+   daysOfWeek[4] := Wed;
+   daysOfWeek[5] := Thu;
+   daysOfWeek[6] := Fri;
+   daysOfWeek[7] := Sat;
 
    twodim[1,1] := "Pioneering";
    twodim[1,2] := "women";
@@ -148,28 +148,28 @@ BEGIN
    twodim[2,2] := "science";
    twodim[2,3] := "!";
 
-   new_date(date_ptrs[1], Thu, 1, 9, 1994);
-   new_date(date_ptrs[2], Tue, 10, 5, 1994);
-   new_date(date_ptrs[3], Fri, 15, 7, 1994);
-   new_date(date_ptrs[4], Sat, 24, 12, 1994);
+   newDate(datePtrs[1], Thu, 1, 9, 1994);
+   newDate(datePtrs[2], Tue, 10, 5, 1994);
+   newDate(datePtrs[3], Fri, 15, 7, 1994);
+   newDate(datePtrs[4], Sat, 24, 12, 1994);
 
    FOR i := 1 TO 4 DO
-      dates[i] := date_ptrs[i]^;
-      DISPOSE(date_ptrs[i]);
+      dates[i] := datePtrs[i]^;
+      DISPOSE(datePtrs[i]);
    END
-END array_test;
+END arrayTest;
 
-PROCEDURE type_test;
+PROCEDURE typeTest;
 VAR holiday : Holiday;
    r	    : REAL;
    c	    : CHAR;
 BEGIN
-   set_holiday(holiday, Sat, 31, 12, 1994, 'May all acquaintance be forgot');
+   setHoliday(holiday, Sat, 31, 12, 1994, 'May all acquaintance be forgot');
    r := 3.1415;
    c := 'A'
-END type_test;
+END typeTest;
 
-PROCEDURE in_out_test;
+PROCEDURE inOutTest;
 VAR name : ARRAY[1..80] OF CHAR;
 BEGIN
    WriteString('What is your name? ');
@@ -178,15 +178,15 @@ BEGIN
    WriteString(name);
    WriteString('!');
    WriteLn
-END in_out_test;
+END inOutTest;
 
 BEGIN
-   main_i := 42;
-   tree_test;
-   main_i := main_i + 1;
-   array_test;
-   main_i := main_i + 1;
-   type_test;
-   main_i := main_i - 1;
-   in_out_test
+   mainI := 42;
+   treeTest;
+   mainI := mainI + 1;
+   arrayTest;
+   mainI := mainI + 1;
+   typeTest;
+   mainI := mainI - 1;
+   inOutTest
 END m2test.
