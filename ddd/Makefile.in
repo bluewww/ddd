@@ -327,6 +327,13 @@ TEXI2HTML = texi2html -split_chapter
 # The texi2dvi program.  (texi2dvi)
 TEXI2DVI = texi2dvi
 
+# The texi2pdf program.  (texi2pdf)
+TEXI2PDF = texi2pdf
+
+# The epstopdf program.  (epstopdf)
+# Available from http://www.tug.org/applications/pdftex/epstopdf
+EPSTOPDF = epstopdf
+
 # The dvips program.  (dvips)
 DVIPS = @DVIPS@
 
@@ -502,7 +509,8 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 
 ## Implicit rules.
 .SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xbmxx .xpm .xpmxx \
-	   .xface .C~ .c~ .f .f~ .sh .sh~ .fig .eps $(IMGEXT)
+	   .xface .C~ .c~ .f .f~ .sh .sh~ .fig .eps .jpg .png .gif .pdf \
+	   $(IMGEXT)
 .C.$(OBJEXT):
 	$(COMPILE.cc) $(INCLUDE) -o $@ $<
 .cc.$(OBJEXT):
@@ -658,6 +666,9 @@ IMAGE_WIDTH = 600
 
 .eps.png:
 	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
+
+.eps.pdf:
+	$(EPSTOPDF) $< --outfile=$@
 
 .fig.eps:
 	(cd `dirname $<` && $(FIG2PS) `basename $<` ) > $@
@@ -951,22 +962,23 @@ docdir = $(srcdir)/../doc
 DVIS = 	ddd.dvi
 
 ## The postscript files.
-PSS = \
-	$(docdir)/ddd.man-nopics.ps \
-	$(docdir)/ddd.man.ps \
-	$(docdir)/ddd.ps
+PSS = $(docdir)/ddd.ps
+
+## The PDF files.
+PDFS = $(docdir)/ddd.pdf
 
 ## The HTML files.
 htmldir = $(docdir)/html
 HTMLS = $(htmldir)/index.html $(docdir)/sample.c
 
 ## The info files.
-INFOS = $(docdir)/ddd.info
+INFO = $(docdir)/ddd.info
+INFOS = $(docdir)/ddd.info*
 
 ## PostScript pictures in the DDD manual.
 # All of these are generated from FIG and XPM files.
 picdir = $(srcdir)/PICS
-PICS = \
+PS_IMAGES = \
 	$(picdir)/disclaimer.eps           \
 	$(picdir)/dddlogo.eps		   \
 	$(picdir)/dddsplash.eps            \
@@ -1031,7 +1043,73 @@ PICS = \
 	$(picdir)/tut-set.eps              \
 	$(picdir)/tut-value.eps
 
-IMAGES = \
+PDF_IMAGES = \
+	$(picdir)/disclaimer.pdf           \
+	$(picdir)/dddback.pdf		\
+	$(picdir)/dddlogo.pdf              \
+	$(picdir)/dddsplash.pdf            \
+	$(picdir)/ddd-aliases.pdf          \
+	$(picdir)/ddd-all.pdf              \
+	$(picdir)/ddd-arguments.pdf        \
+	$(picdir)/ddd-attach.pdf           \
+	$(picdir)/ddd-backtrace.pdf	\
+	$(picdir)/ddd-bp-popup.pdf         \
+	$(picdir)/ddd-bp-properties.pdf    \
+	$(picdir)/ddd-button-editor.pdf    \
+	$(picdir)/ddd-clusters.pdf         \
+	$(picdir)/ddd-code.pdf             \
+	$(picdir)/ddd-console.pdf          \
+	$(picdir)/ddd-data-prefs.pdf       \
+	$(picdir)/ddd-define-command.pdf   \
+	$(picdir)/ddd-display.pdf          \
+	$(picdir)/ddd-drag.pdf             \
+	$(picdir)/ddd-edit-breakpoints.pdf \
+	$(picdir)/ddd-edit-displays.pdf    \
+	$(picdir)/ddd-examine.pdf          \
+	$(picdir)/ddd-font-prefs.pdf       \
+	$(picdir)/ddd-general-prefs.pdf    \
+	$(picdir)/ddd-helpers.pdf  	\
+	$(picdir)/ddd-hide-display.pdf     \
+	$(picdir)/ddd-history.pdf          \
+	$(picdir)/ddd-layout.pdf           \
+	$(picdir)/ddd-line-popup.pdf       \
+	$(picdir)/ddd-locals.pdf	        \
+	$(picdir)/ddd-open.pdf             \
+	$(picdir)/ddd-open-session.pdf     \
+	$(picdir)/ddd-plots.pdf            \
+	$(picdir)/ddd-print-graph.pdf      \
+	$(picdir)/ddd-print-output.pdf     \
+	$(picdir)/ddd-print-popup.pdf      \
+	$(picdir)/ddd-registers.pdf        \
+	$(picdir)/ddd-repeats.pdf          \
+	$(picdir)/ddd-rotate-display.pdf   \
+	$(picdir)/ddd-save-session.pdf     \
+	$(picdir)/ddd-select-display.pdf   \
+	$(picdir)/ddd-separate.pdf         \
+	$(picdir)/ddd-set.pdf	        \
+	$(picdir)/ddd-settings.pdf         \
+	$(picdir)/ddd-shortcuts.pdf        \
+	$(picdir)/ddd-shortcut-editor.pdf  \
+	$(picdir)/ddd-signals.pdf          \
+	$(picdir)/ddd-source-popup.pdf     \
+	$(picdir)/ddd-source-prefs.pdf     \
+	$(picdir)/ddd-source.pdf           \
+	$(picdir)/ddd-startup-prefs.pdf    \
+	$(picdir)/ddd-status-displays.pdf  \
+	$(picdir)/ddd-threads.pdf          \
+	$(picdir)/ddd-tool.pdf             \
+	$(picdir)/ddd-toolbar.pdf          \
+	$(picdir)/ddd-toolbars.pdf         \
+	$(picdir)/ddd-value-tip.pdf        \
+	$(picdir)/tut-backtrace.pdf        \
+	$(picdir)/tut-display.pdf          \
+	$(picdir)/tut-finish.pdf           \
+	$(picdir)/tut-invoke.pdf           \
+	$(picdir)/tut-run.pdf              \
+	$(picdir)/tut-set.pdf              \
+	$(picdir)/tut-value.pdf
+
+HTML_IMAGES = \
 	$(picdir)/disclaimer$(IMGEXT)           \
 	$(picdir)/dddback$(IMGEXT)		\
 	$(picdir)/dddlogo$(IMGEXT)              \
@@ -1243,7 +1321,8 @@ DISTCLEAN_STUFF	 = $(CLEAN_STUFF) \
 		   config.status config.h host.h paths.h \
 		   Makefile MakeOut LOG OOBR OOBR-FTR TAGS \
 		   config.log config.cache configinfo.C stamp-h \
-		   Ddd Ddd.ad.h ddd.man-nopics $(PICS) $(IMAGES)
+		   Ddd Ddd.ad.h ddd.man-nopics \
+		   $(PS_IMAGES) $(HTML_IMAGES) $(PDF_IMAGES)
 
 # Any files that can be reconstructed, except configure script
 REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF) \
@@ -1272,7 +1351,7 @@ ddd-done: $(ddd)$(EXEEXT)
 	@$(ECHO) "You may now type \`$(MAKE) check' for a test."
 
 .PHONY: install
-install: install-prog install-man
+install: install-prog install-man install-info
 	@:
 
 .PHONY: install-strip
@@ -1280,7 +1359,7 @@ install-strip:
 	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' install
 
 .PHONY: uninstall
-uninstall: uninstall-prog uninstall-man
+uninstall: uninstall-prog uninstall-man uninstall-info
 	@:
 
 # install-prog does not depend on $(PROGS) 
@@ -1372,7 +1451,7 @@ ultraclean:
 	$(RM) $(ULTRACLEAN_STUFF) ./#*#
 
 .PHONY: info
-info:	$(INFOS)
+info:	$(INFO)
 	@:
 
 .PHONY: tex dvi
@@ -1381,6 +1460,10 @@ tex dvi: $(DVIS)
 
 .PHONY: ps
 ps:	$(PSS)
+	@:
+
+.PHONY: pdf
+pdf:	$(PDFS)
 	@:
 
 .PHONY: man
@@ -1772,7 +1855,7 @@ regexps.$(OBJEXT): rxscan.C
 
 ## The manual page in PostScript format, including all pictures.
 
-$(docdir)/ddd.man.ps: ddd.man $(PICS)
+$(docdir)/ddd.man.ps: ddd.man $(PS_IMAGES)
 	$(GROFF) -man ddd.man > $@~ && $(MV) $@~ $@
 
 $(docdir)/ddd.man-nopics.ps: ddd.man-nopics
@@ -1957,6 +2040,64 @@ $(picdir)/ddd-plots$(IMGEXT):            $(picdir)/ddd-plots.eps
 $(picdir)/ddd-toolbars$(IMGEXT):         $(picdir)/ddd-toolbars.eps
 
 
+# PDFs are also derived from EPS files
+
+$(picdir)/ddd-all.pdf:              $(picdir)/ddd-all.eps
+$(picdir)/ddd-console.pdf:          $(picdir)/ddd-console.eps
+$(picdir)/ddd-history.pdf:          $(picdir)/ddd-history.eps
+$(picdir)/ddd-open.pdf:             $(picdir)/ddd-open.eps
+$(picdir)/ddd-source.pdf:           $(picdir)/ddd-source.eps
+$(picdir)/ddd-line-popup.pdf:       $(picdir)/ddd-line-popup.eps
+$(picdir)/ddd-bp-popup.pdf:         $(picdir)/ddd-bp-popup.eps
+$(picdir)/ddd-source-popup.pdf:     $(picdir)/ddd-source-popup.eps
+$(picdir)/ddd-arguments.pdf:        $(picdir)/ddd-arguments.eps
+$(picdir)/ddd-tool.pdf:             $(picdir)/ddd-tool.eps
+$(picdir)/ddd-backtrace.pdf:        $(picdir)/ddd-backtrace.eps
+$(picdir)/ddd-value-tip.pdf:        $(picdir)/ddd-value-tip.eps
+$(picdir)/ddd-print-popup.pdf:      $(picdir)/ddd-print-popup.eps
+$(picdir)/ddd-select-display.pdf:   $(picdir)/ddd-select-display.eps
+$(picdir)/ddd-hide-display.pdf:     $(picdir)/ddd-hide-display.eps
+$(picdir)/ddd-rotate-display.pdf:   $(picdir)/ddd-rotate-display.eps
+$(picdir)/ddd-locals.pdf:           $(picdir)/ddd-locals.eps
+$(picdir)/ddd-status-displays.pdf:  $(picdir)/ddd-status-displays.eps
+$(picdir)/ddd-set.pdf:              $(picdir)/ddd-set.eps
+$(picdir)/ddd-layout.pdf:           $(picdir)/ddd-layout.eps
+$(picdir)/ddd-print-graph.pdf:      $(picdir)/ddd-print-graph.eps
+$(picdir)/ddd-print-output.pdf:     $(picdir)/ddd-print-output.eps
+$(picdir)/ddd-code.pdf:             $(picdir)/ddd-code.eps
+$(picdir)/ddd-registers.pdf:        $(picdir)/ddd-registers.eps
+$(picdir)/ddd-general-prefs.pdf:    $(picdir)/ddd-general-prefs.eps
+$(picdir)/ddd-helpers.pdf:          $(picdir)/ddd-helpers.eps
+$(picdir)/ddd-source-prefs.pdf:     $(picdir)/ddd-source-prefs.eps
+$(picdir)/ddd-data-prefs.pdf:       $(picdir)/ddd-data-prefs.eps
+$(picdir)/ddd-startup-prefs.pdf:    $(picdir)/ddd-startup-prefs.eps
+$(picdir)/ddd-settings.pdf:         $(picdir)/ddd-settings.eps
+$(picdir)/ddd-threads.pdf:          $(picdir)/ddd-threads.eps
+$(picdir)/ddd-aliases.pdf:          $(picdir)/ddd-aliases.eps
+$(picdir)/ddd-edit-displays.pdf:    $(picdir)/ddd-edit-displays.eps
+$(picdir)/ddd-attach.pdf:           $(picdir)/ddd-attach.eps
+$(picdir)/ddd-save-session.pdf:     $(picdir)/ddd-save-session.eps
+$(picdir)/ddd-open-session.pdf:     $(picdir)/ddd-open-session.eps
+$(picdir)/ddd-button-editor.pdf:    $(picdir)/ddd-button-editor.eps
+$(picdir)/ddd-shortcuts.pdf:        $(picdir)/ddd-shortcuts.eps
+$(picdir)/ddd-shortcut-editor.pdf:  $(picdir)/ddd-shortcut-editor.eps
+$(picdir)/ddd-drag.pdf:             $(picdir)/ddd-drag.eps
+$(picdir)/disclaimer.pdf:           $(picdir)/disclaimer.eps
+$(picdir)/ddd-separate.pdf:         $(picdir)/ddd-separate.eps
+$(picdir)/ddd-bp-properties.pdf:    $(picdir)/ddd-bp-properties.eps
+$(picdir)/ddd-edit-breakpoints.pdf: $(picdir)/ddd-edit-breakpoints.eps
+$(picdir)/ddd-display.pdf:          $(picdir)/ddd-display.eps
+$(picdir)/ddd-repeats.pdf:          $(picdir)/ddd-repeats.eps
+$(picdir)/ddd-toolbar.pdf:          $(picdir)/ddd-toolbar.eps
+$(picdir)/ddd-font-prefs.pdf:       $(picdir)/ddd-font-prefs.eps
+$(picdir)/ddd-define-command.pdf:   $(picdir)/ddd-define-command.eps
+$(picdir)/ddd-signals.pdf:          $(picdir)/ddd-signals.eps
+$(picdir)/ddd-examine.pdf:          $(picdir)/ddd-examine.eps
+$(picdir)/ddd-clusters.pdf:         $(picdir)/ddd-clusters.eps
+$(picdir)/ddd-plots.pdf:            $(picdir)/ddd-plots.eps
+$(picdir)/ddd-toolbars.pdf:         $(picdir)/ddd-toolbars.eps
+
+
 # The logo comes in XPM source
 $(picdir)/dddsplash.eps: $(icondir)/dddsplash.xpm
 	$(CONVERT) $(icondir)/dddsplash.xpm $@
@@ -2001,6 +2142,22 @@ $(docdir)/ddd.ps: ddd.dvi
 	$(DVIPS) ddd.dvi -o $@
 
 
+## The DDD manual in PDF format, including all pictures.
+
+$(docdir)/ddd.pdf: ddd-pdf.texi $(PDF_IMAGES)
+	-test -d PICS || $(LN_S) $(picdir) .
+	$(TEXI2PDF) ddd-pdf.texi
+	$(INSTALL_DATA) ddd-pdf.pdf $@
+
+# pdftexinfo cannot expand @value{...} in PDF primitives, so we do it by hand
+PDFTEXINFO = $(srcdir)/../texinfo/pdftexinfo.tex
+ddd-pdf.texi: $(srcdir)/ddd.texi $(PDFTEXINFO)
+	$(SED) 's,\\input texinfo,\\input $(PDFTEXINFO),' $(srcdir)/ddd.texi |\
+	$(SED) 's/@value{DDD}/@DDD@/g' | \
+	$(SED) 's/@value{Ddd}/@Ddd@/g' | \
+	$(SED) 's/@value{ddd}/@ddd@/g' > $@~ && \
+	$(MV) $@~ $@
+
 ## The DDD manual in DVI format.
 
 INCLUDES = \
@@ -2011,7 +2168,7 @@ INCLUDES = \
 	epsf.tex \
 	xepsf.tex
 
-ddd.dvi: ddd.texi $(INCLUDES) $(PICS)
+ddd.dvi: ddd.texi $(INCLUDES) $(PS_IMAGES)
 	-test -d PICS || $(LN_S) $(picdir) .
 	$(TEXI2DVI) $(srcdir)/ddd.texi
 
@@ -2035,7 +2192,7 @@ xepsf.tex: epsf.tex
 
 ## The DDD manual in HTML format.
 
-$(htmldir)/index.html: ddd.texi $(INCLUDES) $(IMAGES) \
+$(htmldir)/index.html: ddd.texi $(INCLUDES) $(HTML_IMAGES) \
 	style.css $(srcdir)/fix-html.sed $(srcdir)/fix-toc.sed
 	@-test -d $(htmldir) || $(MKDIR) $(htmldir)
 	@-test -d $(htmldir)/PICS || $(MKDIR) $(htmldir)/PICS
@@ -2052,7 +2209,7 @@ $(htmldir)/index.html: ddd.texi $(INCLUDES) $(IMAGES) \
 	cd $(htmldir) && $(RM) ddd*.html style.css PICS/*
 	$(INSTALL_DATA) ddd*.html $(srcdir)/style.css $(htmldir)
 	@$(ECHO) Installing images...
-	@$(INSTALL_DATA) $(IMAGES) $(htmldir)/PICS
+	@$(INSTALL_DATA) $(HTML_IMAGES) $(htmldir)/PICS
 	@$(ECHO) Installing images...done.
 	$(RM) $(htmldir)/index.html
 	$(LN_S) ddd_toc.html $@
@@ -2061,7 +2218,7 @@ $(htmldir)/index.html: ddd.texi $(INCLUDES) $(IMAGES) \
 
 $(docdir)/ddd.info: ddd.texi $(INCLUDES)
 	$(RM) ddd.info*
-	$(MAKEINFO) -I$(srcdir) $(srcdir)/ddd.texi
+	$(MAKEINFO) -I. -I$(srcdir) $(srcdir)/ddd.texi
 	$(INSTALL_DATA) ddd.info* $(docdir)
 
 
