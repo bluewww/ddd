@@ -246,8 +246,8 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S023>[a-zA-Z_$][^:]*:{_}{P}{W}{C}	return &rxdbxfunc;
 <S024>{C}line{W}{P}{W}in{W}(file{W})?\"[^\"]*\"\n{C}	return &rxdbxfunc2;
 <S025>[[][^]]*:{P}[^]]*]{C}		return &rxdbxpos;
-<S026>dbx:{W}warning:.option{W}only{W}recognized{W}for.*\n	return &rxdbxwarn1;
-<S027>dbx:{W}warning:.unknown{W}language.*\n	return &rxdbxwarn2;
+<S026>dbx:{W}warning:.*option{W}only{W}recognized{W}for.*\n	return &rxdbxwarn1;
+<S027>dbx:{W}warning:.*unknown{W}language.*\n	return &rxdbxwarn2;
 <S028>{_}(debug|givenfile)({W}{C})?     return &rxdebug_cmd;
 <S029>{W}no{W}tnedneped{W}		return &rxdep;
 <S030>{_}disable{W}display({W}{C})?	return &rxdisable;
