@@ -2889,28 +2889,28 @@ the `\fBvslDefs\fR' resource, below.
 The following resources determine \s-2@DDD@\s+2 general behavior.
 .TP
 .B "buttonTips (\fPclass\fB Tips)"
-Whether button tips are enabled (`\fBtrue\fR', default) or
-not (`\fBfalse\fR').  Button tips are helpful for novices, but
+Whether button tips are enabled (`\fBon\fR', default) or
+not (`\fBoff\fR').  Button tips are helpful for novices, but
 may be distracting for experienced users.
 .TP
 .B "buttonDocs (\fPclass\fB Docs)"
 Whether the display of button hints in the status line is enabled
-(`\fBtrue\fR', default) or not (`\fBfalse\fR').
+(`\fBon\fR', default) or not (`\fBoff\fR').
 .TP
 .B "globalTabCompletion (\fPclass\fB GlobalTabCompletion)"
-If this is `\fBtrue\fR' (default), the \s-2\fBTAB\fR\s+2 key completes
-arguments in all windows.  If this is `\fBfalse\fR', the
+If this is `\fBon\fR' (default), the \s-2\fBTAB\fR\s+2 key completes
+arguments in all windows.  If this is `\fBoff\fR', the
 \s-2\fBTAB\fR\s+2 key completes arguments in the debugger console
 only.
 .TP
 .B "groupIconify (\fPclass\fB GroupIconify)"
-If this is `\fBtrue\fR', (un)iconifying any \s-2@DDD@\s+2 window
+If this is `\fBon\fR', (un)iconifying any \s-2@DDD@\s+2 window
 causes all other \s-2@DDD@\s+2 windows to (un)iconify as well.
-Default is `\fBfalse\fR', meaning that each \s-2@DDD@\s+2 window can
+Default is `\fBoff\fR', meaning that each \s-2@DDD@\s+2 window can
 be iconified on its own.
 .TP
 .B "saveHistoryOnExit (\fPclass\fB SaveHistoryOnExit)"
-If `\fBtrue\fR' (default), the command history is automatically saved
+If `\fBon\fR' (default), the command history is automatically saved
 when \s-2@DDD@\s+2 exits.
 .TP
 .B "showStartupLogo (\fPclass\fB ShowStartupLogo)"
@@ -2927,18 +2927,18 @@ Note: if \s-2@DDD@\s+2 runs on a monochrome display, or if
 monochrome version (`\fBm\fR') can be shown.
 .TP
 .B "startupTips (\fPclass\fB StartupTips)"
-Whether a tip of the day is to be shown at startup (`\fBtrue\fR',
-default) or not (`\fBfalse\fR').
+Whether a tip of the day is to be shown at startup (`\fBon\fR',
+default) or not (`\fBoff\fR').
 .TP
 .B "startupTipCount (\fPclass\fB StartupTipCount)"
 The number \fIn\fR of the tip of the day to be shown at startup.  See
 also the `\fBtip\fIn\fR' resources.
 .TP
 .B "suppressWarnings (\fPclass\fB SuppressWarnings)"
-If `\fBtrue\fR', X warnings are suppressed.  This is
+If `\fBon\fR', X warnings are suppressed.  This is
 sometimes useful for executables that were built on a machine with a
 different X or Motif configuration.  By default, this is
-`\fBfalse\fR'.
+`\fBoff\fR'.
 .TP
 .B "tip\fIn\fR (\fPclass\fB Tip)"
 The tip of the day numbered \fIn\fR (a string).
@@ -2946,27 +2946,27 @@ The tip of the day numbered \fIn\fR (a string).
 .B "ungrabMousePointer (\fPclass\fB UngrabMousePointer)"
 When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
 while it has grabbed the pointer, making further interaction
-impossible.  If this is `\fBtrue\fR', \s-2@DDD@\s+2 will check after
+impossible.  If this is `\fBon\fR', \s-2@DDD@\s+2 will check after
 each interaction whether the pointer is grabbed.  If this is so,
 \s-2@DDD@\s+2 will instruct the debugged program to ungrab the mouse
-pointer.  The default setting is `\fBfalse\fR', since this feature is
+pointer.  The default setting is `\fBoff\fR', since this feature is
 known to interfere with some Motif versions (popup menus won't work).
 .TP
 .B "uniconifyWhenReady (\fPclass\fB UniconifyWhenReady)"
-If this is `\fBtrue\fR' (default), the \s-2@DDD@\s+2 windows are
+If this is `\fBon\fR' (default), the \s-2@DDD@\s+2 windows are
 uniconified automatically whenever \s-2GDB\s+2 becomes ready.  This
 way, you can iconify \s-2@DDD@\s+2 during some longer operation and
 have it uniconify itself as soon as the program stops.  Setting this
-to `\fBfalse\fR' leaves the \s-2@DDD@\s+2 windows iconified.
+to `\fBoff\fR' leaves the \s-2@DDD@\s+2 windows iconified.
 .TP
 .B "valueTips (\fPclass\fB Tips)"
-Whether value tips are enabled (`\fBtrue\fR', default) or not
-(`\fBfalse\fR').  Value tips affect \s-2@DDD@\s+2 performance and may
+Whether value tips are enabled (`\fBon\fR', default) or not
+(`\fBoff\fR').  Value tips affect \s-2@DDD@\s+2 performance and may
 be distracting for some experienced users.
 .TP
 .B "valueDocs (\fPclass\fB Docs)"
 Whether the display of variable values in the status line is enabled
-(`\fBtrue\fR', default) or not (`\fBfalse\fR').
+(`\fBon\fR', default) or not (`\fBoff\fR').
 .\"
 .\"
 .SS "Source Window"
@@ -2974,44 +2974,44 @@ Whether the display of variable values in the status line is enabled
 The following resources determine the \s-2@DDD@\s+2 source window.
 .TP
 .B "cacheGlyphImages (\fPclass\fB CacheMachineCode)"
-Whether to cache (share) glyph images (`\fBtrue\fR') or not
-(`\fBfalse\fR').  Caching glyph images requires less X resources, but
+Whether to cache (share) glyph images (`\fBon\fR') or not
+(`\fBoff\fR').  Caching glyph images requires less X resources, but
 has been reported to fail with Motif 2.1 on XFree86 servers.  Default
-is `\fBfalse\fR' for Motif 2.1 or later on Linux machines, and
-`\fBtrue\fR' otherwise.
+is `\fBoff\fR' for Motif 2.1 or later on Linux machines, and
+`\fBon\fR' otherwise.
 .TP
 .B "cacheMachineCode (\fPclass\fB CacheMachineCode)"
-Whether to cache disassembled machine code (`\fBtrue\fR', default) or
-not (`\fBfalse\fR').  Caching machine code requires more memory, but
+Whether to cache disassembled machine code (`\fBon\fR', default) or
+not (`\fBoff\fR').  Caching machine code requires more memory, but
 makes \s-2@DDD@\s+2 run faster.
 .TP
 .B "cacheSourceFiles (\fPclass\fB CacheSourceFiles)"
-Whether to cache source files (`\fBtrue\fR', default) or not
-(`\fBfalse\fR').  Caching source files requires more memory, but makes
+Whether to cache source files (`\fBon\fR', default) or not
+(`\fBoff\fR').  Caching source files requires more memory, but makes
 \s-2@DDD@\s+2 run faster.
 .TP
 .B "disassemble (\fPclass\fB Disassemble)"
-If this is `\fBtrue\fR', the source code is automatically
-disassembled.  The default is `\fBfalse\fR'.  See also the
+If this is `\fBon\fR', the source code is automatically
+disassembled.  The default is `\fBoff\fR'.  See also the
 `\fB\-\-disassemble\fR' and `\fB\-\-no-disassemble\fR' options,
 below.
 .TP
 .B "displayGlyphs (\fPclass\fB DisplayGlyphs)"
-If this is `\fBtrue\fR', the current execution position and breakpoints
+If this is `\fBon\fR', the current execution position and breakpoints
 are displayed as glyphs; otherwise, they are shown through characters
-in the text.  The default is `\fBtrue\fR'.  See also the
+in the text.  The default is `\fBon\fR'.  See also the
 `\fB\-\-glyphs\fR' and `\fB\-\-no-glyphs\fR' options, below.
 .TP
 .B "displayLineNumbers (\fPclass\fB DisplayLineNumbers)"
-If this is `\fBtrue\fR', lines in the source text are prefixed with
-their respective line number.  The default is `\fBfalse\fR'.
+If this is `\fBon\fR', lines in the source text are prefixed with
+their respective line number.  The default is `\fBoff\fR'.
 .TP
 .B "findCaseSensitive (\fPclass\fB FindCaseSensitive)"
-If this is `\fBtrue\fR' (default), the `\fBFind\fR' commands are
+If this is `\fBon\fR' (default), the `\fBFind\fR' commands are
 case-sensitive.  Otherwise, occurrences are found regardless of case.
 .TP
 .B "findWordsOnly (\fPclass\fB FindWordsOnly)"
-If this is `\fBtrue\fR' (default), the `\fBFind\fR' commands find
+If this is `\fBon\fR' (default), the `\fBFind\fR' commands find
 complete words only.  Otherwise, arbitrary occurrences are found.
 .TP
 .B "indentCode (\fPclass\fB Indent)"
@@ -3048,9 +3048,9 @@ resources that are never needed.
 The tab width used in the source window (default: \fB8\fR)
 .TP
 .B "useSourcePath (\fPclass\fB UseSourcePath)"
-If this is `\fBfalse\fR' (default), the inferior debugger refers to
+If this is `\fBoff\fR' (default), the inferior debugger refers to
 source code locations only by their base names.  If this is
-`\fBtrue\fR' (default), \s-2@DDD@\s+2 uses the full source code paths.
+`\fBon\fR' (default), \s-2@DDD@\s+2 uses the full source code paths.
 .\"
 .\"
 .SS "Window Creation and Layout"
@@ -3059,44 +3059,44 @@ The following resources determine \s-2@DDD@\s+2 window creation and
 layout as well as the interaction with the X window manager.
 .TP
 .B "autoRaiseTool (\fPclass\fB AutoRaiseTool)"
-If `\fBtrue\fR' (default), \s-2@DDD@\s+2 will always keep the command
+If `\fBon\fR' (default), \s-2@DDD@\s+2 will always keep the command
 tool on top of other \s-2@DDD@\s+2 windows.  If this setting
 interferes with your window manager, or if your window manager keeps
-the command tool on top anyway, set this resource to `\fBfalse\fR'.
+the command tool on top anyway, set this resource to `\fBoff\fR'.
 .TP
 .B "autoRaiseMenu (\fPclass\fB AutoRaiseMenu)"
-If `\fBtrue\fR' (default), \s-2@DDD@\s+2 will always keep the pulldown
+If `\fBon\fR' (default), \s-2@DDD@\s+2 will always keep the pulldown
 menu on top of the \s-2@DDD@\s+2 main window.  If this setting
 interferes with your window manager, or if your window manager does
-not auto-raise windows, set this resource to `\fBfalse\fR':
+not auto-raise windows, set this resource to `\fBoff\fR':
 .br
 .sp
-  \fB@Ddd@*autoRaiseMenu: false\fR
+  \fB@Ddd@*autoRaiseMenu: off\fR
 .sp
 .br
 .TP
 .B "colorWMIcons (\fPclass\fB ColorWMIcons)"
-If `\fBtrue\fR' (default), \s-2@DDD@\s+2 uses multi-color icons.  If
+If `\fBon\fR' (default), \s-2@DDD@\s+2 uses multi-color icons.  If
 your window manager has trouble with multi-color icons, set this
-resource to `\fBfalse\fR' and \s-2@DDD@\s+2 will use black-and-white
+resource to `\fBoff\fR' and \s-2@DDD@\s+2 will use black-and-white
 icons instead.
 .TP
 .B "dataWindow (\fPclass\fB Window)"
-If `\fBfalse\fR', no data window is created upon start-up.
+If `\fBoff\fR', no data window is created upon start-up.
 .TP
 .B "decorateTool (\fPclass\fB DecorateTool)"
 This resource controls the decoration of the command tool.
 .RS
 .br
 .IP \(bu 2
-If this is `\fBfalse\fR', the command tool is created as a
+If this is `\fBoff\fR', the command tool is created as a
 \fItransient window\fR.  Several window managers keep transient
 windows automatically on top of their parents, which is appropriate
 for the command tool.  However, your window manager may be configured
 not to decorate transient windows, which means that you cannot easily
 move the command tool around.
 .IP \(bu 2
-If this is `\fBtrue\fR', \s-2@DDD@\s+2 realizes the command tool as a
+If this is `\fBon\fR', \s-2@DDD@\s+2 realizes the command tool as a
 \fItop-level window\fR.  Such windows are always decorated by the
 window manager.  However, top-level windows are not automatically kept
 on top of other windows, such that you may wish to set the
@@ -3104,53 +3104,53 @@ on top of other windows, such that you may wish to set the
 .IP \(bu 2
 If this is `\fBauto\fR' (default), \s-2@DDD@\s+2 checks whether the
 window manager decorates transients.  If yes, the command tool is
-realized as a transient window (as in the \fBfalse\fR setting); if no,
+realized as a transient window (as in the `\fBoff\fR' setting); if no,
 the command tool is realized as a top-level window (as in the
-\fBtrue\fR setting).  Hence, the command tool is always decorated
+`\fBon\fR' setting).  Hence, the command tool is always decorated
 using the \*(lqbest\*(rq method, but the extra check takes some time.
 .br
 .RE
 .PP
 .TP
 .B "debuggerConsole (\fPclass\fB Window)"
-If `\fBfalse\fR', no debugger console is created upon start-up.
+If `\fBoff\fR', no debugger console is created upon start-up.
 .TP
 .B "separateDataWindow (\fPclass\fB Separate)"
-If `\fBtrue\fR', the data window and the debugger console are realized
-in different top-level windows.  If `\fBfalse\fR' (default), the data
+If `\fBon\fR', the data window and the debugger console are realized
+in different top-level windows.  If `\fBoff\fR' (default), the data
 window is attached to the debugger console.  See also the
 `\fB\-\-attach-windows\fR' and `\fB\-\-attach-data-window\fR'
 options, below.
 .TP
 .B "separateExecWindow (\fPclass\fB Separate)"
-If `\fBtrue\fR', the debugged program is executed in a separate
-execution window.  If `\fBfalse\fR' (default), the debugged program is
+If `\fBon\fR', the debugged program is executed in a separate
+execution window.  If `\fBoff\fR' (default), the debugged program is
 executed in the console window.  See also the `\fB\-\-exec\-window\fR'
 and `\fB\-\-no\-exec\-window\fR' options, below.
 .TP
 .B "separateSourceWindow (\fPclass\fB Separate)"
-If `\fBtrue\fR', the source window and the debugger console are
-realized in different top-level windows.  If `\fBfalse\fR' (default),
+If `\fBon\fR', the source window and the debugger console are
+realized in different top-level windows.  If `\fBoff\fR' (default),
 the source window is attached to the debugger console.  See also the
 `\fB\-\-attach-windows\fR' and `\fB\-\-attach-source-window\fR'
 options, below.
 .TP
 .B "sourceWindow (\fPclass\fB Window)"
-If `\fBfalse\fR', no source window is created upon start-up.
+If `\fBoff\fR', no source window is created upon start-up.
 .TP
 .B "statusAtBottom (\fPclass\fB StatusAtBottom)"
-If `\fBtrue\fR' (default), the status line is placed at the bottom of
-the \s-2@DDD@\s+2 source window.  If `\fBfalse\fR', the status line is
+If `\fBon\fR' (default), the status line is placed at the bottom of
+the \s-2@DDD@\s+2 source window.  If `\fBoff\fR', the status line is
 placed at the top of the \s-2@DDD@\s+2 source window (as in DDD 1.x).
 See also the `\fB\-\-status-at-bottom\fR' and
 `\fB\-\-status-at-top\fR' options, below.
 .TP
 .B "stickyTool (\fPclass\fB StickyTool)"
-If `\fBtrue\fR' (default), the command tool automatically follows
+If `\fBon\fR' (default), the command tool automatically follows
 every movement of the source window.  Whenever the source window is
 moved, the command tool is moved by the same offset such that its
 position relative to the source window remains unchanged.  If
-`\fBfalse\fR', the command tool does not follow source window
+`\fBoff\fR', the command tool does not follow source window
 movements.
 .PP
 .\"
@@ -3161,11 +3161,11 @@ movements.
 The following resources determine the inferior debugger.
 .TP
 .B "autoCommands (\fPclass\fB AutoCommands)"
-If this is `\fBtrue\fR', each line output by the inferior debugger
+If this is `\fBon\fR', each line output by the inferior debugger
 beginning with the value of the `\fBautoCommandPrefix\fR' resource
 (see below) will be taken as \s-2@DDD@\s+2 command and executed.
 Useful for user-defined commands; see `\fBUSER-DEFINED COMMANDS\fR',
-above.  By default, `\fBfalse\fR'.
+above.  By default, `\fBoff\fR'.
 .TP
 .B "autoCommandPrefix (\fPclass\fB AutoCommandPrefix)"
 The prefix for auto-commands.  By default, `\fB@ddd@: \fR'.
@@ -3174,8 +3174,8 @@ The prefix for auto-commands.  By default, `\fB@ddd@: \fR'.
 Whether \s-2@DDD@\s+2 should block when reading data from the inferior
 debugger via the pseudo-tty interface.  Some systems \fIrequire\fR
 this, such as Linux with libc 5.4.33 and earlier; set it to
-`\fBtrue\fR'.  Some other systems \fIprohibit\fR this, such as Linux
-with GNU libc 6 and later; set it to `\fBfalse\fR'.  The value
+`\fBon\fR'.  Some other systems \fIprohibit\fR this, such as Linux
+with GNU libc 6 and later; set it to `\fBoff\fR'.  The value
 `\fBauto\fR' (default) will always select the \*(lqbest\*(rq choice
 (that is, the best choice known to the \s-2@DDD@\s+2 developers).
 .TP
@@ -3222,7 +3222,7 @@ inferior debugger from the remote shell.  See also the
 `\fB\-\-rhost\fR' option, below, and `\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B "fullNameMode (\fPclass\fB TTYMode)"
-If this is `\fBtrue\fR', \s-2@DDD@\s+2 reports the current source
+If this is `\fBon\fR', \s-2@DDD@\s+2 reports the current source
 position on standard output in \s-2GDB\s+2 `\fB\-fullname\fR'
 format.  As a side effect, the source window is disabled by default.
 See also the `\fB\-\-fullname\fR' option, below.
@@ -3293,23 +3293,23 @@ You may add other commands here\(em\&for instance, to set the
 executable path or to invoke a suitable shell.
 .TP
 .B "synchronousDebugger (\fPclass\fB SynchronousDebugger)"
-If `\fBtrue\fR', X events are not processed while the debugger is
+If `\fBon\fR', X events are not processed while the debugger is
 busy.  This may result in slightly better performance on
 single-processor systems.  See also the `\fB\-\-sync-debugger\fR'
 option, below.
 .TP
 .B "ttyMode (\fPclass\fB TTYMode)"
-If `\fBtrue\fR', enable \s-2TTY\s+2 interface, taking additional
+If `\fBon\fR', enable \s-2TTY\s+2 interface, taking additional
 debugger commands from standard input and forwarding debugger output
 on standard output.  As a side effect, the debugger console is
 disabled by default.  See also the `\fB\-\-tty\fR' and
 `\fB\-\-fullname\fR' options, below.
 .TP
 .B "useTTYCommand (\fPclass\fB UseTTYCommand)"
-If `\fBtrue\fR', use the \s-2GDB\s+2 `\fBtty\fR' command for
+If `\fBon\fR', use the \s-2GDB\s+2 `\fBtty\fR' command for
 redirecting input/output to the separate execution window.  If
-`\fBfalse\fR', use explicit redirection through shell redirection
-operators `\fB<\fR' and `\fB>\fR'.  The default is `\fBfalse\fR'
+`\fBoff\fR', use explicit redirection through shell redirection
+operators `\fB<\fR' and `\fB>\fR'.  The default is `\fBoff\fR'
 (explicit redirection), since on some systems, the `\fBtty\fR' command
 does not work properly.
 .TP
@@ -3335,7 +3335,7 @@ user-defined buttons.
 .TP
 .B "buttonCaptions (\fPclass\fB ButtonCaptions)"
 Whether the toolbar buttons should be shown using captions
-(\fBtrue\fR, default) or not (\fBfalse\fR).  If neither captions nor
+(`\fBon\fR', default) or not (`\fBoff\fR').  If neither captions nor
 images are enabled, toolbar buttons are shown using ordinary labels.
 See also `\fBbuttonImages\fR', below.
 .TP
@@ -3344,8 +3344,8 @@ The geometry of the caption subimage within the button icons.  Default
 is `\fB29x7+0-0\fR'.
 .TP
 .B "buttonImages (\fPclass\fB ButtonImages)"
-Whether the toolbar buttons should be shown using images (\fBtrue\fR,
-default) or not (\fBfalse\fR).  If neither captions nor images are
+Whether the toolbar buttons should be shown using images (`\fBon\fR',
+default) or not (`\fBoff\fR').  If neither captions nor images are
 enabled, toolbar buttons are shown using ordinary labels.  See also
 `\fBbuttonCaptions\fR', above.
 .TP
@@ -3355,15 +3355,15 @@ The geometry of the image within the button icon.  Default is
 .TP
 .B "commandToolBar (\fPclass\fB ToolBar)"
 Whether the tool buttons (see the `\fBtoolButtons\fR' resource, below)
-should be shown in a tool bar above the source window (\fBtrue\fR) or
-within the command tool (\fBfalse\fR, default).  Enabling the command
+should be shown in a tool bar above the source window (`\fBon\fR') or
+within the command tool (`\fBoff\fR', default).  Enabling the command
 tool bar disables the command tool and vice versa.
 .TP
 .B "commonToolBar (\fPclass\fB ToolBar)"
 Whether the toolbar buttons should be shown in one common toolbar at the
-top of the common \s-2@DDD@\s+2 window (\fBtrue\fR, default), or whether they
+top of the common \s-2@DDD@\s+2 window (`\fBon\fR', default), or whether they
 should be placed in two separate tool bars, one for data, and one for
-source operations, as in \s-2@DDD@\s+2 2.x (\fBfalse\fR).
+source operations, as in \s-2@DDD@\s+2 2.x (`\fBoff\fR').
 .TP
 .B "consoleButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be added under the debugger
@@ -3511,8 +3511,8 @@ above, and the `\fBtoolButtons\fR' resource, below.
 .TP
 .B "toolbarsAtBottom (\fPclass\fB ToolbarsAtBottom)"
 Whether source and data toolbars should be placed above source and
-data, respectively (\fBfalse\fR, default), or below, as in
-\s-2@DDD@\s+2 2.x (\fBtrue\fR).
+data, respectively (`\fBoff\fR', default), or below, as in
+\s-2@DDD@\s+2 2.x (`\fBon\fR').
 ,TP
 .B "toolButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be included in the command tool
@@ -3577,9 +3577,9 @@ The distance between the upper border of the command tool and the
 upper border of the source text (in pixels).  Default is 8 pixels.
 .TP
 .B "verifyButtons (\fPclass\fB VerifyButtons)"
-If \fBtrue\fR (default), verify for each button whether its command is
+If `\fBon\fR' (default), verify for each button whether its command is
 actually supported by the inferior debugger.  If the command is
-unknown, the button is disabled.  If this resource is \fBfalse\fR, no
+unknown, the button is disabled.  If this resource is `\fBoff\fR', no
 checking is done: all commands are accepted \*(lqas is\*(rq.
 .\"
 .\"
@@ -3590,22 +3590,22 @@ The following resources control the data display.
 .\"
 .TP
 .B "align2dArrays (\fPclass\fB Align2dArrays)"
-If \fBtrue\fR (default), \s-2@DDD@\s+2 lays out two-dimensional arrays
+If `\fBon\fR' (default), \s-2@DDD@\s+2 lays out two-dimensional arrays
 as tables, such that all array elements are aligned with each other.
-If \fBfalse\fR, \s-2@DDD@\s+2 treats a two-dimensional array as an
+If `\fBoff\fR', \s-2@DDD@\s+2 treats a two-dimensional array as an
 array of one-dimensional arrays, each aligned on its own.
 .TP
 .B "bumpDisplays (\fPclass\fB BumpDisplays)"
-If some display \fID\fR changes size and this resource is \fBtrue\fR
+If some display \fID\fR changes size and this resource is `\fBon\fR'
 (default), \s-2@DDD@\s+2 assigns new positions to displays below and
 on the right of \fID\fR such that the distance between displays
-remains constant.  If this is \fBfalse\fR, other displays are not
+remains constant.  If this is `\fBoff\fR', other displays are not
 rearranged.
 .TP
 .B "detectAliases (\fPclass\fB DetectAliases)"
-If \fBtrue\fR, \s-2@DDD@\s+2 attempts to recognize shared data
+If `\fBon\fR', \s-2@DDD@\s+2 attempts to recognize shared data
 structures.  See `\fBExamining shared data structures\fR', above, for
-a discussion.  The default is \fBfalse\fR, meaning that shared data
+a discussion.  The default is `\fBoff\fR', meaning that shared data
 structures are not recognized.
 .TP
 .B "displayShortcuts (\fPclass\fB DisplayShortcuts)"
@@ -3619,9 +3619,9 @@ activation, the string `\fB()\fR' in \fIexpression\fR is replaced by
 the name of the currently selected display.
 .TP
 .B "hideInactiveDisplays (\fPclass\fB HideInactiveDisplays)"
-If some display gets out of scope and this resource is \fBtrue\fR
-(default), \s-2@DDD@\s+2 removes it from the data display.  If this 
-is \fBfalse\fR, it is simply disabled.
+If some display gets out of scope and this resource is `\fBon\fR'
+(default), \s-2@DDD@\s+2 removes it from the data display.  If this is
+`\fBoff\fR', it is simply disabled.
 .TP
 .B "labelDelimiter (\fPclass\fB LabelDelimiter)"
 The string used to separate labels from commands and shortcuts.
@@ -3629,8 +3629,8 @@ Default is `\fB//\fR'.
 .TP
 .B "pannedGraphEditor (\fPclass\fB PannedGraphEditor)"
 What shall \s-2@DDD@\s+2 use if the graph gets too large to be
-displayed?  If this is `\fBtrue\fR', an Athena panner is used (a kind
-of two-directional scrollbar).  If this is `\fBfalse\fR' (default),
+displayed?  If this is `\fBon\fR', an Athena panner is used (a kind
+of two-directional scrollbar).  If this is `\fBoff\fR' (default),
 two Motif scrollbars are used.  See also the
 `\fB\-\-scrolled-graph-editor\fR' and `\fB\-\-panned-graph-editor\fR'
 options, below.
@@ -3779,9 +3779,9 @@ The following resources control the debugger console.
 .\"
 .TP
 .B "lineBufferedConsole (\fPclass\fB LineBuffered)"
-If this is `\fBtrue\fR' (default), each line from the inferior is
+If this is `\fBon\fR' (default), each line from the inferior is
 output on each own, such that the final line is placed at the bottom
-of the debugger console.  If this is `\fBfalse\fR', all lines are
+of the debugger console.  If this is `\fBoff\fR', all lines are
 output as a whole.  This is faster, but results in a random position
 of the last line.
 .PP
@@ -3969,9 +3969,9 @@ does not match the version of the current \s-2@DDD@\s+2 executable,
 \s-2@DDD@\s+2 issues a warning.
 .TP
 .B "checkConfiguration (\fPclass\fB CheckConfiguration)"
-If true, check the \s-2@DDD@\s+2 environment (in particular, the X
-configuration), report any possible problem causes and exit.  See also
-the `\fB\-\-check-configuration\fR' option, below.
+If `\fBon\fR', check the \s-2@DDD@\s+2 environment (in particular, the
+X configuration), report any possible problem causes and exit.  See
+also the `\fB\-\-check-configuration\fR' option, below.
 .TP
 .B "dddinitVersion (\fPclass\fB Version)"
 The version of the \s-2@DDD@\s+2 executable that last wrote the
@@ -3980,39 +3980,39 @@ version of the current \s-2@DDD@\s+2 executable, \s-2@DDD@\s+2 issues
 a warning.
 .TP
 .B "showConfiguration (\fPclass\fB ShowConfiguration)"
-If `\fBtrue\fR', show the \s-2@DDD@\s+2 configuration on standard
+If `\fBon\fR', show the \s-2@DDD@\s+2 configuration on standard
 output and exit.  See also the `\fB\-\-configuration\fR' option,
 below.
 .TP
 .B "showInvocation (\fPclass\fB ShowInvocation)"
-If `\fBtrue\fR', show the \s-2@DDD@\s+2 invocation options on standard
+If `\fBon\fR', show the \s-2@DDD@\s+2 invocation options on standard
 output and exit.  See also the `\fB\-\-help\fR' option, below.
 .TP
 .B "showLicense (\fPclass\fB ShowLicense)"
-If `\fBtrue\fR', show the \s-2@DDD@\s+2 license on standard output and
+If `\fBon\fR', show the \s-2@DDD@\s+2 license on standard output and
 exit.  See also the `\fB\-\-license\fR' option, below.
 .TP
 .B "showManual (\fPclass\fB ShowManual)"
-If `\fBtrue\fR', show this \s-2@DDD@\s+2 manual page on standard
+If `\fBon\fR', show this \s-2@DDD@\s+2 manual page on standard
 output and exit.  If the standard output is a terminal, the manual
 page is shown in a pager (\fB$PAGER\fR, `\fBless\fR' or `\fBmore\fR').
 See also the `\fB\-\-manual\fR' option, below.
 .TP
 .B "showNews (\fPclass\fB ShowNews)"
-If `\fBtrue\fR', show the \s-2@DDD@\s+2 news on standard output and
+If `\fBon\fR', show the \s-2@DDD@\s+2 news on standard output and
 exit.  See also the `\fB\-\-news\fR' option, below.
 .TP
 .B "showVersion (\fPclass\fB ShowVersion)"
-If `\fBtrue\fR', show the \s-2@DDD@\s+2 version on standard output and
+If `\fBon\fR', show the \s-2@DDD@\s+2 version on standard output and
 exit.  See also the `\fB\-\-version\fR' option, below.
 .TP
 .B "traceDialog (\fPclass\fB Trace)"
-If `\fBtrue\fR', show the dialog between \s-2@DDD@\s+2 and the
-inferior debugger on standard output.  Default is `\fBfalse\fR'.
+If `\fBon\fR', show the dialog between \s-2@DDD@\s+2 and the
+inferior debugger on standard output.  Default is `\fBoff\fR'.
 .TP
 .B "traceShellCommands (\fPclass\fB Trace)"
-If `\fBtrue\fR', show the programs invoked by \s-2@DDD@\s+2 on
-standard output.  Default is `\fBfalse\fR'.
+If `\fBon\fR', show the programs invoked by \s-2@DDD@\s+2 on
+standard output.  Default is `\fBoff\fR'.
 .\"
 .\"
 .\"
@@ -5035,14 +5035,14 @@ interference with the window manager; the first ones listed are the
 ones that are most likely to cause interferences.
 .sp
 .br
-  \fBDdd*colorWMIcons:    false
-  Ddd*autoRaiseMenu:      false
-  Ddd*groupIconify:       false
-  Ddd*uniconifyWhenReady: false
+  \fBDdd*colorWMIcons:    off
+  Ddd*autoRaiseMenu:      off
+  Ddd*groupIconify:       off
+  Ddd*uniconifyWhenReady: off
   Ddd*showStartupLogo:    
-  Ddd*autoRaiseTool:      false
-  Ddd*stickyTool:         false
-  Ddd*decoratedTool:      false\fR
+  Ddd*autoRaiseTool:      off
+  Ddd*stickyTool:         off
+  Ddd*decoratedTool:      off\fR
 .br
 .sp
 See `\fBRESOURCES\fR', above, for a discussion of these resources.
@@ -5052,8 +5052,8 @@ This is due to a bug in Motif.  You may try the following resources in
 your `\fB$HOME/.@ddd@/init\fR' file to minimize interference with Motif:
 .sp
 .br
-  \fBDdd*autoRaiseMenu:      false
-  Ddd*ungrabMousePointer: false\fR
+  \fBDdd*autoRaiseMenu:      off
+  Ddd*ungrabMousePointer: off\fR
 .br
 .sp
 See `\fBRESOURCES\fR', above, for a discussion of these resources.

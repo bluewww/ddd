@@ -77,48 +77,48 @@ Ddd*debugger:
 Ddd*debuggerCommand:
 
 
-! True if data and source are to be displayed in separate top-level
-! windows.  If this is false, the data and source windows are attached
+! On if data and source are to be displayed in separate top-level
+! windows.  If this is off, the data and source windows are attached
 ! to the debugger console.
-Ddd*Separate: false
+Ddd*Separate: off
 
 
 ! You may also attach the source window or data window alone.
-! Ddd*separateDataWindow: true
-! Ddd*separateSourceWindow: true
+! Ddd*separateDataWindow: on
+! Ddd*separateSourceWindow: on
 
 
-! True if programs are to be run in a separate top-level window.
-! If this is false, input/output is sent to the debugger console.
+! On if programs are to be run in a separate top-level window.
+! If this is off, input/output is sent to the debugger console.
 !
 ! Although a separate execution window has several advantages, it
 ! is less portable and more error-prone, which is why it is disabled 
 ! by default.
-Ddd*separateExecWindow: false
+Ddd*separateExecWindow: off
 
 
-! True if DDD windows are to be iconified/uniconified as a whole.
-! If this is false, every DDD window can be iconified on its own.
-Ddd*groupIconify: false
+! On if DDD windows are to be iconified/uniconified as a whole.
+! If this is off, every DDD window can be iconified on its own.
+Ddd*groupIconify: off
 
 
-! True if DDD windows are to be uniconified when GDB becomes ready.
-Ddd*uniconifyWhenReady: true
+! On if DDD windows are to be uniconified when GDB becomes ready.
+Ddd*uniconifyWhenReady: on
 
 
-! True if the TAB key is to complete text in all DDD windows.
-! If this is false, the TAB key completes in the debugger console only.
-Ddd*globalTabCompletion: true
+! On if the TAB key is to complete text in all DDD windows.
+! If this is off, the TAB key completes in the debugger console only.
+Ddd*globalTabCompletion: on
 
 
-! True if the debugger console is line-buffered (i.e. flushed upon 
+! On if the debugger console is line-buffered (i.e. flushed upon 
 ! each newline).  This is slower, but gives nice scrolling.
-! False if newline has no special treatment.
-Ddd*lineBufferedConsole: true
+! Off if newline has no special treatment.
+Ddd*lineBufferedConsole: on
 
 
-! True if options are to be saved in `~/.ddd/init' across DDD invocations.
-Ddd*saveOptionsOnExit: false
+! On if options are to be saved in `~/.ddd/init' across DDD invocations.
+Ddd*saveOptionsOnExit: off
 
 
 ! The command to invoke the execution window for showing I/O of the debugged
@@ -144,25 +144,25 @@ Ddd*termType: xterm
 !   that redirection can not be undone.
 !   For DBX, this means using the `dbxenv run_io pty' and `dbxenv run_pty'
 !   commands to redirect I/O to the execution window.
-!   Set `useTTYCommand' to `true' to enable this behaviour.
+!   Set `useTTYCommand' to `on' to enable this behaviour.
 ! 
 ! * As an alternative, DDD can redirect the process I/O explicitly,
 !   without using the `tty' command.  This is done with XDB and 
 !   with DBX versions that do not support tty redirection.
 !   Explicit redirection may fail if you use a non-standard shell.
-!   Set `useTTYCommand' to `false' to enable this behaviour.
+!   Set `useTTYCommand' to `off' to enable this behaviour.
 !   
-! The default setting is `false', since explicit redirection is easier
+! The default setting is `off', since explicit redirection is easier
 ! to handle (and to debug :-).  Maybe one day GDB will provide a way
 ! to undo redirection.
-Ddd*useTTYCommand: false
+Ddd*useTTYCommand: off
 
 
 ! The `blockTTYInput' resource sets whether DDD should block when
 ! reading data from GDB via the pseudo-tty interface.  Some systems
 ! require this, such as Linux with libc 5.4.33 and earlier; set it to
-! `true'.  Some other systems prohibit this, such as Linux with GNU libc
-! 6 and later; set it to `false'.  The value `auto' will select the
+! `on'.  Some other systems prohibit this, such as Linux with GNU libc
+! 6 and later; set it to `off'.  The value `auto' will select the
 ! `best' choice (that is, the best choice known to the DDD developers).
 Ddd*blockTTYInput: auto
 
@@ -431,15 +431,15 @@ Ddd*command_toolbar*Cont.labelString:   Continue
 
 ! Command tool stuff.
 
-! Do we want a sticky command tool?  If true, the command tool follows
+! Do we want a sticky command tool?  If on, the command tool follows
 ! every movement of the source window, such that the relative position
 ! remains unchanged.
-Ddd*stickyTool: true
+Ddd*stickyTool: on
 
 ! Do we want a decorated command tool?
-! * If `true', DDD will set up the command tool as a top-level window,
+! * If `on', DDD will set up the command tool as a top-level window,
 !   which is decorated like DDD main windows.
-! * If `false', DDD realizes the command tool as a transient window, which
+! * If `off', DDD realizes the command tool as a transient window, which
 !   may be decorated or not, depending on the settings of your window
 !   manager.
 ! * If `auto', DDD checks the window manager.  If it decorates
@@ -447,15 +447,15 @@ Ddd*stickyTool: true
 !   a top-level-window. otherwise.
 Ddd*decoratedTool: auto
 
-! Do we want an auto-raised command tool?  If true, DDD will always 
+! Do we want an auto-raised command tool?  If on, DDD will always 
 ! keep the command tool on top of other DDD windows.  If this setting
-! interferes with your window manager, set this resource to false.
-Ddd*autoRaiseTool: true
+! interferes with your window manager, set this resource to off.
+Ddd*autoRaiseTool: on
 
 ! Do we want auto-raised menus?  This is handy with certain window managers:
 ! An auto-raised DDD might obscure popped up pulldown menus.  However, there's
-! a risk that this might interfere with Motif, which is why this is `false'
-Ddd*autoRaiseMenu: false
+! a risk that this might interfere with Motif, which is why this is `off'
+Ddd*autoRaiseMenu: off
 
 
 ! Shortcuts
@@ -553,7 +553,7 @@ Ddd*jdbSettings:
 ! Unfortunately, this is also a security problem - just imagine some
 ! malicuous program to issue a string like `ddd: shell rm foobar'.
 ! Consequently, this feature is disabled by default.
-Ddd*autoCommands: false
+Ddd*autoCommands: off
 
 ! The prefix of auto-commands (by default, `ddd: ' - note the trailing space).
 ! You are encouraged to change this value in your `~/.ddd/init' file.
@@ -563,16 +563,16 @@ Ddd*autoCommandPrefix: ddd:\
 ! Graph Editor Defaults
 
 ! Shall we detect aliases?  (expensive)
-Ddd*detectAliases:		false
+Ddd*detectAliases:		off
 
 ! Shall we layout two-dimensional arrays as tables?
-Ddd*align2dArrays:		true
+Ddd*align2dArrays:		on
 
 ! After a change in a display, shall we move adjacent displays?
-Ddd*bumpDisplays:		true
+Ddd*bumpDisplays:		on
 
 ! Shall we hide displays that are out of scope?
-Ddd*hideInactiveDisplays:	true
+Ddd*hideInactiveDisplays:	on
 
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
 ! library compiled into DDD, named `ddd.vsl'.  If you wish to use
@@ -586,14 +586,14 @@ Ddd*vslLibrary:			builtin
 Ddd*vslPath:			.
 
 ! What shall we use if the graph gets too large to be displayed?
-! If true, an Athena panner is used (a kind of two-directional scrollbar).
-! If false, two Motif scrollbars are used.
+! If on, an Athena panner is used (a kind of two-directional scrollbar).
+! If off, two Motif scrollbars are used.
 !
 ! Although a panned graph editor is much more comfortable, we set-up Motif
 ! scrollbars as a default: Many OSF/Motif installations choke
 ! on intermixed Motif/Athena applications and we don't want to get bug
 ! reports that should be directed to OSF.
-Ddd*pannedGraphEditor:		false
+Ddd*pannedGraphEditor:		off
 
 ! Nodes are moved when dragged more than 4 pixels.
 Ddd*graph_edit.moveDelta:	4
@@ -603,28 +603,28 @@ Ddd*graph_edit.moveDelta:	4
 ! Ddd*graph_edit.selectTile:	25_foreground
 
 ! Do we wish opaque movement? (doesn't work yet)
-Ddd*graph_edit.opaqueMove:	false
+Ddd*graph_edit.opaqueMove:	off
 
 ! Do we wish rubber edges when moving nodes?
-Ddd*graph_edit.rubberEdges:	true
+Ddd*graph_edit.rubberEdges:	on
 
 ! Do we wish rubber arrows when moving nodes?
-Ddd*graph_edit.rubberArrows:	true
+Ddd*graph_edit.rubberArrows:	on
 
 ! Do we wish a grid?
-Ddd*graph_edit.showGrid:	true
+Ddd*graph_edit.showGrid:	on
 
 ! Do we wish to snap the position to the grid?
-Ddd*graph_edit.snapToGrid:	true
+Ddd*graph_edit.snapToGrid:	on
 
 ! Do we wish to show edge hints?
-Ddd*graph_edit.showHints:	true
+Ddd*graph_edit.showHints:	on
 
 ! What kind of layout do we wish? (regular, compact)
 Ddd*graph_edit.layoutMode:	regular
 
 ! Do we wish to re-layout the graph after each change?
-Ddd*graph_edit.autoLayout:	false
+Ddd*graph_edit.autoLayout:	off
 
 ! Width and height of the grid
 ! Ddd*graph_edit.gridWidth:	16
@@ -635,60 +635,60 @@ Ddd*graph_edit.GridSize:	16
 ! Source View Defaults
 
 ! Do we wish to find complete words only?
-Ddd*findWordsOnly:		true
+Ddd*findWordsOnly:		on
 
 ! Do we wish case-sensitive search?
-Ddd*findCaseSensitive:		true
+Ddd*findCaseSensitive:		on
 
 ! Do we wish to show machine code? (Makes DDD run somewhat slower)
-Ddd*disassemble: false
+Ddd*disassemble: off
 
 ! How many bytes of the current function should we disassemble? (0
 ! means disassemble entire function; default in DDD 2.2 and earlier)
 Ddd*maxDisassemble: 256
 
 ! Do we wish to display glyphs? (Makes DDD run somewhat slower)
-Ddd*displayGlyphs: true
+Ddd*displayGlyphs: on
 
 ! What is the maximum number of glyphs at one time?
 Ddd*maxGlyphs: 10
 
 ! Shall we cache glyph images?  (Won't work with Motif 2.1 on XFree86)
-! Ddd*cacheGlyphImages: true
+! Ddd*cacheGlyphImages: on
 
 ! Do we wish to display line numbers? (Default in DDD 2.1.1 and earlier)
-Ddd*displayLineNumbers: false
+Ddd*displayLineNumbers: off
 
 ! Do we wish to cache source files in memory?
-Ddd*cacheSourceFiles: true
+Ddd*cacheSourceFiles: on
 
 ! Do we wish to cache machine code in memory?
-Ddd*cacheMachineCode: true
+Ddd*cacheMachineCode: on
 
 ! Do we wish to refer to sources using the full path name?
-Ddd*useSourcePaths: false
+Ddd*useSourcePaths: off
 
 ! Do we wish to show all registers, instead of only integer registers?
-Ddd*allRegisters: false
+Ddd*allRegisters: off
 
 ! Tips (aka ballon help or bubble help) are small windows that pop up
 ! when moving the pointer over some item.  Instructive for DDD
 ! novices, but maybe annoying for DDD experts.
 
 ! Do we want tips on buttons, telling us their meaning?
-Ddd*buttonTips: true
+Ddd*buttonTips: on
 
 ! Do we want tips on variables in the source code, telling us their value?
-Ddd*valueTips: true
+Ddd*valueTips: on
 
 
 ! The same info as in tips may also be shown in the status line (`docs').
 ! This is less annoying, but may slow down DDD a bit.
 ! Do we want docs on buttons, telling us their meaning?
-Ddd*buttonDocs: true
+Ddd*buttonDocs: on
 
 ! Do we want docs on variables in the source code, telling us their value?
-Ddd*valueDocs: true
+Ddd*valueDocs: on
 
 
 ! Delays for showing tips and docs
@@ -714,13 +714,13 @@ Ddd*pushMenuPopupTime: 400
 ! Status line
 
 ! Should the status line be placed at the bottom?
-Ddd*statusAtBottom: true
+Ddd*statusAtBottom: on
 
 ! Number of status messages to be kept in status history
 Ddd*statusHistorySize: 20
 
 ! Do we want to see the debugger status (blinking while busy)?
-Ddd*blinkWhileBusy: true
+Ddd*blinkWhileBusy: on
 
 ! Blink rate (in ms) of the busy LED - the LED showing that the inferior
 ! debugger is busy.  A value of 0 prevents the busy LED from blinking.
@@ -751,10 +751,10 @@ Ddd*maxValueDocLength: 80
 
 ! X Warnings
 ! Do we wish to suppress X warnings?
-Ddd*suppressWarnings: false
+Ddd*suppressWarnings: off
 
 ! Shall DDD ungrab the mouse pointer when interrupting a modal X application?
-Ddd*ungrabMousePointer: false
+Ddd*ungrabMousePointer: off
 
 ! A little less highlighting
 Ddd*highlightThickness: 1
@@ -781,13 +781,13 @@ Ddd*showStartupLogo: c
 
 ! Whether to use multi-color icons.  Multi-color icons are not strictly
 ! ICCM-compliant, although supported by most window managers.  In case
-! your window manager has trouble with DDD icons, set this to `false'.
-Ddd*colorWMIcons: true
+! your window manager has trouble with DDD icons, set this to `off'.
+Ddd*colorWMIcons: on
 
 ! Tips of the day
 
 ! Whether to show a tip of the day upon startup
-Ddd*startupTips: true
+Ddd*startupTips: on
 
 ! Which tip to start with.  This is usually overridden by `~/.ddd/tips'.
 Ddd*startupTipCount: 1
@@ -1490,8 +1490,8 @@ Ddd*news_popup.mwmDecorations:        1
 ! Make help button a little wider
 Ddd*helpLabelString: \ \ \ Help\ \ \ 
 
-! Set this to `true' to view widget names in help texts.
-Ddd*helpShowTitle: false
+! Set this to `on' to view widget names in help texts.
+Ddd*helpShowTitle: off
 
 ! Help is never acknowledged, always closed.
 Ddd*help_popup*okLabelString: 		Close
@@ -1582,9 +1582,9 @@ Ddd*arg_label.documentationString: \
 ! Traversal
 !-----------------------------------------------------------------------------
 
-Ddd*arg_label.traversalOn:		false
-Ddd*status_form*traversalOn:		false
-Ddd*XmSash.traversalOn:			false
+Ddd*arg_label.traversalOn:		off
+Ddd*status_form*traversalOn:		off
+Ddd*XmSash.traversalOn:			off
 
 
 !-----------------------------------------------------------------------------
@@ -1599,7 +1599,7 @@ Ddd*manual_help*title.alignment:	XmALIGNMENT_BEGINNING
 Ddd*manual_help*area.borderWidth:	0
 Ddd*manual_help*area.marginWidth:	0
 Ddd*manual_help*area.marginHeight:	0
-Ddd*manual_help*area.allowResize:	true
+Ddd*manual_help*area.allowResize:	on
 
 Ddd*manual_help*index.selectionPolicy:	XmSINGLE_SELECT
 Ddd*manual_help*index.visibleItemCount:	5
@@ -1608,8 +1608,8 @@ Ddd*manual_help*indexSW.height:		90
 
 Ddd*manual_help*text.columns:		80
 Ddd*manual_help*text.rows:		25
-Ddd*manual_help*text.wordWrap:		true
-Ddd*manual_help*text.scrollHorizontal:	false
+Ddd*manual_help*text.wordWrap:		on
+Ddd*manual_help*text.scrollHorizontal:	off
 Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
 Ddd*manual_help*textSW.width:		550
@@ -1658,8 +1658,8 @@ Ddd*license*title.alignment:	        XmALIGNMENT_BEGINNING
 
 Ddd*license*text.columns:	        80
 Ddd*license*text.rows:	      		25
-Ddd*license*text.wordWrap:	        true
-Ddd*license*text.scrollHorizontal:    	false
+Ddd*license*text.wordWrap:	        on
+Ddd*license*text.scrollHorizontal:    	off
 Ddd*license*scrollBarDisplayPolicy:   	XmAS_NEEDED
 
 Ddd*license*textSW.width:		600
@@ -1682,8 +1682,8 @@ Ddd*news*title.alignment:	        XmALIGNMENT_BEGINNING
 
 Ddd*news*text.columns:	        	80
 Ddd*news*text.rows:	      		25
-Ddd*news*text.wordWrap:	        	true
-Ddd*news*text.scrollHorizontal:    	false
+Ddd*news*text.wordWrap:	        	on
+Ddd*news*text.scrollHorizontal:    	off
 Ddd*news*scrollBarDisplayPolicy:   	XmAS_NEEDED
 
 Ddd*news*textSW.width:			600
@@ -2721,7 +2721,7 @@ Ddd*preferences*buttons.borderWidth:  		0
 Ddd*preferences*buttons.marginWidth:  		0
 Ddd*preferences*buttons.marginHeight:		0
 Ddd*preferences*buttons.entryAlignment:		XmALIGNMENT_CENTER
-Ddd*preferences*buttons*indicatorOn:		False
+Ddd*preferences*buttons*indicatorOn:		off
 Ddd*preferences*buttons*shadowThickness:	2
 Ddd*preferences*buttons*alignment:		XmALIGNMENT_CENTER
 Ddd*preferences*panel*XmRowColumn.marginHeight: 0
@@ -2782,13 +2782,13 @@ Ddd*preferences*inAllWindows.labelString: in all windows
 Ddd*preferences*inConsole.labelString:    in console only
 
 Ddd*preferences*buttonHints.width:      	240
-Ddd*preferences*buttonHints.recomputeSize:	false
+Ddd*preferences*buttonHints.recomputeSize:	off
 
 Ddd*preferences*valueHints.width:      		240
-Ddd*preferences*valueHints.recomputeSize:	false
+Ddd*preferences*valueHints.recomputeSize:	off
 
 Ddd*preferences*tabCompletion.width:      	240
-Ddd*preferences*tabCompletion.recomputeSize:	false
+Ddd*preferences*tabCompletion.recomputeSize:	off
 
 Ddd*preferences*groupIconify.labelString:	 \
 Iconify all windows at once
@@ -2834,28 +2834,28 @@ Ddd*preferences*asGlyphs.labelString:		as glyphs
 Ddd*preferences*asText.labelString:		as text characters
 
 Ddd*preferences*showExecPos.width:		200
-Ddd*preferences*showExecPos.recomputeSize:	false
+Ddd*preferences*showExecPos.recomputeSize:	off
 
 Ddd*preferences*referSources.labelString:	Refer to program sources
 Ddd*preferences*byPath.labelString:		by full path name
 Ddd*preferences*byBase.labelString:		by base name only
 
 Ddd*preferences*referSources.width:		200
-Ddd*preferences*referSources.recomputeSize:	false
+Ddd*preferences*referSources.recomputeSize:	off
 
 Ddd*preferences*cache.labelString:	        Cache
 Ddd*preferences*cacheSource.labelString:	source files
 Ddd*preferences*cacheCode.labelString:		machine code
 
 Ddd*preferences*cache.width:		        200
-Ddd*preferences*cache.recomputeSize:	        false
+Ddd*preferences*cache.recomputeSize:	        off
 
 Ddd*preferences*find.labelString:	        Find
 Ddd*preferences*wordsOnly.labelString:		words only
 Ddd*preferences*caseSensitive.labelString:	case sensitive
 
 Ddd*preferences*find.width:		        200
-Ddd*preferences*find.recomputeSize:	        false
+Ddd*preferences*find.recomputeSize:	        off
 
 Ddd*preferences*displayLineNumbers.labelString:	 \
 Display source line numbers
@@ -2863,7 +2863,7 @@ Display source line numbers
 Ddd*preferences*tabWidth.orientation:		XmHORIZONTAL
 Ddd*preferences*tabWidth.minimum:		1
 Ddd*preferences*tabWidth.maximum:		32
-Ddd*preferences*tabWidth.showValue:		true
+Ddd*preferences*tabWidth.showValue:		on
 Ddd*preferences*tabWidth.titleString:		Tab width
 
 
@@ -2913,7 +2913,7 @@ Re-layout graph automatically after each change
 Ddd*preferences*gridSize.orientation:		XmHORIZONTAL
 Ddd*preferences*gridSize.minimum:		0
 Ddd*preferences*gridSize.maximum:		64
-Ddd*preferences*gridSize.showValue:		true
+Ddd*preferences*gridSize.showValue:		on
 Ddd*preferences*gridSize.titleString:		Grid size
 
 Ddd*preferences*startup*helpString:   \
@@ -2961,41 +2961,41 @@ of the day\n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
 
-Ddd*preferences*startup*adjustMargin:		false
+Ddd*preferences*startup*adjustMargin:		off
 
 Ddd*preferences*windows.labelString:		Window Layout
 Ddd*preferences*windows.width:			200
-Ddd*preferences*windows.recomputeSize:		false
+Ddd*preferences*windows.recomputeSize:		off
 Ddd*windowsMenu*attached.labelString:		Stacked Windows
 Ddd*windowsMenu*separate.labelString:		Separate Windows
 
 Ddd*preferences*buttons.labelString:		Toolbar Appearance
 Ddd*preferences*buttons.width:			200
-Ddd*preferences*buttons.recomputeSize:		false
+Ddd*preferences*buttons.recomputeSize:		off
 Ddd*buttonsMenu*images.labelString:		Images
 Ddd*buttonsMenu*captions.labelString:		Captions
 
 Ddd*preferences*toolButtons.labelString:	Tool Buttons Location
 Ddd*preferences*toolButtons.width:		200
-Ddd*preferences*toolButtons.recomputeSize:	false
+Ddd*preferences*toolButtons.recomputeSize:	off
 Ddd*toolButtonsMenu*commandTool.labelString:	Command Tool
 Ddd*toolButtonsMenu*sourceWindow.labelString:   Source Window
 
 Ddd*preferences*keyboardFocus.labelString:	Keyboard Focus
 Ddd*preferences*keyboardFocus.width:		200
-Ddd*preferences*keyboardFocus.recomputeSize:	false
+Ddd*preferences*keyboardFocus.recomputeSize:	off
 Ddd*keyboardFocusMenu*explicit.labelString:	Click to Type
 Ddd*keyboardFocusMenu*pointer.labelString:	Point to Type
 
 Ddd*preferences*dataScrolling.labelString:	Data Scrolling
 Ddd*preferences*dataScrolling.width:		200
-Ddd*preferences*dataScrolling.recomputeSize:	false
+Ddd*preferences*dataScrolling.recomputeSize:	off
 Ddd*dataScrollingMenu*panner.labelString:	Panner
 Ddd*dataScrollingMenu*scrollbars.labelString:	Scrollbars
 
 Ddd*preferences*debugger.labelString:		Debugger Type
 Ddd*preferences*debugger.width:			200
-Ddd*preferences*debugger.recomputeSize:		false
+Ddd*preferences*debugger.recomputeSize:		off
 Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
@@ -3003,7 +3003,7 @@ Ddd*debuggerMenu*jdb.labelString:		JDB
 
 Ddd*preferences*showStartupLogo.labelString:	DDD Splash Screen
 Ddd*preferences*showStartupLogo.width:		200
-Ddd*preferences*showStartupLogo.recomputeSize:	false
+Ddd*preferences*showStartupLogo.recomputeSize:	off
 
 Ddd*showStartupLogoMenu*color.labelString:	Color
 Ddd*showStartupLogoMenu*grey.labelString:	Grey
@@ -3056,7 +3056,7 @@ Ddd*preferences*term*labelString:		Execution Window
 Ddd*preferences*uncompress*labelString:		Uncompress
 Ddd*preferences*www*labelString:		Web Browser
 Ddd*preferences*helpers*label.width:		150
-Ddd*preferences*helpers*label.recomputeSize:	false
+Ddd*preferences*helpers*label.recomputeSize:	off
 Ddd*preferences*text.columns:			50
 
 
@@ -3068,7 +3068,7 @@ Ddd*preferences*text.columns:			50
 ! Ddd*settings_popup*okLabelString: Close
 Ddd*settings_popup*cancelLabelString: Reset
 Ddd*settings_popup.title: DDD: Debugger Settings
-Ddd*settings_popup.autoUnmanage: false
+Ddd*settings_popup.autoUnmanage: off
 
 Ddd*settings*scroll.scrollingPolicy:		XmAUTOMATIC
 Ddd*settings*scroll.height:			293
@@ -3122,7 +3122,7 @@ Click on LBL(OK) to close this window.
 Ddd*edit_buttons_popup.title: DDD: Button Editor
 
 Ddd*edit_buttons*buttons.entryAlignment:	XmALIGNMENT_CENTER
-Ddd*edit_buttons*buttons*indicatorOn:		False
+Ddd*edit_buttons*buttons*indicatorOn:		off
 Ddd*edit_buttons*buttons*shadowThickness:	2
 Ddd*edit_buttons*buttons*alignment:		XmALIGNMENT_CENTER
 
@@ -3132,8 +3132,8 @@ Ddd*edit_buttons*data.labelString:		Data Buttons
 Ddd*edit_buttons*shortcuts.labelString:		Shortcuts
 
 Ddd*edit_buttons*text.rows: 			12
-Ddd*edit_buttons*text.wordWrap:	        	true
-Ddd*edit_buttons*text.scrollHorizontal:    	false
+Ddd*edit_buttons*text.wordWrap:	        	on
+Ddd*edit_buttons*text.scrollHorizontal:    	off
 
 Ddd*edit_buttons*verify.labelString: 		Enable supported buttons only
 
@@ -3196,7 +3196,7 @@ Use LBL(Edit) | LBL(Save Options) to save all shortcuts.
 ! Ddd*infos_popup*okLabelString: Close
 Ddd*infos_popup*cancelLabelString: Reset
 Ddd*infos_popup.title: DDD: Status Displays
-Ddd*infos_popup.autoUnmanage: false
+Ddd*infos_popup.autoUnmanage: off
 
 Ddd*infos*scroll.scrollingPolicy:		XmAUTOMATIC
 Ddd*infos*scroll.height:			293
@@ -3302,7 +3302,7 @@ Ddd*graph_edit_panner.translations: \
 Shift<Key>Tab:	   ddd-prev-tab-group()\n\
 <Key>Tab:	   ddd-next-tab-group()\n
 
-Ddd*graph_edit.highlightOnEnter:	True
+Ddd*graph_edit.highlightOnEnter:	On
 Ddd*graph_edit.navigationType:		TAB_GROUP
 
 define(GRAPH_EDIT_HELP,[\
@@ -3834,11 +3834,11 @@ Ddd*status_form.status.leftOffset:	5
 Ddd*status_form.status.rightOffset:	5
 Ddd*status_form.status.labelString:	Ready.
 Ddd*status_form.status.shadowThickness: 0
-Ddd*status_form.status.fillOnArm:	false
+Ddd*status_form.status.fillOnArm:	off
 
 Ddd*status_form.led.highlightThickness: 0
 Ddd*status_form.led.labelString:
-Ddd*status_form.led.visibleWhenOff:	false
+Ddd*status_form.led.visibleWhenOff:	off
 Ddd*status_form.led.selectColor:	DarkGreen
 Ddd*status_form.led.tipString:	\
 @rm @GDB@ status
@@ -3887,11 +3887,11 @@ Ddd*code_text_wSW.spacing:			0
 Ddd*code_text_wSW.borderWidth:			0
 Ddd*code_text_wSW.shadowThickness:		0
 
-Ddd*source_text_w.scrollHorizontal:	false
-Ddd*source_text_w.wordWrap:		true
+Ddd*source_text_w.scrollHorizontal:	off
+Ddd*source_text_w.wordWrap:		on
 
-Ddd*code_text_w.scrollHorizontal:	false
-Ddd*code_text_w.wordWrap:		true
+Ddd*code_text_w.scrollHorizontal:	off
+Ddd*code_text_w.wordWrap:		on
 
 Ddd*source_text_w.helpString:	\
 WIDGET(Source Text Window)\n\
@@ -4183,16 +4183,16 @@ Ddd*gdb_wSW.borderWidth:		0
 Ddd*gdb_wSW.shadowThickness:		0
 
 ! Don't resize the debugger console when resizing the main window
-Ddd*gdb_w_swindow.skipAdjust:	true
-Ddd*gdb_wSW.skipAdjust:		true
+Ddd*gdb_w_swindow.skipAdjust:	on
+Ddd*gdb_wSW.skipAdjust:		on
 
-Ddd*gdb_w.editable:			true
-Ddd*gdb_w.allowResize:			true
+Ddd*gdb_w.editable:			on
+Ddd*gdb_w.allowResize:			on
 Ddd*gdb_w.editMode:			XmMULTI_LINE_EDIT
-Ddd*gdb_w.scrollHorizontal:		false
-Ddd*gdb_w.wordWrap:			true
-Ddd*gdb_w.autoShowCursorPosition:	true
-Ddd*gdb_w.cursorPositionVisible:	true
+Ddd*gdb_w.scrollHorizontal:		off
+Ddd*gdb_w.wordWrap:			on
+Ddd*gdb_w.autoShowCursorPosition:	on
+Ddd*gdb_w.cursorPositionVisible:	on
 
 define(CONSOLE_HELP,[\
 WIDGET(@GDB@ Console)\n\
@@ -4229,7 +4229,7 @@ Ddd*gdb_popup.clear_window.documentationString:	\
 
 ! The command tool is frequently moved around on top of other windows.
 ! Hence, avoid extra redisplays.
-Ddd*tool_shell*saveUnder: true
+Ddd*tool_shell*saveUnder: on
 
 Ddd*tool_shell.helpString:		\
 WIDGET(Command Tool)\n\
@@ -4426,23 +4426,23 @@ Ddd*print*options.?.orientation:	      XmHORIZONTAL
 Ddd*print*options.?.marginWidth:	      0
 Ddd*print*options.?.marginHeight:	      0
 Ddd*print*options.?.?.orientation:	      XmHORIZONTAL
-Ddd*print*options*isAligned:		      false
+Ddd*print*options*isAligned:		      off
 Ddd*print*options*alignment:		      XmALIGNMENT_BEGINNING
 
 Ddd*print*print_to.labelString:		      Print To:
 Ddd*print*print_to.width:		      120
-Ddd*print*print_to.recomputeSize:	      false
+Ddd*print*print_to.recomputeSize:	      off
 Ddd*print*print_to_field*printer.labelString: Printer
 Ddd*print*print_to_field*file.labelString:    File
 
 Ddd*print*print_command.labelString:	      Print Command:
 Ddd*print*print_command.width:		      120
-Ddd*print*print_command.recomputeSize:	      false
+Ddd*print*print_command.recomputeSize:	      off
 Ddd*print*print_command_field.columns:	      48
 
 Ddd*print*file_name.labelString:	      File Name:
 Ddd*print*file_name.width:		      120
-Ddd*print*file_name.recomputeSize:	      false
+Ddd*print*file_name.recomputeSize:	      off
 Ddd*print*file_name_field.columns:	      32
 Ddd*print*file_name_field.value:	      ddd()graph.ps
 Ddd*print*postscript.labelString:	      PostScript
@@ -4450,19 +4450,19 @@ Ddd*print*xfig.labelString:		      FIG
 
 Ddd*print*print_what.labelString:	      Print:
 Ddd*print*print_what.width:		      120
-Ddd*print*print_what.recomputeSize:	      false
+Ddd*print*print_what.recomputeSize:	      off
 Ddd*print*all.labelString:		      All Displays
 Ddd*print*selected.labelString:		      Selected Displays
 
 Ddd*print*print_orientation.labelString:      Orientation:
 Ddd*print*print_orientation.width:	      120
-Ddd*print*print_orientation.recomputeSize:    false
+Ddd*print*print_orientation.recomputeSize:    off
 Ddd*print*portrait.labelString:		      Portrait
 Ddd*print*landscape.labelString:	      Landscape
 
 Ddd*print*paper_size.labelString:	      Paper Size:
 Ddd*print*paper_size.width:		      120
-Ddd*print*paper_size.recomputeSize:	      false
+Ddd*print*paper_size.recomputeSize:	      off
 Ddd*print*paper_size_field.orientation:	      XmVERTICAL
 Ddd*print*paper_size_field.numColumns:	      3
 Ddd*print*a4.labelString:		      A4 (210mm TIMES 297mm)
@@ -4472,7 +4472,7 @@ Ddd*print*legal.labelString:		      Legal (8ONE_HALF" TIMES 14")
 Ddd*print*executive.labelString:	      Executive (7ONE_HALF" TIMES 10")
 Ddd*print*custom.labelString:		      Other...
 
-Ddd*print.autoUnmanage:	 false
+Ddd*print.autoUnmanage:	 off
 
 Ddd*print*helpString: \
 @rm You can print the graph on a POSTSCRIPT printer \
@@ -4492,7 +4492,7 @@ orientation and paper size.\n\
 To print, click on LBL(OK) or LBL(Apply).
 
 Ddd*paper_size_dialog_popup.title:  		DDD: Paper Size
-Ddd*paper_size_dialog.autoUnmanage:  		false
+Ddd*paper_size_dialog.autoUnmanage:  		off
 Ddd*paper_size_dialog.selectionLabelString: 	Paper size
 Ddd*paper_size_dialog*helpString: \
 @rm Please enter the paper size in the format \
@@ -5443,7 +5443,7 @@ You can tell DDD to not use the KBD(tty) command, but to use explicit\n\
 redirection instead, using shell redirection operators.\n\
 To do so, include a line\n\
 \n\
-CODE([Ddd]*useTTYCommand: false)\n\
+CODE([Ddd]*useTTYCommand: off)\n\
 \n\
 in your FILE(~/.[ddd]/init) file and restart DDD.
 
