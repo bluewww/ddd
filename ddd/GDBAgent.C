@@ -584,6 +584,9 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
     DataLength* dl    = (DataLength *) call_data;
     string      answer(dl->data, dl->length);
 
+    // Get rid of any remaining `\r\n' combinations
+    answer.gsub("\r\n", '\n');
+
     string reply = gdb->requires_reply(answer);
     if (reply != "")
     {
