@@ -111,6 +111,7 @@ char DataDisp_rcsid[] =
 #include "mydialogs.h"
 #include "post.h"
 #include "regexps.h"
+#include "resolveP.h"
 #include "session.h"
 #include "settings.h"
 #include "status.h"
@@ -6862,8 +6863,10 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
     DispBox::vsllib_base_defs = app_data.vsl_base_defs;
     DispBox::vsllib_defs      = app_data.vsl_defs;
 
+    string ddd_themes_dir = resolvePath("themes/");
     string path = ":" + string(app_data.vsl_path) + ":";
-    path.gsub(":themes:", ":" + session_themes_dir() + ":");
+    path.gsub(":user_themes:", ":" + session_themes_dir() + ":");
+    path.gsub(":" ddd_NAME "_themes:", ":" + ddd_themes_dir + ":");
     path = unquote(path);
     DispBox::vsllib_path = path;
 

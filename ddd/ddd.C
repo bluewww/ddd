@@ -246,6 +246,7 @@ char ddd_rcsid[] =
 #include "question.h"
 #include "regexps.h"
 #include "resources.h"
+#include "root.h"
 #include "sashes.h"
 #include "select.h"
 #include "selection.h"
@@ -2289,8 +2290,10 @@ int main(int argc, char *argv[])
 
     // Create GDB interface
     gdb = new_gdb(debugger_type, app_data, app_context, argc, argv);
-    defineConversionMacro("GDB", gdb->title());
-    defineConversionMacro("THEHOST", DDD_HOST);
+    defineConversionMacro("GDB",      gdb->title());
+    defineConversionMacro("THEHOST",  DDD_HOST);
+    defineConversionMacro("ROOT",     DDD_ROOT);
+    defineConversionMacro("ALT_ROOT", DDD_ALT_ROOT);
 
     // Set up GDB handlers
     gdb->addHandler(ReadyForQuestion, gdb_readyHP);

@@ -693,12 +693,15 @@ Ddd*showDependentDisplayTitles: off
 ! library compiled into DDD, named `ddd.vsl'.  If you wish to use
 ! another VSL library, put its name here and set `vslPath' to a
 ! colon-separated list of directories where the VSL file and its
-! includes can be found.  `themes' stands for `~/.ddd/themes'.
+! includes can be found.  
+! The following directory names are special:
+! `user_themes' stands for `~/.ddd/themes'.
+! `ddd_themes'  stands for `/usr/local/share/ddd-VERSION/themes/'.
 !
 ! If you use the builtin library, you can use the `vslDefs' resource,
 ! to override (customize) certain settings.  See `colors', below.
 Ddd*vslLibrary:			builtin
-Ddd*vslPath:			themes:.
+Ddd*vslPath:			user_themes:ddd_themes:.
 
 ! What shall we use if the graph gets too large to be displayed?
 ! If on, an Athena panner is used (a kind of two-directional scrollbar).
@@ -7129,6 +7132,18 @@ include a line\n\
 CODE([Ddd]*maxGlyphs: VAR(N))\n\
 \n\
 in your FILE(~/.[ddd]/init) file and restart DDD.
+
+Ddd*no_vsllib_error.dialogTitle: DDD: Could not load VSL library
+Ddd*no_vsllib_error*helpString: \
+@rm DDD could not load its VSL library\n\
+and will not be able to show data displays.\n\
+\n\
+This error typically happens when DDD installation is (yet) incomplete.\n\
+You can work around this error by\n\
+ITEM installing the file FILE(vsllib/[ddd].vsl)\n\
+    into FILE(@ROOT@/vsllib/[ddd].vsl), or\n\
+ITEM have the environment variable VAR(DDD_HOME) point at the place\n\
+    where the FILE(vsllib) directory resides.
 
 
 !-----------------------------------------------------------------------------

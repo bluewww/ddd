@@ -9705,10 +9705,19 @@ use the built-in library, any other value is used as file name.
 
 @defvr Resource vslPath (class VSLPath)
 A colon-separated list of directories to search for @VSL{} include
-files.  The special directory @samp{themes} stands for your individual
-theme directory, typically @file{~/.@value{ddd}/themes/}.  Default is
-@samp{themes:.}, which means that @DDD{} first searches your theme
-directory, followed by the current directory.
+files.  The following directory names are special:
+@itemize @bullet
+@item
+The special directory name @samp{user_themes} stands for your individual
+theme directory, typically @file{~/.@value{ddd}/themes/}.
+@item
+The special directory name @samp{@value{ddd}_themes} stands for the installed
+theme directory, 
+typically @file{/usr/local/share/@value{ddd}-@value{VERSION}/themes/}.
+@end itemize
+Default is @samp{user_themes:@value{ddd}_themes:.}, which means that @DDD{}
+first searches your theme directory, followed by the system directory
+and the current directory.
 @end defvr
 
 If your @DDD{} source distribution is installed in @file{/opt/src},
@@ -9717,7 +9726,7 @@ you can use the following settings to read the @VSL{} library from
 
 @example
 Ddd*vslLibrary: /home/joe/ddd.vsl
-Ddd*vslPath:    themes:.:/opt/src/ddd/ddd:/opt/src/ddd/vsllib
+Ddd*vslPath:    user_themes:.:/opt/src/ddd/ddd:/opt/src/ddd/vsllib
 @end example
 
 @VSL{} include files referenced by @file{/home/joe/ddd.vsl} are searched

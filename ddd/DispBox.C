@@ -50,6 +50,7 @@ char DispBox_rcsid[] =
 #include "bool.h"
 #include "cook.h"
 #include "ddd.h"
+#include "post.h"
 #include "status.h"
 #include "shorten.h"
 #include "string-fun.h"
@@ -141,6 +142,7 @@ void DispBox::init_vsllib(void (*background)())
     void (*old_background)() = VSLLib::background;
     VSLLib::background = background;
 
+    string name = vsllib_name;
     if (string(vsllib_name) == "builtin")
     {
 #if WITH_BUILTIN_VSLLIB
@@ -153,8 +155,9 @@ void DispBox::init_vsllib(void (*background)())
 	istrstream is(defs.chars());
 	vsllib_ptr = new ThemedVSLLib(is, VSEFlags::optimize_mode());
 #else
+	name = "vsllib/" ddd_NAME ".vsl";
 	vsllib_ptr = new ThemedVSLLib();
-	string path = resolvePath("vsllib/" ddd_NAME ".vsl");
+	string path = resolvePath(name);
 	if (path != "")
 	{
 	    vsllib_ptr->update(path);
@@ -174,6 +177,18 @@ void DispBox::init_vsllib(void (*background)())
     else
     {
 	vsllib_ptr = new ThemedVSLLib(vsllib_name, VSEFlags::optimize_mode());
+    }
+
+    // Check for the most basic VSL functions
+    if (vsllib_ptr->has("display_box") && vsllib_ptr->has("value_box"))
+    {
+	// Everything is fine
+    }
+    else
+    {
+	// Could not read in VSL library properly.  Give a warning.
+	post_error("Could not load VSL Library " + quote(name),
+		   "no_vsllib_error");
     }
 
     VSLLib::background = old_background;
