@@ -256,6 +256,12 @@ DispValue *DispValue::dup() { return new DispValue(*this); }
 // True if more sequence members are coming
 bool DispValue::sequence_pending(const string& value) const
 {
+    if (parent() != 0 && parent()->type() == Array)
+    {
+	// In an array, we always read everything up to the final delimiter.
+	return false;
+    }
+
     string v = value;
     strip_leading_space(v);
 
