@@ -1712,7 +1712,24 @@ static void command_completed(void *data)
     if (verbose && !cmd_data->recorded)
     {
 	// Begin a new undo command
-	undo_buffer.set_source(cmd_data->command);
+
+	const string& cmd = cmd_data->command;
+	string source = cmd;
+	if (cmd.length() == 1 && iscntrl(cmd[0]))
+	{
+	    char c = cmd[0];
+
+	    if (c == '\003')
+		source = "interrupt";
+	    else if (c == '\034')
+		source = "abort";
+	    else if (c < ' ')
+		source = string("^") + char('@' + c);
+	    else
+		source = "^?";	// DEL
+	}
+
+ 	undo_buffer.set_source(source);
     }
 
     string answer = "";
