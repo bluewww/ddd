@@ -43,6 +43,7 @@ const char post_rcsid[] =
 #include "exit.h"
 #include "AppData.h"
 #include "string-fun.h"
+#include "GDBAgent.h"
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
@@ -154,13 +155,11 @@ void post_gdb_message(string text, Widget w)
 	return;
     }
 
-#if 0
-    if (status_w && !text.contains('\n'))
+    if (gdb->isReadyWithPrompt() && !text.contains('\n'))
     {
-	set_status(text);
+	gdb_out("\n" + text + "\n" + gdb->default_prompt());
 	return;
     }
-#endif
 
     static Widget gdb_message_dialog = 0;
     if (gdb_message_dialog)
