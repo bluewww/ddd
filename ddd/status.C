@@ -61,10 +61,6 @@ char status_rcsid[] =
 // Data
 //-----------------------------------------------------------------------------
 
-// GDB selection dialog
-static Widget gdb_selection_dialog;
-static Widget gdb_selection_list_w;
-
 // True if last cmd came from GDB window
 bool gdb_keyboard_command = false;
 
@@ -150,21 +146,6 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
 	XtSetSensitive(buttons, true);
     }
-}
-
-void SelectCB(Widget dialog, XtPointer, XtPointer)
-{
-    IntArray numbers;
-    getDisplayNumbers(gdb_selection_list_w, numbers);
-    string choice;
-    if (numbers.size() > 0)
-	choice = itostring(numbers[0]);
-    else
-	choice = "0";
-
-    // clog << quote(choice) << "\n";
-
-    _gdb_command(choice, dialog);
 }
 
 
