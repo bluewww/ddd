@@ -59,7 +59,9 @@ char DispBox_rcsid[] =
 
 #define assert_ok(x) assert(x)
 
-#define CACHE_BOXES 0
+#ifndef CACHE_BOXES
+#define CACHE_BOXES 1
+#endif
 
 
 //-----------------------------------------------------------------------------
