@@ -1796,10 +1796,8 @@ SourceView::SourceView (XtAppContext app_context,
     XtManageChild(source_text_w);
     XtManageChild(source_form_w);
 
-#ifndef LESSTIF_VERSION		// won't work with LessTif 1.0
     XtAddCallback(source_text_w, XmNgainPrimaryCallback,
 		  set_source_argCB, XtPointer(false));
-#endif
     XtAddCallback(source_text_w, XmNmotionVerifyCallback,
 		  set_source_argCB, XtPointer(true));
     XtAddCallback(source_text_w, XmNmotionVerifyCallback,
@@ -1842,10 +1840,8 @@ SourceView::SourceView (XtAppContext app_context,
     if (disassemble)
 	XtManageChild(code_form_w);
 
-#ifndef LESSTIF_VERSION		// won't work with LessTif 1.0
     XtAddCallback(code_text_w, XmNgainPrimaryCallback,
 		  set_source_argCB, XtPointer(false));
-#endif
     XtAddCallback(code_text_w, XmNmotionVerifyCallback,
 		  set_source_argCB, XtPointer(true));
     XtAddCallback(code_text_w, XmNmotionVerifyCallback,
@@ -1870,11 +1866,6 @@ SourceView::SourceView (XtAppContext app_context,
 
 
     // Create breakpoint editor
-#ifdef LESSTIF_VERSION
-    // Not available in LessTif 0.1
-    edit_breakpoints_dialog_w = 0;
-    breakpoint_list_w         = 0;
-#else
     arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
     edit_breakpoints_dialog_w =
@@ -1910,7 +1901,6 @@ SourceView::SourceView (XtAppContext app_context,
     XtManageChild (form2);
     XtManageChild (label);
     XtManageChild (form1);
-#endif
 
     if (breakpoint_list_w)
     {

@@ -190,9 +190,8 @@ void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
     if (change->startPos < promptPosition && change->text->length == 0)
     {
 	// Attempt to delete text before prompt
-#ifdef LESSTIF_VERSION
-	// This works with LessTif only;
-	// using Motif, it causes a core dump on Solaris.  - AZ
+#if 0
+	// With Motif, this causes a core dump on Solaris.  - AZ
 	change->doit = false;
 #else
 	// Make it a no-op
@@ -233,9 +232,8 @@ void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
     if (change->event != NULL && 
 	(change->event->type == KeyPress || change->event->type == KeyRelease))
     {
-#ifdef LESSTIF_VERSION
-	// This works with LessTif only;
-	// using Motif, it causes a core dump on Solaris.  - AZ
+#if 0
+	// With Motif, this causes a core dump on Solaris.  - AZ
 	change->doit = false;
 #else
 	// Make it a no-op.

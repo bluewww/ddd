@@ -979,13 +979,7 @@ static void Redisplay(Widget w, XEvent *event, Region)
     const Graph* graph            = _w->graphEdit.graph;
     const GraphGC& graphGC        = _w->graphEdit.graphGC;
     const Boolean sizeChanged     = _w->graphEdit.sizeChanged;
-
-#ifdef LESSTIF_VERSION
-    const Boolean highlight_drawn = True;
-#else
     const Boolean highlight_drawn = _w->primitive.highlight_drawn;
-#endif
-
 
     if (sizeChanged)
 	graphEditSizeChanged(w);

@@ -67,11 +67,7 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 {
     XtVaSetValues(shell,
 		  XmNiconPixmap, icon,
-#ifdef LESSTIF_VERSION		// LessTif 0.1 does not define XmNiconMask
-		  "iconMask", mask,
-#else
 		  XmNiconMask, mask,
-#endif
 		  NULL);
     wm_set_icon(XtDisplay(shell), XtWindow(shell), icon, mask);
 }

@@ -39,7 +39,6 @@ const char sashes_rcsid[] =
 #include <Xm/PanedW.h>
 #include <X11/StringDefs.h>
 
-#ifndef LESSTIF_VERSION
 extern "C" {
 #define new new_w
 #define class class_w
@@ -47,9 +46,6 @@ extern "C" {
 #undef class
 #undef new
 }
-#else
-#define XmIsSash(x) false
-#endif
 
 //-----------------------------------------------------------------------------
 // Sashes

@@ -48,10 +48,8 @@ ArgField::ArgField (Widget parent, const char* name)
 						     NULL));
     XtAddCallback(arg_text_field, XmNvalueChangedCallback,
 		  valueChangedCB, this);
-#ifndef LESSTIF_VERSION		// LessTif 0.1 won't compile this
     XtAddCallback(arg_text_field, XmNlosePrimaryCallback,
 		  losePrimaryCB, this);
-#endif
 }
 
 string ArgField::get_string () const
