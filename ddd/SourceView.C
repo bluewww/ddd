@@ -2953,12 +2953,10 @@ string SourceView::current_source_name()
 	break;
 
     case DBX:
-	// DBX uses full file names.
+    case XDB:
+	// DBX and XDB use full file names.
 	source = full_path(current_file_name);
 	break;
-
-    case XDB:
-	break;			// FIXME
     }
 
     // In case this does not work, use the current base name.
