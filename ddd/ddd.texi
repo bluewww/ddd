@@ -45,7 +45,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 1999-10-01
+@set DATE 1999-10-04
 
 
 @c Macros
@@ -3307,9 +3307,9 @@ The following resources control the communication with the inferior
 debugger.
 
 @defvr Resource blockTTYInput (class BlockTTYInput)
-Whether @DDD{} should block when reading data from the inferior
-debugger via the pseudo-tty interface.  Most @UNIX{} systems except Linux
-@emph{require} this; set it to @samp{on}.  On Linux, set it to
+Whether @DDD{} should block when reading data from the inferior debugger
+via the pseudo-tty interface.  Most @UNIX{} systems except @GNU{}/Linux
+@emph{require} this; set it to @samp{on}.  On @GNU{}/Linux, set it to
 @samp{off}.  The value @samp{auto} (default) will always select the
 ``best'' choice (that is, the best choice known to the @DDD{}
 developers).
@@ -5997,7 +5997,7 @@ You can further control glyphs using the following resources:
 Whether to cache (share) glyph images (@samp{on}) or not
 (@samp{off}).  Caching glyph images requires less X resources, but
 has been reported to fail with Motif 2.1 on XFree86 servers.  Default
-is @samp{off} for Motif 2.1 or later on Linux machines, and
+is @samp{off} for Motif 2.1 or later on @GNU{}/Linux machines, and
 @samp{on} otherwise.
 @end defvr
 
