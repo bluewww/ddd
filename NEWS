@@ -4,10 +4,11 @@ DDD News						-*- text -*-
 DDD 3.0 [in development]
 ------------------------
 
-    DDD 3.0 brings a new tool bar, Java support, and JDB support.
+    DDD 3.0 brings a new window layout, Java support, and JDB support.
 
     User-visible changes to DDD 2.2.3:
-    - A new toolbar integrates the old-style button rows.
+    - New window layout.  The DDD 2.x button rows are replaced by a
+      toolbar at the top, saving vertical and horizontal space.
     - JDB support.  DDD now also supports JDB as inferior debugger.
       All important JDB features are available via the GUI.
     - Java support.  Requires GDB 4.17 or later (or JDB, of course).
@@ -29,9 +30,6 @@ DDD 3.0 [in development]
     - The maximum number of glyphs is now configurable at startup time.
       See the `maxGlyphs' resource for details.
     - DBX settings now also work with SGI DBX.
-    - Some resources were renamed for clarity:
-      The `toolBar' resource is now named `commandToolBar'.
-      The `colorIcons' resource is now named `colorWMIcons'.
 
     Bug fixes:
     - Using Sun DBX 3.x, data displays are no longer cluttered by DBX
@@ -42,6 +40,19 @@ DDD 3.0 [in development]
     Changes in configuration and building:
     - LessTif 0.83 is supported (and now the default test environment
       of the DDD developers).  See `patches/' for some useful patches.
+
+    Compatibility notes:
+    - Some resources were renamed for clarity:
+      The `toolBar' resource is now named `commandToolBar'.
+      The `colorIcons' resource is now named `colorWMIcons'.
+      If you used these DDD resources somewhere, be sure to rename them.
+    - To enable the old DDD 2.x window layout, use
+
+	Ddd*commonToolBar:    off
+	Ddd*toolbarsAtBottom: on
+
+      in your `~/.ddd/init' file; disable images and captions via
+      `Edit | Preferences | Startup | Toolbar appareance' if desired.
 
     And once more, several more minor improvements and bug fixes; see
     the `ChangeLog' file for details.

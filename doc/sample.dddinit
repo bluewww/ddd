@@ -1,4 +1,4 @@
-! $Id$
+! $Id$ -*- xrdb -*-
 ! Sample DDD initialization file.  To be copied in `~/.ddd/init'.
 
 ! Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
@@ -45,6 +45,16 @@
 ! Ddd*command_shell.geometry: +0+0
 ! Ddd*source_view_shell.geometry: +0+220
 ! Ddd*data_disp_shell.geometry: +0+670
+
+
+! Enable DDD 2.x style window layout
+! Ddd*commonToolBar:    off
+! Ddd*toolbarsAtBottom: on
+
+! Enable DDD 2.x style labels
+! Ddd*buttonImages:    off
+! Ddd*buttonCaptions:  off
+
 
 ! ----------------------------------------------------------------------------
 ! BUTTONS
