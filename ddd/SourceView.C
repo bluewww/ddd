@@ -1171,7 +1171,6 @@ bool SourceView::get_line_of_pos (XmTextPosition pos,
     return found;
 }
 
-
 // ***************************************************************************
 //
 void SourceView::find_word_bounds (const XmTextPosition pos,
@@ -1631,8 +1630,11 @@ void SourceView::process_info_line_main(string& info_output)
 	PosBuffer pos_buffer;
 	pos_buffer.filter(info_output);
 	pos_buffer.answer_ended();
-	if (pos_buffer.pos_found()) {
-	    show_position(pos_buffer.get_position());
+	if (pos_buffer.pos_found())
+	{
+	    string pos = pos_buffer.get_position();
+	    show_position(pos);
+	    // tty_full_name(pos);
 	}
     }
     break;
@@ -2914,3 +2916,34 @@ void SourceView::set_frame_pos(int arg, int pos)
 }
 
 bool SourceView::where_required() { return stack_dialog_popped_up; }
+
+
+//-----------------------------------------------------------------------------
+// Get Line in GDB format
+//----------------------------------------------------------------------------
+
+string SourceView::get_line(string position)
+{
+    string file_name = current_file_name;
+
+    if (position.contains(':'))
+    {
+	file_name = position.before(':');
+	position  = position.after(':');
+    }
+    int line = get_positive_nr(position);
+
+    if (file_name != current_file_name)
+	read_file(file_name, line);
+
+    XmTextPosition start = pos_of_line[line] + bp_indent_amount;
+    XmTextPosition end   = current_text.index('\n', start);
+    if (end < 0)
+	end = current_text.length();
+
+    string text = current_text.at(int(start), end - start);
+
+    ostrstream buf;
+    buf << line << '\t' << text;
+    return string(buf);
+}

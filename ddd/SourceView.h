@@ -305,6 +305,9 @@ public:
 
     // Clear file cache
     static void clear_file_cache();
+
+    // Get the line at POSITION
+    static string get_line(string position);
 };
 
 #endif
