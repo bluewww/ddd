@@ -68,11 +68,12 @@ void create_session_dir(const string& session);
 
 
 // Callbacks for X11R6 session management
-extern void SaveSessionCB(Widget, XtPointer, XtPointer);
-extern void DieSessionCB(Widget, XtPointer, XtPointer);
+extern void SaveSmSessionCB(Widget, XtPointer, XtPointer);
+extern void ShutdownSmSessionCB(Widget, XtPointer, XtPointer);
 
 // Session editor
-extern void EditSessionsCB(Widget, XtPointer, XtPointer);
+extern void OpenSessionCB(Widget, XtPointer, XtPointer);
+extern void SaveSessionAsCB(Widget, XtPointer, XtPointer);
 
 #endif // _DDD_session_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -561,12 +561,13 @@ string BreakPoint::condition() const
 }
 
 // Return commands to restore this breakpoint.  Assume that the new
-// breakpoint will be given the number NUM.
-bool BreakPoint::get_state(ostream& os, DebuggerType type, int num, bool dummy)
+// breakpoint will be given the number NR.
+bool BreakPoint::get_state(ostream& os, int nr, bool dummy)
 {
     string pos = file_name() + ":" + itostring(line_nr());
+    string num = "@" + itostring(nr) + "@";
 
-    switch (type)
+    switch (gdb->type())
     {
     case GDB:
     {
@@ -636,7 +637,7 @@ bool BreakPoint::get_state(ostream& os, DebuggerType type, int num, bool dummy)
 
     if (dummy)
     {
-	switch (type)
+	switch (gdb->type())
 	{
 	case GDB:
 	case DBX:
@@ -644,7 +645,7 @@ bool BreakPoint::get_state(ostream& os, DebuggerType type, int num, bool dummy)
 	    break;
 
 	case XDB:
-	    os << "db " << "\n";
+	    os << "db " << num << "\n";
 	}
     }
 

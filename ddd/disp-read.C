@@ -82,7 +82,7 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
 bool is_nop_cmd(const string& cmd)
 {
     // All these command have no effect on DDD state...
-    static regex RXnop_cmd("[ \t]*(echo|help|show|info)([ \t]+.*)?");
+    static regex RXnop_cmd("[ \t]*(echo|help|show|info|where)([ \t]+.*)?");
 
     // ... except for this one.
     static regex RXop_cmd("[ \t]*(info[ \t]+line)([ \t]+.*)?");
@@ -210,6 +210,13 @@ bool is_down_cmd (const string& cmd)
     return cmd.matches (RXdown_cmd);
 }
 
+bool is_core_cmd (const string& cmd)
+{
+    static regex RXcore_cmd("[ \t]*(core|core-file)([ \t]+.*)?");
+
+    return cmd.matches (RXcore_cmd);
+}
+
 // ***************************************************************************
 // 
 bool is_thread_cmd (const string& cmd)
@@ -247,6 +254,9 @@ bool is_setting_cmd (const string& cmd)
 // 
 bool is_file_cmd (const string& cmd, GDBAgent *gdb)
 {
+    if (cmd == "# reset")
+	return true;
+
     switch (gdb->type())
     {
     case GDB:

@@ -85,6 +85,9 @@ bool is_frame_cmd(const string& cmd);
 bool is_up_cmd(const string& cmd);   // ... towards caller
 bool is_down_cmd(const string& cmd); // ... towards called
 
+// True if CMD resets process memory.
+bool is_core_cmd(const string& cmd);
+
 // True if CMD changes the current thread
 bool is_thread_cmd(const string& cmd);
 

@@ -1611,7 +1611,32 @@ bool DataDisp::need_core_to_restore()
     return false;
 }
 
+// Reset all
+void DataDisp::reset_done(const string& answer, void *)
+{
+    // Nothing special yet
+    (void) answer;
+}
 
+void DataDisp::reset()
+{
+    // Clear all data displays
+    IntArray display_nrs;
+    getDisplayNumbers(display_list_w, display_nrs);
+
+    if (display_nrs.size() > 0)
+    {
+	Command c("graph undisplay " + numbers(display_nrs));
+	c.verbose  = false;
+	c.check    = true;
+	c.priority = COMMAND_PRIORITY_INIT;
+	c.callback = reset_done;
+	gdb_command(c);
+    }
+}
+
+
+// Return number of display aliased by NODE
 int DataDisp::alias_display_nr(GraphNode *node)
 {
     if (!node->isHint())
@@ -2122,7 +2147,9 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     refresh_graph_edit();
 
     delete info;
-    prompt();
+
+    if (info->verbose)
+	prompt();
 }
 
 void DataDisp::new_user_displayOQC (const string& answer, void* data)
@@ -2165,8 +2192,10 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
 	update_infos();
     }
 
+    if (info->verbose)
+	prompt();
+
     delete info;
-    prompt();
 }
 
 // ***************************************************************************
@@ -2318,8 +2347,10 @@ void DataDisp::new_data_displaysOQAC (string answers[],
     refresh_addr();
     refresh_graph_edit();
 
+    if (info->verbose)
+	prompt();
+
     delete info;
-    prompt();
 }
 
 
@@ -2386,7 +2417,7 @@ void DataDisp::refresh_display(Widget origin)
     gdb_command("graph refresh", origin);
 }
 
-void DataDisp::refresh_displaySQ(Widget origin)
+void DataDisp::refresh_displaySQ(Widget origin, bool verbose)
 {
     if (origin)
 	set_last_origin(origin);
@@ -2413,13 +2444,14 @@ void DataDisp::refresh_displaySQ(Widget origin)
 	dummy += (void *)PROCESS_ADDR;
 	    
     bool ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
-				 refresh_displayOQAC, (void *)1);
+				 refresh_displayOQAC, (void *)verbose);
 
     if (!ok || cmds.size() == 0)
     {
 	// Simply redraw display
 	refresh_graph_edit();
-	prompt();
+	if (verbose)
+	    prompt();
     }
 }
 
@@ -2435,6 +2467,8 @@ void DataDisp::refresh_displayOQAC (string answers[],
     int data_answers_seen = 0;
     StringArray user_answers;
     StringArray addr_answers;
+
+    bool verbose = bool(data);
 
     for (int i = 0; i < count; i++)
     {
@@ -2473,8 +2507,8 @@ void DataDisp::refresh_displayOQAC (string answers[],
 	// If we had a `disabling' message, refresh displays once more
 	if (disabling_occurred)
 	{
-	    refresh_displaySQ();
-	    data = 0;
+	    refresh_displaySQ(0, verbose);
+	    verbose = false;	// No more prompts
 	}
     }
 
@@ -2487,7 +2521,7 @@ void DataDisp::refresh_displayOQAC (string answers[],
     delete[] answers;
     delete[] qu_datas;
 
-    if (data != 0)
+    if (verbose)
 	prompt();
 }
 
@@ -2502,7 +2536,7 @@ void DataDisp::refresh_displayOQAC (string answers[],
 // und aktualisiert den disp_graph.
 //
 
-static string numbers(IntArray& a)
+string DataDisp::numbers(IntArray& a)
 {
     sort(a);
 
@@ -2536,7 +2570,7 @@ void DataDisp::disable_display(IntArray& display_nrs)
 	gdb_command("graph disable display " + numbers(display_nrs));
 }
 
-void DataDisp::disable_displaySQ(IntArray& display_nrs)
+void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose)
 {
     sort_and_check(display_nrs);
 
@@ -2553,7 +2587,7 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs)
     }
 
     if (disabled_data_displays > 0)
-	gdb_command(cmd, last_origin, disable_displayOQC);
+	gdb_command(cmd, last_origin, disable_displayOQC, (void *)verbose);
 
     int disabled_user_displays = 0;
     for (i = 0; i < display_nrs.size(); i++)
@@ -2570,7 +2604,8 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs)
     {
 	if (disabled_user_displays > 0)
 	    refresh_graph_edit();
-	prompt();
+	if (verbose)
+	    prompt();
     }
 }
 
@@ -2578,14 +2613,20 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs)
 // ***************************************************************************
 // Bei nicht-leerer Antwort Ausgabe als Fehlermeldung.
 //
-void DataDisp::disable_displayOQC (const string& answer, void *)
+void DataDisp::disable_displayOQC (const string& answer, void *data)
 {
     if (answer == NO_GDB_ANSWER)
 	return;			// Command was canceled
 
-    gdb_out(answer);
+    bool verbose = bool(data);
+
+    if (verbose)
+	gdb_out(answer);
+
     refresh_graph_edit();
-    prompt();
+
+    if (verbose)
+	prompt();
 }
 
 
@@ -2603,7 +2644,7 @@ void DataDisp::enable_display(IntArray& display_nrs)
 	gdb_command("graph enable display " + numbers(display_nrs));
 }
 
-void DataDisp::enable_displaySQ(IntArray& display_nrs)
+void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose)
 {
     sort_and_check(display_nrs);
 
@@ -2638,7 +2679,8 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs)
     {
 	if (enabled_user_displays > 0)
 	    refresh_graph_edit();
-	prompt();
+	if (verbose)
+	    prompt();
     }
 }
 
@@ -2670,7 +2712,7 @@ void DataDisp::delete_display(IntArray& display_nrs)
 	gdb_command("graph undisplay " + numbers(display_nrs));
 }
 
-void DataDisp::delete_displaySQ(IntArray& display_nrs)
+void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose)
 {
     sort_and_check(display_nrs);
 
@@ -2689,7 +2731,7 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs)
     }
 
     if (deleted_data_displays > 0 && gdb->has_display_command())
-	gdb_command(cmd, last_origin, delete_displayOQC);
+	gdb_command(cmd, last_origin, delete_displayOQC, (void *)verbose);
 
     for (i = 0; i < display_nrs.size(); i++)
     {
@@ -2706,7 +2748,8 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs)
 	// Refresh addresses now
 	force_check_aliases = true;
 	refresh_addr();
-	prompt();
+	if (verbose)
+	    prompt();
     }
 
     update_infos();
@@ -2716,10 +2759,12 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs)
 // ***************************************************************************
 // Bei nicht-leerer Antwort Ausgabe als Fehlermeldung.
 //
-void DataDisp::delete_displayOQC (const string& answer, void *)
+void DataDisp::delete_displayOQC (const string& answer, void *data)
 {
     if (answer == NO_GDB_ANSWER)
 	return;			// Command was canceled
+
+    bool verbose = bool(data);
 
     string ans = answer;
 
@@ -2740,7 +2785,8 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
     }
 
     // Anything remaining is an error message
-    gdb_out(ans);
+    if (verbose)
+	gdb_out(ans);
 
     // Refresh editor
     refresh_graph_edit();
@@ -2748,7 +2794,9 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
     // Refresh remaining addresses
     force_check_aliases = true;
     refresh_addr();
-    prompt();
+
+    if (verbose)
+	prompt();
 }
 
 
@@ -3510,7 +3558,7 @@ void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
 	    dummy += (void *)PROCESS_ADDR;
 
 	ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
-				refresh_displayOQAC, (void *)0);
+				refresh_displayOQAC, (void *)false);
 
 	sent = cmds.size() > 0;
     }

@@ -54,8 +54,11 @@ char session_rcsid[] =
 #include "SourceView.h"
 #include "charsets.h"
 #include "commandQ.h"
+#include "comm-manag.h"
+#include "disp-read.h"
 #include "ddd.h"
 #include "cook.h"
+#include "editing.h"
 #include "exit.h"
 #include "file.h"
 #include "filetype.h"
@@ -64,10 +67,12 @@ char session_rcsid[] =
 #include "options.h"
 #include "post.h"
 #include "question.h"
+#include "settings.h"
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
 #include "version.h"
+#include "windows.h"
 #include "wm.h"
 
 #include <Xm/Xm.h>
@@ -75,6 +80,7 @@ char session_rcsid[] =
 #include <Xm/MessageB.h>
 #include <Xm/SelectioB.h>
 #include <Xm/PushB.h>
+#include <Xm/ToggleB.h>
 
 extern "C" {
 #include <sys/types.h>
@@ -384,6 +390,83 @@ static void update_sessions(Widget dialog)
     update_delete(dialog);
 }
 
+// Update list of sessions
+static void UpdateSessionsCB(Widget dialog, XtPointer, XtPointer)
+{
+    update_sessions(dialog);
+}
+
+// Set argument from selected list item
+static void SelectSessionCB(Widget sessions,
+			    XtPointer client_data, XtPointer call_data)
+{
+    Widget dialog = Widget(client_data);
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
+
+    // Update argument field
+    if (cbs->selected_item_count == 1)
+    {
+	int pos = cbs->item_position;
+	ListSetAndSelectPos(sessions, pos);
+
+	String value_s;
+	XmStringGetLtoR(cbs->item, LIST_CHARSET, &value_s);
+	string value = value_s;
+	XtFree(value_s);
+
+	if (value == NO_SESSION)
+	    value = DEFAULT_SESSION;
+
+	Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
+	XmTextSetString(text_w, (char *)value.chars());
+    }
+
+    // Update delete button
+    update_delete(dialog);
+}
+
+// Create custom session dialog
+static Widget create_session_panel(Widget parent, String name,
+				   XtCallbackProc ok,
+				   XtCallbackProc apply)
+{
+    Arg args[10];
+    int arg = 0;
+
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
+    Widget dialog = 
+	verify(XmCreateSelectionDialog(find_shell(parent), name, args, arg));
+
+    Delay::register_shell(dialog);
+
+    Widget sessions = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
+
+    XtAddCallback(sessions, XmNsingleSelectionCallback,
+		  SelectSessionCB, XtPointer(dialog));
+    XtAddCallback(sessions, XmNmultipleSelectionCallback,
+		  SelectSessionCB, XtPointer(dialog));
+    XtAddCallback(sessions, XmNextendedSelectionCallback,
+		  SelectSessionCB, XtPointer(dialog));
+    XtAddCallback(sessions, XmNbrowseSelectionCallback,
+		  SelectSessionCB, XtPointer(dialog));
+
+    XtAddCallback(dialog, XmNokCallback, 
+		  ok, XtPointer(sessions));
+    XtAddCallback(dialog, XmNapplyCallback, 
+		  apply, XtPointer(sessions));
+    XtAddCallback(dialog, XmNcancelCallback, 
+		  UnmanageThisCB, XtPointer(dialog));
+    XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+
+    return dialog;
+}
+
+
+
+// ---------------------------------------------------------------------------
+// Session deletion
+// ---------------------------------------------------------------------------
+
 // Delete given session
 static void delete_session(const string& session)
 {
@@ -430,52 +513,32 @@ static void DeleteSessionsCB(Widget dialog, XtPointer client_data, XtPointer)
     update_sessions(dialog);
 }
 
-// Set program arguments from list
-static void SelectSessionCB(Widget sessions,
-			    XtPointer client_data, XtPointer call_data)
+
+
+// ---------------------------------------------------------------------------
+// Session save
+// ---------------------------------------------------------------------------
+
+static string get_chosen_session(XtPointer call_data)
 {
-    Widget dialog = Widget(client_data);
-    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
-
-    // Update argument field
-    if (cbs->selected_item_count == 1)
-    {
-	int pos = cbs->item_position;
-	ListSetAndSelectPos(sessions, pos);
-
-	String value_s;
-	XmStringGetLtoR(cbs->item, LIST_CHARSET, &value_s);
-	string value = value_s;
-	XtFree(value_s);
-
-	if (value == NO_SESSION)
-	    value = DEFAULT_SESSION;
-
-	Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
-	XmTextSetString(text_w, (char *)value.chars());
-    }
-
-    // Update delete button
-    update_delete(dialog);
-}
-
-// OK pressed in `EditSession'
-static void SetSessionCB(Widget dialog, 
-			 XtPointer client_data, XtPointer call_data)
-{
-    Widget sessions = Widget(client_data);
-
     XmSelectionBoxCallbackStruct *cbs =
 	(XmSelectionBoxCallbackStruct *)call_data;
 
     String value_s;
     XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &value_s);
-    static string value;
-    value = value_s;
+    string value = value_s;
     XtFree(value_s);
 
     if (value == NO_SESSION)
 	value = DEFAULT_SESSION;
+    return value;
+}
+
+// Set the current session
+static void SetSessionCB(Widget dialog, XtPointer, XtPointer call_data)
+{
+    static string value;
+    value = get_chosen_session(call_data);
 
     app_data.session = value;
 
@@ -511,57 +574,228 @@ static void SetSessionCB(Widget dialog,
     }
 }
 
-// Select the session from a list of choices
-void EditSessionsCB(Widget w, XtPointer, XtPointer)
+static Widget dump_core = 0;
+
+// OK pressed in `save session'
+static void SaveSessionCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
-    static Widget dialog   = 0;
-    static Widget sessions = 0;
+    SetSessionCB(w, client_data, call_data);
 
-    if (dialog == 0)
+    if (app_data.session != DEFAULT_SESSION)
     {
-	Arg args[10];
-	int arg = 0;
+	unsigned long flags = SAVE_SESSION | MAY_INTERACT;
 
-	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
-	dialog = verify(XmCreateSelectionDialog(find_shell(w),
-						"sessions", args, arg));
+	if (XmToggleButtonGetState(dump_core))
+	    flags |= SAVE_CORE;
 
-	Delay::register_shell(dialog);
+	DDDSaveOptionsCB(w, XtPointer(flags), call_data);
+    }
+}
 
-	sessions = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
+// Save current session from a list of choices
+void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
+{
+    static Widget dialog = 
+	create_session_panel(w, "sessions_to_save",
+			     SaveSessionCB, UpdateSessionsCB);
 
-	XtAddCallback(sessions, XmNsingleSelectionCallback,
-		      SelectSessionCB, XtPointer(dialog));
-	XtAddCallback(sessions, XmNmultipleSelectionCallback,
-		      SelectSessionCB, XtPointer(dialog));
-	XtAddCallback(sessions, XmNextendedSelectionCallback,
-		      SelectSessionCB, XtPointer(dialog));
-	XtAddCallback(sessions, XmNbrowseSelectionCallback,
-		      SelectSessionCB, XtPointer(dialog));
-
-	XtAddCallback(dialog, XmNokCallback, 
-		      SetSessionCB, XtPointer(sessions));
-	XtAddCallback(dialog, XmNapplyCallback, 
-		      DeleteSessionsCB, XtPointer(sessions));
-	XtAddCallback(dialog, XmNcancelCallback, 
-		      UnmanageThisCB, XtPointer(dialog));
-	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+    if (dump_core == 0)
+    {
+	dump_core = XmCreateToggleButton(dialog, "dump_core", 0, 0);
+	XtManageChild(dump_core);
     }
 
+    ProgramInfo info;
+    bool dump = 
+	info.running || (info.core != NO_GDB_ANSWER && info.core != "");
+    XmToggleButtonSetState(dump_core, dump, False);
+
+    string name = "";
     if (app_data.session == DEFAULT_SESSION)
     {
 	// No current session - suggest a default name based on executable
-	string filename;
-	int pid;
-	bool attached;
-	get_current_file(filename, pid, attached);
-	if (filename == NO_GDB_ANSWER)
-	    filename = "";
+	ProgramInfo info;
+	if (info.file != NO_GDB_ANSWER)
+	    name = info.file;
 
-	filename = SourceView::basename(filename);
-	MString text(filename);
-	XtVaSetValues(dialog, XmNtextString, text.xmstring(), NULL);
+	name = SourceView::basename(name);
     }
+    else
+    {
+	// Use current session name
+	name = app_data.session;
+    }
+
+    MString text(name);
+    XtVaSetValues(dialog, XmNtextString, text.xmstring(), NULL);
+
+    update_sessions(dialog);
+    manage_and_raise(dialog);
+}
+
+
+
+// ---------------------------------------------------------------------------
+// Session open
+// ---------------------------------------------------------------------------
+
+// Get a resource from DB named nm with class cl
+static string get_resource(XrmDatabase db, string name, string cls)
+{
+    static string prefix = DDD_CLASS_NAME ".";
+    name.prepend(prefix);
+    cls.prepend(prefix);
+
+    char *rtype = 0;
+    XrmValue value;
+    
+    XrmGetResource(db, name, cls, &rtype, &value);
+    if (value.addr != 0)
+    {
+	return string((char *)value.addr, value.size);
+    }
+    else
+	return "";		// Not found
+}
+
+static Boolean delete_delay_if_idle(XtPointer data)
+{
+    if (emptyCommandQueue() && gdb->isReadyWithPrompt())
+    {
+	delete (Delay *)data;
+	return True;		// Remove from the list of work procs
+    }
+    return False;		// Get called again
+}
+
+static void delete_delay(const string&, void *data)
+{
+    XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
+		     delete_delay_if_idle, data);
+}
+
+// Open the session given in SESSION
+static void open_session(const string& session)
+{
+    // Fetch init file for this session
+    string dbfile = session_state_file(session);
+    XrmDatabase db = XrmGetFileDatabase(dbfile);
+    if (db == 0)
+    {
+	post_error("Cannot open session.", "open_session_error");
+	return;
+    }
+
+    StatusDelay *delay_ptr = 
+	new StatusDelay("Opening session " + quote(session));
+
+    // Don't leave any more commands in the list; they'd refer to
+    // another session.
+    clearCommandQueue();
+
+    ProgramInfo info;
+    // Kill or detach the debuggee.
+    Command c("set confirm off");
+    c.verbose  = false;
+    c.check    = false;
+    c.priority = COMMAND_PRIORITY_INIT;
+
+    if (gdb->type() == GDB)
+	gdb_command(c);
+
+    c.command = (info.attached ? "detach" : "kill");
+    gdb_command(c);
+
+    // Clear all breakpoints and displays
+    source_view->reset();
+    data_disp->reset();
+    gdbClearWindowCB(0, 0, 0);
+
+    // Discard current exec and core files
+    if (gdb->type() == GDB)
+    {
+	c.command  = "file";
+	gdb_command(c);
+	c.command  = "core";
+	gdb_command(c);
+    }
+
+    // Remove settings panel
+    reset_settings();
+
+    // Get start-up commands from DB
+    string init = get_resource(db, XtNrestartCommands, XtCInitCommands);
+    switch (gdb->type())
+    {
+    case GDB:
+	init += get_resource(db, XtNgdbSettings, XtCSettings);
+	break;
+
+    case DBX:
+	init += get_resource(db, XtNdbxSettings, XtCSettings);
+	break;
+
+    case XDB:
+	init += get_resource(db, XtNxdbSettings, XtCSettings);
+	break;
+    }
+
+    // Current breakpoint base (< 0: unknown)
+    static int bp_base;
+    bp_base = -1;
+
+    // Process all start-up commands.  These should load the file, etc.
+    while (init != "")
+    {
+	c.command  = init.before('\n');
+	c.callback = 0;
+	c.verbose  = false;
+	c.check    = false;
+
+	if (is_file_cmd(c.command, gdb) || is_core_cmd(c.command))
+	{
+	    // Give feedback on the files used and their state
+	    c.verbose = true;
+	    c.check = true;
+	}
+
+	// Translate breakpoint numbers to the current base.
+	fix_bp_numbers(c.command);
+	gdb_command(c);
+
+	init = init.after('\n');
+    }
+
+    // One last command to clear the delay and set up breakpoints
+    c.command  = "# reset";
+    c.check    = true;
+    c.callback = delete_delay;
+    c.data     = (void *)(Delay *)delay_ptr;
+    gdb_command(c);
+}
+
+
+// OK pressed in `open session'
+static void OpenThisSessionCB(Widget w, XtPointer client_data, 
+			      XtPointer call_data)
+{
+    SetSessionCB(w, client_data, call_data);
+    if (app_data.session != DEFAULT_SESSION)
+    {
+	open_session(app_data.session);
+    }
+}
+
+// Save current session from a list of choices
+void OpenSessionCB(Widget w, XtPointer, XtPointer)
+{
+    static Widget dialog = 
+	create_session_panel(w, "sessions_to_open",
+			     OpenThisSessionCB, DeleteSessionsCB);
+
+    // Clear current value
+    MString text("");
+    XtVaSetValues(dialog, XmNtextString, text.xmstring(), NULL);
 
     update_sessions(dialog);
     manage_and_raise(dialog);
@@ -576,20 +810,20 @@ void EditSessionsCB(Widget w, XtPointer, XtPointer)
 
 // Realize X11R6 session management protocols.
 
-static void AskSaveSessionCB    (Widget w, XtPointer, XtPointer call_data);
-static void ConfirmSaveSessionCB(Widget w, XtPointer, XtPointer call_data);
-static void CancelSaveSessionCB (Widget w, XtPointer, XtPointer call_data);
+static void AskSaveSmSessionCB    (Widget w, XtPointer, XtPointer call_data);
+static void ConfirmSaveSmSessionCB(Widget w, XtPointer, XtPointer call_data);
+static void CancelSaveSmSessionCB (Widget w, XtPointer, XtPointer call_data);
 
-static void AskShutdownCB       (Widget w, XtPointer, XtPointer call_data);
-static void ConfirmShutdownCB   (Widget w, XtPointer, XtPointer call_data);
-static void CancelShutdownCB    (Widget w, XtPointer, XtPointer call_data);
+static void AskSmShutdownCB       (Widget w, XtPointer, XtPointer call_data);
+static void ConfirmSmShutdownCB   (Widget w, XtPointer, XtPointer call_data);
+static void CancelSmShutdownCB    (Widget w, XtPointer, XtPointer call_data);
 
 static void ask(string text, String name,
 		XtCheckpointToken token, Widget w,
 		XtCallbackProc yes, XtCallbackProc no);
 
 // 1. The user initiates a checkpoint.  Have DDD save its options.
-void SaveSessionCB(Widget w, XtPointer, XtPointer call_data)
+void SaveSmSessionCB(Widget w, XtPointer, XtPointer call_data)
 {
     XtCheckpointToken token = XtCheckpointToken(call_data);
 
@@ -597,7 +831,7 @@ void SaveSessionCB(Widget w, XtPointer, XtPointer call_data)
     const bool interact = (token->interact_style == SmInteractStyleAny);
     const bool shutdown = token->shutdown;
 
-    unsigned long flags = SAVE_SESSION | SAVE_GEOMETRY;
+    unsigned long flags = SAVE_SESSION | SAVE_GEOMETRY | SAVE_CORE;
     if (interact)
 	flags |= MAY_INTERACT;
     if (shutdown)
@@ -606,12 +840,13 @@ void SaveSessionCB(Widget w, XtPointer, XtPointer call_data)
     if (!shutdown && saving_options_kills_program(flags))
     {
 	if (interact)
-	    XtAddCallback(w, XtNinteractCallback, AskSaveSessionCB, 0);
+	    XtAddCallback(w, XtNinteractCallback, AskSaveSmSessionCB, 0);
 	else
 	    return;		// Cannot save state right now
     }
     else
     {
+	// Save it
 	token->save_success = save_options(flags);
     }
 
@@ -619,7 +854,7 @@ void SaveSessionCB(Widget w, XtPointer, XtPointer call_data)
     {
 	// Prepare for shutdown
 	if (interact)
-	    XtAddCallback(w, XtNinteractCallback, AskShutdownCB, 0);
+	    XtAddCallback(w, XtNinteractCallback, AskShutdownSmSessionCB, 0);
 	else
 	{
 	    if (!gdb->isReadyWithPrompt())
@@ -635,16 +870,16 @@ void SaveSessionCB(Widget w, XtPointer, XtPointer call_data)
 // Save state
 
 // 2. Request license to kill the program
-static void AskSaveSessionCB(Widget w, XtPointer, XtPointer call_data)
+static void AskSaveSmSessionCB(Widget w, XtPointer, XtPointer call_data)
 {
     XtCheckpointToken token = XtCheckpointToken(call_data);
 
     ask("", "kill_to_save_dialog", token, w, 
-	ConfirmSaveSessionCB, CancelSaveSessionCB);
+	ConfirmSaveSmSessionCB, CancelSaveSmSessionCB);
 }
 
 // Ok, kill it
-static void ConfirmSaveSessionCB(Widget, XtPointer client_data, XtPointer)
+static void ConfirmSaveSmSessionCB(Widget, XtPointer client_data, XtPointer)
 {
     XtCheckpointToken token = XtCheckpointToken(client_data);
 
@@ -656,7 +891,7 @@ static void ConfirmSaveSessionCB(Widget, XtPointer client_data, XtPointer)
 }
 
 // No, don't kill -- save everything else.
-static void CancelSaveSessionCB(Widget, XtPointer client_data, XtPointer)
+static void CancelSaveSmSessionCB(Widget, XtPointer client_data, XtPointer)
 {
     XtCheckpointToken token = XtCheckpointToken(client_data);
 
@@ -671,7 +906,7 @@ static void CancelSaveSessionCB(Widget, XtPointer client_data, XtPointer)
 
 // 2. If the checkpoint was part of a shutdown, make sure the
 //     debugged program is killed properly.
-static void AskShutdownCB(Widget w, XtPointer, XtPointer call_data)
+static void AskShutdownSmSessionCB(Widget w, XtPointer, XtPointer call_data)
 {
     XtCheckpointToken token = XtCheckpointToken(call_data);
 
@@ -691,7 +926,8 @@ static void AskShutdownCB(Widget w, XtPointer, XtPointer call_data)
     {
 	// Debugger is still running; request confirmation
 	ask(gdb->title() + " is still busy.  Shutdown anyway (and kill it)?",
-	    "quit_dialog", token, w, ConfirmShutdownCB, CancelShutdownCB);
+	    "quit_dialog", token, w, ConfirmShutdownSmSessionCB, 
+	    CancelShutdownSmSessionCB);
 	return;
     }
 
@@ -699,21 +935,23 @@ static void AskShutdownCB(Widget w, XtPointer, XtPointer call_data)
     {
 	// Program is still running; request confirmation
 	ask("The program is running.  Shutdown anyway (and kill it)?",
-	    "shutdown_dialog", token, w, ConfirmShutdownCB, CancelShutdownCB);
+	    "shutdown_dialog", token, w, ConfirmShutdownSmSessionCB, 
+	    CancelShutdownSmSessionCB);
 	return;
     }
 
-    ConfirmShutdownCB(w, XtPointer(token), call_data);
+    ConfirmShutdownSmSessionCB(w, XtPointer(token), call_data);
 }
 
 // 3. Confirm or cancel shutdown.
-static void ConfirmShutdownCB(Widget, XtPointer client_data, XtPointer)
+static void ConfirmShutdownSmSessionCB(Widget, XtPointer client_data, 
+				       XtPointer)
 {
     XtCheckpointToken token = XtCheckpointToken(client_data);
     XtSessionReturnToken(token);
 }
 
-static void CancelShutdownCB(Widget, XtPointer client_data, XtPointer)
+static void CancelShutdownSmSessionCB(Widget, XtPointer client_data, XtPointer)
 {
     XtCheckpointToken token = XtCheckpointToken(client_data);
     token->request_cancel = true;
@@ -721,7 +959,7 @@ static void CancelShutdownCB(Widget, XtPointer client_data, XtPointer)
 }
 
 // 4. Let DDD die.
-void DieSessionCB(Widget w, XtPointer, XtPointer call_data)
+void ShutdownSmSessionCB(Widget w, XtPointer, XtPointer call_data)
 {
     if (gdb != 0 && gdb->isReadyWithPrompt())
     {
@@ -767,7 +1005,7 @@ static void ask(string text, String name, XtCheckpointToken token, Widget w,
 #else // XtSpecificationRelease < 6
 
 // X11R5 and earlier: Nothing yet...
-void SaveSessionCB(Widget, XtPointer, XtPointer) {}
-void DieSessionCB(Widget, XtPointer, XtPointer) {}
+void SaveSmSessionCB(Widget, XtPointer, XtPointer) {}
+void ShutdownSmSessionCB(Widget, XtPointer, XtPointer) {}
 
 #endif // XtSpecificationRelease < 6

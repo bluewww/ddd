@@ -132,11 +132,10 @@ public:
     // true iff changes occurred.  Delete own info from INFO_OUTPUT.
     bool update (string& info_output);
 
-    // Return commands to restore this breakpoint.  Assume that the
-    // new breakpoint will be given the number NUM.  If DUMMY is set,
-    // delete the breakpoint immediately.
-    bool get_state(ostream& os, DebuggerType type, int num, 
-		   bool dummy = false);
+    // Return commands to restore this breakpoint.  If DUMMY is set,
+    // delete the breakpoint immediately in order to increase the
+    // breakpoint number.
+    bool get_state(ostream& os, int num, bool dummy = false);
 };
 
 #endif // _DDD_BreakPoint_h

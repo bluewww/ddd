@@ -71,14 +71,35 @@ char settings_rcsid[] =
 #include "DataDisp.h"
 #include "LessTifH.h"
 
+static Widget            settings_panel = 0;
 static Widget            settings_form  = 0;
-static Widget            reset_settings = 0;
-static Widget            reset_infos    = 0;
+static Widget            reset_settings_button = 0;
 static WidgetArray       settings_entries;
 static EntryTypeArray    settings_entry_types;
 static WidgetStringAssoc settings_values;
 static WidgetStringAssoc settings_initial_values;
+
+
+static Widget            infos_panel        = 0;
+static Widget            reset_infos_button = 0;
 static WidgetArray       infos_entries;
+
+
+// Reset it all
+void reset_settings()
+{
+    if (settings_panel != 0)
+	DestroyWhenIdle (settings_panel);
+
+    settings_panel          = 0;
+    settings_form           = 0;
+    reset_settings_button   = 0;
+    
+    settings_entries        = WidgetArray();
+    settings_entry_types    = EntryTypeArray();
+    settings_values         = WidgetStringAssoc();
+    settings_initial_values = WidgetStringAssoc();
+}
 
 
 // Find widget for command COMMAND
@@ -219,19 +240,19 @@ static void SetDisplayCB(Widget, XtPointer client_data, XtPointer call_data)
 }
 
 // Update state of `reset' button
-static void update_reset_settings()
+static void update_reset_settings_button()
 {
     for (int i = 0; i < settings_entries.size(); i++)
     {
 	Widget entry = settings_entries[i];
 	if (settings_initial_values[entry] != settings_values[entry])
 	{
-	    XtSetSensitive(reset_settings, True);
+	    XtSetSensitive(reset_settings_button, True);
 	    return;
 	}
     }
 
-    XtSetSensitive(reset_settings, False);
+    XtSetSensitive(reset_settings_button, False);
 }
 
 // Update states of `info' buttons
@@ -247,8 +268,8 @@ void update_infos()
 	XtVaSetValues(button, XmNset, set, NULL);
     }
 
-    if (reset_infos != 0)
-	XtSetSensitive(reset_infos, have_info);
+    if (reset_infos_button != 0)
+	XtSetSensitive(reset_infos_button, have_info);
 }
 
 // Register additional info button
@@ -269,7 +290,7 @@ void save_settings_state()
 	settings_initial_values[entry] = settings_values[entry];
     }
 
-    update_reset_settings();
+    update_reset_settings_button();
 }
     
 
@@ -365,7 +386,7 @@ void process_show(string command, string value, bool init)
     }
 
     if (!init)
-	update_reset_settings();
+	update_reset_settings_button();
 
     if (button != 0 && XmIsRowColumn(button))
     {
@@ -1415,12 +1436,12 @@ static Widget create_panel(DebuggerType type, bool create_settings)
     // Setup values
     if (create_settings)
     {
-	reset_settings = cancel;
-	update_reset_settings();
+	reset_settings_button = cancel;
+	update_reset_settings_button();
     }
     else
     {
-	reset_infos = cancel;
+	reset_infos_button = cancel;
 	update_infos();
     }
 
@@ -1438,21 +1459,18 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 // Create settings editor
 static Widget create_settings(DebuggerType type)
 {
-    static Widget settings = 0;
-    if (settings == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
-	settings = create_panel(type, true);
-    return settings;
+    if (settings_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
+	settings_panel = create_panel(type, true);
+    return settings_panel;
 }
 
 // Create infos editor
 static Widget create_infos(DebuggerType type)
 {
-    static Widget infos = 0;
-    if (infos == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
-	infos = create_panel(type, false);
-    return infos;
+    if (infos_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
+	infos_panel = create_panel(type, false);
+    return infos_panel;
 }
-
 
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer)

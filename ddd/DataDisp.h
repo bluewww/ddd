@@ -167,6 +167,9 @@ class DataDisp {
 
     static int getDispNrAtPoint (BoxPoint point);
 
+    static string numbers(IntArray& a);
+
+
     //-----------------------------------------------------------------------
     // Actions
     //-----------------------------------------------------------------------
@@ -214,27 +217,27 @@ public:
 			      bool verbose = true);
 
     // Refresh displays.  Sends `info display' and `display' to GDB.
-    static void refresh_displaySQ   (Widget origin = 0);
+    static void refresh_displaySQ(Widget origin = 0, bool verbose = true);
 
     // Disable displays given in DISPLAY_NRS.  Sends `disable display' to GDB.
-    static void disable_displaySQ   (IntArray& display_nrs);
+    static void disable_displaySQ(IntArray& display_nrs, bool verbose = true);
 
     // Enable displays given in DISPLAY_NRS.  Sends `enable display' to GDB.
-    static void enable_displaySQ    (IntArray& display_nrs);
+    static void enable_displaySQ(IntArray& display_nrs, bool verbose = true);
 
     // Delete displays given in DISPLAY_NRS.  Sends `delete display' to GDB.
-    static void delete_displaySQ    (IntArray& display_nrs);
+    static void delete_displaySQ(IntArray& display_nrs, bool verbose = true);
 
     // Same, but use the GDB_COMMAND interface for enqueing commands
-    static void new_display       (string display_expression,
-				   BoxPoint *pos = 0,
-				   string depends_on = "",
-				   Widget origin = 0);
+    static void new_display(string display_expression,
+			    BoxPoint *pos = 0,
+			    string depends_on = "",
+			    Widget origin = 0);
 
-    static void refresh_display   (Widget origin = 0);
-    static void disable_display   (IntArray& display_nrs);
-    static void enable_display    (IntArray& display_nrs);
-    static void delete_display    (IntArray& display_nrs);
+    static void refresh_display(Widget origin = 0);
+    static void disable_display(IntArray& display_nrs);
+    static void enable_display(IntArray& display_nrs);
+    static void delete_display(IntArray& display_nrs);
 
     // Process 'info display' output in INFO_DISPLAY_ANSWER.  Deletes
     // displays if needed.
@@ -339,6 +342,9 @@ private:
     static bool get_state(ostream& os, bool restore_state, 
 			  const StringArray& scopes);
 
+    // Reset done
+    static void reset_done(const string& answer, void *data);
+
 public:
     static Widget graph_edit;
     static Widget graph_cmd_w;
@@ -402,6 +408,9 @@ public:
 
     // Return true if a core dump is needed to restore displays
     static bool need_core_to_restore();
+
+    // Reset all
+    static void reset();
 };
 
 inline bool DataDisp::get_selection(ostream& os)

@@ -69,15 +69,6 @@ static void hint_on(String name)
     DestroyWhenIdle(suggestion);
 }
 
-static bool no_program()
-{
-    string current_file;
-    int current_pid;
-    bool attached;
-    get_current_file(current_file, current_pid, attached);
-    return current_file == "";
-}
-
 static bool no_source_and_no_code()
 {
     return !source_view->have_source()
@@ -174,7 +165,8 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
     }
 
     // Typical start-up situations
-    if (no_program())
+    ProgramInfo info;
+    if (info.file == "")
     {
 	hint_on("no_program");
 	return;
@@ -205,15 +197,14 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
 	return;
     }
 
-    string program_state;
-    if (!program_running(program_state))
+    if (!info.running)
     {
 	hint_on("program_not_running");
 	return;
     }
 
     // Program has stopped and nothing is selected.
-    defineConversionMacro("PROGRAM_STATE", program_state);
+    defineConversionMacro("PROGRAM_STATE", info.state);
 
     if (code_but_no_source())
     {
@@ -221,9 +212,9 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
 	return;
     }
 
-    if (gdb->type() == GDB && program_state.contains("signal"))
+    if (gdb->type() == GDB && info.state.contains("signal"))
     {
-	int p = passed_to_program(program_state);
+	int p = passed_to_program(info.state);
 	if (p > 0)
 	{
 	    hint_on("stopped_at_passed_signal");

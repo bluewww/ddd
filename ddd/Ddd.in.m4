@@ -33,7 +33,7 @@ Ddd*appDefaultsVersion: @VERSION@
 ! NOTE: If you're looking here for things to customize, look
 ! under the DDD `Preferences' menu first.  Many things are customizable
 ! from there.  Things which are settable via the Preferences dialog
-! are stored in the `~/.dddinit' file.
+! are stored in the `~/.ddd/init' file.
 ! =================================================================
 !
 ! This file lists the default resources built into DDD.  You can use the
@@ -41,7 +41,7 @@ Ddd*appDefaultsVersion: @VERSION@
 ! environment; normally you will do this by copying the few lines you
 ! want to alter to your private resource database, which usually lives
 ! in a file called `.Xdefaults' in your home directory.	 You may also 
-! place such lines in the DDD-specific `.dddinit' file in your home
+! place such lines in the DDD-specific `.ddd/init' file in your home
 ! directory.
 ! 
 ! Site administrators **may** want to make changes here and install this
@@ -113,7 +113,7 @@ Ddd*globalTabCompletion: true
 Ddd*lineBufferedConsole: true
 
 
-! True if options are to be saved in ~/.dddinit across DDD invocations.
+! True if options are to be saved in `~/.ddd/init' across DDD invocations.
 Ddd*saveOptionsOnExit: false
 
 
@@ -454,7 +454,7 @@ set height 0\n\
 set width 0\n\
  set verbose off\n
 
-! The GDB settings.  Usually overridden in `~/.dddinit'.
+! The GDB settings.  Usually overridden in `~/.ddd/init'.
 Ddd*gdbSettings: \
 set print asm-demangle on\n\
 set print repeats 0\n
@@ -469,7 +469,7 @@ Ddd*dbxInitCommands: \
 sh stty -echo -onlcr\n\
 set $page = 1\n
 
-! The DBX settings.  Usually overridden in `~/.dddinit'.
+! The DBX settings.  Usually overridden in `~/.ddd/init'.
 Ddd*dbxSettings:
 
 
@@ -487,7 +487,7 @@ def step s\n\
 def quit q\n\
 def finish { bu \\1t ; c ; L }\n
 
-! The XDB settings.  Usually overridden in `~/.dddinit'.
+! The XDB settings.  Usually overridden in `~/.ddd/init'.
 Ddd*xdbSettings:
 
 
@@ -503,7 +503,7 @@ Ddd*xdbSettings:
 Ddd*autoCommands: false
 
 ! The prefix of auto-commands (by default, `ddd: ').  You are encouraged
-! to change this value in your `~/.dddinit' file.
+! to change this value in your `~/.ddd/init' file.
 Ddd*autoCommandPrefix: ddd:\ 
 
 
@@ -881,7 +881,7 @@ Ddd*graph_edit.outlineColor:	   grey50
 ! - stdfontweight() is the weight used: one of
 !   weight_medium(), weight_bold().
 !
-! Here is an example which you can copy to ~/.dddinit and customize:
+! Here is an example which you can copy to `~/.ddd/init' and customize:
 !
 ! Ddd*vslDefs: \
 ! #replace display_color   \n\
@@ -1374,6 +1374,9 @@ DESC(Open Program..., [open the program to be debugged])\n\
 DESC(Open Core Dump..., [open a core dump])\n\
 DESC(Open Source..., [open a source file])\n\
 \n\
+DESC(Open Session..., [open a DDD debugging session])\n\
+DESC(Save Session As..., [save current debugging session])\n\
+\n\
 DESC(Attach to Process..., [attach to a process outside of DDD])\n\
 DESC(Detach Process, [detach a process previously attached])\n\
 \n\
@@ -1383,14 +1386,12 @@ DESC(Print Again, [print using the previous settings])\n\
 DESC(Make..., [run the CODE(make) program])\n\
 DESC(Make Again, [make using the previous settings])\n\
 \n\
-DESC(Change Session..., [define a session in which to save DDD state])\n\
-\n\
 DESC(Close, [close this window])\n\
 DESC(Exit, [exit DDD])
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
 Ddd*menubar*fileMenu.open_file.mnemonic:    O
-Ddd*menubar*fileMenu.open_file.accelerator:      Meta<Key>O
+Ddd*menubar*fileMenu.open_file.accelerator:      ~Shift Meta<Key>O
 Ddd*menubar*fileMenu.open_file.acceleratorText:  Alt+O
 Ddd*menubar*fileMenu.open_file.documentationString:   \
 @rm Open a program to be debugged
@@ -1404,6 +1405,18 @@ Ddd*menubar*fileMenu.open_source.labelString: Open Source...
 Ddd*menubar*fileMenu.open_source.mnemonic:    S
 Ddd*menubar*fileMenu.open_source.documentationString:   \
 @rm Open a source file in the source window
+
+Ddd*menubar*fileMenu.open_session.labelString:	        Open Session...
+Ddd*menubar*fileMenu.open_session.mnemonic:	        e
+Ddd*menubar*fileMenu.open_session.accelerator:          ~Shift Meta<Key>O
+Ddd*menubar*fileMenu.open_session.acceleratorText:      Alt+Shift+O
+Ddd*menubar*fileMenu.open_session.documentationString:  \
+@rm Restore a previously saved DDD session
+
+Ddd*menubar*fileMenu.save_session.labelString:	        Save Session As...
+Ddd*menubar*fileMenu.save_session.mnemonic:	        v
+Ddd*menubar*fileMenu.save_session.documentationString:  \
+@rm Save this DDD session for resuming later
 
 Ddd*menubar*fileMenu.attach.labelString: Attach to Process...
 Ddd*menubar*fileMenu.attach.mnemonic:    A
@@ -1420,8 +1433,8 @@ Ddd*menubar*fileMenu.detach.documentationString:
 
 Ddd*menubar*fileMenu.print.labelString:	 	Print Graph...
 Ddd*menubar*fileMenu.print.mnemonic:	 	P
-! Ddd*menubar*fileMenu.print.accelerator:      ~Shift Meta<Key>P
-! Ddd*menubar*fileMenu.print.acceleratorText:  Alt+P
+! Ddd*menubar*fileMenu.print.accelerator:       ~Shift Meta<Key>P
+! Ddd*menubar*fileMenu.print.acceleratorText:   Alt+P
 Ddd*menubar*fileMenu.print.documentationString:   \
 @rm Print the contents of the data display
 
@@ -1445,11 +1458,6 @@ Ddd*menubar*fileMenu.makeAgain.accelerator:      Shift Ctrl<Key>M
 Ddd*menubar*fileMenu.makeAgain.acceleratorText:  Ctrl+Shift+M
 Ddd*menubar*fileMenu.makeAgain.documentationString:  \
 @rm Run the ``make'' program, using previous settings
-
-Ddd*menubar*fileMenu.sessions.labelString:	Change Session...
-Ddd*menubar*fileMenu.sessions.mnemonic:	 h
-Ddd*menubar*fileMenu.sessions.documentationString:   \
-@rm Set and edit the current session setting
 
 Ddd*menubar*fileMenu.close.labelString:	 Close
 Ddd*menubar*fileMenu.close.mnemonic:	 C
@@ -3523,7 +3531,7 @@ Ddd*core_files_popup.title:		   DDD: Open Core Dump
 Ddd*core_files_popup*okLabelString:	   Open
 Ddd*core_files_popup*selectionLabelString: Core Dump
 Ddd*core_files_popup*helpString:	   \
-@rm  Enter the name of a core dump in the argument field.\n\
+@rm Enter the name of a core dump in the argument field.\n\
 \n\
 The core dump is used for examining memory and registers.\n\
 No argument means to have no core file.\n\
@@ -3538,7 +3546,7 @@ Ddd*source_files_popup.title:		   DDD: Open Source
 Ddd*source_files_popup*okLabelString:	   Open
 Ddd*source_files_popup*selectionLabelString: Source File
 Ddd*source_files_popup*helpString:    \
-@rm  Enter the name of a source file in the argument field.\n\
+@rm Enter the name of a source file in the argument field.\n\
 \n\
 The source file is shown in the source window and may be used\n\
 for setting or clearing breakpoints.\n\
@@ -3577,34 +3585,44 @@ to specify the program running in the process, and to load its symbol table.\n\
 Click on LBL(Attach) to attach to the selected process.\n\
 Click on LBL(Update) to update the list of processes.
 
-Ddd*sessions_popup.title: 	DDD: Save Session
-Ddd*sessions.listLabelString:	Sessions
-Ddd*sessions.selectionLabelString: Set Session
-Ddd*sessions*selectionPolicy:	XmSINGLE_SELECT
 
-Ddd*sessions*okLabelString:	 Set
-Ddd*sessions*applyLabelString:	 Delete
+Ddd*sessions_to_open_popup.title: 		DDD: Open Session
+Ddd*sessions_to_open.listLabelString:		Sessions
+Ddd*sessions_to_open.selectionLabelString: 	Open Session
+Ddd*sessions_to_open*selectionPolicy:		XmSINGLE_SELECT
+Ddd*sessions_to_open*okLabelString:	 	Open
+Ddd*sessions_to_open*applyLabelString:	 	Delete
+Ddd*sessions_to_open*helpString:	\
+@rm Enter the name of a DDD session in the argument field.\n\
+\n\
+A DDD session records the state of a debugging session,\n\
+such that you can exit debugging sessions and resume later.\n\
+\n\
+Click on LBL(Open) to open the selected session.\n\
+Click on LBL(Delete) to delete the selected session.
 
-Ddd*sessions*helpString:	\
-@rm You can save the current DDD state by defining a EMPH(session).\n\
-\n\
-When exiting, DDD checks whether a EMPH(session) is defined.\n\
-If so, DDD saves the entire process state using the session name.\n\
-You can restore the session at a later time by restarting DDD with \
-SAMP(=VAR(session)).\n\
-\n\
-ITEM To choose one of the existing sessions, select it from the list.\n\
-    Click on LBL(Set) to make the selected session name the current session.\n\
-\n\
-ITEM To create a new session, enter its name.\n\
-    Click on LBL(Set) to make the entered session name the current session.\n\
-\n\
-ITEM To undefine the current session, select SAMP(\133none\135).\n\
-    Click on LBL(Set) to undefine the current session.\n\
-\n\
-ITEM To delete old sessions, select them from the list.\n\
-    Click on LBL(Delete) to delete the selected sessions.
 
+Ddd*sessions_to_save_popup.title: 		DDD: Save Session
+Ddd*sessions_to_save.listLabelString:		Sessions
+Ddd*sessions_to_save.selectionLabelString: 	Save Session
+Ddd*sessions_to_save*selectionPolicy:		XmSINGLE_SELECT
+Ddd*sessions_to_save*okLabelString:	 	Save
+Ddd*sessions_to_save*applyLabelString:	 	Update
+Ddd*sessions_to_save*dump_core.labelString:	Include Core Dump
+Ddd*sessions_to_save*dump_core.alignment:	XmALIGNMENT_BEGINNING
+
+Ddd*sessions_to_save*helpString:	\
+@rm Enter the name of a DDD session in the argument field.\n\
+\n\
+A DDD session records the state of a debugging session,\n\
+such that you can exit debugging sessions and resume later.\n\
+\n\
+If LBL(Include Core Dump) is set, DDD includes a core dump of the\n\
+program being debugged.  This allows DDD to restore memory\n\
+contents and data displays when resuming the session.\n\
+\n\
+Click on LBL(Save) to save the current DDD session.\n\
+Click on LBL(Update) to update the session list.
 
 
 !-----------------------------------------------------------------------------
@@ -4118,26 +4136,50 @@ Ddd*set_dialog*helpString:	\
 @rm You can now change a value in the selected display.\n\
 If you want to keep it unchanged, click on LBL(Cancel).
 
-Ddd*kill_to_save_dialog_popup.title: DDD: Kill To Save
+Ddd*kill_to_save_dialog_popup.title: DDD: Save Session
 Ddd*kill_to_save_dialog.messageString: \
-@rm Saving data displays requires a core dump of the debugged program.\
-  Kill it?
-Ddd*kill_to_save_dialog.okLabelString: Yes
-Ddd*kill_to_save_dialog*no.labelString: No
+@rm Kill the program being debugged?
+Ddd*kill_to_save_dialog.okLabelString:     Yes
+Ddd*kill_to_save_dialog.cancelLabelString: No
 Ddd*kill_to_save_dialog*helpString: \
 @rm In order to restore the data displays of this session, DDD requires\n\
 a core dump reflecting the current memory contents.  Unfortunately, \n\
 DDD must kill the program for that.\n\
 \n\
-To kill your program and save the entire state, click on LBL(Yes).\n\
-To save as much state as possible, without killing, click on LBL(No).\n\
-To cancel and leave saved state unchanged, click on LBL(Cancel).
+To kill your program and save the entire state, click on LBL(Yes).
+
+Ddd*data_not_saved_dialog_popup.title: DDD: Save Session
+Ddd*data_not_saved_dialog.messageString: \
+@rm Without a core dump, DDD will not be able to restore data displays.\
+  Proceed anyway?
+Ddd*data_not_saved_dialog.okLabelString:     Yes
+Ddd*data_not_saved_dialog.cancelLabelString: No
+Ddd*data_not_saved_dialog*helpString: \
+@rm In order to restore the data displays of this session, DDD requires\n\
+a core dump reflecting the current memory contents.\n\
+\n\
+To save the entire state without a core dump, click on LBL(Yes).
 
 
 
 !-----------------------------------------------------------------------------
 ! Messages
 !-----------------------------------------------------------------------------
+
+! If we have an old app-defaults file installed, we probably 
+! won't see this warning.
+Ddd*bad_version_warning.title: DDD: Version Mismatch
+Ddd*bad_version_warning*helpString:	\
+@rm This DDD version does not match the version of the\n\
+app-defaults file FILE([Ddd]) or your FILE(~/.[ddd]/init) file.\n\
+\n\
+Please install a recent app-defaults file, or better yet, remove it.\n\
+DDD works perfectly without app-defaults file.  Instead, use a personal\n\
+FILE(~/.[ddd]/init) file to customize DDD.\n\
+\n\
+Saving the current state will update FILE(init) files.\n\
+To update your FILE(~/.[ddd]/init) file, use LBL(Edit) | LBL(Save Options).\n\
+To update a session FILE(init) file, use LBL(File) | LBL(Save Session).
 
 Ddd*source_file_error_popup.title: DDD: No Source
 Ddd*source_file_error*helpString:	\
@@ -4232,7 +4274,7 @@ could not be invoked.  The debugged process will execute in the\n\
 @GDB@ console instead.\n\
 \n\
 Please verify the contents of the SAMP(.termCommand) resource\n\
-in the DDD application defaults file and in your FILE(~/.dddinit) file.
+in the DDD application defaults file and in your FILE(~/.[ddd]/init) file.
 
 Ddd*tty_command_error_popup.title: DDD: TTY Failed
 Ddd*tty_command_error*helpString:	\
@@ -4249,7 +4291,7 @@ To do so, include a line\n\
 \n\
 CODE([Ddd]*useTTYCommand: false)\n\
 \n\
-in your FILE(~/.dddinit) file and restart DDD.
+in your FILE(~/.[ddd]/init) file and restart DDD.
 
 Ddd*tty_type_error: DDD: Term Failed
 Ddd*tty_type_error*helpString:	\
@@ -4327,8 +4369,7 @@ To get the most recent DDD version, see the LBL(Help) | LBL([DDD] WWW Page).
 
 Ddd*incomplete_save_warning.title: DDD: Incomplete Save
 Ddd*incomplete_save_warning*helpString: \
-@rm Some displays could not be saved because their scope is not active.\n\
-See the status line for details.
+@rm Some part of the DDD state could not be saved.
 
 Ddd*no_sessions_error.title: DDD: No Sessions
 Ddd*no_sessions_error*helpString: \

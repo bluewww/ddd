@@ -52,6 +52,10 @@ string get_dbx_help(string dbxenv, string base);
 // Mark settings as `saved'
 void save_settings_state();
 
+// Mark settings as `invalid'
+void reset_settings();
+
+
 
 // Popup editor for debugger infos
 void dddPopupInfosCB(Widget, XtPointer, XtPointer);

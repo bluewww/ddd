@@ -409,6 +409,11 @@ private:
     static bool change_glyphs;
     static WidgetArray changed_glyphs;
 
+    // Callback when state has been reset
+    static void reset_done(const string& answer, void *data);
+
+    static int max_breakpoint_number_seen = 0;
+
 public:
     // Constructor
     SourceView (XtAppContext app_context, Widget parent);
@@ -557,6 +562,9 @@ public:
     // The maximum breakpoint number when saving states
     static int max_breakpoint_number;
 
+    // The next breakpoint number (the highest last seen + 1)
+    static int next_breakpoint_number();
+
     // Return `clear ARG' command.  If CLEAR_NEXT is set, attempt to
     // guess the next event number and clear this one as well.
     static string clear_command(string arg, bool clear_next = false);
@@ -621,7 +629,10 @@ public:
     static bool have_selection();
 
     // Return debugger command(s) to restore current state (breakpoints, etc.)
-    static bool get_state(ostream& os, DebuggerType type);
+    static bool get_state(ostream& os);
+
+    // Clear entire state, using GDB commands
+    static void reset();
 
     // Helpers
     static string full_path(string file);

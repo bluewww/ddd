@@ -35,6 +35,8 @@ char options_rcsid[] =
 
 #include "options.h"
 
+#include "config.h"
+
 #include "AppData.h"
 #include "DataDisp.h"
 #include "DestroyCB.h"
@@ -67,8 +69,15 @@ char options_rcsid[] =
 
 #include <stdio.h>
 #include <fstream.h>
+#include <unistd.h>
 
+#if defined(HAVE_LINK) && !defined(HAVE_LINK_DECL)
+extern "C" int link (const char *oldname, const char *newname);
+#endif
 
+#if defined(HAVE_SYMLINK) && !defined(HAVE_SYMLINK_DECL)
+extern "C" int symlink (const char *oldname, const char *newname);
+#endif
 
 //-----------------------------------------------------------------------------
 // Source Options
@@ -671,56 +680,124 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
 // Get core
 // ---------------------------------------------------------------------------
 
-// Get core from running program
-static bool get_core(const string& session, unsigned long flags)
+static bool copy(const string& src, const string& dest)
 {
-    const bool interact      = (flags & MAY_INTERACT);
-    const bool may_kill      = (flags & MAY_KILL);
+    FILE *from = fopen(src, "r");
+    if (from == NULL)
+	return false;
 
-    create_session_dir(session);
-    string target = session_core_file(session);
-    if (!program_running())
+    FILE *to = fopen(dest, "w");
+    if (to == NULL)
+	return false;
+
+    int c;
+    while ((c = getc(from)) != EOF)
+	putc(c, to);
+
+    fclose(from);
+    if (fclose(to) == EOF)
     {
-	// The program is not running.  Maybe we're still examining a
-	// core file.
-	return is_core_file(target);
-    }
-
-    // Get core file of running program
-    string current_file;
-    int current_pid;
-    bool attached;
-    get_current_file(current_file, current_pid, attached);
-
-    if (current_pid <= 0)
-    {
-	if (interact)
-	    post_error("Cannot get process id", "no_core");
+	unlink(dest);
 	return false;
     }
 
-    StatusDelay delay("Getting core file");
+    return true;
+}
+
+static bool move(const string& from, const string& to)
+{
+    if (rename(from, to) == 0)
+	return true;
+
+    if (copy(from, to) && unlink(from) == 0)
+	return true;
+
+    return false;
+}
+
+
+// Get core from running program
+static bool _get_core(const string& session, unsigned long flags)
+{
+    const bool may_kill      = (flags & MAY_KILL);
+    const bool dont_save     = (flags & DONT_SAVE);
+
+    create_session_dir(session);
+    string target = session_core_file(session);
+
+    ProgramInfo info;
+    if (!info.running)
+    {
+	// The program is not running.
+	if (info.core != "" && info.core != NO_GDB_ANSWER)
+	{
+	    // We already have some core file.
+	    if (dont_save)
+		return true;	// Fine
+
+	    if (info.core == target)
+	    {
+		// It is our target.
+		return true;
+	    }
+
+	    // Remove old target, if any
+	    unlink(target);
+
+#ifdef HAVE_LINK
+	    // Try a hard link from current core file to target
+	    if (link(info.core, target) == 0)
+		return true;
+#endif
+	    
+#ifdef HAVE_SYMLINK
+	    // Try a symlink link from target to current core file
+	    if (symlink(info.core, target) == 0)
+		return true;
+#endif
+
+	    // Looks as if we have to copy some large core file.  Blechhh.
+	    StatusDelay delay("Copying core file");
+	    return copy(info.core, target);
+	}
+
+	// Program is not running, and we have no core.  Quit.
+	return false;
+    }
+
+    if (info.pid <= 0)
+    {
+	// Without process id, no chance to get a core file.
+	return false;
+    }
 
     // Try `gcore' command
     string gcore = app_data.get_core_command;
-    if (gcore != "")
+    if (gcore != "" && !dont_save)
     {
-	string gcore_target = target + "." + itostring(current_pid);
+	// Get new core file from running process
+	StatusDelay delay("Getting core file");
+
+	string gcore_target = target + "." + itostring(info.pid);
 	gcore.gsub("@FILE@", target);
-	gcore.gsub("@PID@",  itostring(current_pid));
+	gcore.gsub("@PID@",  itostring(info.pid));
 	sh_command(gcore);
 
-	if (is_core_file(gcore_target))
-	{
-	    rename(gcore_target, target);
+	if (is_core_file(gcore_target) && move(gcore_target, target) == 0)
 	    return true;
-	}
     }
 
+    // Try direct kill.
     if (may_kill)
     {
+	if (dont_save)
+	    return true;	// Will probably work
+
+	// Get new core file from running process
+	StatusDelay delay("Killing process");
+
 	int tries = 10;
-	while (tries-- > 0 && kill(current_pid, SIGABRT) == 0)
+	while (tries-- > 0 && kill(info.pid, SIGABRT) == 0)
 	{
 	    Command c("stepi");
 	    c.verbose  = false;
@@ -729,14 +806,22 @@ static bool get_core(const string& session, unsigned long flags)
 	    gdb_command(c);
 	    syncCommandQueue();
 	}
+
 	string core = SourceView::full_path("core");
 	if (is_core_file(core))
 	{
-	    rename(core, target);
+	    // It worked.  Fine!
+	    if (!move(core, target))
+	    {
+		// Move failed -- sorry
+		unlink(core);
+		return false;
+	    }
+
 	    if (gdb->type() == GDB)
 	    {
-		// Load the core file just read, such that we can keep
-		// on examining data.
+		// Load the core file just saved, such that we can
+		// keep on examining data in this session.
 		Command c("core " + target);
 		c.verbose  = false;
 		c.check    = true;
@@ -744,34 +829,32 @@ static bool get_core(const string& session, unsigned long flags)
 		gdb_command(c);
 		c.command  = "graph refresh";
 		gdb_command(c);
+		c.command  = "# reset";
+		gdb_command(c);
 		syncCommandQueue();
 	    }
+
 	    return true;
 	}
     }
 
-    if (interact)
-	post_error("Cannot get core", "no_core");
     return false;
+}
+
+static bool get_core(const string& session, unsigned long flags)
+{
+    const bool interact      = (flags & MAY_INTERACT);
+
+    bool ok = _get_core(session, flags);
+    if (!ok && interact)
+	post_warning("Could not save core file.", "incomplete_save_warning");
+
+    return ok;
 }
 
 static bool must_kill_to_get_core()
 {
-    // If the program is not running, we need not kill it.
-    if (!program_running())
-	return false;
-
-#if 0
-    // If we have a `gcore' command, we need not kill the program to
-    // get its core.
-    string gcore = app_data.get_core_command;
-    if (gcore.contains(' '))
-	gcore = gcore.before(' ');
-
-    return gcore != "" && is_cmd_file(cmd_file(gcore));
-#else
-    return true;
-#endif
+    return !_get_core(app_data.session, DONT_SAVE);
 }
 
 
@@ -884,13 +967,27 @@ static string widget_geometry(Widget w)
 
 bool saving_options_kills_program(unsigned long flags)
 {
+    ProgramInfo info;
+
     const bool save_session  = (flags & SAVE_SESSION);
     const bool may_kill      = (flags & MAY_KILL);
+    const bool save_core     = (flags & SAVE_CORE);
 
-    return save_session
-	&& data_disp->need_core_to_restore()
+    return info.running
+	&& save_session
+	&& save_core
 	&& must_kill_to_get_core()
 	&& !may_kill;
+}
+
+bool saving_options_excludes_data(unsigned long flags)
+{
+    const bool save_session  = (flags & SAVE_SESSION);
+    const bool save_core     = (flags & SAVE_CORE);
+
+    return save_session
+	&& !save_core
+	&& data_disp->need_core_to_restore();
 }
 
 bool save_options(unsigned long flags)
@@ -898,6 +995,7 @@ bool save_options(unsigned long flags)
     const bool create        = (flags & CREATE_OPTIONS);
     const bool save_session  = (flags & SAVE_SESSION);
     const bool save_geometry = (flags & SAVE_GEOMETRY);
+    const bool save_core     = (flags & SAVE_CORE);
     const bool interact      = (flags & MAY_INTERACT);
 
     string session = (save_session ? app_data.session : DEFAULT_SESSION);
@@ -1160,15 +1258,46 @@ bool save_options(unsigned long flags)
 	os << "\n! Last " << DDD_NAME << " session\n";
 
 	// Save restart commands
-	ostrstream restart_commands;
+	ostrstream rs;
+
+	// Get exec and core file
+	ProgramInfo info;
+	string core = session_core_file(session);
+	if (info.file == NO_GDB_ANSWER)
+	{
+	    if (interact)
+		post_warning("Could not save program name.",
+			     "incomplete_save_warning");
+	    ok = false;
+	}
+	else
+	{
+	    switch (gdb->type())
+	    {
+	    case GDB:
+		rs << "set confirm off\n";
+		if (info.file != "")
+		    rs << "file " << info.file << "\n";
+		rs << "core " << core << "\n";
+		break;
+
+	    case DBX:
+		if (info.file != "")
+		    rs << "debug " << info.file << " " << core << "\n";
+		break;
+
+	    case XDB:
+		// FIXME
+		break;
+	    }
+	}
 
 	// Get breakpoints and cursor position
-	bool breakpoints_ok = 
-	    source_view->get_state(restart_commands, gdb->type());
+	bool breakpoints_ok = source_view->get_state(rs);
 	if (!breakpoints_ok)
 	{
 	    if (interact)
-		post_warning("Cannot save breakpoints", 
+		post_warning("Could not save all breakpoints", 
 			     "incomplete_save_warning");
 	    ok = false;
 	}
@@ -1177,23 +1306,24 @@ bool save_options(unsigned long flags)
 	StringArray scopes;
 	bool displays_ok = true;
 
-	if (displays_ok && data_disp->need_core_to_restore())
-	    displays_ok = data_disp->get_scopes(scopes);
-	if (displays_ok && data_disp->need_core_to_restore())
-	    displays_ok = get_core(session, flags);
 	if (displays_ok)
-	    displays_ok = data_disp->get_state(restart_commands, scopes);
+	    displays_ok = data_disp->get_scopes(scopes);
+
+	if (save_core)
+	    get_core(session, flags);
+
+	if (displays_ok)
+	    displays_ok = data_disp->get_state(rs, scopes);
 
 	if (!displays_ok)
 	{
 	    if (interact)
-		post_warning("Cannot save data displays",
+		post_warning("Could not save all data displays.",
 			     "incomplete_save_warning");
 	    ok = false;
 	}
 
-	os << string_app_value(XtNrestartCommands, string(restart_commands)) 
-	   << "\n";
+	os << string_app_value(XtNrestartCommands, string(rs)) << "\n";
     }
 
     save_option_state();
@@ -1243,27 +1373,34 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
     else if (saving_options_kills_program(flags))
     {
-	// Saving options would kill program; request confirmation
-	Arg args[10];
-	int arg;
-
+	// Saving session would kill program; request confirmation
 	static Widget dialog = 0;
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
-	arg = 0;
 	dialog = verify(XmCreateQuestionDialog(find_shell(w), 
 					       "kill_to_save_dialog",
-					       args, arg));
+					       0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
 		      XtPointer(flags | MAY_KILL));
-#if XmVersion >= 1002
-	Widget no = verify(XmCreatePushButton(dialog, "no", 0, 0));
-	XtManageChild(no);
-	XtAddCallback(no, XmNactivateCallback, 
-		      DoSaveOptionsCB, XtPointer(flags));
-#endif
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+
+	manage_and_raise(dialog);
+    }
+    else if (saving_options_excludes_data(flags))
+    {
+	// Saving session results in data loss; request confirmation
+	static Widget dialog = 0;
+	if (dialog)
+	    DestroyWhenIdle(dialog);
+
+	dialog = verify(XmCreateQuestionDialog(find_shell(w), 
+					       "data_not_saved_dialog",
+					       0, 0));
+	Delay::register_shell(dialog);
+	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
+		      XtPointer(flags));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
 	manage_and_raise(dialog);

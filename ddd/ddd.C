@@ -531,34 +531,35 @@ static XtActionsRec actions [] = {
 
 struct FileItems {
     enum FileItem { OpenFile, OpenCore, OpenSource, Sep1,
-		    Attach, Detach, Sep2,
-		    Print, PrintAgain, Sep3,
-		    Make, MakeAgain, Sep4,
-		    Sessions, Sep5,
+		    OpenSession, SaveSession, Sep2,
+		    Attach, Detach, Sep3,
+		    Print, PrintAgain, Sep4,
+		    Make, MakeAgain, Sep5,
 		    Close, Restart, Exit
     };
 };
 
 #define FILE_MENU \
 { \
-    { "open_file",   MMPush, { gdbOpenFileCB }}, \
-    { "open_core",   MMPush, { gdbOpenCoreCB }}, \
-    { "open_source", MMPush, { gdbOpenSourceCB }}, \
+    { "open_file",     MMPush, { gdbOpenFileCB }}, \
+    { "open_core",     MMPush, { gdbOpenCoreCB }}, \
+    { "open_source",   MMPush, { gdbOpenSourceCB }}, \
     MMSep, \
-    { "attach",      MMPush, { gdbOpenProcessCB }}, \
-    { "detach",      MMPush, { gdbCommandCB, "detach" }}, \
+    { "open_session",  MMPush, { OpenSessionCB }}, \
+    { "save_session",  MMPush, { SaveSessionAsCB }}, \
     MMSep, \
-    { "print",       MMPush, { graphPrintCB }}, \
-    { "printAgain",  MMPush, { graphQuickPrintCB, XtPointer(1) }}, \
+    { "attach",        MMPush, { gdbOpenProcessCB }}, \
+    { "detach",        MMPush, { gdbCommandCB, "detach" }}, \
     MMSep, \
-    { "make",        MMPush, { gdbMakeCB }}, \
-    { "makeAgain",   MMPush, { gdbMakeAgainCB }}, \
+    { "print",         MMPush, { graphPrintCB }}, \
+    { "printAgain",    MMPush, { graphQuickPrintCB, XtPointer(1) }}, \
     MMSep, \
-    { "sessions",    MMPush, { EditSessionsCB }}, \
+    { "make",          MMPush, { gdbMakeCB }}, \
+    { "makeAgain",     MMPush, { gdbMakeAgainCB }}, \
     MMSep, \
-    { "close",       MMPush, { DDDCloseCB }}, \
-    { "restart",     MMPush | MMUnmanaged, { DDDRestartCB }}, \
-    { "exit",        MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }}, \
+    { "close",         MMPush, { DDDCloseCB }}, \
+    { "restart",       MMPush | MMUnmanaged, { DDDRestartCB }}, \
+    { "exit",          MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }}, \
     MMEnd \
 }
 
@@ -1207,6 +1208,8 @@ public:
     }
 };
 
+static MString version_warnings;
+
 
 //-----------------------------------------------------------------------------
 // DDD main program
@@ -1448,8 +1451,8 @@ int main(int argc, char *argv[])
 			  sessionShellWidgetClass,
 			  args, arg);
 
-    XtAddCallback(toplevel, XtNsaveCallback, SaveSessionCB, XtPointer(0));
-    XtAddCallback(toplevel, XtNdieCallback, DieSessionCB, XtPointer(0));
+    XtAddCallback(toplevel, XtNsaveCallback, SaveSmSessionCB, XtPointer(0));
+    XtAddCallback(toplevel, XtNdieCallback, ShutdownSmSessionCB, XtPointer(0));
 #else
     Widget toplevel = 
 	XtAppInitialize(&app_context, DDD_CLASS_NAME,
@@ -1561,26 +1564,41 @@ int main(int argc, char *argv[])
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
     if (app_data.app_defaults_version == 0)
     {
-	messages << "Warning: no version information in `" 
-	            DDD_CLASS_NAME "' app-defaults-file\n";
+	cerr << "Warning: no version information in `" 
+	     << DDD_CLASS_NAME "' app-defaults-file\n";
+
+	version_warnings += rm("No version information in `")
+	    + tt(DDD_CLASS_NAME) + rm("' app-defaults-file") + cr();
     }
     else if (string(app_data.app_defaults_version) != DDD_VERSION)
     {
-	messages << "Warning: using `" DDD_CLASS_NAME 
-		 << "' app-defaults file for " DDD_NAME " " 
-		 << app_data.app_defaults_version 
-		 << " (this is " DDD_NAME " " DDD_VERSION ")\n";
+	cerr << "Warning: using `" DDD_CLASS_NAME "' app-defaults file"
+	     << " for " DDD_NAME " " << app_data.app_defaults_version 
+	     << " (this is " DDD_NAME " " DDD_VERSION ")\n";
+
+	version_warnings += rm("Using `") + tt(DDD_CLASS_NAME)
+	    + rm("' app-defaults file for " DDD_NAME " ")
+	    + rm(app_data.app_defaults_version)
+	    + rm(" (this is " DDD_NAME " " DDD_VERSION ")");
     }
 
     if (app_data.dddinit_version && 
 	string(app_data.dddinit_version) != DDD_VERSION)
     {
-	messages << "Warning: using "
-		 << quote(session_state_file(app_data.session))
-		 << " file for " << DDD_NAME " " 
-		 << app_data.dddinit_version
-		 << " (this is " DDD_NAME " " DDD_VERSION ").\n"
-		 << "Please save options.\n";
+	cerr << "Warning: using "
+	     << quote(session_state_file(app_data.session))
+	     << " file for " DDD_NAME " " << app_data.dddinit_version
+	     << "\n(this is " DDD_NAME " " DDD_VERSION ")."
+	     << "  Please save options.\n";
+
+	version_warnings += rm("Using `")
+	    + tt(cook(session_state_file(app_data.session)))
+	    + rm("' file for " DDD_NAME " ")
+	    + rm(app_data.dddinit_version) + cr()
+	    + rm("(this is " DDD_NAME " " DDD_VERSION ").  "
+		 "Please save options.");
+	
+	
     }
 
     // Register own converters
@@ -1647,13 +1665,18 @@ int main(int argc, char *argv[])
     {
 	// One single window - use command shell as top-level shell
 	command_shell = 
-	    verify(XtAppCreateShell(NULL, DDD_CLASS_NAME, 
+	    verify(XtAppCreateShell(NULL, DDD_CLASS_NAME,
 				    applicationShellWidgetClass,
 				    XtDisplay(toplevel), args, arg));
 	
-	// The old top-level shell may still be needed for session
-	// management, but is never realized.  From now on, use the
-	// command shell as parent of all further shells.
+#if XtSpecificationRelease >= 6
+	// The old top-level shell is still needed for session
+	// management, but is never realized.
+#else
+	// The old top-level shell is no longer needed
+	XtDestroyWidget(toplevel);
+#endif
+	// From now on, use the command shell as parent
 	toplevel = command_shell;
     }
     else
@@ -2038,7 +2061,11 @@ int main(int argc, char *argv[])
     }
 
     // Create initial delay
-    init_delay = new Delay;
+    if (app_data.session == DEFAULT_SESSION)
+	init_delay = new Delay;
+    else
+	init_delay = new StatusDelay("Opening session " 
+				     + quote(app_data.session));
 
     if (app_data.decorate_tool == Auto)
     {
@@ -2368,11 +2395,29 @@ static void ddd_check_version()
 	return;
     checked = true;
 
+    // Tell user once more about version mismatches
+    if (!version_warnings.isEmpty())
+    {
+	Arg args[10];
+	int arg = 0;
+
+	XtSetArg(args[arg], XmNmessageString, 
+		 version_warnings.xmstring()); arg++;
+	Widget warning = 
+	    verify(XmCreateWarningDialog(command_shell, "bad_version_warning",
+					 args, arg));
+	Delay::register_shell(warning);
+	XtUnmanageChild(XmMessageBoxGetChild(warning, XmDIALOG_CANCEL_BUTTON));
+	XtAddCallback(warning, XmNhelpCallback, ImmediateHelpCB, NULL);
+
+	manage_and_raise(warning);
+    }
+
     if (app_data.dddinit_version == 0 ||
 	string(app_data.dddinit_version) != DDD_VERSION)
     {
 	// We have no ~/.ddd/init file or an old one: show version info
-	HelpOnVersionCB(gdb_w, 0, 0);
+	HelpOnVersionCB(command_shell, 0, 0);
 
 	// We have no ~/.ddd/init file: create a simple one
 	if (app_data.dddinit_version == 0)
@@ -2384,6 +2429,7 @@ static void ddd_check_version()
 	}
     }
 
+    // Check for expired versions
     if (ddd_expired())
     {
 	ostrstream msg;
@@ -2577,10 +2623,26 @@ static void fix_status_size()
 // Setup
 //-----------------------------------------------------------------------------
 
+static Boolean delete_init_delay_if_idle(XtPointer)
+{
+    if (emptyCommandQueue() && gdb->isReadyWithPrompt())
+    {
+	delete init_delay;
+	init_delay = 0;
+	return True;		// Remove from the list of work procs
+    }
+    return False;		// Get called again
+}
+
 static Boolean ddd_setup_done(XtPointer)
 {
-    if (emptyCommandQueue())
+    if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {
+	// Some WMs have trouble with early decorations.  Just re-decorate.
+	decorate_new_shell(command_shell);
+	decorate_new_shell(data_disp_shell);
+	decorate_new_shell(source_view_shell);
+
 	ddd_check_version();
 	install_button_tips();
 	fix_status_size();
@@ -2590,10 +2652,9 @@ static Boolean ddd_setup_done(XtPointer)
 	DispBox::init_vsllib(process_pending_events);
 	DataDisp::refresh_graph_edit();
 
-	// Clear delay
-	delete init_delay;
-	init_delay = 0;
-
+	// Clear delay when idle again
+	XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
+			 delete_init_delay_if_idle, 0);
 	return True;		// Remove from the list of work procs
     }
 
@@ -3763,6 +3824,14 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(source_file_menu[FileItems::OpenCore].widget,        ready);
     set_sensitive(data_file_menu[FileItems::OpenCore].widget,          ready);
 
+    set_sensitive(command_edit_menu[FileItems::OpenSession].widget,    ready);
+    set_sensitive(source_edit_menu[FileItems::OpenSession].widget,     ready);
+    set_sensitive(data_edit_menu[FileItems::OpenSession].widget,       ready);
+
+    set_sensitive(command_edit_menu[FileItems::SaveSession].widget,    ready);
+    set_sensitive(source_edit_menu[FileItems::SaveSession].widget,     ready);
+    set_sensitive(data_edit_menu[FileItems::SaveSession].widget,       ready);
+
     set_sensitive(command_file_menu[FileItems::Attach].widget,         ready);
     set_sensitive(source_file_menu[FileItems::Attach].widget,          ready);
     set_sensitive(data_file_menu[FileItems::Attach].widget,            ready);
@@ -3778,10 +3847,6 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(command_file_menu[FileItems::MakeAgain].widget,      ready);
     set_sensitive(source_file_menu[FileItems::MakeAgain].widget,       ready);
     set_sensitive(data_file_menu[FileItems::MakeAgain].widget,         ready);
-
-    set_sensitive(command_edit_menu[FileItems::Sessions].widget,       ready);
-    set_sensitive(source_edit_menu[FileItems::Sessions].widget,        ready);
-    set_sensitive(data_edit_menu[FileItems::Sessions].widget,          ready);
 
     set_sensitive(command_edit_menu[EditItems::Settings].widget,
 		  ready && (gdb->type() == GDB || gdb->type() == DBX));
@@ -4438,8 +4503,12 @@ static void language_changedHP(Agent *source, void *, void *)
 
 static void decorate_new_shell(Widget w)
 {
-    // Use DDD logo as icon of the new shell
+    if (w == 0)
+	return;
+
     Widget shell = findShellParent(w);
+
+    // Use DDD logo as icon of the new shell
     if (shell != 0 && XtIsRealized(shell))
 	wm_set_icon(shell, iconlogo(w), iconmask(w));
 }

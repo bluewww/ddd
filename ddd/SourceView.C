@@ -370,6 +370,7 @@ bool SourceView::signal_received = false;
 
 int SourceView::max_popup_expr_length = 20;
 
+int SourceView::max_breakpoint_number_seen = 0;
 
 //-----------------------------------------------------------------------
 // Selection stuff
@@ -2831,6 +2832,8 @@ void SourceView::process_info_bp (string& info_output,
 
 	    new_bp->selected() = true;
 	}
+
+	max_breakpoint_number_seen = max(max_breakpoint_number_seen, bp_nr);
     }
 
     // Delete all breakpoints not found now
@@ -2848,6 +2851,10 @@ void SourceView::process_info_bp (string& info_output,
     process_breakpoints(last_info_output);
 }
 
+int SourceView::next_breakpoint_number()
+{
+    return max_breakpoint_number_seen + 1;
+}
 
 
 // ***************************************************************************
@@ -6095,7 +6102,7 @@ bool SourceView::have_selection()
 int SourceView::max_breakpoint_number = 99;
 
 // Return DDD commands to restore current state (breakpoints, etc.)
-bool SourceView::get_state(ostream& os, DebuggerType type)
+bool SourceView::get_state(ostream& os)
 {
     IntArray breakpoint_nrs;
     bool ok = true;
@@ -6125,15 +6132,15 @@ bool SourceView::get_state(ostream& os, DebuggerType type)
 	    if (restore_old_numbers)
 	    {
 		while (num < breakpoint_nrs[i])
-		    ok &= bp->get_state(os, type, num++, true);
+		    ok &= bp->get_state(os, num++, true);
 		assert(num == breakpoint_nrs[i]);
 	    }
-	    ok &= bp->get_state(os, type, num++);
+	    ok &= bp->get_state(os, num++);
 	}
     }
 
     // Restore current cursor position
-    switch (type)
+    switch (gdb->type())
     {
     case GDB:
 	os << "info line " + line_of_cursor() + "\n";
@@ -6148,4 +6155,41 @@ bool SourceView::get_state(ostream& os, DebuggerType type)
     }
 
     return ok;
+}
+
+void SourceView::reset_done(const string& answer, void *)
+{
+    (void) answer;
+
+    // Breakpoints should be deleted now -- clear all other information
+    clear_file_cache();
+    clear_code_cache();
+    clear_dbx_lookup_cache();
+    current_file_name = "";
+}
+
+void SourceView::reset()
+{
+    string del = "delete";
+    if (gdb->type() == XDB)
+	del = "db";
+
+    // Delete all breakpoints
+    MapRef ref;
+    int n = 0;
+    for (BreakPoint *bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    {
+	n++;
+	del += " " + itostring(bp->number());
+    }
+
+    if (n > 0)
+    {
+	Command c(del);
+	c.verbose  = false;
+	c.check    = true;
+	c.priority = COMMAND_PRIORITY_INIT;
+	c.callback = reset_done;
+	gdb_command(c);
+    }
 }

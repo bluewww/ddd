@@ -269,9 +269,22 @@ static string print_cookie = "4711";
 
 //-----------------------------------------------------------------------------
 
-inline string str(String s)
+inline String str(String s)
 {
     return s != 0 ? s : "";
+}
+
+// Replace all occurrences of `@N@' by N + the current breakpoint base.
+void fix_bp_numbers(string& cmd)
+{
+    static regex rxnum("@[0-9]+@");
+    int i;
+    while ((i = cmd.index(rxnum)) >= 0)
+    {
+	int j = cmd.index('@', i + 1);
+	int base = SourceView::next_breakpoint_number() - 1;
+	cmd.at(i, j - i + 1) = itostring(atoi(cmd.chars() + i + 1) + base);
+    }
 }
 
 void start_gdb()
@@ -284,31 +297,39 @@ void start_gdb()
     StringArray cmds;
     VoidArray dummy;
 
-    // Set up initialization commands
-    string init;
+    // Fetch initialization commands
+    String init;
+    String settings;
 
     switch (gdb->type())
     {
     case GDB:
-	init = str(app_data.gdb_init_commands) + str(app_data.gdb_settings);
+	init     = str(app_data.gdb_init_commands);
+	settings = str(app_data.gdb_settings);
 	break;
 
     case DBX:
-	init = str(app_data.dbx_init_commands) + str(app_data.dbx_settings);
+	init     = str(app_data.dbx_init_commands);
+	settings = str(app_data.dbx_settings);
 	break;
 
     case XDB:
-	init = str(app_data.xdb_init_commands) + str(app_data.xdb_settings);
+	init     = str(app_data.xdb_init_commands);
+	settings = str(app_data.xdb_settings);
 	break;
     }
 
-    // Add restart commands
-    init += app_data.restart_commands;
+    // Fetch restart commands
+    String restart = str(app_data.restart_commands);
+
+    string commands(init);
+    commands += restart;
+    commands += settings;
 
     // Place individual commands in CMDS array
-    while (init != "")
+    while (commands != "")
     {
-	string command = init.before('\n');
+	string command = commands.before('\n');
 	if (is_graph_cmd(command))
 	{
 	    // To be handled later by DDD - enqueue in command queue
@@ -318,9 +339,11 @@ void start_gdb()
 	}
 	else
 	{
+	    // Process right now
+	    fix_bp_numbers(command);
 	    cmds += command;
 	}
-	init = init.after('\n');
+	commands = commands.after('\n');
     }
     plus_cmd_data->n_init = cmds.size();
 
@@ -630,34 +653,24 @@ void user_cmdSUC (string cmd, Widget origin,
 	plus_cmd_data->refresh_threads   = false;
 	plus_cmd_data->refresh_data      = true;
 
-	switch (gdb->type())
+	if (gdb->type() == DBX)
 	{
-	case GDB:
-	case XDB:
-	    break;
-
-	case DBX:
 	    // We need to get the current file as well...
 	    plus_cmd_data->refresh_file  = true;
-	    break;
 	}
-	if (!gdb->has_display_command())
-	    plus_cmd_data->refresh_data = true;
     }
-    else if (is_thread_cmd(cmd))
+    else if (is_thread_cmd(cmd) || is_core_cmd(cmd))
     {
 	// Update displays
 	cmd_data->filter_disp            = NoFilter;
 	cmd_data->new_frame_pos          = true;
+	cmd_data->new_exec_pos           = true;
 
-	plus_cmd_data->refresh_bpoints   = true;
+	plus_cmd_data->refresh_bpoints   = is_thread_cmd(cmd);
 	plus_cmd_data->refresh_where     = true;
 	plus_cmd_data->refresh_frame     = true;
 	plus_cmd_data->refresh_data      = true;
 	plus_cmd_data->refresh_threads   = true;
-
-	if (!gdb->has_display_command())
-	    plus_cmd_data->refresh_data = true;
     }
     else if (is_set_cmd(cmd))
     {
@@ -1137,12 +1150,6 @@ void user_cmdOAC (void *data)
 	    source_view->show_pc(pc, XmHIGHLIGHT_NORMAL);
     }
 
-    if (cmd_data->user_callback != 0)
-    {
-	// Invoke user-defined callback
-	cmd_data->user_callback(cmd_data->user_answer, cmd_data->user_data);
-    }
-
     if (verbose)
     {
 	// Show answer
@@ -1177,10 +1184,16 @@ void user_cmdOAC (void *data)
 	}
     }
 
-    if (verbose)
-	prompt();
+    if (cmd_data->user_callback != 0)
+    {
+	// Invoke user-defined callback
+	cmd_data->user_callback(cmd_data->user_answer, cmd_data->user_data);
+    }
 
     delete cmd_data;
+
+    if (verbose)
+	prompt();
 }
 
 
@@ -1264,24 +1277,24 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
     }
     else if (is_refresh_cmd(cmd))
     {
-	data_disp->refresh_displaySQ(origin);
+	data_disp->refresh_displaySQ(origin, verbose);
     }
     else if (is_data_cmd(cmd))
     {
 	IntArray numbers;
 	read_numbers(cmd.after("display"), numbers);
 
-	if (is_delete_display_cmd (cmd))
+	if (is_delete_display_cmd(cmd))
 	{
-	    data_disp->delete_displaySQ(numbers);
+	    data_disp->delete_displaySQ(numbers, verbose);
 	}
-	else if (is_disable_display_cmd (cmd))
+	else if (is_disable_display_cmd(cmd))
 	{
-	    data_disp->disable_displaySQ(numbers);
+	    data_disp->disable_displaySQ(numbers, verbose);
 	}
-	else if (is_enable_display_cmd (cmd))
+	else if (is_enable_display_cmd(cmd))
 	{
-	    data_disp->enable_displaySQ(numbers);
+	    data_disp->enable_displaySQ(numbers, verbose);
 	}
     }
     else

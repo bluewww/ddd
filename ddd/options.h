@@ -46,12 +46,16 @@
 #define CREATE_OPTIONS 1 // Create simple options file if non-existent
 #define SAVE_SESSION   2 // Save additional session information
 #define SAVE_GEOMETRY  4 // Save window geometry
-#define MAY_KILL       8 // True if program can be killed
+#define SAVE_CORE      8 // Always include core file
+#define MAY_KILL      16 // True if program can be killed
+#define DONT_SAVE     32 // Only simulate; don't actually save
 #define MAY_INTERACT 128 // Allow interaction
 
 #define SAVE_DEFAULT MAY_INTERACT
 
 bool saving_options_kills_program(unsigned long flags);
+bool saving_options_excludes_data(unsigned long flags);
+
 bool save_options(unsigned long flags);
 
 
