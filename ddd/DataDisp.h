@@ -326,6 +326,18 @@ private:
 
     static int alias_display_nr(GraphNode *node);
 
+    // State stuff
+    static void fetch_scopes(StringArray& scopes, string where_output);
+    static void write_frame_command(ostream& os, int& current_frame, 
+				   int target_frame);
+    static void write_restore_scope_command(ostream& os,
+					    int& current_frame,
+					    const StringArray& scopes,
+					    DispNode *dn,
+					    bool& ok);
+
+    static bool get_state(ostream& os, bool restore_state);
+
 public:
     static Widget graph_edit;
     static Widget graph_cmd_w;
@@ -374,19 +386,26 @@ public:
     // True iff we have some selection
     static bool have_selection();
 
-    // Current selection as DDD commands
-    static string get_selection(bool restore_state = false);
+    // Write current selection as DDD commands to OS
+    // Return true iff all went well
+    static bool get_selection(ostream& os);
 
     // The maximum display number when saving states
     static int max_display_number;
 
     // Return DDD commands to restore current state (displays, etc.)
-    static string get_state();
+    // Return true iff all went well
+    static bool get_state(ostream& os);
 };
 
-inline string DataDisp::get_state()
+inline bool DataDisp::get_selection(ostream& os)
 {
-    return get_selection(true);
+    return get_state(os, false);
+}
+
+inline bool DataDisp::get_state(ostream& os)
+{
+    return get_state(os, true);
 }
 
 #endif // _DDD_DataDisp_h

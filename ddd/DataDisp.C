@@ -73,6 +73,7 @@ char DataDisp_rcsid[] =
 #include "settings.h"
 #include "shorten.h"
 #include "status.h"
+#include "version.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -318,7 +319,7 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
     disp_value_arg->dereference();
     disp_node_arg->refresh();
 
-    new_display(display_expression, 0, disp_node_arg->disp_nr());
+    new_display(display_expression, 0, itostring(disp_node_arg->disp_nr()));
 }
 
 void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
@@ -770,7 +771,7 @@ void DataDisp::dependent_displayDCB (Widget    dialog,
     case XmCR_OK :
 	XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &input);
 	if (input != "")
-	    new_display(input, 0, disp_nr);
+	    new_display(input, 0, itostring(disp_nr));
 	XtFree(input);
 	break;
     default:
@@ -1393,7 +1394,9 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 
     // Set selection
-    string cmd = get_selection();
+    ostrstream os;
+    get_selection(os);
+    string cmd(os);
 
     // Setting the string causes the selection to be lost.  By setting
     // LOSE_SELECTION, we make sure the associated callbacks return
@@ -1421,27 +1424,131 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 // The maximum display number when saving states
 int DataDisp::max_display_number = 99;
 
-string DataDisp::get_selection(bool restore_state)
+// Store scopes from WHERE_OUTPUT in SCOPES
+void DataDisp::fetch_scopes(StringArray& scopes, string where_output)
 {
-    ostrstream cmd;
-    IntArray nrs;
+    while (where_output != "")
+    {
+	string scope = get_scope(where_output);
+	if (scope != "")
+	    scopes += scope;
+	where_output = where_output.after('\n');
+    }
+}
 
+// Write commands to restore frame #TARGET_FRAME in OS
+void DataDisp::write_frame_command(ostream& os, int& current_frame, 
+				   int target_frame)
+{
+    if (target_frame != current_frame)
+    {
+	os << "graph ";
+	if (gdb->has_frame_command())
+	{
+	    // Issue `frame' command
+	    os << gdb->frame_command(target_frame) << "\n";
+	}
+	else
+	{
+	    // Use `up' and `down' commands
+	    int offset = current_frame - target_frame;
+	    if (offset == -1)
+		os << "up";
+	    else if (offset < 0)
+		os << "up " << -offset;
+	    else if (offset == 1)
+		os << "down";
+	    else if (offset > 0)
+		os << "down " << offset;
+	}
+
+	current_frame = target_frame;
+    }
+}
+
+// Write commands to restore scope of DN in OS
+void DataDisp::write_restore_scope_command(ostream& os,
+					   int& current_frame,
+					   const StringArray& scopes,
+					   DispNode *dn,
+					   bool& ok)
+{
+    int target_frame = -1;
+
+    if (dn->is_user_command())
+    {
+	// User displays are always evaluated on the current frame
+	target_frame = 0;
+    }
+    else if (dn->scope() != "")
+    {
+	for (int i = 0; i < scopes.size(); i++)
+	    if (scopes[i] == dn->scope())
+	    {
+		target_frame = i;
+		break;
+	    }
+    }
+
+    if (target_frame < 0)
+    {
+	// Cannot restore frame
+	MString msg;
+	msg += rm("Cannot save display ");
+	msg += rm(itostring(dn->disp_nr()) + ": ");
+	msg += tt(dn->name());
+
+	if (dn->scope() != "")
+	{
+	   msg += rm(" because ");
+	   msg += tt(dn->scope());
+	   msg += rm(" is not in current backtrace");
+	}
+
+	set_status_mstring(msg);
+	ok = false;
+
+	target_frame = scopes.size() - 1;	// Return to main frame
+    }
+
+    write_frame_command(os, current_frame, target_frame);
+}
+
+bool DataDisp::get_state(ostream& os, bool restore_state)
+{
     // Sort displays by number, such that old displays appear before
     // newer ones.
 
     // Note: this fails with the negative numbers of user-defined
     // displays; a topological sort would make more sense here. (FIXME)
+    IntArray nrs;
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
 	if (restore_state || dn->selected())
-	{
 	    nrs += dn->disp_nr();
-	}
     }
     sort(nrs);
+
+    bool ok = true;
+    StringArray scopes;
+    if (restore_state)
+    {
+	// Fetch current backtrace and store scopes in SCOPES
+	string backtrace = gdb_question(gdb->where_command(), -1, true);
+	fetch_scopes(scopes, backtrace);
+    }
+
+    if (restore_state && scopes.size() == 0 && nrs.size() > 0)
+    {
+	set_status("Cannot get current backtrace");
+	ok = false;
+    }
+
+    // When restoring, we'll be at the lowest frame (#0).
+    int current_frame = 0;
 
     for (int i = 0; i < nrs.size(); i++)
     {
@@ -1449,7 +1556,13 @@ string DataDisp::get_selection(bool restore_state)
 	if (dn == 0)
 	    continue;
 
-	cmd << "graph display " << dn->name();
+	if (restore_state && scopes.size() > 0)
+	    write_restore_scope_command(os, current_frame, scopes, dn, ok);
+
+	os << "graph display " << dn->name();
+
+	if (restore_state)
+	    os << " at " << dn->nodeptr()->pos();
 
 	// Find dependencies
 	GraphEdge *edge;
@@ -1462,13 +1575,20 @@ string DataDisp::get_selection(bool restore_state)
 		int depnr = disp_graph->get_nr(ancestor);
 		DispNode *depnode = disp_graph->get(depnr);
 
-		cmd << " dependent on " << depnode->name();
+		os << " dependent on " << depnode->name();
 	    }
 	}
-	cmd << '\n';
+	os << '\n';
     }
 
-    return string(cmd);
+    // That's it: return to frame #0...
+    write_frame_command(os, current_frame, 0);
+
+    // ... and refresh the graph.
+    if (restore_state && nrs.size() > 0)
+	os << "graph refresh\n";
+
+    return ok;
 }
 
 int DataDisp::alias_display_nr(GraphNode *node)
@@ -1481,7 +1601,6 @@ int DataDisp::alias_display_nr(GraphNode *node)
 
     return edge->disp_nr();
 }
-
 
 // Update graph editor selection after a change in the display editor
 void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
@@ -2242,6 +2361,7 @@ void DataDisp::refresh_displaySQ(Widget origin)
     if (origin)
 	set_last_origin(origin);
 
+    // Process all displays
     StringArray cmds;
     VoidArray dummy;
 

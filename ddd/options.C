@@ -1016,6 +1016,7 @@ bool save_options(string file, unsigned long flags)
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     popups_disabled = false;
 
+    bool ok = true;
     if (save_session)
     {
 	os << "\n! Last " << DDD_NAME << " session\n";
@@ -1029,16 +1030,34 @@ bool save_options(string file, unsigned long flags)
 	    os << widget_geometry(data_disp_shell)   << "\n";
 
 	// Save restart commands
-	string restart_commands;
-	restart_commands += data_disp->get_state();
-	restart_commands += source_view->get_state(gdb->type());
-	os << string_app_value(XtNrestartCommands, restart_commands) << "\n";
+	ostrstream restart_commands;
+	ok &= data_disp->get_state(restart_commands);
+	ok &= source_view->get_state(restart_commands, gdb->type());
+	os << string_app_value(XtNrestartCommands, string(restart_commands)) 
+	   << "\n";
     }
     
     save_option_state();
     save_settings_state();
 
-    return !os.bad();
+    os.close();
+    if (os.bad())
+    {
+	if (interact)
+	    post_error("Cannot save " + options + " in " + quote(file),
+		       "options_save_error");
+	return false;
+    }
+
+    if (!ok)
+    {
+	if (interact)
+	    post_warning("Incomplete " + options + " save", 
+			 "incomplete_save_warning");
+	return false;
+    }
+
+    return true;
 }
 
 void DDDSaveOptionsCB(Widget, XtPointer, XtPointer)
