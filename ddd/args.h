@@ -37,8 +37,11 @@
 #include "strclass.h"
 
 void gdbRunCB(Widget w, XtPointer, XtPointer);
+
 void gdbMakeCB(Widget w, XtPointer, XtPointer);
 void gdbMakeAgainCB(Widget w, XtPointer, XtPointer);
+
+void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer);
 
 void add_to_arguments(string line);
 void update_arguments();

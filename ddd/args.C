@@ -39,6 +39,7 @@ char args_rcsid[] =
 #include "HelpCB.h"
 #include "StringA.h"
 #include "Command.h"
+#include "SourceView.h"
 #include "ddd.h"
 #include "disp-read.h"
 #include "mydialogs.h"
@@ -55,7 +56,7 @@ char args_rcsid[] =
 #include <ctype.h>
 
 //-----------------------------------------------------------------------------
-// Run and Make Dialogs
+// Run, Make, and CD Dialogs
 //-----------------------------------------------------------------------------
 
 // Argument storage
@@ -71,56 +72,12 @@ static Widget make_arguments_w;
 static bool make_arguments_updated = false;
 static string last_make_argument;
 
-// Update list of arguments
-static void update_arguments(Widget dialog, Widget arguments_w,
-			     StringArray& arguments, string& last,
-			     bool& updated)
-{
-    if (updated || dialog == 0)
-	return;
+static Widget cd_dialog;
+static StringArray cd_arguments;
+static Widget cd_arguments_w;
+static bool cd_arguments_updated = false;
+static string last_cd_argument;
 
-    bool *selected = new bool[arguments.size()];
-    int pos = -1;
-    for (int i = 0; i < arguments.size(); i++)
-    {
-	if (arguments[i] == last)
-	    pos = i;
-	selected[i] = false;
-    }
-    if (pos >= 0)
-	selected[pos] = true;
-
-    setLabelList(arguments_w, arguments.values(),
-		 selected, arguments.size(), false, false);
-
-    if (pos >= 0)
-	XmListSelectPos(arguments_w, pos + 1, False);
-
-    delete[] selected;
-
-    Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
-    XmTextSetString(text_w, (char *)last.chars());
-
-    updated = true;
-}
-
-void update_run_arguments()
-{
-    update_arguments(run_dialog, run_arguments_w, run_arguments,
-		     last_run_argument, run_arguments_updated);
-}
-
-void update_make_arguments()
-{
-    update_arguments(make_dialog, make_arguments_w, make_arguments,
-		     last_make_argument, make_arguments_updated);
-}
-
-void update_arguments()
-{
-    update_run_arguments();
-    update_make_arguments();
-}
 
 // Add ARG to the list of arguments
 static void add_argument(string arg, StringArray& arguments, 
@@ -175,7 +132,79 @@ void add_to_arguments(string line)
 	add_argument(args, make_arguments, last_make_argument, 
 		     make_arguments_updated);
     }
+    else if (is_cd_cmd(line))
+    {
+	string dir = line.after("cd");
+	dir = dir.after(rxwhite);
+	dir = source_view->full_path(dir);
+	if (dir.contains('/', 0))
+	    add_argument(dir, cd_arguments, last_cd_argument, 
+			 cd_arguments_updated);
+    }
 }
+
+
+// Update list of arguments
+static void update_arguments(Widget dialog, Widget arguments_w,
+			     StringArray& arguments, string& last,
+			     bool& updated)
+{
+    if (updated || dialog == 0)
+	return;
+
+    bool *selected = new bool[arguments.size()];
+    int pos = -1;
+    for (int i = 0; i < arguments.size(); i++)
+    {
+	if (arguments[i] == last)
+	    pos = i;
+	selected[i] = false;
+    }
+    if (pos >= 0)
+	selected[pos] = true;
+
+    setLabelList(arguments_w, arguments.values(),
+		 selected, arguments.size(), false, false);
+
+    if (pos >= 0)
+	XmListSelectPos(arguments_w, pos + 1, False);
+
+    delete[] selected;
+
+    Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
+    XmTextSetString(text_w, (char *)last.chars());
+
+    updated = true;
+}
+
+void update_run_arguments()
+{
+    update_arguments(run_dialog, run_arguments_w, run_arguments,
+		     last_run_argument, run_arguments_updated);
+}
+
+void update_make_arguments()
+{
+    update_arguments(make_dialog, make_arguments_w, make_arguments,
+		     last_make_argument, make_arguments_updated);
+}
+
+void update_cd_arguments()
+{
+    update_arguments(cd_dialog, cd_arguments_w, cd_arguments,
+		     last_cd_argument, cd_arguments_updated);
+}
+
+void update_arguments()
+{
+    update_run_arguments();
+    update_make_arguments();
+    update_cd_arguments();
+}
+
+//-----------------------------------------------------------------------------
+// Run Dialog
+//-----------------------------------------------------------------------------
 
 // Run program with given arguments
 static void gdbRunDCB(Widget, XtPointer, XtPointer)
@@ -253,6 +282,10 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
 }
 
 
+//-----------------------------------------------------------------------------
+// Make Dialog
+//-----------------------------------------------------------------------------
+
 // Set program arguments from list
 static void SelectMakeArgsCB(Widget, XtPointer, XtPointer call_data)
 {
@@ -311,4 +344,67 @@ void gdbMakeCB(Widget w, XtPointer, XtPointer)
 
     update_make_arguments();
     manage_and_raise(make_dialog);
+}
+
+
+
+//-----------------------------------------------------------------------------
+// CD Dialog
+//-----------------------------------------------------------------------------
+
+// Set program arguments from list
+static void SelectChangeDirectoryArgsCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
+    int pos = cbs->item_position - 1;
+    string args = source_view->full_path(cd_arguments[pos]);
+    
+    Widget text_w = XmSelectionBoxGetChild(cd_dialog, XmDIALOG_TEXT);
+    XmTextSetString(text_w, (char *)args.chars());
+}
+
+// ChangeDirectory program with given arguments
+static void gdbChangeDirectoryDCB(Widget, XtPointer, XtPointer)
+{
+    Widget text = XmSelectionBoxGetChild(cd_dialog, XmDIALOG_TEXT);
+    String _args = XmTextGetString(text);
+    string args(_args);
+    XtFree(_args);
+
+    gdb_command("cd " + source_view->full_path(args));
+}
+
+// Create `ChangeDirectory' dialog
+void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
+{
+    if (cd_dialog == 0)
+    {
+	Arg args[10];
+	int arg = 0;
+
+	cd_dialog = 
+	    verify(XmCreateSelectionDialog(find_shell(w), 
+					   "cd_dialog", args, arg));
+
+	Delay::register_shell(cd_dialog);
+	XtAddCallback(cd_dialog, XmNokCallback,     gdbChangeDirectoryDCB, 0);
+	XtAddCallback(cd_dialog, XmNapplyCallback,  gdbChangeDirectoryDCB, 0);
+	XtAddCallback(cd_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+
+	cd_arguments_w = XmSelectionBoxGetChild(cd_dialog, XmDIALOG_LIST);
+	XtAddCallback(cd_arguments_w, XmNsingleSelectionCallback,
+		      SelectChangeDirectoryArgsCB, 0);
+	XtAddCallback(cd_arguments_w, XmNmultipleSelectionCallback,
+		      SelectChangeDirectoryArgsCB, 0);
+	XtAddCallback(cd_arguments_w, XmNextendedSelectionCallback,
+		      SelectChangeDirectoryArgsCB, 0);
+	XtAddCallback(cd_arguments_w, XmNbrowseSelectionCallback,
+		      SelectChangeDirectoryArgsCB, 0);
+
+	add_argument("..", cd_arguments, last_cd_argument, 
+		     cd_arguments_updated);
+    }
+
+    update_cd_arguments();
+    manage_and_raise(cd_dialog);
 }

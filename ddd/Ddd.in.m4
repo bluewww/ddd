@@ -1113,7 +1113,7 @@ Ddd*XmFileSelectionBox*XmText.translations:      COMPLETE_TRANSLATIONS(file)
 Ddd*XmFileSelectionBox*XmTextField.translations: COMPLETE_TRANSLATIONS(file)
 
 
-! In `print' and `make' dialogs, use a `file' completion, too.
+! In `print', `make', and `cd' dialogs, use a `file' completion, too.
 Ddd*print_popup*XmText.translations: 		 COMPLETE_TRANSLATIONS(file)
 
 Ddd*print_popup*XmTextField.translations:        COMPLETE_TRANSLATIONS(file)
@@ -1121,6 +1121,10 @@ Ddd*print_popup*XmTextField.translations:        COMPLETE_TRANSLATIONS(file)
 Ddd*make_dialog*XmText.translations: 		 COMPLETE_TRANSLATIONS(file)
 
 Ddd*make_dialog*XmTextField.translations:        COMPLETE_TRANSLATIONS(file)
+
+Ddd*cd_dialog*XmText.translations: 		 COMPLETE_TRANSLATIONS(file)
+
+Ddd*cd_dialog*XmTextField.translations:        COMPLETE_TRANSLATIONS(file)
 
 ! In selection boxes, use `shell' completion.
 Ddd*XmSelectionBox*XmText.translations: 	 COMPLETE_TRANSLATIONS(shell)
@@ -1653,6 +1657,7 @@ DESC(Attach to Process..., [attach to a process outside of DDD])\n\
 DESC(Detach Process, [detach a process previously attached])\n\
 \n\
 DESC(Print Graph..., [print the data display graph])\n\
+DESC(Change Directory..., [change current directory])\n\
 DESC(Make..., [run the CODE(make) program])\n\
 \n\
 DESC(Close, [close this window])\n\
@@ -1714,6 +1719,11 @@ Ddd*menubar*fileMenu.printAgain.mnemonic: 	    g
 ! Ddd*menubar*fileMenu.printAgain.acceleratorText:  Alt+Shift+P
 Ddd*menubar*fileMenu.printAgain.documentationString:   \
 @rm Print the contents of the data display, using previous settings
+
+Ddd*menubar*fileMenu.cd.labelString:	 Change Directory...
+Ddd*menubar*fileMenu.cd.mnemonic:	 i
+Ddd*menubar*fileMenu.cd.documentationString:  \
+@rm Change the current directory
 
 Ddd*menubar*fileMenu.make.labelString:	 Make...
 Ddd*menubar*fileMenu.make.mnemonic:	 M
@@ -3157,6 +3167,7 @@ Ddd*graph_cmd_w.graph_cmd_area*show_just.labelString:   Show Just ()
 Ddd*graph_cmd_w.graph_cmd_area*show_detail.labelString: Show All ()
 Ddd*graph_cmd_w.graph_cmd_area*hide_detail.labelString: Hide ()
 Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate ()
+Ddd*graph_cmd_w.graph_cmd_area*rotateAll.labelString:	Rotate All ()
 Ddd*graph_cmd_w.graph_cmd_area*set.labelString:		Set ()
 Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
 ! Ddd*graph_cmd_w.graph_cmd_area*marginTop:	  1
@@ -3192,7 +3203,14 @@ Ddd*graph_cmd_w.graph_cmd_area*dereference.documentationString:\
 
 Ddd*graph_cmd_w.graph_cmd_area*detail.helpString:	\
 LBL(Show ()) / LBL(Hide ())\n\
-Show/Hide details of the selected displays.
+Show/Hide details of the selected displays.\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+DESC(Show More, [Show more details])\n\
+DESC(Show Just, [Show details, excluding substructures]) ...\n\
+DESC(Show All, [Show all details, including substructures])\n\
+DESC(Hide, [Hide Details])
+
 Ddd*graph_cmd_w.graph_cmd_area*detail.tipString:	\
 @rm Show/Hide selected details
 Ddd*graph_cmd_w.graph_cmd_area*detail.documentationString: \
@@ -3209,11 +3227,16 @@ Ddd*graph_cmd_w.graph_cmd_area*hide_detail.documentationString: \
 
 Ddd*graph_cmd_w.graph_cmd_area*rotate.helpString:	\
 LBL(Rotate ())\n\
-Rotate the selected displays.
+Rotate the selected displays.\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+DESC(Rotate All, [Rotate substructures too])
 Ddd*graph_cmd_w.graph_cmd_area*rotate.tipString:	\
 @rm Rotate selected displays
 Ddd*graph_cmd_w.graph_cmd_area*rotate.documentationString: \
 @rm Rotate the selected displays
+Ddd*graph_cmd_w.graph_cmd_area*rotateAll.documentationString: \
+@rm Rotate the selected displays, including substructures
 
 Ddd*graph_cmd_w.graph_cmd_area*set.helpString:	\
 LBL(Set ())\n\
@@ -4460,7 +4483,7 @@ Ddd*run_dialog.selectionLabelString:	Run with Arguments
 Ddd*run_dialog*selectionPolicy:		XmSINGLE_SELECT
 
 Ddd*run_dialog*helpString:	\
-@rm You can enter program arguments now.\n\
+@rm You can now run the debugged program.\n\
 \n\
 DDD keeps track of the arguments you gave to the debugged program,\n\
 such that you can re-use them at a later time.\n\
@@ -4477,7 +4500,7 @@ Ddd*make_dialog.selectionLabelString:	Make
 Ddd*make_dialog*selectionPolicy:	XmSINGLE_SELECT
 
 Ddd*make_dialog*helpString:	\
-@rm You can enter make arguments now.\n\
+@rm You can now start the make program.\n\
 \n\
 DDD keeps track of the arguments you gave to the make program,\n\
 such that you can re-use them at a later time.\n\
@@ -4486,6 +4509,21 @@ Select specific arguments to have them copied to the argument prompt.\n\
 Click on LBL(OK) or LBL(Apply) to start the make program \
 with the selected arguments.
 
+
+Ddd*cd_dialog_popup.title: DDD: Change Directory
+Ddd*cd_dialog.listLabelString:	Directories
+Ddd*cd_dialog.selectionLabelString:	Change Directory
+
+Ddd*cd_dialog*selectionPolicy:	XmSINGLE_SELECT
+
+Ddd*cd_dialog*helpString:	\
+@rm You can now change the current directory.\n\
+\n\
+DDD keeps track of the directories you gave to the cd command,\n\
+such that you can re-use them at a later time.\n\
+Select specific directories to have them copied to the argument prompt.\n\
+\n\
+Click on LBL(OK) or LBL(Apply) to change the current directory.
 
 
 !-----------------------------------------------------------------------------

@@ -563,7 +563,8 @@ struct FileItems {
 		    OpenSession, SaveSession, Sep2,
 		    Attach, Detach, Sep3,
 		    Print, PrintAgain, Sep4,
-		    Make, MakeAgain, Sep5,
+		    CD, Sep5,
+		    Make, MakeAgain, Sep6,
 		    Close, Restart, Exit
     };
 };
@@ -583,6 +584,8 @@ struct FileItems {
     { "print",         MMPush, { graphPrintCB }}, \
     { "printAgain",    MMPush | MMUnmanaged, \
  	                       { graphQuickPrintCB, XtPointer(1) }}, \
+    { "separator",     MMSeparator | MMUnmanaged }, \
+    { "cd",            MMPush, { gdbChangeDirectoryCB }}, \
     { "separator",     MMSeparator | MMUnmanaged }, \
     { "make",          MMPush, { gdbMakeCB }}, \
     { "makeAgain",     MMPush | MMUnmanaged, { gdbMakeAgainCB }}, \
@@ -4424,6 +4427,10 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(command_file_menu[FileItems::MakeAgain].widget,      ready);
     set_sensitive(source_file_menu[FileItems::MakeAgain].widget,       ready);
     set_sensitive(data_file_menu[FileItems::MakeAgain].widget,         ready);
+
+    set_sensitive(command_file_menu[FileItems::CD].widget,             ready);
+    set_sensitive(source_file_menu[FileItems::CD].widget,              ready);
+    set_sensitive(data_file_menu[FileItems::CD].widget,                ready);
 
     set_sensitive(command_edit_menu[EditItems::Settings].widget,
 		  ready && (gdb->type() == GDB || gdb->type() == DBX));
