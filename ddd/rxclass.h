@@ -39,6 +39,8 @@
 extern "C" {
 #include <sys/types.h>
 
+// Avoid conflicts with `regex()' function
+#define regex c_regex
 
 #ifndef __STDC__
 #define __STDC__ 1              // Reguired for KCC when using GNU includes
@@ -52,6 +54,8 @@ extern "C" {
 #else
 #include <librx/rx.h>		// Header from GNU rx 0.07, as shipped with DDD
 #endif
+
+#undef regex
 }
 
 
