@@ -40,6 +40,7 @@
 #include "strclass.h"
 #include "Box.h"
 #include "VSLLib.h"
+#include "VSLArgList.h"
 #include "DispValue.h"
 #include "assert.h"
 
@@ -118,9 +119,9 @@ protected:
     static Box *check(const string& func_name, const Box *box);
 
 public:
-    static Box *eval(const string& func_name, ListBox *arg)
+    static Box *eval(const string& func_name, const VSLArgList& args)
     {
-	return check(func_name, vsllib()->eval(func_name, arg));
+	return check(func_name, vsllib()->eval(func_name, args.list()));
     }
     static Box *eval(const string& func_name, VSLArg args[])
     {

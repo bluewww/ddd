@@ -57,6 +57,8 @@ char DispBox_rcsid[] =
 
 #include <ctype.h>
 
+#define assert_ok(x) assert(x)
+
 #define CACHE_BOXES 0
 
 
@@ -71,6 +73,7 @@ string  DispBox::vsllib_base_defs = "";
 int     DispBox::max_display_title_length = 20;
 bool    DispBox::vsllib_initialized = false;
 bool    DispBox::align_2d_arrays = true;
+
 
 // ***************************************************************************
 //
@@ -134,12 +137,12 @@ void DispBox::init_vsllib(void (*background)())
 //
 DispBox::~DispBox ()
 {
-    // assert(mybox == 0 || mybox->OK());
+    assert_ok(mybox == 0 || mybox->OK());
 
     if (mybox != 0)
 	mybox->unlink();
 
-    // assert(title_box == 0 || title_box->OK());
+    assert_ok(title_box == 0 || title_box->OK());
 
     if (title_box != 0)
 	title_box->unlink();
@@ -147,7 +150,7 @@ DispBox::~DispBox ()
 
 // ***************************************************************************
 //
-void DispBox::set_value (const DispValue* dv, const DispValue *parent)
+void DispBox::set_value(const DispValue* dv, const DispValue *parent)
 {
     if (mybox != 0)
     {
@@ -155,16 +158,14 @@ void DispBox::set_value (const DispValue* dv, const DispValue *parent)
 	mybox = 0;
     }
 
-    VSLArg args[3];
-    int arg = 0;
-
+    VSLArgList args;
     if (title_box != 0)
-	args[arg++] = title_box->link();
+	args += title_box->link();
 
-    args[arg++] = create_value_box(dv, parent);
+    args += create_value_box(dv, parent);
     mybox = eval("display_box", args);
 
-    // assert(mybox->OK());
+    assert_ok(mybox->OK());
 }
 
 void DispBox::set_title(int disp_nr, const string& t)
@@ -225,7 +226,7 @@ void DispBox::set_title(int disp_nr, const string& t)
 
 	title_box = eval("title", args);
 
-	// assert(title_box->OK());
+	assert_ok(title_box->OK());
     }
 }
 
@@ -253,7 +254,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
     if (dv->cached_box() != 0)
     {
 	vbox = dv->cached_box()->link();
-	// assert(vbox->OK());
+	assert_ok(vbox->OK());
 	return vbox;
     }
 
@@ -288,16 +289,15 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 	    string *lines = new string[n + 1];
 	    split(v, lines, n + 1, '\n');
 
-	    ListBox *args = new ListBox;
+	    VSLArgList args;
 	    for (int i = 0; i < n + 1; i++)
 	    {
 		if (lines[i] == "")
 		    lines[i] = " ";
-		*args += eval("text_line", lines[i]);
+		args += eval("text_line", lines[i]);
 	    }
 	    vbox = eval("text_value", args);
 
-	    args->unlink();
 	    delete[] lines;
 	}
 	break;
@@ -378,12 +378,10 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 			    for (int j = 0; j < c->nchildren(); j++)
 			    {
 				DispValue *cc = c->child(j);
-				ListBox *args = new ListBox;
-				*args += create_value_box(cc, c);
-				Box *b = eval("twodim_array_elem", args);
+				Box *b = eval("twodim_array_elem", 
+					      create_value_box(cc, c));
 				*row += b;
 				b->unlink();
-				args->unlink();
 			    }
 
 			    *table += row;
@@ -413,12 +411,10 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 				{
 				    elem = new ListBox;
 				}
-				ListBox *args = new ListBox;
-				*args += elem;
+
 				Box *b = eval("twodim_array_elem", elem);
 				*row += b;
 				b->unlink();
-				args->unlink();
 			    }
 
 			    *table += row;
@@ -426,27 +422,19 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 			}
 		    }
 
-		    ListBox *args = new ListBox;
-		    *args += table;
-		    table->unlink();
-
-		    vbox = eval("twodim_array", args);
-
-		    args->unlink();
+		    vbox = eval("twodim_array", table);
 		}
 		else
 		{
 		    // One-dimensional array
-		    ListBox* args = new ListBox;
+		    VSLArgList args;
 		    for (int i = 0; i < count; i++)
-			*args += create_value_box (dv->child(i), dv);
+			args += create_value_box(dv->child(i), dv);
 
 		    if (dv->vertical_aligned())
 			vbox = eval("vertical_array", args);
 		    else
 			vbox = eval("horizontal_array", args);
-
-		    args->unlink();
 		}
 	    }
 	}
@@ -460,13 +448,12 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 	else
 	{
 	    // Create children
-	    ListBox* args = new ListBox;
+	    VSLArgList args;
 	    int count = dv->nchildren();
 	    for (int i = 0; i < count; i++)
-		*args += create_value_box(dv->child(i), dv);
+		args += create_value_box(dv->child(i), dv);
 
 	    vbox = eval("sequence_value", args);
-	    args->unlink();
 	}
 	break;
     }
@@ -509,13 +496,12 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 		}
 
 		// Create children
-		ListBox* args = new ListBox;
+		VSLArgList args;
 		for (i = 0; i < count; i++)
-		    *args += create_value_box(dv->child(i), dv,
-					      max_member_name_width);
+		    args += create_value_box(dv->child(i), dv,
+					     max_member_name_width);
 
 		vbox = eval(value, args);
-		args->unlink();
 	    }
 	}
 	break;
@@ -527,12 +513,11 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 	    vbox = eval("collapsed_reference_value");
 	else
 	{
-	    ListBox* args = new ListBox;
+	    VSLArgList args;
 	    for (int i = 0; i < 2; i++)
-		*args += create_value_box (dv->child(i), dv);
+		args += create_value_box(dv->child(i), dv);
 
 	    vbox = eval("reference_value", args);
-	    args->unlink();
 	}
 	break;
     }
@@ -545,16 +530,16 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
     // Show repeats
     if (dv->repeats() > 1 && !dv->collapsed())
     {
-	vbox = eval("repeated_value", vbox->link(), dv->repeats());
+	vbox = eval("repeated_value", vbox, dv->repeats());
     }
 
     // Highlight if value changed
     if (dv->is_changed())
     {
-	vbox = eval("changed_value", vbox->link());
+	vbox = eval("changed_value", vbox);
     }
 
-    // assert(vbox->OK());
+    assert_ok(vbox->OK());
 
 #if CACHE_BOXES
     ((DispValue *)dv)->set_cached_box(vbox);
@@ -578,26 +563,19 @@ Box *DispBox::create_value_box (const DispValue *dv,
     }
 
     // Add member name
-    if (dv != 0 && parent != 0)
+    if (dv != 0 && parent != 0 && 
+	dv->type() != Text &&
+	dv->name() != "" &&
+	!dv->name().matches(rxwhite))
     {
 	switch (parent->type())
 	{
 	case List:
-	    if (dv->type() != Text)
-		vbox = eval("list_member", dv->name(), vbox->link(), 
-			    member_name_width);
+	    vbox = eval("list_member", dv->name(), vbox, member_name_width);
 	    break;
 
 	case Struct:
-	    if (dv->name() == "" || dv->name().matches(rxwhite))
-	    {
-		// Don't prepend an empty member name
-	    }
-	    else
-	    {
-		vbox = eval("struct_member", dv->name(), vbox->link(), 
-			    member_name_width);
-	    }
+	    vbox = eval("struct_member", dv->name(), vbox, member_name_width);
 	    break;
 
 	case Sequence:
@@ -620,7 +598,7 @@ Box *DispBox::create_value_box (const DispValue *dv,
 	vbox = vbox->tag(data);
     }
 
-    // assert(vbox->OK());
+    assert_ok(vbox->OK());
 
     return vbox;
 }
