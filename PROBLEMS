@@ -158,6 +158,18 @@ Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>
 DEC
 ===
 
+Reported by: Tim Mooney <mooney@dogbert.cc.ndsu.NoDak.edu>
+
+    When using DEC's C++ compiler 6.0, more than 99% of the warnings I
+    get *normally* when building ddd are complaints about the X11R6
+    header files not explicitly using `int' as a return type.  To make
+    it easier to see the other warnings, I've added
+
+	`-msg_disable nonstd_implicit_int'
+
+    to the `CXXFLAGS' before building this time.
+
+
 Reported by: Pascal Quesseveur <abak@hol.fr>
 
     I have encountered some problems when compiling ddd on DEC Alpha 
