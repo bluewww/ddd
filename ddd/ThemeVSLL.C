@@ -68,6 +68,7 @@ void ThemedVSLLib::optimize(unsigned optimizeMode)
     delete _original_lib;
     _original_lib = dup();
 
+    _optimizeMode = optimizeMode;
     VSLLib::optimize(optimizeMode);
 }
 
@@ -84,7 +85,7 @@ void ThemedVSLLib::set_theme_list(const StringArray& themes)
 	update(themes[i]);
 
     // Optimize according to saved mode
-    optimize(_optimizeMode);
+    VSLLib::optimize(_optimizeMode);
 
     // Save list
     _theme_list = themes;
