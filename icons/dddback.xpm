@@ -4,10 +4,9 @@ static char * dddback_xpm[] = {
  * DDD Backdrop.  Copyright (C) 1998 TU Braunschweig, Germany.
  * For details on DDD, see `http://www.cs.tu-bs.de/softech/ddd/'.
  * columns rows colors chars-per-pixel */
-"150 150 3 1",
-"  c #d2d2d2",
-". c Gray96",
-"X c None",
+"150 150 2 1",
+". c White",
+"X c Grey85",
 /* pixels */
 "...........X.......................................................................................................................XX...X..XX.........",
 "...........XX......................................................................................................................XX....X.XX.........",
