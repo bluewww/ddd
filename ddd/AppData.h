@@ -79,6 +79,8 @@
 #define XtCIndent                "Indent"
 #define XtNlineNumberWidth       "lineNumberWidth"
 #define XtCLineNumberWidth       "LineNumberWidth"
+#define XtNsourceEditing         "sourceEditing"
+#define XtCSourceEditing         "SourceEditing"
 #define XtNlineBufferedConsole   "lineBufferredConsole"
 #define XtCLineBuffered          "LineBuffered"
 #define XtNdisplayShortcuts      "displayShortcuts"
@@ -315,6 +317,7 @@ struct AppData {
     Cardinal  indent_source;
     Cardinal  indent_code;
     Cardinal  line_number_width;
+    Boolean   source_editing;
     Boolean   line_buffered_console;
     String    display_shortcuts;
     String    console_buttons;

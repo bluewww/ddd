@@ -277,6 +277,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNsourceEditing,
+	XtCSourceEditing,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, source_editing),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
+    {
 	XtNlineBufferedConsole,
 	XtCLineBuffered,
 	XtRBoolean,

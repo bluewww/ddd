@@ -129,7 +129,7 @@ class SourceView {
     static void CheckScrollCB(Widget, XtPointer, XtPointer);
     static void CheckScrollWorkProc(XtPointer, XtIntervalId *);
 
-    static void InhibitModificationCB      (Widget, XtPointer, XtPointer);
+    static void CheckModificationCB        (Widget, XtPointer, XtPointer);
 
     static void StackDialogPoppedDownCB    (Widget, XtPointer, XtPointer);
     static void CodeDialogPoppedDownCB     (Widget, XtPointer, XtPointer);
@@ -148,7 +148,8 @@ class SourceView {
     static int line_height (Widget text_w);
 
     static void create_text(Widget parent,
-			    const string& base, Widget& form, Widget& text);
+			    const string& base, bool editable,
+			    Widget& form, Widget& text);
 
     static void refresh_bp_disp ();
     static void refresh_source_bp_disp ();
