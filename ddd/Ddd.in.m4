@@ -4925,11 +4925,11 @@ DESC(Commands, [record and edit @GDB@ command sequences.\n\
     To record a command sequence, follow these steps:\n\
     SUBITEM Click on LBL(Record) to begin the recording.\n\
     SUBITEM Now interact with DDD.\n\
-        The recorded @GDB@ commands are shown in the @GDB@ console.\n\
+       The recorded @GDB@ commands are shown in the @GDB@ console.\n\
     SUBITEM Click on LBL(End) to stop the recording.])\n\
 \n\
 Click on LBL(Close) to close this window.\n\
-Click on LBL(Delete) to delete the breakpoints.
+Click on LBL(Delete) to delete the breakpoint.
 
 
 

@@ -73,8 +73,8 @@ is to press BUTTON(3) on them.
 The difference between LBL(OK) and LBL(Apply) is that 
 LBL(OK) pops down the dialog, while LBL(Apply) does not.
 
-To quickly dereference pointers in the data display,
-double-click on them.
+Double-clicking on any value in the data display 
+will toggle more details.
 
 
 ! Intermediate tips.
@@ -115,8 +115,8 @@ You can move breakpoints by dragging them.
 Just press and hold BUTTON(1) on a breakpoint,
 move it to the new position and release BUTTON(1) again.  That's all!
 
-You can save space by disabling toolbar captions.
-See LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Toolbar Appearance).
+! You can save space by disabling toolbar captions.
+! See LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Toolbar Appearance).
 
 In GCC, SAMP(-Wall) does not enable all warnings.  See the GCC
 documentation for other warnings you might consider useful.
@@ -148,8 +148,8 @@ To save and restore data displays, cut, copy and paste them via the
 LBL(Edit) menu.  Together with CODE(xclipboard), you can manage
 arbitrary collections of data displays.
 
-To stop this debugging session and resume later, use 
-LBL(File) | LBL(Save Session).
+Do you want to stop this debugging session and resume later?
+Use LBL(File) | LBL(Save Session)!
 
 To debug a child process, put a call to SAMP(sleep) in the child right
 after the SAMP(fork) call.  Run the program and attach to the child process
@@ -158,14 +158,13 @@ using LBL(File) | LBL(Attach to Process).
 To execute frequently used commands with one mouse click,
 define your own DDD buttons via LBL(Commands) | LBL(Edit Buttons).
 
+To change the properties of multiple breakpoints at once,
+select them in the breakpoint editor (LBL(Source) | LBL(Edit Breakpoints))
+and click on LBL(Properties).  Just go ahead!
+
 Even while in the source window, you can enter and edit GDB commands.
 Try KEY(Ctrl+P), KEY(Ctrl+N), KEY(Ctrl+B), KEY(Ctrl+F) for cursor movement
 and finish entering commands with KEY_RETURN.
-
-When debugging an X application, there is always a risk of
-interrupting it while the mouse pointer is grabbed (frozen).  To
-prevent this, set LBL(Edit) | LBL(Preferences) | LBL(General) |
-LBL(Ungrab mouse pointer when interrupting modal X application).
 
 You can easily resume a saved DDD VAR(session)
 by invoking DDD as KBD([ddd] =VAR(session)).
