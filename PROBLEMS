@@ -238,6 +238,11 @@ HP-UX
 
 Reported by:  (various)
 
+    Joseph H. Buehler <jhpb@sarto.gaithersburg.md.us> reports that gcc
+    2.95 on HP-UX 11.00 crashes with an internal error, turning off
+    -O2 eliminates the problem.  However, even when gcc 2.95 builds
+    DDD, it core dumps immediately at start.
+
     On HP-UX 10.01, if you cannot link DDD or get an illegal
     instruction at start-up, this is due to some bugs in the X11 and
     Motif libraries as shipped by HP.  Mark Harig <markh@landmark.com>

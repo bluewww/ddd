@@ -192,10 +192,12 @@ floatformat_to_double (fmt, from, to)
      increment the exponent by one to account for the integer bit.  */
 
   if (!special_exponent)
-    if (fmt->intbit == floatformat_intbit_no)
-      dto = ldexp (1.0, exponent);
-    else
-      exponent++;
+    {
+      if (fmt->intbit == floatformat_intbit_no)
+	dto = ldexp (1.0, exponent);
+      else
+	exponent++;
+    }
 
   while (mant_bits_left > 0)
     {
@@ -279,7 +281,7 @@ put_field (data, order, total_len, start, len, stuff_to_put)
 
 void
 floatformat_from_double (fmt, from, to)
-     CONST struct floatformat *fmt;
+     const struct floatformat *fmt;
      double *from;
      char *to;
 {

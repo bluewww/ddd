@@ -231,6 +231,7 @@ ICE_CXX_PRETTY_FUNCTION
 ICE_CXX_ARRAY_OPERATOR_NEW
 ICE_CXX_PLACEMENT_NEW
 ICE_CXX_LIFETIME_OF_TEMPORARIES
+ICE_CXX_ISYSTEM
 ICE_PROG_CPP_TRADITIONAL
 dnl
 dnl
@@ -378,6 +379,10 @@ ICE_PERMISSIVE
 ice_save_CXXFLAGS="$CXXFLAGS"
 CXXFLAGS="$CXXFLAGS $PERMISSIVE"
 AC_PATH_XTRA
+dnl
+dnl Autoconf bug fix: GCC 2.95 and later want -isystem for including X files
+X_CFLAGS=`echo $X_CFLAGS | $SED "s,-I,$ISYSTEM,g"`
+dnl
 ICE_FIND_MOTIF
 ICE_FIND_ATHENA
 ICE_FIND_XPM
@@ -388,7 +393,7 @@ dnl
 dnl Autoconf bug fix: Sun CC 3.0 requires `-R lib', g++ requires `-Rlib'.
 changequote(,)dnl
 case "$CXX" in
-  *CC) X_LIBS="`echo $X_LIBS | $SED 's, -R\([^ ]\), -R \1,g'`"
+  *CC) X_LIBS=`echo $X_LIBS | $SED 's, -R\([^ ]\), -R \1,g'`
 esac
 changequote([,])dnl
 dnl

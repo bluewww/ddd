@@ -86,16 +86,22 @@ DDD 3.1.7
 DDD 3.1.7 fixes a number of minor bugs.
 
 - Auto-raised menus work much better (enabled by default).
+- The `floating' command tool now correctly follows movements of the 
+  main window under KDE and other window managers.
 - The register window is updated when the current frame changes.
 - Value tips of strings containing ` = ' are displayed correctly.
 - In file names, `//' is no longer normalized to `/'.  This is useful 
   for special file systems, where '//c/foo' is an alias for `c:\foo`.
+- Improved session management: `checkpoint sessions' not needed for shutdown
+  (as initiated by GNOME) are automatically deleted after exiting DDD.
 - [DBX] The array syntax `graph display [A..B]' works again for DBX.
 - [DBX] Redirection to the execution window with Sun DBX 4.0 no 
   longer clutters program arguments.
 - [JDB] Thread names with dashes are handled correctly.
 - [HP-UX] Renaming the `~/.ddd/init' file during saving options works.
-- [Build] DDD checks whether -fpermissive is required for old X headers.
+- [Build] New `libiberty' and `configure' packages from GDB 4.18.
+- [Build] If supported, `-isystem' is used for including system headers.
+- [Build] If supported and required, `-fpermissive' is used for old X headers.
 
 There are no new features in DDD 3.1.7.  You don't need to upgrade
 unless you suffer from one of these problems.

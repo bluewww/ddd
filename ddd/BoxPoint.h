@@ -91,6 +91,13 @@ public:
 	else
 	    return BoxPoint();
     }
+    BoxPoint operator - () const
+    {
+	if (isValid())
+	    return BoxPoint(-point[X], -point[Y]);
+	else
+	    return BoxPoint();
+    }
     BoxPoint operator * (const BoxPoint& p) const
     {
 	if (isValid() && p.isValid())

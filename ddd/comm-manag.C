@@ -703,6 +703,7 @@ void init_session(const string& restart, const string& settings,
 	info->tempfile = tmpnam(0);
 
 	string file_commands = "";
+	bool recording_defines = false;
 
 	{
 	    ofstream os(info->tempfile);
@@ -711,14 +712,21 @@ void init_session(const string& restart, const string& settings,
 		string cmd = init_commands.before('\n');
 		init_commands = init_commands.after('\n');
 
-		if (is_file_cmd(cmd, gdb) || is_core_cmd(cmd) || 
-		    cmd.contains("set confirm", 0))
+		if (!recording_defines && 
+		    (is_file_cmd(cmd, gdb) || is_core_cmd(cmd) || 
+		     cmd.contains("set confirm", 0)))
 		{
-		    // Use this command the ordinary way
+		    // This is a `file' command that is not part of
+		    // a definition: execute this command the ordinary way
 		    file_commands += cmd + "\n";
 		}
 		else
 		{
+		    if (is_define_cmd(cmd))
+			recording_defines = true;
+		    else if (is_end_cmd(cmd))
+			recording_defines = false;
+
 		    // Source this command
 		    fix_symbols(cmd);
 		    if (is_graph_cmd(cmd))

@@ -2,6 +2,7 @@ dnl $Id$ -*- autoconf -*-
 dnl ICE and DDD autoconf macros
 dnl 
 dnl Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+dnl Copyright (C) 1999 Universitaet Passau, Germany.
 dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
 dnl This file is part of the ICE Library.
@@ -578,6 +579,38 @@ fi
 AC_SUBST(XS_DEBUG_INFO)
 ])dnl
 dnl
+dnl
+dnl
+dnl ICE_CXX_ISYSTEM
+dnl ---------------
+dnl
+dnl If the C++ compiler accepts the `-isystem PATH' flag,
+dnl set output variable `ISYSTEM' to `-isystem ', `-I' otherwise.
+dnl
+AC_DEFUN(ICE_CXX_ISYSTEM,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -isystem)
+AC_CACHE_VAL(ice_cv_cxx_isystem,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS="$WERROR -isystem ."
+AC_TRY_COMPILE(,[int a;],
+ice_cv_cxx_isystem=yes, ice_cv_cxx_isystem=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_cxx_isystem)
+if test "$ice_cv_cxx_isystem" = yes; then
+ISYSTEM="-isystem "
+else
+ISYSTEM="-I"
+fi
+AC_SUBST(ISYSTEM)
+])dnl
 dnl
 dnl
 dnl
@@ -1425,13 +1458,9 @@ if test "$GXX" = yes; then
   fi
 
   # Setup options
-  # In GCC 2.8.0, `-Wuninitialized' generates lots of warnings about
-  # variables possibly being clobbered by a longjmp()/vfork() call.
-  # These warnings seldom make sense and hide more serious warnings.
-  # Hence, we turn them off via `-Wno-uninitialized'.
   CXXOPT="-DNDEBUG"
   CXXDEBUG=
-  CXXWARNINGS="-W -Wall ${WARN_NO_UNINITIALIZED}"
+  CXXWARNINGS="-W -Wall"
   CXXSTATIC_BINDING="-Bstatic"
   CXXDYNAMIC_BINDING="-Bdynamic"
   CXXSTUFF="${MINIMAL_TOC}"
@@ -1506,7 +1535,7 @@ ICE_ELIDE_CONSTRUCTORS
 ICE_CONSERVE_SPACE
 ICE_TRIGRAPHS
 fi
-CXXSTUFF="$CXXSTUFF $EXTERNAL_TEMPLATES $ELIDE_CONSTRUCTORS $CONSERVE_SPACE $TRIGRAPHS"
+CXXSTUFF="$CXXSTUFF $EXTERNAL_TEMPLATES $TRIGRAPHS"
 AC_SUBST(CXXSTUFF)dnl
 ])dnl
 dnl
@@ -1895,6 +1924,7 @@ dnl
 AC_DEFUN(ICE_FIND_MOTIF,
 [
 AC_REQUIRE([AC_PATH_XTRA])
+AC_REQUIRE([ICE_CXX_ISYSTEM])
 motif_includes=
 motif_libraries=
 AC_ARG_WITH(motif,
@@ -1949,6 +1979,7 @@ for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
            /usr/dt/include /usr/openwin/include \
            /usr/dt/*/include /opt/*/include /usr/include/Motif* \
+           /usr/*/include/X11R6 /usr/*/include/X11R5 /usr/*/include/X11R4 \
 	   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
 	   "${prefix}"/include/* /usr/include/* /usr/local/include/*; do
 if test -f "$dir/Xm/Xm.h"; then
@@ -1956,8 +1987,8 @@ ice_cv_motif_includes="$dir"
 break
 fi
 done
-if test "$ice_cv_motif_includes" = ""; then
-ice_cv_motif_includes=no
+if test "$ice_cv_motif_includes" = "/usr/include"; then
+ice_cv_motif_includes=
 fi
 ])
 #
@@ -2011,6 +2042,7 @@ for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
            /usr/dt/lib /usr/openwin/lib \
 	   /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
            /usr/lesstif*/lib /usr/lib/Lesstif* \
+	   /usr/*/lib/X11R6 /usr/*/lib/X11R5 /usr/*/lib/X11R4 /usr/*/lib/X11 \
 	   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
 	   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
 if test -d "$dir" && test "`ls $dir/libXm.* 2> /dev/null`" != ""; then
@@ -2035,7 +2067,7 @@ fi
 #
 if test "$motif_includes" != "" && test "$motif_includes" != "$x_includes" && test "$motif_includes" != "no"
 then
-X_CFLAGS="-I$motif_includes $X_CFLAGS"
+X_CFLAGS="$ISYSTEM$motif_includes $X_CFLAGS"
 fi
 if test "$motif_libraries" != "" && test "$motif_libraries" != "$x_libraries" && test "$motif_libraries" != "no"
 then
@@ -2074,6 +2106,7 @@ dnl
 AC_DEFUN(ICE_FIND_ATHENA,
 [
 AC_REQUIRE([AC_PATH_XTRA])
+AC_REQUIRE([ICE_CXX_ISYSTEM])
 athena_includes=
 athena_libraries=
 AC_ARG_WITH(athena,
@@ -2131,6 +2164,7 @@ for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
            /usr/dt/include /usr/openwin/include \
            /usr/dt/*/include /opt/*/include /usr/include/Motif* \
+           /usr/*/include/X11R6 /usr/*/include/X11R5 /usr/*/include/X11R4 \
 	   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
 	   "${prefix}"/include/* /usr/include/* /usr/local/include/*; do
 if test -f "$dir/X11/Xaw/Text.h"; then
@@ -2138,6 +2172,9 @@ ice_cv_athena_includes="$dir"
 break
 fi
 done
+if test "$ice_cv_athena_includes" = "/usr/include"; then
+ice_cv_athena_includes=
+fi
 ])
 #
 LIBS="$ice_athena_save_LIBS"
@@ -2189,6 +2226,7 @@ for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
 	   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
            /usr/dt/lib /usr/openwin/lib \
 	   /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
+	   /usr/*/lib/X11R6 /usr/*/lib/X11R5 /usr/*/lib/X11R4 /usr/*/lib/X11 \
 	   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
 	   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
 if test -d "$dir" && test "`ls $dir/libXaw.* 2> /dev/null`" != ""; then
@@ -2210,7 +2248,7 @@ fi
 #
 if test "$athena_includes" != "" && test "$athena_includes" != "$x_includes" && test "$athena_includes" != "no"
 then
-X_CFLAGS="-I$athena_includes $X_CFLAGS"
+X_CFLAGS="$ISYSTEM$athena_includes $X_CFLAGS"
 fi
 if test "$athena_libraries" != "" && test "$athena_libraries" != "$x_libraries" && test "$athena_libraries" != "no"
 then
@@ -2249,6 +2287,7 @@ dnl
 AC_DEFUN(ICE_FIND_XPM,
 [
 AC_REQUIRE([AC_PATH_XTRA])
+AC_REQUIRE([ICE_CXX_ISYSTEM])
 xpm_includes=
 xpm_libraries=
 AC_ARG_WITH(xpm,
@@ -2306,6 +2345,7 @@ for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
            /usr/dt/include /usr/openwin/include \
            /usr/dt/*/include /opt/*/include /usr/include/Motif* \
+           /usr/*/include/X11R6 /usr/*/include/X11R5 /usr/*/include/X11R4 \
 	   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
 	   "${prefix}"/include/* /usr/include/* /usr/local/include/*; do
 if test -f "$dir/X11/xpm.h" || test -f "$dir/xpm.h"; then
@@ -2313,6 +2353,9 @@ ice_cv_xpm_includes="$dir"
 break
 fi
 done
+if test "$ice_cv_xpm_includes" = "/usr/include"; then
+ice_cv_xpm_includes=
+fi
 ])
 #
 LIBS="$ice_xpm_save_LIBS"
@@ -2365,6 +2408,7 @@ for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
 	   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
            /usr/dt/lib /usr/openwin/lib \
 	   /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
+	   /usr/*/lib/X11R6 /usr/*/lib/X11R5 /usr/*/lib/X11R4 /usr/*/lib/X11 \
 	   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
 	   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
 if test -d "$dir" && test "`ls $dir/libXpm.* 2> /dev/null`" != ""; then
@@ -2387,7 +2431,7 @@ fi
 #
 if test "$xpm_includes" != "" && test "$xpm_includes" != "$x_includes" && test "$xpm_includes" != "no"
 then
-X_CFLAGS="-I$xpm_includes $X_CFLAGS"
+X_CFLAGS="$ISYSTEM$xpm_includes $X_CFLAGS"
 fi
 if test "$xpm_libraries" != "" && test "$xpm_libraries" != "$x_libraries" && test "$xpm_libraries" != "no"
 then

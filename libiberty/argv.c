@@ -82,7 +82,7 @@ SYNOPSIS
 DESCRIPTION
 
 	Duplicate an argument vector.  Simply scans through the
-	vector, duplicating each argument argument until the
+	vector, duplicating each argument until the
 	terminating NULL is found.
 
 RETURNS
@@ -225,7 +225,7 @@ char *input;
 
   if (input != NULL)
     {
-      copybuf = alloca (strlen (input) + 1);
+      copybuf = (char *) alloca (strlen (input) + 1);
       /* Is a do{}while to always execute the loop once.  Always return an
 	 argv, even for null strings.  See NOTES above, test case below. */
       do
