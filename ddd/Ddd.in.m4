@@ -6152,6 +6152,28 @@ Ddd*edit_displays_dialog*set.tipString:  \
 Ddd*edit_displays_dialog*set.documentationString: \
 @rm Change a value in the selected data display
 
+Ddd*edit_displays_dialog*cluster.labelString:	    Cluster
+Ddd*edit_displays_dialog*cluster.labelPixmap:			cluster
+Ddd*edit_displays_dialog*cluster.labelInsensitivePixmap:	cluster-xx
+Ddd*edit_displays_dialog*cluster.armPixmap:			cluster-arm
+Ddd*edit_displays_dialog*cluster.highlightPixmap:		cluster-hi
+
+Ddd*edit_displays_dialog*cluster.tipString:  \
+@rm Cluster displays
+Ddd*edit_displays_dialog*cluster.documentationString: \
+@rm Cluster the selected data displays into one
+
+Ddd*edit_displays_dialog*uncluster.labelString:	    Uncluster
+Ddd*edit_displays_dialog*uncluster.labelPixmap:			uncluster
+Ddd*edit_displays_dialog*uncluster.labelInsensitivePixmap:	uncluster-xx
+Ddd*edit_displays_dialog*uncluster.armPixmap:			uncluster-arm
+Ddd*edit_displays_dialog*uncluster.highlightPixmap:		uncluster-hi
+
+Ddd*edit_displays_dialog*uncluster.tipString:  \
+@rm Uncluster displays
+Ddd*edit_displays_dialog*uncluster.documentationString: \
+@rm Move the selected displays out of its cluster
+
 Ddd*edit_displays_dialog*delete.labelString:	    Undisplay
 Ddd*edit_displays_dialog*delete.labelPixmap:		undisplay
 Ddd*edit_displays_dialog*delete.labelInsensitivePixmap:	undisplay-xx

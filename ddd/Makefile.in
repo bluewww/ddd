@@ -1193,6 +1193,7 @@ toolbardir = $(icondir)/toolbar
 XBM_ICONS = \
 	$(toolbardir)/breakat.xbm \
 	$(toolbardir)/clearat.xbm \
+	$(toolbardir)/cluster.xbm \
 	$(toolbardir)/delete.xbm \
 	$(toolbardir)/deref.xbm \
 	$(toolbardir)/disable.xbm \
@@ -1212,6 +1213,7 @@ XBM_ICONS = \
 	$(toolbardir)/rotate.xbm \
 	$(toolbardir)/set.xbm \
 	$(toolbardir)/show.xbm \
+	$(toolbardir)/uncluster.xbm \
 	$(toolbardir)/undisplay.xbm \
 	$(toolbardir)/unwatch.xbm \
 	$(toolbardir)/watch.xbm 
@@ -1220,6 +1222,7 @@ XBM_ICONS = \
 XPM_XX_ICONS = \
 	$(toolbardir)/breakat.xpmxx \
 	$(toolbardir)/clearat.xpmxx \
+	$(toolbardir)/cluster.xpmxx \
 	$(toolbardir)/delete.xpmxx \
 	$(toolbardir)/deref.xpmxx \
 	$(toolbardir)/disable.xpmxx \
@@ -1239,6 +1242,7 @@ XPM_XX_ICONS = \
 	$(toolbardir)/rotate.xpmxx \
 	$(toolbardir)/set.xpmxx \
 	$(toolbardir)/show.xpmxx \
+	$(toolbardir)/uncluster.xpmxx \
 	$(toolbardir)/undisplay.xpmxx \
 	$(toolbardir)/unwatch.xpmxx \
 	$(toolbardir)/watch.xpmxx 
@@ -1247,6 +1251,7 @@ XPM_XX_ICONS = \
 XBM_XX_ICONS = \
 	$(toolbardir)/breakat.xbmxx \
 	$(toolbardir)/clearat.xbmxx \
+	$(toolbardir)/cluster.xbmxx \
 	$(toolbardir)/delete.xbmxx \
 	$(toolbardir)/deref.xbmxx \
 	$(toolbardir)/disable.xbmxx \
@@ -1266,6 +1271,7 @@ XBM_XX_ICONS = \
 	$(toolbardir)/rotate.xbmxx \
 	$(toolbardir)/set.xbmxx \
 	$(toolbardir)/show.xbmxx \
+	$(toolbardir)/uncluster.xbmxx \
 	$(toolbardir)/undisplay.xbmxx \
 	$(toolbardir)/unwatch.xbmxx \
 	$(toolbardir)/watch.xbmxx

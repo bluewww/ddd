@@ -335,7 +335,8 @@ MMDesc DataDisp::detail_menu[] =
 };
 
 struct DisplayItms { enum Itms {New, Dereference, 
-				ShowDetail, HideDetail, Set, Delete}; };
+				ShowDetail, HideDetail, Set, 
+				Cluster, Uncluster, Delete}; };
 
 MMDesc DataDisp::display_area[] =
 {
@@ -345,7 +346,9 @@ MMDesc DataDisp::display_area[] =
      {DataDisp::showDetailCB, XtPointer(-1) }, 0, 0, 0, 0},
     {"hide_detail",  MMPush,   
      {DataDisp::hideDetailCB, XtPointer(-1) }, 0, 0, 0, 0},
-    {"set",          MMPush,   {DataDisp::setCB, 0}, 0, 0, 0, 0},
+    {"set",          MMPush, {DataDisp::setCB, 0}, 0, 0, 0, 0},
+    {"cluster",      MMPush, {DataDisp::clusterSelectedCB, 0}, 0, 0, 0, 0},
+    {"uncluster",    MMPush, {DataDisp::unclusterSelectedCB, 0}, 0, 0, 0, 0},
     {"delete",       MMPush | MMHelp, 
      {DataDisp::deleteCB, XtPointer(true) }, 0, 0, 0, 0},
     MMEnd
@@ -2386,6 +2389,11 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	set_label(delete_menu[DeleteItms::Cluster].widget, "Uncluster ()");
 	set_sensitive(delete_menu[DeleteItms::Cluster].widget, true);
     }
+
+    set_sensitive(display_area[DisplayItms::Cluster].widget,
+		  count.selected_unclustered > 0);
+    set_sensitive(display_area[DisplayItms::Uncluster].widget,
+		  count.selected_clustered > 0);
 
     // Shortcut menu
     for (int i = 0; i < shortcut_items && i < shortcut_exprs.size(); i++)

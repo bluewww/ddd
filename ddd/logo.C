@@ -310,6 +310,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 // X Bitmaps
 #include "icons/toolbar/breakat.xbm"
 #include "icons/toolbar/clearat.xbm"
+#include "icons/toolbar/cluster.xbm"
 #include "icons/toolbar/delete.xbm"
 #include "icons/toolbar/deref.xbm"
 #include "icons/toolbar/disable.xbm"
@@ -329,6 +330,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 #include "icons/toolbar/rotate.xbm"
 #include "icons/toolbar/set.xbm"
 #include "icons/toolbar/show.xbm"
+#include "icons/toolbar/uncluster.xbm"
 #include "icons/toolbar/undisplay.xbm"
 #include "icons/toolbar/unwatch.xbm"
 #include "icons/toolbar/watch.xbm"
@@ -336,6 +338,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 // Same, but insensitive
 #include "icons/toolbar/breakat.xbmxx"
 #include "icons/toolbar/clearat.xbmxx"
+#include "icons/toolbar/cluster.xbmxx"
 #include "icons/toolbar/delete.xbmxx"
 #include "icons/toolbar/deref.xbmxx"
 #include "icons/toolbar/disable.xbmxx"
@@ -355,6 +358,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 #include "icons/toolbar/rotate.xbmxx"
 #include "icons/toolbar/set.xbmxx"
 #include "icons/toolbar/show.xbmxx"
+#include "icons/toolbar/uncluster.xbmxx"
 #include "icons/toolbar/undisplay.xbmxx"
 #include "icons/toolbar/unwatch.xbmxx"
 #include "icons/toolbar/watch.xbmxx"
@@ -363,6 +367,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 // X Pixmaps
 #include "icons/toolbar/breakat.xpm"
 #include "icons/toolbar/clearat.xpm"
+#include "icons/toolbar/cluster.xpm"
 #include "icons/toolbar/delete.xpm"
 #include "icons/toolbar/deref.xpm"
 #include "icons/toolbar/disable.xpm"
@@ -382,6 +387,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 #include "icons/toolbar/rotate.xpm"
 #include "icons/toolbar/set.xpm"
 #include "icons/toolbar/show.xpm"
+#include "icons/toolbar/uncluster.xpm"
 #include "icons/toolbar/undisplay.xpm"
 #include "icons/toolbar/unwatch.xpm"
 #include "icons/toolbar/watch.xpm"
@@ -389,6 +395,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 // Same, but insensitive
 #include "icons/toolbar/breakat.xpmxx"
 #include "icons/toolbar/clearat.xpmxx"
+#include "icons/toolbar/cluster.xpmxx"
 #include "icons/toolbar/delete.xpmxx"
 #include "icons/toolbar/deref.xpmxx"
 #include "icons/toolbar/disable.xpmxx"
@@ -408,6 +415,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 #include "icons/toolbar/rotate.xpmxx"
 #include "icons/toolbar/set.xpmxx"
 #include "icons/toolbar/show.xpmxx"
+#include "icons/toolbar/uncluster.xpmxx"
 #include "icons/toolbar/undisplay.xpmxx"
 #include "icons/toolbar/unwatch.xpmxx"
 #include "icons/toolbar/watch.xpmxx"
@@ -415,6 +423,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 #else
 static char **breakat_xpm        = 0;
 static char **clearat_xpm        = 0;
+static char **cluster_xpm        = 0;
 static char **delete_xpm         = 0;
 static char **deref_xpm          = 0;
 static char **disable_xpm        = 0;
@@ -434,12 +443,14 @@ static char **properties_xpm     = 0;
 static char **rotate_xpm         = 0;
 static char **set_xpm            = 0;
 static char **show_xpm           = 0;
+static char **uncluster_xpm      = 0;
 static char **undisplay_xpm      = 0;
 static char **unwatch_xpm        = 0;
 static char **watch_xpm          = 0;
 
 static char **breakat_xx_xpm     = 0;
 static char **clearat_xx_xpm     = 0;
+static char **cluster_xx_xpm     = 0;
 static char **delete_xx_xpm      = 0;
 static char **deref_xx_xpm       = 0;
 static char **disable_xx_xpm     = 0;
@@ -459,6 +470,7 @@ static char **properties_xx_xpm  = 0;
 static char **rotate_xx_xpm      = 0;
 static char **set_xx_xpm         = 0;
 static char **show_xx_xpm        = 0;
+static char **uncluster_xx_xpm   = 0;
 static char **undisplay_xx_xpm   = 0;
 static char **unwatch_xx_xpm     = 0;
 static char **watch_xx_xpm       = 0;
@@ -743,6 +755,13 @@ void install_icons(Widget shell,
 			color_key, active_color_key,
 			background, arm_background, win_attr);
 
+    install_button_icon(shell, CLUSTER_ICON, 
+      		        cluster_xpm, cluster_xx_xpm,
+		        cluster_bits, cluster_xx_bits, 
+		        cluster_width, cluster_height,
+			color_key, active_color_key,
+			background, arm_background, win_attr);
+
     install_button_icon(shell, DELETE_ICON, 
       		        delete_xpm, delete_xx_xpm,
 		        delete_bits, delete_xx_bits, 
@@ -873,6 +892,13 @@ void install_icons(Widget shell,
       		        show_xpm, show_xx_xpm,
 		        show_bits, show_xx_bits, 
 		        show_width, show_height,
+			color_key, active_color_key,
+			background, arm_background, win_attr);
+
+    install_button_icon(shell, UNCLUSTER_ICON, 
+      		        uncluster_xpm, uncluster_xx_xpm,
+		        uncluster_bits, uncluster_xx_bits, 
+		        uncluster_width, uncluster_height,
 			color_key, active_color_key,
 			background, arm_background, win_attr);
 

@@ -69,6 +69,7 @@ extern void set_label(Widget w, const MString& new_label,
 #define DDD_ICON           ddd_NAME
 #define BREAK_AT_ICON      "break_at"
 #define CLEAR_AT_ICON      "clear_at"
+#define CLUSTER_ICON       "cluster"
 #define DELETE_ICON        "delete"
 #define DISABLE_ICON       "disable"
 #define DISPREF_ICON       "dispref"
@@ -88,6 +89,7 @@ extern void set_label(Widget w, const MString& new_label,
 #define ROTATE_ICON        "rotate"
 #define SET_ICON           "set"
 #define SHOW_ICON          "show"
+#define UNCLUSTER_ICON     "uncluster"
 #define UNDISPLAY_ICON     "undisplay"
 #define UNWATCH_ICON       "unwatch"
 #define WATCH_ICON         "watch"
