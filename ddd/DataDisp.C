@@ -230,7 +230,8 @@ MMDesc DataDisp::graph_cmd_area[] =
     {"rotate",        MMPush | MMInsensitive, {DataDisp::rotateCB},
                                                DataDisp::rotate_menu },
     {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
-    {"delete",        MMPush | MMInsensitive, {DataDisp::deleteCB}},
+    {"delete",        MMPush | MMInsensitive | MMUnmanaged,
+     {DataDisp::deleteCB}},
     MMEnd
 };
 
@@ -716,7 +717,11 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->selected())
+	DispValue *dv = dn->selected_value();
+	if (dv == 0)
+	    dv = dn->value();
+
+	if (dn->selected() && dv == dn->value())
 	{
 	    disp_nrs += dn->disp_nr();
 
@@ -972,7 +977,8 @@ struct DataDispCount {
     int selected;		// # of selected displays
     int selected_expanded;	// # of selected and expanded displays
     int selected_collapsed;	// # of selected and collapsed displays
-    int selected_data;		// # of selected user displays
+    int selected_data;		// # of selected non-user displays
+    int selected_titles;	// # of selected titles (no display parts)
 
     DataDispCount(DispGraph *disp_graph);
 };
@@ -981,7 +987,8 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
     : all(0), visible(0), selected(0),
       selected_expanded(0),
       selected_collapsed(0),
-      selected_data(0)
+      selected_data(0),
+      selected_titles(0)
 {
 
     MapRef ref;
@@ -999,6 +1006,13 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 	    selected++;
 	    if (!dn->deferred())
 	    {
+		DispValue *dv = dn->selected_value();
+		if (dv == 0)
+		    dv = dn->value();
+
+		if (dv == dn->value())
+		    selected_titles++;
+
 		if (!dn->is_user_command())
 		    selected_data++;
 
@@ -1006,9 +1020,6 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 		    selected_collapsed++;
 		else
 		{
-		    DispValue *dv = dn->selected_value();
-		    if (dv == 0)
-			dv = dn->value();
 		    if (dv != 0)
 		    {
 			selected_expanded  += int(dv->expanded());
@@ -1281,14 +1292,27 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     manage_and_raise(dependent_display_dialog);
 }
 
-void DataDisp::dependentArgCB(Widget w, XtPointer, XtPointer)
+void DataDisp::dependentArgCB(Widget w, XtPointer client_data, 
+			      XtPointer call_data)
 {
-    string depends_on = "";
-    DispNode *disp_node_arg = selected_node();
-    if (disp_node_arg != 0)
-	depends_on = itostring(disp_node_arg->disp_nr());
+    DataDispCount count(disp_graph);
+    if (count.selected_titles > 0)
+    {
+	// Delete selected displays
+	deleteCB(w, client_data, call_data);
+    }
+    else
+    {
+	// Create new display
+	string arg = source_arg->get_string();
 
-    new_display(source_arg->get_string(), 0, depends_on, w);
+	string depends_on = "";
+	DispNode *disp_node_arg = selected_node();
+	if (disp_node_arg != 0)
+	    depends_on = itostring(disp_node_arg->disp_nr());
+
+	new_display(arg, 0, depends_on, w);
+    }
 }
 
 
@@ -1765,6 +1789,18 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	arg_ok = (arg != "") && (arg.contains("::") || !arg.contains(":"));
     }
 
+    // New
+    if (count.selected_titles > 0)
+    {
+	set_label(graph_cmd_area[CmdItms::New].widget,
+		  "Undisplay ()", UNDISPLAY_ICON);
+    }
+    else
+    {
+	set_label(graph_cmd_area[CmdItms::New].widget,
+		  "Display ()", DISPLAY_ICON);
+    }
+
     // Dereference
     set_sensitive(node_popup[NodeItms::Dereference].widget,
 		  dereference_ok);
@@ -1826,8 +1862,10 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  count.selected_expanded > 0);
 
     // Delete
-    set_sensitive(graph_cmd_area[CmdItms::Delete].widget,   count.selected > 0);
-    set_sensitive(display_area[DisplayItms::Delete].widget, count.selected > 0);
+    set_sensitive(graph_cmd_area[CmdItms::Delete].widget,
+		  count.selected_titles > 0);
+    set_sensitive(display_area[DisplayItms::Delete].widget,
+		  count.selected_titles > 0);
 
     // Set
     bool can_set = gdb->has_assign_command() && arg_ok;

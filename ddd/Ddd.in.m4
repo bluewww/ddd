@@ -3529,18 +3529,20 @@ DESC(Edit..., [Edit shortcuts])
 ])dnl
 
 Ddd*toolbar*new.helpString:\
-LBL(Display ())\n\
+LBL(Display ()/Undisplay ())\n\
 \n\
-Create a new display dependent on the selected display part.\n\
+If no display is selected, display the argument LBL(()) in the data window.\n\
+Otherwise, delete the selected displays.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
 NEW_DISPLAY_HELP
 Ddd*newMenu*helpString: NEW_DISPLAY_HELP
 
 Ddd*toolbar*new.tipString:\
-@rm Display LBL(())
+@rm Display/Undisplay LBL(())
 Ddd*toolbar*new.documentationString:\
-@rm Display the argument LBL(()) in the data window MORE_PULLDOWN()
+@rm Display/Undisplay the argument LBL(()) in the data window \
+MORE_PULLDOWN()
 
 Ddd*toolbar*dereference.helpString:\
 LBL(Display *())\n\
