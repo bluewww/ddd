@@ -493,14 +493,8 @@ Ddd*gdbDisplayShortcuts: \
 /x ()	// Convert to Hex\n\
 /o ()	// Convert to Oct
 
-Ddd*dbxDisplayShortcuts:  \
-(long)(())	// Convert to Dec\n\
-(void *)(())	// Convert to Hex
-
-Ddd*xdbDisplayShortcuts:   \
-(long)(())	// Convert to Dec\n\
-(void *)(())	// Convert to Hex
-
+Ddd*dbxDisplayShortcuts:  
+Ddd*xdbDisplayShortcuts:
 Ddd*jdbDisplayShortcuts:
 
 Ddd*pydbDisplayShortcuts:  \
