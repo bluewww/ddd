@@ -6,6 +6,7 @@ ChangeLog-96
 ChangeLog-97
 MakeOut
 Makefile
+Makefile.in
 config.cache
 config.log
 config.status
