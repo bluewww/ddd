@@ -454,30 +454,30 @@ void Agent::wait()
 // This handles several file pointers addressing one file
 void Agent::closeChannel(FILE *fp)
 {
-    if (fp != 0)
+    if (fp == 0)
+	return;
+
+    bool err = (fclose(fp) == EOF);
+
+    if (fp == inputfp())
     {
-	bool err = (fclose(fp) == EOF);
-    
-	if (fp == inputfp())
-	{
-	    _inputfp = 0;
-	    if (err)
-		raiseIOMsg("couldn't close input channel");
-	}
+	_inputfp = 0;
+	if (err)
+	    raiseIOMsg("couldn't close input channel");
+    }
 
-	if (fp == errorfp())
-	{
-	    _errorfp = 0;
-	    if (err)
-		raiseIOMsg("couldn't close error channel");
-	}
+    if (fp == errorfp())
+    {
+	_errorfp = 0;
+	if (err)
+	    raiseIOMsg("couldn't close error channel");
+    }
 
-	if (fp == outputfp())
-	{
-	    _outputfp = 0;
-	    if (err)
-		raiseIOMsg("couldn't close output channel");
-	}
+    if (fp == outputfp())
+    {
+	_outputfp = 0;
+	if (err)
+	    raiseIOMsg("couldn't close output channel");
     }
 }
 
@@ -502,7 +502,8 @@ void Agent::inputEOF()
     callHandlers(InputEOF);
 
     // Clear error condition
-    clearerr(inputfp());
+    if (inputfp() != 0)
+	clearerr(inputfp());
 }
 
 // EOF on error detected
@@ -515,9 +516,10 @@ void Agent::errorEOF()
     callHandlers(ErrorEOF);
 
     // Clear error condition
-    clearerr(errorfp());
+    if (errorfp() != 0)
+	clearerr(errorfp());
 }
-	
+
 // Inhibit further communication
 void Agent::abort()
 {
