@@ -80,7 +80,7 @@ set history size 1000
 directory @srcdir@
 
 # Environment
-set environment XUSERFILESEARCHPATH .
+set environment XUSERFILESEARCHPATH %N
 set environment XAPPLRESDIR .
 end
 
