@@ -100,6 +100,7 @@ char SourceView_rcsid[] =
 extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <libiberty.h> // basename()
 }
 #include <stdio.h>
 #include <fcntl.h>
@@ -288,12 +289,15 @@ Assoc<int, VarArray<int> > SourceView::bps_in_line;
 XmTextPosition*             SourceView::pos_of_line = 0;
 StringArray SourceView::bp_addresses;
 Assoc<string, string> SourceView::file_cache;
+Assoc<string, string> SourceView::source_name_cache;
 CodeCache SourceView::code_cache;
 
 string SourceView::current_source;
 string SourceView::current_code;
 string SourceView::current_code_start;
 string SourceView::current_code_end;
+
+string SourceView::current_pwd = ".";
 
 XmTextPosition SourceView::last_top                = 0;
 XmTextPosition SourceView::last_pos                = 0;
@@ -325,14 +329,6 @@ bool SourceView::at_lowest_frame = true;
 //-----------------------------------------------------------------------
 // Helping functions
 //-----------------------------------------------------------------------
-
-inline string basename(string file)
-{
-    if (file.contains('/'))
-	return file.after('/', -1);
-    else
-	return file;
-}
 
 // Return true if W is a descendant of code_form_w
 bool SourceView::is_code_widget(Widget w)
@@ -395,12 +391,12 @@ void SourceView::line_popup_setCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("break " + basename(current_file_name) + ":" + 
+	gdb_command("break " + current_source_name() + ":" + 
 		    itostring(line_nr), w);
 	break;
 	
     case DBX:
-	gdb_command("file " + current_file_name, w);
+	gdb_command("file " + full_path(current_file_name), w);
 	gdb_command("stop at " + itostring(line_nr), w);
 	break;
     }
@@ -433,12 +429,12 @@ void SourceView::line_popup_set_tempCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("tbreak " + basename(current_file_name) + ":" + 
+	gdb_command("tbreak " + current_source_name() + ":" + 
 		    itostring(line_nr), w);
 	break;
 
     case DBX:
-	gdb_command("file " + current_file_name, w);
+	gdb_command("file " + full_path(current_file_name), w);
 	gdb_command("stop at " + itostring(line_nr), w);
 	gdb_command("when at " + itostring(line_nr) 
 		    + " { clear " + itostring(line_nr) + "; }", w);
@@ -474,7 +470,7 @@ void SourceView::line_popup_temp_n_contCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("until " + basename(current_file_name) + ":" + 
+	gdb_command("until " + current_source_name() + ":" + 
 		    itostring(line_nr), w);
 	break;
     
@@ -640,6 +636,40 @@ void SourceView::text_popup_lookupCB (Widget, XtPointer client_data, XtPointer)
 // ***************************************************************************
 //
 
+// Return the normalized full path of FILE
+string SourceView::full_path(string file)
+{
+    static regex RXdotdot("/[^/]*/../");
+
+    if (file == "")
+	return current_pwd;
+
+    if (file[0] != '/')
+	file = current_pwd + "/" + file;
+
+    file.gsub(RXdotdot, "/");
+    file.gsub("/./", "/");
+
+    return file;
+}
+
+bool SourceView::file_matches(const string& file1, const string& file2)
+{
+    return file1 == file2 || full_path(file1) == full_path(file2);
+}
+
+// Check if BP occurs in the current source text
+bool SourceView::bp_matches(BreakPoint *bp)
+{
+    return bp->type() == BREAKPOINT
+	    && (bp->file_name() == ""
+		|| file_matches(bp->file_name(), current_source_name())
+		|| file_matches(bp->file_name(), current_file_name));
+}
+
+// ***************************************************************************
+//
+
 // If this is true, no motion occurred while selecting
 static bool selection_click = false;
 
@@ -682,7 +712,7 @@ void SourceView::set_source_argCB(Widget text_w,
 		// Selection from line number area: prepend source file name
 		string line = text(startIndex, bp_indent_amount);
 		int line_nr = atoi(line);
-		source_arg->set_string(basename(current_file_name)
+		source_arg->set_string(current_source_name() 
 				       + ":" + itostring(line_nr));
 
 		// If a breakpoint is here, select this one only
@@ -692,11 +722,7 @@ void SourceView::set_source_argCB(Widget text_w,
 		     bp = bp_map.next(ref))
 		{
 		    bp->selected() = 
-			(bp->type() == BREAKPOINT
-			 && (bp->file_name() == "" || 
-			     basename(bp->file_name()) == 
-			     basename(current_file_name))
-			 && bp->line_nr() == line_nr);
+			bp_matches(bp) && bp->line_nr() == line_nr;
 		}
 
 		bp_selected = true;
@@ -897,7 +923,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length)
     if (!gdb->isReadyWithPrompt())
 	return 0;
 
-    StatusDelay delay("Reading file " + quote(file_name) + " from debugger");
+    StatusDelay delay("Reading file " + quote(file_name));
 
     string command;
     switch (gdb->type())
@@ -974,6 +1000,8 @@ String SourceView::read_indented(string& file_name, long& length)
     Delay delay;
     long t;
 
+    file_name = full_path(file_name);
+
     String text;
     if (!remote_gdb())
 	text = read_local(file_name, length);
@@ -982,7 +1010,7 @@ String SourceView::read_indented(string& file_name, long& length)
 
     if (text == 0 || length == 0)
     {
-	string source_name = basename(file_name);
+	string source_name = basename((const char *)file_name);
 	text = read_from_gdb(source_name, length);
 
 	if (text != 0 && text[0] != '\0')
@@ -1079,7 +1107,7 @@ String SourceView::read_indented(string& file_name, long& length)
 }
 
 
-// Read file FILE_NAME into current_cource; get it from the cache if possible
+// Read file FILE_NAME into current_source; get it from the cache if possible
 int SourceView::read_current(string& file_name, bool force_reload)
 {
     if (cache_source_files && !force_reload && file_cache.has(file_name))
@@ -1133,15 +1161,16 @@ int SourceView::read_current(string& file_name, bool force_reload)
 void SourceView::clear_file_cache()
 {
     static Assoc<string, string> empty;
-    file_cache = empty;
+    file_cache        = empty;
+    source_name_cache = empty;
 }
 
 void SourceView::reload()
 {
     // Reload current file
-    string pos = line_of_cursor(false);
-    string file = pos.before(':');
+    string pos  = line_of_cursor();
     string line = pos.after(':');
+    string file = full_path(current_file_name);
 
     StatusDelay delay("Reloading " + quote(file));
 
@@ -1201,11 +1230,8 @@ void SourceView::read_file (string file_name,
 
     SetInsertionPosition(source_text_w, initial_pos, true);
 
-    if (file_name != current_file_name)
-    {
-	current_file_name = file_name;
-	update_title();
-    }
+    current_file_name = file_name;
+    update_title();
 
     // Breakpoint-Anzeige aktualisieren
     static Assoc<int, VarArray<int> > empty_bps;
@@ -1255,10 +1281,11 @@ void SourceView::update_title()
     if (toplevel_w == 0)
 	return;
 
-    string title = string(DDD_NAME) + ": " + current_file_name;
+    string title   = string(DDD_NAME) + ": " + current_file_name;
     String title_s = title;
 
-    string icon = string(DDD_NAME) + ": " + basename(current_file_name);
+    string icon   = string(DDD_NAME) + ": " 
+	+ basename((const char *)current_file_name);
     String icon_s = icon;
 
     XtVaSetValues(toplevel_w,
@@ -1310,12 +1337,8 @@ void SourceView::refresh_source_bp_disp()
 	 bp != 0;
 	 bp = bp_map.next(ref))
     {
-	if (bp->type() == BREAKPOINT && 
-	    (bp->file_name() == "" || 
-	     basename(bp->file_name()) == basename(current_file_name)))
-	{
+	if (bp_matches(bp))
 	    bps_in_line[bp->line_nr()] += bp->number();
-	}
     }
 
     if (!display_glyphs)
@@ -1984,10 +2007,10 @@ void SourceView::show_execution_position (string position, bool stopped)
     if (line < 0)
 	return;
 
-    if (file_name != current_file_name)
+    if (!file_matches(file_name, current_file_name))
 	read_file(file_name, line);
 
-    if (file_name == current_file_name)
+    if (file_matches(file_name, current_file_name))
     {
 	if (!display_glyphs && bp_indent_amount > 0)
 	{
@@ -2010,7 +2033,7 @@ void SourceView::_show_execution_position(string file, int line)
     last_execution_file = file;
     last_execution_line = line;
 
-    if (file != current_file_name)
+    if (!file_matches(file, current_file_name))
 	read_file(file, line);
     else if (line >= 1 && line <= line_count)
 	add_to_history(file, line);
@@ -2072,7 +2095,7 @@ void SourceView::show_position (string position)
     }
     int line = get_positive_nr(position);
 
-    if (file_name != current_file_name)
+    if (!file_matches(file_name, current_file_name))
 	read_file(file_name, line);
     add_to_history(file_name, line);
 
@@ -2284,7 +2307,7 @@ void SourceView::lookup(string s)
 	{
 	    if (gdb->type() == GDB)
 		gdb_command("info line " 
-			    + basename(last_execution_file) 
+			    + last_execution_file
 			    + ":" + itostring(last_execution_line));
 	    else
 		_show_execution_position(last_execution_file, 
@@ -2298,11 +2321,11 @@ void SourceView::lookup(string s)
 	if (line > 0 && line <= line_count)
 	{
 	    if (gdb->type() == GDB)
-		gdb_command("info line " 
-			    + basename(current_file_name)
+		gdb_command("info line " + current_source_name()
 			    + ":" + itostring(line));
 	    else
-		show_position(current_file_name + ":" + itostring(line));
+		show_position(full_path(current_file_name) 
+			      + ":" + itostring(line));
 	}
 	else
 	{
@@ -2370,6 +2393,28 @@ void SourceView::lookup(string s)
     }
 }
 
+
+// ***************************************************************************
+// PWD
+// ***************************************************************************
+
+void SourceView::process_pwd(string& pwd_output)
+{
+    string pwd = pwd_output;
+    pwd = pwd.before('\n', -1);
+
+    switch (gdb->type())
+    {
+    case GDB:			// 'Working directory PATH.'
+	pwd = pwd.before('.', -1);
+	pwd = pwd.after(' ', -1);
+	break;
+    case DBX:			// 'PATH'
+	break;
+    }
+
+    current_pwd = pwd;
+}
 
 // ***************************************************************************
 // History
@@ -2478,7 +2523,7 @@ void SourceView::goto_entry(string entry)
     if (file_name != "")
     {
 	// Lookup source
-	if (file_name != current_file_name)
+	if (!file_matches(file_name, current_file_name))
 	{
 	    source_history_locked = true;
 	    read_file(file_name, line);
@@ -2675,9 +2720,49 @@ void SourceView::find(const string& s,
     }
 }
 
+
+
+// ***************************************************************************
+// Return current source name
+string SourceView::current_source_name()
+{
+    string source = "";
+
+    switch (gdb->type())
+    {
+    case GDB:
+	// GDB internally recognizes only `source names', i.e., the
+	// source file name as compiled into the executable.
+	if (source_name_cache[current_file_name] == "")
+	{
+	    string ans = gdb_question("info source");
+	    if (ans != string(-1))
+	    {
+		ans = ans.before('\n');
+		ans = ans.after(' ', -1);
+		source_name_cache[current_file_name] = ans;
+	    }
+	}
+
+	source = source_name_cache[current_file_name];
+	break;
+
+    case DBX:
+	// DBX uses full file names.
+	source = full_path(current_file_name);
+	break;
+    }
+    
+    // In case this does not work, use the current base name.
+    if (source == "")
+	source = basename((const char *)current_file_name);
+
+    return source;
+}
+
 // ***************************************************************************
 //
-string SourceView::line_of_cursor(bool basename)
+string SourceView::line_of_cursor()
 {
     XmTextPosition pos = XmTextGetInsertionPosition(source_text_w);
 
@@ -2690,10 +2775,7 @@ string SourceView::line_of_cursor(bool basename)
 			pos, line_nr, address, in_text, bp_nr) == false)
 	return "";
 
-    string file_name = current_file_name;
-    if (basename)
-	file_name = ::basename(file_name);
-    return file_name + ":" + itostring(line_nr);
+    return current_source_name() + ":" + itostring(line_nr);
 }
 
 
@@ -3839,7 +3921,7 @@ string SourceView::get_line(string position)
         line = line_count;
     }
 
-    if (file_name != current_file_name)
+    if (!file_matches(file_name, current_file_name))
 	read_file(file_name, line);
 
     XmTextPosition start = pos_of_line[line] + bp_indent_amount;
@@ -4257,10 +4339,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	{
 	    bp->source_glyph() = 0;
 
-	    if (bp->type() == BREAKPOINT
-		&& (bp->file_name() == "" || 
-		    basename(bp->file_name()) == 
-		    basename(current_file_name))
+	    if (bp_matches(bp)
 		&& pos_of_line != 0
 		&& bp->line_nr() > 0
 		&& bp->line_nr() <= line_count)
@@ -4709,3 +4788,4 @@ void SourceView::set_disassemble(bool set)
 	}
     }
 }
+

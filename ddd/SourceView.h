@@ -235,7 +235,6 @@ private:
 
     static bool display_glyphs;	         // True if glyphs are to be displayed
     static bool disassemble;	         // True if code is to be disassembled
-
     static bool at_lowest_frame;              // True if at lowest frame
 
     // The indenting amounts
@@ -252,18 +251,36 @@ private:
     static XmTextPosition*            pos_of_line;
     static StringArray bp_addresses;
 
+    // Return TRUE if breakpoint BP is in current file
+    static bool bp_matches(BreakPoint *bp);
+    static string full_path(string file);
+    static bool file_matches(const string& file1, const string& file2);
+
     static Assoc<string, string> file_cache;
     static CodeCache code_cache;
+
+    // The current source text.
     static string current_source;
+
+    // The current assembler code.
     static string current_code;
     static string current_code_start;
     static string current_code_end;
 
+    // Return current source name (name under this source is known to GDB)
+    static Assoc<string, string> source_name_cache;
+    static string current_source_name();
+
+    // The current directory
+    static string current_pwd;
+
+    // Some positions in source text.
     static XmTextPosition last_top;
     static XmTextPosition last_pos;
     static XmTextPosition last_start_highlight;
     static XmTextPosition last_end_highlight;
 
+    // Some positions in assembler code.
     static XmTextPosition last_top_pc;
     static XmTextPosition last_pos_pc;
     static XmTextPosition last_start_highlight_pc;
@@ -274,6 +291,7 @@ private:
     static string last_execution_pc;
     static void _show_execution_position (string file, int line);
 
+    // Read source text
     static String read_local(const string& file_name, long& length);
     static String read_remote(const string& file_name, long& length);
     static String read_from_gdb(const string& file_name, long& length);
@@ -289,6 +307,7 @@ private:
     static bool is_code_widget(Widget w);
     static string& current_text(Widget w);
 
+    // Assembler code display routines.
     static Delay *refresh_code_pending;
     static XmTextPosition find_pc(const string& pc);
     static void refresh_codeOQC(const string& answer, void *data);
@@ -337,6 +356,9 @@ public:
     // Handle 'disassemble' information
     static void process_disassemble     (const string& disassemble_output);
 
+    // Handle 'pwd' information
+    static void process_pwd             (string& pwd_output);
+
     // Process the remainder of an output line
     static void check_remainder         (string& info_output);
 
@@ -367,10 +389,8 @@ public:
     static void go_back();
     static void go_forward();
 
-    // Return source cursor position in <file>:<line> format.
-    // If BASENAME, return only the basename of the file;
-    // the full file name, otherwise.
-    static string line_of_cursor(bool basename = true);
+    // Return source cursor position in <source>:<line> format.
+    static string line_of_cursor();
 
     // Callbacks for menu bar
     static void EditBreakpointsCB(Widget, XtPointer, XtPointer);
