@@ -1768,11 +1768,8 @@ static void reload_options()
 
     XrmDatabase target = XtDatabase(XtDisplay(toplevel));
 
-#if 0				// This causes core dumps. - AZ
-    XrmDatabase default_db = app_defaults(XtDisplay(toplevel));
-    if (default_db != 0)
-	XrmMergeDatabases(default_db, &target);
-#endif
+    static XrmDatabase default_db = app_defaults(XtDisplay(toplevel));
+    XrmMergeDatabases(default_db, &target);
 
     XrmMergeDatabases(session_db, &target);
 
@@ -1905,7 +1902,7 @@ void check_options_file()
 
 static bool is_fallback_value(string resource, string val)
 {
-    XrmDatabase default_db = app_defaults(XtDisplay(find_shell()));
+    static XrmDatabase default_db = app_defaults(XtDisplay(find_shell()));
 
     static String app_name  = 0;
     static String app_class = 0;
