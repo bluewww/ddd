@@ -734,10 +734,6 @@ void send_gdb_command(string cmd, Widget origin,
 	{
 	    gdb->recording(true);
 	}
-	else if (gdb->type() == GDB && ends_recording(cmd))
-	{
-	    plus_cmd_data->refresh_breakpoints = true;
-	}
     }
     else if (is_file_cmd(cmd, gdb))
     {
@@ -921,9 +917,9 @@ void send_gdb_command(string cmd, Widget origin,
 	plus_cmd_data->break_arg = get_break_expression(cmd);
 	plus_cmd_data->refresh_breakpoints = true;
     }
-    else
+    else if (is_defined_cmd(cmd))
     {
-	// Unknown command -- refresh everything
+	// User-defined command -- refresh everything
 	if (gdb->has_display_command())
 	    cmd_data->filter_disp = Filter;
 
