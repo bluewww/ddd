@@ -1870,8 +1870,17 @@ string GDBAgent::dereferenced_expr(string expr) const
 	return prepend_prefix("*", expr);
 
     case LANGUAGE_JAVA:
-	// GDB dereferences JAVA references by prepending `*'
-	return prepend_prefix("*", expr);
+	if (type() == GDB)
+	{
+	    // GDB dereferences JAVA references by prepending `*'
+	    return prepend_prefix("*", expr);
+	}
+	else
+	{
+	    // JDB (and others?) dereference automatically
+	    return expr;
+	}
+	break;
 
     case LANGUAGE_CHILL:
 	return append_suffix(expr, "->");
@@ -1880,10 +1889,10 @@ string GDBAgent::dereferenced_expr(string expr) const
 	return append_suffix(expr, "^");
 
     case LANGUAGE_OTHER:
-	return "";		// All other languages
+	return expr;		// All other languages
     }
 
-    return "";			// All other languages
+    return expr;		// All other languages
 }
 
 // Give the address of an expression.
