@@ -236,15 +236,7 @@ VSLLib *DispBox::vsllib(const DispValue *dv)
     // Check whether we have such a library in the cache
     for (VSLLibCache *p = vsllib_cache; p != 0; p = p->next)
     {
-	bool ok = true;
-	if (p->themes.size() != themes.size())
-	    ok = false;
-
-	for (int i = 0; ok && i < p->themes.size(); i++)
-	    if (p->themes[i] != themes[i])
-		ok = false;
-
-	if (ok)
+	if (p->themes == themes)
 	    return p->lib;
 
 	count++;
@@ -258,7 +250,7 @@ VSLLib *DispBox::vsllib(const DispValue *dv)
     vsllib_ptr->set_theme_list(themes);
 
 #if CACHE_LIBS
-    vsllib_cache  = new VSLLibCache(themes, vsllib_ptr, vsllib_cache);
+    vsllib_cache = new VSLLibCache(themes, vsllib_ptr, vsllib_cache);
 #endif
 
     return vsllib_ptr;
