@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "10 September 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "24 September 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -2244,14 +2244,14 @@ This `\fB.dddinit\fR' setting invokes an editing session
 for an \fIXEmacs\fR editor running \fIgnuserv\fR:
 .sp
 .br
-  \fB@Ddd@*editCommand: gnuclient +@FILE@ @LINE@\fR
+  \fB@Ddd@*editCommand: gnuclient +@LINE@ @FILE@\fR
 .br
 .sp
 This `\fB.dddinit\fR' setting invokes an editing session
 for an \fIEmacs\fR editor running \fIemacsserver\fR:
 .sp
 .br
-  \fB@Ddd@*editCommand: emacsclient +@FILE@ @LINE@\fR
+  \fB@Ddd@*editCommand: emacsclient +@LINE@ @FILE@\fR
 .br
 .sp
 .TP

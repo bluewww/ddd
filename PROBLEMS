@@ -147,6 +147,17 @@ Reported by:  dmitzel@everest.hitc.com (Danny J. Mitzel) and
     -lXaw flag from the `Makefile' linking command).
 
 
+UNIXWARE
+========
+
+Reported by: Vinnie Shelton  <shelton@icd.teradyne.com>
+
+    For Unixware, I have to set up `ddd/Makefile' as follows 
+    after configuration:
+
+    LINK.cc = env LD_RUN_PATH=/usr/X11R6/lib $(CXX) $(CXXBINDING) $(LDFLAGS)
+
+
 X11R4
 =====
 
