@@ -140,6 +140,7 @@ extern "C" {
 #include "ddd.h"
 #include "file.h"
 #include "fortranize.h"
+#include "history.h"
 #include "index.h"
 #include "java.h"
 #include "mydialogs.h"
@@ -2302,8 +2303,11 @@ void SourceView::set_tab_width(int width)
     {
 	tab_width = width;
 
-	StatusDelay delay("Reformatting");
-	reload();
+	if (current_file_name != "")
+	{
+	    StatusDelay delay("Reformatting");
+	    reload();
+	}
     }
 }
 
@@ -2317,12 +2321,14 @@ void SourceView::set_indent(int source_indent, int code_indent)
 	code_indent == code_indent_amount)
 	return;
 
-    StatusDelay delay("Reformatting");
-
     if (source_indent != source_indent_amount)
     {
 	source_indent_amount = source_indent;
-	reload();
+	if (current_file_name != "")
+	{
+	    StatusDelay delay("Reformatting");
+	    reload();
+	}
     }
 
     if (code_indent != code_indent_amount)
@@ -5303,6 +5309,52 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     }
 }
 
+static string cond_filter(const string& cmd)
+{
+    switch (gdb->type())
+    {
+    case GDB:
+	if (cmd.contains("cond", 0))
+	{
+	    // Skip command
+	    string arg = cmd.after(rxwhite);
+
+	    // Skip breakpoint number
+	    arg = arg.after(rxwhite);
+
+	    strip_space(arg);
+	    return arg;
+	}
+	break;
+
+    case DBX:
+	if (cmd.contains("if "))
+	{
+	    string arg = cmd.after("if ");
+	    strip_space(arg);
+	    return arg;
+	}
+	break;
+
+    case XDB:
+	if (cmd.contains("{if "))
+	{
+	    string arg = cmd.after("if ");
+	    if (arg.contains("{}"))
+		arg = arg.before("{}");
+	    strip_space(arg);
+	    return arg;
+	}
+	break;
+
+    case JDB:
+	// No conditions in JDB
+	break;
+    }
+
+    return "";			// No condition
+}
+
 // Edit breakpoint properties
 void SourceView::EditBreakpointPropertiesCB(Widget, 
 					    XtPointer client_data, 
@@ -5394,7 +5446,7 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     MMDesc panel_menu[] = 
     {
 	{ "title", MMButtonPanel, MMNoCB, enabled_menu },
-	{ "condition", MMEnterField,
+	{ "condition", MMComboBox,
 	  { SetBreakpointConditionCB, XtPointer(info) }, 0, &info->condition },
 	{ "ignore", MMSpinField,
 	  { SetBreakpointIgnoreCountCB, XtPointer(info) }, 0, &info->ignore },
@@ -5446,6 +5498,8 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     XtAddCallback(info->dialog, XmNdestroyCallback,
 		  DeleteInfoCB,  XtPointer(info));
 
+    tie_combo_box_to_history(info->condition, cond_filter);
+
     manage_and_raise(info->dialog);
     info->spin_locked = false;
 }
@@ -5453,17 +5507,29 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
 // Set breakpoint condition
 void SourceView::SetBreakpointConditionCB(Widget w,
 					  XtPointer client_data, 
-					  XtPointer)
+					  XtPointer call_data)
 {
+    XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
+    switch (cbs->reason)
+    {
+    case XmCR_ACTIVATE:		// Pressed `RETURN'
+    case XmCR_SINGLE_SELECT:	// Selection from ComboBox
+    case XmCR_MULTIPLE_SELECT:
+    case XmCR_EXTENDED_SELECT:
+    case XmCR_BROWSE_SELECT:
+	break;
+
+    default:
+	return;			// Value changed
+    }
+
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
     String cond = XmTextFieldGetString(info->condition);
 
     for (int i = 0; i < info->nrs.size(); i++)
-    {
 	set_bp_cond(info->nrs[i], cond, w);
-    }
 
     XtFree(cond);
 }
