@@ -142,8 +142,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 272 (LessTif) The `select' font selection method works only once.
 
-278*The `--fonts' option needs documentation.
-
 281 In auto deiconify mode, the GDB console uniconifies even if other
     windows are already there.
 
