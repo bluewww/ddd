@@ -5,7 +5,11 @@ DDD 2.2.4 [in development]
 --------------------------
 
     User-visible changes to DDD 2.2.1:
-    - Java language support as included in future GDB versions.
+    - Improved Java support.  When debugging Java programs with GDB,
+      DDD can now properly parse Java expressions.  (Today's GDB 4.16
+      does not yet support Java, but future GDB versions will; DDD was 
+      tested against a 1998-01-22 GDB development snapshot.)
+    - The `DBX settings' panel for SGI DBX has been improved.
 
 
 DDD 2.2.3
