@@ -4804,6 +4804,8 @@ void SourceView::CheckScrollCB(Widget, XtPointer, XtPointer)
     
 void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
 {
+    (void) id;			// Use it
+
     XtIntervalId *timer = (XtIntervalId *)client_data;
     if (timer != 0)
     {
