@@ -105,5 +105,8 @@ public class jtest {
 	type_test();
 	--i;
 	System.out.println("Hello, World!");
+
+	for (int j = 0; j < 50000; j++)
+	     tree_test();
     }
 }
