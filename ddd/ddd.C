@@ -278,8 +278,10 @@ static void ToggleBlinkCB(Widget, XtPointer client_data, XtPointer call_data);
 static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
 static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
 
+#if SHOW_GDB_STATUS
 // GDB status
 static void ShowGDBStatusCB(Widget w, XtPointer, XtPointer);
+#endif
 
 // Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
@@ -2842,17 +2844,24 @@ static void ToggleBlinkCB(Widget, XtPointer, XtPointer call_data)
 
 const Dimension y_popup_offset = 5;
 
+static Widget history_shell = 0;
 static void PopupStatusHistoryCB(Widget w, XtPointer client_data, 
 				 XtPointer call_data)
 {
+    (void) call_data;		// Use it
+    (void) client_data;		// Use it
+
+#if SHOW_GDB_STATUS
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+
     if (cbs->event->xbutton.state & ShiftMask)
     {
 	ShowGDBStatusCB(w, client_data, call_data);
 	return;
     }
+#endif
 
-    Widget history = status_history(w);
+    history_shell = status_history(w);
 
     Position shell_x, shell_y;
     XtTranslateCoords(find_shell(status_w), 0, 0, &shell_x, &shell_y);
@@ -2866,13 +2875,14 @@ static void PopupStatusHistoryCB(Widget w, XtPointer client_data,
 
     XtQueryGeometry(status_w, NULL, &size);
     XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
-    Dimension status_height = 
-	XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, size.height, unit_type);
+    Dimension status_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS,
+					     size.height, unit_type);
 
-    XtQueryGeometry(history, NULL, &size);
-    XtVaGetValues(history, XmNunitType, &unit_type, NULL);
-    Dimension history_height = 
-	XmConvertUnits(history, XmVERTICAL, XmPIXELS, size.height, unit_type);
+    XtQueryGeometry(history_shell, NULL, &size);
+    XtVaGetValues(history_shell, XmNunitType, &unit_type, NULL);
+    Dimension history_height = XmConvertUnits(history_shell, XmVERTICAL,
+					      XmPIXELS,
+					      size.height, unit_type);
 
     Position x, y;
     if (app_data.status_at_bottom)
@@ -2886,17 +2896,18 @@ static void PopupStatusHistoryCB(Widget w, XtPointer client_data,
 	y = status_y + status_height + y_popup_offset;
     }
 
-    XtVaSetValues(history, XmNx, x, XmNy, y, XtPointer(0));
-    XtPopup(history, XtGrabNone);
+    XtVaSetValues(history_shell, XmNx, x, XmNy, y, XtPointer(0));
+    XtPopup(history_shell, XtGrabNone);
 }
 
-static void PopdownStatusHistoryCB(Widget w, XtPointer, XtPointer)
+static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer)
 {
-    Widget history = status_history(w);
-    XtPopdown(history);
+    if (history_shell != 0)
+	XtPopdown(history_shell);
 }
 
 
+#if SHOW_GDB_STATUS
 //-----------------------------------------------------------------------------
 // Show status of inferior debugger
 //-----------------------------------------------------------------------------
@@ -2961,9 +2972,9 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
     status += bf("Slave TTY: ") + tt(gdb->slave_tty()) + cr();
     status += bf("Current state: ");
     if (gdb->isReadyWithPrompt())
-	status += rm("ready\n");
+	status += rm("ready") + cr();
     else
-	status += rm("busy\n");
+	status += rm("busy") + cr();
 
     status += cr() + sl("DEBUGGER CAPABILITIES") + cr();
     status += bf("Debugger type: ") + rm(gdb->title()) + cr();
@@ -3021,6 +3032,7 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
 
     XtManageChild(info);
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Helpers
