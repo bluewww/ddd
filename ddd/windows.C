@@ -87,7 +87,7 @@ static void recenter_tool_shell(Widget ref);
 
 static string last_tool_shell_geometry = "+0+0";
 
-static void RecenterToolShellCB(XtPointer, XtIntervalId *)
+static void RecenterToolShellCB(XtPointer = 0, XtIntervalId * = 0)
 {
     XWindowAttributes attr;
     XGetWindowAttributes(XtDisplay(tool_buttons_w), 
@@ -145,10 +145,7 @@ void initial_popup_shell(Widget w)
     if (w == tool_shell)
     {
 	if (!iconic)
-	{
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell), 0,
-			    RecenterToolShellCB, XtPointer(0));
-	}
+	    RecenterToolShellCB();
     }
 
     if (w != toplevel)
@@ -317,9 +314,27 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    tool_shell_state = Transient;
 	}
 
+	{
+	    // Check position of command tool
+	    Position pos_x = WidthOfScreen(XtScreen(tool_shell)) - 1;
+	    Position pos_y = HeightOfScreen(XtScreen(tool_shell)) - 1;
+
+	    XWindowAttributes attr;
+	    XGetWindowAttributes(XtDisplay(tool_shell), XtWindow(tool_shell), 
+				 &attr);
+
+	    int root_x, root_y;
+	    Window child;
+	    XTranslateCoordinates(XtDisplay(tool_shell), XtWindow(tool_shell), 
+				  attr.root, 0, 0, &root_x, &root_y, &child);
+
+	    if (root_x >= pos_x || root_y >= pos_y)
+		RecenterToolShellCB();
+	}
+
 	if (!synthetic && app_data.group_iconify)
 	{
-	    // Map all other windows as well
+	    // Some shell was mapped - map all other shells as well
 	    if (command_shell_state == Iconic)
 	    {
 		popup_shell(command_shell);
@@ -644,7 +659,7 @@ void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 
     popup_shell(tool_shell);
     wait_until_mapped(tool_shell);
-    recenter_tool_shell(source_view->source());
+    RecenterToolShellCB();
     update_options();
 }
 
