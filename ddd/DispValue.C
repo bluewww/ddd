@@ -796,10 +796,12 @@ void DispValue::clear()
 
 void DispValue::validate_box_cache()
 {
-    for (int i = 0; i < nchildren(); i++)
-    {
+    int i;
+    for (i = 0; i < nchildren(); i++)
 	child(i)->validate_box_cache();
 
+    for (i = 0; i < nchildren(); i++)
+    {
 	if (child(i)->cached_box() == 0 ||
 	    child(i)->_cached_box_change > _cached_box_change)
 	{

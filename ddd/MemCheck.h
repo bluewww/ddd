@@ -48,16 +48,20 @@ typedef double Align;
 class MemCheckHeader {
     friend class MemCheck;
 
+public:
+    // The anonymous union needs access to this one
+    struct Block {
+	MemCheckHeader *ptr;	// Next block
+	unsigned size;		// Actual size of this block
+	unsigned magic;		// Magic number (debugging only)
+	unsigned requested;	// Requested size (debugging only)
+	unsigned tic;		// ID of this block (debugging only)
+	unsigned dummy;		// Required by gcc-2.5.5 (otherwise crash)
+    };
+
 private:
     union {
-	struct Block {
-	    MemCheckHeader *ptr;    // Next block
-	    unsigned size;	    // Actual size of this block
-	    unsigned magic;	    // Magic number (debugging only)
-	    unsigned requested;	    // Requested size (debugging only)
-	    unsigned tic;	    // ID of this block (debugging only)
-	    unsigned dummy;	    // Required by gcc-2.5.5 (otherwise crash)
-	} s;
+	Block s;
 	Align x;
     };
 

@@ -59,6 +59,8 @@ static bool tty_gdb_input;
 // TTY input received
 void tty_command(Agent *, void *, void *call_data)
 {
+    annotate("post-prompt");
+
     DataLength *d = (DataLength *)call_data;
 
     // Simply insert text, invoking all necessary callbacks
@@ -94,13 +96,18 @@ void _tty_out(const string& text)
     command_tty->write((char *)text, text.length());
 }
 
-// Output TEXT on controlling TTY if we're in full_name_mode
+// Output TEXT on controlling TTY if we're in annotation mode
 void tty_full_name(const string& pos)
 {
     if (command_tty == 0)
 	return;
 
-    if (app_data.full_name_mode)
+    if (app_data.annotate >= 2)
+    {
+	string s = "source " + pos;
+	annotate(s);
+    }
+    else if (app_data.annotate == 1)
     {
 	_tty_out("\032\032" + pos + "\n");
     }
@@ -115,9 +122,13 @@ void tty_full_name(const string& pos)
 // Issue an artificial prompt
 void prompt()
 {
+    annotate("pre-prompt");
+
     _gdb_out(gdb->prompt());
     if (tty_gdb_input)
 	_tty_out(gdb->prompt());
+
+    annotate("prompt");
 }
 
 // Initialize command tty
@@ -133,4 +144,15 @@ void init_command_tty()
 bool tty_running()
 {
     return command_tty != 0 && command_tty->running();
+}
+
+// Annotations
+void annotate(char *text)
+{
+    if (app_data.annotate < 2)
+	return;
+
+    _tty_out("\n\032\032");
+    _tty_out(text);
+    _tty_out("\n");
 }

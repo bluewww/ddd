@@ -303,7 +303,7 @@ int VSLLib::bind()
 		// Replace missing def by "__undef()" call
 		cdef->expr() = call("__undef");
 		if (cdef->expr() == 0)
-		    cdef->expr() = new ConstNode(new StringBox("???"));
+		    cdef->expr() = new ConstNode(new StringBox("?" "?" "?"));
 	    }
 	    else
 	    {

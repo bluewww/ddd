@@ -148,21 +148,13 @@ VSLNode *VSLLib::call(const string& name,
 	string *str;
 	int num;
 	double fnum;
-	struct {
-	    string *id;
-	    VSLNode *pattern;
-	    string *file;
-	    int line;
-	} header;
-	struct {
-	    VSLNode *pattern;
-	    VSLNode *args;
-	} vardef;
+	VSLFunctionHeader function_header;
+	VSLVarDefinition  var_definition;
     };
 }
 
 %type <str> identifier function_identifier string_constant
-%type <header> function_header local_header global_header
+%type <function_header> function_header local_header global_header
 %type <node> function_body box_expression_with_defs box_expression_with_wheres
 	box_expression const_expression
 	unary_expression binary_expression function_call function_argument
@@ -170,7 +162,7 @@ VSLNode *VSLLib::call(const string& name,
 	box_expression_list multiple_box_expression_list
 	in_box_expression box_expression_with_where
 %type <num> numeric_constant
-%type <vardef> var_definition 
+%type <var_definition> var_definition 
 
 %start file
 

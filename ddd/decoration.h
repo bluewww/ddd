@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// Create an XImage from bitmap data
+// Check for WM decoration
 
-// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -26,28 +26,25 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_InitImage_h
-#define _DDD_InitImage_h
+#ifndef _DDD_decoration_h
+#define _DDD_decoration_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-#include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#include "bool.h"
 
-// Initialize IMAGE
-extern void InitImage(XImage *image);
+// Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
+extern void get_transient_pos(Screen *screen,
+			      Position& pos_x, Position& pos_y);
 
-// Create IMAGE from bitmap source
-extern XImage *CreateImageFromBitmapData(unsigned char *bits,
-					 int width, int height);
+// Start check for window manager decoration
+extern void start_have_decorated_transients(Widget parent);
 
-// Install IMAGE in Motif cache
-Boolean InstallImage(XImage *image, char *name);
+// Return true if transient windows are decorated
+extern bool have_decorated_transients(Widget parent);
 
-// Install bitmap in Motif cache
-Boolean InstallBitmap(unsigned char *bits, int width, int height, char *name);
-
-#endif // _DDD_InitImage_h
+#endif // _DDD_decoration_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

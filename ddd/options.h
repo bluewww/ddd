@@ -51,6 +51,7 @@
 #define DONT_RELOAD_CORE (1 << 8) // Do not load generated core file
 #define DONT_COPY_CORE   (1 << 9) // Do not copy existing core file
 #define MAY_INTERACT     (1 << 10) // Allow user interaction
+#define DONT_RELOAD_FILE (1 << 11) // Do not load debuggee
 
 #define SAVE_DEFAULT MAY_INTERACT
 

@@ -535,6 +535,10 @@ private:
     static Widget drag_conds[2];
     static Widget drag_temps[2];
 
+    // Return position POS of glyph GLYPH in X/Y.  Return true iff displayed.
+    static bool glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
+				Position& x, Position& y);
+
     // Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
     // store location in POSITIONS.  Return mapped widget (0 if none)
     static Widget map_stop_at(Widget w, XmTextPosition pos,
@@ -838,7 +842,7 @@ public:
     static string pwd() { return current_pwd; }
 
     // Return current class path
-    static string class_path() { return current_class_path; }
+    static string class_path();
 
     // Return current source file name
     static string name_of_source() { return current_source_name(); }

@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // General configuration file.
 
-// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the ICE Library.
@@ -100,6 +100,12 @@
 
 /* Define if the Motif library defines `xmUseVersion' */
 #undef HAVE_XMUSEVERSION
+
+/* Define if the Motif library defines `XmInstallImage' */
+#undef HAVE_XMINSTALLIMAGE
+
+/* Define if the Motif library defines `Xm21InstallImage' */
+#undef HAVE_XM21INSTALLIMAGE
 
 /* Define if your C++ compiler supports named return values. */
 #undef HAVE_NAMED_RETURN_VALUES

@@ -131,11 +131,11 @@ protected:
 
 public:
     // Create new breakpoint from INFO_OUTPUT.  ARG denotes the
-    // argument of a breakpoint setting command.  If NUMBER is given,
-    // assign this number.  If FILE is given, assume this file.
+    // argument of a breakpoint setting command.  If NUMBER is != 0,
+    // assign this number.  If FILE is != "", assume this file.
     // Delete own info from INFO_OUTPUT.
-    BreakPoint (string& info_output, char *arg = "",
-		int number = 0, char *file = "");
+    BreakPoint(string& info_output, 
+	       const string& arg, int number, string& file);
 
     // This should avoid link warnings on SGI
     // as reported by Mike Tosti <tosti@cinesite.com>

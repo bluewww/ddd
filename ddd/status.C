@@ -42,6 +42,7 @@ char status_rcsid[] =
 #include "HelpCB.h"
 #include "MakeMenu.h"
 #include "charsets.h"
+#include "cmdtty.h"		// annotate()
 #include "ddd.h"
 #include "findParent.h"
 #include "mydialogs.h"
@@ -105,10 +106,16 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
     if (yn)
     {
+	if (!gdb_asks_yn)
+	    annotate("query");
+
 	gdb_asks_yn = true;
     }
     else if (gdb->isReadyWithPrompt())
     {
+	if (gdb_asks_yn)
+	    annotate("post-query");
+
 	gdb_asks_yn = false;
 	unpost_gdb_yn();
     }
@@ -242,7 +249,7 @@ Widget status_history(Widget parent)
     }
     else
     {
-	history_msg = bf("Recent messages");
+	history_msg = MString("Recent messages");
 	history_msg += rm(" (oldest first)");
 	history_msg += cr();
 
@@ -258,10 +265,10 @@ Widget status_history(Widget parent)
 	} while (i != current_history);
     }
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
     {
-	// LessTif fails to resize the shell properly - the border
-	// width is zero.  Use this hack instead.
+	// LessTif 0.87 and earlier fails to resize the shell properly
+	// - the border width is zero.  Use this hack instead.
 	XmFontList font_list;
 	XtVaGetValues(history_label, XmNfontList, &font_list, NULL);
     
@@ -597,19 +604,18 @@ void set_status_mstring(MString message, bool temporary)
 	return;
 
     if (!temporary)
-    {
 	add_to_status_history(message);
-	if (status_locked)
-	    return;
+
+    if (!status_locked)
+    {
+	current_status_text = message;
+
+	XtVaSetValues(status_w,
+		      XmNlabelString, message.xmstring(),
+		      NULL);
+	XFlush(XtDisplay(status_w));
+	XmUpdateDisplay(status_w);
     }
-
-    current_status_text = message;
-
-    XtVaSetValues(status_w,
-		  XmNlabelString, message.xmstring(),
-		  NULL);
-    XFlush(XtDisplay(status_w));
-    XmUpdateDisplay(status_w);
 
     if (log_status && !temporary)
     {

@@ -162,6 +162,10 @@
 #define XtCUseTTYCommand         "UseTTYCommand"
 #define XtNquestionTimeout       "questionTimeout"
 #define XtCQuestionTimeout       "QuestionTimeout"
+#define XtNpositionTimeout       "positionTimeout"
+#define XtCPositionTimeout       "PositionTimeout"
+#define XtNdisplayTimeout        "displayTimeout"
+#define XtCDisplayTimeout        "DisplayTimeout"
 #define XtNsynchronousDebugger   "synchronousDebugger"
 #define XtCSynchronousDebugger   "SynchronousDebugger"
 #define XtNterminateOnEOF        "terminateOnEOF"
@@ -247,8 +251,9 @@
 #define XtNcheckOptions          "checkOptions"
 #define XtCCheckOptions          "CheckOptions"
 #define XtNttyMode               "ttyMode"
-#define XtNfullNameMode          "fullNameMode"
 #define XtCTTYMode               "TTYMode"
+#define XtNannotate              "annotate"
+#define XtCAnnotate              "Annotate"
 #define XtNblockTTYInput         "blockTTYInput"
 #define XtCBlockTTYInput         "BlockTTYInput"
 #define XtNdisplayGlyphs         "displayGlyphs"
@@ -462,6 +467,8 @@ struct AppData {
     String    term_type;
     Boolean   use_tty_command;
     int       question_timeout;
+    int       position_timeout;
+    int       display_timeout;
     Boolean   synchronous_gdb;
     Boolean   terminate_on_eof;
     Boolean   poll_child_status;
@@ -506,7 +513,7 @@ struct AppData {
     Cardinal  check_options;
     Boolean   tty_mode;
     OnOff     block_tty_input;
-    Boolean   full_name_mode;
+    Cardinal  annotate;
     Boolean   display_glyphs;
     Cardinal  max_glyphs;
     Boolean   cache_glyph_images;
