@@ -47,7 +47,7 @@ extern Boolean CvtStringToBitmap(Display *display,
 				 XrmValue *fromVal, XrmValue *toVal,
 				 XtPointer *converter_data);
 
-// Convert String to XmString, using @ for font specs
+// Convert String to XmString, using `@' for font specs
 extern Boolean CvtStringToXmString(Display *display, 
 				   XrmValue *args, Cardinal *num_args, 
 				   XrmValue *fromVal, XrmValue *toVal,
@@ -74,4 +74,8 @@ extern Boolean CvtStringToPacking(Display *display,
 // Register all converters
 extern void registerOwnConverters();
 
-#endif
+// Define a macro: @NAME@ will be replaced by VALUE in CvtStringToXmString
+void defineConversionMacro(String name, String value);
+
+#endif // _DDD_converters_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

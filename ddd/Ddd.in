@@ -87,7 +87,7 @@ Ddd*Separate: false
 
 
 ! True if programs are to be run in a separate top-level window.
-! If this is false, input/output is sent to the DDD console window.
+! If this is false, input/output is sent to the debugger console.
 !
 ! Although a separate execution window has several advantages, it
 ! is less portable and more error-prone, which is why it is disabled 
@@ -1776,15 +1776,14 @@ Ddd*editMenu.delete.documentationString: \
 Ddd*menubar.options.labelString:	 Options
 Ddd*menubar.options.mnemonic:		 O
 Ddd*menubar.options*documentationString: \
-@rm Modify the debugger configuration
+@rm Modify the @GDB@ configuration
 
 Ddd*menubar.options*helpString:	\
 @rm This is the @sl Options Menu.@rm\n\
 \n\
 @tt \267 @bf Preferences... @rm invokes a panel for \
 setting @DDD@ options.\n\
-@tt \267 @bf Settings... @rm invokes a panel for \
-setting options of the inferior debugger.\n\
+@tt \267 @bf Settings... @rm invokes a panel for setting @GDB@ options.\n\
 \n\
 @tt \267 @rm If @bf Run in Execution Window @rm is set, \
 the program is run in a separate\n\
@@ -1797,7 +1796,7 @@ only complete words are found.\n\
 @tt \267 @rm If @bf Display Machine Code @rm is set, \
 the current function is automatically disassembled.\n\
 \n\
-@bf Save Options @rm saves options, preferences, and debugger settings\n\
+@bf Save Options @rm saves options, preferences, and @GDB@ settings\n\
 for the next @DDD@ invocation.
 
 Ddd*optionsMenu.preferences.labelString:		Preferences...
@@ -1809,7 +1808,7 @@ Ddd*optionsMenu.preferences.documentationString:\
 Ddd*optionsMenu.settings.labelString:			Settings...
 Ddd*optionsMenu.settings.mnemonic:			S
 Ddd*optionsMenu.settings.documentationString:\
-@rm Modify the configuration of the inferior debugger
+@rm Modify the @GDB@ configuration
 
 Ddd*optionsMenu.separateExecWindow.labelString:		Run in Execution Window
 Ddd*optionsMenu.separateExecWindow.mnemonic:		E
@@ -1847,8 +1846,8 @@ Ddd*menubar.view.helpString:	\
 \
 @rm This is the @sl Windows Menu.@rm\n\
 \n\
-@tt \267 @bf Command Tool... @rm - show the debugger command tool.\n\
-@tt \267 @bf Debugger Console... @rm - show the debugger console.\n\
+@tt \267 @bf Command Tool... @rm - show the command tool.\n\
+@tt \267 @bf Debugger Console... @rm - show the @GDB@ console.\n\
 @tt \267 @bf Program Source... @rm - show the program source.\n\
 @tt \267 @bf Program Data... @rm - show the program data.\n\
 @tt \267 @bf Program Execution... @rm - show input/output of the program.
@@ -1861,7 +1860,7 @@ Ddd*viewMenu.tool.documentationString: \
 Ddd*viewMenu.console.labelString:		Debugger Console...
 Ddd*viewMenu.console.mnemonic:			C
 Ddd*viewMenu.console.documentationString: \
-@rm Show the debugger console and attached windows
+@rm Show the @GDB@ console and attached windows
 
 Ddd*viewMenu.source.labelString:		Program Source...
 Ddd*viewMenu.source.mnemonic:			S
@@ -1903,8 +1902,8 @@ but proceed through subroutine calls.\n\
 \n\
 @tt \267 @bf Kill @rm - Kill execution of program being debugged.\n\
 @tt \267 @bf Interrupt @rm - interrupt program \
-(or current debugger command).\n\
-@tt \267 @bf Abort @rm - abort program (or current debugger command).
+(or current @GDB@ command).\n\
+@tt \267 @bf Abort @rm - abort program (or current @GDB@ command).
 
 Ddd*menubar*programMenu.run.labelString:	   Run...
 Ddd*menubar*programMenu.run.mnemonic:		   R
@@ -1967,21 +1966,21 @@ Ddd*menubar*programMenu.break.mnemonic:		   I
 Ddd*menubar*programMenu.break.accelerator:	   Ctrl<Key>C
 Ddd*menubar*programMenu.break.acceleratorText:	   Ctrl+C
 Ddd*menubar*programMenu.break.documentationString: \
-@rm Interrupt program (or current debugger command)
+@rm Interrupt program (or current @GDB@ command)
 
 Ddd*menubar*programMenu.quit.labelString:	   Abort
 Ddd*menubar*programMenu.quit.mnemonic:		   A
 Ddd*menubar*programMenu.quit.accelerator:	   Ctrl<Key>\\ 
 Ddd*menubar*programMenu.quit.acceleratorText:	   Ctrl+\\ 
 Ddd*menubar*programMenu.quit.documentationString: \
-@rm Abort program (or current debugger command)
+@rm Abort program (or current @GDB@ command)
 
 
 ! Commands
 Ddd*menubar.commands.labelString:	Commands
 Ddd*menubar.commands.mnemonic:		C
 Ddd*menubar.commands*documentationString: \
-@rm Enter and modify debugger commands
+@rm Enter and modify @GDB@ commands
 Ddd*menubar.commands*helpString:	\
 \
 @rm This is the @sl Commands Menu.@rm\n\
@@ -1998,7 +1997,7 @@ Ddd*menubar.commands*helpString:	\
 @tt \267 @bf Apply @rm - execute the current command.\n\
 \n\
 @tt \267 @bf Clear Line @rm - clear current command line.\n\
-@tt \267 @bf Clear Window @rm - clear all before last debugger prompt.
+@tt \267 @bf Clear Window @rm - clear all before last @GDB@ prompt.
 
 Ddd*commandsMenu.history.labelString:	        Command History...
 Ddd*commandsMenu.history.mnemonic:	        H
@@ -2066,7 +2065,7 @@ Ddd*commandsMenu.clear_window.mnemonic:	        W
 Ddd*commandsMenu.clear_window.accelerator:      Shift Ctrl<Key>U
 Ddd*commandsMenu.clear_window.acceleratorText:  Ctrl+Shift+U
 Ddd*commandsMenu.clear_window.documentationString: \
-@rm Clear all before last debugger prompt
+@rm Clear all before last @GDB@ prompt
 
 
 ! Status
@@ -2386,7 +2385,7 @@ are iconified as a group.\n\
 the @key TAB @rm key completes\n\
     arguments in all @DDD@ windows.\n\
     Otherwise, the  @key TAB @rm key completes \
-in the @DDD@ debugger console only.\n\
+in the @DDD@ @GDB@ console only.\n\
 @tt \267 @rm If @bf Suppress X warnings @rm is set, \
 X warnings are silently ignored.\n\
 @tt \267 @rm If @bf Ungrab mouse pointer @rm is set, @DDD@ will \
@@ -2533,9 +2532,9 @@ Ddd*preferences*startup*helpString:   \
 \n\
 @tt \267 @bf Windows @rm sets the window layout.\n\
     @bf separate windows @rm means to use one source window,\n\
-    one data window, and one debugger console window.\n\
+    one data window, and one @GDB@ console window.\n\
     @bf one single window @rm means to use one single window\n\
-    for source, data, and the debugger console. (*)\n\
+    for source, data, and the @GDB@ console. (*)\n\
 \n\
 @tt \267 The @bf Status line @rm can be placed\n\
     @bf at bottom of source@rm, in order to display menu descriptions, \
@@ -2653,9 +2652,8 @@ Ddd*settings*scroll*helpString:
 
 ! The panel itself has a help button, too.
 Ddd*settings*helpString: \
-@rm These are the @sl Debugger Settings.@rm\n\
+@rm These are the @sl @GDB@ Settings.@rm\n\
 \n\
-These settings affect the inferior debugger only.\n\
 All settings (except source and object paths) can be saved\n\
 using @bf Save Options @rm in the @bf Options @rm menu.\n\
 \n\
@@ -2943,12 +2941,10 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.documentationString:	\
 Ddd*status_form*helpString: \
 @rm This is the @sl Status Line.@rm\n\
 \n\
-It shows the last message of the inferior debugger\n\
-as well as short @DDD@ messages.\n\
+It shows the last @GDB@ message as well as short @DDD@ messages.\n\
 To view tthe most recent messages, just click on the status line.\n\
 \n\
-The debugger status indicator on the right side\n\
-blinks while the inferior debugger is busy.\n\
+The @GDB@ status indicator on the right side blinks while @GDB is busy.\n\
 You can disable it by clicking on the indicator.
 
 Ddd*status_form*borderWidth:		0
@@ -2975,9 +2971,9 @@ Ddd*status_form.led.labelString:
 Ddd*status_form.led.visibleWhenOff:	false
 Ddd*status_form.led.selectColor:	dark green
 Ddd*status_form.led.tipString:	\
-@rm Debugger status
+@rm @GDB@ status
 Ddd*status_form.led.documentationString: \
-@rm Debugger status indicator: blinks while inferior debugger is busy \
+@rm @GDB@ status indicator: blinks while @GDB@ is busy \
 (click to disable or enable)
 
 Ddd*status_form.arrow.shadowThickness:  0
@@ -3121,13 +3117,13 @@ Ddd*bp_popup.delete.documentationString:	\
 @rm Delete the selected breakpoint
 
 Ddd*text_popup.print.documentationString: \
-@rm Print the value of the selected item in the debugger console
+@rm Print the value of the selected item in the @GDB@ console
 
 Ddd*text_popup.disp.documentationString: \
 @rm Display the selected item in the data window
 
 Ddd*text_popup.print_ref.documentationString: \
-@rm Print the dereferenced value of the selected item in the debugger console
+@rm Print the dereferenced value of the selected item in the @GDB@ console
 
 Ddd*text_popup.disp_ref.documentationString: \
 @rm Display the dereferenced item in the data window
@@ -3224,11 +3220,11 @@ Ddd*arg_cmd_w.arg_cmd_area*clearAt.documentationString:	\
 
 Ddd*arg_cmd_w.arg_cmd_area*print.helpString:	\
 @bf Print ()@rm\n\
-Print the argument @bf () @rm in the debugger console.
+Print the argument @bf () @rm in the @GDB@ console.
 Ddd*arg_cmd_w.arg_cmd_area*print.tipString:	\
 @rm Print @bf () @rm in the debugger console
 Ddd*arg_cmd_w.arg_cmd_area*print.documentationString:	\
-@rm Print the argument @bf () @rm in the debugger console
+@rm Print the argument @bf () @rm in the @GDB@ console
 
 Ddd*arg_cmd_w.arg_cmd_area*display.helpString:	\
 @bf Display ()@rm\n\
@@ -3329,9 +3325,9 @@ currently\n\
     executed source code.\n\
 @tt \267 @rm Optionally, there may be a @sl Machine Code Window @rm below\n\
     which shows the current machine code.\n\
-@tt \267 @rm At the bottom, the @sl Debugger Console @rm allows for \
+@tt \267 @rm At the bottom, the @sl @GDB@ Console @rm allows for \
 interaction\n\
-    with the inferior debugger and the debugged program.\n\
+    with @GDB@ and the debugged program.\n\
 \n\
 Use @bf Help On Context @rm in the @bf Help @rm menu to get\n\
 detailed help on any of these areas.
@@ -3361,25 +3357,25 @@ Ddd*gdb_w.autoShowCursorPosition:	true
 Ddd*gdb_w.cursorPositionVisible:	true
 
 Ddd*gdb_w.helpString:		\
-@rm This is the @sl Debugger Console.@rm\n\
+@rm This is the @sl @GDB@ Console.@rm\n\
 \n\
-The debugger console shows the input and output of the inferior debugger\n\
+The @GDB@ console shows the @GDB@ input and output\n\
 as well as the input and output of the debugged program.\n\
 \n\
-You can enter debugging commands here.  To get a list of debugger commands,\n\
-enter `@tt help@rm' at the debugger prompt.\n\
+You can enter @GDB@ commands here.\n\
 \n\
+To get a list of @GDB@ commands, enter `@tt help@rm' at the @GDB@ prompt.\n\
 To see the most important editing commands, see the @bf Commands @rm menu.
 
 Ddd*command_shell.helpString:		\
-@rm This is the @sl Debugger Console.@rm\n\
+@rm This is the @sl @GDB@ Console.@rm\n\
 \n\
-The debugger console shows the input and output of the inferior debugger\n\
+The @GDB@ console shows the @GDB@ input and output\n\
 as well as the input and output of the debugged program.\n\
 \n\
-You can enter debugging commands here.  To get a list of debugger commands,\n\
-enter `@tt help@rm' at the debugger prompt.\n\
+You can enter @GDB@ commands here.\n\
 \n\
+To get a list of @GDB@ commands, enter `@tt help@rm' at the @GDB@ prompt.\n\
 To see the most important editing commands, see the @bf Commands @rm menu.
 
 
@@ -3393,7 +3389,7 @@ Ddd*gdb_popup.clear_line.documentationString:	\
 
 Ddd*gdb_popup.clear_window.labelString:		Clear Window
 Ddd*gdb_popup.clear_window.documentationString:	\
-@rm Clear all before last debugger prompt
+@rm Clear all before last @GDB@ prompt
 
 
 !-----------------------------------------------------------------------------
@@ -3407,18 +3403,16 @@ Ddd*tool_shell*saveUnder: true
 Ddd*tool_shell.helpString:		\
 @rm This is the @sl Command Tool.@rm\n\
 \n\
-By clicking on one of the buttons,\n\
-the corresponding command is sent to the inferior debugger.\n\
-The context sensitive help for the buttons\n\
-gives a short command description.
+By clicking on one of the buttons, \
+the corresponding command is sent to @GDB@.\n\
+The context sensitive help for the buttons gives a short command description.
 
 Ddd*tool_buttons.helpString:\
 @rm This is the @sl Command Tool.@rm\n\
 \n\
-By clicking on one of the buttons,\n\
-the corresponding command is sent to the inferior debugger.\n\
-The context sensitive help for the buttons\n\
-gives a short command description.
+By clicking on one of the buttons, \
+the corresponding command is sent to @GDB@.\n\
+The context sensitive help for the buttons gives a short command description.
 
 !-----------------------------------------------------------------------------
 ! Debugger Buttons
@@ -3427,26 +3421,23 @@ gives a short command description.
 Ddd*source_buttons.helpString:\
 @rm This is a @sl command area.@rm\n\
 \n\
-By clicking on one of the buttons,\n\
-the corresponding command is sent to the inferior debugger.\n\
-The context sensitive help for the buttons\n\
-gives a short command description.\n
+By clicking on one of the buttons, \
+the corresponding command is sent to @GDB@.\n\
+The context sensitive help for the buttons gives a short command description.
 
 Ddd*command_buttons.helpString:\
 @rm This is a @sl command area.@rm\n\
 \n\
-By clicking on one of the buttons,\n\
-the corresponding command is sent to the inferior debugger.\n\
-The context sensitive help for the buttons\n\
-gives a short command description.\n
+By clicking on one of the buttons, \
+the corresponding command is sent to @GDB@.\n\
+The context sensitive help for the buttons gives a short command description.
 
 Ddd*data_buttons.helpString:\
 @rm This is a @sl command area.@rm\n\
 \n\
-By clicking on one of the buttons,\n\
-the corresponding command is sent to the inferior debugger.\n\
-The context sensitive help for the buttons\n\
-gives a short command description.\n
+By clicking on one of the buttons, \
+the corresponding command is sent to @GDB@.\n\
+The context sensitive help for the buttons gives a short command description.
 
 ! An empty help string means that the help text for this button
 ! is to be requested from GDB (via the GDB `help' command).
@@ -3488,7 +3479,7 @@ Ddd*data_buttons.marginHeight:      0
 ! so we must provide help on ourselves.
 Ddd*?*break.helpString: \
 @bf Interrupt\n\
-@rm Interrupt the debugged process or current debugger command.\n\
+@rm Interrupt the debugged process or current @GDB@ command.\n\
 (Equivalent to @key Ctrl+C@rm).
 Ddd*source_buttons*break.tipString: \
 @rm Interrupt debugged program
@@ -3501,17 +3492,17 @@ Ddd*tool_buttons*break.tipString: \
 Ddd*tool_bar*break.tipString: \
 @rm Interrupt debugged program
 Ddd*?*break.documentationString: \
-@rm Interrupt the debugged process or current debugger command
+@rm Interrupt the debugged process or current @GDB@ command
 
 Ddd*?*Yes.helpString:	\
 @bf Yes\n\
-@rm Confirm the question of the inferior debugger.
+@rm Confirm the @GDB@ question.
 Ddd*?*Yes.tipString: \
 @rm Just say yes
 
 Ddd*?*No.helpString:	\
 @bf No\n\
-@rm Do @sl not @rm confirm the question of the inferior debugger.
+@rm Do @sl not @rm confirm the @GDB@ question.
 Ddd*?*No.tipString: \
 @rm Just say no
 
@@ -3928,7 +3919,7 @@ Ddd*history_dialog*helpString:	    \
 sessions, so that you can be certain of precisely what happened.\n\
 Use this window to manage the @DDD@ command history facility.\n\
 \n\
-Select a specific command to have it copied at the debugger prompt.\n\
+Select a specific command to have it copied at the @GDB@ prompt.\n\
 Click on @bf Apply @rm to execute the current command.
 
 
@@ -3989,7 +3980,7 @@ stack frame, plus all those whose scope is global or an entire file.\n\
 Names starting with @tt$ @rm refer to registers\
  (with the values they would have\n\
 if the program were to return to the stack frame now selected, restoring\n\
-all registers saved by frames farther in) or else to debugger\n\
+all registers saved by frames farther in) or else to @GDB@\n\
 ``convenience'' variables (any such name not a known register).\n\
 Use assignment expressions to give values to convenience variables.\n\
 \n\
@@ -4097,7 +4088,7 @@ Ddd*gdb_status_dialog*okLabelString: Close
 Ddd*gdb_status_dialog*cancelLabelString: Update
 
 Ddd*gdb_status_dialog*helpString: \
-@rm This dialog shows the state and capabilities of the inferior debugger.\n\
+@rm This dialog shows the @GDB@ state and capabilities.\n\
 Click on @bf Update @rm to update its contents.
 
 
@@ -4107,43 +4098,44 @@ Click on @bf Update @rm to update its contents.
 
 Ddd*busy_display_dialog_popup.title: @DDD@: Debugger Busy
 Ddd*busy_dialog.messageString:		\
-@rm The debugger is busy!
+@rm @GDB@ is busy!
 Ddd*busy_dialog*helpString:	\
-@rm The inferior debugger (i.e. GDB, XDB, or DBX) is busy on some commands.\n\
-Please try again when the debugger prompt appears.\n\
+@rm @GDB@ is busy on some commands.\n\
+Please try again when the @GDB@ prompt appears.\n\
 \n\
 You may also interrupt the current debugging command by selecting\n\
 @bf Interrupt @rm from the @bf Program @rm menu.
 
 Ddd*quit_dialog_popup.title: @DDD@: Debugger Still Busy
 ! Ddd*quit_dialog.messageString:	 \
-! @rm The inferior debugger is still busy.  Exit anyway (and kill it)?
+! @rm @GDB@ is still busy.  Exit anyway (and kill it)?
 Ddd*quit_dialog*okLabelString:	     Yes
 Ddd*quit_dialog*cancelLabelString:   No
 Ddd*quit_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*quit_dialog*helpString:	\
-@rm The inferior debugger is busy and does not react\n\
-to the ``quit'' command.\n\
+@rm @GDB@ is busy and does not react to the ``quit'' command.\n\
 The debugged process is probably still running.\n\
 \n\
-Before killing a running debugger, you should try to interrupt it\n\
+Before killing a running @GDB@, you should try to interrupt it\n\
 (by selecting @bf Interrupt @rm from the @bf Program @rm menu).
 
 Ddd*terminated_dialog_popup.title: @DDD@: Hasta la Vista
 ! Ddd*terminated_dialog.messageString:   \
-! @rm The inferior debugger terminated abnormally.
+! @rm @GDB@ terminated abnormally.
 Ddd*terminated_dialog*okLabelString:	   Restart
 Ddd*terminated_dialog*cancelLabelString:   Exit
 Ddd*terminated_dialog*helpString:	\
-@rm The inferior debugger terminated abnormally.\n\
-You may wish to examine its final output before exiting or restarting @DDD@.
+@rm @GDB@ terminated abnormally.  Without @GDB@, @DDD@ cannot run.\n\
+\n\
+You may wish to examine the final @GDB@ output before exiting\n\
+or restarting @DDD@.
 
 Ddd*no_debugger_dialog_popup.title: @DDD@: Losing my Religion
 ! Ddd*no_debugger_dialog.messageString:   \
-! @rm The inferior debugger could not be started.
+! @rm @GDB@ could not be started.
 Ddd*no_debugger_dialog*okLabelString:	   Exit
 Ddd*no_debugger_dialog*helpString:	\
-@rm The inferior debugger (i.e. GDB, XDB, or DBX) could not be started.\n\
+@rm @GDB@ could not be started.  @DDD@ needs some inferior debugger to run.\n\
 You may wish to examine the diagnostic messages before exiting @DDD@.\n\
 \n\
 Here are some hints that may help you out:\n\
@@ -4151,14 +4143,16 @@ Here are some hints that may help you out:\n\
     but use one of the @tt --gdb@rm, @tt --dbx@rm, or @tt --xdb @rm options \
 to specify\n\
     the inferior debugger.\n\
-@tt \267 @rm If the inferior debugger could not be found, re-invoke @DDD@,\n\
-    but use the @tt --debugger @sl PATH @rm option to specify the full path\n\
-    of the inferior debugger.\n\
+@tt \267 @rm If @GDB@ is the correct inferior debugger, \
+but could not be found,\n\
+    re-invoke @DDD@, but use the @tt --debugger @sl PATH @rm option to \
+specify\n\
+    the full @GDB@ path.\n\
 @tt \267 @rm If you started DDD without arguments, re-invoke @DDD@,\n\
     but give it an executable as argument.  XDB and some DBX versions\n\
     require being invoked with an executable.
 
-Ddd*fatal_dialog.title: @DDD@: Oops!
+Ddd*fatal_dialog.title: @DDD@: @SIGNAL@
 Ddd*fatal_dialog.messageString:	  \
 @rm Internal error
 Ddd*fatal_dialog*okLabelString:	      Restart
@@ -4170,7 +4164,7 @@ You should better save your work immediately; @DDD@ may fail again soon.\n\
 If you can reproduce this bug, please send a bug report\n\
 to `@tt ddd-bugs@ ips.cs.tu-bs.de@rm', giving a subject like\n\
 \n\
-    @DDD@ @VERSION@ (@host@) gets fatal signal\n\
+    @DDD@ @VERSION@ (@host@) gets `@SIGNAL@' signal\n\
 \n\
 To enable us to fix the bug, you should include the following information:\n\
 @tt \267 @rm What you were doing to get this message.  Report all the facts.\n\
@@ -4187,20 +4181,20 @@ Ddd*yn_dialog*okLabelString:	   Yes
 Ddd*yn_dialog*cancelLabelString:   No
 Ddd*yn_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*yn_dialog*helpString:	\
-@rm This is a question of the inferior debugger.\n\
-For more details, consult the debugger documentation.
+@rm This is a @GDB@ question.\n\
+For more details, consult the @GDB@ documentation.
 
 Ddd*gdb_message_dialog_popup.title: @DDD@: Debugger Message
 Ddd*gdb_message_dialog*helpString:	\
-@rm This is a message of the inferior debugger.\n\
-For more details, consult the debugger documentation.
+@rm This is a @GDB@ message.\n\
+For more details, consult the @GDB@ documentation.
 
 Ddd*gdb_selection_dialog_popup.title: @DDD@: Selection
 Ddd*gdb_selection_dialog*okLabelString:	   Select
 Ddd*gdb_selection_dialog*listLabelString:  Choices
 Ddd*gdb_selection_dialog*helpString:	\
-@rm This is a selection menu of the inferior debugger.\n\
-For more details, consult the debugger documentation.
+@rm This is a @GDB@ selection menu.\n\
+For more details, consult the @GDB@ documentation.
 
 Ddd*confirm_overwrite_dialog_popup.title: @DDD@: File Exists
 Ddd*confirm_overwrite_dialog*messageString:	  \
@@ -4247,34 +4241,24 @@ This message is also caused by attempting to load an empty source file.
 Ddd*source_file_from_gdb_warning_popup.title: @DDD@: Source From Debugger
 Ddd*source_file_from_gdb_warning*helpString:	\
 @rm The given source file could not be loaded directly.\n\
-Instead, the source was obtained from the inferior debugger,\n\
-via the ``list'' command.
+Instead, the source was obtained from @GDB@ via the ``list'' command.
 
 Ddd*source_trunc_error_popup.title: @DDD@: Source Truncated
 Ddd*source_trunc_error*helpString:	\
-@rm The current source file was not be loaded entirely.
+@rm The current source file could not be loaded entirely.
 
-Ddd*source_empty_warning.title: @DDD@: Source Empty
+Ddd*source_empty_warning.title: @DDD@: Empty Source
 Ddd*source_empty_warning*helpString:	\
 @rm The current source file is empty. \n\
 This is very unusual for source files. \n\
 Please verify your file name and try again.
 
-Ddd*source_binary_warning.title: @DDD@: Source Binary
+Ddd*source_binary_warning.title: @DDD@: Binary Source
 Ddd*source_binary_warning*helpString:	\
 @rm The current source file contains NULL characters. \n\
 This is very unusual for source files. \n\
 You probably gave the name of a binary file. \n\
 Please verify the file name and try again.
-
-Ddd*source_position_error_popup.title: @DDD@: No Current Position
-Ddd*source_position_error*helpString:	\
-@rm The current execution position is not in the displayed source file.\n\
-This may be true for two reasons:\n\
-- The debugged process is not running, or\n\
-- The debugged process has stopped in a location without source file.\n\
-In the latter case, try the `directory' command to specify\n\
-a directory where source files can be found.
 
 Ddd*source_find_error_popup.title: @DDD@: Not Found
 Ddd*source_find_error*helpString:	\
@@ -4302,9 +4286,9 @@ Ddd*no_such_breakpoint_error*helpString:	\
 
 Ddd*no_completion_error_popup.title: @DDD@: No Completion
 Ddd*no_completion_error*helpString:	\
-@rm The inferior debugger does not support command and argument completion.\n\
+@rm @GDB@ does not support command and argument completion.\n\
 \n\
-Command completion relies on the GDB `@tt complete@rm' command,\n\
+Command completion requires the GDB `@tt complete@rm' command,\n\
 which is present in GDB 4.13 and later.
 
 Ddd*print_empty_graph_error_popup.title: @DDD@: Nothing to Print
@@ -4321,14 +4305,14 @@ Ddd*tty_exec_error_popup.title: @DDD@: No Execution TTY
 Ddd*tty_exec_error*helpString:	\
 @rm The terminal emulator for the execution window\n\
 could not be invoked.  The debugged process will execute in the\n\
-debugger console instead.\n\
+@GDB@ console instead.\n\
 \n\
 Please verify the contents of the @bf .termCommand @rm resource\n\
 in the @DDD@ application defaults file.
 
 Ddd*tty_command_error_popup.title: @DDD@: TTY Failed
 Ddd*tty_command_error*helpString:	\
-@rm @DDD@ sent a `tty' command to the inferior GDB in order to redirect\n\
+@rm @DDD@ sent a `tty' command to @GDB@ in order to redirect\n\
 input/output of the debugged process to the execution window.\n\
 This command failed.\n\
 \n\

@@ -1,7 +1,7 @@
 // $Id$
 // Own converters
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
 // This file is part of the DDD Library.
@@ -42,6 +42,7 @@ char converters_rcsid[] =
 #include "bool.h"
 #include "strclass.h"
 #include "charsets.h"
+#include "StringSA.h"
 
 #include <Xm/Xm.h>
 
@@ -374,6 +375,8 @@ static String locateBitmap(Display *display, String basename)
 			     NULL);        // no checking for valid bitmap
 }
 
+// Macro tables
+static StringStringAssoc conversionMacroTable;
 
 // Convert String to XmString, using `@' for font specs:
 // `@[font-id] TEXT' makes TEXT be displayed in font font-id
@@ -409,14 +412,40 @@ Boolean CvtStringToXmString(Display *display,
 	}
 	else
 	{
-	    if (segments[i].index(font_id) == 0)
+	    if (segments[i].contains(font_id, 0))
 	    {
-		// found @[font-id] <segment>: process it
-		charset = segments[i].through(font_id);
-		segment = segments[i].after(font_id);
-		segment = segment.after(blank);
+		// Found @[font-id] <segment>: process it
+		string c = segments[i].through(font_id);
+		segment = segments[i].from(int(c.length()));
+		if (segment == "")
+		{
+		    // Found @MACRO@: process it
+		    if (conversionMacroTable.has(c))
+		    {
+			// Replace macro by value
+			segment = conversionMacroTable[c] + segments[++i];
+		    }
+		    else
+		    {
+			// No such macro
+			Cardinal num_params = 1;
+			String params = (String)c.chars();
+			XtAppWarningMsg(XtDisplayToApplicationContext(display),
+					"noSuchMacro", "CvtStringToXmString",
+					"XtToolkitError",
+					"No such macro: @%s@",
+					&params, &num_params);
+			segment = font_esc + segment + font_esc;
+		    }
+		}
+		else
+		{
+		    // Found @CHARSET: set new charset
+		    charset = c;
+		    segment = segment.after(blank);
+		}
 	    }
-	    else if (segments[i] != "" && segments[i][0] == ' ')
+	    else if (segments[i].contains(' ', 0))
 	    {
 		// found @[space]: remove space
 		segment = font_esc + segments[i].from(1);
@@ -627,4 +656,9 @@ void registerOwnConverters()
     XtSetTypeConverter(XtRString, XmNpacking, CvtStringToPacking,
 		       parentCvtArgs, XtNumber(parentCvtArgs), XtCacheNone,
 		       XtDestructor(NULL));
+}
+
+void defineConversionMacro(String name, String value)
+{
+    conversionMacroTable[name] = value;
 }
