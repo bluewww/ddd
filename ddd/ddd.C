@@ -195,6 +195,7 @@ char ddd_rcsid[] =
 #include "question.h"
 #include "resources.h"
 #include "sashes.h"
+#include "settings.h"
 #include "shell.h"
 #include "show.h"
 #include "source.h"
@@ -707,19 +708,22 @@ static Widget find_words_only_w[4];
 static Widget disassemble_w[4];
 static void set_option_widgets(DDDOption opt);
 
+static Widget settings_w;
+
 static MMDesc options_menu [] =
 {
-    { "preferences", MMPush,  { dddPopupPreferencesCB }},
-    { "settings",  MMPush | MMInsensitive },
+    { "preferences",         MMPush,  { dddPopupPreferencesCB }},
+    { "settings",            MMPush,  { dddPopupSettingsCB },
+      NULL, &settings_w },
     MMSep,
     { "separateExecWindow",  MMToggle, { dddToggleSeparateExecWindowCB }, 
       NULL, separate_exec_window_w },
-    { "findWordsOnly",    MMToggle, { sourceToggleFindWordsOnlyCB }, 
+    { "findWordsOnly",       MMToggle, { sourceToggleFindWordsOnlyCB }, 
       NULL, find_words_only_w },
-    { "disassemble",     MMToggle,  { sourceToggleDisassembleCB },
+    { "disassemble",         MMToggle,  { sourceToggleDisassembleCB },
       NULL, disassemble_w },
     MMSep,
-    { "saveOptions",    MMPush,   { DDDSaveOptionsCB }},
+    { "saveOptions",         MMPush,   { DDDSaveOptionsCB }},
     MMEnd
 };
 
@@ -1985,6 +1989,7 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
 
     set_sensitive(stack_w,    gdb_ready);
     set_sensitive(register_w, gdb_ready && gdb->type() == GDB);
+    set_sensitive(settings_w, gdb_ready && gdb->type() == GDB);
 }
 
 void gdb_ready_for_cmdHP (void *, void *, void *)
