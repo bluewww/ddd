@@ -1278,7 +1278,7 @@ Ddd*sourceOptionsMenu.cacheSourceFiles.labelString:    Cache Source Files
 Ddd*sourceOptionsMenu.cacheSourceFiles.mnemonic:       S
 
 Ddd*sourceOptionsMenu.cacheMachineCode.labelString:    Cache Machine Code
-Ddd*sourceOptionsMenu.cacheMachineCode.mnemonic:       C
+Ddd*sourceOptionsMenu.cacheMachineCode.mnemonic:       M
 
 Ddd*dataOptionsMenu*showGrid.labelString:	       Show Grid
 Ddd*dataOptionsMenu*showGrid.mnemonic:		       G
@@ -2751,13 +2751,13 @@ Click on @bf Yes @rm to overwrite the existing file.
 
 Ddd*save_options_dialog_popup.title: @DDD@: Save Options
 Ddd*save_options_dialog.messageString:   \
-@rm Startup @DDD@ options were modified.\n\
+@rm Startup @DDD@ preferences were modified.\n\
 Save them for the next @DDD@ invocation?
 Ddd*save_options_dialog*okLabelString:       Yes
 Ddd*save_options_dialog*cancelLabelString:   No
 Ddd*save_options_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*save_options_dialog*contextHelpString:	\
-@rm You have changed some @DDD@ startup options\n\
+@rm You have changed some @DDD@ startup preferences\n\
 (using the @bf Options @rm menu).\n\
 To save them for the next @DDD@ invocation, click on @bf Yes@rm.\n\
 To discard the changes, click on @bf No@rm.
