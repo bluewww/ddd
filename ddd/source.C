@@ -53,6 +53,84 @@ char source_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 
+
+//-----------------------------------------------------------------------------
+// Moving
+//-----------------------------------------------------------------------------
+
+void gdbLookupCB(Widget, XtPointer, XtPointer)
+{
+    string arg = source_arg->get_string();
+    source_view->lookup(arg);
+}
+
+void gdbGoBackCB(Widget, XtPointer, XtPointer)
+{
+    source_view->go_back();
+}
+
+void gdbGoForwardCB(Widget, XtPointer, XtPointer)
+{
+    source_view->go_forward();
+}
+
+void gdbLookupTypeCB(Widget, XtPointer, XtPointer)
+{
+    // FIXME...
+}
+
+
+//-----------------------------------------------------------------------------
+// Printing
+//-----------------------------------------------------------------------------
+
+void gdbPrintCB(Widget w, XtPointer, XtPointer)
+{
+    string arg = source_arg->get_string();
+
+    if (arg != "" && !arg.matches(rxwhite))
+	gdb_command(gdb->print_command(arg, false), w);
+}
+
+void gdbPrintRefCB(Widget w, XtPointer, XtPointer)
+{
+    string arg = source_arg->get_string();
+
+    if (arg != "" && !arg.matches(rxwhite))
+	gdb_command(gdb->print_command(gdb->dereferenced_expr(arg), false), w);
+}
+
+void gdbDisplayCB(Widget w, XtPointer, XtPointer)
+{
+    string arg = source_arg->get_string();
+
+    if (arg != "" && !arg.matches(rxwhite))
+	gdb_command("graph display " + arg, w);
+}
+
+void gdbDispRefCB(Widget w, XtPointer, XtPointer)
+{
+    string arg = source_arg->get_string();
+
+    if (arg != "" && !arg.matches(rxwhite))
+	gdb_command("graph display " + gdb->dereferenced_expr(arg), w);
+}
+
+void gdbWhatisCB(Widget w, XtPointer, XtPointer)
+{
+    string arg = source_arg->get_string();
+
+    if (arg != "" && !arg.matches(rxwhite))
+	gdb_command(gdb->whatis_command(arg), w);
+}
+
+
+
+
+//-----------------------------------------------------------------------------
+// Breakpoints
+//-----------------------------------------------------------------------------
+
 bool have_break_at_arg()
 {
     return source_view->bp_at(source_arg->get_string()) != 0;
@@ -114,43 +192,25 @@ static void set_break_at_arg(Widget w, bool set)
 }
 
 
-void gdbBreakArgCmdCB(Widget w, XtPointer, XtPointer)
+void gdbBreakAtCB(Widget w, XtPointer, XtPointer)
 {
     set_break_at_arg(w, true);
 }
 
-void gdbClearArgCmdCB(Widget w, XtPointer, XtPointer)
+void gdbClearAtCB(Widget w, XtPointer, XtPointer)
 {
     set_break_at_arg(w, false);
 }
 
-void gdbToggleBreakArgCmdCB(Widget w, XtPointer, XtPointer)
+void gdbToggleBreakCB(Widget w, XtPointer, XtPointer)
 {
     set_break_at_arg(w, !have_break_at_arg());
 }
 
-void gdbPrintArgCmdCB(Widget w, XtPointer, XtPointer)
-{
-    string arg = source_arg->get_string();
 
-    if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(gdb->print_command(arg, false), w);
-}
-
-void gdbDisplayArgCmdCB(Widget w, XtPointer, XtPointer)
-{
-    string cmd = "graph display";
-    string arg = source_arg->get_string();
-
-    if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(cmd + " " + arg, w);
-}
-
-void gdbLookupCB(Widget, XtPointer, XtPointer)
-{
-    string arg = source_arg->get_string();
-    source_view->lookup(arg);
-}
+//-----------------------------------------------------------------------------
+// Searching
+//-----------------------------------------------------------------------------
 
 static void gdbFindCB(Widget w, 
 		      XtPointer call_data, 
@@ -179,6 +239,11 @@ void gdbFindBackwardCB(Widget w, XtPointer, XtPointer call_data)
 {
     gdbFindCB(w, call_data, SourceView::backward);
 }
+
+
+//-----------------------------------------------------------------------------
+// Editor invocation
+//-----------------------------------------------------------------------------
 
 static void gdbDeleteEditAgent(XtPointer client_data, XtIntervalId *)
 {
@@ -227,17 +292,7 @@ void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
     edit_agent->start();
 }
 
-void gdbReloadSourceCB  (Widget, XtPointer, XtPointer)
+void gdbReloadSourceCB(Widget, XtPointer, XtPointer)
 {
     source_view->reload();
-}
-
-void gdbGoBackCB  (Widget, XtPointer, XtPointer)
-{
-    source_view->go_back();
-}
-
-void gdbGoForwardCB  (Widget, XtPointer, XtPointer)
-{
-    source_view->go_forward();
 }

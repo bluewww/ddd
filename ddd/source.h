@@ -35,20 +35,25 @@
 
 #include <X11/Intrinsic.h>
 
-extern void gdbBreakArgCmdCB       (Widget, XtPointer, XtPointer);
-extern void gdbClearArgCmdCB       (Widget, XtPointer, XtPointer);
-extern void gdbToggleBreakArgCmdCB (Widget, XtPointer, XtPointer);
-extern void gdbPrintArgCmdCB       (Widget, XtPointer, XtPointer);
-extern void gdbDisplayArgCmdCB     (Widget, XtPointer, XtPointer);
-extern void gdbLookupCB            (Widget, XtPointer, XtPointer);
-extern void gdbFindForwardCB       (Widget, XtPointer, XtPointer);
-extern void gdbFindBackwardCB      (Widget, XtPointer, XtPointer);
+extern void gdbBreakAtCB      (Widget, XtPointer, XtPointer);
+extern void gdbClearAtCB      (Widget, XtPointer, XtPointer);
+extern void gdbToggleBreakCB  (Widget, XtPointer, XtPointer);
+extern void gdbPrintCB        (Widget, XtPointer, XtPointer);
+extern void gdbDisplayCB      (Widget, XtPointer, XtPointer);
+extern void gdbLookupCB       (Widget, XtPointer, XtPointer);
+extern void gdbFindForwardCB  (Widget, XtPointer, XtPointer);
+extern void gdbFindBackwardCB (Widget, XtPointer, XtPointer);
 
-extern void gdbEditSourceCB        (Widget, XtPointer, XtPointer);
-extern void gdbReloadSourceCB      (Widget, XtPointer, XtPointer);
+extern void gdbLookupTypeCB   (Widget, XtPointer, XtPointer);
+extern void gdbPrintRefCB     (Widget, XtPointer, XtPointer);
+extern void gdbWhatisCB       (Widget, XtPointer, XtPointer);
+extern void gdbDispRefCB      (Widget, XtPointer, XtPointer);
 
-extern void gdbGoBackCB            (Widget, XtPointer, XtPointer);
-extern void gdbGoForwardCB         (Widget, XtPointer, XtPointer);
+extern void gdbEditSourceCB   (Widget, XtPointer, XtPointer);
+extern void gdbReloadSourceCB (Widget, XtPointer, XtPointer);
+
+extern void gdbGoBackCB       (Widget, XtPointer, XtPointer);
+extern void gdbGoForwardCB    (Widget, XtPointer, XtPointer);
 
 extern bool have_break_at_arg();
 

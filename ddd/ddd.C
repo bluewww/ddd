@@ -250,6 +250,7 @@ extern "C" {
 // Callbacks
 static void gdb_ready_for_questionHP (Agent *, void *, void *);
 static void gdb_ready_for_cmdHP      (Agent *, void *, void *);
+static void language_changedHP       (Agent *, void *, void *);
 static void source_argHP             (void *, void *, void *call_data);
 
 // Setup
@@ -1030,11 +1031,30 @@ static MMDesc combined_menubar[] =
 
 static MMDesc lookup_menu[] =
 {
-    { "lookupType",      MMPush, { gdbLookupCB } },
-    { "lookupSomething", MMPush, { gdbLookupCB } },
+    { "lookupType",      MMPush | MMInsensitive, { gdbLookupTypeCB } },
     MMEnd
 };
 
+struct PrintItems {
+    enum ArgCmd { PrintRef, Whatis };
+};
+
+static MMDesc print_menu[] =
+{
+    { "printRef",        MMPush, { gdbPrintRefCB } },
+    { "whatis",          MMPush, { gdbWhatisCB } },
+    MMEnd
+};
+
+struct DispItems {
+    enum ArgCmd { DispRef };
+};
+
+static MMDesc display_menu[] =
+{
+    { "dispRef",        MMPush, { gdbDispRefCB } },
+    MMEnd
+};
 
 struct ArgItems {
     enum ArgCmd { Lookup, Break, Print, Display, FindForward, FindBackward };
@@ -1042,12 +1062,12 @@ struct ArgItems {
 
 static MMDesc arg_cmd_area[] = 
 {
-    {"lookup",        MMPush,  { gdbLookupCB            }, lookup_menu },
-    {"breakAt",       MMPush,  { gdbToggleBreakArgCmdCB }},
-    {"print",         MMPush,  { gdbPrintArgCmdCB       }},
-    {"display",       MMPush,  { gdbDisplayArgCmdCB     }},
-    {"findBackward",  MMPush,  { gdbFindBackwardCB      }},
-    {"findForward",   MMPush,  { gdbFindForwardCB       }},
+    {"lookup",        MMPush,  { gdbLookupCB       }, lookup_menu  },
+    {"breakAt",       MMPush,  { gdbToggleBreakCB  }},
+    {"print",         MMPush,  { gdbPrintCB        }, print_menu   },
+    {"display",       MMPush,  { gdbDisplayCB      }, display_menu },
+    {"findBackward",  MMPush,  { gdbFindBackwardCB }},
+    {"findForward",   MMPush,  { gdbFindForwardCB  }},
     MMEnd
 };
 
@@ -1448,6 +1468,7 @@ int main(int argc, char *argv[])
     gdb->addHandler(ErrorEOF,         gdb_eofHP);
     gdb->addHandler(Died,             gdb_diedHP);
     gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
+    gdb->addHandler(LanguageChanged,  language_changedHP);
     gdb->addHandler(ReplyRequired,    gdb_selectHP);
 
     // Create command shell
@@ -3937,6 +3958,23 @@ void gdbUpdateViewCB(Widget, XtPointer client_data, XtPointer)
     set_toggle(view_menu[GDBWindow].widget,    have_visible_command_window());
 
     set_sensitive(view_menu[ExecWindow].widget, app_data.separate_exec_window);
+}
+
+// Language changed - re-label buttons
+static void language_changedHP(Agent *source, void *, void *)
+{
+    GDBAgent *gdb = ptr_cast(GDBAgent, source);
+    assert(gdb != 0);
+
+    MString print_ref_label("Print " + gdb->dereferenced_expr("()"));
+    XtVaSetValues(print_menu[PrintItems::PrintRef].widget,
+		  XmNlabelString, print_ref_label.xmstring(),
+		  NULL);
+
+    MString disp_ref_label("Display " + gdb->dereferenced_expr("()"));
+    XtVaSetValues(display_menu[DispItems::DispRef].widget,
+		  XmNlabelString, disp_ref_label.xmstring(),
+		  NULL);
 }
 
 

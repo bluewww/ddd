@@ -561,7 +561,7 @@ Ddd*clearDocDelay:		1000
 Ddd*clearTipDelay:		50
 
 ! Time (in ms) to spend before a push button menu pops up
-Ddd*pushMenuPopupTime:		250
+Ddd*pushMenuPopupTime:		400
 
 
 ! Should the status line be placed at the bottom?
@@ -2921,14 +2921,14 @@ Ddd*text_popup.print.documentationString: \
 Ddd*text_popup.disp.documentationString: \
 @rm Display the selected item in the data window
 
-Ddd*text_popup.print_ref.documentationString: \
+Ddd*text_popup.printRef.documentationString: \
 @rm Print the dereferenced value of the selected item in the @GDB@ console
 
-Ddd*text_popup.disp_ref.documentationString: \
+Ddd*text_popup.dispRef.documentationString: \
 @rm Display the dereferenced item in the data window
 
 Ddd*text_popup.whatis.documentationString: \
-@rm Print the data type of the selected item
+@rm Print the type of the selected item in the @GDB@ console
 
 Ddd*text_popup.lookup.documentationString: \
 @rm Lookup definition of the selected item
@@ -2971,9 +2971,13 @@ Ddd*arg_cmd_w.arg_cmd_area.entryAlignment:		XmALIGNMENT_CENTER
 Ddd*arg_cmd_w.arg_cmd_area*alignment:			XmALIGNMENT_CENTER
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup ()
+Ddd*arg_cmd_w.arg_cmd_area*lookupType.labelString:	Lookup type ()
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.labelString:		Break at ()
 Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
+Ddd*arg_cmd_w.arg_cmd_area*printRef.labelString:	Print *()
+Ddd*arg_cmd_w.arg_cmd_area*whatis.labelString:		Whatis ()
 Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display ()
+Ddd*arg_cmd_w.arg_cmd_area*dispRef.labelString:		Display *()
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.labelString:	Find@small<< @bf()
 Ddd*arg_cmd_w.arg_cmd_area*findForward.labelString:	Find@small>> @bf()
 
@@ -2992,10 +2996,13 @@ lookup that line number in the current source.\n\
 lookup that address.\n\
 @tt \267 @rm If @bf () @rm contains a function or variable name, lookup\n\
     the definition of that function or variable.
+
 Ddd*arg_cmd_w.arg_cmd_area*lookup.tipString:	\
 @rm Lookup @bf () @rm in the source
 Ddd*arg_cmd_w.arg_cmd_area*lookup.documentationString:	\
 @rm Lookup a line, file, function, variable or breakpoint in the source
+Ddd*arg_cmd_w.arg_cmd_area*lookupType.documentationString:	\
+@rm Lookup the type of a function or variable in the source
 
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.helpString:	\
 @bf Break at ()@rm / @bf Clear at ()@rm\n\
@@ -3012,6 +3019,10 @@ Ddd*arg_cmd_w.arg_cmd_area*print.tipString:	\
 @rm Print @bf () @rm in the debugger console
 Ddd*arg_cmd_w.arg_cmd_area*print.documentationString:	\
 @rm Print the argument @bf () @rm in the @GDB@ console
+Ddd*arg_cmd_w.arg_cmd_area*printRef.documentationString:	\
+@rm Print the dereferenced argument @bf () @rm in the @GDB@ console
+Ddd*arg_cmd_w.arg_cmd_area*whatis.documentationString:	\
+@rm Print the type of the argument @bf () @rm in the @GDB@ console
 
 Ddd*arg_cmd_w.arg_cmd_area*display.helpString:	\
 @bf Display ()@rm\n\
@@ -3020,6 +3031,8 @@ Ddd*arg_cmd_w.arg_cmd_area*display.tipString:	\
 @rm Display @bf () @rm in the data window
 Ddd*arg_cmd_w.arg_cmd_area*display.documentationString:	\
 @rm Display the argument @bf () @rm in the data window
+Ddd*arg_cmd_w.arg_cmd_area*dispRef.documentationString:	\
+@rm Display the dereferenced argument @bf () @rm in the data window
 
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.helpString:	\
 @bf Find@small<< @bf()@rm\n\
