@@ -1,0 +1,84 @@
+@c $Id$ -*- texinfo -*-
+@c DDD macros
+
+@c Copyright (C) 2000 Universitaet Passau, Germany.
+@c Written by Andreas Zeller <zeller@gnu.org>.
+@c 
+@c This file is part of DDD.
+@c 
+@c DDD is free software; you can redistribute it and/or
+@c modify it under the terms of the GNU General Public
+@c License as published by the Free Software Foundation; either
+@c version 2 of the License, or (at your option) any later version.
+@c 
+@c DDD is distributed in the hope that it will be useful,
+@c but WITHOUT ANY WARRANTY; without even the implied warranty of
+@c MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+@c See the GNU General Public License for more details.
+@c 
+@c You should have received a copy of the GNU General Public
+@c License along with DDD -- see the file COPYING.
+@c If not, write to the Free Software Foundation, Inc.,
+@c 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+@c 
+@c DDD is the data display debugger.
+@c For details, see the DDD World-Wide-Web page, 
+@c `http://www.gnu.org/software/ddd/',
+@c or send a mail to the DDD developers <ddd@gnu.org>.
+
+@c Macros
+@macro DDD {}
+@acronym{@value{DDD}}
+@end macro
+
+@macro GDB {}
+@acronym{GDB}
+@end macro
+
+@macro WDB {}
+@acronym{WDB}
+@end macro
+
+@macro DBX {}
+@acronym{DBX}
+@end macro
+
+@macro XDB {}
+@acronym{XDB}
+@end macro
+
+@macro JDB {}
+@acronym{JDB}
+@end macro
+
+@macro JDK {}
+@acronym{JDK}
+@end macro
+
+@macro UNIX {}
+@acronym{UNIX}
+@end macro
+
+@macro WWW {}
+@acronym{WWW}
+@end macro
+
+@macro FTP {}
+@acronym{FTP}
+@end macro
+
+@macro GNU {}
+@acronym{GNU}
+@end macro
+
+@macro PYDB {}
+@acronym{PYDB}
+@end macro
+
+@macro VSL {}
+@acronym{VSL}
+@end macro
+
+@macro TTY {}
+@acronym{TTY}
+@end macro
