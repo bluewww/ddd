@@ -121,9 +121,10 @@ DDD 3.0 [in beta test]
         Print         -/-           Ctrl+P        KDE standard
         Rev Search    Ctrl+R (*)    Ctrl+B        Ctrl+R is Replace in KDE
         Run           Ctrl+X        Ctrl+E        Ctrl+X is Cut in KDE
-        Run Again     Shift+Ctrl+X  Ctrl+A        Ctrl+X is Cut in KDE
+        Run Again     Shift+Ctrl+X  Shift+Ctrl+E  Ctrl+X is Cut in KDE
         Save Session  -/-           Ctrl+S        KDE standard
         Search        Ctrl+S        Ctrl+F        KDE standard
+	Select All    Alt+Z         Ctrl+A        KDE standard
         Unkill        Ctrl+Y (*)    Shift+Ctrl+Y  Ctrl+Y is Redo in KDE
 
       For smoother transition, keys marked with (*) are still available
