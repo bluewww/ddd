@@ -1655,7 +1655,13 @@ static Widget create_panel(DebuggerType type, bool create_settings)
     XtVaSetValues(form, 
 		  XmNwidth, max_width, NULL);
 
+#if XmVersion > 1001
     Dimension height = preferred_height(form);
+#else
+    // OSF/Motif 1.1 returns a bad value in PREFERRED_HEIGHT
+    (void) preferred_height;
+    Dimension height = MAX_HEIGHT + 1;
+#endif
 
     Widget vertical_scroll_bar = 0;
     Dimension spacing = 4;
