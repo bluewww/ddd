@@ -38,6 +38,7 @@ char fonts_rcsid[] =
 
 #include "AppData.h"
 #include "DestroyCB.h"
+#include "LessTifH.h"
 #include "LiterateA.h"
 #include "StringSA.h"
 #include "assert.h"
@@ -279,18 +280,35 @@ static void set_db_font(const AppData& ad, XrmDatabase& db,
     if (ad.show_fonts)
     {
 	string s = line;
-	s.gsub(":", ": \\\n    ");
+	s.gsub(":", ": \\\n   ");
 	s.gsub(",", ",\\\n    ");
 	cout << s << "\n\n";
     }
 }
 
+static string define_default_font(const string& font_def)
+{
+    string s = "";
+
+    // The canonical way of doing it.
+    s += font_def + "=" + MSTRING_DEFAULT_CHARSET + ",";
+
+    // Special cases
+    if (string(MSTRING_DEFAULT_CHARSET) != "charset")
+    {
+	// This happens in Motif 1.1 and LessTif.  Ensure
+	// compatibility with other Motif versions.
+	s += font_def + "=charset,";
+    }
+
+    return s;
+}
+	    
+
 static void setup_font_db(const AppData& ad, XrmDatabase& db)
 {
     // Default fonts
-    string default_fontlist = 
-	font_defs[CHARSET_DEFAULT] + "=FONTLIST_DEFAULT_TAG_STRING," +
-	font_defs[CHARSET_DEFAULT] + "=charset," +
+    string special_fontlist = 
 	font_defs[CHARSET_SMALL] + "=" CHARSET_SMALL "," +
 	font_defs[CHARSET_TT] + "=" CHARSET_TT "," +
 	font_defs[CHARSET_TB] + "=" CHARSET_TB "," +
@@ -303,13 +321,16 @@ static void setup_font_db(const AppData& ad, XrmDatabase& db)
 	font_defs[CHARSET_LLOGO] + "=" CHARSET_LLOGO "," +
 	font_defs[CHARSET_SYMBOL] + "=" CHARSET_SYMBOL;
 
+
+    string default_fontlist = 
+	define_default_font(font_defs[CHARSET_DEFAULT]) + special_fontlist;
+
     set_db_font(ad, db, string(DDD_CLASS_NAME "*") + 
 		XmCFontList + ": " + default_fontlist);
 
     // Text fonts
     string text_fontlist = 
-	font_defs[CHARSET_TEXT] + "=FONTLIST_DEFAULT_TAG_STRING," +
-	font_defs[CHARSET_TEXT] + "=charset";
+	define_default_font(font_defs[CHARSET_TEXT]) + special_fontlist;
 
     set_db_font(ad, db, string(DDD_CLASS_NAME "*XmTextField.") + 
 		XmCFontList + ": " + text_fontlist);
@@ -318,8 +339,7 @@ static void setup_font_db(const AppData& ad, XrmDatabase& db)
 
     // Command tool fonts
     string tool_fontlist = 
-	font_defs[CHARSET_LIGHT] + "=FONTLIST_DEFAULT_TAG_STRING," +
-	font_defs[CHARSET_LIGHT] + "=charset";
+	define_default_font(font_defs[CHARSET_LIGHT]) + special_fontlist;
 
     set_db_font(ad, db, 
 		string(DDD_CLASS_NAME "*tool_buttons.run.") + 
