@@ -47,7 +47,7 @@ do
 	   echo '// $Id''$ -*- C++ -*-'
 	   echo '//'
 	   echo
-	   echo 'const char '$name'_rcsid[] = '
+	   echo 'char '$name'_rcsid[] = '
 	   echo '    "$Id''$";'
 	   echo
 	   echo '#ifdef __GNUG__'
