@@ -194,6 +194,7 @@ typedef struct PlusCmdData {
     bool     refresh_file;             // send 'file'
     bool     refresh_line;             // send 'list'
     bool     refresh_pwd;	       // send 'pwd'
+    bool     refresh_class_path;       // send 'use'
     bool     refresh_breakpoints;      // send 'info b'
     bool     refresh_where;            // send 'where'
     bool     refresh_frame;            // send 'frame'
@@ -242,6 +243,7 @@ typedef struct PlusCmdData {
 	refresh_file(false),
 	refresh_line(false),
 	refresh_pwd(false),
+	refresh_class_path(false),
 	refresh_breakpoints(false),
 	refresh_where(false),
 	refresh_frame(false),
@@ -467,7 +469,9 @@ void start_gdb()
 	break;
 
     case JDB:
-	break;			// FIXME
+	cmds += "use";
+	plus_cmd_data->refresh_class_path = true;
+	break;
     }
 
     while (dummy.size() < cmds.size())
@@ -810,6 +814,16 @@ void send_gdb_command(string cmd, Widget origin,
 	plus_cmd_data->refresh_threads     = false;
 	plus_cmd_data->refresh_addr        = false;
     }
+    else if (gdb->type() == JDB && is_use_cmd(cmd))
+    {
+	plus_cmd_data->refresh_class_path  = true;
+	plus_cmd_data->refresh_breakpoints = false;
+	plus_cmd_data->refresh_where       = false;
+	plus_cmd_data->refresh_frame       = false;
+	plus_cmd_data->refresh_registers   = false;
+	plus_cmd_data->refresh_threads     = false;
+	plus_cmd_data->refresh_addr        = false;
+    }
     else if (is_setting_cmd(cmd))
     {
 	get_settings(gdb->type());
@@ -940,6 +954,7 @@ void send_gdb_command(string cmd, Widget origin,
 	}
 	if (plus_cmd_data->refresh_pwd)
 	    cmds += "pwd";
+	assert(!plus_cmd_data->refresh_class_path);
 	assert(!plus_cmd_data->refresh_file);
 	assert(!plus_cmd_data->refresh_line);
 	if (plus_cmd_data->refresh_breakpoints)
@@ -989,6 +1004,7 @@ void send_gdb_command(string cmd, Widget origin,
     case DBX:
 	if (plus_cmd_data->refresh_pwd)
 	    cmds += "pwd";
+	assert(!plus_cmd_data->refresh_class_path);
 	if (plus_cmd_data->refresh_file)
 	    cmds += "file";
 	if (plus_cmd_data->refresh_line)
@@ -1020,6 +1036,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += "L";
 	if (plus_cmd_data->refresh_pwd)
 	    cmds += "!pwd";
+	assert(!plus_cmd_data->refresh_class_path);
 	assert(!plus_cmd_data->refresh_file);
 	assert(!plus_cmd_data->refresh_line);
 	if (plus_cmd_data->refresh_breakpoints)
@@ -1044,16 +1061,28 @@ void send_gdb_command(string cmd, Widget origin,
 	break;
 
     case JDB:
+	assert (!plus_cmd_data->refresh_initial_line);
+	assert (!plus_cmd_data->refresh_pwd);
+	if (plus_cmd_data->refresh_class_path)
+	    cmds += "use";
+	assert(!plus_cmd_data->refresh_file);
+	assert(!plus_cmd_data->refresh_line);
 	if (plus_cmd_data->refresh_breakpoints)
 	    cmds += "clear";
 	if (plus_cmd_data->refresh_where)
 	    cmds += "where";
+	assert (!plus_cmd_data->refresh_frame);
+	assert (!plus_cmd_data->refresh_registers);
+	assert (!plus_cmd_data->refresh_threads);
 	if (plus_cmd_data->refresh_data)
 	    plus_cmd_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
 	if (plus_cmd_data->refresh_user)
 	    plus_cmd_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
+	assert (!plus_cmd_data->refresh_history_filename);
+	assert (!plus_cmd_data->refresh_history_size);
+	assert (!plus_cmd_data->refresh_setting);
 	break;
     }
 
@@ -1731,6 +1760,9 @@ void plusOQAC (const StringArray& answers,
 
     if (plus_cmd_data->refresh_pwd)
 	source_view->process_pwd(answers[qu_count++]);
+
+    if (plus_cmd_data->refresh_class_path)
+	source_view->process_use(answers[qu_count++]);
 
     if (plus_cmd_data->refresh_file)
     {

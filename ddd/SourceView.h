@@ -298,6 +298,9 @@ class SourceView {
     // The current directory
     static string current_pwd;
 
+    // The current JDB search path
+    static string current_class_path;
+
     // Some positions in source text.
     static XmTextPosition last_top;
     static XmTextPosition last_pos;
@@ -525,6 +528,9 @@ public:
     // Handle 'pwd' information
     static void process_pwd             (string& pwd_output);
 
+    // Handle 'use' information
+    static void process_use             (string& use_output);
+
     // Process the remainder of an output line
     static void check_remainder         (string& info_output);
 
@@ -654,6 +660,9 @@ public:
 
     // Return current directory
     static string pwd() { return current_pwd; }
+
+    // Return current class path
+    static string class_path() { return current_class_path; }
 
     // Return source text and machine code widget (read-only)
     static Widget source() { return source_text_w; }

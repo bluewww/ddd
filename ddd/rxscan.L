@@ -147,7 +147,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 %s S039
 %s S040
 %s S041
-/* %s S042 */
+%s S042
 %s S043
 %s S044
 %s S045
@@ -261,6 +261,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S039>[^{};,\n= ]+{W}={W}[^{}();,\n= ]+{W}={W}{C} return &rxeqeq;
 <S040>{_}file({W}{C})?			return &rxfile_cmd;
 <S041>[^ "'/]*\/			return &rxfilepath;
+<S042>{_}use{W}{C}			return &rxuse_cmd;
 <S043>#{D}{W}{A}			return &rxframe;
 <S044>{_}(up|do|down|f|fra|fram|frame|top|V)({W}{C})? return &rxframe_cmd;
 <S045>[a-zA-Z0-9_$][(]			return &rxfunction_call;

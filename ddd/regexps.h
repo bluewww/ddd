@@ -141,6 +141,7 @@ extern const regex rxthread_cmd;
 extern const regex rxundisplay;
 extern const regex rxup_cmd;
 extern const regex rxuppercase;
+extern const regex rxuse_cmd;
 extern const regex rxvtable;
 extern const regex rxvtable_entries;
 extern const regex rxwhite;

@@ -378,6 +378,16 @@ bool is_cd_cmd (const string& cmd)
     return cmd.matches(rxcd_cmd);
 }
 
+// True if CMD changes class path
+bool is_use_cmd (const string& cmd)
+{
+#if RUNTIME_REGEX
+    static regex rxuse_cmd("[ \t]*use[ \t]+.*");
+#endif
+
+    return cmd.matches(rxuse_cmd);
+}
+
 // True if CMD invokes `make'
 bool is_make_cmd (const string& cmd)
 {

@@ -133,6 +133,7 @@ const regex rxenable			(rx_matcher, (void *)S038);
 const regex rxeqeq			(rx_matcher, (void *)S039);
 const regex rxfile_cmd			(rx_matcher, (void *)S040);
 const regex rxfilepath			(rx_matcher, (void *)S041);
+const regex rxuse_cmd			(rx_matcher, (void *)S042);
 const regex rxframe			(rx_matcher, (void *)S043);
 const regex rxframe_cmd			(rx_matcher, (void *)S044);
 const regex rxfunction_call		(rx_matcher, (void *)S045);

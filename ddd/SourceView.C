@@ -440,7 +440,8 @@ string SourceView::current_code;
 string SourceView::current_code_start;
 string SourceView::current_code_end;
 
-string SourceView::current_pwd = cwd();
+string SourceView::current_pwd        = cwd();
+string SourceView::current_class_path = ".";
 
 XmTextPosition SourceView::last_top                = 0;
 XmTextPosition SourceView::last_pos                = 0;
@@ -1653,8 +1654,8 @@ String SourceView::read_class(const string& class_name,
     base.gsub(".", "/");
     base += ".java";
 
-    string use = gdb_question("use");
-    while (use != NO_GDB_ANSWER && use != "")
+    string use = class_path();
+    while (use != "")
     {
 	string loc;
 	if (use.contains(':'))
@@ -3658,6 +3659,18 @@ void SourceView::process_pwd(string& pwd_output)
 	}
     }
 }
+
+// ***************************************************************************
+// Current use path
+// ***************************************************************************
+
+void SourceView::process_use(string& use_output)
+{
+    read_leading_blanks(use_output);
+    strip_final_blanks(use_output);
+    current_class_path = use_output;
+}
+
 
 // ***************************************************************************
 // History
