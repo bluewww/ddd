@@ -419,7 +419,7 @@ Optional Features
 -----------------
 
 By default, `configure' will configure DDD to use all supported
-optional DDD features.  There is one single optional feature.
+optional DDD features.  There are two optional features.
 
 * You can configure DDD such that the `Ddd' application defaults file
   will not be compiled into the DDD executable.  This reduces the size
@@ -434,6 +434,17 @@ optional DDD features.  There is one single optional feature.
 
   To disable the builtin application defaults file, use the `configure'
   option `--disable-builtin-app-defaults'.
+
+* You can configure DDD such that the DDD manual will not be compiled
+  into the DDD executable.  This reduces the size of the DDD executable
+  by about 80 kBytes.
+
+  `Help->DDD Reference' will then invoke `info ddd' to get the DDD
+  manual.  Note that this option only works well if the `info' program
+  as well as the DDD info files are installed.
+
+  To disable the builtin DDD manual, use the `configure' option
+  `--disable-builtin-manual'.
 
 
 

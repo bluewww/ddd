@@ -589,7 +589,7 @@ int ddd_man(ostream& os)
 {
 #if WITH_BUILTIN_MANUAL
     static const char MANUAL[] =
-#include "ddd.man.txt.gz.C"
+#include "ddd.info.txt.gz.C"
 	;
 
     return uncompress(os, MANUAL, sizeof(MANUAL) - 1);
