@@ -4183,6 +4183,8 @@ void DataDisp::refresh_display_list(bool silent)
 
 		msg += rm(")");
 	    }
+
+	    set_status_mstring(msg);
 	}
 	else if (selected_displays > 1)
 	{
@@ -4216,9 +4218,8 @@ void DataDisp::refresh_display_list(bool silent)
 	    msg += rm(" (" + itostring(displays.size()) 
 			      + " displays)");
 
+	    set_status_mstring(msg);
 	}
-
-	set_status_mstring(msg);
     }
 
     delete[] label_list;
@@ -4248,7 +4249,8 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     else
 	name = source_arg->get_string();
 
-    bool can_set = (name != "") && (name.contains("::") || !name.contains(":"));
+    bool can_set = (name != "") && 
+	(name.contains("::") || !name.contains(":"));
     if (!can_set)
 	return;
 
@@ -4916,7 +4918,7 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
 
 DataDisp::DataDisp(Widget parent,
 		   String vsl_path, String vsl_library, String vsl_defs,
-		   bool panned)
+		   bool panned, bool toolbar_at_bottom)
 {
     XtAppContext app_context = XtWidgetToApplicationContext(parent);
 
@@ -4930,10 +4932,17 @@ DataDisp::DataDisp(Widget parent,
 
     // Create graph
     disp_graph = new DispGraph();
-
     disp_graph->addHandler(DispGraph_Empty, no_displaysHP);
 
-    // Crate graph editor
+    Widget arg_label = 0;
+
+    if (graph_cmd_w == 0 && !toolbar_at_bottom)
+    {
+	graph_cmd_w = create_toolbar(parent, "graph", 
+				     graph_cmd_area, 0, arg_label, graph_arg);
+    }
+
+    // Create graph editor
     Arg args[10];
     int arg = 0;
     XtSetArg (args[arg], XtNgraph, (Graph *)disp_graph); arg++;
@@ -4960,12 +4969,13 @@ DataDisp::DataDisp(Widget parent,
 
     if (graph_cmd_w == 0)
     {
-	Widget arg_label;
 	graph_cmd_w = create_toolbar(parent, "graph", 
 				     graph_cmd_area, 0, arg_label, graph_arg);
+    }
+
+    if (arg_label != 0)
 	XtAddCallback(arg_label, XmNactivateCallback,
 		      SelectionLostCB, XtPointer(0));
-    }
 
     // Create (unmanaged) selection widget
     graph_selection_w =
