@@ -3513,7 +3513,7 @@ void DataDisp::merge_displays(IntArray displays,
 	if (!hidden && dn->nodeptr()->firstTo() == 0)
 	{
 	    // There is no edge pointing at this node.  Don't merge it
-	    // because it would simply disappear.
+	    // because it would simply disappear otherwise.
 	    changed = unmerge_display(disp_nr) || changed;
 	}
 	else

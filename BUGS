@@ -354,9 +354,4 @@ Volunteers for fixing these and other bugs are welcome!
      [I could not reproduce this.  Jonathan's DDD is compiled with AIX
      xlC.  Is this the reason?  -AZ]
 
-164. Make sure there is at most one hint per aliased display.  Switch
-     off alias detection, and dereference two elements of `list'
-     beyond the point where an alias would be created.  Switch on
-     alias detection again.  There are two hints per alias.
-
 165. (Insert your bug here)
