@@ -28,6 +28,10 @@ DDD 3.1.1 fixes a number of minor bugs in DDD 3.1:
   `displayTimeout' resources.
 - Under certain circumstances, DDD could hang searching for a Java
   class.
+- Using a remote GDB, a new execution window was launched for each
+  program run.
+- Using the execution window, Program->Run Again and the `run' command
+  tool button cleared all arguments.
 
 There are no new features in DDD 3.1.1.
 

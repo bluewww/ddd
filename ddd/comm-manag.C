@@ -1688,10 +1688,30 @@ static void CancelPartialDisplayCB(XtPointer client_data, XtIntervalId *id)
     print_partial_answer(ans, cmd_data);
 }
 
+
+static CmdData *current_cmd_data = 0;
+
+// Return GDB output that has not been echoed yet
+string buffered_gdb_output()
+{
+    string output = "";
+    if (current_cmd_data != 0)
+    {
+	if (current_cmd_data->pos_buffer != 0)
+	    output += current_cmd_data->pos_buffer->answer_ended();
+	if (current_cmd_data->disp_buffer != 0)
+	    output += current_cmd_data->disp_buffer->answer_ended();
+    }
+
+    return output;
+}
+
 static void partial_answer_received(const string& answer, void *data)
 {
     string ans = answer;
     CmdData *cmd_data = (CmdData *) data;
+    current_cmd_data = cmd_data;
+
     XtAppContext app_con = XtWidgetToApplicationContext(gdb_w);
 
     if (cmd_data->pos_buffer)
@@ -2056,6 +2076,7 @@ static void command_completed(void *data)
     }
 
     delete cmd_data;
+    current_cmd_data = 0;
 
     if (do_prompt)
 	prompt();
