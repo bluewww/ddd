@@ -249,7 +249,7 @@ void sourceSetSourceIndentCB (Widget, XtPointer, XtPointer call_data)
 {
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
 
-    if (info->value > app_data.line_number_width)
+    if (info->value > int(app_data.line_number_width))
     {
 	app_data.indent_source = info->value - app_data.line_number_width;
 	app_data.display_line_numbers = true;
