@@ -115,8 +115,8 @@ class SourceView {
     static void BreakpointCmdCB          (Widget, XtPointer, XtPointer);
 
     static void EditBreakpointIgnoreCountDCB (Widget, XtPointer, XtPointer);
-    static void EditBreakpointIgnoreCountCB  (Widget, XtPointer, XtPointer);
     static void EditBreakpointConditionDCB   (Widget, XtPointer, XtPointer);
+    static void EditBreakpointIgnoreCountCB  (Widget, XtPointer, XtPointer);
     static void EditBreakpointConditionCB    (Widget, XtPointer, XtPointer);
 
     static void UpdateBreakpointButtonsCB (Widget, XtPointer, XtPointer);
@@ -412,7 +412,7 @@ class SourceView {
 
     // Create glyph in FORM_W named NAME from given BITS
     static Widget create_glyph(Widget form_w, String name, 
-			       char *bits, int width, int height);
+			       unsigned char *bits, int width, int height);
 
     // Map glyph W in (X, Y)
     static void map_glyph(Widget& w, Position x, Position y);
@@ -456,7 +456,10 @@ private:
     static Widget temp_arrows[2];
     static WidgetArray plain_stops[2];
     static WidgetArray grey_stops[2];
+    static WidgetArray plain_conds[2];
+    static WidgetArray grey_conds[2];
     static Widget temp_stops[2];
+    static Widget temp_conds[2];
 
     // Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
     // store location in POSITIONS.  Return mapped widget (0 if none)
@@ -770,6 +773,10 @@ public:
     // Helpers
     static string full_path(string file);
     static const char *basename(const char *);
+
+    // Edit breakpoint properties.
+    static void edit_breakpoint_ignore_count(int bp_nr);
+    static void edit_breakpoint_condition(int bp_nr);
 };
 
 inline void SourceView::create_bp(const string& a, Widget w)

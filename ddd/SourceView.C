@@ -287,7 +287,7 @@ static XImage arrow_image = {
     arrow_height,		// height
     0,				// xoffset
     XYBitmap,			// format
-    arrow_bits,			// data
+    (char *)arrow_bits,		// data
     MSBFirst,			// byte_order
     8,				// bitmap_unit
     LSBFirst,			// bitmap_bit_order
@@ -302,7 +302,7 @@ static XImage grey_arrow_image = {
     grey_arrow_height,		// height
     0,				// xoffset
     XYBitmap,			// format
-    grey_arrow_bits,		// data
+    (char *)grey_arrow_bits,	// data
     MSBFirst,			// byte_order
     8,				// bitmap_unit
     LSBFirst,			// bitmap_bit_order
@@ -317,7 +317,7 @@ static XImage signal_arrow_image = {
     signal_arrow_height,	// height
     0,				// xoffset
     XYBitmap,			// format
-    signal_arrow_bits,		// data
+    (char *)signal_arrow_bits,	// data
     MSBFirst,			// byte_order
     8,				// bitmap_unit
     LSBFirst,			// bitmap_bit_order
@@ -332,7 +332,7 @@ static XImage temp_arrow_image = {
     temp_arrow_height,		// height
     0,				// xoffset
     XYBitmap,			// format
-    temp_arrow_bits,		// data
+    (char *)temp_arrow_bits,	// data
     MSBFirst,			// byte_order
     8,				// bitmap_unit
     LSBFirst,			// bitmap_bit_order
@@ -347,7 +347,7 @@ static XImage stop_image = {
     stop_height,		// height
     0,				// xoffset
     XYBitmap,			// format
-    stop_bits,			// data
+    (char *)stop_bits,		// data
     MSBFirst,			// byte_order
     8,				// bitmap_unit
     LSBFirst,			// bitmap_bit_order
@@ -362,7 +362,7 @@ static XImage grey_stop_image = {
     grey_stop_height,		// height
     0,				// xoffset
     XYBitmap,			// format
-    grey_stop_bits,		// data
+    (char *)grey_stop_bits,	// data
     MSBFirst,			// byte_order
     8,				// bitmap_unit
     LSBFirst,			// bitmap_bit_order
@@ -377,7 +377,52 @@ static XImage temp_stop_image = {
     temp_stop_height,		// height
     0,				// xoffset
     XYBitmap,			// format
-    temp_stop_bits,		// data
+    (char *)temp_stop_bits,	// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "cond.xbm"
+static XImage cond_image = {
+    cond_width,			// width
+    cond_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    (char *)cond_bits,		// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "greycond.xbm"
+static XImage grey_cond_image = {
+    grey_cond_width,		// width
+    grey_cond_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    (char *)grey_cond_bits,	// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "tempcond.xbm"
+static XImage temp_cond_image = {
+    temp_cond_width,		// width
+    temp_cond_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    (char *)temp_cond_bits,	// data
     MSBFirst,			// byte_order
     8,				// bitmap_unit
     LSBFirst,			// bitmap_bit_order
@@ -1016,7 +1061,7 @@ void SourceView::bp_popup_deleteCB (Widget w,
 				    XtPointer client_data,
 				    XtPointer)
 {
-    int bp_nr = *((int *)client_data);
+    int bp_nr = int(client_data);
     gdb_command(delete_command(bp_nr), w);
 }
 
@@ -1043,7 +1088,7 @@ void SourceView::bp_popup_disableCB (Widget w,
 				     XtPointer client_data,
 				     XtPointer)
 {
-    int bp_nr = *((int *)client_data);
+    int bp_nr = int(client_data);
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp != 0)
     {
@@ -1072,7 +1117,7 @@ void SourceView::disable_bp(int nr, Widget w)
 void SourceView::bp_popup_set_pcCB(Widget w, XtPointer client_data, 
 				   XtPointer call_data)
 {
-    int bp_nr = *((int *)client_data);
+    int bp_nr = int(client_data);
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp != 0 && bp->address() != "")
     {
@@ -2827,8 +2872,11 @@ SourceView::SourceView(Widget parent)
     XmInstallImage(&signal_arrow_image, "signal_arrow");
     XmInstallImage(&temp_arrow_image,   "temp_arrow");
     XmInstallImage(&stop_image,         "plain_stop");
+    XmInstallImage(&cond_image,         "plain_cond");
     XmInstallImage(&grey_stop_image,    "grey_stop");
+    XmInstallImage(&grey_cond_image,    "grey_cond");
     XmInstallImage(&temp_stop_image,    "temp_stop");
+    XmInstallImage(&temp_cond_image,    "temp_cond");
 
     // Setup actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
@@ -4502,7 +4550,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	{
 	    bp_popup_parent = w;
 	    bp_popup_w = MMcreatePopupMenu(w, "bp_popup", bp_popup);
-	    MMaddCallbacks (bp_popup, XtPointer(&bp_nr));
+	    MMaddCallbacks (bp_popup, XtPointer(bp_nr));
 	    InstallButtonTips(bp_popup_w);
 	}
 
@@ -4789,7 +4837,7 @@ void SourceView::EditBreakpointConditionDCB(Widget,
     }
     else
     {
-	int bp_nr = *((int *)client_data);
+	int bp_nr = int(client_data);
 	set_bp_cond(bp_nr, input);
     }
 
@@ -4832,17 +4880,12 @@ void SourceView::EditBreakpointConditionCB(Widget,
 		  EditBreakpointConditionDCB,
 		  client_data);
 
-    int bp_nr;
-    int *bp_nr_ptr = (int *)client_data;
-    if (bp_nr_ptr == 0)
+    int bp_nr = (int)client_data;
+    if (client_data == 0)
     {
 	IntArray breakpoint_nrs;
 	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
 	bp_nr = breakpoint_nrs[0];
-    }
-    else
-    {
-	bp_nr = *bp_nr_ptr;
     }
 
     if (bp_nr > 0)
@@ -4903,7 +4946,7 @@ void SourceView::EditBreakpointIgnoreCountDCB(Widget,
     }
     else
     {
-	int bp_nr = *((int *)client_data);
+	int bp_nr = int(client_data);
 	gdb_command(gdb->ignore_command(itostring(bp_nr), count));
     }
 }
@@ -4943,8 +4986,7 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
 		  client_data);
 
     int bp_nr;
-    int *bp_nr_ptr = (int *)client_data;
-    if (bp_nr_ptr == 0)
+    if (client_data == 0)
     {
 	IntArray breakpoint_nrs;
 	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
@@ -4952,7 +4994,7 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
     }
     else
     {
-	bp_nr = *bp_nr_ptr;
+	bp_nr = int(client_data);
     }
 
     string ignore = "";
@@ -4984,6 +5026,15 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
     manage_and_raise(edit_breakpoint_ignore_count_dialog);
 }
 
+void SourceView::edit_breakpoint_ignore_count(int bp_nr)
+{
+    EditBreakpointIgnoreCountCB(source_text_w, XtPointer(bp_nr), 0);
+}
+
+void SourceView::edit_breakpoint_condition(int bp_nr)
+{
+    EditBreakpointConditionCB(source_text_w, XtPointer(bp_nr), 0);
+}
 
 void SourceView::BreakpointCmdCB(Widget,
 				 XtPointer client_data,
@@ -5764,16 +5815,30 @@ void SourceView::set_max_glyphs (int nmax)
 	    if (grey_stops[k][i] != 0)
 		XtDestroyWidget(grey_stops[k][i]);
 	}
+	for (i = 0; i < plain_conds[k].size(); i++)
+	{
+	    if (plain_conds[k][i] != 0)
+		XtDestroyWidget(plain_conds[k][i]);
+	}
+	for (i = 0; i < grey_conds[k].size(); i++)
+	{
+	    if (grey_stops[k][i] != 0)
+		XtDestroyWidget(grey_conds[k][i]);
+	}
 
 	// ...make array empty...
 	plain_stops[k] = empty;
-	grey_stops[k] = empty;
+	grey_stops[k]  = empty;
+	plain_conds[k] = empty;
+	grey_conds[k]  = empty;
 
 	// ...and make room for new widgets.  The last one is a null pointer.
 	for (i = 0; i < nmax + 1; i++)
 	{
 	    plain_stops[k] += Widget(0);
 	    grey_stops[k]  += Widget(0);
+	    plain_conds[k] += Widget(0);
+	    grey_conds[k]  += Widget(0);
 	}
     }
 }
@@ -5820,7 +5885,8 @@ const int motif_offset = 0;  // Motif 1.x does not
 // Create glyph in FORM_W named NAME from given BITS
 Widget SourceView::create_glyph(Widget form_w,
 				String name,
-				char */* bits */, int width, int height)
+				unsigned char */* bits */,
+				int width, int height)
 {
     Arg args[20];
     Cardinal arg = 0;
@@ -6121,8 +6187,11 @@ Widget SourceView::grey_arrows[2]   = {0, 0};
 Widget SourceView::signal_arrows[2] = {0, 0};
 Widget SourceView::temp_arrows[2]   = {0, 0};
 Widget SourceView::temp_stops[2]    = {0, 0};
+Widget SourceView::temp_conds[2]    = {0, 0};
 WidgetArray SourceView::plain_stops[2];
 WidgetArray SourceView::grey_stops[2];
+WidgetArray SourceView::plain_conds[2];
+WidgetArray SourceView::grey_conds[2];
 
 
 // Create glyphs in the background
@@ -6203,6 +6272,19 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    }
 	}
 
+	for (i = 0; i < grey_conds[k].size() - 1; i++)
+	{
+	    if (grey_conds[k][i] == 0)
+	    {
+		grey_conds[k][i] = 
+		    create_glyph(form_w, "grey_cond",
+				 grey_cond_bits, 
+				 grey_cond_width,
+				 grey_cond_height);
+		return False;
+	    }
+	}
+
 	for (i = 0; i < plain_stops[k].size() - 1; i++)
 	{
 	    if (plain_stops[k][i] == 0)
@@ -6216,6 +6298,19 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    }
 	}
 
+	for (i = 0; i < plain_conds[k].size() - 1; i++)
+	{
+	    if (plain_conds[k][i] == 0)
+	    {
+		plain_conds[k][i] = 
+		    create_glyph(form_w, "plain_cond",
+				 cond_bits, 
+				 cond_width,
+				 cond_height);
+		return False;
+	    }
+	}
+
 	if (temp_stops[k] == 0)
 	{
 	    temp_stops[k] = 
@@ -6223,6 +6318,16 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 			     temp_stop_bits, 
 			     temp_stop_width,
 			     temp_stop_height);
+	    return False;
+	}
+
+	if (temp_conds[k] == 0)
+	{
+	    temp_conds[k] = 
+		create_glyph(form_w, "temp_cond",
+			     temp_cond_bits, 
+			     temp_cond_width,
+			     temp_cond_height);
 	    return False;
 	}
     }
@@ -6372,27 +6477,33 @@ Widget SourceView::map_temp_stop_at(Widget glyph, XmTextPosition pos,
 
     int k = int(is_code_widget(glyph));
 
-    Widget& temp_stop = temp_stops[k];
-
-    while (temp_stop == 0)
-    {
-	if (CreateGlyphsWorkProc(0))
-	    break;
-    }
-
-    copy_colors(temp_stop, origin);
-
     if (pos_displayed)
     {
+	bool cond = (origin != 0 && string(XtName(origin)).contains("cond"));
+
+	Widget& temp_stop = cond ? temp_conds[k] : temp_stops[k];
+	
+	while (temp_stop == 0)
+	{
+	    if (CreateGlyphsWorkProc(0))
+		break;
+	}
+
+	copy_colors(temp_stop, origin);
+
 	if (origin)
  	    XtVaGetValues(origin, XmNx, &x, NULL);
 	else
 	    x += stop_x_offset;
 
 	map_glyph(temp_stop, x, y);
+	unmap_glyph(cond ? temp_stops[k] : temp_conds[k]);
     }
     else
-	unmap_glyph(temp_stop);
+    {
+	unmap_glyph(temp_stop[k]);
+	unmap_glyph(temp_stop[k]);
+    }
 
     return temp_stop;
 }
@@ -6514,8 +6625,10 @@ void SourceView::update_glyphs_now()
 	if (k == 1 && !update_code_glyphs)
 	    continue;
 
-	int plain_count = 0;
-	int grey_count  = 0;
+	int plain_stops_count = 0;
+	int grey_stops_count  = 0;
+	int plain_conds_count = 0;
+	int grey_conds_count  = 0;
 
 	if (display_glyphs)
 	{
@@ -6551,21 +6664,36 @@ void SourceView::update_glyphs_now()
 		    pos = find_pc(bp->address());
 		}
 
-
-		if (bp->enabled() && bp->ignore_count() == 0)
-		    bp_glyph = map_stop_at(text_w, pos, plain_stops[k],
-					   plain_count, positions);
+		if (bp->condition() != "" || bp->ignore_count() != 0)
+		{
+		    if (bp->enabled())
+			bp_glyph = map_stop_at(text_w, pos, plain_conds[k],
+					       plain_conds_count, positions);
+		    else
+			bp_glyph = map_stop_at(text_w, pos, grey_conds[k],
+					       grey_conds_count, positions);
+		}
 		else
-		    bp_glyph = map_stop_at(text_w, pos, grey_stops[k],
-					   grey_count, positions);
+		{
+		    if (bp->enabled() && bp->ignore_count() == 0)
+			bp_glyph = map_stop_at(text_w, pos, plain_stops[k],
+					       plain_stops_count, positions);
+		    else
+			bp_glyph = map_stop_at(text_w, pos, grey_stops[k],
+					       grey_stops_count, positions);
+		}
 	    }
 	}
 
 	// Unmap remaining breakpoint glyphs
 	Widget glyph;
-	while ((glyph = plain_stops[k][plain_count++]))
+	while ((glyph = plain_stops[k][plain_stops_count++]))
 	    unmap_glyph(glyph);
-	while ((glyph = grey_stops[k][grey_count++]))
+	while ((glyph = grey_stops[k][grey_stops_count++]))
+	    unmap_glyph(glyph);
+	while ((glyph = plain_conds[k][plain_conds_count++]))
+	    unmap_glyph(glyph);
+	while ((glyph = grey_conds[k][grey_conds_count++]))
 	    unmap_glyph(glyph);
     }
 
@@ -6797,7 +6925,9 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
 		return;
 	    }
 	}
-	else if (glyph == temp_stops[k] || glyph == temp_arrows[k])
+	else if (glyph == temp_stops[k] || 
+		 glyph == temp_conds[k] || 
+		 glyph == temp_arrows[k])
 	{
 	    // Temp glyph cannot be dragged
 	    return;
@@ -6887,6 +7017,7 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e, String *, Cardinal *)
     for (k = 0; k < 2; k++)
 	if (glyph == grey_arrows[k] || 
 	    glyph == temp_stops[k] || 
+	    glyph == temp_conds[k] || 
 	    glyph == temp_arrows[k])
 	    return;
 
@@ -7000,11 +7131,16 @@ void SourceView::log_glyphs()
 	    log_glyph(plain_stops[k][i], i);
 	for (i = 0; i < grey_stops[k].size() - 1; i++)
 	    log_glyph(grey_stops[k][i], i);
+	for (i = 0; i < plain_conds[k].size() - 1; i++)
+	    log_glyph(plain_conds[k][i], i);
+	for (i = 0; i < grey_conds[k].size() - 1; i++)
+	    log_glyph(grey_conds[k][i], i);
 	log_glyph(plain_arrows[k]);
 	log_glyph(grey_arrows[k]);
 	log_glyph(signal_arrows[k]);
 	log_glyph(temp_arrows[k]);
 	log_glyph(temp_stops[k]);
+	log_glyph(temp_conds[k]);
     }
 }
 
