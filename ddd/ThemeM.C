@@ -35,8 +35,9 @@ char ThemeManager_rcsid[] =
 
 #include "ThemeM.h"
 #include "cook.h"
-#include "glob.h"
 #include "string-fun.h"
+
+#include <iostream.h>
 
 #ifndef LOG_THEMES
 #define LOG_THEMES 0
@@ -98,9 +99,9 @@ StringArray ThemeManager::themes(const string& expr)
 	    ret += i.key();
 
 #if LOG_THEMES
-    clog << "Themes of " << expr << ": ";
+    clog << "Themes of " << expr << ":";
     for (int j = 0; j < ret.size(); j++)
-	clog << ret[j];
+	clog << " " << ret[j];
     clog << "\n";
 #endif
 

@@ -38,6 +38,12 @@ char ThemePattern_rcsid[] =
 #include "glob.h"
 #include "string-fun.h"
 
+#include <iostream.h>
+
+#ifndef LOG_THEME_PATTERNS
+#define LOG_THEME_PATTERNS 0
+#endif
+
 ThemePattern::ThemePattern(const string& rep)
     : patterns()
 {
@@ -72,7 +78,12 @@ bool ThemePattern::matches(const string& expr) const
     for (int i = 0; i < patterns.size(); i++)
     {
 	if (glob_match(patterns[i], expr, 0))
+	{
+#if LOG_THEME_PATTERNS
+	    clog << quote(patterns[i]) << " matches " << quote(expr) << "\n";
+#endif
 	    return true;
+	}
     }
 
     return false;
