@@ -75,10 +75,15 @@ protected:
 	int i = 0;
 	int sz = size();
 	while (i < sz)
+	{
 	    if (_value(i) == v)
+	    {
 		_remove(i);
+		sz = size();
+	    }
 	    else
 		i++;
+	}
     }
 
 public:
