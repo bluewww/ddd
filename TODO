@@ -389,8 +389,4 @@ Volunteers for these and other projects are welcome!
 257 Show whether a conditional jump (breakpoint?) will be taken or
     not.
 
-258*Have a `Display now' button that `un-defers' deferred displays.
-    Better yet, try to un-defer displays upon startup.
-    `display FOOBAR now or when in FUNCTION'.
-
 261 (Insert your project idea here)

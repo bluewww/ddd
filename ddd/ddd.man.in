@@ -1119,7 +1119,7 @@ Finally, you may also enter
 .sp
 .br
   \fBgraph display \fIexpr\fR [\|\fBat (\fIx, y\fB)\fR\|] [\|\fBdependent
-on \fIdisplay\fR\|] [\|\fBwhen in \fIscope\fR\|]
+on \fIdisplay\fR\|] [\|[\|\fBnow or\fR\|]\|\fBwhen in \fIscope\fR\|]
 .sp
 .br
 \&at the debugger prompt.  The options have the following meaning:
@@ -1137,8 +1137,17 @@ created.  Otherwise, no edge is created.
 .IP \(bu 2
 If the suffix `\fBwhen in \fIscope\fR' is given, display creation is
 \fIdeferred\fR until execution reaches the given \fIscope\fR (a
-function name, as in the backtrace output).  Otherwise, the display is
-created immediately.
+function name, as in the backtrace output).
+.br
+.IP \(bu 2
+If the suffix `\fBnow or when in \fIscope\fR' is given, \s-2@DDD@\s+2
+attempts to create the display immediately.  If display creation fails,
+it is \fIdeferred\fR until execution reaches the given \fIscope\fR (a
+function name, as in the backtrace output).
+.br
+.IP \(bu 2
+If no `\fBwhen in\fR' suffix or `\fBnow or when in\fR' suffix is
+given, the display is created immediately.
 .br
 .PP
 .\"

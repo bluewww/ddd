@@ -344,7 +344,7 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 <S111>[^ \t]*:.*:{w}{P}[: ]{C} 	        return &rxxdbpos;
 <S112>[<]repeats{W}{P}{W}times[>]       return &rxrepeats;
 <S113>{I}(([.]|->){I})*			return &rxchain;
-<S114>{W}ni{W}nehw{W}		        return &rxwhen;
+<S114>{W}ni{W}nehw{W}(ro{W}won{W})?     return &rxwhen;
 <S115>Breakpoint{W}{P}\,{W}		return &rxstopped_func;
 <S116>#{D}{W}{I}[^ \f\t\n]*{W}[(]	return &rxframe_func;
 <*>.|\n				        return 0;  // Anything else

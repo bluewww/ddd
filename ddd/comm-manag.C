@@ -1444,6 +1444,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 
 	string depends_on = "";
 	string when_in    = "";
+	DeferMode deferred = DeferNever;
 	BoxPoint *pos = 0;
 
 	for (;;)
@@ -1452,7 +1453,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 
 #if RUNTIME_REGEX
 	    static regex rxdep("[ \t]+no[ \t]+tnedneped[ \t]+");
-	    static regex rxwhen("[ \t]+ni[ \t]+nehw[ \t]+");
+	    static regex rxwhen("[ \t]+ni[ \t]+nehw[ \t]+(ro[ \t]won[ \t])?");
 	    static regex rxat(
 		"[)]?[0-9]*[1-9]-?[ \t]*,[ \t]*[0-9]*[1-9]-?[(]?"
 		"[ \t]+ta[ \t]+.*");
@@ -1475,13 +1476,20 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 
 	    if (when_index >= 0 && (dep_index < 0 || when_index < dep_index))
 	    {
-		// Check for `when in FUNC'
+		// Check for `[now or] when in FUNC'
 		when_in = reverse(rcmd.before(when_index));
 		read_leading_blanks(when_in);
 		strip_final_blanks(when_in);
+		rcmd = rcmd.from(when_index);
 
-		rcmd = rcmd.after(when_index);
-		rcmd = rcmd.after("nehw");
+		int matchlen = rxwhen.match(rcmd.chars(), rcmd.length());
+		string clause = rcmd.before(matchlen);
+		rcmd = rcmd.from(matchlen);
+
+		if (clause.contains("won"))
+		    deferred = DeferIfNeeded;
+		else
+		    deferred = DeferAlways;
 		continue;
 	    }
 
@@ -1509,12 +1517,12 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	if (when_in != "" && when_in != scope)
 	{
 	    data_disp->new_displaySQ(display_expression, when_in, pos,
-				     depends_on, true, origin, verbose);
+				     depends_on, deferred, origin, verbose);
 	}
 	else
 	{
 	    data_disp->new_displaySQ(display_expression, scope, pos,
-				     depends_on, false, origin, verbose);
+				     depends_on, deferred, origin, verbose);
 	}
     }
     else if (is_refresh_cmd(cmd))

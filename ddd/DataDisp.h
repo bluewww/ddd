@@ -79,6 +79,12 @@
 extern GDBAgent *gdb;
 extern ArgField *source_arg;
 
+enum DeferMode { 
+    DeferAlways,		// Defer display creation
+    DeferIfNeeded,		// Defer display creation if needed
+    DeferNever			// Create display now
+};
+
 //-----------------------------------------------------------------------------
 class DataDisp {
 
@@ -251,7 +257,7 @@ public:
 			      string scope,
 			      BoxPoint *pos = 0,
 			      string depends_on = "",
-			      bool deferred = false,
+			      DeferMode deferred = DeferAlways,
 			      Widget origin = 0,
 			      bool verbose = true);
 

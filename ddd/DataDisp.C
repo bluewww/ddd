@@ -1110,7 +1110,7 @@ public:
     Widget shortcut;
     Widget text;
     bool verbose;
-    bool deferred;
+    DeferMode deferred;
 
     NewDisplayInfo()
 	: display_expression(),
@@ -1123,7 +1123,7 @@ public:
 	  shortcut(0),
 	  text(0),
 	  verbose(false),
-	  deferred(false)
+	  deferred(DeferNever)
     {}
 
     ~NewDisplayInfo()
@@ -1141,7 +1141,7 @@ private:
 	  shortcut(0),
 	  text(0),
 	  verbose(false),
-	  deferred(false)
+	  deferred(DeferNever)
     {
 	assert(0);
     }
@@ -2095,7 +2095,7 @@ bool DataDisp::get_state(ostream& os,
 
 	// Write scope
 	if (dn->scope() != "")
-	    os << " when in " << dn->scope();
+	    os << " now or when in " << dn->scope();
 
 	os << '\n';
     }
@@ -2354,11 +2354,11 @@ void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
 
 void DataDisp::new_displaySQ (string display_expression,
 			      string scope, BoxPoint *p,
-			      string depends_on, bool deferred,
+			      string depends_on, DeferMode deferred,
 			      Widget origin, bool verbose)
 {
     // Check arguments
-    if (!deferred && depends_on != "")
+    if (deferred != DeferAlways && depends_on != "")
     {
 	int depend_nr = disp_graph->get_by_name(depends_on);
 	if (depend_nr == 0)
@@ -2423,7 +2423,7 @@ void DataDisp::new_displaySQ (string display_expression,
     if (display_expression == "")
 	return;
 
-    if (deferred)
+    if (deferred == DeferAlways)
     {
 	// Create deferred display now
 	DispNode *dn = new_deferred_node(display_expression, scope, 
@@ -2753,8 +2753,27 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 
     if (!contains_display (answer, gdb))
     {
-	if (info->verbose)
-	    post_gdb_message(answer, last_origin);
+	if (info->deferred == DeferIfNeeded)
+	{
+	    // Create deferred display now
+	    DispNode *dn = new_deferred_node(info->display_expression,
+					     info->scope,
+					     info->point, info->depends_on);
+	    
+	    // Insert deferred node into graph
+	    disp_graph->insert(dn->disp_nr(), dn);
+	    
+	    if (info->verbose)
+		prompt();
+
+	    refresh_display_list();
+	}
+	else
+	{
+	    if (info->verbose)
+		post_gdb_message(answer, last_origin);
+	}
+
 	delete info;
 	return;
     }
@@ -2771,6 +2790,22 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     DispNode *dn = new_data_node(info->display_expression, info->scope, ans);
     if (dn == 0)
     {
+	if (info->deferred == DeferIfNeeded)
+	{
+	    // Create deferred display now
+	    DispNode *dn = new_deferred_node(info->display_expression,
+					     info->scope,
+					     info->point, info->depends_on);
+	    
+	    // Insert deferred node into graph
+	    disp_graph->insert(dn->disp_nr(), dn);
+	    
+	    if (info->verbose)
+		prompt();
+
+	    refresh_display_list();
+	}
+
 	delete info;
 	return;
     }
@@ -3591,9 +3626,8 @@ void DataDisp::process_info_display(string& info_display_answer)
 	}
 
 	// Create new deferred node
-	DispNode *new_dn = new_deferred_node(dn->name(), dn->scope(), 
-					     pos, depends_on);
-	disp_graph->insert(new_dn->disp_nr(), new_dn);
+	new_displaySQ(dn->name(), dn->scope(), &pos,
+		      depends_on, DeferIfNeeded, 0, false);
     }
 
     // Delete old displays
