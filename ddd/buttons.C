@@ -184,6 +184,9 @@ static string gdbHelp(string command)
 	    help = "Display expression in the data window.";
     }
 
+    if (command == "graph" || command.contains("graph ", 0))
+	help = "Data window operation.";
+
     if (help == NO_GDB_ANSWER)
     {
 	// Lookup cache
