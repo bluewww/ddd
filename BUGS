@@ -340,5 +340,12 @@ Volunteers for fixing these and other bugs are welcome!
      PS: What is the prefered way (if any) of making the hex output 
          the default in the display graph?  If I "set output-radix 16" 
          in the gdb window ddd seems to lock up very often.
-    
-085. (Insert your bug here)
+
+086. Jochen Schuetze <jos@GBF-Braunschweig.DE> says:
+     If the binary and the sources are not located in the current
+     directory, no source is displayed, I get an empty alert box and
+     ddd hangs until killed from outside.  Will ddd ever learn to
+     handle the case that source code and binary of the debugged
+     program aren't in the current directory?
+
+087. (Insert your bug here)
