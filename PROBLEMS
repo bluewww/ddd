@@ -4,6 +4,15 @@ Problems in building and installing DDD                          -*- text -*-
 AIX
 ===
 
+    [Mike Bond <mike.bond@template.com> says that as of DDD-1997-12-16
+     (that is, DDD 2.1.1 and later): `compiling with C Set++ on AIX 4.2
+     all works fine.  I had no problems with the data display as
+     mentioned, and all else seemed to work.  I use xlC/xlc to compile
+     my apps to be debugged as well, and use dbx, and all works without
+     problems right out of the tar file, straight compile.'  So the
+     messages below might no more apply.]
+
+
 Reported by:  Jonathan Edwards <edwards@intranet.com>,
               L. Scott Emmons >scott_emmons@uscs.com>
 
