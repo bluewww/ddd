@@ -1993,7 +1993,7 @@ string GDBAgent::debug_command(string program) const
 	    return "debug " + program;     // SUN DBX
 
     case XDB:
-	return "";		// FIXME
+	return "#file " + program; // just a dummy
 
     case JDB:
 	return "load " + program;

@@ -329,8 +329,10 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
     }
 
     case XDB:
+	return cmd.contains("#file ", 0);
+
     case JDB:
-	return false;		// FIXME
+	return cmd.contains("load ", 0);
     }
 
     assert(0);
