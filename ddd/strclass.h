@@ -887,6 +887,12 @@ public:
     bool OK() const;
 };
 
+// Inject names manually to accomodate argument-dependent name lookup (ADL)
+// (aka Koenig lookup). The rule is that friend declarations are visible
+// when found through ADL because an argument of the call happens to be
+// associated with a class of which the function is a friend.
+string replicate(char c, int n);
+
 #if 0
 typedef string strTmp; // for backward compatibility
 #endif
