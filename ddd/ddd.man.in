@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-08\-13" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-09\-01" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -5718,8 +5718,9 @@ November, 1997
 June, 1998
 \s-1@DDD@\s+1 3.0: Icon tool bar, Java support, \s-1JDB\s+1 support.
 .TP
-October, 1998
-\s-1@DDD@\s+1 3.1: Edge annotations, display clusters.
+December, 1998
+\s-1@DDD@\s+1 3.1: Data plotting, Python support, Undo/Redo, 
+	advanced data exploration.
 .PD
 .\"
 .\"

@@ -4,7 +4,21 @@ DDD News						-*- text -*-
 DDD 3.1 [in development]
 ========================
 
-DDD 3.1 brings Python support, Undo/Redo, and advanced data exploration.
+DDD 3.1 brings data plotting, Python support, Undo/Redo, and advanced
+data exploration.
+
+
+Plotting
+--------
+
+- Array plots.  You can plot one- and two-dimensional numeric arrays
+  via the `Plot' button.  This gives a totally new meaning to `data
+  display debugger'.  Requires Gnuplot.
+
+- History plots.  You can plot the history of a numerical variable,
+  i.e. the sequence of previous values.  [Not operational yet]
+
+- Plots can be animated, visualizing algorithm effects.
 
 
 Python support
@@ -30,19 +44,6 @@ Undoing commands
   easily determine how some variable changed in the last steps.
 
 - `Undo' and `Redo' supersedes the old `Back' and `Forward' functions.
-
-
-Plotting
---------
-
-- Array plots.  You can plot one- and two-dimensional numeric arrays
-  via the `Plot' button.  This gives a totally new meaning to `data
-  display debugger'.  Requires Gnuplot.
-
-- History plots.  You can plot the history of a numerical variable,
-  i.e. the sequence of previous values.  [Not operational yet]
-
-- Plots can be animated, visualizing algorithm effects.
 
 
 Data exploration
