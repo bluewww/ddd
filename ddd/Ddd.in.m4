@@ -620,7 +620,7 @@ Ddd*displayGlyphs: on
 Ddd*maxGlyphs: 10
 
 ! The time (in ms) to wait before updating glyph positions while scrolling
-Ddd*glyphUpdateDelay: 10
+Ddd*glyphUpdateDelay: 5
 
 ! Shall we cache glyph images?  (Reported to fail with Motif 2.1 on XFree86)
 ! Ddd*cacheGlyphImages: on

@@ -116,4 +116,10 @@ Volunteers for fixing these and other bugs are welcome!
 306*`graph undisplay -1 1', with 1 being the only display, does not
     delete display -1.
 
+307 Marco Hess <marcoh@senet.com.au> says that sometimes, the source
+    window locks in scroll mode until it reaches the top or bottom of
+    the file.
+    [Johan Vermeire <jvme@se.bel.alcatel.be> reports that
+     lowering the `glyphUpdateDelay' resource fixes this.]
+
 308 (Insert new bugs here)

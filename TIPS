@@ -214,6 +214,10 @@ In the LBL(Breakpoint Properties) panel, try LBL(Record) and LBL(End).
 You can easily resume a saved DDD VAR(session)
 by invoking DDD as KBD([ddd] =VAR(session)).
 
+If the DDD source window keeps on scrolling until the end of source is
+reached, try changing the SAMP(glyphUpdateDelay) resource.  See the
+DDD manual for details.
+
 For further DDD customization (e.g. colors), see the FILE([Ddd])
 app-defaults file from the DDD WWW Site or the DDD source
 distribution.  Copy resources to FILE(~/.[ddd]/init) and edit as desired.

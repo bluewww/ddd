@@ -93,11 +93,6 @@ detail.
     (i586-pc-linux-gnulibc1) consistently crashes if he runs it when
     no `~/.ddd/' exists.
 
-710 Marco Hess <marcoh@senet.com.au> says that sometimes, the source
-    window locks in scroll mode until it reaches the top or bottom of
-    the file.  [Changing the `glyphUpdateDelay' resource should fix
-    this; tell me if this helps.  -AZ]
-
 711 Brian Dowtin <Private_User@gilbarco.com> reports that on 
     SCO Server 5 and running DDD somehow the breakpoint pixmap
     'sticks' to the window.  Sometime after setting a breakpoint, The
