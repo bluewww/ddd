@@ -108,7 +108,7 @@ COMPRESS = @COMPRESS@
 UNCOMPRESS = @UNCOMPRESS@
 
 # The etags command.  (etags)
-ETAGS = etags
+ETAGS = etags --c++
 
 
 ## The C++ compiler.
@@ -1356,15 +1356,21 @@ $(ddd).syms: $(ddd)
 	&& $(MV) $(ddd_canonical).syms $@); true
 	@echo 'Creating $@...done'
 
-# By default, create symbol files in the background
 .PHONY: syms
-syms:   $(ddd)
-	$(MAKE) $(ddd).syms > $(ddd).syms.log 2>&1 &
+syms:   $(ddd).syms
+	@:
 
+
+
+# Create useful stuff in background
+.PHONY: stuff
+stuff: FORCE
+	$(MAKE) syms > make.log 2>&1 &
+	@:
 
 # A convient target for setting up a debugging environment.
 .PHONY: it
-it:	all cxxtest ctest syms
+it:	all cxxtest ctest stuff
 	@:
 
 
@@ -1744,7 +1750,14 @@ host.h: $(srcdir)/host.h.in config.status
 tags:	$(srcdir)/TAGS
 
 $(srcdir)/TAGS:	FORCE
-	cd $(srcdir); $(ETAGS) -o $@ *.[Ch]
+	@cd $(srcdir); \
+	if [ `ls -c TAGS *.[Ch] | head -1` != TAGS ]; then \
+	echo 'Creating $@...'; \
+	$(ETAGS) -o $@ *.[Ch]; \
+	echo 'Creating $@...done.'; \
+	else \
+	echo "'"'$@` is up to date.'; \
+	fi
 
 ## Statistics.
 # Count lines of C++/lex/yacc source code.
