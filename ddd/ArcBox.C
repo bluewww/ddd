@@ -121,7 +121,7 @@ void ArcBox::__draw(Widget w,
 
     if (space[X] > 0 && space[Y] > 0 && _length > 0)
 	XDrawArc(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
-	    space[X], space[Y], _start << 6, _length << 6); // <<6 is *64
+		 space[X], space[Y], _start * 64, _length * 64);
 }
 
 void ArcBox::dump(ostream& s) const
