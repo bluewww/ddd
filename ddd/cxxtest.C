@@ -121,7 +121,7 @@ void array_test ()
     Date dates[4];
     for (int i = 0; i < 4; i++)
     {
-	dates[0] = *date_ptrs[i];
+	dates[i] = *date_ptrs[i];
 	delete date_ptrs[i];
 	date_ptrs[i] = 0;
     }
