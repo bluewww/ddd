@@ -34,10 +34,9 @@ char value_read_rcsid[] =
 #endif
 
 //-----------------------------------------------------------------------------
-// Funktionen zum Lesen von Variablenwerten in string-Darstellung
+// Read variable values in string representation
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
 #include "value-read.h"
 #include <ctype.h>
 
@@ -50,7 +49,8 @@ char value_read_rcsid[] =
 
 static regex RXindex("[[]-?[0-9][0-9]*].*");
 
-// ***************************************************************************
+
+// Determine the type of VALUE.
 DispValueType determine_type (string value)
 {
     read_leading_blanks (value);
@@ -140,7 +140,6 @@ DispValueType determine_type (string value)
     return Simple;
 }
 
-// ***************************************************************************
 
 static void read_token(const char *value, int& pos);
 static void read_leading_junk(string& value);
@@ -189,6 +188,7 @@ static void read_up_to(const char *value, int& pos, char* delim)
     return;
 }
 
+// Read a string enclosed in DELIM.
 static void read_string(const char *value, int& pos, char delim)
 {
     if (value[pos] == '\0')
@@ -218,6 +218,7 @@ static void read_string(const char *value, int& pos, char delim)
 }
 
 
+// Read a C-like token.
 static void read_token(const char *value, int& pos)
 {
     if (value[pos] == '\0')
@@ -290,6 +291,7 @@ static void read_token(const char *value, int& pos)
     }
 }
 
+// Read next token from VALUE.
 string read_token(string& value)
 {
     if (value == "")
@@ -304,6 +306,7 @@ string read_token(string& value)
     return token;
 }
 
+// Read a simple value from VALUE.
 string read_simple_value(string& value)
 {
     // Read values up to [)}],\n]
@@ -327,14 +330,13 @@ string read_simple_value(string& value)
     return ret;
 }
 
-// ***************************************************************************
+// Read a pointer value.
 string read_pointer_value (string& value)
 {
     return read_simple_value (value);
 }
 
-// ***************************************************************************
-// Bei Misserfolg false
+// Read the beginning of an array from VALUE.  Return false iff failure.
 bool read_array_begin (string& value)
 {
     read_leading_blanks (value);
@@ -374,7 +376,7 @@ bool read_array_begin (string& value)
     return true;
 }
 
-// ***************************************************************************
+// Read next array element from VALUE.  Return false iff done.
 bool read_array_next (string& value)
 {
     bool following = false;
@@ -423,7 +425,7 @@ bool read_array_next (string& value)
     return following;		// Anything else except `\n': array is done.
 }
 
-// ***************************************************************************
+// Read end of array from VALUE.  Return false iff done.
 bool read_array_end (string& value)
 {
     read_leading_junk (value);
@@ -463,26 +465,25 @@ bool read_array_end (string& value)
 }
 
 
-// ***************************************************************************
-// Bei Misserfolg false
+// Read the beginning of a struct from VALUE.  Return false iff failure.
 bool read_str_or_cl_begin (string& value)
 {
     return read_array_begin(value);
 }
 
-// ***************************************************************************
+// Read next struct element from VALUE.  Return false iff done.
 bool read_str_or_cl_next (string& value)
 {
     return read_array_next(value);
 }
 
-// ***************************************************************************
+// Read end of struct from VALUE.  Return false iff done.
 bool read_str_or_cl_end (string& value)
 {
     return read_array_end(value);
 }
 
-// ***************************************************************************
+// Skip `members of SUBCLASS:' in VALUE.  Return false iff failure.
 bool read_members_of_xy (string& value)
 {
     static regex RXmembers_of_nl("members of [^\n]+: ?\n");
@@ -497,8 +498,6 @@ bool read_members_of_xy (string& value)
     return false;
 }
 
-
-// ***************************************************************************
 // Read member name; return "" upon error
 string read_member_name (string& value)
 {
@@ -536,7 +535,7 @@ string read_member_name (string& value)
     return member_name;
 }
 
-// Return "" upon error
+// Read vtable entries.  Return "" upon error.
 string read_vtable_entries (string& value)
 {
     static regex RXvtable_entries(".*[0-9][0-9]* vtable entries,.*");
@@ -552,19 +551,15 @@ string read_vtable_entries (string& value)
 }
 
 
-// ***************************************************************************
-// true, wenn name in spitzen Klammern (z.B.: "<>" oder "<Basis>") 
-// 
+// Return true iff NAME is a baseclass name (enclosed in <>).
 bool is_BaseClass_name (const string& name)
 {
     static regex RXbase_class_name ("(<>|<[A-Za-z_][A-Za-z0-9_< >,:]*>)");
     return name.matches (RXbase_class_name);
 }
 
-// ***************************************************************************
-// schneidet vom full_name die letzte Komponente ab
-// d.h.: "blabla.<Basis>" wird zu "blabla"; "blabla-><Basis>" wird zu "*blabla"
-// 
+// Remove baseclass names. 
+// "foo.<Base>" becomes "foo"; "blabla-><Base>" becomes "*foo"
 void cut_BaseClass_name (string& full_name)
 {
     int index = full_name.index (".<", -1);
@@ -591,6 +586,7 @@ static void read_leading_junk (string& value)
     }
 }
 
+// Read leading M2/M3 comment.
 static void read_leading_comment (string& value)
 {
     int i = 2;
