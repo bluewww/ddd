@@ -801,6 +801,7 @@ VSL_OBJECTS = \
 	NameNode.$(OBJEXT)   \
 	ListNode.$(OBJEXT)   \
 	TestNode.$(OBJEXT)   \
+	ThemeVSLL.$(OBJEXT)  \
 	TrueNode.$(OBJEXT)   \
 	VSEFlags.$(OBJEXT)   \
 	VSLArgList.$(OBJEXT) \

@@ -92,20 +92,22 @@ VSLLib::VSLLib()
 
 
 // Init VSL library and read from file
-VSLLib::VSLLib(const string& lib_name, unsigned optimize)
+VSLLib::VSLLib(const string& lib_name, unsigned optimizeMode)
     : _lib_name(lib_name), _first(0), _last(0)
 {
     initHash();
-    update(lib_name, optimize);
+    update(lib_name);
+    optimize(optimizeMode);
 }
 
 
 // Init VSL library and read from stream
-VSLLib::VSLLib(istream& i, unsigned optimize)
+VSLLib::VSLLib(istream& i, unsigned optimizeMode)
     : _lib_name(""), _first(0), _last(0)
 {
     initHash();
-    update(i, optimize);
+    update(i);
+    optimize(optimizeMode);
 }
 
 
@@ -276,20 +278,40 @@ void VSLLib::output(Box *&a)
     
 
 // Destructor
-VSLLib::~VSLLib()
+void VSLLib::clear()
 {
     for (int i = 0; i < hashSize; i++)
 	if (defs[i] != 0)
+	{
 	    delete defs[i];
+	    defs[i] = 0;
+	}
+
+    _first = 0;
+    _last  = 0;
+}
+
+VSLLib::~VSLLib()
+{
+    clear();
 }
 
 
 // Duplication
 VSLLib::VSLLib(const VSLLib& lib)
-    : _lib_name(lib._lib_name),
+    : _lib_name(),
       _first(0),
       _last(0)
 {
+    init_from(lib);
+}
+
+void VSLLib::init_from(const VSLLib& lib)
+{
+    _lib_name = lib._lib_name;
+    _first = 0;
+    _last  = 0;
+
     for (int i = 0; i < hashSize; i++)
     {
 	defs[i] = 0;
@@ -304,6 +326,8 @@ VSLLib::VSLLib(const VSLLib& lib)
 		defs[i] = new_dl;
 	    if (prev_dl != 0)
 		prev_dl->next() = new_dl;
+
+	    prev_dl = new_dl;
 	}
     }
 
@@ -334,6 +358,16 @@ VSLLib *VSLLib::dup() const
 {
     return new VSLLib(*this);
 }
+
+// Assignment
+VSLLib& VSLLib::operator = (const VSLLib& lib)
+{
+    clear();
+    init_from(lib);
+
+    return *this;
+}
+
 
 
 // Binder
@@ -641,9 +675,12 @@ void VSLLib::optimize(unsigned mode)
 	becomes much larger and evaluation speeds up slightly.
     */
 
-    bind();
-    resolveNames();
-    compilePatterns();
+    if (mode & _Basics)
+    {
+	bind();
+	resolveNames();
+	compilePatterns();
+    }
 
     if (mode & _Cleanup)
 	cleanup();

@@ -117,7 +117,7 @@ struct VSLVarDefinition {
 // Read library
 
 // Update library from stream
-void VSLLib::update(istream& s, unsigned optimizeMode)
+void VSLLib::update(istream& s)
 {
     vsllib = this;
 
@@ -135,16 +135,13 @@ void VSLLib::update(istream& s, unsigned optimizeMode)
 	cout.flush();
     }
 
-    // Post-processing (Binding, optimization, etc.)
-    optimize(optimizeMode);
-
     if (VSEFlags::verbose)
 	cout << ", done.\n";
 }
 
 
 // Update library from file
-void VSLLib::update(const string& lib_name, unsigned optimizeMode)
+void VSLLib::update(const string& lib_name)
 {
     if (VSEFlags::verbose)
     {
@@ -164,7 +161,7 @@ void VSLLib::update(const string& lib_name, unsigned optimizeMode)
 	assert(vslstream != 0);
 
 	topstack = 0;
-	update(*vslstream, optimizeMode);
+	update(*vslstream);
     }
 }
 

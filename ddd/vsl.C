@@ -29,6 +29,9 @@
 char vsl_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+#include "MemCheckD.h"
+
 #include "assert.h"
 #include <iostream.h>
 #include "strclass.h"
@@ -44,7 +47,7 @@ char vsl_rcsid[] =
 #include "DocSpace.h"           // DocSpace Widget
 
 #include "bool.h"
-#include "VSLLib.h"
+#include "ThemeVSLL.h"
 #include "VSLDef.h"
 #include "VSEFlags.h"
 
@@ -211,27 +214,30 @@ int main(int argc, char *argv[])
 	if (library_file[0] == '-')
 	{
 	    cout << argv[0] << ": usage: " << argv[0] << " [options] "
-		<< "vsllib\n\n" << VSEFlags::explain();
+		<< "VSLLIB [THEMES...]\n\n" << VSEFlags::explain();
 
 	    exit(EXIT_FAILURE);
 	}
     }
-	
+
     // Create pic in THEBOX
     {
 	// Read library
 	long starttime = clock();
-	VSLLib lib(library_file, VSEFlags::optimize_mode());
+	ThemedVSLLib lib(library_file, VSEFlags::optimize_mode());
 	long endtime = clock();
 
 	assert(lib.OK());
 
-	VSLLib *lib2 = lib.dup();
-	assert(lib2->OK());
-
 	if (VSEFlags::show_optimizing_time)
 	    cout << "\nRead & optimizing time: " 
 		<< (endtime - starttime) / 1000 << " ms\n";
+
+	// Build themes
+	StringArray themes;
+	for (int i = 2; i < argc; i++)
+	    themes += argv[i];
+	lib.set_theme_list(themes);
 
 	if (VSEFlags::assert_library_ok)
 	    assert(lib.OK());
@@ -246,7 +252,7 @@ int main(int argc, char *argv[])
 	    return EXIT_SUCCESS;
 
 	// Fetch last function def (typically "main")
-	VSLDef* def = lib.lastdef();
+	VSLDef *def = lib.lastdef();
 
 	if (def == 0)
 	{
