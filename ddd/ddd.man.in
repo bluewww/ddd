@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-12\-06" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-12\-16" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -857,9 +857,10 @@ console.  As an alternative, \s-1@DDD@\s+1 can also invoke an
 shown.  To activate the execution window, select `\fBProgram\(->Run in
 Execution Window\fR'.
 .PP
-While the execution window is active, \s-1@DDD@\s+1 invokes your
-program such that its standard input, output, and error streams are
-redirected to the execution window.  Note that the device
+The execution window is opened automatically as soon as you start the
+debugged program.  While the execution window is active, \s-1@DDD@\s+1
+redirects the standard input, output, and error streams of your
+program to the execution window.  Note that the device
 `\fB/dev/tty\fR' still refers to the debugger console, \fInot\fR the
 execution window.
 .PP
@@ -871,7 +872,7 @@ redirect the standard error output to the debugger console, use `\fB2>
 /dev/tty\fR' (assuming the inferior debugger and/or your \s-1UNIX\s+1
 shell support standard error redirection).
 .PP
-The execution window is not available in \s-1JDB\s+1 and \s-1Perl\s+1.
+The execution window is not available in \s-1JDB\s+1.
 .\"
 .\"
 .SS "Attaching to a Running Process"

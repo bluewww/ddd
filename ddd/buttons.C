@@ -224,6 +224,8 @@ static string gdbHelpName(Widget widget)
 
 static string gdbHelp(string original_command)
 {
+    string help = NO_GDB_ANSWER;
+
     translate_command(original_command);
 
     string command = original_command;
@@ -244,9 +246,9 @@ static string gdbHelp(string original_command)
 	// Perl help has only one argument
 	if (command.contains(rxwhite))
 	    command = command.before(rxwhite);
+	if (is_run_cmd(command))
+	    help = "Restart debugged program";
     }
-
-    string help = NO_GDB_ANSWER;
 
     if (is_graph_cmd(command))
     {

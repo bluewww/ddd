@@ -429,6 +429,8 @@ static void read_token(const char *value, int& pos)
 		string name(value + start, pos - start);
 		if (name == "record")
 		    read_up_to(value, pos, "end");
+		else if (name == "object")
+		    read_up_to(value, pos, "end");
 		else if (name == "RECORD")
 		    read_up_to(value, pos, "END");
 		else if (name == "OBJECT")
@@ -472,7 +474,23 @@ string read_token(string& value)
     return token;
 }
 
-bool is_ending(const string& value)
+static bool is_ending_with_end(const string& value)
+{
+    int i = 0;
+    while (i < int(value.length()) && isspace(value[i]))
+	i++;
+    if (i >= int(value.length()))
+	return false;		// At end of value
+
+    return value.contains("end\n", i)
+	|| value.contains("END\n", i)
+	|| value.contains("end;", i)
+	|| value.contains("END;", i)
+	|| value.from(i) == "end"
+	|| value.from(i) == "END";
+}
+
+static bool is_ending_with_paren(const string& value)
 {
     int i = 0;
     while (i < int(value.length()) && isspace(value[i]))
@@ -482,11 +500,12 @@ bool is_ending(const string& value)
 
     return value.contains('}', i)
 	|| value.contains(')', i)
-	|| value.contains(']', i)
-	|| value.contains("end\n", i)
-	|| value.contains("END\n", i)
-	|| value.from(i) == "end"
-	|| value.from(i) == "END";
+	|| value.contains(']', i);
+}
+
+bool is_ending(const string& value)
+{
+    return is_ending_with_end(value) || is_ending_with_paren(value);
 }
 
 bool is_delimited(const string& value)
@@ -618,11 +637,7 @@ bool read_array_next(string& value)
     {
 	value = value.after(0);
 	read_leading_junk (value);
-	return value != "" 
-	    && !value.contains("END", 0)
-	    && !value.contains('}', 0)
-	    && !value.contains(')', 0)
-	    && !value.contains(']', 0); // More stuff follows
+	return value != "" && !is_ending(value); // More stuff follows
     }
 
     if (value.contains('{', 0)
@@ -644,27 +659,13 @@ void read_array_end(string& value)
 {
     read_leading_junk(value);
 
-    if (value.contains("end\n", 0))
+    if (is_ending_with_end(value))
     {
-	value = value.after("end");
+	value = value.from(int(strlen("end")));
 	return;
     }
 
-    if (value.contains("END\n", 0))
-    {
-	value = value.after("END");
-	return;
-    }
-
-    if (value.contains("END;", 0))
-    {
-	value = value.after("END");
-	return;
-    }
-
-    if (value.contains('}', 0)
-	|| value.contains(')', 0)
-	|| value.contains(']', 0))
+    if (is_ending_with_paren(value))
     {
 	value = value.after(0);
 
@@ -856,6 +857,13 @@ string read_member_name (string& value)
 	    m = m.before("(");
 	if (m != "")
 	    member_name = m;
+    }
+
+    if (gdb->type() == PERL && 
+	member_name.contains('\'', 0) && member_name.contains('\'', -1))
+    {
+	// Some Perl debugger flavours quote the member name.
+	member_name = unquote(member_name);
     }
 
     read_leading_junk (member_name);

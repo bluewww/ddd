@@ -335,6 +335,11 @@ static int set_term_env(const string& cmd, const string& term_type,
 }
 
 
+static bool has_redirection(const string& args, const string& redirection)
+{
+    return args.contains(redirection, 0) || args.contains(" " + redirection);
+}
+
 // Set debugger TTY to TTY_NAME and terminal type to TERM_TYPE.
 // Use without arguments to silently restore original TTY.
 static int gdb_set_tty(string tty_name = "",
@@ -446,10 +451,24 @@ static int gdb_set_tty(string tty_name = "",
 
     case PERL:
     {
+	// Set remote terminal type
 	string cmd = "$ENV{'TERM'} = " + quote(term_type, '\'');
 	int ok = set_term_env(cmd, term_type, origin, silent);
 	if (!ok)
 	    return ok;
+
+	if (tty_name == gdb->slave_tty())
+	    tty_name = "/dev/tty";
+
+	cmd = "";
+	if (!has_redirection(gdb->path(), "<"))
+	    cmd += "open(STDIN, \"<" + tty_name + "\"); ";
+	if (!has_redirection(gdb->path(), ">"))
+	    cmd += "open(STDOUT, \">" + tty_name + "\"); ";
+	if (!has_redirection(gdb->path(), "2>"))
+	    cmd += "open(STDERR, \">" + tty_name + "\"); ";
+
+	gdb_question(cmd);
     }
     break;
 
@@ -463,9 +482,17 @@ static int gdb_set_tty(string tty_name = "",
     return 0;
 }
 
-static bool has_redirection(const string& args, const string& redirection)
+// Reset TTY settings (after a restart, for instance)
+void gdb_reset_exec_tty()
 {
-    return args.contains(redirection, 0) || args.contains(" " + redirection);
+    if (separate_tty_pid > 0)
+    {
+	gdb_set_tty(separate_tty_name, app_data.term_type);
+    }
+    else
+    {
+	gdb_set_tty();
+    }
 }
 
 // Add redirection commands for SH-like shell
@@ -524,7 +551,7 @@ static void redirect_process(string& command,
 {
     // Try `tty' command to perform redirection
     int ret = gdb_set_tty(tty_name, app_data.term_type, origin);
-    if (app_data.use_tty_command && ret == 0)
+    if ((gdb->type() == PERL || app_data.use_tty_command) && ret == 0)
 	return;
 
     // Use redirection directives
@@ -594,6 +621,13 @@ static void redirect_process(string& command,
 	break;
     }
 
+    case PERL:
+    {
+	// In Perl, COMMAND is always interpreted by /bin/sh.
+	add_sh_redirection(gdb_redirection, tty_name, args);
+	break;
+    }
+
     case DBX:
 	// DBX has its own parsing, in several variants.
 	if (gdb->has_regs_command())
@@ -634,9 +668,6 @@ static void redirect_process(string& command,
 
     case PYDB:
 	break;			// No redirection in PYDB (for now)
-
-    case PERL:
-	break;			// No redirection in Perl (for now)
     }
 
     string new_args;
@@ -651,7 +682,14 @@ static void redirect_process(string& command,
     if (gdb_redirection != "")
 	gdb_out_ignore = " " + gdb_redirection;
 
-    command = base + " " + new_args;
+    if (gdb->type() == PERL)
+    {
+	command = gdb->run_command(new_args);
+    }
+    else
+    {
+	command = base + " " + new_args;
+    }
 }
 
 static void unredirect_reply(const string& answer, void *)
@@ -669,12 +707,26 @@ static void unredirect_process(string& command,
 	string base;
 	string args;
 	get_args(command, base, args);
-	if (has_redirection(args, gdb_redirection) && gdb->type() == GDB)
+	if (has_redirection(args, gdb_redirection))
 	{
-	    static string empty;
-	    args.gsub(gdb_redirection, empty);
-	    strip_space(args);
-	    gdb_command("set args " + args, origin, unredirect_reply);
+	    if (gdb->type() == GDB)
+	    {
+		static string empty;
+		args.gsub(gdb_redirection, empty);
+		strip_space(args);
+		gdb_command("set args " + args, origin, unredirect_reply);
+	    }
+	    else if (gdb->type() == PERL)
+	    {
+		// If we start Perl with I/O redirection, redirection
+		// after exec remains active until explicitly
+		// redirected to /dev/tty.
+		string new_args;
+		add_sh_redirection(new_args, "/dev/tty", args);
+		if (args != "")
+		    new_args = new_args + " " + args;
+		command = gdb->run_command(new_args);
+	    }
 	}
     }
 
@@ -916,6 +968,9 @@ void kill_exec_tty(bool killed)
 	{
 	    kill(separate_tty_pid, SIGHUP);
 	}
+
+	// Tell GDB not to redirect its process I/O
+	gdb_set_tty();
     }
 
     separate_tty_pid    = 0;

@@ -41,6 +41,7 @@
 void startup_exec_tty();
 void startup_exec_tty(string& command, Widget origin = 0);
 void kill_exec_tty(bool killed = false);
+void gdb_reset_exec_tty();
 
 // TTY pid (0: not initialized, -1: failed)
 extern pid_t exec_tty_pid();

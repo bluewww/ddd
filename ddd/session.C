@@ -998,6 +998,9 @@ void RestartDebuggerCB(Widget, XtPointer, XtPointer)
     static string restart_commands;
     unsigned long flags = 0;
 
+    if (gdb->type() == PERL)
+	flags |= DONT_RELOAD_FILE;
+
     (void) get_restart_commands(restart_commands, flags);
     app_data.restart_commands = restart_commands;
 

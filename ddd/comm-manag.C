@@ -64,6 +64,7 @@ char comm_manager_rcsid[] =
 #include "ddd.h"
 #include "disp-read.h"
 #include "editing.h"
+#include "exectty.h"
 #include "exit.h"
 #include "file.h"
 #include "history.h"
@@ -418,6 +419,12 @@ inline String str(String s)
     return s != 0 ? s : "";
 }
 
+static void StartDoneCB(const string& /* answer */, void * /* qu_data */)
+{
+    // If we have an execution tty, use it.
+    gdb_reset_exec_tty();
+}
+
 void start_gdb(bool config)
 {
     // Register asynchronous answer handler
@@ -641,6 +648,7 @@ void start_gdb(bool config)
     c.verbose  = false;
     c.prompt   = false;
     c.check    = true;
+    c.callback = StartDoneCB;
     gdb_command(c);
 }
 
@@ -1302,6 +1310,13 @@ void send_gdb_command(string cmd, Widget origin,
 
 	// Any later input is user interaction.
 	gdb_input_at_prompt = false;
+    }
+
+    if (calls_function(cmd))
+    {
+	// Function call - later input may be user interaction
+	gdb_input_at_prompt = false;
+	debuggee_running    = true;
     }
 
     if (undo_buffer.showing_earlier_state() && !cmd_data->new_exec_pos)
@@ -2088,8 +2103,38 @@ static void command_completed(void *data)
 // Fetch display numbers from ARG into NUMBERS
 static bool read_displays(string arg, IntArray& numbers, bool verbose)
 {
+    IntArray displays;
+    data_disp->get_all_display_numbers(displays);
+
     while (has_nr(arg))
-	numbers += atoi(read_nr_str(arg));
+    {
+	string number = read_nr_str(arg);
+	int nr = atoi(number);
+	bool found = false;
+	for (int i = 0; !found && i < displays.size(); i++)
+	{
+	    if (displays[i] == nr)
+	    {
+		// Found a display with this number
+		numbers += nr;
+		found = true;
+	    }
+	}
+
+	if (!found)
+	{
+	    int disp_nr = data_disp->display_number(number, false);
+	    if (disp_nr != 0)
+	    {
+		// Found a display with this name
+		numbers += disp_nr;
+		found = true;
+	    }
+	}
+
+	if (!found)
+	    numbers += nr;	// Use given (probably invalid) display number
+    }
 
     strip_space(arg);
     if (arg != "")

@@ -73,6 +73,12 @@ $g = newprint("Greetings");
 &$g("earthlings");
 
 
+# I/O
+print "What's your name? ";
+chop($name = <>);
+print "Hello, $name!\n";
+
+
 # Globs
 $fh = *STDOUT;
 

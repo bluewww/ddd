@@ -20,12 +20,18 @@ DDD 3.1.2
 
 DDD 3.1.2 fixes more minor bugs in DDD 3.1:
 
-- The splash screen works with C++ compilers other than GCC.
-- Under certain circumstances, show/hide can fail with deeply nested
-  structures.
+- Show/Hide works properly with deeply nested substructures.
+- Struct members whose name starts with 'END' are properly handled.
+- [CC only] The splash screen works with C++ compilers other than GCC.
+- [Perl only] Arguments of `Program->Run' are no longer taken apart.
+- [Perl only] You can redirect I/O in arguments of `Program->Run'.
+- [Perl only] The separate execution window can now be used with Perl.
+- [Java only] DDD uses $CLASSPATH to lookup Java classes on start-up.
+- [DBX only] DDD supports execution positions as reported by DBX on AIX.
 
-There are no new features in DDD 3.1.2, so unless you suffer from one
-of the bugs listed above, feel free to upgrade at some later time.
+There are no other features in DDD 3.1.2, so unless you use Perl or
+suffer from one of the bugs listed above, feel free to upgrade at some
+later time.
 
 
 DDD 3.1.1
