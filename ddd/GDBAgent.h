@@ -525,7 +525,7 @@ public:
     bool has_temporary_breakpoints() const
     {
 	return type() == GDB || type() == XDB || type() == PYDB || 
-	       has_when_command();
+	       has_when_command() || type() == PERL;
     }
 
     // True if debugger supports breakpoint conditions
@@ -533,6 +533,13 @@ public:
     {
 	return type() == GDB || type() == XDB || 
 	       type() == DBX || type() == PYDB || type() == PERL;
+    }
+
+    // True if debugger supports breakpoint commands
+    bool has_breakpoint_commands() const
+    {
+	return type() == GDB || type() == XDB || 
+	       has_when_command() || type() == PERL;
     }
 
     // True if debugger has typed pointers, as in `(TYPE)0x0'

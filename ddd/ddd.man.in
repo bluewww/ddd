@@ -671,15 +671,18 @@ the ignore count; the program stops only if the ignore count is zero.
 Note: \s-1JDB\s+1, Perl and some \s-1DBX\s+1 variants do not support
 breakpoint ignore counts.
 .\"
-.SS "Breakpoint Commands"
+.SS "Editing Breakpoint Commands"
 .\"
-Note: Breakpoint commands are currently available on \s-1GDB\s+1 only.
-.PP
 Using the `\fBCommands\fR' buttons of the `\fBBreakpoint
-Properties\fR' panel, you can record and edit commands to be executed
-when the breakpoint is hit.
+Properties\fR' panel, you can edit commands to be executed when the
+breakpoint is hit.
 .PP
-To record a command sequence, follow these steps:
+To edit breakpoint commands, click on `\fBEdit \s-2>>\s+2\fR' and
+enter the commands in the commands editor.  When done with editing,
+click on `\fBEdit \s-2<<\s+2\fR' to close the commands editor.
+.PP
+Using \s-1GDB\s+1, you can also \fIrecord\fR a command sequence to be
+executed.  To record a command sequence, follow these steps:
 .IP \(bu 2
 Click on `\fBRecord\fR' to begin the recording of the breakpoint commands.
 .IP \(bu 2
@@ -692,10 +695,11 @@ To stop the recording, click on `\fBEnd\fR' or enter `\fBend\fR' at
 the \s-1GDB\s+1 prompt.  To \fIcancel\fR the recording, click on
 `\fBInterrupt\fR' or press \s-1\fBESC\fR\s+1.
 .IP \(bu 2
-Click on `\fBEdit \s-2>>\s+2\fR' to edit the recorded commands.
-When done with editing, click on `\fBEdit \s-2<<\s+2\fR' to close the
-commands editor.
+You can edit the breakpoint commands just recorded using `\fBEdit
+\s-2>>\s+2\fR'.
 .PP
+Note: \s-1JDB\s+1, \s-1PYDB\s+1, and some \s-1DBX\s+1 variants do not
+support breakpoint commands.
 .\"
 .\"
 .SS "Moving and Copying Breakpoints"

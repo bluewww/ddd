@@ -55,6 +55,7 @@ char BreakPoint_rcsid[] =
 #include "GDBAgent.h"
 #include "regexps.h"
 #include "index.h"
+#include "value-read.h"
 
 #if RUNTIME_REGEX
 static regex rxnl_int ("\n[1-9]");
@@ -544,6 +545,8 @@ void BreakPoint::process_perl(string& info_output)
 	}
     }
 
+    static StringArray empty;
+    mycommands = empty;
     myline_nr = atoi(info_output);
     info_output = info_output.after('\n');
     while (info_output.contains("  ", 0))
@@ -563,9 +566,26 @@ void BreakPoint::process_perl(string& info_output)
 	}
 	else if (info.contains("action: ", 0))
 	{
-	    string command = info.after(':');
-	    strip_space(command);
-	    mycommands += command;
+	    string commands = info.after(':');
+	    strip_space(commands);
+
+	    string command = "";
+	    while (commands != "")
+	    {
+		string token = read_token(commands);
+		if (token != ";")
+		    command += token;
+
+		if (token == ";" || commands == "")
+		{
+		    strip_space(command);
+		    if (command != "")
+		    {
+			mycommands += command;
+			command = "";
+		    }
+		}
+	    }
 	}
 	else
 	{

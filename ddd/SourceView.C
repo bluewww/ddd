@@ -726,6 +726,17 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		command += " " + cond;
 
 	    gdb_command(command, w);
+
+	    if (temp)
+	    {
+		// Perl actions include Perl commands, but not
+		// debugger commands.  Use an auto-command instead.
+		string del = "d " + address;
+		add_auto_command_prefix(del);
+		command = "a " + address + " " + del;
+		gdb_command(command, w);
+	    }
+
 	    break;
 	}
 	}
@@ -983,7 +994,7 @@ bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
 	move_breakpoint_properties(bp_nr, new_bp_nr);
 
 	// Delete old breakpoint
-	delete_bp(bp_nr);
+	delete_bp(bp_nr, w);
     }
 
     return true;
@@ -1050,7 +1061,7 @@ void SourceView::_set_bps_cond(IntArray& _nrs, string cond,
 		move_breakpoint_properties(bp_nr, new_bp_nr);
 
 		// Delete old breakpoint
-		delete_bp(bp_nr);
+		delete_bp(bp_nr, w);
 
 		// Next breakpoint will get the next number
 		count++;
@@ -5773,10 +5784,11 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     set_sensitive(XtParent(info->condition), gdb->has_breakpoint_conditions());
 
     bool can_record = gdb->type() == GDB && !gdb->recording();
+    bool can_edit   = gdb->has_breakpoint_commands() && !gdb->recording();
     set_sensitive(info->record,    can_record);
     set_sensitive(info->end,       gdb->recording());
-    set_sensitive(info->edit,      can_record);
-    set_sensitive(info->editor,    can_record);
+    set_sensitive(info->edit,      can_edit);
+    set_sensitive(info->editor,    can_edit);
 
     if (info->sync_commands)
     {
@@ -6148,21 +6160,23 @@ void SourceView::MakeBreakpointsTempCB(Widget, XtPointer client_data,
 
 
 // Delete Breakpoint
-void SourceView::DeleteBreakpointsCB(Widget, XtPointer client_data, XtPointer)
+void SourceView::DeleteBreakpointsCB(Widget w, XtPointer client_data, 
+				     XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
-    delete_bps(info->nrs);
+    delete_bps(info->nrs, w);
 }
 
 // Enable Breakpoints
-void SourceView::EnableBreakpointsCB(Widget, XtPointer client_data, XtPointer)
+void SourceView::EnableBreakpointsCB(Widget w, XtPointer client_data,
+				     XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
-    enable_bps(info->nrs);
+    enable_bps(info->nrs, w);
 }
 
 // Disable Breakpoints
@@ -6278,10 +6292,73 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 		continue;	// Commands unchanged
 	}
 
-	gdb_command("commands " + itostring(nrs[i]), origin);
+	// Get action for non-GDB types
+	string action = "";
 	for (int j = 0; j < commands.size(); j++)
-	    gdb_command(commands[j], origin);
-	gdb_command("end", origin);
+	{
+	    if (j > 0 && 
+		!action.contains(";", -1) && !action.contains("; ", -1))
+	    {
+		action += "; ";
+	    }
+
+	    action += commands[j];
+	}
+
+	switch (gdb->type())
+	{
+	case GDB:
+	{
+	    gdb_command("commands " + itostring(nrs[i]), origin);
+	    for (int j = 0; j < commands.size(); j++)
+		gdb_command(commands[j], origin);
+	    gdb_command("end", origin);
+	    break;
+	}
+
+	case DBX:
+	{
+	    // Use `when' to set breakpoint commands.
+	    if (gdb->has_when_semicolon())
+		action += "; ";
+
+	    string cmd;
+	    if (bp->func() != "")
+		cmd = "when in " + bp->func();
+	    else
+	    {
+		gdb_command("file " + bp->file_name());
+		cmd = "when at " + itostring(bp->line_nr());
+	    }
+
+	    cmd += " { " + action + " }";
+	    gdb_command(cmd, origin);
+	    break;
+	}
+
+	case XDB:
+	{
+	    // Replace breakpoint by new one with command.
+	    string cmd = "b " + 
+		bp->file_name() + ":" + itostring(bp->line_nr()) + 
+		" {" + action + "}";
+	    gdb_command(cmd, origin);
+	    delete_bp(bp->number(), origin);
+	    break;
+	}
+
+	case PERL:
+	{
+	    // Just set an action.
+	    gdb_command("f " + bp->file_name(), origin);
+	    string cmd = "a " + itostring(bp->line_nr()) + " " + action;
+	    gdb_command(cmd, origin);
+	    break;
+	}
+
+	default:
+	    assert(!gdb->has_breakpoint_commands());
+	}
     }
 }
 
