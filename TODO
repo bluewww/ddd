@@ -364,5 +364,7 @@ Volunteers for these and other projects are welcome!
         would be great if that appeared on the right-click menu when
         clicking on a variable.
 
+317 When setting a `struct' variable value, eliminate all `member = '
+    prefixes.
 
-317 (Insert new project ideas here)
+318 (Insert new project ideas here)
