@@ -41,7 +41,7 @@
 typedef VarArray<XmTextPosition> VarTextPositionArray;
 typedef DynArray<XmTextPosition> DynTextPositionArray;
 
-typedef VarIntArray TextPositionArray;
+typedef VarTextPositionArray TextPositionArray;
 
 #endif // _DDD_TextPosArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
