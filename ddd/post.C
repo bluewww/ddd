@@ -198,6 +198,8 @@ Widget post_gdb_died(string reason, int state, Widget w)
     Widget shell = find_shell(w);
     if (gdb_initialized)
     {
+	_gdb_out("\n" + reason + "\n");
+
 	String name;
 	MString msg;
 	if (exited)
@@ -207,7 +209,6 @@ Widget post_gdb_died(string reason, int state, Widget w)
 	}
 	else
 	{
-	    _gdb_out(reason + "\n");
 	    msg = rm(gdb->title() + " terminated abnormally (" + reason + ")");
 	    name = "terminated_dialog";
 	}
