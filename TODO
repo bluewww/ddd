@@ -290,7 +290,7 @@ Volunteers for these and other projects are welcome!
      debugging DBX code.
 
 121. Mirror the DDD WWW pages, using `wget' 
-     (ftp://gnjilux.cc.fer.hr/pub/unix/util/wget/)
+     (see `ftp://gnjilux.cc.fer.hr/pub/unix/util/wget/')
 
 122. Have a window that shows DDD/GDB communication, with the ability
      to modify commands before they are processed.
@@ -300,7 +300,6 @@ Volunteers for these and other projects are welcome!
 
 124* Include pictures in the PostScript copy of the DDD manual.
 
-126* `shorten' is still too slow and needs some improvements (count
-     `(' and `)' occurrences, etc.)
+126* `shorten' is needs some improvements (count `(' and `)' occurrences, etc.)
 
 127. (Insert your project idea here)
