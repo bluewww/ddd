@@ -97,9 +97,13 @@ Ddd*Separate: false
 Ddd*separateExecWindow: false
 
 
-! True if DDD windows are to be iconified/deiconified as a whole.
+! True if DDD windows are to be iconified/uniconified as a whole.
 ! If this is false, every DDD window can be iconified on its own.
 Ddd*groupIconify: false
+
+
+! True if DDD windows are to be uniconified when GDB becomes ready.
+Ddd*uniconifyWhenReady: true
 
 
 ! True if the TAB key is to complete text in all DDD windows.
@@ -2469,15 +2473,16 @@ in the status line.\n\
 ITEM If LBL(Iconify all windows at once) is set, all DDD windows are \
 iconified as a group.\n\
     Otherwise, windows are iconified separately.\n\
+ITEM If LBL(Uniconify when ready) is set, the DDD windows are \
+automatically uniconified\n\
+    when DDD becomes ready (e.g. after reaching a breakpoint).\n\
+    Otherwise, DDD windows remain iconified.\n\
 ITEM If LBL(TAB key completes in all windows) is set, the KEY(TAB) key\n\
     completes arguments in all DDD windows.\n\
     Otherwise, the KEY(TAB) key completes in the @GDB@ console only.\n\
 ITEM If LBL(Suppress X warnings) is set, X warnings are silently ignored.\n\
 ITEM If LBL(Ungrab mouse pointer) is set, DDD will automatically\n\
     ungrab the mouse pointer when interrupting a modal X application.\n\
-ITEM If LBL(Save command history on exit) is set, the command history is\n\
-    automatically saved when DDD exits.\n\
-    Otherwise, the command history is discarded.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
@@ -2510,12 +2515,12 @@ Ddd*preferences*tabCompletion.recomputeSize:	false
 
 Ddd*preferences*groupIconify.labelString:	 \
 Iconify all windows at once
+Ddd*preferences*uniconifyWhenReady.labelString:	 \
+Uniconify when ready
 Ddd*preferences*suppressWarnings.labelString:	 \
 Suppress X warnings
 Ddd*preferences*ungrabMousePointer.labelString:	 \
 Ungrab mouse pointer when interrupting modal X application
-Ddd*preferences*saveHistoryOnExit.labelString:	 \
-Save command history on exit
 
 
 Ddd*preferences*source*helpString:	\

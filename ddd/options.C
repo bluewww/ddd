@@ -361,6 +361,22 @@ void dddToggleGroupIconifyCB (Widget, XtPointer, XtPointer call_data)
     update_options();
 }
 
+void dddToggleUniconifyWhenReadyCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.uniconify_when_ready = info->set;
+
+    if (info->set)
+	set_status(DDD_NAME " windows will be uniconified automatically "
+		   "whenever " DDD_NAME " becomes ready.");
+    else
+	set_status(DDD_NAME " windows always remain iconified.");
+
+    update_options();
+}
+
 void dddSetGlobalTabCompletionCB(Widget, XtPointer client_data, XtPointer)
 {
     Boolean state = int(client_data);
@@ -1257,6 +1273,8 @@ bool save_options(unsigned long flags)
 			 app_data.all_registers) << "\n";
     os << bool_app_value(XtNgroupIconify,
 			 app_data.group_iconify) << "\n";
+    os << bool_app_value(XtNuniconifyWhenReady,
+			 app_data.uniconify_when_ready) << "\n";
     os << bool_app_value(XtNbuttonTips,
 			 app_data.button_tips) << "\n";
     os << bool_app_value(XtNvalueTips,

@@ -797,8 +797,8 @@ static MMDesc completion_menu [] =
 };
 
 static Widget group_iconify_w;
+static Widget uniconify_when_ready_w;
 static Widget suppress_warnings_w;
-static Widget save_history_on_exit_w;
 static Widget ungrab_mouse_pointer_w;
 
 static MMDesc general_preferences_menu[] = 
@@ -808,12 +808,12 @@ static MMDesc general_preferences_menu[] =
     { "tabCompletion",       MMRadioPanel,  MMNoCB, completion_menu },
     { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB },
       NULL, &group_iconify_w },
+    { "uniconifyWhenReady",  MMToggle, { dddToggleUniconifyWhenReadyCB },
+      NULL, &uniconify_when_ready_w },
     { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB },
       NULL, &suppress_warnings_w },
     { "ungrabMousePointer",  MMToggle, { dddToggleUngrabMousePointerCB },
       NULL, &ungrab_mouse_pointer_w },
-    { "saveHistoryOnExit",   MMToggle, { dddToggleSaveHistoryOnExitCB },
-      NULL, &save_history_on_exit_w },
     MMEnd
 };
 
@@ -3102,8 +3102,9 @@ void update_options()
     set_toggle(set_global_completion_w,  app_data.global_tab_completion);
     set_toggle(set_console_completion_w, !app_data.global_tab_completion);
     set_toggle(group_iconify_w,          app_data.group_iconify);
+    set_toggle(uniconify_when_ready_w,   app_data.uniconify_when_ready);
     set_toggle(ungrab_mouse_pointer_w,   app_data.ungrab_mouse_pointer);
-    set_toggle(save_history_on_exit_w,   app_data.save_history_on_exit);
+    set_toggle(suppress_warnings_w,      app_data.suppress_warnings);
 
     set_toggle(display_line_numbers_w,   app_data.display_line_numbers);
     set_toggle(cache_source_files_w,     app_data.cache_source_files);
@@ -3116,7 +3117,6 @@ void update_options()
     XtVaSetValues(tab_width_w, XmNvalue, app_data.tab_width, NULL);
 
     set_toggle(led_w,                    app_data.blink_while_busy);
-    set_toggle(suppress_warnings_w,      app_data.suppress_warnings);
 
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
     set_sensitive(set_refer_base_w, gdb->type() != GDB);
@@ -3364,11 +3364,11 @@ static void ResetGeneralPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_console_completion_w, 
 	       !initial_app_data.global_tab_completion);
     notify_set_toggle(group_iconify_w, initial_app_data.group_iconify);
+    notify_set_toggle(uniconify_when_ready_w, 
+		      initial_app_data.uniconify_when_ready);
     notify_set_toggle(suppress_warnings_w, initial_app_data.suppress_warnings);
     notify_set_toggle(ungrab_mouse_pointer_w, 
 		      initial_app_data.ungrab_mouse_pointer);
-    notify_set_toggle(save_history_on_exit_w, 
-		      initial_app_data.save_history_on_exit);
 }
 
 static bool general_preferences_changed()
@@ -3380,11 +3380,11 @@ static bool general_preferences_changed()
 	|| app_data.global_tab_completion != 
 	    initial_app_data.global_tab_completion
 	|| app_data.group_iconify != initial_app_data.group_iconify
+	|| app_data.uniconify_when_ready != 
+	    initial_app_data.uniconify_when_ready
 	|| app_data.suppress_warnings != initial_app_data.suppress_warnings
 	|| app_data.ungrab_mouse_pointer != 
-	    initial_app_data.ungrab_mouse_pointer
-	|| app_data.save_history_on_exit != 
-	    initial_app_data.save_history_on_exit;
+	    initial_app_data.ungrab_mouse_pointer;
 }
 
 static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
@@ -4402,6 +4402,13 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 
 	// We don't exit and we don't restart
 	ddd_is_exiting = ddd_is_restarting = false;
+
+	if (app_data.uniconify_when_ready && userInteractionSeen())
+	{
+	    // Uniconify the command shell.  If `iconify all windows
+	    // at once' is set, this also uniconifies the other windows.
+	    popup_shell(command_shell);
+	}
     }
 
 

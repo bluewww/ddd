@@ -169,6 +169,8 @@
 #define XtCFindWordsOnly         "FindWordsOnly"
 #define XtNgroupIconify          "groupIconify"
 #define XtCGroupIconify          "GroupIconify"
+#define XtNuniconifyWhenReady    "uniconifyWhenReady"
+#define XtCUniconifyWhenReady    "UniconifyWhenReady"
 #define XtNglobalTabCompletion   "globalTabCompletion"
 #define XtCGlobalTabCompletion   "GlobalTabCompletion"
 #define XtNsaveHistoryOnExit     "saveHistoryOnExit"
@@ -323,6 +325,7 @@ struct AppData {
     Boolean panned_graph_editor;
     Boolean find_words_only;
     Boolean group_iconify;
+    Boolean uniconify_when_ready;
     Boolean global_tab_completion;
     Boolean save_history_on_exit;
     Boolean cache_source_files;

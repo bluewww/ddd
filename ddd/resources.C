@@ -734,6 +734,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNuniconifyWhenReady,
+	XtCUniconifyWhenReady,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, uniconify_when_ready),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNglobalTabCompletion,
 	XtCGlobalTabCompletion,
 	XtRBoolean,
