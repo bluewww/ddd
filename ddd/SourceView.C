@@ -1433,6 +1433,8 @@ String SourceView::read_indented(string& file_name, long& length,
     }
 
     // At this point, we have a source text.
+    file_name = full_file_name;
+
     // Determine text length and number of lines
     int lines = 0;
     for (t = 0; t < length; t++)
