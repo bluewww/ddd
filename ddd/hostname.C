@@ -110,14 +110,15 @@ char *hostname()
 }
 
 // Return a fully qualified name for the current host
-static char *_fullhostname()
+static char *_fullhostname(char *host)
 {
-    char *name = hostname();
-    if (strchr(name, '.'))
-	return name;		// Name already qualified (this is weird)
+    if (host == 0)
+	host = hostname();
+    if (strchr(host, '.'))
+	return host;		// HOST already qualified
 
 #ifdef HAVE_GETHOSTBYNAME
-    struct hostent *h = gethostbyname(name);
+    struct hostent *h = gethostbyname(host);
     if (h)
     {
 	// Check official name
@@ -143,17 +144,23 @@ static char *_fullhostname()
     }
 #endif
 
-    return name;
+    // Keep on using this host name
+    return host;
 }
 
 
 // Return and cache a fully qualified name for the current host
-char *fullhostname()
+char *fullhostname(char *host)
 {
+    // Buffer for local host name
     static char *name = 0;
-    if (name)
+
+    if (name && host == 0)
 	return name;
 
-    name = _fullhostname();
-    return name = strcpy(new char[strlen(name) + 1], name);
+    char *n = _fullhostname(host);
+    if (host == 0)
+	return name = strcpy(new char[strlen(n) + 1], n);
+    else
+	return n;
 }

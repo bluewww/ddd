@@ -29,8 +29,11 @@
 #ifndef _DDD_hostname_h
 #define _DDD_hostname_h
 
-extern char *hostname();	// Return host name
-extern char *fullhostname();	// Return ``official'' network name of host
+// Return name of current host
+extern char *hostname();
+
+// Return ``official'' network name of HOST (none: current host)
+extern char *fullhostname(char *host = 0);
 
 #endif // _hostname_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
