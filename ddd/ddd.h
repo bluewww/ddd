@@ -134,6 +134,7 @@
 #define XtNsuppressWarnings      "suppressWarnings"
 #define XtCSuppressWarnings      "SuppressWarnings"
 #define XtNttyMode               "ttyMode"
+#define XtNfullNameMode          "fullNameMode"
 #define XtCTTYMode               "TTYMode"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
@@ -187,6 +188,7 @@ typedef struct {
     Boolean cache_source_files;
     Boolean suppress_warnings;
     Boolean tty_mode;
+    Boolean full_name_mode;
     String  dddinit_version;
     String  app_defaults_version;
 } AppData;
@@ -211,6 +213,12 @@ extern void tty_out(const string& text);
 
 // Output TEXT on controlling TTY (unconditionally)
 extern void _tty_out(const string& text);
+
+// Output TEXT on controlling TTY if we're in full_name_mode
+extern void tty_full_name(const string& text);
+
+// Give an artificial prompt
+extern void prompt();
 
 // Error handling
 extern void post_gdb_busy(Widget origin = 0);

@@ -371,6 +371,9 @@ void next_tab_groupAct    (Widget, XEvent*, String*, Cardinal*);
 void prev_tab_groupAct    (Widget, XEvent*, String*, Cardinal*);
 void get_focusAct         (Widget, XEvent*, String*, Cardinal*);
 
+// Setup
+static Boolean ddd_setup_done(XtPointer client_data);
+
 // Cleanup
 static void save_options(Widget origin);
 static void ddd_cleanup();
@@ -861,6 +864,15 @@ static XtResource resources[] = {
 	XtPointer(False)
     },
     {
+	XtNfullNameMode,
+	XtCTTYMode,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, full_name_mode),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,
@@ -881,6 +893,9 @@ static XtResource resources[] = {
 };
 
 
+static char S_true[]  = "true";
+static char S_false[] = "false";
+
 // Options
 // Note: we support both the GDB '--OPTION' and the X '-OPTION' convention.
 static XrmOptionDescRec options[] = {
@@ -893,14 +908,14 @@ static XrmOptionDescRec options[] = {
 { "--dbx",                  XtNdebugger,             XrmoptionNoArg,  "dbx" },
 { "-dbx",                   XtNdebugger,             XrmoptionNoArg,  "dbx" },
 
-{ "--trace",                XtCTrace,                XrmoptionNoArg,  "true" },
-{ "-trace",                 XtCTrace,                XrmoptionNoArg,  "true" },
+{ "--trace",                XtCTrace,                XrmoptionNoArg,  S_true },
+{ "-trace",                 XtCTrace,                XrmoptionNoArg,  S_true },
 
-{ "--trace-dialog",         XtNtraceDialog,          XrmoptionNoArg,  "true" },
-{ "-trace-dialog",          XtNtraceDialog,          XrmoptionNoArg,  "true" },
+{ "--trace-dialog",         XtNtraceDialog,          XrmoptionNoArg,  S_true },
+{ "-trace-dialog",          XtNtraceDialog,          XrmoptionNoArg,  S_true },
 
-{ "--trace-shell-commands", XtNtraceShellCommands,   XrmoptionNoArg,  "true" },
-{ "-trace-shell-commands",  XtNtraceShellCommands,   XrmoptionNoArg,  "true" },
+{ "--trace-shell-commands", XtNtraceShellCommands,   XrmoptionNoArg,  S_true },
+{ "-trace-shell-commands",  XtNtraceShellCommands,   XrmoptionNoArg,  S_true },
 
 { "--vsl-library",          XtNvslLibrary,           XrmoptionSepArg, NULL },
 { "-vsl-library",           XtNvslLibrary,           XrmoptionSepArg, NULL },
@@ -911,42 +926,42 @@ static XrmOptionDescRec options[] = {
 { "--namelength",           XtNmaxNameLength,        XrmoptionSepArg, NULL },
 { "-namelength",            XtNmaxNameLength,        XrmoptionSepArg, NULL },
 
-{ "--separate",             XtCSeparate,             XrmoptionNoArg, "true" },
-{ "-separate",              XtCSeparate,             XrmoptionNoArg, "true" },
-{ "--separate-windows",     XtCSeparate,             XrmoptionNoArg, "true" },
-{ "-separate-windows",      XtCSeparate,             XrmoptionNoArg, "true" },
+{ "--separate",             XtCSeparate,             XrmoptionNoArg, S_true },
+{ "-separate",              XtCSeparate,             XrmoptionNoArg, S_true },
+{ "--separate-windows",     XtCSeparate,             XrmoptionNoArg, S_true },
+{ "-separate-windows",      XtCSeparate,             XrmoptionNoArg, S_true },
 
-{ "--separate-source-window",XtNseparateSourceWindow, XrmoptionNoArg, "true" },
-{ "-separate-source-window", XtNseparateSourceWindow, XrmoptionNoArg, "true" },
+{ "--separate-source-window",XtNseparateSourceWindow, XrmoptionNoArg, S_true },
+{ "-separate-source-window", XtNseparateSourceWindow, XrmoptionNoArg, S_true },
 
-{ "--separate-data-window", XtNseparateDataWindow,   XrmoptionNoArg, "true" },
-{ "-separate-data-window",  XtNseparateDataWindow,   XrmoptionNoArg, "true" },
+{ "--separate-data-window", XtNseparateDataWindow,   XrmoptionNoArg, S_true },
+{ "-separate-data-window",  XtNseparateDataWindow,   XrmoptionNoArg, S_true },
 
-{ "--attach",               XtCSeparate,             XrmoptionNoArg, "false" },
-{ "-attach",                XtCSeparate,             XrmoptionNoArg, "false" },
-{ "--attach-windows",       XtCSeparate,             XrmoptionNoArg, "false" },
-{ "-attach-windows",        XtCSeparate,             XrmoptionNoArg, "false" },
+{ "--attach",               XtCSeparate,             XrmoptionNoArg, S_false },
+{ "-attach",                XtCSeparate,             XrmoptionNoArg, S_false },
+{ "--attach-windows",       XtCSeparate,             XrmoptionNoArg, S_false },
+{ "-attach-windows",        XtCSeparate,             XrmoptionNoArg, S_false },
 
-{ "--attach-source-window", XtNseparateSourceWindow, XrmoptionNoArg, "false" },
-{ "-attach-source-window",  XtNseparateSourceWindow, XrmoptionNoArg, "false" },
+{ "--attach-source-window", XtNseparateSourceWindow, XrmoptionNoArg, S_false },
+{ "-attach-source-window",  XtNseparateSourceWindow, XrmoptionNoArg, S_false },
 
-{ "--attach-data-window",   XtNseparateDataWindow,   XrmoptionNoArg, "false" },
-{ "-attach-data-window",    XtNseparateDataWindow,   XrmoptionNoArg, "false" },
+{ "--attach-data-window",   XtNseparateDataWindow,   XrmoptionNoArg, S_false },
+{ "-attach-data-window",    XtNseparateDataWindow,   XrmoptionNoArg, S_false },
 
-{ "--exec-window",          XtNseparateExecWindow,   XrmoptionNoArg, "true" },
-{ "-exec-window",           XtNseparateExecWindow,   XrmoptionNoArg, "true" },
+{ "--exec-window",          XtNseparateExecWindow,   XrmoptionNoArg, S_true },
+{ "-exec-window",           XtNseparateExecWindow,   XrmoptionNoArg, S_true },
 
-{ "--no-exec-window",       XtNseparateExecWindow,   XrmoptionNoArg, "false" },
-{ "-no-exec-window",        XtNseparateExecWindow,   XrmoptionNoArg, "false" },
+{ "--no-exec-window",       XtNseparateExecWindow,   XrmoptionNoArg, S_false },
+{ "-no-exec-window",        XtNseparateExecWindow,   XrmoptionNoArg, S_false },
 
-{ "--panned-graph-editor",  XtNpannedGraphEditor,    XrmoptionNoArg, "true" },
-{ "-panned-graph-editor",   XtNpannedGraphEditor,    XrmoptionNoArg, "true" },
+{ "--panned-graph-editor",  XtNpannedGraphEditor,    XrmoptionNoArg, S_true },
+{ "-panned-graph-editor",   XtNpannedGraphEditor,    XrmoptionNoArg, S_true },
 
-{ "--scrolled-graph-editor", XtNpannedGraphEditor,   XrmoptionNoArg, "false" },
-{ "-scrolled-graph-editor", XtNpannedGraphEditor,    XrmoptionNoArg, "false" },
+{ "--scrolled-graph-editor", XtNpannedGraphEditor,   XrmoptionNoArg, S_false },
+{ "-scrolled-graph-editor", XtNpannedGraphEditor,    XrmoptionNoArg, S_false },
 
-{ "--synchronous-debugger", XtNsynchronousDebugger,  XrmoptionNoArg, "true" },
-{ "-synchronous-debugger",  XtNsynchronousDebugger,  XrmoptionNoArg, "true" },
+{ "--synchronous-debugger", XtNsynchronousDebugger,  XrmoptionNoArg, S_true },
+{ "-synchronous-debugger",  XtNsynchronousDebugger,  XrmoptionNoArg, S_true },
 
 { "--host",                 XtNdebuggerHost,         XrmoptionSepArg, NULL },
 { "-host",                  XtNdebuggerHost,         XrmoptionSepArg, NULL },
@@ -955,31 +970,35 @@ static XrmOptionDescRec options[] = {
 { "-login",                 XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
 { "-l",                     XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
 
-{ "--tty",                  XtNttyMode,              XrmoptionNoArg, "true" },
-{ "-tty",                   XtNttyMode,              XrmoptionNoArg, "true" },
-{ "-t",                     XtNttyMode,              XrmoptionNoArg, "true" },
+{ "--tty",                  XtNttyMode,              XrmoptionNoArg, S_true },
+{ "-tty",                   XtNttyMode,              XrmoptionNoArg, S_true },
+{ "-t",                     XtNttyMode,              XrmoptionNoArg, S_true },
 
-{ "--version",              XtNshowVersion,          XrmoptionNoArg, "true" },
-{ "-version",               XtNshowVersion,          XrmoptionNoArg, "true" },
-{ "-v",                     XtNshowVersion,          XrmoptionNoArg, "true" },
+{ "--fullname",             XtCTTYMode,              XrmoptionNoArg, S_true },
+{ "-fullname",              XtCTTYMode,              XrmoptionNoArg, S_true },
+{ "-f",                     XtCTTYMode,              XrmoptionNoArg, S_true },
 
-{ "--configuration",        XtNshowConfiguration,    XrmoptionNoArg, "true" },
-{ "-configuration",         XtNshowConfiguration,    XrmoptionNoArg, "true" },
+{ "--version",              XtNshowVersion,          XrmoptionNoArg, S_true },
+{ "-version",               XtNshowVersion,          XrmoptionNoArg, S_true },
+{ "-v",                     XtNshowVersion,          XrmoptionNoArg, S_true },
 
-{ "--resources",            XtNshowResources,        XrmoptionNoArg, "true" },
-{ "-resources",             XtNshowResources,        XrmoptionNoArg, "true" },
+{ "--configuration",        XtNshowConfiguration,    XrmoptionNoArg, S_true },
+{ "-configuration",         XtNshowConfiguration,    XrmoptionNoArg, S_true },
 
-{ "--manual",               XtNshowManual,           XrmoptionNoArg, "true" },
-{ "-manual",                XtNshowManual,           XrmoptionNoArg, "true" },
+{ "--resources",            XtNshowResources,        XrmoptionNoArg, S_true },
+{ "-resources",             XtNshowResources,        XrmoptionNoArg, S_true },
 
-{ "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, "true" },
-{ "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, "true" },
+{ "--manual",               XtNshowManual,           XrmoptionNoArg, S_true },
+{ "-manual",                XtNshowManual,           XrmoptionNoArg, S_true },
 
-{ "--help",                 XtNshowInvocation,       XrmoptionNoArg, "true" },
-{ "-help",                  XtNshowInvocation,       XrmoptionNoArg, "true" },
-{ "-h",                     XtNshowInvocation,       XrmoptionNoArg, "true" },
-{ "--?",                    XtNshowInvocation,       XrmoptionNoArg, "true" },
-{ "-?",                     XtNshowInvocation,       XrmoptionNoArg, "true" },
+{ "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, S_true },
+{ "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, S_true },
+
+{ "--help",                 XtNshowInvocation,       XrmoptionNoArg, S_true },
+{ "-help",                  XtNshowInvocation,       XrmoptionNoArg, S_true },
+{ "-h",                     XtNshowInvocation,       XrmoptionNoArg, S_true },
+{ "--?",                    XtNshowInvocation,       XrmoptionNoArg, S_true },
+{ "-?",                     XtNshowInvocation,       XrmoptionNoArg, S_true },
 
 };
 
@@ -1607,7 +1626,7 @@ int main(int argc, char *argv[])
 #endif
 
     // Check if we are to run without windows
-    bool no_windows = 0;
+    bool no_windows = false;
 
     // Don't run DDD setuid.  DDD invokes shell commands and even
     // shell scripts, such that all known problems of setuid shell
@@ -1621,7 +1640,7 @@ int main(int argc, char *argv[])
     for (int i = 1; i < argc; i++)
     {
 	string arg = string(argv[i]);
-	if (arg == "--debugger" && i < argc - 1)
+	if ((arg == "--debugger" || arg == "-debugger") && i < argc - 1)
 	{
 	    gdb_name = argv[i + 1];
 	    gdb_option_pos = i;
@@ -1631,15 +1650,26 @@ int main(int argc, char *argv[])
 	{
 	    if (gdb_option_pos >= 0)
 	    {
-		for (int j = gdb_option_pos; j < argc - 2; j++)
+		// Strip `--debugger NAME'
+		for (int j = gdb_option_pos; j <= argc - 2; j++)
 		    argv[j] = argv[j + 2];
 		argc -= 2;
+		i    -= 2;
 	    }
+
+	    // Strip `--nw'
+	    for (int j = i; j <= argc - 1; j++)
+		argv[j] = argv[j + 1];
+	    argc -= 1;
+	    i    -= 1;
+
+	    no_windows = true;
 	}
     }
 
     if (no_windows)
     {
+	argv[0] = gdb_name;
 	execvp(gdb_name, argv);
 	perror(gdb_name);
 	return 1;
@@ -2212,6 +2242,7 @@ int main(int argc, char *argv[])
     // lose debugger output.  This also decreases system load on
     // single-processor machines since DDD is idle when the debugger
     // starts.
+    XSync(XtDisplay(command_shell), False);
     wait_until_mapped(command_shell);
     XmUpdateDisplay(command_shell);
 
@@ -2236,8 +2267,10 @@ int main(int argc, char *argv[])
     start_gdb();
     gdb_tty = gdb->slave_tty();
 
+    // Invoke `ddd_setup_done' as soon as all initializations are done.
+    XtAppAddWorkProc(app_context, ddd_setup_done, 0);
+
     // Main Loop
-    main_loop_entered = true;
     int sig;
     if ((sig = setjmp(main_loop_env)))
     {
@@ -2279,6 +2312,17 @@ int main(int argc, char *argv[])
 
     // Never reached...
     return 0;
+}
+
+
+//-----------------------------------------------------------------------------
+// Setup
+//-----------------------------------------------------------------------------
+
+static Boolean ddd_setup_done(XtPointer)
+{
+    main_loop_entered = true;
+    return True;		// Remove from the list of work procs
 }
 
 
@@ -2690,6 +2734,7 @@ void show_invocation(DebuggerType type)
 	" command window.\n"
 	"  --scrolled-graph   Use scrollbars for moving the data display.\n"
 	"  --panned-graph     Use a panner for moving the data display.\n"
+        "  --tty              Use TTY for entering debugger commands.\n"
 	"  --version          Show the DDD version and exit.\n"
 	"  --configuration    Show the DDD configuration flags and exit.\n"
 	"  --manual           Show the DDD manual and exit.\n"
@@ -6195,6 +6240,26 @@ void _tty_out(const string& text)
     command_tty->write((char *)text, text.length());
 }
 
+void tty_full_name(const string& pos)
+{
+    if (app_data.full_name_mode)
+    {
+	_tty_out("\032\032" + pos + "\n");
+    }
+    else
+    {
+	string line = source_view->get_line(pos);
+	_tty_out(line + "\n");
+    }
+}
+
+void prompt()
+{
+    _gdb_out(gdb->default_prompt());
+    if (tty_gdb_input)
+	_tty_out(gdb->default_prompt());
+}
+
 //-----------------------------------------------------------------------------
 // Exiting
 //-----------------------------------------------------------------------------
@@ -6317,15 +6382,14 @@ static void ddd_fatal(int sig)
 	// Re-raise signal.  This should kill us as we return.
 	signal(sig, (void (*)(int))SIG_DFL);
 	kill(getpid(), sig);
+	return;
     }
-    else
-    {
-	// Show the message in an error dialog,
-	// allowing the user to clean up manually.
-	string msg = string("Internal error (") + sigName(sig) + ")";
-	if (sig != SIGINT)
-	    post_error(msg, "internal_error", gdb_w);
-    }
+
+    // Show the message in an error dialog,
+    // allowing the user to clean up manually.
+    string msg = string("Internal error (") + sigName(sig) + ")";
+    if (sig != SIGINT)
+	post_error(msg, "internal_error", gdb_w);
 
     // Reinstall fatal error handlers
     ddd_install_fatal();
@@ -7313,7 +7377,7 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
 
 inline String bool_value(bool value)
 {
-    return value ? "true" : "false";
+    return value ? S_true : S_false;
 }
 
 inline string bool_app_value(const string& name, bool value)
