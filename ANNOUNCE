@@ -1,10 +1,10 @@
-DDD 1.3b is available
+DDD 1.3c is available
 =====================
 
-Release 1.3b of the Data Display Debugger (DDD), a graphical
+Release 1.3c of the Data Display Debugger (DDD), a graphical
 front-end for GDB and DBX debuggers, is now available at
 
-    ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-1.3b.tar.gz
+    ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-1.3c.tar.gz
 
 Diffs from earlier versions are in
 
@@ -20,9 +20,9 @@ Please try a closer FTP site first; see below for a list.
 DDD News
 ========
 
-DDD 1.3b now compiles using GCC 2.7; some new features have been
-added and several minor bugs fixed.  Some bugs remain; see the
-`BUGS' file for details.
+DDD 1.3c now also compiles using GCC 2.7.0 and GCC 2.7.1; some new
+features have been added and several minor bugs fixed.  Some bugs
+remain; see the `BUGS' file for details.
 
 Changes to DDD 1.2:
 - You can now edit the current source via an external editor.
@@ -41,6 +41,10 @@ Changes to DDD 1.2:
   (dlyons@apple.com).
 - New `Help/DDD WWW Page' item.  Invokes a WWW browser with recent DDD
   info.
+- The breakpoint popup menu allows you to set a temporary 
+  breakpoint and continue immediately.
+- The source popup menu allows you to print or display
+  dereferenced names (`print *' and `display *').
 - The DDD WWW page has moved to `http://www.cs.tu-bs.de/softech/ddd/'.
 - Colors slightly reworked: text background is a little brighter.
 - A short DDD survey, including lots of screen shots, is included in
@@ -53,13 +57,21 @@ Changes to DDD 1.2:
   McDorman)
 - Patches for FreeBSD incorporated.  Thanks to smcarey@mailbox.syr.edu
   (Shawn M. Carey).
+- Patches for recent Linux boxes (using ELF format) incorporated.
+  Thanks to lee@champion.tcs.co.jp (Lee Hounshell).
+- Patches for DEC Alpha OSF/1 incorporated; see the `PROBLEMS'
+  file for special building instructions.  Thanks to
+  tuppa@iue.tuwien.ac.at (Walter Tuppa)
 - DDD-specific application defaults now override user application
   defaults.  Thanks to ksfdo0@ksepl.shell.nl (Fred Donck).
 - New GNU librx 0.07.2 library included (from libg++-2.7.0), should be
   faster and more reliable.
+- Configuration scripts reworked for GNU autoconf 2.6; various
+  configuration bugs have been fixed.
 
-Thanks to all who sent in bug reports and suggestions.  DDD now runs
-on every major UNIX flavor, including OSF/1.
+Thanks to all who sent in bug reports and suggestions.  This DDD
+release should compile and run on every major UNIX flavor, including
+OSF/1 and Linux (a.out and ELF format).
 
 
 
@@ -90,9 +102,10 @@ DDD has been extensively beta-tested (especially by debugging itself)
 and configures, compiles and runs out-of-the-box on almost every major
 UNIX brand, including AIX (powerpc-ibm-aix3, rs6000-ibm-aix3), FreeBSD
 (i386-intel-freebsd1), HP-UX (hppa1.1-hp-hpux9, m68k-hp-hpux9), IRIX
-(mips-sgi-irix5), Linux (i386-unknown-linux, i486-unknown-linux),
-Alpha OSF (alpha-osf3), Solaris (i386-sun-solaris2, sparc-sun-solaris2),
-SunOS (sparc-sun-sunos4), and ULTRIX (mips-dec-ultrix4).
+(mips-sgi-irix5), Linux (i386-unknown-linux, i486-unknown-linux; a.out
+and ELF support), Alpha OSF (alpha-osf3), Solaris (i386-sun-solaris2,
+sparc-sun-solaris2), SunOS (sparc-sun-sunos4), and ULTRIX
+(mips-dec-ultrix4).
 
 DDD is free software, protected by the GNU general public license.  It
 is actively maintained by its authors, Dorothea Luetkehaus and Andreas
@@ -162,7 +175,7 @@ Send suggestions and bug reports for DDD to `ddd-bugs@ips.cs.tu-bs.de'.
 DDD source FTP sites
 ====================
 
-The DDD source package `ddd-1.3b.tar.gz' will soon be at these FTP
+The DDD source package `ddd-1.3c.tar.gz' will soon be at these FTP
 sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
 ftp.ips has a slow network connection.
 
@@ -170,39 +183,39 @@ ftp.ips has a slow network connection.
 North America
 -------------
 
-ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
-ftp://ftp.x.org/contrib/utilities/ddd-1.3b.tar.gz
-ftp://ftp.cs.columbia.edu/archives/X11R6/contrib/utilities/ddd-1.3b.tar.gz
-ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/ddd-1.3c.tar.gz
+ftp://ftp.x.org/contrib/utilities/ddd-1.3c.tar.gz
+ftp://ftp.cs.columbia.edu/archives/X11R6/contrib/utilities/ddd-1.3c.tar.gz
+ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/ddd-1.3c.tar.gz
 
 
 Europe
 ------
 
-ftp://ftp.denet.dk/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
-ftp://nic.funet.fi/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
-ftp://ftp.ibp.fr/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
-ftp://ftp.germany.eu.net/pub/X11/XConsortium/contrib/utilities/ddd-1.3b.tar.gz
-ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
-ftp://ftp.luth.se/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
-ftp://ftp.sunet.se/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
-ftp://ftp.eunet.ch/archive/software/X/utilities/ddd-1.3b.tar.gz
-ftp://ftp.NL.net/pub/windows/X/contrib/utilities/ddd-1.3b.tar.gz
-ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.denet.dk/pub/X11/contrib/utilities/ddd-1.3c.tar.gz
+ftp://nic.funet.fi/pub/X11/contrib/utilities/ddd-1.3c.tar.gz
+ftp://ftp.ibp.fr/pub/X11/contrib/utilities/ddd-1.3c.tar.gz
+ftp://ftp.germany.eu.net/pub/X11/XConsortium/contrib/utilities/ddd-1.3c.tar.gz
+ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/ddd-1.3c.tar.gz
+ftp://ftp.luth.se/pub/X11/contrib/utilities/ddd-1.3c.tar.gz
+ftp://ftp.sunet.se/pub/X11/contrib/utilities/ddd-1.3c.tar.gz
+ftp://ftp.eunet.ch/archive/software/X/utilities/ddd-1.3c.tar.gz
+ftp://ftp.NL.net/pub/windows/X/contrib/utilities/ddd-1.3c.tar.gz
+ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/ddd-1.3c.tar.gz
 
 
 East Asia
 ---------
 
-ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/ddd-1.3b.tar.gz
-ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/ddd-1.3b.tar.gz
-ftp://NCTUCCCA.edu.tw/X/contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/ddd-1.3c.tar.gz
+ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/ddd-1.3c.tar.gz
+ftp://NCTUCCCA.edu.tw/X/contrib/utilities/ddd-1.3c.tar.gz
 
 
 Australia
 ---------
 
-ftp://archie.AUX11/contrib/utilities/ddd-1.3b.tar.gz
+ftp://archie.AUX11/contrib/utilities/ddd-1.3c.tar.gz
 
 
 
@@ -233,7 +246,7 @@ Europe
 
 ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
 ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/
-
+ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/
 
 Have fun!
 -- 

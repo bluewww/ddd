@@ -21,7 +21,7 @@ DDD 1.3c
 	Suggested by Chris Sterritt <sterritt@mrj.com>
       * The source popup menu allows you to print or display
 	dereferenced names (`print *' and `display *').  Suggested by
-	our local DDD users.
+	Walter Tuppa <tuppa@iue.tuwien.ac.at>
 
     - All DDD source code (except `ddd.C') now comes under the GNU
       general public *library* license.  This means that the following
