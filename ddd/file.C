@@ -74,8 +74,8 @@ char file_rcsid[] =
 typedef void (*FileSearchProc)(Widget fs, 
 			       XmFileSelectionBoxCallbackStruct *cbs);
 
-static VarArray<Widget> file_filters;
-static VarArray<Widget> file_dialogs;
+static WidgetArray file_filters;
+static WidgetArray file_dialogs;
 
 static string current_file_filter = "";
 
