@@ -1275,12 +1275,6 @@ void plusOQAC (string answers[],
     int qu_count = 0;
     string file;
 
-    if (plus_cmd_data->config_xdb) {
-	// Make sure XDB understands macros
-	assert (qu_count < count);
-	process_config_tm(answers[qu_count++]);
-    }
-
     while (plus_cmd_data->n_init > 0)
     {
 	// Handle output of initialization commands
@@ -1325,6 +1319,12 @@ void plusOQAC (string answers[],
 	case DBX:
 	    break;
 	}
+    }
+
+    if (plus_cmd_data->config_xdb) {
+	// Make sure XDB understands macros
+	assert (qu_count < count);
+	process_config_tm(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_frame) {
@@ -1395,11 +1395,6 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_err_redirection) {
 	assert (qu_count < count);
 	process_config_err_redirection(answers[qu_count++]);
-    }
-
-    if (plus_cmd_data->config_xdb) {
-	assert (qu_count < count);
-	process_config_tm(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_output) {
