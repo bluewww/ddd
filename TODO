@@ -338,7 +338,6 @@ Volunteers for these and other projects are welcome!
     - Allow to pass arguments to defined commands.  More specifically,
       I mean having a command specification where the (): argument
       would be used as $arg0 for the defined command.
-    - Command buttons are not restored when opening a session.
     - Incremental search for the source window is also something I miss.
 
 351 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
