@@ -4368,13 +4368,12 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     string value = gdb_question(gdb->print_command(name));
     if (value == NO_GDB_ANSWER)
     {
-	post_gdb_busy(w);
-	return;
+	value = "";		// GDB is busy - don't show old value
     }
-    if (is_invalid(value))
+    else if (is_invalid(value))
     {
 	post_gdb_message(value);
-	return;
+	value = "";		// Variable cannot be accessed
     }
 
     value = get_disp_value_str(value, gdb);
