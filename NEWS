@@ -107,8 +107,8 @@ DDD 3.0 [in beta test]
 
 
     Changes in configuration and building:
-    - LessTif 0.84 is supported (and a standard test environment of
-      the DDD developers).  See `patches/' for some useful patches.
+    - LessTif 0.85 is supported (and a standard test environment of
+      the DDD developers).  See `patches/' for useful patches.
     - GDB 4.17 is supported.
     - GCC 2.8.1 with enabled optimization is supported.
 

@@ -40,11 +40,7 @@ AIX
 
 Reported by:  Andreas Zeller <zeller@ips.cs.tu-bs.de>
 
-    Use GNU make and GCC for building DDD.
-    * Using AIX make instead of GNU make will cause pre-built files to
-      be re-built (which is a pain if you don't have all appropriate
-      GNU tools).
-    * Using xlC instead of GCC causes a number of minor bugs in DDD.
+    Use GCC for building DDD.  Using xlC will cause several minor bugs.
 
 
 Reported by: Jason A. Smith <smithj4@rpi.edu>
@@ -266,12 +262,10 @@ LessTif
     the `patches/' subdirectory.  See the DDD WWW page for further
     issues and patches.
 
-    With LessTif 0.84 and the patches applied, the following problems
+    With LessTif 0.85 and the patches applied, the following problems
     are currently known:
 
     * Menu traversal by keyboard does not work (yet); use the mouse instead.
-
-    * Cut/Copy/Paste operations are not (yet) implemented.
 
  
 
