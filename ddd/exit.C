@@ -155,6 +155,9 @@ void ddd_cleanup()
     // Now write the session-specific DDD history file.
     if (app_data.save_history_on_exit)
 	save_history(session_history_file(app_data.session));
+
+    // Unlock `~/.ddd'.
+    unlock_session_dir(DEFAULT_SESSION);
 }
 
 

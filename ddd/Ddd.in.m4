@@ -4699,6 +4699,14 @@ a core dump reflecting the current memory contents.\n\
 \n\
 To save the entire state without a core dump, click on LBL(Yes).
 
+Ddd*lock_dialog_popup.title: DDD: Another DDD is running
+Ddd*lock_dialog*helpString:	\
+@rm Another DDD is running, sharing state with this DDD instance.\n\
+\n\
+To resume execution of this DDD, click on LBL(Continue).\n\
+Otherwise, click on LBL(Exit).
+Ddd*lock_dialog.okLabelString:		Continue
+Ddd*lock_dialog.cancelLabelString: 	Exit
 
 
 !-----------------------------------------------------------------------------

@@ -41,10 +41,13 @@ char session_rcsid[] =
 #include <X11/SM/SM.h>
 #endif
 
-#include <stdlib.h>		// putenv(), getenv()
+#include <sys/types.h>
+#include <stdlib.h>		// putenv(), getenv(), getuid()
 #include <stdio.h>
+#include <signal.h>		// kill()
 #include <string.h>		// strerror()
 #include <errno.h>
+#include <fstream.h>
 
 #include "AppData.h"
 #include "DataDisp.h"
@@ -66,6 +69,7 @@ char session_rcsid[] =
 #include "filetype.h"
 #include "glob.h"
 #include "history.h"
+#include "hostname.h"
 #include "mydialogs.h"
 #include "options.h"
 #include "post.h"
@@ -123,7 +127,7 @@ static string home_dir()
     return home;
 }
 
-static string state_dir()
+string session_state_dir()
 {
     char *ddd_state = getenv("DDDSTATE");
     if (ddd_state != 0)
@@ -138,13 +142,13 @@ static string session_base_dir()
     if (ddd_sessions != 0)
 	return ddd_sessions;
     else
-	return state_dir() + "/sessions";
+	return session_state_dir() + "/sessions";
 }
 
 static string session_dir(const string& session)
 {
     if (session == DEFAULT_SESSION)
-	return state_dir();
+	return session_state_dir();
     else
 	return session_base_dir() + "/" + session;
 }
@@ -227,10 +231,11 @@ static void copy(const string& from_name, const string& to_name, ostream& msg)
 }
 
 // Create DDD state directory
-static void create_state_dir(ostream& msg)
+static void create_session_state_dir(ostream& msg)
 {
     // Create or find state directory
-    if (!is_directory(state_dir()) && makedir(state_dir(), msg) == 0)
+    if (!is_directory(session_state_dir()) && 
+	makedir(session_state_dir(), msg) == 0)
     {
 	// Check for DDD 2.1 `~/.dddinit' and `~/.ddd_history' files; 
 	// copy them to new location if needed
@@ -249,7 +254,7 @@ static void create_state_dir(ostream& msg)
 void create_session_dir(const string& session, ostream& msg)
 {
     // Create state directory
-    create_state_dir(msg);
+    create_session_state_dir(msg);
 
     // Create session directory
     if (session != DEFAULT_SESSION 
@@ -280,6 +285,65 @@ void create_session_dir(const string& session)
     }
 }
 
+
+// ---------------------------------------------------------------------------
+// Session locks
+// ---------------------------------------------------------------------------
+
+bool lock_session_dir(Display *display,
+		      const string& session, 
+		      LockInfo& info)
+{
+    info.pid = 0;
+    string lock_file = session_lock_file(session);
+
+    ifstream is(lock_file);
+    if (!is.bad())
+    {
+	// Lock already exists -- use contents as diagnostics
+	string version;
+	is >> version >> info.hostname >> info.pid;
+
+	if (info.hostname != fullhostname())
+	    return false;	// Process running on remote host
+
+	if (info.pid > 0 && kill(info.pid, 0) == 0)
+	    return false;	// Process running on host
+    }
+
+    ofstream os(lock_file);
+    os << DDD_NAME "-" DDD_VERSION
+       << " " << fullhostname() 
+       << " " << getpid()
+       << " " << XDisplayString(display)
+       << " " << getuid()
+       << "\n";
+    return true;
+}
+
+bool unlock_session_dir(const string& session)
+{
+    string lock_file = session_lock_file(session);
+
+    ifstream is(lock_file);
+    if (!is.bad())
+    {
+	// There is a lock -- check whether it's ours
+	LockInfo info;
+	string version;
+	is >> version >> info.hostname >> info.pid;
+
+	if (info.hostname == fullhostname() && info.pid == getpid())
+	{
+	    // It's ours -- remove it
+	    is.close();
+	    unlink(lock_file);
+	    return true;
+	}
+    }
+
+    return false;		// No or mismatched lock
+}
 
 
 // ---------------------------------------------------------------------------
@@ -487,6 +551,7 @@ void delete_session(const string& session, bool silent)
     unlink(session_state_file(session));
     unlink(session_core_file(session));
     unlink(session_history_file(session));
+    unlink(session_lock_file(session));
 
     if (rmdir(session_dir(session)) && !silent)
     {

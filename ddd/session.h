@@ -45,6 +45,9 @@ const string RESTART_SESSION = "." ddd_NAME;
 
 // Return session directories
 
+// Root of DDD state (usually, `~/.ddd')
+string session_state_dir();
+
 // File NAME in directory of session SESSION
 string session_file(const string& session, const string& name);
 
@@ -64,11 +67,29 @@ inline string session_history_file(const string& session)
     return session_file(session, "history");
 }
 
+inline string session_lock_file(const string& session)
+{
+    return session_file(session, "lock");
+}
+
 // Create session directory for SESSION; leave messages in MSG
 void create_session_dir(const string& session, ostream& msg);
 
 // Same, but leave messages in status line
 void create_session_dir(const string& session);
+
+struct LockInfo {
+    string hostname;		// Name of host on which DDD is running
+    string display;		// Display used by DDD
+    int pid;			// DDD process ID
+};
+
+// Lock session.  Return true iff successful.  Otherwise, return
+// false, and return info about the locking process in INFO.
+bool lock_session_dir(Display *display, const string& session, LockInfo& info);
+
+// Unlock session.  Return true iff successful.
+bool unlock_session_dir(const string& session);
 
 // Delete session SESSION
 void delete_session(const string& session, bool silent = false);

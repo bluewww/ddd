@@ -347,6 +347,10 @@ static void popdown_startup_logo(XtPointer data = 0, XtIntervalId *id = 0);
 // resources such as window sizes.
 static XrmDatabase GetFileDatabase(char *filename);
 
+// Lock `~/.ddd'
+static void lock_ddd(Widget parent);
+
+
 //-----------------------------------------------------------------------------
 // Xt Stuff
 //-----------------------------------------------------------------------------
@@ -1712,13 +1716,6 @@ int main(int argc, char *argv[])
 	return EXIT_SUCCESS;
 
     // From this point on, we'll be running under X.
-    Boolean iconic;
-    XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
-
-    // Show startup logo
-    if (!iconic && restart_session() == "")
-	popup_startup_logo(toplevel, app_data.show_startup_logo);
-    last_shown_startup_logo = app_data.show_startup_logo;
 
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
     if (app_data.app_defaults_version == 0)
@@ -1760,6 +1757,16 @@ int main(int argc, char *argv[])
 
     // Register own converters
     registerOwnConverters();
+
+    // Lock `~/.ddd/'.
+    lock_ddd(toplevel);
+
+    // Show startup logo
+    Boolean iconic;
+    XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
+    if (!iconic && restart_session() == "")
+	popup_startup_logo(toplevel, app_data.show_startup_logo);
+    last_shown_startup_logo = app_data.show_startup_logo;
 
     // Global variables: Set LessTif version
     lesstif_version = app_data.lesstif_version;
@@ -2945,6 +2952,74 @@ static void fix_status_size()
     event.xbutton.same_screen = True;
     XtDispatchEvent(&event);
 }
+
+
+//-----------------------------------------------------------------------------
+// Locking stuff
+//-----------------------------------------------------------------------------
+
+static bool continue_despite_lock = false;
+
+static void ContinueDespiteLockCB(Widget, XtPointer, XtPointer)
+{
+    continue_despite_lock = true;
+}
+
+static void lock_ddd(Widget parent)
+{
+    LockInfo info;
+    bool lock_ok = 
+	lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
+    if (lock_ok)
+	return;
+
+    string lock_file = session_lock_file(DEFAULT_SESSION);
+    
+    MString msg = rm(DDD_NAME " has detected a ") 
+	+ tt(lock_file) + rm(" file.") + cr()
+	+ cr()
+	+ rm("This may indicate that another user is running "
+	     DDD_NAME) + cr()
+	+ rm("using your ")
+	+ tt(session_state_dir() + "/") + rm(" files.") + cr()
+	+ rm(DDD_NAME " appears to be running on host ")
+	+ tt(info.hostname) + cr()
+	+ rm("under process ID ") + tt(itostring(info.pid)) + cr()
+	+ cr()
+	+ rm("You may continue to use " DDD_NAME ", but your "
+	     "saved " DDD_NAME " state may be") + cr()
+	+ rm("overwritten by the other " DDD_NAME " instance.") + cr()
+	+ cr()
+	+ rm("Otherwise, make sure that you are not running "
+	     "another " DDD_NAME ",") + cr()
+	+ rm("delete the ") + tt(lock_file) + rm(" file,") + cr()
+	+ rm("and restart " DDD_NAME ".");
+	
+    Arg args[10];
+    int arg = 0;
+	
+    XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
+    XtSetArg(args[arg], XmNdialogStyle, 
+	     XmDIALOG_FULL_APPLICATION_MODAL); arg++;
+    Widget lock_dialog =
+	verify(XmCreateQuestionDialog(parent, "lock_dialog", args, arg));
+    Delay::register_shell(lock_dialog);
+    XtAddCallback(lock_dialog, XmNhelpCallback,
+		  ImmediateHelpCB, NULL);
+    XtAddCallback(lock_dialog, XmNokCallback,
+		  ContinueDespiteLockCB, NULL);
+    XtAddCallback(lock_dialog, XmNcancelCallback, ExitCB, 
+		  XtPointer(EXIT_FAILURE));
+
+    continue_despite_lock = false;
+    manage_and_raise(lock_dialog);
+
+    while (!continue_despite_lock)
+	XtAppProcessEvent(XtWidgetToApplicationContext(lock_dialog), XtIMAll);
+
+    XtDestroyWidget(lock_dialog);
+}
+
 
 //-----------------------------------------------------------------------------
 // Setup
@@ -5061,9 +5136,9 @@ static void ddd_xt_warning(String message)
 
 	if (!informed)
 	{
-	    cerr << "(You can suppress these warnings "
-		 << "by setting the 'Suppress X Warnings' option\n"
-		 << "in the DDD `General Preferences` panel.)\n";
+	    cerr << "(Use 'Edit | Preferences | General | "
+		    "Suppress X Warnings'\n"
+		    " to suppress these warnings.)\n";
 	    informed = true;
 	}
     }
