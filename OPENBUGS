@@ -213,4 +213,7 @@ detail.
     illegal memory accesses for strncpy(), strchr(), memchr() and
     possibly strcpy() on HPPA 712/60 + HPUX 9.03 + gcc 2.8.1.
 
-733 (Insert new bugs here)
+733 Jochen Schütze <jos@gbf.de> complains that ^Z closes the execution 
+    window immediately on DEC alpha OSF1 4.0 878.
+
+734 (Insert new bugs here)
