@@ -32,7 +32,7 @@ dnl
 dnl
 dnl Revision Control
 dnl
-AC_PREREQ(2.11)dnl
+AC_PREREQ(2.12)dnl
 AC_REVISION($Revision$)
 dnl
 dnl
@@ -53,16 +53,30 @@ dnl Name and version number
 dnl *This* is the place where name and version numbers are defined.
 AC_MSG_CHECKING(for name and version number)
 dnl
+dnl The product name, in various capitalizations.
 ddd=ddd
 Ddd=Ddd
 DDD=DDD
-VERSION=2.0
+dnl
+dnl The product version, in the form <Major number>.<Minor number><Suffix>
+dnl <Suffix> is optional - a letter `a' to `z' or `beta1', `beta2', etc.
+VERSION=2.1beta1
+dnl
+dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
+dnl After this date, users are requested to update the product.
+dnl An empty expiration date means no expiration.
+EXPIRES=1997-04-01
 dnl
 AC_SUBST(ddd)dnl
 AC_SUBST(Ddd)dnl
 AC_SUBST(DDD)dnl
 AC_SUBST(VERSION)dnl
-AC_MSG_RESULT(${DDD} ${VERSION})
+AC_SUBST(EXPIRES)dnl
+if test "$EXPIRES" = ""; then
+AC_MSG_RESULT("${DDD} ${VERSION}")
+else
+AC_MSG_RESULT("${DDD} ${VERSION} (expires ${EXPIRES})")
+fi
 dnl
 dnl
 dnl
@@ -257,12 +271,23 @@ if test "$X11_LIBS" = ""; then
 dnl Not having X is fatal.  Let the user fix this.
 AC_MSG_ERROR(The X11 library '-lX11' could not be found.
                   Please use the configure options '--x-includes=DIR'
-                  and '--x-libraries=DIR' to specify X11 locations.
+                  and '--x-libraries=DIR' to specify the X location.
                   See the file 'config.log' for further diagnostics.)
 fi
 AC_SUBST(X_LIBS)
 AC_SUBST(X11_LIBS)
 AC_SUBST(X_PRE_LIBS)
+dnl
+dnl
+dnl Check for -lXintl library.  Lutz Kittler <kittler@sse-erfurt.de> says
+dnl that DLD-Linux with CDE wants `-lXintl' to refine `Xlcmbcurmax'.
+dnl
+AC_CHECK_LIB(Xintl, Xlcmbcurmax, X11_LIBS="${X11_LIBS} -lXintl",,${X11_LIBS})
+dnl
+dnl
+dnl Check for -lipc library.  SCO unix is said to want that.
+dnl
+AC_CHECK_LIB(ipc, shmap, X11_LIBS="${X11_LIBS} -lipc",,${X11_LIBS})
 dnl
 dnl
 dnl Check for X toolkit libraries
@@ -273,7 +298,7 @@ if test "$XT_LIBS" = ""; then
 dnl Not having Xt is fatal.  Let the user fix this.
 AC_MSG_ERROR(The X toolkit library '-lXt' could not be found.
                   Please use the configure options '--with-x-includes=DIR'
-                  and '--with-x-libraries=DIR' to specify X11 locations.
+                  and '--with-x-libraries=DIR' to specify the X location.
                   See the file 'config.log' for further diagnostics.)
 fi
 AC_SUBST(XT_LIBS)
@@ -306,7 +331,7 @@ dnl A warning suffices here -- DDD also works without Athena.
 AC_MSG_WARN(The Athena widgets library '-lXaw' could not be found.
                     If you have the athena library, please use the
                     configure options '--with-athena-includes=DIR' and 
-                    '--with-athena-libraries=DIR' to specify file locations.
+                    '--with-athena-libraries=DIR' to specify the Xaw location.
                     If you do not have the athena library, use the configure
                     option '--without-athena' to suppress this message.
                     See the file 'config.log' for further diagnostics.)
@@ -345,7 +370,7 @@ if test "$XM_LIBS" = ""; then
 dnl Without Motif, we won't get far.  Let the user fix this.
 AC_MSG_ERROR(The Motif library '-lXm' could not be found.
                   Please use the configure options '--with-motif-includes=DIR'
-                  and '--with-motif-libraries=DIR' to specify Motif locations.
+                  and '--with-motif-libraries=DIR' to specify the Xm location.
                   See the file 'config.log' for further diagnostics.)
 fi
 AC_SUBST(XM_LIBS)
@@ -406,6 +431,8 @@ ICE_TYPE_REGEX_T
 ICE_REGCOMP_BROKEN
 dnl
 dnl
+ICE_CHECK_DECL(asctime, time.h)
+ICE_CHECK_DECL(difftime, time.h)
 ICE_CHECK_DECL(dup2, unistd.h)
 ICE_CHECK_DECL(endpwent, pwd.h)
 ICE_CHECK_DECL(fcntl, fcntl.h)
@@ -444,6 +471,7 @@ ICE_CHECK_DECL(srand, stdlib.h)
 ICE_CHECK_DECL(srandom, stdlib.h)
 ICE_CHECK_DECL(stat, sys/stat.h)
 ICE_CHECK_DECL(strerror, string.h)
+ICE_CHECK_DECL(strftime, time.h)
 ICE_CHECK_DECL(strsignal, string.h)
 ICE_CHECK_DECL(strtol, stdlib.h)
 ICE_CHECK_DECL(strtod, stdlib.h)

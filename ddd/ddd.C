@@ -184,6 +184,7 @@ char ddd_rcsid[] =
 #include "editing.h"
 #include "exectty.h"
 #include "exit.h"
+#include "expired.h"
 #include "file.h"
 #include "findParent.h"
 #include "gdbinit.h"
@@ -1722,12 +1723,32 @@ int main(int argc, char *argv[])
 }
 
 
+
+//-----------------------------------------------------------------------------
+// Check this version; give warnings if needed (no license, beta expired, etc.)
+//-----------------------------------------------------------------------------
+static void ddd_check_version()
+{
+    if (ddd_expired())
+    {
+	ostrstream msg;
+	msg << "This " DDD_NAME " version (" DDD_VERSION ") has expired since "
+	    << ddd_expiration_date() << ".\n"
+	    << "Please upgrade to the recent " DDD_NAME " version.";
+
+	post_warning(string(msg), "expired_warning");
+    }
+}
+
+
 //-----------------------------------------------------------------------------
 // Setup
 //-----------------------------------------------------------------------------
 
 static Boolean ddd_setup_done(XtPointer)
 {
+    ddd_check_version();
+
     main_loop_entered = true;
     return True;		// Remove from the list of work procs
 }

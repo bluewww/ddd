@@ -3337,6 +3337,12 @@ Ddd*paper_size_x_error*contextHelpString:	\
 @rm @DDD@ could not find an `x' in your paper size specification.\n\
 Please verify the paper size and try again.
 
+Ddd*expired_warning.title: @DDD@: @DDD@ expired
+Ddd*expired_warning*contextHelpString: \
+@rm @DDD@ @VERSION@ has been superseded by a newer @DDD@ version.\n\
+It should no longer be used.\n\
+To get a recent @DDD@ version, see the @DDD@ WWW page.
+
 
 !-----------------------------------------------------------------------------
 ! Easter Eggs

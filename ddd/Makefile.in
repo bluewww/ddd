@@ -633,6 +633,7 @@ DDD_OBJECTS = \
 	editing.o    \
 	exectty.o    \
 	exit.o       \
+	expired.o    \
 	file.o       \
 	filetype.o   \
 	gdbinit.o    \
@@ -1190,7 +1191,7 @@ batch binaries: pub
 	@for machine in $(MACHINES); do \
 	    echo -n "$$machine:    	"; \
 	    echo $(SHELL) -c \''MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
-  	 	make TARGET=$(TARGET) CXXFLAGS="$(CXXFLAGS)" '\'$$machine \
+		make TARGET=$(TARGET) CXXFLAGS="$(CXXFLAGS)" '\'$$machine \
 		| at -m now + 1 minute; \
 	done
 

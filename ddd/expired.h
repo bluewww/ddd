@@ -1,8 +1,7 @@
 // $Id$ -*- C++ -*-
-// DDD version and version number
-// @configure_input@
+// Check for expiration date
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
 // This file is part of the DDD Library.
@@ -27,17 +26,21 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _DDD_version_h
-#define _DDD_version_h
+#ifndef _DDD_expired_h
+#define _DDD_expired_h
 
-// NOTE: This is not the place where names and version numbers are stored!
-// To change the name or the version number, see `configure.in'.
+#ifdef __GNUG__
+#pragma interface
+#endif
 
-#define ddd_NAME    "@ddd@"
-#define Ddd_NAME    "@Ddd@"
-#define DDD_NAME    "@DDD@"
-#define DDD_VERSION "@VERSION@"
-#define DDD_EXPIRES "@EXPIRES@"
+#include "bool.h"
+#include "strclass.h"
 
-#endif // _DDD_version_h
+// Return true iff this DDD version has expired
+bool ddd_expired();
+
+// Return the expiration date in a user-readable form
+string ddd_expiration_date();
+
+#endif // _DDD_expired_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
