@@ -49,6 +49,10 @@ dnl Autoconf 2.8 bug fix
 dnl
 ac_cv_lib_dnet=no
 dnl
+dnl Zdenek Sekera <zs@cray.com> says that if CDPATH is set, it may break
+dnl this script.
+dnl
+CDPATH=
 dnl
 dnl Autoconf 2.12 bug fix (occurs on sparc-sun-solaris2.5.1)
 ac_cv_func_vfork_works=yes
