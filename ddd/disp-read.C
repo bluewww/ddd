@@ -351,10 +351,15 @@ string read_next_display (string& displays, GDBAgent *)
     // string old_displays = displays;
     // clog << "read_next_display(" << quote(old_displays) << ")...\n";
 
+    static regex RXnl(" *\n");
+
     do {
+
 	next_display += read_token(displays);
-    } while (displays != "" && displays[0] != '\n');
-    displays = displays.after(0);
+
+    } while (displays != "" && !displays.contains(RXnl, 0));
+
+    displays = displays.after('\n');
 
     // clog << "read_next_display(" << quote(old_displays) << ") = "
     //      << quote(next_display) << "\n";
