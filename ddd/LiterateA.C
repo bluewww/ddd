@@ -132,15 +132,15 @@ bool LiterateAgent::default_block_tty_input()
     // According to Terence Spielman <terence@globeset.com>, Linux
     // with GNU libc 5.4.35 also doesn't want BLOCK_TTY_INPUT.  Anders
     // Wegge Jakobsen <wegge@wegge.dk> reports the same for GNU libc
-    // 5.4.38.
+    // 5.4.38.  Ronald Wahl <rwahl@gmx.net> and Phil Romig
+    // <romig@bierstadt.unl.edu> reports the same for GNU libc 5.4.33.
     if (version_major == 5 && version_minor > 4)
 	return false;
-    if (version_major == 5 && version_minor == 4 && version_subminor > 33)
+    if (version_major == 5 && version_minor == 4 && version_subminor >= 33)
 	return false;
 
-    // On the other hand, Linux with GNU libc 5.4.33 and earlier,
-    // needs BLOCK_TTY_INPUT being set.  Hence, we set BLOCK_TTY_INPUT
-    // only for GNU libc 5.4.33 and earlier.
+    // There are no reports about DDD with GNU libc < 5.4.33, but
+    // earlier DDD versions worked with BLOCK_TTY_INPUT set.
     return true;
 
 #else  // !LINUX && !BLOCK_TTY_INPUT
