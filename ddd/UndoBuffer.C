@@ -671,12 +671,18 @@ void UndoBuffer::clear()
 void UndoBuffer::clear_exec_pos()
 {
     UndoBufferArray new_history;
+    int old_history_position = history_position;
     for (int i = 0; i < history.size(); i++)
     {
-	if (!history[i].exec_pos)
+	if (history[i].exec_pos)
+	{
+	    if (i < old_history_position)
+		history_position--;
+	}
+	else
+	{
 	    new_history += history[i];
-	else if (i < history_position)
-	    history_position--;
+	}
     }
 
     history = new_history;
