@@ -42,7 +42,7 @@ char AutoRaise_rcsid[] =
 #include "longName.h"
 
 #ifndef LOG_AUTO_RAISE
-#define LOG_AUTO_RAISE 1
+#define LOG_AUTO_RAISE 0
 #endif
 
 
