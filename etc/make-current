@@ -2,7 +2,7 @@
 # $Id$
 # Create DDD release-of-the-day.  
 
-# Copyright (C) 1997-1998 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 1997-1999 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 # 
 # This file is part of DDD.
@@ -53,8 +53,8 @@ fi
 
 # Setup environment
 tmpdir=$HOME/tmp/ddd$$
-CVSROOT=/usr/local/share/CVS; export CVSROOT
-PATH=/usr/local/bin:/usr/local/gnubin:$PATH; export PATH
+# CVSROOT=/usr/local/share/CVS; export CVSROOT
+# PATH=/usr/local/bin:/usr/local/gnubin:$PATH; export PATH
 
 if $local; then
   target=`pwd`
@@ -64,10 +64,8 @@ fi
 
 # Check whether the ChangeLog file has changed (i.e. we need a new ROTD)
 install=$local
-/usr/local/gnubin/test $CVSROOT/CVSROOT/ddd-log -nt $target/ChangeLog.tail \
-    && install=true
-/usr/local/gnubin/test ! -f $target/ChangeLog.tail \
-    && install=true
+test $CVSROOT/CVSROOT/ddd-log -nt $target/ChangeLog.tail && install=true
+test ! -f $target/ChangeLog.tail && install=true
 
 $install || exit 0; # No installation required
 
@@ -165,7 +163,7 @@ ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-95
 autoconf -l ddd
 (cd ddd && autoconf)
 (cd termcap && autoconf)
-sh ./configure --x-libraries=/usr/X11R5/lib --x-includes=/usr/X11R5/include -v
+sh ./configure -v
 
 # Create an empty `ddd/Makedeps' such that old MAKEs won't fail.
 touch ddd/Makedeps
