@@ -2146,6 +2146,11 @@ The printing has been cancelled.
 @rm The file holding the graph picture could not be written.\n\
 The printing has been cancelled.
 
+*print_fig_error.title: @DDD@: Cannot Print FIG
+*print_fig_error*contextHelpString:	\
+@rm The printer cannot print FIG files; use PostScript instead.\n\
+The printing has been cancelled.
+
 *tty_exec_error_popup.title: @DDD@: No Execution TTY
 *tty_exec_error*contextHelpString:	\
 @rm The terminal emulator for the execution window\n\
