@@ -2721,32 +2721,38 @@ When used for debugging Modula-2 or Pascal programs, \s-2DDD\s+2
 always numerates array elements starting with zero, instead of using
 correct array subscripts.
 .PP
-Using \s-2DBX\s+2 as inferior debugger, \s-2@DDD@\s+2 strips C-style
-and C++-style comments from the \s-2DBX\s+2 output in order to operate
-properly.  This also affects the output of the debugged program when
-sent to the debugger console.  Using the separate execution window
-avoids these problems.
+With some \s-2DBX\s+2 versions (notably Solaris \s-2DBX\s+2),
+\s-2@DDD@\s+2 strips C-style and C++-style comments from the
+\s-2DBX\s+2 output in order to interpret \s-2DBX\2+2 output properly.
+This also affects the output of the debugged program when sent to the
+debugger console.  Using the separate execution window avoids these
+problems.
 .PP
 In some \s-2DBX\s+2 versions (notably \s-2DEC\s+2 \s-2DBX\s+2 and
 \s-2AIX\s+2 \s-2DBX\s+2), there is no automatic data display.
-As a workaround, \s-2@DDD@\s+2 uses the `\fBprint\fR' command to
-access data values.  Consequently, variables outside the current frame
-cannot be displayed; under certain circumstances, other displays may
-also be affected.
+As an alternative, \s-2@DDD@\s+2 uses the `\fBprint\fR' command to
+access data values.  This means that variable names are interpreted
+according to the current frame; variables outside the current frame
+cannot be displayed.
 .\"
 .SS "Limitations using XDB"
 There is no automatic data display in \s-2XDB\s+2.  As a workaround,
-\s-2@DDD@\s+2 uses the `\fBp\fR' command to access data values.
-Consequently, variables outside the current frame cannot be displayed;
-under certain circumstances, other displays may also be affected.
+\s-2@DDD@\s+2 uses the `\fBp\fR' command to access data values.  This
+means that variable names are interpreted according to the current
+frame; variables outside the current frame cannot be displayed.
 .\"
 .SS "General Limitations"
-If command output is sent to the debugger console, it is impossible for
-\s-2@DDD@\s+2 to distinguish between the output of the debugged
+If command output is sent to the debugger console, it is impossible
+for \s-2@DDD@\s+2 to distinguish between the output of the debugged
 program and the output of the inferior debugger.  For instance, if
 your program output includes debugger prompts or debugger-like output,
-\s-2@DDD@\s+2 will become confused.  Use the separate execution window
-to avoid such problems.
+\s-2@DDD@\s+2 will likely become confused.  Use the separate execution
+window to avoid such problems.
+.PP
+If the inferior debugger changes the default \s-2TTY\s+2 settings, for
+instance through a `\fBstty\fR' command in its initialization file,
+\s-2@DDD@\s+2 will likely become confused.  The same applies to
+debugged programs which change the default \s-2TTY\s+2 settings.
 .\"
 .\"
 .\"
