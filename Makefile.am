@@ -109,9 +109,8 @@ snapshot:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	    ddd=`$(SED) -n < $(srcdir)/acinclude.m4 's/^ddd *= *//p'`; \
-	    VER=`$(SED) -n < $(srcdir)/acinclude.m4 's/^VERSION *= *//p'`; \
-	    VER=`echo $$VER | $(SED) 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
+	    ddd=$(PACKAGE_TARNAME) \
+	    VER=$(PACKAGE_VERSION) \
 	    echo "==> Making $$ddd-$$VER.tar.gz"; \
 	    rm -f $$ddd-$$VER.tar.gz; \
 	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
@@ -154,9 +153,8 @@ htmldist:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	    ddd=`$(SED) -n < ddd/acinclude.m4 's/^ddd *= *//p'`; \
-	    VER=`$(SED) -n < ddd/acinclude.m4 's/^VERSION *= *//p'`; \
-	    VER=`echo $$VER | $(SED) 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
+	    ddd=$(PACKAGE_TARNAME) \
+	    VER=$(PACKAGE_VERSION) \
 	    echo "==> Making $$ddd-$$VER-html-manual.tar.gz"; \
 	    rm -f $$ddd-$$VER-pics.tar.gz; \
 	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
@@ -184,9 +182,8 @@ picsdist:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	    ddd=`$(SED) -n < acinclude.m4 's/^ddd *= *//p'`; \
-	    VER=`$(SED) -n < acinclude.m4 's/^VERSION *= *//p'`; \
-	    VER=`echo $$VER | $(SED) 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
+	    ddd=$(PACKAGE_TARNAME) \
+	    VER=$(PACKAGE_VERSION) \
 	    echo "==> Making $$ddd-$$VER-pics.tar.gz"; \
 	    rm -f $$ddd-$$VER-pics.tar.gz; \
 	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
