@@ -248,7 +248,7 @@ AC_LANG_C
 dnl
 dnl
 dnl
-LIBS="$LIBS $X_PRE_LIBS $X_EXTRA_LIBS"
+LIBS="$LIBS $X_EXTRA_LIBS"
 CFLAGS="$CFLAGS $X_CFLAGS"
 CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 LDFLAGS="$LDFLAGS $X_LIBS"
@@ -256,7 +256,7 @@ dnl
 dnl Check for X library
 dnl
 X11_LIBS=""
-AC_CHECK_LIB(X11, XOpenDisplay, X11_LIBS="-lX11",,)
+AC_CHECK_LIB(X11, XOpenDisplay, X11_LIBS="-lX11",,${X_PRE_LIBS})
 if test "$X11_LIBS" = ""; then
 dnl Not having X is fatal.  Let the user fix this.
 AC_MSG_ERROR(The X11 library '-lX11' could not be found.
@@ -274,18 +274,21 @@ dnl that DLD-Linux with CDE wants `-lXintl' to refine `Xlcmbcurmax'.
 dnl Guenther Roehrich <guenther@studbox.uni-stuttgart.de> says that
 dnl we must check for `_Xlcmbcurmax' instead of `Xlcmbcurmax'.
 dnl
-AC_CHECK_LIB(Xintl, _Xlcmbcurmax, X11_LIBS="${X11_LIBS} -lXintl",,${X11_LIBS})
+AC_CHECK_LIB(Xintl, _Xlcmbcurmax, X11_LIBS="${X11_LIBS} -lXintl",,
+	${X_PRE_LIBS} ${X11_LIBS})
 dnl
 dnl
 dnl Check for -lipc library.  SCO unix is said to want that.
 dnl
-AC_CHECK_LIB(ipc, shmap, X11_LIBS="${X11_LIBS} -lipc",,${X11_LIBS})
+AC_CHECK_LIB(ipc, shmap, X11_LIBS="${X11_LIBS} -lipc",,
+	${X_PRE_LIBS} ${X11_LIBS})
 dnl
 dnl
 dnl Check for X toolkit libraries
 dnl
 XT_LIBS=""
-AC_CHECK_LIB(Xt, XtToolkitInitialize, XT_LIBS="-lXt",,${X11_LIBS})
+AC_CHECK_LIB(Xt, XtToolkitInitialize, XT_LIBS="-lXt",,
+	${X_PRE_LIBS} ${X11_LIBS})
 if test "$XT_LIBS" = ""; then
 dnl Not having Xt is fatal.  Let the user fix this.
 AC_MSG_ERROR(The X toolkit library '-lXt' could not be found.
@@ -300,7 +303,8 @@ dnl Check for X extension libraries
 dnl
 dnl
 XEXT_LIBS=""
-AC_CHECK_LIB(Xext, XShapeQueryVersion, XEXT_LIBS="-lXext",,${X11_LIBS})
+AC_CHECK_LIB(Xext, XShapeQueryVersion, XEXT_LIBS="-lXext",,
+	${X_PRE_LIBS} ${X11_LIBS})
 AC_SUBST(XEXT_LIBS)
 dnl
 dnl
@@ -313,11 +317,11 @@ if test "$athena_includes" != "no" && test "$athena_libraries" != "no"
 then
 AC_CHECK_LIB(Xmu, XmuCvtStringToOrientation,
 	XAW_LIBS="-lXmu ${XAW_LIBS}",,
-	${XAW_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
+	${X_PRE_LIBS} ${XAW_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
 AC_CHECK_LIB(Xaw, XawTextSetInsertionPoint, 
 	XAW_LIBS="-lXaw ${XAW_LIBS}"
 	AC_DEFINE(HAVE_ATHENA_WIDGETS),,
-	${XAW_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
+	${X_PRE_LIBS} ${XAW_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
 if test "$XAW_LIBS" = ""; then
 dnl A warning suffices here -- DDD also works without Athena.
 AC_MSG_WARN(The Athena widgets library '-lXaw' could not be found.
@@ -343,7 +347,7 @@ XPM_LIBS=""
 AC_CHECK_LIB(Xpm, XpmCreatePixmapFromXpmImage,
 	XPM_LIBS="-lXpm"
 	AC_DEFINE(HAVE_XPM_WIDGETS),,
-	${X11_LIBS})
+	${X_PRE_LIBS} ${X11_LIBS})
 AC_SUBST(XPM_LIBS)
 dnl
 dnl
@@ -356,7 +360,7 @@ then
 AC_CHECK_LIB(Xm, XmCreateOptionMenu, 
 	XM_LIBS="-lXm"
 	AC_DEFINE(HAVE_MOTIF_WIDGETS),,
-	${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
+	${X_PRE_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
 fi
 if test "$XM_LIBS" = ""; then
 dnl Without Motif, we won't get far.  Let the user fix this.
