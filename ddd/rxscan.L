@@ -268,7 +268,7 @@ J       [A-Za-z][A-Za-z0-9.]*
 <S041>[^ "'/]*\/			return &rxfilepath;
 <S042>{_}use{W}{C}			return &rxuse_cmd;
 <S043>#{D}{W}{A}			return &rxframe;
-<S044>{_}(up|do|down|f|fra|fram|frame|top|V|suspend|resume)({W}{C})? return &rxframe_cmd;
+<S044>{_}(up|do|down|f|fra|fram|frame|suspend|resume|top|V)({W}{C})? return &rxframe_cmd;
 <S045>[a-zA-Z0-9_$][(]			return &rxfunction_call;
 <S046>{P}:{W}[^ ]			return &rxgdb_begin_of_display;
 <S047>{P}:{w}{w}{w}			return &rxgdb_begin_of_display_info;
@@ -327,7 +327,7 @@ J       [A-Za-z][A-Za-z0-9.]*
 <S100>([)]|[}]|end\n|END\n|end;|END;)	return &rxstr_or_cl_end;
 <S101>{x}?{_}(record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|interface|union){C} return &rxstruct_keyword_begin;
 <S102>([Tt]he{W})?[Pp]rogram{W}(exited|terminated|is{W}not{W}being{W}run|no{W}longer{W}exists){C} return &rxterminated;
-<S103>{_}thread({W}{C})?		return &rxthread_cmd;
+<S103>{_}(thread|suspend|resume)({W}{C})? return &rxthread_cmd;
 <S104>{_}(delete{W}|un)display({W}{C})?	return &rxundisplay;
 <S105>{_}up({W}{C})?			return &rxup_cmd;
 <S106>[A-Z]+				return &rxuppercase;

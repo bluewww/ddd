@@ -760,6 +760,19 @@ void send_gdb_command(string cmd, Widget origin,
 	if (!gdb->has_display_command())
 	    plus_cmd_data->refresh_data = true;
     }
+    else if (is_thread_cmd(cmd) || is_core_cmd(cmd))
+    {
+	// Update displays
+	cmd_data->filter_disp   = NoFilter;
+	cmd_data->new_frame_pos = true;
+	cmd_data->new_exec_pos  = true;
+
+	plus_cmd_data->refresh_breakpoints = is_thread_cmd(cmd);
+	plus_cmd_data->refresh_where       = true;
+	plus_cmd_data->refresh_frame       = true;
+	plus_cmd_data->refresh_data        = true;
+	plus_cmd_data->refresh_threads     = true;
+    }
     else if (is_frame_cmd(cmd))
     {
 	// Update displays
@@ -783,19 +796,6 @@ void send_gdb_command(string cmd, Widget origin,
 	    // Get the current frame via `where'
 	    plus_cmd_data->refresh_where = true;
 	}
-    }
-    else if (is_thread_cmd(cmd) || is_core_cmd(cmd))
-    {
-	// Update displays
-	cmd_data->filter_disp   = NoFilter;
-	cmd_data->new_frame_pos = true;
-	cmd_data->new_exec_pos  = true;
-
-	plus_cmd_data->refresh_breakpoints = is_thread_cmd(cmd);
-	plus_cmd_data->refresh_where       = true;
-	plus_cmd_data->refresh_frame       = true;
-	plus_cmd_data->refresh_data        = true;
-	plus_cmd_data->refresh_threads     = true;
     }
     else if (is_set_cmd(cmd, gdb))
     {
