@@ -978,6 +978,7 @@ const string& BreakPoint::title() const
 #undef X
     }
     // Never reached
+    /*NOTREACHED*/
     ::abort();
 }
 
