@@ -105,9 +105,12 @@ static const char *usage =
 "`/'  search again          `:'  list all commands  `!' issue expected command"
 "\n";
 
+static string last_out;
+
 static void put(const string& s)
 {
     write(STDOUT_FILENO, s.chars(), s.length());
+    last_out += s;
 
 #if HAVE_TCDRAIN || defined(tcdrain)
     if (isatty(STDOUT_FILENO))
@@ -135,7 +138,6 @@ void logplayer(const string& logname)
     put("[Playing " + quote(logname) + ".  Use `?' for help]\n");
 
     static string out;
-    static string last_out;
     static string ddd_line;
     static string last_prompt;
     static bool initializing = true;
@@ -193,8 +195,6 @@ void logplayer(const string& logname)
 		    echoing = true;
 		put(out);
 	    }
-
-	    last_out += out;
 	    out = "";
 	}
 
@@ -237,7 +237,6 @@ void logplayer(const string& logname)
 			scanning = false;
 			scan_start = current;
 			command_no_start = command_no - 1;
-			last_out = "";
 		    }
 		}
 	    }
@@ -252,7 +251,12 @@ void logplayer(const string& logname)
 		{
 		    string prompt = last_out.after('\n', -1);
 		    if (prompt != "")
+		    {
+			if (prompt.contains('('))
+			    prompt = prompt.from('(', -1);
+
 			last_prompt = prompt;
+		    }
 		}
 
 		if (!last_out.contains(last_prompt, -1))
@@ -279,7 +283,8 @@ void logplayer(const string& logname)
 		if (ddd_line.contains('q', 0))
 		    exit(EXIT_SUCCESS);
 
-		if (ddd_line.contains("list 1,", 0))
+		if (ddd_line.contains("list ", 0) && 
+		    (ddd_line.contains(" 1,") || ddd_line.contains(":1,")))
 		{
 		    // Send the log file instead of a source
 		    ifstream is(logname);
