@@ -219,6 +219,7 @@ extern "C" {
 #include "findParent.h"
 #include "frame.h"
 #include "gdbinit.h"
+#include "getrlimit.h"
 #include "graph.h"
 #include "history.h"
 #include "host.h"
@@ -372,6 +373,7 @@ static void setup_options(int argc, char *argv[],
 			  bool& no_windows);
 static void setup_tty();
 static void setup_version_warnings();
+static void setup_core_limit();
 
 
 //-----------------------------------------------------------------------------
@@ -1679,8 +1681,9 @@ int main(int argc, char *argv[])
     DispBox::max_display_title_length = app_data.max_display_title_length;
     SourceView::max_popup_expr_length = app_data.max_popup_expr_length;
 
-    // Global variables: Set bump_displays
+    // Global variables: Set bump_displays and hide_displays
     DataDisp::bump_displays = app_data.bump_displays;
+    DataDisp::hide_displays = app_data.hide_displays;
 
     // Global variables: Set delays for button and value tips
     help_button_tip_delay = app_data.button_tip_delay;
@@ -2205,6 +2208,9 @@ int main(int argc, char *argv[])
 
     // Setup TTY interface
     setup_tty();
+
+    // Raise core limit if needed (this must be done before starting GDB)
+    setup_core_limit();
 
     // Start debugger
     start_gdb();
@@ -5533,4 +5539,34 @@ static void setup_version_warnings()
 	    + rm("(this is " DDD_NAME " " DDD_VERSION ").  "
 		 "Please save options.");
     }
+}
+
+static void setup_core_limit()
+{
+#if HAVE_GETRLIMIT && HAVE_SETRLIMIT && defined(RLIMIT_CORE)
+    struct rlimit limit;
+    limit.rlim_cur = 1;
+    limit.rlim_max = 1;
+
+    getrlimit(RLIMIT_CORE, &limit);
+    if (limit.rlim_max > limit.rlim_cur && limit.rlim_max > 0)
+    {
+	string msg;
+
+	if (limit.rlim_cur <= 0)
+	    msg = "Enabling core dumps";
+	else
+	    msg = "Raising core file size limit from "
+		+ itostring(limit.rlim_cur) + " to "
+		+ itostring(limit.rlim_max) + " bytes";
+
+	StatusDelay delay(msg);
+
+	limit.rlim_cur = limit.rlim_max;
+	if (setrlimit(RLIMIT_CORE, &limit))
+	    delay.outcome = strerror(errno);
+    }
+    else if (limit.rlim_cur <= 0)
+	set_status("Warning: core dumps are disabled");
+#endif // HAVE_GETRLIMIT ...
 }
