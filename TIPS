@@ -202,6 +202,9 @@ Try LBL(Commands, Define Command).
 To use GDB with Solaris CC, compile with SAMP(-xs).
 GDB wants debugging info in the executable.
 
+To use GDB with G77, compile with SAMP(-fdebug-kludge).
+This allows GDB to access COMMON and EQUIVALENCE variables.
+
 Double-clicking on a function call will lead you to the definition of
 the function.  Use LBL(Edit, Undo) to return to the function call.
 
