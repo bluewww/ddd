@@ -147,6 +147,4 @@ Volunteers for fixing these and other bugs are welcome!
 281 In auto deiconify mode, the GDB console uniconifies even if other
     windows are already there.
 
-284 `Status Displays' is too narrow.
-
 285 (Insert new bugs here)

@@ -79,6 +79,7 @@ char settings_rcsid[] =
 //-----------------------------------------------------------------------
 
 const Dimension EXTRA_SPACE     = 10;   // Minimum space between label / entry
+const Dimension EXTRA_WIDTH     =  6;   // Additional space for safety
 const Dimension MAX_HEIGHT     = 300;   // Maximum height of window
 
 
@@ -1670,7 +1671,8 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 	
 	XtVaSetValues(scroll,
 		      XmNheight, MAX_HEIGHT,
-		      XmNwidth, max_width + spacing + scrollbar_width,
+		      XmNwidth, max_width + 
+		                spacing + scrollbar_width + EXTRA_WIDTH,
 		      NULL);
     }
     else
