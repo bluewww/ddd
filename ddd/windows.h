@@ -53,6 +53,7 @@ extern void initial_popup_shell(Widget w);
 extern void popup_shell(Widget w);
 extern void popdown_shell(Widget w);
 extern void iconify_shell(Widget w);
+extern void uniconify_shell(Widget w);
 extern int running_shells();
 
 extern void gdbOpenCommandWindowCB  (Widget, XtPointer, XtPointer);

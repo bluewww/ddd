@@ -264,6 +264,20 @@ void iconify_shell(Widget w)
 		   XScreenNumberOfScreen(XtScreen(w)));
 }
 
+void uniconify_shell(Widget w)
+{
+    if (w == 0 || popups_disabled)
+	return;
+
+    if (w == command_shell && command_shell_state == Iconic
+	|| w == data_disp_shell && data_disp_shell_state == Iconic
+	|| w == source_view_shell && source_view_shell_state == Iconic
+	|| w == tool_shell && tool_shell_state == Iconic)
+    {
+	popup_shell(w);
+    }
+}
+
 void popup_tty(Widget shell)
 {
     if (exec_tty_window() && !popups_disabled)
