@@ -161,4 +161,7 @@ detail.
       10.20.  On my Windows NT 4.0 running Exceed on 24-bit screen
       everything shows fine.
 
-720 (Insert new bugs here)
+720 Jens Albrecht <Jens.Albrecht@informatik.uni-erlangen.de> complains 
+    that using DBX, the `file' command does not change the source file.
+
+721 (Insert new bugs here)

@@ -18,9 +18,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 003 (Motif 1.1) The command window is scrolled whenever obscured.
 
-013 Raising windows using the `View' menu does not assign them `mwm'
-    input focus.  [Anyone willing to give me a hint here?  -AZ]
-
 021 (DBX) Using Sun DBX, attempting to dereference a `(nil)' pointer
     results in an error message and no new display.  However, the
     expression is entered as an ordinary display.
@@ -75,9 +72,6 @@ Volunteers for fixing these and other bugs are welcome!
 155 (DBX) `dump` output is not understood if local arrays are shown.
     (DBX prints these as `ARRAY')
 
-168 Jens Albrecht <Jens.Albrecht@informatik.uni-erlangen.de> complains 
-    that using DBX, the `file' command does not change the source file.
-
 169 The Manual Browser does not recognize manual (sub-)titles for
     ULTRIX and HP-UX `man' formats (probably problems with others, too)
 
@@ -99,8 +93,8 @@ Volunteers for fixing these and other bugs are welcome!
 
 272 (LessTif) The `select' font selection method works only once.
 
-281 In auto deiconify mode, the GDB console uniconifies even if other
-    windows are already there.
+281 In auto deiconify mode, the Debugger Console uniconifies even if
+    other DDD windows are already there.
 
 286 (Motif) Changing Cut/Copy/Paste accelerators at runtime does not work.
 
