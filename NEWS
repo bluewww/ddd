@@ -27,7 +27,7 @@ Examining Data
 --------------
 
 - New displays can be created left-to-right.  
-  See `Edit => Preferences => Data => Placement'.
+  See `Edit => Preferences => Data => Placement'.  (6)
 
 - Several memory leaks have been plugged. (1)
 
@@ -57,18 +57,20 @@ Building
 License
 -------
 
-- All LGPL parts of DDD have been changed to use the GPL.
+- All remaining parts of DDD that used the GNU Library Public General
+  License (LGPL) have been changed to use the GNU General Public 
+  License (GPL) instead.
 
 
-Thanks
-------
+Acknowledgments
+---------------
 
 Thanks to: (1) Arnaud Desitter <arnaud@nag.co.uk>
            (2) Hiro Sugawara <hiro@lynx.com>
 	   (3) Yann Dirson <Yann.Dirson@france.sun.com>
 	   (4) H. Nanosecond <aldomel@ix.netcom.com>
 	   (5) Gary Cliff <gary.cliff@cdott.com>
-
+	   (6) Danny Van Elsen <Danny_Van_Elsen@village.uunet.be>
 
 DDD 3.2.1
 =========

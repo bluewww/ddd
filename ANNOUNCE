@@ -1,7 +1,7 @@
-DDD 3.2.2 is available					-*- text -*-
+DDD 3.3 is available					-*- text -*-
 **********************
 
-Release 3.2.2 of DDD, the Data Display Debugger, is now available.
+Release 3.3 of DDD, the Data Display Debugger, is now available.
 
 
 What is DDD?
@@ -20,34 +20,83 @@ There is more information available at the GNU DDD homepage at
 What's new in DDD?
 ==================
 
-DDD 3.2.2 brings support for JDB as of JDK 1.2 and some bug fixes.
+DDD 3.3 brings support for new debugger variants and some bug fixes.
 
-- [JDB] DDD supports JDB as of JDK 1.2.
 
-- [GDB] DDD supports GDB 5.0.
+Debuggers and Languages
+-----------------------
 
-- [DBX] Attaching to processes works with SGI DBX, Sun DBX and other
-  DBXes as well as with Compaq Ladebug. (*)
+- JDB as of JDK 1.2 is supported.
 
-- [LessTif] Combo boxes (drop-down text boxes) no longer shrink.
+- WindRiver's version of GDB (within the Tornado/vxworks environment) 
+  is supported.  See the DDD Reference for details.
 
-- [LessTif] Text selection works better.
+- GDB 5.0 is supported.
 
-- Several memory leaks have been plugged. (*)
+- SGI DBX, Sun DBX, other DBXes as well as Compaq Ladebug can now
+  attach to processes via DDD. (1)
 
-- [Build] Respect CXXFLAGS settings.
+- Parsing of GDB breakpoint information has been improved. (2)
 
-(*) Thanks to Arnaud Desitter <arnaud@nag.co.uk>.
+
+Examining Data
+--------------
+
+- New displays can be created left-to-right.  
+  See `Edit => Preferences => Data => Placement'.  (6)
+
+- Several memory leaks have been plugged. (1)
+
+
+User Interface
+--------------
+
+- In LessTif, combo boxes (drop-down text boxes) no longer shrink.
+
+- In LessTif, Text selection works better.
+
+- Interrupts (Ctrl+C) from the controlling TTY can be issued multiple times.
+
+
+Building
+--------
+
+- The release includes the libiberty package as of GDB 5.0.
+
+- CXXFLAGS settings are respected.
+
+- A bad wildcard use in Makefile has been fixed. (3)
+
+- ddd.texi rules in Makefile have been fixed. (4)
+
+
+License
+-------
+
+- All remaining parts of DDD that used the GNU Library Public General
+  License (LGPL) have been changed to use the GNU General Public 
+  License (GPL) instead.
+
+
+Acknowledgments
+---------------
+
+Thanks to: (1) Arnaud Desitter <arnaud@nag.co.uk>
+           (2) Hiro Sugawara <hiro@lynx.com>
+	   (3) Yann Dirson <Yann.Dirson@france.sun.com>
+	   (4) H. Nanosecond <aldomel@ix.netcom.com>
+	   (5) Gary Cliff <gary.cliff@cdott.com>
+	   (6) Danny Van Elsen <Danny_Van_Elsen@village.uunet.be>
 
 
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-The ddd-3.2.2.tar.gz distribution file has been placed on `ftp.gnu.org'
+The ddd-3.3.tar.gz distribution file has been placed on `ftp.gnu.org'
 in `gnu/ddd'.
 
-DDD 3.2.2 requires LessTif 0.90 or later, available from
+DDD 3.3 requires LessTif 0.90 or later, available from
 `http://www.lesstif.org/' (or any other Motif library), and GCC 2.7.2
 or later (or any other C++ compiler)
 
