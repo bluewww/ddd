@@ -206,3 +206,6 @@ repeated_value (value, n) ->
 // The entire box
 display_box (title, value) -> 
   shadow(display_color(frame(title | hrule() | hwhite () | rm(value))));
+
+display_box (value) -> 
+  shadow(display_color(rm(value)));

@@ -1039,38 +1039,51 @@ static MMDesc source_preferences_menu[] =
 
 
 // Data preferences
-static Widget graph_compact_layout_w;
-static Widget graph_auto_layout_w;
+static Widget graph_show_hints_w;
+static Widget graph_show_annotations_w;
+static Widget graph_show_dependent_titles_w;
 
-static MMDesc layout_menu[] = 
+static MMDesc data_appearance_menu[] =
 {
-    { "compact", MMToggle,  { graphToggleCompactLayoutCB },
-      NULL, &graph_compact_layout_w },
-    { "auto",    MMToggle,  { graphToggleAutoLayoutCB },
-      NULL, &graph_auto_layout_w },
+    { "hints", MMToggle, { graphToggleShowHintsCB },
+      NULL, &graph_show_hints_w },
+    { "annotations", MMToggle, { graphToggleShowAnnotationsCB },
+      NULL, &graph_show_annotations_w },
+    { "dependentTitles", MMToggle, { graphToggleShowDependentTitlesCB },
+      NULL, &graph_show_dependent_titles_w },
     MMEnd
 };
 
 static Widget graph_detect_aliases_w;
 static Widget graph_align_2d_arrays_w;
-static Widget graph_show_hints_w;
-static Widget graph_snap_to_grid_w;
 static Widget graph_auto_close_w;
-static Widget graph_grid_size_w;
 
 static MMDesc data_preferences_menu[] = 
 {
+    { "appearance", MMButtonPanel, MMNoCB, data_appearance_menu },
     { "detectAliases", MMToggle,  { graphToggleDetectAliasesCB },
       NULL, &graph_detect_aliases_w },
     { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB },
       NULL, &graph_align_2d_arrays_w },
-    { "showHints",     MMToggle | MMUnmanaged,  { graphToggleShowHintsCB },
-      NULL, &graph_show_hints_w },
-    { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB },
-      NULL, &graph_snap_to_grid_w },
     { "autoClose", MMToggle,  { graphToggleAutoCloseCB },
       NULL, &graph_auto_close_w },
-    { "layout",        MMButtonPanel, MMNoCB, layout_menu },
+    MMEnd
+};
+
+static Widget graph_compact_layout_w;
+static Widget graph_auto_layout_w;
+static Widget graph_snap_to_grid_w;
+static Widget graph_grid_size_w;
+
+// Layout preferences
+static MMDesc layout_preferences_menu[] =
+{
+    { "compact", MMToggle,  { graphToggleCompactLayoutCB },
+      NULL, &graph_compact_layout_w },
+    { "auto",    MMToggle,  { graphToggleAutoLayoutCB },
+      NULL, &graph_auto_layout_w },
+    { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB },
+      NULL, &graph_snap_to_grid_w },
     { "gridSize",      MMScale,   { graphSetGridSizeCB },
       NULL, &graph_grid_size_w },
     MMEnd
@@ -3543,7 +3556,7 @@ void update_options()
 
     set_toggle(led_w, app_data.blink_while_busy);
 
-    Boolean show_grid, snap_to_grid, show_hints, auto_layout;
+    Boolean show_grid, snap_to_grid, show_hints, auto_layout, show_annotations;
     LayoutMode layout_mode;
     Dimension grid_width, grid_height;
 
@@ -3551,6 +3564,7 @@ void update_options()
  		  XtNshowGrid,   &show_grid,
  		  XtNsnapToGrid, &snap_to_grid,
 		  XtNshowHints,  &show_hints,
+		  XtNshowAnnotations, &show_annotations,
 		  XtNautoLayout, &auto_layout,
 		  XtNlayoutMode, &layout_mode,
 		  XtNgridWidth,  &grid_width,
@@ -3584,9 +3598,12 @@ void update_options()
     set_sensitive(align_w, show_grid);
 
     set_toggle(graph_show_hints_w, show_hints);
+    set_toggle(graph_show_annotations_w, show_annotations);
     set_toggle(graph_auto_layout_w, auto_layout);
     set_toggle(graph_compact_layout_w, layout_mode == CompactLayoutMode);
     set_toggle(graph_auto_close_w, app_data.auto_close_data_window);
+    set_toggle(graph_show_dependent_titles_w,
+	       app_data.show_dependent_display_titles);
 
     if (graph_grid_size_w != 0)
 	XtVaSetValues(graph_grid_size_w, XmNvalue, show_grid ? grid_width : 0, 
@@ -3791,6 +3808,7 @@ static bool          option_state_saved = false;
 static AppData       initial_app_data;
 static Boolean       initial_show_grid;
 static Boolean       initial_show_hints;
+static Boolean       initial_show_annotations;
 static Boolean       initial_snap_to_grid;
 static Boolean       initial_auto_layout;
 static Dimension     initial_grid_width;
@@ -3833,13 +3851,14 @@ void save_option_state()
 
     // Fetch data display resources
     XtVaGetValues(data_disp->graph_edit, 
-		  XtNshowGrid,   &initial_show_grid,
-		  XtNshowHints,  &initial_show_hints,
-		  XtNsnapToGrid, &initial_snap_to_grid,
-		  XtNlayoutMode, &initial_layout_mode, 
-		  XtNautoLayout, &initial_auto_layout,
-		  XtNgridWidth,  &initial_grid_width,
-		  XtNgridHeight, &initial_grid_height,
+		  XtNshowGrid,        &initial_show_grid,
+		  XtNshowAnnotations, &initial_show_annotations,
+		  XtNshowHints,       &initial_show_hints,
+		  XtNsnapToGrid,      &initial_snap_to_grid,
+		  XtNlayoutMode,      &initial_layout_mode, 
+		  XtNautoLayout,      &initial_auto_layout,
+		  XtNgridWidth,       &initial_grid_width,
+		  XtNgridHeight,      &initial_grid_height,
 		  NULL);
 
     XtVaGetValues(command_shell,
@@ -3986,33 +4005,24 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(graph_align_2d_arrays_w, 
 		      initial_app_data.align_2d_arrays);
     notify_set_toggle(graph_show_hints_w, initial_show_hints);
-    notify_set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
-    notify_set_toggle(graph_compact_layout_w, 
-	       initial_layout_mode == CompactLayoutMode);
-    notify_set_toggle(graph_auto_layout_w, initial_auto_layout);
+    notify_set_toggle(graph_show_dependent_titles_w, 
+		      initial_app_data.show_dependent_display_titles);
     notify_set_toggle(graph_auto_close_w,
 		      initial_app_data.auto_close_data_window);
 
-    Dimension grid_width, grid_height;
-    Boolean show_grid, show_hints;
+    Boolean show_hints, show_annotations;
 
     XtVaGetValues(data_disp->graph_edit, 
-		  XtNgridWidth,  &grid_width,
-		  XtNgridHeight, &grid_height,
-		  XtNshowGrid,   &show_grid,
-		  XtNshowHints,  &show_hints,
+		  XtNshowHints,       &show_hints,
+		  XtNshowAnnotations, &show_annotations,
 		  NULL);
 
-    if (grid_width     != initial_grid_width 
-	|| grid_height != initial_grid_height
-	|| show_grid   != initial_show_grid
-	|| show_hints  != initial_show_hints)
+    if (show_hints  != initial_show_hints ||
+	show_annotations != initial_show_annotations)
     {
 	XtVaSetValues(data_disp->graph_edit,
-		      XtNgridWidth,  grid_width  = initial_grid_width,
-		      XtNgridHeight, grid_height = initial_grid_height,
-		      XtNshowGrid,   show_grid   = initial_show_grid,
-		      XtNshowHints,  show_hints  = initial_show_hints,
+		      XtNshowHints,       initial_show_hints,
+		      XtNshowAnnotations, initial_show_annotations,
 		      NULL);
 		      
 	update_options();
@@ -4021,18 +4031,10 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 
 static bool data_preferences_changed()
 {
-    Boolean show_grid, show_hints, snap_to_grid, auto_layout;
-    LayoutMode layout_mode;
-    Dimension grid_width, grid_height;
-
+    Boolean show_hints, show_annotations;
     XtVaGetValues(data_disp->graph_edit, 
-		  XtNshowGrid,   &show_grid,
-		  XtNshowHints,  &show_hints,
-		  XtNsnapToGrid, &snap_to_grid,
-		  XtNlayoutMode, &layout_mode, 
-		  XtNautoLayout, &auto_layout,
-		  XtNgridWidth,  &grid_width,
-		  XtNgridHeight, &grid_height,
+		  XtNshowHints,       &show_hints,
+		  XtNshowAnnotations, &show_annotations,
 		  NULL);
 
     if (app_data.detect_aliases != initial_app_data.detect_aliases)
@@ -4041,10 +4043,68 @@ static bool data_preferences_changed()
     if (app_data.align_2d_arrays != initial_app_data.align_2d_arrays)
 	return true;
 
-    if (show_grid    != initial_show_grid)
+    if (app_data.auto_close_data_window != 
+	initial_app_data.auto_close_data_window)
 	return true;
 
     if (show_hints   != initial_show_hints)
+	return true;
+
+    if (show_annotations != initial_show_annotations)
+	return true;
+
+    if (app_data.show_dependent_display_titles != 
+	initial_app_data.show_dependent_display_titles)
+	return true;
+
+    return false;
+}
+
+static void ResetLayoutPreferencesCB(Widget, XtPointer, XtPointer)
+{
+    notify_set_toggle(graph_compact_layout_w, 
+	       initial_layout_mode == CompactLayoutMode);
+    notify_set_toggle(graph_auto_layout_w, initial_auto_layout);
+    notify_set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
+
+    Dimension grid_width, grid_height;
+    Boolean show_grid;
+    XtVaGetValues(data_disp->graph_edit, 
+		  XtNgridWidth,  &grid_width,
+		  XtNgridHeight, &grid_height,
+		  XtNshowGrid,   &show_grid,
+		  NULL);
+
+    if (grid_width  != initial_grid_width || 
+	grid_height != initial_grid_height ||
+	show_grid   != initial_show_grid)
+    {
+	XtVaSetValues(data_disp->graph_edit,
+		      XtNgridWidth,  initial_grid_width,
+		      XtNgridHeight, initial_grid_height,
+		      XtNshowGrid,   initial_show_grid,
+		      NULL);
+		      
+	update_options();
+    }
+}
+
+static bool layout_preferences_changed()
+{
+    Boolean show_grid, snap_to_grid, auto_layout;
+    LayoutMode layout_mode;
+    Dimension grid_width, grid_height;
+
+    XtVaGetValues(data_disp->graph_edit, 
+		  XtNshowGrid,   &show_grid,
+		  XtNsnapToGrid, &snap_to_grid,
+		  XtNlayoutMode, &layout_mode, 
+		  XtNautoLayout, &auto_layout,
+		  XtNgridWidth,  &grid_width,
+		  XtNgridHeight, &grid_height,
+		  NULL);
+
+    if (show_grid    != initial_show_grid)
 	return true;
 
     if (snap_to_grid != initial_snap_to_grid)
@@ -4054,10 +4114,6 @@ static bool data_preferences_changed()
 	return true;
 
     if (auto_layout  != initial_auto_layout)
-	return true;
-
-    if (app_data.auto_close_data_window != 
-	initial_app_data.auto_close_data_window)
 	return true;
 
     if (grid_width   != initial_grid_width)
@@ -4269,6 +4325,8 @@ static void ResetPreferencesCB(Widget w, XtPointer client_data,
 	ResetSourcePreferencesCB(w, client_data, call_data);
     else if (panel_name == "data")
 	ResetDataPreferencesCB(w, client_data, call_data);
+    else if (panel_name == "layout")
+	ResetLayoutPreferencesCB(w, client_data, call_data);
     else if (panel_name == "startup")
 	ResetStartupPreferencesCB(w, client_data, call_data);
     else if (panel_name == "fonts")
@@ -4291,6 +4349,8 @@ void update_reset_preferences()
 	    sensitive = source_preferences_changed();
 	else if (panel_name == "data")
 	    sensitive = data_preferences_changed();
+	else if (panel_name == "layout")
+	    sensitive = layout_preferences_changed();
 	else if (panel_name == "startup")
 	    sensitive = startup_preferences_changed();
 	else if (panel_name == "fonts")
@@ -4477,6 +4537,8 @@ static void make_preferences(Widget parent)
     add_panel(change, buttons, "source",  source_preferences_menu,  
 	      max_width, max_height, false);
     add_panel(change, buttons, "data",    data_preferences_menu,    
+	      max_width, max_height, false);
+    add_panel(change, buttons, "layout",  layout_preferences_menu,    
 	      max_width, max_height, false);
     add_panel(change, buttons, "startup", startup_preferences_menu, 
 	      max_width, max_height, false);

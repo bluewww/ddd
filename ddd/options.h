@@ -85,6 +85,8 @@ extern void graphToggleSnapToGridCB         (Widget, XtPointer, XtPointer);
 extern void graphToggleCompactLayoutCB      (Widget, XtPointer, XtPointer);
 extern void graphToggleAutoLayoutCB         (Widget, XtPointer, XtPointer);
 extern void graphToggleAutoCloseCB          (Widget, XtPointer, XtPointer);
+extern void graphToggleShowAnnotationsCB    (Widget, XtPointer, XtPointer);
+extern void graphToggleShowDependentTitlesCB(Widget, XtPointer, XtPointer);
 extern void graphSetGridSizeCB              (Widget, XtPointer, XtPointer);
 
 extern void dddToggleGroupIconifyCB         (Widget, XtPointer, XtPointer);

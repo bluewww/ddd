@@ -342,6 +342,37 @@ void graphToggleShowHintsCB(Widget, XtPointer, XtPointer call_data)
     update_options();
 }
 
+void graphToggleShowAnnotationsCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    Arg args[10];
+    Cardinal arg = 0;
+    XtSetArg(args[arg], XtNshowAnnotations, info->set); arg++;
+    XtSetValues(data_disp->graph_edit, args, arg);
+
+    if (info->set)
+	set_status("Annotations on.");
+    else
+	set_status("Annotations off.");
+
+    update_options();
+}
+
+void graphToggleShowDependentTitlesCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.show_dependent_display_titles = info->set;
+    if (info->set)
+	set_status("Dependent titles on.");
+    else
+	set_status("Dependent titles off.");
+
+    update_options();
+}
 
 void graphToggleSnapToGridCB(Widget, XtPointer, XtPointer call_data)
 {
@@ -1855,8 +1886,13 @@ bool save_options(unsigned long flags)
     os << widget_value(data_disp->graph_edit, XtNshowGrid)   << '\n';
     os << widget_value(data_disp->graph_edit, XtNsnapToGrid) << '\n';
     os << widget_value(data_disp->graph_edit, XtNshowHints)  << '\n';
+    os << widget_value(data_disp->graph_edit, XtNshowAnnotations) << '\n';
     os << widget_value(data_disp->graph_edit, XtNlayoutMode) << '\n';
     os << widget_value(data_disp->graph_edit, XtNautoLayout) << '\n';
+    os << bool_app_value(XtNshowBaseDisplayTitles, 
+			 app_data.show_base_display_titles) << '\n';
+    os << bool_app_value(XtNshowDependentDisplayTitles,
+			 app_data.show_dependent_display_titles) << '\n';
     os << bool_app_value(XtNautoCloseDataWindow,
 			 app_data.auto_close_data_window) << '\n';
 

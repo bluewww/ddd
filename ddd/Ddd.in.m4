@@ -593,6 +593,9 @@ Ddd*graph_edit.snapToGrid:	on
 ! Do we wish to show edge hints?
 Ddd*graph_edit.showHints:	on
 
+! Do we wish to show edge annotations?
+Ddd*graph_edit.showAnnotations:	on
+
 ! What kind of layout do we wish? (regular, compact)
 Ddd*graph_edit.layoutMode:	regular
 
@@ -2967,9 +2970,10 @@ Ddd*preferences*buttons*shadowThickness:	2
 Ddd*preferences*buttons*alignment:		XmALIGNMENT_CENTER
 Ddd*preferences*panel*XmRowColumn.marginHeight: 0
 
-Ddd*preferences*buttons*general.labelString:	\ \ \ General\ \ \ 
+Ddd*preferences*buttons*general.labelString:	\ General\ 
 Ddd*preferences*buttons*source.labelString:	Source
 Ddd*preferences*buttons*data.labelString:	Data
+Ddd*preferences*buttons*layout.labelString:	Layout
 Ddd*preferences*buttons*startup.labelString:	Startup
 Ddd*preferences*buttons*fonts.labelString:	Fonts
 Ddd*preferences*buttons*helpers.labelString:	Helpers
@@ -3113,19 +3117,30 @@ Machine Code Indentation
 Ddd*preferences*data*helpString:	\
 @rm These are the EMPH(Data Preferences).\n\
 \n\
+ITEM Using LBL(Show), you can define the appearance of the data:\n\
+SUBITEM LBL(Edge hints) enables handles for multi-line and arc edges.\n\
+SUBITEM LBL(Edge annotations) enables named edges.\n\
+SUBITEM LBL(Titles) enables titles of dependent displays.\n\
 ITEM If LBL(Detect aliases) is set, DDD detects displays with the same\n\
     physical address and suppresses all aliases except the one that was\n\
     least recently changed.  Useful for examining shared data structures.\n\
 ITEM If LBL(Display two-dimensional arrays as tables) is set, the elements\n\
     of two-dimensional arrays are aligned in a table.\n\
     Otherwise, two-dimensional arrays are displayed as nested linear arrays.\n\
-ITEM If LBL(Auto-align displays) is set,\n\
-    each display is aligned on the nearest grid point.\n\
 ITEM If LBL(Close data window when deleting last display) is set,\n\
     deleting the last display automatically closes the data window.\n\
+\n\
+Use the buttons above to view and change other preferences.\n\
+Click on LBL(Reset) to restore the saved preferences.
+
+Ddd*preferences*layout*helpString:	\
+@rm These are the EMPH(Layout Preferences).\n\
+\n\
 ITEM LBL(Compact layout) enables a compact layout,\n\
     suitable for homogeneous structures only.\n\
 ITEM LBL(Automatic layout) makes DDD layout the graph after each change.\n\
+ITEM If LBL(Auto-align displays) is set,\n\
+    each display is aligned on the nearest grid point.\n\
 ITEM In LBL(Grid size), you can change the spacing of grid points.\n\
     A spacing of 0 disables the grid.\n\
 \n\
@@ -3136,18 +3151,23 @@ Ddd*preferences*detectAliases.labelString:	\
 Detect Aliases (shared data structures)
 Ddd*preferences*align2dArrays.labelString:	\
 Display Two-Dimensional Arrays as Tables
-Ddd*preferences*showHints.labelString:	        \
-Show Edge Hints
 Ddd*preferences*snapToGrid.labelString:	        \
 Auto-Align Displays on Nearest Grid Point
 Ddd*preferences*autoClose.labelString:	        \
 Close Data Window when Deleting last Display
-Ddd*preferences*layout.labelString:             \
-Graph Layout
+
+Ddd*preferences*appearance.labelString:	        \
+Show
+Ddd*preferences*hints.labelString:	        \
+Edge Hints
+Ddd*preferences*annotations.labelString:	\
+Edge Annotations
+Ddd*preferences*dependentTitles.labelString:    \
+Titles of Dependent Displays
 Ddd*preferences*auto.labelString:	        \
-Automatic
+Automatic Layout
 Ddd*preferences*compact.labelString:	        \
-Compact
+Compact Layout
 
 Ddd*preferences*gridSize.orientation:		XmHORIZONTAL
 Ddd*preferences*gridSize.minimum:		0
