@@ -985,36 +985,35 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
     // Try hint offsets
     BoxPoint pos1, pos2;
     bool found = false;
+
+    const bool try_direct = false;
+
     const int max_iterations = 100;
     for (int i = 0; i < max_iterations && !found; i++)
     {
-	for (int one_hint = 0; !found && one_hint <= 1; one_hint++)
+	for (int side = RIGHT; !found && side <= LEFT; side++)
 	{
-	    for (int side = RIGHT; !found && side <= LEFT; side++)
+	    BoxPoint offset = offsets[side] * i;
+
+	    if (try_direct && i == 0)
 	    {
-		BoxPoint offset = offsets[side] * i;
-
-		if (i == 0)
-		{
-		    // Try direct edge
-		    pos1 = from->pos() + offset;
-		    pos2 = to->pos()   + offset;
-		}		
-		else
-		{
-		    // Try one-hint edge
-		    pos1 = pos2 = center + offset;
-		}
-
+		// Try direct edge
+		pos1 = from->pos() + offset;
+		pos2 = to->pos()   + offset;
+	    }		
+	    else
+	    {
+		// Try one-hint edge
+		pos1 = pos2 = center + offset;
+	    }
 #if 0
-		clog << "#" << i << " - "
-		     << (side == LEFT ? "left side:  " : "right side: ")
-		     << "trying pos1 = " << pos1 
-		     << " and pos2 = " << pos2 << "\n";
+	    clog << "#" << i << " - "
+		 << (side == LEFT ? "left side:  " : "right side: ")
+		 << "trying pos1 = " << pos1 
+		 << " and pos2 = " << pos2 << "\n";
 #endif
 
-		found = hint_positions_ok(w, from, to, pos1, pos2);
-	    }
+	    found = hint_positions_ok(w, from, to, pos1, pos2);
 	}
     }
 
@@ -1027,14 +1026,14 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
 	pos2 = to->pos();
     }
 
-    if (pos1 == from->pos() && pos2 == to->pos())
+    if (try_direct && pos1 == from->pos() && pos2 == to->pos())
     {
 	// No need for hints - add direct edge
 	add_direct_alias_edge(w, alias_disp_nr, from, to);
     }
     else
     {
-	assert(pos1 == pos2);
+	assert(!try_direct || pos1 == pos2);
 
 	// Add single hint
 	HintGraphNode *hint = new HintGraphNode(pos1);
