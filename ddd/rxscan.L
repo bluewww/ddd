@@ -62,7 +62,7 @@ extern "C" int yywrap()
 %}
 
 /* Addresses -- in various formats */
-A	(0x[0-9a-fA-F]+|0[0-9a-fA-F]+[hH]|H'[0-9a-fA-F]+|00+|[(]nil[)]|NIL|null|@[0-9a-fA-F]+|16_[0-9a-f]+)
+A	(0x[0-9a-fA-F]+|0[0-9a-fA-F]+[hH]|H\'[0-9a-fA-F]+|00+|[(]nil[)]|NIL|null|@[0-9a-fA-F]+|16_[0-9a-f]+)
 
 /* Simple prefix of address */
 a	[0H@]
@@ -96,6 +96,10 @@ C	(.|\n)*
 
 /* `virtual table', in all variants */
 V	v(irtual{W})?t(a)?bl(e)?
+
+/* A Java identifier */
+J       [A-Za-z][A-Za-z0-9.]*
+
 
 /* This lexer is quite huge.  Sun LEX wants some extra sizes. */
 %e 5000
@@ -269,7 +273,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S046>{P}:{W}[^ ]			return &rxgdb_begin_of_display;
 <S047>{P}:{w}{w}{w}			return &rxgdb_begin_of_display_info;
 <S048>{P}		 		return &rxgdb_disp_nr;
-<S049>{C}[(][A-Za-z][A-Za-z0-9.]*(:{P})?[)] return &rxjdbpos;
+<S049>{C}(class[(]{J}[)]|[(]{J}:{P}[)]) return &rxjdbpos;
 <S050>{_}graph{W}{C}			return &rxgraph_cmd;
 <S051>[A-Za-z_$][A-Za-z0-9_$]*		return &rxidentifier;
 <S052>[[]-?{D}]{C}			return &rxindex;

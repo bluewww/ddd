@@ -635,10 +635,11 @@ void PosBuffer::filter (string& answer)
 
 		// Having reached a breakpoint, JDB uses a format like
 		// `(foo.bar.HelloWorld:3)'.
-		// Having loaded a class, JDB uses `(foo.bar.HelloWorld)'.
+		// Having loaded a class, JDB uses `class(foo.bar.HelloWorld)'.
 #if RUNTIME_REGEX
 		static regex 
-		    rxjdbpos(".*[(][A-Za-z][A-Za-z0-9.]*(:[1-9][0-9]*)?[)]");
+		    rxjdbpos("(class[(][A-Za-z][A-Za-z0-9.]*[)]|"
+			     "[(][A-Za-z][A-Za-z0-9.]*:[1-9][0-9]*[)])");
 #endif
 		if (line.matches(rxjdbpos))
 		{
