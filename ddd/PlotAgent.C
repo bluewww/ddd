@@ -115,6 +115,7 @@ int PlotAgent::flush()
     if (ndim == 0 || titles.size() == 0)
     {
 	// No data - ignore
+	return -1;
     }
     else
     {
