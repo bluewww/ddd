@@ -4292,15 +4292,6 @@ Ddd*invalid_range_error.title: @DDD@: Invalid Range
 Ddd*invalid_range_error*helpString: \
 @rm You entered an invalid range X..Y, with X > Y.
 
-Ddd*suppressed_alias_warning.title: @DDD@: Aliases Suppressed
-Ddd*suppressed_alias_warning*helpString: \
-@rm @DDD@ has detected some @sl display aliases--@rm that is, \
-multiple displays\n\
-whose expressions are stored at the same memory location.\n\
-@DDD@ has suppressed all aliases except the one single display that has \n\
-least recently changed.\n\
-Each suppressed display will reappear as soon as it is no more an alias.
-
 
 !-----------------------------------------------------------------------------
 ! Easter Eggs
