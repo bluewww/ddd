@@ -38,7 +38,7 @@ echo "const char *config_info = "
     echo "Built by $userinfo"
     echo "on `date`."
 
-    echo
+    echo "                                        "
     echo Features:
     (
     grep '#define' config.h
