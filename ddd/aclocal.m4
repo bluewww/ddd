@@ -1,7 +1,7 @@
 dnl $Id$
 dnl Local autoconf macros
 dnl 
-dnl Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+dnl Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
 dnl Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 dnl 
 dnl This file is part of the ICE Library.
@@ -25,7 +25,50 @@ dnl ICE is the incremental configuration engine.
 dnl Contact ice@ips.cs.tu-bs.de for details.
 dnl
 dnl
+dnl Extended compiler checks.  Check not only for a compiler,
+dnl but also determine whether it compiles a simple "hello, world" 
+dnl program.
 dnl
+AC_DEFUN(ICE_PROG_CC,
+[
+AC_REQUIRE([AC_ISC_POSIX])
+AC_REQUIRE([AC_PROG_CC])
+AC_MSG_CHECKING(whether ${CC} compiles a simple C program)
+AC_CACHE_VAL(ice_cv_prog_cc,
+[
+AC_LANG_SAVE
+AC_LANG_C
+AC_TRY_LINK([#include <stdio.h>], [printf("hello, world!");],
+ice_cv_prog_cc=yes,
+ice_cv_prog_cc=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_prog_cc)
+if test "$ice_cv_prog_cc" = no; then
+AC_MSG_ERROR(You must set the environment variable CC to a working
+                  C compiler.  Also check the CFLAGS settings.)
+fi
+])dnl
+dnl
+AC_DEFUN(ICE_PROG_CXX,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether ${CXX} compiles a simple C++ program)
+AC_CACHE_VAL(ice_cv_prog_cxx,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_LINK([#include <iostream.h>], [cout << "hello, world!";],
+ice_cv_prog_cxx=yes,
+ice_cv_prog_cxx=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_prog_cxx)
+if test "$ice_cv_prog_cxx" = no; then
+AC_MSG_ERROR(You must set the environment variable CXX to a working 
+                  C++ compiler.  Also check the CXXFLAGS settings.)
+fi
+])dnl
 dnl
 dnl If the C++ compiler accepts the `-fexternal-templates' flag,
 dnl set output variable `EXTERNAL_TEMPLATES' to `-fexternal-templates',

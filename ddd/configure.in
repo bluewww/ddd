@@ -123,15 +123,16 @@ fi
 AC_MSG_RESULT(${LFLAGS})
 AC_SUBST(LFLAGS)dnl
 AC_PROG_AWK
-AC_PROG_CC
-if test "$CC" = ""; then
-AC_MSG_ERROR(could not find C compiler)
-fi
+dnl
+dnl Find and check C/C++ compilers
+dnl
+ICE_PROG_CC
+ICE_PROG_CXX
+dnl
+dnl 
+dnl Find and check C/C++ preprocessors
+dnl
 AC_PROG_CPP
-AC_PROG_CXX
-if test "$CXX" = ""; then
-AC_MSG_ERROR(could not find C++ compiler)
-fi
 AC_PROG_CXXCPP
 dnl
 dnl
