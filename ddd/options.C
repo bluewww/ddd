@@ -2349,8 +2349,9 @@ bool save_options(unsigned long flags)
     if (need_settings() || need_save_defines())
     {
 	string settings;
-	settings += get_settings(gdb->type());
-	settings += get_defines(gdb->type());
+
+	settings += get_settings(gdb->type(), flags);
+	settings += get_defines(gdb->type(), flags);
 
 	settings.gsub(app_data.auto_command_prefix, "@AUTO@");
 

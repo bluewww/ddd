@@ -6,10 +6,12 @@ DDD 3.2 [in development]
 
 DDD 3.2 brings almost nothing yet.
 
-- In dialogs where changing texts requires an explicit action for the
-  change to take effect, have an `Apply' button that applies the
-  changes (bound to Return).  This affects the Breakpoint Properties,
-  Define Command, and GDB Settings Dialogs.
+- In Breakpoint Properties, Define Command, and GDB Settings, have an
+  `Apply' button that applies changes to text fields.
+- The GDB source directory path is saved with the current session.
+
+DDD 3.2 also incorporates all changes from DDD 3.1.1 and later; see
+below.
 
 
 DDD 3.1.2

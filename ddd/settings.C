@@ -130,7 +130,8 @@ static WidgetArray       infos_entries;
 //-----------------------------------------------------------------------
 
 static void get_setting(ostream& os, DebuggerType type,
-			const string& base, string value);
+			const string& base, string value,
+			unsigned long flags = SAVE_DEFAULT | SAVE_SESSION);
 static void set_arg();
 
 
@@ -2390,7 +2391,7 @@ static Widget create_settings(DebuggerType type)
 
 	// Get the command definitions, too.  These must be included
 	// in saving GDB state.
-	get_defines(type);
+	(void) get_defines(type);
     }
     else if (settings_panel != 0 && need_reload_settings)
     {
@@ -2507,7 +2508,8 @@ void reset_signals()
 }
 
 static void get_setting(ostream& os, DebuggerType type,
-			const string& base, string value)
+			const string& base, string value,
+			unsigned long flags)
 {
     if (value == "unlimited")
 	value = "0";
@@ -2572,11 +2574,25 @@ static void get_setting(ostream& os, DebuggerType type,
 	    // Add setting (DBX).
 	    os << base << " " << value << '\n';
 	}
+	else if (base == "dir" && (flags & SAVE_SESSION))
+	{
+	    // `dir' values are only saved within a session.
+
+	    os << base << "\n"	// Clear old value
+	       << base << " " << value << '\n';
+	}
+#if 0 // FIXME: How do we reset the path within GDB?
+	else if (base == "path" && (flags & SAVE_SESSION))
+	{
+	    // `path' values are only saved within a session.
+
+	    os << base << "\n"	// Clear old value
+	       << base << " " << value << '\n';
+	}
+#endif
 	else
 	{
-	    // `dir' and `path' values are not saved, since they are
-	    // dependent on the current machine and the current
-	    // executable (GDB).
+	    // Other value -- ignore
 	}
 	break;
 
@@ -2595,7 +2611,7 @@ static void get_setting(ostream& os, DebuggerType type,
 }
 
 // Fetch GDB settings string
-string get_settings(DebuggerType type)
+string get_settings(DebuggerType type, unsigned long flags)
 {
     Widget settings = create_settings(type);
     if (settings == 0)
@@ -2607,14 +2623,14 @@ string get_settings(DebuggerType type)
 	Widget entry = settings_entries[i];
 	string value = settings_values[entry];
 
-	get_setting(command, type, XtName(entry), value);
+	get_setting(command, type, XtName(entry), value, flags);
     }
 
     return string(command);
 }
 
 // Fetch GDB signal handling string
-string get_signals(DebuggerType type)
+string get_signals(DebuggerType type, unsigned long /* flags */)
 {
     if (type != GDB)
 	return "";		// Not supported yet
@@ -2736,7 +2752,7 @@ static void update_defines()
 }
 
 // Get current definitions
-string get_defines(DebuggerType type)
+string get_defines(DebuggerType type, unsigned long /* flags */)
 {
     if (type != GDB)
 	return "";		// Not supported yet

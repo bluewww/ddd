@@ -37,6 +37,7 @@
 #include "bool.h"
 #include "strclass.h"
 #include "GDBAgent.h"
+#include "options.h"
 
 // Debugger settings
 
@@ -53,7 +54,8 @@ extern bool need_settings();
 extern void update_settings();
 
 // Get settings string
-extern string get_settings(DebuggerType type);
+extern string get_settings(DebuggerType type, 
+			   unsigned long flags = SAVE_DEFAULT);
 
 // Get help on `DBXENV BASE'
 extern string get_dbx_help(string dbxenv, string base);
@@ -95,7 +97,8 @@ extern bool need_signals();
 extern void update_signals();
 
 // Get signals string
-extern string get_signals(DebuggerType type);
+extern string get_signals(DebuggerType type,
+			  unsigned long flags = SAVE_DEFAULT);
 
 // Mark signals as `saved'
 extern void save_signals_state();
@@ -117,7 +120,8 @@ extern void set_need_save_defines(bool val = true);
 extern bool need_save_defines();
 
 // Get current definitions
-extern string get_defines(DebuggerType type);
+extern string get_defines(DebuggerType type,
+			  unsigned long flags = SAVE_DEFAULT);
 
 // True if defined command
 extern bool is_defined_cmd(const string& command);
