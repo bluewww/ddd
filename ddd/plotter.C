@@ -721,7 +721,13 @@ static PlotWindowInfo *new_decoration(const string& name)
 	XtManageChild(main_window);
 
 	MMcreateMenuBar(main_window, "menubar", menubar);
-	MMaddCallbacks(menubar, XtPointer(plot));
+	MMaddCallbacks(file_menu,    XtPointer(plot));
+	MMaddCallbacks(simple_edit_menu);
+	MMaddCallbacks(view_menu,    XtPointer(plot));
+	MMaddCallbacks(plot_menu,    XtPointer(plot));
+	MMaddCallbacks(scale_menu,   XtPointer(plot));
+	MMaddCallbacks(contour_menu, XtPointer(plot));
+	MMaddCallbacks(simple_help_menu);
 	MMaddHelpCallback(menubar, ImmediateHelpCB);
 
 	arg = 0;
