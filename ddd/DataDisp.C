@@ -125,7 +125,7 @@ extern void register_menu_shell(MMDesc *items);
 extern bool process_emergencies();
 
 //-----------------------------------------------------------------------
-// Xt-Zeugs
+// Xt Stuff
 //-----------------------------------------------------------------------
 XtActionsRec DataDisp::actions [] = {
     {"graph-select",         DataDisp::graph_selectAct},
@@ -143,7 +143,7 @@ XtActionsRec DataDisp::actions [] = {
 
 
 
-// Popup-Menues - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Popup Menu
 struct GraphItms { enum Itms {SelectAll, Refresh, NewArg, New}; };
 MMDesc DataDisp::graph_popup[] =
 {
@@ -392,9 +392,11 @@ int DataDisp::count_data_displays() const
     return count;
 }
 
+
 //-----------------------------------------------------------------------------
 // Button Callbacks
 //-----------------------------------------------------------------------------
+
 void DataDisp::dereferenceCB(Widget w, XtPointer client_data, 
 			     XtPointer call_data)
 {
@@ -2242,23 +2244,18 @@ void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
 #endif
 }
 
+
 //-----------------------------------------------------------------------
-// Anfragen an gdb stellen und Antworten bearbeiten
+// Handle GDB input / output
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Erzeugung von neuen (unabhaengigen) Displays
+// Create new Display(s)
 //-----------------------------------------------------------------------------
 
 #if RUNTIME_REGEX
 static regex rxmore_than_one ("\\[-?[0-9]+\\.\\.-?[0-9]+\\]");
 #endif
-
-// ***************************************************************************
-// sendet den Display-Befehl an den gdb
-// wird ein Boxpoint uebergeben, so wird der neue Knoten dorthin gesetzt
-// sonst an eine Default-Position.
-//
 
 void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
 {
@@ -2437,7 +2434,9 @@ void DataDisp::new_display(string display_expression, BoxPoint *p,
 }
 
 
-
+//-----------------------------------------------------------------------------
+// Show progress when creating or updating
+//-----------------------------------------------------------------------------
 
 struct StatusShower {
     string msg;			// The message shown
@@ -2523,6 +2522,10 @@ bool StatusShower::process(int remaining_length)
 }
 
 
+//-----------------------------------------------------------------------------
+// Create new data and user nodes
+//-----------------------------------------------------------------------------
+
 DispNode *DataDisp::new_data_node(const string& given_name,
 				  const string& scope,
 				  const string& answer)
@@ -2589,11 +2592,7 @@ DispNode *DataDisp::new_user_node(const string& name,
     return new DispNode(nr, name, "", answer);
 }
 
-
-// ***************************************************************************
-// erzeugt neuen Display-Knoten und setzt ihn an den im data-Argument
-// angegebenen Punkt (falls (BoxPoint *)data != BoxPoint())
-//
+// Create new data display from ANSWER
 void DataDisp::new_data_displayOQC (const string& answer, void* data)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)data;
@@ -2656,6 +2655,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	prompt();
 }
 
+// Create new user display from ANSWER
 void DataDisp::new_user_displayOQC (const string& answer, void* data)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)data;
@@ -2711,24 +2711,24 @@ void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
 	return;
     }
 
+    // Simulate a `display' output
     string display = itostring(next_gdb_display_number) + ": " 
-	+ info->display_expression + " = " + answer;
+	+ info->display_expression + " = " + answer + '\n';
     new_data_displayOQC(display, data);
 }
 
 
-// ***************************************************************************
-// wird von new_displaySQ aufgerufen, wenn die display_expression die
-// array-notation rxmore_than_one enthaelt.
-//
+//-----------------------------------------------------------------------------
+// Create multiple displays, using the [FROM..TO] syntax
+//-----------------------------------------------------------------------------
+
 void DataDisp::new_data_displaysSQA (string display_expression,
 				     void *data)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)data;
     assert (display_expression.contains (rxmore_than_one));
 
-    // einzelne display-Ausdruecke erzeugen und display-Befehle im array 
-    // abschicken...
+    // Create individual display expressions and process entire array
     string prefix  = display_expression.before(rxmore_than_one);
     string postfix = display_expression.after(rxmore_than_one);
     string range   = display_expression.from(rxmore_than_one);
@@ -2792,7 +2792,6 @@ void DataDisp::new_data_displaysSQA (string display_expression,
     }
 }
 
-// ***************************************************************************
 void DataDisp::new_data_displaysOQAC (string answers[],
 				      void*  qu_datas[],
 				      int    count,
@@ -2850,7 +2849,7 @@ void DataDisp::new_data_displaysOQAC (string answers[],
 
 
 //-----------------------------------------------------------------------------
-// Den disp-graph auf aktuellen Stand bringen.
+// Refresh graph
 //-----------------------------------------------------------------------------
 
 int DataDisp::add_refresh_data_commands(StringArray& cmds)
@@ -2897,20 +2896,15 @@ int DataDisp::add_refresh_user_commands(StringArray& cmds)
     return cmds.size() - initial_size;
 }
 
+void DataDisp::refresh_display(Widget origin)
+{
+    gdb_command("graph refresh", origin);
+}
 
 #define PROCESS_INFO_DISPLAY 0
 #define PROCESS_DATA         1
 #define PROCESS_USER         2
 #define PROCESS_ADDR         3
-
-// ***************************************************************************
-// sendet die Befehle "info display" und "display" an den gdb,
-// um Displays zu aktualisieren.
-//
-void DataDisp::refresh_display(Widget origin)
-{
-    gdb_command("graph refresh", origin);
-}
 
 void DataDisp::refresh_displaySQ(Widget origin, bool verbose)
 {
@@ -2950,9 +2944,6 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose)
     }
 }
 
-// ***************************************************************************
-// Aktualisiert die Displays entsprechend.
-//
 void DataDisp::refresh_displayOQAC (string answers[],
 				    void*  qu_datas[],
 				    int    count,
@@ -3023,13 +3014,8 @@ void DataDisp::refresh_displayOQAC (string answers[],
 
 
 //-----------------------------------------------------------------------------
-// Displays ausschalten (disable)
+// Disabling Displays
 //-----------------------------------------------------------------------------
-
-// ***************************************************************************
-// sendet den 'disable display'-Befehl mit den Nummern an den gdb
-// und aktualisiert den disp_graph.
-//
 
 string DataDisp::numbers(IntArray& a)
 {
@@ -3104,10 +3090,6 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose)
     }
 }
 
-
-// ***************************************************************************
-// Bei nicht-leerer Antwort Ausgabe als Fehlermeldung.
-//
 void DataDisp::disable_displayOQC (const string& answer, void *data)
 {
     if (answer == NO_GDB_ANSWER)
@@ -3126,13 +3108,9 @@ void DataDisp::disable_displayOQC (const string& answer, void *data)
 
 
 //-----------------------------------------------------------------------------
-// Displays einschalten (enable)
+// Enable Displays
 //-----------------------------------------------------------------------------
 
-// ***************************************************************************
-// sendet den 'enable display'-Befehl mit den Nummern an den gdb
-// und aktualisiert den disp_graph.
-//
 void DataDisp::enable_display(IntArray& display_nrs)
 {
     if (display_nrs.size() > 0)
@@ -3179,10 +3157,6 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose)
     }
 }
 
-
-// ***************************************************************************
-// Bei nicht-leerer Antwort Ausgabe als Fehlermeldung.
-//
 void DataDisp::enable_displayOQC (const string& answer, void *)
 {
     if (answer == NO_GDB_ANSWER)
@@ -3194,13 +3168,9 @@ void DataDisp::enable_displayOQC (const string& answer, void *)
 
 
 //-----------------------------------------------------------------------------
-// Displays loeschen (delete)
+// Delete Displays
 //-----------------------------------------------------------------------------
 
-// ***************************************************************************
-// sendet den 'delete display'-Befehl mit den Nummern an den gdb
-// und aktualisiert den disp_graph.
-//
 void DataDisp::delete_display(IntArray& display_nrs)
 {
     if (display_nrs.size() > 0)
@@ -3250,10 +3220,6 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose)
     update_infos();
 }
 
-
-// ***************************************************************************
-// Bei nicht-leerer Antwort Ausgabe als Fehlermeldung.
-//
 void DataDisp::delete_displayOQC (const string& answer, void *data)
 {
     if (answer == NO_GDB_ANSWER)
@@ -3391,7 +3357,6 @@ void DataDisp::process_info_display (string& info_display_answer)
 // Process `display' output
 //-----------------------------------------------------------------------------
 
-// ***************************************************************************
 string DataDisp::process_displays(string& displays,
 				  bool& disabling_occurred)
 {
@@ -3915,6 +3880,7 @@ void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
     manage_and_raise(edit_displays_dialog_w);
 }
 
+
 //----------------------------------------------------------------------------
 // Value Editor
 //----------------------------------------------------------------------------
@@ -3986,6 +3952,7 @@ void DataDisp::setDCB(Widget set_dialog, XtPointer client_data, XtPointer)
     gdb_command(gdb->assign_command(disp_value->full_name(), value),
 		last_origin);
 }
+
 
 //----------------------------------------------------------------------------
 // Helpers for user displays
