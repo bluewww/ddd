@@ -1,7 +1,7 @@
 # $Id$
 # DDD Makefile.
 
-# Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 # 
 # This file is part of the DDD Library.
@@ -928,6 +928,11 @@ uninstall: uninstall-prog uninstall-man
 # since we may have precompiled packages
 .PHONY: install-prog
 install-prog:
+	-parent=`$(ECHO) $(bindir) | $(SED) -e 's@/[^/]*$$@@'`; \
+	grandparent=`$(ECHO) $$parent | $(SED) -e 's@/[^/]*$$@@'`; \
+	test -d $$grandparent || $(MKDIR) $$grandparent; \
+	test -d $$parent || $(MKDIR) $$parent
+	-test -d $(bindir) || $(MKDIR) $(bindir)
 	for p in $(PROGS); do \
 	    $(INSTALL_PROGRAM) \
 		$$p $(bindir)/`$(ECHO) $$p | $(SED) '$(transform)'`; \
@@ -942,6 +947,8 @@ uninstall-prog:
 .PHONY: install-info
 install-info: $(INFO_BASES)
 	-parent=`$(ECHO) $(infodir) | $(SED) -e 's@/[^/]*$$@@'`; \
+	grandparent=`$(ECHO) $$parent | $(SED) -e 's@/[^/]*$$@@'`; \
+	test -d $$grandparent || $(MKDIR) $$grandparent; \
 	test -d $$parent || $(MKDIR) $$parent
 	-test -d $(infodir) || $(MKDIR) $(infodir)
 	for i in $(INFOS); do \
@@ -955,6 +962,8 @@ uninstall-info:
 .PHONY: install-man
 install-man: ddd.1
 	-parent=`$(ECHO) $(man1dir) | $(SED) -e 's@/[^/]*$$@@'`; \
+	grandparent=`$(ECHO) $$parent | $(SED) -e 's@/[^/]*$$@@'`; \
+	test -d $$grandparent || $(MKDIR) $$grandparent; \
 	test -d $$parent || $(MKDIR) $$parent
 	-test -d $(man1dir) || $(MKDIR) $(man1dir)
 	$(INSTALL_DATA) ddd.1 \
