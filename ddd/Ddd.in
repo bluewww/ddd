@@ -3586,9 +3586,8 @@ When you have finished debugging the attached process, you can use\n\
 the process\n\
 continues its execution.\n\
 \n\
-Before using @bf Attach@rm, you should use @bf Open Program @rm\n\
-to specify the program running in the process, and to load\n\
-its symbol table.\n\
+Before using @bf Attach@rm, you should use @bf Open Program @rm to specify\n\
+the program running in the process, and to load its symbol table.\n\
 \n\
 Click on @bf Attach @rm to attach to the selected process.\n\
 Click on @bf Update @rm to update the list of processes.
