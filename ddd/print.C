@@ -50,6 +50,8 @@ char print_rcsid[] =
 #include "wm.h"
 #include "charsets.h"
 
+#include "LessTifH.h"
+
 #include <ctype.h>
 #include <stdio.h>
 #include <iostream.h>
@@ -580,6 +582,11 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     print_dialog = 
 	verify(XmCreatePromptDialog(find_shell(w), "print", ArgList(0), 0));
     Delay::register_shell(print_dialog);
+
+    if (lesstif_hacks_enabled)
+	XtUnmanageChild(XmSelectionBoxGetChild(print_dialog,
+					       XmDIALOG_APPLY_BUTTON));
+
     XtAddCallback(print_dialog, XmNokCallback,     
 		  graphQuickPrintCB, XtPointer(0));
     XtAddCallback(print_dialog, XmNcancelCallback, 
@@ -782,6 +789,10 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 	verify(XmCreatePromptDialog(find_shell(w), "paper_size_dialog", 
 				    ArgList(0), 0));
     Delay::register_shell(paper_size_dialog);
+
+    if (lesstif_hacks_enabled)
+	XtUnmanageChild(XmSelectionBoxGetChild(paper_size_dialog,
+					       XmDIALOG_APPLY_BUTTON));
 
     XtAddCallback(paper_size_dialog, XmNokCallback,     
 		  SetPaperSizeCB, XtPointer(0));

@@ -69,6 +69,7 @@ char settings_rcsid[] =
 #include "SourceView.h"
 #include "string-fun.h"
 #include "DataDisp.h"
+#include "LessTifH.h"
 
 static Widget            settings_form  = 0;
 static Widget            reset_settings = 0;
@@ -1308,9 +1309,13 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 					       args, arg));
     Delay::register_shell(panel);
 
+    if (lesstif_hacks_enabled)
+	XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_APPLY_BUTTON));
+
     // Remove old prompt
     XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_SELECTION_LABEL));
+
     XtAddCallback(panel, XmNhelpCallback, ImmediateHelpCB, 0);
     XtAddCallback(panel, XmNokCallback, UnmanageThisCB, 
     	      XtPointer(panel));

@@ -2098,6 +2098,10 @@ SourceView::SourceView (XtAppContext app_context,
 				    args, arg));
     Delay::register_shell(edit_breakpoints_dialog_w);
 
+    if (lesstif_hacks_enabled)
+	XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
+					       XmDIALOG_APPLY_BUTTON));
+
     XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
@@ -3750,6 +3754,11 @@ void SourceView::NewBreakpointCB(Widget, XtPointer, XtPointer)
 					"new_breakpoint_dialog",
 					NULL, 0));
 	Delay::register_shell(new_breakpoint_dialog);
+
+	if (lesstif_hacks_enabled)
+	    XtUnmanageChild(XmSelectionBoxGetChild(new_breakpoint_dialog,
+						   XmDIALOG_APPLY_BUTTON));
+
 	XtAddCallback(new_breakpoint_dialog,
 		      XmNhelpCallback,
 		      ImmediateHelpCB,
@@ -3810,6 +3819,11 @@ void SourceView::EditBreakpointConditionCB(Widget,
 					"edit_breakpoint_condition_dialog",
 					NULL, 0));
 	Delay::register_shell(edit_breakpoint_condition_dialog);
+
+	if (lesstif_hacks_enabled)
+	    XtUnmanageChild(XmSelectionBoxGetChild(
+		edit_breakpoint_condition_dialog, XmDIALOG_APPLY_BUTTON));
+
 	XtAddCallback(edit_breakpoint_condition_dialog,
 		      XmNhelpCallback,
 		      ImmediateHelpCB,
@@ -3925,6 +3939,11 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
 					"edit_breakpoint_ignore_count_dialog",
 					NULL, 0));
 	Delay::register_shell(edit_breakpoint_ignore_count_dialog);
+
+	if (lesstif_hacks_enabled)
+	    XtUnmanageChild(XmSelectionBoxGetChild(
+		edit_breakpoint_ignore_count_dialog, XmDIALOG_APPLY_BUTTON));
+
 	XtAddCallback(edit_breakpoint_ignore_count_dialog,
 		      XmNhelpCallback,
 		      ImmediateHelpCB,

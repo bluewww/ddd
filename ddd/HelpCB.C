@@ -655,6 +655,10 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	    verify(XmCreatePromptDialog(toplevel, "manual_help", args, arg));
 	Delay::register_shell(text_dialog);
 
+	if (lesstif_hacks_enabled)
+	    XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,
+						   XmDIALOG_APPLY_BUTTON));
+
 	arg = 0;
 	Widget form =
 	    verify(XmCreateForm(text_dialog, "form", args, arg));
@@ -1051,6 +1055,10 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 	text_dialog = 
 	    verify(XmCreatePromptDialog(toplevel, "text_help", args, arg));
 	Delay::register_shell(text_dialog);
+
+	if (lesstif_hacks_enabled)
+	    XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,
+						   XmDIALOG_APPLY_BUTTON));
 
 	arg = 0;
 	Widget form =

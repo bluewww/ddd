@@ -2901,6 +2901,10 @@ static void make_preferences(Widget parent)
 	verify(XmCreatePromptDialog(parent, "preferences", args, arg));
     Delay::register_shell(preferences_dialog);
 
+    if (lesstif_hacks_enabled)
+	XtUnmanageChild(XmSelectionBoxGetChild(preferences_dialog,
+					       XmDIALOG_APPLY_BUTTON));
+
     // Remove old prompt
     Widget text = XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_TEXT);
     XtUnmanageChild(text);

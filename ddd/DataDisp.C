@@ -94,6 +94,7 @@ char DataDisp_rcsid[] =
 #include "verify.h"
 #include "windows.h"
 #include "wm.h"
+#include "LessTifH.h"
 
 // System includes
 #include <iostream.h>
@@ -572,6 +573,10 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 					 NULL, 0));
 	Delay::register_shell(dependent_display_dialog);
 
+	if (lesstif_hacks_enabled)
+	    XtUnmanageChild(XmSelectionBoxGetChild(dependent_display_dialog,
+						   XmDIALOG_APPLY_BUTTON));
+
 	XtAddCallback (dependent_display_dialog, 
 		       XmNhelpCallback, 
 		       ImmediateHelpCB, 
@@ -760,6 +765,11 @@ void DataDisp::new_displayCD (BoxPoint box_point)
 					 "new_display_dialog",
 					 NULL, 0));
 	Delay::register_shell(new_display_dialog);
+
+	if (lesstif_hacks_enabled)
+	    XtUnmanageChild(XmSelectionBoxGetChild(new_display_dialog,
+						   XmDIALOG_APPLY_BUTTON));
+
 	XtAddCallback (new_display_dialog, 
 		       XmNhelpCallback, 
 		       ImmediateHelpCB, 
@@ -3006,6 +3016,11 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 	verify(XmCreatePromptDialog(find_shell(w), "set_dialog", args, arg));
 
     Delay::register_shell(set_dialog);
+
+    if (lesstif_hacks_enabled)
+	XtUnmanageChild(XmSelectionBoxGetChild(set_dialog,
+					       XmDIALOG_APPLY_BUTTON));
+
     XtAddCallback(set_dialog, XmNokCallback,     setDCB, disp_value);
     XtAddCallback(set_dialog, XmNapplyCallback,  setDCB, disp_value);
     XtAddCallback(set_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
@@ -3581,6 +3596,11 @@ DataDisp::DataDisp (XtAppContext app_context,
     edit_displays_dialog_w =
 	verify(XmCreatePromptDialog(graph_edit, "edit_displays_dialog", 
 				    NULL, 0));
+
+    if (lesstif_hacks_enabled)
+	XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
+					       XmDIALOG_APPLY_BUTTON));
+
     Delay::register_shell(edit_displays_dialog_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
