@@ -181,7 +181,8 @@ bool BreakPoint::update (string& info_output)
 		}
 
 		info_output = info_output.from (rxname_colon_int_nl);
-		if (myfile_name != info_output.before(":")) {
+		if (myfile_name != info_output.before(":"))
+		{
 		    changed = myposition_changed = myfile_changed = true;
 		    myfile_name = info_output.before(":");
 		}
@@ -200,9 +201,14 @@ bool BreakPoint::update (string& info_output)
 	    }
 	    else if (mytype == WATCHPOINT)
 	    {
-		// Read Address
-		info_output = info_output.after(rxblanks_or_tabs);
-		new_info = info_output.through ("\n");
+		// Read watch expr
+	        string new_expr = info_output.before('\n');
+		if (myexpr != new_expr)
+		{
+		    changed = true;
+		    myexpr = new_expr;
+		}
+		info_output = info_output.after('\n');
 	    }
 
 	    if (info_output != "" && !isdigit(info_output[0]))

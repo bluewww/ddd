@@ -66,6 +66,7 @@ class BreakPoint {
     string  myfile_name;
     int     myline_nr;
     string  myaddress;
+    string  myexpr;
     string  myinfos;
     string  myignore_count;
     string  mycondition;
@@ -130,6 +131,7 @@ public:
     const string& file_name()    const { return myfile_name; }
     int           line_nr()      const { return myline_nr; }
     const string& address()      const { return myaddress; }
+    const string& expr()         const { return myexpr; }
 
     // Additional infos
     const string& infos()        const { return myinfos; }
