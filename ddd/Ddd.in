@@ -1,5 +1,5 @@
 ! $Id$
-! DDD Resource File
+! DDD Resource File.  DO NOT INSTALL THIS FILE!  See below for details.
 ! @configure_input@
 Ddd*appDefaultsVersion:	 @VERSION@
 
@@ -602,6 +602,8 @@ Ddd*highlightThickness:		1
 ! @rm (roman), @sl (slanted), @bf (bold face), @bs (bold slanted)
 ! are some fonts for usual highlighting.
 ! @Logo and @logo are used in the DDD logo.
+!
+! Note: these font names are also used in DDD.  See `ddd/charsets.h'.
 
 Ddd*fontList: \
 -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\
