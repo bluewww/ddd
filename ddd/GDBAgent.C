@@ -613,6 +613,10 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	    return true;
 	}
 
+	// In annotation level 2, GDB `annotates' its prompt.
+	if (answer.contains("\032\032prompt\n", -1))
+	    return true;
+
 	// FALL THROUGH
     case DBX:
     {
