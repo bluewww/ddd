@@ -87,7 +87,7 @@ Volunteers for fixing these and other bugs are welcome!
        (e.g. myself) always forgets at least some little wee thing
        somewhere....
        [This is a problem of the libiberty and librx maintainers.  -AZ]
- 
+
     d. In the same veine, when I run e.g. "configure --prefix='$(HOME)'",
        the $(HOME) does not get propagated to all Makefiles.
        [This is a problem of the libiberty and librx maintainers.  -AZ]
@@ -136,8 +136,6 @@ Volunteers for fixing these and other bugs are welcome!
     recenter_tool_shell() although no error is returned. When the new
     cmd window position is calculated this will result in a slight
     move.
-
-310 After `Edit', the source is not reloaded.
 
 311 After `next 4' on Solaris DBX, the current position is not
     highlighted.

@@ -149,14 +149,6 @@ Volunteers for these and other projects are welcome!
     - Detect when graph display takes too long (n seconds
       configurable) if it takes too long switch in mode where updates
       are only done on request
-    - Dump inspector hex[+/]ascii/octal dump of length n starting at
-      address a. Possibility to 'group' data : selecting bytes in
-      dump with mouse; declare them to be a particular data type
-      (2/4/8 Byte integer/unsigned, float, real, pointer; select
-      numeric base and byte order); load and store such definitions;
-      apply such definition starting at a specified point.
-      Possibility to 'graph display', modify and write back values
-      from the dump.
     - recognize URLs in source window; follow on click (call external
       browser)
 
