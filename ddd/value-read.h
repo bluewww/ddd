@@ -69,7 +69,7 @@ string read_simple_value (string& value, int depth, bool ignore_repeats);
 string read_pointer_value (string& value);
 
 // Read array; return false iff error
-bool read_array_begin (string& value);
+bool read_array_begin (string& value, string& addr);
 bool read_array_next (string& value);
 bool read_array_end (string& value);
 
@@ -77,7 +77,7 @@ bool read_array_end (string& value);
 int read_repeats(string& value);
 
 // Read struct or class; return false iff error
-bool read_str_or_cl_begin (string& value);
+bool read_str_or_cl_begin (string& value, string& addr);
 bool read_str_or_cl_next (string& value);
 bool read_str_or_cl_end (string& value);
 bool read_members_of_xy (string& value);

@@ -335,7 +335,7 @@ void DispValue::init(string& value, DispValueType given_type)
 	    clog << mytype << ": " << "\n";
 #endif
 
-	    read_array_begin (value);
+	    read_array_begin (value, myaddr);
 
 	    // Check for `vtable entries' prefix.
 	    string vtable_entries = read_vtable_entries(value);
@@ -452,7 +452,7 @@ void DispValue::init(string& value, DispValueType given_type)
 		    member_prefix += ".";
 		}
 
-		read_str_or_cl_begin (value);
+		read_str_or_cl_begin (value, myaddr);
 	    }
 
 	    bool more_values = true;
@@ -1009,7 +1009,7 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 
     case Array:
     {
-	read_array_begin (value);
+	read_array_begin (value, myaddr);
 
 	string vtable_entries = read_vtable_entries(value);
 	int array_index = 0;
@@ -1096,7 +1096,7 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	if (mytype == List)
 	    munch_dump_line (value);
 
-	read_str_or_cl_begin (value);
+	read_str_or_cl_begin (value, myaddr);
 	int i;
 	bool more_values = true;
 	for (i = 0; more_values && i < v.str_or_cl->member_count; i++)

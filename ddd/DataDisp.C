@@ -4246,15 +4246,26 @@ void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
 	VoidArray dummy;
 
 	add_refresh_addr_commands(cmds, dn);
-	while (dummy.size() < cmds.size())
-	    dummy += (void *)PROCESS_ADDR;
+	if (cmds.size() > 0)
+	{
+	    while (dummy.size() < cmds.size())
+		dummy += (void *)PROCESS_ADDR;
 
-	static RefreshInfo info;
-	info.verbose = false;
-	ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
-				refresh_displayOQAC, (void *)&info);
+	    static RefreshInfo info;
+	    info.verbose = false;
+	    ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
+				    refresh_displayOQAC, (void *)&info);
 
-	sent = cmds.size() > 0;
+	    sent = cmds.size() > 0;
+	}
+	else
+	{
+	    // No refreshing commands - rely on addresses as read
+	    bool suppressed = check_aliases();
+	    force_check_aliases = false;
+	    refresh_display_list(suppressed);
+	    ok = true;
+	}
     }
 
     if (!ok)

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-03-09" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-03-24" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -1460,8 +1460,6 @@ list of display numbers to delete.
 .\"
 .SS "Examining Shared Data Structures"
 .\"
-Note: Alias detection is not supported in \s-2JDB\s+2.
-.PP
 By default, \s-2@DDD@\s+2 does not recognize shared data
 structures\(em\&that is, a data object referenced by multiple other
 data objects.  For instance, if two pointers \fBp1\fR and \fBp2\fR

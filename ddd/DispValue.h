@@ -51,6 +51,7 @@ class DispValue {
     bool          myexpanded;
     string        myfull_name;
     string        print_name;   // Name relative to MYPARENT
+    string        myaddr;	// Address as found
     bool          changed;
 
     union {
@@ -85,7 +86,7 @@ protected:
     void _collapse()  { myexpanded = false; }
 
 public:
-    // The DispValue type is determined from VALUE
+    // The DispValue type and address are determined from VALUE
     DispValue (DispValue* parent, 
 	       int        depth,
 	       string&    value,
@@ -107,6 +108,7 @@ public:
     int           depth()      const { return mydepth; }
     const string& full_name()  const { return myfull_name; }
     const string& name()       const { return print_name; }
+    const string& addr()       const { return myaddr; }
 
     DispValue*&   parent()     { return myparent; }
     int&          depth()      { return mydepth; }

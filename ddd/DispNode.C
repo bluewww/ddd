@@ -71,6 +71,7 @@ DispNode::DispNode (int disp_nr,
     {
 	string v = value;
 	disp_value = new DispValue(0, 0, v, myname, myname);
+	set_addr(disp_value->addr());
     }
 
     // Create new box from DISP_VALUE
@@ -140,11 +141,17 @@ bool DispNode::update(string& value)
     { 
 	// We have not read a value yet
 	disp_value = new DispValue (0, 0, value, myname, myname);
+	set_addr(disp_value->addr());
 	changed = true;
     }
     else
     { 
 	disp_value->update(value, changed, inited);
+	if (addr() != disp_value->addr())
+	{
+	    set_addr(disp_value->addr());
+	    changed = true;
+	}
     }
 
     if (inited)

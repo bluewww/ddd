@@ -119,8 +119,9 @@ DispValueType determine_type (string value)
     {
 	// Check for empty struct.
 	string v = value;
-	read_str_or_cl_begin(v);
-	if (v.contains(rxstr_or_cl_end, 0))
+	string addr;
+	bool ok = read_str_or_cl_begin(v, addr);
+	if (ok && v.contains(rxstr_or_cl_end, 0))
 	    return Simple;
 
 	// Check for leading keywords.
@@ -431,17 +432,34 @@ string read_pointer_value (string& value)
 }
 
 // Read the beginning of an array from VALUE.  Return false iff failure.
-bool read_array_begin (string& value)
+bool read_array_begin (string& value, string& addr)
 {
-    read_leading_blanks (value);
+    addr = "";
+    read_leading_blanks(value);
 
     // GDB has a special format for vtables
     if (value.matches(rxvtable))
 	value = value.from("{");
 
-    // XDB prepends the address before each struct
-    if (value.contains("0x", 0) || value.contains("00", 0))
-	value = value.after(rxblanks_or_tabs);
+    int pointer_index = 0;
+    if (gdb->type() == JDB && value.contains('(', 0))
+    {
+	// JDB prepends the array type and address, as in 
+	// `list = (List)0x4070ee90 { ... }'.  Skip the type.
+	read_token(value, pointer_index);
+	while (pointer_index < int(value.length()) && 
+	       value.contains(' ', pointer_index))
+	    pointer_index++;
+    }
+
+    // XDB and JDB prepend the address before each struct.  Save it.
+    int addr_len = rxaddress.match(value, value.length(), pointer_index);
+    if (addr_len > 0)
+    {
+	addr  = value.at(pointer_index, addr_len);
+	value = value.after(pointer_index + addr_len);
+	read_leading_blanks(value);
+    }
 
     // DBX on DEC prepends `struct' or `class' before each struct;
     // XDB also appends the struct type name.
@@ -579,9 +597,9 @@ int read_repeats(string& value)
 }
 
 // Read the beginning of a struct from VALUE.  Return false iff done.
-bool read_str_or_cl_begin (string& value)
+bool read_str_or_cl_begin (string& value, string& addr)
 {
-    return read_array_begin(value);
+    return read_array_begin(value, addr);
 }
 
 // Read next struct element from VALUE.  Return false iff done.
