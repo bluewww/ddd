@@ -4687,10 +4687,11 @@ of the current thread.\n\
 \n\
 Select any thread to make it the current thread.\n\
 \n\
-In JDB, select a threadgroup to switch between viewing all threads\n\
-and the threads of this threadgroup.\n\
-In JDB, click on LBL(Suspend) to suspend the selected thread.\n\
-In JDB, click on LBL(Resume) to resume the selected thread.
+In JDB, you can also\n\
+ITEM select a threadgroup to switch between viewing all threads\n\
+    and the threads of the selected threadgroup.\n\
+ITEM click on LBL(Suspend) to suspend the selected thread(s).\n\
+ITEM click on LBL(Resume) to resume the selected thread(s).
 
 
 
