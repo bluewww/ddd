@@ -3196,10 +3196,9 @@ XrmDatabase GetFileDatabase(char *filename)
 
 #if HAVE_MKSTEMP
     close(tempfd);
-#else
-    unlink(tempfile);
 #endif
 
+    unlink(tempfile);
     return db;
 }
 
