@@ -352,4 +352,15 @@ Volunteers for these and other projects are welcome!
     <flechsig@itp.uni-hannover.de> suggests a pop-up with some
     check-boxes where each box is one bit.
 
-319 (Insert new project ideas here)
+319 Profiling shows the following functions are quite expensive.
+    Optimize them.
+
+    * gdbUpdateEditCB() \ 
+    * gdbUpdateViewCB()  - only if menu is torn off or popped up
+    * gdbUpdateFileCB() /
+    * update_combo_boxes() - only if menu has changed?
+    * cook() - too many string concats
+    * main_loop() - checking for running() all the time is too expensive
+    * CvtStringToXmString() - too many string concats
+
+320 (Insert new project ideas here)
