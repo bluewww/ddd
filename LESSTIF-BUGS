@@ -1,0 +1,211 @@
+# $Id$ -*- Text -*-
+# The DDD/LessTif bug list.
+
+This is a list of known DDD problems, occurring when linking DDD with
+LessTif instead of OSF/Motif.  These bugs should be fixed in some
+future release of DDD and/or LessTif.  Unless otherwise noted, all
+bugs refer to DDD 2.0 compiled against LessTif 0.75a.
+
+DDD is available via `http://www.cs.tu-bs.de/softech/ddd/'.
+LessTif is available via `http://www.hungry.com/products/lesstif'.
+
+
+001. The debugger console  (the place where you can enter GDB
+     commands) displays only one line.
+
+     Category: behavior
+
+     Cause: unknown
+
+     Fix: in `ddd/Ddd.in', comment out the lines limiting the size of the
+     `gdb_w' scrolled window:
+
+     --- ddd-2.0.orig/ddd/Ddd.in  Wed Sep 25 15:27:33 1996
+     +++ ddd-2.0/ddd/Ddd.in  Tue Dec 17 14:59:14 1996
+     @@ -2477,8 +2477,8 @@
+      Ddd*gdb_w.rows:                        10
+      Ddd*gdb_w.columns:             88
+      
+     -Ddd*gdb_wSW.width:             660
+     -Ddd*gdb_wSW.height:            124
+     +! Ddd*gdb_wSW.width:           660
+     +! Ddd*gdb_wSW.height:          124
+      
+      Ddd*gdb_w.editable:            true
+      Ddd*gdb_w.allowResize:         true
+
+
+002. The debugger console is not updated.
+
+     Category: behavior
+
+     Cause: The `XmTextReplace' and `XmTextInsert' functions are not
+     implemented.
+
+     Fix: in `libXm/text.c', provide a simple replacement for
+     `XmTextReplace' and `XmTextInsert':
+
+     --- lesstif-0.75a.orig/libXm/Text.c  Mon Dec 16 17:51:29 1996
+     +++ lesstif-0.75a/libXm/Text.c    Tue Dec 17 14:58:03 1996
+     @@ -1271,6 +1271,9 @@
+      XmTextInsert(Widget w, XmTextPosition position, char *string)
+      {
+        CHECK_CLASS(w);
+     +
+     +  /* Quick hack */
+     +  XmTextReplace(w, position, position, string);
+      }
+ 
+ 
+     @@ -1301,6 +1304,31 @@
+      void
+      XmTextReplace(Widget w, XmTextPosition from_pos, XmTextPosition to_pos, char *value)
+      {
+     +  int old_len, value_len;
+     +  char *old_string;
+     +  char *new_string;
+     +  CHECK_CLASS(w);
+     +
+     +  /* Quick hack */
+     +  value_len  = strlen(value);
+     +  old_string = XmTextGetString(w);
+     +  old_len    = strlen(old_string);
+     +
+     +  if (from_pos < 0)
+     +      from_pos = 0;
+     +  if (to_pos >= old_len)
+     +      to_pos = old_len;
+     +  if (to_pos <= from_pos)
+     +      to_pos = from_pos;
+     +
+     +  new_string = XtMalloc(value_len + old_len - (to_pos - from_pos) + 1);
+     +  strncpy(new_string, old_string, from_pos);
+     +  strncpy(new_string + from_pos, value, value_len);
+     +  strncpy(new_string + from_pos + value_len, old_string + to_pos, 
+     +         old_len - to_pos);
+     +  new_string[value_len + old_len - (to_pos - from_pos)] = '\0';
+     +  XmTextSetString(w, new_string);
+     +  XtFree(new_string);
+      }
+
+
+003. The source argument field `()' is not updated (i.e. when
+     clicking on some source item)
+
+     Category: behavior
+
+     Cause: XmText does not yet support selections.
+     `XmTextGetSelectionPositon' is not implemented.
+
+     Fix: unknown
+
+
+004. The source popup menu (clicking the right mouse button when
+     pointer is on a source item) does not work.
+
+     Category: behavior
+
+     Cause: unknown
+
+     Fix: unknown
+
+
+005. The menu bar items are too close together.
+
+     Category: visual
+
+     Cause: unknown
+
+     Fix: unknown
+
+
+006. The file filters (File->Open File, File->Open Core, ...) 
+     do not work.
+
+     Category: behavior
+
+     Cause: unknown
+
+     Fix: unknown
+
+
+007. `Preferences' buttons (Options->Preferences) stick out.
+     There should be no 3d-border around the four preferences buttons.
+
+     Category: visual
+
+     Cause: unknown
+
+     Fix: unknown
+
+
+008. The `Preferences' panel size (below buttons) is incorrect.  With
+     OSF/Motif, it extends to the maximum size of the four preference
+     panels (i.e. the `Startup preferences' panel).  With LessTif, it
+     extends to the size of the first preference panel.  The code to
+     handle the panel size is in `add_panel()' in `ddd/ddd.C'.
+
+     Category: visual
+
+     Cause: unknown
+
+     Fix: unknown
+
+
+009. Option buttons show `OptionButton' instead of the given label string.
+
+     Category: visual
+
+     Cause: unknown
+
+     Fix: unknown
+
+
+010. The `Settings' panel (Options->Settings) is not scrolled.
+
+     Category: behavioral
+
+     Cause: unknown
+
+     Fix: unknown
+
+
+011. Paned windows don't work.  Dragging sashes has strange effects.
+
+     Category: behavioral
+
+     Cause: unknown
+
+     Fix: unknown
+
+
+012. The `F1' menu accelerator (Help->On Context) has no effect.
+
+     Category: behavioral
+
+     Cause: unknown
+
+     Fix: unknown
+
+
+013. Moving `Up' or `Down' in the `Backtrace' window
+     (Stack->Backtrace) does not clear the last selection.  Only one
+     line should be selected.
+
+     Category: behavioral
+
+     Cause: unknown
+
+     Fix: unknown
+
+
+014. In the DDD manual (Help->DDD Manual), selecting a title on the
+     left causes the cursor to jump on the appropriate section in the
+     right, but the window is not scrolled such that the section is at
+     the top.
+
+     Category: behavioral
+
+     Cause: unknown
+
+     Fix: unknown
