@@ -230,6 +230,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _program_language(LANGUAGE_C),
       _trace_dialog(false),
       _verbatim(false),
+      _detect_echos(true),
       last_prompt(""),
       last_written(""),
       echoed_characters(-1),
@@ -295,6 +296,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _program_language(gdb.program_language()),
       _trace_dialog(gdb.trace_dialog()),
       _verbatim(gdb.verbatim()),
+      _detect_echos(gdb.detect_echos()),
       last_prompt(""),
       last_written(""),
       echoed_characters(-1),
@@ -972,6 +974,10 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 
 void GDBAgent::handle_echo(string& answer)
 {
+    // If we don't detect echos, leave output unchanged.
+    if (!detect_echos())
+	return;
+
     // Check for echoed characters.  Every now and then, the TTY setup
     // fails such that we get characters echoed back.  This may also
     // happen with remote connections.
@@ -1008,7 +1014,7 @@ void GDBAgent::handle_echo(string& answer)
 	else if (i >= ECHO_THRESHOLD && i >= int(answer.length()))
 	{
 	    // All characters received so far have been echoed.
-	    // => Wait for next input
+	    // => Wait for further input
 	    answer = "";
 	    echoed_characters = e;
 	}
@@ -1018,6 +1024,9 @@ void GDBAgent::handle_echo(string& answer)
 	    // => Restore any echoed characters and keep on processing
 	    answer.prepend(last_written.before(echoed_characters));
 	    echoed_characters = -1;
+
+	    // Disable echo detection until re-activated
+	    detect_echos(false);
 	}
     }
 }

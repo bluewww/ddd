@@ -176,6 +176,7 @@ private:
 
     bool _trace_dialog;		// True if dialog is to be traced
     bool _verbatim;		// True if in verbatim mode
+    bool _detect_echos;		// True if echos are to be detected
 
     string last_prompt;		// Last prompt received
     string last_written;	// Last command sent
@@ -400,6 +401,10 @@ public:
     // True if DBX output is to be processed verbatim
     bool verbatim() const        { return _verbatim; }
     bool verbatim(bool val)      { return _verbatim = val; }
+
+    // True if checking for echos
+    bool detect_echos() const        { return _detect_echos; }
+    bool detect_echos(bool val)      { return _detect_echos = val; }
 
     // GDB: "print EXPR".  If INTERNAL is set, avoid side effects
     // (such as setting the value history in GDB).
