@@ -204,8 +204,11 @@ Widget post_gdb_died(string reason, int gdb_status, Widget w)
 	MString msg;
 	if (exited)
 	{
-	    msg = rm(gdb->title() + " exited");
+	    msg = rm(gdb->title() + " suddenly exited");
 	    name = "exited_dialog";
+
+	    // An unexpected exit is almost always an error.
+	    exit_status = EXIT_FAILURE;
 	}
 	else
 	{
