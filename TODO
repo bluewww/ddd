@@ -280,11 +280,12 @@ Volunteers for these and other projects are welcome!
 
 144. When moving the source window, move the command tool, too.
 
-145. Configure `Ddd' at run-time instead of compile-time.
+145. Have some macros in `Ddd' that expand at run-time.  For instance,
+     @DEBUGGER@ may be replaced by the current inferior debugger.
 
 146. Always use arced edges for aliases?
 
-147. When replying to secondary choice prompts, popup some interactive
-     choice dialog.
+147. When replying to secondary choice prompts, popup some (modal)
+     interactive choice dialog.
 
 148. (Insert your project idea here)
