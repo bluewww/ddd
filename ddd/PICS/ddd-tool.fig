@@ -99,15 +99,15 @@ Single
 4 2 -1 0 0 4 24 0.0000 0 360 6165 8505 6525 Step program one line (step into calls)\001
 4 2 -1 0 0 4 24 0.0000 0 360 6270 8505 7560 Step program one line (step over calls)\001
 4 2 -1 0 0 4 24 0.0000 0 285 2430 8505 12465 Edit source file\001
-4 2 -1 0 0 4 24 0.0000 0 360 4950 8505 11430 Go to previous source position\001
 4 2 -1 0 0 4 24 0.0000 0 285 6135 8505 10485 Select stack frame that called this one\001
 4 2 -1 0 0 4 24 0.0000 0 360 5655 8505 9450 Continue program after breakpoint\001
 4 0 -1 0 0 4 24 0.0000 0 360 5850 13500 6615 Step one instruction (step into calls)\001
 4 0 -1 0 0 4 24 0.0000 0 360 5955 13500 7605 Step one instruction (step over calls)\001
 4 0 -1 0 0 4 24 0.0000 0 360 5910 13545 10440 Select stack frame called by this one\001
-4 0 -1 0 0 4 24 0.0000 0 360 4245 13590 11385 Go to next source position\001
 4 0 -1 0 0 4 24 0.0000 0 360 5820 13590 9450 Kill execution of debugged program\001
 4 0 -1 0 0 4 24 0.0000 0 360 4125 13545 12420 Invoke the make program\001
 4 0 -1 0 0 4 24 0.0000 0 285 4620 13545 8505 Continue until frame returns\001
 4 1 -1 0 0 4 24 0.0000 0 285 3210 10980 14175 The Command Tool\001
 4 2 -1 0 0 4 24 0.0000 0 360 6615 8505 8505 Continue until program reaches next line\001
+4 2 -1 0 0 4 24 0.0000 0 360 3465 8505 11430 Undo previous action\001
+4 0 -1 0 0 4 24 0.0000 0 285 2730 13590 11385 Redo next action\001
