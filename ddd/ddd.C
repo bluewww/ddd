@@ -4643,6 +4643,7 @@ static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
     c.callback = DoneCB;
     c.data     = (void *)info;
     c.verbose  = false;
+    c.prompt   = false;
     c.check    = false;
     c.priority = COMMAND_PRIORITY_USER;
 

@@ -1315,6 +1315,7 @@ static bool _get_core(const string& session, unsigned long flags,
 		// keep on examining data in this session.
 		Command c("core " + target);
 		c.verbose  = false;
+		c.prompt   = false;
 		c.check    = true;
 		c.priority = COMMAND_PRIORITY_AGAIN;
 		gdb_command(c);

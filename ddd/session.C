@@ -859,6 +859,7 @@ static void open_session(const string& session)
     // Kill or detach the debuggee.
     Command c("set confirm off");
     c.verbose  = false;
+    c.prompt   = false;
     c.check    = false;
     c.priority = COMMAND_PRIORITY_INIT;
 
@@ -920,6 +921,7 @@ static void open_session(const string& session)
     c.data     = (void *)(Delay *)delay_ptr;
     c.priority = COMMAND_PRIORITY_BATCH;
     c.verbose  = false;
+    c.prompt   = false;
     c.check    = true;
     gdb_command(c);
 }

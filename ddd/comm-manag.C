@@ -83,6 +83,7 @@ enum Filtering {NoFilter, TryFilter, Filter};
 // Additional data given to every single command.
 class CmdData {
 public:
+    string      command;	  // The command issued
     Widget      origin;		  // Origin of this command
     Filtering   filter_disp;      // NoFilter:  do not filter displays.
 				  // TryFilter: do filter if present.
@@ -124,7 +125,8 @@ private:
 public:
     // Constructor
     CmdData (Widget orig = 0, Filtering fd = TryFilter)
-	: origin(orig),
+	: command(""),
+	  origin(orig),
 	  filter_disp(fd),
 	  disp_buffer(0),
 	  pos_buffer(0),
@@ -155,7 +157,8 @@ public:
 
 private:
     CmdData(const CmdData&)
-	: origin(0),
+	: command(""),
+	  origin(0),
 	  filter_disp(TryFilter),
 	  disp_buffer(0),
 	  pos_buffer(0),
@@ -196,6 +199,8 @@ void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
 // Additional data given to extra commands.
 class PlusCmdData {
 public:
+    string      command;	       // The command issued
+
     int      n_init;	               // # of initialization commands
 
     bool     refresh_initial_line;     // send 'info line' / `func'
@@ -245,7 +250,8 @@ public:
     bool     config_program_language;  // try 'show language'
 
     PlusCmdData ()
-	: n_init(0),
+	: command(""),
+	  n_init(0),
 	  refresh_initial_line(false),
 	  refresh_file(false),
 	  refresh_line(false),
@@ -347,11 +353,13 @@ void start_gdb()
 
     // Setup command data
     CmdData* cmd_data     = new CmdData;
+    cmd_data->command     = "<init>";
     cmd_data->filter_disp = NoFilter;      // No `display' output
     cmd_data->pos_buffer  = new PosBuffer; // Find initial pos
     cmd_data->user_prompt = false;
 
     PlusCmdData* plus_cmd_data = new PlusCmdData;
+    plus_cmd_data->command = "<init>";
     StringArray cmds;
     VoidArray dummy;
 
@@ -532,6 +540,8 @@ void init_session(const string& restart, const string& settings)
 	{
 	    // Give feedback on the files used and their state
 	    c.verbose = true;
+	    c.echo    = true;
+	    c.prompt  = true;
 	    c.check   = true;
 	}
 	else if (gdb->type() == JDB && is_use_cmd(c.command))
@@ -557,6 +567,7 @@ void init_session(const string& restart, const string& settings)
 void send_gdb_ctrl(string cmd, Widget origin)
 {
     CmdData* cmd_data      = new CmdData(origin, NoFilter);
+    cmd_data->command      = cmd;
     cmd_data->disp_buffer  = new DispBuffer;
     cmd_data->pos_buffer   = new PosBuffer;
     cmd_data->new_exec_pos = true;
@@ -641,6 +652,7 @@ void send_gdb_command(string cmd, Widget origin,
 
     // Setup extra command information
     CmdData* cmd_data       = new CmdData(origin);
+    cmd_data->command       = cmd;
     cmd_data->disp_buffer   = new DispBuffer;
     cmd_data->pos_buffer    = new PosBuffer;
     cmd_data->user_callback = callback;
@@ -650,6 +662,7 @@ void send_gdb_command(string cmd, Widget origin,
     cmd_data->user_check    = check;
 
     PlusCmdData* plus_cmd_data = new PlusCmdData;
+    plus_cmd_data->command = cmd;
 
     // Breakpoints may change any time
     if (gdb->has_volatile_breakpoints())
@@ -1285,6 +1298,7 @@ void user_cmdOAC(void *data)
 	// Refresh current displays -- they'll probably be lost
 	Command c(data_disp->refresh_display_cmd());
 	c.verbose  = false;
+	c.prompt   = false;
 	c.priority = COMMAND_PRIORITY_SYSTEM;
 	gdb_command(c);
     }
@@ -1302,8 +1316,8 @@ void user_cmdOAC(void *data)
 	    Command c(command, cmd_data->origin);
 	    c.priority = COMMAND_PRIORITY_BATCH;
 	    c.echo    = false;
-	    c.prompt  = (auto_commands == "");
 	    c.verbose = true;
+	    c.prompt  = (auto_commands == "");
 	    gdb_command(c);
 	}
 

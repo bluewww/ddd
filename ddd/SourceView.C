@@ -3879,6 +3879,7 @@ void SourceView::lookup(string s, bool silent)
 		Command c("info line " + current_source_name() + ":" + 
 			  itostring(line));
 		c.verbose = !silent;
+		c.prompt  = !silent;
 		gdb_command(c);
 		break;
 	    }
@@ -3934,6 +3935,7 @@ void SourceView::lookup(string s, bool silent)
 	{
 	    Command c("info line " + s);
 	    c.verbose = !silent;
+	    c.prompt  = !silent;
 	    gdb_command(c);
 	}
 	else
@@ -3952,6 +3954,7 @@ void SourceView::lookup(string s, bool silent)
 		s = string('\'') + s + '\'';
 	    Command c("info line " + s);
 	    c.verbose = !silent;
+	    c.prompt  = !silent;
 	    gdb_command(c);
 	    break;
 	}
@@ -3969,6 +3972,7 @@ void SourceView::lookup(string s, bool silent)
 	{
 	    Command c("v " + s);
 	    c.verbose = !silent;
+	    c.prompt  = !silent;
 	    gdb_command(c);
 	    break;
 	}
@@ -8721,6 +8725,7 @@ void SourceView::reset()
 	{
 	    Command c(del);
 	    c.verbose  = false;
+	    c.prompt   = false;
 	    c.check    = true;
 	    c.priority = COMMAND_PRIORITY_INIT;
 	    c.callback = reset_done;
@@ -8735,6 +8740,7 @@ void SourceView::reset()
 	{
 	    Command c(clear_command(bp->pos()));
 	    c.verbose  = false;
+	    c.prompt   = false;
 	    c.check    = true;
 	    c.priority = COMMAND_PRIORITY_INIT;
 	    c.callback = reset_done;
