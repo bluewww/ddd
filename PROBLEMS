@@ -1,0 +1,31 @@
+Problems in building and installing DDD                          -*- text -*-
+***************************************
+
+Note: For problems occurring when *running* DDD, see the file `BUGS'.
+
+AIX
+===
+
+Reported by:  bas@phys.uva.nl (Bas V. de Bakker),
+              smueller@dbis1.informatik.uni-hamburg.de (Stefan Mueller)
+
+    `ddd.C' won't compile on rs6000-ibm-aix3 and powerpc-ibm-aix3, due
+    to an error message from the assembler.  According to Stefan
+    Mueller and Bas V. de Bakker, the problem disappears when DDD is
+    compiled without `-O'.  Stefan Mueller also states that GCC chokes
+    on `BreakPoint.C'; it can only be compiled without
+    `-felide-constructors' flag.
+
+    We recommend the following simple way to build DDD on AIX:
+    
+    1. Enter `make -k'.  This builds all except erroneous files.
+
+    2. In the `ddd' subdirectory, enter 
+       `make CXXOPT= CXXSTUFF=-fexternal-templates'.  This builds
+       the remainder of DDD without `-O' and `-felide-constructors' flags.
+
+    Note that DBX support has only been tested on Suns; DBX on AIX may be
+    a quite different program.
+
+
+$Id$

@@ -1,0 +1,29 @@
+DDD Contributors					-*- text -*-
+****************
+
+Besides Dorothea LÜtkehaus and Andreas Zeller, many people have
+contributed to the success of DDD.  Starring in historical order,
+
+    CHRISTIAN LINDIG implemented the graph layout algorithm and the export
+	facilities.
+
+    RALF GUTSCHE was the first DDD beta tester and made it run on Solaris
+	and colour displays.  He is not reponsible for the colour settings,
+	though.
+
+    JÜRGEN SCHÖNWÄLDER realized the `ddd-users' mailing list.
+
+    DARRYL HOUSE was the first to make DDD run on a Linux machine and
+	reported substantial Solaris bugs.
+
+    MARTIN KOHLSCHMIDT provided substantial hints for distributing DDD
+	binaries.
+
+    MICHAEL BUSSIECK and NEAL BECKER were the first to make DDD run on
+	HP-UX machines and reported configuration bugs.
+
+    STEFAN MÜLLER and BAS V. DE BAKKER were the first to make DDD run
+        on AIX machines and provided appropriate patches.
+
+Thanks to all others who are not mentioned here and helped in the
+success of DDD.

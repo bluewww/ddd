@@ -1,0 +1,175 @@
+DDD 1.0 is available
+====================
+
+    Release 1.0 of the Data Display Debugger (DDD), a graphical
+    front-end for GDB and DBX debuggers, is now available by anonymous
+    FTP from `ftp.ips.cs.tu-bs.de` [134.169.32.1] in the file
+    `/pub/local/softech/ddd/ddd-1.0.tar.gz' (1.1 MB).  Diffs from
+    earlier versions are in `/pub/local/softech/ddd/diffs/`.  Binaries
+    for various architectures are in `/pub/local/softech/ddd/bin/`.
+    Please try a closer FTP site first; see below for a list.
+
+
+
+Summary of DDD
+==============
+
+    The Data Display Debugger (DDD) is a novel graphical user
+    interface to GDB and DBX, the popular UNIX C/C++ debuggers.
+    Besides ``usual'' features such as viewing source texts and
+    breakpoints, DDD provides a *graphical data display*, where data
+    structures are displayed as graphs.  A simple mouse click
+    dereferences pointers or views structure contents.  Complex data
+    structures can be explored incrementally and interactively, using
+    automatic layout if preferred.  Each time the program stops, the
+    data display reflects the current variable values.  Using DDD, you
+    can reason about your application by viewing its data, not just by
+    viewing it execute lines of source code.
+
+    Other DDD features include: source navigation and lookup; GDB/DBX
+    command-line interface with full editing, history, and completion
+    capabilities; breakpoint, backtrace, and history editors; optional
+    program execution in terminal emulator window; debugging on remote
+    host; on-line manual; interactive help on the OSF/Motif user
+    interface.  DDD has been designed to compete with well-known
+    commercial debuggers.
+
+    DDD has been extensively beta-tested (especially by debugging
+    itself) and has been reported to compile and run out-of-the-box
+    for a variety of UNIX architectures, including AIX
+    (powerpc-ibm-aix3, rs6000-ibm-aix3), Suns (sparc-sun-sunos4,
+    sparc-sun-solaris2), DECs (mips-dec-ultrix4), HPs
+    (hppa1.1-hp-hpux9.05) and Linux (i386-unknown-linux,
+    i486-unknown-linux).
+
+    DDD is free software, protected by the GNU general public license.
+    It is actively maintained by its authors, Dorothea Luetkehaus and
+    Andreas Zeller at the Technische Universitaet Braunschweig, Germany.
+
+
+
+Requirements
+============
+
+    To build a complete DDD system from sources, you need:
+
+       * The GNU C++ compiler, preferably GNU CC (GCC) version 2.6.3
+	 or later, and a matching C++ standard library (libg++ or
+	 libstdc++).
+    
+         (Ideally, any recent C++ compiler should compile DDD.  In
+         practice, we recommend you to get and install GCC instead.)
+
+       * The X window library (Xlib) and X toolkit library (Xt),
+         X11R4 or later.
+
+       * The OSF/Motif Widget library (release 1.1 or later).  Best
+         results are achieved using Motif 2.0 in conjunction with the
+         Athena Widget library.
+
+       * Optionally, the Athena Widget library (release 5 or later).
+         Having the Athena Widget library is convenient for supporting
+         two-dimensional scrollbars and the `editres' protocol.
+
+    To run DDD, you need a GDB debugger (version 4 is required; best
+    results are achieved with 4.13 or later).  Using GDB, you can
+    debug programs written in C and C++.
+
+    As an alternative, DDD also supports Sun's DBX debugger.  Using
+    DBX, you can additionally debug programs written in Pascal and
+    Modula-2.
+
+
+More Information
+================
+
+    A World-Wide-Web page (including screen shots) devoted to DDD is
+    installed at `http://www.cs.tu-bs.de/softech/software/ddd_e.html'.
+
+    The DDD users mailing list, `ddd-users@ips.cs.tu-bs.de', is the
+    right place to contact other DDD users for assistance and hints.
+    New DDD releases and bug fixes are also announced here.
+    Send a mail to `ddd-users-request@ips.cs.tu-bs.de' for more
+    information.
+
+    Send suggestions and bug reports for DDD to `ddd-bugs@ips.cs.tu-bs.de'.
+
+
+
+DDD source FTP sites
+====================
+
+    The DDD source package `ddd-1.0.tar.gz' will soon be at these FTP
+    sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
+    ftp.ips has a slow network connection.
+
+
+North America
+-------------
+
+    ftp.crl.research.digital.com[192.58.206.2]:/pub/X11/contrib/utilities/
+    ftp.x.org[198.112.44.100]:/contrib/utilities/
+    ftp.cs.columbia.edu[128.59.26.5]:/archives/X11R6/contrib/utilities/
+    ftp.uu.net[192.48.96.9]:/systems/window-sys/X/contrib/utilities/
+
+
+Europe
+------
+
+    ftp.denet.dk[129.142.6.74]:/pub/X11/contrib/utilities/
+    nic.funet.fi[192.52.71.41]:/pub/X11/contrib/utilities/
+    ftp.ibp.fr[132.227.60.2]:/pub/X11/contrib/utilities/
+    ftp.germany.eu.net[192.76.144.75]:/pub/X11/XConsortium/contrib/utilities/
+    ftp.uni-paderborn.de[131.234.2.32]:/pub/X11/contrib/utilities/
+    ftp.luth.se[130.240.18.2]:/pub/X11/contrib/utilities/
+    ftp.sunet.se[130.238.127.3]:/pub/X11/contrib/utilities/
+    ftp.eunet.ch[146.228.10.16]:/archive/software/X/utilities/
+    ftp.NL.net[193.78.240.13]:/pub/windows/X/contrib/utilities/
+    src.doc.ic.ac.uk[146.169.2.10]:/packages/X11-contrib/utilities/
+
+
+East Asia
+---------
+
+    ftp.cs.cuhk.hk[137.189.4.57]:/pub/Xcontrib/utilities/
+    ftp.iij.ad.jp[192.244.176.50]:/pub/X/contrib/utilities/
+    NCTUCCCA.edu.tw[140.111.1.10]:/X/contrib/utilities/
+
+
+Australia
+---------
+
+    archie.AU[139.130.23.2]:X11/contrib/utilities/
+
+
+
+DDD Binary FTP sites
+====================
+
+    DDD pre-compiled binaries are available for a variety of
+    architectures.  However, we recommend to compile DDD on your
+    machine instead.  Use binaries as a last resort only.
+
+Europe
+------
+
+    ftp.ips.cs.tu-bs.de[134.169.32.1]:/pub/local/softech/ddd/bin/
+
+
+
+A Note From the DDD Developers
+==============================
+
+If you appreciate DDD, please send a picture postcard to:
+
+    Technische Universitaet Braunschweig
+    Abteilung Softwaretechnologie
+    Gaussstrasse 17
+    D-38092 Braunschweig
+    GERMANY
+
+Have fun!
+
+-- 
+Andreas Zeller (ddd@ips.cs.tu-bs.de)
+Technische Universitaet Braunschweig, Germany

@@ -1,0 +1,15 @@
+This is the source distribution of DDD, the Data Display Debugger.
+Please consult the following files:
+
+    ANNOUNCE     All about DDD.
+    BUGS         Known DDD bugs.
+    COPYING      The DDD license.
+    COPYING.LIB  The license applying to some parts of DDD.
+    INSTALL      Building and installing DDD.
+    NEWS         Release information and recent changes.
+    PROBLEMS     Hints for building DDD on specific systems.
+    PROJECTS     Possible future DDD features.
+
+-- 
+Andreas Zeller (ddd@ips.cs.tu-bs.de)
+Technische Universitaet Braunschweig, Germany
