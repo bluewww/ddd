@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-//
+// DDD session management
 
 // Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
