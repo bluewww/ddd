@@ -31,7 +31,8 @@ char sigName_rcsid[] =
 
 #include "config.h"
 
-#include <strstream.h>
+#include <stdio.h>
+#include <string.h>
 
 extern "C" {
 #include <stddef.h>
@@ -44,30 +45,26 @@ extern "C" {
 
 extern "C" char *strsignal(int signo);
 
-// convert signal number into name
+// Convert signal number into name
 char *sigName(int signo)
 {
     return strsignal(signo);
 }
 
-
-// convert wait() status into name
+// Convert wait() status into name
 char *statusName(int status)
 {
-    static string s;
-
-    s = "Unknown state change";
-
     if (WIFEXITED(status))
     {
-	ostrstream os;
-	os << "Exit " << WEXITSTATUS(status);
-        s = string(os);
+	static char buffer[256];
+
+	sprintf(buffer, "Exit %d", (int)WEXITSTATUS(status));
+	return buffer;
     }
     else if (WIFSIGNALED(status))
-        s = sigName(WTERMSIG(status));
+        return sigName(WTERMSIG(status));
     else if (WIFSTOPPED(status))
-        s = sigName(WSTOPSIG(status));
+        return sigName(WSTOPSIG(status));
 
-    return (char *)s;
+    return "Unknown state change";
 }
