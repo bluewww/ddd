@@ -1751,11 +1751,14 @@ int main(int argc, char *argv[])
     help_clear_doc_delay  = app_data.clear_doc_delay;
     help_clear_tip_delay  = app_data.clear_tip_delay;
 
-#ifdef XmNdragStartCallback
+#if XmVersion >= 2000
     // Setup drag and drop callback
     Widget display_w = verify(XmGetXmDisplay(XtDisplay(toplevel)));
-    XtAddCallback(display_w, XmNdragStartCallback,
-		  CheckDragCB, NULL);
+    if (XmIsDisplay(display_w))
+    {
+	XtAddCallback(display_w, XmNdragStartCallback,
+		      CheckDragCB, NULL);
+    }
 #else
     (void) CheckDragCB;		// Use it
 #endif
@@ -2992,7 +2995,7 @@ static void CheckDragCB(Widget, XtPointer, XtPointer call_data)
 
     // Some Linux Motif implementations have trouble dragging pixmaps.
     // Disable this, such that we don't get drowned in bug reports.
-#if defined(XmNdragStartCallback) && defined(__linux__)
+#if XmVersion >= 2000 && defined(__linux__)
     XmDragStartCallbackStruct *cbs = (XmDragStartCallbackStruct *)call_data;
     Widget w = cbs->widget;
     // clog << "Dragging from " << longName(w) << "\n";
@@ -5598,6 +5601,7 @@ static void setup_tty()
 
 static void setup_version_warnings()
 {
+    // Check for app-defaults
     if (app_data.app_defaults_version == 0)
     {
 	cerr << "Warning: no version information in `" 
@@ -5618,6 +5622,7 @@ static void setup_version_warnings()
 	    + rm(" (this is " DDD_NAME " " DDD_VERSION ")") + cr();
     }
 
+    // Check for ~/.ddd/init
     if (app_data.dddinit_version && 
 	string(app_data.dddinit_version) != DDD_VERSION)
     {
