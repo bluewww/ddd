@@ -144,9 +144,13 @@ list_member (name, value, name_width) ->
 reference_value (ref, value) -> 
   reference_color(vcenter(rm(ref & ": ")) & value & hfill());
 
-// Collapsed Reference
+// Collapsed reference
 collapsed_reference_value () -> 
   reference_color(vcenter(rm("...") & hfill()));
+
+// The offset of merged displays: the height of the title
+merge_offset () ->
+  vspace(shadow(frame(title("X"))));
 
 // The entire box
 display_box (title, value) -> 

@@ -3194,7 +3194,7 @@ bool DataDisp::merge_displays(const IntArray& disp_nrs)
 
     bool changed = false;
 
-    // Place nodes at the position of OLDEST.
+    // Place nodes at the position of LEAST_RECENTLY_CHANGED_NODE.
     BoxPoint offset(0, 0);
     for (i = 0; i < disp_nrs.size(); i++)
     {
@@ -3204,7 +3204,7 @@ bool DataDisp::merge_displays(const IntArray& disp_nrs)
 	if (dn == least_recently_changed_node)
 	    continue;
 
-	offset += BoxPoint(0, 20);
+	offset += DispBox::merge_offset();
 	BoxPoint new_pos = 
 	    least_recently_changed_node->nodeptr()->pos() + offset;
 
