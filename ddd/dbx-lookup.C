@@ -152,10 +152,10 @@ string dbx_path(const string& source)
 	// current file.  The `edit' command, however, invokes an
 	// editor with the entire path.  So, we misuse the `edit'
 	// command such that it reports the entire path.
-	gdb_question("setenv EDITOR echo");
+	gdb_question("setenv EDITOR \"echo\"");
 	path = gdb_question("edit " + source);
 	gdb_question(string("setenv EDITOR ") + 
-		     (getenv("EDITOR") ? getenv("EDITOR") : "vi"));
+		     quote(getenv("EDITOR") ? getenv("EDITOR") : "vi"));
     }
     else if (gdb->type() == DBX)
     {
