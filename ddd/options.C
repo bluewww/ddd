@@ -1338,11 +1338,11 @@ static void detach()
 static bool _get_core(const string& session, unsigned long flags, 
 		      string& target)
 {
-    const bool may_kill         = (flags & MAY_KILL);
-    const bool may_ptrace       = (flags & MAY_PTRACE);
-    const bool may_gcore        = (flags & MAY_GCORE);
-    const bool dont_save        = (flags & DONT_SAVE);
-    const bool dont_reload_core = (flags & DONT_RELOAD_CORE);
+    const bool may_kill    = (flags & MAY_KILL);
+    const bool may_ptrace  = (flags & MAY_PTRACE);
+    const bool may_gcore   = (flags & MAY_GCORE);
+    const bool dont_save   = (flags & DONT_SAVE);
+    const bool reload_core = !(flags & DONT_RELOAD_CORE);
 
     if (!gdb->has_core_files())
 	return true;		// No need to get core files
@@ -1587,7 +1587,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    if (had_a_core_file)
 		move(core_backup, core);
 
-	    if (ok && gdb->type() == GDB && !dont_reload_core)
+	    if (ok && gdb->type() == GDB && reload_core)
 	    {
 		// Load the core file just saved, such that we can
 		// keep on examining data in this session.
@@ -2127,6 +2127,7 @@ bool get_restart_commands(string& restart, unsigned long flags)
     const bool interact     = (flags & MAY_INTERACT);
     const bool save_core    = (flags & SAVE_CORE);
     const bool save_session = (flags & SAVE_SESSION);
+    const bool reload_file  = !(flags & DONT_RELOAD_FILE);
 
     string session = 
 	(save_session ? app_data.session : (char *)DEFAULT_SESSION);
@@ -2196,45 +2197,48 @@ bool get_restart_commands(string& restart, unsigned long flags)
     // Stream to hold exec and core file specs
     ostrstream es;
 
-    // Get exec and core file
-    switch (gdb->type())
+    if (reload_file)
     {
-    case GDB:
-	es << "set confirm off\n";
-	if (info.file != "" && info.file != NO_GDB_ANSWER)
-	    es << "file " << info.file << '\n';
-	if (core_ok)
-	    es << "core " << core << '\n';
-	break;
-
-    case DBX:
-	if (info.file != "" && info.file != NO_GDB_ANSWER)
+	// Get exec and core file
+	switch (gdb->type())
 	{
-	    string cmd = gdb->debug_command(info.file);
-	    if (cmd != "")
+	case GDB:
+	    es << "set confirm off\n";
+	    if (info.file != "" && info.file != NO_GDB_ANSWER)
+		es << "file " << info.file << '\n';
+	    if (core_ok)
+		es << "core " << core << '\n';
+	    break;
+
+	case DBX:
+	    if (info.file != "" && info.file != NO_GDB_ANSWER)
 	    {
-		es << cmd;
-		if (core_ok)
-		    es << " " << core;
-		es << '\n';
+		string cmd = gdb->debug_command(info.file);
+		if (cmd != "")
+		{
+		    es << cmd;
+		    if (core_ok)
+			es << " " << core;
+		    es << '\n';
+		}
 	    }
-	}
-	break;
+	    break;
 
-    case PERL:
-	if (info.file != "" && info.file != NO_GDB_ANSWER)
-	{
-	    string cmd = gdb->debug_command(info.file);
-	    if (cmd != "")
-		es << cmd << '\n';
-	}
-	break;
+	case PERL:
+	    if (info.file != "" && info.file != NO_GDB_ANSWER)
+	    {
+		string cmd = gdb->debug_command(info.file);
+		if (cmd != "")
+		    es << cmd << '\n';
+	    }
+	    break;
 
-    case XDB:
-    case JDB:
-    case PYDB:
-	// FIXME
-	break;
+	case XDB:
+	case JDB:
+	case PYDB:
+	    // FIXME
+	    break;
+	}
     }
 
     restart = string(es) + string(rs) + get_signals(gdb->type());

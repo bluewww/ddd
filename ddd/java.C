@@ -38,12 +38,12 @@ char java_rcsid[] =
 #include "SmartC.h"
 #include "SourceView.h"
 #include "assert.h"
+#include "cook.h"
 #include "ddd.h"
 #include "filetype.h"
 #include "glob.h"
 #include "regexps.h"
-
-#include <iostream.h>
+#include "status.h"
 
 
 
@@ -80,7 +80,10 @@ static const char *file_basename(const char *name)
 
 static bool is_archive(const string& loc)
 {
-    return loc.contains(".jar", -1) || loc.contains(".zip", -1);
+    return loc.contains(".jar", -1) || 
+	   loc.contains(".zip", -1) ||
+	   loc.contains(".JAR", -1) ||
+	   loc.contains(".ZIP", -1);
 }
 
 static string concat_dir(const string& dir, const string& file)
@@ -101,7 +104,7 @@ static string concat_dir(const string& dir, const string& file)
 static void get_java_classes(const string& dir, const string& base,
 			     StringArray& classes_list, bool with_source_only)
 {
-    // clog << "Scanning " << dir << " for classes\n";
+    StatusDelay delay("Scanning " + quote(dir) + " for classes");
 
     assert((base == "" && dir == "") || dir.contains(base, 0));
 
@@ -111,7 +114,7 @@ static void get_java_classes(const string& dir, const string& base,
     char **files = glob_filename(mask);
     if (files == (char **)0)
     {
-	cerr << mask << ": glob failed\n";
+	delay.outcome = mask + ": glob failed";
     }
     if (files == (char **)-1)
     {
@@ -166,7 +169,7 @@ static void get_java_classes(const string& dir, const string& base,
     files = glob_filename(mask);
     if (files == (char **)0)
     {
-	cerr << mask << ": glob failed\n";
+	delay.outcome = mask + ": glob failed\n";
     }
     else if (files == (char **)-1)
     {
@@ -235,9 +238,11 @@ void get_java_classes(StringArray& classes_list, bool with_source_only)
 // Remove `.java' and `.class' suffix from S
 void strip_java_suffix(string& s)
 {
-    if (s.contains(JAVA_SRC_SUFFIX, -1))
+    string s_down = downcase(s);
+
+    if (s_down.contains(JAVA_SRC_SUFFIX, -1))
 	s = s.before(int(int(s.length()) - strlen(JAVA_SRC_SUFFIX)));
-    if (s.contains(JAVA_CLASS_SUFFIX, -1))
+    if (s_down.contains(JAVA_CLASS_SUFFIX, -1))
 	s = s.before(int(int(s.length()) - strlen(JAVA_CLASS_SUFFIX)));
 }
 
@@ -316,7 +321,7 @@ static bool has_class(const string& file_name, const string& class_name)
 }
 
 // Return source file of CLASS_NAME; "" if none.
-string java_class_file(const string& class_name, bool search_classes)
+static string _java_class_file(const string& class_name, bool search_classes)
 {
     // We use 4 iterations:
     // Trial 0.  Search for CLASS_NAME.java; make sure it defines CLASS_NAME.
@@ -421,7 +426,7 @@ string java_class_file(const string& class_name, bool search_classes)
 			src_class = class_file(start, i - start);
 
 			// Search for this class file instead.
-			c = java_class_file(src_class, trial);
+			c = java_class_file(src_class, false);
 			if (c != "")
 			    return c;
 
@@ -445,4 +450,18 @@ string java_class_file(const string& class_name, bool search_classes)
     }
 
     return "";			// Not found
+}
+
+// Same, but with diagnostics
+string java_class_file(const string& class_name, bool search_classes)
+{
+    StatusDelay delay("Searching for " + quote(class_name) + " source");
+
+    string c = _java_class_file(class_name, search_classes);
+    if (c == "")
+	delay.outcome = "failed";
+    else
+	delay.outcome = quote(c);
+
+    return c;
 }

@@ -556,8 +556,8 @@ void TTYAgent::open_master()
 	    }
     }
 
-    // Try PTY's in /dev/pty?? -- a BSD and USG feature
-    // Slackware 3.0 wants [/zip]/dev/pty??, as
+    // Try PTY's in /dev/ptyXX -- a BSD and USG feature
+    // Slackware 3.0 wants [/zip]/dev/ptyXX, as
     // Jim Van Zandt <jrv@vanzandt.mv.com> suggests.
     for (int k = 0; k < 2; k++)
     {

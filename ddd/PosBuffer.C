@@ -216,6 +216,11 @@ void PosBuffer::filter (string& answer)
     // Check for auto command
     if (app_data.auto_commands)
     {
+	answer.prepend(auto_cmd_part);
+	auto_cmd_part = "";
+
+	string pfx = app_data.auto_command_prefix;
+
 	if (auto_cmd_buffer != "" && !auto_cmd_buffer.contains('\n', -1))
 	{
 	    // Complete pending auto command
@@ -231,16 +236,22 @@ void PosBuffer::filter (string& answer)
 	    }
 	}
 
-	while (has_prefix(answer, app_data.auto_command_prefix))
+	while (answer.contains(pfx, 0))
 	{
-	    int index = answer.index(app_data.auto_command_prefix);
+	    int index = answer.index(pfx);
 	    string cmd = answer.from(index);
 	    if (cmd.contains('\n'))
 		cmd = cmd.through('\n');
 	    answer = 
 		answer.before(index) + answer.from(int(index + cmd.length()));
-	    cmd = cmd.after(app_data.auto_command_prefix);
+	    cmd = cmd.after(pfx);
 	    auto_cmd_buffer += cmd;
+	}
+
+	if (pfx.contains(answer, 0))
+	{
+	    auto_cmd_part = answer;
+	    answer = "";
 	}
     }
 
@@ -663,6 +674,9 @@ void PosBuffer::filter_dbx(string& answer)
 	assert(stopped_index >= 0);
 
 	// Stop reached
+	// AIX DBX issues lines like
+	// `[4] stopped in unnamed block $b382 at line 4259 in file
+	//      "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c" ($t1)'
 	int in_file_index = answer.index("in file ", stopped_index);
 	int bracket_index = answer.index("[", stopped_index);
 
@@ -673,7 +687,11 @@ void PosBuffer::filter_dbx(string& answer)
 	    file = file.after("in file ");
 	    if (file.contains('\n'))
 		file = file.before('\n');
-	    file = unquote(file);
+	    if (file.contains('"', 0))
+	    {
+		file = file.after('"');
+		file = file.before('"');
+	    }
 	}
 	else if (bracket_index >= 0)
 	{
@@ -1111,18 +1129,34 @@ void PosBuffer::filter_perl(string& answer)
 
 string PosBuffer::answer_ended ()
 {
-    switch (already_read) {
-    case PosPart:
-	assert (pos_buffer == "");
-	return answer_buffer;
-
+    switch (already_read) 
+    {
     case Null:
+    {
 	assert (pos_buffer == "");
-	return "";
+	return auto_cmd_part;
+    }
+
+    case PosPart:
+    {
+	assert (pos_buffer == "");
+	string ans = answer_buffer;
+	answer_buffer = "";
+	return auto_cmd_part + ans;
+    }
 
     case PosComplete:
+    {
 	assert (pos_buffer != "");
-	return "";
+	return auto_cmd_part;
     }
+
+    default:
+    {
+	assert(0);		// This can't happen
+	break;
+    }
+    }
+
     return "";
 }

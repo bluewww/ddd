@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// Execution TTY
+// Check for WM decoration
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -26,48 +26,25 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_exectty_h
-#define _DDD_exectty_h
+#ifndef _DDD_decoration_h
+#define _DDD_decoration_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-#include "strclass.h"
-#include <stdlib.h>
 #include <X11/Intrinsic.h>
+#include "bool.h"
 
-// Execution TTY
+// Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
+extern void get_transient_pos(Screen *screen,
+			      Position& pos_x, Position& pos_y);
 
-// Raise execution TTY
-extern void startup_exec_tty();
+// Start check for window manager decoration
+extern void start_have_decorated_transients(Widget parent);
 
-// Raise execution TTY on COMMAND
-extern void startup_exec_tty(string& command, Widget origin = 0);
+// Return true if transient windows are decorated
+extern bool have_decorated_transients(Widget parent);
 
-// Kill execution TTY
-extern void kill_exec_tty(bool killed = false);
-
-// Reset execution TTY (also in GDB)
-extern void reset_exec_tty();
-
-// TTY pid (0: not initialized, -1: failed)
-extern pid_t exec_tty_pid();
-
-// TTY window
-extern Window exec_tty_window();
-
-// Set TTY title
-extern void set_tty_from_gdb(const string& text);
-
-// Create TTY if required
-extern void handle_running_commands(string& command, Widget origin);
-
-// Name of GDB tty
-extern string gdb_tty;
-
-// Verify if TTY window is still running
-extern void exec_tty_running();
-
-#endif // _DDD_exectty_h
+#endif // _DDD_decoration_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
