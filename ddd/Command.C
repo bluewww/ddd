@@ -41,8 +41,8 @@ char Command_rcsid[] =
 #pragma implementation "Queue.h"
 #endif
 
-#ifndef LOG_QUEUE
-#define LOG_QUEUE 0
+#ifndef LOG_COMMAND_QUEUE
+#define LOG_COMMAND_QUEUE 0
 #endif
 
 #include "Command.h"
@@ -215,7 +215,7 @@ const string& current_gdb_command()
     return _current_gdb_command;
 }
 
-#if LOG_QUEUE
+#if LOG_COMMAND_QUEUE
 static ostream& operator<<(ostream& os, const Command& c)
 {
     os << quote(c.command) << "<" << c.priority << ">";
@@ -231,16 +231,17 @@ static ostream& operator<<(ostream& os, const Command& c)
 // True while do_gdb_command() is running
 static bool processing_gdb_commands = false;
 
-// True in the first 200ms after continuing
-static bool continuing = false;
+// Non-zero in the first 200ms after continuing
+static XtIntervalId continuing = 0;
 
-static XtIntervalId continuing_timeout = 0;
+// True when interrupting running command
+static bool interrupting = false;
 
 static void ClearContinuingCB(XtPointer, XtIntervalId *)
 {
     // clog << "Continuing...done.\n";
 
-    continuing = false;
+    continuing = 0;
     processCommandQueue();
 }
 
@@ -252,8 +253,8 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
     if (is_command)
 	_current_gdb_command = cmd;
 
-#if LOG_QUEUE
-    clog << "Command " << c << "\n";
+#if LOG_COMMAND_QUEUE
+    clog << "Command " << c << ": executing\n";
 #endif
 
     if (gdb->isReadyWithPrompt())
@@ -275,9 +276,13 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 
 	if (!gdb->recording())
 	{
+	    // Allow for recursive calls in `handle_running_commands'
+	    bool saved_processing_gdb_commands = processing_gdb_commands;
 	    processing_gdb_commands = false;
+
 	    handle_running_commands(cmd, c.origin);
-	    processing_gdb_commands = true;
+
+	    processing_gdb_commands = saved_processing_gdb_commands;
 	}
 
 	if (cmd.length() == 0 && c.prompt)
@@ -309,6 +314,7 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
     translate_command(cmd);
 
     // Allow for recursive calls in `send_gdb_command'
+    bool saved_processing_gdb_commands = processing_gdb_commands;
     processing_gdb_commands = false;
 
     if (is_internal_command(cmd))
@@ -323,7 +329,7 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 
     messagePosition = XmTextGetLastPosition(gdb_w);
 
-    processing_gdb_commands = true;
+    processing_gdb_commands = saved_processing_gdb_commands;
 }
 
 // True if GDB can run a command
@@ -338,7 +344,7 @@ bool can_do_gdb_command()
     if (gdb_prompts_y_or_n())
 	return false;		// GDB prompts
 
-    if (app_data.stop_and_continue && !gdb->recording())
+    if (app_data.stop_and_continue && !gdb->recording() && !continuing)
     {
 	if (is_cont_cmd(current_gdb_command()))
 	    return true;	// We can interrupt `run' and `cond'
@@ -378,11 +384,6 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	return;
     }
 
-    if (continuing && is_command)
-    {
-	XtRemoveTimeOut(continuing_timeout);
-	continuing = false;
-    }
 
     processing_gdb_commands = true;
 
@@ -403,18 +404,25 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 
     if (c.command == "")
     {
-	// No command left
-	processing_gdb_commands = false;
-	return;
+	// Invalid command
+#if LOG_COMMAND_QUEUE
+	clog << "Command " << c << ": ignoring\n";
+#endif
     }
-
-    if (gdb->isReadyWithPrompt() || c.priority == COMMAND_PRIORITY_NOW)
+    else if (gdb->isReadyWithPrompt() || c.priority == COMMAND_PRIORITY_NOW)
     {
-	// Process command right now
+#if LOG_COMMAND_QUEUE
+	clog << "Command " << c << ": processing\n";
+#endif
+
+	interrupting = false;
+
+	// We're ready - process command right now
 	if (is_cont_cmd(c.command) || c.command == "yes")
 	{
-	    // Avoid interrupting `cont' and `run' commands that have just
-	    // been sent - we might cancel them
+	    // Avoid interrupting `cont' and `run' commands
+	    // automatically that have just been sent - we might
+	    // cancel them
 
 	    // `run' needs significantly more time than `cont'
 	    int timeout;
@@ -423,8 +431,10 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	    else
 		timeout = 200;
 
-	    continuing = true;
-	    continuing_timeout = 
+	    if (continuing)
+		XtRemoveTimeOut(continuing);
+
+	    continuing = 
 		XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 				timeout, ClearContinuingCB, XtPointer(0));
 
@@ -432,52 +442,62 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	}
 
 	_do_gdb_command(c, is_command);
-	processing_gdb_commands = false;
-	return;
     }
-
-    if (!app_data.stop_and_continue || 
-	gdb->recording() ||
-	gdb_prompts_y_or_n() ||	
-	!is_cont_cmd(current_gdb_command()))
+    else if (app_data.stop_and_continue &&
+	     !gdb->recording() &&
+	     !gdb_prompts_y_or_n() &&
+	     is_cont_cmd(current_gdb_command()) &&
+	     !continuing &&
+	     !interrupting)
     {
+#if LOG_COMMAND_QUEUE
+	clog << "Command " << c << ": interrupting\n";
+#endif
+
+	// We may become ready by interrupting the current command
+	Command interrupt(c);
+	interrupt.command        = '\003';
+	interrupt.check          = true;
+	interrupt.callback       = 0;
+	interrupt.extra_callback = 0;
+	interrupt.priority       = COMMAND_PRIORITY_NOW;
+	_do_gdb_command(interrupt, false);
+	interrupting = true;
+
+	// Re-enqueue original command
+	c.priority = COMMAND_PRIORITY_READY;
+	c.start_undo = false;
 	gdb_enqueue_command(c);
-	return;
+
+	bool continue_after_command = 
+	    !is_running_cmd(c.command) && 
+	    !starts_recording(c.command) &&
+	    !is_file_cmd(c.command, gdb) &&
+	    !is_define_cmd(c.command) &&
+	    !is_core_cmd(c.command);
+
+	if (continue_after_command)
+	{
+	    // Enqueue 'continue' command.  
+	    // This goes after the last user command.
+	    Command cont(c);
+	    cont.command        = "cont";
+	    cont.callback       = 0;
+	    cont.extra_callback = 0;
+	    cont.start_undo     = false;
+	    cont.priority       = COMMAND_PRIORITY_CONT;
+
+	    gdb_enqueue_command(cont);
+	}
     }
-
-    // Run interrupt command
-    Command interrupt(c);
-    interrupt.command        = '\003';
-    interrupt.check          = true;
-    interrupt.callback       = 0;
-    interrupt.extra_callback = 0;
-    interrupt.priority       = COMMAND_PRIORITY_NOW;
-    _do_gdb_command(interrupt, false);
-
-    // Re-enqueue original command
-    c.priority = COMMAND_PRIORITY_READY;
-    c.start_undo = false;
-    gdb_enqueue_command(c);
-
-    bool continue_after_command = 
-	!is_running_cmd(c.command) && 
-	!starts_recording(c.command) &&
-	!is_file_cmd(c.command, gdb) &&
-	!is_define_cmd(c.command) &&
-	!is_core_cmd(c.command);
-
-    if (continue_after_command)
+    else
     {
-	// Enqueue 'continue' command.  
-	// This goes after the last user command.
-	Command cont(c);
-	cont.command        = "cont";
-	cont.callback       = 0;
-	cont.extra_callback = 0;
-	cont.start_undo     = false;
-	cont.priority       = COMMAND_PRIORITY_CONT;
+	// We're not ready - enqueue command
+#if LOG_COMMAND_QUEUE
+	clog << "Command " << c << ": enqueuing\n";
+#endif
 
-	gdb_enqueue_command(cont);
+	gdb_enqueue_command(c);
     }
 
     processing_gdb_commands = false;
@@ -531,7 +551,7 @@ typedef QueueIter<Command> CommandQueueIter;
 
 static CommandQueue commandQueue;
 
-#if LOG_QUEUE
+#if LOG_COMMAND_QUEUE
 static ostream& operator<<(ostream& os, const CommandQueue& queue)
 {
     os << "[";
@@ -572,7 +592,7 @@ void clearCommandQueue()
 	oldCommandQueue -= cmd;
     }
 
-#if LOG_QUEUE
+#if LOG_COMMAND_QUEUE
     clog << "Command queue: " << commandQueue << "\n";
 #endif
 }
@@ -697,7 +717,7 @@ static void gdb_enqueue_command(const Command& c)
 	commandQueue.enqueue_at_start(c);
     }
 
-#if LOG_QUEUE
+#if LOG_COMMAND_QUEUE
     clog << "Command queue: " << commandQueue << "\n";
 #endif
 
@@ -727,7 +747,7 @@ void processCommandQueue(XtPointer, XtIntervalId *id)
 
 	gdb_keyboard_command = false;
 
-#if LOG_QUEUE
+#if LOG_COMMAND_QUEUE
 	clog << "Command queue: " << commandQueue << "\n";
 #endif
     }
