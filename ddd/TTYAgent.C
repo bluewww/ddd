@@ -427,8 +427,12 @@ void TTYAgent::open_slave()
 #if defined(TIOCSCTTY)
     if (!push)
     {
-	if (ioctl(slave, TIOCSCTTY) < 0)
-	    _raiseIOMsg("cannot allocate controlling terminal");
+	// This is required on some boxes (notably DEC OSF and
+	// FreeBSD); if it fails, don't complain.
+	if (ioctl(slave, TIOCSCTTY, 1) < 0)
+	{
+	    // _raiseIOWarning("cannot allocate controlling terminal");
+	}
     }
 #endif
 
