@@ -35,6 +35,24 @@ $ref_to_LoL = [
 	      ];
 print $ref_to_LoL->[2][2], "\n";
 
+
+# Closures
+sub newprint {
+  my $x = shift;
+  return sub { my $y = shift; print "$x, $y!\n"; };
+}
+$h = newprint("Howdy");
+$g = newprint("Greetings");
+
+&$h("world");
+&$g("earthlings");
+
+
+# Globs
+$fh = *STDOUT;
+
+
+
 sub print_me {
   print @_;
 }

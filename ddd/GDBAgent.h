@@ -631,8 +631,7 @@ public:
     // Several commands
 				                    // GDB command
 						    // -----------------------
-    string print_command(string expr = "",          // print EXP or
-			 bool named = false,        // output EXP (if INTERNAL)
+    string print_command(string expr = "",          // print|output EXP
 			 bool internal = true) const;
     string assign_command(string var,               // set variable VAR = EXPR
 			  string expr) const;

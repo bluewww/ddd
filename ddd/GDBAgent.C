@@ -1479,7 +1479,7 @@ void GDBAgent::handle_died()
 //-----------------------------------------------------------------------------
 
 // DBX 3.0 wants `print -r' instead of `print' for C++
-string GDBAgent::print_command(string expr, bool named, bool internal) const
+string GDBAgent::print_command(string expr, bool internal) const
 {
     string cmd;
 
@@ -1487,10 +1487,11 @@ string GDBAgent::print_command(string expr, bool named, bool internal) const
     {
     case GDB:
     case DBX:
-	if (internal && !named && has_output_command())
+	if (internal && has_output_command())
 	    cmd = "output";
 	else
 	    cmd = "print";
+
 	if (has_print_r_option())
 	    cmd += " -r";
 	break;
@@ -1510,30 +1511,6 @@ string GDBAgent::print_command(string expr, bool named, bool internal) const
 	else
 	    cmd = "print";
 	break;
-    }
-
-    if (expr != "")
-    {
-	if (named && !has_named_values())
-	{
-	    switch (type())
-	    {
-	    case DBX:
-		cmd += " " + quote(expr + " =") + ",";
-		break;
-
-	    case XDB:
-		cmd.prepend(echo_command(expr + " = ") + ";");
-		break;
-
-	    case JDB:
-	    case PERL:
-	    case PYDB:
-	    case GDB:
-		cmd.prepend(echo_command(expr + " = ") + "\n");
-		break;
-	    }
-	}
     }
 
     if (expr != "")

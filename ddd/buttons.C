@@ -463,7 +463,7 @@ string gdbValue(const string& expr)
 	// Ask debugger for value.  In case of secondary prompts, use
 	// the default choice.
 	gdb->removeHandler(ReplyRequired, gdb_selectHP);
-	value = gdb_question(gdb->print_command(expr, false), help_timeout);
+	value = gdb_question(gdb->print_command(expr), help_timeout);
 	if (value != NO_GDB_ANSWER)
 	    gdb->munch_value(value, expr);
 	gdb->addHandler(ReplyRequired, gdb_selectHP);

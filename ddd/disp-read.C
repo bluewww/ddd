@@ -504,10 +504,8 @@ static bool starts_with(const string& cmd, const string& prefix)
 // True if CMD is a printing command
 bool is_print_cmd(const string& cmd, GDBAgent *gdb)
 {
-    return (starts_with(cmd, gdb->print_command("", true, true)) ||
-	    starts_with(cmd, gdb->print_command("", true, false)) ||
-	    starts_with(cmd, gdb->print_command("", false, true)) ||
-	    starts_with(cmd, gdb->print_command("", false, false)));
+    return (starts_with(cmd, gdb->print_command("", true)) ||
+	    starts_with(cmd, gdb->print_command("", false)));
 }
 
 // True if CMD is some other builtin command
@@ -712,18 +710,21 @@ string read_next_display (string& displays, GDBAgent *gdb)
 }
 
 // Return "NR: NAME = " from DISPLAY
-string get_disp_value_str (const string& display, GDBAgent *)
+string get_disp_value_str (const string& display, GDBAgent *gdb)
 {
     string d(display);
 
-    // For some types, XDB issues `NAME = VALUE', for others, `VALUE'.
-    // DDD compensates for this by having XDB prepend `NAME = '.
-    // In case we have `NAME = NAME = VALUE', strip first `NAME = '.
+    if (gdb->type() == XDB)
+    {
+	// For some types, XDB issues `NAME = VALUE', for others, `VALUE'.
+	// DDD compensates for this by prepending `NAME = '.
+	// In case we have `NAME = NAME = VALUE', strip first `NAME = '.
 #if RUNTIME_REGEX
-    static regex rxeqeq("[^{};,\n= ]+ = [^{}();,\n= ]+ = .*");
+	static regex rxeqeq("[^{};,\n= ]+ = [^{}();,\n= ]+ = .*");
 #endif
-    if (d.matches(rxeqeq))
-	d = d.after(" = ");
+	if (d.matches(rxeqeq))
+	    d = d.after(" = ");
+    }
 
     int nl_index = d.index('\n');
     int eq_index = d.index(" = ");

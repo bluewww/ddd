@@ -45,7 +45,7 @@ inline bool isid(char c)
 // True if C is a Perl prefix character
 inline bool is_perl_prefix(char c)
 {
-    return c == '@' || c == '%' || c == '$' || c == '*';
+    return c == '@' || c == '%' || c == '$';
 }
 
 #endif // _DDD_isid_h

@@ -94,7 +94,7 @@ string deref(const string& expr, const string& sym)
     else
 	return symbol;		// Unknown type
 
-    if (symbol == "()" || symbol.matches(rxsimple))
+    if (symbol == "()" || symbol.matches(rxidentifier))
 	return prefix + symbol;
     else
 	return prefix + "{" + symbol + "}";

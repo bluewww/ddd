@@ -225,6 +225,7 @@ void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
 class ExtraData {
 public:
     string   command;		       // The command issued
+    StringArray extra_commands;	       // The additional commands
 
     int      n_init;	               // # of initialization commands
 
@@ -1316,6 +1317,13 @@ void send_gdb_command(string cmd, Widget origin,
 	DispValue::clear_type_cache();
     }
 
+    if (!gdb->has_named_values() && is_print_cmd(cmd, gdb))
+    {
+	// The debugger `print NAME' does not prepend 'NAME = ' before
+	// the value.  Fix this.
+	cmd_data->user_answer = cmd.after(rxwhite) + " = ";
+    }
+
     if (extra_data->refresh_frame && 
 	!gdb->has_frame_command() && 
 	gdb->type() != JDB)
@@ -1611,6 +1619,8 @@ void send_gdb_command(string cmd, Widget origin,
     cmd_data->user_prompt  = prompt;
     cmd_data->user_check   = check;
 
+    extra_data->extra_commands = cmds;
+
     // Send commands
     bool send_ok = gdb->send_user_cmd_plus(cmds, dummy, cmds.size(),
 					   extra_completed, (void*)extra_data,
@@ -1881,7 +1891,8 @@ static void command_completed(void *data)
     // Process displays
     if (check && cmd_data->filter_disp != NoFilter)
     {
-	assert(cmd_data->filter_disp == TryFilter || gdb->has_display_command());
+	assert(cmd_data->filter_disp == TryFilter || 
+	       gdb->has_display_command());
 
 	if (verbose)
 	    gdb_out(cmd_data->disp_buffer->answer_ended());
@@ -2643,7 +2654,14 @@ static void extra_completed (const StringArray& answers,
     {
 	string ans = "";
 	for (int i = 0; i < extra_data->n_refresh_data; i++)
+	{
+	    if (!gdb->has_named_values())
+	    {
+		const string& cmd = extra_data->extra_commands[qu_count];
+		ans += cmd.after(rxwhite) + " = ";
+	    }
 	    ans += answers[qu_count++];
+	}
 
 	if (extra_data->n_refresh_data > 0)
 	{

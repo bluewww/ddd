@@ -96,7 +96,7 @@ string arg_history_filter(const string& cmd)
     string arg;
 
     // Check for common GDB commands
-    if (try_arg(cmd, gdb->print_command("", false, false), arg) ||
+    if (try_arg(cmd, gdb->print_command("", false), arg) ||
 	try_arg(cmd, gdb->display_command(""), arg) ||
 	try_arg(cmd, gdb->whatis_command(""), arg) ||
 	try_arg(cmd, "x", arg) ||

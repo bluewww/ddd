@@ -515,11 +515,21 @@ int SourceView::indent_amount(Widget w, int pos)
 
     int indent = 0;
     if (is_code_widget(w))
+    {
 	indent = code_indent_amount;
-    else if (display_line_numbers)
-	indent = source_indent_amount + line_indent_amount;
+    }
     else
+    {
 	indent = source_indent_amount;
+
+	if (display_line_numbers)
+	    indent += line_indent_amount;
+
+	// For scripting languages, add a minimum amount
+	if (gdb->program_language() == LANGUAGE_PERL ||
+	    gdb->program_language() == LANGUAGE_PYTHON)
+	    indent = max(indent, 4);
+    }
 
     if (pos >= 0)
     {
@@ -1302,7 +1312,7 @@ void SourceView::text_popup_printCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command(fortranize(*word_ptr), false, false), w);
+    gdb_command(gdb->print_command(fortranize(*word_ptr), false), w);
 }
 
 void SourceView::text_popup_print_refCB (Widget w, 
@@ -1311,8 +1321,7 @@ void SourceView::text_popup_print_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command(deref(fortranize(*word_ptr)), 
-				   false, false), w);
+    gdb_command(gdb->print_command(deref(fortranize(*word_ptr)), false), w);
 }
 
 
@@ -6280,7 +6289,7 @@ void SourceView::PrintWatchpointCB(Widget w, XtPointer client_data, XtPointer)
 	break;
 
     case WATCHPOINT:
-	gdb_command(gdb->print_command(bp->expr(), false, false), w);
+	gdb_command(gdb->print_command(bp->expr(), false), w);
 	break;
     }
 }

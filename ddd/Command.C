@@ -230,7 +230,7 @@ static void do_gdb_command(Command& c)
 	if (!gdb->recording())
 	    handle_running_commands(cmd, c.origin);
 
-	if (cmd.length() == 0)
+	if (cmd.length() == 0 && c.prompt)
 	{
 	    _gdb_out(gdb->prompt());
 	    return;

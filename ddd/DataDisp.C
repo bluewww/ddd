@@ -3320,6 +3320,8 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     string display_name;
     read_number_and_name(value, nr_s, display_name);
 
+    gdb->munch_value(value, display_name);
+
     int nr = get_nr(nr_s);
     if (nr == 0 || display_name == "")
     {
@@ -3497,7 +3499,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
-    if (!contains_display(answer, gdb))
+    if (!contains_display(answer, gdb) || is_invalid(answer))
     {
 	if (info->deferred == DeferIfNeeded)
 	{
@@ -3688,7 +3690,7 @@ void DataDisp::new_data_displaysSQA (string display_expression,
 	string expr = prefix + "[" + itostring (i) + "]" + postfix;
 	info->display_expressions += expr;
 	display_cmds              += gdb->display_command(expr);
-	print_cmds                += gdb->print_command(expr, true);
+	print_cmds                += gdb->print_command(expr);
     }
 
     VoidArray dummy;
@@ -3862,7 +3864,7 @@ int DataDisp::add_refresh_data_commands(StringArray& cmds)
 	{
 	    if (!dn->is_user_command() && !dn->deferred())
 	    {
-		string cmd = gdb->print_command(dn->name(), true);
+		string cmd = gdb->print_command(dn->name());
 		while (cmd != "")
 		{
 		    string line = cmd;
@@ -5845,7 +5847,7 @@ int DataDisp::add_refresh_addr_commands(StringArray& cmds, DispNode *dn)
 	{
 	    string addr = gdb->address_expr(dn->name());
 	    if (addr != "")
-		cmds += gdb->print_command(addr, true);
+		cmds += gdb->print_command(addr);
 	}
     }
     else

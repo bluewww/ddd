@@ -56,6 +56,7 @@ char DispValue_rcsid[] =
 #include "ddd.h"
 #include "deref.h"
 #include "fonts.h"
+#include "isid.h"
 #include "misc.h"
 #include "plotter.h"
 #include "question.h"
@@ -111,12 +112,6 @@ string DispValue::add_member_name(const string& base,
     {
 	return base.before('(') + member_name.before(')') + ", " + 
 	    base.after('(');
-    }
-
-    if (gdb->program_language() == LANGUAGE_PERL)
-    {
-	if (base != "" && base[0] != '$')
-	    return '$' + base.after(0) + member_name;
     }
 
     return base + member_name;
@@ -219,6 +214,50 @@ bool DispValue::sequence_pending(const string& value,
     return false;
 }
 
+// In Perl, replace `{$REF}' and `$REF' by `REF->'
+static string normalize_base(const string& base)
+{
+#if RUNTIME_REGEX
+    static regex rxsimple("([][a-zA-Z0-9_$@%().]|->)*");
+#endif
+
+    bool perl = gdb->program_language() == LANGUAGE_PERL;
+    string ref = base;
+
+    // Fetch one-letter Perl prefix
+    string prefix;
+    if (perl && ref != "" && is_perl_prefix(ref[0]))
+    {
+	prefix = ref[0];
+	ref = ref.after(0);
+    }
+
+    // Insert `->' operators
+    if (perl)
+    {
+	string r = ref;
+	if (r.contains("{", 0) && r.contains('}', -1))
+	    r = unquote(r);
+
+	if (r.contains('$', 0) && r.matches(rxsimple))
+	{
+	    if (r.contains("}", -1) || r.contains("]", -1))
+		ref = r.after(0); // Array between braces is optional
+	    else
+		ref = r.after(0) + "->";
+	}
+    }
+
+    if (!perl)
+    {
+	// Place brackets around complex expressions
+	if (!ref.matches(rxsimple))
+	    ref = "(" + ref + ")";
+    }
+
+    return prefix + ref;
+}
+
 // Parsing
 DispValue *DispValue::parse(DispValue *parent, 
 			    int        depth,
@@ -280,7 +319,9 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
     bool ignore_repeats = (parent != 0 && parent->type() == Array);
 
-    switch (mytype) 
+    char perl_type = '\0';
+
+    switch (mytype)
     {
 
     case Simple:
@@ -289,6 +330,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 #if LOG_CREATE_VALUES
 	clog << mytype << ": " << quote(_value) << "\n";
 #endif
+	perl_type = '$';
 	break;
     }
 
@@ -300,6 +342,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 #if LOG_CREATE_VALUES
 	clog << mytype << ": " << quote(_value) << "\n";
 #endif
+	perl_type = '$';
 	break;
     }
 
@@ -314,18 +357,13 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	// Hide vtable pointers.
 	if (_value.contains("virtual table") || _value.contains("vtable"))
 	    myexpanded = false;
+	perl_type = '$';
 	break;
     }
 
     case Array:
     {
-#if RUNTIME_REGEX
-	static regex rxsimple("([][a-zA-Z0-9_$@%().]|->)*");
-#endif
-
-	string base = myfull_name;
-	if (!base.matches(rxsimple))
-	    base = "(" + base + ")";
+	string base = normalize_base(myfull_name);
 
 	_alignment = Vertical;
 
@@ -416,6 +454,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 #if LOG_CREATE_VALUES
 	clog << mytype << " has " << nchildren() << " members\n";
 #endif
+	perl_type = '@';
 	break;
     }
 
@@ -434,7 +473,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 #if LOG_CREATE_VALUES
 	clog << mytype << " " << quote(myfull_name) << "\n";
 #endif
-	string member_prefix = myfull_name;
+	string member_prefix = normalize_base(myfull_name);
 	string member_suffix = "";
 	if (mytype == List)
 	{
@@ -472,9 +511,8 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    }
 	    else if (gdb->program_language() == LANGUAGE_PERL)
 	    {
+		// In Perl, members of A are accessed as A{...}
 		member_prefix += "{";
-		if (member_prefix[0] != '$')
-		    member_prefix[0] = '$';
 		member_suffix = "}";
 	    }
 	    else
@@ -611,6 +649,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	     << " has " << nchildren() << " members\n";
 #endif
 
+	perl_type = '%';
 	break;
     }
 
@@ -634,6 +673,8 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    init(parent, depth, value);
 	    return;
 	}
+
+	perl_type = '$';	// No such thing in Perl...
 	break;
     }
 
@@ -696,6 +737,13 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		 << " has " << nchildren() << " members\n";
 	}
 #endif
+    }
+
+    if (gdb->program_language() == LANGUAGE_PERL && is_perl_prefix(perl_type))
+    {
+	// Set new type
+	if (myfull_name != "" && is_perl_prefix(myfull_name[0]))
+	    myfull_name[0] = perl_type;
     }
 
     background(value.length());
