@@ -2881,7 +2881,7 @@ void process_next_event()
     }
 #if HAVE_EXCEPTION && HAVE_STD_EXCEPTIONS && HAVE_TYPEINFO
     // Standard library exception: get its type and diagnostics.
-    catch (const exception& err)
+    catch (const std::exception& err)
     {
 	ddd_show_exception(typeid(err).name(), err.what());
     }

@@ -923,7 +923,7 @@ AC_TRY_COMPILE([
 #include <math.h>
 ],
 [try { throw runtime_error("too many fingers on keyboard"); }
- catch(const exception& e) { const char *s = e.what(); }],
+ catch(const std::exception& e) { const char *s = e.what(); }],
 ice_cv_have_std_exceptions=yes,
 ice_cv_have_std_exceptions=no)
 AC_LANG_RESTORE
