@@ -283,6 +283,10 @@ void show_invocation(DebuggerType type, ostream& os)
 
 void show_configuration(ostream& os)
 {    
+    string cinfo = string(config_info).before("\n");
+    while (cinfo.contains(' ', -1))
+	cinfo = cinfo.before(int(cinfo.length()) - 1);
+
     show_version(os);
     os << 
 	// Compilation stuff
@@ -327,7 +331,7 @@ void show_configuration(ostream& os)
 	", compile-time regexps"
 #endif
 	"\n" + 4
-       << config_info;
+       << cinfo << "\n";
 }
 
 

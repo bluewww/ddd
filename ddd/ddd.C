@@ -5397,18 +5397,23 @@ bool process_emergencies()
 // Various setups
 //-----------------------------------------------------------------------------
 
+// This text is shown in `About DDD', appended to the value of the
+// `helpOnVersionString' resource.
 static void setup_version_info()
 {
-    string cinfo = string(config_info).before("\n");
-    while (cinfo.contains(' ', -1))
-	cinfo = cinfo.before(int(cinfo.length()) - 1);
+    ostrstream os;
+    show_configuration(os);
+    string cinfo(os);
 
-    int cinfo_lt = cinfo.index('<');
-    int cinfo_gt = cinfo.index('>');
+    cinfo.gsub("(C)", "\251");
+
+    // Set e-mail address in @tt; the remainder in @rm
+    int cinfo_lt = cinfo.index('<', -1);
+    int cinfo_gt = cinfo.index('>', -1);
     if (cinfo_lt >= 0 && cinfo_gt >= 0)
     {
 	helpOnVersionExtraText = rm(cinfo.before(cinfo_lt));
-	helpOnVersionExtraText += cr();
+ 	helpOnVersionExtraText += cr();	// place e-mail on separate line
 	helpOnVersionExtraText += rm(cinfo(cinfo_lt, 1));
 	helpOnVersionExtraText += 
 	    tt(cinfo(cinfo_lt + 1, cinfo_gt - cinfo_lt - 1));
@@ -5418,11 +5423,11 @@ static void setup_version_info()
     {
 	helpOnVersionExtraText = rm(cinfo);
     }
-    helpOnVersionExtraText += cr();
 
     string expires = ddd_expiration_date();
     if (expires != "")
     {
+	// Add expiration date
 	string expired_msg = DDD_NAME " " DDD_VERSION " ";
 	if (ddd_expired())
 	    expired_msg += "has expired since " + expires;

@@ -1478,14 +1478,11 @@ Click on LBL(Close) to close the help window.
 
 
 ! The official announcement.
-! Build information (from `USERINFO') is appended to this text.
+! Build information (like `ddd --configuration') is appended to this text.
 Ddd*helpOnVersionString:	\
 @Logo DDD@logo: \
 The @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
-@rm by Dorothea L\374tkehaus and Andreas Zeller.\n\
-\n\
-DDD @VERSION@ (@host@),\n\
-Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
+@rm by Dorothea L\374tkehaus and Andreas Zeller.\n\n
 
 ! The default Help Text.
 Ddd*helpString:	\
