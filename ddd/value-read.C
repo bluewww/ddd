@@ -291,10 +291,10 @@ DispValueType determine_type(const string& value)
 
 
 // Read tokens up to character DELIM
-static void read_up_to(const char *value, int& pos, char delim)
+static bool read_up_to(const char *value, int& pos, char delim)
 {
     if (value[pos] == '\0')
-	return;
+	return false;
 
     // Add opening delimiter
     pos++;
@@ -304,19 +304,19 @@ static void read_up_to(const char *value, int& pos, char delim)
 	read_token(value, pos);
 
     if (value[pos] == '\0')
-	return;
+	return false;
 
     // Add closing delimiter
     pos++;
 
-    return;
+    return true;
 }
 
 // Read tokens up to word DELIM
-static void read_up_to(const char *value, int& pos, char* delim)
+static bool read_up_to(const char *value, int& pos, char* delim)
 {
     if (value[pos] == '\0')
-	return;
+	return false;
 
     int len = strlen(delim);
 
@@ -325,19 +325,19 @@ static void read_up_to(const char *value, int& pos, char* delim)
 	read_token(value, pos);
 
     if (value[pos] == '\0')
-	return;
+	return false;
 
     // Add closing delimiter
     pos += len;
 
-    return;
+    return true;
 }
 
-// Read a string enclosed in DELIM.
-static void read_string(const char *value, int& pos, char delim)
+// Read a string enclosed in DELIM.  We do accept `\n' in strings.
+static bool read_string(const char *value, int& pos, char delim)
 {
     if (value[pos] == '\0')
-	return;
+	return false;
 
     // Add opening delimiter
     pos++;
@@ -354,12 +354,12 @@ static void read_string(const char *value, int& pos, char delim)
     }
 
     if (value[pos] == '\0')
-	return;
+	return false;		// Could not find end
 
     // Add closing delimiter
     pos++;
 
-    return;
+    return true;
 }
 
 
@@ -368,6 +368,9 @@ static void read_token(const char *value, int& pos)
 {
     if (value[pos] == '\0')
 	return;
+
+    int start = pos;
+    bool ok = true;
 
     string token;
     
@@ -381,20 +384,20 @@ static void read_token(const char *value, int& pos)
 	break;
 
     case '(':
-	read_up_to(value, pos, ')');
+	ok = read_up_to(value, pos, ')');
 	break;
 
     case '[':
-	read_up_to(value, pos, ']');
+	ok = read_up_to(value, pos, ']');
 	break;
 
     case '{':
-	read_up_to(value, pos, '}');
+	ok = read_up_to(value, pos, '}');
 	break;
 
     case '\"':
     case '\'':
-	read_string(value, pos, value[pos]);
+	ok = read_string(value, pos, value[pos]);
 	break;
 
     case '<':
@@ -408,7 +411,7 @@ static void read_token(const char *value, int& pos)
 	}
 	else
 	{
-	    read_up_to(value, pos, '>');
+	    ok = read_up_to(value, pos, '>');
 	}
 	break;
 
@@ -445,6 +448,12 @@ static void read_token(const char *value, int& pos)
 	    pos++;
 	}
 	break;
+    }
+
+    if (!ok)
+    {
+	// Could not find closing delimiter.  Treat as one-character token.
+	pos = start + 1;
     }
 }
 
