@@ -135,7 +135,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 				Window& windowid, Widget origin)
 {
     // If we're already running, all is done.
-    if (pid > 0 && !remote_gdb() && kill(pid, 0) == 0)
+    if (pid > 0 && (remote_gdb() || kill(pid, 0) == 0))
 	return;
 
     string term_command = app_data.term_command;
@@ -274,7 +274,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     }
 }
 
-static void get_args(string command, string& base, string& args)
+static void get_args(const string& command, string& base, string& args)
 {
     // Find (last) arguments to `run' command
     base = command;
@@ -290,7 +290,7 @@ static void get_args(string command, string& base, string& args)
     {
 	args = gdb_question("show args");
 
-	// GDB 4.16 issues `Arguments list', GDB 4,17 `Argument list'.  Shhh.
+	// GDB 4.16 issues `Arguments list', GDB 4.17 `Argument list'.  Shhh.
 	if (!args.contains("Argument", 0))
 	{
 	    args = "";
@@ -775,6 +775,38 @@ static void set_tty_title(string message, Window tty_window)
 		    title, icon);
 }
 
+// Handle rerun
+static void handle_rerun(string& command)
+{
+    if (!gdb->has_rerun_command())
+	return;
+    if (!is_running_cmd(command, gdb))
+	return;
+
+    static string last_args = "";
+
+    string base;
+    string args;
+    get_args(command, base, args);
+    bool rerun = base.contains("re", 0);
+
+    if (rerun && !gdb->rerun_clears_args() && args == "")
+    {
+	// `rerun' without args - Use last arguments
+	command = base + " " + last_args;
+    }
+    else if (!rerun && gdb->rerun_clears_args() && args == "")
+    {
+	// `run' without args - Use last arguments
+	command = base + " " + last_args;
+    }
+    else
+    {
+	// Set last arguments
+	last_args = args;
+    }
+}
+
 // Create TTY if required
 void handle_running_commands(string& command, Widget origin)
 {
@@ -796,6 +828,8 @@ void startup_exec_tty()
 // Raise execution TTY with command COMMAND.
 void startup_exec_tty(string& command, Widget origin)
 {
+    handle_rerun(command);
+
     bool started = false;
 
     if (app_data.separate_exec_window 
