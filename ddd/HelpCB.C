@@ -969,7 +969,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	    positions += source;
 
 	    // Strip `File: ' line
-	    text = text.before(source) + text.from(start_of_title);
+	    text.del(source, start_of_title - source);
 	    
 	    // Find next `File: ' line
 	    source = text.index("File: ", source);
@@ -1622,11 +1622,13 @@ static void HandleTipEvent(Widget w,
     {
     case EnterNotify:
 	{
+#if 0
 	    if (event->xcrossing.mode != NotifyNormal)
 	    {
 		// Ignore grab/ungrab event
 		break;
 	    }
+#endif
 
 	    if (clear_tip_timer != 0)
 	    {
@@ -1652,6 +1654,8 @@ static void HandleTipEvent(Widget w,
 		}
 	    }
 
+#if 0
+	    // Enabling this would inhibit tips on pull-down menus
 	    const int any_button_mask = Button1Mask | Button2Mask 
 	        | Button3Mask | Button4Mask | Button5Mask;
 	    if (event->xcrossing.state & any_button_mask)
@@ -1659,7 +1663,9 @@ static void HandleTipEvent(Widget w,
 		// Some button is pressed - clear tip
 		ClearTip(w, event);
 	    }
-	    else if (!XmIsText(w))
+	    else 
+#endif
+	    if (!XmIsText(w))
 	    {
 		// Clear and re-raise tip
 		ClearTip(w, event);
@@ -1670,11 +1676,13 @@ static void HandleTipEvent(Widget w,
 
     case LeaveNotify:
 	{
+#if 0
 	    if (event->xcrossing.mode != NotifyNormal)
 	    {
 		// Ignore grab/ungrab event
 		break;
 	    }
+#endif
 
 	    last_left_widget = w;
 	    if (clear_tip_timer != 0)
