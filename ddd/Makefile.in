@@ -530,7 +530,6 @@ XSTUFF_OBJECTS = \
 	Delay.o      \
 	DestroyCB.o  \
 	ExitCB.o     \
-	HelpCB.o     \
 	MString.o    \
 	MakeMenu.o
 
@@ -672,6 +671,7 @@ DDD_OBJECTS = \
 	DispNodeM.o  \
 	DispValue.o  \
 	GDBAgent.o   \
+	HelpCB.o     \
 	PosBuffer.o  \
 	SourceView.o
 
