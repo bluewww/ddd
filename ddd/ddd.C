@@ -201,6 +201,7 @@ char ddd_rcsid[] =
 #include "TimeOut.h"
 #include "UndoBuffer.h"
 #include "VSEFlags.h"
+#include "XErrorB.h"
 #include "args.h"
 #include "assert.h"
 #include "bool.h"
@@ -6324,7 +6325,7 @@ static bool have_decorated_transients()
 //-----------------------------------------------------------------------------
 
 static Widget splash_shell  = 0;
-static Pixmap splash_pixmap;
+static Pixmap splash_pixmap = None;
 static _Delay *splash_delay = 0;
 
 static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
@@ -6340,7 +6341,8 @@ static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
     
     if (splash_shell != 0)
     {
-	XFreePixmap(XtDisplay(splash_shell), splash_pixmap);
+	if (splash_pixmap != None)
+	    XFreePixmap(XtDisplay(splash_shell), splash_pixmap);
 
 	popdown_shell(splash_shell);
 	DestroyWhenIdle(splash_shell);
@@ -6354,6 +6356,8 @@ static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
 static void popup_splash_screen(Widget parent, string color_key)
 {
     popdown_splash_screen();
+
+    XErrorBlocker blocker(XtDisplay(parent));
 
     Arg args[10];
     int arg = 0;
@@ -6373,6 +6377,13 @@ static void popup_splash_screen(Widget parent, string color_key)
 
     Dimension width, height;
     splash_pixmap = dddsplash(splash, color_key, width, height);
+
+    if (blocker.error_occurred())
+	splash_pixmap = None;
+
+    if (splash_pixmap == None)
+	return;
+
     XtVaSetValues(splash,
 		  XmNbackgroundPixmap, splash_pixmap,
 		  XmNwidth, width,
