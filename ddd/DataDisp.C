@@ -31,7 +31,7 @@ char DataDisp_rcsid[] =
 #pragma implementation
 #endif
 
-#define LOG_DISPLAYS 1
+#define LOG_DISPLAYS 0
 #define LOG_COMPARE  0
 
 //-----------------------------------------------------------------------------

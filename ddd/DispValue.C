@@ -32,8 +32,8 @@ char DispValue_rcsid[] =
 #pragma implementation "DynArray.h"
 #endif
 
-#define LOG_CREATE_VALUES 1
-#define LOG_UPDATE_VALUES 1
+#define LOG_CREATE_VALUES 0
+#define LOG_UPDATE_VALUES 0
 
 //-----------------------------------------------------------------------------
 // DispValue liest und speichert Typ und Wert eines Display-Ausdrucks
