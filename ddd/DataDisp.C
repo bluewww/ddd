@@ -328,6 +328,21 @@ StringArray DataDisp::shortcut_labels;
 // The command to use for clusters
 #define CLUSTER_COMMAND "displays"
 
+inline bool is_cluster(DispNode *dn)
+{
+    return dn->is_user_command() && dn->user_command() == CLUSTER_COMMAND;
+}
+
+inline bool selected(DispNode *dn)
+{
+    // Don't treat a cluster as selected if only a member is selected
+    if (is_cluster(dn) && dn->selected() && dn->selected_value() != 0)
+	return false;
+    else
+	return dn->selected();
+}
+
+
 //----------------------------------------------------------------------------
 // Helpers
 //----------------------------------------------------------------------------
@@ -440,7 +455,7 @@ void DataDisp::get_all_clusters(IntArray& numbers)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->is_user_command() && dn->user_command() == CLUSTER_COMMAND)
+	if (is_cluster(dn))
 	    numbers += dn->disp_nr();
     }
 }
@@ -514,7 +529,7 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->selected())
+	if (selected(dn))
 	{
 	    DispValue *dv = dn->selected_value();
 	    if (dv == 0)
@@ -614,7 +629,7 @@ void DataDisp::show(Widget dialog, int depth, int more)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->selected())
+	if (selected(dn))
 	{
 	    if (dn->disabled())
 	    {
@@ -670,7 +685,7 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->selected())
+	if (selected(dn))
 	{
 	    DispValue *dv = dn->selected_value();
 	    if (dv == 0)
@@ -757,7 +772,7 @@ void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->selected())
+	if (selected(dn))
 	{
 	    disp_nrs += dn->disp_nr();
 	    if (dn->enabled())
@@ -909,7 +924,7 @@ void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->selected() && dn->disabled())
+	if (selected(dn) && dn->disabled())
 	{
 	    disp_nrs += dn->disp_nr();
 	}
@@ -929,7 +944,7 @@ void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->selected() && dn->enabled())
+	if (selected(dn) && dn->enabled())
 	{
 	    disp_nrs += dn->disp_nr();
 	}
@@ -1109,9 +1124,10 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 	if (!dn->hidden())
 	    visible++;
 
-	if (dn->selected())
+	if (::selected(dn))
 	{
 	    selected++;
+
 	    if (dn->deferred())
 	    {
 		selected_titles++;
@@ -1122,14 +1138,11 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 		if (dv == 0 || dv == dn->value())
 		    selected_titles++;
 
+		if (is_cluster(dn))
+		    selected_clusters++;
+
 		if (!dn->is_user_command() && !dn->clustered())
 		    selected_unclustered++;
-
-		if (dn->is_user_command() && 
-		    dn->user_command() == CLUSTER_COMMAND)
-		{
-		    selected_clusters++;
-		}
 
 		if (dn->disabled())
 		{
@@ -1753,7 +1766,7 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 	disp_node = disp_graph->get (disp_nr);
 	disp_value = (DispValue *)disp_node->box()->data(p);
 
-	was_selected = disp_node->selected() && disp_value == 0;
+	was_selected = selected(disp_node) && disp_value == 0;
 
 	switch (mode)
 	{
@@ -1824,7 +1837,7 @@ DispNode *DataDisp::selected_node()
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->selected())
+	if (selected(dn))
 	{
 	    if (ret == 0)
 		ret = dn;
@@ -1862,7 +1875,8 @@ void DataDisp::refresh_args(bool update_arg)
 			    0, RefreshArgsCB, XtPointer(graph_edit));
     }
 
-    // Synchronize node selection with cluster
+    // Synchronize node selection with cluster: if cluster is
+    // selected, select all contained nodes, too.
     MapRef ref;
     for (DispNode *dn = disp_graph->first(ref); 
 	 dn != 0;
@@ -1871,12 +1885,16 @@ void DataDisp::refresh_args(bool update_arg)
 	if (dn->clustered() && !dn->selected())
 	{
 	    DispNode *cluster = disp_graph->get(dn->clustered());
-	    if (cluster != 0 && 
-		cluster->selected() && cluster->selected_value() == 0)
+	    if (cluster != 0 && cluster->selected())
 	    {
-		dn->selected() = true;
-		dn->select();
-		graphEditRedrawNode(graph_edit, dn);
+		// Cluster is selected -- select display, too
+		DispValue *dv = cluster->selected_value();
+		if (dv == 0 || (dv->name() == dn->name()))
+		{
+		    dn->selected() = true;
+		    dn->select();
+		    graphEditRedrawNode(graph_edit, dn);
+		}
 	    }
 	}
     }
@@ -2277,7 +2295,7 @@ bool DataDisp::get_state(ostream& os,
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (restore_state || dn->selected())
+	if (restore_state || selected(dn))
 	    nrs += dn->disp_nr();
     }
     sort(nrs, absolute_le);
@@ -2423,9 +2441,8 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 
     // Update graph editor selection
     MapRef ref;
-    for (DispNode *dn = disp_graph->first(ref); 
-	 dn != 0;
-	 dn = disp_graph->next(ref))
+    DispNode *dn;
+    for (dn = disp_graph->first(ref); dn != 0; dn = disp_graph->next(ref))
     {
 	int display_nr = dn->disp_nr();
 
@@ -2443,9 +2460,10 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	{
 	    // Synchronize nodes with cluster
 	    DispNode *cluster = disp_graph->get(dn->clustered());
-	    if (cluster != 0 && 
-		cluster->selected() && cluster->selected_value() == 0)
+	    if (cluster != 0 && cluster->selected() && 
+		cluster->selected_value() == 0)
 	    {
+		// All cluster nodes are selected
 		select = true;
 		dn->select();
 	    }
@@ -2476,6 +2494,58 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	}
     }
 
+    // Update cluster selection
+    for (dn = disp_graph->first(ref); dn != 0; dn = disp_graph->next(ref))
+    {
+	// Clear all local cluster selections
+	if (is_cluster(dn) && dn->selected_value() != 0)
+	{
+	    dn->select();
+	    graphEditRedrawNode(graph_edit, dn);
+	}
+    }
+
+    // Reset local cluster selections
+    for (dn = disp_graph->first(ref); dn != 0; dn = disp_graph->next(ref))
+    {
+	if (!dn->selected())
+	    continue;
+	if (!dn->clustered())
+	    continue;
+
+	DispNode *cluster = disp_graph->get(dn->clustered());
+
+	if (cluster == 0)
+	    continue;
+
+	DispValue *dv = cluster->value();
+	if (dv == 0)
+	    continue;
+
+	for (int i = 0; i < dv->nchildren(); i++)
+	{
+	    DispValue *child = dv->child(i);
+	    if (child->name() == dn->name())
+	    {
+		// Got it
+		cluster->selected() = true;
+		if (cluster->selected_value() == 0)
+		{
+		    // Select this child
+		    cluster->select(child);
+		}
+		else
+		{
+		    // Multiple nodes selected -- select them all
+		    cluster->select(0);
+		    break;
+		}
+	    }
+	}
+
+	graphEditRedrawNode(graph_edit, cluster);
+    }
+
     refresh_args(true);
     refresh_display_list();
 }
@@ -2489,17 +2559,17 @@ void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
 	 node = disp_graph->nextNode(node))
     {
 	int nr = alias_display_nr(node);
-	if (nr > 0)
+	if (nr < 0)
+	    continue;
+
+	DispNode *dn = disp_graph->get(nr);
+	if (dn == 0)
+	    continue;
+
+	if (node->selected() != dn->selected())
 	{
-	    DispNode *dn = disp_graph->get(nr);
-	    if (dn != 0)
-	    {
-		if (node->selected() != dn->selected())
-		{
-		    dn->selected() = node->selected();
-		    graphEditRedrawNode(graph_edit, dn);
-		}
-	    }
+	    dn->selected() = node->selected();
+	    graphEditRedrawNode(graph_edit, dn);
 	}
     }
 
@@ -4016,7 +4086,7 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
 	if (node == 0)
 	    continue;		// Already deleted or bad number
 
-	if (node->is_user_command() && node->user_command() == CLUSTER_COMMAND)
+	if (is_cluster(node))
 	{
 	    // Deleting a cluster: uncluster all contained nodes
 	    MapRef ref;
@@ -4694,8 +4764,8 @@ void DataDisp::refresh_display_list(bool silent)
     int scopes_width = max_width(scopes) + 1;
     int addrs_width  = max_width(addrs);
 
-    string *label_list = new string[number_of_displays + 1];
-    bool *selected     = new bool[number_of_displays + 1];
+    string *label_list  = new string[number_of_displays + 1];
+    bool *selected_list = new bool[number_of_displays + 1];
 
     // Set titles
     int display_count = 0;
@@ -4713,8 +4783,8 @@ void DataDisp::refresh_display_list(bool silent)
     {
 	line = "No displays.                           ";
     }
-    label_list[display_count] = line;
-    selected[display_count] = false;
+    label_list   [display_count] = line;
+    selected_list[display_count] = false;
     display_count++;
 
     int selected_displays = 0;	// Number of selected displays
@@ -4731,11 +4801,13 @@ void DataDisp::refresh_display_list(bool silent)
 	if (detect_aliases)
 	    line += " " + fmt(addrs[display_count], addrs_width);
 
-	label_list[display_count] = line;
-	selected[display_count]   = dn->selected();
+	bool select = selected(dn);
 
-	if (dn->selected())
-	{ 
+	label_list   [display_count] = line;
+	selected_list[display_count] = select;
+
+	if (select)
+	{
 	    selected_displays++;
 	    index_selected = display_count;
 	}
@@ -4743,9 +4815,9 @@ void DataDisp::refresh_display_list(bool silent)
 	display_count++;
     }
 
-    sort(label_list + 1, selected + 1, display_count - 1);
+    sort(label_list + 1, selected_list + 1, display_count - 1);
 
-    setLabelList(display_list_w, label_list, selected, display_count, 
+    setLabelList(display_list_w, label_list, selected_list, display_count, 
 		 number_of_displays > 0, false);
 
     if (!silent)
@@ -4822,7 +4894,7 @@ void DataDisp::refresh_display_list(bool silent)
 		 k = disp_graph->next_nr(ref))
 	    {
 		DispNode* dn = disp_graph->get(k);
-		if (dn->selected())
+		if (selected(dn))
 		    displays += dn->disp_nr();
 	    }
 
@@ -4850,7 +4922,7 @@ void DataDisp::refresh_display_list(bool silent)
     }
 
     delete[] label_list;
-    delete[] selected;
+    delete[] selected_list;
 }
 
 
@@ -5180,7 +5252,7 @@ void DataDisp::unclusterSelectedCB(Widget, XtPointer, XtPointer)
     for (int i = 0; i < all_clusters.size(); i++)
     {
 	DispNode *cluster = disp_graph->get(all_clusters[i]);
-	if (cluster != 0 && cluster->selected())
+	if (cluster != 0 && selected(cluster))
 	{
 	    // Delete cluster
 	    killme += all_clusters[i];
@@ -5202,7 +5274,7 @@ void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
     for (int i = 0; i < all_clusters.size(); i++)
     {
 	DispNode *cluster = disp_graph->get(all_clusters[i]);
-	if (cluster != 0 && cluster->selected())
+	if (cluster != 0 && selected(cluster))
 	{
 	    target_cluster = all_clusters[i];
 	    break;
@@ -5221,7 +5293,7 @@ void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (!dn->is_user_command() && dn->selected())
+	if (!dn->is_user_command() && selected(dn))
 	    dn->cluster(target_cluster);
     }
 
