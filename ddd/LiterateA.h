@@ -101,63 +101,83 @@ private:
 	}
     }
 
-    int _read(char*& data, FILE *fp);	// simple read function
-    int _readNonBlocking(char* data, int size, FILE *fp); // read what's there
+    int _read(char*& data, FILE *fp); // Simple read function
+    int _readNonBlocking(char* data, int size, FILE *fp); // Read what's there
 
     // Event Handlers
     static void outputReady(AsyncAgent *c);
     static void inputReady(AsyncAgent *c);
     static void errorReady(AsyncAgent *c);
 
-protected:
+    // Flag: do we want TTYs to be read in blocking mode?
+    bool _block_tty_input;
 
-    // input data handling
+    // Return default value for _block_tty_input
+    static bool default_block_tty_input();
+
+public:
+    // Resources
+    bool block_tty_input() const     { return _block_tty_input; }
+    bool block_tty_input(bool state) { return _block_tty_input = state; }
+
+protected:
+    // Input data handling
     int readInput(char*& data);
     virtual int _readInput(char *& data);
     virtual void readAndDispatchInput(bool expectEOF = false);
 
-    // error data handling
+    // Error data handling
     int readError(char*& data);
     virtual int _readError(char *& data);
     virtual void readAndDispatchError(bool expectEOF = false);
 
-    // event management
+    // Event management
     virtual void dispatch(int type, char *data, int length); // dispatch data
 
-    // called when handlers were changed
+    // Called when handlers were changed
     void handlerChange();
 
+    // Check if fp is a tty and wants blocking input
+    bool blocking_tty(FILE *fp) const
+    {
+	return block_tty_input() && isatty(fileno(fp));
+    }
+
 public:
-    // Constructors
+    // Constructor for Agent users
     LiterateAgent(XtAppContext app_context, string pth,
 		  unsigned nTypes = LiterateAgent_NTypes):
-	AsyncAgent(app_context, pth, nTypes), activeIO(false)
+	AsyncAgent(app_context, pth, nTypes), activeIO(false),
+	_block_tty_input(default_block_tty_input())
     {}
 
+    // Constructor for Agent writers
     LiterateAgent(XtAppContext app_context, FILE *in = stdin,
 		  FILE *out = stdout, FILE *err = 0, 
 		  unsigned nTypes = LiterateAgent_NTypes):
-	AsyncAgent(app_context, in, out, err, nTypes), activeIO(false)
+	AsyncAgent(app_context, in, out, err, nTypes), activeIO(false),
+	// When reading from stdin, always block TTY input.
+	_block_tty_input(in == stdin || default_block_tty_input())
     {}
 
+    // "Dummy" Constructor without any communication
     LiterateAgent(XtAppContext app_context, bool dummy,
 		  unsigned nTypes = LiterateAgent_NTypes):
-	AsyncAgent(app_context, dummy, nTypes), activeIO(false)
+	AsyncAgent(app_context, dummy, nTypes), activeIO(false),
+	_block_tty_input(default_block_tty_input())
     {}
-
-    // Flag: do we want TTYs to be read in blocking mode?
-    static bool block_tty_input;
 
     // Duplicator
     LiterateAgent(const LiterateAgent& lit)
-	: AsyncAgent(lit), activeIO(lit.activeIO)
+	: AsyncAgent(lit), activeIO(lit.activeIO),
+	  _block_tty_input(lit.block_tty_input())
     {}
     virtual Agent *dup() const { return new LiterateAgent(*this); }
 
-    // output data handling
+    // Output data handling
     virtual int write(const char *data, int length);
 
-    // flush output
+    // Flush output
     int flush();
 
     // Starter

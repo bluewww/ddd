@@ -75,13 +75,20 @@ DEFINE_TYPE_INFO_1(LiterateAgent, AsyncAgent)
 // have no special treatment for TTYs.
 
 // Determine an appropriate default setting
-static bool _block_tty_input()
+bool LiterateAgent::default_block_tty_input()
 {
 #if defined(BLOCK_TTY_INPUT)
     return BLOCK_TTY_INPUT;
 
+#elif defined(linux) && __GLIBC__ >= 2
+    // According to Ray Dassen <jdassen@wi.LeidenUniv.nl>, Linux with
+    // GNU libc 6 (that is, glibc 2.x or later) wants BLOCK_TTY_INPUT
+    // to be unset.
+    return false;
+
 #elif defined(_LINUX_C_LIB_VERSION_MAJOR)
-    // On Linux, the correct setting depends on the C library version.
+    // On Linux with Linux libc, the correct setting depends on the
+    // libc version.
 
     // We get the version number from the library, rather than from
     // the include file, since the (dynamic) library may have changed
@@ -138,14 +145,6 @@ static bool _block_tty_input()
 
     return true;
 #endif // !LINUX && !BLOCK_TTY_INPUT
-}
-
-bool LiterateAgent::block_tty_input = _block_tty_input();
-
-// Check if fp is a tty and wants blocking input
-inline bool blocking_tty(FILE *fp)
-{
-    return LiterateAgent::block_tty_input && isatty(fileno(fp));
 }
 
 
