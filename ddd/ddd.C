@@ -1843,11 +1843,12 @@ int main(int argc, char *argv[])
     helpOnVersionExtraText += cr() 
 	+ rm(DDD_NAME " is ") + sl("free software")
 	+ rm(" and you are welcome to distribute copies of it") + cr()
-	+ rm("under certain conditions; select `" DDD_NAME 
-	     " License' in the `Help' menu") + cr()
-	+ rm("to see the conditions.  There is ") 
-	+ sl("absolutely no warranty") + rm(" for " DDD_NAME ";") + cr()
-	+ rm("see the " DDD_NAME " License for details.") + cr()
+	+ rm("under certain conditions; select ")
+	+ bf("Help") + rm(" | ") + bf(DDD_NAME " License")
+	+ rm(" to see the") + cr()
+	+ rm("conditions.  There is ") + sl("absolutely no warranty") 
+	+ rm(" for " DDD_NAME "; see the ") + cr()
+	+ rm(DDD_NAME " License for details.") + cr()
 	+ cr()
 	+ rm("If you appreciate this software, "
 	     "please send a picture postcard to:") + cr()
@@ -2149,6 +2150,9 @@ void process_next_event()
 
 void process_pending_events()
 {
+    if (command_shell == 0)
+	return;
+
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
     while (XtAppPending(app_context))
 	process_next_event();
