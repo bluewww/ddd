@@ -3034,7 +3034,7 @@ void DataDisp::refresh_displayOQAC (const StringArray& answers,
 	    break;
 
 	case PROCESS_DATA:
-	    data_answers += answers[i] + '\n';
+	    data_answers += answers[i];
 	    data_answers_seen++;
 	    break;
 
