@@ -808,7 +808,7 @@ void GDBAgent::cut_off_prompt(string& answer) const
     case JDB:
 	// Strip the last line
 	if (answer.contains('\n'))
-	    answer = answer.before('\n', -1);
+	    answer = answer.through('\n', -1);
 	else
 	    answer = "";
 	break;
@@ -1293,7 +1293,6 @@ string GDBAgent::print_command(string expr, bool internal) const
     {
     case GDB:
     case DBX:
-    case JDB:
 	if (internal && has_output_command())
 	    cmd = "output";
 	else
@@ -1304,6 +1303,13 @@ string GDBAgent::print_command(string expr, bool internal) const
 
     case XDB:
 	cmd = "p";
+	break;
+
+    case JDB:
+	if (internal)
+	    cmd = "dump";
+	else
+	    cmd = "print";
 	break;
     }
 
@@ -1323,7 +1329,8 @@ string GDBAgent::print_command(string expr, bool internal) const
 		break;
 
 	    case JDB:
-		break;		// FIXME
+		// JDB has named values
+		break;
 	    }
 	}
 
