@@ -4,7 +4,7 @@ static char * ddd_xpm[] = {
  * DDD Logo.  Copyright (C) 1997 TU Braunschweig, Germany.
  * For details on DDD, see `http://www.cs.tu-bs.de/softech/ddd/'.
  * width height ncolors chars_per_pixel */
-"  48    48     7       1",
+"  48    48     8       1",
 /* Colors */
 "       c None      m None  g None   g4 None   s Background ",
 ".	c black     m black g black  g4 black  s Legs       ",
@@ -13,6 +13,7 @@ static char * ddd_xpm[] = {
 "o      c #000040   m black g grey25 g4 grey25 s Handle1    ",
 "O	c blue4     m black g grey25 g4 grey25 s Handle2    ",
 "+	c white     m white g white  g4 white  s Light      ",
+"*      c DarkGreen m black g grey25 g4 grey25 s Eye        ",
 /* Pixels */
 "                .            .                  ",    
 "                .           ..                  ",    
@@ -22,7 +23,7 @@ static char * ddd_xpm[] = {
 "     ..            .     .               .      ",    
 "       .            . . .              ..       ",    
 "        .            .X.              .         ",    
-"         .          ..X..           ..          ",    
+"         .          *.X.*           ..          ",    
 "         ..     ..  .XXX.  ..     ...           ",    
 "          .     .X...XXX...X.     .             ",    
 "          ..   ..XXX.XXX.XXX.   ..              ",    
