@@ -2345,10 +2345,10 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 
 	Delay::register_shell(dialog);
 
-	if (lesstif_version <= 79)
-	    XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
-						   XmDIALOG_APPLY_BUTTON));
-	apply_w = XmSelectionBoxGetChild(dialog, XmDIALOG_CANCEL_BUTTON);
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_CANCEL_BUTTON));
+	apply_w = XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
+	XtManageChild(apply_w);
 	
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
@@ -2375,7 +2375,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 
 	XtAddCallback(dialog, XmNokCallback, UnmanageThisCB, 
 		      XtPointer(dialog));
-	XtAddCallback(dialog, XmNcancelCallback, ApplyCB, NULL);
+	XtAddCallback(dialog, XmNapplyCallback, ApplyCB, NULL);
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
 	XtAddCallback(name_w, XmNactivateCallback, ActivateCB, 
 		      XtPointer(record_w));
