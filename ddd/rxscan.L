@@ -2,7 +2,7 @@
 /* DDD regexp scanner */
 
 %{
-// Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1997-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -147,7 +147,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 %s S039
 %s S040
 %s S041
-%s S042
+/* %s S042 */
 %s S043
 %s S044
 %s S045
@@ -181,8 +181,8 @@ V	v(irtual{W})?t(a)?bl(e)?
 %s S073
 %s S074
 %s S075
-%s S076
-%s S077
+/* %s S076 */
+/* %s S077 */
 %s S078
 %s S079
 %s S080
@@ -261,7 +261,6 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S039>[^{};,\n= ]+{W}={W}[^{}();,\n= ]+{W}={W}{C} return &rxeqeq;
 <S040>{_}file({W}{C})?			return &rxfile_cmd;
 <S041>[^ "'/]*\/			return &rxfilepath;
-<S042>[A-Za-z_][-_A-Za-z0-9]*		return &rxfont_id;
 <S043>#{D}{W}{A}			return &rxframe;
 <S044>{_}(up|do|down|f|fra|fram|frame|top|V)({W}{C})? return &rxframe_cmd;
 <S045>[a-zA-Z0-9_$][(]			return &rxfunction_call;
@@ -294,8 +293,6 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S073>Line{W}number{W}{D}{W}is{W}out{W}of{W}range{W}for{W} return &rxout_of_range;
 <S074>{_}(dir|directory|path)({W}{C})?	return &rxpath_cmd;
 <S075>\$pc{_}={_}{A}			return &rxpc;
-<S076>([(][^)]+[)]{W})?{A}{C}		return &rxpointer1_value;
-<S077>[{][^{}]+[}]{W}{a}{C}		return &rxpointer2_value;
 <S078>Process{W}{D}:{_}			return &rxprocess1;
 <S079>Process{W}{D}:			return &rxprocess2;
 <S080>[(][^ )]*db[^ )]*[)]{w}		return &rxprompt;

@@ -168,22 +168,6 @@ DispValueType determine_type (string value)
     // the pointer type contains `(...)' itself (such as in pointers
     // to functions), GDB uses '{...}' instead (as in `{int ()} 0x2908
     // <main>').
-
-#if 0
-
-#if RUNTIME_REGEX
-    static regex rxpointer1_value("([(][^)]+[)] )?" RXADDRESS ".*");
-#endif
-
-    if (value.matches(rxpointer1_value))
-	return Pointer;
-#if RUNTIME_REGEX
-    static regex rxpointer2_value("[{][^{}]+[}] " RXADDRESS_START ".*");
-#endif
-    if (value.matches(rxpointer2_value))
-	return Pointer;
-
-#else
     int pointer_index = 0;
 
     if (value.contains('(', 0) || value.contains('{', 0))
@@ -208,7 +192,6 @@ DispValueType determine_type (string value)
 	    value.from(at_index).matches(rxaddress))
 	    return Pointer;
     }
-#endif
 
     // Arrays.
     if (value.contains('{', 0) /* && value.contains('}', -1) */)
