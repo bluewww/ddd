@@ -1152,7 +1152,7 @@ void handle_graph_cmd (string cmd, Widget origin,
     }
 
     // Make sure the command queue is processed further
-    processCommandQueue(0, 0);
+    processCommandQueue();
 }
 
 

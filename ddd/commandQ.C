@@ -255,7 +255,7 @@ void gdb_command(const string& cmd, Widget origin,
 	return;
     }
 
-    if (gdb->isReadyWithPrompt() && commandQueue.isEmpty())
+    if (gdb->isReadyWithPrompt() && emptyCommandQueue())
     {
 	if (callback == 0)
 	    add_to_history(cmd);
@@ -309,7 +309,7 @@ void processCommandQueue(XtPointer, XtIntervalId *)
 	return;
     }
 
-    if (!commandQueue.isEmpty())
+    if (!emptyCommandQueue())
     {
 	const Command& c = commandQueue.first();
 	Command cmd(c);
@@ -329,7 +329,7 @@ void processCommandQueue(XtPointer, XtIntervalId *)
 static bool ddd_is_idle = false;
 static Boolean ddd_idle(XtPointer)
 {
-    ddd_is_idle = commandQueue.isEmpty() && gdb->isReadyWithPrompt();
+    ddd_is_idle = emptyCommandQueue() && gdb->isReadyWithPrompt();
     return ddd_is_idle;		// If idle, remove from the list of work procs
 }
 
@@ -342,7 +342,7 @@ void syncCommandQueue()
 
     while (!ddd_is_idle)
     {
-	processCommandQueue(0, 0);
+	processCommandQueue();
 	XtAppProcessEvent(XtWidgetToApplicationContext(command_shell),
 			  XtIMTimer | XtIMAlternateInput);
     }

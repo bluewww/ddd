@@ -81,7 +81,7 @@ void syncCommandQueue();
 Widget find_shell(Widget w = 0);
 
 // Process next element from command queue
-void processCommandQueue(XtPointer, XtIntervalId *);
+void processCommandQueue(XtPointer = 0, XtIntervalId *id = 0);
 
 #endif // _DDD_commandQueue_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
