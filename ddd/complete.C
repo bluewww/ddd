@@ -406,7 +406,7 @@ static void _complete_argAct(Widget w,
     }
 
     // The command to use as prefix for completions
-    string base = "print";
+    string base = gdb->print_command();
     if (*num_args >= 1)
 	base = args[0];
 
