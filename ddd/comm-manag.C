@@ -185,6 +185,7 @@ typedef struct PlusCmdData {
     int      n_refresh_addr;	       // # of addresses to refresh
 
     bool     config_frame;	       // try 'frame'
+    bool     config_func;	       // try 'func'
     bool     config_run_io;	       // try 'dbxenv run_io'
     bool     config_print_r;	       // try 'print -r'
     bool     config_where_h;	       // try 'where -h'
@@ -229,6 +230,7 @@ typedef struct PlusCmdData {
 	n_refresh_addr(0),
 
 	config_frame(false),
+	config_func(false),
 	config_run_io(false),
 	config_print_r(false),
 	config_where_h(false),
@@ -253,6 +255,9 @@ static void user_cmdOAC (void *);
 static void plusOQAC (string [], void *[], int, void *);
 static bool handle_graph_cmd(string& cmd, const string& where_answer,
 			     Widget origin = 0);
+
+static void process_init(const string& answer, void *data = 0);
+static void process_batch(const string& answer, void *data = 0);
 
 static string print_cookie = "4711";
 
@@ -300,8 +305,10 @@ void start_gdb()
 	string command = init.before('\n');
 	if (is_graph_cmd(command))
 	{
-	    // To be handled later by DDD - enqueue via gdb_command()
-	    gdb_command(command);
+	    // To be handled later by DDD - enqueue in command queue
+	    Command c(command, 0, process_batch);
+	    c.priority = COMMAND_PRIORITY_INIT;
+	    gdb_command(c);
 	}
 	else
 	{
@@ -340,6 +347,8 @@ void start_gdb()
 
 	cmds += "frame";
 	plus_cmd_data->config_frame = true;
+	cmds += "func";
+	plus_cmd_data->config_func = true;
 	cmds += "dbxenv run_io";
 	plus_cmd_data->config_run_io = true;
 	cmds += "print -r " + print_cookie;
@@ -773,6 +782,7 @@ void user_cmdSUC (string cmd, Widget origin,
 
     assert(plus_cmd_data->n_init == 0);
     assert(!plus_cmd_data->config_frame);
+    assert(!plus_cmd_data->config_func);
     assert(!plus_cmd_data->config_run_io);
     assert(!plus_cmd_data->config_print_r);
     assert(!plus_cmd_data->config_where_h);
@@ -923,9 +933,14 @@ void user_cmdSUC (string cmd, Widget origin,
 
     if (cmd_data->graph_cmd != "")
     {
-	// Instead of DDD `graph' commands, we send a `where 1'
-	// command to get the current scope.
-	cmd = gdb->where_command(1);
+	// Instead of DDD `graph' commands, we send a `frame' or
+	// `where 1' command to get the current scope.
+	if (gdb->has_func_command())
+	    cmd = gdb->func_command();
+	else if (gdb->has_frame_command())
+	    cmd = gdb->frame_command();
+	else
+	    cmd = gdb->where_command(1);
     }
 
     // Send commands
@@ -1021,7 +1036,9 @@ void user_cmdOAC (void *data)
     if (pos_buffer && pos_buffer->auto_cmd_found())
     {
 	// Program (or GDB) issued command to be executed by DDD
-	gdb_batch(pos_buffer->get_auto_cmd());
+	Command c(pos_buffer->get_auto_cmd(), cmd_data->origin, process_batch);
+	c.priority = COMMAND_PRIORITY_BATCH;
+	gdb_command(c);
     }
 
     if (cmd_data->graph_cmd != "")
@@ -1160,36 +1177,6 @@ void user_cmdOAC (void *data)
     delete cmd_data;
 }
 
-//-----------------------------------------------------------------------------
-// Fetch current scope from GDB (a function name or likewise)
-//-----------------------------------------------------------------------------
-
-static string get_scope(const string& answer)
-{
-    // Just issue a `where' command
-    string ans = answer;
-
-    // The word before the first parenthesis is the current function.
-    int index = ans.index('(');
-    if (index < 0)
-	return "";		// no current scope
-
-    do {
-	index--;
-    } while (index >= 0 && isspace(ans[index]));
-
-    int end_of_function_name = index + 1;
-
-    do {
-	index--;
-    } while (index >= 0 && !isspace(ans[index]));
-
-    int start_of_function_name = index + 1;
-
-    return ans.at(start_of_function_name, 
-		  end_of_function_name - start_of_function_name);
-}
-
 
 //-----------------------------------------------------------------------------
 // Process DDD `graph' commands (graph display, graph refresh).
@@ -1206,9 +1193,13 @@ void read_numbers(string command, IntArray& numbers)
 // to a `where 1' command; return true iff recognized
 bool handle_graph_cmd(string& cmd, const string& where_answer, Widget origin)
 {
-    cmd = cmd.after("graph ");
-    string scope = get_scope(where_answer);
+    string scope;
+    if (gdb->has_func_command())
+	scope = ((string&)where_answer).before('\n'); // `func' output
+    else
+	scope = get_scope(where_answer); // `where' or `frame' output
 
+    cmd = cmd.after("graph ");
     if (is_display_cmd(cmd))
     {
 	string rcmd = reverse(cmd);
@@ -1329,14 +1320,26 @@ bool is_known_command(const string& answer)
 	    && !ans.contains("unknown", 0));         // XDB
 }
 
-static void process_init(string&)
+static void process_init(const string& answer, void *)
 {
-    // Nothing yet...
+    (void) answer;
+    // cerr << answer;
+}
+
+static void process_batch(const string& answer, void *)
+{
+    (void) answer;
+    // cerr << answer;
 }
 
 static void process_config_frame(string& answer)
 {
     gdb->has_frame_command(is_known_command(answer));
+}
+
+static void process_config_func(string& answer)
+{
+    gdb->has_func_command(is_known_command(answer));
 }
 
 static void process_config_run_io(string& answer)
@@ -1506,6 +1509,11 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_frame) {
 	assert (qu_count < count);
 	process_config_frame(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_func) {
+	assert (qu_count < count);
+	process_config_func(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_run_io) {
