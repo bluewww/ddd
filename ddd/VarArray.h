@@ -62,7 +62,8 @@ protected:
     {
 	assert(n >= 0 && n < size());
 
-	for (int i = n; i < size() - 1; i++)
+	int sz = size();
+	for (int i = n; i < sz - 1; i++)
 	    _value(i) = _value(i + 1);
 
 	_size--;
@@ -72,7 +73,8 @@ protected:
     virtual void remove(const T& v)
     {
 	int i = 0;
-	while (i < size())
+	int sz = size();
+	while (i < sz)
 	    if (_value(i) == v)
 		_remove(i);
 	    else
