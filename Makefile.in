@@ -24,16 +24,6 @@
 # DDD is the GDB-based data display debugger.
 # Contact ddd@ips.cs.tu-bs.de for details.
 
-# $Log$
-# Revision 1.1  1995/05/01 15:47:05  zeller
-# Initial revision
-#
-# Revision 1.2  1995/03/30  10:55:32  zeller
-# Fix: dist should now be ok
-#
-# Revision 1.1  1995/03/30  10:46:26  zeller
-# Initial revision
-
 ### The source directory
 
 srcdir = .
