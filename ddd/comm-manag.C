@@ -435,6 +435,13 @@ void start_gdb()
 
     // Enqueue restart and settings commands
     init_session(restart, settings);
+
+    // One last command to clear the delay and set up breakpoints
+    Command c("# reset");
+    c.priority = COMMAND_PRIORITY_INIT;
+    c.verbose  = false;
+    c.check    = true;
+    gdb_command(c);
 }
 
 // Enqueue init commands
