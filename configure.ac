@@ -84,7 +84,6 @@ AC_CHECK_PROGS(TAR, gtar tar)
 AC_CHECK_PROGS(M4, gm4 m4)
 AC_CHECK_PROGS(SED, gsed sed)
 AC_CHECK_PROGS(DIFF, gdiff diff)
-AC_CHECK_PROGS(DVIPS, dvips dvi2ps)
 AC_CHECK_PROGS(COMPRESS, gzip compress)
 COMPRESS="$COMPRESS -c"
 case "$COMPRESS" in
