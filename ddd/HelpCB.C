@@ -1068,7 +1068,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     set_scrolled_window_size(help_index);
 
     int columns = max_width(text);
-    columns = min(max(columns, 40), 80);
+    columns = min(max(columns, 40), 80) + 1;
 
     arg = 0;
     XtSetArg(args[arg], XmNcolumns,  columns);           arg++;
@@ -1346,7 +1346,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     XtManageChild(title);
 
     int columns = max_width(text);
-    columns = min(max(columns, 40), 80);
+    columns = min(max(columns, 40), 80) + 1;
 
     arg = 0;
     XtSetArg(args[arg], XmNcolumns,          columns);           arg++;
