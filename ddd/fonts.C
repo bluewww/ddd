@@ -67,7 +67,6 @@ char fonts_rcsid[] =
 //  1     2    3    4     5     6  7     8    9    10   11  12   13     14
 // -fndry-fmly-wght-slant-sWdth-ad-pxlsz-ptSz-resx-resy-spc-avgW-rgstry-encdng
 
-
 const int Foundry       = 1;
 const int Family        = 2;
 const int Weight        = 3;
@@ -90,6 +89,23 @@ typedef int FontComponent;
 // Return the Nth component from NAME, or DEFAULT_VALUE if none
 static string component(string name, FontComponent n)
 {
+    // Use all these constants.  AIX CC gives warnings otherwise.
+    (void) Foundry;
+    (void) Family;
+    (void) Weight;
+    (void) Slant;
+    (void) sWidth;
+    (void) Ad;
+    (void) PixelSize;
+    (void) PointSize;
+    (void) ResX;
+    (void) ResY;
+    (void) Spacing;
+    (void) AvgWidth;
+    (void) Registry;
+    (void) Encoding;
+    (void) AllComponents;
+
     // If name does not begin with `-', assume it's a font family
     if (!name.contains('-', 0))
 	name.prepend("-*-");

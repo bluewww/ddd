@@ -626,13 +626,14 @@ int display_info_index (const string& gdb_answer, GDBAgent *gdb)
     case GDB: 
 	prx = &rxgdb_begin_of_display_info;
 	break;
+
     case DBX:
 	prx = &rxdbx_begin_of_display_info;
 	break;
+
     case JDB:
     case XDB:
-	return -1;
-	break;
+	return -1;		// No displays in JDB and XDB
 
     default:
 	assert(0);
