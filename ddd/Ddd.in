@@ -1,7 +1,7 @@
 ! $Id$
 ! DDD Resource File
 ! @configure_input@
-Ddd*appDefaultsVersion:  @VERSION@
+Ddd*appDefaultsVersion:	 @VERSION@
 
 ! Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
 ! Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
@@ -35,31 +35,31 @@ Ddd*appDefaultsVersion:  @VERSION@
 ! are stored in the ~/.dddinit file.
 ! =================================================================
 !
-! This file lists the default resources built into DDD.  You can use the
+! This file lists the default resources built into DDD.	 You can use the
 ! stuff in this file for examples of how to customize DDD for your
 ! environment; normally you will do this by copying the few lines you
 ! want to alter to your private resource database, which usually lives
-! in a file called `.Xdefaults' in your home directory.  You may also 
+! in a file called `.Xdefaults' in your home directory.	 You may also 
 ! place such lines in the DDD-specific `.dddinit' file in your home
 ! directory.
 ! 
 ! Site administrators **may** want to make changes here and install this
 ! file as the global app-defaults file for the site.  To do this, one
 ! would copy this file to `/usr/lib/X11/app-defaults/Ddd', or on SunOS,
-! `/usr/openwin/lib/app-defaults/Ddd'.  (Actually this directory could
+! `/usr/openwin/lib/app-defaults/Ddd'.	(Actually this directory could
 ! be anywhere; only the person who installed X knows for sure.)
 ! 
 ! It is **STRONGLY RECOMMENDED** that you not install this file in the
 ! `app-defaults' directory unless you are really sure you know what you
 ! are doing.  There are a whole slew of version-skew problems associated
 ! with app-defaults files, which are best avoided by simply not using
-! them.  In particular, if the app-defaults file for a program is
+! them.	 In particular, if the app-defaults file for a program is
 ! installed, and you get a new version of that program, you can't
 ! properly test out the new version without actually installing it,
 ! since it will pick up the resources for the previous version, and will
 ! quite likely malfunction.
 ! 
-! In short, app-defaults files are bad.  Don't use them.  Use this file
+! In short, app-defaults files are bad.	 Don't use them.  Use this file
 ! for informational purposes as suggested above.
 
 !-----------------------------------------------------------------------------
@@ -141,7 +141,7 @@ Ddd*termType: xterm
 !   Set `useTTYCommand' to `false' to enable this behaviour.
 !   
 ! The default setting is `false', since explicit redirection is easier
-! to handle (and to debug :-).  Maybe one day GDB will provide a way
+! to handle (and to debug :-).	Maybe one day GDB will provide a way
 ! to undo redirection.
 Ddd*useTTYCommand: false
 
@@ -158,7 +158,7 @@ Ddd*rshCommand: @RSH@
 Ddd*printCommand: @PRINT_COMMAND@
 
 
-! Paper size, in format WIDTH x HEIGHT.  (Default: A4).
+! Paper size, in format WIDTH x HEIGHT.	 (Default: A4).
 Ddd*paperSize: 210mm x 297mm
 
 
@@ -231,21 +231,21 @@ Ddd*questionTimeout: 10
 Ddd*consoleButtons:
 ! The following setting was effective in DDD 1.4d and earlier:
 ! Ddd*consoleButtons: \
-! 	Yes:No:interrupt^C
+!	Yes:No:interrupt^C
 ! Here is a very extensive setting:
 ! Ddd*consoleButtons: \
-! 	Yes:No:run:Clear:Prev:Next:Apply:interrupt^C
+!	Yes:No:run:Clear:Prev:Next:Apply:interrupt^C
 
 ! The source window buttons (none: no buttons)
 Ddd*sourceButtons:
-! The following setting was effective in DDD 1.4d and earlier:
-! Ddd*sourceButtons:   	    \
+! The following setting was effective in DDD 1.x:
+! Ddd*sourceButtons:	    \
 ! run:step:next:stepi:nexti:cont:finish:kill:\
 ! up:down:Back:Forward:Edit:interrupt^C
 
-! The command tool buttons, as of DDD 1.5 and later.
+! The command tool buttons, as of DDD 2.0 and later.
 Ddd*toolButtons: \
-run:interrupt^C:step:stepi:next:nexti:cont:finish:\
+run:break^C:step:stepi:next:nexti:cont:finish:\
 up:down:Back:Forward:Edit:kill
 
 ! The number of rows in the command tool.
@@ -255,10 +255,10 @@ Ddd*tool_buttons.fractionBase:			8
 ! 
 !    0 4 8	Each line has its individual number.
 !  0 +-+-+	`topPosition' refers to the line above the button;
-!    | | |  	`bottomPosition' is the line below.  Likewise,
+!    | | |	`bottomPosition' is the line below.  Likewise,
 !  1 +-+-+	`leftPosition' is the line at the left, and
 !    | | |	`rightPosition' is the line to the right.  For instance,
-!  2 +-+-+	the line above the `interrupt' button (aka `Break')
+!  2 +-+-+	the line above the `break' button
 !    | | |	is line 1 (topPosition), the line below is line 2
 !  3 +-+-+	(bottomPosition), the line to the left is line 0
 !    | | |	(leftPosition), and the line to the right is line 8
@@ -272,111 +272,95 @@ Ddd*tool_buttons.fractionBase:			8
 !    | | |	
 !  8 +-+-+	
 
-Ddd*tool_buttons.run.topPosition: 		0
-Ddd*tool_buttons.run.bottomPosition:       	1
-Ddd*tool_buttons.run.leftPosition: 		0
-Ddd*tool_buttons.run.rightPosition:       	8
+Ddd*tool_buttons.run.topPosition:		0
+Ddd*tool_buttons.run.bottomPosition:		1
+Ddd*tool_buttons.run.leftPosition:		0
+Ddd*tool_buttons.run.rightPosition:		8
 
-Ddd*tool_buttons.interrupt.topPosition: 	1
-Ddd*tool_buttons.interrupt.bottomPosition:      2
-Ddd*tool_buttons.interrupt.leftPosition: 	0
-Ddd*tool_buttons.interrupt.rightPosition:       8
+Ddd*tool_buttons.break.topPosition:		1
+Ddd*tool_buttons.break.bottomPosition:		2
+Ddd*tool_buttons.break.leftPosition:		0
+Ddd*tool_buttons.break.rightPosition:		8
 
-Ddd*tool_buttons.step.topPosition: 		2
-Ddd*tool_buttons.step.bottomPosition:      	3
-Ddd*tool_buttons.step.leftPosition: 		0
-Ddd*tool_buttons.step.rightPosition:       	4
+Ddd*tool_buttons.step.topPosition:		2
+Ddd*tool_buttons.step.bottomPosition:		3
+Ddd*tool_buttons.step.leftPosition:		0
+Ddd*tool_buttons.step.rightPosition:		4
 
-Ddd*tool_buttons.stepi.topPosition: 		2
-Ddd*tool_buttons.stepi.bottomPosition:      	3
-Ddd*tool_buttons.stepi.leftPosition: 		4
-Ddd*tool_buttons.stepi.rightPosition:       	8
+Ddd*tool_buttons.stepi.topPosition:		2
+Ddd*tool_buttons.stepi.bottomPosition:		3
+Ddd*tool_buttons.stepi.leftPosition:		4
+Ddd*tool_buttons.stepi.rightPosition:		8
 
-Ddd*tool_buttons.next.topPosition: 		3
-Ddd*tool_buttons.next.bottomPosition:      	4
-Ddd*tool_buttons.next.leftPosition: 		0
-Ddd*tool_buttons.next.rightPosition:       	4
+Ddd*tool_buttons.next.topPosition:		3
+Ddd*tool_buttons.next.bottomPosition:		4
+Ddd*tool_buttons.next.leftPosition:		0
+Ddd*tool_buttons.next.rightPosition:		4
 
-Ddd*tool_buttons.nexti.topPosition: 		3
-Ddd*tool_buttons.nexti.bottomPosition:      	4
-Ddd*tool_buttons.nexti.leftPosition: 		4
-Ddd*tool_buttons.nexti.rightPosition:       	8
+Ddd*tool_buttons.nexti.topPosition:		3
+Ddd*tool_buttons.nexti.bottomPosition:		4
+Ddd*tool_buttons.nexti.leftPosition:		4
+Ddd*tool_buttons.nexti.rightPosition:		8
 
-Ddd*tool_buttons.cont.topPosition: 		4
-Ddd*tool_buttons.cont.bottomPosition:      	5
-Ddd*tool_buttons.cont.leftPosition: 		0
-Ddd*tool_buttons.cont.rightPosition:       	4
+Ddd*tool_buttons.cont.topPosition:		4
+Ddd*tool_buttons.cont.bottomPosition:		5
+Ddd*tool_buttons.cont.leftPosition:		0
+Ddd*tool_buttons.cont.rightPosition:		4
 
-Ddd*tool_buttons.finish.topPosition: 		4
-Ddd*tool_buttons.finish.bottomPosition:      	5
-Ddd*tool_buttons.finish.leftPosition: 		4
-Ddd*tool_buttons.finish.rightPosition:       	8
+Ddd*tool_buttons.finish.topPosition:		4
+Ddd*tool_buttons.finish.bottomPosition:		5
+Ddd*tool_buttons.finish.leftPosition:		4
+Ddd*tool_buttons.finish.rightPosition:		8
 
-Ddd*tool_buttons.up.topPosition: 		5
-Ddd*tool_buttons.up.bottomPosition:      	6
-Ddd*tool_buttons.up.leftPosition: 		0
-Ddd*tool_buttons.up.rightPosition:       	4
+Ddd*tool_buttons.up.topPosition:		5
+Ddd*tool_buttons.up.bottomPosition:		6
+Ddd*tool_buttons.up.leftPosition:		0
+Ddd*tool_buttons.up.rightPosition:		4
 
-Ddd*tool_buttons.down.topPosition: 		5
-Ddd*tool_buttons.down.bottomPosition:      	6
-Ddd*tool_buttons.down.leftPosition: 		4
-Ddd*tool_buttons.down.rightPosition:       	8
+Ddd*tool_buttons.down.topPosition:		5
+Ddd*tool_buttons.down.bottomPosition:		6
+Ddd*tool_buttons.down.leftPosition:		4
+Ddd*tool_buttons.down.rightPosition:		8
 
-Ddd*tool_buttons.Back.topPosition: 		6
-Ddd*tool_buttons.Back.bottomPosition:      	7
-Ddd*tool_buttons.Back.leftPosition: 		0
-Ddd*tool_buttons.Back.rightPosition:       	4
+Ddd*tool_buttons.Back.topPosition:		6
+Ddd*tool_buttons.Back.bottomPosition:		7
+Ddd*tool_buttons.Back.leftPosition:		0
+Ddd*tool_buttons.Back.rightPosition:		4
 
-Ddd*tool_buttons.Forward.topPosition: 		6
-Ddd*tool_buttons.Forward.bottomPosition:      	7
-Ddd*tool_buttons.Forward.leftPosition: 		4
-Ddd*tool_buttons.Forward.rightPosition:       	8
+Ddd*tool_buttons.Forward.topPosition:		6
+Ddd*tool_buttons.Forward.bottomPosition:	7
+Ddd*tool_buttons.Forward.leftPosition:		4
+Ddd*tool_buttons.Forward.rightPosition:		8
 
-Ddd*tool_buttons.Edit.topPosition: 		7
-Ddd*tool_buttons.Edit.bottomPosition:      	8
-Ddd*tool_buttons.Edit.leftPosition: 		0
-Ddd*tool_buttons.Edit.rightPosition:       	4
+Ddd*tool_buttons.Edit.topPosition:		7
+Ddd*tool_buttons.Edit.bottomPosition:		8
+Ddd*tool_buttons.Edit.leftPosition:		0
+Ddd*tool_buttons.Edit.rightPosition:		4
 
-Ddd*tool_buttons.kill.topPosition: 		7
-Ddd*tool_buttons.kill.bottomPosition:      	8
-Ddd*tool_buttons.kill.leftPosition: 		4
-Ddd*tool_buttons.kill.rightPosition:       	8
+Ddd*tool_buttons.kill.topPosition:		7
+Ddd*tool_buttons.kill.bottomPosition:		8
+Ddd*tool_buttons.kill.leftPosition:		4
+Ddd*tool_buttons.kill.rightPosition:		8
 
 ! Command tool button placement.  Don't change this.
-Ddd*tool_buttons*topAttachment:      		XmATTACH_POSITION
-Ddd*tool_buttons*bottomAttachment:   		XmATTACH_POSITION
-Ddd*tool_buttons*leftAttachment:     		XmATTACH_POSITION
-Ddd*tool_buttons*rightAttachment:    		XmATTACH_POSITION
+Ddd*tool_buttons*topAttachment:			XmATTACH_POSITION
+Ddd*tool_buttons*bottomAttachment:		XmATTACH_POSITION
+Ddd*tool_buttons*leftAttachment:		XmATTACH_POSITION
+Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
 
 
 ! Some special labels
-Ddd*run.labelString:       Run
-Ddd*step.labelString:      Step
-Ddd*next.labelString:      Next
-Ddd*stepi.labelString:     Stepi
-Ddd*nexti.labelString:     Nexti
-Ddd*cont.labelString:      Cont
-Ddd*interrupt.labelString: Break
-Ddd*kill.labelString:      Kill
-Ddd*until.labelString:     Until
-Ddd*finish.labelString:    Finish
-Ddd*up.labelString:        Up
-Ddd*down.labelString:      Down
-Ddd*Back.labelString:      Back
 Ddd*Forward.labelString:   Fwd
-Ddd*Edit.labelString:      Edit
-Ddd*Reload.labelString:    Reload
-Ddd*Complete.labelString:  Complete
 
-! The maximum number of characters allowed in a data display.
+! The maximum number of characters allowed in a data display title.
 ! Components of longer names are replaced by `..', for instance
 ! `foo->bar->blue' becomes `foo->..->blue'
-Ddd*maxNameLength: 	20
+Ddd*maxNameLength:	20
 
 
-! Number of colons used for the code line number display.
+! Number of columns used for the code line number display.
 ! Should be a multiple of 8, to avoid confusion with TAB characters.
-Ddd*indentAmount: 	8
+Ddd*indentAmount:	8
 
 
 ! The GDB initialization commands.  DDD depends on these settings,
@@ -417,8 +401,8 @@ Ddd*xdbInitCommands:
 !
 ! If you use the builtin library, you can use the `vslDefs' resource,
 ! to override (customize) certain settings.  See `colors', below.
-Ddd*vslLibrary: 		builtin
-Ddd*vslPath:	 		.
+Ddd*vslLibrary:			builtin
+Ddd*vslPath:			.
 
 ! Graph Editor Defaults
 ! What shall we use if the graph gets too large to be displayed?
@@ -429,41 +413,41 @@ Ddd*vslPath:	 		.
 ! scrollbars as a default: Many OSF/Motif installations choke
 ! on intermixed Motif/Athena applications and we don't want to get bug
 ! reports that should be directed to OSF.
-Ddd*pannedGraphEditor: 		false
+Ddd*pannedGraphEditor:		false
 
 ! Nodes are moved when dragged more than 4 pixels.
 Ddd*graph_edit.moveDelta:	4
 
 ! The selection tile pixmap.  Usual choices are Motif built-in pixmaps.
 ! If this resource is left unspecified, nodes are simply inverted.
-! *graph_edit.selectTile: 	25_foreground
+! *graph_edit.selectTile:	25_foreground
 
 ! Do we wish opaque movement? (doesn't work yet)
-Ddd*graph_edit.opaqueMove: 	false
+Ddd*graph_edit.opaqueMove:	false
 
 ! Do we wish a grid?
-Ddd*graph_edit.showGrid: 	true
+Ddd*graph_edit.showGrid:	true
 
 ! Do we wish to snap the position to the grid?
-Ddd*graph_edit.snapToGrid: 	false
+Ddd*graph_edit.snapToGrid:	false
 
 ! Do we wish to show edge hints?
-Ddd*graph_edit.showEdgeHints: 	true
+Ddd*graph_edit.showEdgeHints:	true
 
 ! What kind of layout do we wish? (regular, compact)
-Ddd*graph_edit.layoutMode: 	regular
+Ddd*graph_edit.layoutMode:	regular
 
 ! Do we wish to re-layout the graph after each change?
-Ddd*graph_edit.autoLayout: 	false
+Ddd*graph_edit.autoLayout:	false
 
 ! Width and height of the grid
-Ddd*graph_edit.gridWidth: 	16
-Ddd*graph_edit.gridHeight: 	16
+Ddd*graph_edit.gridWidth:	16
+Ddd*graph_edit.gridHeight:	16
 
 
 ! Source defaults
 ! Do we wish to find complete words only?
-Ddd*findWordsOnly: 		true
+Ddd*findWordsOnly:		true
 
 ! Do we wish to show machine code? (Makes DDD run somewhat slower)
 Ddd*disassemble: false
@@ -495,7 +479,7 @@ Ddd*keyboardFocusPolicy:	POINTER
 Ddd*suppressWarnings:		false
 
 ! A little less highlighting
-Ddd*highlightThickness:      	1
+Ddd*highlightThickness:		1
 
 
 
@@ -542,24 +526,24 @@ Ddd*fontList: \
 ! prefer; another popular choice is `courier'.
 Ddd*XmTextField.FontList: \
 -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
-Ddd*XmText.FontList:      \
+Ddd*XmText.FontList:	  \
 -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 
 ! Command tool fonts.  Slightly smaller.
 Ddd*tool_buttons.run.fontList: \
 	-*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=charset
-Ddd*tool_buttons.interrupt.fontList:  \
+Ddd*tool_buttons.break.fontList:  \
 	-*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=charset
 Ddd*tool_buttons*fontList:  \
 	-*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 
 ! And again, the smaller alternative.
 ! Ddd*tool_buttons.run.fontList: \
-! 	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*tool_buttons.interrupt.fontList:  \
-! 	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+!	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+! Ddd*tool_buttons.break.fontList:  \
+!	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
 ! Ddd*tool_buttons*fontList:  \
-! 	-*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
+!	-*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
 	
 
 ! For fonts in the execution window, see the `termCommand' resource, above.
@@ -570,24 +554,25 @@ Ddd*tool_buttons*fontList:  \
 ! Colors
 !-----------------------------------------------------------------------------
 
-Ddd*foreground:                    black
-Ddd*background:                    grey
-Ddd*XmText.background:             grey90
-Ddd*XmTextField.background:        grey90
-Ddd*GraphEdit.background:          grey90
-Ddd*XmList.background:             grey90
+Ddd*foreground:			   black
+Ddd*background:			   grey
+Ddd*XmText.background:		   grey90
+Ddd*XmTextField.background:	   grey90
+Ddd*GraphEdit.background:	   grey90
+Ddd*XmList.background:		   grey90
 Ddd*graph_edit_panner.background:  grey
 Ddd*graph_edit_panner.foreground:  grey
 Ddd*graph_edit_panner.shadowColor: black
 
 ! Red, green and blue buttons.
-Ddd*interrupt.foreground:          red4
-Ddd*run.foreground:                dark green
-Ddd*run_again.foreground:          dark green
-! Ddd*dereference.foreground:      blue4
+Ddd*break.foreground:		   red4
+Ddd*run.foreground:		   dark green
+Ddd*run_again.foreground:	   dark green
+Ddd*arg_cmd_area*break.foreground: black
+! Ddd*dereference.foreground:	   blue4
 
 ! Highlight special dialogs
-Ddd*fatal_dialog*foreground: 	   red4
+Ddd*fatal_dialog*foreground:	   red4
 Ddd*terminated_dialog*foreground:  red4
 
 ! Glyph colors
@@ -595,21 +580,21 @@ Ddd*source_form_w.XmPushButton.background: grey90
 Ddd*source_form_w.plain_arrow.foreground:  dark green
 Ddd*source_form_w.grey_arrow.foreground:   dark green
 Ddd*source_form_w.plain_stop.foreground:   red4
-Ddd*source_form_w.grey_stop.foreground:    grey50
+Ddd*source_form_w.grey_stop.foreground:	   grey50
 
 Ddd*code_form_w.XmPushButton.background:   grey90
-Ddd*code_form_w.plain_arrow.foreground:    dark green
-Ddd*code_form_w.grey_arrow.foreground:     dark green
-Ddd*code_form_w.plain_stop.foreground:     red4
-Ddd*code_form_w.grey_stop.foreground:      grey50
+Ddd*code_form_w.plain_arrow.foreground:	   dark green
+Ddd*code_form_w.grey_arrow.foreground:	   dark green
+Ddd*code_form_w.plain_stop.foreground:	   red4
+Ddd*code_form_w.grey_stop.foreground:	   grey50
 
 ! Graph colors
-Ddd*graph_edit.nodeColor:          black
-Ddd*graph_edit.edgeColor:          blue4
-Ddd*graph_edit.selectColor:        black
-Ddd*graph_edit.gridColor:          black
-Ddd*graph_edit.frameColor:         grey50
-Ddd*graph_edit.outlineColor:       grey50
+Ddd*graph_edit.nodeColor:	   black
+Ddd*graph_edit.edgeColor:	   blue4
+Ddd*graph_edit.selectColor:	   black
+Ddd*graph_edit.gridColor:	   black
+Ddd*graph_edit.frameColor:	   grey50
+Ddd*graph_edit.outlineColor:	   grey50
 
 ! For colors of nodes in the data display, see below.
 
@@ -640,12 +625,12 @@ Ddd*graph_edit.outlineColor:       grey50
 !
 ! Ddd*vslDefs: \
 ! #replace display_color   \n\
-! #replace title_color     \n\
+! #replace title_color	   \n\
 ! #replace disabled_color  \n\
-! #replace simple_color    \n\
+! #replace simple_color	   \n\
 ! #replace pointer_color   \n\
-! #replace struct_color    \n\
-! #replace array_color     \n\
+! #replace struct_color	   \n\
+! #replace array_color	   \n\
 ! #replace reference_color \n\
 ! \n\
 ! display_color(box)   = color(box, "black", "grey95");	\n\
@@ -661,7 +646,7 @@ Ddd*graph_edit.outlineColor:       grey50
 ! #replace stdfontsize		\n\
 ! #replace stdfontweight	\n\
 ! stdfontfamily() = family_typewriter();	\n\
-! stdfontsize()   = 90;				\n\
+! stdfontsize()	  = 90;				\n\
 ! stdfontweight() = weight_medium();
 
 ! See the file `ddd.vsl' for further definitions to override here.
@@ -674,563 +659,563 @@ Ddd*graph_edit.outlineColor:       grey50
 ! The GDB window uses an EMACS-like editing style.
 ! `R7' and `R13' are generated by the developer's SUNs for `Home' and `End'
 Ddd*gdb_w*translations: #override \
-Ctrl ~Shift<Key>A:	gdb-beginning-of-line()     \n\
-Ctrl<Key>B:     	gdb-backward-character()    \n\
-Ctrl<Key>C:		gdb-control(^C)             \n\
+Ctrl ~Shift<Key>A:	gdb-beginning-of-line()	    \n\
+Ctrl<Key>B:		gdb-backward-character()    \n\
+Ctrl<Key>C:		gdb-control(^C)		    \n\
 Ctrl<Key>D:		gdb-delete-or-control(^D)   \n\
-Ctrl ~Shift<Key>E:	gdb-end-of-line()           \n\
-Ctrl<Key>F:     	gdb-forward-character()     \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-command()      \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>N:		gdb-next-history()          \n\
-Ctrl<Key>P:		gdb-previous-history()      \n\
-Ctrl<Key>U:     	gdb-set-line("")            \n\
-Ctrl<Key>V:     	next-page()                 \n\
-Meta<Key>V:     	previous-page()             \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>osfUp:		gdb-previous-history()      \n\
-None<Key>osfDown:	gdb-next-history()          \n\
+Ctrl ~Shift<Key>E:	gdb-end-of-line()	    \n\
+Ctrl<Key>F:		gdb-forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-command()	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>N:		gdb-next-history()	    \n\
+Ctrl<Key>P:		gdb-previous-history()	    \n\
+Ctrl<Key>U:		gdb-set-line("")	    \n\
+Ctrl<Key>V:		next-page()		    \n\
+Meta<Key>V:		previous-page()		    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+Ctrl<Key>Y:		unkill()		    \n\
+None<Key>osfUp:		gdb-previous-history()	    \n\
+None<Key>osfDown:	gdb-next-history()	    \n\
 None<Key>osfLeft:	gdb-backward-character()    \n\
-None<Key>osfRight:	gdb-forward-character()     \n\
-None<Key>osfBeginLine:	gdb-beginning-of-line()     \n\
-None<Key>osfEndLine:	gdb-end-of-line()           \n\
-None<Key>osfBeginData:	gdb-beginning-of-line()     \n\
-None<Key>osfEndData:	gdb-end-of-line()           \n\
-None<Key>Home:		gdb-beginning-of-line()     \n\
-None<Key>End:		gdb-end-of-line()           \n\
-None<Key>R7:		gdb-beginning-of-line()     \n\
-None<Key>R13:		gdb-end-of-line()           \n\
-None<Key>Tab:		gdb-complete-command()      \n\
-None<Key>Escape:	gdb-complete-command()      \n
+None<Key>osfRight:	gdb-forward-character()	    \n\
+None<Key>osfBeginLine:	gdb-beginning-of-line()	    \n\
+None<Key>osfEndLine:	gdb-end-of-line()	    \n\
+None<Key>osfBeginData:	gdb-beginning-of-line()	    \n\
+None<Key>osfEndData:	gdb-end-of-line()	    \n\
+None<Key>Home:		gdb-beginning-of-line()	    \n\
+None<Key>End:		gdb-end-of-line()	    \n\
+None<Key>R7:		gdb-beginning-of-line()	    \n\
+None<Key>R13:		gdb-end-of-line()	    \n\
+None<Key>Tab:		gdb-complete-command()	    \n\
+None<Key>Escape:	gdb-complete-command()	    \n
 
 ! Have some of these in argument fields as well
 Ddd*XmTextField*translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(print)	    \n\
+None<Key>Escape:	gdb-complete-arg(print)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 
 ! Have some of these in breakpoint and display dialogs
 ! (with different completion)
 Ddd*new_breakpoint_dialog*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(break)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(break)     \n\
-None<Key>Escape:	gdb-complete-arg(break)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(break)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+Ctrl<Key>Y:		unkill()		    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(break)	    \n\
+None<Key>Escape:	gdb-complete-arg(break)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*new_breakpoint_dialog*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(break)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(break)     \n\
-None<Key>Escape:	gdb-complete-arg(break)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(break)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(break)	    \n\
+None<Key>Escape:	gdb-complete-arg(break)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*edit_breakpoint_condition_dialog*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+Ctrl<Key>Y:		unkill()		    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(print)	    \n\
+None<Key>Escape:	gdb-complete-arg(print)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*edit_breakpoint_condition_dialog*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(print)	    \n\
+None<Key>Escape:	gdb-complete-arg(print)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*edit_breakpoint_ignore_count_dialog*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	beep()                      \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		beep()			    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+Ctrl<Key>Y:		unkill()		    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*edit_breakpoint_ignore_count_dialog*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	beep()                      \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		beep()			    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*new_display_dialog*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+Ctrl<Key>Y:		unkill()		    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(print)	    \n\
+None<Key>Escape:	gdb-complete-arg(print)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*new_display_dialog*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(print)	    \n\
+None<Key>Escape:	gdb-complete-arg(print)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*dependent_display_dialog*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+Ctrl<Key>Y:		unkill()		    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(print)	    \n\
+None<Key>Escape:	gdb-complete-arg(print)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*dependent_display_dialog*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(print)	    \n\
+None<Key>Escape:	gdb-complete-arg(print)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 
 ! Have some of these in file dialogs (with different completion)
 Ddd*exec_files_popup*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(file)      \n\
-None<Key>Escape:	gdb-complete-arg(file)      \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+Ctrl<Key>Y:		unkill()		    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(file)	    \n\
+None<Key>Escape:	gdb-complete-arg(file)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*exec_files_popup*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(file)      \n\
-None<Key>Escape:	gdb-complete-arg(file)      \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(file)	    \n\
+None<Key>Escape:	gdb-complete-arg(file)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*core_files_popup*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(core-file) \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(core-file) \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+Ctrl<Key>Y:		unkill()		    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(core-file) \n\
 None<Key>Escape:	gdb-complete-arg(core-file) \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*core_files_popup*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(core-file) \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(core-file) \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(core-file) \n\
 None<Key>Escape:	gdb-complete-arg(core-file) \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*source_files_popup*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(file)      \n\
-None<Key>Escape:	gdb-complete-arg(file)      \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+Ctrl<Key>Y:		unkill()		    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(file)	    \n\
+None<Key>Escape:	gdb-complete-arg(file)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*source_files_popup*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(file)      \n\
-None<Key>Escape:	gdb-complete-arg(file)      \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(file)	    \n\
+None<Key>Escape:	gdb-complete-arg(file)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*print_popup*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(file)      \n\
-None<Key>Escape:	gdb-complete-arg(file)      \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(file)	    \n\
+None<Key>Escape:	gdb-complete-arg(file)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*print_popup*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(file)      \n\
-None<Key>Escape:	gdb-complete-arg(file)      \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(file)	    \n\
+None<Key>Escape:	gdb-complete-arg(file)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*run_dialog*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(shell)     \n\
-None<Key>Escape:	gdb-complete-arg(shell)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+Ctrl<Key>Y:		unkill()		    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(shell)	    \n\
+None<Key>Escape:	gdb-complete-arg(shell)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*run_dialog*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(shell)     \n\
-None<Key>Escape:	gdb-complete-arg(shell)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(shell)	    \n\
+None<Key>Escape:	gdb-complete-arg(shell)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*set_dialog*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+Ctrl<Key>Y:		unkill()		    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(print)	    \n\
+None<Key>Escape:	gdb-complete-arg(print)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 Ddd*set_dialog*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(print)	    \n\
+None<Key>Escape:	gdb-complete-arg(print)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 ! The source window is especially tuned for word selection.
 Ddd*source_text_w.translations: #override \
 None<Btn3Down>:		source-popup-menu() \n\
 None<Btn1Down>:		source-start-select-word()  \n\
 None<Btn1Up>:		source-end-select-word()    \n\
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>V:     	next-page()                 \
-			source-update-glyphs()      \n\
-Meta<Key>V:     	previous-page() 	    \
-			source-update-glyphs()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		PrimitiveNextTabGroup()     \n\
-None<Key>osfPageUp:     previous-page()             \
-			source-update-glyphs()      \n\
-None<Key>osfPageDown:   next-page()     	    \
-			source-update-glyphs()      \n\
-Shift<Key>osfPageUp:    previous-page(extend)       \
-			source-update-glyphs()      \n\
-Shift<Key>osfPageDown:  next-page(extend)     	    \
-			source-update-glyphs()      \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>V:		next-page()		    \
+			source-update-glyphs()	    \n\
+Meta<Key>V:		previous-page()		    \
+			source-update-glyphs()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		PrimitiveNextTabGroup()	    \n\
+None<Key>osfPageUp:	previous-page()		    \
+			source-update-glyphs()	    \n\
+None<Key>osfPageDown:	next-page()		    \
+			source-update-glyphs()	    \n\
+Shift<Key>osfPageUp:	previous-page(extend)	    \
+			source-update-glyphs()	    \n\
+Shift<Key>osfPageDown:	next-page(extend)	    \
+			source-update-glyphs()	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 ! The machine code window is tuned as well.
 Ddd*code_text_w.translations: #override \
-None<Btn3Down>:         source-popup-menu() \n\
+None<Btn3Down>:		source-popup-menu() \n\
 None<Btn1Down>:		source-start-select-word()  \n\
 None<Btn1Up>:		source-end-select-word()    \n\
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>V:     	next-page()                 \
-			source-update-glyphs()      \n\
-Meta<Key>V:     	previous-page() 	    \
-			source-update-glyphs()      \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		PrimitiveNextTabGroup()     \n\
-None<Key>osfPageUp:     previous-page()             \
-			source-update-glyphs()      \n\
-None<Key>osfPageDown:   next-page()     	    \
-			source-update-glyphs()      \n\
-Shift<Key>osfPageUp:    previous-page(extend)       \
-			source-update-glyphs()      \n\
-Shift<Key>osfPageDown:  next-page(extend)     	    \
-			source-update-glyphs()      \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>V:		next-page()		    \
+			source-update-glyphs()	    \n\
+Meta<Key>V:		previous-page()		    \
+			source-update-glyphs()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		PrimitiveNextTabGroup()	    \n\
+None<Key>osfPageUp:	previous-page()		    \
+			source-update-glyphs()	    \n\
+None<Key>osfPageDown:	next-page()		    \
+			source-update-glyphs()	    \n\
+Shift<Key>osfPageUp:	previous-page(extend)	    \
+			source-update-glyphs()	    \n\
+Shift<Key>osfPageDown:	next-page(extend)	    \
+			source-update-glyphs()	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
 
 
 ! Make sure glyphs popup as well
@@ -1255,18 +1240,18 @@ None<Btn3Down>:		graph-select() graph-popup-menu()\n
 
 Ddd*title: @DDD@ Window
 
-Ddd*command_shell.title: 		@DDD@: Debugger Console
-Ddd*command_shell.iconName: 		@DDD@: Debugger Console
+Ddd*command_shell.title:		@DDD@: Debugger Console
+Ddd*command_shell.iconName:		@DDD@: Debugger Console
 
-Ddd*source_view_shell.title: 		@DDD@: Program Source
-Ddd*source_view_shell.iconName: 	@DDD@: Program Source
+Ddd*source_view_shell.title:		@DDD@: Program Source
+Ddd*source_view_shell.iconName:		@DDD@: Program Source
 
-Ddd*data_disp_shell.title: 		@DDD@: Program Data
-Ddd*data_disp_shell.iconName: 		@DDD@: Program Data
+Ddd*data_disp_shell.title:		@DDD@: Program Data
+Ddd*data_disp_shell.iconName:		@DDD@: Program Data
 
-! Ddd*tool_shell.title: 		@DDD@: Command Tool
-Ddd*tool_shell.title: 			@DDD@
-Ddd*tool_shell.iconName: 		@DDD@: Command Tool
+! Ddd*tool_shell.title:			@DDD@: Command Tool
+Ddd*tool_shell.title:			@DDD@
+Ddd*tool_shell.iconName:		@DDD@: Command Tool
 
 
 
@@ -1308,11 +1293,11 @@ the item's functions are explained here.\n\
 Click on @bf Close @rm to close the help window.
 
 ! DDD manual.
-Ddd*manual_help.area.orientation:       XmHORIZONTAL
-Ddd*manual_help*index.selectionPolicy:  XmSINGLE_SELECT
+Ddd*manual_help.area.orientation:	XmHORIZONTAL
+Ddd*manual_help*index.selectionPolicy:	XmSINGLE_SELECT
 
-Ddd*manual_help*text.columns:           72
-Ddd*manual_help*text.rows:              25
+Ddd*manual_help*text.columns:		72
+Ddd*manual_help*text.rows:		25
 Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
 Ddd*manual_help*contextHelpString: \
@@ -1322,8 +1307,8 @@ Select titles from the index on the left\n\
 to get help on a specific item.
 
 ! DDD license.
-Ddd*text_help*text.columns:           80
-Ddd*text_help*text.rows:              25
+Ddd*text_help*text.columns:	      80
+Ddd*text_help*text.rows:	      25
 Ddd*text_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
 Ddd*text_help*contextHelpString: \
@@ -1407,7 +1392,7 @@ Ddd*menubar*fileMenu.open_core.mnemonic:    o
 Ddd*menubar*fileMenu.open_source.labelString: Open Source...
 Ddd*menubar*fileMenu.open_source.mnemonic:    S
 
-Ddd*menubar*fileMenu.print.labelString:  Print Graph...
+Ddd*menubar*fileMenu.print.labelString:	 Print Graph...
 Ddd*menubar*fileMenu.print.mnemonic:	 P
 
 Ddd*menubar*fileMenu.quickPrint.labelString: Print Again
@@ -1423,7 +1408,7 @@ Ddd*menubar*fileMenu.restart.acceleratorText:  Alt+Shift+Q
 
 Ddd*menubar*fileMenu.quit.labelString:	 Exit
 Ddd*menubar*fileMenu.quit.mnemonic:	 E
-Ddd*menubar*fileMenu.quit.accelerator:      ~Shift Meta<Key>Q
+Ddd*menubar*fileMenu.quit.accelerator:	    ~Shift Meta<Key>Q
 Ddd*menubar*fileMenu.quit.acceleratorText:  Alt+Q
 
 
@@ -1457,7 +1442,7 @@ Ddd*editMenu.paste.labelString:		Paste
 Ddd*editMenu.paste.mnemonic:		P
 Ddd*editMenu.paste.accelerator:		Shift<Key>Insert
 ! *editMenu.paste.accelerator:		<Key>osfPaste
-Ddd*editMenu.paste.acceleratorText: 	Shift+Ins
+Ddd*editMenu.paste.acceleratorText:	Shift+Ins
 
 Ddd*editMenu.clear.labelString:		Clear
 Ddd*editMenu.clear.mnemonic:		e
@@ -1489,13 +1474,13 @@ the current function is automatically disassembled.\n\
 \n\
 @bf Save Options @rm saves options and preferences for the next use of @DDD@.
 
-Ddd*optionsMenu.separateExecWindow.labelString: 	Run in Execution Window
-Ddd*optionsMenu.separateExecWindow.mnemonic:    	E
+Ddd*optionsMenu.separateExecWindow.labelString:		Run in Execution Window
+Ddd*optionsMenu.separateExecWindow.mnemonic:		E
 Ddd*optionsMenu*separateExecWindow.accelerator:		Ctrl<Key>Z
 Ddd*optionsMenu*separateExecWindow.acceleratorText:	Ctrl+Z
 
 Ddd*optionsMenu.findWordsOnly.labelString:		Find Words Only
-Ddd*optionsMenu.findWordsOnly.mnemonic: 		W
+Ddd*optionsMenu.findWordsOnly.mnemonic:			W
 Ddd*optionsMenu*findWordsOnly.accelerator:		Ctrl<Key>W
 Ddd*optionsMenu*findWordsOnly.acceleratorText:		Ctrl+W
 
@@ -1504,14 +1489,14 @@ Ddd*optionsMenu.disassemble.mnemonic:			M
 Ddd*optionsMenu*disassemble.accelerator:		Ctrl<Key>M
 Ddd*optionsMenu*disassemble.acceleratorText:		Ctrl+M
 
-Ddd*optionsMenu.preferences.labelString:  	Preferences...
-Ddd*optionsMenu.preferences.mnemonic:     	P
+Ddd*optionsMenu.preferences.labelString:	Preferences...
+Ddd*optionsMenu.preferences.mnemonic:		P
 
-Ddd*optionsMenu.settings.labelString:  		Settings...
-Ddd*optionsMenu.settings.mnemonic:     		S
+Ddd*optionsMenu.settings.labelString:		Settings...
+Ddd*optionsMenu.settings.mnemonic:		S
 
-Ddd*optionsMenu.saveOptions.labelString:     	Save Options
-Ddd*optionsMenu.saveOptions.mnemonic:        	O
+Ddd*optionsMenu.saveOptions.labelString:	Save Options
+Ddd*optionsMenu.saveOptions.mnemonic:		O
 
 
 Ddd*menubar.view.labelString:		Windows
@@ -1560,55 +1545,55 @@ but proceed through subroutine calls.\n\
 @tt \267 @bf Kill @rm - Kill execution of program being debugged.\n\
 @tt \267 @bf Break @rm - interrupt program (or current debugger command).
 
-Ddd*menubar*programMenu.run.labelString: 	   Run...
-Ddd*menubar*programMenu.run.mnemonic:	   	   R
-Ddd*menubar*programMenu.run.accelerator:           Ctrl ~Shift<Key>R
-Ddd*menubar*programMenu.run.acceleratorText:       Ctrl+R
+Ddd*menubar*programMenu.run.labelString:	   Run...
+Ddd*menubar*programMenu.run.mnemonic:		   R
+Ddd*menubar*programMenu.run.accelerator:	   Ctrl ~Shift<Key>R
+Ddd*menubar*programMenu.run.acceleratorText:	   Ctrl+R
 
-Ddd*menubar*programMenu.run_again.labelString: 	   Run Again
+Ddd*menubar*programMenu.run_again.labelString:	   Run Again
 Ddd*menubar*programMenu.run_again.mnemonic:	   A
-Ddd*menubar*programMenu.run_again.accelerator:     Ctrl Shift<Key>R
+Ddd*menubar*programMenu.run_again.accelerator:	   Ctrl Shift<Key>R
 Ddd*menubar*programMenu.run_again.acceleratorText: Ctrl+Shift+R
 
-Ddd*menubar*programMenu.step.labelString: 	   Step
-Ddd*menubar*programMenu.step.mnemonic:	           S
-Ddd*menubar*programMenu.step.accelerator:          Ctrl ~Shift<Key>S
-Ddd*menubar*programMenu.step.acceleratorText:      Ctrl+S
+Ddd*menubar*programMenu.step.labelString:	   Step
+Ddd*menubar*programMenu.step.mnemonic:		   S
+Ddd*menubar*programMenu.step.accelerator:	   Ctrl ~Shift<Key>S
+Ddd*menubar*programMenu.step.acceleratorText:	   Ctrl+S
 
-Ddd*menubar*programMenu.stepi.labelString: 	   Step Instruction
-Ddd*menubar*programMenu.stepi.mnemonic:	           I
-Ddd*menubar*programMenu.stepi.accelerator:         Ctrl Shift<Key>S
-Ddd*menubar*programMenu.stepi.acceleratorText:     Ctrl+Shift+S
+Ddd*menubar*programMenu.stepi.labelString:	   Step Instruction
+Ddd*menubar*programMenu.stepi.mnemonic:		   I
+Ddd*menubar*programMenu.stepi.accelerator:	   Ctrl Shift<Key>S
+Ddd*menubar*programMenu.stepi.acceleratorText:	   Ctrl+Shift+S
 
-Ddd*menubar*programMenu.next.labelString: 	   Next
-Ddd*menubar*programMenu.next.mnemonic:	           N
-Ddd*menubar*programMenu.next.accelerator:          Ctrl ~Shift<Key>X
-Ddd*menubar*programMenu.next.acceleratorText:      Ctrl+X
+Ddd*menubar*programMenu.next.labelString:	   Next
+Ddd*menubar*programMenu.next.mnemonic:		   N
+Ddd*menubar*programMenu.next.accelerator:	   Ctrl ~Shift<Key>X
+Ddd*menubar*programMenu.next.acceleratorText:	   Ctrl+X
 
-Ddd*menubar*programMenu.nexti.labelString: 	   Next Instruction
-Ddd*menubar*programMenu.nexti.mnemonic:	           e
-Ddd*menubar*programMenu.nexti.accelerator:         Ctrl Shift<Key>X
-Ddd*menubar*programMenu.nexti.acceleratorText:     Ctrl+Shift+X
+Ddd*menubar*programMenu.nexti.labelString:	   Next Instruction
+Ddd*menubar*programMenu.nexti.mnemonic:		   e
+Ddd*menubar*programMenu.nexti.accelerator:	   Ctrl Shift<Key>X
+Ddd*menubar*programMenu.nexti.acceleratorText:	   Ctrl+Shift+X
 
 Ddd*menubar*programMenu.cont.labelString:	   Continue
-Ddd*menubar*programMenu.cont.mnemonic:	           C
-Ddd*menubar*programMenu.cont.accelerator:          Ctrl<Key>O
-Ddd*menubar*programMenu.cont.acceleratorText:      Ctrl+O
+Ddd*menubar*programMenu.cont.mnemonic:		   C
+Ddd*menubar*programMenu.cont.accelerator:	   Ctrl<Key>O
+Ddd*menubar*programMenu.cont.acceleratorText:	   Ctrl+O
 
 Ddd*menubar*programMenu.finish.labelString:	   Finish
 Ddd*menubar*programMenu.finish.mnemonic:	   F
-Ddd*menubar*programMenu.finish.accelerator:        Ctrl<Key>Return
-Ddd*menubar*programMenu.finish.acceleratorText:    Ctrl+Return
+Ddd*menubar*programMenu.finish.accelerator:	   Ctrl<Key>Return
+Ddd*menubar*programMenu.finish.acceleratorText:	   Ctrl+Return
 
 Ddd*menubar*programMenu.kill.labelString:	   Kill
-Ddd*menubar*programMenu.kill.mnemonic:	           K
-Ddd*menubar*programMenu.kill.accelerator:          Ctrl Shift<Key>K
-Ddd*menubar*programMenu.kill.acceleratorText:      Ctrl+Shift+K
+Ddd*menubar*programMenu.kill.mnemonic:		   K
+Ddd*menubar*programMenu.kill.accelerator:	   Ctrl Shift<Key>K
+Ddd*menubar*programMenu.kill.acceleratorText:	   Ctrl+Shift+K
 
-Ddd*menubar*programMenu.interrupt.labelString:     Break
-Ddd*menubar*programMenu.interrupt.mnemonic:        B
-Ddd*menubar*programMenu.interrupt.accelerator:     Ctrl<Key>C	 I
-Ddd*menubar*programMenu.interrupt.acceleratorText: Ctrl+C
+Ddd*menubar*programMenu.break.labelString:	   Break
+Ddd*menubar*programMenu.break.mnemonic:		   B
+Ddd*menubar*programMenu.break.accelerator:	   Ctrl<Key>C	 I
+Ddd*menubar*programMenu.break.acceleratorText:	   Ctrl+C
 
 
 Ddd*menubar.commands.labelString:	Commands
@@ -1654,7 +1639,7 @@ Ddd*commandsMenu.apply.acceleratorText: Return
 
 Ddd*commandsMenu.clear_line.labelString: Clear Line
 Ddd*commandsMenu.clear_line.mnemonic:	L
-! *commandsMenu.clear_line.accelerator:  Ctrl<Key>U
+! *commandsMenu.clear_line.accelerator:	 Ctrl<Key>U
 Ddd*commandsMenu.clear_line.acceleratorText: Ctrl+U
 
 Ddd*commandsMenu.clear_window.labelString: Clear Window
@@ -1710,12 +1695,12 @@ Ddd*sourceMenu.breakpoints.labelString:	Edit Breakpoints...
 Ddd*sourceMenu.breakpoints.mnemonic:	E
 
 Ddd*sourceMenu.edit.labelString:	Edit Source...
-Ddd*sourceMenu.edit.mnemonic:	        S
+Ddd*sourceMenu.edit.mnemonic:		S
 Ddd*sourceMenu.edit.accelerator:	Ctrl Shift<Key>E
 Ddd*sourceMenu.edit.acceleratorText:	Ctrl+Shift+E
 
 Ddd*sourceMenu.reload.labelString:	Reload Source
-Ddd*sourceMenu.reload.mnemonic:	        R
+Ddd*sourceMenu.reload.mnemonic:		R
 Ddd*sourceMenu.reload.accelerator:	Ctrl Shift<Key>L
 Ddd*sourceMenu.reload.acceleratorText:	Ctrl+Shift+L
 
@@ -1856,13 +1841,13 @@ X warnings are silently ignored.\n\
 \n\
 Use the buttons above to view and change other preferences.
 
-Ddd*preferences*groupIconify.labelString:        \
+Ddd*preferences*groupIconify.labelString:	 \
 Iconify all windows at once
 Ddd*preferences*globalTabCompletion.labelString: \
 Tab key completes in all windows
-Ddd*preferences*suppressWarnings.labelString:    \
+Ddd*preferences*suppressWarnings.labelString:	 \
 Suppress X warnings
-Ddd*preferences*saveHistoryOnExit.labelString:   \
+Ddd*preferences*saveHistoryOnExit.labelString:	 \
 Save command history on exit
 
 
@@ -1881,11 +1866,11 @@ disassembled code is cached in memory.\n\
 \n\
 Use the buttons above to view and change other preferences.
 
-Ddd*preferences*displayGlyphs.labelString:       \
+Ddd*preferences*displayGlyphs.labelString:	 \
 Use glyphs for showing execution position and breakpoints
-Ddd*preferences*cacheSourceFiles.labelString:    \
+Ddd*preferences*cacheSourceFiles.labelString:	 \
 Cache source files
-Ddd*preferences*cacheMachineCode.labelString:    \
+Ddd*preferences*cacheMachineCode.labelString:	 \
 Cache machine code
 
 
@@ -1940,30 +1925,30 @@ Use the buttons above to view and change other preferences.
 
 Ddd*preferences*startup*adjustMargin:		false
 
-Ddd*preferences*windows.labelString:            Windows:
-Ddd*preferences*windows.alignment:              XmALIGNMENT_END
-Ddd*preferences*windows.width:                  120
-Ddd*preferences*windows.recomputeSize:          false
+Ddd*preferences*windows.labelString:		Windows:
+Ddd*preferences*windows.alignment:		XmALIGNMENT_END
+Ddd*preferences*windows.width:			120
+Ddd*preferences*windows.recomputeSize:		false
 Ddd*windowsMenu*separate.labelString:		Separate windows
 Ddd*windowsMenu*attached.labelString:		One single window
 
 Ddd*preferences*keyboardFocus.labelString:	Keyboard focus:
-Ddd*preferences*keyboardFocus.alignment:      	XmALIGNMENT_END
-Ddd*preferences*keyboardFocus.width:      	120
-Ddd*preferences*keyboardFocus.recomputeSize:    false
+Ddd*preferences*keyboardFocus.alignment:	XmALIGNMENT_END
+Ddd*preferences*keyboardFocus.width:		120
+Ddd*preferences*keyboardFocus.recomputeSize:	false
 Ddd*keyboardFocusMenu*explicit.labelString:	Click to type
 Ddd*keyboardFocusMenu*pointer.labelString:	Point to type
 
-Ddd*preferences*dataScrolling.labelString:      Data scrolling:
-Ddd*preferences*dataScrolling.alignment:      	XmALIGNMENT_END
-Ddd*preferences*dataScrolling.width:      	120
-Ddd*preferences*dataScrolling.recomputeSize:    false
+Ddd*preferences*dataScrolling.labelString:	Data scrolling:
+Ddd*preferences*dataScrolling.alignment:	XmALIGNMENT_END
+Ddd*preferences*dataScrolling.width:		120
+Ddd*preferences*dataScrolling.recomputeSize:	false
 Ddd*dataScrollingMenu*panner.labelString:	Panner
 Ddd*dataScrollingMenu*scrollbars.labelString:	Scrollbars
 
-Ddd*preferences*debugger.labelString:           Debugger type:
-Ddd*preferences*debugger.alignment:           	XmALIGNMENT_END
-Ddd*preferences*debugger.width:           	120
+Ddd*preferences*debugger.labelString:		Debugger type:
+Ddd*preferences*debugger.alignment:		XmALIGNMENT_END
+Ddd*preferences*debugger.width:			120
 Ddd*preferences*debugger.recomputeSize:		false
 Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
@@ -2002,17 +1987,17 @@ Insert the resulting commands in your personal\n\
 to customize the inferior debugger.
 
 ! Some settings are insensitive, because changing them may break DDD...
-Ddd*height.sensitive:     false
+Ddd*height.sensitive:	  false
 Ddd*set height.sensitive: false
-Ddd*width.sensitive:  	  false
+Ddd*width.sensitive:	  false
 Ddd*set width.sensitive:  false
-Ddd*prompt.sensitive: 	  false
+Ddd*prompt.sensitive:	  false
 Ddd*set prompt.sensitive: false
 
 ! ... or simply do not make sense.
-Ddd*listsize.sensitive:     false
+Ddd*listsize.sensitive:	    false
 Ddd*set listsize.sensitive: false
-Ddd*editing.sensitive: 	    false
+Ddd*editing.sensitive:	    false
 Ddd*set editing.sensitive:  false
 
 
@@ -2031,28 +2016,28 @@ Ddd*graph_editSW.width:			620
 Ddd*graph_editSW.height:		200
 
 ! Motif 1.x, using Porthole
-Ddd*graph_edit_porthole.width:          620
-Ddd*graph_edit_porthole.height:         200
+Ddd*graph_edit_porthole.width:		620
+Ddd*graph_edit_porthole.height:		200
 
 ! Motif 2.0, using Porthole
-Ddd*graph_edit_form.width:              620
-Ddd*graph_edit_form.height:             200
+Ddd*graph_edit_form.width:		620
+Ddd*graph_edit_form.height:		200
 
 Ddd*graph_edit_panner.backgroundPixmap:	25_foreground
 Ddd*graph_edit_panner.defaultScale:	10
 Ddd*graph_edit_panner.translations: \
 #override \
-<Btn1Down>:        ddd-get-focus() start()\n\
-<Btn2Down>:        ddd-get-focus() abort()\n\
-<Key>osfLeft:      page(-.5p, +0)\n\
-<Key>osfRight:     page(+.5p, +0)\n\
-<Key>osfUp:        page(+0, -.5p)\n\
-<Key>osfDown:      page(+0, +.5p)\n\
+<Btn1Down>:	   ddd-get-focus() start()\n\
+<Btn2Down>:	   ddd-get-focus() abort()\n\
+<Key>osfLeft:	   page(-.5p, +0)\n\
+<Key>osfRight:	   page(+.5p, +0)\n\
+<Key>osfUp:	   page(+0, -.5p)\n\
+<Key>osfDown:	   page(+0, +.5p)\n\
 <Key>osfBeginLine: page(0,0)\n\
 <Key>osfBackSpace: page(-1p, -1p)\n\
-<Key>osfDelete:    page(-1p, -1p)\n\
-Shift<Key>Tab:     ddd-prev-tab-group()\n\
-<Key>Tab:     	   ddd-next-tab-group()\n
+<Key>osfDelete:	   page(-1p, -1p)\n\
+Shift<Key>Tab:	   ddd-prev-tab-group()\n\
+<Key>Tab:	   ddd-next-tab-group()\n
 
 Ddd*graph_edit.highlightOnEnter:	True
 Ddd*graph_edit.navigationType:		TAB_GROUP
@@ -2062,14 +2047,14 @@ Ddd*graph_edit.contextHelpString:	\
 showing the data displays of the debugged program.\n\
 \n\
 @bf Left mouse button:@rm\n\
-@tt \267 @sl Click @rm on a display @sl DISPLAY  @rm to select @sl DISPLAY @rm.\n\
+@tt \267 @sl Click @rm on a display @sl DISPLAY	 @rm to select @sl DISPLAY @rm.\n\
 @tt \267 @sl Double-click @rm on a display to select all connected displays.\n\
 @tt \267 @sl Double-click @rm on the background to select all displays.\n\
 @tt \267 @sl Drag @rm on a display to move selected displays.\n\
 @tt \267 @sl Drag @rm on the background to select framed displays.\n\
 \n\
 @bf Shift + Left mouse button:@rm\n\
-@tt \267 @sl Click @rm on a display @sl DISPLAY  @rm to add @sl DISPLAY  @rm \
+@tt \267 @sl Click @rm on a display @sl DISPLAY	 @rm to add @sl DISPLAY	 @rm \
 to the selection.\n\
 @tt \267 @sl Drag @rm on a display to move selected displays.\n\
 @tt \267 @sl Drag @rm on the background to add framed displays\n\
@@ -2119,9 +2104,9 @@ Ddd*graph_popup.new.labelString:	New Display...
 
 Ddd*node_popup.dereference.labelString:	Display *
 Ddd*node_popup.detail.labelString:	Show Detail
-Ddd*node_popup.rotate.labelString: 	Rotate
+Ddd*node_popup.rotate.labelString:	Rotate
 Ddd*node_popup.dependent.labelString:	New Display...
-Ddd*node_popup.set.labelString: 	Set Value...
+Ddd*node_popup.set.labelString:		Set Value...
 Ddd*node_popup.delete.labelString:	Delete Display
 Ddd*node_popup.disable.labelString:	Disable Display
 
@@ -2133,13 +2118,13 @@ Ddd*node_popup.disable.labelString:	Disable Display
 Ddd*graph_cmd_w*contextHelpString: \
 @rm Commands related to the data window.
 
-Ddd*graph_cmd_w.marginWidth:     0
-Ddd*graph_cmd_w.marginHeight:    0
-Ddd*graph_cmd_area.marginWidth:  0
+Ddd*graph_cmd_w.marginWidth:	 0
+Ddd*graph_cmd_w.marginHeight:	 0
+Ddd*graph_cmd_area.marginWidth:	 0
 
 Ddd*graph_cmd_w.graph_arg_label.labelString:	():
 Ddd*graph_cmd_w.graph_arg_label.marginWidth:	0
-Ddd*graph_cmd_w.graph_arg.columns:              18
+Ddd*graph_cmd_w.graph_arg.columns:		18
 Ddd*graph_cmd_w*graph_arg.editable:		false
 Ddd*graph_cmd_w*graph_arg.contextHelpString:	\
 @rm This is the argument @bf() @rm for the command buttons on the right.\n\
@@ -2163,8 +2148,8 @@ Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate ()
 Ddd*graph_cmd_w.graph_cmd_area*set.labelString:		Set ()
 Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
 Ddd*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable ()
-! Ddd*graph_cmd_w.graph_cmd_area*marginTop:       1
-! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:    1
+! Ddd*graph_cmd_w.graph_cmd_area*marginTop:	  1
+! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:	  1
 
 Ddd*graph_cmd_w.graph_cmd_area*dependent.contextHelpString:\
 @bf New Display@rm\n\
@@ -2320,16 +2305,16 @@ Ddd*arg_cmd_w.source_arg.contextHelpString:	\
 @rm This is the argument @bf () @rm for the command buttons on the right.\n\
 You can edit this field, or easily change its value\n\
 by selecting something in the source text above.
-Ddd*arg_cmd_w.source_arg.value:                  main
-Ddd*arg_cmd_w.source_arg.columns:                18
+Ddd*arg_cmd_w.source_arg.value:			 main
+Ddd*arg_cmd_w.source_arg.columns:		 18
 
 Ddd*arg_cmd_w.orientation:				XmHORIZONTAL
 Ddd*arg_cmd_w.arg_cmd_area.orientation:			XmHORIZONTAL
 Ddd*arg_cmd_w.arg_cmd_area.spacing:			0
 Ddd*arg_cmd_w*spacing:					0
 ! Ddd*arg_cmd_w.arg_cmd_area.packing:			XmPACK_COLUMN
-Ddd*arg_cmd_w.arg_cmd_area.entryAlignment:  		XmALIGNMENT_CENTER
-Ddd*arg_cmd_w.arg_cmd_area*alignment:  			XmALIGNMENT_CENTER
+Ddd*arg_cmd_w.arg_cmd_area.entryAlignment:		XmALIGNMENT_CENTER
+Ddd*arg_cmd_w.arg_cmd_area*alignment:			XmALIGNMENT_CENTER
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup ()
 Ddd*arg_cmd_w.arg_cmd_area*break.labelString:		Break at ()
@@ -2387,11 +2372,11 @@ If the option @bf Find Words Only @rm is set, only complete words are found.
 ! Source and Code Glyphs
 !-----------------------------------------------------------------------------
 
-Ddd*source_form_w.XmPushButton.shadowThickness:    0
+Ddd*source_form_w.XmPushButton.shadowThickness:	   0
 Ddd*source_form_w.XmPushButton.highlightThickness: 0
-Ddd*source_form_w.XmPushButton.marginHeight:       0
-Ddd*source_form_w.XmPushButton.marginWidth:        0
-Ddd*source_form_w.XmPushButton.borderWidth:        0
+Ddd*source_form_w.XmPushButton.marginHeight:	   0
+Ddd*source_form_w.XmPushButton.marginWidth:	   0
+Ddd*source_form_w.XmPushButton.borderWidth:	   0
 
 Ddd*source_form_w.plain_arrow*contextHelpString: \
 @bf Plain arrow\n\
@@ -2412,11 +2397,11 @@ Ddd*source_form_w.grey_stop*contextHelpString: \
 Press the @bf right mouse button @rm to change its properties.
 
 
-Ddd*code_form_w.XmPushButton.shadowThickness:    0
+Ddd*code_form_w.XmPushButton.shadowThickness:	 0
 Ddd*code_form_w.XmPushButton.highlightThickness: 0
-Ddd*code_form_w.XmPushButton.marginHeight:       0
-Ddd*code_form_w.XmPushButton.marginWidth:        0
-Ddd*code_form_w.XmPushButton.borderWidth:        0
+Ddd*code_form_w.XmPushButton.marginHeight:	 0
+Ddd*code_form_w.XmPushButton.marginWidth:	 0
+Ddd*code_form_w.XmPushButton.borderWidth:	 0
 
 Ddd*code_form_w.plain_arrow*contextHelpString: \
 @bf Plain arrow\n\
@@ -2530,37 +2515,37 @@ Ddd*console_buttons*contextHelpString:
 Ddd*tool_buttons*contextHelpString:
 
 ! Special spacing
-Ddd*source_buttons.spacing:         0
-Ddd*console_buttons.spacing:        0
-Ddd*source_buttons.packing:         XmPACK_COLUMN
-Ddd*console_buttons.packing:        XmPACK_COLUMN
+Ddd*source_buttons.spacing:	    0
+Ddd*console_buttons.spacing:	    0
+Ddd*source_buttons.packing:	    XmPACK_TIGHT
+Ddd*console_buttons.packing:	    XmPACK_TIGHT
 Ddd*source_buttons.entryAlignment:  XmALIGNMENT_CENTER
 Ddd*console_buttons.entryAlignment: XmALIGNMENT_CENTER
-Ddd*source_buttons*alignment:  	    XmALIGNMENT_CENTER
-Ddd*console_buttons*alignment:      XmALIGNMENT_CENTER
-! Ddd*source_buttons*marginTop:       1
+Ddd*source_buttons*alignment:	    XmALIGNMENT_CENTER
+Ddd*console_buttons*alignment:	    XmALIGNMENT_CENTER
+! Ddd*source_buttons*marginTop:	      1
 ! Ddd*source_buttons*marginBottom:    1
 ! Ddd*console_buttons*marginTop:      1
 ! Ddd*console_buttons*marginBottom:   1
 
 ! Some buttons have a special meaning; 
 ! so we must provide help on ourselves.
-Ddd*?*interrupt.contextHelpString: \
+Ddd*?*break.contextHelpString: \
 @bf Break\n\
 @rm Interrupt the debugged process or current debugger command.\n\
 (Equivalent to @key Ctrl+C@rm).
 
-Ddd*?*Yes.contextHelpString:    \
+Ddd*?*Yes.contextHelpString:	\
 @bf Yes\n\
 @rm Confirm the question of the inferior debugger.
 
-Ddd*?*No.contextHelpString:     \
+Ddd*?*No.contextHelpString:	\
 @bf No\n\
 @rm Do @sl not @rm confirm the question of the inferior debugger.
 
 Ddd*?*Complete.contextHelpString:	\
 @bf Complete@rm\n\
-Complete the current debugging command.  (Equivalent to @key TAB@rm).
+Complete the current debugging command.	 (Equivalent to @key TAB@rm).
 
 Ddd*?*Clear.contextHelpString:	\
 @bf Clear@rm\n\
@@ -2578,7 +2563,7 @@ Show the next debugging command \
 
 Ddd*?*Apply.contextHelpString:	\
 @bf Apply@rm\n\
-Execute the current debugging command.  (Equivalent to @symbol \277@rm).
+Execute the current debugging command.	(Equivalent to @symbol \277@rm).
 
 Ddd*?*Back.contextHelpString:	\
 @bf Back@rm\n\
@@ -2605,66 +2590,66 @@ Reload the source from file.
 
 Ddd*print_popup.title: @DDD@: Print Graph
 
-Ddd*print*options.orientation:                XmVERTICAL
-Ddd*print*options.marginWidth:                0
-Ddd*print*options.marginHeight:               0
-Ddd*print*options.spacing:                    0
-Ddd*print*options.?.orientation:              XmHORIZONTAL
-Ddd*print*options.?.marginWidth:              0
-Ddd*print*options.?.marginHeight:             0
-Ddd*print*options.?.?.orientation:            XmHORIZONTAL
+Ddd*print*options.orientation:		      XmVERTICAL
+Ddd*print*options.marginWidth:		      0
+Ddd*print*options.marginHeight:		      0
+Ddd*print*options.spacing:		      0
+Ddd*print*options.?.orientation:	      XmHORIZONTAL
+Ddd*print*options.?.marginWidth:	      0
+Ddd*print*options.?.marginHeight:	      0
+Ddd*print*options.?.?.orientation:	      XmHORIZONTAL
 Ddd*print*options*isAligned:		      false
 Ddd*print*options*alignment:		      XmALIGNMENT_BEGINNING
 
-Ddd*print*print_to.labelString:               Print To:
-Ddd*print*print_to.alignment:                 XmALIGNMENT_END
-Ddd*print*print_to.width:                     100
-Ddd*print*print_to.recomputeSize:             false
+Ddd*print*print_to.labelString:		      Print To:
+Ddd*print*print_to.alignment:		      XmALIGNMENT_END
+Ddd*print*print_to.width:		      100
+Ddd*print*print_to.recomputeSize:	      false
 Ddd*print*print_to_field*printer.labelString: Printer
 Ddd*print*print_to_field*file.labelString:    File
 
-Ddd*print*print_command.labelString:          Print Command:
-Ddd*print*print_command.alignment:            XmALIGNMENT_END
-Ddd*print*print_command.width:                100
-Ddd*print*print_command.recomputeSize:        false
-Ddd*print*print_command_field.columns:        48
+Ddd*print*print_command.labelString:	      Print Command:
+Ddd*print*print_command.alignment:	      XmALIGNMENT_END
+Ddd*print*print_command.width:		      100
+Ddd*print*print_command.recomputeSize:	      false
+Ddd*print*print_command_field.columns:	      48
 
-Ddd*print*file_name.labelString:              File Name:
-Ddd*print*file_name.alignment:                XmALIGNMENT_END
-Ddd*print*file_name.width:                    100
-Ddd*print*file_name.recomputeSize:            false
-Ddd*print*file_name_field.columns:            32
-Ddd*print*postscript.labelString:             PostScript
-Ddd*print*xfig.labelString:	   	      XFIG
+Ddd*print*file_name.labelString:	      File Name:
+Ddd*print*file_name.alignment:		      XmALIGNMENT_END
+Ddd*print*file_name.width:		      100
+Ddd*print*file_name.recomputeSize:	      false
+Ddd*print*file_name_field.columns:	      32
+Ddd*print*postscript.labelString:	      PostScript
+Ddd*print*xfig.labelString:		      XFIG
 
-Ddd*print*print_what.labelString:             Print:
-Ddd*print*print_what.alignment:               XmALIGNMENT_END
-Ddd*print*print_what.width:                   100
-Ddd*print*print_what.recomputeSize:           false
-Ddd*print*all.labelString:	              All Displays
-Ddd*print*selected.labelString:	              Selected Displays
+Ddd*print*print_what.labelString:	      Print:
+Ddd*print*print_what.alignment:		      XmALIGNMENT_END
+Ddd*print*print_what.width:		      100
+Ddd*print*print_what.recomputeSize:	      false
+Ddd*print*all.labelString:		      All Displays
+Ddd*print*selected.labelString:		      Selected Displays
 
 Ddd*print*print_orientation.labelString:      Orientation:
-Ddd*print*print_orientation.alignment:        XmALIGNMENT_END
-Ddd*print*print_orientation.width:            100
+Ddd*print*print_orientation.alignment:	      XmALIGNMENT_END
+Ddd*print*print_orientation.width:	      100
 Ddd*print*print_orientation.recomputeSize:    false
-Ddd*print*portrait.labelString:               Portrait
-Ddd*print*landscape.labelString:              Landscape
+Ddd*print*portrait.labelString:		      Portrait
+Ddd*print*landscape.labelString:	      Landscape
 
-Ddd*print*paper_size.labelString:             Paper Size:
-Ddd*print*paper_size.alignment:               XmALIGNMENT_END
-Ddd*print*paper_size.width:                   100
-Ddd*print*paper_size.recomputeSize:           false
-Ddd*print*paper_size_field.orientation:       XmVERTICAL
-Ddd*print*paper_size_field.numColumns:        3
-Ddd*print*a4.labelString:                     A4 (210mm \327 297mm)
-Ddd*print*a3.labelString:                     A3 (297mm \327 420mm)
+Ddd*print*paper_size.labelString:	      Paper Size:
+Ddd*print*paper_size.alignment:		      XmALIGNMENT_END
+Ddd*print*paper_size.width:		      100
+Ddd*print*paper_size.recomputeSize:	      false
+Ddd*print*paper_size_field.orientation:	      XmVERTICAL
+Ddd*print*paper_size_field.numColumns:	      3
+Ddd*print*a4.labelString:		      A4 (210mm \327 297mm)
+Ddd*print*a3.labelString:		      A3 (297mm \327 420mm)
 Ddd*print*letter.labelString:		      Letter (8\275" \327 11")
 Ddd*print*legal.labelString:		      Legal (8\275" \327 14")
 Ddd*print*executive.labelString:	      Executive (7\275" \327 10")
-Ddd*print*custom.labelString:	      	      Other...
+Ddd*print*custom.labelString:		      Other...
 
-Ddd*print.autoUnmanage:  false
+Ddd*print.autoUnmanage:	 false
 Ddd*print*okLabelString: Print
 
 Ddd*print*contextHelpString: \
@@ -2695,7 +2680,7 @@ Ddd*paper_size_dialog*contextHelpString: \
 \n\
 Examples:\n\
 @tt 42cm x 59.4cm @rm (A2 paper)\n\
-@tt  7in x 10in   @rm (Executive paper)\n\
+@tt  7in x 10in	  @rm (Executive paper)\n\
 \n\
 Recognized units include:\n\
 @tt pt @rm (points), @tt in @rm (inches), \n\
@@ -2707,10 +2692,10 @@ Recognized units include:\n\
 ! File Selection Dialog
 !-----------------------------------------------------------------------------
 
-Ddd*exec_files_popup.title:   	 	   @DDD@: Open Program
-Ddd*exec_files_popup*okLabelString:        Open
+Ddd*exec_files_popup.title:		   @DDD@: Open Program
+Ddd*exec_files_popup*okLabelString:	   Open
 Ddd*exec_files_popup*selectionLabelString: Program
-Ddd*exec_files_popup*contextHelpString:    \
+Ddd*exec_files_popup*contextHelpString:	   \
 @rm Enter the name of the program to be debugged in the argument field.\n\
 The program is read for its symbols, for getting the contents\
  of pure memory,\n\
@@ -2723,10 +2708,10 @@ No argument means to have no executable file and no symbols.\n\
 Click on @bf Open @rm to open the selected file.
 
 
-Ddd*core_files_popup.title:   	 	   @DDD@: Open Core
-Ddd*core_files_popup*okLabelString:        Open
+Ddd*core_files_popup.title:		   @DDD@: Open Core
+Ddd*core_files_popup*okLabelString:	   Open
 Ddd*core_files_popup*selectionLabelString: Core Dump
-Ddd*core_files_popup*contextHelpString:    \
+Ddd*core_files_popup*contextHelpString:	   \
 @rm  Enter the name of a core dump in the argument field.\n\
 The core dump is used for examining memory and registers.\n\
 No argument means to have no core file.\n\
@@ -2734,8 +2719,8 @@ No argument means to have no core file.\n\
 Click on @bf Open @rm to open the selected core dump.
 
 
-Ddd*source_files_popup.title:   	   @DDD@: Open Source
-Ddd*source_files_popup*okLabelString:      Open
+Ddd*source_files_popup.title:		   @DDD@: Open Source
+Ddd*source_files_popup*okLabelString:	   Open
 Ddd*source_files_popup*selectionLabelString: Source File
 Ddd*source_files_popup*contextHelpString:    \
 @rm  Enter the name of a source file in the argument field.\n\
@@ -2752,18 +2737,18 @@ Click on @bf Open @rm to open the selected source file.
 
 Ddd*edit_breakpoints_dialog_popup.title: @DDD@: Breakpoint Editor
 Ddd*edit_breakpoints_dialog*breakpoints.labelString: Breakpoints
-Ddd*edit_breakpoints_dialog*form1.orientation:   XmVERTICAL
-Ddd*edit_breakpoints_dialog*form1.marginWidth:   0
-Ddd*edit_breakpoints_dialog*form1.marginHeight:  0
-Ddd*edit_breakpoints_dialog*form2.orientation:   XmHORIZONTAL
-Ddd*edit_breakpoints_dialog*form2.marginWidth:   0
-Ddd*edit_breakpoints_dialog*form2.marginHeight:  0
+Ddd*edit_breakpoints_dialog*form1.orientation:	 XmVERTICAL
+Ddd*edit_breakpoints_dialog*form1.marginWidth:	 0
+Ddd*edit_breakpoints_dialog*form1.marginHeight:	 0
+Ddd*edit_breakpoints_dialog*form2.orientation:	 XmHORIZONTAL
+Ddd*edit_breakpoints_dialog*form2.marginWidth:	 0
+Ddd*edit_breakpoints_dialog*form2.marginHeight:	 0
 Ddd*edit_breakpoints_dialog*buttons.orientation: XmVERTICAL
 Ddd*edit_breakpoints_dialog*buttons.marginWidth:   0
 Ddd*edit_breakpoints_dialog*buttons.marginHeight:  0
-Ddd*edit_breakpoints_dialog.okLabelString:       Close
+Ddd*edit_breakpoints_dialog.okLabelString:	 Close
 
-Ddd*edit_breakpoints_dialog*contextHelpString:       \
+Ddd*edit_breakpoints_dialog*contextHelpString:	     \
 @rm This is the @sl Breakpoint editor@rm.\n\
 \n\
 Select breakpoints on the left; operations on the right.\n\
@@ -2798,38 +2783,38 @@ Multiple breakpoints at one place are permitted, and useful if conditional.
 
 
 Ddd*edit_breakpoint_condition_dialog_popup.title: @DDD@: Breakpoint Condition
-Ddd*edit_breakpoint_condition_dialog.selectionLabelString:        \
+Ddd*edit_breakpoint_condition_dialog.selectionLabelString:	  \
 @rm Enter breakpoint condition:
 
-Ddd*edit_breakpoint_condition_dialog*contextHelpString:        \
+Ddd*edit_breakpoint_condition_dialog*contextHelpString:	       \
 @rm Specify a condition @sl COND @rm for the selected breakpoint(s).\n\
 The selected breakpoint(s) break only if @sl COND @rm\n\
 evaluates to a non-zero value.
 
 
 Ddd*edit_breakpoint_ignore_count_dialog_popup.title: @DDD@: Ignore Count
-Ddd*edit_breakpoint_ignore_count_dialog.selectionLabelString:        \
+Ddd*edit_breakpoint_ignore_count_dialog.selectionLabelString:	     \
 @rm Enter breakpoint ignore count:
 
-Ddd*edit_breakpoint_ignore_count_dialog*contextHelpString:        \
+Ddd*edit_breakpoint_ignore_count_dialog*contextHelpString:	  \
 @rm Set the ignore count @sl COUNT @rm for the selected breakpoint(s).\n\
 Next @sl COUNT @rm hits of the selected breakpoint(s) will be ignored.
 
 
-Ddd*edit_breakpoints_dialog*buttons*new.labelString:           New...
+Ddd*edit_breakpoints_dialog*buttons*new.labelString:	       New...
 Ddd*edit_breakpoints_dialog*buttons*new.contextHelpString:     \
 @rm Set breakpoint at specified line or function.
 
-Ddd*edit_breakpoints_dialog*buttons*lookup.labelString:        Lookup
+Ddd*edit_breakpoints_dialog*buttons*lookup.labelString:	       Lookup
 Ddd*edit_breakpoints_dialog*buttons*lookup.contextHelpString:  \
 @rm Lookup the selected breakpoint.
 
-Ddd*edit_breakpoints_dialog*buttons*enable.labelString:        Enable
+Ddd*edit_breakpoints_dialog*buttons*enable.labelString:	       Enable
 Ddd*edit_breakpoints_dialog*buttons*enable.contextHelpString:  \
 @rm Enable the selected breakpoint(s).
 
 Ddd*edit_breakpoints_dialog*buttons*disable.labelString:       Disable
-Ddd*edit_breakpoints_dialog*buttons*disable.contextHelpString:  \
+Ddd*edit_breakpoints_dialog*buttons*disable.contextHelpString:	\
 @rm Disable the selected breakpoint(s).
 
 Ddd*edit_breakpoints_dialog*buttons*condition.labelString:     Condition...
@@ -2842,7 +2827,7 @@ Ddd*edit_breakpoints_dialog*buttons*ignore_count*contextHelpString:  \
 @rm Set the ignore count @sl COUNT @rm for the selected breakpoint(s).\n\
 Next @sl COUNT @rm hits of the selected breakpoints will be ignored.
 
-Ddd*edit_breakpoints_dialog*buttons*delete.labelString:        Delete
+Ddd*edit_breakpoints_dialog*buttons*delete.labelString:	       Delete
 Ddd*edit_breakpoints_dialog*buttons*delete.contextHelpString:  \
 @rm Delete the selected breakpoint(s).
 
@@ -2851,14 +2836,14 @@ Ddd*edit_breakpoints_dialog*buttons*delete.contextHelpString:  \
 ! Show Backtrace
 !-----------------------------------------------------------------------------
 
-Ddd*stack_dialog_popup.title:             @DDD@: Backtrace
-Ddd*stack_dialog.listLabelString:         Backtrace
-Ddd*stack_dialog.okLabelString:           Close
-Ddd*stack_dialog.applyLabelString:        Up
-Ddd*stack_dialog.cancelLabelString:       Down
-Ddd*stack_dialog*visibleItemCount:        10
+Ddd*stack_dialog_popup.title:		  @DDD@: Backtrace
+Ddd*stack_dialog.listLabelString:	  Backtrace
+Ddd*stack_dialog.okLabelString:		  Close
+Ddd*stack_dialog.applyLabelString:	  Up
+Ddd*stack_dialog.cancelLabelString:	  Down
+Ddd*stack_dialog*visibleItemCount:	  10
 
-Ddd*stack_dialog*contextHelpString:       \
+Ddd*stack_dialog*contextHelpString:	  \
 @rm This window shows the current @sl backtrace@rm.\n\
 \n\
 The backtrace is a summary of how your program got where it is.\n\
@@ -2868,7 +2853,7 @@ called by @tt main()@rm, the function called by this function and\n\
 so on down the stack, down to the currently executing frame.\n\
 \n\
 You can make a specific frame the current one by selecting it\n\
-in this window.  You can also move around by pressing \
+in this window.	 You can also move around by pressing \
 @bf Up @rm or @bf Down@rm.
 
 
@@ -2876,15 +2861,15 @@ in this window.  You can also move around by pressing \
 ! Registers
 !-----------------------------------------------------------------------------
 
-Ddd*register_dialog_popup.title:             @DDD@: Registers
-Ddd*register_dialog.listLabelString:         Registers
-Ddd*register_dialog.okLabelString:           Close
+Ddd*register_dialog_popup.title:	     @DDD@: Registers
+Ddd*register_dialog.listLabelString:	     Registers
+Ddd*register_dialog.okLabelString:	     Close
 
-Ddd*register_dialog*text.rows:      12
+Ddd*register_dialog*text.rows:	    12
 Ddd*register_dialog*text.columns:   60
 Ddd*register_dialog*text.resizable: true
 
-Ddd*register_dialog*contextHelpString:       \
+Ddd*register_dialog*contextHelpString:	     \
 @rm This window shows the @sl machine registers@rm.\n\
 Select any register to have its name copied to the argument @bf()@rm.
 
@@ -2893,13 +2878,13 @@ Select any register to have its name copied to the argument @bf()@rm.
 ! Command History
 !-----------------------------------------------------------------------------
 
-Ddd*history_dialog_popup.title:             @DDD@: Command History
-Ddd*history_dialog.listLabelString:         Command History
-Ddd*history_dialog.okLabelString:           Close
-Ddd*history_dialog.applyLabelString:        Apply
-Ddd*history_dialog*visibleItemCount:        10
+Ddd*history_dialog_popup.title:		    @DDD@: Command History
+Ddd*history_dialog.listLabelString:	    Command History
+Ddd*history_dialog.okLabelString:	    Close
+Ddd*history_dialog.applyLabelString:	    Apply
+Ddd*history_dialog*visibleItemCount:	    10
 
-Ddd*history_dialog*contextHelpString:       \
+Ddd*history_dialog*contextHelpString:	    \
 @rm This window shows the @sl command history@rm.\n\
 \n\
 @DDD@ keeps track of the commands you type during your debugging\n\
@@ -2923,11 +2908,11 @@ Ddd*edit_displays_dialog*form2.orientation:   XmHORIZONTAL
 Ddd*edit_displays_dialog*form2.marginWidth:   0
 Ddd*edit_displays_dialog*form2.marginHeight:  0
 Ddd*edit_displays_dialog*buttons.orientation: XmVERTICAL
-Ddd*edit_displays_dialog*buttons.marginWidth:   0
-Ddd*edit_displays_dialog*buttons.marginHeight:  0
-Ddd*edit_displays_dialog.okLabelString:       Close
+Ddd*edit_displays_dialog*buttons.marginWidth:	0
+Ddd*edit_displays_dialog*buttons.marginHeight:	0
+Ddd*edit_displays_dialog.okLabelString:	      Close
 
-Ddd*edit_displays_dialog*contextHelpString:       \
+Ddd*edit_displays_dialog*contextHelpString:	  \
 @rm This is the @sl Display editor@rm.\n\
 \n\
 Select displays on the left; operations on the right.\n\
@@ -2992,45 +2977,45 @@ Ddd*dependent_display_dialog*contextHelpString:	\
 @rm Please modify the display expression displayed in the argument field.\n\
 The current value of the expression is shown each time the program stops.
 
-Ddd*edit_displays_dialog*buttons*dependent.labelString:     New Display
+Ddd*edit_displays_dialog*buttons*dependent.labelString:	    New Display
 Ddd*edit_displays_dialog*buttons*dependent.contextHelpString:  \
 @rm Create a data display dependent on the selected data display,\n\
 or a new data display if none is selected.
 
 Ddd*edit_displays_dialog*buttons*dereference.labelString:   Display *
-Ddd*edit_displays_dialog*buttons*dereference.contextHelpString:  \
+Ddd*edit_displays_dialog*buttons*dereference.contextHelpString:	 \
 @rm Dereference the selected data display.
 
 Ddd*edit_displays_dialog*buttons*show_detail.labelString:   Show Detail
-Ddd*edit_displays_dialog*buttons*show_detail.contextHelpString:  \
+Ddd*edit_displays_dialog*buttons*show_detail.contextHelpString:	 \
 @rm Show detail on the selected data display(s).
 
 Ddd*edit_displays_dialog*buttons*hide_detail.labelString:   Hide Detail
-Ddd*edit_displays_dialog*buttons*hide_detail.contextHelpString:  \
+Ddd*edit_displays_dialog*buttons*hide_detail.contextHelpString:	 \
 @rm Hide detail on the selected data display(s).
 
-Ddd*edit_displays_dialog*buttons*set.labelString:   	    Set Value
-Ddd*edit_displays_dialog*buttons*hide_detail.contextHelpString:  \
+Ddd*edit_displays_dialog*buttons*set.labelString:	    Set Value
+Ddd*edit_displays_dialog*buttons*hide_detail.contextHelpString:	 \
 @rm Change a value in the selected data display.
 
-Ddd*edit_displays_dialog*buttons*disable.labelString:       Disable
+Ddd*edit_displays_dialog*buttons*disable.labelString:	    Disable
 Ddd*edit_displays_dialog*buttons*disable.contextHelpString:  \
 @rm Disable the selected data display(s).
 
-Ddd*edit_displays_dialog*buttons*enable.labelString:        Enable
+Ddd*edit_displays_dialog*buttons*enable.labelString:	    Enable
 Ddd*edit_displays_dialog*buttons*enable.contextHelpString:  \
 @rm Enable the selected data display(s).
 
-Ddd*edit_displays_dialog*buttons*delete.labelString:        Delete
+Ddd*edit_displays_dialog*buttons*delete.labelString:	    Delete
 Ddd*edit_displays_dialog*buttons*delete.contextHelpString:  \
 @rm Delete the selected data display(s).
 
 
 Ddd*run_dialog_popup.title: @DDD@: Run Program
-Ddd*run_dialog.listLabelString:	 	Arguments
+Ddd*run_dialog.listLabelString:		Arguments
 Ddd*run_dialog.selectionLabelString:	Run with Arguments
 
-Ddd*run_dialog*selectionPolicy:         XmSINGLE_SELECT
+Ddd*run_dialog*selectionPolicy:		XmSINGLE_SELECT
 
 Ddd*run_dialog*contextHelpString:	\
 @rm This window shows the @sl argument history@rm.\n\
@@ -3059,9 +3044,9 @@ You may also interrupt the current debugging command by selecting\n\
 @bf Break @rm from the @bf Program @rm menu.
 
 Ddd*quit_dialog_popup.title: @DDD@: Debugger Still Busy
-Ddd*quit_dialog.messageString:   \
-@rm The debugger is still busy.  Exit anyway (and kill it)?
-Ddd*quit_dialog*okLabelString:       Yes
+Ddd*quit_dialog.messageString:	 \
+@rm The debugger is still busy.	 Exit anyway (and kill it)?
+Ddd*quit_dialog*okLabelString:	     Yes
 Ddd*quit_dialog*cancelLabelString:   No
 Ddd*quit_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*quit_dialog*contextHelpString:	\
@@ -3075,16 +3060,16 @@ Before killing a running debugger, you should try to interrupt it\n\
 Ddd*terminated_dialog_popup.title: @DDD@: Hasta la Vista
 Ddd*terminated_dialog.messageString:   \
 @rm The debugger terminated abnormally.
-Ddd*terminated_dialog*okLabelString:       Restart
+Ddd*terminated_dialog*okLabelString:	   Restart
 Ddd*terminated_dialog*cancelLabelString:   Exit
 Ddd*terminated_dialog*contextHelpString:	\
 @rm The inferior debugger terminated abnormally.\n\
 You may wish to examine its final output before exiting @DDD@.
 
 Ddd*fatal_dialog.title: @DDD@: Oops!
-Ddd*fatal_dialog.messageString:   \
+Ddd*fatal_dialog.messageString:	  \
 @rm Internal error
-Ddd*fatal_dialog*okLabelString:       Restart
+Ddd*fatal_dialog*okLabelString:	      Restart
 Ddd*fatal_dialog*cancelLabelString:   Exit
 Ddd*fatal_dialog*contextHelpString: \
 @rm Oops!  You have found a bug in @DDD@.\n\
@@ -3106,7 +3091,7 @@ Please read also the section ``Reporting Bugs'' in the @DDD@ manual.\n\
 We thank you for your support.
 
 Ddd*yn_dialog_popup.title: @DDD@: Debugger Question
-Ddd*yn_dialog*okLabelString:       Yes
+Ddd*yn_dialog*okLabelString:	   Yes
 Ddd*yn_dialog*cancelLabelString:   No
 Ddd*yn_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*yn_dialog*contextHelpString:	\
@@ -3119,27 +3104,27 @@ Ddd*gdb_message_dialog*contextHelpString:	\
 For more details, consult the debugger documentation.
 
 Ddd*gdb_selection_dialog_popup.title: @DDD@: Selection
-Ddd*gdb_selection_dialog*okLabelString:    Select
+Ddd*gdb_selection_dialog*okLabelString:	   Select
 Ddd*gdb_selection_dialog*listLabelString:  Choices
 Ddd*gdb_selection_dialog*contextHelpString:	\
 @rm This is a selection menu of the inferior debugger.\n\
 For more details, consult the debugger documentation.
 
 Ddd*confirm_overwrite_dialog_popup.title: @DDD@: File Exists
-Ddd*confirm_overwrite_dialog*messageString:       \
+Ddd*confirm_overwrite_dialog*messageString:	  \
 @rm Overwrite existing file?
-Ddd*confirm_overwrite_dialog*okLabelString:       Yes
-Ddd*confirm_overwrite_dialog*cancelLabelString:   No
-Ddd*confirm_overwrite_dialog*defaultButtonType:   XmDIALOG_CANCEL_BUTTON
+Ddd*confirm_overwrite_dialog*okLabelString:	  Yes
+Ddd*confirm_overwrite_dialog*cancelLabelString:	  No
+Ddd*confirm_overwrite_dialog*defaultButtonType:	  XmDIALOG_CANCEL_BUTTON
 Ddd*confirm_overwrite_dialog*contextHelpString:	\
 @rm The file already exists.\n\
 Click on @bf Yes @rm to overwrite the existing file.
 
 Ddd*save_options_dialog_popup.title: @DDD@: Save Options
-Ddd*save_options_dialog.messageString:   \
+Ddd*save_options_dialog.messageString:	 \
 @rm @DDD@ startup preferences were modified.\n\
 Save them for the next @DDD@ invocation?
-Ddd*save_options_dialog*okLabelString:       Yes
+Ddd*save_options_dialog*okLabelString:	     Yes
 Ddd*save_options_dialog*cancelLabelString:   No
 Ddd*save_options_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*save_options_dialog*contextHelpString:	\
