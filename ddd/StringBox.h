@@ -54,6 +54,8 @@ private:
 
     StringBox& operator = (const StringBox&);
 
+    void newFont();
+
 protected:
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 
@@ -79,12 +81,20 @@ public:
     static bool quoted;          // Flag: insert \ before quotes?
 
     // Constructor
-    StringBox(const string& s = "", const string& fontname = "fixed",
+    StringBox(const string& s = "", const char *fontname = "fixed",
 	const char *t = "StringBox"):
 	PrimitiveBox(BoxSize(0,0), BoxExtend(false, false), t),
 	_string(s), _fontname(fontname), _font(0), _ascent(0)
     {
-	newFont(fontname);
+	newFont();
+    }
+
+    StringBox(const char *s = "", const char *fontname = "fixed",
+	const char *t = "StringBox"):
+	PrimitiveBox(BoxSize(0,0), BoxExtend(false, false), t),
+	_string(s), _fontname(fontname), _font(0), _ascent(0)
+    {
+	newFont();
     }
 
     StringBox(const string& s, XFontStruct *fnt,

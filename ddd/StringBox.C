@@ -125,6 +125,11 @@ void StringBox::dump(std::ostream& s) const
 void StringBox::newFont(const string& fontname)
 {
     _fontname = fontname;
+    newFont();
+}
+
+void StringBox::newFont()
+{
     if (fontTable != 0)
 	_newFont((*fontTable)[_fontname]);
 }
@@ -137,7 +142,7 @@ typedef struct fontmap {
 } FONTMAP ;
 
 // mapping between X11 fonts, PostScript fonts and xfig font numbers
-static FONTMAP map[] = {
+static FONTMAP const map[] = {
 {"fixed",                                "/Courier",                     12},
 {"-*-times-medium-r-*-",                 "/Times-Roman",                  0},
 {"-*-times-medium-*-*-",                 "/Times-Italic",                 1},
@@ -168,9 +173,9 @@ static int mappings = sizeof (map) / sizeof (FONTMAP) ;
  * matchFont
  */
 
-static FONTMAP *matchFont(const char *xfont) 
+static const FONTMAP *matchFont(const char *xfont) 
 {
-    FONTMAP *fmap = &map[0] ;
+    const FONTMAP *fmap = &map[0] ;
     int match = 1;
     int i = 0;
     
@@ -194,7 +199,7 @@ void StringBox::_print(std::ostream& os,
 	return;
 
     BoxPoint origin = region.origin() ;
-    FONTMAP *fmap = matchFont (fontName_c());
+    const FONTMAP *fmap = matchFont (fontName_c());
 
     if (gc.isFig()) {
 	os << TEXTHEAD1 << fmap->figfont << " "
