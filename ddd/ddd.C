@@ -4896,7 +4896,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNset,                True); arg++;
 
     MString spaces("   ");
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
     {
 	XtSetArg(args[arg], XmNlabelString, spaces.xmstring()); arg++;
     }
@@ -4967,7 +4967,7 @@ static void create_status(Widget parent)
     size.request_mode = CWHeight;
     XtQueryGeometry(status_w, NULL, &size);
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
 	XtVaSetValues(led_w, XmNindicatorSize, size.height - 4, NULL);
     else
 	XtVaSetValues(led_w, XmNindicatorSize, size.height - 1, NULL);
