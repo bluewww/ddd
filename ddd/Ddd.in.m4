@@ -3947,7 +3947,7 @@ Ddd*data_buttons.marginHeight:      0
 ! so we must provide help on ourselves.
 Ddd*?*break.helpString: \
 LBL(Interrupt)\n\
-Interrupt the debugged process or current @GDB@ command.\n\
+Interrupt the debugged process (or current @GDB@ command).\n\
 (Equivalent to KEY(Ctrl+C)).
 Ddd*source_buttons*break.tipString: \
 @rm Interrupt debugged program
@@ -3960,7 +3960,7 @@ Ddd*tool_buttons*break.tipString: \
 Ddd*tool_bar*break.tipString: \
 @rm Interrupt debugged program
 Ddd*?*break.documentationString: \
-@rm Interrupt the debugged process or current @GDB@ command
+@rm Interrupt the debugged process (or current @GDB@ command)
 
 Ddd*?*Yes.helpString:	\
 LBL(Yes)\n\
