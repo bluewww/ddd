@@ -684,7 +684,6 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
 	text_dialog = create_text_dialog(toplevel, "manual_help", args, arg);
-	Delay::register_shell(text_dialog);
 
 	if (lesstif_hacks_enabled)
 	    XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,
@@ -1082,6 +1081,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
     // Enable Text Window
     XtRealizeWidget(XtParent(text_dialog));
+    Delay::register_shell(XtParent(text_dialog));
     XtPopup(XtParent(text_dialog), XtGrabNone);
     manage_and_raise(text_dialog);
 }
@@ -1109,7 +1109,6 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
 	text_dialog = create_text_dialog(toplevel, "text_help", args, arg);
-	Delay::register_shell(text_dialog);
 
 	if (lesstif_hacks_enabled)
 	    XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,
@@ -1153,6 +1152,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     // Enable Text Window
     XtRealizeWidget(XtParent(text_dialog));
+    Delay::register_shell(XtParent(text_dialog));
     XtPopup(XtParent(text_dialog), XtGrabNone);
     manage_and_raise(text_dialog);
 }
