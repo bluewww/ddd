@@ -3943,7 +3943,8 @@ void SourceView::process_frame (string& frame_output)
 		      XmNtopItemPosition, &top_item,
 		      XmNvisibleItemCount, &visible_items,
 		      NULL);
-	int pos;
+
+	int pos = 1;
 	switch (gdb->type())
 	{
 	case GDB:

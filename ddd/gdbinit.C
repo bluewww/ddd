@@ -53,7 +53,7 @@ GDBAgent *new_gdb(DebuggerType type,
 		  XtAppContext app_context,
 		  int argc, char *argv[])
 {
-    char *initial_cmds;
+    char *initial_cmds = 0;
     switch (type)
     {
     case GDB:
