@@ -1281,7 +1281,7 @@ void send_gdb_command(string cmd, Widget origin,
     }
 
     if (abort_undo)
-	undo_buffer.goto_current_exec_pos();
+	undo_buffer.restore_current_state();
 
     StringArray cmds;
     VoidArray dummy;

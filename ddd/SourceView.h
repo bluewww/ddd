@@ -919,8 +919,8 @@ public:
     static void goto_entry(const string& file, int line,
 			   const string& address, bool exec_pos);
 
-    // Set or unset past exec mode
-    static void set_past_exec_pos(bool set);
+    // Set or unset showing earlier state
+    static void showing_earlier_state(bool set);
 };
 
 inline void SourceView::create_bp(const string& a, Widget w)

@@ -4785,7 +4785,7 @@ void update_arg_buttons()
     set_sensitive(find_forward_w, can_find);
     set_sensitive(find_backward_w, can_find);
 
-    bool undoing = undo_buffer.at_past_exec_pos();
+    bool undoing = undo_buffer.showing_earlier_state();
     bool can_print = (arg != "") && !is_file_pos(arg) && !undoing;
     set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);

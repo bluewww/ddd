@@ -6507,7 +6507,7 @@ void SourceView::process_where(string& where_output)
     delete[] selected;
 }
 
-void SourceView::set_past_exec_pos(bool set)
+void SourceView::showing_earlier_state(bool set)
 {
 #if 0
     set_sensitive(stack_dialog_w, !set);
@@ -7774,7 +7774,7 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 
     if (pos_displayed)
     {
-	if (undo_buffer.at_past_exec_pos())
+	if (undo_buffer.showing_earlier_state())
 	{
 	    map_glyph(past_arrow, x + arrow_x_offset, y);
 	    unmap_glyph(grey_arrow);

@@ -439,7 +439,7 @@ void clear_value_cache()
 
 string gdbValue(const string& expr)
 {
-    if (undo_buffer.at_past_exec_pos())
+    if (undo_buffer.showing_earlier_state())
 	return NO_GDB_ANSWER;	// We don't know about earlier values
 
     string value = NO_GDB_ANSWER;

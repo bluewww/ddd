@@ -2066,7 +2066,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
     bool recording = gdb->recording() && emptyCommandQueue();
     bool record_ok = recording && arg_ok;
-    bool undoing = undo_buffer.at_past_exec_pos();
+    bool undoing = undo_buffer.showing_earlier_state();
 
     set_sensitive(shortcut_menu[ShortcutItms::New2].widget, 
 		  arg_ok && !undoing);
