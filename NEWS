@@ -4,14 +4,14 @@ DDD News						-*- text -*-
 DDD 3.2.1
 =========
 
-DDD 3.2.1 includes a couple of minor bug fixes and workarounds.
+DDD 3.2.1 includes minor bug fixes and major LessTif bug workarounds.
 
-- DDD PostScript documentation can now be printed on multiple pages per sheet
-- [LessTif] The `Print' dialog works with LessTif (esp. printing to file)
-- [LessTif] Helpers (such as uncompressing the DDD manual) work fine.
+- [LessTif] Helpers (such as uncompressing the DDD manual) works fine.
+- [LessTif] The `Print' dialog (esp. printing to file) works fine.
+- [LessTif] Restarting DDD (while saving settings) works fine.
+- [LessTif] Small fixes for building with LessTif on SGI.
 - [Perl] In the data display, Perl hash keys are properly quoted.
-- [Build] Small fixes for building with LessTif on SGI
-
+- DDD PostScript documentation can be printed on multiple pages per sheet.
 
 
 DDD 3.2
@@ -37,8 +37,7 @@ DDD is now a GNU program
     You can subscribe to these lists by sending an e-mail to
     `bug-ddd-request@gnu.org' and `ddd-request@gnu.org', respectively.
 
-  There will be a smooth transition from previous DDD resources to the
-  new ones; subscribers of old mailing lists will be notified.
+  The old mailing list addresses are now just aliases for the new ones.
 
 
 Documentation

@@ -1,7 +1,7 @@
-DDD 3.2 is available					-*- text -*-
-********************
+DDD 3.2.1 is available					-*- text -*-
+**********************
 
-Release 3.2 of DDD, the Data Display Debugger, is now available.
+Release 3.2.1 of DDD, the Data Display Debugger, is now available.
 
 
 What is DDD?
@@ -20,170 +20,29 @@ There is more information available at the GNU DDD homepage at
 What's new in DDD?
 ==================
 
-DDD 3.2 brings a new documentation and several minor improvements.
+DDD 3.2.1 includes minor bug fixes and major LessTif bug workarounds.
 
+- [LessTif] Helpers (such as uncompressing the DDD manual) works fine.
 
-DDD is now a GNU program
-------------------------
+- [LessTif] The `Print' dialog (esp. printing to file) works fine.
 
-- Starting with this release, DDD is an official GNU program,
-  distributed by the Free Software Foundation.  This brings a number of
-  administrative changes:
+- [LessTif] Restarting DDD (while saving settings) works fine.
 
-  * DDD is distributed as source only using GNU FTP sites and mirrors.
-  
-  * The DDD WWW page is now `http://www.gnu.org/software/ddd/'.
-  
-  * The DDD mailing addresses are now `bug-ddd@gnu.org' (for bug reports) 
-    and `ddd@gnu.org' (for announcements, discussions, or anything else).
-  
-    You can subscribe to these lists by sending an e-mail to
-    `bug-ddd-request@gnu.org' and `ddd-request@gnu.org', respectively.
+- [LessTif] Small fixes for building with LessTif on SGI.
 
-  There will be a smooth transition from previous DDD resources to the
-  new ones; subscribers of old mailing lists will be notified.
+- [Perl] In the data display, Perl hash keys are properly quoted.
 
+- DDD PostScript documentation can be printed on multiple pages per sheet.
 
-Documentation
--------------
-
-- There is a new DDD manual, generated from Texinfo source, and coming
-  in HTML, PDF, PostScript, Info, as well as plain text format.
-
-
-Debuggers and Languages
------------------------
-
-- This release contains partial support for DEC's `ladebug' debugger.
-  Please send in bug reports listing remaining problems.
-
-- Parsing of JDB data has been improved.
-
-- DBX prompts for object file names are recognized.
-
-
-User Interface
---------------
-
-- `Breakpoint Properties', `Define Command', and `Debugger Settings'
-  have an `Apply' button that applies changes to text fields.
-
-- In TTY mode, you can edit and complete the command line as in GDB.
-  (Uses GNU readline library.)
-
-- Ctrl+E moves the cursor to the end of the line.  For a `Run'
-  shortcut, use F2/F3 or Shift+Ctrl+E.
-
-- DDD uses the locale as specified by the environment (such as $LANG).
-  This allows input of locale characters in DDD dialogs; error
-  messages may also come up in your locale.  If you experience any
-  problems, set LANG=C when invoking DDD.
-
-
-Plotting
---------
-
-- If you have several indexed variables in a cluster (such as X[1],
-  X[3], and X[5]), DDD plots the cluster as 2-D plot, where the X axis
-  shows the index, and the Y axis shows the values.  This is useful for
-  plotting array slices (see below).
-
-
-Source Navigation
------------------
-
-- Using GDB, `Open Source' no longer automatically reads all shared
-  libraries of the debuggee; this took too much time with some programs.
-  There is an additional button that loads libraries.
-
-
-Data exploration
-----------------
-
-- You can rotate structs, saving space by omitting the member names.
-  A rotated struct looks very much like a horizontal array.
-
-- The last rotation setting is used for new displays and is saved
-  together with other DDD options.
-
-- Array slices `ARRAY[FROM..TO]' are much better supported:
-  * By default, the displayed values are clustered and displayed like an 
-    ordinary array.
-  * Array slices can be plotted, too (see `Plotting', above).
-
-- You can use the FROM..TO notation in arbitrary values, and also multiple
-  times; `graph display 1..5 * 1..5' creates a multiplication table.
-
-- To select multiple displays, it suffices that the selection rectangle
-  touches a display (rather than enclosing it entirely).
-
-- The Display Editor has buttons for clustering and unclustering displays.
-
-
-Running the Program
--------------------
-
-- Breakpoint commands are also supported for DBX, Perl, and XDB.
-
-- In Perl, DDD supports temporary breakpoints.
-
-
-Settings
---------
-
-- DDD saves the GDB source directory path with the current session.
-
-- DDD saves the JDB class path only with the current session.
-
-
-Bug Fixes
----------
-
-- Auto-raised menus work much better (enabled by default).
-
-- The `floating' command tool now correctly follows movements of the 
-  main window under KDE and other window managers.
-
-- The register window is updated when the current frame changes.
-
-- Value tips of strings containing ` = ' are displayed correctly.
-
-- In file names, `//' is no longer normalized to `/'.  This is useful 
-  for special file systems, where '//c/foo' is an alias for `c:\foo`.
-
-- Improved session management: `checkpoint sessions' not needed for shutdown
-  (as initiated by GNOME) are automatically deleted after exiting DDD.
-
-- Improved auto-command recognition (includes saving displays across sessions)
-
-- [LessTif] Selecting all displays in the Display Editor now works.
-
-- [DBX] The array syntax `graph display [A..B]' works again for DBX.
-
-- [DBX] Redirection to the execution window with Sun DBX 4.0 no 
-  longer clutters program arguments.
-
-- [Perl] Selecting identifiers that represent large data structures no longer
-  blocks DDD.
-
-- [JDB] Thread names with dashes are handled correctly.
-
-- [HP-UX] Renaming the `~/.ddd/init' file during saving options works.
-
-- [Build] New `libiberty' and `configure' packages from GDB 4.18.
-
-- [Build] If supported, `-isystem' is used for including system headers.
-
-- [Build] If supported and required, `-fpermissive' is used for old X headers.
 
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-The ddd-3.2.tar.gz distribution file has been placed on `ftp.gnu.org'
+The ddd-3.2.1.tar.gz distribution file has been placed on `ftp.gnu.org'
 in `gnu/ddd'.
 
-DDD 3.2 requires LessTif 0.89 or higher (see http://www.lesstif.org/)
+DDD 3.2.1 requires LessTif 0.89 or higher (see http://www.lesstif.org/)
 and GCC 2.7.2 or higher.
 
 The most recent (not necessarily tested) snapshots of DDD will be
