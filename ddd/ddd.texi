@@ -450,7 +450,6 @@ command tool.
 
 @item December, 1998
 @value{DDD} 3.1: Data plotting, Perl support, Python support, Undo/Redo.
-@end table
 
 @item Summer 1999
 @value{DDD} 3.2: New manual, Readline support, Ladebug support.
