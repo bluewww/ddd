@@ -37,6 +37,9 @@
 # else
 #  ifdef _AIX
  #pragma alloca
+#ifdef HAVE_MALLOC_H
+#include <malloc.h>
+#endif
 #  else
 #   ifndef alloca /* predefined by HP cc +Olibcalls */
 extern "C" char *alloca ();
