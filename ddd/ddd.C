@@ -2169,10 +2169,16 @@ int main(int argc, char *argv[])
     // Create preference panels
     make_preferences(paned_work_w);
 
-    // Close SourceView and DataDisp until we have data available
-    XtUnmanageChild(source_view->source_form());
-    XtUnmanageChild(source_view->code_form());
-    XtUnmanageChild(data_disp->graph_form());
+    if (!app_data.separate_source_window &&
+	!app_data.separate_data_window)
+    {
+	// In one-window mode, close SourceView and DataDisp until we
+	// have data available
+	save_preferred_paned_sizes(paned_work_w);
+	XtUnmanageChild(source_view->source_form());
+	XtUnmanageChild(source_view->code_form());
+	XtUnmanageChild(data_disp->graph_form());
+    }
 
     // Save option states
     save_option_state();

@@ -105,6 +105,9 @@ static void recenter_tool_shell(Widget ref);
 // TOP_OFFSET and RIGHT_OFFSET
 static void recenter_tool_shell(Widget ref, int top_offset, int right_offset);
 
+// Have command tool follow REF
+static void follow_tool_shell(Widget ref);
+
 // Get current offset of command tool in TOP_OFFSET and RIGHT_OFFSET;
 // return true iff successful.
 static bool get_tool_offset(int& top_offset, int& right_offset);
@@ -116,6 +119,16 @@ static bool offsets_initialized = false;
 
 // Last saved geometry of tool shell
 static string last_tool_shell_geometry = "+0+0";
+
+static void initialize_offsets()
+{
+    if (!offsets_initialized)
+    {
+	last_top_offset   = app_data.tool_top_offset;
+	last_right_offset = app_data.tool_right_offset;
+	offsets_initialized = true;
+    }
+}
 
 // Return current tool shell position relative to root window
 static BoxPoint tool_shell_pos()
@@ -163,8 +176,24 @@ static void move_tool_shell(BoxPoint pos)
     }
 }
 
-static void RecenterToolShellCB(XtPointer = 0, XtIntervalId * = 0)
+static void RecenterToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 {
+    if (tool_shell == 0)
+	return;
+
+    static XtIntervalId recenter_tool_shell_timer = 0;
+
+    if (id != 0)
+    {
+	assert(*id = recenter_tool_shell_timer);
+	recenter_tool_shell_timer = 0;
+    }
+    else if (recenter_tool_shell_timer != 0)
+    {
+	XtRemoveTimeOut(recenter_tool_shell_timer);
+	recenter_tool_shell_timer = 0;
+    }
+
     bool have_visible_tool_shell = false;
 
     if (XtIsRealized(tool_buttons_w))
@@ -175,15 +204,17 @@ static void RecenterToolShellCB(XtPointer = 0, XtIntervalId * = 0)
 	have_visible_tool_shell = (attr.map_state == IsViewable);
     }
 
-    if (!have_visible_tool_shell)
+    if (have_visible_tool_shell)
+    {
+	recenter_tool_shell(source_view->source());
+    }
+    else
     {
 	// Try again in 200 ms
-	XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell), 200,
-			RecenterToolShellCB, XtPointer(0));
-	return;
+	recenter_tool_shell_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell), 
+			    200, RecenterToolShellCB, XtPointer(0));
     }
-
-    recenter_tool_shell(source_view->source());
 }
 
 // Popup initial shell
@@ -428,6 +459,15 @@ inline void raise_tool_above(Widget w)
 	raise_tool_above(XtWindow(w));
 }
 
+static void follow_tool_shell(Widget ref)
+{
+    initialize_offsets();
+
+    recenter_tool_shell(source_view->source(),
+			last_top_offset, last_right_offset);
+    get_tool_offset(last_top_offset, last_right_offset);
+}
+
 void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 {
     bool synthetic = false;
@@ -617,13 +657,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 		|| tool_shell_state == Transient))
 	{
 	    // Let `sticky' command tool follow the source window
-
-	    if (!offsets_initialized)
-	    {
-		last_top_offset   = app_data.tool_top_offset;
-		last_right_offset = app_data.tool_right_offset;
-		offsets_initialized = true;
-	    }
+	    initialize_offsets();
 
 	    if (w == tool_shell)
 	    {
@@ -634,17 +668,13 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 		get_tool_offset(last_top_offset, last_right_offset);
 	    }
 
-	    if (offsets_initialized
-		&& (w == source_view_shell
-		    || w == command_shell && source_view_shell == 0))
+	    if (w == source_view_shell || 
+		w == command_shell && source_view_shell == 0)
 	    {
-		// Source shell has been moved -- follow movement
+		// Source shell has been moved -- let command tool follow
 		// clog << "Shell has been moved to " << point(event) << "\n";
 
-		// Let command tool follow
-		recenter_tool_shell(source_view->source(),
-				    last_top_offset, last_right_offset);
-		get_tool_offset(last_top_offset, last_right_offset);
+		follow_tool_shell(source_view->source());
 	    }
 	}
 	break;
@@ -703,7 +733,7 @@ void gdbCloseCommandWindowCB(Widget w, XtPointer, XtPointer)
 	return;
     }
 
-    XtUnmanageChild(XtParent(gdb_w));
+    unmanage_paned_child(XtParent(gdb_w));
 
     if ((app_data.separate_source_window || !have_source_window())
 	&& (app_data.separate_data_window || !have_data_window()))
@@ -749,9 +779,8 @@ void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
     }
 
     // Unmanage source
-    XtUnmanageChild(source_view->source_form());
-    XtUnmanageChild(source_view->code_form());
-
+    unmanage_paned_child(source_view->source_form());
+    unmanage_paned_child(source_view->code_form());
 
     Widget arg_cmd_w = XtParent(source_arg->widget());
     if (data_disp->graph_cmd_w == arg_cmd_w)
@@ -760,7 +789,7 @@ void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
     }
     else
     {
-	XtUnmanageChild(arg_cmd_w);
+	unmanage_paned_child(arg_cmd_w);
     }
 
     popdown_shell(source_view_shell);
@@ -808,10 +837,10 @@ void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
     }
     else
     {
-	XtUnmanageChild(data_disp->graph_cmd_w);
+	unmanage_paned_child(data_disp->graph_cmd_w);
     }
 
-    XtUnmanageChild(data_disp->graph_form());
+    unmanage_paned_child(data_disp->graph_form());
 
     popdown_shell(data_disp_shell);
     update_options();
@@ -1124,12 +1153,7 @@ static bool get_tool_offset(int& top_offset, int& right_offset)
 // Store current offset of command tool in APP_DATA
 void get_tool_offset()
 {
-    if (!offsets_initialized)
-    {
-	last_top_offset   = app_data.tool_top_offset;
-	last_right_offset = app_data.tool_right_offset;
-    }
-
+    initialize_offsets();
     get_tool_offset(last_top_offset, last_right_offset);
     app_data.tool_top_offset   = last_top_offset;
     app_data.tool_right_offset = last_right_offset;
@@ -1141,29 +1165,59 @@ void get_tool_offset()
 
 inline bool is_internal_paned_child(Widget w)
 {
-    return XmIsSash(w) || XmIsSeparator(w) || XmIsSeparatorGadget(w);
+    return XmIsSash(w) || XmIsSeparator(w) || XmIsSeparatorGadget(w) 
+	|| XtIsShell(w);
 }
 
-const Dimension MIN_PANED_SIZE = 64;
+static MinMaxAssoc preferred_sizes;
 
-void manage_paned_child(Widget w)
+void save_preferred_paned_sizes(Widget paned)
 {
-    Widget paned = XtParent(w);
-
-    if (paned == 0 || !XtIsSubclass(paned, xmPanedWindowWidgetClass))
-    {
-	XtManageChild(w);
-	return;
-    }
-
-    // Fetch current constraints
-    MinMaxAssoc sizes;
-
+    // Fetch children
     WidgetList children;
     Cardinal numChildren = 0;
     XtVaGetValues(paned, XmNchildren, &children, 
 		  XmNnumChildren, &numChildren, NULL);
 
+    // Fetch preferred sizes
+    Cardinal i;
+    for (i = 0; i < numChildren; i++)
+    {
+	Widget child = children[i];
+	if (is_internal_paned_child(child))
+	    continue;
+
+	// Fetch preferred (= initial) height
+	XtWidgetGeometry size;
+	size.request_mode = CWHeight;
+	XtQueryGeometry(child, NULL, &size);
+
+	MinMax& preferred_size = preferred_sizes[child];
+	preferred_size.min = preferred_size.max = size.height;
+    }
+}
+
+const Dimension MIN_PANED_SIZE = 50;
+
+void manage_paned_child(Widget w)
+{
+    Widget paned = XtParent(w);
+
+    if (paned == 0 || !XmIsPanedWindow(paned))
+    {
+	XtManageChild(w);
+	return;
+    }
+
+    // Fetch children
+    WidgetList children;
+    Cardinal numChildren = 0;
+    XtVaGetValues(paned, XmNchildren, &children, 
+		  XmNnumChildren, &numChildren, NULL);
+
+
+    // Fetch current constraints
+    MinMaxAssoc sizes;
     Cardinal i;
     for (i = 0; i < numChildren; i++)
     {
@@ -1195,25 +1249,40 @@ void manage_paned_child(Widget w)
 	if (!sizes.has(child))
 	    continue;
 
-	const MinMax& size = sizes[child];
-	if (MIN_PANED_SIZE >= size.min && MIN_PANED_SIZE <= size.max)
+	Arg args[10];
+	Cardinal arg = 0;
+
+	MinMax& size = sizes[child];
+	if (MIN_PANED_SIZE > size.min && MIN_PANED_SIZE <= size.max)
 	{
-	    XtVaSetValues(child, XmNpaneMinimum, MIN_PANED_SIZE, NULL);
+	    XtSetArg(args[arg], XmNpaneMinimum, MIN_PANED_SIZE); arg++;
+	    size.changed = true;
 	}
 
 	if (child != w
 	    && wsize.min <= no_constraints.min 
-	    && wsize.max >= no_constraints.max)
+	    && wsize.max >= no_constraints.max
+	    && preferred_sizes.has(child))
 	{
-	    // New window is resizable: give all other windows their
-	    // preferred (= initial) height
-	    XtWidgetGeometry preferred_size;
-	    preferred_size.request_mode = CWHeight;
-	    XtQueryGeometry(child, NULL, &preferred_size);
-	    XtVaSetValues(child, XmNpaneMaximum, preferred_size.height, NULL);
+	    // Child to be managed is resizable: give all other
+	    // windows their preferred (= initial) height
+	    MinMax& preferred_size = preferred_sizes[child];
+
+	    if (preferred_size.max < size.max)
+	    {
+		XtSetArg(args[arg], XmNpaneMaximum, preferred_size.max); arg++;
+		size.changed = true;
+	    }
+
+	    // clog << XtName(child) 
+	    //      << " preferred = " << preferred_size.max << '\n';
 	}
+
+	if (arg > 0)
+	    XtSetValues(child, args, arg);
     }
 
+    // Manage the child
     XtManageChild(w);
 
     // Restore old constraints
@@ -1226,11 +1295,79 @@ void manage_paned_child(Widget w)
 	if (!sizes.has(child) || !XtIsManaged(child))
 	    continue;
 
-	const MinMax& size = sizes[child];
-	XtVaSetValues(child,
-		      XmNpaneMinimum, size.min, 
-		      XmNpaneMaximum, size.max,
-		      NULL);
+	MinMax& size = sizes[child];
+
+	if (size.changed)
+	{
+	    XtVaSetValues(child,
+			  XmNpaneMinimum, size.min, 
+			  XmNpaneMaximum, size.max,
+			  NULL);
+	}
     }
+
+    // Recenter the tool shell
+    follow_tool_shell(source_view->source());
 }
     
+void unmanage_paned_child(Widget w)
+{
+    // Whenever we're unmanaging a child, be sure the command window
+    // doesn't grow.
+    Widget paned = XtParent(w);
+    if (paned == 0 || !XmIsPanedWindow(paned))
+    {
+	XtUnmanageChild(w);
+	return;
+    }
+
+    // Fetch children
+    WidgetList children;
+    Cardinal numChildren = 0;
+    XtVaGetValues(paned, XmNchildren, &children, 
+		  XmNnumChildren, &numChildren, NULL);
+
+
+    // Fetch current constraints
+    MinMaxAssoc sizes;
+    Cardinal i;
+    int resizable_children = 0;
+    for (i = 0; i < numChildren; i++)
+    {
+	Widget child = children[i];
+	if (is_internal_paned_child(child) || !XtIsManaged(child))
+	    continue;
+
+	MinMax& size = sizes[child];
+	XtVaGetValues(children[i], 
+		      XmNpaneMinimum, &size.min, 
+		      XmNpaneMaximum, &size.max,
+		      NULL);
+
+	if (size.min < size.max)
+	    resizable_children++;
+    }
+
+    if (resizable_children <= 2)
+    {
+	// Only two resizable children left - the remaining one must
+	// be resized to a maximum.
+	XtUnmanageChild(w);
+    }
+    else
+    {
+	// Resize the other child, but keep the command window intact
+	Widget command = XtParent(gdb_w);
+	Dimension height = 0;
+	XtVaGetValues(command, XmNheight, &height, NULL);
+	XtVaSetValues(command, XmNpaneMaximum, height, NULL);
+
+	XtUnmanageChild(w);
+
+	static const MinMax no_constraints;
+	XtVaSetValues(command, XmNpaneMaximum, no_constraints.max, NULL);
+    }
+
+    // Recenter the tool shell
+    follow_tool_shell(source_view->source());
+}

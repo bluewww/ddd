@@ -39,9 +39,10 @@
 struct MinMax {
     Dimension min;
     Dimension max;
+    bool changed;
 
     MinMax()
-	: min(1), max(1000)
+	: min(1), max(1000), changed(false)
     {}
 };
 

@@ -98,6 +98,10 @@ extern void get_tool_offset();
 
 // Manage child with minimum size
 extern void manage_paned_child(Widget w);
+extern void unmanage_paned_child(Widget w);
+
+// Save paned child sizes
+extern void save_preferred_paned_sizes(Widget paned);
 
 #endif // _DDD_windows_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -7797,7 +7797,7 @@ void SourceView::set_disassemble(bool set)
 
 	if (!disassemble)
 	{
-	    XtUnmanageChild(code_form_w);
+	    unmanage_paned_child(code_form_w);
 	}
 	else
 	{
