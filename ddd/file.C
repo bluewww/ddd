@@ -79,6 +79,7 @@ char file_rcsid[] =
 #include <Xm/RowColumn.h>
 #include <Xm/TextF.h>
 #include <Xm/Label.h>
+#include <Xm/PushB.h>
 
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
@@ -1477,9 +1478,14 @@ static void lookupSourceDone(Widget w,
     {
 	source_view->lookup(source + ":1");
 
-	// FIXME: Check for success here
-	if (cbs != 0 && cbs->reason != XmCR_APPLY)
-	    XtUnmanageChild(sources);
+	if (cbs != 0 && 
+	    cbs->reason != XmCR_APPLY && 
+	    cbs->reason != XmCR_ACTIVATE)
+	{
+	    Widget scroll = XtParent(sources);
+	    Widget dialog = XtParent(scroll);
+	    XtUnmanageChild(dialog);
+	}
     }
 }
 
@@ -1644,6 +1650,17 @@ void gdbOpenClassCB(Widget w, XtPointer, XtPointer)
 static Widget source_list   = 0;
 static Widget source_filter = 0;
 
+void update_sources()
+{
+    if (source_list != 0)
+	update_sources(source_list, source_filter);
+}
+
+static void FilterSourcesCB(Widget, XtPointer, XtPointer)
+{
+    update_sources();
+}
+
 void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     if (gdb->type() != GDB)
@@ -1679,6 +1696,7 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtSetArg(args[arg], XmNborderWidth,     0);     arg++;
 	XtSetArg(args[arg], XmNadjustMargin,    False); arg++;
 	XtSetArg(args[arg], XmNshadowThickness, 0);     arg++;
+	XtSetArg(args[arg], XmNspacing,         0);     arg++;
 	Widget box = XmCreateRowColumn(dialog, "box", args, arg);
 	XtManageChild(box);
 
@@ -1689,6 +1707,12 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	arg = 0;
 	source_filter = XmCreateTextField(box, "filter", args, arg);
 	XtManageChild(source_filter);
+
+#if XmVersion >= 1002
+	arg = 0;
+	Widget lookup = XmCreatePushButton(dialog, "lookup", args, arg);
+	XtManageChild(lookup);
+#endif
 
 	source_list = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
 
@@ -1703,23 +1727,21 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	XtAddCallback(dialog, XmNokCallback, 
 		      lookupSourceDone, XtPointer(source_list));
-	XtAddCallback(dialog, XmNapplyCallback, 
-		      lookupSourceDone, XtPointer(source_list));
+	XtAddCallback(dialog, XmNapplyCallback, FilterSourcesCB, 0);
 	XtAddCallback(dialog, XmNcancelCallback, 
 		      UnmanageThisCB, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
 	XtAddCallback(source_filter, XmNactivateCallback, 
-		      gdbLookupSourceCB, 0);
+		      FilterSourcesCB, 0);
+
+#if XmVersion >= 1002
+	XtAddCallback(lookup, XmNactivateCallback, 
+		      lookupSourceDone, XtPointer(source_list));
+#endif
     }
 
     update_sources(source_list, source_filter);
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
-}
-
-void update_sources()
-{
-    if (source_list != 0)
-	update_sources(source_list, source_filter);
 }

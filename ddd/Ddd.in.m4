@@ -4827,7 +4827,8 @@ Ddd*exec_files_popup.title:		   DDD: Open Program
 Ddd*exec_files.okLabelString:	   Open
 Ddd*exec_files.selectionLabelString: Program
 Ddd*exec_files*helpString:	   \
-@rm Enter the name of the program to be debugged in the argument field.\n\
+@rm These are executable files in the current directory.\n\
+Enter the name of the program to be debugged in the argument field.\n\
 \n\
 The program is read for its symbols, for getting the contents\
  of pure memory,\n\
@@ -4844,7 +4845,8 @@ Ddd*core_files_popup.title:		   DDD: Open Core Dump
 Ddd*core_files.okLabelString:	   Open
 Ddd*core_files.selectionLabelString: Core Dump
 Ddd*core_files*helpString:	   \
-@rm Enter the name of a core dump in the argument field.\n\
+@rm These are core dumps in the current directory.\n\
+Enter the name of a core dump in the argument field.\n\
 \n\
 The core dump is used for examining memory and registers.\n\
 No argument means to have no core file.\n\
@@ -4859,7 +4861,8 @@ Ddd*source_files_popup.title:		   DDD: Open Source
 Ddd*source_files.okLabelString:	   Open
 Ddd*source_files.selectionLabelString: Source File
 Ddd*source_files*helpString:    \
-@rm Enter the name of a source file in the argument field.\n\
+@rm These are source files in the current directory.\n\
+Enter the name of a source file in the argument field.\n\
 \n\
 The source file is shown in the source window and may be used\n\
 for setting or clearing breakpoints.\n\
@@ -4878,7 +4881,8 @@ Ddd*processes.okLabelString:	Attach
 Ddd*processes.applyLabelString:	Update
 
 Ddd*processes*helpString:	\
-@rm Select a running process of the program to be debugged.\n\
+@rm These are the currently running processes.\n\
+Select a running process of the program to be debugged.\n\
 \n\
 An attached process is stopped by DDD. You can examine and modify an\n\
 attached process with all the DDD commands that are ordinarily available\n\
@@ -4906,7 +4910,8 @@ Ddd*classes*selectionPolicy:		XmSINGLE_SELECT
 Ddd*classes*okLabelString:	 	Open
 Ddd*classes*applyLabelString:	 	Update
 Ddd*classes*helpString:	\
-@rm Please select a class to be debugged.\n\
+@rm These are the currently accessible Java classes.\n\
+Please select a class to be debugged.\n\
 \n\
 These classes all have corresponding CODE(.java) sources in the class path.\n\
 To search for other classes, select LBL(Edit, JDB Settings)\n\
@@ -4922,11 +4927,11 @@ Ddd*sources.selectionLabelString: 	Open Source
 Ddd*sources*label.labelString:		Filter
 Ddd*sources*selectionPolicy:		XmSINGLE_SELECT
 Ddd*sources*okLabelString:	 	Open
-Ddd*sources*applyLabelString:	 	Lookup
+Ddd*sources*lookup.labelString:		Lookup
+Ddd*sources*applyLabelString:	 	Filter
 Ddd*sources*helpString:	\
-@rm Please select a source to be opened.\n\
-\n\
-These are the currently accessible source files of your program.\n\
+@rm These are the currently accessible source files of your program.\n\
+Please select a source to be opened.\n\
 \n\
 Source files from shared libraries are only shown after the library\n\
 has been loaded into @GDB@.  To load a shared library, run your program\n\
@@ -4936,7 +4941,8 @@ To search for other sources, select LBL(Edit, @GDB@ Settings)\n\
 and add their directories to the source path.\n\
 \n\
 Click on LBL(Open) to open the selected source and close this window.\n\
-Click on LBL(Lookup) to lookup the selected source.
+Click on LBL(Lookup) to lookup the selected source.\n\
+Click on LBL(Filter) to apply the given filter.
 
 
 Ddd*sessions_to_open_popup.title: 		DDD: Open Session
@@ -4946,7 +4952,8 @@ Ddd*sessions_to_open*selectionPolicy:		XmSINGLE_SELECT
 Ddd*sessions_to_open*okLabelString:	 	Open
 Ddd*sessions_to_open*applyLabelString:	 	Delete
 Ddd*sessions_to_open*helpString:	\
-@rm Enter the name of a DDD session in the argument field.\n\
+@rm These are your DDD sessions.\n\
+Enter the name of a DDD session in the argument field.\n\
 \n\
 A DDD session records the state of a debugging session,\n\
 such that you can exit debugging sessions and resume later.\n\
@@ -4969,7 +4976,8 @@ Ddd*sessions_to_save*ptrace.labelString:	The ptrace() call
 Ddd*sessions_to_save*gcore.labelString:		The `gcore' Command
 
 Ddd*sessions_to_save*helpString:	\
-@rm Enter the name of a DDD session in the argument field.\n\
+@rm These are your DDD sessions.\n\
+Enter the name of a DDD session in the argument field.\n\
 \n\
 A DDD session records the state of a debugging session,\n\
 such that you can exit debugging sessions and resume later.\n\
