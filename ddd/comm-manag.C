@@ -1179,7 +1179,6 @@ void send_gdb_command(string cmd, Widget origin,
 	extra_data->refresh_breakpoints = false;
 	extra_data->refresh_where       = false;
 	extra_data->refresh_frame       = true;
-	extra_data->refresh_registers   = false;
 	extra_data->refresh_threads     = false;
 	extra_data->refresh_data        = true;
 
