@@ -156,7 +156,7 @@ public:
     //
     static void refresh_bpsSQ ();
 private:
-    static void refresh_bpsOQC (string, void*);
+    static void refresh_bpsOQC (const string&, void*);
 
     //-----------------------------------------------------------------------
     // Aktions-Prozeduren
@@ -197,7 +197,6 @@ private:
 
     static Widget toplevel_w;	 // Top-level widget
 
-    static Widget source_view_w; // All windows
     static Widget source_form_w; // Form around text and glyphs
     static Widget source_text_w; // Source text
     static Widget code_form_w;   // Form around Machine code and glyphs
@@ -259,6 +258,7 @@ private:
     static string& current_text(Widget w);
 
     static XmTextPosition find_pc(const string& pc);
+    static void refresh_codeOQC(const string& answer, void *data);
 
 public:
     // Constructor
@@ -294,7 +294,7 @@ public:
     static void process_register        (string& where_output);
 
     // Handle 'disassemble' information
-    static void process_code            (string& where_output);
+    static void process_disassemble     (const string& disassemble_output);
 
     // Process the remainder of an output line
     static void check_remainder         (string& info_output);
@@ -327,9 +327,6 @@ public:
     // If BASENAME, return only the basename of the file;
     // the full file name, otherwise.
     static string line_of_cursor(bool basename = true);
-
-    // Return top-level widget
-    static Widget widget();
 
     // Callbacks for menu bar
     static void EditBreakpointsCB(Widget, XtPointer, XtPointer);

@@ -199,7 +199,6 @@ MMDesc SourceView::text_popup[] =
 //-----------------------------------------------------------------------
 
 Widget SourceView::toplevel_w                = 0;
-Widget SourceView::source_view_w             = 0;
 Widget SourceView::source_form_w             = 0;
 Widget SourceView::source_text_w             = 0;
 Widget SourceView::code_form_w               = 0;
@@ -312,7 +311,7 @@ void SourceView::other_fileCB (Widget w,
 
 // ***************************************************************************
 //
-void SourceView::line_popup_setCB (Widget,
+void SourceView::line_popup_setCB (Widget w,
 				   XtPointer client_data,
 				   XtPointer)
 {
@@ -321,12 +320,12 @@ void SourceView::line_popup_setCB (Widget,
     {
     case GDB:
 	gdb_command("break " + basename(current_file_name) + ":" + 
-		    itostring(line_nr), source_view_w);
+		    itostring(line_nr), w);
 	break;
 	
     case DBX:
-	gdb_command("file " + current_file_name, source_view_w);
-	gdb_command("stop at " + itostring(line_nr), source_view_w);
+	gdb_command("file " + current_file_name, w);
+	gdb_command("stop at " + itostring(line_nr), w);
 	break;
     }
 }
@@ -334,7 +333,7 @@ void SourceView::line_popup_setCB (Widget,
 
 // ***************************************************************************
 //
-void SourceView::line_popup_set_tempCB (Widget,
+void SourceView::line_popup_set_tempCB (Widget w,
 					XtPointer client_data,
 					XtPointer)
 {
@@ -343,14 +342,14 @@ void SourceView::line_popup_set_tempCB (Widget,
     {
     case GDB:
 	gdb_command("tbreak " + basename(current_file_name) + ":" + 
-		    itostring(line_nr), source_view_w);
+		    itostring(line_nr), w);
 	break;
 
     case DBX:
-	gdb_command("file " + current_file_name, source_view_w);
-	gdb_command("stop at " + itostring(line_nr), source_view_w);
+	gdb_command("file " + current_file_name, w);
+	gdb_command("stop at " + itostring(line_nr), w);
 	gdb_command("when at " + itostring(line_nr) 
-		    + " { clear " + itostring(line_nr) + "; }", source_view_w);
+		    + " { clear " + itostring(line_nr) + "; }", w);
 	break;
     }
 }
@@ -366,30 +365,32 @@ void SourceView::line_popup_temp_n_contCB (Widget w,
     {
     case GDB:
 	gdb_command("until " + basename(current_file_name) + ":" + 
-		    itostring(line_nr), source_view_w);
+		    itostring(line_nr), w);
 	break;
     
     case DBX:
 	line_popup_set_tempCB(w, client_data, call_data);
-	gdb_command("cont", source_view_w);
+	gdb_command("cont", w);
 	break;
     }
 }
 
 // ***************************************************************************
 //
-void SourceView::bp_popup_deleteCB (Widget,
+void SourceView::bp_popup_deleteCB (Widget w,
 				    XtPointer client_data,
 				    XtPointer)
 {
     int bp_nr = *((int *)client_data);
-    gdb_command("delete " + itostring(bp_nr), source_view_w);
+    gdb_command("delete " + itostring(bp_nr), w);
 }
 
 
 // ***************************************************************************
 //
-void SourceView::bp_popup_disableCB (Widget, XtPointer client_data, XtPointer)
+void SourceView::bp_popup_disableCB (Widget w, 
+				     XtPointer client_data,
+				     XtPointer)
 {
     int bp_nr = *((int *)client_data);
 
@@ -400,12 +401,14 @@ void SourceView::bp_popup_disableCB (Widget, XtPointer client_data, XtPointer)
 	cmd = "enable ";
 
     cmd += itostring(bp_nr);
-    gdb_command(cmd, source_view_w);
+    gdb_command(cmd, w);
 }
 
 // ***************************************************************************
 //
-void SourceView::text_popup_breakCB (Widget, XtPointer client_data, XtPointer)
+void SourceView::text_popup_breakCB (Widget w,
+				     XtPointer client_data,
+				     XtPointer)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
@@ -414,21 +417,23 @@ void SourceView::text_popup_breakCB (Widget, XtPointer client_data, XtPointer)
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("break " + *word_ptr, source_view_w);
+	gdb_command("break " + *word_ptr, w);
 	break;
 
     case DBX:
 	pos = dbx_lookup(*word_ptr);
 	if (pos != "")
 	{
-	    gdb_command("file " + pos.before(':'), source_view_w);
-	    gdb_command("stop at " + pos.after(':'), source_view_w);
+	    gdb_command("file " + pos.before(':'), w);
+	    gdb_command("stop at " + pos.after(':'), w);
 	}
 	break;
     }
 }
 
-void SourceView::text_popup_clearCB (Widget, XtPointer client_data, XtPointer)
+void SourceView::text_popup_clearCB (Widget w, 
+				     XtPointer client_data, 
+				     XtPointer)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
@@ -437,15 +442,15 @@ void SourceView::text_popup_clearCB (Widget, XtPointer client_data, XtPointer)
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("clear " + *word_ptr, source_view_w);
+	gdb_command("clear " + *word_ptr, w);
 	break;
 
     case DBX:
 	pos = dbx_lookup(*word_ptr);
 	if (pos != "")
 	{
-	    gdb_command("file " + pos.before(':'), source_view_w);
-	    gdb_command("clear " + pos.after(':'), source_view_w);
+	    gdb_command("file " + pos.before(':'), w);
+	    gdb_command("clear " + pos.after(':'), w);
 	}
 	break;
     }
@@ -455,41 +460,43 @@ void SourceView::text_popup_clearCB (Widget, XtPointer client_data, XtPointer)
 
 // ***************************************************************************
 //
-void SourceView::text_popup_printCB (Widget, XtPointer client_data, XtPointer)
+void SourceView::text_popup_printCB (Widget w, 
+				     XtPointer client_data, 
+				     XtPointer)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("print " + *word_ptr, source_view_w);
+    gdb_command("print " + *word_ptr, w);
 }
 
-void SourceView::text_popup_print_refCB (Widget, 
+void SourceView::text_popup_print_refCB (Widget w, 
 					 XtPointer client_data, XtPointer)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("print *(" + *word_ptr + ")", source_view_w);
+    gdb_command("print *(" + *word_ptr + ")", w);
 }
 
 
 // ***************************************************************************
 //
-void SourceView::text_popup_dispCB (Widget, XtPointer client_data, XtPointer)
+void SourceView::text_popup_dispCB (Widget w, XtPointer client_data, XtPointer)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("graph display " + *word_ptr, source_view_w);
+    gdb_command("graph display " + *word_ptr, w);
 }
 
-void SourceView::text_popup_disp_refCB (Widget, 
+void SourceView::text_popup_disp_refCB (Widget w, 
 					XtPointer client_data, XtPointer)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("graph display *(" + *word_ptr + ")", source_view_w);
+    gdb_command("graph display *(" + *word_ptr + ")", w);
 }
 
 // ***************************************************************************
@@ -647,7 +654,7 @@ String SourceView::read_local(const string& file_name, long& length)
     if ((fd = open(file_name, O_RDONLY)) < 0)
     {
 	post_error (file_name + ": " + strerror(errno), 
-		    "source_file_error", source_view_w);
+		    "source_file_error", source_text_w);
         return 0;
     }
 
@@ -655,7 +662,7 @@ String SourceView::read_local(const string& file_name, long& length)
     if (fstat(fd, &statb) < 0)
     {
 	post_error (file_name + ": " + strerror(errno), 
-		    "source_file_error", source_view_w);
+		    "source_file_error", source_text_w);
 	return 0;
     }
 
@@ -663,7 +670,7 @@ String SourceView::read_local(const string& file_name, long& length)
     if (!S_ISREG(statb.st_mode))
     {
 	post_error (file_name + ": not a regular file", 
-		    "source_file_error", source_view_w);
+		    "source_file_error", source_text_w);
 	return 0;
     }
 
@@ -673,14 +680,14 @@ String SourceView::read_local(const string& file_name, long& length)
     char* text = XtMalloc(unsigned(statb.st_size + 1));
     if ((length = read(fd, text, statb.st_size)) != statb.st_size)
 	post_error (file_name + ": " + strerror(errno),
-		    "source_trunc_error", source_view_w);
+		    "source_trunc_error", source_text_w);
     close(fd);
 
     text[statb.st_size] = '\0'; // be sure to null-terminate
 
     if (statb.st_size == 0)
 	post_warning("File " + quote(file_name) + " is empty.", 
-		     "source_empty_warning", source_view_w);
+		     "source_empty_warning", source_text_w);
     return text;
 }
 
@@ -712,7 +719,7 @@ String SourceView::read_remote(const string& file_name, long& length)
 
     if (length == 0)
 	post_error("Cannot access remote file " + quote(file_name), 
-		   "remote_file_error", source_view_w);
+		   "remote_file_error", source_text_w);
     return text;
 }
 
@@ -786,7 +793,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length)
 		i++;
 
 	    string msg = listing.from(start);
-	    post_gdb_message(msg, source_view_w);
+	    post_gdb_message(msg, source_text_w);
 	}
     }
 
@@ -817,7 +824,7 @@ String SourceView::read_indented(string& file_name, long& length)
 	{
 #if 0
 	    post_warning("File was read as source from GDB.",
-			 "source_file_from_gdb_warning", source_view_w);
+			 "source_file_from_gdb_warning", source_text_w);
 #endif
 	    file_name = source_name;
 	}
@@ -929,7 +936,7 @@ int SourceView::read_current(string& file_name, bool force_reload)
 	int null_count = current_source.freq('\0');
 	if (null_count > 0)
 	    post_warning("File " + quote(file_name) + " is a binary file.", 
-			 "source_binary_warning", source_view_w);
+			 "source_binary_warning", source_text_w);
     }
 
     // Setup global parameters
@@ -1008,7 +1015,7 @@ void SourceView::read_file (string file_name,
 
     refresh_bp_disp();
 
-    XtManageChild(source_view_w);
+    XtManageChild(source_text_w);
     XtManageChild(arg_cmd_w);
 
     ostrstream os;
@@ -1291,9 +1298,10 @@ void SourceView::refresh_bpsSQ ()
 
 // ***************************************************************************
 //
-void SourceView::refresh_bpsOQC (string answer, void *)
+void SourceView::refresh_bpsOQC (const string& answer, void *)
 {
-    process_info_bp (answer);
+    string ans = answer;
+    process_info_bp (ans);
 }
 
 
@@ -1313,19 +1321,15 @@ SourceView::SourceView (XtAppContext app_context,
     while (toplevel_w != 0 && !XtIsWMShell(toplevel_w))
 	toplevel_w = XtParent(toplevel_w);
 
-    // Create source view
     Arg args[10];
     Cardinal arg = 0;
-    source_view_w = 
-	verify(XmCreatePanedWindow(parent, "source_view_w", args, arg));
-    XtManageChild(source_view_w);
 
     // Create source code window
     arg = 0;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
     source_form_w = 
-	verify(XmCreateForm(source_view_w, "source_form_w", args, arg));
+	verify(XmCreateForm(parent, "source_form_w", args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNselectionArrayCount, 1); arg++;
@@ -1371,7 +1375,7 @@ SourceView::SourceView (XtAppContext app_context,
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
     code_form_w = 
-	verify(XmCreateForm(source_view_w, "code_form_w", args, arg));
+	verify(XmCreateForm(parent, "code_form_w", args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNselectionArrayCount, 1); arg++;
@@ -1420,7 +1424,7 @@ SourceView::SourceView (XtAppContext app_context,
     arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
     edit_breakpoints_dialog_w =
-	verify(XmCreatePromptDialog(source_view_w, "edit_breakpoints_dialog",
+	verify(XmCreatePromptDialog(parent, "edit_breakpoints_dialog",
 				    args, arg));
     Delay::register_shell(edit_breakpoints_dialog_w);
 
@@ -1490,7 +1494,7 @@ SourceView::SourceView (XtAppContext app_context,
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     stack_dialog_w =
-	verify(XmCreateSelectionDialog(source_view_w, 
+	verify(XmCreateSelectionDialog(parent, 
 				       "stack_dialog", args, arg));
     Delay::register_shell(stack_dialog_w);
 
@@ -1536,7 +1540,7 @@ SourceView::SourceView (XtAppContext app_context,
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     register_dialog_w = 
-	verify(XmCreateSelectionDialog(source_view_w, 
+	verify(XmCreateSelectionDialog(parent, 
 				       "register_dialog", args, arg));
     Delay::register_shell(register_dialog_w);
 
@@ -1894,7 +1898,7 @@ void SourceView::check_remainder(string& info_output)
 	info_output = info_output.before(int(info_output.length() - 1));
 
     if (info_output != "")
-	post_gdb_message(info_output, source_view_w);
+	post_gdb_message(info_output, source_text_w);
 }
 
 // ***************************************************************************
@@ -1910,13 +1914,14 @@ void SourceView::lookup(string s)
 	if (last_execution_file == "")
 	{
 	    post_error("No current execution position.", 
-		       "source_position_error", source_view_w);
+		       "source_position_error", source_text_w);
 	    return;
 	}
 
 	if (gdb->type() == GDB)
 	    gdb_command("info line " 
-			+ last_execution_file + ":" + last_execution_line);
+			+ basename(last_execution_file) 
+			+ ":" + itostring(last_execution_line));
 	else
 	    _show_execution_position(last_execution_file, last_execution_line);
     }
@@ -1936,7 +1941,7 @@ void SourceView::lookup(string s)
 	else
 	{
 	    post_error("No such line in current source.", 
-		       "no_such_line_error", source_view_w);
+		       "no_such_line_error", source_text_w);
 	}
     }
     else if (s[0] == '#')
@@ -1969,7 +1974,7 @@ void SourceView::lookup(string s)
 
 	    if (bp == 0)
 		post_error("No such breakpoint.", 
-			   "no_such_breakpoint_error", source_view_w);
+			   "no_such_breakpoint_error", source_text_w);
 	}
     }
     else if (s.contains(":") && !s.contains("::"))
@@ -2115,7 +2120,7 @@ void SourceView::find(const string& s,
 
     if (current_source == "")
     {
-	post_error("No source.", "no_source_error", source_view_w);
+	post_error("No source.", "no_source_error", source_text_w);
 	return;
     }
 
@@ -2207,7 +2212,7 @@ void SourceView::find(const string& s,
     else
     {
 	post_warning(quote(s) + " not found.", "source_find_error", 
-		     source_view_w);
+		     source_text_w);
     }
 }
 
@@ -2494,8 +2499,6 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	XtManageChild (text_popup_w);
     }
 }
-
-Widget SourceView::widget() { return source_view_w; }
 
 
 
@@ -2924,33 +2927,15 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     XtSetSensitive(up_w,   cbs->item_position > 1);
     XtSetSensitive(down_w, cbs->item_position < count);
 
-    // Get the selected line
-    String _item;
-    XmStringGetLtoR(cbs->item, LIST_CHARSET, &_item);
-    string item(_item);
-    XtFree(_item);
-    string pos;
-
     switch (gdb->type())
     {
     case GDB:
-    {
-	string reply = gdb_question("frame " + 
-				    itostring(count - cbs->item_position));
-	if (reply == string(-1))
-	{
-	    post_gdb_busy(w);
-	    return;
-	}
-
-	if (item.contains(" at "))
-	    pos = item.after(" at ");
+	gdb_command("frame " + itostring(count - cbs->item_position));
 	break;
-    }
     
     case DBX:
-    {
 	// DBX lacks a `frame' command.  Use this kludge instead.
+
 	string reply = gdb_question("func main");
 	if (reply == string(-1))
 	{
@@ -2980,6 +2965,13 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 		post_gdb_message(reply, w);
 	}
 
+	// Get the selected line
+	String _item;
+	XmStringGetLtoR(cbs->item, LIST_CHARSET, &_item);
+	string item(_item);
+	XtFree(_item);
+	string pos;
+
 	if (item.contains(" in "))
 	{
 	    string file = item.after(" in ");
@@ -2993,13 +2985,10 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	    pos += itostring(get_positive_nr(line_s));
 	}
 	break;
-    }
-    }
 
-    // clog << "pos = " << quote(pos) << "\n";
-
-    if (pos != "")
-	show_execution_position(pos);
+	if (pos != "")
+	    show_execution_position(pos);
+    }
 }
 
 void SourceView::refresh_stack_frames()
@@ -3640,7 +3629,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 // Change setting of display_glyphs
 void SourceView::set_display_glyphs(bool set)
 {
-    if (XtIsRealized(source_view_w))
+    if (XtIsRealized(source_text_w))
     {
 	display_glyphs = false;	
 	show_execution_position();
@@ -3652,7 +3641,7 @@ void SourceView::set_display_glyphs(bool set)
 
     display_glyphs = set;
 
-    if (XtIsRealized(source_view_w))
+    if (XtIsRealized(source_text_w))
     {
 	refresh_bp_disp();
 
@@ -3669,12 +3658,12 @@ void SourceView::set_display_glyphs(bool set)
 const int code_indent_amount = 4;
 
 // Process output of `disassemble' command
-void SourceView::process_code(string& code_output)
+void SourceView::process_disassemble(const string& disassemble_output)
 {
-    int count             = code_output.freq('\n') + 1;
+    int count             = ((string&)disassemble_output).freq('\n') + 1;
     string *code_list     = new string[count];
 
-    split(code_output, code_list, count, '\n');
+    split((string &)disassemble_output, code_list, count, '\n');
 
     string indented_code;
     for (int i = 0; i < count; i++)
@@ -3752,19 +3741,32 @@ XmTextPosition SourceView::find_pc(const string& pc)
     return pos;
 }
 
+
+// Process `disassemble' output
+void SourceView::refresh_codeOQC(const string& answer, void* data)
+{
+    string *ppc = (string *)data;
+    string& pc = *ppc;
+    process_disassemble(answer);
+
+    if (find_pc(pc) != XmTextPosition(-1))
+	show_pc(pc);
+}
+
+// Show program counter location PC
 void SourceView::show_pc (const string& pc)
 {
-    clog << "Showing PC " << pc << "\n";
+    // clog << "Showing PC " << pc << "\n";
 
     XmTextPosition pos = find_pc(pc);
     if (pos == XmTextPosition(-1))
     {
-	string c = gdb_question("disassemble " + pc);
-	if (c != string(-1))
-	{
-	    process_code(c);
-	    pos = find_pc(pc);
-	}
+	// PC not found: disassemble location
+	static string last_pc;
+	last_pc = pc;
+	gdb->send_question("disassemble " + pc, 
+			   refresh_codeOQC, (void *)&last_pc);
+	return;
     }
 
     if (pos == XmTextPosition(-1))
