@@ -107,7 +107,7 @@ Data exploration
 - Watchpoints.  You can have the debugged program stop automatically
   whenever a particular variable is read or written.
 
-- Memory Dumps. Using GDB, `Data->Examine Memory' lets you examine
+- Memory dumps. Using GDB, `Data->Examine Memory' lets you examine
   memory in any of several formats, independently of your program's
   data types.
 
