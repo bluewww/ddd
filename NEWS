@@ -1,10 +1,10 @@
 DDD News						-*- text -*-
 ********
 
-DDD 3.x [in development]
+DDD 3.1 [in development]
 ========================
 
-DDD 3.x brings some minor improvements.
+DDD 3.1 brings a bunch of minor improvements.
 
 
 User Interface
@@ -31,9 +31,12 @@ Debuggers and Languages
 Data exploration
 ----------------
 
-- Several improvements in data recognition.  DDD recognizes many more
-  data formats and no more shows differences between creating and
-  updating data displays.
+- Several improvements in data recognition:
+  * Many more data formats are recognized.
+  * Trailing data is no longer ignored.
+  * C++ base classes as reported by AIX DBX are interpreted correctly.
+  * Value changes in status displays are flagged more precisely.
+  * Creating and updating data displays now uses a common code base.
 
 - `Set ()' now allows to set structs as a whole.
 
@@ -47,14 +50,23 @@ Source exploration
   by a `(' character) will lead you to the function definition.
 
 
+Platforms
+---------
+
+- You can now build DDD out-of-the box on Windows 95 and NT (via
+  cygwin32, http://www.cygnus.com/misc/gnu-win32/).  This is useful
+  for people using GCC and GDB on Windows, or for people using DDD as
+  a front-end to JDB.  Note that you need a Windows X server to run DDD.
+
+
 Miscellaneous
 -------------
 
 - Signal settings are saved with the current session.
 
 - Improved redirection handling.  You can now redirect stderr away
-  from the execution window, using `run 2> FILE'.  `run 2> /dev/tty'
-  will redirect stderr to the debugger console.
+  from the execution window, using `run 2> FILE'.  The debugger
+  command `run 2> /dev/tty' will redirect stderr to the debugger console.
 
 - Minor performance improvements.
 
