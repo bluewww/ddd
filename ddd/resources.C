@@ -1570,6 +1570,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNactiveButtonColorKey,
+	XtCColorKey,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, active_button_color_key),
+	XtRString,
+	XtPointer("c")
+    },
+
+    {
 	XtNsplashScreenColorKey,
 	XtCColorKey,
 	XtRString,

@@ -910,15 +910,40 @@ void dddToggleColorButtonsCB(Widget w, XtPointer, XtPointer call_data)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
+#if XmVersion >= 2000
+    switch (info->set)
+    {
+    case XmSET:
+	app_data.button_color_key        = "c";
+	app_data.active_button_color_key = "c";
+	break;
+
+    case XmUNSET:
+	app_data.button_color_key        = "g";
+	app_data.active_button_color_key = "g";
+	break;
+
+    case XmINDETERMINATE:
+	app_data.button_color_key        = "g";
+	app_data.active_button_color_key = "c";
+	break;
+    }
+#else
     if (info->set)
 	app_data.button_color_key = "c";
     else
 	app_data.button_color_key = "g";
+#endif
 
-    if (info->set)
+    string button_color_key        = app_data.button_color_key;
+    string active_button_color_key = app_data.active_button_color_key;
+
+    if (button_color_key == 'c' && active_button_color_key == 'c')
 	set_status(next_ddd_will_start_with + "color buttons.");
-    else
+    else if (button_color_key == active_button_color_key)
 	set_status(next_ddd_will_start_with + "grey buttons.");
+    else			// indeterminate
+	set_status(next_ddd_will_start_with + "grey/color buttons.");
 
     update_options();
     post_startup_warning(w);
@@ -1161,7 +1186,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    if (ok < 0)
 	    {
 		cerr << ddd_NAME ": PTRACE_ATTACH: "
-		     << strerror(errno) << "\n";
+		     << strerror(errno) << '\n';
 	    }
 	    else
 	    {
@@ -1172,7 +1197,7 @@ static bool _get_core(const string& session, unsigned long flags,
 		if (ok < 0)
 		{
 		    cerr << ddd_NAME ": PTRACE_DUMPCORE: "
-			 << strerror(errno) << "\n";
+			 << strerror(errno) << '\n';
 		}
 	    
 		// 5. Detach from the debuggee, leaving it stopped
@@ -1182,7 +1207,7 @@ static bool _get_core(const string& session, unsigned long flags,
 		if (ok < 0)
 		{
 		    cerr << ddd_NAME ": PTRACE_DETACH: "
-			 << strerror(errno) << "\n";
+			 << strerror(errno) << '\n';
 		}
 	    }
 
@@ -1406,7 +1431,7 @@ static bool is_fallback_value(string app_class,
 	    {
 #if LOG_FALLBACKS
 		clog << app_class << "*" << cook(resource) << ": "
-		     << cook(fallback_value) << " => " << cook(value) << "\n";
+		     << cook(fallback_value) << " => " << cook(value) << '\n';
 #endif
 	    }
 
@@ -1416,7 +1441,7 @@ static bool is_fallback_value(string app_class,
 
 #if LOG_FALLBACKS
     clog << app_class << "*" << cook(resource) 
-	 << ": <none> => " << cook(value) << "\n";
+	 << ": <none> => " << cook(value) << '\n';
 #endif
 
     return false;
@@ -1444,7 +1469,7 @@ static string app_value(string resource, const string& value,
 	s += "*" + resource + ": " + value;
 
     if (prefix != "")
-	s.gsub("\n", "\n" + prefix);
+	s.gsub('\n', "\n" + prefix);
 
     return s;
 }
@@ -1700,7 +1725,7 @@ bool save_options(unsigned long flags)
     }
 
     os << dddinit << delimiter << " -- " DDD_NAME " WILL OVERWRITE IT\n";
-    os << string_app_value(XtNdddinitVersion, DDD_VERSION) << "\n";
+    os << string_app_value(XtNdddinitVersion, DDD_VERSION) << '\n';
 
     if (create)
     {
@@ -1714,12 +1739,12 @@ bool save_options(unsigned long flags)
     {
 	os << "\n! Session.\n";
 	os << string_app_value(XtNinitialSession, app_data.initial_session) 
-	   << "\n";
+	   << '\n';
     }
 
     os << "\n! Debugger settings.\n";
-    os << string_app_value(XtNdebugger, app_data.debugger) << "\n";
-    os << bool_app_value(XtNuseSourcePath, app_data.use_source_path) << "\n";
+    os << string_app_value(XtNdebugger, app_data.debugger) << '\n';
+    os << bool_app_value(XtNuseSourcePath, app_data.use_source_path) << '\n';
 
     string gdb_settings = app_data.gdb_settings;
     string dbx_settings = app_data.dbx_settings;
@@ -1754,34 +1779,34 @@ bool save_options(unsigned long flags)
 	}
     }
 
-    os << string_app_value(XtNgdbSettings, gdb_settings, true) << "\n";
-    os << string_app_value(XtNdbxSettings, dbx_settings, true) << "\n";
-    os << string_app_value(XtNxdbSettings, xdb_settings, true) << "\n";
-    os << string_app_value(XtNjdbSettings, jdb_settings, true) << "\n";
+    os << string_app_value(XtNgdbSettings, gdb_settings, true) << '\n';
+    os << string_app_value(XtNdbxSettings, dbx_settings, true) << '\n';
+    os << string_app_value(XtNxdbSettings, xdb_settings, true) << '\n';
+    os << string_app_value(XtNjdbSettings, jdb_settings, true) << '\n';
 
     os << "\n! Source.\n";
     os << bool_app_value(XtNfindWordsOnly,
-			 app_data.find_words_only) << "\n";
+			 app_data.find_words_only) << '\n';
     os << bool_app_value(XtNfindCaseSensitive,
-			 app_data.find_case_sensitive) << "\n";
+			 app_data.find_case_sensitive) << '\n';
     os << int_app_value(XtNtabWidth,
-			 app_data.tab_width, true) << "\n";
+			 app_data.tab_width, true) << '\n';
     os << int_app_value(XtNindentSource,
-			 app_data.indent_source, true) << "\n";
+			 app_data.indent_source, true) << '\n';
     os << int_app_value(XtNindentCode,
-			 app_data.indent_code, true) << "\n";
+			 app_data.indent_code, true) << '\n';
     os << bool_app_value(XtNcacheSourceFiles,
-			 app_data.cache_source_files) << "\n";
+			 app_data.cache_source_files) << '\n';
     os << bool_app_value(XtNcacheMachineCode,
-			 app_data.cache_machine_code) << "\n";
+			 app_data.cache_machine_code) << '\n';
     os << bool_app_value(XtNdisplayGlyphs,
-			 app_data.display_glyphs) << "\n";
+			 app_data.display_glyphs) << '\n';
     os << bool_app_value(XtNdisplayLineNumbers,
-			 app_data.display_line_numbers) << "\n";
+			 app_data.display_line_numbers) << '\n';
     os << bool_app_value(XtNdisassemble,
-			 app_data.disassemble) << "\n";
+			 app_data.disassemble) << '\n';
     os << bool_app_value(XtNallRegisters,
-			 app_data.all_registers) << "\n";
+			 app_data.all_registers) << '\n';
 
     // Misc stuff
     os << "\n! Misc preferences.\n";
@@ -1791,30 +1816,30 @@ bool save_options(unsigned long flags)
     {
     case XmPOINTER:
 	os << string_app_value(string(XmNkeyboardFocusPolicy), "POINTER") 
-	   << "\n";
+	   << '\n';
 	break;
     case XmEXPLICIT:
 	os << string_app_value(string(XmNkeyboardFocusPolicy), "EXPLICIT")
-	   << "\n";
+	   << '\n';
 	break;
     }
 
     os << bool_app_value(XtNstatusAtBottom,
-			 app_data.status_at_bottom) << "\n";
+			 app_data.status_at_bottom) << '\n';
     os << bool_app_value(XtNsuppressWarnings,
-			 app_data.suppress_warnings) << "\n";
+			 app_data.suppress_warnings) << '\n';
     os << bool_app_value(XtNcheckGrabs,
-			 app_data.check_grabs) << "\n";
+			 app_data.check_grabs) << '\n';
     os << bool_app_value(XtNsaveHistoryOnExit,
-			 app_data.save_history_on_exit) << "\n";
+			 app_data.save_history_on_exit) << '\n';
     os << string_app_value(XtNpaperSize,
-			   app_data.paper_size) << "\n";
+			   app_data.paper_size) << '\n';
     os << bool_app_value(XtNblinkWhileBusy,
-			 app_data.blink_while_busy) << "\n";
+			 app_data.blink_while_busy) << '\n';
     os << bool_app_value(XtNsplashScreen,
-			 app_data.splash_screen) << "\n";
+			 app_data.splash_screen) << '\n';
     os << bool_app_value(XtNstartupTips, 
-			 app_data.startup_tips) << "\n";
+			 app_data.startup_tips) << '\n';
 
     // Keys
     os << "\n! Keys.\n";
@@ -1826,14 +1851,14 @@ bool save_options(unsigned long flags)
     // Graph editor
     os << "\n! Data.\n";
     os << bool_app_value(XtNpannedGraphEditor, 
-			 app_data.panned_graph_editor) << "\n";
-    os << widget_value(data_disp->graph_edit, XtNshowGrid)   << "\n";
-    os << widget_value(data_disp->graph_edit, XtNsnapToGrid) << "\n";
-    os << widget_value(data_disp->graph_edit, XtNshowHints)  << "\n";
-    os << widget_value(data_disp->graph_edit, XtNlayoutMode) << "\n";
-    os << widget_value(data_disp->graph_edit, XtNautoLayout) << "\n";
+			 app_data.panned_graph_editor) << '\n';
+    os << widget_value(data_disp->graph_edit, XtNshowGrid)   << '\n';
+    os << widget_value(data_disp->graph_edit, XtNsnapToGrid) << '\n';
+    os << widget_value(data_disp->graph_edit, XtNshowHints)  << '\n';
+    os << widget_value(data_disp->graph_edit, XtNlayoutMode) << '\n';
+    os << widget_value(data_disp->graph_edit, XtNautoLayout) << '\n';
     os << bool_app_value(XtNautoCloseDataWindow,
-			 app_data.auto_close_data_window) << "\n";
+			 app_data.auto_close_data_window) << '\n';
 
     Dimension grid_width, grid_height;
     XtVaGetValues(data_disp->graph_edit,
@@ -1843,28 +1868,28 @@ bool save_options(unsigned long flags)
     if (grid_width == grid_height)
     {
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
-			    + XtCGridSize, grid_width, true) << "\n";
+			    + XtCGridSize, grid_width, true) << '\n';
     }
     else
     {
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
-			    + XtNgridWidth,  grid_width, true) << "\n";
+			    + XtNgridWidth,  grid_width, true) << '\n';
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
-			    + XtNgridHeight, grid_height, true) << "\n";
+			    + XtNgridHeight, grid_height, true) << '\n';
     }
-    os << bool_app_value(XtNdetectAliases,  app_data.detect_aliases)   << "\n";
-    os << bool_app_value(XtNalign2dArrays,  app_data.align_2d_arrays)  << "\n";
+    os << bool_app_value(XtNdetectAliases,  app_data.detect_aliases)   << '\n';
+    os << bool_app_value(XtNalign2dArrays,  app_data.align_2d_arrays)  << '\n';
 
     // Tips
     os << "\n! Tips.\n";
     os << bool_app_value(XtNbuttonTips,
-			 app_data.button_tips) << "\n";
+			 app_data.button_tips) << '\n';
     os << bool_app_value(XtNvalueTips,
-			 app_data.value_tips) << "\n";
+			 app_data.value_tips) << '\n';
     os << bool_app_value(XtNbuttonDocs,
-			 app_data.button_docs) << "\n";
+			 app_data.button_docs) << '\n';
     os << bool_app_value(XtNvalueDocs,
-			 app_data.value_docs) << "\n";
+			 app_data.value_docs) << '\n';
 
     // Helpers
     os << "\n! Helpers.\n";
@@ -1882,7 +1907,7 @@ bool save_options(unsigned long flags)
     os << string_app_value(XtNwwwCommand,     app_data.www_command, true) 
        << '\n';
     os << string_app_value(XtNprintCommand,   app_data.print_command, true) 
-       << "\n";
+       << '\n';
 
     // Toolbar
     os << "\n! Tool Bars.\n";
@@ -1890,39 +1915,41 @@ bool save_options(unsigned long flags)
     // We cannot change these interactively, so there's no point in
     // saving them.
     os << bool_app_value(XtNcommonToolBar,
-			 app_data.common_toolbar)  << "\n";
+			 app_data.common_toolbar)  << '\n';
     os << bool_app_value(XtNtoolbarsAtBottom, 
-			 app_data.toolbars_at_bottom) << "\n";
+			 app_data.toolbars_at_bottom) << '\n';
 #endif
     os << bool_app_value(XtNbuttonImages,
-			 app_data.button_images)   << "\n";
+			 app_data.button_images)   << '\n';
     os << bool_app_value(XtNbuttonCaptions,
-			 app_data.button_captions) << "\n";
+			 app_data.button_captions) << '\n';
 
     if (app_data.flat_toolbar_buttons == app_data.flat_dialog_buttons)
     {
 	os << bool_app_value(XtCFlatButtons,
-			     app_data.flat_toolbar_buttons) << "\n";
+			     app_data.flat_toolbar_buttons) << '\n';
     }
     else
     {
 	os << bool_app_value(XtNflatToolbarButtons,
-			     app_data.flat_toolbar_buttons) << "\n";
+			     app_data.flat_toolbar_buttons) << '\n';
 	os << bool_app_value(XtNflatDialogButtons,
-			     app_data.flat_dialog_buttons) << "\n";
+			     app_data.flat_dialog_buttons) << '\n';
     }
     os << string_app_value(XtNbuttonColorKey,
-			   app_data.button_color_key) << "\n";
+			   app_data.button_color_key) << '\n';
+    os << string_app_value(XtNactiveButtonColorKey,
+			   app_data.active_button_color_key) << '\n';
 
     // Command tool
     os << "\n! Command Tool.\n";
     get_tool_offset();
     os << bool_app_value(XtNcommandToolBar,
-			 app_data.command_toolbar) << "\n";
+			 app_data.command_toolbar) << '\n';
     os << int_app_value(XtNtoolRightOffset,
-			app_data.tool_right_offset, true) << "\n";
+			app_data.tool_right_offset, true) << '\n';
     os << int_app_value(XtNtoolTopOffset,
-			app_data.tool_top_offset, true) << "\n";
+			app_data.tool_top_offset, true) << '\n';
 
     // Buttons
     os << "\n! Buttons.\n";
@@ -1951,71 +1978,71 @@ bool save_options(unsigned long flags)
 		expr += string('\t') + app_data.label_delimiter + ' ' 
 		    + labels[i];
 	}
-	os << string_app_value(XtNdisplayShortcuts, expr) << "\n";
+	os << string_app_value(XtNdisplayShortcuts, expr) << '\n';
     }
 
     // Fonts
     os << "\n! Fonts.\n";
     os << string_app_value(XtNdefaultFont,
-			   app_data.default_font, true) << "\n";
+			   app_data.default_font, true) << '\n';
     os << string_app_value(XtNvariableWidthFont, 
-			   app_data.variable_width_font, true) << "\n";
+			   app_data.variable_width_font, true) << '\n';
     os << string_app_value(XtNfixedWidthFont,
-			   app_data.fixed_width_font, true) << "\n";
+			   app_data.fixed_width_font, true) << '\n';
     if (app_data.default_font_size == app_data.variable_width_font_size &&
 	app_data.default_font_size == app_data.fixed_width_font_size)
     {
 	os << int_app_value(XtCFontSize, app_data.default_font_size, true) 
-	   << "\n";
+	   << '\n';
     }
     else
     {
 	os << int_app_value(XtNdefaultFontSize,
-			    app_data.default_font_size, true) << "\n";
+			    app_data.default_font_size, true) << '\n';
 	os << int_app_value(XtNvariableWidthFontSize, 
-			    app_data.variable_width_font_size, true) << "\n";
+			    app_data.variable_width_font_size, true) << '\n';
 	os << int_app_value(XtNfixedWidthFontSize, 
-			    app_data.fixed_width_font_size, true) << "\n";
+			    app_data.fixed_width_font_size, true) << '\n';
     }
 
     // Windows.
     os << "\n! Windows.\n";
     os << bool_app_value(XtNopenDataWindow,      
-			 app_data.data_window)      << "\n";
+			 app_data.data_window)      << '\n';
     os << bool_app_value(XtNopenSourceWindow,    
-			 app_data.source_window)    << "\n";
+			 app_data.source_window)    << '\n';
     os << bool_app_value(XtNopenDebuggerConsole, 
-			 app_data.debugger_console) << "\n";
+			 app_data.debugger_console) << '\n';
 
     if (!app_data.separate_source_window && !app_data.separate_data_window)
     {
-	os << bool_app_value(XtCSeparate, false) << "\n";
+	os << bool_app_value(XtCSeparate, false) << '\n';
     }
     else if (app_data.separate_source_window && app_data.separate_data_window)
     {
-	os << bool_app_value(XtCSeparate, true) << "\n";
+	os << bool_app_value(XtCSeparate, true) << '\n';
     }
     else
     {
 	os << bool_app_value(XtNseparateSourceWindow, 
-			     app_data.separate_source_window) << "\n";
+			     app_data.separate_source_window) << '\n';
 	os << bool_app_value(XtNseparateDataWindow, 
-			     app_data.separate_data_window) << "\n";
+			     app_data.separate_data_window) << '\n';
     }
     os << bool_app_value(XtNseparateExecWindow,
-			 app_data.separate_exec_window) << "\n";
+			 app_data.separate_exec_window) << '\n';
     os << bool_app_value(XtNgroupIconify,
-			 app_data.group_iconify) << "\n";
+			 app_data.group_iconify) << '\n';
     os << bool_app_value(XtNuniconifyWhenReady,
-			 app_data.uniconify_when_ready) << "\n";
+			 app_data.uniconify_when_ready) << '\n';
 
     // Window sizes.
     os << "\n! Window sizes.\n";
 
-    os << paned_widget_height(data_disp->graph_edit) << "\n";
-    os << paned_widget_size(source_view->source())   << "\n";
-    os << paned_widget_size(source_view->code())     << "\n";
-    os << paned_widget_size(gdb_w)                   << "\n";
+    os << paned_widget_height(data_disp->graph_edit) << '\n';
+    os << paned_widget_size(source_view->source())   << '\n';
+    os << paned_widget_size(source_view->code())     << '\n';
+    os << paned_widget_size(gdb_w)                   << '\n';
 
     if (save_geometry)
     {
@@ -2023,11 +2050,11 @@ bool save_options(unsigned long flags)
 	os << "\n! Last " DDD_NAME " geometry.\n";
 
 	if (command_shell)
-	    os << widget_geometry(command_shell)     << "\n";
+	    os << widget_geometry(command_shell)     << '\n';
 	if (source_view_shell)
-	    os << widget_geometry(source_view_shell) << "\n";
+	    os << widget_geometry(source_view_shell) << '\n';
 	if (data_disp_shell)
-	    os << widget_geometry(data_disp_shell)   << "\n";
+	    os << widget_geometry(data_disp_shell)   << '\n';
     }
 
     bool ok = true;
@@ -2103,9 +2130,9 @@ bool save_options(unsigned long flags)
 	case GDB:
 	    es << "set confirm off\n";
 	    if (info.file != "" && info.file != NO_GDB_ANSWER)
-		es << "file " << info.file << "\n";
+		es << "file " << info.file << '\n';
 	    if (core_ok)
-		es << "core " << core << "\n";
+		es << "core " << core << '\n';
 	    break;
 
 	case DBX:
@@ -2117,7 +2144,7 @@ bool save_options(unsigned long flags)
 		    es << cmd;
 		    if (core_ok)
 			es << " " << core;
-		    es << "\n";
+		    es << '\n';
 		}
 	    }
 	    break;
@@ -2131,7 +2158,7 @@ bool save_options(unsigned long flags)
 	string restart = string(es) + string(rs) + get_signals(gdb->type());
 	restart.gsub(app_data.auto_command_prefix, "@AUTO@");
 
-	os << string_app_value(XtNrestartCommands, restart) << "\n";
+	os << string_app_value(XtNrestartCommands, restart) << '\n';
     }
 
     bool saved = true;

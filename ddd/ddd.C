@@ -2106,7 +2106,9 @@ int main(int argc, char *argv[])
     }
     
     // Install icons if not already done
-    install_icons(command_shell, app_data.button_color_key);
+    install_icons(command_shell, 
+		  app_data.button_color_key,
+		  app_data.active_button_color_key);
 
     // Data window
     Widget data_disp_parent = paned_work_w;
@@ -3448,14 +3450,18 @@ static void PostHelpOnItem(Widget item)
 // Option handling
 //-----------------------------------------------------------------------------
 
-static void set_toggle(Widget w, Boolean new_state, bool notify = false)
+static void set_toggle(Widget w, unsigned char new_state, bool notify = false)
 {
     if (w == 0)
 	return;
 
     assert(XmIsToggleButton(w));
 
+#if XmVersion < 2000
     Boolean old_state;
+#else
+    unsigned char old_state;
+#endif
     XtVaGetValues(w, XmNset, &old_state, NULL);
 
     if (old_state != new_state)
@@ -3596,7 +3602,19 @@ void update_options()
     set_toggle(set_button_images_w,        app_data.button_images);
     set_toggle(set_button_captions_w,      app_data.button_captions);
     set_toggle(set_flat_buttons_w,         app_data.flat_toolbar_buttons);
-    set_toggle(set_color_buttons_w, string(app_data.button_color_key) == 'c');
+
+    string button_color_key        = app_data.button_color_key;
+    string active_button_color_key = app_data.active_button_color_key;
+#if XmVersion < 2000
+    set_toggle(set_color_buttons_w, button_color_key == 'c');
+#else
+    if (button_color_key == 'c' && active_button_color_key == 'c')
+	set_toggle(set_color_buttons_w, XmSET);
+    else if (button_color_key == active_button_color_key)
+	set_toggle(set_color_buttons_w, XmUNSET);
+    else
+	set_toggle(set_color_buttons_w, XmINDETERMINATE);
+#endif
 
     set_toggle(set_tool_buttons_in_toolbar_w,      app_data.command_toolbar);
     set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_toolbar);
@@ -4061,8 +4079,19 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_button_images_w,   initial_app_data.button_images);
     notify_set_toggle(set_flat_buttons_w,    
 		      initial_app_data.flat_toolbar_buttons);
-    notify_set_toggle(set_color_buttons_w,   
-		      string(initial_app_data.button_color_key) == 'c');
+
+    string button_color_key        = initial_app_data.button_color_key;
+    string active_button_color_key = initial_app_data.active_button_color_key;
+#if XmVersion < 2000
+    notify_set_toggle(set_color_buttons_w, button_color_key == 'c');
+#else
+    if (button_color_key == 'c' && active_button_color_key == 'c')
+	notify_set_toggle(set_color_buttons_w, XmSET);
+    else if (button_color_key == active_button_color_key)
+	notify_set_toggle(set_color_buttons_w, XmUNSET);
+    else
+	notify_set_toggle(set_color_buttons_w, XmINDETERMINATE);
+#endif
 
     notify_set_toggle(set_focus_pointer_w, 
 		      initial_focus_policy == XmPOINTER);
@@ -4091,21 +4120,12 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
 
 static bool startup_preferences_changed()
 {
-    Boolean initial_separate = 
-	initial_app_data.separate_data_window 
-	|| initial_app_data.separate_source_window;
-    Boolean separate = 
-	app_data.separate_data_window 
-	|| app_data.separate_source_window;
-
-    unsigned char focus_policy;
-    XtVaGetValues(command_shell,
-		  XmNkeyboardFocusPolicy, &focus_policy, NULL);
 
     // Christoph L. Spiel <Christoph_Spiel@physik.tu-muenchen.de>
     // reports that his g++-2.7.2.3 chokes on large `||' expressions.
     // Hence, instead of `return A || B || C', we say `if A return
     // true; if B return true; if C return true; return false;'.
+
     if (app_data.startup_tips != initial_app_data.startup_tips)
 	return true;
 
@@ -4116,6 +4136,10 @@ static bool startup_preferences_changed()
     if (app_data.splash_screen != initial_app_data.splash_screen)
 	return true;
 
+    Boolean initial_separate = (initial_app_data.separate_data_window ||
+				initial_app_data.separate_source_window);
+    Boolean separate = (app_data.separate_data_window || 
+			app_data.separate_source_window);
     if (separate != initial_separate)
 	return true;
 
@@ -4132,6 +4156,12 @@ static bool startup_preferences_changed()
 	string(initial_app_data.button_color_key))
 	return true;
 
+    if (string(app_data.active_button_color_key) !=
+	string(initial_app_data.active_button_color_key))
+	return true;
+
+    unsigned char focus_policy;
+    XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &focus_policy, NULL);
     if (focus_policy != initial_focus_policy)
 	return true;
 

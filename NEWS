@@ -12,7 +12,10 @@ User Interface
 
 - Insensitive items now have a 3-D `emboss' look, making them more legible.
 
-- `Flat' buttons keep their border after having been activated.
+- `Flat' toolbar buttons keep their border after having been activated.
+
+- Toolbar buttons appear in color when entered.  See the
+  `activeButtonColorKey' resource for details.
 
 
 Debuggers and Languages

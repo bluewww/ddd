@@ -265,7 +265,9 @@ Widget create_toolbar(Widget parent, string /* name */,
 
     // We install the icons AFTER having created the argument field,
     // because otherwise we might eat up all colors.
-    install_icons(toolbar, app_data.button_color_key);
+    install_icons(toolbar,
+		  app_data.button_color_key,
+		  app_data.active_button_color_key);
 
     if (label_type == XmPIXMAP && app_data.flat_toolbar_buttons)
     {

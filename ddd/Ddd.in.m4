@@ -315,7 +315,8 @@ Ddd*FlatButtons: on
 !   Grey  (`g')  - greyscale
 !   Mono  (`m')  - monochrome
 ! See the XPM documentation for details.
-Ddd*buttonColorKey: g
+Ddd*buttonColorKey:       g
+Ddd*activeButtonColorKey: c
 
 ! Whether to check buttons if their commands are actually supported by
 ! the inferior debugger.
@@ -1656,6 +1657,7 @@ Ddd*manual_help*findBackward.labelType:              XmPIXMAP
 Ddd*manual_help*findBackward.labelPixmap:            find_backward
 Ddd*manual_help*findBackward.labelInsensitivePixmap: find_backward-xx
 Ddd*manual_help*findBackward.armPixmap:              find_backward-arm
+Ddd*manual_help*findBackward.highlightPixmap:        find_backward-hi
 
 Ddd*manual_help*findBackward.tipString:	  \
 @rm Find previous LBL(()) in manual
@@ -1667,6 +1669,7 @@ Ddd*manual_help*findForward.labelType:              XmPIXMAP
 Ddd*manual_help*findForward.labelPixmap:            find_forward
 Ddd*manual_help*findForward.labelInsensitivePixmap: find_forward-xx
 Ddd*manual_help*findForward.armPixmap:              find_forward-arm
+Ddd*manual_help*findForward.highlightPixmap:        find_forward-hi
 
 Ddd*manual_help*findForward.tipString:	  \
 @rm Find next LBL(()) in manual
@@ -3161,7 +3164,7 @@ ITEM The LBL(Toolbar) can appear as\n\
     SUBITEM LBL(Images), showing a small symbol for each action, and/or\n\
     SUBITEM LBL(Captions), showing the action name below the image.\n\
     SUBITEM LBL(Flat), enabling the button border only when entered.\n\
-    SUBITEM LBL(Color), enabling colored images.\n\
+    SUBITEM LBL(Color), enabling colored button images.\n\
     If neither LBL(Images) nor LBL(Captions) is set, \
 buttons have ordinary labels.\n\
 ITEM LBL(Keyboard Focus) sets the keyboard focus policy.\n\
@@ -3194,6 +3197,7 @@ Ddd*buttonsMenu*images.labelString:		Images
 Ddd*buttonsMenu*captions.labelString:		Captions
 Ddd*buttonsMenu*flat.labelString:		Flat
 Ddd*buttonsMenu*color.labelString:		Color
+Ddd*buttonsMenu*color.toggleMode:		XmTOGGLE_INDETERMINATE
 
 Ddd*preferences*keyboardFocus.labelString:	Keyboard Focus
 Ddd*keyboardFocusMenu*explicit.labelString:	Click to Type
@@ -3685,26 +3689,32 @@ Ddd*toolbar*delete.labelString:		Undisplay ()
 Ddd*toolbar*dereference.labelPixmap: 		dispref
 Ddd*toolbar*dereference.labelInsensitivePixmap:	dispref-xx
 Ddd*toolbar*dereference.armPixmap:		dispref-arm
+Ddd*toolbar*dereference.highlightPixmap:	dispref-hi
 
 Ddd*toolbar*detail.labelPixmap:			show
 Ddd*toolbar*detail.labelInsensitivePixmap:	show-xx
 Ddd*toolbar*detail.armPixmap:			show-arm
+Ddd*toolbar*detail.highlightPixmap:		show-hi
 
 Ddd*toolbar*rotate.labelPixmap:			rotate
 Ddd*toolbar*rotate.labelInsensitivePixmap:	rotate-xx
 Ddd*toolbar*rotate.armPixmap:			rotate-arm
+Ddd*toolbar*rotate.highlightPixmap:		rotate-hi
 
 Ddd*toolbar*new.labelPixmap:			display
 Ddd*toolbar*new.labelInsensitivePixmap:		display-xx
 Ddd*toolbar*new.armPixmap:			display-arm
+Ddd*toolbar*new.highlightPixmap:		display-hi
 
 Ddd*toolbar*set.labelPixmap:			set
 Ddd*toolbar*set.labelInsensitivePixmap:		set-xx
 Ddd*toolbar*set.armPixmap:			set-arm
+Ddd*toolbar*set.highlightPixmap:		set-hi
 
 Ddd*toolbar*delete.labelPixmap:			undisplay
 Ddd*toolbar*delete.labelInsensitivePixmap:	undisplay-xx
 Ddd*toolbar*delete.armPixmap:			undisplay-arm
+Ddd*toolbar*delete.highlightPixmap:		undisplay-hi
 
 define(ANNOUNCE_PULLDOWN,[\
 Pulldown menu functions (press and hold BUTTON(1)):\
@@ -3856,30 +3866,37 @@ Ddd*toolbar*findForward.labelString:	LBL_FIND_FORWARD
 Ddd*toolbar*lookup.labelPixmap:			lookup
 Ddd*toolbar*lookup.labelInsensitivePixmap:	lookup-xx
 Ddd*toolbar*lookup.armPixmap:			lookup-arm
+Ddd*toolbar*lookup.highlightPixmap:		lookup-hi
 
 Ddd*toolbar*breakAt.labelPixmap:		break_at
 Ddd*toolbar*breakAt.labelInsensitivePixmap: 	break_at-xx
 Ddd*toolbar*breakAt.armPixmap: 			break_at-arm
+Ddd*toolbar*breakAt.highlightPixmap:		break_at-hi
 
 Ddd*toolbar*watch.labelPixmap:		 	watch
 Ddd*toolbar*watch.labelInsensitivePixmap: 	watch-xx
 Ddd*toolbar*watch.armPixmap: 			watch-arm
+Ddd*toolbar*watch.highlightPixmap:		watch-hi
 
 Ddd*toolbar*print.labelPixmap:		 	print
 Ddd*toolbar*print.labelInsensitivePixmap: 	print-xx
 Ddd*toolbar*print.armPixmap: 			print-arm
+Ddd*toolbar*print.highlightPixmap:		print-hi
 
 Ddd*toolbar*display.labelPixmap:		display
 Ddd*toolbar*display.labelInsensitivePixmap: 	display-xx
 Ddd*toolbar*display.armPixmap: 			display-arm
+Ddd*toolbar*display.highlightPixmap:		display-hi
 
 Ddd*toolbar*dispRef.labelPixmap:		dispref
 Ddd*toolbar*dispRef.labelInsensitivePixmap: 	dispref-xx
 Ddd*toolbar*dispRef.armPixmap: 			dispref-arm
+Ddd*toolbar*dispRef.highlightPixmap:		dispref-hi
 
 Ddd*toolbar*find.labelPixmap:		 	find_forward
 Ddd*toolbar*find.labelInsensitivePixmap: 	find_forward-xx
 Ddd*toolbar*find.armPixmap: 			find_forward-arm
+Ddd*toolbar*find.highlightPixmap:		find_forward-hi
 
 Ddd*toolbar*lookup.helpString:	\
 LBL(Lookup ())\n\
@@ -4915,6 +4932,7 @@ Ddd*edit_breakpoints_dialog*new_bp.labelString:	           New Breakpoint...
 Ddd*edit_breakpoints_dialog*new_bp.labelPixmap:	           new_break
 Ddd*edit_breakpoints_dialog*new_bp.labelInsensitivePixmap: new_break-xx
 Ddd*edit_breakpoints_dialog*new_bp.armPixmap:              new_break-arm
+Ddd*edit_breakpoints_dialog*new_bp.highlightPixmap:        new_break-hi
 
 Ddd*edit_breakpoints_dialog*new_bp.tipString:     \
 @rm Set new breakpoint
@@ -4925,6 +4943,7 @@ Ddd*edit_breakpoints_dialog*new_wp.labelString:	      New Watchpoint...
 Ddd*edit_breakpoints_dialog*new_wp.labelPixmap:	           new_watch
 Ddd*edit_breakpoints_dialog*new_wp.labelInsensitivePixmap: new_watch-xx
 Ddd*edit_breakpoints_dialog*new_wp.armPixmap:              new_watch-arm
+Ddd*edit_breakpoints_dialog*new_wp.highlightPixmap:        new_watch-hi
 
 Ddd*edit_breakpoints_dialog*new_wp.tipString:     \
 @rm Set new watchpoint
@@ -4935,6 +4954,7 @@ Ddd*edit_breakpoints_dialog*lookup.labelString:	       Lookup
 Ddd*edit_breakpoints_dialog*lookup.labelPixmap:	           lookup
 Ddd*edit_breakpoints_dialog*lookup.labelInsensitivePixmap: lookup-xx
 Ddd*edit_breakpoints_dialog*lookup.armPixmap:              lookup-arm
+Ddd*edit_breakpoints_dialog*lookup.highlightPixmap:        lookup-hi
 
 Ddd*edit_breakpoints_dialog*lookup.tipString:     \
 @rm Lookup selected item
@@ -4945,6 +4965,7 @@ Ddd*edit_breakpoints_dialog*print.labelString:	       Print
 Ddd*edit_breakpoints_dialog*print.labelPixmap:	          print
 Ddd*edit_breakpoints_dialog*print.labelInsensitivePixmap: print-xx
 Ddd*edit_breakpoints_dialog*print.armPixmap:              print-arm
+Ddd*edit_breakpoints_dialog*print.highlightPixmap:        print-hi
 
 Ddd*edit_breakpoints_dialog*print.tipString:     \
 @rm Print watched expression
@@ -4955,6 +4976,7 @@ Ddd*edit_breakpoints_dialog*enable.labelString:	       Enable
 Ddd*edit_breakpoints_dialog*enable.labelPixmap:	           enable
 Ddd*edit_breakpoints_dialog*enable.labelInsensitivePixmap: enable-xx
 Ddd*edit_breakpoints_dialog*enable.armPixmap:              enable-arm
+Ddd*edit_breakpoints_dialog*enable.highlightPixmap:        enable-hi
 
 Ddd*edit_breakpoints_dialog*enable.tipString:     \
 @rm Enable selected items
@@ -4965,6 +4987,7 @@ Ddd*edit_breakpoints_dialog*disable.labelString:       Disable
 Ddd*edit_breakpoints_dialog*disable.labelPixmap:	    disable
 Ddd*edit_breakpoints_dialog*disable.labelInsensitivePixmap: disable-xx
 Ddd*edit_breakpoints_dialog*disable.armPixmap:              disable-arm
+Ddd*edit_breakpoints_dialog*disable.highlightPixmap:        disable-hi
 
 Ddd*edit_breakpoints_dialog*disable.tipString:     \
 @rm Disable selected items
@@ -4975,6 +4998,7 @@ Ddd*edit_breakpoints_dialog*properties.labelString:     Properties...
 Ddd*edit_breakpoints_dialog*properties.labelPixmap:	       properties
 Ddd*edit_breakpoints_dialog*properties.labelInsensitivePixmap: properties-xx
 Ddd*edit_breakpoints_dialog*properties.armPixmap:              properties-arm
+Ddd*edit_breakpoints_dialog*properties.highlightPixmap:        properties-hi
 
 Ddd*edit_breakpoints_dialog*properties.tipString:     \
 @rm Edit properties
@@ -4985,6 +5009,7 @@ Ddd*edit_breakpoints_dialog*delete.labelString:	       Delete
 Ddd*edit_breakpoints_dialog*delete.labelPixmap:	           delete
 Ddd*edit_breakpoints_dialog*delete.labelInsensitivePixmap: delete-xx
 Ddd*edit_breakpoints_dialog*delete.armPixmap:              delete-arm
+Ddd*edit_breakpoints_dialog*delete.highlightPixmap:        delete-hi
 
 Ddd*edit_breakpoints_dialog*delete.tipString:     \
 @rm Delete selected items
@@ -5063,6 +5088,7 @@ Ddd*breakpoint_properties*lookup.labelString:		Lookup
 Ddd*breakpoint_properties*lookup.labelPixmap:	         lookup
 Ddd*breakpoint_properties*lookup.labelInsensitivePixmap: lookup-xx
 Ddd*breakpoint_properties*lookup.armPixmap:              lookup-arm
+Ddd*breakpoint_properties*lookup.highlightPixmap:        lookup-hi
 Ddd*breakpoint_properties*lookup.tipString:             \
 @rm Lookup breakpoint
 
@@ -5071,6 +5097,7 @@ Ddd*breakpoint_properties*print.labelString:		Print
 Ddd*breakpoint_properties*print.labelPixmap:	        print
 Ddd*breakpoint_properties*print.labelInsensitivePixmap: print-xx
 Ddd*breakpoint_properties*print.armPixmap:              print-arm
+Ddd*breakpoint_properties*print.highlightPixmap: 	print-hi
 Ddd*breakpoint_properties*print.tipString:             \
 @rm Print watchpoint value
 
@@ -5079,22 +5106,25 @@ Ddd*breakpoint_properties*enable.labelString:		Enable
 Ddd*breakpoint_properties*enable.labelPixmap:	         enable
 Ddd*breakpoint_properties*enable.labelInsensitivePixmap: enable-xx
 Ddd*breakpoint_properties*enable.armPixmap:              enable-arm
+Ddd*breakpoint_properties*enable.highlightPixmap:	 enable-hi
 Ddd*breakpoint_properties*enable.tipString:             \
 @rm Enable breakpoint
 
 Ddd*breakpoint_properties*disable.labelType:		XmPIXMAP
 Ddd*breakpoint_properties*disable.labelString:		Disable
-Ddd*breakpoint_properties*disable.labelPixmap:	         disable
+Ddd*breakpoint_properties*disable.labelPixmap:	          disable
 Ddd*breakpoint_properties*disable.labelInsensitivePixmap: disable-xx
 Ddd*breakpoint_properties*disable.armPixmap:              disable-arm
+Ddd*breakpoint_properties*disable.highlightPixmap:        disable-hi
 Ddd*breakpoint_properties*disable.tipString:             \
 @rm Disable breakpoint
 
 Ddd*breakpoint_properties*temporary.labelType:		XmPIXMAP
-Ddd*breakpoint_properties*temporary.labelString:		 Temp 
-Ddd*breakpoint_properties*temporary.labelPixmap:	         maketemp
+Ddd*breakpoint_properties*temporary.labelString:	Temp 
+Ddd*breakpoint_properties*temporary.labelPixmap:	    maketemp
 Ddd*breakpoint_properties*temporary.labelInsensitivePixmap: maketemp-xx
 Ddd*breakpoint_properties*temporary.armPixmap:              maketemp-arm
+Ddd*breakpoint_properties*temporary.highlightPixmap:        maketemp-hi
 Ddd*breakpoint_properties*temporary.tipString:           \
 @rm Make breakpoint temporary
 Ddd*breakpoint_properties*temporary.documentationString:           \
@@ -5105,6 +5135,7 @@ Ddd*breakpoint_properties*delete.labelString:		Delete
 Ddd*breakpoint_properties*delete.labelPixmap:	         delete
 Ddd*breakpoint_properties*delete.labelInsensitivePixmap: delete-xx
 Ddd*breakpoint_properties*delete.armPixmap:              delete-arm
+Ddd*breakpoint_properties*delete.highlightPixmap:        delete-hi
 Ddd*breakpoint_properties*delete.tipString:           \
 @rm Delete breakpoint
 
@@ -5370,6 +5401,7 @@ Ddd*edit_displays_dialog*new.labelString:	    New...
 Ddd*edit_displays_dialog*new.labelPixmap:		new_display
 Ddd*edit_displays_dialog*new.labelInsensitivePixmap:	new_display-xx
 Ddd*edit_displays_dialog*new.armPixmap:			new_display-arm
+Ddd*edit_displays_dialog*new.highlightPixmap:		new_display-hi
 
 Ddd*edit_displays_dialog*new.tipString:  \
 @rm Create new display
@@ -5380,6 +5412,7 @@ Ddd*edit_displays_dialog*dereference.labelString:   Display *
 Ddd*edit_displays_dialog*dereference.labelPixmap:		dispref
 Ddd*edit_displays_dialog*dereference.labelInsensitivePixmap:	dispref-xx
 Ddd*edit_displays_dialog*dereference.armPixmap:			dispref-arm
+Ddd*edit_displays_dialog*dereference.highlightPixmap:		dispref-hi
 
 Ddd*edit_displays_dialog*dereference.tipString:  \
 @rm Dereference selected display
@@ -5390,6 +5423,7 @@ Ddd*edit_displays_dialog*show_detail.labelString:   Show Detail
 Ddd*edit_displays_dialog*show_detail.labelPixmap:		show
 Ddd*edit_displays_dialog*show_detail.labelInsensitivePixmap:	show-xx
 Ddd*edit_displays_dialog*show_detail.armPixmap:			show-arm
+Ddd*edit_displays_dialog*show_detail.highlightPixmap:		show-hi
 
 Ddd*edit_displays_dialog*show_detail.tipString:  \
 @rm Show selected details
@@ -5400,6 +5434,7 @@ Ddd*edit_displays_dialog*hide_detail.labelString:   Hide Detail
 Ddd*edit_displays_dialog*hide_detail.labelPixmap:		hide
 Ddd*edit_displays_dialog*hide_detail.labelInsensitivePixmap:	hide-xx
 Ddd*edit_displays_dialog*hide_detail.armPixmap:			hide-arm
+Ddd*edit_displays_dialog*hide_detail.highlightPixmap:		hide-hi
 
 Ddd*edit_displays_dialog*hide_detail.tipString:  \
 @rm Hide selected details
@@ -5410,6 +5445,7 @@ Ddd*edit_displays_dialog*set.labelString:	    Set Value
 Ddd*edit_displays_dialog*set.labelPixmap:		set
 Ddd*edit_displays_dialog*set.labelInsensitivePixmap:	set-xx
 Ddd*edit_displays_dialog*set.armPixmap:			set-arm
+Ddd*edit_displays_dialog*set.highlightPixmap:		set-hi
 
 Ddd*edit_displays_dialog*set.tipString:  \
 @rm Set display value
@@ -5420,6 +5456,7 @@ Ddd*edit_displays_dialog*delete.labelString:	    Undisplay
 Ddd*edit_displays_dialog*delete.labelPixmap:		undisplay
 Ddd*edit_displays_dialog*delete.labelInsensitivePixmap:	undisplay-xx
 Ddd*edit_displays_dialog*delete.armPixmap:		undisplay-arm
+Ddd*edit_displays_dialog*delete.highlightPixmap:	undisplay-hi
 
 Ddd*edit_displays_dialog*delete.tipString:  \
 @rm Delete selected displays

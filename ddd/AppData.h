@@ -313,6 +313,7 @@
 #define XtNflatDialogButtons     "flatDialogButtons"
 #define XtCFlatButtons           "FlatButtons"
 #define XtNbuttonColorKey        "buttonColorKey"
+#define XtNactiveButtonColorKey  "activeButtonColorKey"
 #define XtNsplashScreenColorKey  "splashScreenColorKey"
 #define XtCColorKey              "ColorKey"
 #define XtNautoCommands          "autoCommands"
@@ -486,6 +487,7 @@ struct AppData {
     Boolean   flat_toolbar_buttons;
     Boolean   flat_dialog_buttons;
     String    button_color_key;
+    String    active_button_color_key;
     String    splash_screen_color_key;
     Boolean   auto_commands;
     String    auto_command_prefix;

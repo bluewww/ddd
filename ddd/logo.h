@@ -48,9 +48,16 @@ extern Pixmap iconmask(Widget shell);
 extern Pixmap dddsplash(Widget shell, const string& color_key = 'c');
 
 // Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
-// visual type. If STRIP_CAPTIONS is greater than 0, strip this number
-// of pixels from the bottom of toolbar icons.
-extern void install_icons(Widget shell, const string& color_key = 'c');
+// visual type for inactive buttons.  ACTIVE_COLOR_KEY is the XPM visual
+// type for active buttons (entered or armed).
+extern void install_icons(Widget shell, 
+			  const string& color_key,
+			  const string& active_color_key);
+inline void install_icons(Widget shell, 
+			  const string& color_key = 'c')
+{
+    install_icons(shell, color_key, color_key);
+}
 
 // Set label of W to NEW_LABEL (and its pixmap to IMAGE_NAME, if given)
 extern void set_label(Widget w, const MString& new_label, 

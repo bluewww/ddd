@@ -167,9 +167,12 @@ static void flatten_button(Widget w)
 {
     Dimension highlight = SHADOW_THICKNESS;
     Dimension shadow    = 0;
+    Pixmap highlight_pixmap, label_pixmap;
     XtVaGetValues(w,
 		  XmNhighlightThickness, &highlight,
-		  XmNshadowThickness, &shadow,
+		  XmNshadowThickness,    &shadow,
+		  XmNlabelPixmap,        &label_pixmap,
+		  XmNhighlightPixmap,    &highlight_pixmap,
 		  NULL);
 
     if (highlight != SHADOW_THICKNESS || shadow != 0)
@@ -179,6 +182,8 @@ static void flatten_button(Widget w)
 	XtVaSetValues(w,
 		      XmNhighlightThickness, SHADOW_THICKNESS,
 		      XmNshadowThickness, 0,
+		      XmNlabelPixmap, highlight_pixmap,
+		      XmNhighlightPixmap, label_pixmap,
 		      NULL);
     }
 }
@@ -187,9 +192,12 @@ static void unflatten_button(Widget w)
 {
     Dimension highlight = 0;
     Dimension shadow    = SHADOW_THICKNESS;
+    Pixmap highlight_pixmap, label_pixmap;
     XtVaGetValues(w,
 		  XmNhighlightThickness, &highlight,
 		  XmNshadowThickness, &shadow,
+		  XmNlabelPixmap, &label_pixmap,
+		  XmNhighlightPixmap, &highlight_pixmap,
 		  NULL);
 
     if (highlight != 0 || shadow != SHADOW_THICKNESS)
@@ -199,6 +207,8 @@ static void unflatten_button(Widget w)
 	XtVaSetValues(w,
 		      XmNhighlightThickness, 0,
 		      XmNshadowThickness, SHADOW_THICKNESS,
+		      XmNlabelPixmap, highlight_pixmap,
+		      XmNhighlightPixmap, label_pixmap,
 		      NULL);
     }
 }

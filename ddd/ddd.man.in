@@ -2253,7 +2253,9 @@ the button border is always shown.
 .PP
 If you enable `\fBColor\fR' buttons, toolbar images will be colored.
 Don't expect too much\(em\&even color toolbar images have a large
-amount of grey.
+amount of grey.  If \s-1@DDD@\s+1 was built using Motif 2.0 and later,
+you can also choose an `indeterminate' setting, causing the buttons to
+appear in grey by default and in color when entered.
 .PP
 By default, \s-1@DDD@\s+1 directs keyboard input to the item your
 mouse pointer points at.  If you prefer a click-to-type keyboard focus
@@ -3687,6 +3689,11 @@ also initially sent to \s-1XDB\s+1.  By default, it is empty.
 The following resources can be used to create and control tool bars and
 user-defined buttons.
 .TP
+.B "activeButtonColorKey (\fPclass\fB ColorKey)"
+The \s-1XPM\s+1 color key to use for the images of active buttons
+(entered or armed).  `\fBc\fR' means color, `\fBg\fR' (default) means
+grey, and `\fBm\fR' means monochrome.
+.TP
 .B "buttonCaptions (\fPclass\fB ButtonCaptions)"
 Whether the tool bar buttons should be shown using captions
 (`\fBon\fR', default) or not (`\fBoff\fR').  If neither captions nor
@@ -3708,8 +3715,9 @@ The geometry of the image within the button icon.  Default is
 `\fB25\(mu21\(pl2\(pl0\fR'.
 .TP
 .B "buttonColorKey (\fPclass\fB ColorKey)"
-The \s-1XPM\s+1 color key to use for buttons images.  `\fBc\fR' means
-color, `\fBg\fR' (default) means grey, and `\fBm\fR' means monochrome.
+The \s-1XPM\s+1 color key to use for the images of inactive buttons
+(non-entered or insensitive).  `\fBc\fR' means color, `\fBg\fR'
+(default) means grey, and `\fBm\fR' means monochrome.
 .TP
 .B "commandToolBar (\fPclass\fB ToolBar)"
 Whether the tool buttons (see the `\fBtoolButtons\fR' resource, below)
@@ -4988,13 +4996,15 @@ Update all visible glyphs.  Usually invoked after a scrolling operation.
 .SH "IMAGES"
 .\" ---------------
 .\"
-\s-1@DDD@\s+1 installs a number of pixmaps that may be used as pixmap
-resources, simply by giving a symbolic name.  For button pixmaps, two
-variants are also installed:
+\s-1@DDD@\s+1 installs a number of images that may be used as pixmap
+resources, simply by giving a symbolic name.  For button images,
+three variants are installed as well:
 .IP \(bu 2
-The suffix `\fB-xx\fR' indicates a disabled (insensitive) variant.
+The suffix `\fB-hi\fR' indicates a highlighted variant (Button is entered).
 .IP \(bu 2
 The suffix `\fB-arm\fR' indicates an armed variant (Button is pushed).
+.IP \(bu 2
+The suffix `\fB-xx\fR' indicates a disabled (insensitive) variant.
 .TP
 .B "break_at"
 `\fBBreak at ()\fR' button.
