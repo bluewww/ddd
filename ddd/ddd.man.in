@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-01-21" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-01-26" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -4262,6 +4262,54 @@ are subject to change without further notice.
 .B \-\-xdb
 Run \s-2XDB\s+2 as inferior debugger.
 .\"
+.\"
+.\" ---------------
+.SH "ENVIRONMENT"
+.\" ---------------
+.\"
+\s-2@DDD@\s+2 is controlled by the following environment variables:
+.PD 0
+.TP 20
+.B @DDD@_NO_SIGNAL_HANDLERS
+If set, \s-2@DDD@\s+2 does not catch fatal errors.  This is sometimes
+useful when debugging \s-2@DDD@\s+2.
+.TP
+.B @DDD@_STATE
+Root of \s-2@DDD@\s+2 state directory.  Default is `\fB$HOME/.@ddd@/\fR'.
+.TP
+.B @DDD@_SESSION
+If set, indicates a session to start, overriding all options.  This is
+used by \s-2@DDD@\s+2 when restarting itself.
+.TP
+.B @DDD@_SESSIONS
+\s-2@DDD@\s+2 session directory.  Default is `\fB$DDD_STATE/sessions/\fR'.
+.TP
+.B VSL_INCLUDE
+Where to search for \s-2VSL\s+2 include files.  Default is the current 
+directory.
+.PD
+The following environment variables are set by \s-2@DDD@\s+2:
+.PD 0
+.TP 20
+.B DDD_NAME
+Set to a string indicating the \s-2@DDD@\s+2 version.  By testing
+whether \fBDDD_NAME\fR is set, a debuggee (or inferior debugger) can
+determine whether it was invoked by \s-2@DDD@\s+2.
+.TP
+.B TERM
+Set to `\fBdumb\fR', the \s-2@DDD@\s+2 terminal type.  This is set for
+the inferior debugger only.  If the debuggee runs in a separate
+execution window, the debuggee's \fBTERM\fR value is set according to
+the `\fBtermType\fR' ressource (see `\fBRESOURCES\fR', above).
+.TP
+.B TERMCAP
+Set to `' (none), the \s-2@DDD@\s+2 terminal capabilities.
+.TP
+.B PAGER
+Set to `\fBcat\fR', the preferred \s-2@DDD@\s+2 pager.
+.PD
+.\"
+.\"
 .\" ---------------
 .SH "FILES"
 .\" ---------------
@@ -4269,7 +4317,7 @@ Run \s-2XDB\s+2 as inferior debugger.
 .PD 0
 .TP 20
 .B $HOME/.@ddd@/
-\s-2@DDD@\s+2 resource directory.
+\s-2@DDD@\s+2 state directory.
 .TP
 .B $HOME/.@ddd@/init
 Individual \s-2@DDD@\s+2 resource file.  \s-2@DDD@\s+2 options are
@@ -4296,6 +4344,9 @@ inferior debugger.
 .TP
 .B $HOME/.@ddd@/sessions/\fIsession\fB/history
 \s-2@DDD@\s+2 command history for \fIsession\fR.
+.TP
+.B $HOME/.@ddd@/sessions/.@ddd@/
+The \s-2@DDD@\s+2 `restart' session.
 .TP
 .B $HOME/.gdbinit
 \s-2GDB\s+2 initialization file.
