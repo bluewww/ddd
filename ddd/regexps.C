@@ -58,6 +58,9 @@ char regexps_rcsid[] =
 #define yywrap               zzwrap
 
 // Anything not in the list is `not matched'
+#ifdef ECHO
+#undef ECHO
+#endif
 #define ECHO                 return 0
 
 #include "rxscan.C"
