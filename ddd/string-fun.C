@@ -76,7 +76,7 @@ int get_positive_nr (const char* s)
 int get_positive_nr (/*const*/ string& s)
 {
     string int_string(s);
-    while (int_string.contains('(', 0))
+    while (int_string.contains('(', 0) || int_string.contains('[', 0))
 	int_string = int_string.after(0);
 
     int_string = int_string.through(rxint);
@@ -100,7 +100,7 @@ void read_leading_blanks (string& s)
 // ***************************************************************************
 string read_nr_str (string& s)
 {
-    while (s != "" && s[0] == '(')
+    while (s.length() > 0 && (s[0] == '(' || s[0] == '['))
 	s = s.after(0);
 
     if (s == "" || !isdigit(s[0]))
@@ -114,7 +114,7 @@ string read_nr_str (string& s)
 // ***************************************************************************
 int read_positive_nr (string& s)
 {
-    while (s != "" && s[0] == '(')
+    while (s.length() > 0 && (s[0] == '(' || s[0] == '['))
 	s = s.after(0);
 
     if (s == "" || !isdigit(s[0]))

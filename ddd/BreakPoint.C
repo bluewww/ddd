@@ -131,7 +131,8 @@ BreakPoint::BreakPoint (string& info_output)
     case DBX:
     {
 	read_leading_blanks (info_output);
-	if (info_output.contains ("stop ", 0))
+	if (info_output.contains ("stop ", 0)
+	    || info_output.contains ("stopped ", 0))
 	{
 	    info_output = info_output.after(RXblanks_or_tabs);
 	    read_leading_blanks (info_output);
@@ -142,6 +143,13 @@ BreakPoint::BreakPoint (string& info_output)
 		{
 		    // ``stop at "FILE":LINE''
 		    myfile_name = unquote(info_output.before(":"));
+		    info_output = info_output.after (":");
+		}
+		else if (info_output.contains('[', 0))
+		{
+		    // ``stop at [file:line ...]''
+		    myfile_name = info_output.before(":");
+		    myfile_name = myfile_name.after('[');
 		    info_output = info_output.after (":");
 		}
 		else
@@ -288,7 +296,8 @@ bool BreakPoint::update (string& info_output)
     {
 	// One may wonder why a DBX breakpoint should change... :-)
 	read_leading_blanks (info_output);
-	if (info_output.contains ("stop ", 0))
+	if (info_output.contains ("stop ", 0)
+	    || info_output.contains ("stopped ", 0))
 	{
 	    info_output = info_output.after(RXblanks_or_tabs);
 	    read_leading_blanks (info_output);
@@ -300,6 +309,13 @@ bool BreakPoint::update (string& info_output)
 		{
 		    // ``stop at "FILE":LINE''
 		    file_name = unquote(info_output.before(":"));
+		    info_output = info_output.after (":");
+		}
+		else if (info_output.contains('[', 0))
+		{
+		    // ``stop at [file:line ...]''
+		    file_name = info_output.before(":");
+		    file_name = file_name.after('[');
 		    info_output = info_output.after (":");
 		}
 		else
