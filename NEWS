@@ -11,8 +11,13 @@ DDD 3.1.2 fixes more minor bugs in DDD 3.1, most of them related to Perl.
 - [Perl] Arguments of `Program->Run' are processed correctly.
 - [Perl] You can redirect I/O in arguments of `Program->Run'.
 - [Perl] The separate execution window can now be used with Perl.
+- [Perl] DDD handles class prefixes when displaying variables.
+- [Perl] The backtrace window is updated after each command.
+- [Perl] The `Convert to Hex' and `Convert to Oct' conversions work.
+- [Perl] Refreshing the graph via `Data->Refresh Graph' works.
 - [Java] DDD uses $CLASSPATH to lookup Java classes on start-up.
 - [DBX] DDD supports execution positions as reported by DBX on AIX.
+- [DBX] The registers window is updated after each command.
 - [Build] The splash screen works with C++ compilers other than GCC.
 
 There are no new features in DDD 3.1.2.  You don't need to upgrade to
