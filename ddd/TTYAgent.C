@@ -465,14 +465,39 @@ void TTYAgent::open_master()
     }
 
 
-#if HAVE_GETPT && HAVE_PTSNAME
-    // getpt() - a GNU libc 2.1 feature
+#if HAVE_STREAMS
+    // Try STREAMS - a SVR4 feature
+    master = -1;
+
+#if HAVE_GETPT
+    // On systems with GNU libc 2.1, getpt() returns a new file
+    // descriptor for the next available master pseudo-terminal.  This
+    // function is a GNU extension.
     master = getpt();
+    if (master < 0)
+	_raiseIOMsg("getpt");
+#endif
+
+    if (master < 0 && stat("/dev/ptmx", &sb) == 0)
+    {
+	// On other systems, we try /dev/ptmx - a SVR4 feature
+	master = open_tty("/dev/ptmx");
+	if (master < 0)
+	    _raiseIOMsg("cannot open /dev/ptmx");
+    }
+
     if (master >= 0)
     {
+	// Finish setup
 	line = ptsname(master);
 	if (line == NULL)
 	    _raiseIOMsg("ptsname");
+	else if (grantpt(master) < 0)
+	    _raiseIOMsg("grantpt " + string(line));
+	else if (unlockpt(master) < 0)
+	    _raiseIOMsg("unlockpt " + string(line));
+	else if (!tty_ok(line))
+	    _raiseIOMsg("access " + string(line));
 	else
 	{
 	    // Everything ok - proceed
@@ -481,48 +506,13 @@ void TTYAgent::open_master()
 #ifdef TIOCFLUSH
 	    ioctl(master, TIOCFLUSH, (char *)0);
 #endif
+	    push = true;
 	    return;
 	}
 
 	close(master);
     }
-#endif
-
-
-#if HAVE_STREAMS
-    if (stat("/dev/ptmx", &sb) == 0)
-    {
-	// Try STREAMS - a SVR4 feature
-	master = open_tty("/dev/ptmx");
-	if (master >= 0)
-	{
-	    line = ptsname(master);
-	    if (line == NULL)
-		_raiseIOMsg("ptsname");
-	    else if (grantpt(master))
-		_raiseIOMsg("grantpt " + string(line));
-	    else if (unlockpt(master))
-		_raiseIOMsg("unlockpt " + string(line));
-	    else if (!tty_ok(line))
-		_raiseIOMsg("access " + string(line));
-	    else
-	    {
-		// Everything ok - proceed
-		_master_tty = ttyname(master);
-		_slave_tty  = line;
-#ifdef TIOCFLUSH
-		ioctl(master, TIOCFLUSH, (char *)0);
-#endif
-		push = true;
-		return;
-	    }
-
-	    close(master);
-	}
-	else
-	    _raiseIOMsg("cannot open /dev/ptmx");
-    }
-#endif
+#endif // HAVE_STREAMS
 
     // Try PTY's
     if (stat("/dev/pty/000", &sb) == 0)
@@ -652,11 +642,11 @@ void TTYAgent::open_slave()
     if (push)
     {
 	// Finish STREAMS setup.
-	if (ioctl(slave, I_PUSH, "ptem"))
+	if (ioctl(slave, I_PUSH, "ptem") < 0)
 	    _raiseIOWarning("ioctl ptem " + slave_tty());
-	if (ioctl(slave, I_PUSH, "ldterm"))
+	if (ioctl(slave, I_PUSH, "ldterm") < 0)
 	    _raiseIOWarning("ioctl ldterm " + slave_tty());
-	if (ioctl(slave, I_PUSH, "ttcompat"))
+	if (ioctl(slave, I_PUSH, "ttcompat") < 0)
 	{
 	    // On HP-UX and other systems, this call always fails.
 	    // Fortunately, it seems we can live without as well.  Hence,
