@@ -746,12 +746,7 @@ ProgramInfo::ProgramInfo()
     }
 
     if (file != NO_GDB_ANSWER)
-    {
-	string full_path = file;
-	if (!remote_gdb())
-	    full_path = SourceView::full_path(file);
-	add_to_recent(full_path);
-    }
+	add_to_recent(file);
 }
 
 

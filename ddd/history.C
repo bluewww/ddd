@@ -44,19 +44,23 @@ char history_rcsid[] =
 #include "HelpCB.h"
 #include "MString.h"
 #include "MakeMenu.h"
+#include "SourceView.h"
 #include "StringA.h"
 #include "VoidArray.h"
 #include "args.h"
 #include "cook.h"
+#include "cwd.h"
 #include "ddd.h"
 #include "disp-read.h"
 #include "editing.h"
+#include "filetype.h"
 #include "home.h"
 #include "logo.h"
 #include "misc.h"
 #include "mydialogs.h"
 #include "post.h"
 #include "regexps.h"
+#include "shell.h"
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
@@ -214,6 +218,12 @@ void load_history(const string& file)
 
 	assert(gdb_history.size() == 0);
 
+	// If the first command in history is a `file' command,
+	// insert them all and disregard later ones.
+	bool first_command = true;
+	bool first_is_file = false;
+	bool get_files     = true;
+
 	while (is)
 	{
 	    char line[BUFSIZ];
@@ -222,15 +232,36 @@ void load_history(const string& file)
 	    is.getline(line, sizeof(line));
 	    if (line[0] != '\0')
 	    {
-		gdb_history += line;
-		add_to_arguments(line);
-		update_combo_boxes(line);
+		bool added = false;
 		if (is_file_cmd(line, gdb))
 		{
-		    string arg = line;
-		    arg = arg.after(rxwhite);
-		    add_to_recent(arg);
+		    if (first_command)
+			first_is_file = true;
+
+		    if (get_files)
+		    {
+			string arg = line;
+			arg = arg.after(rxwhite);
+			add_to_recent(arg);
+			added = first_is_file;
+		    }
 		}
+		else
+		{
+		    if (first_is_file)
+			get_files = false;
+		    if (first_command)
+			first_is_file = false;
+		}
+
+		if (!added)
+		{
+		    gdb_history += line;
+		    add_to_arguments(line);
+		    update_combo_boxes(line);
+		}
+
+		first_command = false;
 	    }
 	}
 
@@ -547,15 +578,18 @@ static StringArray recent_files;
 // Add FILE to recent file history
 void add_to_recent(const string& file)
 {
+    string full_path = SourceView::full_path(file);
+
     if (recent_files.size() > 0 && 
-	recent_files[recent_files.size() - 1] == file)
+	recent_files[recent_files.size() - 1] == full_path)
 	return;			// Already in list
 
     for (int i = 0; i < recent_files.size(); i++)
-	if (recent_files[i] == file)
-	    recent_files[i] = ""; // Clear entry
+	if (recent_files[i] == full_path ||
+	    !remote_gdb() && same_file(recent_files[i], full_path))
+	    recent_files[i] = ""; // Clear old entry
 
-    recent_files += file;
+    recent_files += full_path;
     update_recent_menus();
 }
 
@@ -563,13 +597,57 @@ void add_to_recent(const string& file)
 void get_recent(StringArray& arr)
 {
     for (int i = recent_files.size() - 1; i >= 0; i--)
-	if (recent_files[i] != "")
-	    arr += recent_files[i];
+    {
+	string& recent = recent_files[i];
+	if (recent == "")
+	    continue;		// Removed
+
+	arr += recent_files[i];
+    }
 }
 
 
 // Menus to be updated
 static VoidArray menus;
+
+static const char *basename(const char *name)
+{
+    const char *base = name;
+
+    while (*name)
+    {
+	if (*name++ == '/')
+	    base = name;
+    }
+
+    return base;
+}
+
+// FULL_PATH is /X/Y/Z/NAME; expand NAME to Z/NAME.
+static bool expand_label(string& name, const string& full_path)
+{
+    // Set index to the last `/' before NAME
+    int index = full_path.length() - name.length();
+    index = full_path.index('/', index - full_path.length() - 1);
+
+    if (index >= 1)
+    {
+	// Set index to the last `/' before Z
+	index--;
+	index = full_path.index('/', index - full_path.length() - 1);
+    }
+
+    if (index >= 1)
+    {
+	name = full_path.after(index);
+	return true;
+    }
+    else
+    {
+	name = full_path;
+	return false;
+    }
+}
 
 static void update_recent_menu(MMDesc *items)
 {
@@ -577,25 +655,56 @@ static void update_recent_menu(MMDesc *items)
     get_recent(recent_files);
 
     int i;
+
+    // Start with base names
+    StringArray labels;
     for (i = 0; i < recent_files.size() && items[i].widget != 0; i++)
+	labels += basename(recent_files[i]);
+
+    // While there are any duplicate labels, add the directory names
+    i = 0;
+    while (i < labels.size())
     {
-	Widget w = items[i].widget;
-	string file = recent_files[i];
-	if (file.contains(gethome(), 0))
-	    file = "~" + file.after(gethome());
+	bool expanded = false;
+	for (int j = i + 1; j < labels.size(); j++)
+	{
+	    if (labels[i] == labels[j])
+	    {
+		if (expand_label(labels[j], recent_files[j]))
+		    expanded = true;
+	    }
+	}
 
+	if (expanded && expand_label(labels[i], recent_files[i]))
+	{
+	    // Try again with expanded labels
+	}
+	else
+	{
+	    i++;
+	}
+    }
+
+    // Set labels
+    for (i = 0; i < labels.size(); i++)
+    {
 	MString label(itostring(i + 1) + " ");
-	label += tt(file);
+	label += tt(labels[i]);
 
+	Widget w = items[i].widget;
 	set_label(w, label);
+
+	if (!remote_gdb() && !is_exec_file(recent_files[i]))
+	    set_sensitive(w, false); // File is not loadable now
+	else
+	    set_sensitive(w, true);
+
 	XtManageChild(w);
     }
 
+    // Unmanage remaining items
     for (; items[i].widget != 0; i++)
-    {
-	Widget w = items[i].widget;
-	XtUnmanageChild(w);
-    }
+	XtUnmanageChild(items[i].widget);
 }
 
 static void update_recent_menus()
