@@ -520,7 +520,8 @@ void complete_tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 //-----------------------------------------------------------------------------
 
 #if WITH_READLINE
-static char *complete_readline(char *text, int state)
+extern "C" {
+static char *complete_readline(const char *text, int state)
 {
     static string reply;
 
@@ -559,12 +560,13 @@ static char *complete_readline(char *text, int state)
     strcpy(ret, completion.chars());
     return ret;
 }
+}
 
 // Initialize completion
 struct CompletionInitializer {
     CompletionInitializer()
     {
-	rl_completion_entry_function = (Function *)complete_readline;
+	rl_completion_entry_function = complete_readline;
     }
 };
 

@@ -612,7 +612,7 @@ LIBRX      =
 LIBTERMCAP = @LIBTERMCAP@
 # -liberty library (../libiberty/libiberty.a)
 LIBIBERTY  = @LIBIBERTY@
-# -lreadline library (../readline/libreadline.a)
+# -lreadline library (from system)
 LIBREADLINE = @LIBREADLINE@
 # Yacc library (-ly)
 LIBY       = @LIBY@

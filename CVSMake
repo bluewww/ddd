@@ -31,7 +31,6 @@ autoheader
 libtoolize
 autoconf
 automake --include-deps --add-missing --verbose
-(cd readline && autoheader && autoconf)
 (cd termcap && autoconf)
 (cd libiberty && autoheader && autoconf)
 

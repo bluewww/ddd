@@ -1,8 +1,0 @@
-configure
-autom4te.cache
-config.h.in
-Makefile
-config.h
-config.log
-config.status
-stamp-h

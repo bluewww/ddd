@@ -334,7 +334,6 @@ dnl If we already have -liberty, -ltermcap, etc.,
 dnl there is no need to build them.
 ddd_have_termcap=false
 ddd_have_libiberty=false
-ddd_have_readline=false
 dnl
 dnl check for ncurses
 ncurses_includes=
@@ -389,6 +388,7 @@ if test "x${ddd_have_termcap}" = "xfalse"; then
 fi
 dnl
 dnl Check for -lreadline (optional)
+dnl
 readline_support=no
 AC_ARG_WITH(readline,
 AS_HELP_STRING([--with-readline],
@@ -401,58 +401,58 @@ AS_HELP_STRING([--with-readline],
 ])
 LIBREADLINE=""
 if test "x${readline_support}" != "xno"; then
-  AC_ARG_WITH(readline-includes,
+  AC_MSG_NOTICE([Readline support required.])
+  ddd_readline_include_found=false
+  ddd_readline_lib_found=false
+  AC_ARG_WITH([readline-includes],
   AS_HELP_STRING([--with-readline-includes=DIR],
                  [Readline include files are in DIR]),[
-    readline_includes="$withval"
-    case "$readline_includes" in
-    no) ;;
-    yes)
-      AC_CHECK_HEADER(readline/readline.h)
-      ;;
-    *)
-      _cppflags="${CPPFLAGS}"
-      CPPFLAGS="-I$readline_includes $CPPFLAGS"
-      AC_CHECK_HEADER(readline/readline.h,,[CPPFLAGS="${_cppflags}"])
-      ;;
-    esac
+   readline_includes="$withval"
+   case "$readline_includes" in
+   no) ;;
+   yes)
+    AC_CHECK_HEADER([readline/readline.h],[ddd_readline_include_found=yes],
+                    AC_MSG_ERROR([Cannot find readline include files in given directory.]))
+    ;;
+   *)
+    CPPFLAGS="-I$readline_includes $CPPFLAGS"
+    AC_CHECK_HEADER([readline/readline.h],[ddd_readline_include_found=yes],
+                    AC_MSG_ERROR([Cannot find readline include files in given directory.]))
+    ;;
+   esac
   ])
-  AC_ARG_WITH(readline-libraries,
+  AC_ARG_WITH([readline-libraries],
   AS_HELP_STRING([--with-readline-libraries=DIR],
                  [Readline libraries are in DIR]),[
-    readline_libraries="$withval"
-    case "$readline_libraries" in
-    no) ;;
-    yes)
-      AC_CHECK_LIB(readline, readline,
-                   [ddd_have_readline=true
-                   LIBREADLINE="-lreadline"], ,
-                   $LIBTERMCAP)
-      ;;
-    *)
-      _ldflags="${LDFLAGS}"
-      LDFLAGS="-L$readline_libraries $LDFLAGS"
-      AC_CHECK_LIB(readline, readline,
-                  [ddd_have_readline=true
-		  LIBREADLINE="-L$readline_libraries -lreadline"], ,
-                  $LIBTERMCAP)
-      LDFLAGS="${_ldflags}"
-      ;;
-    esac])
+   readline_libraries="$withval"
+   case "$readline_libraries" in
+   no) ;;
+   yes)
+    AC_CHECK_LIB([readline],[readline],[ddd_readline_lib_found=true
+                  LIBREADLINE="-lreadline"],
+	 	 AC_MSG_ERROR([Cannot find readline library in given directory.]),
+                 [$LIBTERMCAP])
+    ;;
+   *)
+    LDFLAGS="-L$readline_libraries $LDFLAGS"
+    AC_CHECK_LIB([readline],[readline],[ddd_readline_lib_found=true
+		  LIBREADLINE="-L$readline_libraries -lreadline"],
+	 	 AC_MSG_ERROR([Cannot find readline library in given directory.]),
+                 [$LIBTERMCAP])
+    ;;
+   esac
+  ])
 dnl readline has not been found, test if readline is available on the system
-  if test "x${ddd_have_readline}" != "true"; then
-    AC_CHECK_LIB(readline, readline,
-                [ddd_have_readline=true
-                LIBREADLINE="-lreadline"], ,
-                $LIBTERMCAP)
+  if test "${ddd_readline_include_found}" != "true"; then
+    AC_CHECK_HEADER([readline/readline.h],,
+                    AC_MSG_ERROR([Cannot find readline include files.]))
   fi
-  if test "${ddd_have_readline}" != true; then
-    LIBREADLINE="../readline/libreadline.a"
+  if test "${ddd_readline_lib_found}" != "true"; then
+    AC_CHECK_LIB([readline],[readline],[LIBREADLINE="-lreadline"],
+	 	 AC_MSG_ERROR([Cannot find readline library.]),
+                 [$LIBTERMCAP])
   fi
   AC_DEFINE([WITH_READLINE],1,[Define if you want readline support in DDD.])
-else
-dnl do not build built-in readline
-  ddd_have_readline=true
 fi
 AC_SUBST(LIBREADLINE)
 dnl
@@ -502,10 +502,6 @@ if test "x${ddd_valgrind_include_found}" != "xno"; then
 fi
 dnl
 dnl
-if test "$ddd_have_readline" != true; then
-    AC_MSG_NOTICE([Using bundled readline library.])
-    AC_CONFIG_SUBDIRS([readline])
-fi
 if test "$ddd_have_libiberty" != true; then
     AC_MSG_NOTICE([Using bundled libiberty library.])
     AC_CONFIG_SUBDIRS([libiberty])
