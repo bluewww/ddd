@@ -48,7 +48,6 @@ extern Widget tool_buttons_w;
 extern void initial_popup_shell(Widget w);
 extern void popdown_shell(Widget w);
 extern void iconify_shell(Widget w);
-extern int running_shells();
 
 extern void gdbOpenCommandWindowCB  (Widget, XtPointer, XtPointer);
 extern void gdbOpenSourceWindowCB   (Widget, XtPointer, XtPointer);
@@ -61,6 +60,8 @@ extern void gdbCloseSourceWindowCB  (Widget, XtPointer, XtPointer);
 extern void gdbCloseDataWindowCB    (Widget, XtPointer, XtPointer);
 extern void gdbCloseExecWindowCB    (Widget, XtPointer, XtPointer);
 extern void gdbCloseToolWindowCB    (Widget, XtPointer, XtPointer);
+
+extern void DDDCloseCB              (Widget, XtPointer, XtPointer);
 
 // Register this event handler with all shells
 extern void StructureNotifyEH(Widget, XtPointer, XEvent *, Boolean *);

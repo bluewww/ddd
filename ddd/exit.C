@@ -273,19 +273,6 @@ static void ddd_fatal(int sig)
     longjmp(main_loop_env, sig);
 }
 
-// Close callback
-void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
-{
-    if (running_shells() == 1)
-    {
-	DDDExitCB(w, client_data, call_data);
-	return;
-    }
-
-    Widget shell = findTopLevelShellParent(w);
-    popdown_shell(shell);
-}
-
 static void SaveOptionsAndExitCB(Widget w, XtPointer client_data,
 				 XtPointer call_data)
 {

@@ -38,10 +38,12 @@ const char windows_rcsid[] =
 
 #include "assert.h"
 #include "exectty.h"
+#include "cmdtty.h"
 #include "AppData.h"
 #include "exit.h"
 #include "ddd.h"
 #include "SourceView.h"
+#include "findParent.h"
 
 #include <Xm/Xm.h>
 #include <X11/Xutil.h>
@@ -149,7 +151,6 @@ void popup_shell(Widget w)
 
     // Deiconify window
     XMapWindow(XtDisplay(w), XtWindow(w));
-
     raise_shell(w);
 }
 
@@ -331,6 +332,41 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 }
 
 
+//-----------------------------------------------------------------------------
+// Closing shells
+//-----------------------------------------------------------------------------
+
+// Return number of running input shells
+static int running_shells()
+{
+    int shells = 0;
+
+    if (command_shell_state != PoppedDown)
+	shells++;
+    if (source_view_shell_state != PoppedDown)
+	shells++;
+    if (data_disp_shell_state != PoppedDown)
+	shells++;
+    if (tty_running())
+	shells++;
+
+    return shells;
+}
+
+// Generic close callback
+void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    if (running_shells() == 1)
+    {
+	DDDExitCB(w, client_data, call_data);
+	return;
+    }
+
+    Widget shell = findTopLevelShellParent(w);
+    popdown_shell(shell);
+}
+
+// Specific close callbacks
 void gdbCloseCommandWindowCB(Widget w, 
 			    XtPointer client_data, XtPointer call_data)
 {
@@ -381,6 +417,10 @@ void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
 }
 
 
+//-----------------------------------------------------------------------------
+// Opening shells
+//-----------------------------------------------------------------------------
+
 void gdbOpenCommandWindowCB(Widget, XtPointer, XtPointer)
 {
     popup_shell(command_shell);
@@ -406,18 +446,6 @@ void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
 void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 {
     popup_shell(tool_shell);
-}
-
-
-//-----------------------------------------------------------------------------
-// Shell counter
-//-----------------------------------------------------------------------------
-
-int running_shells()
-{
-    return int(command_shell_state != PoppedDown)
-	+ int(source_view_shell_state != PoppedDown)
-	+ int(data_disp_shell_state != PoppedDown);
 }
 
 
