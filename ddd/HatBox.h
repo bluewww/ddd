@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse HatBox
+// A box with a single child
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,9 +34,8 @@
 #endif
 
 
-// Eine HatBox stuelpt sich wie ein Hut ueber eine andere Box, um
-// bestimmte Eigenschaften zu veraendern (insbesondere Groesse,
-// Ausdehnung usw.).
+// A HatBox envelops a child (like a hat) to change specific
+// properties such as size or extent.
 
 #include "Box.h"
 #include "Widget.h"

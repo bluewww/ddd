@@ -161,7 +161,7 @@ public:
     // Return free space in lower right corner
     virtual BoxSize corner() const
     {
-	// Default: Platz der Breite 0 rechts von Box
+	// Default: space of zero width on the right of box
 	return BoxSize(0, _size[Y]);
     }
 
@@ -223,7 +223,7 @@ public:
     BoxRegion region(BoxPoint p = BoxPoint(-1,-1)) const;   // current region
     Data *data(BoxPoint p = BoxPoint(-1,-1)) const;         // current data
     string name(BoxPoint p = BoxPoint(-1,-1)) const;        // current name
-    bool selected(BoxPoint p = BoxPoint(-1,-1)) const;   // Flag: selected?
+    bool selected(BoxPoint p = BoxPoint(-1,-1)) const;      // Flag: selected?
     string info(BoxPoint p = BoxPoint(-1,-1)) const;        // Debugging info
 
     // Return the box that is to be matched

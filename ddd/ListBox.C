@@ -1,5 +1,5 @@
 // $Id$
-// Klasse ListBox (Implementation)
+// Box lists
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -42,7 +42,7 @@ char ListBox_rcsid[] =
 
 DEFINE_TYPE_INFO_1(ListBox, CompositeBox)
 
-// _last neu berechnen
+// Recompute _last
 void ListBox::_relast()
 {
     const ListBox *l;
@@ -51,12 +51,12 @@ void ListBox::_relast()
     _last = l;
 }
 
-// ListBox ausgeben
+// Dump
 void ListBox::dump(ostream &s) const
 {
     if (VSEFlags::include_list_info)
     {
-	// Liste formal ausgeben
+	// Dump formally
 	s << "[";
 	if (!isEmpty())
 	    s << *head() << ":" << *tail();
@@ -64,7 +64,7 @@ void ListBox::dump(ostream &s) const
     }
     else
     {
-	// Etwas geschickter formulieren
+	// Use cuter syntax
 
 	s << "(";
 
@@ -91,16 +91,14 @@ void ListBox::dump(ostream &s) const
     }
 }
 
-// Liste anhaengen
+// Append list
 ListBox *ListBox::cons(ListBox *b)
 {
-    // funktioniert nur, wenn Liste != [],
-    // da in diesem Fall die Liste selbst ersetzt werden muesste
     assert(!isEmpty());
 
     if (!b->isEmpty())
     {
-	// Letzte ListBox durch b ersetzen
+	// Replace final ListBox by B
 	const ListBox *t = this;
 	ListBox *attach = 0;
 
@@ -124,11 +122,11 @@ ListBox *ListBox::cons(ListBox *b)
 }
 
 
-// Liste abhaengen
+// Detach list
 void ListBox::uncons(ListBox *attach)
 {
-    // Attach ist der Rueckgabewert einer fruehren cons()-Operation.
-    // l.uncons(attach) macht attach = l.cons(b) rueckgaengig.
+    // ATTACH must be the return value of a cons() operation.
+    // l.uncons(attach) undoes attach = l.cons(b).
 
     if (attach)
     {
@@ -138,28 +136,28 @@ void ListBox::uncons(ListBox *attach)
 }
 
 
-// Auf Gleichheit pruefen
+// Check for equality
 bool ListBox::matches(const Box &b, const Box *) const
 {
     return CompositeBox::matches(b);
 }
 
-// Box markieren
+// Mark list
 Box *ListBox::tag(Data *d, DataLink *dl)
 {
     if (!isEmpty())
     {
-	// In Listen: alle Soehne markieren
+	// In a list: mark all children
 	_head() = _head()->tag(d, dl);
 	_tail() = _tail()->tag(d, dl);
     }
 
-    // Die Liste selbst nicht markieren, da sie nie angezeigt wird
+    // The list itself is never marked, since it is not drawn
     return this;
 }
 
 
-// Repraesentations-Invariante
+// Representation invariant
 bool ListBox::OK() const
 {
     assert (CompositeBox::OK());

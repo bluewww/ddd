@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse BinBox
+// Bin boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -33,8 +33,7 @@
 #pragma interface
 #endif
 
-// Eine BinBox setzt die Ausdehung ihres Sohnes auf 1, wenn sie > 1 ist.
-
+// A BinBox sets the alignment of its single child to 1, if it is > 1.
 
 #include "HatBox.h"
 

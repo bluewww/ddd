@@ -1,5 +1,5 @@
 // $Id$ 
-// Deklaration Klasse DummyBox
+// `Dummy' boxes (for pattern matching)
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,9 +34,10 @@
 #endif
 
 
-// Eine DummyBox wird -- fast ausschliesslich -- zum Pattern-Matching
-// verwendet. Ist 'matchesAll' gesetzt, matcht die DummyBox jede
-// andere Box (sonst nur eine andere DummyBox).
+// A DummyBox is used in pattern matching.
+
+// If `DummyBox::matchesAll' is set, a DummyBox matches any other box
+// (otherwise, only another DummyBox).
 
 
 #include "strclass.h"
@@ -48,15 +49,14 @@
 
 // DummyBox
 
-// Wir leiten eine DummyBox von einer ListBox ab, um mit ihr
-// auch Listen matchen zu koennen.
+// A DummyBox is derived from ListBox, such that we can match Lists.
 
 class DummyBox: public ListBox {
 public:
     DECLARE_TYPE_INFO
 
 protected:
-    // Kopieren
+    // Copy
     DummyBox(const DummyBox& box):
 	ListBox(box)
     {}
@@ -66,14 +66,14 @@ protected:
     bool matches (const Box &b, const Box *callbackArg = 0) const;
 
 public:
-    // Konstruktor
+    // Constructor
     DummyBox(char *t = "DummyBox"):
 	ListBox(t)
     {}
 
     Box *dup() const { return new DummyBox(*this); }
 
-    static bool matchesAll;          // Flag: alles Matchen?
+    static bool matchesAll;          // Flag: match all?
 
     bool isDummyBox() const { return true; }
 };

@@ -40,7 +40,7 @@ char MarkBox_rcsid[] =
 
 DEFINE_TYPE_INFO_1(MarkBox, TransparentHatBox)
 
-// draw MarkBox
+// Draw
 void MarkBox::_draw(Widget w, 
 		    const BoxRegion& r, 
 		    const BoxRegion& exposed,

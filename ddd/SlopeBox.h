@@ -1,5 +1,5 @@
 // $Id$
-// Klasse SlopeBox (Deklaration)
+// Slope boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -58,7 +58,7 @@ public:
 };
 
 
-// RiseBox
+// RiseBox (`/')
 
 class RiseBox: public SlopeBox {
 public:
@@ -92,7 +92,7 @@ public:
 };
 
 
-// FallBox
+// FallBox (`\')
 
 class FallBox: public SlopeBox {
 public:

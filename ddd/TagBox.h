@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse TagBox
+// Tagged boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -72,6 +72,7 @@ protected:
 
     void dump(ostream& s) const;
 
+    // Find TagBox within P
     const TagBox *findTag(const BoxPoint&) const;
 
 public:

@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse TagBox
+// Tagged boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -47,39 +47,39 @@ DEFINE_TYPE_INFO_1(TagBox, MarkBox)
 
 // TagBox
 
-// Default-Funktionen
+// Default functions
 
-// Default-Duplizier-Funktion
+// Default duplicator
 static Data *default_link(Data *dta)
 {
     return dta;
 }
 
-// Default-Freigabe-Funktion
+// Default deletion
 static void default_unlink(Data *)
 {
     return;
 }
 
-// Dummy-Funktion zur Bestimmung, ob ausgewaehlt
+// Default selection
 static bool default_selected(Data *)
 {
-    return false;   // Default: "nicht ausgewaehlt" zurueckgeben
+    return false;   // Default: non-selected
 }
 
-// Dummy-Funktion zur Bestimmung des Tag-Namens
+// Default tag name
 static string default_name(Data *)
 {
-    return "";      // Default: Kein Name
+    return "";      // Default: no name
 }
 
-// Dummy-Funktion zur Bestimmung der Tag-Information
+// Default tag info
 static string default_info(Data *dta)
 {
-    return default_name(dta);   // Default: Keine Information
+    return default_name(dta);   // Default: none
 }
 
-// Alle Dummyfunktionen
+// All default functions
 DataLink TagBox::default_datalink =
 {
     default_link,
@@ -90,45 +90,42 @@ DataLink TagBox::default_datalink =
 };
 
 
-// TagBox suchen, in der Punkt p liegt und tag zurueckgeben
+// Find TagBox within P
 const TagBox *TagBox::findTag(const BoxPoint& p) const
 {
-    // Sonderfall: obersten Tag zurueckgeben
+    // Special case: return outermost tag
     if (p == BoxPoint(-1, -1))
 	return this;
 
     if (!(p <= _region))
     {
-	// Punkt nicht in BoxRegion dieser TagBox
-	return 0;       // nicht gefunden
+	return 0;       // P does not lie withing the region of this box
     }
 
-    // Soehne absuchen: wenn Sohn gefunden, diesen waehlen
+    // Check children
     const TagBox *subbox = HatBox::findTag(p);
 
     if (subbox != 0)
-	return subbox;  // gefunden? Dann diese TagBox zurueckgeben
+	return subbox;  // found lower child
     else
-	return this;    // sonst hier bleiben.
+	return this;    // take this one
 }
 
 
-// TagBox anzeigen
+// Draw TagBox
 void TagBox::_draw(Widget w, 
 		   const BoxRegion& r, 
 		   const BoxRegion& exposed,
 		   GC gc, 
 		   bool context_selected) const
 {
-    // Sohn anzeigen
+    // Draw child
     bool nodeSelected = __selected();
     MarkBox::_draw(w, r, exposed, gc, nodeSelected);
 
     if (context_selected != nodeSelected)
     {
-	// Wenn propagiertes Select-Flag nicht mit Select-Status des
-	// Knotens uebereinstimmt: angezeigte BoxRegion 
-	// nachtraeglich invertieren
+	// Invert the BoxRegion just drawn
 
 	BoxRegion clipRegion = exposed & r;    // Schnittmenge
 
@@ -145,7 +142,7 @@ void TagBox::_draw(Widget w,
 }
 
 
-// TagBox ausgeben
+// Dump TagBox
 void TagBox::dump(ostream& s) const
 {
     MarkBox::dump(s);

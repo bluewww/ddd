@@ -1,5 +1,5 @@
 // $Id$
-// Klasse ArcBox (Deklaration)
+// Arc boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -49,8 +49,8 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    BoxDegrees _start;     // Beginn Bogen
-    BoxDegrees _length;    // Laenge Bogen
+    BoxDegrees _start;     // Start of arc
+    BoxDegrees _length;    // Length of arc
 
     void __draw(Widget w, 
 		const BoxRegion& region, 
@@ -80,9 +80,9 @@ protected:
     }
 
 public:
-    ArcBox(BoxDegrees start, BoxDegrees length, BoxCoordinate linethickness = 1, 
-	char * t = "ArcBox"):
-	LineBox(linethickness, t), _start(start), _length(length)
+    ArcBox(BoxDegrees start, BoxDegrees length,
+	   BoxCoordinate linethickness = 1, char * t = "ArcBox")
+	: LineBox(linethickness, t), _start(start), _length(length)
     {}
 
     Box *dup() const { return new ArcBox(*this); }
@@ -91,7 +91,7 @@ public:
 			const BoxRegion& region, 
 			const PrintGC& gc) const;
 
-    // Ressourcen
+    // Resources
     BoxDegrees start() const { return _start; }
     BoxDegrees length() const { return _length; }
 };

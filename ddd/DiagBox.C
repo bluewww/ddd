@@ -1,5 +1,5 @@
 // $Id$
-// Klasse DiagBox (Implementation)
+// Diagnostic boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -46,7 +46,7 @@ DEFINE_TYPE_INFO_1(DiagBox, PrimitiveBox)
 
 // DiagBox
 
-// DiagBox anzeigen
+// Draw DiagBox
 void DiagBox::_draw(Widget w, 
 		    const BoxRegion& r, 
 		    const BoxRegion& exposed, GC gc,

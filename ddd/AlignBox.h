@@ -1,5 +1,5 @@
 // $Id$
-// Klasse AlignBox (Deklaration)
+// Box alignments
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,12 +34,13 @@
 #endif
 
 
-// Eine AlignBox ist ein Behaelter fuer eine Anordnung von Boxen.
-// Eine HAlignBox ordnet Boxen nebeneinander ("horizontal") an (in VSL: &)
-// eine VAlignbox uebereinander ("vertikal") (in VSL: |),
-// eine UAlignBox an der gleichen Stelle (in VSL: ^) und
-// eine TAlignBox textuell (in VSL: ~), d.h. wie Buchstaben
-// aneinandergereiht.
+// An AlignBox is a container for an alignment of boxes.
+
+// A HAlignBox is a horizontal alignment (in VSL: &)
+// A VAlignbox is a vertical alignment (in VSL: |),
+// A UAlignBox places its members at the same place (in VSL: ^) 
+// A TAlignBox aligns its members like text blocks, from left to right
+// (in VSL: ~)
 
 
 #include "assert.h"
@@ -54,13 +55,13 @@ public:
     DECLARE_TYPE_INFO
 
 protected:
-    BoxSize _corner; // Platz in unterer rechter Ecke
+    BoxSize _corner; // Space in lower right corner
 
     AlignBox(const AlignBox& box):
 	CompositeBox(box), _corner(box._corner)
     {}
 
-    // Groesse uebernehmen
+    // Take size from B
     void setSize(Box *b)
     {
 	thesize()   = b->size();
@@ -68,26 +69,26 @@ protected:
 	_corner     = b->corner();
     }
 
-    // Groesse hinzufuegen
+    // Add a new size
     virtual void addSize(Box *b) = 0;
 
-    // Groesse neu berechnen
+    // Recompute size
     Box *resize();
 
+    // Add B as child
     void addChild(Box *b)
-    // Box als Sohn hinzufuegen
     {
-	// Sohn in CompositeBox eintragen
+	// Add child
 	CompositeBox::addChild(b);
 
-	// Groesse hinzufuegen (bzw. setzen, wenn erster)
+	// Set or add size
 	if (nchildren() == 1)
-	    setSize(b);     // erster Sohn: Groesse uebernehmen
+	    setSize(b);     // 1st child: set size
 	else
-	    addSize(b);     // spaeterer Sohn: Groesse hinzufuegen
+	    addSize(b);     // later child: add size
     }
 
-    // Alignment (X/Y) anzeigen
+    // Draw it
     void drawAlign(Widget w, 
 		   const BoxRegion& r, 
 		   const BoxRegion& exposed,

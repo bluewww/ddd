@@ -1,5 +1,5 @@
 // $Id$
-// Klasse TransparentHatBox
+// Transparent hat box
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.

@@ -1,5 +1,5 @@
 // $Id$
-// Konstanten fuer vordefinierte VSL-Funktionen
+// Constants
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -37,18 +37,21 @@
 #include "Box.h"
 #include "PrimitiveB.h"
 
+// True
 class TrueBox: public SquareBox {
 public:
     DECLARE_TYPE_INFO
     TrueBox(): SquareBox(true) {}
 };
 
+// False
 class FalseBox: public SquareBox {
 public:
     DECLARE_TYPE_INFO
     FalseBox(): SquareBox(false) {}
 };
 
+// Zero
 class NullBox: public SquareBox {
 public:
     DECLARE_TYPE_INFO

@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse HFixBox, VFixBox
+// Fixed size boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,7 +34,7 @@
 #endif
 
 
-// Eine HFixBox oder VFixBox setzt die Ausdehung ihres Sohnes auf 0.
+// A HFixBox or VFixBox sets the extent of its child to zero.
 
 
 #include "HatBox.h"

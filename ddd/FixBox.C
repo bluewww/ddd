@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klassen HFixBox, VFixBox
+// HFixBox & VFixBox
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -43,7 +43,7 @@ DEFINE_TYPE_INFO_1(VFixBox, FixBox)
 
 // HFixBox
 
-// hfix() ausgeben
+// Dump
 void HFixBox::dump(ostream& s) const
 {
     s << "hfix(" << *_box << ")";
@@ -52,7 +52,7 @@ void HFixBox::dump(ostream& s) const
 
 // VFixBox
 
-// vfix() ausgeben
+// Dump
 void VFixBox::dump(ostream& s) const
 {
     s << "vfix(" << *_box << ")";

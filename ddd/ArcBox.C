@@ -1,5 +1,5 @@
 // $Id$
-// Klasse ArcBox (Implementation)
+// Arc boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -50,7 +50,7 @@ DEFINE_TYPE_INFO_1(ArcBox, LineBox)
 
 // ArcBox
 
-// ArcBox anzeigen
+// Draw
 void ArcBox::__draw(Widget w, 
 		    const BoxRegion& r, 
 		    const BoxRegion& , GC gc, 
@@ -59,22 +59,16 @@ void ArcBox::__draw(Widget w,
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();
 
-    // Bei Teilboegen: Koordinaten anpassen
+    // Adapt coordinates for partial arcs
 
-    /*
-	An sich muesste hier eine vollstaendige Behandlung
-	fuer alle moeglichen Ellipsensegmente stattfinden.
-	Dies ist aber verhaeltnismaessig aufwendig und
-	wegen der in diesem Punkt obskuren X11-Dokumentation
-	eher langwierig zu implementieren. Deshalb werden
-	hier nur Viertelkreise behandelt.
-    */
+    // Only the most common cases (i.e. multiples of 90) are handled
+    // here.
 
     switch (_length) {
 	case 360:   // do nothing
 	    break;
 
-	case 180:   // Groesse der Anzeigeflaeche verdoppeln
+	case 180:   // Double space
 	    switch (_start) {
 		case 0:
 		    space[Y] *= 2;
@@ -95,7 +89,7 @@ void ArcBox::__draw(Widget w,
 	    }
 	    break;
 
-	case 90:    // Groesse der Anzeigeflaeche vervierfachen
+	case 90:    // Quadruple space
 	    switch (_start) {
 		case 0:
 		    origin[X] -= space[X];
@@ -130,7 +124,7 @@ void ArcBox::dump(ostream& s) const
 }
 
 
-// ArcBox drucken
+// Print
 
 #define POINT(i) (os << points[i][X] << " " << points[i][Y] << " ")
 

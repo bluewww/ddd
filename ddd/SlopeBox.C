@@ -46,7 +46,7 @@ DEFINE_TYPE_INFO_1(RiseBox, SlopeBox)
 
 // FallBox
 
-// FallBox anzeigen
+// Draw
 void FallBox::__draw(Widget w, 
 		     const BoxRegion& r, 
 		     const BoxRegion&, 
@@ -60,7 +60,7 @@ void FallBox::__draw(Widget w,
 	origin[X] + space[X], origin[Y] + space[Y]);
 }
 
-// FallBox drucken
+// Print
 void FallBox::_print(ostream& os, 
 		     const BoxRegion& region, 
 		     const PrintGC& gc) const
@@ -94,7 +94,7 @@ void FallBox::dump(ostream& s) const
 
 // RiseBox
 
-// RiseBox anzeigen
+// Draw
 void RiseBox::__draw(Widget w, 
 		     const BoxRegion& r, 
 		     const BoxRegion&, 
@@ -108,7 +108,7 @@ void RiseBox::__draw(Widget w,
 	origin[X] + space[X], origin[Y]);
 }
 
-// RiseBox drucken
+// Print
 void RiseBox::_print(ostream& os, 
 		     const BoxRegion& region, 
 		     const PrintGC& gc) const

@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse TransparentHatBox
+// A transparent hat box
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,8 +34,7 @@
 #endif
 
 
-// Eine TransparentHatBox ist eine HatBox, die beim Matchen
-// unsichtbar ist.
+// A TransparentHatBox is a HatBox that is not considered during matching.
 
 #include "HatBox.h"
 #include "Widget.h"

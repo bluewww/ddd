@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse FontFixBox
+// Font freezing Boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -42,7 +42,7 @@ DEFINE_TYPE_INFO_1(FontFixBox, HatBox)
 
 // FontFixBox
 
-// fontfix() ausgeben
+// Dump
 void FontFixBox::dump(ostream& s) const
 {
     s << "fontfix(" << *_box << ")";

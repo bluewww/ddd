@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse HatBox
+// Hat boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -49,7 +49,7 @@ void HatBox::_draw(Widget w,
 {
     BoxRegion childRegion = r;
 
-    // Wenn nicht erweiterbar, Platz auf minimalen Platz reduzieren
+    // If not extensible, shrink to minimal size
     if (extend(X) == 0)
 	childRegion.space(X) = size(X);
     if (extend(Y) == 0)

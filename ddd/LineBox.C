@@ -1,5 +1,5 @@
 // $Id$
-// Klasse LineBox (Implementation)
+// Line boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -43,7 +43,7 @@ DEFINE_TYPE_INFO_1(LineBox, PrimitiveBox)
 
 // LineBox
 
-// LineBox anzeigen
+// Draw
 void LineBox::_draw(Widget w, 
 		    const BoxRegion& r, 
 		    const BoxRegion& exposed, 
@@ -52,23 +52,22 @@ void LineBox::_draw(Widget w,
 {
     XGCValues gcvalues;
 
-    // Linienbreite und Endpunkte setzen:
-    // Ueber Endpunkt halbe Liniendicke hinausgehen
+    // Set width and cap style; project beyond end point up to 1/2
+    // line thickness
     gcvalues.line_width = _linethickness;
     gcvalues.cap_style = CapProjecting;
     XChangeGC(XtDisplay(w), gc, GCLineWidth | GCCapStyle, &gcvalues);
 
-    // Um BoxRegion Rahmen von halber Liniendicke freilassen
-    // (weil X sonst ueber BoxRegion hinaus schreibt)
+    // Keep an empty frame of 1/2 line thickness around R (X may cross
+    // R's boundaries otherwise)
     BoxPoint origin = r.origin();
     BoxSize space   = r.space();
     origin += _linethickness / 2;
     space  -= _linethickness;
 
-    // Sohn anzeigen
+    // Draw children
     __draw(w, BoxRegion(origin, space), exposed, gc, context_selected);
 
-    // Achtung: Wir lassen Linienbreite und CapStyle veraendert zurueck!
-    // Das hat innerhalb von Box::draw() keine Auswirkungen,
-    // aber der GC koennte danach veraendert sein.
+    // Attention: We leave LINE_WIDTH and CAP_STYLE changed!
+    // (Works within Box::draw(), but the used GC may be changed)
 }

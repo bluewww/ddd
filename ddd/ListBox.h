@@ -1,5 +1,5 @@
 // $Id$
-// Klasse ListBox (Deklaration)
+// Box lists
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,7 +34,7 @@
 #endif
 
 
-// Eine ListBox ist eine Liste von Boxen.
+// A ListBox is a list of boxes.
 
 
 #include <limits.h>
@@ -51,7 +51,7 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    const ListBox *_last; // letzte leere Box
+    const ListBox *_last; // last empty box
 
     Box     *&_head()   { return _child(0); }
     Box     *&_tail()   { return _child(1); }
@@ -79,17 +79,17 @@ public:
     bool isEmpty() const { return nchildren() == 0; }
 
 protected:
-    // _last neu berechnen
+    // Recompute _last
     void _relast();
 
-    // _last ggf. neu berechnen
+    // Recompute _last if needed
     void relast()
     {
 	if (_last == 0 || !_last->isEmpty())
 	    _relast();
     }
 
-    // ListBox kopieren
+    // Copy
     ListBox(const ListBox& box):
 	CompositeBox(box), _last(0)
     {}
@@ -100,14 +100,14 @@ protected:
 		       GC, 
 		       bool) const
     {
-	assert(0);  // ListBox kann nicht gezeichnet werden
+	assert(0);  // A ListBox cannot be drawn
 	::abort();
     }
 
     void dump(ostream& s) const;
 
 public:
-    // Konstruktor: Kopf und Schwanz
+    // Constructor: head and tail
     ListBox(Box *hd, ListBox *tl, char *t = "ListBox"):
 	CompositeBox(2, t), _last(tl->_last)
     {
@@ -118,7 +118,7 @@ public:
 	addChild(tl);
     }
 
-    // Konstruktor: Leere Liste
+    // Constructor: empty list
     ListBox(char *t = "ListBox"):
 	CompositeBox(2, t), _last(this)
     {
@@ -134,11 +134,11 @@ public:
     {
 	relast();
 
-	ListBox *l = new ListBox;   // Leere Liste anhaengen
+	ListBox *l = new ListBox;   // Append empty list
 	((ListBox *)_last)->addChild(b); // head
 	((ListBox *)_last)->addChild(l); // tail
 
-	l->unlink();    // geht, da addChild neuen Link macht
+	l->unlink();    // possible, since addChild makes a new link
 	_last = l;
 
 	return *this;
@@ -178,15 +178,15 @@ public:
 	::abort();
     }
 
-    // Erstes Atom zurueckgeben
+    // Return first atom in list
     Box *atom();
 
     bool OK() const;
 
-    // Liste anhaengen (nur, wenn *this nicht leer ist!)
+    // Append list (only if *this is non-empty)
     ListBox* cons(ListBox *b);
 
-    // Liste abhaengen, die mit cons() angehaengt wurde
+    // Detach a list that was attached with cons()
     void uncons(ListBox *attach);
 };
 

@@ -43,7 +43,7 @@ DEFINE_TYPE_INFO_1(MatchBox, DummyBox)
 
 MatchBoxFunc MatchBox::matchCallback = 0;
 
-// Bei Vergleichen: Match-Funktion aufrufen
+// Call callback during matching
 
 bool MatchBox::matches (const Box &box, const Box *callbackArg) const
 {
@@ -61,7 +61,7 @@ bool MatchBox::matches (const Box &box, const Box *callbackArg) const
     return ret;
 }
 
-// MatchBox ausgeben
+// Dump
 void MatchBox::dump(ostream& s) const
 {
     s << "<" << _data << ">";

@@ -1,5 +1,5 @@
 // $Id$
-// Klasse Box (Implementation)
+// Boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -48,30 +48,30 @@ char Box_rcsid[] =
 DEFINE_TYPE_INFO_0(Box)
 
 
-// Anzeigen
+// Draw
 
-// Box anzeigen
+// Draw Box
 void Box::draw(Widget w, 
 	       const BoxRegion& r, 
 	       const BoxRegion& exposed, 
 	       GC gc, 
 	       bool context_selected) const
 {
-    // Wenn nicht im exponierten Bereich, dann Abbruch
+    // Draw only if exposed
     if (!(r <= exposed))
 	return;
 
     if (VSEFlag(show_draw))
 	cout << "\n[" << r;
 
-    // Sicherstellen, dass genug Platz vorhanden
+    // Make sure we have enough space
     assert(!(size() > r.space()));
 
-    // Grafik-Kontext auf Default setzen
+    // Use default GC if needed
     if (gc == 0)
 	gc = DefaultGCOfScreen(XtScreen(w));
 
-    // Eigentliche Anzeigefunktion aufrufen
+    // Go and draw
     _draw(w, r, exposed, gc, context_selected);
 
     if (VSEFlag(show_draw))
@@ -79,9 +79,9 @@ void Box::draw(Widget w,
 }
 
 
-// Vergleichen
+// Comparisons
 
-// Boxen vergleichen (intern)
+// Internal comparison
 bool Box::matches(const Box &b, const Box *) const
 {
     if (strcmp(type(), b.type()))
@@ -95,7 +95,7 @@ bool Box::matches(const Box &b, const Box *) const
 }
 
 
-// Boxen vergleichen (oeffentliche Schnittstelle)
+// Public interface
 bool Box::operator == (const Box &b) const
 {
     if (VSEFlag(show_match_boxes))
@@ -120,9 +120,9 @@ bool Box::operator == (const Box &b) const
 }
 
 
-// Markierungen
+// Tags
 
-// Box markieren
+// Tag a box
 Box *Box::tag(Data *dta, DataLink *dl)
 {
     TagBox *ret = new TagBox(this, dta, dl);
@@ -130,7 +130,7 @@ Box *Box::tag(Data *dta, DataLink *dl)
     return ret;
 }
 
-// BoxRegion der TagBox zu Punkt p zurueckgeben (kein Punkt: oberste)
+// Region of the TagBox at P; if P is not given, use top-most tag
 BoxRegion Box::region(BoxPoint p) const RETURNS(r)
 {
     RETURN_OBJECT(BoxRegion, r);
@@ -142,7 +142,7 @@ BoxRegion Box::region(BoxPoint p) const RETURNS(r)
     RETURN(r);
 }
 
-// Datum der TagBox zu Punkt p zurueckgeben (kein Punkt: oberste)
+// Data of the TagBox at P
 Data *Box::data(BoxPoint p) const
 {
     const TagBox *t = findTag(p);
@@ -151,7 +151,7 @@ Data *Box::data(BoxPoint p) const
     return t->__data();
 }
 
-// Namen der TagBox zu Punkt p zurueckgeben (kein Punkt: oberste)
+// Name of the TagBox at P
 string Box::name(BoxPoint p) const RETURNS(name)
 {
     RETURN_OBJECT(string, name);
@@ -163,7 +163,7 @@ string Box::name(BoxPoint p) const RETURNS(name)
     RETURN(name);
 }
 
-// Information der TagBox zu Punkt p zurueckgeben (kein Punkt: oberste)
+// Information of the TagBox at P
 string Box::info(BoxPoint p) const RETURNS(info)
 {
     RETURN_OBJECT(string, info);
@@ -175,7 +175,7 @@ string Box::info(BoxPoint p) const RETURNS(info)
     RETURN(info);
 }
 
-// Ausgewaehlt-Eigenschaft der TagBox zu Punkt p zurueckgeben
+// `Selected' property of TagBox at P
 bool Box::selected(BoxPoint p) const
 {
     const TagBox *t = findTag(p);
@@ -187,7 +187,7 @@ bool Box::selected(BoxPoint p) const
 
 // Debugging
 
-// Box ausgeben
+// Dump Box
 ostream &operator << (ostream& s, const Box& b)
 {
     if (VSEFlags::max_info_nesting != 0)

@@ -1,5 +1,5 @@
 // $Id$
-// Klasse AlignBox (Implementation)
+// Box alignments
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -44,7 +44,7 @@ DEFINE_TYPE_INFO_1(UAlignBox, AlignBox)
 DEFINE_TYPE_INFO_1(VAlignBox, AlignBox)
 
 
-// Alignment (horizontal/vertikal) anzeigen
+// Draw alignment (horizontal or vertical)
 void AlignBox::drawAlign(Widget w, 
 			 const BoxRegion& r, 
 			 const BoxRegion& exposed, 
@@ -55,7 +55,7 @@ void AlignBox::drawAlign(Widget w,
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();
 
-    // Restlichen Platz, Restlichen Platz pro Kind berechnen
+    // Compute remaining space and remaining space per child
     BoxCoordinate remainder = space[dimen] - size(dimen);
     BoxCoordinate remainder_per_extend =
 	(extend(dimen) == 0 || remainder < 0) ? 0 : remainder / extend(dimen);
@@ -69,11 +69,11 @@ void AlignBox::drawAlign(Widget w,
     {
 	Box *child = (Box *)(*this)[i];
 
-	// Wenn Kind erweiterbar, Platz pro Kind hinzufuegen
+	// If child is extensible, add remaining space per child
 	child_space[dimen] = child->size(dimen) + 
 	    remainder_per_extend * child->extend(dimen);
 	
-	// Ggf. nicht teilbaren Rest hinzufuegen
+	// Add remaining pixels
 	if (pixel_stuff > 0)
 	{
 	    BoxCoordinate stuff = min(remainder_per_extend, pixel_stuff);
@@ -81,17 +81,17 @@ void AlignBox::drawAlign(Widget w,
 	    pixel_stuff -= stuff;
 	}
 
-	// Kind anzeigen
+	// Draw child
 	child->draw(w, 
 		    BoxRegion(child_origin, child_space), 
 		    exposed, gc, context_selected);
 
-	// Naechstes Kind daneben anzeigen
+	// Draw next child at offset of CHILD_SPACE
 	child_origin[dimen] += child_space[dimen];
     }
 }
 
-// Groesse neu berechnen
+// Recompute size
 Box *AlignBox::resize()
 {
     for (int i = 0; i < nchildren(); i++)
@@ -111,13 +111,13 @@ Box *AlignBox::resize()
 
 // HAlignBox
 
-// Box zu horizontalem Alignment hinzufuegen
+// Add to horizontal alignment
 void HAlignBox::addSize(Box *b)
 {
     thesize()   &= b->size();
     theextend() &= b->extend();
 
-    // Freien Platz unten rechts uebernehmen
+    // Reuse free space in lower right corner
     if (b->size(X) > 0)
 	_corner = b->corner();
 }
@@ -166,13 +166,13 @@ void HAlignBox::_print(ostream& os,
 
 // VAlignBox
 
+// Add to vertical alignment
 void VAlignBox::addSize(Box *b) 
-// Box zu vertikalem Alignment hinzufuegen
 {
     thesize()   |= b->size();
     theextend() |= b->extend();
 
-    // Freien Platz unten rechts berechnen
+    // Compute free space in lower right corner
     if (b->size(Y) > 0)
     {
 	_corner[Y] = b->corner()[Y];
@@ -233,25 +233,25 @@ void VAlignBox::_print(ostream& os,
 
 // UAlignBox
 
+// Add box to unaligned alignment
 void UAlignBox::addSize(Box *b)
-// Box zu gestapeltem Alignment hinzufuegen
 {
     thesize()   ^= b->size();
     theextend() ^= b->extend();
 
-    // Freien Platz unten rechts uebernehmen
+    // Reuse free space in lower right corner
     if (b->size() > BoxSize(0, 0))
 	_corner = b->corner();
 }
 
-// Gestapeltes Alignment anzeigen
+// Draw
 void UAlignBox::_draw(Widget w, 
 		      const BoxRegion& r, 
 		      const BoxRegion& exposed, 
 		      GC gc,
 		      bool context_selected) const
 {
-    // Alle Kinder an der gleichen Stelle anzeigen
+    // Draw all children at the same place
     for (int i = 0; i < nchildren(); i++)
     {
 	Box *child = (Box *)(*this)[i];
@@ -259,7 +259,7 @@ void UAlignBox::_draw(Widget w,
     }
 }
 
-// Gestapeltes Alignment drucken
+// Print
 void UAlignBox::_print(ostream& os, 
 		       const BoxRegion& region, 
 		       const PrintGC& gc) const
@@ -275,28 +275,28 @@ void UAlignBox::_print(ostream& os,
 
 // TAlignBox
 
+// Add box to textual alignment
 void TAlignBox::addSize(Box *b) 
-// Box zu textuellem Alignment hinzufuegen
 {
-    // In Eckplatz einpassen
+    // Fit into lower right corner
     thesize()   += (b->size() ^ _corner) - _corner;
     theextend() &= b->extend();
 
-    // Eckplatz anpassen
+    // Adapt corner
     if (b->size(X) >= _corner[X])
     {
-	// Corner uebernehmen
+	// Reuse corner
 	_corner = b->corner();  
     }
     else
     {
-	// Corner verkleinern
+	// Resize corner
 	_corner[X] -= b->size(X);
 	_corner[Y]  = max(b->size(Y), _corner[Y]);
     }
 }
 
-// Textuelles Alignment anzeigen
+// Draw
 void TAlignBox::_draw(Widget w, 
 		      const BoxRegion& r, 
 		      const BoxRegion& exposed, 
@@ -306,13 +306,13 @@ void TAlignBox::_draw(Widget w,
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();
 
-    // Wenn nicht erweiterbar, Platz auf minimalen Platz reduzieren
+    // If this is non-extensible, use minimal space
     if (extend(X) == 0)
 	space[X] = size(X);
     if (extend(Y) == 0)
 	space[Y] = size(Y);
 
-    // Restlichen Platz, Restlichen Platz pro Kind berechnen
+    // Compute remaining space and remaining space per child
     BoxCoordinate remainder = space[X] - size(X);
     BoxCoordinate remainder_per_extend = 
 	(extend(X) == 0 || remainder < 0) ? 0 : remainder / extend(X);
@@ -326,11 +326,11 @@ void TAlignBox::_draw(Widget w,
     {
 	Box *child = (Box *)(*this)[i];
 
-	// Wenn Kind erweiterbar, Platz pro Kind hinzufuegen
+	// If child is extensible, add remaining space per child
 	child_space[X] = child->size(X) + 
 	    remainder_per_extend * child->extend(X);
 	
-	// Ggf. nicht teilbaren Rest hinzufuegen
+	// Add remaining pixels
 	if (pixel_stuff > 0)
 	{
 	    BoxCoordinate stuff = min(remainder_per_extend, pixel_stuff);
@@ -338,11 +338,11 @@ void TAlignBox::_draw(Widget w,
 	    pixel_stuff -= stuff;
 	}
 
-	// Kind anzeigen
+	// Draw child
 	child->draw(w, BoxRegion(child_origin, child_space), 
 		    exposed, gc, context_selected);
 	
-	// Naechstes Kind in Ecke einpassen
+	// Fit next child into corner
 	child_origin[X] += (child_space[X] - child->corner()[X]);
 	child_origin[Y] += (child->size(Y) - child->corner()[Y]);
     }
@@ -383,7 +383,7 @@ void TAlignBox::_print(ostream& os,
 	child_space[X] = child->size(X) + 
 	    remainder_per_extend * child->extend(X);
 	
-	// Ggf. nicht teilbaren Rest hinzufuegen
+	// Add remaining space
 	
 	if (pixel_stuff > 0) {
 	    BoxCoordinate stuff = 

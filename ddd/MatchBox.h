@@ -1,5 +1,5 @@
 // $Id$ 
-// Deklaration Klasse MatchBox
+// A MatchBox (for pattern matching)
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,10 +34,11 @@
 #endif
 
 
-// Eine MatchBox wird -- fast ausschliesslich -- zum Pattern-Matching
-// verwendet. Ist 'matchesAll' gesetzt, matcht die MatchBox jede
-// andere Box (sonst nur eine gleiche). Ist 'matchCallback' gesetzt,
-// wird eine Funktion nach jedem geglueckten Matchen aufgerufen.
+// A MatchBox is used in pattern matching.
+
+// If `DummyBox::matchesAll' is set, a MatchBox matches any other box
+// (otherwise, only the same MatchBox).  'MatchBox::matchCallback' is
+// called after each successful match.
 
 
 #include "strclass.h"
@@ -56,10 +57,10 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    int _data;  // Datum
+    int _data;  // Associated data
 
 protected:
-    // Kopieren
+    // Copy
     MatchBox(const MatchBox& box):
 	DummyBox(box),
 	_data(box._data)
@@ -67,11 +68,11 @@ protected:
 
     void dump(ostream& s) const;
 
-    // Bei Vergleichen: Match-Funktion aufrufen
+    // Call matchCallback if matches
     bool matches (const Box &b, const Box *callbackArg = 0) const;
 
 public:
-    // Konstruktor
+    // Constructor
     MatchBox(int d, char *t = "MatchBox"):
 	DummyBox(t),
 	_data(d)
@@ -79,9 +80,9 @@ public:
 
     Box *dup() const { return new MatchBox(*this); }
 
-    static MatchBoxFunc matchCallback;  // Funktion bei Matching
+    static MatchBoxFunc matchCallback;  // Match callback
 
-    // MatchBoxen zaehlen
+    // Count match boxes
     void countMatchBoxes(int instances[]) const
     {
 	instances[_data]++;

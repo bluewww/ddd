@@ -1,5 +1,5 @@
 // $Id$ 
-// Implementation Klasse DummyBox
+// DummyBox
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -48,7 +48,7 @@ bool DummyBox::matches(const Box& box, const Box *) const
     return matchesAll || ListBox::matches(box);
 }
 
-// DummyBox ausgeben
+// Dump
 void DummyBox::dump(ostream& s) const
 {
     s << "<_>";
