@@ -282,7 +282,7 @@ MMDesc SourceView::text_popup[] =
 // Glyphs and images
 //-----------------------------------------------------------------------
 
-#include "arrow.xbm"
+#include "icons/glyphs/arrow.xbm"
 static XImage arrow_image = {
     arrow_width,		// width
     arrow_height,		// height
@@ -297,7 +297,7 @@ static XImage arrow_image = {
     2				// bytes_per_line
 };
 
-#include "greyarrow.xbm"
+#include "icons/glyphs/greyarrow.xbm"
 static XImage grey_arrow_image = {
     grey_arrow_width,		// width
     grey_arrow_height,		// height
@@ -312,7 +312,7 @@ static XImage grey_arrow_image = {
     2				// bytes_per_line
 };
 
-#include "signalarrow.xbm"
+#include "icons/glyphs/signalarrow.xbm"
 static XImage signal_arrow_image = {
     signal_arrow_width,		// width
     signal_arrow_height,	// height
@@ -327,7 +327,7 @@ static XImage signal_arrow_image = {
     2				// bytes_per_line
 };
 
-#include "temparrow.xbm"
+#include "icons/glyphs/temparrow.xbm"
 static XImage temp_arrow_image = {
     temp_arrow_width,		// width
     temp_arrow_height,		// height
@@ -342,7 +342,7 @@ static XImage temp_arrow_image = {
     2				// bytes_per_line
 };
 
-#include "stop.xbm"
+#include "icons/glyphs/stop.xbm"
 static XImage stop_image = {
     stop_width,			// width
     stop_height,		// height
@@ -357,7 +357,7 @@ static XImage stop_image = {
     2				// bytes_per_line
 };
 
-#include "greystop.xbm"
+#include "icons/glyphs/greystop.xbm"
 static XImage grey_stop_image = {
     grey_stop_width,		// width
     grey_stop_height,		// height
@@ -372,7 +372,7 @@ static XImage grey_stop_image = {
     2				// bytes_per_line
 };
 
-#include "tempstop.xbm"
+#include "icons/glyphs/tempstop.xbm"
 static XImage temp_stop_image = {
     temp_stop_width,		// width
     temp_stop_height,		// height
@@ -387,7 +387,7 @@ static XImage temp_stop_image = {
     2				// bytes_per_line
 };
 
-#include "cond.xbm"
+#include "icons/glyphs/cond.xbm"
 static XImage cond_image = {
     cond_width,			// width
     cond_height,		// height
@@ -402,7 +402,7 @@ static XImage cond_image = {
     2				// bytes_per_line
 };
 
-#include "greycond.xbm"
+#include "icons/glyphs/greycond.xbm"
 static XImage grey_cond_image = {
     grey_cond_width,		// width
     grey_cond_height,		// height
@@ -417,7 +417,7 @@ static XImage grey_cond_image = {
     2				// bytes_per_line
 };
 
-#include "tempcond.xbm"
+#include "icons/glyphs/tempcond.xbm"
 static XImage temp_cond_image = {
     temp_cond_width,		// width
     temp_cond_height,		// height

@@ -55,16 +55,16 @@ DEFINE_TYPE_INFO_0(Delay);
 #define SMALL_HOURGLASS_CURSOR 1
 
 #if SMALL_HOURGLASS_CURSOR || LARGE_HOURGLASS_CURSOR
-#include "time16.xbm"
-#include "time16m.xbm"
+#include "icons/cursors/time16.xbm"
+#include "icons/cursors/time16m.xbm"
 #if time16_width != time16m_width || time16_height != time16m_height
 #error Bad mask for time16
 #endif
 #endif
 
 #if LARGE_HOURGLASS_CURSOR
-#include "time32.xbm"
-#include "time32m.xbm"
+#include "icons/cursors/time32.xbm"
+#include "icons/cursors/time32m.xbm"
 #if time32_width != time32m_width || time32_height != time32m_height
 #error Bad mask for time32
 #endif
