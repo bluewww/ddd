@@ -50,6 +50,7 @@ char post_rcsid[] =
 #include "wm.h"
 
 #include <Xm/Xm.h>
+#include <Xm/AtomMgr.h>
 #include <Xm/MessageB.h>
 #include <Xm/Protocols.h>
 
