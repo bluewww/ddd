@@ -545,12 +545,16 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 
 void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
 {
+    StatusDelay delay("Refreshing all displays");
+
     set_last_origin(w);
     refresh_displaySQ();
 }
 
 void DataDisp::selectAllCB(Widget w, XtPointer, XtPointer)
 {
+    StatusDelay delay("Selecting all displays");
+
     set_last_origin(w);
     XtCallActionProc(graph_edit, 
 		     "select-all", (XEvent *)0, (String *)0, 0);

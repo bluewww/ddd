@@ -36,6 +36,7 @@ char graph_rcsid[] =
 #include "graph.h"
 #include "DataDisp.h"
 #include "ddd.h"
+#include "status.h"
 
 
 //-----------------------------------------------------------------------------
@@ -45,12 +46,16 @@ char graph_rcsid[] =
 
 void graphAlignCB(Widget, XtPointer, XtPointer)
 {
+    StatusDelay delay("Aligning displays");
+
     XtCallActionProc(data_disp->graph_edit, 
 		     "snap-to-grid", (XEvent *)0, (String *)0, 0);
 }
 
 void graphRotateCB(Widget, XtPointer, XtPointer)
 {
+    StatusDelay delay("Rotating graph");
+
     String params[1];
     params[0] = "+90";
 
@@ -60,6 +65,8 @@ void graphRotateCB(Widget, XtPointer, XtPointer)
 
 void graphLayoutCB(Widget, XtPointer, XtPointer)
 {
+    StatusDelay delay("Layouting graph");
+
     XtCallActionProc(data_disp->graph_edit, 
 		     "layout", (XEvent *)0, (String *)0, 0);
 }
