@@ -188,6 +188,10 @@ AC_LANG_CPLUSPLUS
 dnl
 dnl Locate Libraries
 dnl
+dnl Solaris 2.6 wants an explicit `-lsocket' before `-lnsl'.
+dnl Reported by Emmanuel Engel <Emmanuel.Engel@lri.fr>
+AC_CHECK_LIB(socket, connect)
+dnl
 AC_CHECK_LIB(nsl, gethostbyname, LIBNSL="-lnsl")
 AC_SUBST(LIBNSL)
 dnl
