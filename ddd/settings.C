@@ -47,6 +47,7 @@ const char settings_rcsid[] =
 #include <Xm/Label.h>
 #include <ctype.h>
 
+#include "Assoc.h"
 #include "Delay.h"
 #include "DestroyCB.h"
 #include "GDBAgent.h"
@@ -60,8 +61,6 @@ const char settings_rcsid[] =
 #include "wm.h"
 
 static Widget settings_form   = 0;
-
-static void add_settings(int& row, string command = "set");
 
 // TextField reply
 static void SetTextCB(Widget w, XtPointer client_data, XtPointer)
@@ -190,8 +189,50 @@ void process_show(string command, string value, bool show_status)
 }
 
 
+
+// Create settings form
+
+enum EntryType
+{
+    ToggleButtonEntry,		// Create toggle button
+    OptionMenuEntry,		// Create option menu
+    TextFieldEntry		// Create text field
+};
+
+// Determine entry type
+static EntryType entry_type(const string& base, const string& value)
+{
+    if (base.contains("language", 0)
+	|| base.contains("demangle", 0)
+	|| base.contains("check", 0))
+	return OptionMenuEntry;
+    else if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
+	return ToggleButtonEntry;
+    else
+	return TextFieldEntry;
+}
+
+static Assoc<string, string> gdb_question_cache;
+
+static string cached_gdb_question(const string& question)
+{
+    string& answer = gdb_question_cache[question];
+    if (answer == "")
+	answer = gdb_question(question);
+    return answer;
+}
+
+static void clear_gdb_question_cache()
+{
+    static Assoc<string, string> empty;
+    gdb_question_cache = empty;
+}
+
+static void add_settings(int& row, EntryType entry_filter,
+			 string command = "set");
+
 // Add single button
-static void add_button(string line, int& row)
+static void add_button(string line, EntryType entry_filter, int& row)
 {
     if (!line.contains("set ", 0))
 	return;			// No `set' command
@@ -204,19 +245,22 @@ static void add_button(string line, int& row)
     if (!doc.contains("Set ", 0))
     {
 	// Generic command or `set variable' - list `set' subcommands
-	add_settings(row, set_command);
+	add_settings(row, entry_filter, set_command);
 	return;
     }
 
-    string value = gdb_question(show_command);
+    string value = cached_gdb_question(show_command);
     if (value.freq('\n') > 1)
     {
 	// Generic command - list `set' subcommands
-	add_settings(row, set_command);
+	add_settings(row, entry_filter, set_command);
 	return;
     }
 
     if (!value.contains(".\n", -1))
+	return;
+
+    if (entry_type(base, value) != entry_filter)
 	return;
 
     doc = doc.after("Set ");
@@ -264,7 +308,7 @@ static void add_button(string line, int& row)
 	    verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
 
 	// Possible options are contained in the help string
-	string options = gdb_question("help " + set_command);
+	string options = cached_gdb_question("help " + set_command);
 	options = options.from('(');
 	options = options.before(')');
 
@@ -305,7 +349,7 @@ static void add_button(string line, int& row)
 	    verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
 
 	// Possible options are listed upon `set language' without value
-	string options = gdb_question("set " + base);
+	string options = cached_gdb_question("set " + base);
 
 	while (options != "")
 	{
@@ -407,15 +451,15 @@ static void add_button(string line, int& row)
 }
 
 // Add buttons
-static void add_settings(int& row, string command)
+static void add_settings(int& row, EntryType entry_filter, string command)
 {
-    string commands = gdb_question("help " + command);
+    string commands = cached_gdb_question("help " + command);
 
     while (commands != "")
     {
 	string line = commands.before('\n');
 	commands = commands.after('\n');
-	add_button(line, row);
+	add_button(line, entry_filter, row);
     }
 }
 
@@ -463,7 +507,11 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 
 	// Add setting buttons to the button box.
 	int row = 0;
-	add_settings(row);
+	add_settings(row, ToggleButtonEntry);
+	add_settings(row, OptionMenuEntry);
+	add_settings(row, TextFieldEntry);
+	clear_gdb_question_cache();
+
 	XtVaSetValues(settings_form, XmNfractionBase, row, NULL);
 	XtManageChild(settings_form);
 	XtManageChild(scroll);
