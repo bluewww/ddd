@@ -190,8 +190,8 @@ VSLDefList::VSLDefList(const VSLDefList& dl)
     VSLDef *prev_d = 0;
     for (VSLDef *d = dl._first; d != 0; d = d->listnext())
     {
-	_last = d;
 	VSLDef *new_d = d->dup();
+	_last = new_d;
 	new_d->deflist = this;
 
 	if (d == dl._first)
@@ -199,9 +199,11 @@ VSLDefList::VSLDefList(const VSLDefList& dl)
 	
 	new_d->listnext() = 0;
 	if (prev_d != 0)
-	    prev_d->listnext() = d;
-	prev_d = d;
+	    prev_d->listnext() = new_d;
+	prev_d = new_d;
     }
+
+    assert(OK());
 }
 
 // Duplicate
