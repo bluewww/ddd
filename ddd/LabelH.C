@@ -154,6 +154,9 @@ XmLabelHackClassRec xmLabelHackClassRec =
 	XmInheritMenuProc,            // menuProcs
 	XtInheritTranslations,        // translations
 	0                             // extension
+#if defined(__sgi) && !defined(LesstifVersion)
+	, 0
+#endif
     },
     {
 	-1			      // on
