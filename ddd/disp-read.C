@@ -805,7 +805,8 @@ bool is_invalid(const string& value)
 // Handle `where' output
 //-----------------------------------------------------------------------------
 
-// Fetch current scope from GDB `where' output (a function name)
+// Fetch current scope from GDB `where' output (a function name).
+// This also works for JDB `where' output.
 string get_scope(const string& where_output)
 {
     // The word before the first parenthesis is the current function.
