@@ -3319,8 +3319,53 @@ Ddd*paper_size_x_error*contextHelpString:	\
 @rm @DDD@ could not find an `x' in your paper size specification.\n\
 Please verify the paper size and try again.
 
-Ddd*dungeon_collapse_error_popup.title: @DDD@: Dungeon Kaputt
+
+!-----------------------------------------------------------------------------
+! Cookies
+!-----------------------------------------------------------------------------
+
+Ddd*adventure_popup.title: @DDD@: Welcome to Adventure!
+Ddd*adventure.messageString:	\
+@rm You are standing at the end of a road before a small brick building.\n\
+Around you is a forest.  A small stream flows out of the building and\n\
+down a gully.
+Ddd*adventure.okLabelString:		Continue
+
+Ddd*adventure*contextHelpString:	\
+@rm The @DDD@ Display Dungeon is a colossal cave where all deleted\n\
+displays of all @DDD@ instantiations go.  Entering the display\n\
+dungeon reveals the internals of all programs ever having been\n\
+debugged with @DDD@.\n\
+\n\
+Be aware that this is not for the faint-hearted; it requires special\n\
+magical energy and a supremous power of will to enter the dungeon.\n\
+Attempts to force its entry without being sufficiently prepared\n\
+may cause the dungeon to @sl collapse, @rm taking the adventurer\n\
+and all of its possessions into debris.
+
+Ddd*wumpus_popup.title: @DDD@: Welcome to `Hunt the Wumpus.'
+Ddd*wumpus.messageString:	\
+@rm You are in room @bf 19@rm\n\
+I smell a wumpus\n\
+I feel a draft\n\
+There are tunnels to @bf 12 13 17@rm.
+Ddd*wumpus.okLabelString:		Shoot
+
+Ddd*wumpus*contextHelpString:	\
+@rm The @DDD@ Display Dungeon is a cave of 20 rooms where all deleted\n\
+displays of all @DDD@ instantiations go.  Entering the display\n\
+dungeon reveals the internals of all programs ever having been\n\
+debugged with @DDD@.\n\
+\n\
+Be aware that this is not for the faint-hearted: the dungeon is\n\
+guarded by the @sl Wumpus.@rm  You may attempt to shoot a crooked arrow\n\
+at the wumpus.  If the arrow hits the wumpus, you win.  If the arrow\n\
+hits you, you lose!
+
+Ddd*dungeon_collapse_error_popup.title: \
+@DDD@: Darn! Data Display Dungeon Damaged
 Ddd*dungeon_collapse_error*contextHelpString:	\
-@rm The DDD display dungeon has collapsed.\n\
+@rm The @DDD@ display dungeon has collapsed.\n\
 Please verify your display dungeon database installation.\n\
-See the DDD dungeon documentation for details.
+See the @DDD@ dungeon documentation for details.
+Ddd*dungeon_collapse_error*okLabelString:		Darn!

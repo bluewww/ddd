@@ -26,42 +26,6 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-// For the `meltdown' function, the following terms hold:
-//
-// Copyright 1990 David Lemke and Network Computing Devices
-//
-// Permission to use, copy, modify, distribute, and sell this software
-// and its documentation for any purpose is hereby granted without
-// fee, provided that the above copyright notice appear in all copies
-// and that both that copyright notice and this permission notice
-// appear in supporting documentation, and that the name of Network
-// Computing Devices not be used in advertising or publicity
-// pertaining to distribution of the software without specific,
-// written prior permission.  Network Computing Devices makes no
-// representations about the suitability of this software for any
-// purpose.  It is provided "as is" without express or implied
-// warranty.
-//
-// NETWORK COMPUTING DEVICES DISCLAIMS ALL WARRANTIES WITH REGARD TO
-// THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-// AND FITNESS, IN NO EVENT SHALL NETWORK COMPUTING DEVICES BE LIABLE
-// FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
-// AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
-// OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
-// SOFTWARE.
-//
-// Author:  	
-//		Dave Lemke
-//		lemke@ncd.com
-//
-//		Network Computing Devices, Inc
-//		350 North Bernardo Ave
-//		Mountain View, CA 94043
-//
-//		@(#)meltdown.c	1.2	90/02/22
-
-
 char obscure_rcsid[] = 
     "$Id$";
 
@@ -83,6 +47,7 @@ char obscure_rcsid[] =
 #include "wm.h"
 #include "misc.h"
 #include "GDBAgent.h"
+#include "post.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -119,12 +84,11 @@ static bool dungeon_collapsed = false;
 
 static void DungeonCollapseCB(XtPointer client_data, XtIntervalId *)
 {
-    Widget w = Widget(client_data);
-
     static Widget dungeon_error = 0;
     if (dungeon_error)
 	DestroyWhenIdle(dungeon_error);
 
+    Widget w = (Widget)client_data;
     Widget shell = find_shell(w);
     dungeon_error = 
 	verify(XmCreateErrorDialog(shell, "dungeon_collapse_error", NULL, 0));
@@ -148,46 +112,157 @@ static void DungeonCollapseCB(XtPointer client_data, XtIntervalId *)
     dungeon_collapsed = true;
 }
 
+static void LetDungeonCollapseCB(Widget w, XtPointer, XtPointer)
+{
+    XtAppAddTimeOut(XtWidgetToApplicationContext(w), 5000, DungeonCollapseCB,
+		    XtPointer(w));
+}
+
+static void AdventureCB(XtPointer client_data, XtIntervalId *)
+{
+    post_gdb_message("Welcome to adventure!");
+
+    static Widget adventure_dialog = 0;
+    if (adventure_dialog == 0)
+    {
+	Widget w = Widget(client_data);
+	Widget shell = find_shell(w);
+
+	adventure_dialog = 
+	    verify(XmCreateQuestionDialog(shell, "adventure", NULL, 0));
+	Delay::register_shell(adventure_dialog);
+	XtAddCallback(adventure_dialog, 
+		      XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(adventure_dialog,
+		      XmNokCallback, LetDungeonCollapseCB, NULL);
+    }
+
+    XtManageChild(adventure_dialog);
+}
+
+static void WumpusCB(XtPointer client_data, XtIntervalId *)
+{
+    post_gdb_message("Welcome to `Hunt the Wumpus.'");
+
+    static Widget wumpus_dialog = 0;
+    if (wumpus_dialog == 0)
+    {
+	Widget w = Widget(client_data);
+	Widget shell = find_shell(w);
+
+	wumpus_dialog = 
+	    verify(XmCreateQuestionDialog(shell, "wumpus", NULL, 0));
+	Delay::register_shell(wumpus_dialog);
+	XtAddCallback(wumpus_dialog, 
+		      XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(wumpus_dialog,
+		      XmNokCallback, LetDungeonCollapseCB, NULL);
+    }
+
+    XtManageChild(wumpus_dialog);
+}
+
+static void NothingHappensCB(XtPointer client_data, XtIntervalId *)
+{
+    post_gdb_message("Nothing happens.");
+}
+
+
+#ifdef HAVE_RAND
+inline int rnd(int x) { return rand() % x; }
+#else /* HAVE_RANDOM */
+inline int rnd(int x) { return random() % x; }
+#endif
+
+static void init_random_seed()
+{
+    static bool seed_initialized = false;
+    if (seed_initialized)
+	return;
+
+    time_t tm;
+    time(&tm);
+
+#ifdef HAVE_SRAND
+    srand((int)tm);
+#elif defined(HAVE_SRANDOM)
+    srandom((int)tm);
+#endif
+
+    seed_initialized = true;
+}
+
 #define CMP(x, y, z) (cmd[x] == cmd[y] + (z))
 
 void handle_obscure_commands(string& cmd, Widget origin)
 {
-    // The DDD Display Dungeon is a mythical entity where all deleted
-    // displays of all DDD instantiations go.  Entering the display
-    // dungeon reveals the internals of all programs ever having been
-    // debugged with DDD.  Be aware, however, that this is not for the
-    // faint-hearted; it requires special magical energy and a
-    // supremous power of will to enter the dungeon.  Attempts to
-    // force its entry without being sufficiently prepared may cause
-    // the dungeon to collapse, taking the adventurer and all of its
-    // possessions into debris.                             -- AZ
-
     if (cmd.length() == 5
 	&& CMP(1, 0, 1) && CMP(3, 0, 2)	&& CMP(4, 3, -1) && CMP(2, 1, 1)
 	&& cmd[0] + cmd[1] + cmd[2] + cmd[3] + cmd[4] + '<' == 666)
     {
+	Widget w = origin ? origin : command_shell;
+
 	if (dungeon_collapsed)
 	{
-	    cmd = gdb->echo_command("Nothing happens.\n");
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(w), 100,
+			    NothingHappensCB, XtPointer(w));
 	}
 	else
 	{
-	    cmd = gdb->echo_command("The dungeon shakes violently! \n");
-
-	    static int dungeon_collapsing = 0;
-	    if (dungeon_collapsing++ == 0)
+	    init_random_seed();
+	    switch (rnd(2))
 	    {
-		Widget w = origin ? origin : command_shell;
+	    case 0:
+		XtAppAddTimeOut(XtWidgetToApplicationContext(w), 1000,
+				AdventureCB, XtPointer(w));
+		break;
 
-		XtAppAddTimeOut(XtWidgetToApplicationContext(w), 10000, 
-				DungeonCollapseCB, 
-				XtPointer(w));
+	    case 1:
+		XtAppAddTimeOut(XtWidgetToApplicationContext(w), 1000,
+				WumpusCB, XtPointer(w));
+		break;
 	    }
 	}
+
+	// cmd = " ";		// Ignore this command
     }
 }
 
-
+
+// The following terms hold for the remainder of this code:
+//
+// Copyright 1990 David Lemke and Network Computing Devices
+//
+// Permission to use, copy, modify, distribute, and sell this software
+// and its documentation for any purpose is hereby granted without
+// fee, provided that the above copyright notice appear in all copies
+// and that both that copyright notice and this permission notice
+// appear in supporting documentation, and that the name of Network
+// Computing Devices not be used in advertising or publicity
+// pertaining to distribution of the software without specific,
+// written prior permission.  Network Computing Devices makes no
+// representations about the suitability of this software for any
+// purpose.  It is provided "as is" without express or implied
+// warranty.
+//
+// NETWORK COMPUTING DEVICES DISCLAIMS ALL WARRANTIES WITH REGARD TO
+// THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+// AND FITNESS, IN NO EVENT SHALL NETWORK COMPUTING DEVICES BE LIABLE
+// FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
+// AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
+// OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+// SOFTWARE.
+//
+// Author:  	
+//		Dave Lemke
+//		lemke@ncd.com
+//
+//		Network Computing Devices, Inc
+//		350 North Bernardo Ave
+//		Mountain View, CA 94043
+//
+//		@(#)meltdown.c	1.2	90/02/22
 
 // Melt down screen
 
@@ -201,23 +276,10 @@ const int WIDTH_ADD = 20;
 
 const int FINISHED = 50;
 
-#ifdef HAVE_RAND
-inline int rnd(int x) { return rand() % x; }
-#else /* HAVE_RANDOM */
-inline int rnd(int x) { return random() % x; }
-#endif
-
 static void meltdown(Display *dpy)
 {
+    init_random_seed();
     int screen = DefaultScreen(dpy);
-
-    time_t tm;
-    time(&tm);
-#ifdef HAVE_SRAND
-    srand((int)tm);
-#elif defined(HAVE_SRANDOM)
-    srandom((int)tm);
-#endif
 
     XSetWindowAttributes xswat;
     xswat.override_redirect = True;
@@ -237,7 +299,8 @@ static void meltdown(Display *dpy)
 
     XGCValues	gcvals;
     gcvals.graphics_exposures = False;
-    // copyplane gc wants to leave the data alone
+
+    // Copyplane gc wants to leave the data alone
     gcvals.foreground = 1;
     gcvals.background = 0;
     GC copygc = XCreateGC(dpy, win, 
@@ -260,7 +323,7 @@ static void meltdown(Display *dpy)
     for (;;) {
 	int width = rnd(MIN_WIDTH) + WIDTH_ADD;
 
-	// give values near edges a better chance
+	// Give values near edges a better chance
 	int xloc = rnd(DisplayWidth(dpy, screen) + MIN_WIDTH) - MIN_WIDTH;
 
 	if ((xloc + width) > DisplayWidth(dpy, screen))
