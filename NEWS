@@ -35,6 +35,7 @@ DDD 3.1.7 fixes a number of minor bugs.
 - Value tips of strings containing ` = ' are displayed correctly.
 - In file names, `//' is no longer normalized to `/'.
 - The array syntax `graph display [A..B]' now works for DBX.
+- Using the execution window with Sun DBX 4.0 now should work.
 - [JDB] Thread names with dashes are handled correctly.
 - [HP-UX] Renaming the `~/.ddd/init' file during saving options works.
 - [Build] DDD checks whether -fpermissive is required for old X headers.

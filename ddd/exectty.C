@@ -623,15 +623,13 @@ static void redirect_process(string& command,
 
     case DBX:
 	// DBX has its own parsing, in several variants.
-	if (gdb->has_regs_command())
-	{
-	    // SUN DBX 4.0 has true ksh-style redirection.
-	    add_sh_redirection(gdb_redirection, tty_name, args);
-	}
-	else if (gdb->has_print_r_option())
+	if (gdb->has_print_r_option())
 	{
 	    // SUN DBX 3.x interprets `COMMAND 2>&1' such that COMMAND
 	    // runs in the background.  Use this kludge instead.
+	    // Tuomo Takkula <tuomo@cs.chalmers.se> reports this also
+	    // happens for SUN DBX 4.0.
+
 	    if (!has_redirection(args, "2>"))
 		gdb_redirection += " 2> " + tty_name;
 	    if (!has_redirection(args, ">"))
