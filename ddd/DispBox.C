@@ -196,6 +196,19 @@ void DispBox::set_value (const DispValue* dv)
     mybox = eval("display_box", args);
 }
 
+// Return true if DV is a (right-aligned) numeric value
+static bool is_numeric(const DispValue *dv)
+{
+    if (dv->parent() != 0 && dv->parent()->type() != Array)
+	return false;
+    if (dv->value() == "")
+	return false;
+    if (dv->value().contains(' '))
+	return false;
+
+    char c = dv->value()[0];
+    return isdigit(c) || c == '+' || c == '-' || c == '.';
+}
 
 // ***************************************************************************
 // Create a Box for the value DV
@@ -211,11 +224,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	else
 	{
 	    // Flush numeric values to the right, unless in a struct
-	    char c = '\0';
-	    if (dv->value() != "")
-		c = dv->value()[0];
-	    if ((dv->parent() == 0 || dv->parent()->type() == Array) && 
-		(isdigit(c) || c == '+' || c == '-'))
+	    if (is_numeric(dv))
 		vbox = eval("numeric_value", dv->value());
 	    else
 		vbox = eval("simple_value", dv->value());
