@@ -614,7 +614,7 @@ void PosBuffer::filter_dbx(string& answer)
 	// SUN DBX uses `line LINE in file "FILE"' instead.
 	// We check for the `line LINE' part.
 
-	line = answer.after("line ");
+	line = answer.after(" line ");
 	line = line.through(rxint);
 
 	file = answer.after('\"');

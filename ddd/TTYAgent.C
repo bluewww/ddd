@@ -243,6 +243,10 @@ extern "C" {
     int tcsetpgrp(int fd, pid_t pgid);
 #endif
 #if HAVE_IOCTL && !HAVE_IOCTL_DECL && !defined(ioctl)
+#if defined(__GLIBC__) && __GLIBC__ >= 2 && __GLIBC_MINOR__ > 0
+    //  Christian Meder <meder@isr.uni-stuttgart.de> says glibc 2.1
+    //  has an ioctl() decl.
+#else
     int ioctl(int fd, int request, ...);
 #endif
 #if HAVE_FCNTL && !HAVE_FCNTL_DECL && !defined(fcntl)
