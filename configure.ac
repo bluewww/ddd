@@ -57,7 +57,7 @@ dnl Sets up automake.
 dnl  1.x:  minimum required version
 dnl  foreign:  we don't follow the normal rules for GNU packages (no COPYING
 dnl            file in the top srcdir, etc, etc), so stop complaining.
-AM_INIT_AUTOMAKE([1.8 foreign])
+AM_INIT_AUTOMAKE([1.9 foreign])
 AC_PROG_MAKE_SET
 dnl
 dnl
