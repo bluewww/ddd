@@ -141,6 +141,4 @@ Volunteers for fixing these and other bugs are welcome!
 353 (Automake) The `configure' script checks for `__CYGWIN32__', but
     as of Beta 20, this should be `__CYGWIN__'.
 
-358 The filename `-e' in Perl should be ignored.
-
 359 (Insert new bugs here)
