@@ -119,8 +119,9 @@ Basic Installation
 	 sources), you may also have to supply their locations.  See
 	 `Optional features', below.
 
-      6. Now type `make' to build DDD.  Please report any bugs and
-         problems to `ddd-bugs@ips.cs.tu-bs.de'.
+      6. Now type `make' to build DDD.  Any `make' will do, although
+         GNU make is preferred for incremental construction.  Please
+         report any bugs and problems to `ddd-bugs@ips.cs.tu-bs.de'.
 
       7. Building DDD takes awhile.  While DDD is being built, you may wish
          to read and/or print the documentation shipped with DDD.  See the
