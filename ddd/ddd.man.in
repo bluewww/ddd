@@ -2460,7 +2460,7 @@ movements.
 The following resources determine the inferior debugger.
 .TP
 .B "autoCommands (\fPclass\fB AutoCommands)"
-If this is true `\fBtrue\fR', each line output by the inferior
+If this is `\fBtrue\fR', each line output by the inferior
 debugger beginning with the value of the `\fBautoCommandPrefix\fR'
 resource (see below) will be taken as \s-2@DDD@\s+2 command and
 executed.  Useful for user-defined commands; see\fB USER-DEFINED
@@ -2979,7 +2979,18 @@ to specify some minor changes to the built-in library.  See the
 `\fBvslDefs\fR' resource, above, for details.
 .RE
 .\"
+.SS "Debugger Console"
 .\"
+The following resources control the debugger console.
+.\"
+.TP
+.B "lineBufferedConsole (\fPclass\fB LineBuffered)"
+If this is `\fBtrue\fR' (default), each line from the inferior is
+output on each own, such that the final line is placed at the bottom
+of the debugger console.  If this is `\fBfalse\fR', all lines are
+output as a whole.  This is faster, but results in a random position
+of the last line.
+.PP
 .\"
 .\"
 .\"

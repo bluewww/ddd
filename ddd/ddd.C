@@ -283,7 +283,10 @@ static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer);
 static void update_reset_preferences();
 
 // User emergencies (Ctrl-C)
-static void check_emergencies();
+static void process_emergencies();
+
+// Return true if user interaction events are pending
+static bool pending_interaction();
 
 // Create status line
 static void create_status(Widget parent);
@@ -2128,7 +2131,7 @@ void process_next_event()
     exec_tty_running();
 
     // Check for emergencies
-    check_emergencies();
+    process_emergencies();
 
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
 
@@ -2159,6 +2162,20 @@ void process_pending_events()
 	process_next_event();
 }
 
+
+//-----------------------------------------------------------------------------
+// Check if interaction events (key or mouse) are pending
+//-----------------------------------------------------------------------------
+
+static bool pending_interaction()
+{
+    XEvent event;
+    const long mask = KeyPressMask | ButtonMotionMask | ButtonPressMask;
+    Bool pending = XCheckMaskEvent(XtDisplay(command_shell), mask, &event);
+    if (pending)
+	XPutBackEvent(XtDisplay(command_shell), &event);
+    return pending;
+}
 
 //-----------------------------------------------------------------------------
 // Check this version; give warnings if needed (no license, beta expired, etc.)
@@ -3599,6 +3616,8 @@ static void ReadyCB(XtPointer = 0, XtIntervalId * = 0)
     set_sensitive(command_program_menu[ProgramItems::Kill].widget, ready);
     set_sensitive(source_program_menu[ProgramItems::Kill].widget,  ready);
     set_sensitive(data_program_menu[ProgramItems::Kill].widget,    ready);
+
+    unpost_gdb_busy();
 }
 
 static void gdb_readyHP(Agent *, void *, void *call_data)
@@ -3725,61 +3744,72 @@ void gdb_ctrl(char ctrl)
     {
     case '\t':
     case '\r':
+    {
+	String s = XmTextGetString(gdb_w);
+	string message = s;
+	XtFree(s);
+
+	XmTextPosition startOfLine = min(promptPosition, message.length());
+	while (startOfLine - 1 >= 0 && message[startOfLine - 1] != '\n')
+	    startOfLine--;
+
+	switch (ctrl)
 	{
-	    String s = XmTextGetString(gdb_w);
-	    string message = s;
-	    XtFree(s);
-
-	    XmTextPosition startOfLine = min(promptPosition, message.length());
-	    while (startOfLine - 1 >= 0 && message[startOfLine - 1] != '\n')
-		startOfLine--;
-
-	    switch (ctrl)
-	    {
-	    case '\t':
-		{
-		    // Go to next tab position
-		    const int TAB_WIDTH = 8;
-		    int column = promptPosition - startOfLine;
-		    int spaces = TAB_WIDTH - column % TAB_WIDTH;
-		    string spacing = replicate(' ', spaces);
+	case '\t':
+	{
+	    // Go to next tab position
+	    const int TAB_WIDTH = 8;
+	    int column = promptPosition - startOfLine;
+	    int spaces = TAB_WIDTH - column % TAB_WIDTH;
+	    string spacing = replicate(' ', spaces);
 	
-		    XmTextInsert(gdb_w, promptPosition, (String)spacing);
-		    promptPosition += spacing.length();
-		}
-		break;
-		
-	    case '\r':
-		{
-		    // Erase last line
-		    XmTextReplace(gdb_w, startOfLine, promptPosition, "");
-		    promptPosition = startOfLine;
-		}
-		break;
-	    }
-	    break;
+	    XmTextInsert(gdb_w, promptPosition, (String)spacing);
+	    promptPosition += spacing.length();
 	}
+	break;
+		
+	case '\r':
+	{
+	    // Erase last line
+	    XmTextReplace(gdb_w, startOfLine, promptPosition, "");
+	    promptPosition = startOfLine;
+	}
+	break;
+	}
+	break;
+    }
 
     case '\b':
-	{
-	    // Erase last character
-	    XmTextReplace(gdb_w, promptPosition - 1, promptPosition, "");
-	    promptPosition--;
-	}
-	break;
+    {
+	// Erase last character
+	XmTextReplace(gdb_w, promptPosition - 1, promptPosition, "");
+	promptPosition--;
+    }
+    break;
+
+    case '\n':
+    {
+	string c = ctrl;
+	XmTextInsert(gdb_w, promptPosition, (String)c);
+	promptPosition += c.length();
+
+	// Flush output
+	XmTextShowPosition(gdb_w, promptPosition);
+    }
+    break;
 
     default:
-	{
-	    // Issue control character
-	    string c;
-	    if (ctrl < ' ')
-		c = "^" + string('@' + int(ctrl));
-	    else
-		c = "^?";
-	    XmTextInsert(gdb_w, promptPosition, (String)c);
-	    promptPosition += c.length();
-	}
-	break;
+    {
+	// Issue control character
+	string c;
+	if (ctrl < ' ')
+	    c = "^" + string('@' + int(ctrl));
+	else
+	    c = "^?";
+	XmTextInsert(gdb_w, promptPosition, (String)c);
+	promptPosition += c.length();
+    }
+    break;
     }
 
     // XmTextShowPosition(gdb_w, promptPosition);
@@ -3820,16 +3850,27 @@ void _gdb_out(string text)
 
     // Output TEXT on TTY
     tty_out(text);
+    bool line_buffered = app_data.line_buffered_console;
 
     // Output TEXT in debugger console
     do {
 	char ctrl      = '\0';
 	bool have_ctrl = false;
 
-	check_emergencies();
+	if (pending_interaction())
+	{
+	    process_emergencies();
+	    line_buffered = false;
+	}
 
 	string block = text;
-	int i = index_control(block);
+
+	int i = -1;
+	if (line_buffered)
+	    i = block.index('\n');
+	if (i < 0)
+	    i = index_control(block);
+
 	if (i >= 0)
 	{
 	    ctrl      = block[i];
@@ -4304,7 +4345,7 @@ static Bool is_emergency(Display *, XEvent *event, char *)
     }
 }
 
-void check_emergencies()
+static void process_emergencies()
 {
     XEvent event;
     if (XCheckIfEvent(XtDisplay(gdb_w), &event, is_emergency, 0))

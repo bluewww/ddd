@@ -237,6 +237,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNlineBufferedConsole,
+	XtCLineBuffered,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, line_buffered_console),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNconsoleButtons,
 	XtCConsoleButtons,
 	XtRString,

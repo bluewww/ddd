@@ -105,6 +105,12 @@ Ddd*groupIconify: false
 Ddd*globalTabCompletion: true
 
 
+! True if the debugger console is line-buffered (i.e. flushed upon 
+! each newline).  This is slower, but gives nice scrolling.
+! False if newline has no special treatment.
+Ddd*lineBufferedConsole: true
+
+
 ! True if options are to be saved in ~/.dddinit across DDD invocations.
 Ddd*saveOptionsOnExit: false
 
