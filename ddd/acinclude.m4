@@ -67,13 +67,13 @@ AC_DEFUN(ICE_PROG_CXX,
 AC_REQUIRE([AC_ISC_POSIX])
 AC_REQUIRE([AC_PROG_CXX])
 dnl
+ice_save_LIBS="$LIBS"
 if test "$CXX" = gcc; then
 dnl
 dnl Using gcc as C++ compiler requires linkage with -lstdc++ or -lg++
 dnl
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-ice_save_LIBS="$LIBS"
 AC_CHECK_LIB(m, sin, LIBS="-lm $LIBS")
 AC_CHECK_LIB(stdc++, cout, LIBS="-lstdc++ $LIBS")
 case "$LIBS" in

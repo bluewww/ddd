@@ -37,6 +37,20 @@ char options_rcsid[] =
 
 #include "config.h"
 
+#if HAVE_PTRACE
+extern "C" {
+#if HAVE_SYS_PTRACE_H
+#include <sys/ptrace.h>
+#endif
+#if !HAVE_PTRACE_DECL
+extern int ptrace(int request, int pid, int addr, int data);
+#endif
+#if HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
+}
+#endif
+
 #include "AppData.h"
 #include "DataDisp.h"
 #include "DestroyCB.h"
@@ -88,20 +102,6 @@ char options_rcsid[] =
 #endif
 
 #include <signal.h>
-
-#if HAVE_PTRACE
-extern "C" {
-#if HAVE_SYS_PTRACE_H
-#include <sys/ptrace.h>
-#endif
-#if !HAVE_PTRACE_DECL
-extern int ptrace(int request, int pid, int addr, int data);
-#endif
-#if HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
-}
-#endif
 
 #if HAVE_LINK && !HAVE_LINK_DECL
 extern "C" int link (const char *oldname, const char *newname);
