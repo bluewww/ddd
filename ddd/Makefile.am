@@ -1901,8 +1901,8 @@ PROG_STUFF = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
              $(srcdir)/tips.m4 $(srcdir)/tips.html \
              $(srcdir)/Ddd.in Ddd.ad.h host.h \
              $(vsldir)/ddd.vsl $(srcdir)/ddd.vsl.h \
-             vr.h version.h bld.h build.h configinfo.C \
-             COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C \
+             vr.h version.h bld.h build.h root.h configinfo.C \
+             COPYING.gz.C NEWS.gz.C ddd.info.txt ddd.info.txt.gz.C \
              xlibdir.C eps-code.h .gdbinit
 
 # Additional files to be included in the distribution.
