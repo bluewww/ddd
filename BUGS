@@ -148,11 +148,10 @@ Volunteers for fixing these and other bugs are welcome!
     - Finish printing: 
       * Printing a plot must select the DispValue first.
       * Set `Selected Only' if some displays are selected.
-    - Add a primitive console (or some other way to enter commands)
+    - Add a command dialog to enter commands.  (File->Enter Command)
     - Allow rotating scalar values.
     - Have an `export' option that writes the data to a file.  This
       should just copy the original data file (in `File')
-    - Toggle color / grayscale / monochrome (would affect printing, too)
     - Document it all.
 
 330 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests

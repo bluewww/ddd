@@ -5040,6 +5040,7 @@ Ddd*print*what.labelString:	      	      Print
 Ddd*print*displays.labelString:		      Displays
 Ddd*print*plots.labelString:		      Plots
 Ddd*print*selected.labelString:		      Selected Only
+Ddd*print*color.labelString:		      Color
 
 Ddd*print*orientation.labelString:            Orientation
 Ddd*print*portrait.labelString:		      Portrait
