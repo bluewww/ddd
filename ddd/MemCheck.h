@@ -113,6 +113,9 @@ public:
     // Free block at p
     static void free(void *p);
 
+    // Make sure p points to an allocated block
+    static void check(void *p);
+
     // Issue a map of all allocated blocks (starting with block #start)
     static void map(ostream& os, unsigned start = 0, char *prefix = "");
 

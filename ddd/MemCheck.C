@@ -254,6 +254,15 @@ void MemCheck::_free(MemCheckHeader *bp)
     freep = p;
 }
 
+
+// Make sure AP points to an allocated block
+void MemCheck::check(void *ap)
+{
+    MemCheckHeader *bp = (MemCheckHeader *)ap - 1;
+    validate(bp, "check");
+}
+
+
 // Issue an allocation map -- using the alloc list
 void MemCheck::map(ostream& os, unsigned start, char *prefix)
 {
