@@ -1402,7 +1402,12 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 string DataDisp::selection_as_commands()
 {
     ostrstream cmd;
+    IntArray nrs;
 
+    // Sort displays by number, such that old displays appear before
+    // newer ones.  (Note: this fails with the negative numbers of
+    // user-defined displays; a topological sort would make more sense
+    // here.  FIXME.)
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
@@ -1410,24 +1415,35 @@ string DataDisp::selection_as_commands()
     {
 	if (dn->selected())
 	{
-	    cmd << "graph display " << dn->name();
-
-	    // Find dependencies
-	    GraphEdge *edge;
-	    for (edge = dn->nodeptr()->firstTo();
-		 edge != 0; edge = dn->nodeptr()->nextTo(edge))
-	    {
-		BoxGraphNode *ancestor = ptr_cast(BoxGraphNode, edge->from());
-		if (ancestor != 0)
-		{
-		    int depnr = disp_graph->get_nr(ancestor);
-		    DispNode *depnode = disp_graph->get(depnr);
-
-		    cmd << " dependent on " << depnode->name();
-		}
-	    }
-	    cmd << '\n';
+	    string nr = dn->disp_nr();
+	    nrs += get_positive_nr(nr);
 	}
+    }
+    sort(nrs);
+
+    for (int i = 0; i < nrs.size(); i++)
+    {
+	DispNode *dn = disp_graph->get(nrs[i]);
+	if (dn == 0)
+	    continue;
+
+	cmd << "graph display " << dn->name();
+
+	// Find dependencies
+	GraphEdge *edge;
+	for (edge = dn->nodeptr()->firstTo();
+	     edge != 0; edge = dn->nodeptr()->nextTo(edge))
+	{
+	    BoxGraphNode *ancestor = ptr_cast(BoxGraphNode, edge->from());
+	    if (ancestor != 0)
+	    {
+		int depnr = disp_graph->get_nr(ancestor);
+		DispNode *depnode = disp_graph->get(depnr);
+
+		cmd << " dependent on " << depnode->name();
+	    }
+	}
+	cmd << '\n';
     }
 
     return string(cmd);
