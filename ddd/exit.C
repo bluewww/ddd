@@ -169,7 +169,10 @@ void ddd_cleanup()
 	StopSOSCB(gdb_w);
 
     // Famous last words
-    set_status_mstring(rm("Thanks for using " DDD_NAME " " DDD_VERSION "!"));
+    string last_words = "Thanks for using " DDD_NAME " " DDD_VERSION "!";
+    if (ddd_has_crashed)
+	last_words += "  (We apologize for the inconvenience.)";
+    set_status_mstring(rm(last_words));
 
     // Close log file
     dddlog.close();
@@ -537,6 +540,9 @@ static int ddd_x_fatal(Display *display)
 {
     ddd_has_crashed = true;
 
+    dddlog << "!  X I/O error\n";
+    dddlog.flush();
+
     ddd_cleanup();
     return old_x_fatal_handler(display);
 }
@@ -570,12 +576,19 @@ static void ddd_xt_error(String message = 0)
 {
     ddd_has_crashed = true;
 
+    dddlog << "!  Xt error";
+    if (message != 0)
+	dddlog << ": " << message;
+    dddlog << "\n";
+    dddlog.flush();
+
     if (message == 0 || message[0] == '\0')
     {
+	// Occurred twice in a row
 	ddd_cleanup();
 	exit(EXIT_FAILURE);
     }
-	
+
     static int entered = 0;
 
     // Issue error on stderr
