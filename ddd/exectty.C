@@ -354,20 +354,23 @@ static int gdb_set_tty(string tty_name = "",
 	    }
 
 	    // Set remote terminal type
-	    string env_cmd = "setenv TERM " + term_type;
-	    string reply = gdb_question(env_cmd);
-	    if (reply == NO_GDB_ANSWER)
+	    if (gdb->has_setenv_command())
 	    {
-		if (!silent)
-		    post_warning(string("Cannot set terminal type to ") 
-				 + quote(term_type), 
-				 "tty_type_error", origin);
-	    }
-	    else if (reply != "")
-	    {
-		if (!silent)
-		    post_gdb_message(reply, origin);
-		return -1;
+		string env_cmd = "setenv TERM " + term_type;
+		string reply = gdb_question(env_cmd);
+		if (reply == NO_GDB_ANSWER)
+		{
+		    if (!silent)
+			post_warning(string("Cannot set terminal type to ") 
+				     + quote(term_type), 
+				     "tty_type_error", origin);
+		}
+		else if (reply != "")
+		{
+		    if (!silent)
+			post_gdb_message(reply, origin);
+		    return -1;
+		}
 	    }
 	}
 	break;
