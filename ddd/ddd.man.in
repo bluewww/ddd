@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-05-11" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-05-15" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -2363,32 +2363,46 @@ inferior debugger in the form `\fB@ddd@: \fIcommand\fR', it will
 interpret \fIcommand\fR as if it had been entered at the debugger
 prompt.
 .PP
-Suppose you want to define a \s-2GDB\s+2 command `\fBdispfoo\fR' that
-creates a data display containing the variable \fIfoo\fR.  All
-\fBdispfoo\fR has to do is to issue a string
+Suppose you want to define a \s-2GDB\s+2 command `\fBgd\fR' that
+serves as abbreviation for `\fBgraph display\fR'.  All \fBgd\fR
+has to do is to issue a string
 .br
 .sp
-  \fBddd: graph display foo\fR
+  \fBddd: graph display \fIargument\fR
 .sp
 .br
-In \s-2GDB\s+2, this can be achieved using the \fBecho\fR command.  In 
+where \fIargument\fR is the argument given to `\fBgd\fR'.  In
+\s-2GDB\s+2, this can be achieved using the \fBecho\fR command.  In
 your \fB$HOME/.gdbinit\fR file, insert the lines
 .br
 .sp
-  \fBdefine dispfoo
-    echo \fIprefix\fB graph display foo
+  \fBdefine gd
+    echo ddd: graph display $arg0\\n
   end\fR
 .sp
 .br
+To complete the setting, you must also set the
+`\fBautoCommandPrefix\fR' resource to the `\fBddd: \fR' prefix you
+gave in your command.  In `\fB$HOME/.ddd/init\fR', write:
+.br
+.sp
+  \fBDdd*autoCommandPrefix: ddd:\\ 
+.sp
+.br
+Be sure to leave a space after the trailing backslash.
+.PP
 Entering \fBdispfoo\fR will now have the same effect as entering
 \fBgraph display foo\fR at the debugger prompt.
 .PP
-Unfortunately, auto-commands also raise a security problem, since
-arbitrary commands can be executed.  Just imagine some malicious
-program issuing a string like `\fB\fIprefix\fR shell rm -fr $HOME\fR'
-when being debugged!  As a consequence, the \fIprefix\fR is created
-dynamically by \s-2@DDD@\s+2, unless defined explicitly as value of
-the `\fBautoCommandPrefix\fR resource.
+Note: In your commands, you should choose some other prefix than
+`\fBddd: \fR'.  This is because auto-commands raise a security
+problem, since arbitrary commands can be executed.  Just imagine some
+malicious program issuing a string like `\fB\fIprefix\fR shell rm -fr
+$HOME\fR' when being debugged!  As a consequence, be sure to choose
+your own \fIprefix\fR; it must be at least three characters long.
+.PP
+If you do not define a prefix, it is created dynamically by
+\s-2@DDD@\s+2, and used to set up breakpoint commands.
 .\"
 .\"
 .\" ---------------
