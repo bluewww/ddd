@@ -227,8 +227,6 @@ Volunteers for fixing these and other bugs are welcome!
          the default in the display graph?  If I "set output-radix 16" 
          in the gdb window ddd seems to lock up very often.
 
-099. With DEC DBX, a display once disabled is never enabled again.
-
 100. Self-modifying code is not detected automatically; users must
      explicitly re-disassemble (with caching disabled).  
      [Does anyone care?  -AZ]
