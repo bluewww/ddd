@@ -121,5 +121,22 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false);
 #define XtNpushMenuPopupTime  "pushMenuPopupTime"
 #define XtCPushMenuPopupTime  "PushMenuPopupTime"
 
+// Helpers
+
+// Set sensitivity of W to STATE
+extern void set_sensitive(Widget w, bool state);
+
+// Manage W iff STATE
+inline void manage_child(Widget w, bool state)
+{
+    if (w != 0)
+    {
+	if (state)
+	    XtManageChild(w);
+	else
+	    XtUnmanageChild(w);
+    }
+}
+
 #endif // _DDD_MakeMenu_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

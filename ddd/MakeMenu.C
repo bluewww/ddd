@@ -153,6 +153,9 @@ static void auto_raise(Widget shell)
 // Flat buttons
 //-----------------------------------------------------------------------
 
+// The currently unflattened button
+static Widget active_button = 0;
+
 static void flatten_button(Widget w)
 {
     XtVaSetValues(w,
@@ -169,22 +172,28 @@ static void unflatten_button(Widget w)
 		  NULL);
 }
 
-static void HandleFlattenEvent(Widget w,
-			       XtPointer /* client_data */,
-			       XEvent *event, 
-			       Boolean * /* continue_to_dispatch */)
+static void FlattenEH(Widget w,
+		      XtPointer /* client_data */,
+		      XEvent *event, 
+		      Boolean * /* continue_to_dispatch */)
 {
+    if (event->xcrossing.state & (Button1Mask | Button2Mask | Button3Mask | 
+				  Button4Mask | Button5Mask))
+	return;			// Button is still pressed
+
     switch (event->type)
     {
     case EnterNotify:
     {
 	unflatten_button(w);
+	active_button = w;
 	break;
     }
 
     case LeaveNotify:
     {
 	flatten_button(w);
+	active_button = 0;
 	break;
     }
     }
@@ -675,7 +684,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 	if (flat)
 	{
 	    EventMask event_mask = EnterWindowMask | LeaveWindowMask;
-	    XtAddEventHandler(widget, event_mask, False, HandleFlattenEvent,
+	    XtAddEventHandler(widget, event_mask, False, FlattenEH,
 			      XtPointer(0));
 	}
 
@@ -858,7 +867,7 @@ static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data,
 {
     Widget w = (Widget)client_data;
     EventMask event_mask = EnterWindowMask | LeaveWindowMask;
-    XtAddEventHandler(w, event_mask, False, HandleFlattenEvent, 
+    XtAddEventHandler(w, event_mask, False, FlattenEH, 
 		      XtPointer(0));
     flatten_button(w);
 }
@@ -914,7 +923,7 @@ static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 	// Don't have the PushMenu interfere with flattening.  Disable
 	// flattening until the menu is popped down again.
 	EventMask event_mask = EnterWindowMask | LeaveWindowMask;
-	XtRemoveEventHandler(w, event_mask, False, HandleFlattenEvent, 
+	XtRemoveEventHandler(w, event_mask, False, FlattenEH, 
 			     XtPointer(0));
 	XtAddCallback(shell, XtNpopdownCallback, ReflattenButtonCB, 
 		      XtPointer(w));
@@ -1013,4 +1022,20 @@ static void ArmPushMenuCB(Widget w, XtPointer client_data, XtPointer call_data)
 static void RedrawPushMenuCB(Widget w, XtPointer, XtPointer)
 {
     XtCallActionProc(w, "decorate-push-menu", 0, 0, 0);
+}
+
+
+void set_sensitive(Widget w, bool state)
+{
+    if (w != 0)
+    {
+	XtSetSensitive(w, state);
+
+	if (!state && w == active_button)
+	{
+	    // We won't get the LeaveWindow event, since W is now
+	    // insensitive.  Flatten button explicitly.
+	    flatten_button(w);
+	}
+    }
 }

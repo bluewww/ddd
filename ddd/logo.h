@@ -56,25 +56,6 @@ extern void install_icons(Widget shell, const string& color_key = 'c');
 extern void set_label(Widget w, const MString& new_label, 
 		      char *image_name = 0);
 
-// Set sensitivity of W to STATE
-inline void set_sensitive(Widget w, bool state)
-{
-    if (w != 0)
-	XtSetSensitive(w, state);
-}
-
-// Manage W iff STATE
-inline void manage_child(Widget w, bool state)
-{
-    if (w != 0)
-    {
-	if (state)
-	    XtManageChild(w);
-	else
-	    XtUnmanageChild(w);
-    }
-}
-
 // Icon names
 #define DDD_ICON           ddd_NAME
 #define BREAK_AT_ICON      "break_at"
