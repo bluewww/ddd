@@ -367,7 +367,8 @@ private:
 					    bool& ok);
 
     static bool get_state(ostream& os, bool restore_state, 
-			  const StringArray& scopes);
+			  const StringArray& scopes,
+			  int target_frame);
 
     // Reset done
     static void reset_done(const string& answer, void *data);
@@ -429,8 +430,9 @@ public:
 
     // Return DDD commands to restore current state (displays, etc.)
     // Return true iff all went well.  SCOPES are obtained via
-    // GET_SCOPES (see below).
-    static bool get_state(ostream& os, const StringArray& scopes);
+    // GET_SCOPES (see below).  TARGET_FRAME indicates final frame.
+    static bool get_state(ostream& os, const StringArray& scopes, 
+			  int target_frame = 0);
     static bool get_scopes(StringArray& scopes);
 
     // Return true if a core dump is needed to restore displays
@@ -447,12 +449,13 @@ public:
 inline bool DataDisp::get_selection(ostream& os)
 {
     StringArray dummy;
-    return get_state(os, false, dummy);
+    return get_state(os, false, dummy, 0);
 }
 
-inline bool DataDisp::get_state(ostream& os, const StringArray& scopes)
+inline bool DataDisp::get_state(ostream& os, const StringArray& scopes, 
+				int target_frame)
 {
-    return get_state(os, true, scopes);
+    return get_state(os, true, scopes, target_frame);
 }
 
 inline void DataDisp::get_shortcut_menu(StringArray& exprs,

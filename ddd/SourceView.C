@@ -6699,25 +6699,18 @@ bool SourceView::get_state(ostream& os)
 	}
     }
 
-    // Restore current frame
-    if (current_frame >= 0 && gdb->has_frame_command())
-    {
-	// Issue `frame' command
-	gdb_command(gdb->frame_command(current_frame));
-    }
-    
     // Restore current cursor position
     switch (gdb->type())
     {
     case GDB:
-	os << "info line " + line_of_cursor() + "\n";
+	os << "info line " << line_of_cursor() << '\n';
 	break;
 
     case DBX:
 	break;			// FIXME
 
     case XDB:
-	os << "v " + line_of_cursor() + "\n";
+	os << "v " << line_of_cursor() << '\n';
 	break;
     }
 

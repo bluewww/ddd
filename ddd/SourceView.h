@@ -686,6 +686,9 @@ public:
     // True iff we have some selection
     static bool have_selection();
 
+    // Return current frame (-1 if unknown)
+    static int get_frame() { return current_frame; }
+
     // Return debugger command(s) to restore current state (breakpoints, etc.)
     static bool get_state(ostream& os);
 

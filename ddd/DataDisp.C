@@ -1803,8 +1803,8 @@ void DataDisp::write_restore_scope_command(ostream& os,
     write_frame_command(os, current_frame, target_frame);
 }
 
-bool DataDisp::get_state(ostream& os, bool restore_state, 
-			 const StringArray& scopes)
+bool DataDisp::get_state(ostream& os, bool restore_state,
+			 const StringArray& scopes, int target_frame)
 {
     // Sort displays by number, such that old displays appear before
     // newer ones.
@@ -1863,8 +1863,8 @@ bool DataDisp::get_state(ostream& os, bool restore_state,
 	os << '\n';
     }
 
-    // That's it: return to frame #0...
-    write_frame_command(os, current_frame, 0);
+    // That's it: return to target frame...
+    write_frame_command(os, current_frame, target_frame);
 
     // ... and refresh the graph.
     if (restore_state && nrs.size() > 0)

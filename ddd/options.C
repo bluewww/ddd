@@ -1455,7 +1455,12 @@ bool save_options(unsigned long flags)
 	    core_ok = get_core(session, flags, core);
 
 	if (displays_ok)
-	    displays_ok = data_disp->get_state(rs, scopes);
+	{
+	    int target_frame = source_view->get_frame();
+	    if (target_frame < 0)
+		target_frame = 0;
+	    displays_ok = data_disp->get_state(rs, scopes, target_frame);
+	}
 
 	if (!displays_ok)
 	{
