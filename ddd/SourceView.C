@@ -9177,6 +9177,12 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	signal_received = signaled;
     }
 
+    if (mode == XmHIGHLIGHT_SELECTED)
+	undo_buffer.add_address(pc, stopped);
+    else
+	undo_buffer.remove_address();
+    undo_buffer.add_state();
+
     if (!disassemble)
 	return;
 
@@ -9234,12 +9240,6 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	return;
 
     SetInsertionPosition(code_text_w, pos + indent_amount(code_text_w));
-
-    if (mode == XmHIGHLIGHT_SELECTED)
-	undo_buffer.add_address(pc, stopped);
-    else
-	undo_buffer.remove_address();
-    undo_buffer.add_state();
 
     XmTextPosition pos_line_end = 0;
     if (current_code != "")
