@@ -73,18 +73,24 @@ string ArgField::get_string () const
     return str;
 }
 
-void ArgField::set_string (char* text_ch)
+void ArgField::set_string(string s)
 {
     // Use the last line only
-    int start = 0;
-    for (int i = 0; text_ch[i] != '\0'; i++)
-	if (text_ch[i] == '\n')
-	    start = i + 1;
+    int last_nl = s.index('\n', -1);
+    if (last_nl >= 0)
+	s = s.before(last_nl);
 
-    String s = XmTextFieldGetString(arg_text_field);
-    if (strcmp(s, text_ch + start) != 0)
+    // XmTextField cannot display tabs
+    s.gsub('\t', ' ');
+
+    // Strip blanks
+    strip_space(s);
+
+    // Set it
+    String old_s = XmTextFieldGetString(arg_text_field);
+    if (s != old_s)
     {
-	XmTextFieldSetString(arg_text_field, text_ch + start);
+	XmTextFieldSetString(arg_text_field, (String)s);
 
 	if (XtIsRealized(arg_text_field)) // LessTif 0.1 crashes otherwise
 	{
@@ -94,9 +100,8 @@ void ArgField::set_string (char* text_ch)
 	    XmTextFieldShowPosition(arg_text_field, 0);
 	    XmTextFieldShowPosition(arg_text_field, last_pos);
 	}
-
-	XtFree(s);
     }
+    XtFree(old_s);
 }
 
 void ArgField::valueChangedCB(Widget,

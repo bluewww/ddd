@@ -82,11 +82,7 @@ public:
 
     string get_string () const;
 
-    void set_string (char* text_ch);
-    void set_string (string s)
-    {
-	set_string((char *)s);
-    }
+    void set_string(string s);
 
     Widget widget() { return arg_text_field; };
 
