@@ -201,7 +201,7 @@ Compilers and Options
          Preprocessing flags used by the C++ compiler
 
     `CXXFLAGS'
-         Compilation flags used by the C compiler
+         Compilation flags used by the C++ compiler
 
     `LDFLAGS'
          Linker flags used by both the C and C++ compiler

@@ -21,6 +21,10 @@ ddd.man.ps -- ``DDD---The Data Display Debugger''
 
     Included in the DDD source distribution.
 
+    Note: some older PostScript printers have trouble printing this
+    manual.  You can create a copy without pictures by grabbing a DDD
+    source distribution and to enter `cd ddd; make ps'.
+
 
 ddd-thesis.ps -- ``DDD - ein Debugger mit graphischer Datendarstellung''
 

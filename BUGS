@@ -353,6 +353,14 @@ Volunteers for fixing these and other bugs are welcome!
      source file.
 
 169. The Manual Browser does not recognize manual (sub-)titles for
-     ULTRIX and HP-UX `man' formats.
+     ULTRIX and HP-UX `man' formats (probably problems with others,
+     too)
 
-170. (Insert your bug here)
+170* Ira Cooper <ilcooper@tasc.com> says:
+     In `cxxtest.C', stop at line 125: and do the following
+     1. Open up all the links off tree excluding the nils.
+     2. Turn on auto-layout and alias detection in the preferences.  
+     3. Then set tree->left->left->left to tree->left.
+     4. Watch the loop.
+
+171. (Insert your bug here)
