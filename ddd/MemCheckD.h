@@ -56,7 +56,7 @@ void operator delete(void *p)
 void *operator new[](size_t nbytes)
 {
     return MemCheck::alloc(nbytes);
-}
+} 
 
 void operator delete[](void *p)
 #if HAVE_EXCEPTIONS
