@@ -129,7 +129,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
     : area(w), dpy(XtDisplay(w)), win(XtWindow(w)),
       cx(0), cy(0), px(1), py(1), xscale(0.0), yscale(0.0),
       gc(0), font(0), vchar(0), jmode(0), line_type(0), width(0),
-      type(LineSolid), pointsize(1), commands("")
+      type(LineSolid), pointsize(1), last_commands("")
 {
     plot_resource_values values;
     XtGetApplicationResources(area, &values,
@@ -235,63 +235,57 @@ PlotArea::PlotArea(Widget w, const string& fontname)
 
 #define X(x) (int) (x * xscale)
 #define Y(y) (int) ((4095-y) * yscale)
-PlotCommand PlotArea::command_table[] =
-{
-    { 'V', &PlotArea::plot_vector },
-    { 'M', &PlotArea::plot_move },
-    { 'T', &PlotArea::plot_text },
-    { 'J', &PlotArea::plot_justify },
-    { 'L', &PlotArea::plot_linetype },
-    { 'P', &PlotArea::plot_point },
-    { 'G', &PlotArea::plot_nop },
-    { 'E', &PlotArea::plot_nop },
-    { 'R', &PlotArea::plot_nop },
-};
 
 
-void PlotArea::plot_nop(const string&)
+void PlotArea::plot_nop(const char *)
 {
     // Ignore command
 }
 
-void PlotArea::plot_vector(const string& buf)
+void PlotArea::plot_vector(const char *buf)
 {
     int x, y;
-    sscanf(buf, "V%4d%4d", &x, &y);  
+    sscanf((char *)buf, "V%4d%4d", &x, &y);  
     XDrawLine(dpy, win, gc, X(cx), Y(cy), X(x), Y(y));
     cx = x; cy = y;
 }
 
-void PlotArea::plot_move(const string& buf)
+void PlotArea::plot_move(const char *buf)
 {
-    sscanf(buf, "M%4d%4d", &cx, &cy);
+    sscanf((char *)buf, "M%4d%4d", &cx, &cy);
 }
 
-void PlotArea::plot_text(const string& buf)
+void PlotArea::plot_text(const char *buf)
 {
     int x, y;
-    sscanf(buf, "T%4d%4d", &x, &y);  
-    char *str = (char *)buf + 9;
-    int sl = strlen(str);
+    sscanf((char *)buf, "T%4d%4d", &x, &y);  
+
+    const char *str = buf + 9;
+    int sl = 0;
+    while (str[sl] != '\n' && str[sl] != '\0')
+	sl++;
+
     int sw = XTextWidth(font, str, sl);
-    switch (jmode) {
+    switch (jmode) 
+    {
     case 0: sw = 0;     break;	// left
     case 1: sw = -sw/2; break;	// center
     case 2: sw = -sw;   break;	// right
     }
+
     XSetForeground(dpy, gc, colors[2]);
     XDrawString(dpy, win, gc, X(x)+sw, Y(y) + vchar / 3, str, sl);
     XSetForeground(dpy, gc, colors[line_type + 3]);
 }
 
-void PlotArea::plot_justify(const string& buf)
+void PlotArea::plot_justify(const char *buf)
 {
-    sscanf(buf, "J%4d", &jmode);
+    sscanf((char *)buf, "J%4d", &jmode);
 }
 
-void PlotArea::plot_linetype(const string& buf)
+void PlotArea::plot_linetype(const char *buf)
 {
-    sscanf(buf, "L%4d", &line_type);
+    sscanf((char *)buf, "L%4d", &line_type);
     line_type = (line_type % 8) + 2;
     width = widths[line_type];
     if (dashes[line_type][0])
@@ -307,10 +301,10 @@ void PlotArea::plot_linetype(const string& buf)
     XSetLineAttributes(dpy, gc, width, type, CapButt, JoinBevel);
 }
 
-void PlotArea::plot_point(const string& buf)
+void PlotArea::plot_point(const char *buf)
 {
     int point, x, y;
-    sscanf(buf, "P%1d%4d%4d", &point, &x, &y);  
+    sscanf((char *)buf, "P%1d%4d%4d", &point, &x, &y);  
     if (point == 7) 
     {
 	// Set point size
@@ -381,9 +375,15 @@ void PlotArea::plot_point(const string& buf)
     }
 }
 
-void PlotArea::plot(const string& cmds, bool clear)
+void PlotArea::plot_unknown(const char *command)
 {
-    commands = cmds;
+    // Unknown command
+    cerr << "PlotArea: unknown plot command " << quote(command) << "\n";
+}
+
+void PlotArea::plot(const char *cmds, bool clear)
+{
+    last_commands = cmds;
 
     if (!XtIsRealized(area))
 	return;
@@ -421,34 +421,72 @@ void PlotArea::plot(const string& cmds, bool clear)
 	XSetBackground(dpy, gc, area_background);
     }
 
-    int n = commands.freq('\n');
-    string *lines = new string[n + 1];
-    split(commands, lines, n + 1, '\n');
-
-    for (int i = 0; i < n - 1; i++)
+    // Process commands
+    while (*cmds != '\0')
     {
-	const string& line = lines[i];
+	const char *command = cmds;
 
-	bool processed = false;
-	for (int j = 0; !processed && j < int(XtNumber(command_table)); j++)
+	// Let CMDS point to the end of the line
+	while (*cmds != '\0' && *cmds != '\n')
+	    cmds++;
+	char eol = *cmds;
+
+	if (eol != '\0')
 	{
-	    if (line.contains(command_table[j].code, 0))
-	    {
-		PlotAreaFunc func = command_table[j].func;
-		(this->*func)(lines[i]);
-		processed = true;
-	    }
+	    // Let COMMAND be 0-terminated
+	    *((char *)cmds) = '\0';
 	}
 
-	if (!processed)
-	    cerr << "Unknown command: " << quote(lines[i]) << "\n";
-    }
+	switch (command[0])
+	{
+	case 'V':
+	    plot_vector(command);
+	    break;
 
-    delete[] lines;
+	case 'M':
+	    plot_move(command);
+	    break;
+
+	case 'T':
+	    plot_text(command);
+	    break;
+
+	case 'J':
+	    plot_justify(command);
+	    break;
+
+	case 'L':
+	    plot_linetype(command);
+	    break;
+
+	case 'P':
+	    plot_point(command);
+	    break;
+
+	case 'G':
+	case 'E':
+	case 'R':
+	    plot_nop(command);
+	    break;
+
+	default:
+	    plot_unknown(command);
+	    break;
+	}
+
+	if (eol != '\0')
+	{
+	    // Restore old line terminator
+	    *((char *)cmds) = '\n';
+
+	    // Go to next line
+	    cmds++;
+	}
+    }
 }
 
 void PlotArea::replot(bool clear)
 {
-    plot(commands, clear);
+    plot(last_commands, clear);
 }
 

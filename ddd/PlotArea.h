@@ -38,13 +38,6 @@
 
 class PlotArea;
 
-typedef void (PlotArea::*PlotAreaFunc)(const string& command);
-
-struct PlotCommand {
-    char code;
-    PlotAreaFunc func;
-};
-
 #define Ncolors 13
 #define Ndashes 10
 #define Nwidths 10
@@ -68,25 +61,25 @@ class PlotArea {
     int width;			// Current line width
     int type;			// Current line type
     int pointsize;		// Point size
-    string commands;		// Commands drawn
 
-    static PlotCommand command_table[]; // Commands to use
-
+    string last_commands;	// Last commands drawn
+    
     // Plotting commands
-    void plot_nop(const string& command);
-    void plot_vector(const string& command);
-    void plot_move(const string& command);
-    void plot_text(const string& command);
-    void plot_justify(const string& command);
-    void plot_linetype(const string& command);
-    void plot_point(const string& command);
+    void plot_unknown (const char *command);
+    void plot_nop     (const char *command);
+    void plot_vector  (const char *command);
+    void plot_move    (const char *command);
+    void plot_text    (const char *command);
+    void plot_justify (const char *command);
+    void plot_linetype(const char *command);
+    void plot_point   (const char *command);
 
 public:
     // Constructor
     PlotArea(Widget w, const string& fontname);
 
     // Plot
-    void plot(const string& commands, bool clear = true);
+    void plot(const char *commands, bool clear = true);
     void replot(bool clear = false);
 
     Widget widget() const { return area; }
