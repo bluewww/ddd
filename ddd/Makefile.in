@@ -1753,7 +1753,7 @@ $(srcdir)/TAGS:	FORCE
 	@cd $(srcdir); \
 	if [ `ls -c TAGS *.[Ch] | head -1` != TAGS ]; then \
 	echo 'Creating $@...'; \
-	$(ETAGS) -o $@ *.[Ch]; \
+	$(ETAGS) *.[Ch] > $@; \
 	echo 'Creating $@...done.'; \
 	else \
 	echo "'"'$@` is up to date.'; \
