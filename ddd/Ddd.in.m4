@@ -2223,7 +2223,7 @@ Ddd*menubar*programMenu.nexti.documentationString:
 
 Ddd*menubar*programMenu.cont.labelString:	   Continue
 Ddd*menubar*programMenu.cont.mnemonic:		   C
-Ddd*menubar*programMenu.cont.accelerator:	   ~Shift Ctrl<Key>O
+Ddd*menubar*programMenu.cont.accelerator:	   ~Shift Ctrl<Key>T
 Ddd*menubar*programMenu.cont.acceleratorText:	   Ctrl+T
 Ddd*menubar*programMenu.cont.documentationString:
 
