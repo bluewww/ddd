@@ -1,11 +1,12 @@
 # $Id$ -*- Text -*-
-# The DDD open bugs list.
+# The list of reported DDD bugs.
 
 Note: For problems occurring when *building* DDD, see the file `PROBLEMS'.
       For known bugs that could be reproduced, see the file `BUGS'.
 
 This is a list of reported DDD bugs which could not yet be reproduced.
-Feel free to investigate into one of these problems.
+Feel free to investigate into one of these problems or send in more
+detail.
 
 086 mayer@paradigml.com (Ron Mayer) says:
 

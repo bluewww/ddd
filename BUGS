@@ -1,5 +1,5 @@
 # $Id$ -*- Text -*-
-# The DDD bug list.
+# The list of known DDD bugs.
 
 Note: For problems occurring when *building* DDD, see the file `PROBLEMS'.
       For reported bugs that could not yet be reproduced, see `OPENBUGS'.
@@ -139,8 +139,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 262 Ordinarily labeled toolbars don't show up as they should.  Motif
     bug?
-
-271 Source text and machine code should not be drop targets.
 
 272 (LessTif) The `select' font selection method works only once.
 
