@@ -324,7 +324,7 @@ Box* DispBox::create_value_box (const DispValue *dv,
 		int nchildren = 0;
 		for (int k = 0; have_2d_array && k < count; k++)
 		{
-		    DispValue *child = dv->get_child(k);
+		    DispValue *child = dv->child(k);
 		    if (child->type() != Array)
 		    {
 			// Child is no array
@@ -362,11 +362,11 @@ Box* DispBox::create_value_box (const DispValue *dv,
 			// each sub-array is layed out horizontally
 			for (int i = 0; i < count; i++)
 			{
-			    DispValue *c = dv->get_child(i);
+			    DispValue *c = dv->child(i);
 			    ListBox *row = new ListBox;
 			    for (int j = 0; j < c->nchildren(); j++)
 			    {
-				DispValue *cc = c->get_child(j);
+				DispValue *cc = c->child(j);
 				ListBox *args = new ListBox;
 				*args += create_value_box(cc, c);
 				Box *b = eval("twodim_array_elem", args);
@@ -385,18 +385,17 @@ Box* DispBox::create_value_box (const DispValue *dv,
 			// each sub-array is layed out vertically
 			int max_cc = 0;
 			for (int j = 0; j < count; j++)
-			    max_cc = max(max_cc,
-					 dv->get_child(j)->nchildren());
+			    max_cc = max(max_cc, dv->child(j)->nchildren());
 			for (int i = 0; i < max_cc; i++)
 			{
 			    ListBox *row = new ListBox;
 			    for (int j = 0; j < count; j++)
 			    {
-				DispValue *c = dv->get_child(j);
+				DispValue *c = dv->child(j);
 				Box *elem = 0;
 				if (i < c->nchildren())
 				{
-				    DispValue *cc = c->get_child(i);
+				    DispValue *cc = c->child(i);
 				    elem = create_value_box(cc, c);
 				}
 				else
@@ -429,7 +428,7 @@ Box* DispBox::create_value_box (const DispValue *dv,
 		    // One-dimensional array
 		    ListBox* args = new ListBox;
 		    for (int i = 0; i < count; i++)
-			*args += create_value_box (dv->get_child(i), dv);
+			*args += create_value_box (dv->child(i), dv);
 
 		    if (dv->vertical_aligned())
 			vbox = eval("vertical_array", args);
@@ -453,7 +452,7 @@ Box* DispBox::create_value_box (const DispValue *dv,
 	    ListBox* args = new ListBox;
 	    int count = dv->nchildren();
 	    for (int i = 0; i < count; i++)
-		*args += create_value_box(dv->get_child(i), dv);
+		*args += create_value_box(dv->child(i), dv);
 
 	    vbox = eval("sequence_value", args);
 	    args->unlink();
@@ -491,7 +490,7 @@ Box* DispBox::create_value_box (const DispValue *dv,
 		int i;
 		for (i = 0; i < count; i++)
 		{
-		    string child_member_name = dv->get_child(i)->name();
+		    string child_member_name = dv->child(i)->name();
 		    Box *box = eval(member_name, child_member_name);
 		    max_member_name_width = 
 			max(max_member_name_width, box->size(X));
@@ -501,7 +500,7 @@ Box* DispBox::create_value_box (const DispValue *dv,
 		// Create children
 		ListBox* args = new ListBox;
 		for (i = 0; i < count; i++)
-		    *args += create_value_box(dv->get_child(i), dv,
+		    *args += create_value_box(dv->child(i), dv,
 					      max_member_name_width);
 
 		vbox = eval(value, args);
@@ -519,7 +518,7 @@ Box* DispBox::create_value_box (const DispValue *dv,
 	{
 	    ListBox* args = new ListBox;
 	    for (int i = 0; i < 2; i++)
-		*args += create_value_box (dv->get_child(i), dv);
+		*args += create_value_box (dv->child(i), dv);
 
 	    vbox = eval("reference_value", args);
 	    args->unlink();

@@ -710,7 +710,7 @@ void DataDisp::toggle_rotate(DispValue *dv, bool all)
 
     if (all)
 	for (int i = 0; i < dv->nchildren(); i++)
-	    toggle_rotate(dv->get_child(i), all);
+	    toggle_rotate(dv->child(i), all);
 }
 
 void DataDisp::rotateCB(Widget w, XtPointer, XtPointer)
