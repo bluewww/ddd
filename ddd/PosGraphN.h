@@ -73,4 +73,5 @@ public:
     }
 };
 
-#endif
+#endif // _DDD_PosGraphNode_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

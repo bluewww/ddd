@@ -132,4 +132,5 @@ public:
 
 extern ostream& operator << (ostream& s, GraphEdge& e);
 
-#endif
+#endif // _DDD_GraphEdge_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

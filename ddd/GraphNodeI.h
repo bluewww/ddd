@@ -154,4 +154,5 @@ inline ostream& operator << (ostream& s, GraphNode& node)
     return s << node.str();
 }
 
-#endif
+#endif // _DDD_GraphNodeI_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

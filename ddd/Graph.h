@@ -33,7 +33,6 @@
 #pragma interface
 #endif
 
-
 #include "assert.h"
 #include "GraphGC.h"
 #include "GraphNode.h"
@@ -178,4 +177,5 @@ public:
 // Echo
 extern ostream& operator << (ostream& s, const Graph& g);
 
-#endif
+#endif // _DDD_Graph_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

@@ -49,4 +49,5 @@ inline GraphEdge *GraphNode::nextTo(GraphEdge *ref) const
     return ref->_nextTo == _firstTo ? 0 : ref->_nextTo;
 }
 
-#endif
+#endif // _DDD_GraphNode_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
