@@ -300,4 +300,13 @@ Volunteers for these and other projects are welcome!
      backtrace window at X, Y; open-backtrace() would open it in some
      default position).  See also #154, above.
 
-156. (Insert your project idea here)
+156. When closing the data window (using File|close) and displaying
+     info to it, reopen it.
+
+157. When in the source window, using the Find()>> or Find()<< buttons
+     to find a string that does not appear elsewhere in the current
+     file should produce a message on the status line.
+
+158. Have a `make' button.
+
+159. (Insert your project idea here)

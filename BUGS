@@ -355,4 +355,14 @@ Volunteers for fixing these and other bugs are welcome!
 166. When disassembling, have a way to place a delay that is
      automatically cleared with the next GDB prompt (AutoDelay or so).
 
-167. (Insert your bug here)
+167. The message `GDB is busy' keeps popping up under certain
+     circumstances.  duprat@cs.ubc.ca (Jean-Luc Duprat) says: Once I
+     open the data window, I get constant reminders that gdb is
+     busy. This happens even at times when gdb is obviously not busy,
+     and in fact it happens for anything I do as long as the data
+     window is open. Note that the status indicator is not blinking
+     when that happens.  Once this has started happening, closing the
+     data window does not help (unless the window is empty when
+     closed).
+
+168. (Insert your bug here)
