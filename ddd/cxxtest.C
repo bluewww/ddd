@@ -134,29 +134,129 @@ public:
     virtual void print()    {}
     virtual void print(int) {}
 };
+
 //--------------------------------------------------------------------------
 class Tree {
     int   value;
-    const char *name;
+    const char *_name;
+
+    Tree *_left;
+    Tree *_right;
+    bool left_thread;
+    bool right_thread;
+
+protected:
+    void add_left_threads(Tree *);
+    void add_right_threads(Tree *);
+
 public:
     Date date;
-    Tree *left;
-    Tree *right;
+
     static int shared;
 
-    Tree(int v, char *n):
-	value(v), name(n), left(0), right(0)
+    Tree(int v, const char *n):
+	value(v), _name(n), _left(0), _right(0), 
+	left_thread(false), right_thread(false)
     {}
-    ~Tree() 
+
+    Tree *left()  { return left_thread  ? 0 : _left; }
+    Tree *right() { return right_thread ? 0 : _right; }
+
+    const char *name() { return _name; }
+
+    void set_left(Tree *t)  { _left = t; }
+    void set_right(Tree *t) { _right = t; }
+
+    // In-order traversal
+    Tree *first();
+    Tree *next();
+    Tree *last();
+    Tree *prev();
+
+    ~Tree()
     {
-	if (left)
-	    delete left;
-	if (right)
-	    delete right;
+	delete left();
+ 	delete right();
     }
+
+    void add_threads();
 };
 
 int Tree::shared = 4711;
+
+void Tree::add_threads()
+{
+    add_left_threads(0);
+    add_right_threads(0);
+}
+
+void Tree::add_right_threads(Tree *parent)
+{
+    if (_right == 0)
+    {
+	_right = parent;
+	right_thread = (_right != 0);
+    }
+    else
+    {
+	_right->add_right_threads(parent);
+    }
+
+    if (_left != 0 && !left_thread)
+	_left->add_right_threads(this);
+}
+
+void Tree::add_left_threads(Tree *parent)
+{
+    if (_left == 0)
+    {
+	_left = parent;
+	left_thread = (_left != 0);
+    }
+    else
+    {
+	_left->add_left_threads(parent);
+    }
+
+    if (_right != 0 && !right_thread)
+	_right->add_left_threads(this);
+}
+
+Tree *Tree::next()
+{
+    if (right_thread)
+	return _right;
+    if (_right != 0)
+	return _right->first();
+    return 0;
+}
+
+Tree *Tree::prev()
+{
+    if (left_thread)
+	return _left;
+    if (_left != 0)
+	return _left->last();
+    return 0;
+}
+
+Tree *Tree::first()
+{
+    Tree *t = this;
+    while (t->_left != 0 && !t->left_thread)
+	t = t->_left;
+
+    return t;
+}
+
+Tree *Tree::last()
+{
+    Tree *t = this;
+    while (t->_right != 0 && !t->right_thread)
+	t = t->_right;
+
+    return t;
+}
 
 //--------------------------------------------------------------------------
 class List {
@@ -169,17 +269,24 @@ public:
 	value(v), self(this), next(this)
     {}
 };
-
 //--------------------------------------------------------------------------
-// Simple binary tree
+// Simple threaded tree
+
 void tree_test()
 {
     Tree *tree = 0;
-    tree =              new Tree(7, "Ada");      // Byron Lovelace
-    tree->left =        new Tree(1, "Grace");    // Murray Hopper
-    tree->left->left =  new Tree(5, "Judy");     // Clapp
-    tree->left->right = new Tree(6, "Kathleen"); // McNulty
-    tree->right =       new Tree(1, "Mildred");  // Koss
+
+    tree = new Tree(7, "Ada");                        // Byron Lovelace
+    tree->set_left(new Tree(1, "Grace"));             // Murray Hopper
+    tree->left()->set_left(new Tree(5, "Judy"));      // Clapp
+    tree->left()->set_right(new Tree(6, "Kathleen")); // McNulty
+    tree->set_right(new Tree(1, "Mildred"));          // Koss
+
+    tree->add_threads();
+
+    for (Tree *t = tree->first(); t != 0; t = t->next())
+	cout << t->name() << " ";
+    cout << "\n";
 
     tree->date.set(Tue, 29, 11, 1994);
     tree->date.set(Wed, 30, 11, 1994);
