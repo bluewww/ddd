@@ -111,19 +111,19 @@ bool ddd_expired()
     time_t expiration_time = ddd_expiration_time();
     if (expiration_time == 0)
     {
-	// No expiration time
+	// No expiration time -- this never ever expires.
 	return false;
     }
     else if (expiration_time < 0)
     {
-	// Invalid expiration time
+	// Invalid expiration time -- consider as expired.
 	return true;
     }
 
     time_t current_time = time(NULL);
     if (current_time < 0)
     {
-	// No current time -- consider as expired?
+	// No current time -- consider as expired.
 	return true;
     }
 
@@ -134,5 +134,6 @@ bool ddd_expired()
 	return false;
     }
 
+    // Expired.
     return true;
 }
