@@ -3352,7 +3352,6 @@ Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 Ddd*debuggerMenu*pydb.labelString:		PYDB
 Ddd*debuggerMenu*perl.labelString:		Perl
-Ddd*debuggerMenu.orientation:	      	        XmVERTICAL
 Ddd*debuggerMenu.numColumns:	      	        2
 
 Ddd*preferences*startupWindows.labelString:     Startup Windows
