@@ -29,7 +29,7 @@ char VSLRead_rcsid[] =
 
 #include "assert.h"
 #include <stdlib.h>
-#include <values.h>
+#include <limits.h>
 #include <iostream.h>
 #include <fstream.h>
 #include <strstream.h>

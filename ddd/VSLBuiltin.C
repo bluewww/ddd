@@ -33,7 +33,7 @@ char VSLBuiltin_rcsid[] =
 
 
 #include "assert.h"
-#include <values.h>
+#include <limits.h>
 #include <math.h>
 #include <iostream.h>
 

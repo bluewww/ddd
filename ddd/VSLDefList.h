@@ -33,7 +33,7 @@
 
 
 #include "assert.h"
-#include <values.h>
+#include <limits.h>
 #include <iostream.h>
 #include "strclass.h"
 #include "bool.h"
