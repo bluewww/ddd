@@ -80,14 +80,21 @@ void ArgField::set_string (char* text_ch)
 	if (text_ch[i] == '\n')
 	    start = i + 1;
 
-    XmTextFieldSetString(arg_text_field, text_ch + start);
-
-    if (XtIsRealized(arg_text_field)) // LessTif 0.1 crashes otherwise
+    String s = XmTextFieldGetString(arg_text_field);
+    if (strcmp(s, text_ch + start) != 0)
     {
-	XmTextPosition last_pos = XmTextFieldGetLastPosition(arg_text_field);
-	XmTextFieldSetInsertionPosition(arg_text_field, last_pos);
-	XmTextFieldShowPosition(arg_text_field, 0);
-	XmTextFieldShowPosition(arg_text_field, last_pos);
+	XmTextFieldSetString(arg_text_field, text_ch + start);
+
+	if (XtIsRealized(arg_text_field)) // LessTif 0.1 crashes otherwise
+	{
+	    XmTextPosition last_pos = 
+		XmTextFieldGetLastPosition(arg_text_field);
+	    XmTextFieldSetInsertionPosition(arg_text_field, last_pos);
+	    XmTextFieldShowPosition(arg_text_field, 0);
+	    XmTextFieldShowPosition(arg_text_field, last_pos);
+	}
+
+	XtFree(s);
     }
 }
 
