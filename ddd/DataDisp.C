@@ -62,6 +62,7 @@ char DataDisp_rcsid[] =
 #include "commandQ.h"
 #include "StringMap.h"
 #include "VoidArray.h"
+#include "status.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -1423,9 +1424,54 @@ regex RXmore_than_one ("\\[-?[0-9]+\\.\\.-?[0-9]+\\]");
 // wird ein Boxpoint uebergeben, so wird der neue Knoten dorthin gesetzt
 // sonst an eine Default-Position.
 //
-void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
+
+struct CallAgainInfo {
+    StatusDelay *delay;
+    string display_expression;
+    BoxPoint point;
+    BoxPoint *point_ptr;
+    Widget origin;
+};
+
+void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
+{
+    CallAgainInfo *info = (CallAgainInfo *)client_data;
+    new_displaySQ(info->display_expression, info->point_ptr, info->origin);
+    delete info->delay;
+    delete info;
+}
+
+void DataDisp::new_displaySQ (string display_expression, BoxPoint *p,
 			      Widget origin)
 {
+    if (!DispBox::vsllib_initialized)
+    {
+	// If we don't have the VSL library yet, try again later.
+	CallAgainInfo *info = new CallAgainInfo;
+	info->delay = 
+	    new StatusDelay("Reading VSL library");
+	info->display_expression = display_expression;
+	if (p != 0)
+	{
+	    info->point = *p;
+	    info->point_ptr = &info->point;
+	}
+	else
+	{
+	    info->point = BoxPoint(-1, -1);
+	    info->point_ptr = 0;
+	}
+	info->origin   = origin;
+
+	// Disable background processing and try again - as soon
+	// as the VSL library will be completely read, we shall enter
+	// the main DDD event loop and get called again.
+	VSLLib::background = 0;
+	XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
+			100, again_new_displaySQ, info);
+	return;
+    }
+
     if (origin)
 	set_last_origin(origin);
 

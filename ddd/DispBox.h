@@ -55,6 +55,12 @@ public:
     static string  vsllib_defs;
     static int     max_display_title_length;
 
+    // True if the VSL library has been initialized
+    static bool    vsllib_initialized;
+
+    // Initialize VSL library, using BACKGROUND as work proc
+    static void init_vsllib(void (*background)() = 0);
+
     // bei dv == 0 disabled-box erzeugen
     DispBox (string disp_nr,
 	     string name,
@@ -70,12 +76,13 @@ public:
 private:
     Box*   create_value_box (const DispValue* dv, int member_name_width = 0);
 
-    static VSLLib* vsllib_ptr;
-    static void init_vsllib();
+    static VSLLib dummylib;
+    static VSLLib *vsllib_ptr;
     static VSLLib *vsllib()
     {
-	if (vsllib_ptr == 0)
+	if (!vsllib_initialized)
 	    init_vsllib();
+
 	return vsllib_ptr;
     }
     

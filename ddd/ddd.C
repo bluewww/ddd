@@ -245,6 +245,9 @@ static void setup_settings_title();
 // Warning proc
 static void ddd_xt_warning(String message);
 
+// Event handling
+static void process_pending_events();
+
 // Cut and Paste
 void gdbCutSelectionCB    (Widget, XtPointer, XtPointer);
 void gdbCopySelectionCB   (Widget, XtPointer, XtPointer);
@@ -1835,39 +1838,57 @@ int main(int argc, char *argv[])
 
     bool forever = true;
     while (forever)
-    {
-	// Check if GDB is still running
-	gdb->running();
-
-	// Check if the command TTY is still open
-	tty_running();
-
-	// Check if the separate TTY is still running
-	exec_tty_running();
-
-	// Check for emergencies
-	check_emergencies();
-
-	if (app_data.synchronous_gdb && gdb->isBusyOnQuestion())
-	{
-	    // Synchronous mode: wait for GDB to answer question
-	    XtAppProcessEvent(app_context, XtIMAlternateInput);
-	}
-	else if (XtAppPending(app_context) & (XtIMXEvent | XtIMTimer))
-	{
-	    // Process next X event
-	    XtAppProcessEvent(app_context, XtIMXEvent | XtIMTimer);
-	}
-	else
-	{
-	    // Process pending GDB output
- 	    XtAppProcessEvent(app_context, XtIMAll);
-	}
-    }
+	process_next_event();
 
     return EXIT_SUCCESS;	// Never reached
 }
 
+
+
+
+//-----------------------------------------------------------------------------
+// Process next X Event
+//-----------------------------------------------------------------------------
+
+void process_next_event()
+{
+    // Check if GDB is still running
+    gdb->running();
+
+    // Check if the command TTY is still open
+    tty_running();
+
+    // Check if the separate TTY is still running
+    exec_tty_running();
+
+    // Check for emergencies
+    check_emergencies();
+
+    XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
+
+    if (app_data.synchronous_gdb && gdb->isBusyOnQuestion())
+    {
+	// Synchronous mode: wait for GDB to answer question
+	XtAppProcessEvent(app_context, XtIMAlternateInput);
+    }
+    else if (XtAppPending(app_context) & (XtIMXEvent | XtIMTimer))
+    {
+	// Process next X event
+	XtAppProcessEvent(app_context, XtIMXEvent | XtIMTimer);
+    }
+    else
+    {
+	// Process pending GDB output
+	XtAppProcessEvent(app_context, XtIMAll);
+    }
+}
+
+static void process_pending_events()
+{
+    XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
+    while (XtAppPending(app_context))
+	process_next_event();
+}
 
 
 //-----------------------------------------------------------------------------
@@ -1939,8 +1960,11 @@ static Boolean ddd_setup_done(XtPointer)
 {
     ddd_check_version();
     install_button_tips();
-
     main_loop_entered = true;
+
+    DispBox::init_vsllib(process_pending_events);
+    DataDisp::refresh_graph_edit();
+
     return True;		// Remove from the list of work procs
 }
 

@@ -34,19 +34,19 @@
 #endif
 
 //-----------------------------------------------------------------------------
-// Diese Klasse erzeugt das Data-Display-Fenster und stellt die noetigen
-// Callback-Funktionen zur Verfuegung.
+// The `DataDisp' class creates the data display and provides the
+// necessary callback functions.
 //
-// Namenskonventionen:
-// ...CB  : Callback-Funktion.
-// ...DCB : Dialog-Callback-Funktion.
-// ...CD  : 'create dialog' ; erzeugt einen Dialog.
-// ...Act : Aktions-Funktion.
-// ...SQ  : ruft gdb->send_question() auf.
-// ...OQC : fuer on_question_completion, Typ: OQCProc, siehe GDBAgent.
-// ...SQA : ruft gdb->send_qu_array() auf.
-// ...OQAC: fuer on_question_array_completion, Typ: OQACProc, siehe GDBAgent.
-// ...HP  : Handler-Prozedur. Typ: HandlerProc, siehe HandlerL.h
+// Name conventions used:
+// ...CB  : Callback function.
+// ...DCB : Dialog callback function.
+// ...CD  : Create dialog.
+// ...Act : Action function.
+// ...SQ  : calls gdb->send_question().
+// ...OQC : needed in on_question_completion; see `GDBAgent.h'.
+// ...SQA : calls gdb->send_qu_array().
+// ...OQAC: needed in on_question_array_completion; see `GDBAgent.h'.
+// ...HP  : HandlerProc.  See `HandlerL.h'
 // 
 //-----------------------------------------------------------------------------
 
@@ -100,7 +100,7 @@ class DataDisp {
     static void setCB                   (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
-    // Callbacks der Popup-Menues
+    // Popup menu callbacks
     //-----------------------------------------------------------------------
     static void popup_new_argCB         (Widget, XtPointer, XtPointer);
     static void popup_newCB             (Widget, XtPointer, XtPointer);
@@ -123,17 +123,17 @@ class DataDisp {
     static void CompareNodesCB (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
-    // Dialog-Erzeugung
+    // Create dialogs
     //-----------------------------------------------------------------------
     static void new_displayCD (BoxPoint box_point = BoxPoint(-1,-1));
 
     //-----------------------------------------------------------------------
-    // Sensitivitaet setzen
+    // Set sensitivity
     //-----------------------------------------------------------------------
     static void no_displaysHP (void*, void*, void*);
 
     //-----------------------------------------------------------------------
-    // Hilfs-Prozeduren
+    // Helpers
     //-----------------------------------------------------------------------
 
     static void source_argHP (void*, void*, void*);
@@ -155,13 +155,14 @@ public:
     static void unset_delay ();
 
     static void set_handlers();
-private:
 
+private:
     static inline int getDispNrAtPoint (BoxPoint point);
 
     //-----------------------------------------------------------------------
-    // Aktions-Prozeduren
+    // Actions
     //-----------------------------------------------------------------------
+    static XtActionsRec actions [];
     static void graph_selectAct         (Widget, XEvent*, String*, Cardinal*);
     static void graph_select_or_moveAct (Widget, XEvent*, String*, Cardinal*);
     static void graph_popupAct          (Widget, XEvent*, String*, Cardinal*);
@@ -171,69 +172,61 @@ private:
     static void graph_dependentAct      (Widget, XEvent*, String*, Cardinal*);
 
     //-----------------------------------------------------------------------
-    // Xt-Zeugs
+    // Menus
     //-----------------------------------------------------------------------
-    static XtActionsRec actions [];
-
-    //-----------------------------------------------------------------------
-    // Menues
-    //-----------------------------------------------------------------------
-private:
     static MMDesc graph_popup[];
     static MMDesc node_popup[];
     static MMDesc graph_cmd_area[];
     static MMDesc display_area[];
 
-    //-----------------------------------------------------------------------
-    // Anfragen an gdb stellen und Antworten bearbeiten
-    //-----------------------------------------------------------------------
+
 public:
-    // sendet den Display-Befehl an den gdb
-    // wird ein Boxpoint uebergeben, so wird der neue Knoten dorthin gesetzt
-    // sonst an eine Default-Position.
-    //
+    //-----------------------------------------------------------------------
+    // Send queries to GDB and process answers
+    //-----------------------------------------------------------------------
+
+    // Create a new display for DISPLAY_EXPRESSION.  Sends a `display'
+    // command to GDB.  If POS is set, the new display is created at
+    // this position.
     static void new_displaySQ       (string display_expression,
-				     BoxPoint* p = 0,
+				     BoxPoint* pos = 0,
 				     Widget origin = 0);
 
-    // sendet die Befehle "info display" und "display" an den gdb,
-    // um Displays zu aktualisieren.
-    //
+    // Refresh displays.  Sends `info display' and `display' to GDB.
     static void refresh_displaySQ   (Widget origin = 0);
 
-    // sendet den 'disable display'-Befehl mit den Nummern an den gdb
-    // und aktualisiert den disp_graph.
-    //
+    // Disable displays given in DISPLAY_NRS; COUNT is number of
+    // elements in DISPLAY_NRS.  Sends `disable display' to GDB.
     static void disable_displaySQ   (int display_nrs[], int count);
 
-    // sendet den 'enable display'-Befehl mit den Nummern an den gdb
-    // und aktualisiert den disp_graph.
-    //
+    // Enable displays given in DISPLAY_NRS; COUNT is number of
+    // elements in DISPLAY_NRS.  Sends `enable display' to GDB.
     static void enable_displaySQ    (int display_nrs[], int count);
 
-    // sendet den 'delete display'-Befehl mit den Nummern an den gdb
-    // und aktualisiert den disp_graph.
-    //
+    // Delete displays given in DISPLAY_NRS; COUNT is number of
+    // elements in DISPLAY_NRS.  Sends `delete display' to GDB.
     static void delete_displaySQ    (int display_nrs[], int count);
 
-    // sendet den Display-Befehl an den gdb (mit disp_nr als data).
-    // spaeter wird disp_graph->insert_dependent (answer, data) aufgerufen.
-    //
+    // Create a new display for DISPLAY_EXPRESSION dependent on
+    // DISP_NR.  Sends a `display' command to GDB.
     static void dependent_displaySQ (string display_expression, int disp_nr);
 
-    // wertet Antwort auf 'info display' aus und loescht bei Bedarf Displays.
-    //
+    // Process 'info display' output in INFO_DISPLAY_ANSWER.  Deletes
+    // displays if needed.
     static void process_info_display (string& info_display_answer);
 
-    // liest die in display_answer enthaltenen Displays und aktualisiert die
-    // eigenen Displays entsprechend. Fremde Displays werden zurueckgegeben.
-    // Enthielt display_answer eine Fehlermeldung so ist disabling_occurred
-    // false und es sollte ein display-Befehl geschickt und diese Funktion
-    // erneut aufgerufen werden.
-    //
+    // Process `display' output in DISPLAY_ANSWER.  Remaining
+    // (non-display) output is returned.  If DISABLING_OCCURRED is set
+    // after the call, some displays have been disabled and a
+    // `display' command must be re-sent to GDB.
     static string process_displays  (string& display_answer,
 				     bool& disabling_occurred);
+
 private:
+    // Call me back again
+    static void again_new_displaySQ (XtPointer client_data, XtIntervalId *id);
+
+    // Tons of helpers
     static void new_displayOQC       (const string& answer, void* data);
     static void new_display_extraOQC (const string& answer, void* data);
     static void new_displaysSQA      (string display_expression, BoxPoint* p);
@@ -261,10 +254,8 @@ private:
     static void enable_displayOQC    (const string& answer, void* data);
     static void delete_displayOQC    (const string& answer, void* data);
 
-
-
     //-----------------------------------------------------------------------
-    // Daten
+    // Data
     //-----------------------------------------------------------------------
     static DispGraph *disp_graph;
     static Delay *delay;

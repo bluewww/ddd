@@ -51,11 +51,13 @@ char DispBox_rcsid[] =
 
 //-----------------------------------------------------------------------------
 
-VSLLib* DispBox::vsllib_ptr      = 0;
+VSLLib  DispBox::dummylib;
+VSLLib* DispBox::vsllib_ptr      = &DispBox::dummylib;
 string  DispBox::vsllib_name     = "builtin";
 string  DispBox::vsllib_path     = ".";
 string  DispBox::vsllib_defs     = "";
 int     DispBox::max_display_title_length = 20;
+bool    DispBox::vsllib_initialized = false;
 
 // ***************************************************************************
 //
@@ -96,8 +98,17 @@ DispBox::DispBox (string disp_nr,
 
 // ***************************************************************************
 //
-void DispBox::init_vsllib()
+void DispBox::init_vsllib(void (*background)())
 {
+    if (vsllib_initialized)
+	return;			// We already have a library
+
+    static bool initializing = false;
+    if (initializing)
+	return;			// We are already initializing
+
+    initializing = true;
+
     static const char builtin_def[] = 
 #include "ddd.vsl.h"
 	;
@@ -107,23 +118,25 @@ void DispBox::init_vsllib()
 	strcpy(new char[vsllib_path.length()], vsllib_path);
 
     // Load library
-    if (string(vsllib_name) != "builtin")
-    {
-	StatusDelay delay("Reading VSL library " + quote(vsllib_name));
-	vsllib_ptr = new VSLLib (vsllib_name);
-    }
+    void (*old_background)() = VSLLib::background;
+    VSLLib::background = background;
 
-    if (vsllib_ptr == 0)
+    if (string(vsllib_name) == "builtin")
     {
-	StatusDelay delay("Reading builtin VSL library");
 	string defs = string(builtin_def)
 	    + "#line 1 \"" Ddd_NAME "*vslDefs\"\n"
 	    + vsllib_defs;
 	istrstream is(defs.chars());
 	vsllib_ptr = new VSLLib(is);
     }
+    else
+    {
+	vsllib_ptr = new VSLLib (vsllib_name);
+    }
 
-    assert (vsllib_ptr != 0);
+    VSLLib::background = old_background;
+    initializing = false;
+    vsllib_initialized = true;
 }
 
 
@@ -268,8 +281,8 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 // Duplication with special handling of undefined boxes
 Box *DispBox::dup(const string& func_name, const Box *box)
 {
-    if (box)
+    if (box != 0)
 	return ((Box *)box)->link();
-    else
-	return new StringBox("<?" + func_name + ">"); // box not found
+
+    return (new StringBox("<?" + func_name + ">"))->link(); // box not found
 }
