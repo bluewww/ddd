@@ -729,21 +729,27 @@ string read_member_name (string& value)
     // GDB, DBX, and XDB separate member names and values by ` = '; 
     // GDB using the Java language uses `: ' instead.
     // JDB printing classes uses `:\n' for the interface list.
+    // GDB with GNAT support uses `=> '.
     string member_name;
     if (v.contains(" = "))
     {
-	member_name = v.before (" = ");
-	value = value.after (" = ");
+	member_name = v.before(" = ");
+	value = value.after(" = ");
     }
     else if (gdb->program_language() == LANGUAGE_JAVA && v.contains(": "))
     {
-	member_name = v.before (": ");
-	value = value.after (": ");
+	member_name = v.before(": ");
+	value = value.after(": ");
     }
     else if (gdb->program_language() == LANGUAGE_JAVA && v.contains(":\n"))
     {
 	member_name = v.before(":\n");
 	value = value.after(":\n");
+    }
+    else if (gdb->program_language() == LANGUAGE_ADA && v.contains("=> "))
+    {
+	member_name = v.before("=> ");
+	value = value.after("=> ");
     }
     else
     {

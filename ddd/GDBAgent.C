@@ -2088,6 +2088,10 @@ string GDBAgent::dereferenced_expr(string expr) const
     case LANGUAGE_PASCAL:
 	return append_suffix(expr, "^");
 
+    case LANGUAGE_ADA:
+	// GDB 4.16.gnat.1.13 prepends `*' as in C
+	return prepend_prefix("*", expr);
+
     case LANGUAGE_OTHER:
 	return expr;		// All other languages
     }
@@ -2118,6 +2122,9 @@ string GDBAgent::address_expr(string expr) const
     case LANGUAGE_JAVA:
 	return "";		// Not supported in GDB
 
+    case LANGUAGE_ADA:
+	return "";		// Not supported in GNAT/Ada
+
     case LANGUAGE_OTHER:
 	return "";		// All other languages
     }
@@ -2131,6 +2138,7 @@ string GDBAgent::index_expr(string expr, string index) const
     switch (program_language())
     {
     case LANGUAGE_FORTRAN:
+    case LANGUAGE_ADA:
 	return expr + "(" + index + ")";
 
     default:
@@ -2150,6 +2158,7 @@ int GDBAgent::default_index_base() const
     case LANGUAGE_CHILL:
 	return 1;
 
+    case LANGUAGE_ADA:
     case LANGUAGE_C:
     case LANGUAGE_JAVA:
     case LANGUAGE_OTHER:
@@ -2193,6 +2202,7 @@ string GDBAgent::assign_command(string var, string expr) const
 	cmd += "=";
 	break;
 
+    case LANGUAGE_ADA:
     case LANGUAGE_PASCAL:
     case LANGUAGE_CHILL:
 	cmd += ":=";
@@ -2225,6 +2235,7 @@ void GDBAgent::normalize_address(string& addr) const
 	case LANGUAGE_C:
 	case LANGUAGE_JAVA:
 	case LANGUAGE_FORTRAN:
+	case LANGUAGE_ADA:
 	case LANGUAGE_OTHER:
 	    addr.prepend("0x");
 	    break;
@@ -2315,10 +2326,13 @@ ProgramLanguage GDBAgent::program_language(string text)
 	{
 	    program_language(LANGUAGE_CHILL);
 	}
-	else if (text.contains("pascal")
-	    || text.contains("ada"))
+	else if (text.contains("pascal"))
 	{
 	    program_language(LANGUAGE_PASCAL);
+	}
+	else if (text.contains("ada"))
+	{
+	    program_language(LANGUAGE_ADA);
 	}
 	else if (text.contains("c++"))
 	{

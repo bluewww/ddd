@@ -15,6 +15,8 @@ DDD 3.0 [in beta test]
       All important JDB features are available via the GUI.
     - Java support.  Requires GDB 4.17 or later (or JDB, of course).
       All data display features are available in Java.
+    - Improved Ada support.  Rick Flower <Rick.Flower@trw.com>
+      provided a set of patches for basic GDB/Ada (GNAT) support.
     - Watchpoints.  You can have the debugged program stop
       automatically whenever a particular variable is read or written.
     - Deferred displays.  DDD now can maintain displays whose creation
