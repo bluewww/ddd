@@ -44,9 +44,8 @@ CMP  = cmp
 RM   = rm -f
 
 # Suffixes used in this file.
-SUFFIXES = .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xbmxx .xpm .xpmxx \
-	   .xface .C~ .c~ .f .f~ .sh .sh~ .fig .eps .jpg .png .gif .pdf \
-	   $(IMGEXT)
+SUFFIXES = .C .c .Y .L .txt .xbm .xbmxx .xpm .xpmxx \
+	   .xface .fig .eps .jpg .png .gif .pdf $(IMGEXT)
 
 # Shared data installation
 dddrootdir    = $(pkgdatadir)-$(VERSION)
@@ -915,13 +914,13 @@ $(srcdir)/eps-code.h: \
 DEBUGGER = @DEBUGGER@
 
 # The options for DDD when invoking `make check'.  ()
-DDD_OPTIONS = @DEBUGGER_OPTION@
+DDDFLAGS = @DEBUGGER_OPTION@
 
 # For demonstration and debugging purposes
 .PHONY: check
 check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT)
 	DDD_HOME=$(srcdir)/.. XUSERFILESEARCHPATH=%N XAPPLRESDIR=. \
-	./$(ddd)$(EXEEXT) $(DDD_OPTIONS) cxxtest$(EXEEXT)
+	./$(ddd)$(EXEEXT) $(DDDFLAGS) cxxtest$(EXEEXT)
 
 .PHONY: debug
 debug: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit
@@ -1205,6 +1204,9 @@ ddd-themes.dvi: $(ddd_themes_TEXINFOS)
 
 
 # The DDD manual in PostScript format, including all pictures.
+
+.PHONY: ps
+ps: $(docdir)/ddd.ps $(docdir)/ddd-themes.ps
 
 $(docdir)/ddd.ps: ddd.dvi
 	$(DVIPS) ddd.dvi -o $@
