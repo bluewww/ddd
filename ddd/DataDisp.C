@@ -541,10 +541,8 @@ void DataDisp::toggleDetailCB(Widget dialog,
 
     set_last_origin(dialog);
 
-    IntArray disp_nrs;
-
-    bool do_enable  = true;
-    bool do_disable = true;
+    IntArray disable_nrs;
+    IntArray enable_nrs;
 
     bool changed = false;
     MapRef ref;
@@ -552,6 +550,9 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
+	if (is_cluster(dn))
+	    continue;
+
 	if (selected(dn))
 	{
 	    DispValue *dv = dn->selected_value();
@@ -567,8 +568,7 @@ void DataDisp::toggleDetailCB(Widget dialog,
 		if (dn->disabled())
 		{
 		    // Enable display
-		    disp_nrs += dn->disp_nr();
-		    do_disable = false;
+		    enable_nrs += dn->disp_nr();
 		}
 		else
 		{
@@ -584,8 +584,7 @@ void DataDisp::toggleDetailCB(Widget dialog,
 		if (dv == dn->value() && dn->enabled())
 		{
 		    // Disable display
-		    disp_nrs += dn->disp_nr();
-		    do_enable = false;
+		    disable_nrs += dn->disp_nr();
 		}
 		else
 		{
@@ -596,10 +595,10 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	}
     }
 
-    if (do_enable)
-	enable_display(disp_nrs, dialog);
-    else if (do_disable)
-	disable_display(disp_nrs, dialog);
+    if (enable_nrs.size() > 0)
+	enable_display(enable_nrs, dialog);
+    else if (disable_nrs.size() > 0)
+	disable_display(disable_nrs, dialog);
 
     if (changed)
 	refresh_graph_edit();
