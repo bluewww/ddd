@@ -1304,6 +1304,7 @@ FIG2PS = $(FIG2DEV) -L ps
 	(cd `dirname $<` && $(FIG2PS) `basename $<` ) > $@
 
 .texi.pdf:
+	@-test -d PICS || $(LN_S) $(picdir) .
 	TEXINPUTS=$(top_srcdir)/../texinfo:$$TEXINPUTS \
 	  MAKEINFO='$(MAKEINFO) -I $(srcdir)' $(TEXI2PDF) $<
 
