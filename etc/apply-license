@@ -210,6 +210,7 @@ If not, write to the Free Software Foundation, Inc.,\
 */\
 '
   cpp_text=`echo "$text" | sed 's,^.,// &,'`
+  am_text=`echo "$text"  | sed 's,^.,## &,'`
   sh_text=`echo "$text"  | sed 's,^.,# &,'`
   ad_text=`echo "$text"  | sed 's,^.,! &,'`
   ps_text=`echo "$text"  | sed 's,^.,% &,'`
@@ -227,6 +228,7 @@ If not, write to the Free Software Foundation, Inc.,\
   if [ $? = 0 ]; then
     case "$header" in
       //*)  t="$cpp_text";;
+      \#\#*) t="$am_text";;
       \#*)  t="$sh_text";;
       !*)   t="$ad_text";;
       %*)   t="$ps_text";;
@@ -243,6 +245,7 @@ If not, write to the Free Software Foundation, Inc.,\
     case "$header" in
       //*)  t="$cpp_text";;
       /\**) t="$c_text"; e="^*/\$";;
+      \#\#*) t="$am_text";;
       \#*)  t="$sh_text";;
       !*)   t="$ad_text";;
       %*)   t="$ps_text";;
