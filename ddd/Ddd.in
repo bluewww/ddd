@@ -1726,10 +1726,10 @@ Ddd*menubar.source.contextHelpString:	\
 @tt \267 @bf Forward @rm - show the next source position.
 
 Ddd*sourceMenu.breakpoints.labelString:	Edit Breakpoints...
-Ddd*sourceMenu.breakpoints.mnemonic:	E
+Ddd*sourceMenu.breakpoints.mnemonic:	B
 
 Ddd*sourceMenu.edit.labelString:	Edit Source...
-Ddd*sourceMenu.edit.mnemonic:		S
+Ddd*sourceMenu.edit.mnemonic:		E
 Ddd*sourceMenu.edit.accelerator:	Ctrl Shift<Key>E
 Ddd*sourceMenu.edit.acceleratorText:	Ctrl+Shift+E
 
