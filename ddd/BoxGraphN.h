@@ -66,10 +66,16 @@ protected:
 public:
     // Constructor
     BoxGraphNode(Box *b, const BoxPoint& initialPos = BoxPoint(), 
-		 MarkBox *h = 0):
-	RegionGraphNode(initialPos, b->size()),
-	_box(b->link()),
-        _highlight(h)
+		 MarkBox *h = 0)
+	: RegionGraphNode(initialPos, b->size()),
+	  _box(b->link()),
+	  _highlight(h)
+    {}
+
+    BoxGraphNode()
+	: RegionGraphNode(),
+	  _box(0),
+	  _highlight(0)
     {}
 
     GraphNode *dup() const
@@ -82,7 +88,8 @@ public:
     {
 	if (_highlight)
 	    _highlight->unlink();
-	_box->unlink();
+	if (_box)
+	    _box->unlink();
     }
 
     // Attributes
@@ -112,9 +119,16 @@ public:
 	setHighlight(0);
 
 	Box *old = _box;
-	_box = b->link();
-	old->unlink();
-	resize(b->size());
+	if (b)
+	    _box = b->link();
+	else
+	    _box = 0;
+
+	if (old)
+	    old->unlink();
+
+	if (b)
+	    resize(b->size());
     }
 
 

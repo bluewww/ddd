@@ -46,6 +46,8 @@ void BoxGraphNode::forceDraw(Widget w,
 			     const BoxRegion& /* exposed */,
 			     const GraphGC& gc) const
 {
+    assert (box() != 0);
+
     // We do not check for exposures here --
     // boxes are usually small and partial display
     // doesn't work well with scrolling
@@ -102,6 +104,8 @@ static void endCompound(ostream& os)
 // Print a BoxGraphNode
 void BoxGraphNode::_print(ostream& os, const GraphGC& gc) const
 {
+    assert (box() != 0);
+
     if (gc.printGC->isFig())
 	startCompound(os, region(gc));
 
@@ -115,6 +119,8 @@ void BoxGraphNode::_print(ostream& os, const GraphGC& gc) const
 // MARK is a MarkBox in SRC.  Find equivalent box in DUP.
 MarkBox *BoxGraphNode::find_mark(Box *dup, Box *src, Box *mark)
 {
+    assert (box() != 0);
+
     if (mark == 0)
 	return 0;
 
@@ -161,6 +167,6 @@ MarkBox *BoxGraphNode::find_mark(Box *dup, Box *src, Box *mark)
 // Copy Constructor
 BoxGraphNode::BoxGraphNode(const BoxGraphNode& node):
     RegionGraphNode(node),
-    _box(node._box->dup()),
-    _highlight(find_mark(_box, node._box, node._highlight))
+    _box(node._box ? node._box->dup() : 0),
+    _highlight(node._box ? find_mark(_box, node._box, node._highlight) : 0)
 {}
