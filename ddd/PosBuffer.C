@@ -70,6 +70,9 @@ static void filter_line(string& answer, int line)
 // Fetch position from GDB output ANSWER.
 void PosBuffer::filter (string& answer)
 {
+    if (answer.length() == 0)
+	return;
+
     if (gdb->type() == GDB)
     {
 	// If gdb prints a "Current function" line, it overrides whatever
@@ -240,7 +243,8 @@ void PosBuffer::filter (string& answer)
 		{
 		    int index_p = answer.index ("\032");
 
-		    if (index_p == int(answer.length()) - 1) {
+		    if (index_p == int(answer.length()) - 1)
+		    {
 			// Possible begin of position info at end of ANSWER
 			already_read = PosPart;
 			answer_buffer = "\032";
