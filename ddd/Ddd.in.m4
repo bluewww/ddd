@@ -6207,6 +6207,17 @@ Ddd*exited_dialog*helpString:	\
 Click on LBL(Restart) to restart @GDB@.\n\
 Click on LBL(Exit) to exit DDD.
 
+Ddd*done_dialog_popup.title: DDD: Program Exited
+! Ddd*done_dialog.messageString:   \
+! @rm Your program exited.
+Ddd*done_dialog*okLabelString:		Restart
+Ddd*done_dialog*cancelLabelString:	Exit
+Ddd*done_dialog*helpString:	\
+@rm Your program has exited, and so did @GDB@.\n\
+\n\
+Click on LBL(Restart) to restart @GDB@.\n\
+Click on LBL(Exit) to exit DDD.
+
 Ddd*no_debugger_dialog_popup.title: DDD: No Debugger
 ! Ddd*no_debugger_dialog.messageString:   \
 ! @rm @GDB@ could not be started.

@@ -181,12 +181,14 @@ Widget post_gdb_died(string reason, int state, Widget w)
 
     if (gdb_initialized && gdb_is_exiting && exited)
     {
+	// Exit was expected
 	_DDDExitCB(find_shell(w), XtPointer(EXIT_SUCCESS), 0);
 	return 0;
     }
 
     if (ddd_is_exiting)
     {
+	// GDB would not die
 	cerr << reason << "\n";
 	return 0;
     }
@@ -200,14 +202,26 @@ Widget post_gdb_died(string reason, int state, Widget w)
     {
 	String name;
 	MString msg;
-	if (exited)
+
+	if (gdb->has_exec_files() && exited)
 	{
+	    // In GDB, DBX, and XDB, a sudden exit is probably an error.
 	    msg = rm(gdb->title() + " suddenly exited.");
 	    name = "exited_dialog";
+	}
+	else if (exited)
+	{
+	    // In Perl, PYDB, and JDB, the debugger dies with the program.
+	    _gdb_out("\n" + reason + "\n");
+
+	    msg = rm("The program terminated (" + reason + ")");
+	    name = "done_dialog";
 	}
 	else
 	{
 	    _gdb_out("\n" + reason + "\n");
+
+	    // Abnormal exits are always errors.
 	    msg = rm(gdb->title() + " terminated abnormally (" + reason + ")");
 	    name = "terminated_dialog";
 	}
