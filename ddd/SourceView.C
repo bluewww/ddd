@@ -639,7 +639,7 @@ void SourceView::text_popup_lookupCB (Widget, XtPointer client_data, XtPointer)
 // Return the normalized full path of FILE
 string SourceView::full_path(string file)
 {
-    static regex RXdotdot("/[^/]*/../");
+    static regex RXdotdot("/[^/]*/\\.\\./");
 
     if (file == "")
 	return current_pwd;
