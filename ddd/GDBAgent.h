@@ -480,9 +480,6 @@ private:
     void cut_off_prompt(string& answer) const;
     void strip_dbx_comments(string& answer) const;
     void strip_control(string& answer) const;
-    void strip_xdb_control(string& answer) const;
-    void bad_xdb_control(const string &s, int p, char c, 
-			 const char *expecting) const;
 
     void normalize_answer(string& answer) const;
     void normalize_address(string& addr) const;

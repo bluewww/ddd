@@ -29,6 +29,7 @@ DDD 2.2.2
       other architectures.
     - `Edit' no longer causes DDD to crash.
     - The separate execution TTY now works with Sun DBX 4.0.
+    - XDB control sequences no longer cause DDD to hang.
 
     There are also some more minor improvements and bug fixes; see the
     `ChangeLog' file for details.

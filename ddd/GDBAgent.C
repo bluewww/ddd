@@ -154,7 +154,7 @@ char GDBAgent_rcsid[] =
 #include "regexps.h"
 #include "index.h"
 
-#include <stdlib.h>		// exit
+#include <stdlib.h>
 #include <iostream.h>
 #include <fstream.h>
 #include <ctype.h>
@@ -170,8 +170,11 @@ char GDBAgent_rcsid[] =
 
 DEFINE_TYPE_INFO_1(GDBAgent, TTYAgent);
 
+
 //-----------------------------------------------------------------------------
 // Determine debugger type from TYPE
+//-----------------------------------------------------------------------------
+
 DebuggerType debugger_type(const string& type)
 {
     if (type.contains("gdb"))
@@ -189,7 +192,10 @@ DebuggerType debugger_type(const string& type)
 }
 
 
-// ***************************************************************************
+//-----------------------------------------------------------------------------
+// Construction and setup
+//-----------------------------------------------------------------------------
+
 // Constructor
 GDBAgent::GDBAgent (XtAppContext app_context,
 		    const string& gdb_call,
@@ -318,8 +324,6 @@ string GDBAgent::title() const
     return "debugger";
 }
 
-
-// ***************************************************************************
 // Trace communication
 static void trace(char *prefix, void *call_data)
 {
@@ -359,7 +363,6 @@ void GDBAgent::traceErrorHP (Agent *, void *, void *call_data)
     trace("<= ", call_data);
 }
 
-// ***************************************************************************
 // Start GDBAgent
 void GDBAgent::do_start (OAProc  on_answer,
 			 OACProc on_answer_completion,
@@ -376,7 +379,6 @@ void GDBAgent::do_start (OAProc  on_answer,
     callHandlers(LanguageChanged, (void *)this);
 }
 
-// ***************************************************************************
 // Start with some extra commands
 void GDBAgent::start_plus (OAProc   on_answer,
 			   OACProc  on_answer_completion,
@@ -396,9 +398,6 @@ void GDBAgent::start_plus (OAProc   on_answer,
     do_start(on_answer, on_answer_completion, user_data);
 }
 
-
-
-// ***************************************************************************
 // Destructor
 GDBAgent::~GDBAgent ()
 {
@@ -406,7 +405,11 @@ GDBAgent::~GDBAgent ()
 }
 
 
-// ***************************************************************************
+
+//-----------------------------------------------------------------------------
+// Command sending
+//-----------------------------------------------------------------------------
+
 // Send CMD to GDB, associated with USER_DATA.  Return false iff busy.
 bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without `\n'
 {
@@ -435,7 +438,6 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without `\n'
     return false;
 }
 
-// ***************************************************************************
 // Send CMD to GDB (unconditionally), associated with USER_DATA.
 bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
 {
@@ -452,7 +454,6 @@ bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
     return true;
 }
 
-// ***************************************************************************
 // Send command array CMDS to GDB, associated with QU_DATAS.
 bool GDBAgent::send_user_cmd_plus (string   cmds[],
 				   void*    qu_datas[],
@@ -483,8 +484,6 @@ bool GDBAgent::send_user_cmd_plus (string   cmds[],
     return true;
 }
 
-
-// ***************************************************************************
 // Send CMD to GDB; upon completion, call ON_QUESTION_COMPLETION with QU_DATA
 bool GDBAgent::send_question (string  cmd,
 			      OQCProc on_question_completion,
@@ -508,7 +507,6 @@ bool GDBAgent::send_question (string  cmd,
     return true;
 }
 
-// ***************************************************************************
 // Send CMDS to GDB; upon completion, call ON_QU_ARRAY_COMPLETION with QU_DATAS
 bool GDBAgent::send_qu_array (string   cmds [],
 			      void*    qu_datas [],
@@ -534,7 +532,6 @@ bool GDBAgent::send_qu_array (string   cmds [],
     return true;
 }
 
-// ***************************************************************************
 // Add handlers for tracing GDB I/O
 bool GDBAgent::trace_dialog (bool val)
 {
@@ -554,7 +551,6 @@ bool GDBAgent::trace_dialog (bool val)
     return _trace_dialog = val;
 }
 
-// ***************************************************************************
 // Initialize GDB question array
 void GDBAgent::init_qu_array (string   cmds [],
 			      void*    qu_datas [],
@@ -576,7 +572,11 @@ void GDBAgent::init_qu_array (string   cmds [],
     }
 }
 
-// ***************************************************************************
+
+//-----------------------------------------------------------------------------
+// Prompt Recognition
+//-----------------------------------------------------------------------------
+
 // Return true iff ANSWER ends with primary prompt.
 bool GDBAgent::ends_with_prompt (const string& answer)
 {
@@ -625,7 +625,6 @@ bool GDBAgent::ends_with_prompt (const string& answer)
     return false;		// Never reached
 }
 
-// ***************************************************************************
 
 static bool ends_in(const string& answer, const string& prompt)
 {
@@ -666,7 +665,6 @@ bool GDBAgent::ends_with_secondary_prompt (const string& answer)
 }
 
 
-// ***************************************************************************
 // Check if ANSWER requires an immediate reply; return it.
 string GDBAgent::requires_reply (const string& answer)
 {
@@ -726,7 +724,11 @@ string GDBAgent::requires_reply (const string& answer)
 }
 
 
-// ***************************************************************************
+
+//-----------------------------------------------------------------------------
+// Filters
+//-----------------------------------------------------------------------------
+
 // Normalize answer - handle control characters, remove comments and prompt
 void GDBAgent::normalize_answer(string& answer) const
 {
@@ -864,9 +866,6 @@ void GDBAgent::strip_dbx_comments(string& s) const
 // Strip control characters
 void GDBAgent::strip_control(string& answer) const
 {
-    if (type() == XDB)
-	strip_xdb_control(answer);
-
     int source_index = 0;
     int target_index = 0;
 
@@ -894,6 +893,15 @@ void GDBAgent::strip_control(string& answer) const
 		target_index--;
 	    break;
 
+	case '\033':
+	    // XDB `more' sends VT100 escape sequences like `\e[m',
+	    // `\e[22;1H', `\e[7m', `\e[K', regardless of TERM
+	    // settings.  We simply weed out everything up to and
+	    // including to the next letter.
+	    while (!isalpha(answer[source_index]))
+		source_index++;
+	    break;
+
 	default:
 	    // Leave character unchanged
 	    answer[target_index++] = answer[source_index];
@@ -905,101 +913,11 @@ void GDBAgent::strip_control(string& answer) const
 }
 
 
-// XDB specials.  Contributed by wiegand@kong.gsfc.nasa.gov (Robert Wiegand)
-
-// Hideous hack to get around XDB more facility use during help xxx
-// 
-// Function added to GDBAgent.C to strip things like
-//                \e[m
-//                \e[22;1H
-//                \e[7m
-//                \e[K
-// Seems like xdb in line mode with suspend more should not
-// output these, but they are in there.
-
-// nixed characters:
-// \e\[\d\d[;1H]
-// \e\[[\d]m
-// \e\[[JK]
-void GDBAgent::strip_xdb_control(string &answer) const
-{
-    if (type() != XDB)
-	return;
-
-    int length = answer.length();
-    string out;
-
-    int i = 0;
-    while (i < length)
-    {
-	char c = answer[i++];
-	if (c == '\r')
-	    ;
-	else if (c == '\033')
-	{
-	    // eat chars through end of control;
-	    if (i < length && (c = answer[i++]) == '[')
-	    {
-		if (i < length && (c = answer[i++]) == 'J' || c == 'K')
-		    ;
-		else if (c == 'm')
-			;
-		else if (isdigit(c))
-		{
-		    if (i < length && isdigit(c = answer[i++]))
-		    {
-		        // check for ;1H
-			if (i < length - 2 
-			    && (c = answer[i++]) == ';' 
-			    && (c = answer[i++]) == '1' 
-			    && (c = answer[i++]) == 'H')
-			    ;
-			else
-			    bad_xdb_control(answer, i, c, ";1H");
-		    }
-		    else if (c == 'm')
-			;
-		    else
-			bad_xdb_control(answer, i, c, "digit or m");
-		}
-	    }
-	    else
-		bad_xdb_control(answer, i, c, "[");
-	}
-	else
-	    out += c;
-    }
-
-    answer = out;
-}
-
-void GDBAgent::bad_xdb_control(const string &s, int p, char c, 
-			       const char *expecting) const
-{
-    (void) s;			// Use them
-    (void) p;
-    (void) c;
-    (void) expecting;
-
-#if 0
-    if (p >= (int) s.length())
-	cerr << "tried to get character " << p << " from " << s << "\n";
-    else
-	cerr << "bad character [" << (char) c << ", " << (int) c <<
-		"] at position " << p << " in " << s <<
-		" [expecting " << expecting << "]\n";
-#endif
-}
-
-
-
 //-----------------------------------------------------------------------------
 // Event handlers
 //-----------------------------------------------------------------------------
 
-// ***************************************************************************
 // Received data from GDB
-//
 
 // Number of characters to be echoed for echo detection
 const int ECHO_THRESHOLD = 4;
@@ -1293,8 +1211,9 @@ void GDBAgent::DiedHP(Agent *agent, void *, void *)
 }
 
 
-// ***************************************************************************
+//-----------------------------------------------------------------------------
 // Configuration
+//-----------------------------------------------------------------------------
 
 // DBX 3.0 wants `print -r' instead of `print' for C++
 string GDBAgent::print_command(string expr, bool internal) const
@@ -2023,8 +1942,7 @@ string GDBAgent::history_file() const
     return "";			// Unknown
 }
 
-
-// ***************************************************************************
+// Determine language from TEXT
 ProgramLanguage GDBAgent::program_language(string text)
 {
     text.downcase();
@@ -2075,9 +1993,11 @@ ProgramLanguage GDBAgent::program_language(string text)
     return program_language();
 }
 
-// ***************************************************************************
+
+//-----------------------------------------------------------------------------
 // Handle error messages
-//
+//-----------------------------------------------------------------------------
+
 void GDBAgent::PanicHP(Agent *source, void *, void *call_data)
 {
     string msg = (char *)call_data;
