@@ -145,6 +145,13 @@ Reported by:  (various)
     HP-PA versions of the GNU tools, see
     `ftp://jaguar.cs.utah.edu/dist/pagnutools.html'.
 
+    Frank Hofmann <hofmann@wpax01.physik.uni-wuerzburg.de> fixed an
+    `Invalid loader fixup for symbol _XtInheritTranslations,
+    xmPrimitiveClassRec' by replacing `XtInheritTranslations' by
+    `NULL' in `GraphEdit.C' and `ScrolledGE.C' and replacing
+    `xmPrimitiveClassRec' with `XmPrimitiveWidgetClass' in
+    `GraphEdit.C'.
+
     Ivar Ruyter <ivarr@troll.hz.kfa-juelich.de> states: Build
     everything statically and add `-l:libdld.sl' to the LIBS line in
     the Makefile, voila you have a nice new Christmas Present.
