@@ -60,10 +60,14 @@ public:
     // Destructor
     virtual ~PosGraphNode() {}
 
+    // Position change handler: return true iff ok
+    static bool (*MoveCB)(PosGraphNode *node, const BoxPoint& newPos);
+
     // Move
     virtual void moveTo(const BoxPoint& newPos)
     {
-	_pos = newPos;
+	if (_pos != newPos && MoveCB(this, newPos))
+	    _pos = newPos;
     }
 
     // Attributes

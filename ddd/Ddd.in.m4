@@ -528,10 +528,9 @@ Ddd*xdbSettings:
 ! Consequently, this feature is disabled by default.
 Ddd*autoCommands: false
 
-! The prefix of auto-commands (by default, `ddd: ').  You are encouraged
-! to change this value in your `~/.ddd/init' file.
+! The prefix of auto-commands (by default, `ddd: ' - note the trailing space).
+! You are encouraged to change this value in your `~/.ddd/init' file.
 Ddd*autoCommandPrefix: ddd:\ 
-
 
 
 ! Graph Editor Defaults
@@ -541,6 +540,9 @@ Ddd*detectAliases:		false
 
 ! Shall we layout two-dimensional arrays as tables?
 Ddd*align2dArrays:		true
+
+! After a change in a display, shall we move adjacent displays?
+Ddd*bumpDisplays:		true
 
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
 ! library compiled into DDD, named `ddd.vsl'.  If you wish to use

@@ -36,3 +36,10 @@ char PosGraphNode_rcsid[] =
 #include "PosGraphN.h"
 
 DEFINE_TYPE_INFO_1(PosGraphNode, GraphNode)
+
+static bool Yes(PosGraphNode *, const BoxPoint&)
+{
+    return true;
+}
+
+bool (*PosGraphNode::MoveCB)(PosGraphNode *, const BoxPoint&) = Yes;

@@ -80,12 +80,22 @@ public:
 	center();
     }
 
+    // Size change handler: return true iff ok
+    static bool (*ResizeCB)(RegionGraphNode *node, 
+			    const BoxSize& newSize);
+
     // Assign new size
     virtual void resize(const BoxSize& newSize)
     {
-	_region.space() = newSize;
-	center();
+	if (newSize != _region.space() && ResizeCB(this, newSize))
+	{
+	    _region.space() = newSize;
+	    center();
+	}
     }
+
+    // Compute position for ORIGIN
+    virtual BoxPoint originToPos(const BoxPoint& origin, const GraphGC&) const;
 
     // Draw
     virtual void draw(Widget w,

@@ -45,10 +45,17 @@ char RegionGraphNode_rcsid[] =
 
 DEFINE_TYPE_INFO_1(RegionGraphNode, PosGraphNode)
 
-// center around position
+// Center around position
 void RegionGraphNode::center()
 {
     _region.origin() = pos() - (_region.space() / 2);
+}
+
+// Compute position for ORIGIN
+BoxPoint RegionGraphNode::originToPos(const BoxPoint& origin,
+				      const GraphGC& gc) const
+{
+    return origin + region(gc).space() / 2;
 }
 
 
@@ -124,3 +131,8 @@ void RegionGraphNode::_print(ostream& os, const GraphGC& gc) const
 {
     cleanRegion(os, gc, region(gc));
 }
+
+// Handlers
+static bool Yes(RegionGraphNode *, const BoxSize&) { return true; }
+
+bool (*RegionGraphNode::ResizeCB)(RegionGraphNode *, const BoxSize&) = Yes;

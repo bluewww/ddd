@@ -123,6 +123,11 @@ class DataDisp {
     static void DoubleClickCB                  (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
+    // Graph callbacks
+    //-----------------------------------------------------------------------
+    static bool bump(RegionGraphNode *node, const BoxSize& newSize);
+
+    //-----------------------------------------------------------------------
     // Timers and timer callbacks
     //-----------------------------------------------------------------------
     static void RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id);
@@ -384,6 +389,7 @@ public:
     static Widget graph_cmd_w;
     static Widget graph_selection_w;
     static ArgField *graph_arg;
+    static bool bump_displays;
 
     // Constructor
     DataDisp (XtAppContext app_context,

@@ -1094,6 +1094,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNbumpDisplays,
+	XtCBumpDisplays,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, bump_displays),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNstatusHistorySize,
 	XtCStatusHistorySize,
 	XmRInt,

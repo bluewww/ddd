@@ -123,11 +123,27 @@ public:
 	return string(os);
     }
 
+    // Shortcuts
+    const BoxPoint& origin(const GraphGC& gc) const
+    {
+	return region(gc).origin();
+    }
+    const BoxSize& space(const GraphGC& gc) const
+    {
+	return region(gc).space();
+    }
+
     // Types
     virtual bool isHint() const { return false; }
 
     // Move
     virtual void moveTo(const BoxPoint& newPos) = 0;
+
+    // Compute position for ORIGIN
+    virtual BoxPoint originToPos(const BoxPoint& origin, const GraphGC&) const
+    {
+	return origin;
+    }
 
     // Draw
     virtual void draw(Widget, 

@@ -4444,6 +4444,76 @@ bool DataDisp::have_selection()
 
 
 //----------------------------------------------------------------------------
+// Bumper
+//----------------------------------------------------------------------------
+
+bool DataDisp::bump_displays = true;
+
+static bool Yes(const RegionGraphNode *, const BoxSize&)
+{
+    return true;
+}
+
+// This one is called whenever NODE is to be resized to NEWSIZE
+bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
+{
+    if (!bump_displays)
+	return true;		// Okay
+
+    const GraphGC& gc = graphEditGetGraphGC(graph_edit);
+    BoxRegion oldRegion = node->region(gc);
+
+    // Do the resize; don't get called recursively
+    RegionGraphNode::ResizeCB = Yes;
+    node->resize(newSize);
+    RegionGraphNode::ResizeCB = bump;
+
+    // Let origin remain constant
+    node->moveTo(node->originToPos(oldRegion.origin(), gc));
+
+    // Move all nodes that are right or below NODE such that their
+    // distance to NODE remains constant.
+
+    // DELTA is the difference between old and new size
+    BoxSize delta  = node->space(gc) - oldRegion.space();
+
+    // NODE_ORIGIN is the (old) upper left corner of NODE
+    BoxPoint node_origin = oldRegion.origin();
+
+    // BUMPER is the (old) lower right corner of NODE
+    BoxPoint node_bumper = oldRegion.origin() + oldRegion.space();
+
+    for (GraphNode *r = disp_graph->firstNode(); 
+	 r != 0; r = disp_graph->nextNode(r))
+    {
+	if (r == node)
+	    continue;
+
+	// If ORIGIN (the upper left corner of R) is right of BUMPER,
+	// move R DELTA units to the right.  If it is below BUMPER,
+	// move R DELTA units down.
+
+	BoxPoint r_origin = r->origin(gc);
+	BoxPoint r_bumper = r->origin(gc) + r->space(gc);
+
+	if (r_bumper[X] >= node_origin[X] && r_bumper[Y] >= node_origin[Y])
+	{
+	    if (r_origin[X] > node_bumper[X] && r_origin[Y] > node_bumper[Y])
+		r->moveTo(r->pos() + delta);
+	    else if (r_origin[X] > node_bumper[X])
+		r->moveTo(r->pos() + BoxPoint(delta[X], 0));
+	    else if (r_origin[Y] > node_bumper[Y])
+		r->moveTo(r->pos() + BoxPoint(0, delta[Y]));
+	    else
+		r->moveTo(r->pos() + delta); // Overlapping nodes
+	}
+    }
+
+    // All is done - don't use default behavior.
+    return false;
+}
+
+//----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
 
@@ -4580,7 +4650,7 @@ DataDisp::DataDisp (XtAppContext app_context,
     XtManageChild (form2);
     XtManageChild (form1);
 
-    // Add callbacks
+    // Add widget callbacks
     XtAddCallback(graph_edit, XtNpreSelectionCallback,
 		  DoubleClickCB, XtPointer(this));
     XtAddCallback(graph_edit, XtNselectionChangedCallback,
@@ -4623,6 +4693,9 @@ DataDisp::DataDisp (XtAppContext app_context,
 		      ImmediateHelpCB,
 		      0);
     }
+
+    // Add graph callbacks
+    RegionGraphNode::ResizeCB = bump;
 
     // Reset argument field and display editor buttons
     set_args();

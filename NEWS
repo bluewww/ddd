@@ -4,14 +4,15 @@ DDD News						-*- text -*-
 DDD 2.2.2
 ---------
 
-    DDD 2.2.2 fixes some more minor bugs introduced in DDD 2.2.
+    DDD 2.2.2 brings a slightly improved data display and fixes some
+    more minor bugs introduced in DDD 2.2.
 
     User-visible changes to DDD 2.2.1:
-    - The data display has improved double-click support, speeding up
-      data exploration.
+    - Improved data display:
       * Double-clicking on a pointer value dereferences the pointer.
       * Double-clicking on a partially hidden value shows more detail.
       * Double-clicking on a fully shown value hides it again.
+      * Size changes no longer requires rearranging displays.
     - DDD supports case-insensitive search in the source text.
 
     Bug fixes:
