@@ -555,6 +555,36 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNplotCommand,
+	XtCPlotCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, plot_command),
+	XtRString,
+	XtPointer("gnuplot")
+    },
+
+    {
+	XtNplotInitCommands,
+	XtCPlotInitCommands,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, plot_init_commands),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
+	XtNplotSettings,
+	XtCPlotSettings,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, plot_settings),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
 	XtNtermCommand,
 	XtCTermCommand,
 	XtRString,

@@ -125,6 +125,12 @@
 #endif
 #define XtNautoCloseDataWindow   "autoCloseDataWindow"
 #define XtCAutoClose             "AutoClose"
+#define XtNplotCommand           "plotCommand"
+#define XtCPlotCommand           "PlotCommand"
+#define XtNplotInitCommands      "plotInitCommands"
+#define XtCPlotInitCommands      "PlotInitCommands"
+#define XtNplotSettings          "plotSettings"
+#define XtCPlotSettings          "PlotSettings"
 #define XtNtermCommand           "termCommand"
 #define XtCTermCommand           "TermCommand"
 #define XtNtermType              "termType"
@@ -396,6 +402,9 @@ struct AppData {
     Boolean   source_window;
     Boolean   debugger_console;
     Boolean   auto_close_data_window;
+    String    plot_command;
+    String    plot_init_commands;
+    String    plot_settings;
     String    term_command;
     String    term_type;
     Boolean   use_tty_command;
