@@ -151,15 +151,6 @@ Volunteers for fixing these and other bugs are welcome!
     - Redoing displays queries the _current_ frame from GDB, as well
       as the _current_ values (and non the recorded ones).
 
-321*Mike Bond <mike.bond@template.com> reports:
-    I've been experiencing some strangeness with the toolbar buttons
-    since you changed the way the shadowed buttons look. If I click on
-    one of the toolbar buttons with flat and images selected, when I
-    release I seem to get a corrupted version of the image where the
-    left and bottom borders would be.  I don't think it is necessarily
-    coupled with the way you are doing shadowing now, that's just when
-    it popped up.
-
 322*Finish Plots:
     - Give a diagnostic when trying to plot non-array data
     - Add menus for printing and line styles.
