@@ -104,6 +104,7 @@ DDD 3.1.7 fixes a number of minor bugs.
   for special file systems, where '//c/foo' is an alias for `c:\foo`.
 - Improved session management: `checkpoint sessions' not needed for shutdown
   (as initiated by GNOME) are automatically deleted after exiting DDD.
+- Improved auto-command recognition (includes saving displays across sessions)
 - [DBX] The array syntax `graph display [A..B]' works again for DBX.
 - [DBX] Redirection to the execution window with Sun DBX 4.0 no 
   longer clutters program arguments.
