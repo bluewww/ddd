@@ -160,4 +160,7 @@ Volunteers for these and other projects are welcome!
      directories', such that a lookup of a base file name will refer
      to the source file used in compilation.
 
-054. (Insert your project idea here)
+054. Adapt DDD to DBX as found on DEC Alpha.  Ruediger Berlich
+     <berlich@pc66.mppmu.mpg.de> has a description of the DBX format.
+
+055. (Insert your project idea here)

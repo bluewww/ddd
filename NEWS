@@ -1,6 +1,23 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 1.3c (NOT YET RELEASED)
+---------------------------
+
+    Bug fix release.
+
+    - Patches for recent Linux boxes (using ELF format) incorporated.
+      Thanks to lee@champion.tcs.co.jp (Lee Hounshell).
+    - Patches for DEC Alpha OSF/1 incorporated; see the `PROBLEMS'
+      file for the construction procedure. 
+      Thanks to tuppa@iue.tuwien.ac.at (Walter Tuppa)
+    - Popup menus have been extended:
+      * The breakpoint popup menu allows you to set a temporary 
+	breakpoint and continue immediately.
+	Suggested by Chris Sterritt <sterritt@mrj.com>
+      * The source popup menu allows you to print or display
+	dereferenced names.
+
 DDD 1.3b
 --------
 
