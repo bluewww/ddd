@@ -165,7 +165,7 @@ void UndoBuffer::add_entry(const UndoBufferEntry& entry)
     // Remove all later entries
     clear_after_position();
 
-    if (!entry.has_command() && !entry.has_pos() && entry.has_exec_pos())
+    if (!entry.has_command() && !entry.has_pos() && entry.has_state())
 	clear_exec_commands();
 
     // Clear commands without effect
@@ -192,7 +192,7 @@ void UndoBuffer::add_status(const string& name, const string& value)
 
     if (!collector.has_command() && 
 	!collector.has_pos() && 
-	!collector.has_exec_pos())
+	!collector.has_state())
 	return;			// Not enough stuff yet
 
     restore_current_state();
@@ -288,8 +288,7 @@ void UndoBuffer::set_source(const string& command)
     collector.remove(UB_POS);
     collector.remove(UB_ADDRESS);
 
-    collector.remove(UB_EXEC_POS);
-    collector.remove(UB_EXEC_ADDRESS);
+    collector.remove(UB_STATE);
 }
 
 void UndoBuffer::log()
@@ -459,7 +458,7 @@ bool UndoBuffer::process_command(UndoBufferEntry& entry)
 bool UndoBuffer::process_state(UndoBufferEntry& entry)
 {
     // Process previous state
-    string pos = "";
+    string pos     = "";
     string address = "";
 
     if (entry.has(UB_EXEC_POS))
@@ -523,8 +522,8 @@ bool UndoBuffer::process_state(UndoBufferEntry& entry)
     }
     else
     {
-	// No frame
-	source_view->process_frame(-1);
+	// No frame - assume current one
+	source_view->process_frame(0);
     }
 
     // Process registers

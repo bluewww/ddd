@@ -49,6 +49,7 @@
 #define UB_COMMAND       "command"      // Command restoring state (undoing)
 #define UB_EXEC_COMMAND  "exec_command" // Same, but requires current state
 #define UB_SOURCE        "source"       // Command causing the undo
+#define UB_STATE         "state"        // Marker for execution state
 
 // Prefix for current displays; followed by display name
 #define UB_DISPLAY_PREFIX         "display "  // Display value
@@ -77,9 +78,9 @@ public:
 	return !operator == (entry);
     }
 
-    bool has_exec_pos() const
+    bool has_state() const
     {
-	return has(UB_EXEC_POS) || has(UB_EXEC_ADDRESS);
+	return has(UB_STATE);
     }
 
     bool has_pos() const

@@ -3520,6 +3520,9 @@ void SourceView::show_execution_position (string position, bool stopped,
 	last_execution_file = "";
 	last_execution_line = 0;
 	update_glyphs();
+
+	undo_buffer.remove_position();
+	undo_buffer.add_state();
 	return;
     }
 
@@ -3564,6 +3567,9 @@ void SourceView::clear_execution_position()
     last_execution_pc = "";
     last_shown_pc     = "";
     update_glyphs();
+
+    undo_buffer.remove_address();
+    undo_buffer.add_state();
 }
 
 
@@ -4187,6 +4193,7 @@ void SourceView::add_position_to_history(const string& file_name, int line,
     }
 
     undo_buffer.add_position(source_name, line, exec_pos);
+    undo_buffer.add_state();
 }
 
 // Lookup entry from position history
@@ -8982,7 +8989,6 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
     if (!disassemble)
 	return;
 
-	
     // clog << "Showing PC " << pc << "\n";
 
     XmTextPosition pos = find_pc(pc);
@@ -9037,7 +9043,12 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	return;
 
     SetInsertionPosition(code_text_w, pos + indent_amount(code_text_w));
-    undo_buffer.add_address(pc, stopped);
+
+    if (mode == XmHIGHLIGHT_SELECTED)
+	undo_buffer.add_address(pc, stopped);
+    else
+	undo_buffer.remove_address();
+    undo_buffer.add_state();
 
     XmTextPosition pos_line_end = 0;
     if (current_code != "")

@@ -79,20 +79,20 @@ private:
     //
     // Each entry is a list of key/value pairs.
     //
-    // Basically, there are four kinds of entries:
+    // Basically, there are three kinds of entries:
     // * COMMANDS with the command name in the COMMAND key.
     //   The command is to be executed when reached.
-    // * EXEC COMMANDS with the command name in the EXEC_COMMAND key.
-    //   Like commands, but are dependent on the program state and
-    //   thus get deleted when changing the program state.
-    // * EXEC POSITIONS with the position in the EXEC_POS key.
-    //   Other fields contain the current state, such as display values.
     // * POSITIONS with the position in the POS key.  Used in lookups.
+    // * STATES with the an empty STATE key.  The current state is contained 
+    //   in the remaining keys.
     //
-    // Upon undo, DDD re-executes the command at HISTORY_POSITION - 1
-    // and attempts to re-create the state at HISTORY_POSITION - 2.
-    // Redo works the other way around.
+    // Upon Undo, DDD re-executes the last command at HISTORY_POSITION
+    // - 1; if there is no such command, it attempts to re-create the
+    // earlier state at HISTORY_POSITION - 2.
     //
+    // Upon Redo, DDD re-executes the next command at
+    // HISTORY_POSITION.  If there is no such command, it attempts to
+    // re-create the next state at HISTORY_POSITION.
     //
     // Sources
     // -------
@@ -166,15 +166,20 @@ public:
     // the values are added to the last entry, possibly overriding
     // existing values.
 
+    // Add status NAME/VALUE to history.
+    static void add_status(const string& name, const string& value);
+
     // Add command COMMAND to history.  If EXEC is set, COMMAND is
     // treated as execution command, i.e. dependent on the current
     // program state.
     static void add_command(const string &command, bool exec = false);
 
-    // Add status NAME/VALUE to history.
-    static void add_status(const string& name, const string& value);
-
     // Custom calls
+    static void add_state()
+    {
+	add_status(UB_STATE, "");
+    }
+
     static void add_position(const string& file_name, int line, bool exec)
     {
 	add_status(exec ? UB_EXEC_POS : UB_POS,
