@@ -186,9 +186,6 @@ Widget     DataDisp::display_list_w         = 0;
 Widget     DataDisp::graph_popup_w          = 0;
 Widget     DataDisp::node_popup_w           = 0;
 
-bool DataDisp::ignore_update_graph_editor_selection   = false;
-bool DataDisp::ignore_update_display_editor_selection = false;
-
 bool DataDisp::detect_aliases = false;
 
 int DataDisp::next_display_number = 1;
@@ -767,7 +764,7 @@ void DataDisp::set_handlers()
 //-----------------------------------------------------------------------------
 // Redraw graph and update display list
 //-----------------------------------------------------------------------------
-void DataDisp::refresh_graph_edit ()
+void DataDisp::refresh_graph_edit (bool silent)
 {
     static Graph* dummy = 0;
     if (!dummy)
@@ -779,7 +776,7 @@ void DataDisp::refresh_graph_edit ()
 		  XtNgraph, (Graph *)disp_graph,
 		  NULL);
     refresh_args();
-    refresh_display_list();
+    refresh_display_list(silent);
 }
 
 // ***************************************************************************
@@ -1324,13 +1321,6 @@ void DataDisp::refresh_args()
 // Update graph editor selection after a change in the display editor
 void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 {
-    // Avoid recursive and mutually recursive calls
-    if (ignore_update_graph_editor_selection)
-	return;
-
-    ignore_update_graph_editor_selection   = true;
-    ignore_update_display_editor_selection = true;
-
     IntArray display_nrs;
     getDisplayNumbers(display_list_w, display_nrs);
 
@@ -1361,26 +1351,14 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
     }
 
     refresh_args();
-
-    ignore_update_graph_editor_selection   = false;
-    ignore_update_display_editor_selection = false;
+    refresh_display_list();
 }
 
 // Update display editor selection after a change in the graph editor
 void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
 {
-    // Avoid recursive and mutually recursive calls
-    if (ignore_update_display_editor_selection)
-	return;
-
-    ignore_update_graph_editor_selection   = true;
-    ignore_update_display_editor_selection = true;
-
     refresh_args();
     refresh_display_list();
-
-    ignore_update_graph_editor_selection  =  false;
-    ignore_update_display_editor_selection = false;
 }
 
 
@@ -2865,7 +2843,7 @@ static int max_width(const StringArray& s)
 }
 
 // Create labels for the list
-void DataDisp::refresh_display_list()
+void DataDisp::refresh_display_list(bool silent)
 {
     if (display_list_w == 0)
 	return;
@@ -2902,7 +2880,7 @@ void DataDisp::refresh_display_list()
 	nums += itostring(k) + ":";
 
 	if (dn->nodeptr()->hidden())
-	    states += "alias of " + itostring(dn->alias_of) + " ";
+	    states += "alias of " + itostring(dn->alias_of);
 	else if (dn->enabled())
 	    states += "enabled";
 	else
@@ -2913,8 +2891,8 @@ void DataDisp::refresh_display_list()
     }
 
     int nums_width   = max_width(nums);
-    int states_width = max_width(states);
-    int exprs_width  = max_width(exprs);
+    int exprs_width  = max_width(exprs)  + 1;
+    int states_width = max_width(states) + 1;
     int addrs_width  = max_width(addrs);
 
     string *label_list = new string[number_of_displays + 1];
@@ -2926,8 +2904,8 @@ void DataDisp::refresh_display_list()
     if (number_of_displays > 0)
     {
 	line = fmt(nums[count], nums_width) 
-	    + " " + fmt(states[count], states_width)
-	    + " " + fmt(exprs[count], exprs_width);
+	    + " " + fmt(exprs[count], exprs_width)
+	    + " " + fmt(states[count], states_width);
 	if (detect_aliases)
 	    line += " " + fmt(addrs[count], addrs_width);
     }
@@ -2939,27 +2917,52 @@ void DataDisp::refresh_display_list()
     selected[count] = false;
     count++;
 
+    MString status_line;
+    int selected_displays = 0;
+
     // Set contents
     for (k = disp_graph->first_nr(ref); k != 0; k = disp_graph->next_nr(ref))
     {
 	DispNode* dn = disp_graph->get(k);
 	line = fmt(nums[count], nums_width) 
-	    + " " + fmt(states[count], states_width)
-	    + " " + fmt(exprs[count], exprs_width);
+	    + " " + fmt(exprs[count], exprs_width)
+	    + " " + fmt(states[count], states_width);
 	if (detect_aliases)
 	    line += " " + fmt(addrs[count], addrs_width);
 	label_list[count] = line;
 	selected[count]   = dn->selected();
+
+	if (dn->selected() && ++selected_displays == 1)
+	{
+	    // Set up status line for single display
+	    status_line = 
+		MString(nums[count] + " ", "rm") 
+		+ MString(exprs[count], "tt")
+		+ MString(" (" + states[count], "rm");
+	    if (detect_aliases && addrs[count] != "")
+		status_line += MString(", address ", "rm")
+		            + MString(addrs[count], "tt");
+	    status_line += MString(")", "rm");
+	}
+
 	count++;
     }
 
     sort(label_list + 1, selected + 1, count - 1);
 
-    ignore_update_graph_editor_selection = true;
     setLabelList(display_list_w, label_list, selected, count, 
 		 number_of_displays > 0, false);
-    ignore_update_graph_editor_selection = false;
-	
+
+    if (!silent)
+    {
+	if (selected_displays == 1)
+	    set_status_mstring(MString("Display ", "rm") + status_line);
+	else if (selected_displays > 1)
+	    set_status(itostring(selected_displays) + " displays");
+	else
+	    set_status("");
+    }
+
     delete[] label_list;
     delete[] selected;
 }
@@ -3222,21 +3225,22 @@ void DataDisp::process_addr (StringArray& answers)
 	}
     }
 
+    bool suppressed = false;
     if (changed || force_check_aliases)
     {
-	check_aliases();
+	suppressed = check_aliases();
 	force_check_aliases = false;
     }
 
     if (changed)
-	refresh_display_list();
+	refresh_display_list(suppressed);
 }
 
-// Check for aliases after change
-void DataDisp::check_aliases()
+// Check for aliases after change; return true iff displays were suppressed
+bool DataDisp::check_aliases()
 {
     if (!detect_aliases)
-	return;
+	return false;
 
     // Group displays into equivalence classes depending on their address.
     StringIntArrayAssoc equivalences;
@@ -3255,8 +3259,8 @@ void DataDisp::check_aliases()
 
     // Merge displays with identical address.
     bool changed = false;
+    MString suppressed_msg;
 
-    string msg;
     for (StringIntArrayAssocIter iter(equivalences); iter.ok(); iter++)
     {
 	string addr = iter.key();
@@ -3273,15 +3277,16 @@ void DataDisp::check_aliases()
 	else
 	{
 	    // Multiple displays at one location
-	    changed = merge_displays(displays, msg) || changed;
+	    changed = merge_displays(displays, suppressed_msg) || changed;
 	}
     }
 
-    if (msg != "")
-	post_gdb_message(msg, last_origin);
+    bool suppressed = !suppressed_msg.isEmpty();
 
     if (changed)
-	refresh_graph_edit();
+	refresh_graph_edit(suppressed);
+
+    return suppressed;
 }
 
 // Return last change, or INT_MAX if hidden
@@ -3319,21 +3324,19 @@ void DataDisp::sort_last_change(IntArray& disp_nrs)
     } while (h != 1);
 }
 
-string DataDisp::pretty(int disp_nr)
+MString DataDisp::pretty(int disp_nr)
 {
     DispNode *node = disp_graph->get(disp_nr);
     if (node == 0)
 	return "";
 
-    string title = node->name();
-    // shorten(title, DispBox::max_display_title_length);
-
-    return node->disp_nr() + ": " + title;
+    return MString(node->disp_nr() + ": ", "rm") + MString(node->name(), "tt");
 }
 
-// Merge displays in DISPLAYS; return true iff change.
-// Store an appropriate diagnostic in MSG.
-bool DataDisp::merge_displays(IntArray displays, string& msg)
+// Merge displays in DISPLAYS.  Return true iff changed.
+// Accumulate messages in SUPPRESSED_MSG.
+bool DataDisp::merge_displays(IntArray displays,
+			      MString& suppressed_msg)
 {
     assert(displays.size() > 0);
 
@@ -3385,41 +3388,43 @@ bool DataDisp::merge_displays(IntArray displays, string& msg)
     if (suppressed_displays.size() > 0)
     {
 	// Some displays have been suppressed.  Generate appropriate message.
-	if (msg != "")
-	    msg += "\n";
-	msg += "Suppressing ";
+	if (!suppressed_msg.isEmpty())
+	    suppressed_msg += MString("\n", "rm");
+	suppressed_msg += MString("Suppressing ", "rm");
 
 	if (suppressed_displays.size() == 1)
 	{
-	    msg += "display " + pretty(suppressed_displays[0]);
+	    suppressed_msg += MString("display ", "rm")
+		+ pretty(suppressed_displays[0]);
 	}
 	else if (suppressed_displays.size() == 2)
 	{
-	    msg += "displays " + pretty(suppressed_displays[0]) 
-		+ " and " + pretty(suppressed_displays[1]);
+	    suppressed_msg += MString("displays ", "rm") 
+		+ pretty(suppressed_displays[0]) 
+		+ MString(" and ", "rm") + pretty(suppressed_displays[1]);
 	}
 	else
 	{
-	    msg += "displays ";
+	    suppressed_msg += MString("displays ", "rm");
 	    for (int i = 1; i < suppressed_displays.size(); i++)
 	    {
 		if (i == suppressed_displays.size() - 1)
-		    msg += ", and ";
+		    suppressed_msg += MString(", and ", "rm");
 		else if (i > 1)
-		    msg += ", ";
-		msg += pretty(suppressed_displays[i]);
+		    suppressed_msg += MString(", ", "rm");
+		suppressed_msg += pretty(suppressed_displays[i]);
 	    }
 	}
 
-	msg += " because ";
+	suppressed_msg += MString(" because ", "rm");
 	if (suppressed_displays.size() == 1)
-	    msg += "it is an alias";
+	    suppressed_msg += MString("it is an alias", "rm");
 	else
-	    msg += "they are aliases";
-	msg += " of display " + pretty(displays[0]);
-    }
+	    suppressed_msg += MString("they are aliases", "rm");
+	suppressed_msg += MString(" of display ", "rm") + pretty(displays[0]);
 
-    return changed;
+	set_status_mstring(suppressed_msg, false);
+    }
 }
 
 bool DataDisp::unmerge_display(int disp_nr)

@@ -63,6 +63,7 @@
 #include "VSLLib.h"
 #include "Delay.h"
 #include "IntArray.h"
+#include "MString.h"
 
 // DDD includes
 #include "ArgField.h"
@@ -116,9 +117,6 @@ class DataDisp {
     static void UpdateGraphEditorSelectionCB    (Widget, XtPointer, XtPointer);
     static void UpdateDisplayEditorSelectionCB  (Widget, XtPointer, XtPointer);
 
-    static bool ignore_update_graph_editor_selection;
-    static bool ignore_update_display_editor_selection;
-
     //-----------------------------------------------------------------------
     // Sorting nodes for layout
     //-----------------------------------------------------------------------
@@ -146,7 +144,7 @@ class DataDisp {
     static void set_args(BoxPoint p = BoxPoint(-1, -1),
 			 SelectionMode mode = SetSelection);
     static void refresh_args();
-    static void refresh_display_list();
+    static void refresh_display_list(bool silent = false);
 
     static DispValue *selected_value();
     static DispNode  *selected_node();
@@ -291,17 +289,17 @@ private:
     static void set_last_origin(Widget origin);
 
     // Alias checking
-    static void check_aliases();
+    static bool check_aliases();
     static void sort_last_change(IntArray& disp_nrs);
     static int last_change_of_disp_nr(int disp_nr);
-    static string pretty(int disp_nr);
+    static MString pretty(int disp_nr);
 
     // True iff aliases are to be checked regardless of address changes
     static bool force_check_aliases;
 
-    // Merge displays in DISP_NRS; return true iff change.
-    // Store an appropriate diagnostic in MSG.
-    static bool merge_displays(IntArray disp_nrs, string& msg);
+    // Merge displays in DISPLAYS.  Return true iff changed.
+    // Accumulate messages in SUPPRESSED_MSG.
+    static bool merge_displays(IntArray displays, MString& suppressed_msg);
 
     // Unmerge display DISP_NR; return true iff change
     static bool unmerge_display(int disp_nr);
@@ -320,7 +318,7 @@ public:
 	      bool         panned);          // from app_data
 
     inline int count_all() { return disp_graph->count_all(); }
-    static void refresh_graph_edit ();
+    static void refresh_graph_edit (bool silent = false);
 
     // Refresh address of NODE (0: all nodes)
     static void refresh_addr(DispNode *node = 0);
