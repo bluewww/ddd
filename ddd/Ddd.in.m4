@@ -3724,7 +3724,7 @@ Ddd*sessions_to_save.listLabelString:		Sessions
 Ddd*sessions_to_save.selectionLabelString: 	Save Session
 Ddd*sessions_to_save*selectionPolicy:		XmSINGLE_SELECT
 Ddd*sessions_to_save*okLabelString:	 	Save
-Ddd*sessions_to_save*applyLabelString:	 	Update
+Ddd*sessions_to_save*applyLabelString:	 	Delete
 Ddd*sessions_to_save*dump_core.labelString:	Include Core Dump
 Ddd*sessions_to_save*dump_core.alignment:	XmALIGNMENT_BEGINNING
 
@@ -3739,7 +3739,7 @@ program being debugged.  This allows DDD to restore memory\n\
 contents and data displays when resuming the session.\n\
 \n\
 Click on LBL(Save) to save the current DDD session.\n\
-Click on LBL(Update) to update the session list.
+Click on LBL(Delete) to delete the selected session.
 
 
 !-----------------------------------------------------------------------------

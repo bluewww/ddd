@@ -393,11 +393,13 @@ static void update_sessions(Widget dialog)
     update_delete(dialog);
 }
 
+#if 0
 // Update list of sessions
 static void UpdateSessionsCB(Widget dialog, XtPointer, XtPointer)
 {
     update_sessions(dialog);
 }
+#endif
 
 // Set argument from selected list item
 static void SelectSessionCB(Widget sessions,
@@ -600,7 +602,7 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 
 	create_session_panel(w, "sessions_to_save",
-			     SaveSessionCB, UpdateSessionsCB);
+			     SaveSessionCB, DeleteSessionsCB);
 
     if (dump_core == 0)
     {
