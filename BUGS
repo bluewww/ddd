@@ -144,4 +144,16 @@ Volunteers for fixing these and other bugs are welcome!
     different data files all have the same color.  This does not
     happen with the external Gnuplot window.
 
-348 (Insert new bugs here)
+348*Display titles are shortened before truncatinng `info ' prefix.
+
+349*After a sequence of Undo's (via keyboard), Ctrl+Y remains
+    sensitive until the menu is mapped.
+
+350*If GDB is busy, `Help->What Now?' should distinguish between GDB
+    recording commands, GDB executing the debuggee, and GDB doing
+    something else.
+
+351*After closing the execution window, the TTY redirection args are
+    not cleared.
+
+352 (Insert new bugs here)
