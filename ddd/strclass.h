@@ -1187,22 +1187,22 @@ inline int string::gsub(char* pat, char* r)
 
 // `char *' => `const char *' wrappers
 
-inline subString string::after(char* t, int startpos = 0)
+inline subString string::after(char* t, int startpos)
 {
     return after((const char *)t, startpos);
 }
 
-inline subString string::at(char* t, int startpos = 0)
+inline subString string::at(char* t, int startpos)
 {
     return at((const char *)t, startpos);
 }
 
-inline subString string::before(char* t, int startpos = 0)
+inline subString string::before(char* t, int startpos)
 {
     return before((const char *)t, startpos);
 }
 
-inline void string::del(char* t, int startpos = 0)
+inline void string::del(char* t, int startpos)
 {
     del((const char *)t, startpos);
 }
@@ -1212,12 +1212,12 @@ inline int string::freq(char* t) const
     return freq((const char *)t);
 }
 
-inline subString string::from(char* t, int startpos = 0)
+inline subString string::from(char* t, int startpos)
 {
     return from((const char *)t, startpos);
 }
 
-inline subString string::through(char* t, int startpos = 0)
+inline subString string::through(char* t, int startpos)
 {
     return through((const char *)t, startpos);
 }
