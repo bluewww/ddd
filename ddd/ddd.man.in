@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-04-21" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-04-22" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -4864,16 +4864,6 @@ This means that variable names are interpreted according to the
 current frame; variables outside the current frame cannot be
 displayed.  This also means that displays slow down \s-2@DDD@\s+2
 considerably.
-.PP
-\s-2@DDD@\s+2 cannot find non-public classes unless they are defined
-in a \fB.java\fR file named after the class.  This is so because
-\s-2JDB\s+2 does not report file names, only classes.  Hence, to
-display a class \fIC\fR, \s-2@DDD@\s+2 searches for the java file
-\fB\fIC\fB.java\fR.  This heuristic fails for non-public classes
-\fIC'\fR whose definition resides in
-\fB\fIC\fB.java\fR\(em\&\s-2@DDD@\s+2 would search the definition in
-\fB\fIC'\fB.java\fR instead and fail.  (If you know a way to have
-\s-2JDB\s+2 report file names, please let us know.)
 .PP
 The \s-2JDB\s+2 `\fBdump\fR' and `\fBprint\fR' commands do not support
 expression evaluation.  Hence, you cannot display arbitrary

@@ -35,17 +35,23 @@
 
 #include "StringA.h"
 
-#define JAVA_SUFFIX ".java"
+// Suffixes for Java sources and classes
+#define JAVA_SRC_SUFFIX   ".java"
+#define JAVA_CLASS_SUFFIX ".class"
 
 // Store all classes matching MASK in CLASSES_LIST
 void get_java_classes(StringArray& classes_list, 
-		      const string& mask = "*" JAVA_SUFFIX);
+		      const string& mask = "*" JAVA_SRC_SUFFIX);
 
 // Return source file of CLASS_NAME; "" if none
-string java_class_file(const string& class_name);
+string java_class_file(const string& class_name, bool search_classes = true);
 
 // Remove `.java' suffix from S
 void strip_java_suffix(string& s);
+
+// Return the position of CLASS_NAME definition in TEXT; -1 if none
+int java_class_start(const string& text, const string& class_name,
+		     bool first_line = true);
 
 #endif // _DDD_java_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
