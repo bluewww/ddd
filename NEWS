@@ -77,11 +77,14 @@ User Interface
 
 - Interrupts (Ctrl+C) from the controlling TTY can be issued multiple times.
 
-- In LessTif, combo boxes (drop-down text boxes) no longer shrink.
+- With LessTif, the source window no longer scrolls around when
+  setting or deleting breakpoints.
 
-- In LessTif, Text selection works better.
+- With LessTif, combo boxes (drop-down text boxes) no longer shrink.
 
-- In LessTif, the Backspace and Delete keys in the debugger console 
+- With LessTif, Text selection works better.
+
+- With LessTif, the Backspace and Delete keys in the debugger console 
   work better.
 
 - Spin boxes (used to step values) have been slightly improved.

@@ -2561,7 +2561,7 @@ void SourceView::reload()
     read_file(file, atoi(line), true);
 
     // Restore breakpoints
-    refresh_bp_disp();
+    refresh_bp_disp(true);
 
     // Restore execution position
     if (last_execution_file != "")
@@ -2684,7 +2684,7 @@ void SourceView::read_file (string file_name,
     bps_in_line = empty_bps;
     static StringArray empty_addresses;
     bp_addresses = empty_addresses;
-    refresh_bp_disp();
+    refresh_bp_disp(true);
 
     XtManageChild(source_text_w);
 
@@ -2783,15 +2783,18 @@ void SourceView::update_title()
 //-----------------------------------------------------------------------
 
 // Update breakpoint locations
-void SourceView::refresh_bp_disp()
+void SourceView::refresh_bp_disp(bool reset)
 {
-    refresh_source_bp_disp();
-    refresh_code_bp_disp();
+    refresh_source_bp_disp(reset);
+    refresh_code_bp_disp(reset);
     update_glyphs();
 }
 
-void SourceView::refresh_source_bp_disp()
+void SourceView::refresh_source_bp_disp(bool reset)
 {
+    if (display_glyphs && !reset)
+	return;
+
     // Overwrite old breakpoint displays - - - - - - - - - - - - -
     for (IntIntArrayAssocIter b_i_l_iter(bps_in_line);
 	 b_i_l_iter.ok(); 
@@ -2879,8 +2882,11 @@ void SourceView::refresh_source_bp_disp()
     }
 }
 
-void SourceView::refresh_code_bp_disp()
+void SourceView::refresh_code_bp_disp(bool reset = false)
 {
+    if (display_glyphs && !reset)
+	return;
+
     // Clear all addresses
     int i;
     for (i = 0; i < bp_addresses.size(); i++)
@@ -8758,7 +8764,7 @@ void SourceView::set_display_glyphs(bool set)
 	    UpdateGlyphsWorkProc(0, 0);
 
 	    display_glyphs = true;
-	    refresh_bp_disp();
+	    refresh_bp_disp(true);
 	}
 
 	display_glyphs = set;
@@ -8767,7 +8773,7 @@ void SourceView::set_display_glyphs(bool set)
 	{
 	    StatusDelay delay(set ? "Enabling glyphs" : "Disabling glyphs");
 
-	    refresh_bp_disp();
+	    refresh_bp_disp(true);
 	    if (file != "")
 		show_execution_position(file + ":" + itostring(line), 
 					stopped, signaled);

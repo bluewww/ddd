@@ -163,9 +163,9 @@ class SourceView {
 			    Widget& form, Widget& text);
 
     // Refresh displays
-    static void refresh_bp_disp();
-    static void refresh_source_bp_disp();
-    static void refresh_code_bp_disp();
+    static void refresh_bp_disp(bool reset = false);
+    static void refresh_source_bp_disp(bool reset = false);
+    static void refresh_code_bp_disp(bool reset = false);
 
     // Clear breakpoint helpers
     static void clearBP(void *client_data, XtIntervalId *timer);
