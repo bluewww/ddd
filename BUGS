@@ -145,7 +145,6 @@ Volunteers for fixing these and other bugs are welcome!
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 322*Finish Plots:
-    - Plot clusters
     - Draw scalars as (rotatable) lines
     - Give a diagnostic when plot did not succeed
     - Add menu for printing
@@ -155,9 +154,6 @@ Volunteers for fixing these and other bugs are welcome!
     - Make swallowing (decorating) optional
     - Destroying plotter decorations is risky; better re-use them
     - Document it all
-
-329*Something is wrong with selecting clusters as a whole: the title
-    is not copied to `()'.
 
 330 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
     that the `Displays' cluster should have two or more columns in

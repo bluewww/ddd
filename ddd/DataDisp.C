@@ -1868,23 +1868,47 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 
 DispNode *DataDisp::selected_node()
 {
-    DispNode *ret = 0;
+    DispNode *selection = 0;
 
+    // Check for selected nodes
     MapRef ref;
-    for (DispNode* dn = disp_graph->first(ref); 
-	 dn != 0;
-	 dn = disp_graph->next(ref))
+    for (DispNode *dn = disp_graph->first(ref); 
+	 dn != 0; dn = disp_graph->next(ref))
     {
-	if (selected(dn))
+	if (!selected(dn))
+	    continue;
+
+	if (selection == 0)
 	{
-	    if (ret == 0)
-		ret = dn;
-	    else
-		return 0;	// multiple nodes selected
+	    // First node found
+	    selection = dn;
+	}
+	else if (selection == dn)
+	{
+	    // Already found
+	}
+	else if (is_cluster(dn))
+	{
+	    if (selection->clustered() != dn->disp_nr())
+		return 0;	// Node is unclustered or clustered elsewhere
+
+	    // Select cluster
+	    selection = dn;
+	}
+	else if (is_cluster(selection))
+	{
+	    if (dn->clustered() != selection->disp_nr())
+		return 0;	// Node is unclustered or clustered elsewhere
+
+	    // Cluster remains selected
+	}
+	else
+	{
+	    return 0;		// Differing nodes
 	}
     }
 
-    return ret;
+    return selection;
 }
 
 DispValue *DataDisp::selected_value()
@@ -1892,6 +1916,8 @@ DispValue *DataDisp::selected_value()
     DispNode *dn = selected_node();
     if (dn == 0)
 	return 0;
+    if (is_cluster(dn))
+	return dn->value();
 
     DispValue *dv = dn->selected_value();
     if (dv != 0)
