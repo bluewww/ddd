@@ -1,0 +1,156 @@
+// $Id$
+// Agent Manager
+
+// Copyright (C) 1993 Technische Universitaet Braunschweig, Germany.
+// Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+// 
+// This file is part of the NORA Library.
+// 
+// The NORA Library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Library General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+// 
+// The NORA Library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Library General Public License for more details.
+// 
+// You should have received a copy of the GNU Library General Public
+// License along with the NORA Library -- see the file COPYING.LIB.
+// If not, write to the Free Software Foundation, Inc.,
+// 675 Mass Ave, Cambridge, MA 02139, USA.
+// 
+// NORA is an experimental inference-based software development
+// environment. Contact nora@ips.cs.tu-bs.de for details.
+
+// $Log$
+// Revision 1.1  1995/05/01 15:47:08  zeller
+// Initial revision
+//
+// Revision 1.19  1995/04/18  10:29:08  zeller
+// New: childStatusChange() returns whether signal could be handled
+//
+// Revision 1.18  1995/04/11  17:51:54  zeller
+// Fix: don't fetch status from unknown children; their parents may wait
+// forever
+//
+// Revision 1.17  1995/04/11  08:36:16  zeller
+// Fix: process status change of child causing the signal
+//
+// Revision 1.16  1995/03/21  16:39:21  zeller
+// New: handle child status change in AgentManager
+//
+// Revision 1.15  1995/03/17  09:54:48  zeller
+// License and RCS IDs added
+//
+// Revision 1.14  1995/03/16  14:32:39  zeller
+// New: no more error-prone cleanup on signals
+//
+
+static const char rcsid[] = 
+"$Id$";
+
+#ifdef __GNUG__
+#pragma implementation
+#endif
+
+
+#include "AgentM.h"
+#include "Agent.h"
+#include "SignalC.h"
+#include "SignalB.h"
+#include "config.h"
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+DEFINE_TYPE_INFO_0(AgentManager)
+
+#if 0
+// Make sure to call all destructors, even when a signal comes
+static SignalCleanup hasta_la_vista_you_filthy_agents;
+#endif
+
+
+// Add an agent
+void AgentManager::operator += (Agent *key)
+{
+    for (Agent *c = first; c != 0; c = c->next)
+	if (c == key)
+	    return;
+
+    SignalBlocker sb(SIGCHLD);
+
+    key->next = first;
+    first     = key;
+}
+
+// Remove an agent
+void AgentManager::operator -= (Agent *key)
+{
+    Agent *prev = 0;
+    for (Agent *c = first; c != 0; c = c->next)
+    {
+	if (c == key)
+	{
+	    SignalBlocker sb(SIGCHLD);
+
+	    if (prev == 0)
+		first = c->next;
+	    else
+		prev->next = c->next;
+	}
+	else
+	{
+	    prev = c;
+	}
+    }
+}
+
+
+// Search an agent
+Agent *AgentManager::search(int pid)
+{
+    for (Agent *c = first; c != 0; c = c->next)
+	if (pid == c->pid())
+	    return c;
+
+    return 0;
+}
+
+// Commit all pending changes
+void AgentManager::commit()
+{
+    for (Agent *c = first; c != 0; c = c->next)
+	c->commit();
+}
+
+// Agent Manager Destructor: called at the end of the show
+AgentManager::~AgentManager()
+{
+    // Terminate using low-level functions
+    for (Agent *c = first; c != 0; c = c->next)
+	c->terminate(true);
+}
+
+// Process status change
+bool AgentManager::childStatusChange()
+{
+    bool gotit = false;
+
+    for (Agent *c = first; c != 0; c = c->next)
+    {
+	pid_t pid = c->pid();
+	int status;
+
+	if (pid > 0 && waitpid(pid, &status, WNOHANG) == pid)
+	{
+	    c->callHandlers(Agent::_Died, (void *)status);
+	    gotit = true;
+	}
+    }
+
+    return gotit;
+}
