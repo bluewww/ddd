@@ -40,6 +40,7 @@ char HelpCB_rcsid[] =
 #include "TimeOut.h"
 #include "ddd.h"		// process_pending_events()
 #include "findParent.h"
+#include "isid.h"
 #include "longName.h"
 #include "toolbar.h"
 #include "windows.h"		// set_scrolled_window_size()
@@ -737,11 +738,6 @@ static void HighlightSectionCB(Widget, XtPointer client_data,
 	pos++;
 
     ListSetAndSelectPos(list, pos);
-}
-
-inline bool isid(char c)
-{
-    return isalnum(c) || c == '_' || c == '$';
 }
 
 static void SetSelectionCB(Widget w, XtPointer client_data, 

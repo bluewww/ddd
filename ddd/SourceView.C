@@ -102,6 +102,7 @@ char SourceView_rcsid[] =
 #include "fortranize.h"
 #include "history.h"
 #include "index.h"
+#include "isid.h"
 #include "java.h"
 #include "logo.h"
 #include "misc.h"
@@ -158,7 +159,6 @@ extern "C" {
 #include <iomanip.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <time.h>
 #include <errno.h>
 #include <limits.h>
@@ -166,14 +166,6 @@ extern "C" {
 #ifndef ULONG_MAX
 #define	ULONG_MAX	((unsigned long)(~0L))		/* 0xFFFFFFFF */
 #endif
-
-
-
-// Additional macros
-inline bool isid(char c)
-{
-    return isalnum(c) || c == '_' || c == '$';
-}
 
 // Test for regular file - see stat(3)
 #ifndef S_ISREG

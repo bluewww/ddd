@@ -813,6 +813,7 @@ DDD_OBJECTS = \
 	history.o    \
 	hostname.o   \
 	index.o      \
+	isid.o       \
 	java.o 	     \
 	logo.o       \
 	logplayer.o  \
