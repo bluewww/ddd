@@ -2064,7 +2064,8 @@ int main(int argc, char *argv[])
 	if (!app_data.auto_debugger)
 	{
 	    cerr << "Unknown debugger type " << quote(app_data.debugger)
-		 << ", using " << quote(default_debugger(debugger_type))
+		 << ", using " << quote(default_debugger(app_data.debugger,
+							 debugger_type))
 		 << "instead\n";
 	}
     }
@@ -2074,7 +2075,8 @@ int main(int argc, char *argv[])
 	if (gdb_name != "")
 	    app_data.debugger_command = gdb_name;
 	else
-	    app_data.debugger_command = default_debugger(debugger_type);
+	    app_data.debugger_command = 
+		default_debugger(app_data.debugger, debugger_type);
     }
 
     // Set host specification

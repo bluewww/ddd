@@ -443,8 +443,14 @@ bool get_debugger_type(const string& debugger_name, DebuggerType& type)
     return false;
 }
 
-char *default_debugger(DebuggerType type)
+char *default_debugger(const string& debugger_name, DebuggerType type)
 {
+    if (type == DBX && debugger_name == "ladebug")
+    {
+	// This happens when using the `--ladebug' option.
+	return "ladebug";
+    }
+
     int i;
     for (i = 0; i < int(XtNumber(debuggers)); i++)
 	if (type == debuggers[i].type && have_cmd(debuggers[i].cmd))

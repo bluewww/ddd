@@ -51,7 +51,12 @@ extern DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure);
 extern bool get_debugger_type(const string& debugger_name, DebuggerType& type);
 
 // Return default program for TYPE
-extern char *default_debugger(DebuggerType type);
+extern char *default_debugger(const string& debugger_name, DebuggerType type);
+
+inline char *default_debugger(DebuggerType type)
+{
+    return default_debugger("", type);
+}
 
 #endif // _DDD_gdbinit_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
