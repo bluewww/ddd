@@ -1084,13 +1084,13 @@ FORCE:
 ## The resource header and app-default files.
 
 Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
-	$(AD2C) Ddd > $@
+	$(AD2C) Ddd > $@~ && $(MV) $@~ $@
 
 $(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/macros.m4
 	( \
 		echo "define(srcdir, \`$(srcdir)')dnl"; \
 		echo "include(srcdir()/Ddd.in.m4)dnl" \
-	) | $(M4) > $@
+	) | $(M4) > $@~ && $(MV) $@~ $@
 
 
 ## The VSL header files.
@@ -1238,10 +1238,10 @@ regexps.o: rxscan.C
 ## The manual page in PostScript format, including all pictures.
 
 $(srcdir)/../doc/ddd.man.ps: ddd.man $(PICS)
-	$(GROFF) -man ddd.man > $@
+	$(GROFF) -man ddd.man > $@~ && $(MV) $@~ $@
 
 $(srcdir)/../doc/ddd.man-nopics.ps: ddd.man-nopics
-	$(GROFF) -man ddd.man-nopics > $@
+	$(GROFF) -man ddd.man-nopics > $@~ && $(MV) $@~ $@
 
 $(picdir)/ddd-all.ps: \
 	$(picdir)/ddd-all.fig $(picdir)/ddd-all.xpm
@@ -1414,7 +1414,7 @@ $(picdir)/ddd-drag.ps: \
 # The logo comes in XPM source
 $(picdir)/dddlogo.ps: $(icondir)/dddlogo.xpm
 	$(XPMTOPPM) $(icondir)/dddlogo.xpm | $(PNMDEPTH) 255 | \
-	$(PNMTOPS) -noturn > $@
+	$(PNMTOPS) -noturn > $@~ && $(MV) $@~ $@
 
 
 ## Icons and logos.
@@ -1464,23 +1464,24 @@ $(srcdir)/stamp-h.in: \
 	$(srcdir)/aclocal.m4 \
 	$(srcdir)/acconfig.h
 	cd $(srcdir) && $(AUTOHEADER)
-	$(DATE) > $@
+	$(DATE) > $@~ && $(MV) $@~ $@
 
 $(srcdir)/acconfig.h: $(srcdir)/acconfig.h.in $(srcdir)/acspecial.h
 	( \
 		echo "define(srcdir, \`$(srcdir)')dnl"; \
 		echo "include(srcdir()/acconfig.h.in)dnl" \
-	) | $(M4) > $@
+	) | $(M4) > $@~ && $(MV) $@~ $@
 
 $(srcdir)/acspecial.h: $(srcdir)/configure.in
-	$(GREP) '^ICE_[a-zA-Z0-9_]* *(' $(srcdir)/configure.in > $@
+	$(GREP) '^ICE_[a-zA-Z0-9_]* *(' $(srcdir)/configure.in > $@~ && \
+	$(MV) $@~ $@
 
 
 # config.status might not change config.h
 config.h: stamp-h
 stamp-h: config.h.in config.status
 	CONFIG_FILES= CONFIG_HEADERS=config.h ./config.status
-	$(DATE) > $@
+	$(DATE) > $@~ && $(MV) $@~ $@
 
 
 # We use configure to create `version.h'.
@@ -1488,7 +1489,7 @@ stamp-h: config.h.in config.status
 # we create temporary vr.* files instead and touch the version.* files
 # only if the vr.* files changed.
 version.h: vr.h
-	@$(CMP) vr.h version.h || $(CAT) vr.h > version.h
+	@$(CMP) vr.h $@ || $(CAT) vr.h > $@~ && $(MV) $@~ $@
 vr.h: vr.h.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
@@ -1498,29 +1499,29 @@ ddd.man: $(srcdir)/ddd.man.in config.status
 
 # Same, but in 7-bit format
 ddd.1:   ddd.man $(srcdir)/unumlaut.sed
-	-$(SED) -f $(srcdir)/unumlaut.sed ddd.man > $@
+	-$(SED) -f $(srcdir)/unumlaut.sed ddd.man > $@~ && $(MV) $@~ $@
 
 # ddd.man.txt does NOT depend on ddd.man since we don't want it to get
 # re-created after each configuration.
 ddd.man.txt: $(srcdir)/ddd.man.in configure.in $(srcdir)/umlaut8.sed
 	$(MAKE) ddd.man
 	-$(SED) -f $(srcdir)/umlaut7.sed ddd.man | \
-	$(NROFF) -man | $(SED) -f $(srcdir)/umlaut8.sed > $@
+	$(NROFF) -man | $(SED) -f $(srcdir)/umlaut8.sed > $@~ && $(MV) $@~ $@
 
 # ddd.man.txt may reside in $(srcdir) or `.' , hence the `$?'
 ddd.man.txt.gz: ddd.man.txt
-	$(COMPRESS) $? > $@
+	$(COMPRESS) $? > $@~ && $(MV) $@~ $@
 
 ddd.man.txt.gz.C: ddd.man.txt.gz
 	$(MAKE) stringify
-	-./stringify < $? > $@ || $(RM) $@
+	-./stringify < $? > $@~ && $(MV) $@~ $@
 
 
 # ddd.man.huff.C does NOT depend on huffencode since we don't want it
 # to get re-created after each configuration.
 ddd.man.huff.C: ddd.man.txt
 	$(MAKE) huffencode
-	-./huffencode < ddd.man.txt > $@ || $(RM) $@
+	-./huffencode < ddd.man.txt > $@~ && $(MV) $@~ $@
 
 # The `no pictures' variant of ddd.man.
 ddd.man-nopics: ddd.man
@@ -1530,7 +1531,8 @@ ddd.man-nopics: ddd.man
 # to get re-created after each configuration.
 COPYING.huff.C: $(srcdir)/../COPYING
 	$(MAKE) huffencode
-	-$(SED) 's///' < $(srcdir)/../COPYING | ./huffencode > $@ || $(RM) $@
+	-$(SED) 's///' < $(srcdir)/../COPYING | ./huffencode > $@~ && \
+	$(MV) $@~ $@
 
 COPYING.gz: $(srcdir)/../COPYING
 	$(COMPRESS) $(srcdir)/../COPYING > $@
@@ -1543,14 +1545,15 @@ COPYING.gz.C: COPYING.gz
 # to get re-created after each configuration.
 NEWS.huff.C: $(srcdir)/../NEWS
 	$(MAKE) huffencode
-	-$(SED) 's///' < $(srcdir)/../NEWS | ./huffencode > $@ || $(RM) $@
+	-$(SED) 's///' < $(srcdir)/../NEWS | ./huffencode > $@~ && \
+	$(MV) $@~ $@
 
 NEWS.gz: $(srcdir)/../NEWS
-	$(COMPRESS) $(srcdir)/../NEWS > $@
+	$(COMPRESS) $(srcdir)/../NEWS > $@~ && $(MV) $@~ $@
 
 NEWS.gz.C: NEWS.gz
 	$(MAKE) stringify
-	-./stringify < NEWS.gz > $@ || $(RM) $@
+	-./stringify < NEWS.gz > $@~ && $(MV) $@~ $@
 
 # `make depend' fails to find this dependency :-(
 show.o: COPYING.gz.C NEWS.gz.C ddd.man.txt.gz.C
@@ -1567,7 +1570,8 @@ xconfig.o: xlibdir.C
 host.h: $(srcdir)/host.h.in config.status
 	$(CAT) $(srcdir)/host.h.in | \
 	$(SED) "s%@HOST_CANONICAL@%$(host_canonical)%" | \
-	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" > $@
+	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" > $@~ && \
+	$(MV) $@~ $@
 
 ## Statistics.
 # Count lines of C++/lex/yacc source code.
@@ -1589,20 +1593,22 @@ loc stats:
 ## EPS code stuff.
 
 $(srcdir)/header.str: $(srcdir)/header.ps
-	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/header.ps > $@
+	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/header.ps > $@~ && $(MV) $@~ $@
 
 $(srcdir)/trailer.str: $(srcdir)/trailer.ps
-	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/trailer.ps > $@
+	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/trailer.ps > $@~ && $(MV) $@~ $@
 
 $(srcdir)/eps-code.h: \
 	$(srcdir)/header.str $(srcdir)/trailer.str $(srcdir)/eps-code.x
 	$(SED) -e '/prolog/r $(srcdir)/header.str' \
-	       -e '/trailer/r $(srcdir)/trailer.str' $(srcdir)/eps-code.x > $@
+	       -e '/trailer/r $(srcdir)/trailer.str' $(srcdir)/eps-code.x \
+	> $@~ && $(MV) $@~ $@
 
 
 ## Configuration info stuff
 configinfo.C: USERINFO $(srcdir)/config-info
-	$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO USERINFO > $@
+	$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO USERINFO > $@~ && \
+	$(MV) $@~ $@
 	-$(CAT) $(srcdir)/USERINFO 2> /dev/null || $(CAT) USERINFO
 
 # configinfo.C:	Makefile config.h
@@ -1612,7 +1618,8 @@ configinfo.o:	configinfo.C configinfo.h
 # If `~/.ddd_userinfo' exists, use this file as personal identification
 
 USERINFO: userinfo
-	-(cat $$HOME/.ddd_userinfo || ./userinfo || echo '(unknown)') > $@
+	-(cat $$HOME/.ddd_userinfo || ./userinfo || echo '(unknown)') \
+	> $@~ && $(MV) $@~ $@
 
 
 ## Update the shared source tree.  For development only.
@@ -1632,7 +1639,8 @@ pub:	$(PROG_STUFF) configure $(PUB_DEST)/USERINFO
 	done
 
 $(PUB_DEST)/USERINFO:
-	-echo 'DDD Development Team <ddd@ips.cs.tu-bs.de>' > $@
+	-echo 'DDD Development Team <ddd@ips.cs.tu-bs.de>' > $@~ && \
+	$(MV) $@~ $@
 
 
 ## Make dependency stuff.
