@@ -955,10 +955,10 @@ static Boolean CvtBooleanToString (Display *display, XrmValue *,
     switch (mode)
     {
     case True:
-	s = "true";
+	s = "on";
 	break;
     case False:
-	s = "false";
+	s = "off";
 	break;
     default:
 	XtDisplayStringConversionWarning(display, s, XtRString);
