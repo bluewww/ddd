@@ -847,7 +847,7 @@ string GDBAgent::echo_command(string text) const
 	return "echo " + text;
 
     case DBX:
-	return print_command() + quote(text);
+	return print_command() + " " + quote(text);
 
     case XDB:
 	return quote(text);
