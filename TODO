@@ -307,4 +307,27 @@ Volunteers for these and other projects are welcome!
 
 163. Install `sample.dddinit' and `ddd.man' on the FTP server.
 
+164. Matthias Kurz <mk@baerlap.north.de> suggests:
+     - Recognize 'complete' variables; example "ptr->struct.field": if
+       one points inside this string always show the value of
+       ptr->struct.field.
+     - Selection: Double click to select words - moving the mouse then
+       expands on the basis of words
+     - possibility to select the base (dec, hex, oct ...) for
+       displayed values; Attach this as attributes to variables,
+       fields of structs/unions; load/save
+     - detecting when graph display takes too long (n seconds
+       configurable) if it takes too long switch in mode where updates
+       are only done on request
+     - Dump inspector hex[+/]ascii/octal dump of length n starting at
+       address a. Possibility to 'group' data : selecting bytes in
+       dump with mouse; declare them to be a particular data type
+       (2/4/8 Byte integer/unsigned, float, real, pointer; select
+       numeric base and byte order); load and store such definitions;
+       apply such definition starting at a specified point.
+       Possibility to 'graph display', modify and write back values
+       from the dump.
+     - recognize URLs in source window; follow on click (call external
+       browser)
+ 
 164. (Insert your project idea here)

@@ -363,4 +363,39 @@ Volunteers for fixing these and other bugs are welcome!
      3. Then set tree->left->left->left to tree->left.
      4. Watch the loop.
 
-171. (Insert your bug here)
+171. Skip Koppenhaver <skip@tecelite.com> states: In Solaris 2.5,
+     without REGCOMP_BROKEN defined, `Options->Settings' brings up a
+     blank dialog box, with just the Close, Reset(dimmed), and Help
+     buttons along the bottom.  This also makes the GDB busy light
+     continuously blink.
+
+172. Jonathan Edwards <edwards@intranet.com> says: If I interupt my
+     program while it is running, my data displays are not updated,
+     and instead I get the info in the debugger console.
+
+173. Matthias Kurz <mk@baerlap.north.de> says:
+     - Problems with the gdb 'until' commands. If another breakpoint
+       is hitten before the specified line, the requested halt is
+       forgotten.  tbreak works always as intended. Suggestion: use
+       always tbreak.
+     - Often the first graph display is not completely inside the
+       window; after selecting 'layout graph' things are right
+     - The debugger console often looses the text cursor; typing
+       commands is still possible; 'clear window' brings the cursor
+       back.
+
+174. Matthias Kurz <mk@baerlap.north.de> states:
+     - After i use 'Save Options', the field 'gdb settings' stays
+       greyed.  If i type a command in the Debugger Console i get a
+       'GDB busy' dialog.  Happens after 'Retrieving GDB settings' is
+       displayed. After selecting 'Interrupt' things can go on -
+       though the gdb settings dialog is empty.  Works with 2.0. "ddd
+       --trace" shows that ddd sends a 'help set' - and then it seems
+       to hang (ddd-2.0 starts to retrieve the values shown in the
+       help output). The "(gdb) " prompt appears after the end of the
+       help output. Sorry, no fix.
+
+     [Can be worked around by #defining REGCOMP_BROKEN in config.h]
+
+
+175. (Insert your bug here)
