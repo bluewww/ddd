@@ -318,7 +318,7 @@ Ddd*wwwCommand: \
 || netscape -remote 'openURL(@URL@)' \
 || ${WWWBROWSER-false} '@URL@' \
 || mozilla '@URL@' \
-|| gnome-help-browser '@URL@' \
+|| kfmbrowser '@URL@' \
 || netscape '@URL@' \
 || gnudoit '(w3-fetch \042@URL@\042)' \
 || mosaic '@URL@' \
