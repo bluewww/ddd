@@ -25,10 +25,6 @@ texts, DDD has become famous through its interactive graphical data
 display, where data structures are displayed as graphs.
 
 %changelog
-[ddd-3.2.3]
-* Wed Nov 13 2002 R. Bernstein <rocky@panix.com>
-- Add support for Bash 
-- Small changes make work in the face of newer C++, autotools and so on.
 [ddd-3.2.1]
 * Wed Nov 8  2000 Daniel Serodio <dserodio@email.com>
 - Added missing files ($PREFIX/share/*) and fixed replaces .gz for .* so
