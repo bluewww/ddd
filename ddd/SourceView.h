@@ -254,6 +254,7 @@ private:
     // Return TRUE if breakpoint BP is in current file
     static bool bp_matches(BreakPoint *bp);
     static string full_path(string file);
+    static const char *basename(const char *);
     static bool file_matches(const string& file1, const string& file2);
     static bool base_matches(const string& file1, const string& file2);
 

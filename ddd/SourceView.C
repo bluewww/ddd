@@ -101,7 +101,6 @@ char SourceView_rcsid[] =
 extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <libiberty.h> // basename()
 }
 #include <stdio.h>
 #include <fcntl.h>
@@ -740,6 +739,22 @@ string SourceView::full_path(string file)
     file.gsub("/./", "/");
 
     return file;
+}
+
+// Return the basename of FILE
+// We don't use the default basename(), due to conflicts 
+// with the decl in <libiberty.h>.
+const char *SourceView::basename(const char *name)
+{
+    const char *base = name;
+
+    while (*name)
+    {
+	if (*name++ == '/')
+	    base = name;
+    }
+
+    return base;
 }
 
 bool SourceView::file_matches(const string& file1, const string& file2)
