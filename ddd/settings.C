@@ -319,7 +319,7 @@ void save_settings_state()
     }
 
     update_reset_settings_button();
-    set_need_defines(false);
+    set_need_save_defines(false);
 }
     
 
@@ -1850,20 +1850,31 @@ string get_settings(DebuggerType type)
 // Trace Command Definitions
 //-----------------------------------------------------------------------
 
-static bool update_define_needed = false;
-
-static StringStringAssoc defs;
+static bool save_defines_needed = false;
+static bool load_defines_needed = true;
 
 // Call this function if command definitions have changed
-void set_need_defines(bool val)
+void set_need_save_defines(bool val)
 {
-    update_define_needed = val;
+    save_defines_needed = val;
 }
 
-bool need_defines()
+bool need_save_defines()
 {
-    return update_define_needed;
+    return save_defines_needed;
 }
+
+void set_need_load_defines(bool val)
+{
+    load_defines_needed = val;
+}
+
+bool need_load_defines()
+{
+    return load_defines_needed;
+}
+
+static StringStringAssoc defs;
 
 static bool update_define(const string& command)
 {
@@ -1904,7 +1915,7 @@ static bool update_define(const string& command)
 
 static void update_defines()
 {
-    if (!need_defines())
+    if (!need_load_defines())
 	return;
 
     StatusDelay delay("Retrieving Command Definitions");
@@ -1926,6 +1937,8 @@ static void update_defines()
 	if (!ok)
 	    return;
     }
+
+    set_need_load_defines(false);
 }
 
 // Get current definitions
@@ -2367,7 +2380,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 	XtAddCallback(name_w, XmNactivateCallback, ActivateCB, 
 		      XtPointer(record_w));
 
-	set_need_defines(true);
+	set_need_load_defines(true);
 	update_defines();
     }
 

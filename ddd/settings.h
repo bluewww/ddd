@@ -76,11 +76,15 @@ extern void register_info_button(Widget w);
 
 // Command Definitions
 
-// True if definitions might have changed
-extern bool need_defines();
+// True if definitions must be reloaded
+extern bool need_load_defines();
 
 // Call this function if command definitions have changed
-extern void set_need_defines(bool val = true);
+extern void set_need_load_defines(bool val = true);
+extern void set_need_save_defines(bool val = true);
+
+// True if definitions must be saved
+extern bool need_save_defines();
 
 // Get current definitions
 extern string get_defines(DebuggerType type);

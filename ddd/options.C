@@ -1702,7 +1702,7 @@ bool save_options(unsigned long flags)
     string xdb_settings = app_data.xdb_settings;
     string jdb_settings = app_data.jdb_settings;
 
-    if (need_settings() || need_defines())
+    if (need_settings() || need_save_defines())
     {
 	string settings = get_settings(gdb->type()) + get_defines(gdb->type());
 	settings.gsub(app_data.auto_command_prefix, "@AUTO@");

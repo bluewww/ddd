@@ -716,7 +716,7 @@ void send_gdb_command(string cmd, Widget origin,
 	}
 
 	if (is_define_cmd(cmd))
-	    set_need_defines(true);
+	    set_need_save_defines(true);
 
 	plus_cmd_data->refresh_breakpoints = false;
 	plus_cmd_data->refresh_addr        = false;
