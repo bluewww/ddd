@@ -8,11 +8,10 @@ this=`basename $0`
 echo "$this: setting up DDD from CVS..."
 
 # Set up configure scripts.
-# Note: no `--include-deps': dependencies are generated in `.deps/' subdirs.
 # Note: no `--copy': config scripts are created as symbolic links.
 (cd ddd && aclocal)
 autoconf -l ddd
-automake --gnu --add-missing --verbose
+automake --include-deps --gnu --add-missing --verbose
 (cd ddd && autoconf && automake --foreign --add-missing --verbose)
 (cd vsllib && autoconf -l ../ddd && automake --foreign --verbose)
 (cd themes && autoconf -l ../ddd && automake --foreign --verbose)
