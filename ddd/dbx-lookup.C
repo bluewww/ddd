@@ -36,6 +36,7 @@ char dbx_lookup_rcsid[] =
 #include "dbx-lookup.h"
 
 #include "StringSA.h"
+#include "cook.h"
 #include "ddd.h"
 #include "post.h"
 #include "misc.h"
