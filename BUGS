@@ -146,10 +146,9 @@ Volunteers for fixing these and other bugs are welcome!
 
 322*Finish Plots:
     - Show diagnostic if Gnuplot as a whole failed
-    - Add menu for printing
+    - Finish printing: Printing a plot must select the appropriate display
     - Add menu for line styles
     - Add Gnuplot console
-    - Make swallowing (decorating) optional
     - Document it all
 
 330 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
