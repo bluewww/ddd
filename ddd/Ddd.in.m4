@@ -3796,6 +3796,22 @@ WIDGET(Themes)\n\
 \n\
 This panel controls how values are to be displayed by DDD.\n\
 \n\
+Each EMPH(theme) is a visual modifier that can be applied on \
+several expressions.\n\
+The toggle button controls whether a theme is active or not.\n\
+\n\
+If a theme is active, it is applied on all expressions that match one\n\
+of the given patterns.\n\
+Patterns are separated by SAMP(;) and contain shell-like metacharacters:\n\
+ITEM SAMP(*) matches any sequence of characters\n\
+ITEM SAMP(?) matches any single character\n\
+ITEM SAMP(\133VAR(set)\135) matches any character in VAR(set)\n\
+ITEM SAMP(\133!VAR(set)\135) matches any character not in the VAR(set)\n\
+ITEM SAMP(\1330-9a-zA-Z_\135) is the set of characters allowed \
+in C identifiers.\n\
+To suppress the special syntactic significance of any metacharacter\n\
+and match the character exactly, precede it with SAMP(\\).\n\
+\n\
 Click on LBL(?) to get further information on the specific theme.\n\
 \n\
 Click on LBL(Apply) to apply changed text settings.\n\

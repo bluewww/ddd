@@ -239,14 +239,7 @@ The simplest way to compile DDD is:
      the DDD WWW page `http://www.gnu.org/software/ddd/' for
      patches, people, and pointers.
 
- 11. Optionally, type
- 
-	$ make strip
-	
-     to reduce the size of the `ddd' executable by stripping the
-     debugging information.
-
- 12. Type
+ 11. Type
  
 	$ make install
 	
@@ -259,15 +252,15 @@ The simplest way to compile DDD is:
      See `Installation Names', below, on how to configure DDD to use
      other locations and names.
 
- 13. This distribution also comes with documentation in PostScript,
+ 12. This distribution also comes with documentation in PostScript,
      PDF, and HTML format.  You will find these files in the `doc/'
      subdirectory.  Feel free to install them in some public place.
 
- 14. If you have a `Ddd' app-defaults file installed from a previous
+ 13. If you have a `Ddd' app-defaults file installed from a previous
      DDD version, this file will *override* the built-in DDD settings
      and cause major problems.  Remove it.
 
- 15. Like every good X citizen, DDD comes with an application defaults
+ 14. Like every good X citizen, DDD comes with an application defaults
      file, named `ddd/Ddd'.  By default, this file is already compiled
      into DDD, so you need not install it.
 
@@ -280,7 +273,7 @@ The simplest way to compile DDD is:
      such that `Ddd' is not compiled into DDD), copy `Ddd' to a place
      where app-defaults files are commonly found.
 
- 16. You can remove the program binaries, libraries and object files
+ 15. You can remove the program binaries, libraries and object files
      from the source directory by typing
      
 	$ make clean
@@ -300,7 +293,7 @@ The simplest way to compile DDD is:
      instead.  (There is also `make ultraclean' that removes *every*
      derived file; don't use it unless you know what you do.)
 
- 17. You can remove DDD from your system by typing
+ 16. You can remove DDD from your system by typing
  
 	$ make uninstall
 
