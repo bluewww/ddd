@@ -2005,22 +2005,6 @@ string SourceView::get_word_at_pos(Widget text_w,
 // Create GDB requests and evaluate replies
 //----------------------------------------------------------------------------
 
-// ***************************************************************************
-//
-void SourceView::refresh_bpsSQ ()
-{
-    gdb->send_question ("info breakpoints", refresh_bpsOQC, 0);
-}
-
-// ***************************************************************************
-//
-void SourceView::refresh_bpsOQC (const string& answer, void *)
-{
-    string ans = answer;
-    process_info_bp (ans);
-}
-
-
 //----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------

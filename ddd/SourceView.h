@@ -170,22 +170,12 @@ class SourceView {
 				  XmTextPosition& endpos);
 
     //-----------------------------------------------------------------------
-    // Anfragen stellen und auswerten
-    //-----------------------------------------------------------------------
-public:
-    // Aktualisiert Breakpoint-Anzeige ('info breakpoints').
-    //
-    static void refresh_bpsSQ ();
-private:
-    static void refresh_bpsOQC (const string&, void*);
-
-    //-----------------------------------------------------------------------
     // Aktions-Prozeduren
     //-----------------------------------------------------------------------
-    static void srcpopupAct (Widget, XEvent*, String*, Cardinal*);
-    static void startSelectWordAct (Widget, XEvent*, String*, Cardinal*);
-    static void endSelectWordAct (Widget, XEvent*, String*, Cardinal*);
-    static void updateGlyphsAct (Widget, XEvent*, String*, Cardinal*);
+    static void srcpopupAct       (Widget, XEvent*, String*, Cardinal*);
+    static void startSelectWordAct(Widget, XEvent*, String*, Cardinal*);
+    static void endSelectWordAct  (Widget, XEvent*, String*, Cardinal*);
+    static void updateGlyphsAct   (Widget, XEvent*, String*, Cardinal*);
 
     //-----------------------------------------------------------------------
     // Timer-Prozeduren
