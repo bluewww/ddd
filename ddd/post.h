@@ -38,16 +38,17 @@
 
 // Error handling
 
-// In the following functions, ORIGIN indicates some widget
-// which originated the command.  Any subsequent dialogs
-// are positioned next to ORIGIN.  If ORIGIN is omitted,
-// the widget executing the last command is used.
-extern void post_gdb_busy(Widget origin = 0);
-extern void post_gdb_message(string text, Widget origin = 0);
-extern void post_gdb_yn(string text, Widget origin = 0);
-extern void post_gdb_died(string reason, int gdb_status, Widget origin = 0);
-extern void post_error(string text, String name = 0, Widget origin = 0);
-extern void post_warning(string text, String name = 0, Widget origin = 0);
+// In the following functions, ORIGIN indicates some widget which
+// originated the command.  Any subsequent dialogs are positioned next
+// to ORIGIN.  If ORIGIN is omitted, the widget executing the last
+// command is used.  Each function returns the created, managed, and
+// raised widget, or 0 if no widget was shown.
+extern Widget post_gdb_busy(Widget origin = 0);
+extern Widget post_gdb_message(string text, Widget origin = 0);
+extern Widget post_gdb_yn(string text, Widget origin = 0);
+extern Widget post_gdb_died(string reason, int gdb_status, Widget origin = 0);
+extern Widget post_error(string text, String name = 0, Widget origin = 0);
+extern Widget post_warning(string text, String name = 0, Widget origin = 0);
 
 // General yes/no widget
 extern Widget yn_dialog;

@@ -79,11 +79,11 @@ void YnCB(Widget dialog,
 	XtUnmanageChild(yn_dialog);
 }
 
-void post_gdb_yn(string question, Widget w)
+Widget post_gdb_yn(string question, Widget w)
 {
     strip_final_blanks(question);
     if (question == "")
-	return;
+	return 0;
 
     if (yn_dialog)
 	DestroyWhenIdle(yn_dialog);
@@ -93,6 +93,9 @@ void post_gdb_yn(string question, Widget w)
 
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+    MString mquestion = rm(question);
+    XtSetArg(args[arg], XmNmessageString, mquestion.xmstring()); arg++;
+
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 					      "yn_dialog", args, arg));
     Delay::register_shell(yn_dialog);
@@ -106,32 +109,30 @@ void post_gdb_yn(string question, Widget w)
     XmAddWMProtocolCallback(XtParent(yn_dialog), WM_DELETE_WINDOW, 
 			    YnCB, (caddr_t)"no");
 
-    MString mquestion = rm(question);
-    XtVaSetValues (yn_dialog, XmNmessageString, mquestion.xmstring(), NULL);
-
     manage_and_raise(yn_dialog);
+    return yn_dialog;
 }
 
-void post_gdb_busy(Widget w)
+Widget post_gdb_busy(Widget w)
 {
     if (ddd_is_exiting)
-	return;
+	return 0;
 
     static Widget busy_dialog = 0;
     if (busy_dialog)
 	DestroyWhenIdle(busy_dialog);
 
-    busy_dialog = 
-	verify(XmCreateWorkingDialog (find_shell(w), 
-				      "busy_dialog", NULL, 0));
+    busy_dialog = verify(XmCreateWorkingDialog(find_shell(w), "busy_dialog", 
+					       NULL, 0));
     Delay::register_shell(busy_dialog);
-    XtUnmanageChild(XmMessageBoxGetChild 
-		    (busy_dialog, XmDIALOG_CANCEL_BUTTON));
+    XtUnmanageChild(XmMessageBoxGetChild(busy_dialog, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(busy_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+
     manage_and_raise(busy_dialog);
+    return busy_dialog;
 }
 
-void post_gdb_died(string reason, int gdb_status, Widget w)
+Widget post_gdb_died(string reason, int gdb_status, Widget w)
 {
     strip_final_blanks(reason);
 
@@ -143,13 +144,13 @@ void post_gdb_died(string reason, int gdb_status, Widget w)
 	&& (exit_status == EXIT_SUCCESS || reason.contains("Exit 0")))
     {
 	_DDDExitCB(find_shell(w), XtPointer(EXIT_SUCCESS), 0);
-	return;
+	return 0;
     }
 
     if (ddd_is_exiting)
     {
 	cerr << reason << "\n";
-	return;
+	return 0;
     }
 
     Arg args[10];
@@ -191,62 +192,64 @@ void post_gdb_died(string reason, int gdb_status, Widget w)
 
     Delay::register_shell(died_dialog);
     manage_and_raise(died_dialog);
+    return died_dialog;
 }
 
-void post_gdb_message(string text, Widget w)
+Widget post_gdb_message(string text, Widget w)
 {
     strip_final_blanks(text);
     if (text == "")
-	return;
+	return 0;
 
     if (ddd_is_exiting)
     {
 	cerr << ddd_NAME << ": " << text << "\n";
-	return;
+	return 0;
     }
 
     if (gdb->isReadyWithPrompt())
     {
 	gdb_out("\r" + text + "\n" + gdb->prompt());
-	return;
+	return 0;
     }
 
     static Widget gdb_message_dialog = 0;
     if (gdb_message_dialog)
 	DestroyWhenIdle(gdb_message_dialog);
-    gdb_message_dialog = 
-	verify(XmCreateWarningDialog (find_shell(w), 
-				      "gdb_message_dialog", NULL, 0));
-    Delay::register_shell(gdb_message_dialog);
-    XtUnmanageChild (XmMessageBoxGetChild 
-		     (gdb_message_dialog, XmDIALOG_CANCEL_BUTTON));
-    XtAddCallback (gdb_message_dialog,
-		   XmNhelpCallback,
-		   ImmediateHelpCB,
-		   NULL);
+
+
+    Arg args[10];
+    int arg = 0;
 
     MString mtext = rm(text);
-    XtVaSetValues (gdb_message_dialog,
-		   XmNmessageString, mtext.xmstring(),
-		   NULL);
+    XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
+
+    gdb_message_dialog = 
+	verify(XmCreateWarningDialog(find_shell(w), "gdb_message_dialog",
+				     args, arg));
+    Delay::register_shell(gdb_message_dialog);
+    XtUnmanageChild(XmMessageBoxGetChild(gdb_message_dialog, 
+					 XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback(gdb_message_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
 
     manage_and_raise(gdb_message_dialog);
+    return gdb_message_dialog;
 }
 
-void post_error(string text, String name, Widget w)
+Widget post_error(string text, String name, Widget w)
 {
     strip_final_blanks(text);
     if (ddd_is_exiting)
     {
 	cerr << ddd_NAME << ": " << text << "\n";
-	return;
+	return 0;
     }
 
 #if 0
     if (status_w && !text.contains('\n'))
     {
 	set_status(text);
-	return;
+	return 0;
     }
 #endif
 
@@ -256,36 +259,36 @@ void post_error(string text, String name, Widget w)
     static Widget ddd_error = 0;
     if (ddd_error)
 	DestroyWhenIdle(ddd_error);
-    ddd_error = 
-	verify(XmCreateErrorDialog (find_shell(w), name, NULL, 0));
-    Delay::register_shell(ddd_error);
-    XtUnmanageChild (XmMessageBoxGetChild 
-		     (ddd_error, XmDIALOG_CANCEL_BUTTON));
-    XtAddCallback (ddd_error, XmNhelpCallback, ImmediateHelpCB, NULL);
+
+    Arg args[10];
+    int arg = 0;
 
     MString mtext = rm(text);
-    XtVaSetValues (ddd_error,
-		   XmNmessageString, mtext.xmstring(),
-		   NULL);
+    XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
 
-    XtManageChild (ddd_error);
-    raise_shell(ddd_error);
+    ddd_error = verify(XmCreateErrorDialog(find_shell(w), name, args, arg));
+    Delay::register_shell(ddd_error);
+    XtUnmanageChild(XmMessageBoxGetChild(ddd_error, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback(ddd_error, XmNhelpCallback, ImmediateHelpCB, NULL);
+
+    manage_and_raise(ddd_error);
+    return ddd_error;
 }
 
-void post_warning(string text, String name, Widget w)
+Widget post_warning(string text, String name, Widget w)
 {
     strip_final_blanks(text);
     if (ddd_is_exiting)
     {
 	cerr << ddd_NAME << ": warning: " << text << "\n";
-	return;
+	return 0;
     }
 
 #if 0
     if (status_w && !text.contains('\n'))
     {
 	set_status(text);
-	return;
+	return 0;
     }
 #endif
 
@@ -295,18 +298,19 @@ void post_warning(string text, String name, Widget w)
     static Widget ddd_warning = 0;
     if (ddd_warning)
 	DestroyWhenIdle(ddd_warning);
-    ddd_warning = 
-	verify(XmCreateWarningDialog (find_shell(w), name, NULL, 0));
-    Delay::register_shell(ddd_warning);
-    XtUnmanageChild (XmMessageBoxGetChild 
-		     (ddd_warning, XmDIALOG_CANCEL_BUTTON));
-    XtAddCallback (ddd_warning, XmNhelpCallback, ImmediateHelpCB, NULL);
+
+    Arg args[10];
+    int arg = 0;
 
     MString mtext = rm(text);
-    XtVaSetValues (ddd_warning,
-		   XmNmessageString, mtext.xmstring(),
-		   NULL);
+    XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
 
-    XtManageChild(ddd_warning);
-    raise_shell(ddd_warning);
+    ddd_warning = 
+	verify(XmCreateWarningDialog(find_shell(w), name, args, arg));
+    Delay::register_shell(ddd_warning);
+    XtUnmanageChild(XmMessageBoxGetChild(ddd_warning, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback(ddd_warning, XmNhelpCallback, ImmediateHelpCB, NULL);
+
+    manage_and_raise(ddd_warning);
+    return ddd_warning;
 }
