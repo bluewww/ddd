@@ -49,6 +49,7 @@ char plotter_rcsid[] =
 #include "verify.h"
 #include "status.h"
 #include "strclass.h"
+#include "string-fun.h"
 #include "version.h"
 #include "wm.h"
 #include "AppData.h"
@@ -67,6 +68,8 @@ char plotter_rcsid[] =
 #include <Xm/AtomMgr.h>
 #include <Xm/Protocols.h>
 #include <Xm/DrawingA.h>
+#include <Xm/ScrolledW.h>
+#include <Xm/ScrollBar.h>
 #include <Xm/ToggleB.h>
 
 #define PLOT_CLASS_NAME "Gnuplot"
@@ -84,15 +87,24 @@ static void ToggleOptionCB(Widget, XtPointer, XtPointer);
 static void ToggleLogscaleCB(Widget, XtPointer, XtPointer);
 static void SetStyleCB(Widget, XtPointer, XtPointer);
 static void SetContourCB(Widget, XtPointer, XtPointer);
+static void SetViewCB(Widget, XtPointer, XtPointer);
 
 
 struct PlotWindowInfo {
-    Widget shell;
-    Widget dialog;
-    PlotAgent *plotter;
-    PlotArea *area;
-    Widget swallower;
-    bool active;
+    PlotAgent *plotter;		// The current Gnuplot instance
+    PlotArea *area;		// The area we're drawing in
+    Widget shell;		// The shell we're in
+    Widget dialog;		// The dialog
+    Widget swallower;		// The Gnuplot window
+    Widget vsb;			// Vertical scroll bar
+    Widget hsb;			// Horizontal scroll bar
+    bool active;		// True if popped up
+
+    // Constructor - just initialize
+    PlotWindowInfo()
+	: plotter(0), area(0), shell(0), dialog(0), swallower(0),
+	  vsb(0), hsb(0), active(false)
+    {}
 };
 
 
@@ -182,7 +194,7 @@ static string plot_settings(PlotWindowInfo *plot)
     plot->plotter->write(cmd.chars(), cmd.length());
 
     // Wait for settings file to be created
-    StatusDelay delay("Getting Plot Settings");
+    Delay delay;
 
     string settings;
     do {
@@ -195,7 +207,7 @@ static string plot_settings(PlotWindowInfo *plot)
     return settings;
 }
 
-static void setup_menu(PlotWindowInfo *plot)
+static void configure_plot(PlotWindowInfo *plot)
 {
     int ndim = plot->plotter->dimensions();
 
@@ -286,6 +298,26 @@ static void setup_menu(PlotWindowInfo *plot)
 	bool set = settings.contains("\nset data style " + name + "\n");
 	XmToggleButtonSetState(w, set, False);
     }
+
+    // Set scrollbars
+    manage_child(plot->hsb, ndim >= 3);
+    manage_child(plot->vsb, ndim >= 3);
+
+    int rot_x = 60;
+    int rot_z = 30;
+
+    int view_index = settings.index("set view ");
+    if (view_index >= 0)
+    {
+	// `set view <rot_x> {,{<rot_z>}{,{<scale>}{,<scale_z>}}}'
+	string view_setting = settings.after("set view ");
+	rot_x = atoi(view_setting);
+	view_setting = view_setting.after(", ");
+	rot_z = atoi(view_setting);
+    }
+
+    XtVaSetValues(plot->vsb, XmNvalue, rot_x, NULL);
+    XtVaSetValues(plot->hsb, XmNvalue, rot_z, NULL);
 }
 
 
@@ -317,10 +349,10 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
 
 	if (!plot->active)
 	{
+	    configure_plot(plot);
+
 	    XtPopup(plot->shell, XtGrabNone);
 	    plot->active = true;
-
-	    setup_menu(plot);
 	}
 
 	XtRemoveCallback(swallower, XtNwindowCreatedCallback, 
@@ -403,11 +435,11 @@ static void GetPlotHP(Agent *, void *client_data, void *call_data)
 
     if (!plot->active)
     {
+	// Setup menu
+	configure_plot(plot);
+
 	XtPopup(plot->shell, XtGrabNone);
 	plot->active = true;
-
-	// Setup menu
-	setup_menu(plot);
     }
 
     // Pass the received commands to the plot area
@@ -440,11 +472,6 @@ static PlotWindowInfo *new_decoration(const string& name)
     if (plot == 0)
     {
 	plot = new PlotWindowInfo;
-	plot->shell     = 0;
-	plot->dialog    = 0;
-	plot->plotter   = 0;
-	plot->area      = 0;
-	plot->swallower = 0;
 
 	// Create decoration windows
 	Arg args[10];
@@ -471,24 +498,56 @@ static PlotWindowInfo *new_decoration(const string& name)
 	MMaddCallbacks(menubar, XtPointer(plot));
 	MMaddHelpCallback(menubar, ImmediateHelpCB);
 
+	arg = 0;
+	XtSetArg(args[arg], XmNscrollingPolicy, XmAPPLICATION_DEFINED); arg++;
+	XtSetArg(args[arg], XmNvisualPolicy,    XmVARIABLE);            arg++;
+	Widget scroll = 
+	    XmCreateScrolledWindow(main_window, "scroll", args, arg);
+	XtManageChild(scroll);
+
+	// Create work window
+	Widget work;
 	if (app_data.builtin_plot)
 	{
 	    arg = 0;
-	    Widget area = 
-		XmCreateDrawingArea(main_window, PLOT_AREA_NAME, args, arg);
-	    XtManageChild(area);
+	    work = XmCreateDrawingArea(scroll, PLOT_AREA_NAME, args, arg);
+	    XtManageChild(work);
 
 	    plot->area = 
-		new PlotArea(area, make_font(app_data, FixedWidthDDDFont));
-	    XtVaSetValues(area, XmNuserData, XtPointer(plot->area), NULL);
+		new PlotArea(work, make_font(app_data, FixedWidthDDDFont));
+	    XtVaSetValues(work, XmNuserData, XtPointer(plot->area), NULL);
 	}
 	else
 	{
 	    arg = 0;
-	    plot->swallower = 
+	    work = plot->swallower = 
 		XtCreateManagedWidget(SWALLOWER_NAME, swallowerWidgetClass, 
-				      main_window, args, arg);
+				      scroll, args, arg);
 	}
+
+	// Create scroll bars
+	const int slider_size = 20;
+
+	arg = 0;
+	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL);      arg++;
+	XtSetArg(args[arg], XmNminimum,     0);                 arg++;
+	XtSetArg(args[arg], XmNmaximum,     360 + slider_size); arg++;
+	plot->hsb = XmCreateScrollBar(scroll, "hsb", args, arg);
+	XtManageChild(plot->hsb);
+
+	arg = 0;
+	XtSetArg(args[arg], XmNorientation, XmVERTICAL);        arg++;
+	XtSetArg(args[arg], XmNminimum,     0);                 arg++;
+	XtSetArg(args[arg], XmNmaximum,     180 + slider_size); arg++;
+	plot->vsb = XmCreateScrollBar(scroll, "vsb", args, arg);
+	XtManageChild(plot->vsb);
+
+	XtAddCallback(plot->hsb, XmNvalueChangedCallback,
+		      SetViewCB, XtPointer(plot));
+	XtAddCallback(plot->vsb, XmNvalueChangedCallback,
+		      SetViewCB, XtPointer(plot));
+
+	XmScrolledWindowSetAreas(scroll, plot->hsb, plot->vsb, work);
 
 	Delay::register_shell(plot->shell);
 	InstallButtonTips(plot->shell);
@@ -715,6 +774,22 @@ static void SetContourCB(Widget w, XtPointer client_data, XtPointer)
     plot->plotter->write(cmd.chars(), cmd.length());
 }
 
+static void SetViewCB(Widget, XtPointer client_data, XtPointer)
+{
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+
+    int rot_x = 60;
+    int rot_z = 30;
+
+    XtVaGetValues(plot->vsb, XmNvalue, &rot_x, NULL);
+    XtVaGetValues(plot->hsb, XmNvalue, &rot_z, NULL);
+
+    string cmd = 
+	"set view " + itostring(rot_x) + ", " + itostring(rot_z) + "\n";
+    cmd += "replot\n";
+
+    plot->plotter->write(cmd.chars(), cmd.length());
+}
 
 //-------------------------------------------------------------------------
 // Status line
