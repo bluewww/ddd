@@ -1489,7 +1489,8 @@ Click the @bf right mouse button @rm to get a popup menu:\n\
 !-----------------------------------------------------------------------------
 
 Ddd*line_popup.set.labelString:		Set Breakpoint
-Ddd*line_popup.set_temp.labelString:	Set temporary Breakpoint
+Ddd*line_popup.set_temp.labelString:	Set Temporary Breakpoint
+Ddd*line_popup.temp_n_cont.labelString:	Set Temporary and Continue
 
 Ddd*bp_popup.disable.labelString:	Disable Breakpoint
 Ddd*bp_popup.condition.labelString:	Set Condition

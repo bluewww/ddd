@@ -103,8 +103,9 @@ XtActionsRec SourceView::actions [] = {
 struct LineItms { enum Itms {SetBP, SetTempBP}; };
 MMDesc SourceView::line_popup[] =
 {
-    {"set",      MMPush, {SourceView::line_popup_setCB}},
-    {"set_temp", MMPush, {SourceView::line_popup_set_tempCB}},
+    {"set",         MMPush, {SourceView::line_popup_setCB}},
+    {"set_temp",    MMPush, {SourceView::line_popup_set_tempCB}},
+    {"temp_n_cont", MMPush, {SourceView::line_popup_temp_n_contCB}},
     MMEnd
 };
 
@@ -142,17 +143,44 @@ MMDesc SourceView::bp_area[] =
 };
 
 
-struct TextItms { enum Itms {Print, Disp, Dummy, Lookup, Break, Clear}; };
+struct TextItms { 
+    enum Itms {
+	Print, 
+	Disp, 
+	Dummy1, 
+	PrintRef, 
+	DispRef,
+	Dummy2,
+	Lookup, 
+	Break,
+	Clear
+    };
+};
+
 static String text_cmd_labels[] =
-{"print ", "display ", "", "lookup " , "break ", "clear "};
+{
+    "print ", 
+    "display ", 
+    "", 
+    "print ", 
+    "display ", 
+    "", 
+    "lookup " , 
+    "break ", 
+    "clear "
+};
+
 MMDesc SourceView::text_popup[] =
 {
-    {"print",  MMPush, {SourceView::text_popup_printCB}},
-    {"disp",   MMPush, {SourceView::text_popup_dispCB}},
+    {"print",      MMPush, {SourceView::text_popup_printCB}},
+    {"disp",       MMPush, {SourceView::text_popup_dispCB}},
     MMSep,
-    {"lookup", MMPush, {SourceView::text_popup_lookupCB}},
-    {"break",  MMPush, {SourceView::text_popup_breakCB}},
-    {"clear",  MMPush, {SourceView::text_popup_clearCB}},
+    {"print_ref",  MMPush, {SourceView::text_popup_print_refCB}},
+    {"disp_ref",   MMPush, {SourceView::text_popup_disp_refCB}},
+    MMSep,
+    {"lookup",     MMPush, {SourceView::text_popup_lookupCB}},
+    {"break",      MMPush, {SourceView::text_popup_breakCB}},
+    {"clear",      MMPush, {SourceView::text_popup_clearCB}},
     MMEnd
 };
 
@@ -273,7 +301,15 @@ void SourceView::line_popup_set_tempCB (Widget,
     }
 }
 
-
+// ***************************************************************************
+//
+void SourceView::line_popup_temp_n_contCB (Widget w,
+					   XtPointer client_data,
+					   XtPointer call_data)
+{
+    line_popup_set_tempCB(w, client_data, call_data);
+    gdb_command("cont");
+}
 
 // ***************************************************************************
 //
@@ -362,6 +398,14 @@ void SourceView::text_popup_printCB (Widget, XtPointer client_data, XtPointer)
     gdb_command("print " + *word_ptr, source_view_w);
 }
 
+void SourceView::text_popup_print_refCB (Widget, 
+					 XtPointer client_data, XtPointer)
+{
+    string* word_ptr = (string*)client_data;
+    assert(word_ptr->length() > 0);
+
+    gdb_command("print *(" + *word_ptr + ")", source_view_w);
+}
 
 
 // ***************************************************************************
@@ -374,6 +418,14 @@ void SourceView::text_popup_dispCB (Widget, XtPointer client_data, XtPointer)
     gdb_command("graph display " + *word_ptr, source_view_w);
 }
 
+void SourceView::text_popup_disp_refCB (Widget, 
+					XtPointer client_data, XtPointer)
+{
+    string* word_ptr = (string*)client_data;
+    assert(word_ptr->length() > 0);
+
+    gdb_command("graph display *(" + *word_ptr + ")", source_view_w);
+}
 
 // ***************************************************************************
 //
@@ -2072,6 +2124,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	XtAddCallback(shell, XtNpopdownCallback, DestroyThisCB, shell);
 
 	MString current_arg(word, "tt");
+	MString current_ref_arg("*" + word, "tt");
 
 	Arg args[5];
 	int arg = 0;
@@ -2096,16 +2149,28 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	XtSetValues(text_popup[TextItms::Disp].widget, args, arg);
 
 	arg = 0;
+	label = MString(text_cmd_labels[TextItms::PrintRef]) + current_ref_arg;
+	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
+	XtSetValues(text_popup[TextItms::PrintRef].widget, args, arg);
+
+	arg = 0;
+	label = MString(text_cmd_labels[TextItms::DispRef]) + current_ref_arg;
+	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
+	XtSetValues(text_popup[TextItms::DispRef].widget, args, arg);
+
+	arg = 0;
 	label = MString(text_cmd_labels[TextItms::Lookup]) + current_arg;
 	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Lookup].widget, args, arg);
 
 	bool sens = (word.length() > 0);
-	XtSetSensitive (text_popup[TextItms::Break].widget,  sens);
-	XtSetSensitive (text_popup[TextItms::Clear].widget,  sens);
-	XtSetSensitive (text_popup[TextItms::Print].widget,  sens);
-	XtSetSensitive (text_popup[TextItms::Disp].widget,   sens);
-	XtSetSensitive (text_popup[TextItms::Lookup].widget, sens);
+	XtSetSensitive (text_popup[TextItms::Break].widget,    sens);
+	XtSetSensitive (text_popup[TextItms::Clear].widget,    sens);
+	XtSetSensitive (text_popup[TextItms::Print].widget,    sens);
+	XtSetSensitive (text_popup[TextItms::Disp].widget,     sens);
+	XtSetSensitive (text_popup[TextItms::PrintRef].widget, sens);
+	XtSetSensitive (text_popup[TextItms::DispRef].widget,  sens);
+	XtSetSensitive (text_popup[TextItms::Lookup].widget,   sens);
 
 	XmMenuPosition (text_popup_w, event);
 	XtManageChild (text_popup_w);

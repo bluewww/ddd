@@ -72,26 +72,29 @@ class SourceView {
     static void add_to_history(string file_name, int line);
     static void goto_entry(string entry);
 
-    static void other_fileCB          (Widget, XtPointer, XtPointer);
-    static void set_source_argCB      (Widget, XtPointer, XtPointer);
+    static void other_fileCB             (Widget, XtPointer, XtPointer);
+    static void set_source_argCB         (Widget, XtPointer, XtPointer);
 
-    static void line_popup_setCB      (Widget, XtPointer, XtPointer);
-    static void line_popup_set_tempCB (Widget, XtPointer, XtPointer);
-    static void bp_popup_infoCB       (Widget, XtPointer, XtPointer);
-    static void bp_popup_deleteCB     (Widget, XtPointer, XtPointer);
-    static void bp_popup_disableCB    (Widget, XtPointer, XtPointer);
+    static void line_popup_setCB         (Widget, XtPointer, XtPointer);
+    static void line_popup_set_tempCB    (Widget, XtPointer, XtPointer);
+    static void line_popup_temp_n_contCB (Widget, XtPointer, XtPointer);
+    static void bp_popup_infoCB          (Widget, XtPointer, XtPointer);
+    static void bp_popup_deleteCB        (Widget, XtPointer, XtPointer);
+    static void bp_popup_disableCB       (Widget, XtPointer, XtPointer);
 
-    static void text_popup_breakCB    (Widget, XtPointer, XtPointer);
-    static void text_popup_clearCB    (Widget, XtPointer, XtPointer);
-    static void text_popup_printCB    (Widget, XtPointer, XtPointer);
-    static void text_popup_dispCB     (Widget, XtPointer, XtPointer);
-    static void text_popup_lookupCB   (Widget, XtPointer, XtPointer);
+    static void text_popup_printCB       (Widget, XtPointer, XtPointer);
+    static void text_popup_dispCB        (Widget, XtPointer, XtPointer);
+    static void text_popup_print_refCB   (Widget, XtPointer, XtPointer);
+    static void text_popup_disp_refCB    (Widget, XtPointer, XtPointer);
+    static void text_popup_lookupCB      (Widget, XtPointer, XtPointer);
+    static void text_popup_breakCB       (Widget, XtPointer, XtPointer);
+    static void text_popup_clearCB       (Widget, XtPointer, XtPointer);
 
-    static void NewBreakpointDCB      (Widget, XtPointer, XtPointer);
-    static void NewBreakpointCB       (Widget, XtPointer, XtPointer);
+    static void NewBreakpointDCB         (Widget, XtPointer, XtPointer);
+    static void NewBreakpointCB          (Widget, XtPointer, XtPointer);
 
-    static void LookupBreakpointCB    (Widget, XtPointer, XtPointer);
-    static void BreakpointCmdCB       (Widget, XtPointer, XtPointer);
+    static void LookupBreakpointCB       (Widget, XtPointer, XtPointer);
+    static void BreakpointCmdCB          (Widget, XtPointer, XtPointer);
 
     static void EditBreakpointIgnoreCountDCB (Widget, XtPointer, XtPointer);
     static void EditBreakpointIgnoreCountCB  (Widget, XtPointer, XtPointer);
