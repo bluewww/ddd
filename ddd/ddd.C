@@ -4879,7 +4879,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNset,                True); arg++;
 
     MString spaces("   ");
-    if (lesstif_version <= 87)
+    if (lesstif_version < 1000)
     {
 	XtSetArg(args[arg], XmNlabelString, spaces.xmstring()); arg++;
     }
