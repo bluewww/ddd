@@ -290,6 +290,11 @@
 #define XtCBumpDisplays          "BumpDisplays"
 #define XtNhideInactiveDisplays  "hideInactiveDisplays"
 #define XtCHideInactiveDisplays  "HideInactiveDisplays"
+#define XtNshowBaseDisplayTitles "showBaseDisplayTitles"
+#define XtNshowDependentDisplayTitles "showDependentDisplayTitles"
+#define XtCShowDisplayTitles     "ShowDisplayTitles"
+#define XtNclusterBaseDisplays   "clusterBaseDisplays"
+#define XtCClusterDisplays       "ClusterDisplays"
 #define XtNstatusHistorySize     "statusHistorySize"
 #define XtCHistorySize           "HistorySize"
 #define XtNpopdownHistorySize    "popsownHistorySize"
@@ -479,6 +484,9 @@ struct AppData {
     Boolean   expand_repeated_values;
     Boolean   bump_displays;
     Boolean   hide_inactive_displays;
+    Boolean   show_base_display_titles;
+    Boolean   show_dependent_display_titles;
+    Boolean   cluster_base_displays;
     Cardinal  status_history_size;
     Cardinal  popdown_history_size;
     Boolean   sort_popdown_history;

@@ -1440,6 +1440,36 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNshowBaseDisplayTitles,
+	XtCShowDisplayTitles,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, show_base_display_titles),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNshowDependentDisplayTitles,
+	XtCShowDisplayTitles,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, show_dependent_display_titles),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNclusterBaseDisplays,
+	XtCClusterDisplays,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, cluster_base_displays),
+	XmRImmediate,
+	XtPointer(False)
+    },
+
+    {
 	XtNstatusHistorySize,
 	XtCHistorySize,
 	XtRCardinal,
