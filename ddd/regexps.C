@@ -50,11 +50,33 @@ char regexps_rcsid[] =
 
 static int rx_matcher(void *data, const char *s, int len, int pos)
 {
-    assert(strlen((char *)data) == DATA_LEN);
+#ifndef FLEX_SCANNER
+    int required_len = len - pos + DATA_LEN;
+    if (required_len > MAX_LEX_TOKEN_SIZE)
+    {
+	static int max_reported_len = 0;
+	if (required_len > max_reported_len)
+	{
+	    cerr << "Warning: LEX buffer overflow.\n";
+	    cerr << "Please raise the value of "
+		"MAX_LEX_TOKEN_SIZE in `ddd/rxscan.L'\n"
+		"from " << MAX_LEX_TOKEN_SIZE << " to " 
+		 << required_len << " or more and recompile.  "
+		"Better yet, use FLEX instead of LEX.\n";
+	    max_reported_len = required_len;
+	}
+
+	// Only look at the first MAX_LEX_TOKEN_SIZE characters
+	len = pos + MAX_LEX_TOKEN_SIZE - DATA_LEN;
+	assert(len - pos + DATA_LEN == MAX_LEX_TOKEN_SIZE);
+    }
+#endif
 
     the_prefix = (char *)data;
     the_text   = s + pos;
     the_length = len - pos;
+
+    assert(strlen(the_prefix) == DATA_LEN);
 
     // Restart the scanner
     reset_scanner();

@@ -30,6 +30,10 @@
 char rxscan_rcsid[] = 
     "$Id$";
 
+// Maximal length of a token when using lex.
+#define MAX_LEX_TOKEN_SIZE 8192
+
+
 static const char *the_prefix;	// Prefix
 static const char *the_text;	// Pointer to next text character
 static int the_length;		// Number of characters to read
@@ -126,6 +130,20 @@ extern "C" int yywrap()
 #define RETURN(x) return x ? 1 : 0
 
 #endif
+
+
+
+// Buffer size.  FLEX can match tokens of arbitrary length (all praise
+// FLEX!), but classical LEX has a limit of YYLMAX characters.
+// Attempt to raise this to some larger value.
+#if !defined(FLEX_SCANNER) && defined(YYLMAX)
+#if YYLMAX < MAX_LEX_TOKEN_SIZE
+#undef YYLMAX
+#define YYLMAX MAX_LEX_TOKEN_SIZE
+#endif
+#endif
+
+
 
 // Anything not in the list is `not matched'
 #ifdef ECHO
