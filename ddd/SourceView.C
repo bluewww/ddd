@@ -3770,6 +3770,7 @@ void SourceView::lookup(string s, bool silent)
 	}
 
 	case DBX:
+	case JDB:
 	{
 	    string pos = dbx_lookup(s, silent);
 	    if (pos != "")
@@ -3784,9 +3785,6 @@ void SourceView::lookup(string s, bool silent)
 	    gdb_command(c);
 	    break;
 	}
-
-	case JDB:
-	    break;		// FIXME
 	}
     }
 }

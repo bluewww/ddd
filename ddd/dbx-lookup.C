@@ -44,6 +44,7 @@ char dbx_lookup_rcsid[] =
 #include "index.h"
 #include "string-fun.h"
 #include "GDBAgent.h"
+#include "SourceView.h"
 
 #include <stdlib.h>
 
@@ -70,15 +71,13 @@ string dbx_lookup(const string& func_name, bool silent)
 	break;
 
     case DBX:
+    case JDB:
 	reply = gdb_question("list " + func_name, 0, true);
 	break;
 
     case XDB:
 	reply = gdb_question("v " + func_name, 0, true);
 	break;
-
-    case JDB:
-	break;			// FIXME
     }
 
     if (reply == NO_GDB_ANSWER)
@@ -109,6 +108,12 @@ string dbx_lookup(const string& func_name, bool silent)
 	}
 	break;
 
+    case JDB:
+	line = line_of_listing(reply, silent);
+	file = source_view->line_of_cursor();
+	file = file.before(':');
+	break;
+
     case XDB:
     {
 #if RUNTIME_REGEX
@@ -130,9 +135,6 @@ string dbx_lookup(const string& func_name, bool silent)
 	}
 	break;
     }
-
-    case JDB:
-	break;			// FIXME
     }
 
     string pos = "";
@@ -200,7 +202,15 @@ int line_of_listing(string& listing, bool silent)
 
     int idx = -1;
 
-    if (idx < 0)
+    if (idx < 0 && gdb->type() == JDB)
+    {
+	// JDB issues `=>' in the listed line
+	int idx = listing.index("\t=> \t");
+	while (idx > 0 && listing[idx - 1] != '\n')
+	    idx--;
+    }
+
+    if (idx < 0 && gdb->type() == DBX)
     {
 	// SGI DBX issues `*' in column 2 before the `list'ed line.
 	// Quite useful.
@@ -212,7 +222,7 @@ int line_of_listing(string& listing, bool silent)
 	    idx = 1;
     }
 
-    if (idx < 0)
+    if (idx < 0 && gdb->type() == DBX)
     {
 	// DEC and SGI DBX issue `>' in column 1 before the current
 	// execution line.  Quite useful.
