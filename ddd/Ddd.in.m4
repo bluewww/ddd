@@ -211,9 +211,9 @@ Ddd*rHostInitCommands: stty -echo -onlcr
 ! The first line of the output must either contain a `PID' title, 
 ! or each line must begin with a process ID.
 !
-! We try the BSD style `ps -x' first, then System V `ps -ef'.  If that
+! We try the BSD style `ps x' first, then System V `ps -ef'.  If that
 ! fails, too, use plain `ps'.
-Ddd*psCommand: ps -x 2> /dev/null || ps -ef 2> /dev/null || ps
+Ddd*psCommand: ps x 2> /dev/null || ps -ef 2> /dev/null || ps
 
 
 ! The `print' command to print a postscript file.

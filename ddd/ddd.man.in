@@ -4279,7 +4279,7 @@ The command to print a postscript file.  Usually `\fBlp\fR' or
 .B "psCommand (\fPclass\fB PsCommand)"
 The command to get a list of processes.  Usually `\fBps\fR'.
 Depending on your system, useful alternate values include `\fBps
--ef\fR' and `\fBps -ux\fR'.  The first line of the output must either
+-ef\fR' and `\fBps ux\fR'.  The first line of the output must either
 contain a `\fBPID\fR' title, or each line must begin with a process
 ID.
 .br
