@@ -145,7 +145,7 @@ void setLabelList (Widget  selectionList,
 		   NULL);
 
     for (int i = 0; i < list_length; i++) 
-	if (selected[i] == true) 
+	if (selected != 0 && selected[i] == true) 
 	    XmListSelectPos(selectionList, i + 1, Boolean(notify));
 
     XtVaSetValues (selectionList,
@@ -262,6 +262,9 @@ static void freeXmStringTable (XmStringTable xmlist, int list_length)
 	XmStringFree (*xmlist);
 	xmlist++;
     }
+
+    // It seems XMLIST is already owned
+    // XtFree((char *)xmlist);
 }
 
 
