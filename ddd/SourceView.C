@@ -2435,6 +2435,9 @@ void SourceView::refresh_source_bp_disp()
     static IntIntArrayAssoc empty_bps;
     bps_in_line = empty_bps;
 
+    if (display_glyphs)
+	return;
+
     // Find all breakpoints referring to this file
     MapRef ref;
     for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
@@ -2443,55 +2446,51 @@ void SourceView::refresh_source_bp_disp()
 	    bps_in_line[bp->line_nr()] += bp->number();
     }
 
-    if (!display_glyphs)
+    // Show breakpoints in text
+    for (IntIntArrayAssocIter b_i_l_iter(bps_in_line);
+	 b_i_l_iter.ok();
+	 b_i_l_iter++)
     {
-	// Show breakpoints in text
-	for (IntIntArrayAssocIter b_i_l_iter(bps_in_line);
-	     b_i_l_iter.ok();
-	     b_i_l_iter++)
+	int line_nr = b_i_l_iter.key();
+	if (line_nr < 0 || line_nr > line_count)
+	    continue;
+
+	XmTextPosition pos = pos_of_line(line_nr);
+
+	string insert_string = "";
+
+	// Display all breakpoints in a line
+	VarIntArray& bps = bps_in_line[line_nr];
+
+	int i;
+	for (i = 0; i < bps.size(); i++)
 	{
-	    int line_nr = b_i_l_iter.key();
-	    if (line_nr < 0 || line_nr > line_count)
-		continue;
-
-	    XmTextPosition pos = pos_of_line(line_nr);
-
-	    string insert_string = "";
-
-	    // Display all breakpoints in a line
-	    VarIntArray& bps = bps_in_line[line_nr];
-
-	    int i;
-	    for (i = 0; i < bps.size(); i++)
-	    {
-		BreakPoint* bp = bp_map.get(bps[i]);
-		assert (bp);
-		insert_string += bp->enabled() ? '#' : '_';
-		insert_string += bp->number_str();
-		insert_string += bp->enabled() ? '#' : '_';
-	    }
-	    if (int(insert_string.length()) 
-		>= indent_amount(source_text_w) - 1)
-	    {
-		insert_string =
-		    insert_string.before(indent_amount(source_text_w) - 1);
-	    }
-	    else
-	    {
-		for (i = insert_string.length(); 
-		     i < indent_amount(source_text_w) - 1; i++)
-		{
-		    insert_string += current_source[pos + i];
-		}
-	    }
-
-	    assert(insert_string.length() 
-		   == unsigned(indent_amount(source_text_w) - 1));
-
-	    XmTextReplace (source_text_w, pos, 
-			   pos + indent_amount(source_text_w) - 1,
-			   (String)insert_string);
+	    BreakPoint* bp = bp_map.get(bps[i]);
+	    assert (bp);
+	    insert_string += bp->enabled() ? '#' : '_';
+	    insert_string += bp->number_str();
+	    insert_string += bp->enabled() ? '#' : '_';
 	}
+	if (int(insert_string.length()) >= indent_amount(source_text_w) - 1)
+	{
+	    insert_string = 
+		insert_string.before(indent_amount(source_text_w) - 1);
+	}
+	else
+	{
+	    for (i = insert_string.length(); 
+		 i < indent_amount(source_text_w) - 1; i++)
+	    {
+		insert_string += current_source[pos + i];
+	    }
+	}
+
+	assert(insert_string.length() 
+	       == unsigned(indent_amount(source_text_w) - 1));
+
+	XmTextReplace (source_text_w, pos, 
+		       pos + indent_amount(source_text_w) - 1,
+		       (String)insert_string);
     }
 }
 
@@ -2516,50 +2515,47 @@ void SourceView::refresh_code_bp_disp()
     static StringArray empty;
     bp_addresses = empty;
 
-    if (!display_glyphs)
+    if (display_glyphs)
+	return;
+
+    // Collect all addresses
+    MapRef ref;
+    for (BreakPoint *bp = bp_map.first(ref); bp != 0;
+	 bp = bp_map.next(ref))
     {
-	// Collect all addresses
-	MapRef ref;
+	if (bp->type() != BREAKPOINT)
+	    continue;
+
+	bp_addresses += bp->address();
+    }
+
+    // Process all bp_addresses
+    for (i = 0; i < bp_addresses.size(); i++)
+    {
+	const string& address = bp_addresses[i];
+	XmTextPosition pos = find_pc(address);
+	if (pos == XmTextPosition(-1))
+	    continue;
+
+	// Process all breakpoints at ADDRESS
+	string insert_string = "";
 	for (BreakPoint *bp = bp_map.first(ref);
 	     bp != 0;
 	     bp = bp_map.next(ref))
 	{
-	    if (bp->type() != BREAKPOINT)
-		continue;
-
-	    bp_addresses += bp->address();
-	}
-
-	// Process all bp_addresses
-	for (i = 0; i < bp_addresses.size(); i++)
-	{
-	    const string& address = bp_addresses[i];
-	    XmTextPosition pos = find_pc(address);
-	    if (pos == XmTextPosition(-1))
-		continue;
-
-	    // Process all breakpoints at ADDRESS
-	    string insert_string = "";
-	    for (BreakPoint *bp = bp_map.first(ref);
-		 bp != 0;
-		 bp = bp_map.next(ref))
+	    if (bp->address() == address)
 	    {
-		if (bp->address() == address)
-		{
-		    insert_string += bp->enabled() ? '#' : '_';
-		    insert_string += bp->number_str();
-		    insert_string += bp->enabled() ? '#' : '_';
-		}
+		insert_string += bp->enabled() ? '#' : '_';
+		insert_string += bp->number_str();
+		insert_string += bp->enabled() ? '#' : '_';
 	    }
-	    insert_string += replicate(' ', indent_amount(code_text_w));
-	    insert_string = insert_string.before(indent_amount(code_text_w));
-
-	    XmTextReplace (code_text_w, pos, pos + indent_amount(code_text_w),
-			   (String)insert_string);
 	}
-    }
+	insert_string += replicate(' ', indent_amount(code_text_w));
+	insert_string = insert_string.before(indent_amount(code_text_w));
 
-    update_glyphs();
+	XmTextReplace (code_text_w, pos, pos + indent_amount(code_text_w),
+		       (String)insert_string);
+    }
 }
 
 
