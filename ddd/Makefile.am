@@ -1844,16 +1844,18 @@ $(srcdir)/acspecial.h: $(srcdir)/configure.in
 	$(MV) $@~ $@
 
 # Special program includes
+# Note: we use `build.h' instead of `./build.h', because `./build.h'
+# breaks SGI make.
 version.h: vr.h
 	@$(CMP) vr.h $@ 2> /dev/null || ( $(CAT) vr.h > $@~ && $(MV) $@~ $@ )
-./build.h: bld.h
+build.h: bld.h
 	@$(CMP) bld.h $@ 2> /dev/null || ( $(CAT) bld.h > $@~ && $(MV) $@~ $@ )
-./host.h: $(srcdir)/host.h.in config.status
+host.h: $(srcdir)/host.h.in config.status
 	$(CAT) $(srcdir)/host.h.in | \
 	$(SED) "s%@HOST_CANONICAL@%$(host_canonical)%" | \
 	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" > $@~ && \
 	$(MV) $@~ $@
-./root.h: $(srcdir)/root.h.in config.status
+root.h: $(srcdir)/root.h.in config.status
 	$(CAT) $(srcdir)/root.h.in | \
 	$(SED) "s%@ROOT@%$(dddrootdir)%" | \
 	$(SED) "s%@ALT_ROOT@%$(pkgdatadir)%" > $@~ && \
