@@ -6158,7 +6158,7 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
     BoxSize delta  = node->space(gc) - oldRegion.space();
 
     // NODE_ORIGIN is the (old) upper left corner of NODE
-    BoxPoint node_origin = oldRegion.origin();
+    // BoxPoint node_origin = oldRegion.origin();
 
     // BUMPER is the (old) lower right corner of NODE
     BoxPoint node_bumper = oldRegion.origin() + oldRegion.space();
@@ -6179,19 +6179,16 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
 	// move R DELTA units down.
 
 	BoxPoint r_origin = r->origin(gc);
-	BoxPoint r_bumper = r->origin(gc) + r->space(gc);
+	// BoxPoint r_bumper = r->origin(gc) + r->space(gc);
 
-	if (r_bumper[X] >= node_origin[X] && r_bumper[Y] >= node_origin[Y])
-	{
-	    if (r_origin[X] > node_bumper[X] && r_origin[Y] > node_bumper[Y])
-		r->moveTo(r->pos() + delta);
-	    else if (r_origin[X] > node_bumper[X])
-		r->moveTo(r->pos() + BoxPoint(delta[X], 0));
-	    else if (r_origin[Y] > node_bumper[Y])
-		r->moveTo(r->pos() + BoxPoint(0, delta[Y]));
-	    else
-		r->moveTo(r->pos() + delta); // Overlapping nodes
-	}
+	BoxPoint r_pos = r->pos();
+
+	if (r_origin[X] > node_bumper[X])
+	    r_pos[X] += delta[X];
+	if (r_origin[Y] > node_bumper[Y])
+	    r_pos[Y] += delta[Y];
+
+	r->moveTo(r_pos);
     }
 
     // All is done - don't use default behavior.
