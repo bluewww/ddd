@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script
 
-AC_PREREQ(2.13)
-AC_INIT(pexecute.c)
+AC_PREREQ(2.57)
+AC_INIT(xmalloc.c)
 
 # This works around the fact that libtool configuration may change LD
 # for this particular configuration, but some shells, instead of
@@ -36,7 +36,9 @@ else
   libiberty_topdir="${srcdir}/.."
 fi
 AC_SUBST(libiberty_topdir)
-AC_CONFIG_AUX_DIR($libiberty_topdir)
+dnl DDD modification
+dnl AC_CONFIG_AUX_DIR($libiberty_topdir)
+AC_CONFIG_AUX_DIR(..)
 
 dnl Very limited version of automake's enable-maintainer-mode
 
@@ -69,12 +71,21 @@ if test "x$MAKEINFO" = "x"; then
     BUILD_INFO=
 else
     BUILD_INFO=info
-    case x"`$MAKEINFO --version | grep 'GNU texinfo'`" in
-      x*\ [[1-3]].* )
-	MAKEINFO="@echo $MAKEINFO is too old, 4.0 or newer required; true"
+    case "$MAKEINFO" in
+      */missing\ makeinfo*)
 	BUILD_INFO=
 	AC_MSG_WARN([
+*** Makeinfo is missing. Info documentation will not be built.])
+        ;;
+      *)
+	case x"`$MAKEINFO --version | grep 'GNU texinfo'`" in
+	  x*\ [[1-3]].* )
+	    MAKEINFO="@echo $MAKEINFO is too old, 4.0 or newer required; true"
+	    BUILD_INFO=
+	    AC_MSG_WARN([
 *** Makeinfo is too old. Info documentation will not be built.])
+	  ;;
+	esac
 	;;
     esac
 fi
@@ -99,7 +110,14 @@ dnl to call AC_CHECK_PROG.
 AC_CHECK_TOOL(AR, ar)
 AC_CHECK_TOOL(RANLIB, ranlib, :)
 
-LIB_AC_PROG_CC
+GCC_NO_EXECUTABLES
+AC_PROG_CC
+AC_PROG_CPP_WERROR
+
+if test x$GCC = xyes; then
+  ac_libiberty_warn_cflags='-W -Wall -Wtraditional -pedantic'
+fi
+AC_SUBST(ac_libiberty_warn_cflags)
 
 AC_PROG_CC_C_O
 # autoconf is lame and doesn't give us any substitution variable for this.
@@ -111,9 +129,9 @@ fi
 AC_SUBST(NO_MINUS_C_MINUS_O)
 AC_SUBST(OUTPUT_OPTION)
 
-AC_ISC_POSIX
 AC_C_CONST
 AC_C_INLINE
+AC_C_BIGENDIAN_CROSS
 
 dnl When we start using libtool:
 dnl Default to a non shared library.  This may be overridden by the
@@ -177,6 +195,7 @@ funcs="$funcs memchr"
 funcs="$funcs memcmp"
 funcs="$funcs memcpy"
 funcs="$funcs memmove"
+funcs="$funcs mempcpy"
 funcs="$funcs memset"
 funcs="$funcs mkstemps"
 funcs="$funcs putenv"
@@ -184,7 +203,10 @@ funcs="$funcs random"
 funcs="$funcs rename"
 funcs="$funcs rindex"
 funcs="$funcs setenv"
+funcs="$funcs snprintf"
 funcs="$funcs sigsetmask"
+funcs="$funcs stpcpy"
+funcs="$funcs stpncpy"
 funcs="$funcs strcasecmp"
 funcs="$funcs strchr"
 funcs="$funcs strdup"
@@ -198,6 +220,7 @@ funcs="$funcs tmpnam"
 funcs="$funcs vasprintf"
 funcs="$funcs vfprintf"
 funcs="$funcs vprintf"
+funcs="$funcs vsnprintf"
 funcs="$funcs vsprintf"
 funcs="$funcs waitpid"
 
@@ -206,19 +229,21 @@ funcs="$funcs waitpid"
 vars="sys_errlist sys_nerr sys_siglist"
 
 checkfuncs="getrusage on_exit psignal strerror strsignal sysconf times sbrk gettimeofday"
-checkfuncs="$checkfuncs pstat_getstatic pstat_getdynamic sysmp getsysinfo table sysctl"
+checkfuncs="$checkfuncs realpath canonicalize_file_name pstat_getstatic pstat_getdynamic sysmp"
+checkfuncs="$checkfuncs getsysinfo table sysctl"
 
 # These are neither executed nor required, but they help keep
 # autoheader happy without adding a bunch of text to acconfig.h.
 if test "x" = "y"; then
-  AC_CHECK_FUNCS(asprintf atexit basename bcmp bcopy bsearch bzero calloc clock)
-  AC_CHECK_FUNCS(getcwd getpagesize index insque mkstemps memchr memcmp memcpy)
-  AC_CHECK_FUNCS(memmove memset putenv random rename rindex sigsetmask)
-  AC_CHECK_FUNCS(strcasecmp setenv strchr strdup strncasecmp strrchr strstr)
-  AC_CHECK_FUNCS(strtod strtol strtoul tmpnam vasprintf vfprintf vprintf)
-  AC_CHECK_FUNCS(vsprintf waitpid getrusage on_exit psignal strerror strsignal)
-  AC_CHECK_FUNCS(sysconf times sbrk gettimeofday ffs)
-  AC_CHECK_FUNCS(pstat_getstatic pstat_getdynamic sysmp getsysinfo table sysctl)
+  AC_CHECK_FUNCS(asprintf atexit basename bcmp bcopy bsearch bzero calloc clock \
+  getcwd getpagesize index insque mkstemps memchr memcmp memcpy \
+  memmove mempcpy memset putenv random rename rindex sigsetmask \
+  strcasecmp setenv stpcpy stpncpy strchr strdup strncasecmp strrchr strstr \
+  strtod strtol strtoul tmpnam vasprintf vfprintf vprintf \
+  vsprintf waitpid getrusage on_exit psignal strerror strsignal \
+  sysconf times sbrk gettimeofday ffs snprintf vsnprintf \
+  pstat_getstatic pstat_getdynamic sysmp getsysinfo table sysctl \
+  realpath canonicalize_file_name)
   AC_DEFINE(HAVE_SYS_ERRLIST, 1, [Define if you have the sys_errlist variable.])
   AC_DEFINE(HAVE_SYS_NERR,    1, [Define if you have the sys_nerr variable.])
   AC_DEFINE(HAVE_SYS_SIGLIST, 1, [Define if you have the sys_siglist variable.])
@@ -242,7 +267,12 @@ if test -n "${with_target_subdir}"; then
   # newlib provide and which ones we will be expected to provide.
 
   if test "x${with_newlib}" = "xyes"; then
-    LIBOBJS="asprintf.o basename.o insque.o random.o strdup.o vasprintf.o"
+    AC_LIBOBJ([asprintf])
+    AC_LIBOBJ([basename])
+    AC_LIBOBJ([insque])
+    AC_LIBOBJ([random])
+    AC_LIBOBJ([strdup])
+    AC_LIBOBJ([vasprintf])
 
     for f in $funcs; do
       case "$f" in
@@ -310,8 +340,16 @@ if test -z "${setobjs}"; then
     # Handle VxWorks configuration specially, since on VxWorks the
     # libraries are actually on the target board, not in the file
     # system.
-    LIBOBJS="basename.o getpagesize.o insque.o random.o strcasecmp.o"
-    LIBOBJS="$LIBOBJS strncasecmp.o strdup.o vfork.o waitpid.o vasprintf.o"
+    AC_LIBOBJ([basename])
+    AC_LIBOBJ([getpagesize])
+    AC_LIBOBJ([insque])
+    AC_LIBOBJ([random])
+    AC_LIBOBJ([strcasecmp])
+    AC_LIBOBJ([strncasecmp])
+    AC_LIBOBJ([strdup])
+    AC_LIBOBJ([vfork])
+    AC_LIBOBJ([waitpid])
+    AC_LIBOBJ([vasprintf])
     for f in $funcs; do
       case "$f" in
 	basename | getpagesize | insque | random | strcasecmp)
@@ -358,7 +396,7 @@ if test -z "${setobjs}"; then
     if test -n "${with_target_subdir}"
     then
       funcs="`echo $funcs | sed -e 's/random//'`"
-      LIBOBJS="$LIBOBJS random.o"
+      AC_LIBOBJ([random])
       vars="`echo $vars | sed -e 's/sys_siglist//'`"
       checkfuncs="`echo $checkfuncs | sed -e 's/strsignal//' -e 's/psignal//'`"
     fi
@@ -394,12 +432,12 @@ if test -z "${setobjs}"; then
 
   # We haven't set the list of objects yet.  Use the standard autoconf
   # tests.  This will only work if the compiler works.
-  AC_PROG_CC_WORKS
+  AC_ISC_POSIX
   AC_REPLACE_FUNCS($funcs)
   libiberty_AC_FUNC_C_ALLOCA
   AC_FUNC_VFORK
   if test $ac_cv_func_vfork_works = no; then
-    LIBOBJS="$LIBOBJS vfork.o"
+    AC_LIBOBJ([vfork])
   fi
   # We only need _doprnt if we might use it to implement v*printf.
   if test $ac_cv_func_vprintf != yes \
@@ -436,7 +474,18 @@ if test -z "${setobjs}"; then
     [AC_MSG_RESULT([no])])
 
   AC_CHECK_FUNCS($checkfuncs)
+  libiberty_NEED_DECLARATION(canonicalize_file_name)
 fi
+
+# Figure out which version of pexecute to use.
+case "${host}" in
+     *-*-mingw* | *-*-winnt*)	pexecute=pex-win32.o  ;;
+     *-*-msdosdjgpp*)		pexecute=pex-djgpp.o  ;;
+     *-*-msdos*)		pexecute=pex-msdos.o  ;;
+     *-*-os2-emx*)		pexecute=pex-os2.o    ;;
+     *)				pexecute=pex-unix.o   ;;
+esac
+AC_SUBST(pexecute)
 
 libiberty_AC_FUNC_STRNCMP
 

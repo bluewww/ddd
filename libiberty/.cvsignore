@@ -14,3 +14,7 @@ stamp-config
 stamp-needed
 stamp-picdir
 xhost-mkfrag
+autom4te.cache
+configure
+config.log
+stamp-h
