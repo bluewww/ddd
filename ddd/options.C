@@ -1270,7 +1270,7 @@ inline String bool_value(bool value)
     return value ? "on" : "off";
 }
 
-string app_value(string resource, const string& value)
+static string app_value(string resource, const string& value)
 {
     String app_name;
     String app_class;
@@ -1293,7 +1293,7 @@ inline string int_app_value(const string& name, int value)
     return app_value(name, itostring(value));
 }
 
-string string_app_value(const string& name, string value)
+static string string_app_value(const string& name, string value)
 {
     value = cook(value);
 
@@ -1429,8 +1429,8 @@ bool save_options(unsigned long flags)
     {
 	// File not found: create a new one
 	dddinit = 
-	    "! DDD initialization file\n"
-	    "! Enter your personal DDD resources here.\n"
+	    "! " DDD_NAME " initialization file\n"
+	    "! Enter your personal " DDD_NAME " resources here.\n"
 	    "\n";
     }
     else
