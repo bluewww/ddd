@@ -57,6 +57,8 @@ Debuggers and Languages
 - This release contains partial support for DEC's `ladebug' debugger.
   Please send in bug reports listing remaining problems.
 
+- Parsing of JDB data has been improved.
+
 
 User Interface
 --------------
@@ -110,6 +112,12 @@ Data exploration
 - You can use the FROM..TO notation in arbitrary values, and also multiple
   times; `graph display 1..5 * 1..5' creates a multiplication table.
 
+- To select multiple displays, it suffices that the selection rectangle
+  touches a display (rather than enclosing it entirely).
+
+- The Display Editor has buttons for clustering and unclustering displays.
+
+
 
 Running the Program
 -------------------
@@ -146,6 +154,8 @@ Bug Fixes
   (as initiated by GNOME) are automatically deleted after exiting DDD.
 
 - Improved auto-command recognition (includes saving displays across sessions)
+
+- [LessTif] Selecting all displays in the Display Editor now works.
 
 - [DBX] The array syntax `graph display [A..B]' works again for DBX.
 

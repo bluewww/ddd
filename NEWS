@@ -41,6 +41,8 @@ Debuggers and Languages
 - This release contains partial support for DEC's `ladebug' debugger.
   Please send in bug reports listing remaining problems.
 
+- Parsing of JDB data has been improved.
+
 
 User Interface
 --------------
@@ -98,6 +100,7 @@ Data exploration
   touches a display (rather than enclosing it entirely).
 
 - The Display Editor has buttons for clustering and unclustering displays.
+
 
 
 Running the Program
