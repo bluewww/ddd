@@ -55,20 +55,20 @@ struct TimerInfo {
     XtPointer closure;		// CLOSURE  arg given to XtAppAddTimeOut()
     string file;		// The file where XtAppAddTimeOut() was called
     int line;			// The line where XtAppAddTimeOut() was called
-    TimerInfo *next;		// Next active timer
+    TimerInfo *next;		// Next pending timer
 };
 
-// List of active timers
-static TimerInfo *active_timers = 0;
+// List of pending timers
+static TimerInfo *pending_timers = 0;
 
 // Counter
 static XtIntervalId timer_tics = 0;
 
-// Return number of active timers (i.e. not yet called)
-int MyActiveTimers()
+// Return number of pending timers (i.e. not yet called)
+int MyPendingTimeOuts()
 {
     int count = 0;
-    for (TimerInfo *ti = active_timers; ti != 0; ti = ti->next)
+    for (TimerInfo *ti = pending_timers; ti != 0; ti = ti->next)
 	count++;
 
     return count;
@@ -79,17 +79,17 @@ static void MyTimerProc(XtPointer client_data, XtIntervalId *)
 {
     TimerInfo *tm = (TimerInfo *)client_data;
 
-    // Remove from active list
+    // Remove from pending list
     bool removed = false;
     TimerInfo *tp = 0;
-    for (TimerInfo *ti = active_timers; ti != 0; tp = ti, ti = ti->next)
+    for (TimerInfo *ti = pending_timers; ti != 0; tp = ti, ti = ti->next)
     {
 	if (ti == tm)
 	{
 	    if (tp != 0)
-		tp->next      = ti->next;
+		tp->next = ti->next;
 	    else
-		active_timers = ti->next;
+		pending_timers = ti->next;
 
 	    removed = true;
 	    break;
@@ -101,7 +101,7 @@ static void MyTimerProc(XtPointer client_data, XtIntervalId *)
 #if LOG_TIMERS
     clog << "TimeOut: " << tm->file << ":" << tm->line << ": timer " 
 	 << tm->tic << " (" << XtPointer(tm->timer) << ")"
-	 << " expired (" << MyActiveTimers() << " still active)\n";
+	 << " expired (" << MyPendingTimeOuts() << " still pending)\n";
 #endif
 
     tm->proc(tm->closure, &tm->tic);
@@ -127,14 +127,14 @@ XtIntervalId MyAppAddTimeOut(XtAppContext app_context,
     tm->line     = line;
     tm->tic      = ++timer_tics;
 
-    tm->next = active_timers;
-    active_timers = tm;
+    tm->next = pending_timers;
+    pending_timers = tm;
 
 #if LOG_TIMERS
     clog << "TimeOut: " 
 	 << file << ":" << line << ": timer " 
 	 << tm->tic << " (" << XtPointer(tm->timer) << ") added "
-	 << "(" << MyActiveTimers() << " still active)\n";
+	 << "(" << MyPendingTimeOuts() << " still pending)\n";
 #endif
 
     // Note: we return a private XtIntervalId instead of the one
@@ -148,14 +148,14 @@ XtIntervalId MyAppAddTimeOut(XtAppContext app_context,
 extern void MyRemoveTimeOut(XtIntervalId tic, String file, int line)
 {
     TimerInfo *tp = 0;
-    for (TimerInfo *ti = active_timers; ti != 0; tp = ti, ti = ti->next)
+    for (TimerInfo *ti = pending_timers; ti != 0; tp = ti, ti = ti->next)
     {
 	if (tic == ti->tic)
 	{
 #if LOG_TIMERS
 	    clog << "TimeOut: " << file << ":" << line << ": timer "
 		 << ti->tic << " (" << XtPointer(ti->timer) << ") removed "
-		 << "(" << MyActiveTimers() << " still active)\n"
+		 << "(" << MyPendingTimeOuts() << " still pending)\n"
 		 << "TimeOut: " << ti->file << ":" << ti->line
 		 << ": this is the location where the timer was added.\n";
 #endif
@@ -163,9 +163,9 @@ extern void MyRemoveTimeOut(XtIntervalId tic, String file, int line)
 	    XtRemoveTimeOut(ti->timer);
 
 	    if (tp != 0)
-		tp->next      = ti->next;
+		tp->next = ti->next;
 	    else
-		active_timers = ti->next;
+		pending_timers = ti->next;
 
 	    delete ti;
 	    return;

@@ -53,7 +53,6 @@ extern void MyRemoveTimeOut(XtIntervalId timer,
 // must be removed with MyRemoveTimeOut(); a timer added with
 // XtAppAddTimeOut() must be removed with XtRemoveTimeOut().
 
-
 // Unless NDEBUG is defined (as usually in optimization), use our
 // replacement routines instead of the Xt functions.
 #if !defined(NDEBUG)
@@ -62,6 +61,11 @@ extern void MyRemoveTimeOut(XtIntervalId timer,
 #define XtRemoveTimeOut(timer) \
     MyRemoveTimeOut((timer), __FILE__, __LINE__)
 #endif // !defined(NDEBUG)
+
+// Diagnostics
+
+// Return number of pending timers
+extern int MyPendingTimeOuts();
 
 #endif // _DDD_TimeOut_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
