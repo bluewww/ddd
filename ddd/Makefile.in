@@ -1056,7 +1056,7 @@ cxxtest.o: $(srcdir)/cxxtest.C
 	$(CXX) -g -c -o $@ $(srcdir)/cxxtest.C
 
 ctest.o: $(srcdir)/ctest.c
-	$(COMPILE.c) $(INCLUDE) -o $@ $(srcdir)/ctest.c
+	$(CC) -g -c -o $@ $(srcdir)/ctest.c
 
 huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 	$(COMPILE.cc) -DMAIN -DHUFFTEXT='"$(srcdir)/ddd.man.huff.C"' \
@@ -1331,12 +1331,12 @@ USERINFO:	userinfo
 ## Update the shared source tree.  For development only.
 
 PUB_DEST=/ftp/ips/pub/misc/$(ddd)-$(VERSION)/ddd
-PUB_SRC=`ls /usr/local/share/CVS/ddd/ddd | sed 's/,v//'`
+PUB_SRC=`ls -t /usr/local/share/CVS/ddd/ddd | sed 's/,v//'`
 GTEST=/usr/local/gnubin/test
 
 .PHONY: pub
 pub:	$(PROG_STUFF) configure $(PUB_DEST)/USERINFO
-	@for file in $(PROG_STUFF) configure Makedeps $(PUB_SRC); do \
+	@for file in $(PUB_SRC) $(PROG_STUFF) configure Makedeps; do \
 	    if $(GTEST) ./$$file -nt $(PUB_DEST)/$$file; then \
 		echo -n Updating $(PUB_DEST)/$$file...; \
 		cp -p ./$$file $(PUB_DEST)/$$file; \
