@@ -627,7 +627,7 @@ debugger console.
 .IP \(bu 2
 To stop the recording, click on `\fBEnd\fR' or enter `\fBend\fR' at
 the \s-1GDB\s+1 prompt.  To \fIcancel\fR the recording, click on
-`\fBInterrupt\fR' or press \fBCtrl+G\fR.
+`\fBInterrupt\fR' or press \fBEsc\fR.
 .IP \(bu 2
 Click on `\fBEdit \s-1>>\s+1\fR' to edit the recorded commands.
 When done with editing, click on `\fBEdit \s-1<<\s+1\fR' to close the
@@ -822,7 +822,7 @@ The program stops as soon as a breakpoint is reached.  The current
 execution position is highlighted by an arrow.
 .PP
 You can interrupt a running program any time by clicking the
-`\fBInterrupt\fR' button or typing \fBCtrl+G\fR in a \s-1@DDD@\s+1
+`\fBInterrupt\fR' button or typing \fBEsc\fR in a \s-1@DDD@\s+1
 window.
 .\"
 .\"
@@ -2195,8 +2195,7 @@ bindings, each in accordance with a specific style guide.
 This binds the Cut/Copy/Paste operations to
 \fBCtrl+X\fR/\fBCtrl+C\fR/\fBCtrl+V\fR.  These key bindings are
 conformant to the \s-1KDE\s+1 style guide.  Note that this means that
-\fBCtrl+C\fR no longer interrupts the debuggee; use \fBCtrl+G\fR
-instead.
+\fBCtrl+C\fR no longer interrupts the debuggee; use \fBEsc\fR instead.
 .TP
 .B "Motif-style bindings"
 This (default) setting binds Cut/Copy/Paste to
@@ -2458,7 +2457,7 @@ debugger console.
 .IP \(bu 2
 To stop the recording, click on `\fBEnd\fR' or enter `\fBend\fR' at
 the \s-1GDB\s+1 prompt.  To \fIcancel\fR the recording, click on
-`\fBInterrupt\fR' or press \fBCtrl+G\fR.
+`\fBInterrupt\fR' or press \fBEsc\fR.
 .IP \(bu 2
 Click on `\fBEdit \s-1>>\s+1\fR' to edit the recorded commands.
 When done with editing, click on `\fBEdit \s-1<<\s+1\fR' to close the
@@ -2567,7 +2566,7 @@ the `\fBquit\fR' command at the debugger prompt or press \fBCtrl+Q\fR.
 end-of-file character (usually \fBCtrl+D\fR).  Closing the last
 \s-1@DDD@\s+1 window will also exit \s-1@DDD@\s+1.
 .PP
-An interrupt (\fBCtrl+G\fR or \fBInterrupt\fR) does not exit from
+An interrupt (\fBEsc\fR or \fBInterrupt\fR) does not exit from
 \s-1@DDD@\s+1, but rather terminates the action of any debugger
 command that is in progress and returns to the debugger command level.
 It is safe to type the interrupt character at any time because the
@@ -3155,7 +3154,7 @@ the Motif style guide.
 If this is `\fBKDE\fR', Cut/Copy/Paste is on
 \fBCtrl+X\fR/\fBCtrl+C\fR/\fBCtrl+V\fR.  This is conformant to the
 \s-1KDE\s+1 style guide.  Note that this means that \fBCtrl+C\fR no
-longer interrupts the debuggee; use \fBCtrl+G\fR instead.
+longer interrupts the debuggee; use \fBEsc\fR instead.
 .RE
 .TP
 .B "globalTabCompletion (\fPclass\fB GlobalTabCompletion)"
@@ -4762,7 +4761,6 @@ Bound to \fBHome\fR.
 Send the given \fIcontrol-character\fR to the inferior debugger.
 The \fIcontrol-character\fR must be specified in the form `\fB^\fIX\fR',
 where \fIX\fR is an upper-case letter or `\fB?\fR'.
-Bound to \fBCtrl+G\fR and \fBCtrl+\\\fR.
 .TP
 .B gdb-command (\fIcommand\fB)
 Execute \fIcommand\fR in the debugger console.
@@ -4787,6 +4785,10 @@ character following the cursor is deleted.  Bound to \fBCtrl+D\fR.
 .TP
 .B gdb-end-of-line ()
 Move cursor to the end of the current line.  Bound to \fBEnd\fR.
+.TP
+.B gdb-interrupt ()
+If \s-1@DDD@\s+1 is in incremental search mode, exit it; otherwise
+call \fBgdb-control(^C)\fR.
 .TP
 .B gdb-next-history ()
 Recall next command from history.  Bound to \fBDown\fR.

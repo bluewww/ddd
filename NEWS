@@ -17,7 +17,6 @@ DDD 3.0 [in beta test]
       All data display features are available in Java.
     - Watchpoints.  You can have the debugged program stop
       automatically whenever a particular variable is read or written.
-    - KDE-style key bindings.  See below for details.
     - Deferred displays.  DDD now can maintain displays whose creation
       is deferred until a particular scope is entered.  Benefits:
       * Displays are now persistent across recompilations.
@@ -31,6 +30,9 @@ DDD 3.0 [in beta test]
     - User-defined commands.  Using GDB, you can record and edit new
       commands and assign them to buttons; see `Commands->Define
       Command'.  All commands are saved across DDD sessions.
+    - New, KDE-style key bindings.  See below for details.
+    - ESC is now the default interrupt character.  Ctrl+C still works,
+      but is reserved for Copy in KDE.
     - Conditional breakpoints, temporary breakpoints, and breakpoints
       with ignore counts now have their special symbols on their own.
     - On popular demand, the command tool has `until' and `make' buttons.
@@ -109,7 +111,7 @@ DDD 3.0 [in beta test]
         Detach        Shift+Ctrl+Z  -/-           Ctrl+Z is Undo in KDE
         Edit          Shift+Ctrl+E  Shift+Ctrl+V  Ctrl+E is now Run
         Forward       Ctrl+F        Right         Ctrl+F is now Search
-        Interrupt     Ctrl+C (*)    Ctrl+G        Ctrl+C is Copy in KDE
+        Interrupt     Ctrl+C (*)    Esc           Ctrl+C is Copy in KDE
         Open File     Alt+O         Ctrl+O        KDE standard
         Open Session  Shift+Alt+O   Ctrl+N        KDE standard
         Page Down     Ctrl+V        Page Down     Ctrl+V is Paste in KDE

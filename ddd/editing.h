@@ -39,6 +39,7 @@
 
 // Actions
 extern void controlAct            (Widget, XEvent*, String*, Cardinal*);
+extern void interruptAct          (Widget, XEvent*, String*, Cardinal*);
 extern void commandAct            (Widget, XEvent*, String*, Cardinal*);
 extern void processAct            (Widget, XEvent*, String*, Cardinal*);
 extern void forward_characterAct  (Widget, XEvent*, String*, Cardinal*);

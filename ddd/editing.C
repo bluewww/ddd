@@ -287,6 +287,20 @@ void clear_isearch(bool reset, bool show)
     isearch_motion_ok = false;
 }
 
+void interruptAct(Widget w, XEvent*, String *, Cardinal *)
+{
+    if (isearch_state != ISEARCH_NONE)
+    {
+	clear_isearch();
+    }
+    else
+    {
+	gdb_keyboard_command = true;
+	_gdb_command("\003", w);
+	gdb_keyboard_command = true;
+    }
+}
+
 // Handle incremental searches; return true if processed
 static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 {

@@ -576,6 +576,7 @@ static XrmOptionDescRec options[] = {
 // Actions
 static XtActionsRec actions [] = {
     {"gdb-control",            controlAct},
+    {"gdb-interrupt",          interruptAct},
     {"gdb-command",            commandAct},
     {"gdb-process",            processAct},
     {"gdb-delete-or-control",  delete_or_controlAct},

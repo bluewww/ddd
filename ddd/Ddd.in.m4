@@ -126,7 +126,7 @@ Ddd*globalTabCompletion: on
 !   setting in DDD 2.x and earlier.
 ! * `KDE' means Cut/Copy/Paste is on Ctrl+X/Ctrl+C/Ctrl+V.  
 !   This is conformant to the KDE style guide.  Note that this also 
-!   means that you must use Ctrl+G to interrupt the debuggee.
+!   means that you must use ESC to interrupt the debuggee.
 !
 ! In this release, the default is still Motif, but this may change to KDE 
 ! in some future version.
@@ -1019,7 +1019,7 @@ Ctrl<Key>D:		gdb-delete-or-control(^D)   \n\
 Ctrl<Key>E:		gdb-end-of-line()	    \n\
 Ctrl<Key>F:		gdb-isearch-next()     	    \n\
 Ctrl<Key>G:		gdb-control(^C)		    \n\
-<Key>Break:		gdb-control(^C)		    \n\
+<Key>Break:		gdb-interrupt()		    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>N:		gdb-next-history()	    \n\
@@ -1034,8 +1034,8 @@ Ctrl<Key>backslash:	gdb-control(^\\)	    \n\
 Ctrl<Key>R:		gdb-isearch-prev()          \n\
 Ctrl<Key>S:		gdb-isearch-next()  	    \n\
 Ctrl<Key>T:		gdb-complete-command()	    \n\
-None<Key>Escape:	process-cancel() gdb-isearch-exit() \n\
-None<Key>osfCancel:	process-cancel() gdb-isearch-exit() \n\
+None<Key>Escape:	gdb-interrupt()             \n\
+None<Key>osfCancel:	gdb-interrupt()             \n\
 None<Key>osfUp:		gdb-previous-history()	    \n\
 None<Key>osfDown:	gdb-next-history()	    \n\
 None<Key>osfLeft:	gdb-backward-character()    \n\
@@ -1067,7 +1067,7 @@ Ctrl<Key>D:		delete-next-character()     \n\
 Ctrl<Key>E:		end-of-line()		    \n\
 Ctrl<Key>F:		gdb-forward-character()	    \n\
 Ctrl<Key>G:		gdb-control(^C)		    \n\
-<Key>Break:		gdb-control(^C)		    \n\
+<Key>Break:		gdb-interrupt()		    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>I:		self-insert()               \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
@@ -1225,12 +1225,12 @@ Shift<Key>Next:		next-page(extend)	    \
 ! please let me know.
 define(GDB_TRANSLATIONS,[\
 ~Meta<Key>osfBackSpace:		     gdb-process(delete-previous-character)\n\
-~Meta<Key>osfCancel:		     gdb-process(process-cancel)\n\
 ~Ctrl ~Meta<Key>BackSpace:	     gdb-process(delete-previous-character)\n\
 ~Meta<Key>Tab:			     gdb-process(process-tab)\n\
 ~Ctrl ~Meta<Key>Return:		     gdb-process(process-return)\n\
 ~Ctrl ~Meta<Key>Linefeed:	     gdb-process(process-return)\n\
-~Ctrl ~Meta<Key>Escape:		     gdb-process(process-cancel)\n\
+~Ctrl ~Meta<Key>Escape:		     gdb-interrupt()\n\
+~Meta<Key>osfCancel:		     gdb-interrupt()\n\
 ~Meta<Key>Delete:		     gdb-process(delete-next-character)\n\
 ~Ctrl ~Meta<Key>space:		     gdb-process()\n\
 ~Ctrl ~Meta<Key>exclam:		     gdb-process()\n\
@@ -2225,8 +2225,8 @@ Ddd*menubar*programMenu.kill.documentationString:
 
 Ddd*menubar*programMenu.break.labelString:	   Interrupt
 Ddd*menubar*programMenu.break.mnemonic:		   p
-Ddd*menubar*programMenu.break.accelerator:	   Ctrl<Key>G
-Ddd*menubar*programMenu.break.acceleratorText:	   Ctrl+G
+! Ddd*menubar*programMenu.break.accelerator:	   <Key>Escape
+Ddd*menubar*programMenu.break.acceleratorText:	   Esc
 Ddd*menubar*programMenu.break.documentationString: \
 @rm Interrupt program (or current @GDB@ command)
 
@@ -4457,7 +4457,7 @@ Ddd*?*break.helpString: \
 LBL(Interrupt)\n\
 \n\
 Interrupt the debugged process (or current @GDB@ command).\n\
-(Equivalent to KEY(Ctrl+G)).
+(Equivalent to KEY(Esc)).
 Ddd*source_buttons*break.tipString: \
 @rm Interrupt debugged program
 Ddd*data_buttons*break.tipString: \
@@ -5453,7 +5453,7 @@ Ddd*busy_dialog*helpString:	\
 \n\
 You may wish to wait until the @GDB@ prompt appears,\n\
 or interrupt the current debugging command by selecting\n\
-LBL(Program, Interrupt) (or typing KEY(Ctrl+G)).\n\
+LBL(Program, Interrupt) (or typing KEY(Esc)).\n\
 \n\
 If @GDB@ is busy running your debugged program, interrupting\n\
 @GDB@ means to interrupt program execution, such that you can\n\
