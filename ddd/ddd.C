@@ -2026,8 +2026,8 @@ int main(int argc, char *argv[])
 	XtSetArg(args[arg], XmNmwmDecorations,
 		 MWM_DECOR_BORDER | MWM_DECOR_TITLE | MWM_DECOR_MENU); arg++;
 	tool_shell = 
-	    verify(XtCreateWidget("tool_shell", topLevelShellWidgetClass,
-				  tool_shell_parent, args, arg));
+	    verify(XmCreateDialogShell(tool_shell_parent, 
+				       "tool_shell", args, arg));
 	XmAddWMProtocolCallback(tool_shell, WM_DELETE_WINDOW, 
 				gdbCloseToolWindowCB, 0);
 
@@ -2044,12 +2044,9 @@ int main(int argc, char *argv[])
 	wm_set_icon(tool_shell,
 		    iconlogo(tool_buttons_w),
 		    iconmask(tool_buttons_w));
-
-#if 0
 	wm_set_group_leader(XtDisplay(tool_shell),
 			    XtWindow(tool_shell),
 			    XtWindow(tool_shell_parent));
-#endif
 
 #if 0
 	XtAddEventHandler(tool_shell, structure_mask, False,
