@@ -1,0 +1,31 @@
+DDD Documentation					-*- text -*-
+*****************
+
+This directory contains various documentation related to DDD in
+PostScript format.
+
+ddd.man.ps -- The DDD manual page
+
+
+The following documents may also be of interest to DDD users:
+
+ddd-thesis.ps -- ``DDD - ein Debugger mit graphischer Datendarstellung''
+
+    Dorothea's Master's Thesis on DDD (in German).
+
+
+gdb.ps -- ``Debugging with GDB''
+
+    The GDB manual.
+
+
+vse.ps -- ``Visual Prettyprinting''
+
+    This paper decribes the VSL language, which DDD uses to display data
+    structures in displays.  Contains a short VSL reference.
+
+
+These documents are available via anonymous FTP in 
+<ftp://ftp.ips.tu.bs.de/pub/local/softech/ddd/doc/>,
+
+$Id$
