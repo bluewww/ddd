@@ -357,6 +357,8 @@ void graphToggleShowAnnotationsCB(Widget, XtPointer, XtPointer call_data)
     else
 	set_status("Annotations off.");
 
+    data_disp->refresh_titles();
+
     update_options();
 }
 
