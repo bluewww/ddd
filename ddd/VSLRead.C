@@ -161,7 +161,7 @@ void VSLLib::update(const string& lib_name)
     vslfilename = lib_name;
 
     switchreset();
-    if (switchup(lib_name.chars(), True) == 0)
+    if (switchup(lib_name.chars(), true) == 0)
     {
 	assert(vslstream != 0);
 

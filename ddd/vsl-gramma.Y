@@ -195,7 +195,7 @@ function_declaration	:	function_header
 				    if ($1.pattern)
 				    {
 					vsllib->add(*$1.id,
-						    $1.pattern, 0, False,
+						    $1.pattern, 0, false,
 						    *$1.file, $1.line);
 				    }
 				    delete $1.id;
@@ -280,7 +280,7 @@ local_definition	: 	local_header function_body
 				    {
 					// Define function
 					vsllib->add(*$1.id,
-						    $1.pattern, $2, False,
+						    $1.pattern, $2, false,
 						    *$1.file, $1.line);
 				    }
 
@@ -301,7 +301,7 @@ local_header		:	function_header EQ
 					// (for recursive calls)
 					vsllib->add(*$1.id,
 						    $1.pattern->dup(), 0, 
-						    False,
+						    false,
 						    vslfilename, 
 						    vsllinenumber);
 				    }
@@ -319,7 +319,7 @@ global_definition	:	global_header function_body
 				    {
 					// Define function
 					vsllib->add(*$1.id, 
-						    $1.pattern, $2, True,
+						    $1.pattern, $2, true,
 						    *$1.file, $1.line);
 				    }
 
@@ -336,7 +336,7 @@ global_header		:	function_header ARROW
 				      // Declare function now
 				      // (for recursive calls)
 				      vsllib->add(*$1.id,
-						  $1.pattern->dup(), 0, True,
+						  $1.pattern->dup(), 0, true,
 						  vslfilename, vsllinenumber);
 				  }
 				  $$ = $1;
