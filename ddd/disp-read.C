@@ -462,13 +462,19 @@ static bool starts_with(const string& cmd, const string& prefix)
 	cmd.contains(prefix + " ", 0);
 }
 
+// True if CMD is a printing command
+bool is_print_cmd(const string& cmd, GDBAgent *gdb)
+{
+    return starts_with(cmd, gdb->print_command("", true));
+}
+
 // True if CMD is some other builtin command
 bool is_other_builtin_cmd(const string& cmd, GDBAgent *gdb)
 {
-    return starts_with(cmd, gdb->enable_command("")) ||
+    return is_print_cmd(cmd, gdb) ||
+	starts_with(cmd, gdb->enable_command("")) ||
 	starts_with(cmd, gdb->disable_command("")) ||
 	starts_with(cmd, gdb->delete_command("")) ||
-	starts_with(cmd, gdb->print_command("", true)) ||
 	starts_with(cmd, "make") ||
 	starts_with(cmd, "source");
 }
