@@ -195,6 +195,7 @@ private:
     bool _rerun_clears_args;
     bool _has_attach_command;
     bool _has_addproc_command;
+    bool _has_load_command;
 
     ProgramLanguage _program_language; // Current program language
 
@@ -414,6 +415,10 @@ public:
     // True if debugger has `addproc' command
     bool has_addproc_command() const   { return _has_addproc_command; }
     bool has_addproc_command(bool val) { return _has_addproc_command = val; }
+
+    // True if debugger has `load' command
+    bool has_load_command() const   { return _has_load_command; }
+    bool has_load_command(bool val) { return _has_load_command = val; }
 
     // Current program language
     ProgramLanguage program_language() const   { return _program_language; }

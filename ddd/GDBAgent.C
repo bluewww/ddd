@@ -216,6 +216,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _rerun_clears_args(false),
       _has_attach_command(tp == GDB || tp == DBX),
       _has_addproc_command(false),
+      _has_load_command(false),
       _program_language((tp == JDB) ? LANGUAGE_JAVA :
 			(tp == PYDB) ? LANGUAGE_PYTHON : 
 			(tp == PERL) ? LANGUAGE_PERL : 
@@ -300,6 +301,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _rerun_clears_args(gdb.rerun_clears_args()),
       _has_attach_command(gdb.has_attach_command()),
       _has_addproc_command(gdb.has_addproc_command()),
+      _has_load_command(gdb.has_load_command()),
       _program_language(gdb.program_language()),
       _verbatim(gdb.verbatim()),
       _recording(gdb.recording()),
@@ -2271,7 +2273,10 @@ string GDBAgent::debug_command(string program, string args) const
 	return "#file " + program; // just a dummy
 
     case JDB:
-	return "load " + program;
+	if (has_load_command())
+	    return "load " + program;
+	else
+	    return "";		// JDB 1.2 has no `load'
 
     case PERL:
 	return "exec " + quote(debugger() + " -d " + program + args);

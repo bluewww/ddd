@@ -2,6 +2,7 @@
 // DDD buttons
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -229,7 +230,8 @@ static string gdbHelp(string original_command)
     translate_command(original_command);
 
     string command = original_command;
-    if (gdb->type() == JDB && original_command == "next")
+    if (gdb->type() == JDB && original_command == "next" && 
+	!gdb->has_load_command())
     {
 	// JDB 1.1 has an undocumented `next' command.  Treat it like `step'.
 	command = "step";
@@ -282,6 +284,9 @@ static string gdbHelp(string original_command)
 	    all_help = gdb_question("help", -1, true);
 	    if (all_help == NO_GDB_ANSWER)
 		return NO_GDB_ANSWER; // try again later
+
+	    // Configure debugger
+	    gdb->has_load_command(all_help.contains("load "));
 	}
 
 	int index = all_help.index("\n" + command) + 1;
