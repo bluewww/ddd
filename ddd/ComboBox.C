@@ -46,6 +46,7 @@ char ComboBox_rcsid[] =
 #include "TimeOut.h"
 #include "AutoRaise.h"
 #include "mydialogs.h"
+#include "misc.h"
 
 #include <Xm/Xm.h>
 #include <Xm/ArrowB.h>
@@ -132,14 +133,18 @@ static void PopupComboListCB(Widget w, XtPointer client_data,
     XtVaGetValues(info->top, XmNheight, &top_height,
 		  XmNwidth, &top_width, NULL);
 
+    // Query preferred height of scroll window
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(XtParent(info->list), NULL, &size);
 
+    Dimension current_height;
+    XtVaGetValues(info->shell, XmNheight, &current_height, NULL);
+    
     Position x       = top_x;
     Position y       = top_y + top_height;
     Dimension width  = top_width;
-    Dimension height = size.height;
+    Dimension height = max(size.height, current_height);
 
     XtVaSetValues(info->shell, XmNx, x, XmNy, y, 
 		  XmNwidth, width, XmNheight, height, NULL);
@@ -376,6 +381,7 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     XtVaSetValues(info->top, XmNheight, size.height + shadow_thickness * 2, 
 		  XmNwidth, size.width + shadow_thickness * 2, NULL);
 #else
+    // Create text field and arrow
     arg = 0;
     XtSetArg(args[arg], XmNborderWidth,        0);     arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
@@ -420,6 +426,7 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     XtAddCallback(info->text, XmNactivateCallback,
 		  PopdownComboListCB, XtPointer(info));
 
+    // Create the popup shell
     Widget shell = parent;
     while (!XtIsShell(shell))
 	shell = XtParent(shell);
