@@ -54,6 +54,9 @@ string MString::str() const
     string s = "";
 
     XmString m = xmstring();
+    if (m == 0)
+	return "";
+
     XmStringContext c;
     XmStringInitContext(&c, m);
     XmStringComponentType t = XmSTRING_COMPONENT_UNKNOWN;
