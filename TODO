@@ -376,7 +376,8 @@ Volunteers for these and other projects are welcome!
     that can be rotated.
 
 250*Combine Breakpoint `Ignore Count' and `Condition' in a `Breakpoint
-    Properties' panel.  Also add a `commands' item.
+    Properties' panel.  Breakpoint commands to be executed may also be
+    added.
 
 252 Print via the X Printer extension (-lXp).
 
@@ -398,8 +399,8 @@ Volunteers for these and other projects are welcome!
     - Have a resource for toolbar placement: above or below window.
       As an alternative, use XmNpositionIndex instead (changeable at
       run-time?).
-    - The `Display' button should not prompt for data if `()' is set.
-    - The `Display *' and `Set' buttons should work if `()' is set.
-    - In tip strings, show labelStrings of pixmap displays
+    - Split arg fields and share their values
 
-260 (Insert your project idea here)
+260 When managing a PanedWindow child, give it a minimum height.
+
+261 (Insert your project idea here)
