@@ -43,6 +43,29 @@ char HistoryDialog_rcsid[] =
 #include "regexps.h"
 #include "string-fun.h"
 
+
+//-----------------------------------------------------------------------------
+// Helpers
+//-----------------------------------------------------------------------------
+
+// Don't rely on libiberty basename() because we don't want to depend
+// on libiberty include files
+static const char *file_basename(const char *name)
+{
+    const char *base = name;
+
+    while (*name)
+    {
+	if (*name++ == '/')
+	    base = name;
+    }
+
+    return base;
+}
+
+#define basename file_basename
+
+
 //-----------------------------------------------------------------------------
 // Argument filters
 //-----------------------------------------------------------------------------
@@ -65,9 +88,23 @@ static bool try_arg(const string& cmd, string prefix, string& arg)
 	    arg = unquote(arg);
 	    return true;
 	}
-	else if (is_file_pos(arg) || arg.matches(rxint))
+	else if (is_file_pos(arg))
 	{
-	    // FILE:LINE or LINE arg -- ignore
+	    if (!arg.contains(":1", -1))
+	    {
+		// FILE:LINE arg, with LINE > 1 -- ignore
+		return false;
+	    }
+	    else
+	    {
+		// Use only base name
+		arg = basename(string(arg.before(':'))) + arg.from(':');
+		return true;
+	    }
+	}
+	else if (arg.matches(rxint))
+	{
+	    // LINE arg -- ignore
 	    return false;
 	}
 	else
