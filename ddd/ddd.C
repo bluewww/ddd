@@ -322,6 +322,7 @@ void sourceToggleFindWordsOnlyCB    (Widget, XtPointer, XtPointer);
 void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer);
 void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer);
 void sourceToggleDisplayGlyphsCB    (Widget, XtPointer, XtPointer);
+void sourceToggleDisassembleCB      (Widget, XtPointer, XtPointer);
 
 void dddToggleGroupIconifyCB       (Widget, XtPointer, XtPointer);
 void dddToggleGlobalTabCompletionCB(Widget, XtPointer, XtPointer);
@@ -892,6 +893,15 @@ static XtResource resources[] = {
 	XtPointer(True)
     },
     {
+	XtNdisassemble,
+	XtCDisassemble,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, disassemble),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,
@@ -981,6 +991,18 @@ static XrmOptionDescRec options[] = {
 
 { "--synchronous-debugger", XtNsynchronousDebugger,  XrmoptionNoArg, S_true },
 { "-synchronous-debugger",  XtNsynchronousDebugger,  XrmoptionNoArg, S_true },
+
+{ "--disassemble",          XtNdisassemble,          XrmoptionNoArg, S_true },
+{ "-disassemble",           XtNdisassemble,          XrmoptionNoArg, S_true },
+
+{ "--no-disassemble",       XtNdisassemble,          XrmoptionNoArg, S_false },
+{ "-no-disassemble",        XtNdisassemble,          XrmoptionNoArg, S_false },
+
+{ "--no-glyphs",            XtNdisplayGlyphs,        XrmoptionNoArg, S_false },
+{ "-no-glyphs",             XtNdisplayGlyphs,        XrmoptionNoArg, S_false },
+
+{ "--glyphs",               XtNdisplayGlyphs,        XrmoptionNoArg, S_true },
+{ "-glyphs",                XtNdisplayGlyphs,        XrmoptionNoArg, S_true },
 
 { "--host",                 XtNdebuggerHost,         XrmoptionSepArg, NULL },
 { "-host",                  XtNdebuggerHost,         XrmoptionSepArg, NULL },
@@ -1166,7 +1188,7 @@ static MMDesc stack_menu[] =
 {
     { "stack",       MMPush, { SourceView::ViewStackFramesCB }, 
       NULL, &stack_w },
-    { "registers",  MMPush,  { SourceView::ViewRegistersCB },
+    { "registers",   MMPush,  { SourceView::ViewRegistersCB },
       NULL, &register_w },
     MMSep,
     { "up",         MMPush,  { gdbCommandCB, "up" }},
@@ -1185,6 +1207,7 @@ static MMDesc source_menu[] =
     { "forward",    MMPush,  { gdbGoForwardCB }},
     MMEnd
 };
+
 
 // Option widgets
 
@@ -1212,6 +1235,7 @@ static Widget find_words_only_w[4];
 static Widget cache_source_files_w[4];
 static Widget cache_machine_code_w[4];
 static Widget display_glyphs_w[4];
+static Widget disassemble_w[4];
 static Widget suppress_warnings_w[4];
 static Widget set_focus_pointer_w[4];
 static Widget set_focus_explicit_w[4];
@@ -1243,12 +1267,14 @@ static MMDesc source_options_menu[] =
 {
     { "findWordsOnly",    MMToggle, { sourceToggleFindWordsOnlyCB }, 
       NULL, find_words_only_w },
+    { "disassemble",     MMToggle,  { sourceToggleDisassembleCB },
+      NULL, disassemble_w },
+    { "displayGlyphs",    MMToggle, { sourceToggleDisplayGlyphsCB }, 
+      NULL, display_glyphs_w },
     { "cacheSourceFiles", MMToggle, { sourceToggleCacheSourceFilesCB }, 
       NULL, cache_source_files_w },
     { "cacheMachineCode", MMToggle, { sourceToggleCacheMachineCodeCB }, 
       NULL, cache_machine_code_w },
-    { "displayGlyphs",    MMToggle, { sourceToggleDisplayGlyphsCB }, 
-      NULL, display_glyphs_w },
     MMEnd
 };
 
@@ -1864,6 +1890,7 @@ int main(int argc, char *argv[])
     cache_source_files_w[CommandOptions]       = cache_source_files_w[0];
     cache_machine_code_w[CommandOptions]       = cache_machine_code_w[0];
     display_glyphs_w[CommandOptions]           = display_glyphs_w[0];
+    disassemble_w[CommandOptions]              = disassemble_w[0];
     suppress_warnings_w[CommandOptions]        = suppress_warnings_w[0];
     set_focus_pointer_w[CommandOptions]        = set_focus_pointer_w[0];
     set_focus_explicit_w[CommandOptions]       = set_focus_explicit_w[0];
@@ -1941,6 +1968,7 @@ int main(int argc, char *argv[])
         cache_source_files_w[DataOptions]       = cache_source_files_w[0];
         cache_machine_code_w[DataOptions]       = cache_machine_code_w[0];
         display_glyphs_w[DataOptions]           = display_glyphs_w[0];
+        disassemble_w[DataOptions]              = disassemble_w[0];
 	suppress_warnings_w[DataOptions]        = suppress_warnings_w[0];
 	set_focus_pointer_w[DataOptions]        = set_focus_pointer_w[0];
 	set_focus_explicit_w[DataOptions]       = set_focus_explicit_w[0];
@@ -2020,6 +2048,7 @@ int main(int argc, char *argv[])
 	cache_source_files_w[SourceOptions]       = cache_source_files_w[0];
 	cache_machine_code_w[SourceOptions]       = cache_machine_code_w[0];
 	display_glyphs_w[SourceOptions]           = display_glyphs_w[0];
+	disassemble_w[SourceOptions]              = disassemble_w[0];
 	suppress_warnings_w[SourceOptions]        = suppress_warnings_w[0];
 	set_focus_pointer_w[SourceOptions]        = set_focus_pointer_w[0];
 	set_focus_explicit_w[SourceOptions]       = set_focus_explicit_w[0];
@@ -2437,6 +2466,21 @@ void ddd_install_fatal()
 }
 
 //-----------------------------------------------------------------------------
+// Set sensitivity
+//-----------------------------------------------------------------------------
+
+inline void set_sensitive(Widget w, bool state)
+{
+    if (w == 0)
+	return;
+
+    if (XtIsSensitive(w) == state)
+	return;
+    XtSetSensitive(w, state);
+}
+
+
+//-----------------------------------------------------------------------------
 // Option handling
 //-----------------------------------------------------------------------------
 
@@ -2470,9 +2514,14 @@ void update_options()
 		      XmNset, app_data.cache_machine_code, NULL);
 	XtVaSetValues(display_glyphs_w[i],
 		      XmNset, app_data.display_glyphs, NULL);
+	XtVaSetValues(disassemble_w[i],
+		      XmNset, app_data.disassemble, NULL);
 
 	XtVaSetValues(suppress_warnings_w[i],
 		      XmNset, app_data.suppress_warnings, NULL);
+
+	set_sensitive(disassemble_w[i],        gdb->type() == GDB);
+	set_sensitive(cache_machine_code_w[i], gdb->type() == GDB);
 
 	Boolean state;
 	arg = 0;
@@ -2560,6 +2609,7 @@ void update_options()
     }
 
     source_view->set_display_glyphs(app_data.display_glyphs);
+    source_view->set_disassemble(app_data.disassemble);
 }
 
 
@@ -2899,7 +2949,7 @@ int running_shells()
 // Opening files
 //-----------------------------------------------------------------------------
 
-static Widget find_shell(Widget w)
+static Widget find_shell(Widget w = 0)
 {
     if (w == 0)
 	w = gdb_last_origin;
@@ -4331,7 +4381,6 @@ void _gdb_command(string command, Widget origin)
     user_cmdSUC(command, origin);
     messagePosition = XmTextGetLastPosition(gdb_w);
 }
-    
 
 void controlAct(Widget w, XEvent*, String *params, Cardinal *num_params)
 {
@@ -5135,21 +5184,6 @@ void gdbDeleteSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
 	// Cannot delete from exec window
 	break;
     }
-}
-
-
-//-----------------------------------------------------------------------------
-// Set sensitivity
-//-----------------------------------------------------------------------------
-
-inline void set_sensitive(Widget w, bool state)
-{
-    if (w == 0)
-	return;
-
-    if (XtIsSensitive(w) == state)
-	return;
-    XtSetSensitive(w, state);
 }
 
 void source_argHP (void *_arg_field, void *, void *)
@@ -6515,7 +6549,27 @@ static void ddd_fatal(int sig)
     // allowing the user to clean up manually.
     string msg = string("Internal error (") + sigName(sig) + ")";
     if (sig != SIGINT)
-	post_error(msg, "internal_error", gdb_w);
+    {
+	static Widget fatal_dialog = 0;
+	if (fatal_dialog)
+	    XtDestroyWidget(fatal_dialog);
+	fatal_dialog = 
+	    verify(XmCreateErrorDialog (find_shell(),
+					"fatal_dialog", NULL, 0));
+	Delay::register_shell(fatal_dialog);
+
+	XtUnmanageChild (XmMessageBoxGetChild 
+			 (fatal_dialog, XmDIALOG_CANCEL_BUTTON));
+	XtAddCallback (fatal_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback (fatal_dialog, XmNokCallback,   DDDExitCB,       NULL);
+
+	MString mtext(msg, "rm");
+	XtVaSetValues (fatal_dialog,
+		       XmNmessageString, mtext.xmstring(),
+		       NULL);
+
+	XtManageChild (fatal_dialog);
+    }
 
     // Reinstall fatal error handlers
     ddd_install_fatal();
@@ -7316,6 +7370,22 @@ void sourceToggleDisplayGlyphsCB (Widget, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
+void sourceToggleDisassembleCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.disassemble = info->set;
+
+    if (info->set)
+	set_status("Showing machine code.");
+    else
+	set_status("Not showing machine code.");
+
+    update_options();
+    options_changed = true;
+}
+
 //-----------------------------------------------------------------------------
 // General Options
 //-----------------------------------------------------------------------------
@@ -7638,6 +7708,8 @@ static void save_options(Widget origin)
 			 app_data.cache_machine_code) << "\n";
     os << bool_app_value(XtNdisplayGlyphs,
 			 app_data.display_glyphs) << "\n";
+    os << bool_app_value(XtNdisassemble,
+			 app_data.disassemble) << "\n";
     os << bool_app_value(XtNgroupIconify,
 			 app_data.group_iconify)   << "\n";
     os << bool_app_value(XtNseparateExecWindow,

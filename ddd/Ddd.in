@@ -394,7 +394,7 @@ Ddd*interrupt.foreground:          red4
 Ddd*run.foreground:                dark green
 
 ! Highlight special dialogs
-Ddd*internal_error*foreground: 	   red4
+Ddd*fatal_dialog*foreground: 	   red4
 Ddd*terminated_dialog*foreground:  red4
 Ddd*debugging_poem*foreground: 	   dark green
 
@@ -968,15 +968,17 @@ X warnings are silently ignored.\n\
 @tt \267 @rm If @bf Find Words Only @rm is set, \
 only complete words are found.\n\
     Otherwise, arbitrary occurrences are found.\n\
+@tt \267 @rm If @bf Display Machine Code @rm is set, \
+current functions are disassembled.\n\
+@tt \267 @rm If @bf Display Glyphs @rm is set, \
+positions and breakpoints are shown as glyphs.\n\
+    Otherwise, positions and breakpoints are shown as text.\n\
 @tt \267 @rm If @bf Cache Sources @rm is set, \
 source texts are cached in memory.\n\
     Otherwise, sources are re-read upon each source change.\n\
 @tt \267 @rm If @bf Cache Machine Code @rm is set, \
 disassembled code is cached in memory.\n\
     Otherwise, code is re-disassembled upon each function change.\n\
-@tt \267 @rm If @bf Display Glyphs @rm is set, \
-positions and breakpoints are shown as glyphs.\n\
-    Otherwise, positions and breakpoints are shown as text.\n\
 \n\
 @sl Data Options:@rm\n\
 @tt \267 @rm If @bf Show Grid @rm is set, the grid is displayed.\n\
@@ -1034,14 +1036,17 @@ Ddd*generalOptionsMenu.saveHistoryOnExit.mnemonic:     H
 Ddd*sourceOptionsMenu.findWordsOnly.labelString:       Find Words Only
 Ddd*sourceOptionsMenu.findWordsOnly.mnemonic:	       W
 
+Ddd*sourceOptionsMenu.disassemble.labelString:         Display Machine Code
+Ddd*sourceOptionsMenu.disassemble.mnemonic:            D
+
+Ddd*sourceOptionsMenu.displayGlyphs.labelString:       Display Glyphs
+Ddd*sourceOptionsMenu.displayGlyphs.mnemonic:          G
+
 Ddd*sourceOptionsMenu.cacheSourceFiles.labelString:    Cache Source Files
 Ddd*sourceOptionsMenu.cacheSourceFiles.mnemonic:       S
 
 Ddd*sourceOptionsMenu.cacheMachineCode.labelString:    Cache Machine Code
 Ddd*sourceOptionsMenu.cacheMachineCode.mnemonic:       M
-
-Ddd*sourceOptionsMenu.displayGlyphs.labelString:       Display Glyphs
-Ddd*sourceOptionsMenu.displayGlyphs.mnemonic:          G
 
 Ddd*dataOptionsMenu*showGrid.labelString:	       Show Grid
 Ddd*dataOptionsMenu*showGrid.mnemonic:		       G
@@ -2334,6 +2339,27 @@ Ddd*terminated_dialog*contextHelpString:	\
 @rm The debugger terminated abnormally.\n\
 You may wish to examine its final output before exiting @DDD@.
 
+Ddd*fatal_dialog.title: @DDD@: Internal Error
+Ddd*fatal_dialog.messageString:   \
+@rm Internal error
+Ddd*fatal_dialog*okLabelString:   Exit
+Ddd*fatal_dialog*contextHelpString: \
+@rm Congratulations!  You have found a bug in @DDD@.\n\
+You should better save your work immediately; @DDD@ may fail again soon.\n\
+\n\
+Please send a bug report to `@tt ddd-bugs@ ips.cs.tu-bs.de@rm',\n\
+giving a subject like\n\
+\n\
+    @DDD@ @VERSION@ (@host@) gets fatal signal\n\
+\n\
+To enable us to fix the bug, you should include the following information:\n\
+@tt \267 @rm What you were doing to get this message.  Report all the facts.\n\
+@tt \267 @rm The @DDD@ configuration.  \
+Run `@tt ddd --configuration@rm' to get it.\n\
+See also the section ``Reporting Bugs'' in the @DDD@ manual.\n\
+\n\
+We thank you for your support.
+
 Ddd*yn_dialog_popup.title: @DDD@: Debugger Question
 Ddd*yn_dialog*okLabelString:       Yes
 Ddd*yn_dialog*cancelLabelString:   No
@@ -2482,24 +2508,6 @@ Ddd*print_warning.title: @DDD@: Print Command Output
 Ddd*print_warning*contextHelpString:	\
 @rm This is the output of your printing command.\n\
 For more details, consult your system documentation.
-
-Ddd*internal_error.title: @DDD@: Internal Error
-Ddd*internal_error*contextHelpString: \
-@rm Congratulations!  You have found a bug in @DDD@.\n\
-You should better save your work immediately; @DDD@ may fail again soon.\n\
-\n\
-Please send a bug report to `@tt ddd-bugs@ ips.cs.tu-bs.de@rm',\n\
-giving a subject like\n\
-\n\
-    @DDD@ @VERSION@ (@host@) gets fatal signal\n\
-\n\
-To enable us to fix the bug, you should include the following information:\n\
-@tt \267 @rm What you were doing to get this message.  Report all the facts.\n\
-@tt \267 @rm The @DDD@ configuration.  \
-Run `@tt ddd --configuration@rm' to get it.\n\
-See also the section ``Reporting Bugs'' in the @DDD@ manual.\n\
-\n\
-We thank you for your support.
 
 Ddd*dungeon_collapse_error_popup.title: @DDD@: Dungeon Kaputt
 Ddd*dungeon_collapse_error*contextHelpString:	\
