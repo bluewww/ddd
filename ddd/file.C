@@ -2,6 +2,7 @@
 // DDD file functions
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -791,6 +792,9 @@ ProgramInfo::ProgramInfo()
     case PERL:
 	// Use the program we were invoked with
 	file = gdb->program();
+	if (file.matches(rxint))
+	    file = "";		// Invoked with a constant expression
+
 	if (file == "")
 	{
 	    // Not invoked with a program?  Use the current file, then.
