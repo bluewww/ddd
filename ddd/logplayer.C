@@ -152,8 +152,7 @@ void logplayer(const string& logname)
     static bool ignore_next_input = false;
 
     signal(SIGINT, (SignalProc)intr);
-    static int sig = 0;
-    if ((sig = setjmp(main_loop_env)) != 0)
+    if (setjmp(main_loop_env) != 0)
     {
 	put("Quit\n");
 
@@ -290,6 +289,9 @@ void logplayer(const string& logname)
 		     ddd_line.contains(" 1-")))
 		{
 		    // Send the log file instead of a source
+		    if (echoing)
+			put(ddd_line + "\r\n");
+
 		    ifstream is(logname);
 		    int line = 1;
 		    bool at_start_of_line = true;
@@ -318,6 +320,7 @@ void logplayer(const string& logname)
 		    }
 
 		    put(string(os));
+		    scanning = false;
 		}
 	    }
 
