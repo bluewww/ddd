@@ -767,35 +767,24 @@ ProgramInfo::ProgramInfo()
 	break;
     }
 
-    // As a fallback, get core file and executable from argument list.
-    // Works only on local file system and is more a guess.
-    char **argv = saved_argv();
-    int argc = 0;
-    while (argv[argc] != 0)
-	argc++;
-
-    // All debuggers supported by DDD have [EXEC [CORE]] as their last
-    // arguments.
-    if ((file == NO_GDB_ANSWER || core == NO_GDB_ANSWER) && argc >= 2)
+    if (file == NO_GDB_ANSWER)
     {
-	string last_file = cmd_file(argv[argc - 1]);
-	if (gdb->type() == JDB)
+	// As a fallback, get core file and executable from argument list.
+	// Works only on local file system and is more a guess.
+	char **argv = saved_argv();
+	int argc = 0;
+	while (argv[argc] != 0)
+	    argc++;
+
+	for (int i = argc - 1; i > 0 && file == NO_GDB_ANSWER; i--)
 	{
-	    file = last_file;
-	}
-	else if (is_exec_file(last_file))
-	{
-	    file = last_file;
-	    core = "";
-	}
-	else if (argc >= 3)
-	{
-	    string prev_file = cmd_file(argv[argc - 2]);
-	    if (is_exec_file(prev_file) && is_core_file(last_file))
-	    {
-		file = prev_file;
-		core = last_file;
-	    }
+	    // All debuggers supported by DDD have [EXEC [CORE]] as
+	    // their last arguments.
+	    string arg = argv[i];
+	    if (is_core_file(arg))
+		core = arg;
+	    else if (is_exec_file(arg))
+		file = arg;
 	}
     }
 
