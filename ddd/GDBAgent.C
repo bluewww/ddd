@@ -1362,6 +1362,9 @@ void GDBAgent::handle_input(string& answer)
 	// or a reply to a control character (`Quit').
 	strip_control(answer);
 	callHandlers(AsyncAnswer, (void *)&answer);
+
+	// Save answer in case of exceptions.
+	complete_answer += answer;
 	break;
 
     case BusyOnInitialCmds:
