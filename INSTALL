@@ -5,8 +5,8 @@ For compiling and installing DDD on a system, please follow these
 instructions.
 
 
-Requirements
-============
+Build Requirements
+==================
 
 To build a complete DDD from sources, you need:
 
@@ -20,8 +20,8 @@ To build a complete DDD from sources, you need:
 
    * A Motif Widget library, either LessTif (0.83 or later) or
      OSF/Motif (1.1 or later).  See the DDD WWW site and the
-     `patches/' directory for useful LessTif patches.  LessTif is
-     available via `http://www.lesstif.org/'.
+     `patches/' directory for useful LessTif patches.  The most recent
+     LessTif release is available via `http://www.lesstif.org/'.
 
    * The X window library (Xlib) and X toolkit library (Xt), 
      X11 Release 4 or later.
@@ -29,31 +29,62 @@ To build a complete DDD from sources, you need:
 
 The following packages are recommended, but not required:
 
+   * The XPM library (3.2 or later).  The XPM library brings support
+     for multi-color icons and logos.  Without XPM, DDD will use
+     monochrome icons.
+
    * The Athena Widget library (from X11R5 or later).  Having the
      Athena Widget library is convenient for supporting
-     two-dimensional scrollbars and the `editres' protocol.
-
-   * The XPM library (3.2 or later).  The XPM library brings support
-     for multi-color icons and logos.
+     two-dimensional scrollbars.
 
 
-To run DDD, you need an inferior command-line debugger.  Best results
-are achieved with GDB, the GNU debugger.  (GDB 4.x is required; best
-results are achieved with GDB 4.13 or later.)  Using GDB, you can
-debug programs written in C, C++, GNU Java (`guavac'), GNU Ada
-(`gnat'), GNU Fortran (`g77') and GNU Modula-2.
 
-As an alternative to GDB, DDD also supports the DBX debugger as found
-on SUN, DEC, AIX, and IRIX systems.  Using DBX, you can debug programs
-written in C, C++, Pascal, Fortran, and Modula-2.  DDD adapts
-automatically to a wide range of other DBX variants.
+Execution Requirements
+======================
 
-As another alternative, DDD also supports the XDB debugger as found on
-HP-UX systems.  XDB usage has been tested for C programs only, but may
-work for other languages as well.
+To run DDD, you need:
 
-Finally, DDD also supports JDB, the Java Debugger, as of JDK 1.1 and
-later.  Using JDB, you can find and fix bugs in Java programs.
+   * An inferior command-line debugger.  Best results are achieved
+     with GDB, the GNU debugger.  (GDB 4.x is required; best results
+     are achieved with GDB 4.13 or later.)  Using GDB, you can debug
+     programs written in C, C++, GNU Java (`guavac'), GNU Ada
+     (`gnat'), GNU Fortran (`g77') and GNU Modula-2.
+
+     As an alternative to GDB, DDD also supports the DBX debugger as
+     found on SUN, DEC, AIX, and IRIX systems.  Using DBX, you can
+     debug programs written in C, C++, Pascal, Fortran, and Modula-2.
+     DDD adapts automatically to a wide range of other DBX variants.
+
+     As another alternative, DDD also supports the XDB debugger as
+     found on HP-UX systems.  XDB usage has been tested for C programs
+     only, but may work for other languages as well. (*)
+
+     Finally, DDD also supports JDB, the Java Debugger, as of JDK 1.1
+     and later.  Using JDB, you can find and fix bugs in Java
+     programs.
+
+
+     (*) XDB may no longer be supported in future DDD releases.
+         You can use HP's Wildebeest (WDB) instead, a free GDB port to
+         HP-UX (`http://www.hp.com/lang/tools/Debuggers/WDB/').
+         Please let us know your experiences with DDD and WDB.
+
+
+The following recommended helper applications should be in the user path:
+
+   * An X terminal emulator program (`xterm' or likewise).  DDD needs
+     this for running programs in the separate execution window.
+
+   * The GNU `info' program as well as well as various info files.
+
+     - `info -f gdb' should show the GDB Manual.  DDD uses this to
+       display the GDB Reference.
+
+     - `info -f libc' should show libc documentation.  DDD uses this
+       give online help on the various signals.
+
+   * The `xfontsel' font selection program.  With `xfontsel', you can
+     select fonts interactively.
 
 
 Basic Installation
