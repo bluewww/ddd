@@ -65,6 +65,7 @@ char HelpCB_rcsid[] =
 #include <Xm/PushB.h>
 #include <Xm/PanedW.h>
 #include <Xm/MenuShell.h>
+#include <Xm/ToggleB.h>
 
 #include <X11/cursorfont.h>
 #include <X11/StringDefs.h>
@@ -77,6 +78,7 @@ char HelpCB_rcsid[] =
 #include "cook.h"
 #include "events.h"
 #include "exit.h"
+#include "simpleMenu.h"
 #include "verify.h"
 #include "Delay.h"
 #include "StringA.h"
@@ -812,16 +814,16 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 
 
 // Close action from menu
-static void CloseCB(Widget, XtPointer client_data, XtPointer)
+static void CloseCB(Widget w, XtPointer, XtPointer)
 {
-    Widget shell = Widget(client_data);
+    Widget shell = findTopLevelShellParent(w);
     DestroyWhenIdle(shell);
 }
 
 // Create an empty dialog within a top-level-shell
 // FIXME: This should be part of core DDD!
 static Widget create_text_dialog(Widget parent, String name, 
-				 Arg *args, int arg)
+				 Arg *args, int arg, Widget& bar)
 {
     Widget shell = verify(XtCreateWidget(name, topLevelShellWidgetClass,
 					 parent, args, arg));
@@ -830,26 +832,23 @@ static Widget create_text_dialog(Widget parent, String name,
     Widget w = XmCreateMainWindow(shell, name, args, arg);
     XtManageChild(w);
 
-    static MMDesc file_menu[] = 
+    MMDesc file_menu[] = 
     {
-	{ "close", MMPush, { CloseCB } },
+	{ "close", MMPush, { CloseCB, XtPointer(shell) } },
 	{ "exit",  MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }},
 	MMEnd
     };
 
-    extern MMDesc help_menu[];
-    extern MMDesc edit_menu[];
-
-    static MMDesc menubar[] = 
+    MMDesc menubar[] = 
     {
 	{ "file",     MMMenu, MMNoCB, file_menu },
-	{ "edit",     MMMenu, MMNoCB, edit_menu },
-	{ "help",     MMMenu | MMHelp, MMNoCB, help_menu },
+	{ "edit",     MMMenu, MMNoCB, simple_edit_menu },
+	{ "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu },
 	MMEnd
     };
 
-    /* Widget menubar_w = */ MMcreateMenuBar(w, "menubar", menubar);
-    MMaddCallbacks(menubar, XtPointer(shell));
+    bar = MMcreateMenuBar(w, "menubar", menubar);
+    MMaddCallbacks(menubar);
     MMaddHelpCallback(menubar, ImmediateHelpCB);
     Delay::register_shell(shell);
 
@@ -887,6 +886,16 @@ static int max_width(const char *text)
     }
 
     return max_width;
+}
+
+static void ToggleIndexCB(Widget w, XtPointer client_data, XtPointer)
+{
+    Widget child = Widget(client_data);
+
+    if (XmToggleButtonGetState(w))
+	manage_paned_child(child);
+    else
+	XtUnmanageChild(child);
 }
 
 // Return manual
@@ -1056,9 +1065,10 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
     Arg args[15];
     Cardinal arg = 0;
+    Widget menubar;
     XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
     Widget text_dialog = create_text_dialog(toplevel, "manual_help", 
-					    args, arg);
+					    args, arg, menubar);
 
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,        0); arg++;
@@ -1097,11 +1107,36 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     fi->key = arg_field->text();
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  ClearTextFieldCB, fi->key);
+    MMaddCallbacks(simple_edit_menu, XtPointer(fi->key));
 
     arg = 0;
     Widget help_index = verify(XmCreateScrolledList(area, "index", args, arg));
     XtManageChild(help_index);
     set_scrolled_window_size(help_index);
+
+    Widget view_index;
+    MMDesc manual_menu[] = 
+    {
+	{ "findForward",  MMPush, { FindForwardCB, XtPointer(fi) } },
+	{ "findBackward", MMPush, { FindBackwardCB, XtPointer(fi) } },
+	MMSep,
+	{ "viewIndex",    MMToggle, { ToggleIndexCB, 
+				      XtPointer(XtParent(help_index)) }, 
+	  NULL, &view_index },
+	MMEnd
+    };
+
+    MMDesc more_menubar[] = 
+    {
+	// This is called `source' such that we can re-use the Find
+	// specs from the DDD `Source' meny
+	{ "source", MMMenu, MMNoCB, manual_menu },
+	MMEnd
+    };
+
+    MMaddItems(menubar, more_menubar);
+    MMaddCallbacks(more_menubar);
+    XtVaSetValues(view_index, XmNset, True, NULL);
 
     int columns = max_width(text);
     columns = min(max(columns, 40), 80) + 1;
@@ -1342,8 +1377,10 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     Arg args[15];
     Cardinal arg = 0;
+    Widget menubar;
     XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
-    Widget text_dialog = create_text_dialog(toplevel, name, args, arg);
+    Widget text_dialog = create_text_dialog(toplevel, name, args, arg, 
+					    menubar);
 
     arg = 0;
     Widget form = verify(XmCreateForm(text_dialog, "form", args, arg));
@@ -1378,6 +1415,25 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     fi->key = arg_field->text();
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  ClearTextFieldCB, fi->key);
+    MMaddCallbacks(simple_edit_menu, XtPointer(fi->key));
+
+    MMDesc manual_menu[] = 
+    {
+	{ "findForward",  MMPush, { FindForwardCB, XtPointer(fi) }},
+	{ "findBackward", MMPush, { FindBackwardCB, XtPointer(fi) }},
+	MMEnd
+    };
+
+    MMDesc more_menubar[] = 
+    {
+	// This is called `source' such that we can re-use the Find
+	// specs from the DDD `Source' meny
+	{ "source", MMMenu, MMNoCB, manual_menu },
+	MMEnd
+    };
+
+    MMaddItems(menubar, more_menubar);
+    MMaddCallbacks(more_menubar);
 
     int columns = max_width(text);
     columns = min(max(columns, 40), 80) + 1;

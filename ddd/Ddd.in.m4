@@ -1682,7 +1682,17 @@ Ddd*manual_help*text.rows:		25
 Ddd*manual_help*text.wordWrap:		on
 Ddd*manual_help*text.scrollHorizontal:	off
 
-Ddd*help_area*findBackward.labelString: 	     LBL_FIND_BACKWARD
+Ddd*manual_help*source.labelString:     	Reference
+Ddd*manual_help*source.mnemonic:        	R
+
+Ddd*sourceMenu*viewIndex.labelString:  		Index
+Ddd*sourceMenu*viewIndex.mnemonic:     		I
+Ddd*sourceMenu*viewIndex.accelerator:		Meta<Key>1
+Ddd*sourceMenu*viewIndex.acceleratorText:	Alt+1
+Ddd*sourceMenu*viewIndex.documentationString:\
+@rm Toggle display of manual index
+
+Ddd*help_area*findBackward.labelString: 	   LBL_FIND_BACKWARD
 Ddd*help_area*findBackward.labelType:              XmPIXMAP
 Ddd*help_area*findBackward.labelPixmap:            find_backward
 Ddd*help_area*findBackward.labelInsensitivePixmap: find_backward-xx
@@ -1694,7 +1704,7 @@ Ddd*help_area*findBackward.tipString:	  \
 Ddd*help_area*findBackward.documentationString:	\
 @rm Search the previous occurrence of LBL(()) in the text
 
-Ddd*help_area*findForward.labelString:  	    LBL_FIND_FORWARD
+Ddd*help_area*findForward.labelString:  	  LBL_FIND_FORWARD
 Ddd*help_area*findForward.labelType:              XmPIXMAP
 Ddd*help_area*findForward.labelPixmap:            find_forward
 Ddd*help_area*findForward.labelInsensitivePixmap: find_forward-xx
@@ -1726,6 +1736,9 @@ Ddd*license*form.borderWidth:		0
 Ddd*license*title.labelString:      	DDD License
 Ddd*license*title.alignment:	        XmALIGNMENT_BEGINNING
 
+Ddd*license*source.labelString:     	License
+Ddd*license*source.mnemonic:        	L
+
 Ddd*license*text.rows:	      		25
 Ddd*license*text.wordWrap:	        on
 Ddd*license*text.scrollHorizontal:    	off
@@ -1749,6 +1762,9 @@ Ddd*news*form.borderWidth:		0
 
 Ddd*news*title.labelString:      	DDD News
 Ddd*news*title.alignment:	        XmALIGNMENT_BEGINNING
+
+Ddd*news*source.labelString:     	News
+Ddd*news*source.mnemonic:        	N
 
 Ddd*news*text.rows:	      		25
 Ddd*news*text.wordWrap:	        	on
@@ -2527,7 +2543,7 @@ Ddd*sourceMenu.breakpoints.documentationString: \
 Ddd*sourceMenu.lookup.labelString:	        Lookup ()
 Ddd*sourceMenu.lookup.mnemonic:			L
 Ddd*sourceMenu.lookup.accelerator:		Ctrl<Key>slash
-Ddd*sourceMenu.lookup.acceleratorText:	Ctrl+/
+Ddd*sourceMenu.lookup.acceleratorText:		Ctrl+/
 Ddd*sourceMenu.lookup.documentationString:\
 @rm Lookup LBL(()) in the source
 
@@ -2536,14 +2552,14 @@ Ddd*sourceMenu.findForward.labelString:	        LBL_FIND_FORWARD
 Ddd*sourceMenu.findForward.accelerator:		Ctrl<Key>period
 Ddd*sourceMenu.findForward.acceleratorText:	Ctrl+.
 Ddd*sourceMenu.findForward.documentationString:\
-@rm Search the next occurrence of LBL(()) in the source
+@rm Search the next occurrence of LBL(())
 
 Ddd*sourceMenu.findBackward.labelString:	LBL_FIND_BACKWARD
 ! Ddd*sourceMenu.findBackward.mnemonic:		<
 Ddd*sourceMenu.findBackward.accelerator:	Ctrl<Key>comma
 Ddd*sourceMenu.findBackward.acceleratorText:	Ctrl+,
 Ddd*sourceMenu.findBackward.documentationString:\
-@rm Search the previous occurrence of LBL(()) in the source
+@rm Search the previous occurrence of LBL(())
 
 Ddd*sourceMenu.findWordsOnly.labelString:	Find Words Only
 Ddd*sourceMenu.findWordsOnly.mnemonic:		W

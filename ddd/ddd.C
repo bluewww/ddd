@@ -200,7 +200,6 @@ char ddd_rcsid[] =
 #include "TimeOut.h"
 #include "UndoBuffer.h"
 #include "VSEFlags.h"
-#include "WhatNextCB.h"
 #include "args.h"
 #include "assert.h"
 #include "bool.h"
@@ -250,6 +249,7 @@ char ddd_rcsid[] =
 #include "shell.h"
 #include "shorten.h"
 #include "show.h"
+#include "simpleMenu.h"
 #include "source.h"
 #include "status.h"
 #include "strclass.h"
@@ -821,19 +821,6 @@ static MMDesc command_edit_menu[] = EDIT_MENU(GDBWindow);
 static MMDesc source_edit_menu[]  = EDIT_MENU(SourceWindow);
 static MMDesc data_edit_menu[]    = EDIT_MENU(DataWindow);
 
-// A `generic' edit menu for all occasions
-MMDesc edit_menu[] =
-{
-    { "cut",       MMPush,  { gdbCutSelectionCB,    XtPointer(OtherWindow) }},
-    { "copy",      MMPush,  { gdbCopySelectionCB,   XtPointer(OtherWindow) }},
-    { "paste",     MMPush,  { gdbPasteClipboardCB,  XtPointer(OtherWindow) }},
-    { "clearAll",  MMPush,  { gdbClearAllCB,        XtPointer(OtherWindow) }},
-    { "delete",    MMPush,  { gdbDeleteSelectionCB, XtPointer(OtherWindow) }},
-    MMSep,
-    { "selectAll", MMPush,  { gdbSelectAllCB,       XtPointer(OtherWindow) }},
-    MMEnd
-};
-
 static Widget complete_w;
 static Widget define_w;
 
@@ -1306,28 +1293,6 @@ static MMDesc data_menu[] =
 };
 
 
-// Help
-MMDesc help_menu[] = 
-{
-    {"onHelp",      MMPush, { HelpOnHelpCB }},
-    MMSep,
-    {"onItem",      MMPush, { HelpOnItemCB }},
-    {"onWindow",    MMPush, { HelpOnWindowCB }},
-    MMSep,
-    {"whatNext",    MMPush, { WhatNextCB }},
-    {"tipOfTheDay", MMPush, { TipOfTheDayCB }},
-    MMSep,
-    {"dddManual",   MMPush, { DDDManualCB }},
-    {"news",        MMPush, { DDDNewsCB }},
-    {"gdbManual",   MMPush, { GDBManualCB }},
-    MMSep,
-    {"license",     MMPush, { DDDLicenseCB }},
-    {"www",         MMPush, { DDDWWWPageCB }},
-    MMSep,
-    {"onVersion",   MMPush, { HelpOnVersionCB }},
-    MMEnd
-};
-
 // Menu Bar for DDD command window
 static MMDesc command_menubar[] = 
 {
@@ -1339,7 +1304,7 @@ static MMDesc command_menubar[] =
       				   command_view_menu },
     { "program",  MMMenu,          MMNoCB, command_program_menu },
     { "commands", MMMenu,          MMNoCB, command_menu },
-    { "help",     MMMenu | MMHelp, MMNoCB, help_menu },
+    { "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu },
     MMEnd
 };
 
@@ -1355,7 +1320,7 @@ static MMDesc source_menubar[] =
     { "program", MMMenu,          MMNoCB, source_program_menu },
     { "stack",   MMMenu,          MMNoCB, stack_menu },
     { "source",  MMMenu,          MMNoCB, source_menu },
-    { "help",    MMMenu | MMHelp, MMNoCB, help_menu },
+    { "help",    MMMenu | MMHelp, MMNoCB, simple_help_menu },
     MMEnd
 };
 
@@ -1370,7 +1335,7 @@ static MMDesc data_menubar[] =
       				  data_view_menu },
     { "program", MMMenu,          MMNoCB, data_program_menu },
     { "data",    MMMenu,          MMNoCB, data_menu },
-    { "help",    MMMenu | MMHelp, MMNoCB, help_menu },
+    { "help",    MMMenu | MMHelp, MMNoCB, simple_help_menu },
     MMEnd
 };
 
@@ -1388,7 +1353,7 @@ static MMDesc common_menubar[] =
     { "stack",      MMMenu,       MMNoCB, stack_menu },
     { "source",     MMMenu,       MMNoCB, source_menu },
     { "data",       MMMenu,       MMNoCB, data_menu },
-    { "help", MMMenu | MMHelp,    MMNoCB, help_menu },
+    { "help", MMMenu | MMHelp,    MMNoCB, simple_help_menu },
     MMEnd
 };
 
@@ -5743,11 +5708,6 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
 
 static void setup_cut_copy_paste_bindings(XrmDatabase db)
 {
-#ifdef LESSTIF_VERSION
-    // In Lesstif, we can change accelerators at run-time.  See
-    // set_cut_copy_paste_bindings(), above.
-    (void) db;
-#else
     // Stupid OSF/Motif won't change the accelerators once created.
     // Set resources explicitly.
     String resources = 0;
@@ -5777,7 +5737,6 @@ static void setup_cut_copy_paste_bindings(XrmDatabase db)
     XrmDatabase bindings = XrmGetStringDatabase(resources);
     assert(bindings != 0);
     XrmMergeDatabases(bindings, &db);
-#endif
 }
 
 //-----------------------------------------------------------------------------

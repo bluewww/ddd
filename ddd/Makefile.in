@@ -683,6 +683,7 @@ XSTUFF_OBJECTS = \
 	fileSBF.o    \
 	frame.o      \
 	longName.o   \
+	simpleMenu.o \
 	verify.o     \
 	ComboBox.o   \
 	Delay.o      \

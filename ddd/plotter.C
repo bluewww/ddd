@@ -38,8 +38,10 @@ char plotter_rcsid[] =
 #include "cook.h"
 #include "ddd.h"
 #include "exit.h"
+#include "findParent.h"
 #include "findWindow.h"
 #include "fonts.h"
+#include "simpleMenu.h"
 #include "verify.h"
 #include "strclass.h"
 #include "version.h"
@@ -69,14 +71,11 @@ static MMDesc file_menu[] =
     MMEnd
 };
 
-extern MMDesc help_menu[];
-extern MMDesc edit_menu[];
-
 static MMDesc menubar[] = 
 {
     { "file",     MMMenu, MMNoCB, file_menu },
-    { "edit",     MMMenu, MMNoCB, edit_menu },
-    { "help",     MMMenu | MMHelp, MMNoCB, help_menu },
+    { "edit",     MMMenu, MMNoCB, simple_edit_menu },
+    { "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu },
     MMEnd
 };
 
@@ -106,19 +105,19 @@ static void GoneCB(Widget, XtPointer client_data, XtPointer)
     DestroyWhenIdle(shell);
 }
 
-// Close action from menu
-static void CloseCB(Widget, XtPointer client_data, XtPointer)
-{
-    Widget shell = Widget(client_data);
-    DestroyWhenIdle(shell);
-}
-
 // Swallower is being destroyed - kill agent, too
 static void KillAgentCB(Widget /* swallower */, 
 			XtPointer client_data, XtPointer)
 {
     PlotAgent *plotter = (PlotAgent *)client_data;
     plotter->terminate();
+}
+
+// Close action from menu
+static void CloseCB(Widget w, XtPointer, XtPointer)
+{
+    Widget shell = findTopLevelShellParent(w);
+    DestroyWhenIdle(shell);
 }
 
 // Create a new plot window
