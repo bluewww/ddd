@@ -612,8 +612,9 @@ void DecoratePushMenuAct(Widget w, XEvent */* event */, String *, Cardinal *)
     if (!XmIsPushButton(w))
 	return;
 
-    clog << "Redraw " << XtName(w) << "\n";
-        
+    // clog << "Redraw " << XtName(w) << "\n";
+
+    // Draw a little triangle in upper right corner
     XPoint points[4] = {
 	{-6, 1}, {5, 0}, {-3, 3}, {-2, -3}
     };
@@ -684,7 +685,7 @@ static void ArmPushMenuCB(Widget w, XtPointer, XtPointer call_data)
     XtAddCallback(w, XmNdisarmCallback, RemoveTimeOutCB, XtPointer(id));
 }
 
-static void RedrawPushMenuCB(Widget w, XtPointer, XtPointer call_data)
+static void RedrawPushMenuCB(Widget w, XtPointer, XtPointer)
 {
     XtCallActionProc(w, "decorate-push-menu", 0, 0, 0);
 }
