@@ -227,7 +227,9 @@ Ddd*paperSize: 210mm x 297mm
 
 
 ! The `gnuplot' command.
-Ddd*plotCommand: gnuplot -font '@FONT@' -title 'DDD: Plot Window'
+! The string `@FONT@' is replaced by the current DDD default font.
+! The string `@NAME@' is replaced by the item to plot.
+Ddd*plotCommand: gnuplot -font '@FONT@' -title 'DDD: @NAME@'
 Ddd*plotInitCommands: set parametric
 Ddd*plot2dSettings:   set noborder
 Ddd*plot3dSettings:   set border

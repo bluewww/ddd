@@ -286,7 +286,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
     {
 	// Read in entire text
 	_value = value;
-	value = value.from(value.length());
+	value = value.from(int(value.length())); // assigns ""
 #if LOG_CREATE_VALUES
 	clog << mytype << ": " << quote(_value) << "\n";
 #endif
@@ -1154,6 +1154,7 @@ void DispValue::plot() const
     {
 	string cmd = app_data.plot_command;
 	cmd.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
+	cmd.gsub("@NAME@", full_name());
 
 	((DispValue *)this)->_plotter = 
 	    new PlotAgent(plot_context, cmd);
