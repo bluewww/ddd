@@ -69,7 +69,10 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 		  XmNiconPixmap, icon,
 		  XmNiconMask, mask,
 		  NULL);
+
+#if 0				// This should be done by the shell.
     wm_set_icon(XtDisplay(shell), XtWindow(shell), icon, mask);
+#endif
 }
 
 void wm_set_group_leader(Display * /* display */,
@@ -85,7 +88,7 @@ void wm_set_group_leader(Display * /* display */,
 
     XSetWMHints(display, shell_window, wm_hints);
 
-    XFree(wm_hints);
+    XFree((void *)wm_hints);
 #endif
 }
 
@@ -111,7 +114,9 @@ void wm_set_name(Widget shell, string title, string icon)
 		  XmNtitle,    (char *)title,
 		  NULL);
     
+#if 0				// This should be done by the shell.
     wm_set_name(XtDisplay(shell), XtWindow(shell), title, icon);
+#endif
 }
 
 // Wait until W is mapped
