@@ -232,7 +232,8 @@ EXTRA_DIST = \
         include \
 	$(CVS2CL) \
 	$(USERMAP) \
-        PROBLEMS
+        PROBLEMS \
+        CREDITS
 
 dist-hook:
 	rm -rf `find $(distdir)/include -name CVS -o -name .cvsignore`
