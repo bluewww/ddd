@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
 	if (VSEFlags::dump_tree)
 	    lib.dumpTree(cout);
 
-	if (VSEFlags::supress_eval)
+	if (VSEFlags::suppress_eval)
 	    return EXIT_SUCCESS;
 
 	// Letzte Funktionsdefinition (gewoehnlich "main") finden

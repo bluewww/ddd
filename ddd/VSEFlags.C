@@ -33,6 +33,7 @@ char VSEFlags_rcsid[] =
 #include <stdio.h>
 #include <string.h>
 #include <strstream.h>
+#include <ctype.h>
 #include <X11/Intrinsic.h>
 
 #include "assert.h"
@@ -114,7 +115,7 @@ bool VSEFlags::show_optimizing_time      = false;
 bool VSEFlags::show_display_time         = false;
 
 // eval options
-bool VSEFlags::supress_eval              = false;
+bool VSEFlags::suppress_eval             = false;
 bool VSEFlags::issue_nooptionals         = false;
 
 // arguments
@@ -143,135 +144,137 @@ OptionTableEntry VSEFlags::optionTable[] = {
 // Help options
 { TITLE,    "",                     "Help",
     0 },
-{ BOOLEAN,  "help",                 "explain usage",
+{ BOOLEAN,  "help",                 "Show VSL options",
     &help },
-{ BOOLEAN,  "?",                    "explain usage",
+{ BOOLEAN,  "?",                    "Show VSL options",
     &help },
 
 // Settings
 { TITLE,    "",                     "Settings",
     0 },
-{ BOOLEAN,  "verbose",              "enter verbose mode",
+{ BOOLEAN,  "verbose",              "Enter verbose mode",
     &verbose },
-{ BOOLEAN,  "bag",                  "enter bag mode",
+{ BOOLEAN,  "bag",                  "Enter bag mode",
     &bag_mode },
-{ BOOLEAN,  "open",                 "open documents when loaded",
+{ BOOLEAN,  "open",                 "Open documents when loaded",
     &load_open_mode },
-{ BOOLEAN,  "concurrent",           "allow concurrent editing",
+{ BOOLEAN,  "concurrent",           "Allow concurrent editing",
     &concurrent_mode },
-{ BOOLEAN,  "what",                 "display source file versions",
+{ BOOLEAN,  "what",                 "Display source file versions",
     &what },
-{ STRING,   "library",              "load vsl library",
+{ STRING,   "library",              "Load vsl library",
     &library_file },
-{ STRING,   "document",             "load document",
+{ STRING,   "document",             "Load document",
     &document_file },
-{ STRING,   "startup",              "load startup file",
+{ STRING,   "startup",              "Load startup file",
     &startup_file },
-{ STRING,   "I",                    "set #include search path",
+{ STRING,   "I",                    "Set #include search path",
+    &include_search_path },
+{ STRING,   "include",              "Set #include search path",
     &include_search_path },
 
 // Optimize options
 { TITLE,    "",                     "Optimizing",
     0 },
-{ BOOLEAN,  "Oinline-functions",    "perform inlineFuncs optimization",
+{ BOOLEAN,  "optimize-inline-functions",    "Perform inlineFuncs optimization",
     &optimize_inlineFuncs },
-{ BOOLEAN,  "Ofold-ops",            "perform foldOps optimization",
+{ BOOLEAN,  "optimize-fold-ops",            "Perform foldOps optimization",
     &optimize_foldOps },
-{ BOOLEAN,  "Ofold-consts",         "perform foldConsts optimization",
+{ BOOLEAN,  "optimize-fold-consts",         "Perform foldConsts optimization",
     &optimize_foldConsts },
-{ BOOLEAN,  "Oresolve-defs",        "perform resolveDefs optimization",
+{ BOOLEAN,  "optimize-resolve-defs",        "Perform resolveDefs optimization",
     &optimize_resolveDefs },
-{ BOOLEAN,  "Oresolve-synonyms",    "perform resolveSynonyms optimization",
+{ BOOLEAN,  "optimize-resolve-synonyms",    "Perform resolveSynonyms optimization",
     &optimize_resolveSynonyms },
-{ BOOLEAN,  "Ocleanup",             "perform cleanup between opt stages",
+{ BOOLEAN,  "optimize-cleanup",             "Perform cleanup between optimization stages",
     &optimize_cleanup },
-{ BOOLEAN,  "Oincremental-eval",    "perform incremental evaluation",
+{ BOOLEAN,  "optimize-incremental-eval",    "Perform incremental evaluation",
     &incremental_eval },
-{ BOOLEAN,  "O",                    "perform all optimizations",
+{ BOOLEAN,  "optimize-",                    "Perform all optimizations",
     0 },
-{ INT,      "Noptimize-loops",      "set maximum #optimize loops",
+{ INT,      "max-optimize-loops",           "Set maximum #optimize loops",
     &max_optimize_loops },
 
 // Debugging Options
 { TITLE,    "",                     "Debugging",
     0 },
-{ BOOLEAN,  "Dassert-document-ok",  "assert document::OK()",
+{ BOOLEAN,  "debug-assert-document-ok",  "Assert document::OK()",
     &assert_document_ok },
-{ BOOLEAN,  "Dassert-library-ok",   "assert library::OK()",
+{ BOOLEAN,  "debug-assert-library-ok",   "Assert library::OK()",
     &assert_library_ok },
-{ BOOLEAN,  "Dshow-tree",           "show library tree",
+{ BOOLEAN,  "debug-show-tree",           "Show library tree",
     &dump_tree },
-{ BOOLEAN,  "Dshow-library",        "show library (in VSL)",
+{ BOOLEAN,  "debug-show-library",        "Show library (in VSL)",
     &dump_library },
-{ BOOLEAN,  "Dshow-last",           "show only last library def",
+{ BOOLEAN,  "debug-show-last",           "Show only last library def",
     &dump_last },
-{ BOOLEAN,  "Dshow-document",       "show document (in VSL)",
+{ BOOLEAN,  "debug-show-document",       "Show document (in VSL)",
     &dump_document },
-{ BOOLEAN,  "Dshow-picture",        "show picture (in VSL)",
+{ BOOLEAN,  "debug-show-picture",        "Show picture (in VSL)",
     &dump_picture },
-{ BOOLEAN,  "Dconst-info",          "include const info",
+{ BOOLEAN,  "debug-const-info",          "Include const info",
     &include_const_info },
-{ BOOLEAN,  "Dlist-info",           "include list info",
+{ BOOLEAN,  "debug-list-info",           "Include list info",
     &include_list_info },
-{ BOOLEAN,  "Dbox-fonts-info",      "include box font info",
+{ BOOLEAN,  "debug-box-fonts-info",      "Include box font info",
     &include_font_info },
-{ BOOLEAN,  "Dbox-id-info",         "include box id info",
+{ BOOLEAN,  "debug-box-id-info",         "Include box id info",
     &include_id_info },
-{ BOOLEAN,  "Dbox-tag-info",        "include box tag info",
+{ BOOLEAN,  "debug-box-tag-info",        "Include box tag info",
     &include_tag_info },
-{ BOOLEAN,  "Dbox-size-info",       "include box size info",
+{ BOOLEAN,  "debug-box-size-info",       "Include box size info",
     &include_size_info },
-{ BOOLEAN,  "Ddoc-select-info",     "include document select state info",
+{ BOOLEAN,  "debug-doc-select-info",     "Include document select state info",
     &include_select_info },
-{ BOOLEAN,  "Dshow-balance",        "show balance",
+{ BOOLEAN,  "debug-show-balance",        "Show balance",
     &show_balance },
-{ BOOLEAN,  "Dshow-eval-huge",      "show huge evaluation (documents)",
+{ BOOLEAN,  "debug-show-eval-huge",      "Show huge evaluation (documents)",
     &show_huge_eval },
-{ BOOLEAN,  "Dshow-eval-large",     "show large evaluation (defs)",
+{ BOOLEAN,  "debug-show-eval-large",     "Show large evaluation (defs)",
     &show_large_eval },
-{ BOOLEAN,  "Dshow-eval-tiny",      "show tiny evaluation (nodes)",
+{ BOOLEAN,  "debug-show-eval-tiny",      "Show tiny evaluation (nodes)",
     &show_tiny_eval },
-{ BOOLEAN,  "Dshow-backtrace",      "show backtrace on errors",
+{ BOOLEAN,  "debug-show-backtrace",      "Show backtrace on errors",
     &show_backtrace },
-{ BOOLEAN,  "Dshow-ids",            "show id creation and deletion",
+{ BOOLEAN,  "debug-show-ids",            "Show id creation and deletion",
     &show_ids },
-{ BOOLEAN,  "Dshow-vars",           "show variable declaration and use",
+{ BOOLEAN,  "debug-show-vars",           "Show variable declaration and use",
     &show_vars },
-{ BOOLEAN,  "Dshow-draw",           "show drawing",
+{ BOOLEAN,  "debug-show-draw",           "Show drawing",
     &show_draw },
-{ BOOLEAN,  "Dshow-flags",          "show flag processing",
+{ BOOLEAN,  "debug-show-flags",          "Show flag processing",
     &show_flags },
-{ BOOLEAN,  "Dshow-optimize",       "show optimization",
+{ BOOLEAN,  "debug-show-optimize",       "Show optimization",
     &show_optimize },
-{ BOOLEAN,  "Dshow-match-nodes",    "show pattern matching (nodes)",
+{ BOOLEAN,  "debug-show-match-nodes",    "Show pattern matching (nodes)",
     &show_match_nodes },
-{ BOOLEAN,  "Dshow-match-boxes",    "show pattern matching (boxes)",
+{ BOOLEAN,  "debug-show-match-boxes",    "Show pattern matching (boxes)",
     &show_match_boxes },
-{ BOOLEAN,  "Dshow-match-defs",     "show pattern matching (defs)",
+{ BOOLEAN,  "debug-show-match-defs",     "Show pattern matching (defs)",
     &show_match_defs },
-{ BOOLEAN,  "Dtime-display",        "show display time",
+{ BOOLEAN,  "debug-time-display",        "Show display time",
     &show_display_time },
-{ BOOLEAN,  "Dtime-evaluation",     "show evaluation time",
+{ BOOLEAN,  "debug-time-evaluation",     "Show evaluation time",
     &show_eval_time },
-{ BOOLEAN,  "Dtime-optimizing",     "show optimizing time",
+{ BOOLEAN,  "debug-time-optimizing",     "Show optimizing time",
     &show_optimizing_time },
-{ BOOLEAN,  "Doptimize-globals",    "perform foldConsts on global defs",
+{ BOOLEAN,  "debug-optimize-globals",    "Perform foldConsts on global defs",
     &optimize_globals },
-{ BOOLEAN,  "Dsupress-eval",        "skip evaluation and picture",
-    &supress_eval },
-{ BOOLEAN,  "Dissue-nooptionals",   "generate code for nooptionals",
+{ BOOLEAN,  "debug-suppress-eval",       "Skip evaluation and picture",
+    &suppress_eval },
+{ BOOLEAN,  "debug-issue-nooptionals",   "Generate code for nooptionals",
     &issue_nooptionals },
 
 // Sizes
 { TITLE,    "",                     "Sizes",
     0 },
-{ INT,      "Neval-nesting",        "set max eval nesting",
+{ INT,      "eval-nesting",        "Set max eval nesting",
     &max_eval_nesting },
-{ INT,      "Ninfo-nesting",        "set max info nesting",
+{ INT,      "info-nesting",        "Set max info nesting",
     &max_info_nesting },
-{ INT,      "Npattern-variables",   "set max #variables in pattern",
+{ INT,      "pattern-variables",   "Set max #variables in pattern",
     &max_pattern_variables },
-{ INT,      "Nloops",               "set #evaluation loops",
+{ INT,      "eval-loops",          "Set #evaluation loops",
     &loops },
 
 // Last Option
@@ -279,24 +282,33 @@ OptionTableEntry VSEFlags::optionTable[] = {
     0 }
 };
 
+// Read options; show help and exit if required
 void VSEFlags::parse(int& argc, char**& argv, char *args)
-// Optionen lesen; Wenn Hilfe noetig, ausgeben und Schluss.
 {
-    // Defaults setzen
-    getDefaults();
+    // Get default settings
+    getDefaults(true);
 
-    // Argumente parsen
-    if (_parse(argc, argv))
+    // Parse arguments
+    if (_parse(argc, argv, false))
     {
-	cout << argv[0] << ": usage: " << argv[0] << " [options] "
-	    << args << "\n\n" << explain();
+	cerr << argv[0] << ": usage: " << argv[0] << " [options] "
+	     << args << "\n\n" << explain();
 
 	exit(EXIT_FAILURE);
     }
 }
 
-bool VSEFlags::_parse(int& argc, char**& argv)
-// Optionen lesen; true zurueckgeben, wenn Hilfe noetig
+bool VSEFlags::parse_vsl(int& argc, char**& argv)
+{
+    // Get default settings
+    getDefaults(false);
+
+    return _parse(argc, argv, true);
+}
+    
+
+// Read options; return true if help is required
+bool VSEFlags::_parse(int& argc, char**& argv, bool vsl_prefix_required)
 {
     int arg = 1;
 
@@ -304,18 +316,21 @@ bool VSEFlags::_parse(int& argc, char**& argv)
     {
 	int skip = 0;
 
-	if (argv[arg][0] != '-')        // Keine Option
-	    break;
+	if (argv[arg] == 0)
+	    break;                      // No more args
 
-	if (argv[arg][1] == '\0')       // Keine Option ("-")
-	    break;
+	if (argv[arg][0] != '-')
+	    break;			// No option
 
-	if (argv[arg][1] == '-')        // Ende Optionen ("--")
-	    break;
+	if (argv[arg][1] == '\0')
+	    break;		        // No option ("-")
 
-	string opt = argv[arg];         // Volle Option
+	if (argv[arg][1] == '-' && argv[arg][2] == '\0')
+	    break;                      // End of options ("--")
 
-	// Ggf. "no-" entfernen
+	string opt = argv[arg];         // Full option
+
+	// Remove "no-" prefix
 	bool no = false;
 	if (opt.contains("no-"))
 	{
@@ -323,8 +338,19 @@ bool VSEFlags::_parse(int& argc, char**& argv)
 	    no = true;
 	}
 
-	// Restnamen ohne beginnendes "-" bilden
-	string optName = opt.after("-");
+	// Build option name after leading `-'
+	string optName = opt;
+	while (optName[0] == '-')
+	    optName = optName.after('-');
+
+	// If `vsl-' prefix is required, ignore all other options
+	if (vsl_prefix_required)
+	    if (optName.index("vsl") != 0)
+		break;
+
+	// `vsl-' prefix is optional
+	if (optName.index("vsl-") == 0)
+	    optName = optName.after("vsl-");
 
 	for (int nentry = 0; optionTable[nentry].type != LAST; nentry++)
 	{
@@ -333,8 +359,7 @@ bool VSEFlags::_parse(int& argc, char**& argv)
 
 	    if (entryName.index(optName) == 0)
 	    {   
-		// entryName beginnt mit optName:
-		// Option gefunden, bearbeiten
+		// entryName starts with optName: process option
 
 		switch (entry.type)
 		{
@@ -382,12 +407,20 @@ bool VSEFlags::_parse(int& argc, char**& argv)
 
 		if (show_flags)
 		{
-		    // Bearbeitete Option ausgeben
+		    // Show processed option
 		    cout << "processed flag: " << argv[arg] << " => -";
 
 		    if (no && entry.type == BOOLEAN)
-			cout << entryName.before(rxlowercase) << "no-" 
-			    << entryName.from(rxlowercase);
+		    {
+			if (entryName.contains("debug-"))
+			    cout << entryName.through("debug-") << "no-" 
+				 << entryName.after("debug-");
+			else if (entryName.contains("optimize-"))
+			    cout << entryName.through("optimize-") << "no-" 
+				 << entryName.after("optimize-");
+			else
+			    cout << "no-" << entryName;
+		    }
 		    else
 			cout << entryName;
 
@@ -400,14 +433,14 @@ bool VSEFlags::_parse(int& argc, char**& argv)
 
 	if (skip > 0)
 	{
-	    // Optionen aus Optionenliste entfernen
+	    // Remove option from argument list
 	    for (int a = arg; a < argc; a++)
 		argv[a] = argv[a + skip];
 	    argc -= skip;
 	}
 	else
 	{
-	    // Naechstes Argument bearbeiten; dieses hier drin lassen
+	    // Process next argument; keep this one
 	    arg++;
 	}
     }
@@ -416,7 +449,7 @@ bool VSEFlags::_parse(int& argc, char**& argv)
 }
 
 
-void VSEFlags::getDefaults()
+void VSEFlags::getDefaults(bool warn)
 // Default-Optionen aus .vserc, ~/.vserc, /usr/lib/vse/vse-options lesen
 {
 
@@ -456,7 +489,8 @@ void VSEFlags::getDefaults()
 		    break;
 	    }
 
-	    cerr << "Warning: could not find .vserc, ~/.vserc or vserc\n";
+	    if (warn)
+		cerr << "Warning: could not find .vserc, ~/.vserc or vserc\n";
 	    return;
 	}
     }
@@ -483,7 +517,7 @@ void VSEFlags::getDefaults()
 	    int myargc = nargs + 1;
 	    char **myargv = argv;
 
-	    _parse(myargc, myargv);
+	    _parse(myargc, myargv, false);
 
 	    for (int i = 1; i < myargc; i++)
 		if (myargv[i][0] == '-')
@@ -499,12 +533,14 @@ void VSEFlags::getDefaults()
 }
 
 
-string VSEFlags::explain()
+string VSEFlags::explain(bool vsl_prefix_required)
 // Optionen erklaeren (und defaults ausgeben)
 {
     help = false;   // Stets '-help' ausgeben (sonst kaeme -no-help)
 
     string s = "Options include:\n";
+    if (vsl_prefix_required)
+	s = "List of VSL options:\n";
 
     for (int nentry = 0; optionTable[nentry].type != LAST; nentry++)
     {
@@ -521,6 +557,9 @@ string VSEFlags::explain()
 	string usage   = entry.usage;
 	string deflt   = "";
 
+	if (vsl_prefix_required)
+	    optName.prepend("vsl-");
+
 	switch (entry.type) {
 	    case BOOLEAN:
 	    {
@@ -529,9 +568,20 @@ string VSEFlags::explain()
 		{
 		    if (*boolptr)
 		    {
-			optName = optName.before(rxlowercase) + "no-" 
-			    + optName.from(rxlowercase);
-			usage.prepend("don't ");
+			if (optName.contains("debug-"))
+			    optName = optName.through("debug-") + "no-" 
+				 + optName.after("debug-");
+			else if (optName.contains("optimize-"))
+			    optName = optName.through("optimize-") + "no-" 
+				 + optName.after("optimize-");
+			else if (optName.contains("vsl-"))
+			    optName = optName.through("vsl-") + "no-" 
+				 + optName.after("vsl-");
+			else
+			    optName = "no-" + optName;
+
+			usage[0] = tolower(usage[0]);
+			usage.prepend("Don't ");
 		    }
 		}
 		break;
@@ -571,8 +621,8 @@ string VSEFlags::explain()
 		break;
 	}
 
-	optName = "-" + optName + optArg + ":";
-	while (optName.length() < 28)
+	optName = "--" + optName + optArg + ":";
+	while (optName.length() < 36)
 	    optName += " ";
 	s += optName;
 	usage += deflt;
@@ -580,8 +630,10 @@ string VSEFlags::explain()
 	s += "\n";
     }
 
-    s += "\nOptions may be abbreviated, which causes all matching options"
-	 " to be set.\n\n";
+    s += "\n";
+    s += (vsl_prefix_required ? "VSL options" : "Options");
+    s += " may be abbreviated, which causes all matching options"
+	 " to be set.\n";
 
     return s;
 }

@@ -163,6 +163,7 @@ void show_invocation(DebuggerType type)
 	"  --version          Show the DDD version and exit.\n"
 	"  --configuration    Show the DDD configuration flags and exit.\n"
 	"  --manual           Show the DDD manual and exit.\n"
+	"  --vsl-help         Show VSL options and exit.\n"
 	"\n"
 	"Standard X options are also accepted, such as:\n"
 	"  -display DISPLAY    Run on X server DISPLAY.\n"

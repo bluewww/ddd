@@ -86,13 +86,13 @@ public:
     static bool include_select_info;
 
     // optimize mode
-    static bool optimize_resolveDefs;	// write-only
-    static bool optimize_resolveSynonyms;	// write-only
-    static bool optimize_foldOps;		// write-only
-    static bool optimize_foldConsts;		// write-only
-    static bool optimize_inlineFuncs;	// write-only
-    static bool optimize_cleanup;		// write-only
-    static int max_optimize_loops;		// write-only
+    static bool optimize_resolveDefs;	  // write-only
+    static bool optimize_resolveSynonyms; // write-only
+    static bool optimize_foldOps;         // write-only
+    static bool optimize_foldConsts;	  // write-only
+    static bool optimize_inlineFuncs;	  // write-only
+    static bool optimize_cleanup;	  // write-only
+    static int max_optimize_loops;	  // write-only
 
     static unsigned optimize_mode();
     static bool incremental_eval;
@@ -111,7 +111,7 @@ public:
     static bool show_display_time;
 
     // eval options
-    static bool supress_eval;
+    static bool suppress_eval;
     static bool issue_nooptionals;
 
     // name options
@@ -127,12 +127,16 @@ public:
     static int loops;
 
     // Unterfunktionen
-    static bool _parse(int& argc, char**& argv);
-    static void getDefaults();
-    static string explain();
+    static bool _parse(int& argc, char**& argv, bool vsl_prefix_required);
+    static void getDefaults(bool warn = false);
+    static string explain(bool vsl_prefix_required = false);
 
-    // Haupt-Interface
+    // Main interface for VSL/VSE
     static void parse(int& argc, char**& argv, char *args = " files...");
+
+    // Main interface for other applications; all options require
+    // `-vsl' or `--vsl' prefix.  Return TRUE upon error.
+    static bool parse_vsl(int& argc, char**& argv);
 };
 
 

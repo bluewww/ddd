@@ -171,6 +171,7 @@ char ddd_rcsid[] =
 #include "GDBAgent.h"
 #include "MakeMenu.h"
 #include "SourceView.h"
+#include "VSEFlags.h"
 #include "editing.h"
 #include "args.h"
 #include "assert.h"
@@ -963,6 +964,14 @@ int main(int argc, char *argv[])
     // Merge in ~/.dddinit resources
     XrmDatabase target = XtDatabase(XtDisplay(toplevel));
     XrmMergeDatabases(dddinit, &target);
+
+    // Set up VSL resources
+    if (VSEFlags::parse_vsl(argc, argv))
+    {
+	// Show VSL usage...
+	cout << VSEFlags::explain(true);
+	return EXIT_FAILURE;
+    }
 
     // Setup toplevel window
 #if defined(HAVE_X11_XMU_EDITRES_H)

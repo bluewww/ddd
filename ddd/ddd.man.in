@@ -70,6 +70,9 @@
 .RB "[\|"\c
 .I x-options\c
 \&\|]
+.RB "[\|"\c
+.I vsl-options\c
+\&\|]
 .RB "[\|" \c
 .I program
 .RB "[\|" \c
@@ -1484,6 +1487,9 @@ display shapes and fonts.
 .B \-\-vsl\-path \fIpath\fR
 Search \s-2VSL\s+2 libraries in \fIpath\fR (a colon-separated
 directory list).
+.TP
+.B \-\-vsl\-help
+Show a list of further options controlling the \s-2VSL\s+2 interpreter.
 .PP
 .\" ---------------
 .SH "RESOURCES"
