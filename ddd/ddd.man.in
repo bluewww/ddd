@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "05 March 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "12 March 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -1211,30 +1211,36 @@ same object.
 \s-2@DDD@\s+2 provides a special mode which makes it detect these
 situations.  \s-2@DDD@\s+2 recognizes if two or more data displays are
 stored at the same physical address, and if this is so, merges all
-these \fIaliases\fR into one single data display.  This mode is called
-\fIAlias Detection\fR; it is enabled via the `\fBDetect Aliases\fR'
-item `\fBData\fR' menu.
+these \fIaliases\fR into one single data display, the \fIoriginal data
+display\fR.  This mode is called \fIAlias Detection\fR; it is enabled
+via the `\fBDetect Aliases\fR' item `\fBData\fR' menu.
 .PP
 When alias detection is enabled, \s-2@DDD@\s+2 inquires the memory
 location (the \fIaddress\fR) of each data display after each program
 step.  If two displays have the same address, they are merged into
 one.  More specifically, only the one which has least recently changed
-remains (called \fIoriginal data display\fR); all other aliases are
-\fIsuppressed\fR, i.e. completely hidden. The edges leading to the
+remains (the \fIoriginal data display\fR); all other aliases are
+\fIsuppressed\fR, i.e. completely hidden.  The edges leading to the
 aliases are replaced by edges leading to the original data display.
 .PP
-Alias detection may introduce \fIcurved edges\fR; that is, edges are
-no more straight lines, but describe an arc through an \fIedge
-hint\fR.  You can make edge hints visible by selecting `\fBShow Edge
-Hints\fR' in the `\fBData Options\fR' menu.  Edge hints can be moved
-around like arbitrary displays.
+An edge created by alias detection is somewhat special: rather than
+connecting two displays directly, it goes through an \fIedge hint\fR,
+describing an arc connecting the two displays and the edge hint.
+.PP
+Each edge hint is a placeholder for a suppressed alias; selecting an
+edge hint is equivalent to selecting the alias.  This way, you can
+easily delete display aliases by simply selecting the edge hint and
+clicking on `\fBDelete ()\fR'.
+.PP
+Edge hints can be made invisible by disabling `\fBShow Edge Hints\fR'
+in the `\fBData Options\fR' menu.
 .PP
 .PSPIC PICS/ddd-aliases.ps 15.3cm
 .PP
-The suppressed displays can not be accessed via the data window, since
-they are not visible.  However, they are listed in the Display Editor
-as \fIaliases\fR of the original data display.  Via the Display
-Editor, you can select and delete suppressed displays.
+To access suppressed display aliases, you can also use the Display
+Editor.  Suppressed displays are listed in the Display Editor as
+\fIaliases\fR of the original data display.  Via the Display Editor,
+you can select, change, and delete suppressed displays.
 .PP
 .PSPIC PICS/ddd-edit-displays.ps 15.3cm
 .PP
@@ -1338,6 +1344,10 @@ For fine-grain movements, selected displays may also be moved using
 the arrow keys.  Pressing \fBShift\fR and an arrow key moves displays
 by single pixels.  Pressing `\fBCtrl\fR' and arrow keys moves displays
 by grid positions.
+.PP
+Edge hints can be selected and moved around like other displays.  If
+an arc goes through the edge hint, you can change the shape of the arc
+by moving the edge hint around.
 .\"
 .\"
 .SS "Aligning Displays"
@@ -1358,9 +1368,9 @@ Graph\fR' from the `\fBData\fR' menu.
 .PP
 Layouting the graph may introduce \fIedge hints\fR; that is, edges are
 no more straight lines, but lead to an edge hint and from there to
-their destination.  You can make edge hints visible by selecting
-`\fBShow Edge Hints\fR' in the `\fBData Options\fR' menu.
-Edge hints can be moved around like arbitrary displays.
+their destination.  You can make edge hints invisible by disabling
+`\fBShow Edge Hints\fR' in the `\fBData Options\fR' menu.  Edge hints
+can be moved around like arbitrary displays.
 .PP
 To enable a more compact layout, you can set the `\fBCompact
 Layout\fR' option in the `\fBData Options\fR' menu.  This realizes an
