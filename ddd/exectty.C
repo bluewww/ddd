@@ -97,8 +97,8 @@ Window exec_tty_window() { return separate_tty_window; }
 // Create a separate tty window; return its name in TTYNAME, its
 // process id in PID, its terminal type in TERM, and its window id in
 // WINDOWID.
-void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
-			 Window& windowid, Widget origin)
+static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
+				Window& windowid, Widget origin)
 {
     // If we're already running, all is done.
     if (pid > 0 && !remote_gdb() && kill(pid, 0) == 0)
@@ -196,7 +196,7 @@ void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     }
 }
 
-void get_args(string command, string& base, string& args)
+static void get_args(string command, string& base, string& args)
 {
     // Find (last) arguments to `run' command
     base = command;
@@ -225,10 +225,19 @@ void get_args(string command, string& base, string& args)
 }
 
 
-void gdb_set_tty(const string& tty_name,
-		 const string& term_type,
-		 Widget origin)
+// Set debugger TTY to TTY_NAME and terminal type to TERM_TYPE.
+// Use without arguments to silently restore original TTY.
+static int gdb_set_tty(string tty_name = "",
+		       string term_type = "dumb",
+		       Widget origin = 0)
 {
+    bool silent = false;
+    if (tty_name == "")
+    {
+	tty_name = gdb->slave_tty();
+	silent = true;
+    }
+
     if (gdb->type() == GDB)
     {
 	if (tty_name != gdb_tty)
@@ -239,12 +248,16 @@ void gdb_set_tty(const string& tty_name,
 
 	    if (reply == NO_GDB_ANSWER)
 	    {
-		post_error("GDB I/O error: cannot send tty command", 
-			   "tty_command_error", origin);
+		if (!silent)
+		    post_error("GDB I/O error: cannot send tty command", 
+			       "tty_command_error", origin);
+		return -1;
 	    }
 	    else if (reply != "")
 	    {
-		post_gdb_message(reply, origin);
+		if (!silent)
+		    post_gdb_message(reply, origin);
+		return -1;
 	    }
 	    else
 		gdb_tty = tty_name;
@@ -255,12 +268,16 @@ void gdb_set_tty(const string& tty_name,
 	string reply = gdb_question(env_cmd);
 	if (reply == NO_GDB_ANSWER)
 	{
-	    post_error("GDB I/O error: cannot send tty command", 
-		       "tty_command_error", origin);
+	    if (!silent)
+		post_error("GDB I/O error: cannot send tty command", 
+			   "tty_command_error", origin);
+	    return -1;
 	}
 	else if (reply != "")
 	{
-	    post_gdb_message(reply, origin);
+	    if (!silent)
+		post_gdb_message(reply, origin);
+	    return -1;
 	}
     }
     else if (gdb->has_run_io_command())
@@ -274,12 +291,17 @@ void gdb_set_tty(const string& tty_name,
 
 	    if (reply == NO_GDB_ANSWER)
 	    {
-		post_error("DBX I/O error: cannot send dbxenv run_io command",
-			   "tty_command_error", origin);
+		if (!silent)
+		    post_error("DBX I/O error: "
+			       "cannot send dbxenv run_io command",
+			       "tty_command_error", origin);
+		return -1;
 	    }
 	    else if (reply != "")
 	    {
-		post_gdb_message(reply, origin);
+		if (!silent)
+		    post_gdb_message(reply, origin);
+		return -1;
 	    }
 	    else
 	    {
@@ -288,57 +310,59 @@ void gdb_set_tty(const string& tty_name,
 
 		if (reply == NO_GDB_ANSWER)
 		{
-		post_error("DBX I/O error: cannot send dbxenv run_pty command",
-			   "tty_command_error", origin);
+		    if (!silent)
+			post_error("DBX I/O error: "
+				   "cannot send dbxenv run_pty command",
+				   "tty_command_error", origin);
+		    return -1;
 		}
 		else if (reply != "")
 		{
-		    post_gdb_message(reply, origin);
+		    if (!silent)
+			post_gdb_message(reply, origin);
+		    return -1;
 		}
 		else
 		    gdb_tty = tty_name;
 	    }
 	}
+
 	// Set remote terminal type
 	string env_cmd = string("setenv TERM ") + term_type;
 	string reply = gdb_question(env_cmd);
 	if (reply == NO_GDB_ANSWER)
 	{
-	    post_error("GDB I/O error: cannot send tty command", 
-		       "tty_command_error", origin);
+	    if (!silent)
+		post_error("GDB I/O error: cannot send tty command", 
+			   "tty_command_error", origin);
+	    return -1;
 	}
 	else if (reply != "")
 	{
-	    post_gdb_message(reply, origin);
+	    if (!silent)
+		post_gdb_message(reply, origin);
+	    return -1;
 	}
     }
+
+    return 0;
 }
 
-void redirect_process(string& command,
-		      const string& tty_name,
-		      Widget origin)
+// Redirect COMMAND to TTY_NAME
+static void redirect_process(string& command,
+			     const string& tty_name,
+			     Widget origin)
 {
     if (app_data.use_tty_command
 	&& (gdb->type() == GDB || gdb->has_run_io_command()))
     {
-	// Issue `tty' command to perform redirection
-	gdb_set_tty(tty_name, app_data.term_type, origin);
-	return;
+	// Try `tty' command to perform redirection
+	int ret = gdb_set_tty(tty_name, app_data.term_type, origin);
+	if (ret == 0)
+	    return;
     }
 
-    char *shell_s = getenv("SHELL");
-    if (shell_s == 0)
-	shell_s = "/bin/sh";
-    string shell(shell_s);
-
-    if (gdb->type() == GDB && remote_gdb())
-    {
-	// Make sure we use /bin/sh on a remote GDB
-	shell = "/bin/sh";
-	string reply = gdb_question("set environment SHELL " + shell);
-    }
-
-    // Append appropriate redirection directives
+    // Use redirection directives
     string base;
     string args;
     get_args(command, base, args);
@@ -352,37 +376,77 @@ void redirect_process(string& command,
 	switch (gdb->type())
 	{
 	case GDB:
-	case XDB:
-	{
-	    static regex RXcsh(".*csh$");
-	    static regex RXrc(".*rc$");
+	    {
+		// In GDB, COMMAND is interpreted by the user's shell.
+		static string shell;
 
-	    if (shell.matches(RXcsh))
-	    {
-		// csh, tcsh
-		gdb_redirection += " >&! " + tty_name;
+		if (shell == "")
+		{
+		    // The shell is determined only once, as it cannot
+		    // change.
+		    if (remote_gdb())
+		    {
+			string sh = gdb_question("shell echo $SHELL");
+			if (sh != NO_GDB_ANSWER)
+			    shell = sh.before('\n');
+		    }
+		    else
+		    {
+			char *shell_s = getenv("SHELL");
+			if (shell_s == 0)
+			    shell_s = "/bin/sh";
+			shell = shell_s;
+		    }
+		}
+
+		if (shell.contains("csh"))
+		{
+		    // csh, tcsh
+		    gdb_redirection += " >&! " + tty_name;
+		}
+		else if (shell.contains("rc"))
+		{
+		    // rc (from tim@pipex.net)
+		    gdb_redirection += " >" + tty_name + " >[2=1]";
+		}
+		else if (shell.contains("sh"))
+		{
+		    // sh, bsh, ksh, bash, zsh, sh5, ...
+		    gdb_redirection += " >" + tty_name + " 2>&1";
+		}
+		else
+		{
+		    // Unknown shell - play it safe
+		    gdb_redirection += " > " + tty_name;
+		}
 	    }
-	    else if (shell.matches(RXrc))
-	    {
-		// rc (from tim@pipex.net)
-		gdb_redirection += " >" + tty_name + " >[2=1]";
-	    }
-	    else
-	    {
-		// sh, bsh, ksh, bash, zsh, sh5, ...
-		gdb_redirection += " >" + tty_name + " 2>&1";
-	    }
-	}
-	break;
+	    break;
 
 	case DBX:
-	    // DBX has its own parsing; it does not allow to redirect the
-	    // error channel.  *SIGH*.
-	    gdb_redirection +=  " > " + tty_name;
-	    if (gdb->has_err_redirection())
 	    {
-		// DBX 3.x uses ksh style redirection
-		gdb_redirection += " 2>&1";
+		// DBX has its own parsing, in several variants.
+		if (gdb->has_print_r_command())
+		{
+		    // SUN DBX 3.x uses ksh style redirection.
+		    gdb_redirection +=  " > " + tty_name + " 2>&1";
+		}
+		else if (gdb->has_err_redirection())
+		{
+		    // DEC DBX and AIX DBX use csh style redirection.
+		    gdb_redirection +=  " >& " + tty_name;
+		}
+		else
+		{
+		    // SUN DBX 1.x does not allow to redirect stderr.
+		    gdb_redirection += " > " + tty_name;
+		}
+	    }
+	    break;
+
+	case XDB:
+	    {
+		// XDB uses ksh style redirection.
+		gdb_redirection +=  " > " + tty_name + " 2>&1";
 	    }
 	    break;
 	}
@@ -401,8 +465,9 @@ void redirect_process(string& command,
     command = base + " " + new_args;
 }
 
-void unredirect_process(string& command,
-			Widget origin)
+// Restore original redirection
+static void unredirect_process(string& command,
+			       Widget origin)
 {
     if (gdb_redirection != "")
     {
@@ -420,22 +485,23 @@ void unredirect_process(string& command,
 	}
     }
 
-    // Issue `tty' command to perform redirection
-    gdb_set_tty(gdb->slave_tty(), "dumb", origin);
+    // Restore original tty
+    gdb_set_tty();
 
     gdb_redirection = "";
     gdb_out_ignore = "";
 }
 
 
-inline void addcap(string& s, const char *cap, char *& b)
+static inline void addcap(string& s, const char *cap, char *& b)
 {
     const char *str = tgetstr(cap, &b);
     if (str)
 	s += str;
 }
 
-void initialize_tty(const string& tty_name, const string& tty_term)
+// Initialize execution TTY with an appropriate escape sequence
+static void initialize_tty(const string& tty_name, const string& tty_term)
 {
     StatusDelay delay("Initializing execution tty");
 
@@ -467,7 +533,8 @@ void initialize_tty(const string& tty_name, const string& tty_term)
     }
 }
 
-void set_tty_title(string message, Window tty_window)
+// Set the title of TTY_WINDOW to MESSAGE
+static void set_tty_title(string message, Window tty_window)
 {
     string init = "";
 
@@ -498,6 +565,7 @@ void set_tty_title(string message, Window tty_window)
 		    title, icon);
 }
 
+// Create TTY if required
 void handle_running_commands(string& command, Widget origin)
 {
     // Make sure we see control messages such as `Starting program'
@@ -508,12 +576,14 @@ void handle_running_commands(string& command, Widget origin)
 	startup_exec_tty(command, origin);
 }
 
+// Raise execution TTY.
 void startup_exec_tty()
 {
     string dummy = "";
     startup_exec_tty(dummy);
 }
 
+// Raise execution TTY with command COMMAND.
 void startup_exec_tty(string& command, Widget origin)
 {
     if (app_data.separate_exec_window 
@@ -549,7 +619,7 @@ void startup_exec_tty(string& command, Widget origin)
     }
 }
 
-
+// Set TTY title to TEXT
 void set_tty_from_gdb(const string& text)
 {
     if (private_gdb_input)
@@ -605,7 +675,7 @@ void exec_tty_running()
 	    kill_exec_tty();
 
 	    // Restore original TTY for the time being
-	    gdb_set_tty(gdb->slave_tty(), "dumb", gdb_w);
+	    gdb_set_tty();
 	}
     }
 }
