@@ -152,10 +152,18 @@ touch icons/*.xbm
 (cd ddd; make Makefile)
 (cd ddd; make diststuff)
 
+# Add a RELEASE tag
+echo "ddd-$date: released `date`" > ./RELEASE
+cvs commit -m"ddd-$date released" RELEASE
+
 # Create distribution.
 make dist
 
 if [ -f ddd-$date.tar.gz ]; then
+  # Tag our CVS files
+  tag=DDD_`echo $date | sed s/[^a-zA-Z0-9]/_/g`
+  cvs tag -F $tag .
+
   # Move dist file into target area
   rm -f $target/ddd-*.tar.gz
   mv ddd-$date.tar.gz ddd-$date-pics.tar.gz $target
