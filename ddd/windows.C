@@ -46,7 +46,6 @@ char windows_rcsid[] =
 #include "DataDisp.h"
 #include "SourceView.h"
 #include "findParent.h"
-#include "Delay.h"
 
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
@@ -85,23 +84,42 @@ bool popups_disabled = false;
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref);
 
+// Last saved geometry of tool shell
 static string last_tool_shell_geometry = "+0+0";
 
+// Return current tool shell position relative to root window
+static BoxPoint tool_shell_pos()
+{
+    XWindowAttributes attr;
+    XGetWindowAttributes(XtDisplay(tool_shell), XtWindow(tool_shell), 
+			 &attr);
+    int root_x, root_y;
+    Window child;
+    XTranslateCoordinates(XtDisplay(tool_shell), XtWindow(tool_shell), 
+			  attr.root, 0, 0, &root_x, &root_y, &child);
+
+    return BoxPoint(root_x, root_y);
+}
+
+// Move tool shell to POS
 static void move_tool_shell(const BoxPoint& pos)
 {
     if (tool_shell == 0)
 	return;
 
-    ostrstream os;
-    os << "+" << pos[X] << "+" << pos[Y];
-    last_tool_shell_geometry = string(os);
+    if (pos != tool_shell_pos())
+    {
+	ostrstream os;
+	os << "+" << pos[X] << "+" << pos[Y];
+	last_tool_shell_geometry = string(os);
 
-    // Move tool shell to POS
-    XtVaSetValues(tool_shell,
-		  XmNgeometry, last_tool_shell_geometry.chars(),
-		  XmNx, pos[X],
-		  XmNy, pos[Y],
-		  NULL);
+	// Move tool shell to POS
+	XtVaSetValues(tool_shell,
+		      XmNgeometry, last_tool_shell_geometry.chars(),
+		      XmNx, pos[X],
+		      XmNy, pos[Y],
+		      NULL);
+    }
 }
 
 static void RecenterToolShellCB(XtPointer = 0, XtIntervalId * = 0)
@@ -334,19 +352,9 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	if (tool_shell != 0)
 	{
 	    // Check position of command tool
-	    Position pos_x = WidthOfScreen(XtScreen(tool_shell)) - 1;
-	    Position pos_y = HeightOfScreen(XtScreen(tool_shell)) - 1;
-
-	    XWindowAttributes attr;
-	    XGetWindowAttributes(XtDisplay(tool_shell), XtWindow(tool_shell), 
-				 &attr);
-
-	    int root_x, root_y;
-	    Window child;
-	    XTranslateCoordinates(XtDisplay(tool_shell), XtWindow(tool_shell), 
-				  attr.root, 0, 0, &root_x, &root_y, &child);
-
-	    if (root_x >= pos_x || root_y >= pos_y)
+	    BoxPoint max_pos(WidthOfScreen(XtScreen(tool_shell)) - 1,
+			     HeightOfScreen(XtScreen(tool_shell)) - 1);
+	    if (tool_shell_pos() >= max_pos)
 		RecenterToolShellCB();
 	}
 
@@ -857,8 +865,6 @@ static void recenter_tool_shell(Widget ref)
     if (ref == 0 || tool_shell == 0)
 	return;
 
-    Delay d;
-
     Window ref_window  = XtWindow(ref);
     Window tool_window = XtWindow(tool_shell);
     Window tool_frame  = frame_tool_shell();
@@ -910,8 +916,6 @@ void get_tool_offset()
 
     if (ref == 0 || tool_shell == 0)
 	return;
-
-    Delay d;
 
     Window ref_window  = XtWindow(ref);
     Window tool_window = XtWindow(tool_shell);
