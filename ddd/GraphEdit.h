@@ -191,21 +191,23 @@ struct GraphEditPositionChangedInfo {
 struct GraphEditPreSelectionInfo {
     Graph     *graph;		// Graph this node is in
     GraphNode *node;		// Selected node
+    XEvent    *event;		// Event
     Boolean   double_click;	// Double-click?
     Boolean   doit;		// Flag: do default action?
 
     GraphEditPreSelectionInfo():
-        graph(0), node(0), double_click(False), doit(True)
+        graph(0), node(0), event(0), double_click(False), doit(True)
     {}
     GraphEditPreSelectionInfo(const GraphEditPreSelectionInfo& info):
-        graph(info.graph), node(info.node), double_click(info.double_click),
-	doit(info.doit)
+        graph(info.graph), node(info.node), event(info.event),
+	double_click(info.double_click), doit(info.doit)
     {}
     GraphEditPreSelectionInfo& 
         operator = (const GraphEditPreSelectionInfo& info)
     {
 	graph        = info.graph;
 	node         = info.node;
+	event        = info.event;
 	double_click = info.double_click;
 	doit         = info.doit;
 	return *this;

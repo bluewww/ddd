@@ -1827,13 +1827,14 @@ static void moveTo(Widget w,
 }
 
 // Call ``selection changed'' callbacks
-static void selectionChanged(Widget w, Boolean double_click)
+static void selectionChanged(Widget w, XEvent *event, Boolean double_click)
 {
     const GraphEditWidget _w  = GraphEditWidget(w);
     Graph* graph              = _w->graphEdit.graph;
 
     GraphEditSelectionChangedInfo info;
     info.graph        = graph;
+    info.event        = event;
     info.double_click = double_click;
 
     XtCallCallbacks(w, XtNselectionChangedCallback, caddr_t(&info));
@@ -1867,7 +1868,7 @@ static void SelectAll(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     if (_SelectAll(w, event, params, num_params))
-	selectionChanged(w, False);
+	selectionChanged(w, event, False);
 }
 
 
@@ -1896,7 +1897,7 @@ static void UnselectAll(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     if (_UnselectAll(w, event, params, num_params))
-	selectionChanged(w, False);
+	selectionChanged(w, event, False);
 }
 
 // Find nodes connected to ROOT
@@ -2000,6 +2001,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 	GraphEditPreSelectionInfo info;
 	info.graph        = graph;
 	info.node         = node;
+	info.event        = event;
 	info.doit         = True;
 	info.double_click = double_click;
 
@@ -2090,7 +2092,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 	}
 
 	if (changed)
-	    selectionChanged(w, double_click);
+	    selectionChanged(w, event, double_click);
 
 	if (follow)
 	{
@@ -2319,7 +2321,7 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
     }
 
     if (changed)
-	selectionChanged(w, False);
+	selectionChanged(w, event, False);
 
     defineCursor(w, defaultCursor);
 }
@@ -2388,7 +2390,7 @@ static void MoveSelected(Widget w, XEvent *, String *params,
 
 
 // Select single node
-static void select_single_node(Widget w, GraphNode *selectNode)
+static void select_single_node(Widget w, XEvent *event, GraphNode *selectNode)
 {
     if (selectNode == 0)
 	return;
@@ -2419,20 +2421,20 @@ static void select_single_node(Widget w, GraphNode *selectNode)
     }
 
     if (changed)
-	selectionChanged(w, False);
+	selectionChanged(w, event, False);
 }
 
 // Select first node
-static void SelectFirst(Widget w, XEvent *, String *, Cardinal *)
+static void SelectFirst(Widget w, XEvent *event, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
 
-    select_single_node(w, graph->firstVisibleNode());
+    select_single_node(w, event, graph->firstVisibleNode());
 }
 
 // Select next node
-static void SelectNext(Widget w, XEvent *, String *, Cardinal *)
+static void SelectNext(Widget w, XEvent *event, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
@@ -2452,11 +2454,11 @@ static void SelectNext(Widget w, XEvent *, String *, Cardinal *)
     if (selectNode == 0)
 	selectNode = graph->firstVisibleNode();
 
-    select_single_node(w, selectNode);
+    select_single_node(w, event, selectNode);
 }
 
 // Select previous node
-static void SelectPrev(Widget w, XEvent *, String *, Cardinal *)
+static void SelectPrev(Widget w, XEvent *event, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->graphEdit.graph;
@@ -2475,7 +2477,7 @@ static void SelectPrev(Widget w, XEvent *, String *, Cardinal *)
     if (selectNode == 0)
 	selectNode = lastNode;
 
-    select_single_node(w, selectNode);
+    select_single_node(w, event, selectNode);
 }
 
 // Return nearest grid position near P
