@@ -7,12 +7,13 @@ DDD 2.2.1
     DDD 2.2.1 fixes some minor bugs introduced in DDD 2.2:
 
     User-visible changes to DDD 2.2:
-    - You can now select the method for getting core files.
+    - When saving a session, you can now select the method for getting
+      core files.  This is useful on Solaris and SunOS systems.
 
     Bug fixes:
-    - Auto-raised menus have caused problems on some architectures and
-      are thus disabled by default; use `Ddd*autoRaiseMenu: true' in
-      `~/.ddd/init' to re-enable them.
+    - Auto-raised menus have caused problems on some architectures:
+      they are now disabled by default.  Use `Ddd*autoRaiseMenu: true'
+      in `~/.ddd/init' to re-enable them.
     - By default, DDD stops disassembling after 1024 bytes.  This is
       useful when working with the machine code of huge functions.
       See the `maxDisassemble' resource for more info.

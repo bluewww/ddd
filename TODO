@@ -352,7 +352,7 @@ Volunteers for these and other projects are welcome!
 229. Is it not possible to prevent ddd to put up ANY windows until you
      say you want one. ddd insists on putting up a source window even
      if I run it from within xemacs, I've manually hided it with the
-     window manager, but still...
+     window manager, but still...  [Try `-iconic'  -AZ]
 
 232. Have an `infinite' assembler window that extends in both
      directions as needed.
