@@ -174,15 +174,25 @@ void processCommandQueue(XtPointer, XtIntervalId *)
     }
 }
 
+static bool ddd_is_idle = false;
+static Boolean ddd_idle(XtPointer)
+{
+    ddd_is_idle = commandQueue.isEmpty() && gdb->isReadyWithPrompt();
+    return ddd_is_idle;		// If idle, remove from the list of work procs
+}
+
 // Wait for command queue to drain
 void syncCommandQueue()
 {
-    while (!commandQueue.isEmpty())
+    ddd_is_idle = false;
+    XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
+		     ddd_idle, 0);
+
+    while (!ddd_is_idle)
     {
 	processCommandQueue(0, 0);
-	while (!gdb->isReadyWithPrompt())
-	    XtAppProcessEvent(XtWidgetToApplicationContext(command_shell),
-			      XtIMTimer | XtIMAlternateInput);
+	XtAppProcessEvent(XtWidgetToApplicationContext(command_shell),
+			  XtIMTimer | XtIMAlternateInput);
     }
 }
 
