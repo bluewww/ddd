@@ -81,7 +81,7 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    bool activeIO;           // Flag: I/O handlers active?
+    bool activeIO;		// Flag: I/O handlers active?
     void _activateIO();         // activate I/O handlers
     void _deactivateIO();       // deactivate I/O handlers
 
@@ -144,6 +144,11 @@ public:
     LiterateAgent(XtAppContext app_context, bool dummy,
 		  unsigned nTypes = LiterateAgent_NTypes):
 	AsyncAgent(app_context, dummy, nTypes), activeIO(false)
+    {}
+
+    // Duplicator
+    LiterateAgent(const LiterateAgent& lit)
+	: AsyncAgent(lit), activeIO(lit.activeIO)
     {}
 
     // output data handling
