@@ -394,6 +394,7 @@ Initializing the Inferior Debugger
 * JDB Initialization::          
 * PYDB Initialization::         
 * Perl Initialization::         
+* Finding a Place to Start::    
 * Opening the Selection::       
 
 The @value{DDD} Windows
@@ -3155,6 +3156,7 @@ inferior debugger (@pxref{Customizing}).
 * JDB Initialization::          
 * PYDB Initialization::         
 * Perl Initialization::         
+* Finding a Place to Start::    
 * Opening the Selection::       
 @end menu
 
