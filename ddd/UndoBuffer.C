@@ -445,7 +445,7 @@ bool UndoBuffer::process_command(UndoBufferEntry& entry)
     else if (entry.has(UB_COMMAND))
 	commands = entry[UB_COMMAND];
     else
-	return false;
+	return true;		// Nothing to do
 
     entry.remove(UB_COMMAND);
     entry.remove(UB_EXEC_COMMAND);
@@ -519,7 +519,8 @@ bool UndoBuffer::process_command(UndoBufferEntry& entry)
 
     if (!entry.has(UB_COMMAND) && !entry.has(UB_EXEC_COMMAND))
     {
-	cerr << "Undo: " << quote(original_commands) << " cannot be redone\n";
+	// We had an error during execution
+	return false;
     }
 
     undoing = false;
@@ -645,11 +646,11 @@ bool UndoBuffer::process_command(int entry)
     locked = true;
 
     current_entry = entry;
-    bool ret = process_command(history[entry]);
+    bool ok = process_command(history[entry]);
 
     locked = false;
 
-    return ret;
+    return ok;
 }
 
 bool UndoBuffer::process_state(int entry)
@@ -659,11 +660,11 @@ bool UndoBuffer::process_state(int entry)
     locked = true;
 
     current_entry = entry;
-    bool ret = process_state(history[entry]);
+    bool ok = process_state(history[entry]);
 
     locked = false;
 
-    return ret;
+    return ok;
 }
 
 bool UndoBuffer::process_frame(int entry)
@@ -673,11 +674,11 @@ bool UndoBuffer::process_frame(int entry)
     locked = true;
 
     current_entry = entry;
-    bool ret = process_frame(history[entry]);
+    bool ok = process_frame(history[entry]);
 
     locked = false;
 
-    return ret;
+    return ok;
 }
 
 bool UndoBuffer::process_pos(int entry)
@@ -687,11 +688,11 @@ bool UndoBuffer::process_pos(int entry)
     locked = true;
 
     current_entry = entry;
-    bool ret = process_pos(history[entry]);
+    bool ok = process_pos(history[entry]);
 
     locked = false;
 
-    return ret;
+    return ok;
 }
 
 // Undo and redo commands
@@ -711,14 +712,17 @@ void UndoBuffer::undo()
     // Undo most recent command
     bool have_command = history[history_position - 1].has_command();
 
-    process_command(history_position - 1);
-    if (history_position > 1)
+    bool ok = process_command(history_position - 1);
+    if (ok && history_position > 1)
     {
 	if (!have_command)
 	    process_frame(history_position - 2);
 	process_pos(history_position - 2);
 	process_state(history_position - 2);
     }
+
+    if (!ok)
+	delay.outcome = "failed";
 
     history_position--;
 
@@ -745,7 +749,10 @@ void UndoBuffer::redo()
     if (!have_command)
 	process_frame(history_position);
     process_pos(history_position);
-    process_command(history_position);
+    bool ok = process_command(history_position);
+
+    if (!ok)
+	delay.outcome = "failed";
     
     history_position++;
 
