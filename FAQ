@@ -306,59 +306,141 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 19. Can I add my own command buttons in DDD ?
 
-    Yes.  In ~/.dddinit, copy and modify the following resources:
+    In DDD 1.5 and later, you can specify an individual button list
+    to be inserted under the command window (`commandButtons') or
+    under the source window (`sourceButtons').  A button list is a
+    colon-separated lists of GDB commands; each GDB command creates
+    one button.
 
-    ! Colon-separated lists of GDB commands for which buttons 
-    ! are to be created.
-    !
-    ! All buttons send the named command to GDB.
-    ! Commands ending with '...' insert their name, followed by a space.
-    ! Commands ending with a control character insert the given
-    ! control character.
-    !
-    ! The following button names have special meanings:
-    ! - `Clear'    : Clear current command
-    ! - `Prev'     : Show previous command
-    ! - `Next'     : Show next command
-    ! - `Apply'    : Send the given command to GDB
-    ! - `Back'     : Lookup previously selected source position
-    ! - `Forward'  : Lookup next selected source position
-    ! - `Edit'     : Edit current source file
-    ! - `Reload'   : Reload source file
-    ! - `Complete' : Complete current command
-    ! - `Yes'      : Answer current GDB prompt
-    ! - `No'       : Answer current GDB prompt
+    All buttons in the button list send the named command to GDB.
+    Commands ending with '...' insert their name, followed by a space.
+    Commands ending with a control character insert the given control
+    character.  As of DDD 1.5, commands ending with `()' insert the
+    current contents of the argument field `()'.
+
+    Here is an example to insert into ~/.dddinit:
+
+    Ddd*sourceButtons: print *():display *()
+
+    This creates two buttons labeled `print *()' and `display *()'.
+    Entering `foo' in the `()' argument field and pressing `print *()'
+    invokes the GDB command `print *foo'.
+
+    For DDD 1.4d and earlier, the `commandButtons' and `sourceButtons'
+    resources are already defined as follows:
+
+    Ddd*commandButtons: Yes:No:interrupt^C
     
-    ! The buttons under the GDB command window.
-    ! Ddd*commandButtons: \
-    ! 	Yes:No:run:Clear:Prev:Next:Apply:interrupt^C
-    Ddd*commandButtons: \
-    	Yes:No:interrupt^C
-    
-    ! The buttons under the source window.
-    Ddd*sourceButtons:   	    \
-    run:step:next:stepi:nexti:cont:finish:kill:\
+    Ddd*sourceButtons: run:step:next:stepi:nexti:cont:finish:kill:\
     up:down:Back:Forward:Edit:interrupt^C
 
-    ! The button labels
-    Ddd*run.labelString:       Run
-    Ddd*step.labelString:      Step
-    Ddd*next.labelString:      Next
-    Ddd*stepi.labelString:     Stepi
-    Ddd*nexti.labelString:     Nexti
-    Ddd*cont.labelString:      Continue
-    Ddd*interrupt.labelString: Interrupt
-    Ddd*kill.labelString:      Kill
-    Ddd*until.labelString:     Until
-    Ddd*finish.labelString:    Finish
-    Ddd*up.labelString:        Up
-    Ddd*down.labelString:      Down
-    Ddd*Back.labelString:      Back
-    Ddd*Forward.labelString:   Forward
-    Ddd*Edit.labelString:      Edit
-    Ddd*Reload.labelString:    Reload
-    Ddd*Complete.labelString:  Complete
+    You may wish to replace some of these buttons by buttons of your
+    own.  The `Ddd' app-defaults file contains some examples.
 
+    In DDD 1.5, you can also customize the command tool buttons.  This
+    is somewhat trickier, since you have to specify button locations
+    as well.  The following section in the `Ddd' app-defaults file
+    gives some hints.
 
+    ---- cut here ----
+    ! The command tool buttons, as of DDD 1.5 and later.
+    Ddd*toolButtons: \
+    run:interrupt^C:step:stepi:next:nexti:cont:finish:\
+    up:down:Back:Forward:Edit:kill
+    
+    ! The number of rows in the command tool.
+    Ddd*tool_buttons.fractionBase:			8
+    
+    ! The positions are set up according to the following scheme:
+    ! 
+    !    0 4 8	Each line has its individual number.
+    !  0 +-+-+	`topPosition' refers to the line above the button;
+    !    | | |  	`bottomPosition' is the line below.  Likewise,
+    !  1 +-+-+	`leftPosition' is the line at the left, and
+    !    | | |	`rightPosition' is the line to the right.  For instance,
+    !  2 +-+-+	the line above the `interrupt' button (aka `Break')
+    !    | | |	is line 1 (topPosition), the line below is line 2
+    !  3 +-+-+	(bottomPosition), the line to the left is line 0
+    !    | | |	(leftPosition), and the line to the right is line 8
+    !  4 +-+-+	(rightPosition).
+    !    | | |	
+    !  5 +-+-+	To replace a button by another command, change the
+    !    | | |	`toolButtons' resource, above, and insert appropriate
+    !  6 +-+-+	resource values for the new button, specifying its
+    !    | | |	location.
+    !  7 +-+-+	
+    !    | | |	
+    !  8 +-+-+	
+    
+    Ddd*tool_buttons.run.topPosition:               0
+    Ddd*tool_buttons.run.bottomPosition:            1
+    Ddd*tool_buttons.run.leftPosition:              0
+    Ddd*tool_buttons.run.rightPosition:             8
+    
+    Ddd*tool_buttons.interrupt.topPosition:         1
+    Ddd*tool_buttons.interrupt.bottomPosition:      2
+    Ddd*tool_buttons.interrupt.leftPosition:        0
+    Ddd*tool_buttons.interrupt.rightPosition:       8
+    
+    Ddd*tool_buttons.step.topPosition:              2
+    Ddd*tool_buttons.step.bottomPosition:           3
+    Ddd*tool_buttons.step.leftPosition:             0
+    Ddd*tool_buttons.step.rightPosition:            4
+    
+    Ddd*tool_buttons.stepi.topPosition:             2
+    Ddd*tool_buttons.stepi.bottomPosition:          3
+    Ddd*tool_buttons.stepi.leftPosition:            4
+    Ddd*tool_buttons.stepi.rightPosition:           8
+    
+    Ddd*tool_buttons.next.topPosition:              3
+    Ddd*tool_buttons.next.bottomPosition:           4
+    Ddd*tool_buttons.next.leftPosition:             0
+    Ddd*tool_buttons.next.rightPosition:            4
+    
+    Ddd*tool_buttons.nexti.topPosition:             3
+    Ddd*tool_buttons.nexti.bottomPosition:          4
+    Ddd*tool_buttons.nexti.leftPosition:            4
+    Ddd*tool_buttons.nexti.rightPosition:           8
+    
+    Ddd*tool_buttons.cont.topPosition:              4
+    Ddd*tool_buttons.cont.bottomPosition:           5
+    Ddd*tool_buttons.cont.leftPosition:             0
+    Ddd*tool_buttons.cont.rightPosition:            4
+    
+    Ddd*tool_buttons.finish.topPosition:            4
+    Ddd*tool_buttons.finish.bottomPosition:         5
+    Ddd*tool_buttons.finish.leftPosition:           4
+    Ddd*tool_buttons.finish.rightPosition:          8
+    
+    Ddd*tool_buttons.up.topPosition:                5
+    Ddd*tool_buttons.up.bottomPosition:             6
+    Ddd*tool_buttons.up.leftPosition:               0
+    Ddd*tool_buttons.up.rightPosition:              4
+    
+    Ddd*tool_buttons.down.topPosition:              5
+    Ddd*tool_buttons.down.bottomPosition:           6
+    Ddd*tool_buttons.down.leftPosition:             4
+    Ddd*tool_buttons.down.rightPosition:            8
+    
+    Ddd*tool_buttons.Back.topPosition:              6
+    Ddd*tool_buttons.Back.bottomPosition:           7
+    Ddd*tool_buttons.Back.leftPosition:             0
+    Ddd*tool_buttons.Back.rightPosition:            4
+    
+    Ddd*tool_buttons.Forward.topPosition:           6
+    Ddd*tool_buttons.Forward.bottomPosition:        7
+    Ddd*tool_buttons.Forward.leftPosition:          4
+    Ddd*tool_buttons.Forward.rightPosition:         8
+    
+    Ddd*tool_buttons.Edit.topPosition:              7
+    Ddd*tool_buttons.Edit.bottomPosition:           8
+    Ddd*tool_buttons.Edit.leftPosition:             0
+    Ddd*tool_buttons.Edit.rightPosition:            4
+    
+    Ddd*tool_buttons.kill.topPosition:              7
+    Ddd*tool_buttons.kill.bottomPosition:           8
+    Ddd*tool_buttons.kill.leftPosition:             4
+    Ddd*tool_buttons.kill.rightPosition:            8
+    ---- cut here ----
 
 $Id$

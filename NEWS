@@ -13,10 +13,9 @@ DDD 1.5 (in development)
       settings.
     - Some buttons have been renamed for clarity: `Break' and `Clear' 
       are now named `Break at' and `Clear at'; the `Interrupt' button
-      is now named `Break'.  Likewise, `Dereference' became `Display
-      *'.  The ` ()' prefix has been removed from all labels.
+      is now named `Break'.  Likewise, `Dereference' became `Display *'.
     - The functionality of `Dependent display' and `New display' has
-      been merged into `New display'.  If one display part is
+      been merged into `New Display'.  If one display part is
       selected, the new display is made dependent on the selected
       display; otherwise, it is created as single new display.
 
