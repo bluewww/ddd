@@ -716,7 +716,7 @@ string read_next_display (string& displays, GDBAgent *gdb)
     strip_leading_space(displays);
 
     // string old_displays = displays;
-    // clog << "read_next_display(" << quote(old_displays) << ")...\n";
+    // std::clog << "read_next_display(" << quote(old_displays) << ")...\n";
 
     if (is_disabling(displays, gdb))
     {
@@ -749,8 +749,8 @@ string read_next_display (string& displays, GDBAgent *gdb)
     displays = displays.after('\n');
     strip_leading_space(displays);
 
-    // clog << "read_next_display(" << quote(old_displays) << ") = "
-    //      << quote(next_display) << "\n";
+    // std::clog << "read_next_display(" << quote(old_displays) << ") = "
+    //           << quote(next_display) << "\n";
     return next_display;
 }
 

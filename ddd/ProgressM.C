@@ -125,7 +125,7 @@ bool ProgressMeter::process(int remaining_length)
     int processed = base + current - remaining_length;
 
 #if 0
-    clog << "Processed " << processed << "/" <<  total << " characters\n";
+    std::clog << "Processed " << processed << "/" <<  total << " characters\n";
 #endif
 
     if (!aborted && total >= DIALOG_THRESHOLD && !XtIsManaged(dialog))

@@ -130,7 +130,7 @@ static void flatten_button(Widget w, bool switch_colors = true)
     if (bottom_shadow_pixmap == XmUNSPECIFIED_PIXMAP)
     {
 #if LOG_FLATTENING
-	clog << "Flattening " << XtName(w) << "\n";
+	std::clog << "Flattening " << XtName(w) << "\n";
 #endif
 
 	Arg args[10];
@@ -167,7 +167,7 @@ static void unflatten_button(Widget w, bool switch_colors = true)
     if (bottom_shadow_pixmap != XmUNSPECIFIED_PIXMAP)
     {
 #if LOG_FLATTENING
-	clog << "Unflattening " << XtName(w) << "\n";
+	std::clog << "Unflattening " << XtName(w) << "\n";
 #endif
 
 	Arg args[10];
@@ -203,7 +203,7 @@ static void FlattenEH(Widget w,
     case EnterNotify:
     {
 #if LOG_FLATTENING
-	clog << "Entering " << XtName(w) << "\n";
+	std::clog << "Entering " << XtName(w) << "\n";
 #endif
 
 	unflatten_button(w);
@@ -214,7 +214,7 @@ static void FlattenEH(Widget w,
     case LeaveNotify:
     {
 #if LOG_FLATTENING
-	clog << "Leaving " << XtName(w) << "\n";
+	std::clog << "Leaving " << XtName(w) << "\n";
 #endif
 
 	flatten_button(w);
@@ -236,13 +236,13 @@ static void FlattenCB(Widget w, XtPointer client_data, XtPointer)
     bool set = bool(client_data);
     if (set)
     {
-	// clog << "Arming " << XtName(w) << "\n";
+	// std::clog << "Arming " << XtName(w) << "\n";
 
 	flatten_button(w, false);
     }
     else
     {
-	// clog << "Disarming " << XtName(w) << "\n";
+	// std::clog << "Disarming " << XtName(w) << "\n";
 
 	unflatten_button(w, false);
     }
@@ -1067,7 +1067,7 @@ static void CancelPopupPushMenuCB(Widget w, XtPointer client_data,
     if (info->timer != 0)
     {
 #if LOG_PUSH_MENUS
-	clog << "canceling (reason " << cbs->reason << ")\n";
+	std::clog << "canceling (reason " << cbs->reason << ")\n";
 #endif
 
 	XtRemoveTimeOut(info->timer);
@@ -1096,7 +1096,7 @@ static void PopupPushMenuCB(XtPointer client_data, XtIntervalId *id)
     info->timer = 0;
 
 #if LOG_PUSH_MENUS
-    clog << "popping up\n";
+    std::clog << "popping up\n";
 #endif
 
     XtRemoveCallback(w, XmNdisarmCallback,
@@ -1191,7 +1191,7 @@ static void DecoratePushMenuAct(Widget w, XEvent */* event */,
     if (!XmIsPushButton(w) || !XtIsRealized(w))
 	return;
 
-    // clog << "Redraw " << XtName(w) << "\n";
+    // std::clog << "Redraw " << XtName(w) << "\n";
 
     // Draw a little triangle in upper right corner
     XPoint points[4] = {
@@ -1268,8 +1268,8 @@ static void ArmPushMenuCB(Widget w, XtPointer client_data, XtPointer call_data)
 				  PopupPushMenuCB, XtPointer(info));
 
 #if LOG_PUSH_MENUS
-    clog << "Waiting for " << XtName(w) << " menu " 
-	 << "(timer " << info->timer << ")...";
+    std::clog << "Waiting for " << XtName(w) << " menu " 
+	      << "(timer " << info->timer << ")...";
 #endif
 
     // If we're disarmed or activated within the delay, don't popup.

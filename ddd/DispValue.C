@@ -282,7 +282,7 @@ DispValue *DispValue::parse(DispValue *parent,
 	{
 	    // Just take values from given element
 #if LOG_CREATE_VALUES
-	    clog << "External value " << quote(dv->full_name()) << "\n";
+	    std::clog << "External value " << quote(dv->full_name()) << "\n";
 #endif
 	    return dv;
 	}
@@ -296,7 +296,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		     DispValueType given_type)
 {
 #if LOG_CREATE_VALUES
-    clog << "Building value from " << quote(value) << "\n";
+    std::clog << "Building value from " << quote(value) << "\n";
 #endif
 
     // Be sure the value is not changed in memory
@@ -337,7 +337,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
     {
 	_value = read_simple_value(value, depth, ignore_repeats);
 #if LOG_CREATE_VALUES
-	clog << mytype << ": " << quote(_value) << "\n";
+	std::clog << mytype << ": " << quote(_value) << "\n";
 #endif
 	perl_type = '$';
 	break;
@@ -352,7 +352,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    _value = value;
 	value = value.after('\n');
 #if LOG_CREATE_VALUES
-	clog << mytype << ": " << quote(_value) << "\n";
+	std::clog << mytype << ": " << quote(_value) << "\n";
 #endif
 	perl_type = '$';
 	break;
@@ -364,7 +364,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	_dereferenced = false;
 
 #if LOG_CREATE_VALUES
-	clog << mytype << ": " << quote(_value) << "\n";
+	std::clog << mytype << ": " << quote(_value) << "\n";
 #endif
 	// Hide vtable pointers.
 	if (_value.contains("virtual table") || _value.contains("vtable"))
@@ -391,7 +391,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	_orientation = app_data.array_orientation;
 
 #if LOG_CREATE_VALUES
-	clog << mytype << ": " << "\n";
+	std::clog << mytype << ": " << "\n";
 #endif
 
 	read_array_begin(value, myaddr);
@@ -475,7 +475,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	myexpanded = (depth == 0 || nchildren() <= 1);
 
 #if LOG_CREATE_VALUES
-	clog << mytype << " has " << nchildren() << " members\n";
+	std::clog << mytype << " has " << nchildren() << " members\n";
 #endif
 	perl_type = '@';
 	break;
@@ -497,7 +497,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	bool read_multiple_values = false;
 	
 #if LOG_CREATE_VALUES
-	clog << mytype << " " << quote(myfull_name) << "\n";
+	std::clog << mytype << " " << quote(myfull_name) << "\n";
 #endif
 	string member_prefix = myfull_name;
 	string member_suffix = "";
@@ -741,9 +741,9 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	myexpanded = (depth == 0 || nchildren() <= 1);
 
 #if LOG_CREATE_VALUES
-	clog << mytype << " "
-	     << quote(myfull_name)
-	     << " has " << nchildren() << " members\n";
+	std::clog << mytype << " "
+		  << quote(myfull_name)
+		  << " has " << nchildren() << " members\n";
 #endif
 
 	perl_type = '%';
@@ -790,7 +790,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    if (need_clear)
 	    {
 #if LOG_CREATE_VALUES
-		clog << "Sequence detected at " << quote(value) << "\n";
+		std::clog << "Sequence detected at " << quote(value) << "\n";
 #endif
 
 		clear();
@@ -799,7 +799,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		mytype = Sequence;
 
 #if LOG_CREATE_VALUES
-		clog << mytype << " " << quote(myfull_name) << "\n";
+		std::clog << mytype << " " << quote(myfull_name) << "\n";
 #endif
 
 		need_clear = false;
@@ -829,9 +829,9 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 #if LOG_CREATE_VALUES
 	if (!need_clear)
 	{
-	    clog << mytype << " "
-		 << quote(myfull_name)
-		 << " has " << nchildren() << " members\n";
+	    std::clog << mytype << " "
+		      << quote(myfull_name)
+		      << " has " << nchildren() << " members\n";
 	}
 #endif
     }

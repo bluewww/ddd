@@ -1719,8 +1719,8 @@ static bool options_file_has_changed(ChangeMode mode, bool reset)
     time_t modification_time = last_modification_time(options_file);
 
 #if 0
-    clog << quote(options_file) << " last modified " 
-	 << ctime(&modification_time);
+    std::clog << quote(options_file) << " last modified " 
+	      << ctime(&modification_time);
 #endif
 
     if (reset || last_acknowledge == 0)
@@ -1959,10 +1959,10 @@ static bool is_fallback_value(const string& resource, string val)
 #if 0
     if (val != default_val)
     {
-	clog << resource
-	     << ": val " << quote(val)
-	     << " != default " << quote(default_val)
-	     << '\n';
+	std::clog << resource
+		  << ": val " << quote(val)
+		  << " != default " << quote(default_val)
+		  << '\n';
     }
 #endif
 

@@ -89,11 +89,11 @@ int compare_address(const string& x, const string& y)
 
 #if 0
     if (ret < 0)
-	clog << x << " < " << y << "\n";
+	std::clog << x << " < " << y << "\n";
     else if (ret > 0)
-	clog << x << " > " << y << "\n";
+	std::clog << x << " > " << y << "\n";
     else
-	clog << x << " = " << y << "\n";
+	std::clog << x << " = " << y << "\n";
 #endif
 
     return ret;

@@ -89,7 +89,7 @@ string ThemePattern::matching_pattern(const string& expr) const
 	if (matches(patterns()[i], expr))
 	{
 #if LOG_THEME_PATTERNS
-	    clog << quote(patterns()[i]) << " matches " << quote(expr) << "\n";
+	    std::clog << quote(patterns()[i]) << " matches " << quote(expr) << "\n";
 #endif
 	    return patterns()[i];
 	}

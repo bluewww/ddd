@@ -293,7 +293,7 @@ void UndoBuffer::add_status(const string& name, const string& value)
 	return;
 
 #if LOG_UNDO_BUFFER
-    clog << "Adding " << name << " = " << quote(value) << "\n";
+    std::clog << "Adding " << name << " = " << quote(value) << "\n";
 #endif
 
     collector[name] = value;
@@ -328,7 +328,7 @@ void UndoBuffer::remove_status(const string& name)
 
 #if LOG_UNDO_BUFFER
     if (collector.has(name))
-	clog << "Removing " << name << "\n";
+	std::clog << "Removing " << name << "\n";
 #endif
 
     collector.remove(name);
@@ -360,7 +360,7 @@ void UndoBuffer::add_command(const string& command, bool exec)
     // replace currently executed command by its undo command.
 
 #if LOG_UNDO_BUFFER
-    clog << "Adding " << command_key << " = " << quote(command) << "\n";
+    std::clog << "Adding " << command_key << " = " << quote(command) << "\n";
 #endif
 
     assert (history.size() > 0);
@@ -380,7 +380,7 @@ void UndoBuffer::add_command(const string& command, bool exec)
 void UndoBuffer::set_source(const string& command)
 {
 #if 0
-    clog << "Source:\t" << quote(command) << "\n";
+    std::clog << "Source:\t" << quote(command) << "\n";
 #endif
 
     current_source = action(command);
@@ -416,7 +416,7 @@ int UndoBuffer::allocation()
 void UndoBuffer::log()
 {
 #if LOG_UNDO_BUFFER
-    clog << "Undo buffer:\n";
+    std::clog << "Undo buffer:\n";
     for (int i = 0; i < history.size(); i++)
     {
 #if 0
@@ -428,36 +428,36 @@ void UndoBuffer::log()
 	const UndoBufferEntry& entry = history[i];
 
 	if (i == history_position)
-	    clog << ">-------------\n";
+	    std::clog << ">-------------\n";
 
-	clog << i << '\t';
+	std::clog << i << '\t';
 
 	bool first_line = true;
 	for (StringStringAssocIter iter(entry); iter.ok(); iter++)
 	{
 	    if (!first_line)
-		clog << "\n\t";
-	    clog << iter.key() << " = " << quote(iter.value());
+		std::clog << "\n\t";
+	    std::clog << iter.key() << " = " << quote(iter.value());
 	    first_line = false;
 	}
-	clog << "\n";
+	std::clog << "\n";
     }
 
 #if 0
-    clog << "Collector:";
+    std::clog << "Collector:";
     for (StringStringAssocIter iter(collector); iter.ok(); iter++)
-	clog << "\n\t" << iter.key() << " = " << quote(iter.value());
-    clog << "\n";
+	std::clog << "\n\t" << iter.key() << " = " << quote(iter.value());
+    std::clog << "\n";
 #endif
 
     if (undo_action() != NO_GDB_ANSWER)
-	clog << "Undo " << undo_action() << "\n";
+	std::clog << "Undo " << undo_action() << "\n";
     if (redo_action() != NO_GDB_ANSWER)
-	clog << "Redo " << redo_action() << "\n";
+	std::clog << "Redo " << redo_action() << "\n";
 
-    clog << "Allocated " << allocation() << " bytes\n";
+    std::clog << "Allocated " << allocation() << " bytes\n";
 
-    clog << "\n";
+    std::clog << "\n";
 #endif
 }
 

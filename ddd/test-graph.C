@@ -188,14 +188,14 @@ void PositionChanged(Widget, XtPointer, XtPointer call_data)
     GraphEditPositionChangedInfo *info = 
 	(GraphEditPositionChangedInfo *)call_data;
 
-    clog << "Moving node " << *info->node << " from " << 
-	info->old_position << " to " << info->new_position;
+    std::clog << "Moving node " << *info->node << " from "
+	      << info->old_position << " to " << info->new_position;
     if (info->is_last)
     {
-	clog << " (last)";
+	std::clog << " (last)";
     }
 
-    clog << "\n";
+    std::clog << "\n";
 }
 
 

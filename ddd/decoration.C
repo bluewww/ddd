@@ -111,9 +111,9 @@ bool have_decorated_transients(Widget parent)
 			 &shell_attributes);
 
 #if 0
-    clog << "shell window: " << XtWindow(init_shell)
-	 << ", size: " << BoxPoint(shell_attributes.width, 
-				       shell_attributes.height) << "\n";
+    std::clog << "shell window: " << XtWindow(init_shell)
+	      << ", size: " << BoxPoint(shell_attributes.width, 
+					shell_attributes.height) << "\n";
 #endif
 
     // Wait up to 5 seconds until WM has decorated the init shell.
@@ -135,9 +135,9 @@ bool have_decorated_transients(Widget parent)
 			 &frame_attributes);
 
 #if 0
-    clog << "frame window: " << frame_window 
-	 << ", size: " << BoxPoint(frame_attributes.width, 
-				       frame_attributes.height) << "\n";
+    std::clog << "frame window: " << frame_window 
+	      << ", size: " << BoxPoint(frame_attributes.width, 
+					frame_attributes.height) << "\n";
 #endif
 
     XtUnmapWidget(init_shell);

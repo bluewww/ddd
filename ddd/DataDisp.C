@@ -3382,12 +3382,13 @@ void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
 #if LOG_COMPARE
     if (disp1 && disp2)
     {
-	clog << "Comparing " << disp1->name() 
-	     << " and " << disp2->name() << " yields " << info->result << "\n";
+	std::clog << "Comparing " << disp1->name() 
+		  << " and " << disp2->name()
+		  << " yields " << info->result << "\n";
     }
     else
     {
-	clog << "Cannot compare: unknown nodes\n";
+	std::clog << "Cannot compare: unknown nodes\n";
     }
 #endif
 }
@@ -5185,14 +5186,14 @@ string DataDisp::process_displays(string& displays,
     StringMap disp_string_map;
 
 #if LOG_DISPLAYS
-    clog << "Updating displays " << quote(displays) << "...\n";
+    std::clog << "Updating displays " << quote(displays) << "...\n";
 #endif
 
     string next_display = read_next_display (displays, gdb);
     while (!next_display.empty()) 
     {
 #if LOG_DISPLAYS
-        clog << "Updating display " << quote(next_display);
+        std::clog << "Updating display " << quote(next_display);
 #endif
 	if (gdb->has_numbered_displays())
 	{
@@ -5220,7 +5221,7 @@ string DataDisp::process_displays(string& displays,
 	}
 
 #if LOG_DISPLAYS
-	clog << " (number " << disp_nr << ")\n";
+	std::clog << " (number " << disp_nr << ")\n";
 #endif
 
 	if (is_disabling (next_display, gdb))
@@ -6649,8 +6650,8 @@ void DataDisp::merge_displays(IntArray displays,
 #if 0
     for (i = 0; i < displays.size(); i++)
     {
-	clog << "Last change of display " << displays[i]
-	     << ": " << last_change_of_disp_nr(displays[i]) << "\n";
+	std::clog << "Last change of display " << displays[i]
+		  << ": " << last_change_of_disp_nr(displays[i]) << "\n";
     }
 #endif
 

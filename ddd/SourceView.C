@@ -953,7 +953,7 @@ bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
 
     string address = a;
 
-    // clog << "Moving breakpoint " << bp_nr << " to " << address << '\n';
+    // std::clog << "Moving breakpoint " << bp_nr << " to " << address << '\n';
 
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp == 0)
@@ -8637,7 +8637,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 // The function that does the real work
 void SourceView::update_glyphs_now()
 {
-    // clog << "Updating glyphs...";
+    // std::clog << "Updating glyphs...";
 
     WidgetArray empty;
     changed_glyphs = empty;
@@ -8777,7 +8777,7 @@ void SourceView::update_glyphs_now()
 	update_code_glyphs   = false;
     }
 
-    // clog << "done.\n";
+    // std::clog << "done.\n";
 }
 
 
@@ -8788,10 +8788,10 @@ const WidgetArray& SourceView::glyphs_to_be_updated()
     update_glyphs_now();
     change_glyphs = true;
 
-    // clog << "Glyphs to be updated:";
+    // std::clog << "Glyphs to be updated:";
     // for (int i = 0; i < changed_glyphs.size(); i++)
-    //     clog << " " << XtName(changed_glyphs[i]);
-    // clog << "\n";
+    //     std::clog << " " << XtName(changed_glyphs[i]);
+    // std::clog << "\n";
 
     return changed_glyphs;
 }
@@ -9042,7 +9042,7 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *params,
 
     static Cursor move_cursor = XCreateFontCursor(XtDisplay(glyph), XC_fleur);
 
-    // clog << "Dragging " << XtName(glyph) << " [" << glyph << "]\n";
+    // std::clog << "Dragging " << XtName(glyph) << " [" << glyph << "]\n";
 
     XDefineCursor(XtDisplay(glyph), XtWindow(glyph), move_cursor);
 
@@ -9161,7 +9161,7 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
 	address = current_source_name() + ':' + itostring(line_nr);
     }
 
-    // clog << "Dropping " << XtName(glyph) << " [" << glyph << "] at " 
+    // std::clog << "Dropping " << XtName(glyph) << " [" << glyph << "] at " 
     //      << address << "\n";
 
     if (text_w == code_text_w)
@@ -9239,17 +9239,17 @@ void SourceView::log_glyph(Widget glyph, int n)
 		  XmNy,                  &y,
 		  XtPointer(0));
 
-    clog << XtName(glyph);
+    std::clog << XtName(glyph);
     if (n >= 0)
-	clog << "s[" << n << "]";
-    clog << ": ";
+	std::clog << "s[" << n << "]";
+    std::clog << ": ";
     if (user_data)
-	clog << "mapped";
+	std::clog << "mapped";
     else
-	clog << "unmapped";
+	std::clog << "unmapped";
 
-    clog << " at (" << left << ", " << top << " / "
-	 << x << ", " << y << ")\n";
+    std::clog << " at (" << left << ", " << top << " / "
+	      << x << ", " << y << ")\n";
 #endif
 }
 
@@ -9262,9 +9262,9 @@ void SourceView::log_glyphs()
 	    continue;
 
 	if (k == 0)
-	    clog << "Source glyphs:\n";
+	    std::clog << "Source glyphs:\n";
 	else
-	    clog << "\nCode glyphs:\n";
+	    std::clog << "\nCode glyphs:\n";
 
 	int i;
 	for (i = 0; i < plain_stops[k].size() - 1; i++)
@@ -9591,7 +9591,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
     if (!disassemble)
 	return;
 
-    // clog << "Showing PC " << pc << "\n";
+    // std::clog << "Showing PC " << pc << "\n";
 
     XmTextPosition pos = find_pc(pc);
 

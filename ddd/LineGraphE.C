@@ -278,10 +278,10 @@ void LineGraphEdge::drawArrowHead(Widget w,
     points[2].y = short(pos[Y] + length * sin(alpha - offset / 2));
 
 #if 0
-	clog << "\nangle = " << (alpha / (PI * 2.0)) * 360.0  << "\n";
+	std::clog << "\nangle = " << (alpha / (PI * 2.0)) * 360.0  << "\n";
 	for (int i = 0; i < 3; i++)
-	    clog << "points[" << i << "] = "
-		 << BoxPoint(points[i].x, points[i].y) << "\n";
+	    std::clog << "points[" << i << "] = "
+		      << BoxPoint(points[i].x, points[i].y) << "\n";
 #endif
 
     XFillPolygon(XtDisplay(w), XtWindow(w), gc.edgeGC, points,

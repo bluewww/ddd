@@ -110,9 +110,9 @@ static void MyTimerProc(XtPointer client_data, XtIntervalId *)
 	abort();
 
 #if LOG_TIMERS
-    clog << "TimeOut: " << tm->file << ":" << tm->line << ": timer " 
-	 << tm->tic << " (" << XtPointer(tm->timer) << ")"
-	 << " expired (" << MyPendingTimeOuts() << " still pending)\n";
+    std::clog << "TimeOut: " << tm->file << ":" << tm->line << ": timer " 
+	      << tm->tic << " (" << XtPointer(tm->timer) << ")"
+	      << " expired (" << MyPendingTimeOuts() << " still pending)\n";
 #endif
 
     tm->proc(tm->closure, &tm->tic);
@@ -142,10 +142,10 @@ XtIntervalId MyAppAddTimeOut(XtAppContext app_context,
     pending_timers = tm;
 
 #if LOG_TIMERS
-    clog << "TimeOut: " 
-	 << file << ":" << line << ": timer " 
-	 << tm->tic << " (" << XtPointer(tm->timer) << ") added "
-	 << "(" << MyPendingTimeOuts() << " still pending)\n";
+    std::clog << "TimeOut: " 
+	      << file << ":" << line << ": timer " 
+	      << tm->tic << " (" << XtPointer(tm->timer) << ") added "
+	      << "(" << MyPendingTimeOuts() << " still pending)\n";
 #endif
 
     // Note: we return a private XtIntervalId instead of the one
@@ -164,11 +164,11 @@ void MyRemoveTimeOut(XtIntervalId tic, const char *file, int line)
 	if (tic == ti->tic)
 	{
 #if LOG_TIMERS
-	    clog << "TimeOut: " << file << ":" << line << ": timer "
-		 << ti->tic << " (" << XtPointer(ti->timer) << ") removed "
-		 << "(" << MyPendingTimeOuts() << " still pending)\n"
-		 << "TimeOut: " << ti->file << ":" << ti->line
-		 << ": this is the location where the timer was added.\n";
+	    std::clog << "TimeOut: " << file << ":" << line << ": timer "
+		      << ti->tic << " (" << XtPointer(ti->timer) << ") removed "
+		      << "(" << MyPendingTimeOuts() << " still pending)\n"
+		      << "TimeOut: " << ti->file << ":" << ti->line
+		      << ": this is the location where the timer was added.\n";
 #endif
 
 	    XtRemoveTimeOut(ti->timer);

@@ -389,7 +389,7 @@ void DefCallNode::rebind(const class VSLLib *lib)
     if (lib != _deflist->lib)
     {
 	// Library has changed
-	// clog << "Rebinding: call to " << _deflist->func_name() << "\n";
+	// std::clog << "Rebinding: call to " << _deflist->func_name() << "\n";
 
 	// Remove reference to old library
 	assert(_deflist->references() >= 0);

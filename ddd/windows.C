@@ -161,7 +161,7 @@ static void set_state(Widget w, WindowState s)
     {
 	set_state(var, s);
 #if LOG_EVENTS
-	clog << XtName(w) << " is " << state(w) << "\n";
+	std::clog << XtName(w) << " is " << state(w) << "\n";
 #endif
     }
 }
@@ -233,8 +233,8 @@ static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
     move_tool_shell_timer = 0;
 
 #if LOG_MOVES
-    clog << "Tool position found:    " << tool_shell_pos() << "\n";
-    clog << "Tool position expected: " << last_tool_shell_position << "\n";
+    std::clog << "Tool position found:    " << tool_shell_pos() << "\n";
+    std::clog << "Tool position expected: " << last_tool_shell_position << "\n";
 #endif
 
     BoxPoint diff = tool_shell_pos() - last_tool_shell_position;
@@ -261,7 +261,7 @@ static void move_tool_shell(BoxPoint pos, bool verify)
     if (pos != tool_shell_pos())
     {
 #if LOG_MOVES
-	clog << "Moving tool to: " << pos[X] << ", " << pos[Y] << "\n";
+	std::clog << "Moving tool to: " << pos[X] << ", " << pos[Y] << "\n";
 #endif
 
 	BoxPoint given_pos = pos + tool_shell_move_offset;
@@ -626,7 +626,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 
 #if LOG_EVENTS
     if (synthetic)
-	clog << "Synthetic event: ";
+	std::clog << "Synthetic event: ";
 #endif
 
     switch (event->type)
@@ -770,7 +770,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    {
 		// Command tool has been moved
 #if LOG_EVENTS || LOG_MOVES
-		clog << "Tool has been moved to " << point(event) << "\n";
+		std::clog << "Tool has been moved to " << point(event) << "\n";
 #endif
 
 		if (recentering_tool_shell_timer == 0)
@@ -785,7 +785,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    {
 		// Source shell has been moved -- let command tool follow
 #if LOG_EVENTS || LOG_MOVES
-		clog << "Shell has been moved to " << point(event) << "\n";
+		std::clog << "Shell has been moved to " << point(event) << "\n";
 #endif
 
 		FollowToolShellCB();
@@ -1248,8 +1248,8 @@ static void recenter_tool_shell(Widget ref, int top_offset, int right_offset)
 	return;
 
 #if LOG_MOVES
-    clog << "Recentering tool to offset: " << right_offset 
-	 << ", " << top_offset << "\n";
+    std::clog << "Recentering tool to offset: " << right_offset 
+	      << ", " << top_offset << "\n";
 #endif
 
     Window ref_window  = XtWindow(ref);
@@ -1382,7 +1382,7 @@ static bool get_tool_offset(Widget ref, int& top_offset, int& right_offset)
     y -= frame_y + frame_attributes.border_width;
 
 #if LOG_MOVES
-    clog << "Current offset: " << x << ", " << y << "\n";
+    std::clog << "Current offset: " << x << ", " << y << "\n";
 #endif
 
     top_offset   = y;
@@ -1441,8 +1441,8 @@ void save_preferred_paned_sizes(Widget paned)
 	}
 
 #if LOG_GEOMETRY
-	clog << XtName(paned) << ": child " << XtName(child) 
-	     << " has preferred height " << height << '\n';
+	std::clog << XtName(paned) << ": child " << XtName(child) 
+		  << " has preferred height " << height << '\n';
 #endif
 
 	MinMax& preferred_size = preferred_sizes[child];
@@ -1478,12 +1478,12 @@ void manage_paned_child(Widget w)
     }
 
 #if LOG_GEOMETRY
-    clog << XtName(paned) << ": managing child " << XtName(w) << "\n";
+    std::clog << XtName(paned) << ": managing child " << XtName(w) << "\n";
     if (preferred_sizes.has(w))
     {
 	const MinMax& preferred_size = preferred_sizes[w];
-	clog << XtName(paned) << ": child " << XtName(w) 
-	     << " has preferred height " << preferred_size.max << '\n';
+	std::clog << XtName(paned) << ": child " << XtName(w) 
+		  << " has preferred height " << preferred_size.max << '\n';
     }
 #endif
 
@@ -1510,9 +1510,9 @@ void manage_paned_child(Widget w)
 		      XtPointer(0));
 
 #if LOG_GEOMETRY
-	clog << XtName(paned) << ": child " << XtName(child) 
-	     << " is managed (min = " << size.min 
-	     << ", max = " << size.max << ")\n";
+	std::clog << XtName(paned) << ": child " << XtName(child) 
+		  << " is managed (min = " << size.min 
+		  << ", max = " << size.max << ")\n";
 #endif
     }
 
@@ -1552,8 +1552,8 @@ void manage_paned_child(Widget w)
 	    }
 
 #if LOG_GEOMETRY
-	    clog << XtName(paned) << ": child " << XtName(child) 
-	         << " has preferred height " << preferred_size.max << '\n';
+	    std::clog << XtName(paned) << ": child " << XtName(child) 
+		      << " has preferred height " << preferred_size.max << '\n';
 #endif
 	}
 
@@ -1642,7 +1642,7 @@ void unmanage_paned_child(Widget w)
     }
 
 #if LOG_GEOMETRY
-    clog << XtName(paned) << ": unmanaging child " << XtName(w) << "\n";
+    std::clog << XtName(paned) << ": unmanaging child " << XtName(w) << "\n";
 #endif
 
     Widget command = XtParent(gdb_w);
@@ -1707,8 +1707,8 @@ void get_paned_window_width(Widget paned, Dimension& max_width)
 	XtQueryGeometry(child, (XtWidgetGeometry *)0, &size);
 
 #if LOG_GEOMETRY
-	clog << XtName(paned) << ": child " << XtName(child)
-	     << " wants width " << size.width << "\n";
+	std::clog << XtName(paned) << ": child " << XtName(child)
+		  << " wants width " << size.width << "\n";
 #endif
 
 	max_width = max(size.width, max_width);
@@ -1763,8 +1763,8 @@ void set_paned_window_size(Widget paned, Dimension max_width)
 	}
 
 #if LOG_GEOMETRY
-	clog << XtName(paned) << ": child " << XtName(child) 
-	     << " wants height " << height << "\n";
+	std::clog << XtName(paned) << ": child " << XtName(child) 
+		  << " wants height " << height << "\n";
 #endif
 
 	if (managed_children > 0)
@@ -1828,8 +1828,8 @@ void set_main_window_size(Widget main)
 	}
 
 #if LOG_GEOMETRY
-	clog << XtName(main) << ": child " << XtName(child) << " wants " 
-	     << BoxSize(width, height) << "\n";
+	std::clog << XtName(main) << ": child " << XtName(child) << " wants " 
+		  << BoxSize(width, height) << "\n";
 #endif
 
 	max_width = max(width, max_width);
@@ -1884,8 +1884,8 @@ void set_scrolled_window_size(Widget child, Widget target)
 	target = scroll;
 
 #if LOG_GEOMETRY
-    clog << XtName(target) << ": child " << XtName(child) << " wants " 
-	 << BoxSize(size.width, size.height) << "\n";
+    std::clog << XtName(target) << ": child " << XtName(child) << " wants " 
+	      << BoxSize(size.width, size.height) << "\n";
 #endif
 
     Dimension border_width     = 1;

@@ -194,8 +194,8 @@ bool DispNode::update(string& value)
 	// mylast_change = ++tics;
 	mylast_refresh = ++tics;
 #if 0
-	clog << "Display " << disp_nr() << " changed"
-	     << " (" << mylast_change << ")\n";
+	std::clog << "Display " << disp_nr() << " changed"
+		  << " (" << mylast_change << ")\n";
 #endif
     }
 
@@ -403,8 +403,8 @@ void DispNode::set_addr(const string& new_addr)
 	myaddr = new_addr;
 	// mylast_change = ++tics;
 #if 0
-	clog << "Display " << disp_nr() << " changed"
-	     << " (" << mylast_change << ")\n";
+	std::clog << "Display " << disp_nr() << " changed"
+		  << " (" << mylast_change << ")\n";
 #endif
     }
 }

@@ -251,8 +251,8 @@ string make_font(const AppData& ad, DDDFont base, const string& override)
     }
 
 #if 0
-    clog << "make_font(" << font_type(base) << ", " << quote(override) 
-	 << ") = " << quote(font) << "\n";
+    std::clog << "make_font(" << font_type(base) << ", " << quote(override) 
+	      << ") = " << quote(font) << "\n";
 #endif
 
     return font;
@@ -583,8 +583,8 @@ static string simplify_font(const AppData& ad, DDDFont font,
 	s += "-" + component(ad, font, Weight);
 
 #if 0
-    clog << "simplify_font(" << font_type(font) << ", " 
-	 << quote(source) << ") = " << quote(s) << "\n";
+    std::clog << "simplify_font(" << font_type(font) << ", " 
+	      << quote(source) << ") = " << quote(s) << "\n";
 #endif
 
     return s;

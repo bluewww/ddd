@@ -232,7 +232,7 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
 {
     const GraphGC& graphGC = graphEditGetGraphGC(w);
 
-    // clog << "new node       at " << pos << "\n";
+    // std::clog << "new node       at " << pos << "\n";
 
     BoxSize new_size(new_node->box()->size());
 
@@ -244,14 +244,14 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
     {
 	pos                 += BoxPoint(grid[X], 0);
 	new_region.origin() += BoxPoint(grid[X], 0);
-	// clog << "new node now   at " << pos << "\n";
+	// std::clog << "new node now   at " << pos << "\n";
     }
 
     while (new_region.origin()[Y] <= 0)
     {
 	pos                 += BoxPoint(0, grid[Y]);
 	new_region.origin() += BoxPoint(0, grid[Y]);
-	// clog << "new node now   at " << pos << "\n";
+	// std::clog << "new node now   at " << pos << "\n";
     }
 
     // Make sure the new node does not obscure existing nodes
@@ -265,7 +265,7 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
 	    new_region.origin() += offset;
 
 	    n = firstVisibleNode();
-	    // clog << "new node now   at " << pos << "\n";
+	    // std::clog << "new node now   at " << pos << "\n";
 	}
 	else
 	    n = nextVisibleNode(n);
@@ -327,7 +327,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 	// NODE -> (new)
 
 	BoxGraphNode *node = idMap.get(depends_on);
-	// clog << "node           at " << node->pos() << "\n";
+	// std::clog << "node           at " << node->pos() << "\n";
 	pos = node->pos() + offset;
 
 	assert(pos.isValid());
@@ -380,8 +380,8 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 	    //           \->  MAX_CHILD
 	    //            \-> (new)
 
-	    // clog << "max_child      at " << max_child->pos() << "\n";
-	    // clog << "next_max_child at " << next_max_child->pos() << "\n";
+	    // std::clog << "max_child      at " << max_child->pos() << "\n";
+	    // std::clog << "next_max_child at " << next_max_child->pos() << "\n";
 
 	    // Re-use offset between last two children
 	    pos = max_child->pos() 
@@ -405,7 +405,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 	    //   NODE ->     MAX_CHILD
 	    //        \->    (new)
 
-	    // clog << "child          at " << max_child->pos() << "\n";
+	    // std::clog << "child          at " << max_child->pos() << "\n";
 
 	    // If MAX_CHILD is on the right of NODE, place new node below;
 	    // if MAX_CHILD is below NODE, place new node on the right.
@@ -430,7 +430,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 		GraphNode *parent = edge->from();
 		assert(parent->pos().isValid());
 
-		// clog << "parent         at " << parent->pos() << "\n";
+		// std::clog << "parent         at " << parent->pos() << "\n";
 
 		// Re-use offset between parent and node
 		pos = node->pos() + (node->pos() - parent->pos());
@@ -1050,8 +1050,8 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
     offsets[RIGHT] = rotate_offset(grid_offset, -90);
 
 #if 0
-    clog << "offsets[LEFT]  = " << offsets[LEFT]  << "\n";
-    clog << "offsets[RIGHT] = " << offsets[RIGHT] << "\n";
+    std::clog << "offsets[LEFT]  = " << offsets[LEFT]  << "\n";
+    std::clog << "offsets[RIGHT] = " << offsets[RIGHT] << "\n";
 #endif
 
     // Try hint offsets
@@ -1079,10 +1079,10 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
 		pos1 = pos2 = center + offset;
 	    }
 #if 0
-	    clog << "#" << i << " - "
-		 << (side == LEFT ? "left side:  " : "right side: ")
-		 << "trying pos1 = " << pos1 
-		 << " and pos2 = " << pos2 << "\n";
+	    std::clog << "#" << i << " - "
+		      << (side == LEFT ? "left side:  " : "right side: ")
+		      << "trying pos1 = " << pos1 
+		      << " and pos2 = " << pos2 << "\n";
 #endif
 
 	    found = hint_positions_ok(w, from, to, pos1, pos2);

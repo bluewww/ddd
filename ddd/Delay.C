@@ -142,7 +142,7 @@ _Delay::_Delay(Widget w):
 	return;
 
 #if LOG_DELAY
-    clog << "Setting " << XtName(widget) << " delay cursor\n";
+    std::clog << "Setting " << XtName(widget) << " delay cursor\n";
 #endif
 
     Display *display = XtDisplay(widget);
@@ -171,7 +171,7 @@ _Delay::~_Delay()
 	return;
 
 #if LOG_DELAY
-    clog << "Removing " << XtName(widget) << " delay cursor\n";
+    std::clog << "Removing " << XtName(widget) << " delay cursor\n";
 #endif
 
     if (XtIsRealized(widget))
@@ -212,7 +212,7 @@ Delay::Delay(Widget w):
 	    if (_shells[i])
 	    {
 #if LOG_DELAY
-		clog << "Slot " << i << ": ";
+		std::clog << "Slot " << i << ": ";
 #endif
 		delays[i] = new _Delay(_shells[i]);
 	    }
@@ -236,8 +236,8 @@ void Delay::DestroyCB(Widget widget, XtPointer, XtPointer)
 		delays[i] = 0;
 	    }
 #if LOG_DELAY
-	    clog << "Unregistering " << XtName(widget) 
-		 << " in slot " << i << "\n";
+	    std::clog << "Unregistering " << XtName(widget) 
+		      << " in slot " << i << "\n";
 #endif
 	}
 }
@@ -275,7 +275,7 @@ void Delay::register_shell(Widget widget)
     delays[i]  = new_delay;
 
 #if LOG_DELAY
-    clog << "Registering " << XtName(widget) << " in slot " << i << "\n";
+    std::clog << "Registering " << XtName(widget) << " in slot " << i << "\n";
 #endif
 
     if (shell_registered != 0)
@@ -295,7 +295,7 @@ Delay::~Delay()
 	    if (delays[i])
 	    {
 #if LOG_DELAY
-		clog << "Slot " << i << ": ";
+		std::clog << "Slot " << i << ": ";
 #endif
 		delete delays[i];
 		delays[i] = 0;

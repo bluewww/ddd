@@ -75,7 +75,7 @@ struct GDBReply {
 static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
 {
 #if LOG_GDB_QUESTION
-    clog << "gdb_question: TimeOut\n";
+    std::clog << "gdb_question: TimeOut\n";
 #endif
 
     assert(gdb_question_running);
@@ -92,7 +92,7 @@ static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
 static void gdb_reply(const string& complete_answer, void *qu_data)
 {
 #if LOG_GDB_QUESTION
-    clog << "gdb_question: reply " << quote(complete_answer) << "\n";
+    std::clog << "gdb_question: reply " << quote(complete_answer) << "\n";
 #endif
 
     GDBReply *reply = (GDBReply *)qu_data;
@@ -171,7 +171,7 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 	return NO_GDB_ANSWER;
 
 #if LOG_GDB_QUESTION
-    clog << "gdb_question(" << quote(command) << ")...\n";
+    std::clog << "gdb_question(" << quote(command) << ")...\n";
 #endif
 
     // Block against reentrant calls
@@ -215,8 +215,8 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 	reply->killme = true;
     }
 #if LOG_GDB_QUESTION
-    clog << "gdb_question(" << quote(command) << ") = " 
-	 << quote(answer) << "\n";
+    std::clog << "gdb_question(" << quote(command) << ") = " 
+	      << quote(answer) << "\n";
 #endif
 
     // Return answer

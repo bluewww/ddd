@@ -97,8 +97,8 @@ void TypeInfo::_setup_all_bases() const
 
     if (debug)
     {
-	clog << "TypeInfo: setup done for " << *this << "\n";
-	clog.flush();
+	std::clog << "TypeInfo: setup done for " << *this << "\n";
+	std::clog.flush();
     }
 }
 	

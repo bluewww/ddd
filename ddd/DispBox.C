@@ -230,10 +230,10 @@ VSLLib *DispBox::vsllib(const DispValue *dv)
     StringArray themes = theme_manager.themes(expr);
 
 #if LOG_LIB_CACHE
-    clog << "Searching lib for theme";
+    std::clog << "Searching lib for theme";
     for (int i = 0; i < themes.size(); i++)
-	clog << " " << themes[i];
-    clog << "\n";
+	std::clog << " " << themes[i];
+    std::clog << "\n";
 #endif
 
     int count = 0;
@@ -248,7 +248,7 @@ VSLLib *DispBox::vsllib(const DispValue *dv)
     }
 
 #if LOG_LIB_CACHE
-    clog << "Adding new lib: " << count + 1 << " libs in cache\n";
+    std::clog << "Adding new lib: " << count + 1 << " libs in cache\n";
 #endif
 
     // Not found.  Set theme list and keep a copy in the cache.
@@ -264,7 +264,7 @@ VSLLib *DispBox::vsllib(const DispValue *dv)
 void DispBox::clear_vsllib_cache()
 {
 #if LOG_LIB_CACHE
-    clog << "Clearing lib cache: " << 0 << " libs in cache\n";
+    std::clog << "Clearing lib cache: " << 0 << " libs in cache\n";
 #endif
 
     delete vsllib_cache;
@@ -439,7 +439,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
     if (vbox != 0)
     {
 #if LOG_BOX_CACHE
-	clog << dv->full_name() << ": using cached box\n";
+	std::clog << dv->full_name() << ": using cached box\n";
 #endif
 
 	vbox = vbox->link();
@@ -448,7 +448,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
     }
 
 #if LOG_BOX_CACHE
-    clog << dv->full_name() << ": computing new box\n";
+    std::clog << dv->full_name() << ": computing new box\n";
 #endif
 
     // Rebuild box

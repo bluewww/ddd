@@ -105,7 +105,7 @@ void DispBuffer::filter (string& answer)
 	break;
     }
 
-    // clog << "Display buffer = " << quote(display_buffer) << "\n";
+    // std::clog << "Display buffer = " << quote(display_buffer) << "\n";
 }
 
 string DispBuffer::answer_ended ()

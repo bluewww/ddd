@@ -241,7 +241,7 @@ static Command running_gdb_command("run");
 
 static void ClearContinuingCB(XtPointer, XtIntervalId *)
 {
-    // clog << "Continuing...done.\n";
+    // std::clog << "Continuing...done.\n";
 
     continuing = 0;
     processCommandQueue();
@@ -256,7 +256,7 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 	current_gdb_command = c;
 
 #if LOG_COMMAND_QUEUE
-    clog << "Command " << c << ": executing\n";
+    std::clog << "Command " << c << ": executing\n";
 #endif
 
     if (gdb->isReadyWithPrompt())
@@ -408,13 +408,13 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
     {
 	// Invalid command
 #if LOG_COMMAND_QUEUE
-	clog << "Command " << c << ": ignoring\n";
+	std::clog << "Command " << c << ": ignoring\n";
 #endif
     }
     else if (gdb->isReadyWithPrompt() || c.priority == COMMAND_PRIORITY_NOW)
     {
 #if LOG_COMMAND_QUEUE
-	clog << "Command " << c << ": processing\n";
+	std::clog << "Command " << c << ": processing\n";
 #endif
 
 	interrupting = false;
@@ -443,7 +443,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 		XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 				timeout, ClearContinuingCB, XtPointer(0));
 
-	    // clog << "Continuing...\n";
+	    // std::clog << "Continuing...\n";
 	}
 
 	_do_gdb_command(c, is_command);
@@ -456,7 +456,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	     !interrupting)
     {
 #if LOG_COMMAND_QUEUE
-	clog << "Command " << c << ": interrupting\n";
+	std::clog << "Command " << c << ": interrupting\n";
 #endif
 
 	// We may become ready by interrupting the current command
@@ -504,7 +504,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
     {
 	// We're not ready - enqueue command
 #if LOG_COMMAND_QUEUE
-	clog << "Command " << c << ": enqueuing\n";
+	std::clog << "Command " << c << ": enqueuing\n";
 #endif
 
 	gdb_enqueue_command(c);
@@ -603,7 +603,7 @@ void clearCommandQueue()
     }
 
 #if LOG_COMMAND_QUEUE
-    clog << "Command queue: " << commandQueue << "\n";
+    std::clog << "Command queue: " << commandQueue << "\n";
 #endif
 }
 
@@ -726,7 +726,7 @@ static void gdb_enqueue_command(const Command& c)
     }
 
 #if LOG_COMMAND_QUEUE
-    clog << "Command queue: " << commandQueue << "\n";
+    std::clog << "Command queue: " << commandQueue << "\n";
 #endif
 
     if (process_timeout == 0)
@@ -756,7 +756,7 @@ void processCommandQueue(XtPointer, XtIntervalId *id)
 	gdb_keyboard_command = false;
 
 #if LOG_COMMAND_QUEUE
-	clog << "Command queue: " << commandQueue << "\n";
+	std::clog << "Command queue: " << commandQueue << "\n";
 #endif
     }
 

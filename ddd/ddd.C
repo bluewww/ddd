@@ -3321,7 +3321,7 @@ XrmDatabase GetFileDatabase(const string& filename)
     std::ifstream is(filename.chars());
 
 #if 0
-    clog << "Copying " << filename.chars() << " to " << tmpfile << "\n";
+    std::clog << "Copying " << filename.chars() << " to " << tmpfile << "\n";
 #endif
 
     // Resources to ignore upon copying
@@ -6626,7 +6626,7 @@ static void count_mapped_menus(Widget, XtPointer, XtPointer call_data)
 	break;
     }
 
-    // clog << _mapped_menus << " mapped menus\n";
+    // std::clog << _mapped_menus << " mapped menus\n";
 }
 
 static void gdbUpdateEditCB(Widget w, XtPointer client_data, 

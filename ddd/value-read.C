@@ -300,7 +300,7 @@ static DispValueType _determine_type (string& value)
 DispValueType determine_type(string& value)
 {
 #if LOG_DETERMINE_TYPE
-    clog << quote(value);
+    std::clog << quote(value);
 #endif
 
     const char *v = value.chars();
@@ -309,7 +309,7 @@ DispValueType determine_type(string& value)
     value = v;
 
 #if LOG_DETERMINE_TYPE
-    clog << " has type " << type << "\n";
+    std::clog << " has type " << type << "\n";
 #endif
 
     return type;
@@ -496,7 +496,7 @@ string read_token(string& value)
     string token = string(value.chars(), pos);
     value = value.from(pos);
 
-    // clog << "read_token() = " << quote(token) << "\n";
+    // std::clog << "read_token() = " << quote(token) << "\n";
     return token;
 }
 
@@ -575,7 +575,7 @@ string read_simple_value(string& value, int depth, bool ignore_repeats)
 
     strip_trailing_space(ret);
 
-    // clog << "read_simple_value() = " << quote(ret) << "\n";
+    // std::clog << "read_simple_value() = " << quote(ret) << "\n";
     return ret;
 }
 

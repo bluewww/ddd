@@ -273,9 +273,9 @@ static void PortholeCB(Widget w,
     }
     XtSetValues (panner, args, arg);
 
-    // clog << "Form   size " << BoxPoint(form_width, form_height) << "\n";
-    // clog << "Canvas size " << BoxPoint(report->canvas_width, 
-    // 			       report->canvas_height) << "\n";
+    // std::clog << "Form   size " << BoxPoint(form_width, form_height) << "\n";
+    // std::clog << "Canvas size " << BoxPoint(report->canvas_width, 
+    //                                         report->canvas_height) << "\n";
 
     Dimension scale, panner_border_width;
     XtVaGetValues(panner, 
@@ -294,7 +294,7 @@ static void PortholeCB(Widget w,
 		pw->pannedGraphEdit.minimumPannerHeight), 
 	    (form_height * pw->pannedGraphEdit.maximumScale) / 100);
 
-    // clog << "Panner size " << BoxPoint(panner_width, panner_height) << "\n";
+    // std::clog << "Panner size " << BoxPoint(panner_width, panner_height) << "\n";
 
     Dimension extra_width;
     Dimension extra_height;

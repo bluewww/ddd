@@ -96,7 +96,7 @@ static void AutoRaiseEH(Widget shell, XtPointer, XEvent *event, Boolean *)
     if (ignore)
     {
 #if LOG_AUTO_RAISE
-	clog << "Ignoring visibility change of " << longName(shell) << "\n";
+	std::clog << "Ignoring visibility change of " << longName(shell) << "\n";
 #endif
 	return;
     }
@@ -108,7 +108,7 @@ static void AutoRaiseEH(Widget shell, XtPointer, XEvent *event, Boolean *)
 	// further auto-raises.
 
 #if LOG_AUTO_RAISE
-	clog << "Raised " << longName(shell) << "\n";
+	std::clog << "Raised " << longName(shell) << "\n";
 #endif
 
 	MMresource_values values;
@@ -134,7 +134,7 @@ static void AutoRaiseEH(Widget shell, XtPointer, XEvent *event, Boolean *)
     case VisibilityPartiallyObscured:
 
 #if LOG_AUTO_RAISE
-	clog << "Raising " << longName(shell) << "\n";
+	std::clog << "Raising " << longName(shell) << "\n";
 #endif
 	XRaiseWindow(XtDisplay(shell), frame(shell));
 
@@ -146,7 +146,7 @@ static void AutoRaiseEH(Widget shell, XtPointer, XEvent *event, Boolean *)
 void _auto_raise(Widget shell)
 {
 #if LOG_AUTO_RAISE
-    clog << "Auto-raise enabled for " << longName(shell) << "\n";
+    std::clog << "Auto-raise enabled for " << longName(shell) << "\n";
 #endif
 
     XtAddEventHandler(shell, VisibilityChangeMask, False,

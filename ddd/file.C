@@ -125,12 +125,12 @@ static void SyncFiltersCB(Widget dialog, XtPointer, XtPointer)
 
     entered = true;
 
-    // clog << "widget = " << longName(text) << "\n";
+    // std::clog << "widget = " << longName(text) << "\n";
 
     while (dialog != 0 && !XmIsFileSelectionBox(dialog))
 	dialog = XtParent(dialog);
 	
-    // clog << "dialog = " << longName(dialog) << "\n";
+    // std::clog << "dialog = " << longName(dialog) << "\n";
 
     Widget text = XmFileSelectionBoxGetChild(dialog, XmDIALOG_FILTER_TEXT);
     String _current_file_filter = XmTextGetString(text);
@@ -141,7 +141,7 @@ static void SyncFiltersCB(Widget dialog, XtPointer, XtPointer)
     {
 	if (file_dialogs[i] != dialog)
 	{
-	    // clog << "other dialog = " << longName(file_dialogs[i]) << "\n";
+	    // std::clog << "other dialog = " << longName(file_dialogs[i]) << "\n";
 	    XmTextSetString(file_filters[i], CONST_CAST(char*,current_file_filter.chars()));
 	}
     }
@@ -156,18 +156,18 @@ static void FilterAllCB(Widget dialog, XtPointer client_data,
 {
     SyncFiltersCB(dialog, client_data, call_data);
 
-    // clog << "widget = " << longName(dialog) << "\n";
+    // std::clog << "widget = " << longName(dialog) << "\n";
 
     while (dialog != 0 && !XmIsFileSelectionBox(dialog))
 	dialog = XtParent(dialog);
 	
-    // clog << "dialog = " << longName(dialog) << "\n";
+    // std::clog << "dialog = " << longName(dialog) << "\n";
 
     for (int i = 0; i < file_dialogs.size(); i++)
     {
 	if (file_dialogs[i] != dialog)
 	{
-	    // clog << "other dialog = " << longName(file_dialogs[i]) << "\n";
+	    // std::clog << "other dialog = " << longName(file_dialogs[i]) << "\n";
 	    XmFileSelectionDoSearch(file_dialogs[i], 0);
 	}
     }
@@ -1090,7 +1090,7 @@ static void update_processes(Widget processes, bool keep_selection)
 		all_process_list += line;
 #if 0
 	    else
-		clog << "Excluded: " << line << "\n";
+		std::clog << "Excluded: " << line << "\n";
 #endif
 
 	    if (first_line)
@@ -1164,7 +1164,7 @@ static void update_processes(Widget processes, bool keep_selection)
 		if (pids[k] != 0 && pids[k] == bad_pid)
 		{
 #if 0
-		    clog << "Excluded: " << all_process_list[k] << "\n";
+		    std::clog << "Excluded: " << all_process_list[k] << "\n";
 #endif
 		    all_process_list[k] = NO_GDB_ANSWER;
 		}

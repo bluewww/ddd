@@ -1034,7 +1034,7 @@ void send_gdb_command(string cmd, Widget origin,
 
 	if (!check)
 	{
-	    // clog << "Not checking " << cmd << "\n";
+	    // std::clog << "Not checking " << cmd << "\n";
 	    delete cmd_data->pos_buffer;
 	    cmd_data->pos_buffer = 0;
 	}
@@ -2095,7 +2095,7 @@ static void command_completed(void *data)
 
 	if (!func.empty())
 	{
-	    // clog << "Current function is " << quote(func) << "\n";
+	    // std::clog << "Current function is " << quote(func) << "\n";
 	    data_disp->process_scope(func);
 	}
 

@@ -587,7 +587,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	source_view->get_word_at_event(widget, event, startpos, endpos);
 
 #if LOG_VALUE_TIPS
-    clog << "Pointing at " << quote(expr) << "\n";
+    std::clog << "Pointing at " << quote(expr) << "\n";
 #endif
 
     // If we're at a breakpoint, return appropriate help

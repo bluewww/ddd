@@ -118,10 +118,10 @@ StringArray ThemeManager::themes(const string& expr)
     }
 
 #if LOG_THEMES
-    clog << "Themes of " << expr << ":";
+    std::clog << "Themes of " << expr << ":";
     for (int j = 0; j < ret.size(); j++)
-	clog << " " << ret[j];
-    clog << "\n";
+	std::clog << " " << ret[j];
+    std::clog << "\n";
 #endif
 
     return ret;
