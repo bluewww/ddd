@@ -406,11 +406,10 @@ Volunteers for fixing these and other bugs are welcome!
 214. The check for decorated transients sometimes fails with the
      AfterStep WM.
 
-215. Rudolf Leitgeb <leitgeb@leland.stanford.edu> reports that with
-     separate windows, a newly created assembler window has zero
+215. With separate windows, a newly created assembler window has zero
      height.
 
-216. Jonathan Edwards <edwards@intranet.com> suggests that The
+216. Jonathan Edwards <edwards@intranet.com> suggests that the
      flashing cursor in the gdb console window ought to stop flashing
      during user input.  [Tell the Motif people  -AZ]
 
