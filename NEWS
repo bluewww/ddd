@@ -4,10 +4,15 @@ Changes in DDD						-*- text -*-
 DDD 2.1 [in development; scheduled for April, 1997]
 ---------------------------------------------------
 
-    DDD 2.1 brings a further improved user interface, some new
-    features, and several bug fixes.
+    DDD 2.1 brings alias detection, local variable displays, status
+    displays, a further improved user interface, and several bug
+    fixes.
 
     User-visible changes to DDD 2.0:
+    - Alias detection.  DDD now recognizes that multiple displays
+      reference the same object.  This allows the examination of
+      graph-like data structures (circular lists, DAGs, and so on).
+      Alias detection slows down DDD a bit, so it can be turned off.
     - Local variable displays.  You can display all local variables
       and arguments in the data display.  The display is automatically
       updated to reflect the list of variables and their values.
@@ -22,8 +27,8 @@ DDD 2.1 [in development; scheduled for April, 1997]
       small window to raise showing the current variable value.  (optional)
     - The info shown in the tips is also displayed in the status line.
     - The status line has moved to the bottom.  (can be restored)
-    - The status line contains a small LED-like indicator, blinking
-      whenever the inferior debugger is busy.
+    - The status line contains a debugger status indicator, blinking
+      whenever the inferior debugger is busy.  (can be turned off)
     - The register window can display floating-point registers.
     - Thread support.  You can inquire existing threads and switch
       among them.  (requires GDB and operating system thread support)

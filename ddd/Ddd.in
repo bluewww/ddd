@@ -544,6 +544,9 @@ Ddd*clearDocDelay:		1000
 Ddd*clearTipDelay:		50
 
 
+! Do we want to see the debugger status (blinking while busy)?
+Ddd*blinkWhileBusy:		true
+
 ! Blink rate (in ms) of the busy LED - the LED showing that the inferior
 ! debugger is busy.  A value of 0 prevents the busy LED from blinking.
 Ddd*busyBlinkRate:		500
@@ -3870,8 +3873,15 @@ Ddd*edit_displays_dialog.okLabelString:	      Close
 Ddd*edit_displays_dialog*helpString:	  \
 @rm This is the @sl Display editor@rm.\n\
 \n\
-Select displays on the left; operations on the right.\n\
+Select displays on the left, operations on the right.\n\
 \n\
+Columns:\n\
+@tt \267 @bf Num @rm - the display number.\n\
+@tt \267 @bf State @rm - the display state (enabled, disabled, or alias).\n\
+@tt \267 @bf Expression @rm - the display expression.\n\
+@tt \267 @bf Addr @rm - the location of the display expression in memory.\n\
+\n\
+Buttons:\n\
 @tt \267 @bf New Display @rm - create a new display.\n\
 @tt \267 @bf Display * @rm - dereference the selected display.\n\
 @tt \267 @bf Show Detail @rm - show the details of all selected displays.\n\
