@@ -1114,9 +1114,6 @@ void GDBAgent::strip_control(string& answer) const
 
 // Received data from GDB
 
-// Number of characters to be echoed for echo detection
-const int ECHO_THRESHOLD = 4;
-
 void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 {
     GDBAgent* gdb = ptr_cast(GDBAgent, agent);
@@ -1159,18 +1156,18 @@ void GDBAgent::handle_echo(string& answer)
 	    }
 	}
 
-	if (e >= ECHO_THRESHOLD && e >= int(last_written.length()))
+	if (e >= int(last_written.length()))
 	{
-	    // All characters last written have been echoed.
-	    // => Remove echoed characters and keep on processing
+	    // All characters written have been echoed.
+	    // Remove echoed characters and keep on processing.
 	    callHandlers(EchoDetected);
 	    answer = answer.from(i);
 	    echoed_characters = -1;
 	}
-	else if (i >= ECHO_THRESHOLD && i >= int(answer.length()))
+	else if (i >= int(answer.length()))
 	{
-	    // All characters received so far have been echoed.
-	    // => Wait for further input
+	    // A prefix of the last characters written has been echoed.
+	    // Wait for further echos.
 	    answer = "";
 	    echoed_characters = e;
 	}
@@ -1181,8 +1178,21 @@ void GDBAgent::handle_echo(string& answer)
 	    answer.prepend(last_written.before(echoed_characters));
 	    echoed_characters = -1;
 
-	    // Disable echo detection until re-activated
-	    detect_echos(false);
+	    // If a command of length ECHO_THRESHOLD is not echoed,
+	    // disable echo detection.  The idea behind this is that
+	    // echo disabling seems to have succeeded and we thus no
+	    // longer need to check for echos.  This reduces the risk
+	    // of echo detection altering output data.
+
+	    // ECHO_THRESHOLD is 4 because the inferior debugger might
+	    // not echo short interludes like `yes\n', `no\n' or `^C'.
+	    const int ECHO_THRESHOLD = 4;
+
+	    if (last_written.length() > ECHO_THRESHOLD)
+	    {
+		// No more echos - disable echo detection until re-activated
+		detect_echos(false);
+	    }
 	}
     }
 }
