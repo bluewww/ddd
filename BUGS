@@ -151,4 +151,6 @@ Volunteers for fixing these and other bugs are welcome!
 281 In auto deiconify mode, the GDB console uniconifies even if other
     windows are already there.
 
-282 (Insert new bugs here)
+282*A deferred display cannot be deleted in `Data | Edit Displays'.
+
+283 (Insert new bugs here)

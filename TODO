@@ -389,7 +389,7 @@ Volunteers for these and other projects are welcome!
 
 287 Have the DDD windows be resized in font increments.
 
-288 Have an @ifjdb...@else...@endif constructs in help texts.
+288 Have a @ifjdb...@else...@endif constructs in help texts.
 
 289 Enable drop actions.  Dropping an action on the text causes the
     action to perform on the object (or vice versa?)
@@ -403,4 +403,10 @@ Volunteers for these and other projects are welcome!
     numeric array to a file to inspect the curve with a graphics
     program such as gnuplot or xmgr.
 
-293 (Insert new project ideas here)
+293 Styles.  Have arrays, etc. be displayed in various visual styles
+    such as bar graphs.  This can be easily established using VSL
+    functions.  See also 273 and 292.
+
+294 Support `<repeats N times>' in display output.
+
+295 (Insert new project ideas here)
