@@ -5284,7 +5284,6 @@ static void gdbUpdateAllMenus()
     gdbUpdateEditCB(gdb_w, XtPointer(GDBWindow), NULL);
     gdbUpdateEditCB(gdb_w, XtPointer(SourceWindow), NULL);
     gdbUpdateEditCB(gdb_w, XtPointer(DataWindow), NULL);
-    gdbUpdateEditCB(gdb_w, XtPointer(CommonWindow), NULL);
     gdbUpdateFileCB(gdb_w, XtPointer(command_file_menu), NULL);
     gdbUpdateFileCB(gdb_w, XtPointer(source_file_menu), NULL);
     gdbUpdateFileCB(gdb_w, XtPointer(data_file_menu), NULL);
