@@ -210,7 +210,6 @@ char ddd_rcsid[] =
 #include "comm-manag.h"
 #include "Command.h"
 #include "complete.h"
-#include "configinfo.h"
 #include "converters.h"
 #include "cook.h"
 #include "data.h"

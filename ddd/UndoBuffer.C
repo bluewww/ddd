@@ -894,6 +894,29 @@ void UndoBuffer::restore_current_state()
     done(&delay);
 }
 
+// Return history of display NAME
+string UndoBuffer::display_history(const string& name)
+{
+    string key = UB_DISPLAY_PREFIX + name;
+    string answer = "";
+    string last_value = "";
+
+    for (int i = 0; i < history.size(); i++)
+    {
+	const UndoBufferEntry& entry = history[i];
+
+	if (entry.has(key) && entry[key] != last_value)
+	{
+	    if (answer != "")
+		answer += ", ";
+	    answer += entry[key];
+	    last_value = entry[key];
+	}
+    }
+
+    return "history " + name + " = {" + answer + "}\n";
+}
+
 // Invariant
 bool UndoBuffer::OK()
 {

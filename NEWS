@@ -16,7 +16,7 @@ Plotting
   display debugger'.  Requires Gnuplot.
 
 - History plots.  You can plot the history of a numerical variable,
-  i.e. the sequence of previous values.  [Not operational yet]
+  i.e. the sequence of previous values.
 
 - Plots can be animated, visualizing algorithm effects.
 

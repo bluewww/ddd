@@ -246,6 +246,9 @@ public:
     // Add breakpoint state to OS
     static void add_breakpoint_state(ostream& os, BreakPoint *bp);
 
+    // Return history of display NAME
+    static string display_history(const string& name);
+
     // Invariant
     static bool OK();
 };

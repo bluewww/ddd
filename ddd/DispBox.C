@@ -210,7 +210,9 @@ void DispBox::set_title(int disp_nr, const string& t)
 	{
 	    // User command: use EXPR
 	    title = user_command(title);
-	    if (title.contains("info ", 0))
+	    if (title.contains("graph ", 0))
+		title = title.after("graph ");
+	    else if (title.contains("info ", 0))
 		title = title.after("info ");
 	    else if (title.contains(" "))
 		title = title.before(" ");

@@ -69,5 +69,12 @@ bool is_known_command(const string& answer);
 void init_session(const string& restart, const string& settings,
 		  bool try_source = false);
 
+// Let DDD handle COMMAND
+void internal_command(const string& command, OQCProc callback, void *data,
+		      bool echo, bool verbose, bool do_prompt);
+
+string internal_command(const string& command);
+bool is_internal_command(const string& command);
+
 #endif // _DDD_comm_manag_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

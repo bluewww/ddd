@@ -750,6 +750,56 @@ void send_gdb_ctrl(string cmd, Widget origin)
 
 
 //-----------------------------------------------------------------------------
+// Handle DDD commands
+//-----------------------------------------------------------------------------
+
+// Do internal command; return reply
+string internal_command(const string& command)
+{
+    if (command.contains("graph history ", 0))
+    {
+	string name = command.after("history ");
+	strip_space(name);
+	return undo_buffer.display_history(name);
+    }
+
+    return "";			// Nothing
+}
+
+bool is_internal_command(const string& command)
+{
+    return command.contains("graph history ", 0);
+}
+
+void internal_command(const string& command, OQCProc callback, void *data,
+		      bool echo, bool verbose, bool do_prompt)
+{
+    if (echo && verbose)
+    {
+	gdb_out(command + "\n");
+	gdb_input_at_prompt = true;
+    }
+
+    string answer = internal_command(command);
+
+    if (verbose)
+    {
+	// Show answer
+	_gdb_out(answer);
+    }
+
+    if (callback != 0)
+    {
+	// Invoke user-defined callback
+	callback(answer, data);
+    }
+
+    if (do_prompt)
+	prompt();
+}
+
+
+//-----------------------------------------------------------------------------
 // Send user command to GDB
 //-----------------------------------------------------------------------------
 

@@ -3984,6 +3984,7 @@ Ddd*toolbar*whatis.labelString:		Whatis ()
 Ddd*toolbar*examine.labelString:	Examine ()...
 Ddd*toolbar*display.labelString:	Display ()
 Ddd*toolbar*dispRef.labelString:	Display *()
+Ddd*toolbar*history.labelString:	Plot history of ()
 Ddd*toolbar*find.labelString:		LBL_FIND_FORWARD
 Ddd*toolbar*findBackward.labelString:	LBL_FIND_BACKWARD
 Ddd*toolbar*findForward.labelString:	LBL_FIND_FORWARD

@@ -280,6 +280,15 @@ MMDesc DataDisp::delete_menu[] =
     MMEnd
 };
 
+struct PlotItms { enum Itms { History }; };
+
+MMDesc DataDisp::plot_menu[] =
+{
+    {"history",     MMPush, {DataDisp::plotHistoryCB, 0}, 
+     0, 0, 0, 0},
+    MMEnd
+};
+
 
 struct CmdItms { enum Itms {New, Dereference, Plot, 
 			    Detail, Rotate, Set, Delete }; };
@@ -292,7 +301,8 @@ MMDesc DataDisp::graph_cmd_area[] =
     {"dereference",   MMPush | MMInsensitive | MMUnmanaged, 
      {DataDisp::dereferenceArgCB, 0}, 0, 0, 0, 0},
     {"plot",          MMPush | MMInsensitive,
-     {DataDisp::plotArgCB, 0}, 0, 0, 0, 0},
+     {DataDisp::plotArgCB, 0}, 
+     DataDisp::plot_menu, 0, 0, 0},
     {"detail",        MMPush | MMInsensitive, 
      {DataDisp::toggleDetailCB, XtPointer(-1)}, 
      DataDisp::detail_menu, 0, 0, 0 },
@@ -1558,7 +1568,12 @@ void DataDisp::plotArgCB(Widget w, XtPointer, XtPointer)
     new_display(arg, 0, "", false, true, w);
 }
 
-
+void DataDisp::plotHistoryCB(Widget w, XtPointer, XtPointer)
+{
+    // Create new display and plot its history
+    string arg = "`graph history " + source_arg->get_string() + "`";
+    new_display(arg, 0, "", false, true, w);
+}
 
 void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data, 
 			   XtPointer call_data)
@@ -2207,7 +2222,12 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  dereference_ok && !undoing);
 
     // Plot
+    bool arg_is_displayed = (display_number(source_arg->get_string()) != 0);
+    bool can_delete_arg = (count.selected == 0 && arg_is_displayed || 
+			   record_ok || 
+			   count.selected_titles > 0);
     set_sensitive(graph_cmd_area[CmdItms::Plot].widget, plot_ok);
+    set_sensitive(plot_menu[PlotItms::History].widget, can_delete_arg);
 
     // Rotate
     set_sensitive(node_popup[NodeItms::Rotate].widget,       
@@ -2266,10 +2286,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  record_ok || count.selected_expanded > 0);
 
     // Delete
-    bool have_display_arg = (display_number(source_arg->get_string()) != 0);
-    set_sensitive(graph_cmd_area[CmdItms::Delete].widget,
-		  (count.selected == 0 && have_display_arg) || 
-		  record_ok || count.selected_titles > 0);
+    set_sensitive(graph_cmd_area[CmdItms::Delete].widget, can_delete_arg);
     set_sensitive(display_area[DisplayItms::Delete].widget,
 		  count.selected > 0);
 
@@ -3226,14 +3243,28 @@ void DataDisp::refresh_builtin_user_displays()
 	if (is_cluster(dn) && !needs_refresh(dn))
 	    continue;
 
-	string cmd = dn->user_command();
-	if (!is_builtin_user_command(cmd))
+	const string& cmd = dn->user_command();
+	string answer = NO_GDB_ANSWER;
+
+	if (is_internal_command(cmd))
+	{
+	    if (s == 0)
+		s = new ProgressMeter("Updating histories");
+
+	    answer = internal_command(cmd);
+	} 
+	else if (is_builtin_user_command(cmd))
+	{
+	    if (s == 0)
+		s = new ProgressMeter("Updating clusters");
+
+	    answer = builtin_user_command(cmd, dn);
+	}
+	else
+	{
 	    continue;
+	}
 
-	if (s == 0)
-	    s = new ProgressMeter("Updating clusters");
-
-	string answer = builtin_user_command(cmd, dn);
 	if (answer != NO_GDB_ANSWER && dn->update(answer))
 	{
 	    // Clear old local selection
@@ -3846,7 +3877,9 @@ int DataDisp::add_refresh_user_commands(StringArray& cmds)
 	if (dn->is_user_command() && dn->enabled() && 
 	    !dn->deferred() && !dn->constant())
 	{
-	    cmds += dn->user_command();
+	    const string& cmd = dn->user_command();
+	    if (!is_internal_command(cmd))
+		cmds += cmd;
 	}
     }
 

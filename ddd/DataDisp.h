@@ -117,6 +117,7 @@ class DataDisp {
     static void dependentCB             (Widget, XtPointer, XtPointer);
     static void displayArgCB            (Widget, XtPointer, XtPointer);
     static void plotArgCB               (Widget, XtPointer, XtPointer);
+    static void plotHistoryCB           (Widget, XtPointer, XtPointer);
     static void setCB                   (Widget, XtPointer, XtPointer);
     static void shortcutCB              (Widget, XtPointer, XtPointer);
     static void deleteArgCB		(Widget, XtPointer, XtPointer);
@@ -252,6 +253,7 @@ class DataDisp {
     static MMDesc shortcut_popup1[];
     static MMDesc shortcut_popup2[];
     static MMDesc display_area[];
+    static MMDesc plot_menu[];
     static MMDesc detail_menu[];
     static MMDesc shortcut_menu[];
     static MMDesc rotate_menu[];

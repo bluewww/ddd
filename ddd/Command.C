@@ -229,8 +229,16 @@ void _gdb_command(const Command& c)
     }
 
     translate_command(cmd);
-    send_gdb_command(cmd, c.origin, c.callback, c.extra_callback, c.data, 
-		     c.echo, c.verbose, c.prompt, c.check);
+
+    if (is_internal_command(cmd))
+    {
+	internal_command(cmd, c.callback, c.data, c.echo, c.verbose, c.prompt);
+    }
+    else
+    {
+	send_gdb_command(cmd, c.origin, c.callback, c.extra_callback, c.data, 
+			 c.echo, c.verbose, c.prompt, c.check);
+    }
     messagePosition = XmTextGetLastPosition(gdb_w);
 }
 
