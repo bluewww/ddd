@@ -402,13 +402,13 @@ bool DispNode::set_title(bool set)
     if (set && !disp_box->have_title())
     {
 	// Add title
-	disp_box->set_title(mydisp_nr, myname);
+	disp_box->set_title(value(), mydisp_nr, myname);
 	changed = true;
     }
     else if (!set && disp_box->have_title())
     {
 	// Remove title
-	disp_box->set_title(mydisp_nr, "");
+	disp_box->set_title(value(), mydisp_nr, "");
 	changed = true;
     }
 

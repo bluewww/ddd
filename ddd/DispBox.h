@@ -39,7 +39,7 @@
 
 #include "strclass.h"
 #include "Box.h"
-#include "VSLLib.h"
+#include "ThemeVSLL.h"
 #include "VSLArgList.h"
 #include "DispValue.h"
 #include "ThemeM.h"
@@ -95,7 +95,7 @@ public:
     void set_value (const DispValue *dv, const DispValue *parent = 0);
 
     // Set title to NAME; if NAME == "", disable it
-    void set_title(int disp_nr, string name);
+    void set_title(const DispValue *dv, int disp_nr, string name);
 
     bool have_title() const { return title_box != 0; }
 
@@ -107,16 +107,9 @@ private:
     Box *_create_value_box(const DispValue *dv,
 			   const DispValue *parent);
 
-    static VSLLib dummylib;
-    static VSLLib *vsllib_ptr;
-    static VSLLib *vsllib()
-    {
-	if (!vsllib_initialized)
-	    init_vsllib();
-
-	return vsllib_ptr;
-    }
-    
+    static ThemedVSLLib dummylib;
+    static ThemedVSLLib *vsllib_ptr;
+    static VSLLib *vsllib(const DispValue *dv);
 
 protected:
     // Evaluation functions
@@ -125,22 +118,25 @@ protected:
     static void shorten_title(string& title);
 
 public:
-    static Box *eval(const string& func_name, const VSLArgList& args)
+    static Box *eval(const DispValue *dv,
+		     const string& func_name, const VSLArgList& args)
     {
-	return check(func_name, vsllib()->eval(func_name, args.list()));
+	return check(func_name, vsllib(dv)->eval(func_name, args.list()));
     }
-    static Box *eval(const string& func_name, VSLArg args[])
+    static Box *eval(const DispValue *dv,
+		     const string& func_name, VSLArg args[])
     {
-	return check(func_name, vsllib()->eval(func_name, args));
+	return check(func_name, vsllib(dv)->eval(func_name, args));
     }
-    static Box *eval(const string& func_name, 
+    static Box *eval(const DispValue *dv,
+		     const string& func_name, 
 		     VSLArg arg1 = (Box *)0,
 		     VSLArg arg2 = (Box *)0,
 		     VSLArg arg3 = (Box *)0,
 		     VSLArg arg4 = (Box *)0)
     {
 	return check(func_name, 
-		     vsllib()->eval(func_name, arg1, arg2, arg3, arg4));
+		     vsllib(dv)->eval(func_name, arg1, arg2, arg3, arg4));
     }
 };
 
