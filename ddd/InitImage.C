@@ -38,8 +38,10 @@ char InitImage_rcsid[] =
 #include "config.h"
 #include "assert.h"
 
-#include <sys/types.h>
-#include <X11/Xlib.h>
+// These three are required for #including <X11/Xlibint.h>
+#include <string.h>		// bcopy()
+#include <sys/types.h>		// size_t
+#include <X11/Xlib.h>		// anything else
 
 #include <X11/Xlibint.h>	// Xcalloc()
 #include <X11/Xutil.h>		// XGetPixel(), etc.
