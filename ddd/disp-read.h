@@ -133,6 +133,12 @@ string get_display_expression(const string& cmd);
 // Return the string after a `break' command
 string get_break_expression(const string& cmd);
 
+// Return true if this begins recording commands 
+bool starts_recording(const string& cmd);
+
+// Return true if this ends recording commands
+bool ends_recording(const string& cmd);
+
 
 //----------------------------------------------------------------------------
 // Handle `display' output

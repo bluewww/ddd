@@ -75,6 +75,7 @@ BreakPoint::BreakPoint (string& info_output, string arg, int number)
       myinfos(""),
       myignore_count(0),
       mycondition(""),
+      mycommands(0),
       myarg(arg),
       mywatch_mode(WATCH_CHANGE),
       myenabled_changed(true),
@@ -229,6 +230,7 @@ bool BreakPoint::update (string& info_output)
 
 	    int ignore_count = 0;
 	    string cond      = "";
+	    StringArray commands;
 
 	    if (info_output != "" && !isdigit(info_output[0]))
 	    {
@@ -245,20 +247,50 @@ bool BreakPoint::update (string& info_output)
 		    info_output = info_output.after(next_nl);
 		}
 
-		// Check for ignore count and breakpoint condition
-		if (new_info.contains("ignore next "))
+		int n = new_info.freq('\n');
+		string *lines = new string[n + 1];
+		split(new_info, lines, n + 1, '\n');
+		string newer_info = "";
+
+		for (int i = 0; i < n; i++)
 		{
-		    string count = new_info.after("ignore next ");
-		    count = count.before(" hits");
-		    ignore_count = atoi(count);
+		    string line = lines[i];
+		    bool save_info = true;
+
+		    if (line.contains("ignore next "), 0)
+		    {
+			// Fetch ignore count
+			string count = line.after("ignore next ");
+			count = count.before(" hits");
+			ignore_count = atoi(count);
+		    }
+		    else if (line.contains("stop only if ", 0))
+		    {
+			// Fetch condition
+			cond = line.after("stop only if ");
+			newer_info += line + '\n';
+		    }
+		    else if (line.contains("stop ", 0))
+		    {
+			// Any info
+		    }
+		    else if (line.contains("breakpoint ", 0))
+		    {
+			// Any info
+		    }
+		    else if (line != "")
+		    {
+			// A command
+			commands += line;
+			save_info = false;
+		    }
+
+		    if (save_info)
+			newer_info += line + '\n';
 		}
 
-		if (new_info.contains("stop only if "))
-		{
-		    cond = new_info.after("stop only if ");
-		    if (cond.contains('\n'))
-			cond = cond.before("\n");
-		}
+		new_info = newer_info;
+		delete[] lines;
 	    }
 
 	    if (new_info != myinfos)
@@ -278,6 +310,22 @@ bool BreakPoint::update (string& info_output)
 		changed = myenabled_changed = true;
 		mycondition = cond;
 	    }
+
+	    if (commands.size() != mycommands.size())
+	    {
+		changed = myenabled_changed = true;
+		mycommands = commands;
+	    }
+	    else
+	    {
+		for (int i = 0; i < commands.size(); i++)
+		    if (commands[i] != mycommands[i])
+		    {
+			changed = myenabled_changed = true;
+			mycommands[i] = commands[i];
+		    }
+	    }
+			
 	}
 	break;
 
@@ -642,6 +690,13 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 		os << gdb->ignore_command(num, ignore) << "\n";
 	    if (cond != "" && gdb->has_condition_command())
 		os << gdb->condition_command(num, cond) << "\n";
+	    if (commands().size() != 0)
+	    {
+		os << "commands " << num << "\n";
+		for (int i = 0; i < commands().size(); i++)
+		    os << commands()[i] << "\n";
+		os << "end\n";
+	    }
 	}
 	break;
     }

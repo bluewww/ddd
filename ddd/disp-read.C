@@ -442,6 +442,22 @@ string get_break_expression (const string& cmd)
     return arg;
 }
 
+// Return true if CMD begins recording commands 
+bool starts_recording(const string& cmd)
+{
+    return cmd.contains("if", 0) ||
+	cmd.contains("while", 0) ||
+	cmd.contains("def", 0) ||
+	cmd.contains("doc", 0) ||
+	cmd.contains("comm", 0); 
+}
+
+// Return true if CMD ends recording commands 
+bool ends_recording(const string& cmd)
+{
+    return cmd == "end";
+}
+
 
 //----------------------------------------------------------------------------
 // Handle `display' output

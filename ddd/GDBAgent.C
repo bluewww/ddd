@@ -232,6 +232,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_cont_sig_command(false),
       _program_language(tp == JDB ? LANGUAGE_JAVA : LANGUAGE_C),
       _verbatim(false),
+      _recording(false),
       _detect_echos(true),
       last_prompt(""),
       last_written(""),
@@ -307,6 +308,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_cont_sig_command(gdb.has_cont_sig_command()),
       _program_language(gdb.program_language()),
       _verbatim(gdb.verbatim()),
+      _recording(gdb.recording()),
       _detect_echos(gdb.detect_echos()),
       last_prompt(""),
       last_written(""),
@@ -603,8 +605,16 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 
     switch (type())
     {
-    case DBX:
     case GDB:
+	// GDB reads in breakpoint commands using a `>' prompt
+	if (recording() && answer.contains('>', -1))
+	{
+	    last_prompt = ">";
+	    return true;
+	}
+
+	// FALL THROUGH
+    case DBX:
     {
 	// Any line ending in `(gdb) ' or `(dbx) ' is a prompt.
 	int i = answer.length() - 1;
@@ -623,6 +633,7 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	if (possible_prompt.matches(rxprompt))
 	{
 	    last_prompt = possible_prompt;
+	    recording(false);
 	    return true;
 	}
 	return false;
@@ -839,6 +850,13 @@ void GDBAgent::cut_off_prompt(string& answer) const
     switch (type())
     {
     case GDB:
+	if (recording() && answer.contains('>', -1))
+	{
+	    answer = answer.before('>', -1);
+	    break;
+	}
+
+	// FALL THROUGH
     case DBX:
 	answer = answer.before('(', -1);
 	break;
@@ -1109,6 +1127,9 @@ void GDBAgent::handle_more(string& answer)
 
 void GDBAgent::handle_reply(string& answer)
 {
+    if (recording())
+	return;
+
     // Check for secondary prompt
     if (ends_with_secondary_prompt(answer))
     {

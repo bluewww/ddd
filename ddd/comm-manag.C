@@ -670,11 +670,20 @@ void send_gdb_command(string cmd, Widget origin,
 	cmd_data->filter_disp = NoFilter;
     }
 
-    if (!check || is_nop_cmd(cmd) || is_graph_cmd(cmd))
+    if (gdb->recording() && ends_recording(cmd))
+    {
+	gdb->recording(false);
+    }
+    
+    if (!check || 
+	gdb->recording() ||
+	is_nop_cmd(cmd) || 
+	is_graph_cmd(cmd) || 
+	(gdb->type() == GDB && starts_recording(cmd)))
     {
 	cmd_data->filter_disp = NoFilter;
 
-	if (is_nop_cmd(cmd) || is_graph_cmd(cmd))
+	if (check)
 	{
 	    delete cmd_data->pos_buffer;
 	    cmd_data->pos_buffer = 0;
@@ -691,6 +700,10 @@ void send_gdb_command(string cmd, Widget origin,
 	if (is_graph_cmd(cmd))
 	{
 	    cmd_data->graph_cmd    = cmd;
+	}
+	else if (gdb->type() == GDB && starts_recording(cmd))
+	{
+	    gdb->recording(true);
 	}
     }
     else if (is_file_cmd(cmd, gdb))

@@ -43,6 +43,7 @@
 #include "strclass.h"
 #include "bool.h"
 #include "GDBAgent.h"
+#include "StringA.h"
 
 // Breakpoint type
 enum BPType {
@@ -70,6 +71,7 @@ class BreakPoint {
     string  myinfos;
     int     myignore_count;
     string  mycondition;
+    StringArray mycommands;
     string  myarg;
     WatchMode mywatch_mode;
     bool    myenabled_changed;
@@ -94,6 +96,7 @@ private:
 	  myinfos(b.myinfos),
 	  myignore_count(b.myignore_count),
 	  mycondition(b.mycondition),
+	  mycommands(b.mycommands),
 	  myarg(b.myarg),
 	  mywatch_mode(b.mywatch_mode),
 	  myenabled_changed(b.myenabled_changed),
@@ -144,9 +147,10 @@ public:
     WatchMode watch_mode()       const { return mywatch_mode; }
 
     // Additional infos
-    const string& infos()        const { return myinfos; }
-    int ignore_count()           const { return myignore_count; }
-    const string& condition()    const { return mycondition; }
+    const string& infos()         const { return myinfos; }
+    int ignore_count()            const { return myignore_count; }
+    const string& condition()     const { return mycondition; }
+    const StringArray& commands() const { return mycommands; }
 
     // Argument of breakpoint-setting command, as passed to constructor
     const string& arg()          const { return myarg; }

@@ -190,6 +190,7 @@ private:
     ProgramLanguage _program_language; // Current program language
 
     bool _verbatim;		// True if in verbatim mode
+    bool _recording;		// True if we are recording commands
     bool _detect_echos;		// True if echos are to be detected
 
     string last_prompt;		// Last prompt received
@@ -562,6 +563,10 @@ public:
     // True if DBX output is to be processed verbatim
     bool verbatim() const        { return _verbatim; }
     bool verbatim(bool val)      { return _verbatim = val; }
+
+    // True if we are recording commands
+    bool recording() const         { return _recording; }
+    bool recording(bool val)       { return _recording = val; }
 
     // True if checking for echos
     bool detect_echos() const        { return _detect_echos; }
