@@ -725,7 +725,7 @@ void PosBuffer::filter_dbx(string& answer)
 	// in the format `FUNCTION: LINE  TEXT'
 		
 	// Note that the function name may contain "::" sequences.
-	string line = answer;
+	line = answer;
 	while (line.contains("::"))
 	    line = line.after("::");
 
@@ -736,8 +736,20 @@ void PosBuffer::filter_dbx(string& answer)
 	    line = line.through(rxint);
 	    if (line != "")
 	    {
-		already_read = PosComplete;
-		answer = answer.after("\n");
+		if (answer.contains('\n'))
+		{
+		    // Got it!
+		    already_read = PosComplete;
+		    answer = answer.after("\n");
+		}
+		else
+		{
+		    // Wait for `\n' such that we can delete the line
+		    answer_buffer = answer;
+		    answer = "";
+		    already_read = PosPart;
+		    return;
+		}
 	    }
 	}
     }
