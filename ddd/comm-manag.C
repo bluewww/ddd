@@ -55,6 +55,7 @@ char comm_manager_rcsid[] =
 #include "string-fun.h"
 #include "post.h"
 #include "cmdtty.h"
+#include "editing.h"
 #include "history.h"
 #include "SourceView.h"
 #include "DataDisp.h"
@@ -849,7 +850,10 @@ void send_gdb_command(string cmd, Widget origin,
     }
 
     if (verbose)
+    {
 	gdb_out(cmd + "\n");
+	gdb_input_at_prompt = true;
+    }
 
     StringArray cmds;
     VoidArray dummy;

@@ -627,9 +627,6 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
     if (private_gdb_output)
 	return;
 
-    if (gdb->isReadyWithPrompt())
-	gdb_input_at_prompt = true;
-
     string input = current_line();
 
     if (gdb_input_at_prompt)
@@ -670,21 +667,14 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 		}
 	    }
 
-	    if (gdb_input_at_prompt && !gdb->isReadyWithPrompt())
+	    if (gdb_input_at_prompt)
 	    {
-		// GDB is busy and the command last typed at the GDB
-		// prompt did not cause any output yet (e.g. a new
-		// prompt or diagnostic message).  Since sending CMD
-		// directly may interfere with internal communication,
-		// place CMD in the command queue instead.
-
+		// We're typing at the GDB prompt: place CMD in command queue
 		gdb_command(cmd, w);
 	    }
 	    else
 	    {
-		// Process anything else right now, clearing the
-		// command queue.
-
+		// Process anything else right now, clearing the command queue.
 		clearCommandQueue();
 		_gdb_command(cmd, w);
 	    }

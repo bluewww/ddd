@@ -426,6 +426,9 @@ public:
 	return write(data.chars(), data.length());
     }
 
+    bool ends_with_prompt(const string& answer);
+    bool ends_with_secondary_prompt(const string& answer);
+
 private:
     bool questions_waiting;
 
@@ -448,8 +451,6 @@ private:
 			   OQACProc on_qu_array_completion,
 			   void*    qa_data);
 
-    bool ends_with_prompt(const string& answer);
-    bool ends_with_secondary_prompt(const string& answer);
     string requires_reply(const string& answer);
 
     void cut_off_prompt(string& answer) const;

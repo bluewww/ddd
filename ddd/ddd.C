@@ -4743,7 +4743,7 @@ void _gdb_out(string text)
     if (private_gdb_output)
 	return;
 
-    gdb_input_at_prompt = false;
+    gdb_input_at_prompt = gdb->ends_with_prompt(text);
 
     if (promptPosition == 0)
 	promptPosition = XmTextGetLastPosition(gdb_w);
