@@ -217,8 +217,11 @@ static int check_xkeysymdb(Display *display, bool verbose)
 	}
     }
 
-    cout << "(none)\n";
-    cout.flush();
+    if (verbose)
+    {
+	cout << "(none)\n";
+	cout.flush();
+    }
 
     if (verbose)
     {
