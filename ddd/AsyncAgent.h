@@ -1,7 +1,7 @@
 // $Id$
 // Asynchron Agent Interface
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -54,6 +54,15 @@
     Asynchronus communication is implemented using XtAppAddInput(3).
 */
 
+
+// Set to 1 if you want asynchronous notification
+#ifndef ASYNC_CHILD_STATUS_CHANGE
+#if XtSpecificationRelease >= 6
+#define ASYNC_CHILD_STATUS_CHANGE 1
+#else
+#define ASYNC_CHILD_STATUS_CHANGE 0
+#endif
+#endif // !defined(ASYNC_CHILD_STATUS_CHANGE)
 
 #include "assert.h"
 #include <X11/Intrinsic.h>
@@ -143,6 +152,13 @@ private:
 
     // used in childStatusChange()
     int new_status;
+    bool status_change_pending;
+
+#if ASYNC_CHILD_STATUS_CHANGE
+    XtSignalId signal_id;
+#else
+    XtIntervalId signal_id;		// Just for padding
+#endif
 
     void initHandlers();
     void addDeathOfChildHandler();
@@ -151,10 +167,16 @@ private:
     void deleteWorkProc(AsyncAgentWorkProcInfo *info, bool remove = true);
     void deleteAllWorkProcs();
 
+    // Call when NEW_STATUS has been set
+    void statusChange();
+
+#if ASYNC_CHILD_STATUS_CHANGE
+    static void _childStatusChange(XtPointer client_data, XtSignalId *id);
+#endif
+
     // X Event Handlers
     static void somethingHappened(XtPointer client_data,
 				  int *fid, XtInputId *id);
-    static void _childStatusChange(XtPointer client_data, XtIntervalId *iid);
     static void childStatusChange(Agent *agent, void *client_data,
 				  void *call_data);
     static Boolean callTheHandlers(XtPointer client_data);
@@ -219,7 +241,7 @@ public:
     AsyncAgent(XtAppContext app_context, string pth, 
 	       unsigned nTypes = AsyncAgent_NTypes):
 	Agent(pth, nTypes), _appContext(app_context), workProcs(0), 
-	new_status(0)
+	new_status(0), status_change_pending(false)
     {
 	initHandlers();
 	addDeathOfChildHandler();
@@ -228,7 +250,7 @@ public:
     AsyncAgent(XtAppContext app_context, FILE *in = stdin, FILE *out = stdout,
 	FILE *err = 0, unsigned nTypes = AsyncAgent_NTypes):
 	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0),
-	new_status(0)
+	new_status(0), status_change_pending(false)
     {
 	initHandlers();
     }
@@ -236,14 +258,15 @@ public:
     AsyncAgent(XtAppContext app_context, bool dummy,
 	unsigned nTypes = AsyncAgent_NTypes):
 	Agent(dummy, nTypes), _appContext(app_context), workProcs(0),
-	new_status(0)
+	new_status(0), status_change_pending(false)
     {
 	initHandlers();
     }
 
     // Duplicator
     AsyncAgent(const AsyncAgent& c):
-	Agent(c), _appContext(c.appContext()), workProcs(0), new_status(0)
+	Agent(c), _appContext(c.appContext()), workProcs(0), 
+	new_status(0), status_change_pending(false)
     {
 	initHandlers();
     }
@@ -258,6 +281,9 @@ public:
 	// Inhibit further Xt selection
 	clearHandlers();
     }
+
+    // Commit pending status changes
+    virtual void commit();
 
     // These need special management:
     virtual void abort();

@@ -1,7 +1,7 @@
 // $Id$
 // Asynchron Agent Interface
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -47,25 +47,32 @@ DEFINE_TYPE_INFO_1(AsyncAgent, Agent)
 DEFINE_TYPE_INFO_0(AsyncAgentWorkProc)
 DEFINE_TYPE_INFO_0(AsyncAgentWorkProcInfo)
 
-// process child status change
+// Process child status change
 
-void AsyncAgent::_childStatusChange(XtPointer client_data, XtIntervalId *)
+#if ASYNC_CHILD_STATUS_CHANGE
+void AsyncAgent::_childStatusChange(XtPointer client_data, XtSignalId *)
 {
     AsyncAgent *a = (AsyncAgent *)client_data;
 
-    pid_t agent_pid  = a->pid();
-    int agent_status = a->new_status;
-
     // if we have a dummy agent running, prefer this one
-    Agent *agent = Agent::runningAgents.search(int(agent_pid));
+    Agent *agent = Agent::runningAgents.search(a->pid());
     if (agent == 0)
 	agent = a;
 
-    // set new agent state
-    agent->hasNewStatus(agent_status);
+    agent->commit();
+}
+#endif
 
-    // check if agent is still running
-    (void)(agent->running());
+void AsyncAgent::statusChange()
+{
+    // Set new agent state
+    hasNewStatus(new_status);
+
+    // Check if we're still running
+    running();
+
+    // Clear `pending' flag
+    status_change_pending = false;
 }
 
 void AsyncAgent::childStatusChange(Agent *agent, void *, void *call_data)
@@ -73,10 +80,23 @@ void AsyncAgent::childStatusChange(Agent *agent, void *, void *call_data)
     AsyncAgent *a = (AsyncAgent *)agent;
     a->new_status  = (int)call_data;
 
-    // process status change when back in event loop
-    // Note: this may be delayed until the next event comes in
-    XtAppAddTimeOut(a->appContext(), 1, _childStatusChange, XtPointer(a));
+    // Process status change when back in event loop
+#if ASYNC_CHILD_STATUS_CHANGE
+    // Since we're called from a handler, this is the safe way to do it
+    XtNoticeSignal(a->signal_id);
+#endif
+
+    // In X11R5 and earlier, we cannot call any Xt function -- simply
+    // wait for the next AgentManager::commit()
+    a->status_change_pending = true;
 }
+
+void AsyncAgent::commit()
+{
+    if (status_change_pending)
+	statusChange();
+}
+
 
 // data from agent is ready to be read
 void AsyncAgent::somethingHappened(XtPointer client_data, int *fid,
@@ -97,6 +117,11 @@ void AsyncAgent::initHandlers()
 	_handlers[type] = 0;
 	_ids[type] = 0;
     }
+
+#if ASYNC_CHILD_STATUS_CHANGE
+    signal_id = XtAppAddSignal(appContext(), _childStatusChange, 
+			       XtPointer(this));
+#endif
 }
 
 // Clear handlers
@@ -104,6 +129,10 @@ void AsyncAgent::clearHandlers()
 {
     for (unsigned type = 0; type < AsyncAgent_NHandlers; type++)
 	setHandler(type);
+
+#if ASYNC_CHILD_STATUS_CHANGE
+    XtRemoveSignal(signal_id);
+#endif
 }
 
 // Process "Death of child" signal as soon as possible
