@@ -187,7 +187,7 @@ void load_history()
 {
     if (gdb_history_file != "")
     {
-	Delay d;
+	// Delay d;
 
 	ifstream is(gdb_history_file);
 	if (is.bad())
