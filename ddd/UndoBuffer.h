@@ -39,6 +39,7 @@
 #include "IntArray.h"
 
 class BreakPoint;
+class StatusMsg;
 
 class UndoBuffer {
 
@@ -120,7 +121,7 @@ private:
     static void remap_breakpoint(string& cmd, int old_bp_nr, int new_bp_nr);
 
     // Enter or leave `past exec' mode
-    static void showing_earlier_state(bool set);
+    static void showing_earlier_state(bool set, StatusMsg *msg = 0);
 
 protected:
     // Add new entry
@@ -133,8 +134,8 @@ protected:
     // Log current position
     static void log();
 
-    // Call when all is done
-    static void done();
+    // Call when all is done.  If MSG is set, leave the outcome there.
+    static void done(StatusMsg *msg = 0);
 
     // Get a short action description from COMMAND
     static string action(const string& command);

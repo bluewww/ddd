@@ -568,26 +568,24 @@ void UndoBuffer::undo()
 	return;
     }
 
-    {
-	StatusDelay delay("Undoing " + undo_action());
+    StatusDelay delay("Undoing " + undo_action());
    
-	// Undo most recent command
-	process_command(history_position - 1, -1);
+    // Undo most recent command
+    process_command(history_position - 1, -1);
 
-	if (history_position > 1)
-	{
-	    // Restore previous state
-	    bool restore_state = 
-		(showing_earlier_state() || 
-		 history[history_position - 1].has_exec_pos());
+    if (history_position > 1)
+    {
+	// Restore previous state
+	bool restore_state = 
+	    (showing_earlier_state() || 
+	     history[history_position - 1].has_exec_pos());
 
-	    process_state(history_position - 2, restore_state);
-	}
-
-	history_position--;
+	process_state(history_position - 2, restore_state);
     }
 
-    done();
+    history_position--;
+
+    done(&delay);
 }
 
 void UndoBuffer::redo()
@@ -601,17 +599,15 @@ void UndoBuffer::redo()
 	return;
     }
 
-    {
-	StatusDelay delay("Redoing " + redo_action());
+    StatusDelay delay("Redoing " + redo_action());
 
-	// Redo next command and restore state
-	process_state(history_position, showing_earlier_state());
-	process_command(history_position, 1);
+    // Redo next command and restore state
+    process_state(history_position, showing_earlier_state());
+    process_command(history_position, 1);
     
-	history_position++;
-    }
+    history_position++;
 
-    done();
+    done(&delay);
 }
 
 // Action descriptions
@@ -669,30 +665,39 @@ string UndoBuffer::redo_action()
     return "";		// Generic action
 }
 
-void UndoBuffer::showing_earlier_state(bool set)
+void UndoBuffer::showing_earlier_state(bool set, StatusMsg *msg)
 {
     if (_showing_earlier_state == set)
+    {
+	if (set && msg != 0)
+	    msg->outcome += "  (Still showing earlier program state)";
 	return;
+    }
 
     _showing_earlier_state = set;
-    if (set)
+
+    if (msg != 0)
     {
-	set_status("Cannot restore previous program state; "
-		   "showing earlier state instead");
-    }
-    else
-    {
-	set_status("Back at current program state");
+	if (set)
+	    msg->outcome = "failed  (Showing earlier program state instead)";
+	else
+	    msg->outcome += "  (Back in current program state)";
     }
 
     XtVaSetValues(data_disp->graph_edit, XtNdashedLines, set, NULL);
     update_arg_buttons();
     data_disp->refresh_args();
     source_view->showing_earlier_state(set);
+
+    if (!set)
+    {
+	// Re-activate user displays
+	data_disp->make_sane();
+    }
 }
 
 // Refresh all settings
-void UndoBuffer::done()
+void UndoBuffer::done(StatusMsg *msg)
 {
     log();
     assert(OK());
@@ -710,7 +715,7 @@ void UndoBuffer::done()
 	}
     }
 
-    showing_earlier_state(earlier_state);
+    showing_earlier_state(earlier_state, msg);
     refresh_buttons();
 }
 
