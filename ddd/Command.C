@@ -217,6 +217,16 @@ bool emptyCommandQueue()
 
 void gdb_command(const Command& c)
 {
+    if (c.command == '\003' && gdb->type() == JDB)
+    {
+	// Typing ^C at JDB kills it, which is not what the user
+	// expects.  Simply suspend all threads instead.
+	Command c2(c);
+	c2.command = "suspend";
+	gdb_command(c2);
+	return;
+    }
+
     if (c.command.length() == 1 && iscntrl(c.command[0]) 
 	|| c.command == "no" || c.command == "yes")
     {
