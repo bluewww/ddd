@@ -848,6 +848,8 @@ static Widget find_backward_w;
 static Widget find_words_only_w;
 static Widget find_case_sensitive_w;
 static Widget disassemble_w;
+static Widget edit_source_w;
+static Widget reload_source_w;
 
 static MMDesc source_menu[] =
 {
@@ -868,8 +870,8 @@ static MMDesc source_menu[] =
     { "disassemble",         MMToggle,  { gdbToggleCodeWindowCB },
       NULL, &disassemble_w },
     MMSep,
-    { "edit",       MMPush,  { gdbEditSourceCB }},
-    { "reload",     MMPush,  { gdbReloadSourceCB }},
+    { "edit",       MMPush,  { gdbEditSourceCB }, NULL, &edit_source_w },
+    { "reload",     MMPush,  { gdbReloadSourceCB }, NULL, &reload_source_w },
     MMSep,
     { "back",       MMPush,  { gdbGoBackCB }},
     { "forward",    MMPush,  { gdbGoForwardCB }},
@@ -4673,7 +4675,8 @@ void update_arg_buttons()
 {
     string arg = source_arg->get_string();
 
-    bool can_find = (arg != "") && source_view->have_source();
+    bool can_find = (arg != "") && !is_file_pos(arg) && 
+	source_view->have_source();
     set_sensitive(arg_cmd_area[ArgItems::Find].widget, can_find);
     set_sensitive(find_forward_w, can_find);
     set_sensitive(find_backward_w, can_find);
@@ -4683,6 +4686,9 @@ void update_arg_buttons()
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
     set_sensitive(print_w,   can_print);
     set_sensitive(display_w, can_print);
+
+    set_sensitive(edit_source_w,   source_view->have_source());
+    set_sensitive(reload_source_w, source_view->have_source());
 
     bool can_watch = can_print && gdb->has_watch_command();
     set_sensitive(arg_cmd_area[ArgItems::Watch].widget, can_watch);
