@@ -1955,6 +1955,13 @@ string GDBAgent::signal_command(int sig) const
     return "";			// Never reached
 }
 
+
+// Return a command that does nothing.
+string GDBAgent::nop_command(string comment) const
+{
+    return "# " + comment;	// Works for all inferior debuggers
+}
+
 // Return PREFIX + EXPR, parenthesizing EXPR if needed
 string GDBAgent::prepend_prefix(const string& prefix, const string& expr)
 {

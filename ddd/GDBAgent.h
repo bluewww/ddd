@@ -612,6 +612,7 @@ public:
     string shell_command(string cmd) const;	    // GDB: "shell CMD"
     string debug_command(string program = "") const; // GDB: "file PROGRAM"
     string signal_command(int sig) const;           // GDB: "signal SIG"
+    string nop_command(string comment = "") const;  // GDB: "# comment"
 
     // Default history file
     string history_file() const;                    // GDB: "~/.gdb_history"
