@@ -50,6 +50,7 @@ rxscan.C
 stamp-h
 stamp-h.in
 stringify
+tips.m4
 trailer.str
 ttytest
 userinfo

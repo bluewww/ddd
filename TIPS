@@ -30,7 +30,8 @@
 # will be selected from this file and will be displayed in the `Tip of
 # the day' dialog.
 #
-# - Lines starting with `#' are comments.
+# - Lines starting with `#' and `!' are comments.
+#   `!` comments will appear in the resource file, `#' comments will not.
 # - Blank lines or comments separate two tips (they are not ignored).
 #   Multiple blank lines are treated as one.  If you want to have a
 #   blank line in a tip, put a space or tab in it.
@@ -42,11 +43,10 @@
 #   See `ddd/macros.m4' for details.
 # - Tips should be concise: 3 lines or less.
 
-# This file is processed by m4.
-include(ifdef(`srcdir',srcdir()/ddd/macros.m4,ddd/macros.m4))#
+# Include Macro definitions
+include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
 
-
-# First tips.
+! First tips.
 
 Welcome to DDD!
 You can get help on all items by pointing at them and pressing F1.
@@ -71,7 +71,7 @@ The difference between LBL(OK) and LBL(Apply) is that LBL(OK) pops
 down the dialog, while LBL(Apply) does not.
 
 
-# Intermediate tips.
+! Intermediate tips.
 
 When using GDB, all text fields have command and argument completion
 with KEY(Tab), just like the shell.  In a file selection box, type
@@ -120,7 +120,8 @@ put the following lines in your FILE(.gdbinit) file:
 CODE(        break main)  - or some other initial function
 CODE(        run       )  - possibly giving arguments here
 
-# Advanced tips.
+
+! Advanced tips.
 
 You can have each of DDD, @GDB@ and the debugged program run on
 different machines.  See the DDD KBD(--rhost) option for details.

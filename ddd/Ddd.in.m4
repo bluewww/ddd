@@ -1,7 +1,7 @@
 ! $Id$ -*- xrdb -*-
 ! DDD Resource File.  DO NOT INSTALL THIS FILE!  See below for details.
 ! @configure_input@
-! Generated automatically from Ddd.in.m4 by @M4@.
+! Generated automatically from Ddd.in.m4 and TIPS by @M4@.
 include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
 Ddd*appDefaultsVersion: @VERSION@
 
@@ -63,7 +63,6 @@ Ddd*appDefaultsVersion: @VERSION@
 ! 
 ! In short, app-defaults files are bad.  Don't use them.  Use this file
 ! for informational purposes as suggested above.
-
 
 !-----------------------------------------------------------------------------
 ! User-settable resources
@@ -5618,3 +5617,11 @@ Ddd*stopped.helpString: \
 STOPPED_HELP\n\
 ITEM Use the functions of the LBL(Program) menu to resume execution\n\
     and step through your program.
+
+
+!-----------------------------------------------------------------------------
+! Startup tips
+!-----------------------------------------------------------------------------
+
+
+dnl Tips will be appended here
