@@ -228,8 +228,7 @@ Ddd*paperSize: 210mm x 297mm
 
 ! The `gnuplot' command.
 ! The string `@FONT@' is replaced by the current DDD default font.
-! The string `@NAME@' is replaced by the item to plot.
-Ddd*plotCommand: gnuplot -font '@FONT@' -title 'DDD: @NAME@'
+Ddd*plotCommand: gnuplot -font '@FONT@' -geometry +5000+5000
 Ddd*plotInitCommands: set parametric
 Ddd*plot2dSettings:   set noborder
 Ddd*plot3dSettings:   set border
@@ -4542,6 +4541,17 @@ WIDGET(Command Tool)\n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
 Press KEY_HELP on a button to get a short command description.
+
+
+!-----------------------------------------------------------------------------
+! DDD Plot
+!-----------------------------------------------------------------------------
+
+Ddd*plot.helpString:\
+WIDGET(Plot Window)\n\
+\n\
+Use LBL(File, Close) to close this window.
+
 
 !-----------------------------------------------------------------------------
 ! Debugger Buttons

@@ -196,6 +196,7 @@ char ddd_rcsid[] =
 #include "MakeMenu.h"
 #include "PlotAgent.h"
 #include "SourceView.h"
+#include "Swallower.h"
 #include "TimeOut.h"
 #include "UndoBuffer.h"
 #include "VSEFlags.h"
@@ -1285,7 +1286,7 @@ static MMDesc data_menu[] =
 
 
 // Help
-static MMDesc help_menu[] = 
+MMDesc help_menu[] = 
 {
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     MMSep,
@@ -1940,7 +1941,6 @@ int main(int argc, char *argv[])
     DispGraph::hide_inactive_displays = app_data.hide_inactive_displays;
 
     // Global variables: Setup plot settings
-    DispValue::plot_context       = XtWidgetToApplicationContext(toplevel);
     PlotAgent::plot_2d_settings   = app_data.plot_2d_settings;
     PlotAgent::plot_3d_settings   = app_data.plot_3d_settings;
 
@@ -2661,6 +2661,9 @@ void process_next_event()
 
     XEvent event;
     XtAppNextEvent(app_context, &event);
+
+    // Check for window creation.
+    SwallowerCheckEvents();
 
     // Check for grabs.
     switch (event.type)

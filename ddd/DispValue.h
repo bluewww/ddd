@@ -43,8 +43,6 @@
 #include "DispValueT.h"
 #include "StringSA.h"
 
-#include <X11/Intrinsic.h>	// XtAppContext
-
 class Agent;
 class PlotAgent;
 
@@ -68,6 +66,8 @@ class DispValue {
     int _index_base;		// First index
     bool _have_index_base;	// True if INDEX_BASE is valid
     DispValueAlignment _alignment; // Array alignment
+
+    // Plotting stuff
     PlotAgent *_plotter;	// Plotting agent
 
     // initialize from VALUE.  If TYPE is given, use TYPE as type
@@ -160,7 +160,6 @@ protected:
 public:
     // Global settings
     static bool expand_repeated_values;
-    static XtAppContext plot_context;
 
     // Parse VALUE into a DispValue tree
     static DispValue *parse(string& value, const string& name)

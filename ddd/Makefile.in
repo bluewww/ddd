@@ -679,6 +679,7 @@ XSTUFF_OBJECTS = \
 	converters.o \
 	events.o     \
 	findParent.o \
+	findWindow.o \
 	fileSBF.o    \
 	frame.o      \
 	longName.o   \
@@ -692,7 +693,8 @@ XSTUFF_OBJECTS = \
 	LessTifH.o   \
 	MString.o    \
 	MakeMenu.o   \
-	SpinBox.o
+	SpinBox.o    \
+	Swallower.o
 
 # Box library - rectangular composible graphical items
 # Top-level class is `Box', declared in `Box.h'
@@ -817,6 +819,7 @@ DDD_OBJECTS = \
 	mainloop.o   \
 	mydialogs.o  \
 	options.o    \
+	plotter.o    \
 	post.o       \
 	print.o      \
 	question.o   \

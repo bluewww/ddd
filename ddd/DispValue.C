@@ -56,6 +56,7 @@ char DispValue_rcsid[] =
 #include "ddd.h"
 #include "fonts.h"
 #include "misc.h"
+#include "plotter.h"
 #include "question.h"
 #include "regexps.h"
 #include "string-fun.h"
@@ -1146,24 +1147,11 @@ int DispValue::nchildren_with_repeats() const
     return sum;
 }
 
-XtAppContext DispValue::plot_context;
-
 void DispValue::plot() const
 {
     if (plotter() == 0)
     {
-	string cmd = app_data.plot_command;
-	cmd.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
-	cmd.gsub("@NAME@", full_name());
-
-	((DispValue *)this)->_plotter = 
-	    new PlotAgent(plot_context, cmd);
-
-	string init = app_data.plot_init_commands;
-	if (init != "" && !init.contains('\n', -1))
-	    init += '\n';
-
-	plotter()->start(init);
+	((DispValue *)this)->_plotter = new_plotter(full_name());
 	plotter()->addHandler(Died, PlotterDiedHP, (void *)this);
     }
 
