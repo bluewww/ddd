@@ -272,8 +272,7 @@ static void freeXmStringTable (XmStringTable xmlist, int list_length)
 	xmlist++;
     }
 
-    // It seems XMLIST is already owned
-    // XtFree((char *)xmlist);
+    XtFree((char *)xmlist);
 }
 
 

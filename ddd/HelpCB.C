@@ -2405,8 +2405,8 @@ static void HandleTipEvent(Widget w,
 // (Un)install toolbar tips for W
 static void InstallButtonTipEvents(Widget w, bool install)
 {
-    // If neither `tipString' nor `documentationString' resource is
-    // specified, don't install handler
+    // Install handler only if either `tipString' or
+    // `documentationString' resource is specified
     tip_resource_values tip_values;
     XtGetApplicationResources(w, &tip_values, 
 			      tip_subresources, XtNumber(tip_subresources), 
@@ -2415,23 +2415,26 @@ static void InstallButtonTipEvents(Widget w, bool install)
     XtGetApplicationResources(w, &doc_values, 
 			      doc_subresources, XtNumber(doc_subresources), 
 			      NULL, 0);
-    if (tip_values.tipString == 0 && doc_values.documentationString == 0)
-	return;
-
-    EventMask event_mask = 
-	EnterWindowMask | LeaveWindowMask | ButtonPress | ButtonRelease 
-	| KeyPress | KeyRelease;
-    if (install)
+    if (tip_values.tipString != 0 || doc_values.documentationString != 0)
     {
-	XtAddEventHandler(w, event_mask, False, 
-			  HandleTipEvent, XtPointer(0));
+	EventMask event_mask = 
+	    EnterWindowMask | LeaveWindowMask | ButtonPress | ButtonRelease 
+	    | KeyPress | KeyRelease;
+	if (install)
+	{
+	    XtAddEventHandler(w, event_mask, False, 
+			      HandleTipEvent, XtPointer(0));
 
+	}
+	else
+	{
+	    XtRemoveEventHandler(w, event_mask, False, 
+				 HandleTipEvent, XtPointer(0));
+	}
     }
-    else
-    {
-	XtRemoveEventHandler(w, event_mask, False, 
-			     HandleTipEvent, XtPointer(0));
-    }
+
+    XmStringFree(tip_values.tipString);
+    XmStringFree(doc_values.documentationString);
 }
 
 
