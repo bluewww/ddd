@@ -211,9 +211,11 @@ Volunteers for fixing these and other bugs are welcome!
     drag-hilite the name, ddd goes berserk with the cpu.
     [I could not reproduce this. -AZ]
 
-203 On IRIX6.3 and DBX, the green arrow indicating the current
+203*On IRIX 6.3 DBX, the green arrow indicating the current
     execution position is always at the first line of the currently
-    active source file.  Reported by Uwe Wark <uw@bruker.de>
+    active source file.  Reported by Uwe Wark <uw@bruker.de>.  Also,
+    the `preferences' don't work.  See also the report of Paul Sydney
+    <sydney@ulua.mhpcc.af.mil>.
 
 204 Switching from glyphs to text loses the current PC.
 
@@ -259,6 +261,7 @@ Volunteers for fixing these and other bugs are welcome!
     options. At that point DDD dies and the options file is not
     updated.
 
-238 A `BadMatch' error has been reported for the command tool.
+238 Neil Soiffer <soiffer@wri.com> reports a `BadMatch' X error for the
+    command tool when used under tvtwm.
 
 238 (Insert your bug here)
