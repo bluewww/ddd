@@ -737,6 +737,7 @@ DDD_OBJECTS = \
 	DispNode.o   \
 	DispNodeM.o  \
 	DispValue.o  \
+	DispValueA.o \
 	EntryType.o  \
 	GDBAgent.o   \
 	HelpCB.o     \
