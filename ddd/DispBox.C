@@ -154,17 +154,21 @@ void DispBox::init_vsllib(void (*background)())
 	vsllib_ptr = new ThemedVSLLib(is, VSEFlags::optimize_mode());
 #else
 	vsllib_ptr = new ThemedVSLLib();
-	vsllib_ptr->update(resolvePath("vsllib/" ddd_NAME ".vsl"));
+	string path = resolvePath("vsllib/" ddd_NAME ".vsl");
+	if (path != "")
+	{
+	    vsllib_ptr->update(path);
 
-	string defs =
-	    "#line 1 \"" Ddd_NAME "*vslBaseDefs\"\n" +
-	    vsllib_base_defs +
-	    "#line 1 \"" Ddd_NAME "*vslDefs\"\n" +
-	    vsllib_defs;
+	    string defs =
+		"#line 1 \"" Ddd_NAME "*vslBaseDefs\"\n" +
+		vsllib_base_defs +
+		"#line 1 \"" Ddd_NAME "*vslDefs\"\n" +
+		vsllib_defs;
 
-	istrstream is(defs.chars());
-	vsllib_ptr->update(is);
-	vsllib_ptr->optimize(VSEFlags::optimize_mode());
+	    istrstream is(defs.chars());
+	    vsllib_ptr->update(is);
+	    vsllib_ptr->optimize(VSEFlags::optimize_mode());
+	}
 #endif
     }
     else
