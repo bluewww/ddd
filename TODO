@@ -186,8 +186,6 @@ Volunteers for these and other projects are welcome!
      regexps, one may display different types in different
      colors, fonts, etc.
 
-095. Have a colored DDD icon (requires Xpm).
-
 099. Add a history mechanism to the `()' fields (cursor up / cursor
      down).
 
@@ -362,9 +360,6 @@ Volunteers for these and other projects are welcome!
      linear search may be too slow for large assembly listings.
 
 199. Use X11R6 XtSignalNotify for Xt-safe signal handling.
-
-200. Make DDD session-aware by using the Xt11R6 SessionShell 
-     instead of Xt11R5 ApplicationShell.
 
 201. Install hotkeys on the command tool, using Harald Albrecht's
      hotkey package (in

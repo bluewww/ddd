@@ -41,14 +41,17 @@ DDD 2.2 [in development]
       details, see `User-Defined Commands' in the DDD manual.
     - For `Continue until here', DDD now sets a temporary breakpoints
       and continues (instead of using the GDB `until' command).
-    - Multi-color icons. (requires XPM library)
     - Improved display of breakpoints and execution positions:
       + The current execution position is now properly cleared if
         undetermined (no source, program terminated, etc.)
       + If the program stopped due to a signal, this is indicated
         by a lightning symbol within the current execution glyph.
       + Faster scrolling.  While scrolling source or machine code at
-        high speed, glyphs are now unmapped.  Slow scrolling still works.
+        high speed, glyphs are now unmapped.  Slow scrolling still
+        shows glyphs.
+    - Multi-color icons.  (requires XPM)
+    - Rudimentary session management support.  Checkpoint saves
+      options; Shutdown asks for confirmation.  (requires X11R6)
 
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert

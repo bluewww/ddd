@@ -365,4 +365,8 @@ Volunteers for fixing these and other bugs are welcome!
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
 
-189. (Insert your bug here)
+189. When `Iconify all windows at once is set', (de-)iconifying the
+     data window causes all other windows to (de-)iconify, *except*
+     the command tool.
+
+190. (Insert your bug here)
