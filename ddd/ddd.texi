@@ -43,7 +43,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2000-02-11
+@set DATE 2000-05-25
 
 
 @c Macros
@@ -877,6 +877,7 @@ releases.  Use a recent @GDB{} version instead.}.
 @cindex Java
 To debug @emph{Java byte-code programs}, you can use @DDD{} with
 @dfn{@JDB{}}, the Java debugger, as of @acronym{JDK} 1.1 and later.
+(@DDD{} has been tested with @acronym{JDK} 1.1 and @acronym{JDK} 1.2.)
 
 @item
 @cindex @acronym{PYDB}
@@ -1054,7 +1055,7 @@ inference-based software development tool set, Andreas wrote a graph
 editor (based on @VSL{} and the Box libraries) and facilities
 for inter-process knowledge exchange.  Based on these tools,
 @emph{Dorothea Lütkehaus} (now @emph{Dorothea Krabiell}) realized @DDD{}
-as her Diploma Thesis, 1994
+as her Diploma Thesis, 1994.
 
 The original @DDD{} had no source window; this was added by
 Dorothea during the winter of 1994--1995.  In the first quarter of 1995,
@@ -2448,10 +2449,52 @@ Further options can be found in the @cite{xdb(1)} manual page.
 
 
 @node JDB Options
-@subsubsection JDB Options
+@subsubsection JDB 1.2 Options
 
 The following @JDB{} options are useful when using @DDD{} with @JDB{} as
 inferior debugger.
+
+@table @option
+@item -attach @var{address}
+@cindex VM
+@cindex virtual machine
+attach to a running virtual machine (VM)
+at @var{address} using standard connector
+
+@item -listen @var{address}
+wait for a running VM to connect at @var{address} using standard connector
+
+@item -listenany
+wait for a running VM to connect at any available address using 
+standard connector
+
+@item -launch
+launch VM immediately instead of waiting for @samp{run} command
+@end table
+
+These @JDB{} options are forwarded to the debuggee:
+
+@table @option
+@item -verbose[:class|gc|jni]
+@itemx -v
+Turn on verbose mode.
+
+@item -D@var{name}=@var{value}
+Set the system property @var{name} to @var{value}.
+
+@item -classpath @var{path}
+List directories in which to look for classes.  @var{path} is a list of 
+directories separated by colons.
+
+@item -X @var{option}
+Non-standard target VM option
+@end table
+
+
+@subsubsection JDB 1.1 Options
+
+The following @JDB{} options (for JDB as of JDK 1.1) are useful when
+using @DDD{} with @JDB{} as inferior debugger.
 
 @table @option
 @item -host @var{hostname}
@@ -2461,7 +2504,7 @@ host machine of interpreter to attach to
 password of interpreter to attach to (from @option{-debug})
 @end table
 
-These @JDB{} options are forwarded to debuggee process:
+These @JDB{} options are forwarded to the debuggee:
 
 @table @option
 @item -verbose
@@ -8749,7 +8792,7 @@ array of one-dimensional arrays, each aligned on its own.
 @lbindex Set
 
 During program execution, you can change the values of arbitrary
-variables.@footnote{@JDB{} does not support changing variable values.}
+variables.@footnote{@JDB{} 1.1 does not support changing variable values.}
 
 To change the value of a variable, enter its name in @samp{()}---for
 instance, by selecting an occurrence or a display.  Then, click on the
@@ -12222,9 +12265,8 @@ This means that variable names are interpreted according to the
 current frame; variables outside the current frame cannot be
 displayed.
 
-The @JDB{} @samp{dump} and @samp{print} commands do not support
-expression evaluation.  Hence, you cannot display arbitrary
-expressions.
+In @JDB{} 1.1, the @samp{dump} and @samp{print} commands do not support
+expression evaluation.  Hence, you cannot display arbitrary expressions.
 
 Parsing of @JDB{} output is quite CPU-intensive, due to the
 recognition of asynchronous prompts (any thread may output anything at

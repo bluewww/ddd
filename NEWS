@@ -4,15 +4,22 @@ DDD News						-*- text -*-
 DDD 3.2.2 [not yet released]
 =========
 
-DDD 3.2.2 supports recent tools and components and fixes minor bugs.
+DDD 3.2.2 brings minor bug fixes and support for JDB as of JDK 1.2.
 
-- GDB 5.0 is supported.
-- JDB 1.2 is supported.
-- LessTif 0.90 is supported.
-- Several minor memory leaks have been plugged.
-    (Reported by Arnaud Desitter <arnaud@nag.co.uk>.)
-- Attaching to processes works with more DBX and Ladebug variants.
-    (Reported by Arnaud Desitter <arnaud@nag.co.uk>.)
+- [JDB] JDB 1.2 is supported.
+
+- [GDB] GDB 5.0 is supported.
+
+- [LessTif] LessTif 0.90 is supported.
+
+- [DBX] Attaching to processes is supported for SGI DBX, Sun DBX and others.
+  (Thanks to Arnaud Desitter <arnaud@nag.co.uk>.)
+
+- [Ladebug] Attaching to processes is supported for Compaq Ladebug.
+  (Thanks to Arnaud Desitter <arnaud@nag.co.uk>.)
+
+- Several minor memory leaks have been plugged. (Thanks to Arnaud
+  Desitter <arnaud@nag.co.uk>.)
 
 
 DDD 3.2.1
@@ -21,15 +28,25 @@ DDD 3.2.1
 DDD 3.2.1 brings some minor bug fixes and major LessTif bug workarounds.
 
 - [LessTif] Helpers (such as uncompressing the DDD manual) work fine.
+
 - [LessTif] The `Print' dialog (esp. printing to file) works fine.
+
 - [LessTif] Restarting DDD (while saving settings) works fine.
+
 - [LessTif] Small fixes for building with LessTif on SGI.
+
 - [Perl] In the data display, Perl hash keys are properly quoted.
+
 - [Ladebug] More Ladebug variants are supported.
+
 - [Ladebug] `Edit -> Ladebug settings' should work.
+
 - A string pointer error on 64 bit machines has been fixed.
+
 - Minor bugs with clustered displays have been fixed.
+
 - DDD makes more attempts in locating the initial main function.
+
 - DDD PostScript documentation can be printed on multiple pages per sheet.
 
 
