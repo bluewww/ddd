@@ -35,6 +35,11 @@ char SignalBlocker_rcsid[] =
 
 #include "SignalB.h"
 
+// The LINUX `sigfillset' macro definition causes a GCC warning.
+#if defined(__linux__) && defined(sigfillset)
+#undef sigfillset
+#endif
+
 // Constructor - block signal SIGNUM
 SignalBlocker::SignalBlocker(int signum)
 {
@@ -58,8 +63,6 @@ SignalBlocker::SignalBlocker()
     // POSIX interface
     sigset_t new_set;
 
-    // The following line causes a warning on LINUX systems; this is harmless.
-    // (The problem is in the LINUX `sigfillset' definition.)
     sigfillset(&new_set);
     sigprocmask(SIG_BLOCK, &new_set, &old_set);
 #else
