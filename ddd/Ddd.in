@@ -172,7 +172,7 @@ Ddd*listDirCommand:   \
 
 
 ! The DDD WWW page.
-Ddd*wwwPage: http://www.cs.tu-bs.de/softech/software/ddd_e.html
+Ddd*wwwPage: http://www.cs.tu-bs.de/softech/ddd/
 
 ! Command to invoke the WWW page.  @URL@ stands for the URL to open.
 ! Default is to try a running Netscape first, then to invoke a new 

@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "21 August 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1 September 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -108,14 +108,14 @@ Change things in your program, so you can experiment with correcting the
 effects of one bug and go on to learn about another.
 .PP
 .\"
-\*(lqClassical\*(rq \s-2UNIX\s+2 debuggers such as the \s-2GNU\s+2 debugger
-(\s-2GDB\s+2) provide a command-line interface and a multitude of
-commands for these and other debugging purposes.  \s-2@DDD@\s+2 is a
-\fIwrapper\fR around an underlying \s-2GDB\s+2 or \s-2DBX\s+2
-debugger.  In addition to the \s-2GDB\s+2 or \s-2DBX\s+2 command-line
-interface, \s-2@DDD@\s+2 provides a \fIgraphical user interface\fR to
-support common debugging tasks.  As a special feature, \s-2@DDD@\s+2
-provides a \fIgraphical data display\fR for interactive exploration of
+\*(lqClassical\*(rq \s-2UNIX\s+2 debuggers such as the \s-2GNU\s+2
+debugger (\s-2GDB\s+2) provide a command-line interface and a
+multitude of commands for these and other debugging purposes.
+\s-2@DDD@\s+2 is a \fIwrapper\fR around an underlying \s-2GDB\s+2 or
+\s-2DBX\s+2 debugger.  In addition to the \s-2GDB\s+2 or \s-2DBX\s+2
+command-line interface, \s-2@DDD@\s+2 provides a \fIgraphical user
+interface\fR to support common debugging tasks.  The \s-2@DDD@\s+2
+\fIgraphical data display\fR allows for interactive exploration of
 data structures.
 .PP
 
@@ -931,6 +931,15 @@ terminates the action of any \s-2GDB\s+2 or \s-2DBX\s+2 command that
 is in progress and returns to the debugger command level.  It is safe
 to type the interrupt character at any time because the debugger does
 not allow it to take effect until a time when it is safe.
+.PP
+You may also interrupt \s-2@DDD@\s+2 using an interrupt signal
+(\s-2SIGINT\s+2)\(em\&for instance by pressing \fBCtrl+C\fR in the shell
+\s-2@DDD@\s+2 was started from, or by using the \s-2UNIX\s+2
+`\fBkill\fR' command.  This interrupts any \s-2@DDD@\s+2 action; the
+underlying \s-2GDB\s+2 or \s-2DBX\s+2 debugger is interrupted as well.
+Use this as a last resort in emergencies only\(em\&if \s-2@DDD@\s+2
+hangs, for example.
+
 
 .\" ---------------
 .SH "REMOTE DEBUGGING"
@@ -1293,12 +1302,18 @@ entry in
 .B info.
 
 .PP
-.I 
+.I
 Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
 \&, by Richard M. Stallman and Roland H. Pesch.
 
 .PP
-.I 
+.I
+\s-2DDD\s+2\(em\&A Free Graphical Front-End for \s-2UNIX\s+2 Debuggers\c
+\&, by Andreas Zeller and Dorothea Luetkehaus, Computer Science Report
+95-07, Technische Universitaet Braunschweig, 1995.
+
+.PP
+.I
 \s-2DDD\s+2 \(em ein Debugger mit graphischer Datendarstellung\c
 \&, by Dorothea Luetkehaus, Diploma Thesis, Technische
 Universitaet Braunschweig, 1994.
@@ -1317,7 +1332,7 @@ The \s-2@DDD@\s+2
 .IR "World-Wide-Web page" ,
 .sp
 .br
-  \fBhttp://www.cs.tu-bs.de/softech/software/ddd_e.html\fR
+  \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR
 .br
 .sp
 
@@ -1464,6 +1479,7 @@ somebody else.
 Please report each bug in a separate message.  This makes it easier
 for us to track which bugs have been fixed and to forward your bugs
 reports to the appropriate maintainer.
+.br
 .IP \(bu 2
 Please report bugs in English; this increases the chances of finding
 someone who can fix the bug.  Do not assume one particular person will
