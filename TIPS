@@ -177,6 +177,14 @@ add SAMP(2>/dev/tty) to the arguments of your program.
 To display the first VAR(n) elements of a variable-length array VAR(ptr),
 enter KBD(graph display VAR(ptr)\1330\135@ VAR(n)) at the GDB prompt.
 
+To undisplay a specific record member once and for all, select it in a
+display and click on LBL(Undisp).  Confirming with LBL(Apply to All)
+suppresses the member in other displays, too.
+
+To display data in a smaller font, try LBL(Data, Themes, Small Values).
+The pattern describes the expressions you want to see in smaller font:
+SAMP(*) matches all expressions.
+
 You can have each of DDD, @GDB@ and the debugged program run on
 different machines.  See the DDD KBD(--rhost) option for details.
 
@@ -190,6 +198,10 @@ arbitrary collections of data displays.
 
 Do you want to stop this debugging session and resume later?
 Use LBL(File, Save Session)!
+
+You can interact with DDD even while the debuggee is executing:
+DDD automatically interrupts program execution for a moment.  
+This works whenever program execution is initiated by LBL(Run) or LBL(Cont).
 
 To debug a child process, put a call to SAMP(sleep) in the child right
 after the SAMP(fork) call.  Run the program and attach to the child process
@@ -244,12 +256,15 @@ If the DDD source window keeps on scrolling until the end of source is
 reached, try changing the SAMP(glyphUpdateDelay) resource.  See the
 DDD manual for details.
 
+To customize display appearance, you can write your own themes.
+For details, see the  manual "Writing DDD Themes".
+
 For further DDD customization (e.g. colors), see the FILE([Ddd])
 app-defaults file from the DDD WWW Site or the DDD source
 distribution.  Copy resources to FILE(~/.[ddd]/init) and edit as desired.
 
 
-! Professional tips.
+! Tips from professionals.
 
 In GCC, SAMP(-Wall) does not enable all warnings.  See the GCC
 documentation for other warnings you might consider useful.
@@ -279,6 +294,6 @@ nothing helps you more in debugging than to try to explain your problem
 BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
 ! If you have other questions, comments or suggestions, contact The King via
-! electronic mail to EMAIL(elvis@ graceland.gnu.ai.mit.edu).  The King will
+! electronic mail to EMAIL(elvis@ graceland.gnu.org).  The King will
 ! try to help you out, although he may not have time to fix your problems.
 ! QUOTE(Free Software Foundation, GNU Hello Manual)
