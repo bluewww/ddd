@@ -6955,6 +6955,8 @@ information,\n\
     information, specify the SAMP(-g) option when you run the compiler.\n\
 ITEM You may need to tell @GDB@ where the source code files are.\n\
     Invoke LBL(Edit, @GDB@ Settings) and look for appropriate entries.\n\
+    Using GDB, you can also create a local FILE(.gdbinit) file that contains\n\
+    SAMP(directory VAR(path)), where VAR(path) is the source path.\n\
 ITEM Using GDB, you can continue at machine code level \
 by enabling the\n\
     Machine Code Window.  Use LBL(Source, Display Machine Code).])dnl
