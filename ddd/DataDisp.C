@@ -2603,7 +2603,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
-    if (answer == "")
+    if (gdb->type() == GDB && answer == "")
     {
 	// No display output (GDB bug).  Get it via `print'
 	gdb_command(gdb->print_command(info->display_expression), 
@@ -2711,8 +2711,8 @@ void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
 	return;
     }
 
-    // Simulate a `display' output
-    string display = itostring(next_gdb_display_number) + ": " 
+    // Simulate the `display' output that should have come from GDB
+    string display = itostring(next_gdb_display_number++) + ": " 
 	+ info->display_expression + " = " + answer + '\n';
     new_data_displayOQC(display, data);
 }
@@ -3292,7 +3292,7 @@ void DataDisp::process_info_display (string& info_display_answer)
 	next_disp_info = 
 	    read_next_disp_info(info_display_answer, gdb);
     }
-    next_gdb_display_number = max_disp_nr + 1;
+    next_gdb_display_number = max(next_gdb_display_number, max_disp_nr + 1);
 
 
     // Process DDD displays
@@ -3697,7 +3697,9 @@ void DataDisp::refresh_display_list(bool silent)
 
 	nums += itostring(dn->disp_nr()) + ":";
 
-	if (dn->nodeptr()->hidden())
+	if (dn->hidden())
+	    states += "not active";
+	else if (dn->nodeptr()->hidden())
 	    states += "alias of " + itostring(dn->alias_of);
 	else if (dn->enabled())
 	    states += "enabled";
@@ -4286,7 +4288,7 @@ void DataDisp::merge_displays(IntArray displays,
 #endif
 
     DispNode *d0 = disp_graph->get(displays[0]);
-    if (d0->nodeptr()->hidden())
+    if (!d0->hidden() && d0->nodeptr()->hidden())
     {
 	// All aliases are hidden.  Make sure we see at least the
 	// least recently changed one.
@@ -4298,6 +4300,10 @@ void DataDisp::merge_displays(IntArray displays,
     {
 	int disp_nr = displays[i];
 	DispNode *dn = disp_graph->get(disp_nr);
+
+	if (dn->hidden())
+	    continue;		// Out of scope
+
 	bool hidden = dn->nodeptr()->hidden();
 
 	if (!hidden && dn->nodeptr()->firstTo() == 0)
