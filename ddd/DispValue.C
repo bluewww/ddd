@@ -172,6 +172,12 @@ void DispValue::clear_type_cache()
 }
 
 //-----------------------------------------------------------------------------
+// Flags
+//-----------------------------------------------------------------------------
+
+bool DispValue::expand_repeated_values = false;
+
+//-----------------------------------------------------------------------------
 // Function defs
 //-----------------------------------------------------------------------------
 
@@ -183,7 +189,7 @@ DispValue::DispValue (DispValue* p,
 		      const string& p_n,
 		      DispValueType given_type)
     : mytype(UnknownType), myparent(p), mydepth (d), myexpanded(true), 
-      myfull_name(f_n), print_name(p_n), changed(false)
+      myfull_name(f_n), print_name(p_n), changed(false), myrepeats(1)
 {
     v.simple = 0;
     init(value, given_type);
@@ -196,7 +202,7 @@ DispValue::DispValue (DispValue* p,
 DispValue::DispValue (const DispValue& dv)
     : mytype(dv.mytype), myparent(dv.myparent), mydepth(dv.mydepth),
       myexpanded(dv.myexpanded), myfull_name(dv.myfull_name),
-      print_name(dv.print_name), changed(false)
+      print_name(dv.print_name), changed(false), myrepeats(dv.myrepeats)
 {
     switch (mytype)
     {
@@ -361,7 +367,8 @@ void DispValue::init(string& value, DispValueType given_type)
 	    // would treat it as a pointer.
 	    do {
 		string repeated_value = value;
-		string member_name = gdb->index_expr("", array_index++);
+		string member_name = 
+		    gdb->index_expr("", itostring(array_index++));
 		DispValue *dv = 
 		    new DispValue(this, depth() + 1, value,
 				  add_member_name(base, member_name), 
@@ -371,15 +378,39 @@ void DispValue::init(string& value, DispValueType given_type)
 
 		int repeats = read_repeats(value);
 
-		while (--repeats > 0)
+		if (expand_repeated_values)
 		{
-		    member_name = gdb->index_expr("", array_index++);
-		    string val = repeated_value;
-		    DispValue *repeated_dv = 
-			new DispValue(this, depth() + 1, val,
-				      add_member_name(base, member_name),
-				      member_name, member_type);
-		    v.array->members[v.array->member_count++] = repeated_dv;
+		    // Create one value per repeat
+		    while (--repeats > 0)
+		    {
+			member_name = 
+			    gdb->index_expr("", itostring(array_index++));
+			string val = repeated_value;
+			DispValue *repeated_dv = 
+			    new DispValue(this, depth() + 1, val,
+					  add_member_name(base, member_name),
+					  member_name, member_type);
+			v.array->members[v.array->member_count++] = 
+			    repeated_dv;
+		    }
+		}
+		else
+		{
+		    // Show repetition in member
+		    if (repeats > 1)
+		    {
+			array_index--;
+
+			// We use the GDB `artificial array' notation here,
+			// since repeat recognition is supported in GDB only.
+			member_name += "@" + itostring(repeats);
+
+			dv->full_name() = add_member_name(base, member_name);
+			dv->name()      = member_name;
+			dv->repeats()   = repeats;
+
+			array_index += repeats;
+		    }
 		}
 
 		if (background(value.length()))
@@ -1012,12 +1043,13 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	read_array_begin (value, myaddr);
 
 	string vtable_entries = read_vtable_entries(value);
-	int array_index = 0;
+	int member_index = 0;
+	bool size_changed = false;
 	if (vtable_entries != "")
 	{
-	    v.array->members[array_index++]->update(vtable_entries, 
-						    was_changed, 
-						    was_initialized);
+	    v.array->members[member_index++]->update(vtable_entries, 
+						     was_changed, 
+						     was_initialized);
 	    if (was_initialized)
 		break;
 	    if (background(value.length()))
@@ -1028,46 +1060,67 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	{
 	    DispValueType member_type = UnknownType;
 	    bool more_values = true;
-	    while (more_values && array_index < v.array->member_count)
+	    while (more_values && member_index < v.array->member_count)
 	    {
 		string repeated_value = value;
-		v.array->members[array_index++]->update(value, 
-							was_changed,
-							was_initialized,
-							member_type);
+		DispValue *member = v.array->members[member_index++];
+		member->update(value, was_changed, was_initialized, 
+			       member_type);
+
 		if (was_initialized)
 		    break;
 		if (background(value.length()))
 		    break;
 
-		member_type = v.array->members[array_index - 1]->type();
+		member_type = member->type();
 
 		int repeats = read_repeats(value);
-		while (--repeats > 0)
+
+		if (expand_repeated_values)
 		{
-		    string val = repeated_value;
-		    v.array->members[array_index++]->update(val,
-							    was_changed,
-							    was_initialized,
-							    member_type);
-		    if (was_initialized)
-			break;
-		    if (background(value.length()))
-			break;
+		    // Update each repeated value
+		    while (--repeats > 0)
+		    {
+			string val = repeated_value;
+			DispValue *member = v.array->members[member_index++];
+
+			if (member->repeats() > 1)
+			{
+			    size_changed = true;
+			    break;
+			}
+
+			member->update(val, was_changed, 
+				       was_initialized, member_type);
+			if (was_initialized)
+			    break;
+			if (background(value.length()))
+			    break;
+		    }
+		}
+		else
+		{
+		    // Check whether the repeat count has changed
+		    if (repeats != member->repeats())
+		    {
+			size_changed = true;
+			break;	// No way to update this
+		    }
 		}
 
 		more_values = read_array_next (value);
 	    }
 	}
 
-	if (was_initialized || array_index != v.array->member_count)
+	if (was_initialized || size_changed || 
+	    member_index != v.array->member_count)
 	{
 #if LOG_UPDATE_VALUES
 	    clog << mytype << " changed";
-	    if (array_index != v.array->member_count)
+	    if (member_index != v.array->member_count)
 	    {
 		clog << " (old size " << v.array->member_count 
-		     << "!= new size " << array_index << ")";
+		     << "!= new size " << member_index << ")";
 	    }
 	    clog << "\n";
 #endif

@@ -277,16 +277,38 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	{
 	    int count = dv->nchildren();
 	    if (count == 0)
+	    {
 		vbox = eval("empty_array");
+	    }
 	    else
 	    {
 		bool have_2d_array = true;
-		for (int k = 0; k < count; k++)
-		    if (dv->get_child(k)->type() != Array)
+
+		if (dv->repeats() > 1)
+		    have_2d_array = false;
+
+		int nchildren = 0;
+		for (int k = 0; have_2d_array && k < count; k++)
+		{
+		    DispValue *child = dv->get_child(k);
+		    if (child->type() != Array)
 		    {
+			// Child is no array
 			have_2d_array = false;
 			break;
 		    }
+
+		    if (k == 0)
+		    {
+			nchildren = child->nchildren();
+		    }
+		    else if (nchildren != child->nchildren())
+		    {
+			// Children have differing sizes
+			have_2d_array = false;
+			break;
+		    }
+		}
 
 		if (have_2d_array && align_2d_arrays)
 		{
@@ -447,6 +469,12 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
     case UnknownType:
 	assert(0);
 	abort();
+    }
+
+    // Show repeats
+    if (dv->repeats() > 1 && !dv->collapsed())
+    {
+	vbox = eval("repeated_value", vbox->link(), dv->repeats());
     }
 
     // Highlight if value changed

@@ -3715,6 +3715,13 @@ Otherwise, the label is `\fBDisplay \fIexpression\fR'.  Upon
 activation, the string `\fB()\fR' in \fIexpression\fR is replaced by
 the name of the currently selected display.
 .TP
+.B "expandRepeatedValues (\fPclass\fB ExpandRepeatedValues)"
+\s-2GDB\s+2 can print repeated print elements as `\fIVALUE\fB
+<repeated \fIN\fB times>\fR'.  If this is `\fBon\fR', \s-2@DDD@\s+2
+will display \fIN\fR instances of \fIVALUE\fR instead.  If this is
+`\fBoff\fR' (default), \s-2@DDD@\s+2 will append `\fB<\fIN\fBx>' to
+\fIVALUE\fR to indicate the repetition.
+.TP
 .B "hideInactiveDisplays (\fPclass\fB HideInactiveDisplays)"
 If some display gets out of scope and this resource is `\fBon\fR'
 (default), \s-2@DDD@\s+2 removes it from the data display.  If this is

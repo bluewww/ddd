@@ -511,6 +511,9 @@ Ddd*align2dArrays:		on
 ! After a change in a display, shall we move adjacent displays?
 Ddd*bumpDisplays:		on
 
+! Shall we expand `VALUE <repeated N times>' to N instances of VALUE?
+Ddd*expandRepeatedValues:       off
+
 ! Shall we hide displays that are out of scope?
 Ddd*hideInactiveDisplays:	on
 

@@ -53,6 +53,7 @@ class DispValue {
     string        print_name;   // Name relative to MYPARENT
     string        myaddr;	// Address as found
     bool          changed;
+    int           myrepeats;	// Number of repetitions
 
     union {
 	class SimpleDispValue*        simple;    // mytype == Simple
@@ -86,6 +87,9 @@ protected:
     void _collapse()  { myexpanded = false; }
 
 public:
+    // Global settings
+    static bool expand_repeated_values;
+
     // The DispValue type and address are determined from VALUE
     DispValue (DispValue* parent, 
 	       int        depth,
@@ -106,12 +110,14 @@ public:
     DispValueType type()       const { return mytype; }
     DispValue*    parent()     const { return myparent; }
     int           depth()      const { return mydepth; }
+    int           repeats()    const { return myrepeats; }
     const string& full_name()  const { return myfull_name; }
     const string& name()       const { return print_name; }
     const string& addr()       const { return myaddr; }
 
     DispValue*&   parent()     { return myparent; }
     int&          depth()      { return mydepth; }
+    int&          repeats()    { return myrepeats; }
     string&       full_name()  { return myfull_name; }
     string&       name()       { return print_name; }
 

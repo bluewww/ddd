@@ -1378,7 +1378,9 @@ void DataDisp::displayArgCB(Widget w, XtPointer client_data,
     }
     else 
 #endif
-    if (disp_value_arg != 0 && disp_value_arg->type() == Pointer)
+    if (disp_value_arg != 0 && 
+	disp_value_arg->type() == Pointer && 
+	disp_value_arg->repeats() == 1)
     {
 	// Dereference selected pointer
 	dereferenceCB(w, client_data, call_data);
@@ -1868,8 +1870,9 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	case Reference:
 	    break;
 
-	case Pointer: 
-	    dereference_ok = true;
+	case Pointer:
+	    if (disp_value_arg->repeats() == 1)
+		dereference_ok = true;
 	    break;
 
 	case Array:

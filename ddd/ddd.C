@@ -1800,6 +1800,7 @@ int main(int argc, char *argv[])
 
     // Global variables: Setup data display
     DataDisp::bump_displays           = app_data.bump_displays;
+    DispValue::expand_repeated_values = app_data.expand_repeated_values;
     DispGraph::hide_inactive_displays = app_data.hide_inactive_displays;
 
     // Global variables: Set delays for button and value tips

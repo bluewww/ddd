@@ -1329,6 +1329,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNexpandRepeatedValues,
+	XtCExpandRepeatedValues,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, expand_repeated_values),
+	XmRImmediate,
+	XtPointer(False)
+    },
+
+    {
 	XtNbumpDisplays,
 	XtCBumpDisplays,
 	XmRBoolean,

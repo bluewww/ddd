@@ -55,6 +55,10 @@ DDD 3.0 [in beta test]
       * DDD saves whether a window is open or closed.
       * DDD only saves resources that differ from the default setting.
       * Saving options is also much, much faster.
+    - Using GDB, VALUEs that are repeated N times are now displayed as
+      `VALUE <Nx>', saving space in the data display; see `Edit | GDB
+      Settings | Threshold for repeated print elements'.  Setting the
+      `expandRepeatedValues' resource to `on' turns this off.
     - DBX settings also work with SGI DBX.
 
     Bug fixes:

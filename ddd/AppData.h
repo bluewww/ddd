@@ -272,6 +272,8 @@
 #define XtCDetectAliases         "DetectAliases"
 #define XtNalign2dArrays         "align2dArrays"
 #define XtCAlign2dArrays         "Align2dArrays"
+#define XtNexpandRepeatedValues  "expandRepeatedValues"
+#define XtCExpandRepeatedValues  "ExpandRepeatedValues"
 #define XtNbumpDisplays          "bumpDisplays"
 #define XtCBumpDisplays          "BumpDisplays"
 #define XtNhideInactiveDisplays  "hideInactiveDisplays"
@@ -447,6 +449,7 @@ struct AppData {
     String    grab_action;
     Boolean   detect_aliases;
     Boolean   align_2d_arrays;
+    Boolean   expand_repeated_values;
     Boolean   bump_displays;
     Boolean   hide_inactive_displays;
     Cardinal  status_history_size;
