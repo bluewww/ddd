@@ -166,6 +166,10 @@ detail.
 
 725 Pierre Pomes <ppomes@it.inov.imt-mrs.fr> reports that
     DDD-1998-07-09 causes a segmentation fault, recursing endlessly in
-    Agent::childStatusChange() routines.
+    Agent::childStatusChange() routines.  Setting `pollChildStatus'
+    resource to `on' [now the default - AZ] disables this.
 
-726 (Insert new bugs here)
+726 jik- <fract@sprintmail.com> reports that calling `editres' on DDD
+    makes it dump core.
+
+727 (Insert new bugs here)
