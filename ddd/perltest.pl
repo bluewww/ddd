@@ -14,10 +14,26 @@ $foo[1] = 300_000;
 $foo{'red'}   = 5;
 $foo{'green'} = 7;
 
+# References
 $ref = \%foo;
 $anotherref = $ref;
 $refref = \$ref;
 $refrefref = \$refref;
+
+# Lists of lists - from perllol(1)
+@LoL = (
+	[ "fred", "barney" ],
+	[ "george", "jane", "elroy" ],
+	[ "homer", "marge", "bart" ],
+       );
+print $LoL[2][2], "\n";
+
+$ref_to_LoL = [
+	       [ "fred", "barney", "pebbles", "bambam", "dino", ],
+	       [ "homer", "bart", "marge", "maggie", ],
+	       [ "george", "jane", "alroy", "judy", ],
+	      ];
+print $ref_to_LoL->[2][2], "\n";
 
 sub print_me {
   print @_;
