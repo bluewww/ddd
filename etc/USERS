@@ -1,0 +1,61 @@
+# $Id$ -*- text -*-
+# Some of our better-known customers.  Taken from e-mails to the DDD people.
+
+Adobe             http://www.adobe.com
+Agfa              http://www.agfa.be
+AMD               http://www.amd.com
+Amdahl            http://www.amdahl.com
+AT&T              http://www.att.com
+Baan              http://www.baan.nl
+Bellcore          http://www.bellcore.com
+Boeing            http://www.boeing.com
+Bosch             http://www.bosch.de
+British Telecom   http://www.bt.co.uk
+Caltech           http://www.caltech.edu
+Canon             http://www.canon.co.uk
+Cern              http://www.cern.ch
+Compaq            http://www.compaq.com
+Cygnus            http://www.cygnus.com
+Daimler-Benz      http://www.daimlerbenz.com
+Dasa              http://www.dasa.de
+DEC               http://www.dec.com
+DLR               http://www.dlr.de
+Ericsson          http://www.ericsson.se
+FAA               http://www.faa.gov
+Ford              http://www.ford.com
+GMD               http://www.gmd.de
+Harvard           http://www.harvard.edu
+Honeywell         http://www.honeywell.com
+Hewlett-Packard   http://www.hp.com
+IBM               http://www.ibm.com
+Inria             http://www.inria.fr
+Intel             http://www.intel.com
+J.P. Morgan       http://www.jpmorgan.com
+Kodak             http://www.kodak.com
+Lockheed          http://www.lockheed.com
+Lucent            http://www.lucent.com
+MCI               http://www.mci.com
+MIT               http://www.mit.edu
+Motorola          http://www.mot.com
+NASA              http://www.nasa.gov
+Netscape          http://www.netscape.com
+Nokia             http://www.nokia.com
+Oracle            http://www.oracle.com
+Philips           http://www.philips.com
+SAP               http://www.sap-ag.de
+Silicon Graphics  http://www.sgi.com
+Shell             http://www.shell.nl
+Siemens           http://www.siemens.de
+Stanford          http://www.stanford.edu
+Star Division     http://www.stardiv.de
+Sun               http://www.sun.com
+Thomson           http://www.thomson.fr
+Texas Instruments http://www.ti.com
+US Air Force      http://www.af.mil
+US Navy           http://www.navy.mil
+VocalTec          http://www.vocaltec.com
+Xerox             http://www.xerox.com
+
+# Local Variables:
+# tab-stop-list: (18 48 56 64 72)
+# End:
