@@ -3661,6 +3661,8 @@ DataDisp::DataDisp (XtAppContext app_context,
     // Create (unmanaged) selection widget
     graph_selection_w =
 	verify(XmCreateText(graph_cmd_w, "graph_selection", NULL, 0));
+    XtAddCallback(graph_selection_w, XmNlosePrimaryCallback, 
+		  SelectionLostCB, XtPointer(0));
 
     // Create display editor
     edit_displays_dialog_w =
