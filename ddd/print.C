@@ -736,8 +736,9 @@ static void PrintCB(Widget parent, bool displays)
     static Widget print_to_file_w;
     static MMDesc print_to_menu[] = 
     {
-	{"printer", MMToggle, { SetPrintTargetCB }, NULL, &print_to_printer_w},
-	{"file",    MMToggle, { NopCB }, NULL, &print_to_file_w },
+	{"printer", MMToggle, 
+	 { SetPrintTargetCB, 0 }, NULL, &print_to_printer_w, 0, 0},
+	{"file",    MMToggle, { NopCB, 0 }, NULL, &print_to_file_w, 0, 0 },
 	MMEnd
     };
 
@@ -746,58 +747,66 @@ static void PrintCB(Widget parent, bool displays)
     {
 	{"postscript", MMToggle,
 	  { SetPrintTypeCB, XtPointer(PRINT_POSTSCRIPT) }, NULL, 
-	    &postscript_w },
+	    &postscript_w, 0, 0 },
 	{"xfig",       MMToggle,
-	  { SetPrintTypeCB, XtPointer(PRINT_FIG) }},
+	  { SetPrintTypeCB, XtPointer(PRINT_FIG) }, 0, 0, 0, 0},
 	MMEnd
     };
 
     static MMDesc what2_menu[] = 
     {
-	{"displays", MMToggle, { SetPrintDisplaysCB }, NULL, 
-	 &print_displays_w },
-	{"plots",    MMToggle, { NopCB }, NULL, &print_plots_w },
+	{"displays", MMToggle, { SetPrintDisplaysCB, 0 }, NULL, 
+	 &print_displays_w, 0, 0 },
+	{"plots",    MMToggle, { NopCB, 0 }, NULL, &print_plots_w, 0, 0 },
 	MMEnd
     };
 
     Widget print_selected_w;
     static MMDesc what_menu[] = 
     {
-	{"what2",    MMRadioPanel | MMUnmanagedLabel, MMNoCB, what2_menu },
-	{"selected", MMToggle, { SetPrintSelectedNodesCB }, 
-	             NULL, &print_selected_w },
+	{"what2",    MMRadioPanel | MMUnmanagedLabel, 
+	 MMNoCB, what2_menu, 0, 0, 0 },
+	{"selected", MMToggle, { SetPrintSelectedNodesCB, 0 }, 
+	             NULL, &print_selected_w, 0, 0 },
 	MMEnd
     };
 
     Widget print_portrait_w;
     static MMDesc orientation_menu[] = 
     {
-	{"portrait",  MMToggle, { SetGCOrientation }, NULL, &print_portrait_w},
-	{"landscape", MMToggle, { NopCB }},
+	{"portrait",  MMToggle, 
+	 { SetGCOrientation, 0 }, NULL, &print_portrait_w, 0, 0},
+	{"landscape", MMToggle, { NopCB, 0 }, 0, 0, 0, 0},
 	MMEnd
     };
 
     static MMDesc paper_menu[] = 
     {
-	{"a4",        MMToggle, {SetGCA4},        NULL, &a4_paper_size},
-	{"a3",        MMToggle, {SetGCA3},        NULL, &a3_paper_size},
-	{"letter",    MMToggle, {SetGCLetter},    NULL, &letter_paper_size},
-	{"legal",     MMToggle, {SetGCLegal},     NULL, &legal_paper_size},
-	{"executive", MMToggle, {SetGCExecutive}, NULL, &executive_paper_size},
-	{"custom",    MMToggle, {SetGCCustom},    NULL, &custom_paper_size},
+	{"a4",        MMToggle, 
+	 {SetGCA4, 0},        NULL, &a4_paper_size, 0, 0},
+	{"a3",        MMToggle, 
+	 {SetGCA3, 0},        NULL, &a3_paper_size, 0, 0},
+	{"letter",    MMToggle, 
+	 {SetGCLetter, 0},    NULL, &letter_paper_size, 0, 0},
+	{"legal",     MMToggle, 
+	 {SetGCLegal, 0},     NULL, &legal_paper_size, 0, 0},
+	{"executive", MMToggle, 
+	 {SetGCExecutive, 0}, NULL, &executive_paper_size, 0, 0},
+	{"custom",    MMToggle, 
+	 {SetGCCustom, 0},    NULL, &custom_paper_size, 0, 0},
 	MMEnd
     };
 
     Widget file_type_w;
     static MMDesc menu[] =
     {
-	{"to",          MMRadioPanel, MMNoCB, print_to_menu },
-	{"command",     MMTextField,  MMNoCB, NULL, &print_command_field },
-	{"name", 	MMTextField,  MMNoCB, NULL, &print_file_name_field },
-	{"type", 	MMRadioPanel, MMNoCB, type_menu, &file_type_w },
-	{"what",        MMPanel,      MMNoCB, what_menu },
-	{"orientation", MMRadioPanel, MMNoCB, orientation_menu },
-	{"size",        MMRadioPanel, MMNoCB, paper_menu },
+	{"to",          MMRadioPanel, MMNoCB, print_to_menu, 0, 0, 0 },
+	{"command",     MMTextField,  MMNoCB, 0, &print_command_field, 0, 0 },
+	{"name", 	MMTextField,  MMNoCB, 0, &print_file_name_field, 0, 0},
+	{"type", 	MMRadioPanel, MMNoCB, type_menu, &file_type_w, 0, 0 },
+	{"what",        MMPanel,      MMNoCB, what_menu, 0, 0, 0 },
+	{"orientation", MMRadioPanel, MMNoCB, orientation_menu, 0, 0, 0 },
+	{"size",        MMRadioPanel, MMNoCB, paper_menu, 0, 0, 0 },
 	MMEnd
     };
 

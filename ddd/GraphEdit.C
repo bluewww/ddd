@@ -2871,8 +2871,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
     else if (p == "both")
 	themode = Both;
     else
-	cerr << "show-edges(" << themode << "): bad mode " 
-	     << '`' << themode << "'" << "\n";
+	cerr << "show-edges: bad mode " << '`' << p << "'" << "\n";
 
     for (GraphEdge *edge = graph->firstEdge(); edge != 0;
 	edge = graph->nextEdge(edge))

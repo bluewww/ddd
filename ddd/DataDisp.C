@@ -158,10 +158,14 @@ XtActionsRec DataDisp::actions [] = {
 struct GraphItms { enum Itms {SelectAll, Refresh, NewArg, New}; };
 MMDesc DataDisp::graph_popup[] =
 {
-    {"selectAll", MMPush,               {DataDisp::selectAllCB}},
-    {"refresh",   MMPush,               {DataDisp::refreshCB}},
-    {"new_arg",   MMPush | MMUnmanaged, {DataDisp::popup_new_argCB}},
-    {"new",       MMPush,               {DataDisp::popup_newCB}},
+    {"selectAll", MMPush,               
+     {DataDisp::selectAllCB, 0}, 0, 0, 0, 0},
+    {"refresh",   MMPush,               
+     {DataDisp::refreshCB, 0}, 0, 0, 0, 0},
+    {"new_arg",   MMPush | MMUnmanaged, 
+     {DataDisp::popup_new_argCB, 0}, 0, 0, 0, 0},
+    {"new",       MMPush,               
+     {DataDisp::popup_newCB, 0}, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -169,29 +173,49 @@ MMDesc DataDisp::graph_popup[] =
 const int DataDisp::shortcut_items = 20;
 
 #define SHORTCUT_MENU \
-    {"s1",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(1)  }}, \
-    {"s2",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(2)  }}, \
-    {"s3",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(3)  }}, \
-    {"s4",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(4)  }}, \
-    {"s5",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(5)  }}, \
-    {"s6",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(6)  }}, \
-    {"s7",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(7)  }}, \
-    {"s8",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(8)  }}, \
-    {"s9",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(9)  }}, \
-    {"s10", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(10) }}, \
-    {"s11", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(11) }}, \
-    {"s12", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(12) }}, \
-    {"s13", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(13) }}, \
-    {"s14", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(14) }}, \
-    {"s15", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(15) }}, \
-    {"s16", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(16) }}, \
-    {"s17", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(17) }}, \
-    {"s18", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(18) }}, \
-    {"s19", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(19) }}, \
-    {"s20", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(20) }}, \
-    {"other", MMPush, { DataDisp::dependentCB }}, \
+    {"s1",  MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(1)  }, 0, 0, 0, 0 }, \
+    {"s2",  MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(2)  }, 0, 0, 0, 0 }, \
+    {"s3",  MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(3)  }, 0, 0, 0, 0 }, \
+    {"s4",  MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(4)  }, 0, 0, 0, 0 }, \
+    {"s5",  MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(5)  }, 0, 0, 0, 0 }, \
+    {"s6",  MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(6)  }, 0, 0, 0, 0 }, \
+    {"s7",  MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(7)  }, 0, 0, 0, 0 }, \
+    {"s8",  MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(8)  }, 0, 0, 0, 0 }, \
+    {"s9",  MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(9)  }, 0, 0, 0, 0 }, \
+    {"s10", MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(10) }, 0, 0, 0, 0 }, \
+    {"s11", MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(11) }, 0, 0, 0, 0 }, \
+    {"s12", MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(12) }, 0, 0, 0, 0 }, \
+    {"s13", MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(13) }, 0, 0, 0, 0 }, \
+    {"s14", MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(14) }, 0, 0, 0, 0 }, \
+    {"s15", MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(15) }, 0, 0, 0, 0 }, \
+    {"s16", MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(16) }, 0, 0, 0, 0 }, \
+    {"s17", MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(17) }, 0, 0, 0, 0 }, \
+    {"s18", MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(18) }, 0, 0, 0, 0 }, \
+    {"s19", MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(19) }, 0, 0, 0, 0 }, \
+    {"s20", MMPush | MMUnmanaged, \
+        { DataDisp::shortcutCB, XtPointer(20) }, 0, 0, 0, 0 }, \
+    {"other", MMPush, { DataDisp::dependentCB, 0 }, 0, 0, 0, 0}, \
     MMSep, \
-    {"edit",  MMPush, { dddEditShortcutsCB }}
+    {"edit",  MMPush, { dddEditShortcutsCB, 0 }, 0, 0, 0, 0}
 
 // The menu used in the `New Display' button.
 
@@ -207,8 +231,8 @@ MMDesc DataDisp::shortcut_menu[]   =
 {
     SHORTCUT_MENU,
     MMSep,
-    {"new2", MMPush, {DataDisp::displayArgCB, XtPointer(false)}},
-    {"dereference2", MMPush, {DataDisp::dereferenceArgCB}},
+    {"new2", MMPush, {DataDisp::displayArgCB, XtPointer(false)}, 0, 0, 0, 0 },
+    {"dereference2", MMPush, {DataDisp::dereferenceArgCB, 0}, 0, 0, 0, 0 },
     MMEnd
 };
 
@@ -222,7 +246,8 @@ struct RotateItms { enum Itms {RotateAll}; };
 
 MMDesc DataDisp::rotate_menu[] =
 {
-    {"rotateAll",     MMPush | MMInsensitive, {DataDisp::rotateAllCB}},
+    {"rotateAll",     MMPush | MMInsensitive, 
+     {DataDisp::rotateAllCB, 0}, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -231,14 +256,16 @@ struct NodeItms { enum Itms {Dereference, New, Sep1, Detail, Rotate, Set,
 
 MMDesc DataDisp::node_popup[] =
 {
-    {"dereference",   MMPush,   {DataDisp::dereferenceCB}},
-    {"new",           MMMenu,   MMNoCB, DataDisp::shortcut_popup2, },
+    {"dereference",   MMPush,   {DataDisp::dereferenceCB, 0}, 0, 0, 0, 0},
+    {"new",           MMMenu,   MMNoCB, DataDisp::shortcut_popup2, 0, 0, 0},
     MMSep,
-    {"detail",        MMPush,   {DataDisp::toggleDetailCB, XtPointer(-1)}},
-    {"rotate",        MMPush,   {DataDisp::rotateCB}},
-    {"set",           MMPush,   {DataDisp::setCB}},
+    {"detail",        MMPush,   
+     {DataDisp::toggleDetailCB, XtPointer(-1)}, 0, 0, 0, 0},
+    {"rotate",        MMPush,   {DataDisp::rotateCB, 0}, 0, 0, 0, 0},
+    {"set",           MMPush,   {DataDisp::setCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"delete",        MMPush,   {DataDisp::deleteCB, XtPointer(true)}},
+    {"delete",        MMPush,   
+     {DataDisp::deleteCB, XtPointer(true)}, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -247,7 +274,8 @@ struct DeleteItms { enum Itms {Cluster}; };
 
 MMDesc DataDisp::delete_menu[] =
 {
-    {"cluster",     MMPush, {DataDisp::toggleClusterSelectedCB}},
+    {"cluster",     MMPush, {DataDisp::toggleClusterSelectedCB, 0}, 
+     0, 0, 0, 0},
     MMEnd
 };
 
@@ -257,21 +285,23 @@ struct CmdItms { enum Itms {New, Dereference, Plot,
 
 MMDesc DataDisp::graph_cmd_area[] =
 {
-    {"new",           MMPush,                 {DataDisp::displayArgCB, 
-					       XtPointer(true)},
-                                               DataDisp::shortcut_menu },
+    {"new",           MMPush,                 
+     {DataDisp::displayArgCB, XtPointer(true)}, 
+     DataDisp::shortcut_menu, 0, 0, 0 },
     {"dereference",   MMPush | MMInsensitive | MMUnmanaged, 
-                                              {DataDisp::dereferenceArgCB}},
-    {"plot",          MMPush | MMInsensitive, {DataDisp::plotArgCB}},
-    {"detail",        MMPush | MMInsensitive, {DataDisp::toggleDetailCB,
-					       XtPointer(-1)},
-                                               DataDisp::detail_menu },
-    {"rotate",        MMPush | MMInsensitive, {DataDisp::rotateCB},
-                                               DataDisp::rotate_menu },
-    {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
-    {"delete",        MMPush | MMInsensitive, {DataDisp::deleteArgCB,
-					       XtPointer(true)}, 
-					       DataDisp::delete_menu },
+     {DataDisp::dereferenceArgCB, 0}, 0, 0, 0, 0},
+    {"plot",          MMPush | MMInsensitive,
+     {DataDisp::plotArgCB, 0}, 0, 0, 0, 0},
+    {"detail",        MMPush | MMInsensitive, 
+     {DataDisp::toggleDetailCB, XtPointer(-1)}, 
+     DataDisp::detail_menu, 0, 0, 0 },
+    {"rotate",        MMPush | MMInsensitive, 
+     {DataDisp::rotateCB, 0}, DataDisp::rotate_menu, 0, 0, 0 },
+    {"set",           MMPush | MMInsensitive, 
+     {DataDisp::setCB, 0}, 0, 0, 0, 0 },
+    {"delete",        MMPush | MMInsensitive, 
+     {DataDisp::deleteArgCB, XtPointer(true)},
+     DataDisp::delete_menu, 0, 0, 0 },
     MMEnd
 };
 
@@ -281,10 +311,14 @@ struct DetailItms { enum Itms { ShowMore, ShowJust,
 
 MMDesc DataDisp::detail_menu[] =
 {
-    {"show_more",    MMPush, {DataDisp::showMoreDetailCB, XtPointer(1) }},
-    {"show_just",    MMPush, {DataDisp::showDetailCB, XtPointer(1) }},
-    {"show_detail",  MMPush, {DataDisp::showDetailCB, XtPointer(-1) }},
-    {"hide_detail",  MMPush, {DataDisp::hideDetailCB, XtPointer(-1) }},
+    {"show_more",    MMPush, 
+     {DataDisp::showMoreDetailCB, XtPointer(1) }, 0, 0, 0, 0},
+    {"show_just",    MMPush, 
+     {DataDisp::showDetailCB, XtPointer(1) }, 0, 0, 0, 0},
+    {"show_detail",  MMPush, 
+     {DataDisp::showDetailCB, XtPointer(-1) }, 0, 0, 0, 0},
+    {"hide_detail",  MMPush, 
+     {DataDisp::hideDetailCB, XtPointer(-1) }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -293,12 +327,15 @@ struct DisplayItms { enum Itms {New, Dereference,
 
 MMDesc DataDisp::display_area[] =
 {
-    {"new",          MMPush,   {DataDisp::dependentCB }},
-    {"dereference",  MMPush,   {DataDisp::dereferenceCB }},
-    {"show_detail",  MMPush,   {DataDisp::showDetailCB, XtPointer(-1) }},
-    {"hide_detail",  MMPush,   {DataDisp::hideDetailCB, XtPointer(-1) }},
-    {"set",          MMPush,   {DataDisp::setCB}},
-    {"delete",       MMPush | MMHelp, {DataDisp::deleteCB, XtPointer(true) }},
+    {"new",          MMPush,   {DataDisp::dependentCB, 0 }, 0, 0, 0, 0},
+    {"dereference",  MMPush,   {DataDisp::dereferenceCB, 0 }, 0, 0, 0, 0},
+    {"show_detail",  MMPush,   
+     {DataDisp::showDetailCB, XtPointer(-1) }, 0, 0, 0, 0},
+    {"hide_detail",  MMPush,   
+     {DataDisp::hideDetailCB, XtPointer(-1) }, 0, 0, 0, 0},
+    {"set",          MMPush,   {DataDisp::setCB, 0}, 0, 0, 0, 0},
+    {"delete",       MMPush | MMHelp, 
+     {DataDisp::deleteCB, XtPointer(true) }, 0, 0, 0, 0},
     MMEnd
 };
 

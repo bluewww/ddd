@@ -135,9 +135,9 @@ void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure = 0);
 void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false);
 
 // Conveniences
-#define MMNoCB { NULL }
-#define MMEnd  { NULL }
-#define MMSep  { "separator", MMSeparator }
+#define MMNoCB { 0, 0 }
+#define MMEnd  { 0, MMPush, MMNoCB, 0, 0, 0, 0 }
+#define MMSep  { "separator", MMSeparator, MMNoCB, 0, 0, 0, 0 }
 
 // New resources
 #define XtNpushMenuPopupTime  "pushMenuPopupTime"

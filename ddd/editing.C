@@ -571,8 +571,8 @@ void delete_or_controlAct(Widget, XEvent *e,
 
 static MMDesc gdb_popup[] =
 {
-    {"clear_line",   MMPush, { gdbClearCB }},
-    {"clear_window", MMPush, { gdbClearWindowCB }},
+    {"clear_line",   MMPush, { gdbClearCB, 0 }, 0, 0, 0, 0},
+    {"clear_window", MMPush, { gdbClearWindowCB, 0 }, 0, 0, 0, 0},
     MMEnd
 };
 

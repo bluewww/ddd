@@ -79,18 +79,18 @@ static void ResizePlotAreaCB(Widget, XtPointer, XtPointer);
 
 static MMDesc file_menu[] = 
 {
-    { "print", MMPush, { PrintPlotCB } },
+    { "print", MMPush, { PrintPlotCB, 0 }, 0, 0, 0, 0 },
     MMSep,
-    { "close", MMPush, { CancelPlotCB } },
-    { "exit",  MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }},
+    { "close", MMPush, { CancelPlotCB, 0 }, 0, 0, 0, 0 },
+    { "exit",  MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }, 0, 0, 0, 0},
     MMEnd
 };
 
 static MMDesc menubar[] = 
 {
-    { "file",     MMMenu, MMNoCB, file_menu },
-    { "edit",     MMMenu, MMNoCB, simple_edit_menu },
-    { "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu },
+    { "file",     MMMenu, MMNoCB, file_menu, 0, 0, 0 },
+    { "edit",     MMMenu, MMNoCB, simple_edit_menu, 0, 0, 0 },
+    { "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0 },
     MMEnd
 };
 

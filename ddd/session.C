@@ -687,21 +687,21 @@ static void SetGCoreMethodCB(Widget, XtPointer client_data, XtPointer)
 
 static MMDesc gcore_methods[] =
 {
-    { "kill",   MMPush, { SetGCoreMethodCB, XtPointer(0) }, NULL, 
-      &may_kill_w },
-    { "gcore",  MMPush, { SetGCoreMethodCB, XtPointer(MAY_GCORE) }, NULL, 
-      &may_gcore_w },
-    { "ptrace", MMPush, { SetGCoreMethodCB, XtPointer(MAY_PTRACE) }, NULL, 
-      &may_ptrace_w},
+    { "kill",   MMPush, 
+      { SetGCoreMethodCB, XtPointer(0) }, NULL, &may_kill_w, 0, 0 },
+    { "gcore",  MMPush, 
+      { SetGCoreMethodCB, XtPointer(MAY_GCORE) }, NULL, &may_gcore_w, 0, 0 },
+    { "ptrace", MMPush, 
+      { SetGCoreMethodCB, XtPointer(MAY_PTRACE) }, NULL, &may_ptrace_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc gcore_items[] =
 {
-    { "dump",     MMToggle, { SetGCoreSensitivityCB }, NULL, 
-      &dump_core_w },
-    { "method",   MMOptionMenu, { SetGCoreSensitivityCB }, gcore_methods, 
-      &gcore_methods_w },
+    { "dump",     MMToggle, 
+      { SetGCoreSensitivityCB, 0 }, NULL, &dump_core_w, 0, 0 },
+    { "method",   MMOptionMenu, 
+      { SetGCoreSensitivityCB, 0 }, gcore_methods, &gcore_methods_w, 0, 0 },
     MMEnd
 };
 

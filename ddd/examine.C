@@ -83,35 +83,35 @@ static Widget wide_char_w;
 static Widget wide_string_w;
 
 static MMDesc format_menu[] = { 
-    { "o", MMPush, { SetFormatCB }, NULL, &octal_w },
-    { "x", MMPush, { SetFormatCB }},
-    { "d", MMPush, { SetFormatCB }},
-    { "u", MMPush, { SetFormatCB }, NULL, &unsigned_char_w },
-    { "t", MMPush, { SetFormatCB }, NULL, &binary_w },
-    { "f", MMPush, { SetFormatCB }},
-    { "a", MMPush, { SetFormatCB }, NULL, &address_format_w },
-    { "i", MMPush, { SetFormatCB }},
-    { "c", MMPush, { SetFormatCB }},
-    { "C", MMPush, { SetFormatCB }, NULL, &wide_char_w },
-    { "s", MMPush, { SetFormatCB }},
-    { "W", MMPush, { SetFormatCB }, NULL, &wide_string_w },
+    { "o", MMPush, { SetFormatCB, 0 }, NULL, &octal_w, 0, 0 },
+    { "x", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
+    { "d", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
+    { "u", MMPush, { SetFormatCB, 0 }, NULL, &unsigned_char_w, 0, 0 },
+    { "t", MMPush, { SetFormatCB, 0 }, NULL, &binary_w, 0, 0 },
+    { "f", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
+    { "a", MMPush, { SetFormatCB, 0 }, NULL, &address_format_w, 0, 0 },
+    { "i", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
+    { "c", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
+    { "C", MMPush, { SetFormatCB, 0 }, NULL, &wide_char_w, 0, 0 },
+    { "s", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
+    { "W", MMPush, { SetFormatCB, 0 }, NULL, &wide_string_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc size_menu[] = { 
-    { "b", MMPush, { SetSizeCB }, NULL, &byte_w },
-    { "h", MMPush, { SetSizeCB }},
-    { "w", MMPush, { SetSizeCB }},
-    { "g", MMPush, { SetSizeCB }},
-    { "G", MMPush, { SetSizeCB }, NULL, &long_w },
+    { "b", MMPush, { SetSizeCB, 0 }, NULL, &byte_w, 0, 0 },
+    { "h", MMPush, { SetSizeCB, 0 }, 0, 0, 0, 0},
+    { "w", MMPush, { SetSizeCB, 0 }, 0, 0, 0, 0},
+    { "g", MMPush, { SetSizeCB, 0 }, 0, 0, 0, 0},
+    { "G", MMPush, { SetSizeCB, 0 }, NULL, &long_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc examine_menu[] = { 
-    { "examine", MMSpinBox,    MMNoCB, NULL, &repeat_w },
-    { "format",  MMOptionMenu, MMNoCB, format_menu },
-    { "size",    MMOptionMenu, MMNoCB, size_menu },
-    { "address", MMComboBox,   MMNoCB, NULL, &address_w },
+    { "examine", MMSpinBox,    MMNoCB, NULL, &repeat_w, 0, 0 },
+    { "format",  MMOptionMenu, MMNoCB, format_menu, 0, 0, 0 },
+    { "size",    MMOptionMenu, MMNoCB, size_menu, 0, 0, 0 },
+    { "address", MMComboBox,   MMNoCB, NULL, &address_w, 0, 0 },
     MMEnd
 };
 

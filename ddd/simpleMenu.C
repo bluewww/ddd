@@ -313,34 +313,34 @@ static void RemoveCB(Widget w, XtPointer client_data, XtPointer call_data)
 // Edit menu
 MMDesc simple_edit_menu[] =
 {
-    { "cut",       MMPush,  { CutCB       }},
-    { "copy",      MMPush,  { CopyCB      }},
-    { "paste",     MMPush,  { PasteCB     }},
-    { "clearAll",  MMPush,  { ClearAllCB  }},
-    { "delete",    MMPush,  { RemoveCB    }},
+    { "cut",       MMPush,  { CutCB, 0       }, 0, 0, 0, 0},
+    { "copy",      MMPush,  { CopyCB, 0      }, 0, 0, 0, 0},
+    { "paste",     MMPush,  { PasteCB, 0     }, 0, 0, 0, 0},
+    { "clearAll",  MMPush,  { ClearAllCB, 0  }, 0, 0, 0, 0},
+    { "delete",    MMPush,  { RemoveCB, 0    }, 0, 0, 0, 0},
     MMSep,
-    { "selectAll", MMPush,  { SelectAllCB }},
+    { "selectAll", MMPush,  { SelectAllCB, 0 }, 0, 0, 0, 0},
     MMEnd
 };
 
 // Help menu
 MMDesc simple_help_menu[] = 
 {
-    {"onHelp",      MMPush, { HelpOnHelpCB }},
+    {"onHelp",      MMPush, { HelpOnHelpCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"onItem",      MMPush, { HelpOnItemCB }},
-    {"onWindow",    MMPush, { HelpOnWindowCB }},
+    {"onItem",      MMPush, { HelpOnItemCB, 0}, 0, 0, 0, 0},
+    {"onWindow",    MMPush, { HelpOnWindowCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"whatNext",    MMPush, { WhatNextCB }},
-    {"tipOfTheDay", MMPush, { TipOfTheDayCB }},
+    {"whatNext",    MMPush, { WhatNextCB, 0}, 0, 0, 0, 0},
+    {"tipOfTheDay", MMPush, { TipOfTheDayCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"dddManual",   MMPush, { DDDManualCB }},
-    {"news",        MMPush, { DDDNewsCB }},
-    {"gdbManual",   MMPush, { GDBManualCB }},
+    {"dddManual",   MMPush, { DDDManualCB, 0}, 0, 0, 0, 0},
+    {"news",        MMPush, { DDDNewsCB, 0}, 0, 0, 0, 0},
+    {"gdbManual",   MMPush, { GDBManualCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"license",     MMPush, { DDDLicenseCB }},
-    {"www",         MMPush, { DDDWWWPageCB }},
+    {"license",     MMPush, { DDDLicenseCB, 0}, 0, 0, 0, 0},
+    {"www",         MMPush, { DDDWWWPageCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"onVersion",   MMPush, { HelpOnVersionCB }},
+    {"onVersion",   MMPush, { HelpOnVersionCB, 0}, 0, 0, 0, 0},
     MMEnd
 };

@@ -2707,9 +2707,12 @@ static void ToggleButtonCB(Widget, XtPointer client_data, XtPointer call_data)
 
 MMDesc button_menu[] =
 {
-    { "console", MMToggle, { ToggleButtonCB, XtPointer(ConsoleTarget) }},
-    { "source",  MMToggle, { ToggleButtonCB, XtPointer(SourceTarget) }},
-    { "data",    MMToggle, { ToggleButtonCB, XtPointer(DataTarget) }},
+    { "console", MMToggle, 
+      { ToggleButtonCB, XtPointer(ConsoleTarget) }, 0, 0, 0, 0},
+    { "source",  MMToggle, 
+      { ToggleButtonCB, XtPointer(SourceTarget) }, 0, 0, 0, 0},
+    { "data",    MMToggle, 
+      { ToggleButtonCB, XtPointer(DataTarget) }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -2920,17 +2923,20 @@ static void ApplyCB(Widget, XtPointer, XtPointer)
 
 MMDesc commands_menu[] =
 {
-    { "record", MMPush, { RecordCommandDefinitionCB }, 0, &record_w },
-    { "end",    MMPush | MMInsensitive, { EndCommandDefinitionCB }, 0, &end_w},
-    { "edit",   MMPush, { ToggleEditCommandDefinitionCB }, 0, &edit_w },
+    { "record", MMPush, 
+      { RecordCommandDefinitionCB, 0 }, 0, &record_w, 0, 0 },
+    { "end",    MMPush | MMInsensitive, 
+      { EndCommandDefinitionCB, 0 }, 0, &end_w, 0, 0},
+    { "edit",   MMPush, 
+      { ToggleEditCommandDefinitionCB, 0 }, 0, &edit_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc panel_menu[] = 
 {
-    { "name",     MMComboBox, { UpdateDefinePanelCB }, 0, &name_w },
-    { "commands", MMButtonPanel, MMNoCB, commands_menu },
-    { "button",   MMButtonPanel, MMNoCB, button_menu },
+    { "name",     MMComboBox, { UpdateDefinePanelCB, 0 }, 0, &name_w, 0, 0 },
+    { "commands", MMButtonPanel, MMNoCB, commands_menu, 0, 0, 0 },
+    { "button",   MMButtonPanel, MMNoCB, button_menu, 0, 0, 0 },
     MMEnd
 };
 

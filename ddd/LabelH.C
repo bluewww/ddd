@@ -119,7 +119,9 @@ XmLabelHackClassRec xmLabelHackClassRec =
 	XtInheritTranslations,
 	(XmArmAndActivate)_XtInherit,
 #endif
-	/* remaining fields are NULL or 0 */
+	0,			// syn_resources
+	0,			// num_syn_resources
+	0			// extension
     },
     {	/* xmLabelClass */
 #if XmVersion >= 1002
@@ -131,7 +133,7 @@ XmLabelHackClassRec xmLabelHackClassRec =
 	(XmMenuProc) _XtInherit,
 	XtInheritTranslations,
 #endif
-	/* remaining fields are NULL or 0 */
+	0			// extension
     },
     {
 	-1,

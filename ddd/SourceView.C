@@ -198,23 +198,26 @@ struct LineItms { enum Itms {SetBP, SetTempBP, Sep1, TempNContBP,
 			     Sep2, SetPC}; };
 MMDesc SourceView::line_popup[] = 
 {
-    {"set",         MMPush, {SourceView::line_popup_setCB}},
-    {"set_temp",    MMPush, {SourceView::line_popup_set_tempCB}},
+    {"set",         MMPush, {SourceView::line_popup_setCB, 0}, 0, 0, 0, 0},
+    {"set_temp",    MMPush, 
+     {SourceView::line_popup_set_tempCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"temp_n_cont", MMPush, {SourceView::line_popup_temp_n_contCB}},
+    {"temp_n_cont", MMPush, 
+     {SourceView::line_popup_temp_n_contCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"set_pc",      MMPush, {SourceView::line_popup_set_pcCB}},
+    {"set_pc",      MMPush, {SourceView::line_popup_set_pcCB, 0}, 0, 0, 0, 0},
     MMEnd
 };
 
 struct BPItms { enum Itms {Properties, Disable, Delete, Sep, SetPC}; };
 MMDesc SourceView::bp_popup[] =
 {
-    {"properties",   MMPush, {SourceView::EditBreakpointPropertiesCB}},
-    {"disable",      MMPush, {SourceView::bp_popup_disableCB}},
-    {"delete",       MMPush, {SourceView::bp_popup_deleteCB}},
+    {"properties",   MMPush, 
+     {SourceView::EditBreakpointPropertiesCB, 0}, 0, 0, 0, 0},
+    {"disable",      MMPush, {SourceView::bp_popup_disableCB, 0}, 0, 0, 0, 0},
+    {"delete",       MMPush, {SourceView::bp_popup_deleteCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"set_pc",       MMPush, {SourceView::bp_popup_set_pcCB}},
+    {"set_pc",       MMPush, {SourceView::bp_popup_set_pcCB, 0}, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -222,16 +225,20 @@ struct BPButtons { enum Itms {Properties, Lookup, NewBP, NewWP, Print,
 			      Enable, Disable, Delete}; };
 MMDesc SourceView::bp_area[] =
 {
-    {"properties",   MMPush,   {SourceView::EditBreakpointPropertiesCB, 0}},
+    {"properties",   MMPush,   
+     {SourceView::EditBreakpointPropertiesCB, 0}, 0, 0, 0, 0},
     {"lookup",       MMPush,   
-     {SourceView::LookupBreakpointCB, XtPointer(0) }},
-    {"new_bp",       MMPush,   {SourceView::NewBreakpointCB}},
-    {"new_wp",       MMPush,   {SourceView::NewWatchpointCB}},
+     {SourceView::LookupBreakpointCB, XtPointer(0) }, 0, 0, 0, 0},
+    {"new_bp",       MMPush,   {SourceView::NewBreakpointCB, 0}, 0, 0, 0, 0},
+    {"new_wp",       MMPush,   {SourceView::NewWatchpointCB, 0}, 0, 0, 0, 0},
     {"print",        MMPush,   
-     {SourceView::PrintWatchpointCB, XtPointer(0) }},
-    {"enable",       MMPush,   {SourceView::BreakpointCmdCB, "enable"  }},
-    {"disable",      MMPush,   {SourceView::BreakpointCmdCB, "disable" }},
-    {"delete",       MMPush | MMHelp,   {SourceView::BreakpointCmdCB, "delete" }},
+     {SourceView::PrintWatchpointCB, XtPointer(0) }, 0, 0, 0, 0},
+    {"enable",       MMPush,   
+     {SourceView::BreakpointCmdCB, "enable"  }, 0, 0, 0, 0},
+    {"disable",      MMPush,   
+     {SourceView::BreakpointCmdCB, "disable" }, 0, 0, 0, 0},
+    {"delete",       MMPush | MMHelp,   
+     {SourceView::BreakpointCmdCB, "delete" }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -273,19 +280,23 @@ static String text_cmd_labels[] =
 
 MMDesc SourceView::text_popup[] =
 {
-    {"print",      MMPush, {SourceView::text_popup_printCB}},
-    {"disp",       MMPush, {SourceView::text_popup_dispCB}},
-    {"watch",      MMPush | MMUnmanaged, {SourceView::text_popup_watchCB}},
+    {"print",      MMPush, {SourceView::text_popup_printCB, 0}, 0, 0, 0, 0},
+    {"disp",       MMPush, {SourceView::text_popup_dispCB, 0}, 0, 0, 0, 0},
+    {"watch",      MMPush | MMUnmanaged, 
+     {SourceView::text_popup_watchCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"printRef",   MMPush, {SourceView::text_popup_print_refCB}},
-    {"dispRef",    MMPush, {SourceView::text_popup_disp_refCB}},
-    {"watchRef",   MMPush | MMUnmanaged, {SourceView::text_popup_watch_refCB}},
+    {"printRef",   MMPush, 
+     {SourceView::text_popup_print_refCB, 0}, 0, 0, 0, 0},
+    {"dispRef",    MMPush, 
+     {SourceView::text_popup_disp_refCB, 0}, 0, 0, 0, 0},
+    {"watchRef",   MMPush | MMUnmanaged, 
+     {SourceView::text_popup_watch_refCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"whatis",     MMPush, {SourceView::text_popup_whatisCB}},
+    {"whatis",     MMPush, {SourceView::text_popup_whatisCB, 0}, 0, 0, 0, 0},
     MMSep,
-    {"lookup",     MMPush, {SourceView::text_popup_lookupCB}},
-    {"breakAt",    MMPush, {SourceView::text_popup_breakCB}},
-    {"clearAt",    MMPush, {SourceView::text_popup_clearCB}},
+    {"lookup",     MMPush, {SourceView::text_popup_lookupCB, 0}, 0, 0, 0, 0},
+    {"breakAt",    MMPush, {SourceView::text_popup_breakCB, 0}, 0, 0, 0, 0},
+    {"clearAt",    MMPush, {SourceView::text_popup_clearCB, 0}, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -5178,19 +5189,19 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	static MMDesc wp_modes[] =
 	{
 	    { "cwatch",  MMPush, { SetWatchModeCB, XtPointer(WATCH_CHANGE) }, 
-	      NULL, &cwatch_w },
+	      NULL, &cwatch_w, 0, 0 },
 	    { "rwatch",  MMPush, { SetWatchModeCB, XtPointer(WATCH_READ) }, 
-	      NULL, &rwatch_w },
+	      NULL, &rwatch_w, 0, 0 },
 	    { "awatch", MMPush, { SetWatchModeCB, XtPointer(WATCH_ACCESS)},
-	      NULL, &awatch_w},
+	      NULL, &awatch_w, 0, 0 },
 	    MMEnd
 	};
 
 	static MMDesc wp_menu[] = 
 	{
-	    { "set",      MMLabel },
-	    { "method",   MMOptionMenu, MMNoCB, wp_modes },
-	    { "on",       MMLabel },
+	    { "set",      MMLabel, MMNoCB, 0, 0, 0, 0 },
+	    { "method",   MMOptionMenu, MMNoCB, wp_modes, 0, 0, 0 },
+	    { "on",       MMLabel, MMNoCB, 0, 0, 0, 0 },
 	    MMEnd
 	};
 
@@ -5711,29 +5722,32 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc commands_menu[] =
     {
-	{ "record", MMPush, \
-	  { RecordBreakpointCommandsCB, XtPointer(info) }, 0, &info->record },
-	{ "end",    MMPush | MMInsensitive, \
-	  { EndBreakpointCommandsCB, XtPointer(info) }, 0, &info->end },
-	{ "edit",   MMPush | MMInsensitive, \
-	  { EditBreakpointCommandsCB, XtPointer(info) }, 0, &info->edit },
+	{ "record", MMPush,
+	  { RecordBreakpointCommandsCB, XtPointer(info) }, 
+	  0, &info->record, 0, 0 },
+	{ "end",    MMPush | MMInsensitive,
+	  { EndBreakpointCommandsCB, XtPointer(info) }, 
+	  0, &info->end, 0, 0 },
+	{ "edit",   MMPush | MMInsensitive,
+	  { EditBreakpointCommandsCB, XtPointer(info) }, 
+	  0, &info->edit, 0, 0 },
 	MMEnd
     };
 
     MMDesc enabled_menu[] = 
     {
 	{ "lookup",    MMPush,
-	  { LookupBreakpointCB,    XtPointer(info) }, 0, &info->lookup },
+	  { LookupBreakpointCB,    XtPointer(info) }, 0, &info->lookup, 0, 0 },
 	{ "print",     MMPush,
-	  { PrintWatchpointCB,     XtPointer(info) }, 0, &info->print },
+	  { PrintWatchpointCB,     XtPointer(info) }, 0, &info->print, 0, 0 },
 	{ "enable",    MMPush,
-	  { EnableBreakpointsCB,   XtPointer(info) }, 0, &info->enable },
+	  { EnableBreakpointsCB,   XtPointer(info) }, 0, &info->enable, 0, 0 },
 	{ "disable",   MMPush,
-	  { DisableBreakpointsCB,  XtPointer(info) }, 0, &info->disable },
+	  { DisableBreakpointsCB,  XtPointer(info) }, 0, &info->disable, 0, 0},
 	{ "temporary", MMPush,
-	  { MakeBreakpointsTempCB, XtPointer(info) }, 0, &info->temp },
+	  { MakeBreakpointsTempCB, XtPointer(info) }, 0, &info->temp, 0, 0 },
 	{ "delete",    MMPush | MMHelp,
-	  { DeleteBreakpointsCB,   XtPointer(info) }, 0, &info->del },
+	  { DeleteBreakpointsCB,   XtPointer(info) }, 0, &info->del, 0, 0 },
 	MMEnd
     };
 
@@ -5748,12 +5762,14 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc panel_menu[] = 
     {
-	{ "title", MMButtonPanel, MMNoCB, enabled_menu },
+	{ "title", MMButtonPanel, MMNoCB, enabled_menu, 0, 0, 0 },
 	{ "condition", MMComboBox,
-	  { SetBreakpointConditionCB, XtPointer(info) }, 0, &info->condition },
+	  { SetBreakpointConditionCB, XtPointer(info) }, 
+	  0, &info->condition, 0, 0 },
 	{ "ignore", MMSpinBox,
-	  { SetBreakpointIgnoreCountCB, XtPointer(info) }, 0, &info->ignore },
-	{ "commands", MMButtonPanel, MMNoCB, commands_menu },
+	  { SetBreakpointIgnoreCountCB, XtPointer(info) }, 
+	  0, &info->ignore, 0, 0 },
+	{ "commands", MMButtonPanel, MMNoCB, commands_menu, 0, 0, 0 },
 	MMEnd
     };
 

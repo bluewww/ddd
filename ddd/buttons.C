@@ -1520,7 +1520,7 @@ static void nop(Widget, XtPointer, XtPointer) {}
 
 static MMDesc desc[] = 
 {
-    { "", MMFlatPush, { nop }},
+    { "", MMFlatPush, { nop, 0 }, 0, 0, 0, 0 },
     MMEnd
 };
 

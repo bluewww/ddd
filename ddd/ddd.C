@@ -649,15 +649,15 @@ struct RecentItems {
 
 #define RECENT_MENU \
 { \
-    { "r1", MMPush, { gdbOpenRecentCB, XtPointer(1) }}, \
-    { "r2", MMPush, { gdbOpenRecentCB, XtPointer(2) }}, \
-    { "r3", MMPush, { gdbOpenRecentCB, XtPointer(3) }}, \
-    { "r4", MMPush, { gdbOpenRecentCB, XtPointer(4) }}, \
-    { "r5", MMPush, { gdbOpenRecentCB, XtPointer(5) }}, \
-    { "r6", MMPush, { gdbOpenRecentCB, XtPointer(6) }}, \
-    { "r7", MMPush, { gdbOpenRecentCB, XtPointer(7) }}, \
-    { "r8", MMPush, { gdbOpenRecentCB, XtPointer(8) }}, \
-    { "r9", MMPush, { gdbOpenRecentCB, XtPointer(9) }}, \
+    { "r1", MMPush, { gdbOpenRecentCB, XtPointer(1) }, 0, 0, 0, 0 }, \
+    { "r2", MMPush, { gdbOpenRecentCB, XtPointer(2) }, 0, 0, 0, 0 }, \
+    { "r3", MMPush, { gdbOpenRecentCB, XtPointer(3) }, 0, 0, 0, 0 }, \
+    { "r4", MMPush, { gdbOpenRecentCB, XtPointer(4) }, 0, 0, 0, 0 }, \
+    { "r5", MMPush, { gdbOpenRecentCB, XtPointer(5) }, 0, 0, 0, 0 }, \
+    { "r6", MMPush, { gdbOpenRecentCB, XtPointer(6) }, 0, 0, 0, 0 }, \
+    { "r7", MMPush, { gdbOpenRecentCB, XtPointer(7) }, 0, 0, 0, 0 }, \
+    { "r8", MMPush, { gdbOpenRecentCB, XtPointer(8) }, 0, 0, 0, 0 }, \
+    { "r9", MMPush, { gdbOpenRecentCB, XtPointer(9) }, 0, 0, 0, 0 }, \
     MMEnd \
 }
 
@@ -678,30 +678,41 @@ struct FileItems {
 
 #define FILE_MENU(recent_menu) \
 { \
-    { "open_file",     MMPush, { WhenReady, XtPointer(gdbOpenFileCB) }}, \
-    { "open_class",    MMPush | MMUnmanaged, { WhenReady, XtPointer(gdbOpenClassCB) }}, \
-    { "recent",        MMMenu, MMNoCB, recent_menu }, \
-    { "open_core",     MMPush, { WhenReady, XtPointer(gdbOpenCoreCB) }}, \
-    { "open_source",   MMPush, { gdbLookupSourceCB }}, \
+    { "open_file",     MMPush, \
+        { WhenReady, XtPointer(gdbOpenFileCB) }, 0, 0, 0, 0 }, \
+    { "open_class",    MMPush | MMUnmanaged, \
+        { WhenReady, XtPointer(gdbOpenClassCB) }, 0, 0, 0, 0 }, \
+    { "recent",        MMMenu, MMNoCB, recent_menu, 0, 0, 0 }, \
+    { "open_core",     MMPush, \
+        { WhenReady, XtPointer(gdbOpenCoreCB) }, 0, 0, 0, 0}, \
+    { "open_source",   MMPush, { gdbLookupSourceCB, 0 }, 0, 0, 0, 0 }, \
     MMSep, \
-    { "open_session",  MMPush, { WhenReady, XtPointer(OpenSessionCB) }}, \
-    { "save_session",  MMPush, { WhenReady, XtPointer(SaveSessionAsCB) }}, \
+    { "open_session",  MMPush, \
+        { WhenReady, XtPointer(OpenSessionCB) }, 0, 0, 0, 0 }, \
+    { "save_session",  MMPush, \
+        { WhenReady, XtPointer(SaveSessionAsCB) }, 0, 0, 0, 0 }, \
     MMSep, \
-    { "attach",        MMPush, { WhenReady, XtPointer(gdbOpenProcessCB) }}, \
-    { "detach",        MMPush, { gdbCommandCB, "detach" }}, \
+    { "attach",        MMPush, \
+        { WhenReady, XtPointer(gdbOpenProcessCB) }, 0, 0, 0, 0 }, \
+    { "detach",        MMPush, \
+        { gdbCommandCB, "detach" }, 0, 0, 0, 0 }, \
     MMSep, \
-    { "print",         MMPush, { PrintGraphCB }}, \
+    { "print",         MMPush, { PrintGraphCB, XtPointer(0) }, 0, 0, 0, 0 }, \
     { "printAgain",    MMPush | MMUnmanaged, \
- 	                       { PrintAgainCB, XtPointer(1) }}, \
-    { "separator",     MMSeparator | MMUnmanaged }, \
-    { "cd",            MMPush, { WhenReady, XtPointer(gdbChangeDirectoryCB) }}, \
-    { "separator",     MMSeparator | MMUnmanaged }, \
-    { "make",          MMPush, { WhenReady, XtPointer(gdbMakeCB) }}, \
-    { "makeAgain",     MMPush | MMUnmanaged, { WhenReady, XtPointer(gdbMakeAgainCB) }}, \
+ 	{ PrintAgainCB, XtPointer(1) }, 0, 0, 0, 0 }, \
+    { "separator",     MMSeparator | MMUnmanaged, MMNoCB, 0, 0, 0, 0 }, \
+    { "cd",            MMPush, \
+        { WhenReady, XtPointer(gdbChangeDirectoryCB) }, 0, 0, 0, 0 }, \
+    { "separator",     MMSeparator | MMUnmanaged, MMNoCB, 0, 0, 0, 0 }, \
+    { "make",          MMPush, \
+        { WhenReady, XtPointer(gdbMakeCB) }, 0, 0, 0, 0 }, \
+    { "makeAgain",     MMPush | MMUnmanaged, \
+        { WhenReady, XtPointer(gdbMakeAgainCB) }, 0, 0, 0, 0 }, \
     MMSep, \
-    { "close",         MMPush, { DDDCloseCB }}, \
-    { "restart",       MMPush, { DDDRestartCB }}, \
-    { "exit",          MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }}, \
+    { "close",         MMPush, { DDDCloseCB, 0 }, 0, 0, 0, 0 }, \
+    { "restart",       MMPush, { DDDRestartCB, 0 }, 0, 0, 0, 0 }, \
+    { "exit",          MMPush, \
+        { DDDExitCB, XtPointer(EXIT_SUCCESS) }, 0, 0, 0, 0 }, \
     MMEnd \
 }
 
@@ -721,25 +732,25 @@ struct ProgramItems {
 
 #define PROGRAM_MENU(w) \
 { \
-    { "run",         MMPush, { gdbRunCB }}, \
-    { "run_again",   MMPush, { gdbCommandCB, "run" }}, \
+    { "run",         MMPush, { gdbRunCB, 0 }, 0, 0, 0, 0 }, \
+    { "run_again",   MMPush, { gdbCommandCB, "run" }, 0, 0, 0, 0 }, \
     MMSep, \
     { "separateExecWindow",  MMToggle, \
-	{ dddToggleSeparateExecWindowCB }, NULL, &(w) }, \
+	{ dddToggleSeparateExecWindowCB, 0 }, 0, &(w), 0, 0 }, \
     MMSep, \
-    { "step",        MMPush, { gdbCommandCB, "step" }}, \
-    { "stepi",       MMPush, { gdbCommandCB, "stepi" }}, \
-    { "next",        MMPush, { gdbCommandCB, "next" }}, \
-    { "nexti",       MMPush, { gdbCommandCB, "nexti" }}, \
-    { "until",       MMPush, { gdbCommandCB, "until" }}, \
-    { "finish",      MMPush, { gdbCommandCB, "finish" }}, \
+    { "step",        MMPush, { gdbCommandCB, "step" }, 0, 0, 0, 0 }, \
+    { "stepi",       MMPush, { gdbCommandCB, "stepi" }, 0, 0, 0, 0 }, \
+    { "next",        MMPush, { gdbCommandCB, "next" }, 0, 0, 0, 0 }, \
+    { "nexti",       MMPush, { gdbCommandCB, "nexti" }, 0, 0, 0, 0}, \
+    { "until",       MMPush, { gdbCommandCB, "until" }, 0, 0, 0, 0}, \
+    { "finish",      MMPush, { gdbCommandCB, "finish" }, 0, 0, 0, 0}, \
     MMSep, \
-    { "cont",        MMPush, { gdbCommandCB, "cont" }}, \
-    { "signal0",     MMPush, { gdbCommandCB, "signal 0" }}, \
+    { "cont",        MMPush, { gdbCommandCB, "cont" }, 0, 0, 0, 0}, \
+    { "signal0",     MMPush, { gdbCommandCB, "signal 0" }, 0, 0, 0, 0}, \
     MMSep, \
-    { "kill",        MMPush, { gdbCommandCB, "kill" }}, \
-    { "break",       MMPush, { gdbCommandCB, "\003" }}, \
-    { "quit",        MMPush, { gdbCommandCB, "\034" }}, \
+    { "kill",        MMPush, { gdbCommandCB, "kill" }, 0, 0, 0, 0}, \
+    { "break",       MMPush, { gdbCommandCB, "\003" }, 0, 0, 0, 0}, \
+    { "quit",        MMPush, { gdbCommandCB, "\034" }, 0, 0, 0, 0}, \
     MMEnd \
 }
 
@@ -766,13 +777,14 @@ enum DDDWindow { OtherWindow = -1,
 
 #define VIEW_MENU \
 { \
-    { "tool",    MMPush,   { gdbOpenToolWindowCB }}, \
-    { "exec",    MMPush,   { gdbOpenExecWindowCB }}, \
+    { "tool",    MMPush,   { gdbOpenToolWindowCB, 0 }, 0, 0, 0, 0}, \
+    { "exec",    MMPush,   { gdbOpenExecWindowCB, 0 }, 0, 0, 0, 0}, \
     MMSep, \
-    { "console", MMPush,   { gdbOpenCommandWindowCB }}, \
-    { "source",  MMPush,   { gdbOpenSourceWindowCB }}, \
-    { "data",    MMPush,   { gdbOpenDataWindowCB }}, \
-    { "code",    MMToggle | MMUnmanaged, { gdbToggleCodeWindowCB }}, \
+    { "console", MMPush,   { gdbOpenCommandWindowCB, 0 }, 0, 0, 0, 0}, \
+    { "source",  MMPush,   { gdbOpenSourceWindowCB, 0 }, 0, 0, 0, 0}, \
+    { "data",    MMPush,   { gdbOpenDataWindowCB, 0 }, 0, 0, 0, 0}, \
+    { "code",    MMToggle | MMUnmanaged, \
+        { gdbToggleCodeWindowCB, 0 }, 0, 0, 0, 0}, \
     MMEnd \
 }
 
@@ -782,13 +794,13 @@ static MMDesc data_view_menu[]    = VIEW_MENU;
 
 static MMDesc views_menu[] = 
 {
-    { "tool",    MMPush,   { gdbOpenToolWindowCB }},
-    { "exec",    MMPush,   { gdbOpenExecWindowCB }},
+    { "tool",    MMPush,   { gdbOpenToolWindowCB, 0 }, 0, 0, 0, 0},
+    { "exec",    MMPush,   { gdbOpenExecWindowCB, 0 }, 0, 0, 0, 0},
     MMSep,
-    { "console", MMToggle, { gdbToggleCommandWindowCB }},
-    { "source",  MMToggle, { gdbToggleSourceWindowCB }},
-    { "data",    MMToggle, { gdbToggleDataWindowCB }},
-    { "code",    MMToggle, { gdbToggleCodeWindowCB }},
+    { "console", MMToggle, { gdbToggleCommandWindowCB, 0 }, 0, 0, 0, 0},
+    { "source",  MMToggle, { gdbToggleSourceWindowCB, 0 }, 0, 0, 0, 0},
+    { "data",    MMToggle, { gdbToggleDataWindowCB, 0 }, 0, 0, 0, 0},
+    { "code",    MMToggle, { gdbToggleCodeWindowCB, 0 }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -804,21 +816,30 @@ struct EditItems {
 
 #define EDIT_MENU(win) \
 { \
-    { "undo",        MMPush,  { gdbUndoCB }}, \
-    { "redo",        MMPush,  { gdbRedoCB }}, \
+    { "undo",        MMPush,  { gdbUndoCB, 0 }, 0, 0, 0, 0}, \
+    { "redo",        MMPush,  { gdbRedoCB, 0 }, 0, 0, 0, 0}, \
     MMSep, \
-    { "cut",         MMPush,  { gdbCutSelectionCB,    XtPointer(win) }}, \
-    { "copy",        MMPush,  { gdbCopySelectionCB,   XtPointer(win) }}, \
-    { "paste",       MMPush,  { gdbPasteClipboardCB,  XtPointer(win) }}, \
-    { "clearAll",    MMPush,  { gdbClearAllCB,        XtPointer(win) }}, \
-    { "delete",      MMPush,  { gdbDeleteSelectionCB, XtPointer(win) }}, \
+    { "cut",         MMPush,  \
+      { gdbCutSelectionCB,    XtPointer(win) }, 0, 0, 0, 0}, \
+    { "copy",        MMPush,  \
+      { gdbCopySelectionCB,   XtPointer(win) }, 0, 0, 0, 0}, \
+    { "paste",       MMPush,  \
+      { gdbPasteClipboardCB,  XtPointer(win) }, 0, 0, 0, 0}, \
+    { "clearAll",    MMPush,  \
+      { gdbClearAllCB,        XtPointer(win) }, 0, 0, 0, 0}, \
+    { "delete",      MMPush,  \
+      { gdbDeleteSelectionCB, XtPointer(win) }, 0, 0, 0, 0}, \
     MMSep, \
-    { "selectAll",   MMPush,  { gdbSelectAllCB,       XtPointer(win) }}, \
+    { "selectAll",   MMPush,  \
+      { gdbSelectAllCB,       XtPointer(win) }, 0, 0, 0, 0}, \
     MMSep, \
-    { "preferences", MMPush,  { dddPopupPreferencesCB }}, \
-    { "settings",    MMPush,  { WhenReady, XtPointer(dddPopupSettingsCB) }}, \
+    { "preferences", MMPush,  \
+      { dddPopupPreferencesCB, 0 }, 0, 0, 0, 0}, \
+    { "settings",    MMPush,  \
+      { WhenReady, XtPointer(dddPopupSettingsCB) }, 0, 0, 0, 0}, \
     MMSep, \
-    { "saveOptions", MMPush,  { DDDSaveOptionsCB, XtPointer(SAVE_DEFAULT) }}, \
+    { "saveOptions", MMPush,  \
+      { DDDSaveOptionsCB, XtPointer(SAVE_DEFAULT) }, 0, 0, 0, 0}, \
     MMEnd \
 }
 
@@ -831,24 +852,24 @@ static Widget define_w;
 
 static MMDesc command_menu[] =
 {
-    { "history",  MMPush, { gdbHistoryCB }},
+    { "history",  MMPush, { gdbHistoryCB, 0 }, 0, 0, 0, 0},
     MMSep,
-    { "prev",     MMPush, { gdbPrevCB }},
-    { "next",     MMPush, { gdbNextCB }},
+    { "prev",     MMPush, { gdbPrevCB, 0 }, 0, 0, 0, 0},
+    { "next",     MMPush, { gdbNextCB, 0 }, 0, 0, 0, 0},
     MMSep,
-    { "isearch_prev", MMPush, { gdbISearchPrevCB }},
-    { "isearch_next", MMPush, { gdbISearchNextCB }},
-    { "isearch_exit", MMPush, { gdbISearchExitCB }},
+    { "isearch_prev", MMPush, { gdbISearchPrevCB, 0 }, 0, 0, 0, 0},
+    { "isearch_next", MMPush, { gdbISearchNextCB, 0 }, 0, 0, 0, 0},
+    { "isearch_exit", MMPush, { gdbISearchExitCB, 0 }, 0, 0, 0, 0},
     MMSep,
     { "complete", MMPush, { WhenReady, XtPointer(gdbCompleteCB) }, 
-      NULL, &complete_w },
-    { "apply",    MMPush, { WhenReady, XtPointer(gdbApplyCB) }},
+      NULL, &complete_w, 0, 0 },
+    { "apply",    MMPush, { WhenReady, XtPointer(gdbApplyCB) }, 0, 0, 0, 0},
     MMSep,
-    { "clear_line",   MMPush, { gdbClearCB }},
-    { "clear_window", MMPush, { gdbClearWindowCB }},
+    { "clear_line",   MMPush, { gdbClearCB, 0 }, 0, 0, 0, 0},
+    { "clear_window", MMPush, { gdbClearWindowCB, 0 }, 0, 0, 0, 0},
     MMSep,
-    { "define",   MMPush, { dddDefineCommandCB }, NULL, &define_w },
-    { "buttons",  MMPush, { dddEditButtonsCB }},
+    { "define",   MMPush, { dddDefineCommandCB, 0 }, NULL, &define_w, 0, 0 },
+    { "buttons",  MMPush, { dddEditButtonsCB, 0 }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -861,19 +882,19 @@ static MMDesc stack_menu[] =
 {
     { "stack",      MMPush,  { WhenReady, 
 			       XtPointer(SourceView::ViewStackFramesCB) },
-      NULL, &stack_w },
+      NULL, &stack_w, 0, 0 },
     { "registers",  MMPush,  { WhenReady, 
 			       XtPointer(SourceView::ViewRegistersCB) },
-      NULL, &registers_w },
+      NULL, &registers_w, 0, 0 },
     { "threads",    MMPush,  { WhenReady,
 			       XtPointer(SourceView::ViewThreadsCB) },
-      NULL, &threads_w },
+      NULL, &threads_w, 0, 0 },
     { "signals",    MMPush,  { WhenReady,
 			       XtPointer(dddPopupSignalsCB) },
-      NULL, &signals_w },
+      NULL, &signals_w, 0, 0 },
     MMSep,
-    { "up",         MMPush,  { gdbCommandCB, "up" }},
-    { "down",       MMPush,  { gdbCommandCB, "down" }},
+    { "up",         MMPush,  { gdbCommandCB, "up" }, 0, 0, 0, 0},
+    { "down",       MMPush,  { gdbCommandCB, "down" }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -888,25 +909,27 @@ static Widget reload_source_w;
 
 static MMDesc source_menu[] =
 {
-    { "breakpoints", MMPush, { SourceView::EditBreakpointsCB }},
+    { "breakpoints", MMPush, { SourceView::EditBreakpointsCB, 0 }, 0, 0, 0, 0},
     MMSep,
-    {"lookup",        MMPush, { gdbLookupCB       },
-      NULL, &lookup_w },
+    {"lookup",        MMPush, { gdbLookupCB, 0 },
+      NULL, &lookup_w, 0, 0 },
     { "findForward",  MMPush, { gdbFindCB, XtPointer(SourceView::forward) },
-      NULL, &find_forward_w },
+      NULL, &find_forward_w, 0, 0 },
     { "findBackward", MMPush, { gdbFindCB, XtPointer(SourceView::backward) },
-      NULL, &find_backward_w },
+      NULL, &find_backward_w, 0, 0 },
     MMSep,
-    { "findWordsOnly",       MMToggle, { sourceToggleFindWordsOnlyCB }, 
-      NULL, &find_words_only_w },
-    { "findCaseSensitive",   MMToggle, { sourceToggleFindCaseSensitiveCB }, 
-      NULL, &find_case_sensitive_w },
+    { "findWordsOnly",       MMToggle, { sourceToggleFindWordsOnlyCB, 0 }, 
+      NULL, &find_words_only_w, 0, 0 },
+    { "findCaseSensitive",   MMToggle, { sourceToggleFindCaseSensitiveCB, 0 }, 
+      NULL, &find_case_sensitive_w, 0, 0 },
     MMSep,
-    { "disassemble",         MMToggle,  { gdbToggleCodeWindowCB },
-      NULL, &disassemble_w },
+    { "disassemble",         MMToggle,  { gdbToggleCodeWindowCB, 0 },
+      NULL, &disassemble_w, 0, 0 },
     MMSep,
-    { "edit",       MMPush,  { gdbEditSourceCB }, NULL, &edit_source_w },
-    { "reload",     MMPush,  { gdbReloadSourceCB }, NULL, &reload_source_w },
+    { "edit",       MMPush,  
+      { gdbEditSourceCB, 0 }, 0, &edit_source_w, 0, 0 },
+    { "reload",     MMPush,  
+      { gdbReloadSourceCB, 0 }, 0, &reload_source_w, 0, 0},
     MMEnd
 };
 
@@ -919,8 +942,8 @@ static Widget button_tips_w;
 static Widget button_docs_w;
 static MMDesc button_menu [] = 
 {
-    { "tips",  MMToggle, { dddToggleButtonTipsCB }, NULL, &button_tips_w },
-    { "docs",  MMToggle, { dddToggleButtonDocsCB }, NULL, &button_docs_w },
+    { "tips",  MMToggle, { dddToggleButtonTipsCB, 0 }, 0, &button_tips_w, 0,0},
+    { "docs",  MMToggle, { dddToggleButtonDocsCB, 0 }, 0, &button_docs_w, 0,0},
     MMEnd
 };
 
@@ -928,8 +951,8 @@ static Widget value_tips_w;
 static Widget value_docs_w;
 static MMDesc value_menu [] = 
 {
-    { "tips",  MMToggle, { dddToggleValueTipsCB }, NULL, &value_tips_w },
-    { "docs",  MMToggle, { dddToggleValueDocsCB }, NULL, &value_docs_w },
+    { "tips",  MMToggle, { dddToggleValueTipsCB, 0 }, 0, &value_tips_w, 0, 0 },
+    { "docs",  MMToggle, { dddToggleValueDocsCB, 0 }, 0, &value_docs_w, 0, 0 },
     MMEnd
 };
 
@@ -939,9 +962,9 @@ static MMDesc completion_menu [] =
 {
     { "inAllWindows", MMToggle, 
       { dddSetGlobalTabCompletionCB, XtPointer(True) }, 
-      NULL, &set_global_completion_w },
+      NULL, &set_global_completion_w, 0, 0 },
     { "inConsole", MMToggle, { dddSetGlobalTabCompletionCB, XtPointer(False) },
-      NULL, &set_console_completion_w },
+      NULL, &set_console_completion_w, 0, 0 },
     MMEnd
 };
 
@@ -952,17 +975,17 @@ static Widget check_grabs_w;
 
 static MMDesc general_preferences_menu[] = 
 {
-    { "buttonHints",         MMButtonPanel, MMNoCB, button_menu },
-    { "valueHints",          MMButtonPanel, MMNoCB, value_menu },
-    { "tabCompletion",       MMRadioPanel,  MMNoCB, completion_menu },
-    { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB },
-      NULL, &group_iconify_w },
-    { "uniconifyWhenReady",  MMToggle, { dddToggleUniconifyWhenReadyCB },
-      NULL, &uniconify_when_ready_w },
-    { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB },
-      NULL, &suppress_warnings_w },
-    { "checkGrabs",          MMToggle, { dddToggleCheckGrabsCB },
-      NULL, &check_grabs_w },
+    { "buttonHints",         MMButtonPanel, MMNoCB, button_menu, 0, 0, 0 },
+    { "valueHints",          MMButtonPanel, MMNoCB, value_menu, 0, 0, 0 },
+    { "tabCompletion",       MMRadioPanel,  MMNoCB, completion_menu, 0, 0, 0 },
+    { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB, 0 },
+      NULL, &group_iconify_w, 0, 0 },
+    { "uniconifyWhenReady",  MMToggle, { dddToggleUniconifyWhenReadyCB, 0 },
+      NULL, &uniconify_when_ready_w, 0, 0 },
+    { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB, 0 },
+      NULL, &suppress_warnings_w, 0, 0 },
+    { "checkGrabs",          MMToggle, { dddToggleCheckGrabsCB, 0 },
+      NULL, &check_grabs_w, 0, 0 },
     MMEnd
 };
 
@@ -973,9 +996,9 @@ static Widget set_display_text_w;
 static MMDesc glyph_menu[] =
 {
     { "asGlyphs", MMToggle, { sourceSetDisplayGlyphsCB, XtPointer(True) },
-      NULL, &set_display_glyphs_w },
+      NULL, &set_display_glyphs_w, 0, 0 },
     { "asText", MMToggle, { sourceSetDisplayGlyphsCB, XtPointer(False) },
-      NULL, &set_display_text_w },
+      NULL, &set_display_text_w, 0, 0 },
     MMEnd
 };
 
@@ -984,9 +1007,9 @@ static Widget set_tool_buttons_in_command_tool_w;
 static MMDesc tool_buttons_menu [] = 
 {
     { "commandTool",  MMToggle, { dddSetToolBarCB, XtPointer(False) },
-      NULL, &set_tool_buttons_in_command_tool_w },
+      NULL, &set_tool_buttons_in_command_tool_w, 0, 0 },
     { "sourceWindow", MMToggle, { dddSetToolBarCB, XtPointer(True) },
-      NULL, &set_tool_buttons_in_toolbar_w },
+      NULL, &set_tool_buttons_in_toolbar_w, 0, 0 },
     MMEnd
 };
 
@@ -995,9 +1018,9 @@ static Widget set_refer_base_w;
 static MMDesc refer_menu[] =
 {
     { "byPath", MMToggle, { sourceSetUseSourcePathCB, XtPointer(True) },
-      NULL, &set_refer_path_w },
+      NULL, &set_refer_path_w, 0, 0 },
     { "byBase", MMToggle, { sourceSetUseSourcePathCB, XtPointer(False) },
-      NULL, &set_refer_base_w },
+      NULL, &set_refer_base_w, 0, 0 },
     MMEnd
 };
 
@@ -1005,10 +1028,10 @@ static Widget words_only_w;
 static Widget case_sensitive_w;
 static MMDesc find_preferences_menu[] =
 {
-    { "wordsOnly", MMToggle, { sourceToggleFindWordsOnlyCB }, 
-      NULL, &words_only_w },
-    { "caseSensitive", MMToggle, { sourceToggleFindCaseSensitiveCB }, 
-      NULL, &case_sensitive_w },
+    { "wordsOnly", MMToggle, { sourceToggleFindWordsOnlyCB, 0 }, 
+      NULL, &words_only_w, 0, 0 },
+    { "caseSensitive", MMToggle, { sourceToggleFindCaseSensitiveCB, 0 }, 
+      NULL, &case_sensitive_w, 0, 0 },
     MMEnd
 };
 
@@ -1016,10 +1039,10 @@ static Widget cache_source_files_w;
 static Widget cache_machine_code_w;
 static MMDesc cache_menu[] =
 {
-    { "cacheSource", MMToggle, { sourceToggleCacheSourceFilesCB }, 
-      NULL, &cache_source_files_w },
-    { "cacheCode", MMToggle, { sourceToggleCacheMachineCodeCB }, 
-      NULL, &cache_machine_code_w },
+    { "cacheSource", MMToggle, { sourceToggleCacheSourceFilesCB, 0 }, 
+      NULL, &cache_source_files_w, 0, 0 },
+    { "cacheCode", MMToggle, { sourceToggleCacheMachineCodeCB, 0 }, 
+      NULL, &cache_machine_code_w, 0, 0 },
     MMEnd
 };
 
@@ -1028,11 +1051,12 @@ static Widget source_indent_w;
 static Widget code_indent_w;
 static MMDesc scales_menu[] = 
 {
-    { "tabWidth", MMScale, { sourceSetTabWidthCB }, NULL, &tab_width_w },
-    { "sourceIndent", MMScale, { sourceSetSourceIndentCB }, NULL, 
-      &source_indent_w },
-    { "codeIndent", MMScale, { sourceSetCodeIndentCB }, NULL, 
-      &code_indent_w },
+    { "tabWidth", MMScale, 
+      { sourceSetTabWidthCB, 0 }, NULL, &tab_width_w, 0, 0 },
+    { "sourceIndent", MMScale, 
+      { sourceSetSourceIndentCB, 0 }, NULL, &source_indent_w, 0, 0 },
+    { "codeIndent", MMScale, 
+      { sourceSetCodeIndentCB, 0 }, NULL, &code_indent_w, 0, 0 },
     MMEnd
 };
 
@@ -1040,12 +1064,13 @@ static MMDesc scales_menu[] =
 static Widget refer_sources_w;
 static MMDesc source_preferences_menu[] = 
 {
-    { "showExecPos",      MMRadioPanel, MMNoCB, glyph_menu },
-    { "toolButtons",      MMRadioPanel,  MMNoCB, tool_buttons_menu },
-    { "referSources",     MMRadioPanel, MMNoCB, refer_menu, &refer_sources_w },
-    { "find",             MMButtonPanel, MMNoCB, find_preferences_menu },
-    { "cache",            MMButtonPanel, MMNoCB, cache_menu },
-    { "scales",       	  MMPanel | MMUnmanagedLabel, MMNoCB, scales_menu },
+    { "showExecPos",  MMRadioPanel, MMNoCB, glyph_menu, 0, 0, 0 },
+    { "toolButtons",  MMRadioPanel,  MMNoCB, tool_buttons_menu, 0, 0, 0 },
+    { "referSources", MMRadioPanel, MMNoCB, refer_menu, &refer_sources_w, 0,0},
+    { "find",         MMButtonPanel, MMNoCB, find_preferences_menu, 0, 0, 0 },
+    { "cache",        MMButtonPanel, MMNoCB, cache_menu, 0, 0, 0 },
+    { "scales",       MMPanel | MMUnmanagedLabel, 
+      			MMNoCB, scales_menu, 0, 0, 0 },
     MMEnd
 };
 
@@ -1062,20 +1087,20 @@ static Widget graph_auto_close_w;
 
 static MMDesc data_preferences_menu[] = 
 {
-    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB },
-      NULL, &graph_detect_aliases_w },
-    { "clusterDisplays", MMToggle, { graphToggleClusterDisplaysCB },
-      NULL, &graph_cluster_displays_w }, 
-    { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB },
-      NULL, &graph_align_2d_arrays_w },
-    { "hints", MMToggle, { graphToggleShowHintsCB },
-      NULL, &graph_show_hints_w },
-    { "annotations", MMToggle, { graphToggleShowAnnotationsCB },
-      NULL, &graph_show_annotations_w },
-    { "dependentTitles", MMToggle, { graphToggleShowDependentTitlesCB },
-      NULL, &graph_show_dependent_titles_w },
-    { "autoClose", MMToggle,  { graphToggleAutoCloseCB },
-      NULL, &graph_auto_close_w },
+    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB, 0 },
+      NULL, &graph_detect_aliases_w, 0, 0 },
+    { "clusterDisplays", MMToggle, { graphToggleClusterDisplaysCB, 0 },
+      NULL, &graph_cluster_displays_w, 0, 0 }, 
+    { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB, 0 },
+      NULL, &graph_align_2d_arrays_w, 0, 0 },
+    { "hints", MMToggle, { graphToggleShowHintsCB, 0 },
+      NULL, &graph_show_hints_w, 0, 0 },
+    { "annotations", MMToggle, { graphToggleShowAnnotationsCB, 0 },
+      NULL, &graph_show_annotations_w, 0, 0 },
+    { "dependentTitles", MMToggle, { graphToggleShowDependentTitlesCB, 0 },
+      NULL, &graph_show_dependent_titles_w, 0, 0 },
+    { "autoClose", MMToggle,  { graphToggleAutoCloseCB, 0 },
+      NULL, &graph_auto_close_w, 0, 0 },
     MMEnd
 };
 
@@ -1087,14 +1112,14 @@ static Widget graph_grid_size_w;
 // Layout preferences
 static MMDesc layout_preferences_menu[] =
 {
-    { "compact", MMToggle,  { graphToggleCompactLayoutCB },
-      NULL, &graph_compact_layout_w },
-    { "auto",    MMToggle,  { graphToggleAutoLayoutCB },
-      NULL, &graph_auto_layout_w },
-    { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB },
-      NULL, &graph_snap_to_grid_w },
-    { "gridSize",      MMScale,   { graphSetGridSizeCB },
-      NULL, &graph_grid_size_w },
+    { "compact", MMToggle,  { graphToggleCompactLayoutCB, 0 },
+      NULL, &graph_compact_layout_w, 0, 0 },
+    { "auto",    MMToggle,  { graphToggleAutoLayoutCB, 0 },
+      NULL, &graph_auto_layout_w, 0, 0 },
+    { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB, 0 },
+      NULL, &graph_snap_to_grid_w, 0, 0 },
+    { "gridSize",      MMScale,   { graphSetGridSizeCB, 0 },
+      NULL, &graph_grid_size_w, 0, 0 },
     MMEnd
 };
 
@@ -1105,9 +1130,9 @@ static Widget set_attached_windows_w;
 static MMDesc window_mode_menu [] = 
 {
     { "attached",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(1) },
-      NULL, &set_attached_windows_w },
+      NULL, &set_attached_windows_w, 0, 0 },
     { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(0) },
-      NULL, &set_separate_windows_w },
+      NULL, &set_separate_windows_w, 0, 0 },
     MMEnd
 };
 
@@ -1117,14 +1142,14 @@ static Widget set_flat_buttons_w;
 static Widget set_color_buttons_w;
 static MMDesc button_appearance_menu [] = 
 {
-    { "images",   MMToggle, { dddToggleButtonImagesCB },
-      NULL, &set_button_images_w },
-    { "captions", MMToggle, { dddToggleButtonCaptionsCB },
-      NULL, &set_button_captions_w },
-    { "flat", MMToggle, { dddToggleFlatButtonsCB },
-      NULL, &set_flat_buttons_w },
-    { "color", MMToggle, { dddToggleColorButtonsCB },
-      NULL, &set_color_buttons_w },
+    { "images",   MMToggle, { dddToggleButtonImagesCB, 0 },
+      NULL, &set_button_images_w, 0, 0 },
+    { "captions", MMToggle, { dddToggleButtonCaptionsCB, 0 },
+      NULL, &set_button_captions_w, 0, 0 },
+    { "flat", MMToggle, { dddToggleFlatButtonsCB, 0 },
+      NULL, &set_flat_buttons_w, 0, 0 },
+    { "color", MMToggle, { dddToggleColorButtonsCB, 0 },
+      NULL, &set_color_buttons_w, 0, 0 },
     MMEnd
 };
 
@@ -1134,10 +1159,10 @@ static MMDesc keyboard_focus_menu [] =
 {
     { "pointer",  MMToggle, { dddSetKeyboardFocusPolicyCB, 
 			    XtPointer(XmPOINTER) },
-      NULL, &set_focus_pointer_w },
+      NULL, &set_focus_pointer_w, 0, 0 },
     { "explicit", MMToggle, { dddSetKeyboardFocusPolicyCB, 
 			    XtPointer(XmEXPLICIT) },
-      NULL, &set_focus_explicit_w },
+      NULL, &set_focus_explicit_w, 0, 0 },
     MMEnd
 };
 
@@ -1146,9 +1171,9 @@ static Widget set_scrolling_scrollbars_w;
 static MMDesc data_scrolling_menu [] = 
 {
     { "panner", MMToggle,     { dddSetPannerCB, XtPointer(True) },
-      NULL, &set_scrolling_panner_w },
+      NULL, &set_scrolling_panner_w, 0, 0 },
     { "scrollbars", MMToggle, { dddSetPannerCB, XtPointer(False) },
-      NULL, &set_scrolling_scrollbars_w },
+      NULL, &set_scrolling_scrollbars_w, 0, 0 },
     MMEnd
 };
 
@@ -1160,15 +1185,15 @@ static Widget set_debugger_pydb_w;
 static MMDesc debugger_menu [] = 
 {
     { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
-      NULL, &set_debugger_gdb_w },
+      NULL, &set_debugger_gdb_w, 0, 0 },
     { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
-      NULL, &set_debugger_dbx_w },
+      NULL, &set_debugger_dbx_w, 0, 0 },
     { "xdb", MMToggle, { dddSetDebuggerCB, XtPointer(XDB) },
-      NULL, &set_debugger_xdb_w },
+      NULL, &set_debugger_xdb_w, 0, 0 },
     { "jdb", MMToggle, { dddSetDebuggerCB, XtPointer(JDB) },
-      NULL, &set_debugger_jdb_w },
+      NULL, &set_debugger_jdb_w, 0, 0 },
     { "pydb", MMToggle, { dddSetDebuggerCB, XtPointer(PYDB) },
-      NULL, &set_debugger_pydb_w },
+      NULL, &set_debugger_pydb_w, 0, 0 },
     MMEnd
 };
 
@@ -1177,8 +1202,10 @@ static Widget splash_screen_w;
 
 static MMDesc show_startup_menu [] =
 {
-    { "splashScreen", MMToggle, { SetSplashScreenCB }, NULL, &splash_screen_w},
-    { "startupTips",  MMToggle, { SetStartupTipsCB },  NULL, &startup_tips_w },
+    { "splashScreen", MMToggle, { SetSplashScreenCB, 0 }, 
+      NULL, &splash_screen_w, 0, 0 },
+    { "startupTips",  MMToggle, { SetStartupTipsCB, 0 },  
+      NULL, &startup_tips_w, 0, 0 },
     MMEnd
 };
 
@@ -1188,21 +1215,22 @@ static Widget motif_binding_w;
 static MMDesc binding_menu [] =
 {
     { "kde",    MMToggle, { dddSetBindingStyleCB, XtPointer(KDEBindings) }, 
-      NULL, &kde_binding_w },
+      NULL, &kde_binding_w, 0, 0 },
     { "motif",  MMToggle, { dddSetBindingStyleCB, XtPointer(MotifBindings) },
-      NULL, &motif_binding_w },
+      NULL, &motif_binding_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc startup_preferences_menu [] =
 {
-    { "windows",         MMRadioPanel,  MMNoCB, window_mode_menu },
-    { "bindings",        MMRadioPanel,  MMNoCB, binding_menu },
-    { "buttons",         MMButtonPanel, MMNoCB, button_appearance_menu },
-    { "keyboardFocus",   MMRadioPanel,  MMNoCB, keyboard_focus_menu },
-    { "dataScrolling",   MMRadioPanel,  MMNoCB, data_scrolling_menu },
-    { "debugger",        MMRadioPanel,  MMNoCB, debugger_menu },
-    { "show",            MMButtonPanel, MMNoCB, show_startup_menu },
+    { "windows",         MMRadioPanel,  MMNoCB, window_mode_menu, 0, 0, 0 },
+    { "bindings",        MMRadioPanel,  MMNoCB, binding_menu, 0, 0, 0 },
+    { "buttons",         MMButtonPanel, MMNoCB, 
+                                        button_appearance_menu, 0, 0, 0 },
+    { "keyboardFocus",   MMRadioPanel,  MMNoCB, keyboard_focus_menu, 0, 0, 0 },
+    { "dataScrolling",   MMRadioPanel,  MMNoCB, data_scrolling_menu, 0, 0, 0 },
+    { "debugger",        MMRadioPanel,  MMNoCB, debugger_menu, 0, 0, 0 },
+    { "show",            MMButtonPanel, MMNoCB, show_startup_menu, 0, 0, 0 },
     MMEnd
 };
 
@@ -1214,11 +1242,11 @@ static Widget font_sizes[4];
 { \
     { "name",   MMTextField | MMUnmanagedLabel, \
     { SetFontNameCB, XtPointer(font) }, NULL, \
-    &font_names[int(font)] }, \
+    &font_names[int(font)], 0, 0 }, \
     { "size",   MMTextField, \
     { SetFontSizeCB, XtPointer(font) }, NULL, \
-    &font_sizes[int(font)] }, \
-    { "browse", MMPush, { BrowseFontCB, XtPointer(font) }}, \
+    &font_sizes[int(font)], 0, 0 }, \
+    { "browse", MMPush, { BrowseFontCB, XtPointer(font) }, 0, 0, 0, 0 }, \
     MMEnd \
 }
 
@@ -1228,9 +1256,9 @@ static MMDesc fixed_width_font_menu    [] = FONT_MENU(FixedWidthDDDFont);
 
 static MMDesc font_preferences_menu [] =
 {
-    { "default",         MMPanel,  MMNoCB, default_font_menu },
-    { "variableWidth",   MMPanel,  MMNoCB, variable_width_font_menu },
-    { "fixedWidth",      MMPanel,  MMNoCB, fixed_width_font_menu },
+    { "default",         MMPanel,  MMNoCB, default_font_menu, 0, 0, 0 },
+    { "variableWidth",   MMPanel,  MMNoCB, variable_width_font_menu, 0, 0, 0 },
+    { "fixedWidth",      MMPanel,  MMNoCB, fixed_width_font_menu, 0, 0, 0 },
     MMEnd
 };
 
@@ -1244,18 +1272,18 @@ static Widget www_command_w;
 
 static MMDesc helpers_preferences_menu [] =
 {
-    { "edit",       MMTextField, { dddSetEditCommandCB }, 
-      NULL, &edit_command_w},
-    { "get_core",   MMTextField, { dddSetGetCoreCommandCB }, 
-      NULL, &get_core_command_w},
-    { "ps",         MMTextField, { dddSetPSCommandCB },
-      NULL, &ps_command_w},
-    { "term",       MMTextField, { dddSetTermCommandCB },
-      NULL, &term_command_w},
-    { "uncompress", MMTextField, { dddSetUncompressCommandCB },
-      NULL, &uncompress_command_w},
-    { "www",        MMTextField, { dddSetWWWCommandCB },
-      NULL, &www_command_w},
+    { "edit",       MMTextField, { dddSetEditCommandCB, 0 }, 
+      NULL, &edit_command_w, 0, 0},
+    { "get_core",   MMTextField, { dddSetGetCoreCommandCB, 0 }, 
+      NULL, &get_core_command_w, 0, 0},
+    { "ps",         MMTextField, { dddSetPSCommandCB, 0 },
+      NULL, &ps_command_w, 0, 0},
+    { "term",       MMTextField, { dddSetTermCommandCB, 0 },
+      NULL, &term_command_w, 0, 0},
+    { "uncompress", MMTextField, { dddSetUncompressCommandCB, 0 },
+      NULL, &uncompress_command_w, 0, 0},
+    { "www",        MMTextField, { dddSetWWWCommandCB, 0 },
+      NULL, &www_command_w, 0, 0},
     MMEnd
 };
 
@@ -1273,27 +1301,29 @@ static Widget edit_watchpoints_w = 0;
 
 static MMDesc data_menu[] = 
 {
-    { "displays",    MMPush,    { DataDisp::EditDisplaysCB }},
-    { "watchpoints", MMPush,   { SourceView::EditBreakpointsCB }, 
-                                 NULL, &edit_watchpoints_w },
-    { "examine",     MMPush,  { gdbExamineCB }, NULL, &examine_w},
+    { "displays",    MMPush,    { DataDisp::EditDisplaysCB, 0 }, 0, 0, 0, 0},
+    { "watchpoints", MMPush,   { SourceView::EditBreakpointsCB, 0 }, 
+                                 NULL, &edit_watchpoints_w, 0, 0 },
+    { "examine",     MMPush,  { gdbExamineCB, 0 }, NULL, &examine_w, 0, 0},
     MMSep,
-    { "print",       MMPush,  { gdbPrintCB   }, NULL, &print_w },
-    { "display",     MMPush,  { gdbDisplayCB }, NULL, &display_w },
+    { "print",       MMPush,  { gdbPrintCB, 0   }, NULL, &print_w, 0, 0 },
+    { "display",     MMPush,  { gdbDisplayCB, 0 }, NULL, &display_w, 0, 0 },
     MMSep,
-    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB },
-      NULL, &detect_aliases_w },
+    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB, 0 },
+      NULL, &detect_aliases_w, 0, 0 },
     MMSep,
-    { "info locals", MMToggle,  { graphToggleLocalsCB }, NULL, &locals_w },
-    { "info args",   MMToggle,  { graphToggleArgsCB }, NULL, &args_w },
+    { "info locals", MMToggle,  { graphToggleLocalsCB, 0 }, 
+      NULL, &locals_w, 0, 0 },
+    { "info args",   MMToggle,  { graphToggleArgsCB, 0 }, 
+      NULL, &args_w, 0, 0 },
     { "infos",       MMPush,    { WhenReady, XtPointer(dddPopupInfosCB) }, 
-      NULL, &infos_w },
+      NULL, &infos_w, 0, 0 },
     MMSep,
-    { "align",      MMPush,    { graphAlignCB  }, NULL, &align_w },
-    { "rotate",     MMPush,    { graphRotateCB }},
-    { "layout",     MMPush,    { graphLayoutCB }},
+    { "align",      MMPush,    { graphAlignCB, 0  }, NULL, &align_w, 0, 0 },
+    { "rotate",     MMPush,    { graphRotateCB, 0 }, 0, 0, 0, 0},
+    { "layout",     MMPush,    { graphLayoutCB, 0 }, 0, 0, 0, 0},
     MMSep,
-    { "refresh",    MMPush,    { DataDisp::refreshCB }},
+    { "refresh",    MMPush,    { DataDisp::refreshCB, 0 }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -1302,14 +1332,14 @@ static MMDesc data_menu[] =
 static MMDesc command_menubar[] = 
 {
     { "file",     MMMenu,          { gdbUpdateFileCB, command_file_menu }, 
-                                   command_file_menu },
+                                   command_file_menu, 0, 0, 0 },
     { "edit",     MMMenu,          { gdbUpdateEditCB, XtPointer(GDBWindow) }, 
-                                   command_edit_menu },
+                                   command_edit_menu, 0, 0, 0 },
     { "view",    MMMenu,          { gdbUpdateViewCB, command_view_menu }, 
-      				   command_view_menu },
-    { "program",  MMMenu,          MMNoCB, command_program_menu },
-    { "commands", MMMenu,          MMNoCB, command_menu },
-    { "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu },
+      				   command_view_menu, 0, 0, 0 },
+    { "program",  MMMenu,          MMNoCB, command_program_menu, 0, 0, 0 },
+    { "commands", MMMenu,          MMNoCB, command_menu, 0, 0, 0  },
+    { "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0  },
     MMEnd
 };
 
@@ -1317,15 +1347,15 @@ static MMDesc command_menubar[] =
 static MMDesc source_menubar[] = 
 {
     { "file",    MMMenu,          { gdbUpdateFileCB, source_file_menu }, 
-                                  source_file_menu },
+                                  source_file_menu, 0, 0, 0  },
     { "edit",    MMMenu,          { gdbUpdateEditCB, XtPointer(SourceWindow) },
-                                  source_edit_menu },
+                                  source_edit_menu, 0, 0, 0  },
     { "view",    MMMenu,          { gdbUpdateViewCB, source_view_menu },
-				  source_view_menu },
-    { "program", MMMenu,          MMNoCB, source_program_menu },
-    { "stack",   MMMenu,          MMNoCB, stack_menu },
-    { "source",  MMMenu,          MMNoCB, source_menu },
-    { "help",    MMMenu | MMHelp, MMNoCB, simple_help_menu },
+				  source_view_menu, 0, 0, 0  },
+    { "program", MMMenu,          MMNoCB, source_program_menu, 0, 0, 0  },
+    { "stack",   MMMenu,          MMNoCB, stack_menu, 0, 0, 0  },
+    { "source",  MMMenu,          MMNoCB, source_menu, 0, 0, 0  },
+    { "help",    MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0  },
     MMEnd
 };
 
@@ -1333,14 +1363,14 @@ static MMDesc source_menubar[] =
 static MMDesc data_menubar[] = 
 {
     { "file",    MMMenu,          { gdbUpdateFileCB, data_file_menu }, 
-                                  data_file_menu },
+                                  data_file_menu, 0, 0, 0  },
     { "edit",    MMMenu,          { gdbUpdateEditCB, XtPointer(DataWindow) },
-                                  data_edit_menu },
+                                  data_edit_menu, 0, 0, 0  },
     { "view",    MMMenu,          { gdbUpdateViewCB, data_view_menu }, 
-      				  data_view_menu },
-    { "program", MMMenu,          MMNoCB, data_program_menu },
-    { "data",    MMMenu,          MMNoCB, data_menu },
-    { "help",    MMMenu | MMHelp, MMNoCB, simple_help_menu },
+      				  data_view_menu, 0, 0, 0  },
+    { "program", MMMenu,          MMNoCB, data_program_menu, 0, 0, 0  },
+    { "data",    MMMenu,          MMNoCB, data_menu, 0, 0, 0  },
+    { "help",    MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0  },
     MMEnd
 };
 
@@ -1348,17 +1378,17 @@ static MMDesc data_menubar[] =
 static MMDesc common_menubar[] = 
 {
     { "file",       MMMenu,       { gdbUpdateFileCB, command_file_menu }, 
-                                  command_file_menu },
+                                  command_file_menu, 0, 0, 0  },
     { "edit",       MMMenu,       { gdbUpdateEditCB, XtPointer(CommonWindow) },
-                                  command_edit_menu },
+                                  command_edit_menu, 0, 0, 0  },
     { "views",      MMMenu,       { gdbUpdateViewsCB, views_menu }, 
-                                  views_menu },
-    { "program",    MMMenu,       MMNoCB, command_program_menu },
-    { "commands",   MMMenu,       MMNoCB, command_menu },
-    { "stack",      MMMenu,       MMNoCB, stack_menu },
-    { "source",     MMMenu,       MMNoCB, source_menu },
-    { "data",       MMMenu,       MMNoCB, data_menu },
-    { "help", MMMenu | MMHelp,    MMNoCB, simple_help_menu },
+                                  views_menu, 0, 0, 0  },
+    { "program",    MMMenu,       MMNoCB, command_program_menu, 0, 0, 0  },
+    { "commands",   MMMenu,       MMNoCB, command_menu, 0, 0, 0  },
+    { "stack",      MMMenu,       MMNoCB, stack_menu, 0, 0, 0  },
+    { "source",     MMMenu,       MMNoCB, source_menu, 0, 0, 0  },
+    { "data",       MMMenu,       MMNoCB, data_menu, 0, 0, 0  },
+    { "help", MMMenu | MMHelp,    MMNoCB, simple_help_menu, 0, 0, 0  },
     MMEnd
 };
 
@@ -1370,9 +1400,10 @@ static Widget print_examine_w = 0;
 
 static MMDesc print_menu[] =
 {
-    { "printRef",        MMPush, { gdbPrintRefCB } },
-    { "whatis",          MMPush, { gdbWhatisCB } },
-    { "examine",         MMPush, { gdbExamineCB }, NULL, &print_examine_w },
+    { "printRef",        MMPush, { gdbPrintRefCB, 0 }, 0, 0, 0, 0 },
+    { "whatis",          MMPush, { gdbWhatisCB, 0 }, 0, 0, 0, 0 },
+    { "examine",         MMPush, 
+      { gdbExamineCB, 0 }, NULL, &print_examine_w, 0, 0 },
     MMEnd
 };
 
@@ -1382,7 +1413,7 @@ struct DispItems {
 
 static MMDesc display_menu[] =
 {
-    { "dispRef",        MMPush, { gdbDispRefCB } },
+    { "dispRef",        MMPush, { gdbDispRefCB, 0 }, 0, 0, 0, 0 },
     MMEnd
 };
 
@@ -1392,19 +1423,24 @@ struct WatchItems {
 
 static MMDesc watch_menu[] =
 {
-    { "watchProperties",  MMPush, { gdbEditWatchpointPropertiesCB }},
-    { "enableWatch",      MMPush, { gdbToggleEnableWatchpointCB }},
+    { "watchProperties",  MMPush, 
+      { gdbEditWatchpointPropertiesCB, 0 }, 0, 0, 0, 0},
+    { "enableWatch",      MMPush, 
+      { gdbToggleEnableWatchpointCB, 0 }, 0, 0, 0, 0},
     MMSep,
-    { "cwatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_CHANGE) } },
-    { "rwatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_READ)   } },
-    { "awatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_ACCESS) } },
+    { "cwatch",       MMPush, 
+      { gdbWatchCB, XtPointer(WATCH_CHANGE) }, 0, 0, 0, 0 },
+    { "rwatch",       MMPush, 
+      { gdbWatchCB, XtPointer(WATCH_READ)   }, 0, 0, 0, 0 },
+    { "awatch",       MMPush, 
+      { gdbWatchCB, XtPointer(WATCH_ACCESS) }, 0, 0, 0, 0 },
 
-    // It would be nice to have an `unwatch' command here. for
+    // It would be nice to have an `unwatch' command here, for
     // recording commands.  Unfortunately, GDB needs a watchpoint
     // number for deleting watchpoints.
 #if 0	
     MMSep,
-    { "unwatch",      MMPush, { gdbUnwatchCB }},
+    { "unwatch",      MMPush, { gdbUnwatchCB, 0 }, 0, 0, 0, 0},
 #endif
     MMEnd
 };
@@ -1416,15 +1452,17 @@ struct BreakItems {
 
 static MMDesc break_menu[] = 
 {
-    { "tempBreakAt",     MMPush, { gdbTempBreakAtCB }},
-    { "regexBreakAt",    MMPush, { gdbRegexBreakAtCB }},
-    { "breakProperties", MMPush, { gdbEditBreakpointPropertiesCB }},
-    { "enableBreak",     MMPush, { gdbToggleEnableBreakpointCB }},
+    { "tempBreakAt",     MMPush, { gdbTempBreakAtCB, 0 }, 0, 0, 0, 0},
+    { "regexBreakAt",    MMPush, { gdbRegexBreakAtCB, 0 }, 0, 0, 0, 0},
+    { "breakProperties", MMPush, 
+      { gdbEditBreakpointPropertiesCB, 0 }, 0, 0, 0, 0},
+    { "enableBreak",     MMPush, 
+      { gdbToggleEnableBreakpointCB, 0 }, 0, 0, 0, 0},
     MMSep,
-    { "contUntil",       MMPush, { gdbContUntilCB }},
-    { "setPC",           MMPush, { gdbSetPCCB }},
+    { "contUntil",       MMPush, { gdbContUntilCB, 0 }, 0, 0, 0, 0},
+    { "setPC",           MMPush, { gdbSetPCCB, 0 }, 0, 0, 0, 0},
     MMSep,
-    { "clearAt2",        MMPush, { gdbClearAtCB }},
+    { "clearAt2",        MMPush, { gdbClearAtCB, 0 }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -1434,8 +1472,10 @@ struct FindItems {
 
 static MMDesc find_menu[] = 
 {
-    { "findForward",  MMPush, { gdbFindCB, XtPointer(SourceView::forward) }},
-    { "findBackward", MMPush, { gdbFindCB, XtPointer(SourceView::backward) }},
+    { "findForward",  MMPush, 
+      { gdbFindCB, XtPointer(SourceView::forward) }, 0, 0, 0, 0},
+    { "findBackward", MMPush, 
+      { gdbFindCB, XtPointer(SourceView::backward) }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -1445,13 +1485,15 @@ struct ArgItems {
 
 static MMDesc arg_cmd_area[] = 
 {
-    {"lookup",        MMPush,  { gdbLookupCB       }},
-    {"find",          MMPush | MMInsensitive, { gdbFindAgainCB }, find_menu },
-    {"breakAt",       MMPush,  { gdbToggleBreakCB  }, break_menu   },
+    {"lookup",        MMPush,  
+     { gdbLookupCB, 0 }, 0, 0, 0, 0},
+    {"find",          MMPush | MMInsensitive, 
+     { gdbFindAgainCB, 0 }, find_menu, 0, 0, 0 },
+    {"breakAt",       MMPush,  { gdbToggleBreakCB, 0 }, break_menu, 0, 0, 0 },
     {"watch",         MMPush,  { gdbToggleWatchCB, XtPointer(WATCH_CHANGE) }, 
-                                 watch_menu },
-    {"print",         MMPush,  { gdbPrintCB        }, print_menu   },
-    {"display",       MMPush,  { gdbDisplayCB      }, display_menu },
+                                 watch_menu, 0, 0, 0 },
+    {"print",         MMPush,  { gdbPrintCB, 0 }, print_menu, 0, 0, 0 },
+    {"display",       MMPush,  { gdbDisplayCB, 0 }, display_menu, 0, 0, 0 },
     MMEnd
 };
 

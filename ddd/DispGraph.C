@@ -1091,7 +1091,9 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
     }
     else
     {
+#if 0
 	assert(!try_direct || pos1 == pos2);
+#endif
 
 	// Add single hint
 	HintGraphNode *hint = new HintGraphNode(pos1);

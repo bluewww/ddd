@@ -834,16 +834,16 @@ static Widget create_text_dialog(Widget parent, String name,
 
     MMDesc file_menu[] = 
     {
-	{ "close", MMPush, { CloseCB, XtPointer(shell) } },
-	{ "exit",  MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }},
+	{ "close", MMPush, { CloseCB, XtPointer(shell) }, 0, 0, 0, 0 },
+	{ "exit",  MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }, 0, 0, 0, 0},
 	MMEnd
     };
 
     MMDesc menubar[] = 
     {
-	{ "file",     MMMenu, MMNoCB, file_menu },
-	{ "edit",     MMMenu, MMNoCB, simple_edit_menu },
-	{ "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu },
+	{ "file",     MMMenu, MMNoCB, file_menu, 0, 0, 0 },
+	{ "edit",     MMMenu, MMNoCB, simple_edit_menu, 0, 0, 0 },
+	{ "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0 },
 	MMEnd
     };
 
@@ -1114,8 +1114,10 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
     MMDesc items [] = 
     {
-	{ "findBackward", MMPush, { FindBackwardCB, XtPointer(fi) } },
-	{ "findForward",  MMPush, { FindForwardCB, XtPointer(fi) } },
+	{ "findBackward", MMPush, 
+	  { FindBackwardCB, XtPointer(fi) }, 0, 0, 0, 0},
+	{ "findForward",  MMPush, 
+	  { FindForwardCB, XtPointer(fi) }, 0, 0, 0, 0},
 	MMEnd
     };
 
@@ -1136,12 +1138,14 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     Widget view_index;
     MMDesc manual_menu[] = 
     {
-	{ "findForward",  MMPush, { FindForwardCB, XtPointer(fi) } },
-	{ "findBackward", MMPush, { FindBackwardCB, XtPointer(fi) } },
+	{ "findForward",  MMPush, 
+	  { FindForwardCB, XtPointer(fi) }, 0, 0, 0, 0 },
+	{ "findBackward", MMPush, 
+	  { FindBackwardCB, XtPointer(fi) }, 0, 0, 0, 0 },
 	MMSep,
 	{ "viewIndex",    MMToggle, { ToggleIndexCB, 
 				      XtPointer(XtParent(help_index)) }, 
-	  NULL, &view_index },
+	  NULL, &view_index, 0, 0 },
 	MMEnd
     };
 
@@ -1149,7 +1153,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     {
 	// This is called `source' such that we can re-use the Find
 	// specs from the DDD `Source' meny
-	{ "source", MMMenu, MMNoCB, manual_menu },
+	{ "source", MMMenu, MMNoCB, manual_menu, 0, 0, 0 },
 	MMEnd
     };
 
@@ -1422,8 +1426,10 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     MMDesc items [] = 
     {
-	{ "findBackward", MMPush, { FindBackwardCB, XtPointer(fi) } },
-	{ "findForward",  MMPush, { FindForwardCB, XtPointer(fi) } },
+	{ "findBackward", MMPush, 
+	  { FindBackwardCB, XtPointer(fi) }, 0, 0, 0, 0 },
+	{ "findForward",  MMPush, 
+	  { FindForwardCB, XtPointer(fi) }, 0, 0, 0, 0 },
 	MMEnd
     };
 
@@ -1438,8 +1444,10 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     MMDesc manual_menu[] = 
     {
-	{ "findForward",  MMPush, { FindForwardCB, XtPointer(fi) }},
-	{ "findBackward", MMPush, { FindBackwardCB, XtPointer(fi) }},
+	{ "findForward",  MMPush, 
+	  { FindForwardCB, XtPointer(fi) }, 0, 0, 0, 0},
+	{ "findBackward", MMPush,
+	  { FindBackwardCB, XtPointer(fi) }, 0, 0, 0, 0},
 	MMEnd
     };
 
@@ -1447,7 +1455,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     {
 	// This is called `source' such that we can re-use the Find
 	// specs from the DDD `Source' meny
-	{ "source", MMMenu, MMNoCB, manual_menu },
+	{ "source", MMMenu, MMNoCB, manual_menu, 0, 0, 0 },
 	MMEnd
     };
 
