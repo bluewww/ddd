@@ -35,6 +35,7 @@ char resources_rcsid[] =
 
 #include "resources.h"
 #include "AppData.h"
+#include "stty.h"
 
 // Application resource definitions
 XtResource ddd_resources[] = {
@@ -339,7 +340,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, rhost_init_commands),
 	XtRString,
-	XtPointer("stty -echo -onlcr")
+	XtPointer(STTY_COMMAND)
     },
 
     {

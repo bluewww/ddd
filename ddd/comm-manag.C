@@ -63,6 +63,7 @@ char comm_manager_rcsid[] =
 #include "VoidArray.h"
 #include "question.h"
 #include "settings.h"
+#include "stty.h"
 
 #include <ctype.h>
 
@@ -122,6 +123,7 @@ typedef struct PlusCmdData {
     string   set_command;	       // setting to update
     int      n_refresh_disp;	       // # of displays to refresh
 
+    bool     config_stty;	       // try stty command
     bool     config_frame;	       // try 'frame'
     bool     config_run_io;	       // try 'dbxenv run_io'
     bool     config_print_r;	       // try 'print -r'
@@ -154,6 +156,7 @@ typedef struct PlusCmdData {
 	set_command(""),
 	n_refresh_disp(0),
 
+	config_stty(false),
 	config_frame(false),
 	config_run_io(false),
 	config_print_r(false),
@@ -210,6 +213,8 @@ void start_gdb()
 
     case DBX:
 	plus_cmd_data->refresh_initial_line = true;
+	cmds += "sh " STTY_COMMAND;
+	plus_cmd_data->config_stty = true;
 	cmds += "frame";
 	plus_cmd_data->config_frame = true;
 	cmds += "dbxenv run_io";
@@ -553,6 +558,7 @@ void user_cmdSUC (string cmd, Widget origin)
     StringArray cmds;
     VoidArray dummy;
 
+    assert(!plus_cmd_data->config_stty);
     assert(!plus_cmd_data->config_frame);
     assert(!plus_cmd_data->config_run_io);
     assert(!plus_cmd_data->config_print_r);
@@ -889,6 +895,11 @@ static bool is_known_command(const string& answer)
 	    && !ans.contains("unknown", 0));     // XDB
 }
 
+static void process_config_stty(string&)
+{
+    // Nothing yet...
+}
+
 static void process_config_frame(string& answer)
 {
     gdb->has_frame_command(is_known_command(answer));
@@ -1020,6 +1031,11 @@ void plusOQAC (string answers[],
 	case DBX:
 	    break;
 	}
+    }
+
+    if (plus_cmd_data->config_stty) {
+	assert (qu_count < count);
+	process_config_stty(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_frame) {
