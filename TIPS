@@ -119,7 +119,7 @@ Use KEY(Ctrl+R) and KEY(Ctrl+F) to search the command history.
 
 You can move breakpoints by dragging them.  
 Just press and hold BUTTON(1) on a breakpoint,
-move it to the new position and release BUTTON(1) again.  That's all!
+move it to the new position and release BUTTON(1) again.
 
 ! You can save space by disabling toolbar captions.
 ! See LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Toolbar Appearance).
@@ -145,8 +145,8 @@ You can copy breakpoints by dragging them while pressing KEY(Shift).
 Just press and hold KEY(Shift)+BUTTON(1) on a breakpoint,
 move it to the new position and release BUTTON(1) again.
 
-To save and restore data displays, cut, copy and paste them via the
-LBL(Edit) menu.  Together with CODE(xclipboard), you can manage
+To save and restore data displays, cut, copy and paste them via
+the LBL(Edit) menu.  Together with CODE(xclipboard), you can manage
 arbitrary collections of data displays.
 
 Do you want to stop this debugging session and resume later?
@@ -190,8 +190,8 @@ To get a global idea of what a process or program does or is doing,
 use a system call tracer, like SAMP(strace), SAMP(truss), or SAMP(trace).
 BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
-If you suspect memory corruption caused by problematic pointers, try
-linking with Electric Fence SAMP(efence) or the SAMP(dbmalloc) library.
+If you suspect memory corruption caused by problematic pointers, 
+try linking with Electric Fence SAMP(efence) or the SAMP(dbmalloc) library.
 See the DDD WWW page for links.
 BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
