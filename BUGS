@@ -281,4 +281,13 @@ Volunteers for fixing these and other bugs are welcome!
 
 272 The `select' font selection method does not work with LessTif.
 
-273 (Insert new bugs here)
+273 Mike Bond <mike.bond@template.com> says:
+    The sub-window sizes (Console and Source Window) aren't getting
+    saved and worse, the sub-windows are being resized to some
+    internal default when 'Save Options' returns. 
+
+    I'm also getting loads of 'Warning: Cannot convert string
+    "@CHARSET@" to type FontStruct' and other such, where CHARSET is
+    replace with one of several other strings.
+
+274 (Insert new bugs here)
