@@ -972,9 +972,6 @@ love:
 Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
 	$(AD2C) Ddd > Ddd.ad.h
 
-# `make depend' fails to find this dependency :-(
-ddd.o: Ddd.ad.h
-
 
 ## The VSL header files.
 

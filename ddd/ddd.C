@@ -464,11 +464,6 @@ XtActionsRec actions [] = {
     {"ddd-get-focus",          get_focusAct},
 };
 
-// Resources
-String ddd_fallback_resources[] = {
-#include "Ddd.ad.h"
-0
-};
 
 //-----------------------------------------------------------------------------
 // Menus

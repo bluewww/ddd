@@ -895,3 +895,9 @@ XtResource ddd_resources[] = {
 };
 
 const int ddd_resources_size = XtNumber(ddd_resources);
+
+// Resources
+String ddd_fallback_resources[] = {
+#include "Ddd.ad.h"
+0
+};

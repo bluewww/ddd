@@ -37,6 +37,7 @@
 
 extern XtResource ddd_resources[];
 extern const int ddd_resources_size;
+extern String ddd_fallback_resources[];
 
 #endif // _DDD_resources_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
