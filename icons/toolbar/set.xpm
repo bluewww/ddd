@@ -1,10 +1,10 @@
 /* XPM */
 static char * set_xpm[] = {
 "29 29 4 1",
-" 	c #BFBFBFBFBFBF",
-".	c #000000000000",
-"X	c #FFFFFFFFFFFF",
-"o	c #656565656565",
+" 	c none   m none   s Background",
+".	c black  m black",
+"X	c white  m white",
+"o	c grey50 m black",
 "                             ",
 "   .......................   ",
 "   .XXXXXXXXXXXXXXXXXXXXX.o  ",
@@ -32,5 +32,5 @@ static char * set_xpm[] = {
 "         ..  .  .  .         ",
 "           . ....  .         ",
 "           . .     .         ",
-"        ...   ...  .         ",
+"        ...   ...  ..        ",
 "                             "};

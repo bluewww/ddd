@@ -1,0 +1,6 @@
+Each icon FOO comes in four variants:
+
+FOO.xpm:    color, sensitive (original source)
+FOO-xx.xpm: color, insensitive
+FOO.xbm:    monochrome, sensitive
+FOO-xx.xbm: monochrome, insensitive
