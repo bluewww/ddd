@@ -5062,7 +5062,12 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     read_leading_blanks(info_breakpoints_output);
     strip_final_blanks(info_breakpoints_output);
     if (info_breakpoints_output == "")
-	info_breakpoints_output = "No breakpoints.";
+    {
+	if (gdb->have_watchpoints())
+	    info_breakpoints_output = "No breakpoints or watchpoints.";
+	else
+	    info_breakpoints_output = "No breakpoints.";
+    }
 
     int count = info_breakpoints_output.freq('\n') + 1;
 
