@@ -2200,7 +2200,7 @@ string GDBAgent::run_command(string args) const
 
     case PERL:
     {
-	string c = "R\n@ARGV = ($ARGV[0], ";
+	string c = "R\n@ARGV = (";
 	while (args != "")
 	{
 	    strip_leading_space(args);
