@@ -47,15 +47,13 @@ int main()
 
     int p = 0;
 
-    char c;
-
-    while (cin.get(c))
+    int c;
+    while ((c = cin.get()) && c != EOF)
     {
 	if (p > 0 && p % 16 == 0)
 	    cout << "\"\n\"";
 
-	cout << "\\" << oct << setw(3) 
-	     << setfill('0') << int((unsigned char)c);
+	cout << "\\" << oct << setw(3) << setfill('0') << c;
 
 	p++;
     }
