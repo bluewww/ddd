@@ -3481,7 +3481,18 @@ DispNode *DataDisp::new_user_node(const string& name,
 
     open_data_window();
 
-    if (!is_cluster(dn))
+    if (is_cluster(dn))
+    {
+	if (dn->user_command().contains(rxmore_than_one))
+	{
+	    // Align array slices horizontally
+	    DispValue *dv = dn->value();
+	    dv->align_horizontal();
+	    dv->set_member_names(false);
+	    dn->refresh();
+	}
+    }
+    else
     {
 	undo_buffer.add_display(name, answer);
 	undo_buffer.add_command(delete_display_cmd(name), true);
