@@ -24,7 +24,7 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 char LiterateAgent_rcsid[] = 
     "$Id$";
@@ -38,6 +38,7 @@ char LiterateAgent_rcsid[] =
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdio.h>		// On Linux, includes _G_config.h
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
@@ -57,10 +58,26 @@ extern "C" int fcntl(int fd, int command, ...);
 // ttys, since if the process is run in the background, it will set
 // non-blocking mode for its controlling tty. Since this mode change
 // affects all processes reading from this tty, they will detect an
-// EOF on input and (most likely) exit.  Thus, for ttys, we use
-// blocking mode and read only one line at a time.  This works fine
-// unless the process runs in raw or cbreak mode.
+// EOF on input and (most likely) exit.  Thus, we have a special flag,
+// called BLOCK_TTY_INPUT.  If BLOCK_TTY_INPUT is set (non-zero), we
+// use blocking mode for TTYs and read only one line at a time.  This
+// works fine unless the process runs in raw or cbreak mode.  If
+// BLOCK_TTY_INPUT is not set, we have no special treatment for TTYs.
 
+// According to Ray Dassen <jdassen@wi.LeidenUniv.nl>, Linux with GNU
+// libc 6 wants BLOCK_TTY_INPUT to be unset.
+#if _LINUX_C_LIB_VERSION_MAJOR >= 6
+#define BLOCK_TTY_INPUT 0
+#endif
+
+// Linux with GNU libc5, however, wants BLOCK_TTY_INPUT being set.
+#if _LINUX_C_LIB_VERSION_MAJOR <= 5
+#define BLOCK_TTY_INPUT 1
+#endif
+
+// The default for all other systems is BLOCK_TTY_INPUT set.  (I don't
+// know whether this is the `best' setting, but I have no reason to
+// change a default that has been around successfully for so long...)
 #ifndef BLOCK_TTY_INPUT
 #define BLOCK_TTY_INPUT 1
 #endif
