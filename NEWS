@@ -45,7 +45,9 @@ DDD 2.2.2
       This is useful for bug reports.
 
     Changes in configuration and building:
-    - GCC 2.8.0 is supported.
+    - GCC 2.8.0 is supported (several unjustified warnings about
+      variables that might be clobbered by `longjmp()' or `vfork()',
+      though)
 
     There are also some more minor improvements and bug fixes; see the
     `ChangeLog' file for details.
