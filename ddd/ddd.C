@@ -373,6 +373,9 @@ static void set_settings_title(Widget w);
 // Set Cut/Copy/Paste bindings for MENU to STYLE
 static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style);
 
+// Set Select All bindings for MENU to STYLE
+static void set_select_all_bindings(MMDesc *menu, BindingStyle style);
+
 // Popup DDD splash screen upon start-up.
 static void SetSplashScreenCB(Widget, XtPointer, XtPointer);
 static void popup_splash_screen(Widget parent, string color_key);
@@ -399,6 +402,7 @@ static void setup_auto_command_prefix();
 static void setup_core_limit();
 static void setup_options();
 static void setup_cut_copy_paste_bindings(XrmDatabase db);
+static void setup_select_all_bindings(XrmDatabase db);
 static void setup_show(XrmDatabase db, char *app_name, char *gdb_name);
 
 // Help hooks
@@ -656,6 +660,7 @@ static XtActionsRec actions [] = {
     {"ddd-prev-tab-group",     prev_tab_groupAct},
     {"ddd-previous-tab-group", prev_tab_groupAct},
     {"ddd-get-focus",          get_focusAct},
+    {"ddd-select-all",         select_allAct},
 #if XmVersion < 2000
     {"toggle-overstrike",      toggleOverstrikeAct},
 #endif
@@ -1269,22 +1274,39 @@ static MMDesc startup_menu [] =
     MMEnd
 };
 
-static Widget kde_binding_w;
-static Widget motif_binding_w;
+static Widget cut_copy_paste_kde_w;
+static Widget cut_copy_paste_motif_w;
 
-static MMDesc binding_menu [] =
+static MMDesc cut_copy_paste_menu [] =
 {
-    { "kde",    MMToggle, { dddSetBindingStyleCB, XtPointer(KDEBindings) }, 
-      NULL, &kde_binding_w, 0, 0 },
-    { "motif",  MMToggle, { dddSetBindingStyleCB, XtPointer(MotifBindings) },
-      NULL, &motif_binding_w, 0, 0 },
+    { "kde",    MMToggle, { dddSetCutCopyPasteBindingsCB, 
+			    XtPointer(KDEBindings) }, 
+      NULL, &cut_copy_paste_kde_w, 0, 0 },
+    { "motif",  MMToggle, { dddSetCutCopyPasteBindingsCB, 
+			    XtPointer(MotifBindings) },
+      NULL, &cut_copy_paste_motif_w, 0, 0 },
+    MMEnd
+};
+
+static Widget select_all_kde_w;
+static Widget select_all_motif_w;
+
+static MMDesc select_all_menu [] =
+{
+    { "kde",    MMToggle, { dddSetSelectAllBindingsCB, 
+			    XtPointer(KDEBindings) }, 
+      NULL, &select_all_kde_w, 0, 0 },
+    { "motif",  MMToggle, { dddSetSelectAllBindingsCB, 
+			    XtPointer(MotifBindings) },
+      NULL, &select_all_motif_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc startup_preferences_menu [] =
 {
     { "windows",         MMRadioPanel,  MMNoCB, window_mode_menu, 0, 0, 0 },
-    { "bindings",        MMRadioPanel,  MMNoCB, binding_menu, 0, 0, 0 },
+    { "cutCopyPaste",    MMRadioPanel,  MMNoCB, cut_copy_paste_menu, 0, 0, 0 },
+    { "selectAll",       MMRadioPanel,  MMNoCB, select_all_menu, 0, 0, 0 },
     { "buttons",         MMButtonPanel, MMNoCB, 
                                         button_appearance_menu, 0, 0, 0 },
     { "keyboardFocus",   MMRadioPanel,  MMNoCB, keyboard_focus_menu, 0, 0, 0 },
@@ -1905,6 +1927,7 @@ int main(int argc, char *argv[])
 
     // Set key bindings
     setup_cut_copy_paste_bindings(XtDatabase(XtDisplay(toplevel)));
+    setup_select_all_bindings(XtDatabase(XtDisplay(toplevel)));
 
     // Handle `--version', `--help', etc.  once more, in case the user
     // gave appropriate X resources.  Somewhat paranoid.
@@ -3896,12 +3919,21 @@ void update_options()
     }
 
     // Key Bindings
-    BindingStyle style = app_data.cut_copy_paste_bindings;
-    set_toggle(kde_binding_w, style == KDEBindings);
-    set_toggle(motif_binding_w, style == MotifBindings);
-    set_cut_copy_paste_bindings(command_edit_menu, style);
-    set_cut_copy_paste_bindings(source_edit_menu,  style);
-    set_cut_copy_paste_bindings(data_edit_menu,    style);
+    BindingStyle cut_copy_paste_style = app_data.cut_copy_paste_bindings;
+    set_toggle(cut_copy_paste_kde_w,   cut_copy_paste_style == KDEBindings);
+    set_toggle(cut_copy_paste_motif_w, cut_copy_paste_style == MotifBindings);
+
+    set_cut_copy_paste_bindings(command_edit_menu, cut_copy_paste_style);
+    set_cut_copy_paste_bindings(source_edit_menu,  cut_copy_paste_style);
+    set_cut_copy_paste_bindings(data_edit_menu,    cut_copy_paste_style);
+
+    BindingStyle select_all_style = app_data.select_all_bindings;
+    set_toggle(select_all_kde_w,   select_all_style == KDEBindings);
+    set_toggle(select_all_motif_w, select_all_style == MotifBindings);
+
+    set_select_all_bindings(command_edit_menu, select_all_style);
+    set_select_all_bindings(source_edit_menu,  select_all_style);
+    set_select_all_bindings(data_edit_menu,    select_all_style);
 
     // Check for source toolbar
     Widget arg_cmd_w = XtParent(source_arg->top());
@@ -4329,9 +4361,19 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(auto_debugger_w,
 		      !type_ok || initial_app_data.auto_debugger);
 
-    BindingStyle style = initial_app_data.cut_copy_paste_bindings;
-    notify_set_toggle(kde_binding_w, style == KDEBindings);
-    notify_set_toggle(motif_binding_w, style == MotifBindings);
+    BindingStyle cut_copy_paste_style = 
+	initial_app_data.cut_copy_paste_bindings;
+    notify_set_toggle(cut_copy_paste_kde_w,   
+		      cut_copy_paste_style == KDEBindings);
+    notify_set_toggle(cut_copy_paste_motif_w, 
+		      cut_copy_paste_style == MotifBindings);
+
+    BindingStyle select_all_style = 
+	initial_app_data.select_all_bindings;
+    notify_set_toggle(select_all_kde_w,   
+		      select_all_style == KDEBindings);
+    notify_set_toggle(select_all_motif_w, 
+		      select_all_style == MotifBindings);
 
     notify_set_toggle(splash_screen_w, initial_app_data.splash_screen);
     notify_set_toggle(startup_tips_w,  initial_app_data.startup_tips);
@@ -4351,6 +4393,9 @@ static bool startup_preferences_changed()
 
     if (app_data.cut_copy_paste_bindings !=
 	initial_app_data.cut_copy_paste_bindings)
+	return true;
+
+    if (app_data.select_all_bindings != initial_app_data.select_all_bindings)
 	return true;
 
     if (app_data.splash_screen != initial_app_data.splash_screen)
@@ -5966,6 +6011,61 @@ static void setup_cut_copy_paste_bindings(XrmDatabase db)
     XrmMergeDatabases(bindings, &db);
 }
 
+
+// Update select all bindings
+static void set_select_all_bindings(MMDesc *menu, BindingStyle style)
+{
+    if (menu == 0 || menu[0].widget == 0)
+	return;
+
+    switch (style)
+    {
+    case KDEBindings:
+    {
+	MString select_all("Ctrl+A");
+
+	XtVaSetValues(menu[EditItems::SelectAll].widget,
+		      XmNacceleratorText, select_all.xmstring(),
+		      NULL);
+	break;
+    }
+
+    case MotifBindings:
+    {
+	MString select_all("Shift+Ctrl+A");
+
+	XtVaSetValues(menu[EditItems::SelectAll].widget,
+		      XmNacceleratorText, select_all.xmstring(),
+		      NULL);
+	break;
+    }
+    }
+}
+
+static void setup_select_all_bindings(XrmDatabase db)
+{
+    // Stupid OSF/Motif won't change the accelerators once created.
+    // Set resources explicitly.
+    String resources = 0;
+    switch (app_data.select_all_bindings)
+    {
+    case KDEBindings:
+	resources =
+	    "*editMenu.selectAll.acceleratorText: Ctrl+A\n";
+	break;
+
+    case MotifBindings:
+	resources =
+	    "*editMenu.selectAll.acceleratorText: Shift+Ctrl+A\n";
+	break;
+    }
+
+    XrmDatabase bindings = XrmGetStringDatabase(resources);
+    assert(bindings != 0);
+    XrmMergeDatabases(bindings, &db);
+}
+
+
 //-----------------------------------------------------------------------------
 // Update menu entries
 //-----------------------------------------------------------------------------
@@ -7121,7 +7221,8 @@ static void setup_ddd_version_warnings()
     {
 	cerr << "Warning: using `" DDD_CLASS_NAME "' app-defaults file"
 	     << " for " DDD_NAME " " << app_data.app_defaults_version 
-	     << " (this is " DDD_NAME " " DDD_VERSION ")\n";
+	     << " (this is " DDD_NAME " " DDD_VERSION ")\n"
+	     << "Continue at own risk.\n";
 
 	if (!version_warnings.isEmpty())
 	    version_warnings += cr();

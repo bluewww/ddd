@@ -938,8 +938,8 @@ void dddToggleAutoDebuggerCB(Widget w, XtPointer, XtPointer call_data)
     post_startup_warning(w);
 }
 
-void dddSetBindingStyleCB (Widget, XtPointer client_data, 
-			   XtPointer call_data)
+void dddSetCutCopyPasteBindingsCB (Widget, XtPointer client_data, 
+				   XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
@@ -953,10 +953,39 @@ void dddSetBindingStyleCB (Widget, XtPointer client_data,
     switch (style)
     {
     case KDEBindings:
-	set_status(next_ddd_will_start_with + "KDE-style bindings.");
+	set_status(next_ddd_will_start_with + 
+		   "KDE-style Cut/Copy/Paste bindings.");
 	break;
     case MotifBindings:
-	set_status(next_ddd_will_start_with + "Motif-style bindings.");
+	set_status(next_ddd_will_start_with + 
+		   "Motif-style Cut/Copy/Paste bindings.");
+	break;
+    }
+
+    update_options();
+}
+
+void dddSetSelectAllBindingsCB (Widget, XtPointer client_data, 
+				XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (!info->set)
+	return;
+
+    BindingStyle style = BindingStyle((int)(long)client_data);
+    app_data.select_all_bindings = style;
+
+    switch (style)
+    {
+    case KDEBindings:
+	set_status(next_ddd_will_start_with + 
+		   "KDE-style Select All bindings.");
+	break;
+    case MotifBindings:
+	set_status(next_ddd_will_start_with + 
+		   "Motif-style Select All bindings.");
 	break;
     }
 
@@ -2388,6 +2417,8 @@ bool save_options(unsigned long flags)
 			 app_data.global_tab_completion) << '\n';
     os << binding_app_value(XtNcutCopyPasteBindings,
 			    app_data.cut_copy_paste_bindings) << '\n';
+    os << binding_app_value(XtNselectAllBindings,
+			    app_data.select_all_bindings) << '\n';
 
     // Graph editor
     os << "\n! Data.\n";

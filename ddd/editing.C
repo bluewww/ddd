@@ -500,6 +500,24 @@ void get_focusAct (Widget w, XEvent*, String*, Cardinal*)
     XmProcessTraversal(w, XmTRAVERSE_CURRENT);
 }
 
+void select_allAct (Widget w, XEvent *e, String *params, Cardinal *num_params)
+{
+    switch (app_data.select_all_bindings)
+    {
+    case KDEBindings:
+	XtCallActionProc(w, "select-all", e, params, *num_params);
+	break;
+
+    case MotifBindings:
+	if (w == gdb_w)
+	    XtCallActionProc(w, "gdb-beginning-of-line", 
+			     e, params, *num_params);
+	else
+	    XtCallActionProc(w, "beginning-of-line", e, params, *num_params);
+	break;
+    }
+}
+
 
 //-----------------------------------------------------------------------------
 // Editing actions

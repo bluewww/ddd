@@ -366,6 +366,7 @@
 #define XtNcolorWMIcons          "colorWMIcons"
 #define XtCColorWMIcons          "ColorWMIcons"
 #define XtNcutCopyPasteBindings  "cutCopyPasteBindings"
+#define XtNselectAllBindings     "selectAllBindings"
 #define XtCBindingStyle          "BindingStyle"
 #define XtNmaxUndoDepth          "maxUndoDepth"
 #define XtCMaxUndoDepth          "MaxUndoDepth"
@@ -560,6 +561,7 @@ struct AppData {
     Boolean   splash_screen;
     Boolean   color_wm_icons;
     BindingStyle cut_copy_paste_bindings;
+    BindingStyle select_all_bindings;
     int       max_undo_depth;
     int       max_undo_size;
     int       lesstif_version;

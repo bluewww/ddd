@@ -1880,6 +1880,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNselectAllBindings,
+	XtCBindingStyle,
+	XtRBindingStyle,
+	sizeof(BindingStyle),
+	XtOffsetOf(AppData, select_all_bindings),
+	XmRImmediate,
+	XtPointer(KDEBindings)
+    },
+
+    {
 	XtNmaxUndoDepth,
 	XtCMaxUndoDepth,
 	XmRInt,

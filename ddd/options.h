@@ -122,7 +122,8 @@ extern void dddSetKeyboardFocusPolicyCB     (Widget, XtPointer, XtPointer);
 extern void dddSetPannerCB                  (Widget, XtPointer, XtPointer);
 extern void dddSetDebuggerCB                (Widget, XtPointer, XtPointer);
 extern void dddToggleAutoDebuggerCB         (Widget, XtPointer, XtPointer);
-extern void dddSetBindingStyleCB            (Widget, XtPointer, XtPointer);
+extern void dddSetCutCopyPasteBindingsCB    (Widget, XtPointer, XtPointer);
+extern void dddSetSelectAllBindingsCB       (Widget, XtPointer, XtPointer);
 
 extern void dddSetUndoBufferSizeCB          (Widget, XtPointer, XtPointer);
 extern void dddClearUndoBufferCB            (Widget, XtPointer, XtPointer);

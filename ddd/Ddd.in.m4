@@ -145,6 +145,13 @@ Ddd*globalTabCompletion: on
 Ddd*cutCopyPasteBindings: Motif
 
 
+! The key bindings to use for Ctrl+A (Select All):
+!
+! * `Motif' means: Ctrl+A is Beginning of line
+! * `KDE' means:   Ctrl+A is Select All
+Ddd*selectAllBindings: KDE
+
+
 ! On if the debugger console is line-buffered (i.e. flushed upon 
 ! each newline).  This is slower, but gives nice scrolling.
 ! Off if newline has no special treatment.
@@ -1161,7 +1168,8 @@ Ddd*gdb_w.@TRANSLATIONS@: #override\n\
 SHORTCUTS \
 <Btn3Down>:		gdb-popup-menu()            \n\
 ~Ctrl ~Shift<Btn1Up>:	source-set-arg() extend-end() \n\
-Ctrl<Key>A:		select-all()	    	    \n\
+~Shift Ctrl<Key>A:	ddd-select-all()	    \n\
+Shift Ctrl<Key>A:	select-all()	    	    \n\
 Ctrl<Key>B:		gdb-isearch-prev()    	    \n\
 Ctrl<Key>C:		gdb-control(^C)		    \n\
 Ctrl<Key>D:		gdb-delete-or-control(^D)   \n\
@@ -1211,7 +1219,8 @@ Shift<Key>Next:		next-page(extend)	    \n\
 
 dnl Basic translations for all other texts and text fields
 define(EMACS_TRANSLATIONS, [SHORTCUTS \
-Ctrl<Key>A:		select-all()	    	    \n\
+~Shift Ctrl<Key>A:	ddd-select-all()	    \n\
+Shift Ctrl<Key>A:	select-all()	    	    \n\
 Ctrl<Key>B:		gdb-backward-character()    \n\
 Ctrl<Key>D:		delete-next-character()     \n\
 Ctrl<Key>F:		gdb-forward-character()	    \n\
@@ -1342,7 +1351,8 @@ define(SOURCE_TRANSLATIONS,[\
 <Btn3Down>:		source-popup-menu()         \n\
 ~Ctrl ~Shift<Btn1Down>:	source-start-select-word()  \n\
 ~Ctrl ~Shift<Btn1Up>:	source-end-select-word() source-double-click() \n\
-Ctrl<Key>A:		select-all()	    	    \n\
+~Shift Ctrl<Key>A:	ddd-select-all()	    \n\
+Shift Ctrl<Key>A:	select-all()	    	    \n\
 Ctrl<Key>B:		gdb-isearch-prev()    	    \n\
 Ctrl<Key>C:             gdb-control(^C)             \n\
 Ctrl<Key>F:		gdb-isearch-next()	    \n\
@@ -3088,6 +3098,7 @@ Ddd*preferences*buttons*indicatorOn:		off
 Ddd*preferences*buttons*shadowThickness:	2
 Ddd*preferences*buttons*alignment:		XmALIGNMENT_CENTER
 Ddd*preferences*panel*XmRowColumn.marginHeight: 0
+Ddd*preferences*packing:	      	        XmPACK_TIGHT
 
 Ddd*preferences*buttons*general.labelString:	\ \ \ General\ \ \ 
 Ddd*preferences*buttons*source.labelString:	Source
@@ -3200,7 +3211,7 @@ Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*showExecPos.labelString:	Show Position and Breakpoints
 Ddd*preferences*asGlyphs.labelString:		as Glyphs
-Ddd*preferences*asText.labelString:		as Text
+Ddd*preferences*asText.labelString:		as Text Characters
 
 Ddd*preferences*toolButtons.labelString:	Tool buttons location
 Ddd*toolButtonsMenu*commandTool.labelString:	\
@@ -3311,9 +3322,8 @@ ITEM LBL(Window Layout) sets the window layout.\n\
         where source, data, and the @GDB@ console are stacked.\n\
     SUBITEM LBL(Separate Windows) means to use a separate top-level window\n\
         for each of source, data, and the @GDB@ console.\n\
-ITEM The LBL(Cut/Copy/Paste) functions can be bound to\n\
-    SUBITEM LBL(Ctrl+X/Ctrl+C/Ctrl+V) - the LBL(KDE) style, or\n\
-    SUBITEM LBL(Shift+Del/Ctrl+Ins/Shift+Ins) - the LBL(Motif) Style.\n\
+ITEM The LBL(Cut/Copy/Paste) functions can be bound to different keys.\n\
+ITEM The LBL(Select All) function can be bound to different keys.\n\
 ITEM The LBL(Tool Bar) can appear as follows:\n\
     SUBITEM LBL(Images) shows a small symbol for each action, and/or\n\
     SUBITEM LBL(Captions) shows the action name below the image.\n\
@@ -3346,9 +3356,13 @@ Ddd*preferences*windows.labelString:		Window Layout
 Ddd*windowsMenu*attached.labelString:		Stacked Windows
 Ddd*windowsMenu*separate.labelString:		Separate Windows
 
-Ddd*preferences*bindings.labelString:		Cut/Copy/Paste
-Ddd*bindingsMenu*kde.labelString:		KDE Style Bindings
-Ddd*bindingsMenu*motif.labelString:		Motif Style Bindings
+Ddd*preferences*cutCopyPaste.labelString:	Cut/Copy/Paste is on
+Ddd*cutCopyPasteMenu*kde.labelString:		Ctrl+X/Ctrl+C/Ctrl+V
+Ddd*cutCopyPasteMenu*motif.labelString:		Shift+Del/Ctrl+Ins/Shift+Ins
+
+Ddd*preferences*selectAll.labelString:		Select All is on
+Ddd*selectAllMenu*kde.labelString:		Ctrl+A
+Ddd*selectAllMenu*motif.labelString:		Shift+Ctrl+A
 
 Ddd*preferences*buttons.labelString:		Tool Bar Appearance
 Ddd*buttonsMenu*images.labelString:		Images
@@ -3377,7 +3391,6 @@ Ddd*debuggerMenu*jdb.labelString:		JDB
 Ddd*debuggerMenu*pydb.labelString:		PYDB
 Ddd*debuggerMenu*perl.labelString:		Perl
 Ddd*debuggerMenu.numColumns:	      	        1
-Ddd*debuggerMenu.packing:	      	        XmPACK_TIGHT
 
 Ddd*preferences*startupWindows.labelString:     Startup Windows
 Ddd*preferences*splashScreen.labelString:	DDD Splash Screen

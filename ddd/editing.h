@@ -53,6 +53,7 @@ extern void insert_graph_argAct   (Widget, XEvent*, String*, Cardinal*);
 extern void next_tab_groupAct     (Widget, XEvent*, String*, Cardinal*);
 extern void prev_tab_groupAct     (Widget, XEvent*, String*, Cardinal*);
 extern void get_focusAct          (Widget, XEvent*, String*, Cardinal*);
+extern void select_allAct         (Widget, XEvent*, String*, Cardinal*);
 extern void isearch_nextAct       (Widget, XEvent*, String*, Cardinal*);
 extern void isearch_prevAct       (Widget, XEvent*, String*, Cardinal*);
 extern void isearch_exitAct       (Widget, XEvent*, String*, Cardinal*);
