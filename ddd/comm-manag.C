@@ -1201,25 +1201,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (plus_cmd_data->refresh_history_size)
 	    cmds += "show history size";
 	if (plus_cmd_data->refresh_setting)
-	{
-	    string show_command = "show ";
-	    if (cmd.contains("set ", 0))
-		show_command += cmd.after("set ");
-	    else if (cmd.contains("directory ", 0))
-		show_command += "directories";
-	    else if (cmd.contains("path ", 0))
-		show_command += "paths";
-	    else
-		show_command += cmd;
-
-	    if (show_command.freq(' ') >= 2)
-	    {
-		// Strip last argument from `show' command
-		int index = show_command.index(' ', -1);
-		show_command = show_command.before(index);
-	    }
-	    cmds += show_command;
-	}
+	    cmds += show_command(cmd, gdb->type());
 	if (plus_cmd_data->refresh_handle)
 	{
 	    string sig = cmd.after(rxwhite);
@@ -1255,7 +1237,7 @@ void send_gdb_command(string cmd, Widget origin,
 	assert (!plus_cmd_data->refresh_history_filename);
 	assert (!plus_cmd_data->refresh_history_size);
 	if (plus_cmd_data->refresh_setting)
-	    cmds += cmd.before(rxwhite);
+	    cmds += show_command(cmd, gdb->type());
 	assert (!plus_cmd_data->refresh_handle);
 	break;
 

@@ -61,6 +61,8 @@ extern void save_settings_state();
 // Mark settings as `invalid'
 extern void reset_settings();
 
+// Get `show' command for settings command CMD
+extern string show_command(const string& cmd, DebuggerType type);
 
 // User Status Displays
 
