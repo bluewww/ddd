@@ -841,6 +841,7 @@ XmTextPosition messagePosition;
 // Buttons
 static Widget console_buttons_w;
 static Widget source_buttons_w;
+static Widget tool_buttons_w;
 
 // Strings to be ignored in GDB output
 string gdb_out_ignore = "";
@@ -1421,7 +1422,7 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
     if (iconic)
     {
-	// Startup all shells iconified
+	// Startup all shells iconified.
 	initial_popup_shell(command_shell);
 	initial_popup_shell(source_view_shell);
 	initial_popup_shell(data_disp_shell);
@@ -1453,9 +1454,9 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
     // starts.
     wait_until_mapped(command_shell);
 
-    if (string(app_data.tool_buttons) != "")
+    // Create command tool
+    if (app_data.tool_buttons && strlen(app_data.tool_buttons) > 0)
     {
-	// Create command tool
 	Widget tool_shell_parent = 
 	    source_view_shell ? source_view_shell : command_shell;
 	arg = 0;
@@ -1464,15 +1465,37 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 				       "tool_shell", args, arg));
 	Delay::register_shell(tool_shell);
 	arg = 0;
-	Widget tool_buttons = 
+	tool_buttons_w = 
 	    verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
-	add_buttons(tool_buttons, app_data.tool_buttons);
-	XtManageChild(tool_buttons);
-	XtManageChild(tool_shell);
-    }
-    if (tool_shell)
+	add_buttons(tool_buttons_w, app_data.tool_buttons);
+	XtManageChild(tool_buttons_w);
+
+	wm_set_icon(tool_shell,
+		    iconlogo(tool_buttons_w),
+		    iconmask(tool_buttons_w));
+	wm_set_group_leader(XtDisplay(tool_shell),
+			    XtWindow(tool_shell),
+			    XtWindow(tool_shell_parent));
+
+#if 0
 	XtAddEventHandler(tool_shell, StructureNotifyMask, False,
 			  StructureNotifyEH, XtPointer(0));
+#endif
+
+	recenter_tool_shell(source_view->source());
+
+	if (source_view_shell || iconic)
+	{
+	    // We don't need the command tool right now 
+	    // - wait for source window to map
+	    popdown_shell(tool_shell);
+	}
+	else
+	{
+	    // OK, raise it
+	    initial_popup_shell(tool_shell);
+	}
+    }
 
     // Setup TTY interface
     if (app_data.tty_mode)
@@ -1480,11 +1503,11 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 	init_command_tty();
 
 	string init_msg = XmTextGetString(gdb_w);
-	// init_msg.gsub("\344", "ae");
-	// init_msg.gsub("\366", "oe");
-	// init_msg.gsub("\374", "ue");
-	// init_msg.gsub("\337", "ss");
-	// init_msg.gsub("\251", "(C)");
+	init_msg.gsub("\344", "ae");
+	init_msg.gsub("\366", "oe");
+	init_msg.gsub("\374", "ue");
+	init_msg.gsub("\337", "ss");
+	init_msg.gsub("\251", "(C)");
 	tty_out(init_msg);
     }
 
@@ -2165,6 +2188,7 @@ void gdbUpdateEditCB(Widget, XtPointer, XtPointer)
 void gdbUpdateViewCB(Widget, XtPointer, XtPointer)
 {
     // Check whether the execution tty is running
+    exec_tty_running();
     Boolean b = (exec_tty_pid() > 0);
     set_sensitive(command_view_menu[ExecWindow].widget, b);
     set_sensitive(source_view_menu[ExecWindow].widget,  b);

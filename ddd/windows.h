@@ -43,9 +43,13 @@ extern Widget source_view_shell;
 // Command tool
 extern Widget tool_shell;
 
+// Place command tool in upper right edge of W
+extern void recenter_tool_shell(Widget w);
+
 // Shell management
 extern void initial_popup_shell(Widget w);
 extern void popdown_shell(Widget w);
+extern void iconify_shell(Widget w);
 extern int running_shells();
 
 extern void gdbOpenCommandWindowCB  (Widget, XtPointer, XtPointer);

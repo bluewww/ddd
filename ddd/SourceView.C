@@ -82,6 +82,7 @@ char SourceView_rcsid[] =
 #include "events.h"
 #include "cook.h"
 #include "misc.h"
+#include "wm.h"
 
 // Motif stuff
 #include <Xm/Xm.h>
@@ -1345,6 +1346,9 @@ void SourceView::read_file (string file_name,
 	{
 	    initial_popup_shell(source_view_shell);
 	    initial_popup = false;
+
+	    recenter_tool_shell(source_text_w);
+	    initial_popup_shell(tool_shell);
 	}
     }
 }

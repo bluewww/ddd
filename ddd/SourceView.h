@@ -424,6 +424,9 @@ public:
     // Return current directory
     static string pwd() { return current_pwd; }
 
+    // Return source code widget (read-only)
+    static Widget source() { return source_text_w; }
+
     // Clear caches
     static void clear_file_cache();
     static void clear_code_cache();

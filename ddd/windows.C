@@ -34,6 +34,7 @@ const char windows_rcsid[] =
 #endif
 
 #include "windows.h"
+#include "wm.h"
 
 #include "assert.h"
 #include "exectty.h"
@@ -41,6 +42,7 @@ const char windows_rcsid[] =
 #include "exit.h"
 
 #include <Xm/Xm.h>
+#include <X11/Xutil.h>
 
 //-----------------------------------------------------------------------------
 // Window management
@@ -66,7 +68,7 @@ void initial_popup_shell(Widget w)
     if (w == 0)
 	return;
 
-    assert(XtIsTopLevelShell(w));
+    // assert(XtIsTopLevelShell(w));
 
     Widget toplevel = w;
     while (XtParent(toplevel))
@@ -74,21 +76,35 @@ void initial_popup_shell(Widget w)
 
     assert(XtIsTopLevelShell(toplevel));
 
+    // Well isn't it iconic - don't you think?
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
-    XtVaSetValues(w, XmNiconic, iconic, NULL);
+    XtVaSetValues(w, 
+		  XmNiconic, iconic, 
+		  XmNinitialState, iconic ? IconicState : NormalState,
+		  NULL);
     WindowState state = iconic ? Iconic : PoppedUp;
 
     if (w == command_shell)
-	command_shell_state        = state;
+	command_shell_state     = state;
     else if (w == data_disp_shell)
-	data_disp_shell_state      = state;
+	data_disp_shell_state   = state;
     else if (w == source_view_shell)
-	source_view_shell_state    = state;
+	source_view_shell_state = state;
     else if (w == tool_shell)
-	tool_shell_state    = state;
+	tool_shell_state        = state;
+
+    if (iconic && w != tool_shell)
+	XtVaSetValues(w, 
+		      XmNgeometry, "+0+0", 
+		      XmNx, 0,
+		      XmNy, 0,
+		      NULL);
 
     XtPopup(w, XtGrabNone);
+
+    if (iconic && w == tool_shell)
+	popdown_shell(w);
 }
 
 void popup_shell(Widget w)
@@ -212,16 +228,21 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	// clog << XtName(w) << " is mapped\n";
 
 	// Reflect state
-	if (w == command_shell && command_shell_state != PoppedUp)
+	if (w == command_shell)
 	    command_shell_state = PoppedUp;
-	else if (w == data_disp_shell && data_disp_shell_state != PoppedUp)
+	else if (w == data_disp_shell)
 	    data_disp_shell_state = PoppedUp;
-	else if (w == source_view_shell && source_view_shell_state != PoppedUp)
+	else if (w == source_view_shell)
 	    source_view_shell_state = PoppedUp;
-	else if (w == tool_shell && source_view_shell_state != PoppedUp)
+	else if (w == tool_shell)
 	    tool_shell_state = PoppedUp;
 	else
 	    return;
+
+	if (!synthetic
+	    && (w == source_view_shell
+		|| (source_view_shell == 0 && w == command_shell)))
+	    popup_shell(tool_shell);
 
 	if (!synthetic && app_data.group_iconify)
 	{
@@ -240,11 +261,6 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    {
 		popup_shell(source_view_shell);
 		source_view_shell_state = Transient;
-	    }
-	    if (tool_shell_state == Iconic)
-	    {
-		popup_shell(tool_shell);
-		tool_shell_state = Transient;
 	    }
 	    popup_tty(command_shell);
 	}
@@ -273,6 +289,11 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	else
 	    return;
 
+	if (!synthetic
+	    && (w == source_view_shell
+		|| (source_view_shell == 0 && w == command_shell)))
+	    popdown_shell(tool_shell);
+
 	if (!synthetic && app_data.group_iconify)
 	{
 	    // Iconify all other windows as well
@@ -290,11 +311,6 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    {
 		iconify_shell(source_view_shell);
 		source_view_shell_state = Transient;
-	    }
-	    if (tool_shell_state == PoppedUp)
-	    {
-		iconify_shell(tool_shell);
-		tool_shell_state = Transient;
 	    }
 	    iconify_tty(command_shell);
 	}
@@ -394,4 +410,43 @@ int running_shells()
     return int(command_shell_state != PoppedDown)
 	+ int(source_view_shell_state != PoppedDown)
 	+ int(data_disp_shell_state != PoppedDown);
+}
+
+
+//-----------------------------------------------------------------------------
+// Command tool placement
+//-----------------------------------------------------------------------------
+
+// Place command tool in upper right edge of REF
+void recenter_tool_shell(Widget ref)
+{
+    const int offset = 10;
+
+    if (ref == 0 || tool_shell == 0)
+	return;
+
+    // Get location of upper right edge of REF
+    XWindowAttributes ref_attributes;
+    XGetWindowAttributes(XtDisplay(ref), XtWindow(ref),
+			 &ref_attributes);
+    XWindowAttributes tool_attributes;
+    XGetWindowAttributes(XtDisplay(tool_shell), XtWindow(tool_shell),
+			 &tool_attributes);
+
+    int x, y;
+    Window ref_child;
+    XTranslateCoordinates(XtDisplay(ref), XtWindow(ref), 
+			  ref_attributes.root,
+			  ref_attributes.width 
+			  - tool_attributes.width 
+			  - offset,
+			  offset,
+			  &x, &y,
+			  &ref_child);
+
+    // Move tool shell to X, Y
+    XtVaSetValues(tool_shell,
+		  XmNx, x,
+		  XmNy, y,
+		  NULL);
 }
