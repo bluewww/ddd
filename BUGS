@@ -110,6 +110,13 @@ Volunteers for fixing these and other bugs are welcome!
     3. Select data
     4. Toggle display two dimensional arrays as tables off.
     => X toolkit error: cannot perform realloc
-    nb - does _not_ generate the fault if the edit menu is not torn off.
+    nb - does _not_ generate the fault if the edit menu is not torn
+    off.
 
-304 (Insert new bugs here)
+304 `Find>>' should be insensitive when FILE:POS is selected.  (Better 
+    yet: make it insensitive if the current source does not contain ()).
+
+305 `Find>>', `Edit Source', and `Reload Source' should be insensitive
+     when no source is present.
+
+306 (Insert new bugs here)
