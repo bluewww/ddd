@@ -575,37 +575,33 @@ void set_pixmap(Widget w, string image_name)
 
     Pixel foreground = 0;
     Pixel background = 0;
-    Pixmap p1 = XmUNSPECIFIED_PIXMAP;
-    Pixmap p2 = XmUNSPECIFIED_PIXMAP;
 
     XtVaGetValues(w,
 		  XmNforeground, &foreground,
 		  XmNbackground, &background,
-		  XmNlabelPixmap, &p1,
-		  XmNlabelInsensitivePixmap, &p2,
 		  NULL);
     
-    Pixmap new_p1 = XmGetPixmap(XtScreen(w), image_name, 
+    Pixmap p1 = XmGetPixmap(XtScreen(w), image_name, 
 				foreground, background);
-    Pixmap new_p2 = XmGetPixmap(XtScreen(w), image_name + "-xx", 
+    Pixmap p2 = XmGetPixmap(XtScreen(w), image_name + "-xx", 
 				foreground, background);
 
     Arg args[10];
     Cardinal arg = 0;
 
-    if (new_p1 != XmUNSPECIFIED_PIXMAP && new_p1 != p1)
+    if (p1 != XmUNSPECIFIED_PIXMAP)
     {
-	XtSetArg(args[arg], XmNlabelPixmap, new_p1); arg++;
+	XtSetArg(args[arg], XmNlabelPixmap, p1); arg++;
     }
-    if (new_p2 != XmUNSPECIFIED_PIXMAP && new_p2 != p2)
+    if (p2 != XmUNSPECIFIED_PIXMAP)
     {
-	XtSetArg(args[arg], XmNlabelInsensitivePixmap, new_p2); arg++;
+	XtSetArg(args[arg], XmNlabelInsensitivePixmap, p2); arg++;
     }
     if (arg > 0)
 	XtSetValues(w, args, arg);
 }
 
-void set_label(Widget w, const MString& new_label)
+void set_label(Widget w, const MString& new_label, char *image)
 {
     if (w == 0)
 	return;
@@ -616,9 +612,36 @@ void set_label(Widget w, const MString& new_label)
     XtVaGetValues(w, XmNlabelString, &old_label, NULL);
     if (XmStringCompare(new_label.xmstring(), old_label) == 0)
     {
-	XtVaSetValues(w,
-		      XmNlabelString, new_label.xmstring(),
-		      NULL);
+	Arg args[10];
+	Cardinal arg = 0;
+	XtSetArg(args[arg], XmNlabelString, new_label.xmstring()); arg++;
+
+	if (image != 0)
+	{
+	    Pixel foreground = 0;
+	    Pixel background = 0;
+
+	    XtVaGetValues(w,
+			  XmNforeground, &foreground,
+			  XmNbackground, &background,
+			  NULL);
+
+	    string s1 = image;
+	    string s2 = s1 + "-xx";
+
+	    Pixmap p1 = XmGetPixmap(XtScreen(w), s1, foreground, background);
+	    Pixmap p2 = XmGetPixmap(XtScreen(w), s2, foreground, background);
+
+	    if (p1 != XmUNSPECIFIED_PIXMAP)
+	    {
+		XtSetArg(args[arg], XmNlabelPixmap, p1); arg++;
+	    }
+	    if (p2 != XmUNSPECIFIED_PIXMAP)
+	    {
+		XtSetArg(args[arg], XmNlabelInsensitivePixmap, p2); arg++;
+	    }
+	}
+	XtSetValues(w, args, arg);
     }
     XmStringFree(old_label);
 }

@@ -3281,8 +3281,7 @@ void update_options()
     MString new_label(label, true);
     XmStringFree(label);
 
-    set_label(arg_cmd_area[ArgItems::Find].widget, new_label);
-    set_pixmap(arg_cmd_area[ArgItems::Find].widget, icon);
+    set_label(arg_cmd_area[ArgItems::Find].widget, new_label, icon);
 
     // Check for watchpoints
     set_sensitive(edit_watchpoints_w, gdb->has_watch_command());
@@ -4098,13 +4097,13 @@ void update_arg_buttons()
     bool have_break = have_breakpoint_at_arg();
     if (have_break)
     {
-	set_label(arg_cmd_area[ArgItems::Break].widget, "Clear at ()");
-	set_pixmap(arg_cmd_area[ArgItems::Break].widget, CLEAR_AT_ICON);
+	set_label(arg_cmd_area[ArgItems::Break].widget, 
+		  "Clear at ()", CLEAR_AT_ICON);
     }
     else
     {
-	set_label(arg_cmd_area[ArgItems::Break].widget, "Break at ()");
-	set_pixmap(arg_cmd_area[ArgItems::Break].widget, BREAK_AT_ICON);
+	set_label(arg_cmd_area[ArgItems::Break].widget, 
+		  "Break at ()", BREAK_AT_ICON);
     }
 
     manage_child(break_menu[BreakItems::TempBreak].widget,   !have_break);
@@ -4135,13 +4134,13 @@ void update_arg_buttons()
     bool have_watch = have_watchpoint_at_arg();
     if (have_watch)
     {
-	set_label(arg_cmd_area[ArgItems::Watch].widget, "Unwatch ()");
-	set_pixmap(arg_cmd_area[ArgItems::Watch].widget, UNWATCH_ICON);
+	set_label(arg_cmd_area[ArgItems::Watch].widget, 
+		  "Unwatch ()", UNWATCH_ICON);
     }
     else
     {
-	set_label(arg_cmd_area[ArgItems::Watch].widget, "Watch ()");
-	set_pixmap(arg_cmd_area[ArgItems::Watch].widget, WATCH_ICON);
+	set_label(arg_cmd_area[ArgItems::Watch].widget, 
+		  "Watch ()", WATCH_ICON);
     }
 
     MString print_ref_label("Print " + gdb->dereferenced_expr("()"));

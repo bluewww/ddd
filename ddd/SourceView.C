@@ -5296,13 +5296,12 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
 	switch (selected_bp->type())
 	{
 	case BREAKPOINT:
-	    set_label(bp_area[BPButtons::Lookup].widget, "Lookup");
-	    set_pixmap(bp_area[BPButtons::Lookup].widget, LOOKUP_ICON);
+	    set_label(bp_area[BPButtons::Lookup].widget, "Lookup", 
+		      LOOKUP_ICON);
 	    break;
 
 	case WATCHPOINT:
-	    set_label(bp_area[BPButtons::Lookup].widget, "Print");
-	    set_pixmap(bp_area[BPButtons::Lookup].widget, PRINT_ICON);
+	    set_label(bp_area[BPButtons::Lookup].widget, "Print", PRINT_ICON);
 	    break;
 	}
     }

@@ -53,11 +53,9 @@ extern Pixmap dddsplash(Widget shell, const string& color_key = 'c');
 // Install toolbar icons in Motif cache
 extern void install_icons(Widget shell, const string& color_key = 'c');
 
-// Set pixmap of W to IMAGE_NAME
-extern void set_pixmap(Widget w, string image_name);
-
-// Set label of W to NEW_LABEL
-extern void set_label(Widget w, const MString& new_label);
+// Set label of W to NEW_LABEL (and its pixmap to IMAGE_NAME, if given)
+extern void set_label(Widget w, const MString& new_label, 
+		      char *image_name = 0);
 
 // Set sensitivity of W to STATE
 inline void set_sensitive(Widget w, bool state)

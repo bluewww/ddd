@@ -1757,8 +1757,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     {
 	// Only expanded displays selected
 	set_label(node_popup[NodeItms::Detail].widget, "Hide All");
-	set_label(graph_cmd_area[CmdItms::Detail].widget, "Hide ()");
-	set_pixmap(graph_cmd_area[CmdItms::Detail].widget, HIDE_ICON);
+	set_label(graph_cmd_area[CmdItms::Detail].widget, 
+		  "Hide ()", HIDE_ICON);
 	set_sensitive(node_popup[NodeItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
     }
@@ -1766,8 +1766,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     {
 	// Some collapsed displays selected
 	set_label(node_popup[NodeItms::Detail].widget, "Show All");
-	set_label(graph_cmd_area[CmdItms::Detail].widget, "Show ()");
-	set_pixmap(graph_cmd_area[CmdItms::Detail].widget, SHOW_ICON);
+	set_label(graph_cmd_area[CmdItms::Detail].widget, "Show ()",
+		  SHOW_ICON);
 	set_sensitive(node_popup[NodeItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
     }
