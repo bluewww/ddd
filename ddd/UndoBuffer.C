@@ -81,12 +81,12 @@ char UndoBuffer_rcsid[] =
 //
 // `history' contains:
 //
-// 0                       \ 
-// 1 ...                    > entries (states or commands) to be undone
-// (history_position - 1)  /
-// (history_position)      \ 
-// ...                      > entries (states or commands) to be redone
-// (history.size() - 1)    /
+// | 0                       \                                               |
+// | 1 ...                    > entries (states or commands) to be undone    |
+// | (history_position - 1)  /                                               |
+// | (history_position)      \                                               |
+// | ...                      > entries (states or commands) to be redone    |
+// | (history.size() - 1)    /                                               |
 //
 //
 // Entries
