@@ -48,6 +48,7 @@ char huffencode_rcsid[] =
 #define EXIT_FAILURE 1
 #endif
 
+// A node of the Huffman tree
 struct HuffNode {
     bool isleaf;
     union {
@@ -63,12 +64,15 @@ struct HuffNode {
     HuffNode *next;		// For queue usage
     int number;			// For print usage
 
+    // Constructor - internal node
     HuffNode(HuffNode *l, HuffNode *r)
 	: isleaf(false), sum(l->sum + r->sum), next(0)
     {
 	i.left  = l;
 	i.right = r;
     }
+
+    // Constructor - leaf node
     HuffNode(char c, int s)
 	: isleaf(true), sum(s), next(0)
     {
@@ -76,6 +80,7 @@ struct HuffNode {
     }
 };
 
+// Insert NODE into QUEUE such that the node with maximum sum comes first
 static void insert(HuffNode*& queue, HuffNode *node)
 {
     if (queue == 0)
@@ -93,6 +98,7 @@ static void insert(HuffNode*& queue, HuffNode *node)
     }
 }
 
+// Extract the node with minimum sum from QUEUE (i.e. the last)
 static HuffNode *extract_min(HuffNode*& queue)
 {
     HuffNode *node = queue;
@@ -101,6 +107,7 @@ static HuffNode *extract_min(HuffNode*& queue)
     return node;
 }
 
+// Create a queue sorted according to occurrences of charatcer in S
 static HuffNode *initial_queue(const string& s)
 {
     int occurrences[UCHAR_MAX + 1];
@@ -119,6 +126,7 @@ static HuffNode *initial_queue(const string& s)
     return queue;
 }
 
+// Return the length of QUEUE
 static int length(HuffNode *queue)
 {
     int len = 0;
@@ -131,6 +139,7 @@ static int length(HuffNode *queue)
     return len;
 }
 
+// Create a Huffman tree from S
 static HuffNode *huffman(const string& s)
 {
     HuffNode *queue = initial_queue(s);
@@ -146,6 +155,7 @@ static HuffNode *huffman(const string& s)
     return extract_min(queue);
 }
 
+// Write Huffman tree TREE on standard output
 static void write_huffman(HuffNode *tree)
 {
     static int tics = 0;
@@ -171,7 +181,9 @@ static void write_huffman(HuffNode *tree)
     }
 }
 
-static void init_codes(string codes[], HuffNode *tree, string prefix = "")
+// Fill CODES[C] with a [01]+ string denoting the encoding of C in TREE
+static void init_codes(string codes[UCHAR_MAX + 1], HuffNode *tree, 
+		       string prefix = "")
 {
     if (tree == 0)
 	return;
@@ -187,7 +199,8 @@ static void init_codes(string codes[], HuffNode *tree, string prefix = "")
     }
 }
 
-static char bits_to_byte(string bits)
+// Convert a [01]+ string to a byte
+static char bits_to_byte(const string& bits)
 {
     unsigned char c = 0;
 
@@ -199,8 +212,10 @@ static char bits_to_byte(string bits)
     return (char)c;
 }
 
+// Number of bits per character
 const int BITS_PER_CHAR = 8;
 
+// Encode TEXT using the Huffman tree TREE
 static string encode(const string& text, HuffNode *tree)
 {
     string codes[UCHAR_MAX + 1];
@@ -238,6 +253,7 @@ static string encode(const string& text, HuffNode *tree)
     return byte_encoding;
 }
 
+// Write encoded text BYTE_ENCODING on standard output
 static void write_encoding(const string& byte_encoding)
 {
     cout << "static const char hufftext[" 
@@ -259,6 +275,7 @@ static void write_encoding(const string& byte_encoding)
     cout << "\";\n";
 }    
 
+// Read the string S from standard input
 static void read_input(string& s)
 {
     char c;
@@ -267,6 +284,8 @@ static void read_input(string& s)
 	s += c;
 }
 
+// Main program.  Read a text from standard input, write huffman tree
+// and encoded text on standard output.
 int main()
 {
     string text;
