@@ -240,4 +240,8 @@ Volunteers for fixing these and other bugs are welcome!
 080. Suppress those bison/flex warnings and have users report any remaining
      warnings they encounter.
 
-081. (Insert your bug here)
+081. Have DDD search source code in a list of directories (for GDB,
+     sync that with `list directories'; how to sync with DBX?).  See
+     also the mail of Tom Weis <tom_weis@mathworks.com>.
+
+082. (Insert your bug here)
