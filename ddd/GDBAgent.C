@@ -1931,8 +1931,9 @@ string GDBAgent::echo_command(string text) const
 	return quote(text);
 
     case PERL:
-	// We use `print' instead of `p' since this also works in actions.
-	return "print " + quote(text, '\"');
+	// We use `print DB::OUT' instead of `p' since this also works
+	// in actions.
+	return "print DB::OUT " + quote(text, '\"');
 
     case JDB:
     case PYDB:
