@@ -281,17 +281,25 @@ static int visibility(Widget w)
 	return VisibilityFullyObscured;
 }
 
-static BoxRegion region(Widget w)
+static BoxRegion region(Display *display, Window win)
 {
     XWindowAttributes attr;
 
     Status ok;
-    ok = XGetWindowAttributes(XtDisplay(w), XtWindow(w), &attr);
+    ok = XGetWindowAttributes(display, win, &attr);
     if (!ok)
 	return BoxRegion();
 
     return BoxRegion(BoxPoint(attr.x, attr.y), 
 		     BoxSize(attr.width, attr.height));
+}
+
+static bool obscures(Display *display, Window top, Window bottom)
+{
+    if (top == 0 || bottom == 0)
+	return false;
+
+    return region(display, bottom) <= region(display, top);
 }
 
 static bool obscures(Widget top, Widget bottom)
@@ -302,7 +310,44 @@ static bool obscures(Widget top, Widget bottom)
     if (visibility(bottom) == VisibilityUnobscured)
 	return false;
 
-    return region(bottom) <= region(top);
+    return obscures(XtDisplay(top), XtWindow(top), XtWindow(bottom));
+}
+
+// Raise WIN above SIBLING
+static void raise_above(Display *display, Window win, Window sibling)
+{
+    if (win == 0 || sibling == 0)
+	return;
+
+    Window win_frame     = frame(display, win);
+    Window sibling_frame = frame(display, sibling);
+
+    if (win_frame != 0 && sibling_frame != 0)
+    {
+	// Raise WIN just above SIBLING
+	XWindowChanges changes;
+	changes.stack_mode = Above;
+	changes.sibling    = sibling_frame;
+
+	XConfigureWindow(display, win_frame,
+			 CWSibling | CWStackMode, &changes);
+    }
+    else
+    {
+	// Raise WIN tool on top
+	XRaiseWindow(display, win);
+    }
+}
+
+inline void raise_tool_above(Window sibling)
+{
+    raise_above(XtDisplay(tool_shell), XtWindow(tool_shell), sibling);
+}
+
+inline void raise_tool_above(Widget w)
+{
+    if (w != 0)
+	raise_tool_above(XtWindow(w));
 }
 
 void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
@@ -452,42 +497,33 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	else if (w == tool_shell)
 	    tool_shell_visibility = event->xvisibility.state;
 
-	// Check whether command tool is visible
+	// Check whether command tool is obscured by some DDD shell
 	if (obscures(command_shell, tool_shell)
 	    || obscures(data_disp_shell, tool_shell)
 	    || obscures(source_view_shell, tool_shell))
 	{
-	    // Command tool is obscured by some DDD shell
+	    // Command tool is obscured
 	    if (XmIsMotifWMRunning(tool_shell) && XmIsDialogShell(tool_shell))
 	    {
-		// We have MWM and a Dialog Shell - let MWM handle this
+		// We have MWM and the command tool is a Dialog Shell.
+		// Hence, let MWM keep the command tool on top.
 	    }
 	    else
 	    {
 		// Raise command tool
 		Widget shell = 
 		    source_view_shell ? source_view_shell : command_shell;
-
-		Window tool_frame  = frame(tool_shell);
-		Window shell_frame = frame(shell);
-
-		if (tool_frame != 0 && shell_frame != 0)
-		{
-		    // Raise command tool just above the DDD shell
-		    XWindowChanges changes;
-		    changes.stack_mode = Above;
-		    changes.sibling    = shell_frame;
-
-		    XConfigureWindow(XtDisplay(tool_shell), tool_frame,
-				     CWSibling | CWStackMode, &changes);
-		}
-		else
-		{
-		    // Raise command tool on top
-		    XRaiseWindow(XtDisplay(tool_shell), XtWindow(tool_shell));
-		}
+		raise_tool_above(shell);
 	    }
 	}
+
+#if 0				// Doesn't work yet - AZ
+	// Check whether command tool is obscured by the exec window
+	if (obscures(XtDisplay(tool_shell), exec_tty_window(), 
+		     XtWindow(tool_shell)))
+	    raise_tool_above(exec_tty_window());
+#endif
+
 	break;
     }
 
