@@ -68,8 +68,11 @@ string::operator char*() const
 
 //  globals
 
-strRep  _nilstrRep = { 0, 1, { 0 } }; // nil strings point here
-string _nilstring;               // nil subStrings point here
+// nil strings point here
+strRep _nilstrRep = { 0, 1, &(_nilstrRep.mem[0]), { '\0' } };
+
+// nil subStrings point here
+string _nilstring;
 
 
 
@@ -130,6 +133,15 @@ inline static int slen(const char* t) // inline  strlen
     }
 }
 
+
+
+// The remaining size for the current string in REP
+inline unsigned int string_Sremainder(strRep *rep)
+{
+    return rep->allocated - (rep->s - &(rep->mem[0]));
+}
+
+
 // minimum & maximum representable rep size
 
 #if 0
@@ -170,7 +182,8 @@ inline static strRep* string_Snew(int newsiz)
 #else
     strRep* rep = (strRep *) new char[allocsiz];
 #endif
-    rep->sz = allocsiz - sizeof(strRep);
+    rep->allocated = allocsiz - sizeof(strRep);
+    rep->s  = &rep->mem[0];
     return rep;
 }
 
@@ -194,12 +207,13 @@ strRep* string_Salloc(strRep* old, const char* src, int srclen, int newlen)
     if (srclen < 0) srclen = slen(src);
     if (newlen < srclen) newlen = srclen;
     strRep* rep;
-    if (old == 0 || unsigned(newlen) > old->sz)
+    if (old == 0 || unsigned(newlen) > old->allocated)
 	rep = string_Snew(newlen);
     else
 	rep = old;
 
     rep->len = newlen;
+    rep->s   = &(rep->mem[0]);
     ncopy0(src, rep->s, srclen);
 
     if (old != rep && old != 0)
@@ -222,7 +236,7 @@ static strRep *string_Sresize(strRep* old, int newlen)
     strRep* rep;
     if (old == 0)
 	rep = string_Snew(newlen);
-    else if (unsigned(newlen) > old->sz)
+    else if (unsigned(newlen) > old->allocated)
     {
 	rep = string_Snew(newlen);
 	ncopy0(old->s, rep->s, old->len);
@@ -266,7 +280,7 @@ strRep* string_Scopy(strRep* old, strRep* s)
     {
 	strRep* rep;
 	unsigned newlen = s->len;
-	if (old == 0 || newlen > old->sz)
+	if (old == 0 || newlen > old->allocated)
 	{
 	    if (old != 0) 
 		string_DeleteRep(old);
@@ -274,7 +288,9 @@ strRep* string_Scopy(strRep* old, strRep* s)
 	}
 	else
 	    rep = old;
+
 	rep->len = newlen;
+	rep->s = &(rep->mem[0]);
 	ncopy0(s->s, rep->s, newlen);
 	return rep;
     }
@@ -298,13 +314,14 @@ strRep* string_Scat(strRep* old,
     unsigned newlen = srclen + tlen;
     strRep* rep;
 
-    if (old == 0 || newlen > old->sz || 
+    if (old == 0 || newlen > old->allocated || 
 	(t >= old->s && t < &(old->s[old->len]))) // beware of aliasing
 	rep = string_Snew(newlen);
     else
 	rep = old;
 
     rep->len = newlen;
+    rep->s = &(rep->mem[0]);
 
     ncopy(s, rep->s, srclen);
     ncopy0(t, &(rep->s[srclen]), tlen);
@@ -331,7 +348,7 @@ strRep* string_Scat(strRep* old, const char* s, int srclen,
     if (ulen < 0) ulen = slen(u);
     unsigned newlen = srclen + tlen + ulen;
     strRep* rep;
-    if (old == 0 || newlen > old->sz || 
+    if (old == 0 || newlen > old->allocated || 
 	(t >= old->s && t < &(old->s[old->len])) ||
 	(u >= old->s && u < &(old->s[old->len])))
 	rep = string_Snew(newlen);
@@ -339,6 +356,7 @@ strRep* string_Scat(strRep* old, const char* s, int srclen,
 	rep = old;
 
     rep->len = newlen;
+    rep->s = &(rep->mem[0]);
 
     ncopy(s, rep->s, srclen);
     ncopy(t, &(rep->s[srclen]), tlen);
@@ -371,7 +389,7 @@ strRep* string_Sprepend(strRep* old, const char* t, int tlen)
     if (tlen < 0) tlen = slen(t);
     unsigned newlen = srclen + tlen;
     strRep* rep;
-    if (old == 0 || newlen > old->sz || 
+    if (old == 0 || newlen > string_Sremainder(old) || 
 	(t >= old->s && t < &(old->s[old->len])))
 	rep = string_Snew(newlen);
     else
@@ -589,7 +607,7 @@ void subString::assign(strRep* ysrc, const char* ys, int ylen)
     strRep* targ = S.rep;
     unsigned sl = targ->len - len + ylen;
 
-    if (ysrc == targ || sl >= targ->sz)
+    if (ysrc == targ || sl >= string_Sremainder(targ))
     {
 	strRep* oldtarg = targ;
 	targ = string_Sresize(0, sl);
@@ -654,7 +672,7 @@ int string::_gsub(const char* pat, int pl, const char* r, int rl)
 	    {
 		if (nrep != 0) nrep->len = xi;
 		nrep = string_Sresize(nrep, mustfit);
-		nsz = nrep->sz;
+		nsz = string_Sremainder(nrep);
 		x = nrep->s;
 	    }
 	    pos -= si;
@@ -677,9 +695,10 @@ int string::_gsub(const char* pat, int pl, const char* r, int rl)
     ncopy0(&(s[si]), &(x[xi]), remaining);
     nrep->len = xi + remaining;
 
-    if (nrep->len <= rep->sz)   // fit back in if possible
+    if (nrep->len <= rep->allocated)   // fit back in if possible
     {
 	rep->len = nrep->len;
+	rep->s = &(rep->mem[0]);
 	ncopy0(nrep->s, rep->s, rep->len);
 	string_DeleteRep(nrep);
     }
@@ -727,7 +746,7 @@ int string::_gsub(const regex& pat, const char* r, int rl)
 		if (nrep != 0) nrep->len = xi;
 		nrep = string_Sresize(nrep, mustfit);
 		x = nrep->s;
-		nsz = nrep->sz;
+		nsz = string_Sremainder(nrep);
 	    }
 	    pos -= si;
 	    ncopy(&(s[si]), &(x[xi]), pos);
@@ -749,9 +768,10 @@ int string::_gsub(const regex& pat, const char* r, int rl)
     ncopy0(&(s[si]), &(x[xi]), remaining);
     nrep->len = xi + remaining;
 
-    if (nrep->len <= rep->sz)   // fit back in if possible
+    if (nrep->len <= rep->allocated)   // fit back in if possible
     {
 	rep->len = nrep->len;
+	rep->s = &(rep->mem[0]);
 	ncopy0(nrep->s, rep->s, rep->len);
 	string_DeleteRep(nrep);
     }
@@ -1301,7 +1321,7 @@ istream& operator>>(istream& s, string& x)
     {
 	if (isspace(ch))
 	    break;
-	if (i >= x.rep->sz - 1)
+	if (i >= string_Sremainder(x.rep) - 1)
 	    x.rep = string_Sresize(x.rep, i+1);
 	x.rep->s[i++] = ch;
     }
@@ -1332,7 +1352,7 @@ int readline(istream& s, string& x, char terminator, int discard)
     {
 	if (ch != terminator || !discard)
 	{
-	    if (i >= x.rep->sz - 1)
+	    if (i >= string_Sremainder(x.rep) - 1)
 		x.rep = string_Sresize(x.rep, i+1);
 	    x.rep->s[i++] = ch;
 	}
@@ -1385,17 +1405,20 @@ int string::freq(char c) const
 
 bool string::OK() const
 {
-    if (rep == 0		     // Don't have a rep
-	|| rep->len > rep->sz	     // String outside bounds
-	|| rep->s[rep->len] != '\0') // Not null-terminated
+    if (rep == 0		               // Don't have a rep
+	|| rep->len > string_Sremainder(rep)   // Len out of bounds
+	|| rep->s < rep->mem	               // Ptr out of bounds
+	|| rep->s >= rep->mem + rep->allocated // Ptr out of bounds
+	|| rep->s[rep->len] != '\0')           // Not null-terminated
 	error("invariant failure");
+
     return true;
 }
 
 bool subString::OK() const
 {
     // Check for legal string and pos and len outside bounds
-    if (!S.OK() || pos + len >= S.rep->len)
+    if (!S.OK() || pos + len > S.rep->len)
 	S.error("subString invariant failure");
     return true;
 }

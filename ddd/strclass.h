@@ -395,10 +395,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // Internal string representations
 struct strRep
 {
-    unsigned len;		// String length 
-    unsigned sz;		// Allocated space
-    char s[1];			// The string starts here 
-				// (at least 1 char for trailing null)
+    unsigned int len;		// String length 
+    unsigned int allocated;		// Allocated space
+    char *s;			// Start of string; points into
+				// MEM[0]..MEM[ALLOCATED - 1]
+    char mem[1];                // Start of memory
+    				// (at least 1 char for trailing null)
 				// Allocated & expanded via non-public fcts
 };
 
@@ -821,12 +823,12 @@ extern string _nilstring;
 
 inline unsigned int string::length() const {  return rep->len; }
 inline int          string::empty() const { return rep->len == 0; }
-inline const char*  string::chars() const { return &(rep->s[0]); }
-inline int          string::allocation() const { return rep->sz; }
+inline const char*  string::chars() const { return rep->s; }
+inline int          string::allocation() const { return rep->allocated; }
 
 inline unsigned int subString::length() const { return len; }
 inline int          subString::empty() const { return len == 0; }
-inline const char*  subString::chars() const { return &(S.rep->s[pos]); }
+inline const char*  subString::chars() const { return S.rep->s + pos; }
 
 // Constructors
 inline string::string() 
@@ -870,25 +872,49 @@ inline subString::subString(const string& x, int first, int l)
 
 inline subString::~subString() {}
 
-// Assignment
+// String Assignment
+
 inline string& string::operator = (const string& y)
-{ 
+{
     rep = string_Scopy(rep, y.rep); return *this;
 }
 
 inline string& string::operator = (const char* t)
 {
-    rep = string_Salloc(rep, t, -1, -1); return *this;
+    if (t >= rep->s && t < rep->s + rep->len)
+    {
+	// Assignment of self-substring
+	int len = t - rep->s;
+	rep->len -= len;
+	rep->s = (char *)t;
+    }
+    else
+    {
+	rep = string_Salloc(rep, t, -1, -1);
+    }
+    return *this;
 }
 
-inline string& string::operator = (char* t)
+inline string& string::operator = (char *t)
 {
-    rep = string_Salloc(rep, t, -1, -1); return *this;
+    return operator = ((const char *)t);
 }
 
 inline string& string::operator = (const subString&  y)
 {
-    rep = string_Salloc(rep, y.chars(), y.length(), y.length()); return *this;
+    if (y.chars() >= &(rep->mem[0]) && 
+	y.chars() < &(rep->mem[0]) + rep->allocated)
+    {
+	// Assignment of self-substring
+	rep->s   = (char *)y.chars();
+	rep->len = y.length();
+	rep->s[rep->len] = '\0';
+    }
+    else
+    {
+	rep = string_Salloc(rep, y.chars(), y.length(), y.length());
+    }
+    return *this;
 }
 
 inline string& string::operator = (char c)
@@ -917,6 +943,9 @@ inline string::string(ostrstream& os)
 {
     operator=(os);
 }
+
+
+// Substring assignments
 
 inline subString& subString::operator = (const char* ys)
 {
