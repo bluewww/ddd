@@ -3,7 +3,7 @@
 # Create DDD release-of-the-day.  
 # If `-final' is given, make an official release.
 
-# Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 1997-1998 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 # 
 # This file is part of DDD.
@@ -155,9 +155,12 @@ sh ./configure --x-libraries=/usr/X11R5/lib --x-includes=/usr/X11R5/include -v
 # Create an empty `ddd/Makedeps' such that old MAKEs won't fail.
 touch ddd/Makedeps
 
-# The .xbm files must be newer than the original .xpm files, because
-# we cannot re-create them in batch mode.
+# The derived icon files must be newer than the original XPM files,
+# because we cannot re-create them in batch mode.  (This is the reason
+# why they're under CVS control.)
 touch icons/*.xbm
+touch icons/toolbar/*-xx.xpm
+touch icons/toolbar/*.xbm
 
 # Create distribution stuff.
 (cd libiberty; make)
