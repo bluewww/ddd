@@ -229,8 +229,8 @@ XtResource ddd_resources[] = {
     {
 	XtNtabWidth,
 	XtCTabWidth,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, tab_width),
 	XmRImmediate,
 	XtPointer(8)
@@ -239,8 +239,8 @@ XtResource ddd_resources[] = {
     {
 	XtNlinesAboveCursor,
 	XtCLinesAboveCursor,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, lines_above_cursor),
 	XmRImmediate,
 	XtPointer(2)
@@ -249,8 +249,8 @@ XtResource ddd_resources[] = {
     {
 	XtNlinesBelowCursor,
 	XtCLinesBelowCursor,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, lines_below_cursor),
 	XmRImmediate,
 	XtPointer(3)
@@ -259,8 +259,8 @@ XtResource ddd_resources[] = {
     {
 	XtNindentSource,
 	XtCIndent,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, indent_source),
 	XmRImmediate,
 	XtPointer(4)
@@ -269,8 +269,8 @@ XtResource ddd_resources[] = {
     {
 	XtNindentCode,
 	XtCIndent,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, indent_code),
 	XmRImmediate,
 	XtPointer(4)
@@ -279,8 +279,8 @@ XtResource ddd_resources[] = {
     {
 	XtNlineNumberWidth,
 	XtCLineNumberWidth,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, line_number_width),
 	XmRImmediate,
 	XtPointer(4)
@@ -876,8 +876,8 @@ XtResource ddd_resources[] = {
     {
 	XtNmaxGlyphs,
 	XtCMaxGlyphs,
-	XtRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_glyphs),
 	XtRImmediate,
 	XtPointer(10)
@@ -921,8 +921,8 @@ XtResource ddd_resources[] = {
     {
 	XtNmaxDisassemble,
 	XtCMaxDisassemble,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_disassemble),
 	XmRImmediate,
 	XtPointer(1024)
@@ -1001,8 +1001,8 @@ XtResource ddd_resources[] = {
     {
 	XtNstartupTipCount,
 	XtCStartupTipCount,
-	XtRBoolean,
-	sizeof(Boolean),
+	XmRInt,
+	sizeof(int),
 	XtOffsetOf(AppData, startup_tip_count),
 	XtRImmediate,
 	XtPointer(0)
@@ -1021,8 +1021,8 @@ XtResource ddd_resources[] = {
     {
 	XtNmaxDisplayTitleLength,
 	XtCMaxLength,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_display_title_length),
 	XmRImmediate,
 	XtPointer(20)
@@ -1031,8 +1031,8 @@ XtResource ddd_resources[] = {
     {
 	XtNmaxPopupExprLength,
 	XtCMaxLength,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_popup_expr_length),
 	XmRImmediate,
 	XtPointer(20)
@@ -1041,8 +1041,8 @@ XtResource ddd_resources[] = {
     {
 	XtNmaxValueTipLength,
 	XtCMaxLength,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_value_tip_length),
 	XmRImmediate,
 	XtPointer(32)
@@ -1051,8 +1051,8 @@ XtResource ddd_resources[] = {
     {
 	XtNmaxValueDocLength,
 	XtCMaxLength,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_value_doc_length),
 	XmRImmediate,
 	XtPointer(128)
@@ -1061,8 +1061,8 @@ XtResource ddd_resources[] = {
     {
 	XtNbuttonTipDelay,
 	XtCTipDelay,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, button_tip_delay),
 	XmRImmediate,
 	XtPointer(750)
@@ -1071,8 +1071,8 @@ XtResource ddd_resources[] = {
     {
 	XtNvalueTipDelay,
 	XtCTipDelay,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, value_tip_delay),
 	XmRImmediate,
 	XtPointer(750)
@@ -1081,8 +1081,8 @@ XtResource ddd_resources[] = {
     {
 	XtNbuttonDocDelay,
 	XtCDocDelay,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, button_doc_delay),
 	XmRImmediate,
 	XtPointer(0)
@@ -1091,8 +1091,8 @@ XtResource ddd_resources[] = {
     {
 	XtNvalueDocDelay,
 	XtCDocDelay,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, value_doc_delay),
 	XmRImmediate,
 	XtPointer(0)
@@ -1101,8 +1101,8 @@ XtResource ddd_resources[] = {
     {
 	XtNclearDocDelay,
 	XtCClearDelay,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, clear_doc_delay),
 	XmRImmediate,
 	XtPointer(1000)
@@ -1111,8 +1111,8 @@ XtResource ddd_resources[] = {
     {
 	XtNclearTipDelay,
 	XtCClearDelay,
-	XmRInt,
-	sizeof(int),
+	XtRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, clear_tip_delay),
 	XmRImmediate,
 	XtPointer(50)
@@ -1131,8 +1131,8 @@ XtResource ddd_resources[] = {
     {
 	XtNbusyBlinkRate,
 	XmCBlinkRate,
-	XmRInt,
-	sizeof(int),
+	XmRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, busy_blink_rate),
 	XmRImmediate,
 	XtPointer(500)
@@ -1191,8 +1191,8 @@ XtResource ddd_resources[] = {
     {
 	XtNstatusHistorySize,
 	XtCStatusHistorySize,
-	XmRInt,
-	sizeof(int),
+	XmRCardinal,
+	sizeof(Cardinal),
 	XtOffsetOf(AppData, status_history_size),
 	XmRImmediate,
 	XtPointer(10)
@@ -1240,9 +1240,9 @@ XtResource ddd_resources[] = {
 
     {
 	XtNtoolRightOffset,
-	XtCOffset,
-	XmRInt,
-	sizeof(int),
+	XtCToolOffset,
+	XmRPosition,
+	sizeof(Position),
 	XtOffsetOf(AppData, tool_right_offset),
 	XmRImmediate,
 	XtPointer(8)
@@ -1250,12 +1250,32 @@ XtResource ddd_resources[] = {
 
     {
 	XtNtoolTopOffset,
-	XtCOffset,
-	XmRInt,
-	sizeof(int),
+	XtCToolOffset,
+	XmRPosition,
+	sizeof(Position),
 	XtOffsetOf(AppData, tool_top_offset),
 	XmRImmediate,
 	XtPointer(8)
+    },
+
+    {
+	XtNbuttonCaptions,
+	XtCCaptions,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, button_captions),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNbuttonCaptionHeight,
+	XtCCaptionHeight,
+	XmRDimension,
+	sizeof(Dimension),
+	XtOffsetOf(AppData, button_caption_height),
+	XmRImmediate,
+	XtPointer(10)
     },
 
     {
