@@ -123,6 +123,9 @@ public:
     FixListNode(VSLNode *arg1, VSLNode *arg2);
     FixListNode(VSLNode *arg1, VSLNode *arg2, VSLNode *arg3);
     FixListNode(VSLNode *arg1, VSLNode *arg2, VSLNode *arg3, VSLNode *arg4);
+private:
+    FixListNode(const FixListNode&);
+    FixListNode& operator = (const FixListNode&);
 };
 
 #endif
