@@ -31,7 +31,7 @@ Debuggers and Languages
 Data exploration
 ----------------
 
-- Several improvements in data recognition:
+- Several improvements in processing data output of the inferior debugger:
   * Many more data formats are recognized.
   * Trailing data is no longer ignored.
   * C++ base classes as reported by AIX DBX are interpreted correctly.
