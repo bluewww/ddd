@@ -62,14 +62,19 @@ static void RedrawPushMenuCB(Widget, XtPointer, XtPointer);
 static void PopupPushMenuAct(Widget w, XEvent* e, String *, Cardinal *);
 static void DecoratePushMenuAct(Widget w, XEvent* e, String *, Cardinal *);
 
+static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[]);
+
 static XtActionsRec actions [] = {
     {"popup-push-menu",            PopupPushMenuAct },
     {"decorate-push-menu",         DecoratePushMenuAct },
 };
 
 static char pushMenuTranslations[] = 
-    "None<Btn3Down>:	popup-push-menu()\n"
     "<Expose>:          decorate-push-menu()\n"
+;
+
+static char lesstif_pushMenuTranslations[] = 
+    "None<Btn3Down>:	popup-push-menu()\n"
 ;
 
 
@@ -96,7 +101,7 @@ static XtResource MMsubresources[] = {
 
 // Make sure menu stays on top.  This prevents conflicts with
 // auto-raise windows which would otherwise hide menu panels.
-static void StayOnTopEH(Widget w, XtPointer, XEvent *event, Boolean *)
+static void AutoRaiseEH(Widget w, XtPointer, XEvent *event, Boolean *)
 {
 
     if (event->type != VisibilityNotify)
@@ -111,7 +116,7 @@ static void StayOnTopEH(Widget w, XtPointer, XEvent *event, Boolean *)
     }
 }
 
-static void stay_on_top(Widget shell)
+static void auto_raise(Widget shell)
 {
     assert(XmIsMenuShell(shell));
 
@@ -124,7 +129,7 @@ static void stay_on_top(Widget shell)
     if (values.auto_raise_menu)
     {
 	XtAddEventHandler(shell, VisibilityChangeMask, False,
-			  StayOnTopEH, XtPointer(0));
+			  AutoRaiseEH, XtPointer(0));
     }
 }
 
@@ -165,12 +170,28 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	{
 	case MMPush:
 	    // Create a PushButton
-	    if (subitems != 0)
-		subMenu = MMcreatePopupMenu(shell, subMenuName, subitems);
+	    if (lesstif_version < 1000)
+	    {
+		// LessTif wants the PushButton as parent of the menu
+		arg = 0;
+		widget = verify(XmCreatePushButton(shell, name, args, arg));
 
-	    arg = 0;
-	    XtSetArg(args[arg], XmNuserData, subMenu); arg++;
-	    widget = verify(XmCreatePushButton(shell, name, args, arg));
+		if (subitems != 0)
+		{
+		    subMenu = MMcreatePushMenu(widget, subMenuName, subitems);
+		    XtVaSetValues(widget, XmNuserData, subMenu, NULL);
+		}
+	    }
+	    else
+	    {
+		// Motif wants the shell as parent of the menu
+		if (subitems != 0)
+		    subMenu = MMcreatePushMenu(shell, subMenuName, subitems);
+
+		arg = 0;
+		XtSetArg(args[arg], XmNuserData, subMenu); arg++;
+		widget = verify(XmCreatePushButton(shell, name, args, arg));
+	    }
 	    break;
 
 	case MMToggle:
@@ -374,7 +395,7 @@ Widget MMcreatePulldownMenu(Widget parent, String name, MMDesc items[])
     arg = 0;
     Widget menu = verify(XmCreatePulldownMenu(parent, name, args, arg));
     addItems(parent, menu, items);
-    stay_on_top(XtParent(menu));
+    auto_raise(XtParent(menu));
 
     return menu;
 }
@@ -392,7 +413,7 @@ Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[])
 
     Widget menu = verify(XmCreatePulldownMenu(parent, name, args, arg));
     addItems(parent, menu, items);
-    stay_on_top(XtParent(menu));
+    auto_raise(XtParent(menu));
 
     return menu;
 }
@@ -411,7 +432,42 @@ Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[])
     // 1. There are conflicts with nested popups.
     // 2. During a popup, the pointer is grabbed such that we won't
     //    have an auto-raised window anyway.
-    // stay_on_top(XtParent(menu));
+    // auto_raise(XtParent(menu));
+
+    return menu;
+}
+
+// Create pushmenu from items
+static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[])
+{
+    Arg args[10];
+    int arg;
+
+    // By default, PushButton menus are activated using Button 1.
+    arg = 0;
+#if XmVersion >= 1002
+    if (lesstif_version < 1000)
+    {
+	XtSetArg(args[arg], XmNmenuPost, "<Btn1Down>"); arg++;
+    }
+#endif
+
+    Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
+    addItems(parent, menu, items);
+
+    // Don't auto-raise popup menus.
+    // 1. There are conflicts with nested popups.
+    // 2. During a popup, the pointer is grabbed such that we won't
+    //    have an auto-raised window anyway.
+    // auto_raise(XtParent(menu));
+
+    if (lesstif_version < 1000)
+    {
+	// LessTif places a passive grab on the parent such that the
+	// pointer is grabbed as soon as the menuPost event occurs.  This
+	// grab breaks PushMenus, so we cancel it.
+	XtUngrabButton(parent, AnyButton, AnyModifier);
+    }
 
     return menu;
 }
@@ -531,10 +587,19 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 	    XtAddCallback(widget, XmNarmCallback,    ArmPushMenuCB, subMenu);
 	    XtAddCallback(widget, XmNarmCallback,    RedrawPushMenuCB, 0);
 	    XtAddCallback(widget, XmNdisarmCallback, RedrawPushMenuCB, 0);
-	    
-	    static XtTranslations translations = 
-		XtParseTranslationTable(pushMenuTranslations);
+
+	    static XtTranslations translations =
+		    XtParseTranslationTable(pushMenuTranslations);
 	    XtAugmentTranslations(widget, translations);
+
+	    if (lesstif_version <= 81)
+	    {
+		// In LessTif 0.81 and earlier, one must use the right
+		// mouse button to pop up push menus
+		static XtTranslations lesstif_translations =
+		    XtParseTranslationTable(lesstif_pushMenuTranslations);
+		XtAugmentTranslations(widget, lesstif_translations);
+	    }
 	}
 
 	if (callback.callback != 0)

@@ -15,6 +15,7 @@ DDD 2.2.1 [in development]
     - The `gcore' method for getting core files now works.
     - When running in the background, DDD is no longer interrupted by
       `tty output' signals upon initializing the execution window.
+    - PushButton menus now work with LessTif 0.82 and later.
     - Improved way of creating decorated command tool.
 
     And again, a couple of minor improvements and bug fixes.  See the
