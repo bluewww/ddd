@@ -26,9 +26,6 @@ Reported by:  bas@phys.uva.nl (Bas V. de Bakker),
        `make CXXOPT= CXXSTUFF=-fexternal-templates'.  This builds
        the remainder of DDD without `-O' and `-felide-constructors' flags.
 
-    Note that DBX support has only been tested on Suns; DBX on AIX may be
-    a quite different program.
-
 
 FreeBSD
 =======
@@ -61,6 +58,7 @@ HP-UX
     Ivar Ruyter <ivarr@troll.hz.kfa-juelich.de> states: Build
     everything statically and add `-l:libdld.sl' to the LIBS line in
     the Makefile, voila you have a nice new Christmas Present.
+    This also worked for Hal Manuel <hemanuel@esy.com>.
 
     Roy Dragseth <royd@math.uit.no> adds:
     Statically link as stated above. Actually it is only
@@ -71,6 +69,11 @@ HP-UX
     in the link step DDD works fine. This might be useful for people
     who don't have the gnu linker. It also makes the executable ~1Mb
     smaller than when you add -l:libdld.sl to the link step.
+
+    Lassi A. Tuura <Lassi.Tuura@cern.ch> suggests to use the option
+    `-fmillicode-long-calls' when compiling.  It should permit fixes
+    into shared library calls (these errors only occur with shared
+    libraries).
 
 
 LINUX

@@ -248,4 +248,6 @@ Volunteers for fixing these and other bugs are welcome!
 100. Self-modifying code is not detected automatically; users must
      explicitly re-disassemble (with caching disabled).
 
-101. (Insert your bug here)
+101. `graph display int' results in an empty box.  No warning.
+
+102. (Insert your bug here)

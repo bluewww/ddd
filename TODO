@@ -56,6 +56,18 @@ Volunteers for these and other projects are welcome!
 
 033. Call for bug report if `make' fails.  But how?
 
+     J.H.M. Dassen <jdassen@wi.leidenuniv.nl> suggests using two
+     makefiles: Makefile.real (which does all the hard work, and
+     touches a file "buildcompleted" [1]; if 1. is implemented,
+     "buildcompleted" means that the build is indeed completed) and
+     Makefile (a wrapper that executes Makefile.real, and that
+     displays the error message if "buildcompleted" doesn't exist
+     after executing Makefile.real).  Alternatively, you can merge
+     these into one makefile.
+
+     [1] Of course, as long as DDD produces only one executable, you could
+     ddd/ddd instead.
+
 034. Call for bug report if a fatal X error occurs.
 
 037. Group dereference.  If multiple pointers are selected,
@@ -231,4 +243,9 @@ Volunteers for these and other projects are welcome!
 
 095. Have a colored DDD icon (requires Xpm).
 
-096. (Insert your project idea here)
+096* GDB settings:
+     - Insert a `dir' prompt - where to search for source files.
+     - Insert a `reset' button - reset to initial values.
+     - Save settings in `~/.dddinit' (or `~/.gdbinit'?)
+
+097. (Insert your project idea here)
