@@ -1,0 +1,434 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%Creator: Box::print() by Christian Lindig
+%%BoundingBox: 42 35 371 125
+%%Pages: 1
+%%EndComments
+
+gsave
+32 149 translate
+1 -1 scale
+% $Id$
+% Header for DDD PostScript Box output
+
+% Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+% Written by Christian Lindig <lindig@ips.cs.tu-bs.de>.
+% 
+% This file is part of DDD.
+% 
+% DDD is free software; you can redistribute it and/or
+% modify it under the terms of the GNU General Public
+% License as published by the Free Software Foundation; either
+% version 2 of the License, or (at your option) any later version.
+% 
+% DDD is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% See the GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public
+% License along with DDD -- see the file COPYING.
+% If not, write to the Free Software Foundation, Inc.,
+% 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+% 
+% DDD is the data display debugger.
+% For details, see the DDD World-Wide-Web page, 
+% `http://www.cs.tu-bs.de/softech/ddd/',
+% or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+
+% Make all definitions local to the ddddict dictionary
+/ddddict 25 dict def 
+
+ddddict begin		% make dict active 
+
+
+% Global variables
+/fontSize+ 12 def
+/font+ /Courier def  
+
+
+% Some small utilities
+/cm { 28.34646 mul } bind def
+
+
+% ISOLATIN1* - reencode a font to ISO Latin 1 encoding
+%
+% newfont table oldfont isolatin1*
+
+/isolatin1* {
+	findfont
+	dup maxlength dict begin
+	{
+		1 index /FID ne { def } { pop pop } ifelse
+	} forall
+	/Encoding exch def
+	dup /FontName exch def
+	currentdict end definefont pop
+} bind def
+
+
+% Define the ISO Latin 1 encoding of a font
+ 
+/isotable[
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/space/exclam/quotedbl/numbersign
+/dollar/percent/ampersand/quoteright/parenleft/parenright/asterisk/plus/comma
+/hyphen/period/slash/zero/one/two/three/four/five/six/seven/eight/nine/colon
+/semicolon/less/equal/greater/question/at/A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/Q/R/S
+/T/U/V/W/X/Y/Z/bracketleft/backslash/bracketright/asciicircum/underscore
+/quoteleft/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/braceleft/bar
+/braceright/asciitilde/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/dotlessi/grave/acute/circumflex/tilde/macron/breve/dotaccent/dieresis
+/.notdef/ring/cedilla/.notdef/hungarumlaut/ogonek/caron/.notdef/exclamdown/cent
+/sterling/currency/yen/brokenbar/section/dieresis/copyright/ordfeminine
+/guilsinglleft/logicalnot/hyphen/registered/macron/degree/plusminus/twosuperior
+/threesuperior/acute/mu/paragraph/periodcentered/cedilla/onesuperior
+/ordmasculine/guilsinglright/onequarter/onehalf/threequarters/questiondown
+/Agrave/Aacute/Acircumflex/Atilde/Adieresis/Aring/AE/Ccedilla/Egrave/Eacute
+/Ecircumflex/Edieresis/Igrave/Iacute/Icircumflex/Idieresis/Eth/Ntilde/Ograve
+/Oacute/Ocircumflex/Otilde/Odieresis/multiply/Oslash/Ugrave/Uacute/Ucircumflex
+/Udieresis/Yacute/Thorn/germandbls/agrave/aacute/acircumflex/atilde/adieresis
+/aring/ae/ccedilla/egrave/eacute/ecircumflex/edieresis/igrave/iacute
+/icircumflex/idieresis/eth/ntilde/ograve/oacute/ocircumflex/otilde/odieresis
+/divide/oslash/ugrave/uacute/ucircumflex/udieresis/yacute/thorn/ydieresis
+] def
+
+
+% YCORRECT*
+% The reference point of a string ist NOT its lower left corner but 
+% its baseline.  Therefore, the y coordinate must be corrected.  
+% Returns the correction for the current font.
+%
+% ycorrect* y
+
+/ycorrect* {
+	currentfont /FontBBox get
+	aload pop pop pop
+	currentfont /FontMatrix get dtransform
+	exch pop
+} def 
+
+
+% TEXT*
+% print out a string and make sure not to require more space than
+% specified.
+% font xsize ysize xorigin yorigin (string) text*
+
+/text* {
+
+	/string+ exch def		% set up some variables ..
+	moveto				% move to (xorigin,yorigin)
+	/ysize+ exch def
+	/xsize+ exch def
+	/thefont+ exch def
+
+	% is the right font already selected ?
+
+	thefont+ font+ ne 
+	ysize+ fontSize+ ne
+	or {	
+		% set up the right font - reencode it	
+		
+		/Symbol thefont+ eq 
+		{
+			thefont+ findfont
+		}{
+
+			/isofont+ isotable thefont+ isolatin1*	
+			/isofont+ findfont
+		}ifelse
+
+		[ysize+ 0 0 ysize+ neg 0 0] makefont
+		setfont
+		
+		/font+ thefont+ def
+		/fontSize+ ysize+ def
+	} if
+
+	% correct current point 
+
+	0 ycorrect* neg rmoveto
+
+	% string too long?  Scale it down ...
+	% The actual font is scaled. There is a good chance,
+	% that this will not happen too often when the font is not
+	% changed during the calls of text*
+
+	xsize+ string+ stringwidth pop div dup dup
+	1 lt {
+		0 0 1 0 0 6 array astore currentfont exch 
+		makefont setfont
+		pop
+	}{ 
+		% string is too short ... scale it up
+
+		1.05 gt {
+			0 0 1 0 0 6 array astore currentfont exch 
+			makefont setfont	
+		}{
+			pop
+
+		} ifelse
+	} ifelse
+	
+	string+ show
+
+} bind def
+
+	
+% ARROWLINE*
+% Draw a line of given width with an arrow at its end
+% len gives the height of the triangle forming the head of the arrow
+% and angle the angle at its top
+%	
+% angle len  x1 y1 x2 y2 linewidth arrowline*
+
+/arrowline* {
+	setlinewidth			% angle len x1 y1 x2 y2
+	/y2 exch def
+	/x2 exch def
+	/y1 exch def
+	/x1 exch def
+	/len+ exch def			% height of triangle
+
+	/alpha+ 
+		y2 y1 sub		% define alpha+
+		x2 x1 sub
+		atan
+	def
+
+	/base+				% define half of baseline
+		exch 
+		2 div dup		% angle angle
+		sin exch cos 	 	% sin(angle) cos(angle)
+		div			% tan(angle)
+		len+
+		mul			% half of baseline
+	def  
+	
+	newpath				% draw the line
+	x1 y1 moveto 
+	x2 len+ alpha+ cos mul sub 	% shorten the line to the end  
+	y2 len+ alpha+ sin mul sub 	% of the triangle
+	lineto
+	stroke		
+
+	gsave				% set the origin to the head of
+	0 setlinewidth			% the arrow and rotate the system
+	x2 y2 
+	translate			% origin now at x2 y2
+
+	alpha+ 90 sub rotate 		% rotate the system
+
+	newpath				% draw a triangle
+	0 0 moveto
+	base+ len+ neg rlineto
+	base+ 2 mul neg 0 rlineto
+	closepath
+	fill
+	
+	grestore
+} bind def
+
+% ARROWHEAD*
+% draw an arrow head inclined by alpha at (x,y)
+%
+% angle len alpha x y
+
+/arrowhead* {
+	/y exch def
+	/x exch def
+	/alpha+ exch def
+	/len+ exch def			% height of triangle
+
+	/base+				% define half of baseline
+		exch 
+		2 div dup		% angle angle
+		sin exch cos 	 	% sin(angle) cos(angle)
+		div			% tan(angle)
+		len+
+		mul			% half of baseline
+	def
+
+	gsave				% set the origin to the head of
+	0 setlinewidth			% the arrow and rotate the system
+	x y 
+	translate			% origin now at x y
+
+	alpha+ 90 sub rotate 		% rotate the system
+
+	newpath				% draw a triangle
+	0 0 moveto
+	base+ len+ neg rlineto
+	base+ 2 mul neg 0 rlineto
+	closepath
+	fill
+	
+	grestore
+} bind def
+
+
+% LINE*
+% draw a line of given width from (x1,y1) to (x2,y2)
+%
+% x1 y1 x2 y2 width line*
+
+/line* {
+	setlinewidth	% x1 y1 x2 y2
+	newpath
+	4 2 roll 	% x2 y2 x1 y1
+	moveto		% x2 y2
+	lineto		
+	stroke
+} bind def
+
+
+% CLEAN*
+%
+% fill a box given by four points with white colour ..
+% x1 y1 x2 y2 x3 y3 x4 y4 clean*
+
+/clean* {
+	gsave
+	1 setgray
+	0 setlinewidth
+	newpath
+	moveto  lineto  lineto lineto
+	closepath
+	fill
+	grestore
+} bind def
+
+
+% BOX*
+% fill a box given by four points
+%
+% x1 y1 x2 y2 x3 y3 x4 y4 box*
+
+/box* {
+	0 setlinewidth
+	newpath
+	moveto 	lineto 	lineto lineto
+	closepath
+	fill
+} bind def
+
+
+% ARC*
+% draw an ellipse with center (cx,cy), radius dx dy, starting at start
+% and ending at end.
+%
+% start end dx dy cx cy width ARC*
+
+/arc* {
+	gsave
+	setlinewidth
+	translate
+	newpath
+	dup 3 1 roll		% start end dy dx dy
+	div 1 scale		% dy dx/dy 1 scale => start end dy
+	
+	0 exch  0 exch		% start end 0 0 dy 
+	5 -2 roll 		% 0 0 dy start end
+
+	dup
+	0 eq {			% replace 0 by 360
+		pop 
+		360
+	} if
+	arc
+	stroke
+	grestore
+} bind def
+
+
+% Set up the right font to the right size
+
+/isofont+ isotable font+ isolatin1* 	% reencode font+
+					% and make it the current font
+/isofont+ findfont
+[fontSize+ 0 0 fontSize+ neg 0 0] makefont
+setfont
+
+%%EndProlog
+10 24 119 24 119 105 10 105 clean*
+10 24 118 24 118 25 10 25 box* %(10, 24)(108, 1)
+10 25 11 25 11 103 10 103 box* %(10, 25)(1, 78)
+/Courier 7 13 13 40 (1) text*
+/Courier 14 13 20 40 (: ) text*
+/Courier-Bold 21 13 34 40 (uni) text*
+13 40 115 40 115 41 13 41 box* %(13, 40)(102, 1)
+13 43 115 43 115 44 13 44 box* %(13, 43)(102, 1)
+13 44 14 44 14 100 13 100 box* %(13, 44)(1, 56)
+/Courier 14 13 28 59 (ii) text*
+/Courier 21 13 56 59 ( = ) text*
+/Courier 7 13 77 59 (7) text*
+/Courier 28 13 28 72 (bit1) text*
+/Courier 21 13 56 72 ( = ) text*
+/Courier 7 13 77 72 (1) text*
+/Courier 28 13 28 85 (bit2) text*
+/Courier 21 13 56 85 ( = ) text*
+/Courier 7 13 77 85 (3) text*
+/Courier 7 13 28 98 (u) text*
+/Courier 21 13 56 98 ( = ) text*
+/Courier 35 13 77 98 ({...}) text*
+114 44 115 44 115 100 114 100 box* %(114, 44)(1, 56)
+13 100 115 100 115 101 13 101 box* %(13, 100)(102, 1)
+117 25 118 25 118 103 117 103 box* %(117, 25)(1, 78)
+10 103 118 103 118 104 10 104 box* %(10, 103)(108, 1)
+118 25 119 25 119 104 118 104 box* %(118, 25)(1, 79)
+11 104 119 104 119 105 11 105 box* %(11, 104)(108, 1)
+127 30 194 30 194 98 127 98 clean*
+127 30 193 30 193 31 127 31 box* %(127, 30)(66, 1)
+127 31 128 31 128 96 127 96 box* %(127, 31)(1, 65)
+/Courier 7 13 130 46 (2) text*
+/Courier 14 13 137 46 (: ) text*
+/Courier-Bold 28 13 151 46 (guni) text*
+130 46 190 46 190 47 130 47 box* %(130, 46)(60, 1)
+130 49 190 49 190 50 130 50 box* %(130, 49)(60, 1)
+130 50 131 50 131 93 130 93 box* %(130, 50)(1, 43)
+/Courier 14 13 145 65 (ii) text*
+/Courier 21 13 159 65 ( = ) text*
+/Courier-Oblique 7 13 180 65 (1) text*
+/Courier 35 13 145 78 ({...}) text*
+/Courier 35 13 145 91 ({...}) text*
+189 50 190 50 190 93 189 93 box* %(189, 50)(1, 43)
+130 93 190 93 190 94 130 94 box* %(130, 93)(60, 1)
+192 31 193 31 193 96 192 96 box* %(192, 31)(1, 65)
+127 96 193 96 193 97 127 97 box* %(127, 96)(66, 1)
+193 31 194 31 194 97 193 97 box* %(193, 31)(1, 66)
+128 97 194 97 194 98 128 98 box* %(128, 97)(66, 1)
+206 78 339 78 339 114 206 114 clean*
+206 78 338 78 338 79 206 79 box* %(206, 78)(132, 1)
+206 79 207 79 207 112 206 112 box* %(206, 79)(1, 33)
+/Courier 7 13 209 94 (4) text*
+/Courier 14 13 216 94 (: ) text*
+/Courier-Bold 35 13 230 94 (sqrt2) text*
+209 94 335 94 335 95 209 95 box* %(209, 94)(126, 1)
+/Courier 126 13 209 110 (1.4142135623730951) text*
+337 79 338 79 338 112 337 112 box* %(337, 79)(1, 33)
+206 112 338 112 338 113 206 113 box* %(206, 112)(132, 1)
+338 79 339 79 339 113 338 113 box* %(338, 79)(1, 34)
+207 113 339 113 339 114 207 114 box* %(207, 113)(132, 1)
+218 30 295 30 295 66 218 66 clean*
+218 30 294 30 294 31 218 31 box* %(218, 30)(76, 1)
+218 31 219 31 219 64 218 64 box* %(218, 31)(1, 33)
+/Courier 7 13 221 46 (3) text*
+/Courier 14 13 228 46 (: ) text*
+/Courier-Bold 14 13 242 46 (pi) text*
+221 46 291 46 291 47 221 47 box* %(221, 46)(70, 1)
+/Courier 70 13 221 62 (3.14159274) text*
+293 31 294 31 294 64 293 64 box* %(293, 31)(1, 33)
+218 64 294 64 294 65 218 65 box* %(218, 64)(76, 1)
+294 31 295 31 295 65 294 65 box* %(294, 31)(1, 34)
+219 65 295 65 295 66 219 66 box* %(219, 65)(76, 1)
+%%Trailer
+
+% $Id$
+% Trailer for DDD PostScript Box output
+
+grestore
+showpage
+end		% of ddddict 
