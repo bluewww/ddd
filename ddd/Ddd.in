@@ -4448,3 +4448,12 @@ Edit Breakpoints@rm.\n\
 @tt \267 @rm Use the functions of the @bf Program @rm menu to resume \
 execution\n\
     and step through your program.
+
+Ddd*stuck.helpString: \
+@rm Life is bigger\n\
+It's bigger than you\n\
+And you are not me\n\
+The lengths that I will go to\n\
+The distance in your eyes\n\
+Oh no I've said too much\n\
+I set it up
