@@ -493,7 +493,7 @@ static void MakeMoveCB(Widget, XtPointer client_data, XtPointer)
     if (winner() != NO_ONE)
 	initBoard();
 
-    make_move((int)client_data);
+    make_move((int)(long)client_data);
 }
 
 static Widget create_tictactoe(Widget parent)

@@ -71,10 +71,10 @@ dnl
 dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
-VERSION=3.1
+VERSION=3.1.2
 dnl
 dnl The version nickname.
-NICKNAME="Blue Sky"
+NICKNAME="Birdland"
 dnl 
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update the product.
@@ -562,6 +562,9 @@ AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT
 AC_STAT_MACROS_BROKEN
 dnl
+dnl These checks may require `-lstdc++' to link and run properly
+ice_save_LIBS="$LIBS"
+LIBS="$CXXLIBS $LIBS"
 ICE_CHECK_CORE_MAGIC
 ICE_CHECK_PTRACE_DUMPCORE
 ICE_CHECK_FROZEN_OSTRSTREAM
@@ -574,6 +577,7 @@ AC_LANG_C
 ICE_REGCOMP_BROKEN
 AC_LANG_RESTORE
 dnl
+LIBS="$ice_save_LIBS"
 dnl
 ICE_CHECK_DECL(_getpty, unistd.h)
 ICE_CHECK_DECL(alloca, alloca.h stdlib.h)
@@ -643,9 +647,13 @@ ICE_CHECK_DECL(unlink, unistd.h)
 ICE_CHECK_DECL(unlockpt, stdlib.h)
 ICE_CHECK_DECL(waitpid, sys/wait.h)
 dnl
+dnl These checks may require -lstdc++ to link and tun properly
+ice_save_LIBS="$LIBS"
+LIBS="$CXXLIBS $LIBS"
 ICE_CHECK_PATH_MAX
 ICE_CHECK_POSIX_PATH_MAX
 ICE_CHECK_MAXPATHLEN
+LIBS="$ice_save_LIBS"
 dnl
 dnl
 dnl Check for a POSIX.2 regcomp()/regexec() library
@@ -724,7 +732,7 @@ dnl
 dnl
 dnl That's all, folks!
 dnl
-AC_OUTPUT(Makefile vr.h Ddd ddd.man .gdbinit, date > stamp-h)
+AC_OUTPUT(Makefile vr.h bld.h Ddd ddd.man .gdbinit, date > stamp-h)
 dnl
 dnl 
 dnl Give some warnings

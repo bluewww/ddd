@@ -64,6 +64,10 @@ char DispBox_rcsid[] =
 #define CACHE_BOXES 1
 #endif
 
+#ifndef LOG_BOX_CACHE
+#define LOG_BOX_CACHE 0
+#endif
+
 
 //-----------------------------------------------------------------------------
 
@@ -165,7 +169,8 @@ void DispBox::set_value(const DispValue* dv, const DispValue *parent)
     if (title_box != 0)
 	args += title_box->link();
 
-    ((DispValue *)dv)->validate_box_cache();
+    if (dv != 0)
+	((DispValue *)dv)->validate_box_cache();
 
     args += create_value_box(dv, parent);
     mybox = eval("display_box", args);
@@ -250,6 +255,8 @@ bool DispBox::is_numeric(const DispValue *dv, const DispValue *parent)
 // Create a Box for the value DV
 Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 {
+    assert(dv != 0);
+
     Box *vbox = 0;
 
 #if CACHE_BOXES
@@ -258,10 +265,18 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 
     if (vbox != 0)
     {
+#if LOG_BOX_CACHE
+	clog << dv->full_name() << ": using cached box\n";
+#endif
+
 	vbox = vbox->link();
 	assert_ok(vbox->OK());
 	return vbox;
     }
+#endif
+
+#if LOG_BOX_CACHE
+    clog << dv->full_name() << ": computing new box\n";
 #endif
 
     // Rebuild box
@@ -560,7 +575,11 @@ Box *DispBox::create_value_box (const DispValue *dv,
 				int member_name_width)
 {
     Box *vbox = 0;
-    if (dv == 0 || !dv->enabled())
+    if (dv == 0)
+    {
+	vbox = eval("none");
+    }
+    else if (!dv->enabled())
     {
 	vbox = eval("disabled");
     }

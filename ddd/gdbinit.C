@@ -45,6 +45,7 @@ char gdbinit_rcsid[] =
 #include "shell.h"
 #include "string-fun.h"
 #include "ddd.h"
+#include "SourceView.h"
 #include "TimeOut.h"
 
 static void InvokeGDBFromShellHP(Agent *source, void *client_data, 
@@ -292,8 +293,7 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 	    if (arg.contains('/', 0))
 		continue;		// File
 
-	    string classpath = 
-		getenv("CLASSPATH") != 0 ? getenv("CLASSPATH") : ".";
+	    string classpath = source_view->class_path();
 	    while (classpath != "")
 	    {
 		string dir;

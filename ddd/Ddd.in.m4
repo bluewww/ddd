@@ -220,6 +220,12 @@ Ddd*blockTTYInput: auto
 ! The time (in seconds) to wait for synchronous GDB questions to complete
 Ddd*questionTimeout: 10
 
+! The time (in ms) to wait for GDB to finish a partial position information
+Ddd*positionTimeout: 500
+
+! The time (in ms) to wait for GDB to finish a partial display information
+Ddd*displayTimeout: 2000
+
 
 ! The `rsh' command to invoke tty-based commands on other hosts.
 ! On some systems, this is called `remsh'; on others, `on'.
@@ -504,8 +510,8 @@ Ddd*pydbDisplayShortcuts:  \
 /o ()	// Convert to Oct
 
 Ddd*perlDisplayShortcuts:  \
-hex(())	// Convert to Hex\n\
-oct(())	// Convert to Oct
+sprintf("%#x", ())	// Convert to Hex\n\
+sprintf("%#o", ())	// Convert to Oct
 
 
 ! Tab width in source texts
@@ -598,7 +604,9 @@ Ddd*pydbSettings:
 
 ! The Perl Debugger initialization commands.  Enable emacs mode.
 Ddd*perlInitCommands: \
-$DB::emacs = 1\n
+$DB::emacs = 1\n\
+O compactDump=\n\
+O veryCompact=\n
 
 ! The Perl Debugger settings.  Usually overridden in `~/.ddd/init'.
 Ddd*perlSettings:

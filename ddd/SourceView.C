@@ -389,7 +389,7 @@ string SourceView::current_code_start;
 string SourceView::current_code_end;
 
 string SourceView::current_pwd        = cwd();
-string SourceView::current_class_path = ".";
+string SourceView::current_class_path = NO_GDB_ANSWER;
 
 XmTextPosition SourceView::last_top                = 0;
 XmTextPosition SourceView::last_pos                = 0;
@@ -3864,6 +3864,7 @@ void SourceView::process_info_bp (string& info_output,
     bool changed = false;
     bool added   = false;
     ostrstream undo_commands;
+    string file = current_file_name;
 
     while (info_output != "")
     {
@@ -3978,8 +3979,8 @@ void SourceView::process_info_bp (string& info_output,
 	{
 	    // New breakpoint
 	    changed = true;
-	    BreakPoint *new_bp = new BreakPoint(info_output, break_arg, 
-						bp_nr, current_file_name);
+	    BreakPoint *new_bp = 
+		new BreakPoint(info_output, break_arg, bp_nr, file);
 	    bp_map.insert(bp_nr, new_bp);
 
 	    if (gdb->has_delete_command())
@@ -4477,13 +4478,42 @@ void SourceView::process_pwd(string& pwd_output)
 
 void SourceView::process_use(string& use_output)
 {
-    strip_space(use_output);
-    current_class_path = use_output;
+    if (use_output == NO_GDB_ANSWER)
+	return;
 
-    clear_file_cache();
-    reload();
+    strip_space(use_output);
+
+    string path_prefix = "";
+    char *p = getenv("CLASSPATH");
+    if (p != 0)
+	path_prefix = string(p) + ":";
+    if (!use_output.contains(path_prefix, 0))
+	use_output.prepend(path_prefix);
+
+    if (current_class_path != use_output)
+    {
+	current_class_path = use_output;
+	clear_file_cache();
+	reload();
+    }
 }
 
+string SourceView::class_path()
+{
+    if (gdb->type() == JDB && current_class_path == NO_GDB_ANSWER)
+    {
+	string use = gdb_question("use");
+	process_use(use);
+    }
+
+    if (current_class_path == NO_GDB_ANSWER)
+    {
+	char *p = getenv("CLASSPATH");
+	return p ? p : ".";
+    }
+
+    return current_class_path;
+}
 
 
 //-----------------------------------------------------------------------

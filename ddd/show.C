@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD info functions
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -37,6 +37,7 @@ char show_rcsid[] =
 
 #include "AppData.h"
 #include "LiterateA.h"
+#include "build.h"
 #include "config.h"
 #include "configinfo.h"
 #include "cook.h"
@@ -327,12 +328,18 @@ static void show_configuration(ostream& os, bool version_only)
         "." stringize(__GNUC_MINOR__)
 #endif
 #endif // !defined(__VERSION__)
+	// " (" CXX_NAME ")"
 
 #elif defined(__SUNPRO_CC)
 	"SunPRO CC " stringize(__SUNPRO_CC)
+	// " (" CXX_NAME ")"
+
+#elif defined(CXX_NAME)
+	CXX_NAME
 #else  // Anything else
-	"CC"
+	"some C++ compiler"
 #endif
+
 
 #ifdef _G_LIB_VERSION
 	", libstdc++ " _G_LIB_VERSION
