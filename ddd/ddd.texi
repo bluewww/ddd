@@ -6750,8 +6750,9 @@ Otherwise, enter the variable name in the argument field.  Click on the
 @samp{Watch} button to set a watchpoint there.
 
 @lbindex Watch
-Using @GDB{}, you can set different types of watchpoints.  Click and hold
-@emph{mouse button 1} on the @samp{Watch} button to get a menu.
+Using @GDB{} and @JDB{} 1.2, you can set different types of watchpoints.
+Click and hold @emph{mouse button 1} on the @samp{Watch} button to get a
+menu.
 
 
 @node Editing Watchpoint Properties
