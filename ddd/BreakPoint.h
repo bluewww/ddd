@@ -55,43 +55,45 @@ enum BPType {
 enum BPDispo {
     BPKEEP,			// Keep (default)
     BPDEL,			// Delete (temporary breakpoint)
-    BPDIS			// Disable (???)
+    BPDIS			// Disable (`enable once' in GDB)
 };
 
 class BreakPoint {
-    string  mynumber_str;
-    int     mynumber;
-    BPType  mytype;
-    BPDispo mydispo;
-    bool    myenabled;
-    string  myfile_name;
-    int     myline_nr;
-    string  myaddress;
-    string  myexpr;
-    string  myinfos;
-    int     myignore_count;
-    string  mycondition;
-    StringArray mycommands;
-    string  myarg;
-    WatchMode mywatch_mode;
-    bool    myenabled_changed;
-    bool    myfile_changed;
-    bool    myposition_changed;
-    bool    myaddress_changed;
-    bool    myselected;
-    Widget  mysource_glyph;
-    Widget  mycode_glyph;
+    int     mynumber;		// Breakpoint number
+    BPType  mytype;		// Type, as above
+    BPDispo mydispo;		// Disposition, as above
+    bool    myenabled;		// Is breakpoint enabled?
+    string  myfile_name;	// File name
+    int     myline_nr;		// Line number
+    string  myaddress;		// Address in memory
+    string  myfunc;		// Function name
+    string  myexpr;		// Expression to watch (for watchpoints)
+    string  myinfos;		// Additional information (human-readable)
+    int     myignore_count;	// Ignore count
+    string  mycondition;	// Breakpoint condition
+    StringArray mycommands;	// Commands to be issued when reached
+    string  myarg;		// Argument as given to breakpoint command
+    WatchMode mywatch_mode;	// Watchpoint detail
+
+    bool    myenabled_changed;	// True if `enabled' state changed
+    bool    myfile_changed;	// True if source file changed
+    bool    myposition_changed;	// True if position changed
+    bool    myaddress_changed;	// True if address changed
+    bool    myselected;		// True if selected
+
+    Widget  mysource_glyph;	// Associated glyph in source
+    Widget  mycode_glyph;	// Associated glyph in code
 
 private:
     BreakPoint(const BreakPoint& b)
-	: mynumber_str(b.mynumber_str),
-	  mynumber(b.mynumber),
+	: mynumber(b.mynumber),
 	  mytype(b.mytype),
 	  mydispo(b.mydispo),
 	  myenabled(b.myenabled),
 	  myfile_name(b.myfile_name),
 	  myline_nr(b.myline_nr),
 	  myaddress(b.myaddress),
+	  myfunc(b.myfunc),
 	  myexpr(b.myexpr),
 	  myinfos(b.myinfos),
 	  myignore_count(b.myignore_count),
@@ -127,7 +129,6 @@ public:
     BreakPoint (string& info_output, string arg = "", int number = 0);
 
     // Breakpoint number.
-    const string& number_str() const { return mynumber_str; }
     int number() const               { return mynumber; }
 
     // Breakpoint symbol (`#N#', `?N?', or `_N_')
@@ -147,6 +148,7 @@ public:
     int line_nr() const             { return myline_nr; }
     const string& address() const   { return myaddress; }
     string pos() const;
+    const string& func() const      { return myfunc; }
 
     // Watchpoint info
     const string& expr() const   { return myexpr; }
