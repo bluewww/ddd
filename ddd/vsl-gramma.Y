@@ -35,12 +35,12 @@ char VSL_yacc_rcsid[] =
     "$Id$";
 
 
-// Funktionsaufrufe
+// Function calls
 
-// Geeigneten Knoten fuer Funktionsnamen zurueckgeben
+// Return appropriate node for function call
 VSLNode *VSLLib::_call(const string& func_name, VSLNode *arg)
 {
-    // Definitionsliste finden
+    // Find definition list
     VSLDefList* def = deflist(func_name);
     if (def == 0)
     {
@@ -49,7 +49,7 @@ VSLNode *VSLLib::_call(const string& func_name, VSLNode *arg)
 	arg = 0;
     }
 
-    // Aufruf zurueckgeben
+    // Return calling node
     if (def && arg)
 	return new DefCallNode(def, arg);
 
@@ -194,31 +194,39 @@ item			:	function_declaration ';'
 
 function_declaration	:	function_header
 				{
-				  if ($1.pattern)
-				  {
-				    vsllib->add(*$1.id,
-				      $1.pattern, 0, False,
-				      *$1.file, $1.line);
-				  }
-				  delete $1.id;
-				  delete $1.file;
+				    ASSERT($1.pattern == 0 || 
+					   $1.pattern->OK());
+
+				    if ($1.pattern)
+				    {
+					vsllib->add(*$1.id,
+						    $1.pattern, 0, False,
+						    *$1.file, $1.line);
+				    }
+				    delete $1.id;
+				    delete $1.file;
 				}
 
 function_header		:	function_identifier function_argument
 				{
-				  $$.id      = $1;
-				  $$.pattern = $2;
-				  $$.file    = new string(yyfilename);
-				  $$.line    = yylinenumber;
+				    ASSERT($1->OK());
+				    ASSERT($2 == 0 || $2->OK());
+
+				    $$.id      = $1;
+				    $$.pattern = $2;
+				    $$.file    = new string(yyfilename);
+				    $$.line    = yylinenumber;
 				}
 			|	function_identifier
 				{
-				  $$.id      = new string("#" + *$1);
-				  $$.pattern = new EmptyListNode;
-				  $$.file    = new string(yyfilename);
-				  $$.line    = yylinenumber;
+				    ASSERT($1->OK());
 
-				  delete $1;
+				    $$.id      = new string("#" + *$1);
+				    $$.pattern = new EmptyListNode;
+				    $$.file    = new string(yyfilename);
+				    $$.line    = yylinenumber;
+
+				    delete $1;
 				}
 
 function_identifier	:	identifier
@@ -266,52 +274,69 @@ function_definition	:	local_definition
 
 local_definition	: 	local_header function_body
 				{ 
-				  if ($1.pattern)
-				  {
-				    // Funktion definieren
-				    vsllib->add(*$1.id,
-				      $1.pattern, $2, False,
-				      *$1.file, $1.line);
-				  }
-				  delete $1.id;
-				  delete $1.file;
+				    ASSERT($1.pattern == 0 || 
+					   $1.pattern->OK());
+				    ASSERT($2 == 0 || $2->OK());
+
+				    if ($1.pattern)
+				    {
+					// Define function
+					vsllib->add(*$1.id,
+						    $1.pattern, $2, False,
+						    *$1.file, $1.line);
+				    }
+
+				    delete $1.id;
+				    delete $1.file;
 				}
 
 local_header		:	function_header EQ
 				{
-				  if ($1.pattern)
-				  {
-				    // Funktion bereits deklarieren
-				    // (fuer rekursive Aufrufe)
-				    vsllib->add(*$1.id,
-				      $1.pattern->dup(), 0, False,
-				      yyfilename, yylinenumber);
-				  }
-				  $$ = $1;
+				    ASSERT($1.pattern == 0 || 
+					   $1.pattern->OK());
+
+				    if ($1.pattern)
+				    {
+					// Declare function now
+					// (for recursive calls)
+					vsllib->add(*$1.id,
+						    $1.pattern->dup(), 0, 
+						    False,
+						    yyfilename, yylinenumber);
+				    }
+
+				    $$ = $1;
 				}
 
 global_definition	:	global_header function_body
 				{ 
-				  if ($1.pattern)
-				  {
-				    // Funktion definieren
-				    vsllib->add(*$1.id, 
-				      $1.pattern, $2, True,
-				      *$1.file, $1.line);
-				  }
-				  delete $1.id;
-				  delete $1.file;
+				    ASSERT($1.pattern == 0 || 
+					   $1.pattern->OK());
+				    ASSERT($2 == 0 || $2->OK());
+
+				    if ($1.pattern)
+				    {
+					// Define function
+					vsllib->add(*$1.id, 
+						    $1.pattern, $2, True,
+						    *$1.file, $1.line);
+				    }
+
+				    delete $1.id;
+				    delete $1.file;
 				}
 
 global_header		:	function_header ARROW
 				{
 				  if ($1.pattern)
 				  {
-				    // Funktion bereits deklarieren
-				    // (fuer rekursive Aufrufe)
-				    vsllib->add(*$1.id,
-					$1.pattern->dup(), 0, True,
-					yyfilename, yylinenumber);
+				      ASSERT($1.pattern->OK());
+
+				      // Declare function now
+				      // (for recursive calls)
+				      vsllib->add(*$1.id,
+						  $1.pattern->dup(), 0, True,
+						  yyfilename, yylinenumber);
 				  }
 				  $$ = $1;
 				}
@@ -326,19 +351,40 @@ function_body		:	box_expression_with_defs
 /*** LET, WHERE ***/
 
 box_expression_with_defs:	box_expression_with_wheres
-				{ $$ = $1; }
+				{
+				    $$ = $1;
+				}
 			|	LET var_definition in_box_expression
 				{ 
-				  $$ = ($2.pattern && $2.args && $3) ?
-				    new LetNode($2.pattern, $2.args, $3) : 0;
+				    ASSERT($2.pattern == 0 || 
+					   $2.pattern->OK());
+				    ASSERT($2.args == 0 || 
+					   $2.args->OK());
+				    ASSERT($3 == 0 || $3->OK());
+
+				    $$ = ($2.pattern && $2.args && $3) ?
+					new LetNode($2.pattern, $2.args, $3) :
+					0;
+				    ASSERT($$ == 0 || $$->OK());
 				}
 
 in_box_expression	:	IN box_expression_with_defs
-				{ $$ = $2; }
+				{
+				    $$ = $2;
+				}
 			|	',' var_definition in_box_expression
 				{ 
-				  $$ = ($2.pattern && $2.args && $3) ?
-				    new LetNode($2.pattern, $2.args, $3) : 0;
+				    ASSERT($2.pattern == 0 || 
+					   $2.pattern->OK());
+				    ASSERT($2.args == 0 || 
+					   $2.args->OK());
+				    ASSERT($3 == 0 || $3->OK());
+
+				    $$ = ($2.pattern && $2.args && $3) ?
+					new LetNode($2.pattern, $2.args, $3) :
+					0;
+
+				    ASSERT($$ == 0 || $$->OK());
 				}
 
 box_expression_with_wheres:	box_expression
@@ -349,20 +395,40 @@ box_expression_with_wheres:	box_expression
 box_expression_with_where:	box_expression_with_wheres 
 				WHERE var_definition
 				{
-				  $$ = ($3.pattern && $3.args && $1) ?
-				    new WhereNode($3.pattern, $3.args, $1) : 0;
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3.pattern == 0 || 
+					   $3.pattern->OK());
+				    ASSERT($3.args == 0 || 
+					   $3.args->OK());
+
+				    $$ = ($3.pattern && $3.args && $1) ?
+					new WhereNode($3.pattern, $3.args, $1):
+					0;
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression_with_where 
 				',' var_definition
 				{
-				  $$ = ($3.pattern && $3.args && $1) ?
-				    new WhereNode($3.pattern, $3.args, $1) : 0;
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3.pattern == 0 || 
+					   $3.pattern->OK());
+				    ASSERT($3.args == 0 || 
+					   $3.args->OK());
+
+				    $$ = ($3.pattern && $3.args && $1) ?
+					new WhereNode($3.pattern, $3.args, $1):
+					0;
+
+				    ASSERT($$ == 0 || $$->OK());
 				}
 
 var_definition		:	box_expression EQ box_expression
 				{
-				  $$.pattern = $1;
-				  $$.args    = $3;
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+
+				    $$.pattern = $1;
+				    $$.args    = $3;
 				}
 
 
@@ -386,158 +452,265 @@ box_expression		:	'(' box_expression_with_defs ')'
 				{ $$ = $1; }
 
 list_expression		:	'[' ']'
-				{ $$ = new EmptyListNode; }
+				{
+				    $$ = new EmptyListNode;
+				    ASSERT($$->OK());
+				}
 			|	'[' box_expression_list ']'
-				{ $$ = $2; }
+				{
+				    $$ = $2;
+				    ASSERT($$ == 0 || $$->OK());
+				}
 			|	'(' ')'
-				{ $$ = new EmptyListNode; }
+				{
+				    $$ = new EmptyListNode;
+				    ASSERT($$->OK());
+				}
 			|	'(' multiple_box_expression_list ')'
-				{ $$ = $2; }
+				{
+				    $$ = $2;
+				    ASSERT($$ == 0 || $$->OK());
+				}
 
 box_expression_list	:	box_expression_with_defs
 				{ 
-				  $$ = ($1) ? new FixListNode($1) : 0;
+				    ASSERT($1 == 0 || $1->OK());
+
+				    $$ = ($1) ? new FixListNode($1) : 0;
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	multiple_box_expression_list
 				{ 
-				  $$ = $1; 
+				    $$ = $1; 
 				}
 
 multiple_box_expression_list:	box_expression APPEND box_expression
 				{ 
-				  $$ = ($1 && $3) ? new ListNode($1, $3) : 0;
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+
+				    $$ = ($1 && $3) ? new ListNode($1, $3) : 0;
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression ',' box_expression_list
 				{
-				  $$ = ($1 && $3) ? new ListNode($1, $3) : 0;
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+
+				    $$ = ($1 && $3) ? new ListNode($1, $3) : 0;
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression THREEDOTS
 				{ 
-				  $$ = $1; 
+				    $$ = $1; 
 				}
 			|	THREEDOTS
 				{
-				  $$ = new NameNode("...");
+				    $$ = new NameNode("...");
+				    ASSERT($$ == 0 || $$->OK());
 				}
 
 const_expression	:	string_constant
 				{ 
-				  // bug workaround
-				  char *buf = (char *)*$1;
-				  string name = buf;
-				  $$ = new StringNode(name);
-				  delete $1;
+				    ASSERT($1->OK());
+
+				    // Bug workaround
+				    char *buf = (char *)*$1;
+				    string name = buf;
+				    $$ = new StringNode(name);
+				    delete $1;
+
+				    ASSERT($$->OK());
 				}
 			|	numeric_constant
-				{ $$ = new NumNode($1); }
+				{ 
+				    $$ = new NumNode($1);
+				    ASSERT($$->OK());
+				}
 
 string_constant		:	STRING
-				{ $$ = new string(unquote((char *)yytext)); }
+				{
+				    $$ = new string(unquote((char *)yytext));
+				    ASSERT($$->OK());
+				}
 			|	string_constant STRING
 				{ 
-				  $$ = $1;
-				  *$$ += unquote((char *)yytext);
+				    ASSERT($1->OK());
+
+				    $$ = $1;
+				    *$$ += unquote((char *)yytext);
+
+				    ASSERT($$->OK());
 				}
 
 numeric_constant	:	INTEGER
-				{ $$ = atoi((char *)yytext); }
+				{
+				    $$ = atoi((char *)yytext);
+				}
 
 function_call		:	function_identifier function_argument
 				{
-				  $$ = ($2) ? 
-				    vsllib->_call(*$1, $2) : 0;
+				    ASSERT($1->OK());
+				    ASSERT($2 == 0 || $2->OK());
+
+				    $$ = ($2) ? 
+					vsllib->_call(*$1, $2) : 0;
+				    ASSERT($$ == 0 || $$->OK());
 				}
 
 unary_expression	:	NOT box_expression
-				{ 
-				  $$ = vsllib->call("(not)", $2); 
+				{
+				    ASSERT($2 == 0 || $2->OK());
+				    $$ = vsllib->call("(not)", $2);
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	'+' box_expression
-				{ $$ = $2; }
+				{
+				    $$ = $2;
+				}
 			|	'-' box_expression
 				{
-				  // -x durch 0-x simulieren
-				  $$ = ($2) ? vsllib->call("(-)", 
-					new NullNode, $2) : 0;
+				    // Simulate `-X' by `0-X'
+				    ASSERT($2 == 0 || $2->OK());
+				    $$ = ($2) ? 
+					vsllib->call("(-)", new NullNode, $2) :
+					0;
+				    ASSERT($$ == 0 || $$->OK());
 				}
 
 /*** operators ***/
 
 binary_expression	:	box_expression EQ box_expression
 				{ 
-				  $$ = vsllib->call("(=)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(=)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression NE box_expression
 				{ 
-				  $$ = vsllib->call("(<>)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(<>)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression GT box_expression
 				{ 
-				  $$ = vsllib->call("(>)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(>)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression GE box_expression
 				{ 
-				  $$ = vsllib->call("(>=)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(>=)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression LT box_expression
 				{ 
-				  $$ = vsllib->call("(<)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(<)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression LE box_expression
 				{ 
-				  $$ = vsllib->call("(<=)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(<=)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression HALIGN box_expression
 				{ 
-				  $$ = vsllib->call("(&)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(&)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression VALIGN box_expression
 				{ 
-				  $$ = vsllib->call("(|)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(|)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression UALIGN box_expression
 				{ 
-				  $$ = vsllib->call("(^)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(^)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression TALIGN box_expression
 				{ 
-				  $$ = vsllib->call("(~)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(~)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression '+' box_expression
 				{ 
-				  $$ = vsllib->call("(+)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(+)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression '-' box_expression
 				{ 
-				  $$ = vsllib->call("(-)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(-)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression '*' box_expression
 				{ 
-				  $$ = vsllib->call("(*)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(*)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression '/' box_expression
 				{ 
-				  $$ = vsllib->call("(/)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(/)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression '%' box_expression
 				{ 
-				  $$ = vsllib->call("(%)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(%)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression CONS box_expression
 				{ 
-				  $$ = vsllib->call("(::)", $1, $3); 
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    $$ = vsllib->call("(::)", $1, $3); 
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression OR box_expression
 				{ 
-				  // if expr-1 then true else expr-2
-				  $$ = ($1 && $3) ? 
-			 	    new TestNode($1, new TrueNode, $3) : 0;
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    // If EXPR-1 then true else EXPR-2
+				    $$ = ($1 && $3) ? 
+					new TestNode($1, new TrueNode, $3) : 
+					0;
+				  ASSERT($$ == 0 || $$->OK());
 				}
 			|	box_expression AND box_expression
 				{ 
-				  // if expr-1 then expr-2 else false
-				  $$ = ($1 && $3) ? 
-				    new TestNode($1, $3, new FalseNode) : 0;
+				    ASSERT($1 == 0 || $1->OK());
+				    ASSERT($3 == 0 || $3->OK());
+				    // If EXPR-1 then EXPR-2 else false
+				    $$ = ($1 && $3) ? 
+					new TestNode($1, $3, new FalseNode) : 
+					0;
+				    ASSERT($$ == 0 || $$->OK());
 				}
 
 cond_expression		:	IF box_expression
@@ -545,41 +718,65 @@ cond_expression		:	IF box_expression
 				else_expression
 				FI
 				{ 
-				  $$ = ($2 && $4 && $5) ?
+				    ASSERT($2 == 0 || $2->OK());
+				    ASSERT($4 == 0 || $4->OK());
+				    ASSERT($5 == 0 || $5->OK());
+
+				    $$ = ($2 && $4 && $5) ?
 					new TestNode($2, $4, $5) : 0;
+				    ASSERT($$ == 0 || $$->OK());
 				}
 
 else_expression		:	ELSIF box_expression
 				THEN box_expression_with_defs
 				else_expression
 				{ 
-				  $$ = ($2 && $4 && $5) ?
+				    ASSERT($2 == 0 || $2->OK());
+				    ASSERT($4 == 0 || $4->OK());
+				    ASSERT($5 == 0 || $5->OK());
+
+				    $$ = ($2 && $4 && $5) ?
 					new TestNode($2, $4, $5) : 0;
+				    ASSERT($$ == 0 || $$->OK());
 				}
 			|	ELSE box_expression_with_defs
-				{ $$ = $2; }
+				{
+				    $$ = $2;
+				}
 
 function_argument	:	list_expression
-				{ $$ = $1; }
+				{
+				    $$ = $1;
+				}
 			|	'(' box_expression_with_defs ')'
-				{ $$ = ($2) ? new FixListNode($2) : 0; }
+				{ 
+				    ASSERT($2 == 0 || $2->OK());
+
+				    $$ = ($2) ? new FixListNode($2) : 0; 
+				    ASSERT($$ == 0 || $$->OK());
+				}
 
 argument_or_function	:	identifier
 				{
-				  if (*$1 == "_")
-				    $$ = new DummyNode;
-				  else
-				  {
-				    // Wenn Funktion definiert, diese nehmen;
-				    // sonst Platzhalter Variable bilden.
+				    ASSERT($1->OK());
 
-				    if (vsllib->deflist("#" + *$1))
-				      $$ = vsllib->call("#" + *$1);
+				    if (*$1 == "_")
+				    {
+					$$ = new DummyNode;
+				    }
 				    else
-				      $$ = new NameNode(*$1);
-				  }
+				    {
+					// If function is declared, use it;
+					// otherwise create placeholder var
+					
+					if (vsllib->deflist("#" + *$1))
+					    $$ = vsllib->call("#" + *$1);
+					else
+					    $$ = new NameNode(*$1);
+				    }
 
-				  delete $1;
+				    ASSERT($$->OK());
+				    delete $1;
 				}
 
 
@@ -592,11 +789,16 @@ override_list		:	override_identifier
 
 override_identifier	:	function_identifier
 				{
-				  string func_name = *$1;
-				  if (vsllib->override(func_name)
-				    && vsllib->override("#" + func_name))
-				    VSLLib::parse_error("'" + func_name + 
-				      "(...)' undefined");
+				    ASSERT($1->OK());
+
+				    string func_name = *$1;
+				    if (vsllib->override(func_name)
+					&& vsllib->override("#" + func_name))
+				    {
+					VSLLib::parse_error("'" + func_name + 
+							    "(...)'"
+							    " undefined");
+				    }
 				}
 
 replace_declaration	:	REPLACE replace_list
@@ -606,11 +808,16 @@ replace_list		:	replace_identifier
 
 replace_identifier	:	function_identifier
 				{
-				  string func_name = *$1;
-				  if (vsllib->replace(func_name)
-				    && vsllib->replace("#" + func_name))
-				    VSLLib::parse_error("'" + func_name + 
-				      "(...)' undefined");
+				    ASSERT($1->OK());
+
+				    string func_name = *$1;
+				    if (vsllib->replace(func_name)
+					&& vsllib->replace("#" + func_name))
+				    {
+					VSLLib::parse_error("'" + func_name + 
+							    "(...)'"
+							    " undefined");
+				    }
 				}
 
 %% /* DO NOT REMOVE THIS COMMENT -- MUNCH-YACC DEPENDS ON IT */
