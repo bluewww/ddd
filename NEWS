@@ -41,6 +41,7 @@ DDD 2.2 [in development]
       details, see `User-Defined Commands' in the DDD manual.
     - For `Continue until here', DDD now sets a temporary breakpoints
       and continues (instead of using the GDB `until' command).
+    - Multi-color icons. (requires XPM library)
     - Improved display of breakpoints and execution positions:
       + The current execution position is now properly cleared if
         undetermined (no source, program terminated, etc.)
@@ -54,11 +55,9 @@ DDD 2.2 [in development]
       Wiegand <wiegand@kong.gsfc.nasa.gov>.
     - DDD no longer hangs while receiving large chunks of data.
     - Several speed-ups in processing debugger and program output.
-    - A serious bug involving timer management has been fixed.  On
-      X11R4 (and possibly other X implementations), this bug caused
-      timers to be inadvertently removed, with effects including loss
-      of console cursor, loss of data display contents, and loss of
-      scrolling capabilities.
+    - A serious bug that caused timers to be inadvertently removed has
+      been fixed.  Bug effects included loss of console cursor, loss
+      of data display contents, and loss of scrolling capabilities.
     - Again, several dozens of minor improvements and bug fixes.
 
 
