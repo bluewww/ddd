@@ -525,7 +525,7 @@ dnl
 dnl ICE_CXX_PROBLEMATIC_VERSION
 dnl ---------------------------
 dnl
-dnl If this is GNU C++ earlier than 2.5, issue a warning.
+dnl If this is GNU C++ earlier than 3.1, issue a warning.
 dnl
 AC_DEFUN([ICE_CXX_PROBLEMATIC_VERSION],
 [
@@ -536,21 +536,21 @@ AC_CACHE_CHECK([if this is a problematic ${CXX} version],
 AC_LANG_PUSH(C++)
 AC_PREPROC_IFELSE([AC_LANG_PROGRAM([[
 #ifdef __GNUC__
-#if __GNUC__ < 2
-#error ICE works best with GCC version 2.5 or higher
-#endif /* __GNUC__ < 2 */
+#if __GNUC__ < 3
+#error DDD works best with GCC version 3.1 or higher
+#endif
 #ifdef __GNUC_MINOR__
-#if __GNUC__ == 2 && __GNUC_MINOR__ < 5
-#error ICE works best with GCC version 2.5 or higher
-#endif /* __GNUC_MINOR__ < 5 */
-#endif /* defined(__GNUC_MINOR__) */
-#endif /* defined(__GNUC__) */
+#if __GNUC__ == 3 && __GNUC_MINOR__ < 1
+#error DDD works best with GCC version 3.1 or higher
+#endif
+#endif
+#endif
 ]])],
 [ice_cv_cxx_problematic_version=no], [ice_cv_cxx_problematic_version=yes])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_cxx_problematic_version" = yes; then
-AC_MSG_WARN(*** This package works best with ${CXX} version 2.5 or higher ***)
+AC_MSG_WARN(*** This package works best with ${CXX} version 3.1 or higher ***)
 fi
 ])dnl
 dnl

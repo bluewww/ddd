@@ -20,7 +20,6 @@ Table of Contents
     * LessTif
     * Linux
     * MacOS X
-    * OSF/1
     * Solaris 2.x
     * SunOS
       + SunOS 4.1 and X11R6
@@ -250,26 +249,8 @@ Reported by:  taob@gate.sinica.edu.tw (Brian Tao)
 GCC
 ===
 
-GCC 3.0 prereleases
--------------------
-
-    Building DDD with GCC 3.0 prerelases on Intel/Linux currently
-    leads to duplicate template instantiations.  Recompiling the
-    conflicting objects without optimization should make the problem
-    go away.  Use something like:
-
-       $ rm buttons.o DataDisp.o settings.o BreakPoint.o ddd.o session.o
-       $ make CXXOPT=
-
-    to rebuild DDD.
-
-
-GCC and LIBG++
---------------
-
-    If you have multiple copies of gcc and/or libg++ installed, be
-    sure that the referenced versions match each other.  This is a
-    common source for various problems.
+  Starting ddd 3.3.5, gcc 3.1 or later is required. gcc 2.x is known
+  not to work due to its pre-ISO C++ status.
 
 
 HP-UX
@@ -340,10 +321,7 @@ LessTif
     `http://www.lesstif.org'.  Be sure to apply the patches found in
     the `patches/' subdirectory.
 
-    With DDD 3.1.6 and LessTif 0.88.9, the following problems are
-    currently known:
-
-    * Resizing the plot window does not work properly.
+    Lesstif 0.93.94 is known to work.
 
     See the DDD WWW page for further issues and patches.
 
@@ -427,15 +405,6 @@ MacOS X
     to be renamed as 'ddd'. The resource file Ddd may need to be installed
     within $XAPPLRESDIR.
     ddd for MacOS X is available at http://darwinports.opendarwin.org/.
-
-
-OSF/1
-=====
-
-Reported by:  Marc Mengel <mengel@fnal.gov>
-
-    On our OSF1 V3.2 machine, one has to turn of -g, or the 
-    assembler chokes when compiling ddd.C.
 
 
 Solaris 2.x

@@ -10,6 +10,7 @@ DDD-3.3.10
 * Build fixes
 - automake 1.8 is now the minimum requirement. This affects only builds
   from CVS repository.
+- A warning is emitted if a version of g++ older than 3.1 is used.
 
 DDD-3.3.9
 =========

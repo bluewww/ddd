@@ -232,7 +232,7 @@ dnl
 dnl
 dnl Check for compiler characteristics
 dnl
-dnl ICE_CXX_PROBLEMATIC_VERSION
+ICE_CXX_PROBLEMATIC_VERSION
 dnl ICE_CXX_INCLUDE_DIR
 dnl ICE_CXX_LIB_DIR
 ICE_CXX_OPTIONS
