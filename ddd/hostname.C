@@ -109,43 +109,57 @@ char *hostname()
 	return name = "unknown";
 }
 
-// Return a fully qualified name for the current host
-static char *_fullhostname(char *host)
+// Return the number of '.' in STR
+inline int dots(char *str)
 {
-    if (host == 0)
-	host = hostname();
-    if (strchr(host, '.'))
-	return host;		// HOST already qualified
+    int dots = 0;
+    while (*str != '\0')
+	if (*str++ == '.')
+	    dots++;
+
+    return dots;
+}
+
+// Return most qualified name for the current host
+static char *_fullhostname(char *most_qualified_host)
+{
+    // Try local name
+    if (most_qualified_host == 0)
+	most_qualified_host = hostname();
 
 #ifdef HAVE_GETHOSTBYNAME
-    struct hostent *h = gethostbyname(host);
+    struct hostent *h = gethostbyname(most_qualified_host);
     if (h)
     {
-	// Check official name
-	if (strchr(h->h_name, '.'))
-	    return h->h_name;
+	// Try official name
+	if (dots(h->h_name) > dots(most_qualified_host))
+	    most_qualified_host = h->h_name;
 
-	// Check aliases
+	// Try aliases
 	for (int i = 0; h->h_aliases[i] != 0; i++)
-	    if (strchr(h->h_aliases[i], '.'))
-		return h->h_aliases[i];
+	    if (dots(h->h_aliases[i]) > dots(most_qualified_host))
+		most_qualified_host = h->h_aliases[i];
 
-	// Use first network address
-	if (h->h_addrtype == AF_INET && h->h_addr_list[0] != 0)
+	// Try network addresses
+	if (h->h_addrtype == AF_INET)
 	{
-	    static char buffer[128];
-	    buffer[0] = '\0';
-	    for (int i = 0; i < h->h_length; i++)
-		sprintf(buffer + strlen(buffer), i ? ".%d" : "%d",
-			int((unsigned char)(h->h_addr_list[0][i])));
+	    for (int j = 0; h->h_addr_list[j] != 0; j++)
+	    {
+		static char num_host[128];
+		num_host[0] = '\0';
+		for (int i = 0; i < h->h_length; i++)
+		    sprintf(num_host + strlen(num_host), i ? ".%d" : "%d",
+			    int((unsigned char)(h->h_addr_list[j][i])));
 
-	    return buffer;
+		if (dots(num_host) > dots(most_qualified_host))
+		    most_qualified_host = num_host;
+	    }
 	}
     }
 #endif
 
-    // Keep on using this host name
-    return host;
+    // Return most qualified host name
+    return most_qualified_host;
 }
 
 
