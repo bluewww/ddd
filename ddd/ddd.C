@@ -3001,6 +3001,47 @@ static Widget find_shell(Widget w = 0)
 typedef void (*FileSearchProc)(Widget fs, 
 			       XmFileSelectionBoxCallbackStruct *cbs);
 
+static VarArray<Widget> file_filters;
+static VarArray<Widget> file_filter_buttons;
+static VarArray<Widget> file_dialogs;
+
+static string current_file_filter = "";
+
+// Make sure that every change in one filter is reflected in all others
+static void SyncFiltersCB(Widget w, XtPointer, XtPointer)
+{
+    if (w)
+    {
+	String _current_file_filter = XmTextGetString(w);
+	current_file_filter = _current_file_filter;
+	XtFree(_current_file_filter);
+    }
+
+    for (int i = 0; i < file_filters.size(); i++)
+    {
+	String _filter = XmTextGetString(file_filters[i]);
+	string filter = _filter;
+	XtFree(_filter);
+
+	if (filter != current_file_filter)
+	    XmTextSetString(file_filters[i], current_file_filter);
+    }
+}
+
+// Make sure that every new filter call is performed in all other
+// dialogs as well
+static void FilterAllCB(Widget w, XtPointer, XtPointer)
+{
+    for (int i = 0; i < file_filter_buttons.size(); i++)
+    {
+	if (w != file_filter_buttons[i])
+	    XmFileSelectionDoSearch(file_dialogs[i], NULL);
+    }
+}
+
+// Create a file dialog NAME with DO_SEARCH_FILES and DO_SEARCH_DIRS
+// as search procedures for files and directories, respectively, and
+// OK_CALLBACK as the procedure called when a file is selected.
 Widget file_dialog(Widget w, const string& name,
 		   FileSearchProc do_search_files,
 		   FileSearchProc do_search_dirs,
@@ -3062,9 +3103,23 @@ Widget file_dialog(Widget w, const string& name,
 		  XtPointer(dialog));
     XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
+    Widget filter = XmFileSelectionBoxGetChild(dialog, XmDIALOG_FILTER_TEXT);
+    file_filters += filter;
+    if (current_file_filter != "")
+	XmTextSetString(filter, current_file_filter);
+    XtAddCallback(filter, XmNvalueChangedCallback, SyncFiltersCB, 0);
+
+    Widget filter_button = 
+	XmFileSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
+    file_filter_buttons += filter_button;
+    XtAddCallback(filter_button, XmNactivateCallback, FilterAllCB, 0);
+
+    file_dialogs += dialog;
+
     return dialog;
 }
 
+// Search for remote files and directories, using the command CMD
 static void searchRemote(Widget fs,
 			 XmFileSelectionBoxCallbackStruct *cbs,
 			 String cmd,
@@ -3201,6 +3256,7 @@ static void sort(char *a[], int size)
     } while (h != 1);
 }
 
+// Search for local files and directories, using the predicate IS_OKAY
 static void searchLocal(Widget fs,
 			XmFileSelectionBoxCallbackStruct *cbs,
 			bool is_okay(const string& file_name))
@@ -3281,6 +3337,7 @@ static void searchLocalSourceFiles(Widget fs,
 }
 
 
+// Get the file name from the file selection box W
 string get_file(Widget w, XtPointer, XtPointer call_data)
 {
     XmFileSelectionBoxCallbackStruct *cbs = 
@@ -3313,6 +3370,7 @@ string get_file(Widget w, XtPointer, XtPointer call_data)
     return filename;
 }
 
+// OK pressed in `Open File'
 void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 {
     string filename = get_file(w, client_data, call_data);
@@ -3336,6 +3394,7 @@ void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
+// OK pressed in `Open Core'
 void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 {
     string corefile = get_file(w, client_data, call_data);
@@ -3368,6 +3427,7 @@ void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
+// OK pressed in `Open Source'
 void openSourceDone(Widget w, XtPointer client_data, XtPointer call_data)
 {
     string filename = get_file(w, client_data, call_data);
@@ -3379,6 +3439,9 @@ void openSourceDone(Widget w, XtPointer client_data, XtPointer call_data)
     if (filename != string(-1))
 	source_view->read_file(filename);
 }
+
+
+// Create various file dialogs
 
 void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
 {
@@ -5297,6 +5360,7 @@ void gdbUpdateViewCB(Widget, XtPointer, XtPointer)
 //-----------------------------------------------------------------------------
 
 static bool arguments_updated = false;
+static string last_arguments;
 
 // Update list of arguments
 void update_arguments()
@@ -5304,14 +5368,27 @@ void update_arguments()
     if (arguments_updated || run_dialog == 0)
 	return;
 
-    bool *selected = new bool[gdb_arguments.size() + 1];
-    for (int i = 0; i < gdb_arguments.size() + 1; i++)
+    bool *selected = new bool[gdb_arguments.size()];
+    int pos = -1;
+    for (int i = 0; i < gdb_arguments.size(); i++)
+    {
+	if (gdb_arguments[i] == last_arguments)
+	    pos = i;
 	selected[i] = false;
+    }
+    if (pos >= 0)
+	selected[pos] = true;
 
     setLabelList(gdb_arguments_w, gdb_arguments.values(),
 		 selected, gdb_arguments.size());
 
+    if (pos >= 0)
+	XmListSelectPos(gdb_arguments_w, pos + 1, False);
+
     delete[] selected;
+
+    Widget text_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
+    XmTextSetString(text_w, last_arguments);
 
     arguments_updated = true;
 }
@@ -5322,6 +5399,8 @@ static void add_argument(string arg)
     strip_final_blanks(arg);
     while (arg.length() > 0 && isspace(arg[0]))
 	arg = arg.after(0);
+
+    last_arguments = arg;
 
     // Insertion sort
     int i;
@@ -5426,16 +5505,6 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
 		      SelectArgsCB, 0);
 	XtAddCallback(gdb_arguments_w, XmNbrowseSelectionCallback,
 		      SelectArgsCB, 0);
-    }
-
-    string base;
-    string args;
-    get_args("run", base, args);
-
-    if (args != "")
-    {
-	Widget text_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
-	XmTextSetString(text_w, args);
     }
 
     update_arguments();
