@@ -935,6 +935,7 @@ static Widget find_case_sensitive_w;
 static Widget disassemble_w;
 static Widget edit_source_w;
 static Widget reload_source_w;
+static Widget line_numbers1_w;
 
 static MMDesc source_menu[] =
 {
@@ -952,6 +953,8 @@ static MMDesc source_menu[] =
     { "findCaseSensitive",   MMToggle, { sourceToggleFindCaseSensitiveCB, 0 }, 
       NULL, &find_case_sensitive_w, 0, 0 },
     MMSep,
+    { "lineNumbers",         MMToggle, { sourceToggleDisplayLineNumbersCB, 0 },
+      NULL, &line_numbers1_w, 0, 0 },
     { "disassemble",         MMToggle,  { gdbToggleCodeWindowCB, 0 },
       NULL, &disassemble_w, 0, 0 },
     MMSep,
@@ -1104,7 +1107,7 @@ static MMDesc scales_menu[] =
 };
 
 
-static Widget display_line_numbers_w;
+static Widget line_numbers2_w;
 static Widget refer_sources_w;
 static MMDesc source_preferences_menu[] = 
 {
@@ -1115,7 +1118,7 @@ static MMDesc source_preferences_menu[] =
     { "cache",        MMButtonPanel, MMNoCB, cache_menu, 0, 0, 0 },
     { "lineNumbers",  MMToggle,
       { sourceToggleDisplayLineNumbersCB, 0 }, 0, 
-      &display_line_numbers_w, 0, 0 },
+      &line_numbers2_w, 0, 0 },
     { "scales",       MMPanel | MMUnmanagedLabel, 
       			MMNoCB, scales_menu, 0, 0, 0 },
     MMEnd
@@ -3713,7 +3716,8 @@ void update_options()
     set_toggle(set_display_text_w,       !app_data.display_glyphs);
     set_toggle(set_refer_path_w,         app_data.use_source_path);
     set_toggle(set_refer_base_w,         !app_data.use_source_path);
-    set_toggle(display_line_numbers_w,   app_data.display_line_numbers);
+    set_toggle(line_numbers1_w,          app_data.display_line_numbers);
+    set_toggle(line_numbers2_w,          app_data.display_line_numbers);
 
     if (tab_width_w != 0)
     {
@@ -4152,7 +4156,9 @@ static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(cache_machine_code_w, 
 		      initial_app_data.cache_machine_code);
 
-    notify_set_toggle(display_line_numbers_w, 
+    notify_set_toggle(line_numbers1_w, 
+		      initial_app_data.display_line_numbers);
+    notify_set_toggle(line_numbers2_w, 
 		      initial_app_data.display_line_numbers);
 
     if (app_data.tab_width != initial_app_data.tab_width)

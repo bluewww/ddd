@@ -2633,15 +2633,13 @@ DESC(Lookup (), [lookup LBL(()) in the source])\n\
 DESC(LBL_FIND_FORWARD, [find next occurrence of LBL(())])\n\
 DESC(LBL_FIND_BACKWARD, [find previous occurrence of LBL(())])\n\
 \n\
-ITEM If LBL(Find Words Only) is set, \
-only complete words are found.\n\
-    Otherwise, arbitrary occurrences are found.\n\
-ITEM If LBL(Find Case Sensitive) is set, \
-search is case-sensitive.\n\
-    Otherwise, occurrences are found regardless of case.\n\
+ITEM LBL(Find Words Only) enables finding complete words only.\n\
+    If unset, arbitrary occurrences are found.\n\
+ITEM LBL(Find Case Sensitive) enables case-sensitive search.\n\
+    If unset, occurrences are found regardless of case.\n\
 \n\
-ITEM If LBL(Display Machine Code) is set, the current function\n\
-    is automatically disassembled.\n\
+DESC(Display Line Numbers, [enable numbered source lines])\n\
+DESC(Display Machine Code, [enable disassembling of the current function])\n\
 \n\
 DESC(Edit Source..., [invoke text editor for current source])\n\
 DESC(Reload Source , [reload current source file])])dnl
@@ -2695,6 +2693,13 @@ Ddd*sourceMenu.disassemble.accelerator:		Meta<Key>4
 Ddd*sourceMenu.disassemble.acceleratorText:	Alt+4
 Ddd*sourceMenu.disassemble.documentationString:\
 @rm Toggle display of machine code window
+
+Ddd*sourceMenu.lineNumbers.labelString:		Display Line Numbers
+Ddd*sourceMenu.lineNumbers.mnemonic:		N
+Ddd*sourceMenu.lineNumbers.accelerator:		Meta<Key>N
+Ddd*sourceMenu.lineNumbers.acceleratorText:	Alt+N
+Ddd*sourceMenu.lineNumbers.documentationString:\
+@rm Toggle displaying source line numbers
 
 Ddd*sourceMenu.edit.labelString:	Edit Source...
 Ddd*sourceMenu.edit.mnemonic:		E
