@@ -53,7 +53,8 @@ DDD 2.2 [in development]
       breakpoints set-over a portion of a program that has already
       executed, in order to examine its execution in more detail.
     - The current execution position can also be altered via drag and
-      drop.  Breakpoints can be dragged and dropped, too.
+      drop, allowing users to skip or re-execute portions of code.
+      Breakpoints can be dragged and dropped, too.
     - Improved display of breakpoints and execution positions:
       + The current execution position is now properly cleared if
         undetermined (no source, program terminated, etc.)
@@ -72,13 +73,14 @@ DDD 2.2 [in development]
       window (can be disabled).
     - Memory savings.  DDD regular expressions are now compiled during
       DDD construction (instead of being compiled during DDD
-      execution).  This results in less memory usage and faster execution.
+      execution).  On our box, this results in 35% less memory usage.
 
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
       Wiegand <wiegand@kong.gsfc.nasa.gov>.
     - DDD no longer hangs while receiving large chunks of data.
     - Several speed-ups in processing debugger and program output.
+    - Some memory leaks and some X resource leaks have been tightened.
     - A serious bug that caused timers to be inadvertently removed has
       been fixed.  Bug effects included loss of console cursor, loss
       of data display contents, and loss of scrolling capabilities.

@@ -367,7 +367,4 @@ Volunteers for fixing these and other bugs are welcome!
      data window causes all other windows to (de-)iconify, *except*
      the command tool.
 
-193* `close' does not work on the main window when separate windows
-     are used.
-
-195. (Insert your bug here)
+196. (Insert your bug here)
