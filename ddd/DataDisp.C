@@ -644,9 +644,6 @@ void DataDisp::show(Widget dialog, int depth, int more)
 	    if (dv == 0)
 		continue;
 
-	    if (dn->disabled() && !dv->collapsed())
-		continue;	// Re-enable old state
-
 	    if (more != 0)
 		depth = dv->heightExpanded() + more;
 
@@ -655,7 +652,17 @@ void DataDisp::show(Widget dialog, int depth, int more)
 		dv->collapseAll();
 		dv->expandAll(depth);
 		dn->refresh();
-		changed = true;
+
+		if (dn->enabled())
+		{
+		    changed = true;
+		}
+		else
+		{
+		    // Mark as enabled right now; this way, the
+		    // `enable display' command won't re-expand it.
+		    dn->enable();
+		}
 	    }
 	}
     }
@@ -3123,6 +3130,8 @@ void DataDisp::refresh_builtin_user_displays()
 
     DispValue::value_hook = update_hook;
 
+    StatusShower s("Updating clusters");
+
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
@@ -4193,6 +4202,7 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
 	}
     }
 
+    // Have GDB enable data displays
     if (enabled_data_displays > 0)
     {
 	static RefreshInfo info;
@@ -4202,6 +4212,7 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
 	gdb_command(cmd, last_origin, enable_displayOQC, (void *)&info);
     }
 
+    // Handle user displays
     int enabled_user_displays = 0;
     for (i = 0; i < display_nrs.size(); i++)
     {
@@ -4217,11 +4228,9 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
 
     if (enabled_data_displays == 0)
     {
-	if (enabled_user_displays > 0)
-	{
-	    refresh_builtin_user_displays();
-	    refresh_graph_edit();
-	}
+	refresh_builtin_user_displays();
+	refresh_graph_edit();
+
 	if (do_prompt)
 	    prompt();
     }
@@ -4965,24 +4974,7 @@ void DataDisp::make_sane()
 void DataDisp::process_user (StringArray& answers)
 {
     if (answers.size() == 0)
-    {
-	bool have_displays = false;
-	MapRef ref;
-	for (int k = disp_graph->first_nr(ref); 
-	     k != 0;
-	     k = disp_graph->next_nr(ref))
-	{
-	    DispNode* dn = disp_graph->get(k);
-	    if (dn->is_user_command() && !dn->deferred())
-	    {
-		have_displays = true;
-		break;
-	    }
-	}
-
-	if (!have_displays)
-	    return;		// No data and no displays
-    }
+	return;
 
     StatusShower s("Updating status displays");
 
