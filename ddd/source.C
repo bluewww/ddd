@@ -94,9 +94,9 @@ void gdbRedoCB(Widget, XtPointer, XtPointer)
 
 void gdbPrintCB(Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean internal = (int)(long)client_data;
+    const bool internal = (bool)(long)client_data;
 
-    string arg = current_arg();
+    const string arg = current_arg();
 
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->print_command(arg, internal), w);
@@ -104,9 +104,9 @@ void gdbPrintCB(Widget w, XtPointer client_data, XtPointer)
 
 void gdbPrintRefCB(Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean internal = (int)(long)client_data;
+    const bool internal = (bool)(long)client_data;
 
-    string arg = current_arg();
+    const string arg = current_arg();
 
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->print_command(deref(arg), internal), w);
@@ -254,7 +254,7 @@ bool have_enabled_watchpoint_at_arg()
 void gdbWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     (void) call_data;		// Use it
-    string arg = current_arg();
+    const string arg = current_arg();
 
 #if 0 // We may have different kinds of watchpoints!
     if (have_watchpoint_at_arg())
