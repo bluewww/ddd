@@ -65,6 +65,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 017. On Solaris, exiting DDD while the debugger is still running
      sometimes results in a core dump.
+     [May be fixed in DDD 1.0a and later.]
 
 018. [not a DDD bug, forwarded to manual page]
 
@@ -85,12 +86,14 @@ Volunteers for fixing these and other bugs are welcome!
      > ddd hangs.
      [We cannot determine what causes this error.  On Solaris 2.4, DDD
       runs fine.]
+     [May be fixed in DDD 1.0a and later.]
 
 023. Doug.Royer@eng.sun.com (Doug Royer [KD6HBW]) states:
      > On Solaris 2.5, when I try to 'file->open file...', I get not errors,
      > and nothing happens.
-     [Maybe related with 022, above; `Open file' tries to get the
+     [May be related with 022, above; `Open file' tries to get the
       current directory from GDB and this won't work if GDB hangs.]
+     [May be fixed in DDD 1.0a and later.]
 
 024. On mips-sgi-irix5.2, DDD issues a message `(gdb) write failed:
      Bad file number' and hangs.  Reported by ckumarad@oci.utoronto.ca
@@ -106,9 +109,7 @@ Volunteers for fixing these and other bugs are welcome!
 026. Using DBX with PASCAL or Modula-2, selected array elements are
      always counted from zero, instead of the starting index of the array.
 
-027. When displaying virtual function tables with GDB, vtbl entries
-     are off by one (due to the GDB feature of telling the number of
-     vtbl entries).
+027. [fixed]
 
 028. The `-iconic' option does not work.
 
@@ -120,10 +121,9 @@ Volunteers for fixing these and other bugs are welcome!
 031. On Solaris 2.3, DDD dumps core when dereferencing `date_ptrs' in
      the `cxxtest' program.  Reported by
      Herve.Poirier@grenoble.rxrc.xerox.com (Herve Poirier) and
-     dana@bellcore.com (Dana A Chee).  [Compiler bug?  Herve's
-     backtrace shows strange `r' value for AlignBox::drawAlign()]
+     dana@bellcore.com (Dana A Chee).  [Should be fixed in DDD 1.0a
+     and later.]
 
-032. References are not processed correctly.  Be sure to display the
-     part after `:` only.
+032. [fixed]
 
 033. (Insert your bug here)
