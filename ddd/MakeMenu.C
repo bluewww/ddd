@@ -373,9 +373,12 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 	    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	    widget = verify(XmCreateRowColumn(shell, panelName, args, arg));
 
-	    arg = 0;
-	    label = verify(XmCreateLabel(widget, name, args, arg));
-	    XtManageChild(label);
+	    if (name[0] != '\0')
+	    {
+		arg = 0;
+		label = verify(XmCreateLabel(widget, name, args, arg));
+		XtManageChild(label);
+	    }
 
 	    switch (type)
 	    {

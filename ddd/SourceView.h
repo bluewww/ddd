@@ -385,8 +385,9 @@ class SourceView {
     static bool is_code_widget(Widget w);
     static string& current_text(Widget w);
 
-    // Return current breakpoint indent amount
-    static int indent_amount(Widget w);
+    // Return current breakpoint indent amount.  If POS is given, add
+    // the whitespace from POS.
+    static int indent_amount(Widget w, int pos = -1);
 
     // Format `where' and `thread' lines
     static void setup_where_line(string& line);
@@ -662,6 +663,9 @@ public:
 
     // Set the tab width
     static void set_tab_width(int width);
+
+    // Set the indentation
+    static void set_indent(int source_indent, int code_indent);
 
     // Set the max number of glyphs
     static void set_max_glyphs(int max_glyphs);

@@ -77,6 +77,8 @@ extern void sourceToggleDisplayLineNumbersCB(Widget, XtPointer, XtPointer);
 extern void sourceSetDisplayGlyphsCB        (Widget, XtPointer, XtPointer);
 extern void sourceSetUseSourcePathCB        (Widget, XtPointer, XtPointer);
 extern void sourceSetTabWidthCB             (Widget, XtPointer, XtPointer);
+extern void sourceSetSourceIndentCB 	    (Widget, XtPointer, XtPointer);
+extern void sourceSetCodeIndentCB 	    (Widget, XtPointer, XtPointer);
 
 extern void graphToggleDetectAliasesCB      (Widget, XtPointer, XtPointer);
 extern void graphToggleAlign2dArraysCB      (Widget, XtPointer, XtPointer);

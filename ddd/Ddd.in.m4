@@ -2841,6 +2841,8 @@ ITEM If LBL(Display source line numbers) is set, \n\
     each source line is prefixed by its number.\n\
 ITEM In LBL(Tab width), you can set the spacing of tab stops.\n\
     Setting the tab width to 8 sets a tab stop every 8 characters.\n\
+ITEM In LBL(Indentation), you can indent the source and machine code,\n\
+    giving additional room for the breakpoint area.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
@@ -2880,8 +2882,22 @@ Ddd*preferences*tabWidth.orientation:		XmHORIZONTAL
 Ddd*preferences*tabWidth.minimum:		1
 Ddd*preferences*tabWidth.maximum:		32
 Ddd*preferences*tabWidth.showValue:		on
-Ddd*preferences*tabWidth.titleString:		Tab width
+Ddd*preferences*tabWidth.titleString:		\
+Tab width\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
 
+Ddd*preferences*sourceIndent.orientation:	XmHORIZONTAL
+Ddd*preferences*sourceIndent.minimum:		0
+Ddd*preferences*sourceIndent.maximum:		16
+Ddd*preferences*sourceIndent.showValue:		on
+Ddd*preferences*sourceIndent.titleString:	\
+Source indentation\ \ \ \ \ \ \ \ \ \ \ 
+
+Ddd*preferences*codeIndent.orientation:		XmHORIZONTAL
+Ddd*preferences*codeIndent.minimum:		0
+Ddd*preferences*codeIndent.maximum:		16
+Ddd*preferences*codeIndent.showValue:		on
+Ddd*preferences*codeIndent.titleString:		\
+Machine code indentation
 
 
 Ddd*preferences*data*helpString:	\
@@ -3917,8 +3933,8 @@ WIDGET(Source Text Window)\n\
 \n\
 The source text window shows the source text of the debugged program.\n\
 \n\
-STRONG(Left side)\n\
-The EMPH(left side) shows line numbers and breakpoints:\n\
+STRONG(Breakpoint area)\n\
+On the left of the source code, line numbers and breakpoints are shown.\n\
 ITEM A plain stop sign or TEXT([#]VAR(n)[#]) indicates \
 an enabled breakpoint.\n\
 ITEM A grey stop sign or TEXT([_]VAR(n)[_]) indicates \
@@ -3928,8 +3944,8 @@ ITEM The next executed line is indicated by an arrow or TEXT(>).\n\
 Click BUTTON(1) to select positions.\n\
 Click BUTTON(3) to set and modify breakpoints.\n\
 \n\
-STRONG(Right side)\n\
-The EMPH(right side) contains the source code.\n\
+STRONG(Source text area)\n\
+On the right side, the source code is shown.\n\
 \n\
 Click BUTTON(1) to select words.\n\
 Drag with BUTTON(1) to extend your selection.\n\
@@ -3942,8 +3958,8 @@ WIDGET(Machine Code Window)\n\
 \n\
 The machine code window shows the machine code of the debugged program.\n\
 \n\
-STRONG(Left side)\n\
-The EMPH(left side) shows addresses and breakpoints:\n\
+STRONG(Breakpoint area)\n\
+On the left of the machine code, addresses and breakpoints are shown.\n\
 ITEM A plain stop sign or TEXT([#]VAR(n)[#]) indicates \
 an enabled breakpoint.\n\
 ITEM A grey stop sign or TEXT([_]VAR(n)[_]) indicates \
@@ -3953,8 +3969,8 @@ ITEM The next executed location is indicated by an arrow or TEXT(>).\n\
 Click BUTTON(1) to select addresses.\n\
 Click BUTTON(3) to set and modify breakpoints.\n\
 \n\
-STRONG(Right side)\n\
-The EMPH(right side) contains the machine code.\n\
+STRONG(Machine code area)\n\
+On the right side, the machine code instructions are shown.\n\
 \n\
 Click BUTTON(1) to select words.\n\
 Drag with BUTTON(1) to extend your selection.\n\

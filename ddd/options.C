@@ -178,7 +178,6 @@ void sourceToggleDisplayLineNumbersCB (Widget, XtPointer, XtPointer call_data)
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.display_line_numbers = info->set;
-
     update_options();
 
 #if 0
@@ -244,6 +243,44 @@ void sourceSetTabWidthCB (Widget, XtPointer, XtPointer call_data)
     update_options();
 
     set_status("Tab width set to " + itostring(app_data.tab_width) + ".");
+}
+
+void sourceSetSourceIndentCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
+
+    if (info->value > app_data.line_number_width)
+    {
+	app_data.indent_source = info->value - app_data.line_number_width;
+	app_data.display_line_numbers = true;
+    }
+    else
+    {
+	app_data.indent_source = info->value;
+	app_data.display_line_numbers = false;
+    }
+    update_options();
+
+    string msg = "Source indentation set to " + 
+	itostring(app_data.indent_source) + "; line numbers ";
+    if (app_data.display_line_numbers)
+	msg += "enabled";
+    else
+	msg += "disabled";
+    msg += ".";
+
+    set_status(msg);
+}
+
+void sourceSetCodeIndentCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
+
+    app_data.indent_code = info->value;
+    update_options();
+
+    set_status("Code indentation set to " + 
+	       itostring(app_data.indent_code) + ".");
 }
 
 //-----------------------------------------------------------------------------
@@ -1522,6 +1559,10 @@ bool save_options(unsigned long flags)
 			 app_data.find_case_sensitive) << "\n";
     os << int_app_value(XtNtabWidth,
 			 app_data.tab_width) << "\n";
+    os << int_app_value(XtNindentSource,
+			 app_data.indent_source) << "\n";
+    os << int_app_value(XtNindentCode,
+			 app_data.indent_code) << "\n";
     os << bool_app_value(XtNcacheSourceFiles,
 			 app_data.cache_source_files) << "\n";
     os << bool_app_value(XtNcacheMachineCode,

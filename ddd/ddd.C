@@ -873,9 +873,6 @@ static MMDesc general_preferences_menu[] =
 
 
 // Source preferences
-static Widget display_line_numbers_w;
-static Widget tab_width_w;
-
 static Widget set_display_glyphs_w;
 static Widget set_display_text_w;
 static MMDesc glyph_menu[] =
@@ -884,6 +881,17 @@ static MMDesc glyph_menu[] =
       NULL, &set_display_glyphs_w },
     { "asText", MMToggle, { sourceSetDisplayGlyphsCB, XtPointer(False) },
       NULL, &set_display_text_w },
+    MMEnd
+};
+
+static Widget set_tool_buttons_in_toolbar_w;
+static Widget set_tool_buttons_in_command_tool_w;
+static MMDesc tool_buttons_menu [] = 
+{
+    { "commandTool",  MMToggle, { dddSetToolBarCB, XtPointer(False) },
+      NULL, &set_tool_buttons_in_command_tool_w },
+    { "sourceWindow", MMToggle, { dddSetToolBarCB, XtPointer(True) },
+      NULL, &set_tool_buttons_in_toolbar_w },
     MMEnd
 };
 
@@ -920,16 +928,29 @@ static MMDesc cache_menu[] =
     MMEnd
 };
 
+static Widget tab_width_w;
+static Widget source_indent_w;
+static Widget code_indent_w;
+static MMDesc scales_menu[] = 
+{
+    { "tabWidth", MMScale, { sourceSetTabWidthCB }, NULL, &tab_width_w },
+    { "sourceIndent", MMScale, { sourceSetSourceIndentCB }, NULL, 
+      &source_indent_w },
+    { "codeIndent", MMScale, { sourceSetCodeIndentCB }, NULL, 
+      &code_indent_w },
+    MMEnd
+};
+
+
 static Widget refer_sources_w;
 static MMDesc source_preferences_menu[] = 
 {
     { "showExecPos",      MMRadioPanel, MMNoCB, glyph_menu },
+    { "toolButtons",      MMRadioPanel,  MMNoCB, tool_buttons_menu },
     { "referSources",     MMRadioPanel, MMNoCB, refer_menu, &refer_sources_w },
     { "find",             MMButtonPanel, MMNoCB, find_preferences_menu },
     { "cache",            MMButtonPanel, MMNoCB, cache_menu },
-    { "displayLineNumbers", MMToggle, { sourceToggleDisplayLineNumbersCB },
-      NULL, &display_line_numbers_w },
-    { "tabWidth", MMScale, { sourceSetTabWidthCB }, NULL, &tab_width_w },
+    { "",       	  MMPanel, MMNoCB, scales_menu },
     MMEnd
 };
 
@@ -949,7 +970,7 @@ static MMDesc data_preferences_menu[] =
       NULL, &graph_detect_aliases_w },
     { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB },
       NULL, &graph_align_2d_arrays_w },
-    { "showHints",     MMToggle,  { graphToggleShowHintsCB },
+    { "showHints",     MMToggle | MMUnmanaged,  { graphToggleShowHintsCB },
       NULL, &graph_show_hints_w },
     { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB },
       NULL, &graph_snap_to_grid_w },
@@ -983,17 +1004,6 @@ static MMDesc button_appearance_menu [] =
       NULL, &set_button_images_w },
     { "captions", MMToggle, { dddToggleButtonCaptionsCB },
       NULL, &set_button_captions_w },
-    MMEnd
-};
-
-static Widget set_tool_buttons_in_toolbar_w;
-static Widget set_tool_buttons_in_command_tool_w;
-static MMDesc tool_buttons_menu [] = 
-{
-    { "commandTool",  MMToggle, { dddSetToolBarCB, XtPointer(False) },
-      NULL, &set_tool_buttons_in_command_tool_w },
-    { "sourceWindow", MMToggle, { dddSetToolBarCB, XtPointer(True) },
-      NULL, &set_tool_buttons_in_toolbar_w },
     MMEnd
 };
 
@@ -1062,7 +1072,6 @@ static MMDesc startup_preferences_menu [] =
 {
     { "windows",         MMRadioPanel,  MMNoCB, window_mode_menu },
     { "buttons",         MMButtonPanel, MMNoCB, button_appearance_menu },
-    { "toolButtons",     MMRadioPanel,  MMNoCB, tool_buttons_menu },
     { "keyboardFocus",   MMRadioPanel,  MMNoCB, keyboard_focus_menu },
     { "dataScrolling",   MMRadioPanel,  MMNoCB, data_scrolling_menu },
     { "debugger",        MMRadioPanel,  MMNoCB, debugger_menu },
@@ -3204,7 +3213,6 @@ void update_options()
     set_toggle(ungrab_mouse_pointer_w,   app_data.ungrab_mouse_pointer);
     set_toggle(suppress_warnings_w,      app_data.suppress_warnings);
 
-    set_toggle(display_line_numbers_w,   app_data.display_line_numbers);
     set_toggle(cache_source_files_w,     app_data.cache_source_files);
     set_toggle(cache_machine_code_w,     app_data.cache_machine_code);
     set_toggle(set_display_glyphs_w,     app_data.display_glyphs);
@@ -3212,7 +3220,15 @@ void update_options()
     set_toggle(set_refer_path_w,         app_data.use_source_path);
     set_toggle(set_refer_base_w,         !app_data.use_source_path);
 
-    XtVaSetValues(tab_width_w, XmNvalue, app_data.tab_width, NULL);
+    {
+	XtVaSetValues(tab_width_w,     XmNvalue, app_data.tab_width, NULL);
+	int indent = app_data.indent_source;
+	if (app_data.display_line_numbers)
+	    indent += app_data.line_number_width;
+	XtVaSetValues(source_indent_w, XmNvalue, indent, NULL);
+	XtVaSetValues(code_indent_w,   XmNvalue, app_data.indent_code, NULL);
+	set_sensitive(code_indent_w, gdb->type() == GDB);
+    }
 
     set_toggle(led_w,                    app_data.blink_while_busy);
 
@@ -3319,9 +3335,8 @@ void update_options()
     source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);
+    source_view->set_indent(app_data.indent_source, app_data.indent_code);
 
-    source_view->source_indent_amount = app_data.indent_source;
-    source_view->code_indent_amount   = app_data.indent_code;
     source_view->line_indent_amount   = app_data.line_number_width;
     source_view->lines_above_cursor   = app_data.lines_above_cursor;
     source_view->lines_below_cursor   = app_data.lines_below_cursor;
@@ -3543,20 +3558,36 @@ static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
 {
     notify_set_toggle(set_display_glyphs_w, initial_app_data.display_glyphs);
     notify_set_toggle(set_display_glyphs_w, !initial_app_data.display_glyphs);
+
+    notify_set_toggle(set_tool_buttons_in_toolbar_w, 
+		      initial_app_data.command_toolbar);
+    notify_set_toggle(set_tool_buttons_in_command_tool_w, 
+		      !initial_app_data.command_toolbar);
+
     notify_set_toggle(set_refer_path_w, initial_app_data.use_source_path);
     notify_set_toggle(set_refer_base_w, !initial_app_data.use_source_path);
+
     notify_set_toggle(words_only_w, initial_app_data.find_words_only);
     notify_set_toggle(case_sensitive_w, initial_app_data.find_case_sensitive);
+
     notify_set_toggle(cache_source_files_w, 
 		      initial_app_data.cache_source_files);
     notify_set_toggle(cache_machine_code_w, 
 		      initial_app_data.cache_machine_code);
-    notify_set_toggle(display_line_numbers_w, 
-		      initial_app_data.display_line_numbers);
 
     if (app_data.tab_width != initial_app_data.tab_width)
     {
 	app_data.tab_width = initial_app_data.tab_width;
+	update_options();
+    }
+    if (app_data.indent_source != initial_app_data.indent_source)
+    {
+	app_data.indent_source = initial_app_data.indent_source;
+	update_options();
+    }
+    if (app_data.indent_code != initial_app_data.indent_code)
+    {
+	app_data.indent_code = initial_app_data.indent_code;
 	update_options();
     }
 }
@@ -3564,14 +3595,17 @@ static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
 static bool source_preferences_changed()
 {
     return app_data.display_glyphs != initial_app_data.display_glyphs
-	|| app_data.display_line_numbers 
-	   != initial_app_data.display_line_numbers
+	|| app_data.command_toolbar != initial_app_data.command_toolbar
 	|| app_data.use_source_path != initial_app_data.use_source_path
 	|| app_data.find_words_only != initial_app_data.find_words_only
 	|| app_data.find_case_sensitive != initial_app_data.find_case_sensitive
 	|| app_data.cache_source_files != initial_app_data.cache_source_files
 	|| app_data.cache_machine_code != initial_app_data.cache_machine_code
-	|| app_data.tab_width != initial_app_data.tab_width;
+	|| app_data.tab_width != initial_app_data.tab_width
+	|| app_data.indent_source != initial_app_data.indent_source
+	|| app_data.indent_code != initial_app_data.indent_code
+	|| app_data.display_line_numbers 
+	   != initial_app_data.display_line_numbers;
 }
 
 static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
@@ -3650,11 +3684,6 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_button_captions_w, initial_app_data.button_captions);
     notify_set_toggle(set_button_images_w,   initial_app_data.button_images);
 
-    notify_set_toggle(set_tool_buttons_in_toolbar_w, 
-		      initial_app_data.command_toolbar);
-    notify_set_toggle(set_tool_buttons_in_command_tool_w, 
-		      !initial_app_data.command_toolbar);
-
     notify_set_toggle(set_focus_pointer_w, 
 		      initial_focus_policy == XmPOINTER);
     notify_set_toggle(set_focus_explicit_w,
@@ -3698,7 +3727,6 @@ bool startup_preferences_changed()
 	|| separate != initial_separate
 	|| app_data.button_images != initial_app_data.button_images
 	|| app_data.button_captions != initial_app_data.button_captions
-	|| app_data.command_toolbar != initial_app_data.command_toolbar
 	|| focus_policy != initial_focus_policy
 	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
 	|| debugger_type(app_data.debugger)

@@ -629,16 +629,29 @@ string& SourceView::current_text(Widget w)
 	return current_source;
 }
 
-int SourceView::indent_amount(Widget w)
+int SourceView::indent_amount(Widget w, int pos)
 {
     assert(is_source_widget(w) || is_code_widget(w));
 
+    int indent = 0;
     if (is_code_widget(w))
-	return code_indent_amount;
+	indent = code_indent_amount;
     else if (display_line_numbers)
-	return source_indent_amount + line_indent_amount;
+	indent = source_indent_amount + line_indent_amount;
     else
-	return source_indent_amount;
+	indent = source_indent_amount;
+
+    if (pos >= 0)
+    {
+	const string& text = current_text(w);
+	while (pos < int(text.length()) && text[pos] == ' ')
+	{
+	    pos++;
+	    indent++;
+	}
+    }
+
+    return indent;
 }
 
 
@@ -2241,7 +2254,7 @@ void SourceView::reload()
 }
 
 // Change tab width
-void SourceView::set_tab_width (int width)
+void SourceView::set_tab_width(int width)
 {
     if (width <= 0)
 	return;
@@ -2252,6 +2265,33 @@ void SourceView::set_tab_width (int width)
 
 	StatusDelay delay("Reformatting");
 	reload();
+    }
+}
+
+// Change indentation
+void SourceView::set_indent(int source_indent, int code_indent)
+{
+    if (source_indent < 0 || code_indent < 0)
+	return;
+
+    if (source_indent == source_indent_amount &&
+	code_indent == code_indent_amount)
+	return;
+
+    StatusDelay delay("Reformatting");
+
+    if (source_indent != source_indent_amount)
+    {
+	source_indent_amount = source_indent;
+	reload();
+    }
+
+    if (code_indent != code_indent_amount)
+    {
+	code_indent_amount = code_indent;
+
+	clear_code_cache();
+	show_pc(last_shown_pc);
     }
 }
 
@@ -2435,13 +2475,19 @@ void SourceView::refresh_source_bp_disp()
 	if (line_nr < 0 || line_nr > line_count)
 	    continue;
 
-	string s(current_source.at(int(pos_of_line(line_nr)), 
-				   indent_amount(source_text_w) - 1));
+	int pos = pos_of_line(line_nr);
+	int indent = indent_amount(source_text_w, pos);
 
-	XmTextReplace (source_text_w,
-		       pos_of_line(line_nr),
-		       pos_of_line(line_nr) + indent_amount(source_text_w) - 1,
-		       (String)s);
+	if (indent > 0)
+	{
+	    string s(current_source.at(pos, indent - 1));
+
+	    if (s.length() > 0)
+		XmTextReplace(source_text_w,
+			      pos_of_line(line_nr),
+			      pos_of_line(line_nr) + s.length(),
+			      (String)s);
+	}
     }
 
     static IntIntArrayAssoc empty_bps;
@@ -2468,38 +2514,39 @@ void SourceView::refresh_source_bp_disp()
 	    continue;
 
 	XmTextPosition pos = pos_of_line(line_nr);
+	int indent = indent_amount(source_text_w, pos);
 
-	string insert_string = "";
+	if (indent > 0)
+	{
+	    // Display all breakpoints in a line
+	    VarIntArray& bps = bps_in_line[line_nr];
 
-	// Display all breakpoints in a line
-	VarIntArray& bps = bps_in_line[line_nr];
-
-	int i;
-	for (i = 0; i < bps.size(); i++)
-	{
-	    BreakPoint *bp = bp_map.get(bps[i]);
-	    insert_string += bp->symbol();
-	}
-	if (int(insert_string.length()) >= indent_amount(source_text_w) - 1)
-	{
-	    insert_string = 
-		insert_string.before(indent_amount(source_text_w) - 1);
-	}
-	else
-	{
-	    for (i = insert_string.length(); 
-		 i < indent_amount(source_text_w) - 1; i++)
+	    string insert_string = "";
+	    for (int i = 0; i < bps.size(); i++)
 	    {
-		insert_string += current_source[pos + i];
+		BreakPoint *bp = bp_map.get(bps[i]);
+		insert_string += bp->symbol();
 	    }
+
+	    if (int(insert_string.length()) >= indent - 1)
+	    {
+		insert_string = insert_string.before(indent - 1);
+	    }
+	    else
+	    {
+		for (int i = insert_string.length(); i < indent - 1; i++)
+		{
+		    insert_string += current_source[pos + i];
+		}
+	    }
+
+	    assert(int(insert_string.length()) == indent - 1);
+
+	    if (insert_string.length() > 0)
+		XmTextReplace(source_text_w, pos, 
+			      pos + indent - 1,
+			      (String)insert_string);
 	}
-
-	assert(insert_string.length() 
-	       == unsigned(indent_amount(source_text_w) - 1));
-
-	XmTextReplace (source_text_w, pos, 
-		       pos + indent_amount(source_text_w) - 1,
-		       (String)insert_string);
     }
 }
 
@@ -2515,10 +2562,12 @@ void SourceView::refresh_code_bp_disp()
 	    continue;
 
 	// Process all breakpoints at ADDRESS
-	string insert_string = replicate(' ', indent_amount(code_text_w));
-
-	XmTextReplace (code_text_w, pos, pos + indent_amount(code_text_w),
-		       (String)insert_string);
+	int indent = indent_amount(code_text_w, pos);
+	if (indent > 0)
+	{
+	    string spaces = replicate(' ', indent);
+	    XmTextReplace(code_text_w, pos, pos + indent, (String)spaces);
+	}
     }
 
     static StringArray empty;
@@ -2555,11 +2604,16 @@ void SourceView::refresh_code_bp_disp()
 	    if (bp->address() == address)
 		insert_string += bp->symbol();
 	}
-	insert_string += replicate(' ', indent_amount(code_text_w));
-	insert_string = insert_string.before(indent_amount(code_text_w));
 
-	XmTextReplace (code_text_w, pos, pos + indent_amount(code_text_w),
-		       (String)insert_string);
+	int indent = indent_amount(code_text_w, pos);
+	if (indent > 0)
+	{
+	    insert_string += replicate(' ', indent);
+	    insert_string = insert_string.before(indent);
+
+	    XmTextReplace(code_text_w, pos, pos + indent, 
+			  (String)insert_string);
+	}
     }
 }
 
@@ -3272,10 +3326,15 @@ void SourceView::show_execution_position (string position, bool stopped,
 	if (!display_glyphs)
 	{
 	    // Remove old marker
-	    XmTextReplace (source_text_w,
-			   last_pos + indent_amount(source_text_w) - 1,
-			   last_pos + indent_amount(source_text_w),
-			   " ");
+	    int indent = indent_amount(source_text_w, last_pos);
+	    if (indent > 0)
+	    {
+		string no_marker = " ";
+		XmTextReplace (source_text_w,
+			       last_pos + indent - no_marker.length(),
+			       last_pos + indent,
+			       (String)no_marker);
+	    }
 
 	    if (last_start_highlight)
 		XmTextSetHighlight (source_text_w,
@@ -3307,13 +3366,16 @@ void SourceView::show_execution_position (string position, bool stopped,
 
     if (is_current_file(file_name))
     {
-	if (!display_glyphs && indent_amount(source_text_w) > 0)
+	int indent = indent_amount(source_text_w, last_pos);
+
+	if (!display_glyphs && indent > 0)
 	{
 	    // Remove old marker
+	    string no_marker = " ";
 	    XmTextReplace (source_text_w,
-			   last_pos + indent_amount(source_text_w) - 1,
-			   last_pos + indent_amount(source_text_w),
-			   " ");
+			   last_pos + indent - no_marker.length(),
+			   last_pos + indent,
+			   (String)no_marker);
 	}
 
 	// Show current position
@@ -3345,17 +3407,18 @@ void SourceView::_show_execution_position(string file, int line, bool silent)
     add_to_history(file, line);
 
     XmTextPosition pos = pos_of_line(line);
-    SetInsertionPosition(source_text_w, 
-			 pos + indent_amount(source_text_w), false);
+    int indent = indent_amount(source_text_w, pos);
+    SetInsertionPosition(source_text_w, pos + indent, false);
 
     // Mark current line
-    if (!display_glyphs && indent_amount(source_text_w) > 0)
+    if (!display_glyphs && indent > 0)
     {
 	// Set new marker
+	string marker = ">";
 	XmTextReplace (source_text_w,
-		       pos + indent_amount(source_text_w) - 1,
-		       pos + indent_amount(source_text_w),
-		       ">");
+		       pos + indent - marker.length(),
+		       pos + indent,
+		       (String)marker);
     }
 
     XmTextPosition pos_line_end = 0;
@@ -3405,8 +3468,8 @@ void SourceView::show_position (string position, bool silent)
 	add_to_history(file_name, line);
     
 	XmTextPosition pos = pos_of_line(line);
-	SetInsertionPosition(source_text_w, 
-			     pos + indent_amount(source_text_w), true);
+	int indent = indent_amount(source_text_w, pos);
+	SetInsertionPosition(source_text_w, pos + indent, true);
 
 	last_pos = pos;
     }
@@ -4037,8 +4100,9 @@ void SourceView::goto_entry(string entry)
 			       last_end_secondary_highlight,
 			       mode);
 
-	    XmTextPosition pos = 
-		last_start_secondary_highlight + indent_amount(source_text_w);
+	    int indent = indent_amount(source_text_w, 
+				       last_start_secondary_highlight);
+	    XmTextPosition pos = last_start_secondary_highlight + indent;
 	    SetInsertionPosition(source_text_w, pos, true);
 	}
     }
@@ -7462,7 +7526,7 @@ void SourceView::process_disassemble(const string& disassemble_output)
 	string& line = code_list[i];
 	untabify(line);
 	if (line.length() > 0 && line[0] == '0')
-	    line = replicate(' ', code_indent_amount) + line;
+	    line = replicate(' ', indent_amount(code_text_w)) + line;
 	indented_code += line + '\n';
     }
 
@@ -7723,7 +7787,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
     if (pos == XmTextPosition(-1))
 	return;
 
-    SetInsertionPosition(code_text_w, pos + code_indent_amount);
+    SetInsertionPosition(code_text_w, pos + indent_amount(code_text_w));
     add_to_history(pc);
 
     XmTextPosition pos_line_end = 0;
@@ -7757,15 +7821,21 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	if (!display_glyphs)
 	{
 	    // Set new marker
+	    int indent = indent_amount(code_text_w);
+	    string marker = ">";
 	    if (last_pos_pc)
+	    {
+		string no_marker = replicate(' ', marker.length());
 		XmTextReplace (code_text_w,
-			       last_pos_pc + code_indent_amount - 1,
-			       last_pos_pc + code_indent_amount,
-			       " ");
+			       last_pos_pc + indent - no_marker.length(),
+			       last_pos_pc + indent,
+			       (String)no_marker);
+	    }
+
 	    XmTextReplace (code_text_w,
-			   pos + code_indent_amount - 1,
-			   pos + code_indent_amount,
-			   ">");
+			   pos + indent - marker.length(),
+			   pos + indent,
+			   (String)marker);
     
 	    if (pos_line_end)
 	    {

@@ -30,6 +30,9 @@ DDD 3.0 [in development]
       can point at `A.B' or `A->B' and get the current value.
     - The maximum number of glyphs is now configurable at startup time.
       See the `maxGlyphs' resource for details.
+    - DDD no longer indents the source code, leaving more horizontal
+      space.  To change this, see `Edit | Preferences | Source |
+      Source indentation'.
     - DBX settings now also work with SGI DBX.
 
     Bug fixes:
