@@ -1,7 +1,7 @@
 // $Id$
 // View the Source.
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
@@ -75,6 +75,10 @@
 extern GDBAgent* gdb;
 extern ArgField* source_arg;
 
+
+// Maximum number of simultaneous glyphs on the screen
+#define MAX_GLYPHS 20
+
 //-----------------------------------------------------------------------------
 class SourceView {
     static void add_to_history(const string& file_name, int line);
@@ -131,15 +135,7 @@ class SourceView {
     static void SelectRegisterCB (Widget, XtPointer, XtPointer);
     static void SelectThreadCB   (Widget, XtPointer, XtPointer);
 
-    static Widget create_glyph(Widget form_w, String name, 
-			       char *bits, int width, int height);
-    static void map_glyph(Widget& w, Position x, Position y);
-    static void unmap_glyph(Widget w);
-
     static void update_title ();
-    static void update_glyphs ();
-    static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
-    static Boolean CreateGlyphsWorkProc(XtPointer);
     static void MoveCursorToGlyphPosCB(Widget, XtPointer, XtPointer);
     static int line_height (Widget text_w);
 
@@ -351,6 +347,51 @@ class SourceView {
 			 const string& end);
 
     static MString help_on_bp(int bp, bool detailed);
+
+
+    //-----------------------------------------------------------------------
+    // Glyphs
+    //-----------------------------------------------------------------------
+
+    static Widget create_glyph(Widget form_w, String name, 
+			       char *bits, int width, int height);
+    static void map_glyph(Widget& w, Position x, Position y);
+    static void unmap_glyph(Widget w);
+
+    // Horizontal arrow offset (pixels)
+    static int arrow_x_offset;
+
+    // Horizontal breakpoint symbol offset (pixels)
+    static int stop_x_offset;
+
+    // Additional offset for multiple breakpoints (pixels)
+    static int multiple_stop_x_offset;
+
+    // Glyph locations: x[0] is source, x[1] is code
+    static Widget plain_arrows[2];
+    static Widget grey_arrows[2];
+    static Widget signal_arrows[2];
+    static Widget plain_stops[2][MAX_GLYPHS + 1];
+    static Widget grey_stops[2][MAX_GLYPHS + 1];
+
+    // Map stop sign in W at position POS.  Get widget from
+    // STOPS[COUNT]; store location in STOPS.  Return widget.
+    static Widget map_stop_at(Widget w, XmTextPosition pos,
+			      Widget stops[], int& count,
+			      TextPositionArray& stops);
+
+    // Map arrow in W at POS.
+    static Widget map_arrow_at(Widget w, XmTextPosition pos);
+
+    // True if code/source glyphs need to be updated
+    static bool update_code_glyphs;
+    static bool update_source_glyphs;
+
+    // Update glyphs for widget W (0: all)
+    static void update_glyphs(Widget w = 0);
+    static void update_glyphs_now();
+    static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
+    static Boolean CreateGlyphsWorkProc(XtPointer);
 
 public:
     // Constructor

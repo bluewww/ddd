@@ -1,7 +1,7 @@
 // $Id$
 // Use the Source, Luke.
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de> 
 // and Andreas Zeller <zeller@ips.cs.tu-bs.de>
 // 
@@ -1714,7 +1714,7 @@ void SourceView::read_file (string file_name,
 		       XmHIGHLIGHT_NORMAL);
     last_top = last_pos = last_start_highlight = last_end_highlight = 0;
     last_start_secondary_highlight = last_end_secondary_highlight = 0;
-    update_glyphs();
+    update_glyphs(source_text_w);
 
     if ((source_view_shell != 0 || app_data.tty_mode)
 	&& app_data.source_window)
@@ -5002,6 +5002,8 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
     Dimension margin_height       = 0;
     Dimension shadow_thickness    = 0;
     Dimension highlight_thickness = 0;
+    int old_x                     = 0;
+    int old_y                     = 0; 
     XtVaGetValues(w,
 		  XmNheight,             &height,
 		  XmNborderWidth,        &border_width,
@@ -5009,26 +5011,42 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
 		  XmNshadowThickness,    &shadow_thickness,
 		  XmNhighlightThickness, &highlight_thickness,
 		  XmNuserData,           &user_data,
+		  XmNleftOffset,         &old_x,
+		  XmNtopOffset,          &old_y,
 		  NULL);
     Dimension glyph_height = 
 	height + border_width + margin_height
 	+ shadow_thickness + highlight_thickness;
-    XtVaSetValues(w,
-		  XmNleftOffset, x,
-		  XmNtopOffset, y - glyph_height + line_height(text_w) / 2 - 2,
-		  NULL);
+
+    y += -glyph_height + line_height(text_w) / 2 - 2;
+
+    if (x != old_x || y != old_y)
+	XtVaSetValues(w, XmNleftOffset, x, XmNtopOffset, y, NULL);
 
     if (user_data != 0)
 	return;			// Already mapped
 
     XtMapWidget(w);
     XtVaSetValues(w, XmNuserData, XtPointer(1), NULL);
-}    
+}
 
-void SourceView::update_glyphs()
+
+// True if code/source glyphs need to be updated
+bool SourceView::update_code_glyphs   = false;
+bool SourceView::update_source_glyphs = false;
+
+// Update glyphs for widget W (0: all)
+void SourceView::update_glyphs(Widget w)
 {
     static XtWorkProcId update_glyph_id = 0;
     static time_t update_glyph_called   = 0;
+
+    if (w == 0)
+	update_source_glyphs = update_code_glyphs = true;
+    else if (is_source_widget(w))
+	update_source_glyphs = true;
+    else if (is_code_widget(w))
+	update_code_glyphs = true;
 
     if (update_glyph_id == 0)
     {
@@ -5092,30 +5110,35 @@ void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
 
     XmTextPosition old_top_pc = last_top_pc;
     last_top_pc = XmTextGetTopCharacter(code_text_w);
-    if (old_top != last_top || old_top_pc != last_top_pc)
+    if (old_top != last_top && old_top_pc != last_top_pc)
 	update_glyphs();
+    else if (old_top != last_top)
+	update_glyphs(source_text_w);
+    else if (old_top_pc != last_top_pc)
+	update_glyphs(code_text_w);
 }
 
-// Maximum number of simultaneous glyphs on the screen
-const int max_glyphs = 20;
+
+// Pixel offsets
 
 // Horizontal arrow offset (pixels)
-const int arrow_x_offset = -5;
+int SourceView::arrow_x_offset = -5;
 
 // Horizontal breakpoint symbol offset (pixels)
-const int stop_x_offset = +6;
+int SourceView::stop_x_offset = +6;
 
 // Additional offset for multiple breakpoints (pixels)
-const int multiple_stop_x_offset = stop_width + (2 * motif_offset - 2);
+int SourceView::multiple_stop_x_offset = stop_width + (2 * motif_offset - 2);
 
 
-// Glyph locations
-static Widget _plain_arrow_w[2]  = {0, 0};
-static Widget _grey_arrow_w[2]   = {0, 0};
-static Widget _signal_arrow_w[2] = {0, 0};
-static Widget _plain_stops_w[2][max_glyphs + 1];
-static Widget _grey_stops_w[2][max_glyphs + 1];
+// Glyph locations: x[0] is source, x[1] is code
+Widget SourceView::plain_arrows[2]  = {0, 0};
+Widget SourceView::grey_arrows[2]   = {0, 0};
+Widget SourceView::signal_arrows[2] = {0, 0};
+Widget SourceView::plain_stops[2][MAX_GLYPHS + 1];
+Widget SourceView::grey_stops[2][MAX_GLYPHS + 1];
 
+// Create glyphs in the background
 Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 {
     static bool all_done = false;
@@ -5133,9 +5156,9 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 
 	Widget form_w = k ? code_form_w : source_form_w;
 
-	if (_plain_arrow_w[k] == 0)
+	if (plain_arrows[k] == 0)
 	{
-	    _plain_arrow_w[k] = 
+	    plain_arrows[k] = 
 		create_glyph(form_w, "plain_arrow",
 			     arrow_bits, 
 			     arrow_width,
@@ -5143,24 +5166,19 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    return False;
 	}
 
-	if (_grey_arrow_w[k] == 0)
+	if (grey_arrows[k] == 0)
 	{
-	    _grey_arrow_w[k] = 
+	    grey_arrows[k] = 
 		create_glyph(form_w, "grey_arrow",
 			     grey_arrow_bits, 
 			     grey_arrow_width, 
 			     grey_arrow_height);
 	    return False;
 	}
-    }
 
-    for (k = 0; k < 2; k++)
-    {
-	Widget form_w = k ? code_form_w : source_form_w;
-
-	if (_signal_arrow_w[k] == 0)
+	if (signal_arrows[k] == 0)
 	{
-	    _signal_arrow_w[k] = 
+	    signal_arrows[k] = 
 		create_glyph(form_w, "signal_arrow",
 			     signal_arrow_bits, 
 			     signal_arrow_width,
@@ -5174,11 +5192,11 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	Widget form_w = k ? code_form_w : source_form_w;
 
 	int i;
-	for (i = 0; i < max_glyphs; i++)
+	for (i = 0; i < MAX_GLYPHS; i++)
 	{
-	    if (_grey_stops_w[k][i] == 0)
+	    if (grey_stops[k][i] == 0)
 	    {
-		_grey_stops_w[k][i] = 
+		grey_stops[k][i] = 
 		    create_glyph(form_w, "grey_stop",
 				 grey_stop_bits, 
 				 grey_stop_width,
@@ -5186,11 +5204,12 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 		return False;
 	    }
 	}
-	for (i = 0; i < max_glyphs; i++)
+
+	for (i = 0; i < MAX_GLYPHS; i++)
 	{
-	    if (_plain_stops_w[k][i] == 0)
+	    if (plain_stops[k][i] == 0)
 	    {
-		_plain_stops_w[k][i] = 
+		plain_stops[k][i] = 
 		    create_glyph(form_w, "plain_stop",
 				 stop_bits, 
 				 stop_width,
@@ -5204,6 +5223,97 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
     return True;
 }
 
+// Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
+// store location in POSITIONS.  Return mapped widget (0 if none)
+Widget SourceView::map_stop_at(Widget w, XmTextPosition pos,
+			       Widget stops[], int& count,
+			       TextPositionArray& positions)
+{
+    assert (is_source_widget(w) || is_code_widget(w));
+
+    Position x, y;
+    Boolean pos_displayed = XmTextPosToXY(w, pos, &x, &y);
+    if (pos_displayed)
+    {
+	while (stops[count] == 0)
+	{
+	    if (CreateGlyphsWorkProc(0))
+		break;
+	}
+
+	Widget glyph = stops[count] ? stops[count++] : 0;
+
+	if (glyph != 0)
+	{
+	    for (int i = 0; i < positions.size(); i++)
+		if (pos == positions[i])
+		    x += multiple_stop_x_offset;
+
+	    map_glyph(glyph, x + stop_x_offset, y);
+	    positions += pos;
+	    return glyph;
+	}
+    }
+
+    return 0;
+}
+
+// Map arrow in W at POS.  Return mapped arrow widget (0 if none)
+Widget SourceView::map_arrow_at(Widget w, XmTextPosition pos)
+{
+    assert (is_source_widget(w) || is_code_widget(w));
+
+    Position x, y;
+    Boolean pos_displayed = (pos != XmTextPosition(-1) 
+			     && XmTextPosToXY(w, pos, &x, &y));
+
+    int k = int(is_code_widget(w));
+
+    Widget& signal_arrow = signal_arrows[k];
+    Widget& plain_arrow  = plain_arrows[k];
+    Widget& grey_arrow   = grey_arrows[k];
+
+    while (signal_arrow == 0 || plain_arrow == 0 || grey_arrow == 0)
+    {
+	if (CreateGlyphsWorkProc(0))
+	    break;
+    }
+
+    if (pos_displayed)
+    {
+	if (at_lowest_frame && signal_received)
+	{
+	    map_glyph(signal_arrow, x + arrow_x_offset, y);
+	    unmap_glyph(plain_arrow);
+	    unmap_glyph(grey_arrow);
+	    return signal_arrow;
+	}
+	else if (at_lowest_frame)
+	{
+	    map_glyph(plain_arrow, x + arrow_x_offset, y);
+	    unmap_glyph(signal_arrow);
+	    unmap_glyph(grey_arrow);
+	    return plain_arrow;
+	}
+	else
+	{
+	    map_glyph(grey_arrow, x + arrow_x_offset, y);
+	    unmap_glyph(signal_arrow);
+	    unmap_glyph(plain_arrow);
+	    return grey_arrow;
+	}
+    }
+    else
+    {
+	unmap_glyph(signal_arrow);
+	unmap_glyph(plain_arrow);
+	unmap_glyph(grey_arrow);
+    }
+    return 0;
+}
+
+
+// Update glyphs after interval
 void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
@@ -5216,238 +5326,140 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 	*proc_id = 0;
     }
 
-#if 0
     XtAppContext app_context = XtWidgetToApplicationContext(source_text_w);
     if (XtAppPending(app_context) & (XtIMXEvent | XtIMAlternateInput))
     {
-	// Other events pending - try again in 20ms
+	// Other events pending - unmap all glyphs and try again in 10ms
+	for (int k = 0; k < 2; k++)
+	{
+	    if (k == 0 && !update_source_glyphs)
+		continue;
+	    if (k == 1 && !update_code_glyphs)
+		continue;
+
+	    unmap_glyph(plain_arrows[k]);
+	    unmap_glyph(grey_arrows[k]);
+	    unmap_glyph(signal_arrows[k]);
+
+	    for (int i = 0; i < MAX_GLYPHS; i++)
+	    {
+		unmap_glyph(plain_stops[k][i]);
+		unmap_glyph(grey_stops[k][i]);
+	    }
+	}
+
 	XtIntervalId new_id = 
-	    XtAppAddTimeOut(app_context, 20,
+	    XtAppAddTimeOut(app_context, 10,
 			    UpdateGlyphsWorkProc, client_data);
 	if (proc_id != 0)
 	    *proc_id = new_id;
 	return;
     }
-#endif
 
+    update_glyphs_now();
+}
+
+
+// The function that does the real work
+void SourceView::update_glyphs_now()
+{
     // clog << "Updating glyphs...";
 
+    if (update_source_glyphs)
     {
-	// Show source position
-	Widget& source_plain_arrow_w  = _plain_arrow_w[0];
-	Widget& source_grey_arrow_w   = _grey_arrow_w[0];
-	Widget& source_signal_arrow_w = _signal_arrow_w[0];
-	Position x, y;
-	XmTextPosition pos;
-	Boolean pos_displayed = False;
+	// Show current execution position
+	XmTextPosition pos = XmTextPosition(-1);
 
 	if (display_glyphs
 	    && base_matches(current_file_name, last_execution_file)
 	    && line_count > 0
 	    && last_execution_line > 0
 	    && last_execution_line <= line_count)
-	{
 	    pos = pos_of_line(last_execution_line);
-	    pos_displayed = XmTextPosToXY(source_text_w, pos, &x, &y);
-	}
 
-	if (pos_displayed)
-	{
-	    if (at_lowest_frame && signal_received)
-	    {
-		map_glyph(source_signal_arrow_w, x + arrow_x_offset, y);
-		unmap_glyph(source_plain_arrow_w);
-		unmap_glyph(source_grey_arrow_w);
-	    }
-	    else if (at_lowest_frame)
-	    {
-		map_glyph(source_plain_arrow_w, x + arrow_x_offset, y);
-		unmap_glyph(source_signal_arrow_w);
-		unmap_glyph(source_grey_arrow_w);
-	    }
-	    else
-	    {
-		map_glyph(source_grey_arrow_w, x + arrow_x_offset, y);
-		unmap_glyph(source_signal_arrow_w);
-		unmap_glyph(source_plain_arrow_w);
-	    }
-	}
-	else
-	{
-	    unmap_glyph(source_signal_arrow_w);
-	    unmap_glyph(source_plain_arrow_w);
-	    unmap_glyph(source_grey_arrow_w);
-	}
+	map_arrow_at(source_text_w, pos);
     }
 
+    if (update_code_glyphs)
     {
-	// Show PC
-	Widget& code_plain_arrow_w  = _plain_arrow_w[1];
-	Widget& code_grey_arrow_w   = _grey_arrow_w[1];
-	Widget& code_signal_arrow_w = _signal_arrow_w[1];
-	Position x, y;
-	XmTextPosition pos;
-	Boolean pos_displayed = False;
+	// Show current PC
+	XmTextPosition pos = XmTextPosition(-1);
 
 	if (display_glyphs && last_execution_pc != "")
-	{
 	    pos = find_pc(last_execution_pc);
-	    if (pos != XmTextPosition(-1))
-		pos_displayed = XmTextPosToXY(code_text_w, pos, &x, &y);
-	}
 
-	if (pos_displayed)
-	{
-	    if (at_lowest_frame && signal_received)
-	    {
-		map_glyph(code_signal_arrow_w, x + arrow_x_offset, y);
-		unmap_glyph(code_plain_arrow_w);
-		unmap_glyph(code_grey_arrow_w);
-	    }
-	    else if (at_lowest_frame)
-	    {
-		map_glyph(code_plain_arrow_w, x + arrow_x_offset, y);
-		unmap_glyph(code_signal_arrow_w);
-		unmap_glyph(code_grey_arrow_w);
-	    }
-	    else
-	    {
-		map_glyph(code_grey_arrow_w, x + arrow_x_offset, y);
-		unmap_glyph(code_signal_arrow_w);
-		unmap_glyph(code_plain_arrow_w);
-	    }
-	}
-	else
-	{
-	    unmap_glyph(code_signal_arrow_w);
-	    unmap_glyph(code_plain_arrow_w);
-	    unmap_glyph(code_grey_arrow_w);
-	}
+	map_arrow_at(code_text_w, pos);
     }
-
-    int plain[2]; plain[0] = 0; plain[1] = 0;
-    int grey[2];   grey[0] = 0;  grey[1] = 0;
-
-    if (display_glyphs)
-    {
-	// Show source breakpoints
-
-	Widget *source_plain_stops_w = _plain_stops_w[0];
-	Widget *source_grey_stops_w  = _grey_stops_w[0];
-	int& source_p                = plain[0];
-	int& source_g                = grey[0];
-
-	TextPositionArray source_stops;
-
-	// Map breakpoint glyphs
-	MapRef ref;
-	BreakPoint *bp;
-	for (bp = bp_map.first(ref);
-	     bp != 0;
-	     bp = bp_map.next(ref))
-	{
-	    bp->source_glyph() = 0;
-
-	    if (bp_matches(bp)
-		&& line_count > 0
-		&& bp->line_nr() > 0
-		&& bp->line_nr() <= line_count)
-	    {
-		XmTextPosition pos = pos_of_line(bp->line_nr());
-		Position x, y;
-		Boolean pos_displayed = 
-		    XmTextPosToXY(source_text_w, pos, &x, &y);
-		if (pos_displayed)
-		{
-		    while (!CreateGlyphsWorkProc(0))
-			;
-
-		    Widget glyph = 0;
-		    if (bp->enabled())
-			glyph = source_plain_stops_w[source_p] ? 
-			    source_plain_stops_w[source_p++] : 0;
-		    else
-			glyph = source_grey_stops_w[source_g] ? 
-			    source_grey_stops_w[source_g++] : 0;
-
-		    if (glyph != 0)
-		    {
-			for (int i = 0; i < source_stops.size(); i++)
-			    if (pos == source_stops[i])
-				x += multiple_stop_x_offset;
-
-			map_glyph(glyph, x + stop_x_offset, y);
-			source_stops.operator += (pos);
-			bp->source_glyph() = glyph;
-		    }
-		}
-	    }
-	}
-
-
-
-	// Show code breakpoints
-
-	Widget *code_plain_stops_w = _plain_stops_w[1];
-	Widget *code_grey_stops_w  = _grey_stops_w[1];
-	int& code_p                = plain[1];
-	int& code_g                = grey[1];
-
-	TextPositionArray code_stops;
-
-	// Map breakpoint glyphs
-	MapRef ref2;
-	for (bp = bp_map.first(ref2);
-	     bp != 0;
-	     bp = bp_map.next(ref2))
-	{
-	    bp->code_glyph() = 0;
-
-	    if (bp->type() != BREAKPOINT)
-		continue;
-
-	    XmTextPosition pos = find_pc(bp->address());
-	    Position x, y;
-	    Boolean pos_displayed = XmTextPosToXY(code_text_w, pos, &x, &y);
-	    if (pos_displayed)
-	    {
-		while (!CreateGlyphsWorkProc(0))
-		    ;
-
-		Widget glyph = 0;
-		if (bp->enabled())
-		    glyph = code_plain_stops_w[code_p] ? 
-			code_plain_stops_w[code_p++] : 0;
-		else
-		    glyph = code_grey_stops_w[code_g] ? 
-			code_grey_stops_w[code_g++] : 0;
-
-		if (glyph != 0)
-		{
-		    for (int i = 0; i < code_stops.size(); i++)
-			if (pos == code_stops[i])
-			    x += multiple_stop_x_offset;
-
-		    map_glyph(glyph, x + stop_x_offset, y);
-		    code_stops.operator += (pos);
-		    bp->code_glyph() = glyph;
-		}
-	    }
-	}
-    }
-
-    // Unmanage remaining glyphs
+    
+    // Map breakpoint glyphs
     for (int k = 0; k < 2; k++)
     {
+	if (k == 0 && !update_source_glyphs)
+	    continue;
+	if (k == 1 && !update_code_glyphs)
+	    continue;
+
+	int plain_count = 0;
+	int grey_count  = 0;
+
+	if (display_glyphs)
+	{
+	    TextPositionArray positions;
+	    
+	    MapRef ref;
+	    for (BreakPoint *bp = bp_map.first(ref);
+		 bp != 0;
+		 bp = bp_map.next(ref))
+	    {
+		Widget& bp_glyph = k ? bp->code_glyph() : bp->source_glyph();
+		Widget text_w    = k ? code_text_w      : source_text_w;
+		bp_glyph = 0;
+
+		XmTextPosition pos;
+		if (k == 0)
+		{
+		    // Find source position
+		    if (!bp_matches(bp)
+			|| line_count <= 0
+			|| bp->line_nr() <= 0
+			|| bp->line_nr() > line_count)
+			continue;
+
+		    pos = pos_of_line(bp->line_nr());
+		}
+		else
+		{
+		    // Find code position
+		    if (bp->type() != BREAKPOINT)
+			continue;
+
+		    pos = find_pc(bp->address());
+		}
+
+
+		if (bp->enabled())
+		    bp_glyph = map_stop_at(text_w, pos, plain_stops[k],
+					   plain_count, positions);
+		else
+		    bp_glyph = map_stop_at(text_w, pos, grey_stops[k],
+					   grey_count, positions);
+	    }
+	}
+
+	// Unmap remaining breakpoiny glyphs
 	Widget w;
-	while ((w = _plain_stops_w[k][plain[k]++]))
+	while ((w = plain_stops[k][plain_count++]))
 	    unmap_glyph(w);
-	while ((w = _grey_stops_w[k][grey[k]++]))
+	while ((w = grey_stops[k][grey_count++]))
 	    unmap_glyph(w);
     }
+
+    update_source_glyphs = false;
+    update_code_glyphs   = false;
 
     // clog << "done.\n";
 }
+
 
 // Change setting of display_glyphs
 void SourceView::set_display_glyphs(bool set)
@@ -5826,7 +5838,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
     }
 
     if (mode == XmHIGHLIGHT_SELECTED)
-	update_glyphs();
+	update_glyphs(code_text_w);
 }
 
 void SourceView::set_disassemble(bool set)
@@ -5953,7 +5965,7 @@ string SourceView::bp_pos(int num)
 }
 
 
-    // True iff we have some selection
+// True iff we have some selection
 bool SourceView::have_selection()
 {
     XmTextPosition left, right;
