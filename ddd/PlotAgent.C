@@ -172,3 +172,8 @@ void PlotAgent::add_point(int x, int y, const string& v)
 
     plot_os << x << '\t' << y << '\t' << v << '\n';
 }
+
+void PlotAgent::add_break()
+{
+    plot_os << '\n';
+}

@@ -1290,6 +1290,8 @@ void DispValue::plot3d(PlotAgent *plotter, int ndim) const
 
 	    index++;
 	}
+
+	plotter->add_break();
     }
     
     plotter->end_plot();

@@ -76,6 +76,9 @@ public:
     void add_point(int x, const string& v);
     void add_point(int x, int y, const string& v);
 
+    // Add a break
+    void add_break();
+
     // End plot
     void end_plot();
 
