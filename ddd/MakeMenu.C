@@ -29,7 +29,6 @@ char MakeMenu_rcsid[] =
 
 #include "assert.h"
 #include "strclass.h"
-#include "Delay.h"
 
 #include <stdlib.h>
 #include <Xm/Xm.h>
@@ -156,7 +155,6 @@ Widget MMcreatePulldownMenu(Widget parent, String name, MMDesc items[])
 
     arg = 0;
     Widget shell = XmCreatePulldownMenu(parent, name, args, arg);
-    Delay::register_shell(shell);
     addItems(parent, shell, items);
 
     return shell;
@@ -174,7 +172,6 @@ Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[])
     XtSetArg(args[arg], XmNradioBehavior, True); arg++;	// 
 
     Widget shell = XmCreatePulldownMenu(parent, name, args, arg);
-    Delay::register_shell(shell);
     addItems(parent, shell, items);
 
     return shell;
@@ -188,7 +185,6 @@ Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[])
 
     arg = 0;
     Widget shell = XmCreatePopupMenu(parent, name, args, arg);
-    Delay::register_shell(shell);
     addItems(parent, shell, items);
 
     return shell;
