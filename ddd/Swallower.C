@@ -38,6 +38,7 @@ char Swallower_rcsid[] =
 
 #include <X11/Xlib.h>
 #include "assert.h"
+#include "XErrorB.h"
 
 
 // Resources
@@ -78,6 +79,8 @@ static Boolean SetValues(Widget old,
 static void Resize(Widget w);
 
 static void Destroy(Widget w);
+
+static void CheckIfWindowHasGone(Widget w, XtPointer, XEvent *, Boolean *);
 
 
 // Class record initialization
@@ -194,6 +197,32 @@ static void Initialize(Widget /* request */,
     all_swallowers = _w;
 }
 
+static void WindowHasGone(Widget w, XEvent *event)
+{
+    const SwallowerWidget _w = SwallowerWidget(w);
+    Window& window = _w->swallower.window;
+
+    // Our child has gone
+    SwallowerInfo info;
+    info.window = window;
+    info.event  = event;
+
+    // Mark as `gone'
+    window = None;
+
+    // No further need to check for events
+    XtRemoveEventHandler(w, SubstructureNotifyMask, False, 
+			 CheckIfWindowHasGone, XtPointer(w));
+
+    // Call the callbacks
+    XtCallCallbacks(w, XtNwindowGoneCallback, XtPointer(&info));
+}
+
+static void WindowHasGone(Widget w, const XErrorEvent *event)
+{
+    WindowHasGone(w, (XEvent *)event);
+}
+
 static void CheckIfWindowHasGone(Widget w, XtPointer, XEvent *event, Boolean *)
 {
     const SwallowerWidget _w = SwallowerWidget(w);
@@ -203,29 +232,19 @@ static void CheckIfWindowHasGone(Widget w, XtPointer, XEvent *event, Boolean *)
 	event->type == DestroyNotify && event->xdestroywindow.window == window)
     {
 	// Our child has gone
-	SwallowerInfo info;
-	info.window = window;
-	info.event  = event;
-
-	// Mark as `gone'
-	window = None;
-
-	// No further need to check for events
-	XtRemoveEventHandler(w, SubstructureNotifyMask, False, 
-			     CheckIfWindowHasGone, XtPointer(w));
-
-	// Call the callbacks
-	XtCallCallbacks(w, XtNwindowGoneCallback, XtPointer(&info));
+	WindowHasGone(w, event);
     }
 }
 
 static void Swallow(Widget w)
 {
     const SwallowerWidget _w = SwallowerWidget(w);
-    const Window window = _w->swallower.window;
+    Window& window = _w->swallower.window;
 
     if (window == None || !XtIsRealized(w))
 	return;
+
+    XErrorBlocker blocker(XtDisplay(w));
 
 #if 0
     XSync(XtDisplay(w), False);
@@ -241,9 +260,15 @@ static void Swallow(Widget w)
 
     XMapWindow(XtDisplay(w), window);
 
-    // Check for events
-    XtAddEventHandler(w, SubstructureNotifyMask, False, 
-		      CheckIfWindowHasGone, XtPointer(w));
+    if (blocker.error_occurred())
+	WindowHasGone(w, &blocker.error_event());
+
+    if (window != None)
+    {
+	// Check for events
+	XtAddEventHandler(w, SubstructureNotifyMask, False, 
+			  CheckIfWindowHasGone, XtPointer(w));
+    }
 }
 
 static void Spitout(Widget w)
@@ -253,6 +278,8 @@ static void Spitout(Widget w)
 
     if (window == None || !XtIsRealized(w))
 	return;
+
+    XErrorBlocker blocker(XtDisplay(w));
 
 #if 0
     XSync(XtDisplay(w), False);
@@ -280,7 +307,9 @@ static void Realize(Widget w,
 		    XSetWindowAttributes *attributes)
 {
     const SwallowerWidget _w = SwallowerWidget(w);
-    const Window window = _w->swallower.window;
+    Window& window = _w->swallower.window;
+
+    XErrorBlocker blocker(XtDisplay(w));
 
     if (window != None && (w->core.width <= 1 || w->core.height <= 1))
     {
@@ -290,6 +319,9 @@ static void Realize(Widget w,
 
 	XtMakeResizeRequest(w, attr.width, attr.height, 0, 0);
     }
+
+    if (blocker.error_occurred())
+	WindowHasGone(w, &blocker.error_event());
 
     if (window == None)
     {
@@ -336,10 +368,17 @@ static Boolean SetValues(Widget old,
 static void Resize(Widget w)
 {
     const SwallowerWidget _w = SwallowerWidget(w);
-    const Window window = _w->swallower.window;
+    Window& window = _w->swallower.window;
 
     if (window != None)
+    {
+	XErrorBlocker blocker(XtDisplay(w));
+
 	XResizeWindow(XtDisplay(w), window, w->core.width, w->core.height);
+
+	if (blocker.error_occurred())
+	    WindowHasGone(w, &blocker.error_event());
+    }
 }
 
 // Destroy widget

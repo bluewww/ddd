@@ -35,6 +35,7 @@ char findWindow_rcsid[] =
 
 #include "findWindow.h"
 
+#include "XErrorB.h"
 #include "bool.h"
 #include <iostream.h>
 
@@ -51,6 +52,8 @@ inline bool eq(String s1, String s2)
 bool windowMatches(Display *display, Window window,
 		   String title, String res_name, String res_class)
 {
+    XErrorBlocker blocker(display);
+
     bool matches = false;
 
     char *window_title = 0;
@@ -85,6 +88,8 @@ bool windowMatches(Display *display, Window window,
 Window findWindow(Display *display, Window window,
 		  String title, String res_name, String res_class)
 {
+    XErrorBlocker blocker(display);
+
     if (windowMatches(display, window, title, res_name, res_class))
 	return window;
 
