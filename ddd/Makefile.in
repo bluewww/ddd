@@ -838,6 +838,10 @@ ddd-done: $(ddd)
 install: install-prog install-man
 	@:
 
+.PHONY: install-strip
+install-strip:
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' install
+
 .PHONY: uninstall
 uninstall: uninstall-prog uninstall-man
 	@:
@@ -900,12 +904,16 @@ distclean:
 mostlyclean: clean
 	@:
 
-.PHONY: realclean
-realclean:
+.PHONY: realclean maintainer-clean
+realclean maintainer-clean:
+	@echo 'This command is intended for maintainers to use; it'
+	@echo 'deletes files that may need special tools to rebuild.'
 	$(RM) $(REALCLEAN_STUFF) ./#*#
 
 .PHONY: ultraclean
 ultraclean:
+	@echo 'This command is intended for maintainers to use; it'
+	@echo 'deletes files that may need special tools to rebuild.'
 	$(RM) $(ULTRACLEAN_STUFF) ./#*#
 
 .PHONY: info
