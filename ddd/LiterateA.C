@@ -52,14 +52,14 @@ extern "C" int fcntl(int fd, int command, ...);
 #include "SignalB.h"
 #include "ChunkQueue.h"
 
-// This package reads data in non-blocking mode, reading
-// only data that is currently present. However, this is not a good
-// idea for ttys, since if the process is run in the background, it
-// will set non-blocking mode for its controlling tty. Since
-// this mode change affects all processes reading from this tty,
-// they will detect an EOF on input and (most likely) exit.
-// Thus, for ttys, we use blocking mode and read only one line at a time.
-// This works fine unless the process runs in raw or cbreak mode.
+// This package reads data in non-blocking mode, reading only data
+// that is currently present. However, this is not a good idea for
+// ttys, since if the process is run in the background, it will set
+// non-blocking mode for its controlling tty. Since this mode change
+// affects all processes reading from this tty, they will detect an
+// EOF on input and (most likely) exit.  Thus, for ttys, we use
+// blocking mode and read only one line at a time.  This works fine
+// unless the process runs in raw or cbreak mode.
 
 #ifndef BLOCK_TTY_INPUT
 #define BLOCK_TTY_INPUT 1
@@ -195,7 +195,7 @@ int LiterateAgent::_read(char*& data, FILE *fp)
     {
 	// Otherwise, read and accumulate whatever's there - up to
 	// BUFSIZ characters
-	int length;
+	int length = -1;
 	while (queue.length() < BUFSIZ
 	       && (length = _readNonBlocking(buffer, BUFSIZ, fp)) > 0)
 	    queue.append(buffer, length);

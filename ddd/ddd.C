@@ -2264,7 +2264,7 @@ int main(int argc, char *argv[])
 	// not decorate transient windows such as DialogShells.  In
 	// this case, use a TopLevel shell instead and rely on the DDD
 	// auto-raise mechanisms defined in `windows.C'.
-	bool use_transient_tool_shell;
+	bool use_transient_tool_shell = true;
 	switch (app_data.decorate_tool)
 	{
 	case On:
@@ -4748,6 +4748,8 @@ static _Delay *logo_delay = 0;
 
 static void popdown_startup_logo(XtPointer data, XtIntervalId *id)
 {
+    (void) id;			// use it
+
     if (data != 0)
     {
 	XtIntervalId *timer = (XtIntervalId *)data;

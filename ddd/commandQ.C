@@ -247,6 +247,7 @@ void gdb_command(const Command& c)
 	else
 	{
 	    CommandQueueIter start(commandQueue);
+	    (void) start;	// Use it
 	    assert(!start.ok() || start().priority < c.priority);
 
 	    // Higher priority than first element
