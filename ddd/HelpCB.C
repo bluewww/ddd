@@ -69,10 +69,12 @@ char HelpCB_rcsid[] =
 #include "post.h"
 #include "mydialogs.h"
 
-// The help system supports three resources:
+// The help system supports four resources:
 // helpString          - displayed in context-sensitive help.
 // tipString           - displayed in small windows when entering buttons
 // documentationString - displayed in the status line
+// helpShowTitle       - if set, include widget name in context-sensitive help
+
 struct resource_values {
     XmString helpString;
     XmString tipString;
@@ -126,9 +128,9 @@ static Widget help_dialog = 0;
 static Widget help_shell  = 0;
 static Pixmap help_pixmap = 0;
 
-static MString _DefaultHelpText(Widget widget);
-static MString _DefaultTipText(Widget widget, XEvent *event);
-static MString _DefaultDocumentationText(Widget widget, XEvent *event);
+static MString NoHelpText(Widget widget);
+static MString NoTipText(Widget widget, XEvent *event);
+static MString NoDocumentationText(Widget widget, XEvent *event);
 static void _MStringHelpCB(Widget widget, 
 			   XtPointer client_data, 
 			   XtPointer call_data,
@@ -149,7 +151,7 @@ static MString get_help_string(Widget widget)
     if ((text.xmstring() == 0 || text.isEmpty()) && DefaultHelpText != 0)
 	text = DefaultHelpText(widget);
     if (text.xmstring() == 0 || text.isEmpty())
-	text = _DefaultHelpText(widget);
+	text = NoHelpText(widget);
 
     if (values.showTitle)
 	text = MString("Help for ") + cook(longName(widget)) 
@@ -158,6 +160,9 @@ static MString get_help_string(Widget widget)
     return text;
 }
 
+// A single dot means `no string'.  (An empty string causes the
+// helpers to be called.)
+static MString NO_TIP_STRING(".");
 
 static MString get_tip_string(Widget widget, XEvent *event)
 {
@@ -165,7 +170,7 @@ static MString get_tip_string(Widget widget, XEvent *event)
     {
 	if (DefaultTipText != 0)
 	    return DefaultTipText(widget, event);
-	return _DefaultTipText(widget, event);
+	return NoTipText(widget, event);
     }
 
     // Get text
@@ -175,14 +180,14 @@ static MString get_tip_string(Widget widget, XEvent *event)
 			      NULL, 0);
 
     MString text(values.tipString, true);
-    if (text.xmstring() == 0)
-	return _DefaultTipText(widget, event);
+    if (text.xmstring() == 0 || text == NO_TIP_STRING)
+	return NoTipText(widget, event);
 
     if (text.isEmpty())
     {
 	if (DefaultTipText != 0)
 	    return DefaultTipText(widget, event);
-	return _DefaultTipText(widget, event);
+	return NoTipText(widget, event);
     }
 
     return text;
@@ -194,7 +199,7 @@ static MString get_documentation_string(Widget widget, XEvent *event)
     {
 	if (DefaultDocumentationText != 0)
 	    return DefaultDocumentationText(widget, event);
-	return _DefaultDocumentationText(widget, event);
+	return NoDocumentationText(widget, event);
     }
 
     // Get text
@@ -205,20 +210,19 @@ static MString get_documentation_string(Widget widget, XEvent *event)
 
     MString text(values.documentationString, true);
     if (text.xmstring() == 0)
-    {
 	return get_tip_string(widget, event);
-    }
-    else if (text.isEmpty())
+
+    if (text == NO_TIP_STRING)
+	return NoDocumentationText(widget, event);
+
+    if (text.isEmpty())
     {
 	if (DefaultDocumentationText != 0)
 	    return DefaultDocumentationText(widget, event);
-	else
-	    return _DefaultDocumentationText(widget, event);
+	return NoDocumentationText(widget, event);
     }
-    else
-    {
-	return text;
-    }
+
+    return text;
 }
 
 void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
@@ -296,7 +300,7 @@ static void HelpDestroyCB(Widget, XtPointer client_data, XtPointer)
 
 
 // Default help, tip, and documentation strings
-static MString _DefaultHelpText(Widget widget)
+static MString NoHelpText(Widget widget)
 {
     MString text = "No help available for \"";
     text += cook(longName(widget));
@@ -305,29 +309,25 @@ static MString _DefaultHelpText(Widget widget)
     return text;
 }
 
-static MString _DefaultTipText(Widget, XEvent *)
+static MString NoTipText(Widget, XEvent *)
 {
-    return MString(0, true);	// empty string
+    return MString(0, true);	// Empty string
 }
 
-static MString _DefaultDocumentationText(Widget, XEvent *)
+static MString NoDocumentationText(Widget, XEvent *)
 {
-    return MString(0, true);	// empty string
+    return MString(0, true);	// Empty string
 }
 
-static XmTextPosition _TextPosOfEvent(Widget, XEvent *)
+static XmTextPosition NoTextPosOfEvent(Widget, XEvent *)
 {
     return XmTextPosition(-1);
 }
 
-MString (*DefaultHelpText)(Widget)
-    = _DefaultHelpText;
-MString (*DefaultTipText)(Widget, XEvent *) 
-    = _DefaultTipText;
-MString (*DefaultDocumentationText)(Widget, XEvent *) 
-    = _DefaultDocumentationText;
-XmTextPosition (*TextPosOfEvent)(Widget widget, XEvent *event)
-    = _TextPosOfEvent;
+MString (*DefaultHelpText)(Widget)                    = NoHelpText;
+MString (*DefaultTipText)(Widget, XEvent *)           = NoTipText;
+MString (*DefaultDocumentationText)(Widget, XEvent *) = NoDocumentationText;
+XmTextPosition (*TextPosOfEvent)(Widget, XEvent *)    = NoTextPosOfEvent;
 
 
 Pixmap (*helpOnVersionPixmapProc)(Widget)    = 0;
