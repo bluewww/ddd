@@ -133,6 +133,7 @@ private:
     bool _has_named_values;
     bool _has_func_pos;
     bool _has_when_semicolon;
+    bool _has_err_redirection;
 
 public:
     // Constructor
@@ -262,8 +263,9 @@ public:
     bool has_when_semicolon() const    { return _has_when_semicolon; }
     bool has_when_semicolon(bool val)  { return _has_when_semicolon = val; }
 
-    // True if debugger has stderr redirection
-    bool has_err_redirection() const   { return has_print_r_command(); }
+    // True if debugger has stderr redirection using `>&'
+    bool has_err_redirection() const   { return _has_err_redirection; }
+    bool has_err_redirection(bool val) { return _has_err_redirection = val; }
 
     string print_command(string expr = "") const;   // Usually "print EXPR"
     string display_command(string expr = "") const; // Usually "display EXPR"

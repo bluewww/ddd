@@ -125,6 +125,7 @@ typedef struct PlusCmdData {
     bool     config_named_values;      // try 'print "ddd"'
     bool     config_func_pos;          // try 'func main'
     bool     config_when_semicolon;    // try 'help when'
+    bool     config_err_redirection;   // try 'help run'
     bool     config_page;	       // try 'set $page = 0'
 
     PlusCmdData () :
@@ -153,6 +154,7 @@ typedef struct PlusCmdData {
 	config_named_values(false),
 	config_func_pos(false),
 	config_when_semicolon(false),
+	config_err_redirection(false),
 	config_page(false)
     {}
 };
@@ -216,6 +218,8 @@ void start_gdb()
 	plus_cmd_data->config_func_pos = true;
 	cmds += "help when";
 	plus_cmd_data->config_when_semicolon = true;
+	cmds += "help run";
+	plus_cmd_data->config_err_redirection = true;
 	cmds += "set $page = 0";
 	plus_cmd_data->config_page = true;
 	cmds += "sh pwd";
@@ -545,6 +549,7 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_named_values);
     assert(!plus_cmd_data->config_func_pos);
     assert(!plus_cmd_data->config_when_semicolon);
+    assert(!plus_cmd_data->config_err_redirection);
     assert(!plus_cmd_data->config_page);
     
     // Setup additional trailing commands
@@ -838,8 +843,9 @@ static bool is_known_command(string& answer)
 {
     return answer.contains("program is not active") // DBX
 	|| (!answer.contains("syntax")              // DEC DBX
-	    && !answer.contains("help")             // GDB & DBX 1.0
-	    && !answer.contains("not found")        // DBX 3.0
+	    && !answer.contains("help")             // GDB & SUN DBX 1.0
+	    && !answer.contains("not found")        // SUN DBX 3.0
+	    && !answer.contains("unrecognized")     // AIX DBX
 	    && !answer.contains("Unknown", 0));     // XDB
 }
 
@@ -899,6 +905,11 @@ static void process_config_func_pos(string& answer)
 static void process_config_when_semicolon(string& answer)
 {
     gdb->has_when_semicolon(answer.contains(';'));
+}
+
+static void process_config_err_redirection(string& answer)
+{
+    gdb->has_err_redirection(answer.contains(">&"));
 }
 
 static void process_config_page(string&)
@@ -986,6 +997,11 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_when_semicolon) {
 	assert (qu_count < count);
 	process_config_when_semicolon(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_err_redirection) {
+	assert (qu_count < count);
+	process_config_err_redirection(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_page) {

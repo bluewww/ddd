@@ -97,6 +97,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_named_values(tp == GDB || tp == DBX),
       _has_func_pos(false),
       _has_when_semicolon(tp == DBX),
+      _has_err_redirection(true),
       trace_dialog(false),
       questions_waiting(false),
       _qu_data(0),
@@ -411,7 +412,8 @@ bool GDBAgent::ends_with_prompt (const string& answer)
 	    && answer.length() > 3
 	    && answer[beginning_of_line] == '(' 
 	    && answer[answer.length() - 2] == ')'
-	    && answer[answer.length() - 1] == ' ';
+	    && answer[answer.length() - 1] == ' '
+	    && (answer.contains("gdb") || answer.contains("dbx"));
 
     case XDB:
 	return beginning_of_line < answer.length()
@@ -845,7 +847,7 @@ string GDBAgent::echo_command(string text) const
 	return "echo " + text;
 
     case DBX:
-	return print_command(quote(text));
+	return print_command() + quote(text);
 
     case XDB:
 	return quote(text);
