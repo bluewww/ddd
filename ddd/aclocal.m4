@@ -878,6 +878,83 @@ CPPFLAGS="$ice_save_cppflags"
 ])dnl
 dnl
 dnl
+dnl ICE_REGCOMP_BROKEN: On Solaris 2.4, regcomp() always returns -1.
+dnl Check for that.
+dnl
+AC_DEFUN(ICE_REGCOMP_BROKEN,
+[
+AC_REQUIRE([ICE_TYPE_REGEX_T])
+if  test "$ice_have_regcomp" = yes && test "$ice_have_regexec" = yes; then
+AC_REQUIRE([AC_C_CROSS])
+AC_MSG_CHECKING([whether regcomp() is broken])
+ice_save_cppflags="$CPPFLAGS"
+CPPFLAGS="-I$srcdir/.. $CPPFLAGS"
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_CACHE_VAL(ice_cv_regcomp_broken,
+[
+AC_TRY_RUN(
+[
+extern "C" {
+#include <sys/types.h>
+
+// Avoid conflicts with C regex() function
+#define regex c_regex
+
+// Don't include old libg++ <regex.h> contents
+#define __REGEXP_LIBRARY
+
+#ifndef __STDC__
+#define __STDC__ 1              // Reguired for KCC when using GNU includes
+#endif
+
+// Some old versions of libg++ contain a <regex.h> file.  Avoid this.
+#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
+#include <regex.h>		// POSIX.2 interface
+#endif
+
+// Try hard-wired path to get native <regex.h>.
+#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
+#include </usr/include/regex.h>	// POSIX.2 interface
+#endif
+
+// Some more GNU headers.
+#if !defined(REG_EXTENDED) && defined(HAVE_RX_H)
+#include <rx.h>	 	        // Header from GNU rx 0.07
+#endif
+
+#if !defined(REG_EXTENDED) && defined(HAVE_RXPOSIX_H)
+#include <rxposix.h>		// Header from GNU rx 1.0 and later
+#endif
+}
+
+int main()
+{
+    char rxdouble[] = 
+	"-?(([0-9]+\\\\.[0-9]*)|([0-9]+)|(\\\\.[0-9]+))"
+	"([eE][---+]?[0-9]+)?";
+    regex_t compiled;
+    int errcode = regcomp(&compiled, rxdouble, REG_EXTENDED);
+    if (errcode)
+	return 1;
+    
+    char somedouble[] = "3.141529e+0";
+    return regexec(&compiled, somedouble, 0, NULL, 0);
+}
+], ice_cv_regcomp_broken=no, ice_cv_regcomp_broken=yes,
+ice_cv_regcomp_broken=yes)])dnl
+AC_MSG_RESULT($ice_cv_regcomp_broken)
+if test "$ice_cv_regcomp_broken" = yes; then
+AC_DEFINE(REGCOMP_BROKEN)
+fi
+dnl
+dnl
+AC_LANG_RESTORE
+CPPFLAGS="$ice_save_cppflags"
+]
+fi)dnl
+dnl
+dnl
 dnl ICE_FIND_MOTIF: find OSF/Motif libraries and headers
 dnl put Motif include directory in motif_includes
 dnl put Motif library directory in motif_libraries

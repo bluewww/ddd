@@ -365,6 +365,7 @@ AC_STAT_MACROS_BROKEN
 dnl
 ICE_CHECK_FROZEN_OSTRSTREAM
 ICE_TYPE_REGEX_T
+ICE_REGCOMP_BROKEN
 dnl
 dnl
 ICE_CHECK_DECL(dup2, unistd.h)
@@ -427,7 +428,7 @@ dnl
 dnl
 dnl Check for a POSIX.2 regcomp()/regexec() library
 LIBRX="../librx/librx.a"
-if test "$ice_have_regcomp" = yes && test "$ice_have_regexec" = yes; then
+if test "$ice_have_regcomp" = yes && test "$ice_have_regexec" = yes && test "$ice_cv_regcomp_broken" = no; then
 dnl No need to use the GNU regcomp() library - there's one in the system
 LIBRX=""
 fi
