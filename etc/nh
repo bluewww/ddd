@@ -67,7 +67,7 @@ do
 	   echo '#endif // '$prefix'_'$name'_h'
 	   echo "// DON'T ADD ANYTHING BEHIND THIS #endif"
 	) > $file.h
-	$path/apply-license $user $file.h > /dev/null
+	$path/apply-license -f $user $file.h > /dev/null
 	rm $file.h~
  	${VISUAL:-vi} $file.h
     fi

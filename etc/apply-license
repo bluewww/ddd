@@ -1,7 +1,8 @@
 #!/bin/sh
 # $Id$
 # Add a license disclaimer to the given files unless already present
-# If -l NAME is given, author is NAME 
+# If -l NAME is given, set author to NAME.
+# If -f is given, add license to files that did not have one.
 
 # Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -31,14 +32,22 @@
 this=`basename $0`
 path=`dirname $0`
 
+incremental=true
 logname=`logname`
 force_name=false
-if [ "$1" = "-l" ]; then
-  logname=$2
-  force_name=true
-  shift
-  shift
-fi
+
+# Process options
+while getopts fil: c
+do
+  case $c in
+    f) incremental=false;;
+    i) incremental=true;;
+    l) logname=$OPTARG; force_name=true;;
+    *) echo "$this: usage: $this [-f] [-l NAME] FILES..."
+       exit 2;;
+  esac
+done
+shift `expr $OPTIND - 1`
 
 # prefer system V sed (does not strip initial space)
 sed=sed
@@ -46,19 +55,46 @@ if [ -f /usr/5bin/sed ]; then
    sed=/usr/5bin/sed
 fi
 
-year=19`date +%y`
+year=`date +%Y 2> /dev/null || gdate +%Y`
+domain=`domainname | sed 's/[^\.]*\.//'`
+fullname=`ypmatch $logname passwd | cut -d: -f5 | cut -d, -f1`
 
 for file in "$@"; do
 
-  written="`grep 'Written by ' $file | head -1`"
-  if [ "$written" = "" -o $force_name = true ]; then
-    fullname=`ypmatch $logname passwd | cut -d: -f5 | cut -d, -f1`
-    mailname=$logname@`domainname | sed 's/[^\.]*\.//'`
+  if [ ! -f $file ]; then
+    echo "$this: $file: no such file or directory" >&2
+    continue
+  fi
+
+  written_line="`grep -n 'Written by ' $file | head -1 | cut -d: -f1`"
+
+  and_line=
+  written_by=
+  and_by=
+  if [ "$written_line" != "" ]; then
+    and_line=`expr $written_line + 1`
+    written_by="`tail +$written_line $file | head -1`"
+    and_by="`tail +$and_line $file | head -1 | grep ' and '`"
+  fi
+
+  fullname1=
+  mailname1=
+  fullname2=
+  mailname2=
+  if [ "$written_by" = "" -o $force_name = true ]; then
+    fullname1=$fullname
+    mailname1=$logname@$domain
   else
-    fullname=`echo "$written" | sed 's/.*Written by *\([^<]*\) *<.*/\1/
+    fullname1=`echo "$written_by" | sed 's/.*Written by *\([^<]*\) *<.*/\1/
 s/ $//g'`
-    mailname=`echo "$written" | sed 's/.*<\([^>]*\)>.*/\1/
+    mailname1=`echo "$written_by" | sed 's/.*<\([^>]*\)>.*/\1/
 s/ $//g'`
+    if [ "$and_by" != "" ]; then
+      fullname2=`echo "$and_by" | sed 's/.*and *\([^<]*\) *<.*/\1/
+s/ $//g'`
+      mailname2=`echo "$and_by" | sed 's/.*<\([^>]*\)>.*/\1/
+s/ $//g'`
+    fi
   fi
 
   # If we have a 'lib' in the path, take the library license.
@@ -73,23 +109,55 @@ s/ $//g'`
   case $fullfile in
     */ddd/etc*) project=DDD; library=false;;
     */ice/etc*) project=ICE; library=false;;
-    */ddd*)   project=DDD; library=true;;
-    */ice*)   project=ICE; library=true;;
+    */ddd*)   project=DDD; library=false;;
+    */ice*)   project=ICE; library=false;;
     */nora*)  project=NORA;;
     *)        project=FOOBAR;;
   esac
 
+  # Take the project from the old header, if applicable
+  part=`grep 'This file is part of' $file`
+  case $part in
+    *DDD*Library*) project=DDD; library=true;;
+    *DDD*)         project=DDD; library=false;;
+    *ICE*Library*) project=ICE; library=true;;
+    *ICE*)         project=ICE; library=false;;
+  esac
+
+  copyright=`grep -i 'copyright' $file | head -1 | sed 's/^[^0-9]*\([1-9][-, 0-9]*[0-9]\)[^0-9]*$/\1/'`
+  case $copyright in
+    19*) ;;
+    20*) ;;
+    *) copyright=$year;;
+  esac
+
+  owner=`grep -i 'copyright' $file | head -1`
+  if [ "$owner" != "" ]; then
+    tubs=`echo "$owner" | grep Braunschweig`
+    if [ "$tubs" = "" ]; then
+      # Other owner
+      echo "$this: $file: other owner" >&2
+      continue
+    fi
+  else
+    if $incremental; then
+      # No copyright yet
+      echo "$this: $file: no copyright entry" >&2
+      continue
+    fi
+  fi
+
   case $project in
     NORA)     project_detail='NORA is an experimental inference-based software development\
-environment. Contact nora@ips.cs.tu-bs.de for details.';;
+environment. Contact nora@'"$domain"' for details.';;
     ICE)      project_detail='ICE is the incremental configuration environment.\
 For details, see the ICE World-Wide-Web page, \
 `http://www.cs.tu-bs.de/softech/ice/'"'"',\
-or send a mail to the ICE developers <ice@ips.cs.tu-bs.de>.';;
+or send a mail to the ICE developers <ice@'"$domain"'>.';;
     DDD)      project_detail='DDD is the data display debugger.\
 For details, see the DDD World-Wide-Web page, \
 `http://www.cs.tu-bs.de/softech/ddd/'"'"',\
-or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.';;
+or send a mail to the DDD developers <ddd@'"$domain"'>.';;
     *)        project_detail='FOOBAR is fouled up beyond all recognition.\
 Contact foobar@kremvax.su.org for details.';;
   esac
@@ -106,8 +174,16 @@ Contact foobar@kremvax.su.org for details.';;
     license_file='COPYING'
   fi
 
-  text='Copyright (C) '$year' Technische Universitaet Braunschweig, Germany.\
-Written by '"$fullname <$mailname>"'.\
+  text='Copyright (C) '$copyright' Technische Universitaet Braunschweig, Germany.'
+  if [ "$fullname2" = "" ]; then
+    text="$text"'\
+Written by '"$fullname1 <$mailname1>"'.'
+  else
+    text="$text"'\
+Written by '"$fullname1 <$mailname1>"'\
+and '"$fullname2 <$mailname2>"'.'
+  fi
+  text="$text"'\
 \
 This file is part of '$what'.\
 \
@@ -128,7 +204,7 @@ If not, write to the Free Software Foundation, Inc.,\
 \
 '$project_detail'\
 '
-  
+
   c_text='/*\
 '`echo "$text" | sed 's,^..,    &,'`'
 */\
@@ -143,67 +219,96 @@ If not, write to the Free Software Foundation, Inc.,\
   lisp_text=`echo "$text" | sed 's,^.,;; &,'`
 
   bakfile=$file~
-  tmpfile=LIC$$
-  echo $file: >&2
+  origfile=$file.orig
+  tmpfile=${TMPDIR-.}/.lic$$
   t=""
-  header="`head -1 $file`"
+  header="`grep -i copyright $file`"
+  e="^[ 	]*\$"
   if [ $? = 0 ]; then
-    e='^[ 	]*$'
-    c='c\
-'
     case "$header" in
       //*)  t="$cpp_text";;
-      /\**) t="$c_text"; e='^*/$'; c=d;;
       \#*)  t="$sh_text";;
       !*)   t="$ad_text";;
       %*)   t="$ps_text";;
       @c*)  t="$texi_text";;
       *input\ texinfo*) t="$texi_text";;
       dnl*) t="$m4_text";;
-      .\\\"*) t="$man_text";;
+      .\\\"*) t="$man_text"; e="^\.\\\"";;
       \;*)  t="$lisp_text";;
-      *)    echo "unknown file type" >&2;;
     esac
+  fi
 
-    # echo "$t"; exit 0
-    
-    if [ "$t" != "" ]; then
+  if [ "$t" = "" ]; then
+    header="`head -1 $file`"
+    case "$header" in
+      //*)  t="$cpp_text";;
+      /\**) t="$c_text"; e="^*/\$";;
+      \#*)  t="$sh_text";;
+      !*)   t="$ad_text";;
+      %*)   t="$ps_text";;
+      @c*)  t="$texi_text";;
+      *input\ texinfo*) t="$texi_text";;
+      dnl*) t="$m4_text";;
+      .\\\"*) t="$man_text"; e="^\.\\\"";;
+      \;*)  t="$lisp_text";;
+      *)    echo "$this: $file: unknown file type" >&2;;
+    esac
+  fi
 
-      # Remove old license, if present
-      rm -f $bakfile
-      ln $file $bakfile
+  # echo "$t"; exit 0
+  
+  if [ "$t" = "" ]; then
+    continue
+  fi
+
+  # Remove old license, if present
+  rm -f $bakfile
+  ln $file $bakfile
+
+  copyright_lineno="`grep -n 'Copyright' $file | head -1 | cut -d: -f1`"
       
-      grep -s 'General Public License' $file
-      if [ $? = 0 ]; then
-	lineno=`grep -n '^$' $file | head -1 | cut -d: -f1`
-	if [ "$lineno" = "" ]; then
-	  command=2,24"$c"
-	else
-	  command="${lineno}",'\%'"${e}"'%'"$c"
-	fi
-	$sed "$command" $file > $tmpfile
-	if [ $? = 0 ]; then
-	  mv $tmpfile $file
-	fi
-      fi
+  grep 'General Public License' $file > /dev/null
+  if [ $? = 0 ]; then
+    if [ "$copyright_lineno" != "" ]; then
+      lineno=$copyright_lineno
+    else
+      lineno="`grep -n '^$' $file | head -1 | cut -d: -f1`"
+    fi
+    if [ "$lineno" = "" ]; then
+      command=2,24d
+    else
+      command="${lineno}",'\%'"${e}"'%'d
+    fi
+    $sed "$command" $file > $tmpfile && mv $tmpfile $file
+  fi
 
-      # Apply new license
-      lineno=`grep -n '^$' $file | head -1 | cut -d: -f1`
-      if [ "$lineno" = "" ]; then
-	echo "warning: cannot find first paragraph" >&2
-	lineno=3
-      fi
+  # Apply new license
+  lineno=
+  if [ "$copyright_lineno" != "" ]; then
+    lineno=`expr $copyright_lineno - 1`
+  else
+    lineno=`grep -n '^$' $file | head -1 | cut -d: -f1`
+  fi
+  if [ "$lineno" = "" ]; then
+    echo "$this: $file: warning: cannot find first paragraph" >&2
+    lineno=3
+  fi
       
-      command=${lineno}'a\
+  command=${lineno}'a\
 '"${t}"'
 '
-      $sed "$command" $file > $tmpfile
-      if [ $? = 0 ]; then
-        mv $tmpfile $file
-      fi
+  $sed "$command" $file > $tmpfile && mv $tmpfile $file
 
-      # Show differences
-      diff $bakfile $file
-    fi
+  # Show differences - if none, remove backup file
+  if diff -c5 $bakfile $file > $tmpfile; then
+    # no differences
+    mv $bakfile $file
+    rm $tmpfile
+  else
+    # report diffs to stdout
+    echo $file:
+    cat $tmpfile
+    rm $tmpfile
+    mv $bakfile $origfile
   fi
 done

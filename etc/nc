@@ -57,7 +57,7 @@ do
 	   echo '#include "'$file'.h"'
 	   echo
 	) > $file.C
-	$path/apply-license $user $file.C > /dev/null
+	$path/apply-license -f $user $file.C > /dev/null
 	rm $file.C~  
 	${VISUAL:-vi} $file.C
     fi
