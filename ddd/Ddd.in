@@ -128,13 +128,13 @@ Ddd*termType: xterm
 !   Set `useTTYCommand' to `true' to enable this behaviour.
 ! 
 ! * As an alternative, DDD can redirect the process I/O explicitly,
-!   without using the `tty' command.  This may fail if you use a
-!   non-standard shell.
+!   without using the `tty' command.  This is done with DBX and XDB; 
+!   with GDB, it may fail if you use a non-standard shell.
 !   Set `useTTYCommand' to `false' to enable this behaviour.
 !   
-! The default setting is `true', since tampering around with user commands
-! is too risky.  Maybe one day GDB will provide a way to undo redirection.
-Ddd*useTTYCommand: true
+! The default setting is `false', since explicit redirection is easier 
+! to handle.  Maybe one day GDB will provide a way to undo redirection.
+Ddd*useTTYCommand: false
 
 
 ! The `rsh' command to invoke tty-based commands on other hosts.

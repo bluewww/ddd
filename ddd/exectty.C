@@ -85,6 +85,9 @@ static Window separate_tty_window = 0;
 // GDB command redirection
 static string gdb_redirection = "";
 
+// GDB run command
+static string gdb_run_command = "";
+
 // GDB TTY
 string gdb_tty = "";
 
@@ -407,12 +410,12 @@ static void redirect_process(string& command,
 		else if (shell.contains("rc"))
 		{
 		    // rc (from tim@pipex.net)
-		    gdb_redirection += " >" + tty_name + " >[2=1]";
+		    gdb_redirection += " > " + tty_name + " >[2=1]";
 		}
 		else if (shell.contains("sh"))
 		{
 		    // sh, bsh, ksh, bash, zsh, sh5, ...
-		    gdb_redirection += " >" + tty_name + " 2>&1";
+		    gdb_redirection += " > " + tty_name + " 2>&1";
 		}
 		else
 		{
@@ -467,7 +470,7 @@ static void redirect_process(string& command,
 
 // Restore original redirection
 static void unredirect_process(string& command,
-			       Widget origin)
+			       Widget origin = 0)
 {
     if (gdb_redirection != "")
     {
@@ -489,7 +492,7 @@ static void unredirect_process(string& command,
     gdb_set_tty();
 
     gdb_redirection = "";
-    gdb_out_ignore = "";
+    gdb_out_ignore  = "";
 }
 
 
@@ -617,6 +620,9 @@ void startup_exec_tty(string& command, Widget origin)
 	// Tell GDB not to redirect its process I/O
 	unredirect_process(command, origin);
     }
+
+    if (command != "")
+	gdb_run_command = command;
 }
 
 // Set TTY title to TEXT
@@ -675,7 +681,7 @@ void exec_tty_running()
 	    kill_exec_tty();
 
 	    // Restore original TTY for the time being
-	    gdb_set_tty();
+	    unredirect_process(gdb_run_command);
 	}
     }
 }
