@@ -40,7 +40,6 @@ Data Themes
 - More themes are in preparation, such as rendering of C++ STL data structures.
 
 
-
 Debuggers and Languages
 -----------------------
 
@@ -117,6 +116,12 @@ License
 - All remaining parts of DDD that used the GNU Library Public General
   License (LGPL) have been changed to use the GNU General Public 
   License (GPL) instead.
+
+
+Known Issues
+------------
+
+- Data themes are not documented yet.
 
 
 Acknowledgments
