@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// Completion
+// Command and arg completion
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -176,6 +176,13 @@ static int completions_size = 0;
 // Send completion question
 static void complete(Widget w, XEvent *e, string input, string cmd)
 {
+    // Issue diagnostic if completion doesn't work right now
+    if (!gdb->isReadyWithPrompt())
+    {
+	post_gdb_busy(w);
+	return;
+    }
+
     static CompletionInfo info;
     info.widget = w;
     info.event  = e;
@@ -242,13 +249,6 @@ static void complete(Widget w, XEvent *e, string input, string cmd)
 	completions = 0;
     }
     completions_size = 0;
-
-    // Issue diagnostic if completion doesn't work right now
-    if (!gdb->isReadyWithPrompt())
-    {
-	post_gdb_busy(w);
-	return;
-    }
 
     // Go and ask GDB for completions.
 
@@ -364,17 +364,23 @@ static void complete_reply(const string& complete_answer, void *qu_data)
     completion_done(info);
 }
 
+static void tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
+{
+    if (XmIsText(w))
+	XtCallActionProc(w, "process-tab", e, args, *num_args);
+    else if (XmIsPrimitive(w))
+	XtCallActionProc(w, "PrimitiveNextTabGroup", e, args, *num_args);
+}
+
 // Complete current GDB command
 void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
     if (gdb->type() != GDB
 	|| w != gdb_w
+	|| !gdb->isReadyWithPrompt()
 	|| XmTextGetInsertionPosition(w) != XmTextGetLastPosition(w))
     {
-	if (XmIsText(w))
-	    XtCallActionProc(w, "process-tab", e, args, *num_args);
-	else if (XmIsPrimitive(w))
-	    XtCallActionProc(w, "PrimitiveNextTabGroup", e, args, *num_args);
+	tabAct(w, e, args, num_args);
 	return;
     }
 
@@ -412,12 +418,11 @@ static void _complete_argAct(Widget w,
 			     Cardinal* num_args,
 			     bool tab)
 {
-    if ((tab && !app_data.global_tab_completion) || gdb->type() != GDB)
+    if ((tab && !app_data.global_tab_completion) 
+	|| gdb->type() != GDB 
+	|| !gdb->isReadyWithPrompt())
     {
-	if (XmIsText(w))
-	    XtCallActionProc(w, "process-tab", e, args, *num_args);
-	else if (XmIsPrimitive(w))
-	    XtCallActionProc(w, "PrimitiveNextTabGroup", e, args, *num_args);
+	tabAct(w, e, args, num_args);
 	return;
     }
 
