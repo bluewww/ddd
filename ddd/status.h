@@ -71,15 +71,15 @@ private:
     string cause;
 
 public:
-    StatusDelay(const string& c):
-	cause(c)
+    StatusDelay(const string& c)
+	: cause(c)
     {
 	set_status(cause + "...");
     }
 
     ~StatusDelay()
     {
-	set_status(cause + "... done.");
+	set_status(cause + "...done.");
     }
 };
 
