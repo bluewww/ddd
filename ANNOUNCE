@@ -13,8 +13,8 @@ DDD 1.1 is available
 DDD News
 ========
 
-    Never trust a ``dot-oh'' release - DDD 1.0 had a serious bug that
-    caused DDD to crash upon various occasions, often after a few
+    Never trust a ``dot-oh'' release - DDD 1.0 had two serious bugs
+    that caused DDD to crash upon various occasions, often after a few
     interactions.
 
     Under certain circumstances, the hourglass cursor routines could
@@ -22,13 +22,6 @@ DDD News
     into DDD, making DDD fail at unpredictable (and unrepeatable)
     places.  This bug has been fixed; some other minor bugs were
     fixed, too.
-
-    You should be able to repair a DDD 1.0 release by inserting the line
-
-    > XtRemoveCallback(widget, XtNdestroyCallback, DestroyCB, this);
-
-    at the very end of the `_Delay::~_Delay()' function in `Delay.C'.
-    This should make DDD run properly.
 
     Our sincere apologies to all who got and tried to compile and run
     a defective DDD.  Thanks to all who sent in bug reports and helped
