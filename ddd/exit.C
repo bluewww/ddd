@@ -161,14 +161,17 @@ void ddd_cleanup()
 	gdb->terminate(true);
     }
 
-    // If GDB created a history file, overwrite it such that it is not
-    // cluttered with internal DDD commands.
-    if (is_regular_file(gdb_history_file()))
-	save_history(gdb_history_file(), command_shell);
+    if (gdb_initialized)
+    {
+	// If GDB created a history file, overwrite it such that it is not
+	// cluttered with internal DDD commands.
+	if (is_regular_file(gdb_history_file()))
+	    save_history(gdb_history_file(), command_shell);
 
-    // Now write the session-specific DDD history file.
-    if (app_data.save_history_on_exit)
-	save_history(session_history_file(app_data.session));
+	// Now write the session-specific DDD history file.
+	if (app_data.save_history_on_exit)
+	    save_history(session_history_file(app_data.session));
+    }
 
     // Stop SOS blinking
     if (gdb_w != 0)
