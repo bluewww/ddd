@@ -654,11 +654,21 @@ void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
 
 void DataDisp::selectAllCB(Widget w, XtPointer, XtPointer)
 {
-    StatusDelay d("Selecting all displays");
+    // StatusDelay d("Selecting all displays");
 
     set_last_origin(w);
     XtCallActionProc(graph_edit, 
 		     "select-all", (XEvent *)0, (String *)0, 0);
+    refresh_graph_edit();
+}
+
+void DataDisp::unselectAllCB(Widget w, XtPointer, XtPointer)
+{
+    // StatusDelay d("Unselecting all displays");
+
+    set_last_origin(w);
+    XtCallActionProc(graph_edit, 
+		     "unselect-all", (XEvent *)0, (String *)0, 0);
     refresh_graph_edit();
 }
 

@@ -350,6 +350,7 @@ public:
     static void EditDisplaysCB(Widget, XtPointer, XtPointer);
     static void refreshCB(Widget, XtPointer, XtPointer);
     static void selectAllCB(Widget, XtPointer, XtPointer);
+    static void unselectAllCB(Widget, XtPointer, XtPointer);
     static void deleteCB(Widget, XtPointer, XtPointer);
 
     // Helpers for user displays
