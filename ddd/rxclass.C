@@ -119,7 +119,7 @@ void regex::fatal(int errcode, const char *src)
 }
 
 regex::regex(const char* t, int flags)
-    : matcher(0), data(0), exprs(0)
+    : exprs(0), matcher(0), data(0)
 {
     string rx = "^" + string(t);
     int errcode = regcomp(&compiled, rx, flags);
@@ -138,10 +138,11 @@ regex::regex(const char* t, int flags)
 #endif // WITH_RUNTIME_REGEX
 
 regex::regex(rxmatchproc p, void *d)
-    : matcher(p), data(d)
+    : 
 #if WITH_RUNTIME_REGEX
-    , exprs(0)
+    exprs(0),
 #endif
+    matcher(p), data(d)
 {
 #if WITH_RUNTIME_REGEX
     prefix[0] = '\0';
