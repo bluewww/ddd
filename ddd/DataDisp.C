@@ -426,7 +426,7 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
     disp_value_arg->dereference();
     disp_node_arg->refresh();
 
-    new_display(display_expression, 0, itostring(disp_node_arg->disp_nr()));
+    new_display(display_expression, 0, itostring(disp_node_arg->disp_nr()), w);
 }
 
 void DataDisp::toggleDetailCB(Widget dialog, XtPointer client_data, XtPointer)
@@ -507,9 +507,9 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer client_data, XtPointer)
     }
 
     if (do_enable)
-	enable_display(disp_nrs);
+	enable_display(disp_nrs, dialog);
     else if (do_disable)
-	disable_display(disp_nrs);
+	disable_display(disp_nrs, dialog);
 
     if (changed)
 	refresh_graph_edit();
@@ -569,7 +569,7 @@ void DataDisp::show(Widget dialog, int depth, int more)
 	}
     }
 
-    enable_display(disp_nrs);
+    enable_display(disp_nrs, dialog);
 
     if (changed)
 	refresh_graph_edit();
@@ -609,7 +609,7 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 	}
     }
 
-    disable_display(disp_nrs);
+    disable_display(disp_nrs, dialog);
 
     if (changed)
 	refresh_graph_edit();
@@ -686,9 +686,9 @@ void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
     }
 
     if (do_enable)
-	enable_display(disp_nrs);
+	enable_display(disp_nrs, dialog);
     else if (do_disable)
-	disable_display(disp_nrs);
+	disable_display(disp_nrs, dialog);
 }
 
 void DataDisp::select_with_all_descendants(GraphNode *node)
@@ -764,7 +764,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
     for (i = 0; i < descendants.size(); i++)
 	select_with_all_ancestors(descendants[i]);
 
-    delete_display(disp_nrs);
+    delete_display(disp_nrs, dialog);
 }
 
 
@@ -820,7 +820,7 @@ void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
 	}
     }
 
-    enable_display(disp_nrs);
+    enable_display(disp_nrs, w);
 }
 
 void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
@@ -840,7 +840,7 @@ void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 	}
     }
 
-    disable_display(disp_nrs);
+    disable_display(disp_nrs, w);
 }
 
 
@@ -1088,7 +1088,7 @@ void DataDisp::popup_new_argCB (Widget    display_dialog,
     set_last_origin(display_dialog);
 
     BoxPoint *p = (BoxPoint *) client_data;
-    new_display(source_arg->get_string(), p);
+    new_display(source_arg->get_string(), p, "", display_dialog);
 }
 
 
@@ -2507,8 +2507,8 @@ void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
     }
 }
 
-void DataDisp::new_display(string display_expression, BoxPoint *p,
-			   string depends_on, Widget origin)
+string DataDisp::new_display_cmd(string display_expression, BoxPoint *p,
+				 string depends_on)
 {
     string cmd = "graph display " + display_expression;
     if (p != 0 && *p != BoxPoint())
@@ -2516,7 +2516,7 @@ void DataDisp::new_display(string display_expression, BoxPoint *p,
     if (depends_on != "")
 	cmd += " dependent on " + depends_on;
 
-    gdb_command(cmd, origin);
+    return cmd;
 }
 
 
@@ -2702,9 +2702,9 @@ DispNode *DataDisp::new_deferred_node(const string& expr, const string& scope,
     // A `dummy' answer (never shown)
     string answer = "<deferred>";
 
-    StatusShower s("Deferring display");
-    s.total   = answer.length();
-    s.current = answer.length();
+    MString msg = rm("Creating deferred display " + itostring(nr) + ": ") + 
+	tt(expr) + rm(" (scope ") + tt(scope) + rm(")");
+    set_status_mstring(msg);
 
     DispNode *dn = new DispNode(nr, expr, scope, answer);
     dn->deferred() = true;
@@ -3033,9 +3033,9 @@ int DataDisp::add_refresh_user_commands(StringArray& cmds)
     return cmds.size() - initial_size;
 }
 
-void DataDisp::refresh_display(Widget origin)
+string DataDisp::refresh_display_cmd()
 {
-    gdb_command("graph refresh", origin);
+    return "graph refresh";
 }
 
 #define PROCESS_INFO_DISPLAY 0
@@ -3218,12 +3218,14 @@ void DataDisp::add_aliases(IntArray& display_nrs)
     }
 }
 
-void DataDisp::disable_display(IntArray& display_nrs)
+string DataDisp::disable_display_cmd(IntArray& display_nrs)
 {
     add_aliases(display_nrs);
 
     if (display_nrs.size() > 0)
-	gdb_command("graph disable display " + numbers(display_nrs));
+	return "graph disable display " + numbers(display_nrs);
+    else
+	return "";
 }
 
 void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose)
@@ -3283,12 +3285,14 @@ void DataDisp::disable_displayOQC (const string& answer, void *data)
 // Enable Displays
 //-----------------------------------------------------------------------------
 
-void DataDisp::enable_display(IntArray& display_nrs)
+string DataDisp::enable_display_cmd(IntArray& display_nrs)
 {
     add_aliases(display_nrs);
 
     if (display_nrs.size() > 0)
-	gdb_command("graph enable display " + numbers(display_nrs));
+	return "graph enable display " + numbers(display_nrs);
+    else
+	return "";
 }
 
 void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose)
@@ -3350,10 +3354,12 @@ void DataDisp::enable_displayOQC (const string& answer, void *data)
 // Delete Displays
 //-----------------------------------------------------------------------------
 
-void DataDisp::delete_display(IntArray& display_nrs)
+string DataDisp::delete_display_cmd(IntArray& display_nrs)
 {
     if (display_nrs.size() > 0)
-	gdb_command("graph undisplay " + numbers(display_nrs));
+	return "graph undisplay " + numbers(display_nrs);
+    else
+	return "";
 }
 
 void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose)
@@ -3454,7 +3460,7 @@ void DataDisp::process_info_display(string& info_display_answer)
 
 	    if (disp_graph->contains(disp_nr)) 
 	    {
-		// This is a DDD display
+		// This is a DDD display.
 		strptr = new string(get_info_disp_str(next_disp_info, gdb));
 		info_disp_string_map.insert (disp_nr, strptr);
 	    }
@@ -3464,61 +3470,33 @@ void DataDisp::process_info_display(string& info_display_answer)
     }
     next_gdb_display_number = max(next_gdb_display_number, max_disp_nr + 1);
 
-
     // Process DDD displays
+
+    // Part 1.  Update existing display values.
+    IntArray deleted_displays;
     bool changed = false;
-    bool deleted = false;
     MapRef ref;
-    for (int k = disp_graph->first_nr(ref); 
-	     k != 0 ; 
-	     k = disp_graph->next_nr(ref))
+    for (DispNode* dn = disp_graph->first(ref);
+	 dn != 0; 
+	 dn = disp_graph->next(ref))
     {
-	DispNode *dn = disp_graph->get(k);
 	if (!dn->is_user_command() && !dn->deferred())
 	{
-	    if (!info_disp_string_map.contains (k))
+	    string *disp_info = info_disp_string_map.get(dn->disp_nr());
+	    
+	    if (disp_info == 0)
 	    {
 		// The DDD display is not contained in the GDB
-		// `display' output.  Such things can happen if the
-		// debuggee has changed; GDB deletes all displays
-		// then.  We simply defer the existing displays such
-		// that they can be restored later.
-
-		// Fetch old position and dependent info
-		BoxPoint pos = dn->nodeptr()->pos();
-
-		string depends_on = "";
-		for (GraphEdge *edge = dn->nodeptr()->firstTo();
-		     edge != 0; edge = dn->nodeptr()->nextTo(edge))
-		{
-		    BoxGraphNode *ancestor = 
-			ptr_cast(BoxGraphNode, edge->from());
-		    if (ancestor != 0)
-		    {
-			int depnr = disp_graph->get_nr(ancestor);
-			DispNode *depnode = disp_graph->get(depnr);
-			if (depnode != 0)
-			{
-			    depends_on = depnode->name();
-			    break;
-			}
-		    }
-		}
-
-		// Create new deferred node
-		DispNode *new_dn = new_deferred_node(dn->name(), dn->scope(), 
-						     pos, depends_on);
-		disp_graph->insert(new_dn->disp_nr(), new_dn);
-
-		// Delete old node
-		disp_graph->del(k);
-		changed = deleted = true;
+		// `display' output.  This happens if the debuggee has
+		// changed; in this case, GDB deletes all displays.
+		// We simply defer the existing displays such that
+		// they can be restored later.
+		deleted_displays += dn->disp_nr();
 	    }
 	    else
 	    {
 		// Update values
-		DispNode* dn = disp_graph->get (k);
-		if (disp_is_disabled(*(info_disp_string_map.get (k)), gdb))
+		if (disp_is_disabled(*disp_info, gdb))
 		{
 		    if (dn->enabled())
 		    {
@@ -3534,19 +3512,95 @@ void DataDisp::process_info_display(string& info_display_answer)
 		    }
 		}
 
-		delete info_disp_string_map.get (k);
-		info_disp_string_map.del (k);
+		delete disp_info;
+		info_disp_string_map.del(dn->disp_nr());
 	    }
 	}
     }
 
-    assert (info_disp_string_map.length() == 0);
+    assert(info_disp_string_map.length() == 0);
 
-    if (deleted)
+
+    // Part 2.  Defer deleted displays.
+    sort(deleted_displays);
+
+    // Give an appropriate message
+    if (deleted_displays.size() >= 1)
+    {
+	MString msg = rm("Deferring display");
+	if (deleted_displays.size() >= 2)
+	    msg += rm("s");
+	msg += rm(" ");
+
+	for (int i = 0; i < deleted_displays.size(); i++)
+	{
+	    if (i > 0)
+	    {
+		if (deleted_displays.size() == 2)
+		    msg += rm(" and ");
+		else if (i == deleted_displays.size() - 1)
+		    msg += rm(", and ");
+		else
+		    msg += rm(", ");
+	    }
+	    msg += rm(itostring(deleted_displays[i]));
+	}
+
+	msg += rm(" because ");
+	if (deleted_displays.size() >= 2)
+	    msg += rm("they have");
+	else
+	    msg += rm("it has");
+	msg += rm(" been deleted by " + gdb->title());
+
+	set_status_mstring(msg);
+    }
+
+    // Create new deferred displays
+    int i;
+    for (i = 0; i < deleted_displays.size(); i++)
+    {
+	DispNode *dn = disp_graph->get(deleted_displays[i]);
+
+	// Fetch old position and dependent info
+	BoxPoint pos = dn->nodeptr()->pos();
+
+	string depends_on = "";
+	for (GraphEdge *edge = dn->nodeptr()->firstTo();
+	     edge != 0; edge = dn->nodeptr()->nextTo(edge))
+	{
+	    BoxGraphNode *ancestor = ptr_cast(BoxGraphNode, edge->from());
+	    if (ancestor != 0)
+	    {
+		int depnr = disp_graph->get_nr(ancestor);
+		DispNode *depnode = disp_graph->get(depnr);
+		if (depnode != 0)
+		{
+		    depends_on = depnode->name();
+		    break;
+		}
+	    }
+	}
+
+	// Create new deferred node
+	DispNode *new_dn = new_deferred_node(dn->name(), dn->scope(), 
+					     pos, depends_on);
+	disp_graph->insert(new_dn->disp_nr(), new_dn);
+    }
+
+    // Delete old displays
+    for (i = 0; i < deleted_displays.size(); i++)
+    {
+	disp_graph->del(deleted_displays[i]);
+	changed = true;
+    }
+
+    if (deleted_displays.size() >= 1)
     {
 	force_check_aliases = true;
 	refresh_addr();
     }
+
     if (changed)
 	refresh_graph_edit();
 
@@ -3829,19 +3883,43 @@ void DataDisp::process_scope(const string& scope)
 
     if (deferred_displays.size() > 0)
     {
-	// Enable these displays
-	StatusDelay delay("Enabling deferred displays");
+	// Enable these deferred displays.
 	sort(deferred_displays, absolute_le);
 
-	for (int i = 0; i < deferred_displays.size(); i++)
+	MString msg = rm("Enabling deferred display");
+	if (deferred_displays.size() >= 2)
+	    msg += rm("s");
+	msg += rm(" ");
+
+	int i;
+	for (i = 0; i < deferred_displays.size(); i++)
+	{
+	    if (i > 0)
+	    {
+		if (deferred_displays.size() == 2)
+		    msg += rm(" and ");
+		else if (i == deferred_displays.size() - 1)
+		    msg += rm(", and ");
+		else
+		    msg += rm(", ");
+	    }
+	    msg += rm(itostring(deferred_displays[i]));
+	}
+	set_status_mstring(msg);
+
+	for (i = 0; i < deferred_displays.size(); i++)
 	{
 	    DispNode *dn = disp_graph->get(deferred_displays[i]);
 	    assert(dn != 0 && dn->deferred());
 
 	    BoxPoint pos = dn->nodeptr()->pos();
-	    new_displaySQ(dn->name(), scope, &pos,
-			  dn->depends_on(), false, 0, false);
+	    Command c(new_display_cmd(dn->name(), &pos, dn->depends_on()));
+	    c.verbose = false;
+	    gdb_command(c);
+	}
 
+	for (i = 0; i < deferred_displays.size(); i++)
+	{
 	    disp_graph->del(deferred_displays[i]);
 	}
     }

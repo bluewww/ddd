@@ -1195,7 +1195,7 @@ inline int jdb_frame()
 }
 
 // Command completed
-void user_cmdOAC (void *data)
+void user_cmdOAC(void *data)
 {
     gdb_is_exiting = false;
 
@@ -1231,6 +1231,12 @@ void user_cmdOAC (void *data)
 	source_view->clear_file_cache();
 	source_view->clear_execution_position();
 	source_view->reload();
+
+	// Refresh current displays -- they'll probably be lost
+	Command c(data_disp->refresh_display_cmd());
+	c.verbose  = false;
+	c.priority = COMMAND_PRIORITY_SYSTEM;
+	gdb_command(c);
     }
 
     if (pos_buffer && pos_buffer->auto_cmd_found())

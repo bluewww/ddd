@@ -68,6 +68,7 @@
 
 // DDD includes
 #include "ArgField.h"
+#include "Command.h"
 #include "GDBAgent.h"
 #include "GraphEdit.h"
 #include "DispBox.h"
@@ -263,16 +264,45 @@ public:
     // Delete displays given in DISPLAY_NRS.  Sends `delete display' to GDB.
     static void delete_displaySQ(IntArray& display_nrs, bool verbose = true);
 
+    // Same, but return the appropriate command
+    static string new_display_cmd(string display_expression,
+				  BoxPoint *pos = 0,
+				  string depends_on = "");
+
+    static string refresh_display_cmd();
+    static string disable_display_cmd(IntArray& display_nrs);
+    static string enable_display_cmd(IntArray& display_nrs);
+    static string delete_display_cmd(IntArray& display_nrs);
+
     // Same, but use the GDB_COMMAND interface for enqueing commands
     static void new_display(string display_expression,
 			    BoxPoint *pos = 0,
 			    string depends_on = "",
-			    Widget origin = 0);
+			    Widget origin = 0)
+    {
+	gdb_command(new_display_cmd(display_expression, pos, depends_on), 
+		    origin);
+    }
 
-    static void refresh_display(Widget origin = 0);
-    static void disable_display(IntArray& display_nrs);
-    static void enable_display(IntArray& display_nrs);
-    static void delete_display(IntArray& display_nrs);
+    static void refresh_display(Widget origin = 0)
+    {
+	gdb_command(refresh_display_cmd(), origin);
+    }
+
+    static void disable_display(IntArray& display_nrs, Widget origin = 0)
+    {
+	gdb_command(disable_display_cmd(display_nrs), origin);
+    }
+
+    static void enable_display(IntArray& display_nrs, Widget origin = 0)
+    {
+	gdb_command(enable_display_cmd(display_nrs), origin);
+    }
+
+    static void delete_display(IntArray& display_nrs, Widget origin = 0)
+    {
+	gdb_command(delete_display_cmd(display_nrs), origin);
+    }
 
     // Process 'info display' output in INFO_DISPLAY_ANSWER.  Deletes
     // displays if needed.
