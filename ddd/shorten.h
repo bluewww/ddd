@@ -35,9 +35,8 @@
 
 #include "strclass.h"
 
-extern unsigned shorten_default_max_length;
-
-void shorten(string& expr, unsigned max_length = 0);
+// Shorten expression in EXPR to MAX_LENGTH
+extern void shorten(string& expr, unsigned max_length);
 
 #endif // _DDD_shorten_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

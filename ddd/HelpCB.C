@@ -123,6 +123,7 @@ static Pixmap help_pixmap = 0;
 
 static MString _DefaultHelpText(Widget widget);
 static MString _DefaultTipText(Widget widget, XEvent *event);
+static MString _DefaultDocumentationText(Widget widget, XEvent *event);
 static void _MStringHelpCB(Widget widget, 
 			   XtPointer client_data, 
 			   XtPointer call_data,
@@ -186,9 +187,9 @@ static MString get_documentation_string(Widget widget, XEvent *event)
 {
     if (XmIsText(widget))
     {
-	if (DefaultTipText != 0)
-	    return DefaultTipText(widget, event);
-	return _DefaultTipText(widget, event);
+	if (DefaultDocumentationText != 0)
+	    return DefaultDocumentationText(widget, event);
+	return _DefaultDocumentationText(widget, event);
     }
 
     // Get text
@@ -204,10 +205,10 @@ static MString get_documentation_string(Widget widget, XEvent *event)
     }
     else if (text.isEmpty())
     {
-	if (DefaultTipText != 0)
-	    return DefaultTipText(widget, event);
+	if (DefaultDocumentationText != 0)
+	    return DefaultDocumentationText(widget, event);
 	else
-	    return _DefaultTipText(widget, event);
+	    return _DefaultDocumentationText(widget, event);
     }
     else
     {
@@ -289,7 +290,7 @@ static void HelpDestroyCB(Widget, XtPointer client_data, XtPointer)
 }
 
 
-// Get the top-level shell window
+// Default help, tip, and documentation strings
 static MString _DefaultHelpText(Widget widget)
 {
     MString text = "No help available for \"";
@@ -299,14 +300,31 @@ static MString _DefaultHelpText(Widget widget)
     return text;
 }
 
-static MString _DefaultTipText(Widget /* widget */, XEvent * /* event */)
+static MString _DefaultTipText(Widget, XEvent *)
 {
     return MString(0, true);	// empty string
 }
 
+static MString _DefaultDocumentationText(Widget, XEvent *)
+{
+    return MString(0, true);	// empty string
+}
 
-MString (*DefaultHelpText)(Widget)           = _DefaultHelpText;
-MString (*DefaultTipText)(Widget, XEvent *)  = _DefaultTipText;
+static XmTextPosition _TextPosOfEvent(Widget, XEvent *)
+{
+    return XmTextPosition(-1);
+}
+
+MString (*DefaultHelpText)(Widget)
+    = _DefaultHelpText;
+MString (*DefaultTipText)(Widget, XEvent *) 
+    = _DefaultTipText;
+MString (*DefaultDocumentationText)(Widget, XEvent *) 
+    = _DefaultDocumentationText;
+XmTextPosition (*TextPosOfEvent)(Widget widget, XEvent *event)
+    = _TextPosOfEvent;
+
+
 Pixmap (*helpOnVersionPixmapProc)(Widget)    = 0;
 void (*DisplayDocumentation)(const MString&) = 0;
 
@@ -1182,17 +1200,31 @@ static void HandleTipEvent(Widget w,
     {
     case EnterNotify:
     case LeaveNotify:
-    case MotionNotify:
     case ButtonPress:
     case ButtonRelease:
-	ClearTip(w);
-    }
+	{
+	    ClearTip(w);
 
-    switch (event->type)
-    {
-    case EnterNotify:
+	    if (event->type == EnterNotify)
+		RaiseTip(w, event);
+	    break;
+	}
+
     case MotionNotify:
-	RaiseTip(w, event);
+	{
+	    static Widget last_motion_widget           = 0;
+	    static XmTextPosition last_motion_position = XmTextPosition(-1);
+	    XmTextPosition pos = TextPosOfEvent(w, event);
+
+	    if (w != last_motion_widget || pos != last_motion_position)
+	    {
+		last_motion_widget   = w;
+		last_motion_position = pos;
+
+		ClearTip(w);
+		RaiseTip(w, event);
+	    }
+	}
     }
 }
 

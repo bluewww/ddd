@@ -347,6 +347,7 @@ bool SourceView::source_history_locked = false;
 
 bool SourceView::at_lowest_frame = true;
 
+int SourceView::max_popup_expr_length = 20;
 
 //-----------------------------------------------------------------------
 // Helping functions.
@@ -3520,7 +3521,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	XtAddCallback(shell, XtNpopdownCallback, DestroyThisCB, shell);
 
 	string popup_arg = word;
-	shorten(popup_arg);
+	shorten(popup_arg, max_popup_expr_length);
 	MString current_arg(popup_arg, "tt");
 	MString current_ref_arg(gdb->dereferenced_expr(popup_arg), "tt");
 

@@ -174,16 +174,6 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxNameLength,
-	XtCMaxNameLength,
-	XmRInt,
-	sizeof(int),
-	XtOffsetOf(AppData, max_name_length),
-	XmRImmediate,
-	XtPointer(32)
-    },
-
-    {
 	XtNindentAmount,
 	XtCIndentAmount,
 	XmRInt,
@@ -701,6 +691,46 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, status_at_bottom),
 	XtRImmediate,
 	XtPointer(True)
+    },
+
+    {
+	XtNmaxDisplayTitleLength,
+	XtCMaxLength,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, max_display_title_length),
+	XmRImmediate,
+	XtPointer(20)
+    },
+
+    {
+	XtNmaxPopupExprLength,
+	XtCMaxLength,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, max_popup_expr_length),
+	XmRImmediate,
+	XtPointer(20)
+    },
+
+    {
+	XtNmaxValueTipLength,
+	XtCMaxLength,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, max_value_tip_length),
+	XmRImmediate,
+	XtPointer(32)
+    },
+
+    {
+	XtNmaxValueStatusLength,
+	XtCMaxLength,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, max_value_status_length),
+	XmRImmediate,
+	XtPointer(80)
     },
 
     {

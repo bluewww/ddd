@@ -53,6 +53,7 @@ public:
     static string  vsllib_name;
     static string  vsllib_path;
     static string  vsllib_defs;
+    static int     max_display_title_length;
 
     // bei dv == 0 disabled-box erzeugen
     DispBox (string disp_nr,

@@ -365,11 +365,6 @@ Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
 ! Some special labels
 Ddd*Forward.labelString:   Fwd
 
-! The maximum number of characters allowed in a data display title.
-! Components of longer names are replaced by `..', for instance
-! `foo->bar->blue' becomes `foo->..->blue'
-Ddd*maxNameLength:	20
-
 
 ! Number of columns used for line numbers in the source window
 ! Should be a multiple of 8, to avoid confusion with TAB characters.
@@ -389,18 +384,7 @@ Ddd*tabWidth:	        8
 ! Users of GDB 4.12 and earlier may wish to add a line `display /x $pc',
 ! as these GDB versions do not issue the current PC location when source
 ! code is not available.
-!
-! The `simple-print' command is used by DDD to obtain variable values
-! from GDB without any side-effects such as changing the value history.
-! If `simple-print' does not work, DDD uses `print' instead.
 Ddd*gdbInitCommands:	\
-define simple-print\n\
-  output $arg0\n\
-  echo \\n\n\
-end\n\
-document simple-print\n\
-Like "print" but don't put in value history.\n\
-end\n\
 set height 0\n\
 set width 0\n\
  set verbose off\n\
@@ -507,6 +491,20 @@ Ddd*buttonTips:			true
 
 ! Do we want tips on variables in the source code, telling us their value?
 Ddd*valueTips:			true
+
+
+! The maximum length of a data display title.
+! Longer names are replaced by `..'; `foo->bar->blue' becomes `foo->..->blue'.
+Ddd*maxDisplayTitleLength:	20
+
+! The maximum length of an expression in the source popup.
+Ddd*maxPopupExprLength:		20
+
+! The maximum length of a value tip.
+Ddd*maxValueTipLength:		40
+
+! The maximum number length of a value shown in the status line.
+Ddd*maxValueStatusLength:	120
 
 
 ! Focus policy
@@ -2083,10 +2081,10 @@ Ddd*preferences*general*helpString:	\
 \n\
 @tt \267 @rm If @bf Enable button tips @rm is set and you move the mouse \
 pointer over a button,\n\
-@DDD@ pops up a window showing the button usage.\n\
-@tt \267 @rm If @bf Enable button tips @rm is set and you move the mouse \
+    @DDD@ pops up a window showing the button usage.\n\
+@tt \267 @rm If @bf Enable value tips @rm is set and you move the mouse \
 pointer over a variable\n\
-in the source text, @DDD@ pops up a window showing the variable value.\n\
+    in the source text, @DDD@ pops up a window showing the variable value.\n\
 @tt \267 @rm If @bf Iconify all windows at once @rm is set, all @DDD@ windows \
 are iconified as a group.\n\
     Otherwise, windows are iconified separately.\n\

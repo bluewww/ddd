@@ -452,6 +452,9 @@ public:
     // Set the tab width
     static void set_tab_width(int width);
 
+    // Maximum length of expr in source popup
+    static int max_popup_expr_length;
+
     // Return `clear ARG' command
     static string clear_command(string arg);
 

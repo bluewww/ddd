@@ -55,6 +55,7 @@ VSLLib* DispBox::vsllib_ptr      = 0;
 string  DispBox::vsllib_name     = "builtin";
 string  DispBox::vsllib_path     = ".";
 string  DispBox::vsllib_defs     = "";
+int     DispBox::max_display_title_length = 20;
 
 // ***************************************************************************
 //
@@ -64,7 +65,7 @@ DispBox::DispBox (string disp_nr,
     : mybox(0), title_box(0)
 {
     // Name kuerzen
-    shorten(name);
+    shorten(name, max_display_title_length);
 
     VSLArg args[3];
     args[0] = disp_nr;

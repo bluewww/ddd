@@ -42,5 +42,9 @@ Widget make_buttons(Widget parent, const string& name, const string& list);
 // Add buttons as specified in LIST to BUTTONS
 void add_buttons(Widget buttons, const string& list);
 
+// Maximum length of value in value tip and in status line
+extern int max_value_tip_length;
+extern int max_value_status_length;
+
 #endif // _DDD_buttons_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

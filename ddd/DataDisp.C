@@ -2395,7 +2395,7 @@ string DataDisp::process_displays (string& displays,
 	    return not_my_displays;
 	}
 
-	if (is_not_active (next_display, gdb))
+	if (is_invalid(next_display))
 	{
 	    // Display is not active: don't insert it into map.
 	    // This way, it will be shown as disabled.
@@ -2564,7 +2564,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 	post_gdb_busy();
 	return;
     }
-    if (!value.contains(" = "))
+    if (is_invalid(value))
     {
 	post_gdb_message(value);
 	return;

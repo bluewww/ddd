@@ -64,8 +64,6 @@
 #define XtCVSLLibrary            "VSLLibrary"
 #define XtNvslDefs               "vslDefs"
 #define XtCVSLDefs               "VSLDefs"
-#define XtNmaxNameLength         "maxNameLength"
-#define XtCMaxNameLength         "MaxNameLength"
 #define XtNindentAmount          "indentAmount"
 #define XtCIndentAmount          "IndentAmount"
 #define XtNtabWidth              "tabWidth"
@@ -171,6 +169,11 @@
 #define XtCValueTips             "ValueTips"
 #define XtNstatusAtBottom        "statusAtBottom"
 #define XtCStatusAtBottom        "StatusAtBottom"
+#define XtNmaxDisplayTitleLength "maxDisplayTitleLength"
+#define XtNmaxPopupExprLength    "maxPopupExprLength"
+#define XtNmaxValueTipLength     "maxValueTipLength"
+#define XtNmaxValueStatusLength  "maxValueStatusLength"
+#define XtCMaxLength             "MaxLength"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -189,7 +192,6 @@ struct AppData {
     String  vsl_path;
     String  vsl_library;
     String  vsl_defs;
-    int     max_name_length;
     int     indent_amount;
     int     tab_width;
     String  console_buttons;
@@ -243,6 +245,10 @@ struct AppData {
     Boolean button_tips;
     Boolean value_tips;
     Boolean status_at_bottom;
+    int     max_display_title_length;
+    int     max_popup_expr_length;
+    int     max_value_tip_length;
+    int     max_value_status_length;
     String  dddinit_version;
     String  app_defaults_version;
 };

@@ -41,18 +41,12 @@ const char shorten_rcsid[] =
 #include <stdlib.h>
 #endif
 
-unsigned shorten_default_max_length = 20;
 static string shorten_replacement = "..";
 
 static regex RXdbx_scope("[a-zA-Z_0-9]*`");
 
 void shorten(string& expr, unsigned max_length)
 {
-    if (max_length == 0)
-	max_length = shorten_default_max_length;
-    if (max_length == 0)
-	return;
-
 #ifdef DEBUG
     clog << quote(expr) << "\n";
 #endif
@@ -167,15 +161,16 @@ void shorten(string& expr, unsigned max_length)
 #ifdef MAIN
 int main(int argc, char *argv[])
 {
+    int max_length = 20;
     if (argc > 1)
-	shorten_default_max_length = atoi(argv[1]);
+	max_length = atoi(argv[1]);
 
     char buf[1024];
     while (cin)
     {
 	cin.getline(buf, sizeof buf);
 	string expr(buf);
-	shorten(expr);
+	shorten(expr, max_length);
 	cout << expr << "\n";
     }
 

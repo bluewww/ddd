@@ -297,9 +297,6 @@ static XrmOptionDescRec options[] = {
 { "--vsl-path",             XtNvslPath,              XrmoptionSepArg, NULL },
 { "-vsl-path",              XtNvslPath,              XrmoptionSepArg, NULL },
 
-{ "--namelength",           XtNmaxNameLength,        XrmoptionSepArg, NULL },
-{ "-namelength",            XtNmaxNameLength,        XrmoptionSepArg, NULL },
-
 { "--separate",             XtCSeparate,             XrmoptionNoArg, S_true },
 { "-separate",              XtCSeparate,             XrmoptionNoArg, S_true },
 { "--separate-windows",     XtCSeparate,             XrmoptionNoArg, S_true },
@@ -1279,7 +1276,7 @@ int main(int argc, char *argv[])
     if (!app_data.separate_source_window && !app_data.status_at_bottom)
 	create_status(paned_work_w);
 
-    // Graph area
+    // Data window
     Widget data_disp_parent = paned_work_w;
     Widget data_menubar_w = 0;
     Widget data_main_window_w = 0;
@@ -1318,7 +1315,8 @@ int main(int argc, char *argv[])
 					    data_main_window_w,
 					    NULL));
     }
-				  
+
+    // Create data display
     data_disp = new DataDisp (app_context,
 			      data_disp_parent,
 			      app_data.vsl_path,
@@ -1326,7 +1324,11 @@ int main(int argc, char *argv[])
 			      app_data.vsl_defs,
 			      app_data.panned_graph_editor);
 
-    shorten_default_max_length = app_data.max_name_length;
+    // Set maximum lengths for `shorten' calls
+    max_value_tip_length              = app_data.max_value_tip_length;
+    max_value_status_length           = app_data.max_value_status_length;
+    DispBox::max_display_title_length = app_data.max_display_title_length;
+    SourceView::max_popup_expr_length = app_data.max_popup_expr_length;
 
     if (app_data.separate_data_window)
     {

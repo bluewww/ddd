@@ -1829,12 +1829,6 @@ be iconified on its own.
 The number of columns used for the code line number display (default:
 \fB8\fR)
 .TP
-.B "maxNameLength (\fPclass\fB MaxNameLength)"
-The maximum number of characters allowed in a data display title
-(default: \fB20\fR).  Components of longer names are replaced by
-`\fB..\fR'\(em\&for instance, `\fBfoo->bar->blue\fR' becomes
-`\fBfoo->..->blue\fR'.
-.TP
 .B "pannedGraphEditor (\fPclass\fB PannedGraphEditor)"
 What shall \s-2@DDD@\s+2 use if the graph gets too large to be
 displayed?  If this is `\fBtrue\fR', an Athena panner is used (a kind

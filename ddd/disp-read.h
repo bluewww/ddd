@@ -47,146 +47,111 @@
 #include "GDBAgent.h"
 
 //----------------------------------------------------------------------------
-// fuer die Erkennung bestimmter Befehle
+// Recognize most important commands
 //----------------------------------------------------------------------------
 
-// ***************************************************************************
-// false, wenn cmd ein einzelnes display erzeugt.
-// 
+// True if CMD creates a single display.
 bool is_single_display_cmd(const string& cmd, GDBAgent *gdb);
 
-// ***************************************************************************
-// false, wenn cmd keine besonderen Auswirkungen hat.
-// 
+// True if CMD has no side effects.
 bool is_nop_cmd(const string& cmd);
 
-// ***************************************************************************
-// false, wenn cmd ein einzelnes display erzeugt.
-// 
+// True if CMD creates a display output
 bool is_display_cmd(const string& cmd);
 
-// ***************************************************************************
-// true, wenn cmd Programmstop (mit display-Ausgabe) zur Folge hat.
-// 
+// True if CMD executes debuggee and shows new displays
 bool is_running_cmd(const string& cmd, GDBAgent *gdb);
 
-// ***************************************************************************
-// true, wenn cmd ein Programm startet.
-// 
+// True if CMD starts debuggee
 bool is_run_cmd(const string& cmd);
 
-// ***************************************************************************
-// true, wenn cmd Programm-Argumente setzt.
-// 
+// True if CMD sets debuggee arguments.
 bool is_set_args_cmd(const string& cmd);
 
-// ***************************************************************************
-// true, wenn cmd Frame-Wechsel zur Folge hat.
-// 
+// True if CMD changes the current program frame
 bool is_frame_cmd(const string& cmd);
-bool is_up_cmd(const string& cmd);
-bool is_down_cmd(const string& cmd);
+bool is_up_cmd(const string& cmd);   // ... towards caller
+bool is_down_cmd(const string& cmd); // ... towards called
 
-// ***************************************************************************
-// true, wenn cmd Variablen-Wechsel zur Folge hat.
-// 
+// True if CMD changes variable values.
 bool is_set_cmd(const string& cmd);
 
-// ***************************************************************************
-// true, wenn cmd Einstellungs-Wechsel zur Folge hat.
-// 
+// True if CMD changes debugger settings.
 bool is_setting_cmd(const string& cmd);
 
-// ***************************************************************************
-// true, wenn cmd File-Wechsel zur Folge hat.
-// 
+// True if CMD changes the current file.
 bool is_file_cmd(const string& cmd, GDBAgent *gdb);
 
-// ***************************************************************************
-// true, wenn cmd Breakpoints setzt
-// 
+// True if CMD changes breakpoints.
 bool is_break_cmd(const string& cmd);
 
-// ***************************************************************************
-// true, wenn cmd die aktuelle Position veraendert
-// 
+// True if CMD changes the current position.
 bool is_lookup_cmd(const string& cmd);
 
-// ***************************************************************************
-// true, wenn cmd das aktuelle Verzeichnis veraendert
-// 
+// True if CMD changes the current directory
 bool is_cd_cmd(const string& cmd);
 
-
+// True if CMD is an internal graph command.
 bool is_graph_cmd(const string& cmd);
+
+// True if CMD is an internal `graph refresh' command.
 bool is_refresh_cmd(const string& cmd);
+
+// Return the string after a `display' command.
 string get_display_expression(const string& cmd);
 
+
 //----------------------------------------------------------------------------
-// fuer das Erkennen von Displayausgaben
+// Handle `display' output
 //----------------------------------------------------------------------------
 
-// ***************************************************************************
-// -1, wenn gdb_answer kein display enthaelt, 
-// sonst den index des ersten displays.
-// 
-int display_index (const string& gdb_answer, GDBAgent *gdb);
-
-// ***************************************************************************
-// 
+// True if GDB_ANSWER contains a display expression.
 bool contains_display (const string& gdb_answer, GDBAgent *gdb);
 
-// ***************************************************************************
-// gibt index zurueck, an dem ein Display anfangen koennte (d.h. index eines
-// moeglichen Display-Teils
-// 
+// Return index of first display expr in GDB_ANSWER; -1, if none is found.
+int display_index (const string& gdb_answer, GDBAgent *gdb);
+
+// Return index of first possible beginning of display expr in GDB_ANSWER.
 int possible_begin_of_display (string gdb_answer, GDBAgent *gdb);
 
-// ***************************************************************************
-// gibt den naechsten Display zurueck falls vorhanden, und
-// schneidet diesen von displays vorn ab.
-// 
+// Return next display expr from DISPLAYS; remove it from DISPLAYS.
 string read_next_display (string& displays, GDBAgent *gdb);
 
-
-// ***************************************************************************
-// schneidet vom display "'nr': 'name' = " vorne ab.
-// 
+// Remove and return "NR: NAME = " from DISPLAY.
 string get_disp_value_str (/*const*/ string& display, GDBAgent *gdb);
 
 
 //----------------------------------------------------------------------------
-// fuer das Erkennen der Ausdruecke bei info display
+// Recognize expressions in `info display'
 //----------------------------------------------------------------------------
 
-// ***************************************************************************
-// gibt den ersten (naechsten) Display-Info aus 
-// Ist kein weiteres display-info vorhanden, sind return-Wert und gdb_answer
-// gleich "".
-// 
+// Return first/next display info from GDB_ANSWER; "" if done.
 string read_first_disp_info (string& gdb_answer, GDBAgent *gdb);
 string read_next_disp_info (string& gdb_answer, GDBAgent *gdb);
 
-// ***************************************************************************
-// schneidet "'nr': " vorne ab
-//
+// Remove and return "NR: " from DISPLAY.
 string get_info_disp_str (string& display, GDBAgent *gdb);
 
-// ***************************************************************************
-//
+// Check whether `disabled' entry in INFO_DISP_STR indicates an enabled display
 bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb);
 
 
 
 //----------------------------------------------------------------------------
-// fuer Knotenerzeugung (Lesen des Display-Anfangs)
+// Handle `display' output
 //----------------------------------------------------------------------------
 
+// Remove and return display number from DISPLAY
 string  read_disp_nr_str (string& display, GDBAgent *gdb);
+
+// Remove and return display name from DISPLAY
 string  read_disp_name   (string& display, GDBAgent *gdb);
+
+// True if some display has been disabled
 bool is_disabling (const string& value, GDBAgent *gdb);
-bool is_not_active (const string& value, GDBAgent *gdb);
+
+// True if VALUE is an invalid value (i.e., an error message)
+bool is_invalid(const string& value);
 
 #endif // _DDD_disp_read_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
-

@@ -30,6 +30,7 @@
 #define _DDD_HelpCB_h
 
 #include <X11/Intrinsic.h>
+#include <Xm/Text.h>
 #include "MString.h"
 #include "bool.h"
 
@@ -119,8 +120,15 @@ extern void EnableTextTips(bool enable = true);
 // Create a help text if the `help' resource is empty
 extern MString (*DefaultHelpText)(Widget widget);
 
-// Create a help text if the `tip' resource is empty
+// Create a help text if the `tipString' resource is empty
 extern MString (*DefaultTipText)(Widget widget, XEvent *event);
+
+// Create a help text for the documentation if the `documentationString'
+// resource is empty
+extern MString (*DefaultDocumentationText)(Widget widget, XEvent *event);
+
+// Return a text position associated with this event
+extern XmTextPosition (*TextPosOfEvent)(Widget widget, XEvent *event);
 
 // Hook for displaying documentation
 extern void (*DisplayDocumentation)(const MString& doc);

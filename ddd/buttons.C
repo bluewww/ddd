@@ -60,6 +60,15 @@ char buttons_rcsid[] =
 #include <ctype.h>
 
 //-----------------------------------------------------------------------------
+// Data
+//-----------------------------------------------------------------------------
+
+// Maximum length of value in value tip and in status line
+int max_value_tip_length    = 20;
+int max_value_status_length = 80;
+
+
+//-----------------------------------------------------------------------------
 // Buttons
 //-----------------------------------------------------------------------------
 
@@ -183,7 +192,7 @@ static string gdbHelp(string command)
     return help;
 }
 
-MString gdbDefaultHelp(Widget widget)
+static MString gdbDefaultHelpText(Widget widget)
 {
     string name = gdbHelpName(widget);
     string help = gdbHelp(name);
@@ -201,12 +210,20 @@ static string gdbValue(const string& expr)
     return gdb_question(gdb->print_command(expr));
 }
 
-// A regex matching error messages like `No symbol "i"' or `"i" is not
-// active'.  We simply check for two words either at the beginning or
-// at the end of the message.
-static regex RXnoValue("([a-zA-Z]+ [a-zA-Z]+.*|.*[a-zA-Z]+ [a-zA-Z]+\\.?)\n?");
+static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
+{
+    XmTextPosition startpos, endpos;
 
-MString gdbDefaultTip(Widget widget, XEvent *event)
+    string expr = 
+	source_view->get_word_at_event(widget, event, startpos, endpos);
+    if (expr == "")
+	return XmTextPosition(-1);
+
+    return startpos;
+}
+
+static MString gdbDefaultText(Widget widget, XEvent *event, 
+			      bool for_documentation)
 {
     string tip;
     if (XmIsText(widget))
@@ -215,7 +232,7 @@ MString gdbDefaultTip(Widget widget, XEvent *event)
 	XmTextPosition startpos, endpos;
 	string expr = 
 	    source_view->get_word_at_event(widget, event, startpos, endpos);
-	if (expr == "" || expr.contains('\n'))
+	if (expr == "" || expr.contains('\n') || expr.contains('('))
 	    return MString(0, true);
 
 	Position x, y;
@@ -238,9 +255,11 @@ MString gdbDefaultTip(Widget widget, XEvent *event)
 	tip = gdbValue(expr);
 	if (tip == NO_GDB_ANSWER)
 	    return MString(0, true);
-	if (tip.matches(RXnoValue))
+	if (is_invalid(tip))
 	    return MString(0, true);
-	shorten(tip, 80);
+	int max_length = 
+	    for_documentation ? max_value_status_length : max_value_tip_length;
+	shorten(tip, max_length);
     }
     else
     {
@@ -259,6 +278,17 @@ MString gdbDefaultTip(Widget widget, XEvent *event)
 
     return MString(tip, "rm");
 }
+
+static MString gdbDefaultTipText(Widget widget, XEvent *event)
+{
+    return gdbDefaultText(widget, event, false);
+}
+
+static MString gdbDefaultDocumentationText(Widget widget, XEvent *event)
+{
+    return gdbDefaultText(widget, event, true);
+}
+
 
 Widget make_buttons(Widget parent, const string& name, 
 		    const string& button_list)
@@ -384,8 +414,10 @@ void add_buttons(Widget buttons, const string& button_list)
     delete[] commands;
 
     // Register default help command
-    DefaultHelpText = gdbDefaultHelp;
-    DefaultTipText  = gdbDefaultTip;
+    DefaultHelpText           = gdbDefaultHelpText;
+    DefaultTipText            = gdbDefaultTipText;
+    DefaultDocumentationText  = gdbDefaultDocumentationText;
+    TextPosOfEvent            = textPosOfEvent;
 
-    DisplayDocumentation  = showDocumentationInStatusLine;
+    DisplayDocumentation      = showDocumentationInStatusLine;
 }

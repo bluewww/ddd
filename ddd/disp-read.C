@@ -180,7 +180,7 @@ bool is_down_cmd (const string& cmd)
 // 
 bool is_set_cmd (const string& cmd)
 {
-    static regex RXset_cmd("[ \t]*(set|assign|pq)([ \t]+.*)?");
+    static regex RXset_cmd("[ \t]*(set[ \t]+var[a-z]*|assign|pq)([ \t]+.*)?");
 
     return cmd.matches (RXset_cmd);
 }
@@ -606,11 +606,14 @@ bool is_disabling(const string& value, GDBAgent *gdb)
     return gdb->type() == GDB && value.contains("\nDisabling display ");
 }
 
-bool is_not_active(const string& value, GDBAgent *gdb)
+bool is_invalid(const string& value)
 {
-    return gdb->type() == DBX 
-	&& (value.contains(" is not active\n", -1)
-	    || value.contains(" is not active", -1)
-	    || value.contains("<not active>\n", -1)
-	    || value.contains("<not active>", -1));
+    // If VALUE ends in two words, it is an error message like
+    // `not active' or `no symbol in current context.'.
+    static regex RXinvalid_value("("
+				 "[a-zA-Z]+ [a-zA-Z]+.*"
+				 "|.*[a-zA-Z]+ [a-zA-Z]+(\\.|>)?"
+				 ")\n?");
+
+    return value.matches(RXinvalid_value);
 }
