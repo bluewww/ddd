@@ -196,6 +196,14 @@ ${XEDITOR=false} +@LINE@ @FILE@ \
 || xterm -e ${EDITOR=vi} +@LINE@ @FILE@
 
 
+! A command to get a core dump of a running process (typically, `gcore')
+! `@FILE@' is replaced by the base name of the file to create;
+! `@PID@' is replaced by the process id.  The output must be
+! written to `@FILE@.@PID@'.
+! Leave this entry empty if you have no `gcore' or similar command.
+Ddd*getCoreCommand: @GCORE_COMMAND@
+
+
 ! Commands to list all executable/source/core/directory
 ! files matching @MASK@.
 ! These commands are executed on remote hosts only.
@@ -626,7 +634,7 @@ Ddd*pushMenuPopupTime:		400
 Ddd*statusAtBottom:		true
 
 ! Number of status messages to be kept in status history
-Ddd*statusHistorySize:		10
+Ddd*statusHistorySize:		20
 
 ! Do we want to see the debugger status (blinking while busy)?
 Ddd*blinkWhileBusy:		true
@@ -1539,7 +1547,12 @@ Ddd*editMenu.settings.documentationString:\
 Ddd*editMenu.saveOptions.labelString:			Save Options
 Ddd*editMenu.saveOptions.mnemonic:			O
 Ddd*editMenu.saveOptions.documentationString:\
-@rm Save all options for the next DDD invocation
+@rm Save DDD state (without process state) for the next DDD invocation
+
+Ddd*editMenu.saveSession.labelString:			Save Session
+Ddd*editMenu.saveSession.mnemonic:			e
+Ddd*editMenu.saveSession.documentationString:\
+@rm Save DDD state (including process state) for the next DDD invocation
 
 
 ! View menu (for multi-window DDD)
@@ -4075,7 +4088,23 @@ To discard the changes, click on LBL(No).
 Ddd*set_dialog_popup.title: DDD: Set Value
 Ddd*set_dialog*helpString:	\
 @rm You can now change a value in the selected display.\n\
-If you want to keep it unchanged, press LBL(Cancel).
+If you want to keep it unchanged, click on LBL(Cancel).
+
+Ddd*kill_to_save_dialog_popup.title: DDD: Save State
+Ddd*kill_to_save_dialog.messageString: \
+@rm Saving data displays requires a core dump of the debugged program.\
+  Kill it?
+Ddd*kill_to_save_dialog.okLabelString: Yes
+Ddd*kill_to_save_dialog*no.labelString: No
+Ddd*kill_to_save_dialog*helpString: \
+@rm In order to restore the data displays of this session, DDD requires\n\
+a core dump reflecting the current memory contents.  Unfortunately, \n\
+DDD must kill the program for that.\n\
+\n\
+To kill your program and save the entire state, click on LBL(Yes).\n\
+To save as much state as possible, without killing, click on LBL(No).\n\
+To cancel and leave saved state unchanged, click on LBL(Cancel).
+
 
 
 !-----------------------------------------------------------------------------

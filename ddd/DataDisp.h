@@ -327,7 +327,6 @@ private:
     static int alias_display_nr(GraphNode *node);
 
     // State stuff
-    static void fetch_scopes(StringArray& scopes, string where_output);
     static void write_frame_command(ostream& os, int& current_frame, 
 				   int target_frame);
     static void write_restore_scope_command(ostream& os,
@@ -336,7 +335,8 @@ private:
 					    DispNode *dn,
 					    bool& ok);
 
-    static bool get_state(ostream& os, bool restore_state);
+    static bool get_state(ostream& os, bool restore_state, 
+			  const StringArray& scopes);
 
 public:
     static Widget graph_edit;
@@ -394,18 +394,24 @@ public:
     static int max_display_number;
 
     // Return DDD commands to restore current state (displays, etc.)
-    // Return true iff all went well
-    static bool get_state(ostream& os);
+    // Return true iff all went well.  SCOPES are obtained via
+    // GET_SCOPES (see below).
+    static bool get_state(ostream& os, const StringArray& scopes);
+    static bool get_scopes(StringArray& scopes);
+
+    // Return true if a core dump is needed to restore displays
+    static bool need_core_to_restore();
 };
 
 inline bool DataDisp::get_selection(ostream& os)
 {
-    return get_state(os, false);
+    StringArray dummy;
+    return get_state(os, false, dummy);
 }
 
-inline bool DataDisp::get_state(ostream& os)
+inline bool DataDisp::get_state(ostream& os, const StringArray& scopes)
 {
-    return get_state(os, true);
+    return get_state(os, true, scopes);
 }
 
 #endif // _DDD_DataDisp_h

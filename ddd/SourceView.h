@@ -261,8 +261,6 @@ class SourceView {
 
     // Return TRUE if breakpoint BP is in current file
     static bool bp_matches(BreakPoint *bp);
-    static string full_path(string file);
-    static const char *basename(const char *);
     static bool file_matches(const string& file1, const string& file2);
     static bool base_matches(const string& file1, const string& file2);
 
@@ -624,6 +622,10 @@ public:
 
     // Return debugger command(s) to restore current state (breakpoints, etc.)
     static bool get_state(ostream& os, DebuggerType type);
+
+    // Helpers
+    static string full_path(string file);
+    static const char *basename(const char *);
 };
 
 #endif // _DDD_SourceView_h

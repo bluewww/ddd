@@ -339,6 +339,13 @@ static char S_false[] = "false";
 // Options
 // Note: we support both the GDB '--OPTION' and the X '-OPTION' convention.
 static XrmOptionDescRec options[] = {
+{ "--session",              XtNsession,              XrmoptionSepArg, NULL },
+{ "-session",               XtNsession,              XrmoptionSepArg, NULL },
+
+#if XtSpecificationRelease < 6
+{ "-xtsessionID",           XtNsession,              XrmoptionSepArg, NULL },
+#endif
+
 { "--debugger",             XtNdebuggerCommand,      XrmoptionSepArg, NULL },
 { "-debugger",              XtNdebuggerCommand,      XrmoptionSepArg, NULL },
 
@@ -629,7 +636,7 @@ struct EditItems {
 	Cut, Copy, Paste, ClearAll, Delete, Sep1, 
 	SelectAll, UnselectAll, Sep2,
 	Preferences, Settings, Sep3,
-	SaveOptions 
+	SaveOptions, SaveSession 
     };
 };
 
@@ -644,12 +651,14 @@ struct EditItems {
     { "selectAll",   MMPush | MMUnmanaged, \
 	                      { gdbSelectAllCB,       XtPointer(win) }}, \
     { "unselectAll", MMPush | MMUnmanaged, \
-	                      { gdbUnselectAllCB,       XtPointer(win) }}, \
+	                      { gdbUnselectAllCB,     XtPointer(win) }}, \
     MMSep, \
     { "preferences", MMPush,  { dddPopupPreferencesCB }}, \
     { "settings",    MMPush,  { dddPopupSettingsCB }}, \
     MMSep, \
-    { "saveOptions", MMPush,  { DDDSaveOptionsCB }}, \
+    { "saveOptions", MMPush,  { DDDSaveOptionsCB, XtPointer(SAVE_DEFAULT) }}, \
+    { "saveSession", MMPush,  { DDDSaveOptionsCB, \
+ 			        XtPointer(SAVE_DEFAULT | SAVE_SESSION) }}, \
     MMEnd \
 };
 
@@ -1170,6 +1179,30 @@ inline void manage_child(Widget w, bool state)
     }
 }
 
+//-----------------------------------------------------------------------------
+// Message handling
+//-----------------------------------------------------------------------------
+
+class MessageSaver: public ostrstream
+{
+    ostream& tied_to;
+    int flushed;
+
+public:
+    MessageSaver(ostream& os = cerr)
+	: tied_to(os), flushed(0)
+    {}
+    void flush()
+    {
+	if (flushed++ == 0)
+	    tied_to << str();
+    }
+    ~MessageSaver()
+    {
+	flush();
+    }
+};
+
 
 //-----------------------------------------------------------------------------
 // DDD main program
@@ -1325,16 +1358,80 @@ int main(int argc, char *argv[])
     ddd_install_x_fatal();
     ddd_install_x_error();
 
-    // Read ~/.dddinit resources
-    XrmDatabase dddinit = XrmGetFileDatabase(options_file());
+    MessageSaver messages;
+
+    // Set up a `~/.ddd/' directory hierarchy
+    create_ddd_session_dir(DEFAULT_SESSION, messages);
+
+    // Read ~/.ddd/init resources
+    XrmDatabase dddinit = 
+	XrmGetFileDatabase(session_state_file(DEFAULT_SESSION));
     if (dddinit == 0)
 	dddinit = XrmGetStringDatabase("");
 
-    // Let command-line arguments override ~/.dddinit
+    // Let command-line arguments override ~/.ddd/init
     XrmParseCommand(&dddinit, options, XtNumber(options), 
 		    DDD_CLASS_NAME, &argc, argv);
 
-    // Open X connection and create application shell
+    String session_id = 0;
+    if (session_id == 0)
+    {
+	// Determine session
+	char *session_rtype = 0;
+	XrmValue session_value;
+
+	string Nsession   = string(DDD_CLASS_NAME ".") + XtNsession;
+	string CSessionID = string(DDD_CLASS_NAME ".") + XtCSessionID;
+#if XtSpecificationRelease >= 6
+	string NsessionID = string(DDD_CLASS_NAME ".") + XtNsessionID;
+#endif
+
+	// Try resource or option
+	if (
+#if XtSpecificationRelease >= 6
+	    XrmGetResource(dddinit, NsessionID, CSessionID,
+			   &session_rtype, &session_value) ||
+#endif
+	    XrmGetResource(dddinit, Nsession, CSessionID,
+			   &session_rtype, &session_value))
+	{
+	    if (session_value.addr != 0)
+	    {
+		static string id((char *)session_value.addr, 
+				 session_value.size);
+		session_id = id;
+	    }
+	}
+
+	if (session_id == 0)
+	{
+	    // Try `=FILE' hack: if the last or second-to-last arg is
+	    // `=FILE', replace it by FILE and use FILE as session id.
+	    for (i = argc - 1; i >= 1 && i >= argc - 2; i--)
+	    {
+		if (argv[i][0] == '=')
+		{
+		    argv[i] = argv[i] + 1;
+		    session_id = (char *)SourceView::basename(argv[i]);
+		    session_value.addr = session_id;
+		    session_value.size = strlen(session_id) + 1;
+		    XrmPutResource(&dddinit, Nsession, XtRString, 
+				   &session_value);
+		}
+	    }
+	}
+    }
+
+    XrmDatabase session_db = 0;
+    if (session_id != 0)
+    {
+	// Merge in session resources
+	session_db = XrmGetFileDatabase(session_state_file(session_id));
+	if (session_db != 0)
+	    XrmMergeDatabases(session_db, &dddinit);
+    }
+
+    // Open X connection and create toplevel application shell
     XtAppContext app_context;
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
@@ -1357,19 +1454,12 @@ int main(int argc, char *argv[])
 #endif
     ddd_install_xt_error(app_context);
 
-    // Merge in ~/.dddinit resources
+    // Merge ~/.ddd/init resources into application shell
     XrmDatabase target = XtDatabase(XtDisplay(toplevel));
     XrmMergeDatabases(dddinit, &target);
 
-    // Set up VSL resources
-    if (VSEFlags::parse_vsl(argc, argv))
-    {
-	// Show VSL usage...
-	cout << VSEFlags::explain(true);
-	return EXIT_FAILURE;
-    }
-
-    // Setup top-level actions
+    // Setup top-level actions; this must be done before reading
+    // application defaults.
     XtAppAddActions(app_context, actions, XtNumber(actions));
 
     // Register string -> OnOff converter; this must be done before
@@ -1378,10 +1468,33 @@ int main(int argc, char *argv[])
 		       NULL, 0, XtCacheAll, 
 		       XtDestructor(NULL));
 
-    // Get and save application resources
+    // Get application resources into APP_DATA
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
 				ddd_resources, ddd_resources_size,
 				NULL);
+
+#if XtSpecificationRelease >= 6
+    // Synchronize SESSION_ID and APP_DATA.session
+    session_id = 0;
+    XtVaGetValues(toplevel, XtNsessionID, &session_id, NULL);
+    if (session_id != 0)
+	app_data.session = session_id;
+#endif
+
+    if (app_data.session == 0)
+	app_data.session = DEFAULT_SESSION;
+    session_id = app_data.session;
+
+    // Create new session dir if needed
+    create_ddd_session_dir(app_data.session, messages);
+
+    // Set up VSL resources
+    if (VSEFlags::parse_vsl(argc, argv))
+    {
+	// Show VSL usage...
+	cout << VSEFlags::explain(true);
+	return EXIT_FAILURE;
+    }
 
     // Check the X configuration
     if (app_data.check_configuration)
@@ -1441,30 +1554,29 @@ int main(int argc, char *argv[])
 	|| app_data.show_license)
 	return EXIT_SUCCESS;
 
-    // Warn for incompatible `Ddd' and `~/.dddinit' files
+    // Warn for incompatible `Ddd' and `~/.ddd/init' files
     if (app_data.app_defaults_version == 0)
     {
-	cerr << XtName(toplevel) 
-	     << ": warning: no version information in `" 
-	    DDD_CLASS_NAME "' app-defaults-file\n";
+	messages << "Warning: no version information in `" 
+	            DDD_CLASS_NAME "' app-defaults-file\n";
     }
     else if (string(app_data.app_defaults_version) != DDD_VERSION)
     {
-	cerr << XtName(toplevel) 
-	     << ": warning: using `" DDD_CLASS_NAME 
-	     << "' app-defaults file for " DDD_NAME " " 
-	     << app_data.app_defaults_version 
-	     << " (this is " DDD_NAME " " DDD_VERSION ")\n";
+	messages << "Warning: using `" DDD_CLASS_NAME 
+		 << "' app-defaults file for " DDD_NAME " " 
+		 << app_data.app_defaults_version 
+		 << " (this is " DDD_NAME " " DDD_VERSION ")\n";
     }
 
     if (app_data.dddinit_version && 
 	string(app_data.dddinit_version) != DDD_VERSION)
     {
-	cerr << XtName(toplevel) 
-	     << ": warning: using `~/.dddinit' file for " << DDD_NAME " " 
-	     << app_data.dddinit_version
-	     << " (this is " DDD_NAME " " DDD_VERSION ").\n"
-	     << "Please save options.\n";
+	messages << "Warning: using "
+		 << quote(session_state_file(app_data.session))
+		 << " file for " << DDD_NAME " " 
+		 << app_data.dddinit_version
+		 << " (this is " DDD_NAME " " DDD_VERSION ").\n"
+		 << "Please save options.\n";
     }
 
     // Register own converters
@@ -1789,9 +1901,9 @@ int main(int argc, char *argv[])
     make_preferences(paned_work_w);
 
     // All widgets are created at this point.
-
+    
     // Setup history
-    init_history_file();
+    init_history_file(session_history_file(app_data.session));
 
     // Put saved options back again
     for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
@@ -2113,6 +2225,16 @@ int main(int argc, char *argv[])
 	}
     }
 
+    // Make sure we see all messages accumulated so far
+    string msg(messages);
+    while (msg != "")
+    {
+	string line = msg.before('\n');
+	set_status(line);
+	msg = msg.after('\n');
+    }
+    // messages.flush();
+
     // Setup TTY interface
     if (app_data.tty_mode)
     {
@@ -2240,12 +2362,17 @@ static void ddd_check_version()
     if (app_data.dddinit_version == 0 ||
 	string(app_data.dddinit_version) != DDD_VERSION)
     {
-	// We have no ~/.dddinit file or an old one: show version info
+	// We have no ~/.ddd/init file or an old one: show version info
 	HelpOnVersionCB(gdb_w, 0, 0);
 
-	// We have no ~/.dddinit file: create a simple one
+	// We have no ~/.ddd/init file: create a simple one
 	if (app_data.dddinit_version == 0)
-	    save_options(options_file(), OPTIONS_CREATE);
+	{
+	    string session = app_data.session;
+	    app_data.session = DEFAULT_SESSION;
+	    save_options(CREATE_OPTIONS);
+	    app_data.session = session;
+	}
     }
 
     if (ddd_expired())

@@ -39,20 +39,20 @@
 
 // Options
 
-// Return option file name
-string options_file();
-
 // Save options in FILE.  If CREATE is true, allow creation; if
 // SAVE_YOURSELF is true, include additional state information.
 // Return true iff successful.
 
-#define OPTIONS_CREATE         1 // Create simple options file if non-existent
-#define OPTIONS_SAVE_SESSION   2 // Save extra session information
-#define OPTIONS_INTERACT       4 // Allow interaction
+#define CREATE_OPTIONS 1 // Create simple options file if non-existent
+#define SAVE_SESSION   2 // Save additional session information
+#define SAVE_GEOMETRY  4 // Save window geometry
+#define MAY_KILL       8 // True if program can be killed
+#define MAY_INTERACT 128 // Allow interaction
 
-#define OPTIONS_DEFAULT (OPTIONS_INTERACT)
+#define SAVE_DEFAULT MAY_INTERACT
 
-bool save_options(string file, unsigned long flags = OPTIONS_DEFAULT);
+bool saving_options_kills_program(unsigned long flags);
+bool save_options(unsigned long flags);
 
 
 // Return true iff the startup preferences have changed.

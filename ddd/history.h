@@ -40,7 +40,7 @@
 
 
 // History management
-extern void init_history_file();
+extern void init_history_file(const string& file);
 extern void process_history_filename(string answer);
 extern void process_history_size(string answer);
 extern void process_history_save(string answer);

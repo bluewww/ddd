@@ -40,6 +40,10 @@
 #define DDD_CLASS_NAME           Ddd_NAME
 
 // For a documentation of these resources, see `Ddd.in'.
+#define XtNsession               "session"
+#ifndef XtCSessionID
+#define XtCSessionID             "SessionID"
+#endif
 #define XtNdebugger              "debugger"
 #define XtCDebugger              "Debugger"
 #define XtNdebuggerCommand       "debuggerCommand"
@@ -153,6 +157,8 @@
 #define XtCPaperSize             "PaperSize"
 #define XtNeditCommand           "editCommand"
 #define XtCEditCommand           "EditCommand"
+#define XtNgetCoreCommand        "getCoreCommand"
+#define XtCGetCoreCommand        "GetCoreCommand"
 #define XtNpannedGraphEditor     "pannedGraphEditor"
 #define XtCPannedGraphEditor     "PannedGraphEditor"
 #define XtNfindWordsOnly         "findWordsOnly"
@@ -238,6 +244,7 @@
 #define XtCVersion               "Version"
 
 struct AppData {
+    String  session;
     String  debugger;
     String  debugger_command;
     Boolean trace_dialog;
@@ -298,6 +305,7 @@ struct AppData {
     String  print_command;
     String  paper_size;
     String  edit_command;
+    String  get_core_command;
     Boolean panned_graph_editor;
     Boolean find_words_only;
     Boolean group_iconify;

@@ -1424,16 +1424,20 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 // The maximum display number when saving states
 int DataDisp::max_display_number = 99;
 
-// Store scopes from WHERE_OUTPUT in SCOPES
-void DataDisp::fetch_scopes(StringArray& scopes, string where_output)
+// Get scopes in SCOPES
+bool DataDisp::get_scopes(StringArray& scopes)
 {
-    while (where_output != "")
+    // Fetch current backtrace and store scopes in SCOPES
+    string backtrace = gdb_question(gdb->where_command(), -1, true);
+    while (backtrace != "")
     {
-	string scope = get_scope(where_output);
+	string scope = get_scope(backtrace);
 	if (scope != "")
 	    scopes += scope;
-	where_output = where_output.after('\n');
+	backtrace = backtrace.after('\n');
     }
+
+    return scopes.size() > 0;
 }
 
 // Write commands to restore frame #TARGET_FRAME in OS
@@ -1480,8 +1484,14 @@ void DataDisp::write_restore_scope_command(ostream& os,
 	// User displays are always evaluated on the current frame
 	target_frame = 0;
     }
-    else if (dn->scope() != "")
+    else if (dn->scope() == "")
     {
+	// A global, maybe?  Evaluate on main frame
+	target_frame = scopes.size() - 1;	// Return to main frame
+    }
+    else
+    {
+	// Search scope in backtrace
 	for (int i = 0; i < scopes.size(); i++)
 	    if (scopes[i] == dn->scope())
 	    {
@@ -1514,7 +1524,8 @@ void DataDisp::write_restore_scope_command(ostream& os,
     write_frame_command(os, current_frame, target_frame);
 }
 
-bool DataDisp::get_state(ostream& os, bool restore_state)
+bool DataDisp::get_state(ostream& os, bool restore_state, 
+			 const StringArray& scopes)
 {
     // Sort displays by number, such that old displays appear before
     // newer ones.
@@ -1533,15 +1544,7 @@ bool DataDisp::get_state(ostream& os, bool restore_state)
     sort(nrs);
 
     bool ok = true;
-    StringArray scopes;
-    if (restore_state)
-    {
-	// Fetch current backtrace and store scopes in SCOPES
-	string backtrace = gdb_question(gdb->where_command(), -1, true);
-	fetch_scopes(scopes, backtrace);
-    }
-
-    if (restore_state && scopes.size() == 0 && nrs.size() > 0)
+    if (restore_state && scopes.size() == 0 && need_core_to_restore())
     {
 	set_status("Cannot get current backtrace");
 	ok = false;
@@ -1590,6 +1593,23 @@ bool DataDisp::get_state(ostream& os, bool restore_state)
 
     return ok;
 }
+
+
+// Return true if a core dump is needed to restore displays
+bool DataDisp::need_core_to_restore()
+{
+    MapRef ref;
+    for (DispNode *dn = disp_graph->first(ref);
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->scope() != "")
+	    return true;
+    }
+
+    return false;
+}
+
 
 int DataDisp::alias_display_nr(GraphNode *node)
 {
@@ -2014,12 +2034,14 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 }
 
 DispNode *DataDisp::new_user_node(const string& name,
-				  const string& scope,
+				  const string& /* scope */,
 				  const string& answer)
 {
     // Assign a default number
     int nr = -(next_display_number++);
-    return new DispNode(nr, name, scope, answer);
+
+    // User displays work regardless of scope
+    return new DispNode(nr, name, "", answer);
 }
 
 

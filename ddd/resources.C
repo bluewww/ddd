@@ -42,6 +42,16 @@ char resources_rcsid[] =
 
 // Application resource definitions
 XtResource ddd_resources[] = {
+    {
+	XtNsession,
+	XtCSessionID,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, session),
+	XtRString, 
+	XtPointer(NULL)
+    },
+	
     { 
 	XtNdebugger,
 	XtCDebugger,
@@ -624,6 +634,16 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, paper_size),
 	XtRString,
 	XtPointer("210mm x 297mm")
+    },
+
+    {
+        XtNgetCoreCommand,
+	XtCGetCoreCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, get_core_command),
+	XtRString,
+	XtPointer("")
     },
 
     {

@@ -37,17 +37,24 @@ char options_rcsid[] =
 
 #include "AppData.h"
 #include "DataDisp.h"
+#include "DestroyCB.h"
 #include "GDBAgent.h"
 #include "GraphEdit.h"
 #include "SourceView.h"
 #include "cook.h"
 #include "commandQ.h"
 #include "ddd.h"
+#include "file.h"
+#include "filetype.h"
 #include "post.h"
+#include "session.h"
+#include "settings.h"
+#include "shell.h"
 #include "status.h"
 #include "string-fun.h"
+#include "verify.h"
 #include "windows.h"
-#include "settings.h"
+#include "wm.h"
 
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
@@ -56,6 +63,8 @@ char options_rcsid[] =
 #include <Xm/Scale.h>
 #include <Xm/DialogS.h>
 #include <Xm/BulletinB.h>
+#include <Xm/MessageB.h>
+#include <Xm/PushB.h>
 
 #include <stdio.h>
 #include <fstream.h>
@@ -657,8 +666,117 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
     post_startup_warning(w);
 }
 
+
+
+// ---------------------------------------------------------------------------
+// Get core
+// ---------------------------------------------------------------------------
+
+// Get core from running program
+static bool get_core(unsigned long flags)
+{
+    const bool interact      = (flags & MAY_INTERACT);
+    const bool may_kill      = (flags & MAY_KILL);
+
+    string target = session_core_file(app_data.session);
+    if (!program_running())
+    {
+	// The program is not running.  Maybe we're still examining a
+	// core file.
+	return is_core_file(target);
+    }
+
+    // Get core file of running program
+    string current_file;
+    int current_pid;
+    bool attached;
+    get_current_file(current_file, current_pid, attached);
+
+    if (current_pid <= 0)
+    {
+	if (interact)
+	    post_error("Cannot get process id", "no_core");
+	return false;
+    }
+
+    StatusDelay delay("Getting core file");
+
+    // Try `gcore' command
+    string gcore = app_data.get_core_command;
+    if (gcore != "")
+    {
+	string gcore_target = target + "." + itostring(current_pid);
+	gcore.gsub("@FILE@", target);
+	gcore.gsub("@PID@",  itostring(current_pid));
+	sh_command(gcore);
+
+	if (is_core_file(gcore_target))
+	{
+	    rename(gcore_target, target);
+	    return true;
+	}
+    }
+
+    if (may_kill)
+    {
+	int tries = 10;
+	while (tries-- > 0 && kill(current_pid, SIGABRT) == 0)
+	{
+	    Command c("stepi");
+	    c.verbose  = false;
+	    c.check    = true;
+	    c.priority = COMMAND_PRIORITY_AGAIN;
+	    gdb_command(c);
+	    syncCommandQueue();
+	}
+	string core = SourceView::full_path("core");
+	if (is_core_file(core))
+	{
+	    rename(core, target);
+	    if (gdb->type() == GDB)
+	    {
+		// Load the core file just read, such that we can keep
+		// on examining data.
+		Command c("core " + target);
+		c.verbose  = false;
+		c.check    = true;
+		c.priority = COMMAND_PRIORITY_AGAIN;
+		gdb_command(c);
+		c.command  = "graph refresh";
+		gdb_command(c);
+		syncCommandQueue();
+	    }
+	    return true;
+	}
+    }
+
+    if (interact)
+	post_error("Cannot get core", "no_core");
+    return false;
+}
+
+static bool must_kill_to_get_core()
+{
+    // If the program is not running, we need not kill it.
+    if (!program_running())
+	return false;
+
+#if 0
+    // If we have a `gcore' command, we need not kill the program to
+    // get its core.
+    string gcore = app_data.get_core_command;
+    if (gcore.contains(' '))
+	gcore = gcore.before(' ');
+
+    return gcore != "" && is_cmd_file(cmd_file(gcore));
+#else
+    return true;
+#endif
+}
+
+
 //-----------------------------------------------------------------------------
-// Option management
+// Write state
 //-----------------------------------------------------------------------------
 
 inline String bool_value(bool value)
@@ -764,29 +882,25 @@ static string widget_geometry(Widget w)
     return string_app_value(string(XtName(w)) + ".geometry", geometry);
 }
 
-string options_file()
+bool saving_options_kills_program(unsigned long flags)
 {
-    char *home = getenv("HOME");
-    if (home == 0)
-    {
-	static int warned = 0;
-	if (warned++ == 0)
-	    cerr << "Warning: environment variable HOME undefined\n";
-	home = ".";
-    }
+    const bool save_session  = (flags & SAVE_SESSION);
+    const bool may_kill      = (flags & MAY_KILL);
 
-    return string(home) + "/.dddinit";
+    return save_session
+	&& data_disp->need_core_to_restore()
+	&& must_kill_to_get_core()
+	&& !may_kill;
 }
 
-bool save_options(string file, unsigned long flags)
+bool save_options(unsigned long flags)
 {
-#if 0
-    flags |= OPTIONS_SAVE_SESSION;
-#endif
+    const string file = session_state_file(app_data.session);
 
-    bool create        = (flags & OPTIONS_CREATE);
-    bool save_session  = (flags & OPTIONS_SAVE_SESSION);
-    bool interact      = (flags & OPTIONS_INTERACT);
+    const bool create        = (flags & CREATE_OPTIONS);
+    const bool save_session  = (flags & SAVE_SESSION);
+    const bool save_geometry = (flags & SAVE_GEOMETRY);
+    const bool interact      = (flags & MAY_INTERACT);
 
     string options = (save_session ? "session" : "options");
     string msg = (create ? "Creating " : "Saving ") + options + " in ";
@@ -821,11 +935,17 @@ bool save_options(string file, unsigned long flags)
     }
 
     // ... and write them back again
-    ofstream os(file);
+    string workfile = file + "#";
+    ofstream os(workfile);
+    if (os.bad())
+    {
+	workfile = file;
+	os.open(workfile);
+    }
     if (os.bad())
     {
 	if (interact)
-	    post_error("Cannot save " + options + " in " + quote(file),
+	    post_error("Cannot save " + options + " in " + quote(workfile),
 		       "options_save_error");
 	return false;
     }
@@ -836,6 +956,8 @@ bool save_options(string file, unsigned long flags)
     if (create)
     {
 	app_data.dddinit_version = DDD_VERSION;
+	os.close();
+	rename(workfile, file);
 	return true;
     }
 
@@ -1016,10 +1138,9 @@ bool save_options(string file, unsigned long flags)
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     popups_disabled = false;
 
-    bool ok = true;
-    if (save_session)
+    if (save_geometry)
     {
-	os << "\n! Last " << DDD_NAME << " session\n";
+	os << "\n! Last " << DDD_NAME << " geometry\n";
 
 	// Save current widget geometry
 	if (command_shell)
@@ -1028,15 +1149,50 @@ bool save_options(string file, unsigned long flags)
 	    os << widget_geometry(source_view_shell) << "\n";
 	if (data_disp_shell)
 	    os << widget_geometry(data_disp_shell)   << "\n";
+    }
+
+    bool ok = true;
+    if (save_session)
+    {
+	os << "\n! Last " << DDD_NAME << " session\n";
 
 	// Save restart commands
 	ostrstream restart_commands;
-	ok &= data_disp->get_state(restart_commands);
-	ok &= source_view->get_state(restart_commands, gdb->type());
+
+	// Get breakpoints and cursor position
+	bool breakpoints_ok = 
+	    source_view->get_state(restart_commands, gdb->type());
+	if (!breakpoints_ok)
+	{
+	    if (interact)
+		post_warning("Cannot save breakpoints", 
+			     "incomplete_save_warning");
+	    ok = false;
+	}
+
+	// Get displays
+	StringArray scopes;
+	bool displays_ok = true;
+
+	if (displays_ok && data_disp->need_core_to_restore())
+	    displays_ok = data_disp->get_scopes(scopes);
+	if (displays_ok && data_disp->need_core_to_restore())
+	    displays_ok = get_core(flags);
+	if (displays_ok)
+	    displays_ok = data_disp->get_state(restart_commands, scopes);
+
+	if (!displays_ok)
+	{
+	    if (interact)
+		post_warning("Cannot save data displays",
+			     "incomplete_save_warning");
+	    ok = false;
+	}
+
 	os << string_app_value(XtNrestartCommands, string(restart_commands)) 
 	   << "\n";
     }
-    
+
     save_option_state();
     save_settings_state();
 
@@ -1044,23 +1200,69 @@ bool save_options(string file, unsigned long flags)
     if (os.bad())
     {
 	if (interact)
-	    post_error("Cannot save " + options + " in " + quote(file),
+	    post_error("Cannot save " + options + " in " + quote(workfile),
 		       "options_save_error");
-	return false;
+	ok = false;
+	unlink(workfile);
     }
 
-    if (!ok)
+    if (workfile != file && rename(workfile, file) != 0)
     {
 	if (interact)
-	    post_warning("Incomplete " + options + " save", 
-			 "incomplete_save_warning");
-	return false;
+	    post_error("Cannot rename " + quote(workfile)
+		       + " to " + quote(file),
+		       "options_save_error");
+	ok = false;
+	unlink(workfile);
     }
 
-    return true;
+    return ok;
 }
 
-void DDDSaveOptionsCB(Widget, XtPointer, XtPointer)
+
+
+// ---------------------------------------------------------------------------
+// Callbacks
+// ---------------------------------------------------------------------------
+
+static void DoSaveOptionsCB(Widget, XtPointer client_data, XtPointer)
 {
-    save_options(options_file());
+    unsigned long flags = (unsigned long)client_data;
+    save_options(flags);
+}
+
+void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    unsigned long flags = (unsigned long)client_data;
+    if (saving_options_kills_program(flags))
+    {
+	// Saving options would kill program; request confirmation
+	Arg args[10];
+	int arg;
+
+	static Widget dialog = 0;
+	if (dialog)
+	    DestroyWhenIdle(dialog);
+
+	arg = 0;
+	dialog = verify(XmCreateQuestionDialog(find_shell(w), 
+					       "kill_to_save_dialog",
+					       args, arg));
+	Delay::register_shell(dialog);
+	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
+		      XtPointer(flags | MAY_KILL));
+#if XmVersion >= 1002
+	Widget no = verify(XmCreatePushButton(dialog, "no", 0, 0));
+	XtManageChild(no);
+	XtAddCallback(no, XmNactivateCallback, 
+		      DoSaveOptionsCB, XtPointer(flags));
+#endif
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+
+	manage_and_raise(dialog);
+    }
+    else
+    {
+	DoSaveOptionsCB(w, client_data, call_data);
+    }
 }

@@ -34,9 +34,41 @@
 #endif
 
 #include <X11/Intrinsic.h>
+#include "strclass.h"
 
+// Name of default session
+#define DEFAULT_SESSION ""
+
+// Return session directories
+
+// File NAME in directory of session SESSION
+string session_file(const string& session, const string& name);
+
+// Custom calls
+inline string session_state_file(const string& session)
+{
+    return session_file(session, "init");
+}
+
+inline string session_core_file(const string& session)
+{
+    return session_file(session, "core");
+}
+
+inline string session_history_file(const string& session)
+{
+    return session_file(session, "history");
+}
+
+// Create session directory for SESSION; leave messages in MSG
+void create_ddd_session_dir(const string& session, ostream& msg);
+
+// Callbacks for X11R6 session management
 extern void SaveSessionCB(Widget, XtPointer, XtPointer);
 extern void DieSessionCB(Widget, XtPointer, XtPointer);
+
+// Standard callback
+extern void SaveSessionAndExitCB(Widget, XtPointer, XtPointer);
 
 #endif // _DDD_session_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

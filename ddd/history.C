@@ -82,22 +82,17 @@ static int gdb_current_history;
 static string gdb_history_file;
 
 // Size of saved history
-static int    gdb_history_size = 100;
+static int gdb_history_size = 100;
 
 // True if the history was just loaded
-static bool   gdb_new_history = true;
+static bool gdb_new_history = true;
 
 // True if history command was issued
 static bool private_gdb_history = false;
 
-void init_history_file()
+void init_history_file(const string& file)
 {
-    // Setup history
-    char *home = getenv("HOME");
-    if (home == 0)
-	gdb_history_file = ".ddd_history";
-    else
-	gdb_history_file = string(home) + "/.ddd_history";
+    gdb_history_file = file;
 }
 
 void set_line_from_history()
