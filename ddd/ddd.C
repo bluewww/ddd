@@ -1943,7 +1943,6 @@ int main(int argc, char *argv[])
 	tool_buttons_w = 
 	    verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
 	add_buttons(tool_buttons_w, app_data.tool_buttons);
-	XtManageChild(tool_buttons_w);
     
 	wm_set_icon(tool_shell,
 		    iconlogo(tool_buttons_w),
