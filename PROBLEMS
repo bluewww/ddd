@@ -1,6 +1,40 @@
 Problems in building and installing DDD                          -*- text -*-
 ***************************************
 
+This file lists problems encountered when building and installing DDD
+in various environments.
+
+Table of Contents
+=================
+
+    * Ada
+    * AIX
+    * DEC
+    * FreeBSD
+    * GCC
+      + GCC 2.8.0 on SunOS
+      + Early GCC versions
+      + GCC and libg++
+    * HP-UX
+    * LessTif
+    * Linux
+    * SCO
+    * SGI
+    * Solaris 2.x
+    * SunOS
+      + SunOS 4.1 and X11R6
+      + SunOS 4.1 and Sun C++
+    * Unixware
+    * X11R4
+
+ADA
+===
+
+Reported by: ralph@ifr.luftfahrt.uni-stuttgart.de (Ralph Paul)
+
+    Debugging Ada programs requires a special GDB version, for
+    instance the one at `ftp://helen.cs.berkeley.edu/pub/gdb'.
+
 AIX
 ===
 
@@ -103,8 +137,7 @@ Reported by:	Jacek M. Holeczek <holeczek@clri6f.gsi.de>
 
     then run "make" again.  You should get no other warnings/errors.
     Finally run "make strip" and "make install".  Have fun ...
-
-
+
 DEC
 ===
 
@@ -126,16 +159,7 @@ Reported by: Pascal Quesseveur <abak@hol.fr>
     ddd/Makefile created by configure is wrong : variables LIBNSL,
     NON_XLIBS and LIBGEN have incorrect values : the values must be null 
     to link ddd correctly.
-
-
-EGCS
-====
-
-    When using EGCS 1.0 on a sparc-sun-sunos4.1.4 system, the file
-    `VSLRead.o' must be generated without `-O' flag.  Just type `rm
-    VSLRead.o; make CXXOPT=-DNDEBUG VSLRead.o' and re-build DDD.
-
-
+
 FreeBSD
 =======
 
@@ -146,22 +170,33 @@ Reported by:  taob@gate.sinica.edu.tw (Brian Tao)
 Reported by: Vincenzo Capuano <vcapuano@esoc.esa.de>
 
     Add `-lmytinfo' as additional library to build DDD.
+
+GCC
+===
+
+GCC 2.8.0 on SunOS
+------------------
+
+    When using GCC 2.8.0 (or EGCS 1.0) on a sparc-sun-sunos4.1.4
+    system, the file `VSLRead.o' must be generated without `-O' flag.
+    Just type `rm VSLRead.o; make CXXOPT=-DNDEBUG VSLRead.o' and
+    re-build DDD.
 
 
-GCC 2.3, 2.4, 2.5
-=================
+Early GCC versions
+------------------
 
-    Lots and lots of warnings; nearly all of them insignificant.
+    GCC 2.5 and earlier produce lots and lots of warnings; all of them
+    are insignificant.
 
 
 GCC and LIBG++
-==============
+--------------
 
     If you have multiple copies of gcc and/or libg++ installed, be
     sure that the referenced versions match each other.  This is a
     common source for various problems.
-
-
+
 HP-UX
 =====
 
@@ -222,8 +257,7 @@ Reported by:  (various)
     `-mmillicode-long-calls' when compiling.  It should permit fixes
     into shared library calls (these errors only occur with shared
     libraries).
-
-
+
 LessTif
 =======
     
@@ -247,8 +281,7 @@ LessTif
 
     004. Dragging a line in the `Backtrace' window causes DDD to
          crash.
-
-
+
 Linux
 =====
 
@@ -271,8 +304,7 @@ Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
      commands; to open a specific source, use the GDB `info file
      FUNCTION' command, where FUNCTION is a function defined in that
      source file.
-
-
+
 SCO
 ===
 
@@ -284,8 +316,7 @@ Reported by:  Guillaume Proux <Guillaume.Proux@aar.alcatel-alsthom.fr>
     cannot handle properly.
 
     [Some SCO expert willing to fix this?  -AZ]
-
-
+
 SGI
 ===
 
@@ -297,15 +328,9 @@ Reported by:  Andreas Zeller <zeller@acm.org>
     executable fails with segmentation faults.  I could not find the
     cause for this problem and suspect a CC bug; using GCC instead
     seems a better alternative.
-
-
+
 Solaris 2.x
 ===========
-
-Reported by:  Christoph Koegl <koegl@informatik.uni-kl.de>
-
-    Use `LDFLAGS=-lsocket ./configure' to configure DDD on Solaris
-    2.5.  Otherwise, `./configure' won't find the Xt library.
 
 Reported by:  Blair Zajac <blair@olympia.gps.caltech.edu>
 
@@ -318,10 +343,12 @@ Reported by:  Andreas Zeller <zeller@acm.org>
 
     Solaris CC (SC4.0 18 Oct 1995 C++ 4.1) is safe for compiling DDD.
     Executables are larger compared to those compiled with GCC.
-
+
+SunOS
+=====
 
 SunOS 4.1 and X11R6
-===================
+-------------------
 
 Reported by:  dmitzel@everest.hitc.com (Danny J. Mitzel) and
     doko@cs.tu-berlin.de (Matthias Klose)
@@ -332,8 +359,9 @@ Reported by:  dmitzel@everest.hitc.com (Danny J. Mitzel) and
     (i.e. in `config.h', undefine `HAVE_ATHENA_WIDGETS' and remove the
     -lXaw flag from the `Makefile' linking command).
 
+
 SunOS 4.1 and Sun C++
-=====================
+---------------------
 
 Reported by:	Franklin Chen <chen@adi.com>
 
@@ -342,8 +370,7 @@ Reported by:	Franklin Chen <chen@adi.com>
     rather than
         #define SIGHANDLERARGS int
     to avoid compile errors in a number of source files.
-
-
+
 UNIXWARE
 ========
 
@@ -353,8 +380,7 @@ Reported by: Vinnie Shelton  <shelton@icd.teradyne.com>
     after configuration:
 
     LINK.cc = env LD_RUN_PATH=/usr/X11R6/lib $(CXX) $(CXXBINDING) $(LDFLAGS)
-
-
+
 X11R4
 =====
 
@@ -364,14 +390,6 @@ Reported by:  mlj@gensym.com (Magnus Ljungberg)
     function by entering a line saying '#undef HAVE_X11_XMU_EDITRES_H' in
     `ddd.C'.
 
-
-ADA
-===
-
-Reported by: ralph@ifr.luftfahrt.uni-stuttgart.de (Ralph Paul)
-
-    Debugging Ada programs requires a special GDB version, for
-    instance the one at `ftp://helen.cs.berkeley.edu/pub/gdb'.
 
 
 $Id$
