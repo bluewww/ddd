@@ -92,6 +92,8 @@ static XtResource resources[] = {
 	offset(rubberEdges), XtRImmediate, XtPointer(True) },
     { XtNrubberArrows, XtCRubberEdges, XtRBoolean, sizeof(Boolean),
 	offset(rubberArrows), XtRImmediate, XtPointer(False) },
+    { XtNrubberAnnotations, XtCRubberAnnotations, XtRBoolean, sizeof(Boolean),
+	offset(rubberAnnotations), XtRImmediate, XtPointer(False) },
     { XtNopaqueMove, XtCOpaqueMove, XtRBoolean, sizeof(Boolean),
 	offset(opaqueMove), XtRImmediate, XtPointer(False) },
 
@@ -1653,6 +1655,7 @@ static void drawOutlines(Widget w, const BoxPoint& offset)
     const GraphEditWidget _w            = GraphEditWidget(w);
     const Graph* graph                  = _w->graphEdit.graph;
     const Boolean rubberArrows          = _w->graphEdit.rubberArrows;
+    const Boolean rubberAnnotations     = _w->graphEdit.rubberAnnotations;
     const Boolean rubberEdges           = _w->graphEdit.rubberEdges;
     const GraphGC& graphGC              = _w->graphEdit.graphGC;
     const GC& outlineGC                 = _w->graphEdit.outlineGC;
@@ -1676,6 +1679,7 @@ static void drawOutlines(Widget w, const BoxPoint& offset)
 	gc.edgeGC           = outlineGC;
 	gc.offsetIfSelected = offset;
 	gc.drawArrowHeads   = rubberArrows;
+	gc.drawAnnotations  = (gc.drawAnnotations && rubberAnnotations);
 
 	for (GraphEdge *edge = graph->firstVisibleEdge(); edge != 0;
 	    edge = graph->nextVisibleEdge(edge))

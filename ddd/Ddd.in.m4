@@ -575,11 +575,14 @@ Ddd*graph_edit.moveDelta:	4
 ! Do we wish opaque movement? (doesn't work yet)
 Ddd*graph_edit.opaqueMove:	off
 
-! Do we wish rubber edges when moving nodes?
+! Do we wish to display edges when moving nodes?
 Ddd*graph_edit.rubberEdges:	on
 
-! Do we wish rubber arrows when moving nodes?
+! Do we wish to display arrow heads when moving nodes?
 Ddd*graph_edit.rubberArrows:	on
+
+! Do we wish to display annotations when moving nodes?
+Ddd*graph_edit.rubberAnnotations: off
 
 ! Do we wish a grid?
 Ddd*graph_edit.showGrid:	on

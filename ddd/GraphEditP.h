@@ -83,6 +83,7 @@ typedef struct _GraphEditPart {
     Dimension moveDelta;	// Start move after movement greater than this
     Boolean rubberEdges;	// Draw edges  when moving
     Boolean rubberArrows;	// Draw arrows when moving
+    Boolean rubberAnnotations;	// Draw annotations when moving
     Boolean opaqueMove;		// Draw nodes  when moving
 
     // Selection stuff
