@@ -64,8 +64,6 @@
 #define XtCVSLLibrary            "VSLLibrary"
 #define XtNvslDefs               "vslDefs"
 #define XtCVSLDefs               "VSLDefs"
-#define XtNindentAmount          "indentAmount"
-#define XtCIndentAmount          "IndentAmount"
 #define XtNtabWidth              "tabWidth"
 #define XtCTabWidth              "TabWidth"
 #define XtNconsoleButtons        "consoleButtons"
@@ -163,6 +161,8 @@
 #define XtCTTYMode               "TTYMode"
 #define XtNdisplayGlyphs         "displayGlyphs"
 #define XtCDisplayGlyphs         "DisplayGlyphs"
+#define XtNdisplayLineNumbers    "displayLineNumbers"
+#define XtCDisplayLineNumbers    "DisplayLineNumbers"
 #define XtNdisassemble           "disassemble"
 #define XtCDisassemble           "Disassemble"
 #define XtNuseSourcePath         "useSourcePath"
@@ -227,7 +227,6 @@ struct AppData {
     String  vsl_path;
     String  vsl_library;
     String  vsl_defs;
-    int     indent_amount;
     int     tab_width;
     String  console_buttons;
     String  source_buttons;
@@ -277,6 +276,7 @@ struct AppData {
     Boolean tty_mode;
     Boolean full_name_mode;
     Boolean display_glyphs;
+    Boolean display_line_numbers;
     Boolean disassemble;
     Boolean use_source_path;
     Boolean all_registers;

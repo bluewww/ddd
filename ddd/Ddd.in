@@ -227,8 +227,8 @@ Ddd*questionTimeout: 10
 ! - `Prev'     : Show previous command
 ! - `Next'     : Show next command
 ! - `Apply'    : Send the given command to GDB
-! - `Back'     : Lookup previously selected source position
-! - `Forward'  : Lookup next selected source position
+! - `Back'     : Go to previously selected source position
+! - `Forward'  : Go to next selected source position
 ! - `Edit'     : Edit current source file
 ! - `Reload'   : Reload source file
 ! - `Complete' : Complete current command
@@ -367,10 +367,6 @@ Ddd*tool_buttons*Forward.labelString:   Fwd
 Ddd*tool_bar*Cont.labelString:   Continue
 
 
-! Number of columns used for line numbers in the source window
-! Should be a multiple of 8, to avoid confusion with TAB characters.
-Ddd*indentAmount:	8
-
 ! Tab width in source texts
 Ddd*tabWidth:	        8
 
@@ -495,6 +491,9 @@ Ddd*disassemble: false
 
 ! Do we wish to display glyphs? (Makes DDD run somewhat slower)
 Ddd*displayGlyphs: true
+
+! Do we wish to display line numbers? (Default in DDD 2.1.1 and earlier)
+Ddd*displayLineNumbers: 	false
 
 ! Do we wish to cache source files in memory?
 Ddd*cacheSourceFiles:		true
@@ -2224,6 +2223,8 @@ Ddd*preferences*source*helpString:	\
 is set, \n\
     the current execution position and breakpoints are shown as glyphs.\n\
     Otherwise, they are shown as characters in the text.\n\
+@tt \267 @rm If @bf Display source line numbers @rm is set, \n\
+    each source line is prefixed by its number.\n\
 @tt \267 @rm If @bf Cache source files in memory @rm is set, \
 source texts are cached in memory.\n\
     Otherwise, sources are read from disk upon each source change.\n\
@@ -2252,6 +2253,8 @@ Ddd*preferences*referSources.recomputeSize:	false
 Ddd*preferences*byPath.labelString:		by full path name
 Ddd*preferences*byBase.labelString:		by base name only
 
+Ddd*preferences*displayLineNumbers.labelString:	 \
+Display source line numbers
 Ddd*preferences*cacheSourceFiles.labelString:	 \
 Cache source files in memory
 Ddd*preferences*cacheMachineCode.labelString:	 \
@@ -2819,9 +2822,9 @@ The @sl right side @rm contains the source code.\n\
 \n\
 Click the @sl left mouse button @rm to select words.\n\
 Drag with the @sl left mouse button @rm to extend your selection.\n\
-Click the @sl right mouse button @rm to show values and lookup functions.\n\
+Click the @sl right mouse button @rm to show values and go to places.\n\
 \n\
-To view a specific source, use the @bf Lookup() @rm button below.
+To view a specific source, use the @bf Go to () @rm button below.
 
 Ddd*code_text_w.helpString:	\
 @rm This is the @sl Machine Code Window.@rm\n\
@@ -2844,10 +2847,10 @@ The @sl right side @rm contains the source code.\n\
 \n\
 Click the @sl left mouse button @rm to select words.\n\
 Drag with the @sl left mouse button @rm to extend your selection.\n\
-Click the @sl right mouse button @rm to show values and lookup functions.\n\
+Click the @sl right mouse button @rm to show values and go to places.\n\
 \n\
 To disassemble a specific function or address,\n\
-use the @bf Lookup() @rm button below.
+use the @bf Go to () @rm button below.
 
 Ddd*source_view_shell.helpString:	\
 @rm This is the @sl Source Window.@rm\n\
@@ -2921,7 +2924,7 @@ Ddd*text_popup.whatis.documentationString: \
 @rm Print the data type of the selected item
 
 Ddd*text_popup.lookup.documentationString: \
-@rm Lookup the definition of the selected item
+@rm Go to the definition of the selected item
 
 Ddd*text_popup.breakAt.documentationString: \
 @rm Set a breakpoint at the selected function
@@ -2963,7 +2966,7 @@ Ddd*arg_cmd_w.arg_cmd_area.packing:			XmPACK_TIGHT
 Ddd*arg_cmd_w.arg_cmd_area.entryAlignment:		XmALIGNMENT_CENTER
 Ddd*arg_cmd_w.arg_cmd_area*alignment:			XmALIGNMENT_CENTER
 
-Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup ()
+Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Go to ()
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.labelString:		Break at ()
 Ddd*arg_cmd_w.arg_cmd_area*clearAt.labelString:		Clear at ()
 Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
@@ -2972,24 +2975,24 @@ Ddd*arg_cmd_w.arg_cmd_area*findBackward.labelString:	Find@small<< @bf()
 Ddd*arg_cmd_w.arg_cmd_area*findForward.labelString:	Find@small>> @bf()
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.helpString:	\
-@bf Lookup ()@rm\n\
-Lookup a line, file, function, variable, or breakpoint in the source.\n\
+@bf Go to ()@rm\n\
+Go to a line, file, function, variable, or breakpoint in the source.\n\
 @tt \267 @rm If the argument @bf () @rm is empty, \
-show the current execution position.\n\
+go to the current execution position.\n\
 @tt \267 @rm If @bf () @rm contains a number, \
-lookup that line number in the current source.\n\
-@tt \267 @rm If @bf () @rm contains @sl FILENAME@tt:@sl LINE@rm, lookup\n\
+go to that line number in the current source.\n\
+@tt \267 @rm If @bf () @rm contains @sl FILENAME@tt:@sl LINE@rm, go to\n\
     line number @sl LINE @rm in the source file @sl FILENAME@rm.\n\
-@tt \267 @rm If @bf () @rm contains @tt #@sl NUMBER@rm, lookup\n\
+@tt \267 @rm If @bf () @rm contains @tt #@sl NUMBER@rm, go to\n\
     breakpoint number @sl NUMBER@rm.\n\
 @tt \267 @rm If @bf () @rm contains an address, \
-lookup that address.\n\
-@tt \267 @rm If @bf () @rm contains a function or variable name, lookup\n\
+go to that address.\n\
+@tt \267 @rm If @bf () @rm contains a function or variable name, go to\n\
     the definition of that function or variable.
 Ddd*arg_cmd_w.arg_cmd_area*lookup.tipString:	\
-@rm Lookup @bf () @rm in the source
+@rm Go to @bf () @rm in the source
 Ddd*arg_cmd_w.arg_cmd_area*lookup.documentationString:	\
-@rm Lookup a line, file, function, variable or breakpoint in the source
+@rm Go to a line, file, function, variable or breakpoint in the source
 
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.helpString:	\
 @bf Break at ()@rm\n\
@@ -3527,7 +3530,7 @@ Ddd*edit_breakpoints_dialog*helpString:	     \
 Select breakpoints on the left; operations on the right.\n\
 \n\
 @tt \267 @bf New... @rm - create a new breakpoint.\n\
-@tt \267 @bf Lookup @rm - look up the selected breakpoint.\n\
+@tt \267 @bf Go to @rm - go to the selected breakpoint.\n\
 @tt \267 @bf Enable @rm - enable all selected breakpoints.\n\
 @tt \267 @bf Disable @rm - disable all selected breakpoints.\n\
 @tt \267 @bf Condition... @rm - set or modify a breakpoint condition.\n\
@@ -3580,11 +3583,11 @@ Ddd*edit_breakpoints_dialog*buttons*new.tipString:     \
 Ddd*edit_breakpoints_dialog*buttons*new.documentationString: \
 @rm Set breakpoint at specified line or function
 
-Ddd*edit_breakpoints_dialog*buttons*lookup.labelString:	       Lookup
+Ddd*edit_breakpoints_dialog*buttons*lookup.labelString:	       Go to
 Ddd*edit_breakpoints_dialog*buttons*lookup.tipString:     \
-@rm Lookup selected breakpoint
+@rm Go to selected breakpoint
 Ddd*edit_breakpoints_dialog*buttons*lookup.documentationString: \
-@rm Lookup selected breakpoint in the source
+@rm Go to selected breakpoint in the source
 
 Ddd*edit_breakpoints_dialog*buttons*enable.labelString:	       Enable
 Ddd*edit_breakpoints_dialog*buttons*enable.tipString:     \

@@ -176,16 +176,6 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNindentAmount,
-	XtCIndentAmount,
-	XmRInt,
-	sizeof(int),
-	XtOffsetOf(AppData, indent_amount),
-	XmRImmediate,
-	XtPointer(8)
-    },
-
-    {
 	XtNtabWidth,
 	XtCTabWidth,
 	XmRInt,
@@ -663,6 +653,16 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, display_glyphs),
 	XtRImmediate,
 	XtPointer(True)
+    },
+
+    {
+	XtNdisplayLineNumbers,
+	XtCDisplayLineNumbers,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, display_line_numbers),
+	XtRImmediate,
+	XtPointer(False)
     },
 
     {

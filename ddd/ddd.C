@@ -719,6 +719,7 @@ static MMDesc general_preferences_menu[] =
 
 
 // Source preferences
+static Widget display_line_numbers_w;
 static Widget cache_source_files_w;
 static Widget cache_machine_code_w;
 static Widget tab_width_w;
@@ -751,6 +752,8 @@ static MMDesc source_preferences_menu[] =
 {
     { "showExecPos",      MMRadioPanel, MMNoCB, glyph_menu },
     { "referSources",     MMRadioPanel, MMNoCB, refer_menu, &refer_sources_w },
+    { "displayLineNumbers", MMToggle, { sourceToggleDisplayLineNumbersCB },
+      NULL, &display_line_numbers_w },
     { "cacheSourceFiles", MMToggle, { sourceToggleCacheSourceFilesCB }, 
       NULL, &cache_source_files_w },
     { "cacheMachineCode", MMToggle, { sourceToggleCacheMachineCodeCB }, 
@@ -1626,9 +1629,7 @@ int main(int argc, char *argv[])
 	    create_status(source_view_parent);
     }
 
-    source_view = new SourceView(app_context,
-				 source_view_parent,
-				 app_data.indent_amount);
+    source_view = new SourceView(app_context, source_view_parent);
 
     if (app_data.separate_source_window)
     {
@@ -2437,6 +2438,7 @@ void update_options()
     set_toggle(ungrab_mouse_pointer_w,   app_data.ungrab_mouse_pointer);
     set_toggle(save_history_on_exit_w,   app_data.save_history_on_exit);
 
+    set_toggle(display_line_numbers_w,   app_data.display_line_numbers);
     set_toggle(cache_source_files_w,     app_data.cache_source_files);
     set_toggle(cache_machine_code_w,     app_data.cache_machine_code);
     set_toggle(set_display_glyphs_w,     app_data.display_glyphs);
@@ -2537,6 +2539,7 @@ void update_options()
 	    source_view->clear_code_cache();
     }
 
+    source_view->set_display_line_numbers(app_data.display_line_numbers);
     source_view->set_display_glyphs(app_data.display_glyphs);
     source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
@@ -2647,6 +2650,8 @@ static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_display_glyphs_w, !initial_app_data.display_glyphs);
     notify_set_toggle(set_refer_path_w, initial_app_data.use_source_path);
     notify_set_toggle(set_refer_base_w, !initial_app_data.use_source_path);
+    notify_set_toggle(display_line_numbers_w, 
+		      initial_app_data.display_line_numbers);
     notify_set_toggle(cache_source_files_w, 
 		      initial_app_data.cache_source_files);
     notify_set_toggle(cache_machine_code_w, 
@@ -2662,6 +2667,8 @@ static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
 static bool source_preferences_changed()
 {
     return app_data.display_glyphs != initial_app_data.display_glyphs
+	|| app_data.display_line_numbers 
+	   != initial_app_data.display_line_numbers
 	|| app_data.use_source_path != initial_app_data.use_source_path
 	|| app_data.cache_source_files != initial_app_data.cache_source_files
 	|| app_data.cache_machine_code != initial_app_data.cache_machine_code

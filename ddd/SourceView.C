@@ -298,12 +298,14 @@ bool SourceView::thread_dialog_popped_up   = false;
 bool SourceView::cache_source_files     = true;
 bool SourceView::cache_machine_code     = true;
 bool SourceView::display_glyphs         = true;
+bool SourceView::display_line_numbers   = false;
 bool SourceView::disassemble            = true;
 bool SourceView::all_registers          = false;
 
-int  SourceView::bp_indent_amount   = 0;
-int  SourceView::code_indent_amount = 4;
-int  SourceView::tab_width          = 8;
+int  SourceView::source_indent_amount = 4;
+int  SourceView::code_indent_amount   = 4;
+int  SourceView::line_indent_amount   = 4;
+int  SourceView::tab_width            = 8;
 
 SourceOrigin SourceView::current_origin = ORIGIN_NONE;
 
@@ -412,6 +414,17 @@ string& SourceView::current_text(Widget w)
 	return current_source;
 }
 
+int SourceView::indent_amount(Widget w)
+{
+    assert(is_source_widget(w) || is_code_widget(w));
+
+    if (is_code_widget(w))
+	return code_indent_amount;
+    else if (display_line_numbers)
+	return source_indent_amount + line_indent_amount;
+    else
+	return source_indent_amount;
+}
 
 
 //-----------------------------------------------------------------------
@@ -888,31 +901,37 @@ void SourceView::set_source_argCB(Widget text_w,
 	&& text[startPos] != '\n'
 	&& text[endPos] != '\n')
     {
-	if (text_w == source_text_w
-	    && startPos - startIndex <= bp_indent_amount
-	    && endPos - endIndex <= bp_indent_amount)
+	if (text_w == source_text_w)
 	{
-	    // Selection from line number area: prepend source file name
-	    string line = text(startIndex, bp_indent_amount);
-	    int line_nr = atoi(line);
-	    source_arg->set_string(current_source_name() 
-				   + ":" + itostring(line_nr));
+	    int line_nr = 0;
+	    bool in_text;
+	    int bp_nr;
+	    string address;
 
-	    // If a breakpoint is here, select this one only
-	    MapRef ref;
-	    for (BreakPoint* bp = bp_map.first(ref);
-		 bp != 0;
-		 bp = bp_map.next(ref))
+	    if (get_line_of_pos(source_text_w, startIndex, line_nr, address, 
+				in_text, bp_nr) 
+		&& !in_text)
 	    {
-		bp->selected() = 
-		    bp_matches(bp) && bp->line_nr() == line_nr;
-	    }
+		// Selection from line number area: prepend source file name
+		source_arg->set_string(current_source_name() 
+				       + ":" + itostring(line_nr));
 
-	    bp_selected = true;
+		// If a breakpoint is here, select this one only
+		MapRef ref;
+		for (BreakPoint* bp = bp_map.first(ref);
+		     bp != 0;
+		     bp = bp_map.next(ref))
+		{
+		    bp->selected() = 
+			bp_matches(bp) && bp->line_nr() == line_nr;
+		}
+
+		bp_selected = true;
+	    }
 	}
 	else if (text_w == code_text_w
-		 && startPos - startIndex <= code_indent_amount
-		 && endPos - endIndex <= code_indent_amount)
+		 && startPos - startIndex <= indent_amount(text_w)
+		 && endPos - endIndex <= indent_amount(text_w))
 	{
 	    // Selection from address area
 	    int index = text.index(rxaddress, startPos);
@@ -1316,12 +1335,12 @@ String SourceView::read_indented(string& file_name, long& length,
     }
 
     // Make room for line numbers
-    indented_text_length += bp_indent_amount * lines;
+    indented_text_length += indent_amount(source_text_w) * lines;
 
     String indented_text = XtMalloc(indented_text_length + 1);
 
-    char *line_no_s = new char[bp_indent_amount];
-    for (int i = 0; i < bp_indent_amount; i++)
+    char *line_no_s = new char[indent_amount(source_text_w)];
+    for (int i = 0; i < indent_amount(source_text_w); i++)
 	line_no_s[i] = ' ';
 
     t = 0;
@@ -1330,7 +1349,7 @@ String SourceView::read_indented(string& file_name, long& length,
     {
 	// Increase line number
 	int i;
-	for (i = bp_indent_amount - 2; i >= 0; i--)
+	for (i = indent_amount(source_text_w) - 2; i >= 0; i--)
 	{
 	    char& c = line_no_s[i];
 	    if (c == ' ')
@@ -1348,8 +1367,8 @@ String SourceView::read_indented(string& file_name, long& length,
 	}
 
 	// Copy line number
-	for (i = 0; i < bp_indent_amount; i++)
-	    *pos_ptr++ = line_no_s[i];
+	for (i = 0; i < indent_amount(source_text_w); i++)
+	    *pos_ptr++ = display_line_numbers ? line_no_s[i] : ' ';
 
 	// Copy line
 	while (t < length && text[t] != '\n')
@@ -1417,7 +1436,7 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
     }
 
     // Untabify current source, using the current tab width
-    untabify(current_source, tab_width);
+    untabify(current_source, tab_width, indent_amount(source_text_w));
 
     // Setup global parameters
 
@@ -1547,7 +1566,7 @@ void SourceView::read_file (string file_name,
 
     XmTextPosition initial_pos = 0;
     if (initial_line > 0 && initial_line <= line_count)
-	initial_pos = pos_of_line(initial_line) + bp_indent_amount;
+	initial_pos = pos_of_line(initial_line) + indent_amount(source_text_w);
 
     SetInsertionPosition(source_text_w, initial_pos, true);
 
@@ -1665,11 +1684,11 @@ void SourceView::refresh_source_bp_disp()
 	    continue;
 
 	string s(current_source.at(int(pos_of_line(line_nr)), 
-				   bp_indent_amount - 1));
+				   indent_amount(source_text_w) - 1));
 
 	XmTextReplace (source_text_w,
 		       pos_of_line(line_nr),
-		       pos_of_line(line_nr) + bp_indent_amount - 1,
+		       pos_of_line(line_nr) + indent_amount(source_text_w) - 1,
 		       (String)s);
     }
 
@@ -1713,21 +1732,26 @@ void SourceView::refresh_source_bp_disp()
 		insert_string += bp->number_str();
 		insert_string += bp->enabled() ? '#' : '_';
 	    }
-	    if (int(insert_string.length()) >= bp_indent_amount - 1) {
+	    if (int(insert_string.length()) 
+		>= indent_amount(source_text_w) - 1)
+	    {
 		insert_string =
-		    insert_string.before(bp_indent_amount - 1);
+		    insert_string.before(indent_amount(source_text_w) - 1);
 	    }
 	    else
 	    {
 		for (i = insert_string.length(); 
-		     i < int(bp_indent_amount) - 1; i++)
+		     i < indent_amount(source_text_w) - 1; i++)
 		{
 		    insert_string += current_source[pos + i];
 		}
 	    }
-	    assert(insert_string.length() == unsigned(bp_indent_amount - 1));
 
-	    XmTextReplace (source_text_w, pos, pos + bp_indent_amount - 1,
+	    assert(insert_string.length() 
+		   == unsigned(indent_amount(source_text_w) - 1));
+
+	    XmTextReplace (source_text_w, pos, 
+			   pos + indent_amount(source_text_w) - 1,
 			   (String)insert_string);
 	}
     }
@@ -1745,9 +1769,9 @@ void SourceView::refresh_code_bp_disp()
 	    continue;
 
 	// Process all breakpoints at ADDRESS
-	string insert_string = replicate(' ', code_indent_amount);
+	string insert_string = replicate(' ', indent_amount(code_text_w));
 
-	XmTextReplace (code_text_w, pos, pos + code_indent_amount,
+	XmTextReplace (code_text_w, pos, pos + indent_amount(code_text_w),
 		       (String)insert_string);
     }
 
@@ -1789,10 +1813,10 @@ void SourceView::refresh_code_bp_disp()
 		    insert_string += bp->enabled() ? '#' : '_';
 		}
 	    }
-	    insert_string += replicate(' ', code_indent_amount);
-	    insert_string = insert_string.before(code_indent_amount);
+	    insert_string += replicate(' ', indent_amount(code_text_w));
+	    insert_string = insert_string.before(indent_amount(code_text_w));
 
-	    XmTextReplace (code_text_w, pos, pos + code_indent_amount,
+	    XmTextReplace (code_text_w, pos, pos + indent_amount(code_text_w),
 			   (String)insert_string);
 	}
     }
@@ -1872,11 +1896,24 @@ bool SourceView::get_line_of_pos (Widget   w,
 		pos_of_line(line_nr + 1) :
 		XmTextGetLastPosition (text_w) + 1;
 
-	    if (pos < (line_pos + bp_indent_amount - 1))
+	    bool left_of_first_nonblank = false;
+	    if (pos < next_line_pos)
+	    {
+		// Check if we're left of first non-blank source character
+		int first_nonblank = line_pos + indent_amount(text_w);
+		while (first_nonblank < next_line_pos
+		       && isspace(current_text(text_w)[first_nonblank]))
+		    first_nonblank++;
+		left_of_first_nonblank = (pos < first_nonblank);
+	    }
+
+	    if (left_of_first_nonblank 
+		|| pos < (line_pos + indent_amount(text_w) - 1))
 	    {
 		// Position in breakpoint area
 		found = true;
 		in_text = false;
+		line_nr = max(line_nr, 1);
 
 		// Check for breakpoints...
 		VarIntArray& bps = bps_in_line[line_nr];
@@ -1888,8 +1925,8 @@ bool SourceView::get_line_of_pos (Widget   w,
 		else if (bps.size() > 1)
 		{
 		    // Find which breakpoint was selected
-		    int i;
 		    XmTextPosition bp_disp_pos = line_pos;
+		    int i;
 		    for (i = 0; i < bps.size(); i++)
 		    {
 			BreakPoint* bp = bp_map.get(bps[i]);
@@ -1900,7 +1937,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 			if (pos < bp_disp_pos)
 			{
 			    bp_nr = bps[i];
-			    break; // for-Schleife fertig
+			    break; // exit for loop
 			}
 		    }
 		}
@@ -1927,7 +1964,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 	    line_pos--;
 	line_pos++;
 
-	if (pos - line_pos < code_indent_amount)
+	if (pos - line_pos < indent_amount(text_w))
 	{
 	    // Breakpoint area
 	    in_text = false;
@@ -1968,7 +2005,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 			if (pos < bp_disp_pos)
 			{
 			    bp_nr = bps[i];
-			    break; // for-Schleife fertig
+			    break; // exit for loop
 			}
 		    }
 		}
@@ -1998,8 +2035,7 @@ void SourceView::find_word_bounds (Widget text_w,
 	    line_pos--;
 
     int offset = pos - line_pos;
-    if ((is_source_widget(text_w) && offset < bp_indent_amount)
-	|| (is_code_widget(text_w) && offset < code_indent_amount))
+    if (offset < indent_amount(text_w))
     {
 	// Do not select words in breakpoint area
 	return;
@@ -2066,13 +2102,8 @@ string SourceView::get_word_at_pos(Widget text_w,
 // Constructor
 //----------------------------------------------------------------------------
 
-SourceView::SourceView (XtAppContext app_context,
-			Widget       parent,
-			int          bp_i_a)
+SourceView::SourceView(XtAppContext app_context, Widget parent)
 {
-    assert (bp_indent_amount >= 0);
-    bp_indent_amount = bp_i_a;
-
     // Find application shell
     toplevel_w = parent;
     while (toplevel_w != 0 && !XtIsWMShell(toplevel_w))
@@ -2406,11 +2437,10 @@ void SourceView::show_execution_position (string position, bool stopped,
 	if (!display_glyphs)
 	{
 	    // Remove old marker
-	    String sep = " ";
 	    XmTextReplace (source_text_w,
-			   last_pos + bp_indent_amount - 1,
-			   last_pos + bp_indent_amount,
-			   sep);
+			   last_pos + indent_amount(source_text_w) - 1,
+			   last_pos + indent_amount(source_text_w),
+			   " ");
 
 	    if (last_start_highlight)
 		XmTextSetHighlight (source_text_w,
@@ -2439,14 +2469,13 @@ void SourceView::show_execution_position (string position, bool stopped,
 
     if (file_matches(file_name, current_file_name))
     {
-	if (!display_glyphs && bp_indent_amount > 0)
+	if (!display_glyphs && indent_amount(source_text_w) > 0)
 	{
 	    // Remove old marker
-	    String sep = " ";
 	    XmTextReplace (source_text_w,
-			   last_pos + bp_indent_amount - 1,
-			   last_pos + bp_indent_amount,
-			   sep);
+			   last_pos + indent_amount(source_text_w) - 1,
+			   last_pos + indent_amount(source_text_w),
+			   " ");
 	}
 
 	// Zeilennummer usw. anzeigen
@@ -2469,17 +2498,17 @@ void SourceView::_show_execution_position(string file, int line, bool silent)
 	return;
 
     XmTextPosition pos = pos_of_line(line);
-    SetInsertionPosition(source_text_w, pos + bp_indent_amount, false);
+    SetInsertionPosition(source_text_w, 
+			 pos + indent_amount(source_text_w), false);
 
     // Mark current line
-    if (!display_glyphs && bp_indent_amount > 0)
+    if (!display_glyphs && indent_amount(source_text_w) > 0)
     {
 	// Set new marker
-	String marker = ">";
 	XmTextReplace (source_text_w,
-		       pos + bp_indent_amount - 1,
-		       pos + bp_indent_amount,
-		       marker);
+		       pos + indent_amount(source_text_w) - 1,
+		       pos + indent_amount(source_text_w),
+		       ">");
     }
 
     XmTextPosition pos_line_end = 0;
@@ -2530,7 +2559,8 @@ void SourceView::show_position (string position, bool silent)
     if (line > 0 && line <= line_count)
     {
 	XmTextPosition pos = pos_of_line(line);
-	SetInsertionPosition(source_text_w, pos + bp_indent_amount, true);
+	SetInsertionPosition(source_text_w, 
+			     pos + indent_amount(source_text_w), true);
 
 	last_pos = pos;
     }
@@ -3037,7 +3067,7 @@ void SourceView::goto_entry(string entry)
 			       mode);
 
 	    XmTextPosition pos = 
-		last_start_secondary_highlight + bp_indent_amount;
+		last_start_secondary_highlight + indent_amount(source_text_w);
 	    SetInsertionPosition(source_text_w, pos, true);
 	}
     }
@@ -4646,7 +4676,7 @@ string SourceView::get_line(string position)
     if (!file_matches(file_name, current_file_name))
 	read_file(file_name, line);
 
-    XmTextPosition start = pos_of_line(line) + bp_indent_amount;
+    XmTextPosition start = pos_of_line(line) + indent_amount(source_text_w);
     XmTextPosition end   = current_source.index('\n', start);
     if (end < 0)
 	end = current_source.length();
@@ -5242,8 +5272,6 @@ void SourceView::set_display_glyphs(bool set)
 {
     if (display_glyphs != set)
     {
-	StatusDelay delay(set ? "Enabling glyphs" : "Disabling glyphs");
-
 	if (XtIsRealized(source_text_w))
 	{
 	    display_glyphs = false;	
@@ -5258,8 +5286,26 @@ void SourceView::set_display_glyphs(bool set)
 
 	if (XtIsRealized(source_text_w))
 	{
+	    StatusDelay delay(set ? "Enabling glyphs" : "Disabling glyphs");
+
 	    refresh_bp_disp();
 	    lookup();
+	}
+    }
+}
+
+// Change setting of display_line_numbers
+void SourceView::set_display_line_numbers(bool set)
+{
+    if (display_line_numbers != set)
+    {
+	display_line_numbers = set;
+
+	if (XtIsRealized(source_text_w))
+	{
+	    StatusDelay delay(set ? "Enabling line numbers" : 
+			      "Disabling line numbers");
+	    reload();
 	}
     }
 }
@@ -5287,7 +5333,7 @@ MString SourceView::help_on_pos(Widget w, XmTextPosition pos,
     if (!pos_found || bp_nr == 0)
 	return MString(0, true);
 
-    ref = pos_of_line(line_nr) + bp_indent_amount - 1;
+    ref = pos_of_line(line_nr) + indent_amount(source_text_w) - 1;
     return help_on_bp(bp_nr, detailed);
 }
 
@@ -5608,7 +5654,8 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode)
 		last_start_highlight_pc = pos;
 		last_end_highlight_pc   = pos_line_end;
 	    }
-	    last_pos_pc             = pos;
+
+	    last_pos_pc = pos;
 	}
     }
     else if (mode == XmHIGHLIGHT_SECONDARY_SELECTED)

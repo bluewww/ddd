@@ -46,43 +46,44 @@ inline void create_options(Widget origin)
 }
 extern bool startup_preferences_changed();
 
-extern void sourceToggleFindWordsOnlyCB    (Widget, XtPointer, XtPointer);
-extern void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer);
-extern void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer);
-extern void sourceToggleDisassembleCB      (Widget, XtPointer, XtPointer);
-extern void sourceToggleAllRegistersCB     (Widget, XtPointer, XtPointer);
-extern void sourceSetDisplayGlyphsCB       (Widget, XtPointer, XtPointer);
-extern void sourceSetUseSourcePathCB       (Widget, XtPointer, XtPointer);
-extern void sourceSetTabWidthCB            (Widget, XtPointer, XtPointer);
+extern void sourceToggleFindWordsOnlyCB     (Widget, XtPointer, XtPointer);
+extern void sourceToggleCacheSourceFilesCB  (Widget, XtPointer, XtPointer);
+extern void sourceToggleCacheMachineCodeCB  (Widget, XtPointer, XtPointer);
+extern void sourceToggleDisassembleCB       (Widget, XtPointer, XtPointer);
+extern void sourceToggleAllRegistersCB      (Widget, XtPointer, XtPointer);
+extern void sourceToggleDisplayLineNumbersCB(Widget, XtPointer, XtPointer);
+extern void sourceSetDisplayGlyphsCB        (Widget, XtPointer, XtPointer);
+extern void sourceSetUseSourcePathCB        (Widget, XtPointer, XtPointer);
+extern void sourceSetTabWidthCB             (Widget, XtPointer, XtPointer);
 
-extern void graphToggleDetectAliasesCB     (Widget, XtPointer, XtPointer);
-extern void graphToggleShowGridCB          (Widget, XtPointer, XtPointer);
-extern void graphToggleShowHintsCB         (Widget, XtPointer, XtPointer);
-extern void graphToggleSnapToGridCB        (Widget, XtPointer, XtPointer);
-extern void graphToggleCompactLayoutCB     (Widget, XtPointer, XtPointer);
-extern void graphToggleAutoLayoutCB        (Widget, XtPointer, XtPointer);
-extern void graphSetGridSizeCB             (Widget, XtPointer, XtPointer);
+extern void graphToggleDetectAliasesCB      (Widget, XtPointer, XtPointer);
+extern void graphToggleShowGridCB           (Widget, XtPointer, XtPointer);
+extern void graphToggleShowHintsCB          (Widget, XtPointer, XtPointer);
+extern void graphToggleSnapToGridCB         (Widget, XtPointer, XtPointer);
+extern void graphToggleCompactLayoutCB      (Widget, XtPointer, XtPointer);
+extern void graphToggleAutoLayoutCB         (Widget, XtPointer, XtPointer);
+extern void graphSetGridSizeCB              (Widget, XtPointer, XtPointer);
 
-extern void dddToggleGroupIconifyCB        (Widget, XtPointer, XtPointer);
-extern void dddToggleSeparateExecWindowCB  (Widget, XtPointer, XtPointer);
-extern void dddToggleUngrabMousePointerCB  (Widget, XtPointer, XtPointer);
-extern void dddToggleSaveHistoryOnExitCB   (Widget, XtPointer, XtPointer);
-extern void dddToggleSuppressWarningsCB    (Widget, XtPointer, XtPointer);
+extern void dddToggleGroupIconifyCB         (Widget, XtPointer, XtPointer);
+extern void dddToggleSeparateExecWindowCB   (Widget, XtPointer, XtPointer);
+extern void dddToggleUngrabMousePointerCB   (Widget, XtPointer, XtPointer);
+extern void dddToggleSaveHistoryOnExitCB    (Widget, XtPointer, XtPointer);
+extern void dddToggleSuppressWarningsCB     (Widget, XtPointer, XtPointer);
 
-extern void dddToggleButtonTipsCB          (Widget, XtPointer, XtPointer);
-extern void dddToggleValueTipsCB           (Widget, XtPointer, XtPointer);
-extern void dddToggleButtonDocsCB          (Widget, XtPointer, XtPointer);
-extern void dddToggleValueDocsCB           (Widget, XtPointer, XtPointer);
+extern void dddToggleButtonTipsCB           (Widget, XtPointer, XtPointer);
+extern void dddToggleValueTipsCB            (Widget, XtPointer, XtPointer);
+extern void dddToggleButtonDocsCB           (Widget, XtPointer, XtPointer);
+extern void dddToggleValueDocsCB            (Widget, XtPointer, XtPointer);
 
-extern void dddSetGlobalTabCompletionCB    (Widget, XtPointer, XtPointer);
-extern void dddSetSeparateWindowsCB        (Widget, XtPointer, XtPointer);
-extern void dddSetStatusAtBottomCB         (Widget, XtPointer, XtPointer);
-extern void dddSetToolBarCB                (Widget, XtPointer, XtPointer);
-extern void dddSetKeyboardFocusPolicyCB    (Widget, XtPointer, XtPointer);
-extern void dddSetPannerCB                 (Widget, XtPointer, XtPointer);
-extern void dddSetDebuggerCB               (Widget, XtPointer, XtPointer);
+extern void dddSetGlobalTabCompletionCB     (Widget, XtPointer, XtPointer);
+extern void dddSetSeparateWindowsCB         (Widget, XtPointer, XtPointer);
+extern void dddSetStatusAtBottomCB          (Widget, XtPointer, XtPointer);
+extern void dddSetToolBarCB                 (Widget, XtPointer, XtPointer);
+extern void dddSetKeyboardFocusPolicyCB     (Widget, XtPointer, XtPointer);
+extern void dddSetPannerCB                  (Widget, XtPointer, XtPointer);
+extern void dddSetDebuggerCB                (Widget, XtPointer, XtPointer);
 
-extern void DDDSaveOptionsCB               (Widget, XtPointer, XtPointer);
+extern void DDDSaveOptionsCB                (Widget, XtPointer, XtPointer);
 
 #endif // _DDD_options_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

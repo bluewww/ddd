@@ -112,6 +112,21 @@ void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer call_data)
     update_options();
 }
 
+void sourceToggleDisplayLineNumbersCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.display_line_numbers = info->set;
+
+    if (info->set)
+	set_status("Displaying line numbers.");
+    else
+	set_status("Not displaying line numbers.");
+
+    update_options();
+}
+
 void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 {
     Boolean state = Boolean(client_data != 0);

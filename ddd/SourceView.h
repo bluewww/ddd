@@ -245,13 +245,16 @@ class SourceView {
     static bool thread_dialog_popped_up;      // True if registers are visible
 
     static bool display_glyphs;	              // Display glyphs?
+    static bool display_line_numbers;	      // Display line numbers?
+    
     static bool disassemble;	              // Disassemble code?
     static bool all_registers;	              // Show all registers?
     static bool at_lowest_frame;              // Are we at lowest frame?
 
     // The indenting amounts
-    static int  bp_indent_amount;   // Source
-    static int  code_indent_amount; // Machine code
+    static int source_indent_amount;         // Source
+    static int code_indent_amount;           // Machine code
+    static int line_indent_amount;           // Extra columns for line numbers
 
     // Tab width
     static int tab_width;
@@ -340,6 +343,9 @@ class SourceView {
     static bool is_code_widget(Widget w);
     static string& current_text(Widget w);
 
+    // Return current breakpoint indent amount
+    static int indent_amount(Widget w);
+
     // Format `where' and `thread' lines
     static void setup_where_line(string& line);
 
@@ -356,9 +362,7 @@ class SourceView {
 
 public:
     // Constructor
-    SourceView (XtAppContext app_context,
-		Widget       parent,
-		int          bp_indent_amount);
+    SourceView (XtAppContext app_context, Widget parent);
 
     enum SearchDirection {forward, backward};
 
@@ -466,6 +470,9 @@ public:
 
     // Set whether glyphs are to be displayed
     static void set_display_glyphs(bool value);
+
+    // Set whether line numbers are to be displayed
+    static void set_display_line_numbers(bool value);
 
     // Set whether machine code is to be displayed
     static void set_disassemble(bool value);
