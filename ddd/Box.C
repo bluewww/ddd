@@ -30,6 +30,7 @@ char Box_rcsid[] =
 #include <string.h>
 
 #include "assert.h"
+#include "return.h"
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
@@ -122,38 +123,57 @@ Box *Box::tag(Data *dta, DataLink *dl)
 }
 
 // BoxRegion der TagBox zu Punkt p zurueckgeben (kein Punkt: oberste)
-BoxRegion Box::region(BoxPoint p) const
+BoxRegion Box::region(BoxPoint p) const RETURNS(r)
 {
+    RETURN_OBJECT(BoxRegion, r);
     const TagBox *t = findTag(p);
-    return t ? t->__region() : BoxRegion(BoxPoint(0,0), BoxSize(0,0));
+    if (t)
+	r = t->__region();
+    else
+	r = BoxRegion(BoxPoint(0,0), BoxSize(0,0));
+    RETURN(r);
 }
 
 // Datum der TagBox zu Punkt p zurueckgeben (kein Punkt: oberste)
 Data *Box::data(BoxPoint p) const
 {
     const TagBox *t = findTag(p);
-    return t ? t->__data() : 0;
+    if (t == 0)
+	return 0;
+    return t->__data();
 }
 
 // Namen der TagBox zu Punkt p zurueckgeben (kein Punkt: oberste)
-string Box::name(BoxPoint p) const
+string Box::name(BoxPoint p) const RETURNS(name)
 {
+    RETURN_OBJECT(string, name);
     const TagBox *t = findTag(p);
-    return t ? t->__name() : "";
+    if (t)
+	name = t->__name();
+    else
+	name = "";
+    RETURN(name);
 }
 
 // Information der TagBox zu Punkt p zurueckgeben (kein Punkt: oberste)
-string Box::info(BoxPoint p) const
+string Box::info(BoxPoint p) const RETURNS(info)
 {
+    RETURN_OBJECT(string, info);
     const TagBox *t = findTag(p);
-    return t ? t->__info() : "";
+    if (t)
+	info = t->__info();
+    else
+	info = "";
+    RETURN(info);
 }
 
 // Ausgewaehlt-Eigenschaft der TagBox zu Punkt p zurueckgeben
 bool Box::selected(BoxPoint p) const
 {
     const TagBox *t = findTag(p);
-    return t ? t->__selected() : false;
+    if (t == 0)
+	return false;
+    return t->__selected();
 }
 
 

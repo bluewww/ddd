@@ -70,7 +70,10 @@ DispBox::DispBox (string disp_nr,
     title_box = eval("title", args);
     
     args[0] = title_box;
-    args[1] = (dv == 0 ? eval("disabled") : create_value_box (dv));
+    if (dv)
+	args[1] = create_value_box(dv);
+    else
+	args[1] = eval("disabled");
 
     mybox = eval("display_box", args);
 }
@@ -91,7 +94,10 @@ void DispBox::set_value (const DispValue* dv)
     VSLArg args[3];
 
     args[0] = title_box;
-    args[1] = (dv == 0 ? eval("disabled") : create_value_box (dv));
+    if (dv)
+	args[1] = create_value_box(dv);
+    else
+	args[1] = eval("disabled");
 
     mybox->unlink();
 

@@ -33,6 +33,7 @@ char ListNode_rcsid[] =
 
 
 #include "assert.h"
+#include "return.h"
 #include <iostream.h>
 #include <misc.h>       // max()
 
@@ -351,10 +352,13 @@ int ListNode::_reBase(VSLDef *cdef, unsigned newBase)
     return changes;
 }
 
-string ListNode::firstName() const
+string ListNode::firstName() const RETURNS(s)
 {
-    string s = head()->firstName();
-    return s != "" ? s : tail()->firstName();
+    RETURN_OBJECT(string, s);
+    s = head()->firstName();
+    if (s == "")
+	s = tail()->firstName();
+    RETURN(s);
 }
 
 
