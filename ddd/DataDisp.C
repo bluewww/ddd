@@ -637,8 +637,8 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data, XtPointer)
 {
     set_last_origin(w);
 
-    string pattern = selected_pattern();
-    if (pattern == "")
+    string p = selected_pattern();
+    if (p == "")
 	return;
 
     DispValue *dv = selected_value();
@@ -655,32 +655,37 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data, XtPointer)
 
     defineConversionMacro("THEME", theme);
     defineConversionMacro("THEME_DOC", doc);
-    defineConversionMacro("PATTERN", pattern);
+    defineConversionMacro("PATTERN", p);
     defineConversionMacro("EXPR", dv->full_name());
+
+    bool select = 
+	(pattern(dv->full_name(), true) != pattern(dv->full_name(), false));
 
     Arg args[10];
     Cardinal arg = 0;
 
     XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
     XtSetArg(args[arg], XmNautoUnmanage,   False);     arg++;
+    string name = 
+	(select ? "select_apply_theme_dialog" : "confirm_apply_theme_dialog");
     Widget dialog = 
-	verify(XmCreateQuestionDialog(find_shell(w), "confirm_apply_dialog", 
-				      args, arg));
+	verify(XmCreateQuestionDialog(find_shell(w), name, args, arg));
 
-    arg = 0;
-    Widget apply = XmCreatePushButton(dialog, "apply", args, arg);
-    XtManageChild(apply);
+    if (select)
+    {
+	arg = 0;
+	Widget apply = XmCreatePushButton(dialog, "apply", args, arg);
+	XtManageChild(apply);
+	XtAddCallback(apply, XmNactivateCallback, 
+		      applyThemeOnThisCB, client_data);
+	XtAddCallback(apply, XmNactivateCallback, DestroyShellCB, 0);
+    }
 
     Delay::register_shell(dialog);
-    XtAddCallback(dialog, XmNokCallback,       
-		  applyThemeOnAllCB,  client_data);
-    XtAddCallback(apply,  XmNactivateCallback, 
-		  applyThemeOnThisCB, client_data);
-
-    XtAddCallback(dialog, XmNokCallback, DestroyShellCB, 0);
-    XtAddCallback(apply,  XmNactivateCallback, DestroyShellCB, 0);
-    XtAddCallback(dialog, XmNcancelCallback,   DestroyShellCB, 0);
-    XtAddCallback(dialog, XmNhelpCallback,     ImmediateHelpCB, 0);
+    XtAddCallback(dialog, XmNokCallback,      applyThemeOnAllCB, client_data);
+    XtAddCallback(dialog, XmNokCallback,      DestroyShellCB, 0);
+    XtAddCallback(dialog, XmNcancelCallback,  DestroyShellCB, 0);
+    XtAddCallback(dialog, XmNhelpCallback,    ImmediateHelpCB, 0);
 
     manage_and_raise(dialog);
 }

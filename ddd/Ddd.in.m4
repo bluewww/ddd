@@ -6787,21 +6787,23 @@ Ddd*lock_dialog.okLabelString:		Continue
 Ddd*lock_dialog*kill.labelString:	Kill
 Ddd*lock_dialog.cancelLabelString: 	Exit
 
-Ddd*confirm_apply_dialog.dialogTitle: DDD: Apply Theme
-Ddd*confirm_apply_dialog.okLabelString:     Apply on all
-Ddd*confirm_apply_dialog*apply.labelString: Apply on this
-Ddd*confirm_apply_dialog*messageString:	\
-@rm Apply EMPH(@THEME_DOC@) on all\n\
-expressions matching CODE("@PATTERN@")?
-Ddd*confirm_apply_dialog*helpString:	\
-WIDGET(Apply Theme)\n\
+define(THEME_HELP, 
+[WIDGET(Apply Theme)\n\
 \n\
 You are about to apply a theme to an expression or a pattern.\n\
 \n\
 Applying a theme is EMPH(permanent); that is, it will be applied to all\n\
 present and future occurrences of the expression. (You can always\n\
-unapply the theme via LBL(Data, Themes).)\n\
-\n\
+unapply the theme via LBL(Data, Themes).)\n])
+
+Ddd*select_apply_theme_dialog.dialogTitle: DDD: Apply Theme
+Ddd*select_apply_theme_dialog.okLabelString:     Apply on all
+Ddd*select_apply_theme_dialog*apply.labelString: Apply on this
+Ddd*select_apply_theme_dialog*messageString:	\
+@rm Apply EMPH(@THEME_DOC@) on all\n\
+expressions matching CODE("@PATTERN@")?
+Ddd*select_apply_theme_dialog*helpString:	\
+THEME_HELP\n\
 You can choose where EMPH(@THEME_DOC@) should be applied:\n\
 \n\
 ITEM To apply EMPH(@THEME_DOC@) on all expressions \
@@ -6810,6 +6812,16 @@ matching CODE("@PATTERN@"),\n\
 ITEM To apply EMPH(@THEME_DOC@) on CODE(@EXPR@) only,\n\
     click on LBL(Apply on this).\n\
 ITEM To cancel applying the theme, click on LBL(Cancel).
+
+
+Ddd*confirm_apply_theme_dialog.dialogTitle: DDD: Apply Theme
+Ddd*confirm_apply_theme_dialog.okLabelString:     Apply
+Ddd*confirm_apply_theme_dialog*messageString:	\
+@rm Apply EMPH(@THEME_DOC@) on all expressions CODE("@EXPR@")?
+Ddd*confirm_apply_theme_dialog*helpString:	\
+THEME_HELP\n\
+To apply EMPH(@THEME_DOC@) on CODE(@EXPR@), click on LBL(Apply).\n\
+To cancel applying the theme, click on LBL(Cancel).
 
 Ddd*launch_tty_dialog.dialogTitle: DDD: Starting Execution Window
 Ddd*launch_tty_dialog.messageString:		\
