@@ -869,6 +869,7 @@ PICS = \
 	$(picdir)/ddd-print-output.ps   \
 	$(picdir)/ddd-print-popup.ps    \
 	$(picdir)/ddd-registers.ps      \
+	$(picdir)/ddd-repeats.ps        \
 	$(picdir)/ddd-rotate-display.ps \
 	$(picdir)/ddd-save-session.ps   \
 	$(picdir)/ddd-select-display.ps \
@@ -1642,6 +1643,10 @@ $(picdir)/ddd-edit-breakpoints.ps: \
 $(picdir)/ddd-display.ps: \
 	$(picdir)/ddd-display.fig $(picdir)/ddd-display.xpm
 	cd $(picdir); $(FIG2PS) ddd-display.fig > ddd-display.ps
+
+$(picdir)/ddd-repeats.ps: \
+	$(picdir)/ddd-repeats.fig $(picdir)/ddd-repeats.xpm
+	cd $(picdir); $(FIG2PS) ddd-repeats.fig > ddd-repeats.ps
 
 # The logo comes in XPM source
 $(picdir)/dddsplash.ps: $(icondir)/dddsplash.xpm

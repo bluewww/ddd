@@ -816,9 +816,10 @@ Note: \s-2JDB\s+2 and some \s-2DBX\s+2 variants do not support
 breakpoint ignore counts.
 .PP
 In the field `\fBIgnore Count\fR' of the `\fBBreakpoint Properties\fR'
-panel, you can specify a \fIbreakpoint ignore count\fR.  If an ignore
-count is set, each crossing of the breakpoint decrements the ignore
-count.  The program stops only if the ignore count is zero.
+panel, you can specify a \fIbreakpoint ignore count\fR.  If the ignore
+count is set to some value \fIN\fR, the next \fIN\fR crossings of the
+breakpoint will be ignored: Each crossing of the breakpoint decrements
+the ignore count; the program stops only if the ignore count is zero.
 .\"
 .SS "Breakpoint Commands"
 .\"
@@ -1193,7 +1194,7 @@ useful for large dynamic structures.
 .PP
 .\"
 .\"
-.SS "Displaying Simple Values"
+.SS "Showing Simple Values using Value Hints"
 .\"
 To display the value of a simple variable, move the mouse pointer on
 its name.  After a second, a small window (called \fIvalue tip\fR)
@@ -1202,12 +1203,15 @@ disappears as soon as you move the mouse pointer away from the
 variable.  The value is also shown in the status line.
 .PP
 .PSPIC @srcdir@/PICS/ddd-value-tip.ps 15.3cm
-.PP
+.\"
+.\"
+.SS "Printing Simple Values in the Debugger Console"
+.\"
 The variable value can also be printed in the debugger console, making
 it available for further operations.  To print a variable value,
-select the desired variable by clicking \fImouse button 1\fR on its name.
-The variable name is copied to the argument field.  By clicking the
-`\fBPrint ()\fR' button, a new display is created in the data window.
+select the desired variable by clicking \fImouse button 1\fR on its
+name.  The variable name is copied to the argument field.  By clicking
+the `\fBPrint ()\fR' button, the value is printed in the debugger console.
 .PP
 As a shorter alternative, you can simply press \fImouse button 3\fR on
 the variable name and select the `\fBPrint\fR' item from the popup
@@ -1215,7 +1219,8 @@ menu.
 .PP
 .PSPIC @srcdir@/PICS/ddd-print-popup.ps 15.3cm
 .\"
-.SS "Displaying Complex Values"
+.\"
+.SS "Displaying Complex Values in the Data Window"
 .\"
 To explore complex data structures, you can use the \fIgraphical data
 display\fR in the \fIdata window\fR.  The data window holds
@@ -1225,7 +1230,8 @@ is updated each time the program stops.
 To create a new display, select the desired variable by clicking
 \fImouse button 1\fR on its name.  The variable name is copied to the
 argument field.  By clicking the `\fBDisplay ()\fR' button, a new
-display is created in the data window.
+display is created in the data window.  The data window opens
+automatically as soon as you create a display.
 .PP
 .PSPIC @srcdir@/PICS/ddd-display.ps 15.3cm
 .PP
@@ -1270,7 +1276,6 @@ function name, as in the backtrace output).
 If no `\fBwhen in\fR' suffix or `\fBnow or when in\fR' suffix is
 given, the display is created immediately.
 .br
-.PP
 .\"
 .\"
 .SS "Selecting Displays"
@@ -1305,7 +1310,6 @@ By double-clicking on a display title, the display itself and all
 connected displays are automatically selected.
 .PP
 .PSPIC @srcdir@/PICS/ddd-select-display.ps 15.3cm
-.PP
 .\"
 .\"
 .SS "Selecting Display Parts"
@@ -1316,14 +1320,14 @@ Pascal/MODULA \fIRECORD\fR or \fIARRAY\fR), you can
 select individual parts by clicking on their names or values.  The
 resulting expression is shown in the \fIargument field\fR, below.
 .PP
-You can only select one part of a display.
+You can only select one part of a display at a time.
 .\"
 .\"
 .SS "Showing and Hiding Values"
 .\"
-\fIAggregate Values\fR can be shown \fIexpanded\fR, that is,
-displaying all details, or \fIhidden\fR, that is, displayed as
-`\fB{...}\fR'.
+Aggregate values (i.e. records, structs, classes, and arrays) can be
+shown \fIexpanded\fR, that is, displaying all details, or
+\fIhidden\fR, that is, displayed as `\fB{...}\fR'.
 .PP
 To show details about an aggregate, select the aggregate by clicking
 \fImouse button 1\fR on its name or value and click on the `\fBShow ()\fR'
@@ -1365,9 +1369,10 @@ details will be shown; if the entire value is shown, double-clicking
 will \fIhide\fR the value instead.  This way, you can double-click on
 a value until you get the right amount of details.
 .PP
-If \fIall\fR details of a display are hidden, the display is
-considered \fIdisabled\fR.  Displays can be disabled or enabled via
-the \s-2@DDD@\s+2 commands
+If \fIall\fR details of a display are hidden, the display is called
+\fIdisabled\fR; this is indicated by the string `\fI(Disabled)\fR'.
+Displays can also be disabled or enabled via the \s-2@DDD@\s+2
+commands
 .sp
 .br
   \fBgraph disable display \fIdisplays...\fR
@@ -1380,7 +1385,8 @@ and
 .sp
 .br
 at the debugger prompt.  \fIdisplays...\fR is a space-separated list
-of display numbers to disable or enable.
+of display numbers to disable or enable or a single display name.
+.\"
 .\"
 .SS "Rotating Arrays"
 .\"
@@ -1507,7 +1513,6 @@ The display showing the local variables can be manipulated just like
 any other data display.  Individual variables can be selected and
 dereferenced.
 .PP
-.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-locals.ps 15.3cm
 .PP
 .\"
@@ -1541,7 +1546,7 @@ Note that status displays are quite time-consuming, so you
 should delete them as soon as you don't need them any more.
 .\"
 .\"
-.SS "Displaying Multiple Array Items"
+.SS "Displaying Multiple Array Values"
 .\"
 When debugging C or C++ programs, one often has to deal with pointers
 to arrays of dynamically determined size.  Both \s-2@DDD@\s+2 and
@@ -1549,8 +1554,8 @@ to arrays of dynamically determined size.  Both \s-2@DDD@\s+2 and
 .PP
 To display several successive objects of the same type (a section of
 an array, or an array of dynamically determined size), use the
-notation \fB[\fIfrom\fB..\fIto\fB]\fR in display expressions.
-\fIfrom\fR and \fIto\fR denote the first and last array position to
+notation \fB[\fIFROM\fB..\fITO\fB]\fR in display expressions.
+\fIFROM\fR and \fITO\fR denote the first and last array position to
 display.  Thus,
 .sp
 .br
@@ -1574,6 +1579,29 @@ can specify the number of array elements to be displayed.
 For more details on artificial arrays, see the \s-2GDB\s+2 documentation.
 .\"
 .\"
+.SS "Repeated Array Values"
+.\"
+Using \s-2GDB\s+2, an array value that is repeated 10 or more times is
+displayed only once.  The value is shown with a `\fB<\fIN\fB\(mu>\fR'
+postfix added, where \fIN\fR is the number of times the value is
+repeated.  Thus, the display `\fB0x0 <30\(mu>\fR' stands for 30 array
+elements, each with the value \fB0x0\fR.  This saves a lot of display
+space, especially with homogeneous arrays.
+.PP
+.PSPIC @srcdir@/PICS/ddd-repeats.ps 15.3cm
+.PP
+The default \s-2GDB\s+2 threshold for repeated array values is 10.
+You can change it via `\fBEdit | GDB Settings | Threshold for repeated
+print elements\fR'.  Setting the threshold to \fB0\fR will cause
+\s-2GDB\s+2 (and \s-2@DDD@\s+2) to display each array element
+individually.  Be sure to refresh the data window via `\fBData |
+Refresh Displays\fR' after a change in \s-2GDB\s+2 settings.
+.PP
+You can also configure \s-2@DDD@\s+2 to display each array element
+individually, regardless of \s-2GDB\s+2 settings; see the
+`\fBexpandRepeatedValues\fR' resource for details.
+.\"
+.\"
 .SS "Altering Variable Values"
 .\"
 Note: Altering variable values is not supported in \s-2JDB\s+2.
@@ -1589,6 +1617,31 @@ structures; you must change each primitive structure member
 separately.
 .PP
 .PSPIC @srcdir@/PICS/ddd-set.ps 15.3cm
+.\"
+.\"
+.SS "Refreshing the Data Window"
+.\"
+The data window refreshes itself automatically each time the program
+stops.  Values that have changed are highlighted.
+.PP
+However, there may be situations where you should refresh the data
+window explicitly.  This is especially the case whenever you changed
+debugger settings that could affect the data format, and want the data 
+window to reflect these settings.
+.PP
+You can refresh the data window by selecting `\fBData | Refresh
+Displays\fR'.
+.PP
+As an alternative, you can press \fImouse button 3\fR on the background of
+the data window and select the `\fBRefresh Display\fR' item.
+.PP
+Typing
+.sp
+.br
+  \fBgraph refresh\fR
+.sp
+.br
+at the debugger prompt has the same effect.
 .\"
 .\"
 .SS "Deleting Displays"
@@ -1612,7 +1665,10 @@ As an alternative, you can also type
 .sp
 .br
 at the debugger prompt, where \fIdisplays...\fR is a space-separated
-list of display numbers to delete.
+list of display numbers to delete or a single display name.
+.PP
+If you are using stacked windows, deleting the last display from the
+data window also automatically closes the data window.
 .\"
 .\"
 .SS "Examining Shared Data Structures"
@@ -1678,11 +1734,11 @@ object.  Currently, only C and C++ are supported.
 .br
 .IP \(bu 2
 Some inferior debuggers (for instance, SunOS \s-2DBX\s+2) produce
-incorrect output for address expressions.  Given a pointer \fBp\fR,
+incorrect output for address expressions.  Given a pointer \fIp\fR,
 you may verify the correct function of your inferior debugger by
-comparing the values of \fBp\fR and \fB&p\fR (unless \fBp\fR actually
-points to itself).  You can also examine the data display addresses,
-as shown in the Display Editor.
+comparing the values of \fIp\fR and \fB&\fIp\fR (unless \fIp\fR
+actually points to itself).  You can also examine the data display
+addresses, as shown in the Display Editor.
 .br
 .IP \(bu 2
 Alias detection slows down \s-2@DDD@\s+2 considerably, which is why it
@@ -1692,40 +1748,6 @@ structure\(em\&and disable it while examining control flow (i.e.,
 stepping through your program).  \s-2@DDD@\s+2 will automatically
 restore edges and data displays when switching modes.
 .PP
-.\"
-.\"
-.SS "Refreshing the Data Window"
-.\"
-The data window refreshes itself automatically each time the program
-stops.  Values that have changed are highlighted.
-.PP
-However, there are some situations where you should refresh the data
-window explicitly.  The data window should be refreshed whenever:
-.br
-.IP \(bu 2
-you disabled, enabled or deleted displays items at the debugger
-prompt,
-.br
-.IP \(bu 2
-the display stays unchanged although all items should be deleted
-(e.g. because you chose another file to debug),
-.br
-.IP \(bu 2
-you think it could be useful.
-.PP
-You can refresh the data window by selecting `\fBData | Refresh
-Displays\fR'.
-.PP
-As an alternative, you can press \fImouse button 3\fR on the background of
-the data window and select the `\fBRefresh Display\fR' item.
-.PP
-Typing
-.sp
-.br
-  \fBgraph refresh\fR
-.sp
-.br
-at the debugger prompt has the same effect.
 .\"
 .\"
 .\"
@@ -1899,6 +1921,7 @@ To continue to the next instruction in the current function, click on
 the `\fBNexti\fR' button.  This is similar to `\fBStepi\fR', but any
 subroutine calls are executed without stopping.
 .PP
+.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-code.ps 15.3cm
 .\"
 .\"
@@ -2498,8 +2521,9 @@ in source file specifications.  If you want the inferior debugger to
 refer to source locations by source base names only, unset the `\fBRefer
 to sources by full path name\fR' option.
 .PP
-If your source code uses a tab width different from 8 (the default),
-you can set an alternate width using the `\fBTab width\fR' slider.
+If your source code uses a tab width different from \fB8\fR (the
+default), you can set an alternate width using the `\fBTab width\fR'
+slider.
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
@@ -2975,14 +2999,17 @@ be iconified on its own.
 If `\fBon\fR' (default), the command history is automatically saved
 when \s-2@DDD@\s+2 exits.
 .TP
-.B "showStartupLogo (\fPclass\fB ColorKey)"
-If non-empty, show a \s-2@DDD@\s+2 splash screen upon start-up.
-Possible values include: `\fBc\fR' for a color visual, `\fBg\fR' for a
+.B "splashScreen (\fPclass\fB SplashScreen)"
+If `\fBon\fR' (default), show a \s-2@DDD@\s+2 splash screen upon
+start-up.
+.TP
+.B "splashScreenColorKey (\fPclass\fB ColorKey)"
+The color key to use for the \s-2@DDD@\s+2 splash screen.  Possible
+values include: `\fBc\fR' for a color visual, `\fBg\fR' for a
 multi-level greyscale visual, `\fBg4\fR' for a 4-level greyscale
-visual, `\fBm\fR' for a dithered monochrome visual, and `\fB\fR' (the
-empty string) for no splash screen at all.  The value `\fBbest\fR'
-chooses the best visual available for your display.  Default is
-`\fBg4\fR'.
+visual, and `\fBm\fR' for a dithered monochrome visual.  The value
+`\fBbest\fR' chooses the best visual available for your display.
+Default is `\fBc\fR'.
 .br
 Note: if \s-2@DDD@\s+2 runs on a monochrome display, or if
 \s-2@DDD@\s+2 was compiled without the \s-2XPM\s+2 library, only the
@@ -3419,7 +3446,7 @@ See also `\fBbuttonImages\fR', below.
 .TP
 .B "buttonCaptionGeometry (\fPclass\fB ButtonCaptionGeometry)"
 The geometry of the caption subimage within the button icons.  Default
-is `\fB29x7+0-0\fR'.
+is `\fB29\(mu7\(pl0\-0\fR'.
 .TP
 .B "buttonImages (\fPclass\fB ButtonImages)"
 Whether the tool bar buttons should be shown using images (`\fBon\fR',
@@ -3429,7 +3456,7 @@ enabled, tool bar buttons are shown using ordinary labels.  See also
 .TP
 .B "buttonImageGeometry (\fPclass\fB ButtonImageGeometry)"
 The geometry of the image within the button icon.  Default is
-`\fB25x21+2+0\fR'.
+`\fB25\(mu21\(pl2\(pl0\fR'.
 .TP
 .B "buttonColorKey (\fPclass\fB ColorKey)"
 The \s-2XPM\s+2 color key to use for buttons images.  `\fBc\fR' means
@@ -3716,11 +3743,12 @@ activation, the string `\fB()\fR' in \fIexpression\fR is replaced by
 the name of the currently selected display.
 .TP
 .B "expandRepeatedValues (\fPclass\fB ExpandRepeatedValues)"
-\s-2GDB\s+2 can print repeated print elements as `\fIVALUE\fB
-<repeated \fIN\fB times>\fR'.  If this is `\fBon\fR', \s-2@DDD@\s+2
-will display \fIN\fR instances of \fIVALUE\fR instead.  If this is
-`\fBoff\fR' (default), \s-2@DDD@\s+2 will append `\fB<\fIN\fBx>' to
-\fIVALUE\fR to indicate the repetition.
+\s-2GDB\s+2 can print repeated array elements as `\fIVALUE\fB
+<repeated \fIN\fB times>\fR'.  If `\fBexpandRepeatedValues\fR' is
+`\fBon\fR', \s-2@DDD@\s+2 will display \fIN\fR instances of
+\fIVALUE\fR instead.  If `\fBexpandRepeatedValues\fR' is `\fBoff\fR'
+(default), \s-2@DDD@\s+2 will display \fIVALUE\fR with
+`\fB<\fIN\fB\(mu>' appended to indicate the repetition.
 .TP
 .B "hideInactiveDisplays (\fPclass\fB HideInactiveDisplays)"
 If some display gets out of scope and this resource is `\fBon\fR'
@@ -3939,7 +3967,7 @@ font in the \s-2PRIMARY\s+2 selection or print the selected font on
 standard output.  A typical value is:
 .sp
 .br
-  \fB@Ddd@*fontSelectCommand: xfontsel -print\fR
+  \fB@Ddd@*fontSelectCommand: xfontsel \-print\fR
 .br
 .sp
 .TP
@@ -5158,7 +5186,7 @@ ones that are most likely to cause interferences.
   Ddd*autoRaiseMenu:      off
   Ddd*groupIconify:       off
   Ddd*uniconifyWhenReady: off
-  Ddd*showStartupLogo:    
+  Ddd*splashScreen:       off
   Ddd*autoRaiseTool:      off
   Ddd*stickyTool:         off
   Ddd*decoratedTool:      off\fR
