@@ -157,7 +157,7 @@ UndoBufferEntry UndoBuffer::collector;
 // True if ENTRY has any effect
 bool UndoBuffer::has_effect(const UndoBufferEntry& entry)
 {
-    for (StringStringAssocIter iter(entry); iter.ok(); iter++)
+    for (StringStringAssocIter iter(entry); iter.ok(); ++iter)
     {
 	if (iter.key() != UB_SOURCE)
 	    return true;
@@ -505,7 +505,7 @@ bool UndoBuffer::process_command(UndoBufferEntry& entry)
     entry.remove(UB_COMMAND);
     entry.remove(UB_EXEC_COMMAND);
 
-    string original_commands = commands;
+    //string original_commands = commands;
     int bp_count = 0;
     undoing = true;
 
@@ -615,7 +615,7 @@ bool UndoBuffer::process_state(UndoBufferEntry& entry)
     StringArray displays;
     StringArray values;
     StringArray addrs;
-    for (StringStringAssocIter iter(entry); iter.ok(); iter++)
+    for (StringStringAssocIter iter(entry); iter.ok(); ++iter)
     {
 	if (iter.key().contains(UB_DISPLAY_PREFIX, 0))
 	{

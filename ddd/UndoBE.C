@@ -53,8 +53,8 @@ bool UndoBufferEntry::operator == (const UndoBufferEntry& entry) const
 	if (iter1.value() != iter2.value())
 	    return false;	// Differing values
 
-	iter1++;
-	iter2++;
+	++iter1;
+	++iter2;
     }
 
     if (iter1.ok())
@@ -75,7 +75,7 @@ int UndoBufferEntry::allocation() const
 	alloc += iter.key().allocation();
 	alloc += iter.value().allocation();
 
-	iter++;
+	++iter;
     }
 
     return alloc;
