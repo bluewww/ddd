@@ -830,9 +830,15 @@ string read_member_name (string& value)
 	// Strip leading qualifiers.  <Gyula.Kun-Szabo@eth.ericsson.se>
 	// reports that his GDB reports static members as `static j = 45'.
 	// JDB also qualifies member names (`private String name = Ada`)
-	strip_trailing_space(member_name);
-	while (member_name.contains(' '))
-	    member_name = member_name.after(' ');
+	for (;;)
+	{
+	    strip_space(member_name);
+	    string qualifier = member_name.before(' ');
+	    if (qualifier != "" && qualifier.matches(rxidentifier))
+		member_name = member_name.after(' ');
+	    else
+		break;
+	}
     }
 
     return member_name;
