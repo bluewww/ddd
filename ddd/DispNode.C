@@ -184,7 +184,7 @@ bool DispNode::update(string& value)
     if (inited)
     {
 	// We were reinitialized: disable old selection
-	myselected_value = disp_value;
+	select(0);
     }
 	
     if (changed)
@@ -273,7 +273,7 @@ void DispNode::copy_selection_state(DispNode *src)
     }
 
     // Don't care - just select it all
-    select();
+    select(0);
 }
 
 // Disable display
