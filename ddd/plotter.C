@@ -70,10 +70,12 @@ static MMDesc file_menu[] =
 };
 
 extern MMDesc help_menu[];
+extern MMDesc edit_menu[];
 
 static MMDesc menubar[] = 
 {
     { "file",     MMMenu, MMNoCB, file_menu },
+    { "edit",     MMMenu, MMNoCB, edit_menu },
     { "help",     MMMenu | MMHelp, MMNoCB, help_menu },
     MMEnd
 };

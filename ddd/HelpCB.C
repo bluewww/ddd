@@ -779,6 +779,8 @@ static void SetSelectionCB(Widget w, XtPointer client_data,
     if (selection != "")
     {
 	selection.downcase();
+	while (selection.contains('\n'))
+	    selection = selection.after('\n');
 	arg_field->set_string(selection);
     }
 }
@@ -836,10 +838,12 @@ static Widget create_text_dialog(Widget parent, String name,
     };
 
     extern MMDesc help_menu[];
+    extern MMDesc edit_menu[];
 
     static MMDesc menubar[] = 
     {
 	{ "file",     MMMenu, MMNoCB, file_menu },
+	{ "edit",     MMMenu, MMNoCB, edit_menu },
 	{ "help",     MMMenu | MMHelp, MMNoCB, help_menu },
 	MMEnd
     };

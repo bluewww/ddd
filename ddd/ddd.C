@@ -749,7 +749,8 @@ static MMDesc source_program_menu[]
 static MMDesc data_program_menu[]
     = PROGRAM_MENU(data_separate_exec_window_w);
 
-enum DDDWindow { ToolWindow, 
+enum DDDWindow { OtherWindow = -1,
+		 ToolWindow  = 0, 
 		 ExecWindow, 
 		 Sep,
 		 GDBWindow, 
@@ -819,6 +820,19 @@ struct EditItems {
 static MMDesc command_edit_menu[] = EDIT_MENU(GDBWindow);
 static MMDesc source_edit_menu[]  = EDIT_MENU(SourceWindow);
 static MMDesc data_edit_menu[]    = EDIT_MENU(DataWindow);
+
+// A `generic' edit menu for all occasions
+MMDesc edit_menu[] =
+{
+    { "cut",       MMPush,  { gdbCutSelectionCB,    XtPointer(OtherWindow) }},
+    { "copy",      MMPush,  { gdbCopySelectionCB,   XtPointer(OtherWindow) }},
+    { "paste",     MMPush,  { gdbPasteClipboardCB,  XtPointer(OtherWindow) }},
+    { "clearAll",  MMPush,  { gdbClearAllCB,        XtPointer(OtherWindow) }},
+    { "delete",    MMPush,  { gdbDeleteSelectionCB, XtPointer(OtherWindow) }},
+    MMSep,
+    { "selectAll", MMPush,  { gdbSelectAllCB,       XtPointer(OtherWindow) }},
+    MMEnd
+};
 
 static Widget complete_w;
 static Widget define_w;
