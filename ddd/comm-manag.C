@@ -60,6 +60,7 @@ char comm_manager_rcsid[] =
 #include "DataDisp.h"
 #include "version.h"
 #include "VoidArray.h"
+#include "question.h"
 
 #include <ctype.h>
 
@@ -229,10 +230,6 @@ void start_gdb()
     case XDB:
 	cmds += "v main";
 	plus_cmd_data->refresh_main = true;
-	cmds += "!pwd";
-	plus_cmd_data->refresh_pwd = true;
-	cmds += "lb";
-	plus_cmd_data->refresh_bpoints = true;
 
 	cmds += "sm";
 	cmds += "tm";
@@ -243,6 +240,11 @@ void start_gdb()
 	cmds += "def quit q";
 	cmds += "def finish { bu \\1t ; c ; L }";
 	plus_cmd_data->config_xdb = true;
+
+	cmds += "!pwd";
+	plus_cmd_data->refresh_pwd = true;
+	cmds += "lb";
+	plus_cmd_data->refresh_bpoints = true;
 	break;
     }
 
@@ -422,17 +424,13 @@ void user_cmdSUC (string cmd, Widget origin)
 	switch (gdb->type())
 	{
 	case GDB:
+	case XDB:
 	    break;
 
 	case DBX:
 	    // We need to get the current file as well...
 	    plus_cmd_data->refresh_file  = true;
-	    // if (gdb->has_line_command())
-	    // plus_cmd_data->refresh_line  = true;
 	    break;
-
-	case XDB:
-	    break;		// FIXME
 	}
 	if (!gdb->has_display_command())
 	    plus_cmd_data->refresh_disp = true;
@@ -898,8 +896,11 @@ static void process_config_sm(string&)
 
 static void process_config_tm(string& answer)
 {
+    // If the `tm' command we just sent SUSPENDED macros instead of
+    // ACTIVATING them, we sent another `tm' in order to re-activate
+    // them.
     if (answer.contains("SUSPENDED"))
-	user_rawSUC("tm", 0);
+	gdb_question("tm", 0);
 }
 
 static void process_config_def(string&)
