@@ -61,6 +61,7 @@ DispNode::DispNode (int disp_nr,
       myaddr(""),
       myscope(scope),
       mydepends_on(""),
+      mystr(value),
       myenabled(true),
       myactive(true),
       saved_node_hidden(false),
@@ -80,6 +81,7 @@ DispNode::DispNode (int disp_nr,
     {
 	string v = value;
 	disp_value = new DispValue(0, 0, v, myname, myname);
+	mystr = mystr.before(int(mystr.length() - v.length()));
 	set_addr(disp_value->addr());
     }
 
@@ -149,14 +151,26 @@ bool DispNode::update(string& value)
     if (disp_value == 0)
     { 
 	// We have not read a value yet
+	mystr = value;
 	disp_value = new DispValue(0, 0, value, myname, myname);
+	mystr = mystr.before(int(mystr.length() - value.length()));
 	set_addr(disp_value->addr());
 	changed = true;
     }
     else
     {
 	// Update existing value
+	if (value.contains(mystr, 0))
+	{
+	    // Same value as last time
+	    value = value.after(mystr);
+	    return false;
+	}
+
+	mystr = value;
 	disp_value = disp_value->update(value, changed, inited);
+	mystr = mystr.before(int(mystr.length() - value.length()));
+
 	if (addr() != disp_value->addr())
 	{
 	    set_addr(disp_value->addr());
@@ -309,14 +323,17 @@ void DispNode::make_active()
 // Cluster display into TARGET
 void DispNode::cluster(int target)
 {
-    if (clustered() == 0 && target != 0)
+    if (target != 0)
     {
-	saved_node_hidden = mynodeptr->hidden();
+	if (clustered() == 0)
+	    saved_node_hidden = mynodeptr->hidden();
+
 	mynodeptr->hidden() = true;
     }
-    else if (clustered() != 0 && target == 0)
+    else // target == 0
     {
-	mynodeptr->hidden() = saved_node_hidden;
+	if (clustered() != 0)
+	    mynodeptr->hidden() = saved_node_hidden;
     }
 
     // Set new target

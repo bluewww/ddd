@@ -376,6 +376,21 @@ void graphToggleShowDependentTitlesCB(Widget, XtPointer, XtPointer call_data)
     update_options();
 }
 
+void graphToggleClusterDisplaysCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.cluster_displays = info->set;
+
+    if (info->set)
+	set_status("Display clustering enabled.");
+    else
+	set_status("Display clustering disabled.");
+
+    update_options();
+}
+
 void graphToggleSnapToGridCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 

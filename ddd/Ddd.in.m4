@@ -3149,6 +3149,8 @@ Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*detectAliases.labelString:	\
 Detect Aliases (shared data structures)
+Ddd*preferences*clusterDisplays.labelString:    \
+Cluster Displays
 Ddd*preferences*align2dArrays.labelString:	\
 Display Two-Dimensional Arrays as Tables
 Ddd*preferences*snapToGrid.labelString:	        \
@@ -3709,6 +3711,7 @@ Ddd*toolbar*dereference2.labelString:	Display *()
 Ddd*toolbar*delete2.labelString:	Undisplay ()
 Ddd*toolbar*set.labelString:		Set ()
 Ddd*toolbar*delete.labelString:		Undisplay ()
+Ddd*toolbar*cluster.labelString:	Cluster ()
 
 Ddd*toolbar*dereference.labelPixmap: 		dispref
 Ddd*toolbar*dereference.labelInsensitivePixmap:	dispref-xx

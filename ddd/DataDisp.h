@@ -210,6 +210,11 @@ class DataDisp {
     static void DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer);
     static void SetDone(const string& answer, void *qu_data);
 
+    // Builtin user displays
+    static bool is_builtin_user_command(const string& cmd);
+    static string builtin_user_command(const string& cmd);
+    static void refresh_builtin_user_displays();
+
     //-----------------------------------------------------------------------
     // Actions
     //-----------------------------------------------------------------------
@@ -240,6 +245,7 @@ class DataDisp {
     static MMDesc detail_menu[];
     static MMDesc shortcut_menu[];
     static MMDesc rotate_menu[];
+    static MMDesc delete_menu[];
 
     static const int shortcut_items;
 
@@ -421,7 +427,9 @@ private:
     static Time last_select_time;
     static int next_ddd_display_number;
     static int next_gdb_display_number;
+    static int current_cluster;
     static bool detect_aliases;
+    static bool cluster_displays;
     static bool arg_needs_update;
 
     static Widget graph_popup_w;
@@ -473,6 +481,11 @@ private:
     // Reset done
     static void reset_done(const string& answer, void *data);
 
+    // Clustering stuff
+    static void insert_data_node(DispNode *dn, int depend_nr);
+    static int new_cluster();
+    static void clusterSelectedCB(Widget, XtPointer, XtPointer);
+
 public:
     static Widget graph_edit;
     static Widget graph_cmd_w;
@@ -507,7 +520,8 @@ public:
 
     // Helpers for user displays
     static bool have_user_display(const string& name);
-    static void new_user_display(const string& name);
+    static void new_user_display(const string& name,
+				 bool check_duplicates = true);
     static void delete_user_display(const string& name);
 
     // Callbacks for language changes
@@ -516,6 +530,9 @@ public:
 
     // Set whether aliases are to be detected
     static void set_detect_aliases(bool value);
+
+    // Set whether displays are to be clustered
+    static void set_cluster_displays(bool value);
 
     // True iff we have some selection
     static bool have_selection();

@@ -1055,14 +1055,17 @@ static MMDesc data_appearance_menu[] =
 };
 
 static Widget graph_detect_aliases_w;
+static Widget graph_cluster_displays_w;
 static Widget graph_align_2d_arrays_w;
 static Widget graph_auto_close_w;
 
 static MMDesc data_preferences_menu[] = 
 {
     { "appearance", MMButtonPanel, MMNoCB, data_appearance_menu },
-    { "detectAliases", MMToggle,  { graphToggleDetectAliasesCB },
+    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB },
       NULL, &graph_detect_aliases_w },
+    { "clusterDisplays", MMToggle, { graphToggleClusterDisplaysCB },
+      NULL, &graph_cluster_displays_w }, 
     { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB },
       NULL, &graph_align_2d_arrays_w },
     { "autoClose", MMToggle,  { graphToggleAutoCloseCB },
@@ -3573,6 +3576,7 @@ void update_options()
 
     set_toggle(detect_aliases_w, app_data.detect_aliases);
     set_toggle(graph_detect_aliases_w, app_data.detect_aliases);
+    set_toggle(graph_cluster_displays_w, app_data.cluster_displays);
     set_toggle(graph_align_2d_arrays_w, app_data.align_2d_arrays);
 
     if (graph_snap_to_grid_w != 0)
@@ -3686,6 +3690,7 @@ void update_options()
     data_disp->max_display_number      = app_data.max_display_number;
 
     data_disp->set_detect_aliases(app_data.detect_aliases);
+    data_disp->set_cluster_displays(app_data.cluster_displays);
 
     if (DispBox::align_2d_arrays != app_data.align_2d_arrays)
     {
@@ -4002,6 +4007,8 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 {
     notify_set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
     notify_set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
+    notify_set_toggle(graph_cluster_displays_w, 
+		      initial_app_data.cluster_displays);
     notify_set_toggle(graph_align_2d_arrays_w, 
 		      initial_app_data.align_2d_arrays);
     notify_set_toggle(graph_show_hints_w, initial_show_hints);
@@ -4038,6 +4045,9 @@ static bool data_preferences_changed()
 		  NULL);
 
     if (app_data.detect_aliases != initial_app_data.detect_aliases)
+	return true;
+
+    if (app_data.cluster_displays != initial_app_data.cluster_displays)
 	return true;
 
     if (app_data.align_2d_arrays != initial_app_data.align_2d_arrays)

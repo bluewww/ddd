@@ -87,6 +87,7 @@ extern void graphToggleAutoLayoutCB         (Widget, XtPointer, XtPointer);
 extern void graphToggleAutoCloseCB          (Widget, XtPointer, XtPointer);
 extern void graphToggleShowAnnotationsCB    (Widget, XtPointer, XtPointer);
 extern void graphToggleShowDependentTitlesCB(Widget, XtPointer, XtPointer);
+extern void graphToggleClusterDisplaysCB    (Widget, XtPointer, XtPointer);
 extern void graphSetGridSizeCB              (Widget, XtPointer, XtPointer);
 
 extern void dddToggleGroupIconifyCB         (Widget, XtPointer, XtPointer);

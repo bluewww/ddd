@@ -1460,11 +1460,11 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNclusterBaseDisplays,
+	XtNclusterDisplays,
 	XtCClusterDisplays,
 	XmRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, cluster_base_displays),
+	XtOffsetOf(AppData, cluster_displays),
 	XmRImmediate,
 	XtPointer(False)
     },

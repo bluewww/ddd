@@ -76,6 +76,7 @@ private:
     string        myaddr;	      // Location of expression
     string        myscope;	      // Program location where created
     string        mydepends_on;	      // Display we depend upon (when deferred)
+    string        mystr;	      // Last value (as string)
     bool          myenabled;	      // Flag: is display enabled?
     bool          myactive;	      // Flag: is display active (in scope)?
     bool          saved_node_hidden;  // Saved `hidden' flag of node
@@ -99,7 +100,7 @@ protected:
 
 private:
     DispNode(const DispNode&)
-	: mydisp_nr(0), myname(), myaddr(), myscope(), mydepends_on(),
+	: mydisp_nr(0), myname(), myaddr(), myscope(), mydepends_on(), mystr(),
 	  myenabled(false), myactive(false), saved_node_hidden(false),
 	  mydeferred(false), myclustered(0), myconstant(false), 
 	  mynodeptr(0), disp_value(0), 
@@ -157,6 +158,7 @@ public:
     const Box*    box()     const { return mynodeptr->box(); }
     DispValue*    value()   const { return disp_value; }
     DispValue*    selected_value() const { return myselected_value; }
+    const string& str()     const { return mystr; }
 
     bool& selected()                    { return mynodeptr->selected(); }
     void moveTo(const BoxPoint& newPos) { mynodeptr->moveTo(newPos); }
@@ -172,7 +174,7 @@ public:
 
 
 
-    // Update with NEW_VALUE;  return false if value is unchanged
+    // Update with NEW_VALUE; return false if value is unchanged
     bool update (string& new_value);
 
     // Update address with NEW_ADDR

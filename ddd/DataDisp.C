@@ -232,6 +232,16 @@ MMDesc DataDisp::node_popup[] =
     MMEnd
 };
 
+
+struct DeleteItms { enum Itms {Cluster}; };
+
+MMDesc DataDisp::delete_menu[] =
+{
+    {"cluster",     MMPush, {DataDisp::clusterSelectedCB}},
+    MMEnd
+};
+
+
 struct CmdItms { enum Itms {New, Dereference, Detail, Rotate, Set, Delete }; };
 
 MMDesc DataDisp::graph_cmd_area[] =
@@ -246,7 +256,9 @@ MMDesc DataDisp::graph_cmd_area[] =
     {"rotate",        MMPush | MMInsensitive, {DataDisp::rotateCB},
                                                DataDisp::rotate_menu },
     {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
-    {"delete",        MMPush | MMInsensitive, {DataDisp::deleteArgCB, XtPointer(true) }},
+    {"delete",        MMPush | MMInsensitive, {DataDisp::deleteArgCB,
+					       XtPointer(true)}, 
+					       DataDisp::delete_menu },
     MMEnd
 };
 
@@ -291,10 +303,13 @@ Widget     DataDisp::node_popup_w           = 0;
 Widget     DataDisp::shortcut_popup_w       = 0;
 
 bool DataDisp::detect_aliases   = false;
+bool DataDisp::cluster_displays = false;
 bool DataDisp::arg_needs_update = false;
 
 int DataDisp::next_ddd_display_number = 1;
 int DataDisp::next_gdb_display_number = 1;
+
+int DataDisp::current_cluster = 0;
 
 XtIntervalId DataDisp::refresh_args_timer       = 0;
 XtIntervalId DataDisp::refresh_addr_timer       = 0;
@@ -1225,6 +1240,7 @@ public:
     Widget text;
     bool verbose;
     bool prompt;
+    bool constant;
     DeferMode deferred;
 
     NewDisplayInfo()
@@ -1239,6 +1255,7 @@ public:
 	  text(0),
 	  verbose(false),
 	  prompt(false),
+	  constant(false),
 	  deferred(DeferNever)
     {}
 
@@ -1258,6 +1275,7 @@ private:
 	  text(0),
 	  verbose(false),
 	  prompt(false),
+	  constant(false),
 	  deferred(DeferNever)
     {
 	assert(0);
@@ -2633,7 +2651,16 @@ void DataDisp::new_displaySQ (string display_expression,
     {
 	// User-defined display
 	string cmd = user_command(display_expression);
-	gdb_command(cmd, last_origin, new_user_displayOQC, info);
+	if (is_builtin_user_command(cmd))
+	{
+	    info->constant = true;
+	    string answer = builtin_user_command(cmd);
+	    new_user_displayOQC(answer, info);
+	}
+	else
+	{
+	    gdb_command(cmd, last_origin, new_user_displayOQC, info);
+	}
     }
     else
     {
@@ -2715,6 +2742,72 @@ string DataDisp::new_display_cmd(string display_expression, BoxPoint *p,
 	cmd += " dependent on " + depends_on;
 
     return cmd;
+}
+
+
+//-----------------------------------------------------------------------------
+// Built-in user commands
+//-----------------------------------------------------------------------------
+
+bool DataDisp::is_builtin_user_command(const string& cmd)
+{
+    if (cmd == "displays")
+	return true;
+
+    return false;
+}
+
+string DataDisp::builtin_user_command(const string& cmd)
+{
+    if (cmd == "displays")
+    {
+	bool displays_seen = false;
+	ostrstream os;
+	MapRef ref;
+	for (DispNode* dn = disp_graph->first(ref); 
+	     dn != 0;
+	     dn = disp_graph->next(ref))
+	{
+	    if (!dn->is_user_command() && !dn->deferred() && 
+		dn->active() && dn->clustered())
+	    {
+		os << dn->name() << " = " << dn->str() << "\n";
+		displays_seen = true;
+	    }
+	}
+
+	if (!displays_seen)
+	    os << "No displays.\n";
+
+	return string(os);
+    }
+
+    return NO_GDB_ANSWER;
+}
+
+void DataDisp::refresh_builtin_user_displays()
+{
+    bool changed = false;
+
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->is_user_command())
+	{
+	    string cmd = dn->user_command();
+	    if (is_builtin_user_command(cmd))
+	    {
+		string answer = builtin_user_command(cmd);
+		if (answer != NO_GDB_ANSWER && dn->update(answer))
+		    changed = true;
+	    }
+	}
+    }
+
+    if (changed)
+	refresh_graph_edit();
 }
 
 
@@ -3009,6 +3102,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     DispNode *dn = new_data_node(info->display_expression, info->scope, ans);
     if (dn == 0)
     {
+	// Display could not be created
 	if (info->deferred == DeferIfNeeded)
 	{
 	    // Create deferred display now
@@ -3040,7 +3134,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     select_node(dn, depend_nr);
 
     // Insert node into graph
-    disp_graph->insert(dn->disp_nr(), dn, depend_nr);
+    insert_data_node(dn, depend_nr);
 
     refresh_addr(dn);
     refresh_graph_edit();
@@ -3072,6 +3166,7 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
     // Create new user node and issue `disabling' messages
     string ans = answer;
     DispNode *dn = new_user_node(info->display_expression, info->scope, ans);
+    dn->constant() = info->constant;
     if (dn != 0)
     {
 	// Determine title
@@ -3226,7 +3321,7 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 	    dn->selected() = true;
 
 	    // Insert into graph
-	    disp_graph->insert(dn->disp_nr(), dn, depend_nr);
+	    insert_data_node(dn, depend_nr);
 	}
     }
 
@@ -3237,6 +3332,35 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 	prompt();
 
     delete info;
+}
+
+void DataDisp::insert_data_node(DispNode *dn, int depend_nr)
+{
+    // Insert into graph
+    disp_graph->insert(dn->disp_nr(), dn, depend_nr);
+
+    // Check for clusters
+    if (!cluster_displays)
+	return;
+    if (dn->is_user_command())
+	return;
+    if (depend_nr != 0)
+	return;
+
+    if (current_cluster == 0)
+    {
+	// No cluster -- create a new one
+	current_cluster = new_cluster();
+    }
+
+    // Insert into current cluster
+    dn->cluster(current_cluster);
+}
+
+int DataDisp::new_cluster()
+{
+    new_user_display("displays", true);
+    return -next_ddd_display_number;
 }
 
 
@@ -3355,6 +3479,7 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose, bool do_prompt)
     if (!ok || cmds.size() == 0)
     {
 	// Simply redraw display
+	refresh_builtin_user_displays();
 	refresh_graph_edit();
 	if (do_prompt)
 	    prompt();
@@ -3418,6 +3543,8 @@ void DataDisp::refresh_displayOQAC (const StringArray& answers,
 
     if (user_answers.size() > 0)
 	process_user(user_answers);
+
+    refresh_builtin_user_displays();
 
     if (addr_answers.size() > 0)
     {
@@ -4414,16 +4541,18 @@ void DataDisp::refresh_display_list(bool silent)
 	    states += "deferred";
 	else if (!dn->active())
 	    states += "not active";
-	else if (dn->nodeptr()->hidden())
+	else if (dn->clustered())
+	    states += "clustered";
+	else if (dn->nodeptr()->hidden() && dn->alias_of != 0)
 	    states += "alias of " + itostring(dn->alias_of);
 	else if (dn->enabled())
 	    states += "enabled";
 	else
 	    states += "disabled";
 	
-	exprs += dn->name();
+	exprs  += dn->name();
 	scopes += dn->scope();
-	addrs += dn->addr();
+	addrs  += dn->addr();
     }
 
     int nums_width   = max_width(nums);
@@ -4816,15 +4945,18 @@ bool DataDisp::have_user_display(const string& name)
     return false;
 }
 
-void DataDisp::new_user_display(const string& name)
+void DataDisp::new_user_display(const string& name, bool check_duplicates)
 {
-    MapRef ref;
-    for (DispNode* dn = disp_graph->first(ref); 
-	 dn != 0;
-	 dn = disp_graph->next(ref))
+    if (check_duplicates)
     {
-	if (dn->user_command() == name)
-	    return;
+	MapRef ref;
+	for (DispNode* dn = disp_graph->first(ref); 
+	     dn != 0;
+	     dn = disp_graph->next(ref))
+	{
+	    if (dn->user_command() == name)
+		return;
+	}
     }
 
     gdb_command("graph display `" + name + "`", last_origin);
@@ -4889,6 +5021,41 @@ void DataDisp::refresh_titles()
     if (changed)
 	refresh_graph_edit();
 }
+
+
+
+//----------------------------------------------------------------------------
+// Display Clustering
+//----------------------------------------------------------------------------
+
+// Set whether aliases are to be detected
+void DataDisp::set_cluster_displays(bool value)
+{
+    if (value == cluster_displays)
+	return;
+
+    cluster_displays = value;
+}
+
+// Cluster selected nodes into a new cluster
+void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
+{
+    // Crate a new cluster and make it the current one
+    current_cluster = new_cluster();
+
+    // Cluster all selected displays into this one
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (!dn->is_user_command() && dn->selected())
+	    dn->cluster(current_cluster);
+    }
+
+    refresh_graph_edit();
+}
+
 
 //----------------------------------------------------------------------------
 // Alias Detection
