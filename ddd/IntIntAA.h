@@ -43,5 +43,10 @@ typedef AssocIter<int, VarIntArray> IntIntArrayAssocIter;
 typedef Assoc<string, VarIntArray> StringIntArrayAssoc;
 typedef AssocIter<string, VarIntArray> StringIntArrayAssocIter;
 
+typedef VarArray<IntArray> IntArrayArray;
+
+typedef Assoc<string, IntArrayArray> StringIntArrayArrayAssoc;
+typedef AssocIter<string, IntArrayArray> StringIntArrayArrayAssocIter;
+
 #endif // _DDD_IntIntArrayAssoc_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
