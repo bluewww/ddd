@@ -643,11 +643,11 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNignoreSourcePath,
-	XtCIgnoreSourcePath,
+	XtNuseSourcePath,
+	XtCUseSourcePath,
 	XtRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, ignore_source_path),
+	XtOffsetOf(AppData, use_source_path),
 	XtRImmediate,
 	XtPointer(False)
     },

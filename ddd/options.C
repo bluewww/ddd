@@ -118,17 +118,17 @@ void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
-void sourceToggleIgnoreSourcePathCB (Widget, XtPointer, XtPointer call_data)
+void sourceToggleUseSourcePathCB (Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    app_data.ignore_source_path = info->set;
+    app_data.use_source_path = info->set;
 
     if (info->set)
-	set_status("Referring to sources using source file base names only.");
-    else
 	set_status("Referring to sources using full source file paths.");
+    else
+	set_status("Referring to sources using source file base names only.");
 
     source_arg->set_string(source_view->line_of_cursor());
     update_options();
@@ -618,8 +618,8 @@ void save_options(Widget origin)
 			 app_data.cache_source_files) << "\n";
     os << bool_app_value(XtNcacheMachineCode,
 			 app_data.cache_machine_code) << "\n";
-    os << bool_app_value(XtNignoreSourcePath,
-			 app_data.ignore_source_path) << "\n";
+    os << bool_app_value(XtNuseSourcePath,
+			 app_data.use_source_path) << "\n";
     os << bool_app_value(XtNdisplayGlyphs,
 			 app_data.display_glyphs) << "\n";
     os << bool_app_value(XtNdisassemble,

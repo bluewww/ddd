@@ -473,8 +473,8 @@ Ddd*cacheSourceFiles:		true
 ! Do we wish to cache machine code in memory?
 Ddd*cacheMachineCode:		true
 
-! Do we wish to suppress the path names of source code locations?
-Ddd*ignoreSourcePaths:		false
+! Do we wish to refer to sources using the full path name?
+Ddd*useSourcePaths:		false
 
 
 ! Focus policy
@@ -1897,9 +1897,9 @@ source texts are cached in memory.\n\
 @tt \267 @rm If @bf Cache machine code @rm is set, \
 disassembled code is cached in memory.\n\
     Otherwise, code is re-disassembled upon each function change.\n\
-@tt \267 @rm If @bf Refer to sources by base names only @rm is set, \n\
-    source code locations are referred by file base names only.\n\
-    Otherwise, the full source file path is used.\n\
+@tt \267 @rm If @bf Refer to sources by full path name @rm is set, \n\
+    source code locations are referred by full source file paths.\n\
+    Otherwise, only the base name is used.\n\
 \n\
 Use the buttons above to view and change other preferences.
 
@@ -1909,8 +1909,8 @@ Ddd*preferences*cacheSourceFiles.labelString:	 \
 Cache source files
 Ddd*preferences*cacheMachineCode.labelString:	 \
 Cache machine code
-Ddd*preferences*ignoreSourcePath.labelString:	 \
-Refer to sources by base names only
+Ddd*preferences*useSourcePath.labelString:	 \
+Refer to sources by full path name
 
 
 Ddd*preferences*data*contextHelpString:	\

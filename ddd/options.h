@@ -44,7 +44,7 @@ void save_options(Widget origin);
 extern void sourceToggleFindWordsOnlyCB    (Widget, XtPointer, XtPointer);
 extern void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer);
 extern void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer);
-extern void sourceToggleIgnoreSourcePathCB (Widget, XtPointer, XtPointer);
+extern void sourceToggleUseSourcePathCB    (Widget, XtPointer, XtPointer);
 extern void sourceToggleDisplayGlyphsCB    (Widget, XtPointer, XtPointer);
 extern void sourceToggleDisassembleCB      (Widget, XtPointer, XtPointer);
 
