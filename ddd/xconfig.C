@@ -110,7 +110,7 @@ static String xlibdir(Display *display, bool verbose = false)
 	buffer[len - 1] = '\0';
 
     if (buffer[0] == '/')	// Sanity check
-	dir = XtNewString(buffer);
+	dir = (String)XtNewString(buffer);
 
     if (verbose)
     {
