@@ -52,16 +52,16 @@ private:
 
 public:
     // Constructors
-    MString(char *text = "",
+    MString(const char *text = "",
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
-	_mstring(text ? XmStringCreateLtoR(text, charset) : 0)
+	_mstring(text ? XmStringCreateLtoR((char *)text, charset) : 0)
     {
 	assert(OK());
     }
 
-    MString(const char *text,
+    MString(char *text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
-	_mstring(text ? XmStringCreateLtoR((char *)text, charset) : 0)
+	_mstring(text ? XmStringCreateLtoR(text, charset) : 0)
     {
 	assert(OK());
     }

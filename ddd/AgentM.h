@@ -48,7 +48,10 @@
 #define SIGCHLD SIGCLD
 #endif
 
+extern "C" {
+// Sun C++ wants `SignalProc' to be a C funtion
 typedef void (*SignalProc)(SIGHANDLERARGS);
+}
 
 class Agent;
 
@@ -98,4 +101,3 @@ public:
 
 #endif // _DDD_AgentManager_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
-

@@ -41,7 +41,10 @@ typedef void (*HandlerProc)(void *source,	// handler source
 			    void *client_data,  // data supplied by client
 			    void *call_data);   // data supplied by caller
 
-
+inline int compare(HandlerProc p1, HandlerProc p2)
+{
+    return compare((unsigned long)p1, (unsigned long)p2);
+}
 
 class HandlerList {
 private:
@@ -65,7 +68,7 @@ private:
 
     static int compare(const HandlerRec& l1, const HandlerRec& l2)
     {
-	int c = ::compare((void *)l1.proc, (void *)l2.proc);
+	int c = ::compare(l1.proc, l2.proc);
 	return c ? c : ::compare(l1.client_data, l2.client_data);
     }
 

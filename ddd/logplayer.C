@@ -86,7 +86,9 @@ extern "C" {
 #define STDOUT_FAILNO 1
 #endif
 
+extern "C" {
 typedef void (*SignalProc)(SIGHANDLERARGS);
+}
 
 static jmp_buf main_loop_env;
 

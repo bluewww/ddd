@@ -87,12 +87,36 @@
 
 
 // Convenience functions
-inline MString tt(const string& text) { return MString(text, CHARSET_TT); }
-inline MString tb(const string& text) { return MString(text, CHARSET_TB); }
-inline MString rm(const string& text) { return MString(text, CHARSET_RM); }
-inline MString sl(const string& text) { return MString(text, CHARSET_SL); }
-inline MString bf(const string& text) { return MString(text, CHARSET_BF); }
-inline MString bs(const string& text) { return MString(text, CHARSET_BS); }
+inline MString tt(const string& text) 
+{
+    return MString(text, (const char *)CHARSET_TT);
+}
+
+inline MString tb(const string& text) 
+{
+    return MString(text, (const char *)CHARSET_TB);
+}
+
+inline MString rm(const string& text) 
+{
+    return MString(text, (const char *)CHARSET_RM);
+}
+
+inline MString sl(const string& text) 
+{
+    return MString(text, (const char *)CHARSET_SL);
+}
+
+inline MString bf(const string& text) 
+{
+    return MString(text, (const char *)CHARSET_BF);
+}
+
+inline MString bs(const string& text) 
+{
+    return MString(text, (const char *)CHARSET_BS);
+}
+
 
 // Newline function
 #if XmVERSION == 1 && XmREVISION <= 1
