@@ -506,12 +506,17 @@ void PosBuffer::filter (string& answer)
 #if RUNTIME_REGEX
 	    static regex rxdbxfunc("[a-zA-Z_][^:]*: *[1-9][0-9]*  *.*");
 #endif
-	    if (answer.matches(rxdbxfunc))
+	    if (already_read != PosComplete && answer.matches(rxdbxfunc))
 	    {
 		// DEC DBX issues `up', `down' and `func' output
 		// in the format `FUNCTION: LINE  TEXT'
 		
-		line = answer.after(":");
+		// Note that the function name may contain "::" sequences.
+		string line = answer;
+		while (line.contains("::"))
+		    line = line.after("::");
+
+		line = line.after(":");
 		line = line.through(rxint);
 		already_read = PosComplete;
 		
@@ -522,12 +527,13 @@ void PosBuffer::filter (string& answer)
 	    static regex rxdbxfunc2(
 		".*line  *[1-9][0-9]*  *in  *(file  *)?\"[^\"]*\"\n.*");
 #endif
-	    if (answer.matches(rxdbxfunc2))
+	    if (already_read != PosComplete && answer.matches(rxdbxfunc2))
 	    {
 		// AIX DBX issues `up', `down' and `func' output
 		// in the format `FUNCTION(ARGS), line LINE in "FILE"'.
 		// SUN DBX uses `line LINE in file "FILE"' instead.
-		
+		// We check for the `line LINE' part.
+
 		line = answer.after("line ");
 		line = line.through(rxint);
 		
@@ -542,7 +548,7 @@ void PosBuffer::filter (string& answer)
 #if RUNTIME_REGEX
 	    static regex rxdbxpos("[[][^]]*:[1-9][0-9]*[^]]*].*");
 #endif
-	    if (answer.contains(rxdbxpos))
+	    if (already_read != PosComplete && answer.contains(rxdbxpos))
 	    {
 		// DEC DBX issues breakpoint lines in the format
 		// "[new_tree:113 ,0x400858] \ttree->right = NULL;"
@@ -559,8 +565,10 @@ void PosBuffer::filter (string& answer)
 		if (!answer.contains('[', 0))
 		    answer = answer.after("\n");
 	    }
-	    else if (answer.contains("stopped in ")
-		     || answer.contains("stopped at "))
+
+	    if (already_read != PosComplete && 
+		(answer.contains("stopped in ") || 
+		 answer.contains("stopped at ")))
 	    {
 		// Stop reached
 		if (answer.contains("in file "))
@@ -607,7 +615,9 @@ void PosBuffer::filter (string& answer)
 		already_read = PosComplete;
 		filter_line(answer, atoi(line));
 	    }
-	    else if (answer.contains("Current function is "))
+
+	    if (already_read != PosComplete && 
+		answer.contains("Current function is "))
 	    {
 		// Up/Down command entered
 		string nr = answer.after("\n");
