@@ -102,6 +102,15 @@
 
 
 ! ----------------------------------------------------------------------------
+! MENUS
+! ----------------------------------------------------------------------------
+
+! Auto-raise menu panels.  This is useful if you have a window manager
+! that auto-raises windows - and sometimes raises an application above
+! its own menus.  This is off by default, since it may interfere with Motif.
+! Ddd*autoRaiseMenus: true
+
+! ----------------------------------------------------------------------------
 ! COLORS
 ! ----------------------------------------------------------------------------
 
