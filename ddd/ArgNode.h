@@ -92,7 +92,7 @@ public:
     bool isConst() const   { return false; }
     bool isArgNode() const { return true; }
 
-    unsigned id()       { return _id; }
+    unsigned id() const    { return _id; }
 
     unsigned nargs() const    { return 1; }
 

@@ -77,7 +77,7 @@ protected:
     void add_y(double y);
 
     void reset();
-    string var(const char *name, double min, double max);
+    string var(const char *name, double min, double max) const;
 
     virtual void dispatch(int type, const char *data, int length);
 

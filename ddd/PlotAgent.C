@@ -109,7 +109,7 @@ void PlotAgent::end_plot()
     plot_os.close();
 }
 
-string PlotAgent::var(const char *name, double min, double max)
+string PlotAgent::var(const char *name, double min, double max) const
 {
     std::ostringstream os;
 

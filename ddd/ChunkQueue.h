@@ -116,8 +116,8 @@ public:
     }
 
     // Resources
-    const char *data() { return _data; }
-    int length() { return _length; }
+    const char *data() const { return _data; }
+    int length() const { return _length; }
 };
 
 #endif

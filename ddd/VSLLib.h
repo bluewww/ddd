@@ -282,7 +282,7 @@ public:
     virtual VSLLib *dup() const;
 
     // Check if function is present
-    bool has(const string& func_name)
+    bool has(const string& func_name) const
     {
 	return deflist(func_name) != 0;
     }

@@ -62,13 +62,13 @@ struct CodeCacheEntry {
 	}
 	return *this;
     }
-    bool operator == (const CodeCacheEntry& cce)
+    bool operator == (const CodeCacheEntry& cce) const
     {
 	return start == cce.start
 	    && end == cce.end
 	    && code == cce.code;
     }
-    bool operator != (const CodeCacheEntry& cce)
+    bool operator != (const CodeCacheEntry& cce) const
     {
 	return !operator==(cce);
     }

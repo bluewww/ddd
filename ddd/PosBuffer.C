@@ -60,7 +60,7 @@ regex rxaddress_start(RXADDRESS_START);
 
 // Filter all lines from ANSWER beginning with LINE.  This is required
 // to suppress the line number output after a `stopping in' message.
-void PosBuffer::filter_line(string& answer)
+void PosBuffer::filter_line(string& answer) const
 {
     if (already_read != PosComplete)
 	return;

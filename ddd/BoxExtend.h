@@ -62,37 +62,37 @@ public:
     {}
 
     // Horizontal concatenation
-    BoxExtend operator & (const BoxExtend& e) 
+    BoxExtend operator & (const BoxExtend& e) const
     {
-	if (isValid() && e.isValid())
-	    return BoxExtend(point[X] + e.point[X],
-			     min(point[Y],e.point[Y]));
-	else
-	    return BoxExtend();
+        return
+	  (isValid() && e.isValid())
+	  ? BoxExtend(point[X] + e.point[X],
+		      min(point[Y],e.point[Y]))
+	  : BoxExtend();
     }
 
     // Vertical concatenation
-    BoxExtend operator | (const BoxExtend& e) 
+    BoxExtend operator | (const BoxExtend& e) const
     {
-	if (isValid() && e.isValid())
-	    return BoxExtend(min(point[X], e.point[X]),
-			     point[Y] + e.point[Y]);
-	else
-	    return BoxExtend();
+        return
+	  (isValid() && e.isValid())
+	  ? BoxExtend(min(point[X], e.point[X]),
+		      point[Y] + e.point[Y])
+	  : BoxExtend();
     }
 
     // Stacked concatenation
-    BoxExtend operator ^ (const BoxExtend& e) 
+    BoxExtend operator ^ (const BoxExtend& e) const
     {
-	if (isValid() && e.isValid())
-	    return BoxExtend(max(point[X], e.point[X]),
-			     max(point[Y], e.point[Y]));
-	else
-	    return BoxExtend();
+	return
+	  (isValid() && e.isValid())
+	  ? BoxExtend(max(point[X], e.point[X]),
+		      max(point[Y], e.point[Y]))
+	  : BoxExtend();
     }
 
     // Assignment versions
-    void operator &= (const BoxExtend& e) 
+    void operator &= (const BoxExtend& e)
     {
 	if (isValid() && e.isValid())
 	{

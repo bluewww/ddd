@@ -147,7 +147,7 @@ public:
 	return *this;
     }
     
-    const ListBox *sublist(int start = 1)
+    const ListBox *sublist(int start = 1) const
     {
 	const ListBox *t = this;
 	for (int i = 0; !t->isEmpty() && i < start; i++)
@@ -156,13 +156,13 @@ public:
 	return t;
     }
 
-    const Box *operator [] (int nchild) 
+    const Box *operator [] (int nchild) const
     {
 	const ListBox *t = sublist(nchild);
 	return t->isEmpty() ? 0 : t->head();
     }
 
-    int length()
+    int length() const
     {
 	const ListBox *t = this;
 	int i;

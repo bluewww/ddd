@@ -269,8 +269,8 @@ public:
     const V& value() const { return this->rec->value; }
     V& value()             { return this->rec->value; }
 
-    bool ok() { return this->rec != 0; }
-    AssocIter<K,V> next() { return AssocIter<K,V>(this->rec->next); }
+    bool ok() const { return this->rec != 0; }
+    AssocIter<K,V> next() const { return AssocIter<K,V>(this->rec->next); }
     const AssocIter<K,V>& operator ++ ()
     {
 	this->rec = this->rec->next; return *this;

@@ -203,7 +203,7 @@ protected:
     DispValue (const DispValue& dv);
 
     // Return a `normalized' prefix BASE for arrays and structs
-    string normalize_base(const string& base);
+    string normalize_base(const string& base) const;
 
 public:
     // Global settings

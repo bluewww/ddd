@@ -857,7 +857,7 @@ static bool ends_in(const string& answer, const string& prompt)
 }
 
 // JDB should be applied on itself.
-bool GDBAgent::is_exception_answer(const string& answer)
+bool GDBAgent::is_exception_answer(const string& answer) const
 {
     // Any JDB backtrace contains these lines.
     return type() == JDB && 
@@ -883,7 +883,7 @@ void GDBAgent::set_exception_state(bool new_state)
 
 
 // Return true iff ANSWER ends with secondary prompt.
-bool GDBAgent::ends_with_secondary_prompt (const string& ans)
+bool GDBAgent::ends_with_secondary_prompt (const string& ans) const
 {
     string answer = ans;
     strip_control(answer);
@@ -937,7 +937,7 @@ bool GDBAgent::ends_with_secondary_prompt (const string& ans)
 }
 
 // Return true iff ANSWER ends with (yes or no)
-bool GDBAgent::ends_with_yn (const string& answer)
+bool GDBAgent::ends_with_yn (const string& answer) const
 {
     if (ends_in(answer, "(y or n) "))
 	return true;		// GDB

@@ -72,7 +72,7 @@ protected:
     // Filter all lines from ANSWER beginning with current line.  This
     // is required to suppress the line number output after a
     // `stopping in' message.
-    void filter_line(string& answer);
+    void filter_line(string& answer) const;
 
 public:
     bool check_pc;		// Whether to search for PC

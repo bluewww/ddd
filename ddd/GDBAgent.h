@@ -537,7 +537,7 @@ public:
     }
 
     // True if debugger has numbered breakpoints
-    bool has_numbered_breakpoints()
+    bool has_numbered_breakpoints() const
     {
       return type() == BASH || type() == DBG || type() == DBX || type() == GDB
 	  || type() == PYDB || type() == XDB;
@@ -607,7 +607,7 @@ public:
     }
 
     // True if debugger has numbered displays
-    bool has_numbered_displays()
+    bool has_numbered_displays() const
     {
 	return type() == GDB || type() == PYDB || type() == DBG;
     }
@@ -765,11 +765,11 @@ public:
 
     // True if ANSWER ends in a prompt
     bool ends_with_prompt(const string& answer);
-    bool ends_with_secondary_prompt(const string& answer);
-    bool ends_with_yn(const string& answer);
+    bool ends_with_secondary_prompt(const string& answer) const;
+    bool ends_with_yn(const string& answer) const;
 
     // True if exception error message
-    bool is_exception_answer(const string& answer);
+    bool is_exception_answer(const string& answer) const;
     void set_exception_state(bool state);
 
     // Helpers

@@ -76,13 +76,13 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const ThemeManager& t);
 
     // Get list of themes for an expression
-    StringArray themes(const string& expr);
+    StringArray themes(const string& expr) const;
 
     // Get all themes
-    StringArray themes();
+    StringArray themes() const;
 
     // Check wether pattern exists
-    bool has_pattern(const string& theme)
+    bool has_pattern(const string& theme) const
     {
 	return map.has(theme);
     }

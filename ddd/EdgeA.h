@@ -61,7 +61,7 @@ public:
     // Custom function
     void draw(Widget w, const BoxPoint& p,
 	      const BoxRegion& exposed = 
-	      BoxRegion(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX)))
+	      BoxRegion(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX))) const
     {
 	draw(w, p, exposed, GraphGC());
     }

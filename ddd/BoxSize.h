@@ -57,33 +57,33 @@ public:
 
     // Operators
     // Horizontal concatenation
-    BoxSize operator & (const BoxSize& s) 
+    BoxSize operator & (const BoxSize& s) const
     {
-	if (isValid() && s.isValid())
-	    return BoxSize(point[X] + s.point[X],
-			   max(point[Y], s.point[Y]));
-	else
-	    return BoxSize();
+	return
+	  (isValid() && s.isValid())
+	  ? BoxSize(point[X] + s.point[X],
+		    max(point[Y], s.point[Y]))
+	  : BoxSize();
     }
 
     // Vertical concatenation
-    BoxSize operator | (const BoxSize& s) 
+    BoxSize operator | (const BoxSize& s) const
     {
-	if (isValid() && s.isValid())
-	    return BoxSize(max(point[X], s.point[X]),
-			   point[Y] + s.point[Y]);
-	else
-	    return BoxSize();
+        return
+	  (isValid() && s.isValid())
+	  ? BoxSize(max(point[X], s.point[X]),
+		    point[Y] + s.point[Y])
+	  : BoxSize();
     }
 
     // Stacked concatenation (maximum size)
-    BoxSize operator ^ (const BoxSize& s) 
+    BoxSize operator ^ (const BoxSize& s) const
     {
-	if (isValid() && s.isValid())
-	    return BoxSize(max(point[X], s.point[X]),
-			   max(point[Y], s.point[Y]));
-	else
-	    return BoxSize();
+        return
+	  (isValid() && s.isValid())
+	  ? BoxSize(max(point[X], s.point[X]),
+		    max(point[Y], s.point[Y]))
+	  : BoxSize();
     }
 
     // Assignment versions
