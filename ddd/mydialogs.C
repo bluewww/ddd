@@ -140,7 +140,7 @@ int *getDisplayNumbers(Widget selectionList)
 	XtFree(_item);
 
 	int disp_nr = get_positive_nr(item);
-	if (disp_nr >= 0)
+	if (disp_nr > 0)
 	    disp_nrs[j++] = disp_nr;
     }
 
