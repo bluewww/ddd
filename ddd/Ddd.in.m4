@@ -155,11 +155,11 @@ Ddd*useTTYCommand: false
 
 
 ! The `blockTTYInput' resource sets whether DDD should block when
-! reading from a terminal.  Some systems require this, such as Linux
-! with GNU libc 5.4.33 and earlier; set it to `true'.  Some other
-! systems prohibit this, such as Linux with GNU libc 6 and later; set it
-! to `false'.  The value `auto' will select the `best' choice (that is,
-! the best choice known to the DDD developers).
+! reading data from GDB via the pseudo-tty interface.  Some systems
+! require this, such as Linux with libc 5.4.33 and earlier; set it to
+! `true'.  Some other systems prohibit this, such as Linux with GNU libc
+! 6 and later; set it to `false'.  The value `auto' will select the
+! `best' choice (that is, the best choice known to the DDD developers).
 Ddd*blockTTYInput: auto
 
 
@@ -1385,7 +1385,7 @@ various kind of warranty you do not have.
 ! These colors are taken from Netscape.  The basic idea is that you might
 ! have a Netscape already running, so we won't use up another color cell.
 
-Ddd*tipLabel.background:  #FFFFCC
+Ddd*tipLabel.background:  #ffffcc
 Ddd*tipLabel.foreground:  Black
 Ddd*tipRow.background:    Black
 Ddd*tipShell.borderColor: Black
