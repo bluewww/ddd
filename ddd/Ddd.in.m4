@@ -510,8 +510,8 @@ Ddd*pydbDisplayShortcuts:  \
 /o ()	// Convert to Oct
 
 Ddd*perlDisplayShortcuts:  \
-hex(())	// Convert to Hex\n\
-oct(())	// Convert to Oct
+sprintf("%#x", ())	// Convert to Hex\n\
+sprintf("%#o", ())	// Convert to Oct
 
 
 ! Tab width in source texts
