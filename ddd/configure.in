@@ -511,7 +511,7 @@ dnl
 dnl
 dnl That's all, folks!
 dnl
-AC_OUTPUT(Makefile vr.h Ddd.m4 ddd.man, date > stamp-h)
+AC_OUTPUT(Makefile vr.h Ddd ddd.man, date > stamp-h)
 dnl
 dnl Give an indication of what to do next.
 dnl
