@@ -25,25 +25,9 @@
 # DDD is the GDB-based data display debugger.
 # Contact ddd@ips.cs.tu-bs.de for details.
 
-# $Log$
-# Revision 1.5  1995/05/24 12:24:02  zeller
-# Fix: install README files also if dist file does not exist
-#
-# Revision 1.4  1995/05/21  11:55:46  zeller
-# Fix: install src link correctly
-#
-# Revision 1.3  1995/05/02  11:58:49  zeller
-# New: PROJECTS file renamed TODO (to avoid confusion with PROBLEMS)
-#
-# Revision 1.2  1995/05/02  09:37:31  zeller
-# New: Service
-#
-# Revision 1.1.1.1  1995/05/01  15:48:42  zeller
-# DDD 0.9 distribution
-#
-
 # Name of the ftp server (use "" if local)
-ftp=ftp
+# ftp=ftp
+ftp=
 
 # Directory
 dir=/ftp/pub/local/softech/ddd
@@ -51,12 +35,12 @@ dir=/ftp/pub/local/softech/ddd
 # rsh and rcp commands
 if [ "$ftp" = "" ]; then
   rsh="sh -c"
-  rcp=cp
+  rcp="cp"
   ftpdir=$dir
 else
   rsh="rsh $ftp"
   rcp="rcp"
-  ftpdir=$ftp:$dir
+  ftpdir="$ftp:$dir"
 fi
 
 # Introduction files
@@ -95,17 +79,40 @@ doc=false
 diff=false
 link=false
 
-# Comment out any of the following to disable installation
-readme=true
-#dist=true
-#doc=true
-#diff=true
-#link=true
+errors=false
+if [ $# = 0 ]; then
+  # Default: install all
+  readme=true
+  dist=true
+  doc=true
+  diff=true
+  link=true
+else
+  while [ $# != 0 ]; do
+    case "$1" in
+    -readme) readme=true; shift;;
+    -dist)   dist=true;   shift;;
+    -doc)    doc=true;    shift;;
+    -diff)   diff=true;   shift;;
+    -link)   link=true;   shift;;
+    *) echo "unknown option $1" >&2; errors=true; shift;;
+    esac
+  done
+fi
+
+if $errors; then
+  exit 1
+fi
 
 if $readme; then
-  echo installing $README in $ftpdir...
-  $rsh "cd $dir; /bin/rm -f $README"
-  $rcp $README $ftpdir
+  for file in $README; do
+    $rsh "cd $dir; cat $file" | gdiff -c5 $file -
+    if [ $? != 0 ]; then
+      echo installing $file in $ftpdir...
+      $rsh "cd $dir; /bin/rm -f $README"
+      $rcp $README $ftpdir
+    fi
+  done
 fi
 
 # Distribution files
@@ -245,5 +252,28 @@ if $link; then
 fi
 
 # That's all, folks
-echo done.
+# echo done.
 exit 0
+
+
+# $Log$
+# Revision 1.6  1995/05/26 08:45:04  zeller
+# New: use options to specify what should be installed
+# New: install README files only if they changed
+# New: access NFS-mounted FTP directory (much faster)
+#
+# Revision 1.5  1995/05/24  12:24:02  zeller
+# Fix: install README files also if dist file does not exist
+#
+# Revision 1.4  1995/05/21  11:55:46  zeller
+# Fix: install src link correctly
+#
+# Revision 1.3  1995/05/02  11:58:49  zeller
+# New: PROJECTS file renamed TODO (to avoid confusion with PROBLEMS)
+#
+# Revision 1.2  1995/05/02  09:37:31  zeller
+# New: Service
+#
+# Revision 1.1.1.1  1995/05/01  15:48:42  zeller
+# DDD 0.9 distribution
+#
