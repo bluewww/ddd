@@ -687,7 +687,7 @@ Ddd*graph_edit.outlineColor:	   grey50
 !-----------------------------------------------------------------------------
 
 Ddd*defaultVirtualBindings: \
-osfBackSpace:	<Key>Backspace\n\
+osfBackSpace:	<Key>BackSpace\n\
 osfCancel:	<Key>Escape\n\
 osfRight: 	<Key>Right\n\
 osfLeft:	<Key>Left\n\
