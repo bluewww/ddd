@@ -1,4 +1,4 @@
-dnl $Id$ -*- m4 -*-
+dnl $Id$
 dnl Macros for Ddd app-defaults file
 dnl
 dnl Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
