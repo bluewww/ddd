@@ -196,20 +196,37 @@ if $diff; then
       echo "To apply this patch, do the following:";
       echo
       echo "1. Change to the directory containing the $file_release"
-      echo "   top-level directory."
+      echo "   top-level directory, such that \`./$file_release/ANNOUNCE'"
+      echo "   contains the $file_release announement."
+      echo
       echo
       echo "2. Apply this patch on $file_release, using \`patch':"
-      echo "   % patch -p < $diff"
       echo
-      echo "3. Rename the \`$file_release' directory to \`$dist_release':"
-      echo "   % mv $file_release $dist_release"
+      echo "   % patch < $diff"
       echo
-      echo "4. Consider removing unnecessary .orig files, using \`find:'"
-      echo "   % find $dist_release -name '*.orig' -exec rm -f {} \;"
+      echo
+      echo "3. Check for any rejected patches (in \`.rej' files):"
+      echo
+      echo "   % find $file_release -name '*.rej' -print"
+      echo
+      echo "   Rejected patches must be resolved manually; some files"
+      echo "   can also be reconstructed using \`make'."
+      echo
+      echo
+      echo "4. Consider removing unnecessary \`.orig' files, using \`find:'"
+      echo
+      echo "   % find $file_release -name '*.orig' -exec rm -f {} \;"
+      echo
       echo
       echo "5. Consider removing files no more present in $dist_release."
       echo "   You can find these files by looking for the text"
       echo "   \`Only in $file_release:', below."
+      echo
+      echo
+      echo "6. Rename the \`$file_release' directory to \`$dist_release':"
+      echo
+      echo "   % mv $file_release $dist_release"
+      echo
       echo
       echo "That's all.  $dist_release should now be identical to the distributed version"
       echo "-- besides any changes you made, of course."
