@@ -138,9 +138,9 @@ extern "C" {
 
 // Glyphs
 #include "arrow.xbm"
-#include "bomb.xbm"
-#include "stop.xbm"
 #include "greyarrow.xbm"
+#include "signalarrow.xbm"
+#include "stop.xbm"
 #include "greystop.xbm"
 
 // Additional macros
@@ -5110,9 +5110,9 @@ const int multiple_stop_x_offset = stop_width + (2 * motif_offset - 2);
 
 
 // Glyph locations
-static Widget _plain_arrow_w[2] = {0, 0};
-static Widget _grey_arrow_w[2]  = {0, 0};
-static Widget _bomb_w[2]        = {0, 0};
+static Widget _plain_arrow_w[2]  = {0, 0};
+static Widget _grey_arrow_w[2]   = {0, 0};
+static Widget _signal_arrow_w[2] = {0, 0};
 static Widget _plain_stops_w[2][max_glyphs + 1];
 static Widget _grey_stops_w[2][max_glyphs + 1];
 
@@ -5147,9 +5147,9 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	{
 	    _grey_arrow_w[k] = 
 		create_glyph(form_w, "grey_arrow",
-			     greyarrow_bits, 
-			     greyarrow_width, 
-			     greyarrow_height);
+			     grey_arrow_bits, 
+			     grey_arrow_width, 
+			     grey_arrow_height);
 	    return False;
 	}
     }
@@ -5158,13 +5158,13 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
     {
 	Widget form_w = k ? code_form_w : source_form_w;
 
-	if (_bomb_w[k] == 0)
+	if (_signal_arrow_w[k] == 0)
 	{
-	    _bomb_w[k] = 
-		create_glyph(form_w, "bomb",
-			     bomb_bits, 
-			     bomb_width,
-			     bomb_height);
+	    _signal_arrow_w[k] = 
+		create_glyph(form_w, "signal_arrow",
+			     signal_arrow_bits, 
+			     signal_arrow_width,
+			     signal_arrow_height);
 	    return False;
 	}
     }
@@ -5179,8 +5179,10 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    if (_grey_stops_w[k][i] == 0)
 	    {
 		_grey_stops_w[k][i] = 
-		    create_glyph(form_w, "grey_stop", greystop_bits, 
-				 greystop_width, greystop_height);
+		    create_glyph(form_w, "grey_stop",
+				 grey_stop_bits, 
+				 grey_stop_width,
+				 grey_stop_height);
 		return False;
 	    }
 	}
@@ -5189,8 +5191,10 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    if (_plain_stops_w[k][i] == 0)
 	    {
 		_plain_stops_w[k][i] = 
-		    create_glyph(form_w, "plain_stop", stop_bits, 
-				 stop_width, stop_height);
+		    create_glyph(form_w, "plain_stop",
+				 stop_bits, 
+				 stop_width,
+				 stop_height);
 		return False;
 	    }
 	}
@@ -5230,9 +5234,9 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 
     {
 	// Show source position
-	Widget& source_plain_arrow_w = _plain_arrow_w[0];
-	Widget& source_grey_arrow_w  = _grey_arrow_w[0];
-	Widget& source_bomb_w        = _bomb_w[0];
+	Widget& source_plain_arrow_w  = _plain_arrow_w[0];
+	Widget& source_grey_arrow_w   = _grey_arrow_w[0];
+	Widget& source_signal_arrow_w = _signal_arrow_w[0];
 	Position x, y;
 	XmTextPosition pos;
 	Boolean pos_displayed = False;
@@ -5251,26 +5255,26 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 	{
 	    if (at_lowest_frame && signal_received)
 	    {
-		map_glyph(source_bomb_w, x + arrow_x_offset, y);
+		map_glyph(source_signal_arrow_w, x + arrow_x_offset, y);
 		unmap_glyph(source_plain_arrow_w);
 		unmap_glyph(source_grey_arrow_w);
 	    }
 	    else if (at_lowest_frame)
 	    {
 		map_glyph(source_plain_arrow_w, x + arrow_x_offset, y);
-		unmap_glyph(source_bomb_w);
+		unmap_glyph(source_signal_arrow_w);
 		unmap_glyph(source_grey_arrow_w);
 	    }
 	    else
 	    {
 		map_glyph(source_grey_arrow_w, x + arrow_x_offset, y);
-		unmap_glyph(source_bomb_w);
+		unmap_glyph(source_signal_arrow_w);
 		unmap_glyph(source_plain_arrow_w);
 	    }
 	}
 	else
 	{
-	    unmap_glyph(source_bomb_w);
+	    unmap_glyph(source_signal_arrow_w);
 	    unmap_glyph(source_plain_arrow_w);
 	    unmap_glyph(source_grey_arrow_w);
 	}
@@ -5278,9 +5282,9 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 
     {
 	// Show PC
-	Widget& code_plain_arrow_w = _plain_arrow_w[1];
-	Widget& code_grey_arrow_w  = _grey_arrow_w[1];
-	Widget& code_bomb_w        = _bomb_w[1];
+	Widget& code_plain_arrow_w  = _plain_arrow_w[1];
+	Widget& code_grey_arrow_w   = _grey_arrow_w[1];
+	Widget& code_signal_arrow_w = _signal_arrow_w[1];
 	Position x, y;
 	XmTextPosition pos;
 	Boolean pos_displayed = False;
@@ -5296,26 +5300,26 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 	{
 	    if (at_lowest_frame && signal_received)
 	    {
-		map_glyph(code_bomb_w, x + arrow_x_offset, y);
+		map_glyph(code_signal_arrow_w, x + arrow_x_offset, y);
 		unmap_glyph(code_plain_arrow_w);
 		unmap_glyph(code_grey_arrow_w);
 	    }
 	    else if (at_lowest_frame)
 	    {
 		map_glyph(code_plain_arrow_w, x + arrow_x_offset, y);
-		unmap_glyph(code_bomb_w);
+		unmap_glyph(code_signal_arrow_w);
 		unmap_glyph(code_grey_arrow_w);
 	    }
 	    else
 	    {
 		map_glyph(code_grey_arrow_w, x + arrow_x_offset, y);
-		unmap_glyph(code_bomb_w);
+		unmap_glyph(code_signal_arrow_w);
 		unmap_glyph(code_plain_arrow_w);
 	    }
 	}
 	else
 	{
-	    unmap_glyph(code_bomb_w);
+	    unmap_glyph(code_signal_arrow_w);
 	    unmap_glyph(code_plain_arrow_w);
 	    unmap_glyph(code_grey_arrow_w);
 	}

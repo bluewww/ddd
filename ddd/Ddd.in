@@ -770,14 +770,14 @@ Ddd*no_debugger_dialog*foreground: red4
 Ddd*source_form_w.XmPushButton.background: grey90
 Ddd*source_form_w.plain_arrow.foreground:  dark green
 Ddd*source_form_w.grey_arrow.foreground:   dark green
-Ddd*source_form_w.bomb.foreground:         dark green
+Ddd*source_form_w.signal_arrow.foreground: red4
 Ddd*source_form_w.plain_stop.foreground:   red4
 Ddd*source_form_w.grey_stop.foreground:	   grey50
 
 Ddd*code_form_w.XmPushButton.background:   grey90
 Ddd*code_form_w.plain_arrow.foreground:	   dark green
 Ddd*code_form_w.grey_arrow.foreground:	   dark green
-Ddd*code_form_w.bomb.foreground:           dark green
+Ddd*code_form_w.signal_arrow.foreground:   red4
 Ddd*code_form_w.plain_stop.foreground:	   red4
 Ddd*code_form_w.grey_stop.foreground:	   grey50
 
@@ -3287,17 +3287,17 @@ Ddd*source_form_w.grey_arrow*helpString: \
 Ddd*source_form_w.grey_arrow*tipString: \
 @rm Last execution position in selected frame
 
-Ddd*source_form_w.bomb*helpString: \
+Ddd*source_form_w.signal_arrow*helpString: \
 @bf Lightning arrow\n\
-@rm shows the current execution position (signaled) in the lowest frame.
-Ddd*source_form_w.plain_arrow*tipString: \
-@rm Current execution position
+@rm shows the current execution position after being stopped by a signal.
+Ddd*source_form_w.signal_arrow*tipString: \
+@rm Current execution position (stopped by signal)
 
-Ddd*code_form_w.bomb*helpString: \
+Ddd*code_form_w.signal_arrow*helpString: \
 @bf Lightning arrow\n\
-@rm shows the current program counter (signaled) in the lowest frame.
-Ddd*code_form_w.plain_arrow*tipString: \
-@rm Current program counter
+@rm shows the current program counter after being stopped by a signal.
+Ddd*code_form_w.signal_arrow*tipString: \
+@rm Current program counter (stopped by signal)
 
 Ddd*plain_stop.helpString: \
 @bf Plain stop sign\n\
