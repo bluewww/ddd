@@ -161,7 +161,7 @@ void reference_test(Date& date, Date*& date_ptr)
 //--------------------------------------------------------------------------
 void array_test()
 {
-    // Play woth rotate and show/hide buttons
+    // Play with rotate and show/hide buttons
     DayOfWeek days_of_week[7] = {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
 
     char *twodim [2][3] = {{ "Pioneering", "women", "in"},
