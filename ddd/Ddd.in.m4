@@ -223,6 +223,16 @@ Ddd*useTTYCommand: off
 ! `best' choice (that is, the best choice known to the DDD developers).
 Ddd*blockTTYInput: auto
 
+
+! The `bufferGDBOutput' resource controls whether GDB output should be 
+! buffered (i.e. kept in memory until the next prompt appears).  This helps
+! DDD when parsing GDB output, but it may show up too late in the debugger
+! console (esp. interaction on stdin/stdout).  The default is `auto',
+! meaning to buffer when the execution window is active and not to buffer
+! otherwise.
+Ddd*bufferGDBOutput: auto
+
+
 ! Whether to interrupt running programs for debugger commands.
 Ddd*stopAndContinue: on
 
