@@ -7841,10 +7841,15 @@ static void setup_theme_manager()
 
 	if (!DispBox::theme_manager.has_pattern(theme))
 	{
-	    // Add missing theme as inactive
-
+	    // Add missing themes as inactive unless it's "rednil",
+            // which defaults to active 'cos... well... I like it.
 	    ThemePattern p;
-	    p.active() = false;
+            if (strcmp(theme, "rednil.vsl") == 0) {
+	        p.active() = true;
+                p.add("*");
+            } else {
+	        p.active() = false;
+            }
 	    DispBox::theme_manager.pattern(theme) = p;
 	}
     }
