@@ -1,0 +1,30 @@
+#!vsl
+
+// $Id$ 
+// Tester flowplus.vsl
+
+#include <flowplus.vsl>
+
+stat = statFlow("a := b");
+
+b((box, _...)) = box;
+
+goto1 = gotoFlow("1");
+goto2 = gotoFlow("2");
+goto3 = gotoFlow("3");
+
+label1 = labelFlow("1");
+label2 = labelFlow("2");
+label3 = labelFlow("3");
+
+ok(_...) -> outputFlow(fragFlow(
+  stat, 
+  goto1, 
+  label2,
+  stat, 
+  label1, 
+  stat,
+  goto3,
+  label3,
+  goto1
+  ));

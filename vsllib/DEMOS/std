@@ -1,0 +1,100 @@
+#!vsl
+
+// $Id$ 
+// Testdatei fuer "std.vsl"
+
+#include <std.vsl>
+#include <tab.vsl>
+
+// synonym_test
+syn4(...) = halign(...);
+syn3(...) = syn4(...);
+syn2(...) = syn3(...);
+syn1(...) = syn2(...);
+syn0(...) = syn1(...);
+synonym_test() = syn0("1", "2", "3", "4");
+
+// list_test
+list(a) = a;
+list(a, ...) = a & list(...);
+list_test() = list("1", "2", "3", "4");
+
+// concat_test
+concat_test() = "1" "2" "3" "4";
+
+// cstring_test
+cstring_test() = "Quotes \"\" and Backslashes \\";
+
+// fix_test
+fix_test() = hfix(vfix(rule() ^ 50));
+
+// comma_test
+comma_test() = commalist("1", "2", "3", "4");
+
+// frame_test
+frame_test() = thickframe(doubleframe(10) & vwhite() & doubleframe(10));
+
+// underline_test
+underline_test() = "This should be " & underline("underlined") & ".";
+
+// overline_test
+overline_test() = "This should be " & overline("overlined") & ".";
+
+// crossline_test
+crossline_test() = "This should be " & crossline("crossed") & ".";
+
+// doublestrike_test
+doublestrike_test() = "This should be " & doublestrike("doublestriked") & ".";
+
+// tab_test
+tab_test() = tab(
+[
+	[hcenter("1"),   w_flush("1"),   e_flush("1")],
+ 	[hcenter("22"),  w_flush("22"),  e_flush("22")],
+ 	[hcenter("333"), w_flush("333"), e_flush("333")]
+]
+);
+
+dtab_test() = dtab(
+[
+	[hcenter("1"),   w_flush("1"),   e_flush("1")],
+ 	[hcenter("22"),  w_flush("22"),  e_flush("22")],
+ 	[hcenter("333"), w_flush("333"), e_flush("333")]
+]
+);
+
+// true_test
+bool(a) = if a then "T " else "F " fi;
+
+true_test() =  bool(true) & bool(false or true) 
+	& bool(true or false) & bool(true and true)
+	& bool("1" = "1") & bool(2 + 2 = 4) & bool(not(2 + 2 = 5));
+
+false_test() = bool(false) & bool(true and false) 
+	& bool(false and true) & bool(false or false)
+	& bool("1" = "2") & bool(2 + 2 = 5) & bool(not(2 + 2 = 4));
+
+// all tests
+all_std_tests() = 
+  synonym_test()  		& vcenter(" // synonym_test()")
+| list_test() 			& vcenter(" // list_test()")
+| concat_test()			& vcenter(" // concat_test()")
+| comma_test()			& vcenter(" // comma_test()")
+| frame_test()			& vcenter(" // frame_test()")
+| tab_test()			& vcenter(" // tab_test()")
+| dtab_test()			& vcenter(" // dtab_test()")
+| overline_test()		& vcenter(" // overline_test()")
+| underline_test()		& vcenter(" // underline_test()")
+| crossline_test()		& vcenter(" // crossline_test()")
+| doublestrike_test()	& vcenter(" // doublestrike_test()")
+| true_test()			& vcenter(" // true_test()")
+| false_test()			& vcenter(" // false_test()")
+;
+
+std_explanation() =
+  "This is '$RCSfile$ $Revision$', based on '" & std_version() & "' and '" & 
+  tab_version() & "'."
+| "Each test should yield the string '1234'.";
+
+std_main() = std_explanation() | all_std_tests();
+std_main(_...) -> std_main();

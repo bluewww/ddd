@@ -1,0 +1,17 @@
+#!vsl
+
+// $Id$ 
+// Grosser zusammenfassender Tester
+
+#include "std"
+#include "slopes"
+#include "arcs"
+#include "fonts"
+
+big_main() =
+  frame(std_main() & fill()) 
+| frame(slopes_main() & fill()) 
+| frame(arcs_main() & fill())
+| frame(fonts_main() & fill());
+
+big_main(_...) -> big_main();

@@ -1,0 +1,26 @@
+#!vsl
+
+// $Id$ 
+// a few base demos
+
+#include <std.vsl>
+
+start() = 0;
+end() = 15;
+
+
+// right-formatted number
+rnum(x, base) = e_flush(num(x, base)) & " ";
+
+// single column
+show(_, start()) = vnull();
+show(base, x) = show(base, x - 1) | rnum(x, base);
+show(base) = e_flush("#" & num(base) & " ") | hrule() | show(base, end());
+
+// all
+bases(1) = hnull();
+bases(base) = bases(base - 1) & show(base);
+bases() = bases(16);
+
+bases_main() = bases();
+bases_main(_...) -> bases_main();

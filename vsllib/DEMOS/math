@@ -1,0 +1,37 @@
+#!vsl
+
+// $Id$
+// a few math demos
+
+#include <std.vsl>
+
+start = 0;
+end = 12;
+
+// factorial
+fak(0) = 1;
+fak(1) = 1;
+fak(a) = a * fak(a-1);
+
+// list of factorials
+faks(end) = 0;
+faks(a) = 
+  num(a) & "! = " & num(fak(a))
+| faks(a + 1);
+faks() = faks(start);
+
+// powers
+power(a, 0) = 1;
+power(a, 1) = a;
+power(a, b) = a * power(a, b-1);
+
+// list of powers
+powers(end, b) = 0;
+powers(a, b) = 
+  num(a) & "^" & num(b) & " = " & num(power(a, b))
+| powers(a + 1, b);
+powers(b) = powers(start, b);
+
+math_main() = 
+	" " & faks() & " " & powers(2) & " " & powers(3) & " " & powers(4);
+math_main(...) -> math_main();

@@ -1,0 +1,71 @@
+#!vsl
+
+// $Id$ 
+// Testdatei fuer "list.vsl"
+
+#include <list.vsl>
+
+_numlist([head]) = num(head);
+_numlist([head : tail]) = num(head) & ", " & _numlist(tail);
+_numlist(atom) = num(atom);
+numlist([]) = "[]";
+numlist(l) = "[" & _numlist(l) & "]";
+
+car_test() = num(car([1, 2, 3]));
+cdr_test() = numlist(cdr([1, 2, 3]));
+cons_test() = numlist([1, 2] :: [3, 4] :: [5, 6]);
+append_test() = numlist(append([1, 2, 3], 4));
+
+bool(a) = if a then "T " else "F " fi;
+list_true_test() = bool(member(2, [1, 2, 3])) &
+	bool(prefix([1, 2], [1, 2, 3])) &
+	bool(suffix([2, 3], [1, 2, 3])) &
+	bool(sublist([2, 3], [1, 2, 3, 4]));
+
+list_false_test() = bool(member(4, [1, 2, 3])) &
+	bool(prefix([1, 4], [1, 2, 3])) &
+	bool(suffix([1, 3], [1, 2, 3])) &
+	bool(sublist([2, 4], [1, 2, 3, 4]));
+
+reverse_test() = numlist(reverse([1, 2, 3, 4]));
+
+delete_test() = numlist(delete([4, 5, 5, 6], 5));
+
+select_test() = numlist(select([4, 5, 5, 6], 5));
+
+flat_test() = numlist(flat([[3, 4], [[5], [6]]]));
+
+sort_test() = numlist(sort([2, 1, 3])) & 
+	numlist(sort([9, 5, 7, 4, 2, 1, 3, 8, 6]));
+
+// convert an argument list into a list
+atol(a...) = numlist(a);
+args_to_list_test() = atol(1, 2, 3);
+
+// convert a list into an argument list
+ltoa(list) = atol(list...);
+list_to_args_test() = ltoa([1, 2, 3]);
+
+
+// all tests
+all_list_tests() = 
+  car_test()  			& vcenter(" // car_test()")
+| cdr_test() 			& vcenter(" // cdr_test()")
+| cons_test()			& vcenter(" // cons_test()")
+| append_test()			& vcenter(" // append_test()")
+| list_true_test()		& vcenter(" // list_true_test()")
+| list_false_test()		& vcenter(" // list_false_test()")
+| reverse_test()		& vcenter(" // reverse_test()")
+| delete_test()			& vcenter(" // delete_test()")
+| select_test()			& vcenter(" // select_test()")
+| flat_test()			& vcenter(" // flat_test()")
+| sort_test()			& vcenter(" // sort_test()")
+| args_to_list_test()	& vcenter(" // args_to_list_test()")
+| list_to_args_test()	& vcenter(" // list_to_args_test()")
+;
+
+list_explanation() =
+  "This is '$RCSfile$ $Revision$', based on '" & list_version() & "'.";
+
+list_main() = list_explanation() | all_list_tests();
+list_main(...) -> list_main();

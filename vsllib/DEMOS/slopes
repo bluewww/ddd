@@ -1,0 +1,55 @@
+#!vsl
+
+// $Id$ 
+// Testdatei fuer "slopes.vsl"
+
+#include <std.vsl>
+#include <slopes.vsl>
+
+arrow_test() =
+  fix(vcenter(w_arrow()) ^ 20) & vwhite() &
+  fix(vcenter(e_arrow()) ^ 20) & vwhite() &
+  fix(hcenter(n_arrow()) ^ 20) & vwhite() &
+  fix(hcenter(s_arrow()) ^ 20);
+
+slope_arrow_test() =
+  fix(ne_arrow() ^ 20) & vwhite() &
+  fix(se_arrow() ^ 20) & vwhite() &
+  fix(nw_arrow() ^ 20) & vwhite() &
+  fix(sw_arrow() ^ 20);
+
+angle_test() =
+  fix(w_angle() ^ 20) & vwhite() &
+  fix(e_angle() ^ 20) & vwhite() &
+  fix(n_angle() ^ 20) & vwhite() &
+  fix(s_angle() ^ 20);
+
+punchcard_test() =
+  punchcard("A punchcard.");
+
+rhomb_test() =
+  rhomb("A rhomb.");
+
+octogon_test() =
+  octogon("An octogon.");
+
+// all tests
+all_slopes_tests() = 
+  arrow_test()  		& vcenter(" // arrow_test()")
+| hwhite()
+| slope_arrow_test() 	& vcenter(" // slope_arrow_test()")
+| hwhite()
+| angle_test() 			& vcenter(" // angle_test()")
+| hwhite()
+| punchcard_test() 		& vcenter(" // punchcard_test()")
+| hwhite()
+| rhomb_test() 			& vcenter(" // rhomb_test()")
+| hwhite()
+| octogon_test() 		& vcenter(" // octogon_test()")
+;
+
+slopes_explanation() =
+  "This is '$RCSfile$ $Revision$', based on '" & slopes_version() & "'.";
+
+slopes_main() = slopes_explanation() | all_slopes_tests();
+slopes_main(_...) -> slopes_main();

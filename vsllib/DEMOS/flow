@@ -1,0 +1,45 @@
+#!vsl
+
+// $Id$ 
+// Testdatei fuer "flow.vsl"
+
+#include <flow.vsl>
+#include <list.vsl>
+
+
+stmtlist_test() = seqFlow(statFlow("a := b"), statFlow("c := d"), 
+  callFlow("compute(e)"), printFlow("print(e)"));
+
+while_test() = 
+  positiveTopLoopFlow("not ready?", stmtlist_test());
+
+until_test() = 
+  negativeBottomLoopFlow("done?", stmtlist_test());
+
+repeat_test() = positiveBottomLoopFlow("not done?", stmtlist_test());
+
+if_test() = testFlow("a > b?", statFlow("c := a"));
+
+if_else_test() = testFlow("a > b?", while_test(), until_test());
+
+// all tests
+all_flow_tests() = 
+  " "
+| head(stmtlist_test())	& vcenter(" // stmtlist_test()")
+| " "
+| head(while_test())	& vcenter(" // while_test()")
+| " "
+| head(until_test())	& vcenter(" // until_test()")
+| " "
+| head(repeat_test())	& vcenter(" // repeat_test()")
+| " "
+| head(if_test())		& vcenter(" // if_test()")
+| " "
+| head(if_else_test())	& vcenter(" // if_else_test()")
+| " "
+;
+
+flow_explanation() =
+  "This is 'flow $Revision$', based on 'flow.vsl " & flow_version() & "'.";
+
+flow_main(_...) -> flow_explanation() | all_flow_tests();

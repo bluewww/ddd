@@ -1,0 +1,48 @@
+#!vsl
+
+// $Id$ 
+// Testdatei fuer "arcs.vsl"
+
+#include <std.vsl>
+#include <arcs.vsl>
+
+arc90_test() =
+  fix(ne_arc90() ^ 20) & vwhite() &
+  fix(se_arc90() ^ 20) & vwhite() &
+  fix(nw_arc90() ^ 20) & vwhite() &
+  fix(sw_arc90() ^ 20);
+
+arc180_test() =
+  fix(w_arc180() ^ 20) & vwhite() &
+  fix(e_arc180() ^ 20) & vwhite() &
+  fix(n_arc180() ^ 20) & vwhite() &
+  fix(s_arc180() ^ 20);
+
+ellipse_test() =
+  ellipse("An ellipse.") & ellipse("1") & ellipse("2") & ellipse("3");
+
+oval_test() =
+  oval("An oval.") & oval("1") & oval("2") & oval("3");
+
+vcircle(a) = vcenter(circle(a));
+circle_test() =
+  vfix(vcircle("A circle.") & vcircle("1") & vcircle("2") & vcircle("3"));
+
+// all tests
+all_arcs_tests() = 
+  arc90_test() 		& vcenter(" // arc90_test()")
+| hwhite()
+| arc180_test() 	& vcenter(" // arc180_test()")
+| hwhite()
+| ellipse_test() 	& vcenter(" // ellipse_test()")
+| hwhite()
+| oval_test() 		& vcenter(" // oval_test()")
+| hwhite()
+| circle_test() 	& vcenter(" // circle_test()")
+;
+
+arcs_explanation() =
+  "This is '$RCSfile$ $Revision$', based on '" & arcs_version() & "'.";
+
+arcs_main() = arcs_explanation() | all_arcs_tests();
+arcs_main(_...) -> arcs_main();

@@ -1,0 +1,9 @@
+#!vsl
+
+// $Id$ 
+// Symbol tester
+
+#include <symbols.vsl>
+
+lattice_main(_...) -> "top: " & top() & ", bot: " & bot() |
+bot() & cap() & top() & " = " & bot() & cup() & bot() & " = " & bot();

@@ -1,0 +1,59 @@
+#!vsl
+
+// $Id$ 
+// Tester LET und WHERE
+
+#include <builtin.vsl>
+
+l1 -> let hi = "hello, you" in hi;
+
+l2() -> let hi = "hello, you" in hi;
+
+l3() -> let hi = "hello" in hi & ", you";
+
+l4(you) -> let hi = "hello" in hi & you;
+
+l5(you) -> let him = you, hi = "hello" in hi & him;
+
+l6(you) -> let hi = "hello" in let him = you in hi & him;
+
+l7(you) -> let hi = "hello" in let ho = hi in ho & you;
+
+l8(you) -> let you = "hello" & you in you;
+
+w1 -> hi where hi = "hello, you";
+
+w2() -> hi where hi = "hello, you";
+
+w3() -> hi & ", you" where hi = "hello";
+
+w4(you) -> hi & you where hi = "hello";
+
+w5(you) -> hi & him where him = you, hi = "hello";
+
+w6(you) -> hi & him where hi = "hello" where him = you;
+
+w7(you) -> ho & you where ho = hi where hi = "hello";
+
+w8(you) -> you where you = "hello" & you;
+
+lw1 -> let hi = "hello" in hi & you where you = ", you";
+
+all() -> 
+  l1 
+| l2() 
+| l3() 
+| l4(", you") 
+| l5(", you") 
+| l6(", you") 
+| l7(", you")
+| l8(", you")
+| w1 
+| w2() 
+| w3() 
+| w4(", you") 
+| w5(", you") 
+| w6(", you") 
+| w7(", you")
+| w8(", you")
+| lw1;

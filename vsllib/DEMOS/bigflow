@@ -1,0 +1,34 @@
+#!vsl
+
+// $Id$
+// Grosser Tester Flowcharts
+
+#include <flow.vsl>
+#include <list.vsl>
+
+test() -> 
+  seqFlow(ovalFlow("BEGIN"),
+
+  positiveTopLoopFlow("not empty",
+
+  negativeBottomLoopFlow("fertig?",
+
+  positiveBottomLoopFlow("not fertig?",
+
+  negativeTopLoopFlow("done",
+
+  testFlow("a = c?", 
+	testFlow("a = b?", 
+	  seqFlow(
+	  printFlow("writeln('abc')"), 
+	  punchFlow("readln(x)"), 
+	  statFlow("a := 1")), 
+	seqFlow(statFlow("Forget it"), statFlow("Oh Yeah"), statFlow("Oh Yeah"))))
+	
+  )))),
+
+  ovalFlow("END"));
+
+test2() -> negativeBottomLoopFlow("a = b?", statFlow("writeln('hello, joe')"));
+
+main() -> head(test());

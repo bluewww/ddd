@@ -1,0 +1,8 @@
+// $Id$
+// Render VSL definitions
+
+#include <vsllib.vsl>
+
+#replace VSLLib, VSLDef
+VSLLib(_, vsldefs...) = (|)(vsldefs...);
+VSLDef(_, _, _, _, expr) = fix(expr);

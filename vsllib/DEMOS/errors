@@ -1,0 +1,49 @@
+#!vsl
+
+// $Id$
+// Testdatei fuer Fehlererkennung
+
+#include <std.vsl>
+
+// infinite_test (should generate a warning when optimizing)
+infinite_test() = "Hallo" & infinite_test();
+
+// syntax_error_test (should generate an error)
+syntax_error_test() = "a" & @;
+
+// undefined_test (should generate an error)
+undefined_test() = __never__defined();
+
+// arg_test (should generate an error)
+arg_test(a) = b;
+
+// multiple_arg_test (should generate an error)
+multiple_arg_test(a, a) = 0;
+
+// multiple_definition_test (should generate an error)
+multiple_definition_test(a, b) = 0;
+multiple_definition_test(c, d) = 1;
+
+// shadow_test (should generate a warning)
+shadow_test(...) = 0;
+shadow_test(a) = a;
+
+// bad pattern test (should generate an error)
+nmt(a) = a * a;
+no_match_test(nmt(a)) = a;
+
+// bad pattern test (should generate an error)
+mmt(a) = a & a;
+multiple_match_test(mmt(a)) = a;
+
+// recursive match test (should generate an error)
+f(a) = 1;
+recursive_match_test(f(a)) = 0;
+recursive_match_test(recursive_match_test(a)) = 0;
+
+errors_explanation() = 
+  "This is '$RCSfile$ $Revision$'."
+| "You should have seen various errors while loading.";
+
+errors_main() = errors_explanation();
+errors_main(...) -> errors_main();

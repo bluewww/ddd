@@ -1,0 +1,46 @@
+#!vsl
+
+// $Id$ 
+// Tester Fonts
+
+#include <std.vsl>
+#include <fonts.vsl>
+
+font_text() = "The quick brown fox jumps over the lazy dog. 123";
+rm_test(...) = rm("rm: " & font_text(), ...);
+it_test(...) = it("it: " & font_text(), ...);
+bf_test(...) = bf("bf: " & font_text(), ...);
+bi_test(...) = bi("bi: " & font_text(), ...);
+
+comb_test() = rm("See how " & it("this") & " is " & bf("bold!"));
+
+family_test(family, size, ...) = 
+"'" & family & "' at " & num(size) & " pixels"
+| rm_test(family, size, ...)
+| it_test(family, size, ...)
+| bf_test(family, size, ...)
+| bi_test(family, size, ...)
+| vspace(20);
+
+family_tests(size, ...) =
+  family_test(family_times(), size, ...)
+| family_test(family_courier(), size, ...)
+| family_test(family_helvetica(), size, ...)
+| family_test(family_new_century(), size, ...)
+| family_test(family_typewriter(), size, ...);
+
+size_tests() = 
+  family_tests(10)
+| family_tests(12)
+| family_tests(14)
+| family_tests(20)
+| family_tests(34);
+
+// all tests
+all_font_tests() = size_tests() | comb_test();
+
+fonts_explanation() =
+  "This is '$RCSfile$ $Revision$', based on '" & fonts_version() & "'.";
+
+fonts_main() = fonts_explanation() | all_font_tests();
+fonts_main(_...) -> fonts_main();

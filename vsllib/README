@@ -1,0 +1,12 @@
+This directory contains the VSL function library, a set
+of standard VSL (`Visual Structure Language`) functions.
+
+See the DDD Manual for infos on basic customization.
+
+The DDD survey `../doc/ddd-paper.ps' contains a short VSL overview.
+More info is contained in the paper `Visual Prettyprinting', at
+`ftp://ftp.ips.tu-bs.de/pub/local/softech/ddd/doc/vse.ps'.
+
+The directory `DEMOS' contains some VSL demos, which can be run using
+the `vsl' interpreter built from `../ddd/vsl.C' (`cd ../ddd; make vsl').
+For a comprehensive demo, try `cd DEMOS; ../../ddd/vsl -I .. big'.
