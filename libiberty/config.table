@@ -6,10 +6,12 @@ case "${host}" in
   arm-*-riscix*)	frag=mh-riscix ;;
   m68k-apollo-bsd*)	frag=mh-a68bsd ;;
   m68k-apollo-sysv*)	frag=mh-apollo68 ;;
-  i[345]86-ncr-sysv4*)	frag=mh-ncr3000 ;;
+  i[3456]86-ncr-sysv4*)	frag=mh-ncr3000 ;;
   *-*-cxux7*)		frag=mh-cxux7 ;;
-  *-*-lynxos*)		frag=mh-lynxos ;;
+  *-*-cygwin32)		frag=mh-cygwin32 ;;
   *-*-dgux*)		frag=mh-sysv ;;
+  *-*-freebsd2.1.*)	frag=mh-fbsd21 ;;
+  *-*-freebsd2.2.*)	frag=mh-fbsd21 ;;
   hppa*-hp-bsd*)	frag=mh-hpbsd ;;
   *-*-hpux*)		frag=mh-hpux ;;
   *-*-hiux*)		frag=mh-hpux ;;
@@ -20,6 +22,7 @@ case "${host}" in
   *-*-sysv4*)		frag=mh-sysv4 ;;
   *-*-sysv*)		frag=mh-sysv ;;
   *-*-go32)		frag=mh-go32 ;;
+  i[345]86-*-windows*)	frag=mh-windows ;;
 
   *-*-vxworks5*)
     # VxWorks 5 needs special action, because the usual
@@ -40,11 +43,16 @@ esac
 frags=$frag
 
 # If they didn't specify --enable-shared, don't generate shared libs.
-if [ "${enable_shared}" = "yes" ]; then
+case "${enable_shared}" in
+  yes) shared=yes ;;
+  no) shared=no ;;
+  *) shared=yes ;;
+esac
+if [ "${shared}" = "yes" ]; then
   case "${host}" in
-    hppa*-*-*)	  frags="${frags} ../../config/mh-papic" ;;
-    i[345]86-*-*) frags="${frags} ../../config/mh-x86pic" ;;
-    *-*-*)	  frags="${frags} ../../config/mh-${host_cpu}pic" ;;
+    hppa*-*-*)	   frags="${frags} ../../config/mh-papic" ;;
+    i[3456]86-*-*) frags="${frags} ../../config/mh-x86pic" ;;
+    *-*-*)	   frags="${frags} ../../config/mh-${host_cpu}pic" ;;
   esac
 fi
 
@@ -60,4 +68,4 @@ for frag in ${frags}; do
 done
 
 frag=xhost-mkfrag
-${moveifchange} temp-frag xhost-mkfrag
+${config_shell} ${moveifchange} temp-frag xhost-mkfrag

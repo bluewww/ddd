@@ -1,27 +1,23 @@
 /* "Normal" configuration for alloca.  */
 
 #ifdef __GNUC__
-
 #define alloca __builtin_alloca
-
-#else /* not __GNUC__ */
-
-#ifdef sparc
+#else /* ! defined (__GNUC__) */
+#if defined (sparc) && defined (sun)
 #include <alloca.h>
-/* Stupid include file doesn't declare it */
 #ifdef __STDC__
-extern PTR __builtin_alloca(size_t);
-#else
-extern PTR __builtin_alloca();
-#endif
-
-#else /* not sparc */
-
+extern void *__builtin_alloca();
+#else /* ! defined (__STDC__) */
+extern char *__builtin_alloca();  /* Stupid include file doesn't declare it */
+#endif /* ! defined (__STDC__) */
+#else /* ! defined (sparc) || ! defined (sun) */
 #ifdef __STDC__
 PTR alloca (size_t);
-#else
+#else /* ! defined (__STDC__) */
 PTR alloca ();			/* must agree with functions.def */
+#endif /* ! defined (__STDC__) */
+#endif /* ! defined (sparc) || ! defined (sun) */
+#ifdef _WIN32
+#include <malloc.h>
 #endif
-
-#endif /* not sparc */
-#endif /* not __GNUC__ */
+#endif /* ! defined (__GNUC__) */

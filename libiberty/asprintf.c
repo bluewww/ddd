@@ -1,6 +1,7 @@
-
-/* Win32-Unix compatibility library.
-   Copyright (C) 1995 Free Software Foundation, Inc.
+/* Like sprintf but provides a pointer to malloc'd storage, which must
+   be freed by the caller.
+   Copyright (C) 1997 Free Software Foundation, Inc.
+   Contributed by Cygnus Solutions.
 
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
@@ -18,47 +19,39 @@ License along with libiberty; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-/* sac@cygnus.com */
+#include "ansidecl.h"
+#include "libiberty.h"
 
-/* This should only be compiled and linked under Win32. */
+#if defined (ANSI_PROTOTYPES) || defined (ALMOST_STDC)
+#define USE_STDARG
+#endif
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifdef USE_STDARG
+#include <stdarg.h>
+#else
+#include <varargs.h>
+#endif
 
-/*
-
-NAME
-
-	basename -- return pointer to last component of a pathname
-
-SYNOPSIS
-
-	char *basename (const char *name)
-
-DESCRIPTION
-
-	Given a pointer to a string containing a typical pathname
-	(/usr/src/cmd/ls/ls.c for example), returns a pointer to the
-	last component of the pathname ("ls.c" in this case).
-
-
-*/
-
-
-char *
-basename (name)
-     const char *name;
+/* VARARGS */
+#ifdef USE_STDARG
+int
+asprintf (char **buf, const char *fmt, ...)
+#else
+int
+asprintf (buf, fmt, va_alist)
+     char **buf;
+     const char *fmt;
+     va_dcl
+#endif
 {
-  const char *base = name;
-
-  while (*name)
-    {
-      if (*name == '/'
-	  || *name == '\\')
-	{
-	  base = name+1;
-	}
-      name++;
-    }
-  return (char *) base;
+  int status;
+  va_list ap;
+#ifdef USE_STDARG
+  va_start (ap, fmt);
+#else
+  va_start (ap);
+#endif
+  status = vasprintf (buf, fmt, ap);
+  va_end (ap);
+  return status;
 }

@@ -31,6 +31,7 @@ xconfig.h: Makefile
 	  echo "#define NEED_sys_nerr 1" >xconfig.h; \
 	  echo "#define NEED_sys_errlist 1" >>xconfig.h; \
 	  echo "#define NEED_sys_siglist 1" >>xconfig.h; \
+	  echo "#define NEED_strsignal 1" >>xconfig.h; \
 	  echo "#define NEED_psignal 1" >>xconfig.h; \
 	else \
 	  $(MAKE) $(FLAGS_TO_PASS) lconfig.h; \
@@ -39,7 +40,7 @@ xconfig.h: Makefile
 
 xneeded-list: Makefile
 	if [ -f ../newlib/Makefile ]; then \
-	  echo insque.o random.o strdup.o alloca.o >xneeded-list; \
+	  echo insque.o random.o strdup.o alloca.o vasprintf.o >xneeded-list; \
 	else \
 	  $(MAKE) $(FLAGS_TO_PASS) lneeded-list; \
 	  cp lneeded-list xneeded-list; \
@@ -53,25 +54,13 @@ fi
 
 # We need multilib support, but only if configuring for the target.
 if [ -n "${with_target_subdir}" ] ; then
-  case ${srcdir} in
-  .)
+  if [ "${srcdir}" = "." ] ; then
     if [ "${with_target_subdir}" != "." ] ; then
-
-      # Set MULTISRCTOP to the value we need if we are not doing
-      # multilib.  This will be overridden if --enable-multilib was
-      # used.
-      sed -e "s:^MULTISRCTOP[ 	]*=.*$:MULTISRCTOP = ../:" \
-	${Makefile} > Makefile.tem
-      rm -f ${Makefile}
-      mv Makefile.tem ${Makefile}
-
-      . ${srcdir}/${with_multisrctop}../../config-ml.in
+      . ${with_multisrctop}../../config-ml.in
     else
-      . ${srcdir}/${with_multisrctop}../config-ml.in
+      . ${with_multisrctop}../config-ml.in
     fi
-    ;;
-  *)
+  else
     . ${srcdir}/../config-ml.in
-    ;;
-  esac
+  fi
 fi
