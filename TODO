@@ -327,15 +327,13 @@ Volunteers for these and other projects are welcome!
 
 380 Add special Mocka hacks to access global data.
 
-381 Show initial copyright in source window; let the console show the
-    GDB copyright.
-
 382 Support GDB/MI - a machine oriented interface to GDB.  See
     `http://sourceware.cygnus.com/gdb/onlinedocs/gdbmi_toc.html'.
 
 384 Finish themes support:
     * Scan entire VSL include path for themes
     * Cache computed VSL libraries (clear when changed)
+    * Populate user's DDD directory with themes
     * Make `Suppress' more easily accessible
 
 385 (Insert new project ideas here)

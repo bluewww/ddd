@@ -72,8 +72,8 @@ GDBAgent *new_gdb(DebuggerType type,
 	switch(type)
 	{
 	case GDB:
-	    // Do not issue introductiory messages; output full file names.
-	    gdb_call += " -q -fullname";
+	    // Output full file names.
+	    gdb_call += " -fullname";
 	    break;
 
 	case DBX:

@@ -6897,7 +6897,9 @@ static void setup_version_info()
     if (cinfo_lt >= 0 && cinfo_gt >= 0)
     {
 	helpOnVersionExtraText = rm(cinfo.before(cinfo_lt));
+#if 0
  	helpOnVersionExtraText += cr();	// place e-mail on separate line
+#endif
 	helpOnVersionExtraText += rm(cinfo(cinfo_lt, 1));
 	helpOnVersionExtraText += 
 	    tt(cinfo(cinfo_lt + 1, cinfo_gt - cinfo_lt - 1));
@@ -6957,6 +6959,27 @@ static void setup_version_info()
 	+ rm(DDD_NAME " WWW page: ") + tt(app_data.www_page) + cr()
 	+ rm(DDD_NAME " mailing list: <")
 	+ tt("ddd-request@gnu.org") + rm(">") + cr();
+
+    
+    // Duplicate version info in source window
+    string s =
+	"/----------------------------------------\\\n"
+	"|  GGG  N   N U   U    DDDD  DDDD  DDDD  |\n"
+	"| G     NN  N U   U    D   D D   D D   D |\n"
+	"| G  GG N N N U   U    D   D D   D D   D |\n"
+	"| G   G N  NN U   U    D   D D   D D   D |\n"
+	"|  GGG  N   N  UUU     DDDD  DDDD  DDDD  |\n"
+        "|                                        |\n"
+        "|       The Data Display Debugger        |         "
+	"by Dorothea L\374tkehaus\n"
+	"\\----------------------------------------/         "
+	"and Andreas Zeller\n"
+        "\n";
+
+    s += helpOnVersionExtraText.str();
+    s.gsub("\256", "->");
+    s += "To start, select `Help->What Now?'.";
+    XmTextSetString(SourceView::source(), s);
 }
 
 
