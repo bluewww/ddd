@@ -76,7 +76,7 @@ DispValueType determine_type (string value)
     if (value.contains('(', 0))
     {
 	int ref_index = value.index(')') + 1;
-	while (value.contains(' ', ref_index))
+	while (ref_index < int(value.length()) && isspace(value[ref_index]))
 	    ref_index++;
 #if RUNTIME_REGEX
 	static regex rxreference(
@@ -174,7 +174,7 @@ DispValueType determine_type (string value)
 
 	read_token(value, pointer_index);
 	while (pointer_index < int(value.length()) && 
-	       value.contains(' ', pointer_index))
+	       isspace(value[pointer_index]))
 	    pointer_index++;
     }
 
@@ -183,10 +183,15 @@ DispValueType determine_type (string value)
     {
 	// We have an address.
 	// In JDB, an address may still be followed by a struct.
-	int brace = value.index('{',  pointer_index + addr_len);
-	int nl    = value.index('\n', pointer_index + addr_len);
-	if (brace >= 0 && nl >= 0 && brace < nl)
-	    return StructOrClass;
+	int brace = pointer_index + addr_len;
+	while (brace < int(value.length()) && isspace(value[brace]))
+	    brace++;
+	if (brace < int(value.length()) && value[brace] == '{')
+	{
+	    int nl = value.index('\n', pointer_index + addr_len);
+	    if (nl >= 0 && brace < nl)
+		return StructOrClass;
+	}
 
 	// We have an ordinary pointer
 	return Pointer;
@@ -445,7 +450,7 @@ bool read_array_begin (string& value, string& addr)
 	// `list = (List)0x4070ee90 { ... }'.  Skip the type.
 	read_token(value, pointer_index);
 	while (pointer_index < int(value.length()) && 
-	       value.contains(' ', pointer_index))
+	       isspace(value[pointer_index]))
 	    pointer_index++;
     }
 
@@ -495,8 +500,14 @@ bool read_array_next (string& value)
     bool following = false;
 
     if (value.contains('\n', 0))
-	following = true;
-    
+    {
+	int i = 0;
+	while (i < int(value.length()) && isspace(value[i]))
+	    i++;
+	if (i < int(value.length()))
+	    following = true;	// Non-space character follows
+    }
+
     read_leading_junk (value);
 
     // DBX on DEC prepends `[N]' before array member N
