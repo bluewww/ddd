@@ -754,6 +754,7 @@ static MMDesc source_edit_menu[]  = EDIT_MENU(SourceWindow);
 static MMDesc data_edit_menu[]    = EDIT_MENU(DataWindow);
 
 static Widget complete_w;
+static Widget define_w;
 
 static MMDesc command_menu[] =
 {
@@ -766,12 +767,13 @@ static MMDesc command_menu[] =
     { "isearch_next", MMPush, { gdbISearchNextCB }},
     { "isearch_exit", MMPush, { gdbISearchExitCB }},
     MMSep,
-    { "complete", MMPush, { WhenReady, gdbCompleteCB }},
+    { "complete", MMPush, { WhenReady, gdbCompleteCB }, NULL, &complete_w },
     { "apply",    MMPush, { WhenReady, gdbApplyCB }},
     MMSep,
     { "clear_line",   MMPush, { gdbClearCB }},
     { "clear_window", MMPush, { gdbClearWindowCB }},
     MMSep,
+    { "define",   MMPush, { dddDefineCommandCB }, NULL, &define_w },
     { "buttons",  MMPush, { dddEditButtonsCB }},
     MMEnd
 };
@@ -6049,6 +6051,7 @@ static void setup_options()
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
 
     set_sensitive(complete_w,  gdb->type() == GDB);
+    set_sensitive(define_w,    gdb->type() == GDB);
     set_sensitive(registers_w, gdb->has_regs_command());
     set_sensitive(threads_w,   gdb->type() == GDB || gdb->type() == JDB);
     set_sensitive(infos_w,     gdb->type() == GDB);

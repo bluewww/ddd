@@ -74,7 +74,7 @@ extern void update_infos();
 extern void register_info_button(Widget w);
 
 
-// Definitions
+// Command Definitions
 
 // True if definitions might have changed
 extern bool need_defines();
@@ -84,6 +84,9 @@ extern void set_need_defines(bool val = true);
 
 // Get current definitions
 extern string get_defines(DebuggerType type);
+
+// Define command
+extern void dddDefineCommandCB(Widget, XtPointer, XtPointer);
 
 #endif // _DDD_settings_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

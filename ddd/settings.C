@@ -65,6 +65,7 @@ char settings_rcsid[] =
 #include "WidgetSA.h"
 #include "cook.h"
 #include "ddd.h"
+#include "logo.h"
 #include "question.h"
 #include "regexps.h"
 #include "status.h"
@@ -1834,7 +1835,7 @@ string get_settings(DebuggerType type)
 
 
 //-----------------------------------------------------------------------
-// Command Definitions
+// Trace Command Definitions
 //-----------------------------------------------------------------------
 
 static bool update_define_needed = false;
@@ -1858,7 +1859,9 @@ static bool update_define(const string& command)
     if (text == NO_GDB_ANSWER)
 	return false;
 
-    if (text.contains("Undefined", 0))
+    // `Undefined' means command is undefined; `Not a user command'
+    // means this is a built-in command.
+    if (text.contains("Undefined", 0) || text.contains("Not a", 0))
     {
 	defs.remove(command);
 	return true;
@@ -1873,7 +1876,9 @@ static bool update_define(const string& command)
 
 	if (line.length() > 0 && isspace(line[0]))
 	{
-	    def += line.after(rxwhite) + "\n";
+	    line = line.after(rxwhite);
+	    strip_auto_command_prefix(line);
+	    def += line + "\n";
 	}
     }
 
@@ -1886,9 +1891,9 @@ static void update_defines()
     if (!need_defines())
 	return;
 
-    StatusDelay delay("Retrieving User Commands");
+    StatusDelay delay("Retrieving Command Definitions");
 
-    string commands = gdb_question("help user");
+    string commands = gdb_question("help user-defined");
     if (commands == NO_GDB_ANSWER)
 	return;
 
@@ -1916,6 +1921,8 @@ string get_defines(DebuggerType type)
 	return "";		// Not supported yet
 
     update_defines();
+
+    // We have to get the current value of the `confirm' setting
     create_settings(type);
 
     string defines = "";
@@ -1933,7 +1940,16 @@ string get_defines(DebuggerType type)
 
     for (AssocIter<string, string> iter(defs); iter.ok(); iter++)
     {
-	defines += "define " + iter.key() + "\n" + iter.value() + "end\n";
+	string def = iter.value();
+	if (def == "")
+	{
+	    // We don't save empty definitions, such that users have a
+	    // way to get rid of them.
+	}
+	else
+	{
+	    defines += "define " + iter.key() + "\n" + def + "end\n";
+	}
     }
 
     if (confirm_value == "on")
@@ -1942,3 +1958,251 @@ string get_defines(DebuggerType type)
     return defines;
 }
 
+
+
+
+//-----------------------------------------------------------------------
+// Edit Command Definitions
+//-----------------------------------------------------------------------
+
+static Widget name_w;		// Name of defined command
+static Widget record_w;		// Record button
+static Widget end_w;		// End button
+static Widget edit_w;		// Edit>> button
+static Widget editor_w;		// Editor
+
+static string current_name()
+{
+    String name_s = XmTextFieldGetString(name_w);
+    string name(name_s);
+    XtFree(name_s);
+    strip_space(name);
+    return name;
+}
+
+// Text field has changed -- update buttons
+static void UpdateButtonsCB(Widget = 0, XtPointer = 0, XtPointer = 0)
+{
+    string name = current_name();
+
+    set_sensitive(record_w, !gdb->recording() && name != "");
+    set_sensitive(end_w, gdb->recording());
+    set_sensitive(edit_w, !gdb->recording() && name != "" && defs.has(name));
+
+    XmTextFieldSetEditable(name_w, !gdb->recording());
+    set_sensitive(editor_w, !gdb->recording());
+}
+
+static void update_defineHP(Agent *, void *client_data, void *call_data)
+{
+    bool gdb_ready = bool(call_data);
+    if (gdb_ready && !gdb->recording())
+    {
+	char *c = (char *)client_data;
+	bool ok = update_define(c);
+
+	if (ok)
+	{
+	    // Update buttons
+	    UpdateButtonsCB();
+
+	    // Don't get called again
+	    gdb->removeHandler(ReadyForQuestion, update_defineHP, client_data);
+	    delete[] c;
+	}
+    }
+}
+
+static void update_define_later(const string& command)
+{
+    char *c = new char[command.length() + 1];
+    strcpy(c, (char *)command);
+
+    gdb->addHandler(ReadyForQuestion, update_defineHP, (void *)c);
+}
+
+
+// Log recording state
+static void RecordingHP(Agent *, void *, void *call_data)
+{
+    bool recording = bool(call_data);
+
+    if (!recording)
+    {
+	// Recording is over.  Don't get called again.
+	gdb->removeHandler(Recording, RecordingHP);
+
+	// Fetch new command definition
+	string name = current_name();
+	update_define_later(name);
+    }
+
+    UpdateButtonsCB();
+}
+
+static void RecordCommandDefinitionCB(Widget w, XtPointer, XtPointer)
+{
+    gdb->removeHandler(Recording, RecordingHP);
+    gdb->addHandler(Recording, RecordingHP);
+
+    string name = current_name();
+    gdb_command("define " + name, w);
+}
+
+// Activate the button given in CLIENT_DATA
+static void ActivateCB(Widget, XtPointer client_data, 
+		       XtPointer call_data)
+{
+    XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
+    
+    Widget button = Widget(client_data);
+    XtCallActionProc(button, "ArmAndActivate", cbs->event, (String *)0, 0);
+}
+
+static void EndCommandDefinitionCB(Widget w, XtPointer, XtPointer)
+{
+    gdb_command("end", w);
+}
+
+static void EditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
+{
+    string name = current_name();
+
+    if (XtIsManaged(XtParent(editor_w)))
+    {
+	XtUnmanageChild(XtParent(editor_w));
+	XmTextFieldSetEditable(name_w, True);
+
+	MString label = "Edit " + MString(">>", "small");
+	set_label(edit_w, label);
+
+	String _commands = XmTextGetString(editor_w);
+	string cmd = _commands;
+	XtFree(_commands);
+
+	if (!cmd.contains('\n', -1))
+	    cmd += '\n';
+
+	if (cmd != defs[name])
+	{
+	    StringArray commands;
+	    while (cmd != "")
+	    {
+		string c = cmd.before('\n');
+		if (c != "")
+		    commands += c;
+		cmd = cmd.after('\n');
+	    }
+
+	    // This might require confirmation.  Don't change anything.
+	    set_sensitive(edit_w,   false);
+	    set_sensitive(record_w, false);
+	    set_sensitive(end_w,    false);
+
+	    gdb_command("define " + name, w);
+	    for (int j = 0; j < commands.size(); j++)
+		gdb_command(commands[j], w);
+	    gdb_command("end", w);
+
+	    update_define_later(name);
+	}
+    }
+    else
+    {
+	// update_define(name);
+	XmTextFieldSetEditable(name_w, False);
+
+	string def = "";
+	if (defs.has(name))
+	    def = defs[name];
+
+	XmTextSetString(editor_w, (String)def);
+
+	XtManageChild(XtParent(editor_w));
+	MString label = "Edit " + MString("<<", "small");
+	set_label(edit_w, label);
+    }
+}
+
+MMDesc commands_menu[] =
+{
+    { "record", MMPush, \
+      { RecordCommandDefinitionCB }, 0, &record_w },
+    { "end",    MMPush | MMInsensitive, \
+      { EndCommandDefinitionCB }, 0, &end_w },
+    { "edit",   MMPush, \
+      { EditCommandDefinitionCB }, 0, &edit_w },
+    MMEnd
+};
+
+static MMDesc panel_menu[] = 
+{
+    { "name", MMTextField, { UpdateButtonsCB, 0 }, 0, &name_w },
+    { "commands", MMButtonPanel, MMNoCB, commands_menu },
+    MMEnd
+};
+
+
+// Define command
+void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
+{
+    static Widget dialog = 0;
+
+    if (dialog == 0)
+    {
+	Arg args[10];
+	int arg = 0;
+	dialog = verify(XmCreatePromptDialog(find_shell(w),
+					     "define_command",
+					     args, arg));
+	XtVaSetValues(dialog, XmNdefaultButton, Widget(0), NULL);
+
+	// Remove old prompt
+	Widget text = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
+	XtUnmanageChild(text);
+	Widget old_label = 
+	    XmSelectionBoxGetChild(dialog, XmDIALOG_SELECTION_LABEL);
+	XtUnmanageChild(old_label);
+
+	Delay::register_shell(dialog);
+
+	if (lesstif_version <= 79)
+	    XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+						   XmDIALOG_APPLY_BUTTON));
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_CANCEL_BUTTON));
+	
+	arg = 0;
+	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
+	Widget form = XmCreateRowColumn(dialog, "form", args, arg);
+	XtManageChild(form);
+
+	Widget panel = MMcreatePanel(form, "panel", panel_menu);
+
+	XtVaSetValues(panel,
+		      XmNmarginWidth,    0,
+		      XmNmarginHeight,   0,
+		      NULL);
+
+	arg = 0;
+	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
+        editor_w = XmCreateScrolledText(form, "text", args, arg);
+	XtUnmanageChild(XtParent(editor_w));
+	XtManageChild(editor_w);
+
+	MMaddCallbacks(panel_menu);
+	InstallButtonTips(panel);
+
+	MMadjustPanel(panel_menu);
+
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(name_w, XmNactivateCallback, ActivateCB, 
+		      XtPointer(record_w));
+
+	set_need_defines(true);
+	update_defines();
+    }
+
+    UpdateButtonsCB();
+    manage_and_raise(dialog);
+}

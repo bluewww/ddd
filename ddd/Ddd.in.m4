@@ -1148,6 +1148,16 @@ Ddd*XmSelectionBox*XmTextField.translations:     \
 Ddd*edit_buttons*XmText.translations: 	 	 \
 #override\n TEXT_TRANSLATIONS
 
+! In command definitions, we have command completion.
+Ddd*breakpoint_properties*XmTextField.translations: \
+#override\n COMPLETE_TRANSLATIONS(print)
+Ddd*breakpoint_properties*XmText.translations:      \
+#override\n COMPLETE_TRANSLATIONS(" ")
+
+Ddd*define_command*XmTextField.translations:        \
+#override\n COMPLETE_TRANSLATIONS(" ")
+Ddd*define_command*XmText.translations:             \
+#override\n COMPLETE_TRANSLATIONS(" ")
 
 
 
@@ -2256,6 +2266,11 @@ Ddd*commandsMenu.clear_window.accelerator:      Ctrl Shift ~Meta<Key>U
 Ddd*commandsMenu.clear_window.acceleratorText:  Ctrl+Shift+U
 Ddd*commandsMenu.clear_window.documentationString: \
 @rm Clear all before last @GDB@ prompt
+
+Ddd*commandsMenu.define.labelString:		Define Command...
+Ddd*commandsMenu.define.mnemonic:	        D
+Ddd*commandsMenu.define.documentationString: \
+@rm Define @GDB@ command
 
 Ddd*commandsMenu.buttons.labelString:	        Edit Buttons...
 Ddd*commandsMenu.buttons.mnemonic:	        B
@@ -4957,6 +4972,7 @@ Ddd*breakpoint_properties*edit.tipString: \
 
 
 Ddd*breakpoint_properties*text.columns:		        40
+Ddd*breakpoint_properties*scrollBarDisplayPolicy:  	XmAS_NEEDED
 
 Ddd*breakpoint_properties*helpString:		\
 @rm WIDGET(Breakpoint Properties)\n\
@@ -4968,22 +4984,73 @@ DESC(Disable, [disable the breakpoint.])\n\
 DESC(Temp, [make the breakpoint temporary.])\n\
 DESC(Delete, [delete the breakpoint.])\n\
 \n\
-DESC(Condition, [specify a breakpoint condition.\n\
-    The breakpoint breaks only if the condition evaluates to non-zero.])\n\
-DESC(Ignore Count, [set an ignore count VAR(count).\n\
-    The next VAR(count) hits of the breakpoint will be ignored.])\n\
-DESC(Commands, [record and edit @GDB@ command sequences.\n\
+DESC(Condition, [specify a breakpoint condition])\n\
+    The breakpoint breaks only if the condition evaluates to non-zero.\n\
+DESC(Ignore Count, [set an ignore count VAR(count)])\n\
+    The next VAR(count) hits of the breakpoint will be ignored.\n\
+DESC(Commands, [record and edit @GDB@ command sequences])\n\
     These commands will be executed when the breakpoint is hit.\n\
     To record a command sequence, follow these steps:\n\
     SUBITEM Click on LBL(Record) to begin the recording.\n\
     SUBITEM Now interact with DDD.\n\
        The recorded @GDB@ commands are shown in the @GDB@ console.\n\
-    SUBITEM Click on LBL(End) to stop the recording.])\n\
+    SUBITEM Click on LBL(End) to stop the recording.\n\
     SUBITEM Use LBL(Edit @small>>) to edit the recorded commands.\n\
 \n\
 Click on LBL(Close) to close this window.
 
 
+
+!-----------------------------------------------------------------------------
+! Define Command
+!-----------------------------------------------------------------------------
+
+Ddd*define_command_popup.title:    		DDD: Define Command
+
+Ddd*define_command.okLabelString:    		Close
+
+Ddd*define_command*name.label.labelString:	Command
+Ddd*define_command*name.text.columns:       	31
+
+Ddd*define_command*commands.labelString:	Definition
+Ddd*define_command*commandsMenu.packing:	XmPACK_COLUMN
+Ddd*define_command*commandsMenu.entryAlignment:	XmALIGNMENT_CENTER
+
+Ddd*define_command*record.labelString:		\ \ \ Record\ \ \ 
+Ddd*define_command*end.labelString:		End
+Ddd*define_command*edit.labelString:		Edit @small>>
+
+Ddd*define_command*record.tipString: \
+@rm Record command definition
+Ddd*define_command*record.documentationString: \
+@rm Record command definition
+
+Ddd*define_command*end.tipString: \
+@rm End recording
+Ddd*define_command*end.documentationString: \
+@rm End command recording
+
+Ddd*define_command*edit.tipString: \
+@rm Edit command definition
+
+Ddd*define_command*text.columns: 		40
+Ddd*define_command*scrollBarDisplayPolicy: 	XmAS_NEEDED
+
+Ddd*define_command*helpString:		\
+@rm WIDGET(Define Command)\n\
+\n\
+DESC(Command, [the name of the @GDB@ command being defined])\n\
+DESC(Definition, [record and edit the command definition])\n\
+\n\
+To define a @GDB@ command, follow these steps:\n\
+ITEM Enter the command name in the LBL(Command) field.\n\
+ITEM Click on LBL(Record) to begin the recording.\n\
+ITEM Now interact with DDD.\n\
+   The recorded @GDB@ commands are shown in the @GDB@ console.\n\
+ITEM Click on LBL(End) to stop the recording.\n\
+ITEM Use LBL(Edit @small>>) to edit the command definition.\n\
+\n\
+Click on LBL(Close) to close this window.
 
 
 !-----------------------------------------------------------------------------
