@@ -729,7 +729,7 @@ static MMDesc source_recent_menu[]  = RECENT_MENU;
 static MMDesc data_recent_menu[]    = RECENT_MENU;
 
 struct FileItems {
-    enum FileItem { OpenFile, OpenClass, Recent, OpenCore, OpenSource, Sep1,
+    enum FileItem { OpenClass, OpenFile, Recent, OpenCore, OpenSource, Sep1,
 		    OpenSession, SaveSession, Sep2,
 		    Attach, Detach, Sep3,
 		    Print, PrintAgain, Sep4,
@@ -741,10 +741,10 @@ struct FileItems {
 
 #define FILE_MENU(recent_menu) \
 { \
-    { "open_file",     MMPush, \
-        { WhenReady, XtPointer(gdbOpenFileCB) }, 0, 0, 0, 0 }, \
     { "open_class",    MMPush | MMUnmanaged, \
         { WhenReady, XtPointer(gdbOpenClassCB) }, 0, 0, 0, 0 }, \
+    { "open_file",     MMPush, \
+        { WhenReady, XtPointer(gdbOpenFileCB) }, 0, 0, 0, 0 }, \
     { "recent",        MMMenu, MMNoCB, recent_menu, 0, 0, 0 }, \
     { "open_core",     MMPush, \
         { WhenReady, XtPointer(gdbOpenCoreCB) }, 0, 0, 0, 0}, \
