@@ -166,32 +166,33 @@ DispValueType determine_type (string value)
 
     // Pointers.
 
-    // GDB and JDB prepend the exact pointer type enclosed in `(...)'.
-    // If the pointer type contains `(...)' itself (such as in
-    // pointers to functions), GDB uses '{...}' instead (as in `{int
-    // ()} 0x2908 <main>').
+    int pointer_index = 0;
     if (value.contains('(', 0) || value.contains('{', 0))
     {
-	int pos = 0;
-	read_token(value, pos);
-	while (pos < int(value.length()) && value.contains(' ', pos))
-	    pos++;
-	int len = rxaddress.match(value, value.length(), pos);
-	if (len > 0)
-	{
-	    // We have an address.
-	    // In JDB, an address may still be followed by a struct.
-	    int brace = value.index('{', pos + len);
-	    int nl    = value.index('\n', pos + len);
-	    if (brace >= 0 && nl >= 0 && brace < nl)
-		return StructOrClass;
+	// GDB and JDB prepend the exact pointer type enclosed in
+	// `(...)'.  If the pointer type contains `(...)' itself (such
+	// as in pointers to functions), GDB uses '{...}' instead (as
+	// in `{int ()} 0x2908 <main>').
 
-	    return Pointer;
-	}
+	read_token(value, pointer_index);
+	while (pointer_index < int(value.length()) && 
+	       value.contains(' ', pointer_index))
+	    pointer_index++;
     }
 
-    if (value.contains(rxaddress, 0))
+    int addr_len = rxaddress.match(value, value.length(), pointer_index);
+    if (addr_len > 0)
+    {
+	// We have an address.
+	// In JDB, an address may still be followed by a struct.
+	int brace = value.index('{',  pointer_index + addr_len);
+	int nl    = value.index('\n', pointer_index + addr_len);
+	if (brace >= 0 && nl >= 0 && brace < nl)
+	    return StructOrClass;
+
+	// We have an ordinary pointer
 	return Pointer;
+    }
 
     // In GDB and JDB, Java pointers may be printed as `[TYPE]@ADDR'
     int at_index = value.index('@');
@@ -200,7 +201,10 @@ DispValueType determine_type (string value)
 	string id   = value.before(at_index);
 	string addr = value.from(at_index);
 	if (id.matches(rxidentifier) && addr.contains(rxaddress, 0))
+	{
+	    // We have a Java pointer
 	    return Pointer;
+	}
     }
 
     // Arrays.
@@ -663,6 +667,7 @@ string read_member_name (string& value)
 
     // GDB, DBX, and XDB separate member names and values by ` = '; 
     // GDB using the Java language uses `: ' instead.
+    // JDB printing classes uses `:\n' for the interface list.
     string member_name;
     if (value.contains(" = "))
     {
@@ -673,6 +678,11 @@ string read_member_name (string& value)
     {
 	member_name = value.before (": ");
 	value = value.after (": ");
+    }
+    else if (value.contains(":\n"))
+    {
+	member_name = value.before(":\n");
+	value = value.after(":\n");
     }
     else
     {
