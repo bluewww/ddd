@@ -365,6 +365,9 @@ static XrmDatabase GetFileDatabase(char *filename);
 // Lock `~/.ddd'
 static void lock_ddd(Widget parent);
 
+// History filter
+static string arg_filter(const string& cmd);
+
 // Various setups
 static void setup_version_info();
 static void setup_environment();
@@ -2262,6 +2265,11 @@ int main(int argc, char *argv[])
     
     // Load history for current session
     load_history(session_history_file(app_data.session));
+
+    // Tie arg fields to history
+    tie_combo_box_to_history(source_arg->text(), arg_filter);
+    if (data_disp->graph_arg != 0)
+	tie_combo_box_to_history(data_disp->graph_arg->text(), arg_filter);
 
     // Setup environment.
     setup_environment();
@@ -5750,6 +5758,71 @@ static void sync_args(ArgField *source, ArgField *target)
 
     source->addHandler(Changed, SyncArgHP, (void *)target);
     target->addHandler(Changed, SyncArgHP, (void *)source);
+}
+
+
+//-----------------------------------------------------------------------------
+// Argument filter
+//-----------------------------------------------------------------------------
+
+static bool try_arg(const string& cmd, const string& prefix, string& arg)
+{
+    if (cmd.contains(prefix + " ", 0))
+    {
+	arg = cmd.after(prefix + " ");
+	if (arg.contains("'", 0))
+	    arg = unquote(arg);
+	if (arg.contains(':') || arg.contains("::"))
+	{
+	    // Ignore file:line args
+	}
+	else
+	{
+	    return true;
+	}
+    }
+
+    return false;
+}
+
+static string arg_filter(const string& cmd)
+{
+    string arg = "";
+
+    // Check for GDB commands
+    if (try_arg(cmd, gdb->print_command("", false), arg) ||
+	try_arg(cmd, gdb->display_command(""), arg) ||
+	try_arg(cmd, gdb->whatis_command(""), arg) ||
+	try_arg(cmd, gdb->watch_command("", WATCH_CHANGE), arg) ||
+	try_arg(cmd, gdb->watch_command("", WATCH_READ), arg) ||
+	try_arg(cmd, gdb->watch_command("", WATCH_WRITE), arg) ||
+	try_arg(cmd, gdb->watch_command("", WATCH_ACCESS), arg) ||
+	try_arg(cmd, "info line", arg) ||
+	try_arg(cmd, "break", arg) ||
+	try_arg(cmd, "tbreak", arg) ||
+	try_arg(cmd, "clear", arg) ||
+	try_arg(cmd, "stop in", arg) ||
+	try_arg(cmd, "stop at", arg) ||
+	try_arg(cmd, "b", arg) ||
+	try_arg(cmd, "ba", arg))
+    {
+	return arg;
+    }
+
+    // Check for DDD commands
+    if (cmd.contains("graph display ", 0))
+    {
+	arg = cmd.after("graph display ");
+	if (arg.contains("dependent on"))
+	    arg = arg.before("dependent on");
+	if (arg.contains("now or"))
+	    arg = arg.before("now or");
+	if (arg.contains("when in"))
+	    arg = arg.before("when in");
+	return arg;
+    }
+
+    return "";			// Not found
 }
 
 
