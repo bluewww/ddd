@@ -156,4 +156,12 @@ Volunteers for fixing these and other bugs are welcome!
 345 Plot windows of inactive displays remain in place.  Shouldn't they 
     be cleared at least?  Or contain a string (`not active')?
 
-346 (Insert new bugs here)
+346 Finish Perl mode:
+    - A moved breakpoint cannot be moved again.  Glyph confusion?
+    - `Run' should set arguments first.  Assign to $@?
+    - Restart inferior debugger if exited.
+    - Open Program.  Should be realized via `exec'.
+    - Settings.
+    - Displays.
+
+347 (Insert new bugs here)
