@@ -42,15 +42,18 @@ char fortranize_rcsid[] =
 
 
 
-// Return ID in `fortranized' form -- that is, in lower case and with
-// `_' appended.    If GLOBALS_FIRST is set, try global symbols first.
+// Return ID in `fortranized' form -- that is, in lower/upper case and
+// with appended `_'.  If GLOBALS_FIRST is set, try global symbols first.
 string _fortranize(const string& id, bool globals_first)
 {
     if (globals_first && !id.contains('_', -1))
     {
-	// Try global id first
+	// Try global identifier first.
 	if (!is_invalid(gdbValue(downcase(id) + "_")))
 	    return downcase(id) + "_";
+
+	if (!is_invalid(gdbValue(upcase(id) + "_")))
+	    return upcase(id) + "_";
     }
 
     // Try identifier as given.
@@ -61,18 +64,27 @@ string _fortranize(const string& id, bool globals_first)
     if (!is_invalid(gdbValue(downcase(id))))
 	return downcase(id);
 
-    // Try with `_' postfix.  g77 does this for global objects.
+    // Try in upper-case.  f77 does this for local objects.
+    if (!is_invalid(gdbValue(upcase(id))))
+	return upcase(id);
+
+    // Try with `_' postfix, lower-case.  g77 does this for global objects.
     if (!id.contains('_', -1) &&
 	!is_invalid(gdbValue(downcase(id) + "_")))
 	return downcase(id) + "_";
+
+    // Try with `_' postfix, upper-case.  f77 does this for global objects.
+    if (!id.contains('_', -1) &&
+	!is_invalid(gdbValue(upcase(id) + "_")))
+	return upcase(id) + "_";
 
     // Don't know what to try next - use as given
     return id;
 }
 
-// Return ID in `fortranized' form -- that is, in lower case and with
-// `_' appended.    If GLOBALS_FIRST is set, try global symbols first.
-// In case of pointers, dereference automatically.
+// Return ID in `fortranized' form -- that is, in lower/upper case and
+// with `_' appended.  If GLOBALS_FIRST is set, try global symbols
+// first.  In case of pointers, dereference automatically.
 string fortranize(const string& id, bool globals_first)
 {
     if (gdb->program_language() != LANGUAGE_FORTRAN)

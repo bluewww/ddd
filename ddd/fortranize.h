@@ -35,8 +35,8 @@
 
 #include "strclass.h"
 
-// Return ID in `fortranized' form -- that is, in lower case and with
-// `_' appended.  If GLOBALS_FIRST is set, try global symbols first.
+// Return ID in `fortranized' form -- that is, in lower/upper case and
+// with `_' appended.  If GLOBALS_FIRST is set, try global symbols first.
 extern string fortranize(const string& id, bool globals_first = false);
 
 #endif // _DDD_fortranize_h
