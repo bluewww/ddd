@@ -1904,7 +1904,8 @@ Ddd*menubar.file.mnemonic:		F
 define(FILE_HELP, [\
 WIDGET(File Menu)\n\
 \n\
-DESC(Open Program..., [open the program or class to be debugged])\n\
+DESC(Open Program..., [open the program to be debugged])\n\
+DESC(Open Recent, [open a recently used program])\n\
 DESC(Open Core Dump..., [open a core dump])\n\
 DESC(Open Source..., [open a source file])\n\
 \n\
@@ -2068,9 +2069,10 @@ DESC(Copy, [copy the selected text to the clipboard\n\
 DESC(Paste, [paste the clipboard contents into the text])\n\
 DESC(Clear, [clear argument fields and @GDB@ command line])\n\
 DESC(Delete, [delete the selected text])\n\
+DESC(Select All, [select the entire text])\n\
 \n\
 DESC(Preferences..., [invokes a panel for setting DDD options])\n\
-DESC(Settings..., [invokes a panel for setting @GDB@ options])\n\
+DESC(@GDB@ Settings..., [invokes a panel for setting @GDB@ options])\n\
 \n\
 DESC(Save Options, [saves options, preferences, and @GDB@ settings\n\
     for the next DDD invocation.])
@@ -2175,7 +2177,7 @@ DESC(Execution Window..., [open the execution window])\n\
 DESC(@GDB@ Console, [toggle display of debugger console])\n\
 DESC(Source Window, [toggle display of program source])\n\
 DESC(Data Window, [toggle display of program data])\n\
-DESC(Code Window, [toggle display of assembler code])
+DESC(Machine Code Window, [toggle display of assembler code])
 ])dnl
 
 Ddd*menubar.views.helpString:	VIEWS_HELP
@@ -2436,6 +2438,7 @@ DESC(Apply, [execute the current command])\n\
 DESC(Clear Line, [clear @GDB@ command line])\n\
 DESC(Clear Window, [clear all before last @GDB@ prompt])\n\
 \n\
+DESC(Define Command..., [define @GDB@ command])\n\
 DESC(Edit Buttons..., [edit command buttons])
 ])dnl
 
@@ -2608,7 +2611,7 @@ ITEM If LBL(Display Machine Code) is set, the current function\n\
     is automatically disassembled.\n\
 \n\
 DESC(Edit Source..., [invoke text editor for current source])\n\
-DESC(Reload Source , [reload current source file])\n])dnl
+DESC(Reload Source , [reload current source file])])dnl
 
 Ddd*menubar.source.helpString:	SOURCE_HELP
 Ddd*sourceMenu.helpString:	SOURCE_HELP
@@ -2853,7 +2856,7 @@ DESC(@GDB@ Reference..., [the @GDB@ on-line manual])\n\
 DESC([[[[DDD]]]] License..., [copying, distributing, and modifying DDD])\n\
 DESC([[[[DDD]]]] WWW Page..., [the DDD WWW page])\n\
 \n\
-DESC(Debug [[[[DDD]]]]..., [invoke a debugger to debug DDD])
+DESC(Debug [[[[DDD]]]]..., [invoke a debugger to debug DDD])\n\
 \n\
 DESC(About [[[[DDD]]]]..., [some general information about DDD])
 ])dnl
@@ -3919,10 +3922,9 @@ DESC(Edit..., [Edit shortcuts])
 ])dnl
 
 Ddd*toolbar*new.helpString:\
-LBL(Display ()/Undisplay ())\n\
+LBL(Display () / Display *())\n\
 \n\
-If no display is selected, display the argument LBL(()) in the data window.\n\
-Otherwise, delete the selected displays.\n\
+Display or dereference the argument LBL(()) in the data window.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
 NEW_DISPLAY_MENU_HELP
@@ -3952,7 +3954,11 @@ Ddd*toolbar*dereference2.documentationString:\
 Ddd*toolbar*plot.helpString:\
 LBL(Plot ())\n\
 \n\
-Plot the argument LBL(()).
+Plot the argument LBL(()).\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+DESC(Plot History, [Plot previous and current values of LBL(())])
+
 Ddd*toolbar*plot.tipString:\
 @rm Plot LBL(())
 Ddd*toolbar*plot.documentationString:\
@@ -3963,7 +3969,7 @@ Ddd*toolbar*history.documentationString:\
 
 define(DETAIL_HELP, [\
 DESC(Show More, [Show more details])\n\
-DESC(Show Just, [Show details, excluding substructures]) ...\n\
+DESC(Show Just, [Show details, excluding substructures])\n\
 DESC(Show All, [Show all details, including substructures])\n\
 DESC(Hide, [Hide Details])
 ])dnl
@@ -4025,7 +4031,12 @@ Ddd*toolbar*set.documentationString:	\
 Ddd*toolbar*delete.helpString:	\
 LBL(Undisplay ())\n\
 \n\
-Delete the selected displays.
+Delete the selected displays.\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+DESC(Cluster (), [Merge selected displays into one single cluster])\n\
+DESC(Uncluster (), [Break cluster into individual displays])
+
 Ddd*toolbar*delete.tipString:	\
 @rm Undisplay LBL(())
 Ddd*toolbar*delete.documentationString:	\
@@ -4124,10 +4135,11 @@ Ddd*toolbar*lookup.documentationString:	\
 
 define(BREAK_HELP, [\
 DESC(Set Temporary Breakpoint at (), [set temporary breakpoint])\n\
-DESC(Set Breakpoints at Regexp (), [break at all functions matching ()])\n\
+DESC(Set Breakpoints at Regexp (), \
+[break at all functions matching LBL(())])\n\
 DESC(Continue Until (), [set temporary breakpoint and resume execution])\n\
 DESC(Enable / Disable Breakpoint at (), [enable or disable breakpoint])\n\
-DESC(Breakpoint Properties..., [set properties of breakpoint at ()])\n\
+DESC(Breakpoint Properties..., [set properties of breakpoint at LBL(())])\n\
 DESC(Set Execution Position to (), [move execution position])
 ])dnl
 
@@ -4165,7 +4177,7 @@ Ddd*toolbar*setPC.documentationString: \
 
 define(PRINT_HELP, [\
 DESC(Print *(), [print dereferenced argument])\n\
-DESC(Whatis (), [print type of argument])
+DESC(Whatis (), [print type of argument])\n\
 DESC(Examine (), [examine memory starting at argument])
 ])dnl
 
@@ -4212,7 +4224,6 @@ Ddd*toolbar*dispRef.documentationString:	\
 
 define(WATCH_HELP, [\
 DESC(Watchpoint Properties..., [set properties of watchpoint on LBL(())])\n\
-\n\
 DESC(Set watchpoint on (), [stop whenever LBL(()) changes; same as LBL(Watch())])\n\
 DESC(Set read watchpoint on (), [stop whenever LBL(()) is read])\n\
 DESC(Set access watchpoint on (), [stop whenever LBL(()) is either read or written])\n\
@@ -4227,11 +4238,10 @@ LBL(Watch ()) / LBL(Unwatch())\n\
 Stop whenever the value of LBL(()) changes.\n\
 \n\
 LBL(Watch ()) sets a EMPH(watchpoint) on LBL(()) - a special breakpoint that\n\
-stops your program whenever the value of LBL(()) changes.
+stops your program whenever the value of LBL(()) changes.\n\
+LBL(Unwatch()) deletes the EMPH(watchpoint) associated with LBL(()).\n\
 \n\
 To see all watchpoints, select LBL(Data, Edit Watchpoints).\n\
-\n\
-LBL(Unwatch()) deletes the EMPH(watchpoint) associated with LBL(()).\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
 WATCH_HELP
