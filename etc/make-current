@@ -163,11 +163,12 @@ ln -s $CVSROOT/CVSROOT/ddd-log-96 ChangeLog-1996
 ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-1995
 
 # Set up configure scripts.
+# Note: Don't use `--include-deps' at this stage, such that
+# dependencies are generated in `.deps/' subdir.
 (cd ddd && aclocal)
 autoconf -l ddd
-automake --gnu --include-deps --add-missing --verbose
-(cd ddd && autoconf && 
-       automake --foreign --include-deps --add-missing --verbose)
+automake --gnu --add-missing --verbose
+(cd ddd && autoconf && automake --foreign --add-missing --verbose)
 (cd vsllib && autoconf -l ../ddd && automake --foreign --verbose)
 (cd themes && autoconf -l ../ddd && automake --foreign --verbose)
 (cd readline && autoconf)
@@ -182,7 +183,7 @@ sh ./configure -v
 (cd readline  && test -f Makefile && make)
 
 # Build DDD.  (We have to build all in order to get correct dependencies.)
-(cd ddd; 
+(cd ddd
  make Makefile
  make Makefile
  make diststuff
