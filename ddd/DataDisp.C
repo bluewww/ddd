@@ -1363,10 +1363,11 @@ void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
 	    // Graph is non-empty: make sure its shell is visible
 	    XtManageChild(graph_edit);
 	    initial_popup_shell(data_disp_shell);
+
+	    gdbOpenDataWindowCB(graph_edit, 0, 0);
+
 	    popped_up = true;
 	}
-
-	gdbOpenDataWindowCB(graph_edit, 0, 0);
     }
 }
 
