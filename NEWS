@@ -1,6 +1,12 @@
 DDD News						-*- text -*-
 ********
 
+DDD-3.3.11
+==========
+
+* New features and minor improvements
+- A bug in DBX mode introduced in release 3.3.10 has been fixed.
+
 DDD-3.3.10
 ==========
 
