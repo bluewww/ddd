@@ -389,7 +389,18 @@ Ddd*tabWidth:	        8
 ! Users of GDB 4.12 and earlier may wish to add a line `display /x $pc',
 ! as these GDB versions do not issue the current PC location when source
 ! code is not available.
+!
+! The `simple-print' command is used by DDD to obtain variable values
+! from GDB without any side-effects such as changing the value history.
+! If `simple-print' does not work, DDD uses `print' instead.
 Ddd*gdbInitCommands:	\
+define simple-print\n\
+  output $arg0\n\
+  echo \\n\n\
+end\n\
+document simple-print\n\
+Like "print" but don't put in value history.\n\
+end\n\
 set height 0\n\
 set width 0\n\
  set verbose off\n\
@@ -487,8 +498,15 @@ Ddd*useSourcePaths:		false
 ! Do we wish to show all registers, instead of only integer registers?
 Ddd*allRegisters:		false
 
-! Do we want button tips?  (aka ballon help or bubble help)
+! Tips (aka ballon help or bubble help) are small windows that pop up
+! when moving the pointer over some item.  Instructive for DDD
+! novices, but maybe annoying for DDD experts.
+
+! Do we want tips on buttons, telling us their meaning?
 Ddd*buttonTips:			true
+
+! Do we want tips on variables in the source code, telling us their value?
+Ddd*valueTips:			true
 
 
 ! Focus policy
@@ -498,7 +516,7 @@ Ddd*buttonTips:			true
 !    since Motif has trouble with assigning focus to Athena Widgets.
 ! 2. Several users use DDD in a non-Motif environment, where the click-to-type
 !    methaphor is inappropriate.
-! 3. DDD users usually are wither novices or experienced programmers,
+! 3. DDD users usually are either novices or experienced programmers,
 !    who are often confused and/or embarrassed by explicit focus.
 ! Users unsatisfied with this setting can change it at run-time.
 Ddd*keyboardFocusPolicy:	POINTER
@@ -2063,9 +2081,12 @@ Ddd*preferences*buttons*startup.labelString: Startup Preferences
 Ddd*preferences*general*helpString:	\
 @rm These are the @sl General Preferences@rm.\n\
 \n\
-@tt \267 @rm If @bf Enable button tips @rm is set, @DDD@ shows a hint \
-whenever the mouse pointer\n\
-    moves over a button.\n\
+@tt \267 @rm If @bf Enable button tips @rm is set and you move the mouse \
+pointer over a button,\n\
+@DDD@ pops up a window showing the button usage.\n\
+@tt \267 @rm If @bf Enable button tips @rm is set and you move the mouse \
+pointer over a variable\n\
+in the source text, @DDD@ pops up a window showing the variable value.\n\
 @tt \267 @rm If @bf Iconify all windows at once @rm is set, all @DDD@ windows \
 are iconified as a group.\n\
     Otherwise, windows are iconified separately.\n\
@@ -2085,6 +2106,8 @@ Use the buttons above to view and change other preferences.
 
 Ddd*preferences*buttonTips.labelString:	 \
 Enable button tips
+Ddd*preferences*valueTips.labelString:	 \
+Enable value tips
 Ddd*preferences*groupIconify.labelString:	 \
 Iconify all windows at once
 Ddd*preferences*globalTabCompletion.labelString: \
@@ -3548,6 +3571,7 @@ Ddd*busy_dialog*helpString:	\
 @rm The inferior debugger is busy on some commands.\n\
 Please try again when the `@tt (gdb)@rm' or `@tt (dbx)@rm' \
 or `@tt >@rm' prompt appears.\n\
+\n\
 You may also interrupt the current debugging command by selecting\n\
 @bf Interrupt @rm from the @bf Program @rm menu.
 
@@ -3567,12 +3591,16 @@ Before killing a running debugger, you should try to interrupt it\n\
 
 Ddd*terminated_dialog_popup.title: @DDD@: Hasta la Vista
 Ddd*terminated_dialog.messageString:   \
-@rm The debugger terminated abnormally.
+@rm The inferior debugger terminated abnormally.
 Ddd*terminated_dialog*okLabelString:	   Restart
 Ddd*terminated_dialog*cancelLabelString:   Exit
 Ddd*terminated_dialog*helpString:	\
-@rm The inferior debugger terminated abnormally.\n\
-You may wish to examine its final output before exiting @DDD@.
+@rm The inferior debugger (i.e. GDB, XDB, or DBX) terminated abnormally.\n\
+You may wish to examine its final output before exiting @DDD@.\n\
+\n\
+If you have just invoked @DDD@, and use XDB or DBX as inferior debugger,\n\
+re-invoke @DDD@, but giving it an executable as argument.  XDB and some\n\
+DBX versions require being invoked with an executable.
 
 Ddd*fatal_dialog.title: @DDD@: Oops!
 Ddd*fatal_dialog.messageString:	  \

@@ -2641,7 +2641,6 @@ DataDisp::DataDisp (XtAppContext app_context,
 		    String vsl_path,
 		    String vsl_library,
 		    String vsl_defs,
-		    int    max_name_length,
 		    bool   panned)
 {
     registerOwnConverters();
@@ -2650,7 +2649,6 @@ DataDisp::DataDisp (XtAppContext app_context,
     DispBox::vsllib_name     = vsl_library;
     DispBox::vsllib_path     = vsl_path;
     DispBox::vsllib_defs     = vsl_defs;
-    DispBox::max_name_length = max_name_length;
 
     disp_graph = new DispGraph();
 
@@ -2669,11 +2667,11 @@ DataDisp::DataDisp (XtAppContext app_context,
 
     graph_popup_w = 
 	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
-    InstallTips(graph_popup_w);
+    InstallButtonTips(graph_popup_w);
 
     node_popup_w = 
 	MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
-    InstallTips(node_popup_w);
+    InstallButtonTips(node_popup_w);
 
     disp_graph->callHandlers();
 

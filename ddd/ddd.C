@@ -199,6 +199,7 @@ char ddd_rcsid[] =
 #include "sashes.h"
 #include "settings.h"
 #include "shell.h"
+#include "shorten.h"
 #include "show.h"
 #include "source.h"
 #include "status.h"
@@ -332,6 +333,12 @@ static XrmOptionDescRec options[] = {
 
 { "--no-button-tips",       XtNbuttonTips,           XrmoptionNoArg, S_false },
 { "-no-button-tips",        XtNbuttonTips,           XrmoptionNoArg, S_false },
+
+{ "--value-tips",           XtNvalueTips,            XrmoptionNoArg, S_true },
+{ "-value-tips",            XtNvalueTips,            XrmoptionNoArg, S_true },
+
+{ "--no-value-tips",        XtNvalueTips,            XrmoptionNoArg, S_false },
+{ "-no-value-tips",         XtNvalueTips,            XrmoptionNoArg, S_false },
 
 { "--status-at-bottom",     XtNstatusAtBottom,       XrmoptionNoArg, S_true },
 { "-status-at-bottom",      XtNstatusAtBottom,       XrmoptionNoArg, S_true },
@@ -601,6 +608,7 @@ static Widget preferences_dialog;
 
 // General preferences
 static Widget button_tips_w;
+static Widget value_tips_w;
 static Widget group_iconify_w;
 static Widget global_tab_completion_w;
 static Widget suppress_warnings_w;
@@ -610,6 +618,8 @@ static MMDesc general_preferences_menu[] =
 {
     { "buttonTips",          MMToggle, { dddToggleButtonTipsCB },
       NULL, &button_tips_w },
+    { "valueTips",           MMToggle, { dddToggleValueTipsCB },
+      NULL, &value_tips_w },
     { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB },
       NULL, &group_iconify_w },
     { "globalTabCompletion", MMToggle, { dddToggleGlobalTabCompletionCB },
@@ -1314,8 +1324,9 @@ int main(int argc, char *argv[])
 			      app_data.vsl_path,
 			      app_data.vsl_library,
 			      app_data.vsl_defs,
-			      app_data.max_name_length,
 			      app_data.panned_graph_editor);
+
+    shorten_default_max_length = app_data.max_name_length;
 
     if (app_data.separate_data_window)
     {
@@ -1788,7 +1799,7 @@ static void install_button_tips()
 	while (shell && !XmIsVendorShell(shell))
 	    shell = XtParent(shell);
 	if (shell)
-	    InstallTips(shell, true);
+	    InstallButtonTips(shell, true);
     }
 }
 
@@ -1851,6 +1862,8 @@ void update_options()
 
     XtVaSetValues(button_tips_w,
 		  XmNset, app_data.button_tips, NULL); 
+    XtVaSetValues(value_tips_w,
+		  XmNset, app_data.value_tips, NULL); 
     XtVaSetValues(group_iconify_w,
 		  XmNset, app_data.group_iconify, NULL);
     XtVaSetValues(global_tab_completion_w,
@@ -1965,7 +1978,8 @@ void update_options()
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);
 
-    EnableTips(app_data.button_tips);
+    EnableButtonTips(app_data.button_tips);
+    EnableTextTips(app_data.value_tips);
 }
 
 //-----------------------------------------------------------------------------

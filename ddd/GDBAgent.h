@@ -138,8 +138,9 @@ private:
 
     bool _has_frame_command;	
     bool _has_run_io_command;
-    bool _has_print_r_command;
-    bool _has_where_h_command;
+    bool _has_print_r_option;
+    bool _has_simple_print_command;
+    bool _has_where_h_option;
     bool _has_display_command;
     bool _has_clear_command;
     bool _has_pwd_command;
@@ -241,13 +242,19 @@ public:
     bool has_run_io_command() const    { return _has_run_io_command; }
     bool has_run_io_command(bool val)  { return _has_run_io_command = val; }
 
-    // True if debugger has `print -r' command
-    bool has_print_r_command() const   { return _has_print_r_command; }
-    bool has_print_r_command(bool val) { return _has_print_r_command = val; }
+    // True if debugger has `-r' option in `print' and `display'
+    bool has_print_r_option() const   { return _has_print_r_option; }
+    bool has_print_r_option(bool val) { return _has_print_r_option = val; }
 
-    // True if debugger has `where -h' command
-    bool has_where_h_command() const   { return _has_where_h_command; }
-    bool has_where_h_command(bool val) { return _has_where_h_command = val; }
+    // True if debugger has `simple-print' command (user-defined)
+    bool has_simple_print_command() const   
+    { return _has_simple_print_command; }
+    bool has_simple_print_command(bool val)
+    { return _has_simple_print_command = val; }
+
+    // True if debugger has `-h' option in `where'
+    bool has_where_h_option() const   { return _has_where_h_option; }
+    bool has_where_h_option(bool val) { return _has_where_h_option = val; }
 
     // True if debugger has `display' command
     bool has_display_command() const   { return _has_display_command; }
@@ -289,7 +296,9 @@ public:
     bool verbatim() const        { return _verbatim; }
     bool verbatim(bool val)      { return _verbatim = val; }
 
-    string print_command(string expr = "") const;   // Usually "print EXPR"
+    // Usually "print EXPR".  If INTERNAL is set, avoid side effects
+    // (such as setting the value history in GDB).
+    string print_command(string expr = "", bool internal = true) const; 
     string display_command(string expr = "") const; // Usually "display EXPR"
     string where_command() const;	            // Usually "where "
     string pwd_command() const;	                    // Usually "pwd "

@@ -474,6 +474,18 @@ public:
 
     // Get the position of breakpoint NUM
     static string bp_pos(int num);
+
+    // Get the word at position of EVENT
+    static string get_word_at_event(Widget w,
+				    XEvent *event,
+				    XmTextPosition& first_pos,
+				    XmTextPosition& last_pos);
+
+    // Get the word at position POS
+    static string get_word_at_pos(Widget w,
+				  XmTextPosition pos,
+				  XmTextPosition& startpos,
+				  XmTextPosition& endpos);
 };
 
 #endif // _DDD_SourceView_h

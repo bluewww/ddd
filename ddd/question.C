@@ -80,9 +80,10 @@ string gdb_question(const string& command, int timeout, bool verbatim)
     if (gdb_question_running)
 	return NO_GDB_ANSWER;
 
-    // Don't show delays for help questions
+    // Don't show delays for trivial questions
     Delay *delay = 0;
-    if (!command.contains("help ", 0))
+    if (!command.contains("help ", 0) 
+	&& !command.contains(gdb->print_command(), 0))
 	delay = new Delay;
 
     // Block against reentrant calls

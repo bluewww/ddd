@@ -42,6 +42,7 @@ char buttons_rcsid[] =
 #include "ddd.h"
 #include "editing.h"
 #include "question.h"
+#include "shorten.h"
 #include "source.h"
 #include "status.h"
 #include "string-fun.h"
@@ -49,11 +50,13 @@ char buttons_rcsid[] =
 #include "verify.h"
 #include "GDBAgent.h"
 #include "StringSA.h"
+#include "SourceView.h"
 
 #include <Xm/Xm.h>
 #include <Xm/RowColumn.h>
 #include <Xm/PushB.h>
 #include <Xm/ToggleB.h>
+#include <Xm/Text.h>
 #include <ctype.h>
 
 //-----------------------------------------------------------------------------
@@ -193,21 +196,68 @@ MString gdbDefaultHelp(Widget widget)
     return MString(name + "\n", "bf") +	MString(help, "rm");
 }
 
-MString gdbDefaultTip(Widget widget)
+static string gdbValue(const string& expr)
 {
-    string help = gdbHelp(gdbHelpName(widget));
-    if (help == NO_GDB_ANSWER)
-	return MString(0, true);
+    return gdb_question(gdb->print_command(expr));
+}
 
-    if (help.contains('\n'))
-	help = help.before('\n');
-    if (help.contains('.'))
-	help = help.before('.');
+// A regex matching error messages like `No symbol "i"' or `"i" is not
+// active'.  We simply check for two words either at the beginning or
+// at the end of the message.
+static regex RXnoValue("([a-zA-Z]+ [a-zA-Z]+.*|.*[a-zA-Z]+ [a-zA-Z]+\\.?)\n?");
 
-    static regex RXuppercase("[A-Z]");
-    help = help.from(RXuppercase);
+MString gdbDefaultTip(Widget widget, XEvent *event)
+{
+    string tip;
+    if (XmIsText(widget))
+    {
+	// Text tip
+	XmTextPosition startpos, endpos;
+	string expr = 
+	    source_view->get_word_at_event(widget, event, startpos, endpos);
+	if (expr == "" || expr.contains('\n'))
+	    return MString(0, true);
 
-    return MString(help, "rm");
+	Position x, y;
+	if (XmTextPosToXY(widget, endpos, &x, &y))
+	{
+	    switch (event->type)
+	    {
+	    case MotionNotify:
+		event->xmotion.x = x;
+		event->xmotion.y = y;
+		break;
+
+	    case EnterNotify:
+	    case LeaveNotify:
+		event->xcrossing.x = x;
+		event->xcrossing.y = y;
+		break;
+	    }
+	}
+	tip = gdbValue(expr);
+	if (tip == NO_GDB_ANSWER)
+	    return MString(0, true);
+	if (tip.matches(RXnoValue))
+	    return MString(0, true);
+	shorten(tip, 80);
+    }
+    else
+    {
+	// Button tip
+	tip = gdbHelp(gdbHelpName(widget));
+	if (tip == NO_GDB_ANSWER)
+	    return MString(0, true);
+	if (tip.contains('\n'))
+	    tip = tip.before('\n');
+	if (tip.contains('.'))
+	    tip = tip.before('.');
+
+	static regex RXuppercase("[A-Z]");
+	tip = tip.from(RXuppercase);
+    }
+
+    return MString(tip, "rm");
 }
 
 Widget make_buttons(Widget parent, const string& name, 

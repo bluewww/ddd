@@ -403,6 +403,22 @@ void dddToggleButtonTipsCB (Widget, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
+void dddToggleValueTipsCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.value_tips = info->set;
+
+    if (info->set)
+	set_status("Value tips enabled.");
+    else
+	set_status("Value tips disabled.");
+
+    update_options();
+    options_changed = true;
+}
+
 
 //-----------------------------------------------------------------------------
 // Startup Options
@@ -694,6 +710,8 @@ void save_options(Widget origin)
 			 app_data.group_iconify) << "\n";
     os << bool_app_value(XtNbuttonTips,
 			 app_data.button_tips) << "\n";
+    os << bool_app_value(XtNvalueTips,
+			 app_data.value_tips) << "\n";
     os << bool_app_value(XtNstatusAtBottom,
 			 app_data.status_at_bottom) << "\n";
     os << bool_app_value(XtNseparateExecWindow,

@@ -167,6 +167,8 @@
 #define XtCAllRegisters          "AllRegisters"
 #define XtNbuttonTips            "buttonTips"
 #define XtCButtonTips            "ButtonTips"
+#define XtNvalueTips             "valueTips"
+#define XtCValueTips             "ValueTips"
 #define XtNstatusAtBottom        "statusAtBottom"
 #define XtCStatusAtBottom        "StatusAtBottom"
 #define XtNdddinitVersion        "dddinitVersion"
@@ -239,6 +241,7 @@ struct AppData {
     Boolean use_source_path;
     Boolean all_registers;
     Boolean button_tips;
+    Boolean value_tips;
     Boolean status_at_bottom;
     String  dddinit_version;
     String  app_defaults_version;

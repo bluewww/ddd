@@ -57,6 +57,7 @@ char HelpCB_rcsid[] =
 
 #include "strclass.h"
 #include "cook.h"
+#include "events.h"
 #include "verify.h"
 #include "Delay.h"
 #include "StringA.h"
@@ -121,7 +122,7 @@ static Widget help_shell  = 0;
 static Pixmap help_pixmap = 0;
 
 static MString _DefaultHelpText(Widget widget);
-static MString _DefaultTipText(Widget widget);
+static MString _DefaultTipText(Widget widget, XEvent *event);
 static void _MStringHelpCB(Widget widget, 
 			   XtPointer client_data, 
 			   XtPointer call_data,
@@ -151,8 +152,16 @@ static MString get_help_string(Widget widget)
     return text;
 }
 
-static MString get_tip_string(Widget widget)
+
+static MString get_tip_string(Widget widget, XEvent *event)
 {
+    if (XmIsText(widget))
+    {
+	if (DefaultTipText != 0)
+	    return DefaultTipText(widget, event);
+	return _DefaultTipText(widget, event);
+    }
+
     // Get text
     resource_values values;
     XtGetApplicationResources(widget, &values, 
@@ -161,24 +170,27 @@ static MString get_tip_string(Widget widget)
 
     MString text(values.tipString, true);
     if (text.xmstring() == 0)
-    {
-	return _DefaultTipText(widget);
-    }
-    else if (text.isEmpty())
+	return _DefaultTipText(widget, event);
+
+    if (text.isEmpty())
     {
 	if (DefaultTipText != 0)
-	    return DefaultTipText(widget);
-	else
-	    return _DefaultTipText(widget);
+	    return DefaultTipText(widget, event);
+	return _DefaultTipText(widget, event);
     }
-    else
-    {
-	return text;
-    }
+
+    return text;
 }
 
-static MString get_documentation_string(Widget widget)
+static MString get_documentation_string(Widget widget, XEvent *event)
 {
+    if (XmIsText(widget))
+    {
+	if (DefaultTipText != 0)
+	    return DefaultTipText(widget, event);
+	return _DefaultTipText(widget, event);
+    }
+
     // Get text
     resource_values values;
     XtGetApplicationResources(widget, &values, 
@@ -188,14 +200,14 @@ static MString get_documentation_string(Widget widget)
     MString text(values.documentationString, true);
     if (text.xmstring() == 0)
     {
-	return get_tip_string(widget);
+	return get_tip_string(widget, event);
     }
     else if (text.isEmpty())
     {
 	if (DefaultTipText != 0)
-	    return DefaultTipText(widget);
+	    return DefaultTipText(widget, event);
 	else
-	    return _DefaultTipText(widget);
+	    return _DefaultTipText(widget, event);
     }
     else
     {
@@ -287,14 +299,14 @@ static MString _DefaultHelpText(Widget widget)
     return text;
 }
 
-static MString _DefaultTipText(Widget /* widget */)
+static MString _DefaultTipText(Widget /* widget */, XEvent * /* event */)
 {
     return MString(0, true);	// empty string
 }
 
 
-MString (*DefaultHelpText)(Widget widget)    = _DefaultHelpText;
-MString (*DefaultTipText)(Widget widget)     = _DefaultTipText;
+MString (*DefaultHelpText)(Widget)           = _DefaultHelpText;
+MString (*DefaultTipText)(Widget, XEvent *)  = _DefaultTipText;
 Pixmap (*helpOnVersionPixmapProc)(Widget)    = 0;
 void (*DisplayDocumentation)(const MString&) = 0;
 
@@ -691,7 +703,10 @@ void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 //-----------------------------------------------------------------------------
 
 // True iff button tips are enabled.
-static bool tips_enabled              = true;
+static bool button_tips_enabled       = true;
+
+// True iff text tips are enabled.
+static bool text_tips_enabled         = true;
 
 // The shell containing the tip label.
 static Widget tip_shell               = 0;
@@ -711,8 +726,11 @@ static XtIntervalId pending_doc_timer = 0;
 // The timer used for the delay until the documentation is cleared.
 static XtIntervalId pending_clr_timer = 0;
 
-// Delay before showing the documentation (in ms)
-const int documentation_delay = 0;
+// Delay before showing button documentation (in ms)
+const int button_documentation_delay = 0;
+
+// Delay before showing text documentation (in ms)
+const int text_documentation_delay = 250;
 
 // Delay before clearing the documentation (in ms)
 const int clear_delay = 1000;
@@ -728,6 +746,12 @@ static void CancelTimeOut(Widget, XtPointer client_data, XtPointer)
     XtRemoveTimeOut(timer);
 }
 
+// Event information passed through timeouts, etc.
+struct TipInfo {
+    XEvent event;		// The event structure
+    Widget widget;		// The widget the event occurred in
+};
+
 // Raise button tip near the widget given in CLIENT_DATA
 static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 {
@@ -735,11 +759,12 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
     assert(*timer == pending_tip_timer);
     pending_tip_timer = 0;
 
-    Widget w = Widget(client_data);
+    TipInfo *ti = (TipInfo *)client_data;
+    Widget& w = ti->widget;
     XtRemoveCallback(w, XmNdestroyCallback, 
 		     CancelTimeOut, XtPointer(*timer));
 
-    MString tip = get_tip_string(w);
+    MString tip = get_tip_string(w, &ti->event);
     if (tip.xmstring() == 0 || tip.isEmpty())
 	return;
 
@@ -790,7 +815,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
     static Widget last_parent = 0;
 
     Widget parent = XtParent(w);
-    if (parent != last_parent)
+    if (parent != last_parent || XmIsText(w))
 	last_placement = BottomRight;
 
     // Use 18 runs to find out the best position:
@@ -930,22 +955,29 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XWindowAttributes w_attributes;
 	XGetWindowAttributes(XtDisplay(w), XtWindow(w), &w_attributes);
 
+	if (XmIsText(w))
+	{
+	    w_attributes.width  = 0;
+	    w_attributes.height = 0;
+	}
+
 	XtWidgetGeometry tip_geometry;
 	tip_geometry.request_mode = CWHeight | CWWidth;
 	XtQueryGeometry(tip_shell, NULL, &tip_geometry);
 
-	const int offset = 5;	// Distance between W and tip (in pixels)
+	int x_offset = 5;
+	int y_offset = 5;
 
 	int dx;
 	switch (placement)
 	{
 	case LeftBottom:
 	case LeftTop:
-	    dx = -(tip_geometry.width + offset);
+	    dx = -(tip_geometry.width + x_offset);
 	    break;
 	case RightBottom:
 	case RightTop:
-	    dx = w_attributes.width + offset;
+	    dx = w_attributes.width + x_offset;
 	    break;
 	case BottomLeft:
 	case TopLeft:
@@ -970,12 +1002,19 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	    break;
 	case BottomLeft:
 	case BottomRight:
-	    dy = w_attributes.height + offset;
+	    dy = w_attributes.height + y_offset;
 	    break;
 	case TopLeft:
 	case TopRight:
-	    dy = -(tip_geometry.height + offset);
+	    dy = -(tip_geometry.height + y_offset);
 	    break;
+	}
+
+	if (XmIsText(w))
+	{
+	    BoxPoint pos = point(&ti->event);
+	    dx += pos[X];
+	    dy += pos[Y];
 	}
 
 	// Don't move tip off the screen
@@ -1015,14 +1054,14 @@ static void ShowDocumentation(XtPointer client_data, XtIntervalId *timer)
     assert(*timer == pending_doc_timer);
     pending_doc_timer = 0;
 
-    Widget w = Widget(client_data);
-    XtRemoveCallback(w, XmNdestroyCallback, 
+    TipInfo *ti = (TipInfo *)client_data;
+    XtRemoveCallback(ti->widget, XmNdestroyCallback, 
 		     CancelTimeOut, XtPointer(*timer));
 
     if (DisplayDocumentation != 0)
     {
 	// Display documentation
-	MString doc = get_documentation_string(w);
+	MString doc = get_documentation_string(ti->widget, &ti->event);
 	DisplayDocumentation(doc);
     }
 }
@@ -1086,7 +1125,7 @@ static void ClearTip(Widget w)
 }
 
 // Raise tips and documentation
-static void RaiseTip(Widget w)
+static void RaiseTip(Widget w, XEvent *event)
 {
     if (DisplayDocumentation != 0)
     {
@@ -1097,22 +1136,33 @@ static void RaiseTip(Widget w)
 	    pending_clr_timer = 0;
 	}
 
+	static TipInfo ti;
+	ti.event  = *event;
+	ti.widget = w;
+
+	int documentation_delay = XmIsText(w) ? 
+	    text_documentation_delay : button_documentation_delay;
+
 	pending_doc_timer =
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
-			    documentation_delay, 
-			    ShowDocumentation, XtPointer(w));
+			    documentation_delay,
+			    ShowDocumentation, XtPointer(&ti));
 
 	// Should W be destroyed beforehand, cancel timeout
 	XtAddCallback(w, XmNdestroyCallback, CancelTimeOut, 
 		      XtPointer(pending_doc_timer));
     }
 
-    if (tips_enabled)
+    if (XmIsText(w) ? text_tips_enabled : button_tips_enabled)
     {
+	static TipInfo ti;
+	ti.event  = *event;
+	ti.widget = w;
+
 	pending_tip_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
 			    popup_delay, 
-			    PopupTip, XtPointer(w));
+			    PopupTip, XtPointer(&ti));
 
 	// Should W be destroyed beforehand, cancel timeout
 	XtAddCallback(w, XmNdestroyCallback, CancelTimeOut, 
@@ -1132,6 +1182,7 @@ static void HandleTipEvent(Widget w,
     {
     case EnterNotify:
     case LeaveNotify:
+    case MotionNotify:
     case ButtonPress:
     case ButtonRelease:
 	ClearTip(w);
@@ -1140,12 +1191,13 @@ static void HandleTipEvent(Widget w,
     switch (event->type)
     {
     case EnterNotify:
-	RaiseTip(w);
+    case MotionNotify:
+	RaiseTip(w, event);
     }
 }
 
 // (Un)install toolbar tips for W
-static void InstallTipEvents(Widget w, bool install)
+static void InstallButtonTipEvents(Widget w, bool install)
 {
     // If neither `tipString' nor `documentationString' resource is
     // specified, don't install handler
@@ -1158,7 +1210,7 @@ static void InstallTipEvents(Widget w, bool install)
 
 #if 0
     clog << (install ? "Installing" : "Uninstalling")
-	 << " event handler for " << cook(longName(w)) << "\n";
+	 << " button tip handler for " << cook(longName(w)) << "\n";
 #endif
 
     EventMask event_mask = 
@@ -1176,14 +1228,15 @@ static void InstallTipEvents(Widget w, bool install)
     }
 }
 
+
 // (Un)install toolbar tips for W and all its descendants
-void InstallTipsNow(Widget w, bool install)
+static void InstallButtonTipsNow(Widget w, bool install)
 {
     if (w == 0 || !XtIsWidget(w))
 	return;
 
     // Install tips for this widget
-    InstallTipEvents(w, install);
+    InstallButtonTipEvents(w, install);
 
     if (XtIsComposite(w))
     {
@@ -1198,7 +1251,7 @@ void InstallTipsNow(Widget w, bool install)
 
 	if (children != 0)
 	    for (int i = 0; i < int(num_children); i++)
-		InstallTipsNow(children[i], install);
+		InstallButtonTipsNow(children[i], install);
     }
 
     if (XmIsCascadeButton(w))
@@ -1207,7 +1260,7 @@ void InstallTipsNow(Widget w, bool install)
 	Widget subMenuId = 0;
 	XtVaGetValues(w, XmNsubMenuId, &subMenuId, NULL);
 	if (subMenuId != 0)
-	    InstallTipsNow(subMenuId, install);
+	    InstallButtonTipsNow(subMenuId, install);
     }
 
     if (XmIsRowColumn(w))
@@ -1220,48 +1273,86 @@ void InstallTipsNow(Widget w, bool install)
 		      XmNrowColumnType, &rowColumnType,
 		      NULL);
 	if (rowColumnType == XmMENU_OPTION && subMenuId != 0)
-	    InstallTipsNow(subMenuId, install);
+	    InstallButtonTipsNow(subMenuId, install);
     }
 }
 
 // Callback funtion: install tips now.
-static void InstallTipsTimeOut(XtPointer client_data, XtIntervalId *timer)
+static void InstallButtonTipsTimeOut(XtPointer client_data,
+				     XtIntervalId *timer)
 {
     Widget w = Widget(client_data);
     XtRemoveCallback(w, XmNdestroyCallback, 
 		     CancelTimeOut, XtPointer(*timer));
-    InstallTipsNow(w, true);
+    InstallButtonTipsNow(w, true);
 }
 
 // Callback funtion: uninstall tips now.
-static void UnInstallTipsTimeOut(XtPointer client_data, XtIntervalId *timer)
+static void UnInstallButtonTipsTimeOut(XtPointer client_data, 
+				       XtIntervalId *timer)
 {
     Widget w = Widget(client_data);
     XtRemoveCallback(w, XmNdestroyCallback, 
 		     CancelTimeOut, XtPointer(*timer));
-    InstallTipsNow(w, false);
+    InstallButtonTipsNow(w, false);
 }
 
 // (Un)install tips for W and all its descendants.
 // We do this as soon as we are back in the event loop, since we
 // assume all children have been created until then.
-void InstallTips(Widget w, bool install)
+void InstallButtonTips(Widget w, bool install)
 {
     XtIntervalId timer;
 
     if (install)
 	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
-				InstallTipsTimeOut, XtPointer(w));
+				InstallButtonTipsTimeOut, XtPointer(w));
     else
 	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
-				UnInstallTipsTimeOut, XtPointer(w));
+				UnInstallButtonTipsTimeOut, XtPointer(w));
 
     // Should W be destroyed beforehand, cancel installation.
     XtAddCallback(w, XmNdestroyCallback, CancelTimeOut, XtPointer(timer));
 }
 
-// Enable or disable tips
-void EnableTips(bool enable)
+// Enable or disable button tips
+void EnableButtonTips(bool enable)
 {
-    tips_enabled = enable;
+    button_tips_enabled = enable;
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Text tips.
+//-----------------------------------------------------------------------------
+
+// (Un)install text tips for W.
+void InstallTextTips(Widget w, bool install)
+{
+#if 0
+    clog << (install ? "Installing" : "Uninstalling")
+	 << " button tip handler for " << cook(longName(w)) << "\n";
+#endif
+
+    EventMask event_mask = EnterWindowMask | LeaveWindowMask 
+	| ButtonPress | ButtonRelease | PointerMotionMask;
+
+    if (install)
+    {
+	XtAddEventHandler(w, event_mask, False, 
+			  HandleTipEvent, XtPointer(0));
+
+    }
+    else
+    {
+	XtRemoveEventHandler(w, event_mask, False, 
+			     HandleTipEvent, XtPointer(0));
+    }
+}
+
+// Enable or disable button tips
+void EnableTextTips(bool enable)
+{
+    text_tips_enabled = enable;
 }

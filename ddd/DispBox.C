@@ -44,20 +44,14 @@ char DispBox_rcsid[] =
 #include "cook.h"
 #include "ddd.h"
 #include "status.h"
+#include "shorten.h"
 #include "version.h"
 
 
-//-----------------------------------------------------------------------------
-
-static regex RXpointer_name_pointer
-("->(\\.\\.->)?[a-zA-Z_][]a-zA-Z_0-9\\[\\.\\]*->");
-
-static regex RXscope("[a-zA-Z_0-9]*`");
 
 //-----------------------------------------------------------------------------
 
 VSLLib* DispBox::vsllib_ptr      = 0;
-int     DispBox::max_name_length = 20;
 string  DispBox::vsllib_name     = "builtin";
 string  DispBox::vsllib_path     = ".";
 string  DispBox::vsllib_defs     = "";
@@ -70,7 +64,7 @@ DispBox::DispBox (string disp_nr,
     : mybox(0), title_box(0)
 {
     // Name kuerzen
-    name = short_name(name);
+    shorten(name);
 
     VSLArg args[3];
     args[0] = disp_nr;
@@ -144,37 +138,6 @@ void DispBox::set_value (const DispValue* dv)
     mybox->unlink();
 
     mybox = eval("display_box", args);
-}
-
-
-// ***************************************************************************
-// Versucht, die Display-Namen auf eine Laenge <= app_data.max_name_length
-// zu kuerzen.
-//
-string DispBox::short_name (string name, int length)
-{
-    if (length == 0)
-	return name;
-
-    // Strip DBX scope information
-    while (name.contains(RXscope))
-    {
-	string postfix = name.after(RXscope);
-	name = name.before(RXscope);
-	name += postfix;
-    }
-
-    // Strip pointer chains
-    while (name.length() > unsigned(length)
-	   && name.contains(RXpointer_name_pointer))
-    {
-	string postfix = name.after(RXpointer_name_pointer);
-	name = name.before(RXpointer_name_pointer);
-	name += "->..->";
-	name += postfix;
-    }
-
-    return name;
 }
 
 

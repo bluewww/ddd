@@ -152,7 +152,7 @@ void gdbPrintArgCmdCB(Widget w, XtPointer, XtPointer)
     string arg = source_arg->get_string();
 
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(gdb->print_command(arg), w);
+	gdb_command(gdb->print_command(arg, false), w);
 }
 
 void gdbDisplayArgCmdCB(Widget w, XtPointer, XtPointer)

@@ -300,4 +300,7 @@ Volunteers for these and other projects are welcome!
 
 124* Include pictures in the PostScript copy of the DDD manual.
 
-125. (Insert your project idea here)
+125. While moving over the source text, display the types of the items
+     pointed at in the status line (like button tips).
+
+126. (Insert your project idea here)

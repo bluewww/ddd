@@ -447,7 +447,7 @@ static void redirect_process(string& command,
 	case DBX:
 	    {
 		// DBX has its own parsing, in several variants.
-		if (gdb->has_print_r_command())
+		if (gdb->has_print_r_option())
 		{
 		    // SUN DBX 3.x uses ksh style redirection.
 

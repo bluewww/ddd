@@ -80,6 +80,7 @@ char SourceView_rcsid[] =
 #include "events.h"
 #include "cook.h"
 #include "misc.h"
+#include "shorten.h"
 #include "wm.h"
 
 // Motif stuff
@@ -710,7 +711,7 @@ void SourceView::text_popup_printCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command(*word_ptr), w);
+    gdb_command(gdb->print_command(*word_ptr, false), w);
 }
 
 void SourceView::text_popup_print_refCB (Widget w, 
@@ -719,7 +720,8 @@ void SourceView::text_popup_print_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command(gdb->dereferenced_expr(*word_ptr)), w);
+    gdb_command(gdb->print_command(gdb->dereferenced_expr(*word_ptr), false), 
+		w);
 }
 
 
@@ -1966,6 +1968,44 @@ void SourceView::find_word_bounds (Widget text_w,
 	endpos++;
 }
 
+// Get the word at event position
+string SourceView::get_word_at_event(Widget text_w,
+				     XEvent *event,
+				     XmTextPosition& startpos,
+				     XmTextPosition& endpos)
+{
+    BoxPoint event_pos = point(event);
+    XmTextPosition pos = XmTextXYToPos(text_w, event_pos[X], event_pos[Y]);
+
+    return get_word_at_pos(text_w, pos, startpos, endpos);
+}
+
+
+// Get the word at POS
+string SourceView::get_word_at_pos(Widget text_w,
+				   XmTextPosition pos,
+				   XmTextPosition& startpos,
+				   XmTextPosition& endpos)
+{
+    string& text = current_text(text_w);
+    if (text == "")
+	return "";
+
+    if (!XmTextGetSelectionPosition(text_w, &startpos, &endpos)
+	|| pos < startpos
+	|| pos > endpos)
+    {
+	find_word_bounds(text_w, pos, startpos, endpos);
+    }
+
+    string word = "";
+    if (startpos < XmTextPosition(text.length())
+	&& startpos < endpos)
+	word = text(int(startpos), int(endpos - startpos));
+
+    return word;
+}
+
 
 
 //----------------------------------------------------------------------------
@@ -2032,6 +2072,7 @@ SourceView::SourceView (XtAppContext app_context,
 		  set_source_argCB, XtPointer(true));
     XtAddCallback(source_text_w, XmNmotionVerifyCallback,
 		  CheckScrollCB, 0);
+    InstallTextTips(source_text_w);
 
     // Fetch scrollbar ID
     Widget scrollbar = 0;
@@ -2076,6 +2117,7 @@ SourceView::SourceView (XtAppContext app_context,
 		  set_source_argCB, XtPointer(true));
     XtAddCallback(code_text_w, XmNmotionVerifyCallback,
 		  CheckScrollCB, 0);
+    InstallTextTips(code_text_w);
 
     // Fetch scrollbar ID
     scrollbar = 0;
@@ -3315,7 +3357,6 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     if (!is_source_widget(w) && !is_code_widget(w))
 	return;
     
-    string& text = current_text(w);
     XButtonEvent* event = (XButtonEvent *) e;
 
     Position x = event->x;
@@ -3366,7 +3407,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     bool in_text;
     static int bp_nr;
     static string address;
-    bool pos_found = get_line_of_pos (w, pos, line_nr, address, in_text, bp_nr);
+    bool pos_found = 
+	get_line_of_pos (w, pos, line_nr, address, in_text, bp_nr);
     bool right_of_text = 
 	pos < XmTextPosition(current_text(w).length()) 
 	&& current_text(w)[pos] == '\n';
@@ -3392,7 +3434,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	    bp_popup_w = MMcreatePopupMenu (text_w, "bp_popup", bp_popup);
 	    MMaddCallbacks (bp_popup, XtPointer (&bp_nr));
-	    InstallTips(bp_popup_w);
+	    InstallButtonTips(bp_popup_w);
 	}
 
 	switch (gdb->type())
@@ -3434,7 +3476,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 		line_popup_w = 
 		    MMcreatePopupMenu (w, "line_popup", line_popup);
 		MMaddCallbacks (line_popup, XtPointer(&line_nr));
-		InstallTips(line_popup_w);
+		InstallButtonTips(line_popup_w);
 	    }
 	    XmMenuPosition (line_popup_w, event);
 	    XtManageChild (line_popup_w);
@@ -3447,7 +3489,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 		address_popup_w = 
 		    MMcreatePopupMenu (w, "address_popup", address_popup);
 		MMaddCallbacks (address_popup, XtPointer(&address));
-		InstallTips(address_popup_w);
+		InstallButtonTips(address_popup_w);
 	    }
 	    XmMenuPosition (address_popup_w, event);
 	    XtManageChild (address_popup_w);
@@ -3455,7 +3497,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     }
     else
     {
-	// Determine surrounding token and create popup
+	// Determine surrounding token (or selection) and create popup
 	static string word;
 	static string ref_word;
 
@@ -3463,13 +3505,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	XmTextPosition endpos   = 0;
 
 	if (pos_found)
-	    find_word_bounds(text_w, pos, startpos, endpos);
-
-	word = "";
-	if (pos_found
-	    && startpos < XmTextPosition(text.length())
-	    && startpos < endpos)
-	    word = text(int(startpos), int(endpos - startpos));
+	    word = get_word_at_pos(text_w, pos, startpos, endpos);
 
 	// Popup specific word menu
 	ref_word = gdb->dereferenced_expr(word);
@@ -3477,14 +3513,16 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
 	MMaddCallbacks (text_popup, XtPointer(&word));
-	InstallTips(text_popup_w);
+	InstallButtonTips(text_popup_w);
 
 	// The popup menu is destroyed immediately after having popped down.
 	Widget shell = XtParent(text_popup_w);
 	XtAddCallback(shell, XtNpopdownCallback, DestroyThisCB, shell);
 
-	MString current_arg(word, "tt");
-	MString current_ref_arg(ref_word, "tt");
+	string popup_arg = word;
+	shorten(popup_arg);
+	MString current_arg(popup_arg, "tt");
+	MString current_ref_arg(gdb->dereferenced_expr(popup_arg), "tt");
 
 	Arg args[5];
 	int arg = 0;

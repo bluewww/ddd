@@ -136,6 +136,7 @@ typedef struct PlusCmdData {
     bool     config_err_redirection;   // try 'help run'
     bool     config_page;	       // try 'set $page = 0'
     bool     config_xdb;	       // try XDB settings
+    bool     config_simple_print;      // try 'simple-print'
     bool     config_program_language;  // try 'show language'
 
     PlusCmdData () :
@@ -169,6 +170,7 @@ typedef struct PlusCmdData {
 	config_err_redirection(false),
 	config_page(false),
 	config_xdb(false),
+	config_simple_print(false),
 	config_program_language(false)
     {}
 };
@@ -177,7 +179,7 @@ void user_cmdOA  (const string&, void *);
 void user_cmdOAC (void *);
 void plusOQAC (string [], void *[], int, void *);
 
-static string print_r_cookie = "4711";
+static string print_cookie = "4711";
 
 // ***************************************************************************
 //
@@ -197,6 +199,8 @@ void start_gdb()
 	cmds += "list";		// Required to load symbol table
 	cmds += "info line";
 	plus_cmd_data->refresh_initial_line = true;
+	cmds += "simple-print " + print_cookie;
+	plus_cmd_data->config_simple_print = true;
 	cmds += "show language";
 	plus_cmd_data->config_program_language = true;
 	cmds += "pwd";
@@ -219,7 +223,7 @@ void start_gdb()
 	plus_cmd_data->config_frame = true;
 	cmds += "dbxenv run_io";
 	plus_cmd_data->config_run_io = true;
-	cmds += "print -r " + print_r_cookie;
+	cmds += "print -r " + print_cookie;
 	plus_cmd_data->config_print_r = true;
 	cmds += "where -h";
 	plus_cmd_data->config_where_h = true;
@@ -571,6 +575,7 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_err_redirection);
     assert(!plus_cmd_data->config_page);
     assert(!plus_cmd_data->config_xdb);
+    assert(!plus_cmd_data->config_simple_print);
     assert(!plus_cmd_data->config_program_language);
     
     // Setup additional trailing commands
@@ -912,13 +917,19 @@ static void process_config_run_io(string& answer)
 
 static void process_config_print_r(string& answer)
 {
-    gdb->has_print_r_command(is_known_command(answer) 
-			     && answer.contains(print_r_cookie));
+    gdb->has_print_r_option(is_known_command(answer) 
+			    && answer.contains(print_cookie));
+}
+
+static void process_config_simple_print(string& answer)
+{
+    gdb->has_simple_print_command(is_known_command(answer) 
+				  && answer.contains(print_cookie));
 }
 
 static void process_config_where_h(string& answer)
 {
-    gdb->has_where_h_command(is_known_command(answer));
+    gdb->has_where_h_option(is_known_command(answer));
 }
 
 static void process_config_display(string& answer)
@@ -1103,6 +1114,11 @@ void plusOQAC (string answers[],
 	process_config_def(answers[qu_count++]); // def step s
 	process_config_def(answers[qu_count++]); // def quit q
 	process_config_def(answers[qu_count++]); // def finish { ... }
+    }
+
+    if (plus_cmd_data->config_simple_print) {
+	assert (qu_count < count);
+	process_config_simple_print(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_program_language) {

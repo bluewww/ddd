@@ -684,6 +684,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNvalueTips,
+	XtCValueTips,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, value_tips),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNstatusAtBottom,
 	XtCStatusAtBottom,
 	XtRBoolean,

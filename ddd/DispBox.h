@@ -53,7 +53,6 @@ public:
     static string  vsllib_name;
     static string  vsllib_path;
     static string  vsllib_defs;
-    static int     max_name_length;
 
     // bei dv == 0 disabled-box erzeugen
     DispBox (string disp_nr,
@@ -68,7 +67,6 @@ public:
     void set_value (const DispValue* dv = 0);
 
 private:
-    string short_name (string name, int length = max_name_length);
     Box*   create_value_box (const DispValue* dv, int member_name_width = 0);
 
     static VSLLib* vsllib_ptr;

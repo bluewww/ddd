@@ -63,6 +63,8 @@ extern void dddToggleSaveOptionsOnExitCB  (Widget, XtPointer, XtPointer);
 extern void dddToggleSaveHistoryOnExitCB  (Widget, XtPointer, XtPointer);
 extern void dddToggleSuppressWarningsCB   (Widget, XtPointer, XtPointer);
 extern void dddToggleButtonTipsCB         (Widget, XtPointer, XtPointer);
+extern void dddToggleValueTipsCB          (Widget, XtPointer, XtPointer);
+
 extern void dddSetSeparateWindowsCB       (Widget, XtPointer, XtPointer);
 extern void dddSetStatusAtBottomCB        (Widget, XtPointer, XtPointer);
 extern void dddSetKeyboardFocusPolicyCB   (Widget, XtPointer, XtPointer);

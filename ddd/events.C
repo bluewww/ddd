@@ -45,7 +45,7 @@ BoxPoint point(XEvent *ev)
 	case ButtonPress:
 	case ButtonRelease:
 	    return BoxPoint(ev->xbutton.x,
-			    ev->xkey.y);
+			    ev->xbutton.y);
 
 	case MotionNotify:
 	    return BoxPoint(ev->xmotion.x,

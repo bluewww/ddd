@@ -90,8 +90,9 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       busy_handlers (BusyNTypes),
       _has_frame_command(tp == GDB || tp == XDB),
       _has_run_io_command(false),
-      _has_print_r_command(false),
-      _has_where_h_command(false),
+      _has_print_r_option(false),
+      _has_simple_print_command(false),
+      _has_where_h_option(false),
       _has_display_command(tp == GDB || tp == DBX),
       _has_clear_command(tp == GDB || tp == DBX),
       _has_pwd_command(tp == GDB || tp == DBX),
@@ -135,8 +136,9 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       busy_handlers(gdb.busy_handlers),
       _has_frame_command(gdb.has_frame_command()),
       _has_run_io_command(gdb.has_run_io_command()),
-      _has_print_r_command(gdb.has_print_r_command()),
-      _has_where_h_command(gdb.has_where_h_command()),
+      _has_print_r_option(gdb.has_print_r_option()),
+      _has_simple_print_command(gdb.has_simple_print_command()),
+      _has_where_h_option(gdb.has_where_h_option()),
       _has_display_command(gdb.has_display_command()),
       _has_clear_command(gdb.has_clear_command()),
       _has_pwd_command(gdb.has_pwd_command()),
@@ -576,7 +578,7 @@ void GDBAgent::cut_off_prompt(string& answer)
 void GDBAgent::strip_comments(string& s)
 {
     // These problems occur in Sun DBX 3.x only.
-    if (!has_print_r_command() || verbatim())
+    if (!has_print_r_option() || verbatim())
 	return;
 
     if (s.contains('/'))
@@ -886,7 +888,7 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 // Configuration
 
 // DBX 3.0 wants `print -r' instead of `print' for C++
-string GDBAgent::print_command(string expr) const
+string GDBAgent::print_command(string expr, bool internal) const
 {
     string cmd;
 
@@ -894,10 +896,12 @@ string GDBAgent::print_command(string expr) const
     {
     case GDB:
     case DBX:
-	if (has_print_r_command())
-	    cmd = "print -r";
+	if (internal && has_simple_print_command())
+	    cmd = "simple-print";
 	else
 	    cmd = "print";
+	if (has_print_r_option())
+	    cmd += " -r";
 	break;
 
     case XDB:
@@ -935,7 +939,7 @@ string GDBAgent::display_command(string expr) const
 	return "";
 
     string cmd;
-    if (has_print_r_command())
+    if (has_print_r_option())
 	cmd = "display -r";
     else
 	cmd = "display";
@@ -953,7 +957,7 @@ string GDBAgent::where_command() const
     {
     case GDB:
     case DBX:
-	if (has_where_h_command())
+	if (has_where_h_option())
 	    return "where -h";
 	else
 	    return "where";
@@ -1036,7 +1040,7 @@ string GDBAgent::whatis_command(string text) const
 	return "ptype " + text;
 
     case DBX:
-	if (has_print_r_command())
+	if (has_print_r_option())
 	    return "whatis -r " + text;
 	else
 	    return "whatis " + text;

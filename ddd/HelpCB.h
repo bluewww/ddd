@@ -100,11 +100,18 @@ extern void TextHelpCB(Widget widget, XtPointer client_data,
 extern void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			       XtPointer call_data);
 
-// (Un)install toolbar tips
-extern void InstallTips(Widget w, bool install = true);
+// (Un)install button tips on W.
+extern void InstallButtonTips(Widget w, bool install = true);
 
-// Enable or disable tips
-extern void EnableTips(bool enable = true);
+// Enable or disable all installed button tips.
+extern void EnableButtonTips(bool enable = true);
+
+// (Un)install text tips on W.
+extern void InstallTextTips(Widget w, bool install = true);
+
+// Enable or disable all installed text tips.
+extern void EnableTextTips(bool enable = true);
+
 
 
 // Data
@@ -113,7 +120,7 @@ extern void EnableTips(bool enable = true);
 extern MString (*DefaultHelpText)(Widget widget);
 
 // Create a help text if the `tip' resource is empty
-extern MString (*DefaultTipText)(Widget widget);
+extern MString (*DefaultTipText)(Widget widget, XEvent *event);
 
 // Hook for displaying documentation
 extern void (*DisplayDocumentation)(const MString& doc);
