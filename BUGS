@@ -403,4 +403,14 @@ Volunteers for fixing these and other bugs are welcome!
         debugged program and it seems as though by this time the pty
         12 is already reserved.
 
-214. (Insert your bug here)
+214. The check for decorated transients fails with the AfterStep WM.
+
+215. Rudolf Leitgeb <leitgeb@leland.stanford.edu> reports that with
+     separate windows, a newly created assembler window has zero
+     height.
+
+216. Jonathan Edwards <edwards@intranet.com> suggests that The
+     flashing cursor in the gdb console window ought to stop flashing
+     during user input.  [Tell the Motif people  -AZ]
+
+217. (Insert your bug here)
