@@ -256,6 +256,7 @@ void gdbUpdateViewCB      (Widget, XtPointer, XtPointer);
 // Preferences
 static void make_preferences (Widget parent);
 static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer);
+static void update_reset_preferences();
 
 // User emergencies (Ctrl-C)
 static void check_emergencies();
@@ -604,11 +605,8 @@ static MMDesc source_menu[] =
 
 // Preferences
 
-static Widget preferences_dialog;
-
 // General preferences
 static Widget group_iconify_w;
-static Widget global_tab_completion_w;
 static Widget suppress_warnings_w;
 static Widget save_history_on_exit_w;
 
@@ -630,14 +628,26 @@ static MMDesc value_menu [] =
     MMEnd
 };
 
+static Widget set_global_completion_w;
+static Widget set_console_completion_w;
+static MMDesc completion_menu [] = 
+{
+    { "inAllWindows", MMToggle, 
+      { dddSetGlobalTabCompletionCB, XtPointer(True) }, 
+      NULL, &set_global_completion_w },
+    { "inConsole", MMToggle, { dddSetGlobalTabCompletionCB, XtPointer(False) },
+      NULL, &set_console_completion_w },
+    MMEnd
+};
+
+
 static MMDesc general_preferences_menu[] = 
 {
     { "buttonHints",         MMButtonPanel, MMNoCB, button_menu },
     { "valueHints",          MMButtonPanel, MMNoCB, value_menu },
+    { "tabCompletion",       MMRadioPanel,  MMNoCB, completion_menu },
     { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB },
       NULL, &group_iconify_w },
-    { "globalTabCompletion", MMToggle, { dddToggleGlobalTabCompletionCB },
-      NULL, &global_tab_completion_w },
     { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB },
       NULL, &suppress_warnings_w },
     { "saveHistoryOnExit",   MMToggle, { dddToggleSaveHistoryOnExitCB },
@@ -647,22 +657,42 @@ static MMDesc general_preferences_menu[] =
 
 
 // Source preferences
-static Widget display_glyphs_w;
 static Widget cache_source_files_w;
 static Widget cache_machine_code_w;
-static Widget use_source_path_w;
 static Widget tab_width_w;
 
+static Widget set_display_glyphs_w;
+static Widget set_display_text_w;
+static MMDesc glyph_menu[] =
+{
+    { "asGlyphs", MMToggle, { sourceSetDisplayGlyphsCB, XtPointer(True) },
+      NULL, &set_display_glyphs_w },
+    { "asText", MMToggle, { sourceSetDisplayGlyphsCB, XtPointer(False) },
+      NULL, &set_display_text_w },
+    MMEnd
+};
+
+static Widget set_refer_path_w;
+static Widget set_refer_base_w;
+static MMDesc refer_menu[] =
+{
+    { "byPath", MMToggle, { sourceSetUseSourcePathCB, XtPointer(True) },
+      NULL, &set_refer_path_w },
+    { "byBase", MMToggle, { sourceSetUseSourcePathCB, XtPointer(False) },
+      NULL, &set_refer_base_w },
+    MMEnd
+};
+
+
+static Widget refer_sources_w;
 static MMDesc source_preferences_menu[] = 
 {
-    { "displayGlyphs",    MMToggle, { sourceToggleDisplayGlyphsCB }, 
-      NULL, &display_glyphs_w },
+    { "showExecPos",      MMRadioPanel, MMNoCB, glyph_menu },
+    { "referSources",     MMRadioPanel, MMNoCB, refer_menu, &refer_sources_w },
     { "cacheSourceFiles", MMToggle, { sourceToggleCacheSourceFilesCB }, 
       NULL, &cache_source_files_w },
     { "cacheMachineCode", MMToggle, { sourceToggleCacheMachineCodeCB }, 
       NULL, &cache_machine_code_w },
-    { "useSourcePath", MMToggle, { sourceToggleUseSourcePathCB }, 
-      NULL, &use_source_path_w },
     { "tabWidth", MMScale, { sourceSetTabWidthCB },
       NULL, &tab_width_w },
     MMEnd
@@ -1150,7 +1180,7 @@ int main(int argc, char *argv[])
     Atom WM_DELETE_WINDOW =
 	XmInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
 
-    // Get application resources
+    // Get and save application resources
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
 				ddd_resources, ddd_resources_size,
 				NULL);
@@ -1650,6 +1680,9 @@ int main(int argc, char *argv[])
     if (source_view_shell && data_disp_shell)
 	unmanage_sashes(paned_work_w);
 
+    // Save option states
+    save_option_state();
+
     // Setup option states
     update_options();
 
@@ -1928,10 +1961,12 @@ void update_options()
 		  XmNset, app_data.button_docs, NULL); 
     XtVaSetValues(value_docs_w,
 		  XmNset, app_data.value_docs, NULL); 
+    XtVaSetValues(set_global_completion_w,
+		  XmNset, app_data.global_tab_completion, NULL);
+    XtVaSetValues(set_console_completion_w,
+		  XmNset, !app_data.global_tab_completion, NULL);
     XtVaSetValues(group_iconify_w,
 		  XmNset, app_data.group_iconify, NULL);
-    XtVaSetValues(global_tab_completion_w,
-		  XmNset, app_data.global_tab_completion, NULL);
     XtVaSetValues(save_history_on_exit_w,
 		  XmNset, app_data.save_history_on_exit, NULL);
 
@@ -1939,10 +1974,14 @@ void update_options()
 		  XmNset, app_data.cache_source_files, NULL);
     XtVaSetValues(cache_machine_code_w,
 		  XmNset, app_data.cache_machine_code, NULL);
-    XtVaSetValues(use_source_path_w,
-		  XmNset, app_data.use_source_path, NULL);
-    XtVaSetValues(display_glyphs_w,
+    XtVaSetValues(set_display_glyphs_w,
 		  XmNset, app_data.display_glyphs, NULL);
+    XtVaSetValues(set_display_text_w,
+		  XmNset, !app_data.display_glyphs, NULL);
+    XtVaSetValues(set_refer_path_w,
+		  XmNset, app_data.use_source_path, NULL);
+    XtVaSetValues(set_refer_base_w,
+		  XmNset, !app_data.use_source_path, NULL);
     XtVaSetValues(tab_width_w,
 		  XmNvalue, app_data.tab_width, NULL);
 
@@ -1950,7 +1989,9 @@ void update_options()
 		  XmNset, app_data.suppress_warnings, NULL);
 
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
-    set_sensitive(use_source_path_w, gdb->type() != GDB);
+    set_sensitive(set_refer_base_w, gdb->type() != GDB);
+    set_sensitive(set_refer_path_w, gdb->type() != GDB);
+    set_sensitive(refer_sources_w,  gdb->type() != GDB);
 
     Boolean state;
     arg = 0;
@@ -2046,11 +2087,218 @@ void update_options()
     EnableButtonDocs(app_data.button_docs);
     EnableTextTips(app_data.value_tips);
     EnableTextDocs(app_data.value_docs);
+
+    update_reset_preferences();
 }
 
 //-----------------------------------------------------------------------------
 // Preferences
 //-----------------------------------------------------------------------------
+
+// Original application resources
+static bool          option_state_saved = false;
+static AppData       initial_app_data;
+static Boolean       initial_show_grid;
+static Boolean       initial_show_hints;
+static Boolean       initial_snap_to_grid;
+static Boolean       initial_auto_layout;
+static LayoutMode    initial_layout_mode;
+static unsigned char initial_focus_policy;
+
+static Widget preferences_dialog;
+static Widget reset_preferences_w;
+static Widget current_panel;
+
+static void set_toggle(Widget w, Boolean set)
+{
+    if (XmToggleButtonGetState(w) != set)
+	XmToggleButtonSetState(w, set, True);
+}
+
+void save_option_state()
+{
+    initial_app_data = app_data;
+
+    XtVaGetValues(data_disp->graph_edit, 
+		  XtNshowGrid,   &initial_show_grid,
+		  XtNshowHints,  &initial_show_hints,
+		  XtNsnapToGrid, &initial_snap_to_grid,
+		  XtNlayoutMode, &initial_layout_mode, 
+		  XtNautoLayout, &initial_auto_layout,
+		  NULL);
+
+    XtVaGetValues(command_shell,
+		  XmNkeyboardFocusPolicy, &initial_focus_policy, NULL);
+
+    option_state_saved = true;
+    update_reset_preferences();
+}
+
+static void ResetGeneralPreferencesCB(Widget, XtPointer, XtPointer)
+{
+    set_toggle(button_tips_w, initial_app_data.button_tips);
+    set_toggle(button_docs_w, initial_app_data.button_docs);
+    set_toggle(value_tips_w, initial_app_data.value_tips);
+    set_toggle(value_docs_w, initial_app_data.value_docs);
+    set_toggle(set_global_completion_w, 
+	       initial_app_data.global_tab_completion);
+    set_toggle(set_console_completion_w, 
+	       !initial_app_data.global_tab_completion);
+    set_toggle(group_iconify_w, initial_app_data.group_iconify);
+    set_toggle(suppress_warnings_w, initial_app_data.suppress_warnings);
+    set_toggle(save_history_on_exit_w, initial_app_data.save_history_on_exit);
+}
+
+static bool general_preferences_changed()
+{
+    return app_data.button_tips != initial_app_data.button_tips
+	|| app_data.button_docs != initial_app_data.button_docs
+	|| app_data.value_tips != initial_app_data.value_tips
+	|| app_data.value_docs != initial_app_data.value_docs
+	|| app_data.global_tab_completion != 
+	    initial_app_data.global_tab_completion
+	|| app_data.group_iconify != initial_app_data.group_iconify
+	|| app_data.suppress_warnings != initial_app_data.suppress_warnings
+	|| app_data.save_history_on_exit != 
+	    initial_app_data.save_history_on_exit;
+}
+
+static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
+{
+    set_toggle(set_display_glyphs_w, initial_app_data.display_glyphs);
+    set_toggle(set_display_glyphs_w, !initial_app_data.display_glyphs);
+    set_toggle(set_refer_path_w, initial_app_data.use_source_path);
+    set_toggle(set_refer_base_w, !initial_app_data.use_source_path);
+    set_toggle(cache_source_files_w, initial_app_data.cache_source_files);
+    set_toggle(cache_machine_code_w, initial_app_data.cache_machine_code);
+
+    if (app_data.tab_width != initial_app_data.tab_width)
+    {
+	app_data.tab_width = initial_app_data.tab_width;
+	update_options();
+    }
+}
+
+static bool source_preferences_changed()
+{
+    return app_data.display_glyphs != initial_app_data.display_glyphs
+	|| app_data.use_source_path != initial_app_data.use_source_path
+	|| app_data.cache_source_files != initial_app_data.cache_source_files
+	|| app_data.cache_machine_code != initial_app_data.cache_machine_code
+	|| app_data.tab_width != initial_app_data.tab_width;
+}
+
+static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
+{
+    set_toggle(graph_show_grid_w, initial_show_grid);
+    set_toggle(graph_show_hints_w, initial_show_hints);
+    set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
+    set_toggle(graph_compact_layout_w, 
+	       initial_layout_mode == CompactLayoutMode);
+    set_toggle(graph_auto_layout_w, initial_auto_layout);
+}
+
+static bool data_preferences_changed()
+{
+    Boolean show_grid, show_hints, snap_to_grid, auto_layout;
+    LayoutMode layout_mode;
+
+    XtVaGetValues(data_disp->graph_edit, 
+		  XtNshowGrid,   &show_grid,
+		  XtNshowHints,  &show_hints,
+		  XtNsnapToGrid, &snap_to_grid,
+		  XtNlayoutMode, &layout_mode, 
+		  XtNautoLayout, &auto_layout,
+		  NULL);
+
+    return show_grid    != initial_show_grid
+	|| show_hints   != initial_show_hints
+	|| snap_to_grid != initial_snap_to_grid
+	|| layout_mode  != initial_layout_mode 
+	|| auto_layout  != initial_auto_layout;
+}
+
+static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
+{
+    Boolean separate = initial_app_data.separate_data_window 
+	|| initial_app_data.separate_source_window;
+
+    set_toggle(set_separate_windows_w, separate);
+    set_toggle(set_attached_windows_w, !separate);
+    set_toggle(set_status_bottom_w, initial_app_data.status_at_bottom);
+    set_toggle(set_status_top_w, !initial_app_data.status_at_bottom);
+
+    set_toggle(set_focus_pointer_w, initial_focus_policy == XmPOINTER);
+    set_toggle(set_focus_explicit_w, initial_focus_policy == XmEXPLICIT);
+
+    set_toggle(set_scrolling_panner_w, 
+	       initial_app_data.panned_graph_editor);
+    set_toggle(set_scrolling_scrollbars_w, 
+	       !initial_app_data.panned_graph_editor);
+
+    DebuggerType type = debugger_type(initial_app_data.debugger);
+    set_toggle(set_debugger_gdb_w, type == GDB);
+    set_toggle(set_debugger_dbx_w, type == DBX);
+    set_toggle(set_debugger_xdb_w, type == XDB);
+}
+
+bool startup_preferences_changed()
+{
+    Boolean initial_separate = 
+	initial_app_data.separate_data_window 
+	|| initial_app_data.separate_source_window;
+    Boolean separate = 
+	app_data.separate_data_window 
+	|| app_data.separate_source_window;
+
+    unsigned char focus_policy;
+    XtVaGetValues(command_shell,
+		  XmNkeyboardFocusPolicy, &focus_policy, NULL);
+
+    return separate != initial_separate
+	|| app_data.status_at_bottom != initial_app_data.status_at_bottom
+	|| focus_policy != initial_focus_policy
+	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
+	|| debugger_type(app_data.debugger) 
+	    != debugger_type(initial_app_data.debugger);
+}
+
+static void ResetPreferencesCB(Widget w, XtPointer client_data, 
+			       XtPointer call_data)
+{
+    Widget panel = (Widget)client_data;
+    string panel_name = XtName(panel);
+
+    if (panel_name == "general")
+	ResetGeneralPreferencesCB(w, client_data, call_data);
+    else if (panel_name == "source")
+	ResetSourcePreferencesCB(w, client_data, call_data);
+    else if (panel_name == "data")
+	ResetDataPreferencesCB(w, client_data, call_data);
+    else if (panel_name == "startup")
+	ResetStartupPreferencesCB(w, client_data, call_data);
+}
+
+static void update_reset_preferences()
+{
+    if (current_panel != 0 && reset_preferences_w != 0 && option_state_saved)
+    {
+	string panel_name = XtName(current_panel);
+
+	bool sensitive = false;
+
+	if (panel_name == "general")
+	    sensitive = general_preferences_changed();
+	else if (panel_name == "source")
+	    sensitive = source_preferences_changed();
+	else if (panel_name == "data")
+	    sensitive = data_preferences_changed();
+	else if (panel_name == "startup")
+	    sensitive = startup_preferences_changed();
+
+	XtSetSensitive(reset_preferences_w, sensitive);
+    }
+}
 
 static void ChangePanelCB(Widget, XtPointer client_data, XtPointer call_data)
 {
@@ -2061,14 +2309,21 @@ static void ChangePanelCB(Widget, XtPointer client_data, XtPointer call_data)
     if (cbs->set)
     {
 	XtManageChild(panel);
-	XtAddCallback(preferences_dialog, XmNhelpCallback, HelpOnThisCB, 
-		      XtPointer(panel));
+	XtAddCallback(preferences_dialog, XmNhelpCallback,
+		      HelpOnThisCB, XtPointer(panel));
+	XtAddCallback(reset_preferences_w, XmNactivateCallback,
+		      ResetPreferencesCB, XtPointer(panel));
+	current_panel = panel;
+
+	update_reset_preferences();
     }
     else
     {
 	XtUnmanageChild(panel);
-	XtRemoveCallback(preferences_dialog, XmNhelpCallback, HelpOnThisCB, 
-			 XtPointer(panel));
+	XtRemoveCallback(preferences_dialog, XmNhelpCallback,
+			 HelpOnThisCB, XtPointer(panel));
+	XtRemoveCallback(reset_preferences_w, XmNactivateCallback,
+			 ResetPreferencesCB, XtPointer(panel));
     }
 }
 
@@ -2107,15 +2362,10 @@ static void add_panel(Widget parent, Widget buttons,
     XtAddCallback(button, XmNvalueChangedCallback, ChangePanelCB, 
 		  XtPointer(form));
 
-    XmToggleButtonSetState(button, (Boolean)set,  False);
-    if (set)
-    {
-	XtManageChild(form);
-	XtAddCallback(preferences_dialog, XmNhelpCallback, HelpOnThisCB, 
-		      XtPointer(form));
-    }
-    else
-	XtUnmanageChild(form);
+    XmToggleButtonSetState(button, Boolean(set), False);
+    XmToggleButtonCallbackStruct cbs;
+    cbs.set = set;
+    ChangePanelCB(button, XtPointer(form), &cbs);
 }
 
 // Create preferences dialog
@@ -2129,15 +2379,17 @@ static void make_preferences(Widget parent)
 	verify(XmCreatePromptDialog(parent, "preferences", args, arg));
     Delay::register_shell(preferences_dialog);
 
-    // Remove old prompt and cancel button
+    // Remove old prompt
     Widget text = XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_TEXT);
     XtUnmanageChild(text);
     Widget old_label = 
 	XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_SELECTION_LABEL);
     XtUnmanageChild(old_label);
-    Widget cancel = 
-	XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_CANCEL_BUTTON);
-    XtUnmanageChild(cancel);
+
+    // Use cancel button to reset settings
+    reset_preferences_w = 
+        XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_CANCEL_BUTTON);
+    XtRemoveAllCallbacks(reset_preferences_w, XmNactivateCallback);
 
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;

@@ -60,16 +60,27 @@ int     DispBox::max_display_title_length = 20;
 // ***************************************************************************
 //
 DispBox::DispBox (string disp_nr,
-		  string name,
+		  string title,
 		  const DispValue* dv)
     : mybox(0), title_box(0)
 {
-    // Name kuerzen
-    shorten(name, max_display_title_length);
+    // Strip DBX scope information from title
+    static regex RXdbx_scope("[a-zA-Z_0-9]*`");
+    while (int(title.length()) > max_display_title_length 
+	   && title.contains(RXdbx_scope))
+    {
+	string postfix = title.after(RXdbx_scope);
+	title = title.before(RXdbx_scope);
+	title += postfix;
+    }
 
+    // Shorten remainder
+    shorten(title, max_display_title_length);
+
+    // Create display
     VSLArg args[3];
     args[0] = disp_nr;
-    args[1] = tag (name);
+    args[1] = tag (title);
 
     title_box = eval("title", args);
     

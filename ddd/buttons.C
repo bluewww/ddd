@@ -312,6 +312,7 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	    return MString(0, true);
 	}
 
+	tip = get_disp_value_str(tip, gdb);
 	int max_length = 
 	    for_documentation ? max_value_doc_length : max_value_tip_length;
 	shorten(tip, max_length);

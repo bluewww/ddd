@@ -45,5 +45,8 @@ void process_show(string command, string value, bool init = false);
 // Get settings string
 string get_gdb_settings();
 
+// Mark settings as `saved'
+void save_settings_state();
+
 #endif // _DDD_settings_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

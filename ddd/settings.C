@@ -172,6 +172,22 @@ static void update_reset_settings()
     XtSetSensitive(reset_settings, False);
 }
 
+// Save `settings' state
+static void save_settings_state()
+{
+    if (settings_form == 0)
+	return;
+
+    for (int i = 0; i < entries.size(); i++)
+    {
+	Widget entry = entries[i];
+	initial_values[entry] = values[entry];
+    }
+
+    update_reset_settings();
+}
+    
+
 // Process output of `show' command
 void process_show(string command, string value, bool init)
 {

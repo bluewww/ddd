@@ -301,7 +301,7 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     XtCallbackProc closure = ddd_is_restarting ? RestartCB : ExitCB;
 
-    if (startup_options_changed)
+    if (startup_preferences_changed())
     {
 	// Startup options are still changed; request confirmation
 	if (yn_dialog)

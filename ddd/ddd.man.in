@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "09 January 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "27 January 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -233,15 +233,34 @@ But before that, we tell you how to get interactive help.
 .SH "GETTING HELP"
 .\" ---------------
 .\"
-You can get help on any visible \s-2@DDD@\s+2 item by pressing the
-`\fBF1\fR' key and moving the question mark arrow on the item you
-want help for.  Clicking on the item pops up a help text.
+.SS "Button Tips"
+.\"
+You can get a short help text on most \s-2@DDD@\s+2 buttons by simply
+moving the mouse pointer on it and leave it there.  After a second, a
+small window (called \fIbutton tip\fR) pops up, giving a hint on the
+button's meaning.  The button tip disappears as soon as you move the
+mouse pointer to another item.
 .PP
+The status line also displays information about the button pointed at;
+it also describes the current menu item.
+.\"
+.SS "Context-Sensitive Help"
+.\"
+You can get detailed help on any visible \s-2@DDD@\s+2 item by pressing the
+`\fBF1\fR' key and moving the question mark arrow on the item you
+want help for.  Clicking on the item pops up a detailed help text.
+.PP
+The \s-2@DDD@\s+2 dialogs all contain `\fBHelp\fR' buttons that give
+detailed information about the dialog.
+.\"
+.SS "Help on Debugger Commands"
+.\"
 You can get help on \s-2GDB\s+2 and \s-2DBX\s+2 commands by entering
 `\fBhelp\fR' at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt.  You can
 get help on \s-2XDB\s+2 commands by entering `\fBhelp\fR' at the
-`\fB>\fR' prompt.  See the following section for details on entering
-commands.
+`\fB>\fR' prompt.
+.PP
+See the following section for details on entering commands.
 .\"
 .\" ---------------
 .SH "ENTERING COMMANDS"
@@ -795,19 +814,57 @@ respectively, will also move you through the stack.
 .SH "EXAMINING DATA"
 .\" ---------------
 .\"
-In \s-2@DDD@\s+2, the usual way to examine data is using the \fIgraphical data
+.TP
+\s-2@DDD@\s+2 provides three means to examine data.
+.TP 10
+.B "Value Hints"
+The quickest way to examine variables is to move the pointer on an
+occurrence in the source text.  The value is displayed in the source
+line; after a second, a popup window shows the variable value.  This
+is useful for quick examination of several simple variables.
+.TP 10
+.B "Printing Values"
+If you want to reuse variable values at a later time, you can print
+the value in the debugger console.  This allows for displaying and
+examining larger data structures.
+.TP 10
+.B "Displaying Values"
+If you want to examine complex data structures, you can display them
+graphically in the data display.  Displays remain effective until you
+delete them; they are updated each time the program stops.  This is
+useful for large dynamic structures.
+.PP
+.\"
+.SS "Displaying Simple Values"
+To display the value of a simple variable, move the mouse pointer on
+its name.  After a second, a small window pops up showing its value.
+The window disappears as soon as you move the mouse pointer away from
+the variable.  The value is also shown in the status line.
+.PP
+The variable value can also be printed in the debugger console, making
+it available for further operations.  To print a variable value,
+select the desired variable by clicking the \fIleft mouse button\fR on
+its name.  The variable name is copied to the argument field.  By
+clicking the `\fBPrint()\fR' button, a new display is created in the
+data window.
+.PP
+As a shorter alternative, you can simply press the \fIright mouse
+button\fR on the variable name and select the `\fBPrint\fR' item from
+the popup menu.
+.\"
+.SS "Displaying Complex Values"
+To explore complex data structures, you can use the \fIgraphical data
 display\fR in the \fIdata window\fR.  The data window holds
 \fIdisplays\fR showing names and the values of variables.  The display
 is updated each time the program stops.
-.\"
-.SS "Displaying Variable Values"
-To create a new display, select the variable by clicking the \fIleft mouse
-button\fR on its name.  The variable name is copied to the argument
-field.  By clicking the `\fBDisplay()\fR' button, a new display is
-created in the data window.
+.PP
+To create a new display, select the desired variable by clicking the
+\fIleft mouse button\fR on its name.  The variable name is copied to
+the argument field.  By clicking the `\fBDisplay()\fR' button, a new
+display is created in the data window.
 .PP
 As a shorter alternative, you can simply press the \fIright mouse
-button\fR on the variable name and select the `\fBdisplay\fR' item from
+button\fR on the variable name and select the `\fBDisplay\fR' item from
 the popup menu.
 .PP
 As another alternative, you may also enter the variable name in the
@@ -821,7 +878,7 @@ prompt dialog.
 Finally, you may enter
 .sp
 .br
-  \fBgraph display \fI expr\fR
+  \fBgraph display \fIexpr\fR
 .sp
 .br
 \&at the debugger prompt.
@@ -873,7 +930,7 @@ displaying all details, or \fIhidden\fR, that is, displayed as
 `\fB{...}\fR'.
 .PP
 To show details about an aggregate, select the aggregate by clicking
-the \fIleft mouse button\fR on its name or value and click on the
+the \fIleft mouse button\fR o	n its name or value and click on the
 `\fBShow()\fR' button.  Details are shown for the aggregate itself as
 well as for all contained sub-aggregates.
 .PP
@@ -1432,8 +1489,8 @@ program to be debugged.  Proceed as usual.
 .SS "Using @DDD@ with XEmacs"
 Set the variable \fBgdb-command-name\fR to \fB"ddd"\fR, by inserting
 the following line in your \fB$HOME/.emacs\fR file or evaluating it by
-pressing \s-2\fBESC\fR\s+2 \s-2\fBESC\fR\s+2 \s-2\fB:\fR\s+2\fR
-(\s-2\fBESC\fR\s+2 \s-2\fBESC\fR\s+2 for XEmacs 19.13 and earlier):
+pressing \s-2\fBESC\fR\s+2 \s-2\fB:\fR\s+2\fR (\s-2\fBESC\fR\s+2
+\s-2\fBESC\fR\s+2 for XEmacs 19.13 and earlier):
 .br
 .sp
   \fB(setq gdb-command-name "@ddd@")\fR
@@ -1480,10 +1537,27 @@ preferences:
 .SS "General Preferences"
 These items are found in the `\fBGeneral Preferences\fR' menu:
 .PP
-By default, when you move the pointer over a button,
-\s-2@DDD@\s+2 gives a hint on the button's meaning in a small window.
-Experienced users may find these \fIbutton hints\fR
-disturbing; this is why you can disable them.
+By default, when you move the pointer over a button, \s-2@DDD@\s+2
+gives a hint on the button's meaning in a small window.  Experienced
+users may find these \fIbutton tips\fR disturbing; this is why you
+can disable them by unsetting the `\fBAutomatic display of button
+hints as popup tips\fR' option.
+.PP
+The button hints are also displayed in the status line.  Disabling
+hints in status line (by unsetting the `\fBAutomatic display of button
+hints in the status line\fR' option) and disabling button tips as well
+makes \s-2@DDD@\s+2 run slightly faster.
+.PP
+By default, when you move the pointer over a variable in the source
+code, \s-2@DDD@\s+2 displays the variable value in a small window.
+Users may find these \fIvalue tips\fR disturbing; this is why you can
+disable them by unsetting the `\fBAutomatic display of variable
+values as popup tips\fR' option.
+.PP
+The variable values are also displayed in the status line.  Disabling
+variable values in status line (by unsetting the `\fBAutomatic display
+of variable values in the status line\fR' option) and disabling value
+tips as well will make \s-2@DDD@\s+2 run slightly faster.
 .PP
 If you frequently switch between \s-2@DDD@\s+2 and other multi-window
 applications, you may like to set the `\fBIconify all windows at
@@ -1491,7 +1565,7 @@ once\fR' option.  This way, all \s-2@DDD@\s+2 windows are iconified
 and deiconified as a group.
 .PP
 If you want to use \s-2\fBTAB\fR\s+2 key completion in all text
-windows, set the `\fBTab key completes in all windows\fR' option.
+windows, set the `\fBTAB key completes in all windows\fR' option.
 This is useful if you have pointer-driven keyboard focus (see below)
 and no special usage for the \s-2\fBTAB\fR\s+2 key.
 .PP
@@ -1785,10 +1859,14 @@ the `\fBvslDefs\fR' resource, below.
 The following resources determine \s-2@DDD@\s+2 options and
 preferences.
 .TP
-.B "buttonTips (\fPclass\fB ButtonTips)"
+.B "buttonTips (\fPclass\fB Tips)"
 Whether button tips are enabled (`\fBtrue\fR', default) or
 not (`\fBfalse\fR').  Button tips are helpful for novices, but
 may be distracting for experienced users.
+.TP
+.B "buttonDocs (\fPclass\fB Docs)"
+Whether the display of button hints in the status line is enabled
+(`\fBtrue\fR', default) or not (`\fBfalse\fR').
 .TP
 .B "cacheMachineCode (\fPclass\fB CacheMachineCode)"
 Whether to cache disassembled machine code (`\fBtrue\fR', default) or
@@ -1885,6 +1963,15 @@ The tab width used in the source window (default: \fB8\fR)
 If this is `\fBfalse\fR' (default), the inferior debugger refers to
 source code locations only by their base names.  If this is
 `\fBtrue\fR' (default), \s-2DDD\s+2 uses the full source code paths.
+.TP
+.B "valueTips (\fPclass\fB Tips)"
+Whether value tips are enabled (`\fBtrue\fR', default) or not
+(`\fBfalse\fR').  Value tips affect \s-2@DDD@\s+2 performance and may
+be distracting for some experienced users.
+.TP
+.B "valueDocs (\fPclass\fB Docs)"
+Whether the display of variable values in the status line is enabled
+(`\fBtrue\fR', default) or not (`\fBfalse\fR').
 .\"
 .\"
 .\"

@@ -19,6 +19,8 @@ DDD 2.1 (in development)
     - The status line has moved to the bottom.  (can be restored)
     - The tab width can now be changed at run time.
     - Floating-point registers can be displayed.
+    - The `Preferences' panel has been extended and reworked.  You can
+      now reset the DDD preferences to the previously saved settings.
     - The `Break' button is now named `Interrupt' (as in DDD 1.x), to
       avoid confusion with the `Break At' button.  The `Quit' menu
       item is now named `Abort', to avoid confusion with the `Exit'

@@ -56,14 +56,6 @@ char options_rcsid[] =
 #include <fstream.h>
 
 
-//-----------------------------------------------------------------------------
-// Data
-//-----------------------------------------------------------------------------
-
-// True if options were changed
-bool options_changed         = false;
-bool startup_options_changed = false;
-
 
 //-----------------------------------------------------------------------------
 // Source Options
@@ -82,7 +74,6 @@ void sourceToggleFindWordsOnlyCB (Widget, XtPointer, XtPointer call_data)
 	set_status("Finding arbitrary occurrences.");
 
     update_options();
-    options_changed = true;
 }
 
 void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer call_data)
@@ -99,7 +90,6 @@ void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer call_data)
 		   "Source text cache has been cleared.");
 
     update_options();
-    options_changed = true;
 }
 
 void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer call_data)
@@ -116,40 +106,35 @@ void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer call_data)
 		   "Machine code cache has been cleared.");
 
     update_options();
-    options_changed = true;
 }
 
-void sourceToggleUseSourcePathCB (Widget, XtPointer, XtPointer call_data)
+void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 {
-    XmToggleButtonCallbackStruct *info = 
-	(XmToggleButtonCallbackStruct *)call_data;
+    Boolean state = Boolean(client_data != 0);
 
-    app_data.use_source_path = info->set;
+    app_data.use_source_path = state;
 
-    if (info->set)
+    if (state)
 	set_status("Referring to sources using full source file paths.");
     else
 	set_status("Referring to sources using source file base names only.");
 
     source_arg->set_string(source_view->line_of_cursor());
     update_options();
-    options_changed = true;
 }
 
-void sourceToggleDisplayGlyphsCB (Widget, XtPointer, XtPointer call_data)
+void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
 {
-    XmToggleButtonCallbackStruct *info = 
-	(XmToggleButtonCallbackStruct *)call_data;
+    Boolean state = Boolean(client_data != 0);
 
-    app_data.display_glyphs = info->set;
+    app_data.display_glyphs = state;
 
-    if (info->set)
+    if (state)
 	set_status("Displaying breakpoints and positions as glyphs.");
     else
 	set_status("Displaying breakpoints and positions in the text.");
 
     update_options();
-    options_changed = true;
 }
 
 void sourceToggleDisassembleCB (Widget, XtPointer, XtPointer call_data)
@@ -165,7 +150,6 @@ void sourceToggleDisassembleCB (Widget, XtPointer, XtPointer call_data)
 	set_status("Not showing machine code.");
 
     update_options();
-    options_changed = true;
 }
 
 void sourceToggleAllRegistersCB (Widget, XtPointer, XtPointer call_data)
@@ -181,7 +165,6 @@ void sourceToggleAllRegistersCB (Widget, XtPointer, XtPointer call_data)
 	set_status("Showing integer registers only.");
 
     update_options();
-    options_changed = true;
 }
 
 void sourceSetTabWidthCB (Widget, XtPointer, XtPointer call_data)
@@ -193,7 +176,6 @@ void sourceSetTabWidthCB (Widget, XtPointer, XtPointer call_data)
     set_status("Tab width set to " + itostring(app_data.tab_width) + ".");
 
     update_options();
-    options_changed = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -216,7 +198,6 @@ void graphToggleShowGridCB(Widget, XtPointer, XtPointer call_data)
 	set_status("Grid off.");
 
     update_options();
-    options_changed = true;
 }
 
 void graphToggleShowHintsCB(Widget, XtPointer, XtPointer call_data)
@@ -235,7 +216,6 @@ void graphToggleShowHintsCB(Widget, XtPointer, XtPointer call_data)
 	set_status("Hints off.");
 
     update_options();
-    options_changed = true;
 }
 
 
@@ -255,7 +235,6 @@ void graphToggleSnapToGridCB(Widget, XtPointer, XtPointer call_data)
 	set_status("Snap to grid off.");
 
     update_options();
-    options_changed = true;
 }
 
 
@@ -279,7 +258,6 @@ void graphToggleCompactLayoutCB(Widget, XtPointer, XtPointer call_data)
 	set_status("Regular layout enabled.");
 
     update_options();
-    options_changed = true;
 }
 
 void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
@@ -298,7 +276,6 @@ void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
 	set_status("Automatic Layout off.");
 
     update_options();
-    options_changed = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -318,23 +295,20 @@ void dddToggleGroupIconifyCB (Widget, XtPointer, XtPointer call_data)
 	set_status(DDD_NAME " windows are iconified separately.");
 
     update_options();
-    options_changed = true;
 }
 
-void dddToggleGlobalTabCompletionCB(Widget, XtPointer, XtPointer call_data)
+void dddSetGlobalTabCompletionCB(Widget, XtPointer client_data, XtPointer)
 {
-    XmToggleButtonCallbackStruct *info = 
-	(XmToggleButtonCallbackStruct *)call_data;
+    Boolean state = Boolean(client_data != 0);
 
-    app_data.global_tab_completion = info->set;
+    app_data.global_tab_completion = state;
 
-    if (info->set)
+    if (state)
 	set_status("TAB key completes in all " DDD_NAME " windows.");
     else
 	set_status("TAB key completes in " DDD_NAME " debugger console only.");
 
     update_options();
-    options_changed = true;
 }
 
 void dddToggleSeparateExecWindowCB (Widget, XtPointer, XtPointer call_data)
@@ -352,7 +326,6 @@ void dddToggleSeparateExecWindowCB (Widget, XtPointer, XtPointer call_data)
 		   DDD_NAME " debugger console.");
 
     update_options();
-    options_changed = true;
 }
 
 void dddToggleSaveHistoryOnExitCB (Widget, XtPointer, XtPointer call_data)
@@ -368,7 +341,6 @@ void dddToggleSaveHistoryOnExitCB (Widget, XtPointer, XtPointer call_data)
 	set_status("History will not be saved.");
 
     update_options();
-    options_changed = true;
 }
 
 void dddToggleSuppressWarningsCB (Widget, XtPointer, XtPointer call_data)
@@ -384,7 +356,6 @@ void dddToggleSuppressWarningsCB (Widget, XtPointer, XtPointer call_data)
 	set_status("X Warnings are not suppressed.");
 
     update_options();
-    options_changed = true;
 }
 
 void dddToggleButtonTipsCB (Widget, XtPointer, XtPointer call_data)
@@ -400,7 +371,6 @@ void dddToggleButtonTipsCB (Widget, XtPointer, XtPointer call_data)
 	set_status("Button tips disabled.");
 
     update_options();
-    options_changed = true;
 }
 
 void dddToggleValueTipsCB (Widget, XtPointer, XtPointer call_data)
@@ -416,7 +386,6 @@ void dddToggleValueTipsCB (Widget, XtPointer, XtPointer call_data)
 	set_status("Value tips disabled.");
 
     update_options();
-    options_changed = true;
 }
 
 void dddToggleButtonDocsCB (Widget, XtPointer, XtPointer call_data)
@@ -432,7 +401,6 @@ void dddToggleButtonDocsCB (Widget, XtPointer, XtPointer call_data)
 	set_status("Button docs disabled.");
 
     update_options();
-    options_changed = true;
 }
 
 void dddToggleValueDocsCB (Widget, XtPointer, XtPointer call_data)
@@ -448,7 +416,6 @@ void dddToggleValueDocsCB (Widget, XtPointer, XtPointer call_data)
 	set_status("Value docs disabled.");
 
     update_options();
-    options_changed = true;
 }
 
 
@@ -483,7 +450,6 @@ void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 
     update_options();
     post_startup_warning(w);
-    startup_options_changed = options_changed = true;
 }
 
 void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
@@ -499,7 +465,6 @@ void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
 
     update_options();
     post_startup_warning(w);
-    startup_options_changed = options_changed = true;
 }
 
 void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
@@ -541,7 +506,6 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
     }
 
     update_options();
-    startup_options_changed = options_changed = true;
 }
 
 void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
@@ -558,7 +522,6 @@ void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
 
     update_options();
     post_startup_warning(w);
-    startup_options_changed = options_changed = true;
 }
 
 void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
@@ -585,7 +548,6 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
 
     update_options();
     post_startup_warning(w);
-    startup_options_changed = options_changed = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -802,7 +764,8 @@ void save_options(Widget origin)
     os << widget_value(data_disp->graph_edit, XtNlayoutMode) << "\n";
     os << widget_value(data_disp->graph_edit, XtNautoLayout) << "\n";
 
-    startup_options_changed = options_changed = false;
+    save_option_state();
+    save_settings_state();
 }
 
 void DDDSaveOptionsCB (Widget w, XtPointer, XtPointer)

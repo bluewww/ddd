@@ -704,7 +704,7 @@ PROGS = $(ddd)
 
 ## Extra demonstration files.
 DEMOS = userinfo huffencode huffdecode cxxtest ctest test-file test-graph \
-        vsl ttytest bug ptest m2test tString mmtest shorten
+        vsl ttytest bug ptest m2test tString mmtest
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
@@ -1033,17 +1033,6 @@ cxxtest.o: $(srcdir)/cxxtest.C
 	$(MAKE) CXXDEBUG=-g $@; \
 	else \
 	set -x; $(COMPILE.cc) $(INCLUDE) -o $@ $(srcdir)/cxxtest.C; \
-	fi
-
-SHORTEN_OBJECTS = strclass.o rxclass.o cook.o IntIntAA.o
-shorten: $(srcdir)/shorten.C $(SHORTEN_OBJECTS)
-	@if test "$(CXXOPT)" != ""; then \
-	$(MAKE) CXXOPT= $@; \
-	elif test "$(CXXDEBUG)" = ""; then \
-	$(MAKE) CXXDEBUG=-g $@; \
-	else \
-	set -x; $(COMPILE_AND_LINK.cc) $(INCLUDE) -DMAIN -o $@ \
-		$(srcdir)/shorten.C $(SHORTEN_OBJECTS) $(LIBS); \
 	fi
 
 ctest.o: $(srcdir)/ctest.c

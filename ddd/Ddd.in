@@ -523,10 +523,10 @@ Ddd*maxDisplayTitleLength:	20
 Ddd*maxPopupExprLength:		20
 
 ! The maximum length of a value tip.
-Ddd*maxValueTipLength:		40
+Ddd*maxValueTipLength:		60
 
 ! The maximum length of a value doc.
-Ddd*maxValueDocLength:		120
+Ddd*maxValueDocLength:		100
 
 
 
@@ -2087,21 +2087,24 @@ Ddd*helpMenu.www.documentationString:	\
 ! Preferences
 !-----------------------------------------------------------------------------
 
-Ddd*preferences_popup*okLabelString: Close
-Ddd*preferences_popup.title: @DDD@: Preferences
+Ddd*preferences_popup*okLabelString: 		Close
+Ddd*preferences_popup*cancelLabelString:	Reset
+Ddd*preferences_popup.title:			@DDD@: Preferences
 
-Ddd*preferences*buttons.orientation: XmHORIZONTAL
-Ddd*preferences*buttons.borderWidth:  0
-Ddd*preferences*buttons.marginWidth:  0
-Ddd*preferences*buttons.marginHeight: 0
-Ddd*preferences*buttons.entryAlignment: XmALIGNMENT_CENTER
-Ddd*preferences*buttons*indicatorOn:  False
-Ddd*preferences*buttons*shadowThickness: 2
-Ddd*preferences*buttons*alignment: XmALIGNMENT_CENTER
-Ddd*preferences*buttons*general.labelString: General Preferences
-Ddd*preferences*buttons*source.labelString:  Source Preferences
-Ddd*preferences*buttons*data.labelString:    Data Preferences
-Ddd*preferences*buttons*startup.labelString: Startup Preferences
+Ddd*preferences*buttons.orientation: 		XmHORIZONTAL
+Ddd*preferences*buttons.borderWidth:  		0
+Ddd*preferences*buttons.marginWidth:  		0
+Ddd*preferences*buttons.marginHeight:		0
+Ddd*preferences*buttons.entryAlignment:		XmALIGNMENT_CENTER
+Ddd*preferences*buttons*indicatorOn:		False
+Ddd*preferences*buttons*shadowThickness:	2
+Ddd*preferences*buttons*alignment:		XmALIGNMENT_CENTER
+Ddd*preferences*panel*XmRowColumn.marginHeight: 0
+
+Ddd*preferences*buttons*general.labelString:	General Preferences
+Ddd*preferences*buttons*source.labelString:	Source Preferences
+Ddd*preferences*buttons*data.labelString:	Data Preferences
+Ddd*preferences*buttons*startup.labelString:	Startup Preferences
 
 Ddd*preferences*general*helpString:	\
 @rm These are the @sl General Preferences@rm.\n\
@@ -2125,7 +2128,7 @@ in the status line.\n\
 @tt \267 @rm If @bf Iconify all windows at once @rm is set, all @DDD@ windows \
 are iconified as a group.\n\
     Otherwise, windows are iconified separately.\n\
-@tt \267 @rm If @bf Tab key completes in all windows @rm is set, \
+@tt \267 @rm If @bf TAB key completes in all windows @rm is set, \
 the @key TAB @rm key completes\n\
     arguments in all @DDD@ windows.\n\
     Otherwise, the  @key TAB @rm key completes \
@@ -2137,22 +2140,37 @@ the command history is\n\
     automatically saved when @DDD@ exits.\n\
     Otherwise, the command history is discarded.\n\
 \n\
-Use the buttons above to view and change other preferences.
+Use the buttons above to view and change other preferences.\n\
+Click on @bf Reset @rm to restore the saved preferences.
+
 
 Ddd*preferences*buttonHints.labelString:	 \
 Automatic display of button hints
 Ddd*preferences*valueHints.labelString:	 \
 Automatic display of variable values
+
 Ddd*preferences*tips.labelString: as popup tips
 Ddd*preferences*docs.labelString: in the status line
-Ddd*preferences*panel*XmRowColumn.marginHeight: 0
-Ddd*preferences*valueHintsPanel.packing: XmPACK_COLUMN
-Ddd*preferences*buttonHintsPanel.packing: XmPACK_COLUMN
+
+Ddd*preferences*tabCompletion.labelString: \
+TAB key completes
+Ddd*preferences*inAllWindows.labelString: in all windows
+Ddd*preferences*inConsole.labelString: in console only
+
+Ddd*preferences*buttonHints.alignment:		XmALIGNMENT_END
+Ddd*preferences*buttonHints.width:      	240
+Ddd*preferences*buttonHints.recomputeSize:	false
+
+Ddd*preferences*valueHints.alignment:		XmALIGNMENT_END
+Ddd*preferences*valueHints.width:      		240
+Ddd*preferences*valueHints.recomputeSize:	false
+
+Ddd*preferences*tabCompletion.alignment:	XmALIGNMENT_END
+Ddd*preferences*tabCompletion.width:      	240
+Ddd*preferences*tabCompletion.recomputeSize:	false
 
 Ddd*preferences*groupIconify.labelString:	 \
 Iconify all windows at once
-Ddd*preferences*globalTabCompletion.labelString: \
-Tab key completes in all windows
 Ddd*preferences*suppressWarnings.labelString:	 \
 Suppress X warnings
 Ddd*preferences*saveHistoryOnExit.labelString:	 \
@@ -2162,31 +2180,45 @@ Save command history on exit
 Ddd*preferences*source*helpString:	\
 @rm These are the @sl Source Preferences@rm.\n\
 \n\
-@tt \267 @rm If @bf Use glyphs @rm is set, \
-positions and breakpoints are shown as glyphs.\n\
-    Otherwise, they are shown as characters in the text.\n\
-@tt \267 @rm If @bf Cache source files @rm is set, \
-source texts are cached in memory.\n\
-    Otherwise, sources are read from disk upon each source change.\n\
-@tt \267 @rm If @bf Cache machine code @rm is set, \
-disassembled code is cached in memory.\n\
-    Otherwise, code is re-disassembled upon each function change.\n\
-@tt \267 @rm If @bf Refer to sources by full path name @rm is set, \n\
+@tt \267 @rm If @bf Refer to program sources by full path name @rm is set, \n\
     source code locations are referred by full source file paths.\n\
     Otherwise, only the base name is used.\n\
+@tt \267 @rm If @bf Show position and breakpoints as glyphs @rm \
+is set, \n\
+    the current execution position and breakpoints are shown as glyphs.\n\
+    Otherwise, they are shown as characters in the text.\n\
+@tt \267 @rm If @bf Cache source files in memory @rm is set, \
+source texts are cached in memory.\n\
+    Otherwise, sources are read from disk upon each source change.\n\
+@tt \267 @rm If @bf Cache machine code in memory @rm is set, \
+disassembled code is cached in memory.\n\
+    Otherwise, code is re-disassembled upon each function change.\n\
 @tt \267 @rm In @bf Tab Width@rm, you can set the spacing of tab stops.\n\
     Setting the tab width to 8 sets a tab stop every 8 characters.\n\
 \n\
-Use the buttons above to view and change other preferences.
+Use the buttons above to view and change other preferences.\n\
+Click on @bf Reset @rm to restore the saved preferences.
 
-Ddd*preferences*displayGlyphs.labelString:	 \
-Use glyphs for showing execution position and breakpoints
+Ddd*preferences*showExecPos.labelString:	 \
+Show position and breakpoints
+Ddd*preferences*showExecPos.alignment:		XmALIGNMENT_END
+Ddd*preferences*showExecPos.width:		200
+Ddd*preferences*showExecPos.recomputeSize:	false
+Ddd*preferences*asGlyphs.labelString:		as glyphs
+Ddd*preferences*asText.labelString:		as text characters
+
+Ddd*preferences*referSources.labelString:	 \
+Refer to program sources
+Ddd*preferences*referSources.alignment:		XmALIGNMENT_END
+Ddd*preferences*referSources.width:		200
+Ddd*preferences*referSources.recomputeSize:	false
+Ddd*preferences*byPath.labelString:		by full path name
+Ddd*preferences*byBase.labelString:		by base name only
+
 Ddd*preferences*cacheSourceFiles.labelString:	 \
-Cache source files
+Cache source files in memory
 Ddd*preferences*cacheMachineCode.labelString:	 \
-Cache machine code
-Ddd*preferences*useSourcePath.labelString:	 \
-Refer to sources by full path name
+Cache machine code in memory
 Ddd*preferences*tabWidth.orientation:	 XmHORIZONTAL
 Ddd*preferences*tabWidth.minimum:	 1
 Ddd*preferences*tabWidth.maximum:	 32
@@ -2211,7 +2243,8 @@ Ddd*preferences*data*helpString:	\
  after each change.\n\
     Otherwise, layout can be invoked manually.\n\
 \n\
-Use the buttons above to view and change other preferences.
+Use the buttons above to view and change other preferences.\n\
+Click on @bf Reset @rm to restore the saved preferences.
 
 Ddd*preferences*showGrid.labelString:	       Show grid
 Ddd*preferences*showHints.labelString:	       Show edge hints
@@ -2244,7 +2277,8 @@ Ddd*preferences*startup*helpString:   \
 Note: these startup preferences take effect only after saving options\n\
 and restarting @DDD@.\n\
 \n\
-Use the buttons above to view and change other preferences.
+Use the buttons above to view and change other preferences.\n\
+Click on @bf Reset @rm to restore the saved preferences.
 
 Ddd*preferences*startup*adjustMargin:		false
 
@@ -2325,7 +2359,7 @@ using @bf Save Options @rm in the @bf Options @rm menu.\n\
 Click on @bf ? @rm near an item to get further information.\n\
 In a text field, press the @key RETURN @rm key to commit the changes.\n\
 \n\
-Click on @bf Reset @rm to restore the settings at start-up.\n\
+Click on @bf Reset @rm to restore the saved settings.\n\
 Click on @bf Close @rm to close this window.
 
 
