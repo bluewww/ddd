@@ -27,7 +27,9 @@
 # or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 # This file requires GNU awk (gawk) or any other AWK according to the
-# Posix 1003.2(draft 11.3) definition of the AWK language.
+# Posix 1003.2(draft 11.3) definition of the AWK language - that is,
+# AWK as defined in Aho, Kernighan and Weinberger, The AWK Programming
+# Language, Addison-Wesley Publishing, 1988, (`the AWK book').
 
 # Initialize variables.
 
