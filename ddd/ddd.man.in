@@ -55,25 +55,25 @@
 .RB "[\|" \-\-login
 .I username\c
 \&\|]\|]
-.RB "[\|" \-\-vsl\-library
+.RB "[\|" \-\-vsl-library
 .I library\c
 \&\|]
-.RB "[\|" \-\-vsl\-path
+.RB "[\|" \-\-vsl-path
 .I path\c
 \&\|]
-.RB "[\|" \-\-exec\-window "\|]"
-.RB "[\|" \-\-no\-exec\-window "\|]"
-.RB "[\|" \-\-attach\-windows "\|]"
-.RB "[\|" \-\-separate\-windows "\|]"
-.RB "[\|" \-\-scrolled\-graph\-editor "\|]"
-.RB "[\|" \-\-panned\-graph\-editor "\|]"
+.RB "[\|" \-\-exec-window "\|]"
+.RB "[\|" \-\-no-exec-window "\|]"
+.RB "[\|" \-\-attach-windows "\|]"
+.RB "[\|" \-\-separate-windows "\|]"
+.RB "[\|" \-\-scrolled-graph-editor "\|]"
+.RB "[\|" \-\-panned-graph-editor "\|]"
 .RB "[\|" \-\-trace "\|]"
 .RB "[\|" \-\-nw "\|]"
 .RB "[\|" \-\-tty "\|]"
 .RB "[\|" \-\-fullname "\|]"
 .RB "[\|" \-\-version "\|]"
 .RB "[\|" \-\-configuration "\|]"
-.RB "[\|" \-\-check\-configuration "\|]"
+.RB "[\|" \-\-check-configuration "\|]"
 .RB "[\|" \-\-manual "\|]"
 .RB "[\|" \-\-license "\|]"
 .RB "[\|"\c
@@ -281,7 +281,7 @@ See `\fBEntering Commands\fR', below, for details on entering commands.
 .SS "Are You Stuck?"
 .\"
 In case you're stuck, try `\fBHelp | What Next\fR' (the `\fBWhat
-Next\fR' item in the `\fBHelp\fR' menu) or press `\fBShift+F1\fR'.
+Next\fR' item in the `\fBHelp\fR' menu) or press \fBShift+F1\fR.
 Depending on the current state, \s-2@DDD@\s+2 will give you some hints
 on what you can do next.
 .\"
@@ -1462,7 +1462,7 @@ scroll bars or panners.
 .PP
 For fine-grain movements, selected displays may also be moved using
 the arrow keys.  Pressing \fBShift\fR and an arrow key moves displays
-by single pixels.  Pressing `\fBCtrl\fR' and arrow keys moves displays
+by single pixels.  Pressing \fBCtrl\fR and arrow keys moves displays
 by grid positions.
 .PP
 Edge hints can be selected and moved around like other displays.  If
@@ -1838,7 +1838,7 @@ To run the remote program, \s-2@DDD@\s+2 invokes an `\fBxterm\fR' terminal
 emulator on the remote host, giving your current `\fBDISPLAY\fR'
 environment variable as address.  If the remote host cannot invoke
 `\fBxterm\fR', or does not have access to your X display, start
-\s-2@DDD@\s+2 with the `\fB\-\-no\-exec\-window\fR' option.  The program
+\s-2@DDD@\s+2 with the `\fB\-\-no-exec-window\fR' option.  The program
 input/output will then go through the \s-2@DDD@\s+2 debugger console.
 .br
 .IP \(bu 2
@@ -1848,7 +1848,7 @@ operation than normal.
 .br
 .IP \(bu 2
 To help you find problems due to remote execution, run \s-2@DDD@\s+2 with the
-`\fB\-\-trace\-shell\-commands\fR' option.  This prints the shell
+`\fB\-\-trace-shell-commands\fR' option.  This prints the shell
 commands issued by \s-2@DDD@\s+2 on standard error.
 .\"
 .\"
@@ -1916,7 +1916,7 @@ console, as its facilities are supposed to be provided by the
 integrating front-end.  If the front-end also provides source and/or
 data facilities, you may be interested in disabling the \s-2@DDD@\s+2
 source window or the \s-2@DDD@\s+2 data window, too.  Use the
-`\fB\-\-no\-source\-window\fR' and `\fB\-\-no\-data\-window\fR'
+`\fB\-\-no-source-window\fR' and `\fB\-\-no-data-window\fR'
 options for this purpose.
 .\"
 .\"
@@ -2182,8 +2182,8 @@ By default, \s-2@DDD@\s+2 uses one single window for commands, source,
 and data.  To have separate windows for source, data, and debugger
 console, set the `\fBWindows\fR' option to `\fBSeparate Windows\fR'.
 This change takes only effect after you have saved options and
-restarted \s-2@DDD@\s+2.  See also the `\fB\-\-attach\-windows\fR' and
-`\fB\-\-separate\-windows\fR' options, below.
+restarted \s-2@DDD@\s+2.  See also the `\fB\-\-attach-windows\fR' and
+`\fB\-\-separate-windows\fR' options, below.
 .PP
 \s-2@DDD@\s+2 can display the status line at the bottom (`\fBat
 bottom\fR') or at the top (`\fBat top\fR') of the source.  This change
@@ -2207,8 +2207,8 @@ This is much more comfortable, but may be incompatible with your Motif
 toolkit.  To set up \s-2@DDD@\s+2 such that it uses panners by
 default, set the `\fBData Scrolling\fR' option to `\fBPanner\fR'.
 This change takes only effect after you have saved options and
-restarted \s-2@DDD@\s+2.  See also the `\fB\-\-panned\-graph\-editor\fR' and
-`\fB\-\-scrolled\-graph\-editor\fR' options, below.
+restarted \s-2@DDD@\s+2.  See also the `\fB\-\-panned-graph-editor\fR' and
+`\fB\-\-scrolled-graph-editor\fR' options, below.
 .PP
 By default, \s-2@DDD@\s+2 runs with \s-2GDB\s+2 as inferior debugger.
 To change this default, set the `\fBDebugger Type\fR' option to
@@ -2573,14 +2573,14 @@ Whether to cache source files (`\fBtrue\fR', default) or not
 .B "disassemble (\fPclass\fB Disassemble)"
 If this is `\fBtrue\fR', the source code is automatically
 disassembled.  The default is `\fBfalse\fR'.  See also the
-`\fB\-\-disassemble\fR' and `\fB\-\-no\-disassemble\fR' options,
+`\fB\-\-disassemble\fR' and `\fB\-\-no-disassemble\fR' options,
 below.
 .TP
 .B "displayGlyphs (\fPclass\fB DisplayGlyphs)"
 If this is `\fBtrue\fR', the current execution position and breakpoints
 are displayed as glyphs; otherwise, they are shown through characters
 in the text.  The default is `\fBtrue\fR'.  See also the
-`\fB\-\-glyphs\fR' and `\fB\-\-no\-glyphs\fR' options, below.
+`\fB\-\-glyphs\fR' and `\fB\-\-no-glyphs\fR' options, below.
 .TP
 .B "displayLineNumbers (\fPclass\fB DisplayLineNumbers)"
 If this is `\fBtrue\fR', lines in the source text are prefixed with
@@ -2675,7 +2675,7 @@ If `\fBfalse\fR', no debugger console is created upon start-up.
 If `\fBtrue\fR', the data window and the debugger console are realized
 in different top-level windows.  If `\fBfalse\fR' (default), the data
 window is attached to the debugger console.  See also the
-`\fB\-\-attach\-windows\fR' and `\fB\-\-attach\-data\-window\fR'
+`\fB\-\-attach-windows\fR' and `\fB\-\-attach-data-window\fR'
 options, below.
 .TP
 .B "separateExecWindow (\fPclass\fB Separate)"
@@ -2688,7 +2688,7 @@ and `\fB\-\-no\-exec\-window\fR' options, below.
 If `\fBtrue\fR', the source window and the debugger console are
 realized in different top-level windows.  If `\fBfalse\fR' (default),
 the source window is attached to the debugger console.  See also the
-`\fB\-\-attach\-windows\fR' and `\fB\-\-attach\-source\-window\fR'
+`\fB\-\-attach-windows\fR' and `\fB\-\-attach-source-window\fR'
 options, below.
 .TP
 .B "sourceWindow (\fPclass\fB Window)"
@@ -2698,7 +2698,7 @@ If `\fBfalse\fR', no source window is created upon start-up.
 If `\fBtrue\fR' (default), the status line is placed at the bottom of
 the \s-2@DDD@\s+2 source window.  If `\fBfalse\fR', the status line is
 placed at the top of the \s-2@DDD@\s+2 source window.  See also the
-`\fB\-\-status\-at\-bottom\fR' and `\fB\-\-status\-at\-top\fR'
+`\fB\-\-status-at-bottom\fR' and `\fB\-\-status-at-top\fR'
 options, below.
 .TP
 .B "stickyTool (\fPclass\fB StickyTool)"
@@ -2841,7 +2841,7 @@ executable path or to invoke a suitable shell.
 .B "synchronousDebugger (\fPclass\fB SynchronousDebugger)"
 If `\fBtrue\fR', X events are not processed while the debugger is
 busy.  This may result in slightly better performance on
-single-processor systems.  See also the `\fB\-\-sync\-debugger\fR'
+single-processor systems.  See also the `\fB\-\-sync-debugger\fR'
 option, below.
 .TP
 .B "ttyMode (\fPclass\fB TTYMode)"
@@ -3109,7 +3109,7 @@ What shall \s-2@DDD@\s+2 use if the graph gets too large to be
 displayed?  If this is `\fBtrue\fR', an Athena panner is used (a kind
 of two-directional scrollbar).  If this is `\fBfalse\fR' (default),
 two Motif scrollbars are used.  See also the
-`\fB\-\-scrolled\-graph\-editor\fR' and `\fB\-\-panned\-graph\-editor\fR'
+`\fB\-\-scrolled-graph-editor\fR' and `\fB\-\-panned-graph-editor\fR'
 options, below.
 .TP
 .B "paperSize (\fPclass\fB PaperSize)"
@@ -3411,8 +3411,8 @@ To specify `\fBnetscape-4.0\fR' as browser, use the setting:
 .sp
 .br
   \fB@Ddd@*wwwCommand: \\
-  netscape\-4.0 \-remote 'openURL(@URL@)' \\
-  || netscape\-4.0 '@URL@'\fR
+  netscape-4.0 \-remote 'openURL(@URL@)' \\
+  || netscape-4.0 '@URL@'\fR
 .br
 .sp
 This command first tries to connect to a running \fBnetscape-4.0\fR browser;
@@ -3423,7 +3423,7 @@ if this fails, it starts a new \fBnetscape-4.0\fR process.
 The \s-2@DDD@\s+2 \s-2WWW\s+2 page.  Value:
 .sp
 .br
-  \fB@Ddd@*wwwPage: http://www.cs.tu\-bs.de/softech/ddd/\fR
+  \fB@Ddd@*wwwPage: http://www.cs.tu-bs.de/softech/ddd/\fR
 .br
 .sp
 .\"
@@ -3442,7 +3442,7 @@ does not match the version of the current \s-2@DDD@\s+2 executable,
 .B "checkConfiguration (\fPclass\fB CheckConfiguration)"
 If true, check the \s-2@DDD@\s+2 environment (in particular, the X
 configuration), report any possible problem causes and exit.  See also
-the `\fB\-\-check\-configuration\fR' option, below.
+the `\fB\-\-check-configuration\fR' option, below.
 .TP
 .B "dddinitVersion (\fPclass\fB Version)"
 The version of the \s-2@DDD@\s+2 executable that last wrote the
@@ -3501,16 +3501,16 @@ The following \s-2@DDD@\s+2 actions may be used in translation tables.
 .\"
 These actions are used to assign the keyboard focus.
 .TP
-.B ddd\-next\-tab\-group ()
+.B ddd-next-tab-group ()
 Assign focus to the next tab group.
 .TP
-.B ddd\-prev\-tab\-group ()
+.B ddd-prev-tab-group ()
 Assign focus to the previous tab group.
 .TP
-.B ddd\-previous\-tab\-group ()
+.B ddd-previous-tab-group ()
 Assign focus to the previous tab group.
 .TP
-.B ddd\-get\-focus ()
+.B ddd-get-focus ()
 Assign focus to the element that just received input.
 .\"
 .\"
@@ -3525,7 +3525,7 @@ End the action initiated by \fBselect\fR.  Bound to a button up event.
 .B extend ()
 Extend the current selection.  Bound to a button down event.
 .TP
-.B extend\-or\-move ()
+.B extend-or-move ()
 Extend the current selection.  Bound to a button down event.
 If the pointer is dragged, move the selection.
 .TP
@@ -3533,7 +3533,46 @@ If the pointer is dragged, move the selection.
 Continue the action initiated by \fBselect\fR.  Bound to a pointer
 motion event.
 .TP
-.B hide\-edges (\fR[\fBany\fR|\fBboth\fR|\fBfrom\fR|\fBto\fR]\fB)
+.B graph-select ()
+Equivalent to \fBselect\fR, but also updates the current argument.
+.TP
+.B graph-select-or-move ()
+Equivalent to \fBselect-or-move\fR, but also updates the current argument.
+.TP
+.B graph-extend ()
+Equivalent to \fBextend\fR, but also updates the current argument.
+.TP
+.B graph-extend-or-move ()
+Equivalent to \fBextend-or-move\fR, but also updates the current argument.
+.TP
+.B graph-toggle ()
+Equivalent to \fBtoggle\fR, but also updates the current argument.
+.TP
+.B graph-toggle-or-move ()
+Equivalent to \fBtoggle-or-move\fR, but also updates the current argument.
+.TP
+.B graph-popup-menu (\fR[\fBgraph\fR|\fBnode\fR|\fBshortcut\fR]\fB)
+Pops up a menu.  \fBgraph\fR pops up a menu with global graph
+operations, \fBnode\fR pops up a menu with node operations, and
+\fBshortcut\fR pops up a menu with display shortcuts.  If no argument
+is given, pops up a menu depending on the context: when pointing on a
+node with the \fBShift\fR key pressed, behaves like \fBshortcut\fR;
+when pointing on a without the \fBShift\fR key pressed, behaves like
+\fBnode\fR; otherwise, behaves as if \fBgraph\fR was given.
+.TP
+.B graph-dereference ()
+Dereference the selected display.
+.TP
+.B graph-detail ()
+Show or hide detail of the selected display.
+.TP
+.B graph-rotate ()
+Rotate the selected display.
+.TP
+.B graph-dependent ()
+Pop up a dialog to create a dependent display.
+.TP
+.B hide-edges (\fR[\fBany\fR|\fBboth\fR|\fBfrom\fR|\fBto\fR]\fB)
 Hide some edges.  \fBany\fR means to process all edges where either
 source or target node are selected. \fBboth\fR means to process all
 edges where both nodes are selected. \fBfrom\fR means to process all
@@ -3548,7 +3587,7 @@ successors are placed next to their parents.  Default is
 \fBregular\fR.  \fIdegrees\fR indicates in which direction the graph
 should be layouted.  Default is the current graph direction.
 .TP
-.B move\-selected (\fIx-offset\fB, \fIy-offset\fB)
+.B move-selected (\fIx-offset\fB, \fIy-offset\fB)
 Move all selected nodes in the direction given by \fIx-offset\fR and
 \fIy-offset\fR.  \fIx-offset\fR and \fIy-offset\fR is either given as
 a numeric pixel value, or as `\fB+grid\fR', or `\fB\-grid\fR', meaning
@@ -3565,23 +3604,23 @@ Rotate the graph around \fIdegrees\fR degrees.
 Select the node pointed at.  Clear all other selections.  Bound to a
 button down event.
 .TP
-.B select\-all ()
+.B select-all ()
 Select all nodes in the graph.
 .TP
-.B select\-first ()
+.B select-first ()
 Select the first node in the graph.
 .TP
-.B select\-next ()
+.B select-next ()
 Select the next node in the graph.
 .TP
-.B select\-or\-move ()
+.B select-or-move ()
 Select the node pointed at.  Clear all other selections.  Bound to a
 button down event. If the pointer is dragged, move the selected node.
 .TP
-.B select\-prev ()
+.B select-prev ()
 Select the previous node in the graph.
 .TP
-.B show\-edges (\fR[\fBany\fR|\fBboth\fR|\fBfrom\fR|\fBto\fR]\fB)
+.B show-edges (\fR[\fBany\fR|\fBboth\fR|\fBfrom\fR|\fBto\fR]\fB)
 Show some edges.  \fBany\fR means to process all edges where either
 source or target node are selected. \fBboth\fR means to process all
 edges where both nodes are selected. \fBfrom\fR means to process all
@@ -3589,19 +3628,19 @@ edges where at least the source node is selected. \fBto\fR means to
 process all edges where at least the target node is selected.  Default
 is \fBany\fR.
 .TP
-.B snap\-to\-grid ()
+.B snap-to-grid ()
 Place all nodes on the nearest grid position.
 .TP
 .B toggle ()
 Toggle the current selection\(em\&if the node pointed at is selected,
 it will be unselected, and vice versa.  Bound to a button down event.
 .TP
-.B toggle\-or\-move ()
+.B toggle-or-move ()
 Toggle the current selection\(em\&if the node pointed at is selected,
 it will be unselected, and vice versa.  Bound to a button down event.
 If the pointer is dragged, move the selection.
 .TP
-.B unselect\-all ()
+.B unselect-all ()
 Clear the selection.
 .\"
 .\"
@@ -3609,70 +3648,97 @@ Clear the selection.
 .\"
 These actions are used in the debugger console and other text fields.
 .TP
-.B gdb\-backward\-character ()
+.B gdb-backward-character ()
 Move one character to the left.  Bound to \fBCtrl+B\fR and \fBLeft\fR.
 .TP
-.B gdb\-beginning\-of\-line ()
+.B gdb-beginning-of-line ()
 Move cursor to the beginning of the current line, after the prompt.
 Bound to \fBCtrl+A\fR and \fBHome\fR.
 .TP
-.B gdb\-control (\fIcontrol-character\fB)
+.B gdb-control (\fIcontrol-character\fB)
 Send the given \fIcontrol-character\fR to the inferior debugger.
 The \fIcontrol-character\fR must be specified in the form `\fB^\fIX\fR',
 where \fIX\fR is an upper-case letter or `\fB?\fR'.
 Bound to \fBCtrl+C\fR and \fBCtrl+\\\fR.
 .TP
-.B gdb\-complete\-arg (\fIcommand\fB)
+.B gdb-complete-arg (\fIcommand\fB)
 Complete current argument as if \fIcommand\fR was prepended.
 Bound to \fBCtrl+T\fR.
 .TP
-.B gdb\-complete\-command ()
+.B gdb-complete-command ()
 Complete current command line in the debugger console.
 Bound to \s-2\fBTAB\fR\s+2 and \fBCtrl+T\fR.
 .TP
-.B gdb\-complete\-tab (\fIcommand\fB)
+.B gdb-complete-tab (\fIcommand\fB)
 If global \s-2\fBTAB\fR\s+2 completion is enabled, complete current
 argument as if \fIcommand\fR was prepended.  Otherwise, proceed as if
 the \s-2\fBTAB\fR\s+2 key was hit.  Bound to \s-2\fBTAB\fR\s+2.
 .TP
-.B gdb\-delete\-or\-control (\fIcontrol-character\fB)
+.B gdb-delete-or-control (\fIcontrol-character\fB)
 Like \fBgdb-control\fR, but effective only if the cursor is at the end
 of a line.  Otherwise, \fIcontrol-character\fR is ignored and the
 character following the cursor is deleted.  Bound to \fBCtrl+D\fR.
 .TP
-.B gdb\-end\-of\-line ()
+.B gdb-end-of-line ()
 Move cursor to the end of the current line.  Bound to \fBCtrl+E\fR and
 \fBEnd\fR.
 .TP
-.B gdb\-next\-history ()
+.B gdb-next-history ()
 Recall next command from history.  Bound to \fBCtrl+N\fR and \fBDown\fR.
 .TP
-.B gdb\-prev\-history ()
+.B gdb-prev-history ()
 Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
 .TP
-.B gdb\-previous\-history ()
+.B gdb-previous-history ()
 Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
 .TP
-.B gdb\-forward\-character ()
+.B gdb-forward-character ()
 Move one character to the right.  Bound to \fBCtrl+F\fR and \fBRight\fR.
 .TP
-.B gdb\-insert\-graph\-arg ()
+.B gdb-insert-graph-arg ()
 Insert the contents of the data display argument field `\fB()\fR'.
 .TP
-.B gdb\-insert\-source\-arg ()
+.B gdb-insert-source-arg ()
 Insert the contents of the source argument field `\fB()\fR'.
 .TP
-.B gdb\-isearch\-prev ()
+.B gdb-isearch-prev ()
 Enter reverse incremental search mode.  Bound to \fBCtrl+R\fR.
 .TP
-.B gdb\-isearch\-next ()
+.B gdb-isearch-next ()
 Enter incremental search mode.  Bound to \fBCtrl+S\fR.
 .TP
-.B gdb\-isearch\-exit ()
+.B gdb-isearch-exit ()
 Exit incremental search mode.  Bound to \s-2\fBESC\fR\s+2.
 .TP
-.B gdb\-set\-line (\fIvalue\fB)
+.B gdb-set-line (\fIvalue\fB)
 Set the current line to \fIvalue\fR.  Bound to \fBCtrl+U\fR.
+.\"
+.\"
+.SS "Source Window Actions"
+.\"
+These actions are used in the source and code windows.
+.TP
+.B source-popup-menu ()
+Pop up a menu, depending on the location.
+.TP
+.B source-start-select-word ()
+Start selecting a word.
+.TP
+.B source-end-select-word ()
+End selecting a word.
+.TP
+.B source-update-glyphs ()
+Update all visible glyphs.  Usually invoked after a scrolling operation.
+.TP
+.B source-drag-glyph ()
+Initiate a drag on the glyph at cursor position.
+.TP
+.B source-follow-glyph ()
+Continue a drag on the glyph at cursor position.  Usually bound to
+some motion event.
+.TP
+.B source-drop-glyph ()
+Drop the dragged glyph at cursor position.
 .\"
 .\" ---------------
 .SH "OPTIONS"
@@ -3691,23 +3757,23 @@ option, or with a \s-2@DDD@\s+2 option listed here, use the
 .PP
 .\"
 .TP
-.B \-\-attach\-windows
+.B \-\-attach-windows
 Attach the source and data windows to the debugger console, creating
 one single big \s-2@DDD@\s+2 window.  This is the default setting.
 .TP
-.B \-\-attach\-source\-window
+.B \-\-attach-source-window
 Attaches only the source window to the debugger console.
 .TP
-.B \-\-attach\-data\-window
+.B \-\-attach-data-window
 Attaches only the source window to the debugger console.
 .TP
-.B \-\-button\-tips
+.B \-\-button-tips
 Enable button tips.
 .TP
 .B \-\-configuration
 Show the \s-2@DDD@\s+2 configuration settings and exit.
 .TP
-.B \-\-check\-configuration
+.B \-\-check-configuration
 Check the \s-2@DDD@\s+2 environment (in particular, the X configuration),
 report any possible problem causes and exit.
 .TP
@@ -3728,10 +3794,10 @@ For instance, to pass a `\fB\-d \fIdirectory\fR' option to \s-2XDB\s+2, use:
 .sp
 .TP
 .B \-\-disassemble
-Disassemble the source code.  See also the `\fB\-\-no\-disassemble\fR'
+Disassemble the source code.  See also the `\fB\-\-no-disassemble\fR'
 option, below.
 .TP
-.B \-\-exec\-window
+.B \-\-exec-window
 Run the debugged program in a specially created execution window.
 This is useful for programs that have special terminal requirements
 not provided by the debugger window, as raw keyboard processing or
@@ -3748,7 +3814,7 @@ Run the \s-2GDB\s+2 debugger as inferior debugger.
 .TP
 .B \-\-glyphs
 Display the current execution position and breakpoints as glyphs.
-See also the `\fB\-\-no\-glyphs\fR' option, below.
+See also the `\fB\-\-no-glyphs\fR' option, below.
 .TP
 .B \-\-help
 Give a list of frequently used options.  Show options of the
@@ -3777,75 +3843,75 @@ Use \fIusername\fR as remote user name.  See `\fBREMOTE DEBUGGING\fR', above.
 .B \-\-manual
 Show this manual page and exit.
 .TP
-.B \-\-no\-button\-tips
+.B \-\-no-button-tips
 Disable button tips.
 .TP
-.B \-\-no\-data\-window
+.B \-\-no-data-window
 Do not create the data window upon start-up.
 .TP
-.B \-\-no\-debugger\-console
+.B \-\-no-debugger-console
 Do not create the debugger console upon start-up.
 .TP
-.B \-\-no\-disassemble
+.B \-\-no-disassemble
 Do not disassemble the source code.
 .TP
-.B \-\-no\-exec\-window
+.B \-\-no-exec-window
 Do not run the debugged program in a specially created execution
 window; use the debugger console instead.  Useful for programs that have
 little terminal input/output, or for remote debugging.
 .TP
-.B \-\-no\-glyphs
+.B \-\-no-glyphs
 Display the current execution position and breakpoints as text
 characters.  Do not use glyphs.
 .TP
 .B \-\-no-lesstif-hacks\fR
 Equivalent to `\fB\-\-lesstif-version 1000\fR'.  Deprecated.
 .TP
-.B \-\-no\-source\-window
+.B \-\-no-source-window
 Do not create the source window upon start-up.
 .TP
-.B \-\-no\-value\-tips
+.B \-\-no-value-tips
 Disable value tips.
 .TP
 .B \-\-nw
 Do not use the X window interface.  Start the inferior debugger on
 the local host.
 .TP
-.B \-\-panned\-graph\-editor
+.B \-\-panned-graph-editor
 Use an Athena panner to scroll the data window.  Most people prefer
 panners on scroll bars, since panners allow two-dimensional scrolling.
 However, the panner is off by default, since some Motif
 implementations do not work well with Athena widgets.  See also
-\fB\-\-scrolled\-graph\-editor\fR, below.
+\fB\-\-scrolled-graph-editor\fR, below.
 .TP
 .B \-\-rhost \fIhostname\fR
 Run the inferior debugger interactively on the remote host \fIhostname\fR.
 See `\fBREMOTE DEBUGGING\fR', above.
 .TP
-.B \-\-separate\-windows
+.B \-\-separate-windows
 Separate the console, source and data windows.  See also the
 `\fB\-\-attach\fR' options, above.
 .TP
-.B \-\-scrolled\-graph\-editor
+.B \-\-scrolled-graph-editor
 Use Motif scroll bars to scroll the data window.  This is the default
 in most \s-2@DDD@\s+2 configurations.  See also
-\fB\-\-panned\-graph\-editor\fR, above.
+\fB\-\-panned-graph-editor\fR, above.
 .TP
-.B \-\-status\-at\-bottom
+.B \-\-status-at-bottom
 Place the status line at the bottom of the source window.
 .TP
-.B \-\-status\-at\-top
+.B \-\-status-at-top
 Place the status line at the top of the source window.
 .TP
-.B \-\-sync\-debugger
+.B \-\-sync-debugger
 Do not process X events while the debugger is busy.  This may result
 in slightly better performance on single-processor systems.
 .TP
-.B \-\-trace\-dialog
+.B \-\-trace-dialog
 Show the interaction between \s-2@DDD@\s+2 and the inferior debugger
 on standard error.  This is useful for debugging \s-2@DDD@\s+2.
 .TP
-.B \-\-trace\-shell\-commands
+.B \-\-trace-shell-commands
 Show the shell commands issued by \s-2@DDD@\s+2 on standard error.  This
 is useful for debugging \s-2@DDD@\s+2.
 .TP
@@ -3857,22 +3923,22 @@ Enable \s-2TTY\s+2 interface, taking additional debugger commands
 from standard input and forwarding debugger output on standard output.
 Current positions are issued in a format readable for humans.
 .TP
-.B \-\-value\-tips
+.B \-\-value-tips
 Enable value tips.
 .TP
 .B \-\-version
 Show the \s-2@DDD@\s+2 version and exit.
 .TP
-.B \-\-vsl\-library \fIlibrary\fR
+.B \-\-vsl-library \fIlibrary\fR
 Load the \s-2VSL\s+2 library \fIlibrary\fR instead of using the
 \s-2@DDD@\s+2 built-in library.  This is useful for customizing
 display shapes and fonts.
 .TP
-.B \-\-vsl\-path \fIpath\fR
+.B \-\-vsl-path \fIpath\fR
 Search \s-2VSL\s+2 libraries in \fIpath\fR (a colon-separated
 directory list).
 .TP
-.B \-\-vsl\-help
+.B \-\-vsl-help
 Show a list of further options controlling the \s-2VSL\s+2
 interpreter.  These options are intended for debugging purposes and
 are subject to change without further notice.
@@ -4111,7 +4177,7 @@ are incomplete or missing X or Motif installations, for instance, or
 bugs in the X server or Motif itself.  Running \s-2@DDD@\s+2 as
 .br
 .sp
-  \fB@ddd@ \-\-check\-configuration\fR
+  \fB@ddd@ \-\-check-configuration\fR
 .sp
 .br
 checks for common problems and gives hints on how to repair them.

@@ -39,6 +39,8 @@ DDD 2.2 [in development]
     - Display shortcuts.  Once you have changed `p' to `(char *) p'
       manually, DDD provides a menu shortcut for converting arbitrary
       values to `(char *)'.
+    - Button editor.  User-defined buttons can now be defined,
+      changed, and deleted at run-time.
     - Support for debugging processes running outside of DDD.  You can
       attach to a running process, examine it, and resume execution.
     - Improved online manuals:
