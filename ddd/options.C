@@ -1933,6 +1933,7 @@ bool save_options(unsigned long flags)
 			    + XtNgridHeight, grid_height, true) << '\n';
     }
     os << bool_app_value(XtNdetectAliases,  app_data.detect_aliases)   << '\n';
+    os << bool_app_value(XtNclusterDisplays,app_data.cluster_displays) << '\n';
     os << bool_app_value(XtNalign2dArrays,  app_data.align_2d_arrays)  << '\n';
 
     // Tips
