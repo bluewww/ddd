@@ -1,7 +1,15 @@
 DDD Frequently Asked Questions                                  -*- text -*-
 ******************************
 
-1.  Can I dereference a multi-length array graphically via the mouse?
+1.  How can I speed up DDD?
+
+    The fastest DDD configuration is obtained as follows.  Enable
+    source code and machine code caching.  Disable glyphs, machine
+    code display, execution window.  Do not use remote debugging.
+    Use DDD 1.4b or later, compiled with the `-O2' option.
+
+
+2.  Can I dereference a multi-length array graphically via the mouse?
 
     The problem is that GDB does not know the actual length of the
     array; you have to supply it by hand (i.e. using the keyboard).
@@ -27,20 +35,20 @@ DDD Frequently Asked Questions                                  -*- text -*-
     elements.
 
 
-2.  Does DDD sit on top of GDB, or is it integrated with gdb source?
+3.  Does DDD sit on top of GDB, or is it integrated with gdb source?
 
     DDD sits on top of a separate GDB process.  Use `ddd --trace' to
     see the interaction.
 
 
-3.  If it sits on top, how can GDB upgrades be incorporated?
+4.  If it sits on top, how can GDB upgrades be incorporated?
 
     By getting and installing the new GDB.  No changes to DDD are
     necessary, unless the GDB developers introduce incompatible
     changes - in which case you'll have to wait until we patch DDD.
 
 
-4.  Does DDD work with DBX on other systems than Sun?
+5.  Does DDD work with DBX on other systems than Sun?
 
     DDD has been reported to run with Sun DBX as shipped with SunOS
     4.x (aka Solaris 1.x) and SunOS 5.x (aka Solaris 2.x).
@@ -52,12 +60,12 @@ DDD Frequently Asked Questions                                  -*- text -*-
     the interaction.
 
 
-5.  I don't like the 'break point' symbol.  Can I change it?
+6.  I don't like the 'break point' symbol.  Can I change it?
 
     Yes.  See the various `*.xbm' files in the DDD source code.
 
 
-6.  I compiled DDD on my machine and it fails.  I got the executable
+7.  I compiled DDD on my machine and it fails.  I got the executable
     from an FTP site and it runs.  What is the difference? Is there
     some compilation setup I need to do, or is the executable patched?
 
@@ -79,13 +87,13 @@ DDD Frequently Asked Questions                                  -*- text -*-
     lot.
 
 
-7.  I have heard that there is a magic command built into DDD.
+8.  I have heard that there is a magic command built into DDD.
     Is this true, and what is this magic command for?
 
     It's an adventurer's secret.  Use the source, Luke.
 
 
-8.  Is there an Athena Widgets port of DDD?
+9.  Is there an Athena Widgets port of DDD?
 
     No.  If you want DDD running with a free widget set, you should
     support the LessTif team, who are developing a free
@@ -100,7 +108,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
     efficient interface.  So go and support the LessTif team instead.]
 
 
-9.  DDD reports `imake' and/or `xmkmf' problems when being started.
+10. DDD reports `imake' and/or `xmkmf' problems when being started.
     How come?
 
     To run properly, OSF/Motif requires a file called `XKeysymDB' in
@@ -115,7 +123,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
     in `xconfig.C'.
 
 
-10. How can I change DDD resources (especially colors)?
+11. How can I change DDD resources (especially colors)?
 
     Copy the appropriate resource lines from the `Ddd' file contained
     in the DDD distribution (type `./configure -v; cd ddd; make Ddd'
@@ -138,7 +146,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
      geometry specifications)
 
 
-11. I want to use DDD interprocess communication in my own
+12. I want to use DDD interprocess communication in my own
     application.  How do I proceed?
 
     There is a demonstration program named `ttytest' in the DDD
@@ -147,16 +155,16 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
     Here are some pointers: If you want to talk with a separate
     process, use the `TTYAgent' class, as defined in `TTYAgent.C'.
-    Using the `write' method, you can send arbitrary data to GDB; you
-    can define an `Input' handler that will be called each time GDB
-    sends you data.  The header files of `TTYAgent' and its
-    superclasses should contain sufficient information.  As all
-    communication is handled asynchronously, you can realize a usual
-    Xt-based interface using Athena widgets, Motif widgets, or another
-    Xt-based toolkit.
+    Using the `write' method, you can send arbitrary data to the
+    process; you can define an `Input' handler that will be called
+    each time the process sends data to you.  The header files of
+    `TTYAgent' and its superclasses should contain sufficient
+    information.  As all communication is handled asynchronously, you
+    can realize a usual Xt-based interface using Athena widgets, Motif
+    widgets, or another Xt-based toolkit.
 
 
-12. I want to use the DDD graph editor in my own application.
+13. I want to use the DDD graph editor in my own application.
     How do I proceed?
 
     There is a demonstration program named `test-graph' in the DDD
