@@ -66,6 +66,15 @@
 #define XtCVSLDefs               "VSLDefs"
 #define XtNtabWidth              "tabWidth"
 #define XtCTabWidth              "TabWidth"
+#define XtNlinesAboveCursor      "linesAboveCursor"
+#define XtCLinesAboveCursor      "LinesAboveCursor"
+#define XtNlinesBelowCursor      "linesBelowCursor"
+#define XtCLinesBelowCursor      "LinesBelowCursor"
+#define XtNindentSource          "indentSource"
+#define XtNindentCode            "indentCode"
+#define XtCIndent                "Indent"
+#define XtNlineNumberWidth       "lineNumberWidth"
+#define XtCLineNumberWidth       "LineNumberWidth"
 #define XtNconsoleButtons        "consoleButtons"
 #define XtCConsoleButtons        "ConsoleButtons"
 #define XtNsourceButtons         "sourceButtons"
@@ -228,6 +237,11 @@ struct AppData {
     String  vsl_library;
     String  vsl_defs;
     int     tab_width;
+    int     lines_above_cursor;
+    int     lines_below_cursor;
+    int     indent_source;
+    int     indent_code;
+    int     line_number_width;
     String  console_buttons;
     String  source_buttons;
     String  data_buttons;

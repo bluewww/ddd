@@ -103,13 +103,13 @@ void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer call_data)
 
     app_data.cache_machine_code = info->set;
 
+    update_options();
+
     if (info->set)
 	set_status("Caching machine code.");
     else
 	set_status("Not caching machine code.  "
 		   "Machine code cache has been cleared.");
-
-    update_options();
 }
 
 void sourceToggleDisplayLineNumbersCB (Widget, XtPointer, XtPointer call_data)
@@ -119,12 +119,12 @@ void sourceToggleDisplayLineNumbersCB (Widget, XtPointer, XtPointer call_data)
 
     app_data.display_line_numbers = info->set;
 
+    update_options();
+
     if (info->set)
 	set_status("Displaying line numbers.");
     else
 	set_status("Not displaying line numbers.");
-
-    update_options();
 }
 
 void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
@@ -149,15 +149,15 @@ void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
     Boolean state = Boolean(client_data != 0);
 
     app_data.display_glyphs = state;
+
+    update_options();
+
     string displaying_breakpoints_and_positions =
 	"Displaying breakpoints and positions ";
-
     if (state)
 	set_status(displaying_breakpoints_and_positions + " as glyphs.");
     else
 	set_status(displaying_breakpoints_and_positions + " in the text.");
-
-    update_options();
 }
 
 void sourceToggleDisassembleCB (Widget, XtPointer, XtPointer call_data)
@@ -195,10 +195,9 @@ void sourceSetTabWidthCB (Widget, XtPointer, XtPointer call_data)
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
 
     app_data.tab_width = info->value;
+    update_options();
 
     set_status("Tab width set to " + itostring(app_data.tab_width) + ".");
-
-    update_options();
 }
 
 //-----------------------------------------------------------------------------
@@ -843,6 +842,8 @@ void save_options(Widget origin, bool create)
 			 app_data.use_source_path) << "\n";
     os << bool_app_value(XtNdisplayGlyphs,
 			 app_data.display_glyphs) << "\n";
+    os << bool_app_value(XtNdisplayLineNumbers,
+			 app_data.display_line_numbers) << "\n";
     os << bool_app_value(XtNdisassemble,
 			 app_data.disassemble) << "\n";
     os << bool_app_value(XtNallRegisters,

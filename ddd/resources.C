@@ -186,6 +186,56 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNlinesAboveCursor,
+	XtCLinesAboveCursor,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, lines_above_cursor),
+	XmRImmediate,
+	XtPointer(2)
+    },
+
+    {
+	XtNlinesBelowCursor,
+	XtCLinesBelowCursor,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, lines_below_cursor),
+	XmRImmediate,
+	XtPointer(3)
+    },
+
+    {
+	XtNindentSource,
+	XtCIndent,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, indent_source),
+	XmRImmediate,
+	XtPointer(4)
+    },
+
+    {
+	XtNindentCode,
+	XtCIndent,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, indent_code),
+	XmRImmediate,
+	XtPointer(4)
+    },
+
+    {
+	XtNlineNumberWidth,
+	XtCLineNumberWidth,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, line_number_width),
+	XmRImmediate,
+	XtPointer(4)
+    },
+
+    {
 	XtNconsoleButtons,
 	XtCConsoleButtons,
 	XtRString,

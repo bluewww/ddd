@@ -2125,6 +2125,12 @@ static void process_pending_events()
 
 static void ddd_check_version()
 {
+    static bool checked = false;
+
+    if (checked)
+	return;
+    checked = true;
+
     if (app_data.dddinit_version == 0 ||
 	string(app_data.dddinit_version) != DDD_VERSION)
     {
@@ -2544,6 +2550,12 @@ void update_options()
     source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);
+
+    source_view->source_indent_amount = app_data.indent_source;
+    source_view->code_indent_amount   = app_data.indent_code;
+    source_view->line_indent_amount   = app_data.line_number_width;
+    source_view->lines_above_cursor   = app_data.lines_above_cursor;
+    source_view->lines_below_cursor   = app_data.lines_below_cursor;
 
     data_disp->set_detect_aliases(app_data.detect_aliases);
 

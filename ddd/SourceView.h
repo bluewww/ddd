@@ -251,11 +251,6 @@ class SourceView {
     static bool all_registers;	              // Show all registers?
     static bool at_lowest_frame;              // Are we at lowest frame?
 
-    // The indenting amounts
-    static int source_indent_amount;         // Source
-    static int code_indent_amount;           // Machine code
-    static int line_indent_amount;           // Extra columns for line numbers
-
     // Tab width
     static int tab_width;
 
@@ -485,6 +480,15 @@ public:
 
     // Maximum length of expr in source popup
     static int max_popup_expr_length;
+
+    // The indenting amounts
+    static int source_indent_amount;         // Source
+    static int code_indent_amount;           // Machine code
+    static int line_indent_amount;           // Extra columns for line numbers
+
+    // The scrolling amounts
+    static int lines_above_cursor;           // Lines to keep before cursor
+    static int lines_below_cursor;           // Lines to keep after cursor
 
     // Return `clear ARG' command.  If CLEAR_NEXT is set, attempt to
     // guess the next event number and clear this one as well.

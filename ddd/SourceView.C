@@ -307,6 +307,9 @@ int  SourceView::code_indent_amount   = 4;
 int  SourceView::line_indent_amount   = 4;
 int  SourceView::tab_width            = 8;
 
+int  SourceView::lines_above_cursor   = 2;
+int  SourceView::lines_below_cursor   = 3;
+
 SourceOrigin SourceView::current_origin = ORIGIN_NONE;
 
 Map<int, BreakPoint> SourceView::bp_map;
@@ -990,10 +993,6 @@ void SourceView::SetInsertionPosition(Widget text_w,
 {
     string& text = current_text(text_w);
 
-    // Number of lines to show before or after POS
-    const int lines_above = 2;
-    const int lines_below = 4;
-
     short rows = 0;
     XmTextPosition current_top = 0;
     XtVaGetValues(text_w,
@@ -1007,14 +1006,15 @@ void SourceView::SetInsertionPosition(Widget text_w,
 	if (text[p] == '\n')
 	    relative_row++;
 
-    if (relative_row <= lines_above || relative_row >= rows - lines_below)
+    if (relative_row <= lines_above_cursor 
+	|| relative_row >= rows - (lines_below_cursor + 1))
     {
 	// Determine new TOP position
 	short n = rows / 2;	// #Lines between new TOP and POS
-	if (fromTop || relative_row <= lines_above)
-	    n = lines_above;
-	else if (relative_row >= rows - lines_below)
-	    n = rows - lines_below;
+	if (fromTop || relative_row <= lines_above_cursor)
+	    n = lines_above_cursor;
+	else if (relative_row >= rows - (lines_below_cursor + 1))
+	    n = rows - (lines_below_cursor + 1);
 
 	XmTextPosition new_top = pos;
 	for (;;) {
@@ -1503,16 +1503,8 @@ void SourceView::set_tab_width (int width)
     {
 	tab_width = width;
 
-	if (current_file_name != "")
-	{
-	    string file = file_of_cursor();
-	    string line = file.after(':');
-	    file        = file.before(':');
-
-	    StatusDelay delay("Reformatting " + quote(file));
-
-	    read_file(file, atoi(line), false);
-	}
+	StatusDelay delay("Reformatting");
+	reload();
     }
 }
 
