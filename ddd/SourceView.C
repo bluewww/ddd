@@ -3027,13 +3027,15 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     Boolean have_selection = XmTextGetSelectionPosition(text_w, &left, &right);
     if (have_selection && pos >= left && pos <= right)
     {
-	SetInsertionPosition(text_w, pos);
+	// Do not scroll here.  Do not use SetInsertionPosition().
+	XmTextSetInsertionPosition(text_w, pos);
 	XmTextSetSelection(text_w, left, right, time(e));
     }
     else
     {
+	// Do not scroll here.  Do not use SetInsertionPosition().
 	XmTextClearSelection(text_w, time(e));
-	SetInsertionPosition(text_w, pos);
+	XmTextSetInsertionPosition(text_w, pos);
     }
 
     static int line_nr;
