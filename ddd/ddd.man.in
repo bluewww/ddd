@@ -2820,8 +2820,8 @@ window as supplied by Gnuplot.  \s-1@DDD@\s+1 incorporates or
 \(lqswallows\(rq the Gnuplot output window into its own user
 interface.  To make the swallowing smooth, Gnuplot should be prevented
 from mapping its window by giving an appropriate (large) geometry.
-Nonetheless, some window managers may have trouble with this
-technique.
+Nonetheless, some window managers (notably \s-1MWM\s+1) have trouble
+with this technique.
 .IP \(bu 2
 \s-1@DDD@\s+1 can supply a \fBBuiltin Plot Window\fR instead.  The
 advantage is that there can be no interferences with window managers;
@@ -4759,14 +4759,15 @@ The following resources control the plot window.
 .\"
 .TP
 .B "builtinPlot (\fPclass\fB BuiltinPlot)"
-If this is `\fBoff\fR' (default), \s-1@DDD@\s+1 incorporates or
-\(lqswallows\(rq the Gnuplot output window into its own user
-interface.  Some window managers may have trouble with this technique.
-Setting this resource to `\fBon\fR' makes \s-1@DDD@\s+1 provide a
-builtin plot window instead.  The advantage is that interferences with
-the window manager are excluded; the \s-1@DDD@\s+1 builtin plot window
-also requires less resources than the Gnuplot window.  The
-disadvantage is that plots are slower and less customizable.
+If this is `\fBoff\fR', \s-1@DDD@\s+1 incorporates or \(lqswallows\(rq
+the Gnuplot output window into its own user interface.  Some window
+managers, notably \s-1MWM\s+1, have trouble with this technique.
+Setting this resource to `\fBon\fR' (default) makes \s-1@DDD@\s+1
+provide a builtin plot window instead.  The advantage is that
+interferences with the window manager are excluded; the \s-1@DDD@\s+1
+builtin plot window also requires less resources than the Gnuplot
+window.  The disadvantage is that plots are slower and less
+customizable.
 .TP
 .B "plotCommand (\fPclass\fB PlotCommand)"
 The name of a Gnuplot executable.  Default is `\fBgnuplot\fR',

@@ -65,6 +65,7 @@ char plotter_rcsid[] =
 #include "DispValue.h"
 #include "DataDisp.h"
 #include "DestroyCB.h"
+#include "TimeOut.h"
 
 #include <stdio.h>
 #include <fstream.h>
@@ -105,10 +106,13 @@ static void ToggleLogscaleCB(Widget, XtPointer, XtPointer);
 static void SetStyleCB(Widget, XtPointer, XtPointer);
 static void SetContourCB(Widget, XtPointer, XtPointer);
 static void SetViewCB(Widget, XtPointer, XtPointer);
+static void SwallowCB(Widget, XtPointer, XtPointer);
 
+const int SWALLOW_TIMEOUT = 1000;   // Time to wait for swallow window (in ms)
 
 struct PlotWindowInfo {
     DispValue *source;		// The source we depend upon
+    string window_name;		// The window name
     PlotAgent *plotter;		// The current Gnuplot instance
     PlotArea *area;		// The area we're drawing in
     Widget shell;		// The shell we're in
@@ -120,12 +124,14 @@ struct PlotWindowInfo {
     Widget command_dialog;      // Command dialog
     Widget export_dialog;       // Export dialog
     bool active;		// True if popped up
+    XtIntervalId timer;		// Window timeout
 
     // Constructor - just initialize
     PlotWindowInfo()
-	: plotter(0), area(0), shell(0), working_dialog(0), swallower(0),
+	: source(0), window_name(""),
+	  plotter(0), area(0), shell(0), working_dialog(0), swallower(0),
 	  vsb(0), hsb(0), command(0), command_dialog(0), 
-	  export_dialog(0), active(false)
+	  export_dialog(0), active(false), timer(0)
     {}
 };
 
@@ -443,31 +449,104 @@ static void popup_plot_shell(PlotWindowInfo *plot)
     }
 }
 
-// Swallow new GNUPLOT window
+// Swallow WINDOW
+static void swallow(PlotWindowInfo *plot, Window window)
+{
+    assert(window != None);
+
+    // We have the window
+    XtRemoveCallback(plot->swallower, XtNwindowCreatedCallback, 
+		     SwallowCB, XtPointer(plot));
+
+    if (plot->timer != 0)
+    {
+	XtRemoveTimeOut(plot->timer);
+	plot->timer = 0;
+    }
+
+    XtVaSetValues(plot->swallower, XtNwindow, window, NULL);
+
+    popup_plot_shell(plot);
+}
+
+// Swallow new GNUPLOT window; search from window created on root.
 static void SwallowCB(Widget swallower, XtPointer client_data, 
 		      XtPointer call_data)
 {
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+    assert(plot->swallower == swallower);
+
     SwallowerInfo *info = (SwallowerInfo *)call_data;
-    Window window = 
-	findWindow(XtDisplay(swallower), info->window, app_data.plot_window);
+
+    Window root = info->window;
+    Window window = None;
+    Display *display = XtDisplay(swallower);
+
+    // Try the exact name as given
+    if (window == None)
+	window = findWindow(display, root, plot->window_name);
+
+    // Try the capitalized name.  Gnuplot does this.
+    if (window == None)
+	window = findWindow(display, root, capitalize(plot->window_name));
+
+    // Try any `Gnuplot' window just created
+    if (window == None)
+	window = findWindow(display, root, app_data.plot_window);
 
     if (window != None)
+	swallow(plot, window);
+}
+
+// Swallow new GNUPLOT window; search from root window (expensive).
+static void SwallowTimeOutCB(XtPointer client_data, XtIntervalId *id)
+{
+    (void) id;
+
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+    assert(*id == plot->timer);
+    plot->timer = 0;
+
+    Window root = RootWindowOfScreen(XtScreen(plot->swallower));
+    Window window = None;
+    Display *display = XtDisplay(plot->swallower);
+
+    // Try the exact name as given
+    if (window == None)
+	window = findWindow(display, root, plot->window_name);
+
+    // Try the capitalized name.  Gnuplot does this.
+    if (window == None)
+	window = findWindow(display, root, capitalize(plot->window_name));
+
+    if (window == None)
     {
-	// We have the window
-	XtRemoveCallback(swallower, XtNwindowCreatedCallback, 
-			 SwallowCB, client_data);
-
-	XtVaSetValues(swallower, XtNwindow, window, NULL);
-
-	popup_plot_shell(plot);
+	// Try again later
+	plot->timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
+			    SWALLOW_TIMEOUT, 
+			    SwallowTimeOutCB, XtPointer(plot));
     }
+
+    if (window != None)
+	swallow(plot, window);
 }
 
 // Swallow again after window has gone.  This happens while printing.
 static void SwallowAgainCB(Widget swallower, XtPointer client_data, XtPointer)
 {
-    XtAddCallback(swallower, XtNwindowCreatedCallback, SwallowCB, client_data);
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+    assert(plot->swallower == swallower);
+
+    XtAddCallback(swallower, XtNwindowCreatedCallback, SwallowCB, 
+		  XtPointer(plot));
+
+    if (plot->timer != 0)
+	XtRemoveTimeOut(plot->timer);
+
+    plot->timer = 
+	XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
+			SWALLOW_TIMEOUT, SwallowTimeOutCB, XtPointer(plot));
 }
 
 
@@ -517,6 +596,12 @@ static void CancelPlotCB(Widget, XtPointer client_data, XtPointer)
 	// Don't wait for window to swallow
 	XtRemoveAllCallbacks(plot->swallower, XtNwindowCreatedCallback);
 	XtRemoveAllCallbacks(plot->swallower, XtNwindowGoneCallback);
+    }
+
+    if (plot->timer != 0)
+    {
+	XtRemoveTimeOut(plot->timer);
+	plot->timer = 0;
     }
 
     if (plot->plotter != 0)
@@ -713,9 +798,18 @@ static PlotWindowInfo *new_decoration(const string& name)
 	XtRemoveAllCallbacks(plot->swallower, XtNwindowCreatedCallback);
 	XtAddCallback(plot->swallower, XtNwindowCreatedCallback,
 		      SwallowCB, XtPointer(plot));
+
 	XtRemoveAllCallbacks(plot->swallower, XtNwindowGoneCallback);
 	XtAddCallback(plot->swallower, XtNwindowGoneCallback, 
 		      SwallowAgainCB, XtPointer(plot));
+
+	if (plot->timer != 0)
+	    XtRemoveTimeOut(plot->timer);
+
+	plot->timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
+			    SWALLOW_TIMEOUT, SwallowTimeOutCB, 
+			    XtPointer(plot));
     }
 
     plot->active = false;
@@ -750,12 +844,21 @@ void clear_plot_window_cache()
 // Create a new plot window
 PlotAgent *new_plotter(string name, DispValue *source)
 {
+    static int tics = 1;
+
     string cmd = app_data.plot_command;
     cmd.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
 
+    string window_name = ddd_NAME "plot" + itostring(tics++);
+    if (cmd.contains("@NAME@"))
+	cmd.gsub("@NAME@", window_name);
+    else
+	cmd += " -name " + window_name;
+
     // Create shell
     PlotWindowInfo *plot = new_decoration(name);
-    plot->source = source;
+    plot->source      = source;
+    plot->window_name = window_name;
     XtVaSetValues(plot->shell, XmNuserData, XtPointer(True), NULL);
 
     // Pop up a working dialog

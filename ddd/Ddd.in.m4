@@ -304,8 +304,10 @@ Ddd*wwwCommand: \
 
 ! The Gnuplot command.
 ! The string `@FONT@' is replaced by the current DDD default font.
+! The string '@NAME@' is replaced by a window name assigned by DDD.
 Ddd*plotCommand: \
-gnuplot -bg 'TEXT_BACKGROUND_COLOR' -font '@FONT@' -geometry +5000+5000
+gnuplot -bg 'TEXT_BACKGROUND_COLOR' -font '@FONT@' -name '@NAME@' \
+-geometry +5000+5000
 
 ! The Gnuplot window class.
 Ddd*plotWindow: Gnuplot
@@ -330,10 +332,10 @@ Ddd*plot3dSettings:   set border
 !      - no customization
 ! `off' instructs DDD to `swallow' the plot window supplied by Gnuplot:
 !      + works just as Gnuplot users expect
-!      - swallowing may interfere with window manager
+!      - swallowing interferes with some window managers such as MWM.
 !
-! Default is `off' since no problems with swallowing are yet known.
-Ddd*builtinPlotWindow: off
+! Default is `on' due to problems with MWM.
+Ddd*builtinPlotWindow: on
 
 
 ! The time (in seconds) to wait for synchronous GDB questions to complete
@@ -3410,7 +3412,8 @@ ITEM LBL(Plot) invokes a Gnuplot program for plotting data.\n\
     Example: SAMP(gnuplot)\n\
 ITEM LBL(Plot Window) indicates the type of plot window to use.\n\
     SUBITEM The LBL(builtin) DDD window uses fewer resources.\n\
-    SUBITEM The LBL(external) Gnuplot window is much faster.\n\
+    SUBITEM The LBL(external) Gnuplot window is much faster, but\n\
+        does not work with all window managers.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
