@@ -238,6 +238,9 @@ void source_argHP (void*, void*, void* call_data);
 // Setup
 static Boolean ddd_setup_done(XtPointer client_data);
 
+// Widgets
+static void setup_settings_title();
+
 // Warning proc
 static void ddd_xt_warning(String message);
 
@@ -604,19 +607,33 @@ static MMDesc source_menu[] =
 static Widget preferences_dialog;
 
 // General preferences
-static Widget button_tips_w;
-static Widget value_tips_w;
 static Widget group_iconify_w;
 static Widget global_tab_completion_w;
 static Widget suppress_warnings_w;
 static Widget save_history_on_exit_w;
 
+static Widget button_tips_w;
+static Widget button_docs_w;
+static MMDesc button_menu [] = 
+{
+    { "tips",  MMToggle, { dddToggleButtonTipsCB }, NULL, &button_tips_w },
+    { "docs",  MMToggle, { dddToggleButtonDocsCB }, NULL, &button_docs_w },
+    MMEnd
+};
+
+static Widget value_tips_w;
+static Widget value_docs_w;
+static MMDesc value_menu [] = 
+{
+    { "tips",  MMToggle, { dddToggleValueTipsCB }, NULL, &value_tips_w },
+    { "docs",  MMToggle, { dddToggleValueDocsCB }, NULL, &value_docs_w },
+    MMEnd
+};
+
 static MMDesc general_preferences_menu[] = 
 {
-    { "buttonTips",          MMToggle, { dddToggleButtonTipsCB },
-      NULL, &button_tips_w },
-    { "valueTips",           MMToggle, { dddToggleValueTipsCB },
-      NULL, &value_tips_w },
+    { "buttonHints",         MMButtonPanel, MMNoCB, button_menu },
+    { "valueHints",          MMButtonPanel, MMNoCB, value_menu },
     { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB },
       NULL, &group_iconify_w },
     { "globalTabCompletion", MMToggle, { dddToggleGlobalTabCompletionCB },
@@ -1229,14 +1246,13 @@ int main(int argc, char *argv[])
     // Register own converters
     registerOwnConverters();
 
-    // Set global variables:
-    // - maximum lengths for `shorten' calls
+    // Global variables: Set maximum lengths for `shorten' calls
     max_value_tip_length              = app_data.max_value_tip_length;
     max_value_doc_length              = app_data.max_value_doc_length;
     DispBox::max_display_title_length = app_data.max_display_title_length;
     SourceView::max_popup_expr_length = app_data.max_popup_expr_length;
 
-    // - delays for button and value tips
+    // Global variables: Set delays for button and value tips
     help_button_tip_delay = app_data.button_tip_delay;
     help_value_tip_delay  = app_data.value_tip_delay;
     help_button_doc_delay = app_data.button_doc_delay;
@@ -1536,6 +1552,7 @@ int main(int argc, char *argv[])
     }
     putenv(term_env);
 
+    // Environment.
     // Don't let TERMCAP settings override our TERM settings.
     putenv("TERMCAP=");
 
@@ -1550,7 +1567,7 @@ int main(int argc, char *argv[])
     // Setup help pixmap
     helpOnVersionPixmapProc = versionlogo;
 
-    // Setup extra version info
+    // Setup version info
     helpOnVersionExtraText = MString(string(config_info).through(".\n"), "rm");
 
     string expires = ddd_expiration_date();
@@ -1586,6 +1603,9 @@ int main(int argc, char *argv[])
 "see the " DDD_NAME " manual for details on reporting bugs.\n"
 "Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>.", "rm");
 
+    // Prepend debugger name to `settings' title.
+    setup_settings_title();
+
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
     wm_set_icon(command_shell, iconlogo(gdb_w), iconmask(gdb_w));
@@ -1617,8 +1637,10 @@ int main(int argc, char *argv[])
 
     // The sash in the source view is kept, as it separates source and
     // assembler code windows.
-    // if (source_view_shell)
-    //	   unmanage_sashes(source_view_parent);
+#if 0
+    if (source_view_shell)
+       unmanage_sashes(source_view_parent);
+#endif
 
     untraverse_sashes(data_disp_parent);
     if (data_disp_shell)
@@ -1783,6 +1805,7 @@ int main(int argc, char *argv[])
 //-----------------------------------------------------------------------------
 // Check this version; give warnings if needed (no license, beta expired, etc.)
 //-----------------------------------------------------------------------------
+
 static void ddd_check_version()
 {
     if (ddd_expired())
@@ -1812,6 +1835,32 @@ static void install_button_tips()
 	if (shell)
 	    InstallButtonTips(shell, true);
     }
+}
+
+//-----------------------------------------------------------------------------
+// Prepend debugger name to `settings' title
+//-----------------------------------------------------------------------------
+
+static void setup_settings_title()
+{
+    string gdb_path = app_data.debugger_command;
+    string gdb_base = gdb_path;
+
+    for (int i = 0; i < int(gdb_path.length()); i++)
+    {
+	if (gdb_path[i] == '/')
+	    gdb_base = gdb_path.after(i);
+    }
+
+    gdb_base.upcase();
+
+    XmString xmlabel;
+    XtVaGetValues(settings_w, XmNlabelString, &xmlabel, NULL);
+    MString label(xmlabel, true);
+    XmStringFree(xmlabel);
+
+    label.prepend(MString(gdb_base + " "));
+    XtVaSetValues(settings_w, XmNlabelString, label.xmstring(), NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -1875,6 +1924,10 @@ void update_options()
 		  XmNset, app_data.button_tips, NULL); 
     XtVaSetValues(value_tips_w,
 		  XmNset, app_data.value_tips, NULL); 
+    XtVaSetValues(button_docs_w,
+		  XmNset, app_data.button_docs, NULL); 
+    XtVaSetValues(value_docs_w,
+		  XmNset, app_data.value_docs, NULL); 
     XtVaSetValues(group_iconify_w,
 		  XmNset, app_data.group_iconify, NULL);
     XtVaSetValues(global_tab_completion_w,
@@ -1990,7 +2043,9 @@ void update_options()
     source_view->set_tab_width(app_data.tab_width);
 
     EnableButtonTips(app_data.button_tips);
+    EnableButtonDocs(app_data.button_docs);
     EnableTextTips(app_data.value_tips);
+    EnableTextDocs(app_data.value_docs);
 }
 
 //-----------------------------------------------------------------------------

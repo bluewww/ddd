@@ -104,14 +104,20 @@ extern void ManualStringHelpCB(Widget widget, XtPointer client_data,
 // (Un)install button tips on W.
 extern void InstallButtonTips(Widget w, bool install = true);
 
-// Enable or disable all installed button tips.
-extern void EnableButtonTips(bool enable = true);
-
 // (Un)install text tips on W.
 extern void InstallTextTips(Widget w, bool install = true);
 
+// Enable or disable all installed button tips.
+extern void EnableButtonTips(bool enable = true);
+
 // Enable or disable all installed text tips.
 extern void EnableTextTips(bool enable = true);
+
+// Enable or disable all installed button docs.
+extern void EnableButtonDocs(bool enable = true);
+
+// Enable or disable all installed text docs.
+extern void EnableTextDocs(bool enable = true);
 
 
 

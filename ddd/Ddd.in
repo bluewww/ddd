@@ -1430,7 +1430,7 @@ Ddd*XmSash.tipString: \
 ! Toolbar tips
 !-----------------------------------------------------------------------------
 
-! These colors are taken from NetScape.  The basic idea is that you might
+! These colors are taken from Netscape.  The basic idea is that you might
 ! have a Netscape already running, so we won't use up another color cell.
 
 Ddd*tipLabel.background:  #FFFFCC
@@ -1592,7 +1592,10 @@ Ddd*menubar.options*documentationString: \
 Ddd*menubar.options*helpString:	\
 @rm This is the @sl Options @rm menu.\n\
 \n\
-The @bf Preference @rm menus invoke panels for setting preferences.\n\
+@tt \267 @bf Preferences... @rm invokes a panel for \
+setting @DDD@ options.\n\
+@tt \267 @bf Settings... @rm invokes a panel for \
+setting options of the inferior debugger.\n\
 \n\
 @tt \267 @rm If @bf Run in Execution Window @rm is set, \
 the program is run in a separate\n\
@@ -1613,6 +1616,7 @@ Ddd*optionsMenu.preferences.mnemonic:			P
 Ddd*optionsMenu.preferences.documentationString:\
 @rm Modify the @DDD@ configuration
 
+! Note: The debugger name will be prepended to this label:
 Ddd*optionsMenu.settings.labelString:			Settings...
 Ddd*optionsMenu.settings.mnemonic:			S
 Ddd*optionsMenu.settings.documentationString:\
@@ -2102,12 +2106,22 @@ Ddd*preferences*buttons*startup.labelString: Startup Preferences
 Ddd*preferences*general*helpString:	\
 @rm These are the @sl General Preferences@rm.\n\
 \n\
-@tt \267 @rm If @bf Enable button tips @rm is set and you move the mouse \
-pointer over a button,\n\
-    @DDD@ pops up a window showing the button usage.\n\
-@tt \267 @rm If @bf Enable value tips @rm is set and you move the mouse \
-pointer over a variable\n\
-    in the source text, @DDD@ pops up a window showing the variable value.\n\
+@tt \267 @rm When you move the mouse pointer over a button, @DDD@ can \
+automatically\n\
+    give a hint on its usage.\n\
+    @tt - @rm Select @bf as popup tips @rm if you want the hint to be shown \
+in a popup window.\n\
+    @tt - @rm Select @bf in the status line @rm if you want it to be shown \
+in the status line.\n\
+    You can also select both options, or none at all.\n\
+@tt \267 @rm When you move the mouse pointer over a variable in the source \
+window,\n\
+    @DDD@ can automatically display the variable value.\n\
+    @tt - @rm Select @bf as popup tips @rm if you want the value to be shown \
+in a popup window.\n\
+    @tt - @rm Select @bf in the status line @rm if you want it to be shown \
+in the status line.\n\
+    You can also select both options, or none at all.\n\
 @tt \267 @rm If @bf Iconify all windows at once @rm is set, all @DDD@ windows \
 are iconified as a group.\n\
     Otherwise, windows are iconified separately.\n\
@@ -2125,10 +2139,16 @@ the command history is\n\
 \n\
 Use the buttons above to view and change other preferences.
 
-Ddd*preferences*buttonTips.labelString:	 \
-Enable button tips
-Ddd*preferences*valueTips.labelString:	 \
-Enable value tips
+Ddd*preferences*buttonHints.labelString:	 \
+Automatic display of button hints
+Ddd*preferences*valueHints.labelString:	 \
+Automatic display of variable values
+Ddd*preferences*tips.labelString: as popup tips
+Ddd*preferences*docs.labelString: in the status line
+Ddd*preferences*panel*XmRowColumn.marginHeight: 0
+Ddd*preferences*valueHintsPanel.packing: XmPACK_COLUMN
+Ddd*preferences*buttonHintsPanel.packing: XmPACK_COLUMN
+
 Ddd*preferences*groupIconify.labelString:	 \
 Iconify all windows at once
 Ddd*preferences*globalTabCompletion.labelString: \
@@ -2154,7 +2174,7 @@ disassembled code is cached in memory.\n\
 @tt \267 @rm If @bf Refer to sources by full path name @rm is set, \n\
     source code locations are referred by full source file paths.\n\
     Otherwise, only the base name is used.\n\
-@rr \267 @rm In @bf Tab Width@rm, you can set the spacing of tab stops.\n\
+@tt \267 @rm In @bf Tab Width@rm, you can set the spacing of tab stops.\n\
     Setting the tab width to 8 sets a tab stop every 8 characters.\n\
 \n\
 Use the buttons above to view and change other preferences.
@@ -2554,8 +2574,11 @@ Ddd*status_w.alignment:			XmALIGNMENT_BEGINNING
 Ddd*status_w.marginWidth:		0
 Ddd*status_w.marginHeight:		0
 Ddd*status_w.labelString:		Ready.
-Ddd*status_w.helpString:		\
-@rm This @sl status line @rm shows the last message of the inferior debugger.
+Ddd*status_w.helpString: \
+@rm This is the @sl Status Line @rm.\n\
+\n\
+It shows the last message of the inferior debugger\n\
+as well as short @DDD@ messages.
 
 Ddd*source_text_w.columns:		88
 Ddd*source_text_w.rows:			24

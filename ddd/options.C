@@ -419,12 +419,45 @@ void dddToggleValueTipsCB (Widget, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
+void dddToggleButtonDocsCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.button_docs = info->set;
+
+    if (info->set)
+	set_status("Button docs enabled.");
+    else
+	set_status("Button docs disabled.");
+
+    update_options();
+    options_changed = true;
+}
+
+void dddToggleValueDocsCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.value_docs = info->set;
+
+    if (info->set)
+	set_status("Value docs enabled.");
+    else
+	set_status("Value docs disabled.");
+
+    update_options();
+    options_changed = true;
+}
+
 
 //-----------------------------------------------------------------------------
 // Startup Options
 //-----------------------------------------------------------------------------
-static void post_startup_warning(Widget /* w */)
+static void post_startup_warning(Widget w)
 {
+    (void) w;
 #if 0
     post_warning(
 	"This change will be effective only after\n"

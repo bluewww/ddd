@@ -726,6 +726,12 @@ static bool button_tips_enabled       = true;
 // True iff text tips are enabled.
 static bool text_tips_enabled         = true;
 
+// True iff button docs are enabled.
+static bool button_docs_enabled       = true;
+
+// True iff text docs are enabled.
+static bool text_docs_enabled         = true;
+
 // The shell containing the tip label.
 static Widget tip_shell               = 0;
 
@@ -1071,7 +1077,8 @@ static void ShowDocumentation(XtPointer client_data, XtIntervalId *timer)
     XtRemoveCallback(ti->widget, XmNdestroyCallback, 
 		     CancelTimeOut, XtPointer(*timer));
 
-    if (DisplayDocumentation != 0)
+    if (DisplayDocumentation != 0 
+	&& (XmIsText(ti->widget) ? text_docs_enabled : button_docs_enabled))
     {
 	// Display documentation
 	MString doc = get_documentation_string(ti->widget, &ti->event);
@@ -1080,14 +1087,17 @@ static void ShowDocumentation(XtPointer client_data, XtIntervalId *timer)
 }
 
 // Clear the documentation
-static void ClearDocumentation(XtPointer /* client_data */, 
+static void ClearDocumentation(XtPointer* client_data, 
 			       XtIntervalId *timer)
 {
     (void) timer;
     assert(*timer == pending_clr_timer);
     pending_clr_timer = 0;
 
-    if (DisplayDocumentation != 0)
+    TipInfo *ti = (TipInfo *)client_data;
+
+    if (DisplayDocumentation != 0 
+	&& (XmIsText(ti->widget) ? text_docs_enabled : button_docs_enabled))
     {
 	// Clear documentation
 	static MString empty(0, true);
@@ -1096,7 +1106,7 @@ static void ClearDocumentation(XtPointer /* client_data */,
 }
 
 // Clear tips and documentation
-static void ClearTip(Widget w)
+static void ClearTip(Widget w, XEvent *event)
 {
     (void) w;
 
@@ -1124,23 +1134,29 @@ static void ClearTip(Widget w)
 	pending_clr_timer = 0;
     }
 
-    if (DisplayDocumentation != 0)
+    if (DisplayDocumentation != 0 
+	&& (XmIsText(w) ? text_docs_enabled : button_docs_enabled))
     {
 	// We don't clear the documentation immediately, since the
 	// user might be moving over to another button, and we don't
 	// want some flashing documentation string.
 
+	static TipInfo ti;
+	ti.event  = *event;
+	ti.widget = w;
+
 	pending_clr_timer =
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
 			    help_clear_doc_delay, 
-			    ClearDocumentation, XtPointer(w));
+			    ClearDocumentation, XtPointer(&ti));
     }
 }
 
 // Raise tips and documentation
 static void RaiseTip(Widget w, XEvent *event)
 {
-    if (DisplayDocumentation != 0)
+    if (DisplayDocumentation != 0
+	&& (XmIsText(w) ? text_docs_enabled : button_docs_enabled))
     {
 	// No need to clear the documentation
 	if (pending_clr_timer)
@@ -1197,7 +1213,7 @@ static void HandleTipEvent(Widget w,
     case EnterNotify:
 	if (!XmIsText(w))
 	{
-	    ClearTip(w);
+	    ClearTip(w, event);
 	    RaiseTip(w, event);
 	}
 	break;
@@ -1205,7 +1221,7 @@ static void HandleTipEvent(Widget w,
     case LeaveNotify:
     case ButtonPress:
     case ButtonRelease:
-	ClearTip(w);
+	ClearTip(w, event);
 	break;
 
     case MotionNotify:
@@ -1219,7 +1235,7 @@ static void HandleTipEvent(Widget w,
 		last_motion_widget   = w;
 		last_motion_position = pos;
 
-		ClearTip(w);
+		ClearTip(w, event);
 		if (pos != XmTextPosition(-1))
 		    RaiseTip(w, event);
 	    }
@@ -1353,6 +1369,12 @@ void EnableButtonTips(bool enable)
     button_tips_enabled = enable;
 }
 
+// Enable or disable button docs
+void EnableButtonDocs(bool enable)
+{
+    button_docs_enabled = enable;
+}
+
 
 
 //-----------------------------------------------------------------------------
@@ -1383,8 +1405,14 @@ void InstallTextTips(Widget w, bool install)
     }
 }
 
-// Enable or disable button tips
+// Enable or disable text tips
 void EnableTextTips(bool enable)
 {
     text_tips_enabled = enable;
+}
+
+// Enable or disable text docs
+void EnableTextDocs(bool enable)
+{
+    text_docs_enabled = enable;
 }
