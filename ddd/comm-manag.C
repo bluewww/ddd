@@ -1,8 +1,9 @@
 // $Id$
 // GDB communication manager.
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus (luetke@ips.cs.tu-bs.de).
+// Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
+// Written by Dorothea Luetkehaus (luetke@ips.cs.tu-bs.de)
+// and Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
 // This file is part of the DDD Library.
 // 
@@ -84,6 +85,7 @@ typedef struct CmdData {
     bool        new_frame_pos;    // CMD results in new frame position.
     bool        set_frame_pos;    // True if frame is to be changed manually.
     int         set_frame_arg;    // Argument: 0: reset, +/-N: move N frames
+    string      set_frame_func;   // Argument: new function
 
     CmdData (Filtering   fd = TryFilter,
 	     DispBuffer* db = 0,
@@ -96,7 +98,8 @@ typedef struct CmdData {
 	new_exec_pos (nep),
 	new_frame_pos (nep),
 	set_frame_pos (false),
-	set_frame_arg (0)
+	set_frame_arg (0),
+	set_frame_func ("")
     {}
 };
 
@@ -455,27 +458,11 @@ void user_cmdSUC (string cmd, Widget origin)
     {
 	if (gdb->type() == DBX)
 	{
-	    if (!gdb->has_frame_command())
-	    {
-		// Check if this 'func' command should select a stack frame
-		string func = cmd.after(RXblanks_or_tabs);
-		if (func != "" && source_view->set_frame_func(func))
-		{
-		    // Func found in backtrace; everything okay
-		}
-		else
-		{
-		    // Update position
-		    plus_cmd_data->refresh_file = true;
-		    plus_cmd_data->refresh_line = true;
-		}
-	    }
-	    else
-	    {
-		plus_cmd_data->refresh_file  = true;
-		plus_cmd_data->refresh_line  = true;
-		plus_cmd_data->refresh_frame = true;
-	    }
+	    // In DBX, `func' changes the stack frame
+	    cmd_data->new_frame_pos      = true;
+	    plus_cmd_data->refresh_frame = true;
+	    plus_cmd_data->refresh_file  = true;
+	    plus_cmd_data->refresh_line  = true;
 	}
 	plus_cmd_data->refresh_bpoints  = false;
 	plus_cmd_data->refresh_where    = false;
@@ -507,13 +494,14 @@ void user_cmdSUC (string cmd, Widget origin)
     {
 	// We have a backtrace window open, but DBX has no ``frame''
 	// command to set the selected frame.  Use this hack instead.
+	string arg_s = cmd.after(RXblanks_or_tabs);
+
 	if (is_up_cmd(cmd) || is_down_cmd(cmd))
 	{
 	    // Set the new selected frame from the `up'/`down'
 	    // argument.
 
 	    int arg;
-	    string arg_s = cmd.after(RXblanks_or_tabs);
 	    if (arg_s == "")
 		arg = 1;
 	    else
@@ -530,6 +518,12 @@ void user_cmdSUC (string cmd, Widget origin)
 		
 		cmd_data->set_frame_arg = direction * arg;
 	    }
+	}
+	else if (is_lookup_cmd(cmd))
+	{
+	    // Switch to new function
+	    cmd_data->set_frame_pos = true;
+	    cmd_data->set_frame_func = arg_s;
 	}
 	else
 	{
@@ -713,6 +707,12 @@ void user_cmdOA (const string& answer, void* data)
 // sind und evtl. Restantworten ausgegeben sind (ins gdb_w).
 //
 
+// These two are required for the DBX `file' command.
+// DBX does not issue file names when stopping, so use these instead.
+static string last_pos_found;	// Last position found
+static bool last_new_exec_pos;	// True if last command was new exec position
+static bool last_new_frame_pos;	// True if last command was new frame position
+
 void user_cmdOAC (void* data)
 {
     CmdData* cmd_data = (CmdData *) data;
@@ -734,12 +734,13 @@ void user_cmdOAC (void* data)
 	source_view->reload();
     }
 
-    // Set execution/frame position
+    // Set execution position
     if (cmd_data->pos_buffer->pos_found())
     {
 	string pos  = cmd_data->pos_buffer->get_position();
 	string func = cmd_data->pos_buffer->get_function();
 
+	last_pos_found = pos;
 	tty_full_name(pos);
 
 	if (!pos.contains(':') && func != "")
@@ -764,13 +765,12 @@ void user_cmdOAC (void* data)
 		pos = file + ':' + pos;
 	}
 
+	last_new_exec_pos =  cmd_data->new_exec_pos;
+	last_new_frame_pos = cmd_data->new_frame_pos;
+
 	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
 	{
 	    source_view->show_execution_position(pos, cmd_data->new_exec_pos);
-
-	    // Up/Down succeeded: set frame position in backtrace window
-	    if (cmd_data->set_frame_pos)
-		source_view->set_frame_pos(cmd_data->set_frame_arg);
 	}
 	else
 	{
@@ -782,8 +782,15 @@ void user_cmdOAC (void* data)
     {
 	// Delete old position
 	if (cmd_data->new_exec_pos)
-	    source_view->show_execution_position("", true); 
+	    source_view->show_execution_position("", true);
     }
+
+    // up/down is done: set frame position in backtrace window
+    if (cmd_data->set_frame_pos)
+	if (cmd_data->set_frame_func != "")
+	    source_view->set_frame_func(cmd_data->set_frame_func);
+	else
+	    source_view->set_frame_pos(cmd_data->set_frame_arg);
 
     gdb_out(answer);
 
@@ -1071,6 +1078,31 @@ void plusOQAC (string answers[],
 	    file = file.before('\n');
 	if (file.contains(' '))
 	    file = "";
+
+	if (file != "" && !plus_cmd_data->refresh_line)
+	{
+	    string current_file = source_view->line_of_cursor().before(':');
+	    if (current_file != file)
+	    {
+		// File has changed and we already have the current line
+		// - load new current file
+		if (last_pos_found.contains(':'))
+		    last_pos_found = file + ":" + last_pos_found.after(':');
+		else
+		    last_pos_found = file + ":" + last_pos_found;
+
+		if (last_new_exec_pos || last_new_frame_pos)
+		{
+		    source_view->show_execution_position(last_pos_found,
+							 last_new_exec_pos,
+							 true);
+		}
+		else
+		{
+		    source_view->lookup(last_pos_found, true);
+		}
+	    }
+	}
     }
 
     if (plus_cmd_data->refresh_line)
@@ -1086,8 +1118,17 @@ void plusOQAC (string answers[],
 		line = atoi(listing);
 	    else
 		line = line_of_listing(listing);
-	    string pos = file + ":" + itostring(line);
-	    source_view->lookup(pos);
+	    last_pos_found = file + ":" + itostring(line);
+
+	    if (last_new_exec_pos || last_new_frame_pos)
+	    {
+		source_view->show_execution_position(last_pos_found, 
+						     last_new_exec_pos);
+	    }
+	    else
+	    {
+		source_view->lookup(last_pos_found, true);
+	    }
 	}
     }
 

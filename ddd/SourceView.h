@@ -44,8 +44,8 @@
 // 
 //-----------------------------------------------------------------------------
 
-#ifndef _SourceView_h
-#define _SourceView_h
+#ifndef _DDD_SourceView_h
+#define _DDD_SourceView_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -291,15 +291,21 @@ private:
     static string last_execution_file;
     static int    last_execution_line;
     static string last_execution_pc;
-    static void _show_execution_position (string file, int line);
+    static void _show_execution_position (string file, int line, bool silent);
 
     // Read source text
-    static String read_local(const string& file_name, long& length);
-    static String read_remote(const string& file_name, long& length);
-    static String read_from_gdb(const string& file_name, long& length);
+    static String read_local(const string& file_name, long& length,
+			     bool silent);
+    static String read_remote(const string& file_name, long& length,
+			      bool silent);
+    static String read_from_gdb(const string& file_name, long& length,
+				bool silent);
 
-    static String read_indented(string& file_name, long& length);
-    static int read_current(string& file_name, bool force_reload = false);
+    static String read_indented(string& file_name, long& length,
+				bool silent = false);
+    static int read_current(string& file_name, 
+			    bool force_reload = false,
+			    bool silent = false);
 
     static void SetInsertionPosition(Widget w,
 				     XmTextPosition pos, 
@@ -330,10 +336,11 @@ public:
     // POSITION; no arg means clear current position.
     // STOPPED indicates that the program just stopped.
     static void show_execution_position (string position = "",
-					 bool stopped = false);
+					 bool stopped = false,
+					 bool silent = false);
 
     // Set cursor position, based on the GDB position info POSITION
-    static void show_position           (string position);
+    static void show_position (string position, bool silent = false);
 
     // Set pc position to location PC; return start of line
     // If MODE is given, highlight PC line
@@ -377,12 +384,13 @@ public:
 		     Time time = CurrentTime);
 
     // Locate function S; if S is omitted, locate last execution position.
-    static void lookup(string s = "");
+    static void lookup(string s = "", bool silent = false);
 
     // Read file FILE_NAME; place cursor at INITIAL_LINE.
     static void read_file(string file_name,
 			  int initial_line = 1,
-			  bool force_reload = false);
+			  bool force_reload = false,
+			  bool silent = false);
 
     // Reload current file
     static void reload();
@@ -436,6 +444,11 @@ public:
 
     // Get the line at POSITION
     static string get_line(string position);
+
+    // Get the position of breakpoint NUM
+    static string bp_pos(int num);
 };
 
-#endif
+#endif // _DDD_SourceView_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
+

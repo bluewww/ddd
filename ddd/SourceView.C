@@ -944,7 +944,8 @@ void SourceView::SetInsertionPosition(Widget text_w,
 // ***************************************************************************
 
 // Read local file from FILE_NAME
-String SourceView::read_local(const string& file_name, long& length)
+String SourceView::read_local(const string& file_name, long& length,
+			      bool silent)
 {
     StatusDelay delay("Reading file " + quote(file_name));
     length = 0;
@@ -953,24 +954,27 @@ String SourceView::read_local(const string& file_name, long& length)
     int fd;
     if ((fd = open(file_name, O_RDONLY)) < 0)
     {
-	post_error (file_name + ": " + strerror(errno), 
-		    "source_file_error", source_text_w);
+	if (!silent)
+	    post_error (file_name + ": " + strerror(errno), 
+			"source_file_error", source_text_w);
         return 0;
     }
 
     struct stat statb;
     if (fstat(fd, &statb) < 0)
     {
-	post_error (file_name + ": " + strerror(errno), 
-		    "source_file_error", source_text_w);
+	if (!silent)
+	    post_error (file_name + ": " + strerror(errno), 
+			"source_file_error", source_text_w);
 	return 0;
     }
 
     // Avoid loading from directory, socket, device, or otherwise.
     if (!S_ISREG(statb.st_mode))
     {
-	post_error (file_name + ": not a regular file", 
-		    "source_file_error", source_text_w);
+	if (!silent)
+	    post_error (file_name + ": not a regular file", 
+			"source_file_error", source_text_w);
 	return 0;
     }
 
@@ -979,21 +983,29 @@ String SourceView::read_local(const string& file_name, long& length)
     // allocated space.
     char* text = XtMalloc(unsigned(statb.st_size + 1));
     if ((length = read(fd, text, statb.st_size)) != statb.st_size)
-	post_error (file_name + ": " + strerror(errno),
-		    "source_trunc_error", source_text_w);
+    {
+	if (!silent)
+	    post_error (file_name + ": " + strerror(errno),
+			"source_trunc_error", source_text_w);
+    }
     close(fd);
 
     text[statb.st_size] = '\0'; // be sure to null-terminate
 
     if (statb.st_size == 0)
-	post_warning("File " + quote(file_name) + " is empty.", 
-		     "source_empty_warning", source_text_w);
+    {
+	if (!silent)
+	    post_warning("File " + quote(file_name) + " is empty.", 
+			 "source_empty_warning", source_text_w);
+    }
+
     return text;
 }
 
 
 // Read (possibly remote) file FILE_NAME; a little slower
-String SourceView::read_remote(const string& file_name, long& length)
+String SourceView::read_remote(const string& file_name, long& length, 
+			       bool silent)
 {
     StatusDelay delay("Reading file " + 
 		      quote(file_name) + " from remote host");
@@ -1018,15 +1030,20 @@ String SourceView::read_remote(const string& file_name, long& length)
     text[length] = '\0';  // be sure to null-terminate
 
     if (length == 0)
-	post_error("Cannot access remote file " + quote(file_name), 
-		   "remote_file_error", source_text_w);
+    {
+	if (!silent)
+	    post_error("Cannot access remote file " + quote(file_name), 
+		       "remote_file_error", source_text_w);
+    }
+
     return text;
 }
 
 
 // Read file FILE_NAME via the GDB `list' function
 // Really slow, is guaranteed to work for source files.
-String SourceView::read_from_gdb(const string& file_name, long& length)
+String SourceView::read_from_gdb(const string& file_name, long& length, 
+				 bool /* silent */)
 {
     length = 0;
     if (!gdb->isReadyWithPrompt())
@@ -1106,7 +1123,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length)
 
 
 // Read file FILE_NAME and format it
-String SourceView::read_indented(string& file_name, long& length)
+String SourceView::read_indented(string& file_name, long& length, bool silent)
 {
     length = 0;
     Delay delay;
@@ -1116,20 +1133,25 @@ String SourceView::read_indented(string& file_name, long& length)
 
     String text;
     if (!remote_gdb())
-	text = read_local(file_name, length);
+	text = read_local(file_name, length, silent);
     else
-	text = read_remote(file_name, length);
+	text = read_remote(file_name, length, silent);
 
     if (text == 0 || length == 0)
     {
-	string source_name = basename(file_name.chars());
-	text = read_from_gdb(source_name, length);
+	string saved_current_file_name = current_file_name;
+	current_file_name = file_name;
+	string source_name = current_source_name();
+	current_file_name = saved_current_file_name;
+
+	text = read_from_gdb(source_name, length, silent);
 
 	if (text != 0 && text[0] != '\0')
 	{
 #if 0
-	    post_warning("File was read as source from GDB.",
-			 "source_file_from_gdb_warning", source_text_w);
+	    if (!silent)
+		post_warning("File was read as source from GDB.",
+			     "source_file_from_gdb_warning", source_text_w);
 #endif
 	    file_name = source_name;
 	}
@@ -1220,7 +1242,7 @@ String SourceView::read_indented(string& file_name, long& length)
 
 
 // Read file FILE_NAME into current_source; get it from the cache if possible
-int SourceView::read_current(string& file_name, bool force_reload)
+int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 {
     if (cache_source_files && !force_reload && file_cache.has(file_name))
     {
@@ -1229,7 +1251,7 @@ int SourceView::read_current(string& file_name, bool force_reload)
     else
     {
 	long length = 0;
-	String indented_text = read_indented(file_name, length);
+	String indented_text = read_indented(file_name, length, silent);
 	if (indented_text == 0 || length == 0)
 	    return -1;
 
@@ -1239,7 +1261,7 @@ int SourceView::read_current(string& file_name, bool force_reload)
 	file_cache[file_name] = current_source;
 
 	int null_count = current_source.freq('\0');
-	if (null_count > 0)
+	if (null_count > 0 && !silent)
 	    post_warning("File " + quote(file_name) + " is a binary file.", 
 			 "source_binary_warning", source_text_w);
     }
@@ -1294,7 +1316,8 @@ void SourceView::reload()
 
 void SourceView::read_file (string file_name, 
 			    int initial_line,
-			    bool force_reload)
+			    bool force_reload,
+			    bool silent)
 {
     if (file_name == "")
 	return;
@@ -1325,7 +1348,7 @@ void SourceView::read_file (string file_name,
     file_name.gsub("//", "/");
 
     // Read in current_source
-    int error = read_current(file_name, force_reload);
+    int error = read_current(file_name, force_reload, silent);
     if (error)
 	return;
 
@@ -2089,7 +2112,8 @@ SourceView::SourceView (XtAppContext app_context,
 // Set current execution position, based on the GDB position info
 // POSITION; no arg means clear current position.
 // STOPPED indicates that the program just stopped.
-void SourceView::show_execution_position (string position, bool stopped)
+void SourceView::show_execution_position (string position, bool stopped, 
+					  bool silent)
 {
     if (stopped)
 	at_lowest_frame = true;
@@ -2128,7 +2152,7 @@ void SourceView::show_execution_position (string position, bool stopped)
 	return;
 
     if (!file_matches(file_name, current_file_name))
-	read_file(file_name, line);
+	read_file(file_name, line, silent);
 
     if (file_matches(file_name, current_file_name))
     {
@@ -2143,18 +2167,18 @@ void SourceView::show_execution_position (string position, bool stopped)
 	}
 
 	// Zeilennummer usw. anzeigen
-	_show_execution_position(file_name, line);
+	_show_execution_position(file_name, line, silent);
     }
 }
 
 
-void SourceView::_show_execution_position(string file, int line)
+void SourceView::_show_execution_position(string file, int line, bool silent)
 {
     last_execution_file = file;
     last_execution_line = line;
 
     if (!file_matches(file, current_file_name))
-	read_file(file, line);
+	read_file(file, line, silent);
     else if (line >= 1 && line <= line_count)
 	add_to_history(file, line);
 
@@ -2204,7 +2228,7 @@ void SourceView::_show_execution_position(string file, int line)
 
 // ***************************************************************************
 //
-void SourceView::show_position (string position)
+void SourceView::show_position (string position, bool silent)
 {
     string file_name = current_file_name;
 
@@ -2216,7 +2240,7 @@ void SourceView::show_position (string position)
     int line = get_positive_nr(position);
 
     if (!file_matches(file_name, current_file_name))
-	read_file(file_name, line);
+	read_file(file_name, line, false, silent);
     add_to_history(file_name, line);
 
     // Fenster scrollt an Position
@@ -2435,7 +2459,7 @@ void SourceView::check_remainder(string& info_output)
 
 // ***************************************************************************
 //
-void SourceView::lookup(string s)
+void SourceView::lookup(string s, bool silent)
 {
     if (s != "" && isspace(s[0]))
 	s = s.after(rxwhite);
@@ -2448,7 +2472,8 @@ void SourceView::lookup(string s)
 
 	if (last_execution_file != "")
 	    _show_execution_position(last_execution_file, 
-				     last_execution_line);
+				     last_execution_line,
+				     silent);
     }
     else if (s[0] != '0' && isdigit(s[0]))
     {
@@ -2465,8 +2490,9 @@ void SourceView::lookup(string s)
 	}
 	else
 	{
-	    post_error("No such line in current source.", 
-		       "no_such_line_error", source_text_w);
+	    if (!silent)
+		post_error("No such line in current source.", 
+			   "no_such_line_error", source_text_w);
 	}
     }
     else if (s[0] == '#')
@@ -2497,7 +2523,7 @@ void SourceView::lookup(string s)
 		}
 	    }
 
-	    if (bp == 0)
+	    if (bp == 0 && !silent)
 		post_error("No such breakpoint.", 
 			   "no_such_breakpoint_error", source_text_w);
 	}
@@ -3824,117 +3850,31 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	break;
 
     case DBX:
+	if (gdb->has_frame_command())
 	{
-	    string pos;
-	    if (!gdb->has_frame_command())
-	    {
-		// Some DBXes lack a `frame' command.  Use this kludge instead.
-		string reply = gdb_question("func main");
-		if (reply == NO_GDB_ANSWER)
-		{
-		    post_gdb_busy(w);
-		    return;
-		}
-		if (cbs->item_position == 1)
-		{
-		    set_status("Current function is main");
-		}
-		else
-		{
-		    reply = 
-			gdb_question("down " 
-				     + itostring(cbs->item_position - 1));
-		    if (reply == NO_GDB_ANSWER)
-		    {
-			post_gdb_busy(w);
-			return;
-		    }
-
-		    if (reply.contains("Current", 0))
-		    {
-			if (reply.contains('\n'))
-			    reply = reply.before('\n');
-			set_status(reply);
-		    }
-		    else
-			post_gdb_message(reply, w);
-		}
-
-		// Get the selected line
-		String _item;
-		XmStringGetLtoR(cbs->item, LIST_CHARSET, &_item);
-		string item(_item);
-		XtFree(_item);
-
-		if (item.contains(" in "))
-		{
-		    string file = item.after(" in ");
-		    file = file.after('\"');
-		    file = file.before('\"');
-		    pos = file + ":";
-		}
-
-		if (item.contains("line "))
-		{
-		    string line_s = item.after("line ");
-		    pos += itostring(get_positive_nr(line_s));
-		}
-	    }
-	    else
-	    {
-		// Issue `frame' command
-		string reply = 
-		    gdb_question(gdb->frame_command(
+	    // Issue `frame' command
+	    gdb_command(gdb->frame_command(
 			itostring(count - cbs->item_position + 1)));
-		if (reply == NO_GDB_ANSWER)
-		{
-		    post_gdb_busy(w);
-		    return;
-		}
+	}
+	else
+	{
+	    // Some DBXes lack a `frame' command.  Use `func' instead.
+	    XmStringTable items;
 
-		// Get current file
-		string file = gdb_question("file");
+	    XtVaGetValues(frame_list_w,
+			  XmNitems, &items,
+			  NULL);
+	    String _item;
+	    XmStringGetLtoR(items[cbs->item_position - 1], 
+			    LIST_CHARSET, &_item);
+	    string item(_item);
+	    XtFree(_item);
 
-		// Simple sanity check
-		strip_final_blanks(file);
+	    string func = item.from(rxalpha);
+	    if (func.contains('('))
+		func = func.before('(');
 
-		if (file.contains('\n'))
-		    file = file.before('\n');
-		if (file.contains(' '))
-		    file = "";
-
-		if (file != "")
-		{
-		    // Get current line
-		    int line = 0;
-
-		    // Check if line was contained in `frame' reply
-		    PosBuffer pos_buffer;
-		    pos_buffer.filter(reply);
-		    pos_buffer.answer_ended();
-		    if (pos_buffer.pos_found())
-		    {
-			string line_s = pos_buffer.get_position();
-			if (line_s.contains(':'))
-			    line_s = line_s.after(':');
-			line = atoi(line_s);
-		    }
-
-		    if (line == 0)
-		    {
-			// No? Get the current line via `list'
-			string listing = gdb_question("list");
-			line = atoi(listing);
-		    }
-
-		    if (line >= 1)
-			pos = file + ":" + itostring(line);
-		}
-		
-	    }
-
-	    if (pos != "")
-		show_execution_position(pos);
+	    gdb_command("func " + func);
 	}
 	break;
     }
@@ -4098,9 +4038,6 @@ bool SourceView::set_frame_func(const string& func)
 		  XmNitems, &items,
 		  NULL);
 
-    int pos  = -1;
-    int line = -1;
-    string file;
     for (int i = count - 1; i >= 0; i--)
     {
 	String _item;
@@ -4108,40 +4045,18 @@ bool SourceView::set_frame_func(const string& func)
 	string item(_item);
 	XtFree(_item);
 
-	if (item.contains(func, 0))
+	int func_index  = item.index(func);
+	int paren_index = item.index('(');
+
+	if (func_index >= 0 &&
+	    (func_index < paren_index || paren_index < 0))
 	{
-	    pos = i;
-	    if (item.contains("line "))
-	    {
-		string line_s = item.after("line ");
-		line = get_positive_nr(line_s);
-	    }
-	    if (item.contains(" in "))
-	    {
-		file = item.after(" in ");
-		file = file.from('\"');
-		file = file.through('\"');
-		file = unquote(file);
-	    }
-	    break;
+	    set_frame_pos(0, i + 1);
+	    return true;
 	}
     }
 
-    if (pos >= 0)
-    {
-	set_frame_pos(0, pos + 1);
-	if (line > 0)
-	{
-	    string p;
-	    if (file != "")
-		p = file + ":";
-	    p += itostring(line);
-
-	    show_execution_position(p);
-	}
-    }
-
-    return pos >= 0;
+    return false;
 }
 
 // Set frame manually: ARG = 0: POS, ARG = +/- N: down/up N levels
@@ -5261,3 +5176,12 @@ string SourceView::command_list(string cmd)
 	return "{ " + cmd + " }";
 }
 
+// Get the position of breakpoint NUM
+string SourceView::bp_pos(int num)
+{
+    BreakPoint *bp = bp_map.get(num);
+    if (bp == 0)
+	return "";
+    else
+	return bp->file_name() + ":" + itostring(bp->line_nr());
+}
