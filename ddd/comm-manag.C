@@ -1009,8 +1009,12 @@ void plusOQAC (string answers[],
 	assert (qu_count < count);
 
 	file = answers[qu_count++];
+
+	// Simple sanity check
 	if (file.contains('\n'))
 	    file = file.before('\n');
+	if (file.contains(' '))
+	    file = "";
     }
 
     if (plus_cmd_data->refresh_line)
@@ -1020,35 +1024,38 @@ void plusOQAC (string answers[],
 
 	string listing = answers[qu_count++];
 
-	string message = "";
-	while (listing != "" && atoi(listing) == 0)
-	{
-	    message += listing.through('\n');
-	    listing = listing.after('\n');
-	}
-
-	if (message != "")
-	    post_gdb_message(message);
-
-	int line = atoi(listing);
-	if (line == 0)
-	{
-	    // Weird.  No source?
-	    line = 1;
-	}
-	else if (!plus_cmd_data->refresh_main)
-	{
-	    // Older DBX 1.0 lists 10 lines; the current line is the
-	    // 5th one.  With DBX 3.0, we use the "line" command; and
-	    // even if "list" was used (as on startup) we don't add 5.
-	    if (!gdb->has_line_command())
-	    {
-		line += 5;
-	    }
-	}
-
 	if (file != "")
+	{
+	    string message;
+	    while (listing != "" && atoi(listing) == 0)
+	    {
+		message += listing.through('\n');
+		listing = listing.after('\n');
+	    }
+
+	    if (message != "")
+		post_gdb_message(message);
+
+	    int line = atoi(listing);
+	    if (line == 0)
+	    {
+		// Weird.  No source?
+		line = 1;
+	    }
+	    else if (!plus_cmd_data->refresh_main)
+	    {
+		// Sun DBX 1.0 lists 10 lines; the current line is the
+		// 5th one.  With Sun DBX 3.0, we use the "line"
+		// command; and even if "list" was used (as on
+		// startup) we don't add 5.
+		if (!gdb->has_line_command())
+		{
+		    line += 5;
+		}
+	    }
+	    
 	    source_view->lookup(file + ":" + itostring(line));
+	}
     }
 
     if (plus_cmd_data->refresh_bpoints) {
