@@ -6373,16 +6373,14 @@ define(STOPPED_HELP,
 [ITEM To find out how you got here, use LBL(Status, Backtrace).\n\
 ITEM To examine a variable value, select it first (click on an \
 occurrence).\n\
-    Then use LBL(Print ()) (for simple values) and LBL(Display ()) \
-(for complex\n\
-    values).  As a shortcut, you may also press BUTTON(3)\n\
-    to get a popup menu.\n\
-ITEM You can display all local variables at once using \
-LBL(Data, Display Local Variables).\n\
+    Then use LBL(Print ()) (simple values) or LBL(Display ()) \
+(complex values).\n\
+    Press BUTTON(3) on the variable name for a shortcut.\n\
+ITEM You can display all local variables at once using\n\
+    LBL(Data, Display Local Variables).\n\
 ITEM To set and clear further breakpoints, use \
 LBL(Source, Edit Breakpoints).\n\
-    As a shortcut, you may also press BUTTON(3) on a\n\
-    location or breakpoint to get a popup menu.])dnl
+    Press BUTTON(3) on a location or breakpoint to get a shortcut.])dnl
 
 Ddd*stopped_at_passed_signal.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
