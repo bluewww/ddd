@@ -4,6 +4,14 @@ Problems in building and installing DDD                          -*- text -*-
 AIX
 ===
 
+Reported by:  Jonathan Edwards <edwards@intranet.com>,
+              L. Scott Emmons >scott_emmons@uscs.com>
+
+    Do not use xlC for compiling DDD; use GCC instead.  If you use
+    xlC, the data display does not work correctly (only the very first
+    variable displayed is shown).
+
+
 Reported by:  bas@phys.uva.nl (Bas V. de Bakker),
               smueller@dbis1.informatik.uni-hamburg.de (Stefan Mueller)
 
@@ -173,7 +181,7 @@ Reported by:  (various)
     libraries).
 
 
-LESSTIF
+LessTif
 =======
 
     When linking with LessTif instead of OSF/Motif, the following
@@ -217,7 +225,7 @@ LESSTIF
  
 
 
-LINUX
+Linux
 =====
 
 Reported by:  Andreas Zeller <zeller@acm.org>
@@ -276,6 +284,11 @@ Reported by:  Blair Zajac <blair@olympia.gps.caltech.edu>
     `extern char *__builtin_alloca();' to `extern void
     *__builtin_alloca();' in `alloca-norm.h' to get the code to compile.
     This does not happen with GCC.
+
+Reported by:  Andreas Zeller <zeller@acm.org>
+
+    Solaris CC (SC4.0 18 Oct 1995 C++ 4.1) is safe for compiling DDD.
+    Executables are larger compared to those compiled with GCC.
 
 
 SunOS 4.1 and X11R6

@@ -331,7 +331,7 @@ Volunteers for fixing these and other bugs are welcome!
      (DBX prints these as `ARRAY')
 
 159. Jonathan Edwards <edwards@intranet.com> says:
-     A status display only shows once. After stepping the program it
+     A status display only shows once.  After stepping the program it
      collapses into just the title.  Doing a refresh command restores
      the display.
      [This is due to using AIX xlC instead of GCC.  Further
@@ -381,10 +381,6 @@ Volunteers for fixing these and other bugs are welcome!
      SGI dbx, setting of temporary breakpoints regularly fails because
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
-
-181* `File | Close' does not work properly.
-
-182* Reading a binary file causes an Abort.
 
 183* Hitting `stepi' too fast causes a delay cursor to appear that
      won't go.
