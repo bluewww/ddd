@@ -314,7 +314,7 @@ void TTYAgent::open_master()
     if (line != 0 && master >= 0)
     {
 	// Verify slave side is usable
-
+	//
 	// We don't use TTY_OK() here - it seems this breaks SGI TTY setup.
 	// The error messages generated are as follows:
 	// 
