@@ -90,11 +90,11 @@ AC_CHECK_PROGS(DVIPS, dvips dvi2ps)
 AC_PATH_PROGS(RSH, remsh rsh on)
 AC_CHECK_PROGS(LPR, lp lpr)
 if test "$LPR" = "lpr"; then
-PRINT_COMMAND="lpr -P@PRINTER@ -#@COPIES@ @FILE@"
+PRINT_COMMAND="lpr"
 elif test "$LPR" = "lp"; then
-PRINT_COMMAND="lp -c -d@PRINTER@ -n@COPIES@ @FILE@"
+PRINT_COMMAND="lp"
 else
-PRINT_COMMAND="lp -c @FILE@"
+PRINT_COMMAND="lp"
 fi
 AC_SUBST(PRINT_COMMAND)dnl
 AC_PROG_INSTALL
