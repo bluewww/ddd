@@ -2856,13 +2856,13 @@ void process_next_event()
 
 #if HAVE_EXCEPTIONS
     }
-#if HAVE_EXCEPTION && HAVE_TYPEINFO
+#if HAVE_EXCEPTION && HAVE_STD_EXCEPTIONS && HAVE_TYPEINFO
     // Standard library exception: get its type and diagnostics.
     catch (const exception& err)
     {
 	ddd_show_exception(typeid(err).name(), err.what());
     }
-#endif // HAVE_EXCEPTION && HAVE_TYPEINFO
+#endif // HAVE_EXCEPTION && HAVE_STD_EXCEPTIONS && HAVE_TYPEINFO
     catch (...)
     {
 	// Handle non-standard C++ exceptions
