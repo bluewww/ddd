@@ -60,7 +60,9 @@ static void PannerCB(Widget w, XtPointer client_data, XtPointer call_data);
 
 // Method function declarations
 
-static void Resize(Widget w);
+extern "C" {
+    static void Resize(Widget w);
+}
 
 // Resource list
 
@@ -145,21 +147,23 @@ struct _PannedGraphEditClassRec pannedGraphEditClassRec = {
 WidgetClass pannedGraphEditWidgetClass = WidgetClass(&pannedGraphEditClassRec);
 
 
-static void Resize(Widget w)
-{
-    XtCheckSubclass(w, pannedGraphEditWidgetClass, "Bad widget class");
-    const PannedGraphEditWidget pw = PannedGraphEditWidget(w);
-
-    for (unsigned i = 0; i < pw->composite.num_children; i++)
+extern "C" {
+    static void Resize(Widget w)
     {
-	// Resize each graphEdit child
-	Widget child = pw->composite.children[i];
-	if (XtIsSubclass(child, graphEditWidgetClass))
-	    graphEditSizeChanged(child);
-    }
+	XtCheckSubclass(w, pannedGraphEditWidgetClass, "Bad widget class");
+	const PannedGraphEditWidget pw = PannedGraphEditWidget(w);
 
-    // Call superclass resize method
-    pannedGraphEditClassRec.core_class.superclass->core_class.resize(w);
+	for (unsigned i = 0; i < pw->composite.num_children; i++)
+	{
+	    // Resize each graphEdit child
+	    Widget child = pw->composite.children[i];
+	    if (XtIsSubclass(child, graphEditWidgetClass))
+		graphEditSizeChanged(child);
+	}
+
+	// Call superclass resize method
+	pannedGraphEditClassRec.core_class.superclass->core_class.resize(w);
+    }
 }
 
 

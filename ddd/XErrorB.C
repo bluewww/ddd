@@ -36,6 +36,17 @@ char XErrorBlocker_rcsid[] =
 #include "XErrorB.h"
 #include "assert.h"
 
+// arnaud.desitter@nag.co.uk says `extern "C"' is required to fix
+// warnings on Sun CC 5.x, which enforces a standard C++ rule where
+// pointer to function are extern "C" or extern "C++" (see Sun C++
+// migration guide).
+extern "C" {
+    static int _handler(Display *display, XErrorEvent *event)
+    {
+	return XErrorBlocker::handler(display, event);
+    }
+}
+
 XErrorBlocker *XErrorBlocker::active = 0;
 
 XErrorBlocker::XErrorBlocker(Display *display)
@@ -44,7 +55,7 @@ XErrorBlocker::XErrorBlocker(Display *display)
     : _display(display), _error_occurred(false), // _event(),
       saved_handler(0), saved_active(0)
 {
-    saved_handler = XSetErrorHandler(handler);
+    saved_handler = XSetErrorHandler(_handler);
     saved_active  = active;
     active = this;
 }

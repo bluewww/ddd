@@ -39,9 +39,11 @@
 // Superclasses
 #define new new_w
 #define class class_w
+extern "C" {
 #include <X11/IntrinsicP.h>
 #include <X11/CompositeP.h>
 #include <X11/Xaw/PortholeP.h>
+}
 #undef new
 #undef class
 

@@ -33,19 +33,25 @@
 #pragma interface
 #endif
 
+extern "C" {
 #include <X11/Intrinsic.h>
+}
 #include "bool.h"
 #include "assert.h"
+ 
+extern "C" {
+    typedef int (*ddd_XErrorHandler) (Display *display, 
+				      XErrorEvent *error_event);
+}
 
 class XErrorBlocker {
     Display *_display;
     bool _error_occurred;
     XErrorEvent _event;
 
-    int (*saved_handler)(Display *, XErrorEvent *);
+    ddd_XErrorHandler saved_handler;
     XErrorBlocker *saved_active;
 
-    static int handler(Display *, XErrorEvent *);
     static XErrorBlocker *active;
 
     XErrorBlocker(const XErrorBlocker&)
@@ -70,6 +76,9 @@ protected:
 public:
     XErrorBlocker(Display *display);
     virtual ~XErrorBlocker();
+
+    // made public so that it can be wrapped by extern "C" function
+    static int handler(Display *, XErrorEvent *);
 
     bool error_occurred() const
     {

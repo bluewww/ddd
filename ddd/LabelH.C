@@ -290,56 +290,62 @@ static GC _bottomShadowGC(XmLabelWidget _label)
     return XtGetGC ((Widget)_label,  mask, &gcValues);
 }
 
-static void _grabbedLabelExpose(Widget _w, XEvent *_event, Region _region)
-{
-    GC insensitiveGC;
-
-    XmLabelWidget label = (XmLabelWidget)_w;
-
-    unsigned char label_type = XmSTRING;
-    XtVaGetValues(_w, XmNlabelType, &label_type, NULL);
-
-    if (XtIsSensitive(_w) || label_type != XmSTRING)
-	(*oldLabelWidgetExposeProc)(_w, _event, _region);
-    else
+// arnaud.desitter@nag.co.uk says `extern "C"' is required to fix
+// warnings on Sun CC 5.x, which enforces a standard C++ rule where
+// pointer to function are extern "C" or extern "C++" (see Sun C++
+// migration guide).
+extern "C" {
+    static void _grabbedLabelExpose(Widget _w, XEvent *_event, Region _region)
     {
+	GC insensitiveGC;
+
+	XmLabelWidget label = (XmLabelWidget)_w;
+
+	unsigned char label_type = XmSTRING;
+	XtVaGetValues(_w, XmNlabelType, &label_type, NULL);
+
+	if (XtIsSensitive(_w) || label_type != XmSTRING)
+	    (*oldLabelWidgetExposeProc)(_w, _event, _region);
+	else
+	{
 #if defined(LesstifVersion)
-	// LessTif invokes resize() when exposing the widget,
-	// creating a new insensitive GC.  Inhibit this.
-	XtWidgetProc oldResizeProc = XtClass(_w)->core_class.resize;
-	XtClass(_w)->core_class.resize = noResize;
-	oldResizeProc(_w);
+	    // LessTif invokes resize() when exposing the widget,
+	    // creating a new insensitive GC.  Inhibit this.
+	    XtWidgetProc oldResizeProc = XtClass(_w)->core_class.resize;
+	    XtClass(_w)->core_class.resize = noResize;
+	    oldResizeProc(_w);
 #endif
 
-	insensitiveGC = LABEL(label).insensitive_GC;
+	    insensitiveGC = LABEL(label).insensitive_GC;
 
-	LABEL(label).TextRect.x += 1;
-	LABEL(label).TextRect.y += 1;
-	if (LABEL(label)._acc_text != NULL)
-	{
-	    LABEL(label).acc_TextRect.x += 1;
-	    LABEL(label).acc_TextRect.y += 1;
-	}
-	LABEL(label).insensitive_GC = _topShadowGC(label);
-	(*oldLabelWidgetExposeProc)(_w, _event, _region);
-	XtReleaseGC(_w, LABEL(label).insensitive_GC);
+	    LABEL(label).TextRect.x += 1;
+	    LABEL(label).TextRect.y += 1;
+	    if (LABEL(label)._acc_text != NULL)
+	    {
+		LABEL(label).acc_TextRect.x += 1;
+		LABEL(label).acc_TextRect.y += 1;
+	    }
+	    LABEL(label).insensitive_GC = _topShadowGC(label);
+	    (*oldLabelWidgetExposeProc)(_w, _event, _region);
+	    XtReleaseGC(_w, LABEL(label).insensitive_GC);
 
-	LABEL(label).TextRect.x -= 1;
-	LABEL(label).TextRect.y -= 1;
-	if (LABEL(label)._acc_text != NULL)
-	{
-	    LABEL(label).acc_TextRect.x -= 1;
-	    LABEL(label).acc_TextRect.y -= 1;
-	}
-	LABEL(label).insensitive_GC = _bottomShadowGC(label);
-	(*oldLabelWidgetExposeProc)(_w, _event, _region);
-	XtReleaseGC(_w, LABEL(label).insensitive_GC);
+	    LABEL(label).TextRect.x -= 1;
+	    LABEL(label).TextRect.y -= 1;
+	    if (LABEL(label)._acc_text != NULL)
+	    {
+		LABEL(label).acc_TextRect.x -= 1;
+		LABEL(label).acc_TextRect.y -= 1;
+	    }
+	    LABEL(label).insensitive_GC = _bottomShadowGC(label);
+	    (*oldLabelWidgetExposeProc)(_w, _event, _region);
+	    XtReleaseGC(_w, LABEL(label).insensitive_GC);
 
-	LABEL(label).insensitive_GC = insensitiveGC;
+	    LABEL(label).insensitive_GC = insensitiveGC;
 
 #if defined(LesstifVersion)
-	XtClass(_w)->core_class.resize = oldResizeProc;
+	    XtClass(_w)->core_class.resize = oldResizeProc;
 #endif
+	}
     }
 }
 
@@ -407,57 +413,59 @@ static GC _gadgetParentBottomShadowGC(XmLabelGadget _label)
     return XtGetGC ((Widget)parent,  mask, &gcValues);
 }
 
-static void _grabbedLabelGadgetExpose(Widget _w, XEvent *_event, 
-				      Region _region)
-{
-    GC insensitiveGC;
-
-    XmLabelGadget label = (XmLabelGadget)_w;
-
-    unsigned char label_type = XmSTRING;
-    XtVaGetValues(_w, XmNlabelType, &label_type, NULL);
-
-    if (XtIsSensitive(_w) || label_type != XmSTRING)
-	(*oldLabelGadgetExposeProc)(_w, _event, _region);
-    else
+extern "C" {
+    static void _grabbedLabelGadgetExpose(Widget _w, XEvent *_event, 
+					  Region _region)
     {
+	GC insensitiveGC;
+
+	XmLabelGadget label = (XmLabelGadget)_w;
+
+	unsigned char label_type = XmSTRING;
+	XtVaGetValues(_w, XmNlabelType, &label_type, NULL);
+
+	if (XtIsSensitive(_w) || label_type != XmSTRING)
+	    (*oldLabelGadgetExposeProc)(_w, _event, _region);
+	else
+	{
 #if defined(LesstifVersion)
-	// LessTif invokes resize() when exposing the widget,
-	// creating a new insensitive GC.  Inhibit this.
-	XtWidgetProc oldResizeProc = XtClass(_w)->core_class.resize;
-	XtClass(_w)->core_class.resize = noResize;
-	oldResizeProc(_w);
+	    // LessTif invokes resize() when exposing the widget,
+	    // creating a new insensitive GC.  Inhibit this.
+	    XtWidgetProc oldResizeProc = XtClass(_w)->core_class.resize;
+	    XtClass(_w)->core_class.resize = noResize;
+	    oldResizeProc(_w);
 #endif
 
-	insensitiveGC = LABEL(label).insensitive_GC;
+	    insensitiveGC = LABEL(label).insensitive_GC;
 
-	LABEL(label).TextRect.x += 1;
-	LABEL(label).TextRect.y += 1;
-	if (LABEL(label)._acc_text != NULL)
-	{
-	    LABEL(label).acc_TextRect.x += 1;
-	    LABEL(label).acc_TextRect.y += 1;
-	}
-	LABEL(label).insensitive_GC = _gadgetParentTopShadowGC(label);
-	(*oldLabelGadgetExposeProc)(_w, _event, _region);
-	XtReleaseGC(_w, LABEL(label).insensitive_GC);
+	    LABEL(label).TextRect.x += 1;
+	    LABEL(label).TextRect.y += 1;
+	    if (LABEL(label)._acc_text != NULL)
+	    {
+		LABEL(label).acc_TextRect.x += 1;
+		LABEL(label).acc_TextRect.y += 1;
+	    }
+	    LABEL(label).insensitive_GC = _gadgetParentTopShadowGC(label);
+	    (*oldLabelGadgetExposeProc)(_w, _event, _region);
+	    XtReleaseGC(_w, LABEL(label).insensitive_GC);
 
-	LABEL(label).TextRect.x -= 1;
-	LABEL(label).TextRect.y -= 1;
-	if (LABEL(label)._acc_text != NULL)
-	{
-	    LABEL(label).acc_TextRect.x -= 1;
-	    LABEL(label).acc_TextRect.y -= 1;
-	}
-	LABEL(label).insensitive_GC = _gadgetParentBottomShadowGC(label);
-	(*oldLabelGadgetExposeProc)(_w, _event, _region);
-	XtReleaseGC(_w, LABEL(label).insensitive_GC);
+	    LABEL(label).TextRect.x -= 1;
+	    LABEL(label).TextRect.y -= 1;
+	    if (LABEL(label)._acc_text != NULL)
+	    {
+		LABEL(label).acc_TextRect.x -= 1;
+		LABEL(label).acc_TextRect.y -= 1;
+	    }
+	    LABEL(label).insensitive_GC = _gadgetParentBottomShadowGC(label);
+	    (*oldLabelGadgetExposeProc)(_w, _event, _region);
+	    XtReleaseGC(_w, LABEL(label).insensitive_GC);
 
-	LABEL(label).insensitive_GC = insensitiveGC;
+	    LABEL(label).insensitive_GC = insensitiveGC;
 
 #if defined(LesstifVersion)
-	XtClass(_w)->core_class.resize = oldResizeProc;
+	    XtClass(_w)->core_class.resize = oldResizeProc;
 #endif
+	}
     }
 }
 

@@ -8,10 +8,10 @@ Minor bug fixes:
 
 * The option to create new displays `left-to-right' is restored upon startup.
 * Fortran struct members are accessed as `A%B' instead of `A.B'.
+* DDD honors the TMPDIR environment variable for creating temporary files.
 * Minor compilation problems with GCC 2.7.2, GCC 3.0 (prerelease), 
   and Sun CC have been fixed.
 * `config.guess' and `config.sub' scripts have been updated.
-* Temporary files are now created in TMPDIR, if set.
 
 
 

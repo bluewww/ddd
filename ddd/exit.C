@@ -590,23 +590,27 @@ void DDDDumpCoreCB(Widget, XtPointer, XtPointer)
 // X I/O error
 //-----------------------------------------------------------------------------
 
-static int (*old_x_fatal_handler)(Display *display) = 0;
+extern "C" {
+    static int (*old_x_fatal_handler)(Display *display) = 0;
+}
 
 // Fatal X I/O error handler: cleanup and issue error message
-static int ddd_x_fatal(Display *display)
-{
-    int saved_errno = errno;
-
-    if (errno != EPIPE)
+extern "C" {
+    static int ddd_x_fatal(Display *display)
     {
-	ddd_has_crashed = true;
-	dddlog << "!  X I/O error\n";
-	dddlog.flush();
-    }
-    ddd_cleanup();
+	int saved_errno = errno;
 
-    errno = saved_errno;
-    return old_x_fatal_handler(display);
+	if (errno != EPIPE)
+	{
+	    ddd_has_crashed = true;
+	    dddlog << "!  X I/O error\n";
+	    dddlog.flush();
+	}
+	ddd_cleanup();
+
+	errno = saved_errno;
+	return old_x_fatal_handler(display);
+    }
 }
 
 // Cleanup on fatal X I/O errors
@@ -792,7 +796,9 @@ static void print_x_error(Display *display, XErrorEvent *event, ostream& os)
     os.flush();
 }
 
-static int (*old_x_error_handler)(Display *, XErrorEvent *) = 0;
+extern "C" {
+    static int (*old_x_error_handler)(Display *, XErrorEvent *) = 0;
+}
 
 static bool recovered_from_x_error = true;
 
@@ -802,69 +808,72 @@ static Boolean recovery_done(XtPointer)
     return True;		// Remove from the list of work procs
 }
 
-// X error handler: cleanup and issue error message
-static int ddd_x_error(Display *display, XErrorEvent *event)
-{
-    if (event->error_code == BadImplementation)
+extern "C" {
+    // X error handler: cleanup and issue error message
+    static int ddd_x_error(Display *display, XErrorEvent *event)
     {
-	// Taken care of by the standard X handler - just proceed
-	return old_x_error_handler(display, event);
-    }
+	if (event->error_code == BadImplementation)
+	{
+	    // Taken care of by the standard X handler - just proceed
+	    return old_x_error_handler(display, event);
+	}
 
-    ddd_has_crashed = true;
+	ddd_has_crashed = true;
 
-    dddlog << "!  X error\n";
-    dddlog.flush();
+	dddlog << "!  X error\n";
+	dddlog.flush();
 
-    // Fetch precise diagnostics
-    char buffer[BUFSIZ];
-    XGetErrorText(display, event->error_code, buffer, sizeof buffer);
-    string cause = buffer;
-    if (cause.contains(" ("))
-	cause = cause.before(" (");
-    cause = "`" + cause + "' error";
+	// Fetch precise diagnostics
+	char buffer[BUFSIZ];
+	XGetErrorText(display, event->error_code, buffer, sizeof buffer);
+	string cause = buffer;
+	if (cause.contains(" ("))
+	    cause = cause.before(" (");
+	cause = "`" + cause + "' error";
 
-    string title = buffer;
-    if (title.contains('('))
-	title = title.after('(');
-    if (title.contains(')'))
-	title = title.before(')');
+	string title = buffer;
+	if (title.contains('('))
+	    title = title.after('(');
+	if (title.contains(')'))
+	    title = title.before(')');
 
-    if (!recovered_from_x_error)
-    {
-	// Not recovered from last X error
+	if (!recovered_from_x_error)
+	{
+	    // Not recovered from last X error
 
-	// Ignore being called while cleaning up
-	static bool entered = false;
-	if (entered)
-	    return 0;
-	entered = true;
+	    // Ignore being called while cleaning up
+	    static bool entered = false;
+	    if (entered)
+		return 0;
+	    entered = true;
 
-	// Exit after diagnostics
-	ddd_cleanup();
+	    // Exit after diagnostics
+	    ddd_cleanup();
+	    print_x_error(display, event, cerr);
+	    print_x_error(display, event, dddlog);
+	    print_fatal_msg(title, cause, "X error");
+	    exit(EXIT_FAILURE);
+	}
+
+	// Issue error on stderr and DDD log
 	print_x_error(display, event, cerr);
 	print_x_error(display, event, dddlog);
-	print_fatal_msg(title, cause, "X error");
-	exit(EXIT_FAILURE);
+
+	if (xt_error_app_context != 0)
+	{
+	    // Prepare for issuing error in dialog
+	    string *msg_ptr = new string(title + '\v' + cause);
+	    XtAppAddTimeOut(xt_error_app_context, 0, 
+			    PostXErrorCB, XtPointer(msg_ptr));
+
+	    // Set RECOVERED_FROM_X_ERROR to FALSE until DDD is idle again
+	    recovered_from_x_error = false;
+	    XtAppAddWorkProc(xt_error_app_context, 
+			     recovery_done, XtPointer(0));
+	}
+
+	return 0;			// Keep on acting
     }
-
-    // Issue error on stderr and DDD log
-    print_x_error(display, event, cerr);
-    print_x_error(display, event, dddlog);
-
-    if (xt_error_app_context != 0)
-    {
-	// Prepare for issuing error in dialog
-	string *msg_ptr = new string(title + '\v' + cause);
-	XtAppAddTimeOut(xt_error_app_context, 0, 
-			PostXErrorCB, XtPointer(msg_ptr));
-
-	// Set RECOVERED_FROM_X_ERROR to FALSE until DDD is idle again
-	recovered_from_x_error = false;
-	XtAppAddWorkProc(xt_error_app_context, recovery_done, XtPointer(0));
-    }
-
-    return 0;			// Keep on acting
 }
 
 // Cleanup on fatal X I/O errors

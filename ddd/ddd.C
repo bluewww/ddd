@@ -6842,30 +6842,32 @@ static void vsl_echo(const string& msg)
 // Emergency
 //-----------------------------------------------------------------------------
 
-static Bool is_emergency(Display *, XEvent *event, char *)
-{
-    switch (event->type)
+extern "C" {
+    static Bool is_emergency(Display *, XEvent *event, char *)
     {
-    case KeyPress:
-    {
-	char buffer[1024];
-	KeySym keysym;
-
-	int len = XLookupString(&event->xkey, buffer, sizeof buffer, 
-				&keysym, NULL);
-	if (len == 1)
+	switch (event->type)
 	{
-	    char c = buffer[0];
-	    if (c== '\003' || c == '\007' || c == '\033' || c == '\034')
+	case KeyPress:
+	{
+	    char buffer[1024];
+	    KeySym keysym;
+
+	    int len = XLookupString(&event->xkey, buffer, sizeof buffer, 
+				    &keysym, NULL);
+	    if (len == 1)
 	    {
-		// Interrupt: ^C, ^G, ^\, or ESC found in queue
-		return True;
+		char c = buffer[0];
+		if (c== '\003' || c == '\007' || c == '\033' || c == '\034')
+		{
+		    // Interrupt: ^C, ^G, ^\, or ESC found in queue
+		    return True;
+		}
 	    }
 	}
-    }
-    }
+	}
 
-    return False;
+	return False;
+    }
 }
 
 bool process_emergencies()

@@ -2008,8 +2008,34 @@ int Layout::levelsLength (NODE **level)
     Sorting functions
 *****************************************************************************/
 
+// arnaud.desitter@nag.co.uk says `extern "C"' is required to fix
+// warnings on Sun CC 5.x, which enforces a standard C++ rule where
+// pointer to function are extern "C" or extern "C++" (see Sun C++
+// migration guide).
+extern "C"{
+    static int _sortCmpCenters(const void* k1, const void* k2)
+    {
+	NODE **_n1 = (NODE **)k1;
+	NODE **_n2 = (NODE **)k2;
+	return Layout::sortCmpCenters(_n1,_n2);
+    }
 
-typedef int (*QuicksortCompareProc)(const void *, const void *);
+    static int _sortCmpUpperPrio(const void* k1, const void* k2)
+    {
+	NODE **_n1 = (NODE **)k1;
+	NODE **_n2 = (NODE **)k2;
+	return Layout::sortCmpUpperPrio(_n1,_n2);
+    }
+
+    static int _sortCmpLowerPrio(const void* k1, const void* k2)
+    {
+	NODE **_n1 = (NODE **)k1;
+	NODE **_n2 = (NODE **)k2;
+	return Layout::sortCmpLowerPrio(_n1,_n2);
+    }
+}
+
+
 
 /*
  * sortApplyLevel
@@ -2414,8 +2440,7 @@ void Layout::sortByCenter (NODE **level)
 
     /* sort the index */
 
-    qsort ( (char *) index , len, sizeof (NODE*), 
-	    (QuicksortCompareProc)sortCmpCenters );
+    qsort ( (char *) index , len, sizeof (NODE*), _sortCmpCenters );
 
     /*
      * build up a new list according to the sorted index
@@ -2621,8 +2646,7 @@ void Layout::sortLevelUpX (NODE **level, int dist)
      * sort the index by node priority (from low to high)
      */
 
-    qsort ( (char *)index, len, sizeof (NODE*), 
-	    (QuicksortCompareProc)sortCmpUpperPrio);
+    qsort ( (char *)index, len, sizeof (NODE*), _sortCmpUpperPrio);
 
     tmp = index;
     while (*tmp) {
@@ -2672,8 +2696,7 @@ void Layout::sortLevelDownX (NODE **level, int dist)
      * sort the index by node priority (from low to high)
      */
 
-    qsort ( (char *)index, len, sizeof (NODE*), 
-	    (QuicksortCompareProc)sortCmpLowerPrio);
+    qsort ( (char *)index, len, sizeof (NODE*), _sortCmpLowerPrio);
 
     tmp = index;
     while (*tmp) {
