@@ -153,8 +153,13 @@ string dbx_path(const string& source)
     }
     else
     {
-	// No `setenv' and no `edit' command - revert to SOURCE.
-	path = source;
+	// No `setenv' and no `edit' command.  Check whether the
+	// `file' command with no arguments provides the full path, as
+	// in AIX DBX 3.1. This shouldn't affect other DBXs as file
+	// will simply return the same thing already contained in
+	// source.
+	gdb_question("file " + source);
+	path = gdb_question("file");
     }
 
     strip_final_blanks(path);
