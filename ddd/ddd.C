@@ -170,13 +170,7 @@ char ddd_rcsid[] =
 #endif
 
 #include <X11/IntrinsicP.h>	// LessTif hacks
-extern "C" {
-#define new new_w
-#define class class_w
-#include <Xm/SashP.h>		// XmIsSash(), for LessTif hacks
-#undef class
-#undef new
-}
+#include "Sash.h"
 #include "LessTifH.h"
 
 // ANSI C++ doesn't like the XtIsRealized() macro

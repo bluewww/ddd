@@ -39,13 +39,8 @@ char sashes_rcsid[] =
 #include <Xm/PanedW.h>
 #include <X11/StringDefs.h>
 
-extern "C" {
-#define new new_w
-#define class class_w
-#include <Xm/SashP.h>	  // XmIsSash()
-#undef class
-#undef new
-}
+#include "Sash.h"
+
 
 //-----------------------------------------------------------------------------
 // Sashes
@@ -54,48 +49,40 @@ extern "C" {
 // Unmanage all sashes of PANED
 void unmanage_sashes(Widget paned)
 {
-    if (paned == 0 || !XmIsPanedWindow(paned))
+    if (paned == 0 || !XtIsSubclass(paned, xmPanedWindowWidgetClass))
 	return;
 
-    if (XtIsComposite(paned))
-    {
-	WidgetList children   = 0;
-	Cardinal num_children = 0;
+    WidgetList children   = 0;
+    Cardinal num_children = 0;
 
-	XtVaGetValues(paned,
-		      XtNchildren, &children,
-		      XtNnumChildren, &num_children,
-		      NULL);
+    XtVaGetValues(paned,
+		  XtNchildren, &children,
+		  XtNnumChildren, &num_children,
+		  NULL);
 
-	if (children)
-	    for (int i = 0; i < int(num_children); i++)
-		if (XmIsSash(children[i]))
-		{
-		    XtUnmanageChild(children[i]);
-		    XtUnmapWidget(children[i]);
-		}
-    }
+    for (Cardinal i = 0; i < num_children; i++)
+	if (XmIsSash(children[i]))
+	{
+	    XtUnmanageChild(children[i]);
+	    XtUnmapWidget(children[i]);
+	}
 }
 
 // Disable traversal for all sashes of PANED
 void untraverse_sashes(Widget paned)
 {
-    if (paned == 0 || !XmIsPanedWindow(paned))
+    if (paned == 0 || !XtIsSubclass(paned, xmPanedWindowWidgetClass))
 	return;
 
-    if (XtIsComposite(paned))
-    {
-	WidgetList children   = 0;
-	Cardinal num_children = 0;
+    WidgetList children   = 0;
+    Cardinal num_children = 0;
 
-	XtVaGetValues(paned,
-		      XtNchildren, &children,
-		      XtNnumChildren, &num_children,
-		      NULL);
+    XtVaGetValues(paned,
+		  XtNchildren, &children,
+		  XtNnumChildren, &num_children,
+		  NULL);
 
-	if (children)
-	    for (int i = 0; i < int(num_children); i++)
-		if (XmIsSash(children[i]))
-		    XtVaSetValues(children[i], XmNtraversalOn, False, NULL);
-    }
+    for (Cardinal i = 0; i < num_children; i++)
+	if (XmIsSash(children[i]))
+	    XtVaSetValues(children[i], XmNtraversalOn, False, NULL);
 }

@@ -777,6 +777,7 @@ DDD_OBJECTS = \
 	EntryType.o  \
 	GDBAgent.o   \
 	HelpCB.o     \
+	MinMaxA.o    \
 	PosBuffer.o  \
 	SourceView.o \
 	WhatNextCB.o

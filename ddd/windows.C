@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD window management
 
-// Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -48,6 +48,7 @@ char windows_rcsid[] =
 #include "findParent.h"
 #include "frame.h"
 #include "wm.h"
+#include "MinMaxA.h"
 
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
@@ -58,6 +59,7 @@ char windows_rcsid[] =
 #include <Xm/VendorE.h>		// XmIsMotifWMRunning()
 #endif
 #include <X11/Xutil.h>
+#include "Sash.h"
 
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
@@ -1138,22 +1140,76 @@ const Dimension MIN_PANED_SIZE = 64;
 
 void manage_paned_child(Widget w)
 {
-    if (XtIsSubclass(XtParent(w), xmPanedWindowWidgetClass))
+    Widget paned = XtParent(w);
+
+    if (paned == 0 || !XtIsSubclass(paned, xmPanedWindowWidgetClass))
     {
+	XtManageChild(w);
+	return;
+    }
+
+    // Fetch current constraints
+    MinMaxAssoc sizes;
+
+    WidgetList children;
+    Cardinal numChildren = 0;
+    XtVaGetValues(paned, XmNchildren, &children, 
+		  XmNnumChildren, &numChildren, NULL);
+
+    Cardinal i;
+    for (i = 0; i < numChildren; i++)
+    {
+	Widget child = children[i];
+	if (XmIsSash(child))
+	    continue;
+
 	Dimension minimum = 1;
 	Dimension maximum = 1000;
-	XtVaGetValues(w, XmNpaneMinimum, &minimum, 
+	XtVaGetValues(children[i], XmNpaneMinimum, &minimum, 
 		      XmNpaneMaximum, &maximum, NULL);
 
-	if (MIN_PANED_SIZE >= minimum && MIN_PANED_SIZE <= maximum)
+	MinMax& size = sizes[child];
+	size.min = minimum;
+	size.max = maximum;
+
+	// clog << XtName(child) 
+	//      << " min = " << size.min << ", max = " << size.max << '\n';
+    }
+
+    // Ensure that each child keeps at least the minimum size
+    for (i = 0; i < numChildren; i++)
+    {
+	Widget child = children[i];
+	if (child != w && !XtIsManaged(child))
+	    continue;
+	if (!sizes.has(child))
+	    continue;
+
+	const MinMax& size = sizes[child];
+	if (MIN_PANED_SIZE >= size.min && MIN_PANED_SIZE <= size.max)
 	{
-	    XtVaSetValues(w, XmNpaneMinimum, MIN_PANED_SIZE, NULL);
-	    XtManageChild(w);
-	    XtVaSetValues(w, XmNpaneMinimum, minimum, NULL);
-	    return;
+	    XtVaSetValues(children[i], XmNpaneMinimum, MIN_PANED_SIZE, NULL);
 	}
     }
 
     XtManageChild(w);
+
+    // Restore old constraints
+    XtVaGetValues(paned, XmNchildren, &children, 
+		  XmNnumChildren, &numChildren, NULL);
+
+    for (i = 0; i < numChildren; i++)
+    {
+	Widget child = children[i];
+	if (!sizes.has(child) || !XtIsManaged(child))
+	    continue;
+
+	const MinMax& size = sizes[child];
+	if (size.min <= 1 && size.max >= 1000)
+	    continue;		// Default values
+
+	XtVaSetValues(child, XmNpaneMinimum, size.min, 
+		      XmNpaneMaximum, size.max, NULL);
+    }
 }
     
