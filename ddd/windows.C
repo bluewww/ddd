@@ -59,7 +59,10 @@ char windows_rcsid[] =
 #include <Xm/VendorE.h>		// XmIsMotifWMRunning()
 #endif
 #include <X11/Xutil.h>
-#include "Sash.h"
+
+#include "Sash.h"		// XmIsSash()
+#include <Xm/Separator.h>	// XmIsSeparator()
+#include <Xm/SeparatoG.h>	// XmIsSeparatorGadget()
 
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
@@ -1136,6 +1139,11 @@ void get_tool_offset()
 
 // Manage paned child with minimum size
 
+inline bool is_internal_paned_child(Widget w)
+{
+    return XmIsSash(w) || XmIsSeparator(w) || XmIsSeparatorGadget(w);
+}
+
 const Dimension MIN_PANED_SIZE = 64;
 
 void manage_paned_child(Widget w)
@@ -1160,7 +1168,7 @@ void manage_paned_child(Widget w)
     for (i = 0; i < numChildren; i++)
     {
 	Widget child = children[i];
-	if (XmIsSash(child))
+	if (is_internal_paned_child(child))
 	    continue;
 
 	Dimension minimum = 1;
