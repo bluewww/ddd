@@ -26,8 +26,11 @@
 # environment. Contact nora@ips.cs.tu-bs.de for details.
 
 # $Log$
-# Revision 1.1  1995/02/09 09:14:39  zeller
-# Initial revision
+# Revision 1.2  1995/05/23 13:31:16  zeller
+# Various unknown fixes
+#
+# Revision 1.1.1.1  1995/02/09  09:14:40  zeller
+# ICE 0.5 distribution
 #
 # Revision 1.6  1994/04/28  18:51:34  zeller
 # Neu: #ifndef-Praefix vom Projekt abhaengig
@@ -48,6 +51,7 @@ path=`dirname $0`
 user=""
 
 case `pwd` in
+    *ddd*)    prefix=_DDD;;
     */ice/*)  prefix=_ICE;;
     */ice)    prefix=_ICE;;
     */nora/*) prefix=_Nora;;

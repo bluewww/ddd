@@ -27,8 +27,11 @@
 # environment. Contact nora@ips.cs.tu-bs.de for details.
 
 # $Log$
-# Revision 1.1  1995/02/09 09:14:40  zeller
-# Initial revision
+# Revision 1.2  1995/05/23 13:31:12  zeller
+# Various unknown fixes
+#
+# Revision 1.1.1.1  1995/02/09  09:14:41  zeller
+# ICE 0.5 distribution
 #
 # Revision 1.17  1994/07/09  09:52:02  zeller
 # New: support for lisp files
@@ -126,6 +129,7 @@ s/ $//g'`
   esac
 
   case $fullfile in
+    */ddd*)   project=DDD;;
     */ice/*)  project=ICE;;
     */ice)    project=ICE;;
     */nora/*) project=NORA;;
@@ -138,6 +142,8 @@ s/ $//g'`
 environment. Contact nora@ips.cs.tu-bs.de for details.';;
     ICE)      project_detail='ICE is the incremental configuration engine.\
 Contact ice@ips.cs.tu-bs.de for details.';;
+    DDD)      project_detail='DDD is the GDB-based data display debugger.\
+Contact ddd@ips.cs.tu-bs.de for details.';;
     *)        project_detail='FOOBAR is fouled up beyond all recognition.\
 Contact foobar@kremvax.su.org for details.';;
   esac

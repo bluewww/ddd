@@ -26,8 +26,11 @@
 # environment. Contact nora@ips.cs.tu-bs.de for details.
 
 # $Log$
-# Revision 1.1  1995/02/09 09:14:38  zeller
-# Initial revision
+# Revision 1.2  1995/05/23 13:31:14  zeller
+# Various unknown fixes
+#
+# Revision 1.1.1.1  1995/02/09  09:14:39  zeller
+# ICE 0.5 distribution
 #
 # Revision 1.6  1994/11/18  11:52:52  zeller
 # New: break RCS ID in two lines
@@ -69,7 +72,7 @@ do
 	   echo
 	   echo '// $Log''$'
 	   echo
-	   echo 'static char '$name'_rcsid[] = '
+	   echo 'static const char rcsid[] = '
 	   echo '    "$Id''$";'
 	   echo
 	   echo '#ifdef __GNUG__'
