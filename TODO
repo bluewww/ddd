@@ -105,9 +105,6 @@ Volunteers for these and other projects are welcome!
 120 Check whether `dbxenv output_short_file_name off' helps in
     debugging with DBX.
 
-122 Have a window that shows DDD/GDB communication, with the ability
-    to modify commands before they are processed.
-
 126 `shorten' may need some improvements (count `(' and `)'
     occurrences, etc.)
 
@@ -197,20 +194,10 @@ Volunteers for these and other projects are welcome!
     easier to follow the line.
     [You can turn off glyphs and get a black bar.  -AZ]
 
-216 Raoul Beauduin <beauduin@ori.u-tokyo.ac.jp> wants to be able to
-    view the content of an array graphically.  Useful when you know
-    what kind of array you are expecting (symmetric, diagonal ...)
-
 217 Winson Quock <quock@pepper.com> (see the quote in `ddd/exit.C')
     says: Very often, I found myself spending quite a lot of time
     arranging each "display box".  It will be cool if we can also
     have a normal text list display for variable values.
-
-219 Annotated arrows. Christoph Koegl <koegl@informatik.uni-kl.de>
-    suggests that the data display window should be able to annotate
-    arrows with the name of the pointer variables whose value they
-    represent. This would come in handy if one (as I do at the
-    moment) displays heavily cross-pointered data structures.
 
 221 Have a DDD USENET news group, such as `comp.debuggers[.ddd]',
     instead of a mailing list.  [This should be done when there are
@@ -243,10 +230,16 @@ Volunteers for these and other projects are welcome!
 273 JORGE HERNANDO <hernando@cnea.edu.ar> wants
     1)  when an array is marked for display, how about a popup where one
     writes the indexes ranges?, e.g. 5-8,* in order to show 
-    array(i,j), 5<=i<=8, the whole range of j. Also, with multidimensional
-    arrays is easy to be confused about which value we are looking at. Would
-    it be possible to show (together with the array value) the indexes 
-    values (in another font, size, color, etc)?
+    array(i,j), 5<=i<=8, the whole range of j.
+
+    [You can do this via artificial arrays.]
+
+    Also, with multidimensional arrays is easy to be confused about
+    which value we are looking at. Would it be possible to show
+    (together with the array value) the indexes values (in another
+    font, size, color, etc)?
+
+    [Clicking on any value will tell you the location.]
 
 277 Allow in-place editing.  There is already a simple `sourceEditing'
     resource, but we'd have to do a lot more to realize decent editing
@@ -263,10 +256,6 @@ Volunteers for these and other projects are welcome!
     variable, to be able to toggle between showing only member var's
     defined in that class, or all member variables, including those
     inherited from superclasses.
-
-293 Styles.  Have arrays, etc. be displayed in various visual styles
-    such as bar graphs.  This can be easily established using VSL
-    functions.  See also 273 and 292.
 
 294 Have a way to expand `VALUE <Nx>' manually.
 
