@@ -109,6 +109,7 @@
 ! its own menus.  This is off by default, since it may interfere with Motif.
 ! Ddd*autoRaiseMenus: true
 
+
 ! ----------------------------------------------------------------------------
 ! SHADOWS
 ! ----------------------------------------------------------------------------
@@ -116,6 +117,52 @@
 ! These settings make the menubar and the command tool somewhat `lighter'
 ! Ddd*menubar.shadowThickness: 1
 ! Ddd*tool_shell*shadowThickness: 1
+
+
+! ----------------------------------------------------------------------------
+! ACCELERATORS
+! ----------------------------------------------------------------------------
+
+! Enrico Scholz <enrico.scholz@wirtschaft.tu-chemnitz.de> suggests the
+! following accelerators (taken from the Borland Delphi debugger):
+! 
+! Ddd*menubar*programMenu.step.accelerator:       ~Shift<Key>F7
+! Ddd*menubar*programMenu.step.acceleratorText:   F7
+! 
+! Ddd*menubar*programMenu.stepi.accelerator:      Shift<Key>F7
+! Ddd*menubar*programMenu.stepi.acceleratorText:  Shift+F7
+! 
+! Ddd*menubar*programMenu.next.accelerator:       ~Shift<Key>F8
+! Ddd*menubar*programMenu.next.acceleratorText:   F8
+! 
+! Ddd*menubar*programMenu.nexti.accelerator:      Shift<Key>F8
+! Ddd*menubar*programMenu.nexti.acceleratorText:  Shift+F8
+! 
+! Ddd*menubar*programMenu.kill.accelerator:       Ctrl ~Shift<Key>F2
+! Ddd*menubar*programMenu.kill.acceleratorText:   Ctrl+F2
+! 
+! Ddd*menubar*programMenu.cont.accelerator:       ~Ctrl ~Shift<Key>F9
+! Ddd*menubar*programMenu.cont.acceleratorText:   F9
+! 
+! ! This does not exist in the Borland debugger; `cont' also made run.
+! Ddd*menubar*programMenu.run.accelerator:        Ctrl ~Shift<Key>F9
+! Ddd*menubar*programMenu.run.acceleratorText:    Ctrl+F9
+! 
+! ! There is no such thing in the Borland debugger, but seems useful to me
+! Ddd*menubar*programMenu.finish.accelerator:     ~Shift<Key>F5
+! Ddd*menubar*programMenu.finish.acceleratorText: F5
+! 
+! Ddd*menubar*programMenu.run_again.accelerator:  Ctrl Shift<Key>F9
+! Ddd*menubar*programMenu.run_again.acceleratorText:      Ctrl+Shift+F9
+! 
+! Ddd*menubar*programMenu.separateExecWindow.accelerator:         Meta<Key>F9
+! Ddd*menubar*programMenu.separateExecWindow.acceleratorText:     Alt+F9
+! 
+! ! For future DDD versions:
+! ! Ddd*menubar*programMenu.until.accelerator:     <Key>F4
+! ! Ddd*menubar*programMenu.until.acceleratorText: F4    
+! ! Ddd*menubar*programMenu.until.labelString:     Continue until here
+! ! Ddd*menubar*programMenu.until.mnemonic:        H
 
 
 ! ----------------------------------------------------------------------------
@@ -235,3 +282,9 @@
 ! #pragma replace stdfontpoints\n\
 ! stdfontsize() = 0;\n\
 ! stdfontpoints() = 100;
+
+
+
+! Local Variables:
+! font-lock-keywords: (t ("\\(^\\!.*\\|dnl.*\\)" (0 font-lock-comment-face t)) ("@[0-9a-zA-Z@]+" (0 font-lock-variable-name-face)) ("\\(define\\|include\\|ifdef\\)\\b" (0 font-lock-keyword-face)))
+! End:
