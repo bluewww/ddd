@@ -62,6 +62,15 @@ char filetype_rcsid[] =
 #include <sys/core.h>		// CORE_MAGIC
 #endif
 
+// Test for regular file - see stat(3)
+#ifndef S_ISREG
+#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#endif
+
+// Test for directory - see stat(3)
+#ifndef S_ISDIR
+#define	S_ISDIR(m) (((m) & _IFMT) == _IFDIR)
+#endif
 
 // True if FILE_NAME contains non-TEXT characters
 bool is_binary_file(const string& file_name)
