@@ -984,8 +984,31 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 	disp_bgn = disp_node->nodeptr();
 	was_selected = disp_bgn->selected() && disp_value == 0;
 
-	disp_node->select(disp_value);
-	graphEditRedrawNode(graph_edit, disp_bgn);
+	switch (mode)
+	{
+	case ExtendSelection:
+	case ToggleSelection:
+	    if (disp_node == selected_node()
+		&& disp_node->selected_value() != 0
+		&& disp_value != disp_node->selected_value())
+	    {
+		// Add another value in this node.  We can't do this,
+		// so toggle the entire node.
+		disp_bgn->selected() = false;
+		disp_node->select(0);
+		graphEditRedrawNode(graph_edit, disp_bgn);
+		break;
+	    }
+	    // FALL THROUGH
+
+	case SetSelection:
+	    if (disp_value != selected_value())
+	    {
+		disp_node->select(disp_value);
+		graphEditRedrawNode(graph_edit, disp_bgn);
+	    }
+	    break;
+	}
     }
 
     if (mode == SetSelection)
