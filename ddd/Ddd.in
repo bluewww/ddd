@@ -829,7 +829,7 @@ None<Key>R13:		gdb-end-of-line()	    \n\
 None<Key>Tab:		gdb-complete-command()	    \n
 
 ! Have some of these in argument fields as well
-Ddd*XmTextField*translations: #override \
+Ddd*XmTextField.translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
 Ctrl<Key>B:		backward-character()	    \n\
 Ctrl<Key>D:		delete-next-character()	    \n\
@@ -849,7 +849,7 @@ None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
 ! Have some of these in other texts as well
-Ddd*XmText*translations: #override \
+Ddd*XmText.translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
 Ctrl<Key>B:		backward-character()	    \n\
 Ctrl<Key>D:		delete-next-character()	    \n\
