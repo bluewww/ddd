@@ -356,18 +356,14 @@ Volunteers for fixing these and other bugs are welcome!
      ULTRIX and HP-UX `man' formats (probably problems with others,
      too)
 
-170* Ira Cooper <ilcooper@tasc.com> says:
-     In `cxxtest.C', stop at line 125: and do the following
-     1. Open up all the links off tree excluding the nils.
-     2. Turn on auto-layout and alias detection in the preferences.  
-     3. Then set tree->left->left->left to tree->left.
-     4. Watch the loop.
-
 171. Skip Koppenhaver <skip@tecelite.com> states: In Solaris 2.5,
      without REGCOMP_BROKEN defined, `Options->Settings' brings up a
      blank dialog box, with just the Close, Reset(dimmed), and Help
      buttons along the bottom.  This also makes the GDB busy light
      continuously blink.
+
+     [Can be worked around by #defining REGCOMP_BROKEN in `config.h'.
+     See also 174, below.]
 
 172. Jonathan Edwards <edwards@intranet.com> says: If I interupt my
      program while it is running, my data displays are not updated,
@@ -395,7 +391,7 @@ Volunteers for fixing these and other bugs are welcome!
        help output). The "(gdb) " prompt appears after the end of the
        help output. Sorry, no fix.
 
-     [Can be worked around by #defining REGCOMP_BROKEN in config.h]
-
+     [Can be worked around by #defining REGCOMP_BROKEN in `config.h'.
+     See also 171, above.]
 
 175. (Insert your bug here)
