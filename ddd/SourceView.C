@@ -1261,6 +1261,9 @@ void SourceView::clear_file_cache()
 void SourceView::reload()
 {
     // Reload current file
+    if (current_file_name == "")
+	return;
+
     string pos  = line_of_cursor();
     string line = pos.after(':');
     string file = full_path(current_file_name);
@@ -4323,11 +4326,19 @@ Widget SourceView::create_glyph(Widget form_w,
     XtManageChild(w);
 
     Pixmap pix = pixmap(w, bits, width, height);
+
+    unsigned char unit_type;
+    XtVaGetValues(w, XmNunitType, &unit_type, NULL);
+    int new_width  = XmConvertUnits(w, XmHORIZONTAL, XmPIXELS, 
+				    width + 1 + motif_offset, unit_type);
+    int new_height = XmConvertUnits(w, XmVERTICAL, XmPIXELS, 
+				    height + 1 + motif_offset, unit_type);
+
     arg = 0;
     XtSetArg(args[arg], XmNlabelType, XmPIXMAP); arg++;
     XtSetArg(args[arg], XmNlabelPixmap, pix);    arg++;
-    XtSetArg(args[arg], XmNwidth,  width + 1 + motif_offset);   arg++;
-    XtSetArg(args[arg], XmNheight, height + 1 + motif_offset);  arg++;
+    XtSetArg(args[arg], XmNwidth,  new_width);   arg++;
+    XtSetArg(args[arg], XmNheight, new_height);  arg++;
     XtSetValues(w, args, arg);
     
     XtAddCallback(w, XmNactivateCallback, MoveCursorToGlyphPosCB, 0);
