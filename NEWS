@@ -33,6 +33,8 @@ DDD 2.2.2
     - `Edit' no longer causes DDD to crash.
     - The separate execution TTY now works with Sun DBX 4.0.
     - XDB control sequences no longer cause DDD to hang.
+    - Various quirks and memory leaks in the interaction between DDD
+      and the inferior debugger have been fixed.
 
     Changes in configuration and building:
     - GCC 2.8.0 is supported.
