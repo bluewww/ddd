@@ -5130,6 +5130,10 @@ static void gdb_recordingHP(Agent *, void *, void *call_data)
     // Recording state affects toolbar button sensitivity
     update_arg_buttons();
     data_disp->refresh_args();
+
+    // Recording state affects Undo/Redo buttons
+    refresh_buttons();
+    gdbUpdateAllMenus();
 }
 
 
