@@ -4061,7 +4061,10 @@ specify\n\
     the full @GDB@ path.\n\
 @tt \267 @rm If you started DDD without arguments, re-invoke @DDD@,\n\
     but give it an executable as argument.  XDB and some DBX versions\n\
-    require being invoked with an executable.
+    require being invoked with an executable.\n\
+@tt \267 @rm @DDD@ passes all unknown options to @GDB@.  If @GDB@ choked on\n\
+    some options intended for @DDD@, use the @DDD@ @tt --help @rm option to\n\
+    get a list of valid @DDD@ options.
 
 Ddd*fatal_dialog.title: @DDD@: @SIGNAL@
 Ddd*fatal_dialog.messageString:	  \
@@ -4205,7 +4208,7 @@ Ddd*no_completion_error*helpString:	\
 Command completion requires the GDB `@tt complete@rm' command,\n\
 which is present in GDB 4.13 and later.
 
-Ddd*no_program_popup_title: @DDD@: No Program
+Ddd*no_program_popup.title: @DDD@: No Program
 Ddd*no_program*helpString: \
 @rm You have not opened any program yet.  @GDB@ needs a debuggee\n\
 to access core dumps, source files, or attaching to processes.\n\
