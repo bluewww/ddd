@@ -1041,22 +1041,10 @@ m2test: m2test.mod
 
 # We don't want no optimizing, but debugging info in our test files
 bug.o:	$(srcdir)/bug.C
-	@if test "$(CXXOPT)" != ""; then \
-	$(MAKE) CXXOPT= $@; \
-	elif test "$(CXXDEBUG)" = ""; then \
-	$(MAKE) CXXDEBUG=-g $@; \
-	else \
-	set -x; $(COMPILE.cc) $(INCLUDE) -o $@ $(srcdir)/bug.C; \
-	fi
+	$(CC) -g -c -o $@ $(srcdir)/bug.C
 
 cxxtest.o: $(srcdir)/cxxtest.C
-	@if test "$(CXXOPT)" != ""; then \
-	$(MAKE) CXXOPT= $@; \
-	elif test "$(CXXDEBUG)" = ""; then \
-	$(MAKE) CXXDEBUG=-g $@; \
-	else \
-	set -x; $(COMPILE.cc) $(INCLUDE) -o $@ $(srcdir)/cxxtest.C; \
-	fi
+	$(CXX) -g -c -o $@ $(srcdir)/cxxtest.C
 
 ctest.o: $(srcdir)/ctest.c
 	$(COMPILE.c) $(INCLUDE) -o $@ $(srcdir)/ctest.c
