@@ -2065,9 +2065,6 @@ int main(int argc, char *argv[])
 		   XmNworkWindow, paned_work_w,
 		   NULL);
 
-    // Create preference panels
-    make_preferences(paned_work_w);
-
     // All main widgets (except shells) are created at this point.
     
     // Load history for current session
@@ -2166,6 +2163,9 @@ int main(int argc, char *argv[])
     source_view->create_shells();
     data_disp->create_shells();
     set_shortcut_menu(data_disp, app_data.display_shortcuts);
+
+    // Create preference panels
+    make_preferences(paned_work_w);
 
     // Save option states
     save_option_state();
@@ -5169,9 +5169,13 @@ static bool have_decorated_transients()
     XtUnmapWidget(init_shell);
     DestroyWhenIdle(init_shell);
 
-    // If the window manager frame is more than 5 pixels larger than
-    // the shell window, assume the shell is decorated.
-    return frame_attributes.height - shell_attributes.height > 5;
+    // If the border supplied by the window manager border is more
+    // than 5 pixels higher than wider, assume we have some kind of
+    // title bar - the shell is decorated.
+    int border_height = frame_attributes.height - shell_attributes.height;
+    int border_width  = frame_attributes.width  - shell_attributes.width;
+
+    return border_height - border_width > 5;
 }
 
 
