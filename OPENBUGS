@@ -171,4 +171,22 @@ detail.
        not sure if it happens with other pointers than 'this'.  I
        could not reproduce the bug now.
 
-729 (Insert new bugs here)
+729 Derrik Pates <dmp8309@silver.sdsmt.edu> says:
+
+    First menu click in any menu forces window to move downward and
+    the menu to appear where it normally would have, had the window
+    not moved. (in separate windows mode)
+
+    Enabling clustering in the Preferences window in Separate windows
+    mode causes the data window to be forced to the top (doesn't get
+    focus, but goes to top immediately). The same does not happen when
+    clustering is being disabled
+
+    This doesn't really classify as a bug, but it still does not
+    properly handle array pointers. Can this be fixed?
+    
+    When I start up in separate windows mode, the DDD debugger console
+    window appears, but it doesn't get the input focus.
+
+
+730 (Insert new bugs here)
