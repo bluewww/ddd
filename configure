@@ -916,14 +916,14 @@ EOF
             echo "#!/bin/sh
 # ${NO_EDIT}
 # This directory was configured as follows:
-${progname}" ${arguments}  "
+${subdir}/${progname}" ${arguments}  "
 # ${using}" > ${subdir}/config.new
         else
             echo "#!/bin/sh
 # ${NO_EDIT}
 # This directory was configured as follows:
 cd ${invsubdir}
-${progname}" ${arguments}  "
+${subdir}/${invsubdir}/${progname}" ${arguments}  "
 # ${using}" > ${subdir}/config.new
         fi
         chmod a+x ${subdir}/config.new
