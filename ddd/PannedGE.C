@@ -212,7 +212,7 @@ Widget createPannedGraphEdit(Widget parent, const _XtString name,
 				     graph_edit_args, graph_edit_arg));
     XtVaSetValues(graph_edit,
 		  XtNresizable, True,
-		  NULL);
+		  XtPointer(0));
 
     // Allow the porthole and the panner to talk to each other
     XtAddCallback(porthole, XtNreportCallback, PortholeCB, XtPointer(panner));
@@ -223,12 +223,12 @@ Widget createPannedGraphEdit(Widget parent, const _XtString name,
     XtVaGetValues(graph_edit,
 		  XtNrequestedWidth, &width,
 		  XtNrequestedHeight, &height,
-		  NULL);
+		  XtPointer(0));
 
     if (width > 0)
-	XtVaSetValues(form, XmNwidth, width, NULL);
+	XtVaSetValues(form, XmNwidth, width, XtPointer(0));
     if (height > 0)
-	XtVaSetValues(form, XmNheight, height, NULL);
+	XtVaSetValues(form, XmNheight, height, XtPointer(0));
 
     return graph_edit;
 }
@@ -253,12 +253,12 @@ static void PortholeCB(Widget w,
 		  XtNwidth,       &form_width,
 		  XtNheight,      &form_height,
 		  XtNborderWidth, &form_border_width,
-		  NULL);
+		  XtPointer(0));
 
     WidgetList children;
     XtVaGetValues(w,
                   XtNchildren, &children,
-                  NULL);
+                  XtPointer(0));
     Widget graph_edit = children[0];
 
     arg = 0;
@@ -281,7 +281,7 @@ static void PortholeCB(Widget w,
     XtVaGetValues(panner, 
 		  XtNdefaultScale, &scale,
 		  XtNborderWidth,  &panner_border_width,
-		  NULL);
+		  XtPointer(0));
 
     // Determine new panner size
     Dimension panner_width  = 
@@ -303,7 +303,7 @@ static void PortholeCB(Widget w,
 		  XtNextraWidth,  &extra_width,
 		  XtNextraHeight, &extra_height,
 		  XtNgraph,       &graph,
-		  NULL);
+		  XtPointer(0));
 
     bool need_panner = 
 	graph != 0
@@ -331,7 +331,7 @@ static void PortholeCB(Widget w,
 	XtVaSetValues(graph_edit,
 		      XtNextraWidth,  extra_width,
 		      XtNextraHeight, extra_height,
-		      NULL);
+		      XtPointer(0));
 
 	int panner_x = form_width  - form_border_width - panner_window_width;
 	int panner_y = form_height - form_border_width - panner_window_height;
@@ -348,7 +348,7 @@ static void PortholeCB(Widget w,
 	XtVaSetValues(graph_edit,
 		      XtNextraWidth,  0,
 		      XtNextraHeight, 0,
-		      NULL);
+		      XtPointer(0));
     }
 }
 

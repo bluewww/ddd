@@ -276,7 +276,7 @@ static void move_tool_shell(BoxPoint pos, bool verify)
 		      XmNgeometry, last_tool_shell_geometry.chars(),
 		      XmNx, given_pos[X],
 		      XmNy, given_pos[Y],
-		      NULL);
+		      XtPointer(0));
 
 	// Verify tool shell position
 	if (move_tool_shell_timer != 0)
@@ -392,7 +392,7 @@ bool started_iconified(Widget w)
 
     // Well isn't it iconic - don't you think?
     Boolean iconic;
-    XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
+    XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
     return iconic;
 }
 
@@ -406,7 +406,7 @@ void initial_popup_shell(Widget w)
     XtVaSetValues(w, 
 		  XmNiconic, iconic,
 		  XmNinitialState, iconic ? IconicState : NormalState,
-		  NULL);
+		  XtPointer(0));
     WindowState state = iconic ? Iconic : PoppingUp;
 
     set_state(w, state);
@@ -416,7 +416,7 @@ void initial_popup_shell(Widget w)
 		      XmNgeometry, "+0+0", 
 		      XmNx, 0,
 		      XmNy, 0,
-		      NULL);
+		      XtPointer(0));
 
     if (w == tool_shell)
     {
@@ -1120,7 +1120,7 @@ void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 
     XtVaSetValues(tool_shell,
 		  XmNgeometry, last_tool_shell_geometry.chars(),
-		  NULL);
+		  XtPointer(0));
 
     popup_shell(tool_shell);
 
@@ -1420,7 +1420,7 @@ void save_preferred_paned_sizes(Widget paned)
     WidgetList children;
     Cardinal numChildren = 0;
     XtVaGetValues(paned, XmNchildren, &children, 
-		  XmNnumChildren, &numChildren, NULL);
+		  XmNnumChildren, &numChildren, XtPointer(0));
 
     // Fetch preferred sizes
     Cardinal i;
@@ -1432,7 +1432,7 @@ void save_preferred_paned_sizes(Widget paned)
 
 	// Fetch preferred (= initial) height
 	Dimension height = 0;
-	XtVaGetValues(child, XmNheight, &height, NULL);
+	XtVaGetValues(child, XmNheight, &height, XtPointer(0));
 	{
 	    XtWidgetGeometry size;
 	    size.request_mode = CWHeight;
@@ -1491,7 +1491,7 @@ void manage_paned_child(Widget w)
     WidgetList children;
     Cardinal numChildren = 0;
     XtVaGetValues(paned, XmNchildren, &children, 
-		  XmNnumChildren, &numChildren, NULL);
+		  XmNnumChildren, &numChildren, XtPointer(0));
 
 
     // Fetch current constraints
@@ -1507,7 +1507,7 @@ void manage_paned_child(Widget w)
 	XtVaGetValues(children[i], 
 		      XmNpaneMinimum, &size.min, 
 		      XmNpaneMaximum, &size.max,
-		      NULL);
+		      XtPointer(0));
 
 #if LOG_GEOMETRY
 	clog << XtName(paned) << ": child " << XtName(child) 
@@ -1576,7 +1576,7 @@ void manage_paned_child(Widget w)
 
     // Restore old constraints
     XtVaGetValues(paned, XmNchildren, &children, 
-		  XmNnumChildren, &numChildren, NULL);
+		  XmNnumChildren, &numChildren, XtPointer(0));
 
     for (i = 0; i < numChildren; i++)
     {
@@ -1591,7 +1591,7 @@ void manage_paned_child(Widget w)
 	    XtVaSetValues(child,
 			  XmNpaneMinimum, size.min, 
 			  XmNpaneMaximum, size.max,
-			  NULL);
+			  XtPointer(0));
 	}
     }
 
@@ -1605,7 +1605,7 @@ static int resizable_children(Widget paned)
     WidgetList children;
     Cardinal numChildren = 0;
     XtVaGetValues(paned, XmNchildren, &children, 
-		  XmNnumChildren, &numChildren, NULL);
+		  XmNnumChildren, &numChildren, XtPointer(0));
 
     // Fetch current constraints
     MinMaxAssoc sizes;
@@ -1621,7 +1621,7 @@ static int resizable_children(Widget paned)
 	XtVaGetValues(children[i], 
 		      XmNpaneMinimum, &size.min, 
 		      XmNpaneMaximum, &size.max,
-		      NULL);
+		      XtPointer(0));
 
 	if (size.min < size.max)
 	    n++;
@@ -1652,12 +1652,12 @@ void unmanage_paned_child(Widget w)
 	// Only two resizable children left - the remaining one must
 	// be resized to a maximum.  Disable skipAdjust for a moment.
 	Boolean skip_adjust = True;
-	XtVaGetValues(command, XmNskipAdjust, &skip_adjust, NULL);
-	XtVaSetValues(command, XmNskipAdjust, False, NULL);
+	XtVaGetValues(command, XmNskipAdjust, &skip_adjust, XtPointer(0));
+	XtVaSetValues(command, XmNskipAdjust, False, XtPointer(0));
 
 	XtUnmanageChild(w);
 
-	XtVaSetValues(command, XmNskipAdjust, skip_adjust, NULL);
+	XtVaSetValues(command, XmNskipAdjust, skip_adjust, XtPointer(0));
     }
     else
     {
@@ -1667,12 +1667,12 @@ void unmanage_paned_child(Widget w)
 	XtVaGetValues(command, 
 		      XmNheight, &height,
 		      XmNpaneMaximum, &max,
-		      NULL);
-	XtVaSetValues(command, XmNpaneMaximum, height, NULL);
+		      XtPointer(0));
+	XtVaSetValues(command, XmNpaneMaximum, height, XtPointer(0));
 
 	XtUnmanageChild(w);
 
-	XtVaSetValues(command, XmNpaneMaximum, max, NULL);
+	XtVaSetValues(command, XmNpaneMaximum, max, XtPointer(0));
     }
 
     paned_changed(w);
@@ -1693,7 +1693,7 @@ void get_paned_window_width(Widget paned, Dimension& max_width)
     XtVaGetValues(paned,
 		  XtNchildren, &children,
 		  XtNnumChildren, &num_children,
-		  NULL);
+		  XtPointer(0));
 
     for (Cardinal i = 0; i < num_children; i++)
     {
@@ -1721,7 +1721,7 @@ void set_paned_window_size(Widget paned, Dimension max_width)
     if (paned == 0 || !XtIsSubclass(paned, xmPanedWindowWidgetClass))
 	return;
 
-    XtVaSetValues(paned, XmNwidth, max_width, NULL);
+    XtVaSetValues(paned, XmNwidth, max_width, XtPointer(0));
 
     WidgetList children     = 0;
     Cardinal num_children   = 0;
@@ -1735,7 +1735,7 @@ void set_paned_window_size(Widget paned, Dimension max_width)
 		  XmNspacing, &spacing,
 		  XmNmarginWidth, &margin_width,
 		  XmNmarginHeight, &margin_height,
-		  NULL);
+		  XtPointer(0));
 
     Dimension total_height = 0;
     int managed_children = 0;
@@ -1748,7 +1748,10 @@ void set_paned_window_size(Widget paned, Dimension max_width)
 	// Fetch preferred width
 	Dimension width  = 0;
 	Dimension height = 0;
-	XtVaGetValues(child, XmNwidth, &width, XmNheight, &height, NULL);
+	XtVaGetValues(child, 
+		      XmNwidth, &width, 
+		      XmNheight, &height, 
+		      XtPointer(0));
 
 	{
 	    XtWidgetGeometry size;
@@ -1774,7 +1777,7 @@ void set_paned_window_size(Widget paned, Dimension max_width)
     XtVaSetValues(paned,
 		  XmNwidth, max_width + 2 * margin_width,
 		  XmNheight, total_height + 2 * margin_height,
-		  NULL);
+		  XtPointer(0));
 }
 
 
@@ -1795,7 +1798,7 @@ void set_main_window_size(Widget main)
     XtVaGetValues(main,
 		  XtNchildren, &children,
 		  XtNnumChildren, &num_children,
-		  NULL);
+		  XtPointer(0));
 
     Dimension max_width    = 0;
     Dimension total_height = 0;
@@ -1810,7 +1813,10 @@ void set_main_window_size(Widget main)
 	// Fetch sizes
 	Dimension width  = 0;
 	Dimension height = 0;
-	XtVaGetValues(child, XmNwidth, &width, XmNheight, &height, NULL);
+	XtVaGetValues(child, 
+		      XmNwidth, &width, 
+		      XmNheight, &height, 
+		      XtPointer(0));
 
 	{
 	    XtWidgetGeometry size;
@@ -1830,7 +1836,10 @@ void set_main_window_size(Widget main)
 	total_height += height;
     }
 
-    XtVaSetValues(main, XmNwidth, max_width, XmNheight, total_height, NULL);
+    XtVaSetValues(main, 
+		  XmNwidth, max_width, 
+		  XmNheight, total_height, 
+		  XtPointer(0));
 }
 
 
@@ -1856,7 +1865,7 @@ void set_scrolled_window_size(Widget child, Widget target)
 		  XmNspacing, &spacing,
 		  XmNmarginWidth, &margin_width,
 		  XmNmarginHeight, &margin_height,
-		  NULL);
+		  XtPointer(0));
 
     if (vertical_scroll_bar != 0)
     {
@@ -1884,7 +1893,7 @@ void set_scrolled_window_size(Widget child, Widget target)
     XtVaGetValues(child,
 		  XmNborderWidth, &border_width,
 		  XmNshadowThickness, &shadow_thickness,
-		  NULL);
+		  XtPointer(0));
 
     Dimension width = size.width +
 	border_width * 2 +
@@ -1898,5 +1907,5 @@ void set_scrolled_window_size(Widget child, Widget target)
 	// shadow_thickness * 2 +
 	margin_height * 2;
 
-    XtVaSetValues(target, XmNwidth,  width, XmNheight, height, NULL);
+    XtVaSetValues(target, XmNwidth,  width, XmNheight, height, XtPointer(0));
 }

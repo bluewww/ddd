@@ -51,7 +51,7 @@ void ColorBox::convert_color(Widget w) const
 	return;
 
     Colormap colormap;
-    XtVaGetValues(w, XtNcolormap, &colormap, NULL);
+    XtVaGetValues(w, XtNcolormap, &colormap, XtPointer(0));
 
     XColor exact_def;
     Status ok = 

@@ -101,7 +101,7 @@ static Boolean paste(Widget w, Widget dest)
 	return False;
 
     Boolean editable = False;
-    XtVaGetValues(dest, XmNeditable, &editable, NULL);
+    XtVaGetValues(dest, XmNeditable, &editable, XtPointer(0));
     if (!editable)
 	return False;
 
@@ -121,7 +121,7 @@ static void clear(Widget w, Widget dest)
 	return;
 
     Boolean editable = False;
-    XtVaGetValues(dest, XmNeditable, &editable, NULL);
+    XtVaGetValues(dest, XmNeditable, &editable, XtPointer(0));
     if (!editable)
 	return;
 
@@ -171,7 +171,7 @@ static Boolean remove(Widget w, Widget dest)
 	return False;
 
     Boolean editable = False;
-    XtVaGetValues(dest, XmNeditable, &editable, NULL);
+    XtVaGetValues(dest, XmNeditable, &editable, XtPointer(0));
     if (!editable)
 	return False;
 

@@ -2028,7 +2028,7 @@ int main(int argc, char *argv[])
     // Get application resources into APP_DATA
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
 				ddd_resources, ddd_resources_size,
-				NULL);
+				XtPointer(0));
 
     // If we have no application defaults so far, or if the
     // application defaults have the wrong version, try to load our own.
@@ -2052,12 +2052,12 @@ int main(int argc, char *argv[])
     // Read APP_DATA again
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
 				ddd_resources, ddd_resources_size,
-				NULL);
+				XtPointer(0));
 
 #if XtSpecificationRelease >= 6
     // Synchronize SESSION_ID and APP_DATA.session
     if (session_id == 0)
-	XtVaGetValues(toplevel, XtNsessionID, &session_id, NULL);
+	XtVaGetValues(toplevel, XtNsessionID, &session_id, XtPointer(0));
     if (session_id != 0)
 	app_data.session = session_id;
 #endif
@@ -2273,7 +2273,7 @@ int main(int argc, char *argv[])
 
     // Show splash screen
     Boolean iconic;
-    XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
+    XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
     if (app_data.splash_screen && !iconic && restart_session() == "")
 	popup_splash_screen(toplevel, app_data.splash_screen_color_key);
 
@@ -2485,7 +2485,7 @@ int main(int argc, char *argv[])
 	XtVaSetValues (data_main_window_w,
 		       XmNmenuBar,    data_menubar_w,
 		       XmNworkWindow, data_disp_parent,
-		       NULL);
+		       XtPointer(0));
     }
 
     if (data_buttons_w == 0)
@@ -2569,7 +2569,7 @@ int main(int argc, char *argv[])
 	XtVaSetValues (source_main_window_w,
 		       XmNmenuBar,    source_menubar_w,
 		       XmNworkWindow, source_view_parent,
-		       NULL);
+		       XtPointer(0));
     }
 
     // Source toolbar
@@ -2641,7 +2641,7 @@ int main(int argc, char *argv[])
     {
 	// Don't resize the debugger console when resizing the main
 	// window - resize source and/or data windows instead
-	XtVaSetValues(XtParent(gdb_w), XmNskipAdjust, True, NULL);
+	XtVaSetValues(XtParent(gdb_w), XmNskipAdjust, True, XtPointer(0));
     }
 
     // Set up the scrolled window
@@ -2649,7 +2649,7 @@ int main(int argc, char *argv[])
 		  XmNspacing,         0,
 		  XmNborderWidth,     0,
 		  XmNshadowThickness, 0,
-		  NULL);
+		  XtPointer(0));
 
     // Give the ScrolledWindow the size specified for the debugger console
     set_scrolled_window_size(gdb_w);
@@ -2674,7 +2674,7 @@ int main(int argc, char *argv[])
     XtVaSetValues (main_window,
 		   XmNmenuBar,    menubar_w,
 		   XmNworkWindow, paned_work_w,
-		   NULL);
+		   XtPointer(0));
 
     // All main widgets (except shells) are created at this point.
 
@@ -2850,7 +2850,7 @@ int main(int argc, char *argv[])
     update_infos();
 
     // Startup shells
-    XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
+    XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
     if (iconic)
     {
 	// Startup command shell iconified; others follow as needed
@@ -3345,7 +3345,7 @@ static void fix_status_size()
     XtVaGetValues(status_form,
 		  XmNpaneMaximum, &pane_maximum, 
 		  XmNheight, &height,
-		  NULL);
+		  XtPointer(0));
 
     if (height <= pane_maximum)
 	return;
@@ -3354,7 +3354,7 @@ static void fix_status_size()
 		  XmNallowResize, True,
 		  XmNheight, pane_maximum,
 		  XmNallowResize, False,
-		  NULL);
+		  XtPointer(0));
 
     if (lesstif_version <= 79)
     {
@@ -3369,7 +3369,7 @@ static void fix_status_size()
 	XtVaGetValues(paned, 
 		      XmNchildren, &children,
 		      XmNnumChildren, &num_children,
-		      NULL);
+		      XtPointer(0));
 
 	// The sash controlling the status line is the lowest of all
 	Widget sash = 0;
@@ -3384,8 +3384,8 @@ static void fix_status_size()
 
 		if (sash != 0)
 		{
-		    XtVaGetValues(sash,  XmNy, &sash_y, NULL);
-		    XtVaGetValues(child, XmNy, &child_y, NULL);
+		    XtVaGetValues(sash,  XmNy, &sash_y, XtPointer(0));
+		    XtVaGetValues(child, XmNy, &child_y, XtPointer(0));
 		}
 
 		if (child_y > sash_y)
@@ -3785,14 +3785,14 @@ static void set_toggle(Widget w, unsigned char new_state, bool notify = false)
 #else
     unsigned char old_state;
 #endif
-    XtVaGetValues(w, XmNset, &old_state, NULL);
+    XtVaGetValues(w, XmNset, &old_state, XtPointer(0));
 
     if (old_state != new_state)
     {
 	if (notify)
 	    XmToggleButtonSetState(w, new_state, True);
 	else
-	    XtVaSetValues(w, XmNset, new_state, NULL);
+	    XtVaSetValues(w, XmNset, new_state, XtPointer(0));
     }
 }
 
@@ -3809,7 +3809,7 @@ static void set_string(Widget w, String value)
     // Note: XtVaSetValues(w, XmNvalue, value, ...) 
     // doesn't work properly with LessTif 0.89.9
     XmTextFieldSetString(w, value);
-    XtVaSetValues(w, XmNcursorPosition, 0, NULL);
+    XtVaSetValues(w, XmNcursorPosition, 0, XtPointer(0));
 }
 
 static void set_string_int(Widget w, int value)
@@ -3868,9 +3868,12 @@ void update_options()
 
     if (tab_width_w != 0)
     {
-	XtVaSetValues(tab_width_w,     XmNvalue, app_data.tab_width,     NULL);
-	XtVaSetValues(source_indent_w, XmNvalue, app_data.indent_source, NULL);
-	XtVaSetValues(code_indent_w,   XmNvalue, app_data.indent_code,   NULL);
+	XtVaSetValues(tab_width_w,     XmNvalue, app_data.tab_width,     
+		      XtPointer(0));
+	XtVaSetValues(source_indent_w, XmNvalue, app_data.indent_source, 
+		      XtPointer(0));
+	XtVaSetValues(code_indent_w,   XmNvalue, app_data.indent_code,   
+		      XtPointer(0));
     }
 
     set_toggle(led_w, app_data.blink_while_busy);
@@ -3888,7 +3891,7 @@ void update_options()
 		  XtNlayoutMode, &layout_mode,
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
-		  NULL);
+		  XtPointer(0));
 
     set_toggle(detect_aliases_w, app_data.detect_aliases);
     set_toggle(graph_detect_aliases_w, app_data.detect_aliases);
@@ -3900,13 +3903,16 @@ void update_options()
 	if (!show_grid && XtIsSensitive(graph_snap_to_grid_w))
 	{
 	    // Grid has been disabled - disable `snap to grid' as well
-	    XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, False, NULL);
+	    XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, False, 
+			  XtPointer(0));
 	}
 	else if (show_grid && !XtIsSensitive(graph_snap_to_grid_w))
 	{
 	    // Grid has been re-enabled - restore `snap to grid' setting
-	    XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, 
-			  XmToggleButtonGetState(graph_snap_to_grid_w), NULL);
+	    XtVaSetValues(data_disp->graph_edit, 
+			  XtNsnapToGrid, 
+			  XmToggleButtonGetState(graph_snap_to_grid_w), 
+			  XtPointer(0));
 	}
 	else
 	{
@@ -3935,11 +3941,12 @@ void update_options()
 
     if (graph_grid_size_w != 0)
 	XtVaSetValues(graph_grid_size_w, XmNvalue, show_grid ? grid_width : 0, 
-		      NULL);
+		      XtPointer(0));
 
 
     unsigned char policy = '\0';
-    XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, NULL);
+    XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, 
+		  XtPointer(0));
     set_toggle(set_focus_pointer_w,        policy == XmPOINTER);
     set_toggle(set_focus_explicit_w,       policy == XmEXPLICIT);
 
@@ -4036,11 +4043,11 @@ void update_options()
     switch (app_data.display_placement)
     {
     case XmVERTICAL:
-	XtVaSetValues(data_disp->graph_edit, XtNrotation, 0, NULL);
+	XtVaSetValues(data_disp->graph_edit, XtNrotation, 0, XtPointer(0));
 	break;
 	    
     case XmHORIZONTAL:
-	XtVaSetValues(data_disp->graph_edit, XtNrotation, 90, NULL);
+	XtVaSetValues(data_disp->graph_edit, XtNrotation, 90, XtPointer(0));
 	break;
     }
 
@@ -4088,7 +4095,7 @@ void update_options()
 	break;
     }
     XmString label;
-    XtVaGetValues(find_label_ref, XmNlabelString, &label, NULL);
+    XtVaGetValues(find_label_ref, XmNlabelString, &label, XtPointer(0));
     MString new_label(label, true);
     XmStringFree(label);
 
@@ -4170,7 +4177,8 @@ static void set_settings_title(Widget w)
     if (w != 0)
     {
 	MString settings_title(gdb->title() + " Settings...");
-	XtVaSetValues(w, XmNlabelString, settings_title.xmstring(), NULL);
+	XtVaSetValues(w, XmNlabelString, settings_title.xmstring(), 
+		      XtPointer(0));
     }
 }
 
@@ -4240,10 +4248,10 @@ void save_option_state()
 		  XtNautoLayout,      &initial_auto_layout,
 		  XtNgridWidth,       &initial_grid_width,
 		  XtNgridHeight,      &initial_grid_height,
-		  NULL);
+		  XtPointer(0));
 
     XtVaGetValues(command_shell,
-		  XmNkeyboardFocusPolicy, &initial_focus_policy, NULL);
+		  XmNkeyboardFocusPolicy, &initial_focus_policy, XtPointer(0));
 
     Widget paned_work_w = XtParent(XtParent(gdb_w));
     save_preferred_paned_sizes(paned_work_w);
@@ -4418,7 +4426,7 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowHints,       &show_hints,
 		  XtNshowAnnotations, &show_annotations,
-		  NULL);
+		  XtPointer(0));
 
     if (show_hints  != initial_show_hints ||
 	show_annotations != initial_show_annotations)
@@ -4426,7 +4434,7 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 	XtVaSetValues(data_disp->graph_edit,
 		      XtNshowHints,       initial_show_hints,
 		      XtNshowAnnotations, initial_show_annotations,
-		      NULL);
+		      XtPointer(0));
 		      
 	update_options();
     }
@@ -4442,7 +4450,7 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
 		  XtNshowGrid,   &show_grid,
-		  NULL);
+		  XtPointer(0));
 
     if (grid_width  != initial_grid_width || 
 	grid_height != initial_grid_height ||
@@ -4452,7 +4460,7 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 		      XtNgridWidth,  initial_grid_width,
 		      XtNgridHeight, initial_grid_height,
 		      XtNshowGrid,   initial_show_grid,
-		      NULL);
+		      XtPointer(0));
 		      
 	update_options();
     }
@@ -4464,7 +4472,7 @@ static bool data_preferences_changed()
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowHints,       &show_hints,
 		  XtNshowAnnotations, &show_annotations,
-		  NULL);
+		  XtPointer(0));
 
     if (app_data.detect_aliases != initial_app_data.detect_aliases)
 	return true;
@@ -4502,7 +4510,7 @@ static bool data_preferences_changed()
 		  XtNautoLayout, &auto_layout,
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
-		  NULL);
+		  XtPointer(0));
 
     if (show_grid    != initial_show_grid)
 	return true;
@@ -4642,7 +4650,8 @@ static bool startup_preferences_changed()
 	return true;
 
     unsigned char focus_policy;
-    XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &focus_policy, NULL);
+    XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &focus_policy, 
+		  XtPointer(0));
     if (focus_policy != initial_focus_policy)
 	return true;
 
@@ -4832,7 +4841,7 @@ static void ChangePanelCB(Widget, XtPointer client_data, XtPointer call_data)
 	XtVaGetValues(XtParent(panel), 
 		      XmNchildren, &children,
 		      XmNnumChildren, &num_children,
-		      NULL);
+		      XtPointer(0));
 
 	for (Cardinal i = 0; i < num_children; i++)
 	{
@@ -4936,7 +4945,8 @@ static void make_preferences(Widget parent)
 	verify(XmCreatePromptDialog(parent, 
 				    (char *)"preferences", args, arg));
     Delay::register_shell(preferences_dialog);
-    XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), NULL);
+    XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), 
+		  XtPointer(0));
     XtAddCallback(preferences_dialog, XmNunmapCallback, OfferRestartCB, NULL);
 
     if (lesstif_version <= 79)
@@ -5003,7 +5013,7 @@ static void make_preferences(Widget parent)
 		  XmNheight, max_height,
 		  XmNresizeWidth, False,
 		  XmNresizeHeight, False,
-		  NULL);
+		  XtPointer(0));
 
     XmToggleButtonSetState(general_button, True, True);
 }
@@ -5051,7 +5061,7 @@ static void create_status(Widget parent)
     XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtPointer(0));
 
     Pixel arrow_foreground;
-    XtVaGetValues(status_form, XmNbackground, &arrow_foreground, 0);
+    XtVaGetValues(status_form, XmNbackground, &arrow_foreground, XtPointer(0));
 
     // Create `Get more status messages' button
     arg = 0;
@@ -5120,18 +5130,18 @@ static void create_status(Widget parent)
     XtQueryGeometry(status_w, NULL, &size);
 
     if (lesstif_version <= 87)
-	XtVaSetValues(led_w, XmNindicatorSize, size.height - 4, NULL);
+	XtVaSetValues(led_w, XmNindicatorSize, size.height - 4, XtPointer(0));
     else
-	XtVaSetValues(led_w, XmNindicatorSize, size.height - 1, NULL);
+	XtVaSetValues(led_w, XmNindicatorSize, size.height - 1, XtPointer(0));
 
     XtVaSetValues(arrow_w,
 		  XmNheight, size.height - 2,
 		  XmNwidth,  size.height - 2,
-		  NULL);
+		  XtPointer(0));
     XtVaSetValues(status_form,
 		  XmNpaneMaximum, size.height,
 		  XmNpaneMinimum, size.height,
-		  NULL);
+		  XtPointer(0));
 
     set_toggle(led_w, app_data.blink_while_busy);
     blink(true);
@@ -5160,15 +5170,17 @@ static void BlinkCB(XtPointer client_data, XtIntervalId *id)
 	XtVaGetValues(led_w,
 		      XmNbackground, &led_background_color,
 		      XmNselectColor, &led_select_color,
-		      NULL);
+		      XtPointer(0));
 	have_led_colors = true;
     }
 
     bool set = bool(long(client_data));
     if (set)
-	XtVaSetValues(led_w, XmNselectColor, led_select_color, NULL);
+	XtVaSetValues(led_w, XmNselectColor, led_select_color, 
+		      XtPointer(0));
     else
-	XtVaSetValues(led_w, XmNselectColor, led_background_color, NULL);
+	XtVaSetValues(led_w, XmNselectColor, led_background_color, 
+		      XtPointer(0));
 
     XFlush(XtDisplay(led_w));
     XmUpdateDisplay(led_w);
@@ -5386,12 +5398,12 @@ void update_arg_buttons()
     MString print_ref_label("Print " + deref_arg);
     XtVaSetValues(print_menu[PrintItems::PrintRef].widget,
 		  XmNlabelString, print_ref_label.xmstring(),
-		  NULL);
+		  XtPointer(0));
 
     MString disp_ref_label("Display " + deref_arg);
     XtVaSetValues(display_menu[DispItems::DispRef].widget,
 		  XmNlabelString, disp_ref_label.xmstring(),
-		  NULL);
+		  XtPointer(0));
 
     bool can_dereference = (gdb->dereferenced_expr("") != "");
     manage_child(print_ref_w, can_dereference);
@@ -6227,15 +6239,15 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
 	XtVaSetValues(menu[EditItems::Cut].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>X",
 		      XmNacceleratorText, cut.xmstring(),
-		      NULL);
+		      XtPointer(0));
 	XtVaSetValues(menu[EditItems::Copy].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>C",
 		      XmNacceleratorText, copy.xmstring(),
-		      NULL);
+		      XtPointer(0));
 	XtVaSetValues(menu[EditItems::Paste].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>V",
 		      XmNacceleratorText, paste.xmstring(),
-		      NULL);
+		      XtPointer(0));
 	break;
     }
 
@@ -6248,15 +6260,15 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
 	XtVaSetValues(menu[EditItems::Cut].widget,
 		      XmNaccelerator, "~Ctrl Shift<Key>Delete",
 		      XmNacceleratorText, cut.xmstring(),
-		      NULL);
+		      XtPointer(0));
 	XtVaSetValues(menu[EditItems::Copy].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>Insert",
 		      XmNacceleratorText, copy.xmstring(),
-		      NULL);
+		      XtPointer(0));
 	XtVaSetValues(menu[EditItems::Paste].widget,
 		      XmNaccelerator, "~Ctrl Shift<Key>Insert",
 		      XmNacceleratorText, paste.xmstring(),
-		      NULL);
+		      XtPointer(0));
 	break;
     }
     }
@@ -6313,7 +6325,7 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style)
 
 	XtVaSetValues(menu[EditItems::SelectAll].widget,
 		      XmNacceleratorText, select_all.xmstring(),
-		      NULL);
+		      XtPointer(0));
 	break;
     }
 
@@ -6323,7 +6335,7 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style)
 
 	XtVaSetValues(menu[EditItems::SelectAll].widget,
 		      XmNacceleratorText, select_all.xmstring(),
-		      NULL);
+		      XtPointer(0));
 	break;
     }
     }
@@ -6730,12 +6742,12 @@ static void popup_splash_screen(Widget parent, string color_key)
 		  XmNbackgroundPixmap, splash_pixmap,
 		  XmNwidth, width,
 		  XmNheight, height,
-		  NULL);
+		  XtPointer(0));
 
     int x = (WidthOfScreen(XtScreen(splash_shell)) - width) / 2;
     int y = (HeightOfScreen(XtScreen(splash_shell)) - height) / 2;
 
-    XtVaSetValues(splash_shell, XmNx, x, XmNy, y, NULL);
+    XtVaSetValues(splash_shell, XmNx, x, XmNy, y, XtPointer(0));
 
     // Place lock warning on top of startup splash
     lock_dialog_x = x + 20;

@@ -741,7 +741,7 @@ void install_icons(Widget shell,
 			 &win_attr);
 
     Pixel background;
-    XtVaGetValues(shell, XmNbackground, &background, NULL);
+    XtVaGetValues(shell, XmNbackground, &background, XtPointer(0));
 
     // Determine default arm background
     Pixel foreground, top_shadow, bottom_shadow, select;
@@ -960,7 +960,7 @@ void set_label(Widget w, const MString& new_label, const char *image)
     assert(XtIsSubclass(w, xmLabelWidgetClass));
 
     XmString old_label = 0;
-    XtVaGetValues(w, XmNlabelString, &old_label, NULL);
+    XtVaGetValues(w, XmNlabelString, &old_label, XtPointer(0));
     if (old_label == 0 ||
 	XmStringCompare(new_label.xmstring(), old_label) == 0)
     {
@@ -980,7 +980,7 @@ void set_label(Widget w, const MString& new_label, const char *image)
 			  XmNbackground, &background,
 			  XmNbottomShadowPixmap, &bottom_shadow_pixmap,
 			  XmNhighlightThickness, &highlight_thickness,
-			  NULL);
+			  XtPointer(0));
 
 	    string s1 = image;
 	    string s2 = s1 + "-xx";

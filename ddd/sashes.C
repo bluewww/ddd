@@ -58,7 +58,7 @@ void unmanage_sashes(Widget paned)
     XtVaGetValues(paned,
 		  XtNchildren, &children,
 		  XtNnumChildren, &num_children,
-		  NULL);
+		  XtPointer(0));
 
     for (Cardinal i = 0; i < num_children; i++)
 	if (XmIsSash(children[i]))
@@ -80,9 +80,9 @@ void untraverse_sashes(Widget paned)
     XtVaGetValues(paned,
 		  XtNchildren, &children,
 		  XtNnumChildren, &num_children,
-		  NULL);
+		  XtPointer(0));
 
     for (Cardinal i = 0; i < num_children; i++)
 	if (XmIsSash(children[i]))
-	    XtVaSetValues(children[i], XmNtraversalOn, False, NULL);
+	    XtVaSetValues(children[i], XmNtraversalOn, False, XtPointer(0));
 }

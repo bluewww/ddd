@@ -2756,7 +2756,7 @@ int main(int argc, char *argv[])
     XtVaSetValues (dialog,
 		   XmNlistItems,     xmlist,
 		   XmNlistItemCount, length,
-		   NULL);
+		   XtPointer(0));
 
     for (i = 0; i < length; i++)
 	XmStringFree(xmlist[i]);

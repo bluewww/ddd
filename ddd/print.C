@@ -348,7 +348,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	    MString question = rm("Overwrite existing file " 
 				  + quote(f) + "?");
 	    XtVaSetValues (confirm_overwrite_dialog, XmNmessageString, 
-			   question.xmstring(), NULL);
+			   question.xmstring(), XtPointer(0));
 	    manage_and_raise(confirm_overwrite_dialog);
 	}
 
@@ -696,7 +696,7 @@ static void CheckPaperSizeCB(Widget text, XtPointer client_data, XtPointer)
 {
     Widget ok_button = Widget(client_data);
     String value;
-    XtVaGetValues(text, XmNvalue, &value, NULL);
+    XtVaGetValues(text, XmNvalue, &value, XtPointer(0));
     string size(value);
     XtFree(value);
 

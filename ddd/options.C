@@ -914,7 +914,7 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 	if (bulletin_board != 0)
 	{
 	    XtVaGetValues(bulletin_board, 
-			  XmNdefaultButton, &default_button, NULL);
+			  XmNdefaultButton, &default_button, XtPointer(0));
 	}
 
 	if (default_button == 0)
@@ -931,7 +931,7 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 	while (shell != 0 && !XtIsSubclass(shell, vendorShellWidgetClass))
 	    shell = XtParent(shell);
 	if (shell != 0)
-	    XtVaSetValues(shell, XmNkeyboardFocusPolicy, policy, NULL);
+	    XtVaSetValues(shell, XmNkeyboardFocusPolicy, policy, XtPointer(0));
     }
 
     // Apply to future shells
@@ -1780,7 +1780,8 @@ static void reload_options()
     XrmMergeDatabases(session_db, &target);
 
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
-				ddd_resources, ddd_resources_size, NULL);
+				ddd_resources, ddd_resources_size, 
+				XtPointer(0));
 
     // Keep session ID across reloads
     app_data.session = session;
@@ -2044,7 +2045,7 @@ static string widget_value(Widget w, const _XtString name, bool check_default = 
     String value = 0;
     XtVaGetValues(w, 
 		  XtVaTypedArg, name, XtRString, &value, sizeof(value),
-		  NULL);
+		  XtPointer(0));
 
     return string_app_value(string(XtName(w)) + "." + name, value, 
 			    check_default);
@@ -2082,7 +2083,7 @@ static string paned_widget_size(Widget w, bool height_only = false)
     {
 	// Store rows and columns
 	short columns = 0;
-	XtVaGetValues(w, XmNcolumns, &columns, NULL);
+	XtVaGetValues(w, XmNcolumns, &columns, XtPointer(0));
 	if (!height_only && columns > 0)
 	{
 	    if (s != "")
@@ -2094,7 +2095,7 @@ static string paned_widget_size(Widget w, bool height_only = false)
 	if (XmIsText(w))
 	{
 	    short rows = 0;
-	    XtVaGetValues(w, XmNrows, &rows, NULL);
+	    XtVaGetValues(w, XmNrows, &rows, XtPointer(0));
 	    if (rows > 0)
 	    {
 		if (s != "")
@@ -2117,7 +2118,7 @@ static string paned_widget_size(Widget w, bool height_only = false)
 	// Store absolute sizes
 	Dimension width  = 0;
 	Dimension height = 0;
-	XtVaGetValues(ref, XmNwidth, &width, XmNheight, &height, NULL);
+	XtVaGetValues(ref, XmNwidth, &width, XmNheight, &height, XtPointer(0));
 
 	if (!height_only)
 	    s += int_app_value(string(XtName(w)) + "." + XmNwidth, width,
@@ -2142,7 +2143,7 @@ static string widget_geometry(Widget w, bool include_size = false)
     const bool check_default = false;
 
     Dimension width, height;
-    XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
+    XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, XtPointer(0));
 
     XWindowAttributes attr;
     XGetWindowAttributes(XtDisplay(w), frame(w), &attr);
@@ -2494,7 +2495,9 @@ bool save_options(unsigned long flags)
     // Misc stuff
     os << "\n! Misc preferences.\n";
     unsigned char policy = '\0';
-    XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, NULL);
+    XtVaGetValues(command_shell, 
+		  XmNkeyboardFocusPolicy, &policy,
+		  XtPointer(0));
     switch (policy)
     {
     case XmPOINTER:
@@ -2556,7 +2559,7 @@ bool save_options(unsigned long flags)
     XtVaGetValues(data_disp->graph_edit,
 		  XtNgridWidth, &grid_width,
 		  XtNgridHeight, &grid_height,
-		  NULL);
+		  XtPointer(0));
     if (!save_session && grid_width == grid_height)
     {
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 

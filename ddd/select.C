@@ -138,7 +138,7 @@ static void select_from_gdb(string& question, string& reply)
 						      XmDIALOG_LIST);
 	XtVaSetValues(gdb_selection_list_w,
 		      XmNselectionPolicy, XmSINGLE_SELECT,
-		      NULL);
+		      XtPointer(0));
 	XtAddCallback(gdb_selection_dialog,
 		      XmNokCallback, SelectCB, &selection_reply);
 	XtAddCallback(gdb_selection_dialog,

@@ -129,7 +129,7 @@ static bool refresh_tip_dialog(Widget w)
     if (!is_tip(tip))
 	return false;
 
-    XtVaSetValues(w, XmNmessageString, tip.xmstring(), NULL);
+    XtVaSetValues(w, XmNmessageString, tip.xmstring(), XtPointer(0));
 
     MString next_tip = get_tip_of_the_day(w, app_data.startup_tip_count + 1);
     MString prev_tip = get_tip_of_the_day(w, app_data.startup_tip_count - 1);
@@ -141,7 +141,7 @@ static bool refresh_tip_dialog(Widget w)
 
     string title = DDD_NAME " Tip of the Day #" + 
 	itostring(app_data.startup_tip_count);
-    XtVaSetValues(XtParent(w), XmNtitle, title.chars(), NULL);
+    XtVaSetValues(XtParent(w), XmNtitle, title.chars(), XtPointer(0));
 
     return true;
 }

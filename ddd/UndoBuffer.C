@@ -890,7 +890,7 @@ void UndoBuffer::showing_earlier_state(bool set, StatusMsg *msg)
 	    msg->outcome += ".  Back in current program state";
     }
 
-    XtVaSetValues(data_disp->graph_edit, XtNdashedLines, set, NULL);
+    XtVaSetValues(data_disp->graph_edit, XtNdashedLines, set, XtPointer(0));
     update_arg_buttons();
     data_disp->refresh_args();
     source_view->showing_earlier_state(set);

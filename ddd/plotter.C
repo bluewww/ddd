@@ -440,8 +440,8 @@ static void configure_plot(PlotWindowInfo *plot)
 				GetPlotSettingsCB, XtPointer(plot));
 
 	    // Set initial scrollbar defaults
-	    XtVaSetValues(plot->vsb, XmNvalue, 60, NULL);
-	    XtVaSetValues(plot->hsb, XmNvalue, 30, NULL);
+	    XtVaSetValues(plot->vsb, XmNvalue, 60, XtPointer(0));
+	    XtVaSetValues(plot->hsb, XmNvalue, 30, XtPointer(0));
 	}
 
 	return;
@@ -479,8 +479,8 @@ static void configure_plot(PlotWindowInfo *plot)
 	rot_z = atoi(view_setting);
     }
 
-    XtVaSetValues(plot->vsb, XmNvalue, rot_x, NULL);
-    XtVaSetValues(plot->hsb, XmNvalue, rot_z, NULL);
+    XtVaSetValues(plot->vsb, XmNvalue, rot_x, XtPointer(0));
+    XtVaSetValues(plot->hsb, XmNvalue, rot_z, XtPointer(0));
 }
 
 
@@ -535,7 +535,7 @@ static void swallow(PlotWindowInfo *plot, Window window)
 	plot->swallow_timer = 0;
     }
 
-    XtVaSetValues(plot->swallower, XtNwindow, window, NULL);
+    XtVaSetValues(plot->swallower, XtNwindow, window, XtPointer(0));
 
     popup_plot_shell(plot);
 }
@@ -845,7 +845,8 @@ static PlotWindowInfo *new_decoration(const string& name)
 
 	    plot->area = 
 		new PlotArea(work, make_font(app_data, FixedWidthDDDFont));
-	    XtVaSetValues(work, XmNuserData, XtPointer(plot->area), NULL);
+	    XtVaSetValues(work, XmNuserData, XtPointer(plot->area), 
+			  XtPointer(0));
 	}
 	else if (plot_term_type.contains("x11", 0))
 	{
@@ -903,7 +904,7 @@ static PlotWindowInfo *new_decoration(const string& name)
     XtVaSetValues(plot->shell,
 		  XmNtitle, title.chars(),
 		  XmNiconName, title.chars(),
-		  NULL);
+		  XtPointer(0));
 
     if (plot->swallower != 0)
     {
@@ -974,7 +975,7 @@ PlotAgent *new_plotter(string name, DispValue *source)
 
     plot->source      = source;
     plot->window_name = window_name;
-    XtVaSetValues(plot->shell, XmNuserData, XtPointer(True), NULL);
+    XtVaSetValues(plot->shell, XmNuserData, XtPointer(True), XtPointer(0));
 
     // Pop up a working dialog
     static Widget dialog = 0;
@@ -999,7 +1000,7 @@ PlotAgent *new_plotter(string name, DispValue *source)
     if (base.contains(' '))
 	base = cmd.before(' ');
     MString msg = rm("Starting ") + tt(base) + rm("...");
-    XtVaSetValues(dialog, XmNmessageString, msg.xmstring(), NULL);
+    XtVaSetValues(dialog, XmNmessageString, msg.xmstring(), XtPointer(0));
     manage_and_raise(dialog);
     wait_until_mapped(dialog);
 
@@ -1251,7 +1252,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
 	MString question = rm("Overwrite existing file " 
 			      + quote(target) + "?");
 	XtVaSetValues (confirm_overwrite_dialog, XmNmessageString, 
-		       question.xmstring(), NULL);
+		       question.xmstring(), XtPointer(0));
 	manage_and_raise(confirm_overwrite_dialog);
 
 	XtAppContext app_context = XtWidgetToApplicationContext(plot->shell);
@@ -1415,8 +1416,8 @@ static void SetViewCB(Widget, XtPointer client_data, XtPointer)
     int rot_x = 60;
     int rot_z = 30;
 
-    XtVaGetValues(plot->vsb, XmNvalue, &rot_x, NULL);
-    XtVaGetValues(plot->hsb, XmNvalue, &rot_z, NULL);
+    XtVaGetValues(plot->vsb, XmNvalue, &rot_x, XtPointer(0));
+    XtVaGetValues(plot->hsb, XmNvalue, &rot_z, XtPointer(0));
 
     string cmd = 
 	"set view " + itostring(rot_x) + ", " + itostring(rot_z);

@@ -62,7 +62,7 @@ static Dimension preferred_height(Widget w)
     size.request_mode = CWHeight;
     XtQueryGeometry(w, NULL, &size);
     Dimension real_height;
-    XtVaGetValues(w, XmNheight, &real_height, NULL);
+    XtVaGetValues(w, XmNheight, &real_height, XtPointer(0));
     return max(size.height, real_height);
 }
 
@@ -73,7 +73,7 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
 	Widget w = item->widget;
 	if (w != 0 && XmIsLabel(w))
 	{
-	    XtVaSetValues(w, XmNlabelType, label_type, NULL);
+	    XtVaSetValues(w, XmNlabelType, label_type, XtPointer(0));
 
 	    if (label_type != XmSTRING)
 		continue;
@@ -102,7 +102,7 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
 			  XmNmarginRight,     &margin_right,
 			  XmNmarginHeight,    &margin_height,
 			  XmNmarginWidth,     &margin_width,
-			  NULL);
+			  XtPointer(0));
 
 	    Dimension label_width, label_height;
 	    XmStringExtent(font_list, label_string, 
@@ -122,7 +122,7 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
 			  XmNrecomputeSize, False,
 			  XmNwidth,  width + 4,
 			  XmNheight, height + 4,
-			  NULL);
+			  XtPointer(0));
 
 	    XmStringFree(label_string);
 	}
@@ -192,12 +192,12 @@ static Widget align_buttons(MMDesc *items1, MMDesc *items2)
 static void ResetLabelEH(Widget w, XtPointer, XEvent *, Boolean *)
 {
     XmString label_string;
-    XtVaGetValues(w, XmNlabelString, &label_string, NULL);
+    XtVaGetValues(w, XmNlabelString, &label_string, XtPointer(0));
 
     MString empty("");
 
-    XtVaSetValues(w, XmNlabelString, empty.xmstring(), NULL);
-    XtVaSetValues(w, XmNlabelString, label_string, NULL);
+    XtVaSetValues(w, XmNlabelString, empty.xmstring(), XtPointer(0));
+    XtVaSetValues(w, XmNlabelString, label_string, XtPointer(0));
     XmStringFree(label_string);
 
     XtRemoveEventHandler(w, ExposureMask, False, 
@@ -215,7 +215,7 @@ static void center_buttons(MMDesc items[], Dimension offset)
 	XtVaSetValues(w,
 		      XmNtopOffset, offset / 2,
 		      XmNbottomOffset, (offset + 1) / 2,
-		      NULL);
+		      XtPointer(0));
 
 	// In OSF/Motif, setting both labelString and labelPixmap
 	// causes the button to ignore the labelString extent, giving
@@ -298,7 +298,7 @@ Widget create_toolbar(Widget parent, string /* name */,
 		  XmNleftAttachment,   XmATTACH_FORM,
 		  XmNtopAttachment,    XmATTACH_FORM,
 		  XmNbottomAttachment, XmATTACH_FORM,
-		  NULL);
+		  XtPointer(0));
 
     XtVaSetValues(combobox,
 		  XmNresizable,        False,
@@ -307,7 +307,7 @@ Widget create_toolbar(Widget parent, string /* name */,
 		  XmNrightAttachment,  XmATTACH_WIDGET,
 		  XmNrightWidget,      first_button,
 		  XmNtopAttachment,    XmATTACH_FORM,
-		  NULL);
+		  XtPointer(0));
 
     XtManageChild(toolbar);
     register_menu_shell(items1);
@@ -319,7 +319,7 @@ Widget create_toolbar(Widget parent, string /* name */,
     Dimension button_height  = preferred_height(items1[0].widget);
     Dimension arg_height     = preferred_height(combobox);
     Dimension toolbar_height = max(button_height, arg_height);
-    XtVaSetValues(toolbar, XmNheight, toolbar_height, NULL);
+    XtVaSetValues(toolbar, XmNheight, toolbar_height, XtPointer(0));
 
     if (XmIsPanedWindow(parent))
     {
@@ -327,7 +327,7 @@ Widget create_toolbar(Widget parent, string /* name */,
 	XtVaSetValues(toolbar,
 		      XmNpaneMaximum, toolbar_height,
 		      XmNpaneMinimum, toolbar_height,
-		      NULL);
+		      XtPointer(0));
 
 	if (label_type == XmSTRING)
 	{
@@ -348,7 +348,7 @@ Widget create_toolbar(Widget parent, string /* name */,
 	    XtVaSetValues(argfield->top(),
 			  XmNtopOffset, offset / 2,
 			  XmNbottomOffset, (offset + 1) / 2,
-			  NULL);
+			  XtPointer(0));
 	}
     }
 

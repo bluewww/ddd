@@ -918,7 +918,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 	XtCallbackList callbacks = 0;
 	XtVaGetValues(button, 
 		      XmNactivateCallback, &callbacks,
-		      NULL);
+		      XtPointer(0));
 
 	for (int j = 0; callbacks != 0 && callbacks[j].callback != 0; j++)
 	{
@@ -1070,7 +1070,7 @@ Widget make_buttons(Widget parent, const string& name,
 	XtVaSetValues(buttons,
 		      XmNpaneMaximum, size.height,
 		      XmNpaneMinimum, size.height,
-		      NULL);
+		      XtPointer(0));
     }
 
     return buttons;
@@ -1086,7 +1086,7 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 		  XmNuserData, &user_data,
 		  XtNchildren, &children,
 		  XtNnumChildren, &num_children,
-		  NULL);
+		  XtPointer(0));
 
     string *sp = (string *)user_data;
     if (sp != 0 && *sp == string(_button_list))
@@ -1192,7 +1192,7 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 
 	// A user-specified labelString overrides the given label
 	XmString xmlabel;
-	XtVaGetValues(button, XmNlabelString, &xmlabel, NULL);
+	XtVaGetValues(button, XmNlabelString, &xmlabel, XtPointer(0));
 	MString foundLabel(xmlabel, true);
 	XmStringFree(xmlabel);
 
@@ -1200,7 +1200,8 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	{
 	    // User did not specify a specific labelString - 
 	    // use the specified button command as label
-	    XtVaSetValues(button, XmNlabelString, label.xmstring(), NULL);
+	    XtVaSetValues(button, 
+			  XmNlabelString, label.xmstring(), XtPointer(0));
 	}
 
 	if (name == "Yes")
@@ -1278,7 +1279,7 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	    XtVaSetValues(buttons,
 			  XmNpaneMinimum, size.height, 
 			  XmNpaneMaximum, size.height,
-			  NULL);
+			  XtPointer(0));
 	    
 	    manage_paned_child(buttons);
 	}
@@ -1290,7 +1291,7 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
     }
 
     sp = new string(_button_list);
-    XtVaSetValues(buttons, XmNuserData, XtPointer(sp), NULL);
+    XtVaSetValues(buttons, XmNuserData, XtPointer(sp), XtPointer(0));
 
     // Register default help command
     DefaultHelpText           = gdbDefaultHelpText;
@@ -1563,7 +1564,7 @@ void dddEditButtonsCB(Widget w, XtPointer, XtPointer)
     XtUnmanageChild(shortcut_label);
 
     XtVaSetValues(XtParent(buttons_dialog), XmNtitle, 
-		  DDD_NAME ": Button Editor", NULL);
+		  DDD_NAME ": Button Editor", XtPointer(0));
 
     manage_and_raise(buttons_dialog);
 }
@@ -1583,7 +1584,7 @@ void dddEditShortcutsCB(Widget w, XtPointer, XtPointer)
     XtUnmanageChild(button_box);
 
     XtVaSetValues(XtParent(buttons_dialog), XmNtitle, 
-		  DDD_NAME ": Shortcut Editor", NULL);
+		  DDD_NAME ": Shortcut Editor", XtPointer(0));
 
     manage_and_raise(buttons_dialog);
 }

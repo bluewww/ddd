@@ -163,7 +163,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
     Pixel black = BlackPixelOfScreen(XtScreen(area));
     Pixel white = WhitePixelOfScreen(XtScreen(area));
     int depth;
-    XtVaGetValues(area, XmNdepth, &depth, NULL);
+    XtVaGetValues(area, XmNdepth, &depth, XtPointer(0));
     if (depth <= 1)
     {
 	// Monochrome
@@ -177,7 +177,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
 	Visual *vis = DefaultVisualOfScreen(XtScreen(area));
 	bool gray = (vis->c_class == StaticGray || vis->c_class == GrayScale);
 	Colormap cmap;
-	XtVaGetValues(area, XmNcolormap, &cmap, NULL);
+	XtVaGetValues(area, XmNcolormap, &cmap, XtPointer(0));
 
 	for (int i = 0; i < Ncolors; i++)
 	{
@@ -423,7 +423,7 @@ void PlotArea::plot_clear(const char *)
 		  XmNwidth, &area_width, 
 		  XmNheight, &area_height, 
 		  XmNbackground, &area_background,
-		  NULL);
+		  XtPointer(0));
 
     XSetForeground(dpy, gc, area_background);
     XFillRectangle(dpy, win, gc, 0, 0, area_width, area_height);
@@ -446,7 +446,7 @@ void PlotArea::plot_reset(const char *)
     XtVaGetValues(area, 
 		  XmNwidth, &area_width, 
 		  XmNheight, &area_height, 
-		  NULL);
+		  XtPointer(0));
     xscale = (double)area_width  / 4096.0;
     yscale = (double)area_height / 4096.0;
 

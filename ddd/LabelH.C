@@ -302,7 +302,7 @@ extern "C" {
 	XmLabelWidget label = (XmLabelWidget)_w;
 
 	unsigned char label_type = XmSTRING;
-	XtVaGetValues(_w, XmNlabelType, &label_type, NULL);
+	XtVaGetValues(_w, XmNlabelType, &label_type, XtPointer(0));
 
 	if (XtIsSensitive(_w) || label_type != XmSTRING)
 	    (*oldLabelWidgetExposeProc)(_w, _event, _region);
@@ -422,7 +422,7 @@ extern "C" {
 	XmLabelGadget label = (XmLabelGadget)_w;
 
 	unsigned char label_type = XmSTRING;
-	XtVaGetValues(_w, XmNlabelType, &label_type, NULL);
+	XtVaGetValues(_w, XmNlabelType, &label_type, XtPointer(0));
 
 	if (XtIsSensitive(_w) || label_type != XmSTRING)
 	    (*oldLabelGadgetExposeProc)(_w, _event, _region);

@@ -73,7 +73,7 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 	XtVaSetValues(shell,
 		      XmNiconPixmap, icon,
 		      XmNiconMask, mask,
-		      NULL);
+		      XtPointer(0));
     }
 
 #if 0				// This should be done by the shell.
@@ -101,7 +101,7 @@ void wm_set_name(Widget shell, string title, string icon)
     XtVaSetValues(shell,
 		  XmNiconName, (char *)icon,
 		  XmNtitle,    (char *)title,
-		  NULL);
+		  XtPointer(0));
     
 #if 0				// This should be done by the shell.
     wm_set_name(XtDisplay(shell), XtWindow(shell), title, icon);
@@ -178,7 +178,7 @@ void manage_and_raise(Widget w)
 		      && attr.map_state != IsViewable);
 
 	    if (iconic)
-		XtVaSetValues(w, XmNinitialState, IconicState, NULL);
+		XtVaSetValues(w, XmNinitialState, IconicState, XtPointer(0));
 	}
 
 	XtManageChild(w);

@@ -285,7 +285,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 		  XtNgridHeight, &grid_height,
 		  XtNgridWidth,  &grid_width,
 		  XtNrotation,   &rotation,
-		  NULL);
+		  XtPointer(0));
 
     BoxPoint grid(max(grid_height, 1), max(grid_width, 1));
     BoxPoint delta(grid[X] * 3, grid[Y] * 2);
@@ -304,7 +304,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 	// New node: start with the top-level visible position
 	Position x = 0;
 	Position y = 0;
-	XtVaGetValues(w, XtNx, &x, XtNy, &y, NULL);
+	XtVaGetValues(w, XtNx, &x, XtNy, &y, XtPointer(0));
 	pos = BoxPoint(max(-x, grid[X]), max(-y, grid[Y] * 2));
 
 	// Add size offset
@@ -1034,7 +1034,7 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
     XtVaGetValues(w,
 		  XtNgridHeight, &grid_height,
 		  XtNgridWidth,  &grid_width,
-		  NULL);
+		  XtPointer(0));
 
     BoxPoint dist   = to->pos() - from->pos();
     BoxPoint center = from->pos() + dist / 2;

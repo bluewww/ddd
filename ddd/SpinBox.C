@@ -104,7 +104,7 @@ static void StartSpinCB(Widget w, XtPointer client_data, XtPointer)
     spin_text = Widget(client_data);
 
     unsigned char direction = (unsigned char)-1;
-    XtVaGetValues(w, XmNarrowDirection, &direction, NULL);
+    XtVaGetValues(w, XmNarrowDirection, &direction, XtPointer(0));
 
     switch (direction)
     {
@@ -148,7 +148,7 @@ static Widget create_spin_arrow(Widget parent, unsigned char direction,
 				Widget text)
 {
     Pixel foreground;
-    XtVaGetValues(parent, XmNbackground, &foreground, 0);
+    XtVaGetValues(parent, XmNbackground, &foreground, XtPointer(0));
 
     Arg args[10];
     Cardinal arg = 0;

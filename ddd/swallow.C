@@ -66,7 +66,7 @@ static void CreatedCB(Widget w, XtPointer client_data, XtPointer call_data)
 	cout << "Using window " << (void *)window << "\n";
 
 	// We got our window!
-	XtVaSetValues(w, XtNwindow, window, NULL);
+	XtVaSetValues(w, XtNwindow, window, XtPointer(0));
 	XtRealizeWidget(XtParent(w));
 	XtRemoveCallback(w, XtNwindowCreatedCallback, CreatedCB, client_data);
     }

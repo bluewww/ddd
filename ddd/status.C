@@ -166,7 +166,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	XtVaGetValues(buttons,
 		      XmNchildren, &children,
 		      XmNnumChildren, &num_children,
-		      NULL);
+		      XtPointer(0));
 
 	int i;
 	for (i = 0; i < int(num_children); i++)
@@ -270,7 +270,7 @@ Widget status_history(Widget parent)
 	// LessTif 0.87 and earlier fails to resize the shell properly
 	// - the border width is zero.  Use this hack instead.
 	XmFontList font_list;
-	XtVaGetValues(history_label, XmNfontList, &font_list, NULL);
+	XtVaGetValues(history_label, XmNfontList, &font_list, XtPointer(0));
     
 	Dimension history_width  = history_msg.width(font_list)  + 6;
 	Dimension history_height = history_msg.height(font_list) + 6;
@@ -546,7 +546,7 @@ void set_status_mstring(MString message, bool temporary)
 
 	XtVaSetValues(status_w,
 		      XmNlabelString, message.xmstring(),
-		      NULL);
+		      XtPointer(0));
 	XFlush(XtDisplay(status_w));
 	XmUpdateDisplay(status_w);
     }

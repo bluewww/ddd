@@ -322,7 +322,7 @@ static void post_fatal(string title, string cause, string cls,
     MString mtext = rm(msg);
     XtVaSetValues (fatal_dialog,
 		   XmNmessageString, mtext.xmstring(),
-		   0);
+		   XtPointer(0));
 
     manage_and_raise(fatal_dialog);
 

@@ -131,9 +131,9 @@ bool ProgressMeter::process(int remaining_length)
     if (!aborted && total >= DIALOG_THRESHOLD && !XtIsManaged(dialog))
     {
 	MString mmsg = rm(msg + "...");
-	XtVaSetValues(dialog, XmNmessageString, mmsg.xmstring(), NULL);
+	XtVaSetValues(dialog, XmNmessageString, mmsg.xmstring(), XtPointer(0));
 	string title = DDD_NAME ": " + capitalize(msg);
-	XtVaSetValues(XtParent(dialog), XmNtitle, (char *)title, NULL);
+	XtVaSetValues(XtParent(dialog), XmNtitle, (char *)title, XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, CancelCB, 
 		      XtPointer(&aborted));
 	manage_and_raise(dialog);

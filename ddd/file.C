@@ -357,7 +357,7 @@ static void searchRemote(Widget fs,
 		      XmNdirListItemCount, nitems,
 		      XmNdirectoryValid,   True,
 		      XmNlistUpdated,      True,
-		      NULL);
+		      XtPointer(0));
     }
     else
     {
@@ -368,7 +368,7 @@ static void searchRemote(Widget fs,
 			  XmNfileListItemCount, nitems,
 			  XmNdirSpec,           items[0],
 			  XmNlistUpdated,       True,
-			  NULL);
+			  XtPointer(0));
 	}
 	else
 	{
@@ -376,7 +376,7 @@ static void searchRemote(Widget fs,
 			  XmNfileListItems,     0,
 			  XmNfileListItemCount, 0,
 			  XmNlistUpdated,       True,
-			  NULL);
+			  XtPointer(0));
 	}
     }
 }
@@ -465,7 +465,7 @@ static void searchLocal(Widget fs,
 			  XmNfileListItemCount, nitems,
 			  XmNdirSpec,           items[0],
 			  XmNlistUpdated,       True,
-			  NULL);
+			  XtPointer(0));
 	}
 
 	freeXmStringTable(items, nitems);
@@ -479,7 +479,7 @@ static void searchLocal(Widget fs,
 		  XmNfileListItems,     0,
 		  XmNfileListItemCount, 0,
 		  XmNlistUpdated,       True,
-		  NULL);
+		  XtPointer(0));
 }
 
 static void searchLocalExecFiles(Widget fs,
@@ -953,7 +953,7 @@ static void getPIDs(Widget selectionList, IntArray& disp_nrs)
     XtVaGetValues(selectionList,
 		  XmNselectedItemCount, &selected_items_count,
 		  XmNselectedItems, &selected_items,
-		  NULL);
+		  XtPointer(0));
 
     for (int i = 0; i < selected_items_count; i++)
     {
@@ -1347,7 +1347,7 @@ static void get_items(Widget selectionList, StringArray& itemids)
     XtVaGetValues(selectionList,
 		  XmNselectedItemCount, &selected_items_count,
 		  XmNselectedItems, &selected_items,
-		  NULL);
+		  XtPointer(0));
 
     for (int i = 0; i < selected_items_count; i++)
     {

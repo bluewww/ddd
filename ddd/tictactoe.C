@@ -374,7 +374,7 @@ static void repaint()
 	XtVaGetValues(buttons[i], 
 		      XmNforeground, &foreground,
 		      XmNbackground, &background, 
-		      NULL);
+		      XtPointer(0));
 
 	if (win == NO_ONE || winning[i])
 	{
@@ -391,7 +391,7 @@ static void repaint()
 		      XmNlabelType, XmPIXMAP,
 		      XmNlabelPixmap, p,
 		      XmNlabelInsensitivePixmap, p,
-		      NULL);
+		      XtPointer(0));
 
 	XtSetSensitive(buttons[i], win == NO_ONE && board[i] == NO_ONE);
     }

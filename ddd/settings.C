@@ -383,7 +383,7 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
 	s = "No help available on this signal.";
 
     XmString xmdoc = 0;
-    XtVaGetValues(label, XmNlabelString, &xmdoc, NULL);
+    XtVaGetValues(label, XmNlabelString, &xmdoc, XtPointer(0));
     MString doc(xmdoc, true);
     XmStringFree(xmdoc);
 
@@ -565,7 +565,7 @@ void update_infos()
 	Widget button = infos_entries[i];
 	bool set = data_disp->have_user_display(XtName(button));
 	have_info = have_info || set;
-	XtVaSetValues(button, XmNset, set, NULL);
+	XtVaSetValues(button, XmNset, set, XtPointer(0));
     }
 
     if (reset_infos_button != 0)
@@ -820,14 +820,14 @@ void process_show(string command, string value, bool init)
     if (button != 0 && XmIsRowColumn(button))
     {
 	Widget menu = 0;
-	XtVaGetValues(button, XmNsubMenuId, &menu, NULL);
+	XtVaGetValues(button, XmNsubMenuId, &menu, XtPointer(0));
 	if (menu != 0)
 	{
 	    // Option menu
 	    Widget active = XtNameToWidget(menu, value);
 	    if (active != 0)
 	    {
-		XtVaSetValues(button, XmNmenuHistory, active, NULL);
+		XtVaSetValues(button, XmNmenuHistory, active, XtPointer(0));
 		return;
 	    }
 	}
@@ -847,7 +847,7 @@ void process_show(string command, string value, bool init)
 	    }
 	}
 
-	XtVaSetValues(button, XmNset, set, NULL);
+	XtVaSetValues(button, XmNset, set, XtPointer(0));
 	return;
     }
     else if (button != 0 && XmIsTextField(button))
@@ -856,7 +856,7 @@ void process_show(string command, string value, bool init)
 		      XmNvalue,                 value.chars(),
 		      XmNcursorPosition,        0,
 		      XmNcursorPositionVisible, True,
-		      NULL);
+		      XtPointer(0));
 	return;
     }
 
@@ -915,7 +915,7 @@ void process_handle(string output, bool init)
 		undo_command += handle_command(w, !set);
 	    }
 
-	    XtVaSetValues(w, XmNset, set, NULL);
+	    XtVaSetValues(w, XmNset, set, XtPointer(0));
 
 	    signals_values[w] = value;
 	    if (init)
@@ -1377,7 +1377,7 @@ static Dimension preferred_width(Widget w)
     int left_offset  = 0;
     int right_offset = 0;
     XtVaGetValues(w, XmNleftOffset, &left_offset, 
-		  XmNrightOffset, &right_offset, NULL);
+		  XmNrightOffset, &right_offset, XtPointer(0));
 
     return size.width + left_offset + right_offset;
 }
@@ -1834,9 +1834,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	if (base == "all")
 	{
 	    set_sensitive(send, False);
-	    XtVaSetValues(pass,  XmNset, True, NULL);
-	    XtVaSetValues(print, XmNset, True, NULL);
-	    XtVaSetValues(stop,  XmNset, True, NULL);
+	    XtVaSetValues(pass,  XmNset, True, XtPointer(0));
+	    XtVaSetValues(print, XmNset, True, XtPointer(0));
+	    XtVaSetValues(stop,  XmNset, True, XtPointer(0));
 	}
     }
 
@@ -2077,7 +2077,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		  XmNlabelString,  &xmlabel,
 		  XmNmarginHeight, &marginHeight,
 		  XmNmarginTop,    &marginTop,
-		  NULL);
+		  XtPointer(0));
 
     Dimension baseline = XmStringBaseline(font_list, xmlabel);
     static const Dimension leaderHeight = 2;
@@ -2410,7 +2410,7 @@ static void ClipDo(Widget w, XEvent *event,
 {
     Widget scroll = XtParent(w);
     Widget scrollbar = 0;
-    XtVaGetValues(scroll, XmNverticalScrollBar, &scrollbar, NULL);
+    XtVaGetValues(scroll, XmNverticalScrollBar, &scrollbar, XtPointer(0));
     XtCallActionProc(scrollbar, params[0], event, params + 1, *num_params - 1);
 }
 
@@ -2422,7 +2422,7 @@ static void fix_clip_window_translations(Widget scroll)
     // translations ...
 
     Widget clip = 0;
-    XtVaGetValues(scroll, XmNclipWindow, &clip, NULL);
+    XtVaGetValues(scroll, XmNclipWindow, &clip, XtPointer(0));
     XtUninstallTranslations(clip);
 
     // ... and provide a minimal set instead.
@@ -2445,7 +2445,7 @@ static void fix_clip_window_translations(Widget scroll)
 	"Ctrl <Key>osfEndLine:   clip-do(TopOrBottom)\n";
 
     XtTranslations tr = XtParseTranslationTable(clip_translations);
-    XtVaSetValues(clip, XmNtranslations, tr, NULL);
+    XtVaSetValues(clip, XmNtranslations, tr, XtPointer(0));
 }
 
 
@@ -2733,13 +2733,13 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 
     // Set number of rows
     if (row > 0)
-	XtVaSetValues(form, XmNfractionBase, row, NULL);
+	XtVaSetValues(form, XmNfractionBase, row, XtPointer(0));
     XtManageChild(form);
 
     // Set sizes
     max_width += EXTRA_SPACE;
     XtVaSetValues(form, 
-		  XmNwidth, max_width, NULL);
+		  XmNwidth, max_width, XtPointer(0));
 
 #if XmVersion > 1001
     Dimension height = preferred_height(form);
@@ -2754,7 +2754,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     XtVaGetValues(scroll, 
 		  XmNverticalScrollBar, &vertical_scroll_bar,
 		  XmNspacing, &spacing,
-		  NULL);
+		  XtPointer(0));
 
     if (height + spacing > MAX_HEIGHT)
     {
@@ -2773,7 +2773,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 		      XmNheight, MAX_HEIGHT,
 		      XmNwidth, max_width + 
 		                spacing + scrollbar_width + EXTRA_WIDTH,
-		      NULL);
+		      XtPointer(0));
     }
     else
     {
@@ -2781,7 +2781,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 	XtVaSetValues(scroll,
 		      XmNheight, height + spacing,
 		      XmNwidth, max_width + spacing,
-		      NULL);
+		      XtPointer(0));
     }
 
     XtManageChild(scroll);
@@ -2917,7 +2917,7 @@ void update_themes()
 	}
 
 	XmTextFieldSetString(entry, (String)value);
-	XtVaSetValues(button, XmNset, set, NULL);
+	XtVaSetValues(button, XmNset, set, XtPointer(0));
     }
 }
 
@@ -3474,12 +3474,12 @@ static void refresh_toggle(ButtonTarget t)
     string name = current_name();
 
     Boolean old_state;
-    XtVaGetValues(w, XmNset, &old_state, NULL);
+    XtVaGetValues(w, XmNset, &old_state, XtPointer(0));
 
     Boolean new_state = 
 	s.contains("\n" + name + "\n") || s.contains("\n" + name + " ()\n");
     if (old_state != new_state)
-	XtVaSetValues(w, XmNset, new_state, NULL);
+	XtVaSetValues(w, XmNset, new_state, XtPointer(0));
 
 #if 1
     set_sensitive(w, name != "");
@@ -3790,7 +3790,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 	XtUnmanageChild(old_label);
 
 	apply_w = XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
-	XtVaSetValues(dialog, XmNdefaultButton, apply_w, NULL);
+	XtVaSetValues(dialog, XmNdefaultButton, apply_w, XtPointer(0));
 	XtManageChild(apply_w);
 
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_OK_BUTTON));
@@ -3807,7 +3807,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 	XtVaSetValues(panel,
 		      XmNmarginWidth,    0,
 		      XmNmarginHeight,   0,
-		      NULL);
+		      XtPointer(0));
 
 	arg = 0;
 	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;

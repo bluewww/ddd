@@ -104,9 +104,12 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
     // Set a reasonable icon name
     String title    = 0;
     String iconName = 0;
-    XtVaGetValues(shell, XmNtitle, &title, XmNiconName, &iconName, NULL);
+    XtVaGetValues(shell,
+		  XmNtitle, &title,
+		  XmNiconName, &iconName,
+		  XtPointer(0));
     if (title != 0 && (iconName == 0 || string(iconName) == XtName(shell)))
-	XtVaSetValues(shell, XmNiconName, title, NULL);
+	XtVaSetValues(shell, XmNiconName, title, XtPointer(0));
 
     return box;
 }
@@ -143,7 +146,7 @@ void setLabelList (Widget  selectionList,
     XmListDeselectAllItems (selectionList);
     XtVaSetValues (selectionList,
 		   XmNselectionPolicy, XmMULTIPLE_SELECT,
-		   NULL);
+		   XtPointer(0));
 
     for (int i = 0; i < list_length; i++) 
 	if (selected != 0 && selected[i] == true) 
@@ -151,7 +154,7 @@ void setLabelList (Widget  selectionList,
 
     XtVaSetValues (selectionList,
 		   XmNselectionPolicy, XmEXTENDED_SELECT,
-		   NULL);
+		   XtPointer(0));
 
     freeXmStringTable(xmlabel_list, list_length);
 }
@@ -173,7 +176,7 @@ void updateLabelList (Widget  selectionList,
     XtVaGetValues(selectionList,
 		  XmNitemCount, &items_count,
 		  XmNitems,     &items,
-		  NULL);
+		  XtPointer(0));
 
     for (int i = 0; i < items_count; i++)
     {
@@ -223,7 +226,7 @@ void getItemNumbers(Widget selectionList, IntArray& numbers)
     XtVaGetValues(selectionList,
 		  XmNselectedItemCount, &selected_items_count,
 		  XmNselectedItems, &selected_items,
-		  NULL);
+		  XtPointer(0));
 
     for (int i = 0; i < selected_items_count; i++)
     {
@@ -276,7 +279,7 @@ void ListSetAndSelectPos(Widget list, int pos)
 		  XmNtopItemPosition, &top_item,
 		  XmNvisibleItemCount, &visible_items,
 		  XmNitemCount, &items,
-		  NULL);
+		  XtPointer(0));
 
     // Eugene M. Indenbom <bom@classic.iki.rssi.ru> reports that we
     // cannot use XmListSelectPos() unconditionally here because on

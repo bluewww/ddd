@@ -299,11 +299,11 @@ static MString prepend_label_name(Widget widget, XEvent *event,
     if (XtIsSubclass(widget, xmLabelWidgetClass))
     {
 	unsigned char label_type = XmSTRING;
-	XtVaGetValues(widget, XmNlabelType, &label_type, NULL);
+	XtVaGetValues(widget, XmNlabelType, &label_type, XtPointer(0));
 	if (label_type == XmPIXMAP)
 	{
 	    XmString label = 0;
-	    XtVaGetValues(widget, XmNlabelString, &label, NULL);
+	    XtVaGetValues(widget, XmNlabelString, &label, XtPointer(0));
 	    if (label != 0)
 	    {
 		text = MString(label, true) + rm(": ") + text;
@@ -603,7 +603,7 @@ static void HelpIndexCB(Widget widget, XtPointer client_data,
     int index = cbs->item_position;
 
     void *userData = 0;
-    XtVaGetValues(widget, XmNuserData, &userData, NULL);
+    XtVaGetValues(widget, XmNuserData, &userData, XtPointer(0));
     XmTextPosition *positions = (XmTextPosition *)userData;
     if (positions == 0)
 	return;			// Not yet set
@@ -741,7 +741,7 @@ static void HighlightSectionCB(Widget, XtPointer client_data,
     XmTextPosition cursor = cbs->newInsert;
 
     void *userData = 0;
-    XtVaGetValues(list, XmNuserData, &userData, NULL);
+    XtVaGetValues(list, XmNuserData, &userData, XtPointer(0));
     XmTextPosition *positions = (XmTextPosition *)userData;
     if (positions == 0)
 	return;			// Not yet set
@@ -1172,7 +1172,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
     MMaddItems(menubar, more_menubar);
     MMaddCallbacks(more_menubar);
-    XtVaSetValues(view_index, XmNset, True, NULL);
+    XtVaSetValues(view_index, XmNset, True, XtPointer(0));
 
     int columns = max_width(text);
     columns = min(max(columns, 40), 80) + 1;
@@ -1195,7 +1195,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     XtVaSetValues(toolbar,
 		  XmNpaneMaximum, size.height,
 		  XmNpaneMinimum, size.height,
-		  NULL);
+		  XtPointer(0));
 
     XtAddCallback(help_index, XmNsingleSelectionCallback,
 		  HelpIndexCB, XtPointer(help_man));
@@ -1216,7 +1216,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     XtAddCallback(fi->key, XmNactivateCallback, ActivateCB,
 		  XtPointer(items[1].widget));
 
-    XtVaSetValues(text_dialog, XmNdefaultButton, Widget(0), NULL);
+    XtVaSetValues(text_dialog, XmNdefaultButton, Widget(0), XtPointer(0));
     
     XtManageChild(form);
     InstallButtonTips(text_dialog);
@@ -1259,7 +1259,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	    text[target++] = '\0';
 
 	// Set text
-	XtVaSetValues(help_man, XmNvalue, text, NULL);
+	XtVaSetValues(help_man, XmNvalue, text, XtPointer(0));
 
 	// Set highlighting
 	XmTextSetHighlight(help_man, 0, XmTextGetLastPosition(help_man), 
@@ -1348,7 +1348,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	// Info file, or something else: titles are already set
 
 	// Set text
-	XtVaSetValues(help_man, XmNvalue, text, NULL);
+	XtVaSetValues(help_man, XmNvalue, text, XtPointer(0));
 
 	// No highlighting
 	XmTextSetHighlight(help_man, 0, XmTextGetLastPosition(help_man), 
@@ -1379,7 +1379,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 		  XmNitems,             xmtitles,
 		  XmNuserData,          xmpositions,
 		  XmNitemCount,         titles.size(),
-		  NULL);
+		  XtPointer(0));
 
     for (i = 0; i < titles.size(); i++)
 	XmStringFree(xmtitles[i]);
@@ -1500,7 +1500,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     XtVaSetValues(toolbar,
 		  XmNpaneMaximum, size.height,
 		  XmNpaneMinimum, size.height,
-		  NULL);
+		  XtPointer(0));
 
     XtAddCallback(text_dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
 
@@ -1551,7 +1551,7 @@ static Widget EventToWidget(Widget widget, XEvent *ev)
     Dimension width, height;
     XtVaGetValues(widget, XmNx, &x, XmNy, &y,
 		  XmNwidth, &width, XmNheight, &height,
-		  NULL);
+		  XtPointer(0));
 
     if (ev->xbutton.window == XtWindow(widget) &&
 	(ev->xbutton.x < x ||
@@ -1684,7 +1684,7 @@ static Widget GetWidgetAt(Widget w, int ex, int ey)
 	if (XtIsComposite(w))
 	{
 	    XtVaGetValues(w, XmNchildren, &children,
-			  XmNnumChildren, &numChildren, NULL);
+			  XmNnumChildren, &numChildren, XtPointer(0));
 	}
 
 	once_again = false;
@@ -1702,7 +1702,7 @@ static Widget GetWidgetAt(Widget w, int ex, int ey)
 		XtVaGetValues(child,
 			      XmNx, &cx, XmNy, &cy,
 			      XmNwidth, &cw, XmNheight, &ch,
-			      NULL);
+			      XtPointer(0));
 
 		if (cx <= ex && ex <= (cx + cw) &&
 		    cy <= ey && ey <= (cy + ch))
@@ -1895,7 +1895,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	// LessTif 0.87 and earlier fails to resize the shell properly
 	// - the border width is zero.  Use this hack instead.
 	XmFontList font_list;
-	XtVaGetValues(tip_label, XmNfontList, &font_list, NULL);
+	XtVaGetValues(tip_label, XmNfontList, &font_list, XtPointer(0));
     
 	Dimension tip_width  = tip.width(font_list)  + 6;
 	Dimension tip_height = tip.height(font_list) + 6;
@@ -1905,7 +1905,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtResizeWidget(tip_shell, tip_width, tip_height, 1);
     }
 
-    XtVaSetValues(tip_label, XmNlabelString, tip.xmstring(), NULL);
+    XtVaSetValues(tip_label, XmNlabelString, tip.xmstring(), XtPointer(0));
 
     // Find a possible place for the tip.  Consider the alignment of
     // the parent composite as well as the distance to the screen edge.
@@ -1956,7 +1956,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	    // We're part of a button box: if vertically aligned, place
 	    // tip on the right; otherwise, place it at the bottom.
 	    unsigned char orientation = XmHORIZONTAL;
-	    XtVaGetValues(parent, XmNorientation, &orientation, NULL);
+	    XtVaGetValues(parent, XmNorientation, &orientation, XtPointer(0));
 
 	    switch (placement)
 	    {
@@ -1983,7 +1983,9 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	    // boundary.
 
 	    int fraction_base = 100;
-	    XtVaGetValues(parent, XmNfractionBase, &fraction_base, NULL);
+	    XtVaGetValues(parent, 
+			  XmNfractionBase, &fraction_base,
+			  XtPointer(0));
 	    if (fraction_base == 100)
 	    {
 		// Simple form
@@ -2002,7 +2004,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 			      XmNrightAttachment,  &right_attachment,
 			      XmNtopAttachment,    &top_attachment,
 			      XmNbottomAttachment, &bottom_attachment,
-			      NULL);
+			      XtPointer(0));
 
 		int left_position   = 0;
 		int right_position  = 0;
@@ -2014,7 +2016,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 			      XmNrightPosition,  &right_position,
 			      XmNtopPosition,    &top_position,
 			      XmNbottomPosition, &bottom_position,
-			      NULL);
+			      XtPointer(0));
 
 		switch (placement)
 		{
@@ -2153,7 +2155,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtVaSetValues(tip_shell,
 		      XmNx, x,
 		      XmNy, y,
-		      NULL);
+		      XtPointer(0));
 	
 	// and pop it up.
 	XtPopup(tip_shell, XtGrabNone);
@@ -2470,7 +2472,7 @@ static void InstallButtonTipsNow(Widget w, bool install)
 	XtVaGetValues(w,
 		      XtNchildren, &children,
 		      XtNnumChildren, &num_children,
-		      NULL);
+		      XtPointer(0));
 
 	if (children != 0)
 	    for (int i = 0; i < int(num_children); i++)
@@ -2481,7 +2483,7 @@ static void InstallButtonTipsNow(Widget w, bool install)
     {
 	// Traverse the menu associated with this button
 	Widget subMenuId = 0;
-	XtVaGetValues(w, XmNsubMenuId, &subMenuId, NULL);
+	XtVaGetValues(w, XmNsubMenuId, &subMenuId, XtPointer(0));
 	if (subMenuId != 0)
 	    InstallButtonTipsNow(subMenuId, install);
     }
@@ -2494,7 +2496,7 @@ static void InstallButtonTipsNow(Widget w, bool install)
 	XtVaGetValues(w, 
 		      XmNsubMenuId, &subMenuId,
 		      XmNrowColumnType, &rowColumnType,
-		      NULL);
+		      XtPointer(0));
 	if (rowColumnType == XmMENU_OPTION && subMenuId != 0)
 	    InstallButtonTipsNow(subMenuId, install);
     }

@@ -1875,7 +1875,7 @@ void SourceView::ShowPosition(Widget text_w, XmTextPosition pos, bool fromTop)
     XtVaGetValues(text_w,
 		  XmNrows, &rows,
 		  XmNtopCharacter, &current_top,
-		  NULL);
+		  XtPointer(0));
 
     // Find current relative row
     short relative_row = 1;
@@ -2773,7 +2773,7 @@ void SourceView::update_title()
     XtVaSetValues(toplevel_w,
 		  XmNtitle, title_s,
 		  XmNiconName, icon_s,
-		  NULL);
+		  XtPointer(0));
 }
 
 
@@ -3386,7 +3386,7 @@ void SourceView::create_shells()
 		  XmNborderWidth,     0,
 		  XmNshadowThickness, 0, 
 		  XmNspacing,         0,
-		  NULL);
+		  XtPointer(0));
 
     MMaddCallbacks(bp_area);
     MMaddHelpCallback(bp_area, ImmediateHelpCB);
@@ -3453,7 +3453,7 @@ void SourceView::create_shells()
     frame_list_w = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_LIST);
     XtVaSetValues(frame_list_w,
 		  XmNselectionPolicy, XmSINGLE_SELECT,
-		  NULL);
+		  XtPointer(0));
 
     XtAddCallback(frame_list_w,
 		  XmNsingleSelectionCallback, SelectFrameCB, 0);
@@ -3478,7 +3478,7 @@ void SourceView::create_shells()
     Widget cancel_w = XmSelectionBoxGetChild(stack_dialog_w, 
 					     XmDIALOG_CANCEL_BUTTON);
 
-    XtVaSetValues(stack_dialog_w, XmNdefaultButton, cancel_w, 0);
+    XtVaSetValues(stack_dialog_w, XmNdefaultButton, cancel_w, XtPointer(0));
 
     // Create register view
     arg = 0;
@@ -3522,7 +3522,7 @@ void SourceView::create_shells()
     register_list_w = XmSelectionBoxGetChild(register_dialog_w, XmDIALOG_LIST);
     XtVaSetValues(register_list_w,
 		  XmNselectionPolicy, XmSINGLE_SELECT,
-		  NULL);
+		  XtPointer(0));
 
     XtAddCallback(register_list_w,
 		  XmNsingleSelectionCallback, SelectRegisterCB, 0);
@@ -3566,7 +3566,7 @@ void SourceView::create_shells()
     thread_list_w = XmSelectionBoxGetChild(thread_dialog_w, XmDIALOG_LIST);
     XtVaSetValues(thread_list_w,
 		  XmNselectionPolicy, XmSINGLE_SELECT,
-		  NULL);
+		  XtPointer(0));
 
     XtAddCallback(thread_list_w,
 		  XmNsingleSelectionCallback, SelectThreadCB, 0);
@@ -3666,7 +3666,7 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
 		  XmNspacing,         0,
 		  XmNborderWidth,     0,
 		  XmNshadowThickness, 0,
-		  NULL);
+		  XtPointer(0));
 
     // Give the form the size specified for the text
     set_scrolled_window_size(text, form);
@@ -3684,7 +3684,9 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
 
     // Fetch scrollbar ID and add callbacks
     Widget scrollbar = 0;
-    XtVaGetValues(XtParent(text), XmNverticalScrollBar, &scrollbar, NULL);
+    XtVaGetValues(XtParent(text), 
+		  XmNverticalScrollBar, &scrollbar,
+		  XtPointer(0));
     if (scrollbar != 0)
     {
 	XtAddCallback(scrollbar, XmNincrementCallback,     CheckScrollCB, 0);
@@ -4987,7 +4989,7 @@ void SourceView::set_text_popup_label(int item, const string& arg, bool sens)
     Widget w = text_popup[item].widget;
     MString label = MString(text_cmd_labels[item]) + tt(arg);
 
-    XtVaSetValues(w, XmNlabelString, label.xmstring(), NULL);
+    XtVaSetValues(w, XmNlabelString, label.xmstring(), XtPointer(0));
     set_sensitive(w, sens);
 }
 
@@ -5109,7 +5111,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 		      "Disable Breakpoint" : "Enable Breakpoint");
 	XtVaSetValues(bp_popup[BPItms::Disable].widget,
 		      XmNlabelString, label.xmstring(),
-		      NULL);
+		      XtPointer(0));
 
 	XmMenuPosition(bp_popup_w, event);
 	XtManageChild(bp_popup_w);
@@ -5786,7 +5788,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
     MString title = string(DDD_NAME) + ": Properties: " + label;
     XtVaSetValues(info->dialog, XmNdialogTitle,
-		  title.xmstring(), NULL);
+		  title.xmstring(), XtPointer(0));
 
     // Set values
     string commands = "";
@@ -5810,7 +5812,8 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 #if XmVersion >= 2000
 	if (XmIsSpinBox(XtParent(info->ignore)))
 	{
-	    XtVaSetValues(info->ignore, XmNposition, bp->ignore_count(), NULL);
+	    XtVaSetValues(info->ignore, XmNposition,
+			  bp->ignore_count(), XtPointer(0));
 	}
 	else
 #endif
@@ -6005,7 +6008,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 				    args, arg));
 
     Widget apply = XmSelectionBoxGetChild(info->dialog, XmDIALOG_APPLY_BUTTON);
-    XtVaSetValues(info->dialog, XmNdefaultButton, apply, NULL);
+    XtVaSetValues(info->dialog, XmNdefaultButton, apply, XtPointer(0));
     XtManageChild(apply);
 
     XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, XmDIALOG_OK_BUTTON));
@@ -6082,7 +6085,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     XtVaSetValues(panel,
 		  XmNmarginWidth,    0,
 		  XmNmarginHeight,   0,
-		  NULL);
+		  XtPointer(0));
 
     Widget buttons = XtParent(info->lookup);
     XtVaSetValues(buttons,
@@ -6091,7 +6094,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 		  XmNborderWidth,     0,
 		  XmNshadowThickness, 0, 
 		  XmNspacing,         0,
-		  NULL);
+		  XtPointer(0));
 
     arg = 0;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
@@ -6868,7 +6871,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     int count = 0;
     XtVaGetValues(w,
 		  XmNitemCount, &count,
-		  NULL);
+		  XtPointer(0));
 
     set_sensitive(up_w,   cbs->item_position > 1);
     set_sensitive(down_w, cbs->item_position < count);
@@ -7155,7 +7158,7 @@ void SourceView::process_frame(int frame)
 		      XmNitemCount, &count,
 		      XmNtopItemPosition, &top_item,
 		      XmNvisibleItemCount, &visible_items,
-		      NULL);
+		      XtPointer(0));
 
 	int pos = 1;
 	switch (gdb->type())
@@ -7200,7 +7203,7 @@ bool SourceView::set_frame_func(const string& func)
     XtVaGetValues(frame_list_w,
 		  XmNitemCount, &count,
 		  XmNitems, &items,
-		  NULL);
+		  XtPointer(0));
 
     for (int i = count - 1; i >= 0; i--)
     {
@@ -7233,7 +7236,7 @@ void SourceView::set_frame_pos(int arg, int pos)
     }
 
     int items = 0;
-    XtVaGetValues(frame_list_w, XmNitemCount, &items, NULL);
+    XtVaGetValues(frame_list_w, XmNitemCount, &items, XtPointer(0));
 
     if (pos == 0)
 	pos = items;
@@ -7570,7 +7573,7 @@ void SourceView::SelectThreadCB(Widget w, XtPointer, XtPointer)
 	XtVaGetValues(thread_list_w,
 		      XmNselectedItemCount, &selected_items_count,
 		      XmNselectedItems, &selected_items,
-		      NULL);
+		      XtPointer(0));
 
 	if (selected_items_count == 1)
 	{
@@ -7731,7 +7734,7 @@ Pixmap SourceView::pixmap(Widget w, unsigned char *bits, int width, int height)
     XtVaGetValues(w,
 		  XmNforeground, &foreground,
 		  XmNbackground, &background,
-		  NULL);
+		  XtPointer(0));
 
     int depth = PlanesOfScreen(XtScreen(w));
     Pixmap pix = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w), 
@@ -7754,7 +7757,7 @@ Widget SourceView::create_glyph(Widget form_w,
 	text_w = code_text_w;
     else
 	text_w = source_text_w;
-    XtVaGetValues(text_w, XmNbackground, &background, NULL);
+    XtVaGetValues(text_w, XmNbackground, &background, XtPointer(0));
 
     // Create push button
     Arg args[30];
@@ -7853,7 +7856,7 @@ void SourceView::unmap_glyph(Widget glyph)
     assert(is_code_widget(glyph) || is_source_widget(glyph));
 
     XtPointer user_data;
-    XtVaGetValues(glyph, XmNuserData, &user_data, NULL);
+    XtVaGetValues(glyph, XmNuserData, &user_data, XtPointer(0));
     if (user_data == 0)
 	return;			// Already unmapped
 
@@ -7868,7 +7871,7 @@ void SourceView::unmap_glyph(Widget glyph)
 		      XmNleftOffset, invisible_x,
 		      XmNtopOffset,  invisible_y,
 		      XmNuserData, XtPointer(0),
-		      NULL);
+		      XtPointer(0));
 
 	if (lesstif_version <= 85)
 	{
@@ -7912,7 +7915,7 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 		  XmNuserData,           &user_data,
 		  XmNleftOffset,         &old_x,
 		  XmNtopOffset,          &old_y,
-		  NULL);
+		  XtPointer(0));
     Dimension glyph_height = 
 	height + border_width + margin_height
 	+ shadow_thickness + highlight_thickness;
@@ -7932,7 +7935,8 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 		XtMoveWidget(glyph, x, y);
 	    }
 
-	    XtVaSetValues(glyph, XmNleftOffset, x, XmNtopOffset, y, NULL);
+	    XtVaSetValues(glyph, XmNleftOffset, x, XmNtopOffset, y, 
+			  XtPointer(0));
 	    log_glyph(glyph);
 	}
 	changed_glyphs += glyph;
@@ -7944,7 +7948,7 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
     if (change_glyphs)
     {
 	XtMapWidget(glyph);
-	XtVaSetValues(glyph, XmNuserData, XtPointer(1), NULL);
+	XtVaSetValues(glyph, XmNuserData, XtPointer(1), XtPointer(0));
 	log_glyph(glyph);
 	changed_glyphs += glyph;
     }
@@ -8274,7 +8278,7 @@ bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
     // In LessTif 0.87 and later, XmTextPosToXY() returns True even if
     // the position is *below* the last displayed line.  Verify.
     Dimension width, height;
-    XtVaGetValues(text_w, XmNwidth, &width, XmNheight, &height, NULL);
+    XtVaGetValues(text_w, XmNwidth, &width, XmNheight, &height, XtPointer(0));
     
     if (pos_displayed && (x > width || y > height))
     {
@@ -8414,17 +8418,17 @@ void SourceView::copy_colors(Widget glyph, Widget origin)
     XtVaGetValues(origin,
 		  XmNforeground, &foreground,
 		  XmNbackground, &background,
-		  NULL);
+		  XtPointer(0));
 
     Pixmap pixmap = 
 	XmGetPixmap(XtScreen(glyph), XtName(glyph), foreground, background);
     if (pixmap != XmUNSPECIFIED_PIXMAP)
     {
 	Pixmap old_pixmap;
-	XtVaGetValues(glyph, XmNlabelPixmap, &old_pixmap, NULL);
+	XtVaGetValues(glyph, XmNlabelPixmap, &old_pixmap, XtPointer(0));
 	XmDestroyPixmap(XtScreen(glyph), old_pixmap);
 
-	XtVaSetValues(glyph, XmNlabelPixmap, pixmap, NULL);
+	XtVaSetValues(glyph, XmNlabelPixmap, pixmap, XtPointer(0));
     }
 }
 
@@ -8463,7 +8467,7 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
 	    static Position last_x = x + stop_x_offset;
 
 	    Position origin_x = -1;
- 	    XtVaGetValues(origin, XmNx, &origin_x, NULL);
+ 	    XtVaGetValues(origin, XmNx, &origin_x, XtPointer(0));
 	    if (lesstif_version <= 87)
 		origin_x -= 2;
 
@@ -8904,7 +8908,7 @@ XmTextPosition SourceView::glyph_position(Widget glyph, XEvent *e,
     XtVaGetValues(text_w,
 		  XmNrows, &rows,
 		  XmNtopCharacter, &current_top,
-		  NULL);
+		  XtPointer(0));
 
     const string& text = current_text(text_w);
     XmTextPosition current_bottom = current_top;
@@ -9187,7 +9191,7 @@ void SourceView::log_glyph(Widget glyph, int n)
 		  XmNtopOffset,          &top,
 		  XmNx,                  &x,
 		  XmNy,                  &y,
-		  NULL);
+		  XtPointer(0));
 
     clog << XtName(glyph);
     if (n >= 0)

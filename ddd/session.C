@@ -467,7 +467,7 @@ static void update_delete(Widget dialog)
     XtVaGetValues(sessions,
 		  XmNselectedItemCount, &selected_items_count,
 		  XmNselectedItems, &selected_items,
-		  NULL);
+		  XtPointer(0));
 
     bool sensitive = false;
     for (int i = 0; i < selected_items_count; i++)
@@ -633,7 +633,7 @@ static void DeleteSessionsCB(Widget dialog, XtPointer client_data, XtPointer)
     XtVaGetValues(sessions,
 		  XmNselectedItemCount, &selected_items_count,
 		  XmNselectedItems,     &selected_items,
-		  NULL);
+		  XtPointer(0));
 
     for (int i = 0; i < selected_items_count; i++)
     {
@@ -801,7 +801,7 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 		      XmNspacing,      0,
 		      XmNmarginWidth,  0,
 		      XmNmarginHeight, 0,
-		      NULL);
+		      XtPointer(0));
 	MMaddCallbacks(gcore_items);
 	MMaddHelpCallback(gcore_items, ImmediateHelpCB);
 
@@ -833,7 +833,7 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
     }
 
     MString text(name);
-    XtVaSetValues(dialog, XmNtextString, text.xmstring(), NULL);
+    XtVaSetValues(dialog, XmNtextString, text.xmstring(), XtPointer(0));
 
     update_sessions(dialog);
     manage_and_raise(dialog);
@@ -1108,7 +1108,7 @@ void OpenSessionCB(Widget w, XtPointer, XtPointer)
     if (app_data.session != DEFAULT_SESSION)
     {
 	MString text(app_data.session);
-	XtVaSetValues(dialog, XmNtextString, text.xmstring(), NULL);
+	XtVaSetValues(dialog, XmNtextString, text.xmstring(), XtPointer(0));
     }
 
     update_sessions(dialog);

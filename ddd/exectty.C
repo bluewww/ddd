@@ -167,7 +167,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     if (base.contains(' '))
 	base = base.before(' ');
     MString msg = rm("Starting ") + tt(base) + rm("...");
-    XtVaSetValues(dialog, XmNmessageString, msg.xmstring(), NULL);
+    XtVaSetValues(dialog, XmNmessageString, msg.xmstring(), XtPointer(0));
     manage_and_raise(dialog);
     wait_until_mapped(dialog);
 

@@ -765,7 +765,7 @@ void DataDisp::unapplyThemeCB (Widget w, XtPointer client_data, XtPointer)
 void DataDisp::toggleThemeCB(Widget button, XtPointer, XtPointer call_data)
 {
     String theme;
-    XtVaGetValues(button, XmNuserData, &theme, NULL);
+    XtVaGetValues(button, XmNuserData, &theme, XtPointer(0));
 
     if (XmToggleButtonGetState(button))
     {
@@ -2034,7 +2034,7 @@ void DataDisp::refresh_graph_edit(bool silent)
     XtVaGetValues(graph_edit,
 		  XtNautoLayout, &state.autoLayout,
 		  XtNsnapToGrid, &state.snapToGrid,
-		  NULL);
+		  XtPointer(0));
 
     if (refresh_graph_edit_timer == 0)
     {
@@ -2059,7 +2059,7 @@ void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
     XtVaGetValues(graph_edit,
 		  XtNautoLayout, &state.autoLayout,
 		  XtNsnapToGrid, &state.snapToGrid,
-		  NULL);
+		  XtPointer(0));
 
     const GraphEditState& old_state = *((GraphEditState *) client_data);
 
@@ -2069,14 +2069,14 @@ void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
 		  XtNautoLayout, old_state.autoLayout,
 		  XtNsnapToGrid, old_state.snapToGrid,
 		  XtNgraph, dummy,
-		  NULL);
+		  XtPointer(0));
     XtVaSetValues(graph_edit,
 		  XtNgraph, (Graph *)disp_graph,
-		  NULL);
+		  XtPointer(0));
     XtVaSetValues(graph_edit,
 		  XtNautoLayout, state.autoLayout,
 		  XtNsnapToGrid, state.snapToGrid,
-		  NULL);
+		  XtPointer(0));
 }
 
 // ***************************************************************************
@@ -2356,7 +2356,7 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
     {
 	const string& theme = all_themes[i];
 	Widget& button = theme_menu[i].widget;
-	XtVaSetValues(button, XmNuserData, (String)theme, NULL);
+	XtVaSetValues(button, XmNuserData, (String)theme, XtPointer(0));
 
 	bool set = false;
 	for (int j = 0; j < current_themes.size(); j++)
@@ -7070,7 +7070,7 @@ void DataDisp::create_shells()
 		  XmNborderWidth,     0,
 		  XmNshadowThickness, 0, 
 		  XmNspacing,         0,
-		  NULL);
+		  XtPointer(0));
 
     MMaddCallbacks (display_area);
     MMaddHelpCallback(display_area, ImmediateHelpCB);

@@ -134,7 +134,7 @@ static void flatten_button(Widget w, bool switch_colors = true)
 		  XmNlabelPixmap,        &label_pixmap,
 		  XmNhighlightPixmap,    &highlight_pixmap,
 		  XmNbottomShadowPixmap, &bottom_shadow_pixmap,
-		  NULL);
+		  XtPointer(0));
 
     if (bottom_shadow_pixmap == XmUNSPECIFIED_PIXMAP)
     {
@@ -171,7 +171,7 @@ static void unflatten_button(Widget w, bool switch_colors = true)
 		  XmNlabelPixmap,        &label_pixmap,
 		  XmNhighlightPixmap,    &highlight_pixmap,
 		  XmNbottomShadowPixmap, &bottom_shadow_pixmap,
-		  NULL);
+		  XtPointer(0));
 
     if (bottom_shadow_pixmap != XmUNSPECIFIED_PIXMAP)
     {
@@ -327,7 +327,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    if (flat)
 	    {
 		Pixel background;
-		XtVaGetValues(shell, XmNbackground, &background, NULL);
+		XtVaGetValues(shell, XmNbackground, &background, XtPointer(0));
 		Pixmap empty = XmGetPixmap(XtScreen(shell), 
 					   (char *)"background", 
 					   background, background);
@@ -354,7 +354,9 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 		{
 		    subMenu = MMcreatePushMenu(widget, subMenuName, subitems);
 		    info = new PushMenuInfo(widget, subMenu, flat);
-		    XtVaSetValues(widget, XmNuserData, XtPointer(info), NULL);
+		    XtVaSetValues(widget,
+				  XmNuserData, XtPointer(info),
+				  XtPointer(0));
 		}
 	    }
 	    else
@@ -422,7 +424,9 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 		// of menu items; place a few spaces around the labels
 		// to increase item distance.
 		XmString old_label;
-		XtVaGetValues(widget, XmNlabelString, &old_label, NULL);
+		XtVaGetValues(widget, 
+			      XmNlabelString, &old_label,
+			      XtPointer(0));
 		MString new_label(old_label, true);
 		XmStringFree(old_label);
 
@@ -431,12 +435,14 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 		    new_label = MString("  ") + new_label + MString("  ");
 		    XtVaSetValues(widget, 
 				  XmNlabelString, new_label.xmstring(), 
-				  NULL);
+				  XtPointer(0));
 		}
 
 		// Same applies to accelerator texts.
 		XmString old_acc;
-		XtVaGetValues(widget, XmNacceleratorText, &old_acc, NULL);
+		XtVaGetValues(widget,
+			      XmNacceleratorText, &old_acc,
+			      XtPointer(0));
 		MString new_acc(old_acc, true);
 		XmStringFree(old_acc);
 
@@ -445,7 +451,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 		    new_acc = MString("  ") + new_acc;
 		    XtVaSetValues(widget, 
 				  XmNacceleratorText, new_acc.xmstring(), 
-				  NULL);
+				  XtPointer(0));
 		}
 	    }
 	    break;
@@ -939,7 +945,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     case MMOptionMenu:
     {
 	Widget subMenu = 0;
-	XtVaGetValues(widget, XmNsubMenuId, &subMenu, NULL);
+	XtVaGetValues(widget, XmNsubMenuId, &subMenu, XtPointer(0));
 
 	if (subMenu != 0 && callback.callback != 0)
 	{
@@ -1156,7 +1162,7 @@ static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
     XtTranslateCoords(w, 0, 0, &button_x, &button_y);
 
     Dimension height = 0;
-    XtVaGetValues(w, XmNheight, &height, NULL);
+    XtVaGetValues(w, XmNheight, &height, XtPointer(0));
 
     Position x = button_x;
     Position y = button_y + height;
@@ -1214,7 +1220,7 @@ static void DecoratePushMenuAct(Widget w, XEvent */* event */,
 		  XmNforeground, &foreground,
 		  XmNbackground, &background,
 		  XmNcolormap, &colormap,
-		  NULL);
+		  XtPointer(0));
 
     points[0].x += width - highlightThickness - shadowThickness;
     points[0].y += highlightThickness + shadowThickness;

@@ -122,7 +122,7 @@ static void PopdownComboListCB(Widget, XtPointer client_data, XtPointer)
 {
     ComboBoxInfo *info = (ComboBoxInfo *)client_data;
 
-    XtVaSetValues(info->button, XmNarrowDirection, XmARROW_DOWN, NULL);
+    XtVaSetValues(info->button, XmNarrowDirection, XmARROW_DOWN, XtPointer(0));
     XtPopdown(info->shell);
     info->popped_up = false;
 }
@@ -145,7 +145,7 @@ static void PopupComboListCB(Widget w, XtPointer client_data,
     Dimension top_height = 0;
     Dimension top_width  = 0;
     XtVaGetValues(info->top, XmNheight, &top_height,
-		  XmNwidth, &top_width, NULL);
+		  XmNwidth, &top_width, XtPointer(0));
 
     // Query preferred height of scroll window
     XtWidgetGeometry size;
@@ -153,7 +153,7 @@ static void PopupComboListCB(Widget w, XtPointer client_data,
     XtQueryGeometry(XtParent(info->list), NULL, &size);
 
     Dimension current_height;
-    XtVaGetValues(info->shell, XmNheight, &current_height, NULL);
+    XtVaGetValues(info->shell, XmNheight, &current_height, XtPointer(0));
     
     Position x       = top_x;
     Position y       = top_y + top_height;
@@ -161,7 +161,7 @@ static void PopupComboListCB(Widget w, XtPointer client_data,
     Dimension height = max(size.height, current_height);
 
     XtVaSetValues(info->shell, XmNx, x, XmNy, y, 
-		  XmNwidth, width, XmNheight, height, NULL);
+		  XmNwidth, width, XmNheight, height, XtPointer(0));
 
 
     // Popup shell
@@ -173,11 +173,11 @@ static void PopupComboListCB(Widget w, XtPointer client_data,
     // Unmanage horizontal scrollbar
     Widget horizontal_scrollbar = 0;
     XtVaGetValues(XtParent(info->list), XmNhorizontalScrollBar, 
-		  &horizontal_scrollbar, NULL);
+		  &horizontal_scrollbar, XtPointer(0));
     if (horizontal_scrollbar != 0)
 	XtUnmanageChild(horizontal_scrollbar);
 
-    XtVaSetValues(info->button, XmNarrowDirection, XmARROW_UP, NULL);
+    XtVaSetValues(info->button, XmNarrowDirection, XmARROW_UP, XtPointer(0));
 
     static Cursor cursor = XCreateFontCursor(XtDisplay(info->shell), XC_arrow);
     XDefineCursor(XtDisplay(info->shell), XtWindow(info->shell), cursor);
@@ -235,7 +235,7 @@ static void RefreshComboTextCB(Widget w, XtPointer client_data,
 Widget ComboBoxList(Widget text)
 {
     XtPointer userData;
-    XtVaGetValues(text, XmNuserData, &userData, NULL);
+    XtVaGetValues(text, XmNuserData, &userData, XtPointer(0));
     ComboBoxInfo *info = (ComboBoxInfo *)userData;
     return info->list;
 }
@@ -248,7 +248,7 @@ Widget ComboBoxText(Widget text)
 Widget ComboBoxButton(Widget text)
 {
     XtPointer userData;
-    XtVaGetValues(text, XmNuserData, &userData, NULL);
+    XtVaGetValues(text, XmNuserData, &userData, XtPointer(0));
     ComboBoxInfo *info = (ComboBoxInfo *)userData;
     return info->button;
 }
@@ -261,7 +261,7 @@ Boolean ComboBoxIsSimple(Widget text)
 Widget ComboBoxTop(Widget text)
 {
     XtPointer userData;
-    XtVaGetValues(text, XmNuserData, &userData, NULL);
+    XtVaGetValues(text, XmNuserData, &userData, XtPointer(0));
     ComboBoxInfo *info = (ComboBoxInfo *)userData;
     return info->top;
 }
@@ -279,7 +279,7 @@ void ComboBoxSetList(Widget text, const StringArray& items)
     XtVaGetValues(list,
 		  XmNitemCount, &old_items_count,
 		  XmNitems,     &old_items,
-		  NULL);
+		  XtPointer(0));
 
     int i;
     if (old_items_count == items.size())
@@ -312,7 +312,7 @@ void ComboBoxSetList(Widget text, const StringArray& items)
     XtVaSetValues(list,
 		  XmNitems,     xmlist,
 		  XmNitemCount, items.size(),
-		  NULL);
+		  XtPointer(0));
 
     freeXmStringTable(xmlist, items.size());
 }
@@ -388,13 +388,20 @@ Widget CreateComboBox(Widget parent, const _XtString name, ArgList _args, Cardin
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
     XtQueryGeometry(combo, NULL, &size);
-    XtVaSetValues(form, XmNheight, size.height, XmNwidth, size.width, NULL);
+    XtVaSetValues(form, 
+		  XmNheight, size.height, 
+		  XmNwidth, size.width,
+		  XtPointer(0));
 
     // Set frame size explicitly, too
     Dimension shadow_thickness;
-    XtVaGetValues(info->top, XmNshadowThickness, &shadow_thickness, NULL);
-    XtVaSetValues(info->top, XmNheight, size.height + shadow_thickness * 2, 
-		  XmNwidth, size.width + shadow_thickness * 2, NULL);
+    XtVaGetValues(info->top,
+		  XmNshadowThickness, &shadow_thickness,
+		  XtPointer(0));
+    XtVaSetValues(info->top, 
+		  XmNheight, size.height + shadow_thickness * 2, 
+		  XmNwidth, size.width + shadow_thickness * 2,
+		  XtPointer(0));
 #else
     // Create text field and arrow
     arg = 0;
@@ -408,7 +415,7 @@ Widget CreateComboBox(Widget parent, const _XtString name, ArgList _args, Cardin
     XtManageChild(info->text);
 
     Pixel foreground;
-    XtVaGetValues(parent, XmNbackground, &foreground, 0);
+    XtVaGetValues(parent, XmNbackground, &foreground, XtPointer(0));
 
     arg = 0;
     XtSetArg(args[arg], XmNarrowDirection,     XmARROW_DOWN);  arg++;
@@ -430,7 +437,7 @@ Widget CreateComboBox(Widget parent, const _XtString name, ArgList _args, Cardin
 		  XmNrightWidget,      info->button,
 		  XmNtopAttachment,    XmATTACH_FORM,
 		  XmNbottomAttachment, XmATTACH_FORM,
-		  NULL);
+		  XtPointer(0));
 
     XtAddCallback(info->button, XmNarmCallback,
 		  PopupComboListCB, XtPointer(info));
@@ -468,20 +475,27 @@ Widget CreateComboBox(Widget parent, const _XtString name, ArgList _args, Cardin
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
     XtQueryGeometry(info->text, NULL, &size);
-    XtVaSetValues(form, XmNheight, size.height, XmNwidth, size.width, NULL);
+    XtVaSetValues(form,
+		  XmNheight, size.height,
+		  XmNwidth, size.width,
+		  XtPointer(0));
 
     // Set frame size explicitly, too
     Dimension shadow_thickness;
-    XtVaGetValues(info->top, XmNshadowThickness, &shadow_thickness, NULL);
-    XtVaSetValues(info->top, XmNheight, size.height + shadow_thickness * 2, 
-		  XmNwidth, size.width + shadow_thickness * 2, NULL);
+    XtVaGetValues(info->top,
+		  XmNshadowThickness, &shadow_thickness,
+		  XtPointer(0));
+    XtVaSetValues(info->top,
+		  XmNheight, size.height + shadow_thickness * 2, 
+		  XmNwidth, size.width + shadow_thickness * 2,
+		  XtPointer(0));
 #endif
 
     // Give shell a little more border
-    XtVaSetValues(info->shell, XmNborderWidth, 1, NULL);
+    XtVaSetValues(info->shell, XmNborderWidth, 1, XtPointer(0));
 
     // Store ComboBox info in text field
-    XtVaSetValues(info->text, XmNuserData, XtPointer(info), NULL);
+    XtVaSetValues(info->text, XmNuserData, XtPointer(info), XtPointer(0));
 
     // Synchronize text and list
     XtAddCallback(info->list, XmNbrowseSelectionCallback,

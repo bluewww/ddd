@@ -451,7 +451,7 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
     gdb_commands_w = XmSelectionBoxGetChild(gdb_history_w, XmDIALOG_LIST);
     XtVaSetValues(gdb_commands_w,
 		  XmNselectionPolicy, XmSINGLE_SELECT,
-		  NULL);
+		  XtPointer(0));
 
     XtAddCallback(gdb_commands_w,
 		  XmNsingleSelectionCallback, SelectHistoryCB, 0);

@@ -80,12 +80,12 @@ Widget createScrolledGraphEdit(Widget parent, const _XtString name,
     XtVaGetValues(graphEdit, 
 		  XtNrequestedWidth, &width,
 		  XtNrequestedHeight, &height,
-		  NULL);
+		  XtPointer(0));
 
     if (width > 0)
-	XtVaSetValues(scrolledWindow, XmNwidth, width, NULL);
+	XtVaSetValues(scrolledWindow, XmNwidth, width, XtPointer(0));
     if (height > 0)
-	XtVaSetValues(scrolledWindow, XmNheight, height, NULL);
+	XtVaSetValues(scrolledWindow, XmNheight, height, XtPointer(0));
 
     return graphEdit;
 }
