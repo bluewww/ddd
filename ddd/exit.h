@@ -52,6 +52,7 @@ void _DDDExitCB   (Widget, XtPointer, XtPointer); // GDB exited normally
 void DDDExitCB    (Widget, XtPointer, XtPointer); // Exit DDD
 void DDDRestartCB (Widget, XtPointer, XtPointer); // Restart DDD
 void DDDDebugCB   (Widget, XtPointer, XtPointer); // Debug DDD
+void DDDDumpCoreCB(Widget, XtPointer, XtPointer); // Dump Core
 
 // Helpers
 class Agent;

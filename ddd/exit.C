@@ -142,10 +142,6 @@ bool ddd_has_crashed = false;
 
 static void DDDDoneAnywayCB(Widget w, XtPointer client_data, 
 			    XtPointer call_data);
-static void StartSOSCB(Widget w, XtPointer client_data = 0, 
-		       XtPointer call_data = 0);
-static void StopSOSCB(Widget w, XtPointer client_data = 0, 
-		      XtPointer call_data = 0);
 
 //-----------------------------------------------------------------------------
 // General clean-up actions before exiting DDD
@@ -177,10 +173,6 @@ void ddd_cleanup()
 	if (app_data.save_history_on_exit)
 	    save_history(session_history_file(app_data.session));
     }
-
-    // Stop SOS blinking
-    if (gdb_w != 0)
-	StopSOSCB(gdb_w);
 
     // Famous last words
     string last_words = "Thanks for using " DDD_NAME " " DDD_VERSION "!";
@@ -289,22 +281,16 @@ static void post_fatal(string title, string cause, string cls,
 	XtAddCallback(fatal_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 	XtAddCallback(fatal_dialog, XmNokCallback, 
 		      DDDRestartCB, XtPointer(EXIT_FAILURE));
-	XtAddCallback(fatal_dialog, XmNcancelCallback, 
-		      StopSOSCB, XtPointer(0));
-	XtAddCallback(fatal_dialog, XmNokCallback, 
-		      StopSOSCB, XtPointer(0));
 
 #if XmVersion >= 1002
 	Widget exit = verify(XmCreatePushButton(fatal_dialog, "exit", 0, 0));
 	XtManageChild(exit);
 	XtAddCallback(exit, XmNactivateCallback,
 		      DDDExitCB, XtPointer(EXIT_FAILURE));
-	XtAddCallback(exit, XmNactivateCallback, StopSOSCB, XtPointer(0));
 
 #if DEBUG_BUTTON
 	debug = verify(XmCreatePushButton(fatal_dialog, "debug", 0, 0));
 	XtAddCallback(debug, XmNactivateCallback, DDDDebugCB, XtPointer(True));
-	XtAddCallback(debug, XmNactivateCallback, StopSOSCB, XtPointer(0));
 #endif
 
 #endif
@@ -328,8 +314,6 @@ static void post_fatal(string title, string cause, string cls,
 		   0);
 
     manage_and_raise(fatal_dialog);
-
-    StartSOSCB(fatal_dialog);
 
     // Wait until dialog is mapped and synchronize, such that DDD will
     // exit if we get another signal or X error during that time.
@@ -501,7 +485,6 @@ static void ddd_fatal(int sig...)
     if (sig != SIGINT && app_data.dump_core)
     {
 	// Create core file (without interrupting DDD)
-	unlink("core");
 	if (ddd_dump_core(sig))
 	{
 	    // We are the child: return to originating sequence such
@@ -521,8 +504,11 @@ static void ddd_fatal(int sig...)
 // Dump core (for debugging)
 //-----------------------------------------------------------------------------
 
+// Dump core using SIG; return true iff child
 static bool ddd_dump_core(int sig...)
 {
+    unlink("core");
+
     int core_pid;
     if ((core_pid = fork()) == 0)
     {
@@ -558,26 +544,33 @@ static bool ddd_dump_core(int sig...)
 	    perror(ddd_NAME);
     }
 
-    if (app_data.debug_core_dumps)
-    {
-	// Invoke debugger
-	debug_ddd();
-    }
-
+#if defined(SIGUSR1)
     if (sig == SIGUSR1)
     {
 	// Re-install handler (for SVR4 and others)
 	signal(sig, SignalProc(ddd_dump_core));
-
-	// Enable maintenance menu
-	if (!app_data.maintenance)
-	{
-	    app_data.maintenance = true;
-	    update_options();
-	}
     }
+#endif // defined(SIGUSR1)
 
     return false;
+}
+
+void DDDDumpCoreCB(Widget, XtPointer, XtPointer)
+{
+    StatusDelay delay("Dumping core");
+
+#if defined(SIGABRT)
+    if (ddd_dump_core(SIGABRT))
+	exit(EXIT_FAILURE);
+#elif defined(SIGIOT)
+    if (ddd_dump_core(SIGIOT))
+	exit(EXIT_FAILURE);
+#else
+    abort();
+#endif
+
+    if (!is_core_file("core"))
+	delay.outcome = "failed";
 }
 
 //-----------------------------------------------------------------------------
@@ -1074,80 +1067,4 @@ void DDDDebugCB(Widget, XtPointer client_data, XtPointer)
 {
     bool core_dumped = (int)(long)client_data;
     debug_ddd(core_dumped);
-}
-
-
-//-----------------------------------------------------------------------------
-// Morse SOS on LED #1
-//-----------------------------------------------------------------------------
-
-// See `http://dplinux.sund.ac.uk/~manga/refer/alphabet.html' for a reference.
-static const short DOT          = 1000 / 10; // officially: 1000 / 24
-static const short DASH         = DOT * 3;
-static const short PAUSE        = -DASH;
-static const short LETTER       = PAUSE * 2;
-static const short SPACE        = PAUSE * 4;
-
-static short sos_theme[] = {
-    DOT,  PAUSE, DOT,  PAUSE, DOT,  LETTER,  // S
-    DASH, PAUSE, DASH, PAUSE, DASH, LETTER,  // O
-    DOT,  PAUSE, DOT,  PAUSE, DOT,  SPACE,   // S
-};
-
-static int next_letter = 0;
-
-static void set_led(Display *display, bool state)
-{
-    XKeyboardControl control;
-
-    control.led = 1;
-    control.led_mode = state ? LedModeOn : LedModeOff;
-    XChangeKeyboardControl(display, KBLed | KBLedMode, &control);
-    XFlush(display);
-}
-
-static int get_led(Display *display)
-{
-    XKeyboardState state;
-
-    XGetKeyboardControl(display, &state);
-    return (state.led_mask & 1) ? LedModeOn : LedModeOff;
-}
-
-static XtIntervalId morse_timer = 0;
-
-static void morseCB(XtPointer client_data, XtIntervalId *)
-{
-    Widget w = (Widget)client_data;
-
-    short letter = sos_theme[next_letter++];
-    if (next_letter >= int(XtNumber(sos_theme)))
-	next_letter = 0;
-
-    set_led(XtDisplay(w), letter > 0);
-    morse_timer = 
-	XtAppAddTimeOut(XtWidgetToApplicationContext(w), abs(letter), 
-			morseCB, client_data);
-}
-
-static int old_led_state = LedModeOff;
-
-static void StartSOSCB(Widget w, XtPointer, XtPointer)
-{
-    StopSOSCB(w);
-
-    old_led_state = get_led(XtDisplay(w));
-
-    morse_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0, 
-				  morseCB, XtPointer(w));
-}
-
-static void StopSOSCB(Widget w, XtPointer, XtPointer)
-{
-    if (morse_timer != 0)
-    {
-	XtRemoveTimeOut(morse_timer);
-	morse_timer = 0;
-	set_led(XtDisplay(w), old_led_state);
-    }
 }

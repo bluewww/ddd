@@ -37,6 +37,7 @@ char mainloop_rcsid[] =
 #include "exit.h"
 #include "status.h"
 #include "ddd.h"
+#include "AppData.h"
 
 #include <setjmp.h>
 
@@ -53,14 +54,26 @@ void ddd_main_loop()
     static int sig = 0;
     if ((sig = setjmp(main_loop_env)) != 0)
     {
+	// Got a fatal signal
 	main_loop_entered = false;
 	ddd_show_signal(sig);
 	reset_status_lock();
+
+	// Imvoke debugger
+	if (sig < 0 && app_data.debug_core_dumps)
+	    DDDDebugCB(gdb_w, XtPointer(True), 0);
 
 	// Bring X in a consistent state
 	XUngrabPointer(XtDisplay(gdb_w), CurrentTime);
 	XUngrabKeyboard(XtDisplay(gdb_w), CurrentTime);
 	XUngrabServer(XtDisplay(gdb_w));
+
+	// Enable maintenance menu
+	if (!app_data.maintenance)
+	{
+	    app_data.maintenance = true;
+	    update_options();
+	}
     }
 
     // Set `main_loop_entered' to true as soon 

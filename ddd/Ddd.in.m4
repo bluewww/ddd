@@ -2875,9 +2875,12 @@ define(MAINTENANCE_HELP, [\
 WIDGET(Maintenance Menu)\n\
 \n\
 DESC(Debug [[[[DDD]]]]..., [invoke a debugger on this DDD instance])\n\
+DESC(Dump Core, [dump core now])\n\
 \n\
-DESC(Dump Core Upon Crash, [dump core when DDD crashes])\n\
-DESC(Debug [[[[DDD]]]] Upon Crash, [invoke debugger on DDD when it crashes])
+DESC(Core Dumps, [enable core dumps when DDD crashes])\n\
+DESC(Debug Window, [invoke debugger on DDD when it crashes])\n\
+\n\
+DESC(Tic Tac Toe, [play Tic Tac Toe against DDD])
 ])dnl
 
 Ddd*menubar.maintenance*helpString: MAINTENANCE_HELP
@@ -2891,13 +2894,18 @@ Ddd*maintenanceMenu.debug.acceleratorText:	F12
 Ddd*maintenanceMenu.debug.documentationString:	\
 @rm Invoke a debugger on this DDD instance
 
-Ddd*maintenanceMenu.dumpCore.labelString:	Dump Core Upon Crash
-Ddd*maintenanceMenu.dumpCore.mnemonic:		C
+Ddd*maintenanceMenu.dumpCore.labelString:	Dump Core
+Ddd*maintenanceMenu.dumpCore.mnemonic:		D
 Ddd*maintenanceMenu.dumpCore.documentationString:	\
-@rm Dump core when DDD crashes
+@rm Dump core now
 
-Ddd*maintenanceMenu.debugCoreDump.labelString:	Debug DDD Upon Crash
-Ddd*maintenanceMenu.debugCoreDump.mnemonic:	U
+Ddd*maintenanceMenu.coreDumps.labelString:	Core Dumps
+Ddd*maintenanceMenu.coreDumps.mnemonic:		C
+Ddd*maintenanceMenu.coreDumps.documentationString:	\
+@rm Enable or disable core dumps
+
+Ddd*maintenanceMenu.debugCoreDump.labelString:	Debug Window
+Ddd*maintenanceMenu.debugCoreDump.mnemonic:	W
 Ddd*maintenanceMenu.debugCoreDump.documentationString:	\
 @rm Invoke debugger on DDD when it crashes
 

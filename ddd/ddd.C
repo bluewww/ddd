@@ -1441,8 +1441,9 @@ static Widget debug_core_dump_w = 0;
 static MMDesc maintenance_menu[] = 
 {
     { "debug",         MMPush, { DDDDebugCB, 0 }, 0, 0, 0, 0 },
+    { "dumpCore",      MMPush, { DDDDumpCoreCB, 0 }, 0, 0, 0, 0 },
     MMSep,
-    { "dumpCore",      MMToggle, { dddToggleDumpCoreCB, 0 }, 0,
+    { "coreDumps",     MMToggle, { dddToggleDumpCoreCB, 0 }, 0,
       &dump_core_w, 0, 0 },
     { "debugCoreDump", MMToggle, { dddToggleDebugCoreDumpCB, 0 }, 0,
       &debug_core_dump_w, 0, 0 },
