@@ -114,6 +114,8 @@ public:
     bool        user_prompt;	  // Flag as given to send_gdb_command()
     bool        user_check;	  // Flag as given to send_gdb_command()
 
+    bool        disabling_occurred; // Flag: GDB disabled displays
+
 private:
     static void clear_origin(Widget w, XtPointer client_data, 
 			     XtPointer call_data);
@@ -153,7 +155,9 @@ public:
 	  user_data(0),
 	  user_verbose(true),
 	  user_prompt(true),
-	  user_check(true)
+	  user_check(true),
+
+	  disabling_occurred(false)
     {
 	add_destroy_callback();
     }
@@ -700,7 +704,7 @@ void init_session(const string& restart, const string& settings,
 
 void send_gdb_ctrl(string cmd, Widget origin)
 {
-    CmdData* cmd_data      = new CmdData(origin, NoFilter);
+    CmdData* cmd_data      = new CmdData(origin, TryFilter);
     cmd_data->command      = cmd;
     cmd_data->disp_buffer  = new DispBuffer;
     cmd_data->pos_buffer   = new PosBuffer;
@@ -1437,17 +1441,19 @@ static void partial_answer_received(const string& answer, void* data)
     string ans = answer;
     CmdData *cmd_data = (CmdData *) data;
 
+    bool verbose = cmd_data->user_verbose;
+
     // Filter displays and position
     if (cmd_data->pos_buffer)
 	cmd_data->pos_buffer->filter(ans);
 
     if (cmd_data->filter_disp != NoFilter)
 	cmd_data->disp_buffer->filter(ans);
-
+    
     cmd_data->user_answer += ans;
 
     // Output remaining answer
-    if (cmd_data->user_verbose && cmd_data->graph_cmd == "")
+    if (verbose && cmd_data->graph_cmd == "")
     {
 	gdb_out(ans);
     }
@@ -1528,6 +1534,8 @@ static void command_completed(void *data)
     {
 	// Program (or GDB) issued auto command(s) to be executed by DDD
 	string auto_commands = pos_buffer->get_auto_cmd();
+	if (!auto_commands.contains('\n', -1))
+	    auto_commands += '\n';
 
 	while (auto_commands != "")
 	{
@@ -1680,25 +1688,25 @@ static void command_completed(void *data)
 	if (cmd_data->filter_disp == Filter
 	    || cmd_data->disp_buffer->displays_found())
 	{
-	    bool disabling_occurred;
 	    string displays = cmd_data->disp_buffer->get_displays();
 	    string not_my_displays = 
-		data_disp->process_displays(displays, disabling_occurred);
+		data_disp->process_displays(displays, 
+					    cmd_data->disabling_occurred);
 
 	    if (verbose)
 		gdb_out(not_my_displays);
 	    
 	    cmd_data->disp_buffer->clear();
-
-	    // If GDB disabled any display, try once more
-	    if (disabling_occurred)
-	    {
-		cmd_data->filter_disp = Filter;
-		cmd_data->user_prompt = false;	// No more prompts
-		gdb->send_user_cmd(gdb->display_command());
-		return;
-	    }
 	}
+    }
+
+    // If GDB disabled any display, try once more
+    if (check && cmd_data->disabling_occurred)
+    {
+	cmd_data->filter_disp = Filter;
+	cmd_data->user_prompt = false;	// No more prompts
+	gdb->send_user_cmd(gdb->display_command());
+	return;
     }
 
     if (cmd_data->user_callback != 0)
