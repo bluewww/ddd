@@ -2,7 +2,7 @@
 .\" DDD manual page
 .\" @configure_input@
 .\"
-.\" Copyright (C) 1999 Universitaet Passau, Germany.
+.\" Copyright (C) 1999-2001 Universitaet Passau, Germany.
 .\" Written by Andreas Zeller <zeller@gnu.org>.
 .\" 
 .\" This file is part of DDD.
@@ -27,7 +27,7 @@
 .\" `http://www.gnu.org/software/ddd/',
 .\" or send a mail to the DDD developers <ddd@gnu.org>.
 .\"
-.TH @ddd@ 1 "1999\-10\-07" "@DDD@ @VERSION@" "GNU Tools"
+.TH @ddd@ 1 "2001\-01\-15" "@DDD@ @VERSION@" "GNU Tools"
 .SH "NAME"
 @ddd@, x@ddd@ - The Data Display Debugger
 .SH ""
@@ -43,6 +43,7 @@
 .RB "[\|" \-\-gdb "\|]"
 .RB "[\|" \-\-dbx "\|]"
 .RB "[\|" \-\-ladebug "\|]"
+.RB "[\|" \-\-wdb "\|]"
 .RB "[\|" \-\-xdb "\|]"
 .RB "[\|" \-\-jdb "\|]"
 .RB "[\|" \-\-pydb "\|]"
@@ -210,6 +211,9 @@ debugging.
 .B \-\-version
 Show the \s-1@DDD@\s+1 version and exit.
 .TP
+.B \-\-wdb
+Run the \s-1WDB\s+1 debugger as inferior debugger.
+.TP
 .B \-\-xdb
 Run \s-1XDB\s+1 as inferior debugger.
 .PP
@@ -222,6 +226,7 @@ debugger, can be found in the \s-1@DDD@\s+1 manual.
 .BR X (1),
 .BR gdb (1),
 .BR dbx (1),
+.BR wdb (1),
 .BR xdb (1),
 .BR perldebug (1)
 .PP
@@ -289,7 +294,7 @@ For more information on this list, send a mail to
 .SH "COPYRIGHT"
 .\" ---------------
 .\"
-This manual page is Copyright \(co 1999 Universität Passau, Germany.
+This manual page is Copyright \(co 2001 Universität Passau, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this
 manual page provided the copyright notice and this permission notice
