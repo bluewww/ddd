@@ -5006,7 +5006,8 @@ DataDisp::DataDisp(Widget parent,
     if (graph_cmd_w == 0)
     {
 	graph_cmd_w = create_toolbar(parent, "graph", 
-				     graph_cmd_area, 0, arg_label, graph_arg);
+				     graph_cmd_area, 0, arg_label, graph_arg,
+				     label_type);
     }
 
     if (arg_label != 0)
