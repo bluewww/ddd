@@ -99,10 +99,6 @@ Widget create_toolbar(Widget parent, string name,
 	MMaddHelpCallback(items2, ImmediateHelpCB);
     }
 
-    unsigned char label_type = XmSTRING;
-    if (items1[0].widget != 0)
-	XtVaGetValues(items1[0].widget, XmNlabelType, &label_type, NULL);
-
     XtVaSetValues(buttons,
 		  XmNmarginWidth,    0,
 		  XmNmarginHeight,   0,
@@ -165,12 +161,9 @@ Widget create_toolbar(Widget parent, string name,
     {
 	// Argument field is higher than buttons
 
-	if (label_type == XmSTRING)
-	{
-	    // Center buttons around argument field
-	    int offset = (arg_height - button_height) / 2;
-	    XtVaSetValues(buttons, XmNmarginHeight, offset, NULL);
-	}
+	// Center buttons around argument field
+	int offset = (arg_height - button_height) / 2;
+	XtVaSetValues(buttons, XmNmarginHeight, offset, NULL);
     }
 
     return toolbar;
