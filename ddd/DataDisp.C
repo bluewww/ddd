@@ -1908,7 +1908,7 @@ int DataDisp::add_refresh_user_commands(StringArray& cmds)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->is_user_command())
+	if (dn->is_user_command() && dn->enabled())
 	    cmds += dn->user_command();
     }
 
@@ -2070,7 +2070,7 @@ void DataDisp::enable_displaySQ (const IntArray& display_nrs)
 
     if (k > 0)
     {
-	ok = gdb->send_question (cmd, disable_displayOQC, 0);
+	ok = gdb->send_question (cmd, enable_displayOQC, 0);
 	if (!ok)
 	    post_gdb_busy(last_origin);
     }
@@ -2080,7 +2080,7 @@ void DataDisp::enable_displaySQ (const IntArray& display_nrs)
 	DispNode *dn = disp_graph->get(display_nrs[i]);
 	if (dn->is_user_command() && dn->disabled())
 	{
-	    disp_graph->get(display_nrs[i])->refresh();
+	    dn->enable();
 	    k++;
 	}
     }
@@ -2725,7 +2725,7 @@ void DataDisp::process_user (StringArray& answers)
     {
 	DispNode* dn = disp_graph->get(k);
 
-	if (dn->is_user_command())
+	if (dn->is_user_command() && dn->enabled())
 	{
 	    string answer = answers[i++];
 	    if (dn->update(answer))
