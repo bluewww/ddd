@@ -62,6 +62,7 @@ extern "C" {
 #endif
 }
 
+// Return the host name
 char *hostname()
 {
     static char *name = 0;
@@ -72,17 +73,16 @@ char *hostname()
 
     bool okay = false;
 
-#ifdef HAVE_GETHOSTNAME
-    if (gethostname(buffer, BUFSIZ) == 0)
-    {
-	okay = true;
-    }
-#endif
 #ifdef HAVE_UNAME
     struct utsname un;
-    if (!okay && uname(&un) == 0)
+    if (!okay && uname(&un) >= 0)
     {
 	strcpy(buffer, un.nodename);
+	okay = true;
+    }
+#elif defined(HAVE_GETHOSTNAME)
+    if (!okay && gethostname(buffer, BUFSIZ) == 0)
+    {
 	okay = true;
     }
 #endif
@@ -104,14 +104,26 @@ char *hostname()
 	return name = "unknown";
 }
 
+// Return a fully qualified name for the current host
 static char *_fullhostname()
 {
     char *name = hostname();
+    if (strchr(name, '.'))
+	return name;		// Name already qualified (this is weird)
 
 #ifdef HAVE_GETHOSTBYNAME
     struct hostent *h = gethostbyname(name);
     if (h)
     {
+	// Check official name
+	if (strchr(h->h_name, '.'))
+	    return h->h_name;
+
+	// Check aliases
+	for (int i = 0; h->h_aliases[i] != 0; i++)
+	    if (strchr(h->h_aliases[i], '.'))
+		return h->h_aliases[i];
+
 	// Use first network address
 	if (h->h_addrtype == AF_INET && h->h_addr_list[0] != 0)
 	{
@@ -123,11 +135,6 @@ static char *_fullhostname()
 
 	    return buffer;
 	}
-
-	// Try qualified alias
-	for (int i = 0; h->h_aliases[i] != 0; i++)
-	    if (strchr(h->h_aliases[i], '.'))
-		return h->h_aliases[i];
     }
 #endif
 
@@ -135,6 +142,7 @@ static char *_fullhostname()
 }
 
 
+// Return and cache a fully qualified name for the current host
 char *fullhostname()
 {
     static char *name = 0;
