@@ -848,6 +848,8 @@ void gdbOpenSourceWindowCB(Widget w, XtPointer client_data,
     manage_paned_child(source_view->source_form());
     if (source_view_shell != 0 && app_data.disassemble)
 	manage_paned_child(source_view->code_form());
+    Widget arg_cmd_w = XtParent(source_arg->top());
+    manage_paned_child(arg_cmd_w);
 
     popup_shell(source_view_shell);
 
@@ -863,6 +865,8 @@ void gdbOpenCodeWindowCB(Widget w, XtPointer client_data,
 			 XtPointer call_data)
 {
     manage_paned_child(source_view->code_form());
+    Widget arg_cmd_w = XtParent(source_arg->top());
+    manage_paned_child(arg_cmd_w);
 
     popup_shell(source_view_shell);
 
