@@ -69,12 +69,12 @@ struct MMDesc {
 
 /*
     Type        Callback                 Items   Widget
-    ----------- ------------------------ ------- ---------------------------
-    MMPush      XmNactivateCallback      -/-     PushButtonGadget
-    MMToggle    XmNvalueChangedCallback  -/-     ToggleButtonGadget
-    MMMenu      XmNmapCallback           items   CascadeButtonGadget
-    MMSeparator -/-                      -/-     SeparatorGadget
-    MMLabel     -/-                      -/-     LabelGadget
+    ----------- ------------------------ ------- -------------
+    MMPush      XmNactivateCallback      -/-     PushButton
+    MMToggle    XmNvalueChangedCallback  -/-     ToggleButton
+    MMMenu      XmNmapCallback           items   CascadeButton
+    MMSeparator -/-                      -/-     Separator
+    MMLabel     -/-                      -/-     Label
 */
 
 
