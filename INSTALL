@@ -18,12 +18,12 @@ To build a complete DDD from sources, you need:
 
    * A Motif Widget library.  Either
 
-     - LessTif, 0.89 or later, or
+     - LessTif, 0.90 or later, or
      - OSF/Motif (1.2 or later).
 
-     We recommend to use LessTif 0.89 or later, available from
+     We recommend to use LessTif 0.90 or later, available from
      `http://www.lesstif.org/'.  Use LessTif in (default) Motif 1.2
-     compatibility mode.
+     compatibility mode; with LessTif in Motif 2.0 mode, DDD will not work.
 
    * The X window library (Xlib) and X toolkit library (Xt), X11R4 or
      later.  Best results are obtained with X11R6.3 and later.

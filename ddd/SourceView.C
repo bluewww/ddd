@@ -9282,6 +9282,8 @@ void SourceView::process_disassemble(const string& disassemble_output)
 	    line = replicate(' ', indent_amount(code_text_w)) + line;
 	indented_code += line + '\n';
     }
+    delete[] code_list;
+    code_list = 0;
 
     set_code(indented_code,
 	     first_address(disassemble_output),

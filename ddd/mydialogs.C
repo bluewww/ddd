@@ -38,6 +38,9 @@ char mydialogs_rcsid[] =
 //-----------------------------------------------------------------------------
 
 #include "mydialogs.h"
+#include "LessTifH.h"
+#include "config.h"
+
 
 // System includes
 #include <stdlib.h>
@@ -60,11 +63,6 @@ char mydialogs_rcsid[] =
 // Own includes
 #include "string-fun.h"
 
-
-// Local functions
-static XmStringTable makeXmStringTable (string label_list[], int list_length,
-					bool highlight_title);
-static void freeXmStringTable (XmStringTable xmlabel_list, int list_length);
 
 // Create a selection box with a top-level shell
 Widget createTopLevelSelectionDialog(Widget parent, String name,
@@ -241,8 +239,8 @@ void getItemNumbers(Widget selectionList, IntArray& numbers)
 
 // Create an array of XmStrings from the list LABEL_LIST of length
 // LIST_LENGTH.  If HIGHLIGHT_TITLE is set, let the first line be bold.
-static XmStringTable makeXmStringTable (string label_list[],
-					int list_length, bool highlight_title)
+XmStringTable makeXmStringTable (string label_list[],
+				 int list_length, bool highlight_title)
 {
     XmStringTable xmlist = 
 	XmStringTable(XtMalloc(list_length * sizeof(XmString)));
@@ -264,17 +262,19 @@ static XmStringTable makeXmStringTable (string label_list[],
 }
 
 // Free the XmString table XMLIST of length LIST_LENGTH
-static void freeXmStringTable (XmStringTable xmlist, int list_length)
+void freeXmStringTable (XmStringTable xmlist, int list_length)
 {
     for (int i = 0; i < list_length; i++)
-    {
-	XmStringFree (*xmlist);
-	xmlist++;
-    }
+	XmStringFree(xmlist[i]);
 
-    // Some Motif versions want this to be freed, others (notably
-    // Lesstif) do not.  Play it safe, at the risk of a minor memory leak.
-    // XtFree((char *)xmlist);
+#if MOTIF_DIALOGS_OWN_STRING_TABLE
+    // Some Motif versions want XMLIST to be freed, others (notably
+    // older Lesstif versions) do not.  Play it safe, at the risk of a 
+    // minor memory leak.
+#else
+    if (lesstif_version >= 90)
+	XtFree((char *)xmlist);
+#endif
 }
 
 

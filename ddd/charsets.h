@@ -98,7 +98,11 @@ inline MString bs(const string& text) { return MString(text, CHARSET_BS); }
 #if XmVERSION == 1 && XmREVISION <= 1
 inline MString cr() { return rm("\n"); }
 #else
-inline MString cr() { return MString(XmStringSeparatorCreate(), true); }
+inline MString cr() 
+{
+    static XmString sep = XmStringSeparatorCreate();
+    return MString(sep, true);
+}
 #endif
 
 #endif // _DDD_charsets_h

@@ -39,6 +39,7 @@ char xconfig_rcsid[] =
 #include "cook.h"
 #include "filetype.h"
 #include "shell.h"
+#include "assert.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -158,13 +159,13 @@ static int check_xkeysymdb(Display *display, bool verbose)
 
     String xkeysymdb = 0;
 
-    if (xkeysymdb == 0)
+    if (xkeysymdb == 0 || xkeysymdb[0] == '\0')
 	xkeysymdb = getenv("XKEYSYMDB");
-    if (xkeysymdb == 0)
+    if (xkeysymdb == 0 || xkeysymdb[0] == '\0')
 	xkeysymdb = XtResolvePathname(display, "", "XKeysymDB", "",
 				      NULL, NULL, 0, NULL);
 
-    if (xkeysymdb)
+    if (xkeysymdb != 0 && xkeysymdb[0] != '\0')
     {
 	if (verbose)
 	{
@@ -176,9 +177,13 @@ static int check_xkeysymdb(Display *display, bool verbose)
 	static string env;
 	env = "XKEYSYMDB=" + string(xkeysymdb);
 	putenv(env);
+
+	XtFree(xkeysymdb);
 	return 0;			// Okay
     }
-    
+
+    if (xkeysymdb != 0)
+	XtFree(xkeysymdb);
 
     if (xlibdir(display) != 0)
     {

@@ -229,7 +229,10 @@ inline MString operator + (const MString& m1, const MString& m2)
     if (m2.isNull())
 	return m1;
 
-    return MString(XmStringConcat(m1.xmstring(), m2.xmstring()), true);
+    XmString tmp = XmStringConcat(m1.xmstring(), m2.xmstring());
+    MString ret(tmp, true);
+    XmStringFree(tmp);
+    return ret;
 }
 
 inline MString operator + (const MString& m, const char *s)

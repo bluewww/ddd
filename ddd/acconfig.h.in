@@ -80,6 +80,15 @@
 /* Define if your C++ library has an ostrstream::frozen() function. */
 #undef HAVE_FROZEN_OSTRSTREAM
 
+/* Define if your C++ library has an ostrstreambuf::frozen() function. */
+#undef HAVE_FROZEN_OSTRSTREAMBUF
+
+/* Define if your C++ library has an ostrstream::freeze() function. */
+#undef HAVE_FREEZE_OSTRSTREAM
+
+/* Define if your C++ library has an ostrstreambuf::freeze() function. */
+#undef HAVE_FREEZE_OSTRSTREAMBUF
+
 /* Define if your C++ compiler supports `long long' types. */
 #undef HAVE_LONG_LONG
 
@@ -131,6 +140,10 @@
 
 /* Define if the `regex_t' type has a `re_nsub' member, according to POSIX.2 */
 #undef HAVE_REGEX_T_RE_NSUB
+
+/* Define if Motif selection dialogs `own' their selection list, i.e. it
+   must not be freed after setting. */
+#undef MOTIF_DIALOGS_OWN_SELECTION_LIST
 
 /* Define if ostrstream::pcount() is increased by 1 after accessing the
    string via ostrstream::str(), as in the SGI C++ I/O library. */

@@ -1,6 +1,13 @@
 DDD News						-*- text -*-
 ********
 
+DDD 3.2.2
+=========
+
+- Minor memory leaks have been closed.  
+  Thanks to Arnaud Desitter <arnaud@nag.co.uk>
+
+
 DDD 3.2.1
 =========
 

@@ -1027,12 +1027,17 @@ inline string& string::operator = (ostrstream& os)
 {
     assert(!consuming());
 
-#if HAVE_FROZEN_OSTRSTREAM
     // No need to freeze the stream, since the string is copied right away
-    int frozen = os.frozen();
+#if HAVE_FROZEN_OSTRSTREAMBUF
+    const int frozen = os.rdbuf()->frozen();
+#elif HAVE_FROZEN_OSTRSTREAM
+    const int frozen = os.frozen();
+#else
+    const int frozen = 0;	// Pretty optimistic...
 #endif
 
     const char *str = os.str();
+
 #if OSTRSTREAM_PCOUNT_BROKEN
     // In the SGI C++ I/O library, accessing os.str() *increases*
     // os.pcount() by 1.  We could compensate this in a
@@ -1043,9 +1048,12 @@ inline string& string::operator = (ostrstream& os)
     rep = string_Salloc(rep, str, os.pcount(), os.pcount());
 #endif
 
-#if HAVE_FROZEN_OSTRSTREAM
+#if HAVE_FREEZE_OSTRSTREAMBUF
+    os.rdbuf()->freeze(frozen);
+#elif HAVE_FREEZE_OSTRSTREAM
     os.freeze(frozen);
 #endif
+    
     return *this;
 }
 

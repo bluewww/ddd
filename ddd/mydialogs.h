@@ -84,5 +84,15 @@ void updateLabelList (Widget  selectionList,
 // Select POS in LIST and make it visible
 void ListSetAndSelectPos(Widget list, int pos);
 
+// Create an array of XmStrings from the list LABEL_LIST of length
+// LIST_LENGTH.  If HIGHLIGHT_TITLE is set, let the first line be bold.
+XmStringTable makeXmStringTable(string label_list[],
+				int list_length, 
+				bool highlight_title = false);
+
+// Free the XmString table XMLIST of length LIST_LENGTH
+void freeXmStringTable(XmStringTable xmlist, int list_length);
+
+
 #endif // _DDD_mydialogs_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

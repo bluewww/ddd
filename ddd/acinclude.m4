@@ -1776,6 +1776,81 @@ AC_DEFINE(HAVE_FROZEN_OSTRSTREAM)
 fi
 ])dnl
 dnl
+dnl ICE_CHECK_FREEZE_OSTRSTREAM
+dnl ---------------------------
+dnl
+dnl If the C++ library has a ostrstream::freeze() function,
+dnl define HAVE_FREEZE_OSTRSTREAM.
+dnl
+AC_DEFUN(ICE_CHECK_FREEZE_OSTRSTREAM,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING([for ostrstream::freeze()])
+AC_CACHE_VAL(ice_cv_freeze_ostrstream,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([#include <strstream.h>],
+[ostrstream os; os.freeze(0);],
+ice_cv_freeze_ostrstream=yes, ice_cv_freeze_ostrstream=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_freeze_ostrstream)
+if test "$ice_cv_freeze_ostrstream" = yes; then
+AC_DEFINE(HAVE_FREEZE_OSTRSTREAM)
+fi
+])dnl
+dnl
+dnl ICE_CHECK_FROZEN_OSTRSTREAMBUF
+dnl ------------------------------
+dnl
+dnl If the C++ library has a ostrstreambuf::frozen() function,
+dnl define HAVE_FROZEN_OSTRSTREAMBUF.
+dnl
+AC_DEFUN(ICE_CHECK_FROZEN_OSTRSTREAMBUF,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING([for ostrstreambuf::frozen()])
+AC_CACHE_VAL(ice_cv_frozen_ostrstreambuf,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([#include <strstream.h>],
+[ostrstream os; int frozen = os.rdbuf()->frozen();],
+ice_cv_frozen_ostrstreambuf=yes, ice_cv_frozen_ostrstreambuf=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_frozen_ostrstreambuf)
+if test "$ice_cv_frozen_ostrstreambuf" = yes; then
+AC_DEFINE(HAVE_FROZEN_OSTRSTREAMBUF)
+fi
+])dnl
+dnl
+dnl ICE_CHECK_FREEZE_OSTRSTREAMBUF
+dnl ------------------------------
+dnl
+dnl If the C++ library has a ostrstreambuf::freeze() function,
+dnl define HAVE_FREEZE_OSTRSTREAMBUF.
+dnl
+AC_DEFUN(ICE_CHECK_FREEZE_OSTRSTREAMBUF,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING([for ostrstreambuf::freeze()])
+AC_CACHE_VAL(ice_cv_freeze_ostrstreambuf,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([#include <strstream.h>],
+[ostrstream os; os.rdbuf()->freeze(0);],
+ice_cv_freeze_ostrstreambuf=yes, ice_cv_freeze_ostrstreambuf=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_freeze_ostrstreambuf)
+if test "$ice_cv_freeze_ostrstreambuf" = yes; then
+AC_DEFINE(HAVE_FREEZE_OSTRSTREAMBUF)
+fi
+])dnl
+dnl
 dnl
 dnl ICE_TYPE_REGEX_T
 dnl ----------------
@@ -2560,5 +2635,90 @@ changequote(,)dnl
 LDFLAGS=`echo $LDFLAGS | sed 's/-L *\([^ ][^ ]*\)/& -Wl,-rpath,\1/g'`
  X_LIBS=`echo $X_LIBS  | sed 's/-L *\([^ ][^ ]*\)/& -Wl,-rpath,\1/g'`
 changequote([,])dnl
+fi
+])dnl
+dnl
+dnl
+dnl ICE_MOTIF_DIALOGS_OWN_SELECTION_LIST
+dnl ----------------------------------
+dnl
+AC_DEFUN(ICE_MOTIF_DIALOGS_OWN_SELECTION_LIST,
+[
+AC_MSG_CHECKING(whether Motif dialogs own the string table)
+AC_CACHE_VAL(ice_cv_motif_dialogs_own_selection_list,
+[
+AC_REQUIRE([ICE_FIND_MOTIF])
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_RUN(
+[
+#include <Xm/Xm.h>
+#include <Xm/SelectioB.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#ifdef XmFONTLIST_DEFAULT_TAG
+#define DEFAULT_CHARSET XmFONTLIST_DEFAULT_TAG
+#else
+#define DEFAULT_CHARSET XmSTRING_DEFAULT_CHARSET
+#endif
+
+extern "C" void free(void *p)
+{
+    static void *freed[100000];
+    static int freed_count = 0;
+
+    for (int i = 0; i < freed_count; i++)
+	if (freed[i] == p)
+	{
+	    fprintf(stderr, "%p already freed\n", p);
+	    exit(1);
+	}
+
+    freed[freed_count++] = p;
+}
+
+int main(int argc, char *argv[])
+{
+    XtAppContext app_context;
+    Widget toplevel = 
+	XtAppInitialize(&app_context, "Config",
+			XrmOptionDescList(0), 0, 
+			&argc, argv, NULL, NULL, 0);
+
+    Widget dialog = 
+	XmCreateSelectionDialog(toplevel, "dialog", NULL, 0);
+
+    int length = 10;
+
+    XmStringTable xmlist = 
+	XmStringTable(XtMalloc(length * sizeof(XmString)));
+    int i;
+    for (i = 0; i < length; i++)
+	xmlist[i] = XmStringCreateLtoR("abc", DEFAULT_CHARSET);
+
+    XtVaSetValues (dialog,
+		   XmNlistItems,     xmlist,
+		   XmNlistItemCount, length,
+		   NULL);
+
+    for (i = 0; i < length; i++)
+	XmStringFree(xmlist[i]);
+
+    XtFree((char *)xmlist);
+
+    XtDestroyWidget(toplevel);
+
+    exit(0);
+}
+], 
+ice_cv_motif_dialogs_own_selection_list=no, 
+ice_cv_motif_dialogs_own_selection_list=yes,
+ice_cv_motif_dialogs_own_selection_list=yes)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_motif_dialogs_own_selection_list)
+if test "$ice_cv_motif_dialogs_own_selection_list" = yes; then
+AC_DEFINE(MOTIF_DIALOGS_OWN_SELECTION_LIST)
 fi
 ])dnl

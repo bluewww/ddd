@@ -115,7 +115,14 @@ void DispBox::init_vsllib(void (*background)())
     VSEFlags::include_search_path = 
 	strcpy(new char[vsllib_path.length() + 1], vsllib_path);
 
-    // Load library
+    // Delete old library
+    if (vsllib_ptr != &DispBox::dummylib)
+    {
+	delete vsllib_ptr;
+	vsllib_ptr = &DispBox::dummylib;
+    }
+
+    // Load new library
     void (*old_background)() = VSLLib::background;
     VSLLib::background = background;
 

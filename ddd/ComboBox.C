@@ -45,6 +45,7 @@ char ComboBox_rcsid[] =
 #include "wm.h"
 #include "TimeOut.h"
 #include "AutoRaise.h"
+#include "mydialogs.h"
 
 #include <Xm/Xm.h>
 #include <Xm/ArrowB.h>
@@ -293,11 +294,7 @@ void ComboBoxSetList(Widget text, const StringArray& items)
 		  XmNitemCount, items.size(),
 		  NULL);
 
-    for (i = 0; i < items.size(); i++)
-	XmStringFree(xmlist[i]);
-
-    // It seems XMLIST is already owned by LIST
-    // XtFree((char *)xmlist);
+    freeXmStringTable(xmlist, items.size());
 }
 
 

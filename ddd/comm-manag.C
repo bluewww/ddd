@@ -458,13 +458,13 @@ void start_gdb(bool config)
     gdb->addHandler(AsyncAnswer, AsyncAnswerHP);
 
     // Setup command data
-    CmdData* cmd_data     = new CmdData;
+    CmdData *cmd_data     = new CmdData;
     cmd_data->command     = "<init>";
     cmd_data->filter_disp = NoFilter;      // No `display' output
     cmd_data->pos_buffer  = new PosBuffer; // Find initial pos
     cmd_data->user_prompt = true;
 
-    ExtraData* extra_data = new ExtraData;
+    ExtraData *extra_data = new ExtraData;
     extra_data->command = "<init>";
     StringArray cmds;
     VoidArray dummy;
@@ -924,14 +924,15 @@ void send_gdb_command(string cmd, Widget origin,
     bool next_input_goes_to_debuggee = false;
 
     // Setup extra command information
-    CmdData* cmd_data       = new CmdData(origin);
+    CmdData *cmd_data       = new CmdData(origin);
     cmd_data->command       = cmd;
     cmd_data->disp_buffer   = new DispBuffer;
     cmd_data->pos_buffer    = new PosBuffer;
     cmd_data->user_callback = callback;
     cmd_data->recorded      = gdb->recording();
 
-    ExtraData* extra_data = new ExtraData;
+    // LEAK: Check whether EXTRA_DATA is always deleted
+    ExtraData *extra_data = new ExtraData;
     extra_data->command       = cmd;
     extra_data->user_callback = extra_callback;
     extra_data->user_data     = data;

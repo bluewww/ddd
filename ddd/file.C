@@ -453,7 +453,8 @@ static void searchLocal(Widget fs,
 	    XmStringTable(XtMalloc(count * sizeof(XmString)));
 
 	int nitems = 0;
-	for (int i = 0; files[i] != 0; i++)
+	int i;
+	for (i = 0; files[i] != 0; i++)
 	{
 	    if (is_okay(files[i]))
 		items[nitems++] = XmStringCreateLtoR(files[i], 
@@ -481,10 +482,12 @@ static void searchLocal(Widget fs,
 			  XmNdirSpec,           items[0],
 			  XmNlistUpdated,       True,
 			  NULL);
-
-	    XtFree((char *)items);
-	    return;
 	}
+
+	freeXmStringTable(items, nitems);
+
+	if (nitems > 0)
+	    return;
     }
 
     // Error or nothing found 
