@@ -51,8 +51,8 @@
 Widget createTopLevelSelectionDialog(Widget parent, String name,
 				     ArgList args, Cardinal num_args);
 
-// Get the display numbers
-void getDisplayNumbers(Widget selectionList, IntArray& arr);
+// Get the item numbers
+void getItemNumbers(Widget selectionList, IntArray& arr);
 
 
 // Set the elements of the display selection list

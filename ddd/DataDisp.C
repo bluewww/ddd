@@ -2544,7 +2544,7 @@ int DataDisp::alias_display_nr(GraphNode *node)
 void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 {
     IntArray display_nrs;
-    getDisplayNumbers(display_list_w, display_nrs);
+    getItemNumbers(display_list_w, display_nrs);
 
     // Update graph editor selection
     MapRef ref;

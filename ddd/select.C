@@ -59,7 +59,7 @@ static void SelectCB(Widget, XtPointer client_data, XtPointer)
     string& reply = *((string *)client_data);
 
     IntArray numbers;
-    getDisplayNumbers(gdb_selection_list_w, numbers);
+    getItemNumbers(gdb_selection_list_w, numbers);
     if (numbers.size() > 0)
 	reply = itostring(numbers[0]) + "\n";
 }

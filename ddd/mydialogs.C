@@ -208,11 +208,11 @@ void updateLabelList (Widget  selectionList,
 }
 
 
-// Fill the display numbers in DISP_NRS
-void getDisplayNumbers(Widget selectionList, IntArray& disp_nrs)
+// Fill the item numbers in DISP_NRS
+void getItemNumbers(Widget selectionList, IntArray& numbers)
 {
     static IntArray empty;
-    disp_nrs = empty;
+    numbers = empty;
 
     if (selectionList == 0)
 	return;
@@ -235,7 +235,7 @@ void getDisplayNumbers(Widget selectionList, IntArray& disp_nrs)
 	XtFree(_item);
 
 	if (has_nr(item))
-	    disp_nrs += get_nr(item);
+	    numbers += get_nr(item);
     }
 }
 
