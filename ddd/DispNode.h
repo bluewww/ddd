@@ -90,8 +90,9 @@ private:
     DispValue*    myselected_value;   // Selected value within DISP_VALUE
     DispBox*      disp_box;	      // Associated box within DISP_VALUE
     int           mylast_change;      // Last value or address change
+    int           mylast_refresh;     // Last refresh
 
-    static int change_tics;           // Shared change counter
+    static int tics;		      // Shared change and refresh counter
 
 public:
     int           alias_of;	      // Alias of another display
@@ -153,7 +154,8 @@ public:
     bool constant() const { return myconstant; }
     bool& constant()      { return myconstant; }
 
-    int last_change() const { return mylast_change; }
+    int last_change() const  { return mylast_change; }
+    int last_refresh() const { return mylast_refresh; }
 
     bool is_user_command() const { return ::is_user_command(name()); }
     string user_command() const  { return ::user_command(name()); }
@@ -182,7 +184,7 @@ public:
     void set_addr(const string& new_addr);
 
     // Re-create the box from old DISP_VALUE
-    void refresh ();
+    void refresh();
 
     // Highlights the box related to the display value DV
     void select (DispValue *dv = 0);

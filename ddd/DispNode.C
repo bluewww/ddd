@@ -56,7 +56,8 @@ DEFINE_TYPE_INFO_1(DispNode, BoxGraphNode)
 
 // Data
 HandlerList DispNode::handlers(DispNode_NTypes);
-int DispNode::change_tics = 0;
+
+int DispNode::tics = 0;
 
 // Constructor
 DispNode::DispNode (int disp_nr,
@@ -79,11 +80,10 @@ DispNode::DispNode (int disp_nr,
       disp_value(0),
       myselected_value(0),
       disp_box(0),
-      mylast_change(0),
+      mylast_change(++tics),
+      mylast_refresh(++tics),
       alias_of(0)
 {
-    mylast_change = ++change_tics;
-
     if (val != "")
     {
 	string v = val;
@@ -191,7 +191,8 @@ bool DispNode::update(string& value)
 
     if (changed || inited)
     {
-	// mylast_change = ++change_tics;
+	// mylast_change = ++tics;
+	mylast_refresh = ++tics;
 #if 0
 	clog << "Display " << disp_nr() << " changed"
 	     << " (" << mylast_change << ")\n";
@@ -208,6 +209,8 @@ void DispNode::refresh()
     disp_box->set_value(disp_value);
     setBox(disp_box->box());
     select(selected_value());
+
+    mylast_refresh = ++tics;
 }
 
 // In BOX, find outermost TagBox for given DispValue DV
@@ -348,7 +351,7 @@ void DispNode::set_addr(const string& new_addr)
     if (myaddr != new_addr)
     {
 	myaddr = new_addr;
-	// mylast_change = ++change_tics;
+	// mylast_change = ++tics;
 #if 0
 	clog << "Display " << disp_nr() << " changed"
 	     << " (" << mylast_change << ")\n";
@@ -413,6 +416,7 @@ DispNode::DispNode(const DispNode& node)
       myselected_value(0),
       disp_box(node.disp_box ? node.disp_box->dup() : 0),
       mylast_change(node.last_change()),
+      mylast_refresh(node.last_refresh()),
       alias_of(node.alias_of)
 {
     setBox(disp_box->box());
