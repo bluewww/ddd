@@ -462,10 +462,8 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	// We have a prompt, and still get input?  Maybe this is an
 	// answer to a command sent before the prompt was received - 
 	// or a reply to a control character (`Quit').
-	gdb->state = BusyOnCmd;
-	gdb->busy_handlers.call(ReadyForQuestion, 0, (void *)false);
-
-	// FALL THROUGH
+	_gdb_out(answer);
+	break;
 
     case BusyOnInitialCmds:
     case BusyOnCmd:
