@@ -2584,7 +2584,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
     XtSetArg(args[arg], XmNselectionLabelString, prompt.xmstring()); arg++;
     Widget set_dialog = 
-	verify(XmCreatePromptDialog(w, "set_dialog", args, arg));
+	verify(XmCreatePromptDialog(find_shell(w), "set_dialog", args, arg));
 
     Delay::register_shell(set_dialog);
     XtAddCallback(set_dialog, XmNokCallback,     setDCB, disp_value);
