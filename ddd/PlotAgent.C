@@ -324,21 +324,22 @@ void PlotAgent::dispatch(int type, char *data, int length)
 	// Continue plot
 	plot_commands += string(data, length);
     }
+    else
+    {
+	LiterateAgent::dispatch(type, data, length);
+	return;
+    }
 
-    if (getting_plot_data && 
-	data[length - 2] == 'E' && 
-	data[length - 1] == '\n')
+    if (plot_commands.contains("E\n"))
     {
 	// Leave graphics mode
 
-	// If we got multiple plots in one row, only care for the last one
-	int plot_start = plot_commands.index("G\n", -1);
-	plot_commands = plot_commands.from(plot_start);
+	string plot = plot_commands.through("E\n");
 
-	DataLength dl(plot_commands.chars(), plot_commands.length());
+	DataLength dl(plot.chars(), plot.length());
 	callHandlers(Plot, &dl);
 
-	plot_commands = "";
+	plot_commands = plot_commands.after("E\n");
     }
 }
 
@@ -354,7 +355,8 @@ void PlotAgent::print(const string& filename, const BoxPrintGC& gc)
     }
     else if (gc.isPostScript())
     {
-	const BoxPostScriptGC& ps = ref_cast(const BoxPostScriptGC, gc);
+	const BoxPostScriptGC& ps = 
+	    ref_cast(BoxPostScriptGC, (BoxPrintGC &)gc);
 
 	cmd << "set term postscript ";
 
