@@ -81,3 +81,6 @@ struct YYMEMHANDLER {\
 # malloc/free -> new/delete
 s!(\([^)]*\) *\*) *malloc *(\([^)]*\))!new \1[\2]!g
 s!free *(\([^)]*\))!delete [] \1!g
+
+# malloc.h -> stdlib.h
+s!<malloc\.h>!<stdlib.h>!
