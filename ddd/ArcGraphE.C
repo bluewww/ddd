@@ -35,6 +35,7 @@ char ArcGraphEdge_rcsid[] =
 
 #include "ArcGraphE.h"
 #include "HintGraphN.h"
+#include "misc.h"
 
 #include <math.h>
 
@@ -181,28 +182,46 @@ void ArcGraphEdge::drawLine(Widget w,
     double radius = hypot(c - pos_to);
 
     // Determine start and path of arc
-    if (to()->isHint())
-	pos_to = pos_hint;
-    else
-	pos_from = pos_hint;
-
     double alpha_from = -atan2(pos_from[Y] - c[Y], pos_from[X] - c[X]);
+    double alpha_hint = -atan2(pos_hint[Y] - c[Y], pos_hint[X] - c[X]);
     double alpha_to   = -atan2(pos_to[Y] - c[Y],   pos_to[X] - c[X]);
 
     const int base = 360 * 64;
 
     int angle_from = (int(alpha_from * base / (M_PI * 2.0)) + base) % base;
     int angle_to   = (int(alpha_to   * base / (M_PI * 2.0)) + base) % base;
+    int angle_hint = (int(alpha_hint * base / (M_PI * 2.0)) + base) % base;
 
-    int path = (base + angle_to - angle_from) % base;
+    int path_from_hint = (base + angle_hint - angle_from) % base;
+    int path_hint_to   = (base + angle_to - angle_hint) % base;
 
-    if (abs(path) > base / 2)
-	path = (path - base) % base;
+    if (abs(path_from_hint) > base / 2)
+	path_from_hint = (path_from_hint - base) % base;
+    if (abs(path_hint_to) > base / 2)
+	path_hint_to = (path_hint_to - base) % base;
+
+    if (sgn(path_from_hint) * sgn(path_hint_to) == -1)
+    {
+	// Hint is not between FROM and TO
+	LineGraphEdge::drawLine(w, exposed, gc);
+	return;
+    }
+
+    int angle, path;
+    if (to()->isHint())
+    {
+	angle = angle_from;
+	path  = path_from_hint;
+    }
+    else
+    {
+	angle = angle_hint;
+	path  = path_hint_to;
+    }
 
     XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC,
 	     c[X] - int(radius), c[Y] - int(radius),
-	     unsigned(radius) * 2, unsigned(radius) * 2,
-	     angle_from, path);
+	     unsigned(radius) * 2, unsigned(radius) * 2, angle, path);
 
     if (from()->isHint())
     {
