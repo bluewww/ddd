@@ -4460,6 +4460,9 @@ void update_reset_preferences()
 
 	set_sensitive(reset_preferences_w, sensitive);
     }
+
+    if (gdb_initialized)
+	check_options_file();
 }
 
 static void ChangePanelCB(Widget, XtPointer client_data, XtPointer call_data)

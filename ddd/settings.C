@@ -380,6 +380,8 @@ static void update_reset_settings_button()
     if (reset_settings_button == 0)
 	return;
 
+    check_options_file();
+
     for (int i = 0; i < settings_entries.size(); i++)
     {
 	Widget entry = settings_entries[i];
@@ -397,6 +399,8 @@ static void update_reset_signals_button()
 {
     if (reset_signals_button == 0)
 	return;
+
+    check_options_file();
 
     for (int i = 0; i < signals_entries.size(); i++)
     {
@@ -2293,6 +2297,8 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 // Create settings editor
 static Widget create_settings(DebuggerType type)
 {
+    check_options_file();
+
     if (settings_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
     {
 	settings_panel = create_panel(type, SETTINGS);
@@ -2310,14 +2316,19 @@ static Widget create_settings(DebuggerType type)
 // Create infos editor
 static Widget create_infos(DebuggerType type)
 {
+    check_options_file();
+
     if (infos_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
 	infos_panel = create_panel(type, INFOS);
+
     return infos_panel;
 }
 
 // Reload all signals
 static void reload_all_signals()
 {
+    check_options_file();
+
     string info = gdb_question("info handle");
     if (info != NO_GDB_ANSWER)
 	process_handle(info, true);
@@ -2335,6 +2346,8 @@ void update_signals()
 // Create signal editor
 static Widget create_signals(DebuggerType type)
 {
+    check_options_file();
+
     if (signals_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
     {
 	signals_panel = create_panel(type, SIGNALS);
@@ -2344,6 +2357,7 @@ static Widget create_signals(DebuggerType type)
 	reload_all_signals();
 	need_reload_signals = false;
     }
+
     return signals_panel;
 }
 
@@ -2356,7 +2370,6 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 	return;
 
     manage_and_raise(settings);
-    check_options_file();
 }
 
 // Popup editor for debugger infos
@@ -2367,7 +2380,6 @@ void dddPopupInfosCB (Widget, XtPointer, XtPointer)
 	return;
 
     manage_and_raise(infos);
-    check_options_file();
 }
 
 // Popup editor for debugger infos
@@ -2378,7 +2390,6 @@ void dddPopupSignalsCB (Widget, XtPointer, XtPointer)
 	return;
 
     manage_and_raise(signals);
-    check_options_file();
 }
 
 // True iff settings might have changed
