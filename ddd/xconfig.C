@@ -94,13 +94,19 @@ static String xlibdir(Display *display, bool verbose = false)
     XtGetApplicationNameAndClass(display, &me, &my_class);
 
     if (verbose)
+    {
 	cout << "Checking for X11 library directory... ";
+	cout.flush();
+    }
 
     FILE *fp = popen("/bin/sh -c " + sh_quote(shell_command), "r");
     if (fp == 0)
     {
 	if (verbose)
+	{
 	    cout << strerror(errno) << "\n";
+	    cout.flush();
+	}
 	return dir;
     }
 
@@ -122,6 +128,7 @@ static String xlibdir(Display *display, bool verbose = false)
 	    cout << dir << "\n";
 	else
 	    cout << "(not found)\n";
+	cout.flush();
     }
 
     return dir;
@@ -130,10 +137,15 @@ static String xlibdir(Display *display, bool verbose = false)
 static int check_xkeysymdb(Display *display, bool verbose)
 {
     if (verbose)
-	xlibdir(display, verbose);
+    {
+	(void) xlibdir(display, verbose);
+    }
 
     if (verbose)
+    {
 	cout << "Checking for XKeysymDB... ";
+	cout.flush();
+    }
 
     String me, my_class;
     XtGetApplicationNameAndClass(display, &me, &my_class);
@@ -149,7 +161,10 @@ static int check_xkeysymdb(Display *display, bool verbose)
     if (xkeysymdb)
     {
 	if (verbose)
+	{
 	    cout << xkeysymdb << "\n";
+	    cout.flush();
+	}
 
 	// Fix it now
 	static string env;
@@ -159,7 +174,7 @@ static int check_xkeysymdb(Display *display, bool verbose)
     }
     
 
-    if (xlibdir(display))
+    if (xlibdir(display) != 0)
     {
 	string path = string(xlibdir(display)) + "/XKeysymDB";
 	if (is_file(path))
@@ -171,9 +186,10 @@ static int check_xkeysymdb(Display *display, bool verbose)
 		     << me << ".\n"
 		     << "    To avoid having " << me 
 		     << " determine this setting each time it is started,\n"
-		     << "    please set the $XKEYSYMDB "
+		     << "    please set the XKEYSYMDB "
 		     << "environment variable to\n"
 		     << "    " << quote(path) << ".\n";
+		cout.flush();
 	    }
 
 	    // Fix it
@@ -185,6 +201,7 @@ static int check_xkeysymdb(Display *display, bool verbose)
     }
 
     cout << "(none)\n";
+    cout.flush();
 
     if (verbose)
     {
@@ -197,15 +214,17 @@ static int check_xkeysymdb(Display *display, bool verbose)
 	     << "    Please get the `XKeysymDB' file from\n"
 	     << "    `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/bin/'\n";
 
-	if (xlibdir(display))
+	if (xlibdir(display) != 0)
 	    cout << "    and install it into `" << xlibdir(display, verbose) 
 	     << "'\n";
 	else
 	    cout << "    and install it into your X project root "
 		 << "(typically `/usr/lib/X11')\n";
 
-	cout << "    or have the $XKEYSYMDB environment variable "
+	cout << "    or have the XKEYSYMDB environment variable "
 	     << "point at it.\n";
+
+	cout.flush();
     }
 
     return 1;
@@ -215,10 +234,15 @@ static int check_xkeysymdb(Display *display, bool verbose)
 static int check_xnlspath(Display *display, bool verbose)
 {
     if (verbose)
-	xlibdir(display, verbose);
+    {
+	(void) xlibdir(display, verbose);
+    }
 
     if (verbose)
+    {
 	cout << "Checking for nls directory... ";
+	cout.flush();
+    }
 
     String me, my_class;
     XtGetApplicationNameAndClass(display, &me, &my_class);
@@ -243,7 +267,10 @@ static int check_xnlspath(Display *display, bool verbose)
     if (xnlspath)
     {
 	if (verbose)
+	{
 	    cout << xnlspath << "\n";
+	    cout.flush();
+	}
 
 	// Fix it now
 	static string env;
@@ -252,7 +279,7 @@ static int check_xnlspath(Display *display, bool verbose)
 	return 0;		// Okay
     }
 
-    if (xlibdir(display, verbose))
+    if (xlibdir(display, verbose) != 0)
     {
 	string path;
 	path = xlibdir(display, verbose);
@@ -266,9 +293,10 @@ static int check_xnlspath(Display *display, bool verbose)
 		     << me << ".\n"
 		     << "    To avoid having " << me 
 		     << " determine this setting each time it is started,\n"
-		     << "    please set the $XNLSPATH "
+		     << "    please set the XNLSPATH "
 		     << "environment variable to\n"
 		     << "    " << quote(path) << ".\n\n";
+		cout.flush();
 	    }
 
 	    // Fix it now
@@ -288,13 +316,14 @@ static int check_xnlspath(Display *display, bool verbose)
 	     << "    Please get the `nls' directory from\n"
 	     << "    `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/bin/'\n";
 
-	if (xlibdir(display))
+	if (xlibdir(display) != 0)
 	    cout << "    and install it into `" << xlibdir(display) << "'\n";
 	else
 	    cout << "    and install it into your X project root "
 		 << "(typically `/usr/lib/X11')\n";
-	cout << "    or have the $XNLSPATH environment variable "
+	cout << "    or have the XNLSPATH environment variable "
 	     << "point at it.\n\n";
+	cout.flush();
     }
 
     return 1;
@@ -319,7 +348,10 @@ int check_x_configuration(Widget toplevel, bool verbose)
     if (verbose)
     {
 	if (ret == 0)
+	{
 	    cout << "No configuration problems found.\n";
+	    cout.flush();
+	}
     }
 
     return ret;
