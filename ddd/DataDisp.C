@@ -3277,11 +3277,6 @@ bool DataDisp::check_aliases()
     if (!detect_aliases)
 	return false;
 
-    // Don't layout for each change
-    Boolean autoLayout;
-    XtVaGetValues(graph_edit, XtNautoLayout, &autoLayout, NULL);
-    XtVaSetValues(graph_edit, XtNautoLayout, False, NULL);
-
     // Group displays into equivalence classes depending on their address.
     StringIntArrayAssoc equivalences;
 
@@ -3323,8 +3318,6 @@ bool DataDisp::check_aliases()
 
     if (changed)
 	refresh_graph_edit(suppressed);
-
-    XtVaSetValues(graph_edit, XtNautoLayout, autoLayout, NULL);
 
     return suppressed;
 }
@@ -3486,12 +3479,20 @@ void DataDisp::PostLayoutCB(Widget w, XtPointer client_data, XtPointer)
 
     if (data_disp->detect_aliases)
     {
-	data_disp->set_detect_aliases(false);
-	data_disp->set_detect_aliases(true);
-    }
+	// Unmerge and re-merge all displays
+	MapRef ref;
+	for (int k = disp_graph->first_nr(ref); 
+	     k != 0; 
+	     k = disp_graph->next_nr(ref))
+	{
+	    unmerge_display(k);
+	}
+	data_disp->check_aliases();
 
-    // Okay - we can redisplay now
-    graphEditEnableRedisplay(w, True);
+	// Okay - we can redisplay now
+	graphEditEnableRedisplay(w, True);
+	refresh_graph_edit();
+    }
 }
 
 //----------------------------------------------------------------------------
