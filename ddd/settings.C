@@ -173,7 +173,7 @@ static void update_reset_settings()
 }
 
 // Save `settings' state
-static void save_settings_state()
+void save_settings_state()
 {
     if (settings_form == 0)
 	return;
