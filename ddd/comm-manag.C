@@ -968,7 +968,17 @@ void send_gdb_command(string cmd, Widget origin,
 
     if (verbose)
     {
-	gdb_out(cmd + "\n");
+	if (cmd.contains(gdb->echo_command(app_data.auto_command_prefix), 0))
+	{
+	    string c = cmd;
+	    c = c.after(app_data.auto_command_prefix);
+	    c = c.before("\\n");
+	    gdb_out(c + "\n");
+	}
+	else
+	{
+	    gdb_out(cmd + "\n");
+	}
 	gdb_input_at_prompt = true;
     }
 
