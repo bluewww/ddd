@@ -12,7 +12,8 @@ Major code contributions:
 J.H.M. DASSEN <jdassen@wi.leidenuniv.nl>  - Tips and bug reports
 Christian LINDIG <lindig@ips.cs.tu-bs.de> - PostScript and XFIG printing
 Richard WOLFF <rwolff@noao.edu>		  - Python support
-
+Dmitri Dmitrienko                         - PHP support
+Rocky Bernstein                           - BASH debugger support
 
 Significant suggestions and bug fixes:
 
