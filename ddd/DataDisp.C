@@ -3416,8 +3416,9 @@ string DataDisp::numbers(IntArray& a)
 }
 
 // Sort and verify the display numbers in DISPLAY_NRS
-void DataDisp::sort_and_check(IntArray& display_nrs)
+bool DataDisp::sort_and_check(IntArray& display_nrs)
 {
+    bool ok = true;
     sort(display_nrs);
 
     for (int i = 0; i < display_nrs.size(); i++)
@@ -3428,8 +3429,11 @@ void DataDisp::sort_and_check(IntArray& display_nrs)
 	    post_gdb_message("No display number " 
 			     + itostring(display_nrs[i]) + ".\n");
 	    display_nrs[i] = 0;
+	    ok = false;
 	}
     }
+
+    return ok;
 }
 
 // For all nodes in DISPLAY_NRS, add their aliases
@@ -3472,7 +3476,9 @@ string DataDisp::disable_display_cmd(IntArray& display_nrs)
 void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose, 
 				 bool do_prompt)
 {
-    sort_and_check(display_nrs);
+    bool ok = sort_and_check(display_nrs);
+    if (!ok)
+	do_prompt = false;
 
     int disabled_data_displays = 0;
     int i;
@@ -3548,7 +3554,9 @@ string DataDisp::enable_display_cmd(IntArray& display_nrs)
 void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose, 
  				bool do_prompt)
 {
-    sort_and_check(display_nrs);
+    bool ok = sort_and_check(display_nrs);
+    if (!ok)
+	do_prompt = false;
 
     int enabled_data_displays = 0;
     int i;
@@ -3627,7 +3635,9 @@ string DataDisp::delete_display_cmd(const string& name)
 void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose, 
 				bool do_prompt)
 {
-    sort_and_check(display_nrs);
+    bool ok = sort_and_check(display_nrs);
+    if (!ok)
+	do_prompt = false;
 
     string cmd = "undisplay";
 
