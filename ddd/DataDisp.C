@@ -3188,7 +3188,16 @@ void DataDisp::check_aliases()
     }
 
     if (msg != "")
-	post_warning(msg, "suppressed_alias_warning", graph_edit);
+    {
+	if (msg.freq('\n') > 0)
+	{
+	    post_warning(msg, "suppressed_alias_warning", graph_edit);
+	}
+	else
+	{
+	    set_status(msg);
+	}
+    }
 
     if (changed)
 	refresh_graph_edit();
@@ -3326,18 +3335,12 @@ bool DataDisp::merge_displays(IntArray displays, string& msg)
 	    }
 	}
 
-	msg += "\nbecause ";
+	msg += " because ";
 	if (suppressed_displays.size() == 1)
 	    msg += "it is an alias";
 	else
 	    msg += "they are aliases";
-	msg += " of display " + pretty(displays[0]) + "; ";
-
-	if (suppressed_displays.size() == 1)
-	    msg += "both";
-	else
-	    msg += "all";
-	msg += " are stored at " + orig->addr() + ".";
+	msg += " of display " + pretty(displays[0]);
     }
 
     return changed;
