@@ -662,6 +662,10 @@ public:
 
     // Restore sane state
     static void make_sane();
+
+private:
+    DataDisp(const DataDisp&);
+    DataDisp& operator=(const DataDisp&);
 };
 
 inline bool DataDisp::get_selection(std::ostream& os, bool include_position)
