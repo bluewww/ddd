@@ -1779,7 +1779,7 @@ string GDBAgent::kill_command() const
 	return "k";
 
     case PYDB:
-	return "";		// Not available
+	return "kill";
 
     case JDB:
 	return "";		// Not available
