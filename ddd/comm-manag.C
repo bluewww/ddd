@@ -563,6 +563,18 @@ void user_cmdOAC (void* data)
 
     string answer = cmd_data->pos_buffer->answer_ended();
 
+    if (cmd_data->pos_buffer->started_found())
+    {
+	// Program has been restarted - clear position history
+	source_view->clear_history();
+    }
+
+    if (cmd_data->pos_buffer->recompiled_found())
+    {
+	// Program has been recompiled restarted - clear code cache
+	source_view->clear_code_cache();
+    }
+
     // Set execution/frame position
     if (cmd_data->pos_buffer->pos_found())
     {
