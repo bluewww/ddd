@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD info functions
 
-// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-2000 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -37,6 +37,7 @@ char show_rcsid[] =
 
 #include "AppData.h"
 #include "LiterateA.h"
+#include "SmartC.h"
 #include "build.h"
 #include "config.h"
 #include "configinfo.h"
@@ -81,9 +82,9 @@ void show_invocation(const string& gdb_command, ostream& os)
 {
     string command     = gdb_command;
     string gdb_version = "";
-    string options     = "";
     string title       = "";
     string base        = "";
+    StringArray options;
 
     DebuggerType type;
     bool type_ok = get_debugger_type(command, type);
@@ -97,6 +98,35 @@ void show_invocation(const string& gdb_command, ostream& os)
 
     string args = "executable-file [core-file | process-id]";
 
+    // Set up DDD options
+    static char *options_string[] = {
+	"  --gdb              Invoke GDB as inferior debugger.",
+	"  --dbx              Invoke DBX as inferior debugger.",
+	"  --ladebug          Invoke Ladebug as inferior debugger.",
+	"  --xdb              Invoke XDB as inferior debugger.",
+	"  --jdb              Invoke JDB as inferior debugger.",
+	"  --pydb             Invoke PYDB as inferior debugger.",
+	"  --perl             Invoke Perl as inferior debugger.",
+	"  --debugger CMD     Invoke inferior debugger as CMD.",
+	"  --host USER@HOST   Run inferior debugger on HOST.",
+	"  --rhost USER@HOST  Like --host, but use a rlogin connection.",
+	"  --trace            Show interaction with inferior debugger"
+	" on standard error.",
+        "  --tty              Use controlling tty"
+	" as additional debugger console.",
+	"  --version          Show the DDD version and exit.",
+	"  --configuration    Show the DDD configuration flags and exit.",
+	"  --manual           Show the DDD manual and exit.",
+	"  --license          Show the DDD license and exit.",
+	"  --news             Show the DDD news and exit.",
+	0
+    };
+
+    int i = 0;
+    while (options_string[i] != 0)
+    	options += options_string[i++];
+
+    // Set up debugger-specific options
     switch (type)
     {
     case GDB:
@@ -110,7 +140,7 @@ void show_invocation(const string& gdb_command, ostream& os)
 	FILE *fp = help.inputfp();
 	if (fp)
 	{
-	    enum { Init, Options, Other, Done } state = Init;
+	    enum { Options, Other, Done } state = Other;
 	    char buf[BUFSIZ];
 
 	    while (fgets(buf, sizeof(buf), fp) && state != Done)
@@ -121,11 +151,6 @@ void show_invocation(const string& gdb_command, ostream& os)
 		string option;
 		switch (state)
 		{
-		case Init:
-		    gdb_version = string(buf) + "\n";
-		    state = Other;
-		    break;
-
 		case Other:
 		    if (string(buf).contains("Options:"))
 			state = Options;
@@ -136,7 +161,7 @@ void show_invocation(const string& gdb_command, ostream& os)
 		    if (option.contains("For more information"))
 			state = Done;
 		    else if (option != "")
-			options += option + "\n";
+			options += option;
 		    break;
 
 		case Done:
@@ -151,7 +176,7 @@ void show_invocation(const string& gdb_command, ostream& os)
     {
 	title = "DBX";
 	base  = "DBX, the UNIX debugger.";
-	options = "  [DBX options]      Pass option to DBX.\n";
+	options += "  [DBX options]      Pass option to DBX.";
     }
     break;
 
@@ -159,7 +184,7 @@ void show_invocation(const string& gdb_command, ostream& os)
     {
 	title = "JDB";
 	base  = "JDB, the Java debugger.";
-	options = "  [JDB options]      Pass option to JDB.\n";
+	options += "  [JDB options]      Pass option to JDB.";
 	args = "[class]";
     }
     break;
@@ -168,7 +193,7 @@ void show_invocation(const string& gdb_command, ostream& os)
     {
 	title = "PYDB";
 	base  = "PYDB, the Python debugger.";
-	options = "  [PYDB options]     Pass option to PYDB.\n";
+	options += "  [PYDB options]     Pass option to PYDB.";
 	args = "program-file";
     }
     break;
@@ -177,7 +202,7 @@ void show_invocation(const string& gdb_command, ostream& os)
     {
 	title = "Perl";
 	base  = "the Perl debugger.";
-	options = "  [Perl options]     Pass option to Perl.\n";
+	options += "  [Perl options]     Pass option to Perl.";
 	args = "program-file [args]";
     }
     break;
@@ -186,106 +211,24 @@ void show_invocation(const string& gdb_command, ostream& os)
     {
 	title = "XDB";
 	base  = "XDB, the HP-UX debugger.";
-
-	Agent version(gdb_get_version);
-	version.start();
-
-	FILE *fp = version.inputfp();
-	if (fp)
-	{
-	    char buf[BUFSIZ];
-	    while (fgets(buf, sizeof(buf), fp))
-	    {
-		if (buf[0] && buf[strlen(buf) - 1] == '\n')
-		    buf[strlen(buf) - 1] = '\0';
-		gdb_version = string(buf) + "\n";
-	    }
-	}
-
-	Agent help(gdb_get_help);
-	help.start();
-
-	fp = help.errorfp();
-	if (fp)
-	{
-	    enum { Other, Options, Done } state = Other;
-	    char buf[BUFSIZ];
-
-	    while (fgets(buf, sizeof(buf), fp) && state != Done)
-	    {
-		if (buf[0] && buf[strlen(buf) - 1] == '\n')
-		    buf[strlen(buf) - 1] = '\0';
-
-		string option;
-		switch (state)
-		{
-		case Other:
-		    if (string(buf).contains("Options:"))
-			state = Options;
-		    break;
-
-		case Options:
-		    option = buf;
-		    if (option == "")
-			state = Done;
-		    else
-			options += "  " + option.after(rxwhite) + "\n";
-		    break;
-
-		case Done:
-		    break;
-		}
-	    }
-	}
+	options += "  [XDB options]      Pass option to XDB.";
     }
     break;
     }
 
     show_version(os);
-    os << gdb_version <<
+    os << gdb_version << "\n"
 	"This is " DDD_NAME ", the data display debugger, based on "
-	<< base << "\n" << 
-	"Usage:\n"
-	"    " ddd_NAME " [options...] " << args << "\n"
-	"Options:\n"
-	<< options <<
-	"  --gdb              Invoke GDB as inferior debugger.\n"
-	"  --dbx              Invoke DBX as inferior debugger.\n"
-	"  --xdb              Invoke XDB as inferior debugger.\n"
-	"  --jdb              Invoke JDB as inferior debugger.\n"
-	"  --pydb             Invoke PYDB as inferior debugger.\n"
-	"  --perl             Invoke Perl as inferior debugger.\n"
-	"  --debugger NAME    Invoke inferior debugger as NAME.\n"
-	"  --host USER@HOST   Run inferior debugger on HOST.\n"
-	"  --rhost USER@HOST  Like --host, but use a rlogin connection.\n"
-	"  --vsl-library LIB  Load VSL library LIB.\n"
-	"  --vsl-path PATH    Look for VSL libraries in PATH.\n"
-	"  --font FONT        Use font FONT as default.\n"
-	"  --fontsize SIZE    Use fonts sized SIZE 1/10 points.\n"
-	"  --trace-dialog     Show dialog with inferior debugger"
-	" on standard error.\n"
-	"  --trace-shell      Show shell commands on standard error.\n"
-	"  --exec-window      Create a window for"
-	" running debugged programs.\n"
-	"  --no-exec-window   Do not create a window for"
-	" running debugged programs.\n"
-	"  --attach-windows   Attach data and source windows to"
-	" debugger console.\n"
-	"  --separate-windows Do not attach data and source windows to"
-	" debugger console.\n"
-	"  --scrolled-graph   Use Motif scrollbars"
-	" for moving the data display.\n"
-	"  --panned-graph     Use an Athena panner"
-	" for moving the data display.\n"
-        "  --tty              Use controlling tty"
-	" as additional debugger console.\n"
-	"  --version          Show the DDD version and exit.\n"
-	"  --configuration    Show the DDD configuration flags and exit.\n"
-	"  --manual           Show the DDD manual and exit.\n"
-	"  --license          Show the DDD license and exit.\n"
-	"  --news             Show the DDD news and exit.\n"
-	"  --vsl-help         Show VSL options and exit.\n"
-	"\n"
+	<< base << "\n\n" 
+	"Usage:\n\n"
+	"    " ddd_NAME " [options...] " << args << "\n\n"
+	"Options (including " << title << " options):\n\n";
+
+    smart_sort(options);
+    for (i = 0; i < options.size(); i++)
+	os << options[i] << '\n';
+
+    os << "\n"
 	"Standard X options are also accepted, such as:\n"
 	"  -display DISPLAY   Run on X server DISPLAY.\n"
 	"  -geometry GEOMETRY Specify initial size and location.\n"
