@@ -279,6 +279,9 @@ class SourceView {
     // The current source text.
     static string current_source;
 
+    // The current frame number.  (-1 if none)
+    static int current_frame;
+
     // The origin of the current source text.
     static SourceOrigin current_origin;
 

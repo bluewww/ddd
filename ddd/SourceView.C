@@ -462,6 +462,7 @@ string SourceView::last_shown_pc       = "";
 
 int SourceView::last_frame_pos = 0;
 bool SourceView::frame_pos_locked = false;
+int SourceView::current_frame = -1;
 
 StringArray SourceView::history;
 int SourceView::history_position = 0;
@@ -4855,11 +4856,13 @@ void SourceView::process_frame (string& frame_output)
 	XtSetSensitive(down_w, pos < count);
 
 	update_glyphs();
+	current_frame = frame;
     }
     else
     {
 	XtSetSensitive(up_w,   False);
 	XtSetSensitive(down_w, False);
+	current_frame = -1;
     }
 }
 
@@ -6696,6 +6699,13 @@ bool SourceView::get_state(ostream& os)
 	}
     }
 
+    // Restore current frame
+    if (current_frame >= 0 && gdb->has_frame_command())
+    {
+	// Issue `frame' command
+	gdb_command(gdb->frame_command(current_frame));
+    }
+    
     // Restore current cursor position
     switch (gdb->type())
     {
