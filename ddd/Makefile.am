@@ -929,6 +929,9 @@ DEBUGGER = @DEBUGGER@
 # The options for DDD when invoking `make check'.  ()
 DDDFLAGS = @DEBUGGER_OPTION@
 
+# The program to debug
+DDDTARGET = cxxtest$(EXEEXT)
+
 # For demonstration and debugging purposes
 .PHONY: check
 check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) check-now
@@ -938,7 +941,7 @@ check-now:
 	MALLOC_CHECK_=2 \
 	DDD_HOME=$(srcdir)/.. \
 	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. \
-	./$(ddd)$(EXEEXT) $(DDDFLAGS) cxxtest$(EXEEXT)
+	./$(ddd)$(EXEEXT) $(DDDFLAGS) $(DDDTARGET)
 
 .PHONY: debug
 debug: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit debug-now
