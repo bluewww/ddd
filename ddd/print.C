@@ -47,6 +47,7 @@ const char print_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
+#include "wm.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -388,9 +389,9 @@ static int points(string s)
 
 	unit.downcase();
 
-	if (unit.contains("es"))
+	if (unit.contains("es", -1))
 	    unit = unit.before("es");
-	if (unit.contains("s"))
+	if (unit.contains("s", -1))
 	    unit = unit.before("s");
 
 	double factor = 0.0;
@@ -538,8 +539,8 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     if (print_dialog != 0)
     {
 	// Dialog already created -- pop it up again
-	XtUnmanageChild(print_dialog);
 	XtManageChild(print_dialog);
+	raise_shell(print_dialog);
 	return;
     }
 
@@ -764,4 +765,5 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 	XmToggleButtonSetState(a4_paper_size, True, True);
 
     XtManageChild(print_dialog);
+    raise_shell(print_dialog);
 }
