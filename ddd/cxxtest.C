@@ -275,6 +275,9 @@ void cin_cout_test()
     cout << "What's your name? ";
     cin >> name;
     cout << "Hello, " << name << "!\n";
+    cout.flush();
+
+    cerr << "(This is a stderr message.)\n";
 }
 
 //--------------------------------------------------------------------------
