@@ -295,7 +295,8 @@
 #define XtCButtonCaptionGeometry "ButtonCaptionGeometry"
 #define XtNbuttonImageGeometry   "buttonImageGeometry"
 #define XtCButtonImageGeometry   "ButtonImageGeometry"
-#define XtNflatButtons           "flatButtons"
+#define XtNflatToolbarButtons    "flatToolbarButtons"
+#define XtNflatDialogButtons     "flatDialogButtons"
 #define XtCFlatButtons           "FlatButtons"
 #define XtNbuttonColorKey        "buttonColorKey"
 #define XtCColorKey              "ColorKey"
@@ -456,7 +457,8 @@ struct AppData {
     Boolean   button_images;
     String    button_caption_geometry;
     String    button_image_geometry;
-    Boolean   flat_buttons;
+    Boolean   flat_toolbar_buttons;
+    Boolean   flat_dialog_buttons;
     String    button_color_key;
     Boolean   auto_commands;
     String    auto_command_prefix;

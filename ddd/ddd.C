@@ -2009,14 +2009,7 @@ int main(int argc, char *argv[])
 				      app_data.data_buttons);
 
     // Create data display
-    data_disp = new DataDisp(data_disp_parent,
-			     app_data.vsl_path, 
-			     app_data.vsl_library,
-			     string(app_data.vsl_base_defs) + 
-			     string(app_data.vsl_defs),
-			     app_data.panned_graph_editor,
-			     app_data.toolbars_at_bottom,
-			     label_type);
+    data_disp = new DataDisp(data_disp_parent);
 
     if (app_data.separate_data_window)
     {
@@ -3342,7 +3335,7 @@ void update_options()
 
     set_toggle(set_button_images_w,        app_data.button_images);
     set_toggle(set_button_captions_w,      app_data.button_captions);
-    set_toggle(set_flat_buttons_w,         app_data.flat_buttons);
+    set_toggle(set_flat_buttons_w,         app_data.flat_toolbar_buttons);
     set_toggle(set_color_buttons_w, string(app_data.button_color_key) == 'c');
 
     set_toggle(set_tool_buttons_in_toolbar_w,      app_data.command_toolbar);
@@ -3731,7 +3724,8 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
 
     notify_set_toggle(set_button_captions_w, initial_app_data.button_captions);
     notify_set_toggle(set_button_images_w,   initial_app_data.button_images);
-    notify_set_toggle(set_flat_buttons_w,    initial_app_data.flat_buttons);
+    notify_set_toggle(set_flat_buttons_w,    
+		      initial_app_data.flat_toolbar_buttons);
     notify_set_toggle(set_color_buttons_w,   
 		      string(initial_app_data.button_color_key) == 'c');
 
@@ -3778,7 +3772,8 @@ static bool startup_preferences_changed()
 	|| separate != initial_separate
 	|| app_data.button_images != initial_app_data.button_images
 	|| app_data.button_captions != initial_app_data.button_captions
-	|| app_data.flat_buttons != initial_app_data.flat_buttons
+	|| app_data.flat_toolbar_buttons 
+	      != initial_app_data.flat_toolbar_buttons
 	|| string(app_data.button_color_key) 
 	      != string(initial_app_data.button_color_key)
 	|| focus_policy != initial_focus_policy

@@ -1449,13 +1449,23 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNflatButtons,
+	XtNflatToolbarButtons,
 	XtCFlatButtons,
 	XmRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, flat_buttons),
+	XtOffsetOf(AppData, flat_toolbar_buttons),
 	XmRImmediate,
 	XtPointer(True)
+    },
+
+    {
+	XtNflatDialogButtons,
+	XtCFlatButtons,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, flat_dialog_buttons),
+	XmRImmediate,
+	XtPointer(False)
     },
 
     {

@@ -3469,10 +3469,17 @@ The default resource value is empty\(em\&no source buttons are
 created.
 .RE
 .TP
-.B "flatButtons (\fPclass\fB FlatButtons)"
-If `\fBon\fR' (default), all toolbar buttons are given a `flat'
-appearance - the 3-D border only shows up when the pointer is over the
-icon.  If `\fBoff\fR', the 3-D border is shown all the time.
+.B "flatToolbarButtons (\fPclass\fB FlatButtons)"
+If `\fBon\fR' (default), all toolbar buttons with images or captions
+are given a `flat' appearance - the 3-D border only shows up when the
+pointer is over the icon.  If `\fBoff\fR', the 3-D border is shown all
+the time.
+.TP
+.B "flatDialogButtons (\fPclass\fB FlatButtons)"
+If `\fBon\fR' (default), all dialog buttons with images or captions
+are given a `flat' appearance - the 3-D border only shows up when the
+pointer is over the icon.  If `\fBoff\fR', the 3-D border is shown all
+the time.
 .TP
 .B "sourceButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be added under the debugger

@@ -156,9 +156,9 @@ Widget create_toolbar(Widget parent, string /* name */,
     string toolbar_name = "toolbar";
 
     arg = 0;
-    XtSetArg(args[arg], XmNmarginWidth, 0);        arg++;
-    XtSetArg(args[arg], XmNmarginHeight, 0);       arg++;
-    XtSetArg(args[arg], XmNborderWidth, 0);        arg++;
+    XtSetArg(args[arg], XmNmarginWidth,        0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,        0); arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
     Widget toolbar = verify(XmCreateForm(parent, toolbar_name, args, arg));
 
@@ -171,7 +171,7 @@ Widget create_toolbar(Widget parent, string /* name */,
 
     registerOwnConverters();
 
-    if (label_type == XmPIXMAP && app_data.flat_buttons)
+    if (label_type == XmPIXMAP && app_data.flat_toolbar_buttons)
     {
 	// Use flat buttons
 	flatten_buttons(items1);
