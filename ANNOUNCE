@@ -26,6 +26,9 @@ DDD-3.3.8
 ========
 
 - A memory corruption has been fixed in strclass.h.
+- Several other memory management problems have been fixed.
+- configure options --enable-builtin-app-defaults and --enable-builtin-vsllib
+  should work again.
 - Speed improvements, partly by avoiding the creation of temporary objects.
 - Bug fixes in perl mode (1).
 
