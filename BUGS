@@ -390,9 +390,9 @@ Volunteers for fixing these and other bugs are welcome!
 211. Graham Hudspith <ghudspit@mltsa.uk.lucent.com> reports that the
      HP-UX version of DDD 2.1.95 crashes at start-up.
 
-213* Fred Damen <damenf@cig.mot.com> says: I have been using the new
-     ddd with sun's dbx 4.0 and have noticed somethings that could be
-     better.
+213* DDD does not work with Sun DBX 4.0.  Fred Damen
+     <damenf@cig.mot.com> reports:
+
      1) The arrow/stop sign do not show. independant of the setting
         for glyphs or text.  They do show when using gdb.
 
@@ -405,11 +405,5 @@ Volunteers for fixing these and other bugs are welcome!
         /dev/pts/12 < /dev/pts/12 > /dev/pts/12' is passed to the
         debugged program and it seems as though by this time the pty
         12 is already reserved.
-
-        Suggestion: You may want to connect the debugged program's
-        stdio to ddd's stdio.  i.e. the debugged program's output
-        shows up on the tty that the ddd/debugged program was executed
-        on.  ddd's output can be sent to a file if the distinction
-        needs to be made.
 
 214. (Insert your bug here)
