@@ -108,9 +108,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 056. `Select All' does not select hints.
 
-059. Having a newline ``stuck'' in the command line makes DDD execute
-     each typed letter as a separate command.
-
 060. Frank Dohrmann <frank@kaa.desy.de> says that on his Sun-Sparc
      10/41 with SunOs 4.1.3, using `lpr' instead of `lp -c' to print
      the graph hangs up DDD.
@@ -131,7 +128,7 @@ Volunteers for fixing these and other bugs are welcome!
 068. On HPUX 9.05, DDD does not pass any characters to the left of the "@"
      symbol typed into the command line.  [fixed in DDD 1.5  -AZ]
 
-069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
+069* Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
      [Linux 1.3.38 system, X11R6 (XFree 3.1.1), Motif 2.x]
 
      1. When ddd is called with --exec-window and the execution window is
@@ -140,6 +137,7 @@ Volunteers for fixing these and other bugs are welcome!
           The same problem (seg. fault) happens if I close the window and
         rerun the debugged program: a new execution window apears and then
         ddd aborts.
+	[fixed in DDD 1.5 -AZ]
 
      2. The graph window behaves strangely when all logical windows are in
         a logical one: the scroller disappear sometimes and if the window
@@ -150,6 +148,9 @@ Volunteers for fixing these and other bugs are welcome!
      3. ddd seg. faults when receiving a signal during startup (such as
         when someone hits C-C). It also truncates the .dddinit file to
         zero bytes :-(.
+
+        [I could not reproduce this bug.  Does this also happen on 
+         other configurations?  -AZ]
 
      4. When unselecting the `Display Glyphs' option, the actual line in
         the source window does not get highlighted. If one has also the
@@ -227,7 +228,7 @@ Volunteers for fixing these and other bugs are welcome!
      [Fixed in DDD 1.5?  -AZ]
 
 079. Window resize problems.  louie@dbmx.com (Lewis Alderton) says: I
-     am running using FVWM ( virtual window manager ) and when the
+     am running using FVWM (virtual window manager) and when the
      breakpoints and stack-frame windows pop up, they appear as the
      width of the virtual screen, which is twice as wide as the actual
      screen.
@@ -237,8 +238,8 @@ Volunteers for fixing these and other bugs are welcome!
      redraw is such a manner as to hide all the breakpoints, once this
      has happened, I can never see breakpoints in this window again.
 
-080. Suppress those bison/flex warnings and have users report any remaining
-     warnings they encounter.
+080. Suppress those bison/flex warnings and have users report any
+     remaining warnings they encounter.
 
 081. Have DDD search source code in a list of directories (for GDB,
      sync that with `list directories'; how to sync with DBX?).  See
@@ -341,50 +342,6 @@ Volunteers for fixing these and other bugs are welcome!
          the default in the display graph?  If I "set output-radix 16" 
          in the gdb window ddd seems to lock up very often.
 
-086* Jochen Schuetze <jos@GBF-Braunschweig.DE> says:
-     If the binary and the sources are not located in the current
-     directory, no source is displayed, I get an empty alert box and
-     ddd hangs until killed from outside.  Will ddd ever learn to
-     handle the case that source code and binary of the debugged
-     program aren't in the current directory?
-     [(hopefully) fixed in DDD 1.5  -AZ]
-
-087* Eirik Lygre <z61z@pson17.ppco.com> states: 
-     The IBM xlC compiler has a very useful (at least until now!) flag
-     (-qfullpath) which tells the compiler to store the full path name
-     of the source file, rather than just the stem
-     (/home/z61z/ibmcl/ddetest/test.C vs test.C). In dbx, the
-     following then holds true:
-
-     (dbx) where
-     main(), line 35 in "test.C"
-     (dbx) file
-     /home/z61z/ibmcl/dddtest/test.C
-
-     The problem manifests itself in the source window of DDD. It
-     correctly identifies the source file, but the display is
-     wrong. It always displays from line one of the file, rather than
-     the current line. It is peculiar, though, that if I manually
-     scroll the source window, the arrow indicating the current line
-     is positioned on the correct line. However, as soon as I
-     step/next, the source window is redrawn from line 1.
-     [fixed in DDD 1.5  -AZ]
-
-088* Oyvind Yrke <oyvind@stavanger.geoquest.slb.com> says:
-
-     * Problem setting breakpoint if the basename of 2 files are
-       equal.  E.g. the proper file is listed both in "stack
-       backtrace" and in the source window, but when setting a
-       breakpoint, ddd/gdb tries to set a breakpoint in a file with
-       the same basename, but located in another directory.  I.e. the
-       command sent to gdb is break file.c:987 If there are several
-       file.c, it is somewhat arbitrary which file.c gdb picks up.
-       Ddd should send the full path to gdb to avoid the problem.
-       [fixed in DDD 1.5  -AZ]
-
-     * If I change a variable using "set var=new_value" in the command
-       window, the Data window is not updated automatically.
-
 089. Editing problems.  sstclair@flanders.sanders.lockheed.com (Scott
      H St. Clair) states: 
 
@@ -399,5 +356,7 @@ Volunteers for fixing these and other bugs are welcome!
      5.) Using the spawned copy of vi, modify the source.  This is
          the same source that is in the ddd source window.
      6.) exit vi.
+
+     [See also 083]
 
 090. (Insert your bug here)

@@ -22,6 +22,7 @@ DDD 1.5 (in development)
       Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de>.
 
     Several bug fixes, including:
+    - Opening and closing execution windows is now properly handled.
     - On HP-UX, the `@' character is no more discarded from GDB input.
     - The `vslPath' resource is no more ignored.
 
