@@ -592,7 +592,12 @@ void PosBuffer::filter (string& answer)
 			    already_read = PosComplete;
 
 			    // Delete this line from output
-			    answer.through('\n', index) = "";
+			    int next_index = answer.index('\n', index);
+			    if (next_index < 0)
+				next_index = answer.length();
+			    else
+				next_index++;
+			    answer.at(index, next_index - index) = "";
 			    break;
 			}
 			else
