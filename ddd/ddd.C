@@ -217,6 +217,7 @@ char ddd_rcsid[] =
 #include <iostream.h>
 #include <fstream.h>
 #include <setjmp.h>
+#include <time.h>
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -266,7 +267,6 @@ static void create_status(Widget parent);
 
 // Status LED
 static void blink(bool set);
-static void reset_blink();
 
 // Callbacks
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
@@ -1889,7 +1889,6 @@ int main(int argc, char *argv[])
 	main_loop_entered = false;
 	ddd_show_signal(sig);
     }
-    reset_blink();
 
     // Set `main_loop_entered' to true as soon 
     // as DDD becomes idle again.
@@ -2633,6 +2632,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNbottomAttachment,   XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNrightAttachment,    XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNresizable,          True); arg++; 
+    XtSetArg(args[arg], XmNfillOnSelect,       True); arg++; 
     led_w = verify(XmCreateToggleButton(status_form, "led", args, arg));
     XtManageChild(led_w);
 
@@ -2659,47 +2659,59 @@ static void create_status(Widget parent)
 // Handle Status LED
 //-----------------------------------------------------------------------------
 
-static bool blinker_active      = false; // True iff status LED is active
-static XtIntervalId blink_timer = 0;     // Timer used for blinking
+static bool blinker_active        = false; // True iff status LED is active
+static XtIntervalId blink_timer   = 0;     // Timer for blinking
+static time_t blink_timer_called  = 0;     // Time of blink_timer call
 
 static void BlinkCB(XtPointer client_data, XtIntervalId *id)
 {
     assert(*id == blink_timer);
+    blink_timer = 0;
 
     Boolean set = Boolean(client_data);
     XtVaSetValues(led_w, XmNfillOnSelect, set, NULL);
     XFlush(XtDisplay(led_w));
+    XmUpdateDisplay(led_w);
 
     if ((blinker_active || set) && app_data.busy_blink_rate > 0)
     {
 	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
 				      app_data.busy_blink_rate, BlinkCB,
 				      XtPointer(!set));
-    }
-    else
-    {
-	blink_timer = 0;
+	blink_timer_called = time((time_t *)0);
     }
 }
 
+// Enable or disable blinking
 static void blink(bool set)
 {
     blinker_active = set;
 
-    if (blink_timer == 0 && blinker_active)
-	BlinkCB(XtPointer(True), &blink_timer);
-}
+    // The blinker hangs up occasionally - that is, BLINK_TIMER != 0
+    // holds, but BlinkCB() is never called.  Hence, we check for the
+    // time elapsed since we added the BlinkCB() timeout.
+    time_t seconds_since_timer_call = 
+	(time((time_t *)0) - blink_timer_called);
+    bool timer_should_have_been_called = 
+	seconds_since_timer_call >= app_data.busy_blink_rate / 1000 + 1;
 
-static void reset_blink()
-{
-    if (blink_timer != 0)
+    if (timer_should_have_been_called && blink_timer != 0)
     {
-	XtRemoveTimeOut(blink_timer);
-	blink_timer = 0;
-    }
+#if 0
+	clog << "Restarting blink timer (waiting since " 
+	     << seconds_since_timer_call << "s)\n";
+#endif
 
-    blinker_active = False;
-    BlinkCB(XtPointer(False), &blink_timer);
+	// Remove timer and re-activate it again
+	XtRemoveTimeOut(blink_timer);
+	BlinkCB(XtPointer(blinker_active), &blink_timer);
+    }
+    else
+    {
+	// Start blinking if active
+	if (blink_timer == 0 && blinker_active)
+	    BlinkCB(XtPointer(True), &blink_timer);
+    }
 }
 
 
@@ -3245,6 +3257,5 @@ void check_emergencies()
     {
 	// Emergency: process this event immediately
 	XtDispatchEvent(&event);
-	reset_blink();
     }
 }
