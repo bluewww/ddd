@@ -78,6 +78,7 @@ extern const regex rxdotdot;
 extern const regex rxdouble;
 extern const regex rxdown_cmd;
 extern const regex rxenable;
+extern const regex rxenter_file_name;
 extern const regex rxeqeq;
 extern const regex rxfile_cmd;
 extern const regex rxfilepath;

@@ -1,0 +1,106 @@
+From owner-ddd-bugs@ibr.cs.tu-bs.de  Tue Dec 28 20:26:43 1999
+Received: from yoda.fmi.uni-passau.de (yoda.fmi.uni-passau.de [132.231.1.30])
+          by brahms.fmi.uni-passau.de (8.8.8/8.8.4) with ESMTP
+	  id UAA04594 for <andreas@infosun.fmi.uni-passau.de>; Tue, 28 Dec 1999 20:26:42 +0100 (MET)
+Received: from mumm.ibr.cs.tu-bs.de (majordom@mumm.ibr.cs.tu-bs.de [134.169.34.190])
+	by yoda.fmi.uni-passau.de (8.8.8/8.8.8) with ESMTP id UAA08643
+	for <andreas.zeller@fmi.uni-passau.de>; Tue, 28 Dec 1999 20:26:41 +0100 (MET)
+Received: by mumm.ibr.cs.tu-bs.de (8.9.3/8.9.3) id TAA02307
+	for ddd-bugs-outgoing; Tue, 28 Dec 1999 19:59:47 +0100 (MET)
+Received: from infbssys.ips.cs.tu-bs.de (root@infbssys.ips.cs.tu-bs.de [134.169.32.1])
+	by mumm.ibr.cs.tu-bs.de (8.9.3/8.9.3) with ESMTP id TAA02297
+	for <ddd-bugs@ibr.cs.tu-bs.de>; Tue, 28 Dec 1999 19:59:45 +0100 (MET)
+Received: from speechworks.com (valmiki.speechworks.com [205.136.190.131])
+	by infbssys.ips.cs.tu-bs.de (8.9.3/8.9.3) with ESMTP id TAA28801
+	for <ddd-bugs@ips.cs.tu-bs.de>; Tue, 28 Dec 1999 19:59:32 +0100
+Received: from vishnu.speechworks.com (mailhost.speechworks.com [206.234.64.17])
+	by speechworks.com (8.9.3+Sun/8.9.3) with ESMTP id OAA04967
+	for <ddd-bugs@ips.cs.tu-bs.de>; Tue, 28 Dec 1999 14:00:32 -0500 (EST)
+Received: from armenia (dhcpn60.altech.com [10.2.0.60])
+	by vishnu.speechworks.com (8.9.3+Sun/8.9.3) with SMTP id NAA01533
+	for <ddd-bugs@ips.cs.tu-bs.de (ddd bug report address)>; Tue, 28 Dec 1999 13:59:23 -0500 (EST)
+Reply-To: <matthew.johnson@speechworks.com>
+From: "Matthew Johnson" <matthew.johnson@speechworks.com>
+To: <ddd-bugs@ips.cs.tu-bs.de (ddd bug report address)>
+Subject: [ddd-bugs] ddd-3.1.6 on AIX-4.3.2 gives "X Error of failed request:  BadDrawable (invalid Pixmap or Window parameter)"
+Date: Tue, 28 Dec 1999 14:00:34 -0500
+Message-ID: <000101bf5165$d2dc1a50$3c00020a@armenia.altech.com>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook 8.5, Build 4.71.2173.0
+Importance: Normal
+X-MimeOLE: Produced By Microsoft MimeOLE V4.72.3612.1700
+Sender: owner-ddd-bugs@ibr.cs.tu-bs.de
+Precedence: bulk
+
+Hi,
+
+I see this a few times in archive, but ever an answer.  So here goes.
+
+When inferior is gdb, things seem ok (make check works).  But gdb on AIX
+does not support threads, only dbx does.
+
+When I try to switch ddd to dbx, I get (output from ~.ddd/log):
+
+DDD 3.1.6 (powerpc-ibm-aix4.3.1.0), Copyright (C) 1999 TU Braunschweig.
+Compiled with GCC 2.95.2 19991024 (release), libstdc++ 2.8.0
+Requires X11R6, Xt11R6, Motif 2.1 (Motif Version 2.1.0)
+Includes DDD core, manual, app-defaults, XPM 3.4.11, Athena Panner
+Built 1999-12-28 by root <root@yorktown.altech.com>.
+$  ddd
++  /bin/sh -c 'exec dbx'
+#  Hello, world!
+#  Opening session ".ddd"...
+!  X error
+X Error of failed request:  BadDrawable (invalid Pixmap or Window parameter)
+  Major opcode of failed request:  70 (X_PolyFillRectangle)
+  Resource id in failed request:  0x0
+  Serial number of failed request:  4462
+  Current serial number in output stream:  4463
+#  Running DBX (pid 17978, tty /dev/pts/2)...
+#  Current language: c/c++
+<- "Type \'help\' for help.\n"
+<- "enter object file name (default is `a.out\', ^\273 to exit): "
+#  DBX Settings: waiting until DBX gets ready...
+#  Deleting session ".ddd"...
+#  Current session is [none].
+#  Deleting session ".ddd"...done.
+#  Thanks for using DDD 3.1.6!  (We apologize for the inconvenience.)
+
+# These lines were added by AZ:
+-> "foo\n"
+<- "(dbx) "
+
+
+I just completed the ddd build today, having installed libXpm.a from
+xpm-3_4_11_0.exe (at Bull) as the last build hurdle.
+
+Has this run-time been fixed or avoided by anyone?
+
+Thanks a lot.
+
+Best Regards,
+
+Matthew Johnson				matthew.johnson@speechworks.com
+SpeechWorks International, Inc.		www.speechworks.com
+695 Atlantic Avenue, Boston, MA  02111		(617) 428-4444, 1-888-SAY-DEMO
+
+
+-----
+This message is brought to you via the `ddd-bugs' mailing list.
+
+Send messages to all subscribers:           ddd-bugs@ips.cs.tu-bs.de
+Administrative requests (unsubscribing...): ddd-bugs-request@ips.cs.tu-bs.de
+
+Message archive:     http://www.cs.tu-bs.de/softech/ddd/ddd-bugs/
+Recent DDD info:     http://www.cs.tu-bs.de/softech/ddd/
+Recent DDD software: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
+DDD mirror sites:    ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/
+                     ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/
+                     ftp://uiarchive.cso.uiuc.edu/pub/packages/ddd/
+
+

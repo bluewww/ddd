@@ -785,6 +785,19 @@ bool GDBAgent::ends_with_secondary_prompt (const string& ans)
 	    if (idx >= 0 && answer.index('\n', idx) < 0)
 		return true;
 	}
+	if (ends_in(answer, "): "))
+	{
+	    // DEC DBX wants a file name when being invoked without one:
+	    // `enter object file name (default is `a.out'): '
+	    // Reported by Matthew Johnson <matthew.johnson@speechworks.com>
+#if RUNTIME_REGEX
+	    static regex rxenter_file_name("enter .*file name");
+#endif
+
+	    int idx = index(answer, rxenter_file_name, "enter ", -1);
+	    if (idx >= 0 && answer.index('\n', idx) < 0)
+		return true;
+	}
 
 	// Prompt is `> ' at beginning of line
 	return answer == "> " || ends_in(answer, "\n> ");

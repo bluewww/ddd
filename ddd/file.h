@@ -74,5 +74,8 @@ struct ProgramInfo {
     ~ProgramInfo() {}
 };
 
+// Last opened file
+extern string open_file_reply;
+
 #endif // _DDD_file_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

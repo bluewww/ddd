@@ -41,6 +41,7 @@ char select_rcsid[] =
 #include "Command.h"
 #include "ddd.h"
 #include "editing.h"
+#include "file.h"
 #include "mydialogs.h"
 #include "status.h"
 #include "string-fun.h"
@@ -161,6 +162,20 @@ static void select_from_gdb(string& question, string& reply)
     reply = selection_reply;
 }
 
+// Select a file
+static void select_file(string& /* question */, string& reply)
+{
+    gdbOpenFileCB(find_shell(), 0, 0);
+
+    open_file_reply = "";
+    while (open_file_reply == "" 
+	   && gdb->running() && !gdb->isReadyWithPrompt())
+	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
+
+    // Found a reply - return
+    reply = open_file_reply + "\n";
+}
+
 void gdb_selectHP(Agent *, void *, void *call_data)
 {
     ReplyRequiredInfo *info = (ReplyRequiredInfo *)call_data;
@@ -185,6 +200,16 @@ void gdb_selectHP(Agent *, void *, void *call_data)
     info->question = "";
 
     // Set and issue reply
-    select_from_gdb(prompt, info->reply);
+    if (prompt.contains("file name"))
+    {
+	// File selection
+	select_file(prompt, info->reply);
+    }
+    else
+    {
+	// Option selection
+	select_from_gdb(prompt, info->reply);
+    }
+
     _gdb_out(info->reply);
 }

@@ -115,6 +115,9 @@ static const char *file_basename(const char *name)
 
 #define basename file_basename
 
+// Last opened file
+string open_file_reply;
+
 
 //-----------------------------------------------------------------------------
 // Opening files
@@ -575,6 +578,8 @@ string get_file(Widget w, XtPointer, XtPointer call_data)
 
 static void open_file(const string& filename)
 {
+    open_file_reply = filename;
+
     if (gdb->type() == GDB)
     {
 	// GDB does not always detach processes upon opening new
@@ -584,12 +589,15 @@ static void open_file(const string& filename)
 	    gdb_command("detach");
     }
 
-    string cmd = gdb->debug_command(filename);
+    if (gdb_initialized)
+    {
+	string cmd = gdb->debug_command(filename);
 
-    if (gdb->type() == PERL)
-	cmd.gsub("perl", string(app_data.debugger_command));
+	if (gdb->type() == PERL)
+	    cmd.gsub("perl", string(app_data.debugger_command));
 
-    gdb_command(cmd);
+	gdb_command(cmd);
+    }
 }
 
 // OK pressed in `Open File'
