@@ -107,6 +107,9 @@ COMPRESS = @COMPRESS@
 # An uncompress command, reading from stdin and writing to stdout.  (gunzip -c)
 UNCOMPRESS = @UNCOMPRESS@
 
+# The etags command.  (etags)
+ETAGS = etags
+
 
 ## The C++ compiler.
 
@@ -881,7 +884,7 @@ CLEAN_STUFF	 = $(ddd)-$(VERSION)-* $(PROGS) $(DEMOS) \
 # Architecture-dependent files to be deleted from distribution
 DISTCLEAN_STUFF	 = $(CLEAN_STUFF) \
 		   config.status config.h host.h paths.h \
-		   Makefile MakeOut LOG OOBR OOBR-FTR \
+		   Makefile MakeOut LOG OOBR OOBR-FTR TAGS \
 		   config.log config.cache configinfo.C stamp-h \
 		   Ddd Ddd.ad.h ddd.man-nopics $(PICS)
 
@@ -1602,6 +1605,16 @@ host.h: $(srcdir)/host.h.in config.status
 	$(SED) "s%@HOST_CANONICAL@%$(host_canonical)%" | \
 	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" > $@~ && \
 	$(MV) $@~ $@
+
+## Tags.
+.PHONY:	tags
+tags:	$(srcdir)/TAGS
+
+$(srcdir)/TAGS:	FORCE
+	cd $(srcdir); $(ETAGS) -o $@ *.[Ch] \
+	/usr/include/*.h /usr/include/*/*.h /usr/include/*/*/*.h \
+	${prefix}/include/*.h ${prefix}/include/*/*.h \
+	${prefix}/include/*/*/*.h
 
 ## Statistics.
 # Count lines of C++/lex/yacc source code.
