@@ -45,6 +45,7 @@ header.str
 host.h
 huffdecode
 huffencode
+rxscan.C
 stamp-h
 stamp-h.in
 stringify
