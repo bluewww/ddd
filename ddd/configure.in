@@ -74,7 +74,7 @@ dnl snapshot of the current development tree.
 VERSION=3.1.6
 dnl
 dnl The version nickname.
-NICKNAME="Three Rivers"
+NICKNAME="Eclipse"
 dnl 
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update the product.
