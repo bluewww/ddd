@@ -43,10 +43,8 @@ char logo_rcsid[] =
 #include <X11/Xlib.h>
 #include <Xm/Xm.h>
 
-#if HAVE_XPM
-#if HAVE_X11_XPM_H
+#if defined(HAVE_XPM) && defined(HAVE_X11_XPM_H)
 #include <X11/xpm.h>
-#endif
 #endif
 
 //-----------------------------------------------------------------------------
