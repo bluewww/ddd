@@ -48,7 +48,7 @@ char value_read_rcsid[] =
 #include "ddd.h"
 #include "GDBAgent.h"
 
-static regex RXindex("[[]-?[0-9][0-9]*]");
+static regex RXindex("[[]-?[0-9][0-9]*].*");
 
 // ***************************************************************************
 DispValueType determine_type (string value)
@@ -57,8 +57,8 @@ DispValueType determine_type (string value)
     strip_final_blanks (value);
 
     // DBX on DEC prepends `[N]' before array member N
-    if (value.contains(RXindex, 0))
-	value = value.after(RXindex);
+    if (value.matches(RXindex))
+	value = value.after(']');
 
     static regex 
 	RXreference("([(][^)]*[)] )? *@ *(0x[0-9a-f]+|[(]nil[)]) *:.*");
@@ -73,15 +73,27 @@ DispValueType determine_type (string value)
     case DBX:
 	// DBX uses this representation for out-of-range Pascal/Modula-2
 	// enumerations.
-	if (value.contains("(scalar = ", 0))
+	if (value.matches("(scalar = ", 0))
 	    return Simple;
     }
 
     static regex 
 	RXstr_or_cl_begin("({\n|record\n|RECORD\n|struct|class|union).*");
+    if (value.matches(RXstr_or_cl_begin))
+    {
+	static regex 
+	    RXstr_or_cl_begin_s("({\n|record\n|RECORD\n|struct|class|union)");
 
-    if (value.contains(" = ") && value.matches(RXstr_or_cl_begin))
-	return StructOrClass;
+	// DEC DBX uses `{' for arrays and structs.  So, we check for
+	// some member of this struct -- that is, a ` = ' before
+	// any other sub-structure.
+	string v = value.after(RXstr_or_cl_begin_s);
+	int eq_pos  = v.index(" = ");
+	int str_pos = v.index(RXstr_or_cl_begin_s);
+
+	if (eq_pos > 0 && (str_pos < 0 || str_pos > eq_pos))
+	    return StructOrClass;
+    }
 
     static regex 
 	RXpointer_value("([(][^)]*[)] )?(0x[0-9a-f]+|[(]nil[)]).*");
@@ -323,8 +335,8 @@ bool read_array_begin (string& value)
     read_leading_blanks (value);
 
     // DBX on DEC prepends `[N]' before array member N
-    if (value.contains(RXindex, 0))
-	value = value.after(RXindex);
+    if (value.matches(RXindex))
+	value = value.after(']');
 
     return true;
 }
@@ -340,8 +352,8 @@ bool read_array_next (string& value)
     read_leading_blanks (value);
 
     // DBX on DEC prepends `[N]' before array member N
-    if (value.contains(RXindex, 0))
-	value = value.after(RXindex);
+    if (value.matches(RXindex))
+	value = value.after(']');
 
     if (value.contains(',', 0))
     {
