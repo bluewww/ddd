@@ -1216,7 +1216,7 @@ bool save_options(unsigned long flags)
     }
 
     // Shortcut expressions
-    os << "\n! Display Shortcuts\n";
+    os << "\n! Display shortcuts\n";
     {
 	StringArray exprs;
 	data_disp->get_shortcut_menu(exprs);

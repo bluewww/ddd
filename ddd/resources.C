@@ -313,7 +313,14 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, tool_buttons),
 	XtRString,
-	XtPointer("run:interrupt^C:next:step:continue:finish:up:down")
+	XtPointer("run\n"
+		  "interrupt^C\n"
+		  "next\n"
+		  "step\n"
+		  "continue\n"
+		  "finish\n"
+		  "up\n"
+		  "down")
     },
 
     {
@@ -1134,7 +1141,7 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, lesstif_version),
 	XmRImmediate,
 #if !defined(LesstifVersion)
-	XtPointer(1000)		// No special handling for LessTif 1.0 and later
+	XtPointer(1000)		// Treat OSF/Motif like LessTif 1.0
 #else
 	XtPointer(LesstifVersion)
 #endif

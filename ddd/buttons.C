@@ -43,6 +43,7 @@ char buttons_rcsid[] =
 #include "StringSA.h"
 #include "bool.h"
 #include "charsets.h"
+#include "cook.h"
 #include "comm-manag.h"
 #include "ctrl.h"
 #include "ddd.h"
@@ -629,17 +630,36 @@ Widget make_buttons(Widget parent, const string& name,
     return buttons;
 }
 
-void add_buttons(Widget buttons, const string& button_list)
+void add_buttons(Widget buttons, const string& _button_list)
 {
-    int colons = button_list.freq(':') + 1;
+    string button_list = _button_list;
+
+    if (button_list.contains(':'))
+    {
+	// DDD 2.1 and earlier used `:' to separate buttons
+	button_list.gsub(':', '\n');
+
+	cerr << "Warning: converting " << quote(_button_list) << "\n"
+	     << "to new format " << quote(button_list) << "\n";
+    }
+
+    int colons = button_list.freq('\n') + 1;
     string *commands = new string[colons];
-    split(button_list, commands, colons, ':');
+    split(button_list, commands, colons, '\n');
 
     for (int i = 0; i < colons; i++)
     {
 	XtCallbackProc callback = gdbCommandCB;
 
 	string name = commands[i];
+
+	MString label(0, true);
+	if (name.contains('\t'))
+	{
+	    label = MString(name.after('\t'));
+	    name  = name.before('\t');
+	}
+
 	string command = name;
 	if (name.contains("..."))
 	{
@@ -656,11 +676,16 @@ void add_buttons(Widget buttons, const string& button_list)
 	    name = name.before(-1);
 	}
 
+	if (label.isNull())
+	{
+	    // Create default label from name
+	    string label_s = name;
+	    if (label_s != "")
+		label_s[0] = toupper(label_s[0]);
+	    label = MString(label_s);
+	}
+
 	// Make sure the widget name does not contain invalid characters
-	string label_s = name;
-	if (label_s != "")
-	    label_s[0] = toupper(label_s[0]);
-	MString label(label_s);
 #if RUNTIME_REGEX
 	static regex rxsep("[^-_a-zA-Z0-9]");
 #endif
@@ -669,6 +694,7 @@ void add_buttons(Widget buttons, const string& button_list)
 	Widget button = verify(XmCreatePushButton(buttons, name, 0, 0));
 	XtManageChild(button);
 
+	// A user-specified labelString overrides the given label
 	XmString xmlabel;
 	XtVaGetValues(button, XmNlabelString, &xmlabel, NULL);
 	MString foundLabel(xmlabel, true);

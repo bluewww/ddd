@@ -53,16 +53,14 @@
 
 ! Some useful buttons to be added below the source.
 ! Ddd*sourceButtons: \
-! print *():graph display *():print /x ():\
-! whatis ():ptype ():watch ():until:shell
-
-! A more detailed version of the above.
-! Ddd*sourceButtons: \
-! print *(()):graph display *(()):print /x ():\
-! whatis ():ptype ():watch ():until:shell
-! Ddd*print______.labelString:         Print *()
-! Ddd*graph_display______.labelString: Display *()
-! Ddd*whatis___.labelString:           What is ()
+! print *(())	Print *()\n\
+! graph display *(())	Display *()\n\
+! print /x ()\n\
+! whatis ()	What is ()\n\
+! ptype ()\n\
+! watch ()\n\
+! until\n\
+! shell
 
 ! Show whenever a button is armed.
 ! Ddd*highlightOnEnter: true

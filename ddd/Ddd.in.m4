@@ -253,7 +253,7 @@ Ddd*wwwCommand: \
 Ddd*questionTimeout: 10
 
 
-! Colon-separated lists of GDB commands for which buttons are to be created.
+! Newline-separated lists of GDB commands for which buttons are to be created.
 !
 ! All buttons send the named command to GDB.
 ! Commands ending with '...' insert their name, followed by a space.
@@ -278,25 +278,25 @@ Ddd*questionTimeout: 10
 Ddd*consoleButtons:
 ! The following setting was effective in DDD 1.4d and earlier:
 ! Ddd*consoleButtons: \
-!	Yes:No:interrupt^C
+!	Yes\nNo\ninterrupt^C
 ! Here is a very extensive setting:
 ! Ddd*consoleButtons: \
-!	Yes:No:run:Clear:Prev:Next:Apply:interrupt^C
+!	Yes\nNo\nrun\nClear\nPrev\nNext\nApply\ninterrupt^C
 
 ! The source window buttons (none: no buttons)
 Ddd*sourceButtons:
 ! The following setting was effective in DDD 1.x:
 ! Ddd*sourceButtons:	    \
-! run:step:next:stepi:nexti:cont:finish:kill:\
-! up:down:Back:Forward:Edit:interrupt^C
+! run\nstep\nnext\nstepi\nnexti\ncont\nfinish\nkill\n\
+! up\ndown\nBack\nForward\nEdit\ninterrupt^C
 
 ! The data window buttons (none: no buttons)
 Ddd*dataButtons:
 
 ! The command tool buttons, as of DDD 2.0 and later.
 Ddd*toolButtons: \
-run:step:stepi:next:nexti:cont:finish:\
-up:down:Back:Forward:Edit:kill:break^C
+run\nstep\nstepi\nnext\nnexti\ncont\nfinish\n\
+up\ndown\nBack\nForward\nEdit\nkill\nbreak^C
 
 Ddd*break.labelString: Interrupt
 
@@ -3611,11 +3611,11 @@ To print, click on LBL(OK) or LBL(Apply).
 Ddd*paper_size_dialog_popup.title:  DDD: Paper Size
 Ddd*paper_size_dialog.autoUnmanage:  false
 Ddd*paper_size_dialog.selectionLabelString: \
-@rm Enter paper size (KBD(VAR(WIDTH) x VAR(HEIGHT)):
+@rm Enter paper size (KBD(VAR(width) x VAR(height)):
 Ddd*paper_size_dialog*helpString: \
 @rm Please enter the paper size in the format \n\
 \n\
-       KBD(VAR(WIDTH) CODE(x) VAR(HEIGHT)).\n\
+       KBD(VAR(width) CODE(x) VAR(height)).\n\
 \n\
 Examples:\n\
 KBD(42cm x 59.4cm) - A2 paper\n\
