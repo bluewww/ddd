@@ -8,7 +8,7 @@ DDD 3.0 [in beta test]
 
     User-visible changes to DDD 2.2.3:
     - New, `clean' look.  The DDD 2.x button rows are replaced by an
-      icon toolbar at the top, saving vertical and horizontal space.
+      icon tool bar at the top, saving vertical and horizontal space.
     - Configurable fonts.  You can easily customize DDD font settings
       via `Edit | Preferences | Fonts'.
     - JDB support.  DDD now also supports JDB as inferior debugger.
@@ -42,7 +42,7 @@ DDD 3.0 [in beta test]
     - All selection dialogs, including the breakpoint and display
       editors, can be resized.
     - You can have the most important dialogs be realized as
-      non-transient windows, allowing the DDD main window ro obscure
+      non-transient windows, allowing the DDD main window to obscure
       them.  See the `transientDialogs' resource for details.
     - The maximum number of glyphs is now configurable at startup time.
       See the `maxGlyphs' resource for details.
@@ -65,7 +65,7 @@ DDD 3.0 [in beta test]
     - DDD no longer terminates the inferior debugger when receiving an 
       EOF on input.   See the `terminateOnEOF' resource for details.
     - The new grab detection mechanism no longer interferes with grabs
-      on Motif popup and pulldown menus.
+      on Motif popup and pull down menus.
     - One-letter options like `-b BPS' or `-x FILE' work again.
     - Trailing CRs in debuggee output are properly handled.
     - The data window with Motif scrollbars no longer ignores resizes.

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-04-25" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-05-04" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -687,7 +687,7 @@ argument field (possibly using name completion by pressing the
 `\fB\s-2TAB\s+2\fR' key) and click on the `\fBBreak at ()\fR' button.
 .PP
 As yet another alternative, you can click on `\fBNew\fR' from the
-Breakpoint editor (invoked through `\fBSsource | Edit Breakpoints\fR')
+Breakpoint editor (invoked through `\fBSource | Edit Breakpoints\fR')
 and enter the function name.
 .PP
 Finally, you can use the \s-2GDB\s+2 `\fBbreak\fR' command or the
@@ -1192,7 +1192,7 @@ connected displays are automatically selected.
 .\"
 If a display is composed from several values (that is, a C/C++
 \fIclass\fR, \fIstruct\fR, \fIunion\fR, or \fIarray\fR; or a
-Pascal/Modula \fIRECORD\fR or \fIARRAY\fR), you can
+Pascal/MODULA \fIRECORD\fR or \fIARRAY\fR), you can
 select individual parts by clicking on their names or values.  The
 resulting expression is shown in the \fIargument field\fR, below.
 .PP
@@ -1323,7 +1323,7 @@ Menu\fR' toggle was activated, you can now simply choose the
 `\fBDisplay (char *)()\fR' operation from the `\fBNew Display\fR' menu to
 cast \fIany\fR selected display \fIdisplay\fR to `\fB(char
 *)\fIdisplay\fR'.  This shortcut can save you a lot of time when
-examinating complex data structures.
+examining complex data structures.
 .PP
 .PSPIC @srcdir@/PICS/ddd-shortcuts.ps 15.3cm
 .PP
@@ -1756,7 +1756,7 @@ If supported by your architecture, \s-2@DDD@\s+2 also allows you to
 set \fIread watchpoints\fR, interrupting your program whenever a
 variable is read, and \fIaccess watchpoints\fR, interrupting your
 program whenever a variable is read or written.  These watchpoint
-types can be selected from the pulldown menu obtained by pressing and
+types can be selected from the pull down menu obtained by pressing and
 holding the `\fBWatch ()\fR' button.
 .PP
 Watchpoints can be manipulated like breakpoints; in particular, you
@@ -2289,7 +2289,7 @@ Entering \fBdispfoo\fR will now have the same effect as entering
 \fBgraph display foo\fR at the debugger prompt.
 .PP
 Unfortunately, auto-commands also raise a security problem, since
-arbitrary commands can be executed.  Just imagine some malicuous
+arbitrary commands can be executed.  Just imagine some malicious
 program issuing a string like `\fB\fIprefix\fR shell rm -fr $HOME\fR'
 when being debugged!  As a consequence, the \fIprefix\fR is created
 dynamically by \s-2@DDD@\s+2, unless defined explicitly as value of
@@ -2323,12 +2323,12 @@ for case-sensitive programming languages.  If you want to find all
 occurrences, regardless of case, unset `\fBSource | Find Case
 Sensitive\fR'.
 .PP
-If you wish to display machine code of selected funtions, set
+If you wish to display machine code of selected functions, set
 `\fBSource | Display Machine Code\fR'.  This makes \s-2@DDD@\s+2 run
 a little slower, so it is disabled by default.
 .PP
 Through `\fBEdit | Preferences\fR', you can set up more \s-2@DDD@\s+2
-preferences, which are dicussed here.
+preferences, which are discussed here.
 .\"
 .SS "General Preferences"
 .PP
@@ -2482,11 +2482,11 @@ option to `\fBSeparate Windows\fR'.  See also the
 `\fB\-\-attach-windows\fR' and `\fB\-\-separate-windows\fR' options,
 below.
 .PP
-The \s-2@DDD@\s+2 toolbar buttons can be displayed using \fBImages\fR,
+The \s-2@DDD@\s+2 tool bar buttons can be displayed using \fBImages\fR,
 showing a small symbol for each action, and/or \fBCaptions\fR, showing
 the action name below the image.  If neither of these two is set,
-toolbar buttons are labeled like other buttons (with the exception of
-the common toolbar, which never shows ordinary labels).
+tool bar buttons are labeled like other buttons (with the exception of
+the common tool bar, which never shows ordinary labels).
 .PP
 \s-2@DDD@\s+2 can locate the tool buttons in the command tool
 (`\fBcommand tool\fR') or in a \fIcommand tool bar\fR above the
@@ -2551,7 +2551,7 @@ Attach to Process\fR' dialog.  See also the `\fBpsCommand\fR'
 resource, below.
 .PP
 In `\fBExecution Window\fR', you can enter a command to start a 
-terminal emulator.  To this command, \s-2@DDD@\s+2 appends bourne
+terminal emulator.  To this command, \s-2@DDD@\s+2 appends Bourne
 shell commands to be executed within the execution window.  A simple
 value is `\fBxterm -e /bin/sh -c\fR'.  See also the `\fBtermCommand\fR'
 resource, below.
@@ -2725,8 +2725,8 @@ in your `\fB$HOME/.@ddd@/init\fR' file.
 .TP
 .B "defaultFontSize  (\fPclass\fR FontSize)"
 The size of the default \s-2@DDD@\s+2 font, in 1/10 points.  This
-ressource overrides any font size specification in the
-`\fBdefaultFont\fR' ressource (see above).  The default value is
+resource overrides any font size specification in the
+`\fBdefaultFont\fR' resource (see above).  The default value is
 \fB120\fR for a 12.0 point font.
 .TP
 .B "variableWidthFont (\fPclass\fR Font)"
@@ -2748,8 +2748,8 @@ in your `\fB$HOME/.@ddd@/init\fR' file.
 .TP
 .B "variableWidthFontSize  (\fPclass\fR FontSize)"
 The size of the variable width \s-2@DDD@\s+2 font, in 1/10 points.
-This ressource overrides any font size specification in the
-`\fBvariableWidthFont\fR' ressource (see above).  The default value is
+This resource overrides any font size specification in the
+`\fBvariableWidthFont\fR' resource (see above).  The default value is
 \fB120\fR for a 12.0 point font.
 .TP
 .B "fixedWidthFont (\fPclass\fR Font)"
@@ -2773,8 +2773,8 @@ in your `\fB$HOME/.@ddd@/init\fR' file.
 .TP
 .B "fixedWidthFontSize  (\fPclass\fR FontSize)"
 The size of the fixed width \s-2@DDD@\s+2 font, in 1/10 points.  This
-ressource overrides any font size specification in the
-`\fBfixedWidthFont\fR' ressource (see above).  The default value is
+resource overrides any font size specification in the
+`\fBfixedWidthFont\fR' resource (see above).  The default value is
 \fB120\fR for a 12.0 point font.
 .PP
 As all font size resources have the same class (and by default the
@@ -3052,7 +3052,7 @@ interferes with your window manager, or if your window manager keeps
 the command tool on top anyway, set this resource to `\fBoff\fR'.
 .TP
 .B "autoRaiseMenu (\fPclass\fB AutoRaiseMenu)"
-If `\fBon\fR' (default), \s-2@DDD@\s+2 will always keep the pulldown
+If `\fBon\fR' (default), \s-2@DDD@\s+2 will always keep the pull down
 menu on top of the \s-2@DDD@\s+2 main window.  If this setting
 interferes with your window manager, or if your window manager does
 not auto-raise windows, set this resource to `\fBoff\fR':
@@ -3336,13 +3336,13 @@ also initially sent to \s-2XDB\s+2.  By default, it is empty.
 .\"
 .SS "User-defined Buttons"
 .\"
-The following resources can be used to create and control toolbars and
+The following resources can be used to create and control tool bars and
 user-defined buttons.
 .TP
 .B "buttonCaptions (\fPclass\fB ButtonCaptions)"
-Whether the toolbar buttons should be shown using captions
+Whether the tool bar buttons should be shown using captions
 (`\fBon\fR', default) or not (`\fBoff\fR').  If neither captions nor
-images are enabled, toolbar buttons are shown using ordinary labels.
+images are enabled, tool bar buttons are shown using ordinary labels.
 See also `\fBbuttonImages\fR', below.
 .TP
 .B "buttonCaptionGeometry (\fPclass\fB ButtonCaptionGeometry)"
@@ -3350,9 +3350,9 @@ The geometry of the caption subimage within the button icons.  Default
 is `\fB29x7+0-0\fR'.
 .TP
 .B "buttonImages (\fPclass\fB ButtonImages)"
-Whether the toolbar buttons should be shown using images (`\fBon\fR',
+Whether the tool bar buttons should be shown using images (`\fBon\fR',
 default) or not (`\fBoff\fR').  If neither captions nor images are
-enabled, toolbar buttons are shown using ordinary labels.  See also
+enabled, tool bar buttons are shown using ordinary labels.  See also
 `\fBbuttonCaptions\fR', above.
 .TP
 .B "buttonImageGeometry (\fPclass\fB ButtonImageGeometry)"
@@ -3370,7 +3370,7 @@ within the command tool (`\fBoff\fR', default).  Enabling the command
 tool bar disables the command tool and vice versa.
 .TP
 .B "commonToolBar (\fPclass\fB ToolBar)"
-Whether the toolbar buttons should be shown in one common toolbar at the
+Whether the tool bar buttons should be shown in one common tool bar at the
 top of the common \s-2@DDD@\s+2 window (`\fBon\fR', default), or whether they
 should be placed in two separate tool bars, one for data, and one for
 source operations, as in \s-2@DDD@\s+2 2.x (`\fBoff\fR').
@@ -3478,7 +3478,7 @@ created.
 .RE
 .TP
 .B "flatToolbarButtons (\fPclass\fB FlatButtons)"
-If `\fBon\fR' (default), all toolbar buttons with images or captions
+If `\fBon\fR' (default), all tool bar buttons with images or captions
 are given a `flat' appearance - the 3-D border only shows up when the
 pointer is over the icon.  If `\fBoff\fR', the 3-D border is shown all
 the time.
@@ -3535,7 +3535,7 @@ above, and the `\fBtoolButtons\fR' resource, below.
 .RE
 .TP
 .B "toolbarsAtBottom (\fPclass\fB ToolbarsAtBottom)"
-Whether source and data toolbars should be placed above source and
+Whether source and data tool bars should be placed above source and
 data, respectively (`\fBoff\fR', default), or below, as in
 \s-2@DDD@\s+2 2.x (`\fBon\fR').
 ,TP
@@ -3954,7 +3954,7 @@ hosts.  Usually, `\fBremsh\fR', `\fBrsh\fR', or `\fBon\fR'.
 .TP
 .B "termCommand (\fPclass\fB TermCommand)"
 The command to invoke a separate tty for showing the input/output of
-the debugged program.  A bourne shell command to run in the separate
+the debugged program.  A Bourne shell command to run in the separate
 tty is appended to this string.  The string `\fB@FONT@\fR' is replaced
 by the name of the fixed width font used by \s-2@DDD@\s+2.  A simple
 value is
@@ -4738,7 +4738,7 @@ determine whether it was invoked by \s-2@DDD@\s+2.
 Set to `\fBdumb\fR', the \s-2@DDD@\s+2 terminal type.  This is set for
 the inferior debugger only.  If the debuggee runs in a separate
 execution window, the debuggee's \fBTERM\fR value is set according to
-the `\fBtermType\fR' ressource (see `\fBRESOURCES\fR', above).
+the `\fBtermType\fR' resource (see `\fBRESOURCES\fR', above).
 .TP
 .B TERMCAP
 Set to `' (none), the \s-2@DDD@\s+2 terminal capabilities.
@@ -5377,7 +5377,7 @@ November, 1997
 \s-2@DDD@\s+2 2.2: Persistent sessions, display shortcuts.
 .TP
 June, 1998
-\s-2@DDD@\s+2 3.0: Icon toolbar, Java support, \s-2JDB\s+2 support.
+\s-2@DDD@\s+2 3.0: Icon tool bar, Java support, \s-2JDB\s+2 support.
 .PD
 .\"
 .\"
