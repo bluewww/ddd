@@ -75,6 +75,7 @@ char settings_rcsid[] =
 #include "editing.h"
 #include "mydialogs.h"
 #include "logo.h"
+#include "options.h"
 #include "question.h"
 #include "regexps.h"
 #include "shell.h"
@@ -1940,6 +1941,15 @@ static void reload_all_settings()
     }
 }
 
+void update_settings()
+{
+    if (settings_panel != 0 && XtIsManaged(settings_panel))
+    {
+	reload_all_settings();
+	need_reload_settings = false;
+    }
+}
+
 // Reset settings
 static void ResetSettingsCB (Widget, XtPointer, XtPointer)
 {
@@ -2312,6 +2322,15 @@ static void reload_all_signals()
 	process_handle(info, true);
 }
 
+void update_signals()
+{
+    if (signals_panel != 0 && XtIsManaged(signals_panel))
+    {
+	reload_all_signals();
+	need_reload_signals = false;
+    }
+}
+
 // Create signal editor
 static Widget create_signals(DebuggerType type)
 {
@@ -2336,6 +2355,7 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 	return;
 
     manage_and_raise(settings);
+    check_options_file();
 }
 
 // Popup editor for debugger infos
@@ -2346,6 +2366,7 @@ void dddPopupInfosCB (Widget, XtPointer, XtPointer)
 	return;
 
     manage_and_raise(infos);
+    check_options_file();
 }
 
 // Popup editor for debugger infos
@@ -2356,6 +2377,7 @@ void dddPopupSignalsCB (Widget, XtPointer, XtPointer)
 	return;
 
     manage_and_raise(signals);
+    check_options_file();
 }
 
 // True iff settings might have changed
@@ -2368,10 +2390,7 @@ bool need_settings()
 void reset_settings()
 {
     if (settings_panel != 0)
-    {
-	XtUnmanageChild(settings_panel);
 	need_reload_settings = true;
-    }
 }
 
 // True iff signals might have changed
@@ -2384,10 +2403,7 @@ bool need_signals()
 void reset_signals()
 {
     if (signals_panel != 0)
-    {
-	XtUnmanageChild(signals_panel);
 	need_reload_signals = true;
-    }
 }
 
 static void get_setting(ostream& os, DebuggerType type,

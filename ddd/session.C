@@ -826,20 +826,24 @@ static string get_resource(XrmDatabase db, string name, string cls)
     return "";		// Not found
 }
 
-static Boolean delete_delay_if_idle(XtPointer data)
+static Boolean done_if_idle(XtPointer data)
 {
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {
+	update_settings();	// Refresh settings and signals
+	update_signals();
+
 	delete (Delay *)data;
 	return True;		// Remove from the list of work procs
     }
+
     return False;		// Get called again
 }
 
-static void delete_delay(const string&, void *data)
+static void done(const string&, void *data)
 {
     XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
-		     delete_delay_if_idle, data);
+		     done_if_idle, data);
 }
 
 // Open the session given in SESSION
@@ -961,7 +965,7 @@ static void open_session(const string& session)
 
     // One last command to clear the delay and set up breakpoints
     c.command  = "# reset";
-    c.callback = delete_delay;
+    c.callback = done;
     c.data     = (void *)(Delay *)delay_ptr;
     c.priority = COMMAND_PRIORITY_BATCH;
     c.verbose  = false;

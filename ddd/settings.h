@@ -49,6 +49,9 @@ extern void process_show(string command, string value, bool init = false);
 // True if settings might have changed
 extern bool need_settings();
 
+// Update settings tables
+extern void update_settings();
+
 // Get settings string
 extern string get_settings(DebuggerType type);
 
