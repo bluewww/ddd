@@ -397,9 +397,14 @@ string read_next_display (string& displays, GDBAgent *)
 string get_disp_value_str (/*const*/ string& display, GDBAgent *)
 {
     string d(display);
-    static regex RXeqeq("[^{};,\n=]+ = [^{};,\n=]+ = .*");
+
+    // For some types, XDB issues `NAME = VALUE', for others, `VALUE'.
+    // DDD compensates for this by having XDB prepend `NAME = '.
+    // In case we have `NAME = NAME = VALUE', strip first `NAME = '.
+    static regex RXeqeq("[^{};,\n=]+ = [^{}();,\n=]+ = .*");
     if (d.matches(RXeqeq))
 	d = d.after(" = ");
+
     return d.after (" = ");
 }
 
