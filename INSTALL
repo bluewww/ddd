@@ -33,6 +33,9 @@ To build a complete DDD from sources, you need:
      recommend to use OSF/Motif or the most recent LessTif release,
      available from `http://www.lesstif.org/'.
 
+     LessTif should be used in (default) Motif 1.2 compatibility mode.
+     The Motif 2.0 compatibility mode of LessTif is still incomplete.
+
    * The X window library (Xlib) and X toolkit library (Xt), X11R4 or
      later.  Best results are obtained with X11R6.3 and later.
 

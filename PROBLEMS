@@ -18,7 +18,7 @@ Table of Contents
     * HP-UX
     * LessTif
     * Linux
-    * SGI
+    * OSF/1
     * Solaris 2.x
     * SunOS
       + SunOS 4.1 and X11R6
@@ -405,19 +405,15 @@ Reported by:  Ryan Ware <ware@shocking.com>
     O2 broke the compiler.  It looks and runs great.  Thanks.  I look
     forward to many hours of using it.
 
-
 
-SGI
-===
+OSF/1
+=====
 
-Reported by:  Andreas Zeller <zeller@acm.org>
+Reported by:  Marc Mengel <mengel@fnal.gov>
 
-    Don't use SGI CC for compiling DDD; use GCC instead.
+    On our OSF1 V3.2 machine, one has to turn of -g, or the 
+    assembler chokes when compiling ddd.C.
 
-    I compiled DDD on a mips-sgi-irix5.3 using SGI's CC; the resulting
-    executable fails with segmentation faults.  I could not find the
-    cause for this problem and suspect a CC bug; using GCC instead
-    seems a better alternative.
 
 Solaris 2.x
 ===========

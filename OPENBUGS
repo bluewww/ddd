@@ -197,4 +197,16 @@ detail.
     menu that I discovered this, as the tear-off help window and the
     short cuts box are clearly related.'
 
-731 (Insert new bugs here)
+731 Jarkko Hietaniemi <jhi@iki.fi> says:
+    When the ddd 3.0.90 (compiled with g++/stdc++ in Solaris 2.6 from the
+    sources) is started, it interacts strangely with my X11 window manager
+    (vtwm Release 5.4.4c (http://www.visi.com/~hawkeyd/vtwm.html), running
+    in NetBSD 1.3.2, XFree86 3.3.2).
+    
+    Definition of strange: the splash screen starts up nicely in my
+    current virtual screen but the DDD main window makes my vtwm to jump
+    to screen #0 (upper left corner).
+    
+    I have never before seen problems like this with vtwm.
+
+732 (Insert new bugs here)
