@@ -108,7 +108,6 @@ class DataDisp {
     static void toggleRotateCB          (Widget, XtPointer, XtPointer);
     static void toggleDisableCB         (Widget, XtPointer, XtPointer);
     static void rotateCB                (Widget, XtPointer, XtPointer);
-    static void rotateAllCB             (Widget, XtPointer, XtPointer);
     static void newCB                   (Widget, XtPointer, XtPointer);
     static void enableCB                (Widget, XtPointer, XtPointer);
     static void disableCB               (Widget, XtPointer, XtPointer);

@@ -247,7 +247,7 @@ struct RotateItms { enum Itms {RotateAll}; };
 MMDesc DataDisp::rotate_menu[] =
 {
     {"rotateAll",     MMPush | MMInsensitive, 
-     {DataDisp::rotateAllCB, 0}, 0, 0, 0, 0},
+     {DataDisp::rotateCB, XtPointer(true)}, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -261,7 +261,8 @@ MMDesc DataDisp::node_popup[] =
     MMSep,
     {"detail",        MMPush,   
      {DataDisp::toggleDetailCB, XtPointer(-1)}, 0, 0, 0, 0},
-    {"rotate",        MMPush,   {DataDisp::rotateCB, 0}, 0, 0, 0, 0},
+    {"rotate",        MMPush,   
+     {DataDisp::rotateCB, XtPointer(false) }, 0, 0, 0, 0},
     {"set",           MMPush,   {DataDisp::setCB, 0}, 0, 0, 0, 0},
     MMSep,
     {"delete",        MMPush,   
@@ -296,7 +297,7 @@ MMDesc DataDisp::graph_cmd_area[] =
      {DataDisp::toggleDetailCB, XtPointer(-1)}, 
      DataDisp::detail_menu, 0, 0, 0 },
     {"rotate",        MMPush | MMInsensitive, 
-     {DataDisp::rotateCB, 0}, DataDisp::rotate_menu, 0, 0, 0 },
+     {DataDisp::rotateCB, XtPointer(false)}, DataDisp::rotate_menu, 0, 0, 0 },
     {"set",           MMPush | MMInsensitive, 
      {DataDisp::setCB, 0}, 0, 0, 0, 0 },
     {"delete",        MMPush | MMInsensitive, 
@@ -778,8 +779,10 @@ void DataDisp::toggle_rotate(DispValue *dv, bool all)
 	    toggle_rotate(dv->child(i), all);
 }
 
-void DataDisp::rotateCB(Widget w, XtPointer, XtPointer)
+void DataDisp::rotateCB(Widget w, XtPointer client_data, XtPointer)
 {
+    bool rotate_all = bool(client_data);
+
     set_last_origin(w);
 
     DispNode *disp_node_arg   = selected_node();
@@ -787,29 +790,27 @@ void DataDisp::rotateCB(Widget w, XtPointer, XtPointer)
     if (disp_node_arg == 0 || disp_value_arg == 0)
 	return;
 
-    toggle_rotate(disp_value_arg, false);
+    toggle_rotate(disp_value_arg, rotate_all);
+
+    if (disp_value_arg->type() == Simple)
+    {
+	// We have rotated a scalar value in a plot.  Replot.
+	if (disp_node_arg->clustered())
+	{
+	    DispNode *cluster = disp_graph->get(disp_node_arg->clustered());
+	    if (cluster != 0)
+		cluster->value()->replot();
+	}
+	else
+	{
+	    disp_node_arg->value()->replot();
+	}
+    }
 
     disp_node_arg->refresh();
 
     refresh_graph_edit();
 }
-
-void DataDisp::rotateAllCB(Widget w, XtPointer, XtPointer)
-{
-    set_last_origin(w);
-
-    DispNode *disp_node_arg   = selected_node();
-    DispValue *disp_value_arg = selected_value();
-    if (disp_node_arg == 0 || disp_value_arg == 0)
-	return;
-
-    toggle_rotate(disp_value_arg, true);
-
-    disp_node_arg->refresh();
-
-    refresh_graph_edit();
-}
-
 
 void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
 {
@@ -1720,7 +1721,7 @@ void DataDisp::graph_detailAct (Widget w, XEvent *,
 
 void DataDisp::graph_rotateAct (Widget w, XEvent*, String*, Cardinal*)
 {
-    rotateCB(w, 0, 0);
+    rotateCB(w, XtPointer(false), 0);
 }
 
 void DataDisp::graph_dependentAct (Widget w, XEvent*, String*, Cardinal*)
@@ -2113,6 +2114,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
     bool dereference_ok = false;
     bool rotate_ok      = false;
+    bool rotate_plot_ok = false;
 
     if (disp_value_arg != 0)
     {
@@ -2120,6 +2122,9 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	switch (disp_value_arg->type())
 	{
 	case Simple:
+	    rotate_plot_ok = disp_value_arg->has_plot_alignment();
+	    break;
+
 	case Text:
 	case Reference:
 	    break;
@@ -2205,8 +2210,10 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(graph_cmd_area[CmdItms::Plot].widget, plot_ok);
 
     // Rotate
-    set_sensitive(node_popup[NodeItms::Rotate].widget,       rotate_ok);
-    set_sensitive(graph_cmd_area[CmdItms::Rotate].widget,    rotate_ok);
+    set_sensitive(node_popup[NodeItms::Rotate].widget,       
+		  rotate_ok || rotate_plot_ok);
+    set_sensitive(graph_cmd_area[CmdItms::Rotate].widget,    
+		  rotate_ok || rotate_plot_ok);
     set_sensitive(rotate_menu[RotateItms::RotateAll].widget, rotate_ok);
 
     // Show/Hide Detail

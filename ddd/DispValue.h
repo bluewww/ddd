@@ -67,6 +67,7 @@ class DispValue {
     int _index_base;		// First index
     bool _have_index_base;	// True if INDEX_BASE is valid
     DispValueAlignment _alignment; // Array alignment
+    bool _has_plot_alignment;   // True if plotter set the alignment
 
     // Plotting stuff
     PlotAgent *_plotter;	// Plotting agent
@@ -142,9 +143,6 @@ protected:
 	myexpanded = false;
 	clear_cached_box();
     }
-
-    // Plot Agent
-    PlotAgent *plotter() const { return _plotter; }
 
     // True if more sequence members are coming
     static bool sequence_pending(const string& value, 
@@ -236,11 +234,13 @@ public:
     const string& name()       const { return print_name; }
     const string& addr()       const { return myaddr; }
     int repeats()              const { return myrepeats; }
+    bool has_plot_alignment()  const { return _has_plot_alignment; }
 
     int& repeats()       { clear_cached_box(); return myrepeats; }
     string& full_name()  { clear_cached_box(); return myfull_name; }
     string& name()       { clear_cached_box(); return print_name; }
     bool& enabled()      { clear_cached_box(); return myenabled; }
+    bool& has_plot_alignment() { return _has_plot_alignment; }
 
     bool is_changed() const { return changed; }
     bool descendant_changed() const;
@@ -286,24 +286,12 @@ public:
     // Type-specific modifiers
 
     // Array
+    void set_alignment(DispValueAlignment alignment);
+
     bool vertical_aligned()   const { return _alignment == Vertical; }
     bool horizontal_aligned() const { return _alignment == Horizontal; }
-    void align_vertical()
-    {
-	if (_alignment == Vertical)
-	    return;
-
-	_alignment = Vertical;
-	clear_cached_box();
-    }
-    void align_horizontal()
-    {
-	if (_alignment == Horizontal)
-	    return;
-
-	_alignment = Horizontal;
-	clear_cached_box();
-    }
+    void align_vertical()     { set_alignment(Vertical); }
+    void align_horizontal()   { set_alignment(Horizontal); }
 
     // Pointer
     void dereference(bool set = true)
@@ -354,6 +342,12 @@ public:
 
     // Plot value
     void plot() const;
+
+    // Replot value
+    void replot() const;
+
+    // Current plot agent
+    PlotAgent *plotter() const { return _plotter; }
 
     // Background processing.  PROCESSED is the number of characters
     // processed so far.  If this returns true, abort operation.
