@@ -120,9 +120,9 @@ typedef struct PlusCmdData {
     {}
 };
 
-void user_cmdOA  (string, void*);
-void user_cmdOAC (void*);
-void plusOQAC (string[], void*[], int, void*);
+void user_cmdOA  (const string&, void *);
+void user_cmdOAC (void *);
+void plusOQAC (string [], void *[], int, void *);
 
 // ***************************************************************************
 //
@@ -493,19 +493,21 @@ void user_cmdSUC (string cmd, Widget origin)
 // Filtert und buffert ggf. die Displays aus der Antwort und schreibt uebrige
 // Antwort ins gdb_w. Das data-Argument bestimmt das Filtering.
 //
-void user_cmdOA (string answer, void* data) 
+void user_cmdOA (const string& answer, void* data) 
 {
+    string ans = answer;
     CmdData* cmd_data = (CmdData *) data;
-    cmd_data->pos_buffer->filter (answer);
+    cmd_data->pos_buffer->filter (ans);
 
     if (cmd_data->filter_disp == NoFilter)
-	gdb_out(answer);
+	gdb_out(ans);
     else {
 	// Displays abfangen und buffern, Rest ausgeben
-	cmd_data->disp_buffer->filter (answer);
-	gdb_out(answer);
+	cmd_data->disp_buffer->filter (ans);
+	gdb_out(ans);
     }
 }
+
 
 
 // ***************************************************************************
@@ -567,14 +569,13 @@ void user_cmdOAC (void* data)
 	    source_view->show_execution_position(); // alte Anzeige loeschen
     }
 
+    gdb_out(answer);
+
     // Set PC position
     if (cmd_data->pos_buffer->pc_found())
     {
-	string pc = cmd_data->pos_buffer->get_pc();
-	source_view->show_pc(pc);
-    }	
-
-    gdb_out(answer);
+	source_view->show_pc(cmd_data->pos_buffer->get_pc());
+    }
 
     // Process displays
     if (cmd_data->filter_disp == NoFilter)
@@ -598,7 +599,8 @@ void user_cmdOAC (void* data)
 	    cmd_data->disp_buffer->clear();
 
 	    // War letztes display disabling.... ?
- 	    if (disabling_occurred) {
+ 	    if (disabling_occurred)
+	    {
 		cmd_data->filter_disp = Filter;
 		gdb->send_user_cmd("display");
  		return;
