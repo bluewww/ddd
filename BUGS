@@ -109,7 +109,4 @@ Volunteers for fixing these and other bugs are welcome!
 297 Using display commands like `undisplay' directly instead of using
     the `graph' prefix confuses DDD - displays are considered `inactive'.
 
-298 Displaying two-dimensional arrays in conjunction with `set print
-    repeats on' does not work correctly.
-
 299 (Insert new bugs here)
