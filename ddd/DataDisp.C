@@ -2294,6 +2294,10 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(display_area[DisplayItms::Dereference].widget,
 		  dereference_ok && !undoing);
 
+    bool can_dereference = (gdb->dereferenced_expr("") != "");
+    manage_child(shortcut_menu[ShortcutItms::Dereference2].widget,
+		 can_dereference);
+
     // Plot
     bool arg_is_displayed = (display_number(source_arg->get_string()) != 0);
     bool can_delete_arg = (count.selected == 0 && arg_is_displayed || 

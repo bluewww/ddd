@@ -92,20 +92,24 @@ void gdbRedoCB(Widget, XtPointer, XtPointer)
 // Printing
 //-----------------------------------------------------------------------------
 
-void gdbPrintCB(Widget w, XtPointer, XtPointer)
+void gdbPrintCB(Widget w, XtPointer client_data, XtPointer)
 {
+    Boolean internal = (int)(long)client_data;
+
     string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(gdb->print_command(arg, false), w);
+	gdb_command(gdb->print_command(arg, internal), w);
 }
 
-void gdbPrintRefCB(Widget w, XtPointer, XtPointer)
+void gdbPrintRefCB(Widget w, XtPointer client_data, XtPointer)
 {
+    Boolean internal = (int)(long)client_data;
+
     string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(gdb->print_command(deref(arg), false), w);
+	gdb_command(gdb->print_command(deref(arg), internal), w);
 }
 
 void gdbDisplayCB(Widget w, XtPointer, XtPointer)

@@ -2012,7 +2012,7 @@ string GDBAgent::whatis_command(string text) const
 	return "p " + text + "\\T";
 
     case JDB:
-	return "dump " + text;	// As close as we can get
+	return "class " + text;  // JDB: as close as we can get
 
     case PERL:
 	return "";		// Who knows?

@@ -1445,10 +1445,11 @@ static MMDesc data_menu[] =
     { "displays",    MMPush,    { DataDisp::EditDisplaysCB, 0 }, 0, 0, 0, 0},
     { "watchpoints", MMPush,   { SourceView::EditBreakpointsCB, 0 }, 
                                  NULL, &edit_watchpoints_w, 0, 0 },
-    { "examine",     MMPush,  { gdbExamineCB, 0 }, NULL, &examine_w, 0, 0},
+    { "examine",     MMPush,  { gdbExamineCB, 0 }, 0, &examine_w, 0, 0},
     MMSep,
-    { "print",       MMPush,  { gdbPrintCB, 0   }, NULL, &print_w, 0, 0 },
-    { "display",     MMPush,  { gdbDisplayCB, 0 }, NULL, &display_w, 0, 0 },
+    { "print",       MMPush,  
+	{ gdbPrintCB, XtPointer(False) }, 0, &print_w, 0, 0 },
+    { "display",     MMPush,  { gdbDisplayCB, 0 }, 0, &display_w, 0, 0 },
     MMSep,
     { "detectAliases", MMToggle, { graphToggleDetectAliasesCB, 0 },
       NULL, &detect_aliases_w, 0, 0 },
@@ -1571,17 +1572,24 @@ static MMDesc common_menubar[] =
 };
 
 struct PrintItems {
-    enum ArgCmd { PrintRef, Whatis };
+    enum ArgCmd { PrintRef, Dump, Whatis, Examine };
 };
 
+static Widget print_ref_w     = 0;
+static Widget print_dump_w    = 0;
+static Widget print_whatis_w  = 0;
 static Widget print_examine_w = 0;
 
 static MMDesc print_menu[] =
 {
-    { "printRef",        MMPush, { gdbPrintRefCB, 0 }, 0, 0, 0, 0 },
-    { "whatis",          MMPush, { gdbWhatisCB, 0 }, 0, 0, 0, 0 },
+    { "printRef",        MMPush,
+	{ gdbPrintRefCB, XtPointer(False) }, 0, &print_ref_w, 0, 0 },
+    { "dump",            MMPush, 
+	{ gdbPrintCB, XtPointer(True) }, 0, &print_dump_w, 0, 0 },
+    { "whatis",          MMPush, 
+	{ gdbWhatisCB, 0 }, 0, &print_whatis_w, 0, 0 },
     { "examine",         MMPush, 
-      { gdbExamineCB, 0 }, NULL, &print_examine_w, 0, 0 },
+	{ gdbExamineCB, 0 }, 0, &print_examine_w, 0, 0 },
     MMEnd
 };
 
@@ -1589,9 +1597,11 @@ struct DispItems {
     enum ArgCmd { DispRef };
 };
 
+static Widget disp_ref_w     = 0;
+
 static MMDesc display_menu[] =
 {
-    { "dispRef",        MMPush, { gdbDispRefCB, 0 }, 0, 0, 0, 0 },
+    { "dispRef",        MMPush, { gdbDispRefCB, 0 }, 0, &disp_ref_w, 0, 0 },
     MMEnd
 };
 
@@ -1668,9 +1678,10 @@ static MMDesc arg_cmd_area[] =
     {"find",          MMPush | MMInsensitive, 
      { gdbFindAgainCB, 0 }, find_menu, 0, 0, 0 },
     {"breakAt",       MMPush,  { gdbToggleBreakCB, 0 }, break_menu, 0, 0, 0 },
-    {"watch",         MMPush,  { gdbToggleWatchCB, XtPointer(WATCH_CHANGE) }, 
-                                 watch_menu, 0, 0, 0 },
-    {"print",         MMPush,  { gdbPrintCB, 0 }, print_menu, 0, 0, 0 },
+    {"watch",         MMPush,  
+	{ gdbToggleWatchCB, XtPointer(WATCH_CHANGE) }, watch_menu, 0, 0, 0 },
+    {"print",         MMPush,  
+	{ gdbPrintCB, XtPointer(False) }, print_menu, 0, 0, 0 },
     {"display",       MMPush,  { gdbDisplayCB, 0 }, display_menu, 0, 0, 0 },
     MMEnd
 };
@@ -5213,15 +5224,21 @@ void update_arg_buttons()
     set_sensitive(break_menu[BreakItems::RegexBreak].widget,
 		  gdb->type() == GDB);
 
-    MString print_ref_label("Print " + deref(arg, "()"));
+    string deref_arg = deref(arg, "()");
+
+    MString print_ref_label("Print " + deref_arg);
     XtVaSetValues(print_menu[PrintItems::PrintRef].widget,
 		  XmNlabelString, print_ref_label.xmstring(),
 		  NULL);
 
-    MString disp_ref_label("Display " + deref(arg, "()"));
+    MString disp_ref_label("Display " + deref_arg);
     XtVaSetValues(display_menu[DispItems::DispRef].widget,
 		  XmNlabelString, disp_ref_label.xmstring(),
 		  NULL);
+
+    bool can_dereference = (gdb->dereferenced_expr("") != "");
+    manage_child(print_ref_w, can_dereference);
+    manage_child(disp_ref_w,  can_dereference);
 
     set_sensitive(stack_w,     !undoing);
     set_sensitive(registers_w, gdb->has_regs_command() && !undoing);
@@ -7294,6 +7311,10 @@ static void setup_options()
     set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
     set_sensitive(set_debugger_perl_w, have_cmd("perl"));
+
+    bool can_dump = (gdb->type() == JDB);
+    // (gdb->print_command("", true) != gdb->print_command("", false));
+    manage_child(print_dump_w, can_dump);
 }
 
 static void setup_core_limit()

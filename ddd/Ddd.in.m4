@@ -4205,6 +4205,7 @@ Ddd*toolbar*awatch.labelString:		Set Access Watchpoint on ()
 Ddd*toolbar*unwatch.labelString:	Delete Watchpoint on ()
 Ddd*toolbar*print.labelString:		Print ()
 Ddd*toolbar*printRef.labelString:	Print *()
+Ddd*toolbar*dump.labelString:	        Dump ()
 Ddd*toolbar*whatis.labelString:		Whatis ()
 Ddd*toolbar*examine.labelString:	Examine ()...
 Ddd*toolbar*display.labelString:	Display ()
@@ -4335,6 +4336,8 @@ Ddd*toolbar*print.documentationString:	\
 @rm Print the argument LBL(()) in the @GDB@ console MORE_PULLDOWN()
 Ddd*toolbar*printRef.documentationString:	\
 @rm Print the dereferenced argument LBL(()) in the @GDB@ console
+Ddd*toolbar*dump.documentationString:	\
+@rm Print the detailed argument LBL(()) in the @GDB@ console
 Ddd*toolbar*whatis.documentationString:	\
 @rm Print the type of the argument LBL(()) in the @GDB@ console
 Ddd*toolbar*examine.documentationString:	\
@@ -4593,6 +4596,9 @@ Ddd*text_popup.watch.documentationString: \
 
 Ddd*text_popup.printRef.documentationString: \
 @rm Print the dereferenced value of the selected item in the @GDB@ console
+
+Ddd*text_popup.dump.documentationString: \
+@rm Print the detailed value of the selected item in the @GDB@ console
 
 Ddd*text_popup.dispRef.documentationString: \
 @rm Display the dereferenced item in the data window
