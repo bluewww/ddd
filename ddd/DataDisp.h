@@ -445,7 +445,8 @@ public:
 	      String       vsl_library,        // from APP_DATA
 	      String       vsl_defs,           // from APP_DATA
 	      bool         panned,             // from APP_DATA
-	      bool         toolbar_at_bottom); // from APP_DATA
+	      bool         toolbar_at_bottom,  // from APP_DATA
+	      unsigned char label_type);       // from APP_DATA
 
     void create_shells();
 

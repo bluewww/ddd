@@ -426,7 +426,8 @@ static XImage *get_subimage(XImage *image, String geometry,
     if (sign_y == '-')
 	y = image->height - height - y;
 
-    if (x < 0 || y < 0 || x + width > image->width || y + height > image->height)
+    if (x < 0 || y < 0 || 
+	x + width > image->width || y + height > image->height)
     {
 	cerr << "No such " << resource << " " << quote(geometry) << " in " 
 	     << name << "\n";
@@ -448,8 +449,10 @@ static XImage *get_button_subimage(XImage *image, String name)
 {
     if (!app_data.button_images && !app_data.button_captions)
     {
+#if 0				// This is a legitimate DDD setting
 	cerr << "Must set either " << XtNbuttonImages << " or " 
 	     << XtNbuttonCaptions << "\n";
+#endif
 	return 0;
     }
 

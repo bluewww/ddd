@@ -4918,7 +4918,8 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
 
 DataDisp::DataDisp(Widget parent,
 		   String vsl_path, String vsl_library, String vsl_defs,
-		   bool panned, bool toolbar_at_bottom)
+		   bool panned, bool toolbar_at_bottom,
+		   unsigned char label_type)
 {
     XtAppContext app_context = XtWidgetToApplicationContext(parent);
 
@@ -4939,7 +4940,8 @@ DataDisp::DataDisp(Widget parent,
     if (graph_cmd_w == 0 && !toolbar_at_bottom)
     {
 	graph_cmd_w = create_toolbar(parent, "graph", 
-				     graph_cmd_area, 0, arg_label, graph_arg);
+				     graph_cmd_area, 0, arg_label, graph_arg,
+				     label_type);
     }
 
     // Create graph editor

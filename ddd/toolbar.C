@@ -59,11 +59,22 @@ static int preferred_height(Widget w)
     return XmConvertUnits(w, XmVERTICAL, XmPIXELS, size.height, unit_type);
 }
 
+static void set_label_type(MMDesc items[], unsigned char label_type)
+{
+    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
+    {
+	Widget w = item->widget;
+	if (w != 0 && XmIsLabel(w))
+	    XtVaSetValues(w, XmNlabelType, label_type, NULL);
+    }
+}
+
 // Create a toolbar as child of parent, named `NAME', having
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
 Widget create_toolbar(Widget parent, string name, 
 		      MMDesc *items1, MMDesc *items2,
-		      Widget& label, ArgField*& argfield)
+		      Widget& label, ArgField*& argfield,
+		      unsigned char label_type)
 {
     Arg args[10];
     Cardinal arg = 0;
@@ -92,11 +103,16 @@ Widget create_toolbar(Widget parent, string name,
     MMaddCallbacks(items1);
     MMaddHelpCallback(items1, ImmediateHelpCB);
 
+    if (label_type != (unsigned char)-1)
+	set_label_type(items1, label_type);
+
     if (items2 != 0)
     {
 	MMaddItems(buttons, items2);
 	MMaddCallbacks(items2);
 	MMaddHelpCallback(items2, ImmediateHelpCB);
+	if (label_type != (unsigned char)-1)
+	    set_label_type(items2, label_type);
     }
 
     XtVaSetValues(buttons,

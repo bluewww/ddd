@@ -1864,6 +1864,11 @@ int main(int argc, char *argv[])
     if (!app_data.separate_source_window && !app_data.status_at_bottom)
 	create_status(paned_work_w);
 
+    // Toolbar label type
+    unsigned char label_type = XmSTRING;
+    if (app_data.button_captions || app_data.button_images)
+	label_type = XmPIXMAP;
+
     // Common toolbar
     Widget arg_label = 0;
     if (!app_data.separate_source_window &&
@@ -1873,7 +1878,7 @@ int main(int argc, char *argv[])
 	arg_cmd_area[ArgItems::Display].type |= MMUnmanaged;
 	arg_cmd_w = create_toolbar(paned_work_w, "common",
 				   arg_cmd_area, DataDisp::graph_cmd_area,
-				   arg_label, source_arg);
+				   arg_label, source_arg, XmPIXMAP);
 
 	DataDisp::graph_cmd_w = arg_cmd_w;
 
@@ -1935,11 +1940,12 @@ int main(int argc, char *argv[])
 
     // Create data display
     data_disp = new DataDisp(data_disp_parent,
-			     app_data.vsl_path,
+			     app_data.vsl_path, 
 			     app_data.vsl_library,
 			     app_data.vsl_defs,
 			     app_data.panned_graph_editor,
-			     app_data.toolbars_at_bottom);
+			     app_data.toolbars_at_bottom,
+			     label_type);
 
     if (app_data.separate_data_window)
     {
@@ -2002,7 +2008,8 @@ int main(int argc, char *argv[])
 	if (arg_cmd_w == 0 && !app_data.toolbars_at_bottom)
 	{
 	    arg_cmd_w = create_toolbar(source_view_parent, "source",
-				       arg_cmd_area, 0, arg_label, source_arg);
+				       arg_cmd_area, 0, arg_label, source_arg,
+				       label_type);
 	}
 
 	if (command_toolbar_w == 0 && !app_data.toolbars_at_bottom)
@@ -2024,7 +2031,8 @@ int main(int argc, char *argv[])
     if (arg_cmd_w == 0 && !app_data.toolbars_at_bottom)
     {
 	arg_cmd_w = create_toolbar(source_view_parent, "source",
-				   arg_cmd_area, 0, arg_label, source_arg);
+				   arg_cmd_area, 0, arg_label, source_arg,
+				   label_type);
     }
 
     if (command_toolbar_w == 0 && !app_data.toolbars_at_bottom)
@@ -2057,7 +2065,8 @@ int main(int argc, char *argv[])
     // Source tool bar
     if (arg_cmd_w == 0)
 	arg_cmd_w = create_toolbar(source_view_parent, "source",
-				   arg_cmd_area, 0, arg_label, source_arg);
+				   arg_cmd_area, 0, arg_label, source_arg,
+				   label_type);
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  ClearTextFieldCB, source_arg->widget());
     XtAddCallback(source_arg->widget(), XmNactivateCallback, 

@@ -257,6 +257,24 @@ Ddd*wwwCommand: \
 Ddd*questionTimeout: 10
 
 
+! Toolbar appearance.
+! Whether to have one common toolbar for one-window configurations.
+Ddd*commonToolBar: on
+
+! Whether toolbars should be placed at the bottom (Default in DDD 2.x 
+! and earlier)
+Ddd*toolbarsAtBottom: off
+
+! Whether to display images and/or captions.  Turing both off causes
+! toolbars to display strings (as in DDD 2.x and earlier.)
+Ddd*buttonImages:   on
+Ddd*buttonCaptions: on
+
+! The image and caption areas within button images.
+Ddd*buttonImageGeometry:   25x21+2+0
+Ddd*buttonCaptionGeometry: 29x7+0-0
+
+
 ! Newline-separated lists of GDB commands for which buttons are to be created.
 !
 ! All buttons send the named command to GDB.
@@ -673,6 +691,7 @@ Ddd*valueDocs: true
 
 
 ! Delays for showing tips and docs
+
 ! Time (in ms) to spend before raising a button or value tip.
 Ddd*buttonTipDelay: 750
 Ddd*valueTipDelay:  750
@@ -691,11 +710,10 @@ Ddd*clearTipDelay:   50
 Ddd*pushMenuPopupTime: 400
 
 
+! Status line
+
 ! Should the status line be placed at the bottom?
 Ddd*statusAtBottom: true
-
-! Should the toolbars be placed at the bottom (default in DDD 2.x and earlier)?
-Ddd*toolbarsAtBottom: false
 
 ! Number of status messages to be kept in status history
 Ddd*statusHistorySize: 20
@@ -707,6 +725,8 @@ Ddd*blinkWhileBusy: true
 ! debugger is busy.  A value of 0 prevents the busy LED from blinking.
 Ddd*busyBlinkRate: 500
 
+
+! Maximum lengths
 
 ! The maximum length of a data display title (in characters)
 ! Longer names are replaced by `..'; `foo->bar->blue' becomes `foo->..->blue'.
@@ -3349,9 +3369,6 @@ Clear LBL(()) by clicking on the prompt LBL(():).
 !-----------------------------------------------------------------------------
 ! Common Toolbar
 !-----------------------------------------------------------------------------
-
-! For the common toolbar, only pixmap buttons make sense.
-Ddd*common.toolbar.XmPushButton.labelType: 	XmPIXMAP
 
 Ddd*toolbar*helpString: \
 WIDGET(Toolbar)\n\
