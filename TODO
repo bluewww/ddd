@@ -42,7 +42,7 @@ Volunteers for these and other projects are welcome!
     ddd/ddd instead.
 
 037 Group dereference.  If multiple pointers are selected,
-     dereference them all.
+    dereference them all.
 
 049 albrecht@igpm.rwth-aachen.de (Harald Albrecht):
     The dialog windows (especially the backtrace dialog) should not
@@ -98,7 +98,7 @@ Volunteers for these and other projects are welcome!
 078 Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
     mirrors?
 
-080*Convert the DDD manual to texinfo, as in ICE, resulting in an
+080 Convert the DDD manual to texinfo, as in ICE, resulting in an
     HTML manual.  See also 102.
 
 083 Include graphplace (or other graph layout) support.
@@ -242,8 +242,7 @@ Volunteers for these and other projects are welcome!
     (such as running or making the program as well as shell commands)
     should be ignored.
 
-168 Rename `Lookup' to `List' and recognize the `list' command.  See
-    also #108.
+168 Rename `Lookup' to `List' and recognize the `list' command.  See also #108.
 
 171 Use double-buffering to display the graph.  Even less flickering.
 
@@ -284,8 +283,7 @@ Volunteers for these and other projects are welcome!
 199 Use X11R6 XtSignalNotify for Xt-safe signal handling.
 
 201 Install hotkeys on the command tool, using Harald Albrecht's
-    hotkey package (in
-    `http://www.igpm.rwth-aachen.de/~albrecht/mnem.html')
+    package (in `http://www.igpm.rwth-aachen.de/~albrecht/mnem.html')
 
 206 `manage_and_raise' should deiconify dialogs.
 
@@ -298,7 +296,7 @@ Volunteers for these and other projects are welcome!
     view the content of an array graphically.  Useful when you know
     what kind of array you are expecting (symmetric, diagonal ...)
 
-217 Winson Quock <quock@pepper.com> (see the quote in ddd/exit.C)
+217 Winson Quock <quock@pepper.com> (see the quote in `ddd/exit.C')
     says: Very often, I found myself spending quite a lot of time
     arranging each "display box".  It will be cool if we can also
     have a normal text list display for variable values.
@@ -360,8 +358,7 @@ Volunteers for these and other projects are welcome!
 
 254 If an XEmacs is running, use its frame for displaying the text.
 
-257 Show whether a conditional jump (breakpoint?) will be taken or
-    not.
+257 Show whether a conditional jump (breakpoint?) will be taken or not.
 
 266 Include TAGS support.
 
@@ -403,9 +400,6 @@ Volunteers for these and other projects are welcome!
     functions.  See also 273 and 292.
 
 294 Have a way to expand `VALUE <Nx>' manually.
-
-298*If an item (a word) is selected in the reference browser, have it
-    copied to `():'.
 
 304 If the source window size has changed (via panes?), recenter the
     command tool.
