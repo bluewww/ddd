@@ -5897,7 +5897,7 @@ static Widget          print_file_name_field = 0;
 void graphQuickPrintCB(Widget w, 
 		       XtPointer client_data, XtPointer call_data)
 {
-    BoxPrintGC *gc_ptr;
+    BoxPrintGC *gc_ptr = 0;
     switch (print_type)
     {
     case PRINT_POSTSCRIPT:
@@ -6072,8 +6072,7 @@ void graphPrintCB(Widget w, XtPointer client_data, XtPointer call_data)
     Arg args[10];
     Cardinal num_args;
 
-    print_dialog = XmCreatePromptDialog(data_disp->graph_edit, 
-					"print", ArgList(0), 0);
+    print_dialog = XmCreatePromptDialog(find_shell(w), "print", ArgList(0), 0);
     Delay::register_shell(print_dialog);
     XtAddCallback(print_dialog, XmNokCallback,     
 		  graphQuickPrintCB, XtPointer(0));
