@@ -32,13 +32,9 @@ Volunteers for these and other projects are welcome!
 
 004. Have interactive help -- a wrapper to the GDB `help' command.
 
-005. Have a menu of frequently used GDB commands (classed by help classes?)
-
 006. With GDB 4.14 and later, define `graph display' command such that
      a special code is issued which causes DDD to show the display.
      Thus, one could use `graph display' in own definitions.
-
-007. [done]
 
 008. Have buttons arranged such that they do not disappear when the window
      gets smaller.
@@ -48,39 +44,15 @@ Volunteers for these and other projects are welcome!
      comparing display addresses.  See also the mail of
      markusd@cs.tu-berlin.de (Markus Dahm).
 
-010. [done]
-
 011. Have local source files without path indication located via the
      GDB directories setting.  Maybe through the `info source'
      and `show directories' commands?
 
-012. [done]
-
-013. [done]
-
-014. [done]
-
-015. [done]
-
-016. [done]
-
 017. Have the graph editor scroll automatically when the pointer drags
      something out of the visible part of the window.
 
-018. [done]
-
-019. [done]
-
-020. [done]
-
 021. In the manual index, use special fonts for bold keywords.
      [Requires Motif 2.0 and CMText.]
-
-022. [done]
-
-023. [done]
-
-024. Have Fortran support. [Definitely a volunteer job.]
 
 025. Have auto-unfolding for recursive data structures.  Dereferencing
      a pointer P * would automatically select all P * members in the
@@ -90,57 +62,17 @@ Volunteers for these and other projects are welcome!
      Every data type would be assigned an individual VSL function
      determining its representation.
 
-027. [done]
-
-028. Assembly and register windows.  [Nice job for a volunteer.]
-
-029. [done]
-
-030. [done]
-
 031. Have a three-dimensional data display (using red/green glasses) :-)
-
-032. [done]
 
 033. Call for bug report if `make' fails.  But how?
 
 034. Call for bug report if a fatal X error occurs.
 
-035. [done]
-
-036. [done]
-
 037. Group dereference.  If multiple pointers are selected,
      dereference them all.
 
-038. [done]
-
-039. [done]
-
-040. [done]
-
-041. [done]
-
-042. [done]
-
-043. [done]
-
 044. Disable pointer grabs from the debugged application as soon as
      the Debugger prompt reappears.  But how?
-
-045. [done]
-
-046. [done]
-
-047. [done]
-
-048. From bruno@nsipo.nasa.gov (Eric Bruno):
-     Under the program menu and a menu option with a dialog
-     to be used with a set args line which would be issued with
-     before each run request.
-     A history list would also be used for this dialog, so if one
-     was testing different command lines it would be just a point
-     and click.
 
 049. albrecht@igpm.rwth-aachen.de (Harald Albrecht):
      The dialog windows (especially the backtrace dialog) should not
@@ -152,16 +84,8 @@ Volunteers for these and other projects are welcome!
      LENS (see ftp.cc.gatech.edu:pub/people/stasko).  Suggested by
      bruce@liverpool.ac.uk (Bruce Stephens).
 
-051. [done]
-
-052. [done]
-
-053. [see 011, above]
-
 054. Adapt DDD to DBX as found on DEC Alpha.  Ruediger Berlich
      <berlich@pc66.mppmu.mpg.de> has a description of the DBX format.
-
-055. [done]
 
 056. Have current arguments (`info args') and local variables (`info
      locals') be displayed.
@@ -175,7 +99,6 @@ Volunteers for these and other projects are welcome!
      does not seem to be a problem, except that the default prompt includes
      the command history number, e.g. "(dbx 7) ".  Changing it to "(dbx) "
      is probably appropriate for ddd.
-
 
 058. (Insert your project idea here)
 

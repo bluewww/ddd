@@ -15,22 +15,8 @@ Volunteers for fixing these and other bugs are welcome!
 
 001. It's too big and too slow.  [This one will never get fixed]
 
-002. [fixed]
-
 003. Using Motif 1.1 or earlier, the command window is scrolled
      whenever obscured.  [This seems to be a Motif bug.]
-
-004. [fixed]
-
-005. [fixed]
-
-006. [fixed]
-
-007. [fixed]
-
-008. [fixed]
-
-009. [fixed]
 
 010. On some systems, switching back from running processes in the
      execution window to running processes in the command window does
@@ -41,14 +27,8 @@ Volunteers for fixing these and other bugs are welcome!
      `*useTTYCommand: false' in `~/.dddinit': this will set up an
      alternative redirection scheme].
 
-011. [fixed]
-
-012. [fixed]
-
 013. Raising windows using the `Windows' menu does not assign them `mwm'
      input focus.  [Anyone willing to give me a hint here?  -AZ]
-
-014. [fixed]
 
 015. On Motif 1.2 or later, using DDD with both explicit keyboard
      focus and a panned graph editor causes problems: Keyboard
@@ -61,50 +41,12 @@ Volunteers for fixing these and other bugs are welcome!
      don't use explicit keyboard focus; if you want explicit keyboard
      focus, use scrollbars.]
 
-016. [fixed]
-
-017. [fixed]
-
-018. [not a DDD bug, forwarded to manual page]
-
-019. [not a DDD bug, forwarded to manual page]
-
-020. [fixed]
-
 021. Using DBX, attempting to dereference a `(nil)' pointer results in
      an error message and no new display.  However, the expression is
      entered as an ordinary display.
 
-022. [fixed]
-
-023. [fixed]
-
-024. [fixed]
-
-025. [fixed]
-
 026. Using DBX with PASCAL or Modula-2, selected array elements are
      always counted from zero, instead of the starting index of the array.
-
-027. [fixed]
-
-028. [fixed]
-
-029. [fixed]
-
-030. [fixed]
-
-031. [fixed]
-
-032. [fixed]
-
-033. [fixed]
-
-034. [fixed]
-
-035. [fixed]
-
-036. [fixed]
 
 037. Paul Eggert (eggert@twinsun.com) states:
 
@@ -123,10 +65,6 @@ Volunteers for fixing these and other bugs are welcome!
      SunOS 4.1.x host).  Then run `ddd'.  This will make the SunOS
      4.1.x X server dump core.
 
-038. [fixed]
-
-039. [fixed]
-
 040. dmitzel@everest.hitc.com (Danny J. Mitzel) states:
      I'm running the DDD 1.1 sparc-sun-sunos4.1.1 prebuilt binary on a
      Sun4/300 SunOS4.1.3_U1.  I notice that once I have typed any
@@ -142,22 +80,12 @@ Volunteers for fixing these and other bugs are welcome!
 041. Starting DDD iconified under vtwm causes trouble with group
      iconification.
 
-042. [fixed]
-
 043. vickery@babbage.cs.qc.edu (Christopher Vickery) states:
      The display() operation generates a segmentation fault if the variable
      to be displayed is an uninitialized pointer.
 
-044. [fixed]
-
-045. [fixed]
-
 046. Line continuations (i.e. GDB commands ended by `\' and continued
      on the next line) are not handled.
-
-047. [fixed]
-
-048. [fixed]
 
 049. The bounding box is computed for all boxes, even if only selected
      boxes are to be printed.
@@ -171,18 +99,12 @@ Volunteers for fixing these and other bugs are welcome!
 051. grant@isgtec.com (Grant McDorman) has run purify on DDD and
      reported some memory leaks as well as bad memory accesses.
 
-052. [fixed]
-
 053. emeijer@us.oracle.com (Edwin Meijer) states:
      I tried the following scenario: 
      > exec program [arg,....] 
      and while my program was in a sleep I did:  
      > ddd --dbx program process-id 
      ddd seemed to start up fine, but after loading it core-dumped. 
-
-054. [fixed]
-
-055. [fixed]
 
 056. `Select All' does not select hints.
 
@@ -191,8 +113,6 @@ Volunteers for fixing these and other bugs are welcome!
      level 11.  Since then I updated to the latest fix level 12, that
      came out a few weeks ago.  Now DDD hangs at "random" points when
      coming up.
-
-058. [fixed]
 
 059. Having a newline ``stuck'' in the command line makes DDD execute
      each typed letter as a separate command.

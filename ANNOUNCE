@@ -90,11 +90,11 @@ variable values.  Using DDD, you can reason about your application by
 viewing its data, not just by viewing it execute lines of source code.
 
 Other DDD features include: debugging of programs written in C, C++,
-Pascal, or MODULA-2; hypertext source navigation and lookup; GDB/DBX
-command-line interface with full editing, history, and completion
-capabilities; breakpoint, backtrace, and history editors; optional
-program execution in terminal emulator window; debugging on remote
-host; on-line manual; interactive help on the OSF/Motif user
+ADA, FORTRAN, Pascal, or MODULA-2; hypertext source navigation and
+lookup; GDB/DBX command-line interface with full editing, history, and
+completion capabilities; breakpoint, backtrace, and history editors;
+optional program execution in terminal emulator window; debugging on
+remote host; on-line manual; interactive help on the OSF/Motif user
 interface.  DDD has been designed to compete with well-known
 commercial debuggers.
 
@@ -138,7 +138,8 @@ To build a complete DDD from sources, you need:
 
 To run DDD, you need a GDB debugger (version 4 is required; best
 results are achieved with 4.13 or later).  Using GDB, you can debug
-programs written in C and C++.
+programs written in C and C++; GDB also includes some ADA and FORTRAN
+support.
 
 As an alternative, DDD also supports Sun's DBX debugger.  Using DBX,
 you can additionally debug programs written in Pascal and MODULA-2.
