@@ -483,8 +483,7 @@ set width 0\n\
 
 ! The GDB settings.  Usually overridden in `~/.ddd/init'.
 Ddd*gdbSettings: \
-set print asm-demangle on\n\
-set print repeats 0\n
+set print asm-demangle on\n
 
 
 ! The DBX initialization commands. Make sure the TTY is in a proper state,

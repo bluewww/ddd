@@ -124,6 +124,7 @@ DDD 2.2 [in beta test]
     - A serious bug that caused timers to be inadvertently removed has
       been fixed.  Bug effects included loss of console cursor, loss
       of data display contents, and loss of scrolling capabilities.
+    - DDD now handles GDB `<repeats N times>' output correctly.
     - And again, hundreds of minor improvements and bug fixes.  See
       the ChangeLog for details.
 

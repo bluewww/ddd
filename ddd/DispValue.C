@@ -114,6 +114,63 @@ DispValue::DispValue (DispValue* p,
     changed = false;
 }
 
+// Duplicator
+DispValue::DispValue (const DispValue& dv)
+    : mytype(dv.mytype), myparent(dv.myparent), mydepth(dv.mydepth),
+      myexpanded(dv.myexpanded), myfull_name(dv.myfull_name),
+      print_name(dv.print_name), changed(false)
+{
+    switch (mytype)
+    {
+    case UnknownType:
+    {
+	v.simple = 0;
+	break;
+    }
+
+    case Simple:
+    case Text:
+    {
+	v.simple = new SimpleDispValue;
+	v.simple->value = dv.v.simple->value;
+	break;
+    }
+
+    case Pointer:
+    {
+	v.pointer = new PointerDispValue;
+	v.pointer->value = dv.v.pointer->value;
+	v.pointer->dereferenced = false;
+	break;
+    }
+
+    case Array:
+    {
+	v.array = new ArrayDispValue;
+	v.array->member_count = dv.v.array->member_count;
+	for (int i = 0; i < v.array->member_count; i++)
+	    v.array->members[i] = dv.v.array->members[i]->dup();
+	v.array->align = dv.v.array->align;
+	break;
+    }
+
+    case StructOrClass:
+    case BaseClass:
+    case Reference:
+    case List:
+    {
+	v.str_or_cl = new StructOrClassDispValue;
+	v.str_or_cl->member_count = dv.v.str_or_cl->member_count;
+	for (int i = 0; i < v.str_or_cl->member_count; i++)
+	    v.str_or_cl->members[i] = dv.v.str_or_cl->members[i]->dup();
+	break;
+    }
+    }
+}
+
+DispValue *DispValue::dup() { return new DispValue(*this); }
+
+
 // Initialization
 void DispValue::init(string& value, DispValueType given_type)
 {
@@ -213,18 +270,34 @@ void DispValue::init(string& value, DispValueType given_type)
 	    // same across all elements.
 	    string member_name;
 	    DispValueType member_type = UnknownType;
-	    int i = 0;
+	    int array_index = 0;
 
 	    // The array has at least one element.  Otherwise, GDB
 	    // would treat it as a pointer.
 	    do {
-		member_name = "[" + itostring (i++) + "]";
+		string repeated_value = value;
+		member_name = "[" + itostring(array_index++) + "]";
 		DispValue *dv = 
-		    new DispValue(this, depth() + 1, value, 
+		    new DispValue(this, depth() + 1, value,
 				  base + member_name, member_name, 
 				  member_type);
 		member_type = dv->type();
 		v.array->members[v.array->member_count++] = dv;
+
+		int repeats = read_repeats(value);
+
+		while (--repeats > 0)
+		{
+		    member_name = "[" + itostring(array_index++) + "]";
+		    string val = repeated_value;
+		    DispValue *repeated_dv = 
+			new DispValue(this, depth() + 1,
+				      val,
+				      base + member_name, member_name,
+				      member_type);
+		    v.array->members[v.array->member_count++] = repeated_dv;
+		}
+
 		if (background(value.length()))
 		{
 		    init(value);
@@ -750,11 +823,6 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 
     string init_value = value;
 
-    int i;
-    string new_value;
-    string member_name;
-    bool more_values = true;
-
 #if LOG_UPDATE_VALUES
     clog << "Updating " << mytype 
 	 << " " << full_name() << " with " << quote(value) << "\n";
@@ -787,38 +855,45 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 
     switch (mytype) {
     case Simple:
-	new_value = read_simple_value(value, depth());
+    {
+	string new_value = read_simple_value(value, depth());
 	if (v.simple->value != new_value) {
 	    v.simple->value = new_value;
 	    changed = was_changed = true;
 	}
 	break;
+    }
 
     case Text:
+    {
 	if (v.simple->value != value) {
 	    v.simple->value = value;
 	    changed = was_changed = true;
 	}
 	break;
+    }
 
     case Pointer:
-	new_value = read_pointer_value (value);
+    {
+	string new_value = read_pointer_value (value);
 	if (v.pointer->value != new_value) {
 	    v.pointer->value = new_value;
 	    changed = was_changed = true;
 	}
 	break;
+    }
 
     case Array:
     {
 	read_array_begin (value);
 
-	i = 0;
 	string vtable_entries = read_vtable_entries(value);
+	int array_index = 0;
 	if (vtable_entries != "")
 	{
-	    v.array->members[i++]->update(vtable_entries, 
-					  was_changed, was_initialized);
+	    v.array->members[array_index++]->update(vtable_entries, 
+						    was_changed, 
+						    was_initialized);
 	    if (was_initialized)
 		break;
 	    if (background(value.length()))
@@ -828,22 +903,40 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	if (!was_initialized)
 	{
 	    DispValueType member_type = UnknownType;
-	    for (; more_values && i < v.array->member_count; i++)
+	    bool more_values = true;
+	    while (more_values && array_index < v.array->member_count)
 	    {
-		v.array->members[i]->update(value, 
-					    was_changed, was_initialized,
-					    member_type);
+		string repeated_value = value;
+		v.array->members[array_index++]->update(value, 
+							was_changed,
+							was_initialized,
+							member_type);
 		if (was_initialized)
 		    break;
 		if (background(value.length()))
 		    break;
 
-		member_type = v.array->members[i]->type();
+		member_type = v.array->members[array_index - 1]->type();
+
+		int repeats = read_repeats(value);
+		while (--repeats > 0)
+		{
+		    string val = repeated_value;
+		    v.array->members[array_index++]->update(val,
+							    was_changed,
+							    was_initialized,
+							    member_type);
+		    if (was_initialized)
+			break;
+		    if (background(value.length()))
+			break;
+		}
+
 		more_values = read_array_next (value);
 	    }
 	}
 
-	if (was_initialized || i != v.array->member_count)
+	if (was_initialized || array_index != v.array->member_count)
 	{
 #if LOG_UPDATE_VALUES
 	    clog << mytype << " changed\n";
@@ -880,9 +973,11 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	    munch_dump_line (value);
 
 	read_str_or_cl_begin (value);
+	int i;
+	bool more_values = true;
 	for (i = 0; more_values && i < v.str_or_cl->member_count; i++)
 	{
-	    member_name = read_member_name (value);
+	    string member_name = read_member_name (value);
 		
 	    if (is_BaseClass_name (member_name))
 	    {

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "28 Oct 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "15 Nov 1997" "@DDD@ @VERSION@"
 .\" ---------------
 .SH "NAME"
 .\" ---------------
@@ -3030,7 +3030,6 @@ also initially sent to \s-2GDB\s+2.  Its default value is
 .sp
 .br
   \fB@Ddd@*gdbSettings: \\
-  set print repeats 0\\n\\
   set print asm-demangle on\\n\fR
 .br
 .sp
@@ -4319,22 +4318,14 @@ These settings with their correct values are:
 .br
   \fBset width 0\fR
 .br
-  \fBset print repeats 0\fR
-.br
   \fBset verbose off\fR
 .br
   \fBset prompt (gdb) \fR
 .br
 .sp
-\s-2@DDD@\s+2 sets these values automatically when invoking \s-2GDB\s+2.
-.PP
-If these values are changed, there may be some malfunctions,
-especially in the data display.  If you want to display C strings
-(i.e., `\fBchar *\fR'-fields), it might be useful to change the
-settings of `\fBprint repeats\fR' and `\fBprint elements\fR'.  But to
-recognize array structures correctly, you should have `\fBprint
-repeats\fR' set to 0.  Also, do not change the setting of `\fBprint
-elements\fR' while there are array structures in the data display.
+\s-2@DDD@\s+2 sets these values automatically when invoking
+\s-2GDB\s+2; If these values are changed, there may be some
+malfunctions, especially in the data display.
 .PP
 When debugging at the machine level with \s-2GDB\s+2 4.12 and earlier
 as inferior debugger, use a `\fBdisplay /x $pc\fR' command to ensure

@@ -400,7 +400,13 @@ string read_simple_value(string& value, int depth)
 			      && value[0] != ';')))
     {
 	ret += read_token(value);
+
+	// Don't read in `<repeats N times>'
+	if (value.contains('<', 0) && value.contains(rxrepeats, 0))
+	    break;
     }
+
+    strip_final_blanks(ret);
 
     // clog << "read_simple_value() = " << quote(ret) << "\n";
     return ret;
@@ -544,6 +550,21 @@ bool read_array_end (string& value)
     return value != "";		// More stuff may follow.
 }
 
+// Read `<repeats N times>'; return N (0 if no repeat)
+int read_repeats(string& value)
+{
+    int repeats = 0;
+
+    read_leading_blanks(value);
+    if (value.contains('<', 0) && value.contains(rxrepeats, 0))
+    {
+	value = value.from(rxint);
+	repeats = atoi(value);
+	value = value.after('>');
+    }
+
+    return repeats;
+}
 
 // Read the beginning of a struct from VALUE.  Return false iff done.
 bool read_str_or_cl_begin (string& value)

@@ -27,7 +27,7 @@
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 //-----------------------------------------------------------------------------
-// Funktionen zum Lesen von Variablenwerten in string-Darstellung
+// Read variable values in string representation
 //-----------------------------------------------------------------------------
 
 #ifndef _DDD_value_read_h
@@ -41,7 +41,7 @@
 #include "bool.h"
 #include <iostream.h>
 
-// ***************************************************************************
+// Various types of elements that can be read
 enum DispValueType {
     UnknownType = 0,		// Unknown type
     Simple = 1,			// Ordinary or other value
@@ -56,18 +56,27 @@ enum DispValueType {
 
 ostream& operator<<(ostream& os, DispValueType type);
 
+// Determine type of next element in VALUE
 DispValueType determine_type (string value);
 
+// Read single token from VALUE
 string read_token (string& value);
+
+// Read simple element from VALUE
 string read_simple_value (string& value, int depth);
+
+// Read pointer from VALUE
 string read_pointer_value (string& value);
 
-// Bei Misserfolg false
+// Read array; return false iff error
 bool read_array_begin (string& value);
 bool read_array_next (string& value);
 bool read_array_end (string& value);
 
-// Bei Misserfolg false
+// Read `<repeats N times>'; return N (0 if no repeat)
+int read_repeats(string& value);
+
+// Read struct or class; return false iff error
 bool read_str_or_cl_begin (string& value);
 bool read_str_or_cl_next (string& value);
 bool read_str_or_cl_end (string& value);
@@ -76,19 +85,16 @@ bool read_members_of_xy (string& value);
 // Convert a DBX initial `dump' line into a readable format
 void munch_dump_line (string& value);
 
-// Bei Misserfolg ""
+// Read in C++ vtable; return "" iff error
 string read_vtable_entries (string& value);
+
+// Read struct or class member name; return "" iff error
 string read_member_name (string& value);
 
-// ***************************************************************************
-// true, wenn name in spitzen Klammern (z.B.: "<>" oder "<Basis>") 
-// 
+// Return true if NAME has the form `<FOO>' or `<>'
 bool is_BaseClass_name (const string& name);
 
-// ***************************************************************************
-// schneidet vom full_name die letzte Komponente ab
-// d.h.: "blabla.<Basis>" wird zu "blabla"
-// 
+// Cut off basename part (e.g. "foo.<Base>" becomes "foo")
 void cut_BaseClass_name (string& full_name);
 
 #endif // _DDD_value_read_h

@@ -167,8 +167,16 @@ void array_test()
     char *twodim [2][3] = {{ "Pioneering", "women", "in"},
 			   { "computer", "science", "!"}};
 
+    int array[20][20];
+
     (void) twodim;		// Use it
     (void) days_of_week;	// Use it
+    (void) array;		// Use it
+
+    // Initialize array
+    for (int i = 0; i < sizeof(array) / sizeof(array[0]); i++)
+	for (int j = 0; j < sizeof(array[0]) / sizeof(array[0][0]); j++)
+	    array[i][j] = 0;
 
     // Dereference this
     Date *date_ptrs[4];
