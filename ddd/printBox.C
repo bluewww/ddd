@@ -53,50 +53,90 @@ const char BOUND[] =   "%%BoundingBox: ";
 // and make the graph fit to a DIN-A4 paper.
 //
 // Remember: the origin of the PS-system is lower left, the internal
-// orgin of the graph is upper left!
+// origin of the graph is upper left!
 //
 
 void Box::epsHeader (ostream& os, 
 		     const BoxRegion& region, 
 		     const BoxPostScriptGC& gc)
 {
-    int hmove, vmove ;
-    float hscale, vscale;
-    float scale = 1.0 ;
-    BoxPoint llcorner;
-    BoxPoint urcorner;
-    
-    urcorner = region.space() ;
+    float scale = 1.0;
     
     // check size of graph
 
-    if (region.space() > BoxPoint (gc.hsize,gc.vsize)) {
-	// scale down ...
-	hscale = (float)gc.hsize / region.space(X) ;
-	vscale = (float)gc.vsize / region.space(Y) ;
-	scale = ( hscale < vscale ? hscale : vscale );
-	
-	urcorner[X] = (int)((float)urcorner[X] * scale);
-	urcorner[Y] = (int)((float)urcorner[Y] * scale);
+    BoxPoint space(region.space());
+    BoxPoint origin(region.origin());
+
+    BoxPoint size;
+    switch (gc.orientation)
+    {
+    case BoxPostScriptGC::PORTRAIT:
+	size = BoxPoint(gc.hsize, gc.vsize);
+	break;
+
+    case BoxPostScriptGC::LANDSCAPE:
+	size = BoxPoint(gc.vsize, gc.hsize);
+	break;
     }
 
-    llcorner[X] = gc.hoffset ;
-    llcorner[Y] = gc.voffset ;
+    if (space > size)
+    {
+	// Scale down ...
+	double hscale = float(size[X]) / region.space(X);
+	double vscale = float(size[Y]) / region.space(Y);
+	scale = (hscale < vscale ? hscale : vscale);
+	
+	space[X] = int(double(space[X]) * scale);
+	space[Y] = int(double(space[Y]) * scale);
 
-    hmove = gc.hoffset - region.origin(X);
-    vmove = gc.voffset + urcorner[Y] + region.origin(Y) ;
-    urcorner += llcorner ;
+	origin[X] = int(double(origin[X]) * scale);
+	origin[Y] = int(double(origin[Y]) * scale);
+    }
 
-    os << EPSHEAD << CREATOR ;
-    os << BOUND ;
-    os << llcorner[X] << " " << llcorner[Y] << " ";
-    os << urcorner[X] << " " << urcorner[Y] << "\n" ;
-    os << PAGES << ENDC ;
+    // Determine bounding box
+    BoxPoint llcorner, urcorner;
+    switch (gc.orientation)
+    {
+    case BoxPostScriptGC::PORTRAIT:
+	llcorner = BoxPoint(gc.hoffset,
+			    gc.voffset);
+	urcorner = BoxPoint(gc.hoffset + space[X], 
+			    gc.voffset + space[Y]);
+	break;
 
-    // write os transformation 
-    
-    os << "\ngsave\n" << hmove << " " << vmove << " translate\n";
-    os << scale << " " << -scale << " scale\n" ;
+    case BoxPostScriptGC::LANDSCAPE:
+        llcorner = BoxPoint(gc.hsize - space[Y] + gc.hoffset - gc.voffset, 
+			    gc.hoffset);
+	urcorner = BoxPoint(gc.hsize + gc.hoffset - gc.voffset,
+			    gc.hoffset + space[X]);
+	break;
+    }
+
+    os << EPSHEAD
+       << CREATOR
+       << BOUND 
+       << llcorner[X] << " " << llcorner[Y] << " "
+       << urcorner[X] << " " << urcorner[Y] << "\n"
+       << PAGES << ENDC
+       << "\ngsave\n";
+
+    // Write rotation
+    if (gc.orientation == BoxPostScriptGC::LANDSCAPE)
+	os << gc.hsize + gc.hoffset << " 0 translate 90 rotate\n";
+
+    int hmove, vmove;
+    switch (gc.orientation)
+    {
+    case BoxPostScriptGC::PORTRAIT:
+    case BoxPostScriptGC::LANDSCAPE:
+	hmove = gc.hoffset - origin[X];
+	vmove = gc.voffset + space[Y] + origin[Y];
+	break;
+    }
+
+    // Write scaling
+    os << hmove << " " << vmove << " translate\n"
+       << scale << " " << -scale << " scale\n";
 }
 
 
