@@ -57,15 +57,15 @@ extern "C" {
 // __osf__' flags should be deleted by an OSF expert some day.   - AZ
 #include <termio.h>
 #else
-#if defined(HAVE_TCGETATTR) && defined(HAVE_TCSETATTR)
+#if HAVE_TCGETATTR && HAVE_TCSETATTR
 #ifdef HAVE_TERMIOS_H
 #include <termios.h>
 #endif
-#else // !defined(HAVE_TCGETATTR) || !defined(HAVE_TCSETATTR)
+#else // !HAVE_TCGETATTR || !HAVE_TCSETATTR
 #ifdef HAVE_TERMIO_H
 #include <termio.h>
 #endif
-#endif // !defined(HAVE_TCGETATTR) || !defined(HAVE_TCSETATTR)
+#endif // !HAVE_TCGETATTR || !HAVE_TCSETATTR
 #endif // !__osf__
 
 #ifdef HAVE_SYS_TYPES_H
@@ -94,7 +94,7 @@ extern "C" {
 #include <fcntl.h>
 #endif
 
-#if defined(HAVE_SYS_IOCTL_H) && defined(__FreeBSD__)
+#if HAVE_SYS_IOCTL_H && defined(__FreeBSD__)
 #include <sys/ioctl.h>
 #define HAVE_IOCTL_DECL
 #endif
@@ -113,59 +113,55 @@ extern "C" {
 }
 
 extern "C" {
-#if defined(HAVE_SETPGID) && !defined(HAVE_SETPGID_DECL) && !defined(setpgid)
+#if HAVE_SETPGID && !HAVE_SETPGID_DECL && !defined(setpgid)
     int setpgid(pid_t pid, pid_t pgrp);
 #endif
-#if !defined(HAVE_SETPGID) && defined(HAVE_SETPGRP2) && !defined(setpgid)
-#if !defined(HAVE_SETPGRP2_DECL) && !defined(setpgrp2)
+#if !HAVE_SETPGID && HAVE_SETPGRP2 && !defined(setpgid)
+#if !HAVE_SETPGRP2_DECL && !defined(setpgrp2)
     int setpgrp2(pid_t pid, pid_t pgrp);
 #define setpgid setpgrp2
 #define HAVE_SETPGID
 #endif
 #endif
-#if !defined(HAVE_SETPGID) && defined(HAVE_SETPGRP) && !defined(setpgid)
-#if !defined(HAVE_SETPGRP_DECL) && !defined(setpgrp)
-#if defined(HAVE_SETPRGP_VOID)
+#if !HAVE_SETPGID && HAVE_SETPGRP && !defined(setpgid)
+#if !HAVE_SETPGRP_DECL && !defined(setpgrp)
+#if HAVE_SETPRGP_VOID
     int setpgrp();
 #else
     int setpgrp(pid_t pid, pid_t pgrp);
-#endif // defined(HAVE_SETPRGP_VOID)
+#endif // HAVE_SETPRGP_VOID
 #define setpgid setpgrp
 #define HAVE_SETPGID
 #endif
 #endif
-#if defined(HAVE_TCGETATTR) && !defined(HAVE_TCGETATTR_DECL) \
-    && !defined(tcgetattr)
+#if HAVE_TCGETATTR && !HAVE_TCGETATTR_DECL && !defined(tcgetattr)
     int tcgetattr(int fd, struct termios *termios_p);
 #endif
-#if defined(HAVE_TCSETATTR) && !defined(HAVE_TCSETATTR_DECL) \
-    && !defined(tcsetattr)
+#if HAVE_TCSETATTR && !HAVE_TCSETATTR_DECL && !defined(tcsetattr)
     int tcsetattr(int fd, int when, const struct termios *termios_p);
 #endif
-#if defined(HAVE_TCGETPGRP) && !defined(HAVE_TCGETPGRP_DECL) \
-    && !defined(tcgetpgrp)
+#if HAVE_TCGETPGRP && !HAVE_TCGETPGRP_DECL && !defined(tcgetpgrp)
     pid_t tcgetpgrp(int fd);
 #endif
-#if defined(HAVE_TCSETPGRP) && !defined(HAVE_TCSETPGRP_DECL) \
-    && !defined(tcsetpgrp)
+#if HAVE_TCSETPGRP && !HAVE_TCSETPGRP_DECL && !defined(tcsetpgrp)
     int tcsetpgrp(int fd, pid_t pgid);
 #endif
-#if defined(HAVE_IOCTL) && !defined(HAVE_IOCTL_DECL) && !defined(ioctl)
+#if HAVE_IOCTL && !HAVE_IOCTL_DECL && !defined(ioctl)
     int ioctl(int fd, int request, ...);
 #endif
-#if defined(HAVE_FCNTL) && !defined(HAVE_FCNTL_DECL) && !defined(fcntl)
+#if HAVE_FCNTL && !HAVE_FCNTL_DECL && !defined(fcntl)
     int fcntl(int fd, int command, ...);
 #endif
-#if defined(HAVE_GETPTY) && !defined(HAVE_GETPTY_DECL) && !defined(getpty)
+#if HAVE_GETPTY && !HAVE_GETPTY_DECL && !defined(getpty)
     int getpty(char *line, char *sline, int mode);
 #endif
-#if defined(HAVE__GETPTY) && !defined(HAVE__GETPTY_DECL) && !defined(_getpty)
+#if HAVE__GETPTY && !HAVE__GETPTY_DECL && !defined(_getpty)
     char *_getpty(int *fildes, int oflag, mode_t mode, int nofork);
 #endif
-#if defined(HAVE_SETSID) && !defined(HAVE_SETSID_DECL) && !defined(setsid)
+#if HAVE_SETSID && !HAVE_SETSID_DECL && !defined(setsid)
     pid_t setsid(void);
 #endif
-#if !defined(HAVE_SETSID) && defined(HAVE_SETPGRP) && defined(SETPGRP_VOID)
+#if !HAVE_SETSID && HAVE_SETPGRP && defined(SETPGRP_VOID)
 #define setsid() setpgrp()
 #define HAVE_SETSID
 #endif
@@ -174,25 +170,25 @@ extern "C" {
 // Streams won't work on DEC OSF because there isn't any "ttcompat"
 // module and I don't know enough about any of this stuff to try to
 // figure it out now.  -- phil_brooks@MENTORG.COM (Phil Brooks)
-#if !defined(__osf__) && defined(HAVE_PTSNAME) && defined(HAVE_GRANTPT) \
-    && defined(HAVE_UNLOCKPT) && defined(HAVE_IOCTL)
+#if !defined(__osf__) && HAVE_PTSNAME && HAVE_GRANTPT \
+    && HAVE_UNLOCKPT && HAVE_IOCTL
 
 #define HAVE_STREAMS
 
 // Provide C++ declarations
 extern "C" {
-#if !defined(HAVE_PTSNAME_DECL) && !defined(ptsname)
+#if !HAVE_PTSNAME_DECL && !defined(ptsname)
     char *ptsname(int master);
 #endif
-#if !defined(HAVE_UNLOCKPT_DECL) && !defined(unlockpt)
+#if !HAVE_UNLOCKPT_DECL && !defined(unlockpt)
     int unlockpt(int fd);
 #endif
-#if !defined(HAVE_GRANTPT_DECL) && !defined(grantpt)
+#if !HAVE_GRANTPT_DECL && !defined(grantpt)
     int grantpt(int fd);
 #endif
 }
 
-#endif // !defined(__osf__) && defined(HAVE_PTSNAME) ...
+#endif // !defined(__osf__) && HAVE_PTSNAME && ...
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0
@@ -439,7 +435,7 @@ void TTYAgent::open_slave()
 	return;
     }
 
-#if defined(TIOCSCTTY)
+#if HAVE_IOCTL && defined(TIOCSCTTY)
     if (!push)
     {
 	// This is required on some boxes (notably DEC OSF and
@@ -451,7 +447,7 @@ void TTYAgent::open_slave()
     }
 #endif
 
-#if defined(HAVE_STREAMS) && defined(I_PUSH)
+#if HAVE_STREAMS && defined(I_PUSH)
     if (push)
     {
 	// Finish STREAMS setup.
@@ -487,7 +483,7 @@ int TTYAgent::setupCommunication()
 
 int TTYAgent::setupParentCommunication()
 {
-#if defined(HAVE_FCNTL) && defined(O_NONBLOCK)
+#if HAVE_FCNTL && defined(O_NONBLOCK)
     // Set the child file descriptor to nonblocking mode
     int flags = fcntl(master, F_GETFL, 0);
     if (flags == -1)
@@ -513,10 +509,10 @@ int TTYAgent::setupParentCommunication()
     _outputfp = _inputfp;
     _errorfp  = NULL;
 
-#if defined(HAVE_SETBUF)
+#if HAVE_SETBUF
     // Set unbuffered mode
     setbuf(_outputfp, NULL);
-#elif defined(HAVE_SETVBUF) && defined(_IONBF)
+#elif HAVE_SETVBUF && defined(_IONBF)
     // According to lee@champion.tcs.co.jp (Lee Hounshell), this
     // won't work on Linux ELF systems:
     setvbuf(_outputfp, NULL, _IONBF, BUFSIZ);
@@ -537,17 +533,16 @@ int TTYAgent::setupChildCommunication()
     // Make child a process leader:
     // Set the process group of the pty and of us to our process id.
 
-#if defined(HAVE_SETSID) || defined(setsid)
+#if HAVE_SETSID || defined(setsid)
     result = int(setsid());
-
 #else // !HAVE_SETSID
 
     // Clear controlling tty.  This means that we will not have a
     // controlling tty until we open another terminal device.
-#if defined(HAVE_IOCTL) && defined(TIOCNOTTY)
+#if HAVE_IOCTL && defined(TIOCNOTTY)
     int fd;
 
-#if defined(HAVE_TCGETSID) && defined(HAVE_TCGETPGRP)
+#if HAVE_TCGETSID && HAVE_TCGETPGRP
     if ((tcgetsid(STDIN_FILENO) != tcgetpgrp(STDIN_FILENO)) &&
 	(fd = open("/dev/tty", O_RDWR | O_NONBLOCK)) > 0)
 #else  // !HAVE_TCGETSID
@@ -559,10 +554,10 @@ int TTYAgent::setupChildCommunication()
     }
     if (result < 0)
 	_raiseIOMsg("cannot clear controlling tty");
-#endif // TIOCNOTTY
+#endif // HAVE_IOCTL && defined(TIOCNOTTY)
 
     // Create a new process group.
-#if defined(HAVE_SETPGID)
+#if HAVE_SETPGID
     result = setpgid(pid, pid);
 #endif // HAVE_SETPGID
 #endif // !HAVE_SETSID
@@ -582,9 +577,9 @@ int TTYAgent::setupChildCommunication()
 
     // Make this process the foreground process in the slave pty.
     result = 0;
-#if defined(HAVE_TCSETPGRP)
+#if HAVE_TCSETPGRP
     result = tcsetpgrp(slave, pid);
-#elif defined(HAVE_IOCTL) && defined(TIOCSPGRP)
+#elif HAVE_IOCTL && defined(TIOCSPGRP)
     result = ioctl(slave, TIOCSPGRP, &pid);
 #endif
 
@@ -592,7 +587,8 @@ int TTYAgent::setupChildCommunication()
 	_raiseIOMsg("cannot set terminal foreground process group");
 
     // Modify local and output mode of slave pty
-#if defined(HAVE_TCGETATTR) && defined(HAVE_TCSETATTR)
+#if HAVE_TCGETATTR && HAVE_TCSETATTR
+    // Method 1.  Use termios, tcgetattr(), and tcsetattr().
     struct termios settings;
     result = tcgetattr(slave, &settings);
     if (result < 0)
@@ -645,8 +641,8 @@ int TTYAgent::setupChildCommunication()
 	if (result < 0)
 	    _raiseIOMsg("cannot set slave terminal settings");
     }
-#elif defined(HAVE_IOCTL)
-#if defined(TIOCGETP) && defined(TIOCSETP)
+#elif HAVE_IOCTL && defined(TIOCGETP) && defined(TIOCSETP)
+    // Method 2.  Use sgttyb, ioctl(TIOCGETP), and ioctl(TIOCSETP).
     struct sgttyb settings;
     result = ioctl(slave, TIOCGETP, &settings);
     if (result < 0)
@@ -666,7 +662,8 @@ int TTYAgent::setupChildCommunication()
 	if (result < 0)
 	    _raiseIOMsg("cannot set slave terminal settings");
     }
-#elif defined(TCGETA) && defined(TCSETA)
+#elif HAVE_IOCTL && defined(TCGETA) && defined(TCSETA)
+    // Method 3.  Use termio, ioctl(TCGETA), and ioctl(TCSETA).
     struct termio settings;
     result = ioctl(slave, TCGETA, &settings);
     if (result < 0)
@@ -715,14 +712,18 @@ int TTYAgent::setupChildCommunication()
 #ifdef VWERASE
 	settings.c_cc[VWERASE] = '\027'; // Set WERASE character to `^W'
 #endif
-
-
 	result = ioctl(slave, TCSETA, &settings);
 	if (result < 0)
 	    _raiseIOMsg("cannot set slave terminal settings");
     }
-#endif // defined(TCGETA) && defined(TCSETA)
-#endif // defined(HAVE_IOCTL)
+#else // !HAVE_TCGETATTR && !HAVE_IOCTL
+    // No method left.  There is probably something wrong with
+    // config.h -- HAVE_IOCTL may be missing, for instance.
+    // We actually might compile and run here, but without
+    // being able to reset echo mode, things will be real bad.
+#error no way to set child terminal mode -- please check the settings of
+#error HAVE_TCSETATTR, HAVE_IOCTL, HAVE_TERMIOS_H, HAVE_TERMIO_H in config.h
+#endif // !HAVE_IOCTL
 
     // Redirect stdin, stdout, stderr of child to pty
     if (dup2(slave, STDIN_FILENO) < 0)
