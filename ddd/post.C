@@ -125,9 +125,10 @@ void post_gdb_died(string reason, int gdb_status, Widget w)
     if (WIFEXITED(gdb_status))
 	exit_status = WEXITSTATUS(gdb_status);
 
-    if (gdb_initialized && exit_status == 0)
+    if (gdb_initialized 
+	&& (exit_status == EXIT_SUCCESS || reason.contains("Exit 0")))
     {
-	_DDDExitCB(find_shell(w), XtPointer(exit_status), 0);
+	_DDDExitCB(find_shell(w), XtPointer(EXIT_SUCCESS), 0);
 	return;
     }
 
@@ -136,11 +137,6 @@ void post_gdb_died(string reason, int gdb_status, Widget w)
 	cerr << reason << "\n";
 	return;
     }
-
-    string gdb_path = app_data.debugger_command;
-    if (gdb_path.contains(" "))
-	gdb_path = gdb_path.before(" ");
-    _gdb_out("\n" + gdb_path + ": " + reason + "\n");
 
     Arg args[10];
     int arg;
@@ -152,7 +148,8 @@ void post_gdb_died(string reason, int gdb_status, Widget w)
     if (gdb_initialized)
     {
 	arg = 0;
-	MString msg = rm(gdb->title() + " terminated abnormally.");
+	MString msg = rm(gdb->title() + " terminated abnormally"
+			 + " (" + reason + ")");
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
 	died_dialog = 
 	    verify(XmCreateErrorDialog (find_shell(w), 
@@ -222,7 +219,7 @@ void post_gdb_message(string text, Widget w)
     XtManageChild (gdb_message_dialog);
 }
 
-void post_error (string text, String name, Widget w)
+void post_error(string text, String name, Widget w)
 {
     strip_final_blanks(text);
     if (ddd_is_exiting)
@@ -260,7 +257,7 @@ void post_error (string text, String name, Widget w)
     XtManageChild (ddd_error);
 }
 
-void post_warning (string text, String name, Widget w)
+void post_warning(string text, String name, Widget w)
 {
     strip_final_blanks(text);
     if (ddd_is_exiting)
