@@ -426,9 +426,12 @@ void syncCommandQueue()
 	if (gdb->isReadyWithPrompt())
 	    processCommandQueue();
 
-	// We accept all kinds of input here, since a command in the queue
-	// may request further user interaction.
-	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
+	// This should ensure ESC and ^C can interrupt this queue.
+	// Hopefully we have some timer ready that checks for them...
+	process_emergencies();
+
+	XtAppProcessEvent(XtWidgetToApplicationContext(command_shell),
+			  XtIMTimer | XtIMAlternateInput);
     }
 }
 
