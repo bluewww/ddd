@@ -264,7 +264,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	    vbox = eval("collapsed_array");
 	else
 	{
-	    int count = dv->number_of_childs();
+	    int count = dv->nchildren();
 	    if (count == 0)
 		vbox = eval("empty_array");
 	    else
@@ -290,7 +290,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 			{
 			    DispValue *c = dv->get_child(i);
 			    ListBox *row = new ListBox;
-			    for (int j = 0; j < c->number_of_childs(); j++)
+			    for (int j = 0; j < c->nchildren(); j++)
 			    {
 				DispValue *cc = c->get_child(j);
 				ListBox *args = new ListBox;
@@ -312,7 +312,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 			int max_cc = 0;
 			for (int j = 0; j < count; j++)
 			    max_cc = max(max_cc,
-					 dv->get_child(j)->number_of_childs());
+					 dv->get_child(j)->nchildren());
 			for (int i = 0; i < max_cc; i++)
 			{
 			    ListBox *row = new ListBox;
@@ -320,7 +320,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 			    {
 				DispValue *c = dv->get_child(j);
 				Box *elem = 0;
-				if (i < c->number_of_childs())
+				if (i < c->nchildren())
 				{
 				    DispValue *cc = c->get_child(i);
 				    elem = create_value_box(cc);
@@ -389,7 +389,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 		vbox = eval(collapsed_value);
 	    else
 	    {
-		int count = dv->number_of_childs();
+		int count = dv->nchildren();
 		if (count == 0)
 		    vbox = eval(empty_value);
 		else

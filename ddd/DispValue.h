@@ -112,7 +112,7 @@ public:
     bool dereferenced() const;
     string dereferenced_name() const;
 
-    int number_of_childs() const;
+    int nchildren() const;
     DispValue* get_child (int i) const;
     
     // Makes sense only for type() == Array

@@ -569,7 +569,7 @@ string DispValue::value() const
 
 
 // Return #children.  Only if type() == Array, StructOrClass, or BaseClass.
-int DispValue::number_of_childs() const
+int DispValue::nchildren() const
 {
     switch (mytype) {
     case Array:
@@ -712,7 +712,7 @@ void DispValue::expandAll(int depth)
 
     _expand();
 
-    for (int i = 0; i < number_of_childs(); i++)
+    for (int i = 0; i < nchildren(); i++)
     {
 	DispValue *child = get_child(i);
 	child->expandAll(depth - 1);
@@ -727,7 +727,7 @@ void DispValue::collapseAll(int depth)
 
     _collapse();
 
-    for (int i = 0; i < number_of_childs(); i++)
+    for (int i = 0; i < nchildren(); i++)
     {
 	DispValue *child = get_child(i);
 	child->collapseAll(depth - 1);
@@ -740,7 +740,7 @@ int DispValue::expandedAll() const
     int count = 0;
     if (expanded())
 	count++;
-    for (int i = 0; i < number_of_childs(); i++)
+    for (int i = 0; i < nchildren(); i++)
 	count += get_child(i)->expandedAll();
 
     return count;
@@ -752,7 +752,7 @@ int DispValue::collapsedAll() const
     int count = 0;
     if (collapsed())
 	count++;
-    for (int i = 0; i < number_of_childs(); i++)
+    for (int i = 0; i < nchildren(); i++)
 	count += get_child(i)->collapsedAll();
 
     return count;
@@ -764,7 +764,7 @@ int DispValue::height() const
 {
     int d = 0;
 
-    for (int i = 0; i < number_of_childs(); i++)
+    for (int i = 0; i < nchildren(); i++)
 	d = max(d, get_child(i)->height());
 
     return d + 1;
@@ -778,7 +778,7 @@ int DispValue::heightExpanded() const
 
     int d = 0;
 
-    for (int i = 0; i < number_of_childs(); i++)
+    for (int i = 0; i < nchildren(); i++)
     {
 	if (get_child(i)->collapsed())
 	    return 1;
