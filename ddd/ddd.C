@@ -259,6 +259,9 @@ void gdbLookupCB       (Widget, XtPointer, XtPointer);
 void gdbFindForwardCB  (Widget, XtPointer, XtPointer);
 void gdbFindBackwardCB (Widget, XtPointer, XtPointer);
 
+void gdbEditSourceCB   (Widget, XtPointer, XtPointer);
+void gdbReloadSourceCB (Widget, XtPointer, XtPointer);
+
 void gdbGoBackCB       (Widget, XtPointer, XtPointer);
 void gdbGoForwardCB    (Widget, XtPointer, XtPointer);
 
@@ -741,6 +744,15 @@ static XtResource resources[] = {
 	XtPointer("lp")
     },
     {
+        XtNeditCommand,
+	XtCEditCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, edit_command),
+	XtRString,
+	XtPointer("xterm -e vi +@LINE@ @FILE@")
+    },
+    {
         XtNpannedGraphEditor,
 	XtCPannedGraphEditor,
 	XtRBoolean,
@@ -1081,6 +1093,9 @@ static MMDesc stack_menu[] =
 static MMDesc source_menu[] =
 {
     { "breakpoints", MMPush, { SourceView::EditBreakpointsCB }},
+    MMSep,
+    { "edit",       MMPush,  { gdbEditSourceCB }},
+    { "reload",     MMPush,  { gdbReloadSourceCB }},
     MMSep,
     { "back",       MMPush,  { gdbGoBackCB }},
     { "forward",    MMPush,  { gdbGoForwardCB }},
@@ -2672,9 +2687,13 @@ void show_manual()
 
 int running_shells()
 {
-    return int(command_shell_state != PoppedDown)
+    int n = int(command_shell_state != PoppedDown)
 	+ int(source_view_shell_state != PoppedDown)
 	+ int(data_disp_shell_state != PoppedDown);
+
+    clog << "ddd: " << n << " shells running.\n";
+
+    return n;
 }
 
 
@@ -3315,11 +3334,17 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	// clog << XtName(w) << " is unmapped\n";
 
 	// Reflect state
-	if (w == command_shell && command_shell_state != Iconic)
+	if (w == command_shell
+	    && command_shell_state != Iconic
+	    && command_shell_state != PoppedDown)
 	    command_shell_state = Iconic;
-	else if (w == data_disp_shell && data_disp_shell_state != Iconic)
+	else if (w == data_disp_shell
+		 && data_disp_shell_state != Iconic
+		 && data_disp_shell_state != PoppedDown)
 	    data_disp_shell_state = Iconic;
-	else if (w == source_view_shell && source_view_shell_state != Iconic)
+	else if (w == source_view_shell
+		 && source_view_shell_state != Iconic
+		 && source_view_shell_state != PoppedDown)
 	    source_view_shell_state = Iconic;
 	else
 	    return;
@@ -3511,6 +3536,10 @@ Widget make_buttons(Widget parent, const string& name,
 	    callback = gdbGoBackCB;
 	else if (name == "Forward")
 	    callback = gdbGoForwardCB;
+	else if (name == "Edit")
+	    callback = gdbEditSourceCB;
+	else if (name == "Reload")
+	    callback = gdbReloadSourceCB;
 
 	XtAddCallback(button, XmNactivateCallback, callback,
 		      (XtPointer)XtNewString(command));
@@ -4603,6 +4632,56 @@ void gdbFindBackwardCB(Widget, XtPointer, XtPointer call_data)
     string s = source_arg->get_string();
     source_view->find(s, SourceView::backward, 
 		      app_data.find_words_only, time(cbs->event));
+}
+
+static void gdbDeleteEditAgent(XtPointer client_data, XtIntervalId *)
+{
+    // Delete agent after use
+    Agent *edit_agent = (Agent *)client_data;
+    delete edit_agent;
+}
+
+static void gdbEditDoneHP(Agent *edit_agent, void *client_data, void *)
+{
+    // Editor has terminated: reload current source file
+    string *pfile = (string *)client_data;
+    // post_gdb_message("Editing of " + quote(*pfile) + " done.");
+    delete pfile;
+
+    XtAppAddTimeOut(app_context, 0, gdbDeleteEditAgent, 
+		    XtPointer(edit_agent));
+    gdbReloadSourceCB(gdb_w, 0, 0);
+}
+
+void gdbEditSourceCB  (Widget, XtPointer, XtPointer)
+{
+    string pos = source_view->line_of_cursor(false);
+    string file = pos.before(':');
+    string line = pos.after(':');
+
+    StatusDelay delay("Invoking editor for " + quote(file));
+
+    string cmd = sh_command(app_data.edit_command);
+    cmd.gsub("@FILE@", file);
+    cmd.gsub("@LINE@", line);
+
+    // Invoke an editor in the background
+    LiterateAgent *edit_agent = 
+	new LiterateAgent(app_context, cmd);
+    edit_agent->removeAllHandlers(Died);
+    edit_agent->addHandler(InputEOF, gdbEditDoneHP, (void *)new string(file));
+    edit_agent->start();
+}
+
+void gdbReloadSourceCB  (Widget, XtPointer, XtPointer)
+{
+    string pos = source_view->line_of_cursor(false);
+    string file = pos.before(':');
+    string line = pos.after(':');
+
+    StatusDelay delay("Reloading " + quote(file));
+
+    source_view->read_file(file, atoi(line), true);
 }
 
 void gdbGoBackCB  (Widget, XtPointer, XtPointer)

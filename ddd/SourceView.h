@@ -220,7 +220,7 @@ private:
     static String read_from_gdb(const string& file_name);
 
     static String read_indented(string& file_name);
-    static int read_current(string& file_name);
+    static int read_current(string& file_name, bool force_reload = false);
 
 public:
     // Constructor
@@ -268,14 +268,18 @@ public:
     static void lookup(string s = "");
 
     // Read file FILE_NAME; place cursor at INITIAL_LINE.
-    static void read_file(string file_name, int initial_line = 1);
+    static void read_file(string file_name,
+			  int initial_line = 1,
+			  bool force_reload = false);
 
     // Lookup previous/next position
     static void go_back();
     static void go_forward();
 
     // Return cursor position in <file>:<line> format.
-    static string line_of_cursor();
+    // If BASENAME, return only the basename of the file;
+    // the full file name, otherwise.
+    static string line_of_cursor(bool basename = true);
 
     // Return top-level widget
     static Widget widget();

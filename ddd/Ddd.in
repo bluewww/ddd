@@ -140,10 +140,21 @@ Ddd*useTTYCommand: true
 Ddd*rshCommand: @RSH@
 
 
-! The print command to print a postscript file.
+! The `print' command to print a postscript file.
 ! On some systems, this is called `lp'; on others, `lpr'.
 ! You may want to consult your system documentation for details.
 Ddd*printCommand: @PRINT_COMMAND@
+
+
+! The `edit' command to invoke an editor on the specific file.
+! `@LINE@' is replaced by the current line number,
+! `@FILE@' by the file name.  Default is to invoke $XEDITOR first,
+! then EMACS variations, then $EDITOR, then VI.
+Ddd*editCommand: \
+   ${XEDITOR-false} +@LINE@ @FILE@      \
+|| gnuclient +@LINE@ @FILE@             \
+|| emacsclient +@LINE@ @FILE@           \
+|| xterm -e ${EDITOR-vi} +@LINE@ @FILE@
 
 
 ! Commands to list all executable/source/core/directory
@@ -178,6 +189,8 @@ Ddd*questionTimeout: 5
 ! - `Apply'    : Send the given command to GDB
 ! - `Back'     : Lookup previously selected source position
 ! - `Forward'  : Lookup next selected source position
+! - `Edit'     : Edit current source file
+! - `Reload'   : Reload source file
 ! - `Complete' : Complete current command
 ! - `Yes'      : Answer current GDB prompt
 ! - `No'       : Answer current GDB prompt
@@ -190,7 +203,7 @@ Ddd*commandButtons: \
 
 ! The buttons under the source window.
 Ddd*sourceButtons:   	    \
-	run:step:next:cont:until:finish:up:down:Back:Forward:kill:interrupt^C
+run:step:next:cont:finish:kill:up:down:Back:Forward:Edit:Reload:interrupt^C
 
 ! Some special labels
 Ddd*run.labelString:       Run
@@ -772,19 +785,19 @@ Ddd*menubar.file*contextHelpString:	\
 @tt \267 @bf Exit @rm - exit DDD.
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
-Ddd*menubar*fileMenu.open_file.mnemonic:	 O
+Ddd*menubar*fileMenu.open_file.mnemonic:    O
 
 Ddd*menubar*fileMenu.open_core.labelString: Open Core...
-Ddd*menubar*fileMenu.open_core.mnemonic:	 o
+Ddd*menubar*fileMenu.open_core.mnemonic:    o
 
 Ddd*menubar*fileMenu.open_source.labelString: Open Source...
-Ddd*menubar*fileMenu.open_source.mnemonic:	 S
+Ddd*menubar*fileMenu.open_source.mnemonic:    S
 
-Ddd*menubar*fileMenu.print.labelString: 	 Print Graph...
+Ddd*menubar*fileMenu.print.labelString:  Print Graph...
 Ddd*menubar*fileMenu.print.mnemonic:	 P
 
 Ddd*menubar*fileMenu.quickPrint.labelString: Quick Print
-Ddd*menubar*fileMenu.quickPrint.mnemonic:	 Q
+Ddd*menubar*fileMenu.quickPrint.mnemonic: Q
 
 Ddd*menubar*fileMenu.close.labelString:	 Close
 Ddd*menubar*fileMenu.close.mnemonic:	 C
@@ -796,7 +809,7 @@ Ddd*menubar*fileMenu.quit.acceleratorText:  Ctrl+Q
 
 
 Ddd*menubar.edit.labelString:		Edit
-Ddd*menubar.edit.mnemonic:			E
+Ddd*menubar.edit.mnemonic:		E
 Ddd*menubar.edit*contextHelpString:	\
 \
 @rm This is the @sl Edit menu@rm.\n\
@@ -810,16 +823,16 @@ Ddd*menubar.edit*contextHelpString:	\
 @tt \267 @bf Delete @rm - delete the selected text.
 
 Ddd*editMenu.cut.labelString:		Cut
-Ddd*editMenu.cut.mnemonic:			t
+Ddd*editMenu.cut.mnemonic:		t
 Ddd*editMenu.cut.accelerator:		Shift<Key>osfDelete
 ! *editMenu.cut.accelerator:		<Key>osfCut
-Ddd*editMenu.cut.acceleratorText:		Shift+Del
+Ddd*editMenu.cut.acceleratorText:	Shift+Del
 
 Ddd*editMenu.copy.labelString:		Copy
 Ddd*editMenu.copy.mnemonic:		C
 Ddd*editMenu.copy.accelerator:		Ctrl<Key>osfInsert
 ! *editMenu.copy.accelerator:		<Key>osfPrimaryCopy
-Ddd*editMenu.copy.acceleratorText:		Ctrl+Ins
+Ddd*editMenu.copy.acceleratorText:	Ctrl+Ins
 
 Ddd*editMenu.paste.labelString:		Paste
 Ddd*editMenu.paste.mnemonic:		P
@@ -832,10 +845,10 @@ Ddd*editMenu.clear.mnemonic:		e
 Ddd*editMenu.clear.accelerator:		Ctrl<Key>U
 Ddd*editMenu.clear.acceleratorText:	Ctrl+U
 
-Ddd*editMenu.delete.labelString:		Delete
+Ddd*editMenu.delete.labelString:	Delete
 Ddd*editMenu.delete.mnemonic:		D
 
-Ddd*menubar.options.labelString:		Options
+Ddd*menubar.options.labelString:	Options
 Ddd*menubar.options.mnemonic:		O
 
 Ddd*menubar.options*contextHelpString:	\
@@ -1107,14 +1120,26 @@ Ddd*menubar.source.mnemonic:		S
 Ddd*menubar.source.contextHelpString:	\
 \
 @rm This is the @sl Source menu@rm.\n\
-\n\
 @tt \267 @bf Edit Breakpoints... @rm - set, view, and edit breakpoints.\n\
+\n\
+@tt \267 @bf Edit Source... @rm - invoke text editor for current source.\n\
+@tt \267 @bf Reload Source  @rm - reload current source file.\n\
 \n\
 @tt \267 @bf Back @rm - show the previous source position.\n\
 @tt \267 @bf Forward @rm - show the next source position.
 
 Ddd*sourceMenu.breakpoints.labelString:	Edit Breakpoints...
 Ddd*sourceMenu.breakpoints.mnemonic:	E
+
+Ddd*sourceMenu.edit.labelString:	Edit Source...
+Ddd*sourceMenu.edit.mnemonic:	        S
+Ddd*sourceMenu.edit.accelerator:	Ctrl<Key>G
+Ddd*sourceMenu.edit.acceleratorText:	Ctrl+G
+
+Ddd*sourceMenu.reload.labelString:	Reload Source
+Ddd*sourceMenu.reload.mnemonic:	        R
+Ddd*sourceMenu.reload.accelerator:	Ctrl<Key>L
+Ddd*sourceMenu.reload.acceleratorText:	Ctrl+L
 
 Ddd*sourceMenu.back.labelString:	Back
 Ddd*sourceMenu.back.mnemonic:		B
@@ -1477,8 +1502,8 @@ Ddd*arg_cmd_w.arg_cmd_area*break.labelString:		Break ()
 Ddd*arg_cmd_w.arg_cmd_area*clear.labelString:		Clear ()
 Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
 Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display ()
-Ddd*arg_cmd_w.arg_cmd_area*find_backward.labelString:	Search<< ()
-Ddd*arg_cmd_w.arg_cmd_area*find_forward.labelString:	Search>> ()
+Ddd*arg_cmd_w.arg_cmd_area*find_backward.labelString:	Find<< ()
+Ddd*arg_cmd_w.arg_cmd_area*find_forward.labelString:	Find>> ()
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.contextHelpString:	\
 @bf Lookup ()@rm\n\
@@ -1511,12 +1536,12 @@ Ddd*arg_cmd_w.arg_cmd_area*display.contextHelpString:	\
 Display the argument @bf () @rm in the data display window.
 
 Ddd*arg_cmd_w.arg_cmd_area*find_backward.contextHelpString:	\
-@bf Search<< () @rm\n\
+@bf Find<< () @rm\n\
 Search the previous occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 
 Ddd*arg_cmd_w.arg_cmd_area*find_forward.contextHelpString:	\
-@bf Search>> () @rm\n\
+@bf Find>> () @rm\n\
 Search the next occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 
@@ -1633,6 +1658,14 @@ Ddd*?*Forward.contextHelpString:	\
 @bf Forward@rm\n\
 Go to the next source position.
 
+Ddd*?*Edit.contextHelpString:	\
+@bf Edit@rm\n\
+Invoke an editor for the current source file.
+
+Ddd*?*Reload.contextHelpString:	\
+@bf Reload@rm\n\
+Reload the source from file.
+
 
 
 
@@ -1694,19 +1727,19 @@ Ddd*print.autoUnmanage:  false
 Ddd*print*okLabelString: Print
 
 Ddd*print*contextHelpString: \
-@rm You can print the graph on a PostScript@symbol \0344 @rm printer@rm\n\
+@rm You can print the graph on a PostScript@symbol \344 @rm printer \
 or print the graph in a file.\n\
 Enter the print command or the file name in the appropriate fields.\n\
 \n\
 Files can be created in the following formats:\n\
-@tt \267 @bf PostScript @rm - PostScript format\n\
+@tt \267 @bf PostScript @rm - PostScript@symbol \344 @rm format\n\
 @tt \267 @bf XFIG @rm - XFIG format (from the @tt xfig(1) @rm program)\n\
 \n\
 If you wish to print all displays, select @bf All Displays@rm.\n\
 If you wish to print selected displays only, select\
  @bf Selected Displays@rm.\n\
-For PostScript format only, you can also specify\n\
-the orientation and the paper size.\n\
+For PostScript@symbol \344 @rm format only, you can also specify \
+orientation and paper size.\n\
 \n\
 To print, click on @bf Print@rm.
 

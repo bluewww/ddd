@@ -735,9 +735,9 @@ String SourceView::read_indented(string& file_name)
 
 
 // Read file FILE_NAME into current_text; get it from the cache if possible
-int SourceView::read_current(string& file_name)
+int SourceView::read_current(string& file_name, bool force_reload)
 {
-    if (cache_source_files && file_cache.has(file_name))
+    if (cache_source_files && !force_reload && file_cache.has(file_name))
     {
 	current_text = file_cache[file_name];
     }
@@ -783,13 +783,15 @@ void SourceView::clear_file_cache()
     file_cache = empty;
 }
 
-void SourceView::read_file (string file_name, int initial_line)
+void SourceView::read_file (string file_name, 
+			    int initial_line,
+			    bool force_reload)
 {
     if (file_name == "")
 	return;
 
     // Read in current_text
-    int error = read_current(file_name);
+    int error = read_current(file_name, force_reload);
     if (error)
 	return;
 
@@ -823,6 +825,8 @@ void SourceView::read_file (string file_name, int initial_line)
 		  XmNcursorPosition, initial_pos,
 		  XmNtopCharacter, initial_top,
 		  NULL);
+    XmTextSetInsertionPosition(source_text_w, initial_pos);
+    XmTextShowPosition(source_text_w, initial_pos);
 #if XmVersion >= 1002
     XmTextEnableRedisplay(source_text_w);
 #elif !defined(LESSTIF_VERSION)
@@ -1874,7 +1878,7 @@ void SourceView::find(const string& s,
 
 // ***************************************************************************
 //
-string SourceView::line_of_cursor()
+string SourceView::line_of_cursor(bool basename)
 {
     XmTextPosition pos = XmTextGetInsertionPosition(source_text_w);
 
@@ -1885,7 +1889,10 @@ string SourceView::line_of_cursor()
     if (get_line_of_pos (pos, &line_nr, &in_text, &bp_nr) == false)
 	return "";
 
-    return basename(current_file_name) + ":" + itostring(line_nr);
+    string file_name = current_file_name;
+    if (basename)
+	file_name = ::basename(file_name);
+    return file_name + ":" + itostring(line_nr);
 }
 
 
