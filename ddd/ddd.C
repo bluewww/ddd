@@ -3470,6 +3470,15 @@ static string uncntrl(string name)
     return name;
 }
 
+void YnButtonCB(Widget dialog, 
+		XtPointer client_data, 
+		XtPointer call_data)
+{
+    _gdb_out(string((char *)client_data) + '\n');
+    gdbCommandCB(dialog, client_data, call_data);
+    gdb_keyboard_command = true;
+}
+
 Widget make_buttons(Widget parent, const string& name, 
 		    const string& button_list)
 {
@@ -3516,11 +3525,13 @@ Widget make_buttons(Widget parent, const string& name,
 	{
 	    command = "yes";
 	    XtUnmanageChild(button);
+	    callback = YnButtonCB;
 	}
 	else if (name == "No")
 	{
 	    command = "no";
 	    XtUnmanageChild(button);
+	    callback = YnButtonCB;
 	}
 	else if (name == "Prev")
 	    callback = gdbPrevCB;
@@ -5814,13 +5825,10 @@ void YnCB(Widget dialog,
 	  XtPointer client_data, 
 	  XtPointer call_data)
 {
-    private_gdb_input = true;
     gdbCommandCB(dialog, client_data, call_data);
-    private_gdb_input = false;
     if (yn_dialog)
 	XtUnmanageChild(yn_dialog);
 }
-
 
 //-----------------------------------------------------------------------------
 // Status recognition
