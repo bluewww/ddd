@@ -201,7 +201,7 @@ LIBS = $(CXXLIBS) $(LIBNSL) $(LIBRX) $(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM)
 ## X Libraries
 
 # Special flags for linking with X.  (-L/usr/X11R5/lib)
-X_LDFLAGS = @X_PRE_LIBS@ @X_LIBS@
+X_LDFLAGS = @X_LIBS@
 
 # Motif library.  (-lXm)
 LIBXM = @XM_LIBS@
@@ -225,8 +225,8 @@ LIBGEN = @LIBGEN@
 # X toolkit library.  (-lXt)
 LIBXT = @XT_LIBS@
 
-# X library.  (-lX11 -lnsl -lsocket)
-LIBX11 = @X11_LIBS@ @X_EXTRA_LIBS@
+# X library.  (-lSM -lICE -lX11 -lnsl -lsocket)
+LIBX11 = @X_PRE_LIBS@ @X11_LIBS@ @X_EXTRA_LIBS@
 
 # All libraries shown above
 ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXPM) $(LIBXAW) $(LIBXEXT) \
@@ -352,7 +352,8 @@ FIG2DEV = fig2dev
 
 # Some XPM/PPM/PostScript converters
 XPMTOPPM = xpmtoppm
-PNMTOPS = pnmtops
+PNMTOPS  = pnmtops
+PPMTOPGM = ppmtopgm
 
 ### END OF CUSTOMIZATION SECTION ---
 ### You shouldn't need to change anything below this line.
