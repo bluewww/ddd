@@ -144,9 +144,11 @@ Volunteers for fixing these and other bugs are welcome!
     end-up overlapping), because the heuristic to choose their places
     tends to put them very far.
 
-316 Alias hints of clustered displays remain in place.
+316*Alias hints of clustered displays remain in place.
+    (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 320*Finish Undo/Redo:
-    - Add undo support for displays.
+    - Redoing displays queries the _current_ frame from GDB, as well
+      as the _current_ values (and non the recorded ones).
 
 321 (Insert new bugs here)
