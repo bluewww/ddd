@@ -57,8 +57,11 @@ dnl
 dnl Note: all macros are recognized only with parameters; i.e.
 dnl if a macro F(X) is defined, F and F() expand to F.
 dnl
+dnl DASH makes a dash.
+define([DASH], [@tt -@rm ])dnl
+dnl
 dnl DESC(ITEM, DESC) issues `* ITEM - DESC.', with ITEM in bold.
-define([DESC], [ifelse([$1], , [[DESC]], [@tt \267 LBL($1) - $2.])])dnl
+define([DESC], [ifelse([$1], , [[DESC]], [@tt \267 LBL($1) DASH $2.])])dnl
 dnl
 dnl LBL(FOO) is used for describing the label titled FOO
 dnl Not sure whether we should use @charset (the default charset used 
@@ -114,7 +117,7 @@ dnl ITEM issues a simple centered dot.
 define([ITEM], [@tt \267 @rm])dnl
 dnl
 dnl SUBITEM issues a dash.
-define([SUBITEM], [@tt - @rm])dnl
+define([SUBITEM], DASH)dnl
 dnl
 dnl QUOTE(AUTHOR, WORK) quotes a tip
 define([QUOTE], [\n        - EMPH($1), $2])dnl
