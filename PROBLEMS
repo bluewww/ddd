@@ -14,6 +14,10 @@ Reported by:  bas@phys.uva.nl (Bas V. de Bakker),
     on `BreakPoint.C'; it can only be compiled without
     `-felide-constructors' flag.
 
+    [David C. Snyder <dsnyder@mindspring.com> states that he did not
+    encounter any such problems using GNU binutils-2.6, gcc-2.7.2,
+    libg++-2.7.1, and gdb-4.15.1 on his AIX 3.2.5 system.]
+
     We recommend the following simple way to build DDD on AIX:
     
     1. Enter `make -k'.  This builds all except erroneous files.
@@ -131,5 +135,14 @@ Reported by:  mlj@gensym.com (Magnus Ljungberg)
     You may need to prohibit the use of the _XEditResCheckMessages()
     function by entering a line saying '#undef HAVE_X11_XMU_EDITRES_H' in
     `ddd.C'.
+
+
+ADA
+===
+
+Reported by: ralph@ifr.luftfahrt.uni-stuttgart.de (Ralph Paul)
+
+    Debugging Ada programs requires a special GDB version, for
+    instance the one at `ftp://helen.cs.berkeley.edu/pub/gdb'.
 
 $Id$

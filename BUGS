@@ -135,4 +135,109 @@ Volunteers for fixing these and other bugs are welcome!
 068. On HPUX 9.05 ddd does not pass any characters to the left of the "@"
      symbol typed into the command line.
 
-069. (Insert your bug here)
+069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
+     [Linux 1.3.38 system, X11R6 (XFree 3.1.1), Motif 2.x]
+
+     1. When ddd is called with --exec-window and the execution window is
+        closed, the Execution... item in the Windows menu is not disabled
+        and when this item is then selected ddd aborts precipitately.
+          The same problem (seg. fault) happens if I close the window and
+        rerun the debugged program: a new execution window apears and then
+        ddd aborts.
+
+     2. The graph window behaves strangely when all logical windows are in
+        a logical one: the scroller disappear sometimes and if the window
+        is extended gray appears, not the graph window dotted background.
+        The graph window comes right after a display, though the scrollbar
+        is not appearing.
+
+     3. ddd seg. faults when receiving a signal during startup (such as
+        when someone hits C-C). It also truncates the .dddinit file to
+        zero bytes :-(.
+
+     4. When unselecting the `Display Glyphs' option, the actual line in
+        the source window does not get highlighted. If one has also the
+        assembler window then the line in this window is highlighted, but
+        not the one in the source language window.
+
+     5. Paths to filename are not `normalized' before being passed to
+        emacslient (or gnuclient). I mean that if one of your source
+        files was compiled as
+
+                /some/path//there/file.C
+
+        (which happens fairly often due to empty paths components in
+        Makefiles, for example), the file will not appear in Emacs
+        because the Emacs visit-file function and friends do consider
+        that when there is a // or a /~ in a path then everything
+        before the first / is garbage. The file that will be looked
+        for in the example is
+
+                  /there/file.C
+
+        (the GUD Emacs mode exhibits the same bug ;-)). Thus // in
+        file pathes must be changed to / (or Emacs changed so that
+        only interactively-called versions of visit-file and friends
+        do that, but I don't think this will be done...).
+
+070. Matthias Kurz <mk@baerlap.north.de> complains: When glyphs are
+     enabled, I have endless scrolling as soon as I press a `repeat'
+     button on the DDD source scrollbars.
+
+071. Klaus-Georg Adams <adams@achibm5.chemie.uni-karlsruhe.de> says:
+
+     I have got a seg-fault in the stock precompiled ddd-1.4b
+     (i486-unknown-linux) and report it dutyfully.
+
+     It can be reproduced by doing the following:
+     Run your program to a breakpoint.  Select data to display() in
+     the data window.  Dereference() a pointer.  Step out of the
+     function or kill the program, so that displayed data is disabled.
+     Do a `select all' in the data menu.  Hit delete(). That's it.
+     (sometimes it takes another klick on run to get the seg-fault).
+
+     [I could not reproduce this bug.  Does this also happen on 
+      other configurations?  -AZ]
+
+072. Alexander Dvorak <Alexander.Dvorak@physik.uni-regensburg.de>
+     says:
+
+     Dragging and dropping the `Stop' symbol several times causes DDD
+     to crash with a segmentation fault.
+
+     [Pre-compiled DDD as in 071.  Does this also happen on 
+      other configurations?  -AZ] 
+
+073. Debugging `icicle' causes trouble with job control.  Reported by
+     Andreas Zeller <zeller@acm.org>.
+
+074. If there is no `less', `ddd --manual' will not work.  [Fixed for
+     DDD 1.5 -AZ]
+
+075. On Linux boxes, attempting to drag & drop a breakpoint symbol
+     causes a core dump.  [Motif/Linux bug?]
+
+076. Jauder Ho <jauderho@umich.edu> says:
+
+     DDD 1.4b (i586-unknown-linux) gets fatal signal
+     When I run my program after setting a breakpoint and allowing ddd
+     to stop at the breakpoint. If at that point I choose to run the
+     program again, the program either runs by starting the program at
+     the beginning OR it complains of "Internal error (IOT
+     trap/Abort)" and ddd exits...  this does not result in an error
+     under just gdb so I am assuming that it is an error in ddd.
+
+077. rwolff@noao.edu (Richard Wolff) reports:
+
+     Load a program to debug but do not run it.  Select a variable to
+     display by sweeping out the name with a mouse (or type it into
+     the argument field) and press the Display() button.  The message
+     "No symbol "xxx" in current context." is presented.  Fine.  Now
+     do the same thing with the right mouse button: left click (or
+     sweep) the name in the source window and then right click and
+     select "Display xxx".  "Internal Error (Segmentation Fault)"!
+     [Use the patch
+     `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/patches/message-box'
+     to fix it.]
+
+078. (Insert your bug here)

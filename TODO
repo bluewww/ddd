@@ -24,6 +24,7 @@ Volunteers for these and other projects are welcome!
 006. With GDB 4.14 and later, define `graph display' command such that
      a special code is issued which causes DDD to show the display.
      Thus, one could use `graph display' in own definitions.
+     See also 067, below.
 
 008. Have buttons arranged such that they do not disappear when the
      window is narrowed.
@@ -104,5 +105,99 @@ Volunteers for these and other projects are welcome!
 
 066. Upgrade rx library to rx-1.0.  Should be less buggy.
 
-067. (Insert your project idea here)
+067. Andy Gill (andy@dcs.gla.ac.uk) wants more options to
+     `graph display': ``for example,
 
+        graph display[x=100,y=100,rotate] foo
+
+     where foo is an array. This means put the object at location
+     (x=100,y=100), and rotate the array.  Using this in conjunction
+     with with the TODO 006 means that when restarting a program that
+     you are debugging you could have a script of what vars you are
+     looking at, and where you want them to go on your
+     canvas. Furthermore, there could be an option on the graph window
+     that let you dump such scripts automatically generated from the
+     current layout on the canvas.''  See also 067.
+
+068. Matthias Kurz <mk@baerlap.north.de>: Have `ptype' (in DBX:
+     `whatis') inserted into the source popup menu, such that users
+     can inquire variable types.
+
+069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
+
+     1. When one sets a breakpoint or do something that issues a command
+        to the underlying debugger, the source window is scrolled back to
+        the the current line. This makes it difficult to see what you've
+        actually done, since for example the breakpoint you just set is
+        usually not visible.
+          Maybe it would be nice not to scroll and have a button that lets
+        one go to the current line in a single mouse click?
+
+     2. If one has automatic save of options and also use one of
+        --exec-window or --noexec-window (to change the expected ddd
+        behaviour for a session), then the new behaviour is automatically
+        saved. I find this counter-intuitive, but maybe is this a feature
+        (which may be documented in the manual for dumb people like me).
+
+     3. Add a way to cast a display. What I mean is that when I debug some
+        code with a `generic' C function which takes a void* and a tag that
+        indicates the kind of stuff the void* is really, I'd like to be able
+        to cast the displayed void* (maybe by editing the text
+        field---dangerous---or simply by having a 'Cast' item in the popup
+        menu). The fastest way to do that actually is to select `Dependent
+        display', type the cast there, and then delete the original display
+        (because what we want is in the casted display).
+
+     4. Let one colorize the displays. By using regexps on types or
+        names of the fields, it would already be extremely useful (or
+        with a match on the typed expression, having a list of regexps
+        to match, the first match giving color, so that given blue for
+        ` pr_.*' and red for `^int .*' one would see `int pr_var' in
+        blue but all other int variables in red). Does VSL support
+        colors ?
+
+070. Matthias Kurz <mk@baerlap.north.de> suggests an option to set
+     debuggee arguments when invoking DDD.
+
+071. Matthias Kurz <mk@baerlap.north.de> suggests code annotations
+     (i.e. comments and graphics that are associated with certain
+     variable/function names in the code).
+
+073. While the debugee is running, show some image sequence in the DDD
+     window (similar to Netscape :-)
+
+074. Have a `ddd-announce' mailing list, where only DDD announcements
+     are posted.  (Hmm.  Might be time for `comp.debuggers.ddd.announce'...)
+
+075. Andre Cormeau <ac@enci.ucalgary.ca> says:
+
+     Apparently ddd does not fully support fortran. A problem is in
+     variable names, with capital letters and underscores (not strict f77).
+     I need to change the variable names to small caps and add underscores
+     to the end of the names, which is a bit annoying after a while. 
+     Is there a filter to do this out there? 
+     If not, could someone give me a pointer in the source code of ddd
+     as where I could implement such a feature?
+
+076. Henrik Seidel <henrik@satchmo.physik.tu-berlin.de> says:
+
+     I am missing a feature which would be very useful (but, maybe,
+     difficult to implement). Maybe it is already there and I just
+     don't see it: I would love to be able to save the layout and the
+     variables of the graphic display, so that I can use the same
+     layout if I continue debugging the program tomorrow. More
+     important, I do not like it so much that I have to re-establish
+     the graphic display each time I recompile. Currently, after
+     recompiling all variables displayed in the previous version of
+     the program are now undefined, probably because addresses have
+     changed. Is there a trick to make them be defined again? If not,
+     it might be a good idea to save the displayed variables not by
+     their address but, more source-code oriented, by their scope and
+     name. That way, it shouldn't be too difficult to save the
+     displayed variables and find the corresponding variables even
+     after recompiling.  See also 067.
+
+077. Have a way to show all display detail.  Maybe by selecting `show' on a
+     title?
+
+078. (Insert your project idea here)
