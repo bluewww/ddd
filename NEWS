@@ -15,7 +15,7 @@ DDD 3.0.92 [in development]
 This is the third beta release of DDD 3.1, fixing some minor bugs:
 
 - Perl source position was not recognized in a number of cases.
-- Plot could freeze DDD under certain circumstances.
+- Creating large plots could freeze DDD under certain circumstances.
 - The builtin plot is much faster.
 
 See the DDD ChangeLog for more details.

@@ -624,7 +624,8 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 			XScreenNumberOfScreen(XtScreen(plot->shell)));
 	XtPopdown(plot->shell);
 
-	// Make sure that any tear-off menus become inactive
+	// XtPopdown may not withdraw an iconified shell.  Hence, make
+	// sure the shell really becomes disabled.
 	XtSetSensitive(plot->shell, False);
     }
 
