@@ -3,6 +3,7 @@
 @c DDD Manual
 
 @c Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
+@c Copyright (C) 1999 Universitaet Passau, Germany.
 @c Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 @c 
 @c This file is part of DDD.
@@ -32,7 +33,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 1999-03-04
+@set DATE 1999-07-30
 
 @setfilename ddd.info
 @include config.texi
@@ -80,23 +81,18 @@ This file documents @value{DDD}, the Data Display Debugger.
 This is the @value{EDITION} Edition, @value{DATE}, of @cite{Debugging
 with @value{DDD}} for @value{DDD} Version @value{VERSION}.
 
-@format
 @group
-Copyright (C) 1999 Technische Universit@"at Braunschweig, Germany.
-Institut f@"ur Software
-Abteilung Softwaretechnologie
-B@"ultenweg 88
-D-38092 Braunschweig
+Copyright (C) 1999 Universit@"at Passau, Germany @*
+Lehrstuhl f@"ur Software-Systeme @*
+Innstrasse 33 @*
+D-94032 Passau @*
 GERMANY
 
-Phone: +49 531 391-7580
-Fax: +49 531 391-8940
 E-mail: @email{@value{ddd}@@fmi.uni-passau.de}
-@end group
 
-@value{DDD} and this manual are available via
+@value{DDD} and this manual are available via @*
 @uref{http://www.fmi.uni-passau.de/st/ddd/, the @value{DDD} WWW page}.
-@end format
+@end group
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -147,17 +143,19 @@ into another language, under the above conditions for modified versions.
 @end tex
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1999 Technische Universit@"at Braunschweig, Germany
+Copyright @copyright{} 1995--1999 
+Technische Universit@"at Braunschweig, Germany @*
+Copyright @copyright{} 1999 
+Universit@"at Passau, Germany
 @sp 2
-Published by @*
-Technische Universit@"at Braunschweig @*
-Abteilung Softwaretechnologie @*
-B@"ultenweg 88 @*
-D-38092 Braunschweig @*
-GERMANY @*
 
-Phone: +49 531 391-7580 @*
-Fax: +49 531 391-8940 @*
+Published by @*
+Universit@"at Passau @*
+Lehrstuhl f@"ur Software-Systeme @*
+Innstrasse 33 @*
+D-94032 Passau @*
+GERMANY
+
 E-mail: @email{@value{ddd}@@fmi.uni-passau.de} @*
 
 @value{DDD} and this manual are available via @*
@@ -211,6 +209,7 @@ This is the @value{EDITION} Edition of @cite{Debugging with
 
 * License::                     The @value{DDD} license.
 * Reporting Bugs::              How and when to report @value{DDD} bugs.
+* Extending::                   
 * Configurations::              
 * Label Index::                 Index.
 * Key Index::                   
@@ -251,6 +250,11 @@ debuggers:
 
 @itemize @bullet
 @item
+To debug @emph{executable binaries}, you can use @value{DDD} with @dfn{GDB}, 
+@dfn{DBX}, @dfn{Ladebug}, or @dfn{XDB}.
+
+@itemize @minus{}
+@item
 @cindex GDB
 @cindex C
 @cindex C++
@@ -260,12 +264,12 @@ debuggers:
 @cindex Chill
 @cindex Ada
 @cindex FORTRAN
-You can use @value{DDD} with @dfn{GDB}, the GNU debugger, to debug
-executable binaries.  GDB supports programs written in C, C++, Java,
-Modula-2, Modula-3, Pascal, Chill, Ada, and FORTRAN.
-(@pxref{Languages, Using GDB with Different Languages, Using GDB with
-Different Languages, gdb, Debugging with GDB}, for information on
-language support in GDB.)
+@dfn{GDB}, the GNU debugger, is the recommended inferior debugger for
+@value{DDD}.  GDB supports native executables binaries originally
+written in C, C++, Java, Modula-2, Modula-3, Pascal, Chill, Ada, and
+FORTRAN.  (@pxref{Languages, Using GDB with Different Languages, Using
+GDB with Different Languages, gdb, Debugging with GDB}, for information
+on language support in GDB.)
 
 @item
 @cindex DBX
@@ -291,29 +295,27 @@ for DBX also applies to Ladebug, unless stated otherwise.}
 @cindex XDB
 As another alternative to GDB, you can use @value{DDD} with the
 @dfn{XDB} debugger, as found on HP-UX systems.@footnote{XDB will no
-longer be maintained in future @value{DDD} releases.  You can use
-@uref{http://www.hp.com/lang/tools/Debuggers/WDB/, HP's Wildebeest}
-instead, a free GDB port to HP-UX.}  Using XDB may be useful if GDB does
-not understand or fully support the debugging information as generated
-by your compiler.
+longer be maintained in future @value{DDD} releases.  Use a recent GDB
+version instead.}.
+@end itemize
 
 @item
 @cindex JDB
 @cindex Java
-You can use @value{DDD} with @dfn{JDB}, the Java debugger, as of JDK 1.1
-and later, to debug Java bytecode programs.
+To debug @emph{Java bytecode programs}, you can use @value{DDD} with
+@dfn{JDB}, the Java debugger, as of JDK 1.1 and later.
 
 @item
 @cindex PYDB
 @cindex Python
-You can use @value{DDD} with @dfn{PYDB}, a Python debugger, to debug
-Python programs.
+To debug @emph{Python programs}, you can use @value{DDD} with
+@dfn{PYDB}, a Python debugger.
 
 @item
 @cindex Perl
 @cindex Perl
-You can use @value{DDD} with the @dfn{Perl} debugger, as of Perl 5.003
-and later, to debug Perl programs.
+To debug @emph{Perl programs}, you can use @value{DDD} with the @dfn{Perl}
+debugger, as of Perl 5.003 and later.
 @end itemize
 
 @xref{Choosing an Inferior Debugger}, for choosing the appropriate
@@ -339,23 +341,27 @@ This manual comes in three formats:
 The @emph{Info} format is used for browsing on character devices; it
 comes without pictures.  You should have a local copy installed, which
 you can browse via Emacs, the standalone @file{info} program, or from
-DDD via @samp{Help @result{} @value{DDD} Manual}.  Info files can be
-downloaded via @uref{http://www.fmi.uni-passau.de/st/ddd/, the
-@value{DDD} WWW page}.
+DDD via @samp{Help @result{} @value{DDD} Manual}.
+
+The @uref{http://www.fmi.uni-passau.de/st/ddd/, @value{DDD} WWW page}
+holds DDD info files for downloading.
 
 @item
 The @emph{HTML} format is used for browsing on bitmap devices; it
 includes several pictures.  You can view it using a HTML browser,
-typically from a local copy.  Online copies of the most recent
-@value{DDD} manual are available via
-@uref{http://www.fmi.uni-passau.de/st/ddd/, the @value{DDD} WWW page}.
+typically from a local copy.  
+
+The @uref{http://www.fmi.uni-passau.de/st/ddd/, @value{DDD} WWW page}
+holds online copies of the most recent @value{DDD} manual.
 You can also download HTML files there to install them locally
 (recommended).
 
 @item
 The @emph{PostScript} format is used for printing on paper; it comes
-with pictures as well.  The PostScript format can be downloaded via
-@uref{http://www.fmi.uni-passau.de/st/ddd/, the @value{DDD} WWW page}.
+with pictures as well.  
+
+The @uref{http://www.fmi.uni-passau.de/st/ddd/, @value{DDD} WWW page}
+holds this manual in PostScript format.
 @end itemize
 
 
@@ -464,14 +470,11 @@ If you have any success story related to @value{DDD}, please write it
 down on a picture postcard and send it to us:
 
 @format
-@group
-Technische Universit@"at Braunschweig
-Institut f@"ur Software
-Abteilung Softwaretechnologie
-B@"ultenweg 88
-D-38092 Braunschweig
+Universit@"at Passau
+Lehrstuhl f@"ur Software-Systeme
+Innstrasse 33
+D-94032 Passau
 GERMANY
-@end group
 @end format
 
 @cindex Guestbook
@@ -547,7 +550,8 @@ information as well as a GDB prompt.@footnote{Re-invoke @value{DDD} with
 
 @example
 @value{DDD} Version @value{VERSION}, by Dorothea L@"utkehaus and Andreas Zeller.
-Copyright @copyright{} 1999 Technische Universit@"at Braunschweig, Germany.
+Copyright @copyright{} 1995-1999 Technische Universit@"at Braunschweig, Germany.
+Copyright @copyright{} 1999 Universit@"at Passau, Germany.
 Reading symbols from sample@dots{}done.
 (gdb) 
 @end example
@@ -887,7 +891,6 @@ int main(int argc, char *argv[])
     printf("\n");
 
     free(a);
-
     return 0;
 @}
 @end cartouche
@@ -998,17 +1001,17 @@ Use
 
 @cindex JDB, invoking @value{DDD} with
 @example
-@value{ddd} --jdb
+@value{ddd} --jdb @var{program}
 @end example
 
 @cindex PYDB, invoking @value{DDD} with
 @example
-@value{ddd} --pydb
+@value{ddd} --pydb @var{program}
 @end example
 
 @cindex Perl, invoking @value{DDD} with
 @example
-@value{ddd} --perl
+@value{ddd} --perl @var{program}
 @end example
 
 @noindent
@@ -1023,7 +1026,7 @@ Use
 
 @cindex GDB, invoking @value{DDD} with
 @example
-@value{ddd} --gdb
+@value{ddd} --gdb @var{program}
 @end example
 
 @cindex DBX, invoking @value{DDD} with
@@ -1100,8 +1103,8 @@ for details.
 Determine the inferior debugger automatically from the given arguments.
 
 Giving this option is equivalent to setting the @value{DDD}
-@samp{autoDebugger} resource to @samp{on}.  @xref{Customizing Debugger Interaction},
-for details.
+@samp{autoDebugger} resource to @samp{on}.  @xref{Customizing Debugger
+Interaction}, for details.
 
 @item --button-tips
 Enable button tips.
@@ -1212,8 +1215,8 @@ Execution}, for details.
 Use @var{fontname} as default font.
 
 Giving this option is equivalent to setting the @value{DDD}
-@samp{defaultFont} resource to @samp{fontname}.  @xref{Fonts}, for
-details.
+@samp{defaultFont} resource to @samp{fontname}.  @xref{Customizing
+Fonts}, for details.
 
 
 @item --fonts
@@ -1229,8 +1232,8 @@ Set the default font size to @var{size} (in 1/10 points).  To make
 @value{DDD} use 12-point fonts, say @samp{--fontsize 120}.
 
 Giving this option is equivalent to setting the @value{DDD}
-@samp{FontSize} resource class to @samp{size}.  @xref{Fonts}, for
-details.
+@samp{FontSize} resource class to @samp{size}.  @xref{Customizing
+Fonts}, for details.
 
 
 @item --fullname
@@ -3583,6 +3586,7 @@ sources.
 * Opening Programs::            
 * Opening Core Dumps::          
 * Opening Source Files::        
+* Filtering Files::             
 @end menu
 
 @node Opening Programs
@@ -3652,6 +3656,16 @@ source files, which may or may not be related to your program.
 
 @lbindex Open
 Click on @samp{Open} to open the source file.
+
+
+@node Filtering Files
+@subsection Filtering Files
+
+When presenting files to be opened, @value{DDD} by default filters files
+when opening execution files, core dumps, or source files, such that the
+selection shows only suitable files.  This requires that @value{DDD}
+opens each file, which may take time.  @xref{Customizing File
+Filtering}, if you want to turn off this feature.
 
 
 @node Looking up Items
@@ -5253,6 +5267,29 @@ also shown in the status line.
 @sp 1
 @end ifnotinfo
 
+You can disable value tips via @samp{Edit @result{} Preferences
+@result{} General @result{} Automatic display of variable values as
+popup tips}.
+
+You can disable displaying variable values in the status line via
+@samp{Edit @result{} Preferences @result{} General @result{} Automatic
+display of variable values in the status line}.
+
+These customizations are tied to the following resources:
+
+@defvr Resource valueTips (class Tips)
+Whether value tips are enabled (@samp{on}, default) or not
+(@samp{off}).  Value tips affect @value{DDD} performance and may
+be distracting for some experienced users.
+@end defvr
+
+@defvr Resource valueDocs (class Docs)
+Whether the display of variable values in the status line is enabled
+(@samp{on}, default) or not (@samp{off}).
+@end defvr
+
+
+
 @lbindex Automatic Display of Variable Values
 You can turn off value tips via @samp{Edit @result{} Preferences
 @result{} General @result{} Automatic Display of Variable Values}.
@@ -6292,8 +6329,8 @@ If the data window becomes too small to hold all displays, scroll bars
 are created.  If your @value{DDD} is set up to use @emph{panners}
 instead, a panner is created in the lower right edge.  When the panner
 is moved around, the window view follows the position of the panner.
-@xref{Customizing Scrolling}, for details on how to set up scroll bars
-or panners.
+@xref{Customizing Data Scrolling}, for details on how to set up scroll
+bars or panners.
 
 For fine-grain movements, selected displays may also be moved using the
 arrow keys.  Pressing @strong{Shift} and an arrow key moves displays by
@@ -7228,7 +7265,7 @@ To return to normal mode, press @key{ESC}, or use any cursor command.
 
 The command history is automatically saved when exiting @value{DDD}.
 
-... (more on history)
+@c FIXME: more on history
 
 
 @node TTY mode
@@ -7635,10 +7672,7 @@ running or when invoking @value{DDD}.  @xref{Resource Index}, for the
 full list of @value{DDD} resources.
 
 @menu
-* Preferences::                 
-* Debugger Settings::           
-* Saving Options::              
-* Resources::                   
+* How Customizing Works::       
 * Customizing Windows::         
 * Customizing Help::            
 * Customizing Undo::            
@@ -7653,35 +7687,26 @@ full list of @value{DDD} resources.
 * Customizing Remote Debugging::  
 * Customizing Data::            
 * Customizing Editing::         
-* Customizing Customization::   
+* Customizing Warnings::        
 * Customizing the Debugger Console::  
 * Customizing Sessions::        
+* Customizing the Inferior Debugger::  
 * Application Defaults::        
-* Extending::                   
+* Customizing Customization::   
 * Other Customizations::        
 @end menu
 
+@node How Customizing Works
+@section How Customizing @value{DDD} Works
 
-@node Preferences
-@section Preferences
-
-...
-
-
-@node Debugger Settings
-@section Debugger Settings
-
-...
-
-
-@node Saving Options
-@section Saving Options
-
-...
-
+@menu
+* Resources::                   
+* Changing Resources::          
+* Saving Options::              
+@end menu
 
 @node Resources
-@section How Resources are Saved
+@subsection Resources
 @cindex Resources
 
 Just like any X program, @value{DDD} has a number of places to get
@@ -7734,6 +7759,43 @@ For more details on the syntax of resource specifications, see the
 section @cite{RESOURCES} in the @cite{X(1)} manual page.
 
 
+@node Changing Resources
+@subsection Changing Resources
+
+You can change @value{DDD} resources by three methods:
+
+@itemize @bullet{}
+@item
+Use @value{DDD} to change the options, notably @samp{Edit @result{}
+Preferences}.  This works for the most important @value{DDD} resources.
+Be sure to save the options (@pxref{Saving Options}) such that they
+apply to future @value{DDD} sessions, too.
+
+@item
+You can also invoke @value{DDD} with an appropriate command-line option.
+This changes the related @value{DDD} resource for this particular
+@value{DDD} invocation.  However, if you save the options (@pxref{Saving
+Options}), the changed resource will also apply to future invocations.
+
+@item
+Finally, you can Set the appropriate resource in a file named
+@file{.@value{ddd}/init} in your home directory.  @xref{Resource Index},
+for a list of @value{DDD} resources to be set.
+@end itemize
+
+
+@node Saving Options
+@subsection Saving Options
+
+You can save the current option settings by selecting @samp{Edit
+@result{} Save Options}.  Options are saved in a file named
+@file{.@value{ddd}/init} in your home directory.  If a session
+@var{session} is active, options will be saved in
+@file{~/.@value{ddd}/sessions/@var{session}/init} instead.
+
+
+
+
 @node Customizing Windows
 @section Customizing the @value{DDD} Windows
 
@@ -7742,7 +7804,7 @@ You can customize the @value{DDD} Windows in various ways.
 @menu
 * Splash Screen::               
 * Window Layout::               
-* Fonts::                       
+* Customizing Fonts::           
 * Toggling Windows::            
 * Text Fields::                 
 * Icons::                       
@@ -7752,12 +7814,27 @@ You can customize the @value{DDD} Windows in various ways.
 @node Splash Screen
 @subsection Splash Screen
 
-...
+@lbindex DDD Splash Screen
+You can turn off the @value{DDD} splash screen shown upon startup.  Just
+select @samp{Edit @result{} Preferences @result{} Startup @value{DDD}
+Splash Screen}.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-startup-prefs, 16cm}
+@sp 1
+@end ifnotinfo
+
+The value applies only to the next @value{DDD} invocation.
+
+This setting is related to the following resource:
 
 @defvr Resource splashScreen (class SplashScreen)
 If @samp{on} (default), show a @value{DDD} splash screen upon
 start-up.
 @end defvr
+
+You can also customize the appearance of the splash screen:
 
 @defvr Resource splashScreenColorKey (class ColorKey)
 The color key to use for the @value{DDD} splash screen.  Possible
@@ -7789,7 +7866,7 @@ version (@samp{m}) can be shown.
 By default, @value{DDD} stacks commands, source, and data in one single
 top-level window.  To have separate top-level windows for source, data,
 and debugger console, set @samp{Edit @result{} Preferences @result{}
-Window Layout @samp{} Separate Windows}.
+Startup @result{} Window Layout @result{} Separate Windows}.
 
 @ifnotinfo
 @sp 1
@@ -7829,7 +7906,8 @@ The bottom setting is only supported for separate tool bars---that is,
 you must either choose separate windows or configure the tool bar to
 have neither images nor captions (@pxref{Customizing the Tool Bar}).
 
-You can choose whether there should be one tool bar or two tool bars:
+If you use stacked windows, you can choose whether there should be one
+tool bar or two tool bars:
 
 @defvr Resource commonToolBar (class ToolBar)
 Whether the tool bar buttons should be shown in one common tool bar at
@@ -7850,8 +7928,8 @@ the top of the @value{DDD} source window (as in @value{DDD} 1.x).
 invocation.
 
 
-@node Fonts
-@subsection Fonts
+@node Customizing Fonts
+@subsection Customizing Fonts
 @cindex Fonts
 
 You can configure the basic @value{DDD} fonts at run-time.  Each
@@ -8022,6 +8100,8 @@ output.  A typical value is:
 invocation.
 
 
+
+
 @node Toggling Windows
 @subsection Toggling Windows
 
@@ -8029,10 +8109,11 @@ In the default stacked window setting, you can turn the individual
 @value{DDD} windows on and off by toggling the respective items in the
 @samp{View} menu (@pxref{View Menu}).  When using separate windows
 (@pxref{Window Layout}), you can close the individual windows via
-@samp{File @result{} Close}.
+@samp{File @result{} Close} or by closing them via your window manager.
 
 Whether windows are opened or closed when starting @value{DDD} is
-controlled by the following resources:
+controlled by the following resources, immediately tied to the
+@samp{View} menu items:
 
 @defvr Resource openDataWindow (class Window)
 If @samp{off} (default), the data window is closed upon start-up.
@@ -8053,6 +8134,9 @@ invocation.
 @node Text Fields
 @subsection Text Fields
 
+The @value{DDD} text fields can be customized using the following
+resources:
+
 @defvr Resource popdownHistorySize (class HistorySize)
 The maximum number of items to display in pop-down value histories.  A
 value of @code{0} (default) means an unlimited number of values.
@@ -8068,7 +8152,13 @@ the top.
 @node Icons
 @subsection Icons
 
-...
+@lbindex Iconify all windows at once
+If you frequently switch between @value{DDD} and other multi-window
+applications, you may like to set @samp{Edit @result{} Preferences
+@result{} General @result{} Iconify all windows at once}.  This
+way, all @value{DDD} windows are iconified and deiconified as a group.
+
+This is tied to the following resource:
 
 @defvr Resource groupIconify (class GroupIconify)
 If this is @samp{on}, (un)iconifying any @value{DDD} window
@@ -8076,6 +8166,17 @@ causes all other @value{DDD} windows to (un)iconify as well.
 Default is @samp{off}, meaning that each @value{DDD} window can
 be iconified on its own.
 @end defvr
+
+
+If you want to keep @value{DDD} off your desktop during a longer
+computation, you may like to set @samp{Edit @result{} Preferences
+@result{} General @result{} Uniconify when ready}.  This way, you can
+iconify @value{DDD} while it is busy on a command (e.g. running a
+program); @value{DDD} will automatically pop up again after becoming
+ready (e.g. after the debugged program has stopped at a breakpoint).
+@xref{Program Stop}, for a discussion.
+
+Here is the related resource:
 
 @defvr Resource uniconifyWhenReady (class UniconifyWhenReady)
 If this is @samp{on} (default), the @value{DDD} windows are uniconified
@@ -8163,7 +8264,17 @@ The tip of the day numbered @var{n} (a string).
 @node Help Helpers
 @subsection Help Helpers
 
-...
+@value{DDD} relies on a number of external commands, specified via
+@samp{Edit @result{} Preferences @result{} Helpers}.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-helpers, 16cm}
+@sp 1
+@end ifnotinfo
+
+@lbindex Uncompress
+To uncompress help texts, you can define a @samp{Uncompress} command:
 
 @defvr Resource uncompressCommand (class UncompressCommand)
 The command to uncompress the built-in @value{DDD} manual, the
@@ -8173,6 +8284,8 @@ The default value is @samp{gzip -d -c}; typical values include
 @samp{zcat} and @samp{gunzip -c}.
 @end defvr
 
+@lbindex Web Browser
+To view WWW pages, you can define a @samp{Web Browser} command:
 
 @defvr Resource wwwCommand (class WWWCommand)
 @enindex WWWBROWSER
@@ -8198,6 +8311,9 @@ Ddd*wwwCommand: \
 This command first tries to connect to a running @code{netscape-4.0}
 browser; if this fails, it starts a new @code{netscape-4.0} process.
 @end defvr
+
+This is the default WWW Page shown by @samp{Help @var{} @value{DDD} WWW
+Page}:
 
 @defvr Resource wwwPage (class WWWPage)
 The @value{DDD} WWW page.  Value:
@@ -8231,6 +8347,11 @@ number of actions that can be undone, and the number of states that
 can be shown in historic mode.  Useful for limiting @value{DDD}
 memory usage.  A negative value (default) means to place no limit.
 @end defvr
+
+@lbindex Clear Undo Buffer
+To clear the undo buffer at any time, thus reducing memory usage, use
+@samp{Edit @result{} Preferences @result{} General @result{} Clear Undo
+Buffer}
 
 
 
@@ -8330,7 +8451,7 @@ all the time.
 @node Customizing the Menu Bar
 @section Customizing the Menu Bar
 
-...
+The Menu Bar can be customized in various ways.
 
 @menu
 * Auto-Raise Menus::            
@@ -8340,7 +8461,7 @@ all the time.
 @node Auto-Raise Menus
 @subsection Auto-Raise Menus
 
-The Menu Bar can be customized in various ways.
+You can cause pull-down menus to be raised automatically.
 
 @defvr Resource autoRaiseMenu (class AutoRaiseMenu)
 If @samp{on} (default), @value{DDD} will always keep the pull down menu
@@ -8349,10 +8470,13 @@ your window manager, or if your window manager does not auto-raise
 windows, set this resource to @samp{off}.
 @end defvr
 
+
 @node Customizing the Edit Menu
 @subsection Customizing the Edit Menu
 
 In the Menu Bar, the @samp{Edit} Menu can be customized in various ways.
+Use @samp{Edit @result{} Preferences @result{} Startup} to customize
+these keys.
 
 @kindex Ctrl+C
 @lbindex Ctrl+C is
@@ -8445,6 +8569,12 @@ beneath the tool bar.  To disable the command tool, set @samp{Edit
 @result{} Preferences @result{} Source @result{} Tool Buttons Location
 @result{} Source Window}.
 
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-source-prefs, 16cm}
+@sp 1
+@end ifnotinfo
+
 Here's the related resource:
 
 @defvr Resource commandToolBar (class ToolBar)
@@ -8524,7 +8654,9 @@ extra check takes some time.
 @node Customizing Buttons
 @section Customizing Buttons
 
-The following resources control user-defined buttons:
+@value{DDD} allows defining additional command buttons; @xref{Defining
+Buttons}, for doing this interactively.  This section describes the
+resources that control user-defined buttons.
 
 @defvr Resource consoleButtons (class Buttons)
 A newline-separated list of buttons to be added under the debugger
@@ -8533,8 +8665,8 @@ console.  Each button issues the command given by its name.
 The following characters have special meanings:
 @itemize @bullet
 @item
-Commands ending with '@strong{...} insert their name, followed by a space, in
-the debugger console.
+Commands ending with @strong{@dots{}} insert their name, followed by a
+space, in the debugger console.
 
 @item
 Commands ending with a control character (that is, @samp{^} followed
@@ -8708,8 +8840,8 @@ done: all commands are accepted ``as is''.
 @node Customizing Debugger Interaction
 @section Customizing Interaction with the Inferior Debugger
 
-...
-
+These settings control the interaction of @value{DDD} with its inferior
+debugger.
 
 @menu
 * Debugger Invocation::         
@@ -8719,6 +8851,21 @@ done: all commands are accepted ``as is''.
 
 @node Debugger Invocation
 @subsection Invoking an Inferior Debugger
+
+@lbindex Debugger Type
+To choose the default inferior debugger, select @samp{Edit @result{}
+Preferences @result{} Startup @result{} Debugger Type}.  You can
+
+@itemize @bullet{}
+@item
+@lbindex Determine Automatically from Arguments
+have @value{DDD} determine the appropriate inferior debugger
+automatically from its command-line arguments.  Set @samp{Determine
+Automatically from Arguments} to enable.
+@item
+have @value{DDD} start the debugger of your choice, as specified in
+@samp{Debugger Type}.
+@end itemize
 
 The following @value{DDD} resources control the invocation of the
 inferior debugger.
@@ -8755,8 +8902,59 @@ This resource is usually set through the @samp{--debugger} option;
 @node Debugger Initialization
 @subsection Initializing the Inferior Debugger
 
-...
+@value{DDD} uses a number of resources to initialize the
+inferior debugger.
 
+@menu
+* GDB Initializiation::         
+* DBX Initializiation::         
+* XDB Initializiation::         
+* JDB Initializiation::         
+* PYDB Initializiation::        
+* Perl Initializiation::        
+* Opening the Selection::       
+@end menu
+
+@node GDB Initializiation
+@subsubsection GDB Initializiation
+
+@defvr Resource gdbInitCommands (class InitCommands)
+This string contains a list of newline-separated commands that are
+initially sent to GDB.  As a side-effect, all settings
+specified in this resource are considered fixed and cannot be changed
+through the GDB settings panel, unless preceded by white
+space.  By default, the @samp{gdbInitCommands} resource contains some
+settings vital to @value{DDD}:
+
+@example
+  @value{Ddd}*gdbInitCommands: \
+  set height 0\n\
+  set width 0\n\
+   set verbose off\n\
+  set prompt (gdb) \n
+@end example
+
+While the @samp{set height}, @samp{set width}, and @samp{set
+prompt} settings are fixed, the @samp{set verbose} settings can be
+changed through the GDB settings panel (although being reset
+upon each new @value{DDD} invocation).
+
+Do not use this resource to customize GDB; instead, use a
+personal @samp{~/.gdbinit} file.  See your GDB
+documentation for details.
+@end defvr
+
+@defvr Resource gdbSettings (class Settings)
+This string contains a list of newline-separated commands that are
+also initially sent to GDB.  Its default value is
+
+@example
+  @value{Ddd}*gdbSettings: \
+  set print asm-demangle on\n
+@end example
+
+This resource is used to save and restore the debugger settings.
+@end defvr
 
 @defvr Resource sourceInitCommands (class SourceInitCommands)
 If @samp{on} (default), @value{DDD} writes all GDB initialization
@@ -8767,9 +8965,117 @@ startup (especially if you have several user-defined commands).  If
 @end defvr
 
 
+@node DBX Initializiation
+@subsubsection DBX Initializiation
+
+@defvr Resource dbxInitCommands (class InitCommands)
+This string contains a list of newline-separated commands that are
+initially sent to DBX.  By default, it is empty.
+
+Do not use this resource to customize DBX; instead, use a
+personal @samp{~/.dbxinit} or @samp{~/.dbxrc} file.  See
+your DBX documentation for details.
+@end defvr
+
+@defvr Resource dbxSettings (class Settings)
+This string contains a list of newline-separated commands that are
+also initially sent to DBX.  By default, it is empty.
+@end defvr
+
+
+@node XDB Initializiation
+@subsubsection XDB Initializiation
+
+@defvr Resource xdbInitCommands (class InitCommands)
+This string contains a list of newline-separated commands that are
+initially sent to XDB.  By default, it is empty.
+
+Do not use this resource to customize DBX; instead, use a
+personal @samp{~/.xdbrc} file.  See your XDB
+documentation for details.
+@end defvr
+
+@defvr Resource xdbSettings (class Settings)
+This string contains a list of newline-separated commands that are
+also initially sent to XDB.  By default, it is empty.
+@end defvr
+
+
+@node JDB Initializiation
+@subsubsection JDB Initializiation
+
+@defvr Resource jdbInitCommands (class InitCommands)
+This string contains a list of newline-separated commands that are
+initially sent to JDB.  This resource may be used to customize
+JDB.  By default, it is empty.
+@end defvr
+
+@defvr Resource jdbSettings (class Settings)
+This string contains a list of newline-separated commands that are
+also initially sent to JDB.  By default, it is empty.
+
+This resource is used by @value{DDD} to save and restore JDB
+settings.
+@end defvr
+
+
+
+@node PYDB Initializiation
+@subsubsection PYDB Initializiation
+
+@defvr Resource pydbInitCommands (class InitCommands)
+This string contains a list of newline-separated commands that are
+initially sent to PYDB.  By default, it is empty.
+
+This resource may be used to customize PYDB.
+@end defvr
+
+@defvr Resource pydbSettings (class Settings)
+This string contains a list of newline-separated commands that are
+also initially sent to PYDB.  By default, it is empty.
+
+This resource is used by @value{DDD} to save and restore PYDB
+settings.
+@end defvr
+
+
+@node Perl Initializiation
+@subsubsection Perl Initializiation
+
+@defvr Resource perlInitCommands (class InitCommands)
+This string contains a list of newline-separated commands that are
+initially sent to the Perl debugger.  By default, it is empty.
+
+This resource may be used to customize the Perl debugger.
+@end defvr
+
+@defvr Resource perlSettings (class Settings)
+This string contains a list of newline-separated commands that are
+also initially sent to the Perl debugger.  By default, it is empty.
+
+This resource is used by @value{DDD} to save and restore Perl
+debugger settings.
+@end defvr
+
+
+@node Opening the Selection
+@subsubsection Opening the Selection
+
+@defvr Resource openSelection (class OpenSelection)
+If this is @samp{on}, @value{DDD} invoked without argument checks
+whether the current selection or clipboard contains the file name or
+URL of an executable program.  If this is so, @value{DDD}
+will automatically open this program for debugging.  If this resource
+is @samp{off} (default), @value{DDD} invoked without arguments will
+always start without a debugged program.
+@end defvr
+
 
 @node Debugger Communication
 @subsection Communication with the Inferior Debugger
+
+The following resources control the communication with the inferior
+debugger.
 
 @defvr Resource blockTTYInput (class BlockTTYInput)
 Whether @value{DDD} should block when reading data from the inferior
@@ -8809,22 +9115,61 @@ debugger closes its output channel).  This was the default behavior in
 no special action.
 @end defvr
 
-...
-
+@defvr Resource useTTYCommand (class UseTTYCommand)
+If @samp{on}, use the GDB @samp{tty} command for
+redirecting input/output to the separate execution window.  If
+@samp{off}, use explicit redirection through shell redirection
+operators @samp{<} and @samp{>}.  The default is @samp{off}
+(explicit redirection), since on some systems, the @samp{tty} command
+does not work properly on some GDB versions.
+@end defvr
 
 
 @node Customizing Source
 @section Customizing the Source Window
 
-...
+The source window can be customized in a number of ways, most of them
+accessed via @samp{Edit @result{} Preferences @result{} Source}.
 
-@defvr Resource filterFiles (class FilterFiles)
-If this is @samp{on} (default), @value{DDD} filters files when opening
-execution files, core dumps, or source files, such that the selection
-shows only suitable files.  This requires that @value{DDD} opens each
-file, which may take time.  If this is @samp{off}, @value{DDD} always
-presents all available files.
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-source-prefs, 16cm}
+@sp 1
+@end ifnotinfo
+
+
+@menu
+* Customizing Glyphs::          
+* Customizing Searching::       
+* Customizing Source Appearance::  
+* Customizing Source Scrolling::  
+* Customizing Source Lookup::   
+* Customizing File Filtering::  
+@end menu
+
+@node Customizing Glyphs
+@subsection Customizing Glyphs
+
+@cindex Glyph
+@lbindex Show Position and Breakpoints
+In the source text, the current execution position and breakpoints are
+indicated by symbols (@dfn{glyphs}).  As an alternative, @value{DDD} can
+also indicate these positions using text characters.  If you wish to
+disable glyphs, set @samp{Edit @result{} Preferences @result{} Source
+@result{} Show Position and Breakpoints @result{} as Text Characters}
+option.  This also makes @value{DDD} run slightly faster, especially
+when scrolling.
+
+This setting is tied to this resource:
+
+@defvr Resource displayGlyphs (class DisplayGlyphs)
+If this is @samp{on}, the current execution position and breakpoints are
+displayed as glyphs; otherwise, they are shown through characters in the
+text.  The default is @samp{on}.  @xref{DDD Options}, for the
+@samp{--glyphs} and @samp{--no-glyphs} options.
 @end defvr
+
+You can further control glyphs using the following resources:
 
 @defvr Resource cacheGlyphImages (class CacheMachineCode)
 Whether to cache (share) glyph images (@samp{on}) or not
@@ -8834,23 +9179,26 @@ is @samp{off} for Motif 2.1 or later on Linux machines, and
 @samp{on} otherwise.
 @end defvr
 
-@defvr Resource cacheSourceFiles (class CacheSourceFiles)
-Whether to cache source files (@samp{on}, default) or not
-(@samp{off}).  Caching source files requires more memory, but makes
-@value{DDD} run faster.
+@defvr Resource glyphUpdateDelay (class GlyphUpdateDelay)
+A delay (in ms) that says how much time to wait before updating glyphs
+while scrolling the source text.  A small value results in glyphs
+being scrolled with the text, a large value disables glyphs while
+scrolling and makes scrolling faster.  Default: @code{10}.
 @end defvr
 
-@defvr Resource displayGlyphs (class DisplayGlyphs)
-If this is @samp{on}, the current execution position and breakpoints are
-displayed as glyphs; otherwise, they are shown through characters in the
-text.  The default is @samp{on}.  @xref{DDD Options}, for the
-@samp{--glyphs} and @samp{--no-glyphs} options.
+@defvr Resource maxGlyphs (class MaxGlyphs)
+The maximum number of glyphs to be displayed (default: @code{10}).
+Raising this value causes more glyphs to be allocated, possibly
+wasting resources that are never needed.
 @end defvr
 
-@defvr Resource displayLineNumbers (class DisplayLineNumbers)
-If this is @samp{on}, lines in the source text are prefixed with
-their respective line number.  The default is @samp{off}.
-@end defvr
+
+
+@node Customizing Searching
+@subsection Customizing Searching
+
+Searching in the source text (@pxref{Textual Search}) is controlled by
+these resources, changed via the @samp{Source} menu:
 
 @defvr Resource findCaseSensitive (class FindCaseSensitive)
 If this is @samp{on} (default), the @samp{Find} commands are
@@ -8862,28 +9210,65 @@ If this is @samp{on} (default), the @samp{Find} commands find
 complete words only.  Otherwise, arbitrary occurrences are found.
 @end defvr
 
-@defvr Resource glyphUpdateDelay (class GlyphUpdateDelay)
-A delay (in ms) that says how much time to wait before updating glyphs
-while scrolling the source text.  A small value results in glyphs
-being scrolled with the text, a large value disables glyphs while
-scrolling and makes scrolling faster.  Default: @code{10}.
+
+
+@node Customizing Source Appearance
+@subsection Customizing Source Appearance
+
+@cindex Line numbers
+@lbindex Display Source Line Numbers
+You can have @value{DDD} show line numbers within the source window.
+Use @samp{Edit @result{} Preferences @result{} Source @result{} Display
+Source Line Numbers}.
+
+@defvr Resource displayLineNumbers (class DisplayLineNumbers)
+If this is @samp{on}, lines in the source text are prefixed with
+their respective line number.  The default is @samp{off}.
 @end defvr
+
+@cindex Indent, source code
+@lbindex Source indentation
+You can instruct @value{DDD} to indent the source code, leaving more
+room for breakpoints and execution glyphs.  This is done using the
+@samp{Source indentation} slider.  The default value is @strong{0} for
+no indentation at all.
 
 @defvr Resource indentSource (class Indent)
 The number of columns to indent the source code, such that there is
 enough place to display breakpoint locations.  Default: @code{0}.
 @end defvr
 
+By default, @value{DDD} uses a minimum indentation for script languages.
 @defvr Resource indentScript (class Indent)
 The minimum indentation for script languages, such as Perl and Python.
 Default: @code{4}.
 @end defvr
+
+The maximum width of line numbers is controlled by this resource.
 
 @defvr Resource lineNumberWidth (class LineNumberWidth)
 The number of columns to use for line numbers (if displaying line
 numbers is enabled).  Line numbers wider than this value extend into
 the breakpoint space.  Default: @code{4}.
 @end defvr
+
+@cindex Tab width
+@lbindex Tab Width
+
+If your source code uses a tab width different from @code{8} (the
+default), you can set an alternate width using the @samp{Tab width}
+slider.
+
+@defvr Resource tabWidth (class TabWidth)
+The tab width used in the source window (default: @code{8})
+@end defvr
+
+
+
+@node Customizing Source Scrolling
+@subsection Customizing Source Scrolling
+
+These resources control when the source window is scrolled:
 
 @defvr Resource linesAboveCursor (class LinesAboveCursor)
 The minimum number of lines to show before the current location.
@@ -8896,21 +9281,16 @@ Default is @code{3}.
 @end defvr
 
 
-@defvr Resource maxGlyphs (class MaxGlyphs)
-The maximum number of glyphs to be displayed (default: @code{10}).
-Raising this value causes more glyphs to be allocated, possibly
-wasting resources that are never needed.
-@end defvr
+@node Customizing Source Lookup
+@subsection Customizing Source Lookup
 
-@defvr Resource sourceEditing (class SourceEditing)
-If this is @samp{on}, the displayed source code becomes editable.
-This is an experimental feature and may become obsolete in future
-@value{DDD} releases.  Default if @samp{off}.
-@end defvr
+@lbindex Refer to Program Sources
+Some DBX and XDB variants do not properly handle paths in source file
+specifications.  If you want the inferior debugger to refer to source
+locations by source base names only, unset the @samp{Refer to Program
+Sources by full path name} option.
 
-@defvr Resource tabWidth (class TabWidth)
-The tab width used in the source window (default: @code{8})
-@end defvr
+This is related to the following resource:
 
 @defvr Resource useSourcePath (class UseSourcePath)
 If this is @samp{off} (default), the inferior debugger refers to
@@ -8918,13 +9298,52 @@ source code locations only by their base names.  If this is
 @samp{on} (default), @value{DDD} uses the full source code paths.
 @end defvr
 
-...
+
+@lbindex Cache source files
+By default, @value{DDD} caches source files in memory.  This is
+convenient for remote debugging, since remote file access may be slow.
+If you want to reduce memory usage, unset the @samp{Cache source
+files} option.
+
+This is related to the following resource:
+
+@defvr Resource cacheSourceFiles (class CacheSourceFiles)
+Whether to cache source files (@samp{on}, default) or not
+(@samp{off}).  Caching source files requires more memory, but makes
+@value{DDD} run faster.
+@end defvr
+
+
+@node Customizing File Filtering
+@subsection Customizing File Filtering
+
+You can control whether @value{DDD} should filter files to be opened.
+
+@defvr Resource filterFiles (class FilterFiles)
+If this is @samp{on} (default), @value{DDD} filters files when opening
+execution files, core dumps, or source files, such that the selection
+shows only suitable files.  This requires that @value{DDD} opens each
+file, which may take time.  If this is @samp{off}, @value{DDD} always
+presents all available files.
+@end defvr
 
 
 @node Customizing Machine Code
 @section Customizing Machine Code
 
-...
+To enable showing machine code, use @samp{Source @result{} Display
+Machine Code} (@pxref{Machine Code}).  This toggles the following
+resource:
+
+@defvr Resource disassemble (class Disassemble)
+If this is @samp{on}, the source code is automatically disassembled.
+The default is @samp{off}.  @xref{DDD Options}, for the @samp{--disassemble}
+and @samp{--no-disassemble} options.
+@end defvr
+
+@lbindex Cache Machine Code
+You can keep disassembled code in memory, using @samp{Edit @result{}
+Preferences @result{} Source @result{} Cache Machine Code}:
 
 @defvr Resource cacheMachineCode (class CacheMachineCode)
 Whether to cache disassembled machine code (@samp{on}, default) or
@@ -8932,11 +9351,10 @@ not (@samp{off}).  Caching machine code requires more memory, but
 makes @value{DDD} run faster.
 @end defvr
 
-@defvr Resource disassemble (class Disassemble)
-If this is @samp{on}, the source code is automatically disassembled.
-The default is @samp{off}.  @xref{DDD Options}, for the @samp{--disassemble}
-and @samp{--no-disassemble} options.
-@end defvr
+@lbindex Machine Code Indentation
+You can control the indentation of machine code, using @samp{Edit
+@result{} Preferences @result{} Source @result{} Machine Code
+Indentation}:
 
 @defvr Resource indentCode (class Indent)
 The number of columns to indent the machine code, such that there is
@@ -8961,14 +9379,43 @@ is zero, the entire current function is disassembled.
 
 ...
 
-@defvr Resource useTTYCommand (class UseTTYCommand)
-If @samp{on}, use the GDB @samp{tty} command for redirecting
-input/output to the separate execution window.  If @samp{off}, use
-explicit redirection through shell redirection operators @samp{<} and
-@samp{>}.  The default is @samp{off} (explicit redirection), since on
-some systems, the @samp{tty} command does not work properly on some GDB
-versions.
+
+
+@menu
+* Customizing the Execution Terminal::  
+* Customizing Grab Checking::   
+* Customizing Attaching to Processes::  
+@end menu
+
+@node Customizing the Execution Terminal
+@subsection Customizing the Execution Terminal
+
+...
+
+@defvr Resource termCommand (class TermCommand)
+The command to invoke a separate TTY for showing the input/output of the
+debugged program.  A Bourne shell command to run in the separate TTY is
+appended to this string.  The string @samp{@@FONT@@} is replaced by the
+name of the fixed width font used by @value{DDD}.  A simple value is
+
+@example
+Ddd*termCommand: xterm -fn @@FONT@@ -e /bin/sh -c
+@end example
+@pindex xterm
 @end defvr
+
+@defvr Resource termType (class TermType)
+The terminal type provided by the @samp{termCommand} resource---that is,
+the value of the @samp{TERM} environment variable to be passed to the
+debugged program.  Default: @samp{xterm}.
+@enindex TERM
+@end defvr
+
+
+@node Customizing Grab Checking
+@subsection Customizing Grab Checking
+
+...
 
 @defvr Resource checkGrabs (class CheckGrabs)
 When debugging a modal X application, @value{DDD} may interrupt it while
@@ -9004,6 +9451,12 @@ than the debugged program (including @value{DDD}).  Default is
 @code{10000}, or 10 seconds.
 @end defvr
 
+
+@node Customizing Attaching to Processes
+@subsection Customizing Attaching to Processes
+
+...
+
 @defvr Resource psCommand (class PsCommand)
 The command to get a list of processes.  Usually @samp{ps}.
 Depending on your system, useful alternate values include @samp{ps
@@ -9015,26 +9468,6 @@ Note that the output of this command is filtered by @value{DDD}; a
 process is only shown if it can be attached to.  The @value{DDD}
 process itself as well as the process of the inferior debugger are
 suppressed, too.
-@end defvr
-
-
-@defvr Resource termCommand (class TermCommand)
-The command to invoke a separate TTY for showing the input/output of the
-debugged program.  A Bourne shell command to run in the separate TTY is
-appended to this string.  The string @samp{@@FONT@@} is replaced by the
-name of the fixed width font used by @value{DDD}.  A simple value is
-
-@example
-Ddd*termCommand: xterm -fn @@FONT@@ -e /bin/sh -c
-@end example
-@pindex xterm
-@end defvr
-
-@defvr Resource termType (class TermType)
-The terminal type provided by the @samp{termCommand} resource---that is,
-the value of the @samp{TERM} environment variable to be passed to the
-debugged program.  Default: @samp{xterm}.
-@enindex TERM
 @end defvr
 
 
@@ -9102,53 +9535,20 @@ file @@MASK@@ | grep '.*:.*text.*' | cut -d: -f1
 ...
 
 @menu
-* Customizing Scrolling::       
 * Customizing Value Tips::      
 * Customizing Displays::        
+* Customizing Data Scrolling::  
 * Customizing Shortcuts::       
 * Customizing VSL::             
 * Customizing Plots::           
 * Customizing Prints::          
 @end menu
 
-@node Customizing Scrolling
-@subsection Customizing Scrolling
-
-...
-
-
-@defvr Resource pannedGraphEditor (class PannedGraphEditor)
-The control to scroll the graph.  
-
-@itemize @bullet
-@item
-If this is @samp{on}, an Athena panner is used (a kind of
-two-directional scrollbar).
-@item
-If this is @samp{off} (default), two Motif scrollbars are used.
-@end itemize
-
-@xref{DDD Options}, for the @samp{--scrolled-graph-editor} and
-@samp{--panned-graph-editor} options.
-@end defvr
-
 
 @node Customizing Value Tips
 @subsection Customizing Value Tips
 
 ...
-
-@cindex Value tip, turning off
-@defvr Resource valueTips (class Tips)
-Whether value tips are enabled (@samp{on}, default) or not
-(@samp{off}).  Value tips affect @value{DDD} performance and may
-be distracting for some experienced users.
-@end defvr
-
-@defvr Resource valueDocs (class Docs)
-Whether the display of variable values in the status line is enabled
-(@samp{on}, default) or not (@samp{off}).
-@end defvr
 
 
 @node Customizing Displays
@@ -9227,6 +9627,28 @@ If @samp{on} (default), @value{DDD} requires structural equivalence in
 order to recognize shared data structures.  If this is @samp{off}, two
 displays at the same address are considered aliases, regardless of their
 structure.
+@end defvr
+
+
+@node Customizing Data Scrolling
+@subsection Customizing Data Scrolling
+
+...
+
+
+@defvr Resource pannedGraphEditor (class PannedGraphEditor)
+The control to scroll the graph.  
+
+@itemize @bullet
+@item
+If this is @samp{on}, an Athena panner is used (a kind of
+two-directional scrollbar).
+@item
+If this is @samp{off} (default), two Motif scrollbars are used.
+@end itemize
+
+@xref{DDD Options}, for the @samp{--scrolled-graph-editor} and
+@samp{--panned-graph-editor} options.
 @end defvr
 
 
@@ -9563,24 +9985,50 @@ Ddd*editCommand: emacsclient +@@LINE@@ @@FILE@@
 
 ...
 
+This resource is experimantal:
 
-@node Customizing Customization
-@section Customizing Customization
+@defvr Resource sourceEditing (class SourceEditing)
+If this is @samp{on}, the displayed source code becomes editable.
+This is an experimental feature and may become obsolete in future
+@value{DDD} releases.  Default if @samp{off}.
+@end defvr
 
 ...
 
-@defvr Resource checkOptions (class CheckOptions)
-Every @var{n} seconds, where @var{n} is the value of this resource,
-@value{DDD} checks whether the options file has changed.  Default is
-@code{30}, which means that every 30 seconds, @value{DDD} checks for the
-options file.  Setting this resource to @code{0} disables checking for
-changed option files.
-@end defvr
+
+
+@node Customizing Warnings
+@section Customizing Wanrings
+
+@menu
+* X warnings::                  
+* Multiple DDD instances::      
+@end menu
+
+@node X warnings
+@subsection X warnings
+
+@cindex X Warnings, suppressing
+@lbindex Suppress X warnings
+If you are bothered by X warnings, you can suppress them by setting
+the @samp{Suppress X warnings} option.
+
+
+@node Multiple DDD instances
+@subsection Multiple DDD instances
+
+If you want to be warned about multiple @value{DDD} invocations
+sharing the same preferences and history files, enable
+@samp{Warn if Multiple @value{DDD} Instances are Running}.
+
+This setting is tied to the following resource:
 
 @defvr Resource warnIfLocked (class WarnIfLocked)
 Whether to warn if multiple @value{DDD} instances are running
 (@samp{on}) or not (@samp{off}, default).
 @end defvr
+
+
 
 
 @node Customizing the Debugger Console
@@ -9625,6 +10073,62 @@ Leave this entry empty if you have no @samp{gcore} or similar command.
 @end defvr
 
 
+@node Customizing the Inferior Debugger
+@section Customizing the Inferior Debugger
+
+...
+
+
+@menu
+* Debugger Settings::           
+* Customizing GDB::             
+* Customizing DBX::             
+* Customizing XDB::             
+* Customizing JDB::             
+* Customizing Perl::            
+* Customizing PYDB::            
+@end menu
+
+@node Debugger Settings
+@subsection Debugger Settings
+
+...
+
+@node Customizing GDB
+@subsection Customizing GDB
+
+...
+
+@node Customizing DBX
+@subsection Customizing DBX
+
+...
+
+
+@node Customizing XDB
+@subsection Customizing XDB
+
+...
+
+
+@node Customizing JDB
+@subsection Customizing JDB
+
+...
+
+
+@node Customizing Perl
+@subsection Customizing Perl
+
+...
+
+
+@node Customizing PYDB
+@subsection Customizing PYDB
+
+...
+
+
 @node Application Defaults
 @section The @file{@value{Ddd}} Application Defaults
 
@@ -9667,10 +10171,18 @@ Leave this entry empty if you have no @samp{gcore} or similar command.
 ...
 
 
-@node Extending
-@section Extending DDD
+@node Customizing Customization
+@section Customizing Customization
 
 ...
+
+@defvr Resource checkOptions (class CheckOptions)
+Every @var{n} seconds, where @var{n} is the value of this resource,
+@value{DDD} checks whether the options file has changed.  Default is
+@code{30}, which means that every 30 seconds, @value{DDD} checks for the
+options file.  Setting this resource to @code{0} disables checking for
+changed option files.
+@end defvr
 
 
 @node Other Customizations
@@ -9680,15 +10192,13 @@ Leave this entry empty if you have no @samp{gcore} or similar command.
 
 
 
+@node Extending
+@chapter Extending DDD
 
-@c A
-@node License
-@appendix GNU General Public License
+...
 
-@cindex License
-@include gpl.texinfo
 
-@c B
+
 @node Reporting Bugs
 @appendix Reporting Bugs
 
@@ -9700,17 +10210,33 @@ fix them.
 To make it possible for us to fix a bug, you must report it.  In order
 to do so effectively, you must know when and how to do it.
 
-@section Where to Send Bug Reports
-
-@section Is it a @value{DDD} Bug?
-
-@section How to Report Bugs
-
-@section What to Include in a Bug Report
-
 @menu
+* Where to Send Bug Reports::   
+* Is it a DDD Bug?::            
+* How to Report Bugs::          
+* Bug Reports::                 
 * Diagnostics::                 
 @end menu
+
+@node Where to Send Bug Reports
+@section Where to Send Bug Reports
+
+...
+
+@node Is it a DDD Bug?
+@section Is it a @value{DDD} Bug?
+
+...
+
+@node How to Report Bugs
+@section How to Report Bugs
+
+...
+
+@node Bug Reports
+@section What to Include in a Bug Report
+
+...
 
 @node Diagnostics
 @section Getting Diagnostics
@@ -9823,20 +10349,32 @@ Options}, for the @samp{--trace} option.
 @node GDB
 @section Using @value{DDD} with GDB
 
+...
+
 @node DBX
 @section Using @value{DDD} with DBX
+
+...
 
 @node Ladebug
 @section Using @value{DDD} with Ladebug
 
+...
+
 @node XDB
 @section Using @value{DDD} with XDB
+
+...
 
 @node JDB
 @section Using @value{DDD} with JDB
 
+...
+
 @node  Perl
 @section Using @value{DDD} with Perl
+
+...
 
 @node LessTif
 @section Using @value{DDD} with LessTif
@@ -9858,6 +10396,13 @@ value of the @samp{LessTifVersion} macro in @file{<Xm/Xm.h>}.  If
 @value{DDD} was compiled against OSF/Motif, the default value is
 @code{1000}, disabling all LessTif-specific hacks.
 @end defvr
+
+
+@node License
+@appendix GNU General Public License
+
+@cindex License
+@include gpl.texinfo
 
 
 @node Label Index
