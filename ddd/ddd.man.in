@@ -2982,6 +2982,21 @@ a grabbed pointer.  If \s-2@DDD@\s+2 sees some pointer event within
 this delay, the pointer cannot be grabbed and an explicit check for a
 grabbed pointer is unnecessary.  Default is \fB5000\fR, or 5 seconds.
 .TP
+.B "cutCopyPasteBindings (\fPclass\fB BindingStyle)"
+Controls the key bindings for cut, copy, and paste operations.
+.br
+.RS
+.IP \(bu 2
+If this is `\fBMotif\fR' (default), Cut/Copy/Paste is on
+\fBShift+Del\fR/\fBCtrl+Ins\fR/\fBShift+Ins\fR.  This is conformant to
+the Motif style guide.
+.IP \(bu 2
+If this is `\fBKDE\fR', Cut/Copy/Paste is on
+\fBCtrl+X\fR/\fBCtrl+C\fR/\fBCtrl+V\fR.  This is conformant to the
+\s-2KDE\s+2 style guide.  Note that this means that \fBCtrl+C\fR no
+longer interrupts the debuggee; use \fBCtrl+G\fR instead.
+.RE
+.TP
 .B "globalTabCompletion (\fPclass\fB GlobalTabCompletion)"
 If this is `\fBon\fR' (default), the \s-2\fBTAB\fR\s+2 key completes
 arguments in all windows.  If this is `\fBoff\fR', the
@@ -3021,15 +3036,25 @@ start-up.
 .TP
 .B "splashScreenColorKey (\fPclass\fB ColorKey)"
 The color key to use for the \s-2@DDD@\s+2 splash screen.  Possible
-values include: `\fBc\fR' for a color visual, `\fBg\fR' for a
-multi-level greyscale visual, `\fBg4\fR' for a 4-level greyscale
-visual, and `\fBm\fR' for a dithered monochrome visual.  The value
-`\fBbest\fR' chooses the best visual available for your display.
-Default is `\fBc\fR'.
+values include:
+.RS
 .br
+.IP \(bu 2
+`\fBc\fR' (default) for a color visual, 
+.IP \(bu 2
+`\fBg\fR' for a multi-level greyscale visual,
+.IP \(bu 2
+`\fBg4\fR' for a 4-level greyscale visual, and
+.IP \(bu 2
+`\fBm\fR' for a dithered monochrome visual.
+.IP \(bu 2
+`\fBbest\fR' chooses the best visual available for your display.
+.br
+.PP
 Note: if \s-2@DDD@\s+2 runs on a monochrome display, or if
 \s-2@DDD@\s+2 was compiled without the \s-2XPM\s+2 library, only the
 monochrome version (`\fBm\fR') can be shown.
+.RE
 .TP
 .B "startupTips (\fPclass\fB StartupTips)"
 Whether a tip of the day is to be shown at startup (`\fBon\fR',
@@ -3432,7 +3457,7 @@ redirecting input/output to the separate execution window.  If
 `\fBoff\fR', use explicit redirection through shell redirection
 operators `\fB<\fR' and `\fB>\fR'.  The default is `\fBoff\fR'
 (explicit redirection), since on some systems, the `\fBtty\fR' command
-does not work properly.
+does not work properly on some \s-2GDB\s+2 versions.
 .TP
 .B "xdbInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
@@ -3665,44 +3690,14 @@ The default resource value is
 .sp
 .br
   \fB@Ddd@*toolButtons: \\
-  run\\ninterrupt^C\\nstep\\nstepi\\n\\
-  next\\nnexti\\ncont\\nfinish\\n\\
-  up\\ndown\\nBack\\nForward\\nEdit\\nkill\fR
+  run\\nbreak^C\\nstep\\nstepi\\nnext\\nnexti\\n\\
+  until\\nfinish\\ncont\\n\\kill\\n\\
+  up\\ndown\\nBack\\nForward\\nEdit\\nMake\fR
 .br
 .sp
 For each button, its location in the command tool must be specified
-using \fBXmForm\fR constraint resources.  Each side of a button is
-attached to a row or column position.  Rows are numbered from 0 (top
-side) to 8 (bottom side); columns likewise are numbered from 0 (left
-side) to 8 (right side).  The position of the \fBbreak\fR button, for
-instance, is specified as:
-.sp
-.br
-  \fB@Ddd@*tool_buttons.break.topPosition:    1
-  @Ddd@*tool_buttons.break.bottomPosition: 2
-  @Ddd@*tool_buttons.break.leftPosition:   0
-  @Ddd@*tool_buttons.break.rightPosition:  8\fR
-.br
-.sp
-while the \fBBack\fR button position is specified as
-.sp
-.br
-  \fB@Ddd@*tool_buttons.Back.topPosition:     6
-  @Ddd@*tool_buttons.Back.bottomPosition:  7
-  @Ddd@*tool_buttons.Back.leftPosition:    0
-  @Ddd@*tool_buttons.Back.rightPosition:   4\fR
-.br
-.sp
-The number of rows and columns (default: 8) can be changed by setting the
-`\fBfractionBase\fR' resource to a different value:
-.sp
-.br
-  \fB@Ddd@*tool_buttons.fractionBase:         10\fR
-.br
-.sp
-If you change the `\fBfractionBase\fR' resource, you must provide new
-positions for \fIall\fR buttons in the command tool.  See the
-`\fBDdd\fR' app-defaults file for more details.
+using \fBXmForm\fR constraint resources.  See the `\fBDdd\fR'
+application defaults file for instructions.
 .PP
 If the `\fBtoolButtons\fR' resource value is empty, the command tool is
 not created.
@@ -3776,16 +3771,22 @@ The string used to separate labels from commands and shortcuts.
 Default is `\fB//\fR'.
 .TP
 .B "pannedGraphEditor (\fPclass\fB PannedGraphEditor)"
-What shall \s-2@DDD@\s+2 use if the graph gets too large to be
-displayed?  If this is `\fBon\fR', an Athena panner is used (a kind
-of two-directional scrollbar).  If this is `\fBoff\fR' (default),
-two Motif scrollbars are used.  See also the
-`\fB\-\-scrolled-graph-editor\fR' and `\fB\-\-panned-graph-editor\fR'
-options, below.
+The control to scroll the graph.  
+.RS
+.br
+.IP \(bu 2
+If this is `\fBon\fR', an Athena panner is used (a kind of
+two-directional scrollbar).
+.IP \(bu 2
+If this is `\fBoff\fR' (default), two Motif scrollbars are used.
+.PP
+See also the `\fB\-\-scrolled-graph-editor\fR' and
+`\fB\-\-panned-graph-editor\fR' options, below.
+.RE
 .TP
 .B "paperSize (\fPclass\fB PaperSize)"
 The paper size used for printing, in format \fIwidth\fR x
-\fIheight\fR.  The default is A4 format, or `\fB210mm x 297mm\fR'.
+\fIheight\fR.  The default is A4 format, or `\fB210mm \(mu 297mm\fR'.
 .TP
 .B "vslBaseDefs (\fPclass\fB VSLDefs)"
 A string with additional \s-2VSL\s+2 definitions that are appended to
@@ -4155,6 +4156,10 @@ If `\fBon\fR', show the \s-2@DDD@\s+2 configuration on standard
 output and exit.  See also the `\fB\-\-configuration\fR' option,
 below.
 .TP
+.B "showFonts (\fPclass\fB ShowFonts)"
+If `\fBon\fR', show the \s-2@DDD@\s+2 font definitions on standard
+output and exit.  See also the `\fB\-\-fonts\fR' option, below.
+.TP
 .B "showInvocation (\fPclass\fB ShowInvocation)"
 If `\fBon\fR', show the \s-2@DDD@\s+2 invocation options on standard
 output and exit.  See also the `\fB\-\-help\fR' option, below.
@@ -4263,6 +4268,9 @@ Run the debugged program in a specially created execution window.
 This is useful for programs that have special terminal requirements
 not provided by the debugger window, as raw keyboard processing or
 terminal control sequences.
+.TP
+.B \-\-fonts\fR
+Show the font definitions used by \s-2@DDD@\s+2 on standard output.
 .TP
 .B \-\-fontsize \fIsize\fR
 Set the default font size to \fIsize\fR 1/10 points.  To use 12-point

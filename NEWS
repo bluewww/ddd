@@ -17,7 +17,7 @@ DDD 3.0 [in beta test]
       All data display features are available in Java.
     - Watchpoints.  You can have the debugged program stop
       automatically whenever a particular variable is read or written.
-    - KDE-style key bindings.  See below for a list.
+    - KDE-style key bindings.  See below for details.
     - Deferred displays.  DDD now can maintain displays whose creation
       is deferred until a particular scope is entered.  Benefits:
       * Displays are now persistent across recompilations.
@@ -121,16 +121,9 @@ DDD 3.0 [in beta test]
       by default, but may be re-assigned in future DDD releases.
 
       For full compliance to the KDE style guide, the Cut/Copy/Paste
-      operations must be assigned to Ctrl+X/Ctrl+C/Ctrl+V; use
-
-	Ddd*editMenu.cut.accelerator:       ~Shift Ctrl<Key>X
-	Ddd*editMenu.cut.acceleratorText:   Ctrl+X
-	Ddd*editMenu.copy.accelerator:      ~Shift Ctrl<Key>C
-	Ddd*editMenu.copy.acceleratorText:  Ctrl+C
-	Ddd*editMenu.paste.accelerator:     ~Shift Ctrl<Key>V
-	Ddd*editMenu.paste.acceleratorText: Ctrl+V
-
-      in your ~/.ddd/init file.  This will become the default in
+      operations must be assigned to Ctrl+X/Ctrl+C/Ctrl+V.  This is
+      done by setting `Edit | Preferences | Startup | Cut/Copy/Paste
+      Bindings' to `KDE style'.  This may also become the default in
       future DDD versions.
 
       See the `Ddd' app-defaults file to change other key bindings.

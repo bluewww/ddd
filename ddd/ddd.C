@@ -212,6 +212,7 @@ char ddd_rcsid[] =
 #include "exit.h"
 #include "expired.h"
 #include "file.h"
+#include "filetype.h"
 #include "findParent.h"
 #include "fonts.h"
 #include "frame.h"
@@ -348,6 +349,9 @@ static bool have_decorated_transients();
 // Set `Settings' title
 static void set_settings_title(Widget w);
 
+// Set Cut/Copy/Paste bindings for MENU to STYLE
+static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style);
+
 // Popup DDD splash screen upon start-up.
 static void SetSplashScreenCB(Widget, XtPointer, XtPointer);
 static void popup_splash_screen(Widget parent, string color_key);
@@ -372,6 +376,7 @@ static void setup_version_warnings();
 static void setup_auto_command_prefix();
 static void setup_core_limit();
 static void setup_options();
+static void setup_cut_copy_paste_bindings(XrmDatabase db);
 
 // Help hooks
 static void PreHelpOnContext(Widget w, XtPointer, XtPointer);
@@ -1070,15 +1075,34 @@ static MMDesc debugger_menu [] =
 static Widget startup_tips_w;
 static Widget splash_screen_w;
 
+static MMDesc show_startup_menu [] =
+{
+    { "splashScreen", MMToggle, { SetSplashScreenCB }, NULL, &splash_screen_w},
+    { "startupTips",  MMToggle, { SetStartupTipsCB },  NULL, &startup_tips_w },
+    MMEnd
+};
+
+static Widget kde_binding_w;
+static Widget motif_binding_w;
+
+static MMDesc binding_menu [] =
+{
+    { "kde",    MMToggle, { dddSetBindingStyleCB, XtPointer(KDEBindings) }, 
+      NULL, &kde_binding_w },
+    { "motif",  MMToggle, { dddSetBindingStyleCB, XtPointer(MotifBindings) },
+      NULL, &motif_binding_w },
+    MMEnd
+};
+
 static MMDesc startup_preferences_menu [] =
 {
     { "windows",         MMRadioPanel,  MMNoCB, window_mode_menu },
+    { "bindings",        MMRadioPanel,  MMNoCB, binding_menu },
     { "buttons",         MMButtonPanel, MMNoCB, button_appearance_menu },
     { "keyboardFocus",   MMRadioPanel,  MMNoCB, keyboard_focus_menu },
     { "dataScrolling",   MMRadioPanel,  MMNoCB, data_scrolling_menu },
     { "debugger",        MMRadioPanel,  MMNoCB, debugger_menu },
-    { "splashScreen", MMToggle, { SetSplashScreenCB }, NULL, &splash_screen_w},
-    { "startupTips",  MMToggle, { SetStartupTipsCB },  NULL, &startup_tips_w },
+    { "show",            MMButtonPanel, MMNoCB, show_startup_menu },
     MMEnd
 };
 
@@ -1653,6 +1677,9 @@ int main(int argc, char *argv[])
     session_id = app_data.session;
 
     // From this point on, APP_DATA is valid.
+
+    // Set key bindings
+    setup_cut_copy_paste_bindings(XtDatabase(XtDisplay(toplevel)));
 
     // Define font macros
     setup_fonts(app_data, XtDatabase(XtDisplay(toplevel)));
@@ -3252,6 +3279,11 @@ inline void set_string(Widget w, String value)
 		  NULL);
 }
 
+static bool have_cmd(const string& cmd)
+{
+    return cmd_file(cmd).contains('/', 0);
+}
+
 // Reflect state in option menus
 void update_options()
 {
@@ -3375,6 +3407,11 @@ void update_options()
     set_toggle(set_debugger_xdb_w, type == XDB);
     set_toggle(set_debugger_jdb_w, type == JDB);
 
+    set_sensitive(set_debugger_gdb_w, have_cmd("gdb"));
+    set_sensitive(set_debugger_dbx_w, have_cmd("dbx"));
+    set_sensitive(set_debugger_xdb_w, have_cmd("xdb"));
+    set_sensitive(set_debugger_jdb_w, have_cmd("jdb"));
+
     set_toggle(splash_screen_w, app_data.splash_screen);
     set_toggle(startup_tips_w,  app_data.startup_tips);
 
@@ -3480,6 +3517,14 @@ void update_options()
 	value = itostring(app_data.fixed_width_font_size);
 	XmTextFieldSetString(font_sizes[FixedWidthDDDFont],    (String)value);
     }
+
+    // Key Bindings
+    BindingStyle style = app_data.cut_copy_paste_bindings;
+    set_toggle(kde_binding_w, style == KDEBindings);
+    set_toggle(motif_binding_w, style == MotifBindings);
+    set_cut_copy_paste_bindings(command_edit_menu, style);
+    set_cut_copy_paste_bindings(source_edit_menu,  style);
+    set_cut_copy_paste_bindings(data_edit_menu,    style);
 
     // Check for source toolbar
     Widget arg_cmd_w = XtParent(source_arg->widget());
@@ -3765,6 +3810,10 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_debugger_xdb_w, type == XDB);
     notify_set_toggle(set_debugger_jdb_w, type == JDB);
 
+    BindingStyle style = initial_app_data.cut_copy_paste_bindings;
+    notify_set_toggle(kde_binding_w, style == KDEBindings);
+    notify_set_toggle(motif_binding_w, style == MotifBindings);
+
     notify_set_toggle(splash_screen_w, initial_app_data.splash_screen);
     notify_set_toggle(startup_tips_w,  initial_app_data.startup_tips);
 }
@@ -3784,6 +3833,8 @@ static bool startup_preferences_changed()
 		  XmNkeyboardFocusPolicy, &focus_policy, NULL);
 
     return app_data.startup_tips != initial_app_data.startup_tips
+	|| app_data.cut_copy_paste_bindings
+	      != initial_app_data.cut_copy_paste_bindings
 	|| app_data.splash_screen != initial_app_data.splash_screen
 	|| separate != initial_separate
 	|| app_data.button_images != initial_app_data.button_images
@@ -5113,6 +5164,98 @@ static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
 	gdbUnselectAllCB(w, client_data, call_data);
 }
 
+// Update cut/copy/paste bindings
+static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
+{
+    if (menu == 0 || menu[0].widget == 0)
+	return;
+
+#ifdef LESSTIF_VERSION
+    switch (style)
+    {
+    case KDEBindings:
+    {
+	MString cut("Ctrl+X");
+	MString copy("Ctrl+C");
+	MString paste("Ctrl+V");
+
+	XtVaSetValues(menu[EditItems::Cut].widget,
+		      XmNaccelerator, "~Shift Ctrl<Key>X",
+		      XmNacceleratorText, cut.xmstring(),
+		      NULL);
+	XtVaSetValues(menu[EditItems::Copy].widget,
+		      XmNaccelerator, "~Shift Ctrl<Key>C",
+		      XmNacceleratorText, copy.xmstring(),
+		      NULL);
+	XtVaSetValues(menu[EditItems::Paste].widget,
+		      XmNaccelerator, "~Shift Ctrl<Key>V",
+		      XmNacceleratorText, paste.xmstring(),
+		      NULL);
+	break;
+    }
+
+    case MotifBindings:
+    {
+	MString cut("Shift+Del");
+	MString copy("Ctrl+Ins");
+	MString paste("Shift+Ins");
+
+	XtVaSetValues(menu[EditItems::Cut].widget,
+		      XmNaccelerator, "~Ctrl Shift<Key>Delete",
+		      XmNacceleratorText, cut.xmstring(),
+		      NULL);
+	XtVaSetValues(menu[EditItems::Copy].widget,
+		      XmNaccelerator, "~Shift Ctrl<Key>Insert",
+		      XmNacceleratorText, copy.xmstring(),
+		      NULL);
+	XtVaSetValues(menu[EditItems::Paste].widget,
+		      XmNaccelerator, "~Ctrl Shift<Key>Insert",
+		      XmNacceleratorText, paste.xmstring(),
+		      NULL);
+	break;
+    }
+    }
+#else
+    (void) style;
+#endif
+}
+
+static void setup_cut_copy_paste_bindings(XrmDatabase db)
+{
+#ifdef LESSTIF_VERSION
+    (void) db;
+#else
+    // Stupid OSF/Motif won't change the accelerators once created.
+    // Set resources explicitly.
+    String resources = 0;
+    switch (app_data.cut_copy_paste_bindings)
+    {
+    case KDEBindings:
+	resources =
+	    "*editMenu.cut.acceleratorText: Ctrl+X\n"
+	    "*editMenu.copy.acceleratorText: Ctrl+C\n"
+	    "*editMenu.paste.acceleratorText: Ctrl+V\n"
+	    "*editMenu.cut.accelerator: ~Shift Ctrl<Key>X\n"
+	    "*editMenu.copy.accelerator: ~Shift Ctrl<Key>C\n"
+	    "*editMenu.paste.accelerator: ~Shift Ctrl<Key>V\n";
+	break;
+
+    case MotifBindings:
+	resources =
+	    "*editMenu.cut.acceleratorText: Shift+Del\n"
+	    "*editMenu.copy.acceleratorText: Ctrl+Ins\n"
+	    "*editMenu.paste.acceleratorText: Shift+Ins\n"
+	    "*editMenu.cut.accelerator: ~Ctrl Shift<Key>Delete\n"
+	    "*editMenu.copy.accelerator: ~Shift Ctrl<Key>Insert\n"
+	    "*editMenu.paste.accelerator: ~Ctrl Shift<Key>Insert\n";
+	break;
+    }
+
+    XrmDatabase bindings = XrmGetStringDatabase(resources);
+    assert(bindings != 0);
+    XrmMergeDatabases(bindings, &db);
+#endif
+}
 
 //-----------------------------------------------------------------------------
 // Update menu entries

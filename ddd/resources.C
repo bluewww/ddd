@@ -1549,20 +1549,6 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNlessTifVersion,
-	XtCLessTifVersion,
-	XmRInt,
-	sizeof(int),
-	XtOffsetOf(AppData, lesstif_version),
-	XmRImmediate,
-#if !defined(LesstifVersion)
-	XtPointer(1000)		// Treat OSF/Motif like LessTif 1.0
-#else
-	XtPointer(LesstifVersion)
-#endif
-    },
-
-    {
 	XtNsplashScreen,
 	XtCSplashScreen,
 	XmRBoolean,
@@ -1580,6 +1566,30 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, color_wm_icons),
 	XmRImmediate,
 	XtPointer(True)
+    },
+
+    {
+	XtNcutCopyPasteBindings,
+	XtCBindingStyle,
+	XtRBindingStyle,
+	sizeof(BindingStyle),
+	XtOffsetOf(AppData, cut_copy_paste_bindings),
+	XmRImmediate,
+	XtPointer(KDEBindings)
+    },
+
+    {
+	XtNlessTifVersion,
+	XtCLessTifVersion,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, lesstif_version),
+	XmRImmediate,
+#if !defined(LesstifVersion)
+	XtPointer(1000)		// Treat OSF/Motif like LessTif 1.0
+#else
+	XtPointer(LesstifVersion)
+#endif
     },
 
     {

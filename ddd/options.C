@@ -771,8 +771,14 @@ void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
     post_startup_warning(w);
 }
 
-void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
+void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (!info->set)
+	return;
+
     DebuggerType type = DebuggerType(int(client_data));
 
     switch (type)
@@ -799,6 +805,31 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
 
     update_options();
     post_startup_warning(w);
+}
+
+void dddSetBindingStyleCB (Widget, XtPointer client_data, 
+			   XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (!info->set)
+	return;
+
+    BindingStyle style = BindingStyle(int(client_data));
+    app_data.cut_copy_paste_bindings = style;
+
+    switch (style)
+    {
+    case KDEBindings:
+	set_status(next_ddd_will_start_with + "KDE-style bindings.");
+	break;
+    case MotifBindings:
+	set_status(next_ddd_will_start_with + "Motif-style bindings.");
+	break;
+    }
+
+    update_options();
 }
 
 static void toggle_button_appearance(Widget w, Boolean& data, 
@@ -1374,7 +1405,8 @@ static bool is_fallback_value(string app_class,
     return false;
 }
 
-static string app_value(string resource, const string& value)
+static string app_value(string resource, const string& value, 
+			bool ignore_default)
 {
     static String app_name  = 0;
     static String app_class = 0;
@@ -1384,7 +1416,7 @@ static string app_value(string resource, const string& value)
 				     &app_name, &app_class);
 
     string prefix = "";
-    if (is_fallback_value(app_class, resource, value))
+    if (ignore_default && is_fallback_value(app_class, resource, value))
 	prefix = "! ";
 
     string s = prefix + app_class;
@@ -1402,20 +1434,45 @@ static string app_value(string resource, const string& value)
 
 inline String bool_value(bool value)
 {
+    // Since GDB uses `on' and `off' for its settings, we do so, too. 
     return value ? "on" : "off";
 }
 
-inline string bool_app_value(const string& name, bool value)
+inline String binding_value(BindingStyle value)
 {
-    return app_value(name, bool_value(value));
+    switch (value)
+    {
+    case KDEBindings:
+	return "KDE";
+
+    case MotifBindings:
+	return "Motif";
+    }
+
+    return "";			// Never reached
 }
 
-inline string int_app_value(const string& name, int value)
+static string bool_app_value(const string& name, bool value, 
+			     bool ignore_default = false)
 {
-    return app_value(name, itostring(value));
+    return app_value(name, bool_value(value), ignore_default);
 }
 
-static string string_app_value(const string& name, String v)
+static string int_app_value(const string& name, int value,
+			    bool ignore_default = false)
+{
+    return app_value(name, itostring(value), ignore_default);
+}
+
+static string binding_app_value(const string& name, BindingStyle value,
+				bool ignore_default = false)
+{
+    return app_value(name, binding_value(value), ignore_default);
+}
+
+
+static string string_app_value(const string& name, String v,
+			       bool ignore_default = false)
 {
     if (v == 0)
 	return "";
@@ -1435,22 +1492,24 @@ static string string_app_value(const string& name, String v)
 	value = "\\\n" + value;
     }
 
-    return app_value(name, value);
+    return app_value(name, value, ignore_default);
 }
 
-static string widget_value(Widget w, String name)
+static string widget_value(Widget w, String name, bool ignore_default = false)
 {
     String value = 0;
     XtVaGetValues(w, 
 		  XtVaTypedArg, name, XtRString, &value, sizeof(value),
 		  NULL);
 
-    return string_app_value(string(XtName(w)) + "." + name, value);
+    return string_app_value(string(XtName(w)) + "." + name, value, 
+			    ignore_default);
 }
 
 static string widget_size(Widget w, bool height_only = false)
 {
     string s;
+    const bool ignore_default = true;
 
     if (XmIsText(w) || XmIsTextField(w))
     {
@@ -1461,7 +1520,8 @@ static string widget_size(Widget w, bool height_only = false)
 	{
 	    if (s != "")
 		s += '\n';
-	    s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns);
+	    s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns,
+			       ignore_default);
 	}
 
 	if (XmIsText(w))
@@ -1472,7 +1532,8 @@ static string widget_size(Widget w, bool height_only = false)
 	    {
 		if (s != "")
 		    s += '\n';
-		s += int_app_value(string(XtName(w)) + "." + XmNrows, rows);
+		s += int_app_value(string(XtName(w)) + "." + XmNrows, rows,
+				   ignore_default);
 	    }
 	}
     }
@@ -1484,11 +1545,13 @@ static string widget_size(Widget w, bool height_only = false)
 	XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
 
 	if (!height_only)
-	    s += int_app_value(string(XtName(w)) + "." + XmNwidth, width);
+	    s += int_app_value(string(XtName(w)) + "." + XmNwidth, width,
+			       ignore_default);
 
 	if (s != "")
 	    s += '\n';
-	s += int_app_value(string(XtName(w)) + "." + XmNheight, height);
+	s += int_app_value(string(XtName(w)) + "." + XmNheight, height,
+			   ignore_default);
     }
 
     return s;
@@ -1501,6 +1564,8 @@ inline string widget_height(Widget w)
 
 static string widget_geometry(Widget w, bool include_size = false)
 {
+    const bool ignore_default = true;
+
     Dimension width, height;
     XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
 
@@ -1513,7 +1578,8 @@ static string widget_geometry(Widget w, bool include_size = false)
     geometry << "+" << attr.x << "+" << attr.y;
     string geo(geometry);
 
-    return string_app_value(string(XtName(w)) + ".geometry", geo);
+    return string_app_value(string(XtName(w)) + ".geometry", geo, 
+			    ignore_default);
 }
 
 bool saving_options_kills_program(unsigned long flags)
@@ -1660,10 +1726,10 @@ bool save_options(unsigned long flags)
 	}
     }
 
-    os << string_app_value(XtNgdbSettings, gdb_settings) << "\n";
-    os << string_app_value(XtNdbxSettings, dbx_settings) << "\n";
-    os << string_app_value(XtNxdbSettings, xdb_settings) << "\n";
-    os << string_app_value(XtNjdbSettings, jdb_settings) << "\n";
+    os << string_app_value(XtNgdbSettings, gdb_settings, true) << "\n";
+    os << string_app_value(XtNdbxSettings, dbx_settings, true) << "\n";
+    os << string_app_value(XtNxdbSettings, xdb_settings, true) << "\n";
+    os << string_app_value(XtNjdbSettings, jdb_settings, true) << "\n";
 
     os << "\n! Source.\n";
     os << bool_app_value(XtNfindWordsOnly,
@@ -1671,11 +1737,11 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNfindCaseSensitive,
 			 app_data.find_case_sensitive) << "\n";
     os << int_app_value(XtNtabWidth,
-			 app_data.tab_width) << "\n";
+			 app_data.tab_width, true) << "\n";
     os << int_app_value(XtNindentSource,
-			 app_data.indent_source) << "\n";
+			 app_data.indent_source, true) << "\n";
     os << int_app_value(XtNindentCode,
-			 app_data.indent_code) << "\n";
+			 app_data.indent_code, true) << "\n";
     os << bool_app_value(XtNcacheSourceFiles,
 			 app_data.cache_source_files) << "\n";
     os << bool_app_value(XtNcacheMachineCode,
@@ -1689,6 +1755,7 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNallRegisters,
 			 app_data.all_registers) << "\n";
 
+    // Misc stuff
     os << "\n! Misc preferences.\n";
     unsigned char policy = '\0';
     XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, NULL);
@@ -1721,6 +1788,12 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNstartupTips, 
 			 app_data.startup_tips) << "\n";
 
+    // Keys
+    os << "\n! Keys.\n";
+    os << bool_app_value(XtNglobalTabCompletion, 
+			 app_data.global_tab_completion) << '\n';
+    os << binding_app_value(XtNcutCopyPasteBindings,
+			    app_data.cut_copy_paste_bindings) << '\n';
 
     // Graph editor
     os << "\n! Data.\n";
@@ -1740,14 +1813,14 @@ bool save_options(unsigned long flags)
     if (grid_width == grid_height)
     {
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
-			    + XtCGridSize, grid_width) << "\n";
+			    + XtCGridSize, grid_width, true) << "\n";
     }
     else
     {
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
-			    + XtNgridWidth,  grid_width) << "\n";
+			    + XtNgridWidth,  grid_width, true) << "\n";
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
-			    + XtNgridHeight, grid_height) << "\n";
+			    + XtNgridHeight, grid_height, true) << "\n";
     }
     os << bool_app_value(XtNdetectAliases,  app_data.detect_aliases)   << "\n";
     os << bool_app_value(XtNalign2dArrays,  app_data.align_2d_arrays)  << "\n";
@@ -1765,19 +1838,20 @@ bool save_options(unsigned long flags)
 
     // Helpers
     os << "\n! Helpers.\n";
-    os << string_app_value(XtNeditCommand,       app_data.edit_command)
+    os << string_app_value(XtNeditCommand,    app_data.edit_command, true)
        << '\n';
-    os << string_app_value(XtNgetCoreCommand,    app_data.get_core_command)
+    os << string_app_value(XtNgetCoreCommand, app_data.get_core_command, true)
        << '\n';
-    os << string_app_value(XtNpsCommand,         app_data.ps_command)
+    os << string_app_value(XtNpsCommand,      app_data.ps_command, true)
        << '\n';
-    os << string_app_value(XtNtermCommand,       app_data.term_command)
+    os << string_app_value(XtNtermCommand,    app_data.term_command, true)
        << '\n';
-    os << string_app_value(XtNuncompressCommand, app_data.uncompress_command)
+    os << string_app_value(XtNuncompressCommand, app_data.uncompress_command,
+			   true)
        << '\n';
-    os << string_app_value(XtNwwwCommand,        app_data.www_command)
+    os << string_app_value(XtNwwwCommand,     app_data.www_command, true) 
        << '\n';
-    os << string_app_value(XtNprintCommand,      app_data.print_command) 
+    os << string_app_value(XtNprintCommand,   app_data.print_command, true) 
        << "\n";
 
     // Toolbar
@@ -1817,13 +1891,13 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNcommandToolBar,
 			 app_data.command_toolbar) << "\n";
     os << int_app_value(XtNtoolRightOffset,
-			app_data.tool_right_offset) << "\n";
+			app_data.tool_right_offset, true) << "\n";
     os << int_app_value(XtNtoolTopOffset,
-			app_data.tool_top_offset) << "\n";
+			app_data.tool_top_offset, true) << "\n";
 
     // Buttons
     os << "\n! Buttons.\n";
-    os << string_app_value(XtNconsoleButtons, app_data.console_buttons) 
+    os << string_app_value(XtNconsoleButtons, app_data.console_buttons)
        << '\n';
     os << string_app_value(XtNsourceButtons,  app_data.source_buttons)
        << '\n';
@@ -1854,24 +1928,25 @@ bool save_options(unsigned long flags)
     // Fonts
     os << "\n! Fonts.\n";
     os << string_app_value(XtNdefaultFont,
-			   app_data.default_font) << "\n";
+			   app_data.default_font, true) << "\n";
     os << string_app_value(XtNvariableWidthFont, 
-			   app_data.variable_width_font) << "\n";
+			   app_data.variable_width_font, true) << "\n";
     os << string_app_value(XtNfixedWidthFont,
-			   app_data.fixed_width_font) << "\n";
+			   app_data.fixed_width_font, true) << "\n";
     if (app_data.default_font_size == app_data.variable_width_font_size &&
 	app_data.default_font_size == app_data.fixed_width_font_size)
     {
-	os << int_app_value(XtCFontSize, app_data.default_font_size) << "\n";
+	os << int_app_value(XtCFontSize, app_data.default_font_size, true) 
+	   << "\n";
     }
     else
     {
-	os << int_app_value(XtNdefaultFontSize, 
-			    app_data.default_font_size) << "\n";
+	os << int_app_value(XtNdefaultFontSize,
+			    app_data.default_font_size, true) << "\n";
 	os << int_app_value(XtNvariableWidthFontSize, 
-			    app_data.variable_width_font_size) << "\n";
+			    app_data.variable_width_font_size, true) << "\n";
 	os << int_app_value(XtNfixedWidthFontSize, 
-			    app_data.fixed_width_font_size) << "\n";
+			    app_data.fixed_width_font_size, true) << "\n";
     }
 
     // Windows.

@@ -41,6 +41,7 @@ char converters_rcsid[] =
 #include <X11/CoreP.h>
 
 #include "bool.h"
+#include "BindingS.h"
 #include "OnOff.h"
 #include "strclass.h"
 #include "charsets.h"
@@ -865,6 +866,26 @@ Boolean CvtStringToOnOff(Display*     display,
     return False;
 }
 
+// Convert the strings 'motif', `kde' to BindingStyle values
+Boolean CvtStringToBindingStyle(Display*     display, 
+				XrmValue*    ,
+				Cardinal*    , 
+				XrmValue*    fromVal,
+				XrmValue*    toVal,
+				XtPointer*   )
+{
+    string value = str(fromVal, true);
+    value.downcase();
+
+    if (value == "kde")
+	done(BindingStyle, KDEBindings);
+    else if (value == "motif")
+	done(BindingStyle, MotifBindings);
+
+    XtDisplayStringConversionWarning(display, fromVal->addr, XtRBindingStyle);
+    return False;
+}
+
 // Convert a string to Cardinal.
 static Boolean CvtStringToCardinal(Display*     display, 
 				   XrmValue*    ,
@@ -952,6 +973,11 @@ void registerOwnConverters()
 
     // string -> OnOff
     XtSetTypeConverter(XmRString, XtROnOff, CvtStringToOnOff,
+		       NULL, 0, XtCacheAll, 
+		       XtDestructor(NULL));
+
+    // string -> BindingStyle
+    XtSetTypeConverter(XmRString, XtRBindingStyle, CvtStringToBindingStyle,
 		       NULL, 0, XtCacheAll, 
 		       XtDestructor(NULL));
 

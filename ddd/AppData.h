@@ -35,6 +35,7 @@
 
 #include "version.h"
 #include "OnOff.h"
+#include "BindingS.h"
 
 // The DDD application class name
 #define DDD_CLASS_NAME           Ddd_NAME
@@ -316,6 +317,8 @@
 #define XtCSplashScreen          "SplashScreen"
 #define XtNcolorWMIcons          "colorWMIcons"
 #define XtCColorWMIcons          "ColorWMIcons"
+#define XtNcutCopyPasteBindings  "cutCopyPasteBindings"
+#define XtCBindingStyle          "BindingStyle"
 #define XtNlessTifVersion        "lessTifVersion"
 #define XtCLessTifVersion        "LessTifVersion"
 #define XtNdddinitVersion        "dddinitVersion"
@@ -475,6 +478,7 @@ struct AppData {
     int       max_display_number;
     Boolean   splash_screen;
     Boolean   color_wm_icons;
+    BindingStyle cut_copy_paste_bindings;
     int       lesstif_version;
     String    dddinit_version;
     String    app_defaults_version;

@@ -119,6 +119,20 @@ Ddd*uniconifyWhenReady: on
 Ddd*globalTabCompletion: on
 
 
+! The key binding style to use for Cut/Copy/Paste:
+!
+! * `Motif' means Cut/Copy/Paste is on Shift+Del/Ctrl+Ins/Shift+Ins.
+!   This is conformant to the Motif style guide and the default
+!   setting in DDD 2.x and earlier.
+! * `KDE' means Cut/Copy/Paste is on Ctrl+X/Ctrl+C/Ctrl+V.  
+!   This is conformant to the KDE style guide.  Note that this also 
+!   means that you must use Ctrl+G to interrupt the debuggee.
+!
+! In this release, the default is still Motif, but this may change to KDE 
+! in some future version.
+Ddd*cutCopyPasteBindings: Motif
+
+
 ! On if the debugger console is line-buffered (i.e. flushed upon 
 ! each newline).  This is slower, but gives nice scrolling.
 ! Off if newline has no special treatment.
@@ -1863,12 +1877,12 @@ Ddd*editMenu*helpString:     EDIT_HELP
 Ddd*editMenu*tearOffTitle:   Edit
 
 ! Have standard Motif bindings
-Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
-Ddd*editMenu.cut.acceleratorText:	Shift+Del
-Ddd*editMenu.copy.accelerator:  	Ctrl<Key>Insert
-Ddd*editMenu.copy.acceleratorText:	Ctrl+Ins
-Ddd*editMenu.paste.accelerator:  	Shift<Key>Insert
-Ddd*editMenu.paste.acceleratorText:	Shift+Ins
+! Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
+! Ddd*editMenu.cut.acceleratorText:	Shift+Del
+! Ddd*editMenu.copy.accelerator:  	Ctrl<Key>Insert
+! Ddd*editMenu.copy.acceleratorText:	Ctrl+Ins
+! Ddd*editMenu.paste.accelerator:  	Shift<Key>Insert
+! Ddd*editMenu.paste.acceleratorText:	Shift+Ins
 
 ! Alternative, KDE-like bindings
 ! Ddd*editMenu.cut.accelerator:				~Shift Ctrl<Key>X
@@ -3091,6 +3105,10 @@ Ddd*preferences*windows.labelString:		Window Layout
 Ddd*windowsMenu*attached.labelString:		Stacked Windows
 Ddd*windowsMenu*separate.labelString:		Separate Windows
 
+Ddd*preferences*bindings.labelString:		Cut/Copy/Paste Bindings
+Ddd*bindingsMenu*kde.labelString:		KDE Style
+Ddd*bindingsMenu*motif.labelString:		Motif Style
+
 Ddd*preferences*buttons.labelString:		Toolbar Appearance
 Ddd*buttonsMenu*images.labelString:		Images
 Ddd*buttonsMenu*captions.labelString:		Captions
@@ -3111,8 +3129,9 @@ Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 
-Ddd*preferences*splashScreen.labelString:	Show DDD Splash Screen
-Ddd*preferences*startupTips.labelString:	Show Tip of the Day
+Ddd*preferences*show.labelString:	        Startup Windows
+Ddd*preferences*splashScreen.labelString:	DDD Splash Screen
+Ddd*preferences*startupTips.labelString:	Tip of the Day
 
 
 Ddd*preferences*fonts*helpString: \
