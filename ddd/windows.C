@@ -49,6 +49,8 @@ char windows_rcsid[] =
 #include "Delay.h"
 
 #include <Xm/Xm.h>
+#include <Xm/DialogS.h>
+#include <Xm/VendorE.h>
 #include <X11/Xutil.h>
 
 //-----------------------------------------------------------------------------
@@ -410,14 +412,21 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	else if (w == tool_shell)
 	    tool_shell_visibility = event->xvisibility.state;
 
-	// Auto-raise command tool
+	// Check whether command tool is visible
 	if (obscures(command_shell, tool_shell)
 	    || obscures(data_disp_shell, tool_shell)
 	    || obscures(source_view_shell, tool_shell))
 	{
 	    // Command tool is obscured by some DDD shell - raise it
-	    XRaiseWindow(XtDisplay(tool_shell), 
-			 XtWindow(tool_shell));
+
+	    if (XmIsMotifWMRunning(tool_shell) && XmIsDialogShell(tool_shell))
+	    {
+		// We have MWM and a Dialog Shell - let MWM handle this
+	    }
+	    else
+	    {
+		XRaiseWindow(XtDisplay(tool_shell), XtWindow(tool_shell));
+	    }
 	}
     }
 
