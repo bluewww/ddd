@@ -619,6 +619,12 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 
     if (plot->shell != 0)
     {
+	// Popup shell to uniconify it.  This must be done because
+	// otherwise, the shell may remain iconified (with invalid
+	// contents)
+	XtPopup(plot->shell, XtGrabNone);
+
+	// ...and pop it down again.
 	XtPopdown(plot->shell);
     }
 
