@@ -1033,6 +1033,7 @@ string join(string src[], int n, const string& separator) RETURNS(x)
     xlen += (n - 1) * sep.length();
 
     x.alloc(xlen);
+    x.rep->len = xlen;
 
     int j = 0;
   
@@ -1363,4 +1364,3 @@ int subString::OK() const
     if (!v) S.error("subString invariant failure");
     return v;
 }
-
