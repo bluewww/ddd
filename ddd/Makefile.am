@@ -96,6 +96,8 @@ BASE_SOURCES = \
 	tabs.h       \
 	uniquify.C   \
 	uniquify.h   \
+	Logger.C     \
+	Logger.h     \
 	MemCheck.C   \
 	MemCheck.h   \
 	MemCheckD.h  \
