@@ -61,7 +61,6 @@ char SourceView_rcsid[] =
 extern "C" {
 #define new new_w
 #define class class_w
-#undef MAXINT
 #include <Xm/TextP.h>
 #undef class
 #undef new
@@ -488,32 +487,27 @@ String SourceView::read_local(const string& file_name)
     StatusDelay delay("Reading file " + quote(file_name));
 
     // Make sure the file is a regular text file and open it
-    int fd = 0;
-    struct stat statb;
-
-    if (stat(file_name, &statb) < 0)
-    {
-	post_error (file_name + ": " + strerror(errno), 
-		    "source_file_error", source_view_w);
-	return 0;
-    }
-
-#if 0 
-    // According to bussieck@moa.math.nat.tu-bs.de (Michael Bussieck),
-    // this causes trouble on hppa1.1-hp-hpux9.01.
-    if ((statb.st_mode & S_IFMT) != S_IFREG)
-    {
-	post_error (file_name + ": not a regular file", 
-		    "source_file_error", source_view_w);
-	return 0;
-    }
-#endif
-
+    int fd;
     if ((fd = open(file_name, O_RDONLY)) < 0)
     {
 	post_error (file_name + ": " + strerror(errno), 
 		    "source_file_error", source_view_w);
         return 0;
+    }
+
+    struct stat statb;
+    if (fstat(fd, &statb) < 0)
+    {
+	post_error (file_name + ": " + strerror(errno), 
+		    "source_file_error", source_view_w);
+	return 0;
+    }
+
+    if ((statb.st_mode & S_IFMT) != S_IFREG)
+    {
+	post_error (file_name + ": not a regular file", 
+		    "source_file_error", source_view_w);
+	return 0;
     }
 
     // Put the contents of the file in the Text widget by allocating
