@@ -131,9 +131,6 @@ public:
 // Enqueue COMMAND in command queue
 extern void gdb_command(const Command& command);
 
-// Execute COMMAND right now (unconditionally).
-extern void _gdb_command(const Command& command);
-
 // Custom calls
 inline void gdb_command(const string& command, Widget origin,
 			OQCProc callback, void *data = 0, 
@@ -149,24 +146,10 @@ inline void gdb_command(const string& command, Widget origin = 0)
     gdb_command(Command(command, origin));
 }
 
-inline void _gdb_command(const string& command, Widget origin,
-			 OQCProc callback, void *data = 0, 
-			 bool verbose = false, bool check = false,
-			 int priority = COMMAND_PRIORITY_SYSTEM)
-{
-    _gdb_command(Command(command, origin, callback, data, 
-			 verbose, check, priority));
-}
-
-inline void _gdb_command(const string& command, Widget origin = 0)
-{
-    _gdb_command(Command(command, origin));
-}
-
 inline void gdb_batch(const string& command, Widget origin,
-		       OQCProc callback, void *data = 0,
-		       bool verbose = false, bool check = false,
-		       int priority = COMMAND_PRIORITY_BATCH)
+		      OQCProc callback, void *data = 0,
+		      bool verbose = false, bool check = false,
+		      int priority = COMMAND_PRIORITY_BATCH)
 {
     gdb_command(Command(command, origin, callback, data, 
 			verbose, check, priority));

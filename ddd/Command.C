@@ -193,9 +193,18 @@ void translate_command(string& command)
 }
 
 // Process command C; do it right now.
-void _gdb_command(const Command& c)
+static void do_gdb_command(Command& c)
 {
     string cmd = c.command;
+    OQCProc callback       = c.callback;
+    OACProc extra_callback = c.extra_callback;
+    if (cmd.contains('\n'))
+    {
+	cmd = cmd.before('\n');
+	callback = 0;
+	extra_callback = 0;
+    }
+    c.command = c.command.after('\n');
 
 #if LOG_QUEUE
     clog << "Command " << quote(cmd) << "\n";
@@ -248,11 +257,11 @@ void _gdb_command(const Command& c)
 
     if (is_internal_command(cmd))
     {
-	internal_command(cmd, c.callback, c.data, c.echo, c.verbose, c.prompt);
+	internal_command(cmd, callback, c.data, c.echo, c.verbose, c.prompt);
     }
     else
     {
-	send_gdb_command(cmd, c.origin, c.callback, c.extra_callback, c.data, 
+	send_gdb_command(cmd, c.origin, callback, extra_callback, c.data, 
 			 c.echo, c.verbose, c.prompt, c.check);
     }
     messagePosition = XmTextGetLastPosition(gdb_w);
@@ -353,28 +362,29 @@ string lastUserReply()
     return last_user_reply;
 }
 
-void gdb_command(const Command& c)
+void gdb_command(const Command& c0)
 {
+    Command c(c0);
+
     if (c.command.length() == 1 && iscntrl(c.command[0]) 
 	|| c.command == "no" || c.command == "yes")
     {
  	// User interaction -- execute immediately
 	last_user_reply = c.command;
-	_gdb_command(c);
+	do_gdb_command(c);
 
-	if (c.command != "yes")
+	if (last_user_reply != "yes")
 	{
 	    // Probably some canceling command - clear remaining commands
 	    clearCommandQueue();
 	}
-	return;
+    }
+    else if (gdb->isReadyWithPrompt() && emptyCommandQueue())
+    {
+	do_gdb_command(c);
     }
 
-    if (gdb->isReadyWithPrompt() && emptyCommandQueue())
-    {
-	_gdb_command(c);
-    }
-    else
+    if (c.command != "")
     {
 	// Enqueue before first command with lower priority.  This
 	// ensures that user commands are placed at the end.
@@ -429,11 +439,17 @@ void processCommandQueue(XtPointer, XtIntervalId *)
 	return;
     }
 
-    const Command& c = commandQueue.first();
-    Command cmd(c);
-    commandQueue.dequeue(c);
-
-    _gdb_command(cmd);
+    Command& c = commandQueue.first();
+    if (c.command.contains('\n'))
+    {
+	do_gdb_command(c);
+    }
+    else
+    {
+	Command cmd(c);
+	commandQueue.dequeue(c);
+	do_gdb_command(cmd);
+    }
 
     gdb_keyboard_command = false;
 
