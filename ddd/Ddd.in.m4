@@ -6778,11 +6778,11 @@ ITEM To display the value, use LBL(Print ()) (for simple values)\n\
 Ddd*display_selected.helpString: \
 @rm You have selected some data display.\n\
 \n\
-ITEM To examine further members of this data structure, use \
-LBL(New Display ())\n\
-    and LBL(Display *()).\n\
-ITEM To modify the appearance of the selected display, use \
-LBL(Hide ()) and LBL(Rotate ()).\n\
+ITEM To examine further members of this data structure,\n\
+     use LBL(New Display ()) and LBL(Display *()).\n\
+ITEM To modify the appearance of the selected display,\n\
+     use LBL(Hide ()) and LBL(Rotate ()).\n\
+ITEM To view numerical data as a plot, use LBL(Plot ()).\n\
 ITEM To change the value of the selected display, use LBL(Set ()).\n\
 ITEM To delete the selected displays, use LBL(Delete ()).\n\
 ITEM Use LBL(Data, Edit Displays) for further editing.

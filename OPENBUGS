@@ -188,5 +188,13 @@ detail.
     When I start up in separate windows mode, the DDD debugger console
     window appears, but it doesn't get the input focus.
 
+730 Rubber_Buccaneer@Galactic.Headquarters.org thinks that the window
+    containing the short cut buttons, i.e. step, next, etc. should
+    always be displayed on top of the main window: `If the main window
+    is lowered the short cut box is lowered too, but when the main
+    window is raised the short cut box remains lowered. It was only
+    through accidentally clicking on the border of the tear-off help
+    menu that I discovered this, as the tear-off help window and the
+    short cuts box are clearly related.'
 
-730 (Insert new bugs here)
+731 (Insert new bugs here)
