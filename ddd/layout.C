@@ -1788,7 +1788,7 @@ GRAPH *Layout::graphGet (GRAPHTAB *tab, char *label)
 	/*
 	 * try to find graph
 	 */
-	graph = *tab[pos];
+	graph = (*tab)[pos];
 	while (graph && strcmp(graph->label, label)) {
 		graph = graph->hashnext;
 	}
@@ -1831,12 +1831,12 @@ GRAPH *Layout::graphNew (GRAPHTAB *tab,char *label)
 	 */
 	pos = graphHashStr (label, SMALLPRIME);
 
-	if (*tab[pos]) {
-		tail = (*tab[pos])->hashnext;
+	if ((*tab)[pos]) {
+		tail = ((*tab)[pos])->hashnext;
 	} else {
 		tail = (GRAPH*) NULL;
 	}
-	*tab[pos] = graph;
+	(*tab)[pos] = graph;
 	graph->hashnext = tail;
 	graph->hashprev = (GRAPH*) NULL;
 	if (graph->hashnext) {
@@ -1864,7 +1864,7 @@ void Layout::graphRemove (GRAPHTAB *tab, char *label)
 	/*
 	 * try to find graph
 	 */
-	graph = *tab[pos];
+	graph = (*tab)[pos];
 	while (graph && strcmp(graph->label, label)) {
 		graph = graph->hashnext;
 	}
@@ -1883,7 +1883,7 @@ void Layout::graphRemove (GRAPHTAB *tab, char *label)
 		graph->hashnext->hashprev = graph->hashprev;
 	} else {
 		if (!graph->hashprev) {
-			*tab[pos] = graph->hashnext;
+			(*tab)[pos] = graph->hashnext;
 			if (graph->hashnext) {
 				graph->hashnext->hashprev = (GRAPH*) NULL;
 			}
@@ -1917,7 +1917,7 @@ void Layout::graphTabInit (GRAPHTAB *tab)
 	int i;
 	
 	for (i=0 ; i < SMALLPRIME; i++) {
-		*tab[i] = (GRAPH*) NULL;
+		(*tab)[i] = (GRAPH*) NULL;
 	}
 }
 
