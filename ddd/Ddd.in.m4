@@ -6416,13 +6416,18 @@ Ddd*terminated_dialog*helpString:	\
 Click on LBL(Restart) to restart @GDB@.\n\
 Click on LBL(Exit) to exit DDD.
 
-Ddd*exception_dialog.dialogTitle: DDD: Internal Debugger Error
+Ddd*exception_dialog.dialogTitle: DDD: Internal Debugger Exception
 ! Ddd*exception_dialog.messageString:   \
 ! @rm Internal @GDB@ error.
 Ddd*exception_dialog*okLabelString:	      Restart
 Ddd*exception_dialog*cancelLabelString:   Exit
 Ddd*exception_dialog*helpString:	\
-@rm @GDB@ caught an internal error.  @GDB@ may be in an undefined state.\n\
+@rm @GDB@ caught an internal exception and may be in an undefined state.\n\
+\n\
+DDD users have reported that this frequently happens when @GDB@ attempts\n\
+to access undefined variables.  You can avoid this by disabling the\n\
+automatic display of variable values\n\
+(via LBL(Edit, Preferences, General, Automatic Display of Variable Values).\n\
 \n\
 Click on LBL(Restart) to restart @GDB@.\n\
 Click on LBL(Exit) to exit DDD.

@@ -611,21 +611,34 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    else
 	    {
 		// Ordinary member
-		string full_name;
+		string full_name = "";
 
 		if (member_name == " ")
 		{
 		    // Anonymous union
 		    full_name = myfull_name;
 		}
-		else if (member_name.contains('.') && gdb->has_quotes())
+		
+		if (member_name.contains('.'))
 		{
-		    // The member name contains `.' => quote it.  This
-		    // happens with vtable pointers on Linux (`_vptr.').
-		    full_name = member_prefix + quote(member_name, '\'') + 
-			member_suffix;
+		    if (gdb->has_quotes())
+		    {
+			// The member name contains `.' => quote it.  This
+			// happens with vtable pointers on Linux (`_vptr.').
+			full_name = member_prefix + quote(member_name, '\'') + 
+			    member_suffix;
+		    }
+		    else
+		    {
+			// JDB (and others?) prepend the class name 
+			// to inherited members.  Omit this.
+			full_name = 
+			    member_prefix + member_name.after('.', -1) + 
+			    member_suffix;
+		    }
 		}
-		else
+		
+		if (full_name == "")
 		{
 		    // Ordinary member
 		    full_name = member_prefix + member_name + member_suffix;
