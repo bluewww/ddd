@@ -270,6 +270,7 @@ public:
     string where_command() const;	            // Usually "where "
     string pwd_command() const;	                    // Usually "pwd "
     string frame_command(string depth = "") const;  // Usually "frame EXPR"
+    string echo_command(string text) const;         // Usually "echo TEXT"
 
 private:
     bool trace_dialog;

@@ -1681,30 +1681,16 @@ string DataDisp::refresh_display_command()
     case DBX:
     case XDB:
 	{
-	    command = gdb->print_command() + " ";
+	    command = "";
 	    int i = 0;
 	    MapRef ref;
 	    for (DispNode* dn = disp_graph->first(ref); 
 		 dn != 0;
 		 dn = disp_graph->next(ref))
 	    {
-		if (!gdb->has_named_values())
-		{
-		    // The debugger has no named values (and probably
-		    // no `display' command).  Hence, we insert names 
-		    // (and newlines) in the `print' command.
-		    if (i++)
-			command += ", \"\\n" + dn->name();
-		    else
-			command += "\"" + dn->name();
-		    command += " = \", " + dn->name();
-		}
-		else
-		{
-		    if (i++)
-			command += ", ";
-		    command += dn->name();
-		}
+		if (i++)
+		    command += "; ";
+		command += gdb->print_command(dn->name());
 	    }
 	}
 	break;
@@ -2576,7 +2562,8 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 	post_gdb_message(value);
 	return;
     }
-    value = value.after(" = ");
+
+    value = get_disp_value_str(value, gdb);
     static regex RXnl(" *\n *");
     value.gsub(RXnl, " ");
     strip_final_blanks(value);

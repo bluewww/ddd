@@ -94,7 +94,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_display_command(tp == GDB || tp == DBX),
       _has_clear_command(tp == GDB || tp == DBX),
       _has_pwd_command(tp == GDB || tp == DBX),
-      _has_named_values(true),
+      _has_named_values(tp == GDB || tp == DBX),
       _has_func_pos(false),
       _has_when_semicolon(tp == DBX),
       trace_dialog(false),
@@ -747,10 +747,9 @@ string GDBAgent::print_command(string expr) const
 
     if (expr != "")
     {
-	if (has_named_values())
-	    cmd += " " + expr;
-	else
-	    cmd += " \"" + expr + " = \", " + expr;
+	if (!has_named_values())
+	    cmd = echo_command(expr + " = ") + "; " + cmd;
+	cmd += " " + expr;
     }
 
     return cmd;
@@ -836,6 +835,26 @@ string GDBAgent::frame_command(string depth) const
 
     return "";			// Never reached
 }
+
+// Each debugger has its own way of echoing (sigh)
+string GDBAgent::echo_command(string text) const
+{
+    switch (type())
+    {
+    case GDB:
+	return "echo " + text;
+
+    case DBX:
+	return print_command(quote(text));
+
+    case XDB:
+	return quote(text);
+    }
+
+    return "";			// Never reached
+}
+
+
 
 // ***************************************************************************
 

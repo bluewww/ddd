@@ -404,7 +404,7 @@ string last_command_from_history()
     else
     {
 	// No history yet -- perform a no-op command
-	return "echo";
+	return gdb->echo_command("");
     }
 }
 

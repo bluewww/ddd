@@ -82,6 +82,7 @@ const char obscure_rcsid[] =
 #include "windows.h"
 #include "wm.h"
 #include "misc.h"
+#include "GDBAgent.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -167,11 +168,11 @@ void handle_obscure_commands(string& cmd, Widget origin)
     {
 	if (dungeon_collapsed)
 	{
-	    cmd = "echo Nothing happens.\\n";
+	    cmd = gdb->echo_command("Nothing happens.\n");
 	}
 	else
 	{
-	    cmd = "echo The dungeon shakes violently! \\n";
+	    cmd = gdb->echo_command("The dungeon shakes violently!\n");
 
 	    static int dungeon_collapsing = 0;
 	    if (dungeon_collapsing++ == 0)
