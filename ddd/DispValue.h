@@ -74,6 +74,8 @@ class DispValue {
 
     // Caching stuff
     Box *_cached_box;		// Last box
+    int _cached_box_change;	// Last cached box change
+    static int cached_box_tics;	// Counter
 
     // Initialize from VALUE.  If TYPE is given, use TYPE as type
     // instead of inferring it.
@@ -120,6 +122,7 @@ class DispValue {
 	    _cached_box->unlink();
 	    _cached_box = 0;
 	}
+	_cached_box_change = 0;
     }
 
 protected:
@@ -370,10 +373,15 @@ public:
     {
 	return _cached_box;
     }
+
+    // True if cached box is recent respective to DEPTH children
+    bool cached_box_is_recent(int depth = -1) const;
+
     void set_cached_box(Box *value)
     {
 	clear_cached_box();
 	_cached_box = value->link();
+	_cached_box_change = cached_box_tics++;
     }
 
     // Print plots to FILENAME

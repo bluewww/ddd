@@ -248,15 +248,24 @@ bool DispBox::is_numeric(const DispValue *dv, const DispValue *parent)
 // Create a Box for the value DV
 Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 {
+    // Check cache first
     Box *vbox = 0;
 
-    if (dv->cached_box() != 0)
+#if CACHE_BOXES
+    // FIXME: this always traverses the entire subtree.  Wouldn't it
+    // suffice to do this only once?
+    if (dv->cached_box_is_recent())
+	vbox = dv->cached_box();
+
+    if (vbox != 0)
     {
-	vbox = dv->cached_box()->link();
+	vbox = vbox->link();
 	assert_ok(vbox->OK());
 	return vbox;
     }
+#endif
 
+    // Rebuild box
     switch (dv->type())
     {
     case Simple:

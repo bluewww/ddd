@@ -71,6 +71,8 @@ char DispValue_rcsid[] =
 // Helpers
 //-----------------------------------------------------------------------------
 
+int DispValue::cached_box_tics = 0;
+
 StringStringAssoc DispValue::type_cache;
 
 // Get index base of expr EXPR in dimension DIM
@@ -147,7 +149,9 @@ DispValue::DispValue (DispValue* parent,
       myfull_name(f_n), print_name(p_n), changed(false), myrepeats(1),
       _value(""), _dereferenced(false), _children(0),
       _index_base(0), _have_index_base(false), _alignment(Horizontal),
-      _has_plot_alignment(false), _plotter(0), _cached_box(0), _links(1)
+      _has_plot_alignment(false), _plotter(0), 
+      _cached_box(0), _cached_box_change(0),
+      _links(1)
 {
     init(parent, depth, value, given_type);
 
@@ -164,7 +168,9 @@ DispValue::DispValue (const DispValue& dv)
       _value(dv.value()), _dereferenced(false), _children(dv.nchildren()), 
        _index_base(dv._index_base), 
       _have_index_base(dv._have_index_base), _alignment(dv._alignment),
-      _has_plot_alignment(false), _plotter(0), _cached_box(0), _links(1)
+      _has_plot_alignment(false), _plotter(0),
+      _cached_box(0), _cached_box_change(0),
+      _links(1)
 {
     for (int i = 0; i < dv.nchildren(); i++)
     {
@@ -172,7 +178,7 @@ DispValue::DispValue (const DispValue& dv)
     }
 
     if (dv.cached_box() != 0)
-	_cached_box = dv.cached_box()->link();
+	set_cached_box(dv.cached_box()->link());
 }
 
 
@@ -783,6 +789,34 @@ void DispValue::clear()
     }
 
     clear_cached_box();
+}
+
+//-----------------------------------------------------------------------------
+// Cache
+//-----------------------------------------------------------------------------
+
+bool DispValue::cached_box_is_recent(int depth) const
+{
+    if (cached_box() == 0)
+	return false;
+
+    if (depth != 0)
+    {
+	int i;
+	for (i = 0; i < nchildren(); i++)
+	{
+	    if (child(i)->_cached_box_change > _cached_box_change)
+		return false;
+	}
+
+	for (i = 0; i < nchildren(); i++)
+	{
+	    if (!child(i)->cached_box_is_recent(depth - 1))
+		return false;
+	}
+    }
+
+    return true;
 }
 
 //-----------------------------------------------------------------------------
