@@ -33,7 +33,19 @@
 #pragma interface
 #endif
 
-extern void setup_fonts(bool show = false);
+#include "strclass.h"
+
+enum DDDFont { DefaultDDDFont,
+	       VariableWidthDDDFont,
+	       FixedWidthDDDFont,
+	       SymbolDDDFont };
+
+extern void setup_fonts();
+
+// Return font name from BASE, overriding with parts from OVERRIDE.
+// Override contains "-SPEC-SPEC-..."; each non-empty SPEC overrides
+// the default in BASE.
+extern string make_font(DDDFont base, const string& override = "");
 
 #endif // _DDD_fonts_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

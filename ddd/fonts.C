@@ -40,12 +40,38 @@ char fonts_rcsid[] =
 #include "AppData.h"
 #include "string-fun.h"
 #include "cook.h"
+#include "assert.h"
+
+
+//-----------------------------------------------------------------------------
+// Return font attributes
+//-----------------------------------------------------------------------------
 
 //  1     2    3    4     5     6  7     8    9    10   11  12   13     14
 // -fndry-fmly-wght-slant-sWdth-ad-pxlsz-ptSz-resx-resy-spc-avgW-rgstry-encdng
 
+
+const int Foundry       = 1;
+const int Family        = 2;
+const int Weight        = 3;
+const int Slant         = 4;
+const int sWidth        = 5;
+const int Ad            = 6;
+const int PixelSize     = 7;
+const int PointSize     = 8;
+const int ResX          = 9;
+const int ResY          = 10;
+const int Spacing       = 11;
+const int AvgWidth      = 12;
+const int Registry      = 13;
+const int Encoding      = 14;
+
+const int AllComponents = 14;
+
+typedef int FontComponent;
+
 // Return the Nth component from NAME, or DEFAULT_VALUE if none
-static string word(string name, int n, const string& default_value)
+static string component(string name, FontComponent n)
 {
     // If name does not begin with `-', assume it's a font family
     if (!name.contains('-', 0))
@@ -53,7 +79,7 @@ static string word(string name, int n, const string& default_value)
 
     // Let I point to the Nth occurrence of `-'
     int i = -1;
-    while (n > 0 && (i = name.index('-', i + 1)) >= 0)
+    while (n >= Foundry && (i = name.index('-', i + 1)) >= 0)
 	n--;
 
     string w = "";
@@ -64,53 +90,132 @@ static string word(string name, int n, const string& default_value)
 	    w = w.before('-');
     }
 
-    if (w == "")
-	w = default_value;
-
     return w;
 }
 
-inline string family(const string& font)
+
+//-----------------------------------------------------------------------------
+// Access font resources
+//-----------------------------------------------------------------------------
+
+// User-specified values
+static string userfont(DDDFont font)
 {
-    return word(font, 2, "*");
+    switch (font) 
+    {
+    case DefaultDDDFont:
+	return app_data.default_font;
+    case VariableWidthDDDFont:
+	return app_data.variable_width_font;
+    case FixedWidthDDDFont:
+	return app_data.fixed_width_font;
+    case SymbolDDDFont:
+	return "";
+    }
+
+    assert(0);
+    return "";			// Never reached
 }
 
-inline string weight(const string& font)
+// defaults to use if nothing is specified
+static string fallbackfont(DDDFont font)
 {
-    return word(font, 3, "*");
+    switch (font) 
+    {
+    case DefaultDDDFont:
+ 	return "-*-helvetica-bold-r-*-*-*-90-*-*-*-*-iso8859-*";
+    case VariableWidthDDDFont:
+ 	return "-*-helvetica-medium-r-*-*-*-90-*-*-*-*-iso8859-*";
+    case FixedWidthDDDFont:
+ 	return "-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-iso8859-*";
+    case SymbolDDDFont:
+ 	return "-*-symbol-*-*-*-*-*-90-*-*-*-*-adobe-*";
+    }
+
+    assert(0);
+    return "";
 }
 
-static string slant(const string& font)
+// Fetch a component
+static string component(DDDFont font, FontComponent n)
 {
-    return word(font, 4, "*");
+    if (n == PointSize)
+    {
+	int sz = 0;
+	switch(font)
+	{
+	case DefaultDDDFont:
+	    sz = app_data.default_font_size;
+	    break;
+
+	case VariableWidthDDDFont:
+	case SymbolDDDFont:
+	    sz = app_data.variable_width_font_size;
+	    break;
+
+	case FixedWidthDDDFont:
+	    sz = app_data.fixed_width_font_size;
+	    break;
+	}
+
+	return itostring(sz);
+    }
+
+    string w = component(userfont(font), n);
+    if (w == "")		// nothing specified
+	w = component(fallbackfont(font), n);
+    return w;
 }
 
-static string registry(const string& font)
+
+
+//-----------------------------------------------------------------------------
+// Create a font name
+//-----------------------------------------------------------------------------
+
+static string override(FontComponent new_n, 
+		       const string& new_value, const string& font = "")
 {
-    return word(font, 13, "iso8859");
+    string new_font = "";
+    for (FontComponent n = Foundry; n <= AllComponents; n++)
+    {
+	string w;
+	if (n == new_n)
+	    w = new_value;
+	else
+	    w = component(font, n);
+	new_font += "-" + w;
+    }
+
+    return new_font;
 }
 
-static string make_font(const string& fam, const string& weight,
-			const string& slant, int size, 
-			const string& registry)
+string make_font(DDDFont base, const string& override = "")
 {
-    return "-*-" + fam + "-" + weight + "-" + slant + "-*-*-*-" + 
-	itostring(size) + "-*-*-*-*-" + registry + "-*";
+    string font = "";
+    for (FontComponent n = Foundry; n <= AllComponents; n++)
+    {
+	string w = component(override, n);
+	if (w == "" || w == " ")
+	    w = component(base, n);
+	font += "-" + w;
+    }
+
+    return font;
 }
 
-static void define_font(const string& name,
-			const string& fam, const string& weight,
-			const string& slant, int size,
-			const string& registry, bool show)
+static void define_font(const string& name, DDDFont base, 
+			const string& override = "")
 {
-    string font = make_font(fam, weight, slant, size, registry);
+    string font = make_font(base, override);
     defineConversionMacro(name, font);
 
-    if (show)
-	cout << "@" << name << "@ =\t" << font << "\n";
+    if (app_data.show_fonts)
+	cout << "@" << name << "@    \t" << font << "\n";
 }
 
-static void setup_x_fonts(bool show)
+
+static void setup_x_fonts()
 {
     Dimension small_size = 
 	((app_data.default_font_size * 8) / 90) * 10;
@@ -120,142 +225,82 @@ static void setup_x_fonts(bool show)
     if (small_size < 80)
 	small_size = app_data.default_font_size;
 
+    string small_size_s = itostring(small_size);
+    string llogo_size_s = itostring(llogo_size);
+
 	
     // Default font
-    define_font("CHARSET",
-		family(app_data.default_font),
-		weight(app_data.default_font),
-		slant(app_data.default_font),
-		app_data.default_font_size,
-		registry(app_data.default_font), show);
+    define_font("CHARSET", DefaultDDDFont);
 
-    define_font("SMALL",
-		family(app_data.default_font),
-		weight(app_data.default_font),
-		slant(app_data.default_font),
-		small_size,
-		registry(app_data.default_font), show);
+    define_font("SMALL", DefaultDDDFont,
+		override(PointSize, small_size_s));
 
-    define_font("LIGHT",
-		family(app_data.default_font),
-		"medium",
-		slant(app_data.default_font),
-		small_size,
-		registry(app_data.default_font), show);
-
-    define_font("LOGO",
-		family(app_data.default_font),
-		"bold",
-		slant(app_data.default_font),
-		app_data.default_font_size,
-		registry(app_data.default_font), show);
-
-    define_font("LLOGO",
-		family(app_data.default_font),
-		"bold",
-		slant(app_data.default_font),
-		llogo_size,
-		registry(app_data.default_font), show);
-
-    define_font("KEY",
-		family(app_data.default_font),
-		weight(app_data.default_font),
-		slant(app_data.default_font),
-		app_data.default_font_size,
-		registry(app_data.default_font), show);
+    define_font("LIGHT", DefaultDDDFont,
+		override(Weight, "medium",
+			 override(PointSize, small_size_s)));
 
     // Text fonts
-    define_font("TEXT",
-		family(app_data.fixed_width_font),
-		weight(app_data.fixed_width_font),
-		slant(app_data.fixed_width_font),
-		app_data.fixed_width_font_size,
-		registry(app_data.fixed_width_font), show);
+    define_font("TEXT", FixedWidthDDDFont);
 
     // Text fonts
-    define_font("RM",
-		family(app_data.variable_width_font),
-		weight(app_data.variable_width_font),
-		"r",
-		app_data.variable_width_font_size,
-		registry(app_data.variable_width_font), show);
+    define_font("LOGO", VariableWidthDDDFont,
+		override(Weight, "bold"));
 
-    define_font("SL",
-		family(app_data.variable_width_font),
-		weight(app_data.variable_width_font),
-		"*",	// matches both "i" and "o"
-		app_data.variable_width_font_size,
-		registry(app_data.variable_width_font), show);
+    define_font("LLOGO", VariableWidthDDDFont,
+		override(Weight, "bold",
+			 override(PointSize, llogo_size_s)));
 
-    define_font("BF",
-		family(app_data.variable_width_font),
-		"bold",
-		"r",
-		app_data.variable_width_font_size,
-		registry(app_data.variable_width_font), show);
+    define_font("RM", VariableWidthDDDFont,
+		override(Slant, "r"));
 
-    define_font("BS",
-		family(app_data.variable_width_font),
-		"bold",
-		"*",	// matches both "i" and "o"
-		app_data.variable_width_font_size,
-		registry(app_data.variable_width_font), show);
+    define_font("SL", VariableWidthDDDFont,
+		override(Slant, "*")); // matches `i' and `o'
 
-    define_font("TT",
-		family(app_data.fixed_width_font),
-		weight(app_data.fixed_width_font),
-		slant(app_data.fixed_width_font),
-		app_data.variable_width_font_size,
-		registry(app_data.fixed_width_font), show);
+    define_font("BF", VariableWidthDDDFont,
+		override(Weight, "bold",
+			 override(Slant, "r")));
 
-    define_font("TB",
-		family(app_data.fixed_width_font),
-		"bold",
-		slant(app_data.fixed_width_font),
-		app_data.variable_width_font_size,
-		registry(app_data.fixed_width_font), show);
+    define_font("BS", VariableWidthDDDFont,
+		override(Weight, "bold",
+			 override(Slant, "*")));
 
-    define_font("SYMBOL",
-		"symbol",
-		"*",
-		"*",
-		app_data.variable_width_font_size,
-		"adobe", show);
-}
+    define_font("TT", FixedWidthDDDFont);
 
-static void _replace_vsl_def(string& s, const string& func, const string& val)
-{
-    s += "#pragma replace " + func + "\n" + func + "() = " + val + ";\n";
-}
+    define_font("TB", FixedWidthDDDFont,
+		override(Weight, "bold"));
 
-static void replace_vsl_def(string& s, const string& func, int val)
-{
-    _replace_vsl_def(s, func, itostring(val));
+    define_font("KEY", VariableWidthDDDFont,
+		override(Weight, "bold"));
+
+    define_font("SYMBOL", SymbolDDDFont);
 }
 
 static void replace_vsl_def(string& s, const string& func, const string& val)
 {
-    _replace_vsl_def(s, func, quote(val));
+    s += "#pragma replace " + func + "\n" + func + "() = " + val + ";\n";
 }
 
-static void setup_vsl_fonts(bool show)
+static void setup_vsl_fonts()
 {
     static string defs;
 
-    replace_vsl_def(defs, "stdfontsize", 0);
-    replace_vsl_def(defs, "stdfontpoints", app_data.fixed_width_font_size);
-    replace_vsl_def(defs, "stdfontfamily", family(app_data.fixed_width_font));
-    replace_vsl_def(defs, "stdfontweight", weight(app_data.fixed_width_font));
+    replace_vsl_def(defs, "stdfontsize", "0");
+    replace_vsl_def(defs, "stdfontpoints",
+		    component(FixedWidthDDDFont, PointSize));
+    replace_vsl_def(defs, "stdfontfamily", 
+		    quote(component(FixedWidthDDDFont, Family)));
+    replace_vsl_def(defs, "stdfontweight", 
+		    quote(component(FixedWidthDDDFont, Weight)));
 
-    if (show)
+    if (app_data.show_fonts)
 	cout << defs;
 
     defs += app_data.vsl_base_defs;
     app_data.vsl_base_defs = defs;
 }
 
-void setup_fonts(bool show)
+void setup_fonts()
 {
-    setup_x_fonts(show);
-    setup_vsl_fonts(show);
+    setup_x_fonts();
+    setup_vsl_fonts();
 }
