@@ -20,7 +20,6 @@ There is more information available at the GNU DDD homepage at
 What's new in DDD?
 ==================
 
-
 DDD 3.2.1 brings some minor bug fixes and major LessTif bug workarounds.
 
 - [LessTif] Helpers (such as uncompressing the DDD manual) works fine.
@@ -35,11 +34,13 @@ DDD 3.2.1 brings some minor bug fixes and major LessTif bug workarounds.
 
 - [Ladebug] More Ladebug variants are supported.
 
-- DDD makes more attempts in locating the initial main function.
+- [Ladebug] `Edit -> Ladebug settings' should work.
+
+- A string pointer error on 64 bit machines has been fixed.
 
 - Minor bugs with clustered displays have been fixed.
 
-- A bad pointer error in string manipulation has been fixed.
+- DDD makes more attempts in locating the initial main function.
 
 - DDD PostScript documentation can be printed on multiple pages per sheet.
 

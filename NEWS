@@ -12,9 +12,10 @@ DDD 3.2.1 brings some minor bug fixes and major LessTif bug workarounds.
 - [LessTif] Small fixes for building with LessTif on SGI.
 - [Perl] In the data display, Perl hash keys are properly quoted.
 - [Ladebug] More Ladebug variants are supported.
-- DDD makes more attempts in locating the initial main function.
+- [Ladebug] `Edit -> Ladebug settings' should work.
+- A string pointer error on 64 bit machines has been fixed.
 - Minor bugs with clustered displays have been fixed.
-- A bad pointer error in string manipulation has been fixed.
+- DDD makes more attempts in locating the initial main function.
 - DDD PostScript documentation can be printed on multiple pages per sheet.
 
 
