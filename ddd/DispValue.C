@@ -1307,7 +1307,7 @@ bool DispValue::can_plot3d() const
     if (type() != Array)
 	return false;
 
-    int grandchildren;
+    int grandchildren = -1;
     for (int i = 0; i < nchildren(); i++)
     {
 	if (!child(i)->can_plot2d())
