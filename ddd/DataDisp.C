@@ -1206,19 +1206,23 @@ void DataDisp::SelectionLostCB(Widget, XtPointer, XtPointer)
 	return;
 
     // Selection lost - clear all highlights
+    bool changed = false;
     for (GraphNode *gn = disp_graph->firstNode();
 	 gn != 0; gn = disp_graph->nextNode(gn))
     {
-	BoxGraphNode *bgn = ptr_cast(BoxGraphNode, gn);
-	if (bgn && bgn->selected())
+	if (gn->selected())
 	{
-	    bgn->selected() = false;
-	    graphEditRedrawNode(graph_edit, bgn);
+	    gn->selected() = false;
+	    changed = true;
+	    graphEditRedrawNode(graph_edit, gn);
 	}
     }
 
-    refresh_args();
-    refresh_display_list();
+    if (changed)
+    {
+	refresh_args();
+	refresh_display_list();
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -4161,20 +4165,11 @@ void DataDisp::merge_displays(IntArray displays,
 
     if (suppressed_displays.size() > 0)
     {
-	// Some displays have been suppressed.
 	suppressed = true;
 
 	sort(suppressed_displays);
 
-	// Unselect suppressed displays.  Suggested by Christoph Koegl
-	// <koegl@informatik.uni-kl.de>.
-	for (int i = 0; i < suppressed_displays.size(); i++)
-	{
-	    DispNode *node = disp_graph->get(suppressed_displays[i]);
-	    node->selected() = false;
-	}
-
-	// Generate appropriate message.
+	// Some displays have been suppressed.  Generate appropriate message.
 	MString msg = rm("Suppressing ");
 
 	if (suppressed_displays.size() == 1)
