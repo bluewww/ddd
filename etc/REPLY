@@ -37,5 +37,14 @@ main FTP server and its mirrors at:
     ftp://uiarchive.cso.uiuc.edu/pub/packages/ddd/
     ftp://richb-pc.acc.qc.edu/pub/ddd/
 
+There is a patch called `unresolved-inheritance' which might fix this
+problem.  Get a copy at:
+
+    ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/patches/
+    ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/patches/
+    ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/patches/
+    ftp://uiarchive.cso.uiuc.edu/pub/packages/ddd/patches/
+    ftp://richb-pc.acc.qc.edu/pub/ddd/patches/
+
 Thanks for your support,
 
