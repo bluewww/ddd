@@ -608,6 +608,7 @@ BASE_OBJECTS = \
 	sigName.o    \
 	strclass.o   \
 	tabs.o       \
+	uniquify.o   \
 	SignalB.o    \
 	TypeInfo.o   \
 	UniqueId.o   \
