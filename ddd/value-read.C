@@ -48,7 +48,7 @@ char value_read_rcsid[] =
 #include "GDBAgent.h"
 
 static regex RXindex("[[]-?[0-9][0-9]*].*");
-static regex RXvtable("[^\n]*<[^\n>]* v(irtual )?t(a)?bl(e)?>{.*");
+static regex RXvtable("[^\n]*<[^\n>]* v(irtual )?t(a)?bl(e)?>[{].*");
 
 // Determine the type of VALUE.
 DispValueType determine_type (string value)
