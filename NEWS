@@ -5,6 +5,8 @@ DDD 2.2 [in development]
 ------------------------
 
     User-visible changes to DDD 2.1:
+    - Support for debugging processes running outside of DDD.  You can
+      attach to a running process, examine it, and resume its execution.
     - DDD now requires less width:
       + Source line numbers have been turned off (can be restored);
         the breakpoint area extends to the first non-blank character.
@@ -20,7 +22,7 @@ DDD 2.2 [in development]
       + DDD no longer blocks while the manual is uncompressed and formatted.
       + DDD manuals are now stored in `gzip' format, saving space in
         executables.
-    - The command tool has been improved.  It is now always
+    - Improved command tool.  The command tool is now always
       auto-raised and comes with window manager decorations.
 
     Bug fixes:
