@@ -180,8 +180,10 @@ void ForegroundColorBox::_print(ostream& os, const BoxRegion& region,
     // Reset color
     if (gc.isPostScript())
     {
+	// Rainer Keller <Rainer.Keller@studbox.uni-stuttgart.de> says
+	// egcs 1.1 bails out if we use ref_cast() here.
 	const PostScriptPrintGC &ps = 
-	    ref_cast(PostScriptPrintGC, (PrintGC&) gc);
+	    *ptr_cast(PostScriptPrintGC, (PrintGC *)&gc);
 
 	if (ps.color)
 	{
