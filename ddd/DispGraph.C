@@ -37,6 +37,7 @@ char DispGraph_rcsid[] =
 // DispGraph stores information about all displayed display expressions.
 //-----------------------------------------------------------------------------
 
+#include <math.h>
 #include <X11/StringDefs.h>
 
 #include "DispGraph.h"
@@ -87,8 +88,11 @@ int DispGraph::count_all (Displaying e) const
 
     int count = 0;
     MapRef ref;
-    for (int k = idMap.first_key(ref); k != 0; k = idMap.next_key(ref)) {
-	switch (e) {
+    for (int k = idMap.first_key(ref); k != 0; k =
+	     idMap.next_key(ref))
+    {
+	switch (e) 
+	{
 	case Both:
 	    count++;
 	    break;
@@ -242,8 +246,8 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
     }
 
     // Make sure the new node does not obscure existing nodes
-    GraphNode *n = firstNode();
-    while (n)
+    GraphNode *n = firstVisibleNode();
+    while (n != 0)
     {
 	const BoxRegion& region = n->region(graphGC);
 	if (new_region <= region)
@@ -251,11 +255,11 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
 	    pos                 += offset;
 	    new_region.origin() += offset;
 
-	    n = firstNode();
+	    n = firstVisibleNode();
 	    // clog << "new node now   at " << pos << "\n";
 	}
 	else
-	    n = nextNode(n);
+	    n = nextVisibleNode(n);
     }
 
     return pos;
@@ -754,12 +758,214 @@ bool DispGraph::unalias(int alias_disp_nr)
 
 
 // Routing
+
+// True iff R->P1 and R->P2 have the same angle
+bool DispGraph::same_angle(const BoxPoint& r,
+			   const BoxPoint& p1,
+			   const BoxPoint& p2)
+{
+    if (p1 == r || p2 == r)
+	return false;		// No angle to determine
+
+    double angle1 = atan2(r[Y] - p1[Y], r[X] - p1[X]);
+    double angle2 = atan2(r[Y] - p2[Y], r[X] - p2[X]);
+
+    const double epsilon = 0.1;
+    return fabs(angle1 - angle2) < epsilon;
+}
+
+// True iff NODE is attached to an edge with the same angle as P
+bool DispGraph::has_angle(PosGraphNode *node, const BoxPoint& p)
+{
+    GraphEdge *edge;
+    for (edge = node->firstFrom(); edge != 0; edge = node->nextFrom(edge))
+    {
+	if (same_angle(node->pos(), edge->to()->pos(), p))
+	    return true;
+    }
+    for (edge = node->firstTo(); edge != 0; edge = node->nextTo(edge))
+    {
+	if (same_angle(node->pos(), edge->from()->pos(), p))
+	    return true;
+    }
+
+    return false;
+}
+
+// Add a new edge in existing graph
 void DispGraph::add_alias_edge(Widget w, int alias_disp_nr, 
-			       GraphNode *from, GraphNode *to)
+			       GraphNode *_from, GraphNode *_to)
+{
+    PosGraphNode *from = ptr_cast(PosGraphNode, _from);
+    PosGraphNode *to   = ptr_cast(PosGraphNode, _to);
+
+    // Check whether the new edge may be hidden by existing edges
+    if (from == to || (from == 0 || to == 0))
+    {
+	// Self-referring edge or bad nodes
+	add_direct_alias_edge(w, alias_disp_nr, _from, _to);
+    }
+    else
+    {
+	// Check for interferences with existing edge
+	add_routed_alias_edge(w, alias_disp_nr, from, to);
+    }
+}
+
+// Add a direct edge from FROM to TO
+void DispGraph::add_direct_alias_edge(Widget, int alias_disp_nr, 
+				      GraphNode *from, GraphNode *to)
+{
+    *this += new AliasGraphEdge(alias_disp_nr, from, to);
+}
+
+// Check whether P is obscured by any node
+bool DispGraph::is_hidden(Widget w, const BoxPoint& p) const
 {
     const GraphGC& graphGC = graphEditGetGraphGC(w);
 
-    // Check whether the edge hides other edges (FIXME)
+    for (GraphNode *n = firstVisibleNode(); n != 0; n = nextVisibleNode(n))
+    {
+	RegionGraphNode *node = ptr_cast(RegionGraphNode, n);
+	if (node == 0)
+	    continue;
 
-    *this += new AliasGraphEdge(alias_disp_nr, from, to);
+	if (p == node->pos() || p <= node->sensitiveRegion(graphGC))
+	    return true;
+    }
+
+    return false;
+}
+
+// Rotate offset P by ANGLE (in degrees)
+BoxPoint DispGraph::rotate_offset(const BoxPoint& p, int angle)
+{
+    if (p == BoxPoint(0, 0))
+	return p;
+
+    double length = hypot(p[X], p[Y]);
+    double alpha  = atan2(p[X], p[Y]);
+
+    alpha += (2.0 * M_PI * angle / 360.0);
+
+    return BoxPoint(BoxCoordinate(length * cos(alpha)), 
+		    BoxCoordinate(length * sin(alpha)));
+}
+
+
+// Check whether POS1 and POS2 are okay as hint positions for FROM and TO
+bool DispGraph::hint_positions_ok(Widget w,
+				  PosGraphNode *from,
+				  PosGraphNode *to,
+				  const BoxPoint& pos1,
+				  const BoxPoint& pos2) const
+{
+    BoxPoint p1 = graphEditFinalPosition(w, pos1);
+    BoxPoint p2 = graphEditFinalPosition(w, pos2);
+
+    if (p1[X] <= 0 || p2[X] <= 0 || p1[Y] <= 0 || p2[Y] <= 0)
+	return false;		// Bad coordinates
+	
+    if (p1 == from->pos() && p2 == to->pos())
+    {
+	// Direct edge
+	if (has_angle(from, to->pos()))
+	    return false;	// New edge obscured by existing edge
+	if (has_angle(to, from->pos()))
+	    return false;	// New edge obscured by existing edge
+    }
+    else
+    {
+	// Routed edge
+#if 0
+	if (has_angle(from, p1))
+	    return false;	// New edge obscured by existing edge
+	if (has_angle(to, p2))
+	    return false;	// New edge obscured by existing edge
+#endif
+	if (is_hidden(w, p1))
+	    return false;	// Hint obscured by existing node
+	if (is_hidden(w, p2))
+	    return false;	// Hint obscured by existing node
+    }
+
+    return true;
+}
+
+// Add edge from FROM to TO, inserting hints if required
+void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr, 
+				      PosGraphNode *from, PosGraphNode *to)
+{
+    // Determine hint offsets
+    Dimension grid_height = 16;
+    Dimension grid_width  = 16;
+    XtVaGetValues(w,
+		  XtNgridHeight, &grid_height,
+		  XtNgridWidth,  &grid_width,
+		  NULL);
+
+    BoxPoint edge_dist = to->pos() - from->pos();
+    double edge_angle  = atan2(edge_dist[X], edge_dist[Y]);
+    BoxPoint offset(BoxCoordinate(grid_width  * cos(edge_angle)),
+		    BoxCoordinate(grid_height * sin(edge_angle)));
+
+    const int LEFT  = 1;
+    const int RIGHT = 0;
+
+    BoxPoint offsets[2];
+    offsets[LEFT]  = rotate_offset(offset, +90);
+    offsets[RIGHT] = rotate_offset(offset, -90);
+
+#if 0
+    clog << "offsets[LEFT]  = " << offsets[LEFT]  << "\n";
+    clog << "offsets[RIGHT] = " << offsets[RIGHT] << "\n";
+#endif
+
+    // Try hint offsets
+    BoxPoint pos1, pos2;
+    bool found = false;
+    const int max_iterations = 100;
+    for (int i = 0; i < max_iterations && !found; i++)
+    {
+	for (int side = RIGHT; !found && side <= LEFT; side++)
+	{
+	    pos1 = from->pos() + offsets[side] * i;
+	    pos2 = to->pos()   + offsets[side] * i;
+
+#if 0
+	    clog << (side == LEFT ? "Left" : "Right") << " side: "
+		 << "trying pos1 = " << pos1 
+		 << " and pos2 = " << pos2 << "\n";
+#endif
+
+	    found = hint_positions_ok(w, from, to, pos1, pos2);
+	}
+    }
+
+    if (!found)
+    {
+	// Give up
+	cerr << "Warning: could not find edge after " << i << " iterations\n";
+	pos1 = from->pos();
+	pos2 = to->pos();
+    }
+
+    if (pos1 == from->pos() && pos2 == to->pos())
+    {
+	// No need for hints
+	add_direct_alias_edge(w, alias_disp_nr, from, to);
+    }
+    else
+    {
+	// Add hints
+	HintGraphNode *hint1 = new HintGraphNode(pos1);
+	HintGraphNode *hint2 = new HintGraphNode(pos2);
+	*this += hint1;
+	*this += hint2;
+
+	// Add edges
+	*this += new AliasGraphEdge(alias_disp_nr, from, hint1);
+	*this += new AliasGraphEdge(alias_disp_nr, hint1, hint2);
+	*this += new AliasGraphEdge(alias_disp_nr, hint2, to);
+    }
 }

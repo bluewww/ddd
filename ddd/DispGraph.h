@@ -43,6 +43,7 @@
 #include "Graph.h" 
 #include "HandlerL.h"
 #include "LineGraphE.h"
+#include "PosGraphN.h"
 
 #include "DispNodeM.h"
 
@@ -140,9 +141,28 @@ protected:
 			GraphNode *from, GraphNode *to);
 
 private:
-    static void disp_node_disabledHP (void*, void*, void*);
-};
+    static void disp_node_disabledHP(void *, void *, void *);
 
+    // Alias edge routing stuff
+    // True iff R->P1 and R->P2 have the same angle
+    static bool same_angle(const BoxPoint& r,
+			   const BoxPoint& p1, const BoxPoint& p2);
+
+    // True iff NODE is attached to an edge with the same angle as P
+    static bool has_angle(PosGraphNode *node, const BoxPoint& p);
+
+    void add_direct_alias_edge(Widget w, int alias_disp_nr, 
+			       GraphNode *from, GraphNode *to);
+    void add_routed_alias_edge(Widget w, int alias_disp_nr, 
+			       PosGraphNode *from, PosGraphNode *to);
+    bool is_hidden(Widget w, const BoxPoint& p) const;
+    static BoxPoint rotate_offset(const BoxPoint& p, int angle);
+
+    // Check whether P1 and P2 are okay as hint positions for FROM and TO
+    bool hint_positions_ok(Widget w,
+			   PosGraphNode *from, PosGraphNode *to,
+			   const BoxPoint& p1, const BoxPoint& p2) const;
+};
 
 #endif // _DDD_DispGraph_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
