@@ -289,8 +289,11 @@ Ddd*buttonImageGeometry:   21x17+4+0
 Ddd*buttonCaptionGeometry: 29x7+0-0
 
 ! Whether to use `flat' buttons that only have a 3d appearance when entered
-Ddd*flatToolbarButtons: on
-Ddd*flatDialogButtons:  on
+Ddd*FlatButtons: on
+
+! This may also be set separately for two categories.
+! Ddd*flatToolbarButtons: on
+! Ddd*flatDialogButtons:  on
 
 
 ! The color key to use for buttons.
@@ -5313,7 +5316,7 @@ or restarting DDD.\n\
 Click on LBL(Exit) to exit DDD.\n\
 Click on LBL(Restart) to restart DDD (and @GDB@) from scratch.
 
-Ddd*exited_dialog_popup.title: DDD: Debugger hat fertig
+Ddd*exited_dialog_popup.title: DDD: Always Look at the Bright Side of Life
 ! Ddd*exited_dialog.messageString:   \
 ! @rm @GDB@ exited.
 Ddd*exited_dialog*okLabelString:	   Exit
