@@ -384,4 +384,11 @@ Volunteers for these and other projects are welcome!
 
 266 Include TAGS support.
 
-271 (Insert new project ideas here)
+270 The source indent amount should be set to 0.  Check the failing
+    assertion!
+
+271 Have a crosshair cursor for the data window.
+
+272 Have a resource that controls whether EOF terminates DDD.
+
+273 (Insert new project ideas here)
