@@ -243,15 +243,10 @@ Volunteers for these and other projects are welcome!
 273 JORGE HERNANDO <hernando@cnea.edu.ar> wants
     1)  when an array is marked for display, how about a popup where one
     writes the indexes ranges?, e.g. 5-8,* in order to show 
-    array(i,j), 5<=i<=8, the whole range of j. Also, with multidiemnsional
+    array(i,j), 5<=i<=8, the whole range of j. Also, with multidimensional
     arrays is easy to be confused about which value we are looking at. Would
     it be possible to show (together with the array value) the indexes 
     values (in another font, size, color, etc)?
-
-    2)  It will also be very handy the ability to plot one (or several)
-    variable against another. Nothing fancy, the barest skeleton of a plot.
-    This will allow to have a visual overview of the program behavior 
-    and will be a great help to pinpoint troublesome code.
 
 277 Allow in-place editing.  There is already a simple `sourceEditing'
     resource, but we'd have to do a lot more to realize decent editing
@@ -268,10 +263,6 @@ Volunteers for these and other projects are welcome!
     variable, to be able to toggle between showing only member var's
     defined in that class, or all member variables, including those
     inherited from superclasses.
-
-292 Henrik Seidel <seidel@mpimg-berlin-dahlem.mpg.de> wants to print a
-    numeric array to a file to inspect the curve with a graphics
-    program such as gnuplot or xmgr.
 
 293 Styles.  Have arrays, etc. be displayed in various visual styles
     such as bar graphs.  This can be easily established using VSL
@@ -368,7 +359,7 @@ Volunteers for these and other projects are welcome!
 350 Harri Pasanen <harri@trema.com> suggests:
     - Allow to pass arguments to defined commands.  More specifically,
       I mean having a command specification where the (): argument
-      would used as $arg0 for the defined command.
+      would be used as $arg0 for the defined command.
     - Command buttons are not restored when opening a session.
     - Incremental search for the source window is also something I miss.
 

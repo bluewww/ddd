@@ -146,9 +146,12 @@ Volunteers for fixing these and other bugs are welcome!
 
 322*Finish Plots:
     - Show diagnostic if Gnuplot as a whole failed
-    - Finish printing: Printing a plot must select the appropriate display
-    - Add menu for line styles
-    - Add Gnuplot console
+    - Finish printing: 
+      * Printing a plot must select the DispValue first
+      * Set `Selected Only' if only a few displays are selected
+    - Add a menu for line styles
+    - Add a console (or some other way to enter commands)
+    - Have an `export' option that writes the data to a file
     - Document it all
 
 330 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
