@@ -50,13 +50,14 @@ char plotter_rcsid[] =
 #include "AppData.h"
 #include "Command.h"
 #include "Delay.h"
-#include "DestroyCB.h"
 #include "HelpCB.h"
 #include "MakeMenu.h"
 #include "Swallower.h"
 
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
+#include <Xm/AtomMgr.h>
+#include <Xm/Protocols.h>
 
 #define PLOT_CLASS_NAME "Gnuplot"
 
@@ -64,11 +65,11 @@ static void TraceInputHP (Agent *source, void *, void *call_data);
 static void TraceOutputHP(Agent *source, void *, void *call_data);
 static void TraceErrorHP (Agent *source, void *, void *call_data);
 
-static void CloseCB(Widget, XtPointer, XtPointer);
+static void PopdownCB(Widget, XtPointer, XtPointer);
 
 static MMDesc file_menu[] = 
 {
-    { "close", MMPush, { CloseCB } },
+    { "close", MMPush, { PopdownCB } },
     { "exit",  MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }},
     MMEnd
 };
@@ -84,6 +85,7 @@ static MMDesc menubar[] =
 struct PlotWindowInfo {
     Widget shell;
     Widget dialog;
+    PlotAgent *plotter;
 };
 
 // Swallow new GNUPLOT window
@@ -101,51 +103,151 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
 	XtUnmanageChild(plot->dialog);
 
 	XtVaSetValues(swallower, XtNwindow, window, NULL);
-	XtManageChild(plot->shell);
-	XtRealizeWidget(plot->shell);
+	XtPopup(plot->shell, XtGrabNone);
 	XtRemoveCallback(swallower, XtNwindowCreatedCallback, 
 			 SwallowCB, client_data);
-
-	delete plot;
     }
 }
 
-// GNUPLOT subwindow has gone - kill shell, too
-static void GoneCB(Widget, XtPointer client_data, XtPointer)
+// Close action from menu
+static void PopdownCB(Widget w, XtPointer, XtPointer)
 {
-    Widget shell = Widget(client_data);
-    DestroyWhenIdle(shell);
+    Widget shell = findTopLevelShellParent(w);
+    XtPopdown(shell);
+
 }
 
-// Swallower is being destroyed - kill agent, too
-static void KillAgentCB(Widget /* swallower */, 
-			XtPointer client_data, XtPointer)
+// Cancel plot
+static void CancelPlotCB(Widget, XtPointer client_data, XtPointer)
 {
-    PlotAgent *plotter = (PlotAgent *)client_data;
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+
+    if (plot->shell != 0)
+    {
+	// Pop down shell
+	XtPopdown(plot->shell);
+
+	// Mark shell as `unused'
+	XtVaSetValues(plot->shell, XmNuserData, XtPointer(False), NULL);
+	plot->shell = 0;
+    }
+
+    if (plot->plotter != 0)
+    {
+	// Terminate plotter
+	plot->plotter->terminate();
+	plot->plotter = 0;
+    }
+}
+
+static void DeletePlotterCB(XtPointer client_data, XtIntervalId *)
+{
+    Agent *plotter = (Agent *)client_data;
     delete plotter;
 }
 
-// Close action from menu
-static void CloseCB(Widget w, XtPointer, XtPointer)
+static void DeletePlotterHP(Agent *plotter, void *, void *)
 {
-    Widget shell = findTopLevelShellParent(w);
-    DestroyWhenIdle(shell);
+    // Plotter has died - delete memory
+    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+		    DeletePlotterCB, XtPointer(plotter));
+}
+
+#define SWALLOWER_NAME "swallower"
+
+static PlotWindowInfo *new_decoration(const string& name)
+{
+    static VoidArray decorations;
+
+    Widget shell = 0;
+
+    // Check whether we can reuse an existing decoration
+    for (int i = 0; i < decorations.size(); i++)
+    {
+	Widget w = (Widget)decorations[i];
+	XtPointer user_data;
+	XtVaGetValues(w, XmNuserData, &user_data, NULL);
+	if (!Boolean(user_data))
+	{
+	    // Shell is unused - use this one
+	    shell = w;
+	    break;
+	}
+    }
+
+    if (shell == 0)
+    {
+	// Create decoration windows
+	Arg args[10];
+	Cardinal arg = 0;
+	XtSetArg(args[arg], XmNallowShellResize, True);       arg++;
+	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+
+	// Mark shell as `used'
+	XtSetArg(args[arg], XmNuserData, XtPointer(True)); arg++;
+	shell = verify(XtCreateWidget("plot", topLevelShellWidgetClass,
+				      find_shell(), args, arg));
+
+	Atom WM_DELETE_WINDOW = 
+	    XmInternAtom(XtDisplay(shell), "WM_DELETE_WINDOW", False);
+	XmAddWMProtocolCallback(shell, WM_DELETE_WINDOW, PopdownCB, 0);
+
+	arg = 0;
+	Widget main_window = XmCreateMainWindow(shell, "main_window", 
+						args, arg);
+	XtManageChild(main_window);
+
+	MMcreateMenuBar(main_window, "menubar", menubar);
+	MMaddCallbacks(menubar, XtPointer(shell));
+	MMaddHelpCallback(menubar, ImmediateHelpCB);
+
+	arg = 0;
+	XtCreateManagedWidget(SWALLOWER_NAME, swallowerWidgetClass, 
+			      main_window, args, arg);
+
+	Delay::register_shell(shell);
+
+	decorations += shell;
+    }
+
+    string title = DDD_NAME ": " + name;
+    XtVaSetValues(shell,
+		  XmNtitle, title.chars(),
+		  XmNiconName, title.chars(),
+		  NULL);
+
+    PlotWindowInfo *plot = new PlotWindowInfo;
+    plot->shell   = shell;
+    plot->dialog  = 0;
+    plot->plotter = 0;
+
+    Widget swallower = XtNameToWidget(shell, "*" SWALLOWER_NAME);
+    XtRemoveAllCallbacks(swallower, XtNwindowCreatedCallback);
+    XtAddCallback(swallower, XtNwindowCreatedCallback,
+		  SwallowCB, XtPointer(plot));
+    XtRemoveAllCallbacks(swallower, XtNwindowGoneCallback);
+    XtAddCallback(swallower, XtNwindowGoneCallback, 
+		  CancelPlotCB, XtPointer(plot));
+
+    return plot;
 }
 
 // Create a new plot window
 PlotAgent *new_plotter(string name)
 {
-    Arg args[10];
-    Cardinal arg;
-
     string cmd = app_data.plot_command;
     cmd.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
+
+    // Create shell
+    PlotWindowInfo *plot = new_decoration(name);
+    XtVaSetValues(plot->shell, XmNuserData, XtPointer(True), NULL);
 
     // Pop up a working dialog
     static Widget dialog = 0;
     if (dialog == 0)
     {
-	arg = 0;
+	Arg args[10];
+	Cardinal arg = 0;
 	dialog = verify(XmCreateWorkingDialog(find_shell(),
 					      "launch_plot_dialog", 
 					      args, arg));
@@ -155,6 +257,10 @@ PlotAgent *new_plotter(string name)
 					     XmDIALOG_HELP_BUTTON));
     }
 
+    XtRemoveAllCallbacks(dialog, XmNcancelCallback);
+    XtAddCallback(dialog, XmNcancelCallback, CancelPlotCB, XtPointer(plot));
+    plot->dialog = dialog;
+
     string base = cmd;
     if (base.contains(' '))
 	base = cmd.before(' ');
@@ -162,50 +268,12 @@ PlotAgent *new_plotter(string name)
     XtVaSetValues(dialog, XmNmessageString, msg.xmstring(), NULL);
     manage_and_raise(dialog);
 
-
-    // Create control window
-    string title = DDD_NAME ": " + name;
-    arg = 0;
-    XtSetArg(args[arg], XmNtitle,    title.chars());   arg++;
-    XtSetArg(args[arg], XmNiconName, title.chars());   arg++;
-    XtSetArg(args[arg], XmNallowShellResize, True);    arg++;
-    XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
-    Widget shell = verify(XtCreateWidget("plot",
-					 topLevelShellWidgetClass,
-					 find_shell(), args, arg));
-
-    arg = 0;
-    Widget main_window = XmCreateMainWindow(shell, "main_window", args, arg);
-    XtManageChild(main_window);
-
-    /* Widget menubar_w = */ MMcreateMenuBar(main_window, "menubar", menubar);
-    MMaddCallbacks(menubar, XtPointer(shell));
-    MMaddHelpCallback(menubar, ImmediateHelpCB);
-
-    arg = 0;
-    Widget swallower = 
-	XtCreateManagedWidget("plot", swallowerWidgetClass, 
-			      main_window, args, arg);
-
-    PlotWindowInfo *plot = new PlotWindowInfo;
-    plot->shell  = shell;
-    plot->dialog = dialog;
-
-    XtAddCallback(swallower, XtNwindowCreatedCallback, 
-		  SwallowCB, XtPointer(plot));
-    XtAddCallback(swallower, XtNwindowGoneCallback, 
-		  GoneCB, XtPointer(shell));
-    Delay::register_shell(shell);
-
-    XtRemoveAllCallbacks(dialog, XmNcancelCallback);
-    XtAddCallback(dialog, XmNcancelCallback, DestroyThisCB, XtPointer(shell));
-
     // Invoke plot process
     PlotAgent *plotter = 
-	new PlotAgent(XtWidgetToApplicationContext(shell), cmd);
+	new PlotAgent(XtWidgetToApplicationContext(plot->shell), cmd);
 
-    XtAddCallback(swallower, XtNdestroyCallback, 
-		  KillAgentCB, XtPointer(plotter));
+    XtAddCallback(plot->shell, XtNpopdownCallback,
+		  CancelPlotCB, XtPointer(plot));
 
     string init = app_data.plot_init_commands;
     if (init != "" && !init.contains('\n', -1))
@@ -215,8 +283,10 @@ PlotAgent *new_plotter(string name)
     plotter->addHandler(Input,  TraceInputHP);     // Gnuplot => DDD
     plotter->addHandler(Output, TraceOutputHP);    // DDD => Gnuplot
     plotter->addHandler(Error,  TraceErrorHP);     // Gnuplot Errors => DDD
+    plotter->addHandler(Died,   DeletePlotterHP);  // Free memory
 
     plotter->start(init);
+    plot->plotter = plotter;
 
     return plotter;
 }

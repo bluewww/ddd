@@ -145,7 +145,6 @@ Volunteers for fixing these and other bugs are welcome!
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 322*Finish Plots:
-    - Destroying plotter decorations is buggy; re-use them instead
     - Show diagnostic if plot was not possible 
       (`graph plot' command, but no numeric data)
     - Show diagnostic if Gnuplot failed
@@ -171,4 +170,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 339 Adding a display to a cluster does not work.
 
-340 (Insert new bugs here)
+340 With auto-clustering enabled: select a variable, plot it, plot
+    again.  You get two plot windows.
+
+341 (Insert new bugs here)

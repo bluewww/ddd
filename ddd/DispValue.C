@@ -700,7 +700,7 @@ void DispValue::clear()
     if (plotter() != 0)
     {
 	plotter()->removeHandler(Died, PlotterDiedHP, (void *)this);
-	delete plotter();
+	plotter()->terminate();
 	_plotter = 0;
     }
 
