@@ -885,6 +885,24 @@ static bool selection_click = false;
 
 static string last_info_output = "";
 
+// Return index of RXADDRESS in S, beginning from POS.  Stop search at newline.
+static int address_index(const string& s, int pos)
+{
+    int eol = s.index('\n');
+    if (eol < 0)
+	eol = s.length();
+
+    string first_line = ((string&)s).at(pos, eol - pos);
+    int i = 0;
+    while (i < int(first_line.length()) && isspace(first_line[i]))
+	i++;
+    i = first_line.index(rxaddress_start, i);
+    if (i < 0)
+	return -1;
+    else
+	return pos + i;
+}
+
 void SourceView::set_source_argCB(Widget text_w, 
 				  XtPointer client_data, 
 				  XtPointer call_data)
@@ -990,11 +1008,11 @@ void SourceView::set_source_argCB(Widget text_w,
 		 && endPos - endIndex <= indent_amount(text_w))
 	{
 	    // Selection from address area
-	    int index = text.index(rxaddress, startPos);
+	    int index = address_index(text, startPos);
 	    if (index >= 0)
 	    {
 		string address = text.from(index);
-		address = address.through(rxalphanum);
+		address = address.through(rxaddress);
 
 		source_arg->set_string(address);
 
@@ -2059,11 +2077,11 @@ bool SourceView::get_line_of_pos (Widget   w,
 	    in_text = false;
 
 	    // Check if we have a breakpoint around here
-	    int index = current_code.index(rxaddress, pos);
+	    int index = address_index(current_code, pos);
 	    if (index >= 0)
 	    {
 		address = current_code.from(index);
-		address = address.through(rxalphanum);
+		address = address.through(rxaddress);
 
 		VarIntArray bps;
 
@@ -5655,25 +5673,36 @@ void SourceView::clear_code_cache()
     process_disassemble("No code.");
 }
 
-static string first_address(string s)
+static regex rxnladdress("\n *" RXADDRESS);
+
+static string first_address(const string& s)
 {
-    int index = s.index(rxaddress);
+    int index = s.index(rxnladdress);
     if (index < 0)
 	return "";
+    index++;
 
-    s = s.from(index);
-    return s.through(rxaddress);
+    int eol = s.index('\n', index);
+    if (eol < 0)
+	eol = s.length();
+
+    string addr = ((string&)s).at(index, eol - index);
+    return addr.through(rxaddress);
 }
 
-static string last_address(string s)
+static string last_address(const string& s)
 {
-    static regex rxnladdress("\n" RXADDRESS);
     int index = s.index(rxnladdress, -1);
     if (index < 0)
 	return "";
+    index++;
 
-    s = s.from(index + 1);
-    return s.through(rxalphanum);
+    int eol = s.index('\n', index);
+    if (eol < 0)
+	eol = s.length();
+
+    string addr = ((string&)s).at(index, eol - index);
+    return addr.through(rxaddress);
 }
 
 void SourceView::set_code(const string& code,
@@ -5743,11 +5772,15 @@ XmTextPosition SourceView::find_pc(const string& pc)
 	    j++;
 
 	if (j + 2 < int(current_code.length())
-	    && current_code.contains(rxaddress, j))
+	    && (is_address_start(current_code[j])))
 	{
-	    string line = current_code.at(j, eol - j);
-	    string address = line.from(rxaddress);
-	    address = line.through(rxaddress);
+	    // Use first word of line as address.  Much faster than
+	    // checking address regexps.
+	    string address = current_code.at(j, eol - j);
+	    int k = 0;
+	    while (k < int(address.length()) && !isspace(address[k]))
+		k++;
+	    address = address.before(k);
 	    if (compare_address(pc, address) == 0)
 	    {
 		pos = i;

@@ -48,6 +48,7 @@ char PosBuffer_rcsid[] =
 
 // A regex for C addresses ("0xdead") and Modula-2 addresses ("0BEEFH");
 regex rxaddress(RXADDRESS);
+regex rxaddress_start(RXADDRESS_START);
 
 
 // Filter all lines from ANSWER beginning with LINE.  This is required
@@ -75,6 +76,22 @@ static bool has_prefix(const string& answer, const string& prefix)
     return index == 0 || index > 0 && answer[index - 1] == '\n';
 }
 
+// Store first address in ANSWER after INDEX in BUFFER
+static void fetch_address(const string& answer, int index, string& buffer)
+{
+    while (index < int(answer.length()) && !is_address_start(answer[index]))
+	index++;
+
+    assert (is_address_start(answer[index]));
+
+    int start = index;
+
+    // Just fetch the first word -- no need to do big address matches here
+    while (index < int(answer.length()) && !isspace(answer[index]))
+	index++;
+
+    buffer = ((string&)answer).at(start, index - start);
+}
 
 // Fetch position from GDB output ANSWER.
 void PosBuffer::filter (string& answer)
@@ -205,9 +222,8 @@ void PosBuffer::filter (string& answer)
 		    int pc_index = answer.index(rxpc);
 		    if (pc_index >= 0)
 		    {
-			pc_buffer = answer.from(pc_index);
-			pc_buffer = pc_buffer.from(rxaddress);
-			pc_buffer = pc_buffer.through(rxaddress);
+			int addr_index = answer.index('=');
+			fetch_address(answer, addr_index, pc_buffer);
 
 			// Strip this line from ANSWER
 			int end_line = answer.index('\n', pc_index);
@@ -232,9 +248,8 @@ void PosBuffer::filter (string& answer)
 		    int pc_index = answer.index(rxstopped);
 		    if (pc_index >= 0)
 		    {
-			pc_buffer = answer.from(pc_index);
-			pc_buffer = pc_buffer.from(rxaddress);
-			pc_buffer = pc_buffer.through(rxaddress);
+			pc_index = answer.index(',');
+			fetch_address(answer, pc_index, pc_buffer);
 		    }
 		}
 
@@ -247,9 +262,8 @@ void PosBuffer::filter (string& answer)
 		    if (pc_index == 0
 			|| pc_index > 0 && answer[pc_index - 1] == '\n')
 		    {
-			pc_buffer = answer.from(pc_index);
-			pc_buffer = pc_buffer.from(rxaddress);
-			pc_buffer = pc_buffer.through(rxaddress);
+			pc_index = answer.index(' ');
+			fetch_address(answer, pc_index, pc_buffer);
 		    }
 		}
 
@@ -262,31 +276,30 @@ void PosBuffer::filter (string& answer)
 		    int pc_index = answer.index(rxaddr);
 		    if (pc_index >= 0)
 		    {
-			pc_buffer = answer.from(pc_index);
-			pc_buffer = pc_buffer.from(rxaddress);
-			pc_buffer = pc_buffer.through(rxaddress);
+			pc_index = answer.index(' ');
+			fetch_address(answer, pc_index, pc_buffer);
 		    }
 		}
 
-		if (pc_buffer == "")
+		if (pc_buffer == "" && answer != "")
 		{
 		    // `ADDRESS in FUNCTION'
+		    static regex rxaddress_in(RXADDRESS " in ");
 		    int pc_index = -1;
-		    if (answer.contains(rxaddress, 0))
+		    if (is_address_start(answer[0]) 
+			&& answer.contains(rxaddress_in, 0))
 		    {
 			pc_index = 0;
 		    }
 		    else
 		    {
-			static regex rxnladdress("\n" RXADDRESS);
-			pc_index = answer.index(rxnladdress);
+			static regex rxnladdress_in("\n" RXADDRESS " in ");
+			pc_index = answer.index(rxnladdress_in);
 		    }
 
 		    if (pc_index >= 0)
 		    {
-			pc_buffer = answer.from(pc_index);
-			pc_buffer = pc_buffer.from(rxaddress);
-			pc_buffer = pc_buffer.through(rxaddress);
+			fetch_address(answer, pc_index, pc_buffer);
 		    }
 		}
 
@@ -343,7 +356,7 @@ void PosBuffer::filter (string& answer)
 		pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
 		int last_colon = pos_buffer.index(':', -1);
 		pc_buffer = pos_buffer.after(last_colon);
-		if (!pc_buffer.contains(rxaddress, 0))
+		if (!pc_buffer.contains(rxaddress_start, 0))
 		    pc_buffer = "0x" + pc_buffer;
 		pc_buffer = pc_buffer.through(rxaddress);
 		answer.at(index1, index2 - index1 + 1) = "";

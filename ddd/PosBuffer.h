@@ -113,5 +113,15 @@ public:
                   "|00+|[(]nil[)]|NIL|16_[0-9a-f]+)"
 extern regex rxaddress;
 
+// Possible start of address - simple prefix of RXADDRESS
+#define RXADDRESS_START "[0H]"
+extern regex rxaddress_start;
+
+// An even faster check - for hand-written parsers
+inline bool is_address_start(char c)
+{
+    return c == '0' || c == 'H';
+}
+
 #endif // _DDD_PosBuffer_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
