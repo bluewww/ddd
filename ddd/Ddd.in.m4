@@ -1603,29 +1603,14 @@ Ddd*manual_help*area.allowResize:	on
 Ddd*manual_help*index.selectionPolicy:	XmSINGLE_SELECT
 Ddd*manual_help*index.visibleItemCount:	5
 
-Ddd*manual_help*indexSW.height:		90
-
-Ddd*manual_help*text.columns:		80
 Ddd*manual_help*text.rows:		25
 Ddd*manual_help*text.wordWrap:		on
 Ddd*manual_help*text.scrollHorizontal:	off
 Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
-Ddd*manual_help*textSW.width:		550
-Ddd*manual_help*textSW.height:		342
-
-Ddd*manual_help*search.orientation:	XmHORIZONTAL
-Ddd*manual_help*search.borderWidth:	0
-Ddd*manual_help*search.spacing:		0
-Ddd*manual_help*search.packing:		XmPACK_TIGHT
-Ddd*manual_help*search.entryAlignment:	XmALIGNMENT_CENTER
-Ddd*manual_help*search*alignment:	XmALIGNMENT_CENTER
-
 Ddd*manual_help*arg_label.labelString:	():
 
-Ddd*manual_help*arg.columns:		64
-
-Ddd*manual_help*findBackward.labelString: LBL_FIND_BACKWARD
+Ddd*manual_help*findBackward.labelString: 	     LBL_FIND_BACKWARD
 Ddd*manual_help*findBackward.labelType:              XmPIXMAP
 Ddd*manual_help*findBackward.labelPixmap:            find_backward
 Ddd*manual_help*findBackward.labelInsensitivePixmap: find_backward-xx
@@ -1636,7 +1621,7 @@ Ddd*manual_help*findBackward.tipString:	  \
 Ddd*manual_help*findBackward.documentationString:	\
 @rm Search the previous occurrence of LBL(()) in the manual
 
-Ddd*manual_help*findForward.labelString:  LBL_FIND_FORWARD
+Ddd*manual_help*findForward.labelString:  	    LBL_FIND_FORWARD
 Ddd*manual_help*findForward.labelType:              XmPIXMAP
 Ddd*manual_help*findForward.labelPixmap:            find_forward
 Ddd*manual_help*findForward.labelInsensitivePixmap: find_forward-xx
@@ -1667,14 +1652,10 @@ Ddd*license*form.borderWidth:		0
 Ddd*license*title.labelString:      	DDD License
 Ddd*license*title.alignment:	        XmALIGNMENT_BEGINNING
 
-Ddd*license*text.columns:	        80
 Ddd*license*text.rows:	      		25
 Ddd*license*text.wordWrap:	        on
 Ddd*license*text.scrollHorizontal:    	off
 Ddd*license*scrollBarDisplayPolicy:   	XmAS_NEEDED
-
-Ddd*license*textSW.width:		600
-Ddd*license*textSW.height:		320
 
 Ddd*license*helpString: \
 WIDGET([DDD] License)\n\
@@ -1691,14 +1672,10 @@ Ddd*news*form.borderWidth:		0
 Ddd*news*title.labelString:      	DDD News
 Ddd*news*title.alignment:	        XmALIGNMENT_BEGINNING
 
-Ddd*news*text.columns:	        	80
 Ddd*news*text.rows:	      		25
 Ddd*news*text.wordWrap:	        	on
 Ddd*news*text.scrollHorizontal:    	off
 Ddd*news*scrollBarDisplayPolicy:   	XmAS_NEEDED
-
-Ddd*news*textSW.width:			600
-Ddd*news*textSW.height:			320
 
 Ddd*news*helpString: \
 WIDGET([DDD] News)\n\
