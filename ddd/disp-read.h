@@ -83,6 +83,11 @@ bool is_up_cmd(const string& cmd);
 bool is_down_cmd(const string& cmd);
 
 // ***************************************************************************
+// true, wenn cmd Variablen-Wechsel zur Folge hat.
+// 
+bool is_set_cmd(const string& cmd);
+
+// ***************************************************************************
 // true, wenn cmd File-Wechsel zur Folge hat.
 // 
 bool is_file_cmd(const string& cmd, DebuggerType type);

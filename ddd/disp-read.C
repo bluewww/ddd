@@ -183,6 +183,17 @@ bool is_down_cmd (const string& cmd)
 
 // ***************************************************************************
 // 
+bool is_set_cmd (const string& cmd)
+{
+    static regex RXset_cmd(
+	"[ \t]*set\\( .*\\)?",
+	true);
+
+    return cmd.matches (RXset_cmd);
+}
+
+// ***************************************************************************
+// 
 bool is_file_cmd (const string& cmd, DebuggerType type)
 {
     static regex RXfile_cmd(

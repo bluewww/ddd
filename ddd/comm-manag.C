@@ -245,6 +245,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	cmd += '\n';
 	gdb_out(cmd);
 	_gdb_out(gdb->default_prompt());
+	_tty_out(gdb->default_prompt());
 	return;
     }
 
@@ -325,6 +326,11 @@ void user_cmdSUC (string cmd, Widget origin)
 	    plus_cmd_data->refresh_file  = true;
 	    break;
 	}
+    }
+    else if (is_set_cmd(cmd))
+    {
+	// Update displays
+	plus_cmd_data->refresh_disp    = true;
     }
     else if (is_lookup_cmd(cmd))
     {
