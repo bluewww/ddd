@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "7 May 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "27 May 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -98,7 +98,7 @@ but usually just
 .ad b
 .\"
 .\" ---------------
-.SH DESCRIPTION
+.SH "DESCRIPTION"
 .\" ---------------
 The purpose of a debugger such as \s-2@DDD@\s+2 is to allow you to see
 what is going on \*(lqinside\*(rq another program while it
@@ -2835,6 +2835,12 @@ for an \fIEmacs\fR editor running \fIemacsserver\fR:
 .br
 .sp
 .TP
+.B "lessTifHacks (\fPclass\fB LessTifHacks)"
+If \fBtrue\fR, enable some hacks to make \s-2@DDD@\s+2 run
+properly with LessTif.  The default value is \fBtrue\fR if
+\s-2@DDD@\s+2 was compiled with a LessTif version earlier than 1.0,
+and \fBfalse\fR, otherwise.
+.TP
 .B "listCoreCommand (\fPclass\fB listCoreCommand)"
 The commmand to list all core files on the remote host.  The string
 `\fB@MASK@\fR' is replaced by a file filter.  The default setting is:
@@ -3261,6 +3267,10 @@ inferior debugger as well.
 Invoke the inferior debugger directly on the remote host \fIhostname\fR.  See
 `\fBREMOTE DEBUGGING\fR', above.
 .TP
+.B \-\-lesstif-hacks
+Enable some hacks to make \s-2@DDD@\s+2 run properly with LessTif.
+See also the `\fBlessTifHacks\fR' resource, above.
+.TP
 .B \-\-license
 Show the \s-2@DDD@\s+2 license and exit.
 .TP
@@ -3290,6 +3300,10 @@ little terminal input/output, or for remote debugging.
 .B \-\-no\-glyphs
 Display the current execution position and breakpoints as text
 characters.  Do not use glyphs.
+.TP
+.B \-\-no-lesstif-hacks
+Disable hacks to make \s-2@DDD@\s+2 run properly with LessTif.
+See also the `\fBlessTifHacks\fR' resource, above.
 .TP
 .B \-\-no\-source\-window
 Do not create the source window upon start-up.
