@@ -268,7 +268,7 @@ static string gdbHelp(string command)
 	string& all_help = help_cache["<ALL>"];
 	if (all_help == NO_GDB_ANSWER || all_help == "")
 	{
-	    all_help = gdb_question("help", help_timeout, true);
+	    all_help = gdb_question("help", -1, true);
 	    if (all_help == NO_GDB_ANSWER)
 		return NO_GDB_ANSWER; // try again later
 	}
