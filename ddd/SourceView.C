@@ -3575,7 +3575,7 @@ void SourceView::clear_execution_position()
 
 
 void SourceView::_show_execution_position(string file, int line, 
-					  bool silent, bool stopped)
+					  bool silent, bool /* stopped */)
 {
     last_execution_file = file;
     last_execution_line = line;
@@ -3586,7 +3586,7 @@ void SourceView::_show_execution_position(string file, int line,
     if (!is_current_file(file) || line < 1 || line > line_count)
 	return;
 
-    add_position_to_history(file, line, stopped);
+    add_position_to_history(file, line, true);
 
     XmTextPosition pos = pos_of_line(line);
     int indent = indent_amount(source_text_w, pos);
@@ -3630,7 +3630,7 @@ void SourceView::_show_execution_position(string file, int line,
 }
 
 
-void SourceView::show_position (string position, bool silent)
+void SourceView::show_position(string position, bool silent)
 {
     string file_name = current_file_name;
 
@@ -3646,7 +3646,6 @@ void SourceView::show_position (string position, bool silent)
     bool force_reload = (line == 1);
     if (!is_current_file(file_name) || force_reload)
 	read_file(file_name, line, force_reload, silent);
-
 
     // Have window scroll to correct position
     if (is_current_file(file_name))
@@ -3930,6 +3929,8 @@ void SourceView::process_info_line_main(string& info_output)
 		show_position(pos_buffer.get_position());
 	    if (pos_buffer.pc_found())
 		show_pc(pos_buffer.get_pc());
+	    if (!pos_buffer.pos_found() && !pos_buffer.pc_found())
+		add_current_to_history();
 	}
 	break;
 
@@ -3984,6 +3985,8 @@ void SourceView::lookup(string s, bool silent)
 {
     if (s != "" && isspace(s[0]))
 	s = s.after(rxwhite);
+
+    undo_buffer.set_source("lookup");
 
     if (s == "")
     {
@@ -6464,6 +6467,7 @@ inline string jdb_thread()
     return gdb->prompt().before("[");
 }
 
+// Process `where' output
 void SourceView::process_where(string& where_output)
 {
     undo_buffer.add_where(where_output);
@@ -6507,6 +6511,7 @@ void SourceView::process_where(string& where_output)
     delete[] selected;
 }
 
+// Give a hint whether we're showing earlier state
 void SourceView::showing_earlier_state(bool set)
 {
 #if 0
@@ -6538,7 +6543,8 @@ void SourceView::showing_earlier_state(bool set)
     update_glyphs();
 }
 
-void SourceView::process_frame (string& frame_output)
+// Process `frame' (or `up'/`down') output
+void SourceView::process_frame(string& frame_output)
 {
     if (frame_output != "" 
 	&& (frame_output[0] == '#' || gdb->type() != GDB))
@@ -6575,6 +6581,19 @@ void SourceView::process_frame (string& frame_output)
 	if (gdb->type() == DBX || gdb->type() == JDB)
 	    frame--;
 
+	process_frame(frame);
+    }
+    else
+    {
+	process_frame(-1);	// No frame
+    }
+}
+
+// Same, but accept a frame number
+void SourceView::process_frame(int frame)
+{
+    if (frame >= 0)
+    {
 	at_lowest_frame = (frame == 0);
 
 	if (current_frame < 0)
@@ -6596,7 +6615,7 @@ void SourceView::process_frame (string& frame_output)
 	    undo_buffer.add_command(c, true);
 
 	    // Save state
-	    undo_buffer.add_frame(frame_output);
+	    undo_buffer.add_frame(itostring(frame));
 	}
 
 	int count         = 0;

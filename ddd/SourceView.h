@@ -627,6 +627,7 @@ public:
 
     // Handle 'frame' information
     static void process_frame           (string& frame_output);
+    static void process_frame           (int frame_nr);
 
     // Handle 'info register' information
     static void process_registers       (string& info_register_output);
