@@ -618,6 +618,7 @@ string VSEFlags::explain(bool vsl_prefix_required)
 	    default:
 		// This can't happen.
 		assert(1 + 1 == 3);
+		::abort();
 		break;
 	}
 
