@@ -1462,7 +1462,7 @@ bool save_options(unsigned long flags)
     os << string_app_value(XtNgdbSettings, gdb_settings) << "\n";
     os << string_app_value(XtNdbxSettings, dbx_settings) << "\n";
     os << string_app_value(XtNxdbSettings, xdb_settings) << "\n";
-
+    os << string_app_value(XtNjdbSettings, jdb_settings) << "\n";
 
     os << "\n! Preferences\n";
     os << bool_app_value(XtNfindWordsOnly,
