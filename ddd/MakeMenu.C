@@ -745,9 +745,10 @@ Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[],
     ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
 
-    XtSetArg(args[arg], XmNisHomogeneous, True); arg++;
-    XtSetArg(args[arg], XmNentryClass, xmToggleButtonWidgetClass); arg++;
-    XtSetArg(args[arg], XmNradioBehavior, True); arg++;
+    XtSetArg(args[arg], XmNisHomogeneous, True);                      arg++;
+    XtSetArg(args[arg], XmNentryClass,    xmToggleButtonWidgetClass); arg++;
+    XtSetArg(args[arg], XmNradioBehavior, True);                      arg++;
+    XtSetArg(args[arg], XmNpacking,       XmPACK_TIGHT);              arg++;
 
     for (Cardinal i = 0; i < _arg; i++)
 	args[arg++] = _args[i];
