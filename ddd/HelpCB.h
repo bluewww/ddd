@@ -33,6 +33,24 @@
 #include "MString.h"
 #include "bool.h"
 
+// Resources
+// Text to be displayed in context-sensitive help (via HelpOnContextCB)
+#define XtNhelpString "helpString"
+#define XtCHelpString "HelpString"
+
+// Text to be displayed in button tips (via InstallTips)
+#define XtNtipString  "tipString"
+#define XtCTipString  "TipString"
+
+// Text to be displayed in the status line (via DisplayDocumentation)
+#define XtNdocumentationString  "documentationString"
+#define XtCDocumentationString  "DocumentationString"
+
+// If true, give widget names in context-sensitive help
+#define XtNhelpShowTitle "helpShowTitle"
+#define XtCHelpShowTitle "HelpShowTitle"
+
+
 // Select widget and call help on context.
 // May be used in a menu entry "Help On Context".
 extern void HelpOnContextCB(Widget widget, XtPointer client_data, 
@@ -82,17 +100,23 @@ extern void TextHelpCB(Widget widget, XtPointer client_data,
 extern void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			       XtPointer call_data);
 
-// Install toolbar tips
+// (Un)install toolbar tips
 extern void InstallTips(Widget w, bool install = true);
+
+// Enable or disable tips
+extern void EnableTips(bool enable = true);
 
 
 // Data
 
-// Create a help text if the `help' resource is not found
+// Create a help text if the `help' resource is empty
 extern MString (*DefaultHelpText)(Widget widget);
 
-// Create a help text if the `tip' resource is not found
+// Create a help text if the `tip' resource is empty
 extern MString (*DefaultTipText)(Widget widget);
+
+// Hook for displaying documentation
+extern void (*DisplayDocumentation)(const MString& doc);
 
 // Pixmap to display at ``help on version''
 extern Pixmap (*helpOnVersionPixmapProc)(Widget w);

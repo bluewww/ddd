@@ -386,7 +386,6 @@ void dddToggleButtonTipsCB (Widget, XtPointer, XtPointer call_data)
     else
 	set_status("Button tips disabled.");
 
-    update_button_tips();
     update_options();
     options_changed = true;
 }
@@ -405,6 +404,9 @@ static void post_startup_warning(Widget /* w */)
 #endif
 }
 
+static string next_ddd_will_start_with = 
+    "Next " DDD_NAME " invocation will start-up with ";
+
 void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = Boolean(client_data != 0);
@@ -413,11 +415,25 @@ void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
     app_data.separate_source_window = state;
 
     if (state)
-	set_status("Next " DDD_NAME
-		   " invocation will start-up with separate windows.");
+	set_status(next_ddd_will_start_with + "separate windows.");
     else
-	set_status("Next " DDD_NAME 
-		   " invocation will start-up with one single window.");
+	set_status(next_ddd_will_start_with + "one single window.");
+
+    update_options();
+    post_startup_warning(w);
+    startup_options_changed = options_changed = true;
+}
+
+void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
+{
+    Boolean state = Boolean(client_data != 0);
+
+    app_data.status_at_bottom = state;
+
+    if (state)
+	set_status(next_ddd_will_start_with + "status at bottom.");
+    else
+	set_status(next_ddd_will_start_with + "status at top.");
 
     update_options();
     post_startup_warning(w);
@@ -665,6 +681,8 @@ void save_options(Widget origin)
 			 app_data.group_iconify) << "\n";
     os << bool_app_value(XtNbuttonTips,
 			 app_data.button_tips) << "\n";
+    os << bool_app_value(XtNstatusAtBottom,
+			 app_data.status_at_bottom) << "\n";
     os << bool_app_value(XtNseparateExecWindow,
 			 app_data.separate_exec_window) << "\n";
     if (!app_data.separate_source_window && !app_data.separate_data_window)

@@ -256,6 +256,9 @@ static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer);
 // User emergencies (Ctrl-C)
 static void check_emergencies();
 
+// Create status line
+static void create_status(Widget parent);
+
 //-----------------------------------------------------------------------------
 // Xt Stuff
 //-----------------------------------------------------------------------------
@@ -323,6 +326,18 @@ static XrmOptionDescRec options[] = {
 
 { "--no-exec-window",       XtNseparateExecWindow,   XrmoptionNoArg, S_false },
 { "-no-exec-window",        XtNseparateExecWindow,   XrmoptionNoArg, S_false },
+
+{ "--button-tips",          XtNbuttonTips,           XrmoptionNoArg, S_true },
+{ "-button-tips",           XtNbuttonTips,           XrmoptionNoArg, S_true },
+
+{ "--no-button-tips",       XtNbuttonTips,           XrmoptionNoArg, S_false },
+{ "-no-button-tips",        XtNbuttonTips,           XrmoptionNoArg, S_false },
+
+{ "--status-at-bottom",     XtNstatusAtBottom,       XrmoptionNoArg, S_true },
+{ "-status-at-bottom",      XtNstatusAtBottom,       XrmoptionNoArg, S_true },
+
+{ "--status-at-top",        XtNstatusAtBottom,       XrmoptionNoArg, S_false },
+{ "-status-at-top",         XtNstatusAtBottom,       XrmoptionNoArg, S_false },
 
 { "--panned-graph-editor",  XtNpannedGraphEditor,    XrmoptionNoArg, S_true },
 { "-panned-graph-editor",   XtNpannedGraphEditor,    XrmoptionNoArg, S_true },
@@ -653,13 +668,23 @@ static MMDesc data_preferences_menu[] =
 // Startup preferences
 static Widget set_separate_windows_w;
 static Widget set_attached_windows_w;
-
 static MMDesc window_mode_menu [] = 
 {
     { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(True) },
       NULL, &set_separate_windows_w },
     { "attached",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(False) },
       NULL, &set_attached_windows_w },
+    MMEnd
+};
+
+static Widget set_status_bottom_w;
+static Widget set_status_top_w;
+static MMDesc status_position_menu [] = 
+{
+    { "bottom",  MMToggle, { dddSetStatusAtBottomCB, XtPointer(True) },
+      NULL, &set_status_bottom_w },
+    { "top",     MMToggle, { dddSetStatusAtBottomCB, XtPointer(False) },
+      NULL, &set_status_top_w },
     MMEnd
 };
 
@@ -704,6 +729,7 @@ static MMDesc debugger_menu [] =
 static MMDesc startup_preferences_menu [] =
 {
     { "windows",         MMRadioPanel, MMNoCB, window_mode_menu },
+    { "statusPosition",  MMRadioPanel, MMNoCB, status_position_menu },
     { "keyboardFocus",   MMRadioPanel, MMNoCB, keyboard_focus_menu },
     { "dataScrolling",   MMRadioPanel, MMNoCB, data_scrolling_menu },
     { "debugger",        MMRadioPanel, MMNoCB, debugger_menu },
@@ -1236,23 +1262,9 @@ int main(int argc, char *argv[])
 				main_window,
 				NULL));
 
-    if (!app_data.separate_source_window)
-    {
-	status_w = verify(XmCreateLabel(paned_work_w, "status_w", NULL, 0));
-	XtManageChild(status_w);
-
-	XtWidgetGeometry size;
-	size.request_mode = CWHeight;
-	XtQueryGeometry(status_w, NULL, &size);
-	unsigned char unit_type;
-	XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
-	int new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
-					size.height, unit_type);
-	XtVaSetValues(status_w,
-		      XmNpaneMaximum, new_height,
-		      XmNpaneMinimum, new_height,
-		      NULL);
-    }
+    // Status line
+    if (!app_data.separate_source_window && !app_data.status_at_bottom)
+	create_status(paned_work_w);
 
     // Graph area
     Widget data_disp_parent = paned_work_w;
@@ -1311,7 +1323,7 @@ int main(int argc, char *argv[])
 		       NULL);
     }
 
-    // source_area (Befehle mit PushButton an gdb) ----------------------------
+    // Data buttons (optional)
     data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
 				  app_data.data_buttons);
 
@@ -1354,21 +1366,9 @@ int main(int argc, char *argv[])
 					    source_main_window_w,
 					    NULL));
 
-	status_w = 
-	    verify(XmCreateLabel(source_view_parent, "status_w", NULL, 0));
-	XtManageChild(status_w);
-
-	XtWidgetGeometry size;
-	size.request_mode = CWHeight;
-	XtQueryGeometry(status_w, NULL, &size);
-	unsigned char unit_type;
-	XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
-	int new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
-					size.height, unit_type);
-	XtVaSetValues(status_w,
-		      XmNpaneMaximum, new_height,
-		      XmNpaneMinimum, new_height,
-		      NULL);
+	// Status line
+	if (!app_data.status_at_bottom)
+	    create_status(source_view_parent);
     }
 
     source_view = new SourceView(app_context,
@@ -1403,17 +1403,22 @@ int main(int argc, char *argv[])
     size.request_mode = CWHeight;
     XtQueryGeometry(arg_cmd_w, NULL, &size);
     unsigned char unit_type;
-    XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
-    int new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
+    XtVaGetValues(arg_cmd_w, XmNunitType, &unit_type, NULL);
+    int new_height = XmConvertUnits(arg_cmd_w, XmVERTICAL, XmPIXELS, 
 				    size.height, unit_type);
     XtVaSetValues(arg_cmd_w,
 		  XmNpaneMaximum, new_height,
 		  XmNpaneMinimum, new_height,
 		  NULL);
 
-    // source_area (Befehle mit PushButton an gdb) ----------------------------
+    // Source buttons (optional)
     source_buttons_w = make_buttons(source_view_parent, "source_buttons", 
 				    app_data.source_buttons);
+
+    // Status line
+    if (app_data.separate_source_window && app_data.status_at_bottom)
+	create_status(source_view_parent);
+
 
     // GDB window
     gdb_w = verify(XmCreateScrolledText(paned_work_w,
@@ -1438,9 +1443,13 @@ int main(int argc, char *argv[])
     XmTextSetEditable(gdb_w, false);
 #endif
 
-    // source_area (Befehle mit PushButton an gdb)
+    // Console buttons (optional)
     console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
 				     app_data.console_buttons);
+
+    // Status line
+    if (app_data.status_at_bottom && !app_data.separate_source_window)
+	create_status(source_view_parent);
 
     // Paned Window is done
     XtManageChild (paned_work_w);
@@ -1634,6 +1643,10 @@ int main(int argc, char *argv[])
 	Widget tool_shell_parent = 
 	    source_view_shell ? source_view_shell : command_shell;
 	arg = 0;
+	XtSetArg(args[arg], XmNx, 
+		 WidthOfScreen(XtScreen(tool_shell_parent)) + 1);  arg++;
+	XtSetArg(args[arg], XmNy,
+		 HeightOfScreen(XtScreen(tool_shell_parent)) + 1); arg++;
 	tool_shell = 
 	    verify(XmCreateDialogShell(tool_shell_parent, 
 				       "tool_shell", args, arg));
@@ -1757,10 +1770,10 @@ static void ddd_check_version()
 
 
 //-----------------------------------------------------------------------------
-// (Un)install button tips
+// Install button tips
 //-----------------------------------------------------------------------------
 
-void update_button_tips()
+static void install_button_tips()
 {
     const WidgetArray& shells = Delay::shells();
     for (int i = 0; i < shells.size(); i++)
@@ -1769,7 +1782,7 @@ void update_button_tips()
 	while (shell && !XmIsVendorShell(shell))
 	    shell = XtParent(shell);
 	if (shell)
-	    InstallTips(shell, app_data.button_tips);
+	    InstallTips(shell, true);
     }
 }
 
@@ -1780,7 +1793,7 @@ void update_button_tips()
 static Boolean ddd_setup_done(XtPointer)
 {
     ddd_check_version();
-    update_button_tips();
+    install_button_tips();
 
     main_loop_entered = true;
     return True;		// Remove from the list of work procs
@@ -1905,6 +1918,11 @@ void update_options()
     XtVaSetValues(set_scrolling_scrollbars_w,
 		  XmNset, !app_data.panned_graph_editor, NULL);
 
+    XtVaSetValues(set_status_bottom_w,
+		  XmNset, app_data.status_at_bottom, NULL);
+    XtVaSetValues(set_status_top_w,
+		  XmNset, !app_data.status_at_bottom, NULL);
+
     Boolean separate = 
 	app_data.separate_data_window || app_data.separate_source_window;
     XtVaSetValues(set_separate_windows_w,
@@ -1937,6 +1955,8 @@ void update_options()
     source_view->set_display_glyphs(app_data.display_glyphs);
     source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
+
+    EnableTips(app_data.button_tips);
 }
 
 //-----------------------------------------------------------------------------
@@ -2089,6 +2109,28 @@ static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer)
     raise_shell(preferences_dialog);
 }
 
+
+//-----------------------------------------------------------------------------
+// Create status line
+//-----------------------------------------------------------------------------
+
+static void create_status(Widget parent)
+{
+    status_w = verify(XmCreateLabel(parent, "status_w", NULL, 0));
+    XtManageChild(status_w);
+
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight;
+    XtQueryGeometry(status_w, NULL, &size);
+    unsigned char unit_type;
+    XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
+    int new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
+				    size.height, unit_type);
+    XtVaSetValues(status_w,
+		  XmNpaneMaximum, new_height,
+		  XmNpaneMinimum, new_height,
+		  NULL);
+}
 
 //-----------------------------------------------------------------------------
 // Helpers

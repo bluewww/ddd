@@ -1371,8 +1371,8 @@ to scroll the window in the arrow direction.\n\
 \n\
 Drag the slider with the @bf left mouse button @rm to select the\n\
 visible part of the window.
-Ddd*XmScrollBar.tipString: \
-@rm Scroll window
+! Ddd*XmScrollBar.tipString: \
+! @rm Scroll window
 
 Ddd*XmSash.helpString: \
 @rm This is a @sl Paned Window Sash @rm.\n\
@@ -1413,9 +1413,10 @@ Ddd*menubar.helpString:		\
 @tt \267 @bf Data @rm - edit displays.\n\
 @tt \267 @bf Help @rm - on-line help and version information.
 
-
+! File menu
 Ddd*menubar.file.labelString:		File
-Ddd*menubar.file.mnemonic:			F
+Ddd*menubar.file*documentationString:	@rm File menu
+Ddd*menubar.file.mnemonic:		F
 Ddd*menubar.file*helpString:	\
 \
 @rm This is the @sl File menu@rm.\n\
@@ -1435,41 +1436,59 @@ Ddd*menubar*fileMenu.open_file.labelString: Open Program...
 Ddd*menubar*fileMenu.open_file.mnemonic:    O
 ! Ddd*menubar*fileMenu.open_file.accelerator:      Meta<Key>O
 ! Ddd*menubar*fileMenu.open_file.acceleratorText:  Alt+O
+Ddd*menubar*fileMenu.open_file.documentationString:   \
+@rm Open a program to be debugged
 
 Ddd*menubar*fileMenu.open_core.labelString: Open Core Dump...
 Ddd*menubar*fileMenu.open_core.mnemonic:    D
+Ddd*menubar*fileMenu.open_core.documentationString:   \
+@rm Open a file as core dump for examining memory and registers
 
 Ddd*menubar*fileMenu.open_source.labelString: Open Source...
 Ddd*menubar*fileMenu.open_source.mnemonic:    S
+Ddd*menubar*fileMenu.open_source.documentationString:   \
+@rm Open a source file in the source window
 
 Ddd*menubar*fileMenu.print.labelString:	 Print Graph...
 Ddd*menubar*fileMenu.print.mnemonic:	 P
 ! Ddd*menubar*fileMenu.print.accelerator:      ~Shift Meta<Key>P
 ! Ddd*menubar*fileMenu.print.acceleratorText:  Alt+P
+Ddd*menubar*fileMenu.print.documentationString:   \
+@rm Print the contents of the data display
 
 Ddd*menubar*fileMenu.quickPrint.labelString: Print Again
 Ddd*menubar*fileMenu.quickPrint.mnemonic: A
 ! Ddd*menubar*fileMenu.quickPrint.accelerator:      Shift Meta<Key>P
 ! Ddd*menubar*fileMenu.quickPrint.acceleratorText:  Alt+Shift+P
+Ddd*menubar*fileMenu.quickPrint.documentationString:   \
+@rm Print the contents of the data display, using previous settings
 
 Ddd*menubar*fileMenu.close.labelString:	 Close
 Ddd*menubar*fileMenu.close.mnemonic:	 C
 ! Ddd*menubar*fileMenu.close.accelerator:      Meta<Key>W
 ! Ddd*menubar*fileMenu.close.acceleratorText:  Alt+W
+Ddd*menubar*fileMenu.close.documentationString:   \
+@rm Close the current window
 
 Ddd*menubar*fileMenu.restart.labelString: Restart
 Ddd*menubar*fileMenu.restart.mnemonic:	 R
 Ddd*menubar*fileMenu.restart.accelerator:      Shift Meta<Key>Q
 Ddd*menubar*fileMenu.restart.acceleratorText:  Alt+Shift+Q
+Ddd*menubar*fileMenu.restart.documentationString:   \
+@rm Close all windows and restart @DDD@ from scratch
 
 Ddd*menubar*fileMenu.exit.labelString:	 Exit
 Ddd*menubar*fileMenu.exit.mnemonic:	 x
 Ddd*menubar*fileMenu.exit.accelerator:	    ~Shift Meta<Key>Q
 Ddd*menubar*fileMenu.exit.acceleratorText:  Alt+Q
+Ddd*menubar*fileMenu.exit.documentationString:   \
+@rm Close all windows and exit @DDD@
 
 
+! Edit menu
 Ddd*menubar.edit.labelString:		Edit
 Ddd*menubar.edit.mnemonic:		E
+Ddd*menubar.edit*documentationString:	@rm Edit menu
 Ddd*menubar.edit*helpString:	\
 \
 @rm This is the @sl Edit menu@rm.\n\
@@ -1487,30 +1506,42 @@ Ddd*editMenu.cut.mnemonic:		t
 Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
 ! *editMenu.cut.accelerator:		<Key>osfCut
 Ddd*editMenu.cut.acceleratorText:	Shift+Del
+Ddd*editMenu.cut.documentationString: \
+@rm Cut the selection and put it on the clipboard
 
 Ddd*editMenu.copy.labelString:		Copy
 Ddd*editMenu.copy.mnemonic:		C
 Ddd*editMenu.copy.accelerator:		Ctrl<Key>Insert
 ! *editMenu.copy.accelerator:		<Key>osfPrimaryCopy
 Ddd*editMenu.copy.acceleratorText:	Ctrl+Ins
+Ddd*editMenu.copy.documentationString: \
+@rm Copy the selection and put it on the clipboard
 
 Ddd*editMenu.paste.labelString:		Paste
 Ddd*editMenu.paste.mnemonic:		P
 Ddd*editMenu.paste.accelerator:		Shift<Key>Insert
 ! *editMenu.paste.accelerator:		<Key>osfPaste
 Ddd*editMenu.paste.acceleratorText:	Shift+Ins
+Ddd*editMenu.paste.documentationString: \
+@rm Paste clipboard contents
 
 Ddd*editMenu.clear.labelString:		Clear
 Ddd*editMenu.clear.mnemonic:		e
 ! Ddd*editMenu.clear.accelerator:	~Shift Ctrl<Key>U
 Ddd*editMenu.clear.acceleratorText:	Ctrl+U
+Ddd*editMenu.clear.documentationString: \
+@rm Clear current selection
 
 Ddd*editMenu.delete.labelString:	Delete
 Ddd*editMenu.delete.mnemonic:		D
+Ddd*editMenu.delete.documentationString: \
+@rm Delete current selection
 
-Ddd*menubar.options.labelString:	Options
-Ddd*menubar.options.mnemonic:		O
 
+! Options menu
+Ddd*menubar.options.labelString:	 Options
+Ddd*menubar.options.mnemonic:		 O
+Ddd*menubar.options*documentationString: @rm Options menu
 
 Ddd*menubar.options*helpString:	\
 @rm This is the @sl Options @rm menu.\n\
@@ -1531,33 +1562,47 @@ the current function is automatically disassembled.\n\
 @bf Save Options @rm saves options, preferences, and debugger settings\n\
 for the next @DDD@ invocation.
 
+Ddd*optionsMenu.preferences.labelString:		Preferences...
+Ddd*optionsMenu.preferences.mnemonic:			P
+Ddd*optionsMenu.preferences.documentationString:\
+@rm Modify @DDD@ configuration
+
+Ddd*optionsMenu.settings.labelString:			Settings...
+Ddd*optionsMenu.settings.mnemonic:			S
+Ddd*optionsMenu.settings.documentationString:\
+@rm Modify configuration of the inferior debugger
+
 Ddd*optionsMenu.separateExecWindow.labelString:		Run in Execution Window
 Ddd*optionsMenu.separateExecWindow.mnemonic:		E
 Ddd*optionsMenu*separateExecWindow.accelerator:		Ctrl<Key>X
 Ddd*optionsMenu*separateExecWindow.acceleratorText:	Ctrl+X
+Ddd*optionsMenu.separateExecWindow.documentationString:\
+@rm Run debugged program in separate execution window or not
 
 Ddd*optionsMenu.findWordsOnly.labelString:		Find Words Only
 Ddd*optionsMenu.findWordsOnly.mnemonic:			W
 Ddd*optionsMenu*findWordsOnly.accelerator:		Ctrl<Key>W
 Ddd*optionsMenu*findWordsOnly.acceleratorText:		Ctrl+W
+Ddd*optionsMenu.findWordsOnly.documentationString:\
+@rm Find complete words or arbitrary occurrences
 
 Ddd*optionsMenu.disassemble.labelString:		Display Machine Code
 Ddd*optionsMenu.disassemble.mnemonic:			M
 Ddd*optionsMenu*disassemble.accelerator:		Ctrl<Key>M
 Ddd*optionsMenu*disassemble.acceleratorText:		Ctrl+M
+Ddd*optionsMenu.disassemble.documentationString:\
+@rm Show or hide assembler window
 
-Ddd*optionsMenu.preferences.labelString:	Preferences...
-Ddd*optionsMenu.preferences.mnemonic:		P
-
-Ddd*optionsMenu.settings.labelString:		Settings...
-Ddd*optionsMenu.settings.mnemonic:		S
-
-Ddd*optionsMenu.saveOptions.labelString:	Save Options
-Ddd*optionsMenu.saveOptions.mnemonic:		O
+Ddd*optionsMenu.saveOptions.labelString:		Save Options
+Ddd*optionsMenu.saveOptions.mnemonic:			O
+Ddd*optionsMenu.saveOptions.documentationString:\
+@rm Save all options for the next @DDD@ invocation
 
 
+! Windows menu
 Ddd*menubar.view.labelString:		Windows
 Ddd*menubar.view.mnemonic:		W
+Ddd*menubar.view*documentationString:	@rm Windows menu
 Ddd*menubar.view.helpString:	\
 \
 @rm This is the @sl Windows menu@rm.\n\
@@ -1570,18 +1615,34 @@ Ddd*menubar.view.helpString:	\
 
 Ddd*viewMenu.tool.labelString:			Command Tool...
 Ddd*viewMenu.tool.mnemonic:			T
+Ddd*viewMenu.tool.documentationString: \
+@rm Open the command tool
+
 Ddd*viewMenu.console.labelString:		Debugger Console...
 Ddd*viewMenu.console.mnemonic:			C
+Ddd*viewMenu.console.documentationString: \
+@rm Open the debugger console
+
 Ddd*viewMenu.source.labelString:		Program Source...
 Ddd*viewMenu.source.mnemonic:			S
+Ddd*viewMenu.source.documentationString: \
+@rm Open the source window
+
 Ddd*viewMenu.data.labelString:			Program Data...
 Ddd*viewMenu.data.mnemonic:			D
+Ddd*viewMenu.data.documentationString: \
+@rm Open the data window
+
 Ddd*viewMenu.exec.labelString:			Program Execution...
 Ddd*viewMenu.exec.mnemonic:			E
+Ddd*viewMenu.exec.documentationString: \
+@rm Open the program execution window
 
 
+! Program menu
 Ddd*menubar.program.labelString:		Program
 Ddd*menubar.program.mnemonic:			P
+Ddd*menubar.program*documentationString:	@rm Program menu
 Ddd*menubar.program*helpString:	\
 \
 @rm This is the @sl Program menu@rm.\n\
@@ -1607,60 +1668,77 @@ Ddd*menubar*programMenu.run.labelString:	   Run...
 Ddd*menubar*programMenu.run.mnemonic:		   R
 Ddd*menubar*programMenu.run.accelerator:	   Ctrl ~Shift<Key>Z
 Ddd*menubar*programMenu.run.acceleratorText:	   Ctrl+Z
+Ddd*menubar*programMenu.run.documentationString: \
+@rm Start debugged program.  You may specify arguments to give it.
 
 Ddd*menubar*programMenu.run_again.labelString:	   Run Again
 Ddd*menubar*programMenu.run_again.mnemonic:	   A
 Ddd*menubar*programMenu.run_again.accelerator:	   Ctrl Shift<Key>Z
 Ddd*menubar*programMenu.run_again.acceleratorText: Ctrl+Shift+Z
+Ddd*menubar*programMenu.run_again.documentationString: \
+@rm Restart debugged program, using the previous arguments.
 
 Ddd*menubar*programMenu.step.labelString:	   Step
 Ddd*menubar*programMenu.step.mnemonic:		   S
 Ddd*menubar*programMenu.step.accelerator:	   Ctrl ~Shift<Key>I
 Ddd*menubar*programMenu.step.acceleratorText:	   Ctrl+I
+Ddd*menubar*programMenu.step.documentationString:
 
 Ddd*menubar*programMenu.stepi.labelString:	   Step Instruction
 Ddd*menubar*programMenu.stepi.mnemonic:		   I
 Ddd*menubar*programMenu.stepi.accelerator:	   Ctrl Shift<Key>I
 Ddd*menubar*programMenu.stepi.acceleratorText:	   Ctrl+Shift+I
+Ddd*menubar*programMenu.stepi.documentationString:
 
 Ddd*menubar*programMenu.next.labelString:	   Next
 Ddd*menubar*programMenu.next.mnemonic:		   N
 Ddd*menubar*programMenu.next.accelerator:	   Ctrl ~Shift<Key>J
 Ddd*menubar*programMenu.next.acceleratorText:	   Ctrl+J
+Ddd*menubar*programMenu.next.documentationString:
 
 Ddd*menubar*programMenu.nexti.labelString:	   Next Instruction
 Ddd*menubar*programMenu.nexti.mnemonic:		   e
 Ddd*menubar*programMenu.nexti.accelerator:	   Ctrl Shift<Key>J
 Ddd*menubar*programMenu.nexti.acceleratorText:	   Ctrl+Shift+J
+Ddd*menubar*programMenu.nexti.documentationString:
 
 Ddd*menubar*programMenu.cont.labelString:	   Continue
 Ddd*menubar*programMenu.cont.mnemonic:		   C
 Ddd*menubar*programMenu.cont.accelerator:	   Ctrl<Key>O
 Ddd*menubar*programMenu.cont.acceleratorText:	   Ctrl+O
+Ddd*menubar*programMenu.cont.documentationString:
 
 Ddd*menubar*programMenu.finish.labelString:	   Finish
 Ddd*menubar*programMenu.finish.mnemonic:	   F
 Ddd*menubar*programMenu.finish.accelerator:	   Ctrl<Key>Return
 Ddd*menubar*programMenu.finish.acceleratorText:	   Ctrl+Return
+Ddd*menubar*programMenu.finish.documentationString:
 
 Ddd*menubar*programMenu.kill.labelString:	   Kill
 Ddd*menubar*programMenu.kill.mnemonic:		   K
 Ddd*menubar*programMenu.kill.accelerator:	   Ctrl Shift<Key>K
 Ddd*menubar*programMenu.kill.acceleratorText:	   Ctrl+Shift+K
+Ddd*menubar*programMenu.kill.documentationString:
 
 Ddd*menubar*programMenu.break.labelString:	   Break
 Ddd*menubar*programMenu.break.mnemonic:		   B
 Ddd*menubar*programMenu.break.accelerator:	   Ctrl<Key>C
 Ddd*menubar*programMenu.break.acceleratorText:	   Ctrl+C
+Ddd*menubar*programMenu.break.documentationString: \
+@rm Interrupt program (or current debugger command)
 
 Ddd*menubar*programMenu.quit.labelString:	   Quit
 Ddd*menubar*programMenu.quit.mnemonic:		   Q
 Ddd*menubar*programMenu.quit.accelerator:	   Ctrl<Key>\\ 
 Ddd*menubar*programMenu.quit.acceleratorText:	   Ctrl+\\ 
+Ddd*menubar*programMenu.quit.documentationString: \
+@rm Abort program (or current debugger command)
 
 
+! Commands
 Ddd*menubar.commands.labelString:	Commands
 Ddd*menubar.commands.mnemonic:		C
+Ddd*menubar.commands*documentationString: @rm Commands menu
 Ddd*menubar.commands*helpString:	\
 \
 @rm This is the @sl Commands menu@rm.\n\
@@ -1681,50 +1759,71 @@ Ddd*menubar.commands*helpString:	\
 
 Ddd*commandsMenu.history.labelString:	        Command History...
 Ddd*commandsMenu.history.mnemonic:	        H
+Ddd*commandsMenu.history.documentationString: \
+@rm Show previous commands
 
 Ddd*commandsMenu.prev.labelString:	        Previous
 Ddd*commandsMenu.prev.mnemonic:		        P
 ! *commandsMenu.prev.accelerator:	        Ctrl<Key>P
 Ddd*commandsMenu.prev.acceleratorText:	        Ctrl+P
+Ddd*commandsMenu.prev.documentationString: \
+@rm Get previous command
 
 Ddd*commandsMenu.next.labelString:	        Next
 Ddd*commandsMenu.next.mnemonic:		        N
 ! *commandsMenu.next.accelerator:	        Ctrl<Key>N
 Ddd*commandsMenu.next.acceleratorText:	        Ctrl+N
+Ddd*commandsMenu.next.documentationString: \
+@rm Get next command
 
 Ddd*commandsMenu.complete.labelString:	        Complete
 Ddd*commandsMenu.complete.mnemonic:	        C
 ! *commandsMenu.complete.accelerator:	        None<Key>Tab
 ! *commandsMenu.complete.accelerator:	        Ctrl<Key>I
 Ddd*commandsMenu.complete.acceleratorText:	Tab
+Ddd*commandsMenu.complete.documentationString: \
+@rm Complete current command
 
 Ddd*commandsMenu.apply.labelString:	        Apply
 Ddd*commandsMenu.apply.mnemonic:	        A
 ! *commandsMenu.apply.accelerator:	        None<Key>Return
 Ddd*commandsMenu.apply.acceleratorText:         Return
+Ddd*commandsMenu.apply.documentationString: \
+@rm Execute current command
 
 Ddd*commandsMenu.isearch_prev.labelString:	Search Previous
 Ddd*commandsMenu.isearch_prev.mnemonic:	        r
 Ddd*commandsMenu.isearch_prev.accelerator:	Ctrl<Key>R
 Ddd*commandsMenu.isearch_prev.acceleratorText:  Ctrl+R
+Ddd*commandsMenu.isearch_prev.documentationString: \
+@rm Do incremental search forward in command history
 
 Ddd*commandsMenu.isearch_next.labelString:	Search Next
 Ddd*commandsMenu.isearch_next.mnemonic:	        S
 Ddd*commandsMenu.isearch_next.accelerator:	Ctrl<Key>S
 Ddd*commandsMenu.isearch_next.acceleratorText:  Ctrl+S
+Ddd*commandsMenu.isearch_next.documentationString: \
+@rm Do incremental search backward in command history
 
 Ddd*commandsMenu.clear_line.labelString:        Clear Line
 Ddd*commandsMenu.clear_line.mnemonic:	        L
 ! *commandsMenu.clear_line.accelerator:	        Ctrl<Key>U
 Ddd*commandsMenu.clear_line.acceleratorText:    Ctrl+U
+Ddd*commandsMenu.clear_line.documentationString: \
+@rm Clear current command line
 
 Ddd*commandsMenu.clear_window.labelString:      Clear Window
 Ddd*commandsMenu.clear_window.mnemonic:	        W
 Ddd*commandsMenu.clear_window.accelerator:      Shift Ctrl<Key>U
 Ddd*commandsMenu.clear_window.acceleratorText:  Ctrl+Shift+U
+Ddd*commandsMenu.clear_window.documentationString: \
+@rm Clear all before last debugger prompt
 
+
+! Stack
 Ddd*menubar.stack.labelString:		Stack
 Ddd*menubar.stack.mnemonic:		t
+Ddd*menubar.stack*documentationString:  @rm Stack menu
 Ddd*menubar.stack.helpString:	\
 \
 @rm This is the @sl Stack menu@rm.\n\
@@ -1738,24 +1837,34 @@ where it is.\n\
 
 Ddd*stackMenu.stack.labelString:	Backtrace...
 Ddd*stackMenu.stack.mnemonic:		B
+Ddd*stackMenu.stack.documentationString: \
+@rm Give a summary of how the debugged program got where it is
 
 Ddd*stackMenu.registers.labelString:	Registers...
 Ddd*stackMenu.registers.mnemonic:	R
+Ddd*stackMenu.registers.documentationString: \
+@rm Show registers and their contents
 
 Ddd*stackMenu.up.labelString:		Up
 Ddd*stackMenu.up.mnemonic:		U
 Ddd*stackMenu.up.accelerator:		Ctrl<Key>Up
 Ddd*stackMenu.up.acceleratorText:	Ctrl+Up
+Ddd*stackMenu.up.documentationString: \
+@rm Show the function that called the current one
 
 Ddd*stackMenu.down.labelString:		Down
 Ddd*stackMenu.down.mnemonic:		D
 Ddd*stackMenu.down.accelerator:		Ctrl<Key>Down
 Ddd*stackMenu.down.acceleratorText:	Ctrl+Down
+Ddd*stackMenu.down.documentationString: \
+@rm Show the function that was called the current one
 
 
 
+! Source menu
 Ddd*menubar.source.labelString:		Source
 Ddd*menubar.source.mnemonic:		S
+Ddd*menubar.source*documentationString: @rm Source menu
 Ddd*menubar.source.helpString:	\
 \
 @rm This is the @sl Source menu@rm.\n\
@@ -1769,31 +1878,42 @@ Ddd*menubar.source.helpString:	\
 
 Ddd*sourceMenu.breakpoints.labelString:	Edit Breakpoints...
 Ddd*sourceMenu.breakpoints.mnemonic:	B
+Ddd*sourceMenu.breakpoints.documentationString: \
+@rm Set, view, and edit breakpoints
 
 Ddd*sourceMenu.edit.labelString:	Edit Source...
 Ddd*sourceMenu.edit.mnemonic:		E
 Ddd*sourceMenu.edit.accelerator:	Ctrl Shift<Key>E
 Ddd*sourceMenu.edit.acceleratorText:	Ctrl+Shift+E
+Ddd*sourceMenu.edit.documentationString: \
+@rm Invoke text editor for the current source
 
 Ddd*sourceMenu.reload.labelString:	Reload Source
 Ddd*sourceMenu.reload.mnemonic:		R
 Ddd*sourceMenu.reload.accelerator:	Ctrl Shift<Key>L
 Ddd*sourceMenu.reload.acceleratorText:	Ctrl+Shift+L
+Ddd*sourceMenu.reload.documentationString: \
+@rm Reload current source file
 
 Ddd*sourceMenu.back.labelString:	Back
 Ddd*sourceMenu.back.mnemonic:		B
 Ddd*sourceMenu.back.accelerator:	Ctrl<Key>Left
 Ddd*sourceMenu.back.acceleratorText:	Ctrl+Left
+Ddd*sourceMenu.back.documentationString: \
+@rm Show previous source position
 
 Ddd*sourceMenu.forward.labelString:	Forward
 Ddd*sourceMenu.forward.mnemonic:	F
 Ddd*sourceMenu.forward.accelerator:	Ctrl<Key>Right
 Ddd*sourceMenu.forward.acceleratorText:	Ctrl+Right
+Ddd*sourceMenu.forward.documentationString: \
+@rm Show next source position
 
 
-
+! Data menu
 Ddd*menubar.data.labelString:		Data
 Ddd*menubar.data.mnemonic:		D
+Ddd*menubar.data*documentationString:   @rm Data menu
 Ddd*menubar.data*helpString:	\
 \
 @rm This is the @sl Data menu@rm.\n\
@@ -1809,36 +1929,49 @@ Ddd*menubar.data*helpString:	\
 
 Ddd*dataMenu.displays.labelString:	Edit Displays...
 Ddd*dataMenu.displays.mnemonic:		E
+Ddd*dataMenu.displays.documentationString: \
+@rm Select, enable and delete displays
 
 Ddd*dataMenu.align.labelString:		Align Displays
 Ddd*dataMenu.align.mnemonic:		A
 Ddd*dataMenu.align.accelerator:		Meta<Key>A
 Ddd*dataMenu.align.acceleratorText:	Alt+A
+Ddd*dataMenu.align.documentationString:	\
+@rm Align all displays on the next grid point
 
 Ddd*dataMenu.rotate.labelString:	Rotate Graph
 Ddd*dataMenu.rotate.mnemonic:		R
 Ddd*dataMenu.rotate.accelerator:	Meta<Key>R
 Ddd*dataMenu.rotate.acceleratorText:	Alt+R
+Ddd*dataMenu.rotate.documentationString:	\
+@rm Rotate the graph clockwise by 90 degrees
 
 Ddd*dataMenu.layout.labelString:	Layout Graph
 Ddd*dataMenu.layout.mnemonic:		L
 Ddd*dataMenu.layout.accelerator:	Meta<Key>L
 Ddd*dataMenu.layout.acceleratorText:	Alt+L
+Ddd*dataMenu.layout.documentationString:	\
+@rm Layout the graph
 
 Ddd*dataMenu.selectAll.labelString:	Select All
 Ddd*dataMenu.selectAll.mnemonic:	S
 Ddd*dataMenu.selectAll.accelerator:	Meta<Key>S
 Ddd*dataMenu.selectAll.acceleratorText:	Alt+S
+Ddd*dataMenu.selectAll.documentationString:	\
+@rm Select all displays
 
 Ddd*dataMenu.refresh.labelString:	Refresh
 Ddd*dataMenu.refresh.mnemonic:		R
 Ddd*dataMenu.refresh.accelerator:	Ctrl ~Shift<Key>L
 Ddd*dataMenu.refresh.acceleratorText:	Ctrl+L
+Ddd*dataMenu.refresh.documentationString:	\
+@rm Redraw all displays
 
 
-
+! Help menu
 Ddd*menubar.help.labelString:		Help
 Ddd*menubar.help.mnemonic:		H
+Ddd*menubar.help*documentationString:   @rm Help menu
 Ddd*menubar.help*helpString: \
 \
 @rm This is the @sl Help menu@rm.\n\
@@ -1857,24 +1990,38 @@ Ddd*helpMenu.onContext.mnemonic:	C
 Ddd*helpMenu.onContext.accelerator:	None<Key>F1
 ! *helpMenu.onContext.accelerator:	<Key>osfHelp
 Ddd*helpMenu.onContext.acceleratorText:	F1
+Ddd*helpMenu.onContext.documentationString:	\
+@rm Click on item and get help on it
 
 Ddd*helpMenu.onWindow.labelString:	On Window...
 Ddd*helpMenu.onWindow.mnemonic:		W
+Ddd*helpMenu.onWindow.documentationString:	\
+@rm Information about the current window
 
 Ddd*helpMenu.onHelp.labelString:	On Help...
 Ddd*helpMenu.onHelp.mnemonic:		H
+Ddd*helpMenu.onHelp.documentationString:	\
+@rm Information about the context-sensitive help
 
 Ddd*helpMenu.onVersion.labelString:	On Version...
 Ddd*helpMenu.onVersion.mnemonic:	V
+Ddd*helpMenu.onVersion.documentationString:	\
+@rm Information about version of @DDD@ you are running
 
 Ddd*helpMenu.index.labelString:		@DDD@ Manual...
 Ddd*helpMenu.index.mnemonic:		M
+Ddd*helpMenu.index.documentationString:	\
+@rm The @DDD@ reference manual
 
 Ddd*helpMenu.license.labelString:	@DDD@ License...
 Ddd*helpMenu.license.mnemonic:		L
+Ddd*helpMenu.license.documentationString:	\
+@rm The @DDD@ license
 
 Ddd*helpMenu.www.labelString:		@DDD@ WWW Page...
 Ddd*helpMenu.www.mnemonic:		P
+Ddd*helpMenu.www.documentationString:	\
+@rm Invoke a WWW browser with the @DDD@ WWW page
 
 
 
@@ -2016,6 +2163,13 @@ Ddd*preferences*windows.width:			120
 Ddd*preferences*windows.recomputeSize:		false
 Ddd*windowsMenu*separate.labelString:		Separate windows
 Ddd*windowsMenu*attached.labelString:		One single window
+
+Ddd*preferences*statusPosition.labelString:	Status line:
+Ddd*preferences*statusPosition.alignment:	XmALIGNMENT_END
+Ddd*preferences*statusPosition.width:		120
+Ddd*preferences*statusPosition.recomputeSize:	false
+Ddd*statusPositionMenu*bottom.labelString:	At bottom
+Ddd*statusPositionMenu*top.labelString:		At top
 
 Ddd*preferences*keyboardFocus.labelString:	Keyboard focus:
 Ddd*preferences*keyboardFocus.alignment:	XmALIGNMENT_END
@@ -2175,8 +2329,8 @@ Ddd*graph_edit_panner.helpString:	\
 @rm The data window is too small to hold all displays.\n\
 Drag the slider with the @bf left mouse button @rm to select\n\
 the visible part of the data window.
-Ddd*graph_edit_panner.tipString:	\
-@rm Scroll window
+! Ddd*graph_edit_panner.tipString:	\
+! @rm Scroll window
 
 
 !-----------------------------------------------------------------------------
@@ -2184,16 +2338,44 @@ Ddd*graph_edit_panner.tipString:	\
 !-----------------------------------------------------------------------------
 
 Ddd*graph_popup.selectAll.labelString:	Select All
+Ddd*graph_popup.selectAll.documentationString: \
+@rm Select all displays
+
 Ddd*graph_popup.refresh.labelString:	Refresh
+Ddd*graph_popup.refresh.documentationString: \
+@rm Redraw all displays
+
 Ddd*graph_popup.new.labelString:	New Display...
+Ddd*graph_popup.new.documentationString: \
+@rm Create a new display at the selected position
 
 Ddd*node_popup.dereference.labelString:	Display *
+Ddd*node_popup.dereference.documentationString: \
+@rm Dereference the selected display
+
 Ddd*node_popup.detail.labelString:	Show Detail
+Ddd*node_popup.detail.documentationString: \
+@rm Show/Hide details of the selected display
+
 Ddd*node_popup.rotate.labelString:	Rotate
+Ddd*node_popup.rotate.documentationString: \
+@rm Rotate the selected display
+
 Ddd*node_popup.dependent.labelString:	New Display...
+Ddd*node_popup.dependent.documentationString: \
+@rm Create a new display dependent on the selected display
+
 Ddd*node_popup.set.labelString:		Set Value...
+Ddd*node_popup.set.documentationString: \
+@rm Change the selected display value
+
 Ddd*node_popup.delete.labelString:	Delete Display
+Ddd*node_popup.delete.documentationString: \
+@rm Delete the selected display
+
 Ddd*node_popup.disable.labelString:	Disable Display
+Ddd*node_popup.disable.documentationString: \
+@rm Disable/Enable the selected display
 
 
 !-----------------------------------------------------------------------------
@@ -2241,42 +2423,56 @@ Ddd*graph_cmd_w.graph_cmd_area*dependent.helpString:\
 Create a new display dependent on the selected display part.
 Ddd*graph_cmd_w.graph_cmd_area*dependent.tipString:\
 @rm Create new display
+Ddd*graph_cmd_w.graph_cmd_area*dependent.documentationString:\
+@rm Create a new display dependent on the selected display part
 
 Ddd*graph_cmd_w.graph_cmd_area*dereference.helpString:\
 @bf Display *()@rm\n\
 Dereference the selected display.
 Ddd*graph_cmd_w.graph_cmd_area*dereference.tipString:\
 @rm Dereference selected display
+Ddd*graph_cmd_w.graph_cmd_area*dereference.documentationString:\
+@rm Dereference the selected display
 
 Ddd*graph_cmd_w.graph_cmd_area*detail.helpString:	\
 @bf Show ()@rm / @bf Hide ()@rm\n\
 Show/Hide details of the selected displays.
 Ddd*graph_cmd_w.graph_cmd_area*detail.tipString:	\
-@em Show/Hide selected details
+@rm Show/Hide selected details
+Ddd*graph_cmd_w.graph_cmd_area*detail.documentationString: \
+@rm Show/Hide details of the selected displays
 
 Ddd*graph_cmd_w.graph_cmd_area*rotate.helpString:	\
 @bf Rotate ()@rm\n\
 Rotate the selected displays.
 Ddd*graph_cmd_w.graph_cmd_area*rotate.tipString:	\
 @rm Rotate selected displays
+Ddd*graph_cmd_w.graph_cmd_area*rotate.documentationString: \
+@rm Rotate the selected displays
 
 Ddd*graph_cmd_w.graph_cmd_area*set.helpString:	\
 @bf Set ()@rm\n\
 Change the selected display value.
 Ddd*graph_cmd_w.graph_cmd_area*set.tipString:	\
 @rm Set display value
+Ddd*graph_cmd_w.graph_cmd_area*set.documentationString:	\
+@rm Change the selected display value
 
 Ddd*graph_cmd_w.graph_cmd_area*disable.helpString:	\
 @bf Disable ()@rm / @bf Enable ()@rm\n\
 Disable/Enable the selected displays.
 Ddd*graph_cmd_w.graph_cmd_area*disable.tipString:	\
 @rm Disable/Enable selected displays
+Ddd*graph_cmd_w.graph_cmd_area*disable.documentationString:	\
+@rm Disable/Enable the selected displays
 
 Ddd*graph_cmd_w.graph_cmd_area*delete.helpString:	\
 @bf Delete ()@rm\n\
 Delete the selected displays.
 Ddd*graph_cmd_w.graph_cmd_area*delete.tipString:	\
 @rm Delete selected displays
+Ddd*graph_cmd_w.graph_cmd_area*delete.documentationString:	\
+@rm Delete the selected displays
 
 
 !-----------------------------------------------------------------------------
@@ -2370,21 +2566,72 @@ The lower area shows the machine code.
 
 
 !-----------------------------------------------------------------------------
-! Source Text Popup Menus
+! Source Popup Menus
 !-----------------------------------------------------------------------------
 
 Ddd*line_popup.set.labelString:			Set Breakpoint
+Ddd*line_popup.set.documentationString:	\
+@rm Set a breakpoint at the selected position
+
 Ddd*line_popup.set_temp.labelString:		Set Temporary Breakpoint
+Ddd*line_popup.set_temp.documentationString:	\
+@rm Set a temporary breakpoint which will be deleted when reached
+
 Ddd*line_popup.temp_n_cont.labelString:		Continue Until Here
+Ddd*line_popup.temp_n_cont.documentationString:	\
+@rm Execute until the program reaches this line or returns from the function
 
 Ddd*address_popup.set.labelString:		Set Breakpoint
+Ddd*address_popup.set.documentationString:	\
+@rm Set a breakpoint at the selected address
+
 Ddd*address_popup.set_temp.labelString:		Set Temporary Breakpoint
+Ddd*address_popup.set_temp.documentationString:	\
+@rm Set a temporary breakpoint which will be deleted when reached
+
 Ddd*address_popup.temp_n_cont.labelString:	Continue Until Here
+Ddd*line_popup.temp_n_cont.documentationString:	\
+@rm Execute until the program reaches this address or returns from the function
 
 Ddd*bp_popup.disable.labelString:		Disable Breakpoint
+Ddd*bp_popup.disable.documentationString:	\
+@rm Disable the selected breakpoint
+
 Ddd*bp_popup.condition.labelString:		Set Condition...
+Ddd*bp_popup.condition.documentationString:	\
+@rm Specify a condition for the selected breakpoint
+
 Ddd*bp_popup.ignore_count.labelString:		Set Ignore Count...
+Ddd*bp_popup.ignore_count.documentationString:	\
+@rm Specify how many crossings of the selected breakpoint are to be ignored
+
 Ddd*bp_popup.delete.labelString:		Delete Breakpoint
+Ddd*bp_popup.delete.documentationString:	\
+@rm Delete the selected breakpoint
+
+Ddd*text_popup.print.documentationString: \
+@rm Print the value of the selected item in the debugger console
+
+Ddd*text_popup.disp.documentationString: \
+@rm Display the selected item in the data window
+
+Ddd*text_popup.print_ref.documentationString: \
+@rm Print the dereferenced value of the selected item in the debugger console
+
+Ddd*text_popup.disp_ref.documentationString: \
+@rm Display the dereferenced item in the data window
+
+Ddd*text_popup.whatis.documentationString: \
+@rm Print the data type of the selected item
+
+Ddd*text_popup.lookup.documentationString: \
+@rm Lookup the definition of the selected item
+
+Ddd*text_popup.breakAt.documentationString: \
+@rm Set a breakpoint at the selected function
+
+Ddd*text_popup.clearAt.documentationString: \
+@rm Clear the breakpoint at the selected function
 
 
 !-----------------------------------------------------------------------------
@@ -2427,7 +2674,7 @@ Ddd*arg_cmd_w.arg_cmd_area*findForward.labelString:	Find@small>> @bf()
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.helpString:	\
 @bf Lookup ()@rm\n\
-Lookup a line, file, function, variable, or breakpoint.\n\
+Lookup a line, file, function, variable, or breakpoint in the source.\n\
 @tt \267 @rm If the argument @bf () @rm is empty, \
 show the current execution position.\n\
 @tt \267 @rm If @bf () @rm contains a number, \
@@ -2441,45 +2688,59 @@ lookup that address.\n\
 @tt \267 @rm If @bf () @rm contains a function or variable name, lookup\n\
     the definition of that function or variable.
 Ddd*arg_cmd_w.arg_cmd_area*lookup.tipString:	\
-@rm Lookup () in the source
+@rm Lookup @bf () @rm in the source
+Ddd*arg_cmd_w.arg_cmd_area*lookup.documentationString:	\
+@rm Lookup a line, file, function, variable or breakpoint in the source
 
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.helpString:	\
 @bf Break at ()@rm\n\
 Set a breakpoint at the argument @bf ()@rm.
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.tipString:	\
-@rm Set breakpoint at ()
+@rm Set breakpoint at @bf ()
+Ddd*arg_cmd_w.arg_cmd_area*breakAt.documentationString:	\
+@rm Set a breakpoint at the argument @bf ()
 
 Ddd*arg_cmd_w.arg_cmd_area*clearAt.helpString:	\
 @bf Clear at ()@rm\n\
 Delete the breakpoint at the argument @bf ()@rm.
 Ddd*arg_cmd_w.arg_cmd_area*clearAt.tipString:	\
-@rm Delete breakpoint at ()
+@rm Delete breakpoint at @bf ()
+Ddd*arg_cmd_w.arg_cmd_area*clearAt.documentationString:	\
+@rm Delete the breakpoint at the argument @bf ()
 
 Ddd*arg_cmd_w.arg_cmd_area*print.helpString:	\
 @bf Print ()@rm\n\
 Print the argument @bf () @rm in the debugger console.
 Ddd*arg_cmd_w.arg_cmd_area*print.tipString:	\
-@rm Print () in the debugger console
+@rm Print @bf () @rm in the debugger console
+Ddd*arg_cmd_w.arg_cmd_area*print.documentationString:	\
+@rm Print the argument @bf () @rm in the debugger console
 
 Ddd*arg_cmd_w.arg_cmd_area*display.helpString:	\
 @bf Display ()@rm\n\
-Display the argument @bf () @rm in the data display window.
+Display the argument @bf () @rm in the data window.
 Ddd*arg_cmd_w.arg_cmd_area*display.tipString:	\
-@rm Display () in the data window
+@rm Display @bf () @rm in the data window
+Ddd*arg_cmd_w.arg_cmd_area*display.documentationString:	\
+@rm Display the argument @bf () @rm in the data window
 
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.helpString:	\
 @bf Find@small<< @bf()@rm\n\
 Search the previous occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.tipString:	\
-@rm Find previous () in source
+@rm Find previous @bf () @rm in source
+Ddd*arg_cmd_w.arg_cmd_area*findBackward.documentationString:	\
+@rm Search the previous occurrence of @bf () @rm in the current source
 
 Ddd*arg_cmd_w.arg_cmd_area*findForward.helpString:	\
 @bf Find@small>> @bf()@rm\n\
 Search the next occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 Ddd*arg_cmd_w.arg_cmd_area*findForward.tipString:	\
-@rm Find next () in source
+@rm Find next @bf () @rm in source
+Ddd*arg_cmd_w.arg_cmd_area*findForward.documentationString:	\
+@rm Search the next occurrence of @bf () @rm in the current source
 
 
 
@@ -2683,9 +2944,16 @@ Ddd*?*break.helpString: \
 @bf Break\n\
 @rm Interrupt the debugged process or current debugger command.\n\
 (Equivalent to @key Ctrl+C@rm).
-Ddd*?*break.tipString: \
+Ddd*source_buttons*break.tipString: \
 @rm Interrupt debugged program
-
+Ddd*data_buttons*break.tipString: \
+@rm Interrupt debugged program
+Ddd*console_buttons*break.tipString: \
+@rm Interrupt debugged program
+Ddd*tool_buttons*break.tipString: \
+@rm Interrupt debugged program
+Ddd*?*break.documentationString: \
+@rm Interrupt the debugged process or current debugger command
 
 Ddd*?*Yes.helpString:	\
 @bf Yes\n\
@@ -2748,12 +3016,16 @@ Ddd*?*Edit.helpString:	\
 Invoke an editor for the current source file.
 Ddd*?*Edit.tipString: \
 @rm Edit source file
+Ddd*?*Edit.documentationString: \
+@rm Invoke text editor for the current source
 
 Ddd*?*Reload.helpString:	\
 @bf Reload@rm\n\
 Reload the source from file.
 Ddd*?*Reload.tipString: \
 @rm Reload source file
+Ddd*?*Reload.documentationString: \
+@rm Reload current source file
 
 
 
@@ -2975,48 +3247,46 @@ Next @sl COUNT @rm hits of the selected breakpoint(s) will be ignored.
 
 
 Ddd*edit_breakpoints_dialog*buttons*new.labelString:	       New...
-Ddd*edit_breakpoints_dialog*buttons*new.helpString:     \
-@rm Set breakpoint at specified line or function.
 Ddd*edit_breakpoints_dialog*buttons*new.tipString:     \
 @rm Set new breakpoint
+Ddd*edit_breakpoints_dialog*buttons*new.documentationString: \
+@rm Set breakpoint at specified line or function
 
 Ddd*edit_breakpoints_dialog*buttons*lookup.labelString:	       Lookup
-Ddd*edit_breakpoints_dialog*buttons*lookup.helpString:  \
-@rm Lookup the selected breakpoint.
 Ddd*edit_breakpoints_dialog*buttons*lookup.tipString:     \
 @rm Lookup selected breakpoint
+Ddd*edit_breakpoints_dialog*buttons*lookup.documentationString: \
+@rm Lookup selected breakpoint in the source
 
 Ddd*edit_breakpoints_dialog*buttons*enable.labelString:	       Enable
-Ddd*edit_breakpoints_dialog*buttons*enable.helpString:  \
-@rm Enable the selected breakpoint(s).
 Ddd*edit_breakpoints_dialog*buttons*enable.tipString:     \
 @rm Enable selected breakpoints
+Ddd*edit_breakpoints_dialog*buttons*enable.documentationString: \
+@rm Enable the selected breakpoint(s)
 
 Ddd*edit_breakpoints_dialog*buttons*disable.labelString:       Disable
-Ddd*edit_breakpoints_dialog*buttons*disable.helpString:	\
-@rm Disable the selected breakpoint(s).
 Ddd*edit_breakpoints_dialog*buttons*disable.tipString:     \
 @rm Disable selected breakpoints
+Ddd*edit_breakpoints_dialog*buttons*disable.documentationString: \
+@rm Disable the selected breakpoint(s)
 
 Ddd*edit_breakpoints_dialog*buttons*condition.labelString:     Condition...
-Ddd*edit_breakpoints_dialog*buttons*condition*helpString:  \
-@rm Specify a condition @sl COND @rm for the selected breakpoint(s).\n\
-Breakpoints break only if @sl COND @rm evaluates to a non-zero value.
 Ddd*edit_breakpoints_dialog*buttons*condition.tipString:     \
 @rm Set breakpoint condition
+Ddd*edit_breakpoints_dialog*buttons*condition.documentationString:     \
+@rm Specify a condition for the selected breakpoint(s)
 
 Ddd*edit_breakpoints_dialog*buttons*ignore_count.labelString:  Ignore Count...
-Ddd*edit_breakpoints_dialog*buttons*ignore_count*helpString:  \
-@rm Set the ignore count @sl COUNT @rm for the selected breakpoint(s).\n\
-Next @sl COUNT @rm hits of the selected breakpoints will be ignored.
 Ddd*edit_breakpoints_dialog*buttons*ignore_count.tipString:     \
 @rm Set ignore count
+Ddd*edit_breakpoints_dialog*buttons*ignore_count.documentationString:     \
+@rm Specify how many crossings of the selected breakpoint(s) are to be ignored
 
 Ddd*edit_breakpoints_dialog*buttons*delete.labelString:	       Delete
-Ddd*edit_breakpoints_dialog*buttons*delete.helpString:  \
-@rm Delete the selected breakpoint(s).
 Ddd*edit_breakpoints_dialog*buttons*delete.tipString:     \
 @rm Delete selected breakpoints
+Ddd*edit_breakpoints_dialog*buttons*delete.documentationString:     \
+@rm Delete the selected breakpoint(s)
 
 
 !-----------------------------------------------------------------------------
@@ -3173,53 +3443,52 @@ Ddd*dependent_display_dialog*helpString:	\
 The current value of the expression is shown each time the program stops.
 
 Ddd*edit_displays_dialog*buttons*dependent.labelString:	    New Display
-Ddd*edit_displays_dialog*buttons*dependent.helpString:  \
-@rm Create a data display dependent on the selected data display,\n\
-or a new data display if none is selected.
 Ddd*edit_displays_dialog*buttons*dependent.tipString:  \
 @rm Create new display
+Ddd*edit_displays_dialog*buttons*dependent.documentationString:  \
+@rm Create new data display (possibly depending on the selected data display)
 
 Ddd*edit_displays_dialog*buttons*dereference.labelString:   Display *
-Ddd*edit_displays_dialog*buttons*dereference.helpString:	 \
-@rm Dereference the selected data display.
 Ddd*edit_displays_dialog*buttons*dereference.tipString:  \
 @rm Dereference selected display
+Ddd*edit_displays_dialog*buttons*dereference.documentationString: \
+@rm Dereference the selected data display
 
 Ddd*edit_displays_dialog*buttons*show_detail.labelString:   Show Detail
-Ddd*edit_displays_dialog*buttons*show_detail.helpString:	 \
-@rm Show detail on the selected data display(s).
 Ddd*edit_displays_dialog*buttons*show_detail.tipString:  \
 @rm Show selected details
+Ddd*edit_displays_dialog*buttons*show_detail.documentationString: \
+@rm Show detail on the selected data display(s)
 
 Ddd*edit_displays_dialog*buttons*hide_detail.labelString:   Hide Detail
-Ddd*edit_displays_dialog*buttons*hide_detail.helpString:	 \
-@rm Hide detail on the selected data display(s).
 Ddd*edit_displays_dialog*buttons*hide_detail.tipString:  \
 @rm Hide selected details
+Ddd*edit_displays_dialog*buttons*hide_detail.documentationString: \
+@rm Hide detail on the selected data display(s)
 
 Ddd*edit_displays_dialog*buttons*set.labelString:	    Set Value
-Ddd*edit_displays_dialog*buttons*set.helpString:	 \
-@rm Change a value in the selected data display.
 Ddd*edit_displays_dialog*buttons*set.tipString:  \
 @rm Set display value
+Ddd*edit_displays_dialog*buttons*set.documentationString: \
+@rm Change a value in the selected data display
 
 Ddd*edit_displays_dialog*buttons*disable.labelString:	    Disable
-Ddd*edit_displays_dialog*buttons*disable.helpString:  \
-@rm Disable the selected data display(s).
 Ddd*edit_displays_dialog*buttons*disable.tipString:  \
 @rm Disable selected displays
+Ddd*edit_displays_dialog*buttons*disable.documentationString: \
+@rm Disable the selected data display(s)
 
 Ddd*edit_displays_dialog*buttons*enable.labelString:	    Enable
-Ddd*edit_displays_dialog*buttons*enable.helpString:  \
-@rm Enable the selected data display(s).
 Ddd*edit_displays_dialog*buttons*enable.tipString:  \
 @rm Enable selected displays
+Ddd*edit_displays_dialog*buttons*enable.documentationString:  \
+@rm Enable the selected data display(s)
 
 Ddd*edit_displays_dialog*buttons*delete.labelString:	    Delete
-Ddd*edit_displays_dialog*buttons*delete.helpString:  \
-@rm Delete the selected data display(s).
 Ddd*edit_displays_dialog*buttons*delete.tipString:  \
 @rm Delete selected displays
+Ddd*edit_displays_dialog*buttons*delete.documentationString:  \
+@rm Delete the selected data display(s)
 
 
 Ddd*run_dialog_popup.title: @DDD@: Run Program
@@ -3236,7 +3505,7 @@ such that you can re-use them at a later time.\n\
 \n\
 Select specific arguments to have them copied to the argument prompt.\n\
 Click on @bf OK @rm or @bf Apply @rm to start the debugged program\n\
-with the current arguments.
+with the arguments at the argument prompt.
 
 
 

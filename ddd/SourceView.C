@@ -3325,6 +3325,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	    bp_popup_w = MMcreatePopupMenu (text_w, "bp_popup", bp_popup);
 	    MMaddCallbacks (bp_popup, XtPointer (&bp_nr));
+	    InstallTips(bp_popup_w);
 	}
 
 	switch (gdb->type())
@@ -3366,6 +3367,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 		line_popup_w = 
 		    MMcreatePopupMenu (w, "line_popup", line_popup);
 		MMaddCallbacks (line_popup, XtPointer(&line_nr));
+		InstallTips(line_popup_w);
 	    }
 	    XmMenuPosition (line_popup_w, event);
 	    XtManageChild (line_popup_w);
@@ -3378,6 +3380,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 		address_popup_w = 
 		    MMcreatePopupMenu (w, "address_popup", address_popup);
 		MMaddCallbacks (address_popup, XtPointer(&address));
+		InstallTips(address_popup_w);
 	    }
 	    XmMenuPosition (address_popup_w, event);
 	    XtManageChild (address_popup_w);
@@ -3407,6 +3410,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
 	MMaddCallbacks (text_popup, XtPointer(&word));
+	InstallTips(text_popup_w);
 
 	// The popup menu is destroyed immediately after having popped down.
 	Widget shell = XtParent(text_popup_w);

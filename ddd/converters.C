@@ -80,8 +80,12 @@ static String bitmap_name_set[] =
 
 #endif
 
+// Decl of XmIsSlowSubclass in Motif 1.1 is not C++-aware, hence extern "C"
+extern "C" {
 #include <Xm/XmP.h>
+}
 
+// <Xm/PrimitiveP.h> only exists in Motif 1.2 and later
 #if XmVersion >= 1002
 #include <Xm/PrimitiveP.h>
 #endif
@@ -94,7 +98,6 @@ static String bitmap_name_set[] =
 
 
 // ANSI C++ doesn't like the XtIsRealized() macro
-
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
@@ -174,8 +177,7 @@ Boolean CvtStringToPixmap(Display *display,
 	
 	screen = XtScreen(w);
 	
-	if (XtIsSubclass(w, xmPrimitiveWidgetClass) &&
-	    XtIsSubclass(w, widgetClass))
+	if (XtIsWidget(w) && XmIsPrimitive(w))
 	{
 	    // Get foreground color from widget
 	    foreground = XmPrimitiveWidget(w)->primitive.foreground;

@@ -220,7 +220,7 @@ void process_show(string command, string value, bool init)
     if (!init)
 	update_reset_settings();
 
-    if (button != 0 && XtIsSubclass(button, xmRowColumnWidgetClass))
+    if (button != 0 && XmIsRowColumn(button))
     {
 	Widget menu = 0;
 	XtVaGetValues(button, XmNsubMenuId, &menu, NULL);
@@ -235,13 +235,13 @@ void process_show(string command, string value, bool init)
 	    }
 	}
     }
-    else if (button != 0 && XtIsSubclass(button, xmToggleButtonWidgetClass))
+    else if (button != 0 && XmIsToggleButton(button))
     {
 	bool set = value != "off" && value != "0" && value != "unlimited";
 	XtVaSetValues(button, XmNset, set, NULL);
 	return;
     }
-    else if (button != 0 && XtIsSubclass(button, xmTextFieldWidgetClass))
+    else if (button != 0 && XmIsTextField(button))
     {
 	XtVaSetValues(button, 
 		      XmNvalue,                 value.chars(),

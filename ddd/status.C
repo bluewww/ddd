@@ -66,6 +66,9 @@ bool gdb_keyboard_command = false;
 // True if the next line is to be displayed in the status line
 bool show_next_line_in_status = false;
 
+// Current contents of status window
+static MString current_status_text;
+
 //-----------------------------------------------------------------------------
 // Prompt recognition
 //-----------------------------------------------------------------------------
@@ -285,10 +288,23 @@ void set_status(const string& message)
     if (m != "" && !m.contains("=") && isascii(m[0]) && islower(m[0]))
 	m[0] = toupper(m[0]);
 
-    MString msg(m, "rm");
+    set_status_mstring(MString(m, "rm"));
+}
+
+void set_status_mstring(const MString& message)
+{
+    if (status_w == 0)
+	return;
+
+    current_status_text = message;
     XtVaSetValues(status_w,
-		  XmNlabelString, msg.xmstring(),
+		  XmNlabelString, message.xmstring(),
 		  NULL);
     XFlush(XtDisplay(status_w));
     XmUpdateDisplay(status_w);
+}
+
+const MString& current_status()
+{
+    return current_status_text;
 }

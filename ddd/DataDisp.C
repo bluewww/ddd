@@ -2669,8 +2669,11 @@ DataDisp::DataDisp (XtAppContext app_context,
 
     graph_popup_w = 
 	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
+    InstallTips(graph_popup_w);
+
     node_popup_w = 
 	MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
+    InstallTips(node_popup_w);
 
     disp_graph->callHandlers();
 

@@ -36,16 +36,22 @@
 #include "strclass.h"
 #include "bool.h"
 #include "Delay.h"
+#include "MString.h"
 #include <X11/Intrinsic.h>
 
 // Show TEXT in status window
 void set_status(const string& text);
 
+// Same, but use an MString
+void set_status_mstring(const MString& text);
+
+// Return current contents of status line
+extern const MString& current_status();
+
 // Buttons and state
 void set_buttons_from_gdb(Widget w, string& text);
 void set_status_from_gdb(const string& text);
 void set_selection_from_gdb(string& text);
-void set_status(const string& text);
 
  // True if last cmd came from GDB window
 extern bool gdb_keyboard_command;

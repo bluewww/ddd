@@ -56,9 +56,6 @@ extern void _gdb_out(string text);
 // Update option menus
 extern void update_options();
 
-// Update button tips
-extern void update_button_tips();
-
 // Last output position
 extern XmTextPosition promptPosition;
 

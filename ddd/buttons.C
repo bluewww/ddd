@@ -48,6 +48,7 @@ char buttons_rcsid[] =
 #include "disp-read.h"
 #include "verify.h"
 #include "GDBAgent.h"
+#include "StringSA.h"
 
 #include <Xm/Xm.h>
 #include <Xm/RowColumn.h>
@@ -66,6 +67,53 @@ static void YnButtonCB(Widget dialog,
     _gdb_out(string((char *)client_data) + '\n');
     gdbCommandCB(dialog, client_data, call_data);
     gdb_keyboard_command = true;
+}
+
+
+//-----------------------------------------------------------------------------
+// Show documentation string in status line
+//-----------------------------------------------------------------------------
+
+static void showDocumentationInStatusLine(const MString& doc)
+{
+    static MString current_status_message(0, true);
+    static MString saved_status_message(0, true);
+    static bool doc_shown_in_status = false;
+
+    if (doc.xmstring() == 0 || doc.isEmpty())
+    {
+	// Button has been left - restore previous message unless overwritten
+	if (current_status_message.xmstring() != 0)
+	{
+	    // Button has been left
+	    if (current_status_message == current_status())
+	    {
+		// Restore previous message
+		set_status_mstring(saved_status_message);
+	    }
+	    else
+	    {
+		// Message has been overwritten.  This is a button effect,
+		// so clear the message.
+		set_status("");
+	    }
+	    current_status_message = MString(0, true);
+	}
+
+	doc_shown_in_status = false;
+    }
+    else
+    {
+	// Button has been entered - save old message
+	if (!doc_shown_in_status)
+	{
+	    saved_status_message = current_status();
+	    doc_shown_in_status = true;
+	}
+
+	set_status_mstring(doc);
+	current_status_message = doc;
+    }
 }
 
 
@@ -99,17 +147,36 @@ static string gdbHelp(string command)
 	    command = "q";
     }
 
+    string help = NO_GDB_ANSWER;
+
     if (is_graph_cmd(command))
     {
+	// Use own help texts
 	string cmd = command.after("graph ") + " dummy";
 	if (is_refresh_cmd(cmd))
-	    return "Refresh data window.";
+	    help = "Refresh data window.";
 	else if (is_display_cmd(cmd))
-	    return "Display expression in the data window.";
+	    help = "Display expression in the data window.";
     }
 
-    string help = gdb_question("help " + command, 0, true);
-    strip_final_blanks(help);
+    static StringStringAssoc help_texts;
+    if (help == NO_GDB_ANSWER)
+    {
+	// Lookup cache
+	if (help_texts.has(command))
+	    help = help_texts[command];
+    }
+
+    if (help == NO_GDB_ANSWER)
+    {
+	// Ask debugger for help
+	help = gdb_question("help " + command, 0, true);
+	strip_final_blanks(help);
+    }
+
+    if (help != NO_GDB_ANSWER)
+	help_texts[command] = help;
+
     return help;
 }
 
@@ -270,4 +337,6 @@ void add_buttons(Widget buttons, const string& button_list)
     // Register default help command
     DefaultHelpText = gdbDefaultHelp;
     DefaultTipText  = gdbDefaultTip;
+
+    DisplayDocumentation  = showDocumentationInStatusLine;
 }

@@ -42,6 +42,7 @@ char HelpCB_rcsid[] =
 #include <unistd.h>
 
 #include <Xm/Xm.h>
+#include <Xm/CascadeB.h>
 #include <Xm/MessageB.h>
 #include <Xm/SelectioB.h>
 #include <Xm/RowColumn.h>
@@ -62,22 +63,57 @@ char HelpCB_rcsid[] =
 #include "IntArray.h"
 #include "wm.h"
 
+// The help system supports three resources:
+// helpString          - displayed in context-sensitive help.
+// tipString           - displayed in small windows when entering buttons
+// documentationString - displayed in the status line
 struct resource_values {
     XmString helpString;
     XmString tipString;
+    XmString documentationString;
     Boolean showTitle;
 };
 
 static XtResource subresources[] = {
-    {"helpString", "HelpString",
-     XmRXmString, sizeof(XmString),
-     XtOffsetOf(resource_values, helpString), XtRImmediate, XtPointer(0) },
-    {"helpShowTitle", "HelpShowTitle",
-     XmRBoolean, sizeof(Boolean),
-     XtOffsetOf(resource_values, showTitle), XtRImmediate, XtPointer(False) },
-    {"tipString", "TipString",
-     XmRXmString, sizeof(XmString),
-     XtOffsetOf(resource_values, tipString), XtRImmediate, XtPointer(0) },
+    {
+	XtNhelpString,
+	XtCHelpString,
+	XmRXmString,
+	sizeof(XmString),
+	XtOffsetOf(resource_values, helpString),
+	XtRImmediate,
+	XtPointer(0)
+    },
+
+    {
+	XtNtipString,
+	XtCTipString,
+	XmRXmString,
+	sizeof(XmString),
+	XtOffsetOf(resource_values, tipString), 
+	XtRImmediate,
+	XtPointer(0)
+    },
+    
+    {
+	XtNdocumentationString,
+	XtCDocumentationString,
+	XmRXmString,
+	sizeof(XmString),
+	XtOffsetOf(resource_values, documentationString), 
+	XtRImmediate,
+	XtPointer(0)
+    },
+
+    {
+	XtNhelpShowTitle,
+	XtCHelpShowTitle,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(resource_values, showTitle),
+	XtRImmediate,
+	XtPointer(False)
+    }
 };
 
 static Widget help_dialog = 0;
@@ -124,12 +160,47 @@ static MString get_tip_string(Widget widget)
 			      NULL, 0);
 
     MString text(values.tipString, true);
-    if ((text.xmstring() != 0 && text.isEmpty()) && DefaultTipText != 0)
-	text = DefaultTipText(widget);
-    if (text.xmstring() == 0 || text.isEmpty())
-	text = _DefaultTipText(widget);
+    if (text.xmstring() == 0)
+    {
+	return _DefaultTipText(widget);
+    }
+    else if (text.isEmpty())
+    {
+	if (DefaultTipText != 0)
+	    return DefaultTipText(widget);
+	else
+	    return _DefaultTipText(widget);
+    }
+    else
+    {
+	return text;
+    }
+}
 
-    return text;
+static MString get_documentation_string(Widget widget)
+{
+    // Get text
+    resource_values values;
+    XtGetApplicationResources(widget, &values, 
+			      subresources, XtNumber(subresources), 
+			      NULL, 0);
+
+    MString text(values.documentationString, true);
+    if (text.xmstring() == 0)
+    {
+	return get_tip_string(widget);
+    }
+    else if (text.isEmpty())
+    {
+	if (DefaultTipText != 0)
+	    return DefaultTipText(widget);
+	else
+	    return _DefaultTipText(widget);
+    }
+    else
+    {
+	return text;
+    }
 }
 
 void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
@@ -222,9 +293,10 @@ static MString _DefaultTipText(Widget /* widget */)
 }
 
 
-MString (*DefaultHelpText)(Widget widget) = _DefaultHelpText;
-MString (*DefaultTipText)(Widget widget)  = _DefaultTipText;
-Pixmap (*helpOnVersionPixmapProc)(Widget) = 0;
+MString (*DefaultHelpText)(Widget widget)    = _DefaultHelpText;
+MString (*DefaultTipText)(Widget widget)     = _DefaultTipText;
+Pixmap (*helpOnVersionPixmapProc)(Widget)    = 0;
+void (*DisplayDocumentation)(const MString&) = 0;
 
 void StringHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
@@ -612,21 +684,60 @@ void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
     XtUngrabKeyboard(toplevel, XtLastTimestampProcessed(XtDisplay(widget)));
 }
 
+
+
 //-----------------------------------------------------------------------------
-// Toolbar tips
+// Button tips
 //-----------------------------------------------------------------------------
 
+// True iff button tips are enabled.
+static bool tips_enabled              = true;
+
+// The shell containing the tip label.
 static Widget tip_shell               = 0;
+
+// The tip label.
 static Widget tip_label               = 0;
+
+// True if the button tip shell is raised.
 static bool tip_popped_up             = false;
+
+// The timer used for the delay until the tip is raised.
 static XtIntervalId pending_tip_timer = 0;
 
-static void PopupTip(XtPointer client_data, XtIntervalId *id)
+// The timer used for the delay until the documentation is shown.
+static XtIntervalId pending_doc_timer = 0;
+
+// The timer used for the delay until the documentation is cleared.
+static XtIntervalId pending_clr_timer = 0;
+
+// Delay before showing the documentation (in ms)
+const int documentation_delay = 0;
+
+// Delay before clearing the documentation (in ms)
+const int clear_delay = 1000;
+
+// Delay before showing the tip (in ms)
+const int popup_delay = 750;
+
+
+// Helper: cancel the timer given in CLIENT_DATA
+static void CancelTimeOut(Widget, XtPointer client_data, XtPointer)
 {
-    assert(*id == pending_tip_timer);
+    XtIntervalId timer = XtIntervalId(client_data);
+    XtRemoveTimeOut(timer);
+}
+
+// Raise button tip near the widget given in CLIENT_DATA
+static void PopupTip(XtPointer client_data, XtIntervalId *timer)
+{
+    (void) timer;
+    assert(*timer == pending_tip_timer);
+    pending_tip_timer = 0;
 
     Widget w = Widget(client_data);
-    pending_tip_timer = 0;
+    XtRemoveCallback(w, XmNdestroyCallback, 
+		     CancelTimeOut, XtPointer(*timer));
 
     MString tip = get_tip_string(w);
     if (tip.xmstring() == 0 || tip.isEmpty())
@@ -644,19 +755,21 @@ static void PopupTip(XtPointer client_data, XtIntervalId *id)
 					  findTheTopLevelShell(w), args, arg));
 
 	arg = 0;
-	XtSetArg(args[arg], XmNlabelString, tip.xmstring()); arg++;
-	XtSetArg(args[arg], XmNrecomputeSize, true); arg++;
+	XtSetArg(args[arg], XmNlabelString, tip.xmstring());        arg++;
+	XtSetArg(args[arg], XmNrecomputeSize, true);                arg++;
+	XtSetArg(args[arg], XmNx, WidthOfScreen(XtScreen(w)) + 1);  arg++;
+	XtSetArg(args[arg], XmNy, HeightOfScreen(XtScreen(w)) + 1); arg++;
 	tip_label = XmCreateLabel(tip_shell, "tipLabel", args, arg);
 	XtManageChild(tip_label);
+
+	// Simple hack to ensure shell is realized
+	XtPopup(tip_shell, XtGrabNone);
+	XtPopdown(tip_shell);
     }
 
     XtVaSetValues(tip_label,
 		  XmNlabelString, tip.xmstring(),
 		  NULL);
-
-#if 0
-    clog << "Popup: " << tip.str("rm") << "...";
-#endif
 
 
     // Find a possible place for the tip.  Consider the alignment of
@@ -668,6 +781,18 @@ static void PopupTip(XtPointer client_data, XtIntervalId *id)
     // LeftBottom XXXXXXXXXXXXXXXX RightBottom
     //         BottomLeft BottomRight
 
+    enum Placement { LeftTop, RightTop,
+		     LeftBottom, RightBottom,
+		     BottomLeft, BottomRight,
+		     TopLeft, TopRight };
+
+    static Placement last_placement = BottomRight;
+    static Widget last_parent = 0;
+
+    Widget parent = XtParent(w);
+    if (parent != last_parent)
+	last_placement = BottomRight;
+
     // Use 18 runs to find out the best position:
     // Run 0: try last placement in same alignment
     // Run 1-8: try at various sides of W.  Don't hide other widgets
@@ -675,18 +800,6 @@ static void PopupTip(XtPointer client_data, XtIntervalId *id)
     // Run 9-17: same as 0-8, but don't care for hiding other widgets.
     for (int run = 0; run < 18; run++)
     {
-	enum Placement { LeftTop, RightTop,
-			 LeftBottom, RightBottom,
-			 BottomLeft, BottomRight,
-			 TopLeft, TopRight };
-
-	static Placement last_placement = BottomRight;
-	static Widget last_parent = 0;
-
-	Widget parent = XtParent(w);
-	if (parent != last_parent)
-	    last_placement = BottomRight;
-
 	Placement placement = last_placement;
 	switch (run % 9)
 	{
@@ -703,7 +816,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *id)
 
 	bool ok = false;
 
-	if (XtIsSubclass(parent, xmRowColumnWidgetClass))
+	if (XmIsRowColumn(parent))
 	{
 	    // We're part of a button box: if vertically aligned, place
 	    // tip on the right; otherwise, place it at the bottom.
@@ -729,7 +842,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *id)
 		break;
 	    }
 	}
-	else if (XtIsSubclass(parent, xmFormWidgetClass))
+	else if (XmIsForm(parent))
 	{
 	    // We're part of a form: try to place the tip beyond a form
 	    // boundary.
@@ -873,9 +986,9 @@ static void PopupTip(XtPointer client_data, XtIntervalId *id)
 	    continue;
 	if (y < 0)
 	    continue;
-	if (x + tip_geometry.width >= WidthOfScreen(w_attributes.screen))
+	if (x + tip_geometry.width >= WidthOfScreen(XtScreen(w)))
 	    continue;
-	if (y + tip_geometry.height >= HeightOfScreen(w_attributes.screen))
+	if (y + tip_geometry.height >= HeightOfScreen(XtScreen(w)))
 	    continue;
 
 	// Move tip to X, Y...
@@ -894,58 +1007,141 @@ static void PopupTip(XtPointer client_data, XtIntervalId *id)
     }
 }
 
-static void PopdownTip()
+// Show the documentation for the widget given in CLIENT_DATA
+static void ShowDocumentation(XtPointer client_data, XtIntervalId *timer)
 {
+    (void) timer;
+    assert(*timer == pending_doc_timer);
+    pending_doc_timer = 0;
+
+    Widget w = Widget(client_data);
+    XtRemoveCallback(w, XmNdestroyCallback, 
+		     CancelTimeOut, XtPointer(*timer));
+
+    if (DisplayDocumentation != 0)
+    {
+	// Display documentation
+	MString doc = get_documentation_string(w);
+	DisplayDocumentation(doc);
+    }
+}
+
+// Clear the documentation
+static void ClearDocumentation(XtPointer /* client_data */, 
+			       XtIntervalId *timer)
+{
+    (void) timer;
+    assert(*timer == pending_clr_timer);
+    pending_clr_timer = 0;
+
+    if (DisplayDocumentation != 0)
+    {
+	// Clear documentation
+	static MString empty(0, true);
+	DisplayDocumentation(empty);
+    }
+}
+
+// Clear tips and documentation
+static void ClearTip(Widget w)
+{
+    (void) w;
+
     if (pending_tip_timer)
     {
 	XtRemoveTimeOut(pending_tip_timer);
 	pending_tip_timer = 0;
     }
-
+	
     if (tip_popped_up)
     {
-#if 0
-	clog << "done.\n";
-#endif
 	XtPopdown(tip_shell);
 	tip_popped_up = false;
     }
+
+    if (pending_doc_timer)
+    {
+	XtRemoveTimeOut(pending_doc_timer);
+	pending_doc_timer = 0;
+    }
+
+    if (pending_clr_timer)
+    {
+	XtRemoveTimeOut(pending_clr_timer);
+	pending_clr_timer = 0;
+    }
+
+    if (DisplayDocumentation != 0)
+    {
+	// We don't clear the documentation immediately, since the
+	// user might be moving over to another button, and we don't
+	// want some flashing documentation string.
+
+	pending_clr_timer =
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
+			    clear_delay, 
+			    ClearDocumentation, XtPointer(w));
+    }
 }
 
+// Raise tips and documentation
+static void RaiseTip(Widget w)
+{
+    if (DisplayDocumentation != 0)
+    {
+	// No need to clear the documentation
+	if (pending_clr_timer)
+	{
+	    XtRemoveTimeOut(pending_clr_timer);
+	    pending_clr_timer = 0;
+	}
+
+	pending_doc_timer =
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
+			    documentation_delay, 
+			    ShowDocumentation, XtPointer(w));
+
+	// Should W be destroyed beforehand, cancel timeout
+	XtAddCallback(w, XmNdestroyCallback, CancelTimeOut, 
+		      XtPointer(pending_doc_timer));
+    }
+
+    if (tips_enabled)
+    {
+	pending_tip_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
+			    popup_delay, 
+			    PopupTip, XtPointer(w));
+
+	// Should W be destroyed beforehand, cancel timeout
+	XtAddCallback(w, XmNdestroyCallback, CancelTimeOut, 
+		      XtPointer(pending_tip_timer));
+    }
+}
+
+// Widget W has been entered or left.  Handle event.
 static void HandleTipEvent(Widget w,
 			   XtPointer /* client_data */,
 			   XEvent *event, 
 			   Boolean * /* continue_to_dispatch */)
 {
     if (event->type == EnterNotify || event->type == LeaveNotify)
-	PopdownTip();
+	ClearTip(w);
 
     if (event->type == EnterNotify)
-    {
-	if (pending_tip_timer)
-	{
-	    XtRemoveTimeOut(pending_tip_timer);
-	    pending_tip_timer = 0;
-	}
-
-	// Delay before showing the tip (in ms)
-	const int popup_delay = 750;
-
-	pending_tip_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w),
-					    popup_delay, 
-					    PopupTip, XtPointer(w));
-    }
+	RaiseTip(w);
 }
 
 // (Un)install toolbar tips for W
 static void InstallTipEvents(Widget w, bool install)
 {
-    // If no `tipString' resource is specified, don't install handler
+    // If neither `tipString' nor `documentationString' resource is
+    // specified, don't install handler
     resource_values values;
     XtGetApplicationResources(w, &values, 
 			      subresources, XtNumber(subresources), 
 			      NULL, 0);
-    if (values.tipString == 0)
+    if (values.tipString == 0 && values.documentationString == 0)
 	return;
 
 #if 0
@@ -986,33 +1182,72 @@ void InstallTipsNow(Widget w, bool install)
 		      XtNnumChildren, &num_children,
 		      NULL);
 
-	if (children)
+	if (children != 0)
 	    for (int i = 0; i < int(num_children); i++)
 		InstallTipsNow(children[i], install);
     }
+
+    if (XmIsCascadeButton(w))
+    {
+	// Traverse the menu associated with this button
+	Widget subMenuId = 0;
+	XtVaGetValues(w, XmNsubMenuId, &subMenuId, NULL);
+	if (subMenuId != 0)
+	    InstallTipsNow(subMenuId, install);
+    }
+
+    if (XmIsRowColumn(w))
+    {
+	// Traverse the menu associated with this option menu
+	unsigned char rowColumnType = XmWORK_AREA;
+	Widget subMenuId = 0;
+	XtVaGetValues(w, 
+		      XmNsubMenuId, &subMenuId,
+		      XmNrowColumnType, &rowColumnType,
+		      NULL);
+	if (rowColumnType == XmMENU_OPTION && subMenuId != 0)
+	    InstallTipsNow(subMenuId, install);
+    }
 }
 
-
-static void InstallTipsTimeOut(XtPointer client_data, XtIntervalId *)
+// Callback funtion: install tips now.
+static void InstallTipsTimeOut(XtPointer client_data, XtIntervalId *timer)
 {
     Widget w = Widget(client_data);
+    XtRemoveCallback(w, XmNdestroyCallback, 
+		     CancelTimeOut, XtPointer(*timer));
     InstallTipsNow(w, true);
 }
 
-static void UnInstallTipsTimeOut(XtPointer client_data, XtIntervalId *)
+// Callback funtion: uninstall tips now.
+static void UnInstallTipsTimeOut(XtPointer client_data, XtIntervalId *timer)
 {
     Widget w = Widget(client_data);
+    XtRemoveCallback(w, XmNdestroyCallback, 
+		     CancelTimeOut, XtPointer(*timer));
     InstallTipsNow(w, false);
 }
 
-// (Un)install tips for W and all its descendants as soon as we are back
-// in the event loop.
+// (Un)install tips for W and all its descendants.
+// We do this as soon as we are back in the event loop, since we
+// assume all children have been created until then.
 void InstallTips(Widget w, bool install)
 {
+    XtIntervalId timer;
+
     if (install)
-	XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
-			InstallTipsTimeOut, XtPointer(w));
+	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
+				InstallTipsTimeOut, XtPointer(w));
     else
-	XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
-			UnInstallTipsTimeOut, XtPointer(w));
+	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
+				UnInstallTipsTimeOut, XtPointer(w));
+
+    // Should W be destroyed beforehand, cancel installation.
+    XtAddCallback(w, XmNdestroyCallback, CancelTimeOut, XtPointer(timer));
+}
+
+// Enable or disable tips
+void EnableTips(bool enable)
+{
+    tips_enabled = enable;
 }

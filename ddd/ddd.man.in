@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "1 October 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "5 December 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -1371,6 +1371,11 @@ preferences:
 .SS "General Preferences"
 These items are found in the `\fBGeneral Preferences\fR' menu:
 .PP
+By default, when you move the pointer over a button,
+\s-2@DDD@\s+2 gives a hint on the button's meaning in a small window.
+Experienced users may find these \fIbutton hints\fR
+disturbing; this is why you can disable them.
+.PP
 If you frequently switch between \s-2@DDD@\s+2 and other multi-window
 applications, you may like to set the `\fBIconify all windows at
 once\fR' option.  This way, all \s-2@DDD@\s+2 windows are iconified
@@ -1443,6 +1448,9 @@ debugger console, creating one single big \s-2@DDD@\s+2 window, set the
 takes only effect after you have saved options and restarted
 \s-2@DDD@\s+2.  See also the `\fB\-\-attach\-windows\fR' 
 and `\fB\-\-separate\-windows\fR' options, below.
+.PP
+\s-2@DDD@\s+2 can display the status line at the bottom (`\fBat
+bottom\fR') or at the top (`\fBat top\fR').  Pick your choice.
 .PP
 By default, \s-2@DDD@\s+2 directs keyboard input to the item your
 mouse pointer points at.  If you prefer a click-to-type keyboard focus
@@ -1665,7 +1673,13 @@ the `\fBvslDefs\fR' resource, below.
 .\"
 .\"
 .SS "Options and Preferences"
-The following resources determine \s-2@DDD@\s+2 options and preferences.
+The following resources determine \s-2@DDD@\s+2 options and
+preferences.
+.TP
+.B "buttonTips (\fPclass\fB ButtonTips)"
+Whether button tips are enabled (`\fBtrue\fR', default) or
+not (`\fBfalse\fR').  Button tips are helpful for novices, but
+may be distracting for experienced users.
 .TP
 .B "cacheMachineCode (\fPclass\fB CacheMachineCode)"
 Whether to cache disassembled machine code (`\fBtrue\fR', default) or
@@ -1732,7 +1746,7 @@ command history, its history file is used, otherwise,
 If `\fBtrue\fR' (default), the data window and the debugger console
 are realized in different top-level windows.  If `\fBfalse\fR', the
 data window is attached to the debugger console.  See also the
-`\fB\-\-attach\-windows\fR' and `\fB\-\-attach\-data-window\fR'
+`\fB\-\-attach\-windows\fR' and `\fB\-\-attach\-data\-window\fR'
 options, below.
 .TP
 .B "separateExecWindow (\fPclass\fB Separate)"
@@ -1745,7 +1759,14 @@ and `\fB\-\-no\-exec\-window\fR' options, below.
 If `\fBtrue\fR' (default), the source window and the debugger console
 are realized in different top-level windows.  If `\fBfalse\fR', the
 source window is attached to the debugger console.  See also the
-`\fB\-\-attach\-windows\fR' and `\fB\-\-attach\-source-window\fR'
+`\fB\-\-attach\-windows\fR' and `\fB\-\-attach\-source\-window\fR'
+options, below.
+.TP
+.B "statusAtBottom (\fPclass\fB StatusAtBottom)"
+If `\fBtrue\fR' (default), the status line is placed at the bottom of
+the \s-2@DDD@\s+2 source window.  If `\fBfalse\fR', the status line is
+placed at the top of the \s-2@DDD@\s+2 source window.  See also the
+`\fB\-\-status\-at\-bottom\fR' and `\fB\-\-status\-at\-top\fR'
 options, below.
 .TP
 .B "suppressWarnings (\fPclass\fB SuppressWarnings)"
@@ -2629,6 +2650,9 @@ Attaches only the source window to the debugger console.
 .B \-\-attach\-data\-window
 Attaches only the source window to the debugger console.
 .TP
+.B \-\-button\-tips
+Enable button tips.
+.TP
 .B \-\-configuration
 Show the \s-2@DDD@\s+2 configuration settings and exit.
 .TP
@@ -2684,6 +2708,9 @@ Use \fIusername\fR as remote user name.  See `\fBREMOTE DEBUGGING\fR', above.
 .B \-\-manual
 Show this manual page and exit.
 .TP
+.B \-\-no\-button\-tips
+Disable button tips.
+.TP
 .B \-\-no\-exec\-window
 Do not run the debugged program in a specially created execution
 window; use the debugger console instead.  Useful for programs that have
@@ -2712,6 +2739,12 @@ See also the `\fB\-\-attach\fR' options, above.
 Use Motif scroll bars to scroll the data window.  This is the default
 in most \s-2@DDD@\s+2 configurations.  See also
 \fB\-\-panned\-graph\fR, above.
+.TP
+.B \-\-status\-at\-bottom
+Place the status line at the bottom of the source window.
+.TP
+.B \-\-status\-at\-top
+Place the status line at the top of the source window.
 .TP
 .B \-\-sync\-debugger
 Do not process X events while the debugger is busy.  This may result

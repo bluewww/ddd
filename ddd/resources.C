@@ -674,6 +674,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNstatusAtBottom,
+	XtCStatusAtBottom,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, status_at_bottom),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,
