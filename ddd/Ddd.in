@@ -575,15 +575,8 @@ Ddd*maxValueDocLength:		88
 
 ! Focus Policy
 ! POINTER means point-and-type, EXPLICIT means click-and-type.
-! Rather than accepting the user's default, we use POINTER here because:
-! 1. Using EXPLICIT focus policy works bad with a panned graph editor,
-!    since Motif has trouble with assigning focus to Athena Widgets.
-! 2. Several users use DDD in a non-Motif environment, where the click-to-type
-!    methaphor is inappropriate.
-! 3. DDD users usually are either novices or experienced programmers,
-!    who are often confused and/or embarrassed by explicit focus.
-! Users unsatisfied with this setting can change it at run-time.
-Ddd*keyboardFocusPolicy:	POINTER
+! We accept the user's default setting here.
+! Ddd*keyboardFocusPolicy:	POINTER
 
 ! X Warnings
 ! Do we wish to suppress X warnings?
@@ -1526,6 +1519,15 @@ Ddd*arg_label.tipString: \
 
 Ddd*arg_label.documentationString: \
 @rm Click to clear the argument @bf()@rm.
+
+
+!-----------------------------------------------------------------------------
+! Traversal
+!-----------------------------------------------------------------------------
+
+Ddd*arg_label.traversalOn:		false
+Ddd*status_form*traversalOn:		false
+Ddd*XmSash.traversalOn:			false
 
 
 !-----------------------------------------------------------------------------
