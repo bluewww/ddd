@@ -10,6 +10,8 @@ Ddd.m4
 Makedeps
 Makefile
 Makefile.in
+NEWS.gz
+NEWS.gz.C
 USERINFO
 acconfig.h
 aclocal.m4
@@ -47,6 +49,9 @@ ddd.info-6
 ddd.info-7
 ddd.info-8
 ddd.info-9
+ddd.info.txt
+ddd.info.txt.gz
+ddd.info.txt.gz.C
 ddd.log
 ddd.man
 ddd.man-nopics
