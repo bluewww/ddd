@@ -140,10 +140,14 @@ static void printDoneHP(Agent *print_agent, void *client_data, void *)
 		    XtPointer(client_data));
 }
 
+
+static string print_output_buffer;
+
 static void printOutputHP(Agent *, void *, void *call_data)
 {
     DataLength *input = (DataLength *)call_data;
-    post_warning(string(input->data, input->length), "print_warning");
+    print_output_buffer += string(input->data, input->length);
+    post_warning(print_output_buffer, "print_warning");
 }
 
 // Print according to given BoxPrintGC
@@ -157,6 +161,8 @@ static int print(string command, BoxPrintGC& gc, bool selectedOnly)
     StatusDelay delay("Printing graph " + quote(tempfile));
 
     command = command + " " + tempfile;
+
+    print_output_buffer = "";
 
     LiterateAgent *print_agent = 
 	new LiterateAgent(XtWidgetToApplicationContext(gdb_w), command);
