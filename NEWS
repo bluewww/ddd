@@ -6,9 +6,10 @@ DDD 3.2.1
 
 DDD 3.2.1 fixes a couple of minor bugs.
 
-- DDD PostScript documentation can now be printed using multiple pages per sheet
+- DDD PostScript documentation can now be printed on multiple pages per sheet
 - [LessTif] The `Print' dialog works with LessTif (esp. printing to file)
 - [Perl] In the data display, Perl hash keys are properly quoted.
+- [Build] Small fixes for building with LessTif on SGI
 
 
 

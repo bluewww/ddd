@@ -430,8 +430,8 @@ GraphEditClassRec graphEditClassRec = {
     /* syn_resources            */ NULL,
     /* num_syn_resources        */ 0,
     /* extension                */ NULL
-#if defined(__sgi)
-	// Paul Sydney <sydney@ulua.mhpcc.af.mil> reports that Motif
+#if defined(__sgi) && !defined(LesstifVersion)
+	// Paul Sydney <sydney@ulua.mhpcc.af.mil> reports that OSF/Motif
 	// on an SGI Indy running IRIX 6.5 has an extra
 	// `_SG_vendorExtension' field.  If this is not initialized
 	// explicitly, then EGCS 1.1 gives a warning.
