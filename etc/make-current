@@ -162,6 +162,7 @@ ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-95
 (cd ddd && aclocal)
 autoconf -l ddd
 (cd ddd && autoconf)
+(cd readline && autoconf)
 (cd termcap && autoconf)
 sh ./configure -v
 
@@ -199,7 +200,7 @@ if [ -f ddd-$date.tar.gz ]; then
 
   # Move dist file into target area
   rm -f $target/ddd-*.tar.gz
-  mv ddd-$date.tar.gz $target
+  mv ddd-*.tar.gz $target
 
   if $local; then
     :
