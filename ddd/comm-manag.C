@@ -684,7 +684,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_frame)
 	    cmds += gdb->frame_command();
 	if (plus_cmd_data->refresh_registers)
-	    cmds += "info registers";
+	    cmds += source_view->refresh_registers_command();
 	if (plus_cmd_data->refresh_threads)
 	    cmds += "info threads";
 	if (plus_cmd_data->refresh_data)

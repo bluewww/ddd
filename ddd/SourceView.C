@@ -4408,11 +4408,15 @@ void SourceView::process_registers(string& register_output)
 
 void SourceView::refresh_registers()
 {
-    string registers = 
-	gdb_question(all_registers ? "info all-registers" : "info registers");
+    string registers = gdb_question(refresh_registers_command());
     if (registers == NO_GDB_ANSWER)
 	registers = "No registers.";
     process_registers(registers);
+}
+
+string SourceView::refresh_registers_command()
+{
+    return all_registers ? "info all-registers" : "info registers";
 }
 
 void SourceView::ViewRegistersCB(Widget, XtPointer, XtPointer)

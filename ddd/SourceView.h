@@ -447,6 +447,9 @@ public:
     static void refresh_registers();
     static void refresh_threads();
 
+    // Refreshing commands
+    static string refresh_registers_command();
+
     // Check whether specific commands are required at next prompt
     static bool where_required();
     static bool register_required();
@@ -481,8 +484,9 @@ public:
     // Return current directory
     static string pwd() { return current_pwd; }
 
-    // Return source code widget (read-only)
+    // Return source text and machine code widget (read-only)
     static Widget source() { return source_text_w; }
+    static Widget code()   { return code_text_w; }
 
     // Clear caches
     static void clear_file_cache();
