@@ -849,7 +849,8 @@ void gdbOpenSourceWindowCB(Widget w, XtPointer client_data,
 
     popup_shell(source_view_shell);
 
-    gdbOpenToolWindowCB(w, client_data, call_data);
+    if (!app_data.command_toolbar)
+	gdbOpenToolWindowCB(w, client_data, call_data);
 
     app_data.source_window = true;
 
@@ -863,7 +864,8 @@ void gdbOpenCodeWindowCB(Widget w, XtPointer client_data,
 
     popup_shell(source_view_shell);
 
-    gdbOpenToolWindowCB(w, client_data, call_data);
+    if (!app_data.command_toolbar)
+	gdbOpenToolWindowCB(w, client_data, call_data);
 
     app_data.disassemble = true;
 
