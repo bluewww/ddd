@@ -684,6 +684,7 @@ XSTUFF_OBJECTS = \
 	fileSBF.o    \
 	frame.o      \
 	longName.o   \
+	selection.o  \
 	simpleMenu.o \
 	verify.o     \
 	ComboBox.o   \
