@@ -130,6 +130,18 @@ void ImmediateHelpCB(Widget widget, XtPointer, XtPointer call_data)
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
 }
 
+void HelpOnThisCB(Widget widget, XtPointer client_data, XtPointer call_data)
+{
+    if (widget == 0)
+	return;
+
+    Widget w = (Widget)client_data;
+
+    // Get help on this widget
+    MString text = get_help_string(w);
+    MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
+}
+
 void HelpOnWindowCB(Widget widget, XtPointer, XtPointer call_data)
 {
     // Get a shell window

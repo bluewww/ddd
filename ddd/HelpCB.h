@@ -57,6 +57,10 @@ extern void HelpOnHelpCB(Widget widget, XtPointer client_data,
 extern void ImmediateHelpCB(Widget widget, XtPointer client_data, 
 			    XtPointer call_data);
 
+// Call help for widget given in "Widget w = (Widget)client_data".
+extern void HelpOnThisCB(Widget widget, XtPointer client_data, 
+			 XtPointer call_data);
+
 // Call help with "XmString s = (XmString)client_data" as text.
 // May be used for unchanged text display.
 extern void MStringHelpCB(Widget widget, XtPointer client_data, 
