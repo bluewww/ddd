@@ -73,7 +73,8 @@ void _gdb_command(string command, Widget origin, OQCProc callback,
 {
     if (gdb->isReadyWithPrompt())
     {
-	set_status("");
+	if (verbose)
+	    set_status("");
 
 	if (command.length() == 1 && iscntrl(command[0]))
 	    promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
