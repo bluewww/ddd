@@ -45,6 +45,14 @@ GCC 2.3, 2.4, 2.5
     Lots and lots of warnings; nearly all of them insignificant.
 
 
+GCC and LIBG++
+==============
+
+    If you have multiple copies of gcc and/or libg++ installed, be
+    sure that the referenced versions match each other.  This is a
+    common source for various problems.
+
+
 HP-UX
 =====
 
