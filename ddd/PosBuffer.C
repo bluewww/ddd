@@ -269,7 +269,7 @@ void PosBuffer::filter (string& answer)
 	{
 	    // Try to find out current PC even for non-existent source
 
-	    if (pc_buffer == "")
+	    if (check_pc && pc_buffer == "")
 	    {
 		// `$pc = ADDRESS'
 #if RUNTIME_REGEX
@@ -296,7 +296,8 @@ void PosBuffer::filter (string& answer)
 		}
 	    }
 	    
-	    if (pc_buffer == "" || func_buffer == "")
+	    if (check_pc && pc_buffer == "" || 
+		check_func && func_buffer == "")
 	    {
 		// `Breakpoint N, ADDRESS in FUNCTION (ARGS...)'
 #if RUNTIME_REGEX
@@ -312,7 +313,8 @@ void PosBuffer::filter (string& answer)
 		}
 	    }
 	    
-	    if (pc_buffer == "" || func_buffer == "")
+	    if (check_pc && pc_buffer == "" || 
+		check_func && func_buffer == "")
 	    {
 		// `#FRAME ADDRESS in FUNCTION (ARGS...)'
 #if RUNTIME_REGEX
@@ -329,7 +331,8 @@ void PosBuffer::filter (string& answer)
 		}
 	    }
 	    
-	    if (pc_buffer == "" || func_buffer == "")
+	    if (check_pc && pc_buffer == "" || 
+		check_func && func_buffer == "")
 	    {
 		// `No line number available for 
 		// address ADDRESS <FUNCTION>'
@@ -353,7 +356,7 @@ void PosBuffer::filter (string& answer)
 		}
 	    }
 
-	    if (pc_buffer == "" && answer != "")
+	    if (check_pc && pc_buffer == "" && answer != "")
 	    {
 		// `ADDRESS in FUNCTION'
 #if RUNTIME_REGEX
@@ -382,7 +385,7 @@ void PosBuffer::filter (string& answer)
 
 	    // Try to find out current function name, even for
 	    // non-existing addresses
-	    if (func_buffer == "")
+	    if (check_func && func_buffer == "")
 	    {
 		// `Breakpoint N, FUNCTION (ARGS...)'
 #if RUNTIME_REGEX
@@ -393,7 +396,7 @@ void PosBuffer::filter (string& answer)
 		    fetch_function(answer, bp_index, func_buffer);
 	    }
 
-	    if (func_buffer == "")
+	    if (check_func && func_buffer == "")
 	    {
 		// `#FRAME FUNCTION'
 #if RUNTIME_REGEX
@@ -407,7 +410,7 @@ void PosBuffer::filter (string& answer)
 		}
 	    }
 
-	    if (func_buffer == "")
+	    if (check_func && func_buffer == "")
 	    {
 		// FUNCTION (ARGS...) at FILE:POS
 		int at_index = answer.index(" at ");

@@ -3868,6 +3868,18 @@ void DataDisp::process_user (StringArray& answers)
 // Handle change of current scope
 //-----------------------------------------------------------------------------
 
+bool DataDisp::need_scope()
+{
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->deferred())
+	    return true;
+    }
+}
+
 void DataDisp::process_scope(const string& scope)
 {
     // Fetch deferred displays that are in current scope
@@ -3924,6 +3936,7 @@ void DataDisp::process_scope(const string& scope)
 	}
     }
 }
+
 
 
 //----------------------------------------------------------------------------

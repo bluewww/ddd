@@ -59,6 +59,9 @@ class PosBuffer {
     string auto_cmd_buffer;	// AutoCommand found
 
 public:
+    bool check_pc;		// Whether to search for PC
+    bool check_func;		// Whether to search for function name
+
     // Call this before filtering any new output.
     void clear()
     {
@@ -72,6 +75,8 @@ public:
 	signaled        = false;
 	recompiled      = false;
 	auto_cmd_buffer = "";
+	check_pc        = true;
+	check_func      = true;
     }
 
     // Constructor
@@ -85,7 +90,9 @@ public:
 	  terminated(false),
 	  signaled(false),
 	  recompiled(false),
-	  auto_cmd_buffer("")
+	  auto_cmd_buffer(""),
+	  check_pc(true),
+          check_func(true)
     {
 	// clear();
     }
@@ -114,6 +121,7 @@ public:
     bool signaled_found()   const { return signaled; }
     bool recompiled_found() const { return recompiled; }
 };
+
 
 // A regex for C addresses ("0xdead"), Modula-2 addresses ("0BEEFH"),
 // and Chill addresses ("H'AFFE").  XDB uses the pattern `00000000'

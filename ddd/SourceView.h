@@ -782,6 +782,9 @@ public:
     // True iff we have some selection
     static bool have_selection();
 
+    // True iff we need the current program counter
+    static bool need_pc() { return disassemble; }
+
     // Return current frame (-1 if unknown)
     static int get_frame() { return current_frame; }
 

@@ -323,6 +323,7 @@ public:
 
     // Process current scope
     static void process_scope(const string& scope);
+    static bool need_scope();
 
     // Set shortcut menu to expressions EXPRS
     static void set_shortcut_menu(const StringArray& exprs,
