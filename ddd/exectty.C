@@ -108,7 +108,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     if (pid > 0 && !remote_gdb() && kill(pid, 0) == 0)
 	return;
 
-    StatusDelay delay("Starting execution tty");
+    StatusDelay delay("Starting execution window");
 
     string old_ttyname = ttyname;
 
@@ -182,7 +182,8 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 	pid = -1;
 
     if (pid < 0)
-	post_error("Could not start execution tty", "tty_exec_error", origin);
+	post_error("Could not start execution window", 
+		   "tty_exec_error", origin);
 
     // Set icon and group leader
     if (windowid)
@@ -533,7 +534,7 @@ static inline void addcap(string& s, const char *cap, char *& b)
 // Initialize execution TTY with an appropriate escape sequence
 static void initialize_tty(const string& tty_name, const string& tty_term)
 {
-    StatusDelay delay("Initializing execution tty");
+    StatusDelay delay("Initializing execution window");
 
     char buffer[2048];
     string init;
@@ -675,7 +676,7 @@ void kill_exec_tty()
 {
     if (separate_tty_pid > 0)
     {
-	StatusDelay delay("Closing execution tty");
+	StatusDelay delay("Closing execution window");
 
 	if (remote_gdb())
 	{

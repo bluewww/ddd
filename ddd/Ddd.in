@@ -109,9 +109,9 @@ Ddd*globalTabCompletion: true
 Ddd*saveOptionsOnExit: false
 
 
-! The command to invoke a separate tty for showing I/O of the debugged
-! program.  Bourne shell commands to run in the separate tty are appended
-! to this string.
+! The command to invoke the execution window for showing I/O of the debugged
+! program.  To this string, DDD appends bourne shell commands which must be
+! run in the execution window.
 Ddd*termCommand: xterm \
 -bg 'grey90' -fg 'black' \
 -fn '-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*' \
@@ -123,15 +123,15 @@ Ddd*termCommand: xterm \
 Ddd*termType: xterm
 
 
-! The `useTTYCommand' resource sets the redirection mode for separate TTYs.
-! Basically, there are two ways to redirect process I/O.  Both have
+! The `useTTYCommand' resource sets the redirection mode for the execution
+! window. Basically, there are two ways to redirect process I/O.  Both have
 ! advantages and disadvantages.
 !
 ! * GDB provides a `tty' command to redirect I/O to a separate tty.
 !   This is portable, but on some systems, there is the nasty side-effect
 !   that redirection can not be undone.
 !   For DBX, this means using the `dbxenv run_io pty' and `dbxenv run_pty'
-!   commands to redirect I/O to a separate tty.
+!   commands to redirect I/O to the execution window.
 !   Set `useTTYCommand' to `true' to enable this behaviour.
 ! 
 ! * As an alternative, DDD can redirect the process I/O explicitly,
@@ -1594,8 +1594,8 @@ Ddd*menubar.view.helpString:	\
 \
 @rm This is the @sl Windows Menu.@rm\n\
 \n\
-@tt \267 @bf Command Tool... @rm - raise and recenter the command tool.\n\
-@tt \267 @bf Execution Window... @rm - raise the execution window.\n\
+@tt \267 @bf Command Tool... @rm - open and recenter the command tool.\n\
+@tt \267 @bf Execution Window... @rm - open the execution window.\n\
 \n\
 @tt \267 @bf Data Window @rm - toggle display of program data.\n\
 @tt \267 @bf Source Window @rm - toggle display of program source.\n\
@@ -1604,7 +1604,7 @@ Ddd*menubar.view.helpString:	\
 Ddd*viewMenu.tool.labelString:			Command Tool...
 Ddd*viewMenu.tool.mnemonic:			T
 Ddd*viewMenu.tool.documentationString: \
-@rm Open and recenter the command tool
+@rm Open the command tool and move it to its original position
 
 Ddd*viewMenu.exec.labelString:			Execution Window...
 Ddd*viewMenu.exec.mnemonic:			E
@@ -4111,7 +4111,7 @@ Ddd*print_failed_error*helpString:	\
 @rm The file holding the graph picture could not be written.\n\
 The printing has been cancelled.
 
-Ddd*tty_exec_error_popup.title: @DDD@: No Execution TTY
+Ddd*tty_exec_error_popup.title: @DDD@: No Execution Window
 Ddd*tty_exec_error*helpString:	\
 @rm The terminal emulator for the execution window\n\
 could not be invoked.  The debugged process will execute in the\n\
