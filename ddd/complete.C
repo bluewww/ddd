@@ -188,6 +188,7 @@ static string completion_command(const string& cmd)
 
     default:
 	assert(0);
+	::abort();
 	return "";
     }
 }

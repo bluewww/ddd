@@ -101,6 +101,7 @@ void DispBuffer::filter (string& answer)
 
     default:
 	assert(0);		// This can't happen.
+	::abort();
 	break;
     }
 
@@ -132,6 +133,7 @@ string DispBuffer::answer_ended ()
     default:
     {
 	assert(0);		// This can't happen
+	::abort();
 	break;
     }
     }

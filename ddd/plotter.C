@@ -1117,8 +1117,10 @@ static void ApplyPlotCommandCB(Widget, XtPointer client_data, XtPointer)
 	cmd_s = XmTextFieldGetString(text);
     else if (XmIsText(text))
 	cmd_s = XmTextGetString(text);
-    else
-	assert(0);
+    else {
+        assert(0);
+	::abort();
+    }
 
     string cmd = cmd_s;
     XtFree(cmd_s);

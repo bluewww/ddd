@@ -553,5 +553,6 @@ const char *default_debugger(const string& debugger_name, DebuggerType type)
 
     // This can't happen.
     assert(0);
+    ::abort();
     return "false";
 }

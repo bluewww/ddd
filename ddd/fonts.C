@@ -134,6 +134,7 @@ static string userfont(const AppData& ad, DDDFont font)
     }
 
     assert(0);
+    ::abort();
     return "";			// Never reached
 }
 
@@ -155,6 +156,7 @@ static string font_type(DDDFont font)
     }
 
     assert(0);
+    ::abort();
     return "";			// Never reached
 }
 
@@ -175,6 +177,7 @@ static string fallbackfont(DDDFont font)
     }
 
     assert(0);
+    ::abort();
     return "";			// Never reached
 }
 
@@ -622,6 +625,7 @@ void set_font(DDDFont font, const string& name)
     }
     default:
 	assert(0);
+	::abort();
     }
 }
 
@@ -644,6 +648,7 @@ static void set_font_size(DDDFont font, int size)
 	break;
     default:
 	assert(0);
+	::abort();
     }
 }
 

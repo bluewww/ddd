@@ -1337,6 +1337,7 @@ string PosBuffer::answer_ended ()
     default:
     {
 	assert(0);		// This can't happen
+	::abort();
 	break;
     }
     }

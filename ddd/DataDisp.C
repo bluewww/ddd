@@ -4472,6 +4472,7 @@ void DataDisp::refresh_displayOQAC (const StringArray& answers,
 
 	default:
 	    assert(0);
+	    ::abort();
 	    break;
 	}
     }

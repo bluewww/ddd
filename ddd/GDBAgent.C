@@ -1596,6 +1596,7 @@ void GDBAgent::handle_input(string& answer)
 
     default:
 	assert(0);
+	::abort();
 	break;
     }
 

@@ -188,6 +188,7 @@ void LineGraphEdge::findLine(const BoxPoint& c1, const BoxPoint& c2,
 	}
 
     assert(0);
+    ::abort();
 }
 
 

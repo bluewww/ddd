@@ -423,6 +423,7 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
     }
 
     assert(0);
+    ::abort();
     return false;
 }
 
