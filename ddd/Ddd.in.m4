@@ -2272,7 +2272,7 @@ Ddd*helpMenu.onVersion.documentationString:	\
 ! Preferences
 !-----------------------------------------------------------------------------
 
-Ddd*preferences_popup*okLabelString: 		Close
+! Ddd*preferences_popup*okLabelString: 		Close
 Ddd*preferences_popup*cancelLabelString:	Reset
 Ddd*preferences_popup.title:			DDD: Preferences
 
@@ -2553,7 +2553,7 @@ Ddd*showStartupLogoMenu*none.labelString:	not at all
 ! Settings
 !-----------------------------------------------------------------------------
 
-Ddd*settings_popup*okLabelString: Close
+! Ddd*settings_popup*okLabelString: Close
 Ddd*settings_popup*cancelLabelString: Reset
 Ddd*settings_popup.title: DDD: Debugger Settings
 Ddd*settings_popup.autoUnmanage: false
@@ -2599,7 +2599,7 @@ Click on LBL(?) near an item to get further information.\n\
 In a text field, press the KEY_RETURN key to commit the changes.\n\
 \n\
 Click on LBL(Reset) to restore the saved settings.\n\
-Click on LBL(Close) to close this window.
+Click on LBL(OK) to close this window.
 
 
 !-----------------------------------------------------------------------------
@@ -2680,7 +2680,7 @@ Use LBL(Edit) | LBL(Save Options) to save all shortcuts.
 ! Status displays
 !-----------------------------------------------------------------------------
 
-Ddd*infos_popup*okLabelString: Close
+! Ddd*infos_popup*okLabelString: Close
 Ddd*infos_popup*cancelLabelString: Reset
 Ddd*infos_popup.title: DDD: Status Displays
 Ddd*infos_popup.autoUnmanage: false
@@ -2711,7 +2711,7 @@ in the data window.  Please pick your choice from the list.\n\
 Click on LBL(?) near an item to get further information.\n\
 \n\
 Click on LBL(Reset) to delete all status displays.\n\
-Click on LBL(Close) to close this window.
+Click on LBL(OK) to close this window.
 
 
 
@@ -4012,9 +4012,9 @@ Ddd*edit_breakpoints_dialog*buttons*delete.documentationString:     \
 
 Ddd*stack_dialog_popup.title:		  DDD: Backtrace
 Ddd*stack_dialog.listLabelString:	  Backtrace
-Ddd*stack_dialog.okLabelString:		  Close
-Ddd*stack_dialog.applyLabelString:	  Up
-Ddd*stack_dialog.cancelLabelString:	  Down
+Ddd*stack_dialog.okLabelString:		  Up
+Ddd*stack_dialog.applyLabelString:	  Down
+Ddd*stack_dialog.cancelLabelString:	  Close
 Ddd*stack_dialog*visibleItemCount:	  10
 
 Ddd*stack_dialog*helpString:	  \
@@ -4084,8 +4084,7 @@ Select any thread to make it the current thread.
 
 Ddd*history_dialog_popup.title:		    DDD: Command History
 Ddd*history_dialog.listLabelString:	    Command History
-Ddd*history_dialog.okLabelString:	    Close
-Ddd*history_dialog.applyLabelString:	    Apply
+Ddd*history_dialog.cancelLabelString:	    Close
 Ddd*history_dialog*visibleItemCount:	    10
 
 Ddd*history_dialog*helpString:	    \
@@ -4096,7 +4095,7 @@ sessions, so that you can be certain of precisely what happened.\n\
 Use this window to manage the DDD command history facility.\n\
 \n\
 Select a specific command to have it copied at the @GDB@ prompt.\n\
-Click on LBL(Apply) to execute the current command.
+Click on LBL(OK) or LBL(Apply) to execute the current command.
 
 
 !-----------------------------------------------------------------------------

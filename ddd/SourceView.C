@@ -2615,8 +2615,8 @@ SourceView::SourceView(XtAppContext app_context, Widget parent)
     XtUnmanageChild(XmSelectionBoxGetChild(stack_dialog_w, 
 					   XmDIALOG_SELECTION_LABEL));
 
-    up_w   = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_APPLY_BUTTON);
-    down_w = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_CANCEL_BUTTON);
+    up_w   = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_OK_BUTTON);
+    down_w = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_APPLY_BUTTON);
 
     XtSetSensitive(up_w,   False);
     XtSetSensitive(down_w, False);
@@ -2637,16 +2637,20 @@ SourceView::SourceView(XtAppContext app_context, Widget parent)
 		  XmNbrowseSelectionCallback, SelectFrameCB, 0);
 
     XtAddCallback(stack_dialog_w,
-		  XmNokCallback, UnmanageThisCB, stack_dialog_w);
+		  XmNokCallback, gdbCommandCB, "up");
     XtAddCallback(stack_dialog_w,
-		  XmNokCallback, StackDialogPoppedDownCB, 0);
+		  XmNapplyCallback, gdbCommandCB, "down");
     XtAddCallback(stack_dialog_w,
-		  XmNapplyCallback, gdbCommandCB, "up");
+		  XmNcancelCallback, UnmanageThisCB, stack_dialog_w);
     XtAddCallback(stack_dialog_w,
-		  XmNcancelCallback, gdbCommandCB, "down");
+		  XmNcancelCallback, StackDialogPoppedDownCB, 0);
     XtAddCallback(stack_dialog_w,
 		  XmNhelpCallback, ImmediateHelpCB, 0);
 
+    Widget cancel_w = XmSelectionBoxGetChild(stack_dialog_w, 
+					     XmDIALOG_CANCEL_BUTTON);
+
+    XtVaSetValues(stack_dialog_w, XmNdefaultButton, cancel_w, 0);
 
     // Create register view
     arg = 0;

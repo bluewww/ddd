@@ -306,18 +306,10 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(gdb_history_w, 
 					   XmDIALOG_SELECTION_LABEL));
-    XtUnmanageChild(XmSelectionBoxGetChild(gdb_history_w, 
-					   XmDIALOG_CANCEL_BUTTON));
 
     gdb_commands_w = XmSelectionBoxGetChild(gdb_history_w, XmDIALOG_LIST);
     XtVaSetValues(gdb_commands_w,
 		  XmNselectionPolicy, XmSINGLE_SELECT,
-		  NULL);
-
-    Widget apply_w = XmSelectionBoxGetChild(gdb_history_w, 
-					    XmDIALOG_APPLY_BUTTON);
-    XtVaSetValues(gdb_history_w,
-		  XmNdefaultButton, apply_w,
 		  NULL);
 
     XtAddCallback(gdb_commands_w,
@@ -329,10 +321,12 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
     XtAddCallback(gdb_commands_w,
 		  XmNbrowseSelectionCallback, SelectHistoryCB, 0);
 
-    XtAddCallback(gdb_history_w, XmNokCallback, DestroyThisCB, gdb_history_w);
+    XtAddCallback(gdb_history_w, XmNokCallback, gdbApplySelectionCB, 0);
     XtAddCallback(gdb_history_w, XmNapplyCallback, gdbApplySelectionCB, 0);
+    XtAddCallback(gdb_history_w, XmNcancelCallback, DestroyThisCB, 
+		  gdb_history_w);
     XtAddCallback(gdb_history_w, XmNhelpCallback,  ImmediateHelpCB, 0);
-    XtAddCallback(gdb_history_w, XmNdestroyCallback, 
+    XtAddCallback(gdb_history_w, XmNdestroyCallback,
 		  HistoryDestroyedCB, XtPointer(gdb_history_w));
 
     bool *selected = new bool[gdb_history.size() + 1];
