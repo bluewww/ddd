@@ -2607,8 +2607,15 @@ Set the current line to \fIvalue\fR.  Bound to \fBCtrl+U\fR.
 .\"
 You can use the following options when starting \s-2@DDD@\s+2.  All
 options may be abbreviated, as long as they are unambiguous; single
-dashes may also be used.  Options not listed here are passed to the
-inferior debugger.
+dashes may also be used.  \s-2@DDD@\s+2 also understands the usual X
+options such as `\fB\-display\fR' or `\fB\-geometry\fR'; see
+\fBX(1)\fR for details.
+.PP
+All other arguments and options are passed to the inferior debugger.
+To pass an option to the inferior debugger that conflicts with an X
+option, or with a \s-2@DDD@\s+2 option listed here, use the
+`\fB\-\-debugger\fR' option, below.
+.PP
 .\"
 .TP
 .B \-\-attach\-windows
@@ -2635,6 +2642,14 @@ Run the \s-2DBX\s+2 debugger as inferior debugger.
 Invoke the inferior debugger \fIname\fR.  This is useful if you have
 several debugger versions around, or if the inferior debugger cannot
 be invoked as `\fBgdb\fR', `\fBdbx\fR', or `\fBxdb\fR', respectively.
+This option can also be used to pass options to the inferior debugger
+that would otherwise conflict with \s-2@DDD@\s+2 options.
+For instance, to pass a `\fB\-d \fIdirectory\fR' option to \s-2XDB\s+2, use:
+.sp
+.br
+  \fB@ddd@\ \-\-debugger "xdb \-d \fIdirectory\fB"\fR
+.br
+.sp
 .TP
 .B \-\-exec\-window
 Run the debugged program in a specially created execution window.
