@@ -46,6 +46,7 @@ char value_read_rcsid[] =
 #include "cook.h"
 #include "ddd.h"
 #include "GDBAgent.h"
+#include "PosBuffer.h"
 
 static regex RXindex("[[]-?[0-9][0-9]*].*");
 static regex RXvtable("[^\n]*<[^\n>]* v(irtual )?t(a)?bl(e)?>[^{},]*[{].*");
@@ -126,12 +127,8 @@ DispValueType determine_type (string value)
     }
 
     // Pointers.
-    // XDB uses the pattern `00000000' for nil pointers.
     // GDB prepends the exact pointer type in parentheses.
-    static regex 
-	RXpointer_value("([(].*[)] )?"
-			"(0(0|x)[0-9a-f]+|[0-9A-F]+H"
-			"|[(]nil[)]|NIL|16_[0-9a-f]+).*");
+    static regex RXpointer_value("([(].*[)] )?" RXADDRESS ".*");
     if (value.matches(RXpointer_value))
 	return Pointer;
 

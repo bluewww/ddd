@@ -100,8 +100,12 @@ public:
     }
 };
 
-// A regex for C addresses ("0xdead") and Modula-2 addresses ("0BEEFH");
-#define RXADDRESS "0x[0-9a-fA-F]+|0[0-9a-fA-F][hH]"
+// A regex for C addresses ("0xdead"), Modula-2 addresses ("0BEEFH"),
+// and Chill addresses ("H'AFFE").  XDB uses the pattern `00000000' for
+// nil pointers; XBD uses `nil' and `NIL'.  The origin of the last
+// format "16_FFFF" is lost in the mist of time.
+#define RXADDRESS "(0x[0-9a-fA-F]+|0[0-9a-fA-F]+[hH]|H'[0-9a-fA-F]+" \
+                  "|00+|[(]nil[)]|NIL|16_[0-9a-f]+)"
 extern regex rxaddress;
 
 #endif
