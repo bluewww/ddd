@@ -1461,7 +1461,7 @@ $(icondir)/dddmask.xbm: $(icondir)/ddd.xpm
 
 $(icondir)/dddlogo.xbm: $(icondir)/dddlogo.xpm
 	$(SXPM) -nod -o - -grey $(icondir)/dddlogo.xpm | $(XPMTOPPM) | \
-	$(PNMDEPTH) 255 | $(PNMGAMMA) 0.45 | $(PPMTOPGM) | $(PGMENHANCE) -7 | \
+	$(PNMDEPTH) 255 | $(PNMGAMMA) 0.75 | $(PPMTOPGM) | $(PGMENHANCE) -7 | \
 	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddlogo/g' > tmp.xbm
 	test -s tmp.xbm && $(MV) tmp.xbm $@ || ($(RM) tmp.xbm; false)
 
