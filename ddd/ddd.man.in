@@ -21,9 +21,10 @@
 .\" along with DDD -- see the file COPYING.  If not, write to the Free
 .\" Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 .\" 
-.\" DDD is the GDB-based Data Display Debugger.
-.\" Contact ddd@ips.cs.tu-bs.de for details.
-.\"
+.\" DDD is the data display debugger.
+.\" For details, see the DDD World-Wide-Web page, 
+.\" `http://www.cs.tu-bs.de/softech/ddd/',
+.\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
 .TH @ddd@ 1 "12 January 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
@@ -1056,8 +1057,8 @@ You may also interrupt \s-2@DDD@\s+2 using an interrupt signal
 inferior \s-2GDB\s+2 or \s-2DBX\s+2 debugger is interrupted as well.
 Use this as a last resort in emergencies only\(em\&if \s-2@DDD@\s+2
 hangs, for example.
-
-
+.\"
+.\"
 .\" ---------------
 .SH "REMOTE DEBUGGING"
 .\" ---------------
@@ -1111,8 +1112,34 @@ operation than normal.
 To help you find problems due to remote execution, run \s-2@DDD@\s+2 with the
 `\fB\-\-trace\-shell\-commands\fR' option.  This prints the shell
 commands issued by \s-2@DDD@\s+2 on standard error.
-
-
+.\"
+.\"
+.\" ---------------
+.SH "ROOT DEBUGGING"
+.\" ---------------
+.\"
+Sometimes, you may require to debug programs with root privileges, but
+without actually logging in as root.  This is usually done by
+installing the debugger \fIsetuid root\fR, that is, having the
+debugger run with root privileges.  For security reasons, you cannot
+install \s-2@DDD@\s+2 as a setuid program.  Instead, you should invoke
+\s-2@DDD@\s+2 such that a \fIsetuid\fR copy of the inferior debugger
+is used.
+.PP
+Here is an example.  Have a \fIsetuid root\fR copy of \s-2GDB\s+2
+installed as `\fBrootgdb\fR'.  Then invoke
+.sp
+.br
+  \fB@ddd@\ \-\-debugger rootgdb\fR
+.br
+.sp
+to debug programs with root privileges.
+.PP
+Since a program like `\fBrootgdb\fR' grants root privileges to any
+invoking user, you should give it very limited access.
+.PP
+.\"
+.\"
 .\" ---------------
 .SH "INTEGRATING DDD"
 .\" ---------------
