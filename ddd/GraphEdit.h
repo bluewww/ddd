@@ -76,6 +76,7 @@
 #define XtNnodeColor                "nodeColor"
 #define XtNedgeColor                "edgeColor"
 #define XtNframeColor               "frameColor"
+#define XtNoutlineColor             "outlineColor"
 #define XtNgridColor                "gridColor"
 #define XtNselectColor              "selectColor"
 

@@ -150,6 +150,8 @@ static XtResource resources[] = {
 	offset(edgeColor), XtRCallProc, XtPointer(defaultForeground) },
     { XtNframeColor, XtCColor, XtRPixel, sizeof(Pixel),
 	offset(frameColor), XtRCallProc, XtPointer(defaultForeground) },
+    { XtNoutlineColor, XtCColor, XtRPixel, sizeof(Pixel),
+	offset(outlineColor), XtRCallProc, XtPointer(defaultForeground) },
     { XtNgridColor, XtCColor, XtRPixel, sizeof(Pixel),
 	offset(gridColor), XtRCallProc, XtPointer(defaultForeground) },
     { XtNselectColor, XtCColor, XtRPixel, sizeof(Pixel),
@@ -812,6 +814,7 @@ static void setGCs(Widget w)
     const Pixel nodeColor           = _w->graphEdit.nodeColor;
     const Pixel edgeColor           = _w->graphEdit.edgeColor;
     const Pixel frameColor          = _w->graphEdit.frameColor;
+    const Pixel outlineColor        = _w->graphEdit.outlineColor;
     const Pixel selectColor         = _w->graphEdit.selectColor;
 
 
@@ -821,6 +824,7 @@ static void setGCs(Widget w)
     GC& invertGC                    = _w->graphEdit.invertGC;
     GC& clearGC                     = _w->graphEdit.clearGC;
     GC& frameGC                     = _w->graphEdit.frameGC;
+    GC& outlineGC                   = _w->graphEdit.outlineGC;
 
     // set nodeGC
     XGCValues gcv;
@@ -865,6 +869,15 @@ static void setGCs(Widget w)
     gcv.plane_mask = frameColor ^ background;
     frameGC = XtGetGC(w, GCForeground | GCFunction | 
 		      GCLineWidth | GCLineStyle | GCPlaneMask, &gcv);
+
+    // set outlineGC
+    gcv.foreground = outlineColor;
+    gcv.function   = GXinvert;
+    gcv.line_width = 1;
+    gcv.line_style = LineSolid;
+    gcv.plane_mask = outlineColor ^ background;
+    outlineGC = XtGetGC(w, GCForeground | GCFunction | 
+			GCLineWidth | GCLineStyle | GCPlaneMask, &gcv);
 }
 
 
@@ -1310,15 +1323,14 @@ static BoxPoint actionOffset(Widget w)
 }
 
 // Draw moving frames and edges for nodes at (endAction - startAction)
-static void drawMoveFrames(Widget w, 
-			   const BoxPoint& offset)
+static void drawOutlines(Widget w, const BoxPoint& offset)
 {
     const GraphEditWidget _w            = GraphEditWidget(w);
     const Graph* graph                  = _w->graphEdit.graph;
     const Boolean rubberArrows          = _w->graphEdit.rubberArrows;
     const Boolean rubberEdges           = _w->graphEdit.rubberEdges;
     const GraphGC& graphGC              = _w->graphEdit.graphGC;
-    const GC& frameGC                   = _w->graphEdit.frameGC;
+    const GC& outlineGC                 = _w->graphEdit.outlineGC;
 
     for (GraphNode *node = graph->firstNode(); node != 0;
 	node = graph->nextNode(node))
@@ -1327,7 +1339,7 @@ static void drawMoveFrames(Widget w,
 	{
 	    // this should also handle opaqueMove (FIXME)...
 	    BoxRegion r = node->region(graphGC);
-	    XDrawRectangle(XtDisplay(w), XtWindow(w), frameGC,
+	    XDrawRectangle(XtDisplay(w), XtWindow(w), outlineGC,
 		r.origin(X) + offset[X], r.origin(Y) + offset[Y],
 		r.space(X), r.space(Y));
 	}
@@ -1336,7 +1348,7 @@ static void drawMoveFrames(Widget w,
     if (rubberEdges)
     {
 	GraphGC gc(graphGC);
-	gc.edgeGC           = frameGC;
+	gc.edgeGC           = outlineGC;
 	gc.offsetIfSelected = offset;
 	gc.drawArrowHeads   = rubberArrows;
 
@@ -1612,8 +1624,8 @@ static void Follow(Widget w, XEvent *event, String *, Cardinal *)
 	    BoxPoint newOffset = actionOffset(w);
 	    if (newOffset != lastOffset)
 	    {
-		drawMoveFrames(w, lastOffset);
-		drawMoveFrames(w, lastOffset = newOffset);
+		drawOutlines(w, lastOffset);
+		drawOutlines(w, lastOffset = newOffset);
 	    }
 	    break;
 	}
@@ -1627,7 +1639,7 @@ static void Follow(Widget w, XEvent *event, String *, Cardinal *)
 		endAction = p;
 		getMinimalOffset(w);
 		graphEditSizeChanged(w);
-		drawMoveFrames(w, lastOffset = actionOffset(w));
+		drawOutlines(w, lastOffset = actionOffset(w));
 		state = MoveState;
 	    }
 	    break;
@@ -1723,7 +1735,7 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 	    // Move all selected nodes to new positions
 		   
 	    // clear graph area
-	    drawMoveFrames(w, lastOffset);
+	    drawOutlines(w, lastOffset);
 
             // move nodes
 	    endAction = point(event);

@@ -581,6 +581,7 @@ Ddd*graph_edit.edgeColor:          blue4
 Ddd*graph_edit.selectColor:        black
 Ddd*graph_edit.gridColor:          black
 Ddd*graph_edit.frameColor:         grey50
+Ddd*graph_edit.outlineColor:       grey50
 
 
 

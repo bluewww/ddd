@@ -129,7 +129,8 @@ typedef struct _GraphEditPart {
     // Colors
     Pixel nodeColor;		          // Color to use for nodes
     Pixel edgeColor;		          // Color to use for edges
-    Pixel frameColor;		          // Color to use for frames
+    Pixel frameColor;		          // Color to use for frame
+    Pixel outlineColor;		          // Color to use for outlines
     Pixel gridColor;		          // Color to use for grid
     Pixel selectColor;	                  // Color to use for selected nodes
 
@@ -153,7 +154,8 @@ typedef struct _GraphEditPart {
     GC edgeGC;			// graphic context for edges
     GC invertGC;		// graphic context for inverting
     GC clearGC;		        // graphic context for clearing
-    GC frameGC;			// graphic context for frames
+    GC frameGC;			// graphic context for frame
+    GC outlineGC;		// graphic context for outlines
 
     GraphGC graphGC;		// Graph graphic context
 
