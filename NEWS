@@ -78,6 +78,8 @@ Customization
 Bug fixes
 ---------
 
+- The `Disp *' button dereferences pointers as it should.
+
 - Improved redirection handling.  You can redirect stderr away from
   the execution window, using `run 2> FILE'.  The debugger command
   `run 2> /dev/tty' will redirect stderr to the debugger console.

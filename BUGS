@@ -140,9 +140,6 @@ Volunteers for fixing these and other bugs are welcome!
 311 After `next 4' on Solaris DBX, the current position is not
     highlighted.
 
-312 Selecting `this' from the list of arguments, dereferencing it via
-    `Disp *' causes `this' to be displayed, not `*this'.
-
 313 Mihai Budiu <mihaib@gs41.sp.cs.cmu.edu> reports:
     The displayed items move each time one is resized (which happens
     because the field values change dimensions); it should be nice to

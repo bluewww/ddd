@@ -237,7 +237,7 @@ struct CmdItms { enum Itms {New, Dereference, Detail, Rotate, Set, Delete }; };
 MMDesc DataDisp::graph_cmd_area[] =
 {
     {"new",           MMPush,                 {DataDisp::displayArgCB, 
-					       XtPointer(false)},
+					       XtPointer(true)},
                                                DataDisp::shortcut_menu },
     {"dereference",   MMPush | MMInsensitive | MMUnmanaged, {DataDisp::dereferenceArgCB}},
     {"detail",        MMPush | MMInsensitive, {DataDisp::toggleDetailCB,
