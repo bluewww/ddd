@@ -140,6 +140,9 @@ Volunteers for fixing these and other bugs are welcome!
     likewise), DDD considers the pointer to be frozen, such that it
     continues execution.
 
+369 In `sample.c', place a breakpoint before a is assigned, run, next, 
+    display a.  Rerun disables a, but this is not shown immediately.
+
 371 Is the command shell raised each time a new display is created?
 
 372 guess_debugger_type() must look in PATH for executables.
