@@ -74,7 +74,7 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
       than 30 color screen shots showing DDD usage.
 
     Changes in configuration and building:
-    - DDD 2.1 uses improved configuration checks from Autoconf 2.11.
+    - DDD 2.1 uses improved configuration checks from Autoconf 2.12.
     - DDD no longer installs in the `gcc' location by default, but in
       an existing DDD location; otherwise, in `/usr/local/bin'.
     - Improved means of determining builder's e-mail address.
