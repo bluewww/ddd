@@ -5149,7 +5149,7 @@ Ddd*print_warning*helpString:	\
 For more details, consult your system documentation.
 
 Ddd*no_display_number_warning_popup.title: DDD: No Display Number
-Ddd*no_display_number*helpString: \
+Ddd*no_display_number_warning*helpString: \
 @rm DDD could not determine the number of the new display\n\
 as assigned by @GDB@.  DDD will use a default number instead.
 
