@@ -439,8 +439,13 @@ string read_simple_value(string& value, int depth, bool ignore_repeats)
 	if (ignore_repeats)
 	{
 	    // Don't read in `<repeats N times>'
-	    strip_leading_space(value);
-	    if (value.contains('<', 0) && value.contains(rxrepeats, 0))
+	    int index = 0;
+	    while (index < int(value.length()) && isspace(value[index]))
+		index++;
+
+	    if (index < int(value.length()) && 
+		value.contains('<', index) && 
+		value.contains(rxrepeats, index))
 		break;
 	}
     }
@@ -614,10 +619,10 @@ bool read_array_end (string& value)
     return value != "";		// More stuff may follow.
 }
 
-// Read `<repeats N times>'; return N (0 if no repeat)
+// Read `<repeats N times>'; return N (1 if no repeat)
 int read_repeats(string& value)
 {
-    int repeats = 0;
+    int repeats = 1;
 
     strip_leading_space(value);
     if (value.contains('<', 0) && value.contains(rxrepeats, 0))
