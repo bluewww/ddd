@@ -1,7 +1,7 @@
 // $Id$
 // Create custom Motif Menus
 
-// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -464,11 +464,14 @@ static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[])
     //    have an auto-raised window anyway.
     // auto_raise(XtParent(menu));
 
-    if (lesstif_version < 1000)
+    if (XmVersion < 1002 || lesstif_version < 1000)
     {
-	// LessTif places a passive grab on the parent such that the
-	// pointer is grabbed as soon as the menuPost event occurs.  This
-	// grab breaks PushMenus, so we cancel it.
+	// LessTif places a passive grab on the parent, such that the
+	// pointer is grabbed as soon as the menuPost event occurs.
+	// This grab breaks PushMenus, so we cancel it.
+	// Motif 1.1 places a passive grab on button 3, such that the
+	// pointer is grabbed (and remains grabbed) as soon as button
+	// 3 is pressed.  This breaks any X session, so we cancel it.
 	XtUngrabButton(parent, AnyButton, AnyModifier);
     }
 
@@ -597,8 +600,8 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 
 	    if (lesstif_version <= 81)
 	    {
-		// In LessTif 0.81 and earlier, one must use the right
-		// mouse button to pop up push menus
+		// In LessTif 0.81 and earlier, one must use button 3
+		// to pop up push menus
 		static XtTranslations lesstif_translations =
 		    XtParseTranslationTable(lesstif_pushMenuTranslations);
 		XtAugmentTranslations(widget, lesstif_translations);
