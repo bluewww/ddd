@@ -266,6 +266,7 @@ static void create_status(Widget parent);
 
 // Status LED
 static void blink(bool set);
+static void reset_blink();
 
 // Callbacks
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
@@ -1889,6 +1890,7 @@ int main(int argc, char *argv[])
 	main_loop_entered = false;
 	ddd_show_signal(sig);
     }
+    reset_blink();
 
     // Set `main_loop_entered' to true as soon 
     // as DDD becomes idle again.
@@ -2659,17 +2661,19 @@ static void create_status(Widget parent)
 static bool blinker_active      = false; // True iff status LED is active
 static XtIntervalId blink_timer = 0;     // Timer used for blinking
 
-static void BlinkCB(XtPointer client_data, XtIntervalId *)
+static void BlinkCB(XtPointer client_data, XtIntervalId *id)
 {
-    Boolean new_state = Boolean(client_data);
-    XtVaSetValues(led_w, XmNfillOnSelect, new_state, NULL);
+    assert(*id == blink_timer);
+
+    Boolean set = Boolean(client_data);
+    XtVaSetValues(led_w, XmNfillOnSelect, set, NULL);
     XFlush(XtDisplay(led_w));
 
-    if ((blinker_active || new_state) && app_data.busy_blink_rate > 0)
+    if ((blinker_active || set) && app_data.busy_blink_rate > 0)
     {
 	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
-				      app_data.busy_blink_rate, BlinkCB, 
-				      XtPointer(!new_state));
+				      app_data.busy_blink_rate, BlinkCB,
+				      XtPointer(!set));
     }
     else
     {
@@ -2681,16 +2685,20 @@ static void blink(bool set)
 {
     blinker_active = set;
 
-    if (!blinker_active || blink_timer == 0)
-    {
-	if (blink_timer != 0)
-	{
-	    XtRemoveTimeOut(blink_timer);
-	    blink_timer = 0;
-	}
+    if (blink_timer == 0 && blinker_active)
+	BlinkCB(XtPointer(True), &blink_timer);
+}
 
-	BlinkCB(XtPointer(blinker_active), (XtIntervalId *)0);
+static void reset_blink()
+{
+    if (blink_timer != 0)
+    {
+	XtRemoveTimeOut(blink_timer);
+	blink_timer = 0;
     }
+
+    blinker_active = False;
+    BlinkCB(XtPointer(False), &blink_timer);
 }
 
 
@@ -3236,5 +3244,6 @@ void check_emergencies()
     {
 	// Emergency: process this event immediately
 	XtDispatchEvent(&event);
+	reset_blink();
     }
 }
