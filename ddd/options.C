@@ -317,7 +317,7 @@ void graphToggleDetectAliasesCB(Widget, XtPointer, XtPointer call_data)
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.detect_aliases = info->set;
-    string alias_detection = "Alias detection ";
+    const string alias_detection = "Alias detection ";
 
     if (info->set)
 	set_status(alias_detection + "enabled.");
@@ -351,7 +351,7 @@ void graphToggleShowHintsCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], (char *)XtNshowHints, info->set); arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNshowHints), info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -369,7 +369,7 @@ void graphToggleShowAnnotationsCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], (char *)XtNshowAnnotations, info->set); arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNshowAnnotations), info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -420,7 +420,7 @@ void graphToggleSnapToGridCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], (char *)XtNsnapToGrid, info->set); arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNsnapToGrid), info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -443,7 +443,7 @@ void graphToggleCompactLayoutCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], (char *)XtNlayoutMode, mode); arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNlayoutMode), mode); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -461,7 +461,7 @@ void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], (char *)XtNautoLayout, info->set); arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNautoLayout), info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -496,15 +496,15 @@ void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
 
     if (info->value >= 2)
     {
-	XtSetArg(args[arg], (char *)XtNgridWidth,  info->value); arg++;
-	XtSetArg(args[arg], (char *)XtNgridHeight, info->value); arg++;
-	XtSetArg(args[arg], (char *)XtNshowGrid,   True); arg++;
+	XtSetArg(args[arg], CONST_CAST(char *,XtNgridWidth),  info->value); arg++;
+	XtSetArg(args[arg], CONST_CAST(char *,XtNgridHeight), info->value); arg++;
+	XtSetArg(args[arg], CONST_CAST(char *,XtNshowGrid),   True); arg++;
 	XtSetValues(data_disp->graph_edit, args, arg);
 	set_status("Grid size set to " + itostring(info->value) + ".");
     }
     else
     {
-	XtSetArg(args[arg], (char *)XtNshowGrid, False); arg++;
+	XtSetArg(args[arg], CONST_CAST(char *,XtNshowGrid), False); arg++;
 	XtSetValues(data_disp->graph_edit, args, arg);
 	set_status("Grid off.");
     }
@@ -879,7 +879,7 @@ void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
     Boolean state = (int)(long)client_data;
 
     app_data.command_toolbar = state;
-    string tool_buttons_are_located_in = "Tool buttons are located in ";
+    const string tool_buttons_are_located_in = "Tool buttons are located in ";
 
     if (state)
 	set_status(tool_buttons_are_located_in + "command toolbar.");
@@ -935,16 +935,16 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
     }
 
     // Apply to future shells
-    string keyboardFocusPolicy = "*" + string(XmNkeyboardFocusPolicy);
+    const string keyboardFocusPolicy = "*" + string(XmNkeyboardFocusPolicy);
     XrmDatabase target = XtDatabase(XtDisplay(w));
     switch (policy)
     {
     case XmEXPLICIT:
-	XrmPutStringResource(&target, keyboardFocusPolicy, "EXPLICIT");
+	XrmPutStringResource(&target, keyboardFocusPolicy.chars(), "EXPLICIT");
 	break;
 
     case XmPOINTER:
-	XrmPutStringResource(&target, keyboardFocusPolicy, "POINTER");
+	XrmPutStringResource(&target, keyboardFocusPolicy.chars(), "POINTER");
 	break;
     }
 
@@ -1081,9 +1081,9 @@ void dddSetUndoBufferSizeCB(Widget w, XtPointer, XtPointer)
 {
     String s = XmTextFieldGetString(w);
     string value = s;
-    XtFree(s);
+    XtFree(s); s = 0;
 
-    s = value;
+    s = CONST_CAST(char*,value.chars());
     long val = strtol(value.chars(), &s, 0);
     if (s != value)
     {
@@ -1229,7 +1229,7 @@ void dddSetEditCommandCB(Widget w, XtPointer, XtPointer)
     command = s;
     XtFree(s);
 
-    app_data.edit_command = command;
+    app_data.edit_command = command.chars();
     // set_status("Edit Sources command is " + quote(command));
     update_reset_preferences();
 }
@@ -1241,7 +1241,7 @@ void dddSetPlotCommandCB(Widget w, XtPointer, XtPointer)
     command = s;
     XtFree(s);
 
-    app_data.plot_command = command;
+    app_data.plot_command = command.chars();
     // set_status("Edit Sources command is " + quote(command));
     update_reset_preferences();
 }
@@ -1254,7 +1254,7 @@ void dddSetGetCoreCommandCB(Widget w, XtPointer, XtPointer)
     command = s;
     XtFree(s);
 
-    app_data.get_core_command = command;
+    app_data.get_core_command = command.chars();
     // set_status("Get Core command is " + quote(command));
     update_reset_preferences();
 }
@@ -1267,7 +1267,7 @@ void dddSetPSCommandCB(Widget w, XtPointer, XtPointer)
     command = s;
     XtFree(s);
 
-    app_data.ps_command = command;
+    app_data.ps_command = command.chars();
     // set_status("List Processes command is " + quote(command));
     update_reset_preferences();
 }
@@ -1280,7 +1280,7 @@ void dddSetTermCommandCB(Widget w, XtPointer, XtPointer)
     command = s;
     XtFree(s);
 
-    app_data.term_command = command;
+    app_data.term_command = command.chars();
     // set_status("Execution Window command is " + quote(command));
     update_reset_preferences();
 }
@@ -1293,7 +1293,7 @@ void dddSetUncompressCommandCB(Widget w, XtPointer, XtPointer)
     command = s;
     XtFree(s);
 
-    app_data.uncompress_command = command;
+    app_data.uncompress_command = command.chars();
     // set_status("Uncompress command is " + quote(command));
     update_reset_preferences();
 }
@@ -1306,7 +1306,7 @@ void dddSetWWWCommandCB(Widget w, XtPointer, XtPointer)
     command = s;
     XtFree(s);
 
-    app_data.www_command = command;
+    app_data.www_command = command.chars();
     // set_status("Web Browser is " + quote(command));
     update_reset_preferences();
 }
@@ -1321,11 +1321,11 @@ void dddSetWWWCommandCB(Widget w, XtPointer, XtPointer)
 
 static bool copy(const string& src, const string& dest)
 {
-    FILE *from = fopen(src, "r");
+    FILE *from = fopen(src.chars(), "r");
     if (from == 0)
 	return false;
 
-    FILE *to = fopen(dest, "w");
+    FILE *to = fopen(dest.chars(), "w");
     if (to == 0)
 	return false;
 
@@ -1336,7 +1336,7 @@ static bool copy(const string& src, const string& dest)
     fclose(from);
     if (fclose(to) == EOF)
     {
-	unlink(dest);
+	unlink(dest.chars());
 	return false;
     }
 
@@ -1345,10 +1345,10 @@ static bool copy(const string& src, const string& dest)
 
 static bool move(const string& from, const string& to)
 {
-    if (rename(from, to) == 0)
+    if (rename(from.chars(), to.chars()) == 0)
 	return true;
 
-    if (copy(from, to) && unlink(from) == 0)
+    if (copy(from, to) && unlink(from.chars()) == 0)
 	return true;
 
     return false;
@@ -1418,17 +1418,17 @@ static bool _get_core(const string& session, unsigned long flags,
 	    }
 
 	    // Remove old target, if any
-	    unlink(target);
+	    unlink(target.chars());
 
 #if HAVE_LINK
 	    // Try a hard link from current core file to target
-	    if (link(info.core, target) == 0)
+	    if (link(info.core.chars(), target.chars()) == 0)
 		return true;
 #endif
 
 #if HAVE_SYMLINK
 	    // Try a symlink link from target to current core file
-	    if (symlink(info.core, target) == 0)
+	    if (symlink(info.core.chars(), target.chars()) == 0)
 		return true;
 #endif
 
@@ -1530,7 +1530,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    gcore.gsub("@PID@",  itostring(info.pid));
 	    string cmd = sh_command(gcore, true) + " 2>&1";
 	    ostrstream errs;
-	    FILE *fp = popen(cmd, "r");
+	    FILE *fp = popen(cmd.chars(), "r");
 	    if (fp != 0)
 	    {
 		kill(info.pid, SIGSTOP);
@@ -1624,7 +1624,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    if (!ok)
 	    {
 		// Move failed.  Sorry.
-		unlink(core);
+		unlink(core.chars());
 	    }
 
 	    // Restore the old core file, if any.
@@ -1724,9 +1724,9 @@ static bool options_file_has_changed(ChangeMode mode, bool reset)
     return false;
 }
 
-inline String str(String s)
+inline const _XtString str(const _XtString s)
 {
-    return s != 0 ? s : (String)"";
+    return s != 0 ? s : "";
 }
 
 static Boolean done_if_idle(XtPointer data)
@@ -1759,7 +1759,7 @@ static void reload_options()
     StatusDelay *delay_ptr = 
 	new StatusDelay("Loading options from " + quote(file));
 
-    XrmDatabase session_db = XrmGetFileDatabase(file);
+    XrmDatabase session_db = XrmGetFileDatabase(file.chars());
 
     Widget toplevel = find_shell();
     while (XtParent(toplevel) != 0)
@@ -1784,7 +1784,7 @@ static void reload_options()
 				XtPointer(0));
 
     // Keep session ID across reloads
-    app_data.session = session;
+    app_data.session = session.chars();
 
     save_option_state();
     options_file_has_changed(ACCESS, true);
@@ -1871,7 +1871,7 @@ static void CheckOptionsFileCB(XtPointer client_data, XtIntervalId *id)
 	{
 	    dialog = verify(XmCreateQuestionDialog(
 				find_shell(),
-				(char *)"reload_options_dialog",
+				CONST_CAST(char *,"reload_options_dialog"),
 				0, 0));
 	    Delay::register_shell(dialog);
 	    XtAddCallback(dialog, XmNokCallback,     ReloadOptionsCB, 0);
@@ -1924,7 +1924,7 @@ static bool is_fallback_value(string resource, string val)
 
     char *type;
     XrmValue xrmvalue;
-    Bool success = XrmGetResource(default_db, str_name, str_class, 
+    Bool success = XrmGetResource(default_db, str_name.chars(), str_class.chars(), 
 				  &type, &xrmvalue);
     string default_val = NO_GDB_ANSWER;
 
@@ -1977,10 +1977,10 @@ static string app_value(string resource, const string& value,
     return s;
 }
 
-inline String bool_value(bool value)
+inline const _XtString bool_value(bool value)
 {
     // Since GDB uses `on' and `off' for its settings, we do so, too. 
-    return value ? (String)"on" : (String)"off";
+    return value ? "on" : "off";
 }
 
 inline const _XtString binding_value(BindingStyle value)
@@ -2154,7 +2154,7 @@ static string widget_geometry(Widget w, bool include_size = false)
     geometry << "+" << attr.x << "+" << attr.y;
     string geo(geometry);
 
-    return string_app_value(string(XtName(w)) + ".geometry", geo, 
+    return string_app_value(string(XtName(w)) + ".geometry", geo.chars(), 
 			    check_default);
 }
 
@@ -2196,7 +2196,7 @@ bool get_restart_commands(string& restart, unsigned long flags)
     const bool reload_file  = !(flags & DONT_RELOAD_FILE);
 
     string session = 
-	(save_session ? app_data.session : (char *)DEFAULT_SESSION);
+	(save_session ? app_data.session : DEFAULT_SESSION.chars());
 
     ProgramInfo info;
     if (info.file == NO_GDB_ANSWER)
@@ -2321,7 +2321,7 @@ bool save_options(unsigned long flags)
     const bool interact      = (flags & MAY_INTERACT);
 
     string session = 
-	(save_session ? app_data.session : (char *)DEFAULT_SESSION);
+	(save_session ? app_data.session : DEFAULT_SESSION.chars());
 
     create_session_dir(session);
     const string file = session_state_file(session);
@@ -2331,12 +2331,12 @@ bool save_options(unsigned long flags)
 
     StatusDelay delay(status + quote(file));
 
-    const char delimiter[] = "! DO NOT ADD ANYTHING BELOW THIS LINE";
+    const char *delimiter = "! DO NOT ADD ANYTHING BELOW THIS LINE";
 
     // Read the file contents into memory ...
     string dddinit;
     {
-	ifstream is(file);
+	ifstream is(file.chars());
 	if (is.bad())
 	{
 	    // File not found: create a new one
@@ -2363,11 +2363,11 @@ bool save_options(unsigned long flags)
     // ... and write them back again
     bool ok = true;
     string workfile = file + "#";
-    ofstream os(workfile);
+    ofstream os(workfile.chars());
     if (os.bad())
     {
 	workfile = file;
-	os.open(workfile);
+	os.open(workfile.chars());
     }
     if (os.bad())
     {
@@ -2386,14 +2386,14 @@ bool save_options(unsigned long flags)
 	app_data.dddinit_version = DDD_VERSION;
 	os.close();
 
-	if (workfile != file && rename(workfile, file) != 0)
+	if (workfile != file && rename(workfile.chars(), file.chars()) != 0)
 	{
 	    if (interact)
 		post_error("Cannot rename " + quote(workfile)
 			   + " to " + quote(file) + ": " + strerror(errno),
 			   "options_save_error");
 	    ok = false;
-	    unlink(workfile);
+	    unlink(workfile.chars());
 	}
 
 	return ok;
@@ -2455,12 +2455,12 @@ bool save_options(unsigned long flags)
 	}
     }
 
-    os << string_app_value(XtNgdbSettings,  gdb_settings, true)  << '\n';
-    os << string_app_value(XtNdbxSettings,  dbx_settings, true)  << '\n';
-    os << string_app_value(XtNxdbSettings,  xdb_settings, true)  << '\n';
-    os << string_app_value(XtNjdbSettings,  jdb_settings, true)  << '\n';
-    os << string_app_value(XtNpydbSettings, pydb_settings, true) << '\n';
-    os << string_app_value(XtNperlSettings, perl_settings, true) << '\n';
+    os << string_app_value(XtNgdbSettings,  gdb_settings.chars(), true)  << '\n';
+    os << string_app_value(XtNdbxSettings,  dbx_settings.chars(), true)  << '\n';
+    os << string_app_value(XtNxdbSettings,  xdb_settings.chars(), true)  << '\n';
+    os << string_app_value(XtNjdbSettings,  jdb_settings.chars(), true)  << '\n';
+    os << string_app_value(XtNpydbSettings, pydb_settings.chars(), true) << '\n';
+    os << string_app_value(XtNperlSettings, perl_settings.chars(), true) << '\n';
 
     os << "\n! Source.\n";
     os << bool_app_value(XtNfindWordsOnly,
@@ -2593,8 +2593,8 @@ bool save_options(unsigned long flags)
     themes << DispBox::theme_manager;
     static string themes_s;
     themes_s = themes;
-    app_data.themes = themes_s;
-    os << string_app_value(XtNthemes, themes_s) << '\n';
+    app_data.themes = themes_s.chars();
+    os << string_app_value(XtNthemes, themes_s.chars()) << '\n';
 
     // Tips
     os << "\n! Tips.\n";
@@ -2722,17 +2722,17 @@ bool save_options(unsigned long flags)
 	}
 
 	os << string_app_value(XtNgdbDisplayShortcuts, 
-			       gdb_display_shortcuts, true) << '\n';
+			       gdb_display_shortcuts.chars(), true) << '\n';
 	os << string_app_value(XtNdbxDisplayShortcuts,
-			       dbx_display_shortcuts, true) << '\n';
+			       dbx_display_shortcuts.chars(), true) << '\n';
 	os << string_app_value(XtNxdbDisplayShortcuts,
-			       xdb_display_shortcuts, true) << '\n';
+			       xdb_display_shortcuts.chars(), true) << '\n';
 	os << string_app_value(XtNjdbDisplayShortcuts,
-			       jdb_display_shortcuts, true) << '\n';
+			       jdb_display_shortcuts.chars(), true) << '\n';
 	os << string_app_value(XtNpydbDisplayShortcuts,
-			       pydb_display_shortcuts, true) << '\n';
+			       pydb_display_shortcuts.chars(), true) << '\n';
 	os << string_app_value(XtNperlDisplayShortcuts,
-			       perl_display_shortcuts, true) << '\n';
+			       perl_display_shortcuts.chars(), true) << '\n';
     }
 
     // Fonts
@@ -2834,7 +2834,7 @@ bool save_options(unsigned long flags)
 	if (!restart_ok)
 	    ok = false;
 
-	os << string_app_value(XtNrestartCommands, restart) << '\n';
+	os << string_app_value(XtNrestartCommands, restart.chars()) << '\n';
     }
 
     bool saved = true;
@@ -2846,17 +2846,17 @@ bool save_options(unsigned long flags)
 	    post_error("Cannot save " + options + " in " + quote(workfile),
 		       "options_save_error");
 	ok = saved = false;
-	unlink(workfile);
+	unlink(workfile.chars());
     }
 
-    if (workfile != file && rename(workfile, file) != 0)
+    if (workfile != file && rename(workfile.chars(), file.chars()) != 0)
     {
 	if (interact)
 	    post_error("Cannot rename " + quote(workfile)
 		       + " to " + quote(file) + ": " + strerror(errno),
 		       "options_save_error");
 	ok = saved = false;
-	unlink(workfile);
+	unlink(workfile.chars());
     }
 
     if (saved)
@@ -2897,7 +2897,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
-			    (char *)"overwrite_options_dialog",
+			    CONST_CAST(char *,"overwrite_options_dialog"),
 			    0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
@@ -2915,7 +2915,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
-			    (char *)"kill_to_save_dialog",
+			    CONST_CAST(char *,"kill_to_save_dialog"),
 			    0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
@@ -2933,7 +2933,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
-			    (char *)"data_not_saved_dialog",
+			    CONST_CAST(char *,"data_not_saved_dialog"),
 			    0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 

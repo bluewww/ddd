@@ -123,8 +123,7 @@ public:
     }
 
     // Resources
-    // TODO should return a const char*
-    char *data() { return _data; }
+    const char *data() { return _data; }
     int length() { return _length; }
 };
 

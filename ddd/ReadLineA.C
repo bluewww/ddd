@@ -73,7 +73,7 @@ void ReadLineAgent::readline_handler(char *line)
     else
     {
 	string input = string(line) + "\n";
-	prompter->dispatch(Input, input, input.length());
+	prompter->dispatch(Input, input.chars(), input.length());
     }
 }
 
@@ -91,7 +91,7 @@ void ReadLineAgent::prompt(const string& prompt_string)
     }
 #endif
 
-    write(prompt_string, prompt_string.length());
+    write(prompt_string.chars(), prompt_string.length());
     current_prompter = 0;
 }
 

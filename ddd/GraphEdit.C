@@ -60,7 +60,7 @@ char GraphEdit_rcsid[] =
 #include "TimeOut.h"
 #include "EdgeAPA.h"
 #include "GraphNPA.h"
-
+#include "casts.h"
 
 #if XmVersion < 1002
 // Motif 1.1 backwards compatibility
@@ -95,131 +95,131 @@ static void defaultForeground(Widget w, int, XrmValue *value)
 static XtResource resources[] = {
 #define offset(field) XtOffsetOf(GraphEditRec, graphEdit.field)
     // {name, class, type, size, offset, default_type, default_addr}
-    { (char *)XtNgraph, (char *)XtCGraph, XtRPointer, sizeof(Graph *),
+    { CONST_CAST(char *,XtNgraph), CONST_CAST(char *,XtCGraph), XtRPointer, sizeof(Graph *),
         offset(graph), XtRImmediate, XtPointer(0) },
-    { (char *)XtNmoveDelta, (char *)XtCMoveDelta, XtRDimension, sizeof(Dimension),
+    { CONST_CAST(char *,XtNmoveDelta), CONST_CAST(char *,XtCMoveDelta), XtRDimension, sizeof(Dimension),
 	offset(moveDelta), XtRImmediate, XtPointer(4) },
-    { (char *)XtNrubberEdges, (char *)XtCRubberEdges, XtRBoolean, sizeof(Boolean),
+    { CONST_CAST(char *,XtNrubberEdges), CONST_CAST(char *,XtCRubberEdges), XtRBoolean, sizeof(Boolean),
 	offset(rubberEdges), XtRImmediate, XtPointer(True) },
-    { (char *)XtNrubberArrows, (char *)XtCRubberEdges, XtRBoolean, sizeof(Boolean),
+    { CONST_CAST(char *,XtNrubberArrows), CONST_CAST(char *,XtCRubberEdges), XtRBoolean, sizeof(Boolean),
 	offset(rubberArrows), XtRImmediate, XtPointer(False) },
-    { (char *)XtNrubberAnnotations, (char *)XtCRubberAnnotations, XtRBoolean, sizeof(Boolean),
+    { CONST_CAST(char *,XtNrubberAnnotations), CONST_CAST(char *,XtCRubberAnnotations), XtRBoolean, sizeof(Boolean),
 	offset(rubberAnnotations), XtRImmediate, XtPointer(False) },
-    { (char *)XtNopaqueMove, (char *)XtCOpaqueMove, XtRBoolean, sizeof(Boolean),
+    { CONST_CAST(char *,XtNopaqueMove), CONST_CAST(char *,XtCOpaqueMove), XtRBoolean, sizeof(Boolean),
 	offset(opaqueMove), XtRImmediate, XtPointer(False) },
 
-    { (char *)XtNautoRaise, (char *)XtCAutoRaise, XtRBoolean, sizeof(Boolean),
+    { CONST_CAST(char *,XtNautoRaise), CONST_CAST(char *,XtCAutoRaise), XtRBoolean, sizeof(Boolean),
 	offset(autoRaise), XtRImmediate, XtPointer(True) },
 
-    {(char *) XtNshowHints, (char *)XtCShowHints, XtRBoolean, sizeof(Boolean),
+    {CONST_CAST(char *, XtNshowHints), CONST_CAST(char *,XtCShowHints), XtRBoolean, sizeof(Boolean),
 	offset(showHints), XtRImmediate, XtPointer(False) },
-    { (char *)XtNhintSize, (char *)XtCHintSize, XtRDimension, sizeof(Dimension),
+    { CONST_CAST(char *,XtNhintSize), CONST_CAST(char *,XtCHintSize), XtRDimension, sizeof(Dimension),
 	offset(hintSize), XtRImmediate, XtPointer(6) },
 
-    { (char *)XtNshowAnnotations, (char *)XtCShowAnnotations, XtRBoolean, sizeof(Boolean),
+    { CONST_CAST(char *,XtNshowAnnotations), CONST_CAST(char *,XtCShowAnnotations), XtRBoolean, sizeof(Boolean),
 	offset(showAnnotations), XtRImmediate, XtPointer(True) },
 
-    { (char *)XtNgridWidth, (char *)XtCGridSize, XtRDimension, sizeof(Dimension),
+    { CONST_CAST(char *,XtNgridWidth), CONST_CAST(char *,XtCGridSize), XtRDimension, sizeof(Dimension),
 	offset(gridWidth), XtRImmediate, XtPointer(16) },
-    { (char *)XtNgridHeight, (char *)XtCGridSize, XtRDimension, sizeof(Dimension),
+    { CONST_CAST(char *,XtNgridHeight), CONST_CAST(char *,XtCGridSize), XtRDimension, sizeof(Dimension),
 	offset(gridHeight), XtRImmediate, XtPointer(16) },
 
-    { (char *)XtNshowGrid, (char *)XtCShowGrid, XtRBoolean, sizeof(Boolean),
+    { CONST_CAST(char *,XtNshowGrid), CONST_CAST(char *,XtCShowGrid), XtRBoolean, sizeof(Boolean),
 	offset(showGrid), XtRImmediate, XtPointer(False) },
-    { (char *)XtNsnapToGrid, (char *)XtCSnapToGrid, XtRBoolean, sizeof(Boolean),
+    { CONST_CAST(char *,XtNsnapToGrid), CONST_CAST(char *,XtCSnapToGrid), XtRBoolean, sizeof(Boolean),
 	offset(snapToGrid), XtRImmediate, XtPointer(False) },
 
-    { (char *)XtNautoLayout, (char *)XtCAutoLayout, XtRBoolean, sizeof(Boolean),
+    { CONST_CAST(char *,XtNautoLayout), CONST_CAST(char *,XtCAutoLayout), XtRBoolean, sizeof(Boolean),
 	offset(autoLayout), XtRImmediate, XtPointer(False) },
 
-    { (char *)XtNrotation, (char *)XtCRotation, XtRCardinal, sizeof(Cardinal),
+    { CONST_CAST(char *,XtNrotation), CONST_CAST(char *,XtCRotation), XtRCardinal, sizeof(Cardinal),
 	offset(rotation), XtRImmediate, XtPointer(0)},
 
-    { (char *)XtNedgeWidth, (char *)XtCEdgeWidth, XtRDimension, sizeof(Dimension),
+    { CONST_CAST(char *,XtNedgeWidth), CONST_CAST(char *,XtCEdgeWidth), XtRDimension, sizeof(Dimension),
 	offset(edgeWidth), XtRImmediate, XtPointer(0) },
-    { (char *)XtNarrowAngle, (char *)XtCArrowAngle, XtRDimension, sizeof(Dimension),
+    { CONST_CAST(char *,XtNarrowAngle), CONST_CAST(char *,XtCArrowAngle), XtRDimension, sizeof(Dimension),
 	offset(arrowAngle), XtRImmediate, XtPointer(30) },
-    { (char *)XtNarrowLength, (char *)XtCArrowLength, XtRDimension, sizeof(Dimension),
+    { CONST_CAST(char *,XtNarrowLength), CONST_CAST(char *,XtCArrowLength), XtRDimension, sizeof(Dimension),
 	offset(arrowLength), XtRImmediate, XtPointer(10) },
-    { (char *)XtNselfEdgeDiameter, (char *)XtCSelfEdgeDiameter, XtRDimension, 
+    { CONST_CAST(char *,XtNselfEdgeDiameter), CONST_CAST(char *,XtCSelfEdgeDiameter), XtRDimension, 
         sizeof(Dimension), offset(selfEdgeDiameter), 
         XtRImmediate, XtPointer(32) },
 
-    { (char *)XtNextraWidth, (char *)XtCExtraSize, XtRDimension, sizeof(Dimension),
+    { CONST_CAST(char *,XtNextraWidth), CONST_CAST(char *,XtCExtraSize), XtRDimension, sizeof(Dimension),
 	offset(extraWidth), XtRImmediate, XtPointer(0) },
-    { (char *)XtNextraHeight, (char *)XtCExtraSize, XtRDimension, sizeof(Dimension),
+    { CONST_CAST(char *,XtNextraHeight), CONST_CAST(char *,XtCExtraSize), XtRDimension, sizeof(Dimension),
 	offset(extraHeight), XtRImmediate, XtPointer(0) },
 
-    { (char *)XtNrequestedWidth, (char *)XtCRequestedSize, XtRDimension, sizeof(Dimension),
+    { CONST_CAST(char *,XtNrequestedWidth), CONST_CAST(char *,XtCRequestedSize), XtRDimension, sizeof(Dimension),
 	offset(requestedWidth), XtRImmediate, XtPointer(0) },
-    { (char *)XtNrequestedHeight, (char *)XtCRequestedSize, XtRDimension, sizeof(Dimension),
+    { CONST_CAST(char *,XtNrequestedHeight), CONST_CAST(char *,XtCRequestedSize), XtRDimension, sizeof(Dimension),
 	offset(requestedHeight), XtRImmediate, XtPointer(0) },
 
-    { (char *)XtNselectTile, (char *)XtCBitmap, XtRBitmap, sizeof(Pixmap),
+    { CONST_CAST(char *,XtNselectTile), CONST_CAST(char *,XtCBitmap), XtRBitmap, sizeof(Pixmap),
 	offset(selectTile), XtRImmediate, XtPointer(0)},
 
-    { (char *)XtNedgeAttachMode, (char *)XtCEdgeAttachMode, (char *)XtREdgeAttachMode,
+    { CONST_CAST(char *,XtNedgeAttachMode), CONST_CAST(char *,XtCEdgeAttachMode), CONST_CAST(char *,XtREdgeAttachMode),
 	sizeof(EdgeAttachMode), offset(edgeAttachMode), 
         XtRImmediate, XtPointer(Straight) },
-    { (char *)XtNlayoutMode, (char *)XtCLayoutMode, (char *)XtRLayoutMode,
+    { CONST_CAST(char *,XtNlayoutMode), CONST_CAST(char *,XtCLayoutMode), CONST_CAST(char *,XtRLayoutMode),
 	sizeof(LayoutMode), offset(layoutMode), 
         XtRImmediate, XtPointer(RegularLayoutMode) },
-    { (char *)XtNselfEdgePosition, (char *)XtCSelfEdgePosition, (char *)XtRSelfEdgePosition,
+    { CONST_CAST(char *,XtNselfEdgePosition), CONST_CAST(char *,XtCSelfEdgePosition), CONST_CAST(char *,XtRSelfEdgePosition),
 	sizeof(SelfEdgePosition), offset(selfEdgePosition), 
         XtRImmediate, XtPointer(NorthEast) },
-    { (char *)XtNselfEdgeDirection, (char *)XtCSelfEdgeDirection, (char *)XtRSelfEdgeDirection,
+    { CONST_CAST(char *,XtNselfEdgeDirection), CONST_CAST(char *,XtCSelfEdgeDirection), CONST_CAST(char *,XtRSelfEdgeDirection),
 	sizeof(SelfEdgeDirection), offset(selfEdgeDirection), 
         XtRImmediate, XtPointer(Counterclockwise) },
-    { (char *)XtNdashedLines, (char *)XtCDashedLines, XtRBoolean,
+    { CONST_CAST(char *,XtNdashedLines), CONST_CAST(char *,XtCDashedLines), XtRBoolean,
 	sizeof(Boolean), offset(dashedLines), 
         XtRImmediate, XtPointer(False) },
 
-    { (char *)XtNdefaultCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
+    { CONST_CAST(char *,XtNdefaultCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(defaultCursor), XtRImmediate, XtPointer(0)},
-    { (char *)XtNmoveCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
+    { CONST_CAST(char *,XtNmoveCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(moveCursor), XtRImmediate, XtPointer(0)},
-    { (char *)XtNselectCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
+    { CONST_CAST(char *,XtNselectCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(selectCursor), XtRImmediate, XtPointer(0)},
-    { (char *)XtNselectBottomLeftCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
+    { CONST_CAST(char *,XtNselectBottomLeftCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(selectBottomLeftCursor), XtRImmediate, XtPointer(0)},
-    { (char *)XtNselectBottomRightCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
+    { CONST_CAST(char *,XtNselectBottomRightCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(selectBottomRightCursor), XtRImmediate, XtPointer(0)},
-    { (char *)XtNselectTopLeftCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
+    { CONST_CAST(char *,XtNselectTopLeftCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(selectTopLeftCursor), XtRImmediate, XtPointer(0)},
-    { (char *)XtNselectTopRightCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
+    { CONST_CAST(char *,XtNselectTopRightCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(selectTopRightCursor), XtRImmediate, XtPointer(0)},
 
-    { (char *)XtNnodeColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
+    { CONST_CAST(char *,XtNnodeColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
 	offset(nodeColor), XtRCallProc, XtPointer(defaultForeground) },
-    { (char *)XtNedgeColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
+    { CONST_CAST(char *,XtNedgeColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
 	offset(edgeColor), XtRCallProc, XtPointer(defaultForeground) },
-    { (char *)XtNframeColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
+    { CONST_CAST(char *,XtNframeColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
 	offset(frameColor), XtRCallProc, XtPointer(defaultForeground) },
-    { (char *)XtNoutlineColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
+    { CONST_CAST(char *,XtNoutlineColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
 	offset(outlineColor), XtRCallProc, XtPointer(defaultForeground) },
-    { (char *)XtNgridColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
+    { CONST_CAST(char *,XtNgridColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
 	offset(gridColor), XtRCallProc, XtPointer(defaultForeground) },
-    { (char *)XtNselectColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
+    { CONST_CAST(char *,XtNselectColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
 	offset(selectColor), XtRCallProc, XtPointer(defaultForeground) },
 
-    { (char *)XtNnodePrintColor, (char *)XtCColor, XtRString, sizeof(String),
+    { CONST_CAST(char *,XtNnodePrintColor), CONST_CAST(char *,XtCColor), XtRString, sizeof(String),
 	offset(nodePrintColor), XtRImmediate, 0 },
-    { (char *)XtNedgePrintColor, (char *)XtCColor, XtRString, sizeof(String),
+    { CONST_CAST(char *,XtNedgePrintColor), CONST_CAST(char *,XtCColor), XtRString, sizeof(String),
 	offset(edgePrintColor), XtRImmediate, 0 },
 
-    { (char *)XtNpositionChangedCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
+    { CONST_CAST(char *,XtNpositionChangedCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(positionChangedProc), XtRCallback, XtPointer(0) },
-    { (char *)XtNselectionChangedCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
+    { CONST_CAST(char *,XtNselectionChangedCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(selectionChangedProc), XtRCallback, XtPointer(0) },
-    { (char *)XtNsizeChangedCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
+    { CONST_CAST(char *,XtNsizeChangedCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(sizeChangedProc), XtRCallback, XtPointer(0) },
-    { (char *)XtNcompareNodesCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
+    { CONST_CAST(char *,XtNcompareNodesCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(compareNodesProc), XtRCallback, XtPointer(0) },
-    { (char *)XtNpreLayoutCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
+    { CONST_CAST(char *,XtNpreLayoutCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(preLayoutProc), XtRCallback, XtPointer(0) },
-    { (char *)XtNpostLayoutCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
+    { CONST_CAST(char *,XtNpostLayoutCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(postLayoutProc), XtRCallback, XtPointer(0) },
-    { (char *)XtNpreSelectionCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
+    { CONST_CAST(char *,XtNpreSelectionCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(preSelectionProc), XtRCallback, XtPointer(0) },
 
 #undef offset
@@ -257,36 +257,36 @@ static void _Normalize  (Widget, XEvent *, String *, Cardinal *);
 // Actions table
 
 static XtActionsRec actions[] = {
-    { (char *)"select",         Select },        // select()
-    { (char *)"extend",         Extend },        // extend()
-    { (char *)"toggle",         Toggle },        // toggle()
-    { (char *)"select-or-move", SelectOrMove },	 // select-or-move()
-    { (char *)"extend-or-move", ExtendOrMove },	 // extend-or-move()
-    { (char *)"toggle-or-move", ToggleOrMove },	 // toggle-or-move()
-    { (char *)"move-selected",  MoveSelected },	 // move-selected(X, Y)
-    { (char *)"follow",		Follow },        // follow()
-    { (char *)"end",		End },           // end()
-    { (char *)"show-edges",	ShowEdges },     // show-edges([any|both|from|to])
-    { (char *)"hide-edges", 	HideEdges },     // hide-edges([any|both|from|to])
-    { (char *)"select-all", 	SelectAll },     // select-all()
-    { (char *)"select-first", 	SelectFirst },   // select-first()
-    { (char *)"select-next", 	SelectNext },    // select-next()
-    { (char *)"select-prev", 	SelectPrev },    // select-prev()
-    { (char *)"unselect-all", 	UnselectAll },   // unselect-all()
-    { (char *)"snap-to-grid",	SnapToGrid },    // snap-to-grid()
-    { (char *)"_snap-to-grid",	_SnapToGrid },
-    { (char *)"rotate",		Rotate },        // rotate([[+|-]DEGREES])
-    { (char *)"_rotate",	_Rotate },
-    { (char *)"layout",		DoLayout },      // layout([regular|compact],
-    { (char *)"_layout",	_Layout },       //         [[+|-]DEGREES]])
-    { (char *)"normalize",	Normalize },     // normalize()
-    { (char *)"_normalize",	_Normalize },
+    { CONST_CAST(char *,"select"),         Select },        // select()
+    { CONST_CAST(char *,"extend"),         Extend },        // extend()
+    { CONST_CAST(char *,"toggle"),         Toggle },        // toggle()
+    { CONST_CAST(char *,"select-or-move"), SelectOrMove },	 // select-or-move()
+    { CONST_CAST(char *,"extend-or-move"), ExtendOrMove },	 // extend-or-move()
+    { CONST_CAST(char *,"toggle-or-move"), ToggleOrMove },	 // toggle-or-move()
+    { CONST_CAST(char *,"move-selected"),  MoveSelected },	 // move-selected(X, Y)
+    { CONST_CAST(char *,"follow"),		Follow },        // follow()
+    { CONST_CAST(char *,"end"),		End },           // end()
+    { CONST_CAST(char *,"show-edges"),	ShowEdges },     // show-edges([any|both|from|to])
+    { CONST_CAST(char *,"hide-edges"), 	HideEdges },     // hide-edges([any|both|from|to])
+    { CONST_CAST(char *,"select-all"), 	SelectAll },     // select-all()
+    { CONST_CAST(char *,"select-first"), 	SelectFirst },   // select-first()
+    { CONST_CAST(char *,"select-next"), 	SelectNext },    // select-next()
+    { CONST_CAST(char *,"select-prev"), 	SelectPrev },    // select-prev()
+    { CONST_CAST(char *,"unselect-all"), 	UnselectAll },   // unselect-all()
+    { CONST_CAST(char *,"snap-to-grid"),	SnapToGrid },    // snap-to-grid()
+    { CONST_CAST(char *,"_snap-to-grid"),	_SnapToGrid },
+    { CONST_CAST(char *,"rotate"),		Rotate },        // rotate([[+|-]DEGREES])
+    { CONST_CAST(char *,"_rotate"),	_Rotate },
+    { CONST_CAST(char *,"layout"),		DoLayout },      // layout([regular|compact],
+    { CONST_CAST(char *,"_layout"),	_Layout },       //         [[+|-]DEGREES]])
+    { CONST_CAST(char *,"normalize"),	Normalize },     // normalize()
+    { CONST_CAST(char *,"_normalize"),	_Normalize },
 };
 
 
 // Default translation table
 
-static char defaultTranslations[] =
+static const char *defaultTranslations =
     "Shift<Btn1Down>:	       toggle()\n"
     "~Shift<Btn1Down>:	       select-or-move()\n"
     "<Btn1Motion>:	       follow()\n"
@@ -331,7 +331,7 @@ static char defaultTranslations[] =
     ;
 
 // These translations override the XmPrimitive base translations
-static char extraTranslations[] =
+static const char *extraTranslations =
     "~Meta ~Shift Ctrl<Key>osfLeft:       move-selected(-grid,     0)\n"
     "~Meta ~Shift Ctrl<Key>osfRight:      move-selected(+grid,     0)\n"
     "~Meta ~Shift Ctrl<Key>osfUp:         move-selected(    0, -grid)\n"
@@ -390,7 +390,7 @@ static void Destroy(Widget w);
 GraphEditClassRec graphEditClassRec = {
   {	 /* core fields */
     /* superclass               */  (WidgetClass) &xmPrimitiveClassRec,
-    /* class_name               */  (char *)"GraphEdit",
+    /* class_name               */  CONST_CAST(char *,"GraphEdit"),
     /* widget_size              */  sizeof(GraphEditRec),
     /* class_initialize         */  ClassInitialize,
     /* class_part_initialize    */  XtWidgetClassProc(0),
@@ -417,7 +417,7 @@ GraphEditClassRec graphEditClassRec = {
     /* accept_focus             */  XtAcceptFocusProc(0),
     /* version                  */  XtVersion,
     /* callback_private         */  XtPointer(0),
-    /* tm_table                 */  defaultTranslations,
+    /* tm_table                 */  CONST_CAST(char *,defaultTranslations),
     /* query_geometry           */  XtInheritQueryGeometry,
     /* display_accelerator      */  XtInheritDisplayAccelerator,
     /* extension                */  XtPointer(0)
@@ -1056,7 +1056,7 @@ static Boolean CvtDimensionToString (Display *display, XrmValue *,
     ostrstream os;
     os << d;
     string os_s(os);
-    String s = (String)XtNewString((String)os_s);
+    String s = (String)XtNewString(os_s.chars());
 
     done(String, s);
 }
@@ -1077,7 +1077,7 @@ static Boolean CvtCardinalToString (Display *display, XrmValue *,
     ostrstream os;
     os << d;
     string os_s(os);
-    String s = (String)XtNewString((String)os_s);
+    String s = (String)XtNewString(os_s.chars());
 
     done(String, s);
 }
@@ -2361,7 +2361,7 @@ static void MoveSelected(Widget w, XEvent *, String *params,
 	else
 	{
 	    char *ptr;
-	    char *str = (char *)s;
+	    const char *str = s.chars();
 	    c = strtol(str, &ptr, 0);
 	    if (ptr == str)
 	    {
@@ -2546,7 +2546,7 @@ static void SnapToGrid(Widget w, XEvent *event, String *params,
     graphEditRedraw(w);
 }
 
-static int get_new_rotation(Widget w, String *params, Cardinal *num_params,
+static int get_new_rotation(Widget w, const _XtString *params, Cardinal *num_params,
 			    const _XtString name, const _XtString default_param, 
 			    const _XtString extra_args = "")
 {
@@ -2559,7 +2559,7 @@ static int get_new_rotation(Widget w, String *params, Cardinal *num_params,
     if (param == "")
 	param = default_param;
 
-    int new_rotation = atoi(param);
+    int new_rotation = atoi(param.chars());
     new_rotation = (new_rotation % 360 + 360) % 360;
 
     if (new_rotation % 90 != 0)
@@ -2588,7 +2588,7 @@ static void _Rotate(Widget w, XEvent *event, String *params,
     Cardinal& rotation         = _w->graphEdit.rotation;
 
     int new_rotation = 
-	get_new_rotation(w, params, num_params, "rotate", "+90");
+	get_new_rotation(w, CONST_CAST(const _XtString*,params), num_params, "rotate", "+90");
     if (new_rotation < 0)
 	return;
 
@@ -2647,7 +2647,7 @@ static void Rotate(Widget w, XEvent *event, String *params,
 static Graph *layout_graph = 0;
 static Widget layout_widget = 0;
 
-static void LayoutNodeCB(char *node_name, int x, int y)
+static void LayoutNodeCB(const char *node_name, int x, int y)
 {
     GraphNode *node = (GraphNode *)strtoul(node_name, 0, 16);
     assert(node != 0);
@@ -2655,7 +2655,7 @@ static void LayoutNodeCB(char *node_name, int x, int y)
     node->moveTo(BoxPoint(x, y));
 }
 
-static void LayoutHintCB(char *from_name, char *to_name, int x, int y)
+static void LayoutHintCB(const char *from_name, const char *to_name, int x, int y)
 {
     GraphNode *from = (GraphNode *)strtoul(from_name, 0, 16);
     assert(from != 0);
@@ -2696,7 +2696,7 @@ static void LayoutHintCB(char *from_name, char *to_name, int x, int y)
     }
 }
 
-static int LayoutCompareCB(char *name1, char *name2)
+static int LayoutCompareCB(const char *name1, const char *name2)
 {
     GraphNode *node1 = (GraphNode *)strtoul(name1, 0, 16);
     assert(node1 != 0);
@@ -2796,7 +2796,7 @@ static void _Layout(Widget w, XEvent *event, String *params,
     LayoutMode mode            = _w->graphEdit.layoutMode;
     Boolean& autoLayout        = _w->graphEdit.autoLayout;
 
-    static char graph_name[] = "graph";
+    static const char *graph_name = "graph";
 
     if (num_params && *num_params > 0 && params[0][0] != '\0')
     {
@@ -2816,7 +2816,7 @@ static void _Layout(Widget w, XEvent *event, String *params,
     Cardinal new_num_params = 
 	(num_params && *num_params > 0 ? *num_params - 1 : 0);
     int new_rotation = 
-	get_new_rotation(w, params - 1, &new_num_params, 
+	get_new_rotation(w, CONST_CAST(const _XtString*,params) - 1, &new_num_params, 
 			 "layout", "+0", "MODE, ");
     if (new_rotation < 0)
 	return;
@@ -2853,19 +2853,21 @@ static void _Layout(Widget w, XEvent *event, String *params,
 	    height = tmp;
 	}
 
-	string name = node_name(node);
-	Layout::add_node(graph_name, name);
-	Layout::set_node_width(graph_name, name, width);
-	Layout::set_node_height(graph_name, name, height);
-	Layout::set_node_position(graph_name, name, -1, -1);
+	const string name = node_name(node);
+	Layout::add_node(graph_name, name.chars());
+	Layout::set_node_width(graph_name, name.chars(), width);
+	Layout::set_node_height(graph_name, name.chars(), height);
+	Layout::set_node_position(graph_name, name.chars(), -1, -1);
     }
 
     for (GraphEdge *edge = graph->firstVisibleEdge(); 
 	 edge != 0;
 	 edge = graph->nextVisibleEdge(edge))
     {
+        const string s1 = node_name(edge->from());
+        const string s2 = node_name(edge->to());
 	Layout::add_edge(graph_name, 
-			 node_name(edge->from()), node_name(edge->to()));
+			 s1.chars(), s2.chars());
     }
 
     // Layout the graph
@@ -2889,11 +2891,11 @@ static void _Layout(Widget w, XEvent *event, String *params,
 
     string rotation_s = os;
     Cardinal rotate_num_params = 1;
-    String rotate_params[1];
-    rotate_params[0] = rotation_s;
+    const _XtString rotate_params[1];
+    rotate_params[0] = rotation_s.chars();
 
     rotation = 0;
-    _Rotate(w, event, rotate_params, &rotate_num_params);
+    _Rotate(w, event, CONST_CAST(String*,rotate_params), &rotate_num_params);
 
     // Layout is done
     XtCallCallbacks(w, XtNpostLayoutCallback, XtPointer(&info));

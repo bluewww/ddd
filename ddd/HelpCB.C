@@ -125,8 +125,8 @@ struct doc_resource_values {
 
 static XtResource help_subresources[] = {
     {
-	(char *)XtNhelpString,
-	(char *)XtCHelpString,
+	CONST_CAST(char *,XtNhelpString),
+	CONST_CAST(char *,XtCHelpString),
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(help_resource_values, helpString),
@@ -135,8 +135,8 @@ static XtResource help_subresources[] = {
     },
 
     {
-	(char *)XtNhelpShowTitle,
-	(char *)XtCHelpShowTitle,
+	CONST_CAST(char *,XtNhelpShowTitle),
+	CONST_CAST(char *,XtCHelpShowTitle),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(help_resource_values, showTitle),
@@ -147,8 +147,8 @@ static XtResource help_subresources[] = {
 
 static XtResource help_on_version_subresources[] = {
     {
-	(char *)XtNhelpOnVersionString,
-	(char *)XtCHelpOnVersionString,
+	CONST_CAST(char *,XtNhelpOnVersionString),
+	CONST_CAST(char *,XtCHelpOnVersionString),
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(help_on_version_resource_values, helpOnVersionString),
@@ -157,8 +157,8 @@ static XtResource help_on_version_subresources[] = {
     },
 
     {
-	(char *)XtNhelpShowTitle,
-	(char *)XtCHelpShowTitle,
+	CONST_CAST(char *,XtNhelpShowTitle),
+	CONST_CAST(char *,XtCHelpShowTitle),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(help_on_version_resource_values, showTitle),
@@ -169,8 +169,8 @@ static XtResource help_on_version_subresources[] = {
 
 static XtResource tip_subresources[] = {
     {
-	(char *)XtNtipString,
-	(char *)XtCTipString,
+	CONST_CAST(char *,XtNtipString),
+	CONST_CAST(char *,XtCTipString),
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(tip_resource_values, tipString), 
@@ -181,8 +181,8 @@ static XtResource tip_subresources[] = {
 
 static XtResource doc_subresources[] = {
     {
-	(char *)XtNdocumentationString,
-	(char *)XtCDocumentationString,
+	CONST_CAST(char *,XtNdocumentationString),
+	CONST_CAST(char *,XtCDocumentationString),
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(doc_resource_values, documentationString), 
@@ -567,7 +567,7 @@ static void _MStringHelpCB(Widget widget,
 
 	help_dialog = 
 	    verify(XmCreateInformationDialog(shell, 
-					     (char *)"help", args, arg));
+					     CONST_CAST(char *,"help"), args, arg));
 	Delay::register_shell(help_dialog);
 	XtAddCallback(help_dialog, XmNhelpCallback,
 		      HelpOnHelpCB, 0);
@@ -816,7 +816,7 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 			XtPointer)
 {
     static MString null(0, true);
-    string text((char *)client_data);
+    string text(STATIC_CAST(char *,client_data));
 
     ManualStringHelpCB(widget, null, text);
 }
@@ -838,7 +838,7 @@ static Widget create_text_dialog(Widget parent, const _XtString name,
 					 parent, args, arg));
 
     arg = 0;
-    Widget w = XmCreateMainWindow(shell, (char *)name, args, arg);
+    Widget w = XmCreateMainWindow(shell, CONST_CAST(char *,name), args, arg);
     XtManageChild(w);
 
     MMDesc file_menu[] = 
@@ -930,7 +930,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     string the_text(unformatted_text);
 
     // For efficiency reasons, we access all data in-place via the TEXT ptr.
-    char *text = (char *)the_text.chars();
+    char *text = CONST_CAST(char *,the_text.chars());
 
     // Set i > 0 if TEXT contains more than one newline
     int i = the_text.index('\n');
@@ -1086,7 +1086,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	    // Find next `File: ' line
 	    source = the_text.index("File: ", source);
 	}
-	text = (char *)the_text.chars();
+	text = CONST_CAST(char *,the_text.chars());
 	len = the_text.length();
     }
 
@@ -1104,7 +1104,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
     XtSetArg(args[arg], XmNborderWidth,        0); arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    Widget form = verify(XmCreateForm(text_dialog, (char *)"form", args, arg));
+    Widget form = verify(XmCreateForm(text_dialog, CONST_CAST(char *,"form"), args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
@@ -1116,7 +1116,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
     Widget area = verify(XmCreatePanedWindow(form, 
-					     (char *)"help_area", args, arg));
+					     CONST_CAST(char *,"help_area"), args, arg));
     XtManageChild(area);
 
     FindInfo *fi = new FindInfo;
@@ -1143,7 +1143,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
     arg = 0;
     Widget help_index = 
-	verify(XmCreateScrolledList(area, (char *)"index", args, arg));
+	verify(XmCreateScrolledList(area, CONST_CAST(char *,"index"), args, arg));
     XtManageChild(help_index);
     if (lesstif_version < 90)
 	set_scrolled_window_size(help_index);
@@ -1183,7 +1183,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
     XtSetArg(args[arg], XmNvalue,    "");                arg++;
     Widget help_man = 
-	verify(XmCreateScrolledText(area, (char *)"text", args, arg));
+	verify(XmCreateScrolledText(area, CONST_CAST(char *,"text"), args, arg));
     XtManageChild(help_man);
     if (lesstif_version < 90)
 	set_scrolled_window_size(help_man);
@@ -1368,9 +1368,10 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     for (i = 0; i < titles.size(); i++)
     {
 	xmtitles[i] = 
-	    XmStringCreateLtoR(titles[i], 
-			       titles[i].contains(' ', 0) ? 
-			       (char *)CHARSET_RM : (char *)CHARSET_BF);
+	    XmStringCreateLtoR(CONST_CAST(char*,titles[i].chars()),
+			       titles[i].contains(' ', 0) ?
+			       CONST_CAST(char*,CHARSET_RM) :
+			       CONST_CAST(char*,CHARSET_BF));
     }
 
     XtVaSetValues(help_index,
@@ -1418,11 +1419,11 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     Cardinal arg = 0;
     Widget menubar;
     XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
-    Widget text_dialog = create_text_dialog(toplevel, name, args, arg, 
+    Widget text_dialog = create_text_dialog(toplevel, CONST_CAST(char*,name.chars()), args, arg, 
 					    menubar);
 
     arg = 0;
-    Widget form = verify(XmCreateForm(text_dialog, (char *)"form", args, arg));
+    Widget form = verify(XmCreateForm(text_dialog, CONST_CAST(char*,"form"), args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
@@ -1434,7 +1435,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
     Widget area = verify(
-	XmCreatePanedWindow(form, (char *)"help_area", args, arg));
+	XmCreatePanedWindow(form, CONST_CAST(char *,"help_area"), args, arg));
     XtManageChild(area);
 
     FindInfo *fi = new FindInfo;
@@ -1488,7 +1489,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     XtSetArg(args[arg], XmNeditMode,         XmMULTI_LINE_EDIT); arg++;
     XtSetArg(args[arg], XmNvalue,            text); arg++;
     Widget help_text = verify(
-	XmCreateScrolledText(area, (char *)"text", args, arg));
+	XmCreateScrolledText(area, CONST_CAST(char *,"text"), args, arg));
     XtManageChild(help_text);
     if (lesstif_version < 90)
 	set_scrolled_window_size(help_text);
@@ -1865,7 +1866,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtSetArg(args[arg], XmNwidth,            10);               arg++;
 	XtSetArg(args[arg], XmNheight,           10);               arg++;
 	tip_shell = verify(XmCreateMenuShell(findTheTopLevelShell(w),
-					     (char *)"tipShell", args, arg));
+					     CONST_CAST(char *,"tipShell"), args, arg));
 
 	arg = 0;
 	XtSetArg(args[arg], XmNmarginWidth, 0);                     arg++;
@@ -1875,14 +1876,14 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtSetArg(args[arg], XmNborderWidth, 0);                     arg++;
 	XtSetArg(args[arg], XmNshadowThickness, 0);                 arg++;
 	tip_row = verify(
-	    XmCreateRowColumn(tip_shell, (char *)"tipRow", args, arg));
+	    XmCreateRowColumn(tip_shell, CONST_CAST(char *,"tipRow"), args, arg));
 	XtManageChild(tip_row);
 
 	arg = 0;
 	XtSetArg(args[arg], XmNlabelString, tip.xmstring());        arg++;
 	XtSetArg(args[arg], XmNrecomputeSize, true);                arg++;
 	XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING);   arg++;
-	tip_label = XmCreateLabel(tip_row, (char *)"tipLabel", args, arg);
+	tip_label = XmCreateLabel(tip_row, CONST_CAST(char *,"tipLabel"), args, arg);
 	XtManageChild(tip_label);
 
 	// Simple hack to ensure shell is realized

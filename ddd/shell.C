@@ -84,7 +84,7 @@ string _sh_command(string command, bool force_local,
     if (display.contains(":") && !display.contains("::"))
     {
 	string host = display.before(':');
-	display = string(fullhostname(host)) + display.from(":");
+	display = string(fullhostname(host.chars())) + display.from(":");
     }
 
     string settings = "";

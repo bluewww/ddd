@@ -121,14 +121,14 @@ static string perl_prefix(string& expr)
 
 static bool sub1(string& a, string s1, string s2)
 {
-    string prefix = c_prefix(s1);
+    const string prefix = c_prefix(s1);
 
     for (int depth = 2; depth >= 0; depth--)
     {
 	for (int p = 0; p < 2; p++)
 	{
-	    string open  = replicate(string("([{"[p]), depth);
-	    string close = replicate(string(")]}"[p]), depth);
+	    const string open  = replicate(string("([{"[p]), depth);
+	    const string close = replicate(string(")]}"[p]), depth);
 
 	    if (_sub1(a, prefix + open + s1 + close, s2))
 		return true;
@@ -146,7 +146,7 @@ static void normalize_pointers(string& expr)
 {
     if (gdb->program_language() == LANGUAGE_C)
     {
-	string prefix = c_prefix(expr);
+	const string prefix = c_prefix(expr);
 	while (expr.contains("->"))
 	    expr = "(*" + expr.before("->") + ")." + expr.after("->");
 
@@ -160,14 +160,14 @@ static void normalize_pointers(string& expr)
 	{
 	    for (int j = 0; j < 3; j++)
 	    {
-		string open  = "([{"[j];
-		string close = ")]}"[i];
+	        const string open  = "([{"[j];
+		const string close = ")]}"[i];
 		expr.gsub(close + open, close + "->" + open);
 	    }
 	}
 
 	// Replace $A->[B] by ${$A}[B]
-	string prefix = perl_prefix(expr);
+	const string prefix = perl_prefix(expr);
 	while (expr.contains("->"))
 	    expr = "{$" + expr.before("->") + "}" + expr.after("->");
 
@@ -202,7 +202,7 @@ static string _annotation(string from, string to)
 }
 
 // Return an annotation for an edge from FROM to TO
-string annotation(string from, string to)
+string annotation(const string& from, const string& to)
 {
     string annotation = _annotation(from, to);
     if (annotation == to)
@@ -211,8 +211,8 @@ string annotation(string from, string to)
     // Strip surrounding braces
     for (int i = 0; i < 3; i++)
     {
-	string open  = "([{"[i];
-	string close = ")]}"[i];
+	const string open  = "([{"[i];
+	const string close = ")]}"[i];
 
 	while (annotation.contains(open + "()" + close))
 	    annotation.gsub(open + "()" + close, string("()"));

@@ -79,7 +79,7 @@ bool ThemePattern::matches(const string& pattern, const string& expr) const
 	return expr == unquote(pattern);
 
     const int dot_special = 0;
-    return glob_match(pattern, expr, dot_special);
+    return glob_match(pattern.chars(), expr.chars(), dot_special);
 }
 
 string ThemePattern::matching_pattern(const string& expr) const

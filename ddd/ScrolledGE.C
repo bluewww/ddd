@@ -64,7 +64,7 @@ Widget createScrolledGraphEdit(Widget parent, const _XtString name,
     XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 
     Widget scrolledWindow = 
-	verify(XtCreateManagedWidget((char *)swindow_name, 
+	verify(XtCreateManagedWidget(swindow_name.chars(), 
 				     scrolledGraphEditWidgetClass,
 				     parent, args, arg));
 

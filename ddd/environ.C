@@ -46,9 +46,9 @@ static StringArray environment_names;
 // Put NAME=VALUE into the environment
 void put_environment(string name, string value)
 {
-    string env_s = name + "=" + value;
+    const string env_s = name + "=" + value;
     char *env = new char[env_s.length() + 1];
-    strcpy(env, env_s);
+    strcpy(env, env_s.chars());
     putenv(env);
 
     bool found = false;
@@ -67,7 +67,7 @@ string set_environment_command()
     for (int i = 0; i < environment_names.size(); i++)
     {
 	const string& name = environment_names[i];
-	char *env = getenv((char *)name);
+	const char *env = getenv(name.chars());
 	if (env != 0)
 	    cmd += name + "=" + sh_quote(env) + "; export " + name + "; ";
     }

@@ -130,11 +130,11 @@ void logplayer(const string& logname)
     // All this is really ugly.  Works well as a hack for debugging DDD,
     // but not really worth anything else.
 
-    static ifstream log(logname);
+    static ifstream log(logname.chars());
     if (log.bad())
     {
-	(void) fopen(logname, "r");
-	perror(logname);
+	(void) fopen(logname.chars(), "r");
+	perror(logname.chars());
 	exit(EXIT_FAILURE);
     }
 
@@ -227,7 +227,7 @@ void logplayer(const string& logname)
 		    if (p != "" || c == ':')
 			pattern = p;
 		    if (pattern == "" ||
-			(c == ':' && command_no == atoi(pattern)) ||
+			(c == ':' && command_no == atoi(pattern.chars())) ||
 			(c == '/' && (pattern == "" || in.contains(pattern))))
 		    {
 			// Report line
@@ -299,7 +299,7 @@ void logplayer(const string& logname)
 			if (echoing)
 			    put(ddd_line + "\r\n");
 
-			ifstream is(logname);
+			ifstream is(logname.chars());
 			int line = 1;
 			bool at_start_of_line = true;
 

@@ -66,7 +66,7 @@ void VSLLib::eval_echo(const string& errmsg, const VSLDef *d)
     // Issue backtrace if desired
     if (VSLDef::backtrace && VSLDef::backtrace[0])
     {
-	static char line[] = "------------------------------";
+	static const char *line = "------------------------------";
 
 	echo(line);
 	echo("Current stack:");

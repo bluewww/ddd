@@ -35,6 +35,7 @@ char Agent_rcsid[] =
 
 #include "assert.h"
 #include "config.h"
+#include "casts.h"
 
 #include <iostream.h>
 
@@ -76,7 +77,7 @@ void Agent::childStatusChange(int sig)
 // Default I/O error handler
 void Agent::defaultHandler(Agent *source, void *, void *call_data)
 {
-    string msg = (char *)call_data;
+    const string msg = STATIC_CAST(char *,call_data);
     if (msg != "Exit 0")
 	cerr << source->name() << ": " << msg << "\n";
 }
@@ -105,15 +106,18 @@ void Agent::setRunning()
     runningAgents += this;
     activateIO();
 
-    if (!was_running)
-	callHandlers(Started, (char *)path());
+    if (!was_running) {
+        const string path_(path()); 
+	callHandlers(Started, CONST_CAST(char*,path_.chars()));
+    }
 }
 
 void Agent::unsetRunning()
 {
-    if (_running)
-	callHandlers(Stopped, (char *)path());
-
+  if (_running) {
+        const string path_(path()); 
+	callHandlers(Stopped, CONST_CAST(char*,path_.chars()));
+  }
     deactivateIO();
     runningAgents -= this;
     _running = false;
@@ -283,9 +287,9 @@ int Agent::setupParentCommunication()
 void Agent::executeChild()
 {
     // start child
-    string exec_str = "exec " + path();
-    char *exec_cmd = exec_str;
-    execl("/bin/sh", "sh", "-c", exec_cmd, (char *)0);
+    const string exec_str = "exec " + path();
+    const char *exec_cmd = exec_str.chars();
+    execl("/bin/sh", "sh", "-c", exec_cmd, STATIC_CAST(char *,0));
 
     // could not find child: send message to parent via stderr
     perror("/bin/sh");
@@ -539,7 +543,7 @@ void Agent::abort()
     if (_lastStatus >= 0)
     {
 	// Call "Died" message handlers
-	callHandlers(Died, (char *)statusName(_lastStatus));
+	callHandlers(Died, CONST_CAST(char *,statusName(_lastStatus)));
 	_lastStatus = -1;
     }
 }

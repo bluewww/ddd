@@ -70,15 +70,15 @@ static XtResource resources[] = {
 #define offset(field) XtOffsetOf(PannedGraphEditRec, pannedGraphEdit.field)
     // {name, class, type, size, offset, default_type, default_addr}
 
-    { (char *)XtNminimumPannerWidth, (char *)XtCMinimumPannerWidth, XtRDimension, 
+    { CONST_CAST(char *,XtNminimumPannerWidth), CONST_CAST(char *,XtCMinimumPannerWidth), XtRDimension, 
       sizeof(Dimension), offset(minimumPannerWidth), 
       XtRImmediate, XtPointer(50) },
 
-    { (char *)XtNminimumPannerHeight, (char *)XtCMinimumPannerHeight, XtRDimension, 
+    { CONST_CAST(char *,XtNminimumPannerHeight), CONST_CAST(char *,XtCMinimumPannerHeight), XtRDimension, 
       sizeof(Dimension), offset(minimumPannerHeight), 
       XtRImmediate, XtPointer(50) },
 
-    { (char *)XtNmaximumScale, (char *)XtCMaximumScale, XtRDimension, 
+    { CONST_CAST(char *,XtNmaximumScale), CONST_CAST(char *,XtCMaximumScale), XtRDimension, 
       sizeof(Dimension), offset(maximumScale), 
       XtRImmediate, XtPointer(33) }
 
@@ -97,7 +97,7 @@ static XtResource resources[] = {
 struct _PannedGraphEditClassRec pannedGraphEditClassRec = {
   {	 /* core fields */
     /* superclass               */  portholeWidgetClass,
-    /* class_name               */  (char *)"PannedGraphEdit",
+    /* class_name               */  CONST_CAST(char *,"PannedGraphEdit"),
     /* widget_size              */  sizeof(PannedGraphEditRec),
     /* class_initialize         */  XtProc(XawInitializeWidgetSet),
     /* class_part_initialize    */  XtWidgetClassProc(0),
@@ -177,33 +177,33 @@ Widget createPannedGraphEdit(Widget parent, const _XtString name,
 
     string form_name = string(name) + "_form";
     arg = 0;
-    XtSetArg(args[arg], (char *)XtNborderWidth,     0); arg++;
-    XtSetArg(args[arg], (char *)XtNdefaultDistance, 0); arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNborderWidth),     0); arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNdefaultDistance), 0); arg++;
     Widget form =
-	verify(XtCreateManagedWidget(form_name, 
+	verify(XtCreateManagedWidget(form_name.chars(), 
 				     formWidgetClass, parent, args, arg));
 
     string panner_name = string(name) + "_panner";
     arg = 0;
-    XtSetArg(args[arg], (char *)XtNresize,    False);          arg++;
-    XtSetArg(args[arg], (char *)XtNresizable, True);           arg++;
-    XtSetArg(args[arg], (char *)XtNbottom,    (char *)XawChainBottom); arg++;
-    XtSetArg(args[arg], (char *)XtNtop,       (char *)XawChainBottom); arg++;
-    XtSetArg(args[arg], (char *)XtNleft,      (char *)XawChainRight);  arg++;
-    XtSetArg(args[arg], (char *)XtNright,     (char *)XawChainRight);  arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNresize),    False);          arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNresizable), True);           arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNbottom),    XawChainBottom); arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNtop),       XawChainBottom); arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNleft),      XawChainRight);  arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNright),     XawChainRight);  arg++;
     Widget panner = 
-	verify(XtCreateWidget(panner_name, 
+	verify(XtCreateWidget(panner_name.chars(), 
 			      pannerWidgetClass, form, args, arg));
 
     string porthole_name = string(name) + "_porthole";
     arg = 0;
-    XtSetArg(args[arg], (char *)XtNresizable, True);           arg++;
-    XtSetArg(args[arg], (char *)XtNbottom,    (char *)XawChainBottom); arg++;
-    XtSetArg(args[arg], (char *)XtNtop,       (char *)XawChainTop);    arg++;
-    XtSetArg(args[arg], (char *)XtNleft,      (char *)XawChainLeft);   arg++;
-    XtSetArg(args[arg], (char *)XtNright,     (char *)XawChainRight);  arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNresizable), True);           arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNbottom),    XawChainBottom); arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNtop),       XawChainTop);    arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNleft),      XawChainLeft);   arg++;
+    XtSetArg(args[arg], CONST_CAST(char *,XtNright),     XawChainRight);  arg++;
     Widget porthole = 
-	verify(XtCreateManagedWidget(porthole_name,
+	verify(XtCreateManagedWidget(porthole_name.chars(),
 				     pannedGraphEditWidgetClass, 
 				     form, args, arg));
 
@@ -262,14 +262,14 @@ static void PortholeCB(Widget w,
     Widget graph_edit = children[0];
 
     arg = 0;
-    XtSetArg (args[arg], (char *)XtNsliderX, report->slider_x); arg++;
-    XtSetArg (args[arg], (char *)XtNsliderY, report->slider_y); arg++;
+    XtSetArg (args[arg], CONST_CAST(char *,XtNsliderX), report->slider_x); arg++;
+    XtSetArg (args[arg], CONST_CAST(char *,XtNsliderY), report->slider_y); arg++;
     if (report->changed != (XawPRSliderX | XawPRSliderY))
     {
-	XtSetArg (args[arg], (char *)XtNsliderWidth,  report->slider_width);  arg++;
-	XtSetArg (args[arg], (char *)XtNsliderHeight, report->slider_height); arg++;
-	XtSetArg (args[arg], (char *)XtNcanvasWidth,  report->canvas_width);  arg++;
-	XtSetArg (args[arg], (char *)XtNcanvasHeight, report->canvas_height); arg++;
+	XtSetArg (args[arg], CONST_CAST(char *,XtNsliderWidth),  report->slider_width);  arg++;
+	XtSetArg (args[arg], CONST_CAST(char *,XtNsliderHeight), report->slider_height); arg++;
+	XtSetArg (args[arg], CONST_CAST(char *,XtNcanvasWidth),  report->canvas_width);  arg++;
+	XtSetArg (args[arg], CONST_CAST(char *,XtNcanvasHeight), report->canvas_height); arg++;
     }
     XtSetValues (panner, args, arg);
 

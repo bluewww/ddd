@@ -157,6 +157,7 @@ char GDBAgent_rcsid[] =
 #include "isid.h"
 #include "home.h"
 #include "value-read.h"		// read_token
+#include "casts.h"
 
 #include <stdlib.h>
 #include <iostream.h>
@@ -2858,7 +2859,7 @@ string GDBAgent::history_file() const
     {
     case GDB:
     {
-	char *g = getenv("GDBHISTFILE");
+	const char *g = getenv("GDBHISTFILE");
 	if (g != 0)
 	    return g;
 	else
@@ -2873,7 +2874,7 @@ string GDBAgent::history_file() const
 
     case XDB:
     {
-	char *g = getenv("XDBHIST");
+	const char *g = getenv("XDBHIST");
 	if (g != 0)
 	    return g;
 	else
@@ -3076,7 +3077,7 @@ void GDBAgent::munch_value(string& value, const string& var) const
 
 void GDBAgent::PanicHP(Agent *source, void *, void *call_data)
 {
-    string msg = (char *)call_data;
+    string msg = STATIC_CAST(char *,call_data);
     string path = source->path();
     GDBAgent *gdb = ptr_cast(GDBAgent, source);
     if (gdb != 0)
@@ -3086,9 +3087,9 @@ void GDBAgent::PanicHP(Agent *source, void *, void *call_data)
 
 void GDBAgent::StrangeHP(Agent *source, void *client_data, void *call_data)
 {
-    string msg = (char *)call_data;
+    string msg = STATIC_CAST(char *,call_data);
     msg.prepend("warning: ");
-    PanicHP(source, client_data, (char *)msg);
+    PanicHP(source, client_data, CONST_CAST(char*,msg.chars()));
 }
 
 // Terminator

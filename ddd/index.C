@@ -54,10 +54,10 @@ int index(const string& s, const regex& r, const string& prefix, int startpos)
 
     for (; startpos >= 0 && startpos < int(s.length()); startpos += direction)
     {
-	char *t = (char *)s + startpos;
-	if (strncmp(t, prefix, min(prefix.length(), 
+	const char *t = s.chars() + startpos;
+	if (strncmp(t, prefix.chars(), min(prefix.length(), 
 				   s.length() - startpos)) == 0 
-	    && r.match(s, s.length(), startpos) >= 0)
+	    && r.match(s.chars(), s.length(), startpos) >= 0)
 	    return startpos;
     }
 

@@ -244,21 +244,21 @@ Widget create_toolbar(Widget parent, string /* name */,
     Cardinal arg = 0;
 
     // Create toolbar
-    string toolbar_name = "toolbar";
+    const string toolbar_name = "toolbar";
 
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,        0); arg++;
     XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
     XtSetArg(args[arg], XmNborderWidth,        0); arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    Widget toolbar = verify(XmCreateForm(parent, toolbar_name, args, arg));
+    Widget toolbar = verify(XmCreateForm(parent, CONST_CAST(char*,toolbar_name.chars()), args, arg));
 
     // Create `():'
     label = create_arg_label(toolbar);
 
     // Create argument field
-    string argfield_name = "arg";
-    argfield = new ArgField (toolbar, argfield_name);
+    const string argfield_name = "arg";
+    argfield = new ArgField (toolbar, argfield_name.chars());
     Widget combobox = argfield->top();
 
     registerOwnConverters();

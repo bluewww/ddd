@@ -181,16 +181,16 @@ extern "C" {
 // Xt stuff
 //-----------------------------------------------------------------------
 XtActionsRec SourceView::actions [] = {
-    {(char *)"source-popup-menu",        SourceView::srcpopupAct        },
-    {(char *)"source-start-select-word", SourceView::startSelectWordAct },
-    {(char *)"source-end-select-word",   SourceView::endSelectWordAct   },
-    {(char *)"source-update-glyphs",     SourceView::updateGlyphsAct    },
-    {(char *)"source-drag-glyph",        SourceView::dragGlyphAct       },
-    {(char *)"source-follow-glyph",      SourceView::followGlyphAct     },
-    {(char *)"source-drop-glyph",        SourceView::dropGlyphAct       },
-    {(char *)"source-delete-glyph",      SourceView::deleteGlyphAct     },
-    {(char *)"source-double-click",      SourceView::doubleClickAct     },
-    {(char *)"source-set-arg",           SourceView::setArgAct          },
+    {CONST_CAST(char*,"source-popup-menu"),        SourceView::srcpopupAct        },
+    {CONST_CAST(char*,"source-start-select-word"), SourceView::startSelectWordAct },
+    {CONST_CAST(char*,"source-end-select-word"),   SourceView::endSelectWordAct   },
+    {CONST_CAST(char*,"source-update-glyphs"),     SourceView::updateGlyphsAct    },
+    {CONST_CAST(char*,"source-drag-glyph"),        SourceView::dragGlyphAct       },
+    {CONST_CAST(char*,"source-follow-glyph"),      SourceView::followGlyphAct     },
+    {CONST_CAST(char*,"source-drop-glyph"),        SourceView::dropGlyphAct       },
+    {CONST_CAST(char*,"source-delete-glyph"),      SourceView::deleteGlyphAct     },
+    {CONST_CAST(char*,"source-double-click"),      SourceView::doubleClickAct     },
+    {CONST_CAST(char*,"source-set-arg"),           SourceView::setArgAct          },
 };
 
 //-----------------------------------------------------------------------
@@ -676,7 +676,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		if (temp && line != "")
 		{
 		    syncCommandQueue();
-		    string clear_cmd = clear_command(line, true, new_bps);
+		    const string clear_cmd = clear_command(line, true, new_bps);
 		    gdb_command("when at " + line + " " 
 				+ command_list(clear_cmd), w);
 		}
@@ -1238,7 +1238,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	line = pos.after(':');
     }
 
-    int line_no = atoi(line);
+    int line_no = atoi(line.chars());
 
     if (!clear_next && gdb->has_clear_command())
     {
@@ -1782,7 +1782,7 @@ BreakPoint *SourceView::breakpoint_at(string arg)
 	if (arg.matches(rxint))
 	{
 	    // Line number for current source given
-	    if (bp_matches(bp, atoi(arg)))
+	    if (bp_matches(bp, atoi(arg.chars())))
 		return bp;
 	}
 	else
@@ -1805,7 +1805,7 @@ BreakPoint *SourceView::breakpoint_at(string arg)
 		string file = pos.before(':');
 		string line = pos.after(':');
 
-		if (bp_matches(bp, file, atoi(line)))
+		if (bp_matches(bp, file, atoi(line.chars())))
 		    return bp;
 	    }
 	}
@@ -1960,7 +1960,7 @@ String SourceView::read_local(const string& file_name, long& length,
 
     // Make sure the file is a regular text file and open it
     int fd;
-    if ((fd = open(file_name, O_RDONLY)) < 0)
+    if ((fd = open(file_name.chars(), O_RDONLY)) < 0)
     {
 	delay.outcome = strerror(errno);
 	if (!silent)
@@ -2554,7 +2554,7 @@ void SourceView::reload()
 
     // StatusDelay delay("Reloading " + quote(file));
 
-    read_file(file, atoi(line), true);
+    read_file(file, atoi(line.chars()), true);
 
     // Restore breakpoints
     refresh_bp_disp(true);
@@ -2661,7 +2661,7 @@ void SourceView::read_file (string file_name,
     Delay delay;
 
     // Set source and initial line
-    XmTextSetString(source_text_w, (String)current_source);
+    XmTextSetString(source_text_w, CONST_CAST(char*,current_source.chars()));
 
     XmTextPosition initial_pos = 0;
     if (initial_line > 0 && initial_line <= line_count)
@@ -2760,11 +2760,11 @@ void SourceView::update_title()
 	return;
 
     string title   = DDD_NAME ": " + current_file_name;
-    String title_s = title;
+    const _XtString title_s = title.chars();
 
     string icon   = 
 	DDD_NAME ": " + string(basename(current_file_name.chars()));
-    String icon_s = icon;
+    const _XtString icon_s = icon.chars();
 
     XtVaSetValues(toplevel_w,
 		  XmNtitle, title_s,
@@ -2811,7 +2811,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
 		XmTextReplace(source_text_w,
 			      pos_of_line(line_nr),
 			      pos_of_line(line_nr) + s.length(),
-			      (String)s);
+			      CONST_CAST(char*,s.chars()));
 	}
     }
 
@@ -2873,7 +2873,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
 	    if (insert_string.length() > 0)
 		XmTextReplace(source_text_w, pos, 
 			      pos + indent - 1,
-			      (String)insert_string);
+			      CONST_CAST(char*,insert_string.chars()));
 	}
     }
 }
@@ -2897,7 +2897,7 @@ void SourceView::refresh_code_bp_disp(bool reset)
 	if (indent > 0)
 	{
 	    string spaces = replicate(string(' '), indent);
-	    XmTextReplace(code_text_w, pos, pos + indent, (String)spaces);
+	    XmTextReplace(code_text_w, pos, pos + indent, CONST_CAST(char*,spaces.chars()));
 	}
     }
 
@@ -2943,7 +2943,7 @@ void SourceView::refresh_code_bp_disp(bool reset)
 	    insert_string = insert_string.before(indent);
 
 	    XmTextReplace(code_text_w, pos, pos + indent, 
-			  (String)insert_string);
+			  CONST_CAST(char*,insert_string.chars()));
 	}
     }
 }
@@ -3273,7 +3273,7 @@ string SourceView::get_word_at_pos(Widget text_w,
 static void InstallBitmapAsImage(unsigned char *bits, int width, int height, 
 				 const string& name)
 {
-    Boolean ok = InstallBitmap(bits, width, height, name);
+    Boolean ok = InstallBitmap(bits, width, height, name.chars());
     if (!ok)
 	cerr << "Could not install " << quote(name) << " bitmap\n";
 }
@@ -3494,19 +3494,19 @@ void SourceView::create_shells()
 					   XmDIALOG_CANCEL_BUTTON));
 
     arg = 0;
-    Widget box = XmCreateRadioBox(register_dialog_w, (char *)"box", args, arg);
+    Widget box = XmCreateRadioBox(register_dialog_w, CONST_CAST(char *,"box"), args, arg);
     XtManageChild(box);
 
     arg = 0;
     XtSetArg(args[arg], XmNset, !all_registers); arg++;
     int_registers_w = 
-	XmCreateToggleButton(box, (char *)"int_registers", args, arg);
+	XmCreateToggleButton(box, CONST_CAST(char *,"int_registers"), args, arg);
     XtManageChild(int_registers_w);
 
     arg = 0;
     XtSetArg(args[arg], XmNset, all_registers); arg++;
     all_registers_w = 
-	XmCreateToggleButton(box, (char *)"all_registers", args, arg);
+	XmCreateToggleButton(box, CONST_CAST(char *,"all_registers"), args, arg);
     XtManageChild(all_registers_w);
 
     XtAddCallback(int_registers_w, XmNvalueChangedCallback, 
@@ -3615,7 +3615,7 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
     XtSetArg(args[arg], XmNmarginHeight, 0);    arg++;
     XtSetArg(args[arg], XmNmarginWidth,  0);    arg++;
     string form_name = base + "_form_w";
-    form = verify(XmCreateForm(parent, form_name, args, arg));
+    form = verify(XmCreateForm(parent, CONST_CAST(char*,form_name.chars()), args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNselectionArrayCount, 1);               arg++;
@@ -3654,7 +3654,7 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
     }
 
     string text_name = base + "_text_w";
-    text = verify(XmCreateScrolledText(form, text_name, args, arg));
+    text = verify(XmCreateScrolledText(form, CONST_CAST(char*,text_name.chars()), args, arg));
     XtManageChild(text);
 
     // Set up the scrolled window
@@ -3727,7 +3727,7 @@ void SourceView::show_execution_position (string position, bool stopped,
 		XmTextReplace (source_text_w,
 			       last_pos + indent - no_marker.length(),
 			       last_pos + indent,
-			       (String)no_marker);
+			       CONST_CAST(char*,no_marker.chars()));
 	    }
 
 	    if (last_start_highlight)
@@ -3772,7 +3772,7 @@ void SourceView::show_execution_position (string position, bool stopped,
 	    XmTextReplace (source_text_w,
 			   last_pos + indent - no_marker.length(),
 			   last_pos + indent,
-			   (String)no_marker);
+			   CONST_CAST(char*,no_marker.chars()));
 	}
 
 	// Show current position
@@ -3819,7 +3819,7 @@ void SourceView::_show_execution_position(string file, int line,
 	XmTextReplace (source_text_w,
 		       pos + indent - marker.length(),
 		       pos + indent,
-		       (String)marker);
+		       CONST_CAST(char*,marker.chars()));
     }
 
     XmTextPosition pos_line_end = 0;
@@ -4074,7 +4074,7 @@ void SourceView::process_info_bp (string& info_output,
 
 	    if (gdb->has_delete_command())
 	    {
-		string num = "@" + itostring(bp_nr) + "@";
+		const string num = "@" + itostring(bp_nr) + "@";
 		undo_commands << gdb->delete_command(num) << '\n';
 	    }
 	    else
@@ -4273,7 +4273,7 @@ void SourceView::lookup(string s, bool silent)
     else if (s[0] != '0' && isdigit(s[0]))
     {
 	// Line number given
-	int line = atoi(s);
+	int line = atoi(s.chars());
 	if (line > 0 && line <= line_count)
 	{
 	    add_current_to_history();
@@ -4573,7 +4573,7 @@ void SourceView::process_use(string& use_output)
     strip_space(use_output);
 
     string path_prefix = "";
-    char *p = getenv("CLASSPATH");
+    const char *p = getenv("CLASSPATH");
     if (p != 0)
 	path_prefix = string(p) + ":";
     if (!use_output.contains(path_prefix, 0))
@@ -4597,7 +4597,7 @@ string SourceView::class_path()
 
     if (current_class_path == NO_GDB_ANSWER)
     {
-	char *p = getenv("CLASSPATH");
+	const char *p = getenv("CLASSPATH");
 	return p ? p : ".";
     }
 
@@ -4793,7 +4793,7 @@ string SourceView::current_source_name()
 		{
 		    // The current source does not match the current file.
 		    // Try all sources.
-		    static string all_sources = "<ALL SOURCES>";
+		    static const string all_sources = "<ALL SOURCES>";
 
 		    if (source_name_cache[all_sources] == "")
 		    {
@@ -5404,7 +5404,7 @@ void SourceView::NewBreakpointCB(Widget w, XtPointer, XtPointer)
 	Arg args[10];
 	Cardinal arg = 0;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
-					     (char *)"new_breakpoint_dialog",
+					     CONST_CAST(char *,"new_breakpoint_dialog"),
 					     args, arg));
 	Delay::register_shell(dialog);
 
@@ -5419,10 +5419,10 @@ void SourceView::NewBreakpointCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
 	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-	Widget box = XmCreateRowColumn(dialog, (char *)"box", args, arg);
+	Widget box = XmCreateRowColumn(dialog, CONST_CAST(char *,"box"), args, arg);
 	XtManageChild(box);
 
-	Widget label = XmCreateLabel(box, (char *)"label", args, arg);
+	Widget label = XmCreateLabel(box, CONST_CAST(char *,"label"), args, arg);
 	XtManageChild(label);
 
 	arg = 0;
@@ -5493,7 +5493,7 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	Arg args[10];
 	Cardinal arg = 0;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
-					     (char *)"new_watchpoint_dialog",
+					     CONST_CAST(char *,"new_watchpoint_dialog"),
 					     args, arg));
 	Delay::register_shell(dialog);
 
@@ -5508,7 +5508,7 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
 	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-	Widget box = XmCreateRowColumn(dialog, (char *)"box", args, arg);
+	Widget box = XmCreateRowColumn(dialog, CONST_CAST(char *,"box"), args, arg);
 	XtManageChild(box);
 
 	arg = 0;
@@ -5797,7 +5797,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 	commands += cmd + "\n";
     }
 
-    XmTextSetString(info->editor, commands);
+    XmTextSetString(info->editor, CONST_CAST(char*,commands.chars()));
 
     if (info->ignore_spin_update > 0)
     {
@@ -5823,7 +5823,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 		if (ignore == "0")
 		    ignore = "";
 
-		XmTextFieldSetString(info->ignore, (String)ignore);
+		XmTextFieldSetString(info->ignore, CONST_CAST(char*,ignore.chars()));
 	    }
 	    XtFree(old_ignore);
 	}
@@ -5835,7 +5835,8 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     String old_condition = XmTextFieldGetString(info->condition);
     if (bp->condition() != old_condition)
     {
-	XmTextFieldSetString(info->condition, (String)bp->condition());
+        const string s1 = bp->condition();
+	XmTextFieldSetString(info->condition, CONST_CAST(char*,s1.chars()));
     }
     XtFree(old_condition);
 
@@ -6002,7 +6003,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     info->dialog = 
 	verify(XmCreatePromptDialog(source_text_w,
-				    (char *)"breakpoint_properties",
+				    CONST_CAST(char *,"breakpoint_properties"),
 				    args, arg));
 
     Widget apply = XmSelectionBoxGetChild(info->dialog, XmDIALOG_APPLY_BUTTON);
@@ -6075,7 +6076,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     arg = 0;
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
-    Widget form = XmCreateRowColumn(info->dialog, (char *)"form", args, arg);
+    Widget form = XmCreateRowColumn(info->dialog, CONST_CAST(char *,"form"), args, arg);
     XtManageChild(form);
 
     Widget panel = MMcreatePanel(form, "panel", panel_menu);
@@ -6096,7 +6097,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     arg = 0;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
-    info->editor = XmCreateScrolledText(form, (char *)"text", args, arg);
+    info->editor = XmCreateScrolledText(form, CONST_CAST(char *,"text"), args, arg);
     XtUnmanageChild(XtParent(info->editor));
     XtManageChild(info->editor);
 
@@ -6451,7 +6452,7 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 	case XDB:
 	{
 	    // Replace breakpoint by new one with command.
-	    string cmd = "b " + 
+	    const string cmd = "b " + 
 		bp->file_name() + ":" + itostring(bp->line_nr()) + 
 		" {" + action + "}";
 	    gdb_command(cmd, origin);
@@ -6463,7 +6464,7 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 	{
 	    // Just set an action.
 	    gdb_command("f " + bp->file_name(), origin);
-	    string cmd = "a " + itostring(bp->line_nr()) + " " + action;
+	    const string cmd = "a " + itostring(bp->line_nr()) + " " + action;
 	    gdb_command(cmd, origin);
 	    break;
 	}
@@ -6546,7 +6547,7 @@ void SourceView::BreakpointCmdCB(Widget,
     if (nrs.size() == 0)
         return;
 
-    string cmd = (String)client_data;
+    const string cmd = (String)client_data;
 
     if (cmd == "delete")
         delete_bps(nrs);
@@ -7780,7 +7781,7 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNfillOnArm,          True);          arg++;
     XtSetArg(args[arg], XmNarmColor,           background);    arg++;
     XtSetArg(args[arg], XmNbackground,         background);    arg++;
-    Widget w = verify(XmCreatePushButton(form_w, (char *)name, args, arg));
+    Widget w = verify(XmCreatePushButton(form_w, CONST_CAST(char *,name), args, arg));
 
     if (XtIsRealized(form_w))
 	XtRealizeWidget(w);
@@ -8320,7 +8321,7 @@ Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
 	else
 	{
 	    // Max number of glyphs exceeded
-	    string msg = "Out of glyphs (used " + 
+	    const string msg = "Out of glyphs (used " + 
 		itostring(stops.size() - 1) + " of " +
 		itostring(stops.size() - 1) + ")";
 
@@ -9315,7 +9316,7 @@ void SourceView::set_code(const string& code,
 			  const string& start,
 			  const string& end)
 {
-    XmTextSetString(code_text_w, (String)code);
+    XmTextSetString(code_text_w, CONST_CAST(char*,code.chars()));
     XmTextSetHighlight (code_text_w, 0, code.length(), XmHIGHLIGHT_NORMAL);
     
     current_code       = code;
@@ -9627,13 +9628,13 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 		XmTextReplace (code_text_w,
 			       last_pos_pc + indent - no_marker.length(),
 			       last_pos_pc + indent,
-			       (String)no_marker);
+			       CONST_CAST(char*,no_marker.chars()));
 	    }
 
 	    XmTextReplace (code_text_w,
 			   pos + indent - marker.length(),
 			   pos + indent,
-			   (String)marker);
+			   CONST_CAST(char*,marker.chars()));
     
 	    if (pos_line_end)
 	    {

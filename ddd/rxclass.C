@@ -121,7 +121,7 @@ void regex::fatal(int errcode, const char *src)
 regex::regex(const char* t, int flags)
     : exprs(0), matcher(0), data(0)
 {
-    string rx = "^" + string(t);
+    const string rx = "^" + string(t);
     int errcode = regcomp(&compiled, rx, flags);
     if (errcode)
 	fatal(errcode, rx.chars());
@@ -180,7 +180,7 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
     if (s[len] != '\0')
     {
 	substr = string(s, len);
-	s = (char *)substr;
+	s = substr.chars();
     }
     assert(s[len] == '\0');
 
@@ -200,7 +200,7 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
 #if WITH_RUNTIME_REGEX
 	else
 	{ 
-	    char *t = (char *)s + startpos;
+	    const char *t = s + startpos;
 	    if (strncmp(t, prefix, min(prefix_len, len - startpos)) == 0)
 	    {
 		errcode = regexec((regex_t *)&compiled, t, nexprs(), exprs, 0);
@@ -249,11 +249,11 @@ int regex::match(const char *s, int len, int pos) const
     if (s[len] != '\0')
     {
 	substr = string(s, len);
-	s = (char *)substr;
+	s = substr.chars();
     }
     assert(s[len] == '\0');
 
-    int errcode = regexec((regex_t *)&compiled, (char *)s + pos, 
+    int errcode = regexec((regex_t *)&compiled, s + pos, 
 			  nexprs(), exprs, 0);
 
     if (errcode == 0 && exprs[0].rm_so >= 0)

@@ -104,6 +104,7 @@
 extern "C" char *strerror(int errno);
 #endif
 
+#include "casts.h"
 #include "strclass.h"
 #include "bool.h"
 #include "AgentM.h"
@@ -204,9 +205,9 @@ private:
     {
 	if (system_error)
 	    msg += string(": ") + strerror(errno);
-	char *s = msg;
+	const char *s = msg.chars();
 
-	callHandlers(handler, (void *)s);
+	callHandlers(handler, STATIC_CAST(void *,CONST_CAST(char*,s)));
 
 	if (check_if_running)
 	    (void)running();

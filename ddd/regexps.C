@@ -36,6 +36,7 @@ char regexps_rcsid[] =
 #include "regexps.h"
 #include "assert.h"
 #include "misc.h"		// min()
+#include "casts.h"
 #include <string.h>
 #include <iostream.h>
 
@@ -73,7 +74,7 @@ static int rx_matcher(void *data, const char *s, int len, int pos)
     }
 #endif
 
-    the_prefix = (char *)data;
+    the_prefix = STATIC_CAST(char *,data);
     the_text   = s + pos;
     the_length = len - pos;
 

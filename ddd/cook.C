@@ -44,7 +44,7 @@ char cook_rcsid[] =
 string _cook(const string& raw, bool for_postscript)
 {
     ostrstream cooked;
-    const char *raw_s = (char *)raw;
+    const char *raw_s = raw.chars();
 
     for (unsigned i = 0; i < raw.length(); i++)
     {
@@ -193,7 +193,7 @@ string uncook(const string& cooked)
     int n;
     int count;
 
-    char *i = cooked;
+    const char *i = cooked.chars();
     while (*i != '\0')
     {
 	if (*i == '\\')

@@ -122,14 +122,14 @@ void DispBox::init_vsllib(void (*background)())
     initializing = true;
 
 #if WITH_BUILTIN_VSLLIB
-    static const char builtin_def[] = 
+    static const char *builtin_def = 
 #include "ddd.vsl.h"
 	;
 #endif
 
     // Set include search path
     VSEFlags::include_search_path = 
-	strcpy(new char[vsllib_path.length() + 1], vsllib_path);
+	strcpy(new char[vsllib_path.length() + 1], vsllib_path.chars());
 
     // Delete old library
     if (vsllib_ptr != &DispBox::dummylib)
@@ -664,24 +664,24 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
     case List:
     case Struct:
     {
-	String collapsed_value = (dv->type() == List ? 
-				  (String)"collapsed_list_value" :
-				  (String)"collapsed_struct_value");
-	String empty_value     = (dv->type() == List ? 
-				  (String)"empty_list_value" :
-				  (String)"empty_struct_value");
-	String member_name     = (dv->type() == List ? 
-				  (String)"list_member_name" :
-				  (String)"struct_member_name");
-	String value           = (dv->type() == List ? 
-				  (String)"list_value" :
-				  (String)"struct_value");
-	String horizontal      = (dv->type() == List ? 
-				  (String)"horizontal_unnamed_list" :
-				  (String)"horizontal_unnamed_struct");
-	String vertical        = (dv->type() == List ? 
-				  (String)"vertical_unnamed_list" :
-				  (String)"vertical_unnamed_struct");
+	const _XtString collapsed_value = (dv->type() == List ? 
+				  "collapsed_list_value" :
+				  "collapsed_struct_value");
+	const _XtString empty_value     = (dv->type() == List ? 
+				  "empty_list_value" :
+				  "empty_struct_value");
+	const _XtString member_name     = (dv->type() == List ? 
+				  "list_member_name" :
+				  "struct_member_name");
+	const _XtString value           = (dv->type() == List ? 
+				  "list_value" :
+				  "struct_value");
+	const _XtString horizontal      = (dv->type() == List ? 
+				  "horizontal_unnamed_list" :
+				  "horizontal_unnamed_struct");
+	const _XtString vertical        = (dv->type() == List ? 
+				  "vertical_unnamed_list" :
+				  "vertical_unnamed_struct");
 
 	int count = dv->nchildren();
 
@@ -848,6 +848,6 @@ Box *DispBox::check(const string& func_name, const Box *box)
 	return ((Box *)box);
 
     // Box not found
-    string bad_func_name = "<?" + func_name + ">";
+    const string bad_func_name = "<?" + func_name + ">";
     return new ForegroundColorBox(new StringBox(bad_func_name), "red");
 }

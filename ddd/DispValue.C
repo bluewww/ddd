@@ -101,7 +101,7 @@ int DispValue::index_base(const string& expr, int dim)
     while (colon >= 0 && isdigit(type[colon - 1]))
 	colon--;
 
-    return atoi((char *)type + colon);
+    return atoi(type.chars() + colon);
 }
 
 // In FORTRAN mode, GDB issues last dimensions first.  Insert new
@@ -302,7 +302,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
     // Be sure the value is not changed in memory
     value.consuming(true);
 
-    char *initial_value = value;
+    const char *initial_value = value.chars();
 
     static DispValueArray empty(0);
     _children = empty;
@@ -416,7 +416,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	// The array has at least one element.  Otherwise, GDB
 	// would treat it as a pointer.
 	do {
-	    char *repeated_value = value;
+	    const char *repeated_value = value.chars();
 	    string member_name = 
 		gdb->index_expr("", itostring(array_index++));
 	    DispValue *dv = parse_child(depth, value,
@@ -805,7 +805,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		need_clear = false;
 	    }
 	    
-	    char *old_value = value;
+	    const char *old_value = value.chars();
 
 	    DispValue *dv = parse_child(depth, value, myfull_name);
 
@@ -1623,7 +1623,7 @@ void DispValue::plot1d(PlotAgent *plotter, int ndim) const
 	// limits of a previously plotted array, plot it vertically.
 	if (!val.contains('.'))
 	{
-	    int v = atoi(val);
+	    int v = atoi(val.chars());
 	    if (plotter->min_x() < plotter->max_x() &&
 		v >= plotter->min_x() && v <= plotter->max_x())
 	    {
@@ -1671,7 +1671,7 @@ void DispValue::plot2d(PlotAgent *plotter, int ndim) const
 	{
 	    DispValue *c = child(i);
 	    string idx = c->index(prefix, suffix);
-	    plotter->add_point(atof(idx), c->num_value());
+	    plotter->add_point(atof(idx.chars()), c->num_value());
 	}
     }
 

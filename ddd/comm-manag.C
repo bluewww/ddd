@@ -251,7 +251,7 @@ private:
 
 void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
 {
-    (void) w;			// Use it
+    (void) w;                        // Use it 
 
     // The widget is being destroyed.  Remove all references.
     CmdData *cmd_data = (CmdData *)client_data;
@@ -475,7 +475,7 @@ static void process_batch(const string& answer, void *data = 0);
 static void AsyncAnswerHP(Agent *, void *, void *);
 static void ExceptionStateHP(Agent *, void *, void *);
 
-static string print_cookie = "4711";
+static const string print_cookie = "4711";
 
 
 
@@ -506,9 +506,9 @@ static void fix_symbols(string& cmd)
 // Initialization
 //-----------------------------------------------------------------------------
 
-inline String str(String s)
+inline const _XtString str(const _XtString s)
 {
-    return s != 0 ? s : (String)"";
+    return s != 0 ? s : "";
 }
 
 static void StartDoneCB(const string& /* answer */, void * /* qu_data */)
@@ -595,7 +595,7 @@ void start_gdb(bool config)
     // Place init commands in CMDS array
     while (init != "")
     {
-	string command = init.before('\n');
+	const string command = init.before('\n');
 	if (is_graph_cmd(command))
 	{
 	    // To be handled later by DDD - enqueue in command queue
@@ -773,9 +773,9 @@ struct InitSessionInfo {
 static void SourceDoneCB(const string& answer, void *qu_data)
 {
     InitSessionInfo *info = (InitSessionInfo *)qu_data;
-    unlink(info->tempfile);
+    unlink(info->tempfile.chars());
 
-    string a = downcase(answer);
+    const string a = downcase(answer);
     if (a.contains(downcase(info->tempfile)) && a.contains("error"))
     {
 	// We've had an error while sourcing the file.  This keeps GDB
@@ -807,7 +807,7 @@ void init_session(const string& restart, const string& settings,
 	bool recording_defines = false;
 
 	{
-	    ofstream os(info->tempfile);
+	    ofstream os(info->tempfile.chars());
 	    while (init_commands != "")
 	    {
 		string cmd = init_commands.before('\n');
@@ -1845,6 +1845,7 @@ void send_gdb_command(string cmd, Widget origin,
 
     if (!send_ok)
     {
+	// Deallocate resources
 	delete extra_data;
 	delete cmd_data;
 
@@ -2149,7 +2150,7 @@ static void command_completed(void *data)
     if (check && pos_buffer && pos_buffer->pos_found())
     {
 	string pos  = pos_buffer->get_position();
-	string func = pos_buffer->get_function();
+	const string func = pos_buffer->get_function();
 
 	if (func != "")
 	{
@@ -2228,7 +2229,7 @@ static void command_completed(void *data)
     // Set PC position
     if (check && pos_buffer && pos_buffer->pc_found())
     {
-	string pc = pos_buffer->get_pc();
+	const string pc = pos_buffer->get_pc();
 	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
 	    source_view->show_pc(pc, XmHIGHLIGHT_SELECTED,
 				 cmd_data->new_exec_pos,
@@ -2256,7 +2257,7 @@ static void command_completed(void *data)
 	    || cmd_data->disp_buffer->displays_found())
 	{
 	    string displays = cmd_data->disp_buffer->get_displays();
-	    string not_my_displays = 
+	    const string not_my_displays = 
 		data_disp->process_displays(displays, 
 					    cmd_data->disabling_occurred);
 
@@ -2319,7 +2320,7 @@ static bool read_displays(string arg, IntArray& numbers, bool verbose)
     while (has_nr(arg))
     {
 	string number = read_nr_str(arg);
-	int nr = atoi(number);
+	int nr = atoi(number.chars());
 	bool found = false;
 	for (int i = 0; !found && i < displays.size(); i++)
 	{
@@ -2417,7 +2418,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 		rcmd = rcmd.from(when_index);
 
 		int matchlen = rxwhen.match(rcmd.chars(), rcmd.length());
-		string clause = rcmd.before(matchlen);
+		const string clause = rcmd.before(matchlen);
 		rcmd = rcmd.from(matchlen);
 
 		if (clause.contains("won"))
@@ -2433,7 +2434,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 		if (pos == 0)
 		    pos = new BoxPoint;
 
-		string y = reverse(rcmd.before(','));
+		const string y = reverse(rcmd.before(','));
 		(*pos)[Y] = get_nr(y);
 		string x = rcmd.after(',');
 		x = reverse(x.before(rxwhite));
@@ -2893,7 +2894,7 @@ static void extra_completed (const StringArray& answers,
 	    while (list != "" && !has_nr(list))
 		list = list.after('\n');
 
-	    if (atoi(list) == 0)
+	    if (atoi(list.chars()) == 0)
 	    {
 		// No listing => no source.
 		info_line = "";
@@ -3074,8 +3075,8 @@ static void extra_completed (const StringArray& answers,
 	if (file != "")
 	{
 	    int line;
-	    if (extra_data->refresh_initial_line && atoi(listing) > 0)
-		line = atoi(listing);
+	    if (extra_data->refresh_initial_line && atoi(listing.chars()) > 0)
+		line = atoi(listing.chars());
 	    else
 		line = line_of_listing(listing);
 	    last_pos_found = file + ":" + itostring(line);

@@ -42,6 +42,7 @@ char SpinBox_rcsid[] =
 #include "strclass.h"
 #include "verify.h"
 #include "TimeOut.h"
+#include "casts.h"
 
 #include <stdlib.h>
 #include <stdio.h>		// sprintf
@@ -156,7 +157,7 @@ static Widget create_spin_arrow(Widget parent, unsigned char direction,
     XtSetArg(args[arg], XmNshadowThickness, 0);          arg++;
     XtSetArg(args[arg], XmNforeground,      foreground); arg++;
     Widget arrow = XmCreateArrowButton(parent, 
-				       (char *)"spinBoxArrow", args, arg);
+				       CONST_CAST(char *,"spinBoxArrow"), args, arg);
     XtManageChild(arrow);
 
     XtAddCallback(arrow, XmNarmCallback, StartSpinCB, XtPointer(text));
@@ -172,7 +173,7 @@ static Widget create_spin_arrow(Widget parent, unsigned char direction,
 //-----------------------------------------------------------------------
 
 // Create a spin box
-Widget CreateSpinBox(Widget parent, String name, ArgList _args, Cardinal _arg)
+Widget CreateSpinBox(Widget parent, const _XtString name, ArgList _args, Cardinal _arg)
 {
     ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
@@ -184,11 +185,11 @@ Widget CreateSpinBox(Widget parent, String name, ArgList _args, Cardinal _arg)
 
 #if USE_XM_SPINBOX
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    spin = XmCreateSpinBox(parent, (char *)"spin", args, arg);
+    spin = XmCreateSpinBox(parent, CONST_CAST(char *,"spin"), args, arg);
     XtManageChild(spin);
 #endif
 
-    Widget text = verify(XmCreateTextField(spin, name, args, arg));
+    Widget text = verify(XmCreateTextField(spin, CONST_CAST(char *,name), args, arg));
     XtManageChild(text);
     
 #if !USE_XM_SPINBOX
@@ -198,7 +199,7 @@ Widget CreateSpinBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     XtSetArg(args[arg], XmNspacing,      0); arg++;
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
     XtSetArg(args[arg], XmNorientation, XmVERTICAL); arg++;
-    spin = XmCreateRowColumn(parent, (char *)"spin", args, arg);
+    spin = XmCreateRowColumn(parent, CONST_CAST(char *,"spin"), args, arg);
     XtManageChild(spin);
 
     create_spin_arrow(spin, XmARROW_UP,  text);

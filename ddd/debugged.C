@@ -44,7 +44,7 @@ char debugged_rcsid[] =
 
 static string parent_name()
 {
-    string cmdline = "/proc/" + itostring(getppid()) + "/cmdline";
+    const string cmdline = "/proc/" + itostring(getppid()) + "/cmdline";
 
     ifstream is(cmdline);
     string name;

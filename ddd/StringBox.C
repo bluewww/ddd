@@ -67,7 +67,7 @@ Box *StringBox::resize()
 	int direction, font_ascent, font_descent;
 	XCharStruct overall;
 
-	XTextExtents(_font, (char *)_string, _string.length(),
+	XTextExtents(_font, _string.chars(), _string.length(),
 	    &direction, &font_ascent, &font_descent, &overall);
 
 #if USE_MAX_BOUNDS
@@ -98,7 +98,7 @@ void StringBox::_draw(Widget w,
 	XSetFont(XtDisplay(w), gc, _font->fid);
 
     XDrawString(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y] + _ascent,
-	(char *)_string, _string.length());
+		_string.chars(), _string.length());
 }
 
 
@@ -168,7 +168,7 @@ static int mappings = sizeof (map) / sizeof (FONTMAP) ;
  * matchFont
  */
 
-static FONTMAP *matchFont(char *xfont) 
+static FONTMAP *matchFont(const char *xfont) 
 {
     FONTMAP *fmap = &map[0] ;
     int match = 1;
@@ -194,7 +194,7 @@ void StringBox::_print(ostream& os,
 	return;
 
     BoxPoint origin = region.origin() ;
-    FONTMAP *fmap = matchFont (fontName());
+    FONTMAP *fmap = matchFont (fontName_c());
 
     if (gc.isFig()) {
 	os << TEXTHEAD1 << fmap->figfont << " "

@@ -398,7 +398,7 @@ static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 
 // Read in database from FILENAME.  Upon version mismatch, ignore some
 // resources such as window sizes.
-static XrmDatabase GetFileDatabase(char *filename);
+static XrmDatabase GetFileDatabase(const string &filename);
 
 // Lock `~/.ddd'
 static bool lock_ddd(Widget parent, LockInfo& info);
@@ -417,7 +417,7 @@ static void setup_core_limit();
 static void setup_options();
 static void setup_cut_copy_paste_bindings(XrmDatabase db);
 static void setup_select_all_bindings(XrmDatabase db);
-static void setup_show(XrmDatabase db, char *app_name, char *gdb_name);
+static void setup_show(XrmDatabase db, const char *app_name, const char *gdb_name);
 
 // Help hooks
 static void PreHelpOnContext(Widget w, XtPointer, XtPointer);
@@ -457,413 +457,413 @@ static void vsl_echo(const string& msg);
 #undef OFF
 #endif
 
-static char ON[]  = "on";
-static char OFF[] = "off";
+static const char *ON  = "on";
+static const char *OFF = "off";
 
 
 // Options
 // Note: we support both the GDB '--OPTION' and the X '-OPTION' convention.
 static XrmOptionDescRec options[] = {
-{ (char *)"--session",              (char *)XtNsession,              
+{ CONST_CAST(char*,"--session"),              CONST_CAST(char *,XtNsession),              
                                         XrmoptionSepArg, XPointer(0) },
-{ (char *)"-session",               (char *)XtNsession,              
-                                        XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"-xtsessionID",           (char *)XtNsession,              
+{ CONST_CAST(char*,"-session"),               CONST_CAST(char *,XtNsession),              
                                         XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--debugger",             (char *)XtNdebuggerCommand,      
-                                        XrmoptionSepArg, XPointer(0) },
-{ (char *)"-debugger",              (char *)XtNdebuggerCommand,      
+{ CONST_CAST(char*,"-xtsessionID"),           CONST_CAST(char *,XtNsession),              
                                         XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--automatic-debugger",   (char *)XtNautoDebugger,         
-                                        XrmoptionNoArg,  ON },
-{ (char *)"-automatic-debugger",    (char *)XtNautoDebugger,         
-                                        XrmoptionNoArg,  ON },
-
-{ (char *)"--gdb",                  (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"gdb" },
-{ (char *)"-gdb",                   (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"gdb" },
-
-{ (char *)"--dbx",                  (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"dbx" },
-{ (char *)"-dbx",                   (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"dbx" },
-
-{ (char *)"--ladebug",              (char *)XtNdebugger,            
-                                        XrmoptionNoArg, (char *)"ladebug"},
-{ (char *)"-ladebug", 		    (char *)XtNdebugger,            
-                                        XrmoptionNoArg, (char *)"ladebug"},
-
-{ (char *)"--wdb",                  (char *)XtNdebugger,            
-                                        XrmoptionNoArg, (char *)"wdb"},
-{ (char *)"-wdb", 		    (char *)XtNdebugger,            
-                                        XrmoptionNoArg, (char *)"wdb"},
-
-{ (char *)"--xdb",                  (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"xdb" },
-{ (char *)"-xdb",                   (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"xdb" },
-
-{ (char *)"--jdb",                  (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"jdb" },
-{ (char *)"-jdb",                   (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"jdb" },
-
-{ (char *)"--pydb",                 (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"pydb" },
-{ (char *)"-pydb",                  (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"pydb" },
-
-{ (char *)"--perl",                 (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"perl" },
-{ (char *)"-perl",                  (char *)XtNdebugger,             
-                                        XrmoptionNoArg,  (char *)"perl" },
-
-{ (char *)"--trace",                (char *)XtNtrace,                
-                                        XrmoptionNoArg,  ON },
-{ (char *)"-trace",                 (char *)XtNtrace,                
-                                        XrmoptionNoArg,  ON },
-
-{ (char *)"--play-log",		   (char *)XtNplayLog,              
+{ CONST_CAST(char*,"--debugger"),             CONST_CAST(char *,XtNdebuggerCommand),      
                                         XrmoptionSepArg, XPointer(0) },
-{ (char *)"-play-log",		   (char *)XtNplayLog,              
+{ CONST_CAST(char*,"-debugger"),              CONST_CAST(char *,XtNdebuggerCommand),      
                                         XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--font",                 (char *)XtNdefaultFont,          
+{ CONST_CAST(char*,"--automatic-debugger"),   CONST_CAST(char *,XtNautoDebugger),         
+                                        XrmoptionNoArg,  CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-automatic-debugger"),    CONST_CAST(char *,XtNautoDebugger),         
+                                        XrmoptionNoArg,  CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--gdb"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"gdb") },
+{ CONST_CAST(char*,"-gdb"),                   CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"gdb") },
+
+{ CONST_CAST(char*,"--dbx"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"dbx") },
+{ CONST_CAST(char*,"-dbx"),                   CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"dbx") },
+
+{ CONST_CAST(char*,"--ladebug"),              CONST_CAST(char *,XtNdebugger),            
+                                        XrmoptionNoArg, CONST_CAST(char*,"ladebug") },
+{ CONST_CAST(char*,"-ladebug"), 		    CONST_CAST(char *,XtNdebugger),            
+                                        XrmoptionNoArg, CONST_CAST(char*,"ladebug") },
+
+{ CONST_CAST(char*,"--wdb"),                  CONST_CAST(char *,XtNdebugger),            
+                                        XrmoptionNoArg, CONST_CAST(char*,"wdb") },
+{ CONST_CAST(char*,"-wdb"), 		    CONST_CAST(char *,XtNdebugger),            
+                                        XrmoptionNoArg, CONST_CAST(char*,"wdb") },
+
+{ CONST_CAST(char*,"--xdb"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"xdb") },
+{ CONST_CAST(char*,"-xdb"),                   CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"xdb") },
+
+{ CONST_CAST(char*,"--jdb"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"jdb") },
+{ CONST_CAST(char*,"-jdb"),                   CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"jdb") },
+
+{ CONST_CAST(char*,"--pydb"),                 CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"pydb") },
+{ CONST_CAST(char*,"-pydb"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"pydb") },
+
+{ CONST_CAST(char*,"--perl"),                 CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"perl") },
+{ CONST_CAST(char*,"-perl"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"perl") },
+
+{ CONST_CAST(char*,"--trace"),                CONST_CAST(char *,XtNtrace),                
+                                        XrmoptionNoArg,  CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-trace"),                 CONST_CAST(char *,XtNtrace),                
+                                        XrmoptionNoArg,  CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--play-log"),		   CONST_CAST(char *,XtNplayLog),              
                                         XrmoptionSepArg, XPointer(0) },
-{ (char *)"-font",                  (char *)XtNdefaultFont,          
-                                        XrmoptionSepArg, XPointer(0) },
-{ (char *)"-fn",                    (char *)XtNdefaultFont,          
-                                        XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--fontsize",             (char *)XtCFontSize,             
-                                        XrmoptionSepArg, XPointer(0) },
-{ (char *)"-fontsize",              (char *)XtCFontSize,             
-                                        XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--vsl-library",          (char *)XtNvslLibrary,           
-                                        XrmoptionSepArg, XPointer(0) },
-{ (char *)"-vsl-library",           (char *)XtNvslLibrary,           
-                                        XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--vsl-path",             (char *)XtNvslPath,              
-                                        XrmoptionSepArg, XPointer(0) },
-{ (char *)"-vsl-path",              (char *)XtNvslPath,              
-                                        XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--separate",             (char *)XtCSeparate,             
-                                        XrmoptionNoArg, ON },
-{ (char *)"-separate",              (char *)XtCSeparate,             
-                                        XrmoptionNoArg, ON },
-{ (char *)"--separate-windows",     (char *)XtCSeparate,             
-                                        XrmoptionNoArg, ON },
-{ (char *)"-separate-windows",      (char *)XtCSeparate,             
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--separate-source-window", (char *)XtNseparateSourceWindow, 
-                                        XrmoptionNoArg, ON },
-{ (char *)"-separate-source-window",  (char *)XtNseparateSourceWindow, 
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--separate-data-window", (char *)XtNseparateDataWindow,   
-                                        XrmoptionNoArg, ON },
-{ (char *)"-separate-data-window",  (char *)XtNseparateDataWindow,   
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--attach",               (char *)XtCSeparate,             
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-attach",                (char *)XtCSeparate,             
-                                        XrmoptionNoArg, OFF },
-{ (char *)"--attach-windows",       (char *)XtCSeparate,             
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-attach-windows",        (char *)XtCSeparate,             
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--attach-source-window", (char *)XtNseparateSourceWindow, 
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-attach-source-window",  (char *)XtNseparateSourceWindow, 
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--attach-data-window",   (char *)XtNseparateDataWindow,   
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-attach-data-window",    (char *)XtNseparateDataWindow,   
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--exec-window",          (char *)XtNseparateExecWindow,   
-                                        XrmoptionNoArg, ON },
-{ (char *)"-exec-window",           (char *)XtNseparateExecWindow,   
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--no-exec-window",       (char *)XtNseparateExecWindow,   
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-no-exec-window",        (char *)XtNseparateExecWindow,   
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--source-window",        (char *)XtNopenSourceWindow,     
-                                        XrmoptionNoArg, ON },
-{ (char *)"-source-window",         (char *)XtNopenSourceWindow,     
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--no-source-window",     (char *)XtNopenSourceWindow,     
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-no-source-window",      (char *)XtNopenSourceWindow,     
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--data-window",          (char *)XtNopenDataWindow,       
-                                        XrmoptionNoArg, ON },
-{ (char *)"-data-window",           (char *)XtNopenDataWindow,       
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--no-data-window",       (char *)XtNopenDataWindow,       
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-no-data-window",        (char *)XtNopenDataWindow,       
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--debugger-console",     (char *)XtNopenDebuggerConsole,  
-                                        XrmoptionNoArg, ON },
-{ (char *)"-debugger-console",      (char *)XtNopenDebuggerConsole,  
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--no-debugger-console",  (char *)XtNopenDebuggerConsole,  
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-no-debugger-console",   (char *)XtNopenDebuggerConsole,  
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--button-tips",          (char *)XtNbuttonTips,           
-                                        XrmoptionNoArg, ON },
-{ (char *)"-button-tips",           (char *)XtNbuttonTips,           
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--no-button-tips",       (char *)XtNbuttonTips,           
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-no-button-tips",        (char *)XtNbuttonTips,           
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--value-tips",           (char *)XtNvalueTips,            
-                                        XrmoptionNoArg, ON },
-{ (char *)"-value-tips",            (char *)XtNvalueTips,            
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--no-value-tips",        (char *)XtNvalueTips,            
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-no-value-tips",         (char *)XtNvalueTips,            
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--status-at-bottom",     (char *)XtNstatusAtBottom,       
-                                        XrmoptionNoArg, ON },
-{ (char *)"-status-at-bottom",      (char *)XtNstatusAtBottom,       
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--status-at-top",        (char *)XtNstatusAtBottom,       
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-status-at-top",         (char *)XtNstatusAtBottom,       
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--toolbars-at-bottom",   (char *)XtNtoolbarsAtBottom,     
-                                        XrmoptionNoArg, ON },
-{ (char *)"-toolbars-at-bottom",    (char *)XtNtoolbarsAtBottom,     
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--toolbars-at-top",      (char *)XtNtoolbarsAtBottom,     
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-toolbars-at-top",       (char *)XtNtoolbarsAtBottom,     
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--panned-graph-editor",  (char *)XtNpannedGraphEditor,    
-                                        XrmoptionNoArg, ON },
-{ (char *)"-panned-graph-editor",   (char *)XtNpannedGraphEditor,    
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--scrolled-graph-editor", (char *)XtNpannedGraphEditor,   
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-scrolled-graph-editor", (char *)XtNpannedGraphEditor,    
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--sync-debugger",        (char *)XtNsynchronousDebugger,  
-                                        XrmoptionNoArg, ON },
-{ (char *)"-sync-debugger",         (char *)XtNsynchronousDebugger,  
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--disassemble",          (char *)XtNdisassemble,          
-                                        XrmoptionNoArg, ON },
-{ (char *)"-disassemble",           (char *)XtNdisassemble,          
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--no-disassemble",       (char *)XtNdisassemble,          
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-no-disassemble",        (char *)XtNdisassemble,          
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--glyphs",               (char *)XtNdisplayGlyphs,        
-                                        XrmoptionNoArg, ON },
-{ (char *)"-glyphs",                (char *)XtNdisplayGlyphs,        
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--no-glyphs",            (char *)XtNdisplayGlyphs,        
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-no-glyphs",             (char *)XtNdisplayGlyphs,        
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--host",                 (char *)XtNdebuggerHost,         
-                                        XrmoptionSepArg, XPointer(0) },
-{ (char *)"-host",                  (char *)XtNdebuggerHost,         
+{ CONST_CAST(char*,"-play-log"),		   CONST_CAST(char *,XtNplayLog),              
                                         XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--rhost",                (char *)XtNdebuggerRHost,        
+{ CONST_CAST(char*,"--font"),                 CONST_CAST(char *,XtNdefaultFont),          
                                         XrmoptionSepArg, XPointer(0) },
-{ (char *)"-rhost",                 (char *)XtNdebuggerRHost,        
+{ CONST_CAST(char*,"-font"),                  CONST_CAST(char *,XtNdefaultFont),          
                                         XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--login",                (char *)XtNdebuggerHostLogin,    
-                                        XrmoptionSepArg, XPointer(0) },
-{ (char *)"-login",                 (char *)XtNdebuggerHostLogin,    
-                                        XrmoptionSepArg, XPointer(0) },
-{ (char *)"-l",                     (char *)XtNdebuggerHostLogin,    
+{ CONST_CAST(char*,"-fn"),                    CONST_CAST(char *,XtNdefaultFont),          
                                         XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--tty",                  (char *)XtNttyMode,              
-                                        XrmoptionNoArg, ON },
-{ (char *)"-tty",                   (char *)XtNttyMode,              
-                                        XrmoptionNoArg, ON },
-{ (char *)"-t",                     (char *)XtNttyMode,              
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--fullname",             (char *)XtNannotate,             
-                                        XrmoptionNoArg, (char *)"1" },
-{ (char *)"-fullname",              (char *)XtNannotate,             
-                                        XrmoptionNoArg, (char *)"1" },
-{ (char *)"-f",                     (char *)XtNannotate,             
-                                        XrmoptionNoArg, (char *)"1" },
-
-{ (char *)"--annotate",             (char *)XtNannotate,             
+{ CONST_CAST(char*,"--fontsize"),             CONST_CAST(char *,XtCFontSize),             
                                         XrmoptionSepArg, XPointer(0) },
-{ (char *)"-annotate",              (char *)XtNannotate,             
+{ CONST_CAST(char*,"-fontsize"),              CONST_CAST(char *,XtCFontSize),             
                                         XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--annotate=0",           (char *)XtNannotate,             
-                                        XrmoptionNoArg, (char *)"0" },
-{ (char *)"-annotate=0",            (char *)XtNannotate,             
-                                        XrmoptionNoArg, (char *)"0" },
-
-{ (char *)"--annotate=1",           (char *)XtNannotate,             
-                                        XrmoptionNoArg, (char *)"1" },
-{ (char *)"-annotate=1",            (char *)XtNannotate,             
-                                        XrmoptionNoArg, (char *)"1" },
-
-{ (char *)"--annotate=2",           (char *)XtNannotate,             
-                                        XrmoptionNoArg, (char *)"2" },
-{ (char *)"-annotate=2",            (char *)XtNannotate,             
-                                        XrmoptionNoArg, (char *)"2" },
-
-{ (char *)"--version",              (char *)XtNshowVersion,          
-                                        XrmoptionNoArg, ON },
-{ (char *)"-version",               (char *)XtNshowVersion,          
-                                        XrmoptionNoArg, ON },
-{ (char *)"-v",                     (char *)XtNshowVersion,          
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--configuration",        (char *)XtNshowConfiguration,    
-                                        XrmoptionNoArg, ON },
-{ (char *)"-configuration",         (char *)XtNshowConfiguration,    
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--manual",               (char *)XtNshowManual,           
-                                        XrmoptionNoArg, ON },
-{ (char *)"-manual",                (char *)XtNshowManual,           
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--maintenance",          (char *)XtNmaintenance,          
-                                        XrmoptionNoArg, ON },
-{ (char *)"-maintenance",           (char *)XtNmaintenance,          
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--no-maintenance",       (char *)XtNmaintenance,          
-                                        XrmoptionNoArg, OFF },
-{ (char *)"-no-maintenance",        (char *)XtNmaintenance,          
-                                        XrmoptionNoArg, OFF },
-
-{ (char *)"--license",              (char *)XtNshowLicense,          
-                                        XrmoptionNoArg, ON },
-{ (char *)"-license",               (char *)XtNshowLicense,          
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--news",                 (char *)XtNshowNews,             
-                                        XrmoptionNoArg, ON },
-{ (char *)"-news",                  (char *)XtNshowNews,             
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--fonts",                (char *)XtNshowFonts,            
-                                        XrmoptionNoArg, ON },
-{ (char *)"-fonts",                 (char *)XtNshowFonts,            
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--check-configuration",  (char *)XtNcheckConfiguration,   
-                                        XrmoptionNoArg, ON },
-{ (char *)"-check-configuration",   (char *)XtNcheckConfiguration,   
-                                        XrmoptionNoArg, ON },
-
-{ (char *)"--lesstif-hacks",        (char *)XtNlessTifVersion,       
-                                        XrmoptionNoArg, (char *)"999" },
-{ (char *)"-lesstif-hacks",         (char *)XtNlessTifVersion,       
-                                        XrmoptionNoArg, (char *)"999" },
-
-{ (char *)"--no-lesstif-hacks",     (char *)XtNlessTifVersion,       
-                                        XrmoptionNoArg, (char *)"1000" },
-{ (char *)"-no-lesstif-hacks",      (char *)XtNlessTifVersion,       
-                                        XrmoptionNoArg, (char *)"1000" },
-
-{ (char *)"--lesstif-version",      (char *)XtNlessTifVersion,       
+{ CONST_CAST(char*,"--vsl-library"),          CONST_CAST(char *,XtNvslLibrary),           
                                         XrmoptionSepArg, XPointer(0) },
-{ (char *)"-lesstif-version",       (char *)XtNlessTifVersion,       
+{ CONST_CAST(char*,"-vsl-library"),           CONST_CAST(char *,XtNvslLibrary),           
                                         XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--help",                 (char *)XtNshowInvocation,       
-                                        XrmoptionNoArg, ON },
-{ (char *)"-help",                  (char *)XtNshowInvocation,       
-                                        XrmoptionNoArg, ON },
-{ (char *)"-h",                     (char *)XtNshowInvocation,       
-                                        XrmoptionNoArg, ON },
-{ (char *)"--?",                    (char *)XtNshowInvocation,       
-                                        XrmoptionNoArg, ON },
-{ (char *)"-?",                     (char *)XtNshowInvocation,
-                                        XrmoptionNoArg, ON },
+{ CONST_CAST(char*,"--vsl-path"),             CONST_CAST(char *,XtNvslPath),              
+                                        XrmoptionSepArg, XPointer(0) },
+{ CONST_CAST(char*,"-vsl-path"),              CONST_CAST(char *,XtNvslPath),              
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ CONST_CAST(char*,"--separate"),             CONST_CAST(char *,XtCSeparate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-separate"),              CONST_CAST(char *,XtCSeparate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"--separate-windows"),     CONST_CAST(char *,XtCSeparate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-separate-windows"),      CONST_CAST(char *,XtCSeparate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--separate-source-window"), CONST_CAST(char *,XtNseparateSourceWindow), 
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-separate-source-window"),  CONST_CAST(char *,XtNseparateSourceWindow), 
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--separate-data-window"), CONST_CAST(char *,XtNseparateDataWindow),   
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-separate-data-window"),  CONST_CAST(char *,XtNseparateDataWindow),   
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--attach"),               CONST_CAST(char *,XtCSeparate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-attach"),                CONST_CAST(char *,XtCSeparate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"--attach-windows"),       CONST_CAST(char *,XtCSeparate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-attach-windows"),        CONST_CAST(char *,XtCSeparate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--attach-source-window"), CONST_CAST(char *,XtNseparateSourceWindow), 
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-attach-source-window"),  CONST_CAST(char *,XtNseparateSourceWindow), 
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--attach-data-window"),   CONST_CAST(char *,XtNseparateDataWindow),   
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-attach-data-window"),    CONST_CAST(char *,XtNseparateDataWindow),   
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--exec-window"),          CONST_CAST(char *,XtNseparateExecWindow),   
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-exec-window"),           CONST_CAST(char *,XtNseparateExecWindow),   
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--no-exec-window"),       CONST_CAST(char *,XtNseparateExecWindow),   
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-no-exec-window"),        CONST_CAST(char *,XtNseparateExecWindow),   
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--source-window"),        CONST_CAST(char *,XtNopenSourceWindow),     
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-source-window"),         CONST_CAST(char *,XtNopenSourceWindow),     
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--no-source-window"),     CONST_CAST(char *,XtNopenSourceWindow),     
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-no-source-window"),      CONST_CAST(char *,XtNopenSourceWindow),     
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--data-window"),          CONST_CAST(char *,XtNopenDataWindow),       
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-data-window"),           CONST_CAST(char *,XtNopenDataWindow),       
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--no-data-window"),       CONST_CAST(char *,XtNopenDataWindow),       
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-no-data-window"),        CONST_CAST(char *,XtNopenDataWindow),       
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--debugger-console"),     CONST_CAST(char *,XtNopenDebuggerConsole),  
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-debugger-console"),      CONST_CAST(char *,XtNopenDebuggerConsole),  
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--no-debugger-console"),  CONST_CAST(char *,XtNopenDebuggerConsole),  
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-no-debugger-console"),   CONST_CAST(char *,XtNopenDebuggerConsole),  
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--button-tips"),          CONST_CAST(char *,XtNbuttonTips),           
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-button-tips"),           CONST_CAST(char *,XtNbuttonTips),           
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--no-button-tips"),       CONST_CAST(char *,XtNbuttonTips),           
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-no-button-tips"),        CONST_CAST(char *,XtNbuttonTips),           
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--value-tips"),           CONST_CAST(char *,XtNvalueTips),            
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-value-tips"),            CONST_CAST(char *,XtNvalueTips),            
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--no-value-tips"),        CONST_CAST(char *,XtNvalueTips),            
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-no-value-tips"),         CONST_CAST(char *,XtNvalueTips),            
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--status-at-bottom"),     CONST_CAST(char *,XtNstatusAtBottom),       
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-status-at-bottom"),      CONST_CAST(char *,XtNstatusAtBottom),       
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--status-at-top"),        CONST_CAST(char *,XtNstatusAtBottom),       
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-status-at-top"),         CONST_CAST(char *,XtNstatusAtBottom),       
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--toolbars-at-bottom"),   CONST_CAST(char *,XtNtoolbarsAtBottom),     
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-toolbars-at-bottom"),    CONST_CAST(char *,XtNtoolbarsAtBottom),     
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--toolbars-at-top"),      CONST_CAST(char *,XtNtoolbarsAtBottom),     
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-toolbars-at-top"),       CONST_CAST(char *,XtNtoolbarsAtBottom),     
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--panned-graph-editor"),  CONST_CAST(char *,XtNpannedGraphEditor),    
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-panned-graph-editor"),   CONST_CAST(char *,XtNpannedGraphEditor),    
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--scrolled-graph-editor"), CONST_CAST(char *,XtNpannedGraphEditor),   
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-scrolled-graph-editor"), CONST_CAST(char *,XtNpannedGraphEditor),    
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--sync-debugger"),        CONST_CAST(char *,XtNsynchronousDebugger),  
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-sync-debugger"),         CONST_CAST(char *,XtNsynchronousDebugger),  
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--disassemble"),          CONST_CAST(char *,XtNdisassemble),          
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-disassemble"),           CONST_CAST(char *,XtNdisassemble),          
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--no-disassemble"),       CONST_CAST(char *,XtNdisassemble),          
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-no-disassemble"),        CONST_CAST(char *,XtNdisassemble),          
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--glyphs"),               CONST_CAST(char *,XtNdisplayGlyphs),        
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-glyphs"),                CONST_CAST(char *,XtNdisplayGlyphs),        
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--no-glyphs"),            CONST_CAST(char *,XtNdisplayGlyphs),        
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-no-glyphs"),             CONST_CAST(char *,XtNdisplayGlyphs),        
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--host"),                 CONST_CAST(char *,XtNdebuggerHost),         
+                                        XrmoptionSepArg, XPointer(0) },
+{ CONST_CAST(char*,"-host"),                  CONST_CAST(char *,XtNdebuggerHost),         
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ CONST_CAST(char*,"--rhost"),                CONST_CAST(char *,XtNdebuggerRHost),        
+                                        XrmoptionSepArg, XPointer(0) },
+{ CONST_CAST(char*,"-rhost"),                 CONST_CAST(char *,XtNdebuggerRHost),        
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ CONST_CAST(char*,"--login"),                CONST_CAST(char *,XtNdebuggerHostLogin),    
+                                        XrmoptionSepArg, XPointer(0) },
+{ CONST_CAST(char*,"-login"),                 CONST_CAST(char *,XtNdebuggerHostLogin),    
+                                        XrmoptionSepArg, XPointer(0) },
+{ CONST_CAST(char*,"-l"),                     CONST_CAST(char *,XtNdebuggerHostLogin),    
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ CONST_CAST(char*,"--tty"),                  CONST_CAST(char *,XtNttyMode),              
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-tty"),                   CONST_CAST(char *,XtNttyMode),              
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-t"),                     CONST_CAST(char *,XtNttyMode),              
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--fullname"),             CONST_CAST(char *,XtNannotate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,"1") },
+{ CONST_CAST(char*,"-fullname"),              CONST_CAST(char *,XtNannotate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,"1") },
+{ CONST_CAST(char*,"-f"),                     CONST_CAST(char *,XtNannotate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,"1") },
+
+{ CONST_CAST(char*,"--annotate"),             CONST_CAST(char *,XtNannotate),             
+                                        XrmoptionSepArg, XPointer(0) },
+{ CONST_CAST(char*,"-annotate"),              CONST_CAST(char *,XtNannotate),             
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ CONST_CAST(char*,"--annotate=0"),           CONST_CAST(char *,XtNannotate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,"0") },
+{ CONST_CAST(char*,"-annotate=0"),            CONST_CAST(char *,XtNannotate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,"0") },
+
+{ CONST_CAST(char*,"--annotate=1"),           CONST_CAST(char *,XtNannotate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,"1") },
+{ CONST_CAST(char*,"-annotate=1"),            CONST_CAST(char *,XtNannotate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,"1") },
+
+{ CONST_CAST(char*,"--annotate=2"),           CONST_CAST(char *,XtNannotate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,"2") },
+{ CONST_CAST(char*,"-annotate=2"),            CONST_CAST(char *,XtNannotate),             
+                                        XrmoptionNoArg, CONST_CAST(char*,"2") },
+
+{ CONST_CAST(char*,"--version"),              CONST_CAST(char *,XtNshowVersion),          
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-version"),               CONST_CAST(char *,XtNshowVersion),          
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-v"),                     CONST_CAST(char *,XtNshowVersion),          
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--configuration"),        CONST_CAST(char *,XtNshowConfiguration),    
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-configuration"),         CONST_CAST(char *,XtNshowConfiguration),    
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--manual"),               CONST_CAST(char *,XtNshowManual),           
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-manual"),                CONST_CAST(char *,XtNshowManual),           
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--maintenance"),          CONST_CAST(char *,XtNmaintenance),          
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-maintenance"),           CONST_CAST(char *,XtNmaintenance),          
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--no-maintenance"),       CONST_CAST(char *,XtNmaintenance),          
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+{ CONST_CAST(char*,"-no-maintenance"),        CONST_CAST(char *,XtNmaintenance),          
+                                        XrmoptionNoArg, CONST_CAST(char*,OFF) },
+
+{ CONST_CAST(char*,"--license"),              CONST_CAST(char *,XtNshowLicense),          
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-license"),               CONST_CAST(char *,XtNshowLicense),          
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--news"),                 CONST_CAST(char *,XtNshowNews),             
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-news"),                  CONST_CAST(char *,XtNshowNews),             
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--fonts"),                CONST_CAST(char *,XtNshowFonts),            
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-fonts"),                 CONST_CAST(char *,XtNshowFonts),            
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--check-configuration"),  CONST_CAST(char *,XtNcheckConfiguration),   
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-check-configuration"),   CONST_CAST(char *,XtNcheckConfiguration),   
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+
+{ CONST_CAST(char*,"--lesstif-hacks"),        CONST_CAST(char *,XtNlessTifVersion),       
+                                        XrmoptionNoArg, CONST_CAST(char*,"999") },
+{ CONST_CAST(char*,"-lesstif-hacks"),         CONST_CAST(char *,XtNlessTifVersion),       
+                                        XrmoptionNoArg, CONST_CAST(char*,"999") },
+
+{ CONST_CAST(char*,"--no-lesstif-hacks"),     CONST_CAST(char *,XtNlessTifVersion),       
+                                        XrmoptionNoArg, CONST_CAST(char*,"1000") },
+{ CONST_CAST(char*,"-no-lesstif-hacks"),      CONST_CAST(char *,XtNlessTifVersion),       
+                                        XrmoptionNoArg, CONST_CAST(char*,"1000") },
+
+{ CONST_CAST(char*,"--lesstif-version"),      CONST_CAST(char *,XtNlessTifVersion),       
+                                        XrmoptionSepArg, XPointer(0) },
+{ CONST_CAST(char*,"-lesstif-version"),       CONST_CAST(char *,XtNlessTifVersion),       
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ CONST_CAST(char*,"--help"),                 CONST_CAST(char *,XtNshowInvocation),       
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-help"),                  CONST_CAST(char *,XtNshowInvocation),       
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-h"),                     CONST_CAST(char *,XtNshowInvocation),       
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"--?"),                    CONST_CAST(char *,XtNshowInvocation),       
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
+{ CONST_CAST(char*,"-?"),                     CONST_CAST(char *,XtNshowInvocation),
+                                        XrmoptionNoArg, CONST_CAST(char*,ON) },
 
 };
 
 // Actions
 static XtActionsRec actions [] = {
-    {(char *)"gdb-control",            controlAct},
-    {(char *)"gdb-interrupt",          interruptAct},
-    {(char *)"gdb-command",            commandAct},
-    {(char *)"gdb-process",            processAct},
-    {(char *)"gdb-delete-or-control",  delete_or_controlAct},
-    {(char *)"gdb-prev-history",       prev_historyAct},
-    {(char *)"gdb-previous-history",   prev_historyAct},
-    {(char *)"gdb-next-history",       next_historyAct},
-    {(char *)"gdb-beginning-of-line",  beginning_of_lineAct},
-    {(char *)"gdb-end-of-line",        end_of_lineAct},
-    {(char *)"gdb-forward-character",  forward_characterAct},
-    {(char *)"gdb-backward-character", backward_characterAct},
-    {(char *)"gdb-set-line",           set_lineAct},
-    {(char *)"gdb-complete-command",   complete_commandAct},
-    {(char *)"gdb-complete-arg",       complete_argAct},
-    {(char *)"gdb-complete-tab",       complete_tabAct},
-    {(char *)"gdb-insert-source-arg",  insert_source_argAct},
-    {(char *)"gdb-insert-graph-arg",   insert_graph_argAct},
-    {(char *)"gdb-isearch-prev",       isearch_prevAct},
-    {(char *)"gdb-isearch-next",       isearch_nextAct},
-    {(char *)"gdb-isearch-exit",       isearch_exitAct},
-    {(char *)"gdb-popup-menu",         popupAct},
-    {(char *)"ddd-next-tab-group",     next_tab_groupAct},
-    {(char *)"ddd-prev-tab-group",     prev_tab_groupAct},
-    {(char *)"ddd-previous-tab-group", prev_tab_groupAct},
-    {(char *)"ddd-get-focus",          get_focusAct},
-    {(char *)"ddd-select-all",         select_allAct},
+    {CONST_CAST(char*,"gdb-control"),            controlAct},
+    {CONST_CAST(char*,"gdb-interrupt"),          interruptAct},
+    {CONST_CAST(char*,"gdb-command"),            commandAct},
+    {CONST_CAST(char*,"gdb-process"),            processAct},
+    {CONST_CAST(char*,"gdb-delete-or-control"),  delete_or_controlAct},
+    {CONST_CAST(char*,"gdb-prev-history"),       prev_historyAct},
+    {CONST_CAST(char*,"gdb-previous-history"),   prev_historyAct},
+    {CONST_CAST(char*,"gdb-next-history"),       next_historyAct},
+    {CONST_CAST(char*,"gdb-beginning-of-line"),  beginning_of_lineAct},
+    {CONST_CAST(char*,"gdb-end-of-line"),        end_of_lineAct},
+    {CONST_CAST(char*,"gdb-forward-character"),  forward_characterAct},
+    {CONST_CAST(char*,"gdb-backward-character"), backward_characterAct},
+    {CONST_CAST(char*,"gdb-set-line"),           set_lineAct},
+    {CONST_CAST(char*,"gdb-complete-command"),   complete_commandAct},
+    {CONST_CAST(char*,"gdb-complete-arg"),       complete_argAct},
+    {CONST_CAST(char*,"gdb-complete-tab"),       complete_tabAct},
+    {CONST_CAST(char*,"gdb-insert-source-arg"),  insert_source_argAct},
+    {CONST_CAST(char*,"gdb-insert-graph-arg"),   insert_graph_argAct},
+    {CONST_CAST(char*,"gdb-isearch-prev"),       isearch_prevAct},
+    {CONST_CAST(char*,"gdb-isearch-next"),       isearch_nextAct},
+    {CONST_CAST(char*,"gdb-isearch-exit"),       isearch_exitAct},
+    {CONST_CAST(char*,"gdb-popup-menu"),         popupAct},
+    {CONST_CAST(char*,"ddd-next-tab-group"),     next_tab_groupAct},
+    {CONST_CAST(char*,"ddd-prev-tab-group"),     prev_tab_groupAct},
+    {CONST_CAST(char*,"ddd-previous-tab-group"), prev_tab_groupAct},
+    {CONST_CAST(char*,"ddd-get-focus"),          get_focusAct},
+    {CONST_CAST(char*,"ddd-select-all"),         select_allAct},
 #if XmVersion < 2000 || defined(LESSTIF_VERSION)
-    {(char *)"toggle-overstrike",      toggleOverstrikeAct},
+    {CONST_CAST(char*,"toggle-overstrike"),      toggleOverstrikeAct},
 #endif
 };
 
@@ -2017,9 +2017,9 @@ int main(int argc, char *argv[])
     // If we don't want windows, just start GDB.
     if (no_windows)
     {
-	argv[0] = gdb_name;
-	execvp(gdb_name, argv);
-	perror(gdb_name);
+	argv[0] = CONST_CAST(char*,gdb_name.chars());
+	execvp(gdb_name.chars(), argv);
+	perror(gdb_name.chars());
 	return EXIT_FAILURE;
     }
 
@@ -2052,7 +2052,7 @@ int main(int argc, char *argv[])
     XrmParseCommand(&dddinit, options, XtNumber(options), 
 		    DDD_CLASS_NAME, &argc, (char**)argv);
 
-    String session_id = 0;
+    const _XtString session_id = 0;
     if (session_id == 0)
     {
 	// Determine session
@@ -2068,17 +2068,17 @@ int main(int argc, char *argv[])
 	// Try resource or option
 	if (
 #if XtSpecificationRelease >= 6
-	    XrmGetResource(dddinit, NsessionID, CSessionID,
+	    XrmGetResource(dddinit, NsessionID.chars(), CSessionID.chars(),
 			   &session_rtype, &session_value) ||
 #endif
-	    XrmGetResource(dddinit, Nsession, CSessionID,
+	    XrmGetResource(dddinit, Nsession.chars(), CSessionID.chars(),
 			   &session_rtype, &session_value))
 	{
 	    if (session_value.addr != 0)
 	    {
-		static string id((char *)session_value.addr, 
+		static string id(REINTERPRET_CAST(char *, session_value.addr), 
 				 session_value.size);
-		session_id = id;
+		session_id = id.chars();
 	    }
 	}
 
@@ -2096,9 +2096,9 @@ int main(int argc, char *argv[])
 			j++;
 			
 		    session_id = basename(argv[i]);
-		    session_value.addr = session_id;
+		    session_value.addr = CONST_CAST(char*,session_id);
 		    session_value.size = strlen(session_id) + 1;
-		    XrmPutResource(&dddinit, Nsession, XtRString, 
+		    XrmPutResource(&dddinit, Nsession.chars(), XtRString, 
 				   &session_value);
 		}
 	    }
@@ -2129,7 +2129,7 @@ int main(int argc, char *argv[])
 
     // Handle `--version', `--help', etc.  We do this here, since we
     // might want to use them even without X access.
-    setup_show(dddinit, basename(argv[0]), gdb_name);
+    setup_show(dddinit, basename(argv[0]), gdb_name.chars());
 
     // From this point on, we'll be running under X.
 
@@ -2213,12 +2213,12 @@ int main(int argc, char *argv[])
 #endif
 
     if (app_data.session == 0)
-	app_data.session = DEFAULT_SESSION;
+	app_data.session = DEFAULT_SESSION.chars();
     if (restart_session() != "")
     {
 	static string s;
 	s = restart_session();
-	app_data.session = s;
+	app_data.session = s.chars();
     }
     session_id = app_data.session;
 
@@ -2246,7 +2246,7 @@ int main(int argc, char *argv[])
 
     // Handle `--version', `--help', etc.  once more, in case the user
     // gave appropriate X resources.  Somewhat paranoid.
-    setup_show(XtDatabase(XtDisplay(toplevel)), XtName(toplevel), gdb_name);
+    setup_show(XtDatabase(XtDisplay(toplevel)), XtName(toplevel), gdb_name.chars());
 
     // Define font macros
     setup_fonts(app_data, XtDatabase(XtDisplay(toplevel)));
@@ -2338,7 +2338,7 @@ int main(int argc, char *argv[])
     if (app_data.debugger_command[0] == '\0')
     {
 	if (gdb_name != "")
-	    app_data.debugger_command = gdb_name;
+	    app_data.debugger_command = gdb_name.chars();
 	else
 	    app_data.debugger_command = 
 		default_debugger(app_data.debugger, debugger_type);
@@ -2355,7 +2355,7 @@ int main(int argc, char *argv[])
     if (gdb_host.contains('@') && string(app_data.debugger_host_login) == "")
     {
 	static string new_login = gdb_host.before('@');
-	app_data.debugger_host_login = new_login;
+	app_data.debugger_host_login = new_login.chars();
 	gdb_host = gdb_host.after('@');
     }
 
@@ -2456,13 +2456,14 @@ int main(int argc, char *argv[])
     for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
 	argv[i] = argv[i - saved_options.size()];
     for (i = saved_options.size() - 1; i >= 0; i--)
-	argv[i + 1] = saved_options[i];
+	argv[i + 1] = CONST_CAST(char*,saved_options[i].chars());
     argc += saved_options.size();
     argv[argc] = 0;
 
     // Create GDB interface
     gdb = new_gdb(debugger_type, app_data, app_context, argc, argv);
-    defineConversionMacro("GDB",      gdb->title());
+    const string s1 = gdb->title();
+    defineConversionMacro("GDB",      s1.chars());
     defineConversionMacro("THEHOST",  DDD_HOST);
     defineConversionMacro("ROOT",     DDD_ROOT);
     defineConversionMacro("ALT_ROOT", DDD_ALT_ROOT);
@@ -2514,7 +2515,7 @@ int main(int argc, char *argv[])
 
     // Make command shell a popup shell.  
     // The toplevel window is never realized.
-    command_shell = verify(XtCreatePopupShell((char *)"command_shell",
+    command_shell = verify(XtCreatePopupShell("command_shell",
 					      applicationShellWidgetClass,
 					      toplevel, args, arg));
 
@@ -2525,7 +2526,7 @@ int main(int argc, char *argv[])
     // Create main window
     arg = 0;
     Widget main_window = XmCreateMainWindow(command_shell, 
-					    (char *)"main_window",
+					    CONST_CAST(char *,"main_window"),
 					    args, arg);
     XtManageChild(main_window);
 
@@ -2550,7 +2551,7 @@ int main(int argc, char *argv[])
     XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
     Widget paned_work_w = 
 	verify(XmCreatePanedWindow(main_window,
-				   (char *)"paned_work_w",
+				   CONST_CAST(char *,"paned_work_w"),
 				   args, arg));
     XtManageChild(paned_work_w);
 
@@ -2601,7 +2602,7 @@ int main(int argc, char *argv[])
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	data_disp_shell =
-	    verify(XtCreatePopupShell((char *)"data_disp_shell",
+	    verify(XtCreatePopupShell("data_disp_shell",
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
 
@@ -2610,14 +2611,14 @@ int main(int argc, char *argv[])
 	arg = 0;
 	data_main_window_w = 
 	    XmCreateMainWindow(data_disp_shell, 
-			       (char *)"data_main_window",
+			       CONST_CAST(char *,"data_main_window"),
 			       args, arg);
 	XtManageChild(data_main_window_w);
 
 	// Add menu bar
 	data_menubar_w = 
 	    MMcreateMenuBar (data_main_window_w, 
-			     (char *)"menubar", data_menubar);
+			     "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
 	MMaddHelpCallback(menubar, ImmediateHelpCB);
 	verify_buttons(data_menubar);
@@ -2629,7 +2630,7 @@ int main(int argc, char *argv[])
 	XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 	data_disp_parent = 
 	    verify(XmCreatePanedWindow(data_main_window_w,
-				       (char *)"data_paned_work_w",
+				       CONST_CAST(char *,"data_paned_work_w"),
 				       args, arg));
 	XtManageChild(data_disp_parent);
     }
@@ -2659,7 +2660,7 @@ int main(int argc, char *argv[])
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	source_view_shell = 
-	    verify(XtCreatePopupShell((char *)"source_view_shell",
+	    verify(XtCreatePopupShell("source_view_shell",
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
 	AddDeleteWindowCallback(source_view_shell, DDDCloseCB);
@@ -2667,7 +2668,7 @@ int main(int argc, char *argv[])
 	arg = 0;
 	source_main_window_w = 
 	    XmCreateMainWindow(source_view_shell,
-			       (char *)"source_main_window",
+			       CONST_CAST(char *,"source_main_window"),
 			       args, arg);
 	XtManageChild(source_main_window_w);
 
@@ -2686,7 +2687,7 @@ int main(int argc, char *argv[])
 	XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 	source_view_parent = 
 	    verify(XmCreatePanedWindow(source_main_window_w, 
-				       (char *)"source_paned_work_w", 
+				       CONST_CAST(char *,"source_paned_work_w"), 
 				       args, arg));
 	XtManageChild(source_view_parent);
 
@@ -2779,7 +2780,7 @@ int main(int argc, char *argv[])
 
     arg = 0;
     gdb_w = verify(XmCreateScrolledText(paned_work_w, 
-					(char *)"gdb_w", args, arg));
+					CONST_CAST(char *,"gdb_w"), args, arg));
 
     XtAddCallback (gdb_w,
 		   XmNmodifyVerifyCallback,
@@ -2992,9 +2993,11 @@ int main(int argc, char *argv[])
 
     // Our info routines require that the widgets be named after the
     // info command.  Ugly hack.
-    strcpy(XtName(locals_w), gdb->info_locals_command());
-    strcpy(XtName(args_w),   gdb->info_args_command());
-
+    const string tmp_1_ = gdb->info_locals_command();
+    strcpy(XtName(locals_w), tmp_1_.chars());
+    const string tmp_2_ = gdb->info_args_command();
+    strcpy(XtName(args_w),   tmp_2_.chars());
+    
     if (gdb->info_locals_command() != gdb->info_args_command())
     {
 	register_info_button(locals_w);
@@ -3217,7 +3220,7 @@ static void ddd_check_version()
 		 version_warnings.xmstring()); arg++;
 	Widget warning = 
 	    verify(XmCreateWarningDialog(command_shell, 
-					 (char *)"bad_version_warning",
+					 CONST_CAST(char *,"bad_version_warning"),
 					 args, arg));
 	Delay::register_shell(warning);
 	XtUnmanageChild(XmMessageBoxGetChild(warning, XmDIALOG_CANCEL_BUTTON));
@@ -3236,9 +3239,9 @@ static void ddd_check_version()
 	if (app_data.dddinit_version == 0)
 	{
 	    static string session = app_data.session;
-	    app_data.session = DEFAULT_SESSION;
+	    app_data.session = DEFAULT_SESSION.chars();
 	    save_options(CREATE_OPTIONS);
-	    app_data.session = session;
+	    app_data.session = session.chars();
 	}
     }
 
@@ -3259,17 +3262,17 @@ static void ddd_check_version()
 
 // Read in database from FILENAME.  Upon version mismatch, ignore some
 // resources such as window sizes.
-XrmDatabase GetFileDatabase(char *filename)
+XrmDatabase GetFileDatabase(const string& filename)
 {
     string version_found = "";
 
     string tmpfile = tempfile();
 
-    ofstream os(tmpfile);
-    ifstream is(filename);
+    ofstream os(tmpfile.chars());
+    ifstream is(filename.chars());
 
 #if 0
-    clog << "Copying " << filename << " to " << tmpfile << "\n";
+    clog << "Copying " << filename.chars() << " to " << tmpfile << "\n";
 #endif
 
     // Resources to ignore upon copying
@@ -3319,7 +3322,7 @@ XrmDatabase GetFileDatabase(char *filename)
 		{
 #if 0
 		    cerr << "Warning: ignoring " << line 
-			 << " in " << filename << "\n";
+			 << " in " << filename.chars() << "\n";
 #endif
 		    copy = false;
 		}
@@ -3338,15 +3341,15 @@ XrmDatabase GetFileDatabase(char *filename)
     if (version_mismatch)
     {
 	// Read database from filtered file
-	db = XrmGetFileDatabase(tmpfile);
+	db = XrmGetFileDatabase(tmpfile.chars());
     }
     else
     {
 	// No version mismatch - read from original file
-	db = XrmGetFileDatabase(filename);
+	db = XrmGetFileDatabase(filename.chars());
     }
 
-    unlink(tmpfile);
+    unlink(tmpfile.chars());
     return db;
 }
 
@@ -3370,7 +3373,8 @@ void init_dddlog()
     }
     else
     {
-	static ofstream log(session_log_file());
+        const string tmp_1_ = session_log_file();
+	static ofstream log(tmp_1_.chars());
 	_dddlog = &log;
     }
 
@@ -3758,12 +3762,12 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     }
 
     Widget lock_dialog =
-	verify(XmCreateQuestionDialog(parent, (char *)"lock_dialog", 
+	verify(XmCreateQuestionDialog(parent, CONST_CAST(char *,"lock_dialog"), 
 				      args, arg));
     Delay::register_shell(lock_dialog);
 
 #if XmVersion >= 1002
-    Widget kill = verify(XmCreatePushButton(lock_dialog, (char *)"kill", 
+    Widget kill = verify(XmCreatePushButton(lock_dialog, CONST_CAST(char *,"kill"), 
 					    0, 0));
     XtManageChild(kill);
     XtAddCallback(kill, XmNactivateCallback,
@@ -3959,21 +3963,21 @@ inline void notify_set_toggle(Widget w, Boolean new_state)
     set_toggle(w, new_state, true);
 }
 
-static void set_string(Widget w, String value)
+static void set_string(Widget w, const _XtString value)
 {
     if (w == 0)
 	return;
 
     // Note: XtVaSetValues(w, XmNvalue, value, ...) 
     // doesn't work properly with LessTif 0.89.9
-    XmTextFieldSetString(w, value);
+    XmTextFieldSetString(w, CONST_CAST(char*,value));
     XtVaSetValues(w, XmNcursorPosition, 0, XtPointer(0));
 }
 
 static void set_string_int(Widget w, int value)
 {
     string v = itostring(value);
-    set_string(w, (String)v);
+    set_string(w, v.chars());
 }
 
 static bool have_cmd(const string& cmd)
@@ -4370,31 +4374,31 @@ void save_option_state()
     // Make sure the helper command strings are really duplicated
     static string edit_command;
     edit_command = initial_app_data.edit_command;
-    initial_app_data.edit_command = edit_command;
+    initial_app_data.edit_command = edit_command.chars();
 
     static string plot_command;
     plot_command = initial_app_data.plot_command;
-    initial_app_data.plot_command = plot_command;
+    initial_app_data.plot_command = plot_command.chars();
 
     static string get_core_command;
     get_core_command = initial_app_data.get_core_command;
-    initial_app_data.get_core_command = get_core_command;
+    initial_app_data.get_core_command = get_core_command.chars();
 
     static string ps_command;
     ps_command = initial_app_data.ps_command;
-    initial_app_data.ps_command = ps_command;
+    initial_app_data.ps_command = ps_command.chars();
 
     static string term_command;
     term_command = initial_app_data.term_command;
-    initial_app_data.term_command = term_command;
+    initial_app_data.term_command = term_command.chars();
 
     static string uncompress_command;
     uncompress_command = initial_app_data.uncompress_command;
-    initial_app_data.uncompress_command = uncompress_command;
+    initial_app_data.uncompress_command = uncompress_command.chars();
 
     static string www_command;
     www_command = initial_app_data.www_command;
-    initial_app_data.www_command = www_command;
+    initial_app_data.www_command = www_command.chars();
 
     // Fetch data display resources
     XtVaGetValues(data_disp->graph_edit, 
@@ -5029,7 +5033,7 @@ static Widget add_panel(Widget parent, Widget buttons,
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-    Widget form = verify(XmCreateRowColumn(parent, (char *)name, args, arg));
+    Widget form = verify(XmCreateRowColumn(parent, CONST_CAST(char *,name), args, arg));
     XtManageChild(form);
 
     // Add panel
@@ -5053,7 +5057,7 @@ static Widget add_panel(Widget parent, Widget buttons,
 
     // Add button
     arg = 0;
-    Widget button = verify(XmCreateToggleButton(buttons, (char *)name, args, arg));
+    Widget button = verify(XmCreateToggleButton(buttons, CONST_CAST(char *,name), args, arg));
     XtManageChild(button);
 
     XtAddCallback(button, XmNvalueChangedCallback, ChangePanelCB, 
@@ -5080,7 +5084,7 @@ static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
 	{
 	    restart_dialog = 
 		verify(XmCreateQuestionDialog(find_shell(dialog), 
-					      (char *)"restart_dialog",
+					      CONST_CAST(char *,"restart_dialog"),
 					      0, 0));
 	    Delay::register_shell(restart_dialog);
 	    XtAddCallback(restart_dialog, XmNokCallback,
@@ -5101,7 +5105,7 @@ static void make_preferences(Widget parent)
     arg = 0;
     preferences_dialog = 
 	verify(XmCreatePromptDialog(parent, 
-				    (char *)"preferences", args, arg));
+				    CONST_CAST(char *,"preferences"), args, arg));
     Delay::register_shell(preferences_dialog);
     XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), 
 		  XtPointer(0));
@@ -5129,17 +5133,17 @@ static void make_preferences(Widget parent)
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     Widget box =
-	verify(XmCreateRowColumn(preferences_dialog, (char *)"box", 
+	verify(XmCreateRowColumn(preferences_dialog, CONST_CAST(char *,"box"), 
 				 args, arg));
     XtManageChild(box);
 
     arg = 0;
     Widget buttons =
-	verify(XmCreateRadioBox(box, (char *)"buttons", args, arg));
+	verify(XmCreateRadioBox(box, CONST_CAST(char *,"buttons"), args, arg));
     XtManageChild(buttons);
 
     arg = 0;
-    Widget frame = verify(XmCreateFrame(box, (char *)"frame", args, arg));
+    Widget frame = verify(XmCreateFrame(box, CONST_CAST(char *,"frame"), args, arg));
     XtManageChild(frame);
 
     arg = 0;
@@ -5147,7 +5151,7 @@ static void make_preferences(Widget parent)
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     Widget change =
-	verify(XmCreateRowColumn(frame, (char *)"change", args, arg));
+	verify(XmCreateRowColumn(frame, CONST_CAST(char *,"change"), args, arg));
     XtManageChild(change);
 
     Dimension max_width  = 0;
@@ -5195,7 +5199,7 @@ static void create_status(Widget parent)
     int arg = 0;
     XtSetArg(args[arg], XmNresizePolicy, XmRESIZE_ANY); arg++;
     Widget status_form = 
-	verify(XmCreateForm(parent, (char *)"status_form", args, arg));
+	verify(XmCreateForm(parent, CONST_CAST(char *,"status_form"), args, arg));
     XtManageChild(status_form);
 
     // Create LED
@@ -5214,7 +5218,7 @@ static void create_status(Widget parent)
     }
 
     led_w = verify(XmCreateToggleButton(status_form, 
-					(char *)"led", args, arg));
+					CONST_CAST(char *,"led"), args, arg));
     XtManageChild(led_w);
 
     XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtPointer(0));
@@ -5233,7 +5237,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNarrowDirection, 
 	     (app_data.status_at_bottom ? XmARROW_UP : XmARROW_DOWN)); arg++;
     Widget arrow_w = 
-	verify(XmCreateArrowButton(status_form, (char *)"arrow", args, arg));
+	verify(XmCreateArrowButton(status_form, CONST_CAST(char *,"arrow"), args, arg));
     XtManageChild(arrow_w);
 
     // Give some `dummy' status message.  Some Motif versions limit
@@ -5254,7 +5258,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNrecomputeSize,    False); arg++;
     XtSetArg(args[arg], XmNshadowThickness,  0); arg++;
     status_w = verify(XmCreatePushButton(status_form, 
-					 (char *)"status", args, arg));
+					 CONST_CAST(char *,"status"), args, arg));
     XtManageChild(status_w);
 
     // Initialize status history
@@ -5787,7 +5791,7 @@ static void gdb_msgHP(Agent *source, void *call_data, const char *name)
         return;
     }
 
-    string msg = (char *)call_data;
+    string msg = STATIC_CAST(char *,call_data);
     string path = source->path();
     GDBAgent *gdb = ptr_cast(GDBAgent, source);
     if (gdb != 0)
@@ -5930,7 +5934,7 @@ static void gdb_ctrl(char ctrl)
 	    int spaces = TAB_WIDTH - column % TAB_WIDTH;
 	    string spacing = replicate(string(' '), spaces);
 	
-	    XmTextInsert(gdb_w, promptPosition, (String)spacing);
+	    XmTextInsert(gdb_w, promptPosition, CONST_CAST(char*,spacing.chars()));
 	    promptPosition += spacing.length();
 	}
 	break;
@@ -5938,7 +5942,7 @@ static void gdb_ctrl(char ctrl)
 	case '\r':
 	{
 	    // Erase last line
-	    XmTextReplace(gdb_w, startOfLine, promptPosition, (char *)"");
+	    XmTextReplace(gdb_w, startOfLine, promptPosition, CONST_CAST(char *,""));
 	    promptPosition = startOfLine;
 	}
 	break;
@@ -5949,7 +5953,7 @@ static void gdb_ctrl(char ctrl)
     case '\b':
     {
 	// Erase last character
-	XmTextReplace(gdb_w, promptPosition - 1, promptPosition, (char *)"");
+	XmTextReplace(gdb_w, promptPosition - 1, promptPosition, CONST_CAST(char *,""));
 	promptPosition--;
     }
     break;
@@ -5957,7 +5961,7 @@ static void gdb_ctrl(char ctrl)
     case '\n':
     {
 	string c = ctrl;
-	XmTextInsert(gdb_w, promptPosition, (String)c);
+	XmTextInsert(gdb_w, promptPosition, CONST_CAST(char*,c.chars()));
 	promptPosition += c.length();
 
 	// Flush output
@@ -5973,7 +5977,7 @@ static void gdb_ctrl(char ctrl)
 	    c = string("^") + char('@' + ctrl);
 	else
 	    c = "^?";
-	XmTextInsert(gdb_w, promptPosition, (String)c);
+	XmTextInsert(gdb_w, promptPosition, CONST_CAST(char*,c.chars()));
 	promptPosition += c.length();
     }
     break;
@@ -6063,7 +6067,7 @@ void _gdb_out(const string& txt)
 		cr_pending = false;
 	    }
 
-	    XmTextInsert(gdb_w, promptPosition, (String)block);
+	    XmTextInsert(gdb_w, promptPosition, CONST_CAST(char*,block.chars()));
 	    promptPosition += block.length();
 	    // XmTextShowPosition(gdb_w, promptPosition);
 	}
@@ -6887,7 +6891,7 @@ static void popup_splash_screen(Widget parent, string color_key)
     XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     Widget splash = 
-	verify(XmCreateDrawingArea(splash_shell, (char *)"splash", args, arg));
+	verify(XmCreateDrawingArea(splash_shell, CONST_CAST(char *,"splash"), args, arg));
     XtManageChild(splash);
 
     Dimension width, height;
@@ -6960,7 +6964,7 @@ static void ReportDeathHP(Agent *agent, void *, void *call_data)
     if (gdb == 0)
 	return;
 
-    char *reason = (char *)call_data;
+    char *reason = STATIC_CAST(char *,call_data);
     if (gdb != 0 && running_msg != 0)
     {
 	running_msg->outcome = reason;
@@ -6992,7 +6996,7 @@ static void vsl_echo(const string& msg)
 	XtSetArg(args[arg], XmNautoUnmanage,   False);              arg++;
 	XtSetArg(args[arg], XmNmessageString,  message.xmstring()); arg++;
 	dialog = verify(XmCreateWarningDialog(find_shell(gdb_w), 
-					      (char *)"vsl_message", 
+					      CONST_CAST(char *,"vsl_message"), 
 					      args, arg));
 
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
@@ -7091,11 +7095,11 @@ static void sync_args(ArgField *source, ArgField *target)
 
 static void check_log(const string& logname, DebuggerType& type)
 {
-    ifstream log(logname);
+    ifstream log(logname.chars());
     if (log.bad())
     {
-	(void) fopen(logname, "r");
-	perror(logname);
+	(void) fopen(logname.chars(), "r");
+	perror(logname.chars());
 	exit(EXIT_FAILURE);
     }
 
@@ -7119,18 +7123,18 @@ static void check_log(const string& logname, DebuggerType& type)
 //-----------------------------------------------------------------------------
 
 // Return true iff resource is defined and set
-static string resource_value(XrmDatabase db, string app_name, const char *res_name)
+static string resource_value(XrmDatabase db, const string& app_name, const char *res_name)
 {
     string str_name  = app_name + "." + res_name;
     string str_class = string(DDD_CLASS_NAME) + "." + res_name;
 
     char *type;
     XrmValue xrmvalue;
-    Bool success = XrmGetResource(db, str_name, str_class, &type, &xrmvalue);
+    Bool success = XrmGetResource(db, str_name.chars(), str_class.chars(), &type, &xrmvalue);
     if (!success)
 	return "";		// Resource not found
 
-    char *str = (char *)xrmvalue.addr;
+    const char *str = (const char *)xrmvalue.addr;
     int len   = xrmvalue.size - 1; // includes the final `\0'
     return string(str, len);
 }
@@ -7148,12 +7152,12 @@ static bool is_set(string value)
     return false;
 }
 
-inline bool have_set_resource(XrmDatabase db, char *app_name, const char *res_name)
+inline bool have_set_resource(XrmDatabase db, const char *app_name, const char *res_name)
 {
     return is_set(resource_value(db, app_name, res_name));
 }
 
-static void setup_show(XrmDatabase db, char *app_name, char *gdb_name)
+static void setup_show(XrmDatabase db, const char *app_name, const char *gdb_name)
 {
     // Check for `--version', `--help', `--news', etc.  This may be
     // invoked before we have connected to an X display, so check
@@ -7306,7 +7310,7 @@ static void setup_version_info()
     s += "To start, select `Help->What Now?'.";
     XmTextSetString(SourceView::source(), s);
 #else
-    XmTextSetString(gdb_w, (char *)
+    XmTextSetString(gdb_w, CONST_CAST(char *,
 		    "GNU " DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
 		    "by Dorothea L\374tkehaus and Andreas Zeller.\n"
 		    "Copyright \251 1995-1999 "
@@ -7314,7 +7318,7 @@ static void setup_version_info()
 		    "Copyright \251 1999-2001 "
 		    "Universit\344t Passau, Germany.\n"
 		    "Copyright \251 2001 "
-		    "Universit\344t des Saarlandes, Germany.\n");
+		    "Universit\344t des Saarlandes, Germany.\n"));
 #endif
 }
 
@@ -7360,7 +7364,7 @@ static void add_arg_from_selection(Widget toplevel, int& argc, const char **&arg
 	const int new_argc = 2;
 	static const char *new_argv[new_argc + 1];
 	new_argv[0] = argv[0];
-	new_argv[1] = selection;
+	new_argv[1] = selection.chars();
 	new_argv[2] = 0;
 
 	DebuggerInfo info(new_argc, new_argv);
@@ -7662,7 +7666,7 @@ static void setup_auto_command_prefix()
 	prefix = key;
     }
 
-    app_data.auto_command_prefix = prefix;
+    app_data.auto_command_prefix = prefix.chars();
 }
 
 // All options that remain fixed for a session go here.
@@ -7752,7 +7756,7 @@ static void setup_theme_manager()
 
     for (int i = 0; i < available_themes.size(); i++)
     {
-	const string& theme = basename(available_themes[i]);
+	const char* theme = basename(available_themes[i].chars());
 
 	if (!DispBox::theme_manager.has_pattern(theme))
 	{

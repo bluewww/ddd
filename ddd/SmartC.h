@@ -38,6 +38,8 @@
 // Compare S1 and S2, taking numerals into account
 // returns < 0, > 0, or 0 iff S1 < S2, S1 > S2, or S1 == S2.
 extern int smart_compare(const char *s1, const char *s2);
+extern int smart_compare(const string& s1, const string& s2);
+
 
 // Sort array S, using smart_compare
 extern void smart_sort(StringArray& s);

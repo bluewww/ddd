@@ -89,7 +89,7 @@ extern "C" int pclose(FILE *stream);
 bool is_regular_file(const string& file_name)
 {
     struct stat sb;
-    if (stat(file_name, &sb))
+    if (stat(file_name.chars(), &sb))
 	return false;		// cannot stat
 
     return S_ISREG(sb.st_mode);
@@ -100,7 +100,7 @@ bool is_binary_file(const string& file_name)
 {
     char buf[16];
 
-    int fd = open(file_name, O_RDONLY);
+    int fd = open(file_name.chars(), O_RDONLY);
     if (fd < 0)
 	return false;
     int n = read(fd, buf, sizeof(buf));
@@ -121,7 +121,7 @@ bool is_binary_file(const string& file_name)
 bool is_cmd_file(const string& file_name)
 {
     struct stat sb;
-    if (stat(file_name, &sb))
+    if (stat(file_name.chars(), &sb))
 	return false;		// cannot stat
 
     if (!S_ISREG(sb.st_mode))
@@ -142,8 +142,6 @@ bool is_exec_file(const string& file_name)
 // True if FILE_NAME is a PPC file
 static bool is_ppc_file(const string& file_name)
 {
-    (void) file_name;		// Use it
-
 #if HAVE_LIBELF_H
     Elf32_Ehdr *   ehdr;
     Elf *          elf;
@@ -151,7 +149,7 @@ static bool is_ppc_file(const string& file_name)
 
     bool ret_code = true;
 
-    if ((fd = open(file_name, O_RDONLY)) == -1)
+    if ((fd = open(file_name.chars(), O_RDONLY)) == -1)
 	return false;		// cannot open
 
     // Obtain the ELF descriptor
@@ -178,6 +176,7 @@ static bool is_ppc_file(const string& file_name)
     close(fd);
     return ret_code;
 #else
+    (void) file_name;		// Use it
     return false;
 #endif // HAVE_LIBELF_H
 }
@@ -192,7 +191,7 @@ bool is_debuggee_file(const string& file_name)
 bool is_core_file(const string& file_name)
 {
     struct stat sb;
-    if (stat(file_name, &sb))
+    if (stat(file_name.chars(), &sb))
 	return false;		// cannot stat
 
     if (!S_ISREG(sb.st_mode))
@@ -218,7 +217,7 @@ bool is_core_file(const string& file_name)
 	return false;		// looks like an archive file
 
     // FILE_NAME is a core file iff `file FILE_NAME' issues `core'.
-    string cmd = "file " + file_name;
+    const string cmd = "file " + file_name;
     FILE *fp = popen(cmd.chars(), "r");
     if (fp != 0)
     {
@@ -246,7 +245,7 @@ bool is_source_file(const string& file_name)
 	return false;		// looks like an archive file
 
     struct stat sb;
-    if (stat(file_name, &sb))
+    if (stat(file_name.chars(), &sb))
 	return false;		// cannot stat
 
     if (!S_ISREG(sb.st_mode))
@@ -273,7 +272,7 @@ bool is_source_file(const string& file_name)
 bool is_postscript_file(const string& file_name)
 {
     struct stat sb;
-    if (stat(file_name, &sb))
+    if (stat(file_name.chars(), &sb))
 	return false;		// cannot stat
 
     if (!S_ISREG(sb.st_mode))
@@ -281,7 +280,7 @@ bool is_postscript_file(const string& file_name)
 
     char buf[2];
 
-    int fd = open(file_name, O_RDONLY);
+    int fd = open(file_name.chars(), O_RDONLY);
     if (fd < 0)
 	return false;
     int n = read(fd, buf, sizeof(buf));
@@ -296,7 +295,7 @@ bool is_postscript_file(const string& file_name)
 bool is_fig_file(const string& file_name)
 {
     struct stat sb;
-    if (stat(file_name, &sb))
+    if (stat(file_name.chars(), &sb))
 	return false;		// cannot stat
 
     if (!S_ISREG(sb.st_mode))
@@ -304,7 +303,7 @@ bool is_fig_file(const string& file_name)
 
     char buf[4];
 
-    int fd = open(file_name, O_RDONLY);
+    int fd = open(file_name.chars(), O_RDONLY);
     if (fd < 0)
 	return false;
     int n = read(fd, buf, sizeof(buf));
@@ -325,7 +324,7 @@ static bool has_hashbang(const string& file_name, const string& pattern)
 
     char buf[BUFSIZ];
 
-    int fd = open(file_name, O_RDONLY);
+    int fd = open(file_name.chars(), O_RDONLY);
     if (fd < 0)
 	return false;
     int n = read(fd, buf, sizeof(buf));
@@ -375,7 +374,7 @@ bool is_perl_file(const string& file_name)
 bool is_directory(const string& file_name)
 {
     struct stat sb;
-    if (stat(file_name, &sb))
+    if (stat(file_name.chars(), &sb))
 	return false;
 
     if (!S_ISDIR(sb.st_mode))
@@ -408,7 +407,7 @@ string cmd_file(const string& command)
 time_t last_modification_time(const string& file_name)
 {
     struct stat sb;
-    if (stat(file_name, &sb))
+    if (stat(file_name.chars(), &sb))
 	return 0;
 
     return sb.st_mtime;

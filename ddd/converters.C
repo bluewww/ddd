@@ -189,7 +189,7 @@ static Boolean CvtStringToPacking(Display *display,
 static string str(XrmValue *from, bool strip)
 {
     // Use the length given in FROM->size; strip trailing '\0'
-    String s = (String)from->addr;
+    const _XtString s = (String)from->addr;
     int sz   = from->size;
     if (sz > 0 && s[sz - 1] == '\0')
 	sz--;
@@ -231,8 +231,8 @@ Boolean CvtStringToWidget(Display *display,
     Widget parent = *(Widget *) args[0].addr;
 
     // Get widget
-    string value = str(fromVal, false);
-    Widget w = XtNameToWidget(parent, value);
+    const string value = str(fromVal, false);
+    Widget w = XtNameToWidget(parent, value.chars());
     if (w == 0)
     {
 	XtDisplayStringConversionWarning(display, fromVal->addr, XtRWidget);
@@ -293,7 +293,7 @@ static Boolean CvtStringToPixmap(Display *display,
 	v = v.after("xm");
     if (v != "unspecified_pixmap")
     {
-	p = XmGetPixmap(screen, value, foreground, background);
+	p = XmGetPixmap(screen, CONST_CAST(char*,value.chars()), foreground, background);
 
 	if (p == XmUNSPECIFIED_PIXMAP)
 	{
@@ -308,7 +308,7 @@ static Boolean CvtStringToPixmap(Display *display,
 
 
 
-static String locateBitmap(Display *display, String basename);
+static String locateBitmap(Display *display, const _XtString basename);
 
 // Convert String to Bitmap
 // A Bitmap will be read in as bitmap file -- 1 and 0 values remain unchanged.
@@ -334,8 +334,8 @@ static Boolean CvtStringToBitmap(Display *display,
 	window = DefaultRootWindow(display);
 
     // Locate file
-    string basename = str(fromVal, false);
-    String filename = locateBitmap(display, basename);
+    const string basename = str(fromVal, false);
+    String filename = locateBitmap(display, basename.chars());
     if (filename == 0)
     {
 	// Cannot find file -- check for predefined motif bitmaps
@@ -376,8 +376,8 @@ static Boolean CvtStringToBitmap(Display *display,
 }
 
 // Note: <percent>B<percent> is expanded by SCCS -- thus inserting ""
-static string BASENAME = "%B""%S";
-static string DELIMITER = ":";
+static const string BASENAME = "%B""%S";
+static const string DELIMITER = ":";
 
 // add default search paths to path
 static void addDefaultPaths(string& path, string root)
@@ -400,11 +400,11 @@ static string bitmapPath()
 	return path;
 
     path = BASENAME;
-    char *xbmlangpath = getenv("XBMLANGPATH");
+    const char *xbmlangpath = getenv("XBMLANGPATH");
     if (xbmlangpath == 0)
     {
-	char *xapplresdir = getenv("XAPPLRESDIR");
-	string home = gethome();
+	const char *xapplresdir = getenv("XAPPLRESDIR");
+	const string home = gethome();
 
 	if (xapplresdir != 0)
 	    addDefaultPaths(path, xapplresdir);
@@ -421,22 +421,22 @@ static string bitmapPath()
     return path;
 }
 
-static string PATH = bitmapPath();
+static const string PATH = bitmapPath();
 
 // locate bitmap
 // this mimics XmGetPixmap's efforts to locate a path
-static String locateBitmap(Display *display, String basename)
+static String locateBitmap(Display *display, const _XtString basename)
 {
     SubstitutionRec subst;
     subst.match        = 'B';
-    subst.substitution = basename;
+    subst.substitution = CONST_CAST(char*,basename);
 
     return XtResolvePathname(
 	display,      // the display we use
 	"bitmaps",    // %T = bitmaps
 	String(0),    // %N = application class name
 	"",           // %S = "" (suffix)
-	String(PATH), // path to use
+	PATH.chars(), // path to use
 	&subst, 1,    // %B = basename
 	XtFilePredicate(0)); // no checking for valid bitmap
 }
@@ -463,10 +463,8 @@ static int font_id_len(const string& s)
 }
 
 
-static void XmStringFreeCB(XtPointer client_data, XtIntervalId *id)
+static void XmStringFreeCB(XtPointer client_data, XtIntervalId *)
 {
-    (void) id;			// Use it
-
     XmString xs = (XmString)client_data;
     XmStringFree(xs);
 }
@@ -521,7 +519,7 @@ static Boolean CvtStringToXmString(Display *display,
 		    {
 			// No such macro
 			Cardinal num_params = 1;
-			String params = (String)c.chars();
+			String params = CONST_CAST(char*,c.chars());
 			XtAppWarningMsg(XtDisplayToApplicationContext(display),
 					"noSuchMacro", "CvtStringToXmString",
 					"XtToolkitError",
@@ -555,13 +553,15 @@ static Boolean CvtStringToXmString(Display *display,
 	    string seg = segment.before('\n');
 	    segment = segment.after('\n');
 
-	    buf    += MString(seg.chars(), charset) + cr();
+	    buf    += MString(seg.chars(), 
+			      CONST_CAST(XmStringCharSet,charset.chars()))
+		   + cr();
 	    txtbuf += seg + '\n';
 	}
 
 	if (segment.length() > 0)
 	{
-	    buf    += MString(segment, charset);
+	    buf    += MString(segment, CONST_CAST(XmStringCharSet,charset.chars()));
 	    txtbuf += segment;
 	}
     }
@@ -620,7 +620,7 @@ static bool convert_fontspec(Display *display,
 	{
 	    // No such macro
 	    Cardinal num_params = 1;
-	    String params = (String)c.chars();
+	    String params = CONST_CAST(char*,c.chars());
 	    XtAppWarningMsg(XtDisplayToApplicationContext(display),
 			    "noSuchMacro", name.chars(),
 			    "XtToolkitError",
@@ -650,7 +650,7 @@ static Boolean CvtStringToFontStruct(Display *display,
     if (font == 0)
     {
 	Cardinal num_params = 1;
-	String params = (String)fontspec.chars();
+	String params = CONST_CAST(char*,fontspec.chars());
 	XtAppWarningMsg(XtDisplayToApplicationContext(display),
 			"noSuchFont", "CvtStringToFontStruct",
 			"XtToolkitError",
@@ -696,7 +696,7 @@ static Boolean CvtStringToXmFontList(Display *display,
 	    (charset == "" && charset != MSTRING_DEFAULT_CHARSET))
 	{
 	    Cardinal num_params = 1;
-	    String params = (String)segment.chars();
+	    String params = CONST_CAST(char*,segment.chars());
 	    XtAppWarningMsg(XtDisplayToApplicationContext(display),
 			    "syntaxError", "CvtStringToXmFontList",
 			    "XtToolkitError",
@@ -713,7 +713,7 @@ static Boolean CvtStringToXmFontList(Display *display,
 	if (font == 0)
 	{
 	    Cardinal num_params = 1;
-	    String params = (String)fontspec.chars();
+	    String params = CONST_CAST(char*,fontspec.chars());
 	    XtAppWarningMsg(XtDisplayToApplicationContext(display),
 			    "noSuchFont", "CvtStringToXmFontList",
 			    "XtToolkitError",
@@ -728,7 +728,7 @@ static Boolean CvtStringToXmFontList(Display *display,
 	    target = XmFontListAdd(target, font, charset);
 
 #else  // XmVersion >= 1002
-	XmFontListEntry entry = XmFontListEntryLoad(display, (char *)fontspec, 
+	XmFontListEntry entry = XmFontListEntryLoad(display, CONST_CAST(char *,fontspec), 
 						    XmFONT_IS_FONT, charset);
 	target = XmFontListAppendEntry(target, entry);
 	XmFontListEntryFree(&entry);

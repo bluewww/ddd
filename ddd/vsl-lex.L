@@ -37,6 +37,7 @@ char VSL_lex_rcsid[] =
 #include <stdio.h>
 #include <errno.h>
 #include "strclass.h"
+#include "casts.h"
 
 static const int max_include_nesting = 40;    // max include nesting
 
@@ -54,7 +55,7 @@ static istream *yystream = &cin;
 static int yylinenumber;
 
 static int switchdown(void);
-static int switchup(char *filename, bool thisdir);
+static int switchup(const char *filename, bool thisdir);
 
 static char pushback[BUFSIZ];
 static char *pushback_ptr = pushback;
@@ -194,7 +195,7 @@ W			[ \f\t]*
 ^{W}#{W}line[ \f\t]{W}.* {			// #line LINE ["FILE"]
 			string buf((char *)yytext);
 			buf = buf.after("line");
-			char *s = (char *)buf.chars();
+			char *s = CONST_CAST(char *,buf.chars());
 			int line = strtol(s, &s, 10);
 			if (s == buf.chars())
 			    VSLLib::parse_error("illegal #line number");
@@ -353,7 +354,7 @@ static string dirname(const string& file)
 // Search file in directories -I, $VSL_INCLUDE.
 // If THISDIR == true, also search in current directory,
 // If not found, return FILENAME.
-static char *searchpath(char *filename, bool thisDir)
+static const char *searchpath(const char *filename, bool thisDir)
 {
     char includeList[BUFSIZ];
 
@@ -374,7 +375,7 @@ static char *searchpath(char *filename, bool thisDir)
 		":/usr/local/lib/vsl-include"
 		":/usr/lib/vsl-include";
 	    
-	    s = path;
+	    s = path.chars();
 	}
     }
 
@@ -382,7 +383,8 @@ static char *searchpath(char *filename, bool thisDir)
     if (thisDir)
     {
 	string dir = dirname(yyfilename);
-	strcpy(includeList, dir + ":");
+	dir += ":";
+	strcpy(includeList, dir.chars());
     }
     else
     {
@@ -415,7 +417,7 @@ static char *searchpath(char *filename, bool thisDir)
 }
 
 // Switch to file FILENAME
-static int switchup(char *filename, bool thisdir) 
+static int switchup(const char *filename, bool thisdir) 
 {
     if (string(filename) != "")
     {

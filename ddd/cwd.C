@@ -56,8 +56,8 @@ bool same_file(const string& s1, const string& s2)
     struct stat s1_stat;
     struct stat s2_stat;
 
-    if (stat(s1, &s1_stat) == 0 &&
-	stat(s2, &s2_stat) == 0 &&
+    if (stat(s1.chars(), &s1_stat) == 0 &&
+	stat(s2.chars(), &s2_stat) == 0 &&
 	s1_stat.st_dev == s2_stat.st_dev &&
 	s1_stat.st_ino == s2_stat.st_ino)
 	return true;
@@ -69,7 +69,7 @@ bool same_file(const string& s1, const string& s2)
 string cwd()
 {
     // Try $PWD
-    char *pwd = getenv("PWD");
+    const char *pwd = getenv("PWD");
     if (pwd != 0 && same_file(pwd, "."))
     {
 	// $PWD points to the current dirctory

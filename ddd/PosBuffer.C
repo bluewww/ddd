@@ -68,13 +68,13 @@ void PosBuffer::filter_line(string& answer)
     string line_s = pos_buffer;
     if (line_s.contains(':'))
 	line_s = line_s.after(':');
-    int line = atoi(line_s);
+    int line = atoi(line_s.chars());
     if (line <= 0)
 	return;
 
     int pos = 0;
     do {
-	if (atoi((char *)answer + pos) == line)
+	if (atoi(answer.chars() + pos) == line)
 	{
 	    answer = answer.before(pos) + answer.after('\n', pos);
 	    break;
@@ -846,7 +846,7 @@ void PosBuffer::filter_dbx(string& answer)
 	string nr = answer.after("\n");
 	if (nr != "")
 	{
-	    line = itostring(atoi(nr));
+	    line = itostring(atoi(nr.chars()));
 	    already_read = PosComplete;
 		    
 	    // Show current function only

@@ -72,13 +72,13 @@ extern "C" void *memcpy(void *to, const void *from, size_t size);
 int noglob_dot_filenames = 1;
 
 
-static int glob_match_after_star (char *pattern, char *text);
+static int glob_match_after_star (const char *pattern, const char *text);
 
 /* Return nonzero if PATTERN has any special globbing chars in it.  */
 int
-glob_pattern_p (char *pattern)
+glob_pattern_p (const char *pattern)
 {
-  register char *p = pattern;
+  register const char *p = pattern;
   register char c;
   int	open = 0;
 
@@ -125,9 +125,9 @@ glob_pattern_p (char *pattern)
    If DOT_SPECIAL is nonzero,
    `*' and `?' do not match `.' at the beginning of TEXT.  */
 int
-glob_match (char *pattern, char *text, int dot_special)
+glob_match (const char *pattern, const char *text, int dot_special)
 {
-  register char *p = pattern, *t = text;
+  register char const *p = pattern, *t = text;
   register char c;
 
   while ((c = *p++) != '\0')
@@ -223,9 +223,9 @@ glob_match (char *pattern, char *text, int dot_special)
 /* Like glob_match, but match PATTERN against any final segment of TEXT.  */
 
 static int
-glob_match_after_star (char *pattern, char *text)
+glob_match_after_star (const char *pattern, const char *text)
 {
-  register char *p = pattern, *t = text;
+  register const char *p = pattern, *t = text;
   register char c, c1;
 
   while ((c = *p++) == '?' || c == '*')
@@ -266,7 +266,7 @@ glob_match_after_star (char *pattern, char *text)
    Look in errno for more information.  */
 
 char **
-glob_vector (char *pat, char *dir)
+glob_vector (const char *pat, const char *dir)
 {
   struct globval
     {
@@ -416,11 +416,12 @@ glob_dir_to_array (char *dir, char **array)
    If there isn't enough memory, then return 0.
    If a file system error occurs, return -1; `errno' has the error code.  */
 char **
-glob_filename (char *pathname)
+glob_filename (const char *pathname)
 {
   char **result;
   unsigned int result_size;
-  char *directory_name, *filename;
+  char *directory_name; 
+  const char *filename;
   unsigned int directory_len;
 
   result = (char **) malloc (sizeof (char *));

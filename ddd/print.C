@@ -135,10 +135,10 @@ static int print_to_file(string filename, PrintGC& gc,
     graphGC.printGC = &gc;
     graphGC.printSelectedNodesOnly = selectedOnly;
 
-    ofstream os(filename);
+    ofstream os(filename.chars());
     if (os.bad())
     {
-	FILE *fp = fopen(filename, "w");
+	FILE *fp = fopen(filename.chars(), "w");
 	post_error(string("Cannot open ") 
 		   + quote(filename) + ": " + strerror(errno), 
 		   "print_failed_error", data_disp->graph_edit);
@@ -174,7 +174,7 @@ static void unlinkPrintFile(XtPointer client_data, XtIntervalId *)
 {
     // Delete temp file after use
     string *tempfile = (string *)client_data;
-    unlink(*tempfile);
+    unlink(tempfile->chars());
     delete tempfile;
 }
 
@@ -284,7 +284,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	    XtFree(c);
 	}
 
-	app_data.print_command = command;
+	app_data.print_command = command.chars();
 	if (print_to_printer(command, print_postscript_gc, 
 			     print_selected_only, print_displays) == 0)
 	{
@@ -318,7 +318,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	if (f == "")
 	    return;
 
-	if (access(f, W_OK) || !is_regular_file(f) || override)
+	if (access(f.chars(), W_OK) || !is_regular_file(f) || override)
 	{
 	    // File does not exist, is special, or override is on
 	    if (print_to_file(f, gc, print_selected_only, print_displays) == 0)
@@ -336,7 +336,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	    confirm_overwrite_dialog = 
 		verify(
 		    XmCreateQuestionDialog(find_shell(w),
-					   (char *)"confirm_overwrite_dialog", 
+					   CONST_CAST(char *,"confirm_overwrite_dialog"), 
 					   ArgList(0), 0));
 	    Delay::register_shell(confirm_overwrite_dialog);
 	    XtAddCallback(confirm_overwrite_dialog, 
@@ -373,7 +373,7 @@ static string suffix(PrintType print_type)
 
 static void set_print_file_name(const string& name)
 {
-    XmTextFieldSetString(print_file_name_field, (String)name);
+    XmTextFieldSetString(print_file_name_field, CONST_CAST(char*,name.chars()));
 
     XmTextPosition last_pos = 
 	XmTextFieldGetLastPosition(print_file_name_field);
@@ -446,11 +446,11 @@ static void SetPrintTargetCB(Widget w, XtPointer client_data, XtPointer)
 static void set_paper_size_string(string s)
 {
     Widget text = XmSelectionBoxGetChild(paper_size_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text, s);
+    XmTextSetString(text, CONST_CAST(char*,s.chars()));
 
     static string current_paper_size;
     current_paper_size = s;
-    app_data.paper_size = current_paper_size;
+    app_data.paper_size = current_paper_size.chars();
 }
 
 static void SetGCColorCB(Widget w, XtPointer, XtPointer)
@@ -525,7 +525,7 @@ static int points(string s)
 
     while (s != "")
     {
-	char *start = s;
+	const char *start = s.chars();
 	char *tailptr;
 	double value = strtod(start, &tailptr);
 	int value_len = (int)(tailptr - start);
@@ -777,7 +777,7 @@ static void BrowseNameCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNpattern, pattern.xmstring()); arg++;
 	dialog = 
 	    verify(XmCreateFileSelectionDialog(find_shell(w), 
-					       (char *)"browse_print", 
+					       CONST_CAST(char *,"browse_print"), 
 					       args, arg));
 
 	Delay::register_shell(dialog);
@@ -818,7 +818,8 @@ static void PrintCB(Widget parent, bool displays)
     Cardinal arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     print_dialog = 
-	verify(XmCreatePromptDialog(find_shell(parent), (char *)"print", 
+	verify(XmCreatePromptDialog(find_shell(parent),
+				    CONST_CAST(char *,"print"), 
 				    args, arg));
     Delay::register_shell(print_dialog);
 
@@ -993,7 +994,7 @@ static void PrintCB(Widget parent, bool displays)
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     paper_size_dialog = 
 	verify(XmCreatePromptDialog(find_shell(parent), 
-				    (char *)"paper_size_dialog", 
+				    CONST_CAST(char *,"paper_size_dialog"), 
 				    args, arg));
     Delay::register_shell(paper_size_dialog);
 
@@ -1032,7 +1033,7 @@ static void PrintCB(Widget parent, bool displays)
 	XmToggleButtonSetState(a4_paper_size, True, True);
 
     string command = string(app_data.print_command) + " ";
-    XmTextFieldSetString(print_command_field, command);
+    XmTextFieldSetString(print_command_field, CONST_CAST(char*,command.chars()));
 
     // Gofer it!
     manage_and_raise(print_dialog);

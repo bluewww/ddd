@@ -109,8 +109,8 @@ static string isearch_line = "";
 static bool have_isearch_line = false;
 static bool isearch_motion_ok = false;
 
-static char isearch_prompt[]         = "(i-search)";
-static char reverse_isearch_prompt[] = "(reverse-i-search)";
+static const char *isearch_prompt         = "(i-search)";
+static const char *reverse_isearch_prompt = "(reverse-i-search)";
 
 
 // Return current line
@@ -167,7 +167,7 @@ static void show_isearch()
 
     bool old_private_gdb_output = private_gdb_output;
     private_gdb_output = true;
-    XmTextReplace(gdb_w, start, XmTextGetLastPosition(gdb_w), (String)line);
+    XmTextReplace(gdb_w, start, XmTextGetLastPosition(gdb_w), CONST_CAST(char*,line.chars()));
     promptPosition = start + prompt.length();
 
     XmTextPosition pos = promptPosition;
@@ -424,7 +424,7 @@ void processAct(Widget w, XEvent *e, String *params, Cardinal *num_params)
 	    num_action_params = *num_params - 1;
 	}
 
-	XtCallActionProc(w, action, e, action_params, num_action_params);
+	XtCallActionProc(w, action.chars(), e, action_params, num_action_params);
 	return;
     }
 
@@ -474,13 +474,13 @@ void insert_source_argAct(Widget w, XEvent*, String*, Cardinal*)
     if (XmIsText(w)) {
 	if (XmTextGetEditable(w)) {
 	    XmTextPosition pos = XmTextGetInsertionPosition(w);
-	    XmTextReplace(w, pos, pos, (String)arg);
+	    XmTextReplace(w, pos, pos, CONST_CAST(char*,arg.chars()));
 	}
     }
     else if (XmIsTextField(w)) {
 	if (XmTextFieldGetEditable(w)) {
 	    XmTextPosition pos = XmTextFieldGetInsertionPosition(w);
-	    XmTextFieldReplace(w, pos, pos, (String)arg);
+	    XmTextFieldReplace(w, pos, pos, CONST_CAST(char*,arg.chars()));
 	}
     }
 }
@@ -561,7 +561,7 @@ void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
 void set_current_line(const string& input)
 {
     XmTextReplace(gdb_w, promptPosition, XmTextGetLastPosition(gdb_w), 
-		  (String)input);
+		  CONST_CAST(char*,input.chars()));
 }
 
 void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
@@ -876,7 +876,7 @@ void gdbClearWindowCB(Widget, XtPointer, XtPointer)
 
     private_gdb_output = true;
 
-    XmTextReplace(gdb_w, 0, start, (char *)"");
+    XmTextReplace(gdb_w, 0, start, CONST_CAST(char *,""));
 
     promptPosition  -= start;
     messagePosition -= start;

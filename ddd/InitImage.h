@@ -47,7 +47,7 @@ extern XImage *CreateImageFromBitmapData(unsigned char *bits,
 Boolean InstallImage(XImage *image, const char *name);
 
 // Install bitmap in Motif cache
-Boolean InstallBitmap(unsigned char *bits, int width, int height, char *name);
+Boolean InstallBitmap(unsigned char *bits, int width, int height, const char *name);
 
 #endif // _DDD_InitImage_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -35,6 +35,7 @@ char layout_rcsid[] =
 
 #include "layout.h"
 #include "assert.h"
+#include "casts.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -94,9 +95,9 @@ const int NOT_REGULAR   = 12;
     Interface layer
 *****************************************************************************/
 
-void (*Layout::node_callback)(char *, int, int) = 0;
-void (*Layout::hint_callback)(char *, char *, int, int) = 0;
-int  (*Layout::compare_callback)(char *, char *) = 0;
+void (*Layout::node_callback)(const char *, int, int) = 0;
+void (*Layout::hint_callback)(const char *, const char *, int, int) = 0;
+int  (*Layout::compare_callback)(const char *, const char *) = 0;
 
 #define UP 0
 #define DOWN 1
@@ -112,7 +113,7 @@ static GRAPHTAB tab;
  * TODO: this is a dummy - we don't distinct between different graphs yet.
  */
 
-void Layout::add_graph (char *g)
+void Layout::add_graph (const char *g)
 
 {
     GRAPH *graph;
@@ -135,7 +136,7 @@ void Layout::add_graph (char *g)
  * effect.
  */
 
-void Layout::add_node (char *g, char *node)
+void Layout::add_node (const char *g, const char *node)
 { 
     NODE *nd;
     GRAPH *graph;
@@ -146,7 +147,7 @@ void Layout::add_node (char *g, char *node)
 	fprintf (stderr,"add-node warning: graph %s unknown\n",g);
 	return ;
     }
-    id.label = node;
+    id.label = CONST_CAST(char*,node);
     /*
      * check for dublicates
      */
@@ -174,7 +175,7 @@ void Layout::add_node (char *g, char *node)
  * TODO: check, if edge allready exists.
  */ 
 
-void Layout::add_edge (char *g, char *node1, char *node2)
+void Layout::add_edge (const char *g, const char *node1, const char *node2)
 {
     NODE *source;
     NODE *target;
@@ -182,8 +183,8 @@ void Layout::add_edge (char *g, char *node1, char *node2)
     ID id1;
     ID id2;
 
-    id1.label = node1;
-    id2.label = node2;
+    id1.label = CONST_CAST(char*,node1);
+    id2.label = CONST_CAST(char*,node2);
 
     graph = graphGet (&tab,g);
     if (!graph) {
@@ -217,7 +218,7 @@ void Layout::add_edge (char *g, char *node1, char *node2)
  * overwritten.
  */
 
-void Layout::set_node_width (char *g, char *node, int width)
+void Layout::set_node_width (const char *g, const char *node, int width)
 {
     NODE *nd;
     GRAPH *graph;
@@ -229,7 +230,7 @@ void Layout::set_node_width (char *g, char *node, int width)
 	fprintf (stderr,"graph %s unknown\n",g);
 	return ;
     }
-    id.label = node;
+    id.label = CONST_CAST(char*,node);
     nd = graphGetNode (graph, &id, Regular);
     if (!nd) {
 	fprintf (stderr,"set_node_width: node %s unknown to %s\n",
@@ -246,7 +247,7 @@ void Layout::set_node_width (char *g, char *node, int width)
  * overwritten.
  */
 
-void Layout::set_node_height (char *g, char *node, int height)
+void Layout::set_node_height (const char *g, const char *node, int height)
 {
     NODE *nd;
     GRAPH *graph;
@@ -257,7 +258,7 @@ void Layout::set_node_height (char *g, char *node, int height)
 	fprintf (stderr,"set-node warning: graph %s unknown\n",g);
 	return ;
     }
-    id.label = node;
+    id.label = CONST_CAST(char*,node);
     nd = graphGetNode (graph, &id, Regular);
     if (!nd) {
 	fprintf (stderr,"set_node_width: node %s unknown to %s\n",
@@ -273,7 +274,7 @@ void Layout::set_node_height (char *g, char *node, int height)
  * position is overwritten.
  */
 
-void Layout::set_node_position (char *g, char *node, int x, int y)
+void Layout::set_node_position (const char *g, const char *node, int x, int y)
 {
     NODE *nd;
     GRAPH *graph;
@@ -285,7 +286,7 @@ void Layout::set_node_position (char *g, char *node, int x, int y)
 	fprintf (stderr,"graph %s unknown\n",g);
 	return ;
     }
-    id.label = node;
+    id.label = CONST_CAST(char*,node);
     nd = graphGetNode (graph, &id, Regular);
     if (!nd) {
 	fprintf (stderr,"set_node_position: node %s unknown to %s\n",
@@ -303,7 +304,7 @@ void Layout::set_node_position (char *g, char *node, int x, int y)
  * (X, Y), this has no effect.
  */
 
-void Layout::add_edge_hint (char *, char *, char *, int, int)
+void Layout::add_edge_hint (const char *, const char *, const char *, int, int)
 {
 }
 
@@ -312,7 +313,7 @@ void Layout::add_edge_hint (char *, char *, char *, int, int)
  * If there is no such hint, this action has no effect.  
  */
 
-void Layout::remove_edge_hint (char *, char *, char *, int, int)
+void Layout::remove_edge_hint (const char *, const char *, const char *, int, int)
 {
 }
 
@@ -322,7 +323,7 @@ void Layout::remove_edge_hint (char *, char *, char *, int, int)
  * such edge, this action has no effect.  
  */
 
-void Layout::remove_edge (char *g, char *node1, char *node2)
+void Layout::remove_edge (const char *g, const char *node1, const char *node2)
 {
     GRAPH *graph;
     NODE *source;
@@ -334,8 +335,8 @@ void Layout::remove_edge (char *g, char *node1, char *node2)
     ID id1, id2, tmpid;
     int direction;		/* UP or DOWN */
 
-    id1.label = node1;
-    id2.label = node2;
+    id1.label = CONST_CAST(char*,node1);
+    id2.label = CONST_CAST(char*,node2);
 
     graph = graphGet (&tab,g);
     if (!graph) {
@@ -414,7 +415,7 @@ void Layout::remove_edge (char *g, char *node1, char *node2)
  * this action has no effect.
  */
 
-void Layout::remove_node (char *g, char *label)
+void Layout::remove_node (const char *g, const char *label)
 {
     GRAPH *graph;
     NODE *node;
@@ -426,7 +427,7 @@ void Layout::remove_node (char *g, char *label)
 	fprintf (stderr,"remove-edge warning: graph %s unknown\n",g);
 	return ;
     }
-    id.label = label;
+    id.label = CONST_CAST(char*,label);
     node = graphGetNode (graph, &id, Regular);
     if (!node ) {
 	fprintf (stderr,"remove_node: unknown node %s\n", label);
@@ -466,7 +467,7 @@ void Layout::remove_node (char *g, char *label)
  * nodes.  If there is no such graph, this action has no effect.
  */
 
-void Layout::remove_graph (char *g)
+void Layout::remove_graph (const char *g)
 {
     graphRemove (&tab,g);
 }
@@ -483,7 +484,7 @@ void Layout::remove_graph (char *g)
  * new edge hint (X, Y).
  */
 
-void Layout::layout (char *g)
+void Layout::layout (const char *g)
 {
     GRAPH *graph;
 	
@@ -505,7 +506,7 @@ void Layout::layout (char *g)
 /*
  * debug
  */
-void Layout::dddDebug (char *g)
+void Layout::dddDebug (const char *g)
 {
     GRAPH *graph;
 	
@@ -653,7 +654,7 @@ void Layout::dddOutput (GRAPH *graph)
  * write out the node position 
  */
 
-void Layout::dddNodeOut (char *, NODE *node)
+void Layout::dddNodeOut (const char *, NODE *node)
 {
     if (node->x == node->oldx && node->y == node->oldy) {
 	return;	/* no changes */
@@ -1100,7 +1101,7 @@ void Layout::listRemove (EDGELIST *list)
  * initialize a node
  */
 
-void Layout::nodeInit (NODE* node, ID *id , NODETYPE type)
+void Layout::nodeInit (NODE* node, const ID *id , NODETYPE type)
 {
     node->x = 0;
     node->y = 0;
@@ -1169,7 +1170,7 @@ void Layout::nodeRemove (NODE *node)
  * initialize a graph
  */
 
-void Layout::graphInit (GRAPH *graph, char *label)
+void Layout::graphInit (GRAPH *graph, const char *label)
 {
     int i;
 	
@@ -1203,7 +1204,7 @@ void Layout::graphInit (GRAPH *graph, char *label)
  * new node
  */
 
-NODE *Layout::graphEnterNode (GRAPH *graph, ID *id, NODETYPE type)
+NODE *Layout::graphEnterNode (GRAPH *graph, const ID *id, NODETYPE type)
 {
     NODE *node;
     NODE *tail;
@@ -1242,7 +1243,7 @@ NODE *Layout::graphEnterNode (GRAPH *graph, ID *id, NODETYPE type)
  * get a pointer to a node described by its ID
  */
 
-NODE *Layout::graphGetNode (GRAPH *graph, ID *id, NODETYPE type)
+NODE *Layout::graphGetNode (GRAPH *graph, const ID *id, NODETYPE type)
 {
     int pos;
     int found = FALSE ;
@@ -1298,7 +1299,7 @@ NODE *Layout::graphGetNode (GRAPH *graph, ID *id, NODETYPE type)
  * and remove the node from its level by yourself!
  */
 
-void Layout::graphRemoveNode (GRAPH *graph, ID *id, NODETYPE type)
+void Layout::graphRemoveNode (GRAPH *graph, const ID *id, NODETYPE type)
 {
     int pos;
     NODE *node;
@@ -1677,9 +1678,9 @@ void Layout::graphResetLevels (GRAPH *graph)
  * original by P.J. Weinberger
  */
 
-int Layout::graphHashStr (char *str, int prime) 
+int Layout::graphHashStr (const char *str, int prime) 
 {
-    char *p;
+    const char *p;
     unsigned h = 0, g;
 	
     for (p=str; *p != '\0'; p++ ) {
@@ -1703,7 +1704,7 @@ int Layout::graphHashStr (char *str, int prime)
  * 'hashtab' contains SMALLPRIME pointers to GRAPHs.
  */
 
-GRAPH *Layout::graphGet (GRAPHTAB *tab, char *label)
+GRAPH *Layout::graphGet (GRAPHTAB *tab, const char *label)
 {
     int pos;
     GRAPH *graph;
@@ -1727,7 +1728,7 @@ GRAPH *Layout::graphGet (GRAPHTAB *tab, char *label)
  * is printed and no new graph is created (0 returned).
  */
 
-GRAPH *Layout::graphNew (GRAPHTAB *tab,char *label)
+GRAPH *Layout::graphNew (GRAPHTAB *tab, const char *label)
 {
     GRAPH *graph;
     GRAPH *tail;
@@ -1774,7 +1775,7 @@ GRAPH *Layout::graphNew (GRAPHTAB *tab,char *label)
  * remove a graph from a GRAPHTAB
  */
 
-void Layout::graphRemove (GRAPHTAB *tab, char *label)
+void Layout::graphRemove (GRAPHTAB *tab, const char *label)
 {
     int pos;
     int i;

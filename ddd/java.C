@@ -92,7 +92,7 @@ static void get_java_classes(const string& dir, const string& base,
 			     StatArray& dirs_seen)
 {
     struct stat sb;
-    if (stat(dir, &sb))
+    if (stat(dir.chars(), &sb))
 	return;			// Cannot stat
 
     for (int i = 0; i < dirs_seen.size(); i++)
@@ -113,7 +113,7 @@ static void get_java_classes(const string& dir, const string& base,
     string mask = concat_dir(dir, "*" JAVA_CLASS_SUFFIX);
 
     // Check for `.class' files in this directory.
-    char **files = glob_filename(mask);
+    char **files = glob_filename(mask.chars());
     if (files == (char **)0)
     {
 	delay.outcome = mask + ": glob failed";
@@ -168,7 +168,7 @@ static void get_java_classes(const string& dir, const string& base,
 
     // Check for `.class' files in subdirectories.
     mask = concat_dir(dir, "*");
-    files = glob_filename(mask);
+    files = glob_filename(mask.chars());
     if (files == (char **)0)
     {
 	delay.outcome = mask + ": glob failed\n";
@@ -255,7 +255,7 @@ static void slurp_file(const string& file, string& s)
 {
     s = "";
 
-    FILE *fp = fopen(file, "r");
+    FILE *fp = fopen(file.chars(), "r");
     if (fp == 0)
 	return;
 

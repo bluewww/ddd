@@ -93,7 +93,7 @@ void _tty_out(const string& text)
     if (command_tty == 0)
 	return;
 
-    command_tty->write((char *)text, text.length());
+    command_tty->write(text.chars(), text.length());
 }
 
 // Output TEXT on controlling TTY if we're in annotation mode
@@ -104,8 +104,8 @@ void tty_full_name(const string& pos)
 
     if (app_data.annotate >= 2)
     {
-	string s = "source " + pos;
-	annotate(s);
+	const string s = "source " + pos;
+	annotate(s.chars());
     }
     else if (app_data.annotate == 1)
     {

@@ -142,7 +142,7 @@ static void SyncFiltersCB(Widget dialog, XtPointer, XtPointer)
 	if (file_dialogs[i] != dialog)
 	{
 	    // clog << "other dialog = " << longName(file_dialogs[i]) << "\n";
-	    XmTextSetString(file_filters[i], current_file_filter);
+	    XmTextSetString(file_filters[i], CONST_CAST(char*,current_file_filter.chars()));
 	}
     }
 
@@ -211,7 +211,7 @@ static Widget file_dialog(Widget w, const string& name,
     }
 
     Widget dialog = 
-	verify(XmCreateFileSelectionDialog(w, name, args, arg));
+	verify(XmCreateFileSelectionDialog(w, CONST_CAST(char*,name.chars()), args, arg));
     Delay::register_shell(dialog);
 
     if (ok_callback != 0)
@@ -224,7 +224,7 @@ static Widget file_dialog(Widget w, const string& name,
     Widget filter = XmFileSelectionBoxGetChild(dialog, XmDIALOG_FILTER_TEXT);
     file_filters += filter;
     if (current_file_filter != "")
-	XmTextSetString(filter, current_file_filter);
+	XmTextSetString(filter, CONST_CAST(char*,current_file_filter.chars()));
     XtAddCallback(filter, XmNvalueChangedCallback, SyncFiltersCB, 0);
 
     Widget filter_button = 
@@ -267,18 +267,18 @@ void process_cd(string pwd)
     {
 	if (file_filters[i] != 0)
 	{
-	    XmTextSetString(file_filters[i], current_file_filter);
+	    XmTextSetString(file_filters[i], CONST_CAST(char*,current_file_filter.chars()));
 	    break;
 	}
     }
 }
 
-static char delay_message[] = "Filtering files";
+static const char *delay_message = "Filtering files";
 
 // Search for remote files and directories, using the command CMD
 static void searchRemote(Widget fs,
 			 XmFileSelectionBoxCallbackStruct *cbs,
-			 String cmd,
+			 const _XtString cmd,
 			 bool search_dirs)
 {
     StatusDelay delay(delay_message);
@@ -305,10 +305,10 @@ static void searchRemote(Widget fs,
     {
 	string extra_dir = string(dir) + ".";
 	items[nitems++] = 
-	    XmStringCreateLtoR(extra_dir, MSTRING_DEFAULT_CHARSET);
+	    XmStringCreateLtoR(CONST_CAST(char*,extra_dir.chars()), MSTRING_DEFAULT_CHARSET);
 	extra_dir = string(dir) + "..";
 	items[nitems++] = 
-	    XmStringCreateLtoR(extra_dir, MSTRING_DEFAULT_CHARSET);
+	    XmStringCreateLtoR(CONST_CAST(char*,extra_dir.chars()), MSTRING_DEFAULT_CHARSET);
     }
 
     string command = cmd;
@@ -1031,7 +1031,7 @@ static bool valid_ps_line(const string& line, const string& ps_command)
     string ps = ps_command;
     if (ps.contains(' '))
 	ps = ps.before(' ');
-    ps = basename(ps);
+    ps = basename(ps.chars());
     int index = line.index(ps);
     if (index > 0
 	&& (line[index - 1] == '/' || is_separator(line[index - 1]))
@@ -1139,7 +1139,7 @@ static void update_processes(Widget processes, bool keep_selection)
 	i = kill_result.index(rxint, i);
 	if (i >= 0)
 	{
-	    int bad_pid = atoi((char *)kill_result + i);
+	    int bad_pid = atoi(kill_result.chars() + i);
 	    for (int k = 0; k < all_process_list.size(); k++)
 	    {
 		if (pids[k] != 0 && pids[k] == bad_pid)
@@ -1551,8 +1551,8 @@ static void filter_sources(StringArray& labels, StringArray& sources,
 
     for (int i = 0; i < labels.size(); i++)
     {
-	if (glob_match(pattern, labels[i], 0) ||
-	    glob_match(pattern, sources[i], 0))
+	if (glob_match(pattern.chars(), labels[i].chars(), 0) ||
+	    glob_match(pattern.chars(), sources[i].chars(), 0))
 	{
 	    new_labels  += labels[i];
 	    new_sources += sources[i];
@@ -1575,7 +1575,7 @@ static void update_sources(Widget sources, Widget filter)
     strip_space(pattern);
     if (pattern == "")
 	pattern = "*";
-    XmTextFieldSetString(filter, (char *)pattern);
+    XmTextFieldSetString(filter, CONST_CAST(char *,pattern.chars()));
 
     StringArray labels;
     uniquify(all_sources, labels);
@@ -1733,7 +1733,7 @@ void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
     
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreateSelectionDialog(find_shell(w), 
-						(char *)"processes", 
+						CONST_CAST(char *,"processes"), 
 						args, arg));
 
 	Delay::register_shell(dialog);
@@ -1780,7 +1780,7 @@ void gdbOpenClassCB(Widget w, XtPointer, XtPointer)
     
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreateSelectionDialog(find_shell(w), 
-						(char *)"classes", args, arg));
+						CONST_CAST(char *,"classes"), args, arg));
 
 	Delay::register_shell(dialog);
 
@@ -1855,7 +1855,7 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtSetArg(args[arg], XmNchildPlacement, XmPLACE_TOP); arg++;
 #endif
 	dialog = verify(XmCreateSelectionDialog(find_shell(w), 
-						(char *)"sources", args, arg));
+						CONST_CAST(char *,"sources"), args, arg));
 
 	Delay::register_shell(dialog);
 
@@ -1871,7 +1871,7 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtSetArg(args[arg], XmNadjustMargin,    False); arg++;
 	XtSetArg(args[arg], XmNshadowThickness, 0);     arg++;
 	XtSetArg(args[arg], XmNspacing,         0);     arg++;
-	Widget bigbox = XmCreateRowColumn(dialog, (char *)"bigbox", args, arg);
+	Widget bigbox = XmCreateRowColumn(dialog, CONST_CAST(char *,"bigbox"), args, arg);
 	XtManageChild(bigbox);
 
 	arg = 0;
@@ -1881,26 +1881,26 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtSetArg(args[arg], XmNadjustMargin,    False); arg++;
 	XtSetArg(args[arg], XmNshadowThickness, 0);     arg++;
 	XtSetArg(args[arg], XmNspacing,         0);     arg++;
-	Widget box = XmCreateRowColumn(bigbox, (char *)"box", args, arg);
+	Widget box = XmCreateRowColumn(bigbox, CONST_CAST(char *,"box"), args, arg);
 	XtManageChild(box);
 
 	arg = 0;
-	Widget label = XmCreateLabel(box, (char *)"label", args, arg);
+	Widget label = XmCreateLabel(box, CONST_CAST(char *,"label"), args, arg);
 	XtManageChild(label);
 
 	arg = 0;
-	source_filter = XmCreateTextField(box, (char *)"filter", args, arg);
+	source_filter = XmCreateTextField(box, CONST_CAST(char *,"filter"), args, arg);
 	XtManageChild(source_filter);
 
 	arg = 0;
 	Widget sharedlibrary = 
-	    XmCreatePushButton(bigbox, (char *)"sharedlibrary", args, arg);
+	    XmCreatePushButton(bigbox, CONST_CAST(char *,"sharedlibrary"), args, arg);
 	XtManageChild(sharedlibrary);
 
 #if XmVersion >= 1002
 	arg = 0;
 	Widget lookup = XmCreatePushButton(dialog, 
-					   (char *)"lookup", args, arg);
+					   CONST_CAST(char *,"lookup"), args, arg);
 	XtManageChild(lookup);
 #endif
 

@@ -59,12 +59,12 @@ static Widget init_label, init_shell;
 // Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
 void get_transient_pos(Screen *screen, Position& pos_x, Position& pos_y)
 {
-    (void) screen;		// Use it
 #if 0
     // Use lower right corner.
     pos_x = WidthOfScreen(screen) - 1;
     pos_y = HeightOfScreen(screen) - 1;
 #else
+    (void) screen;           // Use it     
     // This loses on some window managers; upper left corner is safer.
     pos_x = 0;
     pos_y = 0;
@@ -88,13 +88,13 @@ void start_have_decorated_transients(Widget parent)
     XtSetArg(args[arg], XmNx, pos_x);                   arg++;
     XtSetArg(args[arg], XmNy, pos_y);                   arg++;
     init_shell = verify(XmCreateDialogShell(parent, 
-					    (char *)"init_shell", args, arg));
+					    CONST_CAST(char *,"init_shell"), args, arg));
 
     arg = 0;
     MString label(DDD_NAME " " DDD_VERSION);
     XtSetArg(args[arg], XmNlabelString, label.xmstring()); arg++;
     init_label = verify(XmCreateLabel(init_shell, 
-				      (char *)ddd_NAME, args, arg));
+				      CONST_CAST(char *,ddd_NAME), args, arg));
     XtManageChild(init_label);
 }
 

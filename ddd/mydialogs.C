@@ -69,7 +69,7 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 				     ArgList args, Cardinal num_args)
 {
     if (app_data.transient_dialogs)
-	return XmCreateSelectionDialog(parent, (char *)name, args, num_args);
+	return XmCreateSelectionDialog(parent, CONST_CAST(char *,name), args, num_args);
 
     ArgList new_args = new Arg[num_args + 10];
     Cardinal arg = 0;
@@ -97,7 +97,7 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
     Widget shell = verify(XtCreateWidget(shell_name.chars(), 
 					 topLevelShellWidgetClass,
 					 parent, new_args, arg));
-    Widget box = XmCreateSelectionBox(shell, (char *)name, new_args, arg);
+    Widget box = XmCreateSelectionBox(shell, CONST_CAST(char *,name), new_args, arg);
 
     delete[] new_args;
 
@@ -149,7 +149,7 @@ void setLabelList (Widget  selectionList,
 		   XtPointer(0));
 
     for (int i = 0; i < list_length; i++) 
-	if (selected != 0 && selected[i] == true) 
+	if (selected != 0 && selected[i] == true)
 	    XmListSelectPos(selectionList, i + 1, Boolean(notify));
 
     XtVaSetValues (selectionList,
@@ -251,13 +251,13 @@ XmStringTable makeXmStringTable (string label_list[],
     int i = 0;
     if (highlight_title && i < list_length)
     {
-	xmlist[i] = XmStringCreateLtoR(label_list[i], LIST_TITLE_CHARSET);
+	xmlist[i] = XmStringCreateLtoR(CONST_CAST(char*,label_list[i].chars()), LIST_TITLE_CHARSET);
 	i++;
     }
 	
     while (i < list_length)
     {
-	xmlist[i] = XmStringCreateLtoR(label_list[i], LIST_CHARSET);
+	xmlist[i] = XmStringCreateLtoR(CONST_CAST(char*,label_list[i].chars()), LIST_CHARSET);
 	i++;
     }
 

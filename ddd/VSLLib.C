@@ -116,7 +116,7 @@ VSLLib::VSLLib(istream& i, unsigned optimizeMode)
 // Return list of defs for FUNC_NAME; 0 if not found
 VSLDefList* VSLLib::deflist(const string& func_name) const
 {
-    unsigned hashcode = hashpjw(func_name) % hashSize;
+    unsigned hashcode = hashpjw(func_name.chars()) % hashSize;
 
     VSLDefList *d;
     for (d = defs[hashcode];
@@ -140,7 +140,7 @@ VSLDef *VSLLib::add(const string& func_name,
     if (d == 0)
     {
 	// Not found?  Create a new DefList...
-	unsigned hashcode = hashpjw(func_name) % hashSize;
+	unsigned hashcode = hashpjw(func_name.chars()) % hashSize;
 
 	d = defs[hashcode];
 	defs[hashcode] = new VSLDefList(this, hashcode, func_name, global);

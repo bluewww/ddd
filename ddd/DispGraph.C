@@ -554,7 +554,7 @@ int DispGraph::get_by_name(const string& name) const
     int nr = 0;
 
     if (name.matches(rxint))
-	nr = atoi(name);
+	nr = atoi(name.chars());
 
     if (nr != 0)
     {

@@ -317,7 +317,7 @@ void AsyncAgent::terminate(bool onExit)
 	// Inhibit further communication
 	hasNewStatus(-1);
 	abort();
-	callHandlers(Died, (void *)"Exit 0");
+	callHandlers(Died, STATIC_CAST(void*,CONST_CAST(char*,"Exit 0")));
     }
 }
 

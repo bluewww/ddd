@@ -47,6 +47,7 @@ char Tool_rcsid[] =
 #include "DeleteWCB.h"
 #include "DestroyCB.h"
 #include "bool.h"
+#include "casts.h"
 #include "buttons.h"
 #include "decoration.h"
 #include "strclass.h"
@@ -106,7 +107,7 @@ void create_command_tool()
     if (use_transient_tool_shell)
     {
 	tool_shell = verify(XmCreateDialogShell(tool_shell_parent, 
-						(char *)"tool_shell", 
+						CONST_CAST(char *,"tool_shell"), 
 						args, arg));
     }
     else
@@ -120,7 +121,7 @@ void create_command_tool()
 
     arg = 0;
     tool_buttons_w = 
-	verify(XmCreateForm(tool_shell, (char *)"tool_buttons", args, arg));
+	verify(XmCreateForm(tool_shell, CONST_CAST(char *,"tool_buttons"), args, arg));
     set_buttons(tool_buttons_w, app_data.tool_buttons, false);
 
     Delay::register_shell(tool_shell);

@@ -63,7 +63,7 @@ ArgField::ArgField (Widget parent, const char* name)
 	XtSetArg(args[arg], XmNmarginHeight, 2); arg++;
     }
 
-    arg_text_field = CreateComboBox(parent, (char *)name, args, arg);
+    arg_text_field = CreateComboBox(parent, name, args, arg);
 
     XtAddCallback(arg_text_field, XmNvalueChangedCallback,
 		  valueChangedCB, this);
@@ -98,7 +98,7 @@ void ArgField::set_string(string s)
     String old_s = XmTextFieldGetString(arg_text_field);
     if (s != old_s)
     {
-	XmTextFieldSetString(arg_text_field, (String)s);
+	XmTextFieldSetString(arg_text_field, CONST_CAST(char*,s.chars()));
 
 	if (XtIsRealized(arg_text_field)) // LessTif 0.1 crashes otherwise
 	{
@@ -120,7 +120,7 @@ void ArgField::valueChangedCB(Widget,
     ArgField *arg_field = (ArgField *)client_data;
     arg_field->handlers.call(Changed, arg_field);
 
-    string s = arg_field->get_string();
+    const string s = arg_field->get_string();
 
     if (s == "")
     {
@@ -178,7 +178,7 @@ Widget ArgField::top() const { return ComboBoxTop(text()); };
 void ClearTextFieldCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget arg_field = Widget(client_data);
-    XmTextFieldSetString(arg_field, (char *)"");
+    XmTextFieldSetString(arg_field, CONST_CAST(char *,""));
 }
 
 // Create a `():' label named "arg_label" for ARG_FIELD

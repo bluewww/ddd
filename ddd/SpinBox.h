@@ -36,7 +36,7 @@
 #include <X11/Intrinsic.h>
 
 // Create a spin box
-Widget CreateSpinBox(Widget parent, String name, ArgList args, Cardinal arg);
+Widget CreateSpinBox(Widget parent, const _XtString name, ArgList args, Cardinal arg);
 
 #endif // _DDD_SpinBox_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

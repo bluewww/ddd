@@ -55,8 +55,8 @@ int smart_compare(const char *s1, const char *s2)
 	    const char *e1 = s1;
 	    const char *e2 = s2;
 
-	    long i1 = strtol((char *)s1, (char **)&e1, 0);
-	    long i2 = strtol((char *)s2, (char **)&e2, 0);
+	    long i1 = strtol(s1, (char **)&e1, 0);
+	    long i2 = strtol(s2, (char **)&e2, 0);
 
 	    assert(e1 != s1 && e2 != s2);
 
@@ -74,6 +74,11 @@ int smart_compare(const char *s1, const char *s2)
 	    return *s1 - *s2;
 	}
     }
+}
+
+int smart_compare(const string& s1, const string& s2)
+{
+  return smart_compare(s1.chars(), s2.chars());
 }
 
 // Shell sort -- simple and fast

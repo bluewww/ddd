@@ -102,7 +102,7 @@ public:
     VSLDefList *dup(const VSLLib *lib) const;
 
     // Resources
-    string func_name() const { return _func_name; }
+    const string& func_name() const { return _func_name; }
     bool &global()        { return _global; }
     bool global() const   { return _global; }
 

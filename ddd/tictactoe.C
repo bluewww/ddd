@@ -337,7 +337,7 @@ static Pixel color(Widget w, const _XtString name, Pixel pixel)
 {
     XrmValue from, to;
     from.size = strlen(name);
-    from.addr = (char *)name;
+    from.addr = CONST_CAST(char *,name);
     to.size   = sizeof(pixel);
     to.addr   = (String)&pixel;
 
@@ -385,7 +385,7 @@ static void repaint()
 		foreground = BlackPixelOfScreen(XtScreen(buttons[i]));
 	}
 
-	Pixmap p = XmGetPixmap(XtScreen(buttons[i]), (char *)name, 
+	Pixmap p = XmGetPixmap(XtScreen(buttons[i]), CONST_CAST(char *,name), 
 			       foreground, background);
 	XtVaSetValues(buttons[i],
 		      XmNlabelType, XmPIXMAP,
@@ -415,6 +415,7 @@ static void repaint()
 static void MoveCB(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
+
     XtIntervalId *timer = (XtIntervalId *)client_data;
     assert(*timer == *id);
     *timer = 0;
@@ -455,7 +456,7 @@ static void make_move(int move)
 static void InstallBitmapAsImage(unsigned char *bits, int width, int height, 
 				 const string& name)
 {
-    Boolean ok = InstallBitmap(bits, width, height, name);
+    Boolean ok = InstallBitmap(bits, width, height, name.chars());
     if (!ok)
 	cerr << "Could not install " << quote(name) << " bitmap\n";
 }
@@ -508,12 +509,12 @@ static Widget create_tictactoe(Widget parent)
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL);  arg++;
     XtSetArg(args[arg], XmNpacking,     XmPACK_COLUMN); arg++;
     XtSetArg(args[arg], XmNnumColumns,  3);             arg++;
-    board = XmCreateRowColumn(parent, (char *)"board", args, arg);
+    board = XmCreateRowColumn(parent, CONST_CAST(char *,"board"), args, arg);
 
     for (int i = 1; i <= 9; i++)
     {
 	arg = 0;
-	buttons[i] = XmCreatePushButton(board, (char *)"field", args, arg);
+	buttons[i] = XmCreatePushButton(board, CONST_CAST(char *,"field"), args, arg);
 	XtManageChild(buttons[i]);
 	XtAddCallback(buttons[i], XmNactivateCallback, 
 		      MakeMoveCB, XtPointer(i));
@@ -533,7 +534,7 @@ void TicTacToeCB(Widget, XtPointer, XtPointer)
 
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(),
-					     (char *)"tictactoe", args, arg));
+					     CONST_CAST(char *,"tictactoe"), args, arg));
 	Delay::register_shell(dialog);
 
 	if (lesstif_version <= 79)

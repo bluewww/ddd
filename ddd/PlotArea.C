@@ -68,8 +68,8 @@ struct plot_resource_values {
 
 static XtResource plot_subresources[] = {
     {
-	(char *)"font",
-	(char *)"Font",
+	CONST_CAST(char *,"font"),
+	CONST_CAST(char *,"Font"),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(plot_resource_values, font),
@@ -77,8 +77,8 @@ static XtResource plot_subresources[] = {
 	XtPointer("fixed")
     },
     {
-	(char *)"pointsize",
-	(char *)"Pointsize",
+	CONST_CAST(char *,"pointsize"),
+	CONST_CAST(char *,"Pointsize"),
 	XtRInt,
 	sizeof(int),
 	XtOffsetOf(plot_resource_values, pointsize),
@@ -89,38 +89,38 @@ static XtResource plot_subresources[] = {
 
 
 #if 0
-static char color_keys[Ncolors][30] =   { 
+static const char *color_keys[Ncolors] =   { 
    "background", "bordercolor", "text", "border", "axis", 
    "line1", "line2", "line3",  "line4", 
    "line5", "line6", "line7",  "line8" 
    };
 #endif
 
-static char color_values[Ncolors][30] = { 
+static const char *color_values[Ncolors] = { 
     "white", "black",  "black",  "black",  "black", 
     "red",   "green",  "blue",   "magenta", 
     "cyan",  "sienna", "orange", "coral" 
 };
 
-static char gray_values[Ncolors][30] = { 
+static const char *gray_values[Ncolors] = { 
     "black",   "white",  "white",  "gray50", "gray50",
     "gray100", "gray60", "gray80", "gray40", 
     "gray90",  "gray50", "gray70", "gray30" 
 };
 
 #if 0
-char dash_keys[Ndashes][10] =   { 
+static const char *dash_keys[Ndashes] =   { 
    "border", "axis",
    "line1", "line2", "line3",  "line4", "line5", "line6", "line7",  "line8" 
 };
 #endif
 
-static char dash_mono[Ndashes][10] =   { 
+static const char *dash_mono[Ndashes] =   { 
    "0", "16",
    "0", "42", "13",  "44", "15", "4441", "42",  "13" 
 };
 
-static char dash_color[Ndashes][10] =   { 
+static const char *dash_color[Ndashes] =   { 
    "0", "16",
    "0", "0", "0", "0", "0", "0", "0", "0" 
 };
@@ -138,7 +138,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
 			      ArgList(0), 0);
 
     // Init font
-    font = XLoadQueryFont(dpy, fontname);
+    font = XLoadQueryFont(dpy, fontname.chars());
     if (font == 0)
 	font = XLoadQueryFont(dpy, values.font);
     if (font == 0)
@@ -183,7 +183,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
 	{
 	    string color = gray ? gray_values[i] : color_values[i];
 	    XColor xcolor;
-	    if (!XParseColor(dpy, cmap, color, &xcolor))
+	    if (!XParseColor(dpy, cmap, color.chars(), &xcolor))
 	    {
 		cerr << "Unable to parse " << quote(color) 
 		     << ".  Using black.\n";
@@ -251,7 +251,7 @@ void PlotArea::plot_unknown(const char *command)
 void PlotArea::plot_vector(const char *buf)
 {
     int x, y;
-    int assignments = sscanf((char *)buf, "V%4d%4d", &x, &y);
+    int assignments = sscanf(buf, "V%4d%4d", &x, &y);
     if (assignments != 2)
     {
 	plot_unknown(buf);
@@ -264,7 +264,7 @@ void PlotArea::plot_vector(const char *buf)
 
 void PlotArea::plot_move(const char *buf)
 {
-    int assignments = sscanf((char *)buf, "M%4d%4d", &cx, &cy);
+    int assignments = sscanf(buf, "M%4d%4d", &cx, &cy);
     if (assignments != 2)
     {
 	plot_unknown(buf);
@@ -275,7 +275,7 @@ void PlotArea::plot_move(const char *buf)
 void PlotArea::plot_text(const char *buf)
 {
     int x, y;
-    int assignments = sscanf((char *)buf, "T%4d%4d", &x, &y);  
+    int assignments = sscanf(buf, "T%4d%4d", &x, &y);  
     if (assignments != 2)
     {
 	plot_unknown(buf);
@@ -302,7 +302,7 @@ void PlotArea::plot_text(const char *buf)
 
 void PlotArea::plot_justify(const char *buf)
 {
-    int assignments = sscanf((char *)buf, "J%4d", &jmode);
+    int assignments = sscanf(buf, "J%4d", &jmode);
     if (assignments != 1)
     {
 	plot_unknown(buf);
@@ -312,7 +312,7 @@ void PlotArea::plot_justify(const char *buf)
 
 void PlotArea::plot_linetype(const char *buf)
 {
-    int assignments = sscanf((char *)buf, "L%4d", &line_type);
+    int assignments = sscanf(buf, "L%4d", &line_type);
     if (assignments != 1)
     {
 	plot_unknown(buf);
@@ -337,7 +337,7 @@ void PlotArea::plot_linetype(const char *buf)
 void PlotArea::plot_point(const char *buf)
 {
     int point, x, y;
-    int assignments = sscanf((char *)buf, "P%1d%4d%4d", &point, &x, &y);  
+    int assignments = sscanf(buf, "P%1d%4d%4d", &point, &x, &y);  
     if (assignments != 3)
     {
 	plot_unknown(buf);
@@ -470,7 +470,7 @@ void PlotArea::plot(const char *commands, int length, bool clear)
 	last_commands.data()[last_commands.length() - 1] != '\n')
     {
 	// Last command was incomplete - complete it
-	char *s = last_commands.data();
+	const char *s = last_commands.data();
 	int line = last_commands.length() - 1;
 	while (line > 0 && s[line - 1] != '\n')
 	    line--;
@@ -488,7 +488,7 @@ void PlotArea::plot(const char *commands, int length, bool clear)
 	    assert(isalpha(command[0]));
 	    assert(command.contains('\n', -1));
 
-	    do_plot(command, clear);
+	    do_plot(command.chars(), clear);
 
 	    last_commands.append((char *)tail, commands - tail);
 	}
@@ -523,25 +523,27 @@ int PlotArea::do_plot(const char *commands, bool clear)
     // Discard all commands up to `G' command, if any
     int discard = -1;
 
-    const char *cmds = commands;
-    while (*cmds != '\0')
     {
-	if (cmds[0] == 'G' && cmds[1] == '\n')
+      const char *cmds = commands;
+      while (*cmds != '\0')
 	{
-	    if (pending_plots > 0)
+	  if (cmds[0] == 'G' && cmds[1] == '\n')
+	    {
+	      if (pending_plots > 0)
 		pending_plots--;
-
-	    discard = (cmds - commands);
+	      
+	      discard = (cmds - commands);
+	    }
+	  
+	  while (*cmds != '\n' && *cmds != '\0')
+	    cmds++;
+	  if (*cmds != '\0')
+	    cmds++;
 	}
-
-	while (*cmds != '\n' && *cmds != '\0')
-	    cmds++;
-	if (*cmds != '\0')
-	    cmds++;
     }
 
     // Process commands
-    cmds = commands;
+    const char *cmds = commands;
     if (discard >= 0)
     {
 	cmds += discard;
@@ -556,20 +558,23 @@ int PlotArea::do_plot(const char *commands, bool clear)
 
     while (cmds[0] != '\0')
     {
-	const char *command = cmds;
+	const char *command_begin = cmds;
 
 	// Move CMDS to the next line
 	while (*cmds != '\0' && *cmds != '\n')
 	    cmds++;
 	if (*cmds == '\0')
 	    break;		// Command is incomplete - don't do it
+	assert(*cmds == '\n');
 	cmds++;
 
-	// Make current command NUL-terminated.  Otherwise, sscanf()
-	// takes far too much time.
-	if (cmds > commands && *cmds != '\0')
-	    ((char *)cmds)[-1] = '\0';
+	// Copy current command to a NULL-terminated string. Otherwise, 
+        // sscanf() takes far too much time.
+	const int len_ = cmds-command_begin-1;
+	assert(len_ >= 0);
+	const string command_s(command_begin,len_);
 
+	const char *command = command_s.chars();
 	switch (command[0])
 	{
 	case 'V':
@@ -618,10 +623,6 @@ int PlotArea::do_plot(const char *commands, bool clear)
 	    plot_unknown(command);
 	    break;
 	}
-
-	// Restore terminator
-	if (cmds > commands && *cmds != '\0')
-	    ((char *)cmds)[-1] = '\n';
     }
 
     return discard;

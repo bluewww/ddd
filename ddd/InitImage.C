@@ -37,6 +37,7 @@ char InitImage_rcsid[] =
 
 #include "config.h"
 #include "assert.h"
+#include "casts.h"
 
 // These three are required for #including <X11/Xlibint.h>
 #include <string.h>		// bcopy()
@@ -222,14 +223,14 @@ Boolean InstallImage(XImage *image, const char *image_name)
     // XmInstallImage to Xm21InstallImage, the problem is solved.
 
 #if HAVE_XM21INSTALLIMAGE
-    return Xm21InstallImage(image, (char *)image_name);
+    return Xm21InstallImage(image, CONST_CAST(char *,image_name));
 #else
-    return XmInstallImage(image, (char *)image_name);
+    return XmInstallImage(image, CONST_CAST(char *,image_name));
 #endif
 }
 
 // Install the given X bitmap as NAME
-Boolean InstallBitmap(unsigned char *bits, int width, int height, char *name)
+Boolean InstallBitmap(unsigned char *bits, int width, int height, const char *name)
 {
     XImage *image = CreateImageFromBitmapData(bits, width, height);
     return InstallImage(image, name);

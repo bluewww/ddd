@@ -57,8 +57,8 @@ struct MMresource_values {
 
 static XtResource MMsubresources[] = {
     {
-	(char *)XtNautoRaiseMenu,
-	(char *)XtCAutoRaiseMenu,
+	CONST_CAST(char *,XtNautoRaiseMenu),
+	CONST_CAST(char *,XtCAutoRaiseMenu),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(MMresource_values, auto_raise_menu),
@@ -66,8 +66,8 @@ static XtResource MMsubresources[] = {
 	XtPointer(False)
     },
     {
-	(char *)XtNautoRaiseMenuDelay,
-	(char *)XtCAutoRaiseMenuDelay,
+	CONST_CAST(char *,XtNautoRaiseMenuDelay),
+	CONST_CAST(char *,XtCAutoRaiseMenuDelay),
 	XmRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(MMresource_values, auto_raise_menu_delay),

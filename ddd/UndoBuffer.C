@@ -463,8 +463,8 @@ void UndoBuffer::log()
 
 void UndoBuffer::remap_breakpoint(string& cmd, int old_bp, int new_bp)
 {
-    string old_num = "@" + itostring(old_bp) + "@";
-    string new_num = "@" + itostring(new_bp) + "@";
+    const string old_num = "@" + itostring(old_bp) + "@";
+    const string new_num = "@" + itostring(new_bp) + "@";
     cmd.gsub(old_num, new_num);
 }
 
@@ -632,7 +632,7 @@ bool UndoBuffer::process_state(UndoBufferEntry& entry)
     }
     data_disp->update_displays(displays, values, addrs);
 
-    string unknown = "(Unknown state)";
+    const string unknown = "(Unknown state)";
 
     // Process threads
     string threads = unknown;
@@ -663,7 +663,7 @@ bool UndoBuffer::process_frame(UndoBufferEntry& entry)
     if (entry.has(UB_FRAME))
     {
 	string frame = entry[UB_FRAME];
-	source_view->process_frame(atoi(frame));
+	source_view->process_frame(atoi(frame.chars()));
     }
     else
     {

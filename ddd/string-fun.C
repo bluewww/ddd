@@ -147,7 +147,8 @@ string read_nr_str (string& s)
 // Remove and return a leading integer from S, or 0 if none
 int read_positive_nr (string& s)
 {
-    return atoi(read_nr_str(s));
+    const string s1 = read_nr_str(s); 
+    return atoi(s1.chars());
 }
 
 // Strip final characters

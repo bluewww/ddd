@@ -507,7 +507,7 @@ static char get_sign(string& g)
 	return '\0';
 }
 
-static XImage *get_subimage(XImage *image, String geometry, 
+static XImage *get_subimage(XImage *image, const _XtString geometry, 
 			    const _XtString name = "image",
 			    const _XtString resource = "geometry")
 {
@@ -603,7 +603,7 @@ static void install_icon(Widget w, const _XtString name,
     if (depth > 1 && color_key != "m")
     {
 	XpmColorSymbol cs;
-	cs.name  = (char *)"Background";
+	cs.name  = CONST_CAST(char *,"Background");
 	cs.value = 0;
 	cs.pixel = background;
 
@@ -701,21 +701,21 @@ static void install_button_icon(Widget w, const _XtString name,
 		 color_key, background, win_attr, true);
 
     string insensitive_name = string(name) + "-xx";
-    install_icon(w, insensitive_name,
+    install_icon(w, insensitive_name.chars(),
 		 xpm_xx_data,
 		 xbm_xx_data, 
 		 width, height,
 		 color_key, background, win_attr, true);
 
     string armed_name = string(name) + "-arm";
-    install_icon(w, armed_name,
+    install_icon(w, armed_name.chars(),
 		 xpm_data,
 		 xbm_data,
 		 width, height,
 		 active_color_key, arm_background, win_attr, true);
 
     string highlight_name = string(name) + "-hi";
-    install_icon(w, highlight_name,
+    install_icon(w, highlight_name.chars(),
 		 xpm_data,
 		 xbm_data,
 		 width, height,
@@ -987,10 +987,10 @@ void set_label(Widget w, const MString& new_label, const char *image)
 	    string s3 = s1 + "-arm";
 	    string s4 = s1 + "-hi";
 
-	    Pixmap p1 = XmGetPixmap(XtScreen(w), s1, foreground, background);
-	    Pixmap p2 = XmGetPixmap(XtScreen(w), s2, foreground, background);
-	    Pixmap p3 = XmGetPixmap(XtScreen(w), s3, foreground, background);
-	    Pixmap p4 = XmGetPixmap(XtScreen(w), s4, foreground, background);
+	    Pixmap p1 = XmGetPixmap(XtScreen(w), CONST_CAST(char*,s1.chars()), foreground, background);
+	    Pixmap p2 = XmGetPixmap(XtScreen(w), CONST_CAST(char*,s2.chars()), foreground, background);
+	    Pixmap p3 = XmGetPixmap(XtScreen(w), CONST_CAST(char*,s3.chars()), foreground, background);
+	    Pixmap p4 = XmGetPixmap(XtScreen(w), CONST_CAST(char*,s4.chars()), foreground, background);
 
 	    if (bottom_shadow_pixmap == XmUNSPECIFIED_PIXMAP)
 	    {

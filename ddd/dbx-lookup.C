@@ -102,8 +102,8 @@ string dbx_lookup(const string& func_name, bool silent)
     {
 	file = reply.from('\"');
 	file = file.before('\"');
-	string line_s = reply.after("Line ");
-	line = atoi(line_s);
+	const string line_s = reply.after("Line ");
+	line = atoi(line_s.chars());
 	break;
     }
 
@@ -134,8 +134,8 @@ string dbx_lookup(const string& func_name, bool silent)
 	    reply = reply.after(':'); // Skip file
 	    reply = reply.after(':'); // Skip function
 	    strip_leading_space(reply);
-	    string line_s = reply.before(':');
-	    line = atoi(line_s);
+	    const string line_s = reply.before(':');
+	    line = atoi(line_s.chars());
 	}
 	else
 	{
@@ -200,7 +200,7 @@ int line_of_listing(string& listing, bool silent)
     while (listing != ""
 	   && !listing.contains('>', 0) 
 	   && !listing.contains('*', 1) 
-	   && atoi(listing) == 0)
+	   && atoi(listing.chars()) == 0)
     {
 	message += listing.through('\n');
 	listing = listing.after('\n');

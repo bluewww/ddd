@@ -145,17 +145,17 @@ char DataDisp_rcsid[] =
 // Xt Stuff
 //-----------------------------------------------------------------------
 XtActionsRec DataDisp::actions [] = {
-    {(char *)"graph-select",         DataDisp::graph_selectAct},
-    {(char *)"graph-select-or-move", DataDisp::graph_select_or_moveAct},
-    {(char *)"graph-extend",         DataDisp::graph_extendAct},
-    {(char *)"graph-extend-or-move", DataDisp::graph_extend_or_moveAct},
-    {(char *)"graph-toggle",         DataDisp::graph_toggleAct},
-    {(char *)"graph-toggle-or-move", DataDisp::graph_toggle_or_moveAct},
-    {(char *)"graph-popup-menu",     DataDisp::graph_popupAct},
-    {(char *)"graph-dereference",    DataDisp::graph_dereferenceAct},
-    {(char *)"graph-detail",         DataDisp::graph_detailAct},
-    {(char *)"graph-rotate",         DataDisp::graph_rotateAct},
-    {(char *)"graph-dependent",      DataDisp::graph_dependentAct}
+    {CONST_CAST(char*,"graph-select"),         DataDisp::graph_selectAct},
+    {CONST_CAST(char*,"graph-select-or-move"), DataDisp::graph_select_or_moveAct},
+    {CONST_CAST(char*,"graph-extend"),         DataDisp::graph_extendAct},
+    {CONST_CAST(char*,"graph-extend-or-move"), DataDisp::graph_extend_or_moveAct},
+    {CONST_CAST(char*,"graph-toggle"),         DataDisp::graph_toggleAct},
+    {CONST_CAST(char*,"graph-toggle-or-move"), DataDisp::graph_toggle_or_moveAct},
+    {CONST_CAST(char*,"graph-popup-menu"),     DataDisp::graph_popupAct},
+    {CONST_CAST(char*,"graph-dereference"),    DataDisp::graph_dereferenceAct},
+    {CONST_CAST(char*,"graph-detail"),         DataDisp::graph_detailAct},
+    {CONST_CAST(char*,"graph-rotate"),         DataDisp::graph_rotateAct},
+    {CONST_CAST(char*,"graph-dependent"),      DataDisp::graph_dependentAct}
 };
 
 
@@ -663,10 +663,11 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data,
     else if (doc == "")
 	doc = theme;
 
-    defineConversionMacro("THEME", theme);
-    defineConversionMacro("THEME_DOC", doc);
-    defineConversionMacro("PATTERN", p);
-    defineConversionMacro("EXPR", dv->full_name());
+    defineConversionMacro("THEME", theme.chars());
+    defineConversionMacro("THEME_DOC", doc.chars());
+    defineConversionMacro("PATTERN", p.chars());
+    const string s1 = dv->full_name();
+    defineConversionMacro("EXPR", s1.chars());
 
     bool select = 
 	(pattern(dv->full_name(), true) != pattern(dv->full_name(), false));
@@ -686,12 +687,12 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data,
     string name = 
 	(select ? "select_apply_theme_dialog" : "confirm_apply_theme_dialog");
     Widget dialog = 
-	verify(XmCreateQuestionDialog(find_shell(w), name, args, arg));
+	verify(XmCreateQuestionDialog(find_shell(w), CONST_CAST(char*,name.chars()), args, arg));
 
     if (select)
     {
 	arg = 0;
-	Widget apply = XmCreatePushButton(dialog, (char *)"apply", args, arg);
+	Widget apply = XmCreatePushButton(dialog, CONST_CAST(char *,"apply"), args, arg);
 	XtManageChild(apply);
 	XtAddCallback(apply, XmNactivateCallback, 
 		      applyThemeOnThisCB, client_data);
@@ -1821,7 +1822,7 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
     int arg = 0;
 
     Widget dialog = verify(XmCreatePromptDialog(find_shell(parent),
-						(char *)name, args, arg));
+						CONST_CAST(char *,name), args, arg));
     Delay::register_shell(dialog);
 
     if (lesstif_version <= 79)
@@ -1837,12 +1838,12 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
-    Widget box = verify(XmCreateRowColumn(dialog, (char *)"box", args, arg));
+    Widget box = verify(XmCreateRowColumn(dialog, CONST_CAST(char *,"box"), args, arg));
     XtManageChild(box);
 
     arg = 0;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
-    Widget label = verify(XmCreateLabel(box, (char *)"label", args, arg));
+    Widget label = verify(XmCreateLabel(box, CONST_CAST(char *,"label"), args, arg));
     XtManageChild(label);
 
     arg = 0;
@@ -1857,18 +1858,18 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
-    Widget box2 = verify(XmCreateRowColumn(box, (char *)"box2", args, arg));
+    Widget box2 = verify(XmCreateRowColumn(box, CONST_CAST(char *,"box2"), args, arg));
     XtManageChild(box2);
 
     arg = 0;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     info.shortcut = verify(
-	XmCreateToggleButton(box2, (char *)"shortcut", args, arg));
+	XmCreateToggleButton(box2, CONST_CAST(char *,"shortcut"), args, arg));
     XtManageChild(info.shortcut);
 
-    Widget display = verify(XmCreateLabel(box2, (char *)"display", args, arg));
+    Widget display = verify(XmCreateLabel(box2, CONST_CAST(char *,"display"), args, arg));
     XtManageChild(display);
-    Widget menu = verify(XmCreateLabel(box2, (char *)"menu", args, arg));
+    Widget menu = verify(XmCreateLabel(box2, CONST_CAST(char *,"menu"), args, arg));
     XtManageChild(menu);
 
     return dialog;
@@ -1889,7 +1890,7 @@ void DataDisp::new_displayCD (Widget w, BoxPoint box_point)
 
     *(info.point_ptr) = box_point;
     info.display_expression = source_arg->get_string();
-    XmTextSetString(info.text, info.display_expression);
+    XmTextSetString(info.text, CONST_CAST(char*,info.display_expression.chars()));
 
     manage_and_raise(new_display_dialog);
 }
@@ -1931,7 +1932,7 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     XmToggleButtonSetState(info.shortcut, True, False);
 
     info.display_expression = disp_value_arg->full_name();
-    XmTextSetString(info.text, info.display_expression);
+    XmTextSetString(info.text, CONST_CAST(char*,info.display_expression.chars()));
     manage_and_raise(dependent_display_dialog);
 }
 
@@ -1986,7 +1987,7 @@ void DataDisp::plotArgCB(Widget w, XtPointer, XtPointer)
 void DataDisp::plotHistoryCB(Widget w, XtPointer, XtPointer)
 {
     // Create new display and plot its history
-    string arg = "`graph history " + source_arg->get_string() + "`";
+    const string arg = "`graph history " + source_arg->get_string() + "`";
     new_display(arg, 0, "", false, true, w);
 }
 
@@ -2051,6 +2052,7 @@ void DataDisp::refresh_graph_edit(bool silent)
 void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
+
     assert(*id == refresh_graph_edit_timer);
     refresh_graph_edit_timer = 0;
 
@@ -2356,7 +2358,7 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
     {
 	const string& theme = all_themes[i];
 	Widget& button = theme_menu[i].widget;
-	XtVaSetValues(button, XmNuserData, (String)theme, XtPointer(0));
+	XtVaSetValues(button, XmNuserData, theme.chars(), XtPointer(0));
 
 	bool set = false;
 	for (int j = 0; j < current_themes.size(); j++)
@@ -2853,13 +2855,13 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     bool include_position = (count.selected >= count.visible);
     ostrstream os;
     get_selection(os, include_position);
-    string cmd(os);
+    const string cmd(os);
 
     // Setting the string causes the selection to be lost.  By setting
     // LOSE_SELECTION, we make sure the associated callbacks return
     // immediately.
     lose_selection = false;
-    XmTextSetString(graph_selection_w, (char *)cmd);
+    XmTextSetString(graph_selection_w, CONST_CAST(char *,cmd.chars()));
     lose_selection = true;
 
     Time tm = XtLastTimestampProcessed(XtDisplay(graph_selection_w));
@@ -4030,7 +4032,7 @@ DispNode *DataDisp::new_deferred_node(const string& expr, const string& scope,
     int nr = -(next_ddd_display_number++);
 
     // A `dummy' answer (never shown)
-    string answer = "<deferred>";
+    const string answer = "<deferred>";
 
     MString msg = rm("Creating deferred display " + itostring(nr) + ": ") + 
 	tt(expr) + rm(" (scope ") + tt(scope) + rm(")");
@@ -5676,7 +5678,8 @@ void DataDisp::RefreshDisplayListCB(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
 
-    bool silent = int(client_data);
+    // TODO dodgy cast. Use a pointer to bool and dereference it.
+    const bool silent = int(client_data);
     int number_of_displays = disp_graph->count_all();
 
     StringArray nums;
@@ -5989,7 +5992,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     XtSetArg(args[arg], XmNautoUnmanage,   False);     arg++;
     info->dialog = 
 	verify(XmCreatePromptDialog(find_shell(w), 
-				    (char *)"set_dialog", args, arg));
+				    CONST_CAST(char *,"set_dialog"), args, arg));
 
     Delay::register_shell(info->dialog);
 
@@ -6010,14 +6013,14 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
     Widget box = verify(XmCreateRowColumn(info->dialog, 
-					  (char *)"box", args, arg));
+					  CONST_CAST(char *,"box"), args, arg));
     XtManageChild(box);
 
     arg = 0;
     MString prompt = MString("Set value of ") + tt(name);
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     XtSetArg(args[arg], XmNlabelString, prompt.xmstring());   arg++;
-    Widget label = verify(XmCreateLabel(box, (char *)"label", args, arg));
+    Widget label = verify(XmCreateLabel(box, CONST_CAST(char *,"label"), args, arg));
     XtManageChild(label);
 
     arg = 0;
@@ -6965,12 +6968,12 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
     // Create graph editor
     Arg args[10];
     int arg = 0;
-    XtSetArg (args[arg], (char *)XtNgraph, (Graph *)disp_graph); arg++;
+    XtSetArg (args[arg], CONST_CAST(char *,XtNgraph), (Graph *)disp_graph); arg++;
 
     if (app_data.panned_graph_editor)
     {
 	graph_edit = createPannedGraphEdit(parent, 
-					   (char *)"graph_edit", args, arg);
+					   "graph_edit", args, arg);
 	graph_form_w = pannerOfGraphEdit(graph_edit);
     }
     else
@@ -7005,7 +7008,7 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 
     // Create (unmanaged) selection widget
     graph_selection_w =
-	verify(XmCreateText(graph_cmd_w, (char *)"graph_selection", 
+	verify(XmCreateText(graph_cmd_w, CONST_CAST(char *,"graph_selection"), 
 			    ArgList(0), 0));
     XtAddCallback(graph_selection_w, XmNlosePrimaryCallback, 
 		  SelectionLostCB, XtPointer(0));

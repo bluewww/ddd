@@ -88,9 +88,9 @@ void wm_set_name(Display *display, Window shell_window,
     strip_space(icon);
 
     if (title != "")
-	XStoreName(display, shell_window, (String)title);
+	XStoreName(display, shell_window, title.chars());
     if (icon != "")
-	XSetIconName(display, shell_window, (String)icon);
+	XSetIconName(display, shell_window, icon.chars());
 }
 
 void wm_set_name(Widget shell, string title, string icon)
@@ -99,8 +99,8 @@ void wm_set_name(Widget shell, string title, string icon)
     strip_space(icon);
 
     XtVaSetValues(shell,
-		  XmNiconName, (char *)icon,
-		  XmNtitle,    (char *)title,
+		  XmNiconName, icon.chars(),
+		  XmNtitle,    title.chars(),
 		  XtPointer(0));
     
 #if 0				// This should be done by the shell.

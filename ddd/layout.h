@@ -140,35 +140,35 @@ struct _GRAPH {
 // Interface
 class Layout {
 public:
-    static void add_graph(char *g);
-    static void add_node(char *g, char *node);
-    static void add_edge(char *g, char *node1, char *node2);
-    static void set_node_width(char *g, char *node, int width);
-    static void set_node_height(char *g, char *node, int height);
-    static void set_node_position(char *g, char *node, int x, int y);
-    static void add_edge_hint(char *g, char *node1, char *node2, 
+    static void add_graph(const char *g);
+    static void add_node(const char *g, const char *node);
+    static void add_edge(const char *g, const char *node1, const char *node2);
+    static void set_node_width(const char *g, const char *node, int width);
+    static void set_node_height(const char *g, const char *node, int height);
+    static void set_node_position(const char *g, const char *node, int x, int y);
+    static void add_edge_hint(const char *g, const char *node1, const char *node2, 
 			      int x, int y);
-    static void remove_edge_hint(char *g, char *node1, char *node2, 
+    static void remove_edge_hint(const char *g, const char *node1, const char *node2, 
 				 int x, int y);
-    static void remove_edge(char *g, char *node1, char *node2);
-    static void remove_node(char *g, char *label);
-    static void remove_graph(char *g);
-    static void layout(char *g);
+    static void remove_edge(const char *g, const char *node1, const char *node2);
+    static void remove_node(const char *g, const char *label);
+    static void remove_graph(const char *g);
+    static void layout(const char *g);
     
-    static void (*node_callback)(char *, int, int);
-    static void (*hint_callback)(char *, char *, int, int);
-    static int (*compare_callback)(char *, char *);
+    static void (*node_callback)(const char *, int, int);
+    static void (*hint_callback)(const char *, const char *, int, int);
+    static int (*compare_callback)(const char *, const char *);
 
 
     // Data
     // static GRAPHTAB tab;
 
     // Helpers
-    static void dddDebug(char *g);
+    static void dddDebug(const char *g);
     static void inc_layout(GRAPH *graph);
     static void new_layout(GRAPH *graph);
     static void dddOutput(GRAPH *graph);
-    static void dddNodeOut(char *graph,NODE *node);
+    static void dddNodeOut(const char *graph,NODE *node);
     static void debugNode(NODE *node);
     static void debugLevel(GRAPH *graph, int n);
     static void debugAllLevel(GRAPH *graph);
@@ -182,12 +182,12 @@ public:
     static EDGE *listFindNode(EDGELIST *list, NODE *node);
     static EDGE *listFindTarget(EDGELIST *list, NODE *target);
     static void listRemove(EDGELIST *list);
-    static void nodeInit(NODE* node, ID *id , NODETYPE type);
+    static void nodeInit(NODE* node, const ID *id , NODETYPE type);
     static void nodeRemove(NODE *node);
-    static void graphInit(GRAPH *graph, char *label);
-    static NODE *graphEnterNode(GRAPH *graph, ID *id, NODETYPE type);
-    static NODE *graphGetNode(GRAPH *graph, ID *id, NODETYPE type);
-    static void graphRemoveNode(GRAPH *graph, ID *id, NODETYPE type);
+    static void graphInit(GRAPH *graph, const char *label);
+    static NODE *graphEnterNode(GRAPH *graph, const ID *id, NODETYPE type);
+    static NODE *graphGetNode(GRAPH *graph, const ID *id, NODETYPE type);
+    static void graphRemoveNode(GRAPH *graph, const ID *id, NODETYPE type);
     static void graphCreateLevels(GRAPH *graph, int n);
     static void graphRemoveLevels(GRAPH *graph);
     static void graphAddLevels(GRAPH *graph, int n);
@@ -198,10 +198,10 @@ public:
     static EDGE *graphFindEdgeAtSource(NODE *source, NODE *target);
     static EDGE *graphFindEdgeAtTarget(NODE *source, NODE *target);
     static void graphResetLevels(GRAPH *graph);
-    static int graphHashStr(char *str, int prime);
-    static GRAPH *graphGet(GRAPHTAB *tab, char *label);
-    static GRAPH *graphNew(GRAPHTAB *tab,char *label);
-    static void graphRemove(GRAPHTAB *tab, char *label);
+    static int graphHashStr(const char *str, int prime);
+    static GRAPH *graphGet(GRAPHTAB *tab, const char *label);
+    static GRAPH *graphNew(GRAPHTAB *tab, const char *label);
+    static void graphRemove(GRAPHTAB *tab, const char *label);
     static void graphTabInit(GRAPHTAB *tab);
     static void levelsInsertNode(GRAPH *graph, NODE *node, int n);
     static void levelsRemoveNode(GRAPH *graph, NODE *node, int n);

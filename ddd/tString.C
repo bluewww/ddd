@@ -16,15 +16,15 @@
                      { cerr << "failed assertion at " << __LINE__ << "\n"; \
                        abort(); } }
 
-  string X0 = "I say: Hello";
-  string X = X0.from('H');
+  const string X0 = "I say: Hello";
+  const string X = X0.from('H');
 
-  string Y0 = "the world";
-  string Y = Y0.after("the ");
+  const string Y0 = "the world";
+  const string Y = Y0.after("the ");
 
-  string N = "123";
+  const string N = "123";
   string c;
-  char*  s = ",";
+  const char*  s = ",";
 
 #if RUNTIME_REGEX
   regex  r = "e[a-z]*o";

@@ -415,6 +415,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "config.h"
 #include "bool.h"
 #include "assert.h"
+#include "casts.h"
 
 #ifndef STRING_CHECK_CONSUME
 #define STRING_CHECK_CONSUME 0
@@ -810,8 +811,13 @@ public:
     char lastchar() const;
 
     // Conversion
+#if 0
+    // TODO remove
+ private:
     operator const char*() const;
     operator char*() const;
+ public:
+#endif
     const char* chars() const;
 
 
@@ -993,14 +999,14 @@ inline string& string::operator = (const char* t)
 	// Assignment of self-substring
 	int len = t - rep->s;
 	rep->len -= len;
-	rep->s = (char *)t;
+	rep->s = CONST_CAST(char *,t);
     }
     else if (t >= &(rep->mem[0]) && t < rep->s)
     {
 	// Assignment of older base mem
 	int len = (rep->s - t);
 	rep->len += len;
-	rep->s = (char *)t;
+	rep->s = CONST_CAST(char *,t);
     }
     else
     {
@@ -1028,7 +1034,7 @@ inline string& string::operator = (const subString&  y)
 	     y.chars() < &(rep->mem[0]) + rep->allocated)
     {
 	// Assignment of self-substring
-	rep->s   = (char *)y.chars();
+	rep->s   = CONST_CAST(char *,y.chars());
 	rep->len = y.length();
 	rep->s[rep->len] = '\0';
     }

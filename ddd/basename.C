@@ -36,6 +36,7 @@ char basename_rcsid[] =
 // Just a modified `basename.c' from libiberty.
 
 #include "basename.h"
+#include "casts.h"
 #include <ctype.h>
 
 #ifndef DIR_SEPARATOR
@@ -58,7 +59,8 @@ char basename_rcsid[] =
 	(((ch) == DIR_SEPARATOR) || ((ch) == DIR_SEPARATOR_2))
 #endif /* DIR_SEPARATOR_2 */
 
-char *
+
+const char *
 file_basename (const char *name, const char sep)
 {
   const char *base;
@@ -76,5 +78,11 @@ file_basename (const char *name, const char sep)
 	  base = name + 1;
 	}
     }
-  return (char *) base;
+  return base;
+}
+
+char *
+file_basename (char *name, const char sep)
+{
+  return CONST_CAST(char*,file_basename (STATIC_CAST(const char *,name), sep));
 }

@@ -65,7 +65,7 @@ static void hint_on(const _XtString name)
 {
     // Create some `dummy' widget and create a help text for it
     Widget suggestion = 
-	verify(XmCreateInformationDialog(find_shell(), (char *)name, 0, 0));
+	verify(XmCreateInformationDialog(find_shell(), CONST_CAST(char *,name), 0, 0));
 
     ImmediateHelpCB(suggestion, XtPointer(0), XtPointer(0));
 
@@ -109,8 +109,8 @@ static int passed_to_program(string program_state)
 	if (signal_description == "")
 	    signal_description = signal;
 	
-	defineConversionMacro("SIGNAL", signal);
-	defineConversionMacro("SIGNAL_DESCRIPTION", signal_description);
+	defineConversionMacro("SIGNAL", signal.chars());
+	defineConversionMacro("SIGNAL_DESCRIPTION", signal_description.chars());
 
 	string ans = gdb_question("info handle " + signal);
 
@@ -225,7 +225,7 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
     }
 
     // Program has stopped and nothing is selected.
-    defineConversionMacro("PROGRAM_STATE", info.state);
+    defineConversionMacro("PROGRAM_STATE", info.state.chars());
 
     if (code_but_no_source())
     {

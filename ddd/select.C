@@ -104,7 +104,7 @@ static void select_from_gdb(string& question, string& reply)
 	if (count == 1)
 	{
 	    // Take the first choice.
-	    reply = itostring(atoi(choices[0])) + "\n";
+	    reply = itostring(atoi(choices[0].chars())) + "\n";
 	}
 	
 	delete[] choices;
@@ -123,7 +123,7 @@ static void select_from_gdb(string& question, string& reply)
 
 	gdb_selection_dialog = 
 	    verify(XmCreateSelectionDialog(find_shell(gdb_w),
-					   (char *)"gdb_selection_dialog",
+					   CONST_CAST(char *,"gdb_selection_dialog"),
 					   args, arg));
 	Delay::register_shell(gdb_selection_dialog);
 

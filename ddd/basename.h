@@ -35,7 +35,8 @@
 
 // Return the base name of FILE.  If SEP is given, use SEP as
 // component separator; otherwise, use the system default (such as `/')
-extern char *file_basename(const char *file, const char sep = '\0');
+extern const char *file_basename(const char *file, const char sep = '\0');
+extern char *file_basename(char *file, const char sep = '\0');
 
 #define basename file_basename
 

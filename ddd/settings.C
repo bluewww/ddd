@@ -157,7 +157,7 @@ static void set_arg();
 static Widget command_to_widget(Widget ref, string command)
 {
     Widget found = 0;
-    while (command != "" && (found = XtNameToWidget(ref, command)) == 0)
+    while (command != "" && (found = XtNameToWidget(ref, command.chars())) == 0)
     {
 	// Strip last word (command argument)
 	int index = command.index(rxwhite, -1);
@@ -345,9 +345,10 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
     if (sigindex == "SIGUSR1")
 	sigindex = "SIGUSR2";
 
-    string cmd = "info -f libc -n 'Variable Index' " + sigindex + " -o -";
+    const string cmd = "info -f libc -n 'Variable Index' " + sigindex + " -o -";
 
-    FILE *fp = popen(sh_command(cmd), "r");
+    const string s1 = sh_command(cmd); 
+    FILE *fp = popen(s1.chars(), "r");
     if (fp != 0)
     {
 	ostrstream info;
@@ -611,7 +612,7 @@ static void HelpOnThemeCB(Widget w, XtPointer client_data,
     if (text == "")
 	text = "No help available on this theme.";
 
-    MString mtext = bf(basename(file)) + cr() + cr() + rm(text);
+    MString mtext = bf(basename(file.chars())) + cr() + cr() + rm(text);
     MStringHelpCB(w, XtPointer(mtext.xmstring()), call_data);
 }
 
@@ -824,7 +825,7 @@ void process_show(string command, string value, bool init)
 	if (menu != 0)
 	{
 	    // Option menu
-	    Widget active = XtNameToWidget(menu, value);
+	    Widget active = XtNameToWidget(menu, value.chars());
 	    if (active != 0)
 	    {
 		XtVaSetValues(button, XmNmenuHistory, active, XtPointer(0));
@@ -896,7 +897,7 @@ void process_handle(string output, bool init)
 	    value.downcase();
 	    bool set = (value == "yes");
 	    string name = base + "-" + titles[word];
-	    Widget w = XtNameToWidget(signals_form, name);
+	    Widget w = XtNameToWidget(signals_form, name.chars());
 
 	    if (w == 0)
 	    {
@@ -1427,7 +1428,7 @@ static Widget create_signal_button(Widget label,
     Widget w = 0;
     if (name == "send")
     {
-	w = verify(XmCreatePushButton(XtParent(label), name, args, arg));
+	w = verify(XmCreatePushButton(XtParent(label), CONST_CAST(char*,name.chars()), args, arg));
 	XtManageChild(w);
 
 	XtAddCallback(w, XmNactivateCallback, SendSignalCB, XtPointer(label));
@@ -1435,7 +1436,7 @@ static Widget create_signal_button(Widget label,
     else
     {
 	string fullname = string(XtName(label)) + "-" + name;
-	w = verify(XmCreateToggleButton(XtParent(label), fullname, args, arg));
+	w = verify(XmCreateToggleButton(XtParent(label), CONST_CAST(char*,fullname.chars()), args, arg));
 	XtManageChild(w);
 
 	XtAddCallback(w, XmNvalueChangedCallback, SignalCB, XtPointer(label));
@@ -1523,7 +1524,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	e_type = entry_filter;
 	doc = vsldoc(line, DispBox::vsllib_path);
 	if (doc == "")		   // No documentation:
-	    doc = basename(line);  // Use base name of file instead
+	    doc = basename(line.chars());  // Use base name of file instead
 	else if (doc.contains("."))
 	    doc = doc.before("."); // Use first sentence only
     }
@@ -1744,7 +1745,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     Widget entry = 0;
 
     String set_command_s = new char[set_command.length() + 1];
-    strcpy(set_command_s, set_command);
+    strcpy(set_command_s, set_command.chars());
 
     MString labelString(doc);
     arg = 0;
@@ -1794,16 +1795,18 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     if (callback == 0)
     {
 	if (is_set)
-	    label = verify(XmCreateLabel(form, base, args, arg));
-	else
-	    label = verify(XmCreateLabel(form, "the" + base, args, arg));
+	    label = verify(XmCreateLabel(form, CONST_CAST(char*,base.chars()), args, arg));
+	else {
+	  const string s1 = string("the") + base;
+	  label = verify(XmCreateLabel(form, CONST_CAST(char*,s1.chars()), args, arg));
+	}
 
 	XtManageChild(label);
     }
     else
     {
 	entry = label = 
-	    verify(XmCreateToggleButton(form, set_command, args, arg));
+	    verify(XmCreateToggleButton(form, CONST_CAST(char*,set_command.chars()), args, arg));
 	XtManageChild(label);
 
 	XtAddCallback(entry, XmNvalueChangedCallback,
@@ -1818,7 +1821,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);  arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
     XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
-    Widget help = verify(XmCreatePushButton(form, (char *)"help", args, arg));
+    Widget help = verify(XmCreatePushButton(form, CONST_CAST(char *,"help"), args, arg));
     XtManageChild(help);
 
     Widget send  = 0;
@@ -1859,7 +1862,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	// `set check'
 	arg = 0;
 	Widget menu = verify(XmCreatePulldownMenu(form, 
-						  (char *)"menu", args, arg));
+						  CONST_CAST(char *,"menu"), args, arg));
 
 	// Possible options are contained in the help string
 	string options = cached_gdb_question("help " + set_command);
@@ -1874,7 +1877,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
 	    arg = 0;
 	    Widget button = 
-		verify(XmCreatePushButton(menu, option, args, arg));
+		verify(XmCreatePushButton(menu, CONST_CAST(char*,option.chars()), args, arg));
 	    XtManageChild(button);
 	    XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
 			  set_command_s);
@@ -1891,7 +1894,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
 	XtSetArg(args[arg], XmNspacing,          0);                 arg++;
 	XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
-	entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
+	entry = verify(XmCreateOptionMenu(form, CONST_CAST(char*,set_command.chars()), args, arg));
 	XtManageChild(entry);
 
 	Widget option_label = XmOptionLabelGadget(entry);
@@ -1910,7 +1913,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	// set scheduler-locking
 	arg = 0;
 	Widget menu = verify(XmCreatePulldownMenu(form, 
-						  (char *)"menu", args, arg));
+						  CONST_CAST(char *,"menu"), args, arg));
 
 	string options;
 	char separator = '\n';
@@ -2005,7 +2008,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 			 xmlabel.xmstring()); arg++;
 	    }
 	    Widget button = 
-		verify(XmCreatePushButton(menu, option, args, arg));
+		verify(XmCreatePushButton(menu, CONST_CAST(char*,option.chars()), args, arg));
 	    XtManageChild(button);
 	    XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
 			  set_command_s);
@@ -2022,7 +2025,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
 	XtSetArg(args[arg], XmNspacing,          0);                 arg++;
 	XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
-	entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
+	entry = verify(XmCreateOptionMenu(form, CONST_CAST(char*,set_command.chars()), args, arg));
 	XtManageChild(entry);
 
 	Widget option_label = XmOptionLabelGadget(entry);
@@ -2039,7 +2042,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
 	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
 	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-	entry = verify(XmCreateTextField(form, set_command, args, arg));
+	entry = verify(XmCreateTextField(form, CONST_CAST(char*,set_command.chars()), args, arg));
 	XtManageChild(entry);
 
 	if (e_type == TextFieldEntry)
@@ -2096,7 +2099,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     XtSetArg(args[arg], XmNtopWidget,        label);             arg++;
     XtSetArg(args[arg], XmNtopOffset,        top_offset);        arg++;
     Widget leader = verify(XmCreateSeparator(form, 
-					     (char *)"leader", args, arg));
+					     CONST_CAST(char *,"leader"), args, arg));
     XtManageChild(leader);
 
     // Add help callback
@@ -2191,7 +2194,7 @@ static void add_separator(Widget form, int& row)
     XtSetArg(args[arg], XmNtopPosition,      row);               arg++;
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-    Widget sep = verify(XmCreateSeparator(form, (char *)"sep", args, arg));
+    Widget sep = verify(XmCreateSeparator(form, CONST_CAST(char *,"sep"), args, arg));
     XtManageChild(sep);
     row++;
 }
@@ -2332,7 +2335,7 @@ static void ResetSettingsCB(Widget, XtPointer, XtPointer)
 	    if (value != settings_values[entry])
 	    {
 		value = settings_values[entry];
-		XmTextFieldSetString(entry, (String)value);
+		XmTextFieldSetString(entry, CONST_CAST(char*,value.chars()));
 	    }
 	}
 
@@ -2431,7 +2434,7 @@ static void fix_clip_window_translations(Widget scroll)
     if (!have_clip_actions)
     {
 	static XtActionsRec clip_actions[] = {
-	    {(char *)"clip-do", ClipDo}
+	    {CONST_CAST(char *,"clip-do"), ClipDo}
 	};
 
 	XtAppAddActions(XtWidgetToApplicationContext(scroll), 
@@ -2439,7 +2442,7 @@ static void fix_clip_window_translations(Widget scroll)
 	have_clip_actions = true;
     }
 
-    static char clip_translations[] = 
+    static const char *clip_translations = 
 	"<Key>osfPageUp:         clip-do(PageUpOrLeft, 0)\n"
 	"<Key>osfPageDown:       clip-do(PageDownOrRight, 0)\n"
 	"Ctrl <Key>osfBeginLine: clip-do(TopOrBottom)\n"
@@ -2465,7 +2468,7 @@ void get_themes(StringArray& themes)
     for (int i = 0; i < n; i++)
     {
 	string mask = dirs[i] + "/*.[vV][sS][lL]";
-	char **files = glob_filename(mask);
+	char **files = glob_filename(mask.chars());
 	if (files == (char **)0)
 	{
 	    cerr << mask << ": glob failed\n";
@@ -2554,7 +2557,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     Widget panel = verify(XmCreatePromptDialog(find_shell(), 
-					       dialog_name, args, arg));
+					       CONST_CAST(char*,dialog_name.chars()), args, arg));
     Delay::register_shell(panel);
 
     Widget apply_button = XmSelectionBoxGetChild(panel, XmDIALOG_OK_BUTTON);
@@ -2602,26 +2605,26 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNspacing,      0); arg++;
     Widget column =
-        verify(XmCreateRowColumn(panel, (char *)"column", args, arg));
+        verify(XmCreateRowColumn(panel, CONST_CAST(char *,"column"), args, arg));
     XtManageChild(column);
 
     // Add a label
     arg = 0;
     MString xmtitle(title_msg);
     XtSetArg(args[arg], XmNlabelString, xmtitle.xmstring()); arg++;
-    Widget title = verify(XmCreateLabel(column, (char *)"title", args, arg));
+    Widget title = verify(XmCreateLabel(column, CONST_CAST(char *,"title"), args, arg));
     XtManageChild(title);
 
     // Add a scrolled window.
     arg = 0;
     XtSetArg(args[arg], XmNscrollingPolicy, XmAUTOMATIC); arg++;
     Widget scroll = 
-	verify(XmCreateScrolledWindow(column, (char *)"scroll", args, arg));
+	verify(XmCreateScrolledWindow(column, CONST_CAST(char *,"scroll"), args, arg));
     fix_clip_window_translations(scroll);
 
     // Add a form.
     arg = 0;
-    Widget form = verify(XmCreateForm(scroll, (char *)"form", args, arg));
+    Widget form = verify(XmCreateForm(scroll, CONST_CAST(char *,"form"), args, arg));
 
     switch (stype)
     {
@@ -2917,7 +2920,7 @@ void update_themes()
 	    set = false;
 	}
 
-	XmTextFieldSetString(entry, (String)value);
+	XmTextFieldSetString(entry, CONST_CAST(char*,value.chars()));
 	XtVaSetValues(button, XmNset, set, XtPointer(0));
     }
 }
@@ -3073,7 +3076,7 @@ static void get_setting(ostream& os, DebuggerType type,
 	    // if you specify a non-decimal radix, then all
 	    // settings made after that are incorrect.  I would
 	    // suggest prefixing "0d" to all decimal numbers.
-	    if (value.matches(rxint) && atoi(value) > 1)
+	    if (value.matches(rxint) && atoi(value.chars()) > 1)
 		value.prepend("0d");
 
 	    os << base << " " << value << '\n';
@@ -3395,7 +3398,7 @@ static bool is_arg_command(const string& name)
     return defs.has(name) && defs[name].contains(arg0);
 }
 
-static void add_button(string name, String& menu)
+static void add_button(string name, const _XtString& menu)
 {
     if (XmToggleButtonGetState(arg_w) || is_arg_command(name))
 	name += " ()";
@@ -3407,7 +3410,7 @@ static void add_button(string name, String& menu)
     menu = (String)XtNewString(s.chars());
 }
 
-static void remove_button(string name, String& menu)
+static void remove_button(string name, const _XtString& menu)
 {
     string s = string("\n") + menu;
     s.gsub("\n" + name + "\n", string("\n"));
@@ -3417,7 +3420,7 @@ static void remove_button(string name, String& menu)
 
 enum ButtonTarget { ConsoleTarget, SourceTarget, DataTarget };
 
-static String &target_string(ButtonTarget t)
+static const _XtString &target_string(ButtonTarget t)
 {
     switch (t)
     {
@@ -3431,7 +3434,7 @@ static String &target_string(ButtonTarget t)
 	return app_data.data_buttons;
     }
 
-    static String null = 0;
+    static const _XtString null = 0;
     return null;
 }
 
@@ -3443,7 +3446,7 @@ static void ToggleButtonCB(Widget, XtPointer client_data, XtPointer call_data)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    String& str = target_string(target);
+    const _XtString& str = target_string(target);
 
     if (info->set)
     {
@@ -3569,7 +3572,7 @@ static void update_defineHP(Agent *, void *client_data, void *call_data)
 void update_define_later(const string& command)
 {
     char *c = new char[command.length() + 1];
-    strcpy(c, (char *)command);
+    strcpy(c, command.chars());
 
     gdb->addHandler(ReadyForQuestion, update_defineHP, (void *)c);
 
@@ -3649,7 +3652,7 @@ static void EditCommandDefinitionCB(Widget, XtPointer, XtPointer)
     if (defs.has(name))
 	def = defs[name];
 
-    XmTextSetString(editor_w, (String)def);
+    XmTextSetString(editor_w, CONST_CAST(char*,def.chars()));
 
     XtManageChild(XtParent(editor_w));
     MString label = "Edit " + MString("<<", CHARSET_SMALL);
@@ -3780,7 +3783,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 	int arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
-					     (char *)"define_command",
+					     CONST_CAST(char *,"define_command"),
 					     args, arg));
 
 	// Remove old prompt
@@ -3800,7 +3803,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
-	Widget form = XmCreateRowColumn(dialog, (char *)"form", args, arg);
+	Widget form = XmCreateRowColumn(dialog, CONST_CAST(char *,"form"), args, arg);
 	XtManageChild(form);
 
 	Widget panel = MMcreatePanel(form, "panel", panel_menu);
@@ -3812,7 +3815,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 
 	arg = 0;
 	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
-        editor_w = XmCreateScrolledText(form, (char *)"text", args, arg);
+        editor_w = XmCreateScrolledText(form, CONST_CAST(char *,"text"), args, arg);
 	XtUnmanageChild(XtParent(editor_w));
 	XtManageChild(editor_w);
 

@@ -268,7 +268,8 @@ static void define_font(const AppData& ad,
 			const string& override = "")
 {
     string font = make_font(ad, base, override);
-    defineConversionMacro(upcase(name), font);
+    const string s1 = upcase(name);
+    defineConversionMacro(s1.chars(), font.chars());
     font_defs[name] = font;
 
     if (ad.show_fonts)
@@ -285,7 +286,7 @@ static void define_font(const AppData& ad,
 static void set_db_font(const AppData& ad, XrmDatabase& db,
 			const string& line)
 {
-    XrmPutLineResource(&db, line);
+    XrmPutLineResource(&db, line.chars());
 
     if (ad.show_fonts)
     {
@@ -533,7 +534,7 @@ static void setup_vsl_fonts(AppData& ad)
 	cout << defs;
 
     defs += ad.vsl_base_defs;
-    ad.vsl_base_defs = defs;
+    ad.vsl_base_defs = defs.chars();
 }
 
 void setup_fonts(AppData& ad, XrmDatabase db)
@@ -595,28 +596,28 @@ void set_font(DDDFont font, const string& name)
     {
 	static string s;
 	s = name;
-	app_data.default_font = s;
+	app_data.default_font = s.chars();
 	break;
     }
     case VariableWidthDDDFont:
     {
 	static string s;
 	s = name;
-	app_data.variable_width_font = s;
+	app_data.variable_width_font = s.chars();
 	break;
     }
     case FixedWidthDDDFont:
     {
 	static string s;
 	s = name;
-	app_data.fixed_width_font = s;
+	app_data.fixed_width_font = s.chars();
 	break;
     }
     case DataDDDFont:
     {
 	static string s;
 	s = name;
-	app_data.data_font = s;
+	app_data.data_font = s.chars();
 	break;
     }
     default:
@@ -720,7 +721,7 @@ static void process_font(DDDFont font, string fontspec)
 {
     string sz = component(fontspec, PointSize);
     if (sz != "*")
-	set_font_size(font, atoi(sz));
+	set_font_size(font, atoi(sz.chars()));
 
     fontspec.gsub('*', ' ');
     set_font(font, simplify_font(app_data, font, 
@@ -783,7 +784,7 @@ static void GotSelectionCB(Widget w, XtPointer client_data,
 	process_font(info->font, s);
     }
 
-    XmTextSetString(w, (String)s);
+    XmTextSetString(w, CONST_CAST(char*,s.chars()));
 
     // Get the selection again.
     // This will fail if we have multiple font selectors (FIXME).
@@ -824,13 +825,13 @@ void BrowseFontCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     // Create a TextField to fetch the selection
     FontSelectInfo *info = new FontSelectInfo;
-    info->text = XmCreateText(XtParent(w), (char *)"text", 0, 0);
+    info->text = XmCreateText(XtParent(w), CONST_CAST(char *,"text"), 0, 0);
     info->font = font;
 
     XtRealizeWidget(info->text);
 
-    string text = "dummy";
-    XmTextSetString(info->text, (String)text);
+    const string text = "dummy";
+    XmTextSetString(info->text, CONST_CAST(char*,text.chars()));
     TextSetSelection(info->text, 0, text.length(), tm);
     XtAddCallback(info->text, XmNlosePrimaryCallback, 
 		  SelectionLostCB, XtPointer(info));

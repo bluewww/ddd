@@ -335,7 +335,7 @@ void LiterateAgent::dispatch(int type, const char *data, int length)
   // TODO is this correction all right ?
     if (data[length] != '\0'){
       string s1(data,length);
-      const char *data_l = s1;
+      const char *data_l = s1.chars();
       DataLength dl(data_l, length);
       
       // call global handlers

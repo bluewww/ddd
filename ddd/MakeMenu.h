@@ -102,9 +102,9 @@ typedef void (*MMItemProc)(MMDesc items[], XtPointer closure);
 
 
 // Creators
-Widget MMcreatePulldownMenu      (Widget parent, String name, MMDesc items[],
+Widget MMcreatePulldownMenu      (Widget parent, const _XtString name, MMDesc items[],
 				  ArgList args = 0, Cardinal arg = 0);
-Widget MMcreateRadioPulldownMenu (Widget parent, String name, MMDesc items[],
+Widget MMcreateRadioPulldownMenu (Widget parent, const _XtString name, MMDesc items[],
 				  ArgList args = 0, Cardinal arg = 0);
 Widget MMcreatePopupMenu         (Widget parent, const _XtString name, MMDesc items[],
 				  ArgList args = 0, Cardinal arg = 0);
@@ -118,7 +118,7 @@ Widget MMcreateRadioPanel        (Widget parent, const _XtString name, MMDesc it
 				  ArgList args = 0, Cardinal arg = 0);
 Widget MMcreateButtonPanel       (Widget parent, const _XtString name, MMDesc items[],
 				  ArgList args = 0, Cardinal arg = 0);
-Widget MMcreatePushMenu          (Widget parent, String name, MMDesc items[],
+Widget MMcreatePushMenu          (Widget parent, const _XtString name, MMDesc items[],
 				  ArgList args = 0, Cardinal arg = 0);
 
 

@@ -41,10 +41,10 @@
 // - APP_NAME is non-null and WINDOW has the application name APP_NAME
 // - APP_CLASS is non-null and WINDOW has an application class APP_CLASS.
 bool windowMatches(Display *display, Window window,
-		   String title, String app_name, String app_class);
+		   const _XtString title, const _XtString app_name, const _XtString app_class);
 
 // Custom call
-inline bool windowMatches(Display *display, Window window, String name)
+inline bool windowMatches(Display *display, Window window, const _XtString name)
 {
     return windowMatches(display, window, name, name, name);
 }
@@ -53,10 +53,10 @@ inline bool windowMatches(Display *display, Window window, String name)
 // Find a child of WINDOW that matches TITLE/APP_NAME/APP_CLASS.
 // If none is found, return None.
 Window findWindow(Display *display, Window window,
-		  String title, String app_name, String app_class);
+		  const _XtString title, const _XtString app_name, const _XtString app_class);
 
 // Custom call
-inline Window findWindow(Display *display, Window window, String name)
+inline Window findWindow(Display *display, Window window, const _XtString name)
 {
     return findWindow(display, window, name, name, name);
 }
@@ -64,15 +64,15 @@ inline Window findWindow(Display *display, Window window, String name)
 
 // Find a window on W's screen that matches TITLE/APP_NAME/APP_CLASS.
 // If none is found, return None.
-inline Window findWindow(Widget w, String title, 
-			 String app_name, String app_class)
+inline Window findWindow(Widget w, const _XtString title, 
+			 const _XtString app_name, const _XtString app_class)
 {
     return findWindow(XtDisplay(w), RootWindowOfScreen(XtScreen(w)), 
 		      title, app_name, app_class);
 }
 
 // Custom call
-inline Window findWindow(Widget w, String name)
+inline Window findWindow(Widget w, const _XtString name)
 {
     return findWindow(w, name, name, name);
 }

@@ -36,6 +36,7 @@ char ColorBox_rcsid[] =
 #include "ColorBox.h"
 #include "PrimitiveB.h"
 #include "cook.h"
+#include "casts.h"
 #include <X11/StringDefs.h>
 
 DEFINE_TYPE_INFO_1(ColorBox, TransparentHatBox);
@@ -55,7 +56,7 @@ void ColorBox::convert_color(Widget w) const
 
     XColor exact_def;
     Status ok = 
-	XParseColor(XtDisplay(w), colormap, (String)color_name(), &exact_def);
+	XParseColor(XtDisplay(w), colormap, CONST_CAST(char*,color_name().chars()), &exact_def);
 
     if (ok)
     {
@@ -70,7 +71,7 @@ void ColorBox::convert_color(Widget w) const
 
     XrmValue from, to;
     from.size = color_name().length();
-    from.addr = (String)color_name();
+    from.addr = CONST_CAST(char*,color_name().chars());
     to.size   = sizeof(_color);
     to.addr   = (String)&_color;
 

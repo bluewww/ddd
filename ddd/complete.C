@@ -48,6 +48,7 @@ char complete_rcsid[] =
 #include "question.h"
 #include "regexps.h"
 #include "string-fun.h"
+#include "casts.h"
 
 #include <ctype.h>
 
@@ -116,7 +117,7 @@ static void set_completion(const CompletionInfo& info, string completion)
 
 	XmTextReplace(gdb_w, promptPosition,
 		      XmTextGetLastPosition(gdb_w), 
-		      (String)completion);
+		      CONST_CAST(char*,completion.chars()));
 
 	private_gdb_output = false;
     }
@@ -124,11 +125,11 @@ static void set_completion(const CompletionInfo& info, string completion)
     {
 	if (XmIsTextField(info.widget))
 	{
-	    XmTextFieldSetString(info.widget, (String)completion);
+	    XmTextFieldSetString(info.widget, CONST_CAST(char*,completion.chars()));
 	}
 	else if (XmIsText(info.widget))
 	{
-	    XmTextSetString(info.widget, (String)completion);
+	    XmTextSetString(info.widget, CONST_CAST(char*,completion.chars()));
 	}
     }
 }

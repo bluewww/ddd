@@ -36,10 +36,10 @@
 char eps_code_rcsid[] = 
     "$Id$";
 
-static const char prolog[] = 
+static const char *prolog = 
 ;
 
 
-static const char trailer[] =
+static const char *trailer =
 ;
 

@@ -75,7 +75,7 @@ ProgressMeter::ProgressMeter(const string& _msg)
 		 XmDIALOG_FULL_APPLICATION_MODAL); arg++;
 	dialog = verify(
 	    XmCreateWorkingDialog(find_shell(), 
-				  (char *)"update_displays_dialog", 
+				  CONST_CAST(char *,"update_displays_dialog"), 
 				  args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
 					     XmDIALOG_OK_BUTTON));
@@ -88,7 +88,7 @@ ProgressMeter::ProgressMeter(const string& _msg)
 #if XmVersion >= 2000
 	XtSetArg(args[arg], XmNslidingMode, XmTHERMOMETER); arg++;
 #endif
-	scale = verify(XmCreateScale(dialog, (char *)"scale", args, arg));
+	scale = verify(XmCreateScale(dialog, CONST_CAST(char *,"scale"), args, arg));
 	XtManageChild(scale);
     }
 }
@@ -133,7 +133,7 @@ bool ProgressMeter::process(int remaining_length)
 	MString mmsg = rm(msg + "...");
 	XtVaSetValues(dialog, XmNmessageString, mmsg.xmstring(), XtPointer(0));
 	string title = DDD_NAME ": " + capitalize(msg);
-	XtVaSetValues(XtParent(dialog), XmNtitle, (char *)title, XtPointer(0));
+	XtVaSetValues(XtParent(dialog), XmNtitle, title.chars(), XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, CancelCB, 
 		      XtPointer(&aborted));
 	manage_and_raise(dialog);

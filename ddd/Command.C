@@ -100,10 +100,10 @@ void add_auto_command_prefix(string& cmd)
 void strip_auto_command_prefix(string& cmd)
 {
     // Neither of these ever changes, so make them static
-    static string dummy = "XYZZY";
-    static string echo = auto_command(dummy);
-    static string echo_prefix = echo.before(dummy);
-    static string echo_suffix = echo.after(dummy);
+    static const string dummy = "XYZZY";
+    static const string echo = auto_command(dummy);
+    static const string echo_prefix = echo.before(dummy);
+    static const string echo_suffix = echo.after(dummy);
 
     int i;
     if ((i = cmd.index(echo_prefix)) >= 0)

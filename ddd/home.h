@@ -34,7 +34,7 @@
 #endif
 
 // Return home dir
-extern char *gethome();
+extern const char *gethome();
 
 #endif // _DDD_home_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

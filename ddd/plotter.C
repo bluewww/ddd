@@ -269,7 +269,7 @@ static void send_and_replot(PlotWindowInfo *plot, string cmd)
 
 static void slurp_file(const string& filename, string& target)
 {
-    ifstream is(filename);
+    ifstream is(filename.chars());
     if (is.bad())
     {
 	target = "";
@@ -299,7 +299,7 @@ static void GetPlotSettingsCB(XtPointer client_data, XtIntervalId *id)
     if (settings.contains("set zero"))
     {
 	// Settings are complete
-	unlink(plot->settings_file);
+	unlink(plot->settings_file.chars());
 	plot->settings = settings;
 
 	configure_plot(plot);
@@ -326,7 +326,8 @@ static void configure_options(PlotWindowInfo *plot, MMDesc *menu,
 
 	string name = menu[i].name;
 
-	Widget w = XtNameToWidget(plot->shell, "*" + name);
+	const string s1 = "*" + name;
+	Widget w = XtNameToWidget(plot->shell, s1.chars());
 	XtCallbackProc callback = menu[i].callback.callback;
 
 	bool set = false;
@@ -368,7 +369,8 @@ static void configure_plot(PlotWindowInfo *plot)
 
 	string name = plot_menu[i].name;
 
-	Widget w = XtNameToWidget(plot->shell, "*" + name);
+	const string s1 = "*" + name;
+	Widget w = XtNameToWidget(plot->shell, s1.chars());
 
 	if (name.contains("2d", -1))
 	    XtSetSensitive(w, ndim == 2);
@@ -459,7 +461,8 @@ static void configure_plot(PlotWindowInfo *plot)
 
 	string name = plot_menu[i].name;
 
-	Widget w = XtNameToWidget(plot->shell, "*" + name);
+	const string s1 = "*" + name;
+	Widget w = XtNameToWidget(plot->shell, s1.chars());
 
 	bool set = plot->settings.contains("\nset data style " + name + "\n");
 	XmToggleButtonSetState(w, set, False);
@@ -474,9 +477,9 @@ static void configure_plot(PlotWindowInfo *plot)
     {
 	// `set view <rot_x> {,{<rot_z>}{,{<scale>}{,<scale_z>}}}'
 	string view_setting = plot->settings.after("set view ");
-	rot_x = atoi(view_setting);
+	rot_x = atoi(view_setting.chars());
 	view_setting = view_setting.after(", ");
-	rot_z = atoi(view_setting);
+	rot_z = atoi(view_setting.chars());
     }
 
     XtVaSetValues(plot->vsb, XmNvalue, rot_x, XtPointer(0));
@@ -555,11 +558,13 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
 
     // Try the exact name as given
     if (window == None)
-	window = findWindow(display, root, plot->window_name);
+	window = findWindow(display, root, plot->window_name.chars());
 
     // Try the capitalized name.  Gnuplot does this.
-    if (window == None)
-	window = findWindow(display, root, capitalize(plot->window_name));
+    if (window == None) {
+        const string s1 = capitalize(plot->window_name);
+	window = findWindow(display, root, s1.chars());
+    }
 
     // Try any `Gnuplot' window just created
     if (window == None)
@@ -584,11 +589,13 @@ static void SwallowTimeOutCB(XtPointer client_data, XtIntervalId *id)
 
     // Try the exact name as given
     if (window == None)
-	window = findWindow(display, root, plot->window_name);
+	window = findWindow(display, root, plot->window_name.chars());
 
     // Try the capitalized name.  Gnuplot does this.
-    if (window == None)
-	window = findWindow(display, root, capitalize(plot->window_name));
+    if (window == None) {
+        const string s1 = capitalize(plot->window_name);
+	window = findWindow(display, root, s1.chars());
+    }
 
     if (window == None)
     {
@@ -657,7 +664,7 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 	XtRemoveTimeOut(plot->settings_timer);
 	plot->settings_timer = 0;
 
-	unlink(plot->settings_file);
+	unlink(plot->settings_file.chars());
     }
 
     if (plot->settings_delay != 0)
@@ -757,11 +764,11 @@ static void PlotterNotFoundHP(Agent *plotter, void *client_data, void *)
 
     Arg args[10];
     Cardinal arg = 0;
-    MString msg = rm(capitalize(base) + " could not be started.");
+    MString msg = rm( capitalize(base) + " could not be started.");
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     Widget dialog = 
 	verify(XmCreateErrorDialog(find_shell(),
-				   (char *)"no_plotter_dialog", args, arg));
+				   CONST_CAST(char *,"no_plotter_dialog"), args, arg));
     XtUnmanageChild(XmMessageBoxGetChild
 		    (dialog, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
@@ -811,7 +818,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 
 	arg = 0;
 	Widget main_window = XmCreateMainWindow(plot->shell, 
-						(char *)"main_window", 
+						CONST_CAST(char *,"main_window"), 
 						args, arg);
 	XtManageChild(main_window);
 
@@ -829,7 +836,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 	XtSetArg(args[arg], XmNscrollingPolicy, XmAPPLICATION_DEFINED); arg++;
 	XtSetArg(args[arg], XmNvisualPolicy,    XmVARIABLE);            arg++;
 	Widget scroll = 
-	    XmCreateScrolledWindow(main_window, (char *)"scroll", args, arg);
+	    XmCreateScrolledWindow(main_window, CONST_CAST(char *,"scroll"), args, arg);
 	XtManageChild(scroll);
 
 	// Create work window
@@ -840,7 +847,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 	    // xlib type - create plot area to draw plot commands
 	    arg = 0;
 	    work = XmCreateDrawingArea(scroll, 
-				       (char *)PLOT_AREA_NAME, args, arg);
+				       CONST_CAST(char *,PLOT_AREA_NAME), args, arg);
 	    XtManageChild(work);
 
 	    plot->area = 
@@ -872,14 +879,14 @@ static PlotWindowInfo *new_decoration(const string& name)
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL);      arg++;
 	XtSetArg(args[arg], XmNminimum,     0);                 arg++;
 	XtSetArg(args[arg], XmNmaximum,     360 + slider_size); arg++;
-	plot->hsb = XmCreateScrollBar(scroll, (char *)"hsb", args, arg);
+	plot->hsb = XmCreateScrollBar(scroll, CONST_CAST(char *,"hsb"), args, arg);
 	XtManageChild(plot->hsb);
 
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmVERTICAL);        arg++;
 	XtSetArg(args[arg], XmNminimum,     0);                 arg++;
 	XtSetArg(args[arg], XmNmaximum,     180 + slider_size); arg++;
-	plot->vsb = XmCreateScrollBar(scroll, (char *)"vsb", args, arg);
+	plot->vsb = XmCreateScrollBar(scroll, CONST_CAST(char *,"vsb"), args, arg);
 	XtManageChild(plot->vsb);
 
 	XtAddCallback(plot->hsb, XmNvalueChangedCallback,
@@ -984,7 +991,7 @@ PlotAgent *new_plotter(string name, DispValue *source)
 	Arg args[10];
 	Cardinal arg = 0;
 	dialog = verify(XmCreateWorkingDialog(find_shell(),
-					      (char *)"launch_plot_dialog", 
+					      CONST_CAST(char *,"launch_plot_dialog"), 
 					      args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog,
 					     XmDIALOG_OK_BUTTON));
@@ -1150,7 +1157,7 @@ static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
 	Cardinal arg = 0;
 	Widget dialog = 
 	    verify(XmCreatePromptDialog(plot->shell,
-					(char *)"plot_command_dialog",
+					CONST_CAST(char *,"plot_command_dialog"),
 					args, arg));
 	Delay::register_shell(dialog);
 	plot->command_dialog = dialog;
@@ -1171,7 +1178,7 @@ static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
 
 	arg = 0;
 	Widget command = 
-	    verify(XmCreateCommand(dialog, (char *)"plot_command", args, arg));
+	    verify(XmCreateCommand(dialog, CONST_CAST(char *,"plot_command"), args, arg));
 	plot->command = command;
 	XtManageChild(command);
 
@@ -1222,7 +1229,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
     if (source == "")
 	return;			// This should not happen
 
-    if (access(target, W_OK) == 0 && is_regular_file(target))
+    if (access(target.chars(), W_OK) == 0 && is_regular_file(target))
     {
 	// File exists - request confirmation
 	static Widget confirm_overwrite_dialog = 0;
@@ -1235,7 +1242,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
 		 XmDIALOG_FULL_APPLICATION_MODAL); arg++;
 	confirm_overwrite_dialog = 
 	    verify(XmCreateQuestionDialog(plot->shell,
-					  (char *)"confirm_overwrite_dialog", 
+					  CONST_CAST(char *,"confirm_overwrite_dialog"), 
 					  args, arg));
 	Delay::register_shell(confirm_overwrite_dialog);
 
@@ -1266,12 +1273,12 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
     StatusDelay delay("Saving " + title + " data to " + quote(target));
 
     // Copy SOURCE to TARGET
-    ifstream is(source);
-    ofstream os(target);
+    ifstream is(source.chars());
+    ofstream os(target.chars());
 
     if (os.bad())
     {
-	FILE *fp = fopen(target, "w");
+	FILE *fp = fopen(target.chars(), "w");
 	post_error(string("Cannot open ") 
 		   + quote(target) + ": " + strerror(errno), 
 		   "export_failed_error", plot->shell);
@@ -1300,7 +1307,7 @@ static void ExportPlotCB(Widget w, XtPointer client_data, XtPointer call_data)
 	Cardinal arg = 0;
 	Widget dialog = 
 	    verify(XmCreateFileSelectionDialog(plot->shell, 
-					       (char *)"export_data", 
+					       CONST_CAST(char *,"export_data"), 
 					       args, arg));
 	plot->export_dialog = dialog;
 

@@ -57,7 +57,7 @@ inline unsigned hash(const char *name)
 // Return XFontStruct for given font name NAME
 XFontStruct *FontTable::operator[](string& name)
 {
-    int i = hash(name);
+    int i = hash(name.chars());
     while (table[i].font != 0 && name != table[i].name)
     {
 	assert (i < MAX_FONTS);   // Too many fonts
@@ -68,7 +68,7 @@ XFontStruct *FontTable::operator[](string& name)
     {
 	// Insert new font
 	table[i].name = name;
-	table[i].font = XLoadQueryFont(_display, name);
+	table[i].font = XLoadQueryFont(_display, name.chars());
 
 	if (table[i].font == 0)
 	{

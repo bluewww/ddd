@@ -45,6 +45,7 @@ extern "C" {
 #undef class
 
 #include "LabelHP.h"
+#include "casts.h"
 
 static void initialize(XmLabelHackWidget _request, 
 		       XmLabelHackWidget _new, 
@@ -68,7 +69,7 @@ static GC _bottomShadowGC(XmLabelWidget _label);
 #define PrimOffset(field) XtOffset(XmLabelHackWidget, primitive.field)
 static XtResource resources[] =
 {
-    {(char *)XmNinsensitive3D, (char *)XmCInsensitive3D, XmRBoolean, sizeof(Boolean),
+    {CONST_CAST(char *,XmNinsensitive3D), CONST_CAST(char *,XmCInsensitive3D), XmRBoolean, sizeof(Boolean),
      TheOffset(insensitive3D), XmRImmediate, (XtPointer)TRUE},
 };
 
@@ -100,7 +101,7 @@ XmLabelHackClassRec xmLabelHackClassRec =
 {
     {
 	(WidgetClass)&xmLabelClassRec,		/* superclass */
-	(char *)"XmLabelHack",				/* class_name */
+	CONST_CAST(char *,"XmLabelHack"),				/* class_name */
 	(Cardinal)sizeof(XmLabelHackRec),	/* widget size */
 	XtProc(0),				/* class_init */
 	XtWidgetClassProc(0),		        /* class_part_init */

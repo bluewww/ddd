@@ -90,7 +90,7 @@ void PlotAgent::start_plot(const string& title, int n)
     }
 
     // Open plot stream
-    plot_os.open(files[titles.size() - 1]);
+    plot_os.open(files[titles.size() - 1].chars());
 
     // Issue initial line
     plot_os << "# " DDD_NAME ": " << title << "\n"
@@ -242,7 +242,7 @@ void PlotAgent::abort()
 {
     // Unlink temporary files
     for (int i = 0; i < files.size(); i++)
-	unlink(files[i]);
+	unlink(files[i].chars());
 
     // We're done
     LiterateAgent::abort();
@@ -291,7 +291,7 @@ void PlotAgent::add_point(const string& v, int dim)
     values[values.size() - 1] = v;
     dims[dims.size() - 1] = dim;
 
-    add_v(atof(v));
+    add_v(atof(v.chars()));
 }
 
 void PlotAgent::add_point(int x, const string& v)
@@ -302,7 +302,7 @@ void PlotAgent::add_point(int x, const string& v)
     {
 	plot_os << x << '\t' << v << '\n';
 	add_x(x);
-	add_v(atof(v));
+	add_v(atof(v.chars()));
     }
 }
 
@@ -314,7 +314,7 @@ void PlotAgent::add_point(double x, const string& v)
     {
 	plot_os << x << '\t' << v << '\n';
 	add_x(x);
-	add_v(atof(v));
+	add_v(atof(v.chars()));
     }
 }
 
@@ -325,7 +325,7 @@ void PlotAgent::add_point(int x, int y, const string& v)
     plot_os << x << '\t' << y << '\t' << v << '\n';
     add_x(x);
     add_y(y);
-    add_v(atof(v));
+    add_v(atof(v.chars()));
 }
 
 void PlotAgent::add_point(double x, double y, const string& v)
@@ -335,7 +335,7 @@ void PlotAgent::add_point(double x, double y, const string& v)
     plot_os << x << '\t' << y << '\t' << v << '\n';
     add_x(x);
     add_y(y);
-    add_v(atof(v));
+    add_v(atof(v.chars()));
 }
 
 void PlotAgent::add_break()
@@ -388,7 +388,7 @@ void PlotAgent::set_state(const string& state)
     if (state != "")
 	title = " " + quote('(' + state + ')');
 
-    string c = "set title" + title + "\nreplot\n";
+    const string c = "set title" + title + "\nreplot\n";
     write(c.chars(), c.length());
 }
 

@@ -35,11 +35,11 @@ char printBox_rcsid[] =
 
 
 // some constants...
-static const char EPSHEAD[] = "%!PS-Adobe-2.0 EPSF-2.0\n";
-static const char CREATOR[] = "%%Creator: Box::print() by Christian Lindig\n";
-static const char PAGES[] =   "%%Pages: 1\n";
-static const char ENDC[] =    "%%EndComments\n";
-static const char BOUND[] =   "%%BoundingBox: ";
+static const char *EPSHEAD = "%!PS-Adobe-2.0 EPSF-2.0\n";
+static const char *CREATOR = "%%Creator: Box::print() by Christian Lindig\n";
+static const char *PAGES =   "%%Pages: 1\n";
+static const char *ENDC =    "%%EndComments\n";
+static const char *BOUND =   "%%BoundingBox: ";
 
 
 //

@@ -117,6 +117,7 @@ public:
     // Resources
     const XFontStruct *font() const { return _font; }
     const string& fontName() const  { return _fontname; }
+    const char *fontName_c() const { return _fontname.chars(); }
     virtual string str() const { return _string; }
 
     Box *resize();

@@ -58,7 +58,7 @@ string vsldoc(string file, const string& path)
 
     FILE *fp = 0;
 
-    if (file == basename(file))
+    if (file == basename(file.chars()))
     {
 	// Search for FILE in PATH
 	int n = path.freq(':');
@@ -66,8 +66,8 @@ string vsldoc(string file, const string& path)
 	split(path, dirs, n + 1, ':');
 	for (int i = 0; i < n; i++)
 	{
-	    string full_file_name = dirs[i] + "/" + file;
-	    fp = fopen(full_file_name, "r");
+	    const string full_file_name = dirs[i] + "/" + file;
+	    fp = fopen(full_file_name.chars(), "r");
 	    if (fp != 0)
 		break;
 	}
@@ -75,7 +75,7 @@ string vsldoc(string file, const string& path)
     }
 
     if (fp == 0)
-	fp = fopen(file, "r");
+	fp = fopen(file.chars(), "r");
 
     if (fp == 0)
 	return "";

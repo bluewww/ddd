@@ -134,7 +134,7 @@ const string NO_SESSION = "[none]";
 
 string session_state_dir()
 {
-    char *ddd_state = getenv(DDD_NAME "_STATE");
+    const char *ddd_state = getenv(DDD_NAME "_STATE");
     if (ddd_state != 0)
 	return ddd_state;
     else
@@ -143,7 +143,7 @@ string session_state_dir()
 
 static string session_base_dir()
 {
-    char *ddd_sessions = getenv(DDD_NAME "_SESSIONS");
+    const char *ddd_sessions = getenv(DDD_NAME "_SESSIONS");
     if (ddd_sessions != 0)
 	return ddd_sessions;
     else
@@ -203,7 +203,7 @@ static int makedir(string name, ostream& msg, bool user_only = false)
 	mode = S_IRWXU & ~mask;
     else
 	mode = (S_IRWXU | S_IRWXG | S_IRWXO) & ~mask;
-    int ret = mkdir(name, mode);
+    int ret = mkdir(name.chars(), mode);
 
     if (ret != 0)
 	action.failed(strerror(errno));
@@ -213,14 +213,14 @@ static int makedir(string name, ostream& msg, bool user_only = false)
 
 static void copy(const string& from_name, const string& to_name, ostream& msg)
 {
-    FILE *from = fopen(from_name, "r");
+    FILE *from = fopen(from_name.chars(), "r");
     if (from == 0)
 	return;			// Don't care
 
     StreamAction action(msg, "Copying " + quote(from_name) 
 			+ " to " + quote(to_name));
 
-    FILE *to = fopen(to_name, "w");
+    FILE *to = fopen(to_name.chars(), "w");
     if (to == 0)
     {
 	action.failed(strerror(errno));
@@ -235,7 +235,7 @@ static void copy(const string& from_name, const string& to_name, ostream& msg)
     if (fclose(to) == EOF)
     {
 	action.failed(strerror(errno));
-	unlink(to_name);
+	unlink(to_name.chars());
     }
 }
 
@@ -257,12 +257,14 @@ void set_temporary_session(const string& session, bool temporary)
 {
     if (temporary)
     {
-	ofstream os(session_tmp_flag(session));
+        const string s1 = session_tmp_flag(session); 
+	ofstream os(s1.chars());
 	os << "This session will be deleted unless saved explicitly.\n";
     }
     else
     {
-	unlink(session_tmp_flag(session));
+      const string s1 = session_tmp_flag(session.chars());
+	unlink(s1.chars());
     }
 }
 
@@ -338,7 +340,7 @@ bool lock_session_dir(Display *display,
     string lock_file = session_lock_file(session);
 
     {
-	ifstream is(lock_file);
+	ifstream is(lock_file.chars());
 	if (!is.bad())
 	{
 	    string version;
@@ -377,7 +379,7 @@ bool lock_session_dir(Display *display,
 	else
 	    username = itostring(getuid());
 
-	ofstream os(lock_file);
+	ofstream os(lock_file.chars());
 	os << DDD_NAME "-" DDD_VERSION
 	   << " " << fullhostname()
 	   << " " << getpid()
@@ -394,7 +396,7 @@ bool unlock_session_dir(const string& session)
 {
     string lock_file = session_lock_file(session);
 
-    ifstream is(lock_file);
+    ifstream is(lock_file.chars());
     if (!is.bad())
     {
 	// There is a lock -- check whether it's ours
@@ -408,7 +410,7 @@ bool unlock_session_dir(const string& session)
 	{
 	    // It's ours -- remove it
 	    is.close();
-	    unlink(lock_file);
+	    unlink(lock_file.chars());
 	    return true;
 	}
 	else
@@ -428,7 +430,7 @@ bool unlock_session_dir(const string& session)
 static void get_sessions(StringArray& arr)
 {
     string mask = session_state_file("*");
-    char **files = glob_filename(mask);
+    char **files = glob_filename(mask.chars());
     if (files == (char **)0)
     {
 	cerr << mask << ": glob failed\n";
@@ -546,7 +548,7 @@ static void SelectSessionCB(Widget sessions,
 	    value = DEFAULT_SESSION;
 
 	Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
-	XmTextSetString(text_w, (char *)value.chars());
+	XmTextSetString(text_w, CONST_CAST(char *,value.chars()));
     }
 
     // Update delete button
@@ -563,7 +565,7 @@ static Widget create_session_panel(Widget parent, const _XtString name,
 
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     Widget dialog = 
-	verify(XmCreateSelectionDialog(find_shell(parent), (char *)name, args, arg));
+	verify(XmCreateSelectionDialog(find_shell(parent), CONST_CAST(char *,name), args, arg));
 
     Delay::register_shell(dialog);
 
@@ -602,13 +604,29 @@ void delete_session(const string& session, bool silent)
 	return;
 
     StatusDelay delay("Deleting session " + quote(session));
-    unlink(session_state_file(session));
-    unlink(session_core_file(session));
-    unlink(session_history_file(session));
-    unlink(session_lock_file(session));
-    unlink(session_tmp_flag(session));
+    {
+      const string s1 = session_state_file(session);
+      unlink(s1.chars());
+    }
+    {
+      const string s1 = session_core_file(session);
+      unlink(s1.chars());
+    }
+    {
+      const string s1 = session_history_file(session);
+      unlink(s1.chars());
+    }
+    {
+      const string s1 = session_lock_file(session);
+      unlink(s1.chars());
+    }
+    {
+      const string s1 = session_tmp_flag(session);
+      unlink(s1.chars());
+    }
 
-    if (rmdir(session_dir(session)) && !silent)
+    const string s2 = session_dir(session); 
+    if (rmdir(s2.chars()) && !silent)
     {
 	post_error("Could not delete " + quote(session_dir(session)) + ": " 
 		   + strerror(errno), "delete_session_error");
@@ -678,7 +696,7 @@ void set_session(const string& v)
     static string value;
     value = v;
 
-    app_data.session = value;
+    app_data.session = value.chars();
 
     string session_name;
     if (app_data.session == DEFAULT_SESSION)
@@ -826,7 +844,8 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 	if (info.file != NO_GDB_ANSWER)
 	    name = info.file;
 
-	name = basename(name);
+
+	name = basename(name.chars());
     }
     else
     {
@@ -857,7 +876,7 @@ static string get_resource(XrmDatabase db, string name, string cls)
     char *rtype = 0;
     XrmValue value;
     
-    XrmGetResource(db, name, cls, &rtype, &value);
+    XrmGetResource(db, name.chars(), cls.chars(), &rtype, &value);
     if (value.addr != 0)
 	return string((char *)value.addr, value.size - 1);
 
@@ -889,7 +908,7 @@ static void open_session(const string& session)
 {
     // Fetch init file for this session
     string dbfile = session_state_file(session);
-    XrmDatabase db = XrmGetFileDatabase(dbfile);
+    XrmDatabase db = XrmGetFileDatabase(dbfile.chars());
     if (db == 0)
     {
 	post_error("Cannot open session.", "open_session_error");
@@ -945,15 +964,15 @@ static void open_session(const string& session)
     // Set buttons and display shortcuts
     static string data_buttons;
     data_buttons = get_resource(db, XtNdataButtons, XtCButtons);
-    app_data.data_buttons = data_buttons;
+    app_data.data_buttons = data_buttons.chars();
 
     static string source_buttons;
     source_buttons = get_resource(db, XtNsourceButtons, XtCButtons);
-    app_data.source_buttons = source_buttons;
+    app_data.source_buttons = source_buttons.chars();
 
     static string console_buttons;
     console_buttons = get_resource(db, XtNconsoleButtons, XtCButtons);
-    app_data.console_buttons = console_buttons;
+    app_data.console_buttons = console_buttons.chars();
 
     static string display_shortcuts;
 
@@ -972,17 +991,30 @@ static void open_session(const string& session)
 
     switch (gdb->type())
     {
-    case GDB:  app_data.gdb_display_shortcuts  = display_shortcuts; break;
-    case DBX:  app_data.dbx_display_shortcuts  = display_shortcuts; break;
-    case XDB:  app_data.xdb_display_shortcuts  = display_shortcuts; break;
-    case JDB:  app_data.jdb_display_shortcuts  = display_shortcuts; break;
-    case PYDB: app_data.pydb_display_shortcuts = display_shortcuts; break;
-    case PERL: app_data.perl_display_shortcuts = display_shortcuts; break;
+    case GDB:
+	app_data.gdb_display_shortcuts  = display_shortcuts.chars();
+	break;
+    case DBX:
+	app_data.dbx_display_shortcuts  = display_shortcuts.chars();
+	break;
+    case XDB:
+	app_data.xdb_display_shortcuts  = display_shortcuts.chars();
+	break;
+    case JDB:
+	app_data.jdb_display_shortcuts  = display_shortcuts.chars();
+	break;
+    case PYDB:
+	app_data.pydb_display_shortcuts = display_shortcuts.chars();
+	break;
+    case PERL:
+	app_data.perl_display_shortcuts = display_shortcuts.chars();
+	break;
     }
     update_user_buttons();
 
     // Set options
-    int tab_width = atoi(get_resource(db, XtNtabWidth, XtCTabWidth));
+    const string tab_width_s = get_resource(db, XtNtabWidth, XtCTabWidth);
+    int tab_width = atoi(tab_width_s.chars());
     app_data.tab_width = tab_width ? tab_width : DEFAULT_TAB_WIDTH;
 
     update_options();
@@ -1041,33 +1073,33 @@ void RestartDebuggerCB(Widget, XtPointer, XtPointer)
 	flags |= DONT_RELOAD_FILE;
 
     (void) get_restart_commands(restart_commands, flags);
-    app_data.restart_commands = restart_commands;
+    app_data.restart_commands = restart_commands.chars();
 
     settings = get_settings(gdb->type());
     switch (gdb->type())
     {
     case GDB:
-	app_data.gdb_settings = settings;
+	app_data.gdb_settings = settings.chars();
 	break;
 
     case DBX:
-	app_data.dbx_settings = settings;
+	app_data.dbx_settings = settings.chars();
 	break;
 
     case XDB:
-	app_data.xdb_settings = settings;
+	app_data.xdb_settings = settings.chars();
 	break;
 
     case JDB:
-	app_data.jdb_settings = settings;
+	app_data.jdb_settings = settings.chars();
 	break;
 
     case PYDB:
-	app_data.pydb_settings = settings;
+	app_data.pydb_settings = settings.chars();
 	break;
 
     case PERL:
-	app_data.perl_settings = settings;
+	app_data.perl_settings = settings.chars();
 	break;
     }
 
@@ -1129,7 +1161,7 @@ void set_restart_session(const string& session)
 {
     static string env;
     env = DDD_NAME "_SESSION=" + session;
-    putenv(env);
+    putenv(CONST_CAST(char*,env.chars()));
 }
 
 
@@ -1342,7 +1374,7 @@ static void ask(string text, const _XtString name, XtCheckpointToken token, Widg
     {
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     }
-    dialog = verify(XmCreateQuestionDialog(find_shell(w), (char *)name,
+    dialog = verify(XmCreateQuestionDialog(find_shell(w), CONST_CAST(char *,name),
 					   args, arg));
     Delay::register_shell(dialog);
     XtAddCallback(dialog, XmNokCallback,     yes, XtPointer(token));

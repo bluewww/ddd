@@ -74,7 +74,7 @@ void uniquify(StringArray& files, StringArray& labels, char sep)
     labels = empty;
     int i;
     for (i = 0; i < files.size(); i++)
-	labels += basename(files[i], sep);
+	labels += basename(files[i].chars(), sep);
 
     // While there are any duplicate labels, add the directory names
     i = 0;

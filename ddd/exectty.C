@@ -153,7 +153,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 	XtSetArg(args[arg], XmNdialogStyle, 
 		 XmDIALOG_FULL_APPLICATION_MODAL); arg++;
 	dialog = verify(XmCreateWorkingDialog(find_shell(origin), 
-					      (char *)"launch_tty_dialog", 
+					      CONST_CAST(char *,"launch_tty_dialog"), 
 					      args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
 					     XmDIALOG_OK_BUTTON));
@@ -237,7 +237,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 
 	if (reply.length() > 2)
 	{
-	    istrstream is((const char *)reply);
+	    istrstream is(reply.chars());
 	    is >> ttyname >> pid >> term >> windowid;
 	}
 
@@ -362,8 +362,8 @@ static int gdb_set_tty(string tty_name = "",
 	if (app_data.use_tty_command && tty_name != gdb_tty)
 	{
 	    // Issue `tty' command to perform redirection
-	    string tty_cmd = "tty " + tty_name;
-	    string reply = gdb_question(tty_cmd);
+	    const string tty_cmd = "tty " + tty_name;
+	    const string reply = gdb_question(tty_cmd);
 
 	    if (reply == NO_GDB_ANSWER)
 	    {
@@ -753,7 +753,7 @@ static void initialize_tty(const string& tty_name, const string& tty_term)
     char buffer[2048];
     string init;
 
-    int success = tgetent(buffer, tty_term);
+    int success = tgetent(buffer, tty_term.chars());
     if (success > 0)
     {
 	char caps[2048];
@@ -767,16 +767,16 @@ static void initialize_tty(const string& tty_name, const string& tty_term)
     if (remote_gdb())
     {
 	string command = sh_command("cat > " + tty_name);
-	FILE *fp = popen(command, "w");
+	FILE *fp = popen(command.chars(), "w");
 	if (fp != 0)
 	{
-	    fwrite((char *)init, init.length(), sizeof(char), fp);
+	    fwrite(init.chars(), init.length(), sizeof(char), fp);
 	    pclose(fp);
 	}
     }
     else
     {
-	ofstream tty(tty_name);
+	ofstream tty(tty_name.chars());
 	tty << init;
     }
 }

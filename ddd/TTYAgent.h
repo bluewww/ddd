@@ -108,6 +108,7 @@ public:
     // Return the name of the used tty
     const string& master_tty() const { return _master_tty; }
     const string& slave_tty() const  { return _slave_tty; }
+    const char *slave_tty_c() const { return _slave_tty.chars(); }
 };
 
 #endif // _DDD_TTYAgent_h

@@ -62,11 +62,11 @@ static MString get_tip_of_the_day(Widget w, int n)
 	XmString tip;
     };
 
-    string tip_name = "tip" + itostring(n);
+    const string tip_name = "tip" + itostring(n);
 
     XtResource r;
-    r.resource_name   = tip_name;
-    r.resource_class  = (char *)"Tip";
+    r.resource_name   = CONST_CAST(char*,tip_name.chars());
+    r.resource_class  = CONST_CAST(char*,"Tip");
     r.resource_type   = XmRXmString;
     r.resource_size   = sizeof(XmString);
     r.resource_offset = XtOffsetOf(tip_of_the_day_resource_values, tip);
@@ -97,7 +97,7 @@ static void SaveTipCountCB(Widget, XtPointer = 0, XtPointer = 0)
     create_session_dir(DEFAULT_SESSION);
     const string file = session_tips_file();
 
-    ofstream os(file);
+    ofstream os(file.chars());
     os << 
 	"! " DDD_NAME " tips file\n"
 	"\n"
@@ -179,7 +179,7 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	tip_dialog = 
 	    verify(XmCreateInformationDialog(find_shell(w), 
-					     (char *)"tip_dialog", 
+					     CONST_CAST(char *,"tip_dialog"), 
 					     args, arg));
 
 	XtAddCallback(tip_dialog, XmNokCallback, UnmanageThisCB, 

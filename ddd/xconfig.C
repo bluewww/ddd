@@ -40,6 +40,7 @@ char xconfig_rcsid[] =
 #include "filetype.h"
 #include "shell.h"
 #include "assert.h"
+#include "casts.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -69,7 +70,7 @@ extern "C" int pclose(FILE *stream);
 
 static bool is_file(const string& file)
 {
-    FILE *fp = fopen(file, "r");
+    FILE *fp = fopen(file.chars(), "r");
     if (fp == 0)
 	return false;
 
@@ -78,10 +79,10 @@ static bool is_file(const string& file)
 }
 
 // Fetch the X library directory, using xmkmf(1)
-static String xlibdir(Display *display, bool verbose = false)
+static const _XtString xlibdir(Display *display, bool verbose = false)
 {
     static bool tried = false;
-    static String dir = 0;
+    static const _XtString dir = 0;
 
     if (tried)
 	return dir;
@@ -92,7 +93,7 @@ static String xlibdir(Display *display, bool verbose = false)
     if (!is_cmd_file(cmd_file("make")))
 	return dir;		// No `make' in PATH
 
-    static const char shell_command[] =
+    static const char *shell_command =
 	""
 #include "xlibdir.C"
 	"";
@@ -106,7 +107,8 @@ static String xlibdir(Display *display, bool verbose = false)
 	cout.flush();
     }
 
-    FILE *fp = popen("/bin/sh -c " + sh_quote(shell_command), "r");
+    const string s1 = "/bin/sh -c " + sh_quote(shell_command); 
+    FILE *fp = popen(s1.chars(), "r");
     if (fp == 0)
     {
 	if (verbose)
@@ -161,7 +163,7 @@ static int check_xkeysymdb(Display *display, bool verbose)
 
     if (xkeysymdb == "")
     {
-	String s = getenv("XKEYSYMDB");
+	const _XtString s = getenv("XKEYSYMDB");
 	if (s != 0)
 	    xkeysymdb = s;
     }
@@ -187,7 +189,7 @@ static int check_xkeysymdb(Display *display, bool verbose)
 	// Fix it now
 	static string env;
 	env = "XKEYSYMDB=" + xkeysymdb;
-	putenv(env);
+	putenv(CONST_CAST(char*,env.chars()));
 
 	return 0;			// Okay
     }
@@ -213,7 +215,7 @@ static int check_xkeysymdb(Display *display, bool verbose)
 	    // Fix it
 	    static string env;
 	    env = "XKEYSYMDB=" + path;
-	    putenv(env);
+	    putenv(CONST_CAST(char*,env.chars()));
 	    return 0;
 	}
     }
@@ -260,7 +262,7 @@ static string dirname(const string& file)
 	return ".";
 }
 
-static String resolve_dirname(Display *display, String type, String name)
+static const _XtString resolve_dirname(Display *display, const _XtString type, const _XtString name)
 {
     String ret = XtResolvePathname(display, type, name, "", 
 				   (String)0, Substitution(0), 0, 
@@ -270,7 +272,7 @@ static String resolve_dirname(Display *display, String type, String name)
     {
 	static string dir;
 	dir = dirname(ret);
-	ret = (char *)dir.chars();
+	ret = dir.chars();
     }
 
     return ret;
@@ -294,7 +296,7 @@ static int check_xnlspath(Display *display, bool verbose)
     String me, my_class;
     XtGetApplicationNameAndClass(display, &me, &my_class);
 
-    String xnlspath = 0;
+    const _XtString xnlspath = 0;
 
     if (xnlspath == 0)
 	xnlspath = getenv("XNLSPATH");

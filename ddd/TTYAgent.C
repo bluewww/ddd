@@ -530,14 +530,14 @@ void TTYAgent::open_master()
 	{
 	    char nr[32];
 	    sprintf(nr, "%03d", i);
-	    string pty = string("/dev/pty/") + nr;
-	    string tty = string("/dev/ttyp") + nr;
+	    const string pty = string("/dev/pty/") + nr;
+	    const string tty = string("/dev/ttyp") + nr;
 		
 	    master = open_tty(pty.chars());
 	    if (master >= 0)
 	    {
 		// Verify slave tty is usable
-		if (!tty_ok(tty))
+		if (!tty_ok(tty.chars()))
 		{
 		    close(master);
 		    continue;
@@ -559,15 +559,15 @@ void TTYAgent::open_master()
 	for (int i = 0; i < int(p1.length()); i++)
 	    for (int j = 0; j < int(p2.length()); j++)
 	    {
-		string nr  = string(p1[i]) + p2[j];
-		string pty = "/dev/ptym/pty" + nr;
-		string tty = "/dev/pty/tty" + nr;
+		const string nr  = string(p1[i]) + p2[j];
+		const string pty = "/dev/ptym/pty" + nr;
+		const string tty = "/dev/pty/tty" + nr;
 		
 		master = open_tty(pty.chars());
 		if (master >= 0)
 		{
 		    // Verify slave tty is usable
-		    if (!tty_ok(tty))
+		    if (!tty_ok(tty.chars()))
 		    {
 			close(master);
 			continue;
@@ -585,21 +585,21 @@ void TTYAgent::open_master()
     // Jim Van Zandt <jrv@vanzandt.mv.com> suggests.
     for (int k = 0; k < 2; k++)
     {
-	string prefix = (k == 0 ? "" : "/zip");
+	const string prefix = (k == 0 ? "" : "/zip");
 
 	for (int i = 0; i < int(p1.length()); i++)
 	{
 	    for (int j = 0; j < int(p2.length()); j++)
 	    {
-		string nr  = string(p1[i]) + p2[j];
-		string pty = prefix + "/dev/pty" + nr;
-		string tty = prefix + "/dev/tty" + nr;
+		const string nr  = string(p1[i]) + p2[j];
+		const string pty = prefix + "/dev/pty" + nr;
+		const string tty = prefix + "/dev/tty" + nr;
 
 		master = open_tty(pty.chars());
 		if (master >= 0)
 		{
 		    // Verify slave tty is usable
-		    if (!tty_ok(tty))
+		    if (!tty_ok(tty.chars()))
 		    {
 			close(master);
 			continue;
@@ -622,7 +622,7 @@ void TTYAgent::open_master()
 // in slave_tty by open_master.
 void TTYAgent::open_slave()
 {
-    slave = open_tty(slave_tty().chars());
+    slave = open_tty(slave_tty_c());
     if (slave < 0)
     {
 	_raiseIOMsg("cannot open " + slave_tty());
@@ -675,7 +675,7 @@ int TTYAgent::setupCommunication()
 }
 
 #if SYNCHRONIZE_PARENT_AND_CHILD
-static char TTY_INIT[] = { 'A', '\n' };
+static const char TTY_INIT[] = { 'A', '\n' };
 #endif
 
 

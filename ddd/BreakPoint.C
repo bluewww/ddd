@@ -139,8 +139,8 @@ void BreakPoint::process_gdb(string& info_output)
 {
     // Read type (`breakpoint' or `watchpoint')
     // The type may be prefixed by `hw ' or other details.
-    string word1 = info_output.before('\n');
-    string word2 = word1.after(rxblanks_or_tabs);
+    const string word1 = info_output.before('\n');
+    const string word2 = word1.after(rxblanks_or_tabs);
 
     if (word1.contains("watchpoint", 0) || 
 	word2.contains("watchpoint", 0))
@@ -274,7 +274,7 @@ void BreakPoint::process_gdb(string& info_output)
 		// Fetch ignore count
 		string count = line.after("ignore next ");
 		count = count.before(" hits");
-		ignore_count = atoi(count);
+		ignore_count = atoi(count.chars());
 	    }
 	    else if (line.contains("stop only if ", 0))
 	    {
@@ -399,11 +399,11 @@ void BreakPoint::process_dbx(string& info_output)
 		myline_nr = 0;
 
 		// Attempt to get exact position of FUNC
-		string pos = dbx_lookup(myfunc);
+		const string pos = dbx_lookup(myfunc);
 		if (pos != "")
 		{
-		    string file_name = pos.before(":");
-		    string line_s    = pos.after(":");
+		    const string file_name = pos.before(":");
+		    const string line_s    = pos.after(":");
 		    int new_line_nr  = get_positive_nr(line_s);
 
 		    myfile_name = file_name;
@@ -449,7 +449,7 @@ void BreakPoint::process_dbx(string& info_output)
 	    myinfos = "count " + count;
 	    if (count.contains('/'))
 		count = count.after('/');
-	    myignore_count = atoi(count);
+	    myignore_count = atoi(count.chars());
 	}
 
 	if (options.contains(" if ") || options.contains(" -if "))
@@ -483,7 +483,7 @@ void BreakPoint::process_xdb(string& info_output)
 	string count = info_output.before(rxblanks_or_tabs);
 	info_output = info_output.after(rxblanks_or_tabs);
 
-	myignore_count = atoi(count);
+	myignore_count = atoi(count.chars());
     }
 	    
     // Check for `Active' or `Suspended' and strip them
@@ -503,7 +503,7 @@ void BreakPoint::process_xdb(string& info_output)
     info_output = info_output.after(rxblanks_or_tabs);
     myfunc = info_output.before(": ");
 
-    string pos = dbx_lookup(myfunc);
+    const string pos = dbx_lookup(myfunc);
     if (pos != "")
     {
 	myfile_name = pos.before(":");
@@ -577,7 +577,7 @@ void BreakPoint::process_perl(string& info_output)
 
     if (!info_output.contains(' ', 0))
     {
-	string first_line = info_output.before('\n');
+	const string first_line = info_output.before('\n');
 	if (first_line.contains(':', -1))
 	{
 	    // Get leading file name
@@ -588,7 +588,7 @@ void BreakPoint::process_perl(string& info_output)
 
     static StringArray empty;
     mycommands = empty;
-    myline_nr = atoi(info_output);
+    myline_nr = atoi(info_output.chars());
     info_output = info_output.after('\n');
     bool break_seen = false;
     while (info_output.contains("  ", 0))
@@ -618,7 +618,7 @@ void BreakPoint::process_perl(string& info_output)
 	    string command = "";
 	    while (commands != "")
 	    {
-		string token = read_token(commands);
+		const string token = read_token(commands);
 		if (token != ";")
 		    command += token;
 
@@ -669,7 +669,7 @@ bool BreakPoint::update(string& info_output,
     myaddress_changed  = false;
     need_total_undo    = false;
 
-    string num = "@" + itostring(number()) + "@";
+    const string num = "@" + itostring(number()) + "@";
 
     if (new_bp.number() != number())
     {
@@ -929,8 +929,8 @@ bool BreakPoint::is_false(const string& cond)
     if (cond == false_value())
 	return true;
 
-    string c = downcase(cond);
-    string prefix = downcase(false_value() + and_op());
+    const string c = downcase(cond);
+    const string prefix = downcase(false_value() + and_op());
 
     return c.contains(prefix, 0);
 }
@@ -969,7 +969,7 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
     if (cond == char(-1))
 	cond = real_condition();
 
-    string num = "@" + itostring(nr) + "@";
+    const string num = "@" + itostring(nr) + "@";
 
     switch (gdb->type())
     {

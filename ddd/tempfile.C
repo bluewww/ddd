@@ -56,7 +56,7 @@ string tempfile()
 
 #if HAVE_MKSTEMP
     // Find a directory
-    char *tmpdir = getenv("TMPDIR");
+    const char *tmpdir = getenv("TMPDIR");
     if (tmpdir == 0)
     {
 #ifdef P_tmpdir

@@ -43,7 +43,7 @@ char findWindow_rcsid[] =
 #define LOG_FIND_WINDOWS 0
 #endif
 
-inline bool eq(String s1, String s2)
+inline bool eq(const _XtString s1, const _XtString s2)
 {
 #if LOG_FIND_WINDOWS
     if (s1 != 0)
@@ -54,7 +54,7 @@ inline bool eq(String s1, String s2)
 }
 
 bool windowMatches(Display *display, Window window,
-		   String title, String res_name, String res_class)
+		   const _XtString title, const _XtString res_name, const _XtString res_class)
 {
     XErrorBlocker blocker(display);
 
@@ -90,7 +90,7 @@ bool windowMatches(Display *display, Window window,
 }
 
 Window findWindow(Display *display, Window window,
-		  String title, String res_name, String res_class)
+		  const _XtString title, const _XtString res_name, const _XtString res_class)
 {
     XErrorBlocker blocker(display);
 

@@ -101,7 +101,7 @@ static void YnButtonCB(Widget dialog,
 		       XtPointer client_data, 
 		       XtPointer call_data)
 {
-    _gdb_out(string((char *)client_data) + '\n');
+    _gdb_out(string(STATIC_CAST(char *,client_data)) + '\n');
     gdbCommandCB(dialog, client_data, call_data);
     gdb_keyboard_command = true;
 }
@@ -118,8 +118,8 @@ static bool old_button_format()
 {
     if (app_data.dddinit_version == 0)
 	return true;
-    string v = app_data.dddinit_version;
-    int major = atoi(v);
+    const string v = app_data.dddinit_version;
+    int major = atoi(v.chars());
 
     if (major > 1900)
     {
@@ -130,8 +130,8 @@ static bool old_button_format()
 	    return false;	// 1998 or later
 
 	assert(major == 1997);
-	string v2 = v.after('-');
-	int minor = atoi(v2);
+	const string v2 = v.after('-');
+	int minor = atoi(v2.chars());
 	if (minor <= 9)		// 1997-09 or earlier
 	    return true;
 
@@ -146,8 +146,8 @@ static bool old_button_format()
 	    return false;	// 3.x or later
 
 	assert(major == 2);
-	string v2 = v.after('.');
-	int minor = atoi(v2);
+	const string v2 = v.after('.');
+	int minor = atoi(v2.chars());
 	if (minor <= 1)
 	    return true;	// 2.1 or earlier
 
@@ -315,7 +315,7 @@ static string gdbHelp(string original_command)
 
     if (help == NO_GDB_ANSWER && gdb->type() == DBX)
     {
-	string cmd  = command.before(rxwhite);
+	const string cmd  = command.before(rxwhite);
 	string base = command.after(rxwhite);
 	base.gsub(' ', '_');
 
@@ -441,7 +441,7 @@ static MString gdbDefaultHelpText(Widget widget)
     msg += cr();
     msg += cr();
 
-    string help = gdbHelp(name);
+    const string help = gdbHelp(name);
     if (help == NO_GDB_ANSWER)
     {
 	msg += rm("No help available now.") + cr();
@@ -452,7 +452,7 @@ static MString gdbDefaultHelpText(Widget widget)
 	msg += rm(help);
 
 	// Add current settings state, if any
-	string state = gdbSettingsValue(name);
+	const string state = gdbSettingsValue(name);
 	if (state != NO_GDB_ANSWER)
 	{
 	    msg += cr();
@@ -657,7 +657,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	    // Show hex value as well.  We don't do a local
 	    // conversion here, but ask GDB instead, since the hex
 	    // format may be language-dependent.
-	    string hextip = gdbValue("/x " + name);
+	    const string hextip = gdbValue("/x " + name);
 	    if (hextip != NO_GDB_ANSWER)
 		tip = hextip + " (" + tip + ")";
 	}
@@ -724,7 +724,7 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 
     if (help_name == "Undo")
     {
-	string action = undo_buffer.undo_action();
+	const string action = undo_buffer.undo_action();
 	if (action != NO_GDB_ANSWER)
 	    return rm("Undo " + action);
 	else
@@ -733,7 +733,7 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 
     if (help_name == "Redo")
     {
-	string action = undo_buffer.redo_action();
+	const string action = undo_buffer.redo_action();
 	if (action != NO_GDB_ANSWER)
 	    return rm("Redo " + action);
 	else
@@ -796,7 +796,7 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     // DBX (and others) restate the command name at the beginning.
     if (tip.contains(command, 0))
     {
-	string t = tip.after(command);
+	const string t = tip.after(command);
 	if (t != "" && !isalpha(t[0]))
 	{
 	    tip = t;
@@ -897,7 +897,6 @@ static WidgetArray buttons_to_be_verified;
 static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
-
     XtIntervalId& verify_id = *((XtIntervalId *)client_data);
     assert(*id == verify_id);
     verify_id = 0;
@@ -1046,7 +1045,7 @@ static void register_button(WidgetArray& arr, Widget w)
 
 // Create a button work area from BUTTON_LIST named NAME
 Widget make_buttons(Widget parent, const string& name, 
-		    String button_list)
+		    const _XtString button_list)
 {
     Arg args[10];
     int arg = 0;
@@ -1058,7 +1057,7 @@ Widget make_buttons(Widget parent, const string& name,
     XtSetArg(args[arg], XmNborderWidth, 0);            arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0);        arg++;
-    Widget buttons = verify(XmCreateRowColumn(parent, name, args, arg));
+    Widget buttons = verify(XmCreateRowColumn(parent, CONST_CAST(char*,name.chars()), args, arg));
 
     set_buttons(buttons, button_list);
 
@@ -1076,7 +1075,7 @@ Widget make_buttons(Widget parent, const string& name,
     return buttons;
 }
 
-void set_buttons(Widget buttons, String _button_list, bool manage)
+void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 {
     XtPointer user_data   = 0;
     WidgetList children   = 0;
@@ -1185,7 +1184,7 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNborderWidth, 0);        arg++;
 	XtSetArg(args[arg], XmNhighlightThickness, 1); arg++;
-	Widget button = verify(XmCreatePushButton(buttons, name, args, arg));
+	Widget button = verify(XmCreatePushButton(buttons, CONST_CAST(char*,name.chars()), args, arg));
 #endif
 	XtManageChild(button);
 	number_of_buttons++;
@@ -1374,9 +1373,9 @@ static void SetTextCB(Widget, XtPointer, XtPointer)
 
     str = normalize(str);
 
-    XmTextSetString(active_info->text, str);
+    XmTextSetString(active_info->text, CONST_CAST(char*,str.chars()));
 
-    *active_info->str = (String)XtNewString(str.chars());
+    *active_info->str = STATIC_CAST(String,XtNewString(str.chars()));
     update_user_buttons();
 }
 
@@ -1402,8 +1401,8 @@ static void ChangeTextCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	active_info = info;
 
-	string str = normalize(*info->str);
-	XmTextSetString(info->text, (char *)str.chars());
+	const string str = normalize(*info->str);
+	XmTextSetString(info->text, CONST_CAST(char *,str.chars()));
 	XtAddCallback(info->dialog, XmNhelpCallback, 
 		      HelpOnThisCB, XtPointer(w));
 
@@ -1431,16 +1430,16 @@ static void SetVerifyButtonsCB(Widget, XtPointer, XtPointer call_data)
 static Widget add_button(const _XtString name, 
 			 Widget dialog, Widget buttons, 
 			 Widget text, Widget vfy,
-			 String& str, bool shortcuts = false)
+			 const _XtString& str, bool shortcuts = false)
 {
     Arg args[10];
     Cardinal arg = 0;
-    Widget button = XmCreateToggleButton(buttons, (char *)name, args, arg);
+    Widget button = XmCreateToggleButton(buttons, CONST_CAST(char *,name), args, arg);
     XtManageChild(button);
 
     ChangeTextInfo *info = new ChangeTextInfo;
     info->dialog    = dialog;
-    info->str       = &str;
+    info->str       = CONST_CAST(String*,&str);
     info->text      = text;
     info->vfy       = vfy;
     info->shortcuts = shortcuts;
@@ -1462,7 +1461,7 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     buttons_dialog = 
 	verify(XmCreatePromptDialog(find_shell(parent), 
-				    (char *)"edit_buttons", args, arg));
+				    CONST_CAST(char *,"edit_buttons"), args, arg));
 
     XtAddCallback(buttons_dialog, XmNokCallback,     SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNokCallback,     
@@ -1484,7 +1483,7 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
     Widget box = 
-	verify(XmCreateRowColumn(buttons_dialog, (char *)"box", args, arg));
+	verify(XmCreateRowColumn(buttons_dialog, CONST_CAST(char *,"box"), args, arg));
     XtManageChild(box);
 
     arg = 0;
@@ -1493,7 +1492,7 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     shortcut_label = verify(XmCreateLabel(box, 
-					  (char *)"shortcuts", args, arg));
+					  CONST_CAST(char *,"shortcuts"), args, arg));
     XtManageChild(shortcut_label);
 
     arg = 0;
@@ -1502,18 +1501,18 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNorientation,  XmHORIZONTAL); arg++;
     button_box = 
-	verify(XmCreateRadioBox(box, (char *)"buttons", args, arg));
+	verify(XmCreateRadioBox(box, CONST_CAST(char *,"buttons"), args, arg));
     XtManageChild(button_box);
 
     arg = 0;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
-    Widget text = verify(XmCreateScrolledText(box, (char *)"text", args, arg));
+    Widget text = verify(XmCreateScrolledText(box, CONST_CAST(char *,"text"), args, arg));
     XtManageChild(text);
 
     arg = 0;
     XtSetArg(args[arg], XmNset, app_data.verify_buttons); arg++;
     Widget vfy = verify(XmCreateToggleButton(box, 
-					     (char *)"verify", args, arg));
+					     CONST_CAST(char *,"verify"), args, arg));
     XtManageChild(vfy);
     XtAddCallback(vfy, XmNvalueChangedCallback, SetVerifyButtonsCB, 0);
     XtAddCallback(vfy, XmNvalueChangedCallback, SetTextCB, 0);
@@ -1528,7 +1527,7 @@ static void create_buttons_dialog(Widget parent)
 	add_button("data", buttons_dialog, button_box, text, vfy,
 		   app_data.data_buttons);
 
-    String *str = 0;
+    const _XtString *str = 0;
     switch (gdb->type())
     {
     case GDB:  str = &app_data.gdb_display_shortcuts;  break;
@@ -1605,7 +1604,7 @@ void refresh_button_editor()
 	    expr += string('\t') + app_data.label_delimiter + ' ' + labels[i];
     }
 
-    String *str = 0;
+    const _XtString *str = 0;
     switch (gdb->type())
     {
     case GDB:  str = &app_data.gdb_display_shortcuts;  break;
@@ -1616,10 +1615,10 @@ void refresh_button_editor()
     case PERL: str = &app_data.perl_display_shortcuts; break;
     }
 
-    *str = (String)XtNewString(expr.chars());
+    *str = STATIC_CAST(String,XtNewString(expr.chars()));
 
-    if (active_info != 0 && active_info->str == str)
-	XmTextSetString(active_info->text, *str);
+    if (active_info != 0 && active_info->str == CONST_CAST(char**,str))
+	XmTextSetString(active_info->text, CONST_CAST(char*,*str));
 }
 
 
@@ -1638,7 +1637,7 @@ static MMDesc desc[] =
 // Create a flat PushButton named NAME
 Widget create_flat_button(Widget parent, const string& name)
 {
-    desc[0].name = (char *)name;
+    desc[0].name = name.chars();
     MMaddItems(parent, desc);
     MMaddCallbacks(desc);
     return desc[0].widget;

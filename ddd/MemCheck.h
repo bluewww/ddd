@@ -157,7 +157,7 @@ public:
 
     ~MemChecker()
     {
-	MemCheck::map(clog, start, prefix);
+	MemCheck::map(clog, start, prefix.chars());
     }
 };
 

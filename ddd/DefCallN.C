@@ -100,7 +100,8 @@ const Box *DefCallNode::call(Box *a) const
 // Return function name
 const char *DefCallNode::func_name() const
 {
-    return _deflist->f_name();
+    static const string s1 = _deflist->f_name();
+    return s1.chars();
 }
 
 

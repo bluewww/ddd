@@ -209,7 +209,7 @@ static void InvokeGDBFromShellHP(Agent *source, void *client_data,
 		&& app_data.rhost_init_commands[0] != '\0')
 	    {
 		string init = string(app_data.rhost_init_commands) + "\n";
-		gdb->write(init, init.length());
+		gdb->write(init.chars(), init.length());
 	    }
 
 	    init_sent = true;
@@ -218,7 +218,7 @@ static void InvokeGDBFromShellHP(Agent *source, void *client_data,
 	{
 	    // Invoke GDB...
 	    const string& gdb_call = *((string *)client_data);
-	    gdb->write(gdb_call, gdb_call.length());
+	    gdb->write(gdb_call.chars(), gdb_call.length());
 
 	    // Echoing should be disabled by now.  Echo call manually...
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 

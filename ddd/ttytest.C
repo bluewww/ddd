@@ -101,7 +101,7 @@ void exitHP(Agent *, void *client_data, void *)
 // Invoked whenever the inferior dies
 void diedHP(Agent *a, void *client_data, void *call_data)
 {
-    cerr << a->path() << ": " << (char *)call_data << "\n";
+    cerr << a->path() << ": " << STATIC_CAST(char *,call_data) << "\n";
 
     TTYAgent& tty = *((TTYAgent *)client_data);
     tty.shutdown();

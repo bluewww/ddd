@@ -132,7 +132,7 @@ static DispValueType _determine_type (string& value)
     if (value.matches(rxstruct_begin))
     {
 	// Check for empty struct.
-	char *v = value;
+	const char *v = value.chars();
 	value.consuming(true);
 	string addr;
 	bool ok = (read_struct_begin(value, addr) && 
@@ -242,13 +242,13 @@ static DispValueType _determine_type (string& value)
 	// as in pointers to functions), GDB uses '{...}' instead (as
 	// in `{int ()} 0x2908 <main>').
 
-	read_token(value, pointer_index);
+	read_token(value.chars(), pointer_index);
 	while (pointer_index < int(value.length()) && 
 	       isspace(value[pointer_index]))
 	    pointer_index++;
     }
 
-    int addr_len = rxaddress.match(value, value.length(), pointer_index);
+    int addr_len = rxaddress.match(value.chars(), value.length(), pointer_index);
     if (addr_len > 0)
     {
 	// We have an address.
@@ -303,7 +303,7 @@ DispValueType determine_type(const string& value)
     clog << quote(value);
 #endif
 
-    char *v = value;
+    const char *v = value.chars();
     ((string &)value).consuming(true);
     DispValueType type = _determine_type((string &)value);
     ((string &)value) = v;
@@ -492,8 +492,8 @@ string read_token(string& value)
 	return "";
 
     int pos = 0;
-    read_token(value, pos);
-    string token = string(value, pos);
+    read_token(value.chars(), pos);
+    string token = string(value.chars(), pos);
     value = value.from(pos);
 
     // clog << "read_token() = " << quote(token) << "\n";
@@ -600,14 +600,14 @@ bool read_array_begin(string& value, string& addr)
     {
 	// JDB prepends the array type and address, as in 
 	// `list = (List)0x4070ee90 { ... }'.  Skip the type.
-	read_token(value, pointer_index);
+	read_token(value.chars(), pointer_index);
 	while (pointer_index < int(value.length()) && 
 	       isspace(value[pointer_index]))
 	    pointer_index++;
     }
 
     // XDB and JDB prepend the address before each struct.  Save it.
-    int addr_len = rxaddress.match(value, value.length(), pointer_index);
+    int addr_len = rxaddress.match(value.chars(), value.length(), pointer_index);
     if (addr_len > 0)
     {
 	addr  = value.at(pointer_index, addr_len);
@@ -740,7 +740,7 @@ int read_repeats(string& value)
     if (value.contains('<', 0) && value.contains(rxrepeats, 0))
     {
 	value = value.from(rxint);
-	repeats = atoi(value);
+	repeats = atoi(value.chars());
 	value = value.after('>');
     }
 

@@ -34,10 +34,10 @@
 
 extern "C" {
 extern int noglob_dot_filenames;
-extern int glob_pattern_p (char *pattern);
-extern int glob_match (char *pattern, char *text, int dot_special);
-extern char **glob_vector (char *pat, char *dir);
-extern char **glob_filename(char *pathname);
+extern int glob_pattern_p (const char *pattern);
+extern int glob_match (const char *pattern, const char *text, int dot_special);
+extern char **glob_vector (const char *pat, const char *dir);
+extern char **glob_filename(const char *pathname);
 }
 
 #endif // _DDD_glob_h

@@ -41,14 +41,14 @@ char home_rcsid[] =
 #include <pwd.h>
 
 // Return home dir
-char *gethome()
+const char *gethome()
 {
     static string home = "";
 
     // Try using $HOME
     if (home == "")
     {
-	char *h = getenv("HOME");
+	const char *h = getenv("HOME");
 	if (h != 0)
 	    home = h;
     }
@@ -58,7 +58,7 @@ char *gethome()
     {
 	struct passwd *pw = 0;
 
-	char *user = getenv("USER");
+	const char *user = getenv("USER");
 	if (user == 0)
 	    user = getenv("LOGNAME");
 
@@ -74,5 +74,5 @@ char *gethome()
     if (home == "")
 	home = ".";
 
-    return home;
+    return home.chars();
 }

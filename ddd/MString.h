@@ -40,6 +40,7 @@
 #include <Xm/Xm.h>
 #include "strclass.h"
 #include "assert.h"
+#include "casts.h"
 
 #ifdef XmFONTLIST_DEFAULT_TAG
 #define MSTRING_DEFAULT_CHARSET XmFONTLIST_DEFAULT_TAG
@@ -54,21 +55,21 @@ private:
 public:
     // Constructors
     MString():
-	_mstring(XmStringCreateLtoR((char *)"", MSTRING_DEFAULT_CHARSET))
+	_mstring(XmStringCreateLtoR(CONST_CAST(char *,""), MSTRING_DEFAULT_CHARSET))
     {
 	assert(OK());
     }
 
     MString(const char *text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
-	_mstring(text ? XmStringCreateLtoR((char *)text, charset) : 0)
+	_mstring(text ? XmStringCreateLtoR(CONST_CAST(char *,text), charset) : 0)
     {
 	assert(OK());
     }
 
     MString(const string& text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
-	_mstring(XmStringCreateLtoR((char *)text, charset))
+	_mstring(XmStringCreateLtoR(CONST_CAST(char *,text.chars()), charset))
     {
 	assert(OK());
     }
@@ -201,8 +202,13 @@ public:
     }
 
     // Conversions
+#if 0
+    // TODO remove
+ private:
     operator XmString() const { return _mstring; }
     operator XmString()       { return _mstring; }
+ public:
+#endif
     XmString xmstring() const { return _mstring; }
 
     // Substrings

@@ -455,12 +455,12 @@ void VSEFlags::getDefaults(bool warn)
 {
 
     string filename = ".vserc";
-    FILE *fp = fopen(filename, "r");
+    FILE *fp = fopen(filename.chars(), "r");
     if (fp == 0)
     {
 	string home = gethome();
 	filename.prepend(home + "/");
-	fp = fopen(filename, "r");
+	fp = fopen(filename.chars(), "r");
 
 	if (fp == 0)
 	{
@@ -474,7 +474,7 @@ void VSEFlags::getDefaults(bool warn)
 		":/usr/lib";
 
 	    char buffer[BUFSIZ];
-	    strcpy(buffer, path);
+	    strcpy(buffer, path.chars());
 
 	    for (char *p = strtok(buffer, ":"); 
 		 p != 0; 
@@ -482,7 +482,7 @@ void VSEFlags::getDefaults(bool warn)
 	    {
 		filename = string(p) + "/vserc";
 
-		fp = fopen(filename, "r");
+		fp = fopen(filename.chars(), "r");
 		if (fp != 0)
 		    break;
 	    }
@@ -525,7 +525,7 @@ void VSEFlags::getDefaults(bool warn)
     } while (nargs != EOF);
 
     if (fclose(fp) == EOF)
-	perror(filename);
+	perror(filename.chars());
 
     return;
 }
