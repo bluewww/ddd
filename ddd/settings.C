@@ -2802,6 +2802,9 @@ static void refresh_toggles()
 
 static void refresh_combo_box()
 {
+    if (name_w == 0)
+	return;			// Not yet created
+
     // Refresh combo box
     StringArray commands;
     for (StringStringAssocIter iter(defs); iter.ok(); iter++)

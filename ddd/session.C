@@ -784,7 +784,7 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 // Session open
 // ---------------------------------------------------------------------------
 
-// Get a resource from DB named nm with class cl
+// Get a string resource from DB named NAME with class CLS
 static string get_resource(XrmDatabase db, string name, string cls)
 {
     static string prefix = DDD_CLASS_NAME ".";
@@ -796,11 +796,9 @@ static string get_resource(XrmDatabase db, string name, string cls)
     
     XrmGetResource(db, name, cls, &rtype, &value);
     if (value.addr != 0)
-    {
 	return string((char *)value.addr, value.size - 1);
-    }
-    else
-	return "";		// Not found
+
+    return "";		// Not found
 }
 
 static Boolean delete_delay_if_idle(XtPointer data)
@@ -875,6 +873,35 @@ static void open_session(const string& session)
     // signals will be updated from scratch)
     reset_settings();
     reset_signals();
+
+
+    // Set buttons and display shortcuts
+    static string data_buttons;
+    data_buttons = get_resource(db, XtNdataButtons, XtCButtons);
+    app_data.data_buttons = data_buttons;
+
+    static string source_buttons;
+    source_buttons = get_resource(db, XtNsourceButtons, XtCButtons);
+    app_data.source_buttons = source_buttons;
+
+    static string console_buttons;
+    console_buttons = get_resource(db, XtNconsoleButtons, XtCButtons);
+    app_data.console_buttons = console_buttons;
+
+    static string display_shortcuts;
+    display_shortcuts = 
+	get_resource(db, XtNdisplayShortcuts, XtCDisplayShortcuts);
+    app_data.display_shortcuts = display_shortcuts;
+
+    update_user_buttons();
+
+
+    // Set options
+    int tab_width = atoi(get_resource(db, XtNtabWidth, XtCTabWidth));
+    app_data.tab_width = tab_width ? tab_width : 8;
+
+    update_options();
+
 
     // Enqueue start-up commands
     string restart = get_resource(db, XtNrestartCommands, XtCInitCommands);

@@ -160,6 +160,10 @@ Settings
 
 - Signal settings are saved with the current session.
 
+- Opening a session restores button definitions, display shortcuts,
+  and tab width.  This way, you can manage different configurations
+  for different projects.
+
 - DBX breakpoints are saved referring to the function name, if possible.
   This is useful when working with derived sources.
 
