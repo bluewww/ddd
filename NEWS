@@ -10,10 +10,18 @@ DDD 3.1.2 fixes more minor bugs in DDD 3.1:
 - Show/Hide works properly with deeply nested substructures.
 - Execution positions as reported by AIX DBX are properly recognized.
 - Struct fields whose name starts with 'END' are properly handled.
+- Using Perl, you can redirect I/O in arguments of `Program->Run'.
 - DDD also uses the CLASSPATH environment variable to lookup Java classes.
 
-There are no new features in DDD 3.1.2, so unless you suffer from one
-of the bugs listed above, feel free to upgrade at some later time.
+
+There is also one new feature in DDD 3.1.2:
+
+- The separate execution window is now supported for Perl.
+
+
+There are no other features in DDD 3.1.2, so unless you use Perl or
+suffer from one of the bugs listed above, feel free to upgrade at some
+later time.
 
 
 DDD 3.1.1

@@ -312,8 +312,8 @@ J	[A-Za-z_$][A-Za-z0-9_$.]*
 82@{_}{x}{_}:{C} 			RETURN(&rxreference);
 83{_}refresh({W}{C})?			RETURN(&rxrefresh_cmd);
 84{C}([(]press{W}RETURN[)]|Hit{W}RETURN{W}to{W}continue|Type{W}<return>{W}to{W}continue|More{W}[(]n{W}if{W}no[)][?]|{W}cont:{W}).* RETURN(&rxreturn);
-85{_}(r|rer|rerun|ru|run|R)({W}{C})? RETURN(&rxrun_cmd);
-86{_}(r|ru|run|rer|rerun|c|cont|contin|continu|continue|sig|sign|signa|signal|u|unt|unti|until|s|si|step|stepi|n|ni|next|nexti|j|ju|jump|k|ki|kill|fin|fini|finis|finish|R|S)({W}{C})?	RETURN(&rxrunning_cmd);
+85{_}(r|rer|rerun|ru|run|R|exec)({W}{C})? RETURN(&rxrun_cmd);
+86{_}(r|ru|run|rer|rerun|c|cont|contin|continu|continue|sig|sign|signa|signal|u|unt|unti|until|s|si|step|stepi|n|ni|next|nexti|j|ju|jump|k|ki|kill|fin|fini|finis|finish|R|S|exec)({W}{C})?	        RETURN(&rxrunning_cmd);
 87Select{w}one{w}of{w}\[{D}{w}-{w}{D}\]:{w}	RETURN(&rxselect);
 88;{_}[}]				RETURN(&rxsemicolon_and_brace);
 89[^-_a-zA-Z0-9]			RETURN(&rxsep);

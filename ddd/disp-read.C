@@ -118,7 +118,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 	"|j|ju|jump"
 	"|k|ki|kill"
 	"|fin|fini|finis|finish"
-        "|R|S"
+        "|R|S|exec"
 	")([ \t]+.*)?");
 
     static regex rxdisplay("[ \t]*(disp|displ|displa|display)([ \t]+.*)?");
@@ -147,7 +147,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 bool is_run_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
-    static regex rxrun_cmd("[ \t]*(r|rer|rerun|ru|run|R)([ \t]+.*)?");
+    static regex rxrun_cmd("[ \t]*(r|rer|rerun|ru|run|R|exec)([ \t]+.*)?");
 #endif
 
     return cmd.matches (rxrun_cmd);

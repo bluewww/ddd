@@ -847,12 +847,6 @@ command tool.  You may also enter `\fBrun\fR', followed by arguments
 at the debugger prompt instead.
 .PP
 .PSPIC @srcdir@/PICS/ddd-arguments.ps 15.3cm
-.PP
-When you use the Perl debugger, your program is always running.  The
-`\fBRun\fR' button restarts the Perl interpreter instead, generating
-the command `\fBexec perl -d \fIscript\fR'.  To redirect Perl
-input/output, add appropriate shell redirection directives, such as
-`\fBexec perl -d \fIscript\fR 2> /dev/null'.
 .\"
 .\"
 .SS "Using the Execution Window"
