@@ -84,6 +84,8 @@ static String xlibdir(Display *display, bool verbose = false)
 
     if (!is_cmd_file(cmd_file("xmkmf")))
 	return dir;		// No `xmkmf' in PATH
+    if (!is_cmd_file(cmd_file("make")))
+	return dir;		// No `make' in PATH
 
     static const char shell_command[] =
 	""
