@@ -205,7 +205,7 @@ static void GDBOutCB(XtPointer client_data, XtIntervalId *)
 Widget post_gdb_message(string text, Widget w)
 {
     strip_final_blanks(text);
-    if (text == "")
+    if (text == "" || text == NO_GDB_ANSWER)
 	return 0;
 
     if (ddd_is_exiting)
