@@ -131,7 +131,6 @@ extern "C" {
 
 // DDD stuff
 #include "AppData.h"
-#include "BulletiBRH.h"
 #include "Command.h"
 #include "MakeMenu.h"
 #include "PosBuffer.h"
@@ -3099,7 +3098,6 @@ void SourceView::create_shells()
 
     Widget form1 = 
 	verify(XmCreateRowColumn(edit_breakpoints_dialog_w, "form1", NULL, 0));
-    add_bulletin_board_resize_handler(form1);
 
     Widget label =
 	verify(XmCreateLabel(form1, "breakpoints", NULL, 0));
@@ -3108,8 +3106,7 @@ void SourceView::create_shells()
 	verify(XmCreateRowColumn(form1, "form2", NULL, 0));
 
     arg = 0;
-    breakpoint_list_w = 
-	verify(XmCreateScrolledList(form2, "breakpoints", args, arg));
+    breakpoint_list_w = verify(XmCreateScrolledList(form2, "list", args, arg));
     Widget buttons = 
 	verify(MMcreateWorkArea(form2, "buttons", bp_area));
     MMaddCallbacks(bp_area);
@@ -5391,7 +5388,6 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
     Widget form = XmCreateRowColumn(info->dialog, "form", args, arg);
     XtManageChild(form);
-    add_bulletin_board_resize_handler(form);
 
     Widget panel = MMcreatePanel(form, "panel", panel_menu);
 
