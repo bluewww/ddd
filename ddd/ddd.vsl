@@ -52,7 +52,8 @@ array_color(box)     = color(box, "blue4");
 reference_color(box) = color(box, "blue4");
 
 // The title
-title (disp_nr, name) -> title_color(rm(disp_nr & ": ") & bf(name) & hfill());
+title (disp_nr, name) -> 
+  title_color(rm(disp_nr & ": ") & bf(name) & hfill());
 
 // The "disabled" string
 disabled () -> 
