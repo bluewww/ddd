@@ -860,7 +860,7 @@ PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 DIST_STUFF	 = $(PROG_STUFF) $(MANS) $(PSS) $(ICONS)
 
 # Temporary Files to be cleaned, keeping configuration intact
-CLEAN_STUFF	 = $(ddd)-$(VERSION)-* $(PROGS) $(DEMOS) $(PICS) \
+CLEAN_STUFF	 = $(ddd)-$(VERSION)-* $(PROGS) $(DEMOS) \
 		   core *.o *.a *.s *.i \
 		   tmp* *.tmp .*hist* *.syms *.log dddgraph.* \
 		   *.aux *.cp *.cps *.fn *.fns *.flc \
@@ -883,7 +883,7 @@ REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF) \
 # All files that can be reconstructed (but may require special programs)
 ULTRACLEAN_STUFF = $(REALCLEAN_STUFF) \
 		   config.h.in stamp-h.in configure Makedeps \
-		   $(MANS) $(README_FILES) $(HTMLS) $(srcdir)/Ddd.in
+		   $(PICS) $(MANS) $(README_FILES) $(HTMLS) $(srcdir)/Ddd.in
 
 
 ## Targets as specified in GNU standards.
