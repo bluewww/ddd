@@ -115,4 +115,6 @@ Volunteers for fixing these and other bugs are welcome!
     => X toolkit error: cannot perform realloc
     nb - does _not_ generate the fault if the edit menu is not torn off.
 
-302 (Insert new bugs here)
+303 Since JDB does not support an execution window, make it insensitive.
+
+304 (Insert new bugs here)

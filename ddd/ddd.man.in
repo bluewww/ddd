@@ -5053,7 +5053,6 @@ The execution pointer (stopped by signal).
 .\"
 \s-1@DDD@\s+1 is controlled by the following environment variables:
 .PP
-.PD 0
 .TP 20
 .B @DDD@_NO_SIGNAL_HANDLERS
 If set, \s-1@DDD@\s+1 does not catch fatal errors.  This is sometimes
@@ -5084,13 +5083,13 @@ The \s-1WWW\s+1 browser to invoke for viewing the \s-1@DDD@\s+1
 .B XEDITOR
 The X editor to invoke for editing source code.  See the
 `\fBeditCommand\fR' resource, above.
-.PD
+.PP
 The following environment variables are set by \s-1@DDD@\s+1:
-.PD 0
+.PP
 .TP 20
-.B DDD_NAME
+.B DDD
 Set to a string indicating the \s-1@DDD@\s+1 version.  By testing
-whether \fBDDD_NAME\fR is set, a debuggee (or inferior debugger) can
+whether \fBDDD\fR is set, a debuggee (or inferior debugger) can
 determine whether it was invoked by \s-1@DDD@\s+1.
 .TP
 .B TERM
@@ -5104,7 +5103,6 @@ Set to `' (none), the \s-1@DDD@\s+1 terminal capabilities.
 .TP
 .B PAGER
 Set to `\fBcat\fR', the preferred \s-1@DDD@\s+1 pager.
-.PD
 .\"
 .\"
 .\" ---------------
