@@ -58,6 +58,10 @@ dnl
 dnl
 dnl Not much to do here.  Configure the sub-directories.
 dnl
+dnl Use the C++ compiler for all checks.
+ICE_PROG_CXX
+AC_LANG_CPLUSPLUS
+dnl
 # Avoid calling config.guess again.  In libiberty, this destroys dummy.c.
 case "$ac_configure_args" in
 *--host*) ;;
