@@ -334,11 +334,11 @@ bool Agent::running()
 
 
 // child status change
-void Agent::hasNewStatus(int status)
+void Agent::hasNewStatus(int state)
 {
-    _lastStatus = status;
+    _lastStatus = state;
 
-    if (WIFEXITED(status) || WIFSIGNALED(status))
+    if (WIFEXITED(state) || WIFSIGNALED(state))
     {
 	// agent died: inhibit further communication
 	abort();
