@@ -2409,15 +2409,12 @@ int main(int argc, char *argv[])
 	arg = 0;
 	tool_buttons_w = 
 	    verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
-	set_buttons(tool_buttons_w, app_data.tool_buttons);
+	set_buttons(tool_buttons_w, app_data.tool_buttons, false);
 
-	XtManageChild(tool_buttons_w);
-	XtRealizeWidget(tool_shell);
 	Delay::register_shell(tool_shell);
-
 	XtAddEventHandler(tool_shell, structure_mask, False,
 			  StructureNotifyEH, XtPointer(0));
-	
+
 	if (app_data.tool_bar)
 	{
 	    // The command tool is not needed, as we have a tool bar.

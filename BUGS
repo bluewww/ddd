@@ -372,9 +372,6 @@ Volunteers for fixing these and other bugs are welcome!
 200. With DBX on SunOS 4.1.4, sessions do not work (cannot save core
      file).
 
-202. Hal Manuel <hemanuel@gar.esys.com> states that he gets a command
-     tool no matter what preference he has saved.  HP-UX problem?
-
 203. On IRIX6.3 and DBX, the green arrow indicating the current
      execution position is always at the first line of the currently
      active source file.  Reported by Uwe Wark <uw@bruker.de>
