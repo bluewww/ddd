@@ -36,7 +36,7 @@ Volunteers for these and other projects are welcome!
 
 006. With GDB 4.14 and later, define `graph display' command such that
      a special code is issued which causes DDD to show the display.
-     This makes it possible to use `graph display' in own definitions.
+     Thus, one could use `graph display' in own definitions.
 
 007. [done]
 
