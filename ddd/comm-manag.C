@@ -64,6 +64,7 @@ char comm_manager_rcsid[] =
 #include "ddd.h"
 #include "disp-read.h"
 #include "editing.h"
+#include "exectty.h"
 #include "exit.h"
 #include "file.h"
 #include "history.h"
@@ -418,6 +419,12 @@ inline String str(String s)
     return s != 0 ? s : "";
 }
 
+static void StartDoneCB(const string& /* answer */, void * /* qu_data */)
+{
+    // If we have an execution tty, use it.
+    gdb_reset_exec_tty();
+}
+
 void start_gdb(bool config)
 {
     // Register asynchronous answer handler
@@ -641,6 +648,7 @@ void start_gdb(bool config)
     c.verbose  = false;
     c.prompt   = false;
     c.check    = true;
+    c.callback = StartDoneCB;
     gdb_command(c);
 }
 
