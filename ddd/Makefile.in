@@ -636,6 +636,7 @@ LIB_OBJECTS = \
 DDD_OBJECTS = \
 	args.o       \
 	buttons.o    \
+	charsets.o   \
 	cmdtty.o     \
 	configinfo.o \
 	comm-manag.o \
