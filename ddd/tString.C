@@ -8,8 +8,7 @@
 #include "assert.h"
 #include "config.h"
 
-#include <stream.h>  // see note below on `dec(20)' about why this will go away
-#include <std.h>
+#include <iostream.h>
 
 // can't nicely echo assertions because they contain quotes
 
@@ -65,12 +64,8 @@ void decltest()
   assert(z.OK());
   assert(z == "@");
 
-  // XXX: `dec' is obsolete.  Since string.h includes iostream.h, and not
-  //      stream.h, we include stream.h in this file for the time being.  This
-  //      test will be rewritten to be done the "right" way, but for now, let's
-  //      save some time and go the easy route.
-  string n = dec(20);
-  cout << "A string initialized to dec(20):" << n << "\n";
+  string n = "20";
+  cout << "A string initialized to 20:" << n << "\n";
   assert(n.OK());
   assert(n == "20");
 
