@@ -1123,16 +1123,12 @@ void handle_graph_cmd (string cmd, Widget origin,
 
 	string display_expression = get_display_expression(cmd);
 	data_disp->new_displaySQ(display_expression, pos, depends_on, origin);
-	return;
     }
-
-    if (is_refresh_cmd (cmd))
+    else if (is_refresh_cmd(cmd))
     {
 	data_disp->refresh_displaySQ(origin);
-	return;
     }
-
-    if (is_data_cmd (cmd))
+    else if (is_data_cmd(cmd))
     {
 	IntArray numbers;
 	read_numbers(cmd.after("display"), numbers);
@@ -1140,21 +1136,23 @@ void handle_graph_cmd (string cmd, Widget origin,
 	if (is_delete_display_cmd (cmd))
 	{
 	    data_disp->delete_displaySQ(numbers);
-	    return;
 	}
 	else if (is_disable_display_cmd (cmd))
 	{
 	    data_disp->disable_displaySQ(numbers);
-	    return;
 	}
 	else if (is_enable_display_cmd (cmd))
 	{
 	    data_disp->enable_displaySQ(numbers);
-	    return;
 	}
     }
+    else
+    {
+	user_cmdSUC(cmd, origin, callback, data, verbose, check);
+    }
 
-    user_cmdSUC(cmd, origin, callback, data, verbose, check);
+    // Make sure the command queue is processed further
+    processCommandQueue(0, 0);
 }
 
 
