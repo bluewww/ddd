@@ -301,12 +301,26 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     info->top = verify(XmCreateFrame(parent, "frame", args, arg));
     XtManageChild(info->top);
 
-#if USE_XM_COMBOBOX
     arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,        0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,        0); arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
+    Widget form = verify(XmCreateForm(info->top, "form", args, arg));
+    XtManageChild(form);
+
+#if USE_XM_COMBOBOX
+    // ComboBoxes in OSF/Motif 2.0 sometimes resize themselves without
+    // apparent reason.  Prevent this by constraining them in a form.
+    arg = 0;
+    XtSetArg(args[arg], XmNleftAttachment,     XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNrightAttachment,    XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNtopAttachment,      XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNbottomAttachment,   XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNresizable,          False);         arg++;
     for (Cardinal i = 0; i < _arg; i++)
 	args[arg++] = _args[i];
-    Widget combo = verify(XmCreateDropDownComboBox(info->top, 
-						   name, args, arg));
+    Widget combo = verify(XmCreateDropDownComboBox(form, name, args, arg));
     XtManageChild(combo);
 
     arg = 0;
@@ -331,19 +345,24 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     info->shell = info->list;
     while (!XtIsShell(info->shell))
 	info->shell = XtParent(info->shell);
+
+    // Set form size explicitly.
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight | CWWidth;
+    XtQueryGeometry(combo, NULL, &size);
+    XtVaSetValues(form, XmNheight, size.height, XmNwidth, size.width, NULL);
+
+    // Set frame size explicitly, too
+    Dimension shadow_thickness;
+    XtVaGetValues(info->top, XmNshadowThickness, &shadow_thickness, NULL);
+    XtVaSetValues(info->top, XmNheight, size.height + shadow_thickness * 2, 
+		  XmNwidth, size.width + shadow_thickness * 2, NULL);
 #else
     arg = 0;
-    XtSetArg(args[arg], XmNmarginWidth,        0); arg++;
-    XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
-    XtSetArg(args[arg], XmNborderWidth,        0); arg++;
-    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    Widget form = verify(XmCreateForm(info->top, "form", args, arg));
-    XtManageChild(form);
-
-    arg = 0;
-    XtSetArg(args[arg], XmNborderWidth,        0); arg++;
-    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    XtSetArg(args[arg], XmNshadowThickness,    0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,        0);     arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
+    XtSetArg(args[arg], XmNshadowThickness,    0);     arg++;
+    XtSetArg(args[arg], XmNresizable,          False); arg++;
     for (Cardinal i = 0; i < _arg; i++)
 	args[arg++] = _args[i];
     info->text = verify(XmCreateTextField(form, name, args, arg));
@@ -353,19 +372,17 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     XtVaGetValues(parent, XmNbackground, &foreground, 0);
 
     arg = 0;
-    XtSetArg(args[arg], XmNarrowDirection,     XmARROW_DOWN); arg++;
-    XtSetArg(args[arg], XmNborderWidth,        0);            arg++;
-    XtSetArg(args[arg], XmNforeground,         foreground);   arg++;
-    XtSetArg(args[arg], XmNhighlightThickness, 0);            arg++;
-    XtSetArg(args[arg], XmNshadowThickness,    0);            arg++;
+    XtSetArg(args[arg], XmNarrowDirection,     XmARROW_DOWN);  arg++;
+    XtSetArg(args[arg], XmNborderWidth,        0);             arg++;
+    XtSetArg(args[arg], XmNforeground,         foreground);    arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0);             arg++;
+    XtSetArg(args[arg], XmNshadowThickness,    0);             arg++;
+    XtSetArg(args[arg], XmNresizable,          False);         arg++;
+    XtSetArg(args[arg], XmNrightAttachment,    XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNtopAttachment,      XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNbottomAttachment,   XmATTACH_FORM); arg++;
     info->button = XmCreateArrowButton(form, "comboBoxArrow", args, arg);
     XtManageChild(info->button);
-
-    XtVaSetValues(info->button,
-		  XmNrightAttachment,   XmATTACH_FORM,
-		  XmNtopAttachment,     XmATTACH_FORM,
-		  XmNbottomAttachment,  XmATTACH_FORM,
-		  NULL);
 
     XtVaSetValues(info->text,
 		  XmNleftAttachment,   XmATTACH_FORM,
