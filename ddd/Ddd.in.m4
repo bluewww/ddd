@@ -3626,8 +3626,8 @@ WIDGET(@GDB@ Settings)\n\
 These settings control @GDB@ operations.\n\
 Click on LBL(?) near an item to get further information.\n\
 \n\
-LBL(Edit, Save Options) saves all @GDB@ settings\n\
-except session-dependent settings such as source or object paths.\n\
+LBL(Edit, Save Options) saves all @GDB@ settings, except\n\
+session-dependent settings such as source or object paths.\n\
 LBL(File, Save Session) also saves session-dependent @GDB@ settings.\n\
 \n\
 Click on LBL(Apply) to apply changed text settings.\n\
