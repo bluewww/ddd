@@ -977,8 +977,9 @@ Ddd*tool_shell.iconName: 		@DDD@: Command Tool
 ! Don't place resize handles on dialogs
 Ddd*XmDialogShell.mwmDecorations: 26
 
-! Exception: the help index.
+! Exception: the manual page and license page.
 Ddd*manual_help_popup.mwmDecorations: 1
+Ddd*text_help_popup.mwmDecorations:   1
 
 
 !-----------------------------------------------------------------------------
@@ -1017,7 +1018,19 @@ Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
 Ddd*manual_help*contextHelpString: \
 @rm This is the @sl @DDD@ Manual@rm.\n\
 \n\
-Select titles from the index on the left to get help on a specific item.
+Select titles from the index on the left\n\
+to get help on a specific item.
+
+! DDD license.
+Ddd*text_help*text.columns:           80
+Ddd*text_help*text.rows:              25
+Ddd*text_help*scrollBarDisplayPolicy: XmAS_NEEDED
+
+Ddd*text_help*contextHelpString: \
+@rm This is the @sl @DDD@ License@rm.\n\
+\n\
+It describes the terms and conditions\n\
+for copying, distributing and modifying @DDD@.
 
 ! The official announcement.
 ! Build information (from `USERINFO') is appended to this text.
@@ -1596,9 +1609,9 @@ Ddd*menubar.help*contextHelpString: \
 @tt \267 @bf On Help... @rm - help on how to use the help facility.\n\
 @tt \267 @bf On Version... @rm - some general information about @DDD@.\n\
 \n\
-@tt \267 @bf @DDD@ WWW Page... @rm - the @DDD@ WWW page.\
-\n\
-@tt \267 @bf @DDD@ Manual... @rm - the @DDD@ on-line manual.
+@tt \267 @bf @DDD@ Manual... @rm - the @DDD@ on-line manual.\n\
+@tt \267 @bf @DDD@ License... @rm - the @DDD@ license.\n\
+@tt \267 @bf @DDD@ WWW Page... @rm - the @DDD@ WWW page.
 
 Ddd*helpMenu.onContext.labelString:	On Context...
 Ddd*helpMenu.onContext.mnemonic:	C
@@ -1615,11 +1628,14 @@ Ddd*helpMenu.onHelp.mnemonic:		H
 Ddd*helpMenu.onVersion.labelString:	On Version...
 Ddd*helpMenu.onVersion.mnemonic:	V
 
-Ddd*helpMenu.www.labelString:		@DDD@ WWW Page...
-Ddd*helpMenu.www.mnemonic:		P
-
 Ddd*helpMenu.index.labelString:		@DDD@ Manual...
 Ddd*helpMenu.index.mnemonic:		M
+
+Ddd*helpMenu.license.labelString:	@DDD@ License...
+Ddd*helpMenu.license.mnemonic:		L
+
+Ddd*helpMenu.www.labelString:		@DDD@ WWW Page...
+Ddd*helpMenu.www.mnemonic:		P
 
 
 !-----------------------------------------------------------------------------

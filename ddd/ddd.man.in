@@ -19,14 +19,15 @@
 .\" 
 .\" You should have received a copy of the GNU General Public License
 .\" along with DDD -- see the file COPYING.  If not, write to the Free
-.\" Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\" Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+.\" MA 02111-1307, USA.
 .\" 
 .\" DDD is the data display debugger.
 .\" For details, see the DDD World-Wide-Web page, 
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "15 August 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "22 August 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -65,6 +66,7 @@
 .RB "[\|" \-\-version "\|]"
 .RB "[\|" \-\-configuration "\|]"
 .RB "[\|" \-\-manual "\|]"
+.RB "[\|" \-\-license "\|]"
 .RB "[\|"\c
 .I gdb-options\c
 \&\|]
@@ -1557,6 +1559,9 @@ inferior debugger as well.
 Run the inferior debugger on the remote host \fIhostname\fR.  See
 \fBREMOTE MODE\fR, above.
 .TP
+.B \-\-license
+Show the \s-2@DDD@\s+2 license and exit.
+.TP
 .B \-\-login \fIusername\fR
 Use \fIusername\fR as remote user name.  See \fBREMOTE MODE\fR, above.
 .TP
@@ -2008,9 +2013,28 @@ source distribution.
 .\"
 .\"
 .\" ---------------
-.SH COPYING
+.SH COPYRIGHT
 .\" ---------------
 \s-2@DDD@\s+2 is Copyright \(co 1995, 1996
+Technische Universitaet Braunschweig, Germany.
+.PP
+\s-2@DDD@\s+2 is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+.PP
+\s-2@DDD@\s+2 is distributed in the hope that it will be useful,
+but \fIwithout any warranty\fR; without even the implied warranty of
+\fImerchantability\fR or \fIfitness for a particular purpose\fR.
+See the License for more details.
+.PP
+You should have received a copy of the License along with
+\s-2@DDD@\s+2.  If not, invoke \s-2@DDD@\s+2 with the
+`\fB\-\-license\fR' option; this will print a copy on standard
+output.  To read the License from within \s-2@DDD@\s+2, use the
+`\fB@DDD@ License...\fR' item in the `\fBHelp\fR' menu.
+.PP
+This \s-2@DDD@\s+2 manual page is Copyright \(co 1995, 1996
 Technische Universitaet Braunschweig, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this

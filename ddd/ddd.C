@@ -363,6 +363,9 @@ static XrmOptionDescRec options[] = {
 { "--manual",               XtNshowManual,           XrmoptionNoArg, S_true },
 { "-manual",                XtNshowManual,           XrmoptionNoArg, S_true },
 
+{ "--license",              XtNshowLicense,          XrmoptionNoArg, S_true },
+{ "-license",               XtNshowLicense,          XrmoptionNoArg, S_true },
+
 { "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, S_true },
 { "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, S_true },
 
@@ -719,9 +722,9 @@ static MMDesc help_menu[] =
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     {"onVersion",   MMPush, { HelpOnVersionCB }},
     MMSep,
-    {"www",         MMPush, { DDDWWWPageCB }},
-    MMSep,
     {"index",       MMPush, { DDDManualCB }},
+    {"license",     MMPush, { DDDLicenseCB }},
+    {"www",         MMPush, { DDDWWWPageCB }},
     MMEnd
 };
 
@@ -1026,11 +1029,15 @@ int main(int argc, char *argv[])
     if (app_data.show_manual)
 	show_manual();
 
+    if (app_data.show_license)
+	show_license();
+
     if (app_data.show_version 
 	|| app_data.show_invocation 
 	|| app_data.show_configuration
 	|| app_data.show_resources
-	|| app_data.show_manual)
+	|| app_data.show_manual
+	|| app_data.show_license)
 	return 0;
 
     // Warn for incompatible `Ddd' and `~/.dddinit' files

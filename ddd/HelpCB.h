@@ -67,19 +67,10 @@ extern void MStringHelpCB(Widget widget, XtPointer client_data,
 extern void StringHelpCB(Widget widget, XtPointer client_data, 
 			 XtPointer call_data);
 
-// Call help with "String filename = (String)client_data" as text
-// May be used for file display.
-extern void FileHelpCB(Widget widget, XtPointer client_data, 
+// Call help with "String s = (String)client_data" as text.
+// May be used for unchanged text display.
+extern void TextHelpCB(Widget widget, XtPointer client_data, 
 		       XtPointer call_data);
-
-// Call help with "String command = (String)client_data" as text.
-// May be used for command output display.
-extern void CommandHelpCB(Widget widget, XtPointer client_data, 
-			  XtPointer call_data);
-
-// Call help with the manual page of the program.
-extern void HelpManualCB(Widget widget, XtPointer client_data, 
-			 XtPointer call_data);
 
 // Call help with a built-in formatted manual page "String s =
 // (String)client_data".

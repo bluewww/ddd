@@ -45,6 +45,7 @@ void show_version();
 void show_configuration();
 void show_resources(XrmDatabase database);
 void show_manual();
+void show_license();
 
 // WWW page
 void DDDWWWPageCB(Widget, XtPointer, XtPointer);
@@ -53,6 +54,9 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer);
 void ddd_man(ostream& os);
 void DDDManualCB(Widget, XtPointer, XtPointer);
 
+// License
+void ddd_license(ostream& os);
+void DDDLicenseCB(Widget, XtPointer, XtPointer);
 
 #endif // _DDD_show_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

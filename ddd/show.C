@@ -45,12 +45,12 @@ const char show_rcsid[] =
 #include "status.h"
 #include "version.h"
 #include "filetype.h"
-#include "HelpCB.h"
 
 #include <iostream.h>
 #include <iomanip.h>
 #include <fstream.h>
 
+#include "HelpCB.h"
 
 //-----------------------------------------------------------------------------
 // Show version
@@ -169,6 +169,7 @@ void show_invocation(DebuggerType type)
 	"  --version          Show the DDD version and exit.\n"
 	"  --configuration    Show the DDD configuration flags and exit.\n"
 	"  --manual           Show the DDD manual and exit.\n"
+	"  --license          Show the DDD license and exit.\n"
 	"  --vsl-help         Show VSL options and exit.\n"
 	"\n"
 	"Standard X options are also accepted, such as:\n"
@@ -227,20 +228,37 @@ void show_resources(XrmDatabase db)
     unlink(tmpfile);
 }
 
+//-----------------------------------------------------------------------------
+// WWW Page
+//-----------------------------------------------------------------------------
+
+void DDDWWWPageCB(Widget, XtPointer, XtPointer)
+{
+    string url = app_data.www_page;
+    string cmd = app_data.www_command;
+
+    StatusDelay delay("Invoking WWW browser for " + quote(url));
+
+    cmd.gsub("@URL@", url);
+    cmd += " &";
+    cmd = sh_command(cmd, true);
+    system(cmd);
+}
+
 
 //-----------------------------------------------------------------------------
-// Show Manual Page
+// License
 //-----------------------------------------------------------------------------
 
-#define HUFFTEXT "ddd.man.huff.C"
+#define HUFFTEXT "COPYING.huff.C"
 #include "huffdecode.C"
 
-void ddd_man(ostream& os)
+void ddd_license(ostream& os)
 {
     huffdecode(os);
 }
 
-void show_manual()
+void show_license()
 {
     FILE *pager = 0;
     if (isatty(fileno(stdout)))
@@ -261,47 +279,31 @@ void show_manual()
 
     if (pager == 0)
     {
-	ddd_man(cout);
+	ddd_license(cout);
 	cout << flush;
     }
     else
     {
-	ostrstream man;
-	ddd_man(man);
-	string s(man);
+	ostrstream license;
+	ddd_license(license);
+	string s(license);
 
 	fputs((char *)s, pager);
 	pclose(pager);
     }
 }
 
+
 //-----------------------------------------------------------------------------
-// WWW Page
+// Show License
 //-----------------------------------------------------------------------------
 
-void DDDWWWPageCB(Widget, XtPointer, XtPointer)
+void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 {
-    string url = app_data.www_page;
-    string cmd = app_data.www_command;
+    StatusDelay delay("Formatting license");
 
-    StatusDelay delay("Invoking WWW browser for " + quote(url));
-
-    cmd.gsub("@URL@", url);
-    cmd += " &";
-    cmd = sh_command(cmd, true);
-    system(cmd);
-}
-
-//-----------------------------------------------------------------------------
-// Manual
-//-----------------------------------------------------------------------------
-
-void DDDManualCB(Widget w, XtPointer, XtPointer call_data)
-{
-    StatusDelay delay("Formatting manual page");
-
-    ostrstream man;
-    ddd_man(man);
-    string s(man);
-    ManualStringHelpCB(w, (char *)s, call_data);
+    ostrstream license;
+    ddd_license(license);
+    string s(license);
+    TextHelpCB(w, XtPointer((char *)s), call_data);
 }

@@ -112,6 +112,8 @@
 #define XtCShowResources         "ShowResources"
 #define XtNshowManual            "showManual"
 #define XtCShowManual            "ShowManual"
+#define XtNshowLicense           "showLicense"
+#define XtCShowLicense           "ShowLicense"
 #define XtNcheckConfiguration    "checkConfiguration"
 #define XtCCheckConfiguration    "CheckConfiguration"
 #define XtNprintCommand          "printCommand"
@@ -185,6 +187,7 @@ struct AppData {
     Boolean show_configuration;
     Boolean show_resources;
     Boolean show_manual;
+    Boolean show_license;
     Boolean check_configuration;
     String  print_command;
     String  paper_size;

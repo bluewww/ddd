@@ -74,7 +74,6 @@ static XtResource subresources[] = {
 
 static Widget help_dialog = 0;
 static Widget help_shell  = 0;
-static Widget text_dialog = 0;
 static Pixmap help_pixmap = 0;
 
 static MString _DefaultHelpText(Widget widget);
@@ -288,8 +287,9 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
     Arg args[10];
     Cardinal arg = 0;
 
-    static Widget help_man   = 0;
-    static Widget help_index = 0;
+    static Widget help_man    = 0;
+    static Widget help_index  = 0;
+    static Widget text_dialog = 0;
 
     if (help_man == 0)
     {
@@ -490,51 +490,25 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 }
 
 
-void FileHelpCB(Widget widget, XtPointer client_data, XtPointer)
+void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 {
     Delay delay;
 
-    String filename = (String)client_data;
-
-    char buffer[BUFSIZ];
-    String text = (String)XtMalloc(1);
-    text[0] = '\0';
-
-    FILE *fp = fopen(filename, "r");
-    if (fp == 0)
-    {
-	perror(filename);
-	return;
-    }
-
-    while (!feof(fp))
-    {
-	int nitems = fread(buffer, sizeof(char), BUFSIZ, fp);
-	buffer[nitems] = '\0';
-	text = (String)XtRealloc(text, strlen(text) + strlen(buffer) + 1);
-	strcat(text, buffer);
-    }
-
-    if (fclose(fp) == EOF)
-    {
-	perror(filename);
-	XtFree(text);
-	return;
-    }
+    String text = (String)client_data;
 
     Arg args[10];
     Cardinal arg = 0;
 
-    static Widget help_text = 0;
+    static Widget help_text   = 0;
+    static Widget text_dialog = 0;
+
     if (help_text == 0)
     {
 	// Build help_text
 	Widget toplevel = findTheTopLevelShell(widget);
 	if (toplevel == 0)
-	{
-	    XtFree(text);
 	    return;
-	}
+
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
 	text_dialog = 
@@ -567,58 +541,6 @@ void FileHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     // Enable Text Window
     XtManageChild(text_dialog);
-}
-
-
-void CommandHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
-{
-    Delay d;
-
-    string tmpfile = tmpnam(NULL);
-    string command = 
-	string("/bin/sh -c '( ") + (String)client_data + " ) > " 
-	+ tmpfile + " 2>&1'";
-
-    Agent agent(command);
-    agent.start();
-    agent.wait();
-
-    FileHelpCB(widget, (String)tmpfile, call_data);
-    unlink(tmpfile);
-}
-
-
-void HelpManualCB(Widget widget, XtPointer, XtPointer call_data)
-{
-    Widget toplevel = widget;
-    while (XtParent(toplevel))
-	toplevel = XtParent(toplevel);
-
-    string app_name = XtName(toplevel);
-
-    static string command;
-    command = "man " + app_name;
-
-    char buffer[BUFSIZ];
-    String text = (String)XtMalloc(1);
-    text[0] = '\0';
-
-    Agent agent(command);
-    agent.start();
-
-    FILE *fp = agent.inputfp();
-    if (fp == 0)
-	return;
-
-    while (!feof(fp))
-    {
-	int nitems = fread(buffer, sizeof(char), BUFSIZ, fp);
-	buffer[nitems] = '\0';
-	text = (String)XtRealloc(text, strlen(text) + strlen(buffer) + 1);
-	strcat(text, buffer);
-    }
-
-    ManualStringHelpCB(widget, (String)text, call_data);
 }
 
 

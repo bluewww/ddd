@@ -370,6 +370,15 @@ XtResource ddd_resources[] = {
 	XtPointer(False)
     },
     {
+        XtNshowLicense,
+	XtCShowLicense,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, show_license),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
         XtNcheckConfiguration,
 	XtCCheckConfiguration,
 	XtRBoolean,
