@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "1 September 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "21 November 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -372,6 +372,22 @@ Finally, you can use the \s-2GDB\s+2 `\fBdisable\fR' command.  Type
 `\fBhelp disable\fR' at the `\fB(gdb)\fR' prompt for details.
 .\"
 .\"
+.SS "Temporary Breakpoints"
+.\"
+Note: \s-2DBX\s+2 does not support temporary breakpoints.
+.PP
+A \fItemporary breakpoint\fR is immediately deleted as soon as it is
+reached.  To set a temporary breakpoint,  press the \fIright mouse
+button\fR on the source line number and select the `\fBSet Temporary
+Breakpoint\fR' item from the popup menu.
+.PP
+Temporary breakpoints are convenient to make the program continue up
+to a specific location: just set the temporary breakpoint at this
+location and continue execution.   The `\fBSet Temporary and
+Continue\fR' item from the popup menu sets a temporary breakpoint on
+the source line number and immediately continues execution.
+.\"
+.\"
 .SS "Deleting Breakpoints"
 If the breakpoint is visible, click with the \fIleft mouse button\fR
 on the breakpoint.  The breakpoint location is copied to the argument
@@ -668,7 +684,7 @@ button\fR on the originating pointer value or name and select the
 `\fBDereference\fR' menu item.
 .\"
 .\"
-.SS "Displaying Artificial Arrays"
+.SS "Displaying Multiple Array Items"
 .\"
 When debugging C or C++ programs, one often has to deal with pointers
 to arrays of dynamically determined size.  Both \s-2@DDD@\s+2 and
@@ -1133,10 +1149,11 @@ offers to extend \s-2@DDD@\s+2.  For a list of people offering
 \s-2@DDD@\s+2 distribution.
 
 .\" ---------------
-.SH "SENDING PICTURE POSTCARDS"
+.SH "IF YOU LIKE DDD..."
 .\" ---------------
 
-If you appreciate this software, please send a picture postcard to:
+If you appreciate this software, or have any suggestions, 
+please send us a picture postcard.  Our address is:
 
 .DS
 Technische Universitaet Braunschweig 
@@ -1152,6 +1169,10 @@ D-38092 Braunschweig
 \s-2GERMANY\s+2 
 .br
 .DE
+
+You may also leave a message in the DDD guestbook (accessible via the
+\s-2@DDD@\s+2 \s-2WWW\s+2 page, 
+`\fBhttp://www.cs.tu-bs.de/softech/ddd/\fR')
 
 .\" ---------------
 .SH "OPTIONS"
