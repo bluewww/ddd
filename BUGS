@@ -248,4 +248,7 @@ Volunteers for fixing these and other bugs are welcome!
     (i586-pc-linux-gnulibc1) consistently crashes if I run it when no
     ~/.ddd exists.
 
-242 (Insert your bug here)
+242 In Sun DBX, clicking on a breakpoint glyph initiates a drag.
+    `Clear at ()' won't work correctly.
+
+243 (Insert your bug here)
