@@ -669,7 +669,7 @@ static void unredirect_process(string& command,
 	string base;
 	string args;
 	get_args(command, base, args);
-	if (!has_redirection(args, gdb_redirection) && gdb->type() == GDB)
+	if (has_redirection(args, gdb_redirection) && gdb->type() == GDB)
 	{
 	    static string empty;
 	    args.gsub(gdb_redirection, empty);
