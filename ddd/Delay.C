@@ -249,7 +249,7 @@ void Delay::register_shell(Widget widget)
     for (i = 0; i < _shells.size() && _shells[i] != 0; i++)
 	;
 
-    XtAddCallback(widget, XtNdestroyCallback, DestroyCB, 0);
+    XtAddCallback(widget, XtNdestroyCallback, DestroyCB, XtPointer(0));
 
     _Delay *new_delay = 0;
     if (delay_count)

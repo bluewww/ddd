@@ -60,7 +60,7 @@ void wm_set_icon(Display *display, Window shell, Pixmap icon, Pixmap mask)
 
     XSetWMHints(display, shell, wm_hints);
 
-    XFree(wm_hints);
+    XFree((void *)wm_hints);
 }
 
 void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
