@@ -150,10 +150,6 @@ Volunteers for these and other projects are welcome!
 073. While the debuggee is running, show some image sequence in the DDD
      window (similar to Netscape :-)
 
-074. Have a `ddd-announce' mailing list, where only DDD announcements
-     are posted.  (Hmm.  Might be time for a USENET newsgroup
-     `comp.debuggers.ddd.announce' :-)
-
 075. Andre Cormeau <ac@enci.ucalgary.ca> says:
 
      Apparently ddd does not fully support fortran. A problem is in
@@ -284,8 +280,6 @@ Volunteers for these and other projects are welcome!
      `xterm -e info --file gdb Index COMMAND',
 
 115. Have a link from help texts to appropriate sections of the DDD manual.
-
-116. In DBX, use `where N' instead of GDB `frame N'.
 
 117. Paul Courbis <plc@lexem.fr> says: upon dereferencing a pointer, 
      it would be nice to have a menu to say: display hex data for 255
