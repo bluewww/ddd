@@ -1132,6 +1132,12 @@ Ddd*new_breakpoint_dialog*XmText.translations:   COMPLETE_TRANSLATIONS(break)
 Ddd*new_breakpoint_dialog*XmTextField.translations: \
 COMPLETE_TRANSLATIONS(break)
 
+! In watchpoint dialogs, use a `print' completion
+Ddd*new_watchpoint_dialog*XmText.translations:   COMPLETE_TRANSLATIONS(print)
+
+Ddd*new_watchpoint_dialog*XmTextField.translations: \
+COMPLETE_TRANSLATIONS(print)
+
 
 ! In file dialogs, use a `file' completion
 Ddd*XmFileSelectionBox*XmText.translations:      COMPLETE_TRANSLATIONS(file)
@@ -2322,6 +2328,7 @@ Ddd*menubar.data*helpString:	\
 @rm This is the EMPH(Data Menu).\n\
 \n\
 DESC(Edit Displays..., [select, enable and delete displays])\n\
+DESC(Edit Watchpoints..., [set, view, and edit watchpoints])\n\
 \n\
 DESC(Detect Aliases, [toggle alias detection])\n\
 \n\
@@ -2338,9 +2345,14 @@ DESC(Select All, [select all displays])\n\
 DESC(Refresh, [update all displays])
 
 Ddd*dataMenu.displays.labelString:	Edit Displays...
-Ddd*dataMenu.displays.mnemonic:		E
+Ddd*dataMenu.displays.mnemonic:		D
 Ddd*dataMenu.displays.documentationString: \
 @rm Select, enable and delete displays
+
+Ddd*dataMenu.watchpoints.labelString:	Edit Watchpoints...
+Ddd*dataMenu.watchpoints.mnemonic:	W
+Ddd*dataMenu.watchpoints.documentationString: \
+@rm Set, view, and edit watchpoints
 
 Ddd*dataMenu.detectAliases.labelString:	Detect Aliases
 Ddd*dataMenu.detectAliases.mnemonic:	A
@@ -4323,8 +4335,9 @@ Click on LBL(Delete) to delete the selected session.
 ! Breakpoint Editor
 !-----------------------------------------------------------------------------
 
-Ddd*edit_breakpoints_dialog_popup.title: DDD: Breakpoint Editor
-Ddd*edit_breakpoints_dialog*breakpoints.labelString: Breakpoints
+Ddd*edit_breakpoints_dialog_popup.title: DDD: Breakpoint and Watchpoint Editor
+Ddd*edit_breakpoints_dialog*breakpoints.labelString: \
+Breakpoints and Watchpoints
 Ddd*edit_breakpoints_dialog*form1.orientation:	 XmVERTICAL
 Ddd*edit_breakpoints_dialog*form1.marginWidth:	 0
 Ddd*edit_breakpoints_dialog*form1.marginHeight:	 0
@@ -4337,17 +4350,19 @@ Ddd*edit_breakpoints_dialog*buttons.marginHeight:  0
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close
 
 Ddd*edit_breakpoints_dialog*helpString:	     \
-@rm This is the EMPH(Breakpoint Editor).\n\
+@rm This is the EMPH(Breakpoint and Watchpoint Editor).\n\
 \n\
-Select breakpoints on the left; operations on the right.\n\
+Select breakpoints and watchpoints on the left; operations on the right.\n\
 \n\
-DESC(New..., [create a new breakpoint])\n\
-DESC(Lookup, [go to selected breakpoint])\n\
-DESC(Enable, [enable all selected breakpoints])\n\
-DESC(Disable, [disable all selected breakpoints])\n\
-DESC(Condition..., [set or modify a breakpoint condition])\n\
-DESC(Ignore Count..., [set or modify a breakpoint ignore count])\n\
-DESC(Delete, [delete all selected breakpoints])
+DESC(New Breakpoint..., [create a new breakpoint])\n\
+DESC(New Watchpoint..., [create a new watchpoint])\n\
+DESC(Lookup, [lookup selected item])\n\
+DESC(Print, [print selected item])\n\
+DESC(Enable, [enable all selected items])\n\
+DESC(Disable, [disable all selected items])\n\
+DESC(Condition..., [set or modify an item's condition])\n\
+DESC(Ignore Count..., [set or modify an item's ignore count])\n\
+DESC(Delete, [delete all selected items])
 
 Ddd*new_breakpoint_dialog_popup.title: DDD: New Breakpoint
 Ddd*new_breakpoint_dialog.selectionLabelString:	New Breakpoint
@@ -4369,65 +4384,91 @@ This is useful for breaking on return to a stack frame.\n\
 Multiple breakpoints at one place are permitted, and useful if conditional.
 
 
-Ddd*edit_breakpoint_condition_dialog_popup.title: DDD: Breakpoint Condition
-Ddd*edit_breakpoint_condition_dialog.selectionLabelString: Breakpoint Condition
+Ddd*new_watchpoint_dialog_popup.title: DDD: New Watchpoint
+Ddd*new_watchpoint_dialog*set.labelString:	Set
+Ddd*new_watchpoint_dialog*cwatch.labelString:	Watchpoint
+Ddd*new_watchpoint_dialog*rwatch.labelString:	Read Watchpoint
+Ddd*new_watchpoint_dialog*awatch.labelString:	Access Watchpoint
+Ddd*new_watchpoint_dialog*on.labelString:	on
+
+Ddd*new_watchpoint_dialog*helpString:	\
+@rm Please enter a variable whose value you want to watch.\n\
+Enter its name in the argument field.\n\
+\n\
+DESC(Set Watchpoint, [stop whenever the variable value changes])\n\
+DESC(Set Read Watchpoint, [stop whenever the variable is read])\n\
+DESC(Set Access Watchpoint, \
+[stop whenever the variable is either read or written])
+
+
+Ddd*edit_breakpoint_condition_dialog_popup.title: DDD: Condition
+Ddd*edit_breakpoint_condition_dialog.selectionLabelString: Condition
 
 Ddd*edit_breakpoint_condition_dialog*helpString:	       \
-@rm Specify a condition VAR(cond) for the selected breakpoint(s).\n\
-The selected breakpoint(s) break only if VAR(cond)\n\
+@rm Specify a condition VAR(cond) for the selected breakpoint(s) \
+or watchpoint(s).\n\
+The selected breakpoint(s) break only if VAR(cond) \
 evaluates to a non-zero value.
 
 
 Ddd*edit_breakpoint_ignore_count_dialog_popup.title: DDD: Ignore Count
 Ddd*edit_breakpoint_ignore_count_dialog.selectionLabelString: \
-Breakpoint Ignore Count
+Ignore Count
 
 Ddd*edit_breakpoint_ignore_count_dialog*helpString:	  \
-@rm Set the ignore count VAR(count) for the selected breakpoint(s).\n\
-Next VAR(count) hits of the selected breakpoint(s) will be ignored.
+@rm Set the ignore count VAR(count) for the selected breakpoint(s) \
+or watchpoint(s).\n\
+Next VAR(count) hits of the selected breakpoint(s) and watchpoint(s) \
+will be ignored.
 
 
-Ddd*edit_breakpoints_dialog*buttons*new.labelString:	       New...
-Ddd*edit_breakpoints_dialog*buttons*new.tipString:     \
+Ddd*edit_breakpoints_dialog*buttons*new_bp.labelString:	      New Breakpoint...
+Ddd*edit_breakpoints_dialog*buttons*new_bp.tipString:     \
 @rm Set new breakpoint
-Ddd*edit_breakpoints_dialog*buttons*new.documentationString: \
+Ddd*edit_breakpoints_dialog*buttons*new_bp.documentationString: \
 @rm Set breakpoint at specified line or function
+
+Ddd*edit_breakpoints_dialog*buttons*new_wp.labelString:	      New Watchpoint...
+Ddd*edit_breakpoints_dialog*buttons*new_wp.tipString:     \
+@rm Set new watchpoint
+Ddd*edit_breakpoints_dialog*buttons*new_wp.documentationString: \
+@rm Set watchpoint on specified variable
 
 Ddd*edit_breakpoints_dialog*buttons*lookup.labelString:	       Lookup
 Ddd*edit_breakpoints_dialog*buttons*lookup.tipString:     \
-@rm Lookup selected breakpoint
+@rm Lookup or print selected item
 Ddd*edit_breakpoints_dialog*buttons*lookup.documentationString: \
-@rm Lookup selected breakpoint in the source
+@rm Lookup selected item in the source (breakpoint) or print value (watchpoint)
 
 Ddd*edit_breakpoints_dialog*buttons*enable.labelString:	       Enable
 Ddd*edit_breakpoints_dialog*buttons*enable.tipString:     \
-@rm Enable selected breakpoints
+@rm Enable selected items
 Ddd*edit_breakpoints_dialog*buttons*enable.documentationString: \
-@rm Enable the selected breakpoint(s)
+@rm Enable the selected item(s)
 
 Ddd*edit_breakpoints_dialog*buttons*disable.labelString:       Disable
 Ddd*edit_breakpoints_dialog*buttons*disable.tipString:     \
-@rm Disable selected breakpoints
+@rm Disable selected items
 Ddd*edit_breakpoints_dialog*buttons*disable.documentationString: \
-@rm Disable the selected breakpoint(s)
+@rm Disable the selected item(s)
 
 Ddd*edit_breakpoints_dialog*buttons*condition.labelString:     Condition...
 Ddd*edit_breakpoints_dialog*buttons*condition.tipString:     \
-@rm Set breakpoint condition
+@rm Set condition
 Ddd*edit_breakpoints_dialog*buttons*condition.documentationString:     \
-@rm Specify a condition for the selected breakpoint(s)
+@rm Specify a condition for the selected item(s)
 
 Ddd*edit_breakpoints_dialog*buttons*ignore_count.labelString:  Ignore Count...
 Ddd*edit_breakpoints_dialog*buttons*ignore_count.tipString:     \
 @rm Set ignore count
 Ddd*edit_breakpoints_dialog*buttons*ignore_count.documentationString:     \
-@rm Specify how many crossings of the selected breakpoint(s) are to be ignored
+@rm Specify how many crossings of the selected item(s) are to be ignored
 
 Ddd*edit_breakpoints_dialog*buttons*delete.labelString:	       Delete
 Ddd*edit_breakpoints_dialog*buttons*delete.tipString:     \
-@rm Delete selected breakpoints
+@rm Delete selected items
 Ddd*edit_breakpoints_dialog*buttons*delete.documentationString:     \
-@rm Delete the selected breakpoint(s)
+@rm Delete the selected item(s)
 
 
 !-----------------------------------------------------------------------------
