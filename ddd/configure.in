@@ -373,7 +373,7 @@ dnl
 LIBS="$ice_save_LIBS"
 CFLAGS="$ice_save_CFLAGS"
 CPPFLAGS="$ice_save_CPPFLAGS"
-LDFLAGS="$ice_save_CFLAGS"
+LDFLAGS="$ice_save_LDFLAGS"
 AC_LANG_RESTORE
 fi
 dnl
