@@ -51,6 +51,8 @@ char options_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/ToggleB.h>
 #include <Xm/Scale.h>
+#include <Xm/DialogS.h>
+#include <Xm/BulletinB.h>
 
 #include <stdio.h>
 #include <fstream.h>
@@ -541,20 +543,40 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 		      "Setting click-to-type keyboard focus policy" :
 		      "Setting pointer-driven keyboard focus policy");
 
+    if (policy == XmPOINTER)
+    {
+	// Leave old focus on the default button
+	Widget default_button = 0;
+
+	Widget bulletin_board = w;
+	while (bulletin_board != 0 && 
+	       !XtIsSubclass(bulletin_board, xmBulletinBoardWidgetClass))
+	    bulletin_board = XtParent(bulletin_board);
+
+	if (bulletin_board != 0)
+	{
+	    XtVaGetValues(bulletin_board, 
+			  XmNdefaultButton, &default_button, NULL);
+	}
+
+	if (default_button == 0)
+	    default_button = w;
+
+	XmProcessTraversal(default_button, XmTRAVERSE_CURRENT);
+    }
+
+    // Apply to existing shells
     const WidgetArray& shells = Delay::shells();
     for (int i = 0; i < shells.size(); i++)
     {
 	Widget shell = shells[i];
-	while (shell && !XmIsVendorShell(shell))
+	while (shell != 0 && !XtIsSubclass(shell, vendorShellWidgetClass))
 	    shell = XtParent(shell);
-	if (shell)
-	{
-	    XtVaSetValues(shell,
-			  XmNkeyboardFocusPolicy, policy,
-			  NULL);
-	}
+	if (shell != 0)
+	    XtVaSetValues(shell, XmNkeyboardFocusPolicy, policy, NULL);
     }
 
+    // Apply to future shells
     string keyboardFocusPolicy = "*" + string(XmNkeyboardFocusPolicy);
     XrmDatabase target = XtDatabase(XtDisplay(w));
     switch (policy)
@@ -566,6 +588,12 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
     case XmPOINTER:
 	XrmPutStringResource(&target, keyboardFocusPolicy, "POINTER");
 	break;
+    }
+
+    if (policy == XmEXPLICIT)
+    {
+	// Place new focus on this button
+	XmProcessTraversal(w, XmTRAVERSE_CURRENT);
     }
 
     update_options();
