@@ -1,14 +1,17 @@
 # $Id$
 # Convert the DDD man page to Texinfo format.
 
+# At characters
+s/@/@@/g
+
 # Macros
-s/\\s-1@ddd@\\s+1/@value{ddd}/g
-s/\\s-1@Ddd@\\s+1/@value{Ddd}/g
-s/\\s-1@DDD@\\s+1/@value{DDD}/g
+s/\\s-1@@ddd@@\\s+1/@value{ddd}/g
+s/\\s-1@@Ddd@@\\s+1/@value{Ddd}/g
+s/\\s-1@@DDD@@\\s+1/@value{DDD}/g
 s/\\s-1DDD\\s+1/@value{DDD}/g
-s/@ddd@/@value{ddd}/g
-s/@Ddd@/@value{Ddd}/g
-s/@DDD@/@value{DDD}/g
+s/@@ddd@@/@value{ddd}/g
+s/@@Ddd@@/@value{Ddd}/g
+s/@@DDD@@/@value{DDD}/g
 
 # Abbrevs
 s/\\s-1BSD\\s+1/BSD/g
@@ -60,6 +63,21 @@ s/^\.PP//
 # Itemize
 s/^\.IP \\(bu 2/@item/
 
+# Examples
+s/^\.sp/@example/
+s/^\.br//
+
+# Home
+s/\$HOME/\~/g
+
+# Resources
+s/^\.B "\([^ ]*\) *(\\fPclass\\fB \([^)]*\))"/@defvr Resource \1 (class \2)/
+
+# Table
+s/^\.TP//
+s/^\.B//
+s/^\.I//
+
 # Pictures
 \!^\.PSPIC @srcdir@/PICS/\([^.]*\)\..*!i\
 @ifnotinfo\
@@ -67,11 +85,11 @@ s/^\.IP \\(bu 2/@item/
 \!^\.PSPIC @srcdir@/PICS/\([^.]*\)\..*!a\
 @sp 1\
 @end ifnotinfo
-s!^\.PSPIC @srcdir@/PICS/\([^.]*\)\..*!@center @image{PICS/\1, 15cm}!
+s!^\.PSPIC @srcdir@/PICS/\([^.]*\)\..*!@center @image{PICS/\1, 16cm}!
 
 # Font
-s/^\.B \(.*\)/@strong{\1}/
-s/^\.I \(.*\)/@var{\1}/
+# s/^\.B \(.*\)/@strong{\1}/
+# s/^\.I \(.*\)/@var{\1}/
 
 # Special characters
 s/\\-/-/g
