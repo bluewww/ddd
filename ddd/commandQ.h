@@ -41,7 +41,7 @@
 #define COMMAND_PRIORITY_BATCH  1 // batch jobs (auto commands)
 #define COMMAND_PRIORITY_INIT   2 // init commands
 #define COMMAND_PRIORITY_SYSTEM 3 // system-initiated commands
-#define COMMAND_PRIORITY_AGAiN 99 // try again
+#define COMMAND_PRIORITY_AGAIN 99 // try again
 
 // Commands
 struct Command
@@ -69,7 +69,7 @@ public:
     {
 	add_destroy_callback();
     }
-    Command(const string& cmd, Widget w)
+    Command(const string& cmd, Widget w = 0)
 	: command(cmd), origin(w), callback(0), data(0), 
 	  verbose(true), check(true), priority(COMMAND_PRIORITY_USER)
     {
