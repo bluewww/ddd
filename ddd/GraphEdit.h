@@ -217,5 +217,8 @@ extern void graphEditRedrawNode(Widget w, GraphNode *node);
 // Raise a single node
 extern void graphEditRaiseNode(Widget w, GraphNode *node);
 
+// Return final position (if snapToGrid is enabled, for example)
+extern BoxPoint graphEditFinalPosition(Widget w, const BoxPoint& p);
+
 #endif // _DDD_GraphEdit_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

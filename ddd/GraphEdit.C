@@ -2208,7 +2208,36 @@ static void SelectPrev(Widget w, XEvent *, String *, Cardinal *)
     select_single_node(w, selectNode);
 }
 
+// Return nearest grid position near P
+static BoxPoint NearestGridPosition(Widget w, const BoxPoint& p)
+{
+    const GraphEditWidget _w   = GraphEditWidget(w);
+    const Dimension gridWidth  = _w->graphEdit.gridWidth;
+    const Dimension gridHeight = _w->graphEdit.gridHeight;
 
+    BoxPoint grid(gridWidth, gridHeight);
+    BoxPoint pos(p);
+
+    for (BoxDimension d = X; d <= Y; d++)
+	if (grid[d] > 0)
+	    pos[d] = ((pos[d] + grid[d] / 2) / grid[d]) * grid[d];
+
+    return pos;
+}
+
+// Return final position (if snapToGrid is enabled, for example)
+BoxPoint graphEditFinalPosition(Widget w, const BoxPoint& p)
+{
+    XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
+
+    const GraphEditWidget _w   = GraphEditWidget(w);
+    const Boolean snapToGrid   = _w->graphEdit.snapToGrid;
+
+    if (snapToGrid)
+	return NearestGridPosition(w, p);
+    else
+	return p;
+}
 
 // Snap nodes to grid
 static void _SnapToGrid(Widget w, XEvent *, String *params, 
@@ -2231,12 +2260,7 @@ static void _SnapToGrid(Widget w, XEvent *, String *params,
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
 	node = graph->nextVisibleNode(node))
     {
-	BoxPoint pos = node->pos();
-
-	for (BoxDimension d = X; d <= Y; d++)
-	    if (grid[d] > 0)
-		pos[d] = ((pos[d] + grid[d] / 2) / grid[d]) * grid[d];
-
+	BoxPoint pos = NearestGridPosition(w, node->pos());
 	if (pos != node->pos())
 	{
             // set new node position
