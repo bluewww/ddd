@@ -1,0 +1,142 @@
+Files included:
+
+  Notes       --  This file
+  Release     --  The announcement
+  pydb.py     --  The python debugger
+  pydbsupt.py --  Support for pydb
+  pydbcmd.py  --  A modified version of cmd.py
+
+  and either
+   cxxtest    --  A test program compiled from cxxtest.C
+   cxxtest.C  --  the source for the test program
+   ddd.man    --  The ddd manual (man page format, no pictures)
+   ddd.ps     --  The ddd manual in postscript format (original ddd-3.0 version)
+   ddd        --  DDD as a stripped solaris2.6 binary (compiled with gcc)
+  or the directory
+   ddd-3.0/   --  The source code for ddd including manuals and test programs
+     
+INSTALL and Usage notes:
+
+1) You need to copy the pydb.py to some location that is on your PATH,
+such as /usr/local/bin.  (While you can leave it in '.', DDD may not
+include it in its menu of available debuggers (a quirk!).  Aside from
+that, it will work fine in the local directory.)  But wherever you
+copy/move the file, be sure to (re)name it 'pydb' (no extension).  The
+support files pydbcmd.py (a very slightly modified version of cmd.py)
+and pydbsupt.py need to be somewhere where 'import' can find them.
+
+2) Build DDD if you aren't using the prebuilt binary by changing to the
+DDD-3.0 directory and following the directions (the usual ./configure,
+make, make install).  The prebuilt binary was built without any flags
+to "configure" and so expects to land in the default location,
+/usr/local/bin.  DDD comes with a small suite of test programs.  With
+the binary, I've included one (cxxtest) which may be helpful if you're
+exploring DDD for the first time (use 'ddd --gdb').
+
+3) Invoke DDD as 'ddd --pydb' to force it to start up with pydb the
+first time (default is gdb).  Under Edit/Preferences/Source, be sure
+the 'Refer to Program Source' is set to 'by Full Path Name'.  If you
+want line numbers, set the 'Source Indentation' to about 8.
+Then invoke 'Edit/Save Options' to record these choices.
+
+4) The DDD manual is quite complete, but, except for the fact that the
+Python debugger is called 'pydb', for now there's nothing in the on-line
+manual (or the man) page specific to Python; that is, all generic statements
+about DDD and its interaction with any inferior debugger (gdb, pydb, etc.)
+should work as advertised.  While pydb tries to mimic what gdb can do, gdb
+is far more "full-featured" and complex than pydb.  In addition, there are
+inherent differences between debugging a compiled C or C++ program and
+debugging an interpreted Python one.  The postscript version of the manual
+is from the original ddd-3.0 distribution and does not mention pydb at all.
+
+5) Select a .py file from the 'File/Open Source' listing.  In Java, you
+would select a class to debug; in C or C++, you'd select an
+executable.  From such choices, the possible relevant source files can be
+determined.  For Python, you just get a list of .py files in the
+current directory, from which you can select one. 
+
+6) Set a breakpoint or two, and click on the 'Run' button on the
+detached command toolbar.  Note that window that shows part of the
+chatter between DDD and pydb says to issue a continue command.  Click
+on 'cont', and then, per prompt, once more.  Your program should be
+running now.
+
+7) Currently, breakpoints cannot be set on the 'def' line for a
+method.  The breakpoint is automatically moved to the next executable
+line.  Setting a breakpoint on a blank or comment line is not allowed
+(nor does it make sense).  Setting one in the middle of a triply quoted
+string is makes no sense either, but is not dis-allowed, because I don't
+know of a clean and easy way to recognize this case.
+
+8) If the mouse pointer rests on a variable for a bit, a tool tip box
+will pop up with the value of the variable.  Due to Python's scope
+rules, only variables currently in the local or global namespaces can
+be displayed; after all, 'eval' is only so clever.
+
+9) Breakpoints are recognized as the relevant line is about to be
+executed.  This means that you can't ask for the value of a local
+variable 'i' in i = f(3) until after that line has been executed at
+least once and you are still in the relevant namespace.  DDD's
+graphical displays necessarily have the same restriction.
+
+10) Since the breakpoint checking mechanism in p(y)db depends on string
+comparisons of file names, a breakpoint in XXX.py won't be recognized
+as pertaining to /usr/local/lib/python1.5/XXX.py unless full path names
+are in use.
+
+11) If you have breakpoints set for one source file, and switch to
+another, the breakpoints are *not* removed.  You can readily do so in
+the breakpoint editor: select all breakpoints and press 'delete'.
+
+12) The display mechanism in DDD has provision for a format specification.
+The format specifiers currently supported are two characters sequences:
+a '/' followed by one key from
+convert = {'c':"char", 'x':"hex", 'o':"octal", 'f':"float", 's':"string",
+           't':"binary [twos]"}.
+If no format is given, the result of applying 'str()' is used.  In the
+dialog box where these are set are examples of use.
+
+13) Displays of lists don't work properly.  If you ask for a display of
+list 't', for instance, you'll just get the first element of the list.
+To see the full list, right click on the display of 't' to get the popup
+menu and select 'new display' and then a format.  This new display will show
+the full list, but it won't update.
+
+
+Things for later:
+
+    No "until" capability
+    Display of "structures" (lists, etc.) doesn't work properly (yet)
+    Sessions don't handle displays correctly.
+    No class Browser
+    No ability to define your own commands
+    ... and several others of course...
+
+
+Pydb run standalone:
+
+Note that you don't need DDD to use pydb.  You just invoke it, issue
+the command "file file_name.py", set some breakpoints (as in "b
+xfd.py:244" or "b whrandom.random"), and then "run".  "info
+breakpoints" is useful.  "help" isn't a bad choice either.
+
+Why 'pydb'?:
+
+The obvious choice is 'pdb' for the debugger.  But this would lead to
+confusion with the canonical pdb, and there's been some discussion
+about connecting DDD and Perl (and hence pdb).  Besides, 'pdb' feels a
+little leaden to me, and 'pie-db' ought to lead to a nice play on words
+(Simple Simon met a pieman...) once I figure it out.
+
+Debugging the debugger:
+
+The number of possible programs and interactions between any program,
+pydb, and DDD makes for a vast sea.  There are likely to be shoals and
+reefs.  If you should run aground, some immediately useful information
+may be found in the command window.  You can also issue commands to
+pydb in that window.  If the problem is that the interaction between
+DDD and pydb is at fault, save the log file that you'll find in your
+home directory (unless you changed the default): ~/.ddd/log.  All the
+dialog between pydb and DDD is recorded there, along with some DDD
+state changes.  For complex problems, I'll need that file and your
+Python code to debug the debugger.

@@ -1,0 +1,45 @@
+Pydb is a modified version of the standard Python debugger, pdb, with a number
+of augmented features that make it suitable for use with DDD, the Data
+Display Debugger.
+
+DDD is an X-Windows based front end that provides a uniform way of
+using a number of debuggers, including gdb, xdb, jdb (for java), and
+now, pydb.  DDD allows one to place a breakpoint by clicking on a line
+of code, drag breakpoints, install temporary breakpoints, edit
+breakpoints, etc.  DDD also provides a graphical display of variables
+which are updated as each breakpoint is triggered.
+
+DDD is a mature program that runs on a large number of platforms.
+The version available here is based on DDD-3.0 (released June, 1998) and
+modified to support pydb.  More information on DDD is available at
+<A HREF="http://www.cs.tu-bs.de/softech/ddd">DDD's home page</A>.
+
+In the course of connecting the Python debugger pdb to DDD, a number of
+changes were required.  As a result, the new version of pdb, pydb, now
+supports temporary breakpoints, conditional breakpoints, and an ignore
+breakpoint count.  Also, it is now easy to set breakpoints in modules
+outside the current one: that is, you can issue a command such as
+'break whrandom.random' assuming the module whrandom.py can be found
+somewhere in sys.path.  Breakpoints can be disabled and re-enabled.
+Since Pydb does not depend on DDD, it can be used stand alone, like pdb.
+
+This is a first release; perfection won't be attained until the n'th
+release (where n is undefined).
+
+Two distributions are available.  Both contain all the Python code
+along with documentation for DDD.  One release contains DDD as a
+compiled binary for Solaris 2.6 (using gcc 2.8.1).  The other contains
+the DDD source code modified for Python.  If DDD compiles on your
+system, this modified version will (should!); it just takes a while (almost
+3 hours on my sparc 5 85Mhz) as DDD is not small.
+
+pydb with DDD compiled for Solaris 2.6
+    http://daikon.tuc.noao.edu/python/pydb-1.0-sol.tar.gz
+
+pydb and DDD source code
+    http://daikon.tuc.noao.edu/python/pydb-1.0.tar.gz
+
+Comments, suggestions, and bug reports are welcome.
+
+<P> <A HREF="daikon.tuc.noao.edu/python">pydb 1.0</A> Python debugger based
+on pdb.py with DDD, a widely used X-windows based front end.(25-8-98)
