@@ -249,6 +249,7 @@ static int check_xkeysymdb(Display *display, bool verbose)
     return 1;
 }
 
+#if XlibSpecificationRelease == 5 && !__hpux__
 static String resolve_dirname(Display *display, String type, String name)
 {
     String ret = XtResolvePathname(display, type, name, "", 
@@ -263,11 +264,10 @@ static String resolve_dirname(Display *display, String type, String name)
 
     return ret;
 }
+#endif
 
 static int check_xnlspath(Display *display, bool verbose)
 {
-    (void) resolve_dirname;	// Use it
-
 #if XlibSpecificationRelease == 5
     if (verbose)
     {

@@ -2081,7 +2081,7 @@ int main(int argc, char *argv[])
 		      CheckDragCB, NULL);
     }
 #else
-    (void) CheckDragCB;		// Use it
+    CheckDragCB(0, 0, 0);		// Use it
 #endif
 
     // Re-register own converters.  Motif may have overridden some of
@@ -3517,7 +3517,8 @@ static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data)
 
 static void CheckDragCB(Widget, XtPointer, XtPointer call_data)
 {
-    (void) call_data;		// Use it
+    if (call_data == 0)		// Use it
+	return;
 
     // Some Linux Motif implementations have trouble dragging pixmaps.
     // Disable this, such that we don't get drowned in bug reports.

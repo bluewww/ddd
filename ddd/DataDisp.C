@@ -3965,7 +3965,7 @@ void DataDisp::refresh_displayOQAC (const StringArray& answers,
 
     for (int i = 0; i < count; i++)
     {
-	switch (int(qu_datas[i]))
+	switch ((int)(long)qu_datas[i])
 	{
 	case PROCESS_INFO_DISPLAY:
 	    // Process 'info display' output (delete displays if necessary)

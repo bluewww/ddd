@@ -1467,11 +1467,14 @@ static bool _get_core(const string& session, unsigned long flags,
 	if (gdb->has_system_calls())
 	{
 	    // Kill the process, hopefully leaving a core file.
+
 	    // Since g77 catches SIGABRT, we disable its handler first.
-	    string enable_signal_cmd = 
-		"signal(" + itostring(SIGABRT) + ", " + 
-		itostring(int(SIG_DFL)) + ")";
-	    gdb_question(gdb->print_command(enable_signal_cmd));
+	    ostrstream os;
+	    os << "signal(" << SIGABRT << ", " 
+	       << (unsigned long)SIG_DFL << ")";
+	    gdb_question(gdb->print_command(string(os)));
+
+	    // Send signal
 	    gdb_question(gdb->signal_command(SIGABRT));
 	}
 
