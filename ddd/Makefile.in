@@ -1611,10 +1611,7 @@ host.h: $(srcdir)/host.h.in config.status
 tags:	$(srcdir)/TAGS
 
 $(srcdir)/TAGS:	FORCE
-	cd $(srcdir); $(ETAGS) -o $@ *.[Ch] \
-	/usr/include/*.h /usr/include/*/*.h /usr/include/*/*/*.h \
-	${prefix}/include/*.h ${prefix}/include/*/*.h \
-	${prefix}/include/*/*/*.h
+	cd $(srcdir); $(ETAGS) -o $@ *.[Ch]
 
 ## Statistics.
 # Count lines of C++/lex/yacc source code.
