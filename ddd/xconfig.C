@@ -37,6 +37,7 @@ char xconfig_rcsid[] =
 #include "strclass.h"
 #include "bool.h"
 #include "cook.h"
+#include "filetype.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -80,6 +81,9 @@ static String xlibdir(Display *display, bool verbose = false)
     if (tried)
 	return dir;
     tried = true;
+
+    if (!is_cmd_file(cmd_file("xmkmf")))
+	return dir;		// No `xmkmf' in PATH
 
     static const char shell_command[] =
 	""

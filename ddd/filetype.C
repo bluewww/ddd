@@ -32,6 +32,8 @@ char filetype_rcsid[] =
 #include "filetype.h"
 
 #include "config.h"
+#include <string.h>
+#include <stdlib.h>
 
 extern "C" {
 #include <sys/types.h>
@@ -266,4 +268,24 @@ bool is_directory(const string& file_name)
 	return false;		// not a directory
 
     return true;
+}
+
+// Return full file name of COMMAND
+string cmd_file(const string& command)
+{
+    const char *path_s = getenv("PATH");
+    if (path_s == 0 || command.contains('/') != 0)
+	return command;
+
+    // Check if COMMAND occurs in any of the components of PATH
+    char buf[2048];
+    strncpy(buf, path_s, sizeof(buf) - 1);
+    for (const char *dir = strtok(buf, ":"); dir != 0; dir = strtok(0, ":"))
+    {
+	string path = string(dir) + '/' + command;
+	if (is_cmd_file(path))
+	    return path;
+    }
+
+    return command;
 }

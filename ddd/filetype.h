@@ -59,5 +59,8 @@ bool is_xwd_file(const string& file_name);
 // True if FILE_NAME is a directory
 bool is_directory(const string& file_name);
 
+// Return full file name of COMMAND
+string cmd_file(const string& command);
+
 #endif // _DDD_filetype_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
