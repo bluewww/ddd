@@ -1491,62 +1491,45 @@ inline void myXDrawLine(Display *display,
 }
     
 
-// Redraw line (f0/t1) at (f1/t1)
-inline void redrawLine(Display *display,
-		       Drawable d,
-		       GC gc,
-		       const BoxPoint& f0, 
-		       const BoxPoint& t0, 
-		       const BoxPoint& f1, 
-		       const BoxPoint& t1)
+static void redrawSelectFrame(Widget w, const BoxRegion& r)
 {
-    // Clear old line (by redrawing it)
-    myXDrawLine(display, d, gc, f0, t0);
+    const GraphEditWidget _w = GraphEditWidget(w);
+    const GC frameGC = _w->graphEdit.frameGC;
 
-    // Draw new line
-    myXDrawLine(display, d, gc, f1, t1);
+    Display *display = XtDisplay(w);
+    Window window    = XtWindow(w);
+
+    // North
+    myXDrawLine(display, window, frameGC, 
+		r.origin() + BoxPoint(1, 0),
+		r.origin() + BoxPoint(r.space(X) - 1, 0));
+
+    // South
+    myXDrawLine(display, window, frameGC,
+		r.origin() + BoxPoint(0, r.space(Y)),
+		r.origin() + BoxPoint(r.space(X), r.space(Y)));
+
+    // East
+    myXDrawLine(display, window, frameGC,
+		r.origin(),
+		r.origin() + BoxPoint(0, r.space(Y) - 1));
+
+    // West
+    myXDrawLine(display, window, frameGC,
+		r.origin() + BoxPoint(r.space(X), 0),
+		r.origin() + BoxPoint(r.space(X), r.space(Y) - 1));
 }
+
 
 static void drawSelectFrames(Widget w, 
 			     const BoxRegion& r0, 
 			     const BoxRegion& r1)
 {
-    const GraphEditWidget _w = GraphEditWidget(w);
-    const GC frameGC         = _w->graphEdit.frameGC;
+    // Clear old frame (by redrawing it)
+    redrawSelectFrame(w, r0);
 
-    Display *display = XtDisplay(w);
-    Window window    = XtWindow(w);
-
-
-    // Redraw all four sides, one after the other
-
-    // North
-    redrawLine(display, window, frameGC,
-	r0.origin(),
-	r0.origin() + BoxPoint(r0.space(X), 0),
-	r1.origin(),
-	r1.origin() + BoxPoint(r1.space(X), 0));
-
-    // South
-    redrawLine(display, window, frameGC,
-	r0.origin() + BoxPoint(0, r0.space(Y)),
-	r0.origin() + r0.space(),
-	r1.origin() + BoxPoint(0, r1.space(Y)),
-	r1.origin() + r1.space());
-
-    // East
-    redrawLine(display, window, frameGC,
-	r0.origin(),
-	r0.origin() + BoxPoint(0, r0.space(Y)),
-	r1.origin(),
-	r1.origin() + BoxPoint(0, r1.space(Y)));
-
-    // West
-    redrawLine(display, window, frameGC,
-	r0.origin() + BoxPoint(r0.space(X), 0),
-	r0.origin() + r0.space(),
-	r1.origin() + BoxPoint(r1.space(X), 0),
-	r1.origin() + r1.space());
+    // Draw new frame
+    redrawSelectFrame(w, r1);
 
     // Set appropriate cursor
     setRegionCursor(w);
