@@ -3628,12 +3628,11 @@ December, 1995
 \s-2@DDD@\s+2 1.4: Machine-level debugging, glyphs, \s-2EMACS\s+2 integration
 .TP
 October, 1996
-\s-2@DDD@\s+2 2.0: Colored displays, \s-2XDB\s+2
-support, generic \s-2DBX\s+2 support, command tool.
+\s-2@DDD@\s+2 2.0: Color displays, \s-2XDB\s+2 support, generic
+\s-2DBX\s+2 support, command tool.
 .TP
 April, 1997
-\s-2@DDD@\s+2 2.1: Alias detection, button and value tips, status displays.
-pointer ungrabbing.
+\s-2@DDD@\s+2 2.1: Alias detection, button tips, status displays.
 .PD
 .\"
 .\"
@@ -3643,13 +3642,8 @@ pointer ungrabbing.
 .\"
 If you have any contributions to be incorporated into \s-2@DDD@\s+2,
 please send them to `\fBddd@ips.cs.tu-bs.de\fR'.  For suggestions on
-what might be done, see the file `\fBPROJECTS\fR' in the \s-2@DDD@\s+2
+what might be done, see the file `\fBTODO\fR' in the \s-2@DDD@\s+2
 distribution.
-.PP
-If you wish something done in \s-2@DDD@\s+2, but cannot do it
-yourself, you can \fIfinance\fR specific \s-2@DDD@\s+2 extensions.
-For details, contact `\fBddd@ips.cs.tu-bs.de\fR'; direct mail is also
-welcome.
 .\"
 .\" ---------------
 .SH "IF YOU LIKE @DDD@..."
@@ -3693,12 +3687,13 @@ installation as formatted manual page (as
 .PP
 A PostScript copy of this manual page, including several \s-2@DDD@\s+2
 screen shots and diagrams, is included in the \s-2@DDD@\s+2 source
-distribution and available separately as
+distribution and available separately as `\fBddd.man.ps.gz\fR' in
 .sp
 .br
-  \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/doc/ddd.man.ps.gz\fR
+  \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/doc/\fR
 .br
 .sp
+This directory also contains other documentation related to \s-2@DDD@\s+2.
 .PP
 A \s-2ROFF\s+2 copy of this manual page, suitable for installation as
 manual page on \s-2UNIX\s+2 systems (as
