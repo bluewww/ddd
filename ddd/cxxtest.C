@@ -174,8 +174,8 @@ void array_test()
     (void) array;		// Use it
 
     // Initialize array
-    for (int i = 0; i < sizeof(array) / sizeof(array[0]); i++)
-	for (int j = 0; j < sizeof(array[0]) / sizeof(array[0][0]); j++)
+    for (int i = 0; i < int(sizeof(array) / sizeof(array[0])); i++)
+	for (int j = 0; j < int(sizeof(array[0]) / sizeof(array[0][0])); j++)
 	    array[i][j] = 0;
 
     // Dereference this
