@@ -1926,10 +1926,11 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(display_area[DisplayItms::New].widget, true);
 
     // Dereference
+    bool record_ok = gdb->recording() && arg_ok;
     set_sensitive(node_popup[NodeItms::Dereference].widget,
 		  dereference_ok);
     set_sensitive(shortcut_menu[ShortcutItms::Dereference2].widget,
-		  gdb->recording() || dereference_ok || 
+		  record_ok || dereference_ok || 
 		  (count.selected == 0 && arg_ok));
     set_sensitive(graph_cmd_area[CmdItms::Dereference].widget,
 		  dereference_ok || (count.selected == 0 && arg_ok));
@@ -1937,12 +1938,9 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  dereference_ok);
 
     // Rotate
-    set_sensitive(node_popup[NodeItms::Rotate].widget,
-		  rotate_ok);
-    set_sensitive(graph_cmd_area[CmdItms::Rotate].widget,
-		  rotate_ok);
-    set_sensitive(rotate_menu[RotateItms::RotateAll].widget,
-		  rotate_ok);
+    set_sensitive(node_popup[NodeItms::Rotate].widget,       rotate_ok);
+    set_sensitive(graph_cmd_area[CmdItms::Rotate].widget,    rotate_ok);
+    set_sensitive(rotate_menu[RotateItms::RotateAll].widget, rotate_ok);
 
     // Show/Hide Detail
     if (gdb->recording())
@@ -1951,8 +1949,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	set_label(node_popup[NodeItms::Detail].widget, "Show All");
 	set_label(graph_cmd_area[CmdItms::Detail].widget, 
 		  "Show ()", SHOW_ICON);
-	set_sensitive(node_popup[NodeItms::Detail].widget, true);
-	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
+	set_sensitive(node_popup[NodeItms::Detail].widget, record_ok);
+	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, record_ok);
     }
     else if (count.selected_expanded > 0 && count.selected_collapsed == 0)
     {
@@ -1980,22 +1978,22 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 
     set_sensitive(display_area[DisplayItms::ShowDetail].widget, 
-		  gdb->recording() || count.selected_collapsed > 0);
+		  record_ok || count.selected_collapsed > 0);
     set_sensitive(display_area[DisplayItms::HideDetail].widget, 
-		  gdb->recording() || count.selected_expanded > 0);
+		  record_ok || count.selected_expanded > 0);
 
     set_sensitive(detail_menu[DetailItms::ShowMore].widget, 
-		  gdb->recording() || count.selected_collapsed > 0);
+		  record_ok || count.selected_collapsed > 0);
     set_sensitive(detail_menu[DetailItms::ShowJust].widget, 
-		  gdb->recording() || count.selected > 0);
+		  record_ok || count.selected > 0);
     set_sensitive(detail_menu[DetailItms::ShowDetail].widget, 
-		  gdb->recording() || count.selected_collapsed > 0);
+		  record_ok || count.selected_collapsed > 0);
     set_sensitive(detail_menu[DetailItms::HideDetail].widget, 
-		  gdb->recording() || count.selected_expanded > 0);
+		  record_ok || count.selected_expanded > 0);
 
     // Delete
     set_sensitive(graph_cmd_area[CmdItms::Delete].widget,
-		  gdb->recording() || count.selected_titles > 0);
+		  record_ok || count.selected_titles > 0);
     set_sensitive(display_area[DisplayItms::Delete].widget,
 		  count.selected_titles > 0);
 
