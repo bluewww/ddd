@@ -1021,7 +1021,8 @@ void SourceView::_set_bps_cond(IntArray& _nrs, string cond,
 	    move_breakpoint_properties(bp_nr, new_bp_nr);
 
 	    // Delete old breakpoint
-	    delete_bp(bp_nr);
+	    if (gdb->has_numbered_breakpoints())
+		delete_bp(bp_nr);
 
 	    // Next breakpoint will get the next number
 	    count++;
@@ -3891,7 +3892,8 @@ void SourceView::process_info_bp (string& info_output,
 	{
 	    // New breakpoint
 	    changed = true;
-	    BreakPoint *new_bp = new BreakPoint(info_output, break_arg, bp_nr);
+	    BreakPoint *new_bp = new BreakPoint(info_output, break_arg, 
+						bp_nr, current_file_name);
 	    bp_map.insert(bp_nr, new_bp);
 
 	    if (gdb->has_delete_command())
@@ -4102,8 +4104,7 @@ void SourceView::lookup(string s, bool silent)
 	    }
 		
 	    case JDB:
-		show_position(current_source_name()
-			      + ":" + itostring(line));
+		show_position(current_source_name() + ":" + itostring(line));
 		break;
 
 	    case DBX:
