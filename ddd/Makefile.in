@@ -1001,8 +1001,8 @@ Ddd: Ddd.in config.status
 
 $(srcdir)/configure: $(srcdir)/configure.in $(srcdir)/aclocal.m4
 	cd $(srcdir) && $(AUTOCONF)
-config.status: ./configure
-	-$(SHELL) ./config.status --recheck || $(SHELL) ./configure -v
+config.status: $(srcdir)/configure
+	-$(SHELL) ./config.status --recheck || $(SHELL) $(srcdir)/configure -v
 
 .PRECIOUS: Makefile configure config.status config.h Ddd
 
@@ -1110,6 +1110,22 @@ configinfo.o:	configinfo.C configinfo.h
 
 USERINFO:	userinfo Makefile
 		(./userinfo || echo '(unknown)') > $@; $(CAT) $@
+
+
+## Update the shared source tree.  For development only.
+
+PUB_DEST=/ftp/ips/pub/misc/$(ddd)-$(VERSION)/ddd
+PUB_SRC=`ls /usr/local/share/CVS/ddd/ddd | sed 's/,v//'`
+
+.PHONY: pub
+pub:	$(PROG_STUFF) configure
+	@for file in $(PROG_STUFF) configure Makedeps $(PUB_SRC); do \
+	    if gtest ./$$file -nt $(PUB_DEST)/$$file; then \
+		echo -n Updating $(PUB_DEST)/$$file...; \
+		cp -p ./$$file $(PUB_DEST)/$$file; \
+		echo done.; \
+	    fi; \
+	done
 
 
 ## Make dependency stuff.
