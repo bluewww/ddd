@@ -1116,11 +1116,12 @@ USERINFO:	userinfo Makefile
 
 PUB_DEST=/ftp/ips/pub/misc/$(ddd)-$(VERSION)/ddd
 PUB_SRC=`ls /usr/local/share/CVS/ddd/ddd | sed 's/,v//'`
+GTEST=/usr/local/gnubin/test
 
 .PHONY: pub
 pub:	$(PROG_STUFF) configure $(PUB_DEST)/USERINFO
 	@for file in $(PROG_STUFF) configure Makedeps $(PUB_SRC); do \
-	    if gtest ./$$file -nt $(PUB_DEST)/$$file; then \
+	    if $(GTEST) ./$$file -nt $(PUB_DEST)/$$file; then \
 		echo -n Updating $(PUB_DEST)/$$file...; \
 		cp -p ./$$file $(PUB_DEST)/$$file; \
 		echo done.; \
