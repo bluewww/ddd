@@ -34,8 +34,7 @@ char DispGraph_rcsid[] =
 #endif
 
 //-----------------------------------------------------------------------------
-// DispGraph speichert Informationen zu allen graphisch dargestellten
-// Display-Ausdruecken.
+// DispGraph stores information about all displayed display expressions.
 //-----------------------------------------------------------------------------
 
 #include <X11/StringDefs.h>
@@ -44,6 +43,8 @@ char DispGraph_rcsid[] =
 #include "GraphEdit.h"
 #include "assert.h"
 #include "VarArray.h"
+#include "AliasGE.h"
+#include "VoidArray.h"
 
 // ***************************************************************************
 // Constructor
@@ -161,8 +162,7 @@ int DispGraph::insert_new (int disp_nr, DispNode* dn)
     if (idMap.length() == 0)
 	handlers.call(DispGraph_Empty, this, (void*)false);
 
-    Graph* tmp = (Graph *) this;
-    *tmp += dn->nodeptr();
+    *this += dn->nodeptr();
     assert (Graph::OK());
     idMap.insert (disp_nr, dn);
 
@@ -192,9 +192,8 @@ int DispGraph::insert_dependent (int       new_disp_nr,
 
     DispNode* old_dn = idMap.get (old_disp_nr);
 
-    Graph* tmp = (Graph *) this;
-    *tmp += new_dn->nodeptr();
-    *tmp += new LineGraphEdge (old_dn->nodeptr(), new_dn->nodeptr());
+    *this += new_dn->nodeptr();
+    *this += new LineGraphEdge (old_dn->nodeptr(), new_dn->nodeptr());
 
     idMap.insert (new_disp_nr, new_dn);
 
@@ -479,17 +478,17 @@ bool DispGraph::del (int disp_nr)
 {
     if (idMap.contains (disp_nr))
     {
+	unalias(disp_nr);
 	DispNode* dn = idMap.get (disp_nr);
-	Graph* tmp = (Graph *) this;
 
 	VarArray<GraphNode *> hints;
 
 	find_hints_from(dn->nodeptr(), hints);
 	find_hints_to(dn->nodeptr(), hints);
 	for (int i = 0; i < hints.size(); i++)
-	    *tmp -= hints[i];
+	    *this -= hints[i];
 	    
-	*tmp -= dn->nodeptr();
+	*this -= dn->nodeptr();
 	delete dn;
 	idMap.del (disp_nr);
 
@@ -657,4 +656,91 @@ void DispGraph::disp_node_disabledHP (void*,
 	if (disp_graph->no_disabled = (disp_graph->count_all(Disabled) == 0))
 	    disp_graph->handlers.call(NoDisabled, disp_graph, (void*)true);
     }
+}
+
+// ***************************************************************************
+// Alias handling
+//
+
+// Make DISP_NR an alias of ALIAS_DISP_NR.  Suppress ALIAS_DISP_NR.
+bool DispGraph::alias(int disp_nr, int alias_disp_nr)
+{
+    DispNode *d0 = get(disp_nr);
+    DispNode *dn = get(alias_disp_nr);
+
+    if (d0 == 0 || dn == 0)
+	return false;
+
+    GraphNode *node = dn->nodeptr();
+    if (node->hidden() && dn->alias_of == disp_nr)
+    {
+	// Already hidden as alias of DISP_NR
+	return false;
+    }
+
+    if (node->hidden())
+	unalias(alias_disp_nr);
+
+    // Hide alias
+    node->hidden() = true;
+    dn->alias_of   = disp_nr;
+
+    // Insert new edges
+    GraphEdge *edge;
+    for (edge = node->firstFrom(); edge != 0; 
+	 edge = node->nextFrom(edge))
+    {
+	*this += 
+	    new AliasGraphEdge(alias_disp_nr, d0->nodeptr(), edge->to());
+    }
+    for (edge = node->firstTo(); edge != 0;
+	 edge = node->nextTo(edge))
+    {
+	*this +=
+	    new AliasGraphEdge(alias_disp_nr, edge->from(), d0->nodeptr());
+    }
+
+    // Propagate `selected' state
+    if (dn->selected() && !d0->selected())
+    {
+	d0->select();
+	d0->nodeptr()->selected() = true;
+    }
+
+    return true;
+}
+
+
+// Un-alias ALIAS_DISP_NR.  Unsuppress ALIAS_DISP_NR.  Return true iff
+// changed.
+bool DispGraph::unalias(int alias_disp_nr)
+{
+    DispNode *dn = get(alias_disp_nr);
+    if (dn == 0)
+	return false;
+
+    GraphNode *node = dn->nodeptr();
+    if (!node->hidden())
+	return false;
+
+    // Unsuppress display
+    node->hidden() = false;
+
+    // Delete alias edges associated with this node
+    VoidArray kill_edges;
+    for (GraphEdge *edge = firstEdge(); edge != 0; edge = nextEdge(edge))
+    {
+	AliasGraphEdge *e = ptr_cast(AliasGraphEdge, edge);
+	if (e != 0 && e->disp_nr() == alias_disp_nr)
+	    kill_edges += (void *)e;
+    }
+    for (int i = 0; i < kill_edges.size(); i++)
+    {
+	AliasGraphEdge *e = (AliasGraphEdge *)kill_edges[i];
+	*this -= e;
+	delete e;
+    }
+
+    dn->alias_of = 0;
+    return true;
 }

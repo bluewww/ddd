@@ -67,7 +67,6 @@ char DataDisp_rcsid[] =
 #include "PosBuffer.h"
 #include "IntIntAA.h"
 #include "shorten.h"
-#include "AliasGE.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -3255,7 +3254,6 @@ bool DataDisp::merge_displays(IntArray displays, string& msg)
 
     // Hide all aliases except the node which has changed least recently.
     sort_last_change(displays);
-    DispNode *orig = disp_graph->get(displays[0]);
 
 #if 0
     for (int i = 0; i < displays.size(); i++)
@@ -3265,45 +3263,16 @@ bool DataDisp::merge_displays(IntArray displays, string& msg)
     }
 #endif
 
-    bool changed    = false;
+    bool changed = false;
     IntArray suppressed_displays;
     for (int i = 1; i < displays.size(); i++)
     {
-	DispNode *dn = disp_graph->get(displays[i]);
-	GraphNode *node = dn->nodeptr();
-	if (node->hidden() && dn->alias_of == displays[0])
+	bool c = disp_graph->alias(displays[0], displays[i]);
+	if (c)
 	{
-	    // Already hidden as alias of same display
-	    continue;
-	}
-
-	if (node->hidden())
-	    unmerge_display(displays[i]);
-	else
 	    suppressed_displays += displays[i];
-
-	// Hide alias
-	node->hidden() = true;
-	dn->alias_of   = displays[0];
-
-	// Insert new edges
-	GraphEdge *edge;
-	for (edge = node->firstFrom(); edge != 0; 
-	     edge = node->nextFrom(edge))
-	{
-	    GraphEdge *line = 
-		new AliasGraphEdge(displays[i], orig->nodeptr(), edge->to());
-	    *disp_graph += line;
+	    changed = true;
 	}
-	for (edge = node->firstTo(); edge != 0;
-	     edge = node->nextTo(edge))
-	{
-	    GraphEdge *line = 
-		new AliasGraphEdge(displays[i], edge->from(), orig->nodeptr());
-	    *disp_graph += line;
-	}
-
-	changed = true;
     }
 
     if (suppressed_displays.size() > 0)
@@ -3348,36 +3317,7 @@ bool DataDisp::merge_displays(IntArray displays, string& msg)
 
 bool DataDisp::unmerge_display(int disp_nr)
 {
-    DispNode *dn = disp_graph->get(disp_nr);
-    if (dn == 0)
-	return false;
-
-    GraphNode *node = dn->nodeptr();
-    if (!node->hidden())
-	return false;
-
-    // Unhide display
-    node->hidden() = false;
-
-    // Delete alias edges associated with this node
-    VoidArray kill_edges;
-    for (GraphEdge *edge = disp_graph->firstEdge(); edge != 0; 
-	 edge = disp_graph->nextEdge(edge))
-    {
-	AliasGraphEdge *alias = ptr_cast(AliasGraphEdge, edge);
-	if (alias != 0 && alias->disp_nr() == disp_nr)
-	    kill_edges += (void *)alias;
-    }
-    for (int i = 0; i < kill_edges.size(); i++)
-    {
-	AliasGraphEdge *alias = (AliasGraphEdge *)kill_edges[i];
-	*disp_graph -= alias;
-	delete alias;
-    }
-
-    dn->alias_of = 0;
-
-    return true;
+    return disp_graph->unalias(disp_nr);
 }
 
 //----------------------------------------------------------------------------
