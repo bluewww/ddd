@@ -283,7 +283,9 @@ void process_show(string command, string value, bool init)
 	int start_value = -1;
 	for (int i = 0; i < int(value.length()); i++)
 	{
-	    if (column == 0 && value.contains(base, i))
+	    if (column == 0
+		&& value.contains(base, i) 
+		&& value.contains(rxwhite, i + base.length()))
 	    {
 		start_value = i;
 		break;
@@ -740,11 +742,13 @@ static string get_dbx_doc(string dbxenv, string base)
 	dbx_doc = dbx_doc.before("; ");
     dbx_doc.gsub("etc ", "etc. ");
 
+#if 0
     if (dbx_doc == "")
     {
 	dbx_doc = base;
 	dbx_doc.gsub('_', ' ');
     }
+#endif
 
     munch_doc(dbx_doc);
 
@@ -900,6 +904,9 @@ static void add_button(Widget form, int& row, DebuggerType type,
 
     if (e_type != entry_filter)
 	return;
+
+    if (doc == "")
+	return;			// No need to support undocumented stuff
 
     Arg args[10];
     int arg;
@@ -1465,45 +1472,51 @@ string get_settings(DebuggerType type)
 	switch (type)
 	{
 	case GDB:
-	    if (base == "set remotelogfile" && value == "")
+	case DBX:
+	    if (base == "dbxenv disassembler_version" 
+		|| base == "dbxenv rtc_error_log_file_name"
+		|| base == "dbxenv output_log_file_name")
 	    {
-		// This is the default setting - do nothing
+		// Do nothing (DBX) - dependent on the current machine etc.
+	    }
+	    else if (base == "set remotelogfile" && value == "")
+	    {
+		// This is the default setting - do nothing (GDB)
 	    }
 	    else if (base == "set remotedevice" && value == "")
 	    {
-		// This is the default setting - do nothing
+		// This is the default setting - do nothing (GDB)
+	    }
+	    else if (base.contains("set $cur", 0))
+	    {
+		// Do nothing - dependent on the current file (DBX)
 	    }
 	    else if (base.contains("set $", 0))
 	    {
-		// Add setting.
+		// Add setting (DBX).
 		command += base + " = " + value + '\n';
 	    }
 	    else if (base.contains("set ", 0))
 	    {
-		// Add setting.
+		// Add setting (GDB).
+		command += base + " " + value + '\n';
+	    }
+	    else if (base.contains("dbxenv ", 0))
+	    {
+		// Add setting (DBX).
 		command += base + " " + value + '\n';
 	    }
 	    else
 	    {
 		// `dir' and `path' values are not saved, since they are
 		// dependent on the current machine and the current
-		// executable.
+		// executable (GDB).
 	    }
 	    break;
 
-	case DBX:
 	case XDB:
-	    if (base == "dbxenv disassembler_version" 
-		|| base == "dbxenv rtc_error_log_file_name"
-		|| base == "dbxenv output_log_file_name")
-	    {
-		// Do nothing - dependent on the current machine etc.
-	    }
-	    else
-	    {
-		// Add setting.
-		command += base + ' ' + value + '\n';
-	    }
+	    // Add setting (FIXME)
+	    command += base + ' ' + value + '\n';
 	    break;
 	}
     }
