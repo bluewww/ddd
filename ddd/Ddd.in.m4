@@ -5386,15 +5386,21 @@ becomes an item in the LBL(Display ()) menu.])dnl
 Ddd*new_display_dialog_popup.title:          	   DDD: New Display
 Ddd*new_display_dialog.okLabelString:              Display
 Ddd*new_display_dialog*label.labelString:    	   Display Expression
-Ddd*new_display_dialog*shortcut.labelString:   	   \
-Include in `Display ()' Menu
+Ddd*new_display_dialog*shortcut.labelString:   	   Include in 
+Ddd*new_display_dialog*display.labelType:   	   XmPIXMAP
+Ddd*new_display_dialog*display.labelString:   	   `Display ()'
+Ddd*new_display_dialog*display.labelPixmap:   	   display
+Ddd*new_display_dialog*menu.labelString:   	   menu
 Ddd*new_display_dialog*helpString:	           NEW_DISPLAY_HELP
 
 Ddd*dependent_display_dialog_popup.title:          DDD: New Dependent Display
 Ddd*dependent_display_dialog.okLabelString:        Display
 Ddd*dependent_display_dialog*label.labelString:    Display Expression
-Ddd*dependent_display_dialog*shortcut.labelString: \
-Include in `Display ()' Menu
+Ddd*dependent_display_dialog*shortcut.labelString: Include in 
+Ddd*dependent_display_dialog*display.labelType:    XmPIXMAP
+Ddd*dependent_display_dialog*display.labelString:  `Display ()'
+Ddd*dependent_display_dialog*display.labelPixmap:  display
+Ddd*dependent_display_dialog*menu.labelString:     menu
 Ddd*dependent_display_dialog*helpString: 	   NEW_DISPLAY_HELP\n\
 \n\
 The new display will be made dependent on the currently selected display.

@@ -1319,8 +1319,7 @@ Widget DataDisp::create_display_dialog(Widget parent, String name,
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
-    Widget box = 
-	verify(XmCreateRowColumn(dialog, "box", args, arg));
+    Widget box = verify(XmCreateRowColumn(dialog, "box", args, arg));
     XtManageChild(box);
 
     arg = 0;
@@ -1335,10 +1334,23 @@ Widget DataDisp::create_display_dialog(Widget parent, String name,
     tie_combo_box_to_history(info.text, display_history_filter);
 
     arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    XtSetArg(args[arg], XmNadjustMargin, False); arg++;
+    XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
+    Widget box2 = verify(XmCreateRowColumn(box, "box2", args, arg));
+    XtManageChild(box2);
+
+    arg = 0;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
-    info.shortcut = 
-	verify(XmCreateToggleButton(box, "shortcut", args, arg));
+    info.shortcut = verify(XmCreateToggleButton(box2, "shortcut", args, arg));
     XtManageChild(info.shortcut);
+
+    Widget display = verify(XmCreateLabel(box2, "display", args, arg));
+    XtManageChild(display);
+    Widget menu = verify(XmCreateLabel(box2, "menu", args, arg));
+    XtManageChild(menu);
 
     return dialog;
 }
