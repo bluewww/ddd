@@ -1152,45 +1152,6 @@ inline string& string::operator = (std::ostringstream& os)
     return *this;
 }
 
-#if 0
-// Phased out
-#include <strstream>
-
-inline string& string::operator = (std::ostrstream& os)
-{
-    assert(!consuming());
-
-    // No need to freeze the stream, since the string is copied right away
-#if HAVE_FROZEN_OSTRSTREAMBUF
-    const int frozen = os.rdbuf()->frozen();
-#elif HAVE_FROZEN_OSTRSTREAM
-    const int frozen = os.frozen();
-#else
-    const int frozen = 0; // Pretty optimistic ...
-#endif
-
-    const char *str = os.str();
-
-#if OSTRSTREAM_PCOUNT_BROKEN
-    // In the SGI C++ I/O library, accessing os.str() *increases*
-    // os.pcount() by 1.  We could compensate this in a
-    // machine-independent way by fetching pcount() before str(), but
-    // this will cause trouble when os is assigned the next time.
-    rep = string_Salloc(rep, str, os.pcount() - 1, os.pcount() - 1);
-#else
-    rep = string_Salloc(rep, str, os.pcount(), os.pcount());
-#endif
-
-#if HAVE_FREEZE_OSTRSTREAMBUF
-    os.rdbuf()->freeze(frozen);
-#elif HAVE_FREEZE_OSTRSTREAM
-    os.freeze(frozen);
-#endif
-    
-    return *this;
-}
-#endif
-
 inline string::string(std::ostringstream& os)
     : rep(&_nilstrRep)
 #if STRING_CHECK_CONSUME
