@@ -497,12 +497,14 @@ BASE_OBJECTS = \
 	MemCheck.o   \
 	Range.o
 
-# Instantiated `DynArray' and `VarArray' templates
-ARRAY_OBJECTS = \
+# Instantiated templates
+TEMPLATE_OBJECTS = \
+	IntIntAA.o   \
 	StringA.o    \
 	StringMap.o  \
-	IntArray.o   \
-	VoidArray.o
+	StringSA.o   \
+	VoidArray.o  \
+	WidgetSA.o
 
 # Interprocess communication
 # Top-level class is `Agent', declared in `Agent.h'
@@ -609,7 +611,7 @@ GRAPH_OBJECTS = \
 # now maintained as part of DDD.
 LIB_OBJECTS = \
 	$(BASE_OBJECTS)   \
-	$(ARRAY_OBJECTS)  \
+	$(TEMPLATE_OBJECTS)  \
 	$(AGENT_OBJECTS)  \
 	$(XSTUFF_OBJECTS) \
 	$(BOX_OBJECTS)    \

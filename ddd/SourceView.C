@@ -29,7 +29,6 @@
 
 #ifdef __GNUG__
 #pragma implementation
-#pragma implementation "Assoc.h"
 #endif
 
 char SourceView_rcsid[] =
@@ -294,8 +293,8 @@ Map<int, BreakPoint> SourceView::bp_map;
 
 string SourceView::current_file_name = "";
 int    SourceView::line_count = 0;
-Assoc<int, VarArray<int> > SourceView::bps_in_line;
-XmTextPosition*             SourceView::pos_of_line = 0;
+IntIntArrayAssoc SourceView::bps_in_line;
+XmTextPosition*  SourceView::pos_of_line = 0;
 StringArray SourceView::bp_addresses;
 Assoc<string, string> SourceView::file_cache;
 Assoc<string, string> SourceView::source_name_cache;
@@ -1377,7 +1376,7 @@ void SourceView::read_file (string file_name,
     update_title();
 
     // Refresh breakpoints
-    static Assoc<int, VarArray<int> > empty_bps;
+    static IntIntArrayAssoc empty_bps;
     bps_in_line = empty_bps;
     static StringArray empty_addresses;
     bp_addresses = empty_addresses;
@@ -1458,7 +1457,7 @@ void SourceView::refresh_bp_disp()
 void SourceView::refresh_source_bp_disp()
 {
     // Alte Breakpoint-Darstellungen ueberschreiben - - - - - - - - - - - - -
-    for (AssocIter<int, VarArray<int> > b_i_l_iter(bps_in_line);
+    for (IntIntArrayAssocIter b_i_l_iter(bps_in_line);
 	 b_i_l_iter.ok(); 
 	 b_i_l_iter++)
     {
@@ -1475,7 +1474,7 @@ void SourceView::refresh_source_bp_disp()
 		       (String)s);
     }
 
-    static Assoc<int, VarArray<int> > empty_bps;
+    static IntIntArrayAssoc empty_bps;
     bps_in_line = empty_bps;
 
     // Find all breakpoints referring to this file
@@ -1491,7 +1490,7 @@ void SourceView::refresh_source_bp_disp()
     if (!display_glyphs)
     {
 	// Show breakpoints in text
-	for (AssocIter<int, VarArray<int> > b_i_l_iter(bps_in_line);
+	for (IntIntArrayAssocIter b_i_l_iter(bps_in_line);
 	     b_i_l_iter.ok();
 	     b_i_l_iter++)
 	{
@@ -1504,7 +1503,7 @@ void SourceView::refresh_source_bp_disp()
 	    string insert_string = "";
 
 	    // Darstellung fuer alle Breakpoints der Zeile
-	    VarArray<int>& bps = bps_in_line[line_nr];
+	    VarIntArray& bps = bps_in_line[line_nr];
 
 	    int i;
 	    for (i = 0; i < bps.size(); i++)
@@ -1675,7 +1674,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 		in_text = false;
 
 		// Check for breakpoints...
-		VarArray<int>& bps = bps_in_line[line_nr];
+		VarIntArray& bps = bps_in_line[line_nr];
 		if (bps.size() == 1)
 		{
 		    // Return single breakpoint in this line
@@ -1735,7 +1734,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 		address = current_code.from(index);
 		address = address.through(rxalphanum);
 
-		VarArray<int> bps;
+		VarIntArray bps;
 
 		MapRef ref;
 		for (BreakPoint *bp = bp_map.first(ref);
@@ -2288,7 +2287,7 @@ void SourceView::process_info_bp (string& info_output)
 	break;
     }
 				    
-    VarArray<int> bps_not_read;
+    VarIntArray bps_not_read;
     MapRef ref;
     int i;
     for (i = bp_map.first_key(ref);
@@ -4676,7 +4675,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	int& source_p                = plain[0];
 	int& source_g                = grey[0];
 
-	VarArray<XmTextPosition> source_stops;
+	VarIntArray source_stops;
 
 	// Map breakpoint glyphs
 	// clog << "Source breakpoints:\n";
@@ -4732,7 +4731,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	int& code_p                = plain[1];
 	int& code_g                = grey[1];
 
-	VarArray<XmTextPosition> code_stops;
+	VarIntArray code_stops;
 
 	// Map breakpoint glyphs
 	// clog << "Code breakpoints:\n";

@@ -59,6 +59,7 @@
 #include "Assoc.h"
 #include "MakeMenu.h"
 #include "StringA.h"
+#include "IntIntAA.h"
 
 // DDD includes
 #include "ArgField.h"
@@ -247,8 +248,8 @@ private:
     // File attributes
     static string current_file_name;
     static int    line_count;
-    static Assoc<int, VarArray<int> > bps_in_line;
-    static XmTextPosition*            pos_of_line;
+    static IntIntArrayAssoc bps_in_line;
+    static XmTextPosition* pos_of_line;
     static StringArray bp_addresses;
 
     // Return TRUE if breakpoint BP is in current file

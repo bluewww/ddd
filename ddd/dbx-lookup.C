@@ -35,7 +35,7 @@ const char dbx_lookup_rcsid[] =
 
 #include "dbx-lookup.h"
 
-#include "Assoc.h"
+#include "StringSA.h"
 #include "ddd.h"
 #include "post.h"
 #include "misc.h"
@@ -49,7 +49,7 @@ const char dbx_lookup_rcsid[] =
 // Lookup location of FUNC using DBX
 //-----------------------------------------------------------------------------
 
-static Assoc<string, string> pos_cache;
+static StringStringAssoc pos_cache;
 
 string dbx_lookup(const string& func_name)
 {
@@ -118,7 +118,7 @@ string dbx_lookup(const string& func_name)
 
 void clear_dbx_lookup_cache()
 {
-    static Assoc<string, string> empty;
+    static StringStringAssoc empty;
     pos_cache = empty;
 }
 
