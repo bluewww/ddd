@@ -110,7 +110,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _program_language(LANGUAGE_C),
       _trace_dialog(false),
       _verbatim(false),
-      last_prompt("(???) "),
+      last_prompt(""),
       questions_waiting(false),
       _qu_data(0),
       qu_index(0),
@@ -125,20 +125,6 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _on_qu_array_completion(0),
       complete_answer("")
 {
-    // Set default prompt
-    switch (type())
-    {
-    case GDB:
-	last_prompt = "(gdb) ";
-	break;
-    case DBX:
-	last_prompt = "(dbx) ";
-	break;
-    case XDB:
-	last_prompt = ">";
-	break;
-    }
-
     // Suppress default error handlers
     removeAllHandlers(Panic);
     removeAllHandlers(Strange);
@@ -501,9 +487,14 @@ bool GDBAgent::ends_with_prompt (const string& answer)
 	{
 	    // Any line equal to `>' is a prompt.
 	    unsigned beginning_of_line = answer.index('\n', -1) + 1;
-	    return beginning_of_line < answer.length()
+	    if (beginning_of_line < answer.length()
 		&& answer.length() > 0
-		&& answer[beginning_of_line] == '>';
+		&& answer[beginning_of_line] == '>')
+	    {
+		last_prompt = ">";
+		return true;
+	    }
+	    return false;
 	}
     }
 
@@ -1051,14 +1042,46 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 }
 
 // GDB died
-void GDBAgent::DiedHP(Agent *a, void *, void *)
+void GDBAgent::DiedHP(Agent *agent, void *, void *)
 {
-    GDBAgent *agent = ptr_cast(GDBAgent, a);
+    GDBAgent *gdb = ptr_cast(GDBAgent, agent);
+
+    // We have no prompt
+    gdb->last_prompt = "";
+
+    // Call answer completion handlers
+    switch (gdb->state)
+    {
+    case ReadyWithPrompt:
+	break;
+
+    case BusyOnInitialCmds:
+    case BusyOnCmd:
+	if (gdb->_on_answer_completion != 0)
+	    gdb->_on_answer_completion (gdb->_user_data);
+	break;
+
+    case BusyOnQuestion:
+	if (gdb->_on_question_completion != 0)
+	    gdb->_on_question_completion (gdb->complete_answer, 
+					  gdb->_qu_data);
+	break;
+
+    case BusyOnQuArray:
+	if (gdb->_on_qu_array_completion != 0)
+	{
+	    gdb->_on_qu_array_completion(gdb->complete_answers, 
+					 gdb->_qu_datas,
+					 gdb->_qu_count,
+					 gdb->_qa_data);
+	}
+	break;
+    }
 
     // We're not ready anymore
-    agent->state = BusyOnCmd;
-    agent->callHandlers(ReadyForQuestion, (void *)false);
-    agent->callHandlers(ReadyForCmd,      (void *)false);
+    gdb->state = BusyOnCmd;
+    gdb->callHandlers(ReadyForQuestion, (void *)false);
+    gdb->callHandlers(ReadyForCmd,      (void *)false);
 }
 
 
