@@ -30,6 +30,19 @@
 char DataDisp_rcsid[] =
     "$Id$";
 
+// An interactive debugger is an outstanding example of what's NOT
+// needed--it encourages trial-and-error hacking rather than
+// systematic design, and also hides marginal people barely qualified
+// for precision programming.
+// 					-- HARLAN MILLS
+//
+// The debugger isn't a substitute for good thinking.  But, in some
+// cases, thinking isn't a substitute for a good debugger either.  The
+// most effective combination is good thinking and a good debugger.
+//
+//					-- STEVE McCONNELL, Code Complete
+
+
 #ifdef __GNUG__
 #pragma implementation
 #endif
