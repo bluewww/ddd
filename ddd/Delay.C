@@ -169,7 +169,8 @@ Delay::Delay(Widget w):
 	for (int i = 0; i < delays.size(); i++)
 	{
 	    assert(delays[i] == 0);
-	    delays[i] = new _Delay(_shells[i]);
+	    if (_shells[i])
+		delays[i] = new _Delay(_shells[i]);
 	}
     }
 }
