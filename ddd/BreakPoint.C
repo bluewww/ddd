@@ -123,19 +123,19 @@ BreakPoint::BreakPoint (string& info_output)
 		myinfos += info_output.through ("\n");
 	    }
 
-	    if (info_output != "" && isdigit(info_output[0]))
+	    if (info_output != "" && !isdigit(info_output[0]))
 	    {
 		// Extra info may follow
-		int next_index = info_output.index(RXnl_int);
-		if (next_index == -1)
+		int next_nl = info_output.index(RXnl_int);
+		if (next_nl == -1)
 		{
 		    // That's all, folks!
 		    myinfos += info_output;
 		    info_output = "";
 		}
 		else {
-		    myinfos += info_output.through (next_index);
-		    info_output = info_output.after (next_index);
+		    myinfos += info_output.through(next_nl);
+		    info_output = info_output.after(next_nl);
 		}
 	    }
 	}
