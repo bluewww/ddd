@@ -606,8 +606,10 @@ void SourceView::line_popup_set_tempCB (Widget w,
 
 // Create or clear a breakpoint at position A.  If SET, create a
 // breakpoint; if not SET, delete it.  If TEMP, make the breakpoint
-// temporary.  W is the origin.
-void SourceView::set_bp(const string& a, bool set, bool temp, Widget w)
+// temporary.  If COND is given, break only iff COND evals to true. W
+// is the origin.
+void SourceView::set_bp(const string& a, bool set, bool temp, 
+			const string& cond, Widget w)
 {
     int new_bps = max_breakpoint_number_seen + 1;
     string address = a;
@@ -630,14 +632,21 @@ void SourceView::set_bp(const string& a, bool set, bool temp, Widget w)
 		gdb_command("tbreak " + address, w);
 	    else
 		gdb_command("break " + address, w);
+
 	    break;
 
+
 	case DBX:
+	{
+	    string cond_suffix = "";
+	    if (cond != "")
+		cond_suffix = " if " + cond;
+
 	    if (address.contains('*', 0))
 	    {
 		// Address given
 		address = address.after('*');
-		gdb_command("stopi at " + address, w);
+		gdb_command("stopi at " + address + cond_suffix, w);
 
 		if (temp)
 		{
@@ -655,7 +664,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp, Widget w)
 		{
 		    // Line number given
 		    line = address;
-		    gdb_command("stop at " + address, w);
+		    gdb_command("stop at " + address + cond_suffix, w);
 		}
 		else if (address.contains(":") && !address.contains("::"))
 		{
@@ -664,7 +673,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp, Widget w)
 		    line = address.after(':');
 
 		    gdb_command("file " + file, w);
-		    gdb_command("stop at " + line, w);
+		    gdb_command("stop at " + line + cond_suffix, w);
 		}
 		else
 		{
@@ -677,12 +686,12 @@ void SourceView::set_bp(const string& a, bool set, bool temp, Widget w)
 			line = pos.after(':');
 
 			gdb_command("file " + file, w);
-			gdb_command("stop at " + line, w);
+			gdb_command("stop at " + line + cond_suffix, w);
 		    }
 		    else
 		    {
 			// Cannot determine function position - try this one
-			gdb_command("stop in " + address, w);
+			gdb_command("stop in " + address + cond_suffix, w);
 		    }
 		}
 
@@ -695,6 +704,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp, Widget w)
 		}
 	    }
 	    break;
+	}
 
 	case XDB:
 	{
@@ -707,9 +717,18 @@ void SourceView::set_bp(const string& a, bool set, bool temp, Widget w)
 	    if (temp)
 		command += " \\1t";
 
+	    if (cond != "" && !gdb->has_condition_command())
+		command += " {if " + cond + " {} {Q;c}}";
+
 	    gdb_command(command, w);
 	    break;
 	}
+	}
+
+	if (cond != "" && gdb->has_condition_command())
+	{
+	    // Add condition
+	    gdb_command(gdb->condition_command(itostring(new_bps), cond), w);
 	}
     }
 }
@@ -883,10 +902,43 @@ void SourceView::move_bp(int bp_nr, const string& a, Widget w)
 	    return;		// Breakpoint already at address
     }
 
-    // Create a new breakpoint at ADDRESS and make it inherit the
+    // Create a new breakpoint at ADDRESS, making it inherit the
     // current settings
     ostrstream os;
     bool ok = bp->get_state(os, 0, false, address);
+    if (!ok)
+	return;			// Command failed
+
+    string commands(os);
+    commands.gsub("@0@", itostring(next_breakpoint_number()));
+
+    while (commands != "")
+    {
+	string command = commands.before('\n');
+	gdb_command(command, w);
+	commands = commands.after('\n');
+    }
+
+    // Delete old breakpoint
+    bp_popup_deleteCB(w, XtPointer(&bp_nr), XtPointer(0));
+}
+
+void SourceView::set_bp_cond(int bp_nr, const string& cond, Widget w)
+{
+    if (gdb->has_condition_command())
+    {
+	gdb_command(gdb->condition_command(itostring(bp_nr), cond), w);
+	return;
+    }
+
+    BreakPoint *bp = bp_map.get(bp_nr);
+    if (bp == 0)
+	return;			// No such breakpoint
+
+    // Create a new breakpoint with a new condition COND, making it
+    // inherit the current settings
+    ostrstream os;
+    bool ok = bp->get_state(os, 0, false, "", cond);
     if (!ok)
 	return;			// Command failed
 
@@ -4055,8 +4107,6 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 		       gdb->has_disable_command());
 	XtSetSensitive(bp_popup[BPItms::IgnoreCount].widget,
 		       gdb->has_ignore_command());
-	XtSetSensitive(bp_popup[BPItms::Condition].widget,
-		       gdb->has_condition_command());
 	MString label(bp_map.get(bp_nr)->enabled() ? 
 		      "Disable Breakpoint" : "Enable Breakpoint");
 	XtVaSetValues(bp_popup[BPItms::Disable].widget,
@@ -4218,15 +4268,12 @@ void SourceView::EditBreakpointConditionDCB(Widget,
 	IntArray breakpoint_nrs;
 	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
 	for (int i = 0; i < breakpoint_nrs.size(); i++)
-	{
-	    gdb_command(gdb->condition_command(itostring(breakpoint_nrs[i]),
-					       input));
-	}
+	    set_bp_cond(breakpoint_nrs[i], input);
     }
     else
     {
 	int bp_nr = *((int *)client_data);
-	gdb_command(gdb->condition_command(itostring(bp_nr), input));
+	set_bp_cond(bp_nr, input);
     }
 
     XtFree(input);
@@ -4558,7 +4605,7 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
     XtSetSensitive(bp_area[BPButtons::Disable].widget,     
 		   gdb->has_disable_command() && breakpoint_nrs.size() > 0);
     XtSetSensitive(bp_area[BPButtons::Condition].widget,   
-		   gdb->has_condition_command() && breakpoint_nrs.size() > 0);
+		   breakpoint_nrs.size() > 0);
     XtSetSensitive(bp_area[BPButtons::IgnoreCount].widget, 
 		   gdb->has_ignore_command() && breakpoint_nrs.size() > 0);
     XtSetSensitive(bp_area[BPButtons::Delete].widget,
@@ -4666,7 +4713,7 @@ void SourceView::setup_where_line(string& line)
     // Remove file paths (otherwise line can be too long for DBX)
     //   ... n.b. with templates, line can still be rather long
 #if RUNTIME_REGEX
-    static regex rxfilepath("[^ /]*/");
+    static regex rxfilepath("[^\"\' /]*/");
 #endif
     line.gsub(rxfilepath, "");
 

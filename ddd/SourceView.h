@@ -147,15 +147,16 @@ class SourceView {
     static void clearBP(void *client_data, XtIntervalId *timer);
     static void clearJumpBP(const string& answer, void *client_data);
 
-    // Move breakpoint N to ADDRESS
+    // Move breakpoint NR to ADDRESS
     static void move_bp(int nr, const string& address, Widget origin = 0);
 
+    // Set condition of breakpoint NR to COND
+    static void set_bp_cond(int nr, const string& cond, Widget origin = 0);
 
-    // Find the line number at POS
-    // LINE_NR becomes the line number at POS
-    // IN_TEXT becomes true iff POS is in the source area
-    // BP_NR is the number of the breakpoint at POS (none: 0)
-    // Return false iff failure
+    // Find the line number at POS.  LINE_NR becomes the line number
+    // at POS.  IN_TEXT becomes true iff POS is in the source area.
+    // BP_NR is the number of the breakpoint at POS (none: 0).  Return
+    // false iff failure.
     static bool get_line_of_pos (Widget w,
 				 XmTextPosition pos,
 				 int& line_nr,
@@ -596,10 +597,11 @@ public:
     static int next_breakpoint_number();
 
     // Create or clear a breakpoint at position A.  If SET, create a
-    // breakpoint; if not SET, delete it.  If TEMP, make the breakpoint
-    // temporary.
+    // breakpoint; if not SET, delete it.  If TEMP, make the
+    // breakpoint temporary.  If COND is given, break only iff COND
+    // evals to true.  ORIGIN is the origin.
     static void set_bp(const string& a, bool set, bool temp, 
-		       Widget origin = 0);
+		       const string& cond = "", Widget origin = 0);
 
     // Custom calls
     static void create_bp(const string& a, Widget origin = 0);
@@ -694,17 +696,17 @@ public:
 
 inline void SourceView::create_bp(const string& a, Widget w)
 {
-    set_bp(a, true, false, w);
+    set_bp(a, true, false, "", w);
 }
 
 inline void SourceView::create_temp_bp(const string& a, Widget w)
 {
-    set_bp(a, true, true, w);
+    set_bp(a, true, true, "", w);
 }
 
 inline void SourceView::clear_bp(const string& a, Widget w)
 {
-    set_bp(a, false, false, w);
+    set_bp(a, false, false, "", w);
 }
 
 #endif // _DDD_SourceView_h

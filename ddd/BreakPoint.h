@@ -68,6 +68,7 @@ class BreakPoint {
     string  myaddress;
     string  myinfos;
     string  myignore_count;
+    string  mycondition;
     string  myarg;
     bool    myenabled_changed;
     bool    myfile_changed;
@@ -132,10 +133,12 @@ public:
     // true iff changes occurred.  Delete own info from INFO_OUTPUT.
     bool update (string& info_output);
 
-    // Return commands to restore this breakpoint.  If DUMMY is set,
-    // delete the breakpoint immediately in order to increase the
+    // Return commands to restore this breakpoint.  If AS_DUMMY is
+    // set, delete the breakpoint immediately in order to increase the
     // breakpoint number.  If ADDR is set, use ADDR as (fake) address.
-    bool get_state(ostream& os, int num, bool dummy = false, string addr = "");
+    // If COND is set, use COND as (fake) condition.
+    bool get_state(ostream& os, int num, bool as_dummy = false, 
+		   string addr = "", string cond = char(-1));
 };
 
 #endif // _DDD_BreakPoint_h
