@@ -87,18 +87,16 @@ static void YnButtonCB(Widget dialog,
 // Show documentation string in status line
 //-----------------------------------------------------------------------------
 
-static MString NULL_STRING("@"); // Placeholder for `nonexistent value'
-
 static void showDocumentationInStatusLine(const MString& doc)
 {
-    static MString current_status_message = NULL_STRING;
-    static MString saved_status_message   = NULL_STRING;
-    static bool doc_shown_in_status       = false;
+    static MString current_status_message(0, true);
+    static MString saved_status_message(0, true);
+    static bool doc_shown_in_status = false;
 
-    if (doc == NULL_STRING || doc.isNull())
+    if (doc.isNull() || doc.isEmpty())
     {
 	// Button has been left - restore previous message unless overwritten
-	if (current_status_message != NULL_STRING)
+	if (!current_status_message.isNull())
 	{
 	    // Button has been left
 	    if (current_status_message == current_status())
@@ -114,7 +112,8 @@ static void showDocumentationInStatusLine(const MString& doc)
 		set_status("");
 #endif
 	    }
-	    current_status_message = NULL_STRING;
+	    static MString empty(0, true);
+	    current_status_message = empty;
 	}
 
 	doc_shown_in_status = false;
@@ -216,17 +215,20 @@ static string gdbHelp(string command)
 static MString gdbDefaultHelpText(Widget widget)
 {
     string name = gdbHelpName(widget);
+    MString msg = bf(name) + cr();
+
     string help = gdbHelp(name);
     if (help == NO_GDB_ANSWER)
     {
-	return bf(name) + cr() 
-	    + rm("No help available now.") + cr()
-	    + rm("Please try again when " +  gdb->title() + " is ready.");
+	msg += rm("No help available now.") + cr();
+	msg += rm("Please try again when " +  gdb->title() + " is ready.");
     }
     else
     {
-	return bf(name) + cr() + rm(help);
+	msg += rm(help);
     }
+
+    return msg;
 }
 
 
@@ -296,7 +298,7 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	string expr = 
 	    source_view->get_word_at_event(widget, event, startpos, endpos);
 	if (expr == "")
-	    return NULL_STRING; // Nothing pointed at
+	    return MString(0, true); // Nothing pointed at
 
 	// Don't invoke the debugger if EXPR is not an identifier.
 	// Otherwise, we might point at `i++' or `f()' and have weird
@@ -306,7 +308,7 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	    if (for_documentation)
 		return empty;
 	    else
-		return NULL_STRING;
+		return MString(0, true);
 	}
 
 	Position x, y;
@@ -330,7 +332,7 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	// Get value of ordinary variable
 	tip = gdbValue(expr);
 	if (tip == NO_GDB_ANSWER)
-	    return NULL_STRING;
+	    return MString(0, true);
 
 	if (is_invalid(tip) && widget == source_view->code())
 	{
@@ -338,7 +340,7 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	    expr.prepend("$");
 	    tip = gdbValue(expr);
 	    if (tip == NO_GDB_ANSWER)
-		return NULL_STRING;
+		return MString(0, true);
 
 	    if (tip.matches(rxint))
 	    {
@@ -356,12 +358,12 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	    if (for_documentation)
 		return empty;
 	    else
-		return NULL_STRING;
+		return MString(0, true);
 	}
 
 	tip = get_disp_value_str(tip, gdb);
 	if (tip == "void")
-	    return NULL_STRING;
+	    return MString(0, true);
 
 	if (for_documentation)
 	{
@@ -379,7 +381,7 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	string help_name = gdbHelpName(widget);
 	tip = gdbHelp(help_name);
 	if (tip == NO_GDB_ANSWER)
-	    return NULL_STRING;
+	    return MString(0, true);
 	if (tip.contains(help_name, 0))
 	    tip = tip.after(help_name);
 	strip_through(tip, " # ");

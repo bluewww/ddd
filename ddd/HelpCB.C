@@ -149,10 +149,12 @@ static void _MStringHelpCB(Widget widget,
 
 MString helpOnVersionExtraText;
 
-// A single dot means `no string'.  (An empty string causes the
+// A single `\n' means `no string'.  (An empty string causes the
 // helpers to be called.)
-static MString NO_STRING(".");	 // Placeholder for `empty string'
-static MString NULL_STRING("@"); // Placeholder for `nonexistent value'
+static bool isNone(const MString& s)
+{
+    return s.isEmpty() && s.lineCount() > 0;
+}
 
 static MString get_help_string(Widget widget)
 {
@@ -162,13 +164,10 @@ static MString get_help_string(Widget widget)
 			      help_subresources, XtNumber(help_subresources), 
 			      NULL, 0);
 
-    if (values.helpString == 0)
-	values.helpString = NULL_STRING;
-
     MString text(values.helpString, true);
-    if ((text == NULL_STRING || text.isNull()) && DefaultHelpText != 0)
+    if ((text.isNull() || text.isEmpty()) && DefaultHelpText != 0)
 	text = DefaultHelpText(widget);
-    if (text == NULL_STRING || text.isNull())
+    if (text.isNull())
 	text = NoHelpText(widget);
 
     if (values.showTitle)
@@ -193,14 +192,11 @@ static MString get_tip_string(Widget widget, XEvent *event)
 			      tip_subresources, XtNumber(tip_subresources), 
 			      NULL, 0);
 
-    if (values.tipString == 0)
-	values.tipString = NULL_STRING;
-
     MString text(values.tipString, true);
-    if (text == NULL_STRING || text == NO_STRING)
+    if (text.isNull() || isNone(text))
 	return NoTipText(widget, event);
 
-    if (text.isNull())
+    if (text.isEmpty())
     {
 	if (DefaultTipText != 0)
 	    return DefaultTipText(widget, event);
@@ -225,17 +221,14 @@ static MString get_documentation_string(Widget widget, XEvent *event)
 			      doc_subresources, XtNumber(doc_subresources), 
 			      NULL, 0);
 
-    if (values.documentationString == 0)
-	values.documentationString = NULL_STRING;
-
     MString text(values.documentationString, true);
-    if (text == NULL_STRING)
+    if (text.isNull())
 	return get_tip_string(widget, event);
 
-    if (text == NO_STRING)
+    if (isNone(text))
 	return NoDocumentationText(widget, event);
 
-    if (text.isNull())
+    if (text.isEmpty())
     {
 	if (DefaultDocumentationText != 0)
 	    return DefaultDocumentationText(widget, event);
@@ -331,12 +324,12 @@ static MString NoHelpText(Widget widget)
 
 static MString NoTipText(Widget, XEvent *)
 {
-    return NULL_STRING;
+    return MString(0, true);	// Empty string
 }
 
 static MString NoDocumentationText(Widget, XEvent *)
 {
-    return NULL_STRING;
+    return MString(0, true);	// Empty string
 }
 
 static XmTextPosition NoTextPosOfEvent(Widget, XEvent *)
@@ -1044,7 +1037,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 		     CancelTimeOut, XtPointer(*timer));
 
     MString tip = get_tip_string(w, &ti->event);
-    if (tip == NULL_STRING || tip == NO_STRING || tip.isNull())
+    if (tip.isNull() || isNone(tip) || tip.isEmpty())
 	return;
 
     if (tip_shell == 0)
@@ -1357,7 +1350,8 @@ static void ClearDocumentation(XtPointer client_data, XtIntervalId *timer)
 	&& (XmIsText(ti->widget) ? text_docs_enabled : button_docs_enabled))
     {
 	// Clear documentation
-	DisplayDocumentation(NULL_STRING);
+	static MString empty(0, true);
+	DisplayDocumentation(empty);
     }
 }
 
