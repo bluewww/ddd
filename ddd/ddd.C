@@ -1532,13 +1532,6 @@ int main(int argc, char *argv[])
 	ddd_install_fatal(program_name); // Fatal error
     }
 
-#ifdef SIGCHLD
-    // Setup signals: Restore default action for SIGCHLD signals.
-    // Without asynchronous signal handling, DDD still runs well and
-    // is less dependent on OS-specific signal handling.
-    signal(SIGCHLD, SignalProc(SIG_DFL));
-#endif
-
     // Check if we are to run without windows
     bool no_windows = false;
 
@@ -1735,6 +1728,18 @@ int main(int argc, char *argv[])
     session_id = app_data.session;
 
     // From this point on, APP_DATA is valid.
+
+#ifdef SIGCHLD
+    if (app_data.poll_child_status)
+    {
+	// In POLL_CHILD_STATUS mode, we ignore SIGCHLD signals and
+	// poll the child process state explicitly, as in DDD 3.0 and
+	// earlier.  Advantage: DDD does not depend on correct
+	// asynchronous signal handling.  Disadvantage: somewhat
+	// slower due to explicit polling.
+	signal(SIGCHLD, SignalProc(SIG_DFL));
+    }
+#endif
 
     // Setup label hack
     arg = 0;
@@ -2587,11 +2592,20 @@ void process_next_event()
 #if HAVE_EXCEPTIONS
     try {
 #endif
-    // Check if GDB is still running
-    gdb->running();
 
-    // Check if the command TTY is still open
-    tty_running();
+    if (app_data.poll_child_status)
+    {
+	// Check if GDB is still running
+	gdb->running();
+
+	// Check if the command TTY is still open
+	tty_running();
+    }
+    else
+    {
+	// Process pending child status changes
+	Agent::runningAgents.commit();
+    }
 
     // Check if the separate TTY is still running
     exec_tty_running();
@@ -3130,6 +3144,7 @@ static void TryLock(XtPointer client_data, XtIntervalId *)
 		    TryLock, client_data);
 }
 
+#if XmVersion >= 1002
 static void KillLockerCB(Widget w, XtPointer client_data, XtPointer)
 {
     static int attempts_to_kill = 0;
@@ -3144,6 +3159,7 @@ static void KillLockerCB(Widget w, XtPointer client_data, XtPointer)
 	TryLock(XtPointer(w), 0);
     }
 }
+#endif
 
 static void lock_ddd(Widget parent)
 {

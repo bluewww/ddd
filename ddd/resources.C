@@ -595,6 +595,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNpollChildStatus,
+	XtCPollChildStatus,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, poll_child_status),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
+    {
         XtNdebuggerHost,
 	XtCDebuggerHost,
 	XtRString,

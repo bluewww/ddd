@@ -133,6 +133,8 @@
 #define XtCSynchronousDebugger   "SynchronousDebugger"
 #define XtNterminateOnEOF        "terminateOnEOF"
 #define XtCTerminateOnEOF        "TerminateOnEOF"
+#define XtNpollChildStatus       "pollChildStatus"
+#define XtCPollChildStatus       "PollChildStatus"
 #define XtNdebuggerHost          "debuggerHost"
 #define XtCDebuggerHost          "DebuggerHost"
 #define XtNdebuggerRHost         "debuggerRHost"
@@ -383,6 +385,7 @@ struct AppData {
     int       question_timeout;
     Boolean   synchronous_gdb;
     Boolean   terminate_on_eof;
+    Boolean   poll_child_status;
     String    debugger_host;
     String    debugger_rhost;
     String    debugger_host_login;
