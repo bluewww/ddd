@@ -122,7 +122,7 @@ static bool refresh_tip_dialog(Widget w)
     if (!is_tip(tip))
     {
 	// Restart from first tip
-	app_data.startup_tip_count = 1;
+	app_data.startup_tip_count = 0;
 	tip = get_startup_tip(w, app_data.startup_tip_count);
     }
     if (!is_tip(tip))
@@ -133,9 +133,9 @@ static bool refresh_tip_dialog(Widget w)
     MString next_tip = get_startup_tip(w, app_data.startup_tip_count + 1);
     MString prev_tip = get_startup_tip(w, app_data.startup_tip_count - 1);
 
-    XtSetSensitive(XmMessageBoxGetChild(w, XmDIALOG_OK_BUTTON),
-		   is_tip(prev_tip));
     XtSetSensitive(XmMessageBoxGetChild(w, XmDIALOG_CANCEL_BUTTON),
+		   is_tip(prev_tip));
+    XtSetSensitive(XmMessageBoxGetChild(w, XmDIALOG_HELP_BUTTON),
 		   is_tip(next_tip));
 
     string title = DDD_NAME " Tip of the Day #" + 
@@ -157,7 +157,7 @@ static void NextTipCB(Widget w, XtPointer, XtPointer)
     refresh_tip_dialog(w);
 }
 
-void SetStartupTipsCB(Widget w, XtPointer client_data, XtPointer call_data)
+void SetStartupTipsCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
@@ -180,11 +180,11 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 	    verify(XmCreateInformationDialog(find_shell(w), "tip_dialog", 
 					     args, arg));
 
-	XtAddCallback(tip_dialog, XmNokCallback,     PrevTipCB, 0);
-	XtAddCallback(tip_dialog, XmNcancelCallback, NextTipCB, 0);
+	XtAddCallback(tip_dialog, XmNokCallback, UnmanageThisCB, 
+		      XtPointer(tip_dialog));
+	XtAddCallback(tip_dialog, XmNcancelCallback, PrevTipCB, 0);
+	XtAddCallback(tip_dialog, XmNhelpCallback,   NextTipCB, 0);
 	XtAddCallback(tip_dialog, XmNunmapCallback,  SaveTipCountCB, 0);
-	XtAddCallback(tip_dialog, XmNhelpCallback,
-		      UnmanageThisCB, XtPointer(tip_dialog));
     }
 
     bool ok = refresh_tip_dialog(tip_dialog);

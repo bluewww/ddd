@@ -34,9 +34,9 @@
 # Initialize variables.
 
 BEGIN { 
-    tips = 1;			# Next tip number
+    tips  = 0;			# Next tip number
     intip = 0;			# Whether we're in a tip text or not
-    seen = 0;			# Whether we've seen a non-comment yet
+    seen  = 0;			# Whether we've seen a non-comment yet
     }
 
 # Handle comments

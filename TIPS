@@ -46,6 +46,12 @@
 # Include Macro definitions
 include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
 
+! Initial tip - shown after wrap-around.
+
+If you have any more DDD tips of the day,
+please send them to the DDD developers EMAIL([ddd]@ ips.cs.tu-bs.de).
+
+
 ! First tips.
 
 Welcome to DDD!
@@ -170,9 +176,6 @@ When you're totally stuck, try to find a helpful ear.  In my experience,
 nothing helps you more in debugging than to try to explain your problem
 (what your code should do, and what it actually does) to someone else.
 BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
-
-If you have any more DDD tips of the day,
-please send them to the DDD developers EMAIL([ddd]@ ips.cs.tu-bs.de).
 
 ! If you have other questions, comments or suggestions, contact The King
 ! via electronic mail to EMAIL(elvis@ graceland.gnu.ai.mit.edu).  The King will

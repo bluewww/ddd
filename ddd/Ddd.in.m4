@@ -1510,6 +1510,7 @@ Ddd*help_popup*okLabelString: 		Close
 Ddd*license_popup*okLabelString: 	Close
 Ddd*news_popup*okLabelString: 		Close
 Ddd*manual_help_popup*okLabelString: 	Close
+Ddd*tip_dialog.okLabelString: 		Close
 
 ! Titles
 Ddd*help_popup.title:           DDD Help
@@ -5755,9 +5756,8 @@ ITEM Use the functions of the LBL(Program) menu to resume execution\n\
 Ddd*tip_dialog_popup.title: 		DDD Tip of the Day
 Ddd*tip_dialog*helpString:	\
 @rm This is the DDD tip of the day.
-Ddd*tip_dialog.okLabelString:		Prev Tip
-Ddd*tip_dialog.cancelLabelString:	Next Tip
-Ddd*tip_dialog.helpLabelString: 	Close
+Ddd*tip_dialog.cancelLabelString:	Prev Tip
+Ddd*tip_dialog.helpLabelString:		Next Tip
 Ddd*tip_dialog.symbolPixmap: 		ddd
 
 dnl Tips will be appended here
