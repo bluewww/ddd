@@ -38,13 +38,13 @@ char DispValue_rcsid[] =
 #define LOG_UPDATE_VALUES 0
 
 //-----------------------------------------------------------------------------
-// DispValue liest und speichert Typ und Wert eines Display-Ausdrucks
+// A `DispValue' maintains type and value of a displayed expression
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 
 #include "DispValue.h"
-#include "string-fun.h" // fuer itostring
+#include "string-fun.h" // itostring
 #include "DynArray.h"
 #include "assert.h"
 #include "cook.h"
@@ -52,28 +52,28 @@ char DispValue_rcsid[] =
 #include "ddd.h"
 
 //-----------------------------------------------------------------------------
-// Typ-Deklarationen
+// Type decls
 //-----------------------------------------------------------------------------
 
-// typedef DispValue* DispValuePtr;
+// An array of disp values
 typedef DynArray<DispValue*> DispValueArray;
 
 enum Alignment {Vertical, Horizontal};
 
-//-----------------------------------------------------------------------------
+// Simple value
 class SimpleDispValue {
 public:
     string value;
 };
 
-//-----------------------------------------------------------------------------
+// Pointer
 class PointerDispValue {
 public:
     string  value;
-    bool dereferenced;  // true, wenn uber diesen Pointer deref. wird
+    bool dereferenced;  // True iff dereferenced
 };
 
-//-----------------------------------------------------------------------------
+// Array
 class ArrayDispValue {
 public:
     DispValueArray members;
@@ -81,18 +81,19 @@ public:
     Alignment      align;
 };
 
-//-----------------------------------------------------------------------------
+// Struct or class
 class StructOrClassDispValue {
 public:
     DispValueArray members;
     int            member_count;
 };
 
+
 //-----------------------------------------------------------------------------
-// Funktions-Definitionen
+// Function defs
 //-----------------------------------------------------------------------------
 
-// ***************************************************************************
+// Constructor
 DispValue::DispValue (DispValue* p, 
 		      int           d,
 		      string&       value,
@@ -104,6 +105,7 @@ DispValue::DispValue (DispValue* p,
     init(value);
 }
 
+// Initialization
 void DispValue::init(string& value)
 {
 #if LOG_CREATE_VALUES
@@ -132,9 +134,14 @@ void DispValue::init(string& value)
 	v.pointer = new PointerDispValue;
 	v.pointer->value = read_pointer_value (value);
 	v.pointer->dereferenced = false;
+
 #if LOG_CREATE_VALUES
 	clog << "Pointer value: " << v.pointer->value << "\n";
 #endif
+	// Hide vtable pointers.
+	if (v.pointer->value.contains("virtual table")
+	    || v.pointer->value.contains("vtable"))
+	    myexpanded = false;
 	break;
     }
     case Array: {
@@ -155,8 +162,8 @@ void DispValue::init(string& value)
 #endif
 
 	read_array_begin (value);
-	// array hat mind. ein element (wird sonst vom gdb nicht als solches,
-	// sondern als pointer angezeigt)
+	// The array has at least one element.  Otherwise, GDB would
+	// treat it as a pointer.
 
 	string vtable_entries = read_vtable_entries(value);
 	if (vtable_entries != "")
@@ -265,12 +272,13 @@ void DispValue::init(string& value)
 }
 
 
-// ***************************************************************************
+// Destructor
 DispValue::~DispValue ()
 {
     clear();
 }
 
+// Destructor helper
 void DispValue::clear()
 {
     int i;
@@ -301,12 +309,10 @@ void DispValue::clear()
 }
 
 //-----------------------------------------------------------------------------
-// Abragen
+// Resources
 //-----------------------------------------------------------------------------
 
-// ***************************************************************************
-// nur fuer type() == Pointer sinnvoll
-//
+// Return True iff dereferenced.  Only if type() == Pointer.
 bool DispValue::dereferenced() const
 {
     if (mytype == Pointer)
@@ -316,9 +322,7 @@ bool DispValue::dereferenced() const
 }
 
 
-// ***************************************************************************
-// nur fuer type() == Pointer sinnvoll
-//
+// Return dereferenced name.  Only if type() == Pointer.
 string DispValue::dereferenced_name() const
 {
     if (mytype == Pointer)
@@ -335,9 +339,7 @@ string DispValue::dereferenced_name() const
 
 
 
-// ***************************************************************************
-// nur fuer type() == Simple oder Pointer sinnvoll
-//
+// Return value.  Only if type() == Simple or Pointer.
 string DispValue::value() const
 {
     switch (mytype) {
@@ -354,9 +356,7 @@ string DispValue::value() const
 
 
 
-// ***************************************************************************
-// nur fuer type() == Array, StructOrClass, BaseClass sinnvoll
-//
+// Return #children.  Only if type() == Array, StructOrClass, or BaseClass.
 int DispValue::number_of_childs() const
 {
     switch (mytype) {
@@ -372,9 +372,9 @@ int DispValue::number_of_childs() const
     return 0;
 }
 
-// ***************************************************************************
-// nur fuer type() == Array, StructOrClass, BaseClass sinnvoll
-//
+
+// Get child #i (0: first child).
+// Only if type() == Array, StructOrClass, or BaseClass.
 DispValue* DispValue::get_child (int i) const
 {
     switch (mytype) {
@@ -396,9 +396,7 @@ DispValue* DispValue::get_child (int i) const
 
 
 
-// ***************************************************************************
-// nur fuer type() == Array sinnvoll
-//
+// Check if vertically aligned.  Only if type() == Array.
 bool DispValue::vertical_aligned()   const
 {
     if (mytype != Array)
@@ -406,9 +404,7 @@ bool DispValue::vertical_aligned()   const
     return (v.array->align == Vertical);
 }
 
-// ***************************************************************************
-// nur fuer type() == Array sinnvoll
-//
+// Check if horizontally aligned.  Only if type() == Array.
 bool DispValue::horizontal_aligned() const
 {
     if (mytype != Array)
@@ -416,39 +412,35 @@ bool DispValue::horizontal_aligned() const
     return (v.array->align == Horizontal);
 }
 
+
+
 //-----------------------------------------------------------------------------
-// Modifizierungen
+// Modifiers
 //-----------------------------------------------------------------------------
 
-// ***************************************************************************
-// nur fuer type() == Pointer sinnvoll
-//
+// Mark as dereferenced.  Only if type() == Pointer.
 void DispValue::dereference()
 {
     if (mytype == Pointer)
 	v.pointer->dereferenced = true;
 }
 
-// ***************************************************************************
-// nur fuer type() == Array sinnvoll
-//
+// Align vertically.  Only if type() == Array.
 void DispValue::align_vertical ()
 {
     if (mytype == Array)
 	v.array->align = Vertical;
 }
 
-// ***************************************************************************
-// nur fuer type() == Array sinnvoll
-//
+// Align horizontally.  Only if type() == Array.
 void DispValue::align_horizontal ()
 {
     if (mytype == Array)
 	v.array->align = Horizontal;
 }
 
-// ***************************************************************************
-// Like expand(), but expand entire subtree
+
+// Expand.  Like expand(), but expand entire subtree
 void DispValue::expandAll()
 {
     expand();
@@ -459,8 +451,7 @@ void DispValue::expandAll()
     }
 }
 
-// ***************************************************************************
-// Like collapse(), but collapse entire subtree
+// Collapse.  Like collapse(), but collapse entire subtree
 void DispValue::collapseAll()
 {
     collapse();
@@ -471,10 +462,7 @@ void DispValue::collapseAll()
     }
 }
 
-
-// ***************************************************************************
-// Count expanded/collapsed nodes in tree
-
+// Count expanded nodes in tree
 int DispValue::expandedAll() const
 {
     int count = 0;
@@ -486,6 +474,7 @@ int DispValue::expandedAll() const
     return count;
 }
 
+// Count collapsed nodes in tree
 int DispValue::collapsedAll() const
 {
     int count = 0;
@@ -497,13 +486,12 @@ int DispValue::collapsedAll() const
     return count;
 }
 
+
 //-----------------------------------------------------------------------------
-// Aktualisierungen
+// Update values
 //-----------------------------------------------------------------------------
 
-// ***************************************************************************
-// nur fuer type() == BaseClass sinnvoll
-//
+// Return baseclass name.  Only if type() == BaseClass.
 bool DispValue::new_BaseClass_name (string name)
 {
     if (mytype != BaseClass)
@@ -519,7 +507,8 @@ bool DispValue::new_BaseClass_name (string name)
 }
 
 
-// ***************************************************************************
+// Update values from VALUE.  Make WAS_CHANGED true iff value changed;
+// Make WAS_INITIALIZED true iff type changed.
 void DispValue::update (string& value, 
 			bool& was_changed, bool& was_initialized)
 {
