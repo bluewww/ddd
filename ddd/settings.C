@@ -1945,7 +1945,7 @@ string get_defines(DebuggerType type)
     if (confirm_value == "on")
 	defines += "set confirm off\n";
 
-    for (AssocIter<string, string> iter(defs); iter.ok(); iter++)
+    for (StringStringAssocIter iter(defs); iter.ok(); iter++)
     {
 	string def = iter.value();
 	if (def == "")
@@ -2097,7 +2097,7 @@ static void refresh_combo_box()
 {
     // Refresh combo box
     StringArray commands;
-    for (AssocIter<string, string> iter(defs); iter.ok(); iter++)
+    for (StringStringAssocIter iter(defs); iter.ok(); iter++)
 	commands += iter.key();
     MMsetComboBoxList(name_w, commands);
 }

@@ -40,5 +40,8 @@
 typedef Assoc<string, string>       StringStringAssoc;
 typedef Assoc<string, SourceOrigin> StringOriginAssoc;
 
+typedef AssocIter<string, string>       StringStringAssocIter;
+typedef AssocIter<string, SourceOrigin> StringOriginAssocIter;
+
 #endif // _DDD_StringStringAssoc_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

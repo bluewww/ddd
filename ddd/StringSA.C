@@ -35,5 +35,3 @@ char StringStringAssoc_rcsid[] =
 #endif
 
 #include "StringSA.h"
-
-typedef AssocIter<string, string> StringStringAssocIter;
