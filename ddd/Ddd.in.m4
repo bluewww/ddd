@@ -4727,6 +4727,20 @@ Ddd*too_many_shortcuts_warning*helpString:	\
 only display the most recently created shortcuts.\n\
 To edit the list of display shortcuts, use LBL(New Display) | LBL(Edit).
 
+Ddd*gdb_io_error_popup.title: DDD: I/O error
+Ddd*gdb_io_error*helpString: \
+@rm The communication between GDB and DDD does not work correctly.\n\
+DDD cannot correct this problem, so you may not be able to continue.\n\
+\n\
+This is probably a configuration problem, which must be investigated.
+
+Ddd*gdb_io_warning_popup.title: DDD: I/O warning
+Ddd*gdb_io_warning*helpString: \
+@rm The communication between GDB and DDD does not work correctly.\n\
+DDD will be able to correct most problems, so you may continue working.\n\
+\n\
+This is probably a configuration problem, which should be investigated.
+
 
 !-----------------------------------------------------------------------------
 ! Hints on specific DDD states (`What next')
