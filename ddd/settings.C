@@ -271,7 +271,7 @@ void process_show(string command, string value, bool init)
     if (settings_form == 0)
 	return;
 
-    if (value.freq('\n') > 1)
+    if (gdb->type() == DBX && value.freq('\n') > 1)
     {
 	// In DBX, we always get all values at once.  Find the
 	// appropriate line.
@@ -1085,11 +1085,9 @@ static void add_button(Widget form, int& row, DebuggerType type,
 		if (option.contains(separator))
 		    option = option.before(separator);
 		options = options.after(separator);
-		read_leading_blanks(options);
-		strip_final_blanks(options);
 
-		if (options == "" || options.contains(':', -1))
-		    continue;
+		read_leading_blanks(option);
+		strip_final_blanks(option);
 
 		string label = option;
 		if (gdb->type() == GDB && option.contains("  "))
@@ -1102,6 +1100,9 @@ static void add_button(Widget form, int& row, DebuggerType type,
 		    else
 			option = option.before(rxwhite);
 		}
+
+		if (option == "" || option.contains(':', -1))
+		    continue;
 
 		MString xmlabel(label);
 		arg = 0;
@@ -1405,6 +1406,8 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 	XtVaSetValues(form, XmNfractionBase, row, NULL);
     XtManageChild(form);
     XtManageChild(scroll);
+
+    InstallButtonTips(panel);
 
     return panel;
 }
