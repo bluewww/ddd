@@ -117,10 +117,12 @@ public:
     XmString xmstring()       const { return _mstring; }
 
     // Attributes
+#ifndef LESSTIF_VERSION		// Missing in Lesstif 0.1
     Dimension baseline(XmFontList fontlist) const
     {
 	return XmStringBaseline(fontlist, _mstring);
     }
+#endif
 
     Boolean isEmpty() const
     {

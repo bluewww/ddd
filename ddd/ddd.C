@@ -165,6 +165,7 @@ char ddd_rcsid[] =
 #include <X11/Xlib.h>	  // Event names
 #include <X11/Xutil.h>	  // Window manager functions
 
+#ifndef LESSTIF_VERSION
 extern "C" {
 #define new new_w
 #define class class_w
@@ -172,6 +173,9 @@ extern "C" {
 #undef class
 #undef new
 }
+#else
+#define XmIsSash(x) false
+#endif
 
 #ifdef HAVE_X11_XMU_EDITRES_H
 #include <X11/Xmu/Editres.h>
@@ -182,6 +186,7 @@ extern "C" {
 #include "cook.h"
 #include "strclass.h"
 #include "bool.h"
+#include "converters.h"
 #include "MakeMenu.h"
 #include "MString.h"
 #include "HelpCB.h"
@@ -1685,7 +1690,6 @@ int main(int argc, char *argv[])
 	     << "Please save options.\n";
     }
 
-
     // Create command shell
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
@@ -1707,6 +1711,10 @@ int main(int argc, char *argv[])
 						  xmMainWindowWidgetClass,
 						  command_shell,
 						  NULL);
+
+    // Register own converters
+    // Do this now to override Motif converters.
+    registerOwnConverters();
 
     // Create menu bar
     MMDesc *menubar = combined_menubar;
@@ -2415,7 +2423,11 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 {
     XtVaSetValues(shell,
 		  XmNiconPixmap, icon,
+#ifdef LESSTIF_VERSION		// LessTif 0.1 does not define XmNiconMask
+		  "iconMask", mask,
+#else
 		  XmNiconMask, mask,
+#endif
 		  NULL);
     wm_set_icon(XtDisplay(shell), XtWindow(shell), icon, mask);
 }
@@ -3443,6 +3455,11 @@ Widget make_buttons(Widget parent, const string& name,
 	return 0;
 
     Widget buttons = XmCreateWorkArea(parent, name, 0, 0);
+    if (buttons == 0)
+    {
+	// Not available in LessTif 0.1
+	buttons = XmCreateRowColumn(parent, name, 0, 0);
+    }
 
     int colons = button_list.freq(':') + 1;
     string *commands = new string[colons];
@@ -5511,8 +5528,9 @@ void gdbModifyCB(Widget gdb_w,
     if (change->startPos < promptPosition && change->text->length == 0)
     {
 	// Attempt to delete text before prompt
-#if 0
-	// This causes a core dump on Solaris.  - AZ
+#ifdef LESSTIF_VERSION
+	// This works with LessTif only;
+	// using Motif, it causes a core dump on Solaris.  - AZ
 	change->doit = false;
 #else
 	// Make it a no-op
@@ -5554,8 +5572,9 @@ void gdbMotionCB(Widget gdb_w,
     if (change->event != NULL && 
 	(change->event->type == KeyPress || change->event->type == KeyRelease))
     {
-#if 0
-	// This causes a core dump on Solaris.  - AZ
+#ifdef LESSTIF_VERSION
+	// This works with LessTif only;
+	// using Motif, it causes a core dump on Solaris.  - AZ
 	change->doit = false;
 #else
 	// Make it a no-op.
@@ -5864,7 +5883,7 @@ void gdb_ctrl(char ctrl)
 	    int spaces = TAB_WIDTH - column % TAB_WIDTH;
 	    string spacing = replicate(' ', spaces);
 	
-	    XmTextInsert(gdb_w, promptPosition, spacing);
+	    XmTextInsert(gdb_w, promptPosition, String(spacing));
 	    promptPosition += spacing.length();
 	    break;
 	}
@@ -5893,7 +5912,7 @@ void gdb_ctrl(char ctrl)
 	    c = string("^") + string('@' + int(ctrl));
 	else
 	    c = "^?";
-	XmTextInsert(gdb_w, promptPosition, c);
+	XmTextInsert(gdb_w, promptPosition, String(c));
 	promptPosition += c.length();
     }
     }
@@ -5937,7 +5956,7 @@ void _gdb_out(string text)
 	else
 	    text = "";
 
-	XmTextInsert(gdb_w, promptPosition, block);
+	XmTextInsert(gdb_w, promptPosition, String(block));
 	promptPosition += block.length();
 	XmTextShowPosition(gdb_w, promptPosition);
 

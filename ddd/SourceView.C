@@ -828,7 +828,7 @@ void SourceView::read_file (string file_name, int initial_line)
     // Set string and initial line
 #if XmVersion >= 1002
     XmTextDisableRedisplay(source_text_w);
-#else
+#elif !defined(LESSTIF_VERSION)
     _XmTextDisableRedisplay(XmTextWidget(source_text_w), FALSE);
 #endif
     XtVaSetValues(source_text_w,
@@ -838,7 +838,7 @@ void SourceView::read_file (string file_name, int initial_line)
 		  NULL);
 #if XmVersion >= 1002
     XmTextEnableRedisplay(source_text_w);
-#else
+#elif !defined(LESSTIF_VERSION)
     _XmTextEnableRedisplay(XmTextWidget(source_text_w));
 #endif
 
@@ -1139,8 +1139,10 @@ SourceView::SourceView (XtAppContext app_context,
 					  args, arg);
     source_view_w = source_text_w;
     XtManageChild(source_text_w);
+#ifndef LESSTIF_VERSION		// won't work with LessTif 1.0
     XtAddCallback(source_text_w, XmNgainPrimaryCallback,
 		  set_source_argCB, XtPointer(false));
+#endif
     XtAddCallback(source_text_w, XmNmotionVerifyCallback,
 		  set_source_argCB, XtPointer(true));
     XtAppAddActions (app_context, actions, XtNumber (actions));
@@ -1148,6 +1150,11 @@ SourceView::SourceView (XtAppContext app_context,
     // XtManageChild (source_view_w);
 
 
+#ifdef LESSTIF_VERSION
+    // Not available in LessTif 0.1
+    edit_breakpoints_dialog_w = 0;
+    breakpoint_list_w         = 0;
+#else
     // Create breakpoint editor
     arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
@@ -1182,31 +1189,39 @@ SourceView::SourceView (XtAppContext app_context,
     XtManageChild (form2);
     XtManageChild (label);
     XtManageChild (form1);
+#endif
 
-    XtAddCallback(breakpoint_list_w,
-		  XmNsingleSelectionCallback,
-		  UpdateBreakpointButtonsCB,
-		  0);
-    XtAddCallback(breakpoint_list_w,
-		  XmNmultipleSelectionCallback,
-		  UpdateBreakpointButtonsCB,
-		  0);
-    XtAddCallback(breakpoint_list_w,
-		  XmNextendedSelectionCallback,
-		  UpdateBreakpointButtonsCB,
-		  0);
-    XtAddCallback(breakpoint_list_w,
-		  XmNbrowseSelectionCallback,
-		  UpdateBreakpointButtonsCB,
-		  0);
-    XtAddCallback(edit_breakpoints_dialog_w,
-		  XmNokCallback,
-		  UnmanageThisCB,
-		  edit_breakpoints_dialog_w);
-    XtAddCallback(edit_breakpoints_dialog_w,
-		  XmNhelpCallback,
-		  ImmediateHelpCB,
-		  0);
+    if (breakpoint_list_w)
+    {
+	XtAddCallback(breakpoint_list_w,
+		      XmNsingleSelectionCallback,
+		      UpdateBreakpointButtonsCB,
+		      0);
+	XtAddCallback(breakpoint_list_w,
+		      XmNmultipleSelectionCallback,
+		      UpdateBreakpointButtonsCB,
+		      0);
+	XtAddCallback(breakpoint_list_w,
+		      XmNextendedSelectionCallback,
+		      UpdateBreakpointButtonsCB,
+		      0);
+	XtAddCallback(breakpoint_list_w,
+		      XmNbrowseSelectionCallback,
+		      UpdateBreakpointButtonsCB,
+		      0);
+    }
+
+    if (edit_breakpoints_dialog_w)
+    {
+	XtAddCallback(edit_breakpoints_dialog_w,
+		      XmNokCallback,
+		      UnmanageThisCB,
+		      edit_breakpoints_dialog_w);
+	XtAddCallback(edit_breakpoints_dialog_w,
+		      XmNhelpCallback,
+		      ImmediateHelpCB,
+		      0);
+    }
 
     // Create stack view
     arg = 0;
@@ -2050,33 +2065,34 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
 
 	// The popup menu is destroyed immediately after having popped down.
 	Widget shell = XtParent(text_popup_w);
-	XtAddCallback(shell, XmNpopdownCallback, DestroyThisCB, shell);
+	XtAddCallback(shell, XtNpopdownCallback, DestroyThisCB, shell);
 
 	MString current_arg(word, "tt");
 
 	Arg args[5];
 	int arg = 0;
-	MString label = text_cmd_labels[TextItms::Break] + current_arg;
+	MString label = MString(text_cmd_labels[TextItms::Break]) 
+	    + current_arg;
 	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Break].widget, args, arg);
 
 	arg = 0;
-	label = text_cmd_labels[TextItms::Clear] + current_arg;
+	label = MString(text_cmd_labels[TextItms::Clear]) + current_arg;
 	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Clear].widget, args, arg);
 
 	arg = 0;
-	label = text_cmd_labels[TextItms::Print] + current_arg;
+	label = MString(text_cmd_labels[TextItms::Print]) + current_arg;
 	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Print].widget, args, arg);
 
 	arg = 0;
-	label = text_cmd_labels[TextItms::Disp] + current_arg;
+	label = MString(text_cmd_labels[TextItms::Disp]) + current_arg;
 	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Disp].widget, args, arg);
 
 	arg = 0;
-	label = text_cmd_labels[TextItms::Lookup] + current_arg;
+	label = MString(text_cmd_labels[TextItms::Lookup]) + current_arg;
 	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Lookup].widget, args, arg);
 
@@ -2180,6 +2196,9 @@ void SourceView::EditBreakpointConditionDCB(Widget w,
 					    XtPointer client_data, 
 					    XtPointer call_data)
 {
+    if (breakpoint_list_w == 0)
+	return;
+
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
     String input;
@@ -2208,6 +2227,9 @@ void SourceView::EditBreakpointConditionCB(Widget w,
 					   XtPointer client_data,
 					   XtPointer call_data)
 {
+    if (breakpoint_list_w == 0)
+	return;
+
     static Widget edit_breakpoint_condition_dialog = 0;
     if (edit_breakpoint_condition_dialog == 0)
     {
@@ -2270,6 +2292,9 @@ void SourceView::EditBreakpointIgnoreCountDCB(Widget w,
 					      XtPointer client_data, 
 					      XtPointer call_data)
 {
+    if (breakpoint_list_w == 0)
+	return;
+
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
     String input;
@@ -2301,6 +2326,9 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget w,
 					     XtPointer client_data,
 					     XtPointer call_data)
 {
+    if (breakpoint_list_w == 0)
+	return;
+
     static Widget edit_breakpoint_ignore_count_dialog = 0;
     if (edit_breakpoint_ignore_count_dialog == 0)
     {
@@ -2360,6 +2388,9 @@ void SourceView::BreakpointCmdCB(Widget w,
 				 XtPointer client_data,
 				 XtPointer call_data)
 {
+    if (breakpoint_list_w == 0)
+	return;
+
     string cmd = String(client_data);
     int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
     if (breakpoint_nrs[0] > 0)
@@ -2376,6 +2407,9 @@ void SourceView::LookupBreakpointCB(Widget w,
 				    XtPointer client_data,
 				    XtPointer call_data)
 {
+    if (breakpoint_list_w == 0)
+	return;
+
     int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
     if (breakpoint_nrs[0] > 0 && breakpoint_nrs[1] == 0)
     {
@@ -2387,6 +2421,9 @@ void SourceView::LookupBreakpointCB(Widget w,
 // Create labels for the list
 void SourceView::fill_labels(const string& info_output)
 {
+    if (breakpoint_list_w == 0)
+	return;
+
     int count          = info_output.freq('\n') + 1;
     string *label_list = new string[count];
     bool *selected     = new bool[count];
@@ -2431,6 +2468,9 @@ void SourceView::UpdateBreakpointButtonsCB(Widget w,
 					   XtPointer client_data, 
 					   XtPointer call_data)
 {
+    if (edit_breakpoints_dialog_w == 0)
+	return;
+
     int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
     for (int count = 0; breakpoint_nrs[count] != 0; count++)
 	;
@@ -2479,7 +2519,8 @@ void SourceView::EditBreakpointsCB(Widget w,
 				   XtPointer client_data,
 				   XtPointer call_data)
 {
-    XtManageChild(edit_breakpoints_dialog_w);
+    if (edit_breakpoints_dialog_w)
+	XtManageChild(edit_breakpoints_dialog_w);
 }
 
 

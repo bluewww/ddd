@@ -172,7 +172,7 @@ bool DataDisp::ignore_update_display_editor_selection = false;
 
 inline void set_sensitive(Widget w, bool state)
 {
-    if (XtIsSensitive(w) == state)
+    if (w == 0 || XtIsSensitive(w) == state)
 	return;
     XtSetSensitive(w, state);
 }
@@ -2399,6 +2399,9 @@ static void sort(string labels[], bool selected[], int size)
 // Create labels for the list
 void DataDisp::fill_labels()
 {
+    if (display_list_w == 0)
+	return;
+
     int max_count      = disp_graph->count_all();
     string *label_list = new string[max_count + 1];
     bool *selected     = new bool[max_count + 1];
@@ -2436,13 +2439,13 @@ void DataDisp::fill_labels()
     ignore_update_graph_editor_selection = true;
     setLabelList(display_list_w, label_list, selected, count);
     ignore_update_graph_editor_selection = false;
-
+	
     delete[] label_list;
     delete[] selected;
 }
 
 
-void DataDisp::EditDisplaysCB(Widget    w,
+void DataDisp::EditDisplaysCB(Widget w,
 			      XtPointer client_data,
 			      XtPointer call_data)
 {
@@ -2464,8 +2467,9 @@ DataDisp::DataDisp (XtAppContext app_context,
 #include "ddd.vsl.h"
 	;
 
-    StringBox::fontTable = new FontTable (XtDisplay(parent));
     registerOwnConverters();
+
+    StringBox::fontTable = new FontTable (XtDisplay(parent));
 
     if (string(vslLibrary) == "builtin")
     {
@@ -2513,6 +2517,8 @@ DataDisp::DataDisp (XtAppContext app_context,
 
     graph_arg = new ArgField (graph_cmd_w, "graph_arg");
 
+    registerOwnConverters();
+
     MMcreateWorkArea(graph_cmd_w, "graph_cmd_area", graph_cmd_area);
     MMaddCallbacks(graph_cmd_area);
     XtManageChild(graph_cmd_w);
@@ -2525,6 +2531,11 @@ DataDisp::DataDisp (XtAppContext app_context,
 		  XmNpaneMinimum, size.height,
 		  NULL);
 
+#ifdef LESSTIF_VERSION
+    // Not available in LessTif 0.1
+    edit_displays_dialog_w = 0;
+    display_list_w         = 0;
+#else
     // Create display editor
     edit_displays_dialog_w =
 	XmCreatePromptDialog(graph_edit, "edit_displays_dialog", 
@@ -2558,6 +2569,7 @@ DataDisp::DataDisp (XtAppContext app_context,
     XtManageChild (label);
     XtManageChild (form2);
     XtManageChild (form1);
+#endif
 
     XtAddCallback(graph_edit,
 		  XtNselectionChangedCallback,
@@ -2567,30 +2579,38 @@ DataDisp::DataDisp (XtAppContext app_context,
 		  XtNcompareNodesCallback,
 		  CompareNodesCB,
 		  0);
-    XtAddCallback(display_list_w,
-		  XmNsingleSelectionCallback,
-		  UpdateGraphEditorSelectionCB,
-		  0);
-    XtAddCallback(display_list_w,
-		  XmNmultipleSelectionCallback,
-		  UpdateGraphEditorSelectionCB,
-		  0);
-    XtAddCallback(display_list_w,
-		  XmNextendedSelectionCallback,
-		  UpdateGraphEditorSelectionCB,
-		  0);
-    XtAddCallback(display_list_w,
-		  XmNbrowseSelectionCallback,
-		  UpdateGraphEditorSelectionCB,
-		  0);
-    XtAddCallback(edit_displays_dialog_w,
-		  XmNokCallback,
-		  UnmanageThisCB,
-		  edit_displays_dialog_w);
-    XtAddCallback(edit_displays_dialog_w,
-		  XmNhelpCallback,
-		  ImmediateHelpCB,
-		  0);
+
+    if (display_list_w)
+    {
+	XtAddCallback(display_list_w,
+		      XmNsingleSelectionCallback,
+		      UpdateGraphEditorSelectionCB,
+		      0);
+	XtAddCallback(display_list_w,
+		      XmNmultipleSelectionCallback,
+		      UpdateGraphEditorSelectionCB,
+		      0);
+	XtAddCallback(display_list_w,
+		      XmNextendedSelectionCallback,
+		      UpdateGraphEditorSelectionCB,
+		      0);
+	XtAddCallback(display_list_w,
+		      XmNbrowseSelectionCallback,
+		      UpdateGraphEditorSelectionCB,
+		      0);
+    }
+
+    if (edit_displays_dialog_w)
+    {
+	XtAddCallback(edit_displays_dialog_w,
+		      XmNokCallback,
+		      UnmanageThisCB,
+		      edit_displays_dialog_w);
+	XtAddCallback(edit_displays_dialog_w,
+		      XmNhelpCallback,
+		      ImmediateHelpCB,
+		      0);
+    }
 
     // Reset argument field and display editor buttons
     set_args();

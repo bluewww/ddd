@@ -36,7 +36,7 @@ char PannedGraphEdit_rcsid[] =
 #include "PannedGE.h"
 #include "BoxPoint.h"
 
-#if defined(HAVE_ATHENA_WIDGETS) \
+#if 0 && defined(HAVE_ATHENA_WIDGETS) \
     && defined(HAVE_X11_XAW_FORM_H) \
     && defined(HAVE_X11_XAW_PANNER_H) \
     && defined(HAVE_X11_XAW_PORTHOLE_H)

@@ -214,6 +214,11 @@ Widget MMcreateWorkArea(Widget parent, String name, MMDesc items[])
 
     arg = 0;
     Widget bar = XmCreateWorkArea(parent, name, args, arg);
+    if (bar == 0)
+    {
+	// LessTif 0.1 doesn't have work areas
+	bar = XmCreateRowColumn(parent, name, args, arg);
+    }
     addItems(parent, bar, items, true);
     XtManageChild(bar);
 

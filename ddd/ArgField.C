@@ -45,8 +45,10 @@ ArgField::ArgField (Widget parent, const char* name)
 					      NULL);
     XtAddCallback(arg_text_field, XmNvalueChangedCallback,
 		  valueChangedCB, this);
+#ifndef LESSTIF_VERSION		// LessTif 0.1 won't compile this
     XtAddCallback(arg_text_field, XmNlosePrimaryCallback,
 		  losePrimaryCB, this);
+#endif
 }
 
 string ArgField::get_string () const
@@ -73,9 +75,12 @@ void ArgField::set_string (char* text_ch)
 
     XmTextFieldSetString(arg_text_field, text_ch + start);
 
-    XmTextPosition last_pos = XmTextFieldGetLastPosition(arg_text_field);
-    XmTextFieldSetInsertionPosition(arg_text_field, last_pos);
-    XmTextFieldShowPosition(arg_text_field, last_pos);
+    if (XtIsRealized(arg_text_field)) // LessTif 0.1 crashes otherwise
+    {
+	XmTextPosition last_pos = XmTextFieldGetLastPosition(arg_text_field);
+	XmTextFieldSetInsertionPosition(arg_text_field, last_pos);
+	XmTextFieldShowPosition(arg_text_field, last_pos);
+    }
 }
 
 void ArgField::valueChangedCB(Widget w,
