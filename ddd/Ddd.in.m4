@@ -6629,71 +6629,82 @@ FILE(init) file is out of date,\n\
 Ddd*class_error_popup.title: DDD: No Class
 Ddd*class_error*helpString:	\
 @rm The given class could not be loaded.\n\
-Please check the value of the class search path (KBD(use) command).
+Please check the @GDB@ search path via LBL(Edit, @GDB@ settings).
 
 Ddd*source_file_error_popup.title: DDD: No Source
 Ddd*source_file_error*helpString:	\
-@rm The given source file could not be loaded.
+@rm The given source file could not be loaded.\n\
+Please check the @GDB@ search path via LBL(Edit, @GDB@ settings).
 
 Ddd*remote_file_error_popup.title: DDD: No Remote Source
 Ddd*remote_file_error*helpString:	\
 @rm The given source file could not be loaded from the remote host.\n\
-This message is also caused by attempting to load an empty source file.
+Please check the @GDB@ search path via LBL(Edit, @GDB@ settings).
 
 Ddd*source_file_from_gdb_warning_popup.title: DDD: Source From Debugger
 Ddd*source_file_from_gdb_warning*helpString:	\
 @rm The given source file could not be loaded directly.\n\
-Instead, the source was obtained from @GDB@ via the KBD(list) command.
+Instead, the source was obtained from @GDB@ via the KBD(list) command.\n\
+Please proceed as usual.
 
 Ddd*source_trunc_error_popup.title: DDD: Source Truncated
 Ddd*source_trunc_error*helpString:	\
-@rm The given source file could not be loaded entirely.
+@rm The given source file could not be loaded entirely;\n\
+the file size has changed during loading.\n\
+Please try again as soon as the source file contents are stable.
 
 Ddd*source_empty_warning_popup.title: DDD: Empty Source
 Ddd*source_empty_warning*helpString:	\
 @rm The given source file contains no data.\n\
 This is very unusual for source files.\n\
-Please verify your file name and try again.
+Please verify the file name and try again.
 
 Ddd*source_binary_warning_popup.title: DDD: Binary Source
 Ddd*source_binary_warning*helpString:	\
-@rm The given source file contains NULL characters. \n\
-This is very unusual for source files. \n\
-You probably gave the name of a binary file. \n\
+@rm The given source file contains NUL characters. \n\
+You probably loaded a binary file instead of a source file.\n\
 Please verify the file name and try again.
 
 Ddd*source_find_error_popup.title: DDD: Not Found
 Ddd*source_find_error*helpString:	\
-@rm The given argument LBL(()) can not be found in the source text.\n\
-\n\
-See LBL(Edit, Preferences, Source) for search settings.
+@rm The given key LBL(()) can not be found in the source text.\n\
+Please try an alternate key or change the search settings\n\
+via LBL(Edit, Preferences, Source).
 
 Ddd*manual_find_error_popup.title: DDD: Not Found
 Ddd*manual_find_error*helpString:	\
-@rm The given argument LBL(()) can not be found in the on-line manual.
+@rm The given search key LBL(()) can not be found in the on-line manual.\n\
+Please use an alternate key and tru again.
 
 Ddd*no_source_error_popup.title: DDD: No Source
 Ddd*no_source_error*helpString:	\
-@rm There is no current source text in which to search.
+@rm There is no current source text in which to search.\n\
+Please open a program first, using LBL(File, Open Program).
 
 Ddd*no_source_edit_error_popup.title: DDD: No Source
 Ddd*no_source_edit_error*helpString:	\
-@rm There is no current source text to edit.
+@rm There is no current source text to edit.\n\
+Please open a program first, using LBL(File, Open Program).
 
 Ddd*no_such_line_error_popup.title: DDD: No such line
 Ddd*no_such_line_error*helpString:	\
-@rm There is no such line in the current source text.
+@rm There is no such line in the current source text.\n\
+Please try another line number.
 
 Ddd*no_such_breakpoint_error_popup.title: DDD: No Such Breakpoint
 Ddd*no_such_breakpoint_error*helpString:	\
-@rm There is no such breakpoint in the current program.
+@rm There is no such breakpoint in the current program.\n\
+Please verify the breakpoint number.
 
 Ddd*no_completion_error_popup.title: DDD: No Completion
 Ddd*no_completion_error*helpString:	\
 @rm @GDB@ does not support command and argument completion.\n\
 \n\
 Command completion requires the GDB KBD(complete) command,\n\
-which is present in GDB 4.13 and later.
+which is present in GDB 4.13 and later.\n\
+\n\
+To use command completion, upgrade to a recent @GDB@ version.
+
 
 Ddd*no_program_popup.title: DDD: No Program
 Ddd*no_program*helpString: \
@@ -6709,28 +6720,32 @@ To open a program, use LBL(File, Open Program).
 Ddd*print_empty_graph_error_popup.title: DDD: Nothing to Print
 Ddd*print_empty_graph_error*helpString:	\
 @rm There is nothing to print.\n\
-The printing has been cancelled.
+The printing has been cancelled.\n\
+\n\
+Please print again as soon as there is some data to print.
 
 Ddd*print_failed_error_popup.title: DDD: Printing Failed
 Ddd*print_failed_error*helpString:	\
 @rm The file holding the graph picture could not be written.\n\
-The printing has been cancelled.
+The printing has been cancelled.\n\
+\n\
+Please try another file name and try again.
 
 Ddd*export_failed_error_popup.title: DDD: Export Failed
 Ddd*export_failed_error*helpString:	\
 @rm The file holding the plot data could not be written.\n\
-The export has been cancelled.
-
-Ddd*export_failed_error_popup.title: DDD: Export Failed
-Ddd*export_failed_error*helpString:	\
-@rm The file holding the plot data could not be written.\n\
-The export has been cancelled.
+The export has been cancelled.\n\
+\n\
+Please try another file name and try again.
 
 Ddd*unknown_plot_term_type_error: DDD: Unknown Plot Terminal Type
 Ddd*unknown_plot_term_type_error*helpString:	\
 @rm DDD does not know the plot terminal type specified in the\n\
 SAMP(.plotTermType) resource.\n\
-Possible values include SAMP(xlib) and SAMP(x11).
+Possible SAMP(.plotTermType) values include SAMP(xlib) and SAMP(x11).\n\
+\n\
+Please set up the SAMP(.plotTermType) resource\n\
+in your FILE(~/.[ddd]/init) file and try again.
 
 Ddd*tty_exec_error_popup.title: DDD: No Execution Window
 Ddd*tty_exec_error*helpString:	\
@@ -6765,15 +6780,18 @@ Ddd*tty_type_error*helpString:	\
 @rm DDD could not set the TERM environment variable\n\
 to the type of the execution window.  This means that\n\
 your program will execute with a terminal type\n\
-set to SAMP(dumb) instead of SAMP(@XTERM@).
+set to SAMP(dumb) instead of SAMP(@XTERM@).\n\
+Please see FILE(~/.[ddd]/log) for further diagnostics.
 
 Ddd*history_save_error_popup.title: DDD: Save History Failed
 Ddd*history_save_error*helpString:	\
-@rm The command history could not be saved.
+@rm The command history could not be saved.\n\
+Please verify whether FILE(~/.[ddd]/history) is writable and try again.
 
 Ddd*options_save_error_popup.title: DDD: Save Options Failed
 Ddd*options_save_error*helpString:	\
-@rm The DDD options could not be saved.
+@rm The DDD options could not be saved.\n\
+Please verify whether FILE(~/.[ddd]/init) is writable and try again.
 
 define(COULD_NOT_BE_UNCOMPRESSED,
 [could not be uncompressed.\n\
@@ -6797,7 +6815,8 @@ Ddd*no_ddd_manual_error*helpString:	\
 
 Ddd*no_ddd_man_page_error_popup.title: DDD: No Manual
 Ddd*no_ddd_man_page_error*helpString:	\
-@rm It seems the DDD manual page is not installed.
+@rm It seems the DDD manual page is not installed.\n\
+Please install the DDD manual page and try again.
 
 Ddd*startup_warning_popup.title: DDD: New Startup Required
 Ddd*startup_warning*helpString: \
@@ -6828,7 +6847,9 @@ Ddd*expired_warning_popup.title: DDD: DDD Expired
 Ddd*expired_warning*helpString: \
 @rm DDD @VERSION@ has been superseded by a newer DDD version.\n\
 DDD @VERSION@ should no longer be used.\n\
-To get the most recent DDD version, see the LBL(Help, [[[[DDD]]]] WWW Page).
+\n\
+Please upgrade to a recent DDD version.\n\
+For details, see the LBL(Help, [[[[DDD]]]] WWW Page).
 
 Ddd*core_missing_warning_popup.title: DDD: Core Missing
 Ddd*core_missing_warning*helpString: \
@@ -6861,24 +6882,27 @@ Please try again when @GDB@ is ready.
 
 Ddd*no_sessions_error_popup.title: DDD: No Sessions
 Ddd*no_sessions_error*helpString: \
-@rm DDD could not access the session repository.
+@rm DDD could not access the session repository.\n\
+Please verify whether the FILE(~/.[ddd]/sessions/) is accessible.
 
 Ddd*delete_session_error_popup.title: DDD: Delete Session Failed
 Ddd*delete_session_error*helpString: \
-@rm DDD could not entirely remove the session directory from the repository.
+@rm DDD could not entirely remove the session directory from the repository.\n\
+Please verify whether the FILE(~/.[ddd]/sessions/) is writable.
 
 Ddd*too_many_shortcuts_warning_popup.title: DDD: Too many Shortcuts
 Ddd*too_many_shortcuts_warning*helpString:	\
 @rm DDD has not enough room for all display shortcuts and will\n\
 only display the most recently created shortcuts.\n\
-To edit the list of display shortcuts, use LBL(Display, Edit Menu).
+Please edit the list of display shortcuts, using LBL(Display, Edit Menu).
 
 Ddd*gdb_io_error_popup.title: DDD: I/O Error
 Ddd*gdb_io_error*helpString: \
 @rm The communication between @GDB@ and DDD does not work correctly.\n\
 This is probably due to a bad DDD configuration.\n\
 \n\
-DDD cannot work around this problem, so you may not be able to continue.
+DDD cannot work around this problem, so you may not be able to continue.\n\
+Restart DDD and try again.
 
 Ddd*gdb_io_warning_popup.title: DDD: I/O Warning
 Ddd*gdb_io_warning*helpString: \
@@ -7078,4 +7102,4 @@ Ddd*tip_dialog.cancelLabelString:	Prev Tip
 Ddd*tip_dialog.helpLabelString:		Next Tip
 Ddd*tip_dialog.symbolPixmap: 		ddd
 
-dnl Tips will be appended here
+dnl Tips will be appended here.
