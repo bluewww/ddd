@@ -57,6 +57,8 @@ DDD 1.5 (in development)
       and debugger console should work fine now; the execution window
       can be opened, closed and re-opened without DDD crashing or
       hanging.
+    - The terminal type (TERM environment variable) of the debugger
+      console and the execution window is now properly set.
     - Editor problems fixed.  Invoking a source editor via `Edit'
       should work fine now.
     - The rubber band outline no more clutters the data display.

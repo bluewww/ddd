@@ -127,18 +127,22 @@ Ddd*termType: xterm
 ! Basically, there are two ways to redirect process I/O.  Both have
 ! advantages and disadvantages.
 !
-! * GDB provides a `tty' command to redirect I/O to a separate tty TTY.
+! * GDB provides a `tty' command to redirect I/O to a separate tty.
 !   This is portable, but on some systems, there is the nasty side-effect
 !   that redirection can not be undone.
+!   For DBX, this means using the `dbxenv run_io pty' and `dbxenv run_pty'
+!   commands to redirect I/O to a separate tty.
 !   Set `useTTYCommand' to `true' to enable this behaviour.
 ! 
 ! * As an alternative, DDD can redirect the process I/O explicitly,
-!   without using the `tty' command.  This is done with DBX and XDB; 
-!   with GDB, it may fail if you use a non-standard shell.
+!   without using the `tty' command.  This is done with XDB and 
+!   with DBX versions that do not support tty redirection.
+!   Explicit redirection may fail if you use a non-standard shell.
 !   Set `useTTYCommand' to `false' to enable this behaviour.
 !   
-! The default setting is `false', since explicit redirection is easier 
-! to handle.  Maybe one day GDB will provide a way to undo redirection.
+! The default setting is `false', since explicit redirection is easier
+! to handle (and to debug :-).  Maybe one day GDB will provide a way
+! to undo redirection.
 Ddd*useTTYCommand: false
 
 
@@ -885,7 +889,7 @@ None<Key>End:		end-of-line()               \n
 
 ! The source window is especially tuned for word selection.
 Ddd*source_text_w.translations: #override \
-None<Btn3Down>:		source-popup-menu()         \n\
+None<Btn3Down>:		source-popup-menu() \n\
 None<Btn1Down>:		source-start-select-word()  \n\
 None<Btn1Up>:		source-end-select-word()    \n\
 Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
@@ -912,7 +916,7 @@ None<Key>End:		end-of-line()               \n
 
 ! The machine code window is tuned as well.
 Ddd*code_text_w.translations: #override \
-None<Btn3Down>:		source-popup-menu()         \n\
+None<Btn3Down>:         source-popup-menu() \n\
 None<Btn1Down>:		source-start-select-word()  \n\
 None<Btn1Up>:		source-end-select-word()    \n\
 Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
@@ -2865,6 +2869,13 @@ To do so, include a line\n\
 @tt Ddd*useTTYCommand: false\n\
 \n\
 @rm in your @tt ~/.dddinit @rm file and restart @DDD@.
+
+Ddd*tty_type_error: @DDD@: Term Failed
+Ddd*tty_type_error*contextHelpString:	\
+@rm @DDD@ could not set the TERM environment variable\n\
+to the type of the execution window.  This means that\n\
+your program will execute with a terminal type\n\
+set to @tt dumb @rm instead of @tt xterm @rm.
 
 Ddd*history_save_error_popup.title: @DDD@: Save History Failed
 Ddd*history_save_error*contextHelpString:	\

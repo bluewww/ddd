@@ -147,6 +147,7 @@ Volunteers for fixing these and other bugs are welcome!
         just set is usually not visible.  Maybe it would be nice not
         to scroll and have a button that lets one go to the current
         line in a single mouse click?
+	[Happens with DBX on Solaris 2.x only -AZ]
 
 071. Klaus-Georg Adams <adams@achibm5.chemie.uni-karlsruhe.de> says:
      I have got a seg-fault in the stock precompiled ddd-1.4b
