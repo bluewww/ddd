@@ -202,6 +202,9 @@ W			[ \f\t]*
 ^{W}#{W}override   return OVERRIDE;		// Andere Manipulatoren
 ^{W}#{W}undef	   return OVERRIDE;
 ^{W}#{W}replace	   return REPLACE;
+^{W}#{W}pragma{W}override   return OVERRIDE;	// Andere Manipulatoren
+^{W}#{W}pragma{W}undef	    return OVERRIDE;
+^{W}#{W}pragma{W}replace    return REPLACE;
 
 if		return IF;			// Tokens
 then		return THEN;

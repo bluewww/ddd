@@ -32,7 +32,7 @@
 #include <colors.vsl>
 
 // Font settings
-#replace stdfontfamily
+#pragma replace stdfontfamily
 stdfontfamily() = family_typewriter();
 
 // Shadow effects
