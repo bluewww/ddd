@@ -385,9 +385,9 @@ Ddd*indentAmount:	8
 Ddd*gdbInitCommands:	\
 set height 0\n\
 set width 0\n\
-set print repeats 0\n\
-set verbose off\n\
-set print asm-demangle on\n\
+ set print repeats 0\n\
+ set verbose off\n\
+ set print asm-demangle on\n\
 set prompt (gdb) \n
 
 
@@ -2015,20 +2015,6 @@ Note: debugger settings are not saved with @DDD@ options.\n\
 Insert the resulting commands in your personal\n\
 @tt ~/.gdbinit@rm, @tt~/.dbxinit@rm, @tt~/.dbxrc@rm, or @tt~/.xdbrc @rm file\n\
 to customize the inferior debugger.
-
-! Some settings are insensitive, because changing them may break DDD...
-Ddd*height.sensitive:	  false
-Ddd*set height.sensitive: false
-Ddd*width.sensitive:	  false
-Ddd*set width.sensitive:  false
-Ddd*prompt.sensitive:	  false
-Ddd*set prompt.sensitive: false
-
-! ... or simply do not make sense.
-Ddd*listsize.sensitive:	    false
-Ddd*set listsize.sensitive: false
-Ddd*editing.sensitive:	    false
-Ddd*set editing.sensitive:  false
 
 
 !-----------------------------------------------------------------------------

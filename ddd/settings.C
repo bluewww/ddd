@@ -49,6 +49,7 @@ const char settings_rcsid[] =
 #include <ctype.h>
 
 #include "Assoc.h"
+#include "AppData.h"
 #include "Delay.h"
 #include "DestroyCB.h"
 #include "GDBAgent.h"
@@ -492,6 +493,16 @@ static void add_button(string line, EntryType entry_filter, int& row)
     Widget leader = 
 	verify(XmCreateSeparator(settings_form, "leader", args, arg));
     XtManageChild(leader);
+
+    // Make entry insensitive, if part of initialization commands.
+    string init = app_data.gdb_initial_cmds;
+    int idx = init.index(set_command);
+    if (idx == 0 || idx > 0 && init[idx - 1] == '\n')
+    {
+	XtSetSensitive(entry,  False);
+	XtSetSensitive(label,  False);
+	XtSetSensitive(leader, False);
+    }
 
     // Initialize button
     process_show(show_command, value, false);

@@ -1464,6 +1464,10 @@ your inferior debugger\(em\&that is, your \s-2GDB\s+2 version.
 Clicking on `\fB?\fR' gives an an explanation on the specific item;
 the \s-2GDB\s+2 documentation gives more details.
 .PP
+Some debugger settings are insensitive and cannot be changed, because
+doing so would endanger \s-2@DDD@\s+2 operation.  See the
+`\fBgdbInitCommands\fR' resource for details.
+.PP
 Debugger settings are not saved with \s-2@DDD@\s+2 options.  Instead,
 insert the associated commands in your personal \fB$HOME/.gdbinit\fR
 file to customize \s-2GDB\s+2.
@@ -1771,19 +1775,27 @@ format.  See also the `\fB\-\-fullname\fR' option, below.
 .TP
 .B "gdbInitCommands (\fPclass\fB GDBInitCommands)"
 This string contains a list of newline-separated commands that are
-initially sent to \s-2GDB\s+2.  By default, it contains some settings
-vital to \s-2@DDD@\s+2:
+initially sent to \s-2GDB\s+2.  As a side-effect, all settings
+specified in this resource are considered fixed and cannot be changed
+through the \s-2GDB\s+2 settings panel, unless preceded by white
+space.  By default, the `\fBgdbInitCommands\fR' resource contains some
+settings vital to \s-2@DDD@\s+2:
 .sp
 .br
   \fB@Ddd@*gdbInitCommands: \\
   set height 0\\n\\
   set width 0\\n\\
-  set print repeats 0\\n\\
-  set verbose off\\n\\
-  set print asm-demangle on\\n\\
+   set print repeats 0\\n\\
+   set verbose off\\n\\
+   set print asm-demangle on\\n\\
   set prompt (gdb) \\n\fR
 .br
 .sp
+While the `\fBset height\fR', `\fBset width\fR', and `\fBset
+prompt\fR' settings are fixed, the `\fBset print\fR' and `\fBset
+verbose\fR' settings can be changed through the \s-2GDB\s+2 settings
+panel (although being reset upon each new \s-2@DDD@\s+2 invocation).
+.br
 Do not use this resource to customize \s-2GDB\s+2; instead, use a
 personal `\fB$HOME/.gdbinit\fR' file.  See your \s-2GDB\s+2
 documentation for details.

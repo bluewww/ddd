@@ -245,11 +245,7 @@ Volunteers for these and other projects are welcome!
      - Insert a `reset' button - reset to initial values.
      - Save settings in `~/.dddinit' (or `~/.gdbinit'?)
 
-099. Add a history mechanism to the `()' window (cursor up / cursor
-     down).  Realize by making it a multi-line text and selecting only
-     the current line.
-
-100. Settings: make all settings insensitive that appear in
-     `gdbInitCommands', except when preceded by white space.
+099. Add a history mechanism to the `()' fields (cursor up / cursor
+     down).
 
 102. (Insert your project idea here)
