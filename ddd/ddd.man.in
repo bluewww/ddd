@@ -3,6 +3,7 @@
 .\" @configure_input@
 .\"
 .\" Copyright (C) 1999-2001 Universitaet Passau, Germany.
+.\" Copyright (C) 2001-2004 Free Software Foundation, Inc.
 .\" Written by Andreas Zeller <zeller@gnu.org>.
 .\" 
 .\" This file is part of DDD.
@@ -293,7 +294,8 @@ For more information on this list, send a mail to
 .SH "COPYRIGHT"
 .\" ---------------
 .\"
-This manual page is Copyright \(co 2001 Universität Passau, Germany.
+This manual page is Copyright \(co 2001 Universität Passau, Germany
+and \(co 2001-2004 Free Software Foundation, Inc.
 .PP
 Permission is granted to make and distribute verbatim copies of this
 manual page provided the copyright notice and this permission notice
