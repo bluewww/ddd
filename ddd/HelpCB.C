@@ -178,7 +178,7 @@ Pixmap (*helpOnVersionPixmapProc)(Widget) = 0;
 
 void StringHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
-    MString text = String(client_data);
+    MString text = (String)client_data;
 
     MStringHelpCB(widget, text.xmstring(), call_data);
 }
@@ -194,7 +194,7 @@ static void _MStringHelpCB(Widget widget,
 			   bool help_on_help,
 			   Pixmap pixmap)
 {
-    XmString text = XmString(client_data);
+    XmString text = (XmString)client_data;
 
     Arg args[10];
     Cardinal arg = 0;
@@ -275,7 +275,7 @@ static void HelpIndexCB(Widget widget, XtPointer client_data,
 void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			XtPointer)
 {
-    String text = String(client_data);
+    String text = (String)client_data;
 
     Arg args[10];
     Cardinal arg = 0;
@@ -435,7 +435,7 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 
     // Setup text for existing dialog
     arg = 0;
-    XtSetArg(args[arg], XmNvalue, String(stripped_text)); arg++;
+    XtSetArg(args[arg], XmNvalue, (String)stripped_text); arg++;
     XtSetValues(help_man, args, arg);
 
     // Highlight underlined and doublestriked text
@@ -486,10 +486,10 @@ void FileHelpCB(Widget widget, XtPointer client_data, XtPointer)
 {
     Delay delay;
 
-    String filename = String(client_data);
+    String filename = (String)client_data;
 
     char buffer[BUFSIZ];
-    String text = String(XtMalloc(1));
+    String text = (String)XtMalloc(1);
     text[0] = '\0';
 
     FILE *fp = fopen(filename, "r");
@@ -503,7 +503,7 @@ void FileHelpCB(Widget widget, XtPointer client_data, XtPointer)
     {
 	int nitems = fread(buffer, sizeof(char), BUFSIZ, fp);
 	buffer[nitems] = '\0';
-	text = String(XtRealloc(text, strlen(text) + strlen(buffer) + 1));
+	text = (String)XtRealloc(text, strlen(text) + strlen(buffer) + 1);
 	strcat(text, buffer);
     }
 
@@ -554,7 +554,7 @@ void FileHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     // Setup text for existing dialog
     arg = 0;
-    XtSetArg(args[arg], XmNvalue, String(text)); arg++;
+    XtSetArg(args[arg], XmNvalue, (String)text); arg++;
     XtSetValues(help_text, args, arg);
 
     // Enable Text Window
@@ -568,14 +568,14 @@ void CommandHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 
     string tmpfile = tmpnam(NULL);
     string command = 
-	string("/bin/sh -c '( ") + String(client_data) + " ) > " 
+	string("/bin/sh -c '( ") + (String)client_data + " ) > " 
 	+ tmpfile + " 2>&1'";
 
     Agent agent(command);
     agent.start();
     agent.wait();
 
-    FileHelpCB(widget, String(tmpfile), call_data);
+    FileHelpCB(widget, (String)tmpfile, call_data);
     unlink(tmpfile);
 }
 
@@ -592,7 +592,7 @@ void HelpManualCB(Widget widget, XtPointer, XtPointer call_data)
     command = "man " + app_name;
 
     char buffer[BUFSIZ];
-    String text = String(XtMalloc(1));
+    String text = (String)XtMalloc(1);
     text[0] = '\0';
 
     Agent agent(command);
@@ -606,11 +606,11 @@ void HelpManualCB(Widget widget, XtPointer, XtPointer call_data)
     {
 	int nitems = fread(buffer, sizeof(char), BUFSIZ, fp);
 	buffer[nitems] = '\0';
-	text = String(XtRealloc(text, strlen(text) + strlen(buffer) + 1));
+	text = (String)XtRealloc(text, strlen(text) + strlen(buffer) + 1);
 	strcat(text, buffer);
     }
 
-    ManualStringHelpCB(widget, String(text), call_data);
+    ManualStringHelpCB(widget, (String)text, call_data);
 }
 
 

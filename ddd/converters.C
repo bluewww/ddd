@@ -139,7 +139,7 @@ Boolean CvtStringToWidget(Display *display,
     Widget parent = *(Widget *) args[0].addr;
 
     // get widget
-    Widget w = XtNameToWidget(parent, String(fromVal->addr));
+    Widget w = XtNameToWidget(parent, (String)fromVal->addr);
     if (w == NULL)
     {
 	XtDisplayStringConversionWarning(display, fromVal->addr, XtRWidget);
@@ -190,7 +190,7 @@ Boolean CvtStringToPixmap(Display *display,
     }
 
     // get pixmap
-    Pixmap p = XmGetPixmap (screen, String(fromVal->addr),
+    Pixmap p = XmGetPixmap (screen, (String)fromVal->addr,
 			    foreground, background);
 
     if (p == XmUNSPECIFIED_PIXMAP)
@@ -230,7 +230,7 @@ Boolean CvtStringToBitmap(Display *display,
 	window = DefaultRootWindow(display);
 
     // Locate file
-    string basename = String(fromVal->addr);
+    string basename = (String)fromVal->addr;
     String filename = locateBitmap(display, basename);
     if (filename == NULL)
     {
@@ -365,7 +365,7 @@ static String locateBitmap(Display *display, String basename)
 			     "bitmaps",    // %T = bitmaps
 			     NULL,         // %N = application class name
 			     "",           // %S = "" (suffix)
-			     String(PATH), // path to use
+			     (String)PATH, // path to use
 			     &subst, 1,    // %B = basename
 			     NULL);        // no checking for valid bitmap
 }
@@ -391,8 +391,8 @@ Boolean CvtStringToXmString(Display *display,
     const regex blank("[ \t]*", true);
 
     // get string
-    string source = String(fromVal->addr);
-    string charset = String(MSTRING_DEFAULT_CHARSET);
+    string source = (String)fromVal->addr;
+    string charset = (String)MSTRING_DEFAULT_CHARSET;
 
     int n_segments = source.freq(font_esc) + 1;
     string *segments = new string[n_segments];

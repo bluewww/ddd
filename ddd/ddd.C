@@ -2517,9 +2517,9 @@ void wm_set_name(Display *display, Window shell_window,
     strip_final_blanks(icon);
 
     if (title != "")
-	XStoreName(display, shell_window, String(title));
+	XStoreName(display, shell_window, (String)title);
     if (icon != "")
-	XSetIconName(display, shell_window, String(icon));
+	XSetIconName(display, shell_window, (String)icon);
 }
 
 void wm_set_name(Widget shell, string title, string icon)
@@ -4140,13 +4140,13 @@ void insert_source_argAct   (Widget w, XEvent*, String*, Cardinal*)
     if (XmIsText(w)) {
 	if (XmTextGetEditable) {
 	    XmTextPosition pos = XmTextGetInsertionPosition(w);
-	    XmTextReplace(w, pos, pos, String(arg));
+	    XmTextReplace(w, pos, pos, (String)arg);
 	}
     }
     else if (XmIsTextField(w)) {
 	if (XmTextFieldGetEditable) {
 	    XmTextPosition pos = XmTextFieldGetInsertionPosition(w);
-	    XmTextFieldReplace(w, pos, pos, String(arg));
+	    XmTextFieldReplace(w, pos, pos, (String)arg);
 	}
     }
 }
@@ -4157,13 +4157,13 @@ void insert_graph_argAct (Widget w, XEvent*, String*, Cardinal*)
     if (XmIsText(w)) {
 	if (XmTextGetEditable) {
 	    XmTextPosition pos = XmTextGetInsertionPosition(w);
-	    XmTextReplace(w, pos, pos, String(arg));
+	    XmTextReplace(w, pos, pos, (String)arg);
 	}
     }
     else if (XmIsTextField(w)) {
 	if (XmTextFieldGetEditable) {
 	    XmTextPosition pos = XmTextFieldGetInsertionPosition(w);
-	    XmTextFieldReplace(w, pos, pos, String(arg));
+	    XmTextFieldReplace(w, pos, pos, (String)arg);
 	}
     }
 }
@@ -4202,7 +4202,7 @@ void set_line_from_history()
 
     const string& input = gdb_history[gdb_current_history];
     XmTextReplace(gdb_w, promptPosition,
-		  XmTextGetLastPosition(gdb_w), String(input));
+		  XmTextGetLastPosition(gdb_w), (String)input);
     XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
 
     if (gdb_history_w)
@@ -4556,7 +4556,7 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
 
-    string command = String(client_data);
+    string command = (String)client_data;
     if (command.contains("..."))
     {
 	command = command.before("...") + " ";
@@ -4646,7 +4646,7 @@ void gdbClearArgCmdCB(Widget w, XtPointer, XtPointer)
 
 void gdbLineArgCmdCB(Widget w, XtPointer client_data, XtPointer)
 {
-    string cmd = String(client_data);
+    string cmd = (String)client_data;
     string arg = source_arg->get_string();
 
     gdb_command(cmd + arg, w);
@@ -4654,7 +4654,7 @@ void gdbLineArgCmdCB(Widget w, XtPointer client_data, XtPointer)
 
 void gdbItemArgCmdCB(Widget w, XtPointer client_data, XtPointer)
 {
-    string cmd = String(client_data);
+    string cmd = (String)client_data;
     string arg = source_arg->get_string();
 
     if (arg != "" && !arg.matches(rxwhite))
@@ -5222,7 +5222,7 @@ void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
     if (num_params && *num_params > 0)
 	input = params[0];
     XmTextReplace(gdb_w, promptPosition, 
-		  XmTextGetLastPosition(gdb_w), String(input));
+		  XmTextGetLastPosition(gdb_w), (String)input);
 }
 
 void delete_or_controlAct(Widget w, XEvent *e, 
@@ -5293,7 +5293,7 @@ void set_completion(const CompletionInfo& info, string completion)
 
 	XmTextReplace(gdb_w, promptPosition,
 		      XmTextGetLastPosition(gdb_w), 
-		      String(completion));
+		      (String)completion);
 
 	private_gdb_output = false;
     }
@@ -5301,11 +5301,11 @@ void set_completion(const CompletionInfo& info, string completion)
     {
 	if (XmIsTextField(info.widget))
 	{
-	    XmTextFieldSetString(info.widget, String(completion));
+	    XmTextFieldSetString(info.widget, (String)completion);
 	}
 	else if (XmIsText(info.widget))
 	{
-	    XmTextSetString(info.widget, String(completion));
+	    XmTextSetString(info.widget, (String)completion);
 	}
     }
 }
@@ -6006,7 +6006,7 @@ void gdb_ctrl(char ctrl)
 	    int spaces = TAB_WIDTH - column % TAB_WIDTH;
 	    string spacing = replicate(' ', spaces);
 	
-	    XmTextInsert(gdb_w, promptPosition, String(spacing));
+	    XmTextInsert(gdb_w, promptPosition, (String)spacing);
 	    promptPosition += spacing.length();
 	    break;
 	}
@@ -6035,7 +6035,7 @@ void gdb_ctrl(char ctrl)
 	    c = string("^") + string('@' + int(ctrl));
 	else
 	    c = "^?";
-	XmTextInsert(gdb_w, promptPosition, String(c));
+	XmTextInsert(gdb_w, promptPosition, (String)c);
 	promptPosition += c.length();
     }
     }
@@ -6079,7 +6079,7 @@ void _gdb_out(string text)
 	else
 	    text = "";
 
-	XmTextInsert(gdb_w, promptPosition, String(block));
+	XmTextInsert(gdb_w, promptPosition, (String)block);
 	promptPosition += block.length();
 	XmTextShowPosition(gdb_w, promptPosition);
 
@@ -6146,7 +6146,7 @@ void remove_init_file()
 	}
 	else
 	{
-	    unlink(String(gdb_init_file));
+	    unlink((String)gdb_init_file);
 	}
 	gdb_init_file = "";
     }

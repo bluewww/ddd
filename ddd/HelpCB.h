@@ -55,22 +55,22 @@ extern void HelpOnHelpCB(Widget widget, XtPointer client_data,
 extern void ImmediateHelpCB(Widget widget, XtPointer client_data, 
 			    XtPointer call_data);
 
-// Call help with "XmString s = XmString(client_data)" as text.
+// Call help with "XmString s = (XmString)client_data" as text.
 // May be used for unchanged text display.
 extern void MStringHelpCB(Widget widget, XtPointer client_data, 
 			  XtPointer call_data);
 
-// Call help with "String s = String(client_data)" as text.
+// Call help with "String s = (String)client_data" as text.
 // May be used for unchanged text display.
 extern void StringHelpCB(Widget widget, XtPointer client_data, 
 			 XtPointer call_data);
 
-// Call help with "String filename = String(client_data)" as text
+// Call help with "String filename = (String)client_data" as text
 // May be used for file display.
 extern void FileHelpCB(Widget widget, XtPointer client_data, 
 		       XtPointer call_data);
 
-// Call help with "String command = String(client_data)" as text.
+// Call help with "String command = (String)client_data" as text.
 // May be used for command output display.
 extern void CommandHelpCB(Widget widget, XtPointer client_data, 
 			  XtPointer call_data);
@@ -80,7 +80,7 @@ extern void HelpManualCB(Widget widget, XtPointer client_data,
 			 XtPointer call_data);
 
 // Call help with a built-in formatted manual page "String s =
-// String(client_data)".
+// (String)client_data".
 extern void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			       XtPointer call_data);
 

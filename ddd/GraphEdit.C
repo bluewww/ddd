@@ -719,7 +719,7 @@ static Boolean CvtDimensionToString (Display *display, XrmValue *,
     ostrstream os;
     os << d;
     string os_s(os);
-    String s = String(XtNewString(String(os_s)));
+    String s = (String)XtNewString((String)os_s);
 
     done(String, s);
 }
@@ -740,7 +740,7 @@ static Boolean CvtCardinalToString (Display *display, XrmValue *,
     ostrstream os;
     os << d;
     string os_s(os);
-    String s = String(XtNewString(String(os_s)));
+    String s = (String)XtNewString((String)os_s);
 
     done(String, s);
 }

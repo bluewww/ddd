@@ -56,7 +56,7 @@ public:
 
     MString(const string& text, 
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
-	_mstring(XmStringCreateLtoR(String(text), charset))
+	_mstring(XmStringCreateLtoR((String)text, charset))
     {}
 
     MString(XmString text):

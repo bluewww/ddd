@@ -835,7 +835,7 @@ void SourceView::read_file (string file_name,
 
     // Set string and initial line
     XtVaSetValues(source_text_w,
-		  XmNvalue, String(current_text),
+		  XmNvalue, (String)current_text,
 		  NULL);
 
     XmTextPosition initial_pos = 0;
@@ -932,7 +932,7 @@ void SourceView::refresh_bp_disp ()
 	    XmTextReplace (source_text_w,
 			   pos_of_line[line_nr],
 			   pos_of_line[line_nr] + bp_indent_amount - 1,
-			   String(s));
+			   (String)s);
 	}
 
 	delete bps_in_line;
@@ -994,7 +994,7 @@ void SourceView::refresh_bp_disp ()
 
 	XmTextReplace (source_text_w,
 		       pos, pos + bp_indent_amount - 1,
-		       String(insert_string));
+		       (String)insert_string);
     }
 }
 
@@ -2385,7 +2385,7 @@ void SourceView::BreakpointCmdCB(Widget,
     if (breakpoint_list_w == 0)
 	return;
 
-    string cmd = String(client_data);
+    string cmd = (String)client_data;
     int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
     if (breakpoint_nrs[0] > 0)
     {
