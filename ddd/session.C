@@ -571,6 +571,12 @@ void delete_session(const string& session, bool silent)
 		   + strerror(errno), "delete_session_error");
 	delay.outcome = strerror(errno);
     }
+
+    if (session == app_data.session)
+    {
+	// Current session is deleted
+	set_session(DEFAULT_SESSION);
+    }
 }
 
 // Remove selected sessions
