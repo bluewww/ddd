@@ -982,17 +982,21 @@ ptest:  ptest.o
 m2test: m2test.mod
 	$(COMPILE.m2) -o $@ -e $@ m2test.mod -lmodula2 -ltermcap
 
-# We don't want no optimizing in our test files
+# We don't want no optimizing, but debugging info in our test files
 bug.o:	$(srcdir)/bug.C
-	@if test -n "$(CXXOPT)"; then \
+	@if test "$(CXXOPT)" != ""; then \
 	$(MAKE) CXXOPT= $@; \
+	elif test "$(CXXDEBUG)" = ""; then \
+	$(MAKE) CXXDEBUG=-g $@; \
 	else \
 	set -x; $(COMPILE.cc) $(INCLUDE) -o $@ $(srcdir)/bug.C; \
 	fi
 
 cxxtest.o: $(srcdir)/cxxtest.C
-	@if test -n "$(CXXOPT)"; then \
+	@if test "$(CXXOPT)" != ""; then \
 	$(MAKE) CXXOPT= $@; \
+	elif test "$(CXXDEBUG)" = ""; then \
+	$(MAKE) CXXDEBUG=-g $@; \
 	else \
 	set -x; $(COMPILE.cc) $(INCLUDE) -o $@ $(srcdir)/cxxtest.C; \
 	fi
