@@ -45,6 +45,7 @@ char MakeMenu_rcsid[] =
 #include <Xm/CascadeB.h>
 #include <Xm/Separator.h>
 #include <Xm/Scale.h>
+#include <Xm/TextF.h>
 #include <Xm/Label.h>
 #include <Xm/MenuShell.h>
 #include <X11/Xutil.h>
@@ -124,8 +125,11 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 
 	string subMenuName = string(name) + "Menu";
 	string panelName   = string(name) + "Panel";
-	Widget subMenu  = 0;
-	Widget label    = 0;
+	string textName    = "text";
+	string labelName   = "label";
+	Widget subMenu = 0;
+	Widget label   = 0;
+	Widget panel   = 0;
 
 	switch(type & MMTypeMask) 
 	{
@@ -269,6 +273,28 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    widget = verify(XmCreateScale(shell, name, args, arg));
 	    break;
 
+	case MMTextField:
+	    // Create a label with an associated text field
+	    assert(subitems == 0);
+
+	    arg = 0;
+	    XtSetArg(args[arg], XmNorientation,  XmHORIZONTAL); arg++;
+	    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+	    XtSetArg(args[arg], XmNentryBorder,  0); arg++;
+	    XtSetArg(args[arg], XmNspacing,      0); arg++;
+	    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+	    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+	    panel = verify(XmCreateRowColumn(shell, name, args, arg));
+
+	    arg = 0;
+	    label = verify(XmCreateLabel(panel, labelName, args, arg));
+	    XtManageChild(label);
+
+	    arg = 0;
+	    widget = verify(XmCreateTextField(panel, textName, args, arg));
+	    XtManageChild(widget);
+	    break;
+
 	case MMSeparator:
 	    // Create a separator
 	    assert(subitems == 0);
@@ -292,11 +318,14 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    XtSetValues(shell, args, arg);
 	}
 
+	if (panel == 0)
+	    panel = widget;
+
 	if (type & MMInsensitive)
-	    XtSetSensitive(widget, False);
+	    XtSetSensitive(panel, False);
 
 	if (!(type & MMUnmanaged))
-	    XtManageChild(widget);
+	    XtManageChild(panel);
 
 	if (widgetptr)
 	    *widgetptr = widget;
@@ -489,13 +518,22 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     case MMToggle:
     case MMScale:
 	if (callback.callback != 0)
-	    XtAddCallback(widget, 
+	    XtAddCallback(widget,
 			  XmNvalueChangedCallback,
 			  callback.callback, 
 			  callback.closure);
 	else
 	    XtSetSensitive(widget, False);
 	break;
+
+    case MMTextField:
+	if (callback.callback != 0)
+	    XtAddCallback(widget,
+			  XmNactivateCallback,
+			  callback.callback, 
+			  callback.closure);
+	break;
+
 
     case MMMenu:
     case MMRadioMenu:
