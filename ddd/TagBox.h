@@ -53,7 +53,7 @@ private:
     // Default access functions
     static DataLink default_datalink;
 
-    TagBox& operator = (const TagBox&) { assert(0); return *this; }
+    TagBox& operator = (const TagBox&);
 
 protected:
     // Draw

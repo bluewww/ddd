@@ -92,11 +92,6 @@ class DispValue {
     // Assignment
     void assign(DispValue& dv);
 
-    DispValue& operator = (const DispValue&)
-    {
-	assert(0); return *this;
-    }
-
     // Helpers
     static StringStringAssoc type_cache;
     static int index_base(const string& expr, int dim);
@@ -131,6 +126,8 @@ class DispValue {
     }
 
 private:
+    DispValue& operator = (const DispValue&);
+
     // If the names of all children have the form (PREFIX)(INDEX)(SUFFIX),
     // return the common PREFIX and SUFFIX.
     void get_index_surroundings(string& prefix, string& suffix) const;

@@ -1777,10 +1777,7 @@ public:
     {}
 
 private:
-    NewDisplayInfo& operator = (const NewDisplayInfo&)
-    {
-	assert(0); return *this;
-    }
+    NewDisplayInfo& operator = (const NewDisplayInfo&);
 };
 
 int NewDisplayInfo::cluster_nr     = 0;
@@ -4313,15 +4310,8 @@ public:
     {}
 
 private:
-    RefreshInfo(const RefreshInfo&)
-	: verbose(false), prompt(false), display_nrs(), cmds()
-    {
-	assert(0);
-    }
-    RefreshInfo& operator = (const RefreshInfo&)
-    {
-	assert(0); return *this;
-    }
+    RefreshInfo(const RefreshInfo&);
+    RefreshInfo& operator = (const RefreshInfo&);
 };
 
 int DataDisp::add_refresh_data_commands(StringArray& cmds)
@@ -5923,17 +5913,8 @@ struct SetInfo {
     {}
 
 private:
-    SetInfo(SetInfo&)
-	: name(""), text(0), dialog(0), running(false)
-    {
-	assert(0);
-    }
-
-    SetInfo& operator=(const SetInfo&)
-    {
-	assert(0);
-	return *this;
-    }
+    SetInfo(SetInfo&);
+    SetInfo& operator=(const SetInfo&);
 };
 
 void DataDisp::DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer)

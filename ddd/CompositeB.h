@@ -53,7 +53,7 @@ private:
     Box **boxes;            // List of children
     void grow();            // Grow the list
 
-    CompositeBox& operator = (const CompositeBox&) { assert(0); return *this; }
+    CompositeBox& operator = (const CompositeBox&);
 
 protected:
     // Add box as child

@@ -48,16 +48,8 @@ struct QueueRec {
     {}
 
 private:
-    QueueRec(const QueueRec<E>& qr)
-	: elem(qr.elem), next(0)
-    {
-	assert(0);
-    }
-
-    QueueRec<E>& operator = (const QueueRec<E>&)
-    {
-	assert(0); return *this;
-    }
+    QueueRec(const QueueRec<E>&);
+    QueueRec<E>& operator = (const QueueRec<E>&);
 };
 
 template<class E>

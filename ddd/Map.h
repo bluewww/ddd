@@ -256,17 +256,10 @@ public:
 
 private:
     // No copy constructor
-    Map(const Map<Key, Contents>&)
-	: _first(0), _length(0)
-    {
-	assert(0);
-    }
+    Map(const Map<Key, Contents>&);
 
     // No assignment
-    Map<Key, Contents>& operator = (const Map<Key, Contents>&)
-    {
-	assert(0); return *this;
-    }
+    Map<Key, Contents>& operator = (const Map<Key, Contents>&);
 };
 
 #endif // _DDD_Map_h

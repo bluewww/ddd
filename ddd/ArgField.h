@@ -69,15 +69,8 @@ class ArgField {
 			      XtPointer call_data);
 
 private:
-    ArgField(const ArgField&): 
-	arg_text_field(0), 
-	handlers(), 
-	is_empty(false),
-	locked(false)
-    {
-	assert(0);
-    }
-    ArgField& operator = (const ArgField&)       { assert(0); return *this; }
+    ArgField(const ArgField&);
+    ArgField& operator = (const ArgField&);
 
 public:
     // Constructor

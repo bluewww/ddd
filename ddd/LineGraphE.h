@@ -99,11 +99,7 @@ private:
 			     BoxPoint& p, const BoxPoint& c);
 
     // Assignment
-    LineGraphEdge& operator=(const LineGraphEdge&)
-    {
-	assert(0);
-	return *this;
-    }
+    LineGraphEdge& operator=(const LineGraphEdge&);
 
 public:
     // Constructor

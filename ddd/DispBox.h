@@ -60,7 +60,7 @@ protected:
     {}
 
 private:
-    DispBox& operator = (const DispBox&) { assert(0); return *this; }
+    DispBox& operator = (const DispBox&);
 
     static bool is_numeric(const DispValue *dv, const DispValue *parent);
 

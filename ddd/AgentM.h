@@ -70,9 +70,8 @@ private:
     void operator -= (Agent *key);
 
 private:
-    AgentManager(const AgentManager&): 
-	first(0), old_pipe_handler(0), old_chld_handler(0) { assert(0); }
-    AgentManager& operator = (const AgentManager&) { assert(0); return *this; }
+    AgentManager(const AgentManager&);
+    AgentManager& operator = (const AgentManager&);
 
 public:
     DECLARE_TYPE_INFO

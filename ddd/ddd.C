@@ -5742,19 +5742,8 @@ struct WhenReadyInfo {
     }
 
 private:
-    WhenReadyInfo(WhenReadyInfo&)
-	: // message(), // GCC 2.7.2 can't handle this
-	  proc(0), client_data(0)
-	  // , cbs(), event() // GCC 2.7.2 can't handle this
-    {
-	assert(0);
-    }
-
-    WhenReadyInfo& operator= (const WhenReadyInfo&)
-    {
-	assert(0);
-	return *this;
-    }
+    WhenReadyInfo(WhenReadyInfo&);
+    WhenReadyInfo& operator= (const WhenReadyInfo&);
 };
 
 static void DoneCB(const string& /* answer */, void *qu_data)

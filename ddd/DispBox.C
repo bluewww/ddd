@@ -213,17 +213,8 @@ struct VSLLibCache {
     }
 
 private:
-    VSLLibCache(const VSLLibCache&)
-	: themes(), lib(0), next(0)
-    {
-	assert(0);
-    }
-
-    VSLLibCache& operator= (const VSLLibCache&)
-    {
-	assert(0);
-	return *this;
-    }
+    VSLLibCache(const VSLLibCache&);
+    VSLLibCache& operator= (const VSLLibCache&);
 
 } *DispBox::vsllib_cache = 0;
 

@@ -75,18 +75,9 @@ public:
 
 
 private:
-    VSLDefList(const VSLDefList&)
-	: _func_name(), _first(0), _last(0), _ndefs(0),
-	_next(0), _global(false), lib(0), hashcode(0), 
-	references(0), self_references(0)
-    {
-	assert(0);
-    }
+    VSLDefList(const VSLDefList&);
 
-    VSLDefList& operator = (const VSLDefList&) 
-    { 
-	assert(0); return *this; 
-    }
+    VSLDefList& operator = (const VSLDefList&);
 
 public:
     // Add new function

@@ -65,7 +65,7 @@ private:
     GraphNode *prev;		// For collectors
     Graph *graph;		// For collectors
 
-    GraphNode& operator = (const GraphNode&) { assert(0); return *this; }
+    GraphNode& operator = (const GraphNode&);
 
 protected:
     // Copy Constructor

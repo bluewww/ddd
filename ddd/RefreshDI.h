@@ -47,15 +47,8 @@ struct RefreshDisassembleInfo {
 
 private:
     // Don't use assignment or copy constructors
-    RefreshDisassembleInfo(const RefreshDisassembleInfo& info)
-	: pc(info.pc), mode(info.mode), delay("")
-    {
-	assert(0);
-    }
-    RefreshDisassembleInfo& operator = (const RefreshDisassembleInfo&)
-    {
-	assert(0); return *this;
-    }
+    RefreshDisassembleInfo(const RefreshDisassembleInfo&);
+    RefreshDisassembleInfo& operator = (const RefreshDisassembleInfo&);
 
 public:
     RefreshDisassembleInfo(const string& p, XmHighlightMode m,

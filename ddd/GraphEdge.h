@@ -71,7 +71,7 @@ private:
     GraphEdge *prev;
     Graph *graph;
 
-    GraphEdge& operator = (const GraphEdge&) { assert(0); return *this; }
+    GraphEdge& operator = (const GraphEdge&);
 
 protected:
     // Graphics

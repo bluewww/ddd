@@ -93,16 +93,8 @@ struct CompletionInfo {
 	: widget(0), event(0), input(), cmd(), prefix()
     {}
 private:
-    CompletionInfo(const CompletionInfo&)
-	: widget(0), event(0), input(), cmd(), prefix()
-    {
-	assert(0);
-    }
-
-    CompletionInfo& operator = (const CompletionInfo&)
-    {
-	assert(0); return *this;
-    }
+    CompletionInfo(const CompletionInfo&);
+    CompletionInfo& operator = (const CompletionInfo&);
 };
 
 static void complete_reply(const string& complete_answer, void *qu_data);

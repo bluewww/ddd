@@ -76,15 +76,8 @@ public:
     int add(const char *name);
 
 private:
-    yyNameSet(const yyNameSet&)
-	: _name(), _next(0)
-    {
-	assert(0);
-    }
-    yyNameSet& operator = (const yyNameSet&)
-    {
-	assert(0); return *this;
-    }
+    yyNameSet(const yyNameSet&);
+    yyNameSet& operator = (const yyNameSet&);
 } yynameSet("xyzzy");
 
 inline int do_unput(char c) 

@@ -48,10 +48,8 @@ struct FontTableHashEntry {
     FontTableHashEntry(): font(0), name() {}
 
 private:
-    FontTableHashEntry(const FontTableHashEntry&)
-	: font(0), name() { assert(0); }
-    FontTableHashEntry& operator = (const FontTableHashEntry&)
-	{ assert(0); return *this; }
+    FontTableHashEntry(const FontTableHashEntry&);
+    FontTableHashEntry& operator = (const FontTableHashEntry&);
 };
 
 class FontTable {
@@ -62,8 +60,8 @@ private:
     FontTableHashEntry table[MAX_FONTS];
     Display *_display;
 
-    FontTable(const FontTable&): _display(0) { assert(0); }
-    FontTable& operator = (const FontTable&) { assert(0); return *this; }
+    FontTable(const FontTable&);
+    FontTable& operator = (const FontTable&);
 
 public:
     FontTable(Display *display):

@@ -205,7 +205,7 @@ private:
 
     bool exception_state;	// True if exception encountered
 
-    GDBAgent& operator = (const GDBAgent&) { assert(0); return *this; }
+    GDBAgent& operator = (const GDBAgent&);
 
 protected:
     // Return PREFIX + EXPR, parenthesizing EXPR if needed

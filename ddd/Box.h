@@ -76,7 +76,7 @@ private:
 			   const BoxRegion& region, 
 			   const PostScriptPrintGC& gc);
 
-    Box& operator = (const Box&) { assert(0); return *this; }
+    Box& operator = (const Box&);
 
 protected:
     int _links;			// #references (>= 1)

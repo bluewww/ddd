@@ -96,7 +96,7 @@ protected:
     const Box *call(Box *) const  { assert(0); return 0; }
 
 private:
-    LetNode& operator = (const LetNode&) { assert(0); return *this; }
+    LetNode& operator = (const LetNode&);
 
 public:
     // Constructor

@@ -75,30 +75,6 @@ VSLDef::VSLDef(VSLDefList* l, VSLNode *pattern, VSLNode *e,
       deflist(l)
 {}
 
-// `Dummy' copy constructor
-VSLDef::VSLDef(const VSLDef&)
-    : _expr(0),
-      _node_pattern(0),
-      _box_pattern(0),
-      _nargs(0),
-      _straight(0),
-      _filename(),
-      _lineno(0),
-      _listnext(0), _libnext(0), _libprev(0),
-      being_compiled(false),
-      deflist(0)
-{
-    assert(0);
-    abort();
-}
-
-// `Dummy' assignment
-VSLDef& VSLDef::operator = (const VSLDef&)
-{
-    assert(0);
-    return *this;
-}
-
 // Pattern matching
 
 const int max_instances = 256;

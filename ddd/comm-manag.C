@@ -210,46 +210,8 @@ public:
     }
 
 private:
-    CmdData(const CmdData&)
-	: command(""),
-	  undo_command(""),
-	  undo_is_exec(true),
-	  origin(0),
-	  filter_disp(TryFilter),
-	  disp_buffer(0),
-	  pos_buffer(0),
-	  new_exec_pos(false),
-	  new_frame_pos(false),
-	  set_frame_pos(false),
-	  set_frame_arg(0),
-	  set_frame_func(""),
-	  graph_cmd(""),
-	  lookup_arg(""),
-
-	  user_answer(""),
-	  user_callback(0),
-	  user_data(0),
-	  user_verbose(true),
-	  user_prompt(true),
-	  user_check(true),
-	  recorded(false),
-	  start_undo(true),
-
-	  disabling_occurred(false),
-
-	  init_perl(""),
-	  init_bash(""),
-
-	  position_timer(0),
-	  display_timer(0)
-    {
-	assert(0);
-    }
-
-    CmdData& operator = (const CmdData&)
-    {
-	assert(0); return *this;
-    }
+    CmdData(const CmdData&);
+    CmdData& operator = (const CmdData&);
 };
 
 void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
@@ -389,74 +351,8 @@ public:
     {}
 
 private:
-    ExtraData (ExtraData&)
-	: command(""),
-	  extra_commands(),
-	  n_init(0),
-	  refresh_initial_line(false),
-	  refresh_file(false),
-	  refresh_line(false),
-	  refresh_recent_files(false),
-	  refresh_pwd(false),
-	  refresh_class_path(false),
-	  refresh_breakpoints(false),
-	  refresh_where(false),
-	  refresh_frame(false),
-	  refresh_pc(false),
-	  refresh_registers(false),
-	  refresh_threads(false),
-	  refresh_data(false),
-	  refresh_user(false),
-	  refresh_addr(false),
-	  refresh_disp_info(false),
-	  refresh_history_filename(false),
-	  refresh_history_size(false),
-	  refresh_setting(false),
-	  set_command(""),
-	  refresh_handle(false),
-	  break_arg(""),
-	  n_refresh_data(0),
-	  n_refresh_user(0),
-
-	  config_frame(false),
-	  config_func(false),
-	  config_run_io(false),
-	  config_print_r(false),
-	  config_where_h(false),
-	  config_display(false),
-	  config_clear(false),
-	  config_handler(false),
-	  config_attach(false),
-	  config_addproc(false),
-	  config_pwd(false),
-	  config_setenv(false),
-	  config_edit(false),
-	  config_make(false),
-	  config_regs(false),
-	  config_named_values(false),
-	  config_when_semicolon(false),
-	  config_delete_comma(false),
-	  config_err_redirection(false),
-	  config_givenfile(false),
-	  config_cont_sig(false),
-	  config_examine(false),
-	  config_rerun(false),
-	  config_xdb(false),
-	  config_output(false),
-	  config_program_language(false),
-	  config_gdb_version(false),
-
-	  user_callback(0),
-	  user_data(0)
-    {
-	assert(0);
-    }
-    
-    ExtraData& operator = (const ExtraData&)
-    {
-	assert(0);
-	return *this;
-    }
+    ExtraData (ExtraData&);
+    ExtraData& operator = (const ExtraData&);
 };
 
 static void partial_answer_received(const string&, void *);

@@ -63,22 +63,9 @@ private:
 #endif
 
     // No assignments and copies
-    SignalBlocker& operator = (const SignalBlocker&) 
-    {
-	assert(0);
-	return *this;
-    }
+    SignalBlocker& operator = (const SignalBlocker&);
 
-    SignalBlocker(const SignalBlocker& sb) 
-	:
-#ifdef SIG_SETMASK
-	old_set(sb.old_set)
-#else
-	old_mask(sb.old_mask)
-#endif
-     {
-	 assert(0);
-     }
+    SignalBlocker(const SignalBlocker&);
 
 public:
     // Constructor - block signal SIGNUM

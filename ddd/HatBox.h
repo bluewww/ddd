@@ -70,7 +70,7 @@ protected:
     }
 
 private:
-    HatBox& operator = (const HatBox&) { assert(0); return *this; }
+    HatBox& operator = (const HatBox&);
 
 public:
     HatBox(Box *box, const char *t = "HatBox"): 

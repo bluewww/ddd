@@ -140,21 +140,8 @@ struct PlotWindowInfo {
     {}
 
 private:
-    PlotWindowInfo(const PlotWindowInfo&)
-	: source(0), window_name(""),
-	  plotter(0), area(0), shell(0), working_dialog(0), swallower(0),
-	  vsb(0), hsb(0), command(0), command_dialog(0), 
-	  export_dialog(0), active(false), swallow_timer(0), 
-	  settings(""), settings_timer(0), settings_file(""), settings_delay(0)
-    {
-	assert(0);
-    }
-
-    PlotWindowInfo& operator=(const PlotWindowInfo&)
-    {
-	assert(0);
-	return *this;
-    }
+    PlotWindowInfo(const PlotWindowInfo&);
+    PlotWindowInfo& operator=(const PlotWindowInfo&);
 };
 
 

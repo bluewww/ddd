@@ -109,7 +109,7 @@ protected:
 
 private:
     // Prohibit assignment
-    DispNode& operator = (const DispNode&) { assert(0); return *this; }
+    DispNode& operator = (const DispNode&);
 
 public:
     // Create a new display numbered DISP_NR, named NAME, created at

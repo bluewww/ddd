@@ -54,20 +54,9 @@ class XErrorBlocker {
 
     static XErrorBlocker *active;
 
-    XErrorBlocker(const XErrorBlocker&)
-	: _display(0), _error_occurred(false),
-	  // event(), saved_handler(), // GCC 2.7.2 can't handle this
-	  saved_active(0)
-    {
-	assert(0);
-    }
+    XErrorBlocker(const XErrorBlocker&);
 
-    XErrorBlocker& operator=(const XErrorBlocker&)
-    {
-	assert(0);
-	return *this;
-    }
-	
+    XErrorBlocker& operator=(const XErrorBlocker&);
 
 protected:
     virtual int handle(Display *, XErrorEvent *);

@@ -87,36 +87,8 @@ class BreakPoint {
     Widget  mycode_glyph;	// Associated glyph in code
 
 private:
-    BreakPoint(const BreakPoint& b)
-	: mynumber(b.mynumber),
-	  mytype(b.mytype),
-	  mydispo(b.mydispo),
-	  myenabled(b.myenabled),
-	  myfile_name(b.myfile_name),
-	  myline_nr(b.myline_nr),
-	  myaddress(b.myaddress),
-	  myfunc(b.myfunc),
-	  myexpr(b.myexpr),
-	  myinfos(b.myinfos),
-	  myignore_count(b.myignore_count),
-	  mycondition(b.mycondition),
-	  mycommands(b.mycommands),
-	  myarg(b.myarg),
-	  mywatch_mode(b.mywatch_mode),
-	  myenabled_changed(b.myenabled_changed),
-	  myfile_changed(b.myfile_changed),
-	  myposition_changed(b.myposition_changed),
-	  myaddress_changed(b.myaddress_changed),
-	  myselected(b.myselected),
-	  mysource_glyph(b.mysource_glyph),
-	  mycode_glyph(b.mycode_glyph)
-    {
-	assert(0);
-    }
-    BreakPoint& operator = (const BreakPoint&)
-    {
-	assert(0); return *this;
-    }
+    BreakPoint(const BreakPoint&);
+    BreakPoint& operator = (const BreakPoint&);
 
 protected:
     // Helpers

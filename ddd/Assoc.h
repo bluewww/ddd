@@ -65,15 +65,8 @@ public:
     {}
 
 private:
-    AssocRec(const AssocRec<K, V>& x)
-	: next(0), key(x.key), value(x.value)
-    {
-	assert(0);
-    }
-    AssocRec<K,V>& operator = (const AssocRec<K, V>&)
-    {
-	assert(0); return *this;
-    }
+    AssocRec(const AssocRec<K, V>&);
+    AssocRec<K,V>& operator = (const AssocRec<K, V>&);
 };
 
 template<class K, class V>

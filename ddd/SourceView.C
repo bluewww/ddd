@@ -5661,22 +5661,8 @@ struct BreakpointPropertiesInfo {
     }
 
 private:
-    BreakpointPropertiesInfo(const BreakpointPropertiesInfo&)
-	: nrs(),
-	  dialog(0), title(0), lookup(0), print(0),
-	  enable(0), disable(0), temp(0), del(0),
-	  ignore(0), condition(0), record(0), end(0), edit(0), editor(0),
-	  timer(0), spin_locked(false), ignore_spin_update(0),
-	  sync_commands(false), next(all)
-    {
-	assert(0);
-    }
-
-    BreakpointPropertiesInfo& operator=(const BreakpointPropertiesInfo&)
-    {
-	assert(0);
-	return *this;
-    }
+    BreakpointPropertiesInfo(const BreakpointPropertiesInfo&);
+    BreakpointPropertiesInfo& operator=(const BreakpointPropertiesInfo&);
 };
 
 BreakpointPropertiesInfo *BreakpointPropertiesInfo::all = 0;

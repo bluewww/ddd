@@ -67,10 +67,7 @@ protected:
     }
 
 private:
-    ConstNode& operator = (const ConstNode&)
-    {
-	assert(0); return *this;
-    }
+    ConstNode& operator = (const ConstNode&);
 
 public:
     // Constructor

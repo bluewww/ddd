@@ -67,16 +67,9 @@ private:
 	_data = newData;
     }
 
-    ChunkQueue(const ChunkQueue&)
-	: _length(0), _size(0), _data(0)
-    {
-	assert(0);
-    }
+    ChunkQueue(const ChunkQueue&);
 
-    ChunkQueue& operator = (const ChunkQueue&)
-    {
-	assert(0); return *this;
-    }
+    ChunkQueue& operator = (const ChunkQueue&);
 
 public:
     // Constructor

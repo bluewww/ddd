@@ -81,20 +81,9 @@ class PlotArea {
     void plot_reset   (const char *command);
 
     // Don't use these
-    PlotArea(PlotArea&)
-	: area(0), dpy(0), win(0),
-	  cx(0), cy(0), px(1), py(1), xscale(0.0), yscale(0.0),
-	  gc(0), font(0), vchar(0), jmode(0), line_type(0), width(0),
-	  type(0), pointsize(1), pending_plots(0), last_commands()
-    {
-	assert(0);
-    }
+    PlotArea(PlotArea&);
 
-    PlotArea& operator=(const PlotArea&)
-    {
-	assert(0);
-	return *this;
-    }
+    PlotArea& operator=(const PlotArea&);
 
 protected:
     virtual int do_plot(const char *commands, bool clear);

@@ -71,10 +71,7 @@ protected:
     }
 
 private:
-    DefCallNode& operator = (const DefCallNode&)
-    {
-	assert(0); return *this;
-    }
+    DefCallNode& operator = (const DefCallNode&);
 
 public:
     // Copy

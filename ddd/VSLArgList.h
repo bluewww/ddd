@@ -40,17 +40,9 @@
 class VSLArgList {
     ListBox *_list;
 
-    VSLArgList& operator=(const VSLArgList&)
-    {
-	assert(0);
-	return *this;
-    }
+    VSLArgList& operator=(const VSLArgList&);
 
-    VSLArgList(const VSLArgList&)
-	: _list(0)
-    {
-	assert(0);
-    }
+    VSLArgList(const VSLArgList&);
 
 public:
     VSLArgList()

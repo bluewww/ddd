@@ -80,10 +80,7 @@ protected:
     }
 
 private:
-    CallNode& operator = (const CallNode&)
-    {
-	assert(0); return *this;
-    }
+    CallNode& operator = (const CallNode&);
 
 public:
     // Resources

@@ -66,7 +66,7 @@ protected:
     }
 
 private:
-    ListNode& operator = (const ListNode&) { assert(0); return *this; }
+    ListNode& operator = (const ListNode&);
 
 public:
     ListNode(VSLNode *hd, VSLNode *tl, const char *type = "ListNode");

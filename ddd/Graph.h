@@ -48,7 +48,7 @@ private:
     GraphNode *_firstNode;	// circular list (0 if empty)
     GraphEdge *_firstEdge;	// circular list (0 if empty)
 
-    Graph& operator = (const Graph&) { assert(0); return *this; }
+    Graph& operator = (const Graph&);
 
     void begin_color(std::ostream& os, const PrintGC& gc,
 		     unsigned short red,

@@ -83,15 +83,8 @@ struct AsyncAgentWorkProcInfo {
     {}
 
 private:
-    AsyncAgentWorkProcInfo(const AsyncAgentWorkProcInfo&)
-	: agent(0), type(0), call_data(0)
-    {
-	assert(0);
-    }
-    AsyncAgentWorkProcInfo& operator = (const AsyncAgentWorkProcInfo&)
-    {
-	assert(0); return *this;
-    }
+    AsyncAgentWorkProcInfo(const AsyncAgentWorkProcInfo&);
+    AsyncAgentWorkProcInfo& operator = (const AsyncAgentWorkProcInfo&);
 };
 
 struct AsyncAgentWorkProc {
@@ -108,15 +101,8 @@ struct AsyncAgentWorkProc {
     {}
 
 private:
-    AsyncAgentWorkProc(const AsyncAgentWorkProc& p)
-	: proc_id(p.proc_id), info(0), next(0)
-    {
-	assert(0);
-    }
-    AsyncAgentWorkProc& operator = (const AsyncAgentWorkProc&)
-    {
-	assert(0); return *this;
-    }
+    AsyncAgentWorkProc(const AsyncAgentWorkProc&);
+    AsyncAgentWorkProc& operator = (const AsyncAgentWorkProc&);
 };
 
 // Events
@@ -227,11 +213,7 @@ private:
         }
     }
 
-    AsyncAgent& operator = (const AsyncAgent&)
-    {
-	assert(0);
-	return *this;
-    }
+    AsyncAgent& operator = (const AsyncAgent&);
 
 public:
     // Resources

@@ -46,10 +46,7 @@ private:
     Box *_box;		 // the box
     MarkBox *_highlight; // box to be highlighted when selected
 
-    BoxGraphNode& operator = (const BoxGraphNode&)
-    {
-	assert(0); return *this; 
-    }
+    BoxGraphNode& operator = (const BoxGraphNode&);
 
 protected:
     // Draw

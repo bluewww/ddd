@@ -208,9 +208,8 @@ protected:
 
 private:
     // No X(const X&)
-    TypeInfo(const TypeInfo&): 
-	_name(0), _direct_bases(0), _all_bases(0), _hash(0) { assert(0); }
-    TypeInfo& operator = (const TypeInfo&) { assert(0); return *this; }
+    TypeInfo(const TypeInfo&);
+    TypeInfo& operator = (const TypeInfo&);
 
 public:
 #if !IMMEDIATE_TYPE_INFO
@@ -264,10 +263,8 @@ private:
     int index;
     const BaseList bases;
 
-    BaseIterator(const BaseIterator&) : index(0), bases(0) 
-	{ assert(0); }
-    BaseIterator& operator = (const BaseIterator&) 
-	{ assert(0); return *this; }
+    BaseIterator(const BaseIterator&);
+    BaseIterator& operator = (const BaseIterator&);
 
 public:
     enum mode { all, direct };

@@ -78,20 +78,10 @@ private:
 
 private:
     // No copy constructor
-    ProgressMeter(const ProgressMeter &)
-	: current(0), base(0), total(0), msg(),
-	  delay(""), last_shown(0),
-	  old_background(0),
-	  aborted(false)
-    {
-	assert(0);
-    }
+    ProgressMeter(const ProgressMeter &);
 
     // No assignment
-    ProgressMeter& operator = (const ProgressMeter &)
-    {
-	assert(0); return *this;
-    }
+    ProgressMeter& operator = (const ProgressMeter &);
 };
 
 #endif // _DDD_ProgressMeter_h

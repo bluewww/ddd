@@ -53,8 +53,8 @@ struct DataLength {
     {}
 
 private:
-    DataLength(const DataLength&): data(0), length(0) { assert(0); }
-    DataLength& operator = (const DataLength&) { assert(0); return *this; }
+    DataLength(const DataLength&);
+    DataLength& operator = (const DataLength&);
 };
 
 #endif

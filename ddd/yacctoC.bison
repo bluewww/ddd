@@ -61,17 +61,8 @@ struct YYMEMHANDLER {\
     }\
 \
 private:\
-    YYMEMHANDLER(const YYMEMHANDLER&)\
-	: kill(0)\
-    {\
-	assert(0);\
-    }\
-\
-    YYMEMHANDLER& operator=(const YYMEMHANDLER&)\
-    {\
-	assert(0);\
-	return *this;\
-    }\
+    YYMEMHANDLER(const YYMEMHANDLER&);\
+    YYMEMHANDLER& operator=(const YYMEMHANDLER&);\
 };\
 
 \!.int yystacksize!a\

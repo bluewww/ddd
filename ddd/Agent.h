@@ -167,7 +167,7 @@ private:
 
     Agent *next;	    	// used in agent manager
 
-    Agent& operator = (const Agent&)  { assert(0); return *this; }
+    Agent& operator = (const Agent&);
 
 protected:
     // call Handlers
