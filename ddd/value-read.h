@@ -73,6 +73,9 @@ bool read_str_or_cl_next (string& value);
 bool read_str_or_cl_end (string& value);
 bool read_members_of_xy (string& value);
 
+// Convert a DBX initial `dump' line into a readable format
+void munch_dump_line (string& value);
+
 // Bei Misserfolg ""
 string read_vtable_entries (string& value);
 string read_member_name (string& value);

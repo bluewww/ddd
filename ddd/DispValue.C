@@ -207,6 +207,12 @@ void DispValue::init(string& value)
 	}
 
     case List:
+	// Some DBXes issue the local variables via a frame line, just
+	// like `set_date(d = 0x10003060, day_of_week = Sat, day = 24,
+	// month = 12, year = 1994)'.  Make this more readable.
+	munch_dump_line(value);
+
+	// FALL THROUGH
     case StructOrClass:
     case BaseClass:
 	{
@@ -728,6 +734,9 @@ void DispValue::update (string& value,
 		was_initialized = was_changed = true;
 		return;
 	    }
+
+	    if (mytype == List)
+		munch_dump_line (value);
 
 	    read_str_or_cl_begin (value);
 	    for (i = 0; more_values && i < v.str_or_cl->member_count; i++)

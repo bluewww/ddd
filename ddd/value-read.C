@@ -479,7 +479,7 @@ bool read_array_end (string& value)
 }
 
 
-// Read the beginning of a struct from VALUE.  Return false iff failure.
+// Read the beginning of a struct from VALUE.  Return false iff done.
 bool read_str_or_cl_begin (string& value)
 {
     return read_array_begin(value);
@@ -495,6 +495,29 @@ bool read_str_or_cl_next (string& value)
 bool read_str_or_cl_end (string& value)
 {
     return read_array_end(value);
+}
+
+// Some DBXes issue the local variables via a frame line, just like
+// `set_date(d = 0x10003060, day_of_week = Sat, day = 24, month = 12,
+// year = 1994) [location]'.  Make this more readable.
+void munch_dump_line (string& value)
+{
+    string initial_line = value.before('\n');
+    strip_final_blanks(initial_line);
+
+    static regex rxframe("[a-zA-Z_$][a-zA-Z_$0-9]*[(].*[)].*[[].*[]]");
+    if (initial_line.matches(rxframe))
+    {
+	// Strip enclosing parentheses
+	initial_line = initial_line.after('(');
+	int index = initial_line.index(')', -1);
+	initial_line = initial_line.before(index);
+
+	// Place one arg per line
+	initial_line.gsub(", ", "\n");
+
+	value = initial_line + value.from('\n');
+    }
 }
 
 // Skip `members of SUBCLASS:' in VALUE.  Return false iff failure.
