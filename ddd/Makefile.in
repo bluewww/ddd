@@ -813,6 +813,9 @@ OBJECTS = $(LIB_OBJECTS) $(DDD_OBJECTS)
 ## The program files.
 PROGS = $(ddd_canonical) $(ddd)
 
+## The program files to be installed.
+INSTALL_PROGS = $(ddd)
+
 ## Extra demonstration files.
 DEMOS = userinfo stringify huffencode huffdecode \
 	cxxtest ctest grabtest ftest ptest m2test \
@@ -1053,14 +1056,14 @@ install-prog:
 	test -d $$grandparent || $(MKDIR) $$grandparent; \
 	test -d $$parent || $(MKDIR) $$parent
 	-test -d $(bindir) || $(MKDIR) $(bindir)
-	for p in $(PROGS); do \
+	for p in $(INSTALL_PROGS); do \
 	    $(INSTALL_PROGRAM) \
 		$$p $(bindir)/`$(ECHO) $$p | $(SED) '$(transform)'`; \
 	done
 
 .PHONY: uninstall-prog
 uninstall-prog:
-	for p in $(PROGS); do \
+	for p in $(INSTALL_PROGS); do \
 	    $(RM) $(bindir)/`$(ECHO) $$p | $(SED) '$(transform)'`; \
 	done
 
