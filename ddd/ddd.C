@@ -5363,7 +5363,8 @@ void _gdb_out(const string& txt)
 	return;
 
     string text(txt);
-    gdb_input_at_prompt = gdb->ends_with_prompt(text);
+    if (gdb->ends_with_prompt(text))
+	gdb_input_at_prompt = true;
 
     if (promptPosition == 0)
 	promptPosition = XmTextGetLastPosition(gdb_w);

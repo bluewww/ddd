@@ -699,9 +699,8 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
     split(input, lines, newlines, '\n');
 
     private_gdb_input = true;
-    bool at_prompt = gdb_input_at_prompt;
 
-    if (newlines == 0 || (at_prompt && input.contains('\\', -1)))
+    if (newlines == 0 || (gdb_input_at_prompt && input.contains('\\', -1)))
     {
 	// No newline found - line is still incomplete
 	set_history_from_line(input, true);
@@ -716,7 +715,7 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 	    string cmd = lines[i];
 	    tty_out(cmd + "\n");
 
-	    if (at_prompt)
+	    if (gdb_input_at_prompt)
 	    {
 		if (cmd.matches(rxwhite) || cmd == "")
 		{
@@ -730,16 +729,16 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 		}
 	    }
 
-	    if (at_prompt)
+	    if (gdb_input_at_prompt)
 	    {
 		// We're typing at the GDB prompt: place CMD in command queue
 		gdb_command(cmd, w);
 	    }
 	    else
 	    {
-		// Process anything else right now, clearing the command queue.
+		// Pass anything else right to GDB, clearing the command queue.
 		clearCommandQueue();
-		_gdb_command(cmd, w);
+		gdb->send_user_ctrl_cmd(cmd + "\n");
 	    }
 	}
     }

@@ -40,6 +40,7 @@ char cmdtty_rcsid[] =
 #include "LiterateA.h"
 #include "SourceView.h"
 #include "ddd.h"
+#include "editing.h"
 #include "exit.h"
 
 #include <Xm/Xm.h>
@@ -59,12 +60,10 @@ static bool tty_gdb_input;
 void tty_command(Agent *, void *, void *call_data)
 {
     DataLength *d = (DataLength *)call_data;
-    if (promptPosition == 0)
-	promptPosition = XmTextGetLastPosition(gdb_w);
 
     // Simply insert text, invoking all necessary callbacks
     tty_gdb_input = true;
-    XmTextInsert(gdb_w, promptPosition, (String)d->data);
+    XmTextInsert(gdb_w, XmTextGetLastPosition(gdb_w), (String)d->data);
     tty_gdb_input = false;
 }
 
@@ -72,8 +71,9 @@ void tty_command(Agent *, void *, void *call_data)
 void tty_eof(Agent *, void *, void *)
 {
     // Forward EOF to GDB (or whatever GDB is just running)
-    gdb->write("\004", 1);
-    gdb_is_exiting = true;
+    gdb->send_user_ctrl_cmd("\004");
+    if (gdb_input_at_prompt)
+	gdb_is_exiting = true;
 }
 
 // Echo on TTY
@@ -132,5 +132,5 @@ void init_command_tty()
 // Check if command tty is still running
 bool tty_running()
 {
-    return command_tty && command_tty->running();
+    return command_tty != 0 && command_tty->running();
 }

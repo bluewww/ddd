@@ -798,10 +798,7 @@ void internal_command(const string& command, OQCProc callback, void *data,
 		      bool echo, bool verbose, bool do_prompt)
 {
     if (echo && verbose)
-    {
 	gdb_out(command + "\n");
-	gdb_input_at_prompt = false;
-    }
 
     string answer = internal_command(command);
 
@@ -1122,6 +1119,9 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmd_data->undo_command = gdb->rerun_command();
 	cmd_data->undo_is_exec = true;
 #endif
+
+	// Following input is not at prompt
+	gdb_input_at_prompt = false;
     }
     else if (is_thread_cmd(cmd) || is_core_cmd(cmd))
     {
@@ -1289,6 +1289,9 @@ void send_gdb_command(string cmd, Widget origin,
 	extra_data->refresh_frame       = true;
 	extra_data->refresh_data        = true;
 	extra_data->refresh_threads     = true;
+
+	// Following input is not at prompt
+	gdb_input_at_prompt = false;
     }
 
     if (undo_buffer.showing_earlier_state() && !cmd_data->new_exec_pos)
@@ -1388,7 +1391,6 @@ void send_gdb_command(string cmd, Widget origin,
     {
 	strip_auto_command_prefix(echoed_cmd);
 	gdb_out(echoed_cmd + "\n");
-	gdb_input_at_prompt = false;
     }
 
     if (abort_undo)
