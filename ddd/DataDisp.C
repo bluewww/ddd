@@ -109,6 +109,8 @@ char DataDisp_rcsid[] =
 #include "disp-read.h"
 #include "mydialogs.h"
 #include "regexps.h"
+#include "settings.h"
+#include "status.h"
 #include "string-fun.h"
 #include "toolbar.h"
 #include "verify.h"
