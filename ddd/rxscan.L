@@ -303,8 +303,8 @@ J	[A-Za-z_$][A-Za-z0-9_$.]*
 73Line{W}number{W}{D}{W}is{W}out{W}of{W}range{W}for{W} RETURN(&rxout_of_range);
 74{_}(dir|directory|path)({W}{C})?	RETURN(&rxpath_cmd);
 75\$pc{_}={_}{A}			RETURN(&rxpc);
-76[a-zA-Z][-a-zA-Z0-9 ]*[-a-zA-Z0-9][[][1-9][0-9]*[]][ ] RETURN(&rxjdbprompt);
-77[ ][]][0-9]*[1-9][[][-a-zA-Z0-9][-a-zA-Z0-9 ]*[a-zA-Z] RETURN(&rxjdbprompt_reverse);
+76(>|[a-zA-Z][-a-zA-Z0-9 ]*[-a-zA-Z0-9][[][1-9][0-9]*[]])[ ] RETURN(&rxjdbprompt);
+77[ ](>|[]][0-9]*[1-9][[][-a-zA-Z0-9][-a-zA-Z0-9 ]*[a-zA-Z]) RETURN(&rxjdbprompt_reverse);
 78Process{W}{D}:{_}			RETURN(&rxprocess1);
 79Process{W}{D}:			RETURN(&rxprocess2);
 80[(][^ )]*de?b[^)]*[)]{w}		RETURN(&rxprompt);

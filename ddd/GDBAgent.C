@@ -709,12 +709,12 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	// prompts may also occur asynchronously.
 
 #if RUNTIME_REGEX
-	// Threaded prompt: "THREAD[DEPTH] "
+	// Standard prompt: "THREAD[DEPTH] " or "> "
 	static regex rxjdbprompt        
-	    ("[a-zA-Z][a-zA-Z0-9 ]*[a-zA-Z0-9][[][1-9][0-9]*[]] ");
+	    ("([a-zA-Z][a-zA-Z0-9 ]*[a-zA-Z0-9][[][1-9][0-9]*[]]|>) ");
 	// Same, but in reverse
 	static regex rxjdbprompt_reverse
-	    (" []][0-9]*[1-9][[][a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z]");
+	    (" (>|[]][0-9]*[1-9][[][a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z])");
 	// Non-threaded prompt: "[DEPTH] " or "> "
 	static regex rxjdbprompt_nothread
 	    ("(>|[[][1-9][0-9]*[]]) ");
@@ -785,7 +785,8 @@ bool GDBAgent::is_exception_answer(const string& answer)
     // Any JDB backtrace contains these lines.
     return type() == JDB && 
 	(answer.contains("com.sun.tools.example.debug") ||
-	 answer.contains("sun.tools.debug"));
+	 answer.contains("sun.tools.debug") ||
+	 answer.contains("Internal exception:"));
 }
 
 void GDBAgent::set_exception_state(bool new_state)
@@ -1365,6 +1366,11 @@ void GDBAgent::handle_input(string& answer)
 
 	// Save answer in case of exceptions.
 	complete_answer += answer;
+	if (ends_with_prompt(complete_answer))
+	{
+	    set_exception_state(false);
+	    complete_answer = "";
+	}
 	break;
 
     case BusyOnInitialCmds:
@@ -2369,7 +2375,10 @@ string GDBAgent::signal_command(int sig) const
 // Return a command that does nothing.
 string GDBAgent::nop_command(string comment) const
 {
-    return "# " + comment;	// Works for all inferior debuggers
+    if (type() == JDB)
+	return " ";
+
+    return "# " + comment;	// Works for all other inferior debuggers
 }
 
 // Run program with given ARGS
