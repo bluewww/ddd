@@ -1220,16 +1220,24 @@ void DataDisp::refresh_args()
     {
 	string arg;
 	if (disp_value_arg)
+	{
 	    arg = disp_value_arg->full_name();
+	    source_arg->set_string(arg);
+	    graph_arg->set_string(arg);
+	}
 	else if (disp_node_arg)
+	{
 	    arg = disp_node_arg->name();
+	    source_arg->set_string(arg);
+	    graph_arg->set_string(arg);
+	}
 	else
 	{
 	    ostrstream arg_os;
 	    arg_os << "(" << count_selected << " displays)";
 	    arg = arg_os;
+	    graph_arg->set_string(arg);
 	}
-	graph_arg->set_string(arg);
 
 	// Cause argument field to obtain the selection
 	Widget w = graph_arg->widget();
