@@ -3320,7 +3320,7 @@ Ddd*preferences*showExecPos.labelString:	Show Position and Breakpoints
 Ddd*preferences*asGlyphs.labelString:		as Glyphs
 Ddd*preferences*asText.labelString:		as Text Characters
 
-Ddd*preferences*toolButtons.labelString:	Tool buttons location
+Ddd*preferences*toolButtons.labelString:	Tool Buttons Location
 Ddd*toolButtonsMenu*commandTool.labelString:	\
 Command Tool
 Ddd*toolButtonsMenu*sourceWindow.labelString:   \
