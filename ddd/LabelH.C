@@ -30,15 +30,23 @@
  *  cwikla@wolfram.com
 */
 
-
+#define new a_new		// Motif 1.1 wants this
+#define class a_class
+extern "C" {
 #include <Xm/XmP.h>
 #include <Xm/LabelP.h>
 #include <Xm/LabelGP.h>
+
+#if XmVersion >= 1002
 #include <Xm/ManagerP.h>
+#endif
+}
 
 #include "LabelHP.h"
 
-static void initialize(XmLabelHackWidget _request, XmLabelHackWidget _new, String *_args, Cardinal *_numArg);
+static void initialize(XmLabelHackWidget _request, 
+		       XmLabelHackWidget _new, 
+		       String *_args, Cardinal *_numArg);
 static void _replaceLabelExpose(void);
 static void _replaceLabelGadgetExpose(void);
 static GC _topShadowGC(XmLabelWidget _label);
@@ -96,25 +104,40 @@ XmLabelHackClassRec xmLabelHackClassRec =
 	(XtGeometryHandler)NULL, 	        /* query_geometry */
 	NULL, 					/* display_accelerator */
 	(XtPointer)NULL,			/* extension */
-    },
+    }
+#if 0
     { 	/* xmPrimitiveClass */
+#if XmVersion >= 1002
 	(XtWidgetProc)XmInheritBorderHighlight,
 	(XtWidgetProc)XmInheritBorderUnhighlight,
 	XtInheritTranslations,
 	(XtActionProc)XmInheritArmAndActivate,
+#else
+	(XtWidgetProc)_XtInherit,
+	(XtWidgetProc)_XtInherit,
+	XtInheritTranslations,
+	(XmArmAndActivate)_XtInherit,
+#endif
 	NULL,
 	0,
 	(XtPointer)NULL,
     },
     {	/* xmLabelClass */
+#if XmVersion >= 1002
 	(XtWidgetProc) XmInheritSetOverrideCallback,
 	XmInheritMenuProc,
 	XtInheritTranslations,
+#else
+	(XtWidgetProc) _XtInherit,
+	(XmMenuProc) _XtInherit,
+	NULL,
+#endif
 	NULL,
     },
     {
 	-1,
     }
+#endif
 };
 
 WidgetClass xmLabelHackWidgetClass = (WidgetClass)&xmLabelHackClassRec;
