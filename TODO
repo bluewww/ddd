@@ -408,11 +408,4 @@ Volunteers for these and other projects are welcome!
 222* Have a `Restart session' command that replaces the old `Restart'
      command.
 
-223* Have a `Helpers' preferences panel to customize helper apps
-     (termCommand, psCommand, printCommand, editCommand, 
-      getCoreCommand, uncompressCommand)
-
-224. Have some preferences that are not overridden by user prefs when
-     switching to a new version (for instance, window sizes).
-
 225. (Insert your project idea here)

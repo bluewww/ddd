@@ -353,6 +353,9 @@ RMDIR = rmdir
 # The GNU Debugger.
 GDB = gdb
 
+# The sleep command.
+SLEEP = sleep
+
 # The fig2dev command.
 FIG2DEV = fig2dev
 FIG2PS = $(FIG2DEV) -L ps
@@ -1017,6 +1020,45 @@ demos:	$(DEMOS)
 .PHONY: love
 love:
 	@$(ECHO) 'not war?'
+
+
+## A joke.
+# Newsgroups: rec.humor.funny.reruns
+# From: sater@cs.vu.nl (Hans van Staveren)
+# Subject: Good news and bad news
+# Approved: rhf-reruns@clari.net
+# Keywords: heard it, funny, originally appeared in second quarter, 1990
+# Message-ID: <Sba5.2ff7@clarinet.com>
+# Date: Tue, 14 Oct 97 19:20:05 EDT
+# Lines: 20
+# Xref: news.tu-bs.de rec.humor.funny.reruns:535
+#
+# From the RHF archives as selected by Brad Templeton, Maddi Hausmann
+# and Jim Griffith.  This newsgroup posts former jokes from the
+# newsgroup rec.humor.funny.  Visit http://comedy.clari.net/rhf to
+# browse the RHF pages and archives on the web.
+
+.PHONY: joke fun
+joke fun:
+	@$(ECHO)
+	@$(ECHO)
+	@$(ECHO)
+	@$(ECHO) 'A man gets a telephone call from a doctor. The doctor says:'
+	@$(ECHO) ' "About this medical test I did on you, I have some good news'
+	@$(ECHO) '  and some bad news."'
+	@$(SLEEP) 5
+	@$(ECHO)
+	@$(ECHO) 'The man asks for the good news first:'
+	@$(ECHO) 
+	@$(SLEEP) 2
+	@$(ECHO) ' "The good news is that you have 24 hours to live", says the doctor.'
+	@$(SLEEP) 3
+	@$(ECHO)
+	@$(ECHO) 'The man, incredulously:'
+	@$(ECHO) ' "If that is the good news, then what is the bad news??"'
+	@$(SLEEP) 4
+	@$(ECHO)
+	@$(ECHO) ' "I couldn'\''t reach you on the phone yesterday."'
 
 
 ## FORCE target
