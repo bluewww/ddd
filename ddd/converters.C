@@ -392,7 +392,6 @@ Boolean CvtStringToXmString(Display *display,
 
 #if RUNTIME_REGEX
     static regex rxfont_id("[_A-Za-z][-_A-Za-z0-9]*");
-    static regex rxblank("[ \t]?");
 #endif
 
     // Get string
@@ -446,7 +445,9 @@ Boolean CvtStringToXmString(Display *display,
 		{
 		    // Found @CHARSET: set new charset
 		    charset = c;
-		    segment = segment.after(rxblank);
+		    if (segment.contains(' ', 0)
+			|| segment.contains('\t', 0))
+			segment = segment.after(0);
 		}
 	    }
 	    else if (segments[i].contains(' ', 0))
