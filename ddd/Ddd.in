@@ -30,8 +30,8 @@ Ddd*appDefaultsVersion: @VERSION@
 
 ! =================================================================
 ! NOTE: If you're looking here for things to customize, look
-! under the DDD `Options' menu first.  Many things are customizable
-! from there.  Things which are settable via the Options dialog
+! under the DDD `Preferences' menu first.  Many things are customizable
+! from there.  Things which are settable via the Preferences dialog
 ! are stored in the ~/.dddinit file.
 ! =================================================================
 !
@@ -1484,9 +1484,8 @@ Ddd*menubar.helpString:		\
 @rm This is the @sl Menu Bar.@rm\n\
 \n\
 @tt \267 @bf File @rm - select files and exit @DDD@.\n\
-@tt \267 @bf Edit @rm - cut, copy, and paste text.\n\
-@tt \267 @bf Options @rm - change @DDD@ settings.\n\
-@tt \267 @bf Windows @rm - raise @DDD@ windows.\n\
+@tt \267 @bf Edit @rm - cut, copy, and paste text, and change @DDD@ options.\n\
+@tt \267 @bf View @rm - view @DDD@ windows.\n\
 @tt \267 @bf Program @rm - run the debugged program.\n\
 @tt \267 @bf Commands @rm - view command history.\n\
 @tt \267 @bf Stack @rm - view backtrace and select the current stack frame.\n\
@@ -1611,118 +1610,76 @@ Ddd*menubar.edit*helpString:	\
 @tt \267 @bf Paste @rm - paste the clipboard contents into the text.\n\
 \n\
 @tt \267 @bf Clear @rm - delete the current input.\n\
-@tt \267 @bf Delete @rm - delete the selected text.
-
-Ddd*editMenu.cut.labelString:		Cut
-Ddd*editMenu.cut.mnemonic:		t
-Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
-! *editMenu.cut.accelerator:		<Key>osfCut
-Ddd*editMenu.cut.acceleratorText:	Shift+Del
-Ddd*editMenu.cut.documentationString: \
-@rm Cut the selection and put it on the clipboard
-
-Ddd*editMenu.copy.labelString:		Copy
-Ddd*editMenu.copy.mnemonic:		C
-Ddd*editMenu.copy.accelerator:		Ctrl<Key>Insert
-! *editMenu.copy.accelerator:		<Key>osfPrimaryCopy
-Ddd*editMenu.copy.acceleratorText:	Ctrl+Ins
-Ddd*editMenu.copy.documentationString: \
-@rm Copy the selection and put it on the clipboard
-
-Ddd*editMenu.paste.labelString:		Paste
-Ddd*editMenu.paste.mnemonic:		P
-Ddd*editMenu.paste.accelerator:		Shift<Key>Insert
-! *editMenu.paste.accelerator:		<Key>osfPaste
-Ddd*editMenu.paste.acceleratorText:	Shift+Ins
-Ddd*editMenu.paste.documentationString: \
-@rm Paste clipboard contents
-
-Ddd*editMenu.clear.labelString:		Clear
-Ddd*editMenu.clear.mnemonic:		e
-! Ddd*editMenu.clear.accelerator:	~Shift Ctrl<Key>U
-Ddd*editMenu.clear.acceleratorText:	Ctrl+U
-Ddd*editMenu.clear.documentationString: \
-@rm Clear current selection
-
-Ddd*editMenu.delete.labelString:	Delete
-Ddd*editMenu.delete.mnemonic:		D
-Ddd*editMenu.delete.documentationString: \
-@rm Delete current selection
-
-
-! Options menu
-Ddd*menubar.options.labelString:	 Options
-Ddd*menubar.options.mnemonic:		 O
-Ddd*menubar.options*documentationString: \
-@rm Modify the @GDB@ configuration
-
-Ddd*menubar.options*helpString:	\
-@rm This is the @sl Options Menu.@rm\n\
+@tt \267 @bf Delete @rm - delete the selected text.\n\
 \n\
 @tt \267 @bf Preferences... @rm invokes a panel for \
 setting @DDD@ options.\n\
 @tt \267 @bf Settings... @rm invokes a panel for setting @GDB@ options.\n\
 \n\
-@tt \267 @rm If @bf Run in Execution Window @rm is set, \
-the program is run in a separate\n\
-    terminal window; useful for programs using terminal I/O.  Otherwise,\n\
-    the program is run in the @GDB@ console window.\n\
-    This change takes effect the next time the program is run.\n\
-@tt \267 @rm If @bf Find Words Only @rm is set, \
-only complete words are found.\n\
-    Otherwise, arbitrary occurrences are found.\n\
-@tt \267 @rm If @bf Display Machine Code @rm is set, \
-the current function is automatically disassembled.\n\
-\n\
 @bf Save Options @rm saves options, preferences, and @GDB@ settings\n\
 for the next @DDD@ invocation.
 
-Ddd*optionsMenu.preferences.labelString:		Preferences...
-Ddd*optionsMenu.preferences.mnemonic:			P
-Ddd*optionsMenu.preferences.documentationString:\
+Ddd*editMenu.cut.labelString:				Cut
+Ddd*editMenu.cut.mnemonic:				t
+Ddd*editMenu.cut.accelerator:				Shift<Key>Delete
+! *editMenu.cut.accelerator:				<Key>osfCut
+Ddd*editMenu.cut.acceleratorText:			Shift+Del
+Ddd*editMenu.cut.documentationString: \
+@rm Cut the selection and put it on the clipboard
+
+Ddd*editMenu.copy.labelString:				Copy
+Ddd*editMenu.copy.mnemonic:				C
+Ddd*editMenu.copy.accelerator:				Ctrl<Key>Insert
+! *editMenu.copy.accelerator:				<Key>osfPrimaryCopy
+Ddd*editMenu.copy.acceleratorText:			Ctrl+Ins
+Ddd*editMenu.copy.documentationString: \
+@rm Copy the selection and put it on the clipboard
+
+Ddd*editMenu.paste.labelString:				Paste
+Ddd*editMenu.paste.mnemonic:				P
+Ddd*editMenu.paste.accelerator:				Shift<Key>Insert
+! *editMenu.paste.accelerator:				<Key>osfPaste
+Ddd*editMenu.paste.acceleratorText:			Shift+Ins
+Ddd*editMenu.paste.documentationString: \
+@rm Paste clipboard contents
+
+Ddd*editMenu.clear.labelString:				Clear
+Ddd*editMenu.clear.mnemonic:				e
+! Ddd*editMenu.clear.accelerator:			~Shift Ctrl<Key>U
+Ddd*editMenu.clear.acceleratorText:			Ctrl+U
+Ddd*editMenu.clear.documentationString: \
+@rm Clear current selection
+
+Ddd*editMenu.delete.labelString:			Delete
+Ddd*editMenu.delete.mnemonic:				D
+Ddd*editMenu.delete.documentationString: \
+@rm Delete current selection
+
+Ddd*editMenu.preferences.labelString:			Preferences...
+Ddd*editMenu.preferences.mnemonic:			r
+Ddd*editMenu.preferences.documentationString:\
 @rm Modify the @DDD@ configuration
 
 ! Note: The debugger name will be prepended to this label:
-Ddd*optionsMenu.settings.labelString:			Settings...
-Ddd*optionsMenu.settings.mnemonic:			S
-Ddd*optionsMenu.settings.documentationString:\
+Ddd*editMenu.settings.labelString:			Settings...
+Ddd*editMenu.settings.mnemonic:				S
+Ddd*editMenu.settings.documentationString:\
 @rm Modify the @GDB@ configuration
 
-Ddd*optionsMenu.separateExecWindow.labelString:		Run in Execution Window
-Ddd*optionsMenu.separateExecWindow.mnemonic:		E
-Ddd*optionsMenu*separateExecWindow.accelerator:		Alt<Key>X
-Ddd*optionsMenu*separateExecWindow.acceleratorText:	Alt+X
-Ddd*optionsMenu.separateExecWindow.documentationString:\
-@rm Toggle execution of debugged program in separate window
-
-Ddd*optionsMenu.findWordsOnly.labelString:		Find Words Only
-Ddd*optionsMenu.findWordsOnly.mnemonic:			W
-Ddd*optionsMenu*findWordsOnly.accelerator:		Alt<Key>Y
-Ddd*optionsMenu*findWordsOnly.acceleratorText:		Alt+Y
-Ddd*optionsMenu.findWordsOnly.documentationString:\
-@rm Switch between finding complete words and finding arbitrary occurrences
-
-Ddd*optionsMenu.disassemble.labelString:		Display Machine Code
-Ddd*optionsMenu.disassemble.mnemonic:			M
-Ddd*optionsMenu*disassemble.accelerator:		Alt<Key>M
-Ddd*optionsMenu*disassemble.acceleratorText:		Alt+M
-Ddd*optionsMenu.disassemble.documentationString:\
-@rm Toggle display of machine code window
-
-Ddd*optionsMenu.saveOptions.labelString:		Save Options
-Ddd*optionsMenu.saveOptions.mnemonic:			O
-Ddd*optionsMenu.saveOptions.documentationString:\
+Ddd*editMenu.saveOptions.labelString:			Save Options
+Ddd*editMenu.saveOptions.mnemonic:			O
+Ddd*editMenu.saveOptions.documentationString:\
 @rm Save all options for the next @DDD@ invocation
 
 
-! Windows menu
-Ddd*menubar.view.labelString:		Windows
-Ddd*menubar.view.mnemonic:		W
+! View menu
+Ddd*menubar.view.labelString:		View
+Ddd*menubar.view.mnemonic:		V
 Ddd*menubar.view*documentationString:	\
 @rm Open @DDD@ windows
 Ddd*menubar.view.helpString:	\
 \
-@rm This is the @sl Windows Menu.@rm\n\
+@rm This is the @sl View Menu.@rm\n\
 \n\
 @tt \267 @bf Command Tool... @rm - open and recenter the command tool.\n\
 @tt \267 @bf Execution Window... @rm - open the execution window.\n\
@@ -1769,6 +1726,12 @@ Ddd*menubar.program*helpString:	\
 @tt \267 @bf Run... @rm - start the debugged program.\n\
 @tt \267 @bf Run Again @rm - run with current arguments.\n\
 \n\
+@tt \267 @rm If @bf Run in Execution Window @rm is set, \
+the program is run in a separate\n\
+    terminal window; useful for programs using terminal I/O.  Otherwise,\n\
+    the program is run in the @GDB@ console window.\n\
+    This change takes effect the next time the program is run.\n\
+\n\
 @tt \267 @bf Step @rm - step program until it reaches \
 a different source line.\n\
 @tt \267 @bf Step Instruction @rm - step exactly one machine instruction.\n\
@@ -1797,6 +1760,13 @@ Ddd*menubar*programMenu.run_again.accelerator:	   Ctrl Shift<Key>X
 Ddd*menubar*programMenu.run_again.acceleratorText: Ctrl+Shift+X
 Ddd*menubar*programMenu.run_again.documentationString: \
 @rm Restart debugged program, using the previous arguments.
+
+Ddd*menubar*programMenu.separateExecWindow.labelString:	Run in Execution Window
+Ddd*menubar*programMenu.separateExecWindow.mnemonic:	W
+Ddd*menubar*programMenu*separateExecWindow.accelerator:	Alt<Key>X
+Ddd*menubar*programMenu*separateExecWindow.acceleratorText: Alt+X
+Ddd*menubar*programMenu.separateExecWindow.documentationString:\
+@rm Toggle execution of debugged program in separate window
 
 Ddd*menubar*programMenu.step.labelString:	   Step
 Ddd*menubar*programMenu.step.mnemonic:		   S
@@ -2006,6 +1976,12 @@ Ddd*menubar.source.helpString:	\
 \n\
 @tt \267 @bf Edit Breakpoints... @rm - set, view, and edit breakpoints.\n\
 \n\
+@tt \267 @rm If @bf Find Words Only @rm is set, \
+only complete words are found.\n\
+    Otherwise, arbitrary occurrences are found.\n\
+@tt \267 @rm If @bf Display Machine Code @rm is set, \
+the current function is automatically disassembled.\n\
+\n\
 @tt \267 @bf Edit Source... @rm - invoke text editor for current source.\n\
 @tt \267 @bf Reload Source  @rm - reload current source file.\n\
 \n\
@@ -2013,9 +1989,23 @@ Ddd*menubar.source.helpString:	\
 @tt \267 @bf Forward @rm - move forward to next source position.
 
 Ddd*sourceMenu.breakpoints.labelString:	Edit Breakpoints...
-Ddd*sourceMenu.breakpoints.mnemonic:	B
+Ddd*sourceMenu.breakpoints.mnemonic:	d
 Ddd*sourceMenu.breakpoints.documentationString: \
 @rm Set, view, and edit breakpoints
+
+Ddd*sourceMenu.findWordsOnly.labelString:	Find Words Only
+Ddd*sourceMenu.findWordsOnly.mnemonic:		W
+Ddd*sourceMenu*findWordsOnly.accelerator:	Alt<Key>Y
+Ddd*sourceMenu*findWordsOnly.acceleratorText:	Alt+Y
+Ddd*sourceMenu.findWordsOnly.documentationString:\
+@rm Switch between finding complete words and finding arbitrary occurrences
+
+Ddd*sourceMenu.disassemble.labelString:		Display Machine Code
+Ddd*sourceMenu.disassemble.mnemonic:		M
+Ddd*sourceMenu*disassemble.accelerator:		Alt<Key>M
+Ddd*sourceMenu*disassemble.acceleratorText:	Alt+M
+Ddd*sourceMenu.disassemble.documentationString:\
+@rm Toggle display of machine code window
 
 Ddd*sourceMenu.edit.labelString:	Edit Source...
 Ddd*sourceMenu.edit.mnemonic:		E

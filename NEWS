@@ -8,8 +8,6 @@ DDD 2.2 [in development]
     running processes, user-defined commands, and more.
 
     User-visible changes to DDD 2.1:
-    - Support for debugging processes running outside of DDD.  You can
-      attach to a running process, examine it, and resume its execution.
     - Improved user interface:
       + Source line numbers have been turned off (can be restored);
         the breakpoint area extends to the first non-blank character.
@@ -17,17 +15,23 @@ DDD 2.2 [in development]
         displays are now enabled or disabled via `Show ()/Hide ()'.
       + The `Break at ()' and `Clear at ()' buttons have been merged
         into one single dynamic button.
-      As a whole, DDD now requires less width.  If you already have a
-      `~/.dddinit' file, you should resize DDD manually and save options.
+      + Improved command tool.  The command tool is now always
+        auto-raised and comes with window manager decorations.
+      + The `Windows' menu is now called `View', complying with the
+        Motif style guide.
+      + Options are now grouped according to their functionality.  The
+        `Options' menu has gone.  Use `Edit' instead.
+      DDD now requires less width and height.  If you already have a
+      `~/.dddinit' file, resize DDD manually and save options.
+    - Support for debugging processes running outside of DDD.  You can
+      attach to a running process, examine it, and resume its execution.
     - Improved online manuals:
       + Multiple manual browsers are supported.
       + Manual browsers are realized as top-level windows.
       + DDD no longer blocks while the manual is uncompressed and formatted.
       + DDD manuals are now stored in `gzip' format, saving space in
         executables.
-    - Improved command tool.  The command tool is now always
-      auto-raised and comes with window manager decorations.
-    - New `What Next?' help.  Gives hints on what to do next,
+    - New `What Next' help.  Gives a hint on what to do next,
       depending on current state.  Useful for beginners.
     - User-defined DDD commands.  DDD now provides a simple facility
       that allows the inferior debugger to execute DDD commands.  For

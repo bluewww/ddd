@@ -318,6 +318,9 @@ static void decorate_new_shell(Widget w);
 static void start_have_decorated_transients(Widget parent);
 static bool have_decorated_transients();
 
+// Set `Settings' title
+static void set_settings_title(Widget w);
+
 //-----------------------------------------------------------------------------
 // Xt Stuff
 //-----------------------------------------------------------------------------
@@ -554,10 +557,13 @@ struct ProgramItems {
     };
 };
 
-#define PROGRAM_MENU \
+#define PROGRAM_MENU(w) \
 { \
     { "run",         MMPush, { gdbRunCB }}, \
     { "run_again",   MMPush, { gdbCommandCB, "run" }}, \
+    MMSep, \
+    { "separateExecWindow",  MMToggle, \
+	{ dddToggleSeparateExecWindowCB }, NULL, &(w) }, \
     MMSep, \
     { "step",        MMPush, { gdbCommandCB, "step" }}, \
     { "stepi",       MMPush, { gdbCommandCB, "stepi" }}, \
@@ -573,9 +579,16 @@ struct ProgramItems {
     MMEnd \
 }
 
-static MMDesc command_program_menu[] = PROGRAM_MENU;
-static MMDesc source_program_menu[]  = PROGRAM_MENU;
-static MMDesc data_program_menu[]    = PROGRAM_MENU;
+static Widget command_separate_exec_window_w;
+static Widget source_separate_exec_window_w;
+static Widget data_separate_exec_window_w;
+
+static MMDesc command_program_menu[]
+    = PROGRAM_MENU(command_separate_exec_window_w);
+static MMDesc source_program_menu[]
+    = PROGRAM_MENU(source_separate_exec_window_w);
+static MMDesc data_program_menu[]
+    = PROGRAM_MENU(data_separate_exec_window_w);
 
 enum DDDWindow { ToolWindow, ExecWindow, DummySep,
 		 DataWindow, SourceWindow, GDBWindow };
@@ -596,7 +609,12 @@ static MMDesc source_view_menu[]  = VIEW_MENU;
 static MMDesc data_view_menu[]    = VIEW_MENU;
 
 struct EditItems {
-    enum EditItem { Cut, Copy, Paste, Dummy, Clear, Delete };
+    enum EditItem { 
+	Cut, Copy, Paste, Dummy1, 
+	Clear, Delete, Dummy2,
+	Preferences, Settings, Dummy3, 
+	SaveOptions 
+    };
 };
 
 static MMDesc command_edit_menu[] = 
@@ -607,6 +625,11 @@ static MMDesc command_edit_menu[] =
     MMSep,
     { "clear",  MMPush, { gdbClearSelectionCB,  XtPointer(GDBWindow) }},
     { "delete", MMPush, { gdbDeleteSelectionCB, XtPointer(GDBWindow) }},
+    MMSep,
+    { "preferences", MMPush,  { dddPopupPreferencesCB }},
+    { "settings",    MMPush,  { dddPopupSettingsCB }},
+    MMSep,
+    { "saveOptions", MMPush,   { DDDSaveOptionsCB }},
     MMEnd
 };
 
@@ -618,6 +641,11 @@ static MMDesc source_edit_menu[] =
     MMSep,
     { "clear",  MMPush, { gdbClearSelectionCB,  XtPointer(SourceWindow) }},
     { "delete", MMPush, { gdbDeleteSelectionCB, XtPointer(SourceWindow) }},
+    MMSep,
+    { "preferences", MMPush,  { dddPopupPreferencesCB }},
+    { "settings",    MMPush,  { dddPopupSettingsCB }},
+    MMSep,
+    { "saveOptions", MMPush,   { DDDSaveOptionsCB }},
     MMEnd
 };
 
@@ -634,6 +662,11 @@ static MMDesc data_edit_menu[] =
 	  { gdbClearSelectionCB,  XtPointer(DataWindow) }},
     { "delete", MMPush | MMInsensitive, 
 	  { gdbDeleteSelectionCB, XtPointer(DataWindow) }},
+    MMSep,
+    { "preferences", MMPush,  { dddPopupPreferencesCB }},
+    { "settings",    MMPush,  { dddPopupSettingsCB }},
+    MMSep,
+    { "saveOptions", MMPush,   { DDDSaveOptionsCB }},
     MMEnd
 };
 
@@ -674,9 +707,17 @@ static MMDesc stack_menu[] =
     MMEnd
 };
 
+static Widget find_words_only_w;
+static Widget disassemble_w;
+
 static MMDesc source_menu[] =
 {
     { "breakpoints", MMPush, { SourceView::EditBreakpointsCB }},
+    MMSep,
+    { "findWordsOnly",       MMToggle, { sourceToggleFindWordsOnlyCB }, 
+      NULL, &find_words_only_w },
+    { "disassemble",         MMToggle,  { sourceToggleDisassembleCB },
+      NULL, &disassemble_w },
     MMSep,
     { "edit",       MMPush,  { gdbEditSourceCB }},
     { "reload",     MMPush,  { gdbReloadSourceCB }},
@@ -899,41 +940,6 @@ static MMDesc startup_preferences_menu [] =
 };
 
 
-// Options
-// All these widgets come in four times:
-// w[0] holds the last created widget.
-// w[<DDDOption>] holds the widget for the menu in window <DDDOption>.
-
-enum DDDOption { DummyOptions   = 0, 
-		 CommandOptions = 1, 
-		 SourceOptions  = 2,
-		 DataOptions    = 3 };
-
-static Widget separate_exec_window_w[4];
-static Widget find_words_only_w[4];
-static Widget disassemble_w[4];
-static void set_option_widgets(DDDOption opt);
-
-static Widget settings_w;
-
-static MMDesc options_menu [] =
-{
-    { "preferences",         MMPush,  { dddPopupPreferencesCB }},
-    { "settings",            MMPush,  { dddPopupSettingsCB },
-      NULL, &settings_w },
-    MMSep,
-    { "separateExecWindow",  MMToggle, { dddToggleSeparateExecWindowCB }, 
-      NULL, separate_exec_window_w },
-    { "findWordsOnly",       MMToggle, { sourceToggleFindWordsOnlyCB }, 
-      NULL, find_words_only_w },
-    { "disassemble",         MMToggle,  { sourceToggleDisassembleCB },
-      NULL, disassemble_w },
-    MMSep,
-    { "saveOptions",         MMPush,   { DDDSaveOptionsCB }},
-    MMEnd
-};
-
-
 // Data
 static Widget info_locals_w    = 0;
 static Widget info_args_w      = 0;
@@ -995,7 +1001,6 @@ static MMDesc command_menubar[] =
     { "file",     MMMenu,          { gdbUpdateFileCB, command_file_menu }, 
                                    command_file_menu },
     { "edit",     MMMenu,          { gdbUpdateEditCB }, command_edit_menu },
-    { "options",  MMMenu,          MMNoCB, options_menu },
     { "view",     MMMenu,          { gdbUpdateViewCB, command_view_menu }, 
                                    command_view_menu },
     { "program",  MMMenu,          MMNoCB, command_program_menu },
@@ -1010,7 +1015,6 @@ static MMDesc source_menubar[] =
     { "file",    MMMenu,           { gdbUpdateFileCB, source_file_menu }, 
                                    source_file_menu },
     { "edit",    MMMenu,           { gdbUpdateEditCB }, source_edit_menu },
-    { "options", MMMenu,           MMNoCB, options_menu },
     { "view",    MMMenu,           { gdbUpdateViewCB, source_view_menu }, 
                                    source_view_menu },
     { "program", MMMenu,           MMNoCB, source_program_menu },
@@ -1026,7 +1030,6 @@ static MMDesc data_menubar[] =
     { "file",    MMMenu,          { gdbUpdateFileCB, data_file_menu }, 
                                   data_file_menu },
     { "edit",    MMMenu,          { gdbUpdateEditCB }, data_edit_menu },
-    { "options", MMMenu,          MMNoCB, options_menu },
     { "view",     MMMenu,         { gdbUpdateViewCB, data_view_menu }, 
                                   data_view_menu },
     { "program", MMMenu,          MMNoCB, data_program_menu },
@@ -1041,7 +1044,6 @@ static MMDesc combined_menubar[] =
     { "file",       MMMenu,       { gdbUpdateFileCB, command_file_menu }, 
                                   command_file_menu },
     { "edit",       MMMenu,       { gdbUpdateEditCB }, command_edit_menu },
-    { "options",    MMMenu,       MMNoCB, options_menu },
     { "view",       MMMenu,       { gdbUpdateViewCB, command_view_menu }, 
                                   command_view_menu },
     { "program",    MMMenu,       MMNoCB, command_program_menu },
@@ -1560,8 +1562,6 @@ int main(int argc, char *argv[])
     MMaddCallbacks(menubar);
     verify_buttons(menubar);
 
-    set_option_widgets(CommandOptions);
-
     // Create Paned Window
     Widget paned_work_w = 
 	verify(XtVaCreateWidget("paned_work_w",
@@ -1603,8 +1603,6 @@ int main(int argc, char *argv[])
 	    MMcreateMenuBar (data_main_window_w, "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
 	verify_buttons(data_menubar);
-
-	set_option_widgets(DataOptions);
 
 	data_disp_parent = 
 	    verify(XtVaCreateManagedWidget ("data_paned_work_w",
@@ -1664,8 +1662,6 @@ int main(int argc, char *argv[])
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
 	MMaddCallbacks(source_menubar);
 	verify_buttons(source_menubar);
-
-	set_option_widgets(SourceOptions);
 
 	source_view_parent = 
 	    verify(XtVaCreateManagedWidget ("source_paned_work_w",
@@ -1890,8 +1886,9 @@ int main(int argc, char *argv[])
 	+ rm (DDD_NAME " WWW page: ") + tt(app_data.www_page);
 
     // Customize `settings' title.
-    MString settings_title(gdb->title() + " Settings...");
-    XtVaSetValues(settings_w, XmNlabelString, settings_title.xmstring(), NULL);
+    set_settings_title(command_edit_menu[EditItems::Settings].widget);
+    set_settings_title(source_edit_menu[EditItems::Settings].widget);
+    set_settings_title(data_edit_menu[EditItems::Settings].widget);
 
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
@@ -2462,15 +2459,11 @@ static void CheckDragCB(Widget, XtPointer, XtPointer call_data)
 // Option handling
 //-----------------------------------------------------------------------------
 
-static void set_option_widgets(DDDOption opt)
-{
-    separate_exec_window_w[opt] = separate_exec_window_w[0];
-    find_words_only_w[opt]      = find_words_only_w[0];
-    disassemble_w[opt]          = disassemble_w[0];
-}
-
 static void set_toggle(Widget w, Boolean new_state, bool notify = false)
 {
+    if (w == 0)
+	return;
+
     assert(XmIsToggleButton(w));
 
     Boolean old_state;
@@ -2493,16 +2486,11 @@ inline void notify_set_toggle(Widget w, Boolean new_state)
 // Reflect state in option menus
 void update_options()
 {
-    for (int i = 1; i < 4; i++)
-    {
-	if (separate_exec_window_w[i] == 0)
-	    continue;		// Shell not realized
-
-	set_toggle(separate_exec_window_w[i], app_data.separate_exec_window);
-	set_toggle(disassemble_w[i], app_data.disassemble);
-	set_toggle(find_words_only_w[i], app_data.find_words_only);
-	set_sensitive(disassemble_w[i], gdb->type() == GDB);
-    }
+    set_toggle(find_words_only_w,        app_data.find_words_only);
+    set_sensitive(disassemble_w,         gdb->type() == GDB);
+    set_toggle(command_separate_exec_window_w, app_data.separate_exec_window);
+    set_toggle(source_separate_exec_window_w,  app_data.separate_exec_window);
+    set_toggle(data_separate_exec_window_w,    app_data.separate_exec_window);
 
     set_toggle(button_tips_w,            app_data.button_tips); 
     set_toggle(value_tips_w,             app_data.value_tips); 
@@ -2650,6 +2638,17 @@ void update_options()
     update_reset_preferences();
     fix_status_size();
 }
+
+static void set_settings_title(Widget w)
+{
+    if (w != 0)
+    {
+	MString settings_title(gdb->title() + " Settings...");
+	XtVaSetValues(w, XmNlabelString, settings_title.xmstring(), NULL);
+    }
+}
+
+
 
 //-----------------------------------------------------------------------------
 // Preferences
@@ -3575,7 +3574,12 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
     set_sensitive(registers_w, gdb_ready && gdb->type() == GDB);
     set_sensitive(threads_w,   gdb_ready && gdb->type() == GDB);
     set_sensitive(infos_w,     gdb_ready && gdb->type() == GDB);
-    set_sensitive(settings_w,
+
+    set_sensitive(command_edit_menu[EditItems::Settings].widget,
+		  gdb_ready && (gdb->type() == GDB || gdb->type() == DBX));
+    set_sensitive(source_edit_menu[EditItems::Settings].widget,
+		  gdb_ready && (gdb->type() == GDB || gdb->type() == DBX));
+    set_sensitive(data_edit_menu[EditItems::Settings].widget,
 		  gdb_ready && (gdb->type() == GDB || gdb->type() == DBX));
 
     set_sensitive(command_file_menu[FileItems::OpenFile].widget,  gdb_ready);

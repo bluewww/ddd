@@ -543,7 +543,7 @@ As an alternative, you can enter the item in the argument field and
 click on one of the `\fBFind\fR' buttons.
 .PP
 By default, \s-2@DDD@\s+2 finds only complete words.  To search for
-arbitrary substrings, change the value of the `\fBOptions | Find Words
+arbitrary substrings, change the value of the `\fBSource | Find Words
 Only\fR' option.
 .PP
 .PSPIC PICS/ddd-source.ps 15.3cm
@@ -763,7 +763,7 @@ prompt instead.
 By default, input and output of the debugged program go to the
 debugger console.  As an alternative, \s-2@DDD@\s+2 can also invoke an
 \fIexecution window\fR, where the program terminal input and output is
-shown.  See `\fBOptions | Run in Execution Window\fR' for details.
+shown.  See `\fBProgram | Run in Execution Window\fR' for details.
 .\"
 .\"
 .SS "Attaching to a Running Process"
@@ -1263,7 +1263,7 @@ edge hint is equivalent to selecting the alias.  This way, you can
 easily delete display aliases by simply selecting the edge hint and
 clicking on `\fBDelete ()\fR'.
 .PP
-Edge hints can be made invisible by disabling `\fBOptions | Preferences | Data
+Edge hints can be made invisible by disabling `\fBEdit | Preferences | Data
 Preferences | Show Edge Hints\fR'.
 .PP
 .PSPIC PICS/ddd-aliases.ps 15.3cm
@@ -1387,7 +1387,7 @@ You can align all displays on the nearest grid position by selecting
 `\fBData | Align on Grid\fR'.  This is useful for keeping edges
 horizontal or vertical.
 .PP
-You can enforce alignment by selecting `\fBOptions | Preferences |
+You can enforce alignment by selecting `\fBEdit | Preferences |
 Data Preferences | Auto-align displays on nearest grid point\fR'.  If
 this feature is enabled, displays can be moved on grid positions only.
 .\"
@@ -1400,16 +1400,16 @@ Layout Graph\fR'.
 Layouting the graph may introduce \fIedge hints\fR; that is, edges are
 no more straight lines, but lead to an edge hint and from there to
 their destination.  You can make edge hints invisible by disabling
-`\fBOptions | Preferences | Data Preferences | Show Edge Hints\fR'.
+`\fBEdit | Preferences | Data Preferences | Show Edge Hints\fR'.
 Edge hints can be moved around like arbitrary displays.
 .PP
-To enable a more compact layout, you can set the `\fBOptions |
+To enable a more compact layout, you can set the `\fBEdit |
 Preferences | Data Preferences | Use compact layout\fR' option.  This
 realizes an alternate layout algorithm, where successors are placed
 next to their parents.  This algorithm is suitable for homogeneous
 data structures only.
 .PP
-You can enforce layout by setting `\fBOptions | Preferences | Data
+You can enforce layout by setting `\fBEdit | Preferences | Data
 Preferences | Re-layout graph automatically\fR'.  If automatic layout
 is enabled, the graph is layouted after each change.
 .PP
@@ -1474,7 +1474,7 @@ special machine code and register windows for this task.
 .\"
 .SS "Examining Machine Code"
 .\"
-To enable machine-level support, select `\fBOptions | Display Machine
+To enable machine-level support, select `\fBSource | Display Machine
 Code\fR'.  With machine code enabled, an additional \fImachine
 code window\fR shows up, displaying the machine code of the current
 function.  By moving the sash at the right of the separating line
@@ -1844,16 +1844,17 @@ an individual auto-command prefix to avoid security problems.
 .\" ---------------
 .\"
 You can set up your personal \s-2@DDD@\s+2 preferences by using the
-`\fBOptions\fR' menu from the menu bar.  These options affect your
-running \s-2@DDD@\s+2 process only, unless you save these preferences
-for a later \s-2@DDD@\s+2 invocation.
+`\fBEdit | Preferences\fR' menu from the menu bar.  These preferences
+affect your running \s-2@DDD@\s+2 process only, unless you save these
+preferences for a later \s-2@DDD@\s+2 invocation.  Frequently used
+preferences can also be found in the individual menus.
 .\"
-.SS "Frequent Preferences"
+.SS "Frequently Used Preferences"
 .PP
 .PSPIC PICS/ddd-prefs-menu.ps 15.3cm
 .PP
 If you want to run your debugged process in a separate terminal
-emulator window, set `\fBOptions | Run in Execution Window\fR'.
+emulator window, set `\fBProgram | Run in Execution Window\fR'.
 This is useful for programs that have special terminal requirements
 not provided by the debugger window, as raw keyboard processing or
 terminal control sequences.
@@ -1861,13 +1862,13 @@ terminal control sequences.
 By default, \s-2@DDD@\s+2 finds only complete words.  This is
 convenient for clicking on an identifier in the source text and search
 for exactly this identifier.  If you want to find all occurrences,
-including word parts, unset `\fBOptions | Find Words Only\fR'.
+including word parts, unset `\fBSource | Find Words Only\fR'.
 .PP
 If you wish to display machine code of selected funtions, set
-`\fBOptions | Display Machine Code\fR'.  This makes \s-2@DDD@\s+2 run
+`\fBSource | Display Machine Code\fR'.  This makes \s-2@DDD@\s+2 run
 a little slower, so it is disabled by default.
 .PP
-Through `\fBOptions | Preferences\fR' item, you can set up more
+Through `\fBEdit | Preferences\fR' item, you can set up more
 \s-2@DDD@\s+2 preferences, which are dicussed here.
 .\"
 .SS "General Preferences"
@@ -2039,7 +2040,7 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Saving Options"
 .\"
-You can save the current option settings by selecting `\fBOptions |
+You can save the current option settings by selecting `\fBEdit |
 Save Options\fR'.  Options are saved in a file named `\fB.dddinit\fR'
 in your home directory.
 .\"
@@ -2048,7 +2049,7 @@ in your home directory.
 Other personal \s-2@DDD@\s+2 resources can also be set in your
 `\fB.dddinit\fR' file.  See the `\fBRESOURCES\fR' section, below.
 .PP
-The inferior debugger can be customized via `\fBOptions |
+The inferior debugger can be customized via `\fBEdit |
 Settings\fR'.  See the `\fBDEBUGGER SETTINGS\fR' section, below.
 .\"
 .\" ---------------
@@ -2056,7 +2057,7 @@ Settings\fR'.  See the `\fBDEBUGGER SETTINGS\fR' section, below.
 .\" ---------------
 .\"
 If you use \s-2GDB\s+2 (or some \s-2DBX\s+2 flavour) as inferior
-debugger, you can change its settings using `\fBOptions |
+debugger, you can change its settings using `\fBEdit |
 Settings\fR'.  Using the settings editor, you can determine whether
 C++ names are to be demangled, how many array elements are to print,
 and so on.
