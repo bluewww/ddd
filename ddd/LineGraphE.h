@@ -33,12 +33,29 @@
 #pragma interface
 #endif
 
-
 #include "GraphEdge.h"
 #include "Box.h"
 #include "EdgeA.h"
+#include "explicit.h"
 
 enum Side { North = 1, South = 2, East = 4, West = 8 };
+
+// Where to draw `self' edges
+struct LineGraphEdgeSelfInfo {
+    int radius;			// Radius of self edge
+    int diameter;		// Diameter
+    BoxPoint arc_pos;		// Upper left corner
+    BoxPoint arc_center;	// Center
+    int arc_start;		// Arc start (0..360)
+    int arc_extend;		// Arc extend (0..360)
+    BoxPoint anno_pos;		// Position of annotation
+    BoxPoint arrow_pos;		// Position of arrow
+    int arrow_angle;		// Arrow angle (0..360)
+    double arrow_alpha;		// Arrow angle (0.0..2*PI)
+
+    // Constructor
+    explicit LineGraphEdgeSelfInfo(const BoxRegion& region, const GraphGC& gc);
+};
 
 class LineGraphEdge: public GraphEdge {
 public:
@@ -79,6 +96,10 @@ protected:
 
     // Print self edge.
     virtual void printSelf(ostream& os, const GraphGC &gc) const;
+
+    // Find annotation position.
+    virtual BoxPoint annotationPosition(const GraphGC &gc) const;
+
 
 private:
     // Clip point P to side SIDE of region B.
@@ -135,6 +156,9 @@ public:
     {
 	return new LineGraphEdge(*this);
     }
+
+    // Region occupied by edge - if none, BoxRegion()
+    virtual BoxRegion region(const GraphGC&) const;
 };
 
 #endif // _DDD_LineGraphEdge_h

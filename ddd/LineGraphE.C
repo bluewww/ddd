@@ -232,23 +232,11 @@ void LineGraphEdge::drawLine(Widget w,
     XDrawLine(XtDisplay(w), XtWindow(w), gc.edgeGC,
 	      l1[X], l1[Y], l2[X], l2[Y]);
 
-    // Draw annotation at mid-distance
-    if (annotation() != 0)
+    // Draw annotation
+    BoxPoint anno_pos = annotationPosition(gc);
+    if (annotation() != 0 && anno_pos.isValid())
     {
-	if (from()->isHint() && to()->isHint())
-	{
-	    // Between two hints -- don't draw anything
-	}
-	else if (to()->isHint())
-	{
-	    // Draw at hint position
-	    annotation()->draw(w, to()->pos(), exposed, gc);
-	}
-	else
-	{
-	    // Draw at mid-distance
-	    annotation()->draw(w, l1 + (l2 - l1) / 2, exposed, gc);
-	}
+	annotation()->draw(w, anno_pos, exposed, gc);
     }
 
     // Get arrow angle
@@ -292,20 +280,49 @@ void LineGraphEdge::drawArrowHead(Widget w,
 		 XtNumber(points), Convex, CoordModeOrigin);
 }
 
-// Draw self edge
-void LineGraphEdge::drawSelf(Widget w,
-			     const BoxRegion& exposed,
-			     const GraphGC& gc) const
+
+// Region occupied by edge
+BoxRegion LineGraphEdge::region(const GraphGC& gc) const
 {
-    assert(from() == to());
+    BoxRegion r;
+    if (gc.drawAnnotations && annotation() != 0)
+    {
+	BoxPoint anno_pos = annotationPosition(gc);
+	if (anno_pos.isValid())
+	{
+	    BoxRegion anno_region = annotation()->region(anno_pos, gc);
+	    if (r.origin().isValid())
+		r = r | anno_region;
+	    else
+		r = anno_region;
+	}
+    }
 
-    // Get arc start
-    BoxRegion region = from()->region(gc);
-    if (from()->selected())
-	region.origin() += gc.offsetIfSelected;
+    if (from() == to())
+    {
+	BoxRegion region = from()->region(gc);
+       	if (from()->selected())
+	    region.origin() += gc.offsetIfSelected;
 
-    // Draw arc
-    Dimension diameter = gc.selfEdgeDiameter;
+	LineGraphEdgeSelfInfo info(region, gc);
+
+	BoxRegion self_region(info.arc_pos,
+			      BoxSize(info.diameter, info.diameter));
+
+	if (r.origin().isValid())
+	    r = r | self_region;
+	else
+	    r = self_region;
+    }
+
+    return r;
+}
+
+LineGraphEdgeSelfInfo::LineGraphEdgeSelfInfo(const BoxRegion& region,
+					     const GraphGC& gc)
+{
+    // Find edge position
+    diameter = gc.selfEdgeDiameter;
 
     // Make sure edge is still attached to node
     diameter = min(diameter, region.space(X) + region.space(X) / 2);
@@ -313,119 +330,144 @@ void LineGraphEdge::drawSelf(Widget w,
 
     // Be sure we don't make it too small
     diameter = max(diameter, 4);
-    Dimension radius = (diameter + 1) / 2;
+    radius = (diameter + 1) / 2;
     diameter = radius * 2;
 
-    BoxPoint arcpos(region.origin());	// Upper left corner of the arc
-    BoxPoint anno(region.origin());     // Position of annotation
-    int start = 0;		        // Start of the arc (in degrees)
-    const int extend = 270;	        // Extend of the arc (in degrees)
+    arc_pos = region.origin();	// Upper left corner of the arc
+    arc_center = region.origin(); // Center of the arc
+    anno_pos = region.origin();	// Position of annotation
+    arc_start = 0;		// Start of the arc (in degrees)
+    arc_extend = 270;	        // Extend of the arc (in degrees)
 
     switch (gc.selfEdgePosition)
     {
     case NorthEast:
-	arcpos += BoxPoint(region.space(X) - radius, -radius);
-	anno   += BoxPoint(region.space(X) + radius, -radius);
-	start = 270;
+	arc_pos  += BoxPoint(region.space(X) - radius, -radius);
+	arc_center += BoxPoint(region.space(X), 0);
+	anno_pos += BoxPoint(region.space(X) + radius, -radius);
+	arc_start = 270;
 	break;
 
     case SouthEast:
-	arcpos += BoxPoint(region.space(X) - radius, region.space(Y) - radius);
-	anno   += BoxPoint(region.space(X) + radius, region.space(Y) + radius);
-	start = 180;
+	arc_pos  += BoxPoint(region.space(X) - radius,
+			     region.space(Y) - radius);
+	arc_center += BoxPoint(region.space(X), region.space(Y));
+	anno_pos += BoxPoint(region.space(X) + radius,
+			     region.space(Y) + radius);
+	arc_start = 180;
 	break;
 
     case SouthWest:
-	arcpos += BoxPoint(-radius, region.space(Y) - radius);
-	anno   += BoxPoint(-radius, region.space(Y) + radius);
-	start = 90;
+	arc_pos  += BoxPoint(-radius, region.space(Y) - radius);
+	arc_center += BoxPoint(0, region.space(Y));
+	anno_pos += BoxPoint(-radius, region.space(Y) + radius);
+	arc_start = 90;
 	break;
 
     case NorthWest:
-	arcpos += BoxPoint(-radius, -radius);
-	anno   += BoxPoint(-radius, -radius);
-	start = 0;
+	arc_pos  += BoxPoint(-radius, -radius);
+	arc_center += BoxPoint(0, 0);
+	anno_pos += BoxPoint(-radius, -radius);
+	arc_start = 0;
 	break;
-    }
-
-    XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC, arcpos[X],
-	     arcpos[Y], diameter, diameter,
-	     start * 64, extend * 64);
-
-    if (annotation() != 0)
-    {
-	// Draw annotation
-	annotation()->draw(w, anno, exposed, gc);
     }
 
     // Find arrow angle
-    int arrow_angle = 0;
+    arrow_angle = 0;
     switch (gc.selfEdgeDirection)
     {
     case Clockwise:
-	arrow_angle = 360 - (start + extend + 180) % 360;
+	arrow_angle = 360 - (arc_start + arc_extend + 180) % 360;
 	break;
 
     case Counterclockwise:
-	arrow_angle = 360 - (start + 180) % 360;
+	arrow_angle = 360 - (arc_start + 180) % 360;
 	break;
     }
-    double alpha = 2 * PI * arrow_angle / 360.0;
-
+    arrow_alpha = 2 * PI * arrow_angle / 360.0;
+    
     // Incline arrow a little into the arc
     double cosine = gc.arrowLength / (2.0 * radius);
     double inclination = (PI / 2.0) - acos(cosine);
 
-    // Draw arrow
-    BoxPoint arrowpos(BoxPoint(region.origin()));
+    arrow_pos = region.origin();
     switch (gc.selfEdgeDirection)
     {
     case Clockwise:
-	alpha -= inclination;
+	arrow_alpha -= inclination;
 	switch (gc.selfEdgePosition)
 	{
 	case NorthEast:
-	    arrowpos += BoxPoint(region.space(X), radius);
+	    arrow_pos += BoxPoint(region.space(X), radius);
 	    break;
 
 	case SouthEast:
-	    arrowpos += BoxPoint(region.space(X) - radius, region.space(Y));
+	    arrow_pos += BoxPoint(region.space(X) - radius, region.space(Y));
 	    break;
 
 	case SouthWest:
-	    arrowpos += BoxPoint(0, region.space(Y) - radius);
+	    arrow_pos += BoxPoint(0, region.space(Y) - radius);
 	    break;
 
 	case NorthWest:
-	    arrowpos += BoxPoint(radius, 0);
+	    arrow_pos += BoxPoint(radius, 0);
 	    break;
 	}
 	break;
 
     case Counterclockwise:
-	alpha += inclination;
+	arrow_alpha += inclination;
 	switch (gc.selfEdgePosition)
 	{
 	case NorthEast:
-	    arrowpos += BoxPoint(region.space(X) - radius, 0);
+	    arrow_pos += BoxPoint(region.space(X) - radius, 0);
 	    break;
 
 	case SouthEast:
-	    arrowpos += BoxPoint(region.space(X), region.space(Y) - radius);
+	    arrow_pos += BoxPoint(region.space(X), region.space(Y) - radius);
 	    break;
 
 	case SouthWest:
-	    arrowpos += BoxPoint(radius, region.space(Y));
+	    arrow_pos += BoxPoint(radius, region.space(Y));
 	    break;
 
 	case NorthWest:
-	    arrowpos += BoxPoint(0, radius);
+	    arrow_pos += BoxPoint(0, radius);
 	    break;
 	}
 	break;
     }
 
-    drawArrowHead(w, exposed, gc, arrowpos, alpha);
+    // That's all, folks!
+}
+
+
+// Draw self edge
+void LineGraphEdge::drawSelf(Widget w,
+			     const BoxRegion& exposed,
+			     const GraphGC& gc) const
+{
+    assert(from() == to());
+
+    // Get region
+    BoxRegion region = from()->region(gc);
+    if (from()->selected())
+	region.origin() += gc.offsetIfSelected;
+
+    LineGraphEdgeSelfInfo info(region, gc);
+
+    XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC, info.arc_pos[X],
+	     info.arc_pos[Y], info.diameter, info.diameter,
+	     info.arc_start * 64, info.arc_extend * 64);
+
+    if (annotation() != 0)
+    {
+	// Draw annotation
+	annotation()->draw(w, info.anno_pos, exposed, gc);
+    }
+
+    // Find arrow angle
+    drawArrowHead(w, exposed, gc, info.arrow_pos, info.arrow_alpha);
 }
 
 void LineGraphEdge::printSelf(ostream& os, const GraphGC &gc) const
@@ -441,70 +483,67 @@ void LineGraphEdge::printSelf(ostream& os, const GraphGC &gc) const
 	return;
     }
 
-    // Get arc start
+    // Get region
     BoxRegion region = from()->region(gc);
     if (from()->selected())
 	region.origin() += gc.offsetIfSelected;
 
-    // Draw arc
-    Dimension diameter = gc.selfEdgeDiameter;
+    LineGraphEdgeSelfInfo info(region, gc);
 
-    // Make sure edge is still attached to node
-    diameter = min(diameter, region.space(X) + region.space(X) / 2);
-    diameter = min(diameter, region.space(Y) + region.space(Y) / 2);
-
-    // Be sure we don't make it too small
-    diameter = max(diameter, 4);
-    Dimension radius = (diameter + 1) / 2;
-    diameter = radius * 2;
-
-    BoxPoint center(region.origin());	// Center of the arc
-    BoxPoint anno(region.origin());     // Position of annotation
-    int start = 0;		        // Start of the arc (in degrees)
-    const int extend = 270;	        // Extend of the arc (in degrees)
-
-    switch (gc.selfEdgePosition)
-    {
-    case NorthEast:
-	center += BoxPoint(region.space(X), 0);
-	anno   += BoxPoint(region.space(X) + radius, -radius);
-	start = 270;
-	break;
-
-    case SouthEast:
-	center += BoxPoint(region.space(X), region.space(Y));
-	anno   += BoxPoint(region.space(X) + radius, region.space(Y) + radius);
-	start = 180;
-	break;
-
-    case SouthWest:
-	center += BoxPoint(0, region.space(Y));
-	anno   += BoxPoint(-radius, region.space(Y) + radius);
-	start = 90;
-	break;
-
-    case NorthWest:
-	center += BoxPoint(0, 0);
-	anno   += BoxPoint(-radius, -radius);
-	start = 0;
-	break;
-    }
-
-    int end = (720 - start) % 360 ;
-    int s   = (720 - start - extend) % 360 ;
+    int start = (720 - info.arc_start - info.arc_extend) % 360 ;
+    int end   = (720 - info.arc_start) % 360 ;
 
     BoxCoordinate line_width = 1;
 
-    os << s << " " << end << " " << radius << " " << radius << " "
-       << center[X] << " " << center[Y] << " " << line_width << " arc*\n";
+    os << start << " " << end << " " 
+       << info.radius << " " << info.radius << " "
+       << info.arc_center[X] << " " << info.arc_center[Y] << " " 
+       << line_width << " arc*\n";
 
     if (annotation() != 0)
     {
 	// Print annotation
-	annotation()->_print(os, anno, gc);
+	annotation()->_print(os, info.anno_pos, gc);
     }
 
-    // FIX ME: the arrow is missing
+    // FIXME: the arrow is missing
+}
+
+BoxPoint LineGraphEdge::annotationPosition(const GraphGC &gc) const
+{
+    if (from() == to())
+    {
+	BoxRegion region = from()->region(gc);
+	if (from()->selected())
+	    region.origin() += gc.offsetIfSelected;
+
+	LineGraphEdgeSelfInfo info(region, gc);
+	return info.anno_pos;
+    }
+
+    BoxPoint pos1     = from()->pos();
+    BoxRegion region1 = from()->region(gc);
+
+    BoxPoint pos2     = to()->pos();
+    BoxRegion region2 = to()->region(gc);
+
+    BoxPoint l1, l2;
+    findLine(pos1, pos2, region1, region2, l1, l2, gc);
+
+    if (from()->isHint() && to()->isHint())
+    {
+	// Between two hints -- don't draw anything
+	return BoxPoint();
+    }
+
+    if (to()->isHint())
+    {
+	// Draw at hint position
+	return to()->pos();
+    }
+
+    // Draw at mid-distance
+    return l1 + (l2 - l1) / 2;
 }
 
 void LineGraphEdge::_print(ostream& os, const GraphGC &gc) const
@@ -517,33 +556,13 @@ void LineGraphEdge::_print(ostream& os, const GraphGC &gc) const
 
     GraphEdge::_print(os, gc);
 
-    // Print annotation at mid-distance
+    // Print annotation
     if (annotation() != 0)
     {
-	BoxPoint pos1     = from()->pos();
-	BoxRegion region1 = from()->region(gc);
-
-	BoxPoint pos2     = to()->pos();
-	BoxRegion region2 = to()->region(gc);
-
-	BoxPoint l1, l2;
-	findLine(pos1, pos2, region1, region2, l1, l2, gc);
-	if (l1 != l2)
+	BoxPoint anno_pos = annotationPosition(gc);
+	if (anno_pos.isValid())
 	{
-	    if (from()->isHint() && to()->isHint())
-	    {
-		// Between two hints -- don't draw anything
-	    }
-	    else if (to()->isHint())
-	    {
-		// Draw at hint position
-		annotation()->_print(os, to()->pos(), gc);
-	    }
-	    else
-	    {
-		// Draw at mid-distance
-		annotation()->_print(os, l1 + (l2 - l1) / 2, gc);
-	    }
+	    annotation()->_print(os, anno_pos, gc);
 	}
     }
 }
