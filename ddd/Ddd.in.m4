@@ -784,6 +784,14 @@ Ddd*showStartupLogo: c
 ! your window manager has trouble with DDD icons, set this to `false'.
 Ddd*colorWMIcons: true
 
+! Tips of the day
+
+! Whether to show a tip of the day upon startup
+Ddd*startupTips: true
+
+! Which tip to start with.  This is usually overridden by `~/.ddd/tips'.
+Ddd*startupTipCount: 1
+
 
 ! Session Defaults
 
