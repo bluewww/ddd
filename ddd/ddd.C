@@ -1737,9 +1737,6 @@ int main(int argc, char *argv[])
 		 "Please save options.");
     }
 
-    // Register own converters
-    registerOwnConverters();
-
     // Global variables: Set LessTif version
     lesstif_version = app_data.lesstif_version;
 
@@ -1772,6 +1769,9 @@ int main(int argc, char *argv[])
     if (!iconic && restart_session() == "")
 	popup_startup_logo(toplevel, app_data.show_startup_logo);
     last_shown_startup_logo = app_data.show_startup_logo;
+
+    // Register own converters
+    registerOwnConverters();
 
     // Lock `~/.ddd/'.
     lock_ddd(toplevel);
