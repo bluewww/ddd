@@ -104,8 +104,6 @@ Volunteers for fixing these and other bugs are welcome!
     the `graph' prefix confuses DDD - displays are considered
     `inactive'.
 
-299*Starting DDD in `-iconic' mode still pops up some windows:
-    - In multi-window mode, the source pops up;
-    - In single-window mode, the command tool pops up.
+299*Starting multi-window DDD in `-iconic' mode still pops up the source.
 
 301 (Insert new bugs here)

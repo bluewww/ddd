@@ -53,6 +53,9 @@ extern void iconify_shell(Widget w);
 extern void uniconify_shell(Widget w);
 extern int running_shells();
 
+// True if W was started iconified
+extern bool started_iconified(Widget w);
+
 extern void gdbOpenCommandWindowCB  (Widget, XtPointer, XtPointer);
 extern void gdbOpenSourceWindowCB   (Widget, XtPointer, XtPointer);
 extern void gdbOpenCodeWindowCB     (Widget, XtPointer, XtPointer);

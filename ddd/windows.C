@@ -332,15 +332,8 @@ static void FollowToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
     }
 }
 
-
-// Popup initial shell
-void initial_popup_shell(Widget w)
+bool started_iconified(Widget w)
 {
-    if (w == 0)
-	return;
-
-    // assert(XtIsTopLevelShell(w));
-
     Widget toplevel = w;
     while (XtParent(toplevel))
 	toplevel = XtParent(toplevel);
@@ -350,8 +343,18 @@ void initial_popup_shell(Widget w)
     // Well isn't it iconic - don't you think?
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
+    return iconic;
+}
+
+// Popup initial shell
+void initial_popup_shell(Widget w)
+{
+    if (w == 0)
+	return;
+
+    Boolean iconic = started_iconified(w);
     XtVaSetValues(w, 
-		  XmNiconic, iconic, 
+		  XmNiconic, iconic,
 		  XmNinitialState, iconic ? IconicState : NormalState,
 		  NULL);
     WindowState state = iconic ? Iconic : PoppingUp;
@@ -373,6 +376,12 @@ void initial_popup_shell(Widget w)
 	if (!iconic)
 	    RecenterToolShellCB();
     }
+
+    Widget toplevel = w;
+    while (XtParent(toplevel))
+	toplevel = XtParent(toplevel);
+    assert(XtIsTopLevelShell(toplevel));
+
     if (w != toplevel && XtIsRealized(w))
 	XtPopup(w, XtGrabNone);
 }

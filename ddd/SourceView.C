@@ -2535,20 +2535,22 @@ void SourceView::read_file (string file_name,
 	if (!popped_up)
 	{
 	    // Make sure source is visible
+	    Widget shell = (source_view_shell != 0) ? 
+		source_view_shell : command_shell;
+
 	    if (source_view_shell != 0 || app_data.tty_mode)
 	    {
-		Widget shell = (source_view_shell != 0) ? 
-		    source_view_shell : command_shell;
 		initial_popup_shell(shell);
 	    }
 
 	    if (!app_data.command_toolbar)
 		initial_popup_shell(tool_shell);
 
-	    gdbOpenSourceWindowCB(source_text_w, 0, 0);
-
-	    popped_up = true;
+	    if (!started_iconified(shell))
+		gdbOpenSourceWindowCB(source_text_w, 0, 0);
 	}
+
+	popped_up = true;
     }
 }
 
@@ -5359,7 +5361,7 @@ void SourceView::DeleteInfoCB(Widget, XtPointer client_data,
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
-    gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
+    gdb->removeHandler(Recording, RecordingHP, (void *)info);
     if (gdb->recording())
 	gdb_command("\003");	// Abort recording
 
@@ -5952,8 +5954,8 @@ void SourceView::RecordBreakpointCommandsCB(Widget w,
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
-    gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
-    gdb->addHandler(Recording, RecordingHP, XtPointer(info));
+    gdb->removeHandler(Recording, RecordingHP, (void *)info);
+    gdb->addHandler(Recording, RecordingHP, (void *)info);
     gdb_command("commands " + itostring(info->nrs[0]), w);
 }
 
@@ -5995,7 +5997,7 @@ void SourceView::RecordingHP(Agent *, void *client_data, void *call_data)
     if (!recording)
     {
 	// Recording is over.  Don't get called again.
-	gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
+	gdb->removeHandler(Recording, RecordingHP, (void *)info);
 
 	// Update breakpoints
 	gdb->addHandler(ReadyForQuestion, RefreshBreakpointsHP);
