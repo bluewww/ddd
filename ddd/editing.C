@@ -609,8 +609,8 @@ void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
 #else
 	// Make it a no-op
 	XmTextPosition lastPos = XmTextGetLastPosition(gdb_w);
-	change->startPos = change->endPos = change->newInsert
-	    = change->currInsert = lastPos;
+	change->startPos = promptPosition;
+	change->endPos = change->newInsert = change->currInsert = lastPos;
 	if (change->text->length == 0 && change->event != 0)
 	    XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
 	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
