@@ -74,6 +74,7 @@ char SourceView_rcsid[] =
 
 // Misc stuff
 #include "assert.h"
+#include "cwd.h"
 #include "HelpCB.h"
 #include "DestroyCB.h"
 #include "charsets.h"
@@ -439,7 +440,7 @@ string SourceView::current_code;
 string SourceView::current_code_start;
 string SourceView::current_code_end;
 
-string SourceView::current_pwd = ".";
+string SourceView::current_pwd = cwd();
 
 XmTextPosition SourceView::last_top                = 0;
 XmTextPosition SourceView::last_pos                = 0;
@@ -2080,7 +2081,12 @@ void SourceView::reload()
     if (current_file_name == "")
 	return;
 
-    string file = file_of_cursor();
+    string file;
+    if (gdb->type() == JDB)
+	file = line_of_cursor();
+    else
+	file = file_of_cursor();
+
     string line = file.after(':');
     file        = file.before(':');
 
@@ -3294,43 +3300,19 @@ void SourceView::process_info_bp (string& info_output,
 	case JDB:
 	{
 	    // JDB has no breakpoint numbers.  Check if we already have one.
-	    int colon = info_output.index(':');
-	    if (colon >= 0)
+	    bp_nr = jdb_breakpoint(info_output);
+	    if (bp_nr == 0)
+		bp_nr = max_breakpoint_number_seen + 1;	// new breakpoint
+	    if (bp_nr < 0)
 	    {
-		string class_name = info_output.before(colon);
-		read_leading_blanks(class_name);
-		int line_no = get_positive_nr(info_output.after(colon));
-		if (line_no > 0 && !class_name.contains(' '))
-		{
-		    MapRef ref;
-		    for (BreakPoint* bp = bp_map.first(ref);
-			 bp != 0;
-			 bp = bp_map.next(ref))
-		    {
-			if (bp->line_nr() == line_no && 
-			    bp->file_name() == class_name)
-			{
-			    bp_nr = bp->number();
-			    break;
-			}
-		    }
-
-		    if (bp_nr < 0)
-		    {
-			// This is a new breakpoint
-			bp_nr = max_breakpoint_number_seen + 1;
-		    }
-		}
-		else
-		{
-		    string line = info_output.before('\n');
-		    if (!line.contains("Current breakpoints set"))
-			keep_me += line;
-
-		    // Skip this line
-		    info_output = info_output.after('\n');
-		    continue;
-		}
+		// Not a breakpoint
+		string line = info_output.before('\n');
+		if (!line.contains("Current breakpoints set"))
+		    keep_me += line;
+		
+		// Skip this line
+		info_output = info_output.after('\n');
+		continue;
 	    }
 	    break;
 	}
@@ -4738,7 +4720,19 @@ void SourceView::BreakpointCmdCB(Widget,
     if (breakpoint_list_w == 0)
 	return;
 
+    IntArray breakpoint_nrs;
+    getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
+    if (breakpoint_nrs.size() == 0)
+        return;
+
     string cmd = (String)client_data;
+
+    if (cmd == "delete" && gdb->delete_command() == "")
+    {
+        for (int i = 0; i < breakpoint_nrs.size(); i++)
+	    bp_popup_deleteCB(source_text_w, XtPointer(&breakpoint_nrs[i]), 0);
+        return;
+    }
 
     if (cmd == "enable")
 	cmd = gdb->enable_command();
@@ -4747,15 +4741,9 @@ void SourceView::BreakpointCmdCB(Widget,
     else if (cmd == "delete")
 	cmd = gdb->delete_command();
 
-    IntArray breakpoint_nrs;
-    getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
-    if (breakpoint_nrs.size() > 0)
-    {
-	for (int i = 0; i < breakpoint_nrs.size(); i++)
-	    cmd += " " + itostring(breakpoint_nrs[i]);
-
-	gdb_command(cmd);
-    }
+    for (int i = 0; i < breakpoint_nrs.size(); i++)
+        cmd += " " + itostring(breakpoint_nrs[i]);
+    gdb_command(cmd);
 }
 
 void SourceView::LookupBreakpointCB(Widget, XtPointer, XtPointer)
@@ -4768,6 +4756,28 @@ void SourceView::LookupBreakpointCB(Widget, XtPointer, XtPointer)
     if (breakpoint_nrs.size() == 1)
 	lookup("#" + itostring(breakpoint_nrs[0]));
 }
+
+// Return breakpoint of BP_INFO; 0 if new; -1 if none
+int SourceView::jdb_breakpoint(const string& bp_info)
+{
+    int colon = bp_info.index(':');
+    if (colon < 0)
+	return -1;		// no breakpoint
+
+    string class_name = bp_info.before(colon);
+    read_leading_blanks(class_name);
+    int line_no = get_positive_nr(bp_info.after(colon));
+    if (line_no <= 0 || class_name.contains(' '))
+	return -1;		// no breakpoint
+
+    MapRef ref;
+    for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+	if (bp->line_nr() == line_no && bp->file_name() == class_name)
+	    return bp->number(); // existing breakpoint
+
+    return 0;			// new breakpoint
+}
+
 
 // Handle breakpoint info
 void SourceView::process_breakpoints(string& info_breakpoints_output)
@@ -4793,7 +4803,20 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     bool select = false;
     for (int i = 0; i < count; i++)
     {
-	int bp_number = get_positive_nr(breakpoint_list[i]);
+	string& bp_info = breakpoint_list[i];
+	if (gdb->type() == JDB)
+	{
+	    // JDB has no breakpoint numbers -- insert our own
+	    int bp_nr = jdb_breakpoint(bp_info);
+	    if (bp_nr > 0)
+	    {
+		string s = itostring(bp_nr) + "    ";
+		bp_info.prepend(s.at(0, 4));
+	    }
+	}
+
+	// Select number
+	int bp_number = get_positive_nr(bp_info);
 	if (bp_number > 0)
 	{
 	    MapRef ref;
@@ -4810,7 +4833,7 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
 	}
 
 	selected[i] = select;
-	setup_where_line(breakpoint_list[i]);
+	setup_where_line(bp_info);
     }
 
     setLabelList(breakpoint_list_w, breakpoint_list, selected, count,

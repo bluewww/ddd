@@ -464,6 +464,9 @@ private:
 
     static int max_breakpoint_number_seen;
 
+    // Return breakpoint number of BP_INFO; 0 if new; -1 if none
+    static int jdb_breakpoint(const string& bp_info);
+
 public:
     // Constructor
     SourceView (XtAppContext app_context, Widget parent);
