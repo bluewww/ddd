@@ -101,14 +101,14 @@ void gdbClearArgCmdCB(Widget w, XtPointer, XtPointer)
     case GDB:
 	if (arg != "" && arg[0] == '0')
 	    arg = "*" + arg; // Address given
-	gdb_command("clear " + arg);
+	gdb_command(SourceView::clear_command(arg));
 	break;
 
     case DBX:
 	if (arg.matches(rxint))
 	{
 	    // Line number given
-	    gdb_command("clear " + arg);
+	    gdb_command(SourceView::clear_command(arg));
 	}
 	else if (arg.contains(":") && !arg.contains("::"))
 	{
@@ -124,7 +124,7 @@ void gdbClearArgCmdCB(Widget w, XtPointer, XtPointer)
 	if (pos != "")
 	{
 	    gdb_command("file " + pos.before(":"), w);
-	    gdb_command("clear " + pos.after(":"), w);
+	    gdb_command(SourceView::clear_command(pos.after(":")), w);
 	}
 	break;
     }
