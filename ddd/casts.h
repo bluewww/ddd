@@ -45,5 +45,8 @@
 #  define REINTERPRET_CAST(TYPE,OBJ) ((TYPE)(OBJ))
 #endif
 
+// Motif does not use "const _XtString" and leads to many const_cast.
+#define XMST(OBJ) CONST_CAST(char *,OBJ)
+
 #endif // _DDD_casts_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

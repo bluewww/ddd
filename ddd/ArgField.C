@@ -98,7 +98,7 @@ void ArgField::set_string(string s)
     String old_s = XmTextFieldGetString(arg_text_field);
     if (s != old_s)
     {
-	XmTextFieldSetString(arg_text_field, CONST_CAST(char*,s.chars()));
+	XmTextFieldSetString(arg_text_field, XMST(s.chars()));
 
 	if (XtIsRealized(arg_text_field)) // LessTif 0.1 crashes otherwise
 	{
@@ -178,7 +178,7 @@ Widget ArgField::top() const { return ComboBoxTop(text()); }
 void ClearTextFieldCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget arg_field = Widget(client_data);
-    XmTextFieldSetString(arg_field, CONST_CAST(char *,""));
+    XmTextFieldSetString(arg_field, XMST(""));
 }
 
 // Create a `():' label named "arg_label" for ARG_FIELD

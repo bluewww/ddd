@@ -235,7 +235,7 @@ static void update_arguments(Widget dialog, Widget arguments_w,
     delete[] selected;
 
     Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
-    XmTextSetString(text_w, CONST_CAST(char *,last.chars()));
+    XmTextSetString(text_w, XMST(last.chars()));
 
     updated = true;
 }
@@ -299,7 +299,7 @@ static void SelectRunArgsCB(Widget, XtPointer, XtPointer call_data)
     const string& args = run_arguments[pos];
     
     Widget text_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text_w, CONST_CAST(char *,args.chars()));
+    XmTextSetString(text_w, XMST(args.chars()));
 }
 
 // Create `Run' dialog
@@ -312,7 +312,7 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
 
 	run_dialog = 
 	    verify(XmCreateSelectionDialog(find_shell(w), 
-					   CONST_CAST(char *,"run_dialog"), 
+					   XMST("run_dialog"), 
 					   args, arg));
 	XtUnmanageChild(XmSelectionBoxGetChild(run_dialog, 
 					       XmDIALOG_APPLY_BUTTON));
@@ -350,7 +350,7 @@ static void SelectMakeArgsCB(Widget, XtPointer, XtPointer call_data)
     const string& args = make_arguments[pos];
     
     Widget text_w = XmSelectionBoxGetChild(make_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text_w, CONST_CAST(char *,args.chars()));
+    XmTextSetString(text_w, XMST(args.chars()));
 }
 
 // Make program with given arguments
@@ -382,7 +382,7 @@ void gdbMakeCB(Widget w, XtPointer, XtPointer)
 
 	make_dialog = 
 	    verify(XmCreateSelectionDialog(find_shell(w), 
-					   CONST_CAST(char *,"make_dialog"), 
+					   XMST("make_dialog"), 
 					   args, arg));
 	XtUnmanageChild(XmSelectionBoxGetChild(make_dialog, 
 					       XmDIALOG_APPLY_BUTTON));
@@ -421,7 +421,7 @@ static void SelectChangeDirectoryArgsCB(Widget, XtPointer, XtPointer call_data)
     string args = source_view->full_path(cd_arguments[pos]);
     
     Widget text_w = XmSelectionBoxGetChild(cd_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text_w, CONST_CAST(char *,args.chars()));
+    XmTextSetString(text_w, XMST(args.chars()));
 }
 
 // ChangeDirectory program with given arguments
@@ -456,7 +456,7 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
 
 	cd_dialog = 
 	    verify(XmCreateSelectionDialog(find_shell(w), 
-					   CONST_CAST(char *,"cd_dialog"), 
+					   XMST("cd_dialog"), 
 					   args, arg));
 	XtUnmanageChild(XmSelectionBoxGetChild(cd_dialog, 
 					       XmDIALOG_APPLY_BUTTON));
@@ -530,7 +530,7 @@ bool add_running_arguments(string& cmd, Widget origin)
 	{
 	    restart_jdb = 
 		verify(XmCreateQuestionDialog(find_shell(origin),
-				 CONST_CAST(char *,"confirm_restart_gdb_dialog"), 
+				 XMST("confirm_restart_gdb_dialog"), 
 				 ArgList(0), 0));
 	    Delay::register_shell(restart_jdb);
 	    XtAddCallback(restart_jdb, XmNhelpCallback,   

@@ -88,13 +88,13 @@ void start_have_decorated_transients(Widget parent)
     XtSetArg(args[arg], XmNx, pos_x);                   arg++;
     XtSetArg(args[arg], XmNy, pos_y);                   arg++;
     init_shell = verify(XmCreateDialogShell(parent, 
-					    CONST_CAST(char *,"init_shell"), args, arg));
+					    XMST("init_shell"), args, arg));
 
     arg = 0;
     MString label(DDD_NAME " " DDD_VERSION);
     XtSetArg(args[arg], XmNlabelString, label.xmstring()); arg++;
     init_label = verify(XmCreateLabel(init_shell, 
-				      CONST_CAST(char *,ddd_NAME), args, arg));
+				      XMST(ddd_NAME), args, arg));
     XtManageChild(init_label);
 }
 

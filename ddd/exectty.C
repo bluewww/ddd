@@ -153,7 +153,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 	XtSetArg(args[arg], XmNdialogStyle, 
 		 XmDIALOG_FULL_APPLICATION_MODAL); arg++;
 	dialog = verify(XmCreateWorkingDialog(find_shell(origin), 
-					      CONST_CAST(char *,"launch_tty_dialog"), 
+					      XMST("launch_tty_dialog"), 
 					      args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
 					     XmDIALOG_OK_BUTTON));

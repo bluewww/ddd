@@ -133,7 +133,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	if (pos == 0)
 	    pos = messagePosition;
 
-	XmTextReplace(gdb_w, pos, XmTextGetLastPosition(gdb_w), CONST_CAST(char *,""));
+	XmTextReplace(gdb_w, pos, XmTextGetLastPosition(gdb_w), XMST(""));
 	promptPosition = pos;
 
 	prompt = prompt.from(pos);
@@ -213,7 +213,7 @@ static Widget create_status_history(Widget parent)
     XtSetArg(args[arg], XmNallowShellResize, True); arg++;
     XtSetArg(args[arg], XmNwidth,            10);   arg++;
     XtSetArg(args[arg], XmNheight,           10);   arg++;
-    history_shell = verify(XmCreateMenuShell(parent, CONST_CAST(char *,"status_history"), 
+    history_shell = verify(XmCreateMenuShell(parent, XMST("status_history"), 
 					     args, arg));
 
     arg = 0;
@@ -223,17 +223,17 @@ static Widget create_status_history(Widget parent)
     XtSetArg(args[arg], XmNresizeHeight, True); arg++;
     XtSetArg(args[arg], XmNborderWidth, 0);     arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
-    history_row = verify(XmCreateRowColumn(history_shell, CONST_CAST(char *,"row"), 
+    history_row = verify(XmCreateRowColumn(history_shell, XMST("row"), 
 					   args, arg));
     XtManageChild(history_row);
 
     arg = 0;
     XtSetArg(args[arg], XmNresizable, True); arg++;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
-    history_label = verify(XmCreateLabel(history_row, CONST_CAST(char *,"label"), 
+    history_label = verify(XmCreateLabel(history_row, XMST("label"), 
 					 args, arg));
     XtManageChild(history_label);
-					   
+
     return history_shell;
 }
 

@@ -1060,7 +1060,7 @@ Widget make_buttons(Widget parent, const char *name,
     XtSetArg(args[arg], XmNborderWidth, 0);            arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0);        arg++;
-    Widget buttons = verify(XmCreateRowColumn(parent, CONST_CAST(char*,name), args, arg));
+    Widget buttons = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
 
     set_buttons(buttons, button_list);
 
@@ -1187,7 +1187,7 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNborderWidth, 0);        arg++;
 	XtSetArg(args[arg], XmNhighlightThickness, 1); arg++;
-	Widget button = verify(XmCreatePushButton(buttons, CONST_CAST(char*,name.chars()), args, arg));
+	Widget button = verify(XmCreatePushButton(buttons, XMST(name.chars()), args, arg));
 #endif
 	XtManageChild(button);
 	number_of_buttons++;
@@ -1376,7 +1376,7 @@ static void SetTextCB(Widget, XtPointer, XtPointer)
 
     str = normalize(str);
 
-    XmTextSetString(active_info->text, CONST_CAST(char*,str.chars()));
+    XmTextSetString(active_info->text, XMST(str.chars()));
 
     *active_info->str = STATIC_CAST(String,XtNewString(str.chars()));
     update_user_buttons();
@@ -1405,7 +1405,7 @@ static void ChangeTextCB(Widget w, XtPointer client_data, XtPointer call_data)
 	active_info = info;
 
 	const string str = normalize(*info->str);
-	XmTextSetString(info->text, CONST_CAST(char *,str.chars()));
+	XmTextSetString(info->text, XMST(str.chars()));
 	XtAddCallback(info->dialog, XmNhelpCallback, 
 		      HelpOnThisCB, XtPointer(w));
 
@@ -1437,7 +1437,7 @@ static Widget add_button(const _XtString name,
 {
     Arg args[10];
     Cardinal arg = 0;
-    Widget button = XmCreateToggleButton(buttons, CONST_CAST(char *,name), args, arg);
+    Widget button = XmCreateToggleButton(buttons, XMST(name), args, arg);
     XtManageChild(button);
 
     ChangeTextInfo *info = new ChangeTextInfo;
@@ -1464,7 +1464,7 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     buttons_dialog = 
 	verify(XmCreatePromptDialog(find_shell(parent), 
-				    CONST_CAST(char *,"edit_buttons"), args, arg));
+				    XMST("edit_buttons"), args, arg));
 
     XtAddCallback(buttons_dialog, XmNokCallback,     SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNokCallback,     
@@ -1486,7 +1486,7 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
     Widget box = 
-	verify(XmCreateRowColumn(buttons_dialog, CONST_CAST(char *,"box"), args, arg));
+	verify(XmCreateRowColumn(buttons_dialog, XMST("box"), args, arg));
     XtManageChild(box);
 
     arg = 0;
@@ -1495,7 +1495,7 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     shortcut_label = verify(XmCreateLabel(box, 
-					  CONST_CAST(char *,"shortcuts"), args, arg));
+					  XMST("shortcuts"), args, arg));
     XtManageChild(shortcut_label);
 
     arg = 0;
@@ -1504,18 +1504,18 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNorientation,  XmHORIZONTAL); arg++;
     button_box = 
-	verify(XmCreateRadioBox(box, CONST_CAST(char *,"buttons"), args, arg));
+	verify(XmCreateRadioBox(box, XMST("buttons"), args, arg));
     XtManageChild(button_box);
 
     arg = 0;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
-    Widget text = verify(XmCreateScrolledText(box, CONST_CAST(char *,"text"), args, arg));
+    Widget text = verify(XmCreateScrolledText(box, XMST("text"), args, arg));
     XtManageChild(text);
 
     arg = 0;
     XtSetArg(args[arg], XmNset, app_data.verify_buttons); arg++;
     Widget vfy = verify(XmCreateToggleButton(box, 
-					     CONST_CAST(char *,"verify"), args, arg));
+					     XMST("verify"), args, arg));
     XtManageChild(vfy);
     XtAddCallback(vfy, XmNvalueChangedCallback, SetVerifyButtonsCB, 0);
     XtAddCallback(vfy, XmNvalueChangedCallback, SetTextCB, 0);
@@ -1625,7 +1625,7 @@ void refresh_button_editor()
     *str = STATIC_CAST(String,XtNewString(expr.chars()));
 
     if (active_info != 0 && active_info->str == CONST_CAST(char**,str))
-	XmTextSetString(active_info->text, CONST_CAST(char*,*str));
+	XmTextSetString(active_info->text, XMST(*str));
 }
 
 

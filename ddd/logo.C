@@ -987,10 +987,10 @@ void set_label(Widget w, const MString& new_label, const char *image)
 	    string s3 = s1 + "-arm";
 	    string s4 = s1 + "-hi";
 
-	    Pixmap p1 = XmGetPixmap(XtScreen(w), CONST_CAST(char*,s1.chars()), foreground, background);
-	    Pixmap p2 = XmGetPixmap(XtScreen(w), CONST_CAST(char*,s2.chars()), foreground, background);
-	    Pixmap p3 = XmGetPixmap(XtScreen(w), CONST_CAST(char*,s3.chars()), foreground, background);
-	    Pixmap p4 = XmGetPixmap(XtScreen(w), CONST_CAST(char*,s4.chars()), foreground, background);
+	    Pixmap p1 = XmGetPixmap(XtScreen(w), XMST(s1.chars()), foreground, background);
+	    Pixmap p2 = XmGetPixmap(XtScreen(w), XMST(s2.chars()), foreground, background);
+	    Pixmap p3 = XmGetPixmap(XtScreen(w), XMST(s3.chars()), foreground, background);
+	    Pixmap p4 = XmGetPixmap(XtScreen(w), XMST(s4.chars()), foreground, background);
 
 	    if (bottom_shadow_pixmap == XmUNSPECIFIED_PIXMAP)
 	    {

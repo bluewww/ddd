@@ -385,7 +385,7 @@ static void repaint()
 		foreground = BlackPixelOfScreen(XtScreen(buttons[i]));
 	}
 
-	Pixmap p = XmGetPixmap(XtScreen(buttons[i]), CONST_CAST(char *,name), 
+	Pixmap p = XmGetPixmap(XtScreen(buttons[i]), XMST(name), 
 			       foreground, background);
 	XtVaSetValues(buttons[i],
 		      XmNlabelType, XmPIXMAP,
@@ -509,12 +509,12 @@ static Widget create_tictactoe(Widget parent)
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL);  arg++;
     XtSetArg(args[arg], XmNpacking,     XmPACK_COLUMN); arg++;
     XtSetArg(args[arg], XmNnumColumns,  3);             arg++;
-    board = XmCreateRowColumn(parent, CONST_CAST(char *,"board"), args, arg);
+    board = XmCreateRowColumn(parent, XMST("board"), args, arg);
 
     for (int i = 1; i <= 9; i++)
     {
 	arg = 0;
-	buttons[i] = XmCreatePushButton(board, CONST_CAST(char *,"field"), args, arg);
+	buttons[i] = XmCreatePushButton(board, XMST("field"), args, arg);
 	XtManageChild(buttons[i]);
 	XtAddCallback(buttons[i], XmNactivateCallback, 
 		      MakeMoveCB, XtPointer(i));
@@ -534,7 +534,7 @@ void TicTacToeCB(Widget, XtPointer, XtPointer)
 
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(),
-					     CONST_CAST(char *,"tictactoe"), args, arg));
+					     XMST("tictactoe"), args, arg));
 	Delay::register_shell(dialog);
 
 	if (lesstif_version <= 79)

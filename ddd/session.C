@@ -548,7 +548,7 @@ static void SelectSessionCB(Widget sessions,
 	    value = DEFAULT_SESSION;
 
 	Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
-	XmTextSetString(text_w, CONST_CAST(char *,value.chars()));
+	XmTextSetString(text_w, XMST(value.chars()));
     }
 
     // Update delete button
@@ -565,7 +565,7 @@ static Widget create_session_panel(Widget parent, const _XtString name,
 
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     Widget dialog = 
-	verify(XmCreateSelectionDialog(find_shell(parent), CONST_CAST(char *,name), args, arg));
+	verify(XmCreateSelectionDialog(find_shell(parent), XMST(name), args, arg));
 
     Delay::register_shell(dialog);
 
@@ -1401,7 +1401,7 @@ static void ask(const string& text, const _XtString name, XtCheckpointToken toke
     {
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     }
-    dialog = verify(XmCreateQuestionDialog(find_shell(w), CONST_CAST(char *,name),
+    dialog = verify(XmCreateQuestionDialog(find_shell(w), XMST(name),
 					   args, arg));
     Delay::register_shell(dialog);
     XtAddCallback(dialog, XmNokCallback,     yes, XtPointer(token));

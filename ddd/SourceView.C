@@ -2674,7 +2674,7 @@ void SourceView::read_file (string file_name,
     Delay delay;
 
     // Set source and initial line
-    XmTextSetString(source_text_w, CONST_CAST(char*,current_source.chars()));
+    XmTextSetString(source_text_w, XMST(current_source.chars()));
 
     XmTextPosition initial_pos = 0;
     if (initial_line > 0 && initial_line <= line_count)
@@ -2824,7 +2824,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
 		XmTextReplace(source_text_w,
 			      pos_of_line(line_nr),
 			      pos_of_line(line_nr) + s.length(),
-			      CONST_CAST(char*,s.chars()));
+			      XMST(s.chars()));
 	}
     }
 
@@ -2886,7 +2886,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
 	    if (insert_string.length() > 0)
 		XmTextReplace(source_text_w, pos, 
 			      pos + indent - 1,
-			      CONST_CAST(char*,insert_string.chars()));
+			      XMST(insert_string.chars()));
 	}
     }
 }
@@ -2910,7 +2910,7 @@ void SourceView::refresh_code_bp_disp(bool reset)
 	if (indent > 0)
 	{
 	    string spaces = replicate(' ', indent);
-	    XmTextReplace(code_text_w, pos, pos + indent, CONST_CAST(char*,spaces.chars()));
+	    XmTextReplace(code_text_w, pos, pos + indent, XMST(spaces.chars()));
 	}
     }
 
@@ -2956,7 +2956,7 @@ void SourceView::refresh_code_bp_disp(bool reset)
 	    insert_string = insert_string.before(indent);
 
 	    XmTextReplace(code_text_w, pos, pos + indent, 
-			  CONST_CAST(char*,insert_string.chars()));
+			  XMST(insert_string.chars()));
 	}
     }
 }
@@ -3544,19 +3544,19 @@ void SourceView::create_shells()
 					   XmDIALOG_CANCEL_BUTTON));
 
     arg = 0;
-    Widget box = XmCreateRadioBox(register_dialog_w, CONST_CAST(char *,"box"), args, arg);
+    Widget box = XmCreateRadioBox(register_dialog_w, XMST("box"), args, arg);
     XtManageChild(box);
 
     arg = 0;
     XtSetArg(args[arg], XmNset, !all_registers); arg++;
     int_registers_w = 
-	XmCreateToggleButton(box, CONST_CAST(char *,"int_registers"), args, arg);
+	XmCreateToggleButton(box, XMST("int_registers"), args, arg);
     XtManageChild(int_registers_w);
 
     arg = 0;
     XtSetArg(args[arg], XmNset, all_registers); arg++;
     all_registers_w = 
-	XmCreateToggleButton(box, CONST_CAST(char *,"all_registers"), args, arg);
+	XmCreateToggleButton(box, XMST("all_registers"), args, arg);
     XtManageChild(all_registers_w);
 
     XtAddCallback(int_registers_w, XmNvalueChangedCallback, 
@@ -3665,7 +3665,7 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
     XtSetArg(args[arg], XmNmarginHeight, 0);    arg++;
     XtSetArg(args[arg], XmNmarginWidth,  0);    arg++;
     string form_name = base + "_form_w";
-    form = verify(XmCreateForm(parent, CONST_CAST(char*,form_name.chars()), args, arg));
+    form = verify(XmCreateForm(parent, XMST(form_name.chars()), args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNselectionArrayCount, 1);               arg++;
@@ -3704,7 +3704,7 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
     }
 
     string text_name = base + "_text_w";
-    text = verify(XmCreateScrolledText(form, CONST_CAST(char*,text_name.chars()), args, arg));
+    text = verify(XmCreateScrolledText(form, XMST(text_name.chars()), args, arg));
     XtManageChild(text);
 
     // Set up the scrolled window
@@ -3778,7 +3778,7 @@ void SourceView::show_execution_position (const string& position_,
 		XmTextReplace (source_text_w,
 			       last_pos + indent - no_marker.length(),
 			       last_pos + indent,
-			       CONST_CAST(char*,no_marker.chars()));
+			       XMST(no_marker.chars()));
 	    }
 
 	    if (last_start_highlight)
@@ -3824,7 +3824,7 @@ void SourceView::show_execution_position (const string& position_,
 	    XmTextReplace (source_text_w,
 			   last_pos + indent - no_marker.length(),
 			   last_pos + indent,
-			   CONST_CAST(char*,no_marker.chars()));
+			   XMST(no_marker.chars()));
 	}
 
 	// Show current position
@@ -3871,7 +3871,7 @@ void SourceView::_show_execution_position(const string& file, int line,
 	XmTextReplace (source_text_w,
 		       pos + indent - marker.length(),
 		       pos + indent,
-		       CONST_CAST(char*,marker.chars()));
+		       XMST(marker.chars()));
     }
 
     XmTextPosition pos_line_end = 0;
@@ -5472,7 +5472,7 @@ void SourceView::NewBreakpointCB(Widget w, XtPointer, XtPointer)
 	Arg args[10];
 	Cardinal arg = 0;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
-					     CONST_CAST(char *,"new_breakpoint_dialog"),
+					     XMST("new_breakpoint_dialog"),
 					     args, arg));
 	Delay::register_shell(dialog);
 
@@ -5487,10 +5487,10 @@ void SourceView::NewBreakpointCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
 	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-	Widget box = XmCreateRowColumn(dialog, CONST_CAST(char *,"box"), args, arg);
+	Widget box = XmCreateRowColumn(dialog, XMST("box"), args, arg);
 	XtManageChild(box);
 
-	Widget label = XmCreateLabel(box, CONST_CAST(char *,"label"), args, arg);
+	Widget label = XmCreateLabel(box, XMST("label"), args, arg);
 	XtManageChild(label);
 
 	arg = 0;
@@ -5561,7 +5561,7 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	Arg args[10];
 	Cardinal arg = 0;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
-					     CONST_CAST(char *,"new_watchpoint_dialog"),
+					     XMST("new_watchpoint_dialog"),
 					     args, arg));
 	Delay::register_shell(dialog);
 
@@ -5576,7 +5576,7 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
 	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-	Widget box = XmCreateRowColumn(dialog, CONST_CAST(char *,"box"), args, arg);
+	Widget box = XmCreateRowColumn(dialog, XMST("box"), args, arg);
 	XtManageChild(box);
 
 	arg = 0;
@@ -5851,7 +5851,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 	commands += cmd + "\n";
     }
 
-    XmTextSetString(info->editor, CONST_CAST(char*,commands.chars()));
+    XmTextSetString(info->editor, XMST(commands.chars()));
 
     if (info->ignore_spin_update > 0)
     {
@@ -5877,7 +5877,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 		if (ignore == "0")
 		    ignore = "";
 
-		XmTextFieldSetString(info->ignore, CONST_CAST(char*,ignore.chars()));
+		XmTextFieldSetString(info->ignore, XMST(ignore.chars()));
 	    }
 	    XtFree(old_ignore);
 	}
@@ -5890,7 +5890,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     if (bp->condition() != old_condition)
     {
         const string s1 = bp->condition();
-	XmTextFieldSetString(info->condition, CONST_CAST(char*,s1.chars()));
+	XmTextFieldSetString(info->condition, XMST(s1.chars()));
     }
     XtFree(old_condition);
 
@@ -6059,7 +6059,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     info->dialog = 
 	verify(XmCreatePromptDialog(source_text_w,
-				    CONST_CAST(char *,"breakpoint_properties"),
+				    XMST("breakpoint_properties"),
 				    args, arg));
 
     Widget apply = XmSelectionBoxGetChild(info->dialog, XmDIALOG_APPLY_BUTTON);
@@ -6132,7 +6132,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     arg = 0;
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
-    Widget form = XmCreateRowColumn(info->dialog, CONST_CAST(char *,"form"), args, arg);
+    Widget form = XmCreateRowColumn(info->dialog, XMST("form"), args, arg);
     XtManageChild(form);
 
     Widget panel = MMcreatePanel(form, "panel", panel_menu);
@@ -6153,7 +6153,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     arg = 0;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
-    info->editor = XmCreateScrolledText(form, CONST_CAST(char *,"text"), args, arg);
+    info->editor = XmCreateScrolledText(form, XMST("text"), args, arg);
     XtUnmanageChild(XtParent(info->editor));
     XtManageChild(info->editor);
 
@@ -7848,7 +7848,7 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNfillOnArm,          True);          arg++;
     XtSetArg(args[arg], XmNarmColor,           background);    arg++;
     XtSetArg(args[arg], XmNbackground,         background);    arg++;
-    Widget w = verify(XmCreatePushButton(form_w, CONST_CAST(char *,name), args, arg));
+    Widget w = verify(XmCreatePushButton(form_w, XMST(name), args, arg));
 
     if (XtIsRealized(form_w))
 	XtRealizeWidget(w);
@@ -9383,7 +9383,7 @@ void SourceView::set_code(const string& code,
 			  const string& start,
 			  const string& end)
 {
-    XmTextSetString(code_text_w, CONST_CAST(char*,code.chars()));
+    XmTextSetString(code_text_w, XMST(code.chars()));
     XmTextSetHighlight (code_text_w, 0, code.length(), XmHIGHLIGHT_NORMAL);
     
     current_code       = code;
@@ -9695,13 +9695,13 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 		XmTextReplace (code_text_w,
 			       last_pos_pc + indent - no_marker.length(),
 			       last_pos_pc + indent,
-			       CONST_CAST(char*,no_marker.chars()));
+			       XMST(no_marker.chars()));
 	    }
 
 	    XmTextReplace (code_text_w,
 			   pos + indent - marker.length(),
 			   pos + indent,
-			   CONST_CAST(char*,marker.chars()));
+			   XMST(marker.chars()));
     
 	    if (pos_line_end)
 	    {

@@ -65,7 +65,7 @@ static void hint_on(const _XtString name)
 {
     // Create some `dummy' widget and create a help text for it
     Widget suggestion = 
-	verify(XmCreateInformationDialog(find_shell(), CONST_CAST(char *,name), 0, 0));
+	verify(XmCreateInformationDialog(find_shell(), XMST(name), 0, 0));
 
     ImmediateHelpCB(suggestion, XtPointer(0), XtPointer(0));
 

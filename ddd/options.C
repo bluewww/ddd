@@ -1895,7 +1895,7 @@ static void CheckOptionsFileCB(XtPointer client_data, XtIntervalId *id)
 	{
 	    dialog = verify(XmCreateQuestionDialog(
 				find_shell(),
-				CONST_CAST(char *,"reload_options_dialog"),
+				XMST("reload_options_dialog"),
 				0, 0));
 	    Delay::register_shell(dialog);
 	    XtAddCallback(dialog, XmNokCallback,     ReloadOptionsCB, 0);
@@ -2944,7 +2944,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
-			    CONST_CAST(char *,"overwrite_options_dialog"),
+			    XMST("overwrite_options_dialog"),
 			    0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
@@ -2962,7 +2962,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
-			    CONST_CAST(char *,"kill_to_save_dialog"),
+			    XMST("kill_to_save_dialog"),
 			    0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
@@ -2980,7 +2980,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
-			    CONST_CAST(char *,"data_not_saved_dialog"),
+			    XMST("data_not_saved_dialog"),
 			    0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 

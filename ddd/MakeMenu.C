@@ -136,7 +136,7 @@ static void flatten_button(Widget w, bool switch_colors = true)
 	Arg args[10];
 	Cardinal arg = 0;
 
-	Pixmap empty = XmGetPixmap(XtScreen(w), CONST_CAST(char *,"background"), 
+	Pixmap empty = XmGetPixmap(XtScreen(w), XMST("background"), 
 				   background, background);
 
 	XtSetArg(args[arg], XmNbottomShadowPixmap, empty); arg++;
@@ -319,7 +319,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 		Pixel background;
 		XtVaGetValues(shell, XmNbackground, &background, XtPointer(0));
 		Pixmap empty = XmGetPixmap(XtScreen(shell), 
-					   CONST_CAST(char *,"background"), 
+					   XMST("background"), 
 					   background, background);
 
 		XtSetArg(args[arg], XmNbottomShadowPixmap, empty); arg++;
@@ -338,7 +338,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    {
 		// LessTif 0.84 and earlier wants the PushButton as
 		// parent of the menu
-		widget = verify(XmCreatePushButton(shell, CONST_CAST(char*,name), args, arg));
+		widget = verify(XmCreatePushButton(shell, XMST(name), args, arg));
 
 		if (subitems != 0)
 		{
@@ -359,7 +359,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 		    XtSetArg(args[arg], XmNuserData, XtPointer(info)); arg++;
 		}
 
-		widget = verify(XmCreatePushButton(shell, CONST_CAST(char*,name), args, arg));
+		widget = verify(XmCreatePushButton(shell, XMST(name), args, arg));
 
 		if (info != 0)
 		    info->widget = widget;
@@ -373,7 +373,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    widget = verify(XmCreateToggleButton(shell, CONST_CAST(char*,name), args, arg));
+	    widget = verify(XmCreateToggleButton(shell, XMST(name), args, arg));
 	    break;
 	}
 
@@ -383,7 +383,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    widget = verify(XmCreateLabel(shell, CONST_CAST(char*,name), args, arg));
+	    widget = verify(XmCreateLabel(shell, XMST(name), args, arg));
 	    break;
 	}
 
@@ -393,7 +393,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    widget = verify(XmCreateArrowButton(shell, CONST_CAST(char*,name), args, arg));
+	    widget = verify(XmCreateArrowButton(shell, XMST(name), args, arg));
 	    break;
 	}
 
@@ -406,7 +406,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
-	    widget = verify(XmCreateCascadeButton(shell, CONST_CAST(char*,name), args, arg));
+	    widget = verify(XmCreateCascadeButton(shell, XMST(name), args, arg));
 
             if (lesstif_version <= 79)
 	    {
@@ -456,7 +456,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
-	    widget = verify(XmCreateCascadeButton(shell, CONST_CAST(char*,name), args, arg));
+	    widget = verify(XmCreateCascadeButton(shell, XMST(name), args, arg));
 	    break;
 	}
 
@@ -469,7 +469,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
-	    widget = verify(XmCreateOptionMenu(shell, CONST_CAST(char*,name), args, arg));
+	    widget = verify(XmCreateOptionMenu(shell, XMST(name), args, arg));
 	    break;
 	}
 
@@ -493,10 +493,10 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    XtSetArg(args[arg], XmNmarginHeight,    0); arg++;
 	    XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 
-	    widget = verify(XmCreateRowColumn(shell, CONST_CAST(char*,panelName.chars()), args, arg));
+	    widget = verify(XmCreateRowColumn(shell, XMST(panelName.chars()), args, arg));
 
 	    arg = 0;
-	    label = verify(XmCreateLabel(widget, CONST_CAST(char*,name), args, arg));
+	    label = verify(XmCreateLabel(widget, XMST(name), args, arg));
 	    if (have_label)
 		XtManageChild(label);
 
@@ -548,7 +548,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    widget = verify(XmCreateScale(shell, CONST_CAST(char*,name), args, arg));
+	    widget = verify(XmCreateScale(shell, XMST(name), args, arg));
 	    break;
 	}
 
@@ -569,10 +569,10 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    XtSetArg(args[arg], XmNmarginHeight,    0); arg++;
 	    XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 
-	    panel = verify(XmCreateRowColumn(shell, CONST_CAST(char*,name), args, arg));
+	    panel = verify(XmCreateRowColumn(shell, XMST(name), args, arg));
 
 	    arg = 0;
-	    label = verify(XmCreateLabel(panel, CONST_CAST(char*,labelName.chars()), args, arg));
+	    label = verify(XmCreateLabel(panel, XMST(labelName.chars()), args, arg));
 	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
 		XtManageChild(label);
 
@@ -591,7 +591,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    case MMTextField:
 	    case MMEnterField:
 		arg = 0;
-		widget = verify(XmCreateTextField(panel, CONST_CAST(char*,textName.chars()), args, arg));
+		widget = verify(XmCreateTextField(panel, XMST(textName.chars()), args, arg));
 		XtManageChild(widget);
 		break;
 	    }
@@ -606,7 +606,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    if (ignore_seps)
 		continue;
 	    arg = 0;
-	    widget = verify(XmCreateSeparator(shell, CONST_CAST(char*,name), args, arg));
+	    widget = verify(XmCreateSeparator(shell, XMST(name), args, arg));
 	    break;
 	}
 
@@ -646,7 +646,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 Widget MMcreatePulldownMenu(Widget parent, const _XtString name, MMDesc items[],
 			    ArgList args, Cardinal arg)
 {
-    Widget menu = verify(XmCreatePulldownMenu(parent, CONST_CAST(char*,name), args, arg));
+    Widget menu = verify(XmCreatePulldownMenu(parent, XMST(name), args, arg));
     MMaddItems(menu, items);
     auto_raise(XtParent(menu));
 
@@ -677,7 +677,7 @@ Widget MMcreateRadioPulldownMenu(Widget parent, const _XtString name, MMDesc ite
 Widget MMcreatePopupMenu(Widget parent, const _XtString name, MMDesc items[],
 			 ArgList args, Cardinal arg)
 {
-    Widget menu = verify(XmCreatePopupMenu(parent, CONST_CAST(char *,name), args, arg));
+    Widget menu = verify(XmCreatePopupMenu(parent, XMST(name), args, arg));
     MMaddItems(menu, items);
     auto_raise(XtParent(menu));
 
@@ -689,7 +689,7 @@ Widget MMcreatePopupMenu(Widget parent, const _XtString name, MMDesc items[],
 Widget MMcreateMenuBar(Widget parent, const _XtString name, MMDesc items[],
 		       ArgList args, Cardinal arg)
 {
-    Widget bar = verify(XmCreateMenuBar(parent, CONST_CAST(char *,name), args, arg));
+    Widget bar = verify(XmCreateMenuBar(parent, XMST(name), args, arg));
     MMaddItems(bar, items);
     XtManageChild(bar);
 
@@ -700,7 +700,7 @@ Widget MMcreateMenuBar(Widget parent, const _XtString name, MMDesc items[],
 Widget MMcreateWorkArea(Widget parent, const _XtString name, MMDesc items[],
 			ArgList args, Cardinal arg)
 {
-    Widget bar = verify(XmCreateWorkArea(parent, CONST_CAST(char *,name), args, arg));
+    Widget bar = verify(XmCreateWorkArea(parent, XMST(name), args, arg));
     MMaddItems(bar, items, true);
     XtManageChild(bar);
 
@@ -711,7 +711,7 @@ Widget MMcreateWorkArea(Widget parent, const _XtString name, MMDesc items[],
 Widget MMcreatePanel(Widget parent, const _XtString name, MMDesc items[],
 		     ArgList args, Cardinal arg)
 {
-    Widget panel = verify(XmCreateWorkArea(parent, CONST_CAST(char *,name), args, arg));
+    Widget panel = verify(XmCreateWorkArea(parent, XMST(name), args, arg));
     MMaddItems(panel, items);
     XtManageChild(panel);
 
@@ -763,7 +763,7 @@ Widget MMcreateRadioPanel(Widget parent, const _XtString name, MMDesc items[],
     for (Cardinal i = 0; i < _arg; i++)
 	args[arg++] = _args[i];
 
-    Widget panel = verify(XmCreateRowColumn(parent, CONST_CAST(char *,name), args, arg));
+    Widget panel = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
     MMaddItems(panel, items);
     XtManageChild(panel);
 
@@ -775,7 +775,7 @@ Widget MMcreateRadioPanel(Widget parent, const _XtString name, MMDesc items[],
 Widget MMcreateButtonPanel(Widget parent, const _XtString name, MMDesc items[],
 			   ArgList args, Cardinal arg)
 {
-    Widget panel = verify(XmCreateRowColumn(parent, CONST_CAST(char *,name), args, arg));
+    Widget panel = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
     MMaddItems(panel, items);
     XtManageChild(panel);
 
@@ -1031,7 +1031,7 @@ Widget MMcreatePushMenu(Widget parent, const _XtString name, MMDesc items[],
     for (Cardinal i = 0; i < _arg; i++)
 	args[arg++] = _args[i];
     
-    Widget menu = verify(XmCreatePopupMenu(parent, CONST_CAST(char*,name), args, arg));
+    Widget menu = verify(XmCreatePopupMenu(parent, XMST(name), args, arg));
     MMaddItems(menu, items);
     auto_raise(XtParent(menu));
 

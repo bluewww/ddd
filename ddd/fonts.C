@@ -791,7 +791,7 @@ static void GotSelectionCB(Widget w, XtPointer client_data,
 	process_font(info->font, s);
     }
 
-    XmTextSetString(w, CONST_CAST(char*,s.chars()));
+    XmTextSetString(w, XMST(s.chars()));
 
     // Get the selection again.
     // This will fail if we have multiple font selectors (FIXME).
@@ -832,13 +832,13 @@ void BrowseFontCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     // Create a TextField to fetch the selection
     FontSelectInfo *info = new FontSelectInfo;
-    info->text = XmCreateText(XtParent(w), CONST_CAST(char *,"text"), 0, 0);
+    info->text = XmCreateText(XtParent(w), XMST("text"), 0, 0);
     info->font = font;
 
     XtRealizeWidget(info->text);
 
     const string text = "dummy";
-    XmTextSetString(info->text, CONST_CAST(char*,text.chars()));
+    XmTextSetString(info->text, XMST(text.chars()));
     TextSetSelection(info->text, 0, text.length(), tm);
     XtAddCallback(info->text, XmNlosePrimaryCallback, 
 		  SelectionLostCB, XtPointer(info));

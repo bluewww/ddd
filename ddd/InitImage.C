@@ -223,9 +223,9 @@ Boolean InstallImage(XImage *image, const char *image_name)
     // XmInstallImage to Xm21InstallImage, the problem is solved.
 
 #if HAVE_XM21INSTALLIMAGE
-    return Xm21InstallImage(image, CONST_CAST(char *,image_name));
+    return Xm21InstallImage(image, XMST(image_name));
 #else
-    return XmInstallImage(image, CONST_CAST(char *,image_name));
+    return XmInstallImage(image, XMST(image_name));
 #endif
 }
 

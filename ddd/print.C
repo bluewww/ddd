@@ -336,7 +336,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	    confirm_overwrite_dialog = 
 		verify(
 		    XmCreateQuestionDialog(find_shell(w),
-					   CONST_CAST(char *,"confirm_overwrite_dialog"), 
+					   XMST("confirm_overwrite_dialog"), 
 					   ArgList(0), 0));
 	    Delay::register_shell(confirm_overwrite_dialog);
 	    XtAddCallback(confirm_overwrite_dialog, 
@@ -373,7 +373,7 @@ static string suffix(PrintType print_type)
 
 static void set_print_file_name(const string& name)
 {
-    XmTextFieldSetString(print_file_name_field, CONST_CAST(char*,name.chars()));
+    XmTextFieldSetString(print_file_name_field, XMST(name.chars()));
 
     XmTextPosition last_pos = 
 	XmTextFieldGetLastPosition(print_file_name_field);
@@ -446,7 +446,7 @@ static void SetPrintTargetCB(Widget w, XtPointer client_data, XtPointer)
 static void set_paper_size_string(const char *s)
 {
     Widget text = XmSelectionBoxGetChild(paper_size_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text, CONST_CAST(char*,s));
+    XmTextSetString(text, XMST(s));
 
     static string current_paper_size;
     current_paper_size = s;
@@ -777,7 +777,7 @@ static void BrowseNameCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNpattern, pattern.xmstring()); arg++;
 	dialog = 
 	    verify(XmCreateFileSelectionDialog(find_shell(w), 
-					       CONST_CAST(char *,"browse_print"), 
+					       XMST("browse_print"), 
 					       args, arg));
 
 	Delay::register_shell(dialog);
@@ -819,7 +819,7 @@ static void PrintCB(Widget parent, bool displays)
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     print_dialog = 
 	verify(XmCreatePromptDialog(find_shell(parent),
-				    CONST_CAST(char *,"print"), 
+				    XMST("print"), 
 				    args, arg));
     Delay::register_shell(print_dialog);
 
@@ -994,7 +994,7 @@ static void PrintCB(Widget parent, bool displays)
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     paper_size_dialog = 
 	verify(XmCreatePromptDialog(find_shell(parent), 
-				    CONST_CAST(char *,"paper_size_dialog"), 
+				    XMST("paper_size_dialog"), 
 				    args, arg));
     Delay::register_shell(paper_size_dialog);
 
@@ -1033,7 +1033,7 @@ static void PrintCB(Widget parent, bool displays)
 	XmToggleButtonSetState(a4_paper_size, True, True);
 
     string command = string(app_data.print_command) + " ";
-    XmTextFieldSetString(print_command_field, CONST_CAST(char*,command.chars()));
+    XmTextFieldSetString(print_command_field, XMST(command.chars()));
 
     // Gofer it!
     manage_and_raise(print_dialog);

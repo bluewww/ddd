@@ -179,7 +179,7 @@ static void set_line_from_history()
 
     const string& input = gdb_history[gdb_current_history];
     XmTextReplace(gdb_w, promptPosition,
-		  XmTextGetLastPosition(gdb_w), CONST_CAST(char*,input.chars()));
+		  XmTextGetLastPosition(gdb_w), XMST(input.chars()));
     XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
 
     if (gdb_history_w)

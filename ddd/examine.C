@@ -241,7 +241,7 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
-					     CONST_CAST(char *,"examine_dialog"),
+					     XMST("examine_dialog"),
 					     args, arg));
 	Delay::register_shell(dialog);
 
@@ -291,7 +291,7 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
 
     string arg = source_arg->get_string();
     if (!is_file_pos(arg) && !arg.empty())
-	XmTextFieldSetString(address_w, CONST_CAST(char*,arg.chars()));
+	XmTextFieldSetString(address_w, XMST(arg.chars()));
 
     manage_and_raise(dialog);
 }

@@ -45,13 +45,13 @@ void AddDeleteWindowCallback(Widget shell,
 			     XtPointer closure)
 {
     static Atom WM_DELETE_WINDOW =
-	XmInternAtom(XtDisplay(shell), CONST_CAST(char *,"WM_DELETE_WINDOW"), False);
+	XmInternAtom(XtDisplay(shell), XMST("WM_DELETE_WINDOW"), False);
 
     // We don't invoke XmAddWMProtocols directly, because this LessTif macro
     // causes a compilation warning with `gcc -Wwrite-strings'.
 
     static Atom WM_PROTOCOLS = 
-	XmInternAtom(XtDisplay(shell), CONST_CAST(char *,"WM_PROTOCOLS"), FALSE);
+	XmInternAtom(XtDisplay(shell), XMST("WM_PROTOCOLS"), FALSE);
     
     XmAddProtocolCallback(shell, WM_PROTOCOLS, WM_DELETE_WINDOW, 
 			  callback, closure);

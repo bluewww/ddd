@@ -312,7 +312,7 @@ static Boolean CvtStringToPixmap(Display *display,
 	v = v.after("xm");
     if (v != "unspecified_pixmap")
     {
-	p = XmGetPixmap(screen, CONST_CAST(char*,value.chars()), foreground, background);
+	p = XmGetPixmap(screen, XMST(value.chars()), foreground, background);
 
 	if (p == XmUNSPECIFIED_PIXMAP)
 	{
@@ -760,7 +760,7 @@ static Boolean CvtStringToXmFontList(Display *display,
 	    target = XmFontListAdd(target, font, charset);
 
 #else  // XmVersion >= 1002
-	XmFontListEntry entry = XmFontListEntryLoad(display, CONST_CAST(char *,fontspec), 
+	XmFontListEntry entry = XmFontListEntryLoad(display, XMST(fontspec), 
 						    XmFONT_IS_FONT, charset);
 	target = XmFontListAppendEntry(target, entry);
 	XmFontListEntryFree(&entry);

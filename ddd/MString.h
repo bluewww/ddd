@@ -55,21 +55,21 @@ private:
 public:
     // Constructors
     MString():
-	_mstring(XmStringCreateLtoR(CONST_CAST(char *,""), MSTRING_DEFAULT_CHARSET))
+	_mstring(XmStringCreateLtoR(XMST(""), MSTRING_DEFAULT_CHARSET))
     {
 	assert(OK());
     }
 
     MString(const char *text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
-	_mstring(text ? XmStringCreateLtoR(CONST_CAST(char *,text), charset) : 0)
+	_mstring(text ? XmStringCreateLtoR(XMST(text), charset) : 0)
     {
 	assert(OK());
     }
 
     MString(const string& text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
-	_mstring(XmStringCreateLtoR(CONST_CAST(char *,text.chars()), charset))
+	_mstring(XmStringCreateLtoR(XMST(text.chars()), charset))
     {
 	assert(OK());
     }

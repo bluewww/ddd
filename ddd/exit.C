@@ -306,7 +306,7 @@ static void post_fatal(const string& title, const string& cause,
     if (fatal_dialog == 0)
     {
 	fatal_dialog = verify(XmCreateErrorDialog (find_shell(),
-						   CONST_CAST(char *,"fatal_dialog"), 
+						   XMST("fatal_dialog"), 
 						   0, 0));
 	Delay::register_shell(fatal_dialog);
 
@@ -316,7 +316,7 @@ static void post_fatal(const string& title, const string& cause,
 
 #if XmVersion >= 1002
 	Widget exit = verify(XmCreatePushButton(fatal_dialog, 
-						CONST_CAST(char *,"exit"), 0, 0));
+						XMST("exit"), 0, 0));
 	XtManageChild(exit);
 	XtAddCallback(exit, XmNactivateCallback,
 		      DDDExitCB, XtPointer(EXIT_FAILURE));
@@ -1064,7 +1064,7 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     quit_dialog = verify(XmCreateQuestionDialog(find_shell(w),
-						CONST_CAST(char *,"quit_dialog"), 
+						XMST("quit_dialog"), 
 						args, arg));
     Delay::register_shell(quit_dialog);
     XtAddCallback(quit_dialog, XmNokCallback,   DDDDoneAnywayCB, client_data);
@@ -1132,7 +1132,7 @@ void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
 
 	dialog = verify(
 	    XmCreateQuestionDialog(find_shell(w),
-				   CONST_CAST(char *,"confirm_restart_dialog"),
+				   XMST("confirm_restart_dialog"),
 				   0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, _DDDRestartCB,

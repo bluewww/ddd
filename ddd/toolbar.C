@@ -251,7 +251,7 @@ Widget create_toolbar(Widget parent, const string& /* name */,
     XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
     XtSetArg(args[arg], XmNborderWidth,        0); arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    Widget toolbar = verify(XmCreateForm(parent, CONST_CAST(char*,toolbar_name.chars()), args, arg));
+    Widget toolbar = verify(XmCreateForm(parent, XMST(toolbar_name.chars()), args, arg));
 
     // Create `():'
     label = create_arg_label(toolbar);

@@ -182,7 +182,7 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	tip_dialog = 
 	    verify(XmCreateInformationDialog(find_shell(w), 
-					     CONST_CAST(char *,"tip_dialog"), 
+					     XMST("tip_dialog"), 
 					     args, arg));
 
 #if XmVersion >= 1002
@@ -190,7 +190,7 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNset, app_data.startup_tips); arg++;
 	set_startup_tips_w = 
 	    verify(XmCreateToggleButton(tip_dialog, 
-					CONST_CAST(char *,"set_startup_tips"),
+					XMST("set_startup_tips"),
 					args, arg));
 	XtAddCallback(set_startup_tips_w, XmNvalueChangedCallback, 
 		      SetStartupTipsCB, 0);

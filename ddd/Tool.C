@@ -107,7 +107,7 @@ void create_command_tool()
     if (use_transient_tool_shell)
     {
 	tool_shell = verify(XmCreateDialogShell(tool_shell_parent, 
-						CONST_CAST(char *,"tool_shell"), 
+						XMST("tool_shell"), 
 						args, arg));
     }
     else
@@ -121,7 +121,7 @@ void create_command_tool()
 
     arg = 0;
     tool_buttons_w = 
-	verify(XmCreateForm(tool_shell, CONST_CAST(char *,"tool_buttons"), args, arg));
+	verify(XmCreateForm(tool_shell, XMST("tool_buttons"), args, arg));
     set_buttons(tool_buttons_w, app_data.tool_buttons, false);
 
     Delay::register_shell(tool_shell);

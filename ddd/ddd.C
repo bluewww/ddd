@@ -2569,7 +2569,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Create main window
     arg = 0;
     Widget main_window = XmCreateMainWindow(command_shell, 
-					    CONST_CAST(char *,"main_window"),
+					    XMST("main_window"),
 					    args, arg);
     XtManageChild(main_window);
 
@@ -2594,7 +2594,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
     Widget paned_work_w = 
 	verify(XmCreatePanedWindow(main_window,
-				   CONST_CAST(char *,"paned_work_w"),
+				   XMST("paned_work_w"),
 				   args, arg));
     XtManageChild(paned_work_w);
 
@@ -2654,7 +2654,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	arg = 0;
 	data_main_window_w = 
 	    XmCreateMainWindow(data_disp_shell, 
-			       CONST_CAST(char *,"data_main_window"),
+			       XMST("data_main_window"),
 			       args, arg);
 	XtManageChild(data_main_window_w);
 
@@ -2673,7 +2673,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 	data_disp_parent = 
 	    verify(XmCreatePanedWindow(data_main_window_w,
-				       CONST_CAST(char *,"data_paned_work_w"),
+				       XMST("data_paned_work_w"),
 				       args, arg));
 	XtManageChild(data_disp_parent);
     }
@@ -2711,7 +2711,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	arg = 0;
 	source_main_window_w = 
 	    XmCreateMainWindow(source_view_shell,
-			       CONST_CAST(char *,"source_main_window"),
+			       XMST("source_main_window"),
 			       args, arg);
 	XtManageChild(source_main_window_w);
 
@@ -2730,7 +2730,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 	source_view_parent = 
 	    verify(XmCreatePanedWindow(source_main_window_w, 
-				       CONST_CAST(char *,"source_paned_work_w"), 
+				       XMST("source_paned_work_w"), 
 				       args, arg));
 	XtManageChild(source_view_parent);
 
@@ -2823,7 +2823,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     arg = 0;
     gdb_w = verify(XmCreateScrolledText(paned_work_w, 
-					CONST_CAST(char *,"gdb_w"), args, arg));
+					XMST("gdb_w"), args, arg));
 
     XtAddCallback (gdb_w,
 		   XmNmodifyVerifyCallback,
@@ -3281,7 +3281,7 @@ static void ddd_check_version()
 		 version_warnings.xmstring()); arg++;
 	Widget warning = 
 	    verify(XmCreateWarningDialog(command_shell, 
-					 CONST_CAST(char *,"bad_version_warning"),
+					 XMST("bad_version_warning"),
 					 args, arg));
 	Delay::register_shell(warning);
 	XtUnmanageChild(XmMessageBoxGetChild(warning, XmDIALOG_CANCEL_BUTTON));
@@ -3825,12 +3825,12 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     }
 
     Widget lock_dialog =
-	verify(XmCreateQuestionDialog(parent, CONST_CAST(char *,"lock_dialog"), 
+	verify(XmCreateQuestionDialog(parent, XMST("lock_dialog"), 
 				      args, arg));
     Delay::register_shell(lock_dialog);
 
 #if XmVersion >= 1002
-    Widget kill = verify(XmCreatePushButton(lock_dialog, CONST_CAST(char *,"kill"), 
+    Widget kill = verify(XmCreatePushButton(lock_dialog, XMST("kill"), 
 					    0, 0));
     XtManageChild(kill);
     XtAddCallback(kill, XmNactivateCallback,
@@ -4033,7 +4033,7 @@ static void set_string(Widget w, const _XtString value)
 
     // Note: XtVaSetValues(w, XmNvalue, value, ...) 
     // doesn't work properly with LessTif 0.89.9
-    XmTextFieldSetString(w, CONST_CAST(char*,value));
+    XmTextFieldSetString(w, XMST(value));
     XtVaSetValues(w, XmNcursorPosition, 0, XtPointer(0));
 }
 
@@ -5105,7 +5105,7 @@ static Widget add_panel(Widget parent, Widget buttons,
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-    Widget form = verify(XmCreateRowColumn(parent, CONST_CAST(char *,name), args, arg));
+    Widget form = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
     XtManageChild(form);
 
     // Add panel
@@ -5129,7 +5129,7 @@ static Widget add_panel(Widget parent, Widget buttons,
 
     // Add button
     arg = 0;
-    Widget button = verify(XmCreateToggleButton(buttons, CONST_CAST(char *,name), args, arg));
+    Widget button = verify(XmCreateToggleButton(buttons, XMST(name), args, arg));
     XtManageChild(button);
 
     XtAddCallback(button, XmNvalueChangedCallback, ChangePanelCB, 
@@ -5156,7 +5156,7 @@ static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
 	{
 	    restart_dialog = 
 		verify(XmCreateQuestionDialog(find_shell(dialog), 
-					      CONST_CAST(char *,"restart_dialog"),
+					      XMST("restart_dialog"),
 					      0, 0));
 	    Delay::register_shell(restart_dialog);
 	    XtAddCallback(restart_dialog, XmNokCallback,
@@ -5177,7 +5177,7 @@ static void make_preferences(Widget parent)
     arg = 0;
     preferences_dialog = 
 	verify(XmCreatePromptDialog(parent, 
-				    CONST_CAST(char *,"preferences"), args, arg));
+				    XMST("preferences"), args, arg));
     Delay::register_shell(preferences_dialog);
     XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), 
 		  XtPointer(0));
@@ -5205,17 +5205,17 @@ static void make_preferences(Widget parent)
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     Widget box =
-	verify(XmCreateRowColumn(preferences_dialog, CONST_CAST(char *,"box"), 
+	verify(XmCreateRowColumn(preferences_dialog, XMST("box"), 
 				 args, arg));
     XtManageChild(box);
 
     arg = 0;
     Widget buttons =
-	verify(XmCreateRadioBox(box, CONST_CAST(char *,"buttons"), args, arg));
+	verify(XmCreateRadioBox(box, XMST("buttons"), args, arg));
     XtManageChild(buttons);
 
     arg = 0;
-    Widget frame = verify(XmCreateFrame(box, CONST_CAST(char *,"frame"), args, arg));
+    Widget frame = verify(XmCreateFrame(box, XMST("frame"), args, arg));
     XtManageChild(frame);
 
     arg = 0;
@@ -5223,7 +5223,7 @@ static void make_preferences(Widget parent)
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     Widget change =
-	verify(XmCreateRowColumn(frame, CONST_CAST(char *,"change"), args, arg));
+	verify(XmCreateRowColumn(frame, XMST("change"), args, arg));
     XtManageChild(change);
 
     Dimension max_width  = 0;
@@ -5271,7 +5271,7 @@ static void create_status(Widget parent)
     int arg = 0;
     XtSetArg(args[arg], XmNresizePolicy, XmRESIZE_ANY); arg++;
     Widget status_form = 
-	verify(XmCreateForm(parent, CONST_CAST(char *,"status_form"), args, arg));
+	verify(XmCreateForm(parent, XMST("status_form"), args, arg));
     XtManageChild(status_form);
 
     // Create LED
@@ -5290,7 +5290,7 @@ static void create_status(Widget parent)
     }
 
     led_w = verify(XmCreateToggleButton(status_form, 
-					CONST_CAST(char *,"led"), args, arg));
+					XMST("led"), args, arg));
     XtManageChild(led_w);
 
     XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtPointer(0));
@@ -5309,7 +5309,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNarrowDirection, 
 	     (app_data.status_at_bottom ? XmARROW_UP : XmARROW_DOWN)); arg++;
     Widget arrow_w = 
-	verify(XmCreateArrowButton(status_form, CONST_CAST(char *,"arrow"), args, arg));
+	verify(XmCreateArrowButton(status_form, XMST("arrow"), args, arg));
     XtManageChild(arrow_w);
 
     // Give some `dummy' status message.  Some Motif versions limit
@@ -5330,7 +5330,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNrecomputeSize,    False); arg++;
     XtSetArg(args[arg], XmNshadowThickness,  0); arg++;
     status_w = verify(XmCreatePushButton(status_form, 
-					 CONST_CAST(char *,"status"), args, arg));
+					 XMST("status"), args, arg));
     XtManageChild(status_w);
 
     // Initialize status history
@@ -5997,7 +5997,7 @@ static void gdb_ctrl(char ctrl)
 	    const int spaces = TAB_WIDTH - column % TAB_WIDTH;
 	    const string spacing = replicate(' ', spaces);
 	
-	    XmTextInsert(gdb_w, promptPosition, CONST_CAST(char*,spacing.chars()));
+	    XmTextInsert(gdb_w, promptPosition, XMST(spacing.chars()));
 	    promptPosition += spacing.length();
 	}
 	break;
@@ -6005,7 +6005,7 @@ static void gdb_ctrl(char ctrl)
 	case '\r':
 	{
 	    // Erase last line
-	    XmTextReplace(gdb_w, startOfLine, promptPosition, CONST_CAST(char *,""));
+	    XmTextReplace(gdb_w, startOfLine, promptPosition, XMST(""));
 	    promptPosition = startOfLine;
 	}
 	break;
@@ -6016,7 +6016,7 @@ static void gdb_ctrl(char ctrl)
     case '\b':
     {
 	// Erase last character
-	XmTextReplace(gdb_w, promptPosition - 1, promptPosition, CONST_CAST(char *,""));
+	XmTextReplace(gdb_w, promptPosition - 1, promptPosition, XMST(""));
 	promptPosition--;
     }
     break;
@@ -6024,7 +6024,7 @@ static void gdb_ctrl(char ctrl)
     case '\n':
     {
 	string c = ctrl;
-	XmTextInsert(gdb_w, promptPosition, CONST_CAST(char*,c.chars()));
+	XmTextInsert(gdb_w, promptPosition, XMST(c.chars()));
 	promptPosition += c.length();
 
 	// Flush output
@@ -6040,7 +6040,7 @@ static void gdb_ctrl(char ctrl)
 	    c = string("^") + char('@' + ctrl);
 	else
 	    c = "^?";
-	XmTextInsert(gdb_w, promptPosition, CONST_CAST(char*,c.chars()));
+	XmTextInsert(gdb_w, promptPosition, XMST(c.chars()));
 	promptPosition += c.length();
     }
     break;
@@ -6130,7 +6130,7 @@ void _gdb_out(const string& txt)
 		cr_pending = false;
 	    }
 
-	    XmTextInsert(gdb_w, promptPosition, CONST_CAST(char*,block.chars()));
+	    XmTextInsert(gdb_w, promptPosition, XMST(block.chars()));
 	    promptPosition += block.length();
 	    // XmTextShowPosition(gdb_w, promptPosition);
 	}
@@ -6951,7 +6951,7 @@ static void popup_splash_screen(Widget parent, const string& color_key)
     XtSetArg(args[arg], XmNmwmFunctions,   MWM_FUNC_CLOSE); arg++;
     splash_shell = verify(
         XmCreateDialogShell(parent, 
-			    CONST_CAST(char *, "splash_shell"),
+			    XMST( "splash_shell"),
 			    args, arg));
 
     arg = 0;
@@ -6959,7 +6959,7 @@ static void popup_splash_screen(Widget parent, const string& color_key)
     XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     Widget splash = 
-	verify(XmCreateDrawingArea(splash_shell, CONST_CAST(char *,"splash"), args, arg));
+	verify(XmCreateDrawingArea(splash_shell, XMST("splash"), args, arg));
     XtManageChild(splash);
 
     Dimension width, height;
@@ -7064,7 +7064,7 @@ static void vsl_echo(const string& msg)
 	XtSetArg(args[arg], XmNautoUnmanage,   False);              arg++;
 	XtSetArg(args[arg], XmNmessageString,  message.xmstring()); arg++;
 	dialog = verify(XmCreateWarningDialog(find_shell(gdb_w), 
-					      CONST_CAST(char *,"vsl_message"), 
+					      XMST("vsl_message"), 
 					      args, arg));
 
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
@@ -7378,7 +7378,7 @@ static void setup_version_info()
     s += "To start, select `Help->What Now?'.";
     XmTextSetString(SourceView::source(), s);
 #else
-    XmTextSetString(gdb_w, CONST_CAST(char *,
+    XmTextSetString(gdb_w, XMST(
 		    "GNU " DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
 		    "by Dorothea L\374tkehaus and Andreas Zeller.\n"
 		    "Copyright \251 1995-1999 "

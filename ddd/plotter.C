@@ -755,7 +755,7 @@ static void PlotterNotFoundHP(Agent *plotter, void *client_data, void *)
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     Widget dialog = 
 	verify(XmCreateErrorDialog(find_shell(),
-				   CONST_CAST(char *,"no_plotter_dialog"), args, arg));
+				   XMST("no_plotter_dialog"), args, arg));
     XtUnmanageChild(XmMessageBoxGetChild
 		    (dialog, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
@@ -805,7 +805,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 
 	arg = 0;
 	Widget main_window = XmCreateMainWindow(plot->shell, 
-						CONST_CAST(char *,"main_window"), 
+						XMST("main_window"), 
 						args, arg);
 	XtManageChild(main_window);
 
@@ -823,7 +823,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 	XtSetArg(args[arg], XmNscrollingPolicy, XmAPPLICATION_DEFINED); arg++;
 	XtSetArg(args[arg], XmNvisualPolicy,    XmVARIABLE);            arg++;
 	Widget scroll = 
-	    XmCreateScrolledWindow(main_window, CONST_CAST(char *,"scroll"), args, arg);
+	    XmCreateScrolledWindow(main_window, XMST("scroll"), args, arg);
 	XtManageChild(scroll);
 
 	// Create work window
@@ -834,7 +834,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 	    // xlib type - create plot area to draw plot commands
 	    arg = 0;
 	    work = XmCreateDrawingArea(scroll, 
-				       CONST_CAST(char *,PLOT_AREA_NAME), args, arg);
+				       XMST(PLOT_AREA_NAME), args, arg);
 	    XtManageChild(work);
 
 	    plot->area = 
@@ -866,14 +866,14 @@ static PlotWindowInfo *new_decoration(const string& name)
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL);      arg++;
 	XtSetArg(args[arg], XmNminimum,     0);                 arg++;
 	XtSetArg(args[arg], XmNmaximum,     360 + slider_size); arg++;
-	plot->hsb = XmCreateScrollBar(scroll, CONST_CAST(char *,"hsb"), args, arg);
+	plot->hsb = XmCreateScrollBar(scroll, XMST("hsb"), args, arg);
 	XtManageChild(plot->hsb);
 
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmVERTICAL);        arg++;
 	XtSetArg(args[arg], XmNminimum,     0);                 arg++;
 	XtSetArg(args[arg], XmNmaximum,     180 + slider_size); arg++;
-	plot->vsb = XmCreateScrollBar(scroll, CONST_CAST(char *,"vsb"), args, arg);
+	plot->vsb = XmCreateScrollBar(scroll, XMST("vsb"), args, arg);
 	XtManageChild(plot->vsb);
 
 	XtAddCallback(plot->hsb, XmNvalueChangedCallback,
@@ -978,7 +978,7 @@ PlotAgent *new_plotter(const string& name, DispValue *source)
 	Arg args[10];
 	Cardinal arg = 0;
 	dialog = verify(XmCreateWorkingDialog(find_shell(),
-					      CONST_CAST(char *,"launch_plot_dialog"), 
+					      XMST("launch_plot_dialog"), 
 					      args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog,
 					     XmDIALOG_OK_BUTTON));
@@ -1146,7 +1146,7 @@ static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
 	Cardinal arg = 0;
 	Widget dialog = 
 	    verify(XmCreatePromptDialog(plot->shell,
-					CONST_CAST(char *,"plot_command_dialog"),
+					XMST("plot_command_dialog"),
 					args, arg));
 	Delay::register_shell(dialog);
 	plot->command_dialog = dialog;
@@ -1167,7 +1167,7 @@ static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
 
 	arg = 0;
 	Widget command = 
-	    verify(XmCreateCommand(dialog, CONST_CAST(char *,"plot_command"), args, arg));
+	    verify(XmCreateCommand(dialog, XMST("plot_command"), args, arg));
 	plot->command = command;
 	XtManageChild(command);
 
@@ -1231,7 +1231,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
 		 XmDIALOG_FULL_APPLICATION_MODAL); arg++;
 	confirm_overwrite_dialog = 
 	    verify(XmCreateQuestionDialog(plot->shell,
-					  CONST_CAST(char *,"confirm_overwrite_dialog"), 
+					  XMST("confirm_overwrite_dialog"), 
 					  args, arg));
 	Delay::register_shell(confirm_overwrite_dialog);
 
@@ -1296,7 +1296,7 @@ static void ExportPlotCB(Widget w, XtPointer client_data, XtPointer call_data)
 	Cardinal arg = 0;
 	Widget dialog = 
 	    verify(XmCreateFileSelectionDialog(plot->shell, 
-					       CONST_CAST(char *,"export_data"), 
+					       XMST("export_data"), 
 					       args, arg));
 	plot->export_dialog = dialog;
 

@@ -109,7 +109,7 @@ static void set_completion(const CompletionInfo& info, const string& completion)
 
 	XmTextReplace(gdb_w, promptPosition,
 		      XmTextGetLastPosition(gdb_w), 
-		      CONST_CAST(char*,completion.chars()));
+		      XMST(completion.chars()));
 
 	private_gdb_output = false;
     }
@@ -117,11 +117,11 @@ static void set_completion(const CompletionInfo& info, const string& completion)
     {
 	if (XmIsTextField(info.widget))
 	{
-	    XmTextFieldSetString(info.widget, CONST_CAST(char*,completion.chars()));
+	    XmTextFieldSetString(info.widget, XMST(completion.chars()));
 	}
 	else if (XmIsText(info.widget))
 	{
-	    XmTextSetString(info.widget, CONST_CAST(char*,completion.chars()));
+	    XmTextSetString(info.widget, XMST(completion.chars()));
 	}
     }
 }
