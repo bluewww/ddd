@@ -1847,7 +1847,7 @@ vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
 # DDD regexp parsers.
 rxscan.C: $(srcdir)/rxscan.L
 	$(LEX.L) $(srcdir)/rxscan.L
-	$(LEXTOCXX) -prefix ddd
+	$(LEXTOCXX) -prefix "ddd"
 	$(MV) $(LEX_OUTPUT_ROOT).C $@
 	$(RM) $(LEX_OUTPUT_ROOT).c
 
