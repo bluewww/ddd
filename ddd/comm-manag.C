@@ -523,6 +523,10 @@ void init_session(const string& restart, const string& settings)
 	    c.verbose = true;
 	    c.check = true;
 	}
+	else if (gdb->type() == JDB && is_use_cmd(c.command))
+	{
+	    c.check = true;
+	}
 
 	// Translate breakpoint numbers to the current base.
 	fix_bp_numbers(c.command);
@@ -837,6 +841,7 @@ void send_gdb_command(string cmd, Widget origin,
     else if (gdb->type() == JDB && is_use_cmd(cmd))
     {
 	plus_cmd_data->refresh_class_path  = true;
+	plus_cmd_data->set_command         = cmd;
 	plus_cmd_data->refresh_breakpoints = false;
 	plus_cmd_data->refresh_where       = false;
 	plus_cmd_data->refresh_frame       = false;
@@ -1805,7 +1810,11 @@ void plusOQAC (const StringArray& answers,
 	source_view->process_pwd(answers[qu_count++]);
 
     if (plus_cmd_data->refresh_class_path)
-	source_view->process_use(answers[qu_count++]);
+    {
+	string ans = answers[qu_count++];
+	source_view->process_use(ans);
+	process_show(plus_cmd_data->set_command, ans);
+    }
 
     if (plus_cmd_data->refresh_file)
     {

@@ -2947,22 +2947,23 @@ Ddd*settings*scroll.width:			528
 Ddd*settings*form.width:			500
 Ddd*settings*help.labelString:			?
 Ddd*settings*XmTextField.columns:		10
-Ddd*settings*dir.columns:			36
-Ddd*settings*path.columns:			36
 Ddd*settings*sep.bottomOffset:			10
 Ddd*settings*leader.bottomOffset:		4
 Ddd*settings*leader.separatorType:		XmSINGLE_DASHED_LINE
 
-Ddd*settings*v8.labelString: SPARC V8
-Ddd*settings*v9.labelString: SPARC V9
-Ddd*settings*v9sgi.labelString: SPARC V9 with Special Graphics Instructions
+! Settings for special fields
+Ddd*settings*dir.columns:        36
+Ddd*settings*path.columns:       36
+Ddd*settings*use.columns:        50
+Ddd*settings*v8.labelString:     SPARC V8
+Ddd*settings*v9.labelString:     SPARC V9
+Ddd*settings*v9sgi.labelString:  SPARC V9 with Special Graphics Instructions
 Ddd*settings*parent.labelString: stay with parent
-Ddd*settings*child.labelString: follow child
-Ddd*settings*both.labelString: follow both
-Ddd*settings*ask.labelString: ask for an option
-Ddd*settings*stdio.labelString: Standard I/O
-Ddd*settings*pty.labelString: PTY
-
+Ddd*settings*child.labelString:  follow child
+Ddd*settings*both.labelString:   follow both
+Ddd*settings*ask.labelString:    ask for an option
+Ddd*settings*stdio.labelString:  Standard I/O
+Ddd*settings*pty.labelString:    PTY
 
 Ddd*settings*help.tipString:\
 @rm Get help on this setting
@@ -4411,13 +4412,12 @@ Ddd*classes*applyLabelString:	 	Update
 Ddd*classes*helpString:	\
 @rm Please select a class to be debugged.\n\
 \n\
-These classes all have corresponding CODE(.java) files \
-in the SAMP(use) path.\n\
-To search for other classes, change the search path \
-with the SAMP(use) command.\n\
+These classes all have corresponding CODE(.java) sources in the class path.\n\
+To search for other classes, select LBL(Edit) | LBL(JDB Settings)\n\
+and add their directories to the class path.\n\
 \n\
 Click on LBL(Open) to open the selected class.\n\
-Click on LBL(Update) to update the list of classes.
+Click on LBL(Update) to scan the class path once more.
 
 
 

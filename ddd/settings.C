@@ -1042,8 +1042,18 @@ static void add_button(Widget form, int& row, DebuggerType type,
 	}
         break;
 
-    case XDB:
     case JDB:
+    {
+	// All we have is the `use' command.
+	e_type = TextFieldEntry;
+	set_command  = "use";
+	show_command = "use";
+	doc          = "Class path";
+	value = source_view->class_path();
+	break;
+    }
+
+    case XDB:
 	return;			// FIXME
     }
 
@@ -1397,7 +1407,11 @@ static void add_settings(Widget form, int& row, DebuggerType type,
     }
 
     case JDB:
-	break;			// FIXME
+    {
+	// In JDB, all we have is the `use' command.
+	add_button(form, row, type, entry_filter, "use");
+	break;
+    }
     }
 
     while (commands != "")
@@ -1725,7 +1739,7 @@ string get_settings(DebuggerType type)
 
 	case XDB:
 	case JDB:
-	    // Add setting (FIXME)
+	    // Add setting
 	    command += base + ' ' + value + '\n';
 	    break;
 	}
