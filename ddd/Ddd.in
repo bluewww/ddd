@@ -681,7 +681,7 @@ Ddd*manual_help_popup*okLabelString: Close
 
 ! Titles
 Ddd*help_popup.title: @DDD@: Help
-Ddd*manual_help_popup.title: @DDD@: Help Index
+Ddd*manual_help_popup.title: @DDD@: Manual
 
 ! Help on help.
 Ddd*help_popup.help*contextHelpString: \
@@ -1209,7 +1209,7 @@ Ddd*menubar.help*contextHelpString: \
 @tt \267 @bf On Version... @rm - some general information about @DDD@.\n\
 @tt \267 @bf On Debugging... @rm - some general information about debugging.\n\
 \n\
-@tt \267 @bf Index... @rm - the @DDD@ on-line manual.
+@tt \267 @bf @DDD@ Manual... @rm - the @DDD@ on-line manual.
 
 Ddd*helpMenu.onContext.labelString:	On Context...
 Ddd*helpMenu.onContext.mnemonic:	C
@@ -1229,8 +1229,8 @@ Ddd*helpMenu.onVersion.mnemonic:	V
 Ddd*helpMenu.onDebugging.labelString:	On Debugging...
 Ddd*helpMenu.onDebugging.mnemonic:	D
 
-Ddd*helpMenu.index.labelString:		Index...
-Ddd*helpMenu.index.mnemonic:		I
+Ddd*helpMenu.index.labelString:		@DDD@ Manual...
+Ddd*helpMenu.index.mnemonic:		M
 
 
 !-----------------------------------------------------------------------------
@@ -2247,7 +2247,7 @@ To enable us to fix the bug, you should include the following information:\n\
 @tt \267 @rm What you were doing to get this message.  Report all the facts.\n\
 @tt \267 @rm The @DDD@ configuration.  \n\
 Run `@tt ddd --configuration @rm' to get it.\n\
-See also the section ``Reporting Bugs'' in the @DDD@ manual page.\n\
+See also the section ``Reporting Bugs'' in the @DDD@ manual.\n\
 \n\
 We thank you for your support.
 
