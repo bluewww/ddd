@@ -115,12 +115,10 @@ horizontal_array (...) ->
   array_color(frame(indent(hlist((vwhite(3) & vrule() & vwhite(3)), ...))));
 
 // Two-dimensional arrays
-#replace tab_elem
-tab_elem(x) = x;
 twodim_array (...) -> 
-  array_color(hrule() | vrule() & tab(...));
+  array_color(dtab(...));
 twodim_array_elem (...) -> 
-  whiteframe(rm(...)) & vrule() | hrule();
+  rm(...);
 
 // Struct value
 struct_value (...) -> 
