@@ -264,9 +264,9 @@ LessTif
     `http://www.lesstif.org'; if needed, apply the patches found in
     the `patches/' subdirectory.
 
-    With LessTif 0.83, the following problems are known:
+    With LessTif 0.83, the following problems are currently known:
 
-    * The breakpoint popup menu won't work when selected from a breakpoint.
+    * button3 popup menus are insensitive the first time they pop up.
  
 
 Linux
