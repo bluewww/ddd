@@ -5064,8 +5064,6 @@ void SourceView::setArgAct(Widget w, XEvent *, String *, Cardinal *)
 
     if (s != 0)
     {
-	string arg = s;
-	arg.gsub('\n', ' ');
 	source_arg->set_string(s);
 	XtFree(s);
     }
