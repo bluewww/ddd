@@ -401,12 +401,14 @@ void DispValue::init(string& value, DispValueType given_type)
 		    {
 			array_index--;
 
+#if 0
 			// We use the GDB `artificial array' notation here,
 			// since repeat recognition is supported in GDB only.
 			member_name += "@" + itostring(repeats);
 
 			dv->full_name() = add_member_name(base, member_name);
 			dv->name()      = member_name;
+#endif
 			dv->repeats()   = repeats;
 
 			array_index += repeats;
