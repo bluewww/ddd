@@ -114,7 +114,7 @@ via LBL(Edit, @GDB@ Settings).
 
 To enable source line numbers, set the source indentation
 (LBL(Edit, Preferences, Source, Source Indentation))
-to LBL(8) or greater.
+to LBL(5) or more.
 
 You can quickly set breakpoints
 by double-clicking in the breakpoint area.
