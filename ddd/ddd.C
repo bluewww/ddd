@@ -2138,6 +2138,9 @@ void process_next_event()
     // Check for emergencies
     process_emergencies();
 
+    // Restart blinker
+    blink(!gdb->isReadyWithPrompt());
+
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
 
     if (app_data.synchronous_gdb && gdb->isBusyOnQuestion())
@@ -3685,7 +3688,6 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
     }
 
     // Some stuff that must be executed every other time
-    blink(!ready);
     fix_status_size();
 }
 
