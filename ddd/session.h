@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// DDD `What next?' help
+//
 
 // Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -24,25 +24,19 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_WhatNextCB_h
-#define _DDD_WhatNextCB_h
+#ifndef _DDD_session_h
+#define _DDD_session_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
 #include <X11/Intrinsic.h>
-#include "bool.h"
-#include "strclass.h"
 
-// Give a help dependent on current DDD state.
-extern void WhatNextCB(Widget widget, XtPointer client_data,
- 		       XtPointer call_data);
+extern void SaveSessionCB(Widget, XtPointer, XtPointer);
+extern void DieSessionCB(Widget, XtPointer, XtPointer);
 
-// Return whether the program is still running
-bool program_running(string& state);
-
-#endif // _DDD_WhatNextCB_h
+#endif // _DDD_session_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

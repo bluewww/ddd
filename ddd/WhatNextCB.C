@@ -138,7 +138,8 @@ static int passed_to_program(string program_state)
     return -1;
 }
 
-static bool program_running(string& state)
+// Return whether the program is still running
+bool program_running(string& state)
 {
     state = "is not being run";
 

@@ -3923,10 +3923,22 @@ Ddd*quit_dialog*cancelLabelString:   No
 Ddd*quit_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*quit_dialog*helpString:	\
 @rm @GDB@ is busy and does not react to the KBD(quit) command.\n\
-The debugged process is probably still running.\n\
+The debugged program is probably still running.\n\
 \n\
 Before killing a running @GDB@, you should try to interrupt it\n\
 (by selecting LBL(Program) | LBL(Interrupt)).
+
+Ddd*shutdown_dialog_popup.title: DDD: Program Running
+! Ddd*shutdown_dialog.messageString:	 \
+! @rm The program is running.  Shutdown anyway (and kill it)?
+Ddd*shutdown_dialog*okLabelString:	     Yes
+Ddd*shutdown_dialog*cancelLabelString:   No
+Ddd*shutdown_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
+Ddd*shutdown_dialog*helpString:	\
+@rm Your program is still running.\n\
+\n\
+Shutting down DDD now will kill your program.\n\
+Please confirm that this is what you want.
 
 Ddd*terminated_dialog_popup.title: DDD: Hasta la Vista
 ! Ddd*terminated_dialog.messageString:   \

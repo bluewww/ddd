@@ -224,6 +224,7 @@ extern "C" {
 #include "resources.h"
 #include "sashes.h"
 #include "select.h"
+#include "session.h"
 #include "settings.h"
 #include "shell.h"
 #include "shorten.h"
@@ -1337,9 +1338,23 @@ int main(int argc, char *argv[])
     XtAppContext app_context;
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+
+#if XtSpecificationRelease >= 6
+    Widget toplevel =
+	XtOpenApplication(&app_context, DDD_CLASS_NAME,
+			  XrmOptionDescList(0), 0,
+			  &argc, argv, ddd_fallback_resources,
+			  sessionShellWidgetClass,
+			  args, arg);
+
+    XtAddCallback(toplevel, XtNsaveCallback, SaveSessionCB, XtPointer(0));
+    XtAddCallback(toplevel, XtNdieCallback, DieSessionCB, XtPointer(0));
+#else
     Widget toplevel = 
 	XtAppInitialize(&app_context, DDD_CLASS_NAME,
-			0, 0, &argc, argv, ddd_fallback_resources, args, arg);
+			XrmOptionDescList(0), 0, 
+			&argc, argv, ddd_fallback_resources, args, arg);
+#endif
     ddd_install_xt_error(app_context);
 
     // Merge in ~/.dddinit resources
@@ -1520,8 +1535,9 @@ int main(int argc, char *argv[])
 				    applicationShellWidgetClass,
 				    XtDisplay(toplevel), args, arg));
 	
-	// The old top-level shell is no longer needed
-	XtDestroyWidget(toplevel);
+	// The old top-level shell may still be needed for session
+	// management, but is never realized.  From now on, use the
+	// command shell as parent of all further shells.
 	toplevel = command_shell;
     }
     else

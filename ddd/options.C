@@ -750,7 +750,7 @@ string options_file()
     return string(home) + "/.dddinit";
 }
 
-void save_options(Widget origin, bool create)
+bool save_options(Widget origin, bool create, bool interact)
 {
     string file = options_file();
     string msg = (create ? "Creating " : "Saving options in ");
@@ -787,9 +787,10 @@ void save_options(Widget origin, bool create)
     ofstream os(file);
     if (os.bad())
     {
-	post_error("Cannot save options in " + quote(file),
-		   "options_save_error", origin);
-	return;
+	if (interact)
+	    post_error("Cannot save options in " + quote(file),
+		       "options_save_error", origin);
+	return false;
     }
 
     os << dddinit << delimiter << " -- " DDD_NAME " WILL OVERWRITE IT\n";
@@ -801,7 +802,7 @@ void save_options(Widget origin, bool create)
     if (create)
     {
 	app_data.dddinit_version = DDD_VERSION;
-	return;
+	return true;
     }
 
     // Debugger settings
@@ -982,6 +983,8 @@ void save_options(Widget origin, bool create)
 
     save_option_state();
     save_settings_state();
+
+    return true;
 }
 
 void DDDSaveOptionsCB (Widget w, XtPointer, XtPointer)

@@ -38,14 +38,25 @@
 #include <X11/Intrinsic.h>
 
 // Options
+
+// Return option file name
 string options_file();
-void save_options(Widget origin, bool create = false);
-inline void create_options(Widget origin)
+
+// Save options in OPTIONS_FILE.  If CREATE is true, allow creation;
+// if INTERACT is false, don't allow interaction.  Return true iff
+// successful.
+bool save_options(Widget origin, bool create = false, bool interact = true);
+
+// A shorthand for option file creation
+inline bool create_options(Widget origin)
 {
-    save_options(origin, true);
+    return save_options(origin, true);
 }
+
+// Return true iff the startup preferences have changed.
 extern bool startup_preferences_changed();
 
+// Lots and lots of callbacks
 extern void sourceToggleFindWordsOnlyCB     (Widget, XtPointer, XtPointer);
 extern void sourceToggleCacheSourceFilesCB  (Widget, XtPointer, XtPointer);
 extern void sourceToggleCacheMachineCodeCB  (Widget, XtPointer, XtPointer);
