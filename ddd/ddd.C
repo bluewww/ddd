@@ -1,7 +1,7 @@
 // $Id$
 // DDD main program (and much more)
 
-// Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus (luetke@ips.cs.tu-bs.de)
 // and Andreas Zeller (zeller@ips.cs.tu-bs.de)
 // 
@@ -1535,7 +1535,6 @@ int main(int argc, char *argv[])
     make_preferences(paned_work_w);
 
     // All widgets are created at this point.
-    set_status("Welcome to " DDD_NAME " " DDD_VERSION "!");
 
     // Setup history
     init_history_file();
@@ -1719,6 +1718,12 @@ int main(int argc, char *argv[])
     // single-processor machines since DDD is idle when the debugger
     // starts.
     wait_until_mapped(command_shell);
+
+    // Give some `dummy' status message.  Some Motif versions limit
+    // the size of the status window to the length of the very first
+    // message, so we give some huge string at the beginning.
+    set_status(string("Welcome to " DDD_NAME " " DDD_VERSION "!") 
+	       + replicate(' ', 1024));
 
     // Create command tool
     if (app_data.tool_buttons && strlen(app_data.tool_buttons) > 0)
