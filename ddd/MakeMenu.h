@@ -49,9 +49,9 @@ const MMType MMButtonPanel =  9; // Like MMRadioPanel, but no radio behavior
 const MMType MMScale       = 10; // Create a scale
 const MMType MMTextField   = 11; // Create a text field
 const MMType MMEnterField  = 12; // Like MMTextField, but use Enter to activate
-const MMType MMSpinField   = 13; // Like MMTextField, but add two spin buttons
-const MMType MMFlatPush    = 14; // Create `flat' PushButton without shadows
-const MMType MMArrow       = 15; // Create an arrow button
+const MMType MMFlatPush    = 13; // Create `flat' PushButton without shadows
+const MMType MMArrow       = 14; // Create an arrow button
+const MMType MMSpinBox     = 15; // Like MMTextField, but add two spin buttons
 const MMType MMComboBox    = 16; // Create a combo box
 
 const MMType MMTypeMask    = 31; // mask to find type
@@ -133,9 +133,6 @@ void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure = 0);
 
 // Add ITEMS to SHELL.  If IGNORE_SEPS is set, all separators are ignored.
 void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false);
-
-// Set ComboBox list items to ITEMS.
-void MMsetComboBoxList(Widget name, const StringArray& items);
 
 // Conveniences
 #define MMNoCB { NULL }

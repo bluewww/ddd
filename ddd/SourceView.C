@@ -5463,7 +5463,7 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
 	{ "title", MMButtonPanel, MMNoCB, enabled_menu },
 	{ "condition", MMComboBox,
 	  { SetBreakpointConditionCB, XtPointer(info) }, 0, &info->condition },
-	{ "ignore", MMSpinField,
+	{ "ignore", MMSpinBox,
 	  { SetBreakpointIgnoreCountCB, XtPointer(info) }, 0, &info->ignore },
 	{ "commands", MMButtonPanel, MMNoCB, commands_menu },
 	MMEnd

@@ -650,13 +650,15 @@ XSTUFF_OBJECTS = \
 	frame.o      \
 	longName.o   \
 	verify.o     \
+	ComboBox.o   \
 	Delay.o      \
 	DestroyCB.o  \
 	ExitCB.o     \
 	InitImage.o  \
 	LessTifH.o   \
 	MString.o    \
-	MakeMenu.o
+	MakeMenu.o   \
+	SpinBox.o
 
 # Box library - rectangular composible graphical items
 # Top-level class is `Box', declared in `Box.h'

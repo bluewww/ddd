@@ -51,6 +51,7 @@ char settings_rcsid[] =
 
 #include "AppData.h"
 #include "Assoc.h"
+#include "ComboBox.h"
 #include "Command.h"
 #include "DataDisp.h"
 #include "Delay.h"
@@ -2121,7 +2122,7 @@ static void refresh_combo_box()
     for (StringStringAssocIter iter(defs); iter.ok(); iter++)
 	commands += iter.key();
     sort(commands);
-    MMsetComboBoxList(name_w, commands);
+    ComboBoxSetList(name_w, commands);
 }
 
 // Editing stuff

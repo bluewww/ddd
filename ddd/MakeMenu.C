@@ -55,39 +55,14 @@ char MakeMenu_rcsid[] =
 #include <Xm/List.h>
 #include <Xm/MenuShell.h>
 #include <X11/Xutil.h>
-#include <X11/cursorfont.h>
-
-// Whether to use XmSpinBox
-#ifndef USE_XM_SPINBOX
-#if XmVersion >= 2000
-#define USE_XM_SPINBOX 1
-#else
-#define USE_XM_SPINBOX 0
-#endif
-#endif
-
-// Whether to use XmComboBox
-#ifndef USE_XM_COMBOBOX
-#if XmVersion >= 2000
-#define USE_XM_COMBOBOX 1
-#else
-#define USE_XM_COMBOBOX 0
-#endif
-#endif
-
-#if USE_XM_SPINBOX
-#include <Xm/SpinB.h>
-#endif
-
-#if USE_XM_COMBOBOX
-#include <Xm/ComboBox.h>
-#endif
 
 #include "LessTifH.h"
 #include "bool.h"
 #include "verify.h"
 #include "findParent.h"
 #include "frame.h"
+#include "ComboBox.h"
+#include "SpinBox.h"
 
 
 // Pushmenu callbacks
@@ -317,244 +292,6 @@ static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data,
 
 
 //-----------------------------------------------------------------------
-// SpinBox helpers
-//-----------------------------------------------------------------------
-
-static void add_to_value(Widget text, int offset)
-{
-    String value = XmTextFieldGetString(text);
-    int v = atoi(value) + offset;
-
-    if (v >= 0)
-    {
-	string s = itostring(v);
-	XmTextFieldSetString(text, (String)s);
-    }
-    XtFree(value);
-}
-
-static Widget spin_text;
-static XtIntervalId spin_timer;
-static int spin_offset;
-
-static void RepeatSpinCB(XtPointer, XtIntervalId *id)
-{
-    assert(*id == spin_timer);
-    (void) id;
-
-    add_to_value(spin_text, spin_offset);
-
-    spin_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(spin_text),
-				 200, RepeatSpinCB, 0);
-}
-
-static void StartSpinCB(Widget w, XtPointer client_data, XtPointer)
-{
-    spin_text = Widget(client_data);
-
-    unsigned char direction = (unsigned char)-1;
-    XtVaGetValues(w, XmNarrowDirection, &direction, NULL);
-
-    switch (direction)
-    {
-    case XmARROW_LEFT:
-    case XmARROW_UP:
-	spin_offset = -1;
-	break;
-
-    case XmARROW_RIGHT:
-    case XmARROW_DOWN:
-	spin_offset = +1;
-	break;
-
-    default:
-	spin_offset = 0;
-	break;
-    }
-
-    add_to_value(spin_text, spin_offset);
-
-    if (spin_timer != 0)
-    {
-	XtRemoveTimeOut(spin_timer);
-	spin_timer = 0;
-    }
-
-    spin_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(spin_text),
-				 250, RepeatSpinCB, 0);
-}
-
-static void StopSpinCB(Widget, XtPointer, XtPointer)
-{
-    if (spin_timer != 0)
-    {
-	XtRemoveTimeOut(spin_timer);
-	spin_timer = 0;
-    }
-}
-
-static Widget create_spin_arrow(Widget parent, unsigned char direction,
-				Widget text)
-{
-    Pixel foreground;
-    XtVaGetValues(parent, XmNbackground, &foreground, 0);
-
-    Arg args[10];
-    Cardinal arg = 0;
-    XtSetArg(args[arg], XmNarrowDirection,  direction);  arg++;
-    XtSetArg(args[arg], XmNshadowThickness, 0);          arg++;
-    XtSetArg(args[arg], XmNforeground,      foreground); arg++;
-    Widget arrow = XmCreateArrowButton(parent, "arrow", args, arg);
-    XtManageChild(arrow);
-
-    XtAddCallback(arrow, XmNarmCallback, StartSpinCB, XtPointer(text));
-    XtAddCallback(arrow, XmNdisarmCallback, StopSpinCB, XtPointer(text));
-
-    return arrow;
-}
-
-
-//-----------------------------------------------------------------------
-// ComboBox helpers
-//-----------------------------------------------------------------------
-
-struct ComboBoxInfo
-{
-    Widget text;		// The text to be updated
-    Widget button;		// The arrow button
-    Widget list;		// The list to select from
-    Widget shell;		// The shell that contains the list
-    XtIntervalId timer;		// The timer that controls popup time
-    bool popped_up;		// True iff the combo box is popped up
-
-    ComboBoxInfo()
-	: text(0), button(0), list(0), shell(0), timer(0), popped_up(false)
-    {}
-};
-
-static void PopdownComboListCB(Widget, XtPointer client_data, XtPointer)
-{
-    ComboBoxInfo *info = (ComboBoxInfo *)client_data;
-
-    XtPopdown(info->shell);
-    info->popped_up = false;
-}
-
-static void RefreshComboTextCB(Widget w, XtPointer client_data,
-			       XtPointer call_data)
-{
-    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
-    ComboBoxInfo *info = (ComboBoxInfo *)client_data;
-
-    XmString item = cbs->item;
-    String item_s;
-    XmStringGetLtoR(item, CHARSET_TT, &item_s);
-    XmTextFieldSetString(info->text, item_s);
-    XtFree(item_s);
-
-    if (info->shell != 0)
-	PopdownComboListCB(w, client_data, call_data);
-}
-
-void MMsetComboBoxList(Widget name, const StringArray& items)
-{
-    XtPointer userData = 0;
-    XtVaGetValues(name, XmNuserData, &userData, NULL);
-    ComboBoxInfo *info = (ComboBoxInfo *)userData;
-
-    XmStringTable xmlist = 
-	XmStringTable(XtMalloc(items.size() * sizeof(XmString)));
-
-    int i;
-    for (i = 0; i < items.size(); i++)
-	xmlist[i] = XmStringCreateLtoR(items[i], CHARSET_TT);
-
-    XtVaSetValues(info->list,
-		  XmNitems,     xmlist,
-		  XmNitemCount, items.size(),
-		  NULL);
-
-    for (i = 0; i < items.size(); i++)
-	XmStringFree(xmlist[i]);
-
-    // It seems XMLIST is already owned by LIST
-    // XtFree((char *)xmlist);
-}
-
-static void CloseWhenActivatedCB(XtPointer client_data, XtIntervalId *id)
-{
-    ComboBoxInfo *info = (ComboBoxInfo *)client_data;
-    
-    assert(*id == info->timer);
-    (void) id;
-
-    info->timer = 0;
-}
-
-static void PopupComboListCB(Widget w, XtPointer client_data, 
-			     XtPointer call_data)
-{
-    ComboBoxInfo *info = (ComboBoxInfo *)client_data;
-
-    if (info->popped_up)
-    {
-	PopdownComboListCB(w, client_data, call_data);
-	return;
-    }
-
-    Position text_x, text_y;
-    XtTranslateCoords(info->text, 0, 0, &text_x, &text_y);
-
-    Dimension text_height = 0;
-    Dimension text_width  = 0;
-    XtVaGetValues(info->text, XmNheight, &text_height,
-		  XmNwidth, &text_width, NULL);
-
-    Position button_x, button_y;
-    XtTranslateCoords(info->button, 0, 0, &button_x, &button_y);
-
-    Dimension button_height = 0;
-    Dimension button_width  = 0;
-    XtVaGetValues(info->button, XmNheight, &button_height,
-		  XmNwidth, &button_width, NULL);
-
-    XtWidgetGeometry size;
-    size.request_mode = CWHeight;
-    XtQueryGeometry(XtParent(info->list), NULL, &size);
-
-    Position x       = text_x;
-    Position y       = text_y + text_height;
-    Dimension width  = button_x - text_x + button_width;
-    Dimension height = size.height;
-
-    XtVaSetValues(info->shell, XmNx, x, XmNy, y, 
-		  XmNwidth, width, XmNheight, height, NULL);
-    XtPopup(info->shell, XtGrabNonexclusive);
-    raise_shell(info->shell);
-    info->popped_up = true;
-
-    static Cursor cursor = XCreateFontCursor(XtDisplay(info->shell), XC_arrow);
-    XDefineCursor(XtDisplay(info->shell), XtWindow(info->shell), cursor);
-
-    // If we release the button within the next 250ms, keep the menu open.
-    // Otherwise, pop it down again.
-    if (info->timer != 0)
-	XtRemoveTimeOut(info->timer);
-    info->timer = 
-	XtAppAddTimeOut(XtWidgetToApplicationContext(info->shell), 250,
-			CloseWhenActivatedCB, XtPointer(info));
-}
-
-static void ActivatePopdownComboListCB(Widget w, XtPointer client_data, 
-				       XtPointer call_data)
-{
-    ComboBoxInfo *info = (ComboBoxInfo *)client_data;
-    if (info->timer == 0)
-	PopdownComboListCB(w, client_data, call_data);
-}
-
-
-//-----------------------------------------------------------------------
 // Add items
 //-----------------------------------------------------------------------
 
@@ -591,7 +328,6 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	string panelName   = string(name) + "Panel";
 	static string textName  = "text";
 	static string labelName = "label";
-	static string spinName  = "spin";
 	Widget subMenu = 0;
 	Widget panel   = 0;
 	bool flat = false;
@@ -811,10 +547,10 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    break;
 	}
 
+	case MMSpinBox:
 	case MMComboBox:
 	case MMTextField:
 	case MMEnterField:
-	case MMSpinField:
 	{
 	    // Create a label with an associated text field
 	    assert(subitems == 0);
@@ -833,127 +569,25 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
 		XtManageChild(label);
 
-	    Widget spin = panel;
-#if USE_XM_SPINBOX
-	    if (type == MMSpinField)
+	    switch (type)
 	    {
+	    case MMSpinBox:
 		arg = 0;
-		spin = XmCreateSpinBox(panel, spinName, args, arg);
-		XtManageChild(spin);
-	    }
-#endif
+		widget = CreateSpinBox(panel, textName, args, arg);
+		break;
 
-	    ComboBoxInfo *info = 0;
-#if USE_XM_COMBOBOX
-	    if (type == MMComboBox)
-	    {
-		info = new ComboBoxInfo;
-
+	    case MMComboBox:
 		arg = 0;
-		Widget combobox = 
-		    verify(XmCreateDropDownComboBox(panel, textName, 
-						    args, arg));
+		widget = CreateComboBox(panel, textName, args, arg);
+		break;
 
+	    case MMTextField:
+	    case MMEnterField:
 		arg = 0;
-		XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
-		XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-		XtSetValues(combobox, args, arg);
-		XtManageChild(combobox);
-
-		info->text = widget = XtNameToWidget(combobox, "*Text");
-		arg = 0;
-		XtSetArg(args[arg], XmNshadowThickness, 2); arg++;
-		XtSetValues(widget, args, arg);
-
-		info->list = XtNameToWidget(combobox, "*List");
-		arg = 0;
-		XtSetArg(args[arg], XmNshadowThickness, 2); arg++;
-		XtSetValues(info->list, args, arg);
-	    }
-#endif
-
-	    if (widget == 0)
-	    {
-		arg = 0;
-		if (type == MMSpinField)
-		{
-		    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-		}
-		widget = verify(XmCreateTextField(spin, textName, args, arg));
+		widget = verify(XmCreateTextField(panel, textName, args, arg));
 		XtManageChild(widget);
+		break;
 	    }
-
-	    // Add combo box arrow if still needed
-	    if (type == MMComboBox && info == 0)
-	    {
-		info = new ComboBoxInfo;
-
-		Pixel foreground;
-		XtVaGetValues(panel, XmNbackground, &foreground, 0);
-
-		arg = 0;
-		XtSetArg(args[arg], XmNarrowDirection,  XmARROW_DOWN); arg++;
-		XtSetArg(args[arg], XmNshadowThickness, 0);            arg++;
-		XtSetArg(args[arg], XmNforeground,      foreground);   arg++;
-		info->button = XmCreateArrowButton(panel, "comboBoxArrow", 
-						   args, arg);
-		XtManageChild(info->button);
-		XtAddCallback(info->button, XmNarmCallback,
-			      PopupComboListCB, XtPointer(info));
-		XtAddCallback(info->button, XmNactivateCallback,
-			      ActivatePopdownComboListCB, XtPointer(info));
-
-		XtAddCallback(widget, XmNvalueChangedCallback,
-			      PopdownComboListCB, XtPointer(info));
-		XtAddCallback(widget, XmNactivateCallback,
-			      PopdownComboListCB, XtPointer(info));
-
-		Widget the_shell = shell;
-		while (!XtIsShell(the_shell))
-		    the_shell = XtParent(the_shell);
-
-		XtAddCallback(the_shell, XmNpopdownCallback,
-			      PopdownComboListCB, XtPointer(info));
-
-		arg = 0;
-		XtSetArg(args[arg], XmNborderWidth, 0); arg++;
-		info->shell = XtCreatePopupShell("comboBoxShell", 
-						 overrideShellWidgetClass,
-						 panel, args, arg);
-
-		XtAddEventHandler(info->shell, VisibilityChangeMask, False,
-				  AutoRaiseEH, XtPointer(0));
-
-		arg = 0;
-		XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-		info->list = XmCreateScrolledList(info->shell, "list", 
-						  args, arg);
-		XtManageChild(info->list);
-	    }
-	    
-	    if (info != 0)
-	    {
-		info->text = widget;
-
-		XtVaSetValues(widget, XmNuserData, XtPointer(info), NULL);
-
-		XtAddCallback(info->list, XmNbrowseSelectionCallback,
-			      RefreshComboTextCB, XtPointer(info));
-		XtAddCallback(info->list, XmNsingleSelectionCallback,
-			      RefreshComboTextCB, XtPointer(info));
-		XtAddCallback(info->list, XmNmultipleSelectionCallback,
-			      RefreshComboTextCB, XtPointer(info));
-		XtAddCallback(info->list, XmNextendedSelectionCallback,
-			      RefreshComboTextCB, XtPointer(info));
-	    }
-
-	    // Add spin arrows if still needed
-	    if (type == MMSpinField && spin == panel)
-	    {
-		create_spin_arrow(panel, XmARROW_LEFT,  widget);
-		create_spin_arrow(panel, XmARROW_RIGHT, widget);
-	    }
-
 	    break;
 	}
 
@@ -1253,25 +887,23 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     {
 	if (callback.callback != 0)
 	{
-	    XtPointer userData;
-	    XtVaGetValues(widget, XmNuserData, &userData, NULL);
-	    ComboBoxInfo *info = (ComboBoxInfo *)userData;
+	    Widget list = ComboBoxList(widget);
 
-	    XtAddCallback(info->list, XmNbrowseSelectionCallback,
+	    XtAddCallback(list, XmNbrowseSelectionCallback,
 			  callback.callback, callback.closure);
-	    XtAddCallback(info->list, XmNsingleSelectionCallback,
+	    XtAddCallback(list, XmNsingleSelectionCallback,
 			  callback.callback, callback.closure);
-	    XtAddCallback(info->list, XmNmultipleSelectionCallback,
+	    XtAddCallback(list, XmNmultipleSelectionCallback,
 			  callback.callback, callback.closure);
-	    XtAddCallback(info->list, XmNextendedSelectionCallback,
+	    XtAddCallback(list, XmNextendedSelectionCallback,
 			  callback.callback, callback.closure);
 	}
 
 	// FALL THROUGH
     }
 
+    case MMSpinBox:
     case MMTextField:
-    case MMSpinField:
     {
 	if (callback.callback != 0)
 	    XtAddCallback(widget,

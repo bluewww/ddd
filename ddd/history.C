@@ -36,6 +36,7 @@ char history_rcsid[] =
 #include "history.h"
 
 #include "Assoc.h"
+#include "ComboBox.h"
 #include "Delay.h"
 #include "DestroyCB.h"
 #include "GDBAgent.h"
@@ -484,7 +485,7 @@ static void update_combo_box(Widget text, HistoryFilter filter)
 
     sort(entries);
     uniq(entries);
-    MMsetComboBoxList(text, entries);
+    ComboBoxSetList(text, entries);
 }
 
 static WidgetHistoryFilterAssoc combo_boxes;
