@@ -2882,16 +2882,71 @@ string SourceView::current_source_name()
 	// source file name as compiled into the executable.
 	if (source_name_cache[current_file_name] == "")
 	{
+	    // Try the current source.
 	    string ans = gdb_question("info source");
 	    if (ans != NO_GDB_ANSWER)
 	    {
 		ans = ans.before('\n');
-		ans = ans.before(' ', -1);
+		ans = ans.after(' ', -1);
 
-		// For security, we request that source and current
-		// file have the same basename.
 		if (base_matches(ans, current_file_name))
+		{
+		    // For security, we request that source and current
+		    // file have the same basename.
 		    source_name_cache[current_file_name] = ans;
+		}
+		else
+		{
+		    // The current source does not match the current file.
+		    // Try all sources.
+		    static string all_sources = "<ALL SOURCES>";
+
+		    if (source_name_cache[all_sources] == "")
+		    {
+			ans = gdb_question("info sources");
+			if (ans != NO_GDB_ANSWER)
+			{
+			    // Create a newline-separated list of sources
+			    static regex rxtitle("[^\n]*:\n");
+			    ans.gsub(rxtitle, string(""));
+			    ans.gsub(", ", "\n");
+			    ans.gsub(rxwhite, "\n");
+
+			    static regex rxnls("\n\n*");
+			    ans.gsub(rxnls, "\n");
+
+			    source_name_cache[all_sources] = ans;
+			}
+		    }
+
+		    ans = source_name_cache[all_sources];
+		    if (ans != "")
+		    {
+			int n = ans.freq('\n');
+			string *sources = new string[n + 1];
+			split(ans, sources, n + 1, '\n');
+
+			for (int i = 0; i < n + 1; i++)
+			{
+			    if (base_matches(sources[i], current_file_name))
+			    {
+				const string& src = sources[i];
+				source_name_cache[current_file_name] = src;
+				break;
+			    }
+			}
+			
+			delete[] sources;
+
+			if (source_name_cache[current_file_name] == "")
+			{
+			    // No such source text.  Store the base name
+			    // such that GDB is not asked again.
+			    string base = basename(current_file_name.chars());
+			    source_name_cache[current_file_name] = base;
+			}
+		    }
+		}
 	    }
 	}
 

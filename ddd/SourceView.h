@@ -256,6 +256,7 @@ private:
     static bool bp_matches(BreakPoint *bp);
     static string full_path(string file);
     static bool file_matches(const string& file1, const string& file2);
+    static bool base_matches(const string& file1, const string& file2);
 
     static Assoc<string, string> file_cache;
     static CodeCache code_cache;
