@@ -510,6 +510,7 @@ Ddd*highlightThickness:      	1
 ! @rm (roman), @sl (slanted), @bf (bold face), @bs (bold slanted)
 ! are some fonts for usual highlighting.
 ! @Logo and @logo are used in the DDD logo.
+
 Ddd*fontList: \
 -*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=charset,\
 -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\
@@ -522,6 +523,20 @@ Ddd*fontList: \
 -*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\
 -*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=logo,\
 -*-symbol-*-*-*-*-*-100-*-*-*-*-*-*=symbol
+
+! This alternate setting is slightly smaller.
+! Ddd*fontList: \
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\
+! -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\
+! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\
+! -*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=rm,\
+! -*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=bf,\
+! -*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\
+! -*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\
+! -*-symbol-*-*-*-*-*-90-*-*-*-*-*-*=symbol
 
 ! Fixed-width fonts.  `lucidatypewriter' is the font the DDD developers
 ! prefer; another popular choice is `courier'.
@@ -537,6 +552,14 @@ Ddd*tool_buttons.interrupt.fontList:  \
 	-*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=charset
 Ddd*tool_buttons*fontList:  \
 	-*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+
+! And again, the smaller alternative.
+! Ddd*tool_buttons.run.fontList: \
+! 	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+! Ddd*tool_buttons.interrupt.fontList:  \
+! 	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+! Ddd*tool_buttons*fontList:  \
+! 	-*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
 	
 
 ! For fonts in the execution window, see the `termCommand' resource, above.
