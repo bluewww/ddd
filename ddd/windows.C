@@ -738,6 +738,8 @@ void gdbCloseCommandWindowCB(Widget w, XtPointer, XtPointer)
 	popdown_shell(command_shell);
     }
 
+    app_data.debugger_console = false;
+
     update_options();
 }
 
@@ -747,6 +749,8 @@ void gdbOpenCommandWindowCB(Widget, XtPointer, XtPointer)
 
     if (app_data.separate_source_window)
 	popup_shell(command_shell);
+
+    app_data.debugger_console = true;
 
     update_options();
 }
@@ -785,6 +789,8 @@ void gdbCloseSourceWindowCB(Widget w, XtPointer client_data,
     if (!XtIsManaged(source_view->code_form()))
 	gdbCloseToolWindowCB(w, client_data, call_data);
 
+    app_data.source_window = false;
+
     popdown_shell(source_view_shell);
     update_options();
 }
@@ -804,6 +810,8 @@ void gdbCloseCodeWindowCB(Widget w, XtPointer client_data,
     if (!XtIsManaged(source_view->source_form()))
 	gdbCloseToolWindowCB(w, client_data, call_data);
 
+    app_data.disassemble = false;
+
     update_options();
 }
 
@@ -818,6 +826,8 @@ void gdbOpenSourceWindowCB(Widget w, XtPointer client_data,
 
     gdbOpenToolWindowCB(w, client_data, call_data);
 
+    app_data.source_window = true;
+
     update_options();
 }
 
@@ -829,6 +839,8 @@ void gdbOpenCodeWindowCB(Widget w, XtPointer client_data,
     popup_shell(source_view_shell);
 
     gdbOpenToolWindowCB(w, client_data, call_data);
+
+    app_data.disassemble = true;
 
     update_options();
 }
@@ -872,8 +884,10 @@ void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
     }
 
     unmanage_paned_child(data_disp->graph_form());
-
     popdown_shell(data_disp_shell);
+
+    app_data.data_window = false;
+
     update_options();
 }
 
@@ -883,6 +897,9 @@ void gdbOpenDataWindowCB(Widget, XtPointer, XtPointer)
     manage_paned_child(data_disp->graph_form());
 
     popup_shell(data_disp_shell);
+
+    app_data.data_window = true;
+
     update_options();
 }
 
@@ -979,8 +996,6 @@ void gdbToggleCommandWindowCB(Widget w, XtPointer client_data,
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    app_data.debugger_console = info->set;
-
     if (info->set)
 	gdbOpenCommandWindowCB(w, client_data, call_data);
     else
@@ -993,8 +1008,6 @@ void gdbToggleSourceWindowCB(Widget w, XtPointer client_data,
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    app_data.source_window = info->set;
-
     if (info->set)
 	gdbOpenSourceWindowCB(w, client_data, call_data);
     else
@@ -1006,8 +1019,6 @@ void gdbToggleCodeWindowCB(Widget w, XtPointer client_data,
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
-
-    app_data.disassemble = info->set;
 
     if (info->set)
 	gdbOpenCodeWindowCB(w, client_data, call_data);
@@ -1022,8 +1033,6 @@ void gdbToggleDataWindowCB(Widget w, XtPointer client_data,
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
-
-    app_data.data_window = info->set;
 
     if (info->set)
 	gdbOpenDataWindowCB(w, client_data, call_data);
