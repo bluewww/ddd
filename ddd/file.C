@@ -76,6 +76,9 @@ char file_rcsid[] =
 #include <Xm/SelectioB.h>
 #include <Xm/MessageB.h>
 #include <Xm/Text.h>
+#include <Xm/RowColumn.h>
+#include <Xm/TextF.h>
+#include <Xm/Label.h>
 
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
@@ -1202,9 +1205,9 @@ static void get_items(Widget selectionList, StringArray& itemids)
 static string get_item(Widget, XtPointer client_data, XtPointer)
 {
     StringArray itemids;
-    Widget itemes = Widget(client_data);
-    if (itemes != 0)
-	get_items(itemes, itemids);
+    Widget items = Widget(client_data);
+    if (items != 0)
+	get_items(items, itemids);
 
     if (itemids.size() == 1)
 	return itemids[0];
@@ -1354,6 +1357,8 @@ static void uniq(StringArray& a1, StringArray& a2)
 // Sort A1 and A2 according to the values in A1
 static void sort(StringArray& a1, StringArray& a2)
 {
+    assert(a1.size() == a2.size());
+
     // Shell sort -- simple and fast
     int h = 1;
     do {
@@ -1380,10 +1385,41 @@ static void sort(StringArray& a1, StringArray& a2)
     } while (h != 1);
 }
 
-static void update_sources(Widget sources)
+static void filter_sources(StringArray& labels, StringArray& sources,
+			   const string& pattern)
+{
+    assert(labels.size() == sources.size());
+
+    StringArray new_labels;
+    StringArray new_sources;
+
+    for (int i = 0; i < labels.size(); i++)
+    {
+	if (glob_match(pattern, labels[i], 0) ||
+	    glob_match(pattern, sources[i], 0))
+	{
+	    new_labels  += labels[i];
+	    new_sources += sources[i];
+	}
+    }
+
+    labels  = new_labels;
+    sources = new_sources;
+}
+
+static void update_sources(Widget sources, Widget filter)
 {
     StatusDelay delay("Getting sources");
     get_gdb_sources(all_sources);
+
+    String pattern_s = XmTextFieldGetString(filter);
+    string pattern = pattern_s;
+    XtFree(pattern_s);
+
+    strip_space(pattern);
+    if (pattern == "")
+	pattern = "*";
+    XmTextFieldSetString(filter, (char *)pattern);
 
     StringArray labels;
     uniquify(all_sources, labels);
@@ -1391,6 +1427,9 @@ static void update_sources(Widget sources)
     // Sort and remove duplicates
     sort(labels, all_sources);
     uniq(labels, all_sources);
+
+    // Filter pattern
+    filter_sources(labels, all_sources, pattern);
 
     // Now set the selection.
     bool *selected = new bool[labels.size()];
@@ -1408,11 +1447,15 @@ static void lookupSourceDone(Widget w,
 			     XtPointer client_data, 
 			     XtPointer call_data)
 {
+    Widget sources = Widget(client_data);
+    XmSelectionBoxCallbackStruct *cbs = 
+	(XmSelectionBoxCallbackStruct *)call_data;
+
     string source = get_item(w, client_data, call_data);
+
     if (source.contains('/'))
     {
 	// Expand to full path name
-	Widget sources = Widget(client_data);
 	int *position_list = 0;
 	int position_count = 0;
 	if (XmListGetSelectedPos(sources, &position_list, &position_count))
@@ -1431,7 +1474,13 @@ static void lookupSourceDone(Widget w,
     }
 
     if (source != "")
+    {
 	source_view->lookup(source + ":1");
+
+	// FIXME: Check for success here
+	if (cbs != 0 && cbs->reason != XmCR_APPLY)
+	    XtUnmanageChild(sources);
+    }
 }
 
 
@@ -1592,7 +1641,8 @@ void gdbOpenClassCB(Widget w, XtPointer, XtPointer)
     manage_and_raise(dialog);
 }
 
-static Widget source_list = 0;
+static Widget source_list   = 0;
+static Widget source_filter = 0;
 
 void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -1610,6 +1660,9 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	int arg = 0;
     
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
+#if XmVersion >= 1002
+	XtSetArg(args[arg], XmNchildPlacement, XmPLACE_TOP); arg++;
+#endif
 	dialog = verify(XmCreateSelectionDialog(find_shell(w), 
 						"sources", args, arg));
 
@@ -1619,6 +1672,23 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 					       XmDIALOG_SELECTION_LABEL));
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
 					       XmDIALOG_TEXT));
+
+	arg = 0;
+	XtSetArg(args[arg], XmNmarginWidth,     0);     arg++;
+	XtSetArg(args[arg], XmNmarginHeight,    0);     arg++;
+	XtSetArg(args[arg], XmNborderWidth,     0);     arg++;
+	XtSetArg(args[arg], XmNadjustMargin,    False); arg++;
+	XtSetArg(args[arg], XmNshadowThickness, 0);     arg++;
+	Widget box = XmCreateRowColumn(dialog, "box", args, arg);
+	XtManageChild(box);
+
+	arg = 0;
+	Widget label = XmCreateLabel(box, "label", args, arg);
+	XtManageChild(label);
+
+	arg = 0;
+	source_filter = XmCreateTextField(box, "filter", args, arg);
+	XtManageChild(source_filter);
 
 	source_list = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
 
@@ -1633,16 +1703,17 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	XtAddCallback(dialog, XmNokCallback, 
 		      lookupSourceDone, XtPointer(source_list));
-	XtAddCallback(dialog, XmNokCallback, 
-		      UnmanageThisCB, XtPointer(dialog));
 	XtAddCallback(dialog, XmNapplyCallback, 
 		      lookupSourceDone, XtPointer(source_list));
 	XtAddCallback(dialog, XmNcancelCallback, 
 		      UnmanageThisCB, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+
+	XtAddCallback(source_filter, XmNactivateCallback, 
+		      gdbLookupSourceCB, 0);
     }
 
-    update_sources(source_list);
+    update_sources(source_list, source_filter);
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
 }
@@ -1650,5 +1721,5 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 void update_sources()
 {
     if (source_list != 0)
-	update_sources(source_list);
+	update_sources(source_list, source_filter);
 }

@@ -4919,6 +4919,7 @@ Click on LBL(Update) to scan the class path once more.
 Ddd*sources_popup.title: 		DDD: Open Source
 Ddd*sources.listLabelString:		Sources
 Ddd*sources.selectionLabelString: 	Open Source
+Ddd*sources*label.labelString:		Filter
 Ddd*sources*selectionPolicy:		XmSINGLE_SELECT
 Ddd*sources*okLabelString:	 	Open
 Ddd*sources*applyLabelString:	 	Lookup
