@@ -2589,7 +2589,7 @@ Ddd*edit_buttons*text.rows: 			12
 Ddd*edit_buttons*text.wordWrap:	        	true
 Ddd*edit_buttons*text.scrollHorizontal:    	false
 
-Ddd*edit_buttons*verify.labelString: 		Disable unsupported buttons
+Ddd*edit_buttons*verify.labelString: 		Enable supported buttons only
 
 Ddd*edit_buttons*helpString: \
 @rm This is the EMPH(Button Editor).\n\
@@ -2610,8 +2610,8 @@ KEY(Ctrl+VAR(character)).\n\
 ITEM SAMP(...) at the end keeps VAR(command) from issuing a newline.\n\
     Example: SAMP(help ...)\n\
 \n\
-If LBL(Disable unsupported buttons) is set, DDD disables all buttons\n\
-whose commands are not supported by the inferior debugger.\n\
+If LBL(Enable supported buttons only) is set, DDD enables a button\n\
+if and only if its command is supported by the inferior debugger.\n\
 \n\
 Click on LBL(Apply) to apply the changes.\n\
 Click on LBL(OK) to apply the changes and close this window.\n\
@@ -2779,6 +2779,8 @@ ITEM Using the BUTTON(left mouse button), drag on a display to move\n\
 STRONG(Modifying displays)\n\
 ITEM Using the BUTTON(right mouse button), click on some display \
 to modify it.\n\
+ITEM Using KEY(Shift) + BUTTON(right mouse button), select modifications \
+from a shortcut menu.\n\
 \n\
 STRONG(Creating displays)\n\
 ITEM Using the BUTTON(right mouse button), click on the background\n\
@@ -4107,19 +4109,21 @@ The value of the expression is displayed each time the program stops.\n\
 Variables accessible are those of the lexical environment of the current\n\
 stack frame, plus all those whose scope is global or an entire file.\n\
 \n\
-If LBL(Include in New Display Menu) is set, the new display expression\n\
-becomes a shortcut in the LBL(New Display) menu.])dnl
+If LBL(Include in `New Display' Menu) is set, the new display expression\n\
+becomes an item in the LBL(New Display) menu.])dnl
 
 Ddd*new_display_dialog_popup.title:          	   DDD: New Display
 Ddd*new_display_dialog.okLabelString:              Display
 Ddd*new_display_dialog*label.labelString:    	   Display Expression
-Ddd*new_display_dialog*shortcut.labelString:       Include in New Display Menu
+Ddd*new_display_dialog*shortcut.labelString:   	   \
+Include in `New Display' Menu
 Ddd*new_display_dialog*helpString:	           NEW_DISPLAY_HELP
 
 Ddd*dependent_display_dialog_popup.title:          DDD: New Dependent Display
 Ddd*dependent_display_dialog.okLabelString:        Display
 Ddd*dependent_display_dialog*label.labelString:    Display Expression
-Ddd*dependent_display_dialog*shortcut.labelString: Include in New Display Menu
+Ddd*dependent_display_dialog*shortcut.labelString: \
+Include in `New Display' Menu
 Ddd*dependent_display_dialog*helpString: 	   NEW_DISPLAY_HELP\n\
 \n\
 The new display will be made dependent on the currently selected display.
