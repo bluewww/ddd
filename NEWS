@@ -6,8 +6,9 @@ DDD-3.3.11
 
 * New features and minor improvements
 - A bug in DBX mode introduced in release 3.3.10 has been fixed.
-- Thanks to Ted Creedon, XtSetLanguageProc() is now called properly
-  and should help when using I18N encodings.
+- A bug which prevented DDD from properly displaying ISO-8859-1 characters
+  (and probably other character sets too) under Motif has been fixed (1)
+(1) Thanks to Ted Creedon for his patch.
 
 DDD-3.3.10
 ==========

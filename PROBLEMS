@@ -265,8 +265,10 @@ Reported by: Andrew Gaylard <apg@users.sf.net>
 
     Alternatively, link with Lesstif.
 
-    This has been observed on Redhat-8.1, but probably affects other
-    Unixes as well.
+    As of 3.3.11, this problem is believed to be fixed.  Certainly, it
+    no longer occurs with iso-8859-1 characters.  If your source has characters
+    in other encondings, please contact the mailing list if DDD displays them
+    properly.
 
 
 MacOS X
