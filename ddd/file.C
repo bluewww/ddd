@@ -839,7 +839,7 @@ static void update_processes(Widget processes, bool keep_selection)
 	    if (first_line)
 	    {
 		// Find first occurrence of `PID' title
-		ps_pid_index = line.index("PID ");
+		ps_pid_index = line.index(" PID ");
 		if (ps_pid_index < 0)
 		    ps_pid_index = 0;
 	    }
