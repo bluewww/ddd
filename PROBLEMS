@@ -45,11 +45,11 @@ Reported by:	Jacek M. Holeczek <holeczek@clri6f.gsi.de>
             export CXXFLAGS=-O
             export LDFLAGS=-O
 
-    If you decide NOT to use gnu flex and gnu bison you may also need
-    to remove the /usr/local/bin (or any other subdirectory where you
-    keep gnu executables) from the PATH environment variable (so that
-    the ./configure script will not find them, and it will find
-    standard AIX lex and yacc).
+    If you decide NOT to use gnu gcc, flex, and bison you may also
+    need to remove the /usr/local/bin (or any other subdirectory where
+    you keep gnu executables) from the PATH environment variable (so
+    that the ./configure script will not find them, and it will find
+    standard AIX xlC, lex, and yacc).
 
     Then run configure:
             ./configure -v
@@ -197,10 +197,12 @@ SGI
 
 Reported by:  Andreas Zeller <zeller@acm.org>
 
+    Don't use SGI CC for compiling DDD; use GCC instead.
+
     I compiled DDD on a mips-sgi-irix5.3 using SGI's CC; the resulting
     executable fails with segmentation faults.  I could not find the
-    cause for this problem; using GCC instead of CC seems a better
-    alternative.
+    cause for this problem and suspect a CC bug; using GCC instead
+    seems a better alternative.
 
 
 Solaris 2.x

@@ -381,5 +381,20 @@ DDD Frequently Asked Questions                                  -*- text -*-
     `Options' menu) and type ^C there.
 
 
+21. How do I disable the command tool?
+
+    David M. Karr <dkarr@nmo.gtegsc.com> suggests:
+
+    In the section of your .dddinit file where you set your personal
+    resources, add the following:
+
+    Ddd*sourceButtons: \
+    Edit:run:break^C:where:step:next:cont:up:down:Back:Forward
+    Ddd*toolButtons:
+ 
+    Setting the "toolButtons" resource to Null makes the window not
+    appear.  I put some of the commands that were on the "toolButtons"
+    list into my "sourceButtons" list.
+
 $Id$
 
