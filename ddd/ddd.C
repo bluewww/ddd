@@ -6117,10 +6117,8 @@ static void setup_version_info()
 	+ rm(DDD_NAME " License for details.") + cr();
 
     helpOnVersionExtraText += cr()
-	+ sl(DDD_NAME " needs your support!")
-	+ rm(" If you have any " DDD_NAME " success stories, ") + cr()
-        + rm("please write them down on a picture postcard "
-	     "and send them to us:") + cr()
+	+ rm("If you find " DDD_NAME " useful, please send "
+	     "us a picture postcard:") + cr()
 	+ cr()
 	+ rm("    Technische Universit\344t Braunschweig") + cr()
 	+ rm("    Abteilung Softwaretechnologie") + cr()
