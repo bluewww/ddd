@@ -267,7 +267,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
     // Create lots of buttons...
     for (MMDesc *item = items; item != 0 && item->name != 0; item++)
     {
-	const char *name        = item->name;
+	char *name              = (char *)item->name;
 	MMType flags            = item->type;
 	MMType type             = flags & MMTypeMask;
 	Widget& widget          = item->widget;
