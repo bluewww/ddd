@@ -190,6 +190,8 @@
 #define XtNbusyBlinkRate         "busyBlinkRate"
 #define XtNungrabMousePointer    "ungrabMousePointer"
 #define XtCUngrabMousePointer    "UngrabMousePointer"
+#define XtNdetectAliases         "detectAliases"
+#define XtCDetectAliases         "DetectAliases"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -276,6 +278,7 @@ struct AppData {
     int     clear_tip_delay;
     int     busy_blink_rate;
     Boolean ungrab_mouse_pointer;
+    Boolean detect_aliases;
     String  dddinit_version;
     String  app_defaults_version;
 };

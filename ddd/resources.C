@@ -844,6 +844,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNdetectAliases,
+	XtCDetectAliases,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, detect_aliases),
+	XmRImmediate,
+	XtPointer(False)
+    },
+
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,

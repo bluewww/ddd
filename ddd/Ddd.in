@@ -430,6 +430,9 @@ Ddd*xdbSettings:
 
 ! Graph Editor Defaults
 
+! Shall we detect aliases?  (expensive)
+Ddd*detectAliases:		false
+
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
 ! library compiled into DDD, named `ddd.vsl'.  If you wish to use
 ! another VSL library, put its name here and set `vslPath' to a
@@ -2384,7 +2387,7 @@ source texts are cached in memory.\n\
 @tt \267 @rm If @bf Cache machine code in memory @rm is set, \
 disassembled code is cached in memory.\n\
     Otherwise, code is re-disassembled upon each function change.\n\
-@tt \267 @rm In @bf Tab Width@rm, you can set the spacing of tab stops.\n\
+@tt \267 @rm In @bf Tab width@rm, you can set the spacing of tab stops.\n\
     Setting the tab width to 8 sets a tab stop every 8 characters.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
@@ -2411,45 +2414,52 @@ Cache source files in memory
 Ddd*preferences*cacheMachineCode.labelString:	 \
 Cache machine code in memory
 
-Ddd*preferences*tabWidth.orientation:	 XmHORIZONTAL
-Ddd*preferences*tabWidth.minimum:	 1
-Ddd*preferences*tabWidth.maximum:	 32
-Ddd*preferences*tabWidth.showValue:	 true
-Ddd*preferences*tabWidth.titleString:	 Tab Width
+Ddd*preferences*tabWidth.orientation:		XmHORIZONTAL
+Ddd*preferences*tabWidth.minimum:		1
+Ddd*preferences*tabWidth.maximum:		32
+Ddd*preferences*tabWidth.showValue:		true
+Ddd*preferences*tabWidth.titleString:		Tab width
 
 
 
 Ddd*preferences*data*helpString:	\
 @rm These are the @sl Data Preferences@rm.\n\
 \n\
-@tt \267 @rm If @bf Show grid @rm is set, a grid is displayed\
- in the data window.\n\
+@tt \267 @rm If @bf Detect aliases @rm is set, @DDD@ merges displays\
+ with the same physical address.\n\
+    This is useful for examining shared data structures.\n\
 @tt \267 @rm If @bf Show edge hints @rm is set, edge hints are displayed.\n\
-@tt \267 @rm If @bf Snap displays to grid @rm is set, \n\
+@tt \267 @rm If @bf Auto-align displays @rm is set, \n\
     each display is aligned on the nearest grid point.\n\
-@tt \267 @rm If @bf Compact layout @rm is set, the graph is layouted\
+@tt \267 @rm If @bf Use compact layout @rm is set, the graph is layouted\
  in a compact fashion.\n\
     This is suitable for homogeneous structures only.\n\
     Otherwise, the standard layout algorithm is used.\n\
 @tt \267 @rm If @bf Automatic layout @rm is set, the graph is layouted\
  after each change.\n\
     Otherwise, layout can be invoked manually.\n\
-@tt \267 @rm In @bf Grid Size@rm, you can change the spacing of grid points.\n\
+@tt \267 @rm In @bf Grid size@rm, you can change the spacing of grid points.\n\
+    A spacing of 0 disables the grid.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on @bf Reset @rm to restore the saved preferences.
 
-Ddd*preferences*showGrid.labelString:	       Show grid
-Ddd*preferences*showHints.labelString:	       Show edge hints
-Ddd*preferences*snapToGrid.labelString:	       Snap displays to grid
-Ddd*preferences*compactLayout.labelString:     Compact layout
-Ddd*preferences*autoLayout.labelString:	       Automatic layout
+Ddd*preferences*detectAliases.labelString:	\
+Detect aliases (shared data structures)
+Ddd*preferences*showHints.labelString:	        \
+Show edge hints
+Ddd*preferences*snapToGrid.labelString:	        \
+Auto-align displays on nearest grid point
+Ddd*preferences*compactLayout.labelString:      \
+Use compact layout (homogeneous structures only)
+Ddd*preferences*autoLayout.labelString:	        \
+Re-layout graph automatically after each change
 
-Ddd*preferences*gridSize.orientation:	 XmHORIZONTAL
-Ddd*preferences*gridSize.minimum:	 2
-Ddd*preferences*gridSize.maximum:	 64
-Ddd*preferences*gridSize.showValue:	 true
-Ddd*preferences*gridSize.titleString:	 Grid Size
+Ddd*preferences*gridSize.orientation:		XmHORIZONTAL
+Ddd*preferences*gridSize.minimum:		0
+Ddd*preferences*gridSize.maximum:		64
+Ddd*preferences*gridSize.showValue:		true
+Ddd*preferences*gridSize.titleString:		Grid size
 
 Ddd*preferences*startup*helpString:   \
 @rm These are the @sl Startup Preferences@rm.\n\

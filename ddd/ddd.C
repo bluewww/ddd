@@ -723,7 +723,7 @@ static MMDesc source_preferences_menu[] =
 
 
 // Data preferences
-static Widget graph_show_grid_w;
+static Widget graph_detect_aliases_w;
 static Widget graph_show_hints_w;
 static Widget graph_snap_to_grid_w;
 static Widget graph_compact_layout_w;
@@ -732,8 +732,9 @@ static Widget graph_grid_size_w;
 
 static MMDesc data_preferences_menu[] = 
 {
-    { "showGrid",      MMToggle,  { graphToggleShowGridCB }, 
-      NULL, &graph_show_grid_w },
+    { "detectAliases", MMToggle | MMInsensitive,
+      { graphToggleDetectAliasesCB },
+      NULL, &graph_detect_aliases_w },
     { "showHints",     MMToggle,  { graphToggleShowHintsCB },
       NULL, &graph_show_hints_w },
     { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB },
@@ -2132,13 +2133,15 @@ void update_options()
 		  XtNgridHeight, &grid_height,
 		  NULL);
 
-    XtVaSetValues(graph_show_grid_w, XmNset, show_grid, NULL);
+    XtVaSetValues(graph_detect_aliases_w,
+		  XmNset, app_data.detect_aliases, NULL);
     XtVaSetValues(graph_snap_to_grid_w, XmNset, snap_to_grid, NULL);
     XtVaSetValues(graph_show_hints_w, XmNset, show_hints, NULL);
     XtVaSetValues(graph_auto_layout_w, XmNset, auto_layout, NULL);
     XtVaSetValues(graph_compact_layout_w, XmNset, 
 		  layout_mode == CompactLayoutMode, NULL);
-    XtVaSetValues(graph_grid_size_w, XmNvalue, grid_width, NULL);
+    XtVaSetValues(graph_grid_size_w, XmNvalue, show_grid ? grid_width : 0, 
+		  NULL);
 
 
     unsigned char policy = '\0';
@@ -2324,7 +2327,7 @@ static bool source_preferences_changed()
 
 static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 {
-    set_toggle(graph_show_grid_w, initial_show_grid);
+    set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
     set_toggle(graph_show_hints_w, initial_show_hints);
     set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
     set_toggle(graph_compact_layout_w, 
@@ -2332,17 +2335,22 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
     set_toggle(graph_auto_layout_w, initial_auto_layout);
 
     Dimension grid_width, grid_height;
+    Boolean show_grid;
 
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
+		  XtNshowGrid,   &show_grid,
 		  NULL);
 
-    if (grid_width != initial_grid_width || grid_height != initial_grid_height)
+    if (grid_width     != initial_grid_width 
+	|| grid_height != initial_grid_height
+	|| show_grid   != initial_show_grid)
     {
 	XtVaSetValues(data_disp->graph_edit,
 		      XtNgridWidth,  grid_width  = initial_grid_width,
 		      XtNgridHeight, grid_height = initial_grid_height,
+		      XtNshowGrid,   show_grid   = initial_show_grid,
 		      NULL);
 		      
 	update_options();
@@ -2365,7 +2373,8 @@ static bool data_preferences_changed()
 		  XtNgridHeight, &grid_height,
 		  NULL);
 
-    return show_grid    != initial_show_grid
+    return app_data.detect_aliases != initial_app_data.detect_aliases
+	|| show_grid    != initial_show_grid
 	|| show_hints   != initial_show_hints
 	|| snap_to_grid != initial_snap_to_grid
 	|| layout_mode  != initial_layout_mode 

@@ -182,20 +182,17 @@ void sourceSetTabWidthCB (Widget, XtPointer, XtPointer call_data)
 // Graph Options
 //-----------------------------------------------------------------------------
 
-void graphToggleShowGridCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleDetectAliasesCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    Arg args[10];
-    Cardinal arg = 0;
-    XtSetArg(args[arg], XtNshowGrid, info->set); arg++;
-    XtSetValues(data_disp->graph_edit, args, arg);
+    app_data.detect_aliases = info->set;
 
     if (info->set)
-	set_status("Grid on.");
+	set_status("Alias detection enabled.");
     else
-	set_status("Grid off.");
+	set_status("Alias detection disabled.");
 
     update_options();
 }
@@ -284,11 +281,21 @@ void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], XtNgridWidth,  info->value); arg++;
-    XtSetArg(args[arg], XtNgridHeight, info->value); arg++;
-    XtSetValues(data_disp->graph_edit, args, arg);
 
-    set_status("Grid size set to " + itostring(info->value) + ".");
+    if (info->value >= 2)
+    {
+	XtSetArg(args[arg], XtNgridWidth,  info->value); arg++;
+	XtSetArg(args[arg], XtNgridHeight, info->value); arg++;
+	XtSetArg(args[arg], XtNshowGrid,   True); arg++;
+	XtSetValues(data_disp->graph_edit, args, arg);
+	set_status("Grid size set to " + itostring(info->value) + ".");
+    }
+    else
+    {
+	XtSetArg(args[arg], XtNshowGrid, False); arg++;
+	XtSetValues(data_disp->graph_edit, args, arg);
+	set_status("Grid off.");
+    }
 
     update_options();
 }
@@ -803,6 +810,8 @@ void save_options(Widget origin)
 	   << "\n";
 	break;
     }
+
+    os << bool_app_value(XtNdetectAliases, app_data.detect_aliases) << "\n";
 
     // Some settable graph editor defaults
     os << widget_value(data_disp->graph_edit, XtNshowGrid)   << "\n";
