@@ -1,6 +1,19 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 1.4a
+--------
+
+   Bug fix release.
+
+   - Compilation trouble with older GCC versions as well as 
+     older C++ compilers fixed.
+   - Compilation in separate directory fixed.
+   - For older GDB versions, one may use `display /x $pc' and `print
+     /x $pc' to get the current PC value.
+   - Minor bugs in construction and installation fixed.
+
+
 DDD 1.4
 -------
 

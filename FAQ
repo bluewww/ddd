@@ -93,11 +93,11 @@ DDD Frequently Asked Questions                                  -*- text -*-
     
         http://www.hungry.com:8000/products/
 
-    [Note: We have well considered to build DDD on a free widget set.
-    But Athena is definitively not powerful enough, and alternative
+    [Note: We HAVE considered to build DDD on a free widget set.  But
+    Athena is definitively not powerful enough, and alternative
     approaches like Tcl/Tk did not provide the necessary asynchronous
     interprocess communication facilities required to build an
-    efficient interface.]
+    efficient interface.  So go and support the LessTif team instead.]
 
 
 9.  DDD reports `imake' and/or `xmkmf' problems when being started.
