@@ -1,10 +1,10 @@
 DDD News						-*- text -*-
 ********
 
-DDD 3.2.2
-=========
+DDD 3.3 [in beta test]
+=======
 
-DDD 3.2.2 brings support for new debugger variants and some bug fixes.
+DDD 3.3 brings support for new debugger variants and some bug fixes.
 
 
 Debuggers and Languages
@@ -44,6 +44,8 @@ User Interface
 
 Building
 --------
+
+- The release includes the libiberty package as of GDB 5.0.
 
 - CXXFLAGS settings are respected.
 
