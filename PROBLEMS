@@ -125,9 +125,9 @@ Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>
             #define HAVE_GETHOSTNAME_DECL 1
     (On AIX 4.1, AIX 4.2 you should have it already defined by ./configure.)
 
-    If you decide NOT to use gnu flex and gnu bison and use
-    standard AIX lex and yacc instead, you have to remove some
-    files:
+    If you decide NOT to use gnu flex and gnu bison and use standard
+    AIX lex and yacc instead, you have to remove some files:
+
             rm ./ddd/vsl-gramma.C ./ddd/vsl-gramma.h
             rm ./ddd/vsl-lex.C
             rm ./ddd/rxscan.C
@@ -135,9 +135,16 @@ Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>
     Now run "make clean" and then "make".
 
     If you decided to use standard AIX lex and yacc the make will
-    crash while compiling ./ddd/VSLRead.C. You have to edit
-    ./ddd/vsl-gramma.C (after the ./ddd/vsl-gramma.C is newly
-    created by yacc) and modify the declaration of vslerror:
+    complain (while working on ./ddd/vsl-lex.*, ./ddd/vsl-gramma.*,
+    ./ddd/rxscan.*):
+            lextoC: cannot determine lex type -- reverting to flex
+            yacctoC: cannot determine yaccpar type -- reverting to bison
+    You can safely ignore these messages (they come from ./ddd/lextoC
+    and ./ddd/yacctoC and mean that they have no AIX lex and yacc
+    specific entries). Later on, the make will crash while compiling 
+    ./ddd/VSLRead.C. You have to edit ./ddd/vsl-gramma.C (after the
+    ./ddd/vsl-gramma.C is newly created by yacc) and modify the
+    declaration of vslerror:
             extern "C" void vslerror(char *s);       // added "C"
 
     and the definition of vslparse:
