@@ -637,6 +637,10 @@ void startup_exec_tty(string& command, Widget origin)
 
 	// Tell GDB to redirect process I/O to this tty
 	redirect_process(command, separate_tty_name, origin);
+
+	// Reflect setting in options
+	app_data.separate_exec_window = True;
+	update_options();
     }
     else
     {
@@ -708,6 +712,11 @@ void exec_tty_running()
 
 	    // Restore original TTY for the time being
 	    unredirect_process(gdb_run_command);
+
+	    // If the user closed the TTY window, s/he probably has a
+	    // reason for doing so.  Reflect change in options.
+	    app_data.separate_exec_window = False;
+	    update_options();
 	}
     }
 }

@@ -674,12 +674,16 @@ bool have_visible_data_window()
 // Execution window
 void gdbCloseExecWindowCB(Widget, XtPointer, XtPointer)
 {
+    app_data.separate_exec_window = False;
+
     kill_exec_tty();
     update_options();
 }
 
 void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
 {
+    app_data.separate_exec_window = True;
+
     if (exec_tty_pid() == 0)
 	startup_exec_tty();
     popup_tty(command_shell);

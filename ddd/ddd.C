@@ -275,7 +275,7 @@ static void gdbUnselectAllCB     (Widget, XtPointer, XtPointer);
 // Update menus
 static void gdbUpdateEditCB      (Widget, XtPointer, XtPointer);
 static void gdbUpdateFileCB      (Widget, XtPointer, XtPointer);
-static void gdbUpdateViewCB      (Widget, XtPointer, XtPointer);
+static void gdbUpdateViewsCB     (Widget, XtPointer, XtPointer);
 
 // Preferences
 static void make_preferences (Widget parent);
@@ -595,20 +595,27 @@ static MMDesc data_program_menu[]
 enum DDDWindow { ToolWindow, ExecWindow, DummySep,
 		 DataWindow, SourceWindow, GDBWindow, CommonWindow };
 
-#define VIEW_MENU \
-{                                                         \
-    { "tool",    MMPush,   { gdbOpenToolWindowCB }},      \
-    { "exec",    MMPush,   { gdbOpenExecWindowCB }},      \
-    MMSep,                                                \
-    { "data",    MMToggle, { gdbToggleDataWindowCB }},    \
-    { "source",  MMToggle, { gdbToggleSourceWindowCB }},  \
-    { "console", MMToggle, { gdbToggleCommandWindowCB }}, \
-    MMEnd                                                 \
-}
+static MMDesc view_menu[] =
+{
+    { "tool",    MMPush, { gdbOpenToolWindowCB }},
+    { "exec",    MMPush, { gdbOpenExecWindowCB }},
+    MMSep,
+    { "data",    MMPush, { gdbOpenDataWindowCB }},
+    { "source",  MMPush, { gdbOpenSourceWindowCB }},
+    { "console", MMPush, { gdbOpenCommandWindowCB }},
+    MMEnd
+};
 
-static MMDesc command_view_menu[] = VIEW_MENU;
-static MMDesc source_view_menu[]  = VIEW_MENU;
-static MMDesc data_view_menu[]    = VIEW_MENU;
+static MMDesc views_menu[] = 
+{
+    { "tool",    MMPush,   { gdbOpenToolWindowCB }},
+    { "exec",    MMPush,   { gdbOpenExecWindowCB }},
+    MMSep,
+    { "data",    MMToggle, { gdbToggleDataWindowCB }},
+    { "source",  MMToggle, { gdbToggleSourceWindowCB }},
+    { "console", MMToggle, { gdbToggleCommandWindowCB }},
+    MMEnd
+};
 
 struct EditItems {
     enum EditItem { 
@@ -967,8 +974,7 @@ static MMDesc command_menubar[] =
                                    command_file_menu },
     { "edit",     MMMenu,          { gdbUpdateEditCB, XtPointer(GDBWindow) }, 
                                    command_edit_menu },
-    { "view",     MMMenu,          { gdbUpdateViewCB, command_view_menu }, 
-                                   command_view_menu },
+    { "view",     MMMenu,          MMNoCB, view_menu },
     { "program",  MMMenu,          MMNoCB, command_program_menu },
     { "commands", MMMenu,          MMNoCB, command_menu },
     { "help",     MMMenu | MMHelp, MMNoCB, help_menu },
@@ -982,8 +988,7 @@ static MMDesc source_menubar[] =
                                   source_file_menu },
     { "edit",    MMMenu,          { gdbUpdateEditCB, XtPointer(SourceWindow) },
                                   source_edit_menu },
-    { "view",    MMMenu,          { gdbUpdateViewCB, source_view_menu }, 
-                                  source_view_menu },
+    { "view",    MMMenu,          MMNoCB, view_menu },
     { "program", MMMenu,          MMNoCB, source_program_menu },
     { "stack",   MMMenu,          MMNoCB, stack_menu },
     { "source",  MMMenu,          MMNoCB, source_menu },
@@ -998,8 +1003,7 @@ static MMDesc data_menubar[] =
                                   data_file_menu },
     { "edit",    MMMenu,          { gdbUpdateEditCB, XtPointer(DataWindow) },
                                   data_edit_menu },
-    { "view",    MMMenu,          { gdbUpdateViewCB, data_view_menu }, 
-                                  data_view_menu },
+    { "view",    MMMenu,          MMNoCB, view_menu },
     { "program", MMMenu,          MMNoCB, data_program_menu },
     { "data",    MMMenu,          MMNoCB, data_menu },
     { "help",    MMMenu | MMHelp, MMNoCB, help_menu },
@@ -1013,8 +1017,8 @@ static MMDesc common_menubar[] =
                                   command_file_menu },
     { "edit",       MMMenu,       { gdbUpdateEditCB, XtPointer(CommonWindow) },
                                   command_edit_menu },
-    { "view",       MMMenu,       { gdbUpdateViewCB, command_view_menu }, 
-                                  command_view_menu },
+    { "views",      MMMenu,       { gdbUpdateViewsCB, views_menu }, 
+                                  views_menu },
     { "program",    MMMenu,       MMNoCB, command_program_menu },
     { "commands",   MMMenu,       MMNoCB, command_menu },
     { "stack",      MMMenu,       MMNoCB, stack_menu },
@@ -4096,7 +4100,7 @@ static void gdbUpdateFileCB(Widget, XtPointer client_data, XtPointer)
 #endif
 }
 
-void gdbUpdateViewCB(Widget, XtPointer client_data, XtPointer)
+void gdbUpdateViewsCB(Widget, XtPointer client_data, XtPointer)
 {
     MMDesc *view_menu = (MMDesc *)client_data;
 
@@ -4104,8 +4108,6 @@ void gdbUpdateViewCB(Widget, XtPointer client_data, XtPointer)
     set_toggle(view_menu[SourceWindow].widget, 
 	       have_visible_source_window() || have_visible_tool_window());
     set_toggle(view_menu[GDBWindow].widget,    have_visible_command_window());
-
-    set_sensitive(view_menu[ExecWindow].widget, app_data.separate_exec_window);
 }
 
 // Language changed - re-label buttons
