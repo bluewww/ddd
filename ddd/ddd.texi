@@ -3,6 +3,7 @@
 @c DDD Manual
 
 @c Copyright (C) 1999-2001 Universitaet Passau, Germany.
+@c Copyright (C) 2001 Universitaet des Saarlandes, Germany.
 @c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
 @c This file is part of DDD.
@@ -52,7 +53,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2001-02-01
+@set DATE 2001-08-01
 
 @c Index stuff
 @c Labels
@@ -2760,8 +2761,8 @@ given session.
 @cindex Session, default
 The session named @samp{[None]} is the @dfn{default session} which is
 active when starting @DDD{}.  To save options for default sessions,
-open the default session and save options.  @xref{Saving Options}, for
-details.
+choose the default session before exiting @DDD{}.  @xref{Saving
+Options}, for details.
 
 @ifnotinfo
 @sp 1
@@ -3738,8 +3739,8 @@ Settings}, for details.
 
 @item Save Options
 @lbindex Save Options
-Saves all preferences and settings for the next @DDD{} invocation.
-@xref{Saving Options}, for details.
+If set, all preferences and settings will be saved for the next @DDD{}
+invocation.  @xref{Saving Options}, for details.
 @end table
 
 
@@ -5091,11 +5092,20 @@ Finally, you can set the appropriate resource in a file named
 @node Saving Options
 @subsubsection Saving Options
 
-You can save the current option settings by selecting @samp{Edit
-@result{} Save Options}.  Options are saved in a file named
-@file{.@value{ddd}/init} in your home directory.  If a session
-@var{session} is active, options will be saved in
+You can save the current option settings by setting @samp{Edit @result{}
+Save Options}.  Options are saved in a file named
+@file{.@value{ddd}/init} in your home directory when @DDD{} exits.  If a
+session @var{session} is active, options will be saved in
 @file{~/.@value{ddd}/sessions/@var{session}/init} instead.
+
+The options are automatically saved when exiting @DDD{}.  You can turn
+off this feature by unsetting @samp{Edit @result{} Save Options}.  This
+is tied to the following resource:
+
+@defvr Resource saveOptionsOnExit (class SaveOnExit)
+If @samp{on} (default), the current option settings are automatically saved
+when @DDD{} exits.
+@end defvr
 
 
 @node Customizing Help
@@ -5462,22 +5472,13 @@ The @DDD{} font to use for data displays.  Default
 is @samp{lucidatypewriter-medium}.
 @end table
 
-Changes in this panel will not take effect immediately.  Instead, you
-can
-
-@itemize @bullet
-@item
-save options (using @samp{Edit @result{} Save Options}) to make the change
-effective for future @DDD{} sessions,
-@item
-or restart @DDD{} (using @samp{File @result{} Restart @DDD{}})
-to make it effective for the restarted @DDD{} session.
-@end itemize
+Changes in this panel will take effect only in the next @DDD{} session.
+To make it effective right now, restart @DDD{} (using @samp{File
+@result{} Restart @DDD{}}).
 
 After having made changes in the panel, @DDD{} will automatically
 offer you to restart itself, such that you can see the changes taking
-effect.  Note that even after restarting, you still must save options to
-make the changes permanent.
+effect.
 
 The @samp{Reset} button restores the most recently saved preferences.
 
@@ -7828,10 +7829,10 @@ once it saw the signal.  To prevent this, you can resume execution using
 @lbindex Save Options
 @lbindex Save Session As
 @cindex Signal settings, saving
-@samp{Edit @result{} Save Options} does not save changed signal
-settings, since changed signal settings are normally useful within
-specific projects only.  Instead, signal settings are saved with the
-current session, using @samp{File @result{} Save Session As}.
+Signal settings are not saved across DDD invocations, since changed
+signal settings are normally useful within specific projects only.
+Instead, signal settings are saved with the current session, using
+@samp{File @result{} Save Session As}.
 
 
 @node Killing the Program
@@ -8300,8 +8301,7 @@ space.
 The last chosen display orientation is used for the creation of new
 displays.  If you recently rotated an array to horizontal orientation,
 the next array you create will also be oriented horizontally.  These
-settings are saved with @samp{Edit @result{} Save Options}; they are
-tied to the following resources:
+settings are tied to the following resources:
 
 @defvr Resource arrayOrientation (class Orientation)
 How arrays are to be oriented.  Possible values are @samp{XmVERTICAL}
@@ -8999,8 +8999,8 @@ itself).  You can also examine the data display addresses, as shown in
 the Display Editor.
 
 @item
-Alias detection slows down @DDD{} slightly, which is why it is
-disabled by default.  You may consider to enable it only at need---for
+Alias detection slows down @DDD{} slightly, which is why you can turn
+it off.  You may consider to enable it only at need---for
 instance, while examining some complex data structure---and disable it
 while examining control flow (i.e., stepping through your program).
 @DDD{} will automatically restore edges and data displays when
@@ -9018,8 +9018,8 @@ the aliases will be unsuppressed.
 @end defvr
 
 @defvr Resource detectAliases (class DetectAliases)
-If @samp{on}, @DDD{} attempts to recognize shared data structures.
-The default is @samp{off}, meaning that shared data structures are not
+If @samp{on} (default), @DDD{} attempts to recognize shared data structures.
+If @samp{off}, shared data structures are not
 recognized.
 @end defvr
 
@@ -10669,7 +10669,7 @@ The command history is automatically saved when exiting @DDD{}.
 You can turn off this feature by setting the following resource to
 @samp{off}:
 
-@defvr Resource saveHistoryOnExit (class SaveHistoryOnExit)
+@defvr Resource saveHistoryOnExit (class SaveOnExit)
 If @samp{on} (default), the command history is automatically saved
 when @DDD{} exits.
 @end defvr
@@ -11132,7 +11132,7 @@ proceed without asking when used inside a user-defined command.  Many
 @GDB{} commands that normally print messages to say what they are
 doing omit the messages when used in a user-defined command.
 
-To save all command definitions, use @samp{Edit @result{} Save Options}.
+Command definitions are saved across @DDD{} sessions.
 
 
 @node GDB Argument Commands

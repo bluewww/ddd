@@ -105,6 +105,7 @@ extern void dddToggleCheckGrabsCB           (Widget, XtPointer, XtPointer);
 extern void dddToggleSaveHistoryOnExitCB    (Widget, XtPointer, XtPointer);
 extern void dddToggleSuppressWarningsCB     (Widget, XtPointer, XtPointer);
 extern void dddToggleWarnIfLockedCB         (Widget, XtPointer, XtPointer);
+extern void dddToggleSaveOptionsOnExitCB    (Widget, XtPointer, XtPointer);
 
 extern void dddToggleButtonTipsCB           (Widget, XtPointer, XtPointer);
 extern void dddToggleValueTipsCB            (Widget, XtPointer, XtPointer);

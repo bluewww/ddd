@@ -165,10 +165,14 @@ void ddd_cleanup()
 
     ddd_is_exiting = true;
 
+    if (app_data.save_options_on_exit)
+    {
+        save_options(SAVE_DEFAULT);
+    }
 
     if (!ddd_is_restarting)
     {
-        // Delete temporary restart session, if any
+        // Delete restart session, if any
         delete_session(restart_session(), true);
         set_restart_session();
     }

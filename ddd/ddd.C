@@ -1045,7 +1045,7 @@ struct EditItems {
     };
 };
 
-#define EDIT_MENU(win) \
+#define EDIT_MENU(win, w) \
 { \
     { "undo",        MMPush,  { gdbUndoCB, 0 }, 0, 0, 0, 0}, \
     { "redo",        MMPush,  { gdbRedoCB, 0 }, 0, 0, 0, 0}, \
@@ -1069,14 +1069,22 @@ struct EditItems {
     { "settings",    MMPush,  \
       { WhenReady, XtPointer(dddPopupSettingsCB) }, 0, 0, 0, 0}, \
     MMSep, \
-    { "saveOptions", MMPush,  \
-      { DDDSaveOptionsCB, XtPointer(SAVE_DEFAULT) }, 0, 0, 0, 0}, \
+    { "saveOptions", MMToggle,  \
+      { dddToggleSaveOptionsOnExitCB, 0 }, 0, &(w), 0, 0}, \
     MMEnd \
 }
 
-static MMDesc command_edit_menu[] = EDIT_MENU(GDBWindow);
-static MMDesc source_edit_menu[]  = EDIT_MENU(SourceWindow);
-static MMDesc data_edit_menu[]    = EDIT_MENU(DataWindow);
+
+static Widget command_save_options_w;
+static Widget source_save_options_w;
+static Widget data_save_options_w;
+
+static MMDesc command_edit_menu[] = EDIT_MENU(GDBWindow, 
+					      command_save_options_w);
+static MMDesc source_edit_menu[]  = EDIT_MENU(SourceWindow,
+					      source_save_options_w);
+static MMDesc data_edit_menu[]    = EDIT_MENU(DataWindow,
+					      data_save_options_w);
 
 static Widget complete_w;
 static Widget define_w;
@@ -4002,6 +4010,10 @@ void update_options()
     set_toggle(command_separate_exec_window_w, separate_exec_window);
     set_toggle(source_separate_exec_window_w,  separate_exec_window);
     set_toggle(data_separate_exec_window_w,    separate_exec_window);
+
+    set_toggle(command_save_options_w,   app_data.save_options_on_exit);
+    set_toggle(source_save_options_w,    app_data.save_options_on_exit);
+    set_toggle(data_save_options_w,      app_data.save_options_on_exit);
 
     set_toggle(button_tips_w,            app_data.button_tips); 
     set_toggle(value_tips_w,             app_data.value_tips); 

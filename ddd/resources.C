@@ -1239,10 +1239,20 @@ XtResource ddd_resources[] = {
 
     {
 	CONST_CAST(char *,XtNsaveHistoryOnExit),
-	CONST_CAST(char *,XtCSaveHistoryOnExit),
+	CONST_CAST(char *,XtCSaveOnExit),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, save_history_on_exit),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	CONST_CAST(char *,XtNsaveOptionsOnExit),
+	CONST_CAST(char *,XtCSaveOnExit),
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, save_options_on_exit),
 	XtRImmediate,
 	XtPointer(True)
     },

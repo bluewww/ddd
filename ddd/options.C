@@ -760,6 +760,21 @@ void dddToggleValueDocsCB (Widget, XtPointer, XtPointer call_data)
     update_options();
 }
 
+void dddToggleSaveOptionsOnExitCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.save_options_on_exit = info->set;
+
+    if (info->set)
+	set_status("Current options will be saved when exiting DDD.");
+    else
+	set_status("Current options will not be saved when exiting DDD.");
+
+    update_options();
+}
+
 
 //-----------------------------------------------------------------------------
 // Maintenance

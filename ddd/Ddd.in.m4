@@ -7,6 +7,7 @@ Ddd*appDefaultsVersion: @VERSION@
 
 ! Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 ! Copyright (C) 1999-2001 Universitaet Passau, Germany.
+! Copyright (C) 2001 Universitaet des Saarlandes, Germany.
 ! Written by Andreas Zeller <zeller@gnu.org>.
 ! 
 ! This file is part of DDD.
@@ -164,9 +165,6 @@ Ddd*lineBufferedConsole: on
 ! `Auto' if only an *open* debugger console handles keyboard events.
 Ddd*consoleHasFocus: on
 
-
-! On if options are to be saved in `~/.ddd/init' across DDD invocations.
-Ddd*saveOptionsOnExit: off
 
 
 ! On if DDD should attempt to open the current selection 
@@ -694,7 +692,7 @@ Ddd*autoCommandPrefix:
 ! Graph Editor Defaults
 
 ! Shall we detect aliases?  (expensive)
-Ddd*detectAliases:		off
+Ddd*detectAliases:		on
 
 ! Shall we require structural equivalence for aliases?
 Ddd*typedAliases:		on
@@ -830,6 +828,9 @@ Ddd*useSourcePath: off
 
 ! Do we wish to save history on exit?
 Ddd*saveHistoryOnExit: on
+
+! Do we wish to save options on exit?
+Ddd*saveOptionsOnExit: on
 
 ! Do we wish to show all registers, instead of only integer registers?
 Ddd*allRegisters: off
@@ -2199,8 +2200,8 @@ DESC(Select All, [select the entire text])\n\
 DESC(Preferences..., [invokes a panel for setting DDD options])\n\
 DESC(@GDB@ Settings..., [invokes a panel for setting @GDB@ options])\n\
 \n\
-DESC(Save Options, [saves options, preferences, and @GDB@ settings\n\
-    for the next DDD invocation.])
+DESC(Save Options, [if set, options, preferences, and @GDB@ settings\n\
+    are saved across DDD invocations.])
 ])dnl
 
 Ddd*menubar.edit*helpString: EDIT_HELP
@@ -2284,7 +2285,7 @@ Ddd*editMenu.settings.documentationString:\
 Ddd*editMenu.saveOptions.labelString:			Save Options
 Ddd*editMenu.saveOptions.mnemonic:			O
 Ddd*editMenu.saveOptions.documentationString:\
-@rm Save preferences and settings for the next DDD invocation
+@rm If set, preferences and settings are saved across DDD invocations
 
 
 ! View menu (for single-window DDD)
@@ -7413,7 +7414,8 @@ ITEM To view even earlier states of your program, use LBL(Edit, Undo).
 Ddd*tip_dialog.dialogTitle: 		DDD Tip of the Day
 Ddd*tip_dialog*helpString:	\
 @rm This is the DDD tip of the day.
-Ddd*set_startup_tips.labelString:       Show Tip of the Day when starting DDD
+Ddd*set_startup_tips.labelString:       \
+@small Show Tip of the Day when starting DDD
 Ddd*set_startup_tips.alignment:         XmALIGNMENT_BEGINNING
 Ddd*tip_dialog.applyLabelString:	Turn Off
 Ddd*tip_dialog.cancelLabelString:	Prev Tip

@@ -251,7 +251,8 @@
 #define XtNglobalTabCompletion   "globalTabCompletion"
 #define XtCGlobalTabCompletion   "GlobalTabCompletion"
 #define XtNsaveHistoryOnExit     "saveHistoryOnExit"
-#define XtCSaveHistoryOnExit     "SaveHistoryOnExit"
+#define XtNsaveOptionsOnExit     "saveOptionsOnExit"
+#define XtCSaveOnExit            "SaveOnExit"
 #define XtNcacheSourceFiles      "cacheSourceFiles"
 #define XtCCacheSourceFiles      "CacheSourceFiles"
 #define XtNcacheMachineCode      "cacheMachineCode"
@@ -536,6 +537,7 @@ struct AppData {
     Boolean   transient_dialogs;
     Boolean   global_tab_completion;
     Boolean   save_history_on_exit;
+    Boolean   save_options_on_exit;
     Boolean   cache_source_files;
     Boolean   cache_machine_code;
     Boolean   suppress_warnings;

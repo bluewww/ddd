@@ -123,8 +123,6 @@ If DDD cannot find a source, set the @GDB@ source path via
 LBL(Edit, @GDB@ Settings) or enter 
 SAMP(dir sourcedir_1:sourcedir_2:...:sourcedir_n) at the GDB prompt.
 
-To save the window size, use LBL(Edit, Save Options).
-
 You can quickly set breakpoints
 by double-clicking in the breakpoint area.
 
