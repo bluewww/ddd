@@ -433,22 +433,22 @@ void Graph::_print(ostream& os, const GraphGC& _gc) const
     gc.drawHints = false;
     gc.hintSize  = 0;
 
-    // print all edges
-    // if printSelectedNodesOnly, print only edges between selected nodes
+    // Print all edges
+    // If printSelectedNodesOnly, print only edges between selected nodes
     for (GraphEdge *edge = firstVisibleEdge(); edge != 0; 
 	 edge = nextVisibleEdge(edge))
     {
-	if (gc.printSelectedNodesOnly == false ||
+	if (!gc.printSelectedNodesOnly ||
 	    (edge->from()->selected() && edge->to()->selected()))
 	    edge->_print(os, gc);
     }
 
-    // print all nodes
-    // if printSelectedNodesOnly, print only selected nodes
+    // Print all nodes
+    // If printSelectedNodesOnly, print only selected nodes
     for (GraphNode *node = firstVisibleNode(); node != 0; 
 	 node = nextVisibleNode(node))
     {
-	if (gc.printSelectedNodesOnly == false || node->selected())
+	if (!gc.printSelectedNodesOnly || node->selected())
 	    node->_print(os, gc);
     }
 }
@@ -466,24 +466,29 @@ ostream& operator << (ostream& s, const Graph& g)
 
 
 // Region occupied by graph
-BoxRegion Graph::region(const GraphGC& gc) const
+BoxRegion Graph::region(const GraphGC& gc, bool selected_only) const
 {
     if (firstVisibleNode() == 0)
 	return BoxRegion();
 
-    BoxRegion r = firstVisibleNode()->region(gc);
-    for (GraphNode *node = nextVisibleNode(firstVisibleNode()); node != 0;
-	node = nextVisibleNode(node))
+    BoxRegion r;
+    for (GraphNode *node = firstVisibleNode(); node != 0; 
+	 node = nextVisibleNode(node))
     {
-	r = r | node->region(gc);
+	if (!selected_only || node->selected())
+	{
+	    r = r | node->region(gc);
+	}
     }
 
     for (GraphEdge *edge = firstVisibleEdge(); edge != 0; 
 	 edge = nextVisibleEdge(edge))
     {
-	BoxRegion edge_region = edge->region(gc);
-	if (edge_region.origin().isValid())
-	    r = r | edge_region;
+	if (!selected_only ||
+	    (edge->from()->selected() && edge->to()->selected()))
+	{
+	    r = r | edge->region(gc);
+	}
     }
 
     return r;

@@ -181,11 +181,13 @@ public:
     void _print(ostream& os, const GraphGC& gc) const;
     void _printHeader(ostream& os, const GraphGC& gc) const
     {
-	Box::_printHeader(os, region(gc), *gc.printGC);
+	Box::_printHeader(os, region(gc, gc.printSelectedNodesOnly), 
+			  *gc.printGC);
     }
     void _printTrailer(ostream& os, const GraphGC& gc) const
     {
-	Box::_printTrailer(os, region(gc), *gc.printGC);
+	Box::_printTrailer(os, region(gc, gc.printSelectedNodesOnly),
+			   *gc.printGC);
     }
 
     // Custom printing function
@@ -197,7 +199,7 @@ public:
     }
 
     // Total Region
-    BoxRegion region(const GraphGC& gc) const;
+    BoxRegion region(const GraphGC& gc, bool selected_only = false) const;
 
     // Representation invariant
     virtual bool OK() const;
