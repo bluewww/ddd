@@ -57,7 +57,14 @@ extern "C" {
 // Return true if C is a letter found in real user names
 inline bool is_letter(char c)
 {
-    return c && (isalpha(c) || isspace(c) || c == '.' || c == '-');
+    return c != '\0' && (isalpha(c) || isspace(c) || c == '.' || c == '-');
+}
+
+// Return true if C is a letter not found in e-mail addresses
+inline bool is_junk(char c)
+{
+    return c == '\0' || isspace(c) || c == '\"' || c == '(' 
+	|| c == ')' || c == ',' || c == ';';
 }
 
 // Return e-mail address from preferences file DOTRC in HOME dir.
@@ -81,9 +88,9 @@ static char *email_from_preferences(char *home, char *dotrc, char *tag)
 
 		char *s = line + strlen(tag);
 		char *t = buffer;
-		while (isspace(*s))
+		while (is_junk(*s))
 		    s++;
-		while (!isspace(*s) && *s != '\0')
+		while (!is_junk(*s) && *s != '\0')
 		    *t++ = tolower(*s++);
 		*t++ = '\0';
 		fclose(fp);
@@ -172,12 +179,23 @@ static char *email(struct passwd *pwd)
     char *s = 0;
 
     // Try Netscape and Lynx preferences
+
+    // Netscape 4.0
     if (!is_email(s))
-	s = email_from_preferences(pwd->pw_dir, ".netscape-preferences", 
-				   "EMAIL_ADDRESS:");
+	s = email_from_preferences(pwd->pw_dir, ".netscape/preferences.js", 
+				   "user_pref(\"mail.identity.useremail\",");
+
+    // Netscape 3.0
     if (!is_email(s))
 	s = email_from_preferences(pwd->pw_dir, ".netscape/preferences", 
 				   "EMAIL_ADDRESS:");
+
+    // Netscape 2.0 and earlier
+    if (!is_email(s))
+	s = email_from_preferences(pwd->pw_dir, ".netscape-preferences", 
+				   "EMAIL_ADDRESS:");
+
+    // Lynx
     if (!is_email(s))
 	s = email_from_preferences(pwd->pw_dir, ".lynxrc", 
 				   "personal_mail_address=");
