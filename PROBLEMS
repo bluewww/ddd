@@ -53,6 +53,21 @@ Reported by:  Andreas Zeller <zeller@ips.cs.tu-bs.de>
       GNU tools).
     * Using xlC instead of GCC causes a number of minor bugs in DDD.
 
+Reported by:  Kai Engert <Kai.Engert@dresdner-bank.com>
+
+    At the end of "make", linking of DDD stop withs the message "TOC
+    overflow".  I could fix the problem, by modifying the following
+    rule in `ddd/Makefile':
+
+	$(ddd_canonical): ddd.o $(OBJECTS)
+		$(LINK.cc) -v -o $@ ddd.o $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
+
+    I added the "-v" switch. This displays the exact parameters to "ld".
+    Then I manually entered the link command again, adding the switch
+	-bbigtoc
+    I get warnings, that extra code is generated, but I get a working
+    executable.
+
 
 Reported by:  bas@phys.uva.nl (Bas V. de Bakker),
               smueller@dbis1.informatik.uni-hamburg.de (Stefan Mueller)
