@@ -14,8 +14,10 @@ $foo[1] = 300_000;
 $foo{'red'}   = 5;
 $foo{'green'} = 7;
 
-$hashref = \%foo;
-$anotherhashref = $hashref;
+$ref = \%foo;
+$anotherref = $ref;
+$refref = \$ref;
+$refrefref = \$refref;
 
 sub print_me {
   print @_;
