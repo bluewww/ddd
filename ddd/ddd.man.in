@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "24 September 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1 October 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -118,12 +118,11 @@ effects of one bug and go on to learn about another.
 debugger (\s-2GDB\s+2) provide a command-line interface and a
 multitude of commands for these and other debugging purposes.
 \s-2@DDD@\s+2 is a \fIwrapper\fR around an inferior \s-2GDB\s+2,
-\s-2DBX\s+2, or \s-2XDB\s+2 debugger.  
-In addition to the command-line interface of the inferior debugger,
-\s-2@DDD@\s+2 provides a \fIgraphical user
-interface\fR to support common debugging tasks.  The \s-2@DDD@\s+2
-\fIgraphical data display\fR allows for interactive exploration of
-data structures.
+\s-2DBX\s+2, or \s-2XDB\s+2 debugger.  In addition to the command-line
+interface of the inferior debugger, \s-2@DDD@\s+2 provides a common
+\fIgraphical user interface\fR to support debugging tasks.  The
+\s-2@DDD@\s+2 \fIgraphical data display\fR allows for interactive
+exploration of data structures.
 .\"
 .\" ---------------
 .SH "INVOKING @DDD@"
@@ -215,9 +214,16 @@ an empty line, the last command is repeated as well.  The `\fBCommand
 History...\fR' item in the `\fBCommands...\fR' menu shows the command
 history.
 .PP
-Using \s-2GDB\s+2, you can \fIcomplete\fR commands and arguments by
-pressing the \s-2\fBTAB\fR\s+2 key; pressing the \s-2\fBTAB\fR\s+2 key
-multiple times shows one possible expansion after the other.
+You can \fIsearch\fR for previous commands by pressing `\fBCtrl+R\fR'.
+This invokes \fIincremental search mode,\fR where you can enter a
+string to be searched in previous commands.  Press `\fBCtrl+R\fR'
+again to repeat the search, or `\fBCtrl+S\fR' to search in the reverse
+direction.  To return to normal mode, press \s-2\fBESC\fR\s+2, or use
+any cursor command.
+.PP
+Using \s-2GDB\s+2, you can also \fIcomplete\fR commands and arguments
+by pressing the \s-2\fBTAB\fR\s+2 key; pressing the \s-2\fBTAB\fR\s+2
+key multiple times shows one possible expansion after the other.
 .PP
 Here are some of the most frequently needed debugger commands.
 .\"
@@ -394,8 +400,8 @@ sources.
 To open a program to be debugged, select `\fBOpen Program\fR' from the
 `\fBFile\fR' menu.
 .PP
-To open a core dump for the program, select `\fBOpen Core\fR' from the
-`\fBFile\fR' menu.
+To open a core dump for the program, select `\fBOpen Core Dump\fR'
+from the `\fBFile\fR' menu.
 .PP
 To open an arbitrary source file, select `\fBOpen Source\fR' from the
 `\fBFile\fR' menu.
@@ -1764,7 +1770,7 @@ Do not use this resource to customize \s-2DBX\s+2; instead, use a
 personal `\fB$HOME/.dbxinit\fR' or `\fB$HOME/.dbxrc\fR' file.  See
 your \s-2DBX\s+2 documentation for details.
 .TP
-B "dbxSettings (\fPclass\fB DBXSettings)"
+.B "dbxSettings (\fPclass\fB DBXSettings)"
 This string contains a list of newline-separated commands that are
 also initially sent to \s-2DBX\s+2.  By default, it is empty.
 .br
@@ -1831,7 +1837,7 @@ Do not use this resource to customize \s-2GDB\s+2; instead, use a
 personal `\fB$HOME/.gdbinit\fR' file.  See your \s-2GDB\s+2
 documentation for details.
 .TP
-B "gdbSettings (\fPclass\fB GDBSettings)"
+.B "gdbSettings (\fPclass\fB GDBSettings)"
 This string contains a list of newline-separated commands that are
 also initially sent to \s-2GDB\s+2.  Its default value is
 .sp
@@ -1887,7 +1893,7 @@ Do not use this resource to customize \s-2DBX\s+2; instead, use a
 personal `\fB$HOME/.xdbrc\fR' file.  See your \s-2XDB\s+2
 documentation for details.
 .TP
-B "xdbSettings (\fPclass\fB XDBSettings)"
+.B "xdbSettings (\fPclass\fB XDBSettings)"
 This string contains a list of newline-separated commands that are
 also initially sent to \s-2XDB\s+2.  By default, it is empty.
 .br
@@ -2419,50 +2425,178 @@ The `\fBDdd\fR' application defaults file contains even more
 information about setting \s-2@DDD@\s+2 resources.  The `\fBDdd\fR'
 file comes with the \s-2@DDD@\s+2 distribution.
 .\"
-.\" ---------------
-.SH "EXTENDING @DDD@"
-.\" ---------------
-.\"
-If you have any contributions to be incorporated into \s-2@DDD@\s+2,
-please send them to `\fBddd@ips.cs.tu-bs.de\fR'.  For suggestions on
-what might be done, see the file `\fBPROJECTS\fR' in the \s-2@DDD@\s+2
-distribution.
-.PP
-If you wish something done in \s-2@DDD@\s+2, but cannot do it
-yourself, you can \fIfinance\fR specific \s-2@DDD@\s+2 extensions.
-For details, contact `\fBddd@ips.cs.tu-bs.de\fR'; direct mail is also
-welcome.
 .\"
 .\" ---------------
-.SH "IF YOU LIKE @DDD@..."
+.SH "ACTIONS"
 .\" ---------------
-If you appreciate this software, or have any suggestions, 
-please send us a picture postcard.  Our address is:
-.PP
-.DS
-  Technische Universitaet Braunschweig 
-.br
-  Institut fuer Programmiersprachen
-.br
-  und Informationssysteme 
-.br
-  Abteilung Softwaretechnologie 
-.br
-  Bueltenweg 88
-.br
-  D-38092 Braunschweig 
-.br
-  \s-2GERMANY\s+2 
-.br
-.DE
-.PP
-You may also leave a message in the \s-2@DDD@\s+2 Guestbook.
-It is accessible via our \s-2@DDD@\s+2 \s-2WWW\s+2 page,
-.sp
-.br
-  \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR .
-.br
-.sp
+.\"
+.\"
+The following \s-2@DDD@\s+2 actions may be used in translation tables.
+.\"
+.SS "General Actions"
+These actions are used to assign the keyboard focus.
+.TP
+.B ddd-next-tab-group ()
+Assign focus to the next tab group.
+.TP
+.B ddd-prev-tab-group ()
+Assign focus to the previous tab group.
+.TP
+.B ddd-previous-tab-group ()
+Assign focus to the previous tab group.
+.TP
+.B ddd-get-focus ()
+Assign focus to the element that just received input.
+.\"
+.\"
+.\"
+.SS "Data Display Actions"
+These actions are used in the \s-2@DDD@\s+2 graph editor.
+.TP
+.B end ()
+End the action initiated by \fBselect\fR.  Bound to a button up event.
+.TP
+.B extend ()
+Extend the current selection.  Bound to a button down event.
+.TP
+.B extend-or-move ()
+Extend the current selection.  Bound to a button down event.
+If the pointer is dragged, move the selection.
+.TP
+.B follow ()
+Continue the action initiated by \fBselect\fR.  Bound to a pointer
+motion event.
+.TP
+.B hide-edges (\fR[\fBany\fR|\fBboth\fR|\fBfrom\fR|\fBto\fR]\fB)
+Hide some edges.  \fBany\fR means to process all edges where either
+source or target node are selected. \fBboth\fR means to process all
+edges where both nodes are selected. \fBfrom\fR means to process all
+edges where at least the source node is selected. \fBto\fR means to
+process all edges where at least the target node is selected.  Default
+is \fBany\fR.
+.TP
+.B layout (\fR[\fBregular\fR|\fBcompact\fR]\fB, \fR[[\fB+\fR|\fB-\fR]\fIdegrees\fR]]\fB)
+Layout the graph.  \fBregular\fR means to use the regular layout
+algorithm; \fBcompact\fR uses an alternate layout algorithm, where
+successors are placed next to their parents.  Default is
+\fBregular\fR.  \fIdegrees\fR indicates in which direction the graph
+should be layouted.  Default is the current graph direction.
+.TP
+.B move-selected (\fIx-offset\fB, \fIy-offset\fB)
+Move all selected nodes in the direction given by \fIx-offset\fR and
+\fIy-offset\fR.  \fIx-offset\fR and \fIy-offset\fR is either given as
+a numeric pixel value, or as `\fB+grid\fR', or `\fB-grid\fR', meaning
+the current grid size.
+.TP
+.B normalize ()
+Place all nodes on their positions and redraw the graph.
+.TP
+.B rotate (\fR[[\fB+\fR|\fB-\fR]\fIdegrees\fR]\fB)
+Rotate the graph around \fIdegrees\fR degrees.  
+\fIdegrees\fR must be a multiple of 90.  Default is \fB+90\fR.
+.TP
+.B select ()
+Select the node pointed at.  Clear all other selections.  Bound to a
+button down event.
+.TP
+.B select-all ()
+Select all nodes in the graph.
+.TP
+.B select-first ()
+Select the first node in the graph.
+.TP
+.B select-next ()
+Select the next node in the graph.
+.TP
+.B select-or-move ()
+Select the node pointed at.  Clear all other selections.  Bound to a
+button down event. If the pointer is dragged, move the selected node.
+.TP
+.B select-prev ()
+Select the previous node in the graph.
+.TP
+.B show-edges (\fR[\fBany\fR|\fBboth\fR|\fBfrom\fR|\fBto\fR]\fB)
+Show some edges.  \fBany\fR means to process all edges where either
+source or target node are selected. \fBboth\fR means to process all
+edges where both nodes are selected. \fBfrom\fR means to process all
+edges where at least the source node is selected. \fBto\fR means to
+process all edges where at least the target node is selected.  Default
+is \fBany\fR.
+.TP
+.B snap-to-grid ()
+Place all nodes on the nearest grid position.
+.TP
+.B unselect-all ()
+Clear the selection.
+.\"
+.\"
+.SS "Debugger Console Actions"
+These actions are used in the debugger console and other text fields.
+.TP
+.B gdb-backward-character ()
+Move one character to the left.  Bound to \fBCtrl+B\fR and \fBLeft\fR.
+.TP
+.B gdb-beginning-of-line ()
+Move cursor to the beginning of the current line, after the prompt.
+Bound to \fBCtrl+A\fR and \fBHome\fR.
+.TP
+.B gdb-control (\fIcontrol-character\fB)
+Send the given \fIcontrol-character\fR to the inferior debugger.
+The \fIcontrol-character\fR must be specified in the form `\fB^\fIX\fR',
+where \fIX\fR is an upper-case letter or `\fB?\fR'.
+Bound to \fBCtrl+C\fR and \fBCtrl+\\\fR.
+.TP
+.B gdb-complete-arg (\fIcommand\fB)
+Complete current argument as if \fIcommand\fR was prepended.
+Bound to \fBCtrl+T\fR.
+.TP
+.B gdb-complete-command ()
+Complete current command line in the debugger console.
+Bound to \s-2\fBTAB\fR\s+2 and \fBCtrl+T\fR.
+.TP
+.B gdb-complete-tab (\fIcommand\fB)
+If global \s-2TAB\s+2 completion is enabled, complete current 
+argument as if \fIcommand\fR was prepended.  Otherwise, proceed as if
+the \s-2TAB\s+2 key was hit.  Bound to \s-2\fBTAB\fR\s+2.
+.TP
+.B gdb-delete-or-control (\fIcontrol-character\fB)
+Like \fBgdb-control\fR, but effective only if the cursor is at the end
+of a line.  Otherwise, \fIcontrol-character\fR is ignored and the
+character following the cursor is deleted.  Bound to \fBCtrl+D\fR.
+.TP
+.B gdb-end-of-line ()
+Move cursor to the end of the current line.  Bound to \fBCtrl+E\fR and
+\fBEnd\fR.
+.TP
+.B gdb-next-history ()
+Recall next command from history.  Bound to \fBCtrl+N\fR and \fBDown\fR.
+.TP
+.B gdb-prev-history ()
+Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
+.TP
+.B gdb-previous-history ()
+Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
+.TP
+.B gdb-forward-character ()
+Move one character to the right.  Bound to \fBCtrl+F\fR and \fBRight\fR.
+.TP
+.B gdb-insert-graph-arg ()
+Insert the contents of the data display argument field `\fB()\fR'.
+.TP
+.B gdb-insert-source-arg ()
+Insert the contents of the source argument field `\fB()\fR'.
+.TP
+.B gdb-isearch-prev ()
+Enter reverse incremental search mode.  Bound to \fBCtrl+R\fR.
+.TP
+.B gdb-isearch-next ()
+Enter incremental search mode.  Bound to \fBCtrl+S\fR.
+.TP
+.B gdb-isearch-exit ()
+Exit incremental search mode.  Bound to \s-2\fBESC\fR\s+2.
+.TP
+.B gdb-set-line (\fIvalue\fB)
+Set the current line to \fIvalue\fR.  Bound to \fBCtrl+U\fR.
 .\"
 .\" ---------------
 .SH "OPTIONS"
@@ -2943,12 +3077,56 @@ August, 1995
 December, 1995
 \s-2@DDD@\s+2 1.4: Machine-level debugging, glyphs, \s-2EMACS\s+2 integration
 .TP
-September, 1996
+October, 1996
 \s-2@DDD@\s+2 2.0: Colored displays, \s-2XDB\s+2
 support, generic \s-2DBX\s+2 support, command tool.
 .PD
 .\"
 .\"
+.\" ---------------
+.SH "EXTENDING @DDD@"
+.\" ---------------
+.\"
+If you have any contributions to be incorporated into \s-2@DDD@\s+2,
+please send them to `\fBddd@ips.cs.tu-bs.de\fR'.  For suggestions on
+what might be done, see the file `\fBPROJECTS\fR' in the \s-2@DDD@\s+2
+distribution.
+.PP
+If you wish something done in \s-2@DDD@\s+2, but cannot do it
+yourself, you can \fIfinance\fR specific \s-2@DDD@\s+2 extensions.
+For details, contact `\fBddd@ips.cs.tu-bs.de\fR'; direct mail is also
+welcome.
+.\"
+.\" ---------------
+.SH "IF YOU LIKE @DDD@..."
+.\" ---------------
+If you appreciate this software, or have any suggestions, 
+please send us a picture postcard.  Our address is:
+.PP
+.DS
+  Technische Universitaet Braunschweig 
+.br
+  Institut fuer Programmiersprachen
+.br
+  und Informationssysteme 
+.br
+  Abteilung Softwaretechnologie 
+.br
+  Bueltenweg 88
+.br
+  D-38092 Braunschweig 
+.br
+  \s-2GERMANY\s+2 
+.br
+.DE
+.PP
+You may also leave a message in the \s-2@DDD@\s+2 Guestbook.
+It is accessible via our \s-2@DDD@\s+2 \s-2WWW\s+2 page,
+.sp
+.br
+  \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR .
+.br
+.sp
 .\" --------------------
 .SH PRINTING THIS MANUAL
 .\" --------------------
