@@ -5737,7 +5737,7 @@ Click on LBL(Set) to set the specified watchpoint.
 
 Ddd*breakpoint_properties_popup.title:    DDD: Properties
 
-Ddd*breakpoint_properties.okLabelString:    		Close
+Ddd*breakpoint_properties.cancelLabelString:    	Close
 
 Ddd*breakpoint_properties*title.labelString:		Breakpoint
 Ddd*breakpoint_properties*titleMenu.marginWidth:	0
@@ -5864,6 +5864,7 @@ DESC(Commands, [record and edit @GDB@ command sequences])\n\
     SUBITEM Click on LBL(End) to stop the recording.\n\
     SUBITEM Use LBL(Edit @small>>) to edit the recorded commands.\n\
 \n\
+Click on LBL(Apply) to apply the changes you made.\n\
 Click on LBL(Close) to close this window.
 
 

@@ -116,6 +116,7 @@ class SourceView {
     static void BreakpointCmdCB          (Widget, XtPointer, XtPointer);
 
     static void EditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
+    static void ApplyBreakpointPropertiesCB(Widget, XtPointer, XtPointer);
     static void SetBreakpointIgnoreCountCB (Widget, XtPointer, XtPointer);
     static void SetBreakpointConditionCB   (Widget, XtPointer, XtPointer);
     static void EnableBreakpointsCB        (Widget, XtPointer, XtPointer);

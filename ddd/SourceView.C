@@ -5872,8 +5872,12 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 	verify(XmCreatePromptDialog(source_text_w,
 				    "breakpoint_properties",
 				    args, arg));
-    XtVaSetValues(info->dialog, XmNdefaultButton, Widget(0), NULL);
 
+    Widget apply = XmSelectionBoxGetChild(info->dialog, XmDIALOG_APPLY_BUTTON);
+    XtVaSetValues(info->dialog, XmNdefaultButton, apply, NULL);
+    XtManageChild(apply);
+
+    XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, XmDIALOG_OK_BUTTON));
 
     // Remove old prompt
     Widget text = XmSelectionBoxGetChild(info->dialog, XmDIALOG_TEXT);
@@ -5883,12 +5887,6 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     XtUnmanageChild(old_label);
 
     Delay::register_shell(info->dialog);
-
-    if (lesstif_version <= 79)
-	XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, 
-					       XmDIALOG_APPLY_BUTTON));
-    XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, 
-					   XmDIALOG_CANCEL_BUTTON));
 
     MMDesc commands_menu[] =
     {
@@ -5979,9 +5977,19 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     MMadjustPanel(panel_menu);
 
     XtAddCallback(info->dialog, XmNokCallback,
-		  UnmanageThisCB, info->dialog);
+		  ApplyBreakpointPropertiesCB, XtPointer(info));
+    XtAddCallback(info->dialog, XmNokCallback,
+		  UnmanageThisCB, XtPointer(info->dialog));
+
+    XtAddCallback(info->dialog, XmNapplyCallback,
+		  ApplyBreakpointPropertiesCB, XtPointer(info));
+
+    XtAddCallback(info->dialog, XmNcancelCallback,
+		  UnmanageThisCB, XtPointer(info->dialog));
+
     XtAddCallback(info->dialog, XmNhelpCallback,    
 		  ImmediateHelpCB, NULL);
+
     XtAddCallback(info->dialog, XmNunmapCallback,
 		  DestroyThisCB, XtParent(info->dialog));
     XtAddCallback(info->dialog, XmNdestroyCallback,
@@ -6001,12 +6009,17 @@ void SourceView::SetBreakpointConditionCB(Widget w,
     XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
     switch (cbs->reason)
     {
-    case XmCR_ACTIVATE:		// Pressed `RETURN'
+    case XmCR_OK:		// OK button
+    case XmCR_APPLY:		// Apply button
+
     case XmCR_SINGLE_SELECT:	// Selection from ComboBox
     case XmCR_MULTIPLE_SELECT:
     case XmCR_EXTENDED_SELECT:
     case XmCR_BROWSE_SELECT:
 	break;
+
+    case XmCR_ACTIVATE:		// Return Key
+	return;			// Already handled by Apply button
 
     default:
 	return;			// Value changed
@@ -6018,6 +6031,30 @@ void SourceView::SetBreakpointConditionCB(Widget w,
     String cond = XmTextFieldGetString(info->condition);
     set_bps_cond(info->nrs, cond, w);
     XtFree(cond);
+}
+
+// Apply all property changes
+void SourceView::ApplyBreakpointPropertiesCB(Widget w,
+					    XtPointer client_data, 
+					    XtPointer call_data)
+{ 
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
+
+    // End recording
+    if (gdb->recording())
+	EndBreakpointCommandsCB(w, client_data, call_data);
+
+    // Apply condition
+    String cond = XmTextFieldGetString(info->condition);
+    set_bps_cond(info->nrs, cond, w);
+    XtFree(cond);
+
+    if (XtIsManaged(XtParent(info->editor)))
+    {
+	// Apply commands
+	EditBreakpointCommandsCB(w, client_data, call_data);
+    }
 }
 
 // Set breakpoint ignore count

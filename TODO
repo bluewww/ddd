@@ -310,8 +310,8 @@ Volunteers for these and other projects are welcome!
     Support plotting arrays of structs as well as plotting complex
     values (Check `complex' in ISO C++ and COMPLEX in FORTRAN).
 
-368 Don't make the user hit Return in GDB Settings and breakpoint
-    conditions; instead, have an `Apply' button that commits all the
-    changes.  `OK' should do that as well.
+368 Don't make the user hit Return in GDB Settings; instead, have an
+    `Apply' button that commits all the changes.  `OK' should do that
+    as well.
 
 369 (Insert new project ideas here)
