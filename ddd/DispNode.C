@@ -47,43 +47,28 @@ HandlerList DispNode::handlers(DispNode_NTypes);
 int DispNode::change_tics = 0;
 
 // Constructor
-DispNode::DispNode (string& disp_nr, string& name)
-    : mydisp_nr (disp_nr),
-      myname (name),
-      myaddr (""),
-      myenabled (false),
-      mynodeptr (0),
-      disp_value (0),
-      myselected_value (0),
-      disp_box (0),
-      alias_of (0)
+DispNode::DispNode (int disp_nr,
+		    const string& name,
+		    const string& scope,
+		    const string& value)
+    : mydisp_nr(disp_nr),
+      myname(name),
+      myaddr(""),
+      myscope(scope),
+      myenabled(false),
+      mynodeptr(0),
+      disp_value(0),
+      myselected_value(0),
+      disp_box(0),
+      alias_of(0)
 {
     mylast_change = ++change_tics;
+
+    if (value != "")
+	disp_value = new DispValue (0, 0, value, myname, myname);
 
     // Create new box from DISP_VALUE
     disp_box = new DispBox (mydisp_nr, myname, disp_value);
-    
-    // Create graph node from box
-    mynodeptr = new BoxGraphNode (disp_box->box());
-}
-
-DispNode::DispNode (string& disp_nr, string& name, string& value)
-    : mydisp_nr (disp_nr),
-      myname (name),
-      myaddr (""),
-      myenabled (true), 
-      mynodeptr (0),
-      disp_value (0),
-      myselected_value (0),
-      disp_box (0),
-      alias_of (0)
-{
-    mylast_change = ++change_tics;
-
-    disp_value = new DispValue (0, 0, value, myname, myname);
-
-    // Create new box from DISP_VALUE
-    disp_box = new DispBox (disp_nr, name, disp_value);
     
     // Create graph node from box
     mynodeptr = new BoxGraphNode (disp_box->box());

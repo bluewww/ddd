@@ -24,7 +24,7 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 #ifndef _DDD_DataDisp_h
 #define _DDD_DataDisp_h
@@ -160,8 +160,10 @@ class DataDisp {
     static DispValue *selected_value();
     static DispNode  *selected_node();
 
-    static DispNode  *new_data_node(const string& name, string& answer);
-    static DispNode  *new_user_node(const string& name, string& answer);
+    static DispNode *new_data_node(const string& name, const string& scope,
+				   const string& answer);
+    static DispNode *new_user_node(const string& name, const string& scope,
+				   const string& answer);
 
     static int getDispNrAtPoint (BoxPoint point);
 
@@ -199,20 +201,16 @@ public:
     //-----------------------------------------------------------------------
 
     // Create a new display for DISPLAY_EXPRESSION.
+    // SCOPE is the name of the current function (must match backtrace output)
     // If POS is set, the new display is created at this position.
     // If DEPENDS_ON is set, the new display is made dependent on
     // DEPENDS_ON (a display number or name)
     // If ORIGIN is set, the last origin is set to ORIGIN.
-    static void new_displaySQ       (string display_expression,
-				     BoxPoint *pos = 0,
-				     string depends_on = "",
-				     Widget origin = 0);
-
-    // Old interface
-    static void new_displaySQ       (string display_expression,
-				     BoxPoint *pos,
-				     int depends_on,
-				     Widget origin = 0);
+    static void new_displaySQ(string display_expression,
+			      string scope,
+			      BoxPoint *pos = 0,
+			      string depends_on = "",
+			      Widget origin = 0);
 
     // Refresh displays.  Sends `info display' and `display' to GDB.
     static void refresh_displaySQ   (Widget origin = 0);
@@ -226,15 +224,12 @@ public:
     // Delete displays given in DISPLAY_NRS.  Sends `delete display' to GDB.
     static void delete_displaySQ    (IntArray& display_nrs);
 
-    // Same, but via GDB_COMMAND
+    // Same, but use the GDB_COMMAND interface for enqueing commands
     static void new_display       (string display_expression,
 				   BoxPoint *pos = 0,
 				   string depends_on = "",
 				   Widget origin = 0);
-    static void new_display       (string display_expression,
-				   BoxPoint *pos,
-				   int depends_on,
-				   Widget origin = 0);
+
     static void refresh_display   (Widget origin = 0);
     static void disable_display   (IntArray& display_nrs);
     static void enable_display    (IntArray& display_nrs);
@@ -388,24 +383,6 @@ public:
     // Return DDD commands to restore current state (displays, etc.)
     static string get_state();
 };
-
-inline void DataDisp::new_displaySQ(string display_expression,
-				    BoxPoint *pos,
-				    int depends_on,
-				    Widget origin)
-{
-    DataDisp::new_displaySQ(display_expression, pos, 
-			    itostring(depends_on), origin);
-}
-
-inline void DataDisp::new_display(string display_expression,
-				  BoxPoint *pos,
-				  int depends_on,
-				  Widget origin)
-{
-    DataDisp::new_display(display_expression, pos, 
-			  itostring(depends_on), origin);
-}
 
 inline string DataDisp::get_state()
 {

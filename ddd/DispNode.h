@@ -68,11 +68,13 @@ string user_command(const string& s);
 // The DispNode class
 //-----------------------------------------------------------------------------
 
-class DispNode {
+class DispNode 
+{
 private:
-    string        mydisp_nr;	      // Display number
+    int           mydisp_nr;	      // Display number
     string        myname;	      // Display expression
     string        myaddr;	      // Location of expression
+    string        myscope;	      // Program location where created
     bool          myenabled;	      // Flag: is display enabled?
     BoxGraphNode* mynodeptr;	      // Associated graph node 
     DispValue*    disp_value;	      // Associated value
@@ -90,20 +92,24 @@ protected:
     static class TagBox *findTagBox(const Box *box, DispValue *dv);
 
 public:
-    // Constructor
-    DispNode(string& disp_nr, string& name);
-    DispNode(string& disp_nr, string& name, string& value);
+    // Create a new display numbered DISP_NR, named NAME, created at
+    // SCOPE (a function name or "") with a value of VALUE.
+    DispNode(int disp_nr,
+	     const string& name,
+	     const string& scope = "",
+	     const string& value = "");
 
     // Destructor
     ~DispNode();
 
     // Resources
-    const string& disp_nr()  const { return mydisp_nr; }
-    const string& name()     const { return myname; }
-    const string& addr()     const { return myaddr; }
+    int disp_nr()  const        { return mydisp_nr; }
+    const string& name() const  { return myname; }
+    const string& addr() const  { return myaddr; }
+    const string& scope() const { return myscope; }
 
-    bool enabled()  const { return myenabled; }
-    bool disabled() const { return !myenabled; }
+    bool enabled()  const   { return myenabled; }
+    bool disabled() const   { return !myenabled; }
     int last_change() const { return mylast_change; }
 
     bool is_user_command() const { return ::is_user_command(name()); }

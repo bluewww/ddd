@@ -62,8 +62,8 @@ public:
     static void init_vsllib(void (*background)() = 0);
 
     // Create a new box; if DV == 0, create a `disabled' box
-    DispBox (string disp_nr,
-	     string name,
+    DispBox (int disp_nr,
+	     const string& name,
 	     const DispValue* dv = 0);
 
     ~DispBox ();

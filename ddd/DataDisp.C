@@ -318,8 +318,7 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
     disp_value_arg->dereference();
     disp_node_arg->refresh();
 
-    string nr = disp_node_arg->disp_nr();
-    new_display(display_expression, 0, get_nr(nr));
+    new_display(display_expression, 0, disp_node_arg->disp_nr());
 }
 
 void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
@@ -346,8 +345,7 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 	    if (dv == 0)
 	    {
 		// No value -- just enable or disable
-		string nr = dn->disp_nr();
-		disp_nrs += get_nr(nr);
+		disp_nrs += dn->disp_nr();
 
 		if (dn->disabled())
 		{
@@ -367,8 +365,7 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 		if (dv == dn->value() && dn->disabled())
 		{
 		    // Enable display
-		    string nr = dn->disp_nr();
-		    disp_nrs += get_nr(nr);
+		    disp_nrs += dn->disp_nr();
 		    do_disable = false;
 		}
 		else
@@ -384,8 +381,7 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 		if (dv == dn->value() && dn->enabled())
 		{
 		    // Disable display
-		    string nr = dn->disp_nr();
-		    disp_nrs += get_nr(nr);
+		    disp_nrs += dn->disp_nr();
 		    do_enable = false;
 		}
 		else
@@ -422,8 +418,7 @@ void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
 	    if (dn->disabled())
 	    {
 		// Enable display
-		string nr = dn->disp_nr();
-		disp_nrs += get_nr(nr);
+		disp_nrs += dn->disp_nr();
 	    }
 		
 	    DispValue *dv = dn->selected_value();
@@ -467,8 +462,7 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 	    if ((dv == 0 || dv == dn->value()) && dn->enabled())
 	    {
 		// Disable display
-		string nr = dn->disp_nr();
-		disp_nrs += get_nr(nr);
+		disp_nrs += dn->disp_nr();
 	    }
 
 	    if (dv != 0 && dv->expanded())
@@ -520,8 +514,7 @@ void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
     {
 	if (dn->selected())
 	{
-	    string nr = dn->disp_nr();
-	    disp_nrs += get_nr(nr);
+	    disp_nrs += dn->disp_nr();
 	    if (dn->enabled())
 		do_enable = false;
 	    if (dn->disabled())
@@ -575,9 +568,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
     {
 	if (dn->selected())
 	{
-	    string nr_s = dn->disp_nr();
-	    int nr = get_positive_nr(nr_s);
-	    disp_nrs += nr;
+	    disp_nrs += dn->disp_nr();
 
 	    // Select all ancestors
 	    GraphEdge *edge;
@@ -629,10 +620,6 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 	return;
     }
 
-    string nr = disp_node_arg->disp_nr();
-    static int* disp_nr_ptr = new int;
-    *disp_nr_ptr = get_nr(nr);
-
     static Widget dependent_display_dialog = 0;
     if (!dependent_display_dialog) {
 
@@ -652,8 +639,8 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 		       NULL);
 	XtAddCallback (dependent_display_dialog, 
 		       XmNokCallback, 
-		       dependent_displayDCB, 
-		       disp_nr_ptr);
+		       dependent_displayDCB,
+		       XtPointer(disp_node_arg->disp_nr()));
     }
 
     MString label(disp_value_arg->full_name());
@@ -709,8 +696,7 @@ void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
     {
 	if (dn->selected() && dn->disabled())
 	{
-	    string nr = dn->disp_nr();
-	    disp_nrs += get_nr(nr);
+	    disp_nrs += dn->disp_nr();
 	}
     }
 
@@ -730,8 +716,7 @@ void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
     {
 	if (dn->selected() && dn->enabled())
 	{
-	    string nr = dn->disp_nr();
-	    disp_nrs += get_nr(nr);
+	    disp_nrs += dn->disp_nr();
 	}
     }
 
@@ -775,7 +760,7 @@ void DataDisp::dependent_displayDCB (Widget    dialog,
 {
     set_last_origin(dialog);
 
-    int* disp_nr_ptr = (int *) client_data;
+    int disp_nr = int(client_data);
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
 
@@ -785,7 +770,7 @@ void DataDisp::dependent_displayDCB (Widget    dialog,
     case XmCR_OK :
 	XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &input);
 	if (input != "")
-	    new_display(input, 0, *disp_nr_ptr);
+	    new_display(input, 0, disp_nr);
 	XtFree(input);
 	break;
     default:
@@ -1453,8 +1438,7 @@ string DataDisp::get_selection(bool restore_state)
     {
 	if (restore_state || dn->selected())
 	{
-	    string nr = dn->disp_nr();
-	    nrs += get_positive_nr(nr);
+	    nrs += dn->disp_nr();
 	}
     }
     sort(nrs);
@@ -1511,8 +1495,7 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	string nr = dn->disp_nr();
-	int display_nr = get_nr(nr);
+	int display_nr = dn->disp_nr();
 
 	bool select = false;
 	for (int i = 0; i < display_nrs.size(); i++)
@@ -1679,8 +1662,8 @@ regex RXmore_than_one ("\\[-?[0-9]+\\.\\.-?[0-9]+\\]");
 
 class NewDisplayInfo {
 public:
-    StatusDelay *delay;
     string display_expression;
+    string scope;
     StringArray display_expressions;
     BoxPoint point;
     BoxPoint *point_ptr;
@@ -1688,24 +1671,23 @@ public:
     Widget origin;
 
     NewDisplayInfo()
-	: delay(0), point_ptr(0), depends_on(""), origin(0)
+	: point_ptr(0), depends_on(""), origin(0)
     {}
 
     ~NewDisplayInfo()
-    {
-	delete delay;
-    }
+    {}
 };
 
 void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
-    new_displaySQ(info->display_expression, info->point_ptr, 
+    new_displaySQ(info->display_expression, info->scope, info->point_ptr, 
 		  info->depends_on, info->origin);
     delete info;
 }
 
-void DataDisp::new_displaySQ (string display_expression, BoxPoint *p,
+void DataDisp::new_displaySQ (string display_expression,
+			      string scope, BoxPoint *p,
 			      string depends_on, Widget origin)
 {
     // Check arguments
@@ -1728,6 +1710,7 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint *p,
 
     NewDisplayInfo *info = new NewDisplayInfo;
     info->display_expression = display_expression;
+    info->scope = scope;
     if (p != 0)
     {
 	info->point = *p;
@@ -1741,19 +1724,26 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint *p,
     info->depends_on = depends_on;
     info->origin     = origin;
 
+    static Delay *reading_delay = 0;
     if (!DispBox::vsllib_initialized)
     {
-	// If we don't have the VSL library yet, try again later.
-	info->delay = new StatusDelay("Reading VSL library");
+	// We don't have the VSL library yet.  Try again later.
+	if (VSLLib::background != 0)
+	{
+	    reading_delay = new StatusDelay("Reading VSL library");
 
-	// Disable background processing and try again - as soon
-	// as the VSL library will be completely read, we shall enter
-	// the main DDD event loop and get called again.
-	VSLLib::background = 0;
+	    // Disable background processing
+	    VSLLib::background = 0;
+	}
+
+	// As soon as the VSL library will be completely read, we
+	// shall enter the main DDD event loop and get called again.
 	XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			100, again_new_displaySQ, info);
 	return;
     }
+    delete reading_delay;
+    reading_delay = 0;
 
     if (origin)
 	set_last_origin(origin);
@@ -1859,19 +1849,21 @@ void DataDisp::new_display(string display_expression, BoxPoint *p,
     gdb_command(cmd, origin);
 }
 
-DispNode *DataDisp::new_data_node(const string& given_name, string& answer)
+DispNode *DataDisp::new_data_node(const string& given_name,
+				  const string& scope,
+				  const string& answer)
 {
-    string nr;
+    string value = answer;
+    string nr_s;
     string display_name;
+    read_number_and_name(value, nr_s, display_name);
 
-    read_number_and_name(answer, nr, display_name);
-    if (nr == "" || display_name == "")
+    int nr = get_nr(nr_s);
+    if (nr == 0 || display_name == "")
     {
 	post_gdb_message(answer, last_origin);
 	return 0;
     }
-
-    DispNode* dn = 0;
 
     // Naming a data display after the GDB display name cause trouble
     // when displaying functions: `display tree_test' creates a
@@ -1893,25 +1885,22 @@ DispNode *DataDisp::new_data_node(const string& given_name, string& answer)
 	|| title.contains('}'))
 	title = given_name;
 
-    if (is_disabling(answer, gdb))
+    if (is_disabling(value, gdb))
     {
 	post_gdb_message(answer, last_origin);
-	dn = new DispNode(nr, title);
-    }
-    else
-    {
-	dn = new DispNode(nr, title, answer);
+	value = "";
     }
 
-    return dn;
+    return new DispNode(nr, title, scope, value);
 }
 
-DispNode *DataDisp::new_user_node(const string& name, string& answer)
+DispNode *DataDisp::new_user_node(const string& name,
+				  const string& scope,
+				  const string& answer)
 {
     // Assign a default number
-    string disp_nr_str = itostring(-(next_display_number++));
-    string title = name;
-    return new DispNode(disp_nr_str, title, answer);
+    int nr = -(next_display_number++);
+    return new DispNode(nr, name, scope, answer);
 }
 
 
@@ -1925,7 +1914,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 
     if (answer == NO_GDB_ANSWER)
     {
-	delete info;
+	delete info;		// Command was canceled
 	return;
     }
 
@@ -1962,7 +1951,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 
     // DispNode erzeugen und ggf. disabling-Meldung ausgeben
     string ans = answer;
-    DispNode *dn = new_data_node(info->display_expression, ans);
+    DispNode *dn = new_data_node(info->display_expression, info->scope, ans);
     if (dn == 0)
     {
 	delete info;
@@ -1978,8 +1967,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     dn->selected() = true;
 
     // in den Graphen einfuegen
-    string nr = dn->disp_nr();
-    disp_graph->insert(get_nr(nr), dn, depend_nr);
+    disp_graph->insert(dn->disp_nr(), dn, depend_nr);
 
     refresh_addr(dn);
     refresh_graph_edit();
@@ -1994,7 +1982,7 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
 
     if (answer == NO_GDB_ANSWER)
     {
-	delete info;
+	delete info;		// Command was canceled
 	return;
     }
 
@@ -2007,31 +1995,26 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
 	    bgn->selected() = false;
     }
 
-    // DispNode erzeugen und ggf. disabling-Meldung ausgeben
+    // Create new user node and issue `disabling' messages
     string ans = answer;
-    DispNode *dn = new_user_node(info->display_expression, ans);
-    if (dn == 0)
+    DispNode *dn = new_user_node(info->display_expression, info->scope, ans);
+    if (dn != 0)
     {
-	delete info;
-	prompt();
-	return;
+	// Determine new position
+	int depend_nr = disp_graph->get_by_name(info->depends_on);
+	BoxPoint box_point = info->point;
+	if (box_point == BoxPoint())
+	    box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
+	dn->moveTo(box_point);
+	dn->selected() = true;
+
+	// Insert into graph
+	disp_graph->insert(dn->disp_nr(), dn, depend_nr);
+
+	refresh_addr(dn);
+	refresh_graph_edit();
+	update_infos();
     }
-
-    // BoxPoint berechnen
-    int depend_nr = disp_graph->get_by_name(info->depends_on);
-    BoxPoint box_point = info->point;
-    if (box_point == BoxPoint())
-	box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
-    dn->moveTo(box_point);
-    dn->selected() = true;
-
-    // in den Graphen einfuegen
-    string nr = dn->disp_nr();
-    disp_graph->insert(get_nr(nr), dn, depend_nr);
-
-    refresh_addr(dn);
-    refresh_graph_edit();
-    update_infos();
 
     delete info;
     prompt();
@@ -2047,7 +2030,7 @@ void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
 
     if (answer == NO_GDB_ANSWER)
     {
-	delete info;
+	delete info;		// Command was canceled
 	return;
     }
 
@@ -2057,6 +2040,7 @@ void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
     if (display != "")
 	new_data_displayOQC(display, data);
 }
+
 
 // ***************************************************************************
 // wird von new_displaySQ aufgerufen, wenn die display_expression die
@@ -2163,7 +2147,7 @@ void DataDisp::new_data_displaysOQAC (string answers[],
 	{
 	    // Create new display and remember disabling-message
 	    DispNode *dn = new_data_node(info->display_expressions[i],
-					 answers[i]);
+					 info->scope, answers[i]);
 	    if (dn == 0)
 		continue;
 
@@ -2176,8 +2160,7 @@ void DataDisp::new_data_displaysOQAC (string answers[],
 	    dn->selected() = true;
 
 	    // Insert into graph
-	    string nr = dn->disp_nr();
-	    disp_graph->insert(get_nr(nr), dn, depend_nr);
+	    disp_graph->insert(dn->disp_nr(), dn, depend_nr);
 	}
     }
     delete[] answers;
@@ -2448,7 +2431,7 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs)
 void DataDisp::disable_displayOQC (const string& answer, void *)
 {
     if (answer == NO_GDB_ANSWER)
-	return;
+	return;			// Command was canceled
 
     gdb_out(answer);
     refresh_graph_edit();
@@ -2516,7 +2499,7 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs)
 void DataDisp::enable_displayOQC (const string& answer, void *)
 {
     if (answer == NO_GDB_ANSWER)
-	return;
+	return;			// Command was canceled
 
     gdb_out(answer);
     refresh_displaySQ();
@@ -2586,7 +2569,7 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs)
 void DataDisp::delete_displayOQC (const string& answer, void *)
 {
     if (answer == NO_GDB_ANSWER)
-	return;
+	return;			// Command was canceled
 
     string ans = answer;
 
@@ -2762,8 +2745,7 @@ string DataDisp::process_displays (string& displays,
 		    {
 			if (dn->name() == disp_name)
 			{
-			    string nr = dn->disp_nr();
-			    disp_nr = get_positive_nr(nr);
+			    disp_nr = dn->disp_nr();
 			    break;
 			}
 		    }
@@ -2958,6 +2940,7 @@ void DataDisp::refresh_display_list(bool silent)
     StringArray nums;
     StringArray states;
     StringArray exprs;
+    StringArray scopes;
     StringArray addrs;
 
     if (number_of_displays > 0)
@@ -2966,6 +2949,7 @@ void DataDisp::refresh_display_list(bool silent)
 	nums   += "Num";
 	states += "State";
 	exprs  += "Expression";
+	scopes += "Scope";
 	addrs  += "Address";
     }
     else
@@ -2973,6 +2957,7 @@ void DataDisp::refresh_display_list(bool silent)
 	nums   += "";
 	states += "";
 	exprs  += "";
+	scopes += "";
 	addrs  += "";
     }
 
@@ -2982,7 +2967,7 @@ void DataDisp::refresh_display_list(bool silent)
     {
 	DispNode* dn = disp_graph->get(k);
 
-	nums += dn->disp_nr() + ":";
+	nums += itostring(dn->disp_nr()) + ":";
 
 	if (dn->nodeptr()->hidden())
 	    states += "alias of " + itostring(dn->alias_of);
@@ -2992,12 +2977,14 @@ void DataDisp::refresh_display_list(bool silent)
 	    states += "disabled";
 	
 	exprs += dn->name();
+	scopes += dn->scope();
 	addrs += dn->addr();
     }
 
     int nums_width   = max_width(nums);
     int exprs_width  = max_width(exprs)  + 1;
     int states_width = max_width(states) + 1;
+    int scopes_width = max_width(scopes) + 1;
     int addrs_width  = max_width(addrs);
 
     string *label_list = new string[number_of_displays + 1];
@@ -3010,7 +2997,8 @@ void DataDisp::refresh_display_list(bool silent)
     {
 	line = fmt(nums[count], nums_width) 
 	    + " " + fmt(exprs[count], exprs_width)
-	    + " " + fmt(states[count], states_width);
+	    + " " + fmt(states[count], states_width)
+	    + " " + fmt(scopes[count], scopes_width);
 	if (detect_aliases)
 	    line += " " + fmt(addrs[count], addrs_width);
     }
@@ -3031,9 +3019,11 @@ void DataDisp::refresh_display_list(bool silent)
 	DispNode* dn = disp_graph->get(k);
 	line = fmt(nums[count], nums_width) 
 	    + " " + fmt(exprs[count], exprs_width)
-	    + " " + fmt(states[count], states_width);
+	    + " " + fmt(states[count], states_width)
+	    + " " + fmt(scopes[count], scopes_width);
 	if (detect_aliases)
 	    line += " " + fmt(addrs[count], addrs_width);
+
 	label_list[count] = line;
 	selected[count]   = dn->selected();
 
@@ -3062,6 +3052,11 @@ void DataDisp::refresh_display_list(bool silent)
 	    msg = rm("Display " + nums[index_selected] + " ");
 	    msg += tt(exprs[index_selected]);
 	    msg += rm(" (" + states[index_selected]);
+	    if (scopes[index_selected] != "")
+	    {
+		msg += rm(", scope ");
+		msg += tt(scopes[index_selected]);
+	    }
 	    if (detect_aliases && addrs[index_selected] != "")
 	    {
 		msg += rm(", address ");
@@ -3079,7 +3074,7 @@ void DataDisp::refresh_display_list(bool silent)
 	    {
 		DispNode* dn = disp_graph->get(k);
 		if (dn->selected())
-		    displays += atoi(dn->disp_nr());
+		    displays += dn->disp_nr();
 	    }
 
 	    sort(displays);
@@ -3231,8 +3226,7 @@ void DataDisp::delete_user_display(const string& name)
     {
 	if (dn->user_command() == name)
 	{
-	    string nr = dn->disp_nr();
-	    killme += get_nr(nr);
+	    killme += dn->disp_nr();
 	}
     }
 
@@ -3576,7 +3570,7 @@ void DataDisp::merge_displays(IntArray displays,
 	if (suppressed_displays.size() == 1)
 	{
 	    DispNode *node = disp_graph->get(suppressed_displays[0]);
-	    msg += rm("display " + node->disp_nr() + ": ");
+	    msg += rm("display " + itostring(node->disp_nr()) + ": ");
 	    msg += tt(node->name());
 	}
 	else if (suppressed_displays.size() == 2)
@@ -3605,7 +3599,7 @@ void DataDisp::merge_displays(IntArray displays,
 	    msg += rm(" because they are aliases");
 
 	DispNode *of = disp_graph->get(displays[0]);
-	msg += rm(" of display " + of->disp_nr() + ": ");
+	msg += rm(" of display " + itostring(of->disp_nr()) + ": ");
 	msg += tt(of->name());
 
 	set_status_mstring(msg);

@@ -66,11 +66,11 @@ bool    DispBox::vsllib_initialized = false;
 
 // ***************************************************************************
 //
-DispBox::DispBox (string disp_nr,
-		  string title,
-		  const DispValue* dv)
+DispBox::DispBox (int disp_nr, const string& t, const DispValue *dv)
     : mybox(0), title_box(0)
 {
+    string title = t;
+
     // Strip DBX scope information from title
     static regex RXdbx_scope("[a-zA-Z_0-9]*`");
     while (int(title.length()) > max_display_title_length 
@@ -102,7 +102,7 @@ DispBox::DispBox (string disp_nr,
     else
     {
 	// Normal title: use NUMBER: EXPR
-	args[0] = disp_nr;
+	args[0] = itostring(disp_nr);
 	args[1] = tag(title);
     }
 
