@@ -1461,6 +1461,9 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 	// Check if the command TTY is still open
 	tty_running();
 
+	// Check if the separate TTY is still running
+	exec_tty_running();
+
 	if (app_data.synchronous_gdb && gdb->isBusyOnQuestion())
 	{
 	    // Synchronous mode: wait for GDB to answer question
