@@ -230,6 +230,7 @@ void dddToggleGlobalTabCompletionCB(Widget, XtPointer, XtPointer);
 void dddToggleSeparateExecWindowCB (Widget, XtPointer, XtPointer);
 void dddToggleSaveOptionsOnExitCB  (Widget, XtPointer, XtPointer);
 void dddToggleSaveHistoryOnExitCB  (Widget, XtPointer, XtPointer);
+void dddToggleSuppressWarningsCB   (Widget, XtPointer, XtPointer);
 void dddSetSeparateWindowsCB       (Widget, XtPointer, XtPointer);
 void dddSetKeyboardFocusPolicyCB   (Widget, XtPointer, XtPointer);
 void dddSetPannerCB                (Widget, XtPointer, XtPointer);
@@ -280,6 +281,9 @@ static void ddd_signal(int sig);
 static void ddd_fatal(int sig);
 static void ddd_install_fatal();
 static void ddd_install_signal();
+
+// Warning proc
+static void ddd_xt_warning(String message);
 
 // Button creator
 Widget make_buttons(Widget parent, const string& name, const string& list);
@@ -707,6 +711,15 @@ static XtResource resources[] = {
 	XtPointer(True)
     },
     {
+	XtNsuppressWarnings,
+	XtCSuppressWarnings,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, suppress_warnings),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,
@@ -1005,6 +1018,7 @@ static Widget graph_compact_layout_w[4];
 static Widget graph_auto_layout_w[4];
 static Widget find_words_only_w[4];
 static Widget cache_source_files_w[4];
+static Widget suppress_warnings_w[4];
 static Widget set_focus_pointer_w[4];
 static Widget set_focus_explicit_w[4];
 static Widget set_scrolling_panner_w[4];
@@ -1022,6 +1036,8 @@ static MMDesc ddd_options_menu[] =
       NULL, global_tab_completion_w },
     { "separateExecWindow",  MMToggle, { dddToggleSeparateExecWindowCB }, 
       NULL, separate_exec_window_w },
+    { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB }, 
+      NULL, suppress_warnings_w },
     { "saveOptionsOnExit",   MMToggle, { dddToggleSaveOptionsOnExitCB }, 
       NULL, save_options_on_exit_w },
     { "saveHistoryOnExit",   MMToggle, { dddToggleSaveHistoryOnExitCB }, 
@@ -1347,6 +1363,9 @@ static bool   gdb_new_history = true;
 // True if DDD is about to exit
 static bool ddd_is_exiting = false;
 
+// The Xt Warning handler
+static XtErrorHandler ddd_original_xt_warning_handler;
+
 
 //-----------------------------------------------------------------------------
 // Remote commands
@@ -1508,6 +1527,10 @@ int main(int argc, char *argv[])
     // If needed, fix the X configuration silently
     check_x_configuration(toplevel, false);
 
+    // Set up warning handler
+    ddd_original_xt_warning_handler =
+	XtAppSetWarningHandler(app_context, ddd_xt_warning);
+
     // Set up debugger defaults
     if (app_data.debugger[0] == '\0')
     {
@@ -1611,6 +1634,7 @@ int main(int argc, char *argv[])
     graph_auto_layout_w[CommandOptions]        = graph_auto_layout_w[0];
     find_words_only_w[CommandOptions]          = find_words_only_w[0];
     cache_source_files_w[CommandOptions]       = cache_source_files_w[0];
+    suppress_warnings_w[CommandOptions]        = suppress_warnings_w[0];
     set_focus_pointer_w[CommandOptions]        = set_focus_pointer_w[0];
     set_focus_explicit_w[CommandOptions]       = set_focus_explicit_w[0];
     set_scrolling_panner_w[CommandOptions]     = set_scrolling_panner_w[0];
@@ -1684,6 +1708,7 @@ int main(int argc, char *argv[])
 	graph_auto_layout_w[DataOptions]        = graph_auto_layout_w[0];
 	find_words_only_w[DataOptions]          = find_words_only_w[0];
         cache_source_files_w[DataOptions]       = cache_source_files_w[0];
+	suppress_warnings_w[DataOptions]        = suppress_warnings_w[0];
 	set_focus_pointer_w[DataOptions]        = set_focus_pointer_w[0];
 	set_focus_explicit_w[DataOptions]       = set_focus_explicit_w[0];
 	set_scrolling_panner_w[DataOptions]     = set_scrolling_panner_w[0];
@@ -1760,6 +1785,7 @@ int main(int argc, char *argv[])
 	graph_auto_layout_w[SourceOptions]        = graph_auto_layout_w[0];
 	find_words_only_w[SourceOptions]          = find_words_only_w[0];
 	cache_source_files_w[SourceOptions]       = cache_source_files_w[0];
+	suppress_warnings_w[SourceOptions]        = suppress_warnings_w[0];
 	set_focus_pointer_w[SourceOptions]        = set_focus_pointer_w[0];
 	set_focus_explicit_w[SourceOptions]       = set_focus_explicit_w[0];
 	set_scrolling_panner_w[SourceOptions]     = set_scrolling_panner_w[0];
@@ -2130,6 +2156,9 @@ void update_options()
 		      XmNset, app_data.find_words_only, NULL);
 	XtVaSetValues(cache_source_files_w[i],
 		      XmNset, app_data.cache_source_files, NULL);
+
+	XtVaSetValues(suppress_warnings_w[i],
+		      XmNset, app_data.suppress_warnings, NULL);
 
 	Boolean state;
 	arg = 0;
@@ -5592,6 +5621,104 @@ void set_status(const string& message)
 // Output
 //-----------------------------------------------------------------------------
 
+static regex RXcontrol("["
+		       "\001"  // SOH
+		       "\002"  // STX
+		       "\003"  // ETX
+		       "\004"  // EOT
+		       "\005"  // ENQ
+		       "\006"  // ACK
+		       "\007"  // BEL
+		       "\010"  // BS
+		       "\011"  // HT
+		       // "\012"  // NL
+		       "\013"  // VT
+		       "\014"  // NP
+		       "\015"  // CR
+		       "\016"  // SO
+		       "\017"  // SI
+		       "\020"  // DLE
+		       "\021"  // DC1
+		       "\022"  // DC2
+		       "\023"  // DC3
+		       "\024"  // DC4
+		       "\025"  // NAK
+		       "\026"  // SYN
+		       "\027"  // ETB
+		       "\030"  // CAN
+		       "\031"  // EM
+		       "\032"  // SUB
+		       "\033"  // ESC
+		       "\034"  // FS
+		       "\035"  // GS
+		       "\036"  // RS
+		       "\037"  // US
+		       "\177"  // DEL
+		       "]", true);
+
+// Process control character
+void gdb_ctrl(char ctrl)
+{
+    switch (ctrl)
+    {
+    case '\t':
+    case '\r':
+    {
+	String s = XmTextGetString(gdb_w);
+	string message = s;
+	XtFree(s);
+
+	XmTextPosition startOfLine = promptPosition;
+	while (startOfLine - 1 >= 0 && message[startOfLine - 1] != '\n')
+	    startOfLine--;
+
+	switch (ctrl)
+	{
+	case '\t':
+	{
+	    const int TAB_WIDTH = 8;
+	    int column = promptPosition - startOfLine;
+	    int spaces = TAB_WIDTH - column % TAB_WIDTH;
+	    string spacing = replicate(' ', spaces);
+	
+	    XmTextInsert(gdb_w, promptPosition, spacing);
+	    promptPosition += spacing.length();
+	    break;
+	}
+
+	case '\r':
+	{
+	    XmTextReplace(gdb_w, startOfLine, promptPosition, "");
+	    promptPosition = startOfLine;
+	    break;
+	}
+	}
+	break;
+    }
+
+    case '\b':
+    {
+	XmTextReplace(gdb_w, promptPosition - 1, promptPosition, "");
+	promptPosition--;
+	break;
+    }
+
+    default:
+    {
+	string c;
+	if (ctrl < ' ')
+	    c = string("^") + string('@' + int(ctrl));
+	else
+	    c = "^?";
+	XmTextInsert(gdb_w, promptPosition, c);
+	promptPosition += c.length();
+    }
+    }
+
+    XmTextShowPosition(gdb_w, promptPosition);
+}
+	
+
 // Append TEXT to GDB output
 void _gdb_out(string text)
 {
@@ -5613,8 +5740,27 @@ void _gdb_out(string text)
     set_status_from_gdb(text);
     set_tty_from_gdb(text);
 
-    XmTextInsert(gdb_w, promptPosition, text);
-    promptPosition += text.length();
+    char ctrl;
+    do {
+	string block = text;
+	int i = block.index(RXcontrol);
+	ctrl = '\0';
+	if (i >= 0)
+	{
+	    ctrl  = block[i];
+	    block = block.before(i);
+	    text  = text.after(i);
+	}
+	else
+	    text = "";
+
+	XmTextInsert(gdb_w, promptPosition, block);
+	promptPosition += block.length();
+	XmTextShowPosition(gdb_w, promptPosition);
+
+	if (ctrl)
+	    gdb_ctrl(ctrl);
+    } while (text != "");
 
     XmTextPosition lastPos = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, lastPos);
@@ -5755,7 +5901,24 @@ static void ddd_fatal(int sig)
     kill(getpid(), sig);
 }
 
+// Xt Warning handler
+static void ddd_xt_warning(String message)
+{
+    if (!app_data.suppress_warnings)
+    {
+	ddd_original_xt_warning_handler(message);
 
+	static bool informed = false;
+
+	if (!informed)
+	{
+	    cerr << "(You can suppress these warnings\n"
+		 << "by setting the 'Suppress X Warnings' option"
+		 << " in the DDD `Options` menu.)\n";
+	    informed = true;
+	}
+    }
+}
 
 // Close callback
 void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
@@ -6533,6 +6696,22 @@ void dddToggleSaveHistoryOnExitCB (Widget, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
+void dddToggleSuppressWarningsCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.suppress_warnings = info->set;
+
+    if (info->set)
+	set_status("X Warnings are suppressed.");
+    else
+	set_status("X Warnings are not suppressed.");
+
+    update_options();
+    options_changed = true;
+}
+
 
 //-----------------------------------------------------------------------------
 // Startup Options
@@ -6759,6 +6938,8 @@ static void save_options(Widget origin)
 			 app_data.separate_data_window) << "\n";
     os << bool_app_value(XtNpannedGraphEditor,
 			 app_data.panned_graph_editor) << "\n";
+    os << bool_app_value(XtNsuppressWarnings,
+			 app_data.suppress_warnings) << "\n";
     os << bool_app_value(XtNsaveOptionsOnExit,
 			 app_data.save_options_on_exit) << "\n";
     os << bool_app_value(XtNsaveHistoryOnExit,
