@@ -82,6 +82,9 @@ bool ddd_is_exiting = false;
 // True if DDD is about to restart
 bool ddd_is_restarting = false;
 
+// True if DDD has crashed and needs restarting
+bool ddd_has_crashed = false;
+
 //-----------------------------------------------------------------------------
 // Signal handling
 //-----------------------------------------------------------------------------
@@ -235,6 +238,8 @@ static void ddd_fatal(int sig...)
     // process with the environment variable DDD_NO_SIGNAL_HANDLERS set.
     // This disables installation of the `ddd_fatal' signal handler
     // and makes it possible for you to determine the problem cause.
+
+    ddd_has_crashed = true;
 
     static int fatal_entered = 0;
 

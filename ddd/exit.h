@@ -58,5 +58,8 @@ extern bool ddd_is_exiting;
 // True if DDD is about to restart
 extern bool ddd_is_restarting;
 
+// True if DDD has crashed and needs restarting
+extern bool ddd_has_crashed;
+
 #endif // _DDD_exit_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -58,6 +58,9 @@ void set_status_from_gdb(const string& text);
  // True if last cmd came from GDB window
 extern bool gdb_keyboard_command;
 
+// True if asking `yes or no'
+extern bool gdb_asks_yn;
+
 // True if the next line is to be displayed in the status line
 extern bool show_next_line_in_status;
 

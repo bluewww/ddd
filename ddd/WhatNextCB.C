@@ -35,72 +35,165 @@ char WhatNextCB_rcsid[] =
 
 #include "WhatNextCB.h"
 
-// Give a help dependent on current DDD state
-void WhatNextCB(Widget widget, XtPointer client_data, XtPointer call_data)
+#include "commandQ.h"
+#include "converters.h"
+#include "ddd.h"
+#include "exit.h"
+#include "file.h"
+#include "question.h"
+#include "status.h"
+#include "verify.h"
+#include "version.h"
+#include "wm.h"
+#include "DataDisp.h"
+#include "Delay.h"
+#include "DestroyCB.h"
+#include "HelpCB.h"
+#include "SourceView.h"
+
+#include <Xm/Xm.h>
+#include <Xm/MessageB.h>
+
+// Show a suggestion named NAME
+static void hint_on(String name)
 {
-    if (ddd_has_crashed())
+    // Create some `dummy' widget and create a help text for it
+    Widget suggestion = 
+	verify(XmCreateInformationDialog(find_shell(), name, 0, 0));
+
+    ImmediateHelpCB(suggestion, XtPointer(0), XtPointer(0));
+
+    DestroyWhenIdle(suggestion);
+}
+
+static bool no_program()
+{
+    string current_file;
+    int current_pid;
+    bool attached;
+    get_current_file(current_file, current_pid, attached);
+    return current_file == "";
+}
+
+static bool no_gdb()
+{
+    return !gdb_initialized;
+}
+
+static bool gdb_has_crashed()
+{
+    return !no_gdb() && (gdb == 0 || gdb->pid() <= 0 || !gdb->running());
+}
+
+static bool program_running(string& state)
+{
+    state = "is not being run";
+
+    switch (gdb->type())
     {
-	suggest("restart_ddd");
+    case GDB:
+        {
+	    // In case we have a core dump, treat the program as
+	    // `running' - remember we still have the possibility to
+	    // examine variables, etc.
+	    string ans = gdb_question("info files");
+	    if (ans.contains("core dump"))
+		return true;
+
+	    ans = gdb_question("info program");
+	    if (ans.contains("not being run"))
+		return false;
+
+	    if (ans.contains("\nIt stopped "))
+	    {
+		state = ans.from("\nIt stopped ");
+		state = "has " + state.after("\nIt ");
+		state = state.before('.');
+	    }
+	}
+	break;
+
+    case DBX:
+    case XDB:
+	if (!source_view->have_exec_pos())
+	    return false;
+
+	state = "has stopped";
+	break;
+    }
+
+    return true;
+}
+
+// Give a help dependent on current DDD state
+void WhatNextCB(Widget, XtPointer, XtPointer)
+{
+    // Special DDD states
+    if (ddd_has_crashed)
+    {
+	hint_on("fatal_dialog");
 	return;
     }
 
+    // Special GDB states
     if (no_gdb())
     {
-	suggest("start_debugger");
+	hint_on("no_debugger_dialog");
 	return;
     }
 
-    if (gdb_has_exited())
+    if (gdb_has_crashed())
     {
-	suggest("restart_ddd");
+	hint_on("terminated_dialog");
 	return;
     }
 
-    if (gdb_is_busy())
+    if (gdb_asks_yn)
     {
-	suggest("interrupt");
+	hint_on("yn_dialog");
 	return;
     }
 
+    if (!gdb->isReadyWithPrompt())
+    {
+	hint_on("busy_dialog");
+	return;
+    }
+
+    // Typical start-up situations
     if (no_program())
     {
-	suggest("open_program");
+	hint_on("no_program");
 	return;
     }
 
-    if (no_source())
+    if (!source_view->have_source())
     {
-	suggest("open_source");
+	hint_on("no_source");
 	return;
     }
 
-    if (program_not_running())
+    // Examine state
+    if (source_view->have_selection())
     {
-	suggest("start_program");
+	hint_on("item_selected");
 	return;
     }
 
-    if (program_is_running())
+    if (data_disp->have_selection())
     {
-	suggest("stop_program");
+	hint_on("display_selected");
 	return;
     }
 
-    if (variable_selected())
+    string program_state;
+    if (!program_running(program_state))
     {
-	suggest("examine_variable");
+	hint_on("program_not_running");
 	return;
     }
 
-    if (display_selected())
-    {
-	suggest("examine_display");
-	return;
-    }
-
-    if (program_has_stopped())
-    {
-	suggest("examine_program_state");
-	return;
-    }
+    // Fallback: all is well, program has stopped, nothing is selected.
+    defineConversionMacro("PROGRAM_STATE", program_state);
+    hint_on("program_stopped");
 }

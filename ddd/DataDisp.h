@@ -363,6 +363,9 @@ public:
 
     // Set whether aliases are to be detected
     static void set_detect_aliases(bool value);
+
+    // True iff we have some selection
+    static bool have_selection();
 };
 
 #endif // _DDD_DataDisp_h

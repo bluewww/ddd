@@ -704,7 +704,8 @@ DDD_OBJECTS = \
 	GDBAgent.o   \
 	HelpCB.o     \
 	PosBuffer.o  \
-	SourceView.o
+	SourceView.o \
+	WhatNextCB.o
 
 # Objects required for userinfo
 USERINFO_OBJECTS =
@@ -787,6 +788,9 @@ MANS = $(srcdir)/ddd.man
 
 ## Readme files built from ddd.texinfo
 README_FILES = 
+
+## GDB symbol files
+SYMS = ddd.syms
 
 
 ## Intermediate files
@@ -982,6 +986,10 @@ programs: $(PROGS)
 demos:	$(DEMOS)
 	@:
 
+.PHONY: syms
+syms:	$(SYMS)
+	@:
+
 
 ## A TECO-ism
 
@@ -1017,7 +1025,7 @@ ddd.vsl.h: $(srcdir)/../vsllib/builtin.vsl
 ## The programs.
 
 $(ddd):	$(ddd_canonical)
-	$(RM) $@ ddd.syms; $(LN_S) $(ddd_canonical) $@
+	$(RM) $@ $(SYMS); $(LN_S) $(ddd_canonical) $@
 
 $(ddd_canonical): ddd.o $(OBJECTS)
 	$(LINK.cc) -o $@ ddd.o $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
@@ -1091,11 +1099,11 @@ check: Ddd ddd cxxtest
 	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
 
 debug: Ddd ddd cxxtest ddd.gdb
-	(sleep 10; nice $(MAKE) ddd.syms > ddd.syms.log 2>&1) & \
+	(sleep 10; nice $(MAKE) $(SYMS) > ddd.syms.log 2>&1) & \
 	$(GDB) -x $(srcdir)/ddd.gdb ./ddd;
 
 ddd.syms: ddd
-	$(GDB) -batch -nx -mapped -readnow ddd || $(TOUCH) ddd.syms
+	$(GDB) -batch -nx -mapped -readnow ddd || $(TOUCH) $@
 
 
 

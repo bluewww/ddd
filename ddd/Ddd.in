@@ -77,7 +77,7 @@ Ddd*debuggerCommand:
 
 ! True if data and source are to be displayed in separate top-level
 ! windows.  If this is false, the data and source windows are attached
-! to the DDD console window.
+! to the debugger console.
 Ddd*Separate: false
 
 
@@ -101,7 +101,7 @@ Ddd*groupIconify: false
 
 
 ! True if the TAB key is to complete text in all DDD windows.
-! If this is false, the TAB key completes in the DDD console window only.
+! If this is false, the TAB key completes in the debugger console only.
 Ddd*globalTabCompletion: true
 
 
@@ -249,7 +249,7 @@ Ddd*questionTimeout: 10
 ! - `Yes'      : Answer current GDB prompt
 ! - `No'       : Answer current GDB prompt
 
-! The console window buttons (none: no buttons)
+! The debugger console buttons (none: no buttons)
 Ddd*consoleButtons:
 ! The following setting was effective in DDD 1.4d and earlier:
 ! Ddd*consoleButtons: \
@@ -1285,8 +1285,11 @@ Ddd*text_help_popup.iconName:   @DDD@ License
 Ddd*help_popup.help*helpString: \
 @rm This is the @sl Help Window.@rm\n\
 \n\
-By pressing @key F1 @rm and clicking on an item,\n\
-the item's functions are explained here.\n\
+To find out something specific about an item, press @key F1 @rm and click\n\
+on the item.  Its functionality will be explained here.\n\
+\n\
+To find out what you can do next, press @key Shift+F1@rm.  Depending on\n\
+the current @DDD@ state, you will be given some general advice.\n\
 \n\
 Click on @bf Close @rm to close the help window.
 
@@ -1641,7 +1644,7 @@ setting @DDD@ options.\n\
 @tt \267 @rm If @bf Run in Execution Window @rm is set, \
 the program is run in a separate\n\
     terminal window; useful for programs using terminal I/O.  Otherwise,\n\
-    the program is run in the @DDD@ console window.\n\
+    the program is run in the @GDB@ console window.\n\
     This change takes effect the next time the program is run.\n\
 @tt \267 @rm If @bf Find Words Only @rm is set, \
 only complete words are found.\n\
@@ -2153,33 +2156,37 @@ Ddd*menubar.help*helpString: \
 @tt \267 @bf @DDD@ License... @rm - the @DDD@ license.\n\
 @tt \267 @bf @DDD@ WWW Page... @rm - the @DDD@ WWW page.
 
-Ddd*helpMenu.onWindow.labelString:	What Next...
-Ddd*helpMenu.onWindow.mnemonic:		N
-Ddd*helpMenu.onWindow.documentationString:	\
-@rm Suggestions on what to do next
+Ddd*helpMenu.whatNext.labelString:		What Next...
+Ddd*helpMenu.whatNext.mnemonic:			N
+Ddd*helpMenu.whatNext.accelerator:		Shift ~Ctrl<Key>F1
+Ddd*helpMenu.whatNext.acceleratorText:		Shift+F1
+Ddd*helpMenu.whatNext.documentationString:	\
+@rm Get a suggestion on what to do next
 
-Ddd*helpMenu.onContext.labelString:	On Context...
-Ddd*helpMenu.onContext.mnemonic:	C
-Ddd*helpMenu.onContext.accelerator:	None<Key>F1
-! *helpMenu.onContext.accelerator:	<Key>osfHelp
+Ddd*helpMenu.onContext.labelString:		On Context...
+Ddd*helpMenu.onContext.mnemonic:		C
+Ddd*helpMenu.onContext.accelerator:		~Shift ~Ctrl<Key>F1
+! *helpMenu.onContext.accelerator:		<Key>osfHelp
 Ddd*helpMenu.onContext.acceleratorText:	F1
 Ddd*helpMenu.onContext.documentationString:	\
 @rm Click on an item and get help on it
 
-Ddd*helpMenu.onWindow.labelString:	On Window...
-Ddd*helpMenu.onWindow.mnemonic:		W
+Ddd*helpMenu.onWindow.labelString:		On Window...
+Ddd*helpMenu.onWindow.mnemonic:			W
 Ddd*helpMenu.onWindow.documentationString:	\
 @rm Information about the current window
 
-Ddd*helpMenu.onHelp.labelString:	On Help...
-Ddd*helpMenu.onHelp.mnemonic:		H
+Ddd*helpMenu.onHelp.labelString:		On Help...
+Ddd*helpMenu.onHelp.mnemonic:			H
 Ddd*helpMenu.onHelp.documentationString:	\
 @rm How to use the context-sensitive help
 
-Ddd*helpMenu.onVersion.labelString:	About @DDD@...
-Ddd*helpMenu.onVersion.mnemonic:	A
+Ddd*helpMenu.onVersion.labelString:		About @DDD@...
+Ddd*helpMenu.onVersion.mnemonic:		A
+Ddd*helpMenu.onVersion.accelerator:		~Shift Ctrl<Key>F1
+Ddd*helpMenu.onVersion.acceleratorText:		Ctrl+F1
 Ddd*helpMenu.onVersion.documentationString:	\
-@rm Information about the version of @DDD@ you are running
+@rm General information about this @DDD@ version
 
 Ddd*helpMenu.dddManual.labelString:		@DDD@ Manual...
 Ddd*helpMenu.dddManual.mnemonic:		D
@@ -2252,7 +2259,7 @@ are iconified as a group.\n\
 the @key TAB @rm key completes\n\
     arguments in all @DDD@ windows.\n\
     Otherwise, the  @key TAB @rm key completes \
-in the @DDD@ @GDB@ console only.\n\
+in the @GDB@ console only.\n\
 @tt \267 @rm If @bf Suppress X warnings @rm is set, \
 X warnings are silently ignored.\n\
 @tt \267 @rm If @bf Ungrab mouse pointer @rm is set, @DDD@ will \
@@ -2526,7 +2533,7 @@ Ddd*settings*helpString: \
 @rm These are the @sl @GDB@ Settings.@rm\n\
 \n\
 All settings (except source and object paths) can be saved\n\
-using @bf Save Options @rm in the @bf Options @rm menu.\n\
+using @bf Options @rm| @bf Save Options @rm.\n\
 \n\
 Click on @bf ? @rm near an item to get further information.\n\
 In a text field, press the @key RETURN @rm key to commit the changes.\n\
@@ -2936,7 +2943,7 @@ debugged program.\n\
 The upper area shows the source code.\n\
 The lower area shows the machine code.\n\
 \n\
-Use @bf Help On Context @rm in the @bf Help @rm menu to get\n\
+Use @bf Help @rm| @bf Help On Context @rm to get\n\
 detailed help on each of these areas.
 
 
@@ -3057,14 +3064,16 @@ Lookup a line, file, function, variable, or breakpoint in the source.\n\
 lookup the current execution position.\n\
 @tt \267 @rm If @bf () @rm contains a number, \
 lookup that line number in the current source.\n\
-@tt \267 @rm If @bf () @rm contains @sl FILENAME@tt:@sl LINE@rm, lookup\n\
-    line number @sl LINE @rm in the source file @sl FILENAME@rm.\n\
-@tt \267 @rm If @bf () @rm contains @tt #@sl NUMBER@rm, lookup\n\
-    breakpoint number @sl NUMBER@rm.\n\
+@tt \267 @rm If @bf () @rm contains @sl FILENAME@tt:@sl LINE@rm, lookup \
+line number @sl LINE @rm\n\
+    in the source file @sl FILENAME@rm.\n\
+@tt \267 @rm If @bf () @rm contains @tt #@sl NUMBER@rm, lookup breakpoint \
+@sl NUMBER@rm.\n\
 @tt \267 @rm If @bf () @rm contains an address, \
 lookup that address.\n\
-@tt \267 @rm If @bf () @rm contains a function or variable name, lookup\n\
-    the definition of that function or variable.
+@tt \267 @rm If @bf () @rm contains a function or variable name, lookup \
+the definition\n\
+    of that function or variable.
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.tipString:	\
 @rm Lookup @bf () @rm in the source
@@ -3198,8 +3207,8 @@ currently\n\
 interaction\n\
     with @GDB@ and the debugged program.\n\
 \n\
-Use @bf Help On Context @rm in the @bf Help @rm menu to get\n\
-detailed help on any of these areas.
+Use @bf Help @rm| @bf Help On Context @rm to get detailed \
+help on any of these areas.
 
 
 
@@ -3586,8 +3595,8 @@ When you have finished debugging the attached process, you can use\n\
 the process\n\
 continues its execution.\n\
 \n\
-Before using @bf Attach@rm, you should use @bf Open Program @rm to specify\n\
-the program running in the process, and to load its symbol table.\n\
+Before using @bf Attach@rm, you should use @bf File @rm| @bf Open Program @rm\n\
+to specify the program running in the process, and to load its symbol table.\n\
 \n\
 Click on @bf Attach @rm to attach to the selected process.\n\
 Click on @bf Update @rm to update the list of processes.
@@ -3602,9 +3611,8 @@ Ddd*core_files_popup*helpString:	   \
 The core dump is used for examining memory and registers.\n\
 No argument means to have no core file.\n\
 \n\
-When using @bf Open Core@rm, you should use @bf Open Program @rm\n\
-to specify the program causing the core dump, and to load\n\
-its symbol table.\n\
+Before using @bf Open Core@rm, you should use @bf File @rm| @bf Open Program @rm\n\
+to specify the program causing the core dump, and to load its symbol table.\n\
 \n\
 Click on @bf Open @rm to open the selected core dump.\n\
 Click on @bf Filter @rm to apply the given filter.
@@ -3618,7 +3626,8 @@ Ddd*source_files_popup*helpString:    \
 The source file is shown in the source window and may be used\n\
 for setting or clearing breakpoints.\n\
 \n\
-When using @bf Open Source@rm, you should use @bf Open Program @rm\n\
+Before using @bf Open Core@rm, you should use @bf File @rm| \
+@bf Open Program @rm\n\
 to specify the executable program, and to load its symbol table.\n\
 \n\
 Click on @bf Open @rm to open the selected source file.\n\
@@ -3856,9 +3865,9 @@ Select displays on the left, operations on the right.\n\
 \n\
 Columns:\n\
 @tt \267 @bf Num @rm - the display number.\n\
-@tt \267 @bf State @rm - the display state (enabled, disabled, or alias).\n\
 @tt \267 @bf Expression @rm - the display expression.\n\
-@tt \267 @bf Addr @rm - the location of the display expression in memory.\n\
+@tt \267 @bf State @rm - the display state (enabled, disabled, or alias).\n\
+@tt \267 @bf Address @rm - the location of the display expression in memory.\n\
 \n\
 Buttons:\n\
 @tt \267 @bf New Display @rm - create a new display.\n\
@@ -4011,11 +4020,15 @@ Ddd*busy_display_dialog_popup.title: @DDD@: Debugger Busy
 Ddd*busy_dialog.messageString:		\
 @rm @GDB@ is busy!
 Ddd*busy_dialog*helpString:	\
-@rm @GDB@ is busy on some commands.\n\
-Please try again when the @GDB@ prompt appears.\n\
+@rm @GDB@ is busy on some debugger action.\n\
 \n\
-You may also interrupt the current debugging command by selecting\n\
-@bf Interrupt @rm from the @bf Program @rm menu.
+You may wish to wait until the @GDB@ prompt appears,\n\
+or interrupt the current debugging command by selecting\n\
+@bf Program @rm| @bf Interrupt @rm (or typing @key Ctrl+C@rm).\n\
+\n\
+If @GDB@ is busy running your debugged program, interrupting\n\
+@GDB@ means to interrupt program execution, such that you can\n\
+examine the current program state.
 
 Ddd*quit_dialog_popup.title: @DDD@: Debugger Still Busy
 ! Ddd*quit_dialog.messageString:	 \
@@ -4028,7 +4041,7 @@ Ddd*quit_dialog*helpString:	\
 The debugged process is probably still running.\n\
 \n\
 Before killing a running @GDB@, you should try to interrupt it\n\
-(by selecting @bf Interrupt @rm from the @bf Program @rm menu).
+(by selecting @bf Program @rm| @bf Interrupt @rm).
 
 Ddd*terminated_dialog_popup.title: @DDD@: Hasta la Vista
 ! Ddd*terminated_dialog.messageString:   \
@@ -4096,6 +4109,8 @@ Ddd*yn_dialog*cancelLabelString:   No
 Ddd*yn_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*yn_dialog*helpString:	\
 @rm This is a @GDB@ question.\n\
+Click on @bf Yes @rm or @bf No@rm, or enter `@tt yes@rm' or `@tt no@rm' \
+in the @GDB@ console.\n\
 For more details, consult the @GDB@ documentation.
 
 Ddd*gdb_message_dialog_popup.title: @DDD@: Debugger Message
@@ -4216,7 +4231,7 @@ to access core dumps, source files, or attaching to processes.\n\
 You can ignore this warning and proceed, but @GDB@ may be unable\n\
 to display symbolic values and determine locations.\n\
 \n\
-To open a program, use @bf Open Program@rm.
+To open a program, use @bf File @rm| @bf Open Program@rm.
 
 
 Ddd*print_empty_graph_error_popup.title: @DDD@: Nothing to Print
@@ -4328,3 +4343,91 @@ Ddd*expired_warning*helpString: \
 @rm @DDD@ @VERSION@ has been superseded by a newer @DDD@ version.\n\
 @DDD@ @VERSION@ should no longer be used.\n\
 To get the most recent @DDD@ version, see the @DDD@ WWW page.
+
+
+!-----------------------------------------------------------------------------
+! Hints on specific DDD states (`What next')
+!-----------------------------------------------------------------------------
+
+Ddd*no_program.helpString: \
+@rm You have not opened any program yet.  @GDB@ needs a debuggee\n\
+to access core dumps, source files, or attaching to processes.\n\
+\n\
+To open a program, use @bf File @rm| @bf Open Program @rm.
+
+Ddd*no_source.helpString: \
+@rm @GDB@ cannot find the source code of your program.\n\
+\n\
+Here are some hints that may help you out:\n\
+@tt \267 @rm In order to debug a program effectively, you need to generate\n\
+    debugging information when you compile it.  Without debugging \
+information,\n\
+    @GDB@ will be unable to locate the source code.  To request debugging\n\
+    information, specify the `@tt -g@rm' option when you run the compiler.\n\
+@tt \267 @rm You may need to tell @GDB@ where the source code files are.\n\
+    Invoke @bf Options @rm| @bf @GDB@ Settings @rm and look for appropriate \
+entries.\n\
+@tt \267 @rm If you don't have the source code of your program, @DDD@ is not\n\
+    the tool of choice for you.  Try using a machine-code oriented debugger\n\
+    instead.
+
+Ddd*program_not_running.helpString: \
+@rm Your program is not running.\n\
+\n\
+You may now choose between the following:\n\
+@tt \267 @rm Start the program, using @bf Program @rm| @bf Run@rm. \
+You may wish to \n\
+    set some breakpoints beforehand, using @bf Break at () @rm and \n\
+    @bf Source @rm| @bf Edit Breakpoints@rm.\n\
+    To find specific functions, use @bf Lookup ()@rm.\n\
+@tt \267 @rm If your program is already running outside of @DDD@, you can\n\
+    attach to its running process, using @bf File @rm| @bf \
+Attach to Process@rm.\n\
+@tt \267 @rm If some previous invocation of your program has failed, and\n\
+    you want to know why, use @bf File @rm| @bf Open Core Dump @rm to open\n\
+    its core dump.
+
+Ddd*item_selected.helpString: \
+@rm You have selected some item from the program source code.\n\
+\n\
+@tt \267 @rm To look up further occurences in the source code, use \
+@bf Find@small<< @bf() @rm\n\
+    and @bf Find@small>> @bf()@rm.  @bf Lookup () @rm leads you to the item's \
+definition.\n\
+@tt \267 @rm To display the value, use @bf Print () @rm (for simple \
+values)\n\
+    and @bf Display () @rm (for complex values and dynamic displays).
+
+Ddd*display_selected.helpString: \
+@rm You have selected some data display.\n\
+\n\
+@tt \267 @rm To examine further members of this data structure, use \
+@bf New Display () @rm\n\
+    and @bf Display *() @rm.\n\
+@tt \267 @rm To modify the appearance of the selected display, use \
+@bf Hide () @rm and @bf Rotate ()@rm.\n\
+@tt \267 @rm To change the value of the selected display, use @bf Set ()@rm.\n\
+@tt \267 @rm To delete the selected displays, use @bf Delete ()@rm.\n\
+@tt \267 @rm Use @bf Data @rm| @bf Edit Displays @rm for further editing.
+
+Ddd*program_stopped.helpString: \
+@rm Your program @PROGRAM_STATE@.\n\
+\n\
+@tt \267 @rm To find out how you got here, use @bf Status @rm| @bf \
+Backtrace@rm.\n\
+@tt \267 @rm To examine a variable value, select it first (click on an \
+occurrence).\n\
+    Then use @bf Print () @rm (for simple values) and @bf Display () @rm \
+(for complex\n\
+    values).  As a shortcut, you may also press the @sl right mouse\n\
+    button @rm to get a popup menu.\n\
+@tt \267 @rm You can display all local variables at once using \
+@bf Data @rm| @bf Display\n\
+    Local Variables@rm.\n\
+@tt \267 @rm To set and clear further breakpoints, use @bf Source @rm| @bf \
+Edit Breakpoints@rm.\n\
+    As a shortcut, you may also press the @sl right mouse button @rm on a\n\
+    location or breakpoint to get a popup menu.\n\
+@tt \267 @rm Use the functions of the @bf Program @rm menu to resume \
+execution\n\
+    and step through your program.

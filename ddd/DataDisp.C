@@ -3514,6 +3514,20 @@ void DataDisp::PostLayoutCB(Widget w, XtPointer client_data, XtPointer)
     }
 }
 
+// True iff we have some selection
+bool DataDisp::have_selection()
+{
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref);
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->selected())
+	    return true;
+    }
+    return false;
+}
+
 //----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------

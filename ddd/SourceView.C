@@ -2097,7 +2097,8 @@ bool SourceView::get_line_of_pos (Widget   w,
 }
 
 // ***************************************************************************
-//
+// Find word around POS.  STARTPOS is the first character, ENDPOS
+// is the last character in the word.
 void SourceView::find_word_bounds (Widget text_w,
 				   const XmTextPosition pos,
 				   XmTextPosition& startpos,
@@ -5863,4 +5864,15 @@ string SourceView::bp_pos(int num)
 	return "";
     else
 	return bp->file_name() + ":" + itostring(bp->line_nr());
+}
+
+
+    // True iff we have some selection
+bool SourceView::have_selection()
+{
+    XmTextPosition left, right;
+
+    return (XmTextGetSelectionPosition(source_text_w, &left, &right)
+	    || XmTextGetSelectionPosition(code_text_w, &left, &right)) 
+	&& left != right;
 }

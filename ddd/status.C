@@ -76,11 +76,25 @@ static MString current_status_text;
 // Prompt recognition
 //-----------------------------------------------------------------------------
 
+// True if asking `yes or no'
+bool gdb_asks_yn;
+
 void set_buttons_from_gdb(Widget buttons, string& text)
 {
     bool yn = text.contains("(y or n) ", -1) 
 	|| text.contains("(yes or no) ", -1)
 	|| (gdb->type() == XDB && text.contains("? ", -1));
+
+    if (yn)
+    {
+	gdb_asks_yn = true;
+    }
+    else if (gdb->isReadyWithPrompt())
+    {
+	gdb_asks_yn = false;
+	if (yn_dialog)
+	    XtUnmanageChild(yn_dialog);
+    }
 
     if (yn && !gdb_keyboard_command)
     {
@@ -140,7 +154,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	    Widget w = children[i];
 	    string name = XtName(w);
 
-	    if (yn == (name == "Yes" || name == "No"))
+	    if (gdb_asks_yn == (name == "Yes" || name == "No"))
 		XtManageChild(w);
 	    else
 		XtUnmanageChild(w);

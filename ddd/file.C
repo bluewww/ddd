@@ -481,7 +481,7 @@ static string get_file(Widget w, XtPointer, XtPointer call_data)
 // Get FILENAME and PID of current debuggee.  NO_GDB_ANSWER for
 // FILENAME means debuggee cannot be determined; "" means no debuggee.
 // ATTACHED is true iff we're debugging an attached process.
-static void get_current_file(string& filename, int& pid, bool& attached)
+void get_current_file(string& filename, int& pid, bool& attached)
 {
     filename = NO_GDB_ANSWER;
     pid      = 0;

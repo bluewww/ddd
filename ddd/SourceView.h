@@ -150,11 +150,11 @@ class SourceView {
     static void refresh_source_bp_disp ();
     static void refresh_code_bp_disp ();
 
-    // Findet zu pos die passende Zeilennummer.
-    // in_text==true wenn pos im Quelltext-Bereich ist.
-    // bp_nr ist die Nr des Brekpoints, 
-    // der an Position pos dargestellt wird, 0 sonst.
-    //
+    // Find the line number at POS
+    // LINE_NR becomes the line number at POS
+    // IN_TEXT becomes true iff POS is in the source area
+    // BP_NR is the number of the breakpoint at POS (none: 0)
+    // Return false iff failure
     static bool get_line_of_pos (Widget w,
 				 XmTextPosition pos,
 				 int& line_nr,
@@ -162,17 +162,15 @@ class SourceView {
 				 bool& in_text,
 				 int& bp_nr);
 
-    // Findet von pos ausgehend die Anfangs- und Endposition eines C-Strings.
-    // (text[startpos] ist dann der erste und text[endpos] der letzte Buchstabe
-    // des gefundenen Wortes)
-    //
+    // Find word around POS.  STARTPOS is the first character, ENDPOS
+    // is the last character in the word.
     static void find_word_bounds (Widget w,
 				  const XmTextPosition pos,
 				  XmTextPosition& startpos,
 				  XmTextPosition& endpos);
 
     //-----------------------------------------------------------------------
-    // Aktions-Prozeduren
+    // Action procedures
     //-----------------------------------------------------------------------
     static void srcpopupAct       (Widget, XEvent*, String*, Cardinal*);
     static void startSelectWordAct(Widget, XEvent*, String*, Cardinal*);
@@ -180,18 +178,17 @@ class SourceView {
     static void updateGlyphsAct   (Widget, XEvent*, String*, Cardinal*);
 
     //-----------------------------------------------------------------------
-    // Timer-Prozeduren
+    // Timer procedures
     //-----------------------------------------------------------------------
     static void setSelection(XtPointer client_data, XtIntervalId *timer);
 
-
     //-----------------------------------------------------------------------
-    // Xt-Zeugs
+    // Action decls
     //-----------------------------------------------------------------------
     static XtActionsRec actions [];
 
     //-----------------------------------------------------------------------
-    // Menues
+    // Menus
     //-----------------------------------------------------------------------
     static MMDesc line_popup[];
     static MMDesc address_popup[];
@@ -204,7 +201,7 @@ class SourceView {
     static void set_text_popup_resource(int item, const string& arg);
 
     //-----------------------------------------------------------------------
-    // Daten
+    // Data
     //-----------------------------------------------------------------------
     static StringArray history;
     static int history_position; // Last position in history + 1
@@ -539,6 +536,17 @@ public:
 				  XmTextPosition pos,
 				  XmTextPosition& startpos,
 				  XmTextPosition& endpos);
+
+    // Examine DDD state
+
+    // True iff we have some source text
+    static bool have_source() { return current_source.length() != 0; }
+
+    // True iff we have some execution position
+    static bool have_exec_pos() { return last_execution_file != ""; }
+
+    // True iff we have some selection
+    static bool have_selection();
 };
 
 #endif // _DDD_SourceView_h

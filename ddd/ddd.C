@@ -250,10 +250,9 @@ extern "C" {
 //-----------------------------------------------------------------------------
 
 // Callbacks
-static void gdb_ready_for_questionHP (Agent *, void *, void *);
-static void gdb_ready_for_cmdHP      (Agent *, void *, void *);
-static void language_changedHP       (Agent *, void *, void *);
-static void source_argHP             (void *, void *, void *call_data);
+static void gdb_readyHP       (Agent *, void *, void *);
+static void language_changedHP(Agent *, void *, void *);
+static void source_argHP      (void *, void *, void *call_data);
 
 // Setup
 static Boolean ddd_setup_done(XtPointer client_data);
@@ -972,16 +971,12 @@ static MMDesc data_menu[] =
 
 
 // Help
-static Widget help_on_window_w = 0;
-
 static MMDesc help_menu[] = 
 {
-#if 0
     {"whatNext",    MMPush, { WhatNextCB }},
     MMSep,
-#endif
     {"onContext",   MMPush, { HelpOnContextCB }},
-    {"onWindow",    MMPush, { HelpOnWindowCB }, NULL, &help_on_window_w },
+    {"onWindow",    MMPush, { HelpOnWindowCB }},
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     MMSep,
     {"onVersion",   MMPush, { HelpOnVersionCB }},
@@ -1490,8 +1485,7 @@ int main(int argc, char *argv[])
 
     // Set up GDB handlers
     gdb->removeAllHandlers(Died);
-    gdb->addHandler(ReadyForQuestion, gdb_ready_for_questionHP);
-    gdb->addHandler(ReadyForCmd,      gdb_ready_for_cmdHP);
+    gdb->addHandler(ReadyForQuestion, gdb_readyHP);
     gdb->addHandler(InputEOF,         gdb_eofHP);
     gdb->addHandler(ErrorEOF,         gdb_eofHP);
     gdb->addHandler(Died,             gdb_diedHP);
@@ -3541,7 +3535,7 @@ static void source_argHP(void *, void *, void *)
 // Handlers
 //-----------------------------------------------------------------------------
 
-static void gdb_ready_for_questionHP (Agent *, void*, void* call_data)
+static void gdb_readyHP(Agent *, void *, void *call_data)
 {
     bool gdb_ready = bool(call_data);
     if (gdb_ready)
@@ -3651,11 +3645,6 @@ static void gdb_ready_for_questionHP (Agent *, void*, void* call_data)
 
     blink(!gdb_ready);
     fix_status_size();
-}
-
-static void gdb_ready_for_cmdHP (Agent *, void *, void *)
-{
-    // Nothing yet...
 }
 
 

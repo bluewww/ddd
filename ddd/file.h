@@ -36,12 +36,19 @@
 #include <X11/Intrinsic.h>
 #include "strclass.h"
 
+// Open file, process, core, source ...
 extern void gdbOpenFileCB   (Widget, XtPointer, XtPointer);
 extern void gdbOpenProcessCB(Widget, XtPointer, XtPointer);
 extern void gdbOpenCoreCB   (Widget, XtPointer, XtPointer);
 extern void gdbOpenSourceCB (Widget, XtPointer, XtPointer);
 
+// When entering `cd', change path in file selection boxes
 extern void process_cd(string pwd);
+
+// Get FILENAME and PID of current debuggee.  NO_GDB_ANSWER for
+// FILENAME means debuggee cannot be determined; "" means no debuggee.
+// ATTACHED is true iff we're debugging an attached process.
+void get_current_file(string& filename, int& pid, bool& attached);
 
 #endif // _DDD_file_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

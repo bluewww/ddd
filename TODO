@@ -338,7 +338,7 @@ Volunteers for these and other projects are welcome!
 170. In the `File' menu, keep a history of most recently opened files
      (executables? sources?)
 
-171. Use double-buffering to display the graph.  Even less flickering.
+171* Use double-buffering to display the graph.  Even less flickering.
 
 174* Realize `()' buttons as cascade buttons, showing a pulldown menu
      with additional functions, like in Netscape 4.0 - i.e. base
@@ -369,19 +369,8 @@ Volunteers for these and other projects are welcome!
 
 179. Add `libgdb' as an alternate communication method.
 
-180* Have a context-sensitive hint on what to do next (Help | What next?)
-     - ``There is no file.  You must open an executable file to be debugged.''
-     - ``There is no source.  Compile with -g or set the source dir...''
-     - ``Your program is not running.  Set a breakpoint and press Run.''
-     - ``Your program is still running.  Click on `Interrupt' to stop it.''
-     - ``Your program has stopped.  Inquire variable values and use
-       step/next.''
-     - ``GDB has died.  So sorry.''
-     - ``There was a fatal error.  You'd better save your work and
-       restart.''
-
 181. If the DDD WWW page server is down, try a mirror site.
 
-183. Have a way to re-dereference until a NULL pointer is encountered.
+183* Have a way to re-dereference until a NULL pointer is encountered.
 
 186. (Insert your project idea here)
