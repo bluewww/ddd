@@ -91,16 +91,12 @@ DispValueType determine_type (string value)
 	return Array;
 
     // Scalars.
-    switch(gdb->type())
+    if (gdb->has_scalars())
     {
-    case DBX:
 	// DBX uses this representation for out-of-range Pascal/Modula-2
 	// enumerations.
 	if (value.contains("(scalar = ", 0))
 	    return Simple;
-
-    default:
-	break;
     }
 
     // Structs.
@@ -168,7 +164,8 @@ DispValueType determine_type (string value)
     // Pointers.
 
     int pointer_index = 0;
-    if (value.contains('(', 0) || value.contains('{', 0))
+    if (gdb->has_typed_pointers() &&
+	(value.contains('(', 0) || value.contains('{', 0)))
     {
 	// GDB and JDB prepend the exact pointer type enclosed in
 	// `(...)'.  If the pointer type contains `(...)' itself (such
@@ -442,7 +439,7 @@ bool read_array_begin (string& value, string& addr)
 	value = value.from("{");
 
     int pointer_index = 0;
-    if (gdb->type() == JDB && value.contains('(', 0))
+    if (gdb->has_typed_structs() && value.contains('(', 0))
     {
 	// JDB prepends the array type and address, as in 
 	// `list = (List)0x4070ee90 { ... }'.  Skip the type.
@@ -533,7 +530,9 @@ bool read_array_next (string& value)
 	|| value.contains(')', 0)
         || value.contains(']', 0)
 	|| value.contains("end\n", 0)
-	|| value.contains("END\n", 0))
+	|| value.contains("END\n", 0)
+	|| value == "end"
+	|| value == "END")
     {
 	return false;		// Array is done.
     }
