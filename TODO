@@ -381,6 +381,13 @@ Volunteers for these and other projects are welcome!
     command tool.
 
 305 Have all icons parsed from one big XPM file (and use subimages to
-    create individual icons), such that the icon creation time is minimized.
+    create individual icons), such that the icon creation time is
+    minimized.
 
-306 (Insert new project ideas here)
+306 Andreas Heilwagen <hostmaster@netguru.org> suggests a way to have
+    multiple DDDs run, each saving its state in
+    `~/.ddd/<pid>/<status>'.  This is useful for client-server
+    debugging.
+    [Can't we just use GDB to switch between processes?  -AZ]
+
+307 (Insert new project ideas here)

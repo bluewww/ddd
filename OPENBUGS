@@ -8,7 +8,7 @@ This is a list of reported DDD bugs which could not yet be reproduced.
 Feel free to investigate into one of these problems or send in more
 detail.
 
-086 mayer@paradigml.com (Ron Mayer) says:
+700 mayer@paradigml.com (Ron Mayer) says:
 
     In a number of structures I would attempt to "Modify [the]
     dependent display expression" to display in hex using expressions
@@ -28,7 +28,7 @@ detail.
         in the gdb window ddd seems to lock up very often.
     [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
 
-127 Bob Vickers <bobv@dcs.rhbnc.ac.uk> says that DDD 2.0
+701 Bob Vickers <bobv@dcs.rhbnc.ac.uk> says that DDD 2.0
     (alpha-dec-osf3.2) sometimes fails to start.  Often it works
     fine. But sometimes, especially if you haven't run it for a while
     (e.g. first thing in the morning) the command window comes up but
@@ -51,25 +51,25 @@ detail.
      distribution comes with a demo program `ttytest' which is useful
      for debugging the TTY interface in `TTYAgent.C'  -AZ]
 
-153 Jonathan Edwards <edwards@intranet.com> says that in AIX DBX,
+702 Jonathan Edwards <edwards@intranet.com> says that in AIX DBX,
     the local variable display does not display function arguments.
     [This is probably due to using AIX xlC instead of GCC.  -AZ]
 
-159 Jonathan Edwards <edwards@intranet.com> says:
+703 Jonathan Edwards <edwards@intranet.com> says:
     A status display only shows once.  After stepping the program it
     collapses into just the title.  Doing a refresh command restores
     the display.
     [This is due to using AIX xlC instead of GCC.  -AZ]
 
-172 Jonathan Edwards <edwards@intranet.com> says: If I interrupt my
+704 Jonathan Edwards <edwards@intranet.com> says: If I interrupt my
     program while it is running, my data displays are not updated,
     and instead I get the info in the debugger console.
 
-173 Matthias Kurz <mk@baerlap.north.de> says:
+705 Matthias Kurz <mk@baerlap.north.de> says:
     - Often the first graph display is not completely inside the
       window; after selecting 'layout graph' things are right
 
-175 Harry Mangalam <mangalam@uci.edu> reports: As soon as I click on
+706 Harry Mangalam <mangalam@uci.edu> reports: As soon as I click on
     a variable to try to highlight a structure name, DDD 2.1 goes
     into an unresponsive state for several seconds (seems like up to
     a minute on a 486) in which the ddd process hogs the cpu.  It
@@ -78,27 +78,27 @@ detail.
     variable name, it responds appopriately, but if I try to
     drag-hilite the name, ddd goes berserk with the cpu.
 
-230 Roy Dragseth <royd@math.uit.no> reports that if you type in
+707 Roy Dragseth <royd@math.uit.no> reports that if you type in
     commands really fast in ddd, it gets problems to cope.  When
     using DDD from XEmacs, and defining XEmacs command sequences to
     be sent to DDD, the last command(s) in the sequence get lost.
 
-235 Nagi M. Aboulenein <naboulen@ichips.intel.com> says: I'm seeing a
+708 Nagi M. Aboulenein <naboulen@ichips.intel.com> says: I'm seeing a
     persistent problem with various version of DDD on FreeBSD/x86
     platforms. The problem occurs when an attempt is made to save
     options. At that point DDD dies and the options file is not
     updated.
 
-241 Lev Makhlis <mlev@writeme.com> states that DDD 2.2.3
+709 Lev Makhlis <mlev@writeme.com> states that DDD 2.2.3
     (i586-pc-linux-gnulibc1) consistently crashes if he runs it when
     no `~/.ddd/' exists.
 
-257 Marco Hess <marcoh@senet.com.au> says that sometimes, the source
+710 Marco Hess <marcoh@senet.com.au> says that sometimes, the source
     window locks in scroll mode until it reaches the top or bottom of
     the file.  [Changing the `glyphUpdateDelay' resource should fix
     this; tell me if this helps.  -AZ]
 
-279 Brian Dowtin <Private_User@gilbarco.com> reports that on 
+711 Brian Dowtin <Private_User@gilbarco.com> reports that on 
     SCO Server 5 and running DDD somehow the breakpoint pixmap
     'sticks' to the window.  Sometime after setting a breakpoint, The
     stop sign, stays in one spot. If I scroll up or down, its
@@ -106,28 +106,47 @@ detail.
     resize/close//reopen source window, its still there. If I load a
     different source file - you get the picture.
 
-280 Ralf Hildebrandt <R.Hildebrandt@tu-bs.de> reports that on his
+712 Ralf Hildebrandt <R.Hildebrandt@tu-bs.de> reports that on his
     HP-UX box, the tooltips are not complete: "Set/Delete Breakpo???",
     "Display/Undisplay???", etc.
 
-281 Michael Marxmeier <mike@msede.com> writes: When configuring a
+713*Michael Marxmeier <mike@msede.com> writes: When configuring a
     separate Command Tool (with separate windows), its location
     relative to the source window changes.
-    - The border size is not accounted for. Everytime you
-      change the location of the source window, the distance
-      shrinks.
-    - Sometimes, the CMD tool "jumps" to a default location.
-      With DDD 2.2.3, this happened each time a new source
-      file was opened.
-    This happens with CDE on Linux.
 
-282 Michael Marxmeier <mike@msede.com> writes: I discovered that ddd
+    The border size is not accounted for. Everytime you change the
+    location of the source window, the distance shrinks.  This happens
+    with CDE on Linux.
+
+    The border_width structure member (XWindowAttributes) seems to be
+    always zero in recenter_tool_shell() although no error is
+    returned. When the new cmd window position is calculated this will
+    result in a slight move.
+
+    [Could we check for the frame that actually adds a border?  -AZ]
+
+
+714 Michael Marxmeier <mike@msede.com> writes: I discovered that ddd
     2.99.1 "run again" discards any arguments specified previously
     with "run".  This works fine with gdb so i assume ddd is
     responsible.
 
-284 Graham Hudspith <geordie@lucent.com> says that using separate
-    windows, closing the DDD 2.99.2 source window gives a `BadWindow'
-    error.
+715 Terence P. Spielman <terence@GlobeSet.com> reports:
+    1) I can accidentally paste material into the source window.  Once
+       this is done, the gdb (debugger) window becomes unstable.
+       Standard GDB cmds no longer work as expected.
 
-285 (Insert new bugs here)
+    2) I like to NOT see the DDD command window.  I would like the
+       option of getting rid of it altogether.  I simply type commands
+       in the gdb window to step, run, etc...  How can I get rid of
+       it?  If I kill it and save preferences, it still comes back on
+       restart.
+
+    3) If a program is NOT running, yet I view the execution window
+       (Alt+9) and then kill the window, ddd seg faults.
+
+716 Michael Marxmeier <mike@msede.com> reports:
+    * 4 digit line numbers are truncated. Only last three digits
+      are visible.
+
+717 (Insert new bugs here)
