@@ -425,7 +425,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 			    for (int j = 0; j < c->nchildren(); j++)
 			    {
 				DispValue *cc = c->child(j);
-				Box *b = eval(dv, "twodim_array_elem", 
+				Box *b = eval(cc, "twodim_array_elem", 
 					      create_value_box(cc, c));
 				*row += b;
 				b->unlink();
@@ -449,9 +449,10 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 			    {
 				DispValue *c = dv->child(j);
 				Box *elem = 0;
+				DispValue *cc = c;
 				if (i < c->nchildren())
 				{
-				    DispValue *cc = c->child(i);
+				    cc = c->child(i);
 				    elem = create_value_box(cc, c);
 				}
 				else
@@ -459,7 +460,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 				    elem = new ListBox;
 				}
 
-				Box *b = eval(dv, "twodim_array_elem", elem);
+				Box *b = eval(cc, "twodim_array_elem", elem);
 				*row += b;
 				b->unlink();
 			    }
