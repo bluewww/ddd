@@ -897,10 +897,10 @@ ddd.vsl.h: ddd.vsl
 DispBox.o: ddd.vsl.h
 
 # And these are never computed:
-ddd.vsl: \
-	$(srcdir)/../vsllib/std.vsl \
-	$(srcdir)/../vsllib/fonts.vsl \
-	$(srcdir)/../vsllib/builtin.vsl
+ddd.vsl.h: $(srcdir)/../vsllib/std.vsl
+ddd.vsl.h: $(srcdir)/../vsllib/fonts.vsl
+ddd.vsl.h: $(srcdir)/../vsllib/colors.vsl
+ddd.vsl.h: $(srcdir)/../vsllib/builtin.vsl
 	
 
 ## The programs.

@@ -37,39 +37,13 @@ const char ColorBox_rcsid[] =
 #include <X11/StringDefs.h>
 
 DEFINE_TYPE_INFO_1(ColorBox, TransparentHatBox);
+DEFINE_TYPE_INFO_1(BackgroundColorBox, ColorBox);
+DEFINE_TYPE_INFO_1(ForegroundColorBox, ColorBox);
 
 bool ColorBox::use_color = true;
 
-void ColorBox::_draw(Widget w, 
-		     const BoxRegion& region, 
-		     const BoxRegion& exposed, 
-		     GC gc,
-		     bool context_selected) const
-{
-    if (use_color && !color_valid())
-	((ColorBox *)this)->convert_color(w);
-
-    if (use_color && color_valid())
-    {
-	XGCValues gc_values;
-	if (XGetGCValues(XtDisplay(w), gc, GCForeground, &gc_values))
-	{
-	    // Draw with new foreground color
-	    XSetForeground(XtDisplay(w), gc, color());
-	    TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
-	    XSetForeground(XtDisplay(w), gc, gc_values.foreground);
-	    return;
-	}
-    }
-	    
-    // No color - proceed as if this box was not there
-    TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
-    return;
-}
-
-
 // Create color, using the colormap of W
-void ColorBox::convert_color(Widget w)
+void ColorBox::convert_color(Widget w) const
 {
     if (color_valid() || color_failed())
 	return;
@@ -82,10 +56,75 @@ void ColorBox::convert_color(Widget w)
 
     if (!XtConvertAndStore(w, XtRString, &from, XtRPixel, &to))
     {
-	XtDisplayStringConversionWarning(XtDisplay(w), color_name(), XtCColor);
-	_color_failed = true;
+	((ColorBox *)this)->_color_failed = true;
 	return;
     }
 
-    _color_valid = true;
+    ((ColorBox *)this)->_color_valid = true;
+}
+
+// Draw using color
+void ColorBox::_draw(Widget w, 
+		     const BoxRegion& region, 
+		     const BoxRegion& exposed, 
+		     GC gc,
+		     bool context_selected) const
+{
+    if (use_color && !color_valid())
+	convert_color(w);
+
+    if (use_color && color_valid())
+    {
+	// Draw in color
+	color_draw(w, region, exposed, gc, context_selected);
+    }
+    else
+    {
+	// Draw child without special color settings
+	TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
+    }
+}
+
+// Draw using foreground color
+void ForegroundColorBox::color_draw(Widget w, 
+				    const BoxRegion& region, 
+				    const BoxRegion& exposed, 
+				    GC gc,
+				    bool context_selected) const
+{
+    XGCValues gc_values;
+    XGetGCValues(XtDisplay(w), gc, GCBackground | GCForeground, &gc_values);
+
+    // Draw with new foreground color
+    XSetForeground(XtDisplay(w), gc, color());
+    TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
+    XSetForeground(XtDisplay(w), gc, gc_values.foreground);
+}
+
+// Draw using background color
+void BackgroundColorBox::color_draw(Widget w, 
+				    const BoxRegion& region, 
+				    const BoxRegion& exposed, 
+				    GC gc,
+				    bool context_selected) const
+{
+    XGCValues gc_values;
+    XGetGCValues(XtDisplay(w), gc, GCBackground | GCForeground, &gc_values);
+
+    BoxSize space   = region.space();
+    BoxPoint origin = region.origin();
+
+    BoxPoint width(extend(X) ? space[X] : size(X),
+		   extend(Y) ? space[Y] : size(Y));
+
+    // Fill child area with background color
+    XSetForeground(XtDisplay(w), gc, color());
+    XFillRectangle(XtDisplay(w), XtWindow(w), gc, 
+		   origin[X], origin[Y], width[X], width[Y]);
+    XSetForeground(XtDisplay(w), gc, gc_values.foreground);
+
+    // Draw child with new background color
+    XSetBackground(XtDisplay(w), gc, color());
+    TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
+    XSetBackground(XtDisplay(w), gc, gc_values.background);
 }

@@ -552,10 +552,11 @@ Ddd*graph_edit_panner.background:  grey
 Ddd*graph_edit_panner.foreground:  grey
 Ddd*graph_edit_panner.shadowColor: black
 
-! The famous red and green buttons.
+! Red, green and blue buttons.
 Ddd*interrupt.foreground:          red4
 Ddd*run.foreground:                dark green
 Ddd*run_again.foreground:          dark green
+! Ddd*dereference.foreground:      blue4
 
 ! Highlight special dialogs
 Ddd*fatal_dialog*foreground: 	   red4
@@ -576,7 +577,7 @@ Ddd*code_form_w.grey_stop.foreground:      grey50
 
 ! Data display colors
 Ddd*graph_edit.nodeColor:          black
-Ddd*graph_edit.edgeColor:          grey50
+Ddd*graph_edit.edgeColor:          blue4
 Ddd*graph_edit.selectColor:        black
 Ddd*graph_edit.gridColor:          black
 Ddd*graph_edit.frameColor:         grey50

@@ -60,7 +60,7 @@ void RuleBox::_draw(Widget w,
     BoxPoint origin = r.origin();
 
     BoxPoint width(extend(X) ? space[X] : size(X),
-		extend(Y) ? space[Y] : size(Y));
+		   extend(Y) ? space[Y] : size(Y));
 
     XFillRectangle(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
 	width[X], width[Y]);

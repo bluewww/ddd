@@ -57,8 +57,8 @@ struct GraphGC {
 
     BoxPoint       offsetIfSelected; // Offset to apply if nodes are selected
     EdgeAttachMode edgeAttachMode;   // Where to attach edges
-    bool        drawArrowHeads;   // Flag: draw arrow heads?
-    bool        drawHints;        // Flag: draw hints?
+    bool           drawArrowHeads;   // Flag: draw arrow heads?
+    bool           drawHints;        // Flag: draw hints?
     BoxCoordinate  hintSize;         // Hint size (in pixels)
     unsigned       arrowAngle;       // Arrow angle (in degrees)
     unsigned       arrowLength;      // Arrow length (in pixels)

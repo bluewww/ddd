@@ -578,10 +578,16 @@ static Box *fontfix(ListBox *args)
     return new FontFixBox((Box *)(*args)[0]);
 }
 
-static Box *color(ListBox *args)
-// color(box, font)
+// background(box, color_name)
+static Box *background(ListBox *args)
 {
-    return new ColorBox((Box *)(*args)[0], (*args)[1]->str());
+    return new BackgroundColorBox((Box *)(*args)[0], (*args)[1]->str());
+}
+
+// foreground(box, color_name)
+static Box *foreground(ListBox *args)
+{
+    return new ForegroundColorBox((Box *)(*args)[0], (*args)[1]->str());
 }
 
 // Standard-Boxen
@@ -721,7 +727,8 @@ static BuiltinRec builtins[] = {
 { 0,    "__string",     false,  false,  false,  str },
 { 0,    "__font",       false,  false,  false,  font },
 { 0,    "__fontfix",    false,  false,  false,  fontfix },
-{ 0,    "__color",      false,  false,  false,  color },
+{ 0,    "__background", false,  false,  false,  background },
+{ 0,    "__foreground", false,  false,  false,  foreground },
 
 // Funktionen mit Seiteneffekten
 { 0,    "__fail",       false,  true,   false,  fail },

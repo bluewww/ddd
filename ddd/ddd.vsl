@@ -29,6 +29,7 @@
 // Includes
 #include <std.vsl>
 #include <fonts.vsl>
+#include <colors.vsl>
 
 // Font settings
 #replace stdfontfamily
@@ -40,46 +41,66 @@ shadow(box, thickness) =
 | square(thickness) & hrule(thickness);
 shadow(box) = shadow(box, 1);
 
+// Colors
+display_color(box)   = color(box, "black", "grey95");
+title_color(box)     = color(box, "black");
+disabled_color(box)  = color(box, "white", "grey50");
+simple_color(box)    = color(box, "black");
+pointer_color(box)   = color(box, "blue4");
+struct_color(box)    = color(box, "black");
+array_color(box)     = color(box, "blue4");
+reference_color(box) = color(box, "blue4");
+
 // The title
-title (disp_nr, name) -> color(rm(disp_nr & ": ") & bf(name), "red4");
+title (disp_nr, name) -> title_color(rm(disp_nr & ": ") & bf(name) & hfill());
 
 // The "disabled" string
-disabled () -> vcenter(it("(Disabled)") & hfill());
+disabled () -> 
+  disabled_color(vcenter(it("(Disabled)") & hfill()));
 
 // Ordinary values
-simple_value (value) -> vcenter(rm(value) & hfill());
+simple_value (value) -> 
+  simple_color(vcenter(rm(value) & hfill()));
 
 // Collapsed ordinary values
-collapsed_simple_value () -> vcenter(rm("...") & hfill());
+collapsed_simple_value () -> 
+  simple_color(vcenter(rm("...") & hfill()));
 
 // Ordinary pointers
-pointer_value (value) -> vcenter(rm(value) & hfill());
+pointer_value (value) -> 
+  pointer_color(vcenter(rm(value) & hfill()));
 
 // Collapsed pointers
-collapsed_pointer_value () -> vcenter(rm("...") & hfill());
+collapsed_pointer_value () -> 
+  pointer_color(vcenter(rm("...") & hfill()));
 
 // Dereferenced pointers
-dereferenced_pointer_value (value) -> bf(value) & hfill();
+dereferenced_pointer_value (value) -> 
+  pointer_color(vcenter(bf(value)) & hfill());
 
 // Collapsed array
-collapsed_array () -> vcenter(rm("[...]") & hfill());
+collapsed_array () -> 
+  array_color(vcenter(rm("[...]") & hfill()));
 
 // Vertical array
 vertical_array (...) -> 
-  frame(indent(vlist(hwhite() | hrule() | hwhite(), ...)));
+  array_color(frame(indent(vlist(hwhite() | hrule() | hwhite(), ...))));
 
 // Horizontal array
 horizontal_array (...) -> 
-  frame(indent(hlist((vwhite(3) & vrule() & vwhite(3)), ...)));
+  array_color(frame(indent(hlist((vwhite(3) & vrule() & vwhite(3)), ...))));
 
 // Struct value
-struct_value (...) -> frame(indent(valign(...)) & hfill());
+struct_value (...) -> 
+  struct_color(frame(indent(valign(...)) & hfill()));
 
 // Collapsed struct
-collapsed_struct_value () -> vcenter(rm("{...}") & hfill());
+collapsed_struct_value () -> 
+  struct_color(vcenter(rm("{...}") & hfill()));
 
 // Struct member name
-struct_member_name (name) -> rm(name);
+struct_member_name (name) -> 
+  struct_color(rm(name));
 
 // Struct member
 struct_member (name, value, name_width) -> 
@@ -88,12 +109,12 @@ struct_member (name, value, name_width) ->
 
 // Reference
 reference_value (ref, value) -> 
-  vcenter(rm(ref & ": ")) & value & hfill();
+  reference_color(vcenter(rm(ref & ": ")) & value & hfill());
 
 // Collapsed Reference
-collapsed_reference_value (...) -> 
-  collapsed_simple_value (...);
+collapsed_reference_value () -> 
+  reference_color(vcenter(rm("...") & hfill()));
 
 // The entire box
 display_box (title, value) -> 
-  shadow(frame(title | hrule() | hwhite () | value));
+  shadow(display_color(frame(title | hrule() | hwhite () | value)));

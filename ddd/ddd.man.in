@@ -1982,8 +1982,8 @@ December, 1995
 \s-2@DDD@\s+2 1.4: Machine-level debugging, glyphs, \s-2EMACS\s+2 integration
 .TP
 September, 1996
-\s-2@DDD@\s+2 2.0: \s-2XDB\s+2 support, generic \s-2DBX\s+2 support, 
-command tool 
+\s-2@DDD@\s+2 2.0: Colored displays, \s-2XDB\s+2
+support, generic \s-2DBX\s+2 support, command tool.
 .PD
 .PP
 .\"

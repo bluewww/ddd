@@ -36,6 +36,7 @@ char BoxGraphNode_rcsid[] =
 #include "BoxGraphN.h"
 #include "printBox.h"
 #include "CompositeB.h"
+#include "ColorBox.h"
 
 
 DEFINE_TYPE_INFO_1(BoxGraphNode, RegionGraphNode)
@@ -49,7 +50,30 @@ void BoxGraphNode::forceDraw(Widget w,
     // boxes are usually small and partial display
     // doesn't work well with scrolling
 
-    box()->draw(w, region(gc), region(gc), gc.nodeGC, false);
+    if (selected() && highlight())
+    {
+	box()->draw(w, region(gc), region(gc), gc.nodeGC, false);
+
+	bool use_color = ColorBox::use_color;
+	ColorBox::use_color = false;
+	BoxRegion r = highlightRegion(gc);
+	XFillRectangle(XtDisplay(w), XtWindow(w), gc.clearGC,
+		       r.origin(X), r.origin(Y),
+		       r.space(X), r.space(Y));
+	highlight()->draw(w, r, r, gc.nodeGC, false);
+	ColorBox::use_color = use_color;
+    }
+    else if (selected())
+    {
+	bool use_color = ColorBox::use_color;
+	ColorBox::use_color = false;
+	box()->draw(w, region(gc), region(gc), gc.nodeGC, false);
+	ColorBox::use_color = use_color;
+    }
+    else
+    {
+	box()->draw(w, region(gc), region(gc), gc.nodeGC, false);
+    }
 }
 
 

@@ -42,6 +42,7 @@
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
+// Associate a color with a box
 class ColorBox: public TransparentHatBox {
 public:
     DECLARE_TYPE_INFO;
@@ -55,13 +56,6 @@ private:
     bool _color_failed;		// True if conversion failed
 
 protected:
-    // Draw
-    virtual void _draw(Widget w, 
-		       const BoxRegion& region, 
-		       const BoxRegion& exposed, 
-		       GC gc,
-		       bool context_selected) const;
-
     // Copy Constructor
     ColorBox(const ColorBox& box):
 	TransparentHatBox(box),
@@ -71,23 +65,89 @@ protected:
 	_color_failed(box._color_failed)
     {}
 
+    // Just draw the child
+    virtual void _draw(Widget w, 
+		       const BoxRegion& region, 
+		       const BoxRegion& exposed, 
+		       GC gc,
+		       bool context_selected) const;
+
+    // Draw the child in color
+    virtual void color_draw(Widget w, 
+			    const BoxRegion& region, 
+			    const BoxRegion& exposed, 
+			    GC gc,
+			    bool context_selected) const = 0;
+
     // Create color, using the colormap of W
-    void convert_color(Widget w);
+    void convert_color(Widget w) const;
 
 public:
     // Constructor
     ColorBox(Box *box, const string& name):
-	TransparentHatBox(box), _color_name(name), 
+	TransparentHatBox(box), _color_name(name),
 	_color_valid(false), _color_failed(false)
     {}
-
-    Box *dup() const { return new ColorBox(*this); }
 
     // Resources
     const string& color_name() const { return _color_name; }
     bool color_valid() const         { return _color_valid; }
     bool color_failed() const        { return _color_failed; }
     Pixel color() const              { assert(color_valid()); return _color; }
+};
+
+// Draw box using associated color as foreground
+class ForegroundColorBox: public ColorBox {
+public:
+    DECLARE_TYPE_INFO;
+
+protected:
+    // Draw
+    virtual void color_draw(Widget w, 
+			    const BoxRegion& region, 
+			    const BoxRegion& exposed, 
+			    GC gc,
+			    bool context_selected) const;
+
+    // Copy Constructor
+    ForegroundColorBox(const ForegroundColorBox& box):
+	ColorBox(box)
+    {}
+
+public:
+    // Constructor
+    ForegroundColorBox(Box *box, const string& name):
+	ColorBox(box, name)
+    {}
+
+    Box *dup() const { return new ForegroundColorBox(*this); }
+};
+
+// Draw box using associated color as background
+class BackgroundColorBox: public ColorBox {
+public:
+    DECLARE_TYPE_INFO;
+
+protected:
+    // Draw
+    virtual void color_draw(Widget w, 
+			    const BoxRegion& region, 
+			    const BoxRegion& exposed, 
+			    GC gc,
+			    bool context_selected) const;
+
+    // Copy Constructor
+    BackgroundColorBox(const BackgroundColorBox& box):
+	ColorBox(box)
+    {}
+
+public:
+    // Constructor
+    BackgroundColorBox(Box *box, const string& name):
+	ColorBox(box, name)
+    {}
+
+    Box *dup() const { return new BackgroundColorBox(*this); }
 };
 
 #endif // _DDD_ColorBox_h

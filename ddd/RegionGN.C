@@ -75,7 +75,7 @@ void RegionGraphNode::draw(Widget w,
     forceDraw(w, exposed, gc);
 
     // if selected, invert area
-    if (__selected())
+    if (selected())
     {
 	const BoxRegion& h = highlightRegion(gc);
 

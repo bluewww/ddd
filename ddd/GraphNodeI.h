@@ -86,10 +86,9 @@ public:
     // Resources
     unsigned long id() const { return _id; }
     bool& selected()      { return _selected; }
+    bool selected() const { return _selected; }
     bool& hidden()        { return _hidden; }
-
-    bool __selected() const { return _selected; }
-    bool __hidden() const   { return _hidden; }
+    bool hidden() const   { return _hidden; }
 
     // Iteration on all edges starting here
     GraphEdge *firstFrom() const { return _firstFrom; }
