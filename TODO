@@ -146,9 +146,6 @@ Volunteers for these and other projects are welcome!
       expands on the basis of words
     - Attach base as attributes to variables, fields of
       structs/unions; load/save
-    - Detect when graph display takes too long (n seconds
-      configurable) if it takes too long switch in mode where updates
-      are only done on request
     - recognize URLs in source window; follow on click (call external
       browser)
 
@@ -357,7 +354,7 @@ Volunteers for these and other projects are welcome!
 345 Have automatic unfolding of data structures using `Layout by
     Example' - that is, lay out the first few elements and have this
     operation repeated until a fix point is reached.  
-    See also 025 and 193.
+    See also 025, 183, and 193.
 
 346 If a new display obscures an existing display, use spring-embedded
     layout to resolve conflicts.
