@@ -46,7 +46,8 @@ enum EntryType
     TargetOptionMenuEntry,	// Create `target' option menu
     CheckOptionMenuEntry,       // Create `check' option menu
     OtherOptionMenuEntry,       // Create other option menu
-    TextFieldEntry		// Create text field
+    TextFieldEntry,		// Create text field
+    SignalEntry		        // Create signal handler
 };
 
 typedef VarArray<EntryType> EntryTypeArray;

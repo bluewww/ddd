@@ -196,9 +196,6 @@ Volunteers for these and other projects are welcome!
     *()' applied to a struct could dereference all contained pointers
     (unless already dereferenced).
 
-196 Realize GUI support for the GDB `handle' commands 
-    (`Signal handling' or so).
-
 197 Implement a fast lookup table for assembler locations.  Current
     linear search may be too slow for large assembly listings.
 

@@ -69,6 +69,7 @@ char settings_rcsid[] =
 #include "cook.h"
 #include "comm-manag.h"
 #include "ddd.h"
+#include "editing.h"
 #include "mydialogs.h"
 #include "logo.h"
 #include "question.h"
@@ -88,6 +89,7 @@ const Dimension EXTRA_SPACE     = 10;   // Minimum space between label / entry
 const Dimension EXTRA_WIDTH     =  6;   // Additional space for safety
 const Dimension MAX_HEIGHT     = 300;   // Maximum height of window
 
+enum SettingsType { SETTINGS, INFOS, SIGNALS };
 
 
 //-----------------------------------------------------------------------
@@ -102,10 +104,16 @@ static EntryTypeArray    settings_entry_types;
 static WidgetStringAssoc settings_values;
 static WidgetStringAssoc settings_initial_values;
 
+static Widget      infos_panel        = 0;
+static Widget      reset_infos_button = 0;
+static WidgetArray infos_entries;
 
-static Widget            infos_panel        = 0;
-static Widget            reset_infos_button = 0;
-static WidgetArray       infos_entries;
+static Widget signals_panel = 0;
+static Widget signals_form  = 0;
+static Widget reset_signals_button = 0;
+static WidgetArray signals_entries;
+static WidgetStringAssoc signals_values;
+static WidgetStringAssoc signals_initial_values;
 
 
 
@@ -267,9 +275,43 @@ static void SetDisplayCB(Widget, XtPointer client_data, XtPointer call_data)
 	data_disp->delete_user_display((String)client_data);
 }
 
+// ToggleButton reply
+static void SendSignalCB(Widget, XtPointer client_data, XtPointer)
+{
+    gdb_command(string("signal ") + XtName(Widget(client_data)));
+}
+
+static void gdb_handle_command(Widget w, bool set)
+{
+    string sig    = string(XtName(w)).before('-');
+    string action = string(XtName(w)).after('-');
+    if (!set)
+	action.prepend("no");
+
+    if (action == "nopass")
+	action = "ignore";
+    else if (action == "noignore")
+	action = "pass";
+
+    gdb_command("handle " + sig + " " + action);
+}
+
+// ToggleButton reply
+static void SignalCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    gdb_handle_command(w, cbs->set);
+}
+
+
 // Update state of `reset' button
 static void update_reset_settings_button()
 {
+    if (reset_settings_button == 0)
+	return;
+
     for (int i = 0; i < settings_entries.size(); i++)
     {
 	Widget entry = settings_entries[i];
@@ -281,6 +323,24 @@ static void update_reset_settings_button()
     }
 
     XtSetSensitive(reset_settings_button, False);
+}
+
+static void update_reset_signals_button()
+{
+    if (reset_signals_button == 0)
+	return;
+
+    for (int i = 0; i < signals_entries.size(); i++)
+    {
+	Widget entry = signals_entries[i];
+	if (signals_initial_values[entry] != signals_values[entry])
+	{
+	    XtSetSensitive(reset_signals_button, True);
+	    return;
+	}
+    }
+
+    XtSetSensitive(reset_signals_button, False);
 }
 
 // Update states of `info' buttons
@@ -465,6 +525,54 @@ void process_show(string command, string value, bool init)
     cerr << "Warning: cannot set " << quote(set_command)
 	 << " to " << quote(value) << "\n";
 #endif
+}
+
+// Process output of `handle' command
+void process_handle(string output, bool init)
+{
+    if (signals_form == 0)
+	return;
+
+    while (output != "")
+    {
+	string line = output;
+	if (line.contains('\n'))
+	    line = line.before('\n');
+	output = output.after('\n');
+
+	string base = line.before(rxwhite);
+	if (!base.contains("SIG", 0))
+	    continue;
+
+	line = line.after(rxwhite);
+	static String titles[3] = { "stop", "print", "pass" };
+
+	for (int word = 0; word <= 2; word++)
+	{
+	    string value = line.before(rxwhite);
+	    line = line.after(rxwhite);
+
+	    value.downcase();
+	    bool set = (value == "yes");
+	    string name = base + "-" + titles[word];
+	    Widget w = XtNameToWidget(signals_form, name);
+
+	    if (w == 0)
+	    {
+		cerr << "Warning: cannot set " << base << " " << titles[word]
+		     << " to " << quote(value) << "\n";
+		continue;
+	    }
+
+	    XtVaSetValues(w, XmNset, set, NULL);
+
+	    signals_values[w] = value;
+	    if (init)
+		signals_initial_values[w] = value;
+	}
+    }
+
+    update_reset_signals_button();
 }
 
 
@@ -892,6 +1000,9 @@ static string get_dbx_doc(string dbxenv, string base)
 
 static Dimension preferred_width(Widget w)
 {
+    if (w == 0)
+	return 0;
+
     XtWidgetGeometry size;
     size.request_mode = CWWidth;
     XtQueryGeometry(w, NULL, &size);
@@ -900,6 +1011,9 @@ static Dimension preferred_width(Widget w)
 
 static Dimension preferred_height(Widget w)
 {
+    if (w == 0)
+	return 0;
+
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(w, NULL, &size);
@@ -909,6 +1023,44 @@ static Dimension preferred_height(Widget w)
 static void add_settings(Widget form, int& row, Dimension& max_width,
 			 DebuggerType type, EntryType entry_filter, 
 			 string gdb_class = "set");
+
+static Widget create_signal_button(Widget label,
+				   string name,
+				   int row,
+				   Widget rightmost = 0)
+{
+    Arg args[15];
+    Cardinal arg = 0;
+
+    MString lbl(capitalize(name));
+    XtSetArg(args[arg], XmNlabelString, lbl.xmstring()); arg++;
+
+    if (rightmost != 0)
+    {
+	XtSetArg(args[arg], XmNrightAttachment, XmATTACH_WIDGET); arg++;
+	XtSetArg(args[arg], XmNrightWidget,     rightmost);       arg++;
+    }
+    else
+    {
+	XtSetArg(args[arg], XmNrightAttachment, XmATTACH_FORM); arg++;
+    }
+
+    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_POSITION);  arg++;
+    XtSetArg(args[arg], XmNtopPosition,      row);                arg++;
+    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);  arg++;
+    XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
+    XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
+
+    string fullname = string(XtName(label)) + "-" + name;
+    Widget w = 
+	verify(XmCreateToggleButton(XtParent(label), fullname, args, arg));
+    XtManageChild(w);
+
+    XtAddCallback(w, XmNvalueChangedCallback,
+		  SignalCB, XtPointer(label));
+
+    return w;
+}
 
 // Add single button
 static void add_button(Widget form, int& row, Dimension& max_width,
@@ -931,138 +1083,152 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     switch (type)
     {
     case GDB:
+    {
+	if (!line.contains(" -- ") && !line.contains("SIG", 0))
+	    return;			// No help line
+
+	set_command  = line.before(" -- ");
+	doc          = line.after(" -- ");
+	base         = set_command.after(' ');
+	if (base == "")
+	    base = set_command;
+	show_command = "show " + base;
+
+	if (entry_filter == SignalEntry)
 	{
-	    if (!line.contains(" -- "))
-		return;			// No help line
+	    if (!line.contains("SIG", 0))
+		return;		// No signal line
 
-	    set_command  = line.before(" -- ");
-	    doc          = line.after(" -- ");
-	    base         = set_command.after(' ');
-	    if (base == "")
-		base = set_command;
-	    show_command = "show " + base;
-
-	    if (entry_filter != DisplayToggleButtonEntry)
-	    {
-		if (base == "args")
-		    return; // Already handled in `Run...' editor
-
-		if (base == "radix")
-		    return; // Already handled in input- and output-radix
-
-		is_set = doc.contains("Set ", 0);
-		is_add = doc.contains("Add ", 0);
-
-		if (!is_set && !is_add)
-		{
-		    // Generic command or `set variable' - list `set'
-		    // subcommands
-		    add_settings(form, row, max_width, 
-				 type, entry_filter, set_command);
-		    return;
-		}
-
-		value = cached_gdb_question(show_command);
-		if (is_set && value.freq('\n') > 1)
-		{
-		    // Generic command - list `set' subcommands
-		    add_settings(form, row, max_width,
-				 type, entry_filter, set_command);
-		    return;
-		}
-
-		if (is_set && 
-		    !value.contains(" is ") && 
-		    !value.contains(".\n", -1))
-		    return;
-
-		e_type = entry_type(type, base, doc, value);
-		if (e_type != entry_filter)
-		    return;
-
-		if (is_set)
-		    doc = doc.after("Set ");
-		else if (is_add)
-		    doc = doc.after("Add ");
-
-		if (is_add && doc.contains("of "))
-		    doc = doc.after("of ");
-	    }
-	    else
-	    {
-		if (base == "handle")
-		    return;	// We already have `info signals'.
-		if (base == "watchpoints")
-		    return;	// We already have `info breakpoints'.
-		if (base == "target")
-		    return;	// We already have `info files'.
-		if (base == "address")
-		    return;	// `info address' requires an argument.
-		if (base == "line")
-		    return;	// `info line' requires an argument.
-
-		// These infos produce too much output for our data
-		// window to be of any use.  Even more, `info
-		// functions' causes my X terminal to crash - AZ.
-		if (base == "types")
-		    return;
-		if (base == "functions")
-		    return;
-		if (base == "variables")
-		    return;
-
-		e_type = DisplayToggleButtonEntry;
-		if (e_type != entry_filter)
-		    return;
-
-		strip_leading(doc, "Show ");
-		strip_leading(doc, "Print ");
-		strip_leading(doc, "out ");
-		strip_leading(doc, "the ");
-	    }
-	    munch_doc(doc);
-	}
-        break;
-
-    case DBX:
-	{
-	    if (!line.contains("$", 0) 
-		&& !(line.contains(rxidentifier, 0) && islower(line[0])))
-		return;			// No help line
-
+	    // Special handling for signal tables
 	    base = line.before(rxwhite);
-	    if (base == "")
+	    doc  = line.after(rxwhite);
+	    doc  = doc.after(rxwhite);
+	    doc  = doc.after(rxwhite);
+	    doc  = doc.after(rxwhite);
+	    e_type = SignalEntry;
+	}
+	else if (entry_filter != DisplayToggleButtonEntry)
+	{
+	    if (base == "args")
+		return; // Already handled in `Run...' editor
+
+	    if (base == "radix")
+		return; // Already handled in input- and output-radix
+
+	    is_set = doc.contains("Set ", 0);
+	    is_add = doc.contains("Add ", 0);
+
+	    if (!is_set && !is_add)
+	    {
+		// Generic command or `set variable' - list `set'
+		// subcommands
+		add_settings(form, row, max_width, 
+			     type, entry_filter, set_command);
 		return;
-	    if (base == "run_savetty")
-		return; // Makes no sense under a GUI
+	    }
 
-	    value = line.after(rxwhite);
+	    value = cached_gdb_question(show_command);
+	    if (is_set && value.freq('\n') > 1)
+	    {
+		// Generic command - list `set' subcommands
+		add_settings(form, row, max_width,
+			     type, entry_filter, set_command);
+		return;
+	    }
 
-	    string dbxenv;
-	    if (base[0] == '$')
-		dbxenv = "set";
-	    else
-		dbxenv = "dbxenv";
+	    if (is_set && 
+		!value.contains(" is ") && 
+		!value.contains(".\n", -1))
+		return;
 
-	    e_type = entry_type(type, base, get_dbx_help(dbxenv, base), value);
+	    e_type = entry_type(type, base, doc, value);
 	    if (e_type != entry_filter)
 		return;
 
-	    set_command = dbxenv + " " + base;
-	    show_command = set_command + " " + value;
-	    doc = get_dbx_doc(dbxenv, base);
+	    if (is_set)
+		doc = doc.after("Set ");
+	    else if (is_add)
+		doc = doc.after("Add ");
+
+	    if (is_add && doc.contains("of "))
+		doc = doc.after("of ");
+	}
+	else
+	{
+	    if (base == "handle")
+		return;	// We already have `info signals'.
+	    if (base == "watchpoints")
+		return;	// We already have `info breakpoints'.
+	    if (base == "target")
+		return;	// We already have `info files'.
+	    if (base == "address")
+		return;	// `info address' requires an argument.
+	    if (base == "line")
+		return;	// `info line' requires an argument.
+
+	    // These infos produce too much output for our data window
+	    // to be of any use.  Even more, a large data display as
+	    // generated by `info functions' causes my X terminal to
+	    // crash - AZ.
+	    if (base == "types")
+		return;
+	    if (base == "functions")
+		return;
+	    if (base == "variables")
+		return;
+
+	    e_type = DisplayToggleButtonEntry;
+	    if (e_type != entry_filter)
+		return;
+
+	    strip_leading(doc, "Show ");
+	    strip_leading(doc, "Print ");
+	    strip_leading(doc, "out ");
+	    strip_leading(doc, "the ");
+	}
+	munch_doc(doc);
+        break;
+    }
+
+    case DBX:
+    {
+	if (!line.contains("$", 0) 
+	    && !(line.contains(rxidentifier, 0) && islower(line[0])))
+	    return;			// No help line
+
+	base = line.before(rxwhite);
+	if (base == "")
+	    return;
+	if (base == "run_savetty")
+	    return; // Makes no sense under a GUI
+
+	value = line.after(rxwhite);
+
+	string dbxenv;
+	if (base[0] == '$')
+	    dbxenv = "set";
+	else
+	    dbxenv = "dbxenv";
+
+	e_type = entry_type(type, base, get_dbx_help(dbxenv, base), value);
+	if (e_type != entry_filter)
+	    return;
+
+	set_command = dbxenv + " " + base;
+	show_command = set_command + " " + value;
+	doc = get_dbx_doc(dbxenv, base);
 
 #if RUNTIME_REGEX
-	    static regex rxdont("Do ?n['o]t");
+	static regex rxdont("Do ?n['o]t");
 #endif
-	    if (doc.contains(rxdont, 0) && e_type == NumToggleButtonEntry)
-	    {
-		doc = doc.after(rxdont);
-		munch_doc(doc);
-		e_type = NoNumToggleButtonEntry;
-	    }
+	if (doc.contains(rxdont, 0) && e_type == NumToggleButtonEntry)
+	{
+	    doc = doc.after(rxdont);
+	    munch_doc(doc);
+	    e_type = NoNumToggleButtonEntry;
 	}
         break;
+    }
 
     case JDB:
     {
@@ -1085,7 +1251,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     if (doc == "")
 	return;			// No need to support undocumented stuff
 
-    Arg args[10];
+    Arg args[15];
     int arg;
 
     // Add label
@@ -1155,16 +1321,44 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		      callback, XtPointer(set_command_s));
     }
 
-    // Add help button
-    arg = 0;
-    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);      arg++;
-    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_POSITION);  arg++;
-    XtSetArg(args[arg], XmNtopPosition,      row);                arg++;
-    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);  arg++;
-    XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
-    XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
-    Widget help = verify(XmCreatePushButton(form, "help", args, arg));
-    XtManageChild(help);
+    Widget help  = 0;
+    Widget pass  = 0;
+    Widget print = 0;
+    Widget stop  = 0;
+    Widget send  = 0;
+    if (e_type != SignalEntry)
+    {
+	// Add help button
+	arg = 0;
+	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);      arg++;
+	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_POSITION);  arg++;
+	XtSetArg(args[arg], XmNtopPosition,      row);                arg++;
+	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);  arg++;
+	XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
+	XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
+	help = verify(XmCreatePushButton(form, "help", args, arg));
+	XtManageChild(help);
+    }
+    else
+    {
+	// Add stop, print, pass, and send buttons
+	arg = 0;
+	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);      arg++;
+	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_POSITION);  arg++;
+	XtSetArg(args[arg], XmNtopPosition,      row);                arg++;
+	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);  arg++;
+	XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
+	XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
+	send = verify(XmCreatePushButton(form, "send", args, arg));
+	XtManageChild(send);
+
+	XtAddCallback(send, XmNactivateCallback, 
+		      SendSignalCB, XtPointer(label));
+
+	pass  = create_signal_button(label, "pass",  row, send);
+	print = create_signal_button(label, "print", row, pass);
+	stop  = create_signal_button(label, "stop",  row, print);
+    }
 
     // Add entry
     switch (e_type)
@@ -1175,164 +1369,164 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     case NumToggleButtonEntry:
     case NoNumToggleButtonEntry:
     case DisplayToggleButtonEntry:
+    case SignalEntry:
 	// All is done
 	break;
 
     case CheckOptionMenuEntry:
+    {
+	// `set check'
+	arg = 0;
+	Widget menu = verify(XmCreatePulldownMenu(form, "menu", args, arg));
+
+	// Possible options are contained in the help string
+	string options = cached_gdb_question("help " + set_command);
+	options = options.from('(');
+	options = options.before(')');
+
+	while (options != "")
 	{
-	    // `set check'
+	    string option = options.after(0);
+	    option = option.through(rxalpha);
+	    options = options.after(rxalpha);
+
 	    arg = 0;
-	    Widget menu = 
-		verify(XmCreatePulldownMenu(form, "menu", args, arg));
-
-	    // Possible options are contained in the help string
-	    string options = cached_gdb_question("help " + set_command);
-	    options = options.from('(');
-	    options = options.before(')');
-
-	    while (options != "")
-	    {
-		string option = options.after(0);
-		option = option.through(rxalpha);
-		options = options.after(rxalpha);
-
-		arg = 0;
-		Widget button = 
-		    verify(XmCreatePushButton(menu, option, args, arg));
-		XtManageChild(button);
-		XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
-			      set_command_s);
-	    }
-
-	    MString empty;
-	    arg = 0;
-	    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
-	    XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
-	    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
-	    XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-	    XtSetArg(args[arg], XmNlabelString,      empty.xmstring());  arg++;
-	    XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
-	    XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
-	    XtSetArg(args[arg], XmNspacing,          0);                 arg++;
-	    XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
-	    entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
-	    XtManageChild(entry);
-
-	    Widget option_label = XmOptionLabelGadget(entry);
-	    XtUnmanageChild(option_label);
+	    Widget button = 
+		verify(XmCreatePushButton(menu, option, args, arg));
+	    XtManageChild(button);
+	    XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
+			  set_command_s);
 	}
+
+	MString empty;
+	arg = 0;
+	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
+	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
+	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
+	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
+	XtSetArg(args[arg], XmNlabelString,      empty.xmstring());  arg++;
+	XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
+	XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
+	XtSetArg(args[arg], XmNspacing,          0);                 arg++;
+	XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
+	entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
+	XtManageChild(entry);
+
+	Widget option_label = XmOptionLabelGadget(entry);
+	XtUnmanageChild(option_label);
 	break;
+    }
 
     case OtherOptionMenuEntry:
     case TargetOptionMenuEntry:
+    {
+	// set language / set demangle / set architecture / set endian
+	arg = 0;
+	Widget menu = verify(XmCreatePulldownMenu(form, "menu", args, arg));
+
+	string options;
+	char separator = '\n';
+
+	switch (gdb->type())
 	{
-	    // set language / set demangle / set architecture / set endian
-	    arg = 0;
-	    Widget menu = 
-		verify(XmCreatePulldownMenu(form, "menu", args, arg));
-
-	    string options;
-	    char separator = '\n';
-
-	    switch (gdb->type())
+	case GDB:
+	    if (base == "architecture")
 	    {
-	    case GDB:
-		if (base == "architecture")
-		{
-		    // Possible options are listed upon `info architecture'
-		    // and separated by ` '.
-		    options = cached_gdb_question("info " + base);
-		    options = "auto" + options.from('\n');
-		    separator = ' ';
-		}
-		else if (base == "endian")
-		{
-		    // Hardwired options
-		    options = "auto\nbig endian\nlittle endian\n";
-		}
-		else
-		{
-		    // Possible options are listed upon `set BASE'
-		    options = cached_gdb_question("set " + base);
-		}
-		break;
-
-	    case DBX:
-		options = _get_dbx_help("dbxenv", base);
-		options = options.after('<');
-		options = options.before('>');
-
-		if (options == "")
-		{
-		    if (base == "follow_fork_mode")
-			options = "parent|child|both|ask";
-		}
-		separator = '|';
-		break;
-
-	    case XDB:
-	    case JDB:
-		return;		// FIXME
+		// Possible options are listed upon `info architecture'
+		// and separated by ` '.
+		options = cached_gdb_question("info " + base);
+		options = "auto" + options.from('\n');
+		separator = ' ';
 	    }
-
-	    while (options != "")
+	    else if (base == "endian")
 	    {
-		string option = options;
-		if (option.contains(separator))
-		    option = option.before(separator);
-		options = options.after(separator);
-
-		strip_space(option);
-
-		string label = option;
-		if (gdb->type() == GDB && option.contains("  "))
-		{
-		    label = option.after("  ");
-		    label = label.after(rxwhite);
-
-		    if (option.contains(" auto"))
-			option = "auto";
-		    else
-			option = option.before(rxwhite);
-		}
-
-		if (option == "" || option.contains(':', -1))
-		    continue;
-
-		MString xmlabel(label);
-		arg = 0;
-		if (gdb->type() == GDB)
-		{
-		    XtSetArg(args[arg], XmNlabelString, 
-			     xmlabel.xmstring()); arg++;
-		}
-		Widget button = 
-		    verify(XmCreatePushButton(menu, option, args, arg));
-		XtManageChild(button);
-		XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
-			      set_command_s);
+		// Hardwired options
+		options = "auto\nbig endian\nlittle endian\n";
 	    }
+	    else
+	    {
+		// Possible options are listed upon `set BASE'
+		options = cached_gdb_question("set " + base);
+	    }
+	    break;
 
-	    MString empty;
-	    arg = 0;
-	    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
-	    XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
-	    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
-	    XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-	    XtSetArg(args[arg], XmNlabelString,      empty.xmstring());  arg++;
-	    XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
-	    XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
-	    XtSetArg(args[arg], XmNspacing,          0);                 arg++;
-	    XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
-	    entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
-	    XtManageChild(entry);
+	case DBX:
+	    options = _get_dbx_help("dbxenv", base);
+	    options = options.after('<');
+	    options = options.before('>');
 
-	    Widget option_label = XmOptionLabelGadget(entry);
-	    XtUnmanageChild(option_label);
+	    if (options == "")
+	    {
+		if (base == "follow_fork_mode")
+		    options = "parent|child|both|ask";
+	    }
+	    separator = '|';
+	    break;
+
+	case XDB:
+	case JDB:
+	    return;		// FIXME
 	}
+
+	while (options != "")
+	{
+	    string option = options;
+	    if (option.contains(separator))
+		option = option.before(separator);
+	    options = options.after(separator);
+
+	    strip_space(option);
+
+	    string label = option;
+	    if (gdb->type() == GDB && option.contains("  "))
+	    {
+		label = option.after("  ");
+		label = label.after(rxwhite);
+
+		if (option.contains(" auto"))
+		    option = "auto";
+		else
+		    option = option.before(rxwhite);
+	    }
+
+	    if (option == "" || option.contains(':', -1))
+		continue;
+
+	    MString xmlabel(label);
+	    arg = 0;
+	    if (gdb->type() == GDB)
+	    {
+		XtSetArg(args[arg], XmNlabelString, 
+			 xmlabel.xmstring()); arg++;
+	    }
+	    Widget button = 
+		verify(XmCreatePushButton(menu, option, args, arg));
+	    XtManageChild(button);
+	    XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
+			  set_command_s);
+	}
+
+	MString empty;
+	arg = 0;
+	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
+	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
+	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
+	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
+	XtSetArg(args[arg], XmNlabelString,      empty.xmstring());  arg++;
+	XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
+	XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
+	XtSetArg(args[arg], XmNspacing,          0);                 arg++;
+	XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
+	entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
+	XtManageChild(entry);
+
+	Widget option_label = XmOptionLabelGadget(entry);
+	XtUnmanageChild(option_label);
 	break;
+    }
 
     case TextFieldEntry:
+    {
 	// Some other value
 	arg = 0;
 	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
@@ -1344,14 +1538,21 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	XtAddCallback(entry, XmNactivateCallback, 
 		      SetTextCB, XtPointer(set_command_s));
     }
+    }
 
     Widget rightmost = help;
     if (entry != label)
 	rightmost = entry;
+    if (stop != 0)
+        rightmost = stop;
 
     Dimension width = preferred_width(label);
     if (entry != label)
 	width += preferred_width(entry);
+    width += preferred_width(send);
+    width += preferred_width(stop);
+    width += preferred_width(print);
+    width += preferred_width(pass);
     width += preferred_width(help);
 
     // Add leader
@@ -1367,10 +1568,23 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     XtManageChild(leader);
 
     // Add help callback
-    XtAddCallback(help, XmNactivateCallback, 
-		  HelpOnThisCB, XtPointer(entry));
+    if (help != 0)
+    {
+	XtAddCallback(help, XmNactivateCallback, 
+		      HelpOnThisCB, XtPointer(entry));
+    }
 
-    if (e_type != DisplayToggleButtonEntry)
+    if (e_type == SignalEntry)
+    {
+	// Initialize button
+	process_handle(line, true);
+
+	// Register buttons
+	signals_entries += stop;
+	signals_entries += print;
+	signals_entries += pass;
+    }
+    else if (e_type != DisplayToggleButtonEntry)
     {
 	// Make entry insensitive if part of initialization commands.
 	string init = app_data.gdb_init_commands;
@@ -1392,7 +1606,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     else
     {
 	// Register entry
-	infos_entries        += entry;
+	infos_entries += entry;
     }
 
     max_width = max(width, max_width);
@@ -1411,7 +1625,10 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
     switch (type)
     {
     case GDB:
-	commands = cached_gdb_question("help " + gdb_class);
+	if (entry_filter == SignalEntry)
+	    commands = cached_gdb_question("info signals");
+	else
+	    commands = cached_gdb_question("help " + gdb_class);
 	break;
 
     case XDB:
@@ -1471,6 +1688,7 @@ static void add_separator(Widget form, int& row)
     row++;
 }
 
+
 // Reset settings
 static void ResetSettingsCB (Widget, XtPointer, XtPointer)
 {
@@ -1479,6 +1697,17 @@ static void ResetSettingsCB (Widget, XtPointer, XtPointer)
 	Widget entry = settings_entries[i];
 	if (settings_initial_values[entry] != settings_values[entry])
 	    gdb_set_command(XtName(entry), settings_initial_values[entry]);
+    }
+}
+
+// Reset signals
+static void ResetSignalsCB (Widget, XtPointer, XtPointer)
+{
+    for (int i = 0; i < signals_entries.size(); i++)
+    {
+	Widget entry = signals_entries[i];
+	if (signals_initial_values[entry] != signals_values[entry])
+	    gdb_handle_command(entry, signals_initial_values[entry] == "yes");
     }
 }
 
@@ -1506,13 +1735,28 @@ static string get_help_line(string command, DebuggerType type)
 }
 
 // Create settings or infos editor
-static Widget create_panel(DebuggerType type, bool create_settings)
+static Widget create_panel(DebuggerType type, SettingsType stype)
 {
     string title_msg;
-    if (create_settings)
+    string dialog_name;
+    switch (stype)
+    {
+    case SETTINGS:
 	title_msg = gdb->title() + " Settings";
-    else
+	dialog_name = "settings";
+	break;
+
+    case INFOS:
 	title_msg = gdb->title() + " Status Displays";
+	dialog_name = "infos";
+	break;
+
+    case SIGNALS:
+	title_msg = gdb->title() + " Signal Handling";
+	dialog_name = "signals";
+	break;
+    }
+
     StatusDelay delay("Retrieving " + title_msg);
 
     Arg args[10];
@@ -1521,9 +1765,7 @@ static Widget create_panel(DebuggerType type, bool create_settings)
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     Widget panel = verify(XmCreatePromptDialog(find_shell(), 
-					       create_settings ? 
-					       "settings" : "infos", 
-					       args, arg));
+					       dialog_name, args, arg));
     Delay::register_shell(panel);
 
     if (lesstif_version <= 79)
@@ -1538,16 +1780,25 @@ static Widget create_panel(DebuggerType type, bool create_settings)
     	      XtPointer(panel));
 
     Widget cancel = XmSelectionBoxGetChild(panel, XmDIALOG_CANCEL_BUTTON);
-    if (create_settings)
+
+    switch (stype)
     {
+    case SETTINGS:
 	XtRemoveAllCallbacks(cancel, XmNactivateCallback);
 	XtAddCallback(cancel, XmNactivateCallback, ResetSettingsCB, 0);
 	XtVaSetValues(panel, XmNdefaultButton, Widget(0), NULL);
-    }
-    else
-    {
+	break;
+
+    case INFOS:
 	XtRemoveAllCallbacks(cancel, XmNactivateCallback);
 	XtAddCallback(cancel, XmNactivateCallback, DeleteAllInfosCB, 0);
+	break;
+
+    case SIGNALS:
+	XtRemoveAllCallbacks(cancel, XmNactivateCallback);
+	XtAddCallback(cancel, XmNactivateCallback, ResetSignalsCB, 0);
+	XtVaSetValues(panel, XmNdefaultButton, Widget(0), NULL);
+	break;
     }
 
     // Add a rowcolumn widget
@@ -1569,16 +1820,26 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 
     // Add a scrolled window...
     arg = 0;
+    XtSetArg(args[arg], XmNscrollingPolicy, XmAUTOMATIC); arg++;
     Widget scroll = 
-        verify(XmCreateScrolledWindow(column, "scroll", args, arg));
+	verify(XmCreateScrolledWindow(column, "scroll", args, arg));
 
     // ...and a form.
     arg = 0;
     Widget form = verify(XmCreateForm(scroll, "form", args, arg));
 
-    if (create_settings)
+    switch (stype)
     {
+    case SETTINGS:
 	settings_form  = form;
+	break;
+
+    case SIGNALS:
+	signals_form = form;
+	break;
+
+    case INFOS:
+	break;
     }
 
     // Add setting buttons to the button box.
@@ -1586,8 +1847,9 @@ static Widget create_panel(DebuggerType type, bool create_settings)
     int row = 0;
     int last_row = row;
 
-    if (create_settings)
+    switch (stype)
     {
+    case SETTINGS:
 	add_settings(form, row, max_width, type, OnOffToggleButtonEntry);
 	add_settings(form, row, max_width, type, TrueFalseToggleButtonEntry);
 	add_settings(form, row, max_width, type, SensitiveToggleButtonEntry);
@@ -1623,26 +1885,38 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 	}
 
 	add_settings(form, row, max_width, type, TextFieldEntry);
-    }
-    else
-    {
+	break;
+
+    case INFOS:
 	add_settings(form, row, max_width, type, 
 		     DisplayToggleButtonEntry, "info");
+	break;
+
+    case SIGNALS:
+	add_settings(form, row, max_width, type, SignalEntry, "signals");
+	break;
     }
 
     // Clean up cached documentation stuff
     clear_gdb_question_cache();
 
     // Setup values
-    if (create_settings)
+    switch (stype)
     {
+    case SETTINGS:
 	reset_settings_button = cancel;
 	update_reset_settings_button();
-    }
-    else
-    {
+	break;
+
+    case INFOS:
 	reset_infos_button = cancel;
 	update_infos();
+	break;
+
+    case SIGNALS:
+	reset_signals_button = cancel;
+	update_reset_signals_button();
+	break;
     }
 
     // Set number of rows
@@ -1711,7 +1985,7 @@ static Widget create_settings(DebuggerType type)
 {
     if (settings_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
     {
-	settings_panel = create_panel(type, true);
+	settings_panel = create_panel(type, SETTINGS);
 	get_defines(type);
     }
     return settings_panel;
@@ -1721,8 +1995,16 @@ static Widget create_settings(DebuggerType type)
 static Widget create_infos(DebuggerType type)
 {
     if (infos_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
-	infos_panel = create_panel(type, false);
+	infos_panel = create_panel(type, INFOS);
     return infos_panel;
+}
+
+// Create signal editor
+static Widget create_signals(DebuggerType type)
+{
+    if (signals_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
+	signals_panel = create_panel(type, SIGNALS);
+    return signals_panel;
 }
 
 // Popup editor for debugger settings
@@ -1732,8 +2014,7 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
     if (settings == 0)
 	return;
 
-    XtManageChild(settings);
-    raise_shell(settings);
+    manage_and_raise(settings);
 }
 
 // Popup editor for debugger infos
@@ -1743,8 +2024,17 @@ void dddPopupInfosCB (Widget, XtPointer, XtPointer)
     if (infos == 0)
 	return;
 
-    XtManageChild(infos);
-    raise_shell(infos);
+    manage_and_raise(infos);
+}
+
+// Popup editor for debugger infos
+void dddPopupSignalsCB (Widget, XtPointer, XtPointer)
+{
+    Widget signals = create_signals(gdb->type());
+    if (signals == 0)
+	return;
+
+    manage_and_raise(signals);
 }
 
 // True iff settings might have changed
@@ -1844,6 +2134,12 @@ string get_settings(DebuggerType type)
     return command;
 }
 
+// Fetch GDB signal handling string
+string get_signals(DebuggerType type)
+{
+    create_signals(type);
+    return "";			// Not yet implemented
+}
 
 
 //-----------------------------------------------------------------------

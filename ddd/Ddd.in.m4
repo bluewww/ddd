@@ -862,6 +862,7 @@ Ddd*graph_edit_panner.shadowColor: black
 ! Red, green and blue buttons.
 Ddd*break.foreground:		   red4
 Ddd*quit.foreground:		   red4
+Ddd*send.foreground:		   red4
 Ddd*run.foreground:		   DarkGreen
 Ddd*run_again.foreground:	   DarkGreen
 ! Ddd*dereference.foreground:	   blue4
@@ -2125,10 +2126,10 @@ DESC(Next, [step program, but proceed through subroutine calls])\n\
 DESC(Next Instruction, [step instruction, \
 but proceed through subroutine calls])\n\
 DESC(Until, [execute until program reaches a line after the current])\n\
+DESC(Finish, [execute until function returns])\n\
 \n\
 DESC(Continue, [continue program after signal or breakpoint])\n\
-DESC(Finish, [execute until function returns])\n\
-DESC(Return, [make current function return to its caller])\n\
+DESC(Continue Without Signal, [continue, but don't give a signal])\n\
 \n\
 DESC(Kill, [kill execution of program being debugged])\n\
 DESC(Interrupt, [interrupt program (or current @GDB@ command)])\n\
@@ -2187,8 +2188,15 @@ Ddd*menubar*programMenu.nexti.documentationString:
 Ddd*menubar*programMenu.cont.labelString:	   Continue
 Ddd*menubar*programMenu.cont.mnemonic:		   C
 Ddd*menubar*programMenu.cont.accelerator:	   ~Shift Ctrl<Key>O
-Ddd*menubar*programMenu.cont.acceleratorText:	   Ctrl+O
+Ddd*menubar*programMenu.cont.acceleratorText:	   Ctrl+T
 Ddd*menubar*programMenu.cont.documentationString:
+
+Ddd*menubar*programMenu.signal0.labelString:	   Continue Without Signal
+Ddd*menubar*programMenu.signal0.mnemonic:          t
+Ddd*menubar*programMenu.signal0.accelerator:	   Shift Ctrl<Key>T
+Ddd*menubar*programMenu.signal0.acceleratorText:   Shift+Ctrl+T
+Ddd*menubar*programMenu.signal0.documentationString: \
+@rm Continue program without giving it a signal.
 
 Ddd*menubar*programMenu.finish.labelString:	   Finish
 Ddd*menubar*programMenu.finish.mnemonic:	   F
@@ -2201,12 +2209,6 @@ Ddd*menubar*programMenu.until.mnemonic:	   	   U
 Ddd*menubar*programMenu.until.accelerator:	   Ctrl<Key>bracketleft
 Ddd*menubar*programMenu.until.acceleratorText:	   Ctrl+\133
 Ddd*menubar*programMenu.until.documentationString:
-
-Ddd*menubar*programMenu.return.labelString:	   Return
-Ddd*menubar*programMenu.return.mnemonic:	   t
-Ddd*menubar*programMenu.return.accelerator:	   Ctrl<Key>Return
-Ddd*menubar*programMenu.return.acceleratorText:	   Ctrl+Return
-Ddd*menubar*programMenu.return.documentationString:
 
 Ddd*menubar*programMenu.kill.labelString:	   Kill
 Ddd*menubar*programMenu.kill.mnemonic:		   K
@@ -2353,6 +2355,7 @@ WIDGET(Status Menu)\n\
 DESC(Backtrace..., [give a summary of how your program got where it is])\n\
 DESC(Registers..., [show current processor registers])\n\
 DESC(Threads..., [show current program threads])\n\
+DESC(Signals..., [show current signal handling])\n\
 \n\
 DESC(Up, [show the function that called the current one])\n\
 DESC(Down, [show the function that was called by the current one])
@@ -2376,6 +2379,11 @@ Ddd*stackMenu.threads.labelString:	Threads...
 Ddd*stackMenu.threads.mnemonic:		T
 Ddd*stackMenu.threads.documentationString: \
 @rm Show and select current program threads
+
+Ddd*stackMenu.signals.labelString:	Signals...
+Ddd*stackMenu.signals.mnemonic:		S
+Ddd*stackMenu.signals.documentationString: \
+@rm Show and edit current signal handling
 
 Ddd*stackMenu.up.labelString:		Up
 Ddd*stackMenu.up.mnemonic:		U
@@ -2877,8 +2885,6 @@ Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
 ! Some special labels
 Ddd*tool_buttons*Forward.labelString:      Fwd
 Ddd*command_toolbar*Forward.labelString:   Fwd
-Ddd*tool_buttons*return.labelString:       Ret
-Ddd*command_toolbar*return.labelString:    Ret
 
 
 ! Make command tool and buttons a little lighter
@@ -3232,7 +3238,6 @@ Ddd*settings_popup.title: DDD: Debugger Settings
 ! Ddd*settings.okLabelString: Close
 Ddd*settings.cancelLabelString: Reset
 
-Ddd*settings*scroll.scrollingPolicy:		XmAUTOMATIC
 Ddd*settings*help.labelString:			?
 Ddd*settings*XmTextField.columns:		10
 Ddd*settings*sep.bottomOffset:			10
@@ -3356,7 +3361,6 @@ Use LBL(Edit, Save Options) to save all shortcuts.
 Ddd*infos.cancelLabelString: Reset
 Ddd*infos_popup.title: DDD: Status Displays
 
-Ddd*infos*scroll.scrollingPolicy:		XmAUTOMATIC
 Ddd*infos*help.labelString:			?
 Ddd*infos*sep.bottomOffset:			10
 Ddd*infos*leader.bottomOffset:			4
@@ -3380,6 +3384,33 @@ Click on LBL(?) near an item to get further information.\n\
 \n\
 Click on LBL(Reset) to delete all status displays.\n\
 Click on LBL(OK) to close this window.
+
+
+
+!-----------------------------------------------------------------------------
+! Signals
+!-----------------------------------------------------------------------------
+
+! Ddd*signals.okLabelString: Close
+Ddd*signals.cancelLabelString: Reset
+Ddd*signals_popup.title: DDD: Signal Handling
+
+Ddd*signals*send.labelString:	   Send
+Ddd*signals*sep.bottomOffset:	   10
+Ddd*signals*leader.bottomOffset:   4
+Ddd*signals*leader.separatorType:  XmSINGLE_DASHED_LINE
+Ddd*signals*signal0.labelString:   Continue execution without giving a signal
+
+! The panel itself has a help button, too.
+Ddd*signals*helpString: \
+WIDGET(Signal Handling)\n\
+\n\
+This panel controls how signals are handled by @GDB@.\n\
+\n\
+DESC(Stop, [interrupt program if this signal happens (implies LBL(Print))])\n\
+DESC(Print, [print a message in the @GDB@ console if this signal happens])\n\
+DESC(Pass, [let program see this signal; otherwise program doesn't know])\n\
+DESC(Send, [continue program execution with this signal])
 
 
 
@@ -6005,7 +6036,7 @@ for execution when a breakpoint is reached or for user-defined commands.\n\
 ITEM To end the recording, click on LBL(End) \
 or enter KBD(end) at the @GDB@ prompt.\n\
 ITEM To cancel the recording, select LBL(Program, Interrupt) \
-or press KEY(Ctrl+G).
+or press KEY(Esc).
 
 Ddd*program_not_running.helpString: \
 @rm Your program is not running.\n\
@@ -6084,9 +6115,8 @@ STOPPED_HELP\n\
 When resuming execution, the @SIGNAL_DESCRIPTION@ signal\n\
 will be passed to the program.\n\
 ITEM To continue execution without giving a @SIGNAL@ signal,\n\
-    use the @GDB@ command KBD(signal 0).\n\
-ITEM To see the current signal handling, \n\
-    use the @GDB@ command KBD(info handle).
+    use LBL(Commands, Continue Without Signal).\n\
+ITEM To see or change the current signal handling, use LBL(Status, Signals).
 
 Ddd*stopped_at_ignored_signal.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
@@ -6097,8 +6127,7 @@ When resuming execution, the @SIGNAL_DESCRIPTION@ signal \
 will EMPH(not) be passed to the program.\n\
 ITEM To pass this signal to the program, \
 use the @GDB@ command KBD(signal @SIGNAL@).\n\
-ITEM To see the current signal handling, \
-use the @GDB@ command KBD(info handle).
+ITEM To see or change the current signal handling, use LBL(Status, Signals).
 
 Ddd*stopped.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\

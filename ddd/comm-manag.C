@@ -230,6 +230,7 @@ public:
     bool     refresh_history_size;     // send 'show history size'
     bool     refresh_setting;	       // send 'show SETTING'
     string   set_command;	       // setting to update
+    bool     refresh_handle;	       // send 'info handle SIGNAL'
     string   break_arg;		       // argument when setting breakpoint
     int      n_refresh_data;	       // # of data displays to refresh
     int      n_refresh_user;	       // # of user displays to refresh
@@ -280,6 +281,7 @@ public:
 	  refresh_history_size(false),
 	  refresh_setting(false),
 	  set_command(""),
+	  refresh_handle(false),
 	  break_arg(""),
 	  n_refresh_data(0),
 	  n_refresh_user(0),
@@ -1003,10 +1005,11 @@ void send_gdb_command(string cmd, Widget origin,
     else if (is_setting_cmd(cmd))
     {
 	get_settings(gdb->type());
-	plus_cmd_data->refresh_setting = true;
-	plus_cmd_data->set_command     = cmd;
-	plus_cmd_data->refresh_data    = false;
-	plus_cmd_data->refresh_addr    = false;
+	plus_cmd_data->refresh_setting     = true;
+	plus_cmd_data->set_command         = cmd;
+	plus_cmd_data->refresh_data        = false;
+	plus_cmd_data->refresh_addr        = false;
+	plus_cmd_data->refresh_breakpoints = false;
 
 	if (gdb->type() == GDB && cmd.contains("history"))
 	{
@@ -1014,6 +1017,14 @@ void send_gdb_command(string cmd, Widget origin,
 	    plus_cmd_data->refresh_history_filename = true;
 	    plus_cmd_data->refresh_history_size     = true;
 	}
+    }
+    else if (is_handle_cmd(cmd))
+    {
+	get_signals(gdb->type());
+	plus_cmd_data->refresh_handle      = true;
+	plus_cmd_data->refresh_data        = false;
+	plus_cmd_data->refresh_addr        = false;
+	plus_cmd_data->refresh_breakpoints = false;
     }
     else if (is_quit_cmd(cmd))
     {
@@ -1209,6 +1220,12 @@ void send_gdb_command(string cmd, Widget origin,
 	    }
 	    cmds += show_command;
 	}
+	if (plus_cmd_data->refresh_handle)
+	{
+	    string sig = cmd.after(rxwhite);
+	    sig = sig.before(rxwhite);
+	    cmds += "info handle " + sig;
+	}
 	break;
 
     case DBX:
@@ -1239,6 +1256,7 @@ void send_gdb_command(string cmd, Widget origin,
 	assert (!plus_cmd_data->refresh_history_size);
 	if (plus_cmd_data->refresh_setting)
 	    cmds += cmd.before(rxwhite);
+	assert (!plus_cmd_data->refresh_handle);
 	break;
 
     case XDB:
@@ -1268,6 +1286,7 @@ void send_gdb_command(string cmd, Widget origin,
 	assert (!plus_cmd_data->refresh_history_filename);
 	assert (!plus_cmd_data->refresh_history_size);
 	assert (!plus_cmd_data->refresh_setting);
+	assert (!plus_cmd_data->refresh_handle);
 	break;
 
     case JDB:
@@ -1292,6 +1311,7 @@ void send_gdb_command(string cmd, Widget origin,
 	assert (!plus_cmd_data->refresh_history_filename);
 	assert (!plus_cmd_data->refresh_history_size);
 	assert (!plus_cmd_data->refresh_setting);
+	assert (!plus_cmd_data->refresh_handle);
 	break;
     }
 
@@ -2260,6 +2280,11 @@ void plusOQAC (const StringArray& answers,
 	// Just in case we've changed the source language
 	PosBuffer pb;
 	pb.filter(ans);
+    }
+
+    if (plus_cmd_data->refresh_handle)
+    {
+	process_handle(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_recent_files)

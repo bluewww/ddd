@@ -117,6 +117,18 @@ Data exploration
   across debugging sessions, even if no core dump was included.
 
 
+Program Execution
+-----------------
+
+- Signal handling.  Using GDB, you can control whether signals are
+  passed to your program and whether they interrupt execution.  See
+  `Status->Signals' for details.
+
+- Frozen X display detection.  When detecting a grabbed mouse pointer
+  after reaching a breakpoint, DDD now automatically continues
+  execution, rather than attempting to ungrab the pointer.
+
+
 Help and Assistance
 -------------------
 
@@ -135,10 +147,6 @@ Miscellaneous
 
 - `File->Open Recent' allows you to re-open the nine most recently
   debugged programs.
-
-- When detecting a grabbed (frozen) mouse pointer after reaching a
-  breakpoint, DDD now automatically continues execution, rather
-  than attempting to ungrab the pointer.
 
 - All dialogs can be properly resized.
 
@@ -216,6 +224,7 @@ Compatibility notes
     Attach        Ctrl+Z        -/-           Ctrl+Z is Undo in KDE
     Backward      Ctrl+B        Left          Ctrl+B is now Rev Search
     Close         Alt+W         Ctrl+W        KDE standard
+    Continue      Ctrl+O        Ctrl+T        Ctrl+O is now Open
     Delete Word   Ctrl+W        Ctrl+Backspc  Ctrl+W is now Close
     Detach        Shift+Ctrl+Z  -/-           Ctrl+Z is Undo in KDE
     Edit          Shift+Ctrl+E  Shift+Ctrl+V  Ctrl+E is now Run

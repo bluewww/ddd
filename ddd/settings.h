@@ -74,6 +74,21 @@ extern void update_infos();
 extern void register_info_button(Widget w);
 
 
+// Signal Handling
+
+// Popup editor for signal handling
+extern void dddPopupSignalsCB(Widget, XtPointer, XtPointer);
+
+// Update signal tables
+extern void update_signals();
+
+// Get settings string
+extern string get_signals(DebuggerType type);
+
+// Process `handle' output
+extern void process_handle(string line, bool init = false);
+
+
 // Command Definitions
 
 // True if definitions must be reloaded

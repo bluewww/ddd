@@ -99,6 +99,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 	"(r|ru|run"
 	"|rer|rerun"
 	"|c|cont|contin|continu|continue"
+	"|sig|sign|signa|signal"
 	"|u|unt|unti|until"
 	"|s|si|step|stepi"
 	"|n|ni|next|nexti"
@@ -292,6 +293,12 @@ bool is_setting_cmd (const string& cmd)
 	return false;		// `set args' command
 
     return cmd.matches (rxsetting_cmd) || cmd.matches(rxpath_cmd);
+}
+
+// True if CMD changes debugger signal handling
+bool is_handle_cmd (const string& cmd)
+{
+    return cmd.contains("handle ", 0) && cmd.freq(' ') >= 2;
 }
 
 // True if CMD changes debugger settings

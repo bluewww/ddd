@@ -113,9 +113,7 @@ To display VAR(data) in hexadecimal format, display it and choose
 LBL(Convert to Hex) from the LBL(Display ()) menu, 
 or enter KBD(graph display /x VAR(data)) at the GDB prompt.
 
-To send a signal to the debuggee, use the GDB SAMP(signal) command.
-For instance, to continue execution with an interrupt signal, use
-KBD(signal SIGINT) or KBD(signal 2) at the GDB prompt.
+To send a signal to the debuggee, use LBL(Status, Signals, Send).
 
 You can quickly print variable values
 by double-clicking on the variable name.
@@ -129,6 +127,9 @@ Use KEY(Ctrl+B) and KEY(Ctrl+F) to search the command history.
 You can move breakpoints by dragging them.  
 Just press and hold BUTTON(1) on a breakpoint,
 move it to the new position and release BUTTON(1) again.
+
+To make your program ignore signals, use LBL(Status, Signals) and
+unset the LBL(Pass) button for the appropriate signal.
 
 You can save space by disabling toolbar captions.
 See LBL(Edit, Preferences, Startup, Toolbar Appearance).

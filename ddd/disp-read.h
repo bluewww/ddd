@@ -95,6 +95,9 @@ bool is_set_cmd(const string& cmd, GDBAgent *gdb);
 // True if CMD changes debugger settings.
 bool is_setting_cmd(const string& cmd);
 
+// True if CMD changes debugger signal handling.
+bool is_handle_cmd(const string& cmd);
+
 // True if CMD changes debugger command definitions.
 bool is_define_cmd(const string& cmd);
 

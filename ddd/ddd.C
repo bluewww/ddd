@@ -680,7 +680,7 @@ struct ProgramItems {
     enum ProgramItem { Run, RunAgain, Sep1,
 		       SeparateExecWindow, Sep2,
 		       Step, Stepi, Next, Nexti, Until, Finish, Sep3,
-		       Cont, Sep4,
+		       Cont, Signal0, Sep4,
 		       Kill, Break, Quit
     };
 };
@@ -701,6 +701,7 @@ struct ProgramItems {
     { "finish",      MMPush, { gdbCommandCB, "finish" }}, \
     MMSep, \
     { "cont",        MMPush, { gdbCommandCB, "cont" }}, \
+    { "signal0",     MMPush, { gdbCommandCB, "signal 0" }}, \
     MMSep, \
     { "kill",        MMPush, { gdbCommandCB, "kill" }}, \
     { "break",       MMPush, { gdbCommandCB, "\003" }}, \
@@ -809,6 +810,7 @@ static MMDesc command_menu[] =
 
 static Widget registers_w;
 static Widget threads_w;
+static Widget signals_w;
 
 static MMDesc stack_menu[] =
 {
@@ -817,6 +819,8 @@ static MMDesc stack_menu[] =
       NULL, &registers_w },
     { "threads",    MMPush,  { WhenReady, SourceView::ViewThreadsCB },
       NULL, &threads_w },
+    { "signals",    MMPush,  { WhenReady, dddPopupSignalsCB },
+      NULL, &signals_w },
     MMSep,
     { "up",         MMPush,  { gdbCommandCB, "up" }},
     { "down",       MMPush,  { gdbCommandCB, "down" }},
@@ -6444,6 +6448,7 @@ static void setup_options()
     set_sensitive(define_w,    gdb->type() == GDB);
     set_sensitive(registers_w, gdb->has_regs_command());
     set_sensitive(threads_w,   gdb->type() == GDB || gdb->type() == JDB);
+    set_sensitive(signals_w,   gdb->type() == GDB);
     set_sensitive(infos_w,     gdb->type() == GDB);
 }
 
