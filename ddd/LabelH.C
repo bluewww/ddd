@@ -104,8 +104,7 @@ XmLabelHackClassRec xmLabelHackClassRec =
 	(XtGeometryHandler)NULL, 	        /* query_geometry */
 	NULL, 					/* display_accelerator */
 	(XtPointer)NULL,			/* extension */
-    }
-#if 0
+    },
     { 	/* xmPrimitiveClass */
 #if XmVersion >= 1002
 	(XtWidgetProc)XmInheritBorderHighlight,
@@ -118,9 +117,7 @@ XmLabelHackClassRec xmLabelHackClassRec =
 	XtInheritTranslations,
 	(XmArmAndActivate)_XtInherit,
 #endif
-	NULL,
-	0,
-	(XtPointer)NULL,
+	/* remaining fields are NULL or 0 */
     },
     {	/* xmLabelClass */
 #if XmVersion >= 1002
@@ -130,14 +127,13 @@ XmLabelHackClassRec xmLabelHackClassRec =
 #else
 	(XtWidgetProc) _XtInherit,
 	(XmMenuProc) _XtInherit,
-	NULL,
+	XtInheritTranslations,
 #endif
-	NULL,
+	/* remaining fields are NULL or 0 */
     },
     {
 	-1,
     }
-#endif
 };
 
 WidgetClass xmLabelHackWidgetClass = (WidgetClass)&xmLabelHackClassRec;
