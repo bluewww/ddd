@@ -1,7 +1,7 @@
 // $Id$
 // GDB communication manager.
 
-// Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
@@ -1177,6 +1177,7 @@ bool is_known_command(const string& answer)
 	|| (!ans.contains("syntax")                  // DEC DBX
 	    && !ans.contains("invalid keyword")      // DEC DBX
 	    && !ans.contains("undefined command")    // GDB
+	    && !ans.contains("ambiguous command")    // GDB
 	    && !ans.contains("not found")            // SUN DBX 3.0
 	    && !ans.contains("is unknown")           // SUN DBX 3.0
 	    && !ans.contains("unrecognized")         // AIX DBX & SUN DBX 1.0
