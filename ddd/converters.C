@@ -392,7 +392,7 @@ Boolean CvtStringToXmString(Display *display,
 
     // get string
     string source = String(fromVal->addr);
-    string charset = MSTRING_DEFAULT_CHARSET;
+    string charset = String(MSTRING_DEFAULT_CHARSET);
 
     int n_segments = source.freq(font_esc) + 1;
     string *segments = new string[n_segments];
