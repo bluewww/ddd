@@ -273,13 +273,9 @@ Volunteers for fixing these and other bugs are welcome!
      killed, the X server cannot give focus to any other windows.
      This happens with Red Hat Linux 4.1 and Metrolink Motif 2.01.
 
-229. enhenderson <enhenderson@micron.com> reports that 'Run in
-     executing window' does not work with DBX as shipped with Sun CC
-     4.2.
-
-230.  Roy Dragseth <royd@math.uit.no> reports that if you type in
-      commands really fast in ddd, it gets problems to cope.  When
-      using DDD from XEmacs, and defining XEmacs command sequences to
-      be sent to DDD, the last command(s) in the sequence get lost.
+230. Roy Dragseth <royd@math.uit.no> reports that if you type in
+     commands really fast in ddd, it gets problems to cope.  When
+     using DDD from XEmacs, and defining XEmacs command sequences to
+     be sent to DDD, the last command(s) in the sequence get lost.
 
 231. (Insert your bug here)
