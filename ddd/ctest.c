@@ -42,6 +42,8 @@ char ctest_rcsid[] =
 
 typedef enum _DayOfWeek {Sun, Mon, Tue, Wed, Thu, Fri, Sat} DayOfWeek;
 
+int a_global = 42;	/* Place watchpoints on this one */
+
 typedef struct Date {
     DayOfWeek day_of_week;
     int day;
@@ -90,6 +92,7 @@ void set_holiday(d, day_of_week, day, month, year, name)
 {
     set_date(&d->date, day_of_week, day, month, year);
     d->name = name;
+    a_global = 1;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -127,6 +130,25 @@ void free_tree(tree)
 }
 
 /*--------------------------------------------------------------------------*/
+typedef struct _List {
+    int value;
+
+    struct _List *self;
+    struct _List *next;
+} List;
+
+List *new_list(value)
+    int value;
+{
+    List *list = (List *)malloc(sizeof(List));
+    list->value = value;
+    list->self  = list;
+    list->next  = list;
+
+    return list;
+}
+
+/*--------------------------------------------------------------------------*/
 void tree_test ()
 {
     Tree *tree = NULL;
@@ -140,6 +162,22 @@ void tree_test ()
     set_date(&tree->date, Wed, 30, 11, 1994);
 
     free_tree(tree);
+}
+
+/*--------------------------------------------------------------------------*/
+void list_test(start)
+    int start;
+{
+    List *list = 0;
+
+    list                         = new_list(a_global + start++);
+    list->next                   = new_list(a_global + start++);
+    list->next->next             = new_list(a_global + start++);
+    list->next->next->next       = list;
+
+    free(list->next->next);
+    free(list->next);
+    free(list);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -207,6 +245,8 @@ int main (argc, argv)
 {
     int i = 42;
     tree_test();
+    i++;
+    list_test(i);
     i++;
     array_test();
     i++;
