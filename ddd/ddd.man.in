@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-11\-17" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-11\-19" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -106,8 +106,8 @@ effects of one bug and go on to learn about another.
 debugger (\s-1GDB\s+1) provide a command-line interface and a
 multitude of commands for these and other debugging purposes.
 \s-1@DDD@\s+1 is a comfortable \fIgraphical user interface\fR around
-an inferior \s-1GDB\s+1, \s-1DBX\s+1, \s-1XDB\s+1, \s-1JDB\s+1,
-\s-1PYDB\s+1, or Perl debugger.
+an inferior \s-1GDB\s+1, \s-1DBX\s+1, \s-1XDB\s+1, \s-1JDB\s+1, Python
+debugger, or Perl debugger.
 .\"
 .\"
 .\" ---------------
@@ -340,7 +340,7 @@ See `\fBEntering Commands\fR', below, for details on entering commands.
 .\"
 .SS "Are You Stuck?"
 .\"
-If you're stuck, try `\fBHelp\(->What Now?\fR' (the `\fBWhat Now\fR'
+If you are stuck, try `\fBHelp\(->What Now?\fR' (the `\fBWhat Now\fR'
 item in the `\fBHelp\fR' menu) or press \fBCtrl+F1\fR.  Depending on
 the current state, \s-1@DDD@\s+1 will give you some hints on what you
 can do next.
@@ -865,8 +865,7 @@ redirect the standard error output to the debugger console, use `\fB2>
 /dev/tty\fR' (assuming the inferior debugger and/or your \s-1UNIX\s+1
 shell support standard error redirection).
 .PP
-The execution window is not available in \s-1JDB\s+1, since
-\s-1JDB\s+1 does not support redirection.
+The execution window is not available in \s-1JDB\s+1 and \s-1Perl\s+1.
 .\"
 .\"
 .SS "Attaching to a Running Process"
@@ -931,6 +930,10 @@ To continue to the next line in the current function, click on the
 function calls appearing within the line of code are executed without
 stopping.
 .PP
+To continue until a greater line in the current function is reached,
+click on the `\fBUntil\fR' button.  This is useful to avoid
+single stepping through a loop more than once.
+.PP
 To continue running until the current function returns, use the
 `\fBFinish\fR' button.  The returned value (if any) is printed.
 .PP
@@ -949,8 +952,6 @@ occasion to use this feature is to back up\(em\&perhaps with more
 breakpoints set-over a portion of a program that has already executed,
 in order to examine its execution in more detail.
 .PP
-.PSPIC @srcdir@/PICS/ddd-drag.ps 15.3cm
-.PP
 Moving the execution position does not change the current stack frame,
 or the stack pointer, or the contents of any memory location or any
 register other than the program counter.
@@ -964,6 +965,8 @@ the specified line is not in the function currently executing.
 .PP
 After moving the execution position, click on the `\fBContinue\fR'
 button to resume execution.
+.PP
+.PSPIC @srcdir@/PICS/ddd-drag.ps 15.3cm
 .PP
 Note: Dragging the execution position is not possible when glyphs are
 disabled.  Use `\fBSet Execution Position\fR' from the breakpoint
@@ -983,6 +986,8 @@ where it stopped and how it got there.
 how your program got where it is.  To enable the backtrace window,
 select `\fBStatus\(->Backtrace\fR'.
 .PP
+.PSPIC @srcdir@/PICS/ddd-backtrace.ps 15.3cm
+.PP
 The `\fBUp\fR' button selects the function that called the current
 one.
 .PP
@@ -992,8 +997,6 @@ the current one.
 You can also directly type the `\fBup\fR' and `\fBdown\fR' commands at
 the debugger prompt.  Typing \fBCtrl+Up\fR and \fBCtrl+Down\fR,
 respectively, will also move you through the stack.
-.PP
-.PSPIC @srcdir@/PICS/ddd-backtrace.ps 15.3cm
 .PP
 `\fBUp\fR' and `\fBDown\fR' actions can be undone via
 `\fBEdit\(->Undo\fR'.
@@ -1029,10 +1032,10 @@ displayed variables.  Using `\fBUndo\fR' and `\fBRedo\fR', you can
 move back and forward in time to examine how your program got into the
 present state.
 .PP
-To let you know that you're operating in historic mode, the execution
+To let you know that you are operating in historic mode, the execution
 arrow gets a dashed-line appearance (indicating a past position);
 variable displays also come with dashed lines.  Furthermore, the
-status line informs you that you're seeing an earlier program state.
+status line informs you that you are seeing an earlier program state.
 .PP
 Here's how historic mode works: each time your program stops,
 \s-1DDD\s+1 collects the current execution position and the values of
@@ -1136,8 +1139,6 @@ functioning of your program) but to stop your program immediately
 whenever an error signal happens.  In \s-1@DDD@\s+1, you can change
 these settings via `\fBStatus\(->Signals\fR'.
 .PP
-.PSPIC @srcdir@/PICS/ddd-signals.ps 15.3cm
-.PP
 `\fBStatus\(->Signals\fR' pops up a panel showing all the kinds of
 signals and how \s-1GDB\s+1 has been told to handle each one.  The
 settings available for each signal are:
@@ -1145,14 +1146,14 @@ settings available for each signal are:
 .B "Stop"
 If set, \s-1GDB\s+1 should stop your program when this signal happens.
 This also implies `\fBPrint\fR' being set.
-.sp
+.br
 If unset, \s-1GDB\s+1 should not stop your program when this signal
 happens.  It may still print a message telling you that the signal has
 come in.
 .TP 10
 .B "Print"
 If set, \s-1GDB\s+1 should print a message when this signal happens.
-.sp
+.br
 If unset, \s-1GDB\s+1 should not mention the occurrence of the signal
 at all.  This also implies `\fBStop\fR' being unset.
 .TP 10
@@ -1160,9 +1161,11 @@ at all.  This also implies `\fBStop\fR' being unset.
 If set, \s-1GDB\s+1 should allow your program to see this signal; your
 program can handle the signal, or else it may terminate if the signal
 is fatal and not handled.
-.sp
+.br
 If unset, \s-1GDB\s+1 should not allow your program to see this
 signal.
+.PP
+.PSPIC @srcdir@/PICS/ddd-signals.ps 15.3cm
 .PP
 The entry `\fBAll Signals\fR' is special.  Changing a setting here
 affects \fIall signals at once\fR\(em\&except those used by the
@@ -1174,9 +1177,9 @@ button restores the saved settings.
 When a signal stops your program, the signal is not visible until you
 continue.  Your program sees the signal then, if `\fBPass\fR' is in
 effect for the signal in question \fIat that time\fR.  In other words,
-after \s-1GDB\s+1 reports a signal, you can change the
-`\fBStatus\(->Signals\fR' `\fBPass\fR' setting to control whether your
-program sees that signal when you continue.
+after \s-1GDB\s+1 reports a signal, you can change the `\fBPass\fR'
+setting in `\fBStatus\(->Signals\fR' to control whether your program
+sees that signal when you continue.
 .PP
 You can also cause your program to see a signal it normally would not
 see, or to give it any signal at any time.  The `\fBSend\fR' button
@@ -1554,10 +1557,10 @@ holding the `\fBDisplay ()\fR' button.
 .\"
 You can display all local variables at once by choosing
 `\fBData\(->Display Local Variables\fR'.  When using \s-1DBX\s+1,
-\s-1XDB\s+1, or \s-1JDB\s+1, this displays all local variables,
+\s-1XDB\s+1, \s-1JDB\s+1, or Perl, this displays all local variables,
 including the arguments of the current function.  When using
-\s-1GDB\s+1, function arguments are contained in a separate display,
-activated by `\fBDisplay Arguments\fR'.
+\s-1GDB\s+1 or \s-1PYDB\s+1, function arguments are contained in a
+separate display, activated by `\fBDisplay Arguments\fR'.
 .PP
 The display showing the local variables can be manipulated just like
 any other data display.  Individual variables can be selected and
@@ -1569,31 +1572,31 @@ dereferenced.
 .\"
 .SS "Displaying Program Status"
 .\"
-Besides local variables, you can create a display from the output of
-an arbitrary debugger command.  By entering
+You can create a display from the output of an arbitrary debugger
+command.  By entering
 .sp
 .br
   \fBgraph display `\fIcommand\fB`\fR
 .sp
 .br
 the output of \fIcommand\fR is turned into a \fIstatus display\fR
-updated each time the program stops.  For instance, by entering
+updated each time the program stops.  For instance,
 .sp
 .br
   \fBgraph display `where`\fR
 .sp
 .br
-a status display named `\fBWhere\fR' is created that shows the current
+creates a status display named `\fBWhere\fR' that shows the current
 backtrace.
 .PP
 If you are using \s-1GDB\s+1, \s-1@DDD@\s+1 provides a panel from
 which you can choose useful status displays.  Select
-`\fBData\(->Status Displays\fR' and pick your choice from the list.
+`\fBData\(->More Status Displays\fR' and pick your choice from the list.
 .PP
 .PSPIC @srcdir@/PICS/ddd-status-displays.ps 15.3cm
 .PP
-Note that status displays are quite time-consuming, so you
-should delete them as soon as you don't need them any more.
+Status displays consume time; you should delete them as soon as you
+don't need them any more.
 .\"
 .\"
 .SS "Displaying Multiple Array Values"
@@ -1773,8 +1776,6 @@ Editor.  Suppressed displays are listed in the Display Editor as
 \fIaliases\fR of the original data display.  Via the Display Editor,
 you can select, change, and delete suppressed displays.
 .PP
-.PSPIC @srcdir@/PICS/ddd-edit-displays.ps 15.3cm
-.PP
 Suppressed displays become visible again as soon as
 .br
 .IP \(bu 2
@@ -1809,6 +1810,8 @@ need\(em\&for instance, while examining some complex data
 structure\(em\&and disable it while examining control flow (i.e.,
 stepping through your program).  \s-1@DDD@\s+1 will automatically
 restore edges and data displays when switching modes.
+.PP
+.PSPIC @srcdir@/PICS/ddd-edit-displays.ps 15.3cm
 .\"
 .\"
 .SS "Clustering Displays"
@@ -1817,8 +1820,6 @@ If you examine several variables at once, having a separate display
 for each of them uses a lot of screen space.  This is why
 \s-1@DDD@\s+1 supports \fIclusters\fR.  A cluster merges several
 logical data displays into one physical display, saving screen space.
-.PP
-.PSPIC @srcdir@/PICS/ddd-clusters.ps 15.3cm
 .PP
 There are two ways to create clusters:
 .br
@@ -1835,6 +1836,8 @@ displays, such that all new data displays will automatically be
 clustered, too.  This is achieved by enabling
 `\fBEdit\(->Preferences\(->Data\(->Cluster Data Displays\fR'.
 .br
+.PP
+.PSPIC @srcdir@/PICS/ddd-clusters.ps 15.3cm
 .PP
 Displays in a cluster can be selected and manipulated like parts of an
 ordinary display; in particular, you can show and hide details, or
@@ -1903,14 +1906,14 @@ their destination.  Edge hints can be moved around like arbitrary
 displays.
 .PP
 To enable a more compact layout, you can set the
-`\fBEdit\(->Preferences\(->Data\(->Use compact layout\fR' option.
+`\fBEdit\(->Preferences\(->Data\(->Compact layout\fR' option.
 This realizes an alternate layout algorithm, where successors are
 placed next to their parents.  This algorithm is suitable for
 homogeneous data structures only.
 .PP
 You can enforce layout by setting `\fBEdit\(->Preferences\(->Data\(->
-Re-layout graph automatically\fR'.  If automatic layout is enabled,
-the graph is layouted after each change.
+Automatic Layout\fR'.  If automatic layout is enabled, the graph is
+layouted after each change.
 .PP
 .PSPIC @srcdir@/PICS/ddd-layout.ps 15.3cm
 .\"
@@ -1990,8 +1993,6 @@ occurrence.  The array name is copied to the argument field.  By
 clicking the `\fBPlot\fR' button, a new display is created in the data
 window, followed by a new top-level window containing the value plot.
 .PP
-.PSPIC @srcdir@/PICS/ddd-plots.ps 15.3cm
-.PP
 Each time the value changes during program execution, the plot is
 updated to reflect the current values.  The plot window remains active
 until you close it (via `\fBFile\(->Close\fR') or until the associated
@@ -2025,6 +2026,8 @@ In a 3-D plot, you can use the scroll bars to change your view
 position.  The horizontal scroll bar rotates the plot around the
 \fIZ\fR axis, that is, to the left and right.  The vertical scroll bar
 rotates the plot around the \fIY\fR axis, that is, up and down.
+.PP
+.PSPIC @srcdir@/PICS/ddd-plots.ps 15.3cm
 .\"
 .\"
 .SS "Plotting Scalars and Composites"
@@ -2208,6 +2211,8 @@ function.  By moving the sash at the right of the separating line
 between source and machine code, you can resize the source and machine
 code windows.
 .PP
+.PSPIC @srcdir@/PICS/ddd-code.ps 15.3cm
+.PP
 The machine code window works very much like the source window.  You
 can set, clear, and change breakpoints by selecting the address and
 pressing a `\fBBreak at ()\fR' or `\fBClear at ()\fR' button; the
@@ -2242,8 +2247,6 @@ To execute just one machine instruction, click on the `\fBStepi\fR' button.
 To continue to the next instruction in the current function, click on
 the `\fBNexti\fR' button.  This is similar to `\fBStepi\fR', but any
 subroutine calls are executed without stopping.
-.PP
-.PSPIC @srcdir@/PICS/ddd-code.ps 15.3cm
 .\"
 .\"
 .SS "Registers"
@@ -2261,12 +2264,10 @@ to have its value displayed in the data window.
 .\"
 .SS "Examining Memory"
 .\"
-Using \s-1@DDD@\s+1, you can examine memory in any of several formats,
-independently of your program's data types.  The item
+Using \s-1GDB\s+1 or \s-1DBX\s+1, you can examine memory in any of
+several formats, independently of your program's data types.  The item
 `\fBData\(->Examine Memory\fR' pops up a panel where you can choose
 the format to be shown.
-.PP
-.PSPIC @srcdir@/PICS/ddd-examine.ps 15.3cm
 .PP
 You can enter
 .IP \(bu 2
@@ -2342,6 +2343,8 @@ You can also display the memory dump in the data window (using
 `\fBDisplay\fR').  If you choose to display the values, the values
 will be updated automatically each time the program stop.
 .PP
+.PSPIC @srcdir@/PICS/ddd-examine.ps 15.3cm
+.PP
 .\"
 .\"
 .\" ---------------------
@@ -2353,23 +2356,12 @@ displayed.  Instead, \s-1@DDD@\s+1 allows you to invoke a \fItext
 editor\fR.  To invoke a text editor for the current source file,
 select the `\fBEdit\fR' button or `\fBSource\(->Edit Source\fR'.
 .PP
-The editor command is specified in the `\fBeditCommand\fR' resource.
-By default, \s-1@DDD@\s+1 tries to invoke the first available editor
-from the following list:
-.br
-.IP \(bu 2
-The editor specified in the `\fBXEDITOR\fR' environment variable;
-.IP \(bu 2
-An `\fBxterm\fR' terminal emulator running the editor specified in the
-`\fBEDITOR\fR' environment variable;
-.IP \(bu 2
-An `\fBxterm\fR' terminal emulator running the `\fBvi\fR' editor.
-.PP
-(You can change this setting via
-`\fBEdit\(->Preferences\(->Helpers\(->Edit Sources\fR'.)
+By default, \s-1@DDD@\s+1 tries a number of common editors.  You can
+customize \s-1@DDD@\s+1 to use your favourite editor via
+`\fBEdit\(->Preferences\(->Helpers\(->Edit Sources\fR'.
 .PP
 After the editor has exited, the source code shown is automatically
-brought up-to-date.
+updated.
 .PP
 If you have \s-1@DDD@\s+1 and an editor running in parallel, you can
 also update the source code manually via `\fBSource\(->Reload
@@ -2398,14 +2390,14 @@ You can \fIrepeat\fR previous and next commands by pressing the
 empty line, the last command is repeated as well.
 `\fBCommands\(->Command History\fR' shows the command history.
 .PP
+.PSPIC @srcdir@/PICS/ddd-history.ps 15.3cm
+.PP
 You can \fIsearch\fR for previous commands by pressing \fBCtrl+B\fR.
 This invokes \fIincremental search mode,\fR where you can enter a
 string to be searched in previous commands.  Press \fBCtrl+B\fR again
 to repeat the search, or \fBCtrl+F\fR to search in the reverse
 direction.  To return to normal mode, press \s-1\fBESC\fR\s+1, or use
 any cursor command.
-.PP
-.PSPIC @srcdir@/PICS/ddd-history.ps 15.3cm
 .PP
 Using \s-1GDB\s+1 and Perl, you can also \fIcomplete\fR commands and
 arguments by pressing the \s-1\fBTAB\fR\s+1 key; pressing the
@@ -2508,15 +2500,23 @@ interaction whether the pointer is grabbed.  If this is so,
 \s-1@DDD@\s+1 will continue the debugged program such that you can
 continue to use your display.
 .PP
+The \fIUndo Buffer\fR is the area where \s-1@DDD@\s+1 stores old
+program states and commands in order to undo operations.  When you are
+displaying lots of data, the undo buffer can quickly grow.  In
+`\fBUndo Buffer Size\fR', you can limit the size of the undo buffer.
+Setting this limit to \fB0\fR disables undo altogether.  A negative
+value means to place no limit.
+.PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Source Preferences"
 .PP
 In the source text, the current execution position and breakpoints are
-indicated by symbols (\*(lqglyphs\*(rq).  As an alternative, \s-1@DDD@\s+1
-can also indicate these positions using text characters.  If you wish
-to disable glyphs, unset the `\fBUse Glyphs\fR' option.  This also
-makes \s-1@DDD@\s+1 run slightly faster, especially when scrolling.
+indicated by symbols (\*(lqglyphs\*(rq).  As an alternative,
+\s-1@DDD@\s+1 can also indicate these positions using text characters.
+If you wish to disable glyphs, set the `\fBAs Text Characters\fR'
+option.  This also makes \s-1@DDD@\s+1 run slightly faster, especially
+when scrolling.
 .PP
 .PSPIC @srcdir@/PICS/ddd-source-prefs.ps 15.3cm
 .PP
@@ -2650,6 +2650,27 @@ This (default) setting binds Cut/Copy/Paste to
 \fBShift+Del\fR/\fBCtrl+Ins\fR/\fBShift+Ins\fR.  This is conformant to
 the Motif style guide.
 .PP
+For your convenience, the Motif-style bindings are also available when 
+\s-1KDE\s+1-style bindings are enabled\(em\&that is, you can always
+use \fBShift+Del\fR/\fBCtrl+Ins\fR/\fBShift+Ins\fR to cut, copy, and
+paste text.
+.PP
+To select the entire text, \s-1@DDD@\s+1 supports two types of key
+bindings, each in accordance with a specific style guide.
+.TP
+.B "\s-1KDE\s+1-style bindings"
+This (default) setting binds the Select All operation to \fBCtrl+A\fR.
+This key binding is conformant to the \s-1KDE\s+1 style guide.  Note
+that this means that \fBCtrl+A\fR no longer moves the cursor to the
+beginning of a line; use \s-1\fBHOME\fR\s+1 instead.
+.TP
+.B "Motif-style bindings"
+This setting binds Select All to \fBShift+Ctrl+A\fR.
+.PP
+For your convenience, the Motif-style bindings are also available when
+\s-1KDE\s+1-style bindings are enabled\(em\&that is,
+\fBShift+Ctrl+A\fR always selects the entire text.
+.PP
 The \s-1@DDD@\s+1 tool bar buttons can appear in a variety of styles:
 .TP
 .B "Images"
@@ -2660,6 +2681,8 @@ This shows the action name below the image.
 .PP
 The default is to have images as well as captions, but you can choose
 to have only images (saving space) or only captions.
+.PP
+.PSPIC @srcdir@/PICS/ddd-toolbars.ps 15.3cm
 .PP
 If you choose to have neither images nor captions, tool bar buttons
 are labeled like other buttons, as in \s-1@DDD@\s+1 2.x.  Note that
@@ -2672,11 +2695,10 @@ buttons will appear only if the mouse pointer is over them.  This
 latest-and-greatest \s-1GUI\s+1 invention can be disabled, such that
 the button border is always shown.
 .PP
-If you enable `\fBColor\fR' buttons, tool bar images will be colored.
-Don't expect too much\(em\&even color tool bar images have a large
-amount of grey.  If \s-1@DDD@\s+1 was built using Motif 2.0 and later,
-you can also choose an `indeterminate' setting, causing the buttons to
-appear in grey by default and in color when entered.
+If you enable `\fBColor\fR' buttons, tool bar images will be colored
+when entered.  If \s-1@DDD@\s+1 was built using Motif 2.0 and later,
+you can also choose a third setting, where buttons appear in color all
+the time.
 .PP
 By default, the \s-1@DDD@\s+1 tool bars are located on top of the
 window.  If you prefer the tool bar being located at the bottom, as in
@@ -2684,8 +2706,6 @@ window.  If you prefer the tool bar being located at the bottom, as in
 bottom setting is only supported for separate tool bars\(em\&that is,
 you must either choose separate windows or configure the tool bar to
 have neither images nor captions.
-.PP
-.PSPIC @srcdir@/PICS/ddd-toolbars.ps 15.3cm
 .PP
 By default, \s-1@DDD@\s+1 directs keyboard input to the item your
 mouse pointer points at.  If you prefer a click-to-type keyboard focus
@@ -2734,21 +2754,22 @@ can select fonts and attributes interactively.  Clicking `\fBquit\fR'
 or `\fBselect\fR' in the font selector causes all non-default values
 to be transferred to the \s-1@DDD@\s+1 font preferences panel.
 .PP
+.PSPIC @srcdir@/PICS/ddd-font-prefs.ps 15.3cm
+.PP
 The following fonts can be set using the preferences panel:
 .TP
 .B "Default Font"
 The default \s-1@DDD@\s+1 font to use for labels, menus, and buttons.
-Default value is `\fBhelvetica-bold\fR'.
+Default is `\fBhelvetica-bold\fR'.
 .TP
 .B "Variable Width"
 The variable width \s-1@DDD@\s+1 font to use for help texts and messages.
-Default value is `\fBhelvetica-medium\fR'.
+Default is `\fBhelvetica-medium\fR'.
 .TP
 .B "Fixed Width"
 The fixed width \s-1@DDD@\s+1 font to use for source code, the
 debugger console, text fields, data displays, and the execution
-window.
-Default value is `\fBlucidatypewriter-medium\fR'.
+window.  Default is `\fBlucidatypewriter-medium\fR'.
 .PP
 Just like startup preferences, changes in this panel will not take
 effect immediately.  Instead, you can
@@ -2758,8 +2779,6 @@ effective for future \s-1@DDD@\s+1 sessions,
 .IP \(bu 2
 or restart \s-1@DDD@\s+1 (using `\fBFile\(->Restart \s-1DDD\s+1\fR')
 to make it effective for the restarted \s-1@DDD@\s+1 session.
-.PP
-.PSPIC @srcdir@/PICS/ddd-font-prefs.ps 15.3cm
 .PP
 After having made changes in the panel, \s-1@DDD@\s+1 will
 automatically offer you to restart itself, such that you can see the
@@ -2793,6 +2812,8 @@ kill the debuggee in order to get a core file.  See also the
 `\fBFile\(->Attach to Process\fR' dialog.  See also the
 `\fBpsCommand\fR' resource, below.
 .PP
+.PSPIC @srcdir@/PICS/ddd-helpers.ps 15.3cm
+.PP
 In `\fBExecution Window\fR', you can enter a command to start a 
 terminal emulator.  To this command, \s-1@DDD@\s+1 appends Bourne
 shell commands to be executed within the execution window.  A simple
@@ -2810,8 +2831,6 @@ below.
 the \s-1@DDD@\s+1 \s-1WWW\s+1 page.  `\fB@URL@\fR' is replaced by the
 \s-1URL\s+1 (web page) to be shown.  A simple value is `\fBnetscape
 @URL@\fR'.  See also the `\fBwwwCommand\fR' resource, below.
-.PP
-.PSPIC @srcdir@/PICS/ddd-helpers.ps 15.3cm
 .PP
 `\fBPlot\fR' is the name of a Gnuplot program to invoke.
 \s-1@DDD@\s+1 can run Gnuplot in two ways:
@@ -2851,20 +2870,20 @@ See the `\fBDEBUGGER SETTINGS\fR' section, below.
 .SH "DEBUGGER SETTINGS"
 .\" ---------------
 .\"
-If you use \s-1GDB\s+1 (or some \s-1DBX\s+1 flavor) as inferior
-debugger, you can change its settings using `\fBEdit\(->Settings\fR'.
-Using the settings editor, you can determine whether C++ names are to
-be demangled, how many array elements are to print, and so on.
+For most inferior debuggers, you can change its settings using
+`\fBEdit\(->Settings\fR'.  Using the settings editor, you can
+determine whether C++ names are to be demangled, how many array
+elements are to print, and so on.
+.PP
+.PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
 .PP
 The capabilities of the settings editor depend on the capabilities of
-your inferior debugger\(em\&that is, your \s-1GDB\s+1 or \s-1DBX\s+1
-version.  Clicking on `\fB?\fR' gives an an explanation on the
-specific item; the \s-1GDB\s+1 documentation gives more details.
+your inferior debugger.  Clicking on `\fB?\fR' gives an an explanation
+on the specific item; the \s-1GDB\s+1 documentation gives more
+details.
 .PP
 Use `\fBEdit\(->Undo\fR' to undo changes.  Clicking on `\fBReset\fR'
 restores the most recently saved settings.
-.PP
-.PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
 .PP
 Some debugger settings are insensitive and cannot be changed, because
 doing so would endanger \s-1@DDD@\s+1 operation.  See the
@@ -3751,6 +3770,19 @@ be iconified on its own.
 .B "saveHistoryOnExit (\fPclass\fB SaveHistoryOnExit)"
 If `\fBon\fR' (default), the command history is automatically saved
 when \s-1@DDD@\s+1 exits.
+.TP
+.B "selectAllBindings (\fPclass\fB BindingStyle)"
+Controls the key bindings for the select all operation.
+.br
+.RS
+.IP \(bu 2
+If this is `\fBMotif\fR', Select All on \fBShift+Ctrl+A\fR.
+.IP \(bu 2
+If this is `\fBKDE\fR' (default), Select All is on \fBCtrl+A\fR.  This
+is conformant to the \s-1KDE\s+1 style guide.  Note that this means
+that \fBCtrl+A\fR no longer moves the cursor to the beginning of a
+line; use the \s-1\fBHOME\fR\s+1 key instead.
+.RE
 .TP
 .B "splashScreen (\fPclass\fB SplashScreen)"
 If `\fBon\fR' (default), show a \s-1@DDD@\s+1 splash screen upon
@@ -5552,7 +5584,7 @@ Move one character to the left.  Bound to \fBLeft\fR.
 .TP
 .B gdb-beginning-of-line ()
 Move cursor to the beginning of the current line, after the prompt.
-Bound to \fBHome\fR.
+Bound to \s-1\fBHOME\fR\s+1.
 .TP
 .B gdb-control (\fIcontrol-character\fB)
 Send the given \fIcontrol-character\fR to the inferior debugger.
@@ -5631,6 +5663,11 @@ in the source and data window.  If this action is bound to the source
 window, and the source window is editable, perform
 \fIaction\fB(\fIargs...\fB)\fR on the source window instead; if
 \fIaction\fR is not given, perform `\fBself-insert()\fR'.
+.TP
+.B gdb-select-all ()
+If the `\fBselectAllBindings\fR' resource is set to \fBMotif\fR,
+perform \fIbeginning-of-line\fR.  Otherwise, perform \fIselect-all\fR.
+Bound to \fBCtrl+A\fR.
 .TP
 .B gdb-set-line (\fIvalue\fB)
 Set the current line to \fIvalue\fR.  Bound to \fBCtrl+U\fR.
@@ -6018,6 +6055,34 @@ For more information on this list, send a mail to
 .SH "LIMITATIONS"
 .\" ---------------
 .\"
+.SS "General Limitations"
+.\"
+If command output is sent to the debugger console, it is impossible
+for \s-1@DDD@\s+1 to distinguish between the output of the debugged
+program and the output of the inferior debugger.  This problem can be
+avoided by running the program in the separate execution window.
+.PP
+Output that confuses \s-1@DDD@\s+1 includes:
+.IP \(bu 2
+Primary debugger prompts (e.g. `\fB(gdb) \fR' or `\fB(dbx) \fR')
+.IP \(bu 2
+Secondary debugger prompts (e.g. `\fB>\fR')
+.IP \(bu 2 
+Confirmation prompts (e.g. `\fB(y or n) \fR')
+.IP \(bu 2
+Prompts for more output (e.g. `\fBPress \s-1RETURN\s+1 to continue\fR')
+.IP \(bu 2
+Display output (e.g. `\fB$pc = 0x1234\fR')
+.PP
+If your program outputs any of these strings, you should run it in the
+separate execution window.
+.PP
+If the inferior debugger changes the default \s-1TTY\s+1 settings, for
+instance through a `\fBstty\fR' command in its initialization file,
+\s-1@DDD@\s+1 will likely become confused.  The same applies to
+debugged programs which change the default \s-1TTY\s+1 settings.
+.\"
+.\"
 .SS "Limitations using GDB"
 .\"
 Some \s-1GDB\s+1 settings are essential for \s-1@DDD@\s+1 to work correctly.
@@ -6096,34 +6161,6 @@ There is no automatic data display in Perl.  As a workaround,
 \s-1@DDD@\s+1 uses the `\fBx\fR' command to access data values.  This
 means that variable names are interpreted according to the current
 frame; variables outside the current frame cannot be displayed.
-.\"
-.SS "General Limitations"
-.\"
-If command output is sent to the debugger console, it is impossible
-for \s-1@DDD@\s+1 to distinguish between the output of the debugged
-program and the output of the inferior debugger.  This problem can be
-avoided by running the program in the separate execution window.
-.PP
-Output that confuses \s-1@DDD@\s+1 includes:
-.IP \(bu 2
-Primary debugger prompts (e.g. `\fB(gdb) \fR' or `\fB(dbx) \fR')
-.IP \(bu 2
-Secondary debugger prompts (e.g. `\fB>\fR')
-.IP \(bu 2 
-Confirmation prompts (e.g. `\fB(y or n) \fR')
-.IP \(bu 2
-Prompts for more output (e.g. `\fBPress \s-1RETURN\s+1 to continue\fR')
-.IP \(bu 2
-Display output (e.g. `\fB$pc = 0x1234\fR')
-.PP
-If your program outputs any of these strings, you should run it in the
-separate execution window.
-.PP
-If the inferior debugger changes the default \s-1TTY\s+1 settings, for
-instance through a `\fBstty\fR' command in its initialization file,
-\s-1@DDD@\s+1 will likely become confused.  The same applies to
-debugged programs which change the default \s-1TTY\s+1 settings.
-.\"
 .\"
 .\"
 .\" ---------------
@@ -6358,7 +6395,7 @@ distribution.
 .DE
 .PP
 You may also leave a message in the \fI\s-1@DDD@\s+1 Guestbook\fR. It
-is accessible via our \s-1@DDD@\s+1 \s-1WWW\s+1 page,
+is accessible via the \s-1@DDD@\s+1 \s-1WWW\s+1 page,
 .sp
 .br
   \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR .
