@@ -178,7 +178,7 @@ extern "C" int yywrap()
 %}
 
 /* Addresses -- in various formats */
-A	(0x[0-9a-fA-F]+|0[0-9a-fA-F]+[hH]|H\'[0-9a-fA-F]+|00+|[(]nil[)]|NIL|null|@[0-9a-fA-F]+|16_[0-9a-f]+)
+A	(0x[0-9a-fA-F]+|0[0-9a-fA-F]+[hH]|H\'[0-9a-fA-F]+|00+|[(]nil[)]|NIL|null|@[0-9a-fA-F]+|16_[0-9a-f]+|instance[ ]of[ ][^(]*[(][^)]*[)])
 
 /* Simple prefix of address */
 a	[0H@]
