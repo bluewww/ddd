@@ -339,6 +339,7 @@
 #define XtCShowDisplayTitles     "ShowDisplayTitles"
 #define XtNclusterDisplays       "clusterDisplays"
 #define XtCClusterDisplays       "ClusterDisplays"
+#define XtNdisplayPlacement      "displayPlacement"
 #define XtNstatusHistorySize     "statusHistorySize"
 #define XtCHistorySize           "HistorySize"
 #define XtNpopdownHistorySize    "popsownHistorySize"
@@ -568,6 +569,7 @@ struct AppData {
     Boolean   show_base_display_titles;
     Boolean   show_dependent_display_titles;
     Boolean   cluster_displays;
+    unsigned char display_placement;
     Cardinal  status_history_size;
     Cardinal  popdown_history_size;
     Boolean   sort_popdown_history;

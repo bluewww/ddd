@@ -497,6 +497,43 @@ void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
     update_options();
 }
 
+void graphSetDisplayPlacementCB(Widget, XtPointer client_data,
+				XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (info->set)
+    {
+	unsigned char orientation = (unsigned char)(int)(long)client_data;
+	app_data.display_placement = orientation;
+
+	Arg args[10];
+	Cardinal arg = 0;
+
+	// Synchronize layout direction with placement
+	switch (orientation)
+	{
+	case XmVERTICAL:
+	    XtSetArg(args[arg], XtNrotation, 0); arg++;
+	    XtSetValues(data_disp->graph_edit, args, arg);
+	    set_status("New displays will be placed "
+		       "below the downmost display.");
+	    break;
+	    
+	case XmHORIZONTAL:
+	    XtSetArg(args[arg], XtNrotation, 90); arg++;
+	    XtSetValues(data_disp->graph_edit, args, arg);
+	    set_status("New displays will be placed on the "
+		       "right of the rightmost display.");
+	    break;
+	}
+
+	update_options();
+    }
+}
+
+
 //-----------------------------------------------------------------------------
 // General Options
 //-----------------------------------------------------------------------------
@@ -2529,7 +2566,11 @@ bool save_options(unsigned long flags)
     }
     os << bool_app_value(XtNdetectAliases,  app_data.detect_aliases)   << '\n';
     os << bool_app_value(XtNclusterDisplays,app_data.cluster_displays) << '\n';
-    os << bool_app_value(XtNalign2dArrays,  app_data.align_2d_arrays)  << '\n';
+
+    os << orientation_app_value(XtNdisplayPlacement,
+				app_data.display_placement) << '\n';
+
+    os << bool_app_value(XtNalign2dArrays, app_data.align_2d_arrays)  << '\n';
 
     os << orientation_app_value(XtNarrayOrientation, 
 				app_data.array_orientation) << '\n';

@@ -6,19 +6,60 @@ DDD 3.2.2
 
 DDD 3.2.2 brings support for new debugger variants and some bug fixes.
 
-- DDD supports JDB as of JDK 1.2.
-- DDD can now be used within Tornado, i.e. WindRiver's version of GDB (5).
-  See the DDD Reference for details.
-- [GDB] DDD supports GDB 5.0.
-- [GDB] Improved breakpoint parsing. (2)
-- [DBX] Attaching to processes works with SGI DBX, Sun DBX and other
-  DBXes as well as with Compaq Ladebug. (1)
-- [LessTif] Combo boxes (drop-down text boxes) no longer shrink.
-- [LessTif] Text selection works better.
+
+Debuggers and Languages
+-----------------------
+
+- JDB as of JDK 1.2 is supported.
+
+- WindRiver's version of GDB (within the Tornado/vxworks environment) 
+  is supported.  See the DDD Reference for details.
+
+- GDB 5.0 is supported.
+
+- SGI DBX, Sun DBX, other DBXes as well as Compaq Ladebug can now
+  attach to processes via DDD. (1)
+
+- Parsing of GDB breakpoint information has been improved. (2)
+
+
+Examining Data
+--------------
+
+- New displays can be created left-to-right.  
+  See `Edit => Preferences => Data => Placement'.
+
 - Several memory leaks have been plugged. (1)
-- [Build] Respect CXXFLAGS settings.
-- [Build] Fix a bad wildcard use in Makefile. (3)
-- [Build] Fix ddd.texi rules in Makefile. (4)
+
+
+User Interface
+--------------
+
+- In LessTif, combo boxes (drop-down text boxes) no longer shrink.
+
+- In LessTif, Text selection works better.
+
+- Interrupts (Ctrl+C) from the controlling TTY can be issued multiple times.
+
+
+Building
+--------
+
+- CXXFLAGS settings are respected.
+
+- A bad wildcard use in Makefile has been fixed. (3)
+
+- ddd.texi rules in Makefile have been fixed. (4)
+
+
+License
+-------
+
+- All LGPL parts of DDD have been changed to use the GPL.
+
+
+Thanks
+------
 
 Thanks to: (1) Arnaud Desitter <arnaud@nag.co.uk>
            (2) Hiro Sugawara <hiro@lynx.com>

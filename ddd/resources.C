@@ -1731,6 +1731,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNdisplayPlacement,
+	XtCOrientation,
+	XtROrientation,
+	sizeof(unsigned char),
+	XtOffsetOf(AppData, display_placement),
+	XmRImmediate,
+	XtPointer(XmVERTICAL)
+    },
+
+    {
 	XtNstatusHistorySize,
 	XtCHistorySize,
 	XtRCardinal,

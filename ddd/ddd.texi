@@ -883,7 +883,7 @@ releases.  Use a recent @GDB{} version instead.}.
 @item
 @cindex @acronym{JDB}
 @cindex Java
-To debug @emph{Java byte-code programs}, you can use @DDD{} with
+To debug @emph{Java byte code programs}, you can use @DDD{} with
 @dfn{@JDB{}}, the Java debugger, as of @JDK{} 1.1 and later.
 (@DDD{} has been tested with @JDK{} 1.1 and @JDK{} 1.2.)
 
@@ -896,8 +896,8 @@ To debug @emph{Python programs}, you can use @DDD{} with
 @item
 @cindex Perl
 @cindex Perl
-To debug @emph{Perl programs}, you can use @DDD{} with the @dfn{Perl}
-debugger, as of Perl 5.003 and later.
+To debug @emph{Perl programs}, you can use @DDD{} with the @dfn{Perl
+debugger,} as of Perl 5.003 and later.
 @end itemize
 
 @xref{Choosing an Inferior Debugger}, for choosing the appropriate
@@ -2612,7 +2612,7 @@ options file.  Setting this resource to @code{0} disables checking for
 changed option files.
 @end defvr
 
-@lbindex Warn if Multiple @DDD{} Instances are Running
+@lbindex Warn if Multiple @value{DDD} Instances are Running
 
 Normally, automatic reloading of options should already suffice.  If you
 need stronger protection, @DDD{} also provides a warning against
@@ -3752,12 +3752,12 @@ for details.
 
 @item Debugger Settings
 @lbindex Debugger Settings
-@lbindex @acronym{GDB} Settings
-@lbindex @acronym{DBX} Settings
+@lbindex GDB Settings
+@lbindex DBX Settings
 @lbindex Ladebug Settings
-@lbindex @acronym{XDB} Settings
-@lbindex @acronym{JDB} Settings
-@lbindex @acronym{PYDB} Settings
+@lbindex XDB Settings
+@lbindex JDB Settings
+@lbindex PYDB Settings
 @lbindex Perl Settings
 Allows you to customize the inferior debugger.  @xref{Debugger
 Settings}, for details.
@@ -3788,12 +3788,12 @@ Open the separate execution window.  @xref{Using the Execution Window},
 for details.
 
 @item Debugger Console
-@lbindex @acronym{GDB} Console
-@lbindex @acronym{DBX} Console
+@lbindex GDB Console
+@lbindex DBX Console
 @lbindex Ladebug Console
-@lbindex @acronym{XDB} Console
-@lbindex @acronym{JDB} Console
-@lbindex @acronym{PYDB} Console
+@lbindex XDB Console
+@lbindex JDB Console
+@lbindex PYDB Console
 @lbindex Perl Console
 Open the debugger console.  @xref{Commands}, for details.
 
@@ -4161,7 +4161,7 @@ fatal signal.
 
 @table @code
 @item Debug @DDD{}
-@lbindex Debug @DDD{}
+@lbindex Debug @value{DDD}
 Invoke a debugger (typically, @GDB{}) and attach it to this @DDD{}
 process.  This is useful only if you are a @DDD{} maintainer.
 
@@ -4180,7 +4180,7 @@ row, while preventing @DDD{} from doing so with its skulls.  Click
 on @samp{New Game} to restart.
 
 @item When @DDD{} Crashes
-@lbindex When @DDD{} Crashes
+@lbindex When @value{DDD} Crashes
 Select what to do when @DDD{} gets a fatal signal.
 
 @table @code
@@ -4235,30 +4235,30 @@ Gives a hint on what to do next.
 Shows the current tip of the day.
 
 @item @DDD{} Reference
-@lbindex @acronym{@value{DDD}} Reference
+@lbindex @value{DDD} Reference
 Shows the @DDD{} Manual.
 
 @item @DDD{} News
-@lbindex @acronym{@value{DDD}} News
+@lbindex @value{DDD} News
 Shows what's new in this @DDD{} release.
 
 @item Debugger Reference
 @lbindex Debugger Reference
-@lbindex @acronym{GDB} Reference
-@lbindex @acronym{DBX} Reference
+@lbindex GDB Reference
+@lbindex DBX Reference
 @lbindex Ladebug Reference
-@lbindex @acronym{XDB} Reference
-@lbindex @acronym{JDB} Reference
-@lbindex @acronym{PYDB} Reference
+@lbindex XDB Reference
+@lbindex JDB Reference
+@lbindex PYDB Reference
 @lbindex Perl Reference
 Shows the on-line documentation for the inferior debugger.
 
 @item @DDD{} License
-@lbindex @acronym{@value{DDD}} License
+@lbindex @value{DDD} License
 Shows the @DDD{} License (@pxref{License}).
 
 @item @DDD{} @WWW{} Page
-@lbindex @acronym{@value{DDD}} @WWW{} Page
+@lbindex @value{DDD} WWW Page
 Invokes a @WWW{} browser for the @DDD{} @WWW{} page.
 
 @item About @DDD{}
@@ -4939,18 +4939,18 @@ Of course, you can always refer to the @emph{on-line documentation}:
 
 @itemize @minus
 @item
-@lbindex @acronym{@value{DDD}} Reference
+@lbindex @value{DDD} Reference
 @samp{Help @result{} @DDD{} Reference} gives you access to the
 @DDD{} manual, the ultimate @DDD{} reference.
 
 @item
 @lbindex Debugger Reference
-@lbindex @acronym{GDB} Reference
-@lbindex @acronym{DBX} Reference
+@lbindex GDB Reference
+@lbindex DBX Reference
 @lbindex Ladebug Reference
-@lbindex @acronym{XDB} Reference
-@lbindex @acronym{JDB} Reference
-@lbindex @acronym{PYDB} Reference
+@lbindex XDB Reference
+@lbindex JDB Reference
+@lbindex PYDB Reference
 @lbindex Perl Reference
 @samp{Help @result{} Debugger Reference} shows you the
 on-line documentation of the inferior debugger.
@@ -4958,7 +4958,7 @@ on-line documentation of the inferior debugger.
 @item
 @samp{Help @result{} @DDD{} @WWW{} Page} gives you access to the
 latest and greatest information on @DDD{}.
-@lbindex @acronym{@value{DDD}} @WWW{} Page
+@lbindex @value{DDD} @WWW{} Page
 @end itemize
 
 @item
@@ -5149,7 +5149,13 @@ You can also turn off the hint that is displayed in the status line.
 Just toggle @samp{Edit @result{} Preferences @result{} General @result{}
 Automatic Display of Button Hints @result{} in the Status Line}.
 
-Here are related @DDD{} resources (@pxref{Customizing}):
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-general-prefs, 16cm}
+@sp 1
+@end ifnotinfo
+
+These are the related @DDD{} resources (@pxref{Customizing}):
 
 @defvr Resource buttonTips (class Tips)
 If @samp{on} (default), enable button tips.
@@ -5224,29 +5230,31 @@ To view @WWW{} pages, you can define a @samp{Web Browser} command:
 @pindex netscape
 @pindex mozilla
 @pindex emacs
+@pindex xemacs
 @pindex mosaic
+@pindex gnudoit
 @pindex lynx
 The command to invoke a @WWW{} browser.  The string @samp{@@URL@@} is
 replaced by the @acronym{URL} to open.  Default is to try a running
 Netscape first (trying @command{mozilla}, then @command{netscape}), then
 @command{$WWWBROWSER}, then to invoke a new Netscape process, then to
-let a running Emacs do the job, then to invoke Mosaic, then to invoke
-Lynx in an xterm.
+let a running Emacs or XEmacs do the job (via @command{gnudoit}), then
+to invoke Mosaic, then to invoke Lynx in an xterm.
 
-To specify @samp{netscape-4.0} as browser, use the setting:
+To specify @samp{netscape-6.0} as browser, use the setting:
 
 @example
 Ddd*wwwCommand: \
-     netscape-4.0 -remote 'openURL(@@URL@@)' \
-  || netscape-4.0 '@@URL@@'
+     netscape-6.0 -remote 'openURL(@@URL@@)' \
+  || netscape-6.0 '@@URL@@'
 @end example
 
-This command first tries to connect to a running @code{netscape-4.0}
-browser; if this fails, it starts a new @code{netscape-4.0} process.
+This command first tries to connect to a running @code{netscape-6.0}
+browser; if this fails, it starts a new @code{netscape-6.0} process.
 @end defvr
 
-This is the default @WWW{} Page shown by @samp{Help @var{} @DDD{} @WWW{}
-Page}:
+This is the default @WWW{} Page shown by @samp{Help @result{} @DDD{}
+@WWW{} Page}:
 
 @defvr Resource wwwPage (class @WWW{}Page)
 The @DDD{} @WWW{} page.  Value:
@@ -5307,7 +5315,7 @@ You can customize the @DDD{} Windows in various ways.
 @node Splash Screen
 @subsubsection Splash Screen
 
-@lbindex @acronym{@value{DDD}} Splash Screen
+@lbindex @value{DDD} Splash Screen
 You can turn off the @DDD{} splash screen shown upon startup.  Just
 select @samp{Edit @result{} Preferences @result{} Startup @DDD{}
 Splash Screen}.
@@ -8015,6 +8023,7 @@ Click on @samp{Undisplay} to delete the selected display.
 * Displaying Local Variables::  
 * Displaying Program Status::   
 * Refreshing the Data Window::  
+* Placement::                   
 * Clustering::                  
 * Creating Multiple Displays::  
 * Editing all Displays::        
@@ -8403,6 +8412,41 @@ graph refresh
 at the debugger prompt has the same effect.
 
 
+@node Placement
+@subsubsection Display Placement
+@cindex Display, placement
+@cindex Placement
+
+@lbindex Left to right
+@lbindex Top to bottom
+@lbindex Placement
+By default, displays are created from @emph{top to bottom}---that is,
+each new display is placed below the downmost one.  You can change this
+setting to @emph{left to right} via @samp{Edit @result{} Preferences
+@result{} Data @result{} Placement @result{} Left to right}.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-data-prefs, 16cm}
+@sp 1
+@end ifnotinfo
+
+This setting is tied to the following resource:
+
+@defvr Resource displayPlacement (class Orientation)
+If this is @samp{XmVERTICAL} (default), @DDD{} places each new
+independent display below the downmost one.  If this is
+@samp{XmHORIZONTAL}, each new independent display is placed on the right
+of the rightmost one.
+@end defvr
+
+Note that changing the placement of new displays also affects the
+placement of @emph{dependent displays} (@pxref{Dependent Values}).  In
+@emph{top to bottom} mode, dependent displays are created on the right
+of the originating display; in @emph{left to right} mode, dependent
+displays are created on the below the originating display.
+
+
 @node Clustering
 @subsubsection Clustering Displays
 @cindex Cluster
@@ -8428,9 +8472,8 @@ clustered into the selected cluster.
 You can create a cluster @emph{automatically} for all independent data
 displays, such that all new data displays will automatically be
 clustered, too.  This is achieved by enabling @samp{Edit @result{}
-Preferences @result{} Data @result{} Cluster Data Displays}.
+Preferences @result{} Data @result{} Placement @result{} clustered}.
 @end itemize
-
 
 @ifnotinfo
 @sp 1
@@ -8454,9 +8497,10 @@ and choosing @samp{Undisp @result{} Uncluster ()}.
 
 @item
 You can uncluster all current and future displays by disabling
-@samp{Edit @result{} Preferences @result{} Data @result{} Cluster Data
-Displays}.
-@lbindex Cluster Data Displays
+@samp{Edit @result{} Preferences @result{} Data @result{} Placement @result{} 
+clustered}.
+@lbindex clustered
+@lbindex Placement
 @end itemize
 
 
@@ -9218,7 +9262,10 @@ this feature is enabled, displays can be moved on grid positions only.
 
 @lbindex Layout Graph
 You can layout the entire graph as a tree by selecting @samp{Data
-@result{} Layout Graph}.
+@result{} Layout Graph}.  The layout direction is determined from the
+display placement (@pxref{Placement}) and from the last rotation
+(@pxref{Rotating the Graph}).
+
 
 @ifnotinfo
 @sp 1
@@ -9244,7 +9291,6 @@ You can enforce layout by setting @samp{Edit @result{} Preferences
 enabled, the graph is layouted after each change.
 
 
-
 @node Rotating the Graph
 @subsubsection Rotating the Graph
 @cindex Graph, rotating
@@ -9252,10 +9298,8 @@ enabled, the graph is layouted after each change.
 @lbindex Rotate Graph
 
 You can rotate the entire graph clockwise by 90 degrees by selecting
-@samp{Data @result{} Rotate Graph}.
-
-If the graph was previously layouted, you may need to layout it again.
-Subsequent layouts will respect the direction of the last rotation.
+@samp{Data @result{} Rotate Graph}.  You may need to layout the graph
+after rotating it; @xref{Automatic Layout}, for details.
 
 
 @node Printing the Graph

@@ -1163,17 +1163,9 @@ static MMDesc source_preferences_menu[] =
 
 // Data preferences
 
-static Widget graph_detect_aliases_w;
-static Widget graph_cluster_displays_w;
-static Widget graph_align_2d_arrays_w;
 static Widget graph_show_hints_w;
 static Widget graph_show_annotations_w;
 static Widget graph_show_dependent_titles_w;
-static Widget graph_auto_close_w;
-static Widget graph_compact_layout_w;
-static Widget graph_auto_layout_w;
-static Widget graph_snap_to_grid_w;
-static Widget graph_grid_size_w;
 
 static MMDesc show_menu[] = 
 {
@@ -1186,6 +1178,9 @@ static MMDesc show_menu[] =
     MMEnd
 };
 
+static Widget graph_compact_layout_w;
+static Widget graph_auto_layout_w;
+
 static MMDesc layout_menu[] =
 {
     { "compact", MMToggle,  { graphToggleCompactLayoutCB, 0 },
@@ -1195,22 +1190,59 @@ static MMDesc layout_menu[] =
     MMEnd
 };
 
+static Widget graph_top_to_bottom_w;
+static Widget graph_left_to_right_w;
+
+static MMDesc direction_menu[] =
+{
+    { "topToBottom",    MMToggle,  { graphSetDisplayPlacementCB, 
+					 XtPointer(XmVERTICAL) },
+      NULL, &graph_top_to_bottom_w, 0, 0 },
+    { "leftToRight",    MMToggle,  { graphSetDisplayPlacementCB, 
+					 XtPointer(XmHORIZONTAL) },
+      NULL, &graph_left_to_right_w, 0, 0 },
+    MMEnd
+};
+
+static Widget graph_cluster_displays_w;
+
+static MMDesc placement_menu[] =
+{
+    { "direction", MMRadioPanel | MMUnmanagedLabel,
+	  MMNoCB, direction_menu, 0, 0, 0 },
+    { "clusterDisplays", MMToggle, { graphToggleClusterDisplaysCB, 0 },
+      NULL, &graph_cluster_displays_w, 0, 0 },
+    MMEnd
+};
+
+static Widget graph_grid_size_w;
+
+static MMDesc grid_menu[] =
+{
+    { "gridSize",      MMScale,   { graphSetGridSizeCB, 0 },
+      NULL, &graph_grid_size_w, 0, 0 },
+    MMEnd
+};
+
+static Widget graph_detect_aliases_w;
+static Widget graph_align_2d_arrays_w;
+static Widget graph_auto_close_w;
+static Widget graph_snap_to_grid_w;
+
 static MMDesc data_preferences_menu[] = 
 {
     { "show",          MMPanel, MMNoCB, show_menu, 0, 0, 0 },
+    { "placement",     MMPanel, MMNoCB, placement_menu, 0, 0, 0 },
     { "layout",        MMPanel, MMNoCB, layout_menu, 0, 0, 0 },
     { "detectAliases", MMToggle, { graphToggleDetectAliasesCB, 0 },
       NULL, &graph_detect_aliases_w, 0, 0 },
-    { "clusterDisplays", MMToggle, { graphToggleClusterDisplaysCB, 0 },
-      NULL, &graph_cluster_displays_w, 0, 0 }, 
     { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB, 0 },
       NULL, &graph_align_2d_arrays_w, 0, 0 },
     { "autoClose",     MMToggle,  { graphToggleAutoCloseCB, 0 },
       NULL, &graph_auto_close_w, 0, 0 },
     { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB, 0 },
       NULL, &graph_snap_to_grid_w, 0, 0 },
-    { "gridSize",      MMScale,   { graphSetGridSizeCB, 0 },
-      NULL, &graph_grid_size_w, 0, 0 },
+    { "grid",    MMPanel | MMUnmanagedLabel, MMNoCB, grid_menu, 0, 0, 0 },
     MMEnd
 };
 
@@ -3811,6 +3843,14 @@ void update_options()
     set_sensitive(graph_snap_to_grid_w, show_grid);
     set_sensitive(align_w, show_grid);
 
+    set_sensitive(graph_left_to_right_w, !app_data.cluster_displays);
+    set_sensitive(graph_top_to_bottom_w, !app_data.cluster_displays);
+
+    set_toggle(graph_left_to_right_w, 
+	       app_data.display_placement == XmHORIZONTAL);
+    set_toggle(graph_top_to_bottom_w,
+	       app_data.display_placement == XmVERTICAL);
+
     set_toggle(graph_show_hints_w, show_hints);
     set_toggle(graph_show_annotations_w, show_annotations);
     set_toggle(graph_auto_layout_w, auto_layout);
@@ -4270,6 +4310,10 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 {
     notify_set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
     notify_set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
+    notify_set_toggle(graph_left_to_right_w,
+		      initial_app_data.display_placement == XmHORIZONTAL);
+    notify_set_toggle(graph_top_to_bottom_w,
+		      initial_app_data.display_placement == XmVERTICAL);
     notify_set_toggle(graph_cluster_displays_w, 
 		      initial_app_data.cluster_displays);
     notify_set_toggle(graph_align_2d_arrays_w, 
@@ -4337,6 +4381,9 @@ static bool data_preferences_changed()
 	return true;
 
     if (app_data.cluster_displays != initial_app_data.cluster_displays)
+	return true;
+
+    if (app_data.display_placement != initial_app_data.display_placement)
 	return true;
 
     if (app_data.align_2d_arrays != initial_app_data.align_2d_arrays)
@@ -4730,6 +4777,10 @@ static Widget add_panel(Widget parent, Widget buttons,
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
     XtQueryGeometry(form, NULL, &size);
+
+    size.width  += 10;		// Compensate for small rounding errors
+    size.height += 10;
+
     max_width  = max(max_width,  size.width);
     max_height = max(max_height, size.height);
 

@@ -339,7 +339,7 @@ void ddd_show_signal(int sig)
     }
 
     // Show diagnostic
-    if (sig > 0)
+    if (sig > 0 && (sig != SIGINT || !tty_running()))
     {
 	string s = sigName(sig);
 	if (core_dumped)

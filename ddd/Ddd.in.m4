@@ -3228,7 +3228,7 @@ Ddd*preferences*buttons*alignment:		XmALIGNMENT_CENTER
 Ddd*preferences*panel*XmRowColumn.marginHeight: 0
 Ddd*preferences*packing:	      	        XmPACK_TIGHT
 
-Ddd*preferences*buttons*general.labelString:	\ \ \ General\ \ \ 
+Ddd*preferences*buttons*general.labelString:	\ \ \ \ General\ \ \ \ 
 Ddd*preferences*buttons*source.labelString:	Source
 Ddd*preferences*buttons*data.labelString:	Data
 Ddd*preferences*buttons*startup.labelString:	Startup
@@ -3387,22 +3387,30 @@ Machine Code Indentation
 Ddd*preferences*data*helpString:	\
 WIDGET(Data Preferences)\n\
 \n\
-ITEM If LBL(Detect aliases) is set, DDD detects displays with the same\n\
-    physical address and suppresses all aliases except the one that was\n\
-    least recently changed.  Useful for examining shared data structures.\n\
-ITEM If LBL(Cluster data displays) is set, all independent data displays\n\
-    will be merged into one single cluster, saving screen space.\n\
-ITEM If LBL(Display two-dimensional arrays as tables) is set, the elements\n\
-    of two-dimensional arrays are aligned in a table.\n\
-    Otherwise, two-dimensional arrays are displayed as nested linear arrays.\n\
 ITEM LBL(Show edge hints) enables handles for multi-line and arc edges.\n\
 ITEM LBL(Show edge annotations) enables named edges.\n\
 ITEM LBL(Show titles) enables titles of dependent displays.\n\
+ITEM LBL(Placement) controls how new displays are to be placed:\n\
+    SUBITEM If LBL(Top to bottom) is set, new independent displays\n\
+        will be placed below the downmost display.\n\
+    SUBITEM If LBL(Left to right) is set, new independent displays\n\
+        will be placed on the right of the rightmost display.\n\
+    SUBITEM If LBL(Clustered) is set, independent data displays\n\
+        are merged into one single cluster, saving screen space.\n\
+    Dependent displays are placed in the orthogonal direction.\n\
+ITEM LBL(Layout) controls the automatic layout:\n\
+    SUBITEM LBL(Compact layout) enables a compact layout,\n\
+        suitable for homogeneous structures only.\n\
+    SUBITEM LBL(Automatic layout) makes DDD relayout the graph\n\
+        after each change.\n\
+ITEM If LBL(Detect aliases) is set, DDD detects displays with the same\n\
+    physical address and suppresses all aliases except the one that was\n\
+    least recently changed.  Useful for examining shared data structures.\n\
+ITEM If LBL(Display two-dimensional arrays as tables) is set, the elements\n\
+    of two-dimensional arrays are aligned in a table.\n\
+    Otherwise, two-dimensional arrays are displayed as nested linear arrays.\n\
 ITEM If LBL(Close data window when deleting last display) is set,\n\
     deleting the last display automatically closes the data window.\n\
-ITEM LBL(Compact layout) enables a compact layout,\n\
-    suitable for homogeneous structures only.\n\
-ITEM LBL(Automatic layout) makes DDD layout the graph after each change.\n\
 ITEM If LBL(Auto-align displays) is set,\n\
     each display is aligned on the nearest grid point.\n\
 ITEM In LBL(Grid size), you can change the spacing of grid points.\n\
@@ -3413,8 +3421,6 @@ Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*detectAliases.labelString:	\
 Detect Aliases (shared data structures)
-Ddd*preferences*clusterDisplays.labelString:    \
-Cluster Data Displays
 Ddd*preferences*align2dArrays.labelString:	\
 Display Two-Dimensional Arrays as Tables
 Ddd*preferences*snapToGrid.labelString:	        \
@@ -3437,9 +3443,19 @@ Automatic
 Ddd*preferences*compact.labelString:	        \
 Compact
 
+Ddd*preferences*placement.labelString:	        \
+Placement
+Ddd*preferences*topToBottom.labelString:        \
+Top to bottom
+Ddd*preferences*leftToRight.labelString:        \
+Left to right
+Ddd*preferences*clusterDisplays.labelString:    \
+Clustered
+
 Ddd*preferences*gridSize.orientation:		XmHORIZONTAL
 Ddd*preferences*gridSize.minimum:		0
 Ddd*preferences*gridSize.maximum:		64
+Ddd*preferences*gridSize.width:			192
 Ddd*preferences*gridSize.showValue:		on
 Ddd*preferences*gridSize.titleString:		Grid Size
 
