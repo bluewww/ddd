@@ -169,7 +169,7 @@ Volunteers for fixing these and other bugs are welcome!
     - Displays.
 
 347*Verify buttons clears *all buttons* in SGI DBX, even basic ones
-    such as `step' or `run'.  Suggestion: if `help step' doesn't give
+    such as `step' or `run'.  Suggestion: if `help run' doesn't give
     help, disable verification altogether.
 
 348 (Insert new bugs here)
