@@ -500,8 +500,8 @@ void Agent::inputEOF()
     // Call handlers
     callHandlers(InputEOF);
 
-    // Close input pipe
-    closeChannel(inputfp());
+    // Clear error condition
+    clearerr(inputfp());
 }
 
 // EOF on error detected
@@ -513,30 +513,29 @@ void Agent::errorEOF()
     // Call handlers
     callHandlers(ErrorEOF);
 
-    // Close error pipe
-    closeChannel(errorfp());
+    // Clear error condition
+    clearerr(errorfp());
 }
 	
-// inhibit further communication
+// Inhibit further communication
 void Agent::abort()
 {
     restoreParentIO();
 
-    // close pipes
-    // we deliberately ignore any error messages here
+    // Close pipes.  We deliberately ignore any error messages here.
     shutdown();
     closeChannel(inputfp());
     closeChannel(errorfp());
 
     if (!_beingTerminated)
     {
-	// declare agent as "not running"
+	// Declare agent as "not running"
 	unsetRunning();
     }
 
     if (_lastStatus >= 0)
     {
-	// call "Died" message handlers
+	// Call "Died" message handlers
 	callHandlers(Died, statusName(_lastStatus));
 	_lastStatus = -1;
     }
