@@ -179,17 +179,9 @@ protected:
     void dump(std::ostream& s) const;
 
 public:
-#ifdef GCC_OK
     SquareBox(BoxCoordinate s): 
 	SpaceBox(BoxSize(s, s)) 
     {}
-#else
-    // Patch for GCC Version 2.3.3
-    SquareBox(BoxCoordinate s)
-    {
-	thesize() = s;
-    }
-#endif
 
     Box *dup() const { return new SquareBox(*this); }
 };
