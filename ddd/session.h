@@ -66,7 +66,6 @@ void create_session_dir(const string& session, ostream& msg);
 // Same, but leave messages in status line
 void create_session_dir(const string& session);
 
-
 // Callbacks for X11R6 session management
 extern void SaveSmSessionCB(Widget, XtPointer, XtPointer);
 extern void ShutdownSmSessionCB(Widget, XtPointer, XtPointer);

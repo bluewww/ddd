@@ -652,7 +652,7 @@ static string get_resource(XrmDatabase db, string name, string cls)
     XrmGetResource(db, name, cls, &rtype, &value);
     if (value.addr != 0)
     {
-	return string((char *)value.addr, value.size);
+	return string((char *)value.addr, value.size - 1);
     }
     else
 	return "";		// Not found
@@ -723,54 +723,31 @@ static void open_session(const string& session)
     // Remove settings panel
     reset_settings();
 
-    // Get start-up commands from DB
-    string init = get_resource(db, XtNrestartCommands, XtCInitCommands);
+    // Enqueue start-up commands
+    string restart = get_resource(db, XtNrestartCommands, XtCInitCommands);
+    string settings;
     switch (gdb->type())
     {
     case GDB:
-	init += get_resource(db, XtNgdbSettings, XtCSettings);
+	settings = get_resource(db, XtNgdbSettings, XtCSettings);
 	break;
 
     case DBX:
-	init += get_resource(db, XtNdbxSettings, XtCSettings);
+	settings = get_resource(db, XtNdbxSettings, XtCSettings);
 	break;
 
     case XDB:
-	init += get_resource(db, XtNxdbSettings, XtCSettings);
+	settings = get_resource(db, XtNxdbSettings, XtCSettings);
 	break;
     }
+    init_session(restart, settings);
 
-    // Current breakpoint base (< 0: unknown)
-    static int bp_base;
-    bp_base = -1;
-
-    // Process all start-up commands.  These should load the file, etc.
-    while (init != "")
-    {
-	c.command  = init.before('\n');
-	c.callback = 0;
-	c.verbose  = false;
-	c.check    = false;
-
-	if (is_file_cmd(c.command, gdb) || is_core_cmd(c.command))
-	{
-	    // Give feedback on the files used and their state
-	    c.verbose = true;
-	    c.check = true;
-	}
-
-	// Translate breakpoint numbers to the current base.
-	fix_bp_numbers(c.command);
-	gdb_command(c);
-
-	init = init.after('\n');
-    }
-
-    // One last command to clear the delay and set up breakpoints
-    c.command  = "# reset";
-    c.check    = true;
+    // One last command to clear the delay
+    c.command  = "# dummy";
     c.callback = delete_delay;
     c.data     = (void *)(Delay *)delay_ptr;
+    c.priority = COMMAND_PRIORITY_BATCH;
+    c.check    = true;
     gdb_command(c);
 }
 

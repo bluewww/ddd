@@ -302,9 +302,8 @@ void start_gdb()
     VoidArray dummy;
 
     // Fetch initialization commands
-    String init;
-    String settings;
-
+    string init;
+    string settings;
     switch (gdb->type())
     {
     case GDB:
@@ -322,18 +321,12 @@ void start_gdb()
 	settings = str(app_data.xdb_settings);
 	break;
     }
+    string restart = str(app_data.restart_commands);
 
-    // Fetch restart commands
-    String restart = str(app_data.restart_commands);
-
-    string commands(init);
-    commands += restart;
-    commands += settings;
-
-    // Place individual commands in CMDS array
-    while (commands != "")
+    // Place init commands in CMDS array
+    while (init != "")
     {
-	string command = commands.before('\n');
+	string command = init.before('\n');
 	if (is_graph_cmd(command))
 	{
 	    // To be handled later by DDD - enqueue in command queue
@@ -344,14 +337,13 @@ void start_gdb()
 	else
 	{
 	    // Process right now
-	    fix_bp_numbers(command);
 	    cmds += command;
 	}
-	commands = commands.after('\n');
+	init = init.after('\n');
     }
     plus_cmd_data->n_init = cmds.size();
 
-    // Add some additional commands with reply handling
+    // Add some additional init commands with reply handling
     switch (gdb->type())
     {
     case GDB:
@@ -444,6 +436,40 @@ void start_gdb()
 		     cmds.size(),
 		     plusOQAC,
 		     (void*)plus_cmd_data);
+
+    // Enqueue restart and settings commands
+    init_session(restart, settings);
+}
+
+// Enqueue init commands
+void init_session(const string& restart, const string& settings)
+{
+    string init_commands = restart + settings;
+
+    // Process all start-up commands.  These should load the file, etc.
+    while (init_commands != "")
+    {
+	Command c(init_commands.before('\n'), Widget(0), OQCProc(0));
+	c.priority = COMMAND_PRIORITY_INIT;
+	if (is_file_cmd(c.command, gdb) || is_core_cmd(c.command))
+	{
+	    // Give feedback on the files used and their state
+	    c.verbose = true;
+	    c.check = true;
+	}
+
+	// Translate breakpoint numbers to the current base.
+	fix_bp_numbers(c.command);
+	gdb_command(c);
+
+	init_commands = init_commands.after('\n');
+    }
+
+    // One last command to clear the delay and set up breakpoints
+    Command c("# reset");
+    c.priority = COMMAND_PRIORITY_INIT;
+    c.verbose  = false;
+    gdb_command(c);
 }
 
 

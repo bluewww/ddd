@@ -65,5 +65,8 @@ bool is_known_command(const string& answer);
 // Replace all occurrences of `@N@' by N + the current breakpoint base.
 void fix_bp_numbers(string& cmd);
 
+// Send commands to initialize a session
+void init_session(const string& restart, const string& settings);
+
 #endif // _DDD_comm_manag_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
