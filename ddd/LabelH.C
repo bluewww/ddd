@@ -122,6 +122,13 @@ XmLabelHackClassRec xmLabelHackClassRec =
 	0,			// syn_resources
 	0,			// num_syn_resources
 	0			// extension
+#if defined(__sgi)
+	// Paul Sydney <sydney@ulua.mhpcc.af.mil> reports that Motif
+	// on an SGI Indy running IRIX 6.5 has an extra
+	// `_SG_vendorExtension' field.  If this is not initialized
+	// explicitly, then EGCS 1.1 gives a warning.
+	, 0
+#endif
     },
     {	/* xmLabelClass */
 #if XmVersion >= 1002
