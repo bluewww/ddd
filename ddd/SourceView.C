@@ -135,6 +135,7 @@ extern "C" {
 #include "windows.h"
 #include "wm.h"
 #include "dbx-lookup.h"
+#include "java.h"
 #include "question.h"
 #include "status.h"
 #include "file.h"
@@ -1781,14 +1782,6 @@ String SourceView::read_remote(const string& file_name, long& length,
     return text;
 }
 
-#define JAVA_SUFFIX ".java"
-
-static void strip_java_suffix(string& s)
-{
-    if (s.contains(JAVA_SUFFIX, -1))
-	s = s.before(int(int(s.length()) - strlen(JAVA_SUFFIX)));
-}
-
 // Read class CLASS_NAME
 String SourceView::read_class(const string& class_name, 
 			      string& file_name, SourceOrigin& origin,
@@ -1797,68 +1790,37 @@ String SourceView::read_class(const string& class_name,
     StatusDelay delay("Loading class " + quote(class_name));
     length = 0;
 
-    string base = class_name;
-    strip_java_suffix(base);
-    base.gsub(".", "/");
-    base += JAVA_SUFFIX;
-
-    string use = class_path();
-    while (use != "")
+    file_name = java_class_file(class_name);
+    
+    String text = 0;
+    if (remote_gdb())
+	text = read_remote(file_name, length, true);
+    else
     {
-	string loc;
-	if (use.contains(':'))
-	    loc = use.before(':');
-	else
-	    loc = use;
-	use = use.after(':');
-
-	if (loc.contains(".jar", -1) ||
-	    loc.contains(".zip", -1))
-	{
-	    // Archive file.
-	    // Should we search this for classes? (FIXME)
-	}
-	else
-	{
-	    if (loc == "" || loc == ".")
-	    {
-		file_name = base;
-	    }
-	    else
-	    {
-		if (!loc.contains('/', -1))
-		    loc += '/';
-		file_name = loc + base;
-	    }
-		    
-	    String text = 0;
-	    if (remote_gdb())
-		text = read_remote(file_name, length, true);
-	    else
-	    {
-		file_name = full_path(file_name);
-		text = read_local(file_name, length, true);
-	    }
-
-	    if (text != 0 && length != 0)
-	    {
-		// Save class name for further reference
-		source_name_cache[file_name] = class_name;
-		origin = remote_gdb() ? ORIGIN_REMOTE : ORIGIN_LOCAL;
-		return text;
-	    }
-	}
+	file_name = full_path(file_name);
+	text = read_local(file_name, length, true);
     }
 
-    file_name = class_name;
-    origin = ORIGIN_NONE;
-    delay.outcome = "failed";
-    if (!silent)
-	post_file_error(class_name,
-			"Cannot access class " + quote(class_name),
-			"class_error", source_text_w);
+    if (text != 0 && length != 0)
+    {
+	// Save class name for further reference
+	source_name_cache[file_name] = class_name;
+	origin = remote_gdb() ? ORIGIN_REMOTE : ORIGIN_LOCAL;
+	return text;
+    }
+    else
+    {
+	// Could not load class
+	file_name = class_name;
+	origin = ORIGIN_NONE;
+	delay.outcome = "failed";
+	if (!silent)
+	    post_file_error(class_name,
+			    "Cannot access class " + quote(class_name),
+			    "class_error", source_text_w);
 
-    return 0;
+	return 0;
+    }
 }
 
 

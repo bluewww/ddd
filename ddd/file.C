@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD file functions
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -51,6 +51,7 @@ char file_rcsid[] =
 #include "ddd.h"
 #include "filetype.h"
 #include "glob.h"
+#include "java.h"
 #include "mydialogs.h"
 #include "post.h"
 #include "question.h"
@@ -1137,32 +1138,6 @@ static void warn_if_no_program(Widget popdown)
 // Classes (JDB only)
 //-----------------------------------------------------------------------------
 
-static string class_id(const string& s)
-{
-    return s;
-}
-
-static void sortClasses(StringArray& a)
-{
-    // Shell sort -- simple and fast
-    int h = 1;
-    do {
-	h = h * 3 + 1;
-    } while (h <= a.size());
-    do {
-	h /= 3;
-	for (int i = h; i < a.size(); i++)
-	{
-	    string v = a[i];
-	    int j;
-	    for (j = i; j >= h && class_id(a[j - h]) > class_id(v); j -= h)
-		a[j] = a[j - h];
-	    if (i != j)
-		a[j] = v;
-	}
-    } while (h != 1);
-}
-
 // Get the selected class ids
 static void get_classes(Widget selectionList, StringArray& classids)
 {
@@ -1186,9 +1161,7 @@ static void get_classes(Widget selectionList, StringArray& classids)
 	string item(_item);
 	XtFree(_item);
 
-	string c = class_id(item);
-	if (c != "")
-	    classids += c;
+	classids += item;
     }
 }
 
@@ -1224,81 +1197,11 @@ static void SelectClassCB(Widget w, XtPointer client_data,
 	set_status("Class " + cls);
 }
 
-#define JAVA_SUFFIX ".java"
-
-static void strip_java_suffix(string& s)
-{
-    if (s.contains(JAVA_SUFFIX, -1))
-	s = s.before(int(int(s.length()) - strlen(JAVA_SUFFIX)));
-}
-
 static void update_classes(Widget classes)
 {
     StatusDelay delay("Getting list of classes");
     StringArray classes_list;
-
-    string use = source_view->class_path();
-    while (use != "")
-    {
-	string base = "*" JAVA_SUFFIX;
-
-	string loc;
-	if (use.contains(':'))
-	    loc = use.before(':');
-	else
-	    loc = use;
-	use = use.after(':');
-
-	if (loc.contains(".jar", -1) ||
-	    loc.contains(".zip", -1))
-	{
-	    // Archive file.
-	    // Should we search this for classes? (FIXME)
-	}
-	else
-	{
-	    string mask;
-
-	    if (loc == "" || loc == ".")
-	    {
-		mask = base;
-	    }
-	    else
-	    {
-		if (!loc.contains('/', -1))
-		    loc += '/';
-		mask = loc + base;
-	    }
-
-	    char **files = glob_filename(mask);
-	    if (files == (char **)0)
-	    {
-		cerr << mask << ": glob failed\n";
-	    }
-	    else if (files == (char **)-1)
-	    {
-#if 0
-		// No *.java in directory
-		post_error(string(mask) + ": " + strerror(errno));
-#endif
-	    }
-	    else
-	    {
-		for (int i = 0; files[i] != 0; i++)
-		{
-		    string file = files[i];
-		    file = basename(file);
-		    strip_java_suffix(file);
-		    classes_list += file;
-
-		    free(files[i]);
-		}
-		free((char *)files);
-	    }
-	}
-    }
-
-    sortClasses(classes_list);
+    get_java_classes(classes_list);
 
     // Now set the selection.
     bool *selected = new bool[classes_list.size()];
