@@ -555,9 +555,11 @@ void SourceView::line_popup_temp_n_contCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
+#if 0				// GDB `until' only works in the current frame
 	gdb_command("until " + current_source_name() + ":" + 
 		    itostring(line_nr), w);
 	break;
+#endif
     
     case DBX:
 	line_popup_set_tempCB(w, client_data, call_data);
@@ -579,8 +581,10 @@ void SourceView::address_popup_temp_n_contCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
+#if 0				// GDB `until' only works in the current frame
 	gdb_command("until *" + address, w);
 	break;
+#endif
     
     case DBX:
 	line_popup_set_tempCB(w, client_data, call_data);
