@@ -1097,7 +1097,6 @@ D-38092 Braunschweig
 .br
 .DE
 
-
 .\" ---------------
 .SH "OPTIONS"
 .\" ---------------
@@ -1105,6 +1104,7 @@ D-38092 Braunschweig
 You can use the following options when starting \s-2@DDD@\s+2.  All
 options may be abbreviated, as long as they are unambiguous.  Options
 not listed here are passed to the underlying debugger.
+
 .TP
 .B \-\-attach\-windows
 Attach the source and data windows to the command window, creating one
