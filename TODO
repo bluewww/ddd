@@ -359,4 +359,9 @@ Volunteers for these and other projects are welcome!
 
 340 Have `Display Array Slice', a friendly interface to the `@' operator.
 
-341 (Insert new project ideas here)
+341 Have a menu bar for all non-transient windows (esp. Reference,
+    News, and License).
+
+342 Add a menu bar for the execution window, using swallowing.
+
+343 (Insert new project ideas here)

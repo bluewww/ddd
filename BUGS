@@ -153,9 +153,11 @@ Volunteers for fixing these and other bugs are welcome!
 
 322*Finish Plots:
     - Give a diagnostic when trying to plot non-array data
-    - Add menus for printing and line styles.
-
-324 Have a menu bar for all non-transient windows (esp. Reference,
-    News, and License).
+    - Add menu for printing
+    - Add menu for line styles
+    - Add diagnostics when Gnuplot could not be invoked
+    - Add Gnuplot console
+    - Make swallowing (decorating) optional
+    - Destroying plotter decorations is risky; better re-use them
 
 325 (Insert new bugs here)
