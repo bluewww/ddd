@@ -167,6 +167,8 @@ ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-1995
 autoconf -l ddd
 automake --gnu --include-deps --add-missing --verbose
 (cd ddd && autoconf && automake --foreign --add-missing --verbose)
+(cd vsllib && autoconf -l ../ddd && automake --foreign --verbose)
+(cd themes && autoconf -l ../ddd && automake --foreign --verbose)
 (cd readline && autoconf)
 (cd termcap && autoconf)
 
