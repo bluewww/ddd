@@ -234,6 +234,8 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_givenfile_command(false),
       _has_cont_sig_command(false),
       _has_examine_command(tp == GDB || tp == DBX),
+      _has_rerun_command(tp == DBX),
+      _rerun_clears_args(false),
       _program_language((tp == JDB) ? LANGUAGE_JAVA :
 			(tp == PYDB) ? LANGUAGE_PYTHON : 
 			LANGUAGE_C),
@@ -313,6 +315,8 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_givenfile_command(gdb.has_givenfile_command()),
       _has_cont_sig_command(gdb.has_cont_sig_command()),
       _has_examine_command(gdb.has_examine_command()),
+      _has_rerun_command(gdb.has_rerun_command()),
+      _rerun_clears_args(gdb.rerun_clears_args()),
       _program_language(gdb.program_language()),
       _verbatim(gdb.verbatim()),
       _recording(gdb.recording()),
@@ -2098,6 +2102,66 @@ string GDBAgent::nop_command(string comment) const
 {
     return "# " + comment;	// Works for all inferior debuggers
 }
+
+// Run program with given ARGS
+string GDBAgent::run_command(string args) const
+{
+    if (args != "" && !args.contains(' ', 0))
+	args = " " + args;
+
+    switch (type())
+    {
+    case GDB:
+    {
+	string c;
+	if (args == "")
+	    c = "set args\n";
+	return c + "run" + args;
+    }
+
+    case DBX:
+	if (args == "" && has_rerun_command() && rerun_clears_args())
+	    return "rerun";
+	else
+	    return "run" + args;
+
+    case JDB:
+    case PYDB:
+	return "run" + args;
+
+    case XDB:
+	if (args == "")
+	    return "R";
+	else
+	    return "r" + args;
+    }
+
+    return "";			// Never reached
+}
+
+// Re-run program with previous arguments
+string GDBAgent::rerun_command() const
+{
+    switch (type())
+    {
+    case GDB:
+    case JDB:
+    case PYDB:
+	return "run";
+
+    case DBX:
+	if (has_rerun_command() && !rerun_clears_args())
+	    return "rerun";
+	else
+	    return "run";
+
+    case XDB:
+	return "r";
+    }
+
+    return "";			// Never reached
+}
+
 
 // Return PREFIX + EXPR, parenthesizing EXPR if needed
 string GDBAgent::prepend_prefix(const string& prefix, const string& expr)

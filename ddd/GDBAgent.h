@@ -190,6 +190,8 @@ private:
     bool _has_givenfile_command;
     bool _has_cont_sig_command;
     bool _has_examine_command;
+    bool _has_rerun_command;
+    bool _rerun_clears_args;
 
     ProgramLanguage _program_language; // Current program language
 
@@ -390,6 +392,14 @@ public:
     bool has_examine_command() const   { return _has_examine_command; }
     bool has_examine_command(bool val) { return _has_examine_command = val; }
 
+    // True if debugger has `rerun' command
+    bool has_rerun_command() const   { return _has_rerun_command; }
+    bool has_rerun_command(bool val) { return _has_rerun_command = val; }
+
+    // True if `rerun' command clears current arguments
+    bool rerun_clears_args() const   { return _rerun_clears_args; }
+    bool rerun_clears_args(bool val) { return _rerun_clears_args = val; }
+
     // Current program language
     ProgramLanguage program_language() const   { return _program_language; }
     ProgramLanguage program_language(ProgramLanguage val) 
@@ -406,7 +416,8 @@ public:
     // True if debugger can enable breakpoints
     bool has_enable_command() const
     { 
-	return type() == GDB || type() == XDB || type() == PYDB || has_handler_command();
+	return type() == GDB || type() == XDB || type() == PYDB || 
+	    has_handler_command();
     }
     bool has_disable_command() const
     {
@@ -416,7 +427,8 @@ public:
     // True if debugger can set ignore counts on breakpoints
     bool has_ignore_command() const
     {
-	return type() == GDB || type() == XDB || type() == PYDB || has_handler_command();
+	return type() == GDB || type() == XDB || type() == PYDB || 
+	    has_handler_command();
     }
 
     // True if debugger can set conditions on breakpoints
@@ -428,14 +440,16 @@ public:
     // True if debugger can delete breakpoints by number
     bool has_delete_command() const
     {
-	return type() == GDB || type() == XDB || type() == DBX || type() == PYDB;
+	return type() == GDB || type() == XDB || 
+	    type() == DBX || type() == PYDB;
     }
 
     // True if debugger has volatile breakpoints (i.e. breakpoints may
     // change at any time)
     bool has_volatile_breakpoints() const
     {
-	return type() == GDB || type() == XDB || type() == DBX || type() == PYDB;
+	return type() == GDB || type() == XDB || 
+	    type() == DBX || type() == PYDB;
     }
 
     // True if debugger supports I/O redirection
@@ -483,7 +497,8 @@ public:
     // True if debugger supports `cd'
     bool has_cd_command() const
     {
-	return type() == GDB || type() == XDB || type() == DBX || type() == PYDB;
+	return type() == GDB || type() == XDB || 
+	    type() == DBX || type() == PYDB;
     }
 
     // True if debugger supports `shell'
@@ -495,13 +510,15 @@ public:
     // True if debugger supports temporary breakpoints
     bool has_temporary_breakpoints() const
     {
-	return type() == GDB || type() == XDB || type() == PYDB || has_when_command();
+	return type() == GDB || type() == XDB || type() == PYDB || 
+	    has_when_command();
     }
 
     // True if debugger supports breakpoint conditions
     bool has_breakpoint_conditions() const
     {
-	return type() == GDB || type() == XDB || type() == DBX || type() == PYDB;
+	return type() == GDB || type() == XDB || 
+	    type() == DBX || type() == PYDB;
     }
 
     // True if debugger has typed pointers, as in `(TYPE)0x0'
@@ -635,9 +652,15 @@ public:
     string condition_command(string bp, string expr) const; 
 				                    // GDB: "cond BP EXPR"
     string shell_command(string cmd) const;	    // GDB: "shell CMD"
-    string debug_command(string program = "") const; // GDB: "file PROGRAM"
+    string debug_command(string file = "") const;   // GDB: "file FILE"
     string signal_command(int sig) const;           // GDB: "signal SIG"
     string nop_command(string comment = "") const;  // GDB: "# comment"
+
+    // Run program with given arguments
+    string run_command(string args) const;	    // GDB: "run ARGS"
+
+    // Run program, re-using current arguments
+    string rerun_command() const;                   // GDB: "run"
 
     // Default history file
     string history_file() const;                    // GDB: "~/.gdb_history"

@@ -220,32 +220,16 @@ static void gdbRunDCB(Widget, XtPointer, XtPointer)
     string args(_args);
     XtFree(_args);
 
-    if (args != "")
-	args = " " + args;
-
-    switch (gdb->type())
+    string cmd = gdb->run_command(args);
+    while (cmd != "")
     {
-    case GDB:
-	if (args == "")
-	    gdb_command("set args", run_dialog);
-	gdb_command("run" + args, run_dialog);
-	break;
-
-    case DBX:
-	gdb_command("rerun" + args, run_dialog);
-	break;
-
-    case JDB:
-    case PYDB:
-	gdb_command("run " + args, run_dialog);
-	break;
-
-    case XDB:
-	if (args == "")
-	    gdb_command("R", run_dialog);
+	string c;
+	if (cmd.contains('\n'))
+	    c = cmd.before('\n');
 	else
-	    gdb_command("r" + args, run_dialog);
-	break;
+	    c = cmd;
+	cmd = cmd.after('\n');
+	gdb_command(c, run_dialog);
     }
 }
 
@@ -325,7 +309,6 @@ void gdbMakeAgainCB(Widget, XtPointer, XtPointer)
 {
     gdb_command(gdb->make_command(last_make_argument));
 }
-    
 
 // Create `Make' dialog
 void gdbMakeCB(Widget w, XtPointer, XtPointer)
@@ -435,6 +418,9 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
 
 void add_running_arguments(string& cmd)
 {
+    if (cmd == "run")
+	cmd = gdb->rerun_command();
+
     if (gdb->type() != JDB || !is_run_cmd(cmd))
 	return;
 

@@ -264,6 +264,7 @@ public:
     bool     config_givenfile;         // try 'help givenfile'
     bool     config_cont_sig;          // try 'help cont'
     bool     config_examine;           // try 'help examine'
+    bool     config_rerun;             // try 'help rerun'
     bool     config_xdb;	       // try XDB settings
     bool     config_output;            // try 'output'
     bool     config_program_language;  // try 'show language'
@@ -319,6 +320,7 @@ public:
 	  config_givenfile(false),
 	  config_cont_sig(false),
 	  config_examine(false),
+	  config_rerun(false),
 	  config_xdb(false),
 	  config_output(false),
 	  config_program_language(false),
@@ -520,6 +522,8 @@ void start_gdb()
 	extra_data->config_cont_sig = true;
 	cmds += "help examine";
 	extra_data->config_examine = true;
+	cmds += "help rerun";
+	extra_data->config_rerun = true;
 	cmds += "language";
 	extra_data->config_program_language = true;
 
@@ -1276,6 +1280,7 @@ void send_gdb_command(string cmd, Widget origin,
     assert(!extra_data->config_givenfile);
     assert(!extra_data->config_cont_sig);
     assert(!extra_data->config_examine);
+    assert(!extra_data->config_rerun);
     assert(!extra_data->config_xdb);
     assert(!extra_data->config_output);
     assert(!extra_data->config_program_language);
@@ -1721,7 +1726,7 @@ static void command_completed(void *data)
 
 	    if (verbose)
 		gdb_out(not_my_displays);
-	    
+
 	    cmd_data->disp_buffer->clear();
 	}
     }
@@ -2092,6 +2097,11 @@ static void process_config_delete_comma(string& answer)
 static void process_config_err_redirection(string& answer)
 {
     gdb->has_err_redirection(answer.contains(">&"));
+
+    // If `help run' contains `with the current arguments', then `run'
+    // without args uses the current args.  Hence, `rerun' without
+    // args must run the program without args.  SUN DBX feature.
+    gdb->rerun_clears_args(answer.contains("with the current arg"));
 }
 
 static void process_config_givenfile(string& answer)
@@ -2107,6 +2117,11 @@ static void process_config_cont_sig(string& answer)
 static void process_config_examine(string& answer)
 {
     gdb->has_examine_command(is_known_command(answer));
+}
+
+static void process_config_rerun(string& answer)
+{
+    gdb->has_rerun_command(is_known_command(answer));
 }
 
 static void process_config_tm(string& answer)
@@ -2250,6 +2265,9 @@ static void extra_completed (const StringArray& answers,
 
     if (extra_data->config_examine)
 	process_config_examine(answers[qu_count++]);
+
+    if (extra_data->config_rerun)
+	process_config_rerun(answers[qu_count++]);
 
     if (extra_data->config_output)
 	process_config_output(answers[qu_count++]);

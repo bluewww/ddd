@@ -168,6 +168,9 @@ Bug fixes
   processing large chunks of data.  In fact, the time complexity of
   data processing algorithms has been improved from O(n^2) to O(n).
 
+- On DBX (except Sun DBX), the `Run' button is now bound to the
+  `rerun' command, re-using program arguments.
+
 - Value tips for large arrays no longer cause significant delays.
 
 - Improved redirection handling.  You can redirect stderr away from
