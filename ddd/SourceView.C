@@ -1919,6 +1919,12 @@ SourceView::SourceView (XtAppContext app_context,
 		      XmNmultipleSelectionCallback,
 		      UpdateBreakpointButtonsCB,
 		      0);
+#if 0
+	XtAddCallback(breakpoint_list_w,
+		      XmNmultipleSelectionCallback,
+		      LookupBreakpointCB,
+		      0);
+#endif
 	XtAddCallback(breakpoint_list_w,
 		      XmNextendedSelectionCallback,
 		      UpdateBreakpointButtonsCB,
@@ -2218,6 +2224,10 @@ void SourceView::process_info_bp (string& info_output)
     // Skip header
     if (gdb->type() == GDB)
 	info_output = info_output.after ('\n');
+
+    if (info_output == "")
+	info_output = "No breakpoints.";
+
     bool changed = false;
 
     while (info_output != "") 
@@ -2469,7 +2479,11 @@ void SourceView::lookup(string s)
 	    break;
 
 	case DBX:
-	    gdb_command("func " + s);
+	    {
+		string pos = dbx_lookup(s);
+		if (pos != "")
+		    show_position(pos);
+	    }
 	    break;
 
 	case XDB:
@@ -2919,7 +2933,7 @@ void SourceView::startSelectWordAct (Widget text_w, XEvent* e,
 {
     XtCallActionProc(text_w, "grab-focus", e, params, *num_params);
 
-    if (e->type != ButtonPress)
+    if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
     
     XButtonEvent *event = (XButtonEvent *) e;
@@ -2945,7 +2959,7 @@ void SourceView::endSelectWordAct (Widget text_w, XEvent* e,
 {
     XtCallActionProc(text_w, "extend-end", e, params, *num_params);
 
-    if (e->type != ButtonPress)
+    if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
     
     XButtonEvent *event = (XButtonEvent *) e;
@@ -2962,7 +2976,7 @@ void SourceView::endSelectWordAct (Widget text_w, XEvent* e,
     selection_pos      = pos;
     selection_time     = time(e);
 
-    XtAppAddTimeOut(XtAppContext(text_w), 0, setSelection,
+    XtAppAddTimeOut(XtWidgetToApplicationContext(text_w), 0, setSelection,
 		   (XtPointer)text_w);
 }
 
@@ -2971,7 +2985,7 @@ void SourceView::endSelectWordAct (Widget text_w, XEvent* e,
 //----------------------------------------------------------------------------
 void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 {
-    if (e->type != ButtonPress)
+    if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
 
     if (!is_source_widget(w) && !is_code_widget(w))
@@ -2996,6 +3010,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     }
 
 
+    // Get the position
     Widget text_w;
     if (is_source_widget(w))
 	text_w = source_text_w;
@@ -3005,6 +3020,21 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	return;
 
     XmTextPosition pos = XmTextXYToPos (text_w, x, y);
+
+    // Move the insertion cursor to this position, but don't disturb the
+    // selection
+    XmTextPosition left, right;
+    Boolean have_selection = XmTextGetSelectionPosition(text_w, &left, &right);
+    if (have_selection && pos >= left && pos <= right)
+    {
+	SetInsertionPosition(text_w, pos);
+	XmTextSetSelection(text_w, left, right, time(e));
+    }
+    else
+    {
+	XmTextClearSelection(text_w, time(e));
+	SetInsertionPosition(text_w, pos);
+    }
 
     static int line_nr;
     bool in_text;
@@ -3688,7 +3718,6 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	    if (!gdb->has_frame_command())
 	    {
 		// Some DBXes lack a `frame' command.  Use this kludge instead.
-
 		string reply = gdb_question("func main");
 		if (reply == NO_GDB_ANSWER)
 		{
@@ -3751,9 +3780,24 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 		    post_gdb_busy(w);
 		    return;
 		}
-		pos = gdb_question("file");
-		strip_final_blanks(pos);	// remove trailing newline
-		pos = pos + ":" + gdb_question("line");
+		
+		string file = gdb_question("file");
+
+		// Simple sanity check
+		strip_final_blanks(file);
+
+		if (file.contains('\n'))
+		    file = file.before('\n');
+		if (file.contains(' '))
+		    file = "";
+
+		if (file != "")
+		{
+		    string listing = gdb_question("list");
+		    int line = atoi(listing);
+		    if (line >= 1)
+			pos = pos + ":" + itostring(line);
+		}
 	    }
 
 	    if (pos != "")
@@ -4157,7 +4201,7 @@ void SourceView::MoveCursorToGlyphPosCB(Widget w,
 {
     XmPushButtonCallbackStruct *info = (XmPushButtonCallbackStruct *)call_data;
     XEvent *e = info->event;
-    if (e->type != ButtonPress)
+    if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
 
     Widget text_w;
