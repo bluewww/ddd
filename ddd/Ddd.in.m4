@@ -1570,12 +1570,12 @@ Ddd*tip_dialog.okLabelString: 		Close
 
 ! Titles
 Ddd*help_popup.title:           DDD Help
-Ddd*manual_help_popup.title:    DDD Reference
-Ddd*manual_help_popup.iconName: DDD Reference
-Ddd*license_popup.title:        DDD License
-Ddd*license_popup.iconName:     DDD License
-Ddd*news_popup.title:           DDD News
-Ddd*news_popup.iconName:     	DDD News
+Ddd*manual_help.title:    	DDD Reference
+Ddd*manual_help.iconName: 	DDD Reference
+Ddd*license.title:        	DDD License
+Ddd*license.iconName:     	DDD License
+Ddd*news.title:           	DDD News
+Ddd*news.iconName:     		DDD News
 
 ! Icons
 Ddd*help_popup.help.symbolPixmap: ddd
@@ -1666,7 +1666,7 @@ Ddd*XmSash.traversalOn:			off
 Ddd*manual_help*title.labelString:	DDD Reference
 Ddd*manual_help*title.alignment:	XmALIGNMENT_BEGINNING
 
-Ddd*manual_help*area.allowResize:	on
+Ddd*help_area.allowResize:		on
 
 Ddd*manual_help*index.selectionPolicy:	XmSINGLE_SELECT
 Ddd*manual_help*index.visibleItemCount:	5
@@ -1674,33 +1674,30 @@ Ddd*manual_help*index.visibleItemCount:	5
 Ddd*manual_help*text.rows:		25
 Ddd*manual_help*text.wordWrap:		on
 Ddd*manual_help*text.scrollHorizontal:	off
-Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
-Ddd*manual_help*arg_label.labelString:	():
+Ddd*help_area*findBackward.labelString: 	     LBL_FIND_BACKWARD
+Ddd*help_area*findBackward.labelType:              XmPIXMAP
+Ddd*help_area*findBackward.labelPixmap:            find_backward
+Ddd*help_area*findBackward.labelInsensitivePixmap: find_backward-xx
+Ddd*help_area*findBackward.armPixmap:              find_backward-arm
+Ddd*help_area*findBackward.highlightPixmap:        find_backward-hi
 
-Ddd*manual_help*findBackward.labelString: 	     LBL_FIND_BACKWARD
-Ddd*manual_help*findBackward.labelType:              XmPIXMAP
-Ddd*manual_help*findBackward.labelPixmap:            find_backward
-Ddd*manual_help*findBackward.labelInsensitivePixmap: find_backward-xx
-Ddd*manual_help*findBackward.armPixmap:              find_backward-arm
-Ddd*manual_help*findBackward.highlightPixmap:        find_backward-hi
+Ddd*help_area*findBackward.tipString:	  \
+@rm Find previous LBL(()) in text
+Ddd*help_area*findBackward.documentationString:	\
+@rm Search the previous occurrence of LBL(()) in the text
 
-Ddd*manual_help*findBackward.tipString:	  \
-@rm Find previous LBL(()) in manual
-Ddd*manual_help*findBackward.documentationString:	\
-@rm Search the previous occurrence of LBL(()) in the manual
+Ddd*help_area*findForward.labelString:  	    LBL_FIND_FORWARD
+Ddd*help_area*findForward.labelType:              XmPIXMAP
+Ddd*help_area*findForward.labelPixmap:            find_forward
+Ddd*help_area*findForward.labelInsensitivePixmap: find_forward-xx
+Ddd*help_area*findForward.armPixmap:              find_forward-arm
+Ddd*help_area*findForward.highlightPixmap:        find_forward-hi
 
-Ddd*manual_help*findForward.labelString:  	    LBL_FIND_FORWARD
-Ddd*manual_help*findForward.labelType:              XmPIXMAP
-Ddd*manual_help*findForward.labelPixmap:            find_forward
-Ddd*manual_help*findForward.labelInsensitivePixmap: find_forward-xx
-Ddd*manual_help*findForward.armPixmap:              find_forward-arm
-Ddd*manual_help*findForward.highlightPixmap:        find_forward-hi
-
-Ddd*manual_help*findForward.tipString:	  \
-@rm Find next LBL(()) in manual
-Ddd*manual_help*findForward.documentationString:	\
-@rm Search the next occurrence of LBL(()) in the manual
+Ddd*help_area*findForward.tipString:	  \
+@rm Find next LBL(()) in text
+Ddd*help_area*findForward.documentationString:	\
+@rm Search the next occurrence of LBL(()) in the text
 
 Ddd*manual_help*helpString: \
 WIDGET([DDD] Manual Browser)\n\
@@ -1725,13 +1722,17 @@ Ddd*license*title.alignment:	        XmALIGNMENT_BEGINNING
 Ddd*license*text.rows:	      		25
 Ddd*license*text.wordWrap:	        on
 Ddd*license*text.scrollHorizontal:    	off
-Ddd*license*scrollBarDisplayPolicy:   	XmAS_NEEDED
 
 Ddd*license*helpString: \
 WIDGET([DDD] License)\n\
 \n\
 The DDD License, a GNU General Public License, describes the terms\n\
 and conditions for copying, distributing and modifying DDD.\n\
+\n\
+To find a string in the license, enter it in the LBL(()) argument field \
+and press KEY_RETURN.\n\
+Click on LBL_FIND_BACKWARD to search the next occurrence of LBL(()).\n\
+Click on LBL_FIND_FORWARD to search the previous occurrence of LBL(()).\n\
 \n\
 Please see section 11, TEXT(NO WARRANTY), for the various kinds of warranty\n\
 you do not have.
@@ -1745,12 +1746,16 @@ Ddd*news*title.alignment:	        XmALIGNMENT_BEGINNING
 Ddd*news*text.rows:	      		25
 Ddd*news*text.wordWrap:	        	on
 Ddd*news*text.scrollHorizontal:    	off
-Ddd*news*scrollBarDisplayPolicy:   	XmAS_NEEDED
 
 Ddd*news*helpString: \
 WIDGET([DDD] News)\n\
 \n\
-What's new in this DDD release relative to previous releases.
+What's new in this DDD release relative to previous releases.\n\
+\n\
+To find a string in the text, enter it in the LBL(()) argument field \
+and press KEY_RETURN.\n\
+Click on LBL_FIND_BACKWARD to search the next occurrence of LBL(()).\n\
+Click on LBL_FIND_FORWARD to search the previous occurrence of LBL(()).
 
 
 

@@ -329,10 +329,6 @@ Volunteers for these and other projects are welcome!
     <flechsig@itp.uni-hannover.de> suggests a pop-up with some
     check-boxes where each box is one bit.
 
-320 Have an undo/redo facility, e.g. for breakpoints and displays.
-    All we need is to generate an `undoing' command for each command
-    we send to GDB.
-
 321 Allow `()' expansion in auto-commands.
 
 322 Add support for the Perl debugger.
@@ -359,9 +355,9 @@ Volunteers for these and other projects are welcome!
 
 340 Have `Display Array Slice', a friendly interface to the `@' operator.
 
-341 Have a menu bar for all non-transient windows (esp. Reference,
-    News, and License).
-
 342 Add a menu bar for the execution window, using swallowing.
 
-343 (Insert new project ideas here)
+343 Add a progress meter (including `Cancel' button) for long display
+    updates.
+
+344 (Insert new project ideas here)

@@ -53,6 +53,7 @@ char HelpCB_rcsid[] =
 
 #include <Xm/Xm.h>
 #include <Xm/CascadeB.h>
+#include <Xm/MainW.h>
 #include <Xm/MessageB.h>
 #include <Xm/SelectioB.h>
 #include <Xm/RowColumn.h>
@@ -75,6 +76,7 @@ char HelpCB_rcsid[] =
 #include "strclass.h"
 #include "cook.h"
 #include "events.h"
+#include "exit.h"
 #include "verify.h"
 #include "Delay.h"
 #include "StringA.h"
@@ -806,24 +808,46 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
     ManualStringHelpCB(widget, null, text);
 }
 
+
+// Close action from menu
+static void CloseCB(Widget, XtPointer client_data, XtPointer)
+{
+    Widget shell = Widget(client_data);
+    DestroyWhenIdle(shell);
+}
+
 // Create an empty dialog within a top-level-shell
+// FIXME: This should be part of core DDD!
 static Widget create_text_dialog(Widget parent, String name, 
 				 Arg *args, int arg)
 {
-    string shell_name = string(name) + "_popup";
-    Widget shell = verify(XtCreateWidget(shell_name.chars(), 
-					 topLevelShellWidgetClass,
+    Widget shell = verify(XtCreateWidget(name, topLevelShellWidgetClass,
 					 parent, args, arg));
 
-    XtSetArg(args[arg], XmNdialogType, XmDIALOG_PROMPT); arg++;
-    Widget w = XmCreateSelectionBox(shell, name, args, arg);
+    arg = 0;
+    Widget w = XmCreateMainWindow(shell, name, args, arg);
     XtManageChild(w);
 
-    XtUnmanageChild(XmSelectionBoxGetChild(w, XmDIALOG_CANCEL_BUTTON));
-    XtUnmanageChild(XmSelectionBoxGetChild(w, XmDIALOG_TEXT));
-    XtUnmanageChild(XmSelectionBoxGetChild(w, XmDIALOG_SELECTION_LABEL));
+    static MMDesc file_menu[] = 
+    {
+	{ "close", MMPush, { CloseCB } },
+	{ "exit",  MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }},
+	MMEnd
+    };
 
-    XtAddCallback(w, XmNokCallback, DestroyThisCB, shell);
+    extern MMDesc help_menu[];
+
+    static MMDesc menubar[] = 
+    {
+	{ "file",     MMMenu, MMNoCB, file_menu },
+	{ "help",     MMMenu | MMHelp, MMNoCB, help_menu },
+	MMEnd
+    };
+
+    /* Widget menubar_w = */ MMcreateMenuBar(w, "menubar", menubar);
+    MMaddCallbacks(menubar, XtPointer(shell));
+    MMaddHelpCallback(menubar, ImmediateHelpCB);
+    Delay::register_shell(shell);
 
     return w;
 }
@@ -1031,38 +1055,44 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
     Widget text_dialog = create_text_dialog(toplevel, "manual_help", 
 					    args, arg);
-    
-    if (lesstif_version <= 79)
-	XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,
-					       XmDIALOG_APPLY_BUTTON));
 
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,        0); arg++;
     XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
     XtSetArg(args[arg], XmNborderWidth,        0); arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    Widget form =
-	verify(XmCreateForm(text_dialog, "form", args, arg));
-
-    arg = 0;
-    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM);     arg++;
-    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
-    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
-    Widget dialog_title = verify(XmCreateLabel(form, "title", args, arg));
-    XtManageChild(dialog_title);
+    Widget form = verify(XmCreateForm(text_dialog, "form", args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
     XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
     XtSetArg(args[arg], XmNborderWidth,      0);                 arg++;
     XtSetArg(args[arg], XmNallowResize,      True);              arg++;
-    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
-    XtSetArg(args[arg], XmNtopWidget,        dialog_title);      arg++;
+    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
-    Widget area = verify(XmCreatePanedWindow(form, "area", args, arg));
+    Widget area = verify(XmCreatePanedWindow(form, "help_area", args, arg));
     XtManageChild(area);
+
+    FindInfo *fi = new FindInfo;
+    XtAddCallback(text_dialog, XmNdestroyCallback,
+		  DeleteFindInfoCB, XtPointer(fi));
+
+    MMDesc items [] = 
+    {
+	{ "findBackward", MMPush, { FindBackwardCB, XtPointer(fi) } },
+	{ "findForward",  MMPush, { FindForwardCB, XtPointer(fi) } },
+	MMEnd
+    };
+
+    Widget arg_label;
+    ArgField *arg_field;
+    Widget toolbar = create_toolbar(area, "toolbar", items, 0, arg_label,
+				    arg_field, XmPIXMAP);
+    fi->key = arg_field->text();
+    XtAddCallback(arg_label, XmNactivateCallback, 
+		  ClearTextFieldCB, fi->key);
 
     arg = 0;
     Widget help_index = verify(XmCreateScrolledList(area, "index", args, arg));
@@ -1080,26 +1110,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     Widget help_man = verify(XmCreateScrolledText(area, "text", args, arg));
     XtManageChild(help_man);
     set_scrolled_window_size(help_man);
-
-    FindInfo *fi = new FindInfo;
     fi->text = help_man;
-    XtAddCallback(text_dialog, XmNdestroyCallback,
-		  DeleteFindInfoCB, XtPointer(fi));
-
-    MMDesc items [] = 
-    {
-	{ "findBackward", MMPush, { FindBackwardCB, XtPointer(fi) } },
-	{ "findForward",  MMPush, { FindForwardCB, XtPointer(fi) } },
-	MMEnd
-    };
-
-    Widget arg_label;
-    ArgField *arg_field;
-    Widget toolbar = create_toolbar(area, "manual", items, 0, arg_label,
-				    arg_field, XmPIXMAP);
-    fi->key = arg_field->text();
-    XtAddCallback(arg_label, XmNactivateCallback, 
-		  ClearTextFieldCB, fi->key);
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
@@ -1135,10 +1146,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
     // Set title
     if (!title.isNull())
-    {
-	XtVaSetValues(dialog_title, XmNlabelString, title.xmstring(), NULL);
 	wm_set_name(XtParent(text_dialog), title.str(), title.str());
-    }
 
     if (manual)
     {
@@ -1333,38 +1341,68 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
     Widget text_dialog = create_text_dialog(toplevel, name, args, arg);
 
-    if (lesstif_version <= 79)
-	XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,
-					       XmDIALOG_APPLY_BUTTON));
-
     arg = 0;
     Widget form = verify(XmCreateForm(text_dialog, "form", args, arg));
 
     arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
+    XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
+    XtSetArg(args[arg], XmNborderWidth,      0);                 arg++;
+    XtSetArg(args[arg], XmNallowResize,      True);              arg++;
     XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
-    Widget title = verify(XmCreateLabel(form, "title", args, arg));
-    XtManageChild(title);
+    Widget area = verify(XmCreatePanedWindow(form, "help_area", args, arg));
+    XtManageChild(area);
+
+    FindInfo *fi = new FindInfo;
+    XtAddCallback(text_dialog, XmNdestroyCallback,
+		  DeleteFindInfoCB, XtPointer(fi));
+
+    MMDesc items [] = 
+    {
+	{ "findBackward", MMPush, { FindBackwardCB, XtPointer(fi) } },
+	{ "findForward",  MMPush, { FindForwardCB, XtPointer(fi) } },
+	MMEnd
+    };
+
+    Widget arg_label;
+    ArgField *arg_field;
+    Widget toolbar = create_toolbar(area, "toolbar", items, 0, arg_label,
+				    arg_field, XmPIXMAP);
+    fi->key = arg_field->text();
+    XtAddCallback(arg_label, XmNactivateCallback, 
+		  ClearTextFieldCB, fi->key);
 
     int columns = max_width(text);
     columns = min(max(columns, 40), 80) + 1;
 
     arg = 0;
     XtSetArg(args[arg], XmNcolumns,          columns);           arg++;
-    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
-    XtSetArg(args[arg], XmNtopWidget,        title);             arg++;
-    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
-    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
-    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNeditable,         False);             arg++;
     XtSetArg(args[arg], XmNeditMode,         XmMULTI_LINE_EDIT); arg++;
     XtSetArg(args[arg], XmNvalue,            text); arg++;
-    Widget help_text = verify(XmCreateScrolledText(form, "text", args, arg));
+    Widget help_text = verify(XmCreateScrolledText(area, "text", args, arg));
     XtManageChild(help_text);
     set_scrolled_window_size(help_text);
+    fi->text = help_text;
+
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight;
+    XtQueryGeometry(toolbar, NULL, &size);
+    XtVaSetValues(toolbar,
+		  XmNpaneMaximum, size.height,
+		  XmNpaneMinimum, size.height,
+		  NULL);
 
     XtAddCallback(text_dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
+
+    XtAddCallback(help_text, XmNmotionVerifyCallback,
+		  SetSelectionCB, XtPointer(arg_field));
+
+    XtAddCallback(fi->key, XmNactivateCallback, ActivateCB,
+		  XtPointer(items[1].widget));
 
     XtManageChild(form);
     InstallButtonTips(text_dialog);

@@ -327,6 +327,9 @@ Miscellaneous
   commands and assign them to buttons; see `Commands->Define Command'.
   All commands are saved across DDD sessions.
 
+- The Reference, License, and News windows now come with a menu bar
+  and a find facility.  They can be easily resized.
+
 - `File->Open Recent' allows you to re-open the nine most recently
   debugged programs.
 
