@@ -433,8 +433,7 @@ void Graph::begin_color(ostream& os, const PrintGC& gc,
 {
     if (gc.isPostScript())
     {
-	const PostScriptPrintGC &ps = 
-	    ref_cast(PostScriptPrintGC, (PrintGC &)gc);
+	const PostScriptPrintGC &ps = const_ref_cast(PostScriptPrintGC, gc);
 
 	if (ps.color)
 	{
@@ -451,8 +450,7 @@ void Graph::end_color(ostream& os, const PrintGC& gc) const
 {
     if (gc.isPostScript())
     {
-	const PostScriptPrintGC &ps = 
-	    ref_cast(PostScriptPrintGC, (PrintGC &)gc);
+	const PostScriptPrintGC &ps = const_ref_cast(PostScriptPrintGC, gc);
 
 	if (ps.color)
 	    os << "endcolor*\n";

@@ -160,8 +160,7 @@ void ForegroundColorBox::_print(ostream& os, const BoxRegion& region,
     // Set foreground color
     if (gc.isPostScript())
     {
-	const PostScriptPrintGC &ps = 
-	    ref_cast(PostScriptPrintGC, (PrintGC &)gc);
+	const PostScriptPrintGC &ps = const_ref_cast(PostScriptPrintGC, gc);
 
 	if (ps.color)
 	{
@@ -178,8 +177,7 @@ void ForegroundColorBox::_print(ostream& os, const BoxRegion& region,
     // Reset color
     if (gc.isPostScript())
     {
-	const PostScriptPrintGC &ps = 
-	    ref_cast(PostScriptPrintGC, (PrintGC &)gc);
+	const PostScriptPrintGC &ps = const_ref_cast(PostScriptPrintGC, gc);
 
 	if (ps.color)
 	{

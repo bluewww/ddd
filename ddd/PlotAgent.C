@@ -371,8 +371,7 @@ void PlotAgent::print(const string& filename, const PrintGC& gc)
     }
     else if (gc.isPostScript())
     {
-	const PostScriptPrintGC& ps = 
-	    ref_cast(PostScriptPrintGC, (PrintGC &)gc);
+	const PostScriptPrintGC& ps = const_ref_cast(PostScriptPrintGC, gc);
 
 	cmd << "set term postscript";
 
