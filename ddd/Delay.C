@@ -142,13 +142,13 @@ _Delay::_Delay(Widget w):
 
     old_cursor = current_cursor;
 
-    if (XtIsRealized(w))
+    if (XtIsRealized(widget))
     {
 	XDefineCursor(display, XtWindow(widget), hourglass_cursor());
 	XFlush(display);
     }
 
-    XtAddCallback(w, XtNdestroyCallback, DestroyCB, this);
+    XtAddCallback(widget, XtNdestroyCallback, DestroyCB, this);
 }
 
 _Delay::~_Delay()
@@ -167,12 +167,15 @@ _Delay::~_Delay()
     }
 
     current_cursor = old_cursor;
+    XtRemoveCallback(widget, XtNdestroyCallback, DestroyCB, this);
 }
 
 // Make sure we do not attempt to delete a delay on a destroyed widget
 void _Delay::DestroyCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     _Delay *delay = (_Delay *)client_data;
+    assert(ptr_cast(_Delay, delay));
+
     delay->widget     = 0;
     delay->old_cursor = 0;
 }
