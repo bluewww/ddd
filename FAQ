@@ -114,7 +114,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
     support the Hungry Programmer's Team - they develop LessTif, a
     free Motif-compliant widget set.  Check out their WWW page at
 
-        http://www.hungry.com/products/lesstif/
+        http://www.lesstif.org/
 
     [Note: We HAVE considered to build DDD on a free widget set.  But
     Athena is definitively not powerful enough, and alternative

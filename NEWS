@@ -52,6 +52,9 @@ DDD 2.1 [in development; scheduled for April, 1997]
       application?  DDD will now automatically make the debugged
       program ungrab the pointer, if it is interrupted in some modal
       state.
+    - In the source argument field `()', typing RETURN activates
+      the `Lookup ()' button.
+    - You can search for keywords in the online DDD manual.
 
     Documentation:
     - The PostScript copy of the manual has been enriched with more

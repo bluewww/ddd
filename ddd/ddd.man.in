@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "19 February 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "21 February 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -1025,7 +1025,7 @@ dereferenced.
 .PP
 .\"
 .\"
-.SS "Displaying Program Status Information"
+.SS "Displaying Program Status"
 .\"
 Besides local variables, you can create a display from the output of
 an arbitrary debugger command.  By entering
