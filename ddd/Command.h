@@ -2,7 +2,7 @@
 // DDD interface to GDB commands
 
 // Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2000-2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -233,9 +233,6 @@ extern void translate_command(string& command);
 // Add and strip auto_command prefix
 extern void add_auto_command_prefix(string& command);
 extern void strip_auto_command_prefix(string& command);
-
-// Currently executed command
-extern const string& current_gdb_command();
 
 #endif // _DDD_Command_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -208,13 +208,6 @@ void translate_command(string& command)
     }
 }
 
-static string _current_gdb_command;
-
-const string& current_gdb_command()
-{
-    return _current_gdb_command;
-}
-
 #if LOG_COMMAND_QUEUE
 static ostream& operator<<(ostream& os, const Command& c)
 {
@@ -237,6 +230,13 @@ static XtIntervalId continuing = 0;
 // True when interrupting running command
 static bool interrupting = false;
 
+// Currently executed command
+static Command current_gdb_command("echo");
+
+// Saved `running' command
+static Command running_gdb_command("run");
+
+
 static void ClearContinuingCB(XtPointer, XtIntervalId *)
 {
     // clog << "Continuing...done.\n";
@@ -251,7 +251,7 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
     string cmd = c.command;
 
     if (is_command)
-	_current_gdb_command = cmd;
+	current_gdb_command = c;
 
 #if LOG_COMMAND_QUEUE
     clog << "Command " << c << ": executing\n";
@@ -293,7 +293,7 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
     }
 
     if (is_command)
-	_current_gdb_command = cmd;
+	current_gdb_command = c;
 
     gdb_keyboard_command = private_gdb_input;
 
@@ -346,7 +346,7 @@ bool can_do_gdb_command()
 
     if (app_data.stop_and_continue && !gdb->recording() && !continuing)
     {
-	if (is_cont_cmd(current_gdb_command()))
+	if (is_cont_cmd(current_gdb_command.command))
 	    return true;	// We can interrupt `run' and `cond'
     }
 
@@ -420,6 +420,9 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	// We're ready - process command right now
 	if (is_cont_cmd(c.command) || c.command == "yes")
 	{
+	    // Save `running' command
+	    running_gdb_command = c;
+
 	    // Avoid interrupting `cont' and `run' commands
 	    // automatically that have just been sent - we might
 	    // cancel them
@@ -446,7 +449,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
     else if (app_data.stop_and_continue &&
 	     !gdb->recording() &&
 	     !gdb_prompts_y_or_n() &&
-	     is_cont_cmd(current_gdb_command()) &&
+	     is_cont_cmd(current_gdb_command.command) &&
 	     !continuing &&
 	     !interrupting)
     {
@@ -479,12 +482,17 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	if (continue_after_command)
 	{
 	    // Enqueue 'continue' command.  
-	    // This goes after the last user command.
-	    Command cont(c);
+
+	    // Inherit properties of current command,
+	    // but verbosity from last `run' or `cont' command
+	    Command cont(running_gdb_command);
+	    cont.echo           = c.echo;
 	    cont.command        = "cont";
 	    cont.callback       = 0;
 	    cont.extra_callback = 0;
 	    cont.start_undo     = false;
+
+	    // This goes after the last user command.
 	    cont.priority       = COMMAND_PRIORITY_CONT;
 
 	    gdb_enqueue_command(cont);
@@ -768,7 +776,7 @@ void syncCommandQueue()
     // Note: there will be no automatic `continue' afterwards (FIXME).
     if (app_data.stop_and_continue && 
 	gdb->running() && !gdb->isReadyWithPrompt() && 
-	is_cont_cmd(current_gdb_command()))
+	is_cont_cmd(current_gdb_command.command))
     {
 	gdb_command('\003');
     }
