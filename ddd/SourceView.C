@@ -3627,8 +3627,11 @@ void SourceView::show_position (string position, bool silent)
     }
     int line = get_positive_nr(position);
 
-    if (!is_current_file(file_name))
-	read_file(file_name, line, false, silent);
+    // In case of `Open Source', we get FILE:1 positions.  Be sure to
+    // reload the file in this case.
+    bool force_reload = (line == 1);
+    if (!is_current_file(file_name) || force_reload)
+	read_file(file_name, line, force_reload, silent);
 
 
     // Have window scroll to correct position
