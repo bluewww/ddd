@@ -4,7 +4,7 @@ DDD descriptions for the Linux software map
 Begin3
 Title:          ddd
 Version:        1.3
-Entered-date:   December 3, 1995
+Entered-date:   03DEC95
 Description:    The Data Display Debugger (DDD) is a comforatble
 		graphical user interface to GDB and DBX, the popular
 		UNIX debuggers.  Besides ``usual'' features such as
@@ -35,11 +35,12 @@ Alternate-site: ftp.funet.fi /pub/OS/Linux/devel/debuggers
                 803kB  ddd-1.3b-aout.gz (Binary)
                 1182kB ddd-1.3d-elf.gz  (Binary)
 Original-site:  ftp.ips.cs.tu-bs.de /pub/local/softech/ddd/
+Copying-policy: GPL
+End
+
 Platform:       Building DDD: C++ compiler (GCC 2.6.3 or later preferred),
                 OSF/Motif library.
                 Running DDD: GDB (4.13 or later preferred).
-Copying-policy: GPL
-End
 
 Send submissions for comp.os.linux.announce to: linux-announce@news.ornl.gov
 PLEASE remember Keywords: and a short description of the software.
