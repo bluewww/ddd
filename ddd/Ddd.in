@@ -1524,7 +1524,8 @@ If the option @bf Find Words Only @rm is set, only complete words are found.
 !-----------------------------------------------------------------------------
 
 *gdb_w.value: \
-@DDD@ @VERSION@ (@host@), Copyright © 1995 TU Braunschweig, Germany.\n
+@DDD@ @VERSION@ (@host@), by Dorothea Lütkehaus and Andreas Zeller.\n\
+Copyright © 1995 Technische Universität Braunschweig, Germany.\n
 
 *gdb_w.rows:			10
 *gdb_w.columns:			88
