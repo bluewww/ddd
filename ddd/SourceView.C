@@ -4355,6 +4355,7 @@ void SourceView::process_registers(string& register_output)
     register_output.gsub(";\n", "\n");
     register_output.gsub("; ", "\n");
     register_output.gsub(";", "\n");
+    register_output.gsub("\n\n", "\n");
 
     int count             = register_output.freq('\n') + 1;
     string *register_list = new string[count];
