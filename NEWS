@@ -26,6 +26,7 @@ DDD 3.0 [in development]
       change all properties for a breakpoint at once.
     - Breakpoint commands.  You can record and edit commands to be
       executed when a breakpoint is reached.
+    - On popular demand, the command tool now has `until' and `make' buttons.
     - Conditional breakpoints and breakpoints with ignore counts are now
       indicated by special breakpoint symbols.
     - Improved help system: In accordance with the Motif style guide,
