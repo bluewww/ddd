@@ -1,5 +1,5 @@
 /* XPM */
-static char * ddd_source_xpm@[] = {
+static char * ddd-source_xpm@[] = {
 "668 498 15 1",
 " 	c gray20",
 ".	c gray56",
@@ -11,7 +11,7 @@ static char * ddd_source_xpm@[] = {
 "#	c #7e7e7e",
 "$	c #b7b7b7",
 "%	c #c3c3c3",
-"&	c gray90",
+"&	c white",
 "*	c #606060",
 "=	c dark green",
 "-	c red4",

@@ -1,5 +1,5 @@
 /* XPM */
-static char * ddd_arguments_xpm@[] = {
+static char * ddd-arguments_xpm@[] = {
 "284 287 8 1",
 " 	c gray20",
 ".	c white",
@@ -8,7 +8,7 @@ static char * ddd_arguments_xpm@[] = {
 "O	c black",
 "+	c #7e7e7e",
 "@	c #b7b7b7",
-"#	c gray90",
+"#	c white",
 "                                                                                                                                                                                                                                                                                            ",
 " .......................................................................................................................................................................................................................................................................................... ",
 " .XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXo ",
