@@ -73,7 +73,7 @@ Source exploration
 Printing
 --------
 
-- PostScript output includes arcs.
+- Arc edges can now be printed and exported to FIG format.
 
 - The default setting for printing is to print all displays.
 

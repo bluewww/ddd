@@ -164,5 +164,47 @@ LineGraphEdgeSelfInfo::LineGraphEdgeSelfInfo(const BoxRegion& region,
 	break;
     }
 
+    // Find FIG positions
+    fig_pos[0] = region.origin();
+    fig_pos[1] = region.origin();
+    fig_pos[2] = region.origin();
+
+    int offset = int(sqrt(radius * radius / 2.0));
+
+    switch (gc.selfEdgePosition)
+    {
+    case NorthEast:
+	fig_pos[0] += BoxPoint(region.space(X), radius);
+	fig_pos[1] += BoxPoint(region.space(X) + offset, -offset);
+	fig_pos[2] += BoxPoint(region.space(X) - radius, 0);
+	break;
+
+    case SouthEast:
+	fig_pos[0] += BoxPoint(region.space(X) - radius, region.space(Y));
+	fig_pos[1] += BoxPoint(region.space(X) + offset, 
+			       region.space(Y) + offset);
+	fig_pos[2] += BoxPoint(region.space(X), region.space(Y) - radius);
+	break;
+
+    case SouthWest:
+	fig_pos[0] += BoxPoint(region.space(X), region.space(Y) - radius);
+	fig_pos[1] += BoxPoint(-offset, region.space(Y) + offset);
+	fig_pos[2] += BoxPoint(region.space(X) + radius, region.space(Y));
+	break;
+
+    case NorthWest:
+	fig_pos[0] += BoxPoint(radius, 0);
+	fig_pos[1] += BoxPoint(-offset, -offset);
+	fig_pos[2] += BoxPoint(0, radius);
+	break;
+    }
+
+    if (gc.selfEdgeDirection == Clockwise)
+    {
+	BoxPoint pivot = fig_pos[0];
+	fig_pos[0] = fig_pos[2];
+	fig_pos[2] = pivot;
+    }
+
     // That's all, folks!
 }

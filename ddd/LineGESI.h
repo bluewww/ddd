@@ -49,6 +49,7 @@ struct LineGraphEdgeSelfInfo {
     BoxPoint arrow_pos;		// Position of arrow
     int arrow_angle;		// Arrow angle (0..360)
     double arrow_alpha;		// Arrow angle (0.0..2*PI)
+    BoxPoint fig_pos[3];	// FIG coordinates of arc
 
     // Constructor
     explicit LineGraphEdgeSelfInfo(const BoxRegion& region, const GraphGC& gc);

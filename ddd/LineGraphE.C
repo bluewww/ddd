@@ -51,6 +51,7 @@ char LineGraphEdge_rcsid[] =
 
 #include "GraphNode.h"
 #include "LineGESI.h"
+#include "printBox.h"
 
 
 DEFINE_TYPE_INFO_1(LineGraphEdge, GraphEdge)
@@ -353,15 +354,6 @@ void LineGraphEdge::printSelf(ostream& os, const GraphGC &gc) const
 {
     assert(from() == to());
 
-    if (!gc.printGC->isPostScript())
-    {
-	static int warning = 0;
-	if (warning++ == 0)
-	    cerr << "Warning: arc printing is not supported\n";
-
-	return;
-    }
-
     // Get region
     BoxRegion region = from()->region(gc);
     if (from()->selected())
@@ -369,28 +361,42 @@ void LineGraphEdge::printSelf(ostream& os, const GraphGC &gc) const
 
     LineGraphEdgeSelfInfo info(region, gc);
 
-    int start = (720 - info.arc_start - info.arc_extend) % 360 ;
-    int end   = (720 - info.arc_start) % 360 ;
+    if (gc.printGC->isPostScript())
+    {
+	int start = (720 - info.arc_start - info.arc_extend) % 360 ;
+	int end   = (720 - info.arc_start) % 360 ;
 
-    BoxCoordinate line_width = 1;
+	BoxCoordinate line_width = 1;
 
-    // Draw arc
-    os << start << " " << end << " " 
-       << info.radius << " " << info.radius << " "
-       << info.arc_center[X] << " " << info.arc_center[Y] << " " 
-       << line_width << " arc*\n";
+	// Draw arc
+	os << start << " " << end << " " 
+	   << info.radius << " " << info.radius << " "
+	   << info.arc_center[X] << " " << info.arc_center[Y] << " " 
+	   << line_width << " arc*\n";
+
+	// Now draw the arrow head
+	int angle = (720 - info.arrow_angle) % 360;
+
+	os << gc.arrowAngle << " " << gc.arrowLength << " " << angle << " "
+	   << info.arrow_pos[X] << " " << info.arrow_pos[Y] << " arrowhead*\n";
+    }
+    else if (gc.printGC->isFig())
+    {
+	BoxCoordinate line_width = 1;
+
+	os << ARCARROWHEAD1 << line_width << ARCARROWHEAD2 << " ";
+	os << float(info.arc_center[X]) << " " 
+	   << float(info.arc_center[Y]) << " ";
+	for (int i = 0; i < 3; i++)
+	    os << info.fig_pos[i][X] << " " << info.fig_pos[i][Y] << " ";
+	os << ARCARROWHEAD3;
+    }
 
     if (annotation() != 0)
     {
 	// Print annotation
 	annotation()->_print(os, info.anno_pos, gc);
     }
-
-    // Now draw the arrow head
-    int angle = (720 - info.arrow_angle) % 360;
-
-    os << gc.arrowAngle << " " << gc.arrowLength << " " << angle << " "
-       << info.arrow_pos[X] << " " << info.arrow_pos[Y] << " arrowhead*\n";
 }
 
 BoxPoint LineGraphEdge::annotationPosition(const GraphGC &gc) const

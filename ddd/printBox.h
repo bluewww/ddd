@@ -175,9 +175,11 @@
 #define EDGEHEAD1 "2 1 0 " // +thickness
 #define EDGEHEAD2 " -1 2 0 0 0.000 0 0 0\n\t"
 
+#define ARROW "-1 -1 1 4 10\n\t"
+
 // Same, but with arrows (for edges, depth = 2)
 #define ARROWHEAD1 "2 1 0 " // +thickness
-#define ARROWHEAD2 " -1 2 0 0 0.000 0 1 0\n\t -1 -1 1 4 10\n\t"
+#define ARROWHEAD2 " -1 2 0 0 0.000 0 1 0\n\t" ARROW
 
 // A black line (for boxes, depth = 0)
 #define LINEHEAD1 "2 1 0 " // +thickness
@@ -188,6 +190,58 @@
 
 // A white rectangle in the background (behind boxes, depth = 1)
 #define CLEANHEAD "2 2 0 0 7 1 0 21 0.000 0 0 0\n\t"
+
+/*
+    (3.1) ARC
+
+    First line :
+	type	name			(brief description)
+	----	----			-------------------
+	int	object_code		(always 5)
+	int	sub_type		(always	1)
+	int	line_style		(enumeration type)
+	int	line_thickness		(pixels)
+	int	color			(enumeration type)
+	int	depth			(enumeration type)
+	int	pen			(not used)
+	int	area_fill		(enumeration type)
+	float	style_val		(pixels)
+	int	direction		(0 : clockwise, 1 : counterclockwise)
+	int	forward_arrow		(0: no forward arrow, 1: on)
+	int	backward_arrow		(0: no forward arrow, 1: on)
+	float	center_x, center_y	(center of the arc)
+	int	x1, y1			(pixels, the 1st point the user entered)
+	int	x2, y2			(pixels, the 2nd point)
+	int	x3, y3			(pixels, the last point)
+
+    Forward arrow line (Optional; absent if forward_arrow is 0) :
+	type	name			(brief description)
+	----	----			-------------------
+	int	arrow_type		(not used)
+	int	arrow_style		(not used)
+	float	arrow_thickness		(pixels)
+	float 	arrow_width		(pixels)
+	float	arrow_height		(pixels)
+
+    Backward arrow line (Optional; absent if backward_arrow is 0) :
+	type	name			(brief description)
+	----	----			-------------------
+	int	arrow_type		(not used)
+	int	arrow_style		(not used)
+	float	arrow_thickness		(pixels)
+	float	arrow_width		(pixels)
+	float	arrow_height		(pixels)
+
+*/
+
+// An arc line (for boxes, depth = 0)
+#define ARCHEAD1 "5 1 0 " // +thickness
+#define ARCHEAD2 " -1 0 0 0 0.000 1 0 0\n\t" // +center, P1, P2, P3
+
+// Same, but with arrows
+#define ARCARROWHEAD1 "5 1 0 " // +thickness
+#define ARCARROWHEAD2 " -1 0 0 0 0.000 1 1 0 " // +center, P1, P2, P3
+#define ARCARROWHEAD3 "\n\t" ARROW
 
 
 /*
