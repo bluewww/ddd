@@ -56,7 +56,6 @@ if [ -f /usr/5bin/sed ]; then
 fi
 
 year=`date +%Y 2> /dev/null || gdate +%Y`
-domain=`domainname | sed 's/[^\.]*\.//'`
 fullname=`ypmatch $logname passwd | cut -d: -f5 | cut -d, -f1`
 
 for file in "$@"; do
@@ -83,7 +82,7 @@ for file in "$@"; do
   mailname2=
   if [ "$written_by" = "" -o $force_name = true ]; then
     fullname1=$fullname
-    mailname1=$logname@$domain
+    mailname1=andreas.zeller@fmi.uni-passau.de
   else
     fullname1=`echo "$written_by" | sed 's/.*Written by *\([^<]*\) *<.*/\1/
 s/ $//g'`
@@ -153,11 +152,11 @@ environment. Contact nora@'"$domain"' for details.';;
     ICE)      project_detail='ICE is the incremental configuration environment.\
 For details, see the ICE World-Wide-Web page, \
 `http://www.cs.tu-bs.de/softech/ice/'"'"',\
-or send a mail to the ICE developers <ice@'"$domain"'>.';;
+or send a mail to the ICE developers <ice@ips.cs.tu-bs.de>.';;
     DDD)      project_detail='DDD is the data display debugger.\
 For details, see the DDD World-Wide-Web page, \
 `http://www.cs.tu-bs.de/softech/ddd/'"'"',\
-or send a mail to the DDD developers <ddd@'"$domain"'>.';;
+or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.';;
     *)        project_detail='FOOBAR is fouled up beyond all recognition.\
 Contact foobar@kremvax.su.org for details.';;
   esac
@@ -174,7 +173,7 @@ Contact foobar@kremvax.su.org for details.';;
     license_file='COPYING'
   fi
 
-  text='Copyright (C) '$copyright' Technische Universitaet Braunschweig, Germany.'
+  text='Copyright (C) '$copyright' Universitaet Passau, Germany.'
   if [ "$fullname2" = "" ]; then
     text="$text"'\
 Written by '"$fullname1 <$mailname1>"'.'

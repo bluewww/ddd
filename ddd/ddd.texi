@@ -8475,7 +8475,7 @@ windows, set this resource to @samp{off}.
 The time (in ms) during which an initial auto-raised window blocks
 further auto-raises.  This is done to prevent two overlapping
 auto-raised windows from entering an @emph{auto-raise loop}.  Default is
-@code{50}.
+@code{100}.
 @end defvr
 
 
