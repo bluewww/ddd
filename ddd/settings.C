@@ -42,10 +42,12 @@ char settings_rcsid[] =
 #include <Xm/ScrolledW.h>
 #include <Xm/RowColumn.h>
 #include <Xm/ToggleB.h>
+#include <Xm/PanedW.h>
 #include <Xm/PushB.h>
 #include <Xm/TextF.h>
 #include <Xm/Form.h>
 #include <Xm/Label.h>
+#include <Xm/LabelG.h>
 #include <Xm/Separator.h>
 #include <ctype.h>
 #include <string.h>
@@ -380,7 +382,7 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
 	s.gsub("\n ", "\n");
     }
 
-    if (s.empty())
+    if (s == "")
 	s = "No help available on this signal.";
 
     XmString xmdoc = 0;
@@ -609,7 +611,7 @@ static void HelpOnThemeCB(Widget w, XtPointer client_data,
     // Fetch text from file
     string file = XtName((Widget)client_data);
     string text = vsldoc(file, DispBox::vsllib_path);
-    if (text.empty())
+    if (text == "")
 	text = "No help available on this theme.";
 
     MString mtext = bf(basename(file.chars())) + cr() + cr() + rm(text);
@@ -1038,7 +1040,7 @@ static StringStringAssoc gdb_question_cache;
 static string cached_gdb_question(const string& question, int timeout = 0)
 {
     string& answer = gdb_question_cache[question];
-    if (answer.empty())
+    if (answer == "")
 	answer = gdb_question(question, timeout);
     return answer;
 }
@@ -1362,7 +1364,7 @@ static string get_dbx_doc(const string& dbxenv, const string& base)
     dbx_doc.gsub("etc ", "etc. ");
 
 #if 0
-    if (dbx_doc.empty())
+    if (dbx_doc == "")
     {
 	dbx_doc = base;
 	dbx_doc.gsub('_', ' ');
@@ -1514,7 +1516,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		       DebuggerType type, EntryType entry_filter,
 		       string line)
 {
-    if (line.empty())
+    if (line == "")
 	return;
 
     string set_command;		// Command to create the setting
@@ -1532,7 +1534,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	set_command = show_command = line;
 	e_type = entry_filter;
 	doc = vsldoc(line, DispBox::vsllib_path);
-	if (doc.empty())		   // No documentation:
+	if (doc == "")		   // No documentation:
 	    doc = basename(line.chars());  // Use base name of file instead
 	else if (doc.contains("."))
 	    doc = doc.before("."); // Use first sentence only
@@ -1553,7 +1555,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    set_command  = line.before(" -- ");
 	    doc          = line.after(" -- ");
 	    base         = set_command.after(' ');
-	    if (base.empty())
+	    if (base == "")
 		base = set_command;
 	    show_command = "show " + base;
 
@@ -1668,7 +1670,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		return;			// No help line
 
 	    base = line.before(rxwhite);
-	    if (base.empty())
+	    if (base == "")
 		return;
 	    if (base == "run_savetty")
 		return; // Makes no sense under a GUI
@@ -1743,7 +1745,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	if (e_type != entry_filter)
 	    return;
 
-	if (doc.empty())
+	if (doc == "")
 	    return;		// No need to support undocumented stuff
     }
 
@@ -1989,7 +1991,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    options = options.after('<');
 	    options = options.before('>');
 
-	    if (options.empty())
+	    if (options == "")
 	    {
 		if (base == "follow_fork_mode")
 		    options = "parent|child|both|ask";
@@ -2026,7 +2028,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		    option = option.before(rxwhite);
 	    }
 
-	    if (option.empty() || option.contains(':', -1))
+	    if (option == "" || option.contains(':', -1))
 		continue;
 
 	    MString xmlabel(label);
@@ -2457,7 +2459,7 @@ static void fix_clip_window_translations(Widget scroll)
 
     Widget clip = 0;
     XtVaGetValues(scroll, XmNclipWindow, &clip, XtPointer(0));
-    XtUninstallTranslations(clip);
+//  XtUninstallTranslations(clip);
 
     // ... and provide a minimal set instead.
     static bool have_clip_actions = false;
@@ -2472,14 +2474,17 @@ static void fix_clip_window_translations(Widget scroll)
 	have_clip_actions = true;
     }
 
-    static const char *clip_translations = 
+    String clip_translations =
 	"<Key>osfPageUp:         clip-do(PageUpOrLeft, 0)\n"
 	"<Key>osfPageDown:       clip-do(PageDownOrRight, 0)\n"
 	"Ctrl <Key>osfBeginLine: clip-do(TopOrBottom)\n"
-	"Ctrl <Key>osfEndLine:   clip-do(TopOrBottom)\n";
+	"Ctrl <Key>osfEndLine:   clip-do(TopOrBottom)\n"
+        "<Key>osfUp:             clip-do(IncrementUpOrLeft, 0)\n"
+        "<Key>osfDown:           clip-do(IncrementDownOrRight, 0)\n";
+
 
     XtTranslations tr = XtParseTranslationTable(clip_translations);
-    XtVaSetValues(clip, XmNtranslations, tr, XtPointer(0));
+    XtOverrideTranslations(clip, tr);
 }
 
 
@@ -2582,79 +2587,147 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     StatusDelay delay("Retrieving " + title_msg);
 
     Arg args[10];
-    int arg;
+    int arg=0;
 
-    arg = 0;
-    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
-    Widget panel = verify(XmCreatePromptDialog(find_shell(), 
-					       CONST_CAST(char*,dialog_name.chars()), args, arg));
+    // Create a popup dialog window
+    // I can't figure out how to connect the window-close button
+    // to the Close-button callback, so it's disable for now... FIXME
+    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+    // DialogShell seems to ignore this resource,
+    // so we do the same work ourselves at the end of this function
+    XtSetArg(args[arg], XmNdefaultPosition, True); arg++;
+    Widget panel = verify(XmCreateDialogShell(
+                            find_shell(),
+                            CONST_CAST(char*,dialog_name.chars()),
+                            args, arg));
     Delay::register_shell(panel);
 
-    Widget apply_button = XmSelectionBoxGetChild(panel, XmDIALOG_OK_BUTTON);
+    // create a paned widget in it
+    Widget pane = XtVaCreateWidget(CONST_CAST(char *,"pane"),
+                                   xmPanedWindowWidgetClass, panel,
+                                   XmNsashWidth, 1,
+                                   XmNsashHeight, 1,
+                                   XtPointer(0));
+
+    // create a form widget in the top half
+    Widget form0 = XtVaCreateWidget(CONST_CAST(char *,"form0"),
+                                    xmFormWidgetClass, pane, XtPointer(0));
+
+    // create another form widget in the bottom half
+    Widget form1 = XtVaCreateWidget(CONST_CAST(char *,"form1"),
+                                    xmFormWidgetClass, pane,
+                                    XmNfractionBase, 9,
+                                    XtPointer(0));
+
+    Widget apply_button =
+        XtVaCreateManagedWidget(CONST_CAST(char *,"Apply"),
+                                xmPushButtonWidgetClass,   form1,
+                                XmNtopAttachment,          XmATTACH_FORM,
+                                XmNbottomAttachment,       XmATTACH_FORM,
+                                XmNleftAttachment,         XmATTACH_POSITION,
+                                XmNleftPosition,           1,
+                                XmNrightAttachment,        XmATTACH_POSITION,
+                                XmNrightPosition,          2,
+                                XmNshowAsDefault,          False,
+                                XmNdefaultButtonShadowThickness, 1,
+                                XtPointer(0));
+
+    Widget reset_button =
+        XtVaCreateManagedWidget(CONST_CAST(char *,"Reset"),
+                                xmPushButtonWidgetClass,   form1,
+                                XmNtopAttachment,          XmATTACH_FORM,
+                                XmNbottomAttachment,       XmATTACH_FORM,
+                                XmNleftAttachment,         XmATTACH_POSITION,
+                                XmNleftPosition,           3,
+                                XmNrightAttachment,        XmATTACH_POSITION,
+                                XmNrightPosition,          4,
+                                XmNshowAsDefault,          False,
+                                XmNdefaultButtonShadowThickness, 1,
+                                XtPointer(0));
+
+    Widget close_button =
+        XtVaCreateManagedWidget(CONST_CAST(char *,"Close"),
+                                xmPushButtonWidgetClass,   form1,
+                                XmNsensitive,              True,
+                                XmNtopAttachment,          XmATTACH_FORM,
+                                XmNbottomAttachment,       XmATTACH_FORM,
+                                XmNleftAttachment,         XmATTACH_POSITION,
+                                XmNleftPosition,           5,
+                                XmNrightAttachment,        XmATTACH_POSITION,
+                                XmNrightPosition,          6,
+                                XmNshowAsDefault,          True,
+                                XmNdefaultButtonShadowThickness, 1,
+                                XtPointer(0));
+
+    Widget help_button =
+        XtVaCreateManagedWidget(CONST_CAST(char *,"Help"),
+                                xmPushButtonWidgetClass,   form1,
+                                XmNtopAttachment,          XmATTACH_FORM,
+                                XmNbottomAttachment,       XmATTACH_FORM,
+                                XmNleftAttachment,         XmATTACH_POSITION,
+                                XmNleftPosition,           7,
+                                XmNrightAttachment,        XmATTACH_POSITION,
+                                XmNrightPosition,          8,
+                                XmNshowAsDefault,          False,
+                                XmNdefaultButtonShadowThickness, 1,
+                                XtPointer(0));
+
     set_sensitive(apply_button, False);
-
-    Widget reset_button = XmSelectionBoxGetChild(panel, XmDIALOG_APPLY_BUTTON);
-    XtManageChild(reset_button);
-
-    // Remove old prompt
-    XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_TEXT));
-    XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_SELECTION_LABEL));
-
-    XtAddCallback(panel, XmNhelpCallback, ImmediateHelpCB, 0);
-    XtAddCallback(panel, XmNcancelCallback, UnmanageThisCB, XtPointer(panel));
+    XtAddCallback(help_button,
+                    XmNactivateCallback, ImmediateHelpCB, XtPointer(0));
+    XtAddCallback(close_button,
+                    XmNactivateCallback, UnmanageThisCB, XtPointer(panel));
 
     switch (stype)
     {
     case SETTINGS:
-	XtAddCallback(panel, XmNokCallback, ApplySettingsCB, 0);
-	XtAddCallback(panel, XmNapplyCallback, ResetSettingsCB, 0);
+	XtAddCallback(apply_button,
+                        XmNactivateCallback, ApplySettingsCB, XtPointer(0));
+	XtAddCallback(reset_button,
+                        XmNactivateCallback, ResetSettingsCB, XtPointer(0));
 	apply_settings_button = apply_button;
 	break;
 
     case INFOS:
-	XtAddCallback(panel, XmNapplyCallback, DeleteAllInfosCB, 0);
-	XtUnmanageChild(apply_button); // No text entries
+	XtAddCallback(apply_button,
+                        XmNactivateCallback, DeleteAllInfosCB, XtPointer(0));
 	break;
 
     case SIGNALS:
-	XtAddCallback(panel, XmNapplyCallback, ResetSignalsCB, 0);
-	XtUnmanageChild(apply_button); // No text entries
+	XtAddCallback(apply_button,
+                        XmNactivateCallback, ResetSignalsCB, XtPointer(0));
 	break;
 
     case THEMES:
-	XtAddCallback(panel, XmNokCallback,    ApplyThemesCB, 0);
-	XtAddCallback(panel, XmNapplyCallback, ResetThemesCB, 0);
+	XtAddCallback(apply_button,
+                        XmNactivateCallback, ApplyThemesCB, XtPointer(0));
+	XtAddCallback(reset_button,
+                        XmNactivateCallback, ResetThemesCB, XtPointer(0));
 	apply_themes_button = apply_button;
 	break;
     }
 
-    // Add a rowcolumn widget
-    arg = 0;
-    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
-    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
-    XtSetArg(args[arg], XmNspacing,      0); arg++;
-    Widget column =
-        verify(XmCreateRowColumn(panel, CONST_CAST(char *,"column"), args, arg));
-    XtManageChild(column);
 
     // Add a label
     arg = 0;
     MString xmtitle(title_msg);
     XtSetArg(args[arg], XmNlabelString, xmtitle.xmstring()); arg++;
-    Widget title = verify(XmCreateLabel(column, CONST_CAST(char *,"title"), args, arg));
+    Widget title = verify(XmCreateLabel(form0,
+                            CONST_CAST(char *,"title"), args, arg));
     XtManageChild(title);
 
     // Add a scrolled window.
     arg = 0;
+    XtSetArg(args[arg], XmNvisualPolicy, XmCONSTANT); arg++;
     XtSetArg(args[arg], XmNscrollingPolicy, XmAUTOMATIC); arg++;
-    Widget scroll = 
-	verify(XmCreateScrolledWindow(column, CONST_CAST(char *,"scroll"), args, arg));
+    Widget scroll = verify(XmCreateScrolledWindow(form0,
+                                CONST_CAST(char *,"scroll"), args, arg));
     fix_clip_window_translations(scroll);
 
     // Add a form.
     arg = 0;
-    Widget form = verify(XmCreateForm(scroll, CONST_CAST(char *,"form"), args, arg));
+    Widget form = verify(XmCreateForm(scroll,
+                            CONST_CAST(char *,"form"), args, arg));
 
     switch (stype)
     {
@@ -2818,7 +2891,52 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 		      XtPointer(0));
     }
 
+    XtVaSetValues(scroll,
+                  XmNtopAttachment,    XmATTACH_WIDGET,
+                  XmNtopWidget,        title,
+                  XmNleftAttachment,   XmATTACH_FORM,
+                  XmNrightAttachment,  XmATTACH_FORM,
+                  XmNbottomAttachment, XmATTACH_FORM,
+                  XtPointer(0));
+
     XtManageChild(scroll);
+    XtManageChild(form0);
+    XtManageChild(form1);
+    XtManageChild(pane);
+
+    // prevent the action area from growing when the window is resized
+    Dimension h, w, x, y;
+    XtVaGetValues(close_button, XmNheight, &h, XtPointer(0));
+    XtVaSetValues(form1, XmNpaneMaximum, h, XmNpaneMinimum, h, XtPointer(0));
+
+    // prevent the window from being made smaller than it initially is
+    XtVaGetValues(panel,
+                  XmNwidth,  &w,
+                  XmNheight, &h,
+                  XtPointer(0));
+
+    // XtGetValues sometimes returns rubbish in the higher-order bits
+    w &= 0x7fff;
+    h &= 0x7fff;
+
+    XtVaSetValues(panel,
+                  XmNminWidth,  w,
+                  XmNminHeight, h,
+                  XtPointer(0));
+
+    // Center this dialog window in it's parent widget
+    XtVaGetValues(XtParent(panel),
+                  XmNwidth,  &x,
+                  XmNheight, &y,
+                  XtPointer(0));
+
+    x &= 0x7fff;  // "32767 pixels should be enough for just about anybody"
+    y &= 0x7fff;  //                            -- Andrew Gaylard, 2003/10/13
+
+    XtVaSetValues(panel,
+                  XmNx, x/2 - w/2,
+                  XmNy, y/2 - h/2,
+                  XtPointer(0));
 
     InstallButtonTips(panel);
 
@@ -2944,7 +3062,7 @@ void update_themes()
 	std::ostringstream os;
 	os << p;
 	string value = string(os);
-	if (value.empty())
+	if (value == "")
 	{
 	    value = "*";
 	    set = false;
@@ -3042,13 +3160,13 @@ static void get_setting(std::ostream& os, DebuggerType type,
 	    break;
 	}
 
-	if (base == "set remotelogfile" && value.empty())
+	if (base == "set remotelogfile" && value == "")
 	{
 	    // This is the default setting - do nothing (GDB)
 	    break;
 	}
 
-	if (base == "set remotedevice" && value.empty())
+	if (base == "set remotedevice" && value == "")
 	{
 	    // This is the default setting - do nothing (GDB)
 	    break;
@@ -3066,7 +3184,7 @@ static void get_setting(std::ostream& os, DebuggerType type,
 	    break;
 	}
 
-	if (base == "set solib-absolute-prefix" && value.empty())
+	if (base == "set solib-absolute-prefix" && value == "")
 	{
 	    // GDB 4.17 bug: `set solib-absolute-prefix' without arg
 	    // does not work.  Just leave it as default setting.
@@ -3360,7 +3478,7 @@ string get_defines(DebuggerType type, unsigned long /* flags */)
 	cmd.downcase();		// GDB 5.0 makes all commands lower case
 
 	string def = iter.value();
-	if (def.empty())
+	if (def == "")
 	{
 	    // We don't save empty definitions, such that users have a
 	    // way to get rid of them.
