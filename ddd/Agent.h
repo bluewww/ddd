@@ -264,15 +264,15 @@ protected:
     virtual void errorEOF();    // EOF on error detected
 
     // Check if we're on a terminal
-    bool inputIsTerminal() 
+    bool inputIsTerminal() const
     {
 	return inputfp() != 0 && isatty(fileno(inputfp()));
     }    
-    bool outputIsTerminal() 
+    bool outputIsTerminal() const
     {
 	return outputfp() != 0 && isatty(fileno(outputfp()));
     }
-    bool onTerminal()
+    bool onTerminal() const
     {
 	return inputIsTerminal() && outputIsTerminal();
     }

@@ -150,7 +150,7 @@ public:
 	}
 	return *this;
     }
-    bool operator == (const Command& c)
+    bool operator == (const Command& c) const
     {
 	return this == &c || 
 	    command == c.command 

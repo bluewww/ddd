@@ -181,13 +181,13 @@ protected:
     void clearHandlers();
 
     // resources
-    XtInputId id(unsigned type)
+    XtInputId id(unsigned type) const
     {
 	assert(type < AsyncAgent_NHandlers);
 	return _ids[type]; 
     }
 
-    AsyncAgentHandler handler(unsigned type)
+    AsyncAgentHandler handler(unsigned type) const
     {
 	assert(type < AsyncAgent_NHandlers);
 	return _handlers[type];
