@@ -1047,6 +1047,44 @@ None<Key>Tab:		gdb-complete-tab(file)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
+Ddd*make_dialog*XmText.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(file)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
+
+Ddd*make_dialog*XmTextField.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Tab:		gdb-complete-tab(file)	    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n
+
 Ddd*XmSelectionBox*XmText.translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
 Ctrl<Key>B:		backward-character()	    \n\
