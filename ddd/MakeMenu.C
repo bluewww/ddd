@@ -161,20 +161,55 @@ static void auto_raise(Widget shell)
 // The currently unflattened button
 static Widget active_button = 0;
 
+static const int SHADOW_THICKNESS = 2;
+
 static void flatten_button(Widget w)
 {
-    XtVaSetValues(w,
-		  XmNhighlightThickness, 2,
-		  XmNshadowThickness, 0,
+    Dimension highlight = SHADOW_THICKNESS;
+    Dimension shadow    = 0;
+    XtVaGetValues(w,
+		  XmNhighlightThickness, &highlight,
+		  XmNshadowThickness, &shadow,
 		  NULL);
+
+    if (highlight != SHADOW_THICKNESS || shadow != 0)
+    {
+	clog << "Flattening " << XtName(w) << "\n";
+
+	XtVaSetValues(w,
+		      XmNhighlightThickness, SHADOW_THICKNESS,
+		      XmNshadowThickness, 0,
+		      NULL);
+    }
 }
 
 static void unflatten_button(Widget w)
 {
-    XtVaSetValues(w,
-		  XmNhighlightThickness, 0,
-		  XmNshadowThickness, 2,
+    Dimension highlight = 0;
+    Dimension shadow    = SHADOW_THICKNESS;
+    XtVaGetValues(w,
+		  XmNhighlightThickness, &highlight,
+		  XmNshadowThickness, &shadow,
 		  NULL);
+
+    if (highlight != 0 || shadow != SHADOW_THICKNESS)
+    {
+	clog << "Unflattening " << XtName(w) << "\n";
+
+	XtVaSetValues(w,
+		      XmNhighlightThickness, 0,
+		      XmNshadowThickness, SHADOW_THICKNESS,
+		      NULL);
+    }
+}
+
+
+static void FlattenNow(XtPointer client_data, XtIntervalId *)
+{
+    Widget *w = (Widget *)client_data;
+    flatten_button(*w);
+    *w = 0;
+    active_button = 0;
 }
 
 static void FlattenEH(Widget w,
@@ -186,10 +221,26 @@ static void FlattenEH(Widget w,
 				  Button4Mask | Button5Mask))
 	return;			// Button is still pressed
 
+    static XtIntervalId pending_flatten_timer = 0;
+    static Widget pending_flatten_widget      = 0;
+
+    if (pending_flatten_widget != 0)
+    {
+	// Flattening of old button still pending - do this now
+	XtRemoveTimeOut(pending_flatten_timer);
+
+	if (pending_flatten_widget != w)
+	    flatten_button(pending_flatten_widget);
+
+	pending_flatten_timer = 0;
+	pending_flatten_widget = 0;
+    }
+
     switch (event->type)
     {
     case EnterNotify:
     {
+	clog << "Entering " << XtName(w) << "\n";
 	unflatten_button(w);
 	active_button = w;
 	break;
@@ -197,8 +248,15 @@ static void FlattenEH(Widget w,
 
     case LeaveNotify:
     {
-	flatten_button(w);
-	active_button = 0;
+	clog << "Leaving " << XtName(w) << "\n";
+
+	// We don't flatten the button immediately, because the DDD
+	// ungrab mechanism may cause the pointer to leave a button
+	// and re-enter it immediately.  Wait for 75ms.
+	pending_flatten_widget = w;
+	pending_flatten_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
+			    75, FlattenNow, &pending_flatten_widget);
 	break;
     }
     }
@@ -288,7 +346,8 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 	    if (flat)
 	    {
 		XtSetArg(args[arg], XmNshadowThickness,    0); arg++;
-		XtSetArg(args[arg], XmNhighlightThickness, 2); arg++;
+		XtSetArg(args[arg], XmNhighlightThickness, 
+			 SHADOW_THICKNESS); arg++;
 	    }
 
 	    if (lesstif_version < 1000)
