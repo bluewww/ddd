@@ -4548,10 +4548,8 @@ Ddd*edit_breakpoint_condition_dialog_popup.title: DDD: Condition
 Ddd*edit_breakpoint_condition_dialog.selectionLabelString: Condition
 
 Ddd*edit_breakpoint_condition_dialog*helpString:	       \
-@rm Specify a condition VAR(cond) for the selected breakpoint(s) \
-or watchpoint(s).\n\
-The selected breakpoint(s) break only if VAR(cond) \
-evaluates to a non-zero value.
+@rm Specify a condition VAR(cond) for the selected items.\n\
+The selected items break only if VAR(cond) evaluates to a non-zero value.
 
 
 Ddd*edit_breakpoint_ignore_count_dialog_popup.title: DDD: Ignore Count
@@ -4559,10 +4557,8 @@ Ddd*edit_breakpoint_ignore_count_dialog.selectionLabelString: \
 Ignore Count
 
 Ddd*edit_breakpoint_ignore_count_dialog*helpString:	  \
-@rm Set the ignore count VAR(count) for the selected breakpoint(s) \
-or watchpoint(s).\n\
-Next VAR(count) hits of the selected breakpoint(s) and watchpoint(s) \
-will be ignored.
+@rm Set the ignore count VAR(count) for the selected items.\n\
+Next VAR(count) hits of the selected items will be ignored.
 
 
 Ddd*edit_breakpoints_dialog*buttons*new_bp.labelString:	      New Breakpoint...
@@ -4587,31 +4583,31 @@ Ddd*edit_breakpoints_dialog*buttons*enable.labelString:	       Enable
 Ddd*edit_breakpoints_dialog*buttons*enable.tipString:     \
 @rm Enable selected items
 Ddd*edit_breakpoints_dialog*buttons*enable.documentationString: \
-@rm Enable the selected item(s)
+@rm Enable the selected items
 
 Ddd*edit_breakpoints_dialog*buttons*disable.labelString:       Disable
 Ddd*edit_breakpoints_dialog*buttons*disable.tipString:     \
 @rm Disable selected items
 Ddd*edit_breakpoints_dialog*buttons*disable.documentationString: \
-@rm Disable the selected item(s)
+@rm Disable the selected items
 
 Ddd*edit_breakpoints_dialog*buttons*condition.labelString:     Condition...
 Ddd*edit_breakpoints_dialog*buttons*condition.tipString:     \
 @rm Set condition
 Ddd*edit_breakpoints_dialog*buttons*condition.documentationString:     \
-@rm Specify a condition for the selected item(s)
+@rm Specify a condition for the selected items
 
 Ddd*edit_breakpoints_dialog*buttons*ignore_count.labelString:  Ignore Count...
 Ddd*edit_breakpoints_dialog*buttons*ignore_count.tipString:     \
 @rm Set ignore count
 Ddd*edit_breakpoints_dialog*buttons*ignore_count.documentationString:     \
-@rm Specify how many crossings of the selected item(s) are to be ignored
+@rm Specify how many crossings of the selected items are to be ignored
 
 Ddd*edit_breakpoints_dialog*buttons*delete.labelString:	       Delete
 Ddd*edit_breakpoints_dialog*buttons*delete.tipString:     \
 @rm Delete selected items
 Ddd*edit_breakpoints_dialog*buttons*delete.documentationString:     \
-@rm Delete the selected item(s)
+@rm Delete the selected items
 
 
 !-----------------------------------------------------------------------------
@@ -4690,8 +4686,8 @@ Select any thread to make it the current thread.\n\
 In JDB, you can also\n\
 ITEM select a threadgroup to switch between viewing all threads\n\
     and the threads of the selected threadgroup.\n\
-ITEM click on LBL(Suspend) to suspend the selected thread(s).\n\
-ITEM click on LBL(Resume) to resume the selected thread(s).
+ITEM click on LBL(Suspend) to suspend the selected threads.\n\
+ITEM click on LBL(Resume) to resume the selected threads.
 
 
 
@@ -4795,13 +4791,13 @@ Ddd*edit_displays_dialog*buttons*show_detail.labelString:   Show Detail
 Ddd*edit_displays_dialog*buttons*show_detail.tipString:  \
 @rm Show selected details
 Ddd*edit_displays_dialog*buttons*show_detail.documentationString: \
-@rm Show detail on the selected data display(s)
+@rm Show detail on the selected data displays
 
 Ddd*edit_displays_dialog*buttons*hide_detail.labelString:   Hide Detail
 Ddd*edit_displays_dialog*buttons*hide_detail.tipString:  \
 @rm Hide selected details
 Ddd*edit_displays_dialog*buttons*hide_detail.documentationString: \
-@rm Hide detail on the selected data display(s)
+@rm Hide detail on the selected data displays
 
 Ddd*edit_displays_dialog*buttons*set.labelString:	    Set Value
 Ddd*edit_displays_dialog*buttons*set.tipString:  \
@@ -4813,7 +4809,7 @@ Ddd*edit_displays_dialog*buttons*delete.labelString:	    Delete
 Ddd*edit_displays_dialog*buttons*delete.tipString:  \
 @rm Delete selected displays
 Ddd*edit_displays_dialog*buttons*delete.documentationString:  \
-@rm Delete the selected data display(s)
+@rm Delete the selected data displays
 
 
 Ddd*run_dialog_popup.title: DDD: Run Program
