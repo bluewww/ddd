@@ -476,7 +476,7 @@ public:
     static bool bump_displays;
 
     // Constructor
-    DataDisp(Widget parent);
+    DataDisp(Widget parent, Widget& data_buttons_w);
 
     void create_shells();
 

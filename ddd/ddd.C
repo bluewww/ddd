@@ -2137,10 +2137,6 @@ int main(int argc, char *argv[])
 	verify_buttons(data_menubar);
 	register_menu_shell(data_menubar);
 
-	if (data_buttons_w == 0 && !app_data.toolbars_at_bottom)
-	    data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
-					  app_data.data_buttons);
-
 	arg = 0;
 	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
 	XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
@@ -2151,12 +2147,8 @@ int main(int argc, char *argv[])
 	XtManageChild(data_disp_parent);
     }
 
-    if (data_buttons_w == 0 && !app_data.toolbars_at_bottom)
-	data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
-				      app_data.data_buttons);
-
     // Create data display
-    data_disp = new DataDisp(data_disp_parent);
+    data_disp = new DataDisp(data_disp_parent, data_buttons_w);
 
     if (app_data.separate_data_window)
     {
@@ -2213,28 +2205,6 @@ int main(int argc, char *argv[])
 	// Status line
 	if (!app_data.status_at_bottom)
 	    create_status(source_view_parent);
-
-	// Add toolbar
-	if (arg_cmd_w == 0 && !app_data.toolbars_at_bottom)
-	{
-	    arg_cmd_w = create_toolbar(source_view_parent, "source",
-				       arg_cmd_area, 0, arg_label, source_arg,
-				       label_type);
-	}
-
-	if (command_toolbar_w == 0 && !app_data.toolbars_at_bottom)
-	{
-	    command_toolbar_w = make_buttons(source_view_parent, 
-					     "command_toolbar", 
-					     app_data.tool_buttons);
-	}
-
-	if (source_buttons_w == 0 && !app_data.toolbars_at_bottom)
-	{
-	    source_buttons_w = make_buttons(source_view_parent, 
-					    "source_buttons", 
-					    app_data.source_buttons);
-	}
     }
 
     // Add toolbar

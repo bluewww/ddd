@@ -5300,7 +5300,7 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
 // Constructor
 //----------------------------------------------------------------------------
 
-DataDisp::DataDisp(Widget parent)
+DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 {
     XtAppContext app_context = XtWidgetToApplicationContext(parent);
 
@@ -5329,6 +5329,11 @@ DataDisp::DataDisp(Widget parent)
 				     graph_cmd_area, 0, arg_label, graph_arg,
 				     label_type);
     }
+
+    // Add buttons
+    if (data_buttons_w == 0 && !app_data.toolbars_at_bottom)
+	data_buttons_w = 
+	    make_buttons(parent, "data_buttons", app_data.data_buttons);
 
     // Create graph editor
     Arg args[10];
