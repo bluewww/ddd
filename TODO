@@ -331,9 +331,10 @@ Volunteers for these and other projects are welcome!
     `http://sourceware.cygnus.com/gdb/onlinedocs/gdbmi_toc.html'.
 
 384 Finish themes support:
-    * Cache computed VSL libraries (clear when changed)
-    * Finish pop-up themes menu
+    * Finish pop-up themes menu.
+    * Populate user's DDD directory with themes.
+    * Cache computed VSL libraries (clear when changed).
     * Allow for interaction between VSL and DDD.
-    * Populate user's DDD directory with themes
+    * Document it all.
 
 385 (Insert new project ideas here)
