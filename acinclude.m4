@@ -1951,6 +1951,7 @@ dnl
 AC_DEFUN([ICE_FIND_MOTIF],
 [
 AC_REQUIRE([AC_PATH_XTRA])
+AC_REQUIRE([ICE_FIND_XEXTRA])
 AC_REQUIRE([ICE_CXX_ISYSTEM])
 motif_includes=
 motif_libraries=
@@ -1984,7 +1985,7 @@ ice_motif_save_CFLAGS="$CFLAGS"
 ice_motif_save_CPPFLAGS="$CPPFLAGS"
 ice_motif_save_LDFLAGS="$LDFLAGS"
 #
-LIBS="-lXm -lXmu -lXt -lXp -lXext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+LIBS="-lXm $ice_xextra_libxmu -lXt $ice_xextra_libxp $ice_xextra_libxext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
 CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
@@ -2042,7 +2043,7 @@ ice_motif_save_CFLAGS="$CFLAGS"
 ice_motif_save_CPPFLAGS="$CPPFLAGS"
 ice_motif_save_LDFLAGS="$LDFLAGS"
 #
-LIBS="-lXm -lXmu -lXt -lXp -lXext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+LIBS="-lXm $ice_xextra_libxmu -lXt $ice_xextra_libxp $ice_xextra_libxext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
 CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
@@ -2139,6 +2140,7 @@ AC_DEFUN([ICE_FIND_ATHENA],
 [
 AC_REQUIRE([AC_PATH_XTRA])
 AC_REQUIRE([ICE_CXX_ISYSTEM])
+AC_REQUIRE([ICE_FIND_XEXTRA])
 AC_REQUIRE([ICE_FIND_XPM])
 athena_includes=
 athena_libraries=
@@ -2172,7 +2174,9 @@ ice_athena_save_CFLAGS="$CFLAGS"
 ice_athena_save_CPPFLAGS="$CPPFLAGS"
 ice_athena_save_LDFLAGS="$LDFLAGS"
 #
-LIBS="-lXaw -lXmu -lXt -lXpm -lXext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+ice_athena_libxpm=
+test "$xpm_libraries" != "no" && ice_athena_libxpm=-lXpm
+LIBS="-lXaw $ice_xextra_libxmu -lXt $ice_athena_libxpm $ice_xextra_libxext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
 CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
@@ -2234,7 +2238,9 @@ ice_athena_save_CFLAGS="$CFLAGS"
 ice_athena_save_CPPFLAGS="$CPPFLAGS"
 ice_athena_save_LDFLAGS="$LDFLAGS"
 #
-LIBS="-lXaw -lXmu -lXt -lXpm -lXext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+ice_athena_libxpm=
+test "$xpm_libraries" != "no" && ice_athena_libxpm=-lXpm
+LIBS="-lXaw $ice_xextra_libxmu -lXt $ice_athena_libxpm $ice_xextra_libxext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
 CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
@@ -2499,10 +2505,32 @@ AC_MSG_RESULT(
 ])dnl
 dnl
 dnl
+dnl ICE_FIND_XEXTRA
+dnl ---------------
+dnl
+dnl Define ice_xextra_libxmu, ice_xextra_libxext, ice_xextra_libxp
+dnl
+dnl
+AC_DEFUN([ICE_FIND_XEXTRA],
+[
+AC_REQUIRE([AC_PATH_XTRA])
+ice_xextra_libxext=
+ice_xextra_libxp=
+ice_xextra_libxmu=
+ice_save_LDFLAGS=$LDFLAGS
+test -n "$x_libraries" && LDFLAGS="$LDFLAGS -L$x_libraries"
+AC_CHECK_LIB([Xext],[XShapeQueryVersion],[ice_xextra_libxext="-lXext"],[],
+	[${X_PRE_LIBS} -lX11 ${X_EXTRA_LIBS}])
+AC_CHECK_LIB([Xp],[XpSelectInput],[ice_xextra_libxp="-lXp"],[],
+	[${ice_xextra_libxext} ${X_PRE_LIBS} -lX11 ${X_EXTRA_LIBS}])
+AC_CHECK_LIB([Xmu],[XmuCvtStringToOrientation],[ice_xextra_libxmu="-lXmu"],[],
+	[-lXt ${ice_xextra_libxext} ${X_PRE_LIBS} -lX11 ${X_EXTRA_LIBS}])
+LDFLAGS=$ice_save_LDFLAGS
+])
 dnl
 dnl ICE_TRANSLATION_RESOURCE
 dnl ------------------------
-dnl 
+dnl
 dnl If Xt supports base translations, set @TRANSLATIONS@ to `baseTranslations',
 dnl otherwise, to `translations'.
 dnl
