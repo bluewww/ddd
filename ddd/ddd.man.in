@@ -3729,6 +3729,13 @@ If this is `\fBKDE\fR', Cut/Copy/Paste is on
 longer interrupts the debuggee; use \s-1\fBESC\fR\s+1 instead.
 .RE
 .TP
+.B "filterFiles (\fPclass\fB FilterFiles)"
+If this is `\fBon\fR' (default), \s-1@DDD@\s+1 filters files when
+opening execution files, core dumps, or source files, such that the
+selection shows only suitable files.  This requires that \s-1@DDD@\s+1
+opens each file, which may take time.  If this is `\fBoff\fR',
+\s-1@DDD@\s+1 always presents all available files.
+.TP
 .B "globalTabCompletion (\fPclass\fB GlobalTabCompletion)"
 If this is `\fBon\fR' (default), the \s-1\fBTAB\fR\s+1 key completes
 arguments in all windows.  If this is `\fBoff\fR', the

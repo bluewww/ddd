@@ -342,8 +342,6 @@ Volunteers for these and other projects are welcome!
 
 359 Check the GNU `screen' package for more PTY handling options.
 
-360 Make filtering files optional.
-
 361 Zdenek Sekera <zs@sgi.com> suggests to have the cursor jump to
     some specific location (such as the end of main()) when the
     program has terminated.

@@ -262,10 +262,12 @@ static Widget create_file_dialog(Widget w, String name,
 	return file_dialog(find_shell(w), name,
 			   searchRemoteFiles, searchRemoteDirectories, 
 			   openDone);
-    else
+    else if (app_data.filter_files)
 	return file_dialog(find_shell(w), name,
 			   searchLocalFiles, searchLocalDirectories, 
 			   openDone);
+    else
+	return file_dialog(find_shell(w), name, 0, 0, openDone);
 }
 
 

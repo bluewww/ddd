@@ -178,6 +178,8 @@
 #define XtCRHostInitCommands     "RHostInitCommands"
 #define XtNrshCommand            "rshCommand"
 #define XtCRshCommand            "RshCommand"
+#define XtNfilterFiles           "filterFiles"
+#define XtCFilterFiles           "FilterFiles"
 #define XtNlistExecCommand       "listExecCommand"
 #define XtCListExecCommand       "ListExecCommand"
 #define XtNlistSourceCommand     "listSourceCommand"
@@ -471,6 +473,7 @@ struct AppData {
     String    debugger_host_login;
     String    rhost_init_commands;
     String    rsh_command;
+    Boolean   filter_files;
     String    list_exec_command;
     String    list_source_command;
     String    list_core_command;

@@ -141,6 +141,15 @@ Source exploration
 - Dragging breakpoints works much better with scrolling.
 
 
+
+File Access
+-----------
+
+- The `filterFiles' resource allows you to turn off filtering files
+  when opening executables, core dumps, or sources.  This is useful in
+  environments with slow file access.
+
+
 User Interface
 --------------
 

@@ -865,6 +865,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNfilterFiles,
+	XtCFilterFiles,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, filter_files),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
         XtNlistExecCommand,
 	XtCListExecCommand,
 	XtRString,
