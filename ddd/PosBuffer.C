@@ -108,6 +108,7 @@ void PosBuffer::filter (string& answer)
 	if (has_prefix(answer, "Current function is "))
 	    already_read = Null;
 
+	// Check program state
 	if (has_prefix(answer, "Starting program: "))
 	    started = true;
 
@@ -116,6 +117,9 @@ void PosBuffer::filter (string& answer)
 
 	if (has_prefix(answer, "Program received signal"))
 	    signaled = true;
+
+	if (has_prefix(answer, "Program terminated with signal"))
+	    signaled = terminated = true;
 
 	if (answer.contains("has changed; re-reading symbols"))
 	    recompiled = true;
