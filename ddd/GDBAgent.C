@@ -91,7 +91,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_frame_command(tp == GDB || tp == XDB),
       _has_run_io_command(false),
       _has_print_r_option(false),
-      _has_simple_print_command(false),
+      _has_output_command(false),
       _has_where_h_option(false),
       _has_display_command(tp == GDB || tp == DBX),
       _has_clear_command(tp == GDB || tp == DBX),
@@ -137,7 +137,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_frame_command(gdb.has_frame_command()),
       _has_run_io_command(gdb.has_run_io_command()),
       _has_print_r_option(gdb.has_print_r_option()),
-      _has_simple_print_command(gdb.has_simple_print_command()),
+      _has_output_command(gdb.has_output_command()),
       _has_where_h_option(gdb.has_where_h_option()),
       _has_display_command(gdb.has_display_command()),
       _has_clear_command(gdb.has_clear_command()),
@@ -465,23 +465,30 @@ void GDBAgent::init_qu_array (string   cmds [],
 // Return true iff ANSWER ends with primary prompt.
 bool GDBAgent::ends_with_prompt (const string& answer)
 {
-    unsigned beginning_of_line = answer.index('\n', -1) + 1;
-
     switch (type())
     {
     case GDB:
+	{
+	    // Any line ending in `(gdb) ' is a prompt.
+	    static regex rxprompt(".*[(][^)]*gdb[^)]*[)] ");
+	    return answer.matches(rxprompt);
+	}
+
     case DBX:
-	return beginning_of_line < answer.length()
-	    && answer.length() > 3
-	    && answer[beginning_of_line] == '(' 
-	    && answer[answer.length() - 2] == ')'
-	    && answer[answer.length() - 1] == ' '
-	    && answer.index("db", beginning_of_line) >= 0;
+	{
+	    // Any line ending in `(dbx) ' is a prompt.
+	    static regex rxprompt(".*[(][^)]*gdb[^)]*[)] ");
+	    return answer.matches(rxprompt);
+	}
 
     case XDB:
-	return beginning_of_line < answer.length()
-	    && answer.length() > 0
-	    && answer[beginning_of_line] == '>';
+	{
+	    // Any line equal to `>' is a prompt.
+	    unsigned beginning_of_line = answer.index('\n', -1) + 1;
+	    return beginning_of_line < answer.length()
+		&& answer.length() > 0
+		&& answer[beginning_of_line] == '>';
+	}
     }
 
     return false;		// Never reached
@@ -896,8 +903,8 @@ string GDBAgent::print_command(string expr, bool internal) const
     {
     case GDB:
     case DBX:
-	if (internal && has_simple_print_command())
-	    cmd = "simple-print";
+	if (internal && has_output_command())
+	    cmd = "output";
 	else
 	    cmd = "print";
 	if (has_print_r_option())

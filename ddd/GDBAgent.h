@@ -139,7 +139,7 @@ private:
     bool _has_frame_command;	
     bool _has_run_io_command;
     bool _has_print_r_option;
-    bool _has_simple_print_command;
+    bool _has_output_command;
     bool _has_where_h_option;
     bool _has_display_command;
     bool _has_clear_command;
@@ -246,11 +246,9 @@ public:
     bool has_print_r_option() const   { return _has_print_r_option; }
     bool has_print_r_option(bool val) { return _has_print_r_option = val; }
 
-    // True if debugger has `simple-print' command (user-defined)
-    bool has_simple_print_command() const   
-    { return _has_simple_print_command; }
-    bool has_simple_print_command(bool val)
-    { return _has_simple_print_command = val; }
+    // True if debugger has `output' command
+    bool has_output_command() const   { return _has_output_command; }
+    bool has_output_command(bool val) { return _has_output_command = val; }
 
     // True if debugger has `-h' option in `where'
     bool has_where_h_option() const   { return _has_where_h_option; }

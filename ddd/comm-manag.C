@@ -136,7 +136,7 @@ typedef struct PlusCmdData {
     bool     config_err_redirection;   // try 'help run'
     bool     config_page;	       // try 'set $page = 0'
     bool     config_xdb;	       // try XDB settings
-    bool     config_simple_print;      // try 'simple-print'
+    bool     config_output;            // try 'output'
     bool     config_program_language;  // try 'show language'
 
     PlusCmdData () :
@@ -170,7 +170,7 @@ typedef struct PlusCmdData {
 	config_err_redirection(false),
 	config_page(false),
 	config_xdb(false),
-	config_simple_print(false),
+	config_output(false),
 	config_program_language(false)
     {}
 };
@@ -199,8 +199,8 @@ void start_gdb()
 	cmds += "list";		// Required to load symbol table
 	cmds += "info line";
 	plus_cmd_data->refresh_initial_line = true;
-	cmds += "simple-print " + print_cookie;
-	plus_cmd_data->config_simple_print = true;
+	cmds += "output " + print_cookie;
+	plus_cmd_data->config_output = true;
 	cmds += "show language";
 	plus_cmd_data->config_program_language = true;
 	cmds += "pwd";
@@ -497,10 +497,25 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_register = false;
     }
 
-    if (is_setting_cmd(cmd) && gdb->type() == GDB)
+    if (is_setting_cmd(cmd))
     {
-	plus_cmd_data->refresh_setting = true;
-	plus_cmd_data->set_command     = cmd;
+	// Get and refresh settings
+	switch (gdb->type())
+	{
+	case GDB:
+	    (void) get_gdb_settings();
+	    plus_cmd_data->refresh_setting = true;
+	    plus_cmd_data->set_command     = cmd;
+	    break;
+
+	case DBX:
+	    // (void) get_dbx_settings();
+	    break;
+
+	case XDB:
+	    // (void) get_xdb_settings();
+	    break;
+	}
     }
 	
     if (plus_cmd_data->refresh_frame && !gdb->has_frame_command())
@@ -575,7 +590,7 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_err_redirection);
     assert(!plus_cmd_data->config_page);
     assert(!plus_cmd_data->config_xdb);
-    assert(!plus_cmd_data->config_simple_print);
+    assert(!plus_cmd_data->config_output);
     assert(!plus_cmd_data->config_program_language);
     
     // Setup additional trailing commands
@@ -921,9 +936,9 @@ static void process_config_print_r(string& answer)
 			    && answer.contains(print_cookie));
 }
 
-static void process_config_simple_print(string& answer)
+static void process_config_output(string& answer)
 {
-    gdb->has_simple_print_command(is_known_command(answer) 
+    gdb->has_output_command(is_known_command(answer) 
 				  && answer.contains(print_cookie));
 }
 
@@ -1116,9 +1131,9 @@ void plusOQAC (string answers[],
 	process_config_def(answers[qu_count++]); // def finish { ... }
     }
 
-    if (plus_cmd_data->config_simple_print) {
+    if (plus_cmd_data->config_output) {
 	assert (qu_count < count);
-	process_config_simple_print(answers[qu_count++]);
+	process_config_output(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_program_language) {
