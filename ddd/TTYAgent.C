@@ -641,20 +641,20 @@ void TTYAgent::open_slave()
 #if HAVE_STREAMS && defined(I_PUSH)
     if (push)
     {
-	// Finish STREAMS setup.
-	if (ioctl(slave, I_PUSH, "ptem") < 0)
+	// Finish STREAMS setup by pushing TTY compatibility modules.
+	// These calls fail may fail if the modules do not exist.  For
+	// instance, HP-UX has no `ttcompat' module; Linux has no
+	// modules at all.  To avoid confusion, we do not give a
+	// warning if these calls fail due to invalid module names.
+
+	if (ioctl(slave, I_PUSH, "ptem") < 0 && errno != EINVAL)
 	    _raiseIOWarning("ioctl ptem " + slave_tty());
-	if (ioctl(slave, I_PUSH, "ldterm") < 0)
+	    
+	if (ioctl(slave, I_PUSH, "ldterm") < 0 && errno != EINVAL)
 	    _raiseIOWarning("ioctl ldterm " + slave_tty());
-	if (ioctl(slave, I_PUSH, "ttcompat") < 0)
-	{
-	    // On HP-UX and other systems, this call always fails.
-	    // Fortunately, it seems we can live without as well.  Hence,
-	    // we suppress the warning message to avoid confusion.
-#if 0
+
+	if (ioctl(slave, I_PUSH, "ttcompat") < 0 && errno != EINVAL)
 	    _raiseIOWarning("ioctl ttcompat " + slave_tty());
-#endif
-	}
     }
 #endif // I_PUSH
 
