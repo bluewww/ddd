@@ -302,11 +302,6 @@ LessTif
 
     With LessTif 0.87, the following problems are currently known:
 
-    * Running DDD with separate windows may cause the Debugger Console 
-      to become insensitive.  If this happens, close the debugger
-      console using your window manager, then re-open it via
-      `View->Debugger Console'.
-
     * The `Preferences' dialog may need manual resize.
 
     * Option menus in `GDB Settings' are only displayed partially.
