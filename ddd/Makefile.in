@@ -454,112 +454,146 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include $(X_INCLUDE)
 
 
 ## Libraries and object files
-# A subset of the NORA library -- utilities
+# General-purpose utilities: strings, regexps, run-type type info...
+BASE_OBJECTS = \
+	compare.o    \
+	cook.o       \
+	glob.o       \
+	hash.o       \
+	regex.o      \
+	sigName.o    \
+	strclass.o   \
+	SignalB.o    \
+	TypeInfo.o   \
+	UniqueId.o   \
+	MemCheck.o   \
+	Range.o
+
+# Instantiated `DynArray' and `VarArray' templates
+ARRAY_OBJECTS = \
+	StringA.o    \
+	IntArray.o   \
+	VoidArray.o
+
+# Interprocess communication
+# Top-level class is `Agent', declared in `Agent.h'
 AGENT_OBJECTS = \
-	compare.o \
-	cook.o \
-	hash.o \
-	regex.o \
-	sigName.o \
-	strclass.o \
-	Agent.o \
-	AgentM.o \
+	Agent.o      \
+	AgentM.o     \
 	AsyncAgent.o \
 	ChunkQueue.o \
 	DataLength.o \
-	HandlerL.o \
-	LiterateA.o \
-	SignalB.o \
-	TTYAgent.o \
-	TypeInfo.o \
-	UniqueId.o
+	HandlerL.o   \
+	LiterateA.o  \
+	TTYAgent.o
 
-NORA_OBJECTS = \
-	$(AGENT_OBJECTS) \
+# Miscellaneous utilities for X programs: Motif strings, hourglasses,
+# context-sensitive help...
+XSTUFF_OBJECTS = \
 	converters.o \
-	database.o \
-	events.o \
-	fileSBF.o \
+	database.o   \
+	events.o     \
 	findParent.o \
-	layout.o \
-	longName.o \
-	printBox.o \
-	verify.o \
-	AlignBox.o \
-	ArcBox.o \
-	ArgNode.o \
-	BinBox.o \
-	Box.o \
-	BoxD.o \
-	BoxExtend.o \
-	BoxGraphN.o \
-	BoxPoint.o \
-	BoxRegion.o \
-	BoxSize.o \
-	BuiltinCN.o \
-	CallNode.o \
-	CompositeB.o \
-	ConstNode.o \
-	DefCallN.o \
-	Delay.o \
-	DestroyCB.o \
-	DiagBox.o \
-	DummyBox.o \
-	DummyNode.o \
-	ExitCB.o \
-	FixBox.o \
-	FontFixBox.o \
-	FontTable.o \
-	Graph.o \
-	GraphEdge.o \
-	GraphEdit.o \
-	GraphGC.o \
-	GraphNode.o \
-	HatBox.o \
-	HelpCB.o \
-	HintGraphN.o \
-	IntArray.o   \
-	LetNode.o \
-	LineBox.o \
-	LineGraphE.o \
-	ListBox.o \
-	ListNode.o \
-	MString.o \
-	MakeMenu.o \
-	MarkBox.o \
-	MatchBox.o \
-	MemCheck.o \
-	NameNode.o \
-	PannedGE.o \
-	PosGraphN.o \
-	PrimitiveB.o \
-	Range.o \
-	RegionGN.o \
-	ScrolledGE.o \
-	SlopeBox.o \
-	StringA.o \
-	StringBox.o \
-	THatBox.o \
-	TagBox.o \
-	TestNode.o \
-	TrueBox.o \
-	TrueNode.o \
-	VSEFlags.o \
-	VSLBuiltin.o \
-	VSLDef.o \
-	VSLDefList.o \
-        VSLErr.o \
-	VSLLib.o \
-	VSLNode.o \
-        VSLRead.o \
-	VoidArray.o
+	fileSBF.o    \
+	longName.o   \
+	verify.o     \
+	Delay.o      \
+	DestroyCB.o  \
+	ExitCB.o     \
+	HelpCB.o     \
+	MString.o    \
+	MakeMenu.o
 
+# Box library - rectangular composible graphical items
+# Top-level class is `Box', declared in `Box.h'
+BOX_OBJECTS = \
+	printBox.o   \
+	AlignBox.o   \
+	ArcBox.o     \
+	BinBox.o     \
+	Box.o        \
+	BoxD.o       \
+	BoxExtend.o  \
+	BoxPoint.o   \
+	BoxRegion.o  \
+	BoxSize.o    \
+	CompositeB.o \
+	DiagBox.o    \
+	DummyBox.o   \
+	FixBox.o     \
+	FontFixBox.o \
+	FontTable.o  \
+	HatBox.o     \
+	LineBox.o    \
+	ListBox.o    \
+	MarkBox.o    \
+	MatchBox.o   \
+	PrimitiveB.o \
+	SlopeBox.o   \
+	StringBox.o  \
+	THatBox.o    \
+	TagBox.o     \
+	TrueBox.o
+
+# VSL library - building boxes from structured data
+# Top-level class is `VSLLib', declared in `VSLLib.h'
+VSL_OBJECTS = \
+	ArgNode.o    \
+	BuiltinCN.o  \
+	CallNode.o   \
+	DummyNode.o  \
+	LetNode.o    \
+	NameNode.o   \
+	ListNode.o   \
+	TestNode.o   \
+	TrueNode.o   \
+	VSEFlags.o   \
+	VSLBuiltin.o \
+	VSLDef.o     \
+	VSLDefList.o \
+        VSLErr.o     \
+	VSLLib.o     \
+	VSLNode.o    \
+        VSLRead.o
+
+# Graph structure, graph layout and graph editor widget
+# Top-level classes are `Graph', declared in `Graph.h'
+# and the `GraphEdit' widget, deckared in `GraphEdit.h'.
+GRAPH_OBJECTS = \
+	layout.o     \
+	BoxGraphN.o  \
+	ConstNode.o  \
+	DefCallN.o   \
+	Graph.o      \
+	GraphEdge.o  \
+	GraphEdit.o  \
+	GraphGC.o    \
+	GraphNode.o  \
+	HintGraphN.o \
+	LineGraphE.o \
+	PannedGE.o   \
+	PosGraphN.o  \
+	RegionGN.o   \
+	ScrolledGE.o
+
+# All these objects were originally part of the NORA library and are now
+# maintained as part of DDD.
+NORA_OBJECTS = \
+	$(BASE_OBJECTS)   \
+	$(ARRAY_OBJECTS)  \
+	$(AGENT_OBJECTS)  \
+	$(XSTUFF_OBJECTS) \
+	$(BOX_OBJECTS)    \
+	$(VSL_OBJECTS)    \
+	$(GRAPH_OBJECTS)
+
+# The DDD application itself.  `ddd.C' is the main program, `SourceView.C'
+# is the source window, `DataDisp.C' is the data window.
 DDD_OBJECTS = \
 	configinfo.o \
 	comm-manag.o \
 	disp-read.o  \
 	filetype.o   \
-	glob.o       \
 	hostname.o   \
 	mydialogs.o  \
 	string-fun.o \
@@ -586,7 +620,6 @@ PROGS = ddd
 
 ## Extra demonstration files.
 DEMOS = cxxtest ctest test-graph ttytest bug ptest m2test
-
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
@@ -804,8 +837,9 @@ ddd:	ddd.o $(OBJECTS)
 test-graph: test-graph.o $(NORA_OBJECTS) 
 	$(LINK.cc) -o $@ test-graph.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
-ttytest: ttytest.o $(AGENT_OBJECTS)
-	$(LINK.cc) -o $@ ttytest.o $(AGENT_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+ttytest: ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS)
+	$(LINK.cc) -o $@ ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS) \
+	$(ALL_X_LIBS) $(LIBS)
 
 bug:	bug.o
 	$(LINK.cc) -o $@ bug.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
