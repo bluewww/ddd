@@ -1,7 +1,7 @@
 // $Id$
 // Data Display
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus (luetke@ips.cs.tu-bs.de).
 // 
 // This file is part of the DDD Library.
@@ -273,6 +273,9 @@ private:
     static void disable_displayOQC   (const string& answer, void* data);
     static void enable_displayOQC    (const string& answer, void* data);
     static void delete_displayOQC    (const string& answer, void* data);
+
+    static void select_with_all_descendants(GraphNode *node);
+    static void select_with_all_ancestors(GraphNode *node);
 
     //-----------------------------------------------------------------------
     // Data

@@ -436,7 +436,7 @@ void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
 	disable_displaySQ(disp_nrs);
 }
 
-static void select_with_all_descendants(GraphNode *node)
+void DataDisp::select_with_all_descendants(GraphNode *node)
 {
     if (!node->selected())
     {
@@ -448,7 +448,7 @@ static void select_with_all_descendants(GraphNode *node)
     }
 }
 
-static void select_with_all_ancestors(GraphNode *node)
+void DataDisp::select_with_all_ancestors(GraphNode *node)
 {
     if (!node->selected())
     {
@@ -465,13 +465,9 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 {
     set_last_origin(dialog);
 
-    int count = disp_graph->count_all();
-    IntArray disp_nrs(count);
-    GraphNode **ancestors   = new GraphNode *[count];
-    GraphNode **descendants = new GraphNode *[count];
-
-    int a = 0;
-    int d = 0;
+    IntArray disp_nrs;
+    VarArray<GraphNode *> ancestors;
+    VarArray<GraphNode *> descendants;
 
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
@@ -493,7 +489,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 		while (ancestor->isHint())
 		    ancestor = ancestor->firstTo()->from();
 
-		ancestors[a++] = ancestor;
+		ancestors += ancestor;
 	    }
 
 	    // Select all descendants
@@ -504,22 +500,20 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 		while (descendant->isHint())
 		    descendant = descendant->firstFrom()->to();
 
-		descendants[d++] = descendant;
+		descendants += descendant;
 	    }
 	}
     }
 
+    int i;
+    for (i = 0; i < ancestors.size(); i++)
+	select_with_all_descendants(ancestors[i]);
+    for (i = 0; i < descendants.size(); i++)
+	select_with_all_ancestors(descendants[i]);
+
     delete_displaySQ(disp_nrs);
 
-    while (a > 0)
-	select_with_all_descendants(ancestors[--a]);
-    while (d > 0)
-	select_with_all_ancestors(descendants[--d]);
-
     refresh_graph_edit();
-
-    delete[] descendants;
-    delete[] ancestors;
 }
 
 
@@ -1753,7 +1747,7 @@ void DataDisp::new_displayOQC (const string& answer, void* data)
 
     // in den Graphen einfuegen
     string nr = dn->disp_nr();
-    disp_graph->insert_new (get_nr(nr), dn);
+    disp_graph->insert_new(get_nr(nr), dn);
 
     refresh_addr(dn);
     refresh_graph_edit();
@@ -1792,7 +1786,7 @@ void DataDisp::new_userOQC (const string& answer, void* data)
 
     // in den Graphen einfuegen
     string nr = dn->disp_nr();
-    disp_graph->insert_new (get_nr(nr), dn);
+    disp_graph->insert_new(get_nr(nr), dn);
 
     refresh_addr(dn);
     refresh_graph_edit();
@@ -1838,59 +1832,49 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
     }
 
     assert (stop >= start);
-    int count = stop + 1 - start;
 
-    string *display_cmds = new string[count];
-    string *print_cmds   = new string[count];
+    StringArray display_cmds;
+    StringArray print_cmds;
 
-    int j = 0;
-    for (int i = start; i < stop + 1; i++) {
-	display_cmds[j] = 
+    for (int i = start; i < stop + 1; i++)
+    {
+	display_cmds += 
 	    gdb->display_command(prefix + "[" + itostring (i) + "]" + postfix);
-	print_cmds[j] = 
+	print_cmds += 
 	    gdb->print_command(prefix + "[" + itostring (i) + "]" + postfix);
-	j++;
     }
+    VoidArray dummy;
+    while (dummy.size() < display_cmds.size())
+	dummy += (void *)0;
 
     switch (gdb->type())
     {
     case GDB:
 	{
-	    void** dummy = new void *[count];
-	    bool ok = gdb->send_qu_array (display_cmds,
-					  dummy,
-					  count,
-					  new_displaysOQAC,
-					  p);
+	    bool ok = 
+		gdb->send_qu_array (display_cmds, dummy, display_cmds.size(),
+				    new_displaysOQAC, p);
 	    if (!ok)
 		post_gdb_busy(last_origin);
-
-	    delete[] dummy;
 	}
 	break;
 
     case DBX:
     case XDB:
 	{
-	    for (int i = 0; i < count; i++)
+	    for (int i = 0; i < display_cmds.size(); i++)
 		gdb_question(display_cmds[i]);
 
-	    void** dummy = new void *[count];
 	    bool ok = gdb->send_qu_array (print_cmds,
 					  dummy,
-					  count,
+					  print_cmds.size(),
 					  new_displaysOQAC,
 					  p);
 	    if (!ok)
 		post_gdb_busy(last_origin);
-	
-	    delete[] dummy;
 	}
 	break;
     }
-
-    delete[] display_cmds;
-    delete[] print_cmds;
 }
 
 // ***************************************************************************
@@ -1934,7 +1918,7 @@ void DataDisp::new_displaysOQAC (string answers[],
 
 	    // Insert into graph
 	    string nr = dn->disp_nr();
-	    disp_graph->insert_new (get_nr(nr), dn);
+	    disp_graph->insert_new(get_nr(nr), dn);
 	}
     }
     delete[] answers;
@@ -2457,59 +2441,51 @@ void DataDisp::dependent_displaysSQA (string display_expression,
     }
 
     assert (stop >= start);
-    int count = stop + 1 - start;
 
-    string *display_cmds = new string[count];
-    string *print_cmds   = new string[count];
+    StringArray display_cmds;
+    StringArray print_cmds;
 
-    int j = 0;
-    for (int i = start; i < stop + 1; i++) {
-	display_cmds[j] = 
+    for (int i = start; i < stop + 1; i++)
+    {
+	display_cmds += 
 	    gdb->display_command(prefix + "[" + itostring (i) + "]" + postfix);
-	print_cmds[j] = 
+	print_cmds += 
 	    gdb->print_command(prefix + "[" + itostring (i) + "]" + postfix);
-	j++;
     }
+    VoidArray dummy;
+    while (dummy.size() < display_cmds.size())
+	dummy += (void *)0;
 
     switch (gdb->type())
     {
     case GDB:
 	{
-	    void** dummy = new void *[count];
 	    bool ok = gdb->send_qu_array (display_cmds,
 					  dummy,
-					  count,
+					  display_cmds.size(),
 					  dependent_displaysOQAC,
 					  (void *)disp_nr);
 	    if (!ok)
 		post_gdb_busy(last_origin);
-
-	    delete[] dummy;
 	}
 	break;
 
     case DBX:
     case XDB:
 	{
-	    for (int i = 0; i < count; i++)
+	    for (int i = 0; i < display_cmds.size(); i++)
 		gdb_question(display_cmds[i]);
 
-	    void** dummy = new void *[count];
 	    bool ok = gdb->send_qu_array (print_cmds,
 					  dummy,
-					  count,
+					  print_cmds.size(),
 					  dependent_displaysOQAC,
 					  (void *)disp_nr);
 	    if (!ok)
 		post_gdb_busy(last_origin);
-	
-	    delete[] dummy;
 	}
 	break;
     }
-
-    delete[] display_cmds;
-    delete[] print_cmds;
 }
 
 // ***************************************************************************
