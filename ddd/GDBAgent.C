@@ -40,6 +40,7 @@ char GDBAgent_rcsid[] =
 #include "GDBAgent.h"
 #include "cook.h"
 #include "ddd.h"
+#include "string-fun.h"
 
 #include <stdlib.h>		// exit
 #include <iostream.h>
@@ -1101,22 +1102,28 @@ string GDBAgent::display_command(string expr) const
 }
 
 // DBX 3.0 wants `where -h' instead of `where'
-string GDBAgent::where_command() const
+string GDBAgent::where_command(int count) const
 {
+    string cmd;
     switch (type())
     {
     case GDB:
     case DBX:
 	if (has_where_h_option())
-	    return "where -h";
+	    cmd = "where -h";
 	else
-	    return "where";
+	    cmd = "where";
+	break;
 	
     case XDB:
-	return "t";
+	cmd = "t";
+	break;
     }
 
-    return "";			// Never reached
+    if (count != 0)
+	cmd += " " + itostring(count);
+
+    return cmd;
 }
 
 string GDBAgent::info_locals_command() const

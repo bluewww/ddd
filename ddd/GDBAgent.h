@@ -338,7 +338,7 @@ public:
     string assign_command(string var, string expr) const;
 
     string display_command(string expr = "") const; // GDB: "display EXPR"
-    string where_command() const;	            // GDB: "where "
+    string where_command(int count = 0) const;	    // GDB: "where COUNT"
     string pwd_command() const;	                    // GDB: "pwd "
     string frame_command(string depth = "") const;  // GDB: "frame DEPTH"
     string echo_command(string text) const;         // GDB: "echo TEXT"
