@@ -195,6 +195,13 @@ Widget post_gdb_died(string reason, int gdb_status, Widget w)
     return died_dialog;
 }
 
+static void GDBOutCB(XtPointer client_data, XtIntervalId *)
+{
+    string *text_ptr = (string *)client_data;
+    gdb_out("\r" + *text_ptr + "\n" + gdb->prompt());
+    delete text_ptr;
+}
+
 Widget post_gdb_message(string text, Widget w)
 {
     strip_final_blanks(text);
@@ -209,7 +216,12 @@ Widget post_gdb_message(string text, Widget w)
 
     if (gdb->isReadyWithPrompt())
     {
-	_gdb_out("\r" + text + "\n" + gdb->prompt());
+	// We don't output this immediately, because we might be in a
+	// private input state (private_gdb_input or tty_gdb_input
+	// might be set)
+	string *text_ptr = new string(text);
+	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0,
+			GDBOutCB, XtPointer(text_ptr));
 	return 0;
     }
 
