@@ -87,7 +87,12 @@ public:
     }
 
     // Get pattern of theme
-    ThemePattern pattern(const string& theme)
+    ThemePattern& pattern(const string& theme)
+    {
+	return map[theme];
+    }
+
+    const ThemePattern& pattern(const string& theme) const
     {
 	return map[theme];
     }

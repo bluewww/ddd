@@ -88,3 +88,22 @@ bool ThemePattern::matches(const string& expr) const
 
     return false;
 }
+
+void ThemePattern::add(const string& pattern)
+{
+    for (int i = 0; i < patterns.size(); i++)
+	if (patterns[i] == pattern)
+	    return;		// PATTERN is already there
+
+    patterns += pattern;
+}
+
+void ThemePattern::remove(const string& pattern)
+{
+    StringArray new_patterns;
+    for (int i = 0; i < patterns.size(); i++)
+	if (patterns[i] != pattern)
+	    new_patterns += patterns[i];
+
+    patterns = new_patterns;
+}

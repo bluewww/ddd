@@ -321,6 +321,16 @@ public:
 				 bool verbose = true,
 				 bool prompt = true);
 
+    // Suppress expression EXPR.
+    static void suppress_patternSQ(const string& expr,
+				   bool verbose = true,
+				   bool prompt = true);
+
+    // Unsuppress expression EXPR.
+    static void unsuppress_patternSQ(const string& expr,
+				     bool verbose = true,
+				     bool prompt = true);
+
     // Same, but return the appropriate command
     static string new_display_cmd(const string& display_expression,
 				  BoxPoint *pos = 0,
@@ -333,6 +343,8 @@ public:
     static string enable_display_cmd(IntArray& display_nrs);
     static string delete_display_cmd(IntArray& display_nrs);
     static string delete_display_cmd(const string& name);
+    static string suppress_pattern_cmd(const string& expr);
+    static string unsuppress_pattern_cmd(const string& expr);
 
     // Same, but use the GDB_COMMAND interface for enqueing commands
     static void new_display(string display_expression,
@@ -373,6 +385,11 @@ public:
     static void delete_display(const string& name, Widget origin = 0)
     {
 	gdb_command(delete_display_cmd(name), origin);
+    }
+
+    static void suppress_pattern(const string& expr, Widget origin = 0)
+    {
+	gdb_command(suppress_pattern_cmd(expr), origin);
     }
 
     // Process 'info display' output in INFO_DISPLAY_ANSWER.  If
@@ -549,6 +566,7 @@ public:
     static void selectAllCB(Widget, XtPointer, XtPointer);
     static void unselectAllCB(Widget, XtPointer, XtPointer);
     static void deleteCB(Widget, XtPointer, XtPointer);
+    static void suppressCB(Widget, XtPointer, XtPointer);
 
     // Helpers for user displays
     static bool have_user_display(const string& name);

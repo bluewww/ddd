@@ -539,6 +539,80 @@ void DataDisp::get_all_clusters(IntArray& numbers)
 
 
 //-----------------------------------------------------------------------------
+// Suppress expressions
+//-----------------------------------------------------------------------------
+
+// Suppress the selected item - now and forever
+void DataDisp::suppressCB (Widget dialog, XtPointer, XtPointer)
+{
+    set_last_origin(dialog);
+
+    DispValue *dv = selected_value();
+    if (dv == 0)
+	return;
+
+    string pattern = dv->full_name();
+    pattern.gsub("\\", "\\\\");
+    pattern.gsub("?", "\\?");
+    pattern.gsub("*", "\\*");
+    pattern.gsub("[", "\\[");
+    pattern.gsub("]", "\\]");
+    if (pattern.contains("->"))
+	pattern = "*" + pattern.from("->", -1);
+    if (pattern.contains("."))
+	pattern = "*" + pattern.from(".", -1);
+
+    suppress_pattern(pattern);
+}
+
+string DataDisp::suppress_pattern_cmd(const string& expr)
+{
+    return "graph suppress " + expr;
+}
+
+string DataDisp::unsuppress_pattern_cmd(const string& expr)
+{
+    return "graph unsuppress " + expr;
+}
+
+static string suppress_vsl = "suppress.vsl";
+
+void DataDisp::suppress_patternSQ(const string& expr, bool /* verbose */, 
+				  bool do_prompt)
+{
+    string e = expr;
+    strip_space(e);
+
+    ThemePattern& p = DispBox::theme_manager.pattern(suppress_vsl);
+    p.add(e);
+    p.active() = true;
+
+    update_themes();
+    set_theme_manager(DispBox::theme_manager);
+
+    if (do_prompt)
+	prompt();
+}
+
+void DataDisp::unsuppress_patternSQ(const string& expr, bool /* verbose */, 
+				    bool do_prompt)
+{
+    string e = expr;
+    strip_space(e);
+
+    ThemePattern& p = DispBox::theme_manager.pattern(suppress_vsl);
+    p.remove(expr);
+    p.active() = true;
+
+    update_themes();
+    set_theme_manager(DispBox::theme_manager);
+
+    if (do_prompt)
+	prompt();
+}
+
+
+//-----------------------------------------------------------------------------
 // Button Callbacks
 //-----------------------------------------------------------------------------
 
@@ -978,7 +1052,6 @@ void DataDisp::deleteCB (Widget dialog, XtPointer client_data, XtPointer)
 
     delete_display(disp_nrs, dialog);
 }
-
 
 void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
 {
@@ -1649,6 +1722,11 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data,
 	// Delete selected displays
 	deleteCB(dialog, client_data, call_data);
     }
+    else if (count.selected > 0)
+    {
+	// Suppress selected display
+	suppressCB(dialog, client_data, call_data);
+    }
     else
     {
 	// Delete argument
@@ -2303,7 +2381,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     bool arg_is_displayed = (display_number(source_arg->get_string()) != 0);
     bool can_delete_arg = (count.selected == 0 && arg_is_displayed || 
 			   record_ok || 
-			   count.selected_titles > 0);
+			   count.selected > 0);
     set_sensitive(graph_cmd_area[CmdItms::Plot].widget, plot_ok);
     set_sensitive(plot_menu[PlotItms::History].widget, can_delete_arg);
 
@@ -6489,7 +6567,7 @@ void DataDisp::set_theme_manager(const ThemeManager& t)
 	dn->reset();
     }
 
-    refresh_graph_edit();
+    unselectAllCB(graph_edit, 0, 0);
 }
 
 

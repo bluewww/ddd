@@ -45,9 +45,7 @@ public:
     // Create as empty
     ThemePattern()
 	: patterns(), _active(true)
-    {
-	patterns += "*";
-    }
+    {}
 
     // Create from external representation REP
     ThemePattern(const string& rep, bool active = true);
@@ -60,6 +58,12 @@ public:
     // True if active
     bool  active() const { return _active; }
     bool& active()       { return _active; }
+
+    // Add pattern
+    void add(const string& pattern);
+
+    // Remove pattern
+    void remove(const string& pattern);
 
     // Assignment
     ThemePattern& operator = (const ThemePattern& t)

@@ -1075,6 +1075,22 @@ void send_gdb_command(string cmd, Widget origin,
 	if (is_graph_cmd(cmd))
 	{
 	    cmd_data->graph_cmd = cmd;
+
+	    string base = cmd.after("graph ");
+	    if (is_suppress_cmd(base))
+	    {
+		string expr = base.after(" ");
+		cmd_data->undo_command = 
+		    data_disp->unsuppress_pattern_cmd(expr);
+		cmd_data->undo_is_exec = false;
+	    }
+	    else if (is_unsuppress_cmd(base))
+	    {
+		string expr = base.after(" ");
+		cmd_data->undo_command = 
+		    data_disp->suppress_pattern_cmd(expr);
+		cmd_data->undo_is_exec = false;
+	    }
 	}
 	else if (gdb->type() == GDB && starts_recording(cmd))
 	{
@@ -2389,6 +2405,16 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 		return false;
 	    }
 	}
+    }
+    else if (is_suppress_cmd(cmd))
+    {
+	data_disp->suppress_patternSQ(cmd.after("suppress "), 
+				      verbose, do_prompt);
+    }
+    else if (is_unsuppress_cmd(cmd))
+    {
+	data_disp->unsuppress_patternSQ(cmd.after("unsuppress "), 
+					verbose, do_prompt);
     }
     else
     {

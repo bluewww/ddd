@@ -57,6 +57,12 @@ bool is_display_cmd(const string& cmd);
 // True if CMD changes a data display
 bool is_data_cmd(const string& cmd);
 
+// True if CMD is a suppress command
+bool is_suppress_cmd(const string& cmd);
+
+// True if CMD is an unsuppress command
+bool is_unsuppress_cmd(const string& cmd);
+
 // True if CMD deletes a data display
 bool is_delete_display_cmd(const string& cmd);
 

@@ -229,6 +229,18 @@ bool is_disable_display_cmd (const string& cmd)
     return cmd.matches(rxdisable);
 }
 
+// True if CMD suppresses values
+bool is_suppress_cmd (const string& cmd)
+{
+    return cmd.contains("suppress ", 0);
+}
+
+// True if CMD unsuppresses values
+bool is_unsuppress_cmd (const string& cmd)
+{
+    return cmd.contains("unsuppress ", 0);
+}
+
 // True if CMD changes current frame
 bool is_frame_cmd (const string& cmd)
 {
