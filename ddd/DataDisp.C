@@ -1,8 +1,9 @@
 // $Id$
 // Data Display
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
+// and Andreas Zeller <zeller@ips.cs.tu-bs.de>
 // 
 // This file is part of the DDD Library.
 // 
@@ -182,6 +183,7 @@ Widget     DataDisp::graph_form_w           = 0;
 Widget     DataDisp::last_origin            = 0;
 ArgField  *DataDisp::graph_arg              = 0;
 Widget     DataDisp::graph_cmd_w            = 0;
+Widget     DataDisp::graph_selection_w      = 0;
 Widget     DataDisp::edit_displays_dialog_w = 0;
 Widget     DataDisp::display_list_w         = 0;
 Widget     DataDisp::graph_popup_w          = 0;
@@ -851,17 +853,6 @@ void DataDisp::new_displayCD (BoxPoint box_point)
 }
 
 
-
-//-----------------------------------------------------------------------------
-// Set up event handlers
-//-----------------------------------------------------------------------------
-
-void DataDisp::set_handlers()
-{
-    graph_arg->addHandler(LosePrimary, graph_unselectHP);
-}
-
-
 //-----------------------------------------------------------------------------
 // Redraw graph and update display list
 //-----------------------------------------------------------------------------
@@ -958,7 +949,7 @@ void DataDisp::no_displaysHP (void*, void* , void* call_data)
 		   (!empty && gdb->isReadyWithPrompt()));
 }
 
-void DataDisp::graph_unselectHP (void*, void*, void*)
+void DataDisp::SelectionLostCB(Widget, XtPointer, XtPointer)
 {
     // Selection lost - clear all highlights
     for (GraphNode *gn = disp_graph->firstNode();
@@ -1351,7 +1342,6 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(display_area[DisplayItms::HideDetail].widget, 
 		  count_selected_expanded > 0);
 
-
     // Delete
     set_sensitive(graph_cmd_area[ValueItms::Delete].widget, count_selected);
     set_sensitive(display_area[DisplayItms::Delete].widget, count_selected);
@@ -1371,54 +1361,80 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	{
 	    arg = disp_value_arg->full_name();
 	    source_arg->set_string(arg);
-	    graph_arg->set_string(arg);
 	}
 	else if (disp_node_arg)
 	{
 	    arg = disp_node_arg->name();
 	    source_arg->set_string(arg);
-	    graph_arg->set_string(arg);
 	}
 	else
 	{
 	    ostrstream arg_os;
 	    arg_os << "(" << count_selected << " displays)";
 	    arg = arg_os;
-	    graph_arg->set_string(arg);
 	}
-
-	// Cause argument field to obtain the selection
-	Widget w = graph_arg->widget();
-
-	XmTextPosition left, right;
-	if (!XmTextFieldGetSelectionPosition(w, &left, &right)
-	    || left != 0
-	    || right != XmTextFieldGetLastPosition(w))
-	{
-	    // Give it the selection
-	    XmTextFieldSetSelection(w,
-				    0, XmTextFieldGetLastPosition(w),
-				    XtLastTimestampProcessed(XtDisplay(w)));
-
-	    // The value is already highlighted in the node -- 
-	    // hence, no reason to cause confusion
-	    XmTextFieldSetHighlight(w,
-				    0, XmTextFieldGetLastPosition(w),
-				    XmHIGHLIGHT_NORMAL);
-	}
+	graph_arg->set_string(arg);
     }
     else
     {
 	// No argument
 	graph_arg->set_string("");
+    }
 
-	// Clear selection
-	Widget w = graph_arg->widget();
-	XmTextFieldClearSelection(w, XtLastTimestampProcessed(XtDisplay(w)));
+    // Set selection
+    string cmd = selection_as_commands();
+    XmTextSetString(graph_selection_w, cmd);
+    Time tm = XtLastTimestampProcessed(XtDisplay(graph_selection_w));
+
+    if (cmd == "")
+    {
+	// No selection
+	XmTextClearSelection(graph_selection_w, tm);
+    }
+    else
+    {
+	// Give it to the selection
+	XmTextSetSelection(graph_selection_w, 
+			   0, XmTextGetLastPosition(graph_selection_w), tm);
     }
 }
 
-static int alias_display_nr(GraphNode *node)
+string DataDisp::selection_as_commands()
+{
+    ostrstream cmd;
+
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->selected())
+	{
+	    cmd << "graph display " << dn->name();
+
+	    // Find dependencies
+	    GraphEdge *edge;
+	    for (edge = dn->nodeptr()->firstTo();
+		 edge != 0; edge = dn->nodeptr()->nextTo(edge))
+	    {
+		BoxGraphNode *ancestor = ptr_cast(BoxGraphNode, edge->from());
+		if (ancestor != 0)
+		{
+		    int depnr = disp_graph->get_nr(ancestor);
+		    DispNode *depnode = disp_graph->get(depnr);
+
+		    cmd << " dependent on " << depnode->name();
+		}
+	    }
+	    cmd << '\n';
+	}
+    }
+
+    return string(cmd);
+}
+
+
+int DataDisp::alias_display_nr(GraphNode *node)
 {
     if (!node->isHint())
 	return 0;
@@ -1614,11 +1630,11 @@ public:
     string display_expression;
     BoxPoint point;
     BoxPoint *point_ptr;
-    int depends_on;
+    string depends_on;
     Widget origin;
 
     NewDisplayInfo()
-	: delay(0), point_ptr(0), depends_on(0), origin(0)
+	: delay(0), point_ptr(0), depends_on(""), origin(0)
     {}
 
     ~NewDisplayInfo()
@@ -1636,18 +1652,22 @@ void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
 }
 
 void DataDisp::new_displaySQ (string display_expression, BoxPoint *p,
-			      int depends_on, Widget origin)
+			      string depends_on, Widget origin)
 {
     // Check arguments
-    if (depends_on != 0)
+    if (depends_on != "")
     {
-	DispNode *dn = disp_graph->get(depends_on);
+	int depend_nr = disp_graph->get_by_name(depends_on);
+	if (depend_nr == 0)
+	{
+	    post_gdb_message("No display named " + quote(depends_on) + ".\n");
+	    return;
+	}
+	DispNode *dn = disp_graph->get(depend_nr);
 	if (dn == 0)
 	{
-	    // Issue error message
-	    IntArray dummy;
-	    dummy += depends_on;
-	    sort_and_check(dummy);
+	    post_gdb_message("No display number " + 
+			     itostring(depend_nr) + ".\n");
 	    return;
 	}
     }
@@ -1774,13 +1794,13 @@ void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
 }
 
 void DataDisp::new_display(string display_expression, BoxPoint *p,
-			   int depends_on, Widget origin)
+			   string depends_on, Widget origin)
 {
     string cmd = "graph display " + display_expression;
     if (p != 0 && *p != BoxPoint())
 	cmd += " at (" + itostring((*p)[X]) + ", " + itostring((*p)[Y]) + ")";
-    if (depends_on != 0)
-	cmd += " dependent on " + itostring(depends_on);
+    if (depends_on != "")
+	cmd += " dependent on " + depends_on;
 
     gdb_command(cmd, origin);
 }
@@ -1870,15 +1890,16 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     }
 
     // BoxPoint berechnen
-    BoxPoint  box_point = info->point;
+    int depend_nr = disp_graph->get_by_name(info->depends_on);
+    BoxPoint box_point = info->point;
     if (box_point == BoxPoint())
-	box_point = disp_graph->default_pos(dn, graph_edit, info->depends_on);
+	box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
     dn->moveTo(box_point);
     dn->selected() = true;
 
     // in den Graphen einfuegen
     string nr = dn->disp_nr();
-    disp_graph->insert(get_nr(nr), dn, info->depends_on);
+    disp_graph->insert(get_nr(nr), dn, depend_nr);
 
     refresh_addr(dn);
     refresh_graph_edit();
@@ -1911,15 +1932,16 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
     }
 
     // BoxPoint berechnen
-    BoxPoint  box_point = info->point;
+    int depend_nr = disp_graph->get_by_name(info->depends_on);
+    BoxPoint box_point = info->point;
     if (box_point == BoxPoint())
-	box_point = disp_graph->default_pos(dn, graph_edit, info->depends_on);
+	box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
     dn->moveTo(box_point);
     dn->selected() = true;
 
     // in den Graphen einfuegen
     string nr = dn->disp_nr();
-    disp_graph->insert(get_nr(nr), dn, info->depends_on);
+    disp_graph->insert(get_nr(nr), dn, depend_nr);
 
     refresh_addr(dn);
     refresh_graph_edit();
@@ -2034,6 +2056,7 @@ void DataDisp::new_data_displaysOQAC (string answers[],
     NewDisplayInfo *info = (NewDisplayInfo *)data;
 
     // Create and select new nodes
+    int depend_nr = disp_graph->get_by_name(info->depends_on);
     for (int i = 0; i < count; i++)
     {
 	if (!contains_display(answers[i], gdb))
@@ -2051,15 +2074,14 @@ void DataDisp::new_data_displaysOQAC (string answers[],
 	    BoxPoint box_point = info->point;
 	    if (box_point == BoxPoint())
 	    {
-		box_point = 
-		    disp_graph->default_pos(dn, graph_edit, info->depends_on);
+		box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
 	    }
 	    dn->moveTo(box_point);
 	    dn->selected() = true;
 
 	    // Insert into graph
 	    string nr = dn->disp_nr();
-	    disp_graph->insert(get_nr(nr), dn, info->depends_on);
+	    disp_graph->insert(get_nr(nr), dn, depend_nr);
 	}
     }
     delete[] answers;
@@ -3600,7 +3622,7 @@ DataDisp::DataDisp (XtAppContext app_context,
     Widget arg_label = create_arg_label(graph_cmd_w);
     graph_arg = new ArgField (graph_cmd_w, "graph_arg");
     XtAddCallback(arg_label, XmNactivateCallback, 
-		  XtCallbackProc(graph_unselectHP), XtPointer(0));
+		  SelectionLostCB, XtPointer(0));
 
     registerOwnConverters();
 
@@ -3619,6 +3641,10 @@ DataDisp::DataDisp (XtAppContext app_context,
 		  XmNpaneMaximum, new_height,
 		  XmNpaneMinimum, new_height,
 		  NULL);
+
+    // Create (unmanaged) selection widget
+    graph_selection_w =
+	verify(XmCreateText(graph_cmd_w, "graph_selection", NULL, 0));
 
     // Create display editor
     edit_displays_dialog_w =

@@ -64,19 +64,19 @@
 #include "IntArray.h"
 #include "MString.h"
 #include "DispNode.h"
+#include "string-fun.h"
 
 // DDD includes
 #include "ArgField.h"
 #include "GDBAgent.h"
 #include "GraphEdit.h"
 #include "DispBox.h"
-#include "DispBox.h"
 #include "StringA.h"
 
 
 //-----------------------------------------------------------------------------
-extern GDBAgent* gdb;
-extern ArgField* source_arg;
+extern GDBAgent *gdb;
+extern ArgField *source_arg;
 
 //-----------------------------------------------------------------------------
 class DataDisp {
@@ -148,7 +148,7 @@ class DataDisp {
     // Helpers
     //-----------------------------------------------------------------------
 
-    static void graph_unselectHP (void*, void*, void*);
+    static void SelectionLostCB(Widget, XtPointer, XtPointer);
 
     static void set_args(BoxPoint p = BoxPoint(),
 			 SelectionMode mode = SetSelection);
@@ -162,11 +162,7 @@ class DataDisp {
     static DispNode  *new_data_node(string& answer);
     static DispNode  *new_user_node(const string& name, string& answer);
 
-public:
-    static void set_handlers();
-
-private:
-    static inline int getDispNrAtPoint (BoxPoint point);
+    static int getDispNrAtPoint (BoxPoint point);
 
     //-----------------------------------------------------------------------
     // Actions
@@ -203,11 +199,18 @@ public:
 
     // Create a new display for DISPLAY_EXPRESSION.
     // If POS is set, the new display is created at this position.
-    // If DEPENDS_ON is set, the new display is made dependent on DEPENDS_ON
+    // If DEPENDS_ON is set, the new display is made dependent on
+    // DEPENDS_ON (a display number or name)
     // If ORIGIN is set, the last origin is set to ORIGIN.
     static void new_displaySQ       (string display_expression,
 				     BoxPoint *pos = 0,
-				     int depends_on = 0,
+				     string depends_on = "",
+				     Widget origin = 0);
+
+    // Old interface
+    static void new_displaySQ       (string display_expression,
+				     BoxPoint *pos,
+				     int depends_on,
 				     Widget origin = 0);
 
     // Refresh displays.  Sends `info display' and `display' to GDB.
@@ -225,7 +228,11 @@ public:
     // Same, but via GDB_COMMAND
     static void new_display       (string display_expression,
 				   BoxPoint *pos = 0,
-				   int depends_on = 0,
+				   string depends_on = "",
+				   Widget origin = 0);
+    static void new_display       (string display_expression,
+				   BoxPoint *pos,
+				   int depends_on,
 				   Widget origin = 0);
     static void refresh_display   (Widget origin = 0);
     static void disable_display   (IntArray& display_nrs);
@@ -321,9 +328,12 @@ private:
 
     static Widget graph_form_w;
 
+    static int alias_display_nr(GraphNode *node);
+
 public:
     static Widget graph_edit;
     static Widget graph_cmd_w;
+    static Widget graph_selection_w;
     static ArgField *graph_arg;
 
     // Constructor
@@ -367,7 +377,29 @@ public:
 
     // True iff we have some selection
     static bool have_selection();
+
+    // Current selection as DDD commands
+    static string selection_as_commands();
 };
+
+inline void DataDisp::new_displaySQ(string display_expression,
+				    BoxPoint *pos,
+				    int depends_on,
+				    Widget origin)
+{
+    DataDisp::new_displaySQ(display_expression, pos, 
+			    itostring(depends_on), origin);
+}
+
+inline void DataDisp::new_display(string display_expression,
+				  BoxPoint *pos,
+				  int depends_on,
+				  Widget origin)
+{
+    DataDisp::new_display(display_expression, pos, 
+			  itostring(depends_on), origin);
+}
+
 
 #endif // _DDD_DataDisp_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

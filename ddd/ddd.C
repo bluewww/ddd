@@ -1787,8 +1787,6 @@ int main(int argc, char *argv[])
     put_environment(DDD_NAME, ddd_NAME "-" DDD_VERSION "-" DDD_HOST);
 
     // Setup handlers
-    DataDisp::set_handlers();
-
     source_arg->addHandler (Changed, source_argHP);
     source_arg->callHandlers();
 
@@ -2064,6 +2062,7 @@ int main(int argc, char *argv[])
     {
 	init_command_tty();
 
+	// Issue init msg (using 7-bit characters)
 	string init_msg = XmTextGetString(gdb_w);
 	init_msg.gsub("\344", "ae");
 	init_msg.gsub("\366", "oe");
@@ -3849,7 +3848,7 @@ static void gdbCutSelectionCB(Widget w, XtPointer client_data,
     {
 	if (data_disp->have_selection())
 	{
-	    success = XmTextFieldCopy(DataDisp::graph_arg->widget(), tm);
+	    success = XmTextCopy(DataDisp::graph_selection_w, tm);
 	    if (success)
 		DataDisp::deleteCB(w, client_data, call_data);
 	}
@@ -3886,7 +3885,7 @@ static void gdbCopySelectionCB(Widget, XtPointer client_data,
 
     // Try data arg
     if (!success && (win == DataWindow || win == CommonWindow))
-	success = XmTextFieldCopy(DataDisp::graph_arg->widget(), tm);
+	success = XmTextCopy(DataDisp::graph_selection_w, tm);
 }
 
 static void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
@@ -3926,6 +3925,7 @@ static void gdbUnselectAllCB(Widget w, XtPointer client_data,
     XmTextClearSelection(source_view->source(), tm);
     XmTextClearSelection(source_view->code(), tm);
     XmTextFieldClearSelection(DataDisp::graph_arg->widget(), tm);
+    XmTextClearSelection(DataDisp::graph_selection_w, tm);
     DataDisp::unselectAllCB(w, client_data, call_data);
 }
 

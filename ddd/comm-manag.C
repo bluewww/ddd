@@ -1073,7 +1073,7 @@ void handle_graph_cmd (string cmd, Widget origin,
     {
 	string rcmd = reverse(cmd);
 
-	int depends_on = 0;
+	string depends_on = "";
 	BoxPoint *pos = 0;
 
 	for (;;)
@@ -1081,13 +1081,16 @@ void handle_graph_cmd (string cmd, Widget origin,
 	    read_leading_blanks(rcmd);
 
 	    {
-		// Check for `dependent on DISPLAY_NR'
-		static regex 
-		    rxdep("[0-9]*[1-9]-?[ \t]+no[ \t]+tnedneped[ \t]+.*");
-		if (rcmd.matches(rxdep))
+		// Check for `dependent on DISPLAY'
+		static regex rxdep("[ \t]+no[ \t]+tnedneped[ \t]+");
+		int index = rcmd.index(rxdep);
+		if (index >= 0)
 		{
-		    string nr = reverse(rcmd.before(rxwhite));
-		    depends_on = get_nr(nr);
+		    depends_on = reverse(rcmd.before(index));
+		    read_leading_blanks(depends_on);
+		    strip_final_blanks(depends_on);
+
+		    rcmd = rcmd.after(index);
 		    rcmd = rcmd.after("tnedneped");
 		    continue;
 		}
