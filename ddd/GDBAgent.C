@@ -2,7 +2,7 @@
 // Communicate with separate GDB process
 
 // Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 1999-2000 Universitaet Passau, Germany.
+// Copyright (C) 1999-2001 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -841,6 +841,21 @@ bool GDBAgent::ends_with_secondary_prompt (const string& ans)
     return false;		// Never reached
 }
 
+// Return true iff ANSWER ends with (yes or no)
+bool GDBAgent::ends_with_yn (const string& answer)
+{
+    if (ends_in(answer, "(y or n) "))
+	return true;		// GDB
+
+    if (ends_in(answer, "(yes or no) "))
+	return true;
+
+    if ((type() == XDB || type() == JDB) && ends_in(answer, "? "))
+	return true;
+
+    return false;
+}
+
 
 // Check if ANSWER requires an immediate reply; return it.
 string GDBAgent::requires_reply (const string& answer)
@@ -1302,10 +1317,28 @@ void GDBAgent::handle_reply(string& answer)
 
 	ReplyRequiredInfo info;
 	info.question = answer;
-	info.reply    = "1\n";
+	info.reply = "1\n";
 
 	// Allow handlers to override the default reply
 	callHandlers(ReplyRequired, (void *)&info);
+
+	// Send reply immediately
+	write(info.reply);
+	flush();
+
+	// Ignore the selection
+	answer = info.question;
+    }
+
+    // Check for `yes or no'
+    if (state != BusyOnCmd && ends_with_yn(answer))
+    {
+	ReplyRequiredInfo info;
+	info.question = answer;
+	info.reply = "no\n";
+
+	// Allow handlers to override the default reply
+	callHandlers(YesNoRequired, (void *)&info);
 
 	// Send reply immediately
 	write(info.reply);
@@ -1380,7 +1413,7 @@ void GDBAgent::handle_input(string& answer)
 	    {
 		// Buffer answer
 		ready_to_process = 
-		    had_a_prompt || complete_answer.contains("(y or n)");
+		    had_a_prompt || ends_with_yn(complete_answer);
 
 		if (flush_next_output() && !ready_to_process)
 		{

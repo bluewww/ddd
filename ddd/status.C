@@ -99,10 +99,7 @@ void reset_status_lock(void) { status_locked = 0; }
 
 void set_buttons_from_gdb(Widget buttons, string& text)
 {
-    bool yn = text.contains("(y or n) ", -1) 
-	|| text.contains("(yes or no) ", -1)
-	|| ((gdb->type() == XDB || gdb->type() == JDB) 
-	    && text.contains("? ", -1));
+    bool yn = gdb->ends_with_yn(text);
 
     if (yn)
     {

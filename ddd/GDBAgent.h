@@ -123,7 +123,8 @@ const unsigned ReadyForQuestion = TTYAgent_NTypes;
 const unsigned ReadyForCmd      = ReadyForQuestion + 1;
 const unsigned LanguageChanged  = ReadyForCmd + 1;
 const unsigned ReplyRequired    = LanguageChanged + 1;
-const unsigned EchoDetected     = ReplyRequired + 1;
+const unsigned YesNoRequired    = ReplyRequired + 1;
+const unsigned EchoDetected     = YesNoRequired + 1;
 const unsigned AsyncAnswer      = EchoDetected + 1;
 const unsigned ExceptionState   = AsyncAnswer + 1;
 const unsigned Recording        = ExceptionState + 1;
@@ -751,6 +752,7 @@ public:
     // True if ANSWER ends in a prompt
     bool ends_with_prompt(const string& answer);
     bool ends_with_secondary_prompt(const string& answer);
+    bool ends_with_yn(const string& answer);
 
     // True if exception error message
     bool is_exception_answer(const string& answer);
