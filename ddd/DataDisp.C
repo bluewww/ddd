@@ -2692,11 +2692,6 @@ DataDisp::DataDisp (XtAppContext app_context,
 		  XmNpaneMinimum, size.height,
 		  NULL);
 
-#ifdef LESSTIF_VERSION
-    // Not available in LessTif 0.1
-    edit_displays_dialog_w = 0;
-    display_list_w         = 0;
-#else
     // Create display editor
     edit_displays_dialog_w =
 	verify(XmCreatePromptDialog(graph_edit, "edit_displays_dialog", 
@@ -2731,7 +2726,6 @@ DataDisp::DataDisp (XtAppContext app_context,
     XtManageChild (label);
     XtManageChild (form2);
     XtManageChild (form1);
-#endif
 
     XtAddCallback(graph_edit,
 		  XtNselectionChangedCallback,
