@@ -2,7 +2,7 @@
 // Modify debugger settings
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2000-2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -3321,6 +3321,9 @@ string get_defines(DebuggerType type, unsigned long /* flags */)
 
     for (StringStringAssocIter iter(defs); iter.ok(); iter++)
     {
+	string cmd = iter.key();
+	cmd.downcase();		// GDB 5.0 makes all commands lower case
+
 	string def = iter.value();
 	if (def == "")
 	{
@@ -3329,7 +3332,7 @@ string get_defines(DebuggerType type, unsigned long /* flags */)
 	}
 	else
 	{
-	    defines += "define " + iter.key() + "\n" + def + "end\n";
+	    defines += "define " + cmd + "\n" + def + "end\n";
 	}
     }
 
@@ -3347,12 +3350,13 @@ bool is_defined_cmd(const string& command)
 
     update_defines();
 
-    string word = command;
-    strip_space(word);
-    if (word.contains(' '))
-	word = word.before(' ');
+    string cmd = command;
+    strip_space(cmd);
+    if (cmd.contains(' '))
+	cmd = cmd.before(' ');
+    cmd.downcase();		// GDB 5.0 makes all commands lower case
 
-    return defs.has(word);
+    return defs.has(cmd);
 }
 
 
