@@ -6485,7 +6485,8 @@ inline string jdb_thread()
 // Process `where' output
 void SourceView::process_where(string& where_output)
 {
-    undo_buffer.add_where(where_output);
+    if (!where_output.contains("No ", 0))
+	undo_buffer.add_where(where_output);
 
     int count          = where_output.freq('\n') + 1;
     string *frame_list = new string[count];
@@ -6772,7 +6773,8 @@ void SourceView::process_registers(string& register_output)
     register_output.gsub(";", "\n");
     register_output.gsub("\n\n", "\n");
 
-    undo_buffer.add_registers(register_output);
+    if (!register_output.contains("No ", 0))
+	undo_buffer.add_registers(register_output);
 
     int count             = register_output.freq('\n') + 1;
     string *register_list = new string[count];
@@ -6851,6 +6853,7 @@ void SourceView::process_threads(string& threads_output)
 
     if (threads_output == NO_GDB_ANSWER 
 	|| threads_output == ""
+	|| threads_output.contains("No ", 0)
 	|| threads_output.matches(rxwhite))
     {
 	valid_threads_output = false;
