@@ -147,11 +147,9 @@ Volunteers for fixing these and other bugs are welcome!
 
 375 Improve Python support (in DDD 3.2)
 
-376 Improve the command tool movement in KDE.
-
-377 The Breakpoint dialog has a generic title.
-
 378 Using Motif 2.1, `Ignore Count' in Breakpoint Properties
     has a bad orientation.
 
-379 (Insert new bugs here)
+379 Adapt DDD to JDB as of JDK 1.2.
+
+380 (Insert new bugs here)
