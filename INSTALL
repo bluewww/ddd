@@ -446,6 +446,9 @@ optional DDD features.  There are two optional features.
   To disable the builtin DDD manual, use the `configure' option
   `--disable-builtin-manual'.
 
+See also `External Packages', above, to disable external packages such
+as the Readline library used for command-line editing on standard input.
+
 
 
 

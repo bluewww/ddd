@@ -152,4 +152,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 379 Adapt DDD to JDB as of JDK 1.2.
 
-380 (Insert new bugs here)
+380 Support GDB 4.18 follow-fork-mode.
+
+382 (Insert new bugs here)
