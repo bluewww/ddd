@@ -25,9 +25,9 @@
 .\" DDD is the data display debugger.
 .\" For details, see the DDD World-Wide-Web page, 
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
-.\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+.\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "29 Sep 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1 Oct 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC @srcdir@/PICS/dddlogo.ps 10cm
@@ -262,9 +262,9 @@ recent messages.
 .\"
 .SS "Context-Sensitive Help"
 .\"
-You can get detailed help on any visible \s-2@DDD@\s+2 item by pressing the
-`\fBF1\fR' key and moving the question mark arrow on the item you
-want help for.  Clicking on the item pops up a detailed help text.
+You can get detailed help on any visible \s-2@DDD@\s+2 item.  Just
+press the `\fBF1\fR' key and move the question mark arrow on the item
+you want help for.  Clicking on the item pops up a detailed help text.
 .PP
 The \s-2@DDD@\s+2 dialogs all contain `\fBHelp\fR' buttons that give
 detailed information about the dialog.
@@ -276,7 +276,15 @@ You can get help on \s-2GDB\s+2 and \s-2DBX\s+2 commands by entering
 get help on \s-2XDB\s+2 commands by entering `\fBhelp\fR' at the
 `\fB>\fR' prompt.
 .PP
-See the following section for details on entering commands.
+See `\fBEntering Commands\fR', below, for details on entering commands.
+.\"
+.SS "Are You Stuck?"
+.\"
+In case you're stuck, try `\fBHelp | What Next\fR' (the `\fBWhat
+Next\fR' item in the `\fBHelp\fR' menu) or press `\fBShift+F1\fR'.
+Depending on the current state, \s-2@DDD@\s+2 will give you some hints
+on what you can do next.
+.\"
 .\"
 .\" ---------------
 .SH "ENTERING COMMANDS"
@@ -598,8 +606,8 @@ use one single mouse button.  \fIAdvanced users\fR know how to use
 shortcuts and prefer popup menus.  \fIExperienced users\fR prefer the
 command line interface.)
 .PP
-Breakpoints are indicated by a plain stop sign, 
-or as `\fB#\fIn\fB#\fR', where \fIn\fR is the breakpoint number.
+Breakpoints are indicated by a plain stop sign, or as
+`\fB#\fIn\fB#\fR', where \fIn\fR is the breakpoint number.
 .\"
 .\"
 .SS "Setting Breakpoints by Name"
@@ -647,6 +655,10 @@ Disabled breakpoints are indicated by a grey stop sign, or
 .PP
 Finally, you can use the \s-2GDB\s+2 `\fBdisable\fR' command.  Type
 `\fBhelp disable\fR' at the `\fB(gdb)\fR' prompt for details.
+.PP
+The `\fBDisable Breakpoint\fR' item is also accessible via the
+`\fBClear at ()\fR' button.  Just press and hold the \fIleft mouse
+button\fR on the button to get a popup menu.
 .\"
 .\"
 .SS "Temporary Breakpoints"
@@ -666,6 +678,11 @@ continues execution.  In \s-2GDB\s+2, execution stops when a source
 line greater than the source line is reached, or when the current
 stack frame is exited.  In \s-2DBX\s+2 and \s-2XDB\s+2, execution
 stops when the temporary breakpoint is reached.
+.PP
+The `\fBSet Temporary Breakpoint\fR' and `\fBContinue Until Here\fR'
+items are also accessible via the `\fBBreak at ()\fR' button.  Just press
+and hold the \fIleft mouse button\fR on the button to get a popup
+menu.
 .\"
 .\"
 .SS "Deleting Breakpoints"
@@ -691,6 +708,19 @@ Edit Breakpoints\fR').
 Finally, you can use the \s-2GDB\s+2 `\fBclear\fR' and `\fBdelete\fR'
 commands.  Type `\fBhelp clear\fR' or `\fBhelp delete\fR' at
 the `\fB(gdb)\fR' prompt for details.
+.\"
+.\"
+.SS "Moving Breakpoints"
+.\"
+To move a breakpoint to a different location, press the \fIleft mouse
+button\fR on the stop sign and drag it to the desired location.  This
+is equivalent to deleting the breakpoint at the old location and
+setting a breakpoint at the new location.  The new breakpoint inherits
+all properties of the old breakpoint, except the breakpoint number.
+.PP
+Note: Dragging breakpoints is not possible when glyphs are disabled.
+Delete and set breakpoints instead.
+.\"
 .\"
 .\"
 .SS "Finding Breakpoints"
@@ -833,8 +863,41 @@ To continue running until the current function returns, use the
 .PP
 To continue running until a line after the current source line is
 reached, use the `\fBContinue Until Here\fR' facility from the line
-popup menu.  See `\fBTemporary Breakpoints\fR', above, for a
-discussion.
+popup menu.  See the `\fBTemporary Breakpoints\fR' section, above, for
+a discussion.
+.\"
+.\"
+.\"
+.SS "Changing the Execution Position"
+.\"
+Note: Changing the execution position is available with \s-2GDB\s+2
+and \s-2XDB\s+2only.
+.PP
+To resume execution at a different location, press the \fIleft mouse
+button\fR on the arrow and drag it to a different location.  The most
+common occasion to use this feature is to back up\(em\&perhaps with
+more breakpoints set-over a portion of a program that has already
+executed, in order to examine its execution in more detail.
+.PP
+Moving the execution position does not change the current stack frame,
+or the stack pointer, or the contents of any memory location or any
+register other than the program counter.  If the new execution
+position is in a different function from the one currently executing,
+the results may be bizarre if the two functions expect different
+patterns of arguments or of local variables.  For this reason, moving
+the execution position requests confirmation if the specified line is
+not in the function currently executing.  However, even bizarre
+results are predictable if you are well acquainted with the
+machine-language code of your program.
+.PP
+After moving the execution position, click on the `\fBContinue\fR'
+button to resume execution.
+.PP
+Note: Dragging the execution position is not possible when glyphs are
+disabled.  Use `\fBSet Execution Position\fR' from the breakpoint
+popup menu instead to set the execution position to the current
+location.  This item is also accessible via the popup menu obtained by
+pressing and holding the `\fBBreak at ()\fR/\fBClear at ()\fR' button.
 .\"
 .\"
 .SS "Examining the Stack"
@@ -862,7 +925,7 @@ respectively, will also move you through the stack.
 .SS "Examining Threads"
 .\"
 Note: Thread support is available with \s-2GDB\s+2 only.
-.\"
+.PP
 In some operating systems, a single program may have more than one
 \fIthread\fR of execution.  The precise semantics of threads differ
 from one operating system to another, but in general the threads of a
@@ -1039,13 +1102,33 @@ To hide details about an aggregate, select the aggregate by clicking
 the \fIleft mouse button\fR on its name or value and click on the
 `\fBHide ()\fR' button.
 .PP
+When pressing and holding the \fIleft mouse button\fR on the `\fBShow
+()\fR/\fBHide ()\fR' button, a menu pops up with even more
+alternatives:
+.TP
+.B "Show More ()"
+Shows details of all aggregates currently hidden, but not of their
+sub-aggregates.  You can invoke this item several times in a row to
+reveal more and more details of the selected aggregate.
+.TP
+.B "Show Just ()"
+Shows details of the selected aggregate, but hides all sub-aggregates.
+.TP
+.B "Show All ()"
+Shows all details of the selected aggregate and of its sub-aggregates.
+This item is equivalent to the `\fBShow ()\fR' button.
+.TP
+.B "Hide ()"
+Hide all details of the selected aggregate.  This item is equivalent
+to the `\fBHide ()\fR' button.
+.PP
 As a faster alternative, you can also press the \fIright mouse
 button\fR on the aggregate and select the appropriate menu item.
 .PP
 .PSPIC @srcdir@/PICS/ddd-hide-display.ps 15.3cm
 .PP
-If \fIall\fR details of a display are hidden, this display is
-considered \fIdisabled\fR.   Displays can be disabled or enabled via
+If \fIall\fR details of a display are hidden, the display is
+considered \fIdisabled\fR.  Displays can be disabled or enabled via
 the \s-2@DDD@\s+2 commands
 .sp
 .br
@@ -1096,8 +1179,8 @@ image of the \*(lqtree\*(rq data structure.
 .PP
 By default, \s-2@DDD@\s+2 does not recognize shared data structures
 (i.e. a data object referenced by multiple other data objects).  See
-the section on \fIExamining Shared Data Structures\fR, below, for
-details on how to examine such structures.
+`\fBExamining Shared Data Structures\fR', below, for details on how to
+examine such structures.
 .\"
 .\"
 .SS "Dereferencing Pointers"
@@ -1107,12 +1190,15 @@ shortcut for creating dependent displays showing the value of a
 dereferenced pointer.
 .PP
 To dereference a pointer, select the originating pointer value or name
-and click on the `\fBDisplay * ()\fR' button.  A new display showing
+and click on the `\fBDisplay *()\fR' button.  A new display showing
 the dereferenced pointer value is created.
 .PP
 As a faster alternative, you can also press the \fIright mouse
 button\fR on the originating pointer value or name and select the
 `\fBDisplay *\fR' menu item.
+.PP
+The `\fBDisplay *()\fR' function is also available via the menu
+obtained by pressing and holding the `\fBDisplay ()\fR' button.
 .\"
 .\"
 .SS "Displaying Local Variables"
@@ -1574,6 +1660,9 @@ program has been recompiled, this should seldom be necessary.
 .SH "PERSISTENT SESSIONS"
 .\" ---------------
 .\"
+Note: Session support is available with \s-2GDB\s+2 running on the
+local machine only.
+.PP
 If you want to interrupt your current \s-2@DDD@\s+2 session, you can
 save its entire \s-2@DDD@\s+2 state in a file and restore it later.
 .\"
@@ -1582,14 +1671,14 @@ To save a session, select `\fBFile | Save Session As\fR'.  You will
 be asked for
 .br
 .IP \(bu 2 
-a symbolic session name \fINAME\fR and
+a symbolic session name \fIsession\fR and
 .br
 .IP \(bu 2 
 whether to include a core dump of the debugged program.
 Including a core dump is necessary for restoring data displays.
 .PP
 After clicking on `\fBSave\fR', the session is saved in 
-`\fB$HOME/.ddd/sessions/\fINAME\fR'.
+`\fB$HOME/.ddd/sessions/\fIsession\fR'.
 .PP
 .PSPIC @srcdir@/PICS/ddd-save-session.ps 15.3cm
 .PP
@@ -1599,12 +1688,12 @@ as session defaults:
 .br
 .IP \(bu 2
 User options will be saved in
-`\fB$HOME/.ddd/sessions/\fINAME\fB/init\fR' instead of
-`\fB$HOME/.ddd/init\fR'; see \fISaving Options\fR below for details.
+`\fB$HOME/.ddd/sessions/\fIsession\fB/init\fR' instead of
+`\fB$HOME/.ddd/init\fR'; see `\fBSaving Options\fR', below, for details.
 .IP \(bu 2
 The \s-2@DDD@\s+2 command history will be saved in
-`\fB$HOME/.ddd/sessions/\fINAME\fB/history\fR' instead of
-`\fB$HOME/.ddd/history\fR'; see \fIEntering Commands\fR above for
+`\fB$HOME/.ddd/sessions/\fIsession\fB/history\fR' instead of
+`\fB$HOME/.ddd/history\fR'; see `\fBEntering Commands\fR', above, for
 details.
 .PP
 To make the current session inactive, open the \fIdefault session\fR
@@ -1622,18 +1711,17 @@ the given session.
 .PP
 The session named `\fB[None]\fR' is the \fIdefault session\fR which is
 active when starting \s-2@DDD@\s+2.  To save options for default
-sessions, open the default session and save options; see \fISaving
-Options\fR below for details.
+sessions, open the default session and save options; see `\fBSaving
+Options\fR' below for details.
 .PP
 .PSPIC @srcdir@/PICS/ddd-open-session.ps 15.3cm
 .PP
-If a core file was included in the restored session, the program being
+If a the restored session includes a core dump, the program being
 debugged will be in the same state at the time the session was saved;
-in particular, you can examine the data of the program being debugged.
-However, you will not be able to resume execution of the debugged
-program since its environment (open files, resources, etc.) will be
-lost.  You can restart it instead, re-using the restored breakpoints
-and data displays.
+in particular, you can examine the program data.  However, you will
+not be able to resume program execution since the environment (open
+files, resources, etc.) will be lost.  However, you can restart the
+program, re-using the restored breakpoints and data displays.
 .\"
 .SS "Deleting Sessions"
 To delete sessions that are no longer needed, select `\fBFile | Open
@@ -1643,19 +1731,19 @@ want to delete and click on `\fBDelete\fR'.
 The default session cannot be deleted.
 .\"
 .SS "Starting @DDD@ with a Session"
-To start-up \s-2@DDD@\s+2 with a given session named \fINAME\fR
+To start-up \s-2@DDD@\s+2 with a given session named \fIsession\fR
 instead of the default session, use
 .sp
 .br
-  \fB@ddd@\ \-\-session\ \fINAME\fR
+  \fB@ddd@\ \-\-session\ \fIsession\fR
 .br
 .sp
-There is also a shortcut that opens the session \fINAME\fR and also
-invokes the inferior debugger on \fINAME\fR (in case the session
-\fINAME\fR cannot be opened):
+There is also a shortcut that opens the session \fIsession\fR and also
+invokes the inferior debugger on an executable named \fIsession\fR (in
+case \fIsession\fR cannot be opened):
 .sp
 .br
-  \fB@ddd@\ =\fINAME\fR
+  \fB@ddd@\ =\fIsession\fR
 .br
 .sp
 There is no need to give further command-line options when restarting
@@ -1992,10 +2080,10 @@ of variable values in the status line\fR' option) and disabling value
 tips as well will make \s-2@DDD@\s+2 run slightly faster.
 .PP
 If you want to use \s-2\fBTAB\fR\s+2 key completion in all text
-windows, set the `\fBTAB key completes in all windows\fR' option.
-This is useful if you have pointer-driven keyboard focus (see below)
-and no special usage for the \s-2\fBTAB\fR\s+2 key.  Otherwise, the
-\s-2\fBTAB\fR\s+2 key completes in the debugger console only.
+windows, set the `\s-2\fBTAB\fR\s+2 \fBkey completes in all windows\fR'
+option.  This is useful if you have pointer-driven keyboard focus (see
+below) and no special usage for the \s-2\fBTAB\fR\s+2 key.  Otherwise,
+the \s-2\fBTAB\fR\s+2 key completes in the debugger console only.
 .PP
 If you frequently switch between \s-2@DDD@\s+2 and other multi-window
 applications, you may like to set the `\fBIconify all windows at
@@ -2141,8 +2229,8 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 You can save the current option settings by selecting `\fBEdit | Save
 Options\fR'.  Options are saved in a file named `\fB.ddd/init\fR' in
-your home directory.  If a session \fINAME\fR is active, options 
-will be saved in `\fB$HOME/.ddd/sessions/\fINAME\fB/init\fR' instead.
+your home directory.  If a session \fIsession\fR is active, options 
+will be saved in `\fB$HOME/.ddd/sessions/\fIsession\fB/init\fR' instead.
 .\"
 .SS "Other Customizations"
 .\"
@@ -2529,8 +2617,8 @@ the command tool on top anyway, set this resource to `\fBfalse\fR'.
 .B "colorIcons (\fPclass\fB ColorIcons)"
 If `\fBtrue\fR' (default), \s-2@DDD@\s+2 uses multi-color icons.  If
 your window manager has trouble with multi-color icons, set this
-resource to `\fBfalse\fR'. If `\fBfalse\fR', \s-2@DDD@\s+2 will use
-black-and-white icons.
+resource to `\fBfalse\fR' and \s-2@DDD@\s+2 will use black-and-white
+icons instead.
 .TP
 .B "dataWindow (\fPclass\fB Window)"
 If `\fBfalse\fR', no data window is created upon start-up.
@@ -2612,11 +2700,11 @@ movements.
 The following resources determine the inferior debugger.
 .TP
 .B "autoCommands (\fPclass\fB AutoCommands)"
-If this is `\fBtrue\fR', each line output by the inferior
-debugger beginning with the value of the `\fBautoCommandPrefix\fR'
-resource (see below) will be taken as \s-2@DDD@\s+2 command and
-executed.  Useful for user-defined commands; see\fB USER-DEFINED
-COMMANDS\fR, above.  By default, `\fBfalse\fR'.
+If this is `\fBtrue\fR', each line output by the inferior debugger
+beginning with the value of the `\fBautoCommandPrefix\fR' resource
+(see below) will be taken as \s-2@DDD@\s+2 command and executed.
+Useful for user-defined commands; see `\fBUSER-DEFINED COMMANDS\fR',
+above.  By default, `\fBfalse\fR'.
 .TP
 .B "autoCommandPrefix (\fPclass\fB AutoCommandPrefix)"
 The prefix for auto-commands.  By default, `\fB@ddd@: \fR'.
@@ -3516,9 +3604,9 @@ Complete current command line in the debugger console.
 Bound to \s-2\fBTAB\fR\s+2 and \fBCtrl+T\fR.
 .TP
 .B gdb\-complete\-tab (\fIcommand\fB)
-If global \s-2TAB\s+2 completion is enabled, complete current 
+If global \s-2\fBTAB\fR\s+2 completion is enabled, complete current
 argument as if \fIcommand\fR was prepended.  Otherwise, proceed as if
-the \s-2TAB\s+2 key was hit.  Bound to \s-2\fBTAB\fR\s+2.
+the \s-2\fBTAB\fR\s+2 key was hit.  Bound to \s-2\fBTAB\fR\s+2.
 .TP
 .B gdb\-delete\-or\-control (\fIcontrol-character\fB)
 Like \fBgdb-control\fR, but effective only if the cursor is at the end
@@ -3779,13 +3867,13 @@ Default \s-2@DDD@\s+2 command history file.
 .B $HOME/.ddd/sessions/
 \s-2@DDD@\s+2 session directory.  One subdirectory per session.
 .TP
-.B $HOME/.ddd/sessions/\fIsession\fR/init
+.B $HOME/.ddd/sessions/\fIsession\fB/init
 \s-2@DDD@\s+2 resource file for session \fIsession\fR.
 .TP
-.B $HOME/.ddd/sessions/\fIsession\fR/history
+.B $HOME/.ddd/sessions/\fIsession\fB/history
 \s-2@DDD@\s+2 command history file for session \fIsession\fR.
 .TP
-.B $HOME/.ddd/sessions/\fIsession\fR/core
+.B $HOME/.ddd/sessions/\fIsession\fB/core
 \s-2@DDD@\s+2 core file for session \fIsession\fR.
 .TP
 .B $HOME/.gdbinit
@@ -3799,6 +3887,10 @@ Alternate \s-2DBX\s+2 initialization file.
 .TP
 .B $HOME/.xdbrc
 \s-2XDB\s+2 initialization file.
+.TP
+.B $HOME/.dddinit
+Old-style \s-2@DDD@\s+2 initialization file; only used if
+\fB$HOME/.ddd/init\fR does not exist.
 .PD
 .\"
 .\" ---------------

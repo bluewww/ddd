@@ -1747,7 +1747,7 @@ Ddd*menubar*programMenu.run_again.documentationString: \
 @rm Restart debugged program, using the previous arguments.
 
 Ddd*menubar*programMenu.separateExecWindow.labelString:	Run in Execution Window
-Ddd*menubar*programMenu.separateExecWindow.mnemonic:	W
+Ddd*menubar*programMenu.separateExecWindow.mnemonic:	x
 Ddd*menubar*programMenu*separateExecWindow.accelerator:	Meta<Key>X
 Ddd*menubar*programMenu*separateExecWindow.acceleratorText: Alt+X
 Ddd*menubar*programMenu.separateExecWindow.documentationString:\
@@ -4601,12 +4601,12 @@ Ddd*stopped_at_passed_signal.helpString: \
 \n\
 STOPPED_HELP\n\
 \n\
-When resuming execution, the @SIGNAL_DESCRIPTION@ signal \
+When resuming execution, the @SIGNAL_DESCRIPTION@ signal\n\
 will be passed to the program.\n\
-ITEM To continue execution without giving a @SIGNAL@ signal, \
-use the @GDB@ command KBD(signal 0).\n\
-ITEM To see the current signal handling, \
-use the @GDB@ command KBD(info handle).
+ITEM To continue execution without giving a @SIGNAL@ signal,\n\
+    use the @GDB@ command KBD(signal 0).\n\
+ITEM To see the current signal handling, \n\
+    use the @GDB@ command KBD(info handle).
 
 Ddd*stopped_at_ignored_signal.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
