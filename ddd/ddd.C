@@ -302,7 +302,6 @@ void DDDExitCB               (Widget, XtPointer, XtPointer);
 void DDDCloseCB              (Widget, XtPointer, XtPointer);
 void DDDSaveOptionsCB        (Widget, XtPointer, XtPointer);
 
-void HelpOnDebuggingCB       (Widget, XtPointer, XtPointer);
 void DDDWWWPageCB            (Widget, XtPointer, XtPointer);
 
 void graphQuickPrintCB       (Widget, XtPointer, XtPointer);
@@ -1345,7 +1344,6 @@ static MMDesc help_menu[] =
     {"onWindow",    MMPush, { HelpOnWindowCB }},
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     {"onVersion",   MMPush, { HelpOnVersionCB }},
-    {"onDebugging", MMPush, { HelpOnDebuggingCB }},
     MMSep,
     {"www",         MMPush, { DDDWWWPageCB }},
     MMSep,
@@ -2209,6 +2207,10 @@ int main(int argc, char *argv[])
     // Setup help pixmap
     helpOnVersionPixmapProc = versionlogo;
 
+    // Setup extra version info
+    helpOnVersionExtraText = 
+	MString(string(config_info).before("\n\n"), "rm");
+
     // Go for it
     XtRealizeWidget(command_shell);
     wm_set_icon(command_shell, iconlogo(gdb_w), iconmask(gdb_w));
@@ -2829,7 +2831,7 @@ void show_configuration()
 	"Using X" stringize(X_PROTOCOL) "R" stringize(XlibSpecificationRelease)
 	 ", Xt" stringize(X_PROTOCOL) "R" stringize(XtSpecificationRelease)
 	 ", Motif " stringize(XmVERSION) "." stringize(XmREVISION) "\n";
-    cout << "\n" << config_info;
+    cout << config_info;
 }
 
 
@@ -4788,6 +4790,8 @@ void gdbBreakArgCmdCB(Widget w, XtPointer, XtPointer)
     switch (gdb->type())
     {
     case GDB:
+	if (arg != "" && arg[0] == '0')
+	    arg = "*" + arg; // Address given
 	gdb_command("break " + arg, w);
 	break;
 
@@ -4824,6 +4828,8 @@ void gdbClearArgCmdCB(Widget w, XtPointer, XtPointer)
     switch (gdb->type())
     {
     case GDB:
+	if (arg != "" && arg[0] == '0')
+	    arg = "*" + arg; // Address given
 	gdb_command("clear " + arg);
 	break;
 
@@ -7782,22 +7788,6 @@ void handle_obscure_commands(string& cmd, Widget origin)
 	    }
 	}
     }
-}
-
-void HelpOnDebuggingCB(Widget w, XtPointer, XtPointer)
-{
-    static Widget debugging_poem = 0;
-    if (debugging_poem)
-	XtDestroyWidget(debugging_poem);
-
-    Widget shell = find_shell(w);
-    debugging_poem = 
-	verify(XmCreateMessageDialog(shell, "debugging_poem", NULL, 0));
-    Delay::register_shell(debugging_poem);
-    XtUnmanageChild(XmMessageBoxGetChild 
-		    (debugging_poem, XmDIALOG_CANCEL_BUTTON));
-    XtAddCallback(debugging_poem, XmNhelpCallback, ImmediateHelpCB, NULL);
-    XtManageChild(debugging_poem);
 }
 
     
