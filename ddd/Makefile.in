@@ -2,6 +2,7 @@
 # DDD Makefile.
 
 # Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 2000 Universitaet Passau, Germany.
 # Written by Andreas Zeller <zeller@gnu.org>.
 # 
 # This file is part of DDD.
@@ -1396,7 +1397,7 @@ uninstall-prog:
 	done
 
 .PHONY: install-info
-install-info: $(INFOS)
+install-info: $(INFO)
 	-parent=`$(ECHO) $(infodir) | $(SED) -e 's@/[^/]*$$@@'`; \
 	grandparent=`$(ECHO) $$parent | $(SED) -e 's@/[^/]*$$@@'`; \
 	test -d $$grandparent || $(MKDIR) $$grandparent; \
@@ -2224,8 +2225,8 @@ $(htmldir)/index.html: ddd.texi $(INCLUDES) $(HTML_IMAGES) \
 
 ## The DDD manual in Info format.
 
-$(docdir)/ddd.info: ddd.texi $(INCLUDES)
-	$(RM) ddd.info*
+$(INFO): $(srcdir)/ddd.texi $(INCLUDES)
+	$(RM) ddd.info* $(INFOS)
 	$(MAKEINFO) -I. -I$(srcdir) $(srcdir)/ddd.texi
 	$(INSTALL_DATA) ddd.info* $(docdir)
 
