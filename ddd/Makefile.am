@@ -731,7 +731,7 @@ cxxtest_LDADD = $(LIBM)
 ddd_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 vsl_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
-INCLUDES = -I$(srcdir)/.. $(X_INCLUDE)
+AM_CPPFLAGS = -I$(srcdir)/.. $(X_INCLUDE)
 
 # -----------------------------------------------------------------------------
 # DDD Applocation Defaults.
@@ -1468,7 +1468,7 @@ FIG2PDF = $(FIG2DEV) -L pdf
 .texi.pdf:
 	@-test -d $(buildpicdir) || mkdir $(buildpicdir)
 	@-test -f texinfo.tex || $(LN_S) $(texidir)/texinfo.tex .
-	$(TEXI2PDF) --pdf -I $(srcdir) -I $(texidir) $<
+	$(TEXI2PDF) -I $(srcdir) -I $(texidir) $<
 
 .texi.dvi:
 	@-test -d $(buildpicdir) || mkdir $(buildpicdir)
@@ -2032,7 +2032,7 @@ stamp-h: config.h.in $(top_builddir)/config.status
 	$(DATE) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 $(srcdir)/config.h.in:
-	cd $(srcdir)/.. && $(AUTOHEADER) -I ddd
+	cd $(srcdir)/.. && $(AUTOHEADER)
 
 # Special program includes
 # Note: we use `build.h' instead of `./build.h', because `./build.h'

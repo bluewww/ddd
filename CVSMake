@@ -15,7 +15,7 @@ echo "$this: setting up DDD from CVS..."
 # Set up configure scripts.
 # Note: no `--copy': config scripts are created as symbolic links.
 aclocal
-autoheader -I ddd
+autoheader
 libtoolize
 autoconf
 automake --include-deps --add-missing --verbose
