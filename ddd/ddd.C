@@ -4578,6 +4578,7 @@ static void gdb_strangeHP(Agent *source, void *, void *call_data)
 
 static void gdb_echo_detectedHP(Agent *, void *, void *)
 {
+#if 0
     if (!remote_gdb())
     {
 	static bool warned = false;
@@ -4590,6 +4591,10 @@ static void gdb_echo_detectedHP(Agent *, void *, void *)
 	    warned = true;
 	}
     }
+#endif
+
+    // Here is a more subtle warning.
+    set_status(gdb->title() + " is running in echo mode.");
 
     // Disable echo mode explicitly via stty command.
     gdb_command(gdb->shell_command("stty -echo -onlcr"), 0, 0, 0, 
