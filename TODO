@@ -359,6 +359,4 @@ Volunteers for these and other projects are welcome!
      *()' applied to a struct could dereference all contained pointers
      (unless already dereferenced).
 
-195. Catch fatal X errors.
-
 196. (Insert your project idea here)
