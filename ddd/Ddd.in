@@ -2687,14 +2687,6 @@ The debugged process is probably still running.\n\
 Before killing a running debugger, you should try to interrupt it\n\
 (by selecting @bf Break @rm from the @bf Program @rm menu).
 
-Ddd*exited_dialog_popup.title: @DDD@: Debugger Exited
-Ddd*exited_dialog.messageString:   \
-@rm The debugger exited normally.
-Ddd*exited_dialog*okLabelString:   Exit
-Ddd*exited_dialog*contextHelpString:	\
-@rm The inferior debugger exited normally.\n\
-You may wish to examine its final output before exiting @DDD@.
-
 Ddd*terminated_dialog_popup.title: @DDD@: Hasta la Vista
 Ddd*terminated_dialog.messageString:   \
 @rm The debugger terminated abnormally.
@@ -2719,8 +2711,10 @@ to `@tt ddd-bugs@ ips.cs.tu-bs.de@rm', giving a subject like\n\
 To enable us to fix the bug, you should include the following information:\n\
 @tt \267 @rm What you were doing to get this message.  Report all the facts.\n\
 @tt \267 @rm The @DDD@ configuration.  \
-Run `@tt ddd --configuration@rm' to get it.\n\
-See also the section ``Reporting Bugs'' in the @DDD@ manual.\n\
+Run `@tt @ddd@ --configuration@rm' to get it.\n\
+@tt \267 @rm Invoke @DDD@ with the `@tt --trace@rm' option, and if you can\n\
+    reproduce the bug, include the trace output in your bug report.\n\
+Please read also the section ``Reporting Bugs'' in the @DDD@ manual.\n\
 \n\
 We thank you for your support.
 

@@ -237,24 +237,27 @@ static void ddd_fatal(int sig)
 	    " (" DDD_HOST ") gets `%s' signal\n"
 	    "\n"
 	    "To enable us to fix the bug, you should include "
-	    "the following information:\n\n"
+	    "the following information:\n"
 	    "  * What you were doing to get this message.  "
 	    "Report all the facts.\n"
 	    "  * Your " DDD_NAME " configuration.  "
-	    "Run `%s --configuration' to get it.\n"
+	    "Run `" ddd_NAME " --configuration' to get it.\n"
 	    "  * If a core file was generated in your directory, please run\n"
-	    "    `gdb %s core', and type `where' at the `(gdb)' prompt.\n"
+	    "    `gdb " ddd_NAME " core', "
+	    "and type `where' at the `(gdb)' prompt.\n"
 	    "    (Include this output only.  Do not include "
-	    "the core file itself.)\n\n"
-	    "See also the section \"Reporting Bugs\" "
-	    "in the " DDD_NAME " manual page.\n"
+	    "the core file itself.)\n"
+	    "  * Invoke " DDD_NAME " with the `--trace' option, "
+	    "and if you can reproduce the bug,\n"
+	    "    include the trace output in your bug report.\n"
+	    "Please read also the section \"Reporting Bugs\" "
+	    "in the " DDD_NAME " manual.\n"
 	    "\n"
 	    "We thank you for your support.\n\n";
 
 	if (sig != SIGINT)
 	{
-	    fprintf(stderr, msg, sigName(sig), sigName(sig),
-		    ddd_invoke_name, ddd_invoke_name);
+	    fprintf(stderr, msg, sigName(sig), sigName(sig));
 	}
 
 	// Re-raise signal.  This should kill us as we return.
