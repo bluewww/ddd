@@ -180,6 +180,11 @@
 ! COLORS
 ! ----------------------------------------------------------------------------
 
+! Use white background for text and lists.
+! Ddd*XmText.background:      white
+! Ddd*XmTextField.background: white
+! Ddd*XmList.background:      white
+
 ! Make activated toggle buttons shine in red.  Tcl/Tk people like this.
 ! Ddd*XmToggleButton.fillOnSelect: true
 ! Ddd*XmToggleButton.selectColor: red4
