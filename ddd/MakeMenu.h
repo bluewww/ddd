@@ -47,7 +47,9 @@ const MMType MMButtonPanel =  9; // Like MMRadioPanel, but no radio behavior
 const MMType MMScale       = 10; // Create a scale
 const MMType MMTextField   = 11; // Create a text field
 const MMType MMEnterField  = 12; // Like MMTextField, but use Enter to activate
-const MMType MMFlatPush    = 13; // Create `flat' PushButton without shadows
+const MMType MMSpinField   = 13; // Like MMTextField, but add two spin buttons
+const MMType MMFlatPush    = 14; // Create `flat' PushButton without shadows
+const MMType MMArrow       = 15; // Create an arrow button
 
 const MMType MMTypeMask    = 31; // mask to find type
 
@@ -73,6 +75,7 @@ struct MMDesc {
     MMDesc *items;		 // Submenus (NULL if none)
     Widget *widgetptr;           // Where to store the resulting widget
     Widget widget;		 // The resulting widget
+    Widget label;		 // The resulting label
 };
 
 

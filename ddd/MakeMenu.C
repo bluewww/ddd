@@ -42,6 +42,7 @@ char MakeMenu_rcsid[] =
 #include <Xm/CascadeB.h>
 #include <Xm/PushB.h>
 #include <Xm/ToggleB.h>
+#include <Xm/ArrowB.h>
 #include <Xm/CascadeB.h>
 #include <Xm/Separator.h>
 #include <Xm/Scale.h>
@@ -49,6 +50,10 @@ char MakeMenu_rcsid[] =
 #include <Xm/Label.h>
 #include <Xm/MenuShell.h>
 #include <X11/Xutil.h>
+
+#if XmVersion >= 2000
+#include <Xm/SpinB.h>
+#endif
 
 #include "LessTifH.h"
 #include "bool.h"
@@ -251,22 +256,25 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
     {
 	String name             = item->name;
 	MMType type             = item->type;
-	Widget &widget          = item->widget;
+	Widget& widget          = item->widget;
 	Widget *widgetptr       = item->widgetptr;
 	MMDesc *subitems        = item->items;
+	Widget& label           = item->label;
 
 	if (type & MMIgnore)
 	    continue;		// Don't create
 
 	string subMenuName = string(name) + "Menu";
 	string panelName   = string(name) + "Panel";
-	string textName    = "text";
-	string labelName   = "label";
+	static string textName  = "text";
+	static string labelName = "label";
+	static string spinName  = "spin";
 	Widget subMenu = 0;
-	Widget label   = 0;
 	Widget panel   = 0;
+	Widget spin    = 0;
 	bool flat = false;
 	PushMenuInfo *info = 0;
+	label = 0;
 
 	switch(type & MMTypeMask) 
 	{
@@ -310,6 +318,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 		if (info != 0)
 		    info->widget = widget;
 	    }
+	    label = widget;
 	    break;
 
 	case MMToggle:
@@ -317,7 +326,8 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    widget = verify(XmCreateToggleButton(shell, name, args, arg));
+	    label = widget = 
+		verify(XmCreateToggleButton(shell, name, args, arg));
 	    break;
 
 	case MMLabel:
@@ -325,7 +335,16 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    widget = verify(XmCreateLabel(shell, name, args, arg));
+	    label = widget = 
+		verify(XmCreateLabel(shell, name, args, arg));
+	    break;
+
+	case MMArrow:
+	    // Create an arrow
+	    assert(subitems == 0);
+
+	    arg = 0;
+	    widget = verify(XmCreateArrowButton(shell, name, args, arg));
 	    break;
 
 	case MMMenu:
@@ -336,7 +355,8 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
-	    widget = verify(XmCreateCascadeButton(shell, name, args, arg));
+	    label = widget = 
+		verify(XmCreateCascadeButton(shell, name, args, arg));
 
             if (lesstif_version <= 79)
 	    {
@@ -380,7 +400,8 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
-	    widget = verify(XmCreateCascadeButton(shell, name, args, arg));
+	    label = widget = 
+		verify(XmCreateCascadeButton(shell, name, args, arg));
 	    break;
 
 	case MMOptionMenu:
@@ -391,7 +412,8 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
-	    widget = verify(XmCreateOptionMenu(shell, name, args, arg));
+	    label = widget = 
+		verify(XmCreateOptionMenu(shell, name, args, arg));
 	    break;
 
 	case MMPanel:
@@ -447,6 +469,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 
 	case MMTextField:
 	case MMEnterField:
+	case MMSpinField:
 	    // Create a label with an associated text field
 	    assert(subitems == 0);
 
@@ -463,8 +486,18 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 	    label = verify(XmCreateLabel(panel, labelName, args, arg));
 	    XtManageChild(label);
 
+	    spin = panel;
+	    if ((type & MMTypeMask) == MMSpinField)
+	    {
+#if XmVersion >= 2000
+		arg = 0;
+		spin = XmCreateSpinBox(panel, spinName, args, arg);
+		XtManageChild(spin);
+#endif
+	    }
+
 	    arg = 0;
-	    widget = verify(XmCreateTextField(panel, textName, args, arg));
+	    widget = verify(XmCreateTextField(spin, textName, args, arg));
 	    XtManageChild(widget);
 	    break;
 
@@ -713,6 +746,9 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 	    ReflattenButtonCB(widget, XtPointer(widget));
 	}
 
+	// FALL THROUGH
+
+    case MMArrow:
 	if (callback.callback != 0)
 	    XtAddCallback(widget, 
 			  XmNactivateCallback,
@@ -734,12 +770,15 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 	break;
 
     case MMTextField:
+    case MMSpinField:
 	if (callback.callback != 0)
 	    XtAddCallback(widget,
 			  XmNvalueChangedCallback,
 			  callback.callback, 
 			  callback.closure);
-	break;
+
+	if ((type & MMTypeMask) == MMTextField)
+	    break;
 
     case MMEnterField:
 	if (callback.callback != 0)
