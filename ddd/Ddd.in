@@ -1560,11 +1560,11 @@ Ddd*code_text_w.contextHelpString:	\
 @rm This is the @sl machine code window @rm in which the machine code\n\
 of the debugged program is shown.\n\
 \n\
-On the @sl left side@rm, line numbers and breakpoints are shown:\n\
+On the @sl left side@rm, code addresses and breakpoints are shown:\n\
 A stop sign or `@tt #@sl n@tt #@rm' shows an enabled breakpoint;\n\
 A grey stop sign or `@tt _@sl n@tt _@rm' shows a disabled breakpoint.\n\
 The last executed line is indicated by an arrow or `@tt>@rm'.\n\
-The @sl right side @rm contains the source code.\n\
+The @sl right side @rm contains the machine instructions.\n\
 \n\
 Click the @bf left mouse button @rm to select words.\n\
 Drag with the @bf left mouse button @rm to modify your selection.\n\
