@@ -5,7 +5,7 @@ DDD 1.4 (WORK IN PROGRESS - NOT YET RELEASED)
 ---------------------------------------------
 
     This release brings the long awaited machine code support, new
-    cute breakpoint symbols, improved DBX support, enhanced
+    breakpoint and execution symbols, improved DBX support, enhanced
     integration facilities and some more new features and
     improvements.
 
@@ -15,7 +15,9 @@ DDD 1.4 (WORK IN PROGRESS - NOT YET RELEASED)
       instructions.  (Won't work with DBX yet)
     - Breakpoints and the current execution position are displayed as
       stop signs and arrow symbols (``glyphs'') instead of text.  Our
-      students find that cute.
+      students find that cute; the old mode is still available.
+    - New argument editor: Upon program start, select from a list of
+      previously used program arguments.
     - Using the new `--tty' option, DDD can be easily integrated with
       other GDB/DBX front-ends.  For instance, you can have DDD run as
       an inferior debugger from your Emacs GDB-mode, having all Emacs
@@ -23,12 +25,14 @@ DDD 1.4 (WORK IN PROGRESS - NOT YET RELEASED)
     - Improved DBX 3.x support.  Thanks to Grant McDorman <grant@isgtec.com>.
     - Displays with format expressions (`/x') are properly
       dereferenced.
-    - Improved position history (`Back'/`Forward').
+    - Position history (`Back'/`Forward') improved.
     - Automatic reloading of source files when the debugged program
       has changed; explicit reload is no longer required.
-    - No more `Help on Debugging' item.  Sigh.
+    - File selection dialogs are synchronized: changing the directory
+      in one dialog also changes the directory in all others.
     - Several major and minor bugs have been fixed.  Special thanks to
       Grant McDorman <grant@isgtec.com>.
+    - No more `Help on Debugging' item.  Sigh.
 
 
 DDD 1.3e
