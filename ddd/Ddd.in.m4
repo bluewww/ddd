@@ -4730,8 +4730,10 @@ to EMAIL([ddd]-bugs@ ips.cs.tu-bs.de), giving a subject like\n\
 \n\
 To enable us to fix the bug, you should include the following information:\n\
 ITEM What you were doing to get this message.  Report all the facts.\n\
-ITEM The DDD configuration.  \
-Run KBD([ddd] --configuration) to get it.\n\
+ITEM The DDD configuration.  Run KBD([ddd] --configuration) to get it.\n\
+ITEM If a core file was generated in your directory, please run\n\
+    KBD(gdb [ddd] core), and type KBD(where) at the SAMP((gdb)) prompt.\n\
+    (Include this output only.  Do not include the core file itself.)\n\
 ITEM Invoke DDD with the SAMP(--trace) option, and if you can\n\
     reproduce the bug, include the trace output in your bug report.\n\
 Please read also the section ``Reporting Bugs'' in the DDD manual.\n\

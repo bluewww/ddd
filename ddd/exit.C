@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Exit DDD (including fatal exits)
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -101,6 +101,7 @@ char exit_rcsid[] =
 #include <signal.h>
 #include <iostream.h>
 #include <ctype.h>
+#include <sys/wait.h>
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
@@ -116,6 +117,7 @@ extern int raise(int sig);
 
 static void ddd_signal(int sig...);
 static void ddd_fatal(int sig...);
+static bool ddd_dump_core(int sig...);
 
 // True if DDD is about to exit
 bool ddd_is_exiting = false;
@@ -184,6 +186,10 @@ void ddd_install_signal()
 #ifdef SIGTERM
     signal(SIGTERM, SignalProc(ddd_signal));
 #endif
+
+#ifdef SIGQUIT
+    signal(SIGQUIT, SignalProc(ddd_signal));
+#endif
 }
 
 static char *ddd_invoke_name = ddd_NAME;
@@ -233,6 +239,10 @@ void ddd_install_fatal(char *program_name)
 
 #ifdef SIGSYS
     signal(SIGSYS, SignalProc(ddd_fatal));
+#endif
+
+#ifdef SIGUSR1
+    signal(SIGUSR1, SignalProc(ddd_dump_core));
 #endif
 }
 
@@ -403,7 +413,8 @@ static void ddd_fatal(int sig...)
     // handler and makes it possible for you to determine the problem
     // cause.
 
-    ddd_has_crashed = true;
+    if (sig != SIGINT)
+	ddd_has_crashed = true;
 
     static int fatal_entered = 0;
 
@@ -417,6 +428,7 @@ static void ddd_fatal(int sig...)
 	    print_fatal_msg(title, cause, "Internal error");
 	}
 
+
 	// Re-raise signal.  This should kill us as we return.
 	ddd_signal(sig);
 	return;
@@ -425,11 +437,66 @@ static void ddd_fatal(int sig...)
     // Reinstall fatal error handlers
     ddd_install_fatal();
 
+    if (sig != SIGINT)
+    {
+	// Create core file (without interrupting DDD)
+	if (ddd_dump_core(sig))
+	{
+	    // We are the child: return to originating sequence such
+	    // that we can dump core.
+	    return;
+	}
+    }
+
     // Return to main event loop
     fatal_entered--;
     longjmp(main_loop_env, sig);
 }
 
+
+//-----------------------------------------------------------------------------
+// Dump core (for debugging)
+//-----------------------------------------------------------------------------
+
+static bool ddd_dump_core(int sig...)
+{
+    int core_pid;
+    if ((core_pid = fork()) == 0)
+    {
+	// I am the child: re-raise signal
+#if defined(SIGUSR1)
+	if (sig == SIGUSR1)
+	{
+	    // SIGUSR1 does not cause a core dump; use abort() instead
+#if defined(SIGIOT)
+	    sig = SIGIOT;
+#elif defined(SIGABRT)
+	    sig = SIGABRT;
+#endif // defined(SIGIOT)
+	}
+#endif // defined(SIGUSR1)
+
+	// Re-raise signal.  This should kill us as we return.
+	signal(sig, SignalProc(SIG_DFL));
+	raise(sig);
+	return true;
+    }
+
+    if (core_pid < 0)
+    {
+	perror(ddd_NAME);
+    }
+    else
+    {
+	// Wait for the child to finish
+	int status;
+	pid_t ret = waitpid(core_pid, &status, 0);
+	if (ret < 0)
+	    perror(ddd_NAME);
+    }
+
+    return false;
+}
 
 //-----------------------------------------------------------------------------
 // X I/O error
