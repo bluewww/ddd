@@ -4323,6 +4323,9 @@ but could not be found,\n\
     re-invoke DDD, but use the SAMP(--debugger VAR(path)) option to \
 specify\n\
     the full @GDB@ path VAR(path).\n\
+ITEM If you used the SAMP(--debugger VAR(path)) option, be sure to specify \
+one of\n\
+    the SAMP(--gdb), SAMP(--dbx), or SAMP(--xdb) options as well.\n\
 ITEM If you started DDD without arguments, re-invoke DDD,\n\
     but give it an executable as argument.  XDB and some DBX versions\n\
     require being invoked with an executable.\n\
