@@ -2328,6 +2328,68 @@ void DataDisp::write_restore_scope_command(ostream& os,
 }
 
 
+void DataDisp::get_node_state(ostream& os, DispNode *dn, bool include_position)
+{
+    os << "graph display " << dn->name();
+
+    // Write cluster
+    if (dn->clustered())
+	os << " clustered";
+
+    // Write position
+    if (include_position)
+    {
+	BoxPoint pos = dn->pos();
+
+	if (pos.isValid())
+	{
+	    if (bump_displays && is_cluster(dn))
+	    {
+		// When this cluster will be restored, it will be
+		// empty first, but later additions will bump it
+		// to a new position.  Compensate for this.
+		static DispNode empty_cluster(-1, dn->name(), 
+					      dn->scope(), "No displays.");
+
+		BoxPoint offset = 
+		    (dn->box()->size() - empty_cluster.box()->size()) / 2;
+		    
+		pos = graphEditFinalPosition(graph_edit, pos - offset);
+	    }
+
+	    os << " at " << pos;
+	}
+    }
+
+    // Write dependency
+    string depends_on = "";
+    if (dn->deferred())
+    {
+	depends_on = dn->depends_on();
+    }
+    else
+    {
+	for (GraphEdge *edge = dn->firstTo();
+	     edge != 0; edge = dn->nextTo(edge))
+	{
+	    DispNode *ancestor = ptr_cast(DispNode, edge->from());
+	    if (ancestor != 0)
+	    {
+		depends_on = ancestor->name();
+		break;
+	    }
+	}
+    }
+    if (depends_on != "")
+	os << " dependent on " << depends_on;
+
+    // Write scope
+    if (dn->scope() != "")
+	os << " now or when in " << dn->scope();
+
+    os << '\n';
+}
+
 bool DataDisp::get_state(ostream& os,
 			 bool restore_state,
 			 bool include_position,
@@ -2369,69 +2431,7 @@ bool DataDisp::get_state(ostream& os,
 	if (restore_state && scopes.size() > 0)
 	    write_restore_scope_command(os, current_frame, scopes, dn, ok);
 
-	os << "graph display " << dn->name();
-
-	// Write cluster
-	if (dn->clustered())
-	    os << " clustered";
-
-	// Write position
-	if (include_position)
-	{
-	    BoxPoint pos = dn->pos();
-
-	    if (pos.isValid())
-	    {
-		if (bump_displays && is_cluster(dn))
-		{
-		    // When this cluster will be restored, it will be
-		    // empty first, but later additions will bump it
-		    // to a new position.  Compensate for this.
-		    static DispNode empty_cluster(-1, dn->name(), 
-						  dn->scope(), "No displays.");
-
-		    BoxPoint offset = 
-			(dn->box()->size() - empty_cluster.box()->size()) / 2;
-		    
-		    pos = graphEditFinalPosition(graph_edit, pos - offset);
-		}
-
-		os << " at " << pos;
-	    }
-	}
-
-	// Write dependency
-	string depends_on = "";
-	if (dn->deferred())
-	{
-	    depends_on = dn->depends_on();
-	}
-	else
-	{
-	    for (GraphEdge *edge = dn->firstTo();
-		 edge != 0; edge = dn->nextTo(edge))
-	    {
-		BoxGraphNode *ancestor = ptr_cast(BoxGraphNode, edge->from());
-		if (ancestor != 0)
-		{
-		    int depnr = disp_graph->get_nr(ancestor);
-		    DispNode *depnode = disp_graph->get(depnr);
-		    if (depnode != dn)
-		    {
-			depends_on = depnode->name();
-			break;
-		    }
-		}
-	    }
-	}
-	if (depends_on != "")
-	    os << " dependent on " << depends_on;
-
-	// Write scope
-	if (dn->scope() != "")
-	    os << " now or when in " << dn->scope();
-
-	os << '\n';
+	get_node_state(os, dn, include_position);
     }
 
     // That's it: return to target frame...
@@ -3233,8 +3233,6 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 	disabling_occurred = true;
     }
 
-    undo_buffer.add_display(title, value);
-
     StatusShower s("Creating display");
     s.total   = value.length();
     s.current = value.length();
@@ -3247,6 +3245,9 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     }
 
     open_data_window();
+
+    undo_buffer.add_display(title, value);
+    undo_buffer.add_command(delete_display_cmd(title));
 
     return dn;
 }
@@ -3266,8 +3267,6 @@ DispNode *DataDisp::new_user_node(const string& name,
     if (name == "`" CLUSTER_COMMAND "`")
 	DispValue::value_hook = update_hook;
 
-    undo_buffer.add_display(name, answer);
-
     // User displays work regardless of scope
     static const string scope = "";
 
@@ -3275,6 +3274,9 @@ DispNode *DataDisp::new_user_node(const string& name,
     DispValue::value_hook = 0;
 
     open_data_window();
+
+    undo_buffer.add_display(name, answer);
+    undo_buffer.add_command(delete_display_cmd(name));
 
     return dn;
 }
@@ -3301,6 +3303,9 @@ DispNode *DataDisp::new_deferred_node(const string& expr, const string& scope,
     dn->make_inactive();
     dn->depends_on() = depends_on;
     dn->moveTo(pos);
+
+    undo_buffer.add_display(expr, answer);
+    undo_buffer.add_command(delete_display_cmd(expr));
 
     return dn;
 }
@@ -4208,7 +4213,23 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
 {
     bool unclustered = false;
 
-    for (int i = 0; i < display_nrs.size(); i++)
+    // Build undo command
+    ostrstream undo_commands;
+    int i;
+    for (i = 0; i < display_nrs.size(); i++)
+    {
+	int nr = display_nrs[i];
+	DispNode *node = disp_graph->get(nr);
+	if (node == 0)
+	    continue;		// Already deleted or bad number
+
+	// Save current state
+	get_node_state(undo_commands, node, true);
+    }
+    undo_buffer.add_command(string(undo_commands));
+
+    // Delete nodes
+    for (i = 0; i < display_nrs.size(); i++)
     {
 	int nr = display_nrs[i];
 

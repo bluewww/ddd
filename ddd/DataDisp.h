@@ -485,6 +485,9 @@ private:
 			  const StringArray& scopes,
 			  int target_frame);
 
+    static void get_node_state(ostream& os, DispNode *dn,
+			       bool include_position);
+
     // Reset done
     static void reset_done(const string& answer, void *data);
 
