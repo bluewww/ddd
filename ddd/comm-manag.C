@@ -579,7 +579,7 @@ void start_gdb()
 	break;
 
     case PERL:
-	extra_data->refresh_initial_line = true;
+	cmd_data->new_exec_pos = true;
 
 	cmds += gdb->pwd_command();
 	extra_data->refresh_pwd = true;
@@ -1350,11 +1350,23 @@ void send_gdb_command(string cmd, Widget origin,
 	    extra_data->refresh_data = true;
     }
 
-    if (gdb->type() != GDB)
+    if (gdb->type() == PERL)
+    {
+	// All positions issued by Perl are execution positions
+	cmd_data->new_exec_pos = true;
+    }
+
+    if (!gdb->has_regs_command())
+    {
+	// No `regs' command => no refresh
 	extra_data->refresh_registers = false;
+    }
 
     if (gdb->type() != GDB && gdb->type() != JDB)
+    {
+	// No threads
 	extra_data->refresh_threads = false;
+    }
 
     if (gdb->type() == GDB && cmd_data->pos_buffer != 0)
     {
