@@ -2194,12 +2194,10 @@ void DataDisp::delete_displaySQ (const IntArray& display_nrs)
     }
 	
     bool ok = true;
+    bool sent = false;
 
-    if (k > 0)
-    {
-	if (gdb->has_display_command())
-	    ok = gdb->send_question (cmd, delete_displayOQC, 0);
-    }
+    if (k > 0 && gdb->has_display_command())
+	sent = ok = gdb->send_question (cmd, delete_displayOQC, 0);
 
     if (!ok)
 	post_gdb_busy(last_origin);
@@ -2211,7 +2209,12 @@ void DataDisp::delete_displaySQ (const IntArray& display_nrs)
 	    disp_graph->del(display_nrs[i]);
     }
 
-    refresh_addr();
+    if (!sent && ok)
+    {
+	// Refresh addresses now
+	refresh_addr();
+    }
+
     update_infos();
 }
 
@@ -2226,10 +2229,10 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
     switch (gdb->type())
     {
     case GDB:
+    case XDB:
 	break;
 
     case DBX:
-    case XDB:
 	// Upon `undisplay', DBX redisplays remaining displays with values
 	if (answer != "")
 	{
@@ -2242,6 +2245,9 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
     // Anything remaining is an error message
     if (answer != "")
 	post_gdb_message (ans, last_origin);
+
+    // Refresh remaining addresses
+    refresh_addr();
 }
 
 
@@ -3034,7 +3040,21 @@ void DataDisp::set_detect_aliases(bool value)
 
     detect_aliases = value;
     if (detect_aliases)
+    {
+	// Re-check for aliases
 	refresh_displaySQ();
+    }
+    else
+    {
+	// Unmerge all displays
+	MapRef ref;
+	for (int k = disp_graph->first_nr(ref); 
+	     k != 0; 
+	     k = disp_graph->next_nr(ref))
+	{
+	    unmerge_display(k);
+	}
+    }
 }
 
 // Add address-printing commands to CMDS
@@ -3133,6 +3153,7 @@ void DataDisp::check_aliases()
 
     bool changed = false;
 
+    string msg;
     for (StringIntArrayAssocIter iter(equivalences); iter.ok(); iter++)
     {
 	string addr = iter.key();
@@ -3150,15 +3171,69 @@ void DataDisp::check_aliases()
 	{
 	    // Multiple displays at one location
 	    changed = merge_displays(displays) || changed;
+
+	    // Generate appropriate message
+	    if (msg == "")
+		msg = "Aliases detected: ";
+	    else
+		msg += "; ";
+
+	    for (int i = 0; i < displays.size(); i++)
+	    {
+		DispNode *dn = disp_graph->get(displays[i]);
+		if (i > 0)
+		    msg += " = ";
+		msg += gdb->address_expr(dn->name());
+	    }
+	    msg += " = " + addr;
 	}
+    }
+
+    if (msg != "")
+    {
+	msg += ".";
+	post_gdb_message(msg);
     }
 
     if (changed)
 	refresh_graph_edit();
 }
 
-bool DataDisp::merge_displays(const IntArray& disp_nrs)
+// Return last change
+int DataDisp::last_change_of_disp_nr(int disp_nr)
 {
+    DispNode *dn = disp_graph->get(disp_nr);
+    assert(dn != 0);
+
+    return dn->last_change();
+}
+
+// Sort A according to the last change
+void DataDisp::sort_last_change(IntArray& disp_nrs)
+{
+    // Shell sort -- simple and fast
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= disp_nrs.size());
+    do {
+	h /= 3;
+	for (int i = h; i < disp_nrs.size(); i++)
+	{
+	    int v = disp_nrs[i];
+	    int j;
+	    for (j = i; j >= h && last_change_of_disp_nr(disp_nrs[j - h]) > 
+		                  last_change_of_disp_nr(v); j -= h)
+		disp_nrs[j] = disp_nrs[j - h];
+	    if (i != j)
+		disp_nrs[j] = v;
+	}
+    } while (h != 1);
+}
+
+bool DataDisp::merge_displays(const IntArray& _disp_nrs)
+{
+    IntArray disp_nrs(_disp_nrs);
     assert(disp_nrs.size() > 0);
 
     int i;
@@ -3176,43 +3251,50 @@ bool DataDisp::merge_displays(const IntArray& disp_nrs)
 	}
     }
 
-    // Determine new position where nodes are to be placed at.
-    // We use the node which hasn't changed most recently.  This way,
+    // Determine new position where nodes are to be placed at.  We use
+    // the node which has changed least recently.  This way,
     // dereferenced pointers will be merged with static data, instead
     // of vice versa.
-    int least_recent_change = INT_MAX;
-    DispNode *least_recently_changed_node = 0;
-    for (i = 0; i < disp_nrs.size(); i++)
-    {
-	DispNode *dn = disp_graph->get(disp_nrs[i]);
- 	assert(dn != 0 && dn->merged());
+    sort_last_change(disp_nrs);
+    BoxPoint pos = disp_graph->get(disp_nrs[0])->nodeptr()->pos();
 
-	if (dn->last_change() < least_recent_change)
-	    least_recently_changed_node = dn;
-    }
-    assert(least_recently_changed_node != 0);
-
-    bool changed = false;
-
-    // Place nodes at the position of LEAST_RECENTLY_CHANGED_NODE.
+    // Determine offset for next nodes;
     BoxPoint offset(0, 0);
+    Dimension grid_height = 16;
+    Dimension grid_width  = 16;
+    Boolean snap_to_grid  = True;
+    XtVaGetValues(graph_edit,
+		  XtNgridHeight, &grid_height,
+		  XtNgridWidth,  &grid_width,
+		  XtNsnapToGrid, &snap_to_grid,
+		  NULL);
+
+    if (snap_to_grid && grid_height > 0)
+    {
+	// Snap to grid is enabled: use grid as offset
+	offset = BoxPoint(grid_width, grid_height);
+    }
+    else
+    {
+	// Snap to grid is disabled: use title height as offset
+	offset = DispBox::merge_offset();
+    }
+
+    // Place nodes below ROOT_POS.
+    bool changed = false;
     for (i = 0; i < disp_nrs.size(); i++)
     {
 	DispNode *dn = disp_graph->get(disp_nrs[i]);
  	assert(dn != 0 && dn->merged());
 
-	if (dn == least_recently_changed_node)
-	    continue;
-
-	offset += DispBox::merge_offset();
-	BoxPoint new_pos = 
-	    least_recently_changed_node->nodeptr()->pos() + offset;
-
-	if (dn->nodeptr()->pos() != new_pos)
+	if (dn->nodeptr()->pos() != pos)
 	{
-	    dn->moveTo(new_pos);
+	    dn->moveTo(pos);
+	    graphEditRaiseNode(graph_edit, dn->nodeptr());
 	    changed = true;
 	}
+
+	pos += offset;
     }
 
     return changed;

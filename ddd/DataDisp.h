@@ -292,6 +292,8 @@ private:
 
     // Alias checking
     static void check_aliases();
+    static void sort_last_change(IntArray& disp_nrs);
+    static int last_change_of_disp_nr(int disp_nr);
 
     // Merge displays in DISP_NRS; return true iff change
     static bool merge_displays(const IntArray& disp_nrs);
