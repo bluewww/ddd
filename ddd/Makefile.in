@@ -788,7 +788,8 @@ README_FILES =
 PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C \
 	 	   acconfig.h acspecial.h stamp-h.in \
 		   ddd.vsl.h version.h host.h configinfo.C \
-		   Ddd.ad.h ddd.man.huff.C COPYING.huff.C xlibdir.C eps-code.h
+		   Ddd.ad.h ddd.man ddd.man.txt \
+		   ddd.man.huff.C COPYING.huff.C xlibdir.C eps-code.h
 
 # Extra files to be built for the distribution
 # In a distribution, these should be already built.
@@ -808,7 +809,7 @@ DISTCLEAN_STUFF	 = $(CLEAN_STUFF) \
 		   config.status config.h host.h paths.h \
 		   Makefile MakeOut LOG OOBR OOBR-FTR \
 		   config.log config.cache configinfo.C stamp-h \
-		   Ddd Ddd.ad.h ddd.man ddd.man-nopics vr.h
+		   Ddd Ddd.ad.h ddd.man-nopics vr.h
 
 # Any files that can be reconstructed, except configure script
 REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF) \
