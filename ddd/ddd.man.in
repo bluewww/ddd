@@ -4519,7 +4519,8 @@ This is due to a bug in Motif.  You may try the following resources in
 your `\fB$HOME/.ddd/init\fR' file to minimize interference with Motif:
 .sp
 .br
-  \fBDdd*autoRaiseMenu:      false\fR
+  \fBDdd*autoRaiseMenu:      false
+  Ddd*ungrabMousePointer: false\fR
 .br
 .sp
 See `\fBRESOURCES\fR', above, for a discussion of these resources.
@@ -4534,7 +4535,7 @@ If it's the character rather than the signal you're interested in, run
 your program in the separate execution window (via `\fBView |
 Execution Window\fR') and type \fBCtrl+C\fR there.
 .\"
-.SS "In C++, how do I see the \fIactual\fR type of an object?"
+.SS "In C++, how do I see the \fIactual\fB type of an object?"
 When using a generic pointer, you may wish to see the \fIactual\fR
 type of an object rather than the \fIdeclared\fR type.  In the
 \s-2GDB\s+2 settings (`\fBEdit | GDB Settings\fR'), enable `\fBSet
