@@ -155,13 +155,8 @@ public:
     bool OK() const;  // Representation invariant
 
 private:
-    regex(const regex&) :
-#if WITH_RUNTIME_REGEX
-	exprs(0),
-#endif
-	matcher(0), data(0) {} // no X(X&)
-
-    regex& operator = (const regex&) { return *this; } // no assignment
+    regex(const regex&);
+    regex& operator = (const regex&);
 };
 
 #if WITH_RUNTIME_REGEX
