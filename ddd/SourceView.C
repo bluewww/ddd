@@ -349,6 +349,8 @@ int SourceView::history_position = 0;
 bool SourceView::code_history_locked = false;
 bool SourceView::source_history_locked = false;
 
+bool SourceView::checking_scroll = false;
+
 bool SourceView::at_lowest_frame = true;
 
 int SourceView::max_popup_expr_length = 20;
@@ -2043,94 +2045,12 @@ SourceView::SourceView (XtAppContext app_context,
     Cardinal arg = 0;
 
     // Create source code window
-    arg = 0;
-    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
-    XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
-    source_form_w = 
-	verify(XmCreateForm(parent, "source_form_w", args, arg));
-
-    arg = 0;
-    XtSetArg(args[arg], XmNselectionArrayCount, 1); arg++;
-    XtSetArg(args[arg], XmNtopAttachment,     XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNbottomAttachment,  XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNleftAttachment,    XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNrightAttachment,   XmATTACH_FORM); arg++;
-    source_text_w = 
-	verify(XmCreateScrolledText(source_form_w, "source_text_w", 
-				    args, arg));
-    XtManageChild(source_text_w);
-    XtManageChild(source_form_w);
-
-    XtAddCallback(source_text_w, XmNgainPrimaryCallback,
-		  set_source_argCB, XtPointer(false));
-    XtAddCallback(source_text_w, XmNmotionVerifyCallback,
-		  set_source_argCB, XtPointer(true));
-    XtAddCallback(source_text_w, XmNmotionVerifyCallback,
-		  CheckScrollCB, 0);
-    InstallTextTips(source_text_w);
-
-    // Fetch scrollbar ID
-    Widget scrollbar = 0;
-    XtVaGetValues(XtParent(source_text_w),
-		  XmNverticalScrollBar, &scrollbar,
-		  NULL);
-    if (scrollbar)
-    {
-	XtAddCallback(scrollbar, XmNincrementCallback,     CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNdecrementCallback,     CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNpageIncrementCallback, CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNpageDecrementCallback, CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNtoTopCallback,         CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNtoBottomCallback,      CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNdragCallback,          CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNvalueChangedCallback,  CheckScrollCB, 0);
-    }
-
+    create_text(parent, "source", source_form_w, source_text_w);
 
     // Create machine code window
-    arg = 0;
-    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
-    XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
-    code_form_w = 
-	verify(XmCreateForm(parent, "code_form_w", args, arg));
-
-    arg = 0;
-    XtSetArg(args[arg], XmNselectionArrayCount, 1); arg++;
-    XtSetArg(args[arg], XmNtopAttachment,     XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNbottomAttachment,  XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNleftAttachment,    XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNrightAttachment,   XmATTACH_FORM); arg++;
-    code_text_w = 
-	verify(XmCreateScrolledText(code_form_w, "code_text_w", args, arg));
-    XtManageChild(code_text_w);
-    if (disassemble)
-	XtManageChild(code_form_w);
-
-    XtAddCallback(code_text_w, XmNgainPrimaryCallback,
-		  set_source_argCB, XtPointer(false));
-    XtAddCallback(code_text_w, XmNmotionVerifyCallback,
-		  set_source_argCB, XtPointer(true));
-    XtAddCallback(code_text_w, XmNmotionVerifyCallback,
-		  CheckScrollCB, 0);
-    InstallTextTips(code_text_w);
-
-    // Fetch scrollbar ID
-    scrollbar = 0;
-    XtVaGetValues(XtParent(code_text_w),
-		  XmNverticalScrollBar, &scrollbar,
-		  NULL);
-    if (scrollbar)
-    {
-	XtAddCallback(scrollbar, XmNincrementCallback,     CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNdecrementCallback,     CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNpageIncrementCallback, CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNpageDecrementCallback, CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNtoTopCallback,         CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNtoBottomCallback,      CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNdragCallback,          CheckScrollCB, 0);
-	XtAddCallback(scrollbar, XmNvalueChangedCallback,  CheckScrollCB, 0);
-    }
-
+    create_text(parent, "code", code_form_w, code_text_w);
+    if (!disassemble)
+	XtUnmanageChild(code_form_w);
 
     // Create breakpoint editor
     arg = 0;
@@ -2358,6 +2278,55 @@ SourceView::SourceView (XtAppContext app_context,
     // Create glyphs in the background
     XtAppAddWorkProc (app_context, CreateGlyphsWorkProc, XtPointer(0));
 }
+
+
+void SourceView::create_text(Widget parent,
+			     const string& base, Widget& form, Widget& text)
+{
+    Arg args[10];
+    int arg = 0;
+
+    // Create text window
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
+    string form_name = base + "_form_w";
+    form = verify(XmCreateForm(parent, form_name, args, arg));
+
+    arg = 0;
+    XtSetArg(args[arg], XmNselectionArrayCount, 1); arg++;
+    XtSetArg(args[arg], XmNtopAttachment,     XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNbottomAttachment,  XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNleftAttachment,    XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNrightAttachment,   XmATTACH_FORM); arg++;
+    string text_name = base + "_text_w";
+    text = verify(XmCreateScrolledText(form, text_name, args, arg));
+    XtManageChild(text);
+    XtManageChild(form);
+
+    XtAddCallback(text, XmNgainPrimaryCallback, 
+		  set_source_argCB, XtPointer(false));
+    XtAddCallback(text, XmNmotionVerifyCallback,
+		  set_source_argCB, XtPointer(true));
+    XtAddCallback(text, XmNmotionVerifyCallback, CheckScrollCB, 0);
+    InstallTextTips(text);
+
+    // Fetch scrollbar ID and add callbacks
+    Widget scrollbar = 0;
+    XtVaGetValues(XtParent(text), XmNverticalScrollBar, &scrollbar, NULL);
+    if (scrollbar != 0)
+    {
+	XtAddCallback(scrollbar, XmNincrementCallback,     CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNdecrementCallback,     CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNpageIncrementCallback, CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNpageDecrementCallback, CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNtoTopCallback,         CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNtoBottomCallback,      CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNdragCallback,          CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNvalueChangedCallback,  CheckScrollCB, 0);
+    }
+}
+
 
 
 // ***************************************************************************
@@ -4742,8 +4711,6 @@ void SourceView::update_glyphs()
     }
 }
 
-
-static bool checking_scroll = false;
 
 // Invoked by scrolling keys
 void SourceView::updateGlyphsAct(Widget, XEvent*, String *, Cardinal *)

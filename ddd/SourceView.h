@@ -140,6 +140,9 @@ class SourceView {
     static void MoveCursorToGlyphPosCB(Widget, XtPointer, XtPointer);
     static int line_height (Widget text_w);
 
+    static void create_text(Widget parent,
+			    const string& base, Widget& form, Widget& text);
+
     static void refresh_bp_disp ();
     static void refresh_source_bp_disp ();
     static void refresh_code_bp_disp ();
@@ -211,6 +214,7 @@ private:
     static int history_position; // Last position in history + 1
     static bool source_history_locked;
     static bool code_history_locked;
+    static bool checking_scroll;
 
     static XmTextPosition last_start_secondary_highlight;
     static XmTextPosition last_end_secondary_highlight;
