@@ -50,6 +50,8 @@ char LineGraphEdge_rcsid[] =
 #include <X11/Intrinsic.h>
 
 #include "GraphNode.h"
+#include "LineGESI.h"
+
 
 DEFINE_TYPE_INFO_1(LineGraphEdge, GraphEdge)
 
@@ -316,129 +318,6 @@ BoxRegion LineGraphEdge::region(const GraphGC& gc) const
     }
 
     return r;
-}
-
-LineGraphEdgeSelfInfo::LineGraphEdgeSelfInfo(const BoxRegion& region,
-					     const GraphGC& gc)
-{
-    // Find edge position
-    diameter = gc.selfEdgeDiameter;
-
-    // Make sure edge is still attached to node
-    diameter = min(diameter, region.space(X) + region.space(X) / 2);
-    diameter = min(diameter, region.space(Y) + region.space(Y) / 2);
-
-    // Be sure we don't make it too small
-    diameter = max(diameter, 4);
-    radius = (diameter + 1) / 2;
-    diameter = radius * 2;
-
-    arc_pos = region.origin();	// Upper left corner of the arc
-    arc_center = region.origin(); // Center of the arc
-    anno_pos = region.origin();	// Position of annotation
-    arc_start = 0;		// Start of the arc (in degrees)
-    arc_extend = 270;	        // Extend of the arc (in degrees)
-
-    switch (gc.selfEdgePosition)
-    {
-    case NorthEast:
-	arc_pos  += BoxPoint(region.space(X) - radius, -radius);
-	arc_center += BoxPoint(region.space(X), 0);
-	anno_pos += BoxPoint(region.space(X) + radius, -radius);
-	arc_start = 270;
-	break;
-
-    case SouthEast:
-	arc_pos  += BoxPoint(region.space(X) - radius,
-			     region.space(Y) - radius);
-	arc_center += BoxPoint(region.space(X), region.space(Y));
-	anno_pos += BoxPoint(region.space(X) + radius,
-			     region.space(Y) + radius);
-	arc_start = 180;
-	break;
-
-    case SouthWest:
-	arc_pos  += BoxPoint(-radius, region.space(Y) - radius);
-	arc_center += BoxPoint(0, region.space(Y));
-	anno_pos += BoxPoint(-radius, region.space(Y) + radius);
-	arc_start = 90;
-	break;
-
-    case NorthWest:
-	arc_pos  += BoxPoint(-radius, -radius);
-	arc_center += BoxPoint(0, 0);
-	anno_pos += BoxPoint(-radius, -radius);
-	arc_start = 0;
-	break;
-    }
-
-    // Find arrow position and angle
-    arrow_angle = 0;
-    switch (gc.selfEdgeDirection)
-    {
-    case Clockwise:
-	arrow_angle = 360 - (arc_start + arc_extend + 180) % 360;
-	break;
-
-    case Counterclockwise:
-	arrow_angle = 360 - (arc_start + 180) % 360;
-	break;
-    }
-    arrow_alpha = 2 * PI * arrow_angle / 360.0;
-    
-    // Incline arrow a little into the arc
-    double cosine = gc.arrowLength / (2.0 * radius);
-    double inclination = (PI / 2.0) - acos(cosine);
-
-    arrow_pos = region.origin();
-    switch (gc.selfEdgeDirection)
-    {
-    case Clockwise:
-	arrow_alpha -= inclination;
-	switch (gc.selfEdgePosition)
-	{
-	case NorthEast:
-	    arrow_pos += BoxPoint(region.space(X), radius);
-	    break;
-
-	case SouthEast:
-	    arrow_pos += BoxPoint(region.space(X) - radius, region.space(Y));
-	    break;
-
-	case SouthWest:
-	    arrow_pos += BoxPoint(0, region.space(Y) - radius);
-	    break;
-
-	case NorthWest:
-	    arrow_pos += BoxPoint(radius, 0);
-	    break;
-	}
-	break;
-
-    case Counterclockwise:
-	arrow_alpha += inclination;
-	switch (gc.selfEdgePosition)
-	{
-	case NorthEast:
-	    arrow_pos += BoxPoint(region.space(X) - radius, 0);
-	    break;
-
-	case SouthEast:
-	    arrow_pos += BoxPoint(region.space(X), region.space(Y) - radius);
-	    break;
-
-	case SouthWest:
-	    arrow_pos += BoxPoint(radius, region.space(Y));
-	    break;
-
-	case NorthWest:
-	    arrow_pos += BoxPoint(0, radius);
-	    break;
-	}
-	break;
-    }
-
-    // That's all, folks!
 }
 
 
