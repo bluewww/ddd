@@ -129,7 +129,8 @@
 #define XtCPlotCommand           "PlotCommand"
 #define XtNplotInitCommands      "plotInitCommands"
 #define XtCPlotInitCommands      "PlotInitCommands"
-#define XtNplotSettings          "plotSettings"
+#define XtNplot2dSettings        "plot2dSettings"
+#define XtNplot3dSettings        "plot3dSettings"
 #define XtCPlotSettings          "PlotSettings"
 #define XtNtermCommand           "termCommand"
 #define XtCTermCommand           "TermCommand"
@@ -404,7 +405,8 @@ struct AppData {
     Boolean   auto_close_data_window;
     String    plot_command;
     String    plot_init_commands;
-    String    plot_settings;
+    String    plot_2d_settings;
+    String    plot_3d_settings;
     String    term_command;
     String    term_type;
     Boolean   use_tty_command;

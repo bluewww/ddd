@@ -53,6 +53,9 @@ private:
     PlotMode mode;
 
 public:
+    static string plot_2d_settings;
+    static string plot_3d_settings;
+
     // Constructor for Agent users
     PlotAgent(XtAppContext app_context, const string& pth,
 	      unsigned nTypes = LiterateAgent_NTypes)

@@ -38,6 +38,9 @@ char PlotAgent_rcsid[] =
 
 DEFINE_TYPE_INFO_1(PlotAgent, LiterateAgent)
 
+string PlotAgent::plot_2d_settings = "set noparametric";
+string PlotAgent::plot_3d_settings = "set parametric";
+
 // Start and initialize
 void PlotAgent::start(const string& init)
 {
@@ -83,11 +86,11 @@ int PlotAgent::flush()
 	    break;
 
 	case TwoD:
-	    cmd = "plot ";
+	    cmd = plot_2d_settings + "\nplot ";
 	    break;
 
 	case ThreeD:
-	    cmd = "splot ";
+	    cmd = plot_3d_settings + "\nsplot ";
 	    break;
 	}
 

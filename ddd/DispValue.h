@@ -45,6 +45,7 @@
 
 #include <X11/Intrinsic.h>	// XtAppContext
 
+class Agent;
 class PlotAgent;
 
 enum DispValueAlignment {Vertical, Horizontal};
@@ -92,20 +93,13 @@ class DispValue {
 				  const string& member_name);
 
     // Plotting stuff
-    void _plot() const;
-    void plot2d() const;
-    void plot3d() const;
-    void add_points(int prefix, bool three_d) const;
-    void add_points() const
-    {
-	add_points(0, false);
-    }
-    void add_points(int prefix) const
-    {
-	add_points(prefix, true);
-    }
+    void _plot(PlotAgent *plotter) const;
+    void plot2d(PlotAgent *plotter) const;
+    void plot3d(PlotAgent *plotter) const;
     bool can_plot2d() const;
     bool can_plot3d() const;
+
+    static void PlotterDiedHP(Agent *, void *, void *);
 
     // Update helper
     DispValue *_update(DispValue *source, 
@@ -166,10 +160,6 @@ protected:
 public:
     // Global settings
     static bool expand_repeated_values;
-
-    static string plot_command;
-    static string plot_init_commands;
-    static string plot_settings;
     static XtAppContext plot_context;
 
     // Parse VALUE into a DispValue tree

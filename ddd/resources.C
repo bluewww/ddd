@@ -575,13 +575,23 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNplotSettings,
+	XtNplot2dSettings,
 	XtCPlotSettings,
 	XtRString,
 	sizeof(String),
-	XtOffsetOf(AppData, plot_settings),
+	XtOffsetOf(AppData, plot_2d_settings),
 	XtRString,
-	XtPointer("")
+	XtPointer("set noparametric")
+    },
+
+    {
+	XtNplot3dSettings,
+	XtCPlotSettings,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, plot_3d_settings),
+	XtRString,
+	XtPointer("set parametric")
     },
 
     {

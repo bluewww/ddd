@@ -229,7 +229,8 @@ Ddd*paperSize: 210mm x 297mm
 ! The `gnuplot' command.
 Ddd*plotCommand: gnuplot -font '@FONT@' -title 'DDD: Plot Window'
 Ddd*plotInitCommands:
-Ddd*plotSettings: set noborder\n
+Ddd*plot2dSettings: set noparametric\nset noborder
+Ddd*plot3dSettings: set parametric\nset border
 
 
 

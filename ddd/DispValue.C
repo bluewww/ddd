@@ -692,6 +692,7 @@ void DispValue::clear()
 
     if (plotter() != 0)
     {
+	plotter()->removeHandler(Died, PlotterDiedHP, (void *)this);
 	delete plotter();
 	_plotter = 0;
     }
@@ -1108,7 +1109,7 @@ bool DispValue::can_plot2d() const
 	const string& v = child(i)->value();
 	if (v.length() == 0)
 	    return false;	// Empty value
-	if (v[0] != '.' && !isdigit(v[0]))
+	if (v[0] != '.' && v[0] != '+' && v[0] != '-' && !isdigit(v[0]))
 	    return false;	// Not a numeric value
     }
 
@@ -1120,13 +1121,13 @@ bool DispValue::can_plot3d() const
     if (type() != Array)
 	return false;
 
-    int grandchildren = -1;
+    int grandchildren;
     for (int i = 0; i < nchildren(); i++)
     {
 	if (!child(i)->can_plot2d())
 	    return false;
 
-	if (grandchildren < 0)
+	if (i == 0)
 	    grandchildren = child(i)->nchildren_with_repeats();
 	else if (child(i)->nchildren_with_repeats() != grandchildren)
 	    return false;	// Differing number of grandchildren
@@ -1143,69 +1144,57 @@ int DispValue::nchildren_with_repeats() const
     return sum;
 }
 
-
-string DispValue::plot_command;
-string DispValue::plot_init_commands;
-string DispValue::plot_settings;
 XtAppContext DispValue::plot_context;
 
 void DispValue::plot() const
 {
     if (plotter() == 0)
     {
-	string cmd = plot_command;
+	string cmd = app_data.plot_command;
 	cmd.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
 
-	((DispValue *)this)->_plotter = new PlotAgent(plot_context, cmd);
+	((DispValue *)this)->_plotter = 
+	    new PlotAgent(plot_context, cmd);
 
-	string init = plot_init_commands;
+	string init = app_data.plot_init_commands;
 	if (init != "" && !init.contains('\n', -1))
 	    init += '\n';
 
 	plotter()->start(init);
+	plotter()->addHandler(Died, PlotterDiedHP, (void *)this);
     }
 
-    string settings = plot_settings;
-    if (settings != "" && !settings.contains('\n', -1))
-	settings += '\n';
+    plotter()->plot_2d_settings = app_data.plot_2d_settings;
+    plotter()->plot_3d_settings = app_data.plot_3d_settings;
 
-    plotter()->write(settings.chars(), settings.length());
-
-    _plot();
+    _plot(plotter());
 
     plotter()->flush();
 }
 
-void DispValue::_plot() const
+void DispValue::_plot(PlotAgent *plotter) const
 {
     if (can_plot2d())
     {
-	plot2d();
+	plot2d(plotter);
 	return;
     }
 
     if (can_plot3d())
     {
-	plot3d();
+	plot3d(plotter);
 	return;
     }
 
     // Plot all array children into one window
     for (int i = 0; i < nchildren(); i++)
-	child(i)->_plot();
+	child(i)->_plot(plotter);
 }
 
-void DispValue::plot2d() const
+void DispValue::plot2d(PlotAgent *plotter) const
 {
-    plotter()->start_plot(full_name());
+    plotter->start_plot(full_name());
 
-    add_points();
-
-    plotter()->end_plot();
-}
-
-void DispValue::add_points(int prefix, bool three_d) const
-{
     int index;
     if (_have_index_base)
 	index = _index_base;
@@ -1215,40 +1204,53 @@ void DispValue::add_points(int prefix, bool three_d) const
     for (int i = 0; i < nchildren(); i++)
     {
 	DispValue *c = child(i);
-	for (int j = 0; j < c->repeats(); j++)
+	for (int ii = 0; ii < c->repeats(); ii++)
+	    plotter->add_point(index++, c->value());
+    }
+
+    plotter->end_plot();
+}
+
+void DispValue::plot3d(PlotAgent *plotter) const
+{
+    plotter->start_plot(full_name());
+
+    int index;
+    if (_have_index_base)
+	index = _index_base;
+    else
+	index = gdb->default_index_base();
+
+    for (int i = 0; i < nchildren(); i++)
+    {
+	DispValue *c = child(i);
+	int c_index;
+	if (c->_have_index_base)
+	    c_index = c->_index_base;
+	else
+	    c_index = gdb->default_index_base();
+
+	for (int ii = 0; ii < c->repeats(); ii++)
 	{
-	    if (three_d)
+	    for (int j = 0; j < c->nchildren(); j++)
 	    {
-		plotter()->add_point(prefix, index++, c->value());
+		DispValue *cc = c->child(j);
+		for (int jj = 0; jj < cc->repeats(); jj++)
+		    plotter->add_point(index, c_index++, cc->value());
 	    }
-	    else
-	    {
-		plotter()->add_point(index++, c->value());
-	    }
+
+	    index++;
 	}
     }
-}
-
-void DispValue::plot3d() const
-{
-    plotter()->start_plot(full_name());
-
-    int index;
-    if (_have_index_base)
-	index = _index_base;
-    else
-	index = gdb->default_index_base();
-
-    for (int i = 0; i < nchildren(); i++)
-    {
-	DispValue *c = child(i);
-	for (int j = 0; j < c->repeats(); j++)
-	    c->add_points(i);
-    }
     
-    plotter()->end_plot();
+    plotter->end_plot();
 }
 
+void DispValue::PlotterDiedHP(Agent *, void *client_data, void *)
+{
+    DispValue *dv = (DispValue *)client_data;
+    dv->_plotter = 0;
+}
 
 
 //-----------------------------------------------------------------------------
