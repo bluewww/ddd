@@ -45,8 +45,8 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    GraphNode *_firstNode;	// circular list (0, if empty)
-    GraphEdge *_firstEdge;	// circular list (0, if empty)
+    GraphNode *_firstNode;	// circular list (0 if empty)
+    GraphEdge *_firstEdge;	// circular list (0 if empty)
 
 protected:
     void addNodes(GraphNode* nodes);
@@ -58,7 +58,6 @@ protected:
 
     // needed by the Copy-Constructor
     GraphNode *getNode(GraphNode *node, const Graph& graph) const;
-    
     Graph(const Graph& graph);
 
 public:
@@ -136,6 +135,14 @@ public:
     {
 	return ref->next == _firstEdge ? 0 : ref->next;
     }
+
+    // Change position in node list
+    void makeNodeFirst(GraphNode *node);
+    void makeNodeLast(GraphNode *node);
+
+    // Change position in edge list
+    void makeEdgeFirst(GraphEdge *edge);
+    void makeEdgeLast(GraphEdge *edge);
 
     // Drawing
     void draw(Widget w, const BoxRegion& exposed, const GraphGC& gc) const;

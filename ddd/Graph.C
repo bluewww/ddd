@@ -204,6 +204,102 @@ void Graph::addUsedEdges(GraphEdge *edges)
     }
 }
 
+// Make NODE first node in node list
+void Graph::makeNodeFirst(GraphNode *node)
+{
+    if (node == _firstNode)
+	return;
+
+    // Chain out NODE
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+
+    // Chain in at FIRSTNODE.
+    node->next = _firstNode;
+    node->prev = _firstNode->prev;
+
+    node->next->prev = node;
+    node->prev->next = node;
+
+    // Have FIRSTNODE point at NODE.
+    _firstNode = node;
+
+    assert(OK());
+}
+
+// Make NODE last node in node list
+void Graph::makeNodeLast(GraphNode *node)
+{
+    if (node == _firstNode->prev)
+	return;
+
+    // Chain out NODE
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+    if (_firstNode == node)
+	_firstNode = node->next;
+
+    // Chain in at FIRSTNODE.
+    node->next = _firstNode;
+    node->prev = _firstNode->prev;
+
+    node->next->prev = node;
+    node->prev->next = node;
+
+    // Have FIRSTNODE point at NODE's successor.
+    _firstNode = node->next;
+
+    assert(OK());
+}
+
+// Make EDGE first edge in edge list
+void Graph::makeEdgeFirst(GraphEdge *edge)
+{
+    if (edge == _firstEdge)
+	return;
+
+    // Chain out EDGE
+    edge->prev->next = edge->next;
+    edge->next->prev = edge->prev;
+
+    // Chain in at FIRSTEDGE.
+    edge->next = _firstEdge;
+    edge->prev = _firstEdge->prev;
+
+    edge->next->prev = edge;
+    edge->prev->next = edge;
+
+    // Have FIRSTEDGE point at EDGE.
+    _firstEdge = edge;
+
+    assert(OK());
+}
+
+// Make EDGE last edge in edge list
+void Graph::makeEdgeLast(GraphEdge *edge)
+{
+    if (edge == _firstEdge->prev)
+	return;
+
+    // Chain out EDGE
+    edge->prev->next = edge->next;
+    edge->next->prev = edge->prev;
+    if (_firstEdge == edge)
+	_firstEdge = edge->next;
+
+    // Chain in at FIRSTEDGE.
+    edge->next = _firstEdge;
+    edge->prev = _firstEdge->prev;
+
+    edge->next->prev = edge;
+    edge->prev->next = edge;
+
+    // Have FIRSTEDGE point at EDGE's successor.
+    _firstEdge = edge->next;
+
+    assert(OK());
+}
+
 // Remove Node
 void Graph::removeNode(GraphNode *node)
 {
