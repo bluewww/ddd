@@ -9750,55 +9750,52 @@ void SourceView::reset()
 {
     bool reset_later = false;
 
-    if (gdb->running())
+    // Delete all breakpoints
+    if (gdb->has_delete_command())
     {
-	// Delete all breakpoints
-	if (gdb->has_delete_command())
+	string del = gdb->delete_command();
+
+	MapRef ref;
+	int n = 0;
+	for (BreakPoint *bp = bp_map.first(ref); bp != 0; 
+	     bp = bp_map.next(ref))
 	{
-	    string del = gdb->delete_command();
+	    n++;
+	    del += " " + itostring(bp->number());
+	}
 
-	    MapRef ref;
-	    int n = 0;
-	    for (BreakPoint *bp = bp_map.first(ref); bp != 0; 
-		 bp = bp_map.next(ref))
-	    {
-		n++;
-		del += " " + itostring(bp->number());
-	    }
+	if (n > 0)
+	{
+	    Command c(del);
+	    c.verbose  = false;
+	    c.prompt   = false;
+	    c.check    = true;
+	    c.priority = COMMAND_PRIORITY_INIT;
+	    c.callback = reset_done;
+	    gdb_command(c);
 
-	    if (n > 0)
+	    reset_later = true;
+	}
+    }
+    else if (gdb->has_clear_command())
+    {
+	MapRef ref;
+	for (BreakPoint *bp = bp_map.first(ref); bp != 0; 
+	     bp = bp_map.next(ref))
+	{
+	    Command c(clear_command(bp->pos()));
+	    c.verbose  = false;
+	    c.prompt   = false;
+	    c.check    = true;
+	    c.priority = COMMAND_PRIORITY_INIT;
+
+	    if (bp_map.next(ref) == 0)
 	    {
-		Command c(del);
-		c.verbose  = false;
-		c.prompt   = false;
-		c.check    = true;
-		c.priority = COMMAND_PRIORITY_INIT;
+		// Last command
 		c.callback = reset_done;
-		gdb_command(c);
-
 		reset_later = true;
 	    }
-	}
-	else if (gdb->has_clear_command())
-	{
-	    MapRef ref;
-	    for (BreakPoint *bp = bp_map.first(ref); bp != 0; 
-		 bp = bp_map.next(ref))
-	    {
-		Command c(clear_command(bp->pos()));
-		c.verbose  = false;
-		c.prompt   = false;
-		c.check    = true;
-		c.priority = COMMAND_PRIORITY_INIT;
-
-		if (bp_map.next(ref) == 0)
-		{
-		    // Last command
-		    c.callback = reset_done;
-		    reset_later = true;
-		}
-		gdb_command(c);
-	    }
+	    gdb_command(c);
 	}
     }
 

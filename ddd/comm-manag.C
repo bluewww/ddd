@@ -448,6 +448,10 @@ static void start_done()
 
 void start_gdb(bool config)
 {
+    // Remove all queued commands.  This is important when we're
+    // restarting the inferior debugger (such as JDB).
+    clearCommandQueue();
+
     // Register asynchronous answer handler
     gdb->removeHandler(AsyncAnswer, AsyncAnswerHP);
     gdb->addHandler(AsyncAnswer, AsyncAnswerHP);
