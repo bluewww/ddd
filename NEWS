@@ -235,7 +235,7 @@ Building DDD
   `ostrstream::str()' has been called.
 
 - On Solaris, `configure' adds the CC `-xs' flag to executables, such
-  that they can be debugged by DDD.
+  that they can be debugged by GDB.
 
 - `configure' also warns about configurations known to be `risky' -
   that is, where DDD may not run as expected.
@@ -286,14 +286,14 @@ Bug fixes
 Maintenance
 -----------
 
-- When DDD crashes, all information required for maintenance (such as
-  a stack trace) is automatically included into the DDD log.
-
 - All remaining German comments in DDD source have been translated
   into English.
 
-- The `--maintenance' option enables a top-level `Maintenance' menu
-  with additional options for maintaining DDD.
+- When DDD crashes, all information required for maintenance (such as
+  a stack trace) is automatically included into the DDD log.
+
+- The DDD `--maintenance' option enables a top-level `Maintenance'
+  menu with additional options for maintaining DDD.
 
 
 

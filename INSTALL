@@ -15,13 +15,14 @@ To build a complete DDD from sources, you need:
 
      Some other C++ compilers have been reported to compile DDD as well:
 
-     - Sun CC: safe.
-     - SGI CC: safe if full ISO C++ is supported (including `bool').
-               Earlier versions are unsafe: DDD may compile, but
-               crashes after a few interactions.
+     - Sun CC:  safe.
+     - SGI CC:  safe if full ISO C++ is supported (including `bool').
+                Earlier versions are unsafe: DDD may compile, but
+                crashes after a few interactions.
      - DEC CXX: safe if full ISO C++ is supported (including `bool').
-     - AIX xlC: unsafe. Introduces some minor errors.
-     - Cfront 3.0: unsafe. Does not compile DDD.
+     - AIX xlC: safe if full ISO C++ is supported (including `bool').
+                Earlier versions are unsafe: they introduce some minor errors.
+     - Cfront 3.0: does not compile DDD.
 
      To avoid any risks, we strongly recommend to use the GNU C++ compiler.
 
