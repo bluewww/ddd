@@ -14,7 +14,9 @@ DDD 1.4 (WORK IN PROGRESS - NOT YET RELEASED)
       an inferior debugger from your Emacs GDB-mode, having all Emacs
       and DDD facilities at your disposition.
     - Displays with format expressions (`/x') are properly dereferenced.
-    - Several major and minor bugs have been fixed.
+    - Improved DBX 3.x support.  Thanks to Grant McDorman <grant@isgtec.com>.
+    - Several major and minor bugs have been fixed.  Thanks to Grant
+      McDorman <grant@isgtec.com>.
 
 
 DDD 1.3e

@@ -109,6 +109,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
 		    DebuggerType tp)
     : state(BusyOnInitialCmds),
       _type(tp),
+      _version(tp == GDB ? GDB4 : DBX1),
       _user_data(0),
       busy_handlers (BusyNTypes),
       _prompt(tp == GDB ?  "\\(.\\|\n\\)*([^)]*gdb[^)]*) " :
@@ -391,6 +392,71 @@ void GDBAgent::cut_off_prompt (string& answer)
 
 
 
+// ***************************************************************************
+//
+void GDBAgent::strip_comments(string& s)
+{
+    if (type() != DBX && version() != DBX3)
+	return;
+
+    if (!s.contains('/'))
+	return;
+
+    char quoted = '\0';
+
+    unsigned int i = 0;
+    while (i < s.length())
+    {
+	char c = s[i++];
+	switch (c)
+	{
+	case '\\':
+	    if (i < s.length())
+		i++;
+	    break;
+
+	case '\'':
+	case '\"':
+	    if (c == quoted)
+		quoted = '\0';
+	    else if (!quoted)
+		quoted = c;
+	    break;
+
+	case '/':
+	    if (i < s.length() && !quoted)
+	    {
+		if (s[i] == '*')
+		{
+		    /* C-style comment */
+		    int end = s.index("*/", i + 1);
+		    if (end == -1)
+		    {
+			// unterminated comment -- keep it now
+			break;
+		    }
+
+		    // Remove comment
+		    i--;
+		    s.at(int(i), int(end - i + 2)) = "";
+		}
+		else if (s[i] == '/')
+		{
+		    // C++-style comment
+		    int end = s.index('\n', i + 1);
+		    i--;
+
+		    // Remove comment
+		    if (end == -1)
+			s.from(int(i)) = "";
+		    else
+			s.at(int(i), int(end - i + 1)) = "";
+		}
+	    }
+	}
+    }
+}
+
 //-----------------------------------------------------------------------------
 // Event handlers
 //-----------------------------------------------------------------------------
@@ -425,6 +491,7 @@ void GDBAgent::InputHP (Agent *, void* client_data, void* call_data)
 	else {
             // Received complete answer (GDB issued prompt)
 	    gdb->cut_off_prompt (answer);
+	    gdb->strip_comments (answer);
 
 	    if (answer != "" && gdb->_on_answer != 0)
 		gdb->_on_answer (answer, gdb->_user_data);
@@ -483,6 +550,7 @@ void GDBAgent::InputHP (Agent *, void* client_data, void* call_data)
 	else {
             // Received complete answer (GDB issued prompt)
 	    gdb->cut_off_prompt (answer);
+	    gdb->strip_comments (answer);
 
 	    gdb->complete_answer += answer;
 
@@ -506,6 +574,7 @@ void GDBAgent::InputHP (Agent *, void* client_data, void* call_data)
 	else {
             // Received complete answer (GDB issued prompt)
 	    gdb->cut_off_prompt (answer);
+	    gdb->strip_comments (answer);
 
 	    gdb->complete_answers[gdb->qu_index] += answer;
 

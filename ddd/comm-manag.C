@@ -94,7 +94,7 @@ typedef struct CmdData {
 typedef struct PlusCmdData {
     bool     refresh_main;             // send 'info line main' / `func main'
     bool     refresh_file;             // send 'file'
-    bool     refresh_line;             // send 'list'
+    bool     refresh_line;             // send 'list' (DBX 1.x) or 'line'
     bool     refresh_bpoints;          // send 'info b'
     bool     refresh_where;            // send 'where'
     bool     refresh_frame;            // send 'frame'
@@ -104,6 +104,7 @@ typedef struct PlusCmdData {
     bool     refresh_history_filename; // send 'show history filename'
     bool     refresh_history_size;     // send 'show history size'
     bool     refresh_history_save;     // send 'show history save'
+    bool     refresh_print_r;          // send 'print -r'
 
     PlusCmdData () :
 	refresh_main(false),
@@ -113,16 +114,20 @@ typedef struct PlusCmdData {
 	refresh_where(false),
 	refresh_frame(false),
 	refresh_register(false),
+	refresh_disp(false),
 	refresh_disp_info(false),
 	refresh_history_filename(false),
 	refresh_history_size(false),
-	refresh_history_save(false)
+	refresh_history_save(false),
+	refresh_print_r(false)
     {}
 };
 
 void user_cmdOA  (const string&, void *);
 void user_cmdOAC (void *);
 void plusOQAC (string [], void *[], int, void *);
+
+static string print_r_cookie = "4711";
 
 // ***************************************************************************
 //
@@ -160,6 +165,8 @@ void start_gdb()
 	plus_cmd_data->refresh_line = true;
 	cmds[qu_count++] = "status";
 	plus_cmd_data->refresh_bpoints = true;
+	cmds[qu_count++] = "print -r " + print_r_cookie;
+	plus_cmd_data->refresh_print_r = true;
 	break;
     }
 
@@ -309,6 +316,14 @@ void user_cmdSUC (string cmd, Widget origin)
 	// New displays and new exec position
 	cmd_data->filter_disp = Filter;
 	cmd_data->new_exec_pos = true;
+	if (gdb->type() == DBX) {
+	    plus_cmd_data->refresh_file  = true;
+	    if (gdb->version() != DBX1)
+	    {
+		plus_cmd_data->refresh_line  = true;
+		plus_cmd_data->refresh_frame = true;
+	    }
+	}
     }
     else if (is_frame_cmd(cmd))
     {
@@ -331,29 +346,43 @@ void user_cmdSUC (string cmd, Widget origin)
 	case DBX:
 	    // We need to get the current file as well...
 	    plus_cmd_data->refresh_file  = true;
+	    if (gdb->version() != DBX1)
+		plus_cmd_data->refresh_line  = true;
 	    break;
 	}
     }
     else if (is_set_cmd(cmd))
     {
-	// Update displays
-	plus_cmd_data->refresh_disp    = true;
+	if (gdb->type() == GDB)
+	{
+	    // Update displays
+	    plus_cmd_data->refresh_disp    = true;
+	}
     }
     else if (is_lookup_cmd(cmd))
     {
 	if (gdb->type() == DBX)
 	{
-	    // Check if this 'func' command should select a stack frame
-	    string func = cmd.after(RXblanks_or_tabs);
-	    if (func != "" && source_view->set_frame_func(func))
+	    if (gdb->version() == DBX1)
 	    {
-		// Func found in backtrace; everything okay
+		// Check if this 'func' command should select a stack frame
+		string func = cmd.after(RXblanks_or_tabs);
+		if (func != "" && source_view->set_frame_func(func))
+		{
+		    // Func found in backtrace; everything okay
+		}
+		else
+		{
+		    // Update position
+		    plus_cmd_data->refresh_file      = true;
+		    plus_cmd_data->refresh_line      = true;
+		}
 	    }
 	    else
 	    {
-		// Update position
-		plus_cmd_data->refresh_file      = true;
-		plus_cmd_data->refresh_line      = true;
+		plus_cmd_data->refresh_file  = true;
+		plus_cmd_data->refresh_line  = true;
+		plus_cmd_data->refresh_frame = true;
 	    }
 	}
 	plus_cmd_data->refresh_bpoints  = false;
@@ -369,7 +398,9 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_register = false;
     }
 	
-    if (gdb->type() == DBX && plus_cmd_data->refresh_frame)
+    if (gdb->type() == DBX 
+	&& gdb->version() == DBX1 
+	&& plus_cmd_data->refresh_frame)
     {
 	// We have a backtrace window open, but DBX has no ``frame''
 	// command to set the selected frame.  Use this hack instead.
@@ -443,19 +474,29 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds[qu_count++] = "show history size";
 	if (plus_cmd_data->refresh_history_save)
 	    cmds[qu_count++] = "show history save";
+	if (plus_cmd_data->refresh_print_r)
+	    assert(0);
 	break;
 
     case DBX:
 	if (plus_cmd_data->refresh_file)
 	    cmds[qu_count++] = "file";
 	if (plus_cmd_data->refresh_line)
-	    cmds[qu_count++] = "list";
+	{
+	    if (gdb->version() == DBX1)
+		cmds[qu_count++] = "list";
+	    else
+		cmds[qu_count++] = "line";
+	}
 	if (plus_cmd_data->refresh_bpoints)
 	    cmds[qu_count++] = "status";
 	if (plus_cmd_data->refresh_where)
 	    cmds[qu_count++] = "where";
 	if (plus_cmd_data->refresh_frame)
-	    assert(0);
+	{
+	    assert(gdb->version() != DBX1);
+	    cmds[qu_count++] = "frame";
+	}
 	if (plus_cmd_data->refresh_register)
 	    assert(0);
 	if (plus_cmd_data->refresh_disp)
@@ -468,6 +509,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	    assert(0);
 	if (plus_cmd_data->refresh_history_save)
 	    assert(0);
+	if (plus_cmd_data->refresh_print_r)
+	    cmds[qu_count++] = "print -r " + print_r_cookie;
 	break;
     }
 
@@ -536,8 +579,11 @@ void user_cmdOAC (void* data)
 	    switch (gdb->type())
 	    {
 	    case DBX:
-		file = dbx_lookup(func);
-		file = file.before(':');
+		if (gdb->version() == DBX1)
+		{
+		    file = dbx_lookup(func);
+		    file = file.before(':');
+		}
 		break;
 
 	    case GDB:
@@ -633,6 +679,19 @@ void handle_graph_cmd (string cmd, Widget origin)
     }
 }
 
+
+// ***************************************************************************
+// Process output of `print -r' command
+void process_print_r(string& answer)
+{
+    assert(gdb->type() == DBX);
+
+    if (answer.contains(print_r_cookie))
+	gdb->set_version(DBX3);
+    else
+	gdb->set_version(DBX1);
+}
+
 // ***************************************************************************
 // Behandelt die Antworten auf die hinterhergeschickten Anfragen
 //
@@ -670,7 +729,7 @@ void plusOQAC (string answers[],
 	{
 	    // Set the correct file now.
 	    string pos = file + ":0";
-	    source_view->show_execution_position(pos);
+	    source_view->lookup(pos);
 	}
     }
 
@@ -678,33 +737,43 @@ void plusOQAC (string answers[],
 	assert (gdb->type() == DBX);
 	assert (qu_count < count);
 
-	string listing = answers[qu_count++];
-
-	string message = "";
-	while (listing != "" && atoi(listing) == 0)
+	if (gdb->version() == DBX1)
 	{
-	    message += listing.through('\n');
-	    listing = listing.after('\n');
+	    string listing = answers[qu_count++];
+
+	    string message = "";
+	    while (listing != "" && atoi(listing) == 0)
+	    {
+		message += listing.through('\n');
+		listing = listing.after('\n');
+	    }
+
+	    if (message != "")
+		post_gdb_message(message);
+
+	    int line = atoi(listing);
+	    if (line == 0)
+	    {
+		// Weird.  No source?
+		line = 1;
+	    }
+	    else if (!plus_cmd_data->refresh_main)
+	    {
+		// DBX lists 10 lines; the current line is the 5th one.
+		line += 5;
+	    }
+
+	    string pos;
+	    if (file != "")
+		source_view->lookup(file + ":" + itostring(line));
 	}
-
-	if (message != "")
-	    post_gdb_message(message);
-
-	int line = atoi(listing);
-	if (line == 0)
+	else
 	{
-	    // Weird.  No source?
-	    line = 1;
+	    // source_view->lookup(file + ":" + answers[qu_count]);
+	    source_view->show_execution_position(file + ":" 
+						 + answers[qu_count]);
+	    qu_count++;
 	}
-	else if (!plus_cmd_data->refresh_main)
-	{
-	    // DBX lists 10 lines; the current line is the 5th one.
-	    line += 5;
-	}
-
-	string pos;
-	if (file != "")
-	    source_view->lookup(file + ":" + itostring(line));
     }
 
     if (plus_cmd_data->refresh_bpoints) {
@@ -764,6 +833,14 @@ void plusOQAC (string answers[],
 	assert (qu_count < count);
 	if (!disabling_occurred)
 	    process_history_save(answers[qu_count++]);
+	else
+	    qu_count++;
+    }
+
+    if (plus_cmd_data->refresh_print_r) {
+	assert (qu_count < count);
+	if (!disabling_occurred)
+	    process_print_r(answers[qu_count++]);
 	else
 	    qu_count++;
     }

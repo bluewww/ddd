@@ -2930,59 +2930,78 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     switch (gdb->type())
     {
     case GDB:
+	// GDB frame output is caught by our routines
 	gdb_command("frame " + itostring(count - cbs->item_position));
 	break;
     
     case DBX:
-	// DBX lacks a `frame' command.  Use this kludge instead.
+	string pos;
+	if (gdb->version() == DBX1)
+	{
+	    // DBX 1.x lacks a `frame' command.  Use this kludge instead.
 
-	string reply = gdb_question("func main");
-	if (reply == string(-1))
-	{
-	    post_gdb_busy(w);
-	    return;
-	}
-	if (cbs->item_position == 1)
-	{
-	    set_status("Current function is main");
-	}
-	else
-	{
-	    reply = gdb_question("down " + itostring(cbs->item_position - 1));
+	    string reply = gdb_question("func main");
 	    if (reply == string(-1))
 	    {
 		post_gdb_busy(w);
 		return;
 	    }
-
-	    if (reply.contains("Current", 0))
+	    if (cbs->item_position == 1)
 	    {
-		if (reply.contains('\n'))
-		    reply = reply.before('\n');
-		set_status(reply);
+		set_status("Current function is main");
 	    }
 	    else
-		post_gdb_message(reply, w);
-	}
+	    {
+		reply = 
+		    gdb_question("down " + itostring(cbs->item_position - 1));
+		if (reply == string(-1))
+		{
+		    post_gdb_busy(w);
+		    return;
+		}
 
-	// Get the selected line
-	String _item;
-	XmStringGetLtoR(cbs->item, LIST_CHARSET, &_item);
-	string item(_item);
-	XtFree(_item);
-	string pos;
+		if (reply.contains("Current", 0))
+		{
+		    if (reply.contains('\n'))
+			reply = reply.before('\n');
+		    set_status(reply);
+		}
+		else
+		    post_gdb_message(reply, w);
+	    }
 
-	if (item.contains(" in "))
-	{
-	    string file = item.after(" in ");
-	    file = file.after('\"');
-	    file = file.before('\"');
-	    pos = file + ":";
+	    // Get the selected line
+	    String _item;
+	    XmStringGetLtoR(cbs->item, LIST_CHARSET, &_item);
+	    string item(_item);
+	    XtFree(_item);
+
+	    if (item.contains(" in "))
+	    {
+		string file = item.after(" in ");
+		file = file.after('\"');
+		file = file.before('\"');
+		pos = file + ":";
+	    }
+	    if (item.contains("line "))
+	    {
+		string line_s = item.after("line ");
+		pos += itostring(get_positive_nr(line_s));
+	    }
 	}
-	if (item.contains("line "))
+	else
 	{
-	    string line_s = item.after("line ");
-	    pos += itostring(get_positive_nr(line_s));
+	    // DBX 3.x works better
+	    string reply = 
+		gdb_question("frame " + 
+			     itostring(count - cbs->item_position + 1));
+	    if (reply == string(-1))
+	    {
+		post_gdb_busy(w);
+		return;
+	    }
+	    pos = gdb_question("file");
+	    pos = pos + ":" + gdb_question("line");
 	}
 	break;
 
@@ -2991,14 +3010,22 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     }
 }
 
+inline string where(GDBAgent *gdb)
+{
+    if (gdb->type() == DBX && gdb->version() != DBX1)
+	return "where -h";
+    else
+	return "where";
+}
+
 void SourceView::refresh_stack_frames()
 {
-    string where = gdb_question("where");
-    if (where == string(-1))
-	where = "No stack.";
-    process_where(where);
+    string where_s = gdb_question(where(gdb));
+    if (where_s == string(-1))
+	where_s = "No stack.";
+    process_where(where_s);
 
-    if (gdb->type() == GDB)
+    if (gdb->type() == GDB || (gdb->type() == DBX && gdb->version() != DBX1))
     {
 	string frame = gdb_question("frame");
 	process_frame(frame);
@@ -3054,10 +3081,19 @@ void SourceView::process_where (string& where_output)
 
 void SourceView::process_frame (string& frame_output)
 {
-    if (frame_output != "" && frame_output[0] == '#')
+    if (frame_output != "" && (frame_output[0] == '#' || gdb->type() == DBX))
     {
-	string frame_nr = frame_output.after(0);
+	string	frame_nr;
+
+	if (gdb->type() == GDB)
+	    frame_nr = frame_output.after(0);
+	else
+	    frame_nr = frame_output;
+
 	int frame = get_positive_nr(frame_nr);
+
+	if (gdb->type() == DBX)
+	    frame--;		    // GDB uses origin-0, DBX uses origin-1
 
 	int count         = 0;
 	int top_item      = 0;
@@ -3162,11 +3198,13 @@ void SourceView::set_frame_pos(int arg, int pos)
     {
 	int *position_list;
 	int position_count;
-	XmListGetSelectedPos(frame_list_w, &position_list, &position_count);
-
-	if (position_count == 1)
-	    pos = position_list[0] + arg;
-	XtFree((char *)position_list);
+	if (XmListGetSelectedPos(frame_list_w, &position_list, &position_count))
+	{
+	    if (position_count == 1)
+		pos = position_list[0] + arg;
+	    XtFree((char *)position_list);
+	} else
+	    return;
 	if (position_count != 1 || pos < 1 || pos > count)
 	    return;
     }

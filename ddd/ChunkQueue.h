@@ -84,7 +84,7 @@ public:
     void append(char *dta, int len)
     {
 	if (_length + len + 1 > _size)
-	    grow(_length + len);
+	    grow(_length + len + 1);
 
 	memcpy(_data + _length, dta, len + 1);
 	_length += len;

@@ -1413,12 +1413,10 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
 DispNode *DataDisp::new_node (string& answer)
 {
     string disp_nr_str;
-    string ans = answer;
-
     switch(gdb->type())
     {
     case GDB:
-	disp_nr_str = read_disp_nr_str (ans, gdb->type());
+	disp_nr_str = read_disp_nr_str (answer, gdb->type());
 	if (disp_nr_str == "")
 	    return 0;
 	break;
@@ -1429,17 +1427,17 @@ DispNode *DataDisp::new_node (string& answer)
 	break;
     }
 
-    string name = read_disp_name (ans, gdb->type());
+    string name = read_disp_name (answer, gdb->type());
     DispNode* dn = 0;
 
-    if (is_disabling (ans, gdb->type()))
+    if (is_disabling (answer, gdb->type()))
     {
-	post_gdb_message (ans, last_origin);
+	post_gdb_message (answer, last_origin);
 	dn = new DispNode(disp_nr_str, name);
     }
     else
     {
-	dn = new DispNode(disp_nr_str, name, ans);
+	dn = new DispNode(disp_nr_str, name, answer);
     }
 
     return dn;

@@ -3950,15 +3950,30 @@ void gdb_set_tty(const string& tty_name,
 		 const string& term_type,
 		 Widget origin)
 {
-    if (gdb->type() != GDB)
-	return;
-
-    if (tty_name != gdb_tty)
+    if (gdb->type() == GDB)
     {
-	// Issue `tty' command to perform redirection
-	string tty_cmd = string("tty ") + tty_name;
-	string reply = gdb_question(tty_cmd);
+	if (tty_name != gdb_tty)
+	{
+	    // Issue `tty' command to perform redirection
+	    string tty_cmd = string("tty ") + tty_name;
+	    string reply = gdb_question(tty_cmd);
 
+	    if (reply == string(-1))
+	    {
+		post_error("GDB I/O error: cannot send tty command", 
+			   "tty_command_error", origin);
+	    }
+	    else if (reply != "")
+	    {
+		post_gdb_message(reply, origin);
+	    }
+	    else
+		gdb_tty = tty_name;
+	}
+
+	// Set remote terminal type
+	string env_cmd = string("set environment TERM ") + term_type;
+	string reply = gdb_question(env_cmd);
 	if (reply == string(-1))
 	{
 	    post_error("GDB I/O error: cannot send tty command", 
@@ -3968,21 +3983,55 @@ void gdb_set_tty(const string& tty_name,
 	{
 	    post_gdb_message(reply, origin);
 	}
-	else
-	    gdb_tty = tty_name;
     }
+    else if (gdb->type() == DBX && gdb->version() != DBX1)
+    {
+	if (tty_name != gdb_tty)
+	{
+	    // Issue `dbxenv run_io pty' and `dbxenv run_pty' commands
+	    // to perform redirection
+	    string command = string("dbxenv run_io pty");
+	    string reply = gdb_question(command);
 
-    // Set remote terminal type
-    string env_cmd = string("set environment TERM ") + term_type;
-    string reply = gdb_question(env_cmd);
-    if (reply == string(-1))
-    {
-	post_error("GDB I/O error: cannot send tty command", 
-		   "tty_command_error", origin);
-    }
-    else if (reply != "")
-    {
-	post_gdb_message(reply, origin);
+	    if (reply == string(-1))
+	    {
+		post_error("DBX I/O error: cannot send dbxenv run_io command",
+			   "tty_command_error", origin);
+	    }
+	    else if (reply != "")
+	    {
+		post_gdb_message(reply, origin);
+	    }
+	    else
+	    {
+		command = string("dbxenv run_pty ") + tty_name;
+		reply = gdb_question(command);
+
+		if (reply == string(-1))
+		{
+		post_error("DBX I/O error: cannot send dbxenv run_pty command",
+			   "tty_command_error", origin);
+		}
+		else if (reply != "")
+		{
+		    post_gdb_message(reply, origin);
+		}
+		else
+		    gdb_tty = tty_name;
+	    }
+	}
+	// Set remote terminal type
+	string env_cmd = string("setenv TERM ") + term_type;
+	string reply = gdb_question(env_cmd);
+	if (reply == string(-1))
+	{
+	    post_error("GDB I/O error: cannot send tty command", 
+		       "tty_command_error", origin);
+	}
+	else if (reply != "")
+	{
+	    post_gdb_message(reply, origin);
+	}
     }
 }
 
@@ -3992,7 +4041,9 @@ void redirect_process(string& command,
 		      const string& tty_name,
 		      Widget origin)
 {
-    if (gdb->type() == GDB && app_data.use_tty_command)
+    if (app_data.use_tty_command
+	&& (gdb->type() == GDB 
+	    || (gdb->type() == DBX && gdb->version() != DBX1)))
     {
 	// Issue `tty' command to perform redirection
 	gdb_set_tty(tty_name, app_data.term_type, origin);
@@ -4051,6 +4102,11 @@ void redirect_process(string& command,
 	    // DBX has its own parsing; it does not allow to redirect the
 	    // error channel. *Sigh*.
 	    gdb_redirection +=  " > " + tty_name;
+	    if (gdb->version() != DBX1)
+	    {
+		// DBX 3.x uses ksh style redirection
+		gdb_redirection += " 2>&1";
+	    }
 	    break;
 	}
     }

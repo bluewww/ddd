@@ -63,7 +63,8 @@
 // Debugger types
 //-----------------------------------------------------------------------------
 
-enum DebuggerType { GDB, DBX };
+enum DebuggerType    { GDB, DBX };
+enum DebuggerVersion { GDB4, DBX1, DBX3 };
 
 
 //-----------------------------------------------------------------------------
@@ -118,10 +119,11 @@ protected:
     State state;
 
 private:
-    DebuggerType _type;
-    void*        _user_data;
-    HandlerList  busy_handlers;
-    regex        _prompt;
+    DebuggerType    _type;
+    DebuggerVersion _version;
+    void*           _user_data;
+    HandlerList     busy_handlers;
+    regex           _prompt;
 
 public:
     GDBAgent (XtAppContext app_context,
@@ -179,12 +181,13 @@ public:
 
 
     // Zustandsabfragen
-    DebuggerType type()      const {return _type;}
-    bool isReadyWithPrompt() const {return state == ReadyWithPrompt;}
-    bool isBusyOnCmd()       const {return (state == BusyOnCmd)
-					   || (state == BusyOnInitialCmds);}
-    bool isBusyOnQuestion()  const {return (state == BusyOnQuestion)
-					   || (state == BusyOnQuArray);}
+    DebuggerType type()       const { return _type; }
+    DebuggerVersion version() const { return _version; }
+    bool isReadyWithPrompt()  const { return state == ReadyWithPrompt; }
+    bool isBusyOnCmd()        const { return state == BusyOnCmd
+					  || state == BusyOnInitialCmds; }
+    bool isBusyOnQuestion()   const { return state == BusyOnQuestion
+					  || state == BusyOnQuArray; }
 
     void addBusyHandler (unsigned    type,
 			 HandlerProc proc,
@@ -202,6 +205,7 @@ public:
 
     // Konfigurationen
     void set_trace_dialog (bool trace);
+    void set_version (DebuggerVersion v) { _version = v; } 
 
 private:
     bool trace_dialog;
@@ -221,13 +225,15 @@ private:
     OQCProc  _on_question_completion;
     OQACProc _on_qu_array_completion;
 
-    inline void    init_qu_array (string   cmds [],
-				  void*    qu_datas [],
-				  int      qu_count,
-				  OQACProc on_qu_array_completion,
-				  void*    qa_data);
-    inline bool ends_with_prompt (const string& answer);
-    inline void cut_off_prompt (string& answer);
+    void    init_qu_array (string   cmds [],
+			   void*    qu_datas [],
+			   int      qu_count,
+			   OQACProc on_qu_array_completion,
+			   void*    qa_data);
+    bool ends_with_prompt (const string& answer);
+    void cut_off_prompt (string& answer);
+    void strip_comments (string& answer);
+
 protected:
     string complete_answer;
 
@@ -238,7 +244,6 @@ protected:
     static void traceInputHP (Agent*, void*, void*);
     static void traceOutputHP (Agent*, void*, void*);
     static void traceErrorHP (Agent*, void*, void*);
-
 
     virtual int setupChildCommunication();
 };

@@ -66,6 +66,11 @@ static void filter_line(string& answer, int line)
 
 void PosBuffer::filter (string& answer)
 {
+    // If gdb prints a "Current function" line, it overrides whatever
+    // came before (e.g. "stopped in").
+    if (gdb->type() == GDB && answer.contains("Current function is "))
+	already_read = Null;
+
     // Positionsangabe abfangen und puffern, Rest zurueckgeben
     switch (already_read) {
     case PosComplete:
@@ -219,14 +224,16 @@ void PosBuffer::filter (string& answer)
 		    {
 			// Function name given
 			string func = answer.after("stopped in ");
-			if (func.contains(" at line"))
-			    func = func.before(" at line");
+			if (func.contains(" at "))
+			    func = func.before(" at ");
 			func_buffer = func;
 			file = "";
 		    }
 
 		    string line = answer.after("at line ");
 		    line = line.through(rxint);
+		    if (!answer.contains("at line "))
+			line = "0";
 
 		    if (file != "")
 			pos_buffer = file + ":" + line;
@@ -239,12 +246,23 @@ void PosBuffer::filter (string& answer)
 		{
 		    // Up/Down command entered
 		    string nr = answer.after("\n");
-		    pos_buffer = itostring(atoi(nr));
-		    already_read = PosComplete;
+		    if (nr != "")
+		    {
+			pos_buffer = itostring(atoi(nr));
+			already_read = PosComplete;
 
-		    // Show current function only
-		    answer = answer.from("Current function is ");
-		    answer = answer.through("\n");
+			// Show current function only
+			answer = answer.from("Current function is ");
+			answer = answer.through("\n");
+			func_buffer = answer.after("function is ");
+			func_buffer = func_buffer.before("\n");
+		    }
+		    else
+		    {
+			answer_buffer = answer;
+			answer = "";
+			already_read = PosPart;
+		    }
 		}
 	    }
 	    break;
