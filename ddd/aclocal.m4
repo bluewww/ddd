@@ -818,7 +818,7 @@ dnl
 AC_DEFUN(ICE_TYPE_SIGNAL,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING([return type of C++ signal handlers])
+AC_MSG_CHECKING([return type of signal handlers])
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 AC_CACHE_VAL(ice_cv_type_signal,
@@ -832,6 +832,30 @@ void handler(int sg);],
 AC_LANG_RESTORE
 AC_MSG_RESULT($ice_cv_type_signal)
 AC_DEFINE_UNQUOTED(RETSIGTYPE, $ice_cv_type_signal)
+])dnl
+dnl
+dnl
+dnl
+dnl ICE_TYPE_SIGNALPROC: check params of signal handler
+dnl
+AC_DEFUN(ICE_TYPE_SIG_HANDLER_ARGS,
+[
+AC_REQUIRE([AC_TYPE_SIGNAL])
+AC_MSG_CHECKING([parameter type of signal handlers])
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_CACHE_VAL(ice_cv_type_sig_handler_args,
+[
+AC_TRY_COMPILE(
+[
+#include <sys/types.h>
+#include <signal.h>
+RETSIGTYPE handler(int sg);],
+[signal(1, handler);], 
+ice_cv_type_sig_handler_args=int, ice_cv_type_sig_handler_args=...)])dnl
+AC_LANG_RESTORE
+AC_MSG_RESULT($ice_cv_type_sig_handler_args)
+AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args)
 ])dnl
 dnl
 dnl If the C++ library has a ostrstream::frozen() function,

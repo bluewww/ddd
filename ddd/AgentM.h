@@ -39,6 +39,7 @@
 
 
 #include <signal.h>
+#include "config.h"
 #include "TypeInfo.h"
 #include "bool.h"
 
@@ -46,7 +47,7 @@
 #define SIGCHLD SIGCLD
 #endif
 
-typedef void (*SignalProc)(...);
+typedef void (*SignalProc)(SIGHANDLERARGS);
 
 class Agent;
 
@@ -71,10 +72,10 @@ public:
     AgentManager(SignalProc new_chld_handler = SignalProc(SIG_IGN)):
 	first(0)
     {
-	// ignore "Broken Pipe" signals
+	// Ignore "Broken Pipe" signals
 	old_pipe_handler = SignalProc(signal(SIGPIPE, SignalProc(SIG_IGN)));
 
-	// catch "Death of child" signals
+	// Catch "Death of child" signals
 	old_chld_handler = SignalProc(signal(SIGCHLD, new_chld_handler));
     }
 
@@ -91,4 +92,6 @@ public:
     void commit();
 };
 
-#endif
+#endif // _DDD_AgentManager_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
+

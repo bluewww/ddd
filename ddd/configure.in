@@ -344,6 +344,7 @@ AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 AC_TYPE_GETGROUPS
 AC_TYPE_SIGNAL
+ICE_TYPE_SIG_HANDLER_ARGS
 dnl
 dnl
 dnl Find libraries and functions
