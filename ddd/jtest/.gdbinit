@@ -101,7 +101,7 @@ end
 # Facility for printing DDD string types
 define string
     p $.rep->s[0]@$.rep->len
-nd
+end
 document string
     Print value of last viewed DDD string
 end
