@@ -98,7 +98,7 @@ public:
 
     // Make DISP_NR an alias of ALIAS_DISP_NR.  Suppress
     // ALIAS_DISP_NR.  Return true iff changed.
-    bool alias (int disp_nr, int alias_disp_nr);
+    bool alias (Widget w, int disp_nr, int alias_disp_nr);
 
     // Un-alias ALIAS_DISP_NR.  Unsuppress ALIAS_DISP_NR.  Return true
     // iff changed.
@@ -134,6 +134,10 @@ protected:
 			      BoxPoint pos,
 			      BoxPoint offset,
 			      BoxPoint grid) const;
+
+    // Add a new alias edge
+    void add_alias_edge(Widget w, int alias_disp_nr,
+			GraphNode *from, GraphNode *to);
 
 private:
     static void disp_node_disabledHP (void*, void*, void*);
