@@ -22,6 +22,7 @@ DDD 2.0 (in development)
       through the source popup menu.
     - `New display' subsumes `Dependent display': if a display is
       selected, the new display is made dependent on it.
+    - Option editors.  New editors for DDD preferences and GDB settings.
     - Some items have been renamed for further clarity:
       * The `command window' is now named `debugger console', to avoid
         confusion with the command tool.
@@ -42,8 +43,11 @@ DDD 2.0 (in development)
     - Extended DBX support.  DDD determines DBX properties
       at run-time and adapts automatically to a wide range of DBX
       variants.
-    - DDD now supports DBX on DEC and AIX systems.
-    - Improved GDB support for Modula-2 and Modula-3 programs.
+    - Even more DBX support.  DDD supports DBX on DEC and AIX systems.
+    - Language support.  DDD uses Pascal-style dereferencing (X^ 
+      instead of *X) if the current frame was written in Pascal, Ada,
+      or Modula.  (GDB only)
+    - Modula-3 support.  DDD supports `m3gdb', a GDB extension for Modula-3.
       Thanks to Peter Klein <pk@i3.informatik.rwth-aachen.de>.
 
     Changes in configuration and building:

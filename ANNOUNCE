@@ -30,18 +30,15 @@ DDD News
       arguments are now located in the command tool, a small separate
       window.  The command tool can be moved wherever appropriate,
       leaving more space for window contents.
-    - XDB support.  On popular request, DDD now supports HP's XDB as
-      inferior debugger.
-    - Extended DBX support.  DDD determines DBX properties
-      at run-time and adapts automatically to a wide range of DBX
-      variants.
-    - DDD now supports DBX on DEC and AIX systems.
     - User-defined buttons are now available.  These can also
       be used to re-install the old command buttons.
     - Variable values can now be altered interactively during program
       execution.
+    - You can inquire the types of variables and functions (`whatis') 
+      through the source popup menu.
     - `New display' subsumes `Dependent display': if a display is
       selected, the new display is made dependent on it.
+    - Option editors.  New editors for DDD preferences and GDB settings.
     - Some items have been renamed for further clarity:
       * The `command window' is now named `debugger console', to avoid
         confusion with the command tool.
@@ -56,6 +53,19 @@ DDD News
     - Ctrl+C has now the highest priority of all processed events.
     - The DDD License can now be viewed from within DDD.
 
+    Supported debuggers and languages:
+    - XDB support.  On popular request, DDD now supports HP's XDB as
+      inferior debugger.
+    - Extended DBX support.  DDD determines DBX properties
+      at run-time and adapts automatically to a wide range of DBX
+      variants.
+    - Even more DBX support.  DDD supports DBX on DEC and AIX systems.
+    - Language support.  DDD uses Pascal-style dereferencing (X^ 
+      instead of *X) if the current frame was written in Pascal, Ada,
+      or Modula.  (GDB only)
+    - Modula-3 support.  DDD supports `m3gdb', a GDB extension for Modula-3.
+      Thanks to Peter Klein <pk@i3.informatik.rwth-aachen.de>.
+
     Changes in configuration and building:
     - Regular expressions now use the POSIX.2 standard regcomp/regexec
       interface.  The slower interface is compensated by smarter calls.
@@ -68,8 +78,9 @@ DDD News
       C++ compilers exist in the world.
     - You can specify `--without-athena' to avoid searching for and
       linking with Athena libraries.
-    - Patches for AIX xlC C++ compiler (and probably others) included.
-      Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de>.
+    - Patches for AIX xlC, GCC 2.8.0 and probably other C++ compilers
+      included.  Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de> and
+      Jason Merrill <jason@cygnus.com>.
     - DDD now compiles and runs unchanged with LessTif, a free Motif
       clone under construction.  Note that `runs' is relative: As of
       LessTif 0.50, DDD is still far from being usable.  This will
@@ -95,6 +106,7 @@ DDD News
       recognized for C++' are silently ignored.
     - You can now specify the location of own VSL libraries via the
       `vslPath' resource.
+    - Improved diagnostics for VSL errors.
     - The `--attach' and `--separate' options are no more overridden
       by the settings in `~/.dddinit'.
     - The `-synchronous' option (for X debugging) now works;
@@ -122,14 +134,14 @@ Summary of DDD
     viewing it execute lines of source code.
 
     Other DDD features include: debugging of programs written in C,
-    C++, Ada, Fortran, Pascal, or Modula-2; machine-level debugging;
-    hypertext source navigation and lookup; GDB/DBX/XDB command-line
-    interface with full editing, history, and completion capabilities;
-    breakpoint, backtrace, and history editors; optional program
-    execution in terminal emulator window; debugging on remote host;
-    on-line manual; interactive help on the OSF/Motif user interface.
-    DDD has been designed to compete with well-known commercial
-    debuggers.
+    C++, Ada, Fortran, Pascal, Modula-2, or Modula-3; machine-level
+    debugging; hypertext source navigation and lookup; GDB/DBX/XDB
+    command-line interface with full editing, history, and completion
+    capabilities; breakpoint, backtrace, and history editors;
+    preferences and settings editors, optional program execution in
+    terminal emulator window; debugging on remote host; on-line
+    manual; interactive help on the OSF/Motif user interface.  DDD has
+    been designed to compete with well-known commercial debuggers.
 
     DDD has been extensively beta-tested (especially by debugging
     itself) and configures, compiles and runs out-of-the-box on every
@@ -183,9 +195,9 @@ Requirements
 
     As an alternative, DDD also supports the DBX debugger as found on
     SUN and DEC systems.  Using DBX, you can debug programs written in
-    C, C++, Pascal and Modula-2.  DBX usage has been reported to work
-    on other systems as well, notably AIX.  DDD adapts itself to a
-    wide range of DBX variants.
+    C, C++, Pascal and Modula-2.  DBX usage has been tested on other
+    systems as well, notably DEC and AIX.  As of DDD 2.0, DDD adapts
+    itself to a wide range of DBX variants.
 
     As another alternative, DDD also supports the XDB debugger as
     found on HP-UX systems.  XDB usage has been tested for C programs
@@ -294,6 +306,7 @@ Europe
     ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
     ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/
     ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/
+
 
 Have fun!
 --
