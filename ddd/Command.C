@@ -40,6 +40,10 @@ char Command_rcsid[] =
 #pragma implementation "Queue.h"
 #endif
 
+#ifndef LOG_QUEUE
+#define LOG_QUEUE 0
+#endif
+
 #include "Command.h"
 #include "comm-manag.h"
 #include "status.h"
@@ -66,8 +70,6 @@ char Command_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
-
-#define LOG_QUEUE 0
 
 // Origin of last command
 static Widget gdb_last_origin;
@@ -160,6 +162,10 @@ void translate_command(string& command)
 void _gdb_command(const Command& c)
 {
     string cmd = c.command;
+
+#if LOG_QUEUE
+    clog << "Command " << quote(cmd) << "\n";
+#endif
 
     if (gdb->isReadyWithPrompt())
     {
@@ -401,6 +407,10 @@ void syncCommandQueue()
     {
 	if (gdb->isReadyWithPrompt())
 	    processCommandQueue();
+
+	// This should ensure ESC and ^C can interrupt this queue.
+	// Hopefully we have some timer ready that checks for them...
+	process_emergencies();
 
 	XtAppProcessEvent(XtWidgetToApplicationContext(command_shell),
 			  XtIMTimer | XtIMAlternateInput);
