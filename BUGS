@@ -348,4 +348,53 @@ Volunteers for fixing these and other bugs are welcome!
      handle the case that source code and binary of the debugged
      program aren't in the current directory?
 
-087. (Insert your bug here)
+087. Eirik Lygre <z61z@pson17.ppco.com> states: 
+     The IBM xlC compiler has a very useful (at least until now!) flag
+     (-qfullpath) which tells the compiler to store the full path name
+     of the source file, rather than just the stem
+     (/home/z61z/ibmcl/ddetest/test.C vs test.C). In dbx, the
+     following then holds true:
+
+     (dbx) where
+     main(), line 35 in "test.C"
+     (dbx) file
+     /home/z61z/ibmcl/dddtest/test.C
+
+     The problem manifests itself in the source window of DDD. It
+     correctly identifies the source file, but the display is
+     wrong. It always displays from line one of the file, rather than
+     the current line. It is peculiar, though, that if I manually
+     scroll the source window, the arrow indicating the current line
+     is positioned on the correct line. However, as soon as I
+     step/next, the source window is redrawn from line 1.
+
+088. Oyvind Yrke <oyvind@stavanger.geoquest.slb.com> says:
+
+     * Problem setting breakpoint if the basename of 2 files are
+       equal.  E.g. the proper file is listed both in "stack
+       backtrace" and in the source window, but when setting a
+       breakpoint, ddd/gdb tries to set a breakpoint in a file with
+       the same basename, but located in another directory.  I.e. the
+       command sent to gdb is break file.c:987 If there are several
+       file.c, it is somewhat arbitrary which file.c gdb picks up.
+       Ddd should send the full path to gdb to avoid the problem.
+
+     * If I change a variable using "set var=new_value" in the command
+       window, the Data window is not updated automatically.
+
+089. Editing problems.  sstclair@flanders.sanders.lockheed.com (Scott
+     H St. Clair) states: 
+
+     DDD crashed after vi exited.  I am able to get ddd to crash using the 
+     following procedure 100% of the time.
+
+     1.) start debugging something.
+     2.) Set a break point.
+     3.) After the program breaks, select source-edit from the
+         source window.
+     4.) A VI window appears.
+     5.) Using the spawned copy of vi, modify the source.  This is
+         the same source that is in the ddd source window.
+     6.) exit vi.
+
+090. (Insert your bug here)

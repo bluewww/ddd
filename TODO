@@ -31,8 +31,12 @@ Volunteers for these and other projects are welcome!
 
 009. Recognize shared data structures (that is, two displays
      referencing the same object).  This could be achieved by
-     comparing display addresses.  See also the mail of
-     markusd@cs.tu-berlin.de (Markus Dahm).
+     comparing display addresses.  See also the mails of
+     markusd@cs.tu-berlin.de (Markus Dahm) and finster@ave.ac.agit.de
+     (Harald Finster).  Possible renderings include:
+     a) Merge two objects into one
+     b) Move one object on top of the other
+     c) Draw a special `identity edge' between the two objects.
 
 011. Have local source files without path indication located via the
      GDB directories setting.  Maybe through the `info source'
@@ -205,4 +209,51 @@ Volunteers for these and other projects are welcome!
 087. Have configurable buttons that take their arguments from the
      mouse buffer.
 
-088. (Insert your project idea here)
+088. Some suggestions by Oyvind Yrke <oyvind@stavanger.geoquest.slb.com>:
+
+     * Buttons for print* and display*, or better - programmable buttons
+
+     * When setting a breakpoint, it should be possible to select from
+       a list matching a regexp.  This feature would be particularly
+       useful when working with c++ code with overloading,templates
+       and member functions.
+
+     * In data display, it would be extremely useful to select which
+       fields of a (big) struct should be displayed.  In the current
+       version, you have to display the whole struct, or display
+       individual elements in separate boxes which wastes space.
+
+     * Change a variable by selecting it in the Data window.  A new
+       command along the lines of Derefence(), Hide() ... would be
+       Change value() that pops up a new dialog.
+
+     * Ability to group variables as selections that can be
+       enabled/disabled separately.  For big applications, the data
+       display quickly gets overcrowded.  Disabling data display of
+       these variables will not save much screen space.  So if I can
+       select some of the variable boxes in the data display, and save
+       them for later retrieval would be use very useful.
+
+     * Display of variables are disabled when stepping into a new
+       function, i.e. variables in functions "above" the current frame
+       are not displayed.  Although I can circumvent this problem by
+       typing the full path (e.g.  graph display
+       /some/deeply/nested/directory/file.c:a, this is quite
+       inconvenient.  The function/file prefix should probably be
+       omitted (at least as an option), since otherwise the data
+       display would be messed up with very long variable names as in
+       SunOS dbxtool/debugger.  Displaying an element of an array in
+       dbxtool as you iterate through the array looks like
+
+         '/a_very/long/path/'funcname'data['/a_very/long/path'funcname'i] = 17
+
+       Some sort of user customization is probably needed here to
+       avoid lengthy names (e.g. by specifying how many directories
+       should be displayed).  An alternative is to have a status line
+       in the data window too specifying the full path of the data box
+       where the cursor is pointing.
+        
+     * Since you supply ddd binaries, why not supply gdb binaries as
+       well?
+
+089. (Insert your project idea here)
