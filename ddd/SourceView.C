@@ -262,6 +262,7 @@ bool SourceView::register_dialog_popped_up = false;
 bool SourceView::cache_source_files     = true;
 bool SourceView::cache_machine_code     = true;
 bool SourceView::display_glyphs         = true;
+bool SourceView::disassemble            = false;
 
 int  SourceView::bp_indent_amount   = 0;
 int  SourceView::code_indent_amount = 4;
@@ -294,13 +295,17 @@ XmTextPosition SourceView::last_end_highlight_pc   = 0;
 XmTextPosition SourceView::last_start_secondary_highlight = 0;
 XmTextPosition SourceView::last_end_secondary_highlight = 0;
 
+XmTextPosition SourceView::last_start_secondary_highlight_pc = 0;
+XmTextPosition SourceView::last_end_secondary_highlight_pc = 0;
+
 string SourceView::last_execution_file = "";
 int    SourceView::last_execution_line = 0;
 string SourceView::last_execution_pc = "";
 
 StringArray SourceView::history;
 int SourceView::history_position = 0;
-bool SourceView::history_locked = false;
+bool SourceView::code_history_locked = false;
+bool SourceView::source_history_locked = false;
 
 bool SourceView::at_lowest_frame = true;
 
@@ -2316,26 +2321,32 @@ void SourceView::lookup(string s)
 // History
 // ***************************************************************************
 
-void SourceView::add_to_history(string file_name, int line)
+void SourceView::add_to_history(const string& file_name, int line)
 {
-    if (history_locked)
+    if (source_history_locked)
     {
-	history_locked = false;
+	source_history_locked = false;
 	return;
     }
 
     string entry = file_name + ":" + itostring(line);
 
-    if (history_position >= history.size() ||
-	history[history_position] != entry)
+    string last_entry;
+    if (history.size() > 0)
     {
-	history_position++;
-	if (history_position >= history.size())
-	    history += entry;
-	else
-	    history[history_position] = entry;
+	last_entry = history[history.size() - 1];
+	if (last_entry.freq(':') == 2)
+	{
+	    int last_colon = last_entry.index(':', -1);
+	    last_entry = last_entry.before(last_colon);
+	}
     }
 
+    if (entry != last_entry)
+    {
+	history += entry;
+	history_position = history.size();
+    }
 
     if (last_start_secondary_highlight || last_end_secondary_highlight)
     {
@@ -2350,7 +2361,54 @@ void SourceView::add_to_history(string file_name, int line)
 #if 0
     clog << "Position history:\n";
     for (int i = 0; i < history.size(); i++)
-	clog << i << (i == history_position ? "* " : "  ") 
+	clog << i << (i == history_position - 1 ? "* " : "  ") 
+	     << history[i] << "\n";
+    clog << "\n";
+#endif
+}
+
+void SourceView::add_to_history(const string& address)
+{
+    if (code_history_locked)
+    {
+	code_history_locked = false;
+	return;
+    }
+
+    if (history.size() > 0)
+    {
+	string& last_entry = history[history.size() - 1];
+	if (last_entry.freq(':') < 2)
+	{
+	    // Append address to this position
+	    last_entry += ":" + address;
+	}
+	else
+	{
+	    // Address already there
+	    int last_colon = last_entry.index(':', -1);
+	    string last_address = last_entry.after(last_colon);
+	    if (address != last_address)
+	    {
+		// Add new entry
+		string new_entry = last_entry.through(last_colon) + address;
+
+		history += new_entry;
+		history_position = history.size();
+	    }
+	}
+    }
+    else
+    {
+	// No source position yet: add address
+	history += "::" + address;
+	history_position = history.size();
+    }
+
+#if 0
+    clog << "Position history:\n";
+    for (int i = 0; i < history.size(); i++)
+	clog << i << (i == history_position - 1 ? "* " : "  ") 
 	     << history[i] << "\n";
     clog << "\n";
 #endif
@@ -2361,54 +2419,82 @@ void SourceView::goto_entry(string entry)
     string file_name = entry.before(':');
     string line_str = entry.after(':');
     int line = atoi(line_str);
+    string address = line_str.after(':');
 
-    if (file_name != current_file_name)
+    if (file_name != "")
     {
-	history_locked = true;
-	read_file(file_name, line);
-    }
-
-    if (line > 0 && line <= line_count)
-    {
-	XmTextSetHighlight(source_text_w,
-			   last_start_secondary_highlight,
-			   last_end_secondary_highlight,
-			   XmHIGHLIGHT_NORMAL);
-
-	last_start_secondary_highlight = pos_of_line[line];
-	last_end_secondary_highlight   = last_start_secondary_highlight;
-	if (current_source != "")
+	// Lookup source
+	if (file_name != current_file_name)
 	{
-	    last_end_secondary_highlight 
-		= current_source.index('\n', 
-				       last_start_secondary_highlight) + 1;
+	    source_history_locked = true;
+	    read_file(file_name, line);
 	}
 
-	XmHighlightMode mode = XmHIGHLIGHT_SECONDARY_SELECTED;
+	if (line > 0 && line <= line_count)
+	{
+	    XmTextSetHighlight(source_text_w,
+			       last_start_secondary_highlight,
+			       last_end_secondary_highlight,
+			       XmHIGHLIGHT_NORMAL);
 
-	if (line == last_execution_line && file_name == last_execution_file)
-	    mode = XmHIGHLIGHT_SELECTED;
+	    last_start_secondary_highlight = pos_of_line[line];
+	    last_end_secondary_highlight   = last_start_secondary_highlight;
+	    if (current_source != "")
+	    {
+		last_end_secondary_highlight 
+		    = current_source.index('\n', 
+					   last_start_secondary_highlight) + 1;
+	    }
 
-	XmTextSetHighlight(source_text_w,
-			   last_start_secondary_highlight,
-			   last_end_secondary_highlight,
-			   mode);
+	    XmHighlightMode mode = XmHIGHLIGHT_SECONDARY_SELECTED;
 
-	XmTextPosition pos = 
-	    last_start_secondary_highlight + bp_indent_amount;
-	SetInsertionPosition(source_text_w, pos, true);
+	    if (line == last_execution_line
+		&& file_name == last_execution_file)
+	    {
+		mode = display_glyphs ? 
+		    XmHIGHLIGHT_NORMAL : XmHIGHLIGHT_SELECTED;
+	    }
+
+	    XmTextSetHighlight(source_text_w,
+			       last_start_secondary_highlight,
+			       last_end_secondary_highlight,
+			       mode);
+
+	    XmTextPosition pos = 
+		last_start_secondary_highlight + bp_indent_amount;
+	    SetInsertionPosition(source_text_w, pos, true);
+	}
     }
+
+    if (address != "")
+    {
+	// Lookup address
+	code_history_locked = true;
+	show_pc(address, 
+		address == last_execution_pc ? 
+		XmHIGHLIGHT_SELECTED : XmHIGHLIGHT_SECONDARY_SELECTED);
+    }
+
+#if 0
+    clog << "Position history:\n";
+    for (int i = 0; i < history.size(); i++)
+	clog << i << (i == history_position - 1 ? "* " : "  ") 
+	     << history[i] << "\n";
+    clog << "\n";
+#endif
 }
 
 void SourceView::go_back()
 {
-    if (history_position > 0 && history.size() > 0)
+    if (history_position == history.size())
+	--history_position;
+    if (history_position > 0)
 	goto_entry(history[--history_position]);
 }
 
 void SourceView::go_forward()
 {
-    if (history_position < history.size() - 1)
+    if (history_position + 1 < history.size())
 	goto_entry(history[++history_position]);
 }
 
@@ -4345,6 +4431,32 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode)
 	return;
 
     SetInsertionPosition(code_text_w, pos + code_indent_amount);
+    add_to_history(pc);
+
+    XmTextPosition pos_line_end = 0;
+    if (current_code != "")
+	pos_line_end = current_code.index('\n', pos) + 1;
+
+    // Clear old selections
+    if (last_start_secondary_highlight_pc)
+    {
+	XmTextSetHighlight (code_text_w,
+			    last_start_secondary_highlight_pc, 
+			    last_end_secondary_highlight_pc,
+			    XmHIGHLIGHT_NORMAL);
+	last_start_secondary_highlight_pc = 0;
+	last_end_secondary_highlight_pc   = 0;
+    }
+
+    if (last_start_highlight_pc)
+    {
+	XmTextSetHighlight (code_text_w,
+			    last_start_highlight_pc, 
+			    last_end_highlight_pc,
+			    XmHIGHLIGHT_NORMAL);
+	last_start_highlight_pc = 0;
+	last_end_highlight_pc   = 0;
+    }
 
     // Mark current line
     if (mode == XmHIGHLIGHT_SELECTED)
@@ -4365,27 +4477,11 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode)
 			   pos + code_indent_amount,
 			   ">");
     
-	    XmTextPosition pos_line_end = 0;
-	    if (current_code != "")
-		pos_line_end = current_code.index('\n', pos) + 1;
-
 	    if (pos_line_end)
 	    {
-		if (pos != last_start_highlight_pc 
-		    || pos_line_end != last_end_highlight_pc)
-		{
-		    if (last_start_highlight_pc)
-		    {
-			XmTextSetHighlight (code_text_w,
-					    last_start_highlight_pc, 
-					    last_end_highlight_pc,
-					    XmHIGHLIGHT_NORMAL);
-		    }
-
-		    XmTextSetHighlight (code_text_w,
-					pos, pos_line_end,
-					XmHIGHLIGHT_SELECTED);
-		}
+		XmTextSetHighlight (code_text_w,
+				    pos, pos_line_end,
+				    XmHIGHLIGHT_SELECTED);
 
 		last_start_highlight_pc = pos;
 		last_end_highlight_pc   = pos_line_end;
@@ -4393,14 +4489,22 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode)
 	    last_pos_pc             = pos;
 	}
     }
-
-    if (mode == XmHIGHLIGHT_SECONDARY_SELECTED)
+    else if (mode == XmHIGHLIGHT_SECONDARY_SELECTED)
     {
-	// ...
+	if (pos_line_end)
+	{
+	    XmTextSetHighlight (code_text_w,
+				pos, pos_line_end,
+				XmHIGHLIGHT_SECONDARY_SELECTED);
+
+	    last_start_secondary_highlight_pc = pos;
+	    last_end_secondary_highlight_pc   = pos_line_end;
+	}
     }
 
     if (mode == XmHIGHLIGHT_SELECTED)
 	update_glyphs();
 }
 
-
+void SourceView::set_disassemble(bool set)
+{}

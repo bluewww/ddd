@@ -73,7 +73,8 @@ extern ArgField* source_arg;
 
 //-----------------------------------------------------------------------------
 class SourceView {
-    static void add_to_history(string file_name, int line);
+    static void add_to_history(const string& file_name, int line);
+    static void add_to_history(const string& address);
     static void goto_entry(string entry);
 
     static void other_fileCB             (Widget, XtPointer, XtPointer);
@@ -200,10 +201,15 @@ private:
     // Daten
     //-----------------------------------------------------------------------
     static StringArray history;
-    static int history_position;
-    static bool history_locked;
+    static int history_position; // Last position in history + 1
+    static bool source_history_locked;
+    static bool code_history_locked;
+
     static XmTextPosition last_start_secondary_highlight;
     static XmTextPosition last_end_secondary_highlight;
+
+    static XmTextPosition last_start_secondary_highlight_pc;
+    static XmTextPosition last_end_secondary_highlight_pc;
 
     static Widget toplevel_w;	 // Top-level widget
 
@@ -225,7 +231,8 @@ private:
     static Widget register_list_w;            // Register list inside
     static bool register_dialog_popped_up;    // True if registers are visible
 
-    static bool display_glyphs;	// True if glyphs are to be displayed
+    static bool display_glyphs;	         // True if glyphs are to be displayed
+    static bool disassemble;	         // True if code is to be disassembled
 
     static bool at_lowest_frame;              // True if at lowest frame
 
@@ -377,6 +384,9 @@ public:
 
     // Set whether glyphs are to be displayed
     static void set_display_glyphs(bool value);
+
+    // Set whether machine code is to be displayed
+    static void set_disassemble(bool value);
 
     // Clear caches
     static void clear_file_cache();
