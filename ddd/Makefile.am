@@ -1290,7 +1290,8 @@ TEXI2PDF = texi2dvi --pdf
 
 # The fig2dev command.  (fig2dev)
 FIG2DEV = fig2dev
-FIG2PS = $(FIG2DEV) -L ps
+FIG2PS  = $(FIG2DEV) -L eps
+FIG2PDF = $(FIG2DEV) -L pdf
 
 
 # We use giftoppm/ppmtogif to get optimal GIF compression.
@@ -1308,6 +1309,9 @@ FIG2PS = $(FIG2DEV) -L ps
 
 .fig.eps:
 	(cd `dirname $<` && $(FIG2PS) `basename $<` ) > $@
+
+.fig.pdf:
+	(cd `dirname $<` && $(FIG2PDF) `basename $<` ) > $@
 
 .texi.pdf:
 	@-test -d PICS || $(LN_S) $(picdir) .
@@ -1718,7 +1722,9 @@ $(picdir)/tut-set$(IMGEXT):	         $(picdir)/tut-set.eps
 $(picdir)/tut-value$(IMGEXT):	         $(picdir)/tut-value.eps
 
 
-# PDFs are also derived from EPS files
+# PDFs are also derived from EPS files.
+# (We could also generate them directly from FIG files, but this
+# would mean to duplicate all dependencies as above.)
 
 $(picdir)/ddd-all.pdf:              $(picdir)/ddd-all.eps
 $(picdir)/ddd-console.pdf:          $(picdir)/ddd-console.eps
