@@ -8012,10 +8012,15 @@ bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
 
     Boolean pos_displayed = XmTextPosToXY(text_w, pos, &x, &y);
 
-    if (pos_displayed && y > 1000)
+    // In LessTif 0.87 and later, XmTextPosToXY() returns True even if
+    // the position is *below* the last displayed line.  Verify.
+    Dimension width, height;
+    XtVaGetValues(text_w, XmNwidth, &width, XmNheight, &height, NULL);
+    
+    if (pos_displayed && (x > width || y > height))
     {
-	// Weird stuff.  LessTif bug?
-	(void) XmTextPosToXY(text_w, pos, &x, &y);
+	// Below last displayed position
+	pos_displayed = False;
     }
 
     return pos_displayed;
