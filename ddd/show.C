@@ -280,7 +280,7 @@ void show_configuration()
 	"CC"
 #endif
 #ifdef _G_LIB_VERSION
-	", libg++ " _G_LIB_VERSION
+	", libstdc++ " _G_LIB_VERSION
 #endif
 #if defined(__GLIBC__)
 	", GNU libc " stringize(__GLIBC__) "." stringize(__GLIBC_MINOR__)
