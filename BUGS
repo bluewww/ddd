@@ -272,4 +272,73 @@ Volunteers for fixing these and other bugs are welcome!
      environment variables (is this true for the top-level
      `configure', or for `ddd/configure'?)
 
+085. DDD cannot handle `members of T:' GDB output in displays.
+     The following is not processed correctly:
+
+     -> "display p\n"
+     <- "1: p = {\n"
+        "  <bidirectional_iterator<pair<Symbol *const,ProcInfo>,int>> = {\n"
+        "  }, \n"
+        "  members of iterator: \n"
+        "  node = 0xf5300\n"
+        "}\n"
+        "(gdb) "
+
+     Reported by Jens Krinke <krinke@ips.cs.tu-bs.de>.
+
+086. Lassi A. Tuura <Lassi.Tuura@cern.ch> states:
+
+     - configure does not handle CXXFLAGS correctly -- it wanted to
+       determine the options itself anyway.  I had to go and modify
+       the makefiles by hand later on (not a big deal).
+
+     - configure did not respect CC settings for -liberty.  Sligthly
+       worse than the previous.  I had to modify the settings again
+       by hand (is the problem that libiberty/Makefile.in does not
+       have an entry for CC= @CC@?)
+
+    - There is some sort of problem when starting up ddd.  It gives
+      the following message on the xterm:
+          (gdb) ioctl ttcompat /dev/pts/0: Invalid argument
+
+      I don't know enough of streams and PTYs on HP-UX 10.10 to
+      tell what's wrong.  The problem is obviously in TTYAgent.C,
+      line 447.
+
+    - There is a bug somewhere in graph layout code that manifests
+      only on highest KCC optimization levels (+K2 and +K3).  The
+      result is that if I dereference any pointer, the following
+      happens:
+        - the arrow is drawn to extreme left, beyond the left edge
+        - the panner window becomes very wide and the current view
+          is just a thin line in the panner
+        - moving the panner handle has no effect -- no scrolling is
+          ever done; thus I cannot make the target of the pointer
+          visible
+  
+      This is very repeatable, as it happens every time.  DDD does
+      not crash, however.  My first guess is that somehow something
+      goes either negative or to extremely large positive value.  I
+      could try to narrow down the location of the bug if someone
+      would be nice enough to tell me which functions to look at.
+
+085. mayer@paradigml.com (Ron Mayer) says:
+
+     In a number of structures I would attempt to "Modify [the]
+     dependent display expression" to display in hex using expressions
+     like "/x g->head", instead of the default "(g)->head".
+
+     Occasionally this would make ddd hang, and lock up the X-server
+     completely so that I would have to rlogin from another terminal
+     to kill the program.  The bus-error was not reproducable, and
+     unfortunatelly I had core files disabled when it happened.
+
+     These structures did happen to be in a mmap()'d region of shared
+     memory, but since I didn't see the problems when I didn't use the
+     "/x" modifier I suspect this isn't the problem.
+
+     PS: What is the prefered way (if any) of making the hex output 
+         the default in the display graph?  If I "set output-radix 16" 
+         in the gdb window ddd seems to lock up very often.
+    
 085. (Insert your bug here)

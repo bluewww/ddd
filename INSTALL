@@ -80,12 +80,18 @@ Basic Installation
          `configure' program.  You may, however, wish to edit the
          settings, or re-run `configure' with special options.
 
-         Frequently used `configure' options include `--program-prefix=x'
-         to have DDD installed as `xddd' (to avoid confusion with existing
-         `ddd' programs) or the `--with-motif' and `--with-athena' options
-         used to specify the locations of Motif and Athena widgets.  These
-         and other `configure' options are decribed below.  Note that
-         some of these options apply to the `ddd/configure' script only.
+         Frequently used `configure' options include
+         `--program-prefix=x' to have DDD installed as `xddd' (to
+         avoid confusion with existing `ddd' programs) or the
+         `--with-motif' and `--with-athena' options used to specify
+         the locations of Motif and Athena widgets.  These and other
+         `configure' options are decribed below.  Note that some of
+         these options apply to the `ddd/configure' script only.
+
+	 If you have multiple library versions installed (for
+	 instance, multiple X11 releases or releases from different
+	 sources), you may also have to supply their locations.  See
+	 `Optional features', below.
 
       4. Now type `make' to build DDD.  Please report any bugs and
          problems to `ddd-bugs@ips.cs.tu-bs.de'.

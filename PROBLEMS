@@ -71,6 +71,13 @@ Reported by: Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>
      Remove the double `-lc' when linking DDD to avoid a
      segmentation fault immediately after startup.
 
+Reported by: Gilad Gam <gilad@vocaltec.com>
+
+     I managed to solve the problem in the following way: I changed
+     the CXX variable to gcc so the compilation is through gcc.  I
+     commented out the LIBC and LIBM variables.  I added -lg++ to
+     EXTRA_LIBS and also to LINK.cc (to enable compilation of
+     cxxtest).
 
 Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
 
