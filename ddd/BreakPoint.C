@@ -86,7 +86,7 @@ BreakPoint::BreakPoint(string& info_output, string arg, int number)
       mysource_glyph(0),
       mycode_glyph(0)
 {
-    if (gdb->type() != JDB)
+    if (gdb->has_numbered_breakpoints())
     {
 	// Read leading breakpoint number
 	strip_leading_space(info_output);
@@ -97,406 +97,460 @@ BreakPoint::BreakPoint(string& info_output, string arg, int number)
 
 	mynumber = number;
     }
-    strip_leading_space (info_output);
+
+    strip_leading_space(info_output);
 
     switch(gdb->type())
     {
     case GDB:
-    case PYDB:
-    {
-	// Read type (`breakpoint' or `watchpoint')
-	// The type may be prefixed by `hw ' or other details.
-	string word1 = info_output.before('\n');
-	string word2 = word1.after(rxblanks_or_tabs);
-
-	if (word1.contains("watchpoint", 0) || 
-	    word2.contains("watchpoint", 0))
-	{
-	    mytype = WATCHPOINT;
-
-	    // Fetch breakpoint mode detail (`acc' or `read')
-	    if (word1.contains("acc ", 0))
-		mywatch_mode = WATCH_ACCESS;
-	    else if (word1.contains("read ", 0))
-		mywatch_mode = WATCH_READ;
-	    else
-		mywatch_mode = WATCH_CHANGE;
-	}
-	else if (word1.contains("breakpoint", 0) || 
-		 word2.contains("breakpoint", 0))
-	{
-	    mytype = BREAKPOINT;
-	}
-	info_output = info_output.after("point");
-	info_output = info_output.after(rxblanks_or_tabs);
-
-	// Read disposition (`dis', `del', or `keep')
-	if (info_output.contains("dis", 0))
-	{
-	    mydispo = BPDIS;
-	}
-	else if (info_output.contains("del", 0))
-	{
-	    mydispo = BPDEL;
-	}
-	else if (info_output.contains("keep", 0))
-	{
-	    mydispo = BPKEEP;
-	}
-	info_output = info_output.after(rxblanks_or_tabs);
-
-	// Read enabled flag (`y' or `n')
-	if (info_output.contains('y', 0))
-	{
-	    myenabled = true;
-	}
-	else if (info_output.contains('n', 0))
-	{
-	    myenabled = false;
-	}
-	info_output = info_output.after(rxblanks_or_tabs);
-
-	string new_info = "";
-	if (mytype == BREAKPOINT) 
-	{
-	    // Read address
-	    myaddress = info_output.through(rxalphanum);
-
-	    info_output = info_output.after(myaddress);
-	    strip_leading_space(info_output);
-
-	    if (info_output.contains("in ", 0))
-	    {
-		// Function name
-		string func = info_output.after("in ");
-		if (func.contains('\n'))
-		    func = func.before('\n');
-		if (func.contains(" at "))
-		    func = func.before(" at ");
-		strip_space(func);
-
-		myfunc = func;
-	    }
-
-	    // Location
-	    info_output = info_output.from(rxname_colon_int_nl);
-	    myfile_name = info_output.before(":");
-
-	    info_output = info_output.after (":");
-	    if (info_output != "" && isdigit(info_output[0]))
-		myline_nr = get_positive_nr(info_output);
-	}
-	else if (mytype == WATCHPOINT)
-	{
-	    // Read watched expression
-	    myexpr = info_output.before('\n');
-	}
-
-	// That's all in this line
-	info_output = info_output.after('\n');
-
-	int ignore_count = 0;
-	string cond      = "";
-	StringArray commands;
-
-	if (info_output != "" && !isdigit(info_output[0]))
-	{
-	    // Extra info follows
-	    int next_nl = index(info_output, rxnl_int, "\n");
-	    if (next_nl == -1)
-	    {
-		new_info += info_output;
-		info_output = "";
-	    }
-	    else
-	    {
-		new_info += info_output.through(next_nl);
-		info_output = info_output.after(next_nl);
-	    }
-
-	    int n = new_info.freq('\n');
-	    string *lines = new string[n + 1];
-	    split(new_info, lines, n + 1, '\n');
-	    string newer_info = "";
-
-	    for (int i = 0; i < n; i++)
-	    {
-		bool save_info = true;
-
-		string line = lines[i];
-		bool starts_with_space = (line != "" && isspace(line[0]));
-		strip_leading_space(line);
-
-		if (line.contains("ignore next ", 0))
-		{
-		    // Fetch ignore count
-		    string count = line.after("ignore next ");
-		    count = count.before(" hits");
-		    ignore_count = atoi(count);
-		}
-		else if (line.contains("stop only if ", 0))
-		{
-		    // Fetch condition
-		    cond = line.after("stop only if ");
-		}
-		else if (line.contains("stop ", 0))
-		{
-		    // Any info (no GDB command starts with `stop')
-		}
-		else if (line.contains("breakpoint ", 0))
-		{
-		    // Any info (no GDB command starts with `breakpoint')
-		}
-		else if (starts_with_space)
-		{
-		    // A command (GDB indents all commands)
-		    commands += line;
-		    save_info = false;
-		}
-		else
-		{
-		    // Some other info
-		}
-
-		if (save_info)
-		    newer_info += line + '\n';
-	    }
-
-	    new_info = newer_info;
-	    delete[] lines;
-	}
-
-	myinfos = new_info;
-	myignore_count = ignore_count;
-	mycondition = cond;
-	mycommands = commands;
-    }
-    break;
+	process_gdb(info_output);
+	break;
 
     case DBX:
-    {
-	if (info_output.contains ("stop ", 0)
-	    || info_output.contains ("stopped ", 0))
-	{
-	    info_output = info_output.after(rxblanks_or_tabs);
-	    strip_leading_space (info_output);
-	    if (info_output.contains ("at ", 0))
-	    {
-		info_output = info_output.after(rxblanks_or_tabs);
-		string file_name;
-		if (info_output.contains('"', 0))
-		{
-		    // `stop at "FILE":LINE'
-		    file_name = unquote(info_output.before(":"));
-		    info_output = info_output.after (":");
-		}
-		else if (info_output.contains('[', 0))
-		{
-		    // `stop at [file:line ...]'
-		    file_name = info_output.before(":");
-		    file_name = file_name.after('[');
-		    info_output = info_output.after (":");
-		}
-		else
-		{
-		    // `stop at LINE'
-		    file_name = "";
-		}
-
-		int new_line_nr = 0;
-		if (info_output != "" && isdigit(info_output[0]))
-		    new_line_nr = get_positive_nr(info_output);
-
-		if (file_name != "")
-		    myfile_name = file_name;
-
-		if (new_line_nr != 0)
-		    myline_nr = new_line_nr;
-
-		// DBX issues either locations or functions
-		myfunc = "";
-	    }
-	    else if (info_output.contains ("in ", 0))
-	    {
-		// `stop in FUNC'
-		string func = info_output.after(rxblanks_or_tabs);
-		if (func.contains('\n'))
-		    func = func.before('\n');
-		strip_space(func);
-		myfunc = func;
-
-		myfile_name = "";
-		myline_nr = 0;
-
-		// Attempt to get exact position
-		string pos = dbx_lookup(func);
-		if (pos != "")
-		{
-		    string file_name = pos.before(":");
-		    string line_s    = pos.after(":");
-		    int new_line_nr  = get_positive_nr(line_s);
-
-		    myfile_name = file_name;
-		    if (new_line_nr != 0)
-			myline_nr = new_line_nr;
-		}
-	    }
-	    else
-	    {
-		// `stop VAR'
-		mytype       = WATCHPOINT;
-		mywatch_mode = WATCH_CHANGE;
-
-		string expr = info_output;
-		if (expr.contains('\n'))
-		    expr = expr.before('\n');
-		if (expr.contains(rxblanks_or_tabs))
-		    expr = expr.before(rxblanks_or_tabs);
-
-		myexpr = expr;
-	    }
-
-	    // Sun DBX 3.0 issues extra characters like 
-	    // (2) stop in main -count 0/10
-	    // [3] stop in main -disable
-	    string options;
-	    if (info_output.contains('\n'))
-		options = info_output.before('\n');
-	    else
-		options = info_output;
-	    bool new_enabled = !options.contains(" -disable");
-	    myenabled = new_enabled;
-
-	    myinfos = "";
-	    if (options.contains(" -count "))
-	    {
-		string count = options.after(" -count ");
-		strip_leading_space(count);
-		if (count.contains(' '))
-		    count = count.before(' ');
-
-		myinfos = "count " + count;
-		if (count.contains('/'))
-		    count = count.after('/');
-		myignore_count = atoi(count);
-	    }
-
-	    if (options.contains(" if ") || options.contains(" -if "))
-	    {
-		string cond = options.after("if ");
-		if (myinfos != "")
-		    myinfos += '\n';
-		myinfos += "stop only if " + cond;
-		mycondition = cond;
-	    }
-	}
-	info_output = info_output.after('\n');
-    }
-    break;
+	process_dbx(info_output);
+	break;
 
     case XDB:
-    {
-	// Strip leading `:'.
-	// Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
-	if (info_output.contains(':', 0))
-	    info_output = info_output.after(0);
-
-	strip_leading_space(info_output);
-
-	// Skip `count: N'
-	if (info_output.contains("count:", 0))
-	{
-	    info_output = info_output.after("count:");
-	    strip_leading_space(info_output);
-	    string count = info_output.before(rxblanks_or_tabs);
-	    info_output = info_output.after(rxblanks_or_tabs);
-
-	    myignore_count = atoi(count);
-	}
-	    
-	// Check for `Active' or `Suspended' and strip them
-	// Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
-	if (info_output.contains("Active", 0))
-	{
-	    info_output = info_output.after("Active");
-	    myenabled   = true;
-	}
-	else if (info_output.contains("Suspended", 0))
-	{
-	    info_output = info_output.after("Suspended");
-	    myenabled   = false;
-	}
-
-	// Get function name and position
-	info_output = info_output.after(rxblanks_or_tabs);
-	myfunc = info_output.before(": ");
-
-	string pos = dbx_lookup(myfunc);
-	if (pos != "")
-	{
-	    myfile_name = pos.before(":");
-	}
-
-	info_output = info_output.after(": ");
-	myline_nr = get_positive_nr(info_output);
-
-	info_output = info_output.after('\n');
-
-	// Examine commands for condition
-	string commands = info_output;
-	strip_leading_space(commands);
-	if (commands.contains('{', 0))
-	{
-	    // A condition has the form `{if COND {} {Q; c}}'.
-	    if (commands.contains("{if ", 0))
-	    {
-		string cond = commands.after("{if ");
-		cond = cond.before('{');
-		strip_space(cond);
-		mycondition = cond;
-	    }
-
-	    // Skip this line, too
-	    info_output = info_output.after('\n');
-	}
-    }
-    break;
+	process_xdb(info_output);
+	break;
 
     case JDB:
-    {
-	int colon = info_output.index(':');
-	if (colon >= 0)
-	{
-	    string class_name = info_output.before(colon);
-	    int line_no = get_positive_nr(info_output.after(colon));
-	    if (line_no >= 0 && class_name != "")
-	    {
-		myfile_name = class_name;
-		myline_nr   = line_no;
-
-		// Kill this line
-		int beginning_of_line = colon;
-		while (beginning_of_line >= 0 && 
-		       info_output[beginning_of_line] != '\n')
-		    beginning_of_line--;
-		beginning_of_line++;
-
-		int next_nl = info_output.index('\n', colon);
-		if (next_nl >= 0)
-		    info_output = info_output.before(beginning_of_line)
-			+ info_output.from(next_nl);
-		else
-		    info_output = info_output.before(beginning_of_line);
-	    }
-	}
+	process_jdb(info_output);
 	break;
-    }
+
+    case PYDB:
+	process_pydb(info_output);
+	break;
 
     case PERL:
-    {
-	// FIXME
+	process_perl(info_output);
 	break;
     }
+}
+
+void BreakPoint::process_gdb(string& info_output)
+{
+    // Read type (`breakpoint' or `watchpoint')
+    // The type may be prefixed by `hw ' or other details.
+    string word1 = info_output.before('\n');
+    string word2 = word1.after(rxblanks_or_tabs);
+
+    if (word1.contains("watchpoint", 0) || 
+	word2.contains("watchpoint", 0))
+    {
+	mytype = WATCHPOINT;
+
+	// Fetch breakpoint mode detail (`acc' or `read')
+	if (word1.contains("acc ", 0))
+	    mywatch_mode = WATCH_ACCESS;
+	else if (word1.contains("read ", 0))
+	    mywatch_mode = WATCH_READ;
+	else
+	    mywatch_mode = WATCH_CHANGE;
+    }
+    else if (word1.contains("breakpoint", 0) || 
+	     word2.contains("breakpoint", 0))
+    {
+	mytype = BREAKPOINT;
+    }
+    info_output = info_output.after("point");
+    info_output = info_output.after(rxblanks_or_tabs);
+
+    // Read disposition (`dis', `del', or `keep')
+    if (info_output.contains("dis", 0))
+    {
+	mydispo = BPDIS;
+    }
+    else if (info_output.contains("del", 0))
+    {
+	mydispo = BPDEL;
+    }
+    else if (info_output.contains("keep", 0))
+    {
+	mydispo = BPKEEP;
+    }
+    info_output = info_output.after(rxblanks_or_tabs);
+
+    // Read enabled flag (`y' or `n')
+    if (info_output.contains('y', 0))
+    {
+	myenabled = true;
+    }
+    else if (info_output.contains('n', 0))
+    {
+	myenabled = false;
+    }
+    info_output = info_output.after(rxblanks_or_tabs);
+
+    string new_info = "";
+    if (mytype == BREAKPOINT) 
+    {
+	// Read address
+	myaddress = info_output.through(rxalphanum);
+
+	info_output = info_output.after(myaddress);
+	strip_leading_space(info_output);
+
+	if (info_output.contains("in ", 0))
+	{
+	    // Function name
+	    string func = info_output.after("in ");
+	    if (func.contains('\n'))
+		func = func.before('\n');
+	    if (func.contains(" at "))
+		func = func.before(" at ");
+	    strip_space(func);
+
+	    myfunc = func;
+	}
+
+	// Location
+	info_output = info_output.from(rxname_colon_int_nl);
+	myfile_name = info_output.before(":");
+
+	info_output = info_output.after (":");
+	if (info_output != "" && isdigit(info_output[0]))
+	    myline_nr = get_positive_nr(info_output);
+    }
+    else if (mytype == WATCHPOINT)
+    {
+	// Read watched expression
+	myexpr = info_output.before('\n');
+    }
+
+    // That's all in this line
+    info_output = info_output.after('\n');
+
+    int ignore_count = 0;
+    string cond      = "";
+    StringArray commands;
+
+    if (info_output != "" && !isdigit(info_output[0]))
+    {
+	// Extra info follows
+	int next_nl = index(info_output, rxnl_int, "\n");
+	if (next_nl == -1)
+	{
+	    new_info += info_output;
+	    info_output = "";
+	}
+	else
+	{
+	    new_info += info_output.through(next_nl);
+	    info_output = info_output.after(next_nl);
+	}
+
+	int n = new_info.freq('\n');
+	string *lines = new string[n + 1];
+	split(new_info, lines, n + 1, '\n');
+	string newer_info = "";
+
+	for (int i = 0; i < n; i++)
+	{
+	    bool save_info = true;
+
+	    string line = lines[i];
+	    bool starts_with_space = (line != "" && isspace(line[0]));
+	    strip_leading_space(line);
+
+	    if (line.contains("ignore next ", 0))
+	    {
+		// Fetch ignore count
+		string count = line.after("ignore next ");
+		count = count.before(" hits");
+		ignore_count = atoi(count);
+	    }
+	    else if (line.contains("stop only if ", 0))
+	    {
+		// Fetch condition
+		cond = line.after("stop only if ");
+	    }
+	    else if (line.contains("stop ", 0))
+	    {
+		// Any info (no GDB command starts with `stop')
+	    }
+	    else if (line.contains("breakpoint ", 0))
+	    {
+		// Any info (no GDB command starts with `breakpoint')
+	    }
+	    else if (starts_with_space)
+	    {
+		// A command (GDB indents all commands)
+		commands += line;
+		save_info = false;
+	    }
+	    else
+	    {
+		// Some other info
+	    }
+
+	    if (save_info)
+		newer_info += line + '\n';
+	}
+
+	new_info = newer_info;
+	delete[] lines;
+    }
+
+    myinfos = new_info;
+    myignore_count = ignore_count;
+    mycondition = cond;
+    mycommands = commands;
+}
+
+void BreakPoint::process_pydb(string& info_output)
+{
+    // PYDB has the same output format as GDB.
+    process_gdb(info_output);
+}
+
+void BreakPoint::process_dbx(string& info_output)
+{
+    if (info_output.contains("stop ", 0) || 
+	info_output.contains("stopped ", 0))
+    {
+	info_output = info_output.after(rxblanks_or_tabs);
+	strip_leading_space (info_output);
+	if (info_output.contains ("at ", 0))
+	{
+	    info_output = info_output.after(rxblanks_or_tabs);
+	    string file_name;
+	    if (info_output.contains('"', 0))
+	    {
+		// `stop at "FILE":LINE'
+		file_name = unquote(info_output.before(":"));
+		info_output = info_output.after (":");
+	    }
+	    else if (info_output.contains('[', 0))
+	    {
+		// `stop at [file:line ...]'
+		file_name = info_output.before(":");
+		file_name = file_name.after('[');
+		info_output = info_output.after (":");
+	    }
+	    else
+	    {
+		// `stop at LINE'
+		file_name = "";
+	    }
+
+	    int new_line_nr = 0;
+	    if (info_output != "" && isdigit(info_output[0]))
+		new_line_nr = get_positive_nr(info_output);
+
+	    if (file_name != "")
+		myfile_name = file_name;
+
+	    if (new_line_nr != 0)
+		myline_nr = new_line_nr;
+
+	    // DBX issues either locations or functions
+	    myfunc = "";
+	}
+	else if (info_output.contains ("in ", 0))
+	{
+	    // `stop in FUNC'
+	    string func = info_output.after(rxblanks_or_tabs);
+	    if (func.contains('\n'))
+		func = func.before('\n');
+	    strip_space(func);
+	    myfunc = func;
+
+	    myfile_name = "";
+	    myline_nr = 0;
+
+	    // Attempt to get exact position
+	    string pos = dbx_lookup(func);
+	    if (pos != "")
+	    {
+		string file_name = pos.before(":");
+		string line_s    = pos.after(":");
+		int new_line_nr  = get_positive_nr(line_s);
+
+		myfile_name = file_name;
+		if (new_line_nr != 0)
+		    myline_nr = new_line_nr;
+	    }
+	}
+	else
+	{
+	    // `stop VAR'
+	    mytype       = WATCHPOINT;
+	    mywatch_mode = WATCH_CHANGE;
+
+	    string expr = info_output;
+	    if (expr.contains('\n'))
+		expr = expr.before('\n');
+	    if (expr.contains(rxblanks_or_tabs))
+		expr = expr.before(rxblanks_or_tabs);
+
+	    myexpr = expr;
+	}
+
+	// Sun DBX 3.0 issues extra characters like 
+	// (2) stop in main -count 0/10
+	// [3] stop in main -disable
+	string options;
+	if (info_output.contains('\n'))
+	    options = info_output.before('\n');
+	else
+	    options = info_output;
+	bool new_enabled = !options.contains(" -disable");
+	myenabled = new_enabled;
+
+	myinfos = "";
+	if (options.contains(" -count "))
+	{
+	    string count = options.after(" -count ");
+	    strip_leading_space(count);
+	    if (count.contains(' '))
+		count = count.before(' ');
+
+	    myinfos = "count " + count;
+	    if (count.contains('/'))
+		count = count.after('/');
+	    myignore_count = atoi(count);
+	}
+
+	if (options.contains(" if ") || options.contains(" -if "))
+	{
+	    string cond = options.after("if ");
+	    if (myinfos != "")
+		myinfos += '\n';
+	    myinfos += "stop only if " + cond;
+	    mycondition = cond;
+	}
+    }
+    info_output = info_output.after('\n');
+}
+
+
+void BreakPoint::process_xdb(string& info_output)
+{
+    // Strip leading `:'.
+    // Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
+    if (info_output.contains(':', 0))
+	info_output = info_output.after(0);
+
+    strip_leading_space(info_output);
+
+    // Skip `count: N'
+    if (info_output.contains("count:", 0))
+    {
+	info_output = info_output.after("count:");
+	strip_leading_space(info_output);
+	string count = info_output.before(rxblanks_or_tabs);
+	info_output = info_output.after(rxblanks_or_tabs);
+
+	myignore_count = atoi(count);
+    }
+	    
+    // Check for `Active' or `Suspended' and strip them
+    // Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
+    if (info_output.contains("Active", 0))
+    {
+	info_output = info_output.after("Active");
+	myenabled   = true;
+    }
+    else if (info_output.contains("Suspended", 0))
+    {
+	info_output = info_output.after("Suspended");
+	myenabled   = false;
+    }
+
+    // Get function name and position
+    info_output = info_output.after(rxblanks_or_tabs);
+    myfunc = info_output.before(": ");
+
+    string pos = dbx_lookup(myfunc);
+    if (pos != "")
+    {
+	myfile_name = pos.before(":");
+    }
+
+    info_output = info_output.after(": ");
+    myline_nr = get_positive_nr(info_output);
+
+    info_output = info_output.after('\n');
+
+    // Examine commands for condition
+    string commands = info_output;
+    strip_leading_space(commands);
+    if (commands.contains('{', 0))
+    {
+	// A condition has the form `{if COND {} {Q; c}}'.
+	if (commands.contains("{if ", 0))
+	{
+	    string cond = commands.after("{if ");
+	    cond = cond.before('{');
+	    strip_space(cond);
+	    mycondition = cond;
+	}
+
+	// Skip this line, too
+	info_output = info_output.after('\n');
+    }
+}
+
+void BreakPoint::process_jdb(string& info_output)
+{
+    int colon = info_output.index(':');
+    if (colon >= 0)
+    {
+	string class_name = info_output.before(colon);
+	int line_no = get_positive_nr(info_output.after(colon));
+	if (line_no >= 0 && class_name != "")
+	{
+	    myfile_name = class_name;
+	    myline_nr   = line_no;
+
+	    // Kill this line
+	    int beginning_of_line = colon;
+	    while (beginning_of_line >= 0 && 
+		   info_output[beginning_of_line] != '\n')
+		beginning_of_line--;
+	    beginning_of_line++;
+
+	    int next_nl = info_output.index('\n', colon);
+	    if (next_nl >= 0)
+		info_output = info_output.before(beginning_of_line)
+		    + info_output.from(next_nl);
+	    else
+		info_output = info_output.before(beginning_of_line);
+	}
+    }
+}
+
+void BreakPoint::process_perl(string& info_output)
+{
+    // Format: LINE_NO: LINE
+    //           INFO 1
+    //           INFO 2 ...
+    myline_nr = atoi(info_output);
+    info_output = info_output.after('\n');
+    while (info_output.contains(' ', 0))
+    {
+	string info = info_output.before('\n');
+	info_output = info_output.after('\n');
+
+	strip_space(info);
+	if (info.contains("break if ", 0))
+	{
+	    string cond = info.after(" if ");
+	    if (cond == "(1)")
+		cond = "";
+	    mycondition = cond;
+	}
+	else if (info.contains("action: ", 0))
+	{
+	    string command = info.after(':');
+	    strip_space(command);
+	    mycommands += command;
+	}
+	else
+	{
+	    myinfos += info + '\n';
+	}
     }
 }
 
@@ -930,7 +984,21 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 
     case PERL:
     {
-	// FIXME
+	string cond_suffix;
+	if (cond != "")
+	    cond_suffix = " " + cond;
+
+	os << "f " << pos.before(':') << "\n";
+	os << "b " << pos.after(':')  << cond_suffix << "\n";
+
+	if (commands().size() != 0)
+	{
+	    os << "a " << pos.after(':') << " ";
+	    for (int i = 0; i < commands().size(); i++)
+		os << commands()[i] << ";";
+	    os << "\n";
+	}
+
 	break;
     }
     }

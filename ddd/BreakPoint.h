@@ -122,6 +122,13 @@ protected:
     static string and_op();
     static bool is_false(const string& cond);
 
+    void process_gdb(string& info_output);
+    void process_dbx(string& info_output);
+    void process_xdb(string& info_output);
+    void process_jdb(string& info_output);
+    void process_pydb(string& info_output);
+    void process_perl(string& info_output);
+
 public:
     // Create new breakpoint from INFO_OUTPUT.  ARG denotes the
     // argument of a breakpoint setting command.  If NUMBER is given,

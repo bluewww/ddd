@@ -696,7 +696,8 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		string file = address.before(':');
 		address = address.after(':');
 
-		gdb_command("f " + file, w);
+		if (!file_matches(file, current_file_name))
+		    gdb_command("f " + file, w);
 	    }
 
 	    string command = "b " + address;
@@ -3822,9 +3823,11 @@ void SourceView::process_info_bp (string& info_output,
 	    break;
 
 	case JDB:
+	case PERL:
 	{
-	    // JDB has no breakpoint numbers.  Check if we already have one.
-	    bp_nr = jdb_breakpoint(info_output);
+	    // JDB and Perl have no breakpoint numbers.
+	    // Check if we already have a breakpoint at this location.
+	    bp_nr = breakpoint_number(info_output);
 	    if (bp_nr == 0)
 		bp_nr = max_breakpoint_number_seen + 1;	// new breakpoint
 	    if (bp_nr < 0)
@@ -3838,12 +3841,6 @@ void SourceView::process_info_bp (string& info_output,
 		info_output = info_output.after('\n');
 		continue;
 	    }
-	    break;
-	}
-
-	case PERL:
-	{
-	    // FIXME
 	    break;
 	}
 	}
@@ -6256,15 +6253,34 @@ void SourceView::PrintWatchpointCB(Widget w, XtPointer client_data, XtPointer)
 
 
 // Return breakpoint of BP_INFO; 0 if new; -1 if none
-int SourceView::jdb_breakpoint(const string& bp_info)
-{
-    int colon = bp_info.index(':');
-    if (colon < 0)
-	return -1;		// No breakpoint
+int SourceView::breakpoint_number(const string& bp_info)
+{ 
+    string class_name = current_source_name();
+    int line = 0;
 
-    string class_name = bp_info.before(colon);
+    switch (gdb->type())
+    {
+    case JDB:
+    {
+        int colon = bp_info.index(':');
+	if (colon < 0)
+	    return -1;		// No breakpoint
+
+	class_name = bp_info.before(colon);
+	line = get_positive_nr(bp_info.after(colon));
+	break;
+    }
+    case PERL:
+    {
+	line = get_positive_nr(bp_info);
+	break;
+    }
+
+    default:
+	return -1;			// Never reached
+    }
+
     strip_leading_space(class_name);
-    int line = get_positive_nr(bp_info.after(colon));
     if (line <= 0 || class_name.contains(' '))
 	return -1;		// No breakpoint
 
@@ -6306,10 +6322,10 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     for (int i = 0; i < count; i++)
     {
 	string& bp_info = breakpoint_list[i];
-	if (gdb->type() == JDB)
+	if (!gdb->has_numbered_breakpoints())
 	{
 	    // JDB has no breakpoint numbers -- insert our own
-	    int bp_nr = jdb_breakpoint(bp_info);
+	    int bp_nr = breakpoint_number(bp_info);
 	    if (bp_nr > 0)
 	    {
 		string s = itostring(bp_nr) + "    ";
@@ -6340,7 +6356,9 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     }
 
     setLabelList(breakpoint_list_w, breakpoint_list, selected, count,
-		 (gdb->type() == GDB || gdb->type() == PYDB) && count > 1, false);
+		 (gdb->type() == GDB || 
+		  gdb->type() == PYDB) && count > 1, false);
+
     UpdateBreakpointButtonsCB(breakpoint_list_w, XtPointer(0), XtPointer(0));
 
     delete[] breakpoint_list;

@@ -509,6 +509,12 @@ public:
 	return type() == GDB || type() == XDB || type() == DBX || type() == PERL;
     }
 
+    // True if debugger has numbered breakpoints
+    bool has_numbered_breakpoints()
+    {
+	return type() == GDB || type() == DBX || type() == XDB || type() == PYDB;
+    }
+
     // True if debugger supports temporary breakpoints
     bool has_temporary_breakpoints() const
     {
