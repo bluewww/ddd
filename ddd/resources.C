@@ -654,6 +654,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNallRegisters,
+	XtCAllRegisters,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, all_registers),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,

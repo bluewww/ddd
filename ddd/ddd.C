@@ -1900,6 +1900,7 @@ void update_options()
 
     source_view->set_display_glyphs(app_data.display_glyphs);
     source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
+    source_view->set_all_registers(app_data.all_registers);
 }
 
 //-----------------------------------------------------------------------------

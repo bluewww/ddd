@@ -233,10 +233,13 @@ private:
 
     static Widget register_dialog_w;          // Dialog for registers
     static Widget register_list_w;            // Register list inside
+    static Widget int_registers_w;            // Display integer registers
+    static Widget all_registers_w;            // Display all registers
     static bool register_dialog_popped_up;    // True if registers are visible
 
     static bool display_glyphs;	         // True if glyphs are to be displayed
     static bool disassemble;	         // True if code is to be disassembled
+    static bool all_registers;	         // True if all registers are shown
     static bool at_lowest_frame;              // True if at lowest frame
 
     // The indenting amounts
@@ -434,6 +437,9 @@ public:
 
     // Set whether machine code is to be displayed
     static void set_disassemble(bool value);
+
+    // Set whether all registers are to be displayed
+    static void set_all_registers(bool value);
 
     // Return `clear ARG' command
     static string clear_command(string arg);

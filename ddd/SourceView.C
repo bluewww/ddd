@@ -94,6 +94,7 @@ char SourceView_rcsid[] =
 #include <Xm/SelectioB.h>
 #include <Xm/List.h>
 #include <Xm/PanedW.h>
+#include <Xm/ToggleB.h>
 #include <X11/StringDefs.h>
 
 // System stuff
@@ -125,6 +126,7 @@ extern "C" {
 #include "status.h"
 #include "file.h"
 #include "AppData.h"
+#include "options.h"
 
 // Glyphs
 #include "arrow.xbm"
@@ -277,6 +279,8 @@ Widget SourceView::up_w                      = 0;
 Widget SourceView::down_w                    = 0;
 Widget SourceView::register_dialog_w         = 0;
 Widget SourceView::register_list_w           = 0;
+Widget SourceView::all_registers_w           = 0;
+Widget SourceView::int_registers_w           = 0;
 
 bool SourceView::stack_dialog_popped_up    = false;
 bool SourceView::register_dialog_popped_up = false;
@@ -285,6 +289,7 @@ bool SourceView::cache_source_files     = true;
 bool SourceView::cache_machine_code     = true;
 bool SourceView::display_glyphs         = true;
 bool SourceView::disassemble            = true;
+bool SourceView::all_registers          = false;
 
 int  SourceView::bp_indent_amount   = 0;
 int  SourceView::code_indent_amount = 4;
@@ -2111,6 +2116,26 @@ SourceView::SourceView (XtAppContext app_context,
 					   XmDIALOG_APPLY_BUTTON));
     XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
 					   XmDIALOG_CANCEL_BUTTON));
+
+    arg = 0;
+    Widget box = 
+	XmCreateRadioBox(register_dialog_w, "box", args, arg);
+    XtManageChild(box);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNset, !all_registers); arg++;
+    int_registers_w = 
+	XmCreateToggleButton(box, "int_registers", args, arg);
+    XtManageChild(int_registers_w);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNset, all_registers); arg++;
+    all_registers_w = 
+	XmCreateToggleButton(box, "all_registers", args, arg);
+    XtManageChild(all_registers_w);
+
+    XtAddCallback(all_registers_w, XmNvalueChangedCallback, 
+		  sourceToggleAllRegistersCB, XtPointer(0));
 
     arg = 0;
     register_list_w = XmSelectionBoxGetChild(register_dialog_w, XmDIALOG_LIST);
@@ -4236,7 +4261,8 @@ void SourceView::process_register(string& register_output)
 
 void SourceView::refresh_registers()
 {
-    string registers = gdb_question("info registers");
+    string registers = 
+	gdb_question(all_registers ? "info all-registers" : "info registers");
     if (registers == NO_GDB_ANSWER)
 	registers = "No registers.";
     process_register(registers);
@@ -5180,6 +5206,21 @@ void SourceView::set_disassemble(bool set)
 	    else
 		lookup(line_of_cursor());
 	}
+    }
+}
+
+void SourceView::set_all_registers(bool set)
+{
+    if (all_registers != set)
+    {
+	all_registers = set;
+
+	if (all_registers_w)
+	    XmToggleButtonSetState(all_registers_w, (Boolean)set, False);
+	if (int_registers_w)
+	    XmToggleButtonSetState(int_registers_w, !(Boolean)set, False);
+
+	refresh_registers();
     }
 }
 

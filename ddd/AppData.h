@@ -161,6 +161,8 @@
 #define XtCDisassemble           "Disassemble"
 #define XtNuseSourcePath         "useSourcePath"
 #define XtCUseSourcePath         "UseSourcePath"
+#define XtNallRegisters          "allRegisters"
+#define XtCAllRegisters          "AllRegisters"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -228,6 +230,7 @@ struct AppData {
     Boolean display_glyphs;
     Boolean disassemble;
     Boolean use_source_path;
+    Boolean all_registers;
     String  dddinit_version;
     String  app_defaults_version;
 };

@@ -167,6 +167,22 @@ void sourceToggleDisassembleCB (Widget, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
+void sourceToggleAllRegistersCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.all_registers = info->set;
+
+    if (info->set)
+	set_status("Showing all registers.");
+    else
+	set_status("Showing integer registers only.");
+
+    update_options();
+    options_changed = true;
+}
+
 //-----------------------------------------------------------------------------
 // Graph Options
 //-----------------------------------------------------------------------------
@@ -626,6 +642,8 @@ void save_options(Widget origin)
 			 app_data.display_glyphs) << "\n";
     os << bool_app_value(XtNdisassemble,
 			 app_data.disassemble) << "\n";
+    os << bool_app_value(XtNallRegisters,
+			 app_data.all_registers) << "\n";
     os << bool_app_value(XtNgroupIconify,
 			 app_data.group_iconify)   << "\n";
     os << bool_app_value(XtNseparateExecWindow,

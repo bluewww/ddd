@@ -2914,13 +2914,21 @@ Ddd*register_dialog_popup.title:	     @DDD@: Registers
 Ddd*register_dialog.listLabelString:	     Registers
 Ddd*register_dialog.okLabelString:	     Close
 
-Ddd*register_dialog*text.rows:	    12
-Ddd*register_dialog*text.columns:   60
-Ddd*register_dialog*text.resizable: true
+Ddd*register_dialog.listVisibleItemCount:    12
+
+Ddd*register_dialog*box.orientation: XmHORIZONTAL
+Ddd*register_dialog*box.marginHeight: 0
+Ddd*register_dialog*box.marginWidth:  0
+
+Ddd*register_dialog*all_registers.labelString: All registers
+Ddd*register_dialog*int_registers.labelString: Integer registers
 
 Ddd*register_dialog*contextHelpString:	     \
 @rm This window shows the @sl machine registers@rm.\n\
-Select any register to have its name copied to the argument @bf()@rm.
+Select any register to have its name copied to the argument @bf()@rm.\n\
+\n\
+If @bf Integer registers @rm is set, integer registers are shown.\n\
+If @bf All registers @rm is set, all registers are shown.
 
 
 !-----------------------------------------------------------------------------
