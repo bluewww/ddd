@@ -568,7 +568,7 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 
 void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
 {
-    StatusDelay delay("Refreshing all displays");
+    StatusDelay d("Refreshing all displays");
 
     set_last_origin(w);
     refresh_displaySQ();
@@ -576,7 +576,7 @@ void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
 
 void DataDisp::selectAllCB(Widget w, XtPointer, XtPointer)
 {
-    StatusDelay delay("Selecting all displays");
+    StatusDelay d("Selecting all displays");
 
     set_last_origin(w);
     XtCallActionProc(graph_edit, 
@@ -785,6 +785,7 @@ void DataDisp::refresh_graph_edit(bool silent)
 
 void DataDisp::RefreshGraphEditCB(XtPointer, XtIntervalId *id)
 {
+    (void) id;			// Use it
     assert(*id == refresh_graph_edit_timer);
     refresh_graph_edit_timer = 0;
 
@@ -1089,6 +1090,7 @@ void DataDisp::refresh_args()
 
 void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 {
+    (void) timer_id;		// Use it
     assert(*timer_id == refresh_args_timer);
     refresh_args_timer = 0;
     

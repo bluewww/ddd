@@ -2747,6 +2747,7 @@ static time_t blink_timer_called  = 0;     // Time of blink_timer call
 
 static void BlinkCB(XtPointer client_data, XtIntervalId *id)
 {
+    (void) id;			// use it
     assert(*id == blink_timer);
     blink_timer = 0;
 

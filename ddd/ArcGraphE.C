@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char ArcGraphEdge_rcsid[] = 
+char ArcGraphEdge_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -43,13 +43,6 @@ const char ArcGraphEdge_rcsid[] =
 #include <X11/Intrinsic.h>
 
 DEFINE_TYPE_INFO_1(ArcGraphEdge, LineGraphEdge);
-
-// Let A, B, and C denote the sides of a triangle; return the angle on
-// the opposite of A.
-inline double angle(double a, double b, double c)
-{
-    return acos((b * b + c * c - a * a) / (2.0 * b * c));
-}
 
 inline double hypot(const BoxPoint& p)
 {

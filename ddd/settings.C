@@ -1057,7 +1057,7 @@ static void add_button(Widget form, int& row, DebuggerType type,
 	    // Possible options are listed upon `set language'
 	    // without value
 	    string options;
-	    char separator;
+	    char separator = '\n';
 
 	    switch (gdb->type())
 	    {

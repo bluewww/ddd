@@ -168,6 +168,8 @@ public:
 
 void Command::clear_origin(Widget w, XtPointer client_data, XtPointer)
 {
+    (void) w;			// Use it
+
     // The widget is being destroyed.  Remove all references.
     Command *command = (Command *)client_data;
     assert(w == command->origin);

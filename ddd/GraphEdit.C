@@ -533,6 +533,7 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
     const Dimension highlight_thickness = _w->primitive.highlight_thickness;
     XtIntervalId& redrawTimer           = _w->graphEdit.redrawTimer;
 
+    (void) id;			// Use it
     assert(redrawTimer == *id);
     redrawTimer = 0;
 
