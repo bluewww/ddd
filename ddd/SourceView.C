@@ -4510,9 +4510,10 @@ XmTextPosition SourceView::find_pc(const string& pc)
 struct RefreshInfo {
     string pc;
     XmHighlightMode mode;
+    Delay *delay;
 };
 
-bool SourceView::refresh_code_pending = false;
+Delay *SourceView::refresh_code_pending = 0;
 
 // Process `disassemble' output
 void SourceView::refresh_codeOQC(const string& answer, void *client_data)
@@ -4523,14 +4524,22 @@ void SourceView::refresh_codeOQC(const string& answer, void *client_data)
     if (find_pc(info->pc) != XmTextPosition(-1))
 	show_pc(info->pc, info->mode);
 
-    refresh_code_pending = false;
+    if (refresh_code_pending)
+    {
+	delete refresh_code_pending;
+	refresh_code_pending = 0;
+    }
 }
 
 void SourceView::refresh_codeWorkProc(XtPointer client_data, XtIntervalId *)
 {
     if (!disassemble)
     {
-	refresh_code_pending = false;
+	if (refresh_code_pending)
+	{
+	    delete refresh_code_pending;
+	    refresh_code_pending = 0;
+	}
 	return;
     }
 
@@ -4551,6 +4560,9 @@ static string last_shown_pc;
 // Show program counter location PC
 void SourceView::show_pc(const string& pc, XmHighlightMode mode)
 {
+    if (!disassemble)
+	return;
+	
     // clog << "Showing PC " << pc << "\n";
 
     last_shown_pc = pc;
@@ -4575,16 +4587,25 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode)
     {
 	// PC not found in current code: disassemble location
 	static RefreshInfo info;
-	info.pc   = pc;
-	info.mode = mode;
-	if (!refresh_code_pending)
+	info.pc    = pc;
+	info.mode  = mode;
+
+	if (refresh_code_pending)
 	{
-	    // Send `disassemble' command only after the running command
-	    // has ended.
+	    // Working proc already started: clear old status line
+	    delete refresh_code_pending;
+	}
+	else
+	{
+	    // Start new working proc: send `disassemble' command
+	    // after the running command completed.
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
 			    refresh_codeWorkProc, XtPointer(&info));
-	    refresh_code_pending = true;
 	}
+
+	// Show new status
+	refresh_code_pending = 
+	    new StatusDelay("Disassembling location " + pc);
 	return;
     }
 

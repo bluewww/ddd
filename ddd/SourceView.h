@@ -66,6 +66,7 @@
 #include "BreakPoint.h"
 #include "CodeCache.h"
 #include "Map.h"
+#include "Delay.h"
 
 //-----------------------------------------------------------------------------
 extern GDBAgent* gdb;
@@ -288,7 +289,7 @@ private:
     static bool is_code_widget(Widget w);
     static string& current_text(Widget w);
 
-    static bool refresh_code_pending;
+    static Delay *refresh_code_pending;
     static XmTextPosition find_pc(const string& pc);
     static void refresh_codeOQC(const string& answer, void *data);
     static void refresh_codeWorkProc(XtPointer client_data, XtIntervalId *);
