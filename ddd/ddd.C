@@ -1277,30 +1277,6 @@ inline void manage_child(Widget w, bool state)
 // Message handling
 //-----------------------------------------------------------------------------
 
-class MessageSaver: public ostrstream
-{
-    ostream& tied_to;
-    int flushed;
-
-public:
-    MessageSaver(ostream& os = cerr)
-	: tied_to(os), flushed(0)
-    {}
-    void flush()
-    {
-	if (flushed++ == 0)
-	{
-	    char *s = str();
-	    if (s)
-		tied_to << s;
-	}
-    }
-    ~MessageSaver()
-    {
-	flush();
-    }
-};
-
 static MString version_warnings;
 
 
@@ -1482,7 +1458,7 @@ int main(int argc, char *argv[])
     ddd_install_x_fatal();
     ddd_install_x_error();
 
-    MessageSaver messages;
+    ostrstream messages;
 
     // Set up a `~/.ddd/' directory hierarchy
     create_session_dir(DEFAULT_SESSION, messages);
@@ -1638,6 +1614,12 @@ int main(int argc, char *argv[])
     // Create new session dir if needed
     create_session_dir(app_data.session, messages);
 
+    // Forward messages found so far into cerr
+    {
+	string msg(messages);
+	cerr << msg;
+    }
+
     // Set up VSL resources
     if (VSEFlags::parse_vsl(argc, argv))
     {
@@ -1758,16 +1740,6 @@ int main(int argc, char *argv[])
     // Register own converters
     registerOwnConverters();
 
-    // Lock `~/.ddd/'.
-    lock_ddd(toplevel);
-
-    // Show startup logo
-    Boolean iconic;
-    XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
-    if (!iconic && restart_session() == "")
-	popup_startup_logo(toplevel, app_data.show_startup_logo);
-    last_shown_startup_logo = app_data.show_startup_logo;
-
     // Global variables: Set LessTif version
     lesstif_version = app_data.lesstif_version;
 
@@ -1793,6 +1765,16 @@ int main(int argc, char *argv[])
 #else
     (void) CheckDragCB;		// Use it
 #endif
+
+    // Show startup logo
+    Boolean iconic;
+    XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
+    if (!iconic && restart_session() == "")
+	popup_startup_logo(toplevel, app_data.show_startup_logo);
+    last_shown_startup_logo = app_data.show_startup_logo;
+
+    // Lock `~/.ddd/'.
+    lock_ddd(toplevel);
 
     // Create GDB interface
     gdb = new_gdb(type, app_data, app_context, argc, argv);
@@ -2443,14 +2425,15 @@ int main(int argc, char *argv[])
     }
 
     // Make sure we see all messages accumulated so far
-    string msg(messages);
-    while (msg != "")
     {
-	string line = msg.before('\n');
-	set_status(line);
-	msg = msg.after('\n');
+	string msg(messages);
+	while (msg != "")
+	{
+	    string line = msg.before('\n');
+	    set_status(line);
+	    msg = msg.after('\n');
+	}
     }
-    // messages.flush();
 
     // Setup TTY interface
     if (app_data.tty_mode)
@@ -2959,6 +2942,8 @@ static void fix_status_size()
 //-----------------------------------------------------------------------------
 
 static bool continue_despite_lock = false;
+static int lock_dialog_x = -1;
+static int lock_dialog_y = -1;
 
 static void ContinueDespiteLockCB(Widget, XtPointer, XtPointer)
 {
@@ -3001,6 +2986,18 @@ static void lock_ddd(Widget parent)
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNdialogStyle, 
 	     XmDIALOG_FULL_APPLICATION_MODAL); arg++;
+
+    string geometry;
+    if (lock_dialog_x >= 0 && lock_dialog_y >= 0)
+    {
+	ostrstream os;
+	os << "+" << lock_dialog_x << "+" << lock_dialog_y;
+	geometry = string(os);
+	XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
+	XtSetArg(args[arg], XmNx, lock_dialog_x); arg++;
+	XtSetArg(args[arg], XmNy, lock_dialog_y); arg++;
+    }
+
     Widget lock_dialog =
 	verify(XmCreateQuestionDialog(parent, "lock_dialog", args, arg));
     Delay::register_shell(lock_dialog);
@@ -3010,6 +3007,19 @@ static void lock_ddd(Widget parent)
 		  ContinueDespiteLockCB, NULL);
     XtAddCallback(lock_dialog, XmNcancelCallback, ExitCB, 
 		  XtPointer(EXIT_FAILURE));
+
+    if (geometry != "")
+    {
+	Widget shell = lock_dialog;
+	while (!XmIsDialogShell(shell))
+	    shell = XtParent(shell);
+
+	arg = 0;
+	XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
+	XtSetArg(args[arg], XmNx, lock_dialog_x); arg++;
+	XtSetArg(args[arg], XmNy, lock_dialog_y); arg++;
+	XtSetValues(shell, args, arg);
+    }
 
     continue_despite_lock = false;
     manage_and_raise(lock_dialog);
@@ -5213,6 +5223,7 @@ static bool have_decorated_transients()
     return frame_attributes.height - shell_attributes.height > 5;
 }
 
+
 //-----------------------------------------------------------------------------
 // Startup Logo
 //-----------------------------------------------------------------------------
@@ -5280,6 +5291,10 @@ static void popup_startup_logo(Widget parent, string color_key)
     int y = (HeightOfScreen(XtScreen(logo_shell)) - height) / 2;
 
     XtVaSetValues(logo_shell, XmNx, x, XmNy, y, NULL);
+
+    // Place lock warning on top of startup logo
+    lock_dialog_x = x + 20;
+    lock_dialog_y = y + 20;
 
     popup_shell(logo_shell);
     wait_until_mapped(logo, logo_shell);
