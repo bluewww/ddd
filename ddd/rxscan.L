@@ -190,7 +190,7 @@ C	(.|\n)*
 080[(][^ )]*db[^ )]*[)]{w}		return &rxprompt;
 081{C}[(]END[)].*			return &rxq;
 082([(][^)]+[)]{W})?{_}@{W}{x}{W}:{C} 	return &rxreference;
-083{W}refresh({W}{C})?			return &rxrefresh_cmd;
+083{_}refresh({W}{C})?			return &rxrefresh_cmd;
 084{C}([(]press{W}RETURN[)]|Hit{W}RETURN{W}to{W}continue|Type{W}<return>{W}to{W}continue|More{W}[(]n{W}if{W}no[)][?]).* return &rxreturn;
 085{_}(r|rer|rerun|ru|run|R)({W}{C})? return &rxrun_cmd;
 086{_}(r|ru|run|rer|rerun|c|cont|contin|continu|continue|u|unt|unti|until|s|si|step|stepi|n|ni|next|nexti|j|ju|jump|k|ki|kill|fin|fini|finis|finish|R|S)({W}{C})?	return &rxrunning_cmd;
