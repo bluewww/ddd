@@ -362,7 +362,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 
     if (c.command == '\003' && !gdb->isReadyWithPrompt())
     {
-	if (continuing || processing_gdb_commands)
+	if (processing_gdb_commands)
 	{
 	    // Cannot interrupt right now - ignore
 	    return;
@@ -644,9 +644,7 @@ void gdb_command(const Command& c0)
     bool control_command = 
 	(c.command.length() == 1 && iscntrl(c.command[0]));
 
-    if (!continuing && 
-	(control_command || yesno_command || 
-	 c.priority == COMMAND_PRIORITY_NOW))
+    if (control_command || yesno_command || c.priority == COMMAND_PRIORITY_NOW)
     {
  	// User interaction -- execute immediately
 	bool is_command = (c.command == '\003');
