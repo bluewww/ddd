@@ -336,6 +336,8 @@ static void setup_font_db(const AppData& ad, XrmDatabase& db)
 		XmCFontList + ": " + text_fontlist);
     set_db_font(ad, db, string(DDD_CLASS_NAME "*XmText.") + 
 		XmCFontList + ": " + text_fontlist);
+    set_db_font(ad, db, string(DDD_CLASS_NAME "*XmCommand*XmList.") + 
+		XmCFontList + ": " + text_fontlist);
 
     // Command tool fonts
     string tool_fontlist = 
