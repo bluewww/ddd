@@ -890,6 +890,9 @@ DispValue *DispValue::_update(DispValue *source,
 	// We're updated from ourselves -- ignore it all.  
 	// This happens when a cluster is updated from the values of
 	// the clustered dislays.
+	if (descendant_changed())
+	    was_changed = true;
+
 	return this;
     }
 
@@ -1037,6 +1040,18 @@ DispValue *DispValue::_update(DispValue *source,
     return ret;
 }
 
+// Return true iff this or some descendant changed
+bool DispValue::descendant_changed() const
+{
+    if (changed)
+	return true;
+
+    for (int i = 0; i < nchildren(); i++)
+	if (child(i)->descendant_changed())
+	    return true;
+
+    return false;
+}
 
 //-----------------------------------------------------------------------------
 // Find descendant

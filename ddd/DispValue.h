@@ -243,6 +243,7 @@ public:
     bool& enabled()      { clear_cached_box(); return myenabled; }
 
     bool is_changed() const { return changed; }
+    bool descendant_changed() const;
     bool expanded()   const { return myexpanded; }
     bool collapsed()  const { return !expanded(); }
 
