@@ -211,8 +211,6 @@ Volunteers for fixing these and other bugs are welcome!
     drag-hilite the name, ddd goes berserk with the cpu.
     [I could not reproduce this. -AZ]
 
-204 Switching from glyphs to text loses the current PC.
-
 215 With separate windows, a newly created assembler window has zero
     height.
 
