@@ -80,7 +80,14 @@ int compare_address(const string& x, const string& y);
 // Return true if C is a leading zero character
 inline bool is_leading_zero(char c)
 {
-    return c == '0' || c == 'x' || c == 'X' || isspace(c);
+    return c == '0' || c == 'x' || c == 'X' || c == 'H' || c == '\'' 
+	|| isspace(c);
+}
+
+// Return true if C is a trailing zero character
+inline bool is_trailing_zero(char c)
+{
+    return c == 'h' || c == 'H' || isspace(c);
 }
 
 #endif // _DDD_CodeCache_h

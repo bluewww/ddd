@@ -78,6 +78,11 @@ int compare_address(const string& x, const string& y)
     unsigned int lx = x.length() - px;
     unsigned int ly = y.length() - py;
 
+    while (lx > 0 && is_trailing_zero(x[px + lx - 1]))
+	lx--;
+    while (ly > 0 && is_trailing_zero(y[py + ly - 1]))
+	ly--;
+
     int ret = lx - ly;
     for (unsigned i = 0; ret == 0 && i < lx; i++)
 	ret = xdigit(x[px + i]) - xdigit(y[py + i]);
