@@ -482,11 +482,14 @@ int TTYAgent::setupParentCommunication()
     _outputfp = _inputfp;
     _errorfp  = NULL;
     
+#if 0
+    // lee@champion.tcs.co.jp (Lee Hounshell) removed this code:
     // Set line buffered mode
 #if !defined(__osf__) && defined(HAVE_SETVBUF) && defined(_IONBF)
     setvbuf(_outputfp, NULL, _IONBF, BUFSIZ);
 #elif defined(__osf__) || defined(HAVE_SETBUF)
     setbuf(_outputfp, NULL);
+#endif
 #endif
 
     return 0;

@@ -245,7 +245,20 @@ void LiterateAgent::outputReady(AsyncAgent *c)
 
 void LiterateAgent::inputReady(AsyncAgent *c)
 {
-    ptr_cast(LiterateAgent, c)->readAndDispatchInput();
+    // lee@champion.tcs.co.jp (Lee Hounshell) modified this procedure
+    // from this:
+    // ptr_cast(LiterateAgent, c)->readAndDispatchInput(0);
+
+    bool expectEOF = false;
+    char data[1024];
+    char *datap = data;
+    LiterateAgent *leeLA = ptr_cast(LiterateAgent, c);
+    int length = leeLA->readInput(datap);
+    if (length > 0)
+	leeLA->dispatch(Input, datap, length);
+    else if (!expectEOF && length == 0 
+	     && leeLA->inputfp() != 0 && feof(leeLA->inputfp()))
+	leeLA->inputEOF();
 }
 
 void LiterateAgent::errorReady(AsyncAgent *c)
