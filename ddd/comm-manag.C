@@ -1086,9 +1086,12 @@ void send_gdb_command(string cmd, Widget origin,
 	if (var != "")
 	{
 	    string value = assignment_value(gdbValue(var));
-	    cmd_data->assign_arg   = var;
-	    cmd_data->undo_command = gdb->assign_command(var, value);
-	    cmd_data->undo_is_exec = true;
+	    if (value != NO_GDB_ANSWER)
+	    {
+		cmd_data->assign_arg   = var;
+		cmd_data->undo_command = gdb->assign_command(var, value);
+		cmd_data->undo_is_exec = true;
+	    }
 	}
     }
     else if (is_lookup_cmd(cmd))
