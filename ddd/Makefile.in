@@ -683,6 +683,7 @@ IMAGE_WIDTH = 600
 ## Libraries and object files
 # General-purpose utilities: strings, regexps, run-type type info...
 BASE_OBJECTS = \
+	basename.$(OBJEXT)   \
 	compare.$(OBJEXT)    \
 	cook.$(OBJEXT)       \
 	cwd.$(OBJEXT)        \

@@ -205,6 +205,7 @@ char ddd_rcsid[] =
 #include "XErrorB.h"
 #include "args.h"
 #include "assert.h"
+#include "basename.h"
 #include "bool.h"
 #include "buttons.h"
 #include "charsets.h"
@@ -1921,7 +1922,7 @@ int main(int argc, char *argv[])
 		    while ((argv[i][j] = argv[i][j + 1]))
 			j++;
 			
-		    session_id = (char *)SourceView::basename(argv[i]);
+		    session_id = basename(argv[i]);
 		    session_value.addr = session_id;
 		    session_value.size = strlen(session_id) + 1;
 		    XrmPutResource(&dddinit, Nsession, XtRString, 
@@ -1955,7 +1956,7 @@ int main(int argc, char *argv[])
 
     // Handle `--version', `--help', etc.  We do this here, since we
     // might want to use them even without X access.
-    setup_show(dddinit, (char *)SourceView::basename(argv[0]), gdb_name);
+    setup_show(dddinit, basename(argv[0]), gdb_name);
 
     // From this point on, we'll be running under X.
 

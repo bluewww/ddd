@@ -62,6 +62,7 @@ char session_rcsid[] =
 #include "SourceView.h"
 #include "charsets.h"
 #include "Command.h"
+#include "basename.h"
 #include "comm-manag.h"
 #include "disp-read.h"
 #include "ddd.h"
@@ -819,7 +820,7 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 	if (info.file != NO_GDB_ANSWER)
 	    name = info.file;
 
-	name = SourceView::basename(name);
+	name = basename(name);
     }
     else
     {

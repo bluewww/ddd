@@ -93,6 +93,7 @@ char SourceView_rcsid[] =
 #include "TimeOut.h"
 #include "UndoBuffer.h"
 #include "assert.h"
+#include "basename.h"
 #include "buttons.h"
 #include "charsets.h"
 #include "cmdtty.h"
@@ -1534,21 +1535,6 @@ string SourceView::full_path(string file)
 	file = file.before(int(file.length() - 1));
 
     return file;
-}
-
-// Return the basename of FILE.  We don't use the default ::basename(),
-// due to conflicts with the decl in <libiberty.h>.
-const char *SourceView::basename(const char *name)
-{
-    const char *base = name;
-
-    while (*name)
-    {
-	if (*name++ == '/')
-	    base = name;
-    }
-
-    return base;
 }
 
 bool SourceView::file_matches(const string& file1, const string& file2)

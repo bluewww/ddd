@@ -35,20 +35,8 @@ char uniquify_rcsid[] =
 
 #include "uniquify.h"
 #include "SmartC.h"
+#include "basename.h"
 #include "bool.h"
-
-static const char *file_basename(const char *name, char sep)
-{
-    const char *base = name;
-
-    while (*name)
-    {
-	if (*name++ == sep)
-	    base = name;
-    }
-
-    return base;
-}
 
 // FULL_PATH is /X/Y/Z/NAME; expand NAME to Z/NAME.
 static bool expand_label(string& name, const string& full_path, char sep)
@@ -86,7 +74,7 @@ extern void uniquify(StringArray& files, StringArray& labels, char sep)
     labels = empty;
     int i;
     for (i = 0; i < files.size(); i++)
-	labels += file_basename(files[i], sep);
+	labels += basename(files[i], sep);
 
     // While there are any duplicate labels, add the directory names
     i = 0;

@@ -40,6 +40,7 @@ char java_rcsid[] =
 #include "SourceView.h"
 #include "StatArray.h"
 #include "assert.h"
+#include "basename.h"
 #include "cook.h"
 #include "ddd.h"
 #include "filetype.h"
@@ -61,24 +62,6 @@ char java_rcsid[] =
 //-----------------------------------------------------------------------------
 // Helpers
 //-----------------------------------------------------------------------------
-
-// Don't rely on libiberty basename() because we don't want to depend
-// on libiberty include files
-static const char *file_basename(const char *name)
-{
-    const char *base = name;
-
-    while (*name)
-    {
-	if (*name++ == '/')
-	    base = name;
-    }
-
-    return base;
-}
-
-#define basename file_basename
-
 
 static bool is_archive(const string& loc)
 {

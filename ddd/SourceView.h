@@ -917,7 +917,6 @@ public:
 
     // Helpers
     static string full_path(string file);
-    static const char *basename(const char *);
 
     // Edit breakpoint properties.
     static void edit_breakpoint_properties(int bp_nr);
