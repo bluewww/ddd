@@ -177,4 +177,12 @@ Volunteers for fixing these and other bugs are welcome!
 041. Starting DDD iconified under vtwm causes trouble with group
      iconification.
 
-042. (Insert your bug here)
+042. jcrupi@mystech.com (John Crupi) states:
+     After I rerun ddd after modifing a source file, ddd does not
+     pull the new file.  I have caching turned off.
+
+043. vickery@babbage.cs.qc.edu (Christopher Vickery) states:
+     The display() operation generates a segmentation fault if the variable
+     to be displayed is an uninitialized pointer.
+
+044. (Insert your bug here)

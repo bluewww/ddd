@@ -54,7 +54,16 @@ Reported by:  dmitzel@everest.hitc.com (Danny J. Mitzel) and
     workaround is to configure DDD to run without Athena widgets
     (i.e. in `config.h', undefine `HAVE_ATHENA_WIDGETS' and remove the
     -lXaw flag from the `Makefile' linking command).
- 
+
+
+X11R4
+=====
+
+Reported by:  mlj@gensym.com (Magnus Ljungberg)
+
+    You may need to prohibit the use of the _XEditResCheckMessages()
+    function by entering a line saying '#undef HAVE_X11_XMU_EDITRES_H' in
+    `ddd.C'.
     
     
   

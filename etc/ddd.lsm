@@ -1,5 +1,5 @@
 $Id$
-DDD description for the Linux software map
+DDD descriptions for the Linux software map
 
 Begin3
 Title:          ddd
@@ -29,6 +29,45 @@ Alternate-site: ftp.funet.fi /pub/OS/Linux/devel/debuggers
                 950kB ddd-1.1.tar.gz                (Source)
                 2 MB  ddd-1.1-i486-unknown-linux.gz (Linux binary)
 Original-site:  ftp.ips.cs.tu-bs.de /pub/local/softech/ddd/
-Platform:       GDB (4.13 or later preferred)
+Platform:       Building DDD: C++ compiler (GCC 2.6.3 preferred),
+                OSF/Motif library.
+                Running DDD: GDB (4.13 or later preferred).
 Copying-policy: GPL
 End
+
+Begin3
+Title:          ddd
+Version:        1.2
+Entered-date:   May 21, 1995
+Description:    The Data Display Debugger (DDD) is a novel graphical user
+                interface to GDB, the popular UNIX debugger.  Besides
+                ``usual'' features such as viewing source texts and
+                breakpoints, DDD provides a *graphical data display*,
+                where data structures are displayed as graphs.  Complex
+                data structures can be explored incrementally and
+                interactively. Other features include: hypertext source
+                navigation and lookup; GDB command-line interface with
+                full editing, history, and completion capabilities;
+                breakpoint, backtrace, and history editors; optional
+                program execution in terminal emulator window; debugging
+                on remote host; on-line manual; interactive help on the
+                OSF/Motif user interface.
+Keywords:       ddd, GUI, debugger, visualization
+Author:         luetke@ips.cs.tu-bs.de (Dorothea Luetkehaus)
+                zeller@ips.cs.tu-bs.de (Andreas Zeller)
+Maintained-by:  ddd@ips.cs.tu-bs.de (DDD Maintainers)
+Primary-site:   sunsite.unc.edu /pub/Linux/devel/debuggers
+                900kB ddd-1.2.tar.gz                (Source)
+                2 MB  ddd-1.1-i486-unknown-linux.gz (Linux binary)
+Alternate-site: ftp.funet.fi /pub/OS/Linux/devel/debuggers
+                900kB ddd-1.2.tar.gz                (Source)
+                2 MB  ddd-1.1-i486-unknown-linux.gz (Linux binary)
+Original-site:  ftp.ips.cs.tu-bs.de /pub/local/softech/ddd/
+Platform:       Building DDD: C++ compiler (GCC 2.6.3 preferred),
+                OSF/Motif library.
+                Running DDD: GDB (4.13 or later preferred).
+Copying-policy: GPL
+End
+
+Send submissions for comp.os.linux.announce to: linux-announce@news.ornl.gov
+PLEASE remember Keywords: and a short description of the software.

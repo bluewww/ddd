@@ -1,10 +1,10 @@
-DDD 1.1 is available
+DDD 1.2 is available
 ====================
 
-    Release 1.1 of the Data Display Debugger (DDD), a graphical
+    Release 1.2 of the Data Display Debugger (DDD), a graphical
     front-end for GDB and DBX debuggers, is now available by anonymous
     FTP from `ftp.ips.cs.tu-bs.de` [134.169.32.1] in the file
-    `/pub/local/softech/ddd/ddd-1.1.tar.gz' (0.9 MB).  Diffs from
+    `/pub/local/softech/ddd/ddd-1.2.tar.gz' (0.9 MB).  Diffs from
     earlier versions are in `/pub/local/softech/ddd/diffs/`.  Binaries
     for various architectures are in `/pub/local/softech/ddd/bin/`.
     Please try a closer FTP site first; see below for a list.
@@ -13,29 +13,31 @@ DDD 1.1 is available
 DDD News
 ========
 
-    Never trust a ``dot-oh'' release - DDD 1.0 had two serious bugs
-    that caused DDD to crash upon various occasions, often after a few
-    interactions.
+    DDD 1.2 is again a bug fix release.  Many minor bugs have been
+    fixed; see the `ChangeLog' file for details.
 
-    Under certain circumstances and on many architectures, the
-    hourglass cursor routines could corrupt the stack at a random
-    point and thus throw a time bomb into DDD, making DDD fail at
-    unpredictable (and unrepeatable) places.  This bug has been fixed;
-    some other minor bugs were fixed, too.  See the `ChangeLog' file
-    for details.  Some bugs still remain; especially, DDD still won't
-    run on SGI machines.
+    Thanks to all who sent in bug reports and suggestions.
 
-    Our sincere apologies to all who got and tried to compile and run
-    a defective DDD.  Thanks to all who sent in bug reports and helped
-    us track this bug down.
+    Changes to DDD 1.1:
+    - DDD source code should now be ANSI/ISO C++ conformant - all code
+      specific to GCC or libg++ has been adapted.  DDD now also
+      compiles using other C++ compilers than GCC (Sun's CC 4.0 works
+      fine; AT&T Cfront 3.0 has trouble with some inline functions).
+    - DDD should now run correctly on SGI/IRIX machines.
+    - Interrupting processes via the Interrupt button now works
+      correctly on Solaris, HP-UX, and other systems.
+    - Improved support for GDB artificial arrays.
+    - The GDB command window has improved control character support.
+      Tabs, Carriage returns, Backspaces and so on are processed
+      correctly.  Unprintable characters are also handled.
+    - There is an option to suppress X warnings.  This may be useful
+      for people annoyed by tons of Motif Keysym warnings.
+    - We have started to compile a FAQ list to reduce our daily mail
+      load.  See the file `FAQ' for details.
 
-    User visible changes to DDD 1.0:
-    - C++ References and VTables are fully supported.
-    - The source popup menu no longer changes the source selection.
-
-    NOTE: As we receive lots of request for DDD binaries from people
-    who lack the requirements for building DDD, we encourage everyone
-    to share her or his DDD executable with others.  See below for
+    As building DDD is still a major challenge for some users, we
+    encourage everyone to share her/his binaries with others.  See the
+    file ftp.ips.cs.tu-bs.de:/pub/local/softech/ddd/bin/README for
     details.
 
 
@@ -80,16 +82,13 @@ Summary of DDD
 Requirements
 ============
 
-    To build a complete DDD system from sources, you need:
+    To build a complete DDD from sources, you need:
 
        * The GNU C++ compiler (GCC/G++), version 2.6.3, and a matching
 	 C++ I/O library (libg++, libstdc++, or libiostream).
 
-	 GCC version 2.6.0, 2.6.1, and 2.6.2 have been reported to
-	 compile DDD, but the resulting executable may fail due to
-	 bugs in these GCC versions.  Earlier GCC versions have been
-         reported to fail.  No one has tried yet to compile DDD
-         using a C++ compiler other than GCC.
+         Some other C++ compilers have been reported to compile DDD as
+         well, such as Sun CC 4.0.  Cfront 3.0 does not compile DDD.
 
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
@@ -102,9 +101,6 @@ Requirements
          Athena Widget library (release 5 or later).  Having the
          Athena Widget library is convenient for supporting
          two-dimensional scrollbars and the `editres' protocol.
-
-    (As an alternative to building DDD, you may also get a DDD binary;
-    see below for a list.)
 
     To run DDD, you need a GDB debugger (version 4 is required; best
     results are achieved with 4.13 or later).  Using GDB, you can
@@ -127,6 +123,9 @@ More Information
     Send a mail to `ddd-users-request@ips.cs.tu-bs.de' for more
     information.
 
+    Some people and organizations offer support services for DDD.
+    See the file `SERVICE' in the DDD distribution for details.
+
     Send suggestions and bug reports for DDD to `ddd-bugs@ips.cs.tu-bs.de'.
 
 
@@ -134,7 +133,7 @@ More Information
 DDD source FTP sites
 ====================
 
-    The DDD source package `ddd-1.1.tar.gz' will soon be at these FTP
+    The DDD source package `ddd-1.2.tar.gz' will soon be at these FTP
     sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
     ftp.ips has a slow network connection.
 
@@ -156,7 +155,6 @@ Europe
     ftp.ibp.fr[132.227.60.2]:/pub/X11/contrib/utilities/
     ftp.germany.eu.net[192.76.144.75]:/pub/X11/XConsortium/contrib/utilities/
     ftp.uni-paderborn.de[131.234.2.32]:/pub/X11/contrib/utilities/
-    ftp.th-darmstadt.de[130.83.47.112]:/pub/X11/contrib/utilities/
     ftp.luth.se[130.240.18.2]:/pub/X11/contrib/utilities/
     ftp.sunet.se[130.238.127.3]:/pub/X11/contrib/utilities/
     ftp.eunet.ch[146.228.10.16]:/archive/software/X/utilities/
