@@ -599,7 +599,6 @@ static MMDesc command_menu[] =
 static Widget stack_w;
 static Widget registers_w;
 static Widget threads_w;
-static Widget infos_w;
 
 static MMDesc stack_menu[] =
 {
@@ -609,9 +608,6 @@ static MMDesc stack_menu[] =
       NULL, &registers_w },
     { "threads",    MMPush,  { SourceView::ViewThreadsCB },
       NULL, &threads_w },
-    MMSep,
-    { "infos",      MMPush,  { dddPopupInfosCB },
-      NULL, &infos_w },
     MMSep,
     { "up",         MMPush,  { gdbCommandCB, "up" }},
     { "down",       MMPush,  { gdbCommandCB, "down" }},
@@ -881,11 +877,13 @@ static Widget info_args_w      = 0;
 static Widget dump_w           = 0;
 static Widget l_w              = 0;
 static Widget detect_aliases_w = 0;
+static Widget infos_w          = 0;
 
 static MMDesc data_menu[] = 
 {
     { "displays",   MMPush,    { DataDisp::EditDisplaysCB }},
     MMSep,
+    { "infos",      MMPush,    { dddPopupInfosCB }, NULL, &infos_w },
     { "l",           MMToggle | MMUnmanaged, { graphToggleLocalsCB },
       NULL, &l_w },
     { "dump",        MMToggle | MMUnmanaged, { graphToggleLocalsCB },
@@ -2750,7 +2748,7 @@ static void BlinkCB(XtPointer client_data, XtIntervalId *id)
     assert(*id == blink_timer);
     blink_timer = 0;
 
-    Boolean set = Boolean(client_data);
+    bool set = int(client_data);
     XtVaSetValues(led_w, XmNfillOnSelect, set, NULL);
     XFlush(XtDisplay(led_w));
     XmUpdateDisplay(led_w);
@@ -2759,7 +2757,7 @@ static void BlinkCB(XtPointer client_data, XtIntervalId *id)
     {
 	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
 				      app_data.busy_blink_rate, BlinkCB,
-				      XtPointer(!set));
+				      XtPointer(int(!set)));
 	blink_timer_called = time((time_t *)0);
     }
 }
@@ -2789,13 +2787,13 @@ static void blink(bool set)
 
 	// Remove timer and re-activate it again
 	XtRemoveTimeOut(blink_timer);
-	BlinkCB(XtPointer(blinker_active), &blink_timer);
+	BlinkCB(XtPointer(int(blinker_active)), &blink_timer);
     }
     else
     {
 	// Start blinking if active
 	if (blink_timer == 0 && blinker_active)
-	    BlinkCB(XtPointer(True), &blink_timer);
+	    BlinkCB(XtPointer(int(true)), &blink_timer);
     }
 }
 
