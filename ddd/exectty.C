@@ -381,9 +381,13 @@ static void redirect_process(string& command,
     string args;
     get_args(command, base, args);
 
-    static string empty;
-    args.gsub(gdb_redirection, empty);
-    read_leading_blanks(args);
+    if (gdb_redirection != "")
+    {
+	static string empty;
+	args.gsub(" " + gdb_redirection, empty);
+	strip_final_blanks(args);
+	read_leading_blanks(args);
+    }
 
     gdb_redirection = "";
     if (!args.contains("<"))
@@ -483,7 +487,9 @@ static void redirect_process(string& command,
 	    new_args = gdb_redirection + " " + args;
     }
 
-    gdb_out_ignore = gdb_redirection;
+    if (gdb_redirection != "")
+	gdb_out_ignore = " " + gdb_redirection;
+
     command = base + " " + new_args;
 }
 
@@ -500,8 +506,9 @@ static void unredirect_process(string& command,
 	if (args.contains(gdb_redirection) && gdb->type() == GDB)
 	{
 	    static string empty;
-	    args.gsub(gdb_redirection, empty);
+	    args.gsub(" " + gdb_redirection, empty);
 	    strip_final_blanks(args);
+	    read_leading_blanks(args);
 	    string reply = gdb_question("set args " + args);
 	    if (reply != "")
 		post_gdb_message(reply, origin);
