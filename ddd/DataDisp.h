@@ -93,6 +93,8 @@ class DataDisp {
     static void toggleDetailCB          (Widget, XtPointer, XtPointer);
     static void toggleRotateCB          (Widget, XtPointer, XtPointer);
     static void toggleDisableCB         (Widget, XtPointer, XtPointer);
+    static void rotateCB                (Widget, XtPointer, XtPointer);
+    static void rotateAllCB             (Widget, XtPointer, XtPointer);
     static void newCB                   (Widget, XtPointer, XtPointer);
     static void enableCB                (Widget, XtPointer, XtPointer);
     static void disableCB               (Widget, XtPointer, XtPointer);
@@ -175,6 +177,8 @@ class DataDisp {
     static Widget create_display_dialog(Widget parent, String name,
 				      class NewDisplayInfo& info);
 
+    static void toggle_rotate(DispValue *dv, bool all = false);
+
 
     //-----------------------------------------------------------------------
     // Actions
@@ -206,6 +210,7 @@ class DataDisp {
     static MMDesc display_area[];
     static MMDesc detail_menu[];
     static MMDesc shortcut_menu[];
+    static MMDesc rotate_menu[];
 
     static const int DataDisp::shortcut_items;
 

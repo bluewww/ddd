@@ -194,6 +194,14 @@ MMDesc DataDisp::shortcut_popup1[] = SHORTCUT_MENU;
 // The sub-menu in the `New Display' item.
 MMDesc DataDisp::shortcut_popup2[] = SHORTCUT_MENU;
 
+struct RotateItms { enum Itms {RotateAll}; };
+
+MMDesc DataDisp::rotate_menu[] =
+{
+    {"rotateAll",     MMPush | MMInsensitive, {DataDisp::rotateAllCB}},
+    MMEnd
+};
+
 struct PopupItms { enum Itms {Dereference, New, Sep1, Detail, Rotate, Set,
 			      Sep2, Delete }; };
 
@@ -203,7 +211,7 @@ MMDesc DataDisp::node_popup[] =
     {"new",           MMMenu,   MMNoCB, DataDisp::shortcut_popup2, },
     MMSep,
     {"detail",        MMPush,   {DataDisp::toggleDetailCB, XtPointer(-1)}},
-    {"rotate",        MMPush,   {DataDisp::toggleRotateCB}},
+    {"rotate",        MMPush,   {DataDisp::rotateCB}},
     {"set",           MMPush,   {DataDisp::setCB}},
     MMSep,
     {"delete",        MMPush,   {DataDisp::deleteCB}},
@@ -218,7 +226,8 @@ MMDesc DataDisp::graph_cmd_area[] =
     {"detail",        MMPush | MMInsensitive, {DataDisp::toggleDetailCB,
 					       XtPointer(-1) }, 
                                                DataDisp::detail_menu },
-    {"rotate",        MMPush | MMInsensitive, {DataDisp::toggleRotateCB}},
+    {"rotate",        MMPush | MMInsensitive, {DataDisp::rotateCB},
+                                               DataDisp::rotate_menu },
     {"new",           MMPush,                 {DataDisp::dependentCB},
                                                DataDisp::shortcut_menu },
     {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
@@ -586,7 +595,22 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 }
 
 
-void DataDisp::toggleRotateCB(Widget w, XtPointer, XtPointer)
+void DataDisp::toggle_rotate(DispValue *dv, bool all)
+{
+    if (dv == 0)
+	return;
+
+    if (dv->horizontal_aligned())
+	dv->align_vertical();
+    else
+	dv->align_horizontal();
+
+    if (all)
+	for (int i = 0; i < dv->nchildren(); i++)
+	    toggle_rotate(dv->get_child(i), all);
+}
+
+void DataDisp::rotateCB(Widget w, XtPointer, XtPointer)
 {
     set_last_origin(w);
 
@@ -595,10 +619,22 @@ void DataDisp::toggleRotateCB(Widget w, XtPointer, XtPointer)
     if (disp_node_arg == 0 || disp_value_arg == 0)
 	return;
 
-    if (disp_value_arg->horizontal_aligned())
-	disp_value_arg->align_vertical();
-    else
-	disp_value_arg->align_horizontal();
+    toggle_rotate(disp_value_arg, false);
+
+    disp_node_arg->refresh();
+    refresh_graph_edit();
+}
+
+void DataDisp::rotateAllCB(Widget w, XtPointer, XtPointer)
+{
+    set_last_origin(w);
+
+    DispNode *disp_node_arg   = selected_node();
+    DispValue *disp_value_arg = selected_value();
+    if (disp_node_arg == 0 || disp_value_arg == 0)
+	return;
+
+    toggle_rotate(disp_value_arg, true);
 
     disp_node_arg->refresh();
     refresh_graph_edit();
@@ -1246,7 +1282,7 @@ void DataDisp::graph_detailAct (Widget w, XEvent *,
 
 void DataDisp::graph_rotateAct (Widget w, XEvent*, String*, Cardinal*)
 {
-    toggleRotateCB(w, 0, 0);
+    rotateCB(w, 0, 0);
 }
 
 void DataDisp::graph_dependentAct (Widget w, XEvent*, String*, Cardinal*)
@@ -1592,6 +1628,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(node_popup[PopupItms::Rotate].widget,
 		  rotate_ok);
     set_sensitive(graph_cmd_area[CmdItms::Rotate].widget,
+		  rotate_ok);
+    set_sensitive(rotate_menu[RotateItms::RotateAll].widget,
 		  rotate_ok);
 
     // Show/Hide Detail
