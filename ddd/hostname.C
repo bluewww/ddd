@@ -38,26 +38,23 @@ char hostname_rcsid[] =
 
 extern "C" {
 // Get hostname.
-// We prefer uname() on gethostname() since uname() is POSIX-defined.
-// Also, Sullivan N. Beck <sbeck@cise.ufl.edu> states that Solaris 2.6
-// has trouble with the gethostname() decl below.  Note that if uname()
-// is available, gethostname() is usually provided as a compatibility
-// function calling... guess what? uname().
-#if HAVE_UNAME
-#if HAVE_SYS_UTSNAME_H
-#include <sys/utsname.h>
-#endif
-#if !HAVE_UNAME_DECL
-    int uname(struct utsname *name);
-#endif
-#elif HAVE_GETHOSTNAME
+// We prefer gethostname() on uname() since <sys/utsname.h> makes
+// trouble on some systems.
+#if HAVE_GETHOSTNAME
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
 #if !HAVE_GETHOSTNAME_DECL
     int gethostname(char *name, size_t size);
 #endif // !HAVE_GETHOSTNAME_DECL
-#endif // HAVE_GETHOSTNAME
+#elif HAVE_UNAME
+#if HAVE_SYS_UTSNAME_H
+#include <sys/utsname.h>
+#endif
+#if !HAVE_UNAME_DECL
+    int uname(struct utsname *name);
+#endif
+#endif // HAVE_UNAME
 
 
 // Get host aliases.
@@ -86,19 +83,19 @@ char *hostname()
 
     bool okay = false;
 
-#if HAVE_UNAME
+#if HAVE_GETHOSTNAME
+    if (!okay && gethostname(buffer, BUFSIZ) == 0)
+    {
+	okay = true;
+    }
+#elif HAVE_UNAME
     struct utsname un;
     if (!okay && uname(&un) >= 0)
     {
 	strcpy(buffer, un.nodename);
 	okay = true;
     }
-#elif HAVE_GETHOSTNAME
-    if (!okay && gethostname(buffer, BUFSIZ) == 0)
-    {
-	okay = true;
-    }
-#endif // HAVE_GETHOSTNAME
+#endif
 
     if (!okay)
     {
