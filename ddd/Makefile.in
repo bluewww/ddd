@@ -400,7 +400,6 @@ SLEEP = sleep
 
 # The fig2dev command.  (fig2dev)
 FIG2DEV = fig2dev
-# FIG2DEV = /public/source/graphic2/transfig.3.2.1/fig2dev/fig2dev
 FIG2PS = $(FIG2DEV) -L ps
 
 # Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
