@@ -3980,6 +3980,10 @@ Ddd*node_popup.new.labelString:		New Display
 Ddd*node_popup.new.documentationString: \
 @rm Create a new display dependent on the selected display
 
+Ddd*node_popup.theme.labelString:	Theme
+Ddd*node_popup.theme.documentationString: \
+@rm Select a theme for the selected display
+
 Ddd*node_popup.detail.labelString:	Show Detail
 Ddd*node_popup.detail.documentationString: \
 @rm Show/Hide details of the selected display
@@ -4003,6 +4007,10 @@ Ddd*newMenu.other.documentationString: \
 Ddd*newMenu.edit.labelString:		Edit Menu...
 Ddd*newMenu.edit.documentationString: \
 @rm Edit this menu
+
+Ddd*themeMenu.edit.labelString:		Edit Themes...
+Ddd*themeMenu.edit.documentationString: \
+@rm Edit themes
 
 Ddd*shortcut_popup.other.labelString:	Other...
 Ddd*shortcut_popup.other.documentationString: \

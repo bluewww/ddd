@@ -254,13 +254,65 @@ MMDesc DataDisp::rotate_menu[] =
     MMEnd
 };
 
-struct NodeItms { enum Itms {Dereference, New, Sep1, Detail, Rotate, Set,
-			     Sep2, Delete }; };
+// Number of theme items
+const int DataDisp::theme_items = 20;
+
+MMDesc DataDisp::theme_menu[] =
+{
+    {"t1",  MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(1)  }, 0, 0, 0, 0 },  
+    {"t2",  MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(2)  }, 0, 0, 0, 0 },  
+    {"t3",  MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(3)  }, 0, 0, 0, 0 },  
+    {"t4",  MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(4)  }, 0, 0, 0, 0 },  
+    {"t5",  MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(5)  }, 0, 0, 0, 0 },  
+    {"t6",  MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(6)  }, 0, 0, 0, 0 },  
+    {"t7",  MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(7)  }, 0, 0, 0, 0 },  
+    {"t8",  MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(8)  }, 0, 0, 0, 0 },  
+    {"t9",  MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(9)  }, 0, 0, 0, 0 },  
+    {"t10", MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(10) }, 0, 0, 0, 0 },  
+    {"t11", MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(11) }, 0, 0, 0, 0 },  
+    {"t12", MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(12) }, 0, 0, 0, 0 },  
+    {"t13", MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(13) }, 0, 0, 0, 0 },  
+    {"t14", MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(14) }, 0, 0, 0, 0 },  
+    {"t15", MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(15) }, 0, 0, 0, 0 },  
+    {"t16", MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(16) }, 0, 0, 0, 0 },  
+    {"t17", MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(17) }, 0, 0, 0, 0 },  
+    {"t18", MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(18) }, 0, 0, 0, 0 },  
+    {"t19", MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(19) }, 0, 0, 0, 0 },  
+    {"t20", MMToggle | MMUnmanaged,  
+        { DataDisp::applyCB, XtPointer(20) }, 0, 0, 0, 0 },  
+    MMSep, 
+    {"edit",  MMPush, { dddPopupThemesCB, 0 }, 0, 0, 0, 0},
+    MMEnd
+};
+
+struct NodeItms { enum Itms {Dereference, New, Theme, Sep1, 
+			     Detail, Rotate, Set, Sep2, 
+			     Delete }; };
 
 MMDesc DataDisp::node_popup[] =
 {
     {"dereference",   MMPush,   {DataDisp::dereferenceCB, 0}, 0, 0, 0, 0},
     {"new",           MMMenu,   MMNoCB, DataDisp::shortcut_popup2, 0, 0, 0},
+    {"theme",         MMMenu,   MMNoCB, DataDisp::theme_menu, 0, 0, 0},
     MMSep,
     {"detail",        MMPush,   
      {DataDisp::toggleDetailCB, XtPointer(-1)}, 0, 0, 0, 0},
@@ -269,7 +321,7 @@ MMDesc DataDisp::node_popup[] =
     {"set",           MMPush,   {DataDisp::setCB, 0}, 0, 0, 0, 0},
     MMSep,
     {"delete",        MMPush,   
-     {DataDisp::deleteCB, XtPointer(true)}, 0, 0, 0, 0},
+     {DataDisp::deleteCB, 0}, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -352,7 +404,7 @@ MMDesc DataDisp::display_area[] =
     {"cluster",      MMPush, {DataDisp::clusterSelectedCB, 0}, 0, 0, 0, 0},
     {"uncluster",    MMPush, {DataDisp::unclusterSelectedCB, 0}, 0, 0, 0, 0},
     {"delete",       MMPush | MMHelp, 
-     {DataDisp::deleteCB, XtPointer(true) }, 0, 0, 0, 0},
+     {DataDisp::deleteCB, 0}, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -1004,23 +1056,31 @@ void DataDisp::select_with_all_ancestors(GraphNode *node)
 }
 
 // Upon deletion, select the ancestor and all siblings
-void DataDisp::deleteCB (Widget dialog, XtPointer client_data, XtPointer)
+void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
+			 XtPointer call_data)
 {
     set_last_origin(dialog);
+
+    DispValue *dv = selected_value();
+    DispNode  *dn = selected_node();
+    if (dv != 0 && dv != dn->value())
+    {
+	// Display part to be undisplayed
+	applyCB(dialog, XtPointer("suppress.vsl"), call_data);
+	return;
+    }
 
     IntArray disp_nrs;
     VarArray<GraphNode *> ancestors;
     VarArray<GraphNode *> descendants;
 
-    bool delete_from_display_part = bool((int)(long)client_data);
-
     MapRef ref;
-    for (DispNode* dn = disp_graph->first(ref); 
+    for (dn = disp_graph->first(ref); 
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	DispValue *dv = dn->selected_value();
-	if (selected(dn) && (delete_from_display_part || dv == 0))
+	dv = dn->selected_value();
+	if (selected(dn) && dv == 0)
 	{
 	    disp_nrs += dn->disp_nr();
 

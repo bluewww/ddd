@@ -262,9 +262,10 @@ class DataDisp {
     static MMDesc shortcut_menu[];
     static MMDesc rotate_menu[];
     static MMDesc delete_menu[];
+    static MMDesc theme_menu[];
 
     static const int shortcut_items;
-
+    static const int theme_items;
 
     // Array of shortcut expressions
     static StringArray shortcut_exprs;
