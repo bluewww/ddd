@@ -1468,7 +1468,8 @@ void SourceView::set_source_argCB(Widget text_w,
 	return;
 
     XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
-    if (bool((int)(long)client_data))
+    bool motion = bool((int)(long)client_data);
+    if (motion)
 	selection_click = false;
 
     XmTextPosition startPos, endPos;
@@ -1603,7 +1604,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	// Update breakpoint selection
 	process_breakpoints(last_info_output);
     }
-    else
+    else if (!motion)
     {
 	// Selection from source or code
 	string s;
