@@ -317,7 +317,7 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
 	return;
     }
 
-    StatusDelay delay("Retrieving signal documentation");
+    StatusDelay delay("Retrieving Signal Documentation");
 
     // libc info has one common node for SIGUSR1 and SIGUSR2
     string sigindex = sig;

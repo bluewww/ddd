@@ -5728,7 +5728,7 @@ Ddd*define_command*helpString:		\
 \n\
 DESC(Command, [the name of the @GDB@ command being defined])\n\
 DESC(Definition, [record and edit the command definition])\n\
-DESC(Buttons, [assign buttons to this command])\n\
+DESC(Button, [assign a button to this command])\n\
 \n\
 To define a @GDB@ command, follow these steps:\n\
 ITEM Enter the command name in the LBL(Command) field.\n\
@@ -5737,7 +5737,7 @@ ITEM Now interact with DDD.\n\
    The recorded @GDB@ commands are shown in the @GDB@ console.\n\
 ITEM Click on LBL(End) to stop the recording.\n\
 ITEM Use LBL(Edit @small>>) to edit the command definition.\n\
-ITEM Use LBL(Buttons) to place the new command on a button.\n\
+ITEM Use LBL(Button) to place the new command on a button.\n\
 \n\
 Click on LBL(Apply) to apply the new command.\n\
 Click on LBL(OK) to close this window.
