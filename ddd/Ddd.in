@@ -390,7 +390,7 @@ Ddd*fontList: \
 -*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\
 -*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\
 -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\
--*-symbol-*-*-*-*-90-*-*-*-*-*-*=symbol
+-*-symbol-*-*-*-*-*-90-*-*-*-*-*-*=symbol
 
 ! Fixed-width fonts.  `lucidatypewriter' is the font the DDD developers
 ! prefer; another popular choice is `courier'.  Note that the fonts used in
