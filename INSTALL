@@ -50,9 +50,10 @@ To run DDD, you need:
 
    * An X server.  Without X, DDD does not run.
 
-     If you are running a UNIX system, you certainly have X.  For
-     Windows systems, free X servers are available.  See the DDD FAQ
-     under `http://www.gnu.org/software/ddd/' for useful links.
+     If you are running a UNIX system, you certainly have X.  X
+     servers are also available for other operating systems.  See
+     `http://www.rahul.net/kenton/xsites.html' for a list.
+
 
    * A command-line debugger (the so-called `inferior' debugger).
 
