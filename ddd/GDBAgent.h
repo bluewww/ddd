@@ -166,6 +166,7 @@ private:
     bool _has_make_command;
     bool _has_jump_command;
     bool _has_regs_command;
+    bool _has_watch_command;
     bool _has_named_values;
     bool _has_when_command;
     bool _has_when_semicolon;
@@ -329,6 +330,10 @@ public:
     // True if debugger has `regs' command
     bool has_regs_command() const      { return _has_regs_command; }
     bool has_regs_command(bool val)    { return _has_regs_command = val; }
+
+    // True if debugger has `watch' command
+    bool has_watch_command() const     { return _has_watch_command; }
+    bool has_watch_command(bool val)   { return _has_watch_command = val; }
 
     // True if debugger issues `NAME = VALUE' upon `print' commands
     bool has_named_values() const      { return _has_named_values; }
@@ -500,6 +505,7 @@ public:
     string make_command(string target) const;       // GDB: "make TARGET"
     string jump_command(string pc) const;           // GDB: "jump PC"
     string regs_command(bool all = true) const;	    // GDB: "info registers"
+    string watch_command(string expr) const;	    // GDB: "watch EXPR"
     string kill_command() const;                    // GDB: "kill"
     string enable_command(string bp = "") const;    // GDB: "enable BP"
     string disable_command(string bp = "") const;   // GDB: "disable BP"

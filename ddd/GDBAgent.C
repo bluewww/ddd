@@ -222,6 +222,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_make_command(tp == GDB || tp == DBX),
       _has_jump_command(tp == GDB || tp == DBX || tp == XDB),
       _has_regs_command(tp == GDB),
+      _has_watch_command(tp == GDB || tp == DBX),
       _has_named_values(tp == GDB || tp == DBX || tp == JDB),
       _has_when_command(tp == DBX),
       _has_when_semicolon(tp == DBX),
@@ -288,6 +289,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_make_command(gdb.has_make_command()),
       _has_jump_command(gdb.has_jump_command()),
       _has_regs_command(gdb.has_regs_command()),
+      _has_watch_command(gdb.has_watch_command()),
       _has_named_values(gdb.has_named_values()),
       _has_when_command(gdb.has_when_command()),
       _has_when_semicolon(gdb.has_when_semicolon()),
@@ -1571,6 +1573,33 @@ string GDBAgent::regs_command(bool all) const
 
     return "";			// Never reached
 }
+
+// Watch expressions
+string GDBAgent::watch_command(string expr) const
+{
+    if (!has_watch_command())
+	return "";
+
+    switch (type())
+    {
+    case GDB:
+	return "watch " + expr;
+   
+    case DBX:
+	return "stop " + expr;
+
+    case XDB:
+	// Not available.  (There is the `assertion' concept which is
+	// similar but won't fit into the GUI.)
+	return "";
+
+    case JDB:
+	return "";		// Not available
+    }
+
+    return "";			// Never reached
+}
+
 
 string GDBAgent::kill_command() const
 {
