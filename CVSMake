@@ -24,10 +24,10 @@ sh ./configure "$@"
 # Make DDD Makefiles
 (cd ddd && (make Makefile; make Makefile))
 
-# Create everything included in the distribution.  See the `INSTALL' file
-# for prerequisites.
+# Create everything in the distribution that can be installed.
+# See the `INSTALL' file for prerequisites.
 # If all went well, delete any configuration-dependent files.
-make diststuff && make distclean
+make progstuff && make distclean
 
 echo "$this: setting up DDD from CVS...done."
 echo "$this: Now see the INSTALL file for configuring and building DDD."

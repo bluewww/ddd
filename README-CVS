@@ -54,10 +54,10 @@ To checkout and build DDD from the public CVS archive, follow these steps:
 
    Messages about missing `.in' or `ChangeLog' files can be safely ignored.
 
-   Note: You require several tools to setup the distribution, including
-   LaTeX, PDFLaTeX, netpbm, pbmplus, ...   The `INSTALL' file has a list.
-   If `CVSMake' fails at some point, install the necessary package
-   and simply run `CVSMake' again.
+   Note: You may require special tools to setup the distribution,
+   including `flex', `bison' and `makeinfo'.  If `CVSMake' fails at
+   some point, install the necessary package and simply run `CVSMake'
+   again.
 
    Note: running `CVSMake' takes some time.
 
@@ -65,11 +65,26 @@ To checkout and build DDD from the public CVS archive, follow these steps:
 6. If all went well, you can now re-configure, build, and install DDD
    as described in the `INSTALL' file.  Example commands:
 
-       $ sh ./configure
-       $ make
-       $ make check
+	$ sh ./configure
+	$ make
+	$ make check
 
 
-7. You can always sync with the current development state by using
+7. `CVSMake' and `make', as described above, do not generate formatted
+   documentation (i.e. PDF and HTML files).  It is suggested that you
+   use formatted documentation from the DDD distributions.
 
-       $ cvs update
+   However, you can create formatted documentation from source.  For
+   this, you need several typesetting and graphics tools, such as
+   LaTeX, PDFLaTeX, netpbm, pbmplus, ...  The `INSTALL' file has a list.
+
+   To create formatted documentation from source, type
+
+	$ make diststuff
+
+
+8. You can always sync with the current development state by using
+
+	$ cvs update
+
+   and rebuild DDD using `make'.

@@ -1993,14 +1993,14 @@ PROG_STUFF = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
              vr.h version.h bld.h build.h root.h configinfo.C \
              $(srcdir)/COPYING.gz.C $(srcdir)/NEWS.gz.C \
 	     $(srcdir)/ddd.info.txt.gz.C $(srcdir)/ddd.info \
-             xlibdir.C eps-code.h .gdbinit
+             xlibdir.C eps-code.h .gdbinit $(ICONS)
 
 # Additional files to be included in the distribution.
 DIST_STUFF = ../$(ddd)-$(VERSION)-$(REL).spec \
              $(man_MANS) \
 	     $(docdir)/ddd.ps $(docdir)/ddd.pdf \
 	     $(docdir)/ddd-themes.ps $(docdir)/ddd-themes.pdf \
-	     $(htmldir)/ddd.html $(ICONS)
+	     $(htmldir)/ddd.html
 
 # Let automake know what we need.
 EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
@@ -2022,3 +2022,6 @@ MAINTAINERCLEANFILES = $(PROG_STUFF)
 
 # `make diststuff' creates all files required for a distribution.
 diststuff: $(EXTRA_DIST)
+
+# `make progstuff' creates all files required for building DDD.
+progstuff: $(PROG_STUFF)

@@ -59,14 +59,14 @@ cvsdist: diststuff disttouch distclean \
 	snapshot htmldist picsdist
 
 # Create architecture-independent files in DDD subdirectory.
-.PHONY: diststuff
-diststuff:
+.PHONY: diststuff progstuff
+diststuff progstuff:
 	@cd $(srcdir); \
 	target=$@; \
 	rootme=`pwd`; export rootme; \
 	srcroot=`cd $(srcdir); pwd`; export srcroot; \
 	echo "==> Making $@ in ddd..."; \
-	( cd ./ddd; $(MAKE) diststuff )
+	( cd ./ddd; $(MAKE) $@ )
 
 # Touch `configure' files such that they don't get re-created.
 .PHONY: disttouch
