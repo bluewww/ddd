@@ -760,7 +760,7 @@ dnl Linking dynamically will appear to succeed, but DDD will core on startup.
 dnl (I haven't tried other HPUX versions, so I'd be glad for any feedback.)
 case "$host_os" in
 hpux10.20|hpux11.00|hpux11.11)
-  for file in "/usr/lib/libXm.a /usr/lib/Motif1.2_R6/libXm.a";
+  for file in "/usr/lib/libXm.a" "/usr/lib/Motif1.2_R6/libXm.a";
   do
    if test -f "$file"; then
     XM_LIBS="$file"
