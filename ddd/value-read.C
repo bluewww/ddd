@@ -80,14 +80,14 @@ DispValueType determine_type (string value)
     // XDB issues the struct address before each struct.
     static regex 
 	RXstr_or_cl_begin("(0(0|x)[0-9a-f]+|[(]nil[)])? *"
-			  "([(]|{\n|record\n|RECORD\n|RECORD |OBJECT "
+			  "([(]|{|record\n|RECORD\n|RECORD |OBJECT "
 			  "|struct|class|union).*");
     if (value.matches(RXstr_or_cl_begin))
     {
 	static regex 
-	    RXstr_or_cl_begin_s("([(]|{\n|record\n|RECORD\n|RECORD |OBJECT )");
+	    RXstr_or_cl_begin_s("([(]|{|record\n|RECORD\n|RECORD |OBJECT )");
 	static regex 
-	    RXstr_or_cl_end_s("([)]|}\n|end\n|END\n|END;)");
+	    RXstr_or_cl_end_s("([)]|}|end\n|END\n|END;)");
 
 	// DEC DBX uses `{' for arrays as well as for structs;
 	// likewise, AIX DBX uses `(' for arrays and structs.  To

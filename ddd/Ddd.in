@@ -387,12 +387,12 @@ Ddd*indentAmount: 	8
 ! as these GDB versions do not issue the current PC location when source
 ! code is not available.
 !
-! Technically, the two command `set print asm-demangle on' is
-! not required by DDD, but this is frequently demanded by DDD users...
+! Technically, the two commands `set print repeats 0' and 
+! `set print asm-demangle on' are not required by DDD, but 
+! this is frequently demanded by DDD users...
 Ddd*gdbInitCommands:	\
 set height 0\n\
 set width 0\n\
-set print pretty on\n\
 set print repeats 0\n\
 set verbose off\n\
 set print asm-demangle on\n\
