@@ -85,20 +85,33 @@ bool ArcGraphEdge::center(const BoxPoint& p1, const BoxPoint& p2,
     return true;
 }
 
-
 void ArcGraphEdge::drawLine(Widget w, 
 			    const BoxRegion& exposed, 
+			    const GraphGC& gc) const
+{
+    makeLine(w, exposed, cout, gc);
+}
+
+void ArcGraphEdge::_print(ostream& os,
+			  const GraphGC& gc) const
+{
+    makeLine(0, BoxRegion(), os, gc);
+}
+
+void ArcGraphEdge::makeLine(Widget w,
+			    const BoxRegion& exposed,
+			    ostream& os,
 			    const GraphGC& gc) const
 {
     HintGraphNode   *arc_hint = 0;
     RegionGraphNode *arc_from = 0;
     RegionGraphNode *arc_to   = 0;
 
+    bool make_arc = true;
     if (from()->isHint() && to()->isHint())
     {
 	// Edge between two hints
-	LineGraphEdge::drawLine(w, exposed, gc);
-	return;
+	make_arc = false;
     }
     else if (from()->isHint() && from()->firstTo() != 0)
     {
@@ -110,8 +123,7 @@ void ArcGraphEdge::drawLine(Widget w,
 	    || arc_hint->nextTo(arc_hint->firstTo()) != 0)
 	{
 	    // Bad nodes or hint with multiple edges
-	    LineGraphEdge::drawLine(w, exposed, gc);
-	    return;
+	    make_arc = false;
 	}
     }
     else if (to()->isHint() && to()->firstFrom() != 0)
@@ -124,14 +136,21 @@ void ArcGraphEdge::drawLine(Widget w,
 	    || arc_hint->nextFrom(arc_hint->firstFrom()) != 0)
 	{
 	    // Bad nodes or hint with multiple edges
-	    LineGraphEdge::drawLine(w, exposed, gc);
-	    return;
+	    make_arc = false;
 	}
     }
     else
     {
 	// Edge between two ordinary nodes
-	LineGraphEdge::drawLine(w, exposed, gc);
+	make_arc = false;
+    }
+
+    if (!make_arc)
+    {
+ 	if (w != 0)
+	    LineGraphEdge::drawLine(w, exposed, gc);
+	else
+	    LineGraphEdge::_print(os, gc);
 	return;
     }
 
@@ -162,7 +181,10 @@ void ArcGraphEdge::drawLine(Widget w,
     if (pos_hint <= region_from || pos_hint <= region_to)
     {
 	// Hint within region
-	LineGraphEdge::drawLine(w, exposed, gc);
+ 	if (w != 0)
+	    LineGraphEdge::drawLine(w, exposed, gc);
+	else
+	    LineGraphEdge::_print(os, gc);
 	return;
     }
 
@@ -182,7 +204,10 @@ void ArcGraphEdge::drawLine(Widget w,
     if (!ok)
     {
 	// Nodes form a line
-	LineGraphEdge::drawLine(w, exposed, gc);
+ 	if (w != 0)
+	    LineGraphEdge::drawLine(w, exposed, gc);
+	else
+	    LineGraphEdge::_print(os, gc);
 	return;
     }
 
@@ -216,7 +241,10 @@ void ArcGraphEdge::drawLine(Widget w,
     if (sgn(path_from_hint) * sgn(path_hint_to) == -1)
     {
 	// Hint is not between FROM and TO
-	LineGraphEdge::drawLine(w, exposed, gc);
+ 	if (w != 0)
+	    LineGraphEdge::drawLine(w, exposed, gc);
+	else
+	    LineGraphEdge::_print(os, gc);
 	return;
     }
 
@@ -232,35 +260,83 @@ void ArcGraphEdge::drawLine(Widget w,
 	path  = path_hint_to;
     }
 
-    XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC,
-	     c[X] - int(radius), c[Y] - int(radius),
-	     unsigned(radius) * 2, unsigned(radius) * 2, angle, path);
+    if (w != 0)
+    {
+	XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC,
+		 c[X] - int(radius), c[Y] - int(radius),
+		 unsigned(radius) * 2, unsigned(radius) * 2, angle, path);
+    }
+    else if (gc.printGC->isPostScript())
+    {
+	BoxCoordinate line_width = 1;
+
+	int arc_start  = angle / 64;
+	int arc_extend = path / 64;
+
+	int start, end;
+	if (arc_extend > 0)
+	{
+	    start = (720 - arc_start - arc_extend) % 360;
+	    end   = (720 - arc_start) % 360;
+	}
+	else
+	{
+	    start = (720 - arc_start) % 360;
+	    end   = (720 - arc_start - arc_extend) % 360;
+	}
+
+	os << start << " " << end << " " 
+	   << int(radius) << " " << int(radius) << " "
+	   << c[X] << " " << c[Y] << " " << line_width << " arc*\n";
+    }
+    else
+    {
+	// Cannot print arcs in FIG mode
+	static int warning = 0;
+	if (warning++ == 0)
+	    cerr << "Warning: arc printing is not supported\n";
+
+	LineGraphEdge::_print(os, gc);
+	return;
+    }
 
     if (from()->isHint())
     {
 	// Draw arrow head at POS_TO
 	double alpha = atan2(double(pos_to[Y] - c[Y]),
 			     double(pos_to[X] - c[X]));
-	if (path > 0)
-	    alpha += PI / 2.0;
+
+	if (w != 0)
+	{
+	    if (path > 0)
+		alpha += PI / 2.0;
+	    else
+		alpha -= PI / 2.0;
+
+	    drawArrowHead(w, exposed, gc, pos_to, alpha);
+	}
 	else
-	    alpha -= PI / 2.0;
-	drawArrowHead(w, exposed, gc, pos_to, alpha);
+	{
+	    if (path > 0)
+		alpha -= PI / 2.0;
+	    else
+		alpha += PI / 2.0;
+
+	    os << gc.arrowAngle << " " << gc.arrowLength << " " 
+	       << (360 + int(alpha * 360.0 / (PI * 2.0))) % 360 << " "
+	       << pos_to[X] << " " << pos_to[Y] << " arrowhead*\n";
+	}
     }
 
-    if (to()->isHint())
+    if (to()->isHint() && annotation() != 0)
     {
-	// Draw annotation at hint position
-	if (annotation() != 0)
+	if (w != 0)
+	{
 	    annotation()->draw(w, to()->pos(), exposed, gc);
+	}
+	else
+	{
+	    annotation()->_print(os, to()->pos(), gc);
+	}
     }
-}
-
-void ArcGraphEdge::_print(ostream& os, const GraphGC &gc) const
-{
-    static int warning = 0;
-    if (warning++ == 0)
-	cerr << "Warning: arc printing is not supported\n";
-
-    LineGraphEdge::_print(os, gc);
 }

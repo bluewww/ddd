@@ -55,6 +55,12 @@ protected:
     static bool center(const BoxPoint& p1, const BoxPoint& p2, 
 		       const BoxPoint& p3, double& x, double& y);
 
+    // Joint function for drawing and printing
+    void makeLine(Widget w,
+		  const BoxRegion& exposed,
+		  ostream& os,
+		  const GraphGC& gc) const;
+
 public:
     // Constructor
     ArcGraphEdge(GraphNode *from, GraphNode *to, EdgeAnnotation *ann = 0)

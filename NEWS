@@ -73,7 +73,7 @@ Source exploration
 Printing
 --------
 
-- PostScript printing supports `Self' edges.
+- PostScript output includes arcs.
 
 - The default setting for printing is to print all displays.
 
