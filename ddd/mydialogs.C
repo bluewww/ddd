@@ -46,6 +46,7 @@ char mydialogs_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/SelectioB.h>
 #include <Xm/List.h>
+#include <Xm/Text.h>
 
 // includes von Nora-Zeugs
 #include "assert.h"
@@ -176,9 +177,10 @@ static void freeXmStringTable (XmStringTable xmlist, int list_length)
 }
 
 // Set and select a text string
-void set_string(Widget w, const string& text, Time time = CurrentTime)
+void set_string(Widget w, const string& text, Time time)
 {
     XmTextSetString(w, (String)text);
     XmTextSetInsertionPosition(w, XmTextGetLastPosition(w));
     XmTextSetSelection(w, 0, XmTextGetInsertionPosition(w), time);
 }
+

@@ -66,6 +66,12 @@ void setLabelList (Widget  selectionList,
 #define LIST_CHARSET "tt"
 
 // Set and select a text string
-void set_string(Widget w, const string& text, Time time = CurrentTime);
+void set_string(Widget w, const string& text, Time time);
+
+// For your convenience...
+inline void set_string(Widget w, const string& text)
+{
+    set_string(w, text, XtLastTimestampProcessed(XtDisplay(w)));
+}
 
 #endif
