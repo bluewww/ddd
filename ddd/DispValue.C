@@ -1228,6 +1228,25 @@ int DispValue::nchildren_with_repeats() const
     return sum;
 }
 
+// Return a title for NAME
+string DispValue::make_title(const string& name)
+{
+    if (!is_user_command(name))
+	return name;
+
+    string title = user_command(name);
+    if (title.contains("graph ", 0))
+	title = title.after("graph ");
+    else if (title.contains("info ", 0))
+	title = title.after("info ");
+    else if (title.contains(" "))
+	title = title.before(" ");
+    if (title.length() > 0)
+	title = toupper(title[0]) + title.after(0);
+
+    return title;
+}
+
 void DispValue::plot() const
 {
     int ndim = can_plot();
@@ -1236,18 +1255,7 @@ void DispValue::plot() const
 
     if (plotter() == 0)
     {
-	string title = full_name();
-	if (is_user_command(title))
-	{
-	    title = user_command(title);
-	    if (title.contains("info ", 0))
-		title = title.after("info ");
-	    else if (title.contains(" "))
-		title = title.before(" ");
-	    if (title.length() > 0)
-		title = toupper(title[0]) + title.after(0);
-	}
-
+	string title = make_title(full_name());
 	((DispValue *)this)->_plotter = new_plotter(title, (DispValue *)this);
 	plotter()->addHandler(Died, PlotterDiedHP, (void *)this);
     }

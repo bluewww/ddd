@@ -373,6 +373,9 @@ public:
     // Print plots to FILENAME
     void print_plots(const string& filename, 
 		     const PrintGC& gc = PostScriptPrintGC()) const;
+
+    // Return a title for NAME
+    static string make_title(const string& name);
 };
 
 #endif // _DDD_DispValue_h

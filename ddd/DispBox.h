@@ -90,8 +90,8 @@ public:
     // Set new value to DV.  If DV == 0, make it disabled.
     void set_value (const DispValue *dv, const DispValue *parent = 0);
 
-    // Set title; if TITLE == "", disable it
-    void set_title (int disp_nr, const string& title);
+    // Set title to NAME; if NAME == "", disable it
+    void set_title(int disp_nr, string name);
 
     bool have_title() const { return title_box != 0; }
 
