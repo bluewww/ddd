@@ -54,7 +54,14 @@ ICE_FIND_ATHENA
 fi
 dnl
 dnl
+dnl
 dnl Not much to do here.  Just configure the sub-directories...
+dnl
+# Avoid calling config.guess again.  In libiberty, this destroys dummy.c.
+case "$ac_configure_args" in
+*--host*) ;;
+*) ac_configure_args="$ac_configure_args --host=$host";;
+esac
 dnl
 AC_CONFIG_SUBDIRS(libiberty librx termcap ddd)
 dnl
