@@ -584,10 +584,13 @@ void PosBuffer::filter (string& answer)
 			}
 		    }
 
-		    if (already_read != PosComplete && answer.contains(':'))
+		    // Check for trailing `:' in last line
+		    index = answer.index('\n', -1) + 1;
+		    if (already_read != PosComplete 
+			&& answer.index(':', index) >= 0)
 		    {
-			answer_buffer = answer;
-			answer = "";
+			answer_buffer = answer.from(index);
+			answer.from(index) = "";
 			already_read = PosPart;
 		    }
 		}
