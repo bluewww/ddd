@@ -920,9 +920,7 @@ dnl
 AC_DEFUN(ICE_CXX_ARRAY_OPERATOR_NEW,
 [
 AC_REQUIRE([AC_PROG_CXX])
-changequote(,)dnl
-AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports overloaded new[])
-changequote([,])dnl
+AC_MSG_CHECKING([whether the C++ compiler (${CXX}) supports overloaded new])
 AC_CACHE_VAL(ice_cv_have_array_operator_new,
 [
 AC_LANG_SAVE
@@ -949,9 +947,7 @@ dnl
 AC_DEFUN(ICE_STREAMPOS,
 [
 AC_REQUIRE([AC_PROG_CXX])
-changequote(,)dnl
-AC_MSG_CHECKING(for streampos)
-changequote([,])dnl
+AC_MSG_CHECKING([for streampos])
 AC_CACHE_VAL(ice_cv_have_streampos,
 [
 AC_LANG_SAVE
@@ -976,9 +972,7 @@ dnl
 AC_DEFUN(ICE_STD_STREAMPOS,
 [
 AC_REQUIRE([AC_PROG_CXX])
-changequote(,)dnl
-AC_MSG_CHECKING(for std::streampos)
-changequote([,])dnl
+AC_MSG_CHECKING([for std::streampos])
 AC_CACHE_VAL(ice_cv_have_std_streampos,
 [
 AC_LANG_SAVE
@@ -1004,9 +998,7 @@ dnl
 AC_DEFUN(ICE_IOSTATE,
 [
 AC_REQUIRE([AC_PROG_CXX])
-changequote(,)dnl
-AC_MSG_CHECKING(for ios::iostate)
-changequote([,])dnl
+AC_MSG_CHECKING([for ios::iostate])
 AC_CACHE_VAL(ice_cv_have_iostate,
 [
 AC_LANG_SAVE
@@ -1035,9 +1027,7 @@ dnl
 AC_DEFUN(ICE_CXX_PLACEMENT_NEW,
 [
 AC_REQUIRE([AC_PROG_CXX])
-changequote(,)dnl
-AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports placement new)
-changequote([,])dnl
+AC_MSG_CHECKING([whether the C++ compiler (${CXX}) supports placement new])
 AC_CACHE_VAL(ice_cv_have_placement_new,
 [
 AC_LANG_SAVE
@@ -1513,14 +1503,15 @@ AC_CACHE_VAL(ice_cv_cxx_include_dir,
 cat > conftest.cc << EOF
 #include <iostream.h>
 EOF
-changequote(,)dnl
 $CXXCPP $DEFS conftest.cc > conftest.ii 2>&5
 if test $? != 0; then
 AC_MSG_ERROR(${CXXCPP} could not find iostream.h)
 else
 ice_file=`grep '^# 1' conftest.ii | grep iostream.h | \
 	head -1 | sed 's/^.*"\(.*\)".*$/\1/'`
+changequote(,)dnl
 ice_cv_cxx_include_dir=`echo $ice_file | sed 's%/[^/][^/]*$%%'`
+changequote([,])dnl
 fi
 if test "$ice_cv_cxx_include_dir" = ""; then
 ice_cv_cxx_include_dir="$prefix/include"
@@ -1534,7 +1525,6 @@ fi
 done
 done
 fi
-changequote([,])dnl
 rm -f conftest.cc conftest.ii
 ])
 CXX_INCLUDE_DIR=$ice_cv_cxx_include_dir
