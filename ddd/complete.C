@@ -152,7 +152,7 @@ static void completion_done(const CompletionInfo& info)
 	    XmTextFieldGetLastPosition(info.widget);
 	XmTextFieldSetInsertionPosition(info.widget, last_pos);
 	XmTextFieldShowPosition(info.widget, last_pos);
-	XmTextFieldSetEditable(info.widget, true);
+	XmTextFieldSetEditable(info.widget, True);
     }
     else if (XmIsText(info.widget))
     {
@@ -160,10 +160,10 @@ static void completion_done(const CompletionInfo& info)
 	    XmTextGetLastPosition(info.widget);
 	XmTextSetInsertionPosition(info.widget, last_pos);
 	XmTextShowPosition(info.widget, last_pos);
-	XmTextSetEditable(info.widget, true);
+	XmTextSetEditable(info.widget, True);
     }
 
-    XmTextSetEditable(gdb_w, true);
+    XmTextSetEditable(gdb_w, True);
 }
 
 void clear_completion_delay()
@@ -293,10 +293,10 @@ static void complete(Widget w, XEvent *e, const string& input, string cmd)
     }
 
     if (XmIsTextField(w))
-	XmTextFieldSetEditable(w, false);
+	XmTextFieldSetEditable(w, False);
     else if (XmIsText(w))
-	XmTextSetEditable(w, false);
-    XmTextSetEditable(gdb_w, false);
+	XmTextSetEditable(w, False);
+    XmTextSetEditable(gdb_w, False);
     
     gdb_command(complete_cmd, gdb_w, complete_reply, (void *)&info);
 
