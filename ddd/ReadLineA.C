@@ -49,7 +49,7 @@ extern "C" {
 }
 
 #undef rl_callback_handler_install
-extern "C" void rl_callback_handler_install(char *prompt, 
+extern "C" void rl_callback_handler_install(const char *prompt, 
 					    VFunction *lhandler);
 #endif // WITH_READLINE
 
@@ -72,7 +72,7 @@ void ReadLineAgent::readline_handler(char *line)
     }
     else
     {
-	string input = string(line) + "\n";
+	const string input = string(line) + "\n";
 	prompter->dispatch(Input, input.chars(), input.length());
     }
 }
@@ -84,7 +84,7 @@ void ReadLineAgent::prompt(const string& prompt_string)
     {
 	// Prompt using PROMPT_STRING
 	rl_callback_handler_remove();
-	rl_callback_handler_install((char *)prompt_string,
+	rl_callback_handler_install(prompt_string.chars(),
 				    (VFunction *)readline_handler);
 	current_prompter = this;
 	return;
