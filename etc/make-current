@@ -133,8 +133,8 @@ mkdir ddd
 chgrp ddd ddd
 chmod g+s ddd
 
-# Get the DDD development tree out of CVS.
-cvs checkout -P "$@" ddd
+# Get the DDD development tree out of CVS, expanding RCS keywords.
+cvs checkout -kkv -P "$@" ddd
 cd ddd
 
 if $final; then
