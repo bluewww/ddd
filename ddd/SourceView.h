@@ -60,6 +60,7 @@
 #include "MakeMenu.h"
 #include "StringA.h"
 #include "IntIntAA.h"
+#include "TextPosA.h"
 
 // DDD includes
 #include "ArgField.h"
@@ -249,8 +250,9 @@ private:
     static string current_file_name;
     static int    line_count;
     static IntIntArrayAssoc bps_in_line;
-    static XmTextPosition* pos_of_line;
+    static TextPositionArray _pos_of_line;
     static StringArray bp_addresses;
+    static XmTextPosition pos_of_line(int line);
 
     // Return TRUE if breakpoint BP is in current file
     static bool bp_matches(BreakPoint *bp);
@@ -459,4 +461,3 @@ public:
 
 #endif // _DDD_SourceView_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
-

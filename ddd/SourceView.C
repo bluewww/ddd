@@ -294,7 +294,7 @@ Map<int, BreakPoint> SourceView::bp_map;
 string SourceView::current_file_name = "";
 int    SourceView::line_count = 0;
 IntIntArrayAssoc SourceView::bps_in_line;
-XmTextPosition*  SourceView::pos_of_line = 0;
+TextPositionArray SourceView::_pos_of_line;
 StringArray SourceView::bp_addresses;
 Assoc<string, string> SourceView::file_cache;
 Assoc<string, string> SourceView::source_name_cache;
@@ -1254,13 +1254,18 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
     {
 	long length = 0;
 	String indented_text = read_indented(file_name, length, silent);
-	if (indented_text == 0 || length == 0)
-	    return -1;
+	if (indented_text)
+	{
+	    current_source = string(indented_text, length);
+	    XtFree(indented_text);
+	}
+	else
+	{
+	    current_source = "";
+	}
 
-	current_source = string(indented_text, length);
-	XtFree(indented_text);
-
-	file_cache[file_name] = current_source;
+	if (current_source.length() > 0)
+	    file_cache[file_name] = current_source;
 
 	int null_count = current_source.freq('\0');
 	if (null_count > 0 && !silent)
@@ -1271,26 +1276,30 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
     // Setup global parameters
 
     // Number of lines
-    line_count = current_source.freq('\n');
+    line_count   = current_source.freq('\n');
+    _pos_of_line = TextPositionArray(line_count + 2);
+    _pos_of_line += XmTextPosition(0);
+    _pos_of_line += XmTextPosition(0);
 
-    // Line positions
-    if (pos_of_line != 0)
-    {
-	delete[] pos_of_line;
-	pos_of_line = 0;
-    }
-    pos_of_line = new XmTextPosition[line_count + 2];
-    pos_of_line[0] = XmTextPosition(0);
-    pos_of_line[1] = XmTextPosition(0);
-
-    int l = 2;
     for (int i = 0; i < int(current_source.length()) - 1; i++)
 	if (current_source[i] == '\n')
-	    pos_of_line[l++] = XmTextPosition(i + 1);
+	    _pos_of_line += XmTextPosition(i + 1);
 
-    assert(l == line_count + 1);
+    assert(_pos_of_line.size() == line_count + 1);
 
-    return 0;
+    if (current_source.length() == 0)
+	return -1;
+    else
+	return 0;
+}
+
+// Return position of line LINE
+XmTextPosition SourceView::pos_of_line(int line)
+{
+    if (line < 0 || line > line_count || line >= _pos_of_line.size())
+	return 0;
+    else
+	return _pos_of_line[line];
 }
 
 // Clear the file cache
@@ -1366,7 +1375,7 @@ void SourceView::read_file (string file_name,
 
     XmTextPosition initial_pos = 0;
     if (initial_line > 0 && initial_line <= line_count)
-	initial_pos = pos_of_line[initial_line] + bp_indent_amount;
+	initial_pos = pos_of_line(initial_line) + bp_indent_amount;
 
     SetInsertionPosition(source_text_w, initial_pos, true);
 
@@ -1465,12 +1474,12 @@ void SourceView::refresh_source_bp_disp()
 	if (line_nr < 0 || line_nr > line_count)
 	    continue;
 
-	string s(current_source.at(int(pos_of_line[line_nr]), 
+	string s(current_source.at(int(pos_of_line(line_nr)), 
 				   bp_indent_amount - 1));
 
 	XmTextReplace (source_text_w,
-		       pos_of_line[line_nr],
-		       pos_of_line[line_nr] + bp_indent_amount - 1,
+		       pos_of_line(line_nr),
+		       pos_of_line(line_nr) + bp_indent_amount - 1,
 		       (String)s);
     }
 
@@ -1498,7 +1507,7 @@ void SourceView::refresh_source_bp_disp()
 	    if (line_nr < 0 || line_nr > line_count)
 		continue;
 
-	    XmTextPosition pos = pos_of_line[line_nr];
+	    XmTextPosition pos = pos_of_line(line_nr);
 
 	    string insert_string = "";
 
@@ -1664,7 +1673,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 	while (!found && line_count >= line_nr)
 	{
 	    next_line_pos = (line_count >= line_nr + 1) ?
-		pos_of_line[line_nr + 1] :
+		pos_of_line(line_nr + 1) :
 		XmTextGetLastPosition (text_w) + 1;
 
 	    if (pos < (line_pos + bp_indent_amount - 1))
@@ -2187,7 +2196,7 @@ void SourceView::_show_execution_position(string file, int line, bool silent)
     if (line < 1 || line > line_count)
 	return;
 
-    XmTextPosition pos = pos_of_line[line];
+    XmTextPosition pos = pos_of_line(line);
     SetInsertionPosition(source_text_w, pos + bp_indent_amount, false);
 
     // Mark current line
@@ -2248,7 +2257,7 @@ void SourceView::show_position (string position, bool silent)
     // Fenster scrollt an Position
     if (line > 0 && line <= line_count)
     {
-	XmTextPosition pos = pos_of_line[line];
+	XmTextPosition pos = pos_of_line(line);
 	SetInsertionPosition(source_text_w, pos + bp_indent_amount, true);
 
 	last_pos = pos;
@@ -2736,7 +2745,7 @@ void SourceView::goto_entry(string entry)
 			       last_end_secondary_highlight,
 			       XmHIGHLIGHT_NORMAL);
 
-	    last_start_secondary_highlight = pos_of_line[line];
+	    last_start_secondary_highlight = pos_of_line(line);
 	    last_end_secondary_highlight   = last_start_secondary_highlight;
 	    if (current_source != "")
 	    {
@@ -4246,13 +4255,13 @@ string SourceView::get_line(string position)
 
     // Sanity check: make sure the line # isn't too big
     line = min(line, line_count);
-    if (line == 0)
+    if (line < 1)
 	return "";
 
     if (!file_matches(file_name, current_file_name))
 	read_file(file_name, line);
 
-    XmTextPosition start = pos_of_line[line] + bp_indent_amount;
+    XmTextPosition start = pos_of_line(line) + bp_indent_amount;
     XmTextPosition end   = current_source.index('\n', start);
     if (end < 0)
 	end = current_source.length();
@@ -4593,11 +4602,11 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 
     if (display_glyphs
 	&& base_matches(current_file_name, last_execution_file)
-	&& pos_of_line != 0
+	&& line_count > 0
 	&& last_execution_line > 0
 	&& last_execution_line <= line_count)
     {
-	pos = pos_of_line[last_execution_line];
+	pos = pos_of_line(last_execution_line);
 	pos_displayed = XmTextPosToXY(source_text_w, pos, &x, &y);
     }
 
@@ -4675,7 +4684,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	int& source_p                = plain[0];
 	int& source_g                = grey[0];
 
-	VarIntArray source_stops;
+	TextPositionArray source_stops;
 
 	// Map breakpoint glyphs
 	// clog << "Source breakpoints:\n";
@@ -4688,11 +4697,11 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	    bp->source_glyph() = 0;
 
 	    if (bp_matches(bp)
-		&& pos_of_line != 0
+		&& line_count > 0
 		&& bp->line_nr() > 0
 		&& bp->line_nr() <= line_count)
 	    {
-		pos = pos_of_line[bp->line_nr()];
+		pos = pos_of_line(bp->line_nr());
 		pos_displayed = 
 		    XmTextPosToXY(source_text_w, pos, &x, &y);
 		if (pos_displayed)
@@ -4731,7 +4740,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	int& code_p                = plain[1];
 	int& code_g                = grey[1];
 
-	VarIntArray code_stops;
+	TextPositionArray code_stops;
 
 	// Map breakpoint glyphs
 	// clog << "Code breakpoints:\n";
