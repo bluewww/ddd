@@ -67,6 +67,9 @@ to manipulate them directly.
 To quickly dereference pointers in the data display,
 double-click on them.
 
+The difference between LBL(OK) and LBL(Apply) is that LBL(OK) pops
+down the dialog, while LBL(Apply) does not.
+
 
 # Intermediate tips.
 
@@ -85,6 +88,9 @@ LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Data is scrolled).
 To limit the number of array elements in a data display, select
 LBL(Edit) | LBL(GDB Settings) and set LBL(Limit on string chars or
 array elements to print).
+
+If DDD cannot find a source, don't use LBL(File) | LBL(Open Source).
+Instead, set the @GDB@ source path via LBL(Edit) | LBL(@GDB@ Settings).
 
 To see the EMPH(actual) type of a C++ object in GDB, enable
 LBL(Set printing of object's derived type based on vtable info)
@@ -109,6 +115,10 @@ To get a global idea of what a process or program does or is doing,
 use a system call tracer, like strace, truss, or trace.
 BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
 
+To have GDB start your program automatically upon startup,
+put the following lines in your FILE(.gdbinit) file:
+CODE(        break main)  - or some other initial function
+CODE(        run       )  - possibly giving arguments here
 
 # Advanced tips.
 
