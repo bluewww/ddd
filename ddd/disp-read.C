@@ -80,7 +80,7 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
 
 bool is_nop_cmd(const string& cmd)
 {
-    static regex RXnop_cmd("[ \t]*(echo|print|help|show|info)([ \t]+.*)?");
+    static regex RXnop_cmd("[ \t]*(echo|help|show|info)([ \t]+.*)?");
 
     return cmd.matches(RXnop_cmd);
 }
