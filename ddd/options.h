@@ -48,6 +48,7 @@ extern void sourceToggleUseSourcePathCB    (Widget, XtPointer, XtPointer);
 extern void sourceToggleDisplayGlyphsCB    (Widget, XtPointer, XtPointer);
 extern void sourceToggleDisassembleCB      (Widget, XtPointer, XtPointer);
 extern void sourceToggleAllRegistersCB     (Widget, XtPointer, XtPointer);
+extern void sourceSetTabWidthCB            (Widget, XtPointer, XtPointer);
 
 extern void graphToggleShowGridCB         (Widget, XtPointer, XtPointer);
 extern void graphToggleShowHintsCB        (Widget, XtPointer, XtPointer);

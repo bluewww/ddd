@@ -50,6 +50,7 @@ char options_rcsid[] =
 
 #include <Xm/Xm.h>
 #include <Xm/ToggleB.h>
+#include <Xm/Scale.h>
 
 #include <stdio.h>
 #include <fstream.h>
@@ -178,6 +179,18 @@ void sourceToggleAllRegistersCB (Widget, XtPointer, XtPointer call_data)
 	set_status("Showing all registers.");
     else
 	set_status("Showing integer registers only.");
+
+    update_options();
+    options_changed = true;
+}
+
+void sourceSetTabWidthCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
+
+    app_data.tab_width = info->value;
+
+    set_status("Tab width set to " + itostring(app_data.tab_width) + ".");
 
     update_options();
     options_changed = true;
@@ -540,12 +553,10 @@ inline string bool_app_value(const string& name, bool value)
     return DDD_CLASS_NAME "*" + name + ": " + bool_value(value);
 }
 
-#if 0
 inline string int_app_value(const string& name, int value)
 {
     return DDD_CLASS_NAME "*" + name + ": " + itostring(value);
 }
-#endif
 
 string string_app_value(const string& name, string value)
 {
@@ -665,6 +676,8 @@ void save_options(Widget origin)
     // Some settable top-level defaults
     os << bool_app_value(XtNfindWordsOnly,
 			 app_data.find_words_only) << "\n";
+    os << bool_app_value(XtNtabWidth,
+			 app_data.tab_width) << "\n";
     os << bool_app_value(XtNcacheSourceFiles,
 			 app_data.cache_source_files) << "\n";
     os << bool_app_value(XtNcacheMachineCode,

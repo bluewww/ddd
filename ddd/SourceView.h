@@ -237,14 +237,17 @@ private:
     static Widget all_registers_w;            // Display all registers
     static bool register_dialog_popped_up;    // True if registers are visible
 
-    static bool display_glyphs;	         // True if glyphs are to be displayed
-    static bool disassemble;	         // True if code is to be disassembled
-    static bool all_registers;	         // True if all registers are shown
-    static bool at_lowest_frame;              // True if at lowest frame
+    static bool display_glyphs;	              // Display glyphs?
+    static bool disassemble;	              // Disassemble code?
+    static bool all_registers;	              // Show all registers?
+    static bool at_lowest_frame;              // Are we at lowest frame?
 
     // The indenting amounts
     static int  bp_indent_amount;   // Source
     static int  code_indent_amount; // Machine code
+
+    // Tab width
+    static int tab_width;
 
     // The breakpoint map
     static BreakPointMap bp_map;
@@ -445,6 +448,9 @@ public:
 
     // Set whether all registers are to be displayed
     static void set_all_registers(bool value);
+
+    // Set the tab width
+    static void set_tab_width(int width);
 
     // Return `clear ARG' command
     static string clear_command(string arg);

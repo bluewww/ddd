@@ -292,7 +292,8 @@ bool SourceView::disassemble            = true;
 bool SourceView::all_registers          = false;
 
 int  SourceView::bp_indent_amount   = 0;
-int  SourceView::code_indent_amount = 4;
+int  SourceView::code_indent_amount = 8;
+int  SourceView::tab_width          = 8;
 
 SourceOrigin SourceView::current_origin = ORIGIN_NONE;
 
@@ -385,6 +386,46 @@ string& SourceView::current_text(Widget w)
     else
 	return current_source;
 }
+
+
+//-----------------------------------------------------------------------
+// Tabulator stuff
+//-----------------------------------------------------------------------
+
+// Replace first '\t' by filling up spaces until POS is reached
+static void tabto(string& s, int pos)
+{
+    for (int i = 0; unsigned(i) < s.length() && i < pos; i++)
+    {
+	if (s[i] == '\t')
+	{
+	    int offset = pos - i;
+	    s(i, 1) = replicate(' ', offset);
+	    return;
+	}
+    }
+}
+    
+// Replace all '\t' by filling up spaces until multiple of TAB_WIDTH is reached
+static void untabify(string& s, int tab_width = 8)
+{
+    int column = 0;
+    for (int i = 0; unsigned(i) < s.length(); i++)
+    {
+	if (s[i] == '\t')
+	{
+	    int spaces = tab_width - (column % tab_width);
+	    s(i, 1) = replicate(' ', spaces);
+	    i += spaces - 1;
+	}
+
+	if (s[i] == '\n')
+	    column = 0;
+	else
+	    column++;
+    }
+}
+
 
 //-----------------------------------------------------------------------
 // Methods
@@ -1326,6 +1367,9 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 			 "source_binary_warning", source_text_w);
     }
 
+    // Untabify current source, using the current tab width
+    untabify(current_source, tab_width);
+
     // Setup global parameters
 
     // Number of lines
@@ -1379,6 +1423,29 @@ void SourceView::reload()
     StatusDelay delay("Reloading " + quote(file));
 
     read_file(file, atoi(line), true);
+}
+
+// Change tab width
+void SourceView::set_tab_width (int width)
+{
+    if (width <= 0)
+	return;
+
+    if (tab_width != width)
+    {
+	tab_width = width;
+
+	if (current_file_name != "")
+	{
+	    string file = file_of_cursor();
+	    string line = file.after(':');
+	    file        = file.before(':');
+
+	    StatusDelay delay("Reformatting " + quote(file));
+
+	    read_file(file, atoi(line), false);
+	}
+    }
 }
 
 void SourceView::read_file (string file_name, 
@@ -4255,34 +4322,6 @@ bool SourceView::register_required() { return register_dialog_popped_up; }
 //-----------------------------------------------------------------------------
 // Machine stuff
 //----------------------------------------------------------------------------
-
-// Replace first '\t' by filling up spaces until POS is reached
-static void tabto(string& s, int pos)
-{
-    for (int i = 0; unsigned(i) < s.length() && i < pos; i++)
-    {
-	if (s[i] == '\t')
-	{
-	    int offset = pos - i;
-	    s(i, 1) = replicate(' ', offset);
-	    return;
-	}
-    }
-}
-    
-// Replace all '\t' by filling up spaces until multiple of OFFSET is reached
-static void untabify(string& s, int offset = 8)
-{
-    for (int i = 0; unsigned(i) < s.length(); i++)
-    {
-	if (s[i] == '\t')
-	{
-	    int spaces = offset - i % offset;
-	    s(i, 1) = replicate(' ', spaces);
-	    i += spaces - 1;
-	}
-    }
-}
 
 void SourceView::process_register(string& register_output)
 {

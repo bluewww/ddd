@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "5 December 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "6 December 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -1774,6 +1774,9 @@ If `\fBtrue\fR', X warnings are suppressed.  This is
 sometimes useful for executables that were built on a machine with a
 different X or Motif configuration.  By default, this is
 `\fBfalse\fR'.
+.TP
+.B "tabWidth (\fPclass\fB TabWidth)"
+The tab width used in the source window (default: \fB8\fR)
 .TP
 .B "useSourcePath (\fPclass\fB UseSourcePath)"
 If this is `\fBfalse\fR' (default), the inferior debugger refers to

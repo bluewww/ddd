@@ -369,9 +369,12 @@ Ddd*Forward.labelString:   Fwd
 Ddd*maxNameLength:	20
 
 
-! Number of columns used for the code line number display.
+! Number of columns used for line numbers in the source window
 ! Should be a multiple of 8, to avoid confusion with TAB characters.
 Ddd*indentAmount:	8
+
+! Tab width in source texts
+Ddd*tabWidth:	        8
 
 
 ! The GDB initialization commands.  DDD depends on these settings,
@@ -2104,6 +2107,12 @@ Ddd*preferences*cacheMachineCode.labelString:	 \
 Cache machine code
 Ddd*preferences*useSourcePath.labelString:	 \
 Refer to sources by full path name
+Ddd*preferences*tabWidth.orientation:	 XmHORIZONTAL
+Ddd*preferences*tabWidth.minimum:	 1
+Ddd*preferences*tabWidth.maximum:	 32
+Ddd*preferences*tabWidth.showValue:	 true
+Ddd*preferences*tabWidth.titleString:	 Tab Width
+
 
 
 Ddd*preferences*data*helpString:	\

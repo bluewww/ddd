@@ -194,6 +194,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNtabWidth,
+	XtCTabWidth,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, tab_width),
+	XmRImmediate,
+	XtPointer(8)
+    },
+
+    {
 	XtNconsoleButtons,
 	XtCConsoleButtons,
 	XtRString,

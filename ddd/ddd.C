@@ -627,6 +627,7 @@ static Widget display_glyphs_w;
 static Widget cache_source_files_w;
 static Widget cache_machine_code_w;
 static Widget use_source_path_w;
+static Widget tab_width_w;
 
 static MMDesc source_preferences_menu[] = 
 {
@@ -638,6 +639,8 @@ static MMDesc source_preferences_menu[] =
       NULL, &cache_machine_code_w },
     { "useSourcePath", MMToggle, { sourceToggleUseSourcePathCB }, 
       NULL, &use_source_path_w },
+    { "tabWidth", MMScale, { sourceSetTabWidthCB },
+      NULL, &tab_width_w },
     MMEnd
 };
 
@@ -1863,6 +1866,8 @@ void update_options()
 		  XmNset, app_data.use_source_path, NULL);
     XtVaSetValues(display_glyphs_w,
 		  XmNset, app_data.display_glyphs, NULL);
+    XtVaSetValues(tab_width_w,
+		  XmNvalue, app_data.tab_width, NULL);
 
     XtVaSetValues(suppress_warnings_w,
 		  XmNset, app_data.suppress_warnings, NULL);
@@ -1958,6 +1963,7 @@ void update_options()
     source_view->set_display_glyphs(app_data.display_glyphs);
     source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
+    source_view->set_tab_width(app_data.tab_width);
 
     EnableTips(app_data.button_tips);
 }
