@@ -3923,7 +3923,7 @@ void SourceView::process_frame (string& frame_output)
 	    break;
 
 	case XDB:
-	    frame_nr = frame_output.after(" = ");
+	    frame_nr = frame_output.after(" = ", -1);
 	    break;
 	}
 
