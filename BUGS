@@ -54,9 +54,6 @@ Volunteers for fixing these and other bugs are welcome!
         in the gdb window ddd seems to lock up very often.
     [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
 
-118 SGI CC compiles DDD, but the resulting executable soon dies with a
-    segmentation fault.  [Use GCC instead.  -AZ]
-
 126 Flashing data window.  Thomas Liefke
     <liefke@cdc.Informatik.TH-Darmstadt.DE> says: 
 
@@ -204,6 +201,7 @@ Volunteers for fixing these and other bugs are welcome!
     sometimes is really big and occupies most of the screen, thus
     obliterating most of the other windows.  This happens with
     OSF/Motif Version 1.2.4 on alpha-dec-osf4.0.
+    [Should be fixed in 2.99.1  -AZ]
 
 228 Chip Atkinson <chip@XiG.com> and Bernie Borenstein
     <bernieb@deltanet.com> state that after enabling `ungrab mouse
