@@ -1820,7 +1820,8 @@ EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
 # Make sure all this is built before DDD.
 ddd.$(OBJEXT): $(PROG_STUFF)
 
-CLEANFILES = build.h ddd.?? ddd.??s ddd.ps ddd.pdf *.tmp
+CLEANFILES = build.h ddd.?? ddd.??s ddd.ps ddd.pdf *.tmp ddd.html ddd.info* \
+	$(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
 DISTCLEANFILES = host.h
 
 diststuff: $(EXTRA_DIST)
