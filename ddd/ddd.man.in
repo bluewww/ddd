@@ -240,9 +240,12 @@ moving the mouse pointer on it and leave it there.  After a second, a
 small window (called \fIbutton tip\fR) pops up, giving a hint on the
 button's meaning.  The button tip disappears as soon as you move the
 mouse pointer to another item.
-.PP
-The status line also displays information about the button pointed at;
-it also describes the current menu item.
+.\"
+.SS "The Status Line"
+.\"
+The status line also displays information about the currently selected
+item.  By clicking on the status line, you can redisplay the most
+recent messages.
 .\"
 .SS "Context-Sensitive Help"
 .\"

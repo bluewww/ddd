@@ -544,6 +544,12 @@ Ddd*clearDocDelay:		1000
 Ddd*clearTipDelay:		50
 
 
+! Should the status line be placed at the bottom?
+Ddd*statusAtBottom:		true
+
+! Number of status messages to be kept in status history
+Ddd*statusHistorySize:		10
+
 ! Do we want to see the debugger status (blinking while busy)?
 Ddd*blinkWhileBusy:		true
 
@@ -1775,21 +1781,21 @@ Ddd*optionsMenu.separateExecWindow.mnemonic:		E
 Ddd*optionsMenu*separateExecWindow.accelerator:		Ctrl<Key>X
 Ddd*optionsMenu*separateExecWindow.acceleratorText:	Ctrl+X
 Ddd*optionsMenu.separateExecWindow.documentationString:\
-@rm Run debugged program in separate execution window or not
+@rm Toggle execution of debugged program in separate window
 
 Ddd*optionsMenu.findWordsOnly.labelString:		Find Words Only
 Ddd*optionsMenu.findWordsOnly.mnemonic:			W
 Ddd*optionsMenu*findWordsOnly.accelerator:		Ctrl<Key>W
 Ddd*optionsMenu*findWordsOnly.acceleratorText:		Ctrl+W
 Ddd*optionsMenu.findWordsOnly.documentationString:\
-@rm Find complete words or arbitrary occurrences
+@rm Switch between finding complete words and finding arbitrary occurrences
 
 Ddd*optionsMenu.disassemble.labelString:		Display Machine Code
 Ddd*optionsMenu.disassemble.mnemonic:			M
 Ddd*optionsMenu*disassemble.accelerator:		Ctrl<Key>M
 Ddd*optionsMenu*disassemble.acceleratorText:		Ctrl+M
 Ddd*optionsMenu.disassemble.documentationString:\
-@rm Show or hide assembler window
+@rm Toggle display of machine code window
 
 Ddd*optionsMenu.saveOptions.labelString:		Save Options
 Ddd*optionsMenu.saveOptions.mnemonic:			O
@@ -2908,10 +2914,11 @@ Ddd*status_form*helpString: \
 \n\
 It shows the last message of the inferior debugger\n\
 as well as short @DDD@ messages.\n\
+To view previous messages, just click on the status line.\n\
 \n\
 The debugger status indicator on the right side\n\
 blinks while the inferior debugger is busy.\n\
-If this annoys you, disable it by clicking on it.
+You can disable it by clicking on the indicator.
 
 Ddd*status_form*borderWidth:		0
 
@@ -2921,12 +2928,17 @@ Ddd*status_form.status.marginHeight:	0
 Ddd*status_form.status.marginTop:	0
 Ddd*status_form.status.marginBottom:	0
 Ddd*status_form.status.labelString:	Ready.
+Ddd*status_form.status.highlightThickness: 0
+Ddd*status_form.status.shadowThickness: 0
+Ddd*status_form.status.spacing:		0
+Ddd*status_form.status.fillOnArm:	false
 
 Ddd*status_form.led.marginWidth:	0
 Ddd*status_form.led.marginHeight:	0
 Ddd*status_form.led.marginTop:		0
 Ddd*status_form.led.marginBottom:	0
 Ddd*status_form.led.spacing:		0
+Ddd*status_form.led.highlightThickness: 0
 Ddd*status_form.led.labelString:
 Ddd*status_form.led.visibleWhenOff:	false
 Ddd*status_form.led.selectColor:	dark green
@@ -2935,6 +2947,13 @@ Ddd*status_form.led.tipString:	\
 Ddd*status_form.led.documentationString: \
 @rm Debugger status: blinks while inferior debugger is busy \
 (click to disable or enable)
+
+Ddd*status_lines.marginWidth:		0
+Ddd*status_lines.marginHeight:		0
+Ddd*status_lines.borderWidth:		0
+Ddd*status_lines.spacing:		0
+Ddd*history_label.labelString:		\
+@rm No status history.
 
 
 !-----------------------------------------------------------------------------

@@ -194,6 +194,8 @@
 #define XtCUngrabMousePointer    "UngrabMousePointer"
 #define XtNdetectAliases         "detectAliases"
 #define XtCDetectAliases         "DetectAliases"
+#define XtNstatusHistorySize     "statusHistorySize"
+#define XtCStatusHistorySize     "StatusHistorySize"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -282,6 +284,7 @@ struct AppData {
     int     busy_blink_rate;
     Boolean ungrab_mouse_pointer;
     Boolean detect_aliases;
+    int     status_history_size;
     String  dddinit_version;
     String  app_defaults_version;
 };

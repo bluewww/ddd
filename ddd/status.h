@@ -39,15 +39,17 @@
 #include "MString.h"
 #include <X11/Intrinsic.h>
 
-// Show MESSAGE in status window.  If FORCE is true, ensure that
-// the entire message is visible.
-void set_status(string message, bool force = false);
+// Show MESSAGE in status window.
+void set_status(string message);
 
 // Same, but use an MString.
-void set_status_mstring(const MString& text, bool force = false);
+void set_status_mstring(const MString& text);
 
 // Return current contents of status line
 extern const MString& current_status();
+
+// Status history
+extern Widget status_history(Widget parent);
 
 // Buttons and state
 void set_buttons_from_gdb(Widget w, string& text);
@@ -59,6 +61,9 @@ extern bool gdb_keyboard_command;
 
 // True if the next line is to be displayed in the status line
 extern bool show_next_line_in_status;
+
+// Number of messages to keep in status history
+extern int status_history_size;
 
 // This is convenient for setting the status during a function
 class StatusDelay: public Delay {

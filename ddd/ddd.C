@@ -151,6 +151,7 @@ char ddd_rcsid[] =
 #include <Xm/DialogS.h>
 #include <Xm/Form.h>
 #include <Xm/ToggleB.h>
+#include <Xm/PushB.h>
 #include <X11/Shell.h>
 
 #ifdef HAVE_X11_XMU_EDITRES_H
@@ -269,6 +270,10 @@ static void create_status(Widget parent);
 // Status LED
 static void blink(bool set);
 static void ToggleBlinkCB(Widget, XtPointer client_data, XtPointer call_data);
+
+// Status history
+static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
+static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
 
 // Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
@@ -2634,21 +2639,6 @@ static void create_status(Widget parent)
 	verify(XmCreateForm(parent, "status_form", args, arg));
     XtManageChild(status_form);
 
-    // Give some `dummy' status message.  Some Motif versions limit
-    // the size of the status window to the length of the very first
-    // message, so we give some huge string at the beginning.
-    MString msg = rm("Welcome to " DDD_NAME " " DDD_VERSION "!") 
-	+ rm(replicate(' ', 120));
-
-    arg = 0;
-    XtSetArg(args[arg], XmNlabelString,      msg.xmstring()); arg++;
-    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNresizable,        True); arg++;
-    status_w = verify(XmCreateLabel(status_form, "status", args, arg));
-    XtManageChild(status_w);
-
     arg = 0;
     XtSetArg(args[arg], XmNtopAttachment,      XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNbottomAttachment,   XmATTACH_FORM); arg++;
@@ -2660,6 +2650,34 @@ static void create_status(Widget parent)
     XtManageChild(led_w);
 
     XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtPointer(0));
+
+    // Give some `dummy' status message.  Some Motif versions limit
+    // the size of the status window to the length of the very first
+    // message, so we give some huge string at the beginning.
+    MString short_msg = rm("Welcome to " DDD_NAME " " DDD_VERSION "!");
+    MString long_msg = short_msg + rm(replicate(' ', 120));
+
+    arg = 0;
+    XtSetArg(args[arg], XmNlabelString,      long_msg.xmstring()); arg++;
+    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET); arg++;
+    XtSetArg(args[arg], XmNrightWidget,      led_w); arg++;
+    XtSetArg(args[arg], XmNresizable,        True); arg++;
+    status_w = verify(XmCreatePushButton(status_form, "status", args, arg));
+    XtManageChild(status_w);
+
+    // Initialize status history
+    status_history_size = app_data.status_history_size;
+    (void) status_history(parent);
+    set_status("");
+    set_status_mstring(short_msg);
+
+    XtAddCallback(status_w, XmNarmCallback, 
+		  PopupStatusHistoryCB, XtPointer(0));
+    XtAddCallback(status_w, XmNdisarmCallback, 
+		  PopdownStatusHistoryCB, XtPointer(0));
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
@@ -2759,6 +2777,58 @@ static void ToggleBlinkCB(Widget, XtPointer, XtPointer call_data)
 
     // Restart blinker
     blink(blinker_active);
+}
+
+//-----------------------------------------------------------------------------
+// Handle Status History
+//-----------------------------------------------------------------------------
+
+const Dimension y_popup_offset = 5;
+
+static void PopupStatusHistoryCB(Widget w, XtPointer, XtPointer)
+{
+    Widget history = status_history(w);
+
+    Position shell_x, shell_y;
+    XtTranslateCoords(find_shell(status_w), 0, 0, &shell_x, &shell_y);
+
+    Position status_x, status_y;
+    XtTranslateCoords(status_w, 0, 0, &status_x, &status_y);
+
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight;
+    unsigned char unit_type;
+
+    XtQueryGeometry(status_w, NULL, &size);
+    XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
+    Dimension status_height = 
+	XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, size.height, unit_type);
+
+    XtQueryGeometry(history, NULL, &size);
+    XtVaGetValues(history, XmNunitType, &unit_type, NULL);
+    Dimension history_height = 
+	XmConvertUnits(history, XmVERTICAL, XmPIXELS, size.height, unit_type);
+
+    Position x, y;
+    if (app_data.status_at_bottom)
+    {
+	x = shell_x;
+	y = status_y - history_height - y_popup_offset;
+    }
+    else
+    {
+	x = shell_x;
+	y = status_y + status_height + y_popup_offset;
+    }
+
+    XtVaSetValues(history, XmNx, x, XmNy, y, XtPointer(0));
+    XtPopup(history, XtGrabNone);
+}
+
+static void PopdownStatusHistoryCB(Widget w, XtPointer, XtPointer)
+{
+    Widget history = status_history(w);
+    XtPopdown(history);
 }
 
 

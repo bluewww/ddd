@@ -864,6 +864,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNstatusHistorySize,
+	XtCStatusHistorySize,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, status_history_size),
+	XmRImmediate,
+	XtPointer(10)
+    },
+
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,
