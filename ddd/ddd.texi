@@ -2821,8 +2821,8 @@ Lets you click on an item to get help on it.
 @lbindex On item
 Gives you help on this @value{DDD} window.
 
-@item What Now
-@lbindex What Now
+@item What Now?
+@lbindex What Now?
 Gives a hint on what to do next.
 
 @item Tip of the Day
@@ -3212,7 +3212,7 @@ commands.
 
 @item
 If you are totally stuck, try @samp{Help @result{} What Now?} (the
-@samp{What Now} item in the @samp{Help} menu) or press @key{Ctrl+F1}.
+@samp{What Now?} item in the @samp{Help} menu) or press @key{Ctrl+F1}.
 Depending on the current state, @value{DDD} will give you some hints on
 what you can do next.
 @lbindex What Now?
@@ -6152,8 +6152,12 @@ meaningful for PostScript only.
 
 @node Plotting Values
 @section Plotting Values
+@cindex Values, plotting
+@cindex Plotting values
 
-...
+If you have huge amounts of numerical data to examine, a picture often
+says more than a thousand numbers.  Therefore, @value{DDD} allows you to
+draw numerical values in nice 2-D and 3-D plots.
 
 @menu
 * Plotting Arrays::             
@@ -6168,32 +6172,406 @@ meaningful for PostScript only.
 
 @node Plotting Arrays
 @subsection Plotting Arrays
+@cindex Arrays, plotting
+
+Basically, @value{DDD} can plot two types of numerical values:
+
+@itemize @bullet
+@item
+One-dimensional arrays.  These are drawn in a 2-D @var{x}/@var{y} space,
+where @var{x} denotes the array index, and @var{y} the element value.
+
+@item
+Two-dimensional arrays.  These are drawn in a 3-D
+@var{x}/@var{y}/@var{z} space, where @var{x} and @var{y} denote the
+array indexes, and @var{z} the element value.
+@end itemize
+
+To plot a fixed-size array, select its name by clicking @emph{mouse
+button 1} on an occurrence.  The array name is copied to the argument
+field.  By clicking the @samp{Plot} button, a new display is created in
+the data window, followed by a new top-level window containing the value
+plot.
+
+To plot a dynamically sized array, you must use an array slice
+(@pxref{Array Slices}).  In the argument field, enter
+
+@example
+@var{array}[@var{first}]@@@var{nelems}
+@end example
+
+@noindent
+where @var{array} is the name of the array to display, @var{first} is
+the index of the first element, and @var{nelems} is the number of
+elements to display.  Then, click on @samp{Plot} to start the plot.
+
+To plot a value, you can also enter a command at the debugger prompt:
+
+@example
+graph plot @var{expr}
+@end example
+@cmindex graph plot
+
+@noindent
+works like @samp{graph display @var{expr}} (and takes the same
+arguments; @pxref{Creating Single Displays}), but the value is
+additionally shown in the plot window.
+
+Each time the value changes during program execution, the plot is
+updated to reflect the current values.  The plot window remains active
+until you close it (via @samp{File @result{} Close}) or until the
+associated display is deleted.
+
 
 @node Plot Appearance
 @subsection Changing the Plot Appearance
+@cindex Plot appearance
+
+The actual drawing is not done by @value{DDD} itself.  Instead,
+@value{DDD} relies on an external @code{gnuplot} program to create the
+drawing.
+@pindex gnuplot
+
+@value{DDD} adds a menu bar to the Gnuplot plot window that lets you
+influence the appearance of the plot:
+
+@itemize @bullet
+@item
+The @samp{View} menu toggles optional parts of the plot, such as
+border lines or a background grid.
+@lbindex View
+@cindex Grid, in plots
+
+@item
+The @samp{Plot} menu changes the @dfn{plotting style}.  The @samp{3-D
+Lines} option is useful for plotting two-dimensional arrays.
+@lbindex Plot
+@lbindex 3-D Lines
+@cindex Plotting style
+
+@item
+The @samp{Scale} menu allows you to enable logarithmic scaling and to 
+enable or disable the scale tics.
+@lbindex Scale
+@cindex Scales, in plots
+
+@item
+The @samp{Contour} menu adds contour lines to 3-D plots.
+@lbindex Contour
+@cindex Contour lines, in plots
+@end itemize
+
+In a 3-D plot, you can use the scroll bars to change your view position.
+The horizontal scroll bar rotates the plot around the @var{z} axis, that
+is, to the left and right.  The vertical scroll bar rotates the plot
+around the @var{y} axis, that is, up and down.
+@cindex Plot, scrolling
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-plots, 16cm}
+@sp 1
+@end ifnotinfo
+
+You can also resize the plot window as desired.
+
 
 @node Scalars and Composites
 @subsection Plotting Scalars and Composites
+@cindex Scalars, plotting
+
+Besides plotting arrays, @value{DDD} also allows you to plot scalars
+(simple numerical values).  This works just like plotting arrays---you
+select the numerical variable, click on @samp{Plot}, and here comes the
+plot.  However, plotting a scalar is not very exciting.  A plot that
+contains nothing but a scalar simply draws the scalar's value as a
+@var{y} constant---that is, a horizontal line.
+
+So why care about scalars at all?  @value{DDD} allows you to combine
+multiple values into one plot.  The basic idea is: if you want to plot
+something that is neither an array nor a scalar, @value{DDD} takes
+all numerical sub-values it can find and plots them all together in one
+window.  For instance, you can plot all local variables by selecting
+@samp{Data @result{} Display Local Variables}, followed by @samp{Plot}.
+This will create a plot containing all numerical values as found in
+the current local variables.  Likewise, you can plot all numeric
+members contained in a structure by selecting it, followed by
+@samp{Plot}.
+
+If you want more control about what to include in a plot and what not,
+you can use @emph{display clusters} (@pxref{Clustering}).  A common
+scenario is to plot a one-dimensional array together with the current
+index position.  This is done in three steps:
+@cindex Cluster, and plotting
+
+@enumerate
+@item
+Display the array and the index, using @samp{Display}.
+
+@item
+Cluster both displays: select them and choose @samp{Undisp @result{}
+Cluster ()}.
+
+@item
+Plot the cluster by pressing @samp{Plot}.
+@end enumerate
+
+Scalars that are displayed together with arrays can be displayed either
+as vertical lines or horizontal lines.  By default, scalars are plotted
+as horizontal lines.  However, if a scalar is a valid index for an array
+that was previously plotted, it is shown as a vertical line.  You can
+change this initial alignment by selecting the scalar display, followed
+by @samp{Rotate}.
+
 
 @node Plotting Histories
 @subsection Plotting Display Histories
 
+At each program stop, @value{DDD} records the values of all displayed
+variables, such that you can ``undo'' program execution (@pxref{Undoing
+Program Execution}).  These @emph{display histories} can be plotted,
+too.  The menu item @samp{Plot @result{} Plot history of ()} creates a
+plot that shows all previously recorded values of the selected display.
+@cindex Display, plotting the history
+@cindex Value, plotting the history
+@cindex History, plotting
+
+
 @node Printing Plots
 @subsection Printing Plots
+@cindex Plot, printing
+@cindex Printing plots
+
+If you want to print the plot, select @samp{File @result{} Print Plot}.
+This pops up the @value{DDD} printing dialog, set up for printing plots.
+Just as when printing graphs, you have the choice between printing to a
+printer or a file and setting up appropriate options.
+@lbindex Print Plot
+
+The actual printing is also performed by Gnuplot, using the appropriate
+driver.  Please note the following @emph{caveats} related to printing:
+
+@itemize @bullet
+@item
+Creating @samp{FIG} files requires an appropriate driver built into
+Gnuplot.  Your Gnuplot program may not contain such a driver.  In this
+case, you will have to recompile Gnuplot, including the line
+@samp{#define FIG} in the Gnuplot @samp{term.h} file.
+
+@item
+The @samp{Portrait} option generates an @code{EPS} file useful for
+inclusion in other documents.  The @samp{Landscape} option makes
+@value{DDD} print the plot in the size specified in the @samp{Paper
+Size} option; this is useful for printing on a printer.  In
+@samp{Portrait} mode, the @samp{Paper Size} option is ignored.
+@lbindex Portrait
+@lbindex Landscape
+@lbindex Paper Size
+
+@item
+The Gnuplot device drivers for PostScript and X11 each have their own
+set of colors, such that the printed colors may differ from the
+displayed colors.
+
+@item
+The @samp{Selected Only} option is set by default, such that only the
+currently selected plot is printed.  (If you select multiple plots to be
+printed, the respective outputs will all be concatenated, which may not
+be what you desire.)
+@lbindex Selected Only
+@end itemize
+
 
 @node Entering Plotting Commands
 @subsection Entering Plotting Commands
 
+Via @samp{File @result{} Command}, you can enter Gnuplot commands
+directly.  Each command entered at the @samp{gnuplot>} prompt is passed
+to Gnuplot, followed by a Gnuplot @samp{replot} command to update the
+view.  This is useful for advanced Gnuplot tasks.
+@lbindex Command
+
+Here's a simple example.  The Gnuplot command 
+
+@example
+set xrange [@var{xmin}:@var{xmax}]
+@end example
+
+@noindent
+sets the horizontal range that will be displayed to
+@var{xmin}@dots{}@var{xmax}.  To plot only the elements 10 to 20, enter:
+
+@example
+gnuplot> set xrange [10:20]
+@end example
+
+After each command entered, DDD adds a @samp{replot} command, such
+that the plot is updated automatically.
+@cmindex replot
+
+Here's a more complex example.  The following sequence of Gnuplot
+commands saves the plot in @TeX{} format:
+
+@example
+gnuplot> set output "plot.tex" # Set the output filename
+gnuplot> set term latex        # Set the output format
+gnuplot> set term x11          # Show original picture again
+@end example
+@cmindex set output
+@cmindex set term
+
+Due to the implicit @samp{replot} command, the output is automatically
+written to @samp{plot.tex} after the @samp{set term latex} command.
+
+The dialog keeps track of the commands entered; use the arrow keys to
+restore previous commands.  Gnuplot error messages (if any) are also
+shown in the history area.
+
+The interaction between @value{DDD} and Gnuplot is logged in the file
+@file{~/.@value{ddd}/log}.  The @value{DDD} @samp{--trace} option logs
+this interaction on standard output.
+
+
 @node Exporting Plot Data
 @subsection Exporting Plot Data
+@cindex Plot, exporting
+
+If you want some external program to process the plot data (a
+stand-alone Gnuplot program or the @code{xmgr} program, for instance),
+you can save the plot data in a file, using @samp{File @result{} Save
+Data As}.  This pops up a dialog that lets you choose a data file to
+save the plotted data in.
+@lbindex Save Data As
+@pindex xmgr
+
+The generated file starts with a few comment lines.  The actual data
+follows in X/Y or X/Y/Z format.  It is the same file as processed by
+Gnuplot.
+
+@c Exporting plot data is only available if your plot includes exactly
+@c one array.
+
 
 @node Animating Plots
 @subsection Animating Plots
+@cindex Plot, animating
+@cindex Animating plots
+
+If you want to see how your data evolves in time, you can set a
+breakpoint whose command sequence ends in a @samp{cont} command
+(@pxref{Breakpoint Commands}.  Each time this ``continue'' breakpoint is
+reached, the program stops and @value{DDD} updates the displayed values,
+including the plots.  Then, @value{DDD} executes the breakpoint command
+sequence, resuming execution.
+
+This way, you can set a ``continue'' breakpoint at some decisive point
+within an array-processing algorithm and have @value{DDD} display the
+progress graphically.  When your program has stopped for good, you can
+use @samp{Undo} and @samp{Redo} to redisplay and examine previous
+program states.  @xref{Undoing Program Execution}, for details.
+
 
 @node Examining Memory
 @section Examining Memory
+@cindex Examining memory contents
+@cindex Memory, examining
 
-...
+Using GDB or DBX, you can examine memory in any of several formats,
+independently of your program's data types.  The item @samp{Data
+@result{} Examine Memory} pops up a panel where you can choose the
+format to be shown.
+@lbindex Examine Memory
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-examine, 16cm}
+@sp 1
+@end ifnotinfo
+
+In the panel, you can enter
+
+@itemize @bullet
+@item
+a @dfn{repeat count}, a decimal integer that specifies how much memory
+(counting by units) to display
+
+@item
+a @dfn{display format}---one of
+
+@table @samp
+@item octal
+Print as integer in octal
+
+@item hex
+Regard the bits of the value as an integer, and print the integer 
+in hexadecimal.
+
+@item decimal
+Print as integer in signed decimal.
+
+@item unsigned
+Print as integer in unsigned decimal.
+
+@item binary
+Print as integer in binary.
+
+@item float
+Regard the bits of the value as a floating point number and print
+using typical floating point syntax.
+
+@item address
+Print as an address, both absolute in hexadecimal and as an offset
+from the nearest preceding symbol.
+
+@item instruction
+Print as machine instructions.  The unit size is ignored for this
+display format.
+
+@item char
+Regard as an integer and print it as a character constant.
+
+@item string
+Print as null-terminated string.  The unit size is ignored for this
+display format.
+@end table
+
+@item
+a @dfn{unit size}---one of
+
+@table @samp
+@item bytes
+Bytes.
+
+@item halfwords
+Halfwords (two bytes).
+
+@item words
+Words (four bytes).
+
+@item giants
+Giant words (eight bytes).
+@end table
+
+@item
+an @dfn{address}---the starting display address.  The expression need
+not have a pointer value (though it may); it is always interpreted as an
+integer address of a byte of memory.
+@end itemize
+
+There are two ways to examine the values:
+
+@itemize @bullet
+@item
+You can dump the memory in the debugger console (using @samp{Print}).
+If you repeat the resulting @samp{x} command by pressing @key{Return} in
+the debugger console (@pxref{Repeating Commands}), the following area of
+memory is shown.
+
+@item
+You can also display the memory dump in the data window (using
+@samp{Display}).  If you choose to display the values, the values will
+be updated automatically each time the program stop.
+@end itemize
 
 
 @node Machine-Level Debugging
@@ -6245,7 +6623,8 @@ meaningful for PostScript only.
 
 @menu
 * Entering Commands::           
-* Command History::             
+* TTY mode::                    
+* Integrating DDD::             
 * Defining Commands::           
 * Defining Buttons::            
 @end menu
@@ -6254,25 +6633,26 @@ meaningful for PostScript only.
 @section Entering Commands
 
 @menu
-* Debugger Console::            
-* TTY mode::                    
-* Integrating DDD::             
-* Using DDD with GNU Emacs::    
-* Using DDD with XEmacs::       
-* Using DDD with XXGDB::        
+* Command Completion::          
+* Repeating Commands::          
+* Command History::             
 @end menu
 
-@node Debugger Console
-@subsection Entering Commands in the Debugger Console
+@node Command Completion
+@subsection Command Completion
 
-...
+@node Repeating Commands
+@subsection Repeating Commands
+
+@node Command History
+@subsection The Command History
 
 
 @node TTY mode
-@subsection Entering Commands at the TTY
+@section Entering Commands at the TTY
 
 @node Integrating DDD
-@subsection Integrating @value{DDD}
+@section Integrating @value{DDD}
 
 @menu
 * Using DDD with GNU Emacs::    
@@ -6288,10 +6668,6 @@ meaningful for PostScript only.
 
 @node Using DDD with XXGDB
 @subsection Using @value{DDD} with XXGDB
-
-
-@node Command History
-@section The Command History
 
 
 @node Defining Commands
@@ -7676,9 +8052,20 @@ file @@MASK@@ | grep '.*:.*text.*' | cut -d: -f1
 
 ...
 
+
 @defvr Resource pannedGraphEditor (class PannedGraphEditor)
-Whether to use an Athena panner (@samp{on}) or Motif scrollbars
-(@samp{off}, default).
+The control to scroll the graph.  
+
+@itemize @bullet
+@item
+If this is @samp{on}, an Athena panner is used (a kind of
+two-directional scrollbar).
+@item
+If this is @samp{off} (default), two Motif scrollbars are used.
+@end itemize
+
+@xref{DDD Options}, for the @samp{--scrolled-graph-editor} and
+@samp{--panned-graph-editor} options.
 @end defvr
 
 
@@ -7758,26 +8145,6 @@ repetition.
 If some display gets out of scope and this resource is @samp{on}
 (default), @value{DDD} removes it from the data display.  If this is
 @samp{off}, it is simply disabled.
-@end defvr
-
-@defvr Resource pannedGraphEditor (class PannedGraphEditor)
-The control to scroll the graph.  
-
-@itemize @bullet
-@item
-If this is @samp{on}, an Athena panner is used (a kind of
-two-directional scrollbar).
-@item
-If this is @samp{off} (default), two Motif scrollbars are used.
-@end itemize
-
-@xref{DDD Options}, for the @samp{--scrolled-graph-editor} and
-@samp{--panned-graph-editor} options.
-@end defvr
-
-@defvr Resource paperSize (class PaperSize)
-The paper size used for printing, in format @var{width} x @var{height}.
-The default is A4 format, or @samp{210mm x 297mm}.
 @end defvr
 
 @defvr Resource showBaseDisplayTitles (class ShowDisplayTitles)
