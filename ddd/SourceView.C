@@ -830,7 +830,7 @@ void SourceView::clearBP(XtPointer client_data, XtIntervalId *)
     int bp_nr = int(client_data);
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp != 0)
-	gdb_command(delete_command(bp_nr));
+	delete_bp(bp_nr);
 }
 
 // Save last `jump' target for XDB
@@ -1038,7 +1038,7 @@ void SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
     if (!copy)
     {
 	// Delete old breakpoint
-	gdb_command(delete_command(bp_nr));
+	delete_bp(bp_nr);
     }
 }
 
@@ -1072,7 +1072,7 @@ void SourceView::set_bp_cond(int bp_nr, const string& cond, Widget w)
     }
 
     // Delete old breakpoint
-    gdb_command(delete_command(bp_nr));
+    delete_bp(bp_nr);
 }
 
 
@@ -1083,23 +1083,7 @@ void SourceView::bp_popup_deleteCB (Widget w,
 				    XtPointer)
 {
     int bp_nr = *((int *)client_data);
-    gdb_command(delete_command(bp_nr), w);
-}
-
-string SourceView::delete_command(int bp_nr)
-{
-    if (gdb->has_delete_command())
-    {
-	return gdb->delete_command(itostring(bp_nr));
-    }
-    else if (gdb->has_clear_command())
-    {
-	BreakPoint *bp = bp_map.get(bp_nr);
-	if (bp != 0)
-	    return clear_command(bp->pos());
-    }
-
-    return "";			// No way to delete a breakpoint (*sigh*)
+    delete_bp(bp_nr, w);
 }
 
 
@@ -1120,16 +1104,88 @@ void SourceView::bp_popup_disableCB (Widget w,
     }
 }
 
-void SourceView::enable_bp(int nr, Widget w)
+// Convert NRS to a list of numbers
+string SourceView::numbers(IntArray& nrs)
 {
-    if (gdb->has_enable_command())
-	gdb_command(gdb->enable_command(itostring(nr)), w);
+    if (all_bps(nrs))
+	return "";		// In GDB, no arg means `all'
+
+    string cmd = ""; 
+    for (int i = 0; i < nrs.size(); i++)
+    {
+	if (i > 0)
+	    cmd += " ";
+	cmd += itostring(nrs[i]);
+    }
+    return cmd;
 }
 
-void SourceView::disable_bp(int nr, Widget w)
+// Return true if NRS contains all breakpoints and
+// a GDB delete/disable/enable command can be given without args.
+bool SourceView::all_bps(IntArray& nrs)
+{
+    if (gdb->type() != GDB || nrs.size() < 2)
+	return false;
+
+    IntArray work(nrs);
+
+    MapRef ref;
+    BreakPoint *bp = 0;
+    for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    {
+	bool found = false;
+	for (int i = 0; !found && i < work.size(); i++)
+	{
+	    if (bp->number() == work[i])
+		found = true;
+	}
+
+	if (!found)
+	    return false;
+    }
+
+    return true;
+}
+
+void SourceView::enable_bps(IntArray& nrs, Widget w)
+{
+    if (gdb->has_enable_command())
+	gdb_command(gdb->enable_command(numbers(nrs)), w);
+}
+
+void SourceView::disable_bps(IntArray& nrs, Widget w)
 {
     if (gdb->has_disable_command())
-	gdb_command(gdb->disable_command(itostring(nr)), w);
+	gdb_command(gdb->disable_command(numbers(nrs)), w);
+}
+
+void SourceView::delete_bps(IntArray& nrs, Widget w)
+{
+    if (!gdb->has_delete_command())
+    {
+        for (int i = 0; i < nrs.size(); i++)
+	    gdb_command(delete_command(nrs[i]));
+    }
+    else
+    {
+	gdb_command(gdb->delete_command(numbers(nrs)), w);
+    }
+}
+
+string SourceView::delete_command(int bp_nr)
+{
+    if (gdb->has_delete_command())
+    {
+	return gdb->delete_command(itostring(bp_nr));
+    }
+    else if (gdb->has_clear_command())
+    {
+	BreakPoint *bp = bp_map.get(bp_nr);
+	if (bp != 0)
+	    return clear_command(bp->pos());
+    }
+
+    return "";			// No way to delete a breakpoint (*sigh*)
 }
 
 
@@ -3282,7 +3338,8 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
 
     if (lesstif_version <= 1000)
     {
-	// LessTif has trouble with non-editable text windows
+	// LessTif has trouble with non-editable text windows: cursor
+	// movement is inhibited.
 	editable = true;
     }
     XtSetArg(args[arg], XmNeditable, editable); arg++;
@@ -5197,6 +5254,7 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
 
     Arg args[10];
     int arg = 0;
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     Widget dialog = 
 	verify(XmCreatePromptDialog(source_text_w,
 				    "breakpoint_properties",
@@ -5257,6 +5315,7 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
 
     update_properties_panel(info);
 
+    XtAddCallback(dialog, XmNokCallback,      UnmanageThisCB, dialog);
     XtAddCallback(dialog, XmNhelpCallback,    ImmediateHelpCB, NULL);
     XtAddCallback(dialog, XmNunmapCallback,   DestroyThisCB, XtParent(dialog));
     XtAddCallback(dialog, XmNdestroyCallback, DeleteInfoCB,  XtPointer(info));
@@ -5362,19 +5421,7 @@ void SourceView::DeleteBreakpointCB(Widget, XtPointer client_data, XtPointer)
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
-    if (!gdb->has_delete_command())
-    {
-        for (int i = 0; i < info->nrs.size(); i++)
-	    gdb_command(delete_command(info->nrs[i]));
-    }
-    else
-    {
-	string cmd = gdb->delete_command();
-
-	for (int i = 0; i < info->nrs.size(); i++)
-	    cmd += " " + itostring(info->nrs[i]);
-	gdb_command(cmd);
-    }
+    delete_bps(info->nrs);
 }
 
 // Record breakpoint commands
@@ -5417,30 +5464,19 @@ void SourceView::BreakpointCmdCB(Widget,
     if (breakpoint_list_w == 0)
 	return;
 
-    IntArray breakpoint_nrs;
-    getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
-    if (breakpoint_nrs.size() == 0)
+    IntArray nrs;
+    getDisplayNumbers(breakpoint_list_w, nrs);
+    if (nrs.size() == 0)
         return;
 
     string cmd = (String)client_data;
 
-    if (cmd == "delete" && !gdb->has_delete_command())
-    {
-        for (int i = 0; i < breakpoint_nrs.size(); i++)
-	    gdb_command(delete_command(breakpoint_nrs[i]));
-        return;
-    }
-
-    if (cmd == "enable")
-	cmd = gdb->enable_command();
+    if (cmd == "delete")
+        delete_bps(nrs);
+    else if (cmd == "enable")
+	enable_bps(nrs);
     else if (cmd == "disable")
-	cmd = gdb->disable_command();
-    else if (cmd == "delete")
-	cmd = gdb->delete_command();
-
-    for (int i = 0; i < breakpoint_nrs.size(); i++)
-        cmd += " " + itostring(breakpoint_nrs[i]);
-    gdb_command(cmd);
+	disable_bps(nrs);
 }
 
 void SourceView::LookupBreakpointCB(Widget, XtPointer, XtPointer)

@@ -721,10 +721,35 @@ public:
     // Create a temporary breakpoint at A and continue execution.
     static void temp_n_cont(const string& a, Widget origin = 0);
 
-    // Enable or disable breakpoint NR
-    static void enable_bp(int nr,  Widget origin = 0);
-    static void disable_bp(int nr, Widget origin = 0);
+    // Enable/Disable/Delete breakpoints
+    static void enable_bps (IntArray& nrs,  Widget origin = 0);
+    static void disable_bps(IntArray& nrs, Widget origin = 0);
+    static void delete_bps (IntArray& nrs, Widget origin = 0);
 
+    inline static void enable_bp(int nr, Widget origin = 0)
+    {
+	IntArray nrs;
+	nrs += nr;
+	enable_bps(nrs, origin);
+    }
+
+    inline static void disable_bp(int nr, Widget origin = 0)
+    {
+	IntArray nrs;
+	nrs += nr;
+	disable_bps(nrs, origin);
+    }
+
+    inline static void delete_bp(int nr, Widget origin = 0)
+    {
+	IntArray nrs;
+	nrs += nr;
+	delete_bps(nrs, origin);
+    }
+
+    static string numbers(IntArray& nrs);
+    static bool all_bps(IntArray& nrs);
+	    
     // Move PC to ADDRESS
     static void move_pc(const string& address, Widget origin = 0);
 
