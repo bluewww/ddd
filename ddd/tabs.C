@@ -70,18 +70,24 @@ void untabify(string& str, int tab_width)
 	case '\t':
 	    spaces = tab_width - (column % tab_width);
 	    while (spaces-- > 0)
+	    {
 		*b++ = ' ';
+		column++;
+	    }
+	    break;
+
+	case '\n':
+	case '\r':
+	    *b++   = *s;
+	    column = 0;
 	    break;
 
 	default:
 	    *b++ = *s;
+	    column++;
 	    break;
 	}
-
-	if (*s++ == '\n')
-	    column = 0;
-	else
-	    column++;
+	s++;
     }
     *b++ = '\0';
 
