@@ -731,6 +731,8 @@ void process_show(const string& command, string value, bool init)
     {
 	if (value.contains(" is "))
 	    value = value.after(" is ", -1);
+        if (value.contains(" is: "))
+            value = value.after(" is: ", -1);
 	if (value.contains(".", -1))
 	    value = value.before(int(value.length()) - 1);
 	if (value.contains(". "))
@@ -741,7 +743,9 @@ void process_show(const string& command, string value, bool init)
 
 	if (value.contains("\"auto;", 0) || 
 	    value.contains("set automatically", 0) ||
-	    value.contains("auto-detected", 0))
+	    value.contains("auto-detected", 0) ||
+            value.contains("auto -", 0) ||
+            value.contains("\"auto\"", 0))
 	{
 	    value = "auto";
 	}
@@ -965,7 +969,12 @@ static EntryType entry_type(DebuggerType type,
 	if (base.contains("scheduler-locking", 0))
 	    return SchedulerOptionMenuEntry;
 	if (base.contains("language", 0) || 
-	    base.contains("demangle", 0))
+	    base.contains("demangle", 0)
+#if GDB_ABI_OPTIONS
+            || base.contains("cp-abi", 0)
+            || base.contains("osabi", 0)
+#endif
+	    )
 	    return OtherOptionMenuEntry;
 	if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
 	    return OnOffToggleButtonEntry;
@@ -1555,6 +1564,11 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		base = set_command;
 	    show_command = "show " + base;
 
+#if GDB_AMBIGUOUS_SHOW_PATH
+	    if (base == "path")
+               show_command = "show paths";
+#endif
+
 	    if (entry_filter == SignalEntry)
 	    {
 		if (!line.contains("all", 0) && !line.contains("SIG", 0))
@@ -1575,6 +1589,15 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
 		if (base == "radix")
 		    return; // Already handled in input- and output-radix
+
+#if GDB_BROKEN_SET_INTERPRETER
+                // Terry Teague <terry_teague@users.sourceforge.net> reports
+		// that GDB 5.x on Mac OS X (prior to 10.4) chokes on
+		// "set interpreter console" when sourcing the gdbSettings on
+		// initialization.
+                if (base == "interpreter")
+                    return;
+#endif
 
 		// GDB 4.18 provides `set extension-language', but not the
 		// equivalent `show extension-language'.
@@ -1918,6 +1941,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     case DisassemblyOptionMenuEntry:
     case SchedulerOptionMenuEntry:
     {
+#if GDB_ABI_OPTIONS
+        // set cp-abi / set osabi /
+#endif
 	// set language / set demangle / set architecture / set endian /
 	// set follow-fork-mode / set disassembly-flavor / 
 	// set scheduler-locking
@@ -1937,7 +1963,11 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    || (base == "disassembly-flavor")
 	    || (base == "endian")
 	    || (base == "follow-fork-mode")
-	    || (base == "scheduler-locking"))
+	    || (base == "scheduler-locking")
+#if GDB_ABI_OPTIONS
+            || (base == "osabi")
+#endif
+	       )
 	    {
 		// First look for the reponse in the format of GDB-5.x or
 		// newer. Possible options are listed upon `set endian'
@@ -1952,6 +1982,16 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		    }
 		    separator = ',';
 		}
+                else if (options.contains("Requires an argument. Valid values are"))
+                {
+                    strip_leading(options, "Requires an argument. Valid values are");
+                    // remove trailing .\n (if any)
+                    if (options.contains(".\n"))
+                    {
+                        options = options.before(".\n");
+                    }
+                    separator = ',';
+                }
 		// OK, so it doesn't match GDB-5.x output; go with 4.x format
 		else if (base == "architecture")
 		{
@@ -1981,6 +2021,12 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		    // Hardwired options
 		    options = "off\non\nstep\n";
 		}
+#if GDB_ABI_OPTIONS
+                else if (base == "cp-abi")
+                {
+                    strip_leading(options, "The available C++ ABIs are:");
+                }
+#endif
 	    }
 	    break;
 
@@ -2026,6 +2072,16 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		else
 		    option = option.before(rxwhite);
 	    }
+
+#if GDB_ABI_OPTIONS
+            else if (gdb->type() == GDB && option.contains(" - "))
+            {
+                 label = option.after(" - ");
+                 option = option.before(" - ");
+                 if (option.contains("auto"))
+		    label = "auto";
+            }
+#endif
 
 	    if (option.empty() || option.contains(':', -1))
 		continue;
@@ -3241,6 +3297,7 @@ static void get_setting(std::ostream& os, DebuggerType type,
 	os << base << ' ' << value << '\n';
 	break;
     }
+    
 }
 
 // Fetch GDB settings string

@@ -981,6 +981,25 @@ AC_DEFINE(RUNTIME_REGEX, 0,
 DDD 2.1 and earlier.  Requires ~30% more memory; slightly slower,
 too. Requires WITH_RUNTIME_REGEX to be set. Required in ICE.])
 dnl
+dnl Terry Teague <terry_teague@users.sourceforge.net> reports Mac OS X
+dnl requires some fixes
+AC_MSG_CHECKING([fixes needed for Mac OS X])
+case "$host_os" in
+Darwin*)
+LDFLAGS="-bind_at_load ${LDFLAGS}"
+  AC_DEFINE(GDB_ABI_OPTIONS,1,
+[Define if you want any inferior debugger abi (e.g. "cp-abi", "osabi" in gdb for Mac OS X) settings to have their own settings buttons (rather than entering the abi as text) in DDD.])
+  AC_DEFINE(GDB_AMBIGUOUS_SHOW_PATH,1,
+[Define if your inferior debugger has an ambigious "show path" command (e.g. gdb for Mac OS X).])
+  AC_DEFINE(GDB_BROKEN_SET_INTERPRETER,1,
+[Define if your inferior debugger has a broken "set interpreter" command (e.g. gdb for Mac OS X).])
+  AC_MSG_RESULT(yes)
+  ;;
+*)
+  AC_MSG_RESULT(no)
+  ;;
+esac
+dnl
 dnl
 dnl User-defined options
 dnl
