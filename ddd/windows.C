@@ -1465,3 +1465,45 @@ void unmanage_paned_child(Widget w)
 
     paned_changed(w);
 }
+
+
+//-----------------------------------------------------------------------------
+// Scrolled Window stuff
+//-----------------------------------------------------------------------------
+
+// Promote child size to scrolled window
+void set_scrolled_window_size(Widget child, Widget target)
+{
+    Widget scroll = XtParent(child);
+
+    assert(XmIsScrolledWindow(scroll));
+
+    Dimension scrollbar_width = 15;   // Additional space for scrollbar
+
+    Widget vertical_scroll_bar = 0;
+    Dimension spacing = 4;
+    XtVaGetValues(scroll, 
+		  XmNverticalScrollBar, &vertical_scroll_bar,
+		  XmNspacing, &spacing,
+		  NULL);
+    if (vertical_scroll_bar != 0)
+    {
+	XtWidgetGeometry size;
+	size.request_mode = CWWidth;
+	XtQueryGeometry(vertical_scroll_bar, NULL, &size);
+	scrollbar_width = size.width;
+    }
+
+    // Give the ScrolledWindow the size specified for its child
+    XtWidgetGeometry size;
+    size.request_mode = CWWidth | CWHeight;
+    XtQueryGeometry(child, NULL, &size);
+
+    if (target == 0)
+	target = scroll;
+
+    XtVaSetValues(target,
+		  XmNwidth,  size.width + spacing + scrollbar_width,
+		  XmNheight, size.height,
+		  NULL);
+}

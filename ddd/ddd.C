@@ -2176,7 +2176,7 @@ int main(int argc, char *argv[])
     if (app_data.separate_source_window && app_data.status_at_bottom)
 	create_status(source_view_parent);
 
-    // GDB window
+    // Debugger console
     if (console_buttons_w == 0 && !app_data.toolbars_at_bottom)
 	console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
 					 app_data.console_buttons);
@@ -2197,6 +2197,9 @@ int main(int argc, char *argv[])
 		   gdbChangeCB,
 		   NULL);
     XtManageChild (gdb_w);
+
+    // Give the ScrolledWindow the size specified for the debugger console
+    set_scrolled_window_size(gdb_w);
 
 #if 0
     // Don't edit the text until the first prompt appears.

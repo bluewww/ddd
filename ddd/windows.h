@@ -101,6 +101,9 @@ extern void get_tool_offset();
 extern void manage_paned_child(Widget w);
 extern void unmanage_paned_child(Widget w);
 
+// Promote size of ScrolledWindow child CHILD to TARGET (default: parent)
+extern void set_scrolled_window_size(Widget child, Widget target = 0);
+
 // Save paned child sizes
 extern void save_preferred_paned_sizes(Widget paned);
 

@@ -79,8 +79,6 @@ char settings_rcsid[] =
 //-----------------------------------------------------------------------
 
 const Dimension EXTRA_SPACE     = 10;   // Minimum space between label / entry
-const Dimension SCROLLBAR_WIDTH = 24;   // Additional space for scrollbar
-const Dimension MARGIN_WIDTH    =  4;   // Additional space for ScrolledWindow
 const Dimension MAX_HEIGHT     = 300;   // Maximum height of window
 
 
@@ -1649,20 +1647,38 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 		  XmNwidth, max_width, NULL);
 
     Dimension height = preferred_height(form);
-    if (height + MARGIN_WIDTH > MAX_HEIGHT)
+
+    Widget vertical_scroll_bar = 0;
+    Dimension spacing = 4;
+    XtVaGetValues(scroll, 
+		  XmNverticalScrollBar, &vertical_scroll_bar,
+		  XmNspacing, &spacing,
+		  NULL);
+
+    if (height + spacing > MAX_HEIGHT)
     {
 	// Form must be scrolled
+	Dimension scrollbar_width = 15;   // Additional space for scrollbar
+
+	if (vertical_scroll_bar != 0)
+	{
+	    XtWidgetGeometry size;
+	    size.request_mode = CWWidth;
+	    XtQueryGeometry(vertical_scroll_bar, NULL, &size);
+	    scrollbar_width = size.width;
+	}
+	
 	XtVaSetValues(scroll,
 		      XmNheight, MAX_HEIGHT,
-		      XmNwidth, max_width + MARGIN_WIDTH + SCROLLBAR_WIDTH,
+		      XmNwidth, max_width + spacing + scrollbar_width,
 		      NULL);
     }
     else
     {
 	// Form need not be scrolled
 	XtVaSetValues(scroll,
-		      XmNheight, height + MARGIN_WIDTH,
-		      XmNwidth, max_width + MARGIN_WIDTH,
+		      XmNheight, height + spacing,
+		      XmNwidth, max_width + spacing,
 		      NULL);
     }
 

@@ -1397,33 +1397,40 @@ static string widget_value(Widget w, String name)
 
 static string widget_size(Widget w)
 {
-    Dimension width, height;
-    XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
-
     string s;
-    s += int_app_value(string(XtName(w)) + "." + XmNwidth, width);
-    s += '\n';
-    s += int_app_value(string(XtName(w)) + "." + XmNheight, height);
 
     if (XmIsText(w) || XmIsTextField(w))
     {
-	short columns;
+	// Store rows and columns
+	short columns = 0;
 	XtVaGetValues(w, XmNcolumns, &columns, NULL);
 	if (columns > 0)
 	{
 	    s += '\n';
 	    s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns);
 	}
-    }
-    if (XmIsText(w))
-    {
-	short rows;
-	XtVaGetValues(w, XmNrows, &rows, NULL);
-	if (rows > 0)
+
+	if (XmIsText(w))
 	{
-	    s += '\n';
-	    s += int_app_value(string(XtName(w)) + "." + XmNrows, rows);
+	    short rows = 0;
+	    XtVaGetValues(w, XmNrows, &rows, NULL);
+	    if (rows > 0)
+	    {
+		s += '\n';
+		s += int_app_value(string(XtName(w)) + "." + XmNrows, rows);
+	    }
 	}
+    }
+    else
+    {
+	// Store absolute sizes
+	Dimension width  = 0;
+	Dimension height = 0;
+	XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
+
+	s += int_app_value(string(XtName(w)) + "." + XmNwidth, width);
+	s += '\n';
+	s += int_app_value(string(XtName(w)) + "." + XmNheight, height);
     }
 
     return s;
@@ -1833,17 +1840,10 @@ bool save_options(unsigned long flags)
     // Window sizes.
     os << "\n! Window sizes\n";
 
-    os << widget_size(data_disp->graph_edit)           << "\n";
-    Widget porthole_w = XtParent(data_disp->graph_edit);
-    if (porthole_w != data_disp->graph_form())
-	os << widget_size(porthole_w) << "\n";
-    os << widget_size(data_disp->graph_form())         << "\n";
-    os << widget_size(source_view->source())           << "\n";
-    os << widget_size(source_view->source_form())      << "\n";
-    os << widget_size(source_view->code())             << "\n";
-    os << widget_size(source_view->code_form())        << "\n";
-    os << widget_size(gdb_w)                           << "\n";
-    os << widget_size(XtParent(gdb_w))                 << "\n";
+    os << widget_size(data_disp->graph_edit);
+    os << widget_size(source_view->source());
+    os << widget_size(source_view->code());
+    os << widget_size(gdb_w);
 
     if (save_geometry)
     {

@@ -88,10 +88,12 @@ Ddd*Separate: off
 ! Ddd*separateSourceWindow: on
 
 
-! The windows may be initially on or off.
-Ddd*debuggerConsole: on
-Ddd*sourceWindow:    on
-Ddd*dataWindow:     off
+! The windows may be initially on or off.  By default, the data window 
+! remains closed since it will be opened anyway as soon as we create
+! the first display.
+Ddd*openDebuggerConsole: on
+Ddd*openSourceWindow:    on
+Ddd*openDataWindow:      off
 
 
 ! On if programs are to be run in a separate top-level window.
@@ -3299,23 +3301,8 @@ Ddd*XmPanedWindow.spacing:		4
 ! Graph Editor
 !-----------------------------------------------------------------------------
 
-! Width and height for several Motif & Athena variants
-
-! Motif 1.x, using ScrolledWindow
-Ddd*graph_edit_swindow.width:		594
-Ddd*graph_edit_swindow.height:		174
-
-! Motif 2.0, using ScrolledWindow
-Ddd*graph_editSW.width:			594
-Ddd*graph_editSW.height:		174
-
-! Motif 1.x, using Porthole
-Ddd*graph_edit_porthole.width:		594
-Ddd*graph_edit_porthole.height:		174
-
-! Motif 2.0, using Porthole
-Ddd*graph_edit_form.width:		594
-Ddd*graph_edit_form.height:		174
+Ddd*graph_edit.width:		        560
+Ddd*graph_edit.height:		        170
 
 Ddd*graph_edit_swindow.spacing:		0
 Ddd*graph_edit_swindow.borderWidth:	0
@@ -3345,7 +3332,7 @@ Ddd*graph_edit.highlightOnEnter:	On
 Ddd*graph_edit.navigationType:		TAB_GROUP
 
 ! Set this to have a crosshair cursor
-! Ddd*graph_edit.defaultCursor: 		crosshair
+! Ddd*graph_edit.defaultCursor:    	crosshair
 
 define(GRAPH_EDIT_HELP,[\
 WIDGET(Data Window)\n\
@@ -3920,16 +3907,10 @@ Ddd*status_history.row.background:	Black
 !-----------------------------------------------------------------------------
 
 Ddd*source_text_w.columns:		80
-Ddd*source_text_w.rows:			24
+Ddd*source_text_w.rows:			31
 
 Ddd*code_text_w.columns:		80
-Ddd*code_text_w.rows:			2
-
-Ddd*source_form_w.width:		590
-Ddd*source_form_w.height:		424
-
-Ddd*code_form_w.width:			590
-Ddd*code_form_w.height:			29
+Ddd*code_text_w.rows:			4
 
 Ddd*source_text_w_swindow.spacing:		0
 Ddd*source_text_w_swindow.borderWidth:		0
@@ -4238,9 +4219,6 @@ Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
 Ddd*gdb_w.columns:		80
 Ddd*gdb_w.rows:			5
 
-Ddd*gdb_wSW.width:		569
-Ddd*gdb_wSW.height:		83
-
 Ddd*gdb_w_swindow.spacing:		0
 Ddd*gdb_w_swindow.borderWidth:		0
 Ddd*gdb_w_swindow.shadowThickness:	0
@@ -4249,8 +4227,8 @@ Ddd*gdb_wSW.borderWidth:		0
 Ddd*gdb_wSW.shadowThickness:		0
 
 ! Don't resize the debugger console when resizing the main window
-Ddd*gdb_w_swindow.skipAdjust:	on
-Ddd*gdb_wSW.skipAdjust:		on
+Ddd*gdb_w_swindow.skipAdjust:		on
+Ddd*gdb_wSW.skipAdjust:			on
 
 Ddd*gdb_w.editable:			on
 Ddd*gdb_w.allowResize:			on
