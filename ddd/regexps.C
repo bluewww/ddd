@@ -140,7 +140,7 @@ const regex rxfunction_call		(rx_matcher, (void *)S045);
 const regex rxgdb_begin_of_display	(rx_matcher, (void *)S046);
 const regex rxgdb_begin_of_display_info	(rx_matcher, (void *)S047);
 const regex rxgdb_disp_nr		(rx_matcher, (void *)S048);
-const regex rxgdb_next_display_info	(rx_matcher, (void *)S049);
+//                                  	(rx_matcher, (void *)S049);
 const regex rxgraph_cmd			(rx_matcher, (void *)S050);
 const regex rxidentifier		(rx_matcher, (void *)S051);
 const regex rxindex			(rx_matcher, (void *)S052);
@@ -198,7 +198,7 @@ const regex rxsingle_display_cmd	(rx_matcher, (void *)S095);
 const regex rxspace			(rx_matcher, (void *)S096);
 const regex rxstopped			(rx_matcher, (void *)S097);
 const regex rxstr_or_cl_begin		(rx_matcher, (void *)S098);
-const regex rxstr_or_cl_begin_s		(rx_matcher, (void *)S099);
+//                                      (rx_matcher, (void *)S099);
 const regex rxstr_or_cl_end		(rx_matcher, (void *)S100);
 const regex rxstruct_keyword_begin	(rx_matcher, (void *)S101);
 const regex rxterminated		(rx_matcher, (void *)S102);
@@ -219,3 +219,5 @@ const regex rxwhite			(rx_matcher, (void *)S109);
 
 const regex rxxdb			(rx_matcher, (void *)S110);
 const regex rxxdbpos			(rx_matcher, (void *)S111);
+
+const regex rxrepeats                   (rx_matcher, (void *)S112);

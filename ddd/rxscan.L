@@ -154,7 +154,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 %s S046
 %s S047
 %s S048
-%s S049
+/* %s S049 */
 %s S050
 %s S051
 %s S052
@@ -204,7 +204,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 %s S096
 %s S097
 %s S098
-%s S099
+/* %s S099 */
 %s S100
 %s S101
 %s S102
@@ -217,6 +217,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 %s S109
 %s S110
 %s S111
+%s S112
 
 %%
 <S001>address{W}{A}			return &rxaddr;
@@ -267,7 +268,6 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S046>{P}:{W}[^ ]			return &rxgdb_begin_of_display;
 <S047>{P}:{w}{w}{w}			return &rxgdb_begin_of_display_info;
 <S048>{P}		 		return &rxgdb_disp_nr;
-<S049>\n{P}:{w}{w}{w}			return &rxgdb_next_display_info;
 <S050>{_}graph{W}{C}			return &rxgraph_cmd;
 <S051>[A-Za-z_][A-Za-z0-9_]*		return &rxidentifier;
 <S052>[[]-?{D}]{C}			return &rxindex;
@@ -317,7 +317,6 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S096>{C}(--More--|line{w}{d}).* 	return &rxspace;
 <S097>Breakpoint{W}{P}\,{W}{A}	return &rxstopped;
 <S098>{x}?{_}([(]|[{]|record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|union){C}	return &rxstr_or_cl_begin;
-<S099>([(]|[{])				return &rxstr_or_cl_begin_s;
 <S100>([)]|[}]|end\n|END\n|end;|END;)	return &rxstr_or_cl_end;
 <S101>{x}?{_}(record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|union){C} return &rxstruct_keyword_begin;
 <S102>([Tt]he{W})?[Pp]rogram{W}(exited|terminated|is{W}not{W}being{W}run|no{W}longer{W}exists){C} return &rxterminated;
@@ -330,5 +329,6 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S109>[ \n\t\r\v\f]+		 	return &rxwhite;
 <S110>{C}Standard{W}input:{W}END{C} 	return &rxxdb;
 <S111>[^: \t]*:[^:]*:{w}{P}[: ]{C} 	return &rxxdbpos;
+<S112>[<]repeats{W}{P}{W}times[>]       return &rxrepeats;
 <*>.|\n				        return 0;  // Anything else
 %%
