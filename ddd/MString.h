@@ -111,11 +111,6 @@ public:
 	return XmStringLineCount(_mstring);
     }
 
-    Boolean isNull() const
-    {
-	return isEmpty() && lineCount() == 0;
-    }
-
     void extent(Dimension& x, Dimension& y, XmFontList fontlist) const
     {
 	XmStringExtent(fontlist, _mstring, &x, &y);
@@ -206,6 +201,11 @@ public:
     operator XmString() const { return _mstring; }
     operator XmString()       { return _mstring; }
     XmString xmstring() const { return _mstring; }
+
+    Boolean isNull() const
+    {
+	return xmstring() == 0;
+    }
 
     // Substrings
     Boolean contains(const MString& m) const

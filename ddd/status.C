@@ -277,7 +277,7 @@ static void add_to_status_history(const MString& message)
     int last_history = 
 	(status_history_size + current_history - 1) % status_history_size;
 
-    if (message.isNull())
+    if (message.isNull() || message.isEmpty())
 	return;
     if (message == history[last_history])
 	return;
@@ -288,9 +288,9 @@ static void add_to_status_history(const MString& message)
     MString history_msg;
     int i = current_history;
     do {
-	if (!history[i].isNull())
+	if (!history[i].isEmpty())
 	{
-	    if (!history_msg.isNull())
+	    if (!history_msg.isEmpty())
 		history_msg += cr();
 	    history_msg += history[i];
 	}

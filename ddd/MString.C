@@ -37,6 +37,9 @@ char MString_rcsid[] =
 
 Boolean MString::OK() const
 {
+    if (xmstring() == 0)
+	return True;		// Null pointer
+
     // All of these must return some result.
     (void) isEmpty();
     (void) length();
