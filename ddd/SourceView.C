@@ -5071,38 +5071,40 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
     static string address;
     bool pos_found = get_line_of_pos(w, pos, line_nr, address, in_text, bp_nr);
 
-    if (pos_found && bp_nr != 0)
+    if (!pos_found)
+	return;
+
+    if (bp_nr != 0)
     {
 	// Clicked on breakpoint: edit its properties
 	edit_bp(bp_nr, text_w);
 	return;
     }
 
-    string arg = source_arg->get_string();
-    if (in_text && !is_file_pos(arg))
+    XmTextPosition startpos = 0;
+    XmTextPosition endpos   = 0;
+
+    string arg  = source_arg->get_string();
+    string word = get_word_at_pos(text_w, pos, startpos, endpos);
+
+    if (in_text && arg == word)
     {
-	// In text: do some action on the selection
+	// In text: do some action on current word
 	if (text_w == source_text_w)
 	{
-	    XmTextPosition startPos, endPos;
-	    Boolean have_selection = 
-		XmTextGetSelectionPosition(text_w, &startPos, &endPos);
-	    if (have_selection)
-	    {
-		int p = endPos;
-		while (p < (int)current_source.length() && 
-		       isspace(current_source[p]))
-			p++;
+	    // Check for function call
+	    int p = endpos;
+	    while (p < (int)current_source.length() && 
+		   isspace(current_source[p]))
+		p++;
 
-		if (current_source.contains('(', p))
-		{
-		    // Function call
-		    if (*num_params >= 3)
-			gdb_button_command(params[2]);
-		    else
-			gdb_button_command("list ()");
-		    return;
-		}
+	    if (current_source.contains('(', p))
+	    {
+		if (*num_params >= 3)
+		    gdb_button_command(params[2]);
+		else
+		    gdb_button_command("list ()");
+		return;
 	    }
 	}
 
@@ -5113,44 +5115,48 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
 	return;
     }
 
-    // In breakpoint area
-    IntArray bps;
-    if (text_w == source_text_w)
+    if (!in_text)
     {
-	MapRef ref;
-	for (BreakPoint* bp = bp_map.first(ref);
-	     bp != 0;
-	     bp = bp_map.next(ref))
+	// In breakpoint area
+	IntArray bps;
+	if (text_w == source_text_w)
 	{
-	    if (bp_matches(bp, line_nr))
-		bps += bp->number();
+	    MapRef ref;
+	    for (BreakPoint* bp = bp_map.first(ref);
+		 bp != 0;
+		 bp = bp_map.next(ref))
+	    {
+		if (bp_matches(bp, line_nr))
+		    bps += bp->number();
+	    }
 	}
-    }
-    else
-    {
-	MapRef ref;
-	for (BreakPoint* bp = bp_map.first(ref);
-	     bp != 0;
-	     bp = bp_map.next(ref))
-	{
-	    if (bp->type() == BREAKPOINT && 
-		compare_address(address, bp->address()) == 0)
-		bps += bp->number();
-	}
-    }
-
-    if (bps.size() > 0)
-    {
-	// In breakpoint area, and we already have a breakpoint
-	edit_bps(bps, text_w);
-    }
-    else
-    {
-	// In breakpoint area, and we have no breakpoint: create a new one
-	if (*num_params >= 2)
-	    gdb_button_command(params[1]);
 	else
-	    create_bp(source_arg->get_string(), w);
+	{
+	    MapRef ref;
+	    for (BreakPoint* bp = bp_map.first(ref);
+		 bp != 0;
+		 bp = bp_map.next(ref))
+	    {
+		if (bp->type() == BREAKPOINT && 
+		    compare_address(address, bp->address()) == 0)
+		    bps += bp->number();
+	    }
+	}
+
+	if (bps.size() > 0)
+	{
+	    // In breakpoint area, and we already have a breakpoint -
+	    // edit its properties
+	    edit_bps(bps, text_w);
+	}
+	else
+	{
+	    // In breakpoint area, and we have no breakpoint: create a new one
+	    if (*num_params >= 2)
+		gdb_button_command(params[1]);
+	    else
+		create_bp(source_arg->get_string(), w);
+	}
     }
 }
 
