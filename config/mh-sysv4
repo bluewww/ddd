@@ -8,7 +8,4 @@ CXXFLAGS=-O
 # The l flag generates a warning from the SVR4 archiver, remove it.
 AR_FLAGS = cr
 
-
-X11_INCLUDE_FLAGS = -I/usr/X/include
-X11_LIB_FLAGS = -L/usr/X/lib
-X11_LIB = -lX11 -lnsl
+X11_EXTRA_LIBS = -lnsl

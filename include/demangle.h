@@ -1,5 +1,5 @@
 /* Defs for interface to demanglers.
-   Copyright 1992, 1995 Free Software Foundation, Inc.
+   Copyright 1992, 1995, 1996 Free Software Foundation, Inc.
    
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,8 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 
 #if !defined (DEMANGLE_H)
@@ -94,10 +95,10 @@ extern char *
 cplus_demangle PARAMS ((const char *mangled, int options));
 
 extern int
-cplus_demangle_opname PARAMS ((char *opname, char *result, int options));
+cplus_demangle_opname PARAMS ((const char *opname, char *result, int options));
 
-extern char *
-cplus_mangle_opname PARAMS ((char *opname, int options));
+extern const char *
+cplus_mangle_opname PARAMS ((const char *opname, int options));
 
 /* Note: This sets global state.  FIXME if you care about multi-threading. */
 

@@ -34,7 +34,9 @@
 #include <limits.h>
 #include <ctype.h>
 #include <errno.h>
+#if 0
 #include <stdlib.h>
+#endif
 #include "ansidecl.h"
 
 /* FIXME: It'd be nice to configure around these, but the include files are too

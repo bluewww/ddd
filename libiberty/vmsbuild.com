@@ -15,7 +15,7 @@ $! manually copied from Makefile.in
 $ REQUIRED_OFILES = "argv.o basename.o concat.o cplus-dem.o fdmatch.o "-
 	+ "getopt.o getopt1.o getruntime.o hex.o "-
 	+ "floatformat.o obstack.o spaces.o strerror.o strsignal.o "-
-	+ "vasprintf.o xatexit.o xexit.o xmalloc.o"
+	+ "vasprintf.o xatexit.o xexit.o xmalloc.o xstrerror.o"
 $! anything not caught by link+search of dummy.* should be added here
 $ EXTRA_OFILES = ""
 $!

@@ -14,8 +14,12 @@
 static char sccsid[] = "@(#)strcasecmp.c	5.5 (Berkeley) 11/24/87";
 #endif /* LIBC_SCCS and not lint */
 
-#include <sys/types.h>
-#include <string.h>
+#include <ansidecl.h>
+#ifdef __STDC__
+#include <stddef.h>
+#else
+#define size_t unsigned long
+#endif
 
 /*
  * This array is designed for mapping upper and lower case letter
@@ -59,8 +63,8 @@ static unsigned char charmap[] = {
 
 int
 strncasecmp(s1, s2, n)
-	char *s1, *s2;
-	register int n;
+	const char *s1, *s2;
+	register size_t n;
 {
     register unsigned char u1, u2;
 

@@ -2,9 +2,5 @@
 
 SYSV = -DSYSV
 RANLIB = true
-CFLAGS = -g 
 
-# X11 
-OPENWINHOME = /usr/openwin
-X11_INCLUDE_FLAGS = -I$(OPENWINHOME)/include
-X11_LIB_FLAGS = -L$(OPENWINHOME)/lib
+X11_EXTRA_LIBS = -lnsl -lsocket

@@ -7,4 +7,4 @@ RANLIB = true
 # it doesn't defined anything like "__sco__" for us to test for in ansidecl.h.
 CC = cc -Dconst=
 
-X11_LIB = -lX11_s -lsocket -lm -lintl -lmalloc
+X11_EXTRA_LIBS = -lsocket -lm -lintl -lmalloc

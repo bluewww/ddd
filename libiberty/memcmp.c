@@ -23,7 +23,7 @@ DESCRIPTION
 
 int
 DEFUN(memcmp, (str1, str2, count),
-      PTRCONST str1 AND PTRCONST str2 AND size_t count)
+      const PTR str1 AND const PTR str2 AND size_t count)
 {
   register unsigned char *s1 = (unsigned char*)str1;
   register unsigned char *s2 = (unsigned char*)str2;

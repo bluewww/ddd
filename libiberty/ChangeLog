@@ -1,6 +1,200 @@
+Tue Mar 19 22:02:07 1996  Jason Merrill  <jason@yorick.cygnus.com>
+
+	* cplus-dem.c (demangle_template): Fix for non-mangled pointer
+	arguments.
+
+Fri Mar  8 17:24:18 1996  Ian Lance Taylor  <ian@cygnus.com>
+
+	* configure.in: If srcdir is `.' and with_target_subdir is not
+	`.', then set MULTISRCTOP before calling config-ml.in.
+
+Thu Mar  7 13:37:10 1996  Stan Shebs  <shebs@andros.cygnus.com>
+
+	* mpw.c (mpw_open): Add debugging output option.
+
+Wed Mar  6 17:36:03 1996  Jason Merrill  <jason@yorick.cygnus.com>
+
+	* cplus-dem.c (demangle_template): Fix for address-of-extern arguments.
+
+Tue Feb 27 12:00:50 1996  Raymond Jou  <rjou@mexican.cygnus.com>
+
+	* mpw.c (mpwify_filename): Change 6 to 5 in
+	strncmp (unixname, "/tmp/", 5).
+	
+Tue Feb 20 10:55:53 1996  Ian Lance Taylor  <ian@cygnus.com>
+
+	* cplus-dem.c (demangle_template): Initialize is_bool.  Correctly
+	handle 0 as a pointer value parameter.
+
+Mon Feb  5 16:41:44 1996  Ian Lance Taylor  <ian@cygnus.com>
+
+	* Makefile.in (all): Depend upon required-list.
+	(required-list): New target.
+	(clean): Remove required-list.
+
+Wed Jan 31 10:19:41 1996  Steve Chamberlain  <sac@slash.cygnus.com>
+
+	* win32.c: Deleted.
+	* config.table (i386-*-win32): Deleted.
+	* config/mh-i386win32: Deleted.
+
+Thu Jan 18 11:34:17 1996  Ian Lance Taylor  <ian@cygnus.com>
+
+	* cplus-dem.c (cplus_demangle_opname): Change opname parameter to
+	const char *.
+	(cplus_mangle_opname): Change return type and opname parameter to
+	const char *.  Don't cast return value.
+
+Tue Jan 16 12:13:11 1996  Stan Shebs  <shebs@andros.cygnus.com>
+
+	* mpw.c: Include Timer.h, in order to get m68k Microseconds trap
+	definition.
+
+Wed Jan  3 13:15:04 1996  Fred Fish  <fnf@cygnus.com>
+
+	* obstack.c: Update copyright to 1996.
+	(_obstack_memory_used): Define new function.  Called via
+	obstack_memory_used macro.
+
+Thu Dec 28 11:39:40 1995  Ian Lance Taylor  <ian@cygnus.com>
+
+	* xstrdup.c: New file.
+	* Makefile.in (CFILES): Add xstrdup.c.
+	(REQUIRED_OFILES): Add xstrdup.o.
+	(xstrdup.o): New target.
+
+Mon Dec 11 18:18:52 1995  Mike Stump  <mrs@cygnus.com>
+
+	* atexit.c: New stub to provide atexit on systems that have
+	on_exit, like SunOS 4.1.x systems.
+	* functions.def (on_exit, atexit): Ditto.
+
+Mon Dec 11 15:42:14 1995  Stan Shebs  <shebs@andros.cygnus.com>
+
+	* mpw.c (mpw_abort): Remove decl.
+	(mpw_access): Move debugging printf.
+
+Sat Dec  2 01:25:23 1995  Ian Lance Taylor  <ian@cygnus.com>
+
+	* config.table: Consistently use ${host} rather than ${xhost} or
+	${target}.
+	* configure.in: Don't bother to set ${xhost} before calling
+	config.table.
+
+Tue Nov 28 14:16:57 1995  Brendan Kehoe  <brendan@lisa.cygnus.com>
+
+	* Makefile.in (.c.o): Use test instead of the left bracket, to
+	avoid problems with some versions of make.
+
+Tue Nov 28 11:45:17 1995  Stan Shebs  <shebs@andros.cygnus.com>
+
+	* mpw-make.sed: Fix INCDIR edit to work with Nov 14 change.
+
+Tue Nov 21 11:26:34 1995  Fred Fish  <fnf@rtl.cygnus.com>
+
+	* config/mh-hpux: Remove.  It was only used to define EXTRA_OFILES,
+	which was set to just alloca.o, which is now automatically marked
+	as needed by the autoconfiguration process.
+
+Tue Nov 21 14:15:06 1995  Ian Lance Taylor  <ian@cygnus.com>
+
+	* config.table: Check ${with_cross_host} rather than comparing
+	${host} and ${target}.
+
+Thu Nov 16 14:34:42 1995  Ian Lance Taylor  <ian@cygnus.com>
+
+	* configure.in: If with_target_subdir is empty, set xhost to
+	${host} rather than ${target} before calling config.table.
+
+Tue Nov 14 01:38:30 1995  Doug Evans  <dje@canuck.cygnus.com>
+
+	* Makefile.in (MULTITOP): Deleted.
+	(MULTISRCTOP, MULTIBUILDTOP): New.
+	(FLAGS_TO_PASS): Delete INCDIR.
+	(INCDIR): Add $(MULTISRCTOP).
+	(install_to_libdir): Add $(MULTISUBDIR).  Call $(MULTIDO).
+	* configure.in: Delete call to cfg-ml-com.in.  Call config-ml.in
+	instead of cfg-ml-pos.in.
+	(cross-compile check): Change to test for with_target_subdir.
+	(EXTRA_LINKS): Delete.
+
+Sun Nov 12 12:13:04 1995  Stan Shebs  <shebs@andros.cygnus.com>
+
+	* mpw-make.sed: Add getpagesize.c.o to needed-list.
+	* mpw.c [USE_MW_HEADERS]: Conditionalize compiling of
+	functions that are supplied by Metrowerks libraries.
+	(fstat): Clean up descriptor->pointer conversion code.
+	(InstallConsole, etc): Empty definitions, for when linking
+	with SIOUX.
+
+Sun Nov  5 19:25:27 1995  Per Bothner  <bothner@kalessin.cygnus.com>
+
+	* Makefile.in (FLAGS_TO_PASS):  Also pass PICFLAGS.
+	(.c.o):  Stylistic change.
+
+Thu Nov  2 12:06:29 1995  Ian Lance Taylor  <ian@cygnus.com>
+
+	* strtol.c, strtoul.c: Don't include <stdlib.h>.  From
+	phdm@info.ucl.ac.be (Philippe De Muyter).
+
+Wed Nov  1 11:59:36 1995  Ian Lance Taylor  <ian@cygnus.com>
+
+	* configure.in: Correct sed call.
+
+Mon Oct 30 13:03:45 1995  Per Bothner  <bothner@kalessin.cygnus.com>
+
+	* configure.in:  Clean up / simplify for native.
+
+	* configure.in:  Merge in stuff from ../xiberty/configure.in.
+	* Makefile.in (CC):  Add definition (so it can be overrridden
+	by ../configure).
+
+Tue Oct 24 17:57:27 1995  Stan Shebs  <shebs@andros.cygnus.com>
+
+	* mpw-make.sed: Leave strerror.c.o in standard list of functions.
+	* mpw.c (R_OK, ENOENT, EACCESS, ENOSYS): Remove.
+	(link): Remove useless definition with error return.
+	(last_microseconds, warn_if_spin_delay, record_for_spin_delay):
+	Use UnsignedWide type for microsecond counts.
+
+Thu Oct 19 10:52:07 1995  Michael Meissner  <meissner@wogglebug.tiac.net>
+
+	* memcmp.c (memcmp): Argument types are const void *, not void
+	*const.
+
+	* strncasecmp.c (strncasecmp): Include ansidecl.h/stdarg.h, not
+	sys/types.h.
+	* strcasecmp.c (strcasecmp): Ditto.
+
 Tue Oct 10 11:03:24 1995  Fred Fish  <fnf@cygnus.com>
 
 	* Makefile.in (BISON):  Remove macro.
+
+Tue Sep 26 15:06:46 1995  Stan Shebs  <shebs@andros.cygnus.com>
+
+	* Makefile.in (HFILES): Add default empty definition.
+	* mpw-config.in (config.h): Only update if changed.
+	* mpw-make.in: Remove.
+	* mpw-make.sed: New file, edits Makefile.in into MPW makefile.
+	* mpw.c: Remove semi-clone of strerror code.
+	(sys_nerr, sys_errlist): Define here.
+	(Microseconds): Only define as A-line trap if m68k Mac.
+
+Wed Sep 20 12:53:32 1995  Ian Lance Taylor  <ian@cygnus.com>
+
+	* Makefile.in (maintainer-clean): New synonym for distclean.
+
+Mon Aug 28 19:47:52 1995  Per Bothner  <bothner@kalessin.cygnus.com>
+
+	* config.table:  For host, generalize rs6000-ibm-aix*
+	to *-ibm-aix* so we also include powerpc.
+
+Tue Aug 22 03:18:05 1995  Ken Raeburn  <raeburn@kr-laptop.cygnus.com>
+
+	Fri Jun 16 18:35:40 1995  Pat Rankin  (rankin@eql.caltech.edu)
+
+	* xstrerror.c: New file.
+	* Makefile.in, vmsbuild.com: Compile it.
 
 Mon Jul 31 12:16:32 1995  steve chamberlain  <sac@slash.cygnus.com>
 

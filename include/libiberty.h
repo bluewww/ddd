@@ -56,6 +56,10 @@ extern const char *strerrno PARAMS ((int));
 
 extern int strtoerrno PARAMS ((const char *));
 
+/* ANSI's strerror(), but more robust.  */
+
+extern char *xstrerror PARAMS ((int));
+
 /* Return the maximum signal number for which strsignal will return a
    string.  */
 
@@ -110,6 +114,10 @@ extern PTR xmalloc ();
    xmalloc.  */
 
 extern PTR xrealloc ();
+
+/* Copy a string into a memory buffer without fail.  */
+
+extern char *xstrdup PARAMS ((const char *));
 
 /* hex character manipulation routines */
 
