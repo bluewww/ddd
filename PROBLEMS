@@ -28,10 +28,12 @@ Table of Contents
 ADA
 ===
 
-Reported by: ralph@ifr.luftfahrt.uni-stuttgart.de (Ralph Paul)
+Reported by: Rick Flower <Rick.Flower@trw.com>
 
-    Debugging Ada programs requires a special GDB version, for
-    instance the one at `ftp://helen.cs.berkeley.edu/pub/gdb'.
+    To debug Ada programs created with Gnat, you need a set of GDB
+    patches.  The current best set of patches for GDB 4.16 can be
+    found at `ftp://cs.nyu.edu/pub/gnat/gdb'.
+
 
 AIX
 ===

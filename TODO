@@ -409,4 +409,8 @@ Volunteers for these and other projects are welcome!
 
 294 Have a way to expand `VALUE <Nx>' manually.
 
-295 (Insert new project ideas here)
+295*Have GUI support for user-defined commands.  The simplest thing
+    would be a prompt dialog with `Record', `End', and `Edit >>',
+    just as in breakpoint commands.
+
+296 (Insert new project ideas here)

@@ -25,8 +25,10 @@ DDD 3.0 [in beta test]
     - Breakpoint properties.  There is an editor panel to set and
       change all properties for a breakpoint at once.  Such panels can
       also be created for multiple breakpoints.
-    - Breakpoint commands.  You can record and edit commands to be
-      executed when a breakpoint is reached.
+    - Breakpoint commands.  Using GDB, you can record and edit
+      commands to be executed when a breakpoint is reached.
+    - User-defined commands.  Using GDB, DDD now saves and restores
+      all user commands defined during a DDD session.
     - Conditional breakpoints, temporary breakpoints, and breakpoints
       with ignore counts now have their special symbols on their own.
     - On popular demand, the command tool has `until' and `make' buttons.
