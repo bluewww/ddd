@@ -115,6 +115,7 @@ snapshot:
 		-o -name "stringify" -prune \
 		-o -name "sun" -prune \
 		-o -name "linux" -prune \
+		-o -name "config.cache" -prune \
 		-o -type f -print -o -type l -print | \
 	        sed "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
 		> proto-toplev/FILES; \
