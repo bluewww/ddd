@@ -328,7 +328,9 @@ static void show_configuration(ostream& os, bool version_only)
 #endif
 #endif // !defined(__VERSION__)
 
-#else  // !defined(__GNUC__)
+#elif defined(__SUNPRO_CC)
+	"SunPRO CC " stringize(__SUNPRO_CC)
+#else  // Anything else
 	"CC"
 #endif
 
