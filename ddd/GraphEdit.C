@@ -1973,6 +1973,8 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
     BoxPoint& endAction        = _w->graphEdit.endAction;
     GraphEditState& state      = _w->graphEdit.state;
 
+    bool changed = false;
+
     switch(state)
     {
 	case SelectState:
@@ -1998,7 +2000,7 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 			have_unselected_nodes = true;
 			node->selected() = true;
 			node->draw(w, EVERYWHERE, graphGC);
-			selectionChanged(w);
+			changed = true;
 		    }
 		}
 	    }
@@ -2019,7 +2021,7 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 			{
 			    node->selected() = false;
 			    node->draw(w, EVERYWHERE, graphGC);
-			    selectionChanged(w);
+			    changed = true;
 			}
 		    }
 		}
@@ -2049,6 +2051,9 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 	    // Do nothing
 	    break;
     }
+
+    if (changed)
+	selectionChanged(w);
 
     defineCursor(w, defaultCursor);
 }
