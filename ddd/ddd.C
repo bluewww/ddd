@@ -2,7 +2,7 @@
 // DDD main program (and much more)
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 1999 Universitaet Passau, Germany.
+// Copyright (C) 1999-2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -31,8 +31,8 @@
 char ddd_rcsid[] =
     "$Id$";
 
-// Introduction to DDD
-// ===================
+// About Bugs
+// ==========
 //
 // :bug: n.  An unwanted and unintended property of a program or
 // piece of hardware, esp. one that causes it to malfunction.
@@ -3682,15 +3682,15 @@ inline void notify_set_toggle(Widget w, Boolean new_state)
     set_toggle(w, new_state, true);
 }
 
-inline void set_string(Widget w, String value)
+static void set_string(Widget w, String value)
 {
     if (w == 0)
 	return;
 
-    XtVaSetValues(w, 
-		  XmNvalue, value,
-		  XmNcursorPosition, 0,
-		  NULL);
+    // Note: XtVaSetValues(w, XmNvalue, value, ...) 
+    // doesn't work properly with LessTif 0.89.9
+    XmTextFieldSetString(w, value);
+    XtVaSetValues(w, XmNcursorPosition, 0, NULL);
 }
 
 static void set_string_int(Widget w, int value)
