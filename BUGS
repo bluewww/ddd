@@ -354,8 +354,6 @@ Volunteers for fixing these and other bugs are welcome!
 139. With Solaris 2.5.1, DDD recurses endlessly in glob_filename().
      Reported by Deepak Mulchandani <dmm@jurassic.eng.sun.com>
 
-140* Running DDD with `--rhost' issues `variable syntax' errors.
-
 141. The GDB output `$1 = {<Parent> = {}, a = 2028, b = 100860}' is
      not parsed correctly.  Reported by Gerhard Wirrer
      <Gerhard.Wirrer@cern.ch>.
