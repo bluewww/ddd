@@ -22,7 +22,8 @@ DDD 2.2 [in development]
       + Options are now grouped according to their functionality.  The
         `Options' menu has gone.  Use `Edit' instead.
       + The `Edit' menu has been completely rewritten, allowing for
-        better clipboard operations.
+        better clipboard operations.  For instance, you can now copy
+        selected displays to the clipboard and paste them later.
       DDD now requires less width and height.  If you already have a
       `~/.dddinit' file, resize DDD manually and save options.
     - Support for debugging processes running outside of DDD.  You can
@@ -38,6 +39,8 @@ DDD 2.2 [in development]
     - User-defined DDD commands.  DDD now provides a simple facility
       that allows the inferior debugger to execute DDD commands.  For
       details, see `User-Defined Commands' in the DDD manual.
+    - For `Continue until here', DDD now uses explicit temporary
+      breakpoints and `continue' instead of the GDB `until' command.
 
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert

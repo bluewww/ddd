@@ -355,9 +355,6 @@ Volunteers for these and other projects are welcome!
 187. Have a `commands' menu listing up all debugger commands.  Should
      be organized according to `help' classes.
 
-191. When selecting displays, have the selection text contain ddd
-     `graph' commands to re-generate them.
-
 192. Use the generating expression as display base, not the expression 
      sent by GDB.  (i.e., use `f', not `f(int)').
 

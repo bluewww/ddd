@@ -355,10 +355,6 @@ Volunteers for fixing these and other bugs are welcome!
      and instead I get the info in the debugger console.
 
 173. Matthias Kurz <mk@baerlap.north.de> says:
-     - Problems with the gdb 'until' commands. If another breakpoint
-       is hitten before the specified line, the requested halt is
-       forgotten.  tbreak works always as intended. Suggestion: use
-       always tbreak.
      - Often the first graph display is not completely inside the
        window; after selecting 'layout graph' things are right
      - The debugger console often looses the text cursor; typing
@@ -393,10 +389,7 @@ Volunteers for fixing these and other bugs are welcome!
 183* Hitting `stepi' too fast causes a delay cursor to appear that
      won't go.
 
-184* When the PC changes, but no line number is received, clear
-     execution arrow.
-
-185. When pasting a multi-line text with `graph' commands, some
-     commands are ignored.
+184* When the PC changes, but no line number is received, the
+     execution arrow should be cleared.
 
 186. (Insert your bug here)
