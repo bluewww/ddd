@@ -129,9 +129,6 @@
 /* Define if the Motif library defines `Xm21InstallImage' */
 #undef HAVE_XM21INSTALLIMAGE
 
-/* Define if your C++ compiler supports named return values. */
-#undef HAVE_NAMED_RETURN_VALUES
-
 /* Define if PATH_MAX is defined or declared in <limits.h>. */
 #undef HAVE_PATH_MAX
 

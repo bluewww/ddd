@@ -87,7 +87,6 @@ BASE_SRC = \
 	my-dirent.h  \
 	oldcxx.h     \
 	pi.h         \
-	return.h     \
 	rxclass.C    \
 	rxclass.h    \
 	sigName.C    \

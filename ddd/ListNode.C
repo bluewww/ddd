@@ -35,7 +35,6 @@ char ListNode_rcsid[] =
 
 
 #include "assert.h"
-#include "return.h"
 #include <iostream>
 #include <misc.h>       // max()
 
@@ -370,13 +369,12 @@ void ListNode::rebind(const class VSLLib *lib)
     tail()->rebind(lib);
 }
 
-string ListNode::firstName() const RETURNS(s)
+string ListNode::firstName() const
 {
-    RETURN_OBJECT(string, s);
-    s = head()->firstName();
+    string s = head()->firstName();
     if (s.empty())
 	s = tail()->firstName();
-    RETURN(s);
+    return s;
 }
 
 

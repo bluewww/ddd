@@ -769,49 +769,6 @@ fi
 ])dnl
 dnl
 dnl
-dnl
-dnl ICE_CXX_NAMED_RETURN_VALUES
-dnl ---------------------------
-dnl
-dnl If the C++ compiler supports named return values, 
-dnl define `HAVE_NAMED_RETURN_VALUES'.
-dnl
-AC_DEFUN(ICE_CXX_NAMED_RETURN_VALUES,
-[
-AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports named return values)
-AC_CACHE_VAL(ice_cv_have_named_return_values,
-[
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-# GCC 3.0 supports named return values, but produces lots of warnings.
-# Prefer GCC 3.0 without warnings.
-ice_save_cxxflags="$CXXFLAGS"
-if test "$GXX" = yes; then
-  CXXFLAGS="-Werror $CXXFLAGS"
-fi
-AC_TRY_COMPILE([
-struct X {
-    int f();
-};
-
-int X::f() return i;
-{
-    i = 42;
-}
-], [/* empty */],
-ice_cv_have_named_return_values=yes,
-ice_cv_have_named_return_values=no)
-CXXFLAGS="$ice_save_cxxflags"
-AC_LANG_RESTORE
-])
-AC_MSG_RESULT($ice_cv_have_named_return_values)
-if test "$ice_cv_have_named_return_values" = yes; then
-AC_DEFINE(HAVE_NAMED_RETURN_VALUES)
-fi
-])dnl
-dnl
-dnl
 dnl ICE_CXX_EXPLICIT_TEMPLATE_INSTANTIATION
 dnl ---------------------------------------
 dnl

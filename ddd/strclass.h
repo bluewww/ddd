@@ -1412,109 +1412,6 @@ inline string& string:: operator +=(char y)
 }
 
 // Constructive concatenation
-#if HAVE_NAMED_RETURN_VALUES
-
-inline string operator + (const string& x, const string& y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (const string& x, const subString& y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (const string& x, const char* y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (const string& x, char* y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (const string& x, char y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (const subString& x, const string& y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (const subString& x, const subString& y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (const subString& x, const char* y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (const subString& x, char* y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (const subString& x, char y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (const char* x, const string& y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (const char* x, const subString& y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (char* x, const string& y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (char* x, const subString& y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (char x, const string& y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string operator + (char x, const subString& y) return r;
-{
-    cat(x, y, r);
-}
-
-inline string reverse(const string& x) return r;
-{
-    r.rep = string_Sreverse(x.rep, r.rep);
-}
-
-inline string upcase(const string& x) return r;
-{
-    r.rep = string_Supcase(x.rep, r.rep);
-}
-
-inline string downcase(const string& x) return r;
-{
-    r.rep = string_Sdowncase(x.rep, r.rep);
-}
-
-inline string capitalize(const string& x) return r;
-{
-    r.rep = string_Scapitalize(x.rep, r.rep);
-}
-
-#else /* ! defined(NAMED_RETURN_VALUES) */
 
 inline string operator + (const string& x, const string& y)
 {
@@ -1615,8 +1512,6 @@ inline string capitalize(const string& x)
 {
     string r; r.rep = string_Scapitalize(x.rep, r.rep); return r;
 }
-
-#endif /* ! defined(NAMED_RETURN_VALUES) */
 
 // prepend
 

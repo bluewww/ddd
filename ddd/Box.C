@@ -36,7 +36,6 @@ char Box_rcsid[] =
 #include <string.h>
 
 #include "assert.h"
-#include "return.h"
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
@@ -131,15 +130,12 @@ Box *Box::tag(Data *dta, DataLink *dl)
 }
 
 // Region of the TagBox at P; if P is not given, use top-most tag
-BoxRegion Box::region(BoxPoint p) const RETURNS(r)
+BoxRegion Box::region(BoxPoint p) const
 {
-    RETURN_OBJECT(BoxRegion, r);
     const TagBox *t = findTag(p);
-    if (t)
-	r = t->__region();
-    else
-	r = BoxRegion(BoxPoint(0,0), BoxSize(0,0));
-    RETURN(r);
+    return (t) ?
+      t->__region() :
+      BoxRegion(BoxPoint(0,0), BoxSize(0,0));
 }
 
 // Data of the TagBox at P
@@ -152,27 +148,21 @@ Data *Box::data(BoxPoint p) const
 }
 
 // Name of the TagBox at P
-string Box::name(BoxPoint p) const RETURNS(name)
+string Box::name(BoxPoint p) const
 {
-    RETURN_OBJECT(string, name);
     const TagBox *t = findTag(p);
-    if (t)
-	name = t->__name();
-    else
-	name = "";
-    RETURN(name);
+    return (t) ?
+      t->__name() :
+      "";
 }
 
 // Information of the TagBox at P
-string Box::info(BoxPoint p) const RETURNS(info)
+string Box::info(BoxPoint p) const
 {
-    RETURN_OBJECT(string, info);
     const TagBox *t = findTag(p);
-    if (t)
-	info = t->__info();
-    else
-	info = "";
-    RETURN(info);
+    return (t) ?
+      t->__info():
+      "";
 }
 
 // `Selected' property of TagBox at P

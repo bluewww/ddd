@@ -40,7 +40,6 @@ extern "C" int malloc_verify();
 
 #include "strclass.h"
 #include "config.h"
-#include "return.h"
 #include <ctype.h>
 #include <limits.h>
 #include <new>
@@ -1348,10 +1347,10 @@ int split(const string& src, string *results, int n, const regex& r)
     return i;
 }
 
-string join(const string *src, int n, const string& separator) RETURNS(x)
+string join(const string *src, int n, const string& separator)
 {
-    RETURN_OBJECT(string, x);
-    string sep = separator;
+    string x;
+    const string& sep = separator;
     int xlen = 0;
     int i;
     for (i = 0; i < n; ++i)
@@ -1371,7 +1370,7 @@ string join(const string *src, int n, const string& separator) RETURNS(x)
 	j += sep.length();
     }
     ncopy0(src[i].chars(), &(x.rep->s[j]), src[i].length());
-    RETURN(x);
+    return x;
 }
 
   
@@ -1462,81 +1461,6 @@ strRep* string_Scapitalize(strRep* src, strRep* dest)
     return dest;
 }
 
-#if HAVE_NAMED_RETURN_VALUES
-
-#if 0				// already defined in -lg++
-string replicate(char c, int n) return w;
-{
-    w.rep = string_Sresize(w.rep, n);
-    char* p = w.rep->s;
-    while (n-- > 0) *p++ = c;
-    *p = 0;
-}
-#endif
-
-string replicate(const string& y, int n) return w
-{
-    int len = y.length();
-    w.rep = string_Sresize(w.rep, n * len);
-    char* p = w.rep->s;
-    while (n-- > 0)
-    {
-	ncopy(y.chars(), p, len);
-	p += len;
-    }
-    *p = 0;
-}
-
-string common_prefix(const string& x, const string& y, int startpos) return r;
-{
-    if ((int)x.length() + startpos < 0 || (int)y.length() + startpos < 0)
-	return;
-
-    const char* xchars = x.chars();
-    const char* ychars = y.chars();
-    const char* xs = &(xchars[startpos]);
-    const char* ss = xs;
-    const char* topx = &(xchars[x.length()]);
-    const char* ys = &(ychars[startpos]);
-    const char* topy = &(ychars[y.length()]);
-    int l;
-    for (l = 0; xs < topx && ys < topy && *xs++ == *ys++; ++l)
-	;
-    r.rep = string_Salloc(r.rep, ss, l, l);
-}
-
-string common_suffix(const string& x, const string& y, int startpos) return r;
-{
-    if ((int)x.length() + startpos < 0 || (int)y.length() + startpos < 0)
-	return;
-
-    const char* xchars = x.chars();
-    const char* ychars = y.chars();
-    const char* xs = &(xchars[x.length() + startpos]);
-    const char* botx = xchars;
-    const char* ys = &(ychars[y.length() + startpos]);
-    const char* boty = ychars;
-    int l;
-    for (l = 0; xs >= botx && ys >= boty && *xs == *ys ; --xs, --ys, ++l)
-	;
-    r.rep = string_Salloc(r.rep, ++xs, l, l);
-}
-
-#else // !HAVE_NAMED_RETURN_VALUES
-
-#if 0
-string replicate(char c, int n)
-{
-    string w;
-    w.rep = string_Sresize(w.rep, n);
-    char* p = w.rep->s;
-    while (n-- > 0) 
-	*p++ = c;
-    *p = 0;
-    return w;
-}
-#endif
-
 string replicate(const string& y, int n)
 {
     string w;
@@ -1590,8 +1514,6 @@ string common_suffix(const string& x, const string& y, int startpos)
     r.rep = string_Salloc(r.rep, ++xs, l, l);
     return r;
 }
-
-#endif // !HAVE_NAMED_RETURN_VALUES
 
 // IO
 
