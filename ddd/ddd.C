@@ -882,6 +882,7 @@ static Widget dump_w           = 0;
 static Widget l_w              = 0;
 static Widget detect_aliases_w = 0;
 static Widget infos_w          = 0;
+static Widget align_w          = 0;
 
 static MMDesc data_menu[] = 
 {
@@ -900,7 +901,7 @@ static MMDesc data_menu[] =
       NULL, &info_args_w },
     { "infos",      MMPush,    { dddPopupInfosCB }, NULL, &infos_w },
     MMSep,
-    { "align",      MMPush,    { graphAlignCB  }},
+    { "align",      MMPush,    { graphAlignCB  }, NULL, &align_w },
     { "rotate",     MMPush,    { graphRotateCB }},
     { "layout",     MMPush,    { graphLayoutCB }},
     MMSep,
@@ -2165,6 +2166,7 @@ void update_options()
     }
 
     set_sensitive(graph_snap_to_grid_w, show_grid);
+    set_sensitive(align_w, show_grid);
 
     XtVaSetValues(graph_show_hints_w, XmNset, show_hints, NULL);
     XtVaSetValues(graph_auto_layout_w, XmNset, auto_layout, NULL);
