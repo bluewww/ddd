@@ -97,6 +97,7 @@ string _cook(CONST_REF(string) raw, bool for_postscript) RETURNS(cooked)
 
 	quote:
 	case '\"':
+	case '\'':
 	case '\\':
 	    cooked += "\\";
 	    cooked += c;
