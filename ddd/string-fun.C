@@ -121,11 +121,16 @@ void read_leading_blanks (string& s)
 // ***************************************************************************
 string read_nr_str (string& s)
 {
+    string s0 = s;
     read_leading_parentheses(s);
-    if (s == "" || !isdigit(s[0]))
-	return "";
 
     string int_string = s.through(rxint);
+    if (int_string == "")
+    {
+	s = s0;
+	return "";
+    }
+
     s = s.from(int(int_string.length()));
     read_trailing_parentheses(s);
 
