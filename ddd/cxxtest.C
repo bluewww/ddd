@@ -312,8 +312,16 @@ static void list_test(int start)
 
     (void) list;		// Display this
 
-    delete list->next->next;
-    delete list->next;
+    // Delete an element
+    List *p = list->next->next;
+    list->next->next = p->next;
+
+    // Delete another element
+    List *pp = list->next;
+    list->next = pp->next;
+
+    delete p;
+    delete pp;
     delete list;
 }
 
