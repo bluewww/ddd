@@ -1020,8 +1020,8 @@ static bool is_known_command(const string& answer)
     read_leading_blanks(ans);
     strip_final_blanks(ans);
 
-    // Care for first line only
-    if (ans.contains('\n'))
+    // In longer messages (help texts), care for first line only
+    if (ans.freq('\n') > 1)
 	ans = ans.before('\n');
 
     return ans.contains("program is not active") // DBX
