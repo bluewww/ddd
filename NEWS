@@ -29,6 +29,9 @@ DDD 3.0 [in development]
     - The maximum number of glyphs is now configurable at startup time.
       See the `maxGlyphs' resource for details.
     - DBX settings now also work with SGI DBX.
+    - Some resources were renamed for clarity:
+      The `toolBar' resource is now named `commandToolBar'.
+      The `colorIcons' resource is now named `colorWMIcons'.
 
     Bug fixes:
     - Using Sun DBX 3.x, data displays are no longer cluttered by DBX
