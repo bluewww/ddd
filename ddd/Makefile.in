@@ -851,6 +851,7 @@ PICS = \
 	$(picdir)/ddd-code.ps           \
 	$(picdir)/ddd-console.ps        \
 	$(picdir)/ddd-data-prefs.ps     \
+	$(picdir)/ddd-display.ps        \
 	$(picdir)/ddd-drag.ps           \
 	$(picdir)/ddd-edit-breakpoints.ps \
 	$(picdir)/ddd-edit-displays.ps  \
@@ -1624,6 +1625,9 @@ $(picdir)/ddd-edit-breakpoints.ps: \
 	$(picdir)/ddd-edit-breakpoints.fig $(picdir)/ddd-edit-breakpoints.xpm
 	cd $(picdir); $(FIG2PS) ddd-edit-breakpoints.fig > ddd-edit-breakpoints.ps
 
+$(picdir)/ddd-display.ps: \
+	$(picdir)/ddd-display.fig $(picdir)/ddd-display.xpm
+	cd $(picdir); $(FIG2PS) ddd-display.fig > ddd-display.ps
 
 # The logo comes in XPM source
 $(picdir)/dddsplash.ps: $(icondir)/dddsplash.xpm
