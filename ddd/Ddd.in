@@ -457,8 +457,9 @@ Ddd*graph_edit.layoutMode:	regular
 Ddd*graph_edit.autoLayout:	false
 
 ! Width and height of the grid
-Ddd*graph_edit.gridWidth:	16
-Ddd*graph_edit.gridHeight:	16
+! Ddd*graph_edit.gridWidth:	16
+! Ddd*graph_edit.gridHeight:	16
+Ddd*graph_edit.GridSize:	16
 
 
 ! Source defaults
@@ -546,6 +547,9 @@ Ddd*keyboardFocusPolicy:	POINTER
 ! X Warnings
 ! Do we wish to suppress X warnings?
 Ddd*suppressWarnings:		false
+
+! Shall DDD ungrab the mouse pointer when interrupting a modal X application?
+Ddd*ungrabMousePointer:		true
 
 ! A little less highlighting
 Ddd*highlightThickness:		1
@@ -2134,8 +2138,11 @@ the @key TAB @rm key completes\n\
     arguments in all @DDD@ windows.\n\
     Otherwise, the  @key TAB @rm key completes \
 in the @DDD@ debugger console only.\n\
-@tt \267 @rm If @bf Suppress X Warnings @rm is set, \
+@tt \267 @rm If @bf Suppress X warnings @rm is set, \
 X warnings are silently ignored.\n\
+@tt \267 @rm If @bf Ungrab mouse pointer @rm is set, @DDD@ will \
+automatically\n\
+    ungrab the mouse pointer when interrupting a modal X application.\n\
 @tt \267 @rm If @bf Save command history on exit @rm is set, \
 the command history is\n\
     automatically saved when @DDD@ exits.\n\
@@ -2174,6 +2181,8 @@ Ddd*preferences*groupIconify.labelString:	 \
 Iconify all windows at once
 Ddd*preferences*suppressWarnings.labelString:	 \
 Suppress X warnings
+Ddd*preferences*ungrabMousePointer.labelString:	 \
+Ungrab mouse pointer when interrupting modal X application
 Ddd*preferences*saveHistoryOnExit.labelString:	 \
 Save command history on exit
 
@@ -2220,6 +2229,7 @@ Ddd*preferences*cacheSourceFiles.labelString:	 \
 Cache source files in memory
 Ddd*preferences*cacheMachineCode.labelString:	 \
 Cache machine code in memory
+
 Ddd*preferences*tabWidth.orientation:	 XmHORIZONTAL
 Ddd*preferences*tabWidth.minimum:	 1
 Ddd*preferences*tabWidth.maximum:	 32
@@ -2235,7 +2245,7 @@ Ddd*preferences*data*helpString:	\
  in the data window.\n\
 @tt \267 @rm If @bf Show edge hints @rm is set, edge hints are displayed.\n\
 @tt \267 @rm If @bf Snap displays to grid @rm is set, \n\
-    displays are always aligned on the grid.\n\
+    each display is aligned on the nearest grid point.\n\
 @tt \267 @rm If @bf Compact layout @rm is set, the graph is layouted\
  in a compact fashion.\n\
     This is suitable for homogeneous structures only.\n\
@@ -2243,6 +2253,7 @@ Ddd*preferences*data*helpString:	\
 @tt \267 @rm If @bf Automatic layout @rm is set, the graph is layouted\
  after each change.\n\
     Otherwise, layout can be invoked manually.\n\
+@tt \267 @rm In @bf Grid Size@rm, you can change the spacing of grid points.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on @bf Reset @rm to restore the saved preferences.
@@ -2253,6 +2264,11 @@ Ddd*preferences*snapToGrid.labelString:	       Snap displays to grid
 Ddd*preferences*compactLayout.labelString:     Compact layout
 Ddd*preferences*autoLayout.labelString:	       Automatic layout
 
+Ddd*preferences*gridSize.orientation:	 XmHORIZONTAL
+Ddd*preferences*gridSize.minimum:	 2
+Ddd*preferences*gridSize.maximum:	 64
+Ddd*preferences*gridSize.showValue:	 true
+Ddd*preferences*gridSize.titleString:	 Grid Size
 
 Ddd*preferences*startup*helpString:   \
 @rm These are the @sl Startup Preferences@rm.\n\
