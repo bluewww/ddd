@@ -941,10 +941,11 @@ HUFFMAN_OBJECTS = strclass.$(OBJEXT) cook.$(OBJEXT) rxclass.$(OBJEXT)
 OBJECTS = $(LIB_OBJECTS) $(DDD_OBJECTS)
 
 ## The program files.
-PROGS = $(ddd_canonical)$(EXEEXT) $(ddd)$(EXEEXT)
+# We use `./ddd' to prevent VPATH selecting at the `ddd' directory instead.
+PROGS = $(ddd_canonical)$(EXEEXT) ./$(ddd)$(EXEEXT)
 
 ## The program files to be installed.
-INSTALL_PROGS = $(ddd)$(EXEEXT)
+INSTALL_PROGS = ./$(ddd)$(EXEEXT)
 
 ## Extra demonstration files.
 DEMOS = userinfo$(EXEEXT) stringify$(EXEEXT) huffencode$(EXEEXT) \
@@ -1345,7 +1346,7 @@ ddd-message:
 	@$(ECHO) "Building $(ddd_canonical)..."
 
 .PHONY: ddd-done
-ddd-done: $(ddd)$(EXEEXT)
+ddd-done: ./$(ddd)$(EXEEXT)
 	@$(ECHO) "Building $(ddd_canonical)... done."
 	@$(ECHO) "You may now type \`$(MAKE) check' for a test."
 
@@ -1648,6 +1649,9 @@ ddd.vsl.h: $(srcdir)/../vsllib/tab.vsl
 $(ddd)$(EXEEXT): $(ddd_canonical)$(EXEEXT)
 	$(RM) $@ $(SYMS); $(LN_S) $(ddd_canonical)$(EXEEXT) $@
 
+./$(ddd)$(EXEEXT): $(ddd_canonical)$(EXEEXT)
+	$(RM) $@ $(SYMS); $(LN_S) $(ddd_canonical)$(EXEEXT) $@
+
 $(ddd_canonical)$(EXEEXT): ddd.$(OBJEXT) $(OBJECTS)
 	$(LINK.cc) -o $@ ddd.$(OBJEXT) $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
@@ -1791,12 +1795,12 @@ ftest.$(OBJEXT): $(srcdir)/ftest.f
 
 ## For demonstration and debugging purposes
 .PHONY: check
-check: Ddd $(ddd)$(EXEEXT) cxxtest$(EXEEXT)
-	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. ./ddd $(DDD_OPTIONS) cxxtest$(EXEEXT)
+check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT)
+	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. ./$(ddd)$(EXEEXT) $(DDD_OPTIONS) cxxtest$(EXEEXT)
 
 .PHONY: debug
-debug: Ddd $(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit $(ddd).syms
-	$(DEBUGGER) ./$(ddd)
+debug: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit $(ddd).syms
+	$(DEBUGGER) ./$(ddd)$(EXEEXT)
 
 $(ddd).syms: $(ddd_canonical).syms
 	$(RM) $@; $(LN_S) $(ddd_canonical).syms $@
@@ -1812,7 +1816,7 @@ syms:   $(ddd).syms
 
 # Create useful stuff in background
 .PHONY: stuff
-stuff:  $(ddd)$(EXEEXT)
+stuff:  ./$(ddd)$(EXEEXT)
 	$(MAKE) $(ddd).syms > make.log 2>&1 &
 	@:
 
