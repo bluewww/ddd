@@ -6065,8 +6065,9 @@ void DataDisp::merge_displays(IntArray displays,
     // Hide all aliases except the node which has changed least recently.
     sort_last_change(displays);
 
+    int i;
 #if 0
-    for (int i = 0; i < displays.size(); i++)
+    for (i = 0; i < displays.size(); i++)
     {
 	clog << "Last change of display " << displays[i]
 	     << ": " << last_change_of_disp_nr(displays[i]) << "\n";
@@ -6082,7 +6083,7 @@ void DataDisp::merge_displays(IntArray displays,
     }
 
     IntArray suppressed_displays;
-    for (int i = 1; i < displays.size(); i++)
+    for (i = 1; i < displays.size(); i++)
     {
 	int disp_nr = displays[i];
 	DispNode *dn = disp_graph->get(disp_nr);
