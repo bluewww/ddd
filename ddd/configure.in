@@ -670,12 +670,15 @@ fi
 dnl
 dnl Check for risky LessTif versions.
 risky_lesstif=false
+ice_save_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 AC_TRY_CPP([#include <Xm/Xm.h>
 #ifdef LESSTIF_VERSION
 #if LESSTIF_VERSION < 1 && LESSTIF_REVISION < 87
 #error
 #endif
 #endif], risky_lesstif=false, risky_lesstif=true)
+CPPFLAGS="$ice_save_CPPFLAGS"
 dnl
 dnl Check for risky CC versions.
 dnl
