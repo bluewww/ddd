@@ -49,11 +49,13 @@ To run DDD, you need:
 
    * An X server.  Without X, DDD does not run.
 
-   * An inferior command-line debugger.  Best results are achieved
-     with GDB, the GNU debugger.  (GDB 4.x is required; best results
-     are achieved with GDB 4.13 or later.)  Using GDB, you can debug
-     programs written in C, C++, GNU Java (`guavac'), GNU Ada
-     (`gnat'), GNU Fortran (`g77') and GNU Modula-2.
+   * An inferior command-line debugger.
+
+     To debug binary executables, best results are achieved with GDB,
+     the GNU debugger.  (GDB 4.x is required; GDB 4.17 or later is
+     recommended.)  Using GDB, you can debug programs written in C,
+     C++, GNU Java (`guavac'), GNU Ada (`gnat'), GNU Fortran (`g77')
+     and GNU Modula-2.
 
      As an alternative to GDB, DDD also supports the DBX debugger as
      found on SUN, DEC, AIX, and IRIX systems.  Using DBX, you can
@@ -64,11 +66,14 @@ To run DDD, you need:
      found on HP-UX systems.  XDB usage has been tested for C programs
      only, but may work for other languages as well. (*)
 
-     To debug Java programs, DDD supports JDB, the Java Debugger, as
-     of JDK 1.1 and later.
+     To debug Java bytecode programs, DDD supports JDB, the Java
+     Debugger, as of JDK 1.1 and later.
 
-     To debug Python scripts, DDD supports PYDB, a PDB extension.
+     To debug Python programs, DDD supports PYDB, a PDB extension.
      PYDB is included in the DDD distribution.
+
+     To debug Perl programs, DDD supports the Perl debugger as of Perl
+     5.003 and later.
 
      (*) XDB will no longer be supported in future DDD releases.
          You can use HP's Wildebeest (WDB) instead, a free GDB port to
