@@ -220,6 +220,7 @@ void load_history(const string& file)
 	    {
 		gdb_history += line;
 		add_to_arguments(line);
+		update_combo_boxes(line);
 	    }
 	}
 
