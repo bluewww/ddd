@@ -176,79 +176,86 @@ Reported by:  (various)
 LESSTIF
 =======
 
-    Here is a list of known DDD problems, occurring when linking DDD with
-    LessTif instead of OSF/Motif.  These bugs should be fixed in some
-    future release of DDD and/or LessTif.  Unless otherwise noted, all
-    bugs refer to DDD 2.0 compiled against LessTif 0.75a.
+    Here is a list of known DDD problems, occurring when linking DDD
+    with LessTif instead of OSF/Motif.  These bugs should be fixed in
+    some future release of DDD and/or LessTif.  Unless otherwise
+    noted, all bugs refer to DDD 2.1 compiled against LessTif 0.79 on
+    a sparc-sunos-4.1.4.
 
     DDD is available via `http://www.cs.tu-bs.de/softech/ddd/'.
     LessTif is available via `http://www.lesstif.org/'.
 
-    001. The debugger console  (the place where you can enter GDB
-         commands) displays only one line.  [behavioral]
-        
-         Fix: in `ddd/Ddd.in', comment out the lines limiting the size of the
-         `gdb_w' scrolled window:
-    
-         --- ddd-2.0.orig/ddd/Ddd.in  Wed Sep 25 15:27:33 1996
-         +++ ddd-2.0/ddd/Ddd.in  Tue Dec 17 14:59:14 1996
-         @@ -2477,8 +2477,8 @@
-          Ddd*gdb_w.rows:                        10
-          Ddd*gdb_w.columns:             88
-          
-         -Ddd*gdb_wSW.width:             660
-         -Ddd*gdb_wSW.height:            124
-         +! Ddd*gdb_wSW.width:           660
-         +! Ddd*gdb_wSW.height:          124
-          
-          Ddd*gdb_w.editable:            true
-          Ddd*gdb_w.allowResize:         true
+    001. (fixed)
     
     002. The source argument field `()' is not updated (i.e. when
          clicking on some source item)  [behavioral]
-        
-         Cause: XmText does not yet support selections.
-         `XmTextGetSelectionPositon' is not implemented.
-    
-    003. The source popup menu (clicking the right mouse button when
-         pointer is on a source item) does not work.  [behavioral]
+         Cause: Text.c:XmTextGetSelectionPositon() is not implemented.
+
+    003. (fixed)
     
     004. The menu bar items are too close together.  [visual]
     
-    005. The file filters (File->Open File, File->Open Core, ...) 
-         do not work.  [behavioral]
+    005. (fixed)
     
-    006. `Preferences' buttons (Options->Preferences) stick out.
+    006. `Preferences' buttons (Options|Preferences) stick out.
          There should be no 3d-border around the four preferences
          buttons.  [visual]
     
-    007. The `Preferences' panel size (below buttons) is incorrect.  With
-         OSF/Motif, it extends to the maximum size of the four
-         preference panels (i.e. the `Startup preferences' panel).
-         With LessTif, it extends to the size of the first preference
-         panel.  The code to handle the panel size is in `add_panel()'
-         in `ddd/ddd.C'.  [visual]
+    007-010. (fixed)
     
-    008. Option buttons show `OptionButton' instead of the given label
-         string.  [visual]
-    
-    009. The `Settings' panel (Options->Settings) is not scrolled.
-         [behavioral]
-    
-    010. Paned windows don't work.  Dragging sashes has strange
-         effects.  [behavioral]
-    
-    011. The `F1' menu accelerator (Help->On Context) has no effect.
+    011. The `F1' menu accelerator (Help|On Context) has no effect.
          [behavioral]
     
     012. Moving `Up' or `Down' in the `Backtrace' window
-         (Stack->Backtrace) does not clear the last selection.  Only
-         one line should be selected.  [behavioral]
-    
-    014. In the DDD manual (Help->DDD Manual), selecting a title on the
-         left causes the cursor to jump on the appropriate section in
-         the right, but the window is not scrolled such that the
-         section is at the top.  [behavioral]
+         (Status|Backtrace) does not clear the last selection.  Only
+         one line should be selected.  Same applies to other List
+         Widgets (e.g. Commands|Command History).  [visual]
+
+    013-014. (fixed)
+
+    015. Selecting `Source Preferences' in the `Preferences' panel
+         (Options|Preferences) causes a `BadValue' request.
+         [X protocol error]
+
+    016. Enabling value tips causes a `PANIC: no geometry_manager
+         procedure specified' error.  [core dump]
+
+    017. It is not possible to change values of the OptionButton in the 
+         `Print' panel (File|Print Graph).  [behavioral]
+
+    018. In the `Settings' panel, the scrolled window border is etched
+         out instead of etched in.  [visual]
+
+    019. The `Find>>' button in `Help|DDD Manual' causes a
+         segmentation fault.  Cause: PushB.c:ArmTimeout()
+         passes NULL as event to the ActivateCallback.  [core dump]
+
+    020. Some of the dialog shells behave like top-level shells
+         (e.g. they are decorated and placed by the user), for
+         instance the display editor (Data|Edit Displays) and the
+         breakpoint editor (Source|Edit Breakpoints).  [behavioral]
+
+    021. Text widgets use a `fixed' font instead of the
+         `lucidatypewriter' font specified in the DDD resources.
+         [visual]
+
+    022. The status line (at the bottom) does not have minimum height.
+         [visual]
+
+    023. The debugger status indicator (in the status line) is
+         invisible.  [visual]
+
+    024. Let A be a child of a PanedWindow.  In LessTif, if A is
+         unmanaged, its space is occupied by the last child of the
+         PanedWindow (regardless of paneMaximum settings - this is a
+         bug).  In Motif, the space is occupied by A's predecessor.
+         [behavioral]
+
+    025. Although the source window is non-editable, characters can be 
+         inserted and deleted.  The bell rings, though.  [behavioral]
+
+    026. The bell rings even when only the Shift key is pressed.
+         [behavioral]
 
 
 LINUX
