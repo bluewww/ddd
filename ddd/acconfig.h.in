@@ -111,12 +111,13 @@
 /* Define if you want this program to use Motif widgets. */
 #undef WITH_MOTIF
 
-/* Define if you want runtime-compiled regexes (not needed in DDD) */
+/* Define if you want support for runtime-compiled regexps.  Required
+   in ICE; not needed in DDD.  */
 #undef WITH_RUNTIME_REGEX
 
-/* Define if you want runtime-compiled regexps in DDD.  Default in DDD
-   2.1 and earlier.  Requires ~30% more memory; slightly slower, too.
-   Requires WITH_RUNTIME_REGEX to be set. */
+/* Define if you want regexps to be compiled at runtime.  Default in
+   DDD 2.1 and earlier.  Requires ~30% more memory; slightly slower,
+   too.  Requires WITH_RUNTIME_REGEX to be set.  Required in ICE.  */
 #undef RUNTIME_REGEX
 
 
