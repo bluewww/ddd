@@ -4280,6 +4280,7 @@ void SourceView::process_pwd(string& pwd_output)
 	switch (gdb->type())
 	{
 	case GDB:			// 'Working directory PATH.'
+	case PYDB:
 	    if (pwd.contains("Working directory", 0))
 	    {
 		pwd = pwd.before('.', -1);
