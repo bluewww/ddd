@@ -35,7 +35,7 @@ char Delay_rcsid[] =
 #pragma implementation "VarArray.h"
 #endif
 
-#define LOG_DELAY 0
+#define LOG_DELAY 1
 
 #include "Delay.h"
 #include "assert.h"
@@ -185,13 +185,16 @@ _Delay::~_Delay()
 }
 
 // Make sure we do not attempt to delete a delay on a destroyed widget
-void _Delay::DestroyCB(Widget, XtPointer client_data, XtPointer)
+void _Delay::DestroyCB(Widget widget, XtPointer client_data, XtPointer)
 {
     _Delay *delay = (_Delay *)client_data;
     assert(ptr_cast(_Delay, delay));
 
     delay->widget     = 0;
     delay->old_cursor = 0;
+#if LOG_DELAY
+    std::clog << "_Delay::DestroyCB: " << XtName(widget) << "\n";
+#endif
 }
 
 
