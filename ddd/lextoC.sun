@@ -31,19 +31,19 @@
 // This file was modified for -*- C++ -*-\
 // using $RCSfile$ $Revision$\
 #ifndef yyerror\
-extern void yyerror(char *s);\
+extern "C" void yyerror(char *s);\
 #endif\
 #ifndef yylex\
-extern int yylex();\
+extern "C" int yylex();\
 #endif\
 #ifndef yylook\
-extern int yylook();\
+extern "C" int yylook();\
 #endif\
 #ifndef yyback\
-extern int yyback(int *p, int m);\
+extern "C" int yyback(int *p, int m);\
 #endif\
 #ifndef yywrap\
-extern int yywrap();\
+extern "C" int yywrap();\
 #endif\
 extern "C" {\
     void allprint(int c);\
@@ -68,6 +68,6 @@ s!^yyunput(!extern "C" void yyunput(!
 s!\<yystate\>!yylexstate!g
 s!^yyfussy: !!
 s! extern int yyprevious;$!!
-s!static	char ncform_rcsid!char yy_ncform_rcsid!
+s!static[ 	]*char \(ncform_[a-z]*id\)!char yy_\1!
 \/yycrank\[\] = {/,/}/s![0-9][0-9]*,[0-9][0-9]*!{&}!g
 \/yysvec\[\] = {/,/}/s!\([^,]*,[^,]*,[^,}]*\)!{\1}!g

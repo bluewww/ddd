@@ -56,26 +56,21 @@ static int yylinenumber;
 static int switchdown();
 static int switchup(char *filename, bool thisdir);
 
-static int pushback;
-static int has_pushback = 0;
+static char pushback[BUFSIZ];
+static char *pushback_ptr = pushback;
 
 inline int do_unput(char c) 
 {
     if (c != 0)
-    {
-	pushback = c;
-	has_pushback = 1;
-    }
+	*pushback_ptr++ = c;
+
     return c;
 }
 
 static int do_input() 
 {
-    if (has_pushback)
-    {
-	has_pushback = 0;
-	return pushback;
-    }
+    if (pushback_ptr != pushback)
+	return *--pushback_ptr;
 
     char c;
 

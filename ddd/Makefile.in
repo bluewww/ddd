@@ -463,12 +463,11 @@ LINK.f = $(FC)
 
 ## YACC commands.
 YY = yy
-YACCTOCPLUS = $(SHELL) $(srcdir)/yacctoC -prefix $(YY) \
-	&& $(RM) y.tab.c y.tab.h
+YACCTOCXX = $(SHELL) $(srcdir)/yacctoC
 YACC.Y = $(YACC) $(YFLAGS)
 
 ## LEX commands.
-LEXTOCPLUS = $(SHELL) $(srcdir)/lextoC -prefix $(YY) && $(RM) lex.yy.c
+LEXTOCXX = $(SHELL) $(srcdir)/lextoC
 LEX.L = $(LEX) $(LFLAGS)
 
 ## Where to look for X include files.  (-I/usr/X11R5/include)
@@ -497,42 +496,44 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 	$(COMPILE.p) -E -o $@ $<
 .Y:
 	$(YACC.Y) $<
-	$(YACCTOCPLUS)
+	$(YACCTOCXX)
+	$(RM) y.tab.c y.tab.h
 	$(LINK.cc) -o $@ y.tab.C $(LDLIBS)
 	$(RM) y.tab.C y.tab.H
 .Y.C:
 	$(YACC) $(YFLAGS) $<
-	$(YACCTOCPLUS)
+	$(YACCTOCXX)
 	$(MV) y.tab.C $@
-	$(RM) y.tab.H
+	$(RM) y.tab.H y.tab.c y.tab.h
 .Y.h:
 	$(YACC) -d $(YFLAGS) $<
-	$(YACCTOCPLUS)
+	$(YACCTOCXX)
 	$(MV) y.tab.H $@
-	$(RM) y.tab.C
+	$(RM) y.tab.C y.tab.c y.tab.h
 .Y.o:
 	$(YACC) $(YFLAGS) $<
-	$(YACCTOCPLUS)
+	$(YACCTOCXX)
 	$(COMPILE.cc) y.tab.C
-	$(RM) y.tab.C y.tab.H
+	$(RM) y.tab.C y.tab.H y.tab.c y.tab.h
 .Y.YY:
 	$(YACC) -v $(YFLAGS) $<
 	$(MV) y.output $@
-	$(RM) y.tab.c
+	$(RM) y.tab.c y.tab.h
 .L:
 	$(LEX.L) $<
-	$(LEXTOCPLUS)
+	$(LEXTOCXX)
 	$(LINK.cc) -o $@ lex.yy.C $(LDLIBS)
-	$(RM) lex.yy.C
+	$(RM) lex.yy.C lex.yy.c
 .L.C:
 	$(LEX.L) $<
-	$(LEXTOCPLUS)
+	$(LEXTOCXX)
 	$(MV) lex.yy.C $@
+	$(RM) lex.yy.c
 .L.o:
 	$(LEX.L) $<
-	$(LEXTOCPLUS)
+	$(LEXTOCXX)
 	$(COMPILE.cc) -o $@ lex.yy.C
-	$(RM) lex.yy.C
+	$(RM) lex.yy.C lex.yy.c
 
 ## Script rules
 .txt.C:
@@ -1428,13 +1429,26 @@ it:	all cxxtest ctest stuff
 
 ## Lex and Yacc stuff.
 
-# VSL parsers
-vsl-lex.C: vsl-lex.L
-vsl-gramma.h: vsl-lex.L
-vsl-gramma.C: vsl-gramma.Y
+# VSL parsers.
+vsl-lex.C: $(srcdir)/vsl-lex.L
+	$(LEX.L) $(srcdir)/vsl-lex.L
+	$(LEXTOCXX) -prefix vsl
+	$(MV) lex.yy.C $@
+	$(RM) lex.yy.c
 
-# Regexp parsers
-rxscan.C: rxscan.L
+vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y
+	$(YACC.Y) -d $(srcdir)/vsl-gramma.Y
+	$(YACCTOCXX) -prefix vsl
+	$(MV) y.tab.H vsl-gramma.h
+	$(MV) y.tab.C vsl-gramma.C
+	$(RM) y.tab.c y.tah.h
+
+# DDD regexp parsers.
+rxscan.C: $(srcdir)/rxscan.L
+	$(LEX.L) $(srcdir)/rxscan.L
+	$(LEXTOCXX) -prefix ddd
+	$(MV) lex.yy.C $@
+	$(RM) lex.yy.c
 
 # `make depend' fails to find these dependencies :-(
 VSLRead.o: vsl-lex.C vsl-gramma.h vsl-gramma.C

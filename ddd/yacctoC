@@ -49,7 +49,7 @@ fi
 
 prefix=cat
 if [ "$1" = -prefix ]; then
-  prefix="$sed s!yy!$2!"
+  prefix="$sed s!yy!$2!g"
   shift 2
 fi
 

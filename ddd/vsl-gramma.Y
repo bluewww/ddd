@@ -214,8 +214,8 @@ function_header		:	function_identifier function_argument
 
 				    $$.id      = $1;
 				    $$.pattern = $2;
-				    $$.file    = new string(yyfilename);
-				    $$.line    = yylinenumber;
+				    $$.file    = new string(vslfilename);
+				    $$.line    = vsllinenumber;
 				}
 			|	function_identifier
 				{
@@ -223,8 +223,8 @@ function_header		:	function_identifier function_argument
 
 				    $$.id      = new string("#" + *$1);
 				    $$.pattern = new EmptyListNode;
-				    $$.file    = new string(yyfilename);
-				    $$.line    = yylinenumber;
+				    $$.file    = new string(vslfilename);
+				    $$.line    = vsllinenumber;
 
 				    delete $1;
 				}
@@ -267,7 +267,7 @@ function_identifier	:	identifier
 				{ $$ = new string("(not)"); }
 
 identifier		:	IDENTIFIER
-				{ $$ = new string((char *)yytext); }
+				{ $$ = new string((char *)vsltext); }
 
 function_definition	:	local_definition
 			|	global_definition
@@ -302,7 +302,8 @@ local_header		:	function_header EQ
 					vsllib->add(*$1.id,
 						    $1.pattern->dup(), 0, 
 						    False,
-						    yyfilename, yylinenumber);
+						    vslfilename, 
+						    vsllinenumber);
 				    }
 
 				    $$ = $1;
@@ -336,7 +337,7 @@ global_header		:	function_header ARROW
 				      // (for recursive calls)
 				      vsllib->add(*$1.id,
 						  $1.pattern->dup(), 0, True,
-						  yyfilename, yylinenumber);
+						  vslfilename, vsllinenumber);
 				  }
 				  $$ = $1;
 				}
@@ -530,7 +531,7 @@ const_expression	:	string_constant
 
 string_constant		:	STRING
 				{
-				    $$ = new string(unquote((char *)yytext));
+				    $$ = new string(unquote((char *)vsltext));
 				    ASSERT($$->OK());
 				}
 			|	string_constant STRING
@@ -538,14 +539,14 @@ string_constant		:	STRING
 				    ASSERT($1->OK());
 
 				    $$ = $1;
-				    *$$ += unquote((char *)yytext);
+				    *$$ += unquote((char *)vsltext);
 
 				    ASSERT($$->OK());
 				}
 
 numeric_constant	:	INTEGER
 				{
-				    $$ = atoi((char *)yytext);
+				    $$ = atoi((char *)vsltext);
 				}
 
 function_call		:	function_identifier function_argument
