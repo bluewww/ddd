@@ -570,8 +570,8 @@ dnl Autoconf bug fix: GCC 2.95 and later want -isystem for including X files
 X_CFLAGS=`echo $X_CFLAGS | $SED "s,-I,$ISYSTEM,g"`
 dnl
 ICE_FIND_MOTIF
-ICE_FIND_ATHENA
 ICE_FIND_XPM
+ICE_FIND_ATHENA
 ICE_X_PERMISSIVE
 CXXFLAGS="$CXXFLAGS $X_PERMISSIVE"
 dnl
@@ -592,7 +592,8 @@ dnl
 dnl Check for X library
 dnl
 X11_LIBS=""
-AC_CHECK_LIB(X11, XOpenDisplay, X11_LIBS="-lX11",,${X_PRE_LIBS} ${X_EXTRA_LIBS})
+AC_CHECK_LIB([X11],[XOpenDisplay],[X11_LIBS="-lX11"],[],
+	[${X_PRE_LIBS} ${X_EXTRA_LIBS}])
 if test "$X11_LIBS" = ""; then
 dnl Not having X is fatal.  Let the user fix this.
 AC_MSG_ERROR([The X11 library '-lX11' could not be found.
@@ -611,21 +612,21 @@ dnl that DLD-Linux with CDE wants `-lXintl' to refine `Xlcmbcurmax'.
 dnl Guenther Roehrich <guenther@studbox.uni-stuttgart.de> says that
 dnl we must check for `_Xlcmbcurmax' instead of `Xlcmbcurmax'.
 dnl
-AC_CHECK_LIB(Xintl, _Xlcmbcurmax, X11_LIBS="${X11_LIBS} -lXintl",,
-	${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
+AC_CHECK_LIB([Xintl],[_Xlcmbcurmax],[X11_LIBS="${X11_LIBS} -lXintl"],[],
+	[${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
 dnl
 dnl
 dnl Check for -lipc library.  SCO unix is said to want that.
 dnl
-AC_CHECK_LIB(ipc, shmap, X11_LIBS="${X11_LIBS} -lipc",,
-	${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
+AC_CHECK_LIB([ipc],[shmap],[X11_LIBS="${X11_LIBS} -lipc"],[],
+	[${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
 dnl
 dnl
 dnl Check for X toolkit libraries
 dnl
 XT_LIBS=""
-AC_CHECK_LIB(Xt, XtToolkitInitialize, XT_LIBS="-lXt",,
-	${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
+AC_CHECK_LIB([Xt],[XtToolkitInitialize],[XT_LIBS="-lXt"],[],
+	[${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
 if test "$XT_LIBS" = ""; then
 dnl Not having Xt is fatal.  Let the user fix this.
 AC_MSG_ERROR([The X toolkit library '-lXt' could not be found.
@@ -641,9 +642,14 @@ dnl Check for X extension libraries
 dnl
 dnl
 XEXT_LIBS=""
-AC_CHECK_LIB(Xext, XShapeQueryVersion, XEXT_LIBS="-lXext",,
-	${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
+AC_CHECK_LIB([Xext],[XShapeQueryVersion],[XEXT_LIBS="-lXext"],[],
+	[${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
 AC_SUBST(XEXT_LIBS)
+XMU_LIBS=""
+AC_CHECK_LIB([Xmu],[XmuCvtStringToOrientation],
+	[XMU_LIBS="-lXmu"],[],
+	[${XMU_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
+AC_SUBST(XMU_LIBS)
 dnl
 dnl
 dnl
@@ -652,10 +658,10 @@ dnl
 XPM_LIBS=""
 if test "$xpm_includes" != "no" && test "$xpm_libraries" != "no"
 then
-AC_CHECK_LIB(Xpm, XpmCreatePixmapFromXpmImage,
-	XPM_LIBS="-lXpm"
-	AC_DEFINE(HAVE_XPM,1,[Define if you have the XPM library.]),,
-        ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
+AC_CHECK_LIB([Xpm],[XpmCreatePixmapFromXpmImage],
+	[XPM_LIBS="-lXpm"
+	AC_DEFINE([HAVE_XPM],1,[Define if you have the XPM library.])],[],
+        [${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
 if test "$XPM_LIBS" != ""; then
 AC_CHECK_HEADERS(X11/xpm.h xpm.h)
 fi
@@ -669,13 +675,11 @@ dnl
 XAW_LIBS=""
 if test "$athena_includes" != "no" && test "$athena_libraries" != "no"
 then
-AC_CHECK_LIB(Xmu, XmuCvtStringToOrientation,
-	XAW_LIBS="-lXmu ${XAW_LIBS}",,
-	${X_PRE_LIBS} ${XAW_LIBS} ${XT_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
-AC_CHECK_LIB(Xaw, XawTextSetInsertionPoint,
-	XAW_LIBS="-lXaw ${XAW_LIBS}"
-	AC_DEFINE(HAVE_ATHENA,1,[Define if you have the X Athena widgets.]),,
-	${X_PRE_LIBS} ${XAW_LIBS} ${XT_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
+AC_CHECK_LIB([Xaw],[XawTextSetInsertionPoint],
+	[XAW_LIBS="-lXaw ${XAW_LIBS}"
+	AC_DEFINE([HAVE_ATHENA],1,[Define if you have the X Athena widgets.])],
+        [],
+	[${XAW_LIBS} ${XMU_LIBS} ${XT_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
 if test "$XAW_LIBS" = ""; then
 dnl A warning suffices here -- DDD also works without Athena.
 AC_MSG_WARN([The Athena widgets library '-lXaw' could not be found.
@@ -716,27 +720,32 @@ XP_LIBS=""
 if test "$motif_includes" != "no" && test "$motif_libraries" != "no"
 then
 dnl Motif 2.1 wants `-lXp' (X11R6.3 print server)
-AC_CHECK_LIB(Xp, XpSelectInput,
-	XP_LIBS="-lXp"
-	AC_DEFINE(HAVE_XP,1,[Define if you have the XP library (X11R6.3 print server).]),,
-	${X_PRE_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
+AC_CHECK_LIB([Xp],[XpSelectInput],
+	[XP_LIBS="-lXp"
+	AC_DEFINE([HAVE_XP],1,[Define if you have the XP library (X11R6.3 print server).])],
+	[],
+	[${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN}])
 dnl
-AC_CHECK_LIB(Xm, XmCreateOptionMenu,
-	XM_LIBS="-lXm"
-	AC_DEFINE(HAVE_MOTIF,1,[Define if you have Motif widgets.]),,
-	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
+AC_CHECK_LIB([Xm],[XmCreateOptionMenu],
+	[XM_LIBS="-lXm"
+	AC_DEFINE([HAVE_MOTIF],1,[Define if you have Motif widgets.])],
+	[],
+	[${XMU_LIBS} ${XT_LIBS} ${XP_LIBS} ${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN}])
 dnl
-AC_CHECK_LIB(Xm, xmUseVersion,
-	AC_DEFINE(HAVE_XMUSEVERSION,1,[Define if the Motif library defines `xmUseVersion'.]),,
-	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
+AC_CHECK_LIB([Xm],[xmUseVersion],
+	[AC_DEFINE([HAVE_XMUSEVERSION],1,[Define if the Motif library defines `xmUseVersion'.])],
+	[],
+	[${XMU_LIBS} ${XT_LIBS} ${XP_LIBS} ${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN}])
 dnl
-AC_CHECK_LIB(Xm, XmInstallImage,
-	AC_DEFINE(HAVE_XMINSTALLIMAGE,1,[Define if the Motif library defines `XmInstallImage'.]),,
-	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
+AC_CHECK_LIB([Xm],[XmInstallImage],
+	[AC_DEFINE([HAVE_XMINSTALLIMAGE],1,[Define if the Motif library defines `XmInstallImage'.])],
+	[],
+	[${XMU_LIBS} ${XT_LIBS} ${XP_LIBS} ${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN}])
 dnl
-AC_CHECK_LIB(Xm, Xm21InstallImage,
-	AC_DEFINE(HAVE_XM21INSTALLIMAGE,1,[Define if the Motif library defines `Xm21InstallImage'.]),,
-	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
+AC_CHECK_LIB([Xm],[Xm21InstallImage],
+	[AC_DEFINE([HAVE_XM21INSTALLIMAGE],1,[Define if the Motif library defines `Xm21InstallImage'.])],
+	[],
+	[${XMU_LIBS} ${XT_LIBS} ${XP_LIBS} ${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN}])
 fi
 if test "$XM_LIBS" = ""; then
 dnl Without Motif, we won't get far.  Let the user fix this.
@@ -762,7 +771,7 @@ dnl Check for `baseTranslations' resource
 ICE_TRANSLATION_RESOURCE
 dnl
 dnl Check for Motif properties
-LIBS="$LIBS ${XM_LIBS} ${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN}"
+LIBS="$LIBS ${XM_LIBS} ${XMU_LIBS} ${XT_LIBS} ${XP_LIBS} ${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN}"
 ICE_MOTIF_DIALOGS_OWN_SELECTION_LIST
 dnl
 dnl

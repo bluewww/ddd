@@ -658,16 +658,19 @@ LIBXM = @XM_LIBS@
 # LIBXM = /path/to/libXm.a
 # This can be done interactively: "make LIBXM=/path/to/libXm.a"
 
-# Athena libraries.  (-lXaw -lXmu)
+# Athena libraries.  (-lXaw)
 LIBXAW = @XAW_LIBS@
+
+# X Miscellaneous  Utilities needed for Athena and Motif >= 2.0 (lXmu)
+LIBXMU = @XMU_LIBS@
 
 # X extension library; needed for Athena and Motif >= 2.0.  (-lXext)
 LIBXEXT = @XEXT_LIBS@
 
-# Xpm library; needed for DDD and sometimes for Motif >= 2.0.  (-lXpm)
+# Xpm pixmap library; needed for DDD and sometimes for Motif >= 2.0.  (-lXpm)
 LIBXPM = @XPM_LIBS@
 
-# Xp library; sometimes needed for Motif >= 2.1.  (-lXp)
+# Xp printing extension library; sometimes needed for Motif >= 2.1.  (-lXp)
 LIBXP = @XP_LIBS@
 
 # gen library; sometimes needed for Motif >= 2.0.  (-lgen)
@@ -677,10 +680,12 @@ LIBGEN = @LIBGEN@
 LIBXT = @XT_LIBS@
 
 # X library.  (-lX11 -lSM -lICE -lnsl -lsocket)
+# libSM: Session Management extension
+# libICE: Inter-Client Exchange extension
 LIBX11 = @X_PRE_LIBS@ @X11_LIBS@ @X_EXTRA_LIBS@
 
 # All libraries shown above
-ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXAW) $(LIBXT) $(LIBXPM) \
+ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXAW) $(LIBXMU) $(LIBXT) $(LIBXPM) \
              $(LIBXP) $(LIBXEXT) $(LIBX11) $(LIBGEN)
 
 
