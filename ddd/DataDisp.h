@@ -104,6 +104,7 @@ class DataDisp {
     //-----------------------------------------------------------------------
     static void dereferenceCB           (Widget, XtPointer, XtPointer);
     static void dereferenceArgCB        (Widget, XtPointer, XtPointer);
+    static void dereferenceInPlaceCB    (Widget, XtPointer, XtPointer);
     static void toggleDetailCB          (Widget, XtPointer, XtPointer);
     static void toggleRotateCB          (Widget, XtPointer, XtPointer);
     static void toggleDisableCB         (Widget, XtPointer, XtPointer);

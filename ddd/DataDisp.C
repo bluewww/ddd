@@ -563,6 +563,25 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
     new_display(display_expression, 0, depends_on, false, false, w);
 }
 
+// Replace node by its dereferenced variant
+void DataDisp::dereferenceInPlaceCB(Widget w, XtPointer, XtPointer)
+{
+    DispNode *disp_node_arg   = selected_node();
+    DispValue *disp_value_arg = selected_value();
+    if (disp_node_arg == 0 || disp_value_arg == 0)
+	return;
+
+    string display_expression = disp_value_arg->dereferenced_name();
+
+    static BoxPoint p;
+    p = disp_node_arg->pos();
+    new_display(display_expression, &p, "", false, false, w);
+
+    IntArray nrs;
+    nrs += disp_node_arg->disp_nr();
+    delete_display(nrs, w);
+}
+
 void DataDisp::dereferenceArgCB(Widget w, XtPointer client_data, 
 				XtPointer call_data)
 {
@@ -1224,10 +1243,8 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 // Double click callback
 //-----------------------------------------------------------------------------
 
-void DataDisp::DoubleClickCB(Widget w, XtPointer client_data, 
-			     XtPointer call_data)
+void DataDisp::DoubleClickCB(Widget w, XtPointer, XtPointer call_data)
 {
-    DataDisp *data_disp = (DataDisp *)client_data;
     GraphEditPreSelectionInfo *info = (GraphEditPreSelectionInfo *)call_data;
 
     if (!info->double_click)
@@ -1238,9 +1255,14 @@ void DataDisp::DoubleClickCB(Widget w, XtPointer client_data,
 
     DispNode *disp_node_arg = ptr_cast(DispNode, info->node);
     if (disp_node_arg == 0)
-	disp_node_arg = data_disp->selected_node();
+	disp_node_arg = selected_node();
     if (disp_node_arg == 0)
 	return;
+
+    XEvent *ev = info->event;
+    bool control = (ev != 0 && 
+		    (ev->type == ButtonPress || ev->type == ButtonRelease) &&
+		    (ev->xbutton.state & ControlMask) != 0);
 
     // Do the right thing
     if (disp_node_arg->disabled())
@@ -1256,11 +1278,23 @@ void DataDisp::DoubleClickCB(Widget w, XtPointer client_data,
 	DataDispCount count(disp_graph);
 	
 	if (disp_value_arg->type() == Pointer && !disp_value_arg->collapsed())
-	    data_disp->dereferenceCB(w, 0, 0);    // Dereference
+	{
+	    // Dereference
+	    if (control)
+		dereferenceInPlaceCB(w, XtPointer(true), 0);
+	    else
+		dereferenceCB(w, 0, 0);
+	}
 	else if (count.selected_collapsed > 0)
-	    showMoreDetailCB(w, XtPointer(1), 0); // Show 1 level more
+	{
+	    // Show 1 level more
+	    showMoreDetailCB(w, XtPointer(1), 0);
+	}
 	else
-	    hideDetailCB(w, XtPointer(-1), 0);    // Hide all
+	{
+	    // Hide all
+	    hideDetailCB(w, XtPointer(-1), 0);
+	}
     }
 
     // Don't do the default action
@@ -6230,11 +6264,9 @@ bool DataDisp::unmerge_display(int disp_nr)
     return disp_graph->unalias(disp_nr);
 }
 
-void DataDisp::PreLayoutCB(Widget w, XtPointer client_data, XtPointer)
+void DataDisp::PreLayoutCB(Widget w, XtPointer, XtPointer)
 {
-    DataDisp *data_disp = (DataDisp *)client_data;
-
-    if (data_disp->detect_aliases)
+    if (detect_aliases)
     {
 	// Don't redisplay while or after layouting
 	graphEditEnableRedisplay(w, False);
@@ -6242,11 +6274,9 @@ void DataDisp::PreLayoutCB(Widget w, XtPointer client_data, XtPointer)
 }
 
 // Re-enable aliases after layouting
-void DataDisp::PostLayoutCB(Widget w, XtPointer client_data, XtPointer)
+void DataDisp::PostLayoutCB(Widget w, XtPointer, XtPointer)
 {
-    DataDisp *data_disp = (DataDisp *)client_data;
-
-    if (data_disp->detect_aliases)
+    if (detect_aliases)
     {
 	// Unmerge and re-merge all displays
 	MapRef ref;
@@ -6256,7 +6286,7 @@ void DataDisp::PostLayoutCB(Widget w, XtPointer client_data, XtPointer)
 	{
 	    unmerge_display(k);
 	}
-	data_disp->check_aliases();
+	check_aliases();
 
 	// Okay - we can redisplay now
 	graphEditEnableRedisplay(w, True);

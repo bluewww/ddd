@@ -1367,8 +1367,8 @@ Ddd*define_command*XmTextField.@TRANSLATIONS@:        \
 ! The source window is especially tuned for word selection.
 define(SOURCE_TRANSLATIONS,[\
 <Btn3Down>:		source-popup-menu()         \n\
-~Ctrl ~Shift<Btn1Down>:	source-start-select-word()  \n\
-~Ctrl ~Shift<Btn1Up>:	source-end-select-word() source-double-click() \n\
+~Shift<Btn1Down>:	source-start-select-word()  \n\
+~Shift<Btn1Up>:		source-end-select-word() source-double-click() \n\
 ~Shift Ctrl<Key>A:	ddd-select-all()	    \n\
 Shift Ctrl<Key>A:	select-all()	    	    \n\
 Ctrl<Key>B:		gdb-isearch-prev()    	    \n\

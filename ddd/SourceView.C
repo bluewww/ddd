@@ -5110,6 +5110,7 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
 
     int x = event->x;
     int y = event->y;
+    bool control = ((event->state & ControlMask) != 0);
 
     if (w != source_text_w && w != code_text_w)
     {
@@ -5151,8 +5152,11 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
 
     if (bp_nr != 0)
     {
-	// Clicked on breakpoint: edit its properties
-	edit_bp(bp_nr, text_w);
+	// Clicked on breakpoint
+	if (control)
+	    delete_bp(bp_nr, text_w);
+	else
+	    edit_bp(bp_nr, text_w);
 	return;
     }
 
@@ -5173,7 +5177,7 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
 		   isspace(current_source[p]))
 		p++;
 
-	    if (current_source.contains('(', p))
+	    if (control || current_source.contains('(', p))
 	    {
 		if (*num_params >= 3)
 		    gdb_button_command(params[2]);
@@ -5220,15 +5224,19 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
 
 	if (bps.size() > 0)
 	{
-	    // In breakpoint area, and we already have a breakpoint -
-	    // edit its properties
-	    edit_bps(bps, text_w);
+	    // In breakpoint area, and we already have a breakpoint.
+	    if (control)
+		delete_bps(bps, text_w);
+	    else
+		edit_bps(bps, text_w);
 	}
 	else
 	{
 	    // In breakpoint area, and we have no breakpoint: create a new one
 	    if (*num_params >= 2)
 		gdb_button_command(params[1]);
+	    else if (control)
+		create_temp_bp(source_arg->get_string(), w);
 	    else
 		create_bp(source_arg->get_string(), w);
 	}
