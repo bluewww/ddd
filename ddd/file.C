@@ -186,6 +186,11 @@ static void FilterAllCB(Widget dialog, XtPointer client_data,
     }
 }
 
+static void ClearStatusCB(Widget, XtPointer, XtPointer)
+{
+    set_status("");
+}
+
 // Create a file dialog NAME with DO_SEARCH_FILES and DO_SEARCH_DIRS
 // as search procedures for files and directories, respectively, and
 // OK_CALLBACK as the procedure called when a file is selected.
@@ -238,6 +243,7 @@ static Widget file_dialog(Widget w, const string& name,
     Widget filter_button = 
 	XmFileSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
     XtAddCallback(filter_button, XmNactivateCallback, FilterAllCB, 0);
+    XtAddCallback(dialog, XmNunmapCallback, ClearStatusCB, 0);
 
     file_dialogs += dialog;
 
@@ -631,6 +637,7 @@ static void openSourceDone(Widget w, XtPointer client_data,
 	return;
 
     XtUnmanageChild(w);
+    set_status("");
 
     // For PYDB, issue a 'file filename' command
     if (gdb->type() == PYDB)
@@ -1452,6 +1459,8 @@ static void lookupSourceDone(Widget w,
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
 
+    set_status("");
+
     string source = get_item(w, client_data, call_data);
 
     if (source.contains('/'))
@@ -1487,6 +1496,12 @@ static void lookupSourceDone(Widget w,
 	    XtUnmanageChild(dialog);
 	}
     }
+}
+
+static void open_source_msg()
+{
+    set_status("Open Source is an idea whose time has finally come.  "
+	       "See http://www.opensource.org/.");
 }
 
 
@@ -1544,6 +1559,8 @@ void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
 			   searchLocalSourceFiles, 0,
 			   openSourceDone);
     manage_and_raise(dialog);
+
+    open_source_msg();
 
     if ((gdb->type() != JDB) && (gdb->type() != PYDB))
     {
@@ -1730,6 +1747,7 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtAddCallback(dialog, XmNapplyCallback, FilterSourcesCB, 0);
 	XtAddCallback(dialog, XmNcancelCallback, 
 		      UnmanageThisCB, XtPointer(dialog));
+	XtAddCallback(dialog, XmNunmapCallback, ClearStatusCB, 0);
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
 	XtAddCallback(source_filter, XmNactivateCallback, 
@@ -1742,6 +1760,8 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 
     update_sources(source_list, source_filter);
+
+    open_source_msg();
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
 }
