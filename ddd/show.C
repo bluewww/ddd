@@ -59,7 +59,7 @@ const char show_rcsid[] =
 void show_version()
 {
     cout << DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
-	"Copyright (C) 1995, 1996 TU Braunschweig, Germany.\n";
+	"Copyright (C) 1995, 1996 TU Braunschweig.\n";
 }
 
 //-----------------------------------------------------------------------------
@@ -72,65 +72,122 @@ void show_invocation(DebuggerType type)
     string options     = "";
     string base        = "";
 
-    string gdb_help = sh_command(string(app_data.debugger_command) 
-				 + " -h");
+    string gdb_get_help = 
+	sh_command(string(app_data.debugger_command) + " -h");
+    string gdb_get_version = 
+	sh_command(string(app_data.debugger_command) + " -v");
+
     switch (type)
     {
     case GDB:
-    {
-	base = "GDB, the GNU debugger.";
-
-	Agent help(gdb_help);
-	help.start();
-
-	FILE *fp = help.inputfp();
-	if (fp)
 	{
-	    enum { Init, Options, Other, Done } state = Init;
-	    char buf[BUFSIZ];
+	    base = "GDB, the GNU debugger.";
 
-	    while (fgets(buf, sizeof(buf), fp))
+	    Agent help(gdb_get_help);
+	    help.start();
+
+	    FILE *fp = help.inputfp();
+	    if (fp)
 	    {
-		if (buf[0] && buf[strlen(buf) - 1] == '\n')
-		    buf[strlen(buf) - 1] = '\0';
+		enum { Init, Options, Other, Done } state = Init;
+		char buf[BUFSIZ];
 
-		string option;
-		switch (state)
+		while (fgets(buf, sizeof(buf), fp) && state != Done)
 		{
-		case Init:
-		    gdb_version = string(buf) + "\n";
-		    state = Other;
-		    break;
+		    if (buf[0] && buf[strlen(buf) - 1] == '\n')
+			buf[strlen(buf) - 1] = '\0';
 
-		case Other:
-		    if (string(buf).contains("Options:"))
-			state = Options;
-		    break;
+		    string option;
+		    switch (state)
+		    {
+		    case Init:
+			gdb_version = string(buf) + "\n";
+			state = Other;
+			break;
 
-		case Options:
-		    option = buf;
-		    if (option == "")
-			state = Done;
-		    else
-			options += option + "\n";
-		    break;
+		    case Other:
+			if (string(buf).contains("Options:"))
+			    state = Options;
+			break;
 
-		case Done:
-		    break;
+		    case Options:
+			option = buf;
+			if (option == "")
+			    state = Done;
+			else
+			    options += option + "\n";
+			break;
+
+		    case Done:
+			break;
+		    }
 		}
 	    }
+	    break;
+	}
+
+    case DBX:
+	{
+	    base = "DBX, the UNIX debugger.";
+	    options = "  [DBX options]      Pass option to DBX.\n";
 	}
 	break;
 
-    }
-    case DBX:
-	base = "DBX, the UNIX debugger.";
-	options = "  [DBX options]      Pass option to DBX.\n";
-	break;
-
     case XDB:
-	base = "XDB, the HP-UX debugger.";
-	options = "  [XDB options]      Pass option to XDB.\n";
+	{
+	    base = "XDB, the HP-UX debugger.";
+
+	    Agent version(gdb_get_version);
+	    version.start();
+
+	    FILE *fp = version.inputfp();
+	    if (fp)
+	    {
+		char buf[BUFSIZ];
+		while (fgets(buf, sizeof(buf), fp))
+		{
+		    if (buf[0] && buf[strlen(buf) - 1] == '\n')
+			buf[strlen(buf) - 1] = '\0';
+		    gdb_version = string(buf) + "\n";
+		}
+	    }
+
+	    Agent help(gdb_get_help);
+	    help.start();
+
+	    fp = help.errorfp();
+	    if (fp)
+	    {
+		enum { Other, Options, Done } state = Other;
+		char buf[BUFSIZ];
+
+		while (fgets(buf, sizeof(buf), fp) && state != Done)
+		{
+		    if (buf[0] && buf[strlen(buf) - 1] == '\n')
+			buf[strlen(buf) - 1] = '\0';
+
+		    string option;
+		    switch (state)
+		    {
+		    case Other:
+			if (string(buf).contains("Options:"))
+			    state = Options;
+			break;
+
+		    case Options:
+			option = buf;
+			if (option == "")
+			    state = Done;
+			else
+			    options += "  " + option.after(rxwhite) + "\n";
+			break;
+
+		    case Done:
+			break;
+		    }
+		}
+	    }
+	}
 	break;
     }
 
@@ -139,7 +196,7 @@ void show_invocation(DebuggerType type)
 	"This is DDD, the data display debugger, based on "
 	<< base << "\n" << 
 	"Usage:\n"
-	"    " ddd_NAME " [options]"
+	"    " ddd_NAME " [options...]"
 	" executable-file [core-file or process-id]]\n"
 	"Options:\n"
 	<< options <<
@@ -151,21 +208,23 @@ void show_invocation(DebuggerType type)
 	"  --login LOGIN      Use LOGIN for connecting to host.\n"
 	"  --vsl-library LIB  Load VSL library LIB.\n"
 	"  --vsl-path PATH    Look for VSL libraries in PATH.\n"
-	"  --trace-dialog     Show inferior debugger I/O on standard error.\n"
+	"  --trace-dialog     Show dialog with inferior debugger"
+	" on standard error.\n"
 	"  --trace-shell      Show shell commands on standard error.\n"
 	"  --exec-window      Create a window for"
 	" running debugged programs.\n"
 	"  --no-exec-window   Do not create a window for"
 	" running debugged programs.\n"
 	"  --attach-windows   Attach data and source windows to"
-	" command window.\n"
+	" debugger console.\n"
 	"  --separate-windows Do not attach data and source windows to"
-	" command window.\n"
+	" debugger console.\n"
 	"  --scrolled-graph   Use Motif scrollbars"
 	" for moving the data display.\n"
 	"  --panned-graph     Use an Athena panner"
 	" for moving the data display.\n"
-        "  --tty              Use the tty as additional debugger interface.\n"
+        "  --tty              Use controlling tty"
+	" as additional debugger console.\n"
 	"  --version          Show the DDD version and exit.\n"
 	"  --configuration    Show the DDD configuration flags and exit.\n"
 	"  --manual           Show the DDD manual and exit.\n"
