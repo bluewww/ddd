@@ -1053,15 +1053,13 @@ void DataDisp::refresh_args()
 	switch (gdb->type())
 	{
 	case DBX:
-	    // DBX cannot disable or enable displays
+	case XDB:
+	    // DBX and XDB cannot disable or enable displays
 	    count_selected_enabled = count_selected_disabled = 0;
 	    break;
 
 	case GDB:
 	    break;
-
-	case XDB:
-	    break;		// FIXME
 	}
     }
 
@@ -1431,28 +1429,24 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
     switch (gdb->type())
     {
     case GDB:
-    {
-	string cmd = gdb->display_command(display_expression);
-	bool ok = gdb->send_question (cmd, new_displayOQC, p);
-	if (!ok) {
-	    post_gdb_busy(last_origin);
+	{
+	    string cmd = gdb->display_command(display_expression);
+	    bool ok = gdb->send_question (cmd, new_displayOQC, p);
+	    if (!ok)
+		post_gdb_busy(last_origin);
 	}
-    }
-    break;
+	break;
 
     case DBX:
-    {
-	gdb_question(gdb->display_command(display_expression));
-	string cmd = gdb->print_command(display_expression);
-	bool ok = gdb->send_question (cmd, new_displayOQC, p);
-	if (!ok) {
-	    post_gdb_busy(last_origin);
-	}
-    }
-    break;
-
     case XDB:
-	break;			// FIXME
+	{
+	    gdb_question(gdb->display_command(display_expression));
+	    string cmd = gdb->print_command(display_expression);
+	    bool ok = gdb->send_question (cmd, new_displayOQC, p);
+	    if (!ok)
+		post_gdb_busy(last_origin);
+	}
+	break;
     }
 }
 
@@ -1469,12 +1463,10 @@ DispNode *DataDisp::new_node (string& answer)
 	break;
 
     case DBX:
+    case XDB:
 	// Assign a default number
 	disp_nr_str = itostring(disp_graph->count_all() + 1);
 	break;
-
-    case XDB:
-	break;			// FIXME
     }
 
     string name = read_disp_name (answer, gdb);
@@ -1591,40 +1583,38 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
     switch (gdb->type())
     {
     case GDB:
-    {
-	void** dummy = new void *[count];
-	int k = gdb->send_qu_array (display_cmds,
-				    dummy,
-				    count,
-				    new_displaysOQAC,
-				    p);
-	if (k == 0) {
-	    post_gdb_busy(last_origin);
+	{
+	    void** dummy = new void *[count];
+	    int k = gdb->send_qu_array (display_cmds,
+					dummy,
+					count,
+					new_displaysOQAC,
+					p);
+	    if (k == 0)
+		post_gdb_busy(last_origin);
+
+	    delete[] dummy;
 	}
-	delete[] dummy;
-    }
-    break;
+	break;
 
     case DBX:
-    {
-	for (int i = 0; i < count; i++)
-	    gdb_question(display_cmds[i]);
-
-	void** dummy = new void *[count];
-	int k = gdb->send_qu_array (print_cmds,
-				    dummy,
-				    count,
-				    new_displaysOQAC,
-				    p);
-	if (k == 0) {
-	    post_gdb_busy(last_origin);
-	}
-	delete[] dummy;
-    }
-    break;
-
     case XDB:
-	break;			// FIXME
+	{
+	    for (int i = 0; i < count; i++)
+		gdb_question(display_cmds[i]);
+
+	    void** dummy = new void *[count];
+	    int k = gdb->send_qu_array (print_cmds,
+					dummy,
+					count,
+					new_displaysOQAC,
+					p);
+	    if (k == 0)
+		post_gdb_busy(last_origin);
+	
+	    delete[] dummy;
+	}
+	break;
     }
 
     delete[] display_cmds;
@@ -1786,12 +1776,10 @@ void DataDisp::refresh_displaySQA (Widget origin)
 	break;
 
     case DBX:
+    case XDB:
 	cmds[0] = refresh_display_command();
 	ok = gdb->send_qu_array(cmds, dummy, 1, refresh_displayOQAC, 0);
 	break;
-
-    case XDB:
-	break;			// FIXME
     }
 
     if (!ok)
@@ -1937,6 +1925,7 @@ void DataDisp::delete_displaySQ (int display_nrs[], int count)
 	break;
 
     case DBX:
+    case XDB:
 	{
 	    int c = 0;
 	    for (j = 0; j < count; j++)
@@ -1951,9 +1940,6 @@ void DataDisp::delete_displaySQ (int display_nrs[], int count)
 	    }
 	}
 	break;
-
-    case XDB:
-	break;			// FIXME
     }
 	
     bool ok = 
@@ -1984,6 +1970,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
 	break;
 
     case DBX:
+    case XDB:
 	// Upon `undisplay', DBX redisplays remaining displays with
 	// values
 	if (answer != "")
@@ -1992,9 +1979,6 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
 	    process_displays(ans, disabling_occurred);
 	}
 	break;
-
-    case XDB:
-	break;			// FIXME
     }
 
     // Anything remaining is an error message
@@ -2022,31 +2006,29 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
     switch (gdb->type())
     {
     case GDB:
-    {
-	string cmd = gdb->display_command(display_expression);
-	bool ok = gdb->send_question(cmd, dependent_displayOQC, 
-				     (void *) disp_nr);
-	if (!ok) {
-	    post_gdb_busy(last_origin);
+	{
+	    string cmd = gdb->display_command(display_expression);
+	    bool ok = gdb->send_question(cmd, dependent_displayOQC, 
+					 (void *) disp_nr);
+	    if (!ok)
+		post_gdb_busy(last_origin);
+	
 	}
-    }
-    break;
+	break;
 
     case DBX:
-    {
-	gdb_question(gdb->display_command(display_expression));
-
-	string cmd = gdb->print_command(display_expression);
-	bool ok = gdb->send_question(cmd, dependent_displayOQC, 
-				   (void *) disp_nr);
-	if (!ok) {
-	    post_gdb_busy(last_origin);
-	}
-    }
-    break;
-
     case XDB:
-	break;			// FIXME
+	{
+	    gdb_question(gdb->display_command(display_expression));
+
+	    string cmd = gdb->print_command(display_expression);
+	    bool ok = gdb->send_question(cmd, dependent_displayOQC, 
+					 (void *) disp_nr);
+	    if (!ok)
+		post_gdb_busy(last_origin);
+	
+	}
+	break;
     }
 }
 
@@ -2144,39 +2126,38 @@ void DataDisp::dependent_displaysSQA (string display_expression,
     switch (gdb->type())
     {
     case GDB:
-    {
-	void** dummy = new void *[count];
-	int k = gdb->send_qu_array (display_cmds,
-				    dummy,
-				    count,
-				    dependent_displaysOQAC,
-				    (void *)disp_nr);
-	if (k == 0) {
-	    post_gdb_busy(last_origin);
+	{
+	    void** dummy = new void *[count];
+	    int k = gdb->send_qu_array (display_cmds,
+					dummy,
+					count,
+					dependent_displaysOQAC,
+					(void *)disp_nr);
+	    if (k == 0)
+		post_gdb_busy(last_origin);
+
+	    delete[] dummy;
 	}
-	delete[] dummy;
-    }
-    break;
+	break;
 
     case DBX:
-    {
-	for (int i = 0; i < count; i++)
-	    gdb_question(display_cmds[i]);
-	void** dummy = new void *[count];
-	int k = gdb->send_qu_array (print_cmds,
-				    dummy,
-				    count,
-				    dependent_displaysOQAC,
-				    (void *)disp_nr);
-	if (k == 0) {
-	    post_gdb_busy(last_origin);
-	}
-	delete[] dummy;
-    }
-    break;
-
     case XDB:
-	break;			// FIXME
+	{
+	    for (int i = 0; i < count; i++)
+		gdb_question(display_cmds[i]);
+
+	    void** dummy = new void *[count];
+	    int k = gdb->send_qu_array (print_cmds,
+					dummy,
+					count,
+					dependent_displaysOQAC,
+					(void *)disp_nr);
+	    if (k == 0)
+		post_gdb_busy(last_origin);
+	
+	    delete[] dummy;
+	}
+	break;
     }
 
     delete[] display_cmds;
@@ -2220,12 +2201,10 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 		break;
 
 	    case DBX:
+	    case XDB:
 		// Assign a default number
 		disp_nr_str = itostring(disp_graph->count_all() + 1);
 		break;
-
-	    case XDB:
-		break;		// FIXME
 	    }
 
 	    name = read_disp_name (answers[i], gdb);
@@ -2380,25 +2359,24 @@ string DataDisp::process_displays (string& displays,
 	    break;
 
 	case DBX:
-	{
-	    disp_nr = 0;
-	    string disp_name = next_display;
-	    disp_name = read_disp_name(disp_name, gdb);
-	    MapRef ref;
-	    for (DispNode* dn = disp_graph->first(ref); 
-		 dn != 0;
-		 dn = disp_graph->next(ref))
+	case XDB:
 	    {
-		if (dn->name() == disp_name)
+		disp_nr = 0;
+		string disp_name = next_display;
+		disp_name = read_disp_name(disp_name, gdb);
+		MapRef ref;
+		for (DispNode* dn = disp_graph->first(ref); 
+		     dn != 0;
+		     dn = disp_graph->next(ref))
 		{
-		    string nr = dn->disp_nr();
-		    disp_nr = get_positive_nr(nr);
-		    break;
+		    if (dn->name() == disp_name)
+		    {
+			string nr = dn->disp_nr();
+			disp_nr = get_positive_nr(nr);
+			break;
+		    }
 		}
 	    }
-	}
-
-	case XDB:
 	    break;		// FIXME
 	}
 
@@ -2650,7 +2628,8 @@ void DataDisp::setDCB(Widget set_dialog, XtPointer client_data, XtPointer)
 	break;
 
     case XDB:
-	break;			// FIXME
+	cmd = "pq " + disp_value->full_name() + " = " + value;
+	break;
     }
 
 
