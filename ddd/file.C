@@ -69,6 +69,7 @@ extern "C" {
 #include <Xm/FileSB.h>
 #include <Xm/List.h>
 #include <Xm/SelectioB.h>
+#include <Xm/MessageB.h>
 #include <Xm/Text.h>
 
 // ANSI C++ doesn't like the XtIsRealized() macro
@@ -477,9 +478,12 @@ static string get_file(Widget w, XtPointer, XtPointer call_data)
     return filename;
 }
 
+// Get FILENAME and PID of current debuggee.  NO_GDB_ANSWER for
+// FILENAME means debuggee cannot be determined; "" means no debuggee.
+// ATTACHED is true iff we're debugging an attached process.
 static void get_current_file(string& filename, int& pid, bool& attached)
 {
-    filename = "";
+    filename = NO_GDB_ANSWER;
     pid      = 0;
     attached = false;
 
@@ -490,6 +494,8 @@ static void get_current_file(string& filename, int& pid, bool& attached)
 	    string ans = gdb_question("info files");
 	    if (ans == NO_GDB_ANSWER)
 		return;
+
+	    filename = "";
 
 	    if (ans.contains("Symbols from "))
 	    {
@@ -547,6 +553,8 @@ static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
     switch(gdb->type())
     {
     case GDB:
+	// GDB does not always detach processes upon opening new
+	// files, so we do it explicitly
 	if (attached)
 	    gdb_command("detach");
 
@@ -641,7 +649,8 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 	    break;
 
 	case DBX:
-	    gdb_command("debug " + current_file + " " + corefile);
+	    if (current_file != NO_GDB_ANSWER && current_file != "")
+		gdb_command("debug " + current_file + " " + corefile);
 	    break;
 
 	case XDB:
@@ -884,6 +893,8 @@ static void openProcessDone(Widget w, XtPointer client_data,
     case GDB:
 	if (pid != current_pid)
 	{
+	    // GDB does not always detach processes upon opening new
+	    // files, so we do it explicitly
 	    if (attached)
 		gdb_command("detach");
 
@@ -896,12 +907,57 @@ static void openProcessDone(Widget w, XtPointer client_data,
 	if (pid != current_pid)
 	{
 	    // Attach to new process
-	    gdb_command("debug " + current_file + " " + itostring(pid));
+	    if (current_file != NO_GDB_ANSWER && current_file != "")
+		gdb_command("debug " + current_file + " " + itostring(pid));
 	}
 	break;
 
     case XDB:
 	break;		// FIXME
+    }
+}
+
+// When W is to be destroyed, remove all references in Widget(CLIENT_DATA)
+static void RemoveCallbacksCB(Widget w, XtPointer client_data, XtPointer)
+{
+    Widget ref = Widget(client_data);
+    XtRemoveCallback(ref, XmNokCallback,      UnmanageThisCB, XtPointer(w));
+    XtRemoveCallback(ref, XmNcancelCallback,  UnmanageThisCB, XtPointer(w));
+    XtRemoveCallback(ref, XmNdestroyCallback, RemoveCallbacksCB, XtPointer(w));
+}
+
+// If we don't have a current executable, issue a warning.
+static void warn_if_no_program(Widget popdown)
+{
+    string current_file;
+    int current_pid;
+    bool attached;
+    get_current_file(current_file, current_pid, attached);
+
+    if (current_file == "")
+    {
+	Widget warning = 
+	    post_warning("Please open a program first.", 
+			 "no_program_warning", popdown);
+
+	if (popdown != 0 && warning != 0)
+	{
+	    // Tie the warning to the dialog - if one is popped down,
+	    // so is the other.
+	    XtAddCallback(warning, XmNokCallback, 
+			  UnmanageThisCB, XtPointer(popdown));
+	    XtAddCallback(warning, XmNcancelCallback, 
+			  UnmanageThisCB, XtPointer(popdown));
+	    XtAddCallback(popdown, XmNdestroyCallback,
+			  RemoveCallbacksCB, XtPointer(warning));
+
+	    XtAddCallback(popdown, XmNokCallback,
+			  UnmanageThisCB, XtPointer(warning));
+	    XtAddCallback(popdown, XmNcancelCallback,
+			  UnmanageThisCB, XtPointer(warning));
+	    XtAddCallback(warning, XmNdestroyCallback,
+			  RemoveCallbacksCB, XtPointer(popdown));
+	}
     }
 }
 
@@ -927,6 +983,7 @@ void gdbOpenCoreCB(Widget w, XtPointer, XtPointer)
 			   searchLocalCoreFiles, 0,
 			   openCoreDone);
     manage_and_raise(dialog);
+    warn_if_no_program(dialog);
 }
 
 void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
@@ -937,6 +994,7 @@ void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
 			   searchLocalSourceFiles, 0,
 			   openSourceDone);
     manage_and_raise(dialog);
+    warn_if_no_program(dialog);
 }
 
 void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
@@ -982,6 +1040,7 @@ void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
 
     update_processes(processes, false);
     manage_and_raise(dialog);
+    warn_if_no_program(dialog);
 }
 
 
