@@ -2,7 +2,8 @@
 // Use the Source, Luke.
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus (luetke@ips.cs.tu-bs.de).
+// Written by Dorothea Luetkehaus (luetke@ips.cs.tu-bs.de) 
+// and Andreas Zeller (zeller@ips.cs.tu-bs.de) 
 // 
 // This file is part of the DDD Library.
 // 
@@ -1250,8 +1251,8 @@ void SourceView::refresh_code_bp_disp()
 
 // ***************************************************************************
 // Findet zu pos die passende Zeilennummer.
-// ist in_text!=0, so ist *in_text==true wenn pos im Quelltext-Bereich ist.
-// ist bp_nr!=0, so ist *bp_nr die Nr des Breakpoints, der an Position pos
+// in_text==true wenn pos im Quelltext-Bereich ist.
+// bp_nr ist die Nr des Breakpoints, der an Position pos
 // dargestellt wird, 0 sonst.
 //
 bool SourceView::get_line_of_pos (Widget   text_w,
@@ -1261,67 +1262,127 @@ bool SourceView::get_line_of_pos (Widget   text_w,
 				  int&     bp_nr)
 {
     bool found = false;
-    XmTextPosition line_pos = 0;
-    XmTextPosition next_line_pos = 0;
+
     line_nr = 1;
+    in_text = true;
+    bp_nr   = 0;
 
-    while (!found && line_count >= line_nr)
+    if (pos >= int(current_text(text_w).length()))
+	return false;
+
+    if (is_source_widget(text_w))
     {
-	next_line_pos = (line_count >= line_nr + 1) ?
-	    pos_of_line[line_nr + 1] :
-	    XmTextGetLastPosition (text_w) + 1;
+	XmTextPosition line_pos = 0;
+	XmTextPosition next_line_pos = 0;
 
-	if (pos < (line_pos + bp_indent_amount - 1))
+	while (!found && line_count >= line_nr)
 	{
-	    // Position in breakpoint area
-	    found = true;
-	    in_text = false;
+	    next_line_pos = (line_count >= line_nr + 1) ?
+		pos_of_line[line_nr + 1] :
+		XmTextGetLastPosition (text_w) + 1;
 
-	    // Check for breakpoints...
-	    VarArray<int>& bps = bps_in_line[line_nr];
-	    if (bps.size() == 1)
+	    if (pos < (line_pos + bp_indent_amount - 1))
 	    {
-		// Return single breakpoint in this line
-		bp_nr = bps[0];
-	    }
-	    else if (bps.size() > 1)
-	    {
-		// Find which breakpoint was selected
-		bp_nr = 0;
-		int i;
-		XmTextPosition bp_disp_pos = line_pos;
-		for (i = 0; i < bps.size(); i++)
+		// Position in breakpoint area
+		found = true;
+		in_text = false;
+
+		// Check for breakpoints...
+		VarArray<int>& bps = bps_in_line[line_nr];
+		if (bps.size() == 1)
 		{
-		    BreakPoint* bp = bp_map.get(bps[i]);
-		    assert (bp);
-		    bp_disp_pos += 2; // respect '#' and '_';
-		    bp_disp_pos += bp->number_str().length();
-		    if (pos < bp_disp_pos)
+		    // Return single breakpoint in this line
+		    bp_nr = bps[0];
+		}
+		else if (bps.size() > 1)
+		{
+		    // Find which breakpoint was selected
+		    int i;
+		    XmTextPosition bp_disp_pos = line_pos;
+		    for (i = 0; i < bps.size(); i++)
 		    {
-			bp_nr = bps[i];
-			break; // for-Schleife fertig
+			BreakPoint* bp = bp_map.get(bps[i]);
+			assert (bp);
+			bp_disp_pos += 2; // respect '#' and '_';
+			bp_disp_pos += bp->number_str().length();
+			if (pos < bp_disp_pos)
+			{
+			    bp_nr = bps[i];
+			    break; // for-Schleife fertig
+			}
 		    }
 		}
 	    }
-	    else 
+	    else if (pos < next_line_pos)
 	    {
-		// No breakpoint in this line
-		bp_nr = 0;
+		// Position is in text
+		found   = true;
+		in_text = true;
+	    }
+	    else
+	    {
+		// Position is in the following line
+		line_pos = next_line_pos;
+		line_nr++;
 	    }
 	}
-	else if (pos < next_line_pos)
+    }
+    else if (is_code_widget(text_w))
+    {
+	XmTextPosition line_pos = pos;
+	while (line_pos >= 0 && current_code[line_pos] != '\n')
+	    line_pos--;
+	line_pos++;
+
+	if (pos - line_pos < code_indent_amount)
 	{
-	    // Position is in text
-	    found   = true;
-	    in_text = true;
-	    bp_nr   = 0;
+	    // Breakpoint area
+	    in_text = false;
+
+	    // Check if we have a breakpoint around here
+	    int index = current_code.index("0x", pos);
+	    if (index >= 0)
+	    {
+		string pc = current_code.from(index);
+		pc = pc.through(rxalphanum);
+
+		VarArray<int> bps;
+
+		MapRef ref;
+		for (BreakPoint *bp = bp_map.first(ref);
+		     bp != 0;
+		     bp = bp_map.next(ref))
+		{
+		    if (compare_address(pc, bp->address()) == 0)
+			bps += bp->number();
+		}
+		if (bps.size() == 1)
+		{
+		    // Return single breakpoint in this line
+		    bp_nr = bps[0];
+		}
+		else if (bps.size() > 1)
+		{
+		    // Find which breakpoint was selected
+		    int i;
+		    XmTextPosition bp_disp_pos = line_pos;
+		    for (i = 0; i < bps.size(); i++)
+		    {
+			BreakPoint* bp = bp_map.get(bps[i]);
+			assert (bp);
+			bp_disp_pos += 2; // respect '#' and '_';
+			bp_disp_pos += bp->number_str().length();
+			if (pos < bp_disp_pos)
+			{
+			    bp_nr = bps[i];
+			    break; // for-Schleife fertig
+			}
+		    }
+		}
+	    }
 	}
-	else
-	{
-	    // Position is in the following line
-	    line_pos = next_line_pos;
-	    line_nr++;
-	}
+
+	found = true;
     }
 
     return found;
