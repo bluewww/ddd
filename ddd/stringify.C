@@ -48,7 +48,7 @@ int main()
     int p = 0;
 
     int c;
-    while ((c = cin.get()) && c != EOF)
+    while ((c = cin.get()) != EOF)
     {
 	if (p > 0 && p % 16 == 0)
 	    cout << "\"\n\"";
