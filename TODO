@@ -359,5 +359,11 @@ Volunteers for these and other projects are welcome!
 
        [graph display `print *this` would help.]
 
+327 Make annotations printable.
 
-327 (Insert new project ideas here)
+328 Optionally, have one single `Displays' box that combines all
+    independent displays as a List.
+
+329 Have a Display Editor shortcut from the data popup menu.
+
+330 (Insert new project ideas here)
