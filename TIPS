@@ -195,6 +195,9 @@ Try LBL(Commands, Define Command).
 To use GDB with Sun CC, compile with SAMP(-xs).
 GDB wants debugging info in the executable.
 
+Double-clicking on a function call will lead you to the definition of
+the function.  Use LBL(Source, Back) to return to the function call.
+
 Disabled breakpoints can be used as bookmarks.
 Use LBL(Source, Edit Breakpoints) to list all breakpoints;
 then, click on LBL(Lookup) to jump to a breakpoint location.
