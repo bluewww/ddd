@@ -690,9 +690,9 @@ struct FileItems {
     { "attach",        MMPush, { WhenReady, XtPointer(gdbOpenProcessCB) }}, \
     { "detach",        MMPush, { gdbCommandCB, "detach" }}, \
     MMSep, \
-    { "print",         MMPush, { graphPrintCB }}, \
+    { "print",         MMPush, { PrintGraphCB }}, \
     { "printAgain",    MMPush | MMUnmanaged, \
- 	                       { graphQuickPrintCB, XtPointer(1) }}, \
+ 	                       { PrintAgainCB, XtPointer(1) }}, \
     { "separator",     MMSeparator | MMUnmanaged }, \
     { "cd",            MMPush, { WhenReady, XtPointer(gdbChangeDirectoryCB) }}, \
     { "separator",     MMSeparator | MMUnmanaged }, \

@@ -35,8 +35,9 @@
 
 #include "ddd.h"
 
-extern void graphQuickPrintCB (Widget, XtPointer, XtPointer);
-extern void graphPrintCB      (Widget, XtPointer, XtPointer);
+extern void PrintGraphCB (Widget, XtPointer, XtPointer);
+extern void PrintPlotCB  (Widget, XtPointer, XtPointer);
+extern void PrintAgainCB (Widget, XtPointer, XtPointer);
 
 #endif // _DDD_print_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

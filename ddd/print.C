@@ -195,6 +195,7 @@ static int print(string command, BoxPrintGC& gc, bool selectedOnly)
 enum PrintType { PRINT_POSTSCRIPT, PRINT_FIG };
 
 static bool            print_selected_only = false;
+static bool            print_displays      = true;
 static bool            print_to_printer    = true;
 static BoxPostScriptGC print_postscript_gc;
 static BoxFigGC        print_xfig_gc;
@@ -214,7 +215,7 @@ static Widget          custom_paper_size;
 
 
 // Go and print according to local state
-void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
+void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 {
     const bool unmanage = ((int)(long)client_data & 1);
     const bool override = ((int)(long)client_data & 2);
@@ -282,7 +283,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 					      NULL, 0));
 	    Delay::register_shell(confirm_overwrite_dialog);
 	    XtAddCallback(confirm_overwrite_dialog, 
-			  XmNokCallback,   graphQuickPrintCB, 
+			  XmNokCallback, PrintAgainCB, 
 			  XtPointer((int)(long)client_data | 2));
 	    XtAddCallback(confirm_overwrite_dialog, 
 			  XmNhelpCallback, ImmediateHelpCB, 0);
@@ -348,6 +349,11 @@ static void UnsetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (XmToggleButtonGetState(w))
 	set_sensitive(Widget(client_data), False);
+}
+
+static void SetPrintDisplaysCB(Widget w, XtPointer, XtPointer)
+{
+    print_displays = XmToggleButtonGetState(w);
 }
 
 static void SetPrintSelectedNodesCB(Widget w, XtPointer, XtPointer)
@@ -643,11 +649,14 @@ static void SetGCOrientation(Widget w, XtPointer, XtPointer)
 static void NopCB(Widget, XtPointer, XtPointer)
 {}
 
-void graphPrintCB(Widget w, XtPointer, XtPointer)
+static void PrintCB(Widget parent, bool plot)
 {
+    static Widget print_displays;
+
     if (print_dialog != 0)
     {
 	// Dialog already created -- pop it up again
+	XmToggleButtonSetState(print_displays, !plot, True);
 	manage_and_raise(print_dialog);
 	return;
     }
@@ -656,7 +665,7 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     Cardinal arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     print_dialog = 
-	verify(XmCreatePromptDialog(find_shell(w), "print", args, arg));
+	verify(XmCreatePromptDialog(find_shell(parent), "print", args, arg));
     Delay::register_shell(print_dialog);
 
     if (lesstif_version <= 79)
@@ -664,9 +673,9 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 					       XmDIALOG_APPLY_BUTTON));
 
     XtAddCallback(print_dialog, XmNokCallback,
-		  graphQuickPrintCB, XtPointer(1));
+ 		  PrintAgainCB, XtPointer(1));
     XtAddCallback(print_dialog, XmNapplyCallback,
-		  graphQuickPrintCB, XtPointer(0));
+		  PrintAgainCB, XtPointer(0));
     XtAddCallback(print_dialog, XmNcancelCallback, 
 		  UnmanageThisCB, XtPointer(print_dialog));
     XtAddCallback(print_dialog, XmNhelpCallback,
@@ -697,11 +706,19 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 	MMEnd
     };
 
-    Widget print_all;
+    static MMDesc what2_menu[] = 
+    {
+	{"displays", MMToggle, { SetPrintDisplaysCB }, NULL, &print_displays },
+	{"plots",    MMToggle, { NopCB } },
+	MMEnd
+    };
+
+    Widget print_selected;
     static MMDesc what_menu[] = 
     {
-	{"all",      MMToggle, { NopCB }, NULL, &print_all },
-	{"selected", MMToggle, { SetPrintSelectedNodesCB }},
+	{"what2",    MMRadioPanel | MMUnmanagedLabel, MMNoCB, what2_menu },
+	{"selected", MMToggle, { SetPrintSelectedNodesCB }, 
+	             NULL, &print_selected },
 	MMEnd
     };
 
@@ -731,7 +748,7 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 	{"command",     MMTextField,  MMNoCB, NULL, &print_command_field },
 	{"name", 	MMTextField,  MMNoCB, NULL, &print_file_name_field },
 	{"type", 	MMRadioPanel, MMNoCB, type_menu, &file_type },
-	{"what",        MMRadioPanel, MMNoCB, what_menu },
+	{"what",        MMPanel,      MMNoCB, what_menu },
 	{"orientation", MMRadioPanel, MMNoCB, orientation_menu },
 	{"size",        MMRadioPanel, MMNoCB, paper_menu },
 	MMEnd
@@ -779,7 +796,7 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     paper_size_dialog = 
-	verify(XmCreatePromptDialog(find_shell(w), "paper_size_dialog", 
+	verify(XmCreatePromptDialog(find_shell(parent), "paper_size_dialog", 
 				    args, arg));
     Delay::register_shell(paper_size_dialog);
 
@@ -805,8 +822,9 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     // Set initial state
     XmToggleButtonSetState(print_to_printer, True, True);
     XmToggleButtonSetState(postscript, True, True);
-    XmToggleButtonSetState(print_all, True, True);
+    XmToggleButtonSetState(print_selected, False, True);
     XmToggleButtonSetState(print_portrait, True, True);
+    XmToggleButtonSetState(print_displays, !plot, True);
 
     bool ok = set_paper_size(app_data.paper_size);
     if (!ok)
@@ -818,3 +836,14 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     // Gofer it!
     manage_and_raise(print_dialog);
 }
+
+void PrintGraphCB(Widget w, XtPointer, XtPointer)
+{
+    PrintCB(w, false);
+}
+
+void PrintPlotCB(Widget w, XtPointer, XtPointer)
+{
+    PrintCB(w, true);
+}
+
