@@ -401,5 +401,15 @@ DDD Frequently Asked Questions                                  -*- text -*-
     appear.  I put some of the commands that were on the "toolButtons"
     list into my "sourceButtons" list.
 
+
+22. Can I use DDD with ADA?
+
+    Matthew Majka <mmajka@cs5.dasd.honeywell.com> says:
+
+    It works very well.  You just need an Ada-aware version of GDB.
+    You can get the patches from `ftp://cs.nyu.edu/pub/gnat/gdb/'.
+
+
+
 $Id$
 
