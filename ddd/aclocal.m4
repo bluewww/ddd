@@ -426,7 +426,6 @@ dnl lifetime of temporaries, define `HAVE_ANSI_LIFETIME_OF_TEMPORARIES'.
 dnl
 AC_DEFUN(ICE_CXX_LIFETIME_OF_TEMPORARIES,
 [
-AC_REQUIRE([AC_C_CROSS])
 AC_REQUIRE([AC_PROG_CXX])
 AC_MSG_CHECKING(whether ${CXX} supports ANSI C++ lifetime of temporaries)
 AC_CACHE_VAL(ice_cv_have_ansi_lifetime_of_temporaries,
@@ -1037,7 +1036,7 @@ AC_DEFUN(ICE_REGCOMP_BROKEN,
 [
 AC_REQUIRE([ICE_TYPE_REGEX_T])
 if  test "$ice_have_regcomp" = yes && test "$ice_have_regexec" = yes; then
-AC_REQUIRE([AC_C_CROSS])
+AC_REQUIRE([AC_PROG_CXX])
 AC_MSG_CHECKING([whether regcomp() is broken])
 ice_save_cppflags="$CPPFLAGS"
 CPPFLAGS="-I$srcdir/.. $CPPFLAGS"
