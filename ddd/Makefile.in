@@ -567,9 +567,9 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 %-xx.xpm: %.xpm
 	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
 	$(SED) 's/[ 	]c[	 ][#a-zA-Z0-9][#a-zA-Z0-9]*//' $< | \
-	$(SED) 's/ g black / g grey50/' | \
-	$(SED) 's/ g white / g grey75/' | \
-	$(SED) 's/g \([a-zA-Z0-9]*\) /c \1 g \1/' | \
+	$(SED) 's/ g black  / g grey50 /' | \
+	$(SED) 's/ g white  / g grey75 /' | \
+	$(SED) 's/g \([a-zA-Z0-9]*\) /c \1 g \1 /' | \
 	$(SED) "s/$$base/&_xx/" > $@~
 	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
@@ -636,6 +636,7 @@ XSTUFF_OBJECTS = \
 	Delay.o      \
 	DestroyCB.o  \
 	ExitCB.o     \
+	InitImage.o  \
 	LessTifH.o   \
 	MString.o    \
 	MakeMenu.o
