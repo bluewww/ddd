@@ -44,6 +44,7 @@ char print_rcsid[] =
 #include "TimeOut.h"
 #include "Command.h"
 #include "cook.h"
+#include "cwd.h"
 #include "filetype.h"
 #include "post.h"
 #include "regexps.h"
@@ -82,7 +83,11 @@ char print_rcsid[] =
 // Convert according to given BoxPrintGC
 static int convert(string filename, BoxPrintGC& gc, bool selectedOnly)
 {
-    StatusDelay delay("Printing graph to " + quote(filename));
+    string path = filename;
+    if (!filename.contains('/', 0))
+	path.prepend(cwd() + '/');
+
+    StatusDelay delay("Printing graph to " + quote(path));
 
     // Get the graph
     Graph *graph = graphEditGetGraph(data_disp->graph_edit);
