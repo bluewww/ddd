@@ -1,10 +1,10 @@
-DDD 1.4a is available
+DDD 1.4b is available
 =====================
 
-    Release 1.4a of the Data Display Debugger (DDD), a graphical
+    Release 1.4b of the Data Display Debugger (DDD), a graphical
     front-end for GDB and DBX debuggers, is now available at
 
-        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-1.4a.tar.gz
+        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-1.4b.tar.gz
 
     Diffs from earlier versions are in
 
@@ -164,7 +164,7 @@ More Information
 DDD source FTP sites
 ====================
 
-    The DDD source package `ddd-1.4a.tar.gz' will soon be at these FTP
+    The DDD source package `ddd-1.4b.tar.gz' will soon be at these FTP
     sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
     ftp.ips has a slow network connection.
 
@@ -172,38 +172,38 @@ DDD source FTP sites
 North America
 -------------
 
-  ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/ddd-1.4a.tar.gz
-  ftp://ftp.x.org/contrib/utilities/ddd-1.4a.tar.gz
-  ftp://ftp.cs.columbia.edu/archives/X11R6/contrib/utilities/ddd-1.4a.tar.gz
-  ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/ddd-1.4a.tar.gz
+  ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/ddd-1.4b.tar.gz
+  ftp://ftp.x.org/contrib/utilities/ddd-1.4b.tar.gz
+  ftp://ftp.cs.columbia.edu/archives/X11R6/contrib/utilities/ddd-1.4b.tar.gz
+  ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/ddd-1.4b.tar.gz
 
 
 Europe
 ------
 
-  ftp://ftp.denet.dk/pub/X11/contrib/utilities/ddd-1.4a.tar.gz
-  ftp://nic.funet.fi/pub/X11/contrib/utilities/ddd-1.4a.tar.gz
-  ftp://ftp.ibp.fr/pub/X11/contrib/utilities/ddd-1.4a.tar.gz
-  ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/ddd-1.4a.tar.gz
-  ftp://ftp.luth.se/pub/X11/contrib/utilities/ddd-1.4a.tar.gz
-  ftp://ftp.sunet.se/pub/X11/contrib/utilities/ddd-1.4a.tar.gz
-  ftp://ftp.eunet.ch/archive/software/X/utilities/ddd-1.4a.tar.gz
-  ftp://ftp.NL.net/pub/windows/X/contrib/utilities/ddd-1.4a.tar.gz
-  ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/ddd-1.4a.tar.gz
+  ftp://ftp.denet.dk/pub/X11/contrib/utilities/ddd-1.4b.tar.gz
+  ftp://nic.funet.fi/pub/X11/contrib/utilities/ddd-1.4b.tar.gz
+  ftp://ftp.ibp.fr/pub/X11/contrib/utilities/ddd-1.4b.tar.gz
+  ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/ddd-1.4b.tar.gz
+  ftp://ftp.luth.se/pub/X11/contrib/utilities/ddd-1.4b.tar.gz
+  ftp://ftp.sunet.se/pub/X11/contrib/utilities/ddd-1.4b.tar.gz
+  ftp://ftp.eunet.ch/archive/software/X/utilities/ddd-1.4b.tar.gz
+  ftp://ftp.NL.net/pub/windows/X/contrib/utilities/ddd-1.4b.tar.gz
+  ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/ddd-1.4b.tar.gz
 
 
 East Asia
 ---------
 
-  ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/ddd-1.4a.tar.gz
-  ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/ddd-1.4a.tar.gz
-  ftp://NCTUCCCA.edu.tw/X/contrib/utilities/ddd-1.4a.tar.gz
+  ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/ddd-1.4b.tar.gz
+  ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/ddd-1.4b.tar.gz
+  ftp://NCTUCCCA.edu.tw/X/contrib/utilities/ddd-1.4b.tar.gz
 
 
 Australia
 ---------
 
-  ftp://archie.AUX11/contrib/utilities/ddd-1.4a.tar.gz
+  ftp://archie.AUX11/contrib/utilities/ddd-1.4b.tar.gz
 
 
 
