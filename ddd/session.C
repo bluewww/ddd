@@ -921,16 +921,19 @@ static void OpenThisSessionCB(Widget w, XtPointer client_data,
     }
 }
 
-// Save current session from a list of choices
+// Load session from a list of choices
 void OpenSessionCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 
 	create_session_panel(w, "sessions_to_open",
 			     OpenThisSessionCB, DeleteSessionsCB);
 
-    // Clear current value
-    MString text("");
-    XtVaSetValues(dialog, XmNtextString, text.xmstring(), NULL);
+    // Suggest reloading current session
+    if (app_data.session != DEFAULT_SESSION)
+    {
+	MString text(app_data.session);
+	XtVaSetValues(dialog, XmNtextString, text.xmstring(), NULL);
+    }
 
     update_sessions(dialog);
     manage_and_raise(dialog);
