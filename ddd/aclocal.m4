@@ -745,9 +745,9 @@ dnl
 AC_DEFUN(ICE_TYPE_REGEX_T,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_CHECK_HEADERS(regex.h rx.h)
-ICE_CHECK_DECL(regcomp, regex.h rx.h)
-ICE_CHECK_DECL(regexec, regex.h rx.h)
+AC_CHECK_HEADERS(regex.h rx.h rxposix.h)
+ICE_CHECK_DECL(regcomp, regex.h rx.h rxposix.h)
+ICE_CHECK_DECL(regexec, regex.h rx.h rxposix.h)
 ice_save_cppflags="$CPPFLAGS"
 CPPFLAGS="-I $srcdir/.. $CPPFLAGS"
 AC_LANG_SAVE
@@ -757,13 +757,18 @@ AC_CACHE_VAL(ice_cv_have_regex_t_re_nsub,
 [
 AC_TRY_COMPILE(
 [
+extern "C" {
+#include <sys/types.h>
 #if defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_REGEX_H)
 #include <regex.h>		// POSIX.2 interface
 #elif defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_RX_H)
-#include <rx.h>	 	        // Header from GNU g++-include
+#include <rx.h>	 	        // Header from GNU rx 0.07
+#elif defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_RXPOSIX_H)
+#include <rxposix.h>		// Header from GNU rx 1.0 and later
 #else
-#include <rx/rxposix.h>	        // Header from GNU rx 1.0 and later
+#include <librx/rx.h>		// Header from GNU rx 0.07, as shipped with DDD
 #endif
+}
 ],
 [regex_t rx; int a = rx.re_nsub;], 
 ice_cv_have_regex_t_re_nsub=yes, ice_cv_have_regex_t_re_nsub=no)])dnl
@@ -773,18 +778,23 @@ AC_DEFINE(HAVE_REGEX_T_RE_NSUB)
 fi
 dnl
 dnl
-AC_MSG_CHECKING([n_subexps member of GNU RX regex_t type])
+AC_MSG_CHECKING([n_subexps member of GNU RX 1.0 regex_t type])
 AC_CACHE_VAL(ice_cv_have_regex_t_n_subexps,
 [
 AC_TRY_COMPILE(
 [
+extern "C" {
+#include <sys/types.h>
 #if defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_REGEX_H)
 #include <regex.h>		// POSIX.2 interface
 #elif defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_RX_H)
-#include <rx.h>	 	        // Header from GNU g++-include
+#include <rx.h>	 	        // Header from GNU rx 0.07
+#elif defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_RXPOSIX_H)
+#include <rxposix.h>		// Header from GNU rx 1.0 and later
 #else
-#include <rx/rxposix.h>	        // Header from GNU rx 1.0 and later
+#include <librx/rx.h>		// Header from GNU rx 0.07, as shipped with DDD
 #endif
+}
 ],
 [regex_t rx; int a = rx.n_subexps;],
 ice_cv_have_regex_t_n_subexps=yes, ice_cv_have_regex_t_n_subexps=no)])dnl
