@@ -5518,8 +5518,8 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer)
 
     // Check if we have something to cut
     XmTextPosition start, end;
-    bool can_cut  = false;
-    Widget dest = XmGetDestination(XtDisplay(w));
+    bool can_cut = false;
+    Widget dest  = XmGetDestination(XtDisplay(w));
 
     // Try destination window
     if (!can_cut && dest != 0 && XmIsText(dest))
@@ -5553,24 +5553,12 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer)
 	can_copy = XmTextGetSelectionPosition(source_view->code(),
 					      &start, &end);
 
-    // Check if we have something to paste
-    bool can_paste = false;
-    switch (win)
-    {
-    case GDBWindow:
-    case CommonWindow:
-    case SourceWindow:
-	can_paste = true;
-	break;
-
-    default:
-	break;
-    }
-
-    set_sensitive(menu[EditItems::Cut].widget,         can_cut);
-    set_sensitive(menu[EditItems::Copy].widget,        can_copy);
-    set_sensitive(menu[EditItems::Paste].widget,       can_paste);
-    set_sensitive(menu[EditItems::Delete].widget,      can_cut);
+    // There is always something to paste
+    bool can_paste = true;
+    set_sensitive(menu[EditItems::Cut].widget,    can_cut);
+    set_sensitive(menu[EditItems::Copy].widget,   can_copy);
+    set_sensitive(menu[EditItems::Paste].widget,  can_paste);
+    set_sensitive(menu[EditItems::Delete].widget, can_cut);
 }
 
 static void gdbUpdateFileCB(Widget, XtPointer client_data, XtPointer)
