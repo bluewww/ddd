@@ -3208,7 +3208,7 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
     {
 	string info = 
 	    gdb_question("info breakpoint " + itostring(bp_nr));
-	if (info == NO_GDB_ASNWER)
+	if (info == NO_GDB_ANSWER)
 	    return;
 
 	string ignore = info.after("ignore next ");
