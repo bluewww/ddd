@@ -78,6 +78,12 @@ char history_rcsid[] =
 #include <Xm/List.h>
 #include <Xm/SelectioB.h>
 
+#if WITH_READLINE
+extern "C" {
+#include "readline/history.h"
+}
+#endif
+
 #ifndef ARG_MAX
 #define ARG_MAX 4096
 #endif
@@ -116,6 +122,17 @@ static void update_combo_boxes();
 static void update_combo_boxes(const string& new_entry);
 
 
+#if WITH_READLINE
+// Initialize history
+struct HistoryInitializer {
+    HistoryInitializer()
+    {
+	using_history();
+    }
+};
+
+static HistoryInitializer history_initializer;
+#endif
 
 
 void set_gdb_history_file(const string& file)
@@ -214,6 +231,10 @@ void add_to_history(const string& line)
     add_to_arguments(line);
     update_arguments();
     update_combo_boxes(line);
+
+#if WITH_READLINE
+    add_history((char *)line);
+#endif
 }
 
 // Load history from history file
@@ -230,6 +251,10 @@ void load_history(const string& file)
 
     static StringArray empty;
     gdb_history = empty;
+
+#if WITH_READLINE
+    clear_history();
+#endif
 
     assert(gdb_history.size() == 0);
 
@@ -283,6 +308,10 @@ void load_history(const string& file)
 	    {
 		gdb_history += line;
 		add_to_arguments(line);
+
+#if WITH_READLINE
+		add_history((char *)line);
+#endif
 	    }
 
 	    first_command = false;
@@ -696,3 +725,4 @@ void tie_menu_to_recent_files(MMDesc *items)
     menus += (void *)items;
     update_recent_menu(items);
 }
+

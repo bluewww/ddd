@@ -160,6 +160,9 @@
    executable. */
 #undef WITH_BUILTIN_APP_DEFAULTS
 
+/* Define if you want readline support in DDD. */
+#undef WITH_READLINE
+
 
 // @BOTTOM@
 

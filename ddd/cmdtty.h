@@ -39,6 +39,9 @@
 // Initialize command tty
 extern void init_command_tty();
 
+// Close command tty
+extern void kill_command_tty();
+
 // Check if command tty is still running
 extern bool tty_running();
 

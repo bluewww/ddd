@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // TTY command interface
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -37,7 +37,7 @@ char cmdtty_rcsid[] =
 
 #include "AppData.h"
 #include "GDBAgent.h"
-#include "LiterateA.h"
+#include "ReadLineA.h"
 #include "SourceView.h"
 #include "ddd.h"
 #include "editing.h"
@@ -51,13 +51,13 @@ char cmdtty_rcsid[] =
 //-----------------------------------------------------------------------------
 
 // All communication with the command TTY passes through this variable
-static LiterateAgent* command_tty = 0;
+static ReadLineAgent *command_tty = 0;
 
 // true if input comes from command tty
 static bool tty_gdb_input;
 
 // TTY input received
-void tty_command(Agent *, void *, void *call_data)
+static void tty_command(Agent *, void *, void *call_data)
 {
     DataLength *d = (DataLength *)call_data;
 
@@ -68,7 +68,7 @@ void tty_command(Agent *, void *, void *call_data)
 }
 
 // TTY EOF received
-void tty_eof(Agent *, void *, void *)
+static void tty_eof(Agent *, void *, void *)
 {
     // Forward EOF to GDB (or whatever GDB is just running)
     gdb->send_user_ctrl_cmd("\004");
@@ -115,18 +115,36 @@ void tty_full_name(const string& pos)
 // Issue an artificial prompt
 void prompt()
 {
+    bool saved_tty_gdb_input = tty_gdb_input;
+    tty_gdb_input = true;
+
     _gdb_out(gdb->prompt());
-    if (tty_gdb_input)
-	_tty_out(gdb->prompt());
+
+    tty_gdb_input = saved_tty_gdb_input;
+
+    if (!tty_gdb_input && command_tty != 0)
+	command_tty->prompt(gdb->prompt());
 }
 
-// Initialize command tty
+// Initialize command TTY
 void init_command_tty()
 {
-    command_tty = new LiterateAgent(XtWidgetToApplicationContext(gdb_w));
+    assert(command_tty == 0);
+
+    command_tty = new ReadLineAgent(XtWidgetToApplicationContext(gdb_w));
     command_tty->addHandler(Input, tty_command);
     command_tty->addHandler(InputEOF, tty_eof);
     command_tty->start();
+}
+
+// Close command TTY
+void kill_command_tty()
+{
+    if (command_tty == 0)
+	return;
+
+    delete command_tty;
+    command_tty = 0;
 }
 
 // Check if command tty is still running

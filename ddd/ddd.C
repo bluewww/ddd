@@ -283,6 +283,12 @@ char ddd_rcsid[] =
 #include <exception>
 #endif
 
+#if WITH_READLINE
+extern "C" {
+#include "readline/readline.h"
+}
+#endif
+
 
 //-----------------------------------------------------------------------------
 // Forward function decls
@@ -397,7 +403,7 @@ static void setup_command_tool();
 static void setup_options(int& argc, char *argv[],
 			  StringArray& saved_options, string& gdb_name,
 			  bool& no_windows);
-static void setup_tty();
+static void setup_command_tty();
 static void setup_ddd_version_warnings();
 static void setup_motif_version_warnings();
 static void setup_auto_command_prefix();
@@ -2773,7 +2779,7 @@ int main(int argc, char *argv[])
 	setup_command_tool();
 
     // Setup TTY interface
-    setup_tty();
+    setup_command_tty();
 
     // Raise core limit if needed; required for getting session info.
     // Note: this must be done before starting GDB.
@@ -7286,10 +7292,17 @@ static void setup_options(int& argc, char *argv[],
     }
 }
 
-static void setup_tty()
+static void setup_command_tty()
 {
     if (app_data.tty_mode)
     {
+#if WITH_READLINE
+	// Initialize Readline
+	rl_initialize();
+	rl_readline_name = DDD_NAME;
+#endif
+	
+	// Initialize TTY
 	init_command_tty();
 
 	// Issue init msg (using 7-bit characters)

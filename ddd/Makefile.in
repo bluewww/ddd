@@ -208,6 +208,8 @@ LIBRX      =
 LIBTERMCAP = @LIBTERMCAP@
 # -liberty library (../libiberty/libiberty.a)
 LIBIBERTY  = @LIBIBERTY@
+# -lreadline library (../readline/libreadline.a)
+LIBREADLINE = @LIBREADLINE@
 # Yacc library (-ly)
 LIBY       = @LIBY@
 # Math library (-lm)
@@ -222,7 +224,7 @@ LIBNSL     = @LIBNSL@
 NON_X_LIBS = @LIBS@
 
 # All libraries shown above
-LIBS = $(CXXLIBS) $(LIBSOCKET) $(LIBNSL) $(LIBRX) \
+LIBS = $(CXXLIBS) $(LIBREADLINE) $(LIBSOCKET) $(LIBNSL) $(LIBRX) \
        $(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM)
 
 
@@ -689,6 +691,7 @@ AGENT_OBJECTS = \
 	DataLength.o \
 	HandlerL.o   \
 	LiterateA.o  \
+	ReadLineA.o  \
 	TimeOut.o    \
 	TTYAgent.o
 
