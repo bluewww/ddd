@@ -89,6 +89,9 @@
 /* Define if your C++ library has an ostrstreambuf::freeze() function. */
 #undef HAVE_FREEZE_OSTRSTREAMBUF
 
+/* Define if the ios::iostate type is defined or declared in <iostream.h>. */
+#undef HAVE_IOSTATE
+
 /* Define if your C++ compiler supports `long long' types. */
 #undef HAVE_LONG_LONG
 

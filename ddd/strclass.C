@@ -1431,7 +1431,11 @@ istream& operator>>(istream& s, string& x)
     }
     x.rep->s[i] = 0;
     x.rep->len = i;
+#if HAVE_IOSTATE
+    ios::iostate new_state = s.rdstate();
+#else
     int new_state = s.rdstate();
+#endif
     if (i == 0)
 	new_state |= ios::failbit;
     if (ch == EOF) 

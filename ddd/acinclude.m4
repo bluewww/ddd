@@ -797,11 +797,15 @@ dnl
 AC_DEFUN(ICE_CXX_NAMED_RETURN_VALUES,
 [
 AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports named return values)
 AC_CACHE_VAL(ice_cv_have_named_return_values,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
+# GCC 3.0 supports named return values, but produces lots of warnings.
+# Prefer GCC 3.0 without warnings.
+CXXFLAGS="$CXXFLAGS $WERROR"
 AC_TRY_COMPILE([
 struct X {
     int f();
@@ -937,6 +941,35 @@ if test "$ice_cv_have_streampos" = yes; then
 AC_DEFINE(HAVE_STREAMPOS)
 fi
 ])dnl
+dnl
+dnl ICE_IOSTATE
+dnl -----------
+dnl
+dnl If <iostream.h> defines an `ios::iostate' type (as type of os.rdstate(), 
+dnl os.clear(), etc.), define `HAVE_IOSTATE'.
+dnl
+AC_DEFUN(ICE_IOSTATE,
+[
+AC_REQUIRE([AC_PROG_CXX])
+changequote(,)dnl
+AC_MSG_CHECKING(for ios::iostate)
+changequote([,])dnl
+AC_CACHE_VAL(ice_cv_have_iostate,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([#include <iostream.h>],
+[ios::iostate new_state;],
+ice_cv_have_iostate=yes,
+ice_cv_have_iostate=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_iostate)
+if test "$ice_cv_have_iostate" = yes; then
+AC_DEFINE(HAVE_IOSTATE)
+fi
+])dnl
+dnl
 dnl
 dnl
 dnl

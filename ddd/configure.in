@@ -426,8 +426,9 @@ AC_ARG_WITH(readline-libraries,
 AC_SUBST(LIBREADLINE)
 dnl
 dnl
-dnl `streampos' type
+dnl `streampos' and `iostate' types
 ICE_STREAMPOS
+ICE_IOSTATE
 dnl
 dnl
 dnl
