@@ -720,7 +720,7 @@ README_FILES =
 # Files required for building DDD.
 # In a distribution, these should be already built.
 PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C \
-	 	   config.h.in acconfig.h acspecial.h stamp-h.in \
+	 	   acconfig.h acspecial.h stamp-h.in \
 		   ddd.vsl.h version.h host.h configinfo.C \
 		   Ddd.ad.h ddd.man.huff.C COPYING.huff.C xlibdir.C eps-code.h
 
