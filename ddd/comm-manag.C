@@ -627,7 +627,9 @@ void send_gdb_command(string cmd, Widget origin,
     else if (is_file_cmd(cmd, gdb))
     {
 	// File may change: display main() function and update displays
-	plus_cmd_data->refresh_disp_info    = true;
+	if (gdb->has_display_command())
+	    plus_cmd_data->refresh_disp_info = true;
+
 	plus_cmd_data->refresh_initial_line = true;
 	plus_cmd_data->refresh_data         = true;
 	
