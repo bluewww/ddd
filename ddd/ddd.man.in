@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "12 August 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "13 August 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -691,13 +691,14 @@ As an alternative, you can use \s-2GDB\s+2 \fIartificial arrays\fR.
 Typing
 .sp
 .br
-  \fBgraph display *argv @ 10\fR
+  \fBgraph display argv[0] @ 10\fR
 .sp
 .br
 creates a single array display node containing `\fBargv[0]\fR' up to
-`\fBargv[9]`\fR'. 
+`\fBargv[9]\fR'.  Generally, by using the `\fB@\fR' operator, you
+can specify the number of array elements to be displayed.
 .PP
-See the \s-2GDB\s+2 documentation, for details on artificial arrays.
+For more details on artificial arrays, see the \s-2GDB\s+2 documentation.
 .\"
 .\"
 .SS "Deleting Displays"
