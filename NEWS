@@ -4,7 +4,7 @@ Changes in DDD						-*- text -*-
 DDD 1.3a
 --------
 
-    FBug fix release.
+    Bug fix release.
 
     - Minor troubles with GCC 2.7.0 on certain architectures fixed.
     - New help item: DDD WWW Page.
