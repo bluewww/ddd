@@ -2625,6 +2625,7 @@ static void _Layout(Widget w, XEvent *event, String *params,
     const GraphGC& graphGC     = _w->graphEdit.graphGC;
     Cardinal& rotation         = _w->graphEdit.rotation;
     LayoutMode mode            = _w->graphEdit.layoutMode;
+    Boolean& autoLayout        = _w->graphEdit.autoLayout;
 
     static char graph_name[] = "graph";
 
@@ -2650,6 +2651,10 @@ static void _Layout(Widget w, XEvent *event, String *params,
 			 "layout", "+0", "MODE, ");
     if (new_rotation < 0)
 	return;
+
+    // Don't get called again while setting values from hooks
+    Boolean old_autoLayout = autoLayout;
+    autoLayout = False;
 
     // Call hooks before layouting
     GraphEditLayoutInfo info;
@@ -2723,6 +2728,8 @@ static void _Layout(Widget w, XEvent *event, String *params,
 
     // Layout is done
     XtCallCallbacks(w, XtNpostLayoutCallback, caddr_t(&info));
+
+    autoLayout = old_autoLayout;
 }
 
 // DoLayout() should be named Layout(), but this conflicts with the

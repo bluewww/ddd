@@ -795,32 +795,60 @@ void DataDisp::set_handlers()
 // Redraw graph and update display list
 //-----------------------------------------------------------------------------
 
+struct GraphEditState {
+    Boolean autoLayout;
+    Boolean snapToGrid;
+};
+
 void DataDisp::refresh_graph_edit(bool silent)
 {
+    // Save current graph editor state
+    static GraphEditState state;
+
+    XtVaGetValues(graph_edit,
+		  XtNautoLayout, &state.autoLayout,
+		  XtNsnapToGrid, &state.snapToGrid,
+		  NULL);
+
     if (refresh_graph_edit_timer == 0)
     {
 	refresh_graph_edit_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
-			    0, RefreshGraphEditCB, XtPointer(graph_edit));
+			    0, RefreshGraphEditCB, XtPointer(&state));
     }
 
     refresh_args();
     refresh_display_list(silent);
 }
 
-void DataDisp::RefreshGraphEditCB(XtPointer, XtIntervalId *id)
+void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
     assert(*id == refresh_graph_edit_timer);
     refresh_graph_edit_timer = 0;
 
+    static GraphEditState state;
+
+    XtVaGetValues(graph_edit,
+		  XtNautoLayout, &state.autoLayout,
+		  XtNsnapToGrid, &state.snapToGrid,
+		  NULL);
+
+    const GraphEditState& old_state = *((GraphEditState *) client_data);
+
     static Graph *dummy = new Graph;
 
     XtVaSetValues(graph_edit,
+		  XtNautoLayout, old_state.autoLayout,
+		  XtNsnapToGrid, old_state.snapToGrid,
 		  XtNgraph, dummy,
 		  NULL);
     XtVaSetValues(graph_edit,
 		  XtNgraph, (Graph *)disp_graph,
+		  NULL);
+    XtVaSetValues(graph_edit,
+		  XtNautoLayout, state.autoLayout,
+		  XtNsnapToGrid, state.snapToGrid,
 		  NULL);
 
     if (disp_graph->firstVisibleNode() != 0)
@@ -3249,6 +3277,11 @@ bool DataDisp::check_aliases()
     if (!detect_aliases)
 	return false;
 
+    // Don't layout for each change
+    Boolean autoLayout;
+    XtVaGetValues(graph_edit, XtNautoLayout, &autoLayout, NULL);
+    XtVaSetValues(graph_edit, XtNautoLayout, False, NULL);
+
     // Group displays into equivalence classes depending on their address.
     StringIntArrayAssoc equivalences;
 
@@ -3290,6 +3323,8 @@ bool DataDisp::check_aliases()
 
     if (changed)
 	refresh_graph_edit(suppressed);
+
+    XtVaSetValues(graph_edit, XtNautoLayout, autoLayout, NULL);
 
     return suppressed;
 }
