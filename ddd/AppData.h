@@ -196,6 +196,8 @@
 #define XtCDetectAliases         "DetectAliases"
 #define XtNstatusHistorySize     "statusHistorySize"
 #define XtCStatusHistorySize     "StatusHistorySize"
+#define XtNverifyButtons         "verifyButtons"
+#define XtCVerifyButtons         "VerifyButtons"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -285,6 +287,7 @@ struct AppData {
     Boolean ungrab_mouse_pointer;
     Boolean detect_aliases;
     int     status_history_size;
+    Boolean verify_buttons;
     String  dddinit_version;
     String  app_defaults_version;
 };

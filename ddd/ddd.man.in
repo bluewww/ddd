@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "12 March 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "18 March 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -54,14 +54,14 @@
 .RB "[\|" \-\-vsl\-path
 .I path\c
 \&\|]
-.RB "[\|" \-\-trace\-dialog "\|]"
-.RB "[\|" \-\-trace\-shell "\|]"
+.RB "[\|" \-\-help "\|]"
 .RB "[\|" \-\-exec\-window "\|]"
 .RB "[\|" \-\-no\-exec\-window "\|]"
 .RB "[\|" \-\-attach\-windows "\|]"
 .RB "[\|" \-\-separate\-windows "\|]"
 .RB "[\|" \-\-scrolled\-graph "\|]"
 .RB "[\|" \-\-panned\-graph "\|]"
+.RB "[\|" \-\-trace "\|]"
 .RB "[\|" \-\-tty "\|]"
 .RB "[\|" \-\-fullname "\|]"
 .RB "[\|" \-\-version "\|]"
@@ -2607,6 +2607,12 @@ positions for \fIall\fR buttons in the command tool.  See the
 If the `\fBtoolButtons\fR' resource value is empty, the command tool is
 not created.
 .RE
+.TP
+.B "verifyButtons (\fPclass\fB VerifyButtons)"
+If true (default), verify for each button whether its command is
+actually supported by the inferior debugger.  If the command is
+unknown, the button is disabled.  If this resource is false, no
+checking is done: all commands are accepted `as is'.
 .\"
 .\"
 .\"

@@ -35,9 +35,12 @@ char buttons_rcsid[] =
 
 #include "buttons.h"
 
+#include "AppData.h"
+#include "Delay.h"
 #include "HelpCB.h"
 #include "bool.h"
 #include "charsets.h"
+#include "comm-manag.h"
 #include "ctrl.h"
 #include "ddd.h"
 #include "editing.h"
@@ -60,6 +63,7 @@ char buttons_rcsid[] =
 #include <Xm/Text.h>
 #include <ctype.h>
 
+
 //-----------------------------------------------------------------------------
 // Data
 //-----------------------------------------------------------------------------
@@ -70,7 +74,7 @@ int max_value_doc_length = 128;
 
 
 //-----------------------------------------------------------------------------
-// Buttons
+// Button callbacks
 //-----------------------------------------------------------------------------
 
 static void YnButtonCB(Widget dialog, 
@@ -139,6 +143,8 @@ static void showDocumentationInStatusLine(const MString& doc)
 
 const int help_timeout = 2;	// Timeout for short queries (in s)
 
+static StringStringAssoc help_cache;
+
 static string gdbHelpName(Widget widget)
 {
     string name = XtName(widget);
@@ -177,12 +183,11 @@ static string gdbHelp(string command)
 	    help = "Display expression in the data window.";
     }
 
-    static StringStringAssoc help_texts;
     if (help == NO_GDB_ANSWER)
     {
 	// Lookup cache
-	if (help_texts.has(command))
-	    help = help_texts[command];
+	if (help_cache.has(command))
+	    help = help_cache[command];
     }
 
     if (help == NO_GDB_ANSWER && gdb->type() == DBX)
@@ -207,7 +212,7 @@ static string gdbHelp(string command)
     }
 
     if (help != NO_GDB_ANSWER)
-	help_texts[command] = help;
+	help_cache[command] = help;
 
     return help;
 }
@@ -431,6 +436,101 @@ static MString gdbDefaultDocumentationText(Widget widget, XEvent *event)
 }
 
 
+//-----------------------------------------------------------------------------
+// Button Verification
+//-----------------------------------------------------------------------------
+
+// Buttons to be verified
+static WidgetArray buttons_to_be_verified;
+
+// Procedure id
+static XtWorkProcId verify_id = 0;
+
+static Boolean VerifyButtonWorkProc(XtPointer)
+{
+    int i;
+    for (i = 0; i < buttons_to_be_verified.size(); i++)
+	if (buttons_to_be_verified[i] != 0)
+	    break;
+
+    if (i >= buttons_to_be_verified.size())
+    {
+	verify_id = 0;
+	return True;		// Done
+    }
+
+    Widget& button = buttons_to_be_verified[i];
+    assert(button != 0);
+
+    XtCallbackList callbacks = 0;
+    XmString xmlabelString = 0;
+    XtVaGetValues(button, 
+		  XmNactivateCallback, &callbacks,
+		  XmNlabelString, &xmlabelString,
+		  NULL);
+    MString labelString(xmlabelString, true);
+    XmStringFree(xmlabelString);
+
+    for (i = 0; callbacks != 0 && callbacks[i].callback != 0; i++)
+    {
+	string cmd = String(callbacks[i].closure);
+	cmd = cmd.through(rxidentifier);
+	if (cmd == "")
+	    continue;
+
+	if (callbacks[i].callback == gdbCommandCB)
+	{
+	    bool first_time = !help_cache.has(cmd);
+
+	    string answer = gdbHelp(cmd);
+	    if (answer == NO_GDB_ANSWER)
+		return False;		// Try again later
+
+	    if (!is_known_command(answer))
+	    {
+		// Command is not known - make button insensitive
+		XtSetSensitive(button, False);
+
+		if (first_time)
+		{
+		    MString msg = rm("Disabling ") + labelString
+			+ rm(" button (not supported on " 
+			     + gdb->title() + ")");
+		    set_status_mstring(msg);
+		    break;
+		}
+	    }
+	}
+    }
+
+    button = 0;			// Don't process this one again
+    return False;		// Try again with next button
+}
+
+// Make BUTTON insensitive if it is not supported
+void verify_button(Widget button)
+{
+    if (!app_data.verify_buttons)
+	return;
+    if (button == 0)
+	return;
+    if (!XtIsSubclass(button, xmPushButtonWidgetClass))
+	return;
+
+    buttons_to_be_verified += button;
+    if (verify_id == 0)
+    {
+	verify_id = XtAppAddWorkProc(XtWidgetToApplicationContext(button),
+				     VerifyButtonWorkProc, 0);
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+// Button Creation
+//-----------------------------------------------------------------------------
+
+// Create a button work area from BUTTON_LIST named NAME
 Widget make_buttons(Widget parent, const string& name, 
 		    const string& button_list)
 {
@@ -546,6 +646,9 @@ void add_buttons(Widget buttons, const string& button_list)
 	    callback = gdbEditSourceCB;
 	else if (name == "Reload")
 	    callback = gdbReloadSourceCB;
+
+	// Verify later whether the button actually exists
+	verify_button(button);
 
 	// We remove all callbacks to avoid popping down DialogShells
 	XtRemoveAllCallbacks(button, XmNactivateCallback);

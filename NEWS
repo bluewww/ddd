@@ -69,6 +69,8 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
       prompt `():'.
     - Unnecessary redisplays have been significantly reduced, causing
       much less flickering.
+    - Buttons not supported on certain debuggers (for instance,
+      `Finish' on DBX) are now automatically made insensitive.
     - You can search for keywords in the online DDD manual.
 
     Documentation:

@@ -42,6 +42,9 @@ Widget make_buttons(Widget parent, const string& name, const string& list);
 // Add buttons as specified in LIST to BUTTONS
 void add_buttons(Widget buttons, const string& list);
 
+// Make BUTTON insensitive if it is not supported
+void verify_button(Widget button);
+
 // Maximum length of value in value tip and in status line
 extern int max_value_tip_length;
 extern int max_value_doc_length;

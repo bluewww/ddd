@@ -289,6 +289,9 @@ static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
 // Drag and drop
 static void CheckDragCB(Widget, XtPointer client_data, XtPointer call_data);
 
+// Button stuff
+static void verify_buttons(MMDesc *items);
+
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -1424,6 +1427,7 @@ int main(int argc, char *argv[])
 
     Widget menubar_w = MMcreateMenuBar (main_window, "menubar", menubar);
     MMaddCallbacks(menubar);
+    verify_buttons(program_menu);
 
     set_option_widgets(CommandOptions);
 
@@ -1468,6 +1472,7 @@ int main(int argc, char *argv[])
 	data_menubar_w = 
 	    MMcreateMenuBar (data_main_window_w, "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
+	verify_buttons(program_menu);
 
 	set_option_widgets(DataOptions);
 
@@ -1529,6 +1534,7 @@ int main(int argc, char *argv[])
 	source_menubar_w = 
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
 	MMaddCallbacks(source_menubar);
+	verify_buttons(program_menu);
 
 	set_option_widgets(SourceOptions);
 
@@ -2055,6 +2061,17 @@ static void install_button_tips()
 	if (shell)
 	    InstallButtonTips(shell, true);
     }
+}
+
+
+//-----------------------------------------------------------------------------
+// Verify buttons
+//-----------------------------------------------------------------------------
+
+static void verify_buttons(MMDesc *items)
+{
+    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
+	verify_button(item->widget);
 }
 
 //-----------------------------------------------------------------------------
@@ -3057,6 +3074,7 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
     status += has("pwd",     gdb->has_pwd_command());
     status += has("run_io",  gdb->has_run_io_command());
     status += has("setenv",  gdb->has_setenv_command());
+    status += has("when",    gdb->has_when_command());
 
     status += cr() + sl("DEBUGGER COMMANDS") + cr();
     status += cmd("Args",        gdb->info_args_command());
@@ -3103,7 +3121,7 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
 
     XtManageChild(info);
 }
-#endif
+#endif // SHOW_GDB_STATUS
 
 //-----------------------------------------------------------------------------
 // Helpers

@@ -874,6 +874,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNverifyButtons,
+	XtCVerifyButtons,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, verify_buttons),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,

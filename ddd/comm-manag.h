@@ -69,5 +69,8 @@ void user_cmdSUC (string cmd, Widget origin = 0);
 //
 void user_rawSUC (string cmd, Widget origin = 0);
 
+// Return FALSE if ANSWER is an error message indicating an unknown command
+bool is_known_command(const string& answer);
+
 #endif // _DDD_comm_manag_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

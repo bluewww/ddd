@@ -1013,7 +1013,7 @@ void handle_graph_cmd (string cmd, Widget origin)
 // ***************************************************************************
 // Process output of configuration commands
 
-static bool is_known_command(const string& answer)
+bool is_known_command(const string& answer)
 {
     string ans = downcase(answer);
 
@@ -1028,15 +1028,16 @@ static bool is_known_command(const string& answer)
 	ans = ans.before('\n') + ans.from(last_nl + 1);
     }
 
-    return ans.contains("program is not active") // DBX
-	|| (!ans.contains("syntax")              // DEC DBX
-	    && !ans.contains("invalid keyword")  // DEC DBX
-	    && !ans.contains("help")             // GDB & SUN DBX 1.0
-	    && !ans.contains("not found")        // SUN DBX 3.0
-	    && !ans.contains("is unknown")       // SUN DBX 3.0
-	    && !ans.contains("unrecognized")     // AIX DBX
-	    && !ans.contains("expected")         // SGI DBX
-	    && !ans.contains("unknown", 0));     // XDB
+    return ans.contains("program is not active")  // DBX
+	|| (!ans.contains("syntax")               // DEC DBX
+	    && !ans.contains("invalid keyword")   // DEC DBX
+	    && !ans.contains("help")              // GDB & SUN DBX 1.0
+	    && !ans.contains("not found")         // SUN DBX 3.0
+	    && !ans.contains("is unknown")        // SUN DBX 3.0
+	    && !ans.contains("unrecognized")      // AIX DBX
+	    && !ans.contains("no help available") // AIX DBX
+	    && !ans.contains("expected")          // SGI DBX
+	    && !ans.contains("unknown", 0));      // XDB
 }
 
 static void process_init(string&)
@@ -1103,6 +1104,7 @@ static void process_config_named_values(string& answer)
 
 static void process_config_when_semicolon(string& answer)
 {
+    gdb->has_when_command(is_known_command(answer));
     static regex rxsemicolon_and_brace("; *[}]");
     gdb->has_when_semicolon(answer.contains(rxsemicolon_and_brace));
 }
