@@ -320,7 +320,7 @@ bool read_array_begin (string& value)
     if (value.contains("struct", 0) 
 	|| value.contains("class", 0) 
 	|| value.contains("union", 0))
-	value = value.after(' ');
+	value = value.from('{');
 
     if (value.contains('{', 0))
 	value = value.after(0);
