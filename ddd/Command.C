@@ -225,6 +225,20 @@ static ostream& operator<<(ostream& os, const Command& c)
 }
 #endif
 
+// True while do_gdb_command() is running
+static bool processing_gdb_commands = false;
+
+// True in the first 200ms after continuing
+static bool continuing = false;
+
+static XtIntervalId continuing_timeout = 0;
+
+static void ClearContinuingCB(XtPointer, XtIntervalId *)
+{
+    continuing = false;
+    processCommandQueue();
+}
+
 // Process command C; do it right now.
 static void _do_gdb_command(const Command& c, bool is_command = true)
 {
@@ -255,7 +269,11 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 	}
 
 	if (!gdb->recording())
+	{
+	    processing_gdb_commands = false;
 	    handle_running_commands(cmd, c.origin);
+	    processing_gdb_commands = true;
+	}
 
 	if (cmd.length() == 0 && c.prompt)
 	{
@@ -263,6 +281,9 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 	    return;
 	}
     }
+
+    if (is_command)
+	_current_gdb_command = cmd;
 
     gdb_keyboard_command = private_gdb_input;
 
@@ -294,24 +315,10 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
     messagePosition = XmTextGetLastPosition(gdb_w);
 }
 
-// True while do_gdb_command() is running
-static bool processing_gdb_commands = false;
-
-// True in the first 200ms after continuing
-static bool continuing = false;
-
-static XtIntervalId continuing_timeout = 0;
-
-static void ClearContinuingCB(XtPointer, XtIntervalId *)
-{
-    continuing = false;
-    processCommandQueue();
-}
-
 // True if GDB can run a command
 bool can_do_gdb_command()
 {
-    if (processing_gdb_commands || continuing)
+    if (processing_gdb_commands)
 	return false;
 
     if (gdb->isReadyWithPrompt())
@@ -377,8 +384,9 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	{
 	    // Avoid interrupting a `cont' command just after it has been sent
 	    continuing = true;
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
-			    200, ClearContinuingCB, XtPointer(0));
+	    continuing_timeout = 
+		XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
+				200, ClearContinuingCB, XtPointer(0));
 	}
 
 	_do_gdb_command(c, is_command);
@@ -559,7 +567,7 @@ void gdb_command(const Command& c0)
 	return;
     }
 
-    if (can_do_gdb_command() && emptyCommandQueue())
+    if (!continuing && can_do_gdb_command() && emptyCommandQueue())
     {
 	// We're ready - process immediately
 	do_gdb_command(c);
@@ -624,7 +632,7 @@ void processCommandQueue(XtPointer, XtIntervalId *id)
     if (emptyCommandQueue())
 	return;
 
-    if (can_do_gdb_command())
+    if (!continuing && can_do_gdb_command())
     {
 	Command& c = commandQueue.first();
 	Command cmd(c);
