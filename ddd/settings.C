@@ -490,7 +490,6 @@ static void update_themes_buttons()
     for (i = 0; i < themes_entries.size(); i++)
     {
 	Widget entry = themes_entries[i];
-	Widget button = themes_labels[i];
 	string theme = basename(XtName(entry));
 	ThemePattern p;
 
@@ -746,12 +745,19 @@ void process_show(string command, string value, bool init)
 	    value = value.after(" is ", -1);
 	if (value.contains(".", -1))
 	    value = value.before(int(value.length()) - 1);
+	if (value.contains(". "))
+	    value = value.before(". ");
 
 	if (value.contains("assumed to be "))
 	    value = value.after("assumed to be ");
+
 	if (value.contains("\"auto;", 0) || 
-	    value.contains("set automatically", 0))
+	    value.contains("set automatically", 0) ||
+	    value.contains("auto-detected", 0))
+	{
 	    value = "auto";
+	}
+
 	if (value.contains('"', 0))
 	    value = unquote(value);
 	else if (value.contains(": "))
@@ -1563,6 +1569,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		// equivalent `show extension-language'.
 		if (base == "extension-language")
 		    return;
+
+		if (doc.contains("deprecated"))
+		    return;	// Won't support this
 
 		is_set = doc.contains("Set ", 0);
 		is_add = doc.contains("Add ", 0);
@@ -2993,6 +3002,18 @@ static void get_setting(ostream& os, DebuggerType type,
 	if (base == "set remotedevice" && value == "")
 	{
 	    // This is the default setting - do nothing (GDB)
+	    break;
+	}
+
+	if (base == "set targetdebug")
+	{
+	    // We cannot set this without a debuggee (GDB 5.0).
+	    break;
+	}
+
+	if (base == "set scheduler-locking")
+	{
+	    // Architecture-dependent (GDB 5.0).
 	    break;
 	}
 
