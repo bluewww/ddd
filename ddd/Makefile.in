@@ -1567,13 +1567,13 @@ $(srcdir)/Makedeps depend:
 	$(ECHO) ; \
 	srcdir=`echo $(srcdir) | $(SED) 's%\.%\\\\.%g'`; \
 	$(CXX) -M $(CPPFLAGS) $(DEFS) $(INCLUDE) $(srcdir)/*.C \
-	| $(SED) "s%$$srcdir/%%g" \
+	| $(SED) "s% $$srcdir/% %g" \
 	| $(SED) 's% /[^ ]*%%g' \
 	| $(SED) 's% \./% %g' \
 	| $(GREP) -v '^ *\\$$' \
-	| $(SED) 's% \.\./% \$$(srcdir)/\.\./%g' \
+	| $(SED) "s% \.\./% \$$(srcdir)/\.\./%g" \
 	| $(SED) 's%^ *$$%& config.h%g' ) > Makedeps~
-	$(MV) Makedeps~ $(srcdir)/Makedeps
+	@$(MV) Makedeps~ $(srcdir)/Makedeps
 	@$(ECHO) "Creating $(srcdir)/Makedeps...done."
 
 ## If your `make' cannot handle the following line,
