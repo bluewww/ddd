@@ -209,6 +209,10 @@ public:
 
     // Toggle titles.  Return true iff changed.
     bool set_title(bool set);
+
+    // Print plots to FILENAME
+    void print_plots(const string& filename, 
+		     const GraphGC& gc = GraphGC()) const;
 };
 
 // Clustering stuff

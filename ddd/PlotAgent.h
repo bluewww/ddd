@@ -37,6 +37,7 @@
 #include "assert.h"
 #include "StringA.h"
 #include "IntArray.h"
+#include "Box.h"
 
 #include <fstream.h>
 
@@ -61,6 +62,7 @@ private:
     double y_min, y_max;
     double v_min, v_max;
     string plot_commands;	// Plotting commands received so far
+    string init_commands;	// Initialization commands
 
 protected:
     void add_v(double v);
@@ -84,7 +86,8 @@ public:
 	  x_min(0.0), x_max(0.0),
 	  y_min(0.0), y_max(0.0),
 	  v_min(0.0), v_max(0.0),
-	  plot_commands("")
+	  plot_commands(""),
+	  init_commands("")
     {
 	reset();
     }
@@ -111,6 +114,10 @@ public:
 
     // Flush accumulated data
     int flush();
+
+    // Print plot to FILENAME
+    void print(const string& filename, 
+	       const BoxPrintGC& gc = BoxPostScriptGC());
 };
 
 #endif // _DDD_PlotAgent_h

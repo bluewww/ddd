@@ -48,6 +48,7 @@ void PlotAgent::start(const string& init)
 {
     LiterateAgent::start();
     write(init.chars(), init.length());
+    init_commands = init;
 }
 
 // Reset for next plot
@@ -329,4 +330,60 @@ void PlotAgent::dispatch(int type, char *data, int length)
 
 	plot_commands = "";
     }
+}
+
+
+// Print plot to FILENAME
+void PlotAgent::print(const string& filename, const BoxPrintGC& gc)
+{
+    ostrstream cmd;
+
+    if (gc.isFig())
+    {
+	cmd << "set term fig\n";
+    }
+    else if (gc.isPostScript())
+    {
+	const BoxPostScriptGC& ps = ref_cast(const BoxPostScriptGC, gc);
+
+	cmd << "set term postscript ";
+
+	switch (ps.orientation)
+	{
+	case BoxPostScriptGC::PORTRAIT:
+	{
+	    cmd << "portrait";
+	    break;
+	}
+
+	case BoxPostScriptGC::LANDSCAPE:
+	{
+	    cmd << "landscape";
+	    break;
+	}
+	}
+	cmd << "\n";
+
+
+	// Postscript defaults are: landscape 10" wide and 7" high.
+	// Our `vsize' and `hsize' members assume portrait, so they
+	// are just reversed.
+	const int default_hsize =  7 * 72; // Default width in 1/72"
+	const int default_vsize = 10 * 72; // Default height in 1/72"
+
+	// Set size
+	double xscale = double(ps.hsize) / default_hsize;
+	double yscale = double(ps.vsize) / default_vsize;
+	cmd << "set size " << xscale << ", " << yscale << "\n";
+    }
+
+    cmd << "set output " << quote(filename) << "\n"
+	<< "replot\n"
+	<< "set output\n"
+	<< "set size\n"
+	<< init_commands << "\n"
+	<< "replot\n";
+
+    string c(cmd);
+    write(c.chars(), c.length());
 }

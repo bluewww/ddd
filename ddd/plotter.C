@@ -42,6 +42,7 @@ char plotter_rcsid[] =
 #include "findParent.h"
 #include "findWindow.h"
 #include "fonts.h"
+#include "print.h"
 #include "simpleMenu.h"
 #include "verify.h"
 #include "strclass.h"
@@ -67,7 +68,7 @@ static void TraceInputHP (Agent *source, void *, void *call_data);
 static void TraceOutputHP(Agent *source, void *, void *call_data);
 static void TraceErrorHP (Agent *source, void *, void *call_data);
 
-static void PopdownCB(Widget, XtPointer, XtPointer);
+static void CancelPlotCB(Widget, XtPointer, XtPointer);
 static void ExposePlotAreaCB(Widget, XtPointer, XtPointer);
 static void ResizePlotAreaCB(Widget, XtPointer, XtPointer);
 
@@ -78,7 +79,9 @@ static void ResizePlotAreaCB(Widget, XtPointer, XtPointer);
 
 static MMDesc file_menu[] = 
 {
-    { "close", MMPush, { PopdownCB } },
+    { "print", MMPush, { PrintPlotCB } },
+    MMSep,
+    { "close", MMPush, { CancelPlotCB } },
     { "exit",  MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }},
     MMEnd
 };
@@ -94,8 +97,9 @@ static MMDesc menubar[] =
 struct PlotWindowInfo {
     Widget shell;
     Widget dialog;
-    PlotArea *area;
     PlotAgent *plotter;
+    PlotArea *area;
+    Widget swallower;
 };
 
 // Swallow new GNUPLOT window
@@ -110,23 +114,28 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
     if (window != None)
     {
 	// We have the window
-	XtUnmanageChild(plot->dialog);
-	XtPopdown(XtParent(plot->dialog));
+	if (plot->dialog != 0)
+	{
+	    XtUnmanageChild(plot->dialog);
+	    XtPopdown(XtParent(plot->dialog));
+	}
 
 	XtVaSetValues(swallower, XtNwindow, window, NULL);
-	XtPopup(plot->shell, XtGrabNone);
+
+	if (plot->shell != 0)
+	    XtPopup(plot->shell, XtGrabNone);
+
 	XtRemoveCallback(swallower, XtNwindowCreatedCallback, 
 			 SwallowCB, client_data);
     }
 }
 
-// Close action from menu
-static void PopdownCB(Widget w, XtPointer, XtPointer)
+// Swallow again after window has gone.  This happens while printing.
+static void SwallowAgainCB(Widget swallower, XtPointer client_data, XtPointer)
 {
-    Widget shell = findTopLevelShellParent(w);
-    XtPopdown(shell);
-
+    XtAddCallback(swallower, XtNwindowCreatedCallback, SwallowCB, client_data);
 }
+
 
 // Cancel plot
 static void popdown_plot_shell(PlotWindowInfo *plot)
@@ -149,7 +158,6 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 
     entered = false;
 }
-
 
 static void CancelPlotCB(Widget, XtPointer client_data, XtPointer)
 {
@@ -185,6 +193,8 @@ static void DeletePlotterHP(Agent *plotter, void *client_data, void *)
 		    DeletePlotterCB, XtPointer(plotter));
 
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+    assert(plot->plotter == plotter);
+    plot->plotter = 0;
     popdown_plot_shell(plot);
 }
 
@@ -208,26 +218,31 @@ static void GetPlotHP(Agent *, void *client_data, void *call_data)
 
 static PlotWindowInfo *new_decoration(const string& name)
 {
-    static VoidArray decorations;
+    static VoidArray infos;
 
-    Widget shell = 0;
+    PlotWindowInfo *plot = 0;
 
     // Check whether we can reuse an existing decoration
-    for (int i = 0; i < decorations.size(); i++)
+    for (int i = 0; i < infos.size(); i++)
     {
-	Widget w = (Widget)decorations[i];
-	XtPointer user_data;
-	XtVaGetValues(w, XmNuserData, &user_data, NULL);
-	if (!Boolean(user_data))
+	PlotWindowInfo *info = (PlotWindowInfo *)infos[i];
+	if (info->plotter == 0)
 	{
 	    // Shell is unused - use this one
-	    shell = w;
+	    plot = info;
 	    break;
 	}
     }
 
-    if (shell == 0)
+    if (plot == 0)
     {
+	plot = new PlotWindowInfo;
+	plot->shell     = 0;
+	plot->dialog    = 0;
+	plot->plotter   = 0;
+	plot->area      = 0;
+	plot->swallower = 0;
+
 	// Create decoration windows
 	Arg args[10];
 	Cardinal arg = 0;
@@ -236,20 +251,21 @@ static PlotWindowInfo *new_decoration(const string& name)
 
 	// Mark shell as `used'
 	XtSetArg(args[arg], XmNuserData, XtPointer(True)); arg++;
-	shell = verify(XtCreateWidget("plot", topLevelShellWidgetClass,
-				      find_shell(), args, arg));
+	plot->shell = verify(XtCreateWidget("plot", topLevelShellWidgetClass,
+					    find_shell(), args, arg));
 
 	Atom WM_DELETE_WINDOW = 
-	    XmInternAtom(XtDisplay(shell), "WM_DELETE_WINDOW", False);
-	XmAddWMProtocolCallback(shell, WM_DELETE_WINDOW, PopdownCB, 0);
+	    XmInternAtom(XtDisplay(plot->shell), "WM_DELETE_WINDOW", False);
+	XmAddWMProtocolCallback(plot->shell, WM_DELETE_WINDOW, 
+				CancelPlotCB, XtPointer(plot));
 
 	arg = 0;
-	Widget main_window = XmCreateMainWindow(shell, "main_window", 
+	Widget main_window = XmCreateMainWindow(plot->shell, "main_window", 
 						args, arg);
 	XtManageChild(main_window);
 
 	MMcreateMenuBar(main_window, "menubar", menubar);
-	MMaddCallbacks(menubar, XtPointer(shell));
+	MMaddCallbacks(menubar, XtPointer(plot));
 	MMaddHelpCallback(menubar, ImmediateHelpCB);
 
 	if (app_data.builtin_plot)
@@ -259,50 +275,41 @@ static PlotWindowInfo *new_decoration(const string& name)
 		XmCreateDrawingArea(main_window, PLOT_AREA_NAME, args, arg);
 	    XtManageChild(area);
 
-	    PlotArea *plot_area = 
+	    plot->area = 
 		new PlotArea(area, make_font(app_data, FixedWidthDDDFont));
-	    XtVaSetValues(area, XmNuserData, XtPointer(plot_area), NULL);
+	    XtVaSetValues(area, XmNuserData, XtPointer(plot->area), NULL);
 	}
 	else
 	{
 	    arg = 0;
-	    XtCreateManagedWidget(SWALLOWER_NAME, swallowerWidgetClass, 
-				  main_window, args, arg);
+	    plot->swallower = 
+		XtCreateManagedWidget(SWALLOWER_NAME, swallowerWidgetClass, 
+				      main_window, args, arg);
 	}
 
-	Delay::register_shell(shell);
+	Delay::register_shell(plot->shell);
 
-	decorations += shell;
+	infos += plot;
     }
 
     string title = DDD_NAME ": " + name;
-    XtVaSetValues(shell,
+    XtVaSetValues(plot->shell,
 		  XmNtitle, title.chars(),
 		  XmNiconName, title.chars(),
 		  NULL);
 
-    PlotWindowInfo *plot = new PlotWindowInfo;
-    plot->shell   = shell;
-    plot->dialog  = 0;
-    plot->plotter = 0;
-    plot->area    = 0;
-
     if (app_data.builtin_plot)
     {
-	Widget area = XtNameToWidget(shell, "*" PLOT_AREA_NAME);
-	XtPointer user_data;
-	XtVaGetValues(area, XmNuserData, &user_data, NULL);
-	plot->area = (PlotArea *)user_data;
+	// Nothing to do
     }
     else
     {
-	Widget swallower = XtNameToWidget(shell, "*" SWALLOWER_NAME);
-	XtRemoveAllCallbacks(swallower, XtNwindowCreatedCallback);
-	XtAddCallback(swallower, XtNwindowCreatedCallback,
+	XtRemoveAllCallbacks(plot->swallower, XtNwindowCreatedCallback);
+	XtAddCallback(plot->swallower, XtNwindowCreatedCallback,
 		      SwallowCB, XtPointer(plot));
-	XtRemoveAllCallbacks(swallower, XtNwindowGoneCallback);
-	XtAddCallback(swallower, XtNwindowGoneCallback, 
-		      CancelPlotCB, XtPointer(plot));
+	XtRemoveAllCallbacks(plot->swallower, XtNwindowGoneCallback);
+	XtAddCallback(plot->swallower, XtNwindowGoneCallback, 
+		      SwallowAgainCB, XtPointer(plot));
     }
 
     return plot;
@@ -363,6 +370,8 @@ PlotAgent *new_plotter(string name)
     string init = app_data.plot_init_commands;
     if (plot->area != 0)
 	init.prepend("set term xlib\n");
+    else
+	init.prepend("set term x11\n");
     if (init != "" && !init.contains('\n', -1))
 	init += '\n';
 

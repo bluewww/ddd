@@ -59,6 +59,10 @@ const unsigned NoDisabled = NoEnabled + 1;
 const unsigned DispGraph_NTypes = NoDisabled + 1;
 
 class DispGraph: public Graph {
+public:
+    DECLARE_TYPE_INFO
+
+private:
     DispNodeMap  idMap;
     HandlerList  handlers;
     bool         no_enabled;
@@ -141,6 +145,10 @@ public:
     {
 	Graph::print(os, gc);
     }
+
+    // Print plots to FILENAME
+    void print_plots(const string& filename, 
+		     const GraphGC& gc = GraphGC()) const;
 
     // Refresh title settings
     bool refresh_titles() const;

@@ -429,3 +429,14 @@ DispNode::DispNode(const DispNode& node)
     setBox(disp_box->box());
     copy_selection_state(node);
 }
+
+// Plotting
+
+// Print plots to FILENAME
+void DispNode::print_plots(const string& filename, const GraphGC& gc) const
+{
+    if (gc.printSelectedNodesOnly && selected_value() != 0)
+	selected_value()->print_plots(filename, *gc.printGC);
+    else if (value() != 0)
+	value()->print_plots(filename, *gc.printGC);
+}

@@ -4596,10 +4596,14 @@ Press KEY_HELP on a button to get a short command description.
 ! DDD Plot
 !-----------------------------------------------------------------------------
 
-Ddd*plot.helpString:\
+Ddd*plot*helpString:\
 WIDGET(Plot Window)\n\
 \n\
 Use LBL(File, Close) to close this window.
+
+Ddd*plot*print.labelString: Print Plot...
+Ddd*plot*fileMenu.print.documentationString:   \
+@rm Print the current plot
 
 Ddd*plot*area.width:        640
 Ddd*plot*area.height:       450
@@ -4789,7 +4793,7 @@ Ddd*?*Reload.documentationString: \
 ! Print Dialog
 !-----------------------------------------------------------------------------
 
-Ddd*print_popup.title: DDD: Print Graph
+Ddd*print_popup.title: DDD: Print
 Ddd*print.okLabelString: Print
 
 Ddd*print*to.labelString:		      Print To
@@ -4832,19 +4836,18 @@ Ddd*print*executive.labelString:	      Executive (7ONE_HALF" TIMES 10")
 Ddd*print*custom.labelString:		      Other...
 
 Ddd*print*helpString: \
-@rm You can print the graph on a POSTSCRIPT printer \
-or print the graph in a file.\n\
+@rm You can print on a POSTSCRIPT printer or print to a file.\n\
 Enter the print command or the file name in the appropriate fields.\n\
 \n\
 Files can be created in the following formats:\n\
 DESC(PostScript, POSTSCRIPT format)\n\
 DESC(FIG, [FIG format (for the CODE(xfig) program)])\n\
 \n\
-If you wish to print all displays, select LBL(All Displays).\n\
-If you wish to print selected displays only, select\
- LBL(Selected Displays).\n\
-For POSTSCRIPT format only, you can also specify \
-orientation and paper size.\n\
+Select LBL(Print Displays) to print displays.\n\
+Select LBL(Print Plots) to print the current plots.\n\
+\n\
+To print selected items only, select LBL(Selected Only).\n\
+For POSTSCRIPT format only, you can also specify orientation and paper size.\n\
 \n\
 To print, click on LBL(Print).
 

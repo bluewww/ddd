@@ -38,6 +38,7 @@ char print_rcsid[] =
 #include "AppData.h"
 #include "DataDisp.h"
 #include "DestroyCB.h"
+#include "DispGraph.h"
 #include "GraphEdit.h"
 #include "Graph.h"
 #include "LiterateA.h"
@@ -80,17 +81,35 @@ char print_rcsid[] =
 // Printing Graphs
 //-----------------------------------------------------------------------------
 
-// Convert according to given BoxPrintGC
-static int convert(string filename, BoxPrintGC& gc, bool selectedOnly)
+static string msg(string path, bool displays, bool to_file)
+{
+    string m = "Printing ";
+    if (displays)
+	m += "graph ";
+    else
+	m += "plots ";
+    if (to_file)
+	m += "to ";
+    m += quote(path);
+    if (!to_file)
+	m += " to printer";
+
+    return m;
+}
+
+// Print to FILENAME according to given BoxPrintGC
+static int print_to_file(string filename, BoxPrintGC& gc, 
+			 bool selectedOnly, bool displays)
 {
     string path = filename;
     if (!filename.contains('/', 0))
 	path.prepend(cwd() + '/');
 
-    StatusDelay delay("Printing graph to " + quote(path));
+    StatusDelay delay(msg(path, displays, true));
 
     // Get the graph
-    Graph *graph = graphEditGetGraph(data_disp->graph_edit);
+    Graph *_graph = graphEditGetGraph(data_disp->graph_edit);
+    DispGraph *graph = ptr_cast(DispGraph, _graph);
 
     if (graph->firstNode() == 0)
     {
@@ -118,7 +137,18 @@ static int convert(string filename, BoxPrintGC& gc, bool selectedOnly)
 	return -1;
     }
 
-    graph->print(os, graphGC);
+    if (displays)
+    {
+	// Print displays
+	graph->print(os, graphGC);
+    }
+    else
+    {
+	// Print plots
+	os.close();
+	graph->print_plots(filename, graphGC);
+    }
+
     return 0;
 }
 
@@ -165,14 +195,15 @@ static void printOutputHP(Agent *, void *, void *call_data)
 }
 
 // Print according to given BoxPrintGC
-static int print(string command, BoxPrintGC& gc, bool selectedOnly)
+static int print_to_printer(string command, BoxPrintGC& gc, 
+			    bool selectedOnly, bool displays)
 {
     string tempfile = tmpnam(0);
-    int ret = convert(tempfile, gc, selectedOnly);
+    int ret = print_to_file(tempfile, gc, selectedOnly, displays);
     if (ret)
 	return ret;
 
-    StatusDelay delay("Printing graph " + quote(tempfile));
+    StatusDelay delay(msg(tempfile, displays, false));
 
     command = command + " " + tempfile;
 
@@ -192,11 +223,12 @@ static int print(string command, BoxPrintGC& gc, bool selectedOnly)
 }
 
 // Local state of print dialog
-enum PrintType { PRINT_POSTSCRIPT, PRINT_FIG };
+enum PrintType   { PRINT_POSTSCRIPT, PRINT_FIG };
+enum PrintTarget { TARGET_FILE, TARGET_PRINTER };
 
 static bool            print_selected_only = false;
 static bool            print_displays      = true;
-static bool            print_to_printer    = true;
+static bool            print_target = TARGET_PRINTER;
 static BoxPostScriptGC print_postscript_gc;
 static BoxFigGC        print_xfig_gc;
 static PrintType       print_type = PRINT_POSTSCRIPT;
@@ -220,7 +252,9 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
     const bool unmanage = ((int)(long)client_data & 1);
     const bool override = ((int)(long)client_data & 2);
 
-    if (print_to_printer)
+    switch (print_target)
+    {
+    case TARGET_PRINTER:
     {
 	static string command;
 	command = app_data.print_command;
@@ -233,13 +267,17 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	}
 
 	app_data.print_command = command;
-	if (print(command, print_postscript_gc, print_selected_only) == 0)
+	if (print_to_printer(command, print_postscript_gc, 
+			     print_selected_only, print_displays) == 0)
 	{
 	    if (unmanage && print_dialog != 0)
 		XtUnmanageChild(print_dialog);
 	}
+
+	break;
     }
-    else
+    
+    case TARGET_FILE:
     {
 	BoxPrintGC *gc_ptr = 0;
 	switch (print_type)
@@ -265,7 +303,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	if (access(f, W_OK) || !is_regular_file(f) || override)
 	{
 	    // File does not exist, is special, or override is on
-	    if (convert(f, gc, print_selected_only) == 0)
+	    if (print_to_file(f, gc, print_selected_only, print_displays) == 0)
 	    {
 		if (unmanage && print_dialog != 0)
 		    XtUnmanageChild(print_dialog);
@@ -294,6 +332,9 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 			   question.xmstring(), NULL);
 	    manage_and_raise(confirm_overwrite_dialog);
 	}
+
+	break;
+    }
     }
 }
 
@@ -363,7 +404,7 @@ static void SetPrintSelectedNodesCB(Widget w, XtPointer, XtPointer)
 
 static void SetPrintTargetCB(Widget w, XtPointer, XtPointer)
 {
-    print_to_printer = XmToggleButtonGetState(w);
+    print_target = XmToggleButtonGetState(w) ? TARGET_PRINTER : TARGET_FILE;
 }
 
 static void set_paper_size_string(string s)
@@ -649,14 +690,18 @@ static void SetGCOrientation(Widget w, XtPointer, XtPointer)
 static void NopCB(Widget, XtPointer, XtPointer)
 {}
 
-static void PrintCB(Widget parent, bool plot)
+static void PrintCB(Widget parent, bool displays)
 {
-    static Widget print_displays;
+    print_displays = displays;
+
+    static Widget print_displays_w;
+    static Widget print_plots_w;
 
     if (print_dialog != 0)
     {
 	// Dialog already created -- pop it up again
-	XmToggleButtonSetState(print_displays, !plot, True);
+	XmToggleButtonSetState(print_plots_w, !displays, True);
+	XmToggleButtonSetState(print_displays_w, displays, True);
 	manage_and_raise(print_dialog);
 	return;
     }
@@ -687,20 +732,21 @@ static void PrintCB(Widget parent, bool plot)
 					   XmDIALOG_SELECTION_LABEL));
 
     // Create menu
-    static Widget print_to_printer;
-    static Widget print_to_file;
+    static Widget print_to_printer_w;
+    static Widget print_to_file_w;
     static MMDesc print_to_menu[] = 
     {
-	{"printer", MMToggle, { SetPrintTargetCB }, NULL, &print_to_printer },
-	{"file",    MMToggle, { NopCB }, NULL, &print_to_file },
+	{"printer", MMToggle, { SetPrintTargetCB }, NULL, &print_to_printer_w},
+	{"file",    MMToggle, { NopCB }, NULL, &print_to_file_w },
 	MMEnd
     };
 
-    Widget postscript;
+    Widget postscript_w;
     static MMDesc type_menu[] = 
     {
 	{"postscript", MMToggle,
-	  { SetPrintTypeCB, XtPointer(PRINT_POSTSCRIPT) }, NULL, &postscript},
+	  { SetPrintTypeCB, XtPointer(PRINT_POSTSCRIPT) }, NULL, 
+	    &postscript_w },
 	{"xfig",       MMToggle,
 	  { SetPrintTypeCB, XtPointer(PRINT_FIG) }},
 	MMEnd
@@ -708,24 +754,25 @@ static void PrintCB(Widget parent, bool plot)
 
     static MMDesc what2_menu[] = 
     {
-	{"displays", MMToggle, { SetPrintDisplaysCB }, NULL, &print_displays },
-	{"plots",    MMToggle, { NopCB } },
+	{"displays", MMToggle, { SetPrintDisplaysCB }, NULL, 
+	 &print_displays_w },
+	{"plots",    MMToggle, { NopCB }, NULL, &print_plots_w },
 	MMEnd
     };
 
-    Widget print_selected;
+    Widget print_selected_w;
     static MMDesc what_menu[] = 
     {
 	{"what2",    MMRadioPanel | MMUnmanagedLabel, MMNoCB, what2_menu },
 	{"selected", MMToggle, { SetPrintSelectedNodesCB }, 
-	             NULL, &print_selected },
+	             NULL, &print_selected_w },
 	MMEnd
     };
 
-    Widget print_portrait;
+    Widget print_portrait_w;
     static MMDesc orientation_menu[] = 
     {
-	{"portrait",  MMToggle, { SetGCOrientation }, NULL, &print_portrait },
+	{"portrait",  MMToggle, { SetGCOrientation }, NULL, &print_portrait_w},
 	{"landscape", MMToggle, { NopCB }},
 	MMEnd
     };
@@ -741,13 +788,13 @@ static void PrintCB(Widget parent, bool plot)
 	MMEnd
     };
 
-    Widget file_type;
+    Widget file_type_w;
     static MMDesc menu[] =
     {
 	{"to",          MMRadioPanel, MMNoCB, print_to_menu },
 	{"command",     MMTextField,  MMNoCB, NULL, &print_command_field },
 	{"name", 	MMTextField,  MMNoCB, NULL, &print_file_name_field },
-	{"type", 	MMRadioPanel, MMNoCB, type_menu, &file_type },
+	{"type", 	MMRadioPanel, MMNoCB, type_menu, &file_type_w },
 	{"what",        MMPanel,      MMNoCB, what_menu },
 	{"orientation", MMRadioPanel, MMNoCB, orientation_menu },
 	{"size",        MMRadioPanel, MMNoCB, paper_menu },
@@ -761,34 +808,34 @@ static void PrintCB(Widget parent, bool plot)
     // Add callbacks
     MMaddCallbacks(menu);
 
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,   
+    XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,   
 		  SetSensitiveCB,   XtPointer(print_command_field));
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,   
+    XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,   
 		  SetSensitiveCB,   XtPointer(menu[1].label));
 
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,
+    XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,
 		  UnsetSensitiveCB, XtPointer(print_file_name_field));
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,
+    XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,
 		  UnsetSensitiveCB, XtPointer(menu[2].label));
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,
-		  UnsetSensitiveCB, XtPointer(file_type));
+    XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,
+		  UnsetSensitiveCB, XtPointer(file_type_w));
 
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,
+    XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,
 		  TakeFocusCB,      XtPointer(print_command_field));
 
-    XtAddCallback(print_to_file, XmNvalueChangedCallback,   
+    XtAddCallback(print_to_file_w, XmNvalueChangedCallback,   
 		  UnsetSensitiveCB, XtPointer(print_command_field));
-    XtAddCallback(print_to_file, XmNvalueChangedCallback,   
+    XtAddCallback(print_to_file_w, XmNvalueChangedCallback,   
 		  UnsetSensitiveCB, XtPointer(menu[1].label));
 
-    XtAddCallback(print_to_file, XmNvalueChangedCallback,   
+    XtAddCallback(print_to_file_w, XmNvalueChangedCallback,   
 		  SetSensitiveCB,   XtPointer(print_file_name_field));
-    XtAddCallback(print_to_file, XmNvalueChangedCallback,
+    XtAddCallback(print_to_file_w, XmNvalueChangedCallback,
 		  SetSensitiveCB,   XtPointer(menu[2].label));
-    XtAddCallback(print_to_file, XmNvalueChangedCallback,   
-		  SetSensitiveCB,   XtPointer(file_type));
+    XtAddCallback(print_to_file_w, XmNvalueChangedCallback,   
+		  SetSensitiveCB,   XtPointer(file_type_w));
 
-    XtAddCallback(print_to_file, XmNvalueChangedCallback,
+    XtAddCallback(print_to_file_w, XmNvalueChangedCallback,
 		  TakeFocusCB,      XtPointer(print_file_name_field));
 
 
@@ -818,13 +865,13 @@ static void PrintCB(Widget parent, bool plot)
     XtAddCallback(size, XmNvalueChangedCallback, 
 		  CheckPaperSizeCB, XtPointer(ok_button));
 
-
     // Set initial state
-    XmToggleButtonSetState(print_to_printer, True, True);
-    XmToggleButtonSetState(postscript, True, True);
-    XmToggleButtonSetState(print_selected, False, True);
-    XmToggleButtonSetState(print_portrait, True, True);
-    XmToggleButtonSetState(print_displays, !plot, True);
+    XmToggleButtonSetState(print_to_printer_w, True, True);
+    XmToggleButtonSetState(postscript_w, True, True);
+    XmToggleButtonSetState(print_selected_w, False, True);
+    XmToggleButtonSetState(print_portrait_w, True, True);
+    XmToggleButtonSetState(print_plots_w, !displays, True);
+    XmToggleButtonSetState(print_displays_w, displays, True);
 
     bool ok = set_paper_size(app_data.paper_size);
     if (!ok)
@@ -839,11 +886,10 @@ static void PrintCB(Widget parent, bool plot)
 
 void PrintGraphCB(Widget w, XtPointer, XtPointer)
 {
-    PrintCB(w, false);
+    PrintCB(w, true);
 }
 
 void PrintPlotCB(Widget w, XtPointer, XtPointer)
 {
-    PrintCB(w, true);
+    PrintCB(w, false);
 }
-

@@ -375,6 +375,10 @@ public:
 	clear_cached_box();
 	_cached_box = value->link();
     }
+
+    // Print plots to FILENAME
+    void print_plots(const string& filename, 
+		     const BoxPrintGC& gc = BoxPostScriptGC()) const;
 };
 
 #endif // _DDD_DispValue_h

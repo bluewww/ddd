@@ -58,40 +58,42 @@ char DispGraph_rcsid[] =
 #include "DispBox.h"
 #include "EdgeAPA.h"
 
+DEFINE_TYPE_INFO_1(DispGraph, Graph)
 
-// ***************************************************************************
+
+//-------------------------------------------------------------------------
+// Basics
+//-------------------------------------------------------------------------
+
 // Constructor
-//
-DispGraph::DispGraph() :
-    Graph(),
-    idMap(),
-    handlers(DispGraph_NTypes),
-    no_enabled(true),
-    no_disabled(true)
+DispGraph::DispGraph()
+    : Graph(), idMap(), handlers(DispGraph_NTypes),
+      no_enabled(true), no_disabled(true)
 {
     DispNode::addHandler(DispNode_Disabled,
 			 disp_node_disabledHP,
 			 (void*)this);
 }
 
-// ***************************************************************************
 // Destructor
-//
 DispGraph::~DispGraph() 
 {
     DispGraph::clear();
 }
 
-// ***************************************************************************
-// loescht alle
-//
+// Delete all
 void DispGraph::clear()
 {
     idMap.delete_all_contents();
 }
 
 
-// ***************************************************************************
+
+//-------------------------------------------------------------------------
+// Node management
+//-------------------------------------------------------------------------
+
+// Return number of nodes
 int DispGraph::count_all (Displaying e) const
 {
     if (e == Both)
@@ -124,7 +126,7 @@ int DispGraph::count_all (Displaying e) const
     return count;
 }
 
-// ***************************************************************************
+// Count selected nodes
 int DispGraph::count_selected() const
 {
     int count = 0;
@@ -136,7 +138,7 @@ int DispGraph::count_selected() const
     return count;
 }
 
-// ***************************************************************************
+// Add an event handler
 void DispGraph::addHandler (unsigned    type,
 			    HandlerProc proc,
 			    void*       client_data)
@@ -144,7 +146,7 @@ void DispGraph::addHandler (unsigned    type,
     handlers.add(type, proc, client_data);
 }
 
-// ***************************************************************************
+// Remove an event handler
 void DispGraph::removeHandler (unsigned    type,
 			       HandlerProc proc,
 			       void        *client_data)
@@ -152,7 +154,7 @@ void DispGraph::removeHandler (unsigned    type,
     handlers.remove(type, proc, client_data);
 }
 
-// ***************************************************************************
+// Call event handlers
 void DispGraph::callHandlers ()
 {
     handlers.call(DispGraph_Empty,
@@ -167,7 +169,7 @@ void DispGraph::callHandlers ()
 }
 
 
-
+// Add a new edge
 void DispGraph::add_edge(DispNode *from, DispNode *to)
 {
     string a = annotation(from->name(), to->name());
@@ -178,9 +180,8 @@ void DispGraph::add_edge(DispNode *from, DispNode *to)
     *this += new LineGraphEdge(from, to, ann);
 }
 
-// ***************************************************************************
-// new_disp_nr bei Erfolg
-//
+
+// Insert NEW_DN into graph, return its number iff successful
 int DispGraph::insert(int new_disp_nr, DispNode *new_dn, int depends_on)
 {
     if (idMap.contains(new_disp_nr))
@@ -220,7 +221,8 @@ int DispGraph::insert(int new_disp_nr, DispNode *new_dn, int depends_on)
     return new_disp_nr;
 }
 
-// ***************************************************************************
+
+// Get a good position for NEW_NODE
 BoxPoint DispGraph::adjust_position (DispNode *new_node,
 				     Widget w,
 				     BoxPoint pos,
@@ -271,7 +273,7 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
     return pos;
 }
 
-// ***************************************************************************
+// Return a default position for NEW_NODE
 BoxPoint DispGraph::default_pos(DispNode *new_node, 
 				Widget w, int depends_on) const
 {
@@ -451,10 +453,6 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
     return adjust_position(new_node, w, pos, offset, grid);
 }
 
-
-
-// ***************************************************************************
-
 // Find all hints in edges leading to NODE; store them in HINTS
 void DispGraph::find_hints_to(GraphNode *node, GraphNodePointerArray& hints)
 {
@@ -539,7 +537,7 @@ bool DispGraph::del (int disp_nr)
     return true;
 }
 
-// ***************************************************************************
+// Return display number of NODE
 int DispGraph::get_nr(BoxGraphNode *node) const
 {
     DispNode *dn = ptr_cast(DispNode, node);
@@ -547,7 +545,7 @@ int DispGraph::get_nr(BoxGraphNode *node) const
 }
 
 
-// ***************************************************************************
+// Get number of node NAME
 int DispGraph::get_by_name(const string& name) const
 {
     if (name.matches(rxint))
@@ -561,9 +559,7 @@ int DispGraph::get_by_name(const string& name) const
 }
 
 
-// ***************************************************************************
-// 0, wenn nicht vorhanden.
-//
+// Return first node; 0 if not found
 DispNode* DispGraph::first (MapRef& ref, Displaying e) const
 {
     for (DispNode* dn = idMap.first(ref); dn != 0; dn = idMap.next(ref)) {
@@ -582,16 +578,15 @@ DispNode* DispGraph::first (MapRef& ref, Displaying e) const
 	    break;
 
 	default:
-	    // Falscher Fehler
-	    assert (0);
+	    assert (0);		// This can't happen
 	    break;
 	}
     }
     return 0;
 }
-// ***************************************************************************
-// 0, wenn nicht vorhanden.
-//
+
+
+// Return next node; 0 if not found
 DispNode* DispGraph::next (MapRef& ref, Displaying e) const
 {
     for (DispNode* dn = idMap.next(ref); dn != 0; dn = idMap.next(ref)) {
@@ -610,17 +605,14 @@ DispNode* DispGraph::next (MapRef& ref, Displaying e) const
 	    break;
 
 	default:
-	    // Falscher Fehler
-	    assert (0);
+	    assert (0);		// This can't happen.
 	    break;
 	}
     }
     return 0;
 }
 
-// ***************************************************************************
-// 0, wenn nicht vorhanden.
-//
+// Return number of first node; 0 if not found
 int DispGraph::first_nr (MapRef& ref, Displaying e) const
 {
     for (int k = idMap.first_key(ref); k != 0; k = idMap.next_key(ref)) {
@@ -639,17 +631,14 @@ int DispGraph::first_nr (MapRef& ref, Displaying e) const
 	    break;
 
 	default:
-	    // Falscher Fehler
-	    assert (0);
+	    assert (0);		// This can't happen.
 	    break;
 	}
     }
     return 0;
 }
 
-// ***************************************************************************
-// 0, wenn nicht vorhanden.
-//
+// Return next node number; 0 if not found
 int DispGraph::next_nr (MapRef& ref, Displaying e) const
 {
     for (int k = idMap.next_key(ref); k != 0; k = idMap.next_key(ref)) {
@@ -668,15 +657,14 @@ int DispGraph::next_nr (MapRef& ref, Displaying e) const
 	    break;
 
 	default:
-	    // Falscher Fehler
-	    assert (0);
+	    assert (0);		// This can't happen
 	    break;
 	}
     }
     return 0;
 }
 
-// ***************************************************************************
+// Helper for disabling nodes
 void DispGraph::disp_node_disabledHP (void*,
 				      void* client_data,
 				      void* call_data)
@@ -702,9 +690,10 @@ void DispGraph::disp_node_disabledHP (void*,
     }
 }
 
-// ***************************************************************************
+
+//-------------------------------------------------------------------------
 // Alias handling
-//
+//-------------------------------------------------------------------------
 
 // Make DISP_NR an alias of ALIAS_DISP_NR.  Suppress ALIAS_DISP_NR.
 bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
@@ -1233,4 +1222,26 @@ bool DispGraph::refresh_titles() const
     }
 
     return changed;
+}
+
+
+//-----------------------------------------------------------------------------
+// Plotting
+//-----------------------------------------------------------------------------
+
+// Print all plots
+void DispGraph::print_plots(const string& filename, const GraphGC& gc) const
+{
+    for (GraphNode *node = firstVisibleNode(); node != 0; 
+	 node = nextVisibleNode(node))
+    {
+	DispNode *dn = ptr_cast(DispNode, node);
+	if (dn == 0)
+	    continue;
+
+	if (gc.printSelectedNodesOnly && !dn->selected())
+	    continue;
+
+	dn->print_plots(filename, gc);
+    }
 }

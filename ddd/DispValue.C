@@ -1357,6 +1357,19 @@ void DispValue::PlotterDiedHP(Agent *, void *client_data, void *)
     dv->_plotter = 0;
 }
 
+// Print plots to FILENAME
+void DispValue::print_plots(const string& filename, 
+			    const BoxPrintGC& gc) const
+{
+    // Print yourself
+    if (plotter() != 0)
+	plotter()->print(filename, gc);
+
+    // Print children
+    for (int i = 0; i < nchildren(); i++)
+	child(i)->print_plots(filename, gc);
+}
+
 
 //-----------------------------------------------------------------------------
 // Background processing
