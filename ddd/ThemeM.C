@@ -38,6 +38,10 @@ char ThemeManager_rcsid[] =
 #include "glob.h"
 #include "string-fun.h"
 
+#ifndef LOG_THEMES
+#define LOG_THEMES 0
+#endif
+
 ThemeManager::ThemeManager(const string& rep)
     : map()
 {
@@ -92,6 +96,13 @@ StringArray ThemeManager::themes(const string& expr)
     for (StringThemePatternAssocIter i(map); i.ok(); i = i.next())
 	if (i.value().matches(expr))
 	    ret += i.key();
+
+#if LOG_THEMES
+    clog << "Themes of " << expr << ": ";
+    for (int j = 0; j < ret.size(); j++)
+	clog << ret[j];
+    clog << "\n";
+#endif
 
     return ret;
 }
