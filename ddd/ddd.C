@@ -4691,7 +4691,7 @@ static int index_control(const string& text)
 }
 
 // Process control character
-void gdb_ctrl(char ctrl)
+static void gdb_ctrl(char ctrl)
 {
     switch (ctrl)
     {
@@ -4784,12 +4784,6 @@ void _gdb_out(string text)
 
     private_gdb_output = true;
 
-    // Don't care for CR if followed by NL
-#if RUNTIME_REGEX
-    static regex rxcrlf("\r\r*\n");
-#endif
-    text.gsub(rxcrlf, "\n");
-
     // Don't care for strings to be ignored
     static string empty;
     if (gdb_out_ignore != "")
@@ -4806,6 +4800,8 @@ void _gdb_out(string text)
     // Output TEXT on TTY
     tty_out(text);
     bool line_buffered = app_data.line_buffered_console;
+
+    static bool cr_pending = false;
 
     // Output TEXT in debugger console
     do {
@@ -4835,15 +4831,48 @@ void _gdb_out(string text)
 	}
 	else
 	{
+	    // All done
 	    text = "";
 	}
 
-	XmTextInsert(gdb_w, promptPosition, (String)block);
-	promptPosition += block.length();
-	// XmTextShowPosition(gdb_w, promptPosition);
+	if (block.length() > 0)
+	{
+	    if (cr_pending)
+	    {
+		gdb_ctrl('\r');
+		cr_pending = false;
+	    }
+
+	    XmTextInsert(gdb_w, promptPosition, (String)block);
+	    promptPosition += block.length();
+	    // XmTextShowPosition(gdb_w, promptPosition);
+	}
 
 	if (have_ctrl)
-	    gdb_ctrl(ctrl);
+	{
+	    if (ctrl == '\r')
+	    {
+		// Don't output CR immediately, but wait for the next
+		// character.  If it's a NL, ignore the CR.
+		cr_pending = true;
+	    }
+	    else 
+	    {
+		if (cr_pending)
+		{
+		    if (ctrl == '\n')
+		    {
+			// Ignore CR followed by NL
+		    }
+		    else
+		    {
+			gdb_ctrl('\r');
+		    }
+		    cr_pending = false;
+		}
+		gdb_ctrl(ctrl);
+	    }
+	}
     } while (text != "");
 
     XmTextPosition lastPos = XmTextGetLastPosition(gdb_w);
