@@ -2148,7 +2148,24 @@ void update_options()
     XtVaSetValues(detect_aliases_w,
 		  XmNset, app_data.detect_aliases, NULL);
 
-    XtVaSetValues(graph_snap_to_grid_w, XmNset, snap_to_grid, NULL);
+    if (!show_grid && XtIsSensitive(graph_snap_to_grid_w))
+    {
+	// Grid has been disabled - disable `snap to grid' as well
+	XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, False, NULL);
+    }
+    else if (show_grid && !XtIsSensitive(graph_snap_to_grid_w))
+    {
+	// Grid has been re-enabled - restore `snap to grid' setting
+	XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, 
+		      XmToggleButtonGetState(graph_snap_to_grid_w), NULL);
+    }
+    else
+    {
+	XtVaSetValues(graph_snap_to_grid_w, XmNset, snap_to_grid, NULL);
+    }
+
+    set_sensitive(graph_snap_to_grid_w, show_grid);
+
     XtVaSetValues(graph_show_hints_w, XmNset, show_hints, NULL);
     XtVaSetValues(graph_auto_layout_w, XmNset, auto_layout, NULL);
     XtVaSetValues(graph_compact_layout_w, XmNset, 
