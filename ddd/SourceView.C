@@ -5622,10 +5622,14 @@ struct RefreshInfo {
 void SourceView::refresh_codeOQC(const string& answer, void *client_data)
 {
     RefreshInfo *info = (RefreshInfo *)client_data;
-    process_disassemble(answer);
 
-    if (find_pc(info->pc) != XmTextPosition(-1))
-	show_pc(info->pc, info->mode);
+    if (answer != NO_GDB_ANSWER)
+    {
+	process_disassemble(answer);
+
+	if (find_pc(info->pc) != XmTextPosition(-1))
+	    show_pc(info->pc, info->mode);
+    }
 
     delete info->delay;
     delete info;

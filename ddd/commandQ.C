@@ -228,7 +228,17 @@ static ostream& operator<<(ostream& os, const CommandQueue& queue)
 void clearCommandQueue()
 {
     while (!commandQueue.isEmpty())
-	commandQueue -= commandQueue.first();
+    {
+	const Command& cmd = commandQueue.first();
+	if (cmd.callback != 0)
+	{
+	    // We're deleting a command with associated callback Call
+	    // callback with NO_GDB_ANSWER such that it can clean up
+	    // the associated data.
+	    cmd.callback(NO_GDB_ANSWER, cmd.data);
+	}
+	commandQueue -= cmd;
+    }
 
 #if LOG_QUEUE
     clog << "Command queue: " << commandQueue << "\n";
@@ -318,6 +328,7 @@ void processCommandQueue(XtPointer, XtIntervalId *)
 	add_to_history(cmd.command);
 	_gdb_command(cmd.command, cmd.origin, cmd.callback, 
 		     cmd.data, cmd.verbose, cmd.check);
+
 	gdb_keyboard_command = false;
 
 #if LOG_QUEUE

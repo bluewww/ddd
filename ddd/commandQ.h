@@ -34,11 +34,15 @@
 #endif
 
 #include "GDBAgent.h"
+#include "question.h"		// NO_GDB_ANSWER
 
 // Send COMMAND to GDB, if GDB is ready; queue in COMMAND, otherwise.
-// Upon completion, invoke CALLBACK with DATA (if CALLBACK is
-// non-zero).  If VERBOSE is set, issue command in GDB console.  If
-// CHECK is set, add appropriate GDB commands to get GDB state.
+// If VERBOSE is set, issue command in GDB console.  If CHECK is set,
+// add appropriate GDB commands to get GDB state.
+//
+// If CALLBACK is non-zero: After COMMAND is executed, invoke CALLBACK
+// with GDB answer and DATA.  If COMMAND was not executed, invoke
+// CALLBACK with NO_GDB_ANSWER and DATA instead.
 extern void gdb_command(const string& command, Widget origin,
 			OQCProc callback, void *data = 0, 
 			bool verbose = false, bool check = false);
@@ -51,7 +55,7 @@ inline void gdb_command(const string& command, Widget origin = 0)
 }
 
 
-// Send COMMAND to GDB (unconditionally)
+// Send COMMAND to GDB (unconditionally).  Same parameters as gdb_command().
 extern void _gdb_command(string command, Widget origin,
 			 OQCProc callback, void *data = 0,
 			 bool verbose = false, bool check = false);

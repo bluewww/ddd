@@ -1865,6 +1865,12 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)data;
 
+    if (answer == NO_GDB_ANSWER)
+    {
+	delete info;
+	return;
+    }
+
     if (answer == "")
     {
 	if (gdb->has_display_command())
@@ -1928,6 +1934,12 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)data;
 
+    if (answer == NO_GDB_ANSWER)
+    {
+	delete info;
+	return;
+    }
+
     // Unselect all nodes
     for (GraphNode *gn = disp_graph->firstNode();
 	 gn != 0; gn = disp_graph->nextNode(gn))
@@ -1973,6 +1985,14 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
 //
 void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
 {
+    NewDisplayInfo *info = (NewDisplayInfo *)data;
+
+    if (answer == NO_GDB_ANSWER)
+    {
+	delete info;
+	return;
+    }
+
     string ans = answer;
     string display = read_next_display (ans, gdb);
 
@@ -2367,6 +2387,9 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs)
 //
 void DataDisp::disable_displayOQC (const string& answer, void *)
 {
+    if (answer == NO_GDB_ANSWER)
+	return;
+
     gdb_out(answer);
     refresh_graph_edit();
     prompt();
@@ -2432,6 +2455,9 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs)
 //
 void DataDisp::enable_displayOQC (const string& answer, void *)
 {
+    if (answer == NO_GDB_ANSWER)
+	return;
+
     gdb_out(answer);
     refresh_displaySQ();
 }
@@ -2499,6 +2525,9 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs)
 //
 void DataDisp::delete_displayOQC (const string& answer, void *)
 {
+    if (answer == NO_GDB_ANSWER)
+	return;
+
     string ans = answer;
 
     switch (gdb->type())
