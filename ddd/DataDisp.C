@@ -5965,7 +5965,7 @@ void DataDisp::select_node(DispNode *dn, int nr)
     if (src == 0)
 	return;
 	
-    dn->copy_selection_state(src);
+    dn->copy_selection_state(*src);
     refresh_args(true);
 }
 
