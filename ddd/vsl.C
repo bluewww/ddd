@@ -91,7 +91,7 @@ void redraw(Widget w, BoxRegion r, BoxRegion exposed)
 }
 
 // Callback bei Expose
-void ExposeCB(Widget w, XtPointer client_data, XtPointer call_data)
+void ExposeCB(Widget w, XtPointer, XtPointer call_data)
 {
     // Groesse anpassen
     Arg arglist[10];
@@ -110,7 +110,7 @@ void ExposeCB(Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 // Bei Auswahl: *Gesamtes* Bild anzeigen (fuer Statistiken)
-void SelectCB(Widget w, XtPointer client_data, XtPointer call_data)
+void SelectCB(Widget w, XtPointer, XtPointer)
 {
     XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, false);
 
@@ -123,7 +123,7 @@ void SelectCB(Widget w, XtPointer client_data, XtPointer call_data)
 XtAppContext app_con;
 
 // Callback bei Ende
-void QuitCB(Widget w, XtPointer client_data, XtPointer call_data)
+void QuitCB(Widget, XtPointer, XtPointer)
 {
     if (VSEFlags::verbose)
     {
