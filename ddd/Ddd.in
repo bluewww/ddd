@@ -119,7 +119,7 @@ Ddd*saveOptionsOnExit: false
 ! program.  To this string, DDD appends bourne shell commands which must be
 ! run in the execution window.
 Ddd*termCommand: xterm \
--bg 'grey90' -fg 'black' \
+-bg 'grey90' -fg 'black' -cr 'dark green' \
 -fn '-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*' \
 -title '@DDD@: Execution Window' -e /bin/sh -c
 
@@ -4394,7 +4394,7 @@ could not be invoked.  The debugged process will execute in the\n\
 @GDB@ console instead.\n\
 \n\
 Please verify the contents of the @bf .termCommand @rm resource\n\
-in the @DDD@ application defaults file.
+in the @DDD@ application defaults file and in your @tt ~/.dddinit @rm file.
 
 Ddd*tty_command_error_popup.title: @DDD@: TTY Failed
 Ddd*tty_command_error*helpString:	\
