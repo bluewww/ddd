@@ -325,12 +325,19 @@ Widget create_toolbar(Widget parent, string /* name */,
 	{
 	    Dimension offset = arg_height - button_height;
 
-	    if (offset > 0)
-	    {
-		// Recenter all labels
-		center_buttons(items1, offset);
-		center_buttons(items2, offset);
-	    }
+	    // Center all labels
+	    center_buttons(items1, offset);
+	    center_buttons(items2, offset);
+	}
+	else if (button_height > arg_height)
+	{
+	    Dimension offset = button_height - arg_height;
+
+	    // Center arg field
+	    XtVaSetValues(argfield->widget(),
+			  XmNtopOffset, offset / 2,
+			  XmNbottomOffset, (offset + 1) / 2,
+			  NULL);
 	}
     }
 
