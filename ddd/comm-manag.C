@@ -1478,7 +1478,13 @@ void send_gdb_command(string cmd, Widget origin,
     assert(!extra_data->config_xdb);
     assert(!extra_data->config_output);
     assert(!extra_data->config_program_language);
-    
+
+    // Annotate state
+    if (extra_data->refresh_breakpoints)
+	annotate("breakpoints-invalid");
+    if (extra_data->refresh_frame)
+	annotate("frames-invalid");
+
     // Setup additional trailing commands
     switch (gdb->type())
     {

@@ -579,9 +579,21 @@ static XrmOptionDescRec options[] = {
 { "-tty",                   XtNttyMode,              XrmoptionNoArg, ON },
 { "-t",                     XtNttyMode,              XrmoptionNoArg, ON },
 
-{ "--fullname",             XtCTTYMode,              XrmoptionNoArg, ON },
-{ "-fullname",              XtCTTYMode,              XrmoptionNoArg, ON },
-{ "-f",                     XtCTTYMode,              XrmoptionNoArg, ON },
+{ "--fullname",             XtNannotate,             XrmoptionNoArg, "1" },
+{ "-fullname",              XtNannotate,             XrmoptionNoArg, "1" },
+{ "-f",                     XtNannotate,             XrmoptionNoArg, "1" },
+
+{ "--annotate",             XtNannotate,             XrmoptionSepArg, NULL },
+{ "-annotate",              XtNannotate,             XrmoptionSepArg, NULL },
+
+{ "--annotate=0",           XtNannotate,             XrmoptionNoArg, "0" },
+{ "-annotate=0",            XtNannotate,             XrmoptionNoArg, "0" },
+
+{ "--annotate=1",           XtNannotate,             XrmoptionNoArg, "1" },
+{ "-annotate=1",            XtNannotate,             XrmoptionNoArg, "1" },
+
+{ "--annotate=2",           XtNannotate,             XrmoptionNoArg, "2" },
+{ "-annotate=2",            XtNannotate,             XrmoptionNoArg, "2" },
 
 { "--version",              XtNshowVersion,          XrmoptionNoArg, ON },
 { "-version",               XtNshowVersion,          XrmoptionNoArg, ON },
@@ -2585,9 +2597,13 @@ int main(int argc, char *argv[])
     set_settings_title(source_edit_menu[EditItems::Settings].widget);
     set_settings_title(data_edit_menu[EditItems::Settings].widget);
 
+    // If we use annotations, we also want tty mode.
+    if (app_data.annotate)
+	app_data.tty_mode = True;
+
     // Close windows explicitly requested
     if (!app_data.data_window && 
-	(!app_data.full_name_mode || !app_data.tty_mode))
+	(!app_data.annotate || !app_data.tty_mode))
     {
 	// We don't want the data window (unless in full name mode,
 	// where we always open a data window - because otherwise, no
@@ -2595,7 +2611,7 @@ int main(int argc, char *argv[])
 	gdbCloseDataWindowCB(gdb_w, 0, 0);
     }
 
-    if (!app_data.source_window || app_data.full_name_mode)
+    if (!app_data.source_window || app_data.annotate)
     {
 	// We don't need the source window, since we're invoked by Emacs.
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
