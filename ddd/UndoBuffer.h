@@ -76,7 +76,7 @@ private:
     // execution states and non-execution states (lookups).
 
     // True if we have undone some exec position
-    static bool _at_past_exec_pos;
+    static bool _showing_earlier_state;
 
     // Current command source
     static string current_source;
@@ -97,14 +97,15 @@ private:
     static void remap_breakpoint(string& cmd, int old_bp_nr, int new_bp_nr);
 
     // Enter or leave `past exec' mode
-    static void set_past_exec_pos(bool set);
+    static void showing_earlier_state(bool set);
 
 protected:
     // Add new entry
     static void add(const UndoBufferEntry& entry);
 
     // Process entry
-    static void process(int entry, int direction);
+    static void process_command(int entry, int direction);
+    static void process_status(int entry, int direction);
 
     // Log current position
     static void log();
@@ -174,11 +175,11 @@ public:
     static string undo_action();
     static string redo_action();
 
-    // True iff we're at some past execution position
-    static bool at_past_exec_pos() { return _at_past_exec_pos; }
+    // True iff we're showing an earlier program state
+    static bool showing_earlier_state() { return _showing_earlier_state; }
 
-    // Go to the last known (`true') execution position
-    static void goto_current_exec_pos();
+    // Restore current program state
+    static void restore_current_state();
 
     // Clear history
     static void clear();
