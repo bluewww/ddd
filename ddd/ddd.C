@@ -1038,7 +1038,7 @@ static MMDesc arg_cmd_area[] =
 {
     {"lookup",        MMPush,  { gdbLookupCB        }},
     {"breakAt",       MMPush,  { gdbBreakArgCmdCB   }},
-    {"clearAt",       MMPush,  { gdbClearArgCmdCB   }},
+    {"clearAt",       MMPush | MMUnmanaged,  { gdbClearArgCmdCB   }},
     {"print",         MMPush,  { gdbPrintArgCmdCB   }},
     {"display",       MMPush,  { gdbDisplayArgCmdCB }},
     {"findBackward",  MMPush,  { gdbFindBackwardCB  }},
@@ -3065,7 +3065,7 @@ static void create_status(Widget parent)
     // the size of the status window to the length of the very first
     // message, so we give some huge string at the beginning.
     MString short_msg = rm("Welcome to " DDD_NAME " " DDD_VERSION "!");
-    MString long_msg = short_msg + rm(replicate(' ', 120));
+    MString long_msg = short_msg + rm(replicate(' ', 90));
 
     arg = 0;
     XtSetArg(args[arg], XmNlabelString,      long_msg.xmstring()); arg++;

@@ -581,7 +581,7 @@ Ddd*maxPopupExprLength:		20
 Ddd*maxValueTipLength:		60
 
 ! The maximum length of a value doc.
-Ddd*maxValueDocLength:		88
+Ddd*maxValueDocLength:		80
 
 
 
@@ -2504,19 +2504,19 @@ Click on @bf Close @rm to close this window.
 ! Width and height for several Motif & Athena variants
 
 ! Motif 1.x, using ScrolledWindow
-Ddd*graph_edit_swindow.width:		660
+Ddd*graph_edit_swindow.width:		622
 Ddd*graph_edit_swindow.height:		200
 
 ! Motif 2.0, using ScrolledWindow
-Ddd*graph_editSW.width:			660
+Ddd*graph_editSW.width:			622
 Ddd*graph_editSW.height:		200
 
 ! Motif 1.x, using Porthole
-Ddd*graph_edit_porthole.width:		660
+Ddd*graph_edit_porthole.width:		622
 Ddd*graph_edit_porthole.height:		200
 
 ! Motif 2.0, using Porthole
-Ddd*graph_edit_form.width:		660
+Ddd*graph_edit_form.width:		622
 Ddd*graph_edit_form.height:		200
 
 Ddd*graph_edit_panner.backgroundPixmap:	25_foreground
@@ -2640,10 +2640,6 @@ Ddd*node_popup.delete.labelString:	Delete Display
 Ddd*node_popup.delete.documentationString: \
 @rm Delete the selected display
 
-Ddd*node_popup.disable.labelString:	Disable Display
-Ddd*node_popup.disable.documentationString: \
-@rm Disable/Enable the selected display
-
 
 !-----------------------------------------------------------------------------
 ! Graph Buttons
@@ -2678,9 +2674,8 @@ Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	New Display
 Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: Display *()
 Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:	Show ()
 Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate ()
-Ddd*graph_cmd_w.graph_cmd_area*set.labelString:		Set Value ()
+Ddd*graph_cmd_w.graph_cmd_area*set.labelString:		Set ()
 Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
-Ddd*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable ()
 ! Ddd*graph_cmd_w.graph_cmd_area*marginTop:	  1
 ! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:	  1
 
@@ -2717,20 +2712,12 @@ Ddd*graph_cmd_w.graph_cmd_area*rotate.documentationString: \
 @rm Rotate the selected displays
 
 Ddd*graph_cmd_w.graph_cmd_area*set.helpString:	\
-@bf Set Value ()@rm\n\
+@bf Set ()@rm\n\
 Change the selected display value.
 Ddd*graph_cmd_w.graph_cmd_area*set.tipString:	\
 @rm Set display value
 Ddd*graph_cmd_w.graph_cmd_area*set.documentationString:	\
 @rm Change the selected display value
-
-Ddd*graph_cmd_w.graph_cmd_area*disable.helpString:	\
-@bf Disable ()@rm / @bf Enable ()@rm\n\
-Disable/Enable the selected displays.
-Ddd*graph_cmd_w.graph_cmd_area*disable.tipString:	\
-@rm Disable/Enable selected displays
-Ddd*graph_cmd_w.graph_cmd_area*disable.documentationString:	\
-@rm Disable/Enable the selected displays
 
 Ddd*graph_cmd_w.graph_cmd_area*delete.helpString:	\
 @bf Delete ()@rm\n\
@@ -2797,16 +2784,16 @@ Ddd*status_history.row.background:	Black
 ! Source view
 !-----------------------------------------------------------------------------
 
-Ddd*source_text_w.columns:		88
+Ddd*source_text_w.columns:		80
 Ddd*source_text_w.rows:			24
 
-Ddd*code_text_w.columns:		88
+Ddd*code_text_w.columns:		80
 Ddd*code_text_w.rows:			2
 
-Ddd*source_form_w.width:		660
+Ddd*source_form_w.width:		622
 Ddd*source_form_w.height:		320
 
-Ddd*code_form_w.width:			660
+Ddd*code_form_w.width:			622
 Ddd*code_form_w.height:			50
 
 Ddd*source_text_w.scrollHorizontal:	false
@@ -3148,9 +3135,9 @@ Ddd*gdb_w.value: \
 Copyright \251 1997 Technische Universit\344t Braunschweig, Germany.\n
 
 Ddd*gdb_w.rows:			10
-Ddd*gdb_w.columns:		88
+Ddd*gdb_w.columns:		80
 
-Ddd*gdb_wSW.width:		660
+Ddd*gdb_wSW.width:		622
 Ddd*gdb_wSW.height:		124
 
 Ddd*gdb_w.editable:		true
@@ -3762,10 +3749,7 @@ Buttons:\n\
 @tt \267 @bf Show Detail @rm - show the details of all selected displays.\n\
 @tt \267 @bf Hide Detail @rm - hide the details of all selected displays.\n\
 @tt \267 @bf Set Value @rm - change a value in the selected display.\n\
-@tt \267 @bf Enable @rm - enable all selected displays.\n\
-@tt \267 @bf Disable @rm - disable all selected displays.\n\
 @tt \267 @bf Delete @rm - delete all selected displays.
-
 
 Ddd*new_display_dialog_popup.title: @DDD@: New Display
 Ddd*new_display_dialog.selectionLabelString:	\
@@ -3846,18 +3830,6 @@ Ddd*edit_displays_dialog*buttons*set.tipString:  \
 @rm Set display value
 Ddd*edit_displays_dialog*buttons*set.documentationString: \
 @rm Change a value in the selected data display
-
-Ddd*edit_displays_dialog*buttons*disable.labelString:	    Disable
-Ddd*edit_displays_dialog*buttons*disable.tipString:  \
-@rm Disable selected displays
-Ddd*edit_displays_dialog*buttons*disable.documentationString: \
-@rm Disable the selected data display(s)
-
-Ddd*edit_displays_dialog*buttons*enable.labelString:	    Enable
-Ddd*edit_displays_dialog*buttons*enable.tipString:  \
-@rm Enable selected displays
-Ddd*edit_displays_dialog*buttons*enable.documentationString:  \
-@rm Enable the selected data display(s)
 
 Ddd*edit_displays_dialog*buttons*delete.labelString:	    Delete
 Ddd*edit_displays_dialog*buttons*delete.tipString:  \
