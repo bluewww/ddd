@@ -2,7 +2,7 @@
 .\" DDD manual page
 .\" @configure_input@
 .\"
-.\" Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
+.\" Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 .\" Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 .\" 
 .\" This file is part of DDD.
@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "10 December 1996" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "08 January 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .SH SYNOPSIS
@@ -644,7 +644,7 @@ The program stops as soon as a breakpoint is reached.  The current
 execution position is highlighted by an arrow.
 .PP
 You can interrupt a running program any time by clicking the
-`\fBBreak\fR' button or typing \fBCtrl+C\fR in a \s-2@DDD@\s+2 window.
+`\fBInterrupt\fR' button or typing \fBCtrl+C\fR in a \s-2@DDD@\s+2 window.
 .\"
 .\"
 .SS "Resuming Execution"
@@ -1173,20 +1173,27 @@ You may also type the `\fBquit\fR' command at the debugger prompt.
 \s-2GDB\s+2 and \s-2XDB\s+2 also accept the `\fBq\fR' command or an
 end-of-file character (usually \fBCtrl+D\fR).
 .PP
-An interrupt (\fBCtrl+C\fR or \fBBreak\fR) does not exit from
+An interrupt (\fBCtrl+C\fR or \fBInterrupt\fR) does not exit from
 \s-2@DDD@\s+2, but rather terminates the action of any debugger
 command that is in progress and returns to the debugger command level.
 It is safe to type the interrupt character at any time because the
 debugger does not allow it to take effect until a time when it is
 safe.
 .PP
-You may also interrupt \s-2@DDD@\s+2 using an interrupt signal
+In case an ordinary interrupt does not succeed, you can also use an 
+abort (\fBCtrl+\\\fR or \fBAbort\fR), which sends a \s-2QUIT\s+2 signal
+to the inferior debugger.  Use this in emergencies only; the inferior
+debugger may be left inconsistent after a \s-2QUIT\s+2 signal.
+.PP
+As a last resort\(em&if \s-2DDD\s+2 hangs, for example\(em&, you may
+also interrupt \s-2@DDD@\s+2 itself using an interrupt signal
 (\s-2SIGINT\s+2)\(em\&for instance by pressing \fBCtrl+C\fR in the
 shell \s-2@DDD@\s+2 was started from, or by using the \s-2UNIX\s+2
 `\fBkill\fR' command.  This interrupts any \s-2@DDD@\s+2 action; the
 inferior debugger is interrupted as well.  Since this interrupt signal
 can result in internal inconsistencies, use this as a last resort in
-emergencies only\(em\&if \s-2@DDD@\s+2 hangs, for example.
+emergencies only; save your work as soon as possible
+and restart \s-2DDD\s+2.
 .\"
 .\"
 .\" ---------------

@@ -259,6 +259,8 @@ Ddd*toolButtons: \
 run:break^C:step:stepi:next:nexti:cont:finish:\
 up:down:Back:Forward:Edit:kill
 
+Ddd*tool_buttons.break.labelString: Interrupt
+
 ! The number of rows in the command tool.
 Ddd*tool_buttons.fractionBase:			8
 
@@ -1668,8 +1670,9 @@ but proceed through subroutine calls.\n\
 @tt \267 @bf Finish @rm - execute until function returns.\n\
 \n\
 @tt \267 @bf Kill @rm - Kill execution of program being debugged.\n\
-@tt \267 @bf Break @rm - interrupt program (or current debugger command).\n\
-@tt \267 @bf Quit @rm - abort program (or current debugger command).
+@tt \267 @bf Interrupt @rm - interrupt program \
+(or current debugger command).\n\
+@tt \267 @bf Abort @rm - abort program (or current debugger command).
 
 Ddd*menubar*programMenu.run.labelString:	   Run...
 Ddd*menubar*programMenu.run.mnemonic:		   R
@@ -1727,15 +1730,15 @@ Ddd*menubar*programMenu.kill.accelerator:	   Ctrl Shift<Key>K
 Ddd*menubar*programMenu.kill.acceleratorText:	   Ctrl+Shift+K
 Ddd*menubar*programMenu.kill.documentationString:
 
-Ddd*menubar*programMenu.break.labelString:	   Break
-Ddd*menubar*programMenu.break.mnemonic:		   B
+Ddd*menubar*programMenu.break.labelString:	   Interrupt
+Ddd*menubar*programMenu.break.mnemonic:		   I
 Ddd*menubar*programMenu.break.accelerator:	   Ctrl<Key>C
 Ddd*menubar*programMenu.break.acceleratorText:	   Ctrl+C
 Ddd*menubar*programMenu.break.documentationString: \
 @rm Interrupt program (or current debugger command)
 
-Ddd*menubar*programMenu.quit.labelString:	   Quit
-Ddd*menubar*programMenu.quit.mnemonic:		   Q
+Ddd*menubar*programMenu.quit.labelString:	   Abort
+Ddd*menubar*programMenu.quit.mnemonic:		   A
 Ddd*menubar*programMenu.quit.accelerator:	   Ctrl<Key>\\ 
 Ddd*menubar*programMenu.quit.acceleratorText:	   Ctrl+\\ 
 Ddd*menubar*programMenu.quit.documentationString: \
@@ -2966,7 +2969,7 @@ Ddd*data_buttons.marginHeight:      0
 ! Some buttons have a special meaning; 
 ! so we must provide help on ourselves.
 Ddd*?*break.helpString: \
-@bf Break\n\
+@bf Interrupt\n\
 @rm Interrupt the debugged process or current debugger command.\n\
 (Equivalent to @key Ctrl+C@rm).
 Ddd*source_buttons*break.tipString: \
@@ -3546,7 +3549,7 @@ Ddd*busy_dialog*helpString:	\
 Please try again when the `@tt (gdb)@rm' or `@tt (dbx)@rm' \
 or `@tt >@rm' prompt appears.\n\
 You may also interrupt the current debugging command by selecting\n\
-@bf Break @rm from the @bf Program @rm menu.
+@bf Interrupt @rm from the @bf Program @rm menu.
 
 Ddd*quit_dialog_popup.title: @DDD@: Debugger Still Busy
 Ddd*quit_dialog.messageString:	 \
@@ -3560,7 +3563,7 @@ to the ``quit'' command.\n\
 The debugged process is probably still running.\n\
 \n\
 Before killing a running debugger, you should try to interrupt it\n\
-(by selecting @bf Break @rm from the @bf Program @rm menu).
+(by selecting @bf Interrupt @rm from the @bf Program @rm menu).
 
 Ddd*terminated_dialog_popup.title: @DDD@: Hasta la Vista
 Ddd*terminated_dialog.messageString:   \
