@@ -71,11 +71,17 @@ dnl
 dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
-VERSION=3.0.92
+VERSION=3.1
 dnl
 dnl The version nickname.
-NICKNAME="Nightsleeper"
+NICKNAME="Blue Sky"
 dnl 
+dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
+dnl After this date, users are requested to update the product.
+dnl An empty expiration date means no expiration.
+EXPIRES=
+dnl
+dnl
 AC_SUBST(ddd)dnl
 AC_SUBST(Ddd)dnl
 AC_SUBST(DDD)dnl
@@ -85,12 +91,6 @@ AC_MSG_RESULT(${DDD} ${VERSION} \"${NICKNAME}\")
 dnl
 dnl
 AC_MSG_CHECKING(for expiration date)
-dnl
-dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
-dnl After this date, users are requested to update the product.
-dnl An empty expiration date means no expiration.
-EXPIRES=1999-01-01
-dnl
 dnl
 AC_SUBST(EXPIRES)dnl
 if test "$EXPIRES" = ""; then
