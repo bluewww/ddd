@@ -5280,7 +5280,14 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 	info->spin_locked = lock;
     }
 
-    XmTextFieldSetString(info->condition, (String)bp->condition());
+    // Don't update unchanged condition to prevent OSF/Motif 2.0
+    // ComboBox from growing
+    String old_condition = XmTextFieldGetString(info->condition);
+    if (bp->condition() != old_condition)
+    {
+	XmTextFieldSetString(info->condition, (String)bp->condition());
+    }
+    XtFree(old_condition);
 
     bool can_enable   = false;
     bool can_disable  = false;
