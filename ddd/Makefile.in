@@ -897,6 +897,13 @@ ddd.vsl.h: ddd.vsl
 # `make depend' fails to find this dependency :-(
 DataDisp.o: ddd.vsl.h
 
+# And these are never computed:
+ddd.vsl: \
+	$(srcdir)/../vsllib/std.vsl \
+	$(srcdir)/../vsllib/fonts.vsl \
+	$(srcdir)/../vsllib/builtin.vsl
+	
+
 ## The programs.
 
 $(ddd):	$(ddd_canonical)
