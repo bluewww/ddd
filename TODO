@@ -308,4 +308,7 @@ Volunteers for these and other projects are welcome!
 119. Try whether the `-fno-implement-inlines' option in DDD reduces
      executable size.
 
-120. (Insert your project idea here)
+120. Check whether `dbxenv output_short_file_name off' helps in
+     debugging DBX code.
+
+121. (Insert your project idea here)

@@ -403,4 +403,10 @@ Volunteers for fixing these and other bugs are welcome!
 
 137. It seems SCO unix has `shmap' in `-lipc'.  Check for it.
 
-138. (Insert your bug here)
+138. With DBX as the inferior debugger, deleting a node disables all
+     other nodes.  Reported by Ira Cooper <ilcooper@tasc.com>.
+
+139. With Solaris 2.5.1, DDD recurses endlessly in glob_filename().
+     Reported by Deepak Mulchandani <dmm@jurassic.eng.sun.com>
+
+140. (Insert your bug here)
