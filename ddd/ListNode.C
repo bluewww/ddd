@@ -185,13 +185,6 @@ void ListNode::_dumpTree(std::ostream& s) const
     }
 }
 
-
-// Check if constant
-bool ListNode::isConst() const
-{
-    return _head->isConst() && _tail->isConst();
-}
-
 // Return number of NameNodes
 unsigned ListNode::nargs() const
 {

@@ -118,7 +118,9 @@ public:
     void _dumpTree(std::ostream& s) const;
 
     // Properties
-    bool isConst() const;
+    bool isConst() const {
+      return _head->isConst() && _tail->isConst();
+    }
     bool isListNode() const { return true; }
     bool isStraight() const;
 
