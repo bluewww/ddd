@@ -103,10 +103,11 @@ public:
 class List {
     int value;
 public:
+    List *self;
     List *next;
 
     List (int v):
-	value(v), next(this)
+	value(v), self(this), next(this)
     {}
 };
 //--------------------------------------------------------------------------
@@ -134,10 +135,8 @@ void list_test (int start)
     list                         = new List(start++);
     list->next                   = new List(start++);
     list->next->next             = new List(start++);
-    list->next->next->next       = new List(start++);
-    list->next->next->next->next = list;
+    list->next->next->next       = list;
 
-    delete list->next->next->next;
     delete list->next->next;
     delete list->next;
     delete list;
