@@ -224,7 +224,7 @@ Volunteers for fixing these and other bugs are welcome!
      up. The outline draws in the wrong place, not just within the
      selected rectangle, but also in the upper left corner of the
      window regardles of where the selection rectangle starts.
-     [Fixed in DDD 1.5  -AZ]
+     [Fixed in DDD 1.5?  -AZ]
 
 079. Window resize problems.  louie@dbmx.com (Lewis Alderton) says: I
      am running using FVWM ( virtual window manager ) and when the
@@ -251,4 +251,25 @@ Volunteers for fixing these and other bugs are welcome!
      by compiling a version of the code that has the "-r"s taken out,
      but I suspect that is not the best way.
 
-083. (Insert your bug here)
+083. Editing problems.  js@spacenet.LANL.GOV (John Sutton) says: I run
+     ddd on a simple c program, select Source -> Edit Source and get
+     an xterm running vi.  When I exit vi the following messages pops
+     up:
+
+     Internal error (Segmentation fault)
+
+     and ddd print to stdout the following message over and over until
+     I kill ddd.
+
+     Warning: Select failed: error code 9
+
+     I'm running on a Sun SPARC 10 with SunOS 4.1.4, X11R5, ICS Motif
+     1.2.4, the mit x server (not openwin) and the fvwm2 window
+     manager.
+
+084. Configure problems.  Lutz Vieweg <vieweg@iap.uni-frankfurt.de>
+     says that the `configure' tests ignore the `CC' and `CXX'
+     environment variables (is this true for the top-level
+     `configure', or for `ddd/configure'?)
+
+085. (Insert your bug here)

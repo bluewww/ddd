@@ -186,4 +186,9 @@ Volunteers for these and other projects are welcome!
 
 081. Pre-scan the X event buffer for ^C events.
 
-082. (Insert your project idea here)
+082. For remote debugging, use an on-line `rlogin' connection,
+     invoking the inferior debugger from the remote shell.
+
+083. Include graphplace support.
+
+084. (Insert your project idea here)
