@@ -1839,10 +1839,12 @@ $(icondir)/ddd.xface: $(icondir)/ddd.xbm
 
 $(icondir)/dddmask.xbm: $(icondir)/dddmask.xpm
 
+# Original filter for dddsplash to extract g4 info
+# $(SED) 's/[	 ][cmg][ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' | \
+
 $(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 	@$(ECHO) "Creating $@"
 	@-$(CAT) $(icondir)/dddsplash.xpm | \
-	$(SED) 's/[	 ][cmg][ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PNMGAMMA) 0.4 | $(PPMTOPGM) | \
 	$(PGMENHANCE) -7 | \
 	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddsplash/g' | \
