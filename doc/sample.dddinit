@@ -115,38 +115,16 @@
 ! KEYBOARD
 ! ----------------------------------------------------------------------------
 
-! Get a Motif-style `Edit' menu.  This also unbinds Ctrl+C from `Copy',
-! re-establishing its meaning as `Interrupt' character.
-! Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
-! Ddd*editMenu.cut.acceleratorText:	Shift+Del
-! Ddd*editMenu.copy.accelerator:  	Ctrl<Key>Insert
-! Ddd*editMenu.copy.acceleratorText:	Ctrl+Ins
-! Ddd*editMenu.paste.accelerator:  	Shift<Key>Insert
-! Ddd*editMenu.paste.acceleratorText:	Shift+Ins
+! Create KDE-style Cut/Copy/Paste bindings.  Please note that this
+! assigns Ctrl+C to `Copy'; use Ctrl+G for interrupts.
+! 
+! Ddd*editMenu.cut.accelerator:       ~Shift Ctrl<Key>X
+! Ddd*editMenu.cut.acceleratorText:   Ctrl+X
+! Ddd*editMenu.copy.accelerator:      ~Shift Ctrl<Key>C
+! Ddd*editMenu.copy.acceleratorText:  Ctrl+C
+! Ddd*editMenu.paste.accelerator:     ~Shift Ctrl<Key>V
+! Ddd*editMenu.paste.acceleratorText: Ctrl+V
 
-
-! ----------------------------------------------------------------------------
-! MENUS
-! ----------------------------------------------------------------------------
-
-! Auto-raise menu panels.  This is useful if you have a window manager
-! that auto-raises windows - and sometimes raises an application above
-! its own menus.  This is off by default, since it may interfere with Motif.
-! Ddd*autoRaiseMenus: true
-
-
-! ----------------------------------------------------------------------------
-! SHADOWS
-! ----------------------------------------------------------------------------
-
-! These settings make the menubar and the command tool somewhat `lighter'
-! Ddd*menubar.shadowThickness: 1
-! Ddd*tool_shell*shadowThickness: 1
-
-
-! ----------------------------------------------------------------------------
-! ACCELERATORS
-! ----------------------------------------------------------------------------
 
 ! Enrico Scholz <enrico.scholz@wirtschaft.tu-chemnitz.de> suggests the
 ! following accelerators (taken from the Borland Delphi debugger):
@@ -183,11 +161,19 @@
 ! Ddd*menubar*programMenu.separateExecWindow.accelerator:         Meta<Key>F9
 ! Ddd*menubar*programMenu.separateExecWindow.acceleratorText:     Alt+F9
 ! 
-! ! For future DDD versions:
-! ! Ddd*menubar*programMenu.until.accelerator:     <Key>F4
-! ! Ddd*menubar*programMenu.until.acceleratorText: F4    
-! ! Ddd*menubar*programMenu.until.labelString:     Continue until here
-! ! Ddd*menubar*programMenu.until.mnemonic:        H
+! Ddd*menubar*programMenu.until.accelerator:     <Key>F4
+! Ddd*menubar*programMenu.until.acceleratorText: F4    
+
+
+! ----------------------------------------------------------------------------
+! MENUS
+! ----------------------------------------------------------------------------
+
+! Auto-raise menu panels.  This is useful if you have a window manager
+! that auto-raises windows - and sometimes raises an application above
+! its own menus.  This is off by default, since it may interfere with Motif.
+! Ddd*autoRaiseMenu: true
+
 
 
 ! ----------------------------------------------------------------------------

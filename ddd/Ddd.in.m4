@@ -999,11 +999,11 @@ osfEndLine:	<Key>End\n
 Ddd*gdb_w.translations: #override\n\
 <Btn3Down>:		gdb-popup-menu()            \n\
 Ctrl<Key>A:		gdb-beginning-of-line()	    \n\
-Ctrl<Key>B:		gdb-backward-character()    \n\
+Ctrl<Key>B:		gdb-isearch-prev()    	    \n\
 Ctrl<Key>C:		gdb-control(^C)		    \n\
 Ctrl<Key>D:		gdb-delete-or-control(^D)   \n\
 Ctrl<Key>E:		gdb-end-of-line()	    \n\
-Ctrl<Key>F:		gdb-forward-character()     \n\
+Ctrl<Key>F:		gdb-isearch-next()     	    \n\
 Ctrl<Key>G:		gdb-control(^C)		    \n\
 <Key>Break:		gdb-control(^C)		    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
@@ -1019,7 +1019,6 @@ Ctrl<Key>Y:		unkill()		    \n\
 Ctrl<Key>backslash:	gdb-control(^\\)	    \n\
 Ctrl<Key>R:		gdb-isearch-prev()          \n\
 Ctrl<Key>S:		gdb-isearch-next()  	    \n\
-Ctrl<Key>F:		gdb-isearch-next()  	    \n\
 Ctrl<Key>T:		gdb-complete-command()	    \n\
 None<Key>Escape:	process-cancel() gdb-isearch-exit() \n\
 None<Key>osfCancel:	process-cancel() gdb-isearch-exit() \n\
@@ -1062,15 +1061,15 @@ Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n])dnl
+~Shift <Key>R7:		beginning-of-line()	    \n\
+~Shift <Key>R13:	end-of-line()		    \n\
+~Shift <Key>Home:	beginning-of-line()	    \n\
+~Shift <Key>End:	end-of-line()		    \n])dnl
 dnl
 dnl Emacs + TAB completion.
 define(COMPLETE_TRANSLATIONS, EMACS_TRANSLATIONS[\
 Ctrl<Key>T:		gdb-complete-arg($1)	    \n\
-None<Key>Tab:		gdb-complete-tab($1)	    \n])dnl
+~Shift <Key>Tab:	gdb-complete-tab($1)	    \n])dnl
 dnl
 dnl Emacs + extra pageup/pagedown and newline capabilities
 define(TEXT_TRANSLATIONS, EMACS_TRANSLATIONS[\
@@ -1080,8 +1079,8 @@ Ctrl<Key>N:		gdb-next-history()	    \n\
 Ctrl<Key>P:		gdb-previous-history()      \n\
 Meta<Key>V:		previous-page()		    \n\
 Ctrl<Key>V:		next-page()		    \n\
-~Shift<Key>Prior:	previous-page()		    \n\
-~Shift<Key>Next:	next-page()	            \n\
+~Shift <Key>Prior:	previous-page()		    \n\
+~Shift <Key>Next:	next-page()	            \n\
 Shift<Key>osfPageUp:	previous-page(extend)	    \n\
 Shift<Key>osfPageDown:	next-page(extend)           \n\
 Shift<Key>Prior:	previous-page(extend)	    \n\
@@ -1090,7 +1089,7 @@ dnl
 dnl Emacs + pageup/pagedown + TAB completion.
 define(COMPLETE_TEXT_TRANSLATIONS, TEXT_TRANSLATIONS[\
 Ctrl<Key>T:		gdb-complete-arg($1)	    \n\
-None<Key>Tab:		gdb-complete-tab($1)	    \n])dnl
+~Shift <Key>Tab:	gdb-complete-tab($1)	    \n])dnl
 dnl
 
 ! Have some of these in argument fields as well
@@ -1172,38 +1171,40 @@ define(SOURCE_TRANSLATIONS,[\
 ~Ctrl ~Shift<Btn1Down>:	source-start-select-word()  \n\
 ~Ctrl ~Shift<Btn1Up>:	source-end-select-word()    \n\
 Ctrl<Key>A:		beginning-of-line()	    \n\
-Ctrl<Key>B:		gdb-backward-character()    \n\
+Ctrl<Key>B:		gdb-isearch-prev()    	    \n\
 Ctrl<Key>C:             gdb-control(^C)             \n\
 Ctrl<Key>E:		end-of-line()		    \n\
+Ctrl<Key>F:		gdb-isearch-next()	    \n\
 Ctrl<Key>G:             gdb-control(^C)             \n\
-Ctrl<Key>F:		gdb-forward-character()	    \n\
 Ctrl<Key>N:		gdb-next-history()	    \n\
 Ctrl<Key>P:		gdb-previous-history()      \n\
+Ctrl<Key>R:		gdb-isearch-prev()          \n\
+Ctrl<Key>S:		gdb-isearch-next()  	    \n\
 Ctrl<Key>V:		next-page()		    \
 			source-update-glyphs()	    \n\
 Meta<Key>V:		previous-page()		    \
 			source-update-glyphs()	    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		PrimitiveNextTabGroup()	    \n\
-None<Key>osfPageUp:	previous-page()		    \
+~Shift <Key>R7:		beginning-of-line()	    \n\
+~Shift <Key>R13:	end-of-line()		    \n\
+~Shift <Key>Tab:	PrimitiveNextTabGroup()	    \n\
+~Shift <Key>osfPageUp:	previous-page()		    \
 			source-update-glyphs()	    \n\
-None<Key>osfPageDown:	next-page()		    \
+~Shift <Key>osfPageDown: next-page()		    \
 			source-update-glyphs()	    \n\
 Shift<Key>osfPageUp:	previous-page(extend)	    \
 			source-update-glyphs()	    \n\
 Shift<Key>osfPageDown:	next-page(extend)	    \
 			source-update-glyphs()	    \n\
-~Shift<Key>Prior:	previous-page()		    \
+~Shift <Key>Prior:	previous-page()		    \
 			source-update-glyphs()	    \n\
-~Shift<Key>Next:	next-page()		    \
+~Shift <Key>Next:	next-page()		    \
 			source-update-glyphs()	    \n\
 Shift<Key>Prior:	previous-page(extend)	    \
 			source-update-glyphs()	    \n\
 Shift<Key>Next:		next-page(extend)	    \
 			source-update-glyphs()	    \n\
-~Shift<Key>Home:	beginning-of-line()	    \n\
-~Shift<Key>End:		end-of-line()		    \n])dnl
+~Shift <Key>Home:	beginning-of-line()	    \n\
+~Shift <Key>End:	end-of-line()		    \n])dnl
 
 ! Have all characters be processed by the GDB console.
 ! If you know of a better way than by using such huge translation tables,
@@ -1334,6 +1335,7 @@ define(GDB_TRANSLATIONS,[\
 ~Ctrl ~Meta<Key>KP_Divide:	     gdb-process()\n\
 ~Meta Ctrl<Key>C:		     gdb-process()\n\
 ~Meta Ctrl<Key>D:		     gdb-process(process-delete)\n\
+~Meta Ctrl<Key>G:		     gdb-process()\n\
 ~Meta Ctrl ~Shift<Key>K:	     gdb-process(delete-to-end-of-line)\n\
 ~Meta Ctrl<Key>W:		     gdb-process(delete-previous-word)\n\
 ~Meta Ctrl<Key>U:		     gdb-process()\n])dnl
@@ -1860,30 +1862,35 @@ Ddd*menubar.edit*helpString: EDIT_HELP
 Ddd*editMenu*helpString:     EDIT_HELP
 Ddd*editMenu*tearOffTitle:   Edit
 
+! Have standard Motif bindings
+Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
+Ddd*editMenu.cut.acceleratorText:	Shift+Del
+Ddd*editMenu.copy.accelerator:  	Ctrl<Key>Insert
+Ddd*editMenu.copy.acceleratorText:	Ctrl+Ins
+Ddd*editMenu.paste.accelerator:  	Shift<Key>Insert
+Ddd*editMenu.paste.acceleratorText:	Shift+Ins
+
+! Alternative, KDE-like bindings
+! Ddd*editMenu.cut.accelerator:				~Shift Ctrl<Key>X
+! Ddd*editMenu.cut.acceleratorText:			Ctrl+X
+! Ddd*editMenu.copy.accelerator:			~Shift Ctrl<Key>C
+! Ddd*editMenu.copy.acceleratorText:			Ctrl+C
+! Ddd*editMenu.paste.accelerator:			~Shift Ctrl<Key>V
+! Ddd*editMenu.paste.acceleratorText:			Ctrl+V
+
+
 Ddd*editMenu.cut.labelString:				Cut
 Ddd*editMenu.cut.mnemonic:				t
-! Ddd*editMenu.cut.accelerator:				Shift<Key>Delete
-! Ddd*editMenu.cut.acceleratorText:			Shift+Del
-Ddd*editMenu.cut.accelerator:				~Shift Ctrl<Key>X
-Ddd*editMenu.cut.acceleratorText:			Ctrl+X
 Ddd*editMenu.cut.documentationString: \
 @rm Cut the selection and put it on the clipboard
 
 Ddd*editMenu.copy.labelString:				Copy
 Ddd*editMenu.copy.mnemonic:				C
-! Ddd*editMenu.copy.accelerator:			Ctrl<Key>Insert
-! Ddd*editMenu.copy.acceleratorText:			Ctrl+Ins
-Ddd*editMenu.copy.accelerator:				~Shift Ctrl<Key>C
-Ddd*editMenu.copy.acceleratorText:			Ctrl+C
 Ddd*editMenu.copy.documentationString: \
 @rm Copy the selection and put it on the clipboard
 
 Ddd*editMenu.paste.labelString:				Paste
 Ddd*editMenu.paste.mnemonic:				P
-! Ddd*editMenu.paste.accelerator:			Shift<Key>Insert
-! Ddd*editMenu.paste.acceleratorText:			Shift+Ins
-Ddd*editMenu.paste.accelerator:				~Shift Ctrl<Key>V
-Ddd*editMenu.paste.acceleratorText:			Ctrl+V
 Ddd*editMenu.paste.documentationString: \
 @rm Paste clipboard contents
 
@@ -2243,16 +2250,16 @@ Ddd*commandsMenu.apply.acceleratorText:         Return
 Ddd*commandsMenu.apply.documentationString: \
 @rm Execute current command
 
-Ddd*commandsMenu.isearch_prev.labelString:	Find Previous
-Ddd*commandsMenu.isearch_prev.mnemonic:	        r
-! Ddd*commandsMenu.isearch_prev.accelerator:	Ctrl<Key>R
-Ddd*commandsMenu.isearch_prev.acceleratorText:  Ctrl+R
+Ddd*commandsMenu.isearch_prev.labelString:	Find Backward
+Ddd*commandsMenu.isearch_prev.mnemonic:	        B
+! Ddd*commandsMenu.isearch_prev.accelerator:	Ctrl<Key>B
+Ddd*commandsMenu.isearch_prev.acceleratorText:  Ctrl+B
 Ddd*commandsMenu.isearch_prev.documentationString: \
 @rm Do incremental search backward in command history
 
-Ddd*commandsMenu.isearch_next.labelString:	Find Next
+Ddd*commandsMenu.isearch_next.labelString:	Find Forward
 Ddd*commandsMenu.isearch_next.mnemonic:	        F
-! Ddd*commandsMenu.isearch_next.accelerator:	Ctrl<Key>S
+! Ddd*commandsMenu.isearch_next.accelerator:	Ctrl<Key>F
 Ddd*commandsMenu.isearch_next.acceleratorText:  Ctrl+F
 Ddd*commandsMenu.isearch_next.documentationString: \
 @rm Do incremental search forward in command history
@@ -2283,7 +2290,7 @@ Ddd*commandsMenu.define.documentationString: \
 @rm Define @GDB@ command
 
 Ddd*commandsMenu.buttons.labelString:	        Edit Buttons...
-Ddd*commandsMenu.buttons.mnemonic:	        B
+Ddd*commandsMenu.buttons.mnemonic:	        u
 Ddd*commandsMenu.buttons.documentationString: \
 @rm Edit command buttons
 

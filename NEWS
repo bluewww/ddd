@@ -9,10 +9,6 @@ DDD 3.0 [in beta test]
     User-visible changes to DDD 2.2.3:
     - New, `clean' look.  The DDD 2.x button rows are replaced by an
       icon tool bar at the top, saving vertical and horizontal space.
-    - New KDE-compatible key bindings.  Cut/Copy/Paste is now on
-      Ctrl+X/Ctrl+C/Ctrl+V.  To interrupt, use Ctrl+G (as in Emacs).
-      See below for a ful list of changed key bindings and how to
-      restore old key bindings.
     - Configurable fonts.  You can easily customize DDD font settings
       via `Edit | Preferences | Fonts'.
     - JDB support.  DDD now also supports JDB as inferior debugger.
@@ -21,6 +17,7 @@ DDD 3.0 [in beta test]
       All data display features are available in Java.
     - Watchpoints.  You can have the debugged program stop
       automatically whenever a particular variable is read or written.
+    - KDE-style key bindings.  See below for a list.
     - Deferred displays.  DDD now can maintain displays whose creation
       is deferred until a particular scope is entered.  Benefits:
       * Displays are now persistent across recompilations.
@@ -96,42 +93,47 @@ DDD 3.0 [in beta test]
     - GCC 2.8.1 with enabled optimization is supported.
 
     Compatibility notes:
-    - Some key bindings have been re-assigned for KDE compatibility.
-      See `http://www.kde.org/standard-keys.html' for rationales.
+    - Several key bindings have been re-assigned for compliance with
+      the KDE style guide (`http://www.kde.org/standard-keys.html').
 
         Action        Old key       New key       Rationale
         ------------  ------------  ------------  ----------
-        Interrupt     Ctrl+C        Ctrl+G        Ctrl+C now used for Copy
-        Cut           Shift+Del     Ctrl+X        KDE standard
-        Copy          Ctrl+Ins      Ctrl+C        KDE standard
-        Paste         Shift+Ins     Ctrl+V        KDE standard
-        Search        Ctrl+S        Ctrl+F        KDE standard
-        Run           Ctrl+X        Ctrl+E        Ctrl+X now used for Cut
-        Run Again     Shift+Ctrl+X  Ctrl+A        Ctrl+X now used for Cut
+        Attach        Ctrl+Z        -/-           Ctrl+Z is Undo in KDE
+        Backward      Ctrl+B        Left          Ctrl+B is now Rev Search
+        Close         Alt+W         Ctrl+W        KDE standard
+        Delete Word   Ctrl+W        Ctrl+Backspc  Ctrl+W is now Close
+        Detach        Shift+Ctrl+Z  -/-           Ctrl+Z is Undo in KDE
+        Edit          Shift+Ctrl+E  Shift+Ctrl+V  Ctrl+E is now Run
+        Forward       Ctrl+F        Right         Ctrl+F is now Search
+        Interrupt     Ctrl+C (*)    Ctrl+G        Ctrl+C is Copy in KDE
         Open File     Alt+O         Ctrl+O        KDE standard
         Open Session  Shift+Alt+O   Ctrl+N        KDE standard
-        Save Session  -/-           Ctrl+S        KDE standard
-        Attach        Ctrl+Z        -/-           Reserved for Undo
-        Detach        Shift+Ctrl+Z  -/-           Reserved for Undo
+        Page Down     Ctrl+V        Page Down     Ctrl+V is Paste in KDE
         Print         -/-           Ctrl+P        KDE standard
-        Close         Alt+W         Ctrl+W        KDE standard
-        Edit          Shift+Ctrl+E  Shift+Ctrl+V  Ctrl+E now used for Run
-        Del Word      Ctrl+W        Ctrl+Bsp      Ctrl+W now used for Close
-        Backward      Ctrl+B        Left          Reserved
-        Unkill        Ctrl+Y        Shift+Ctrl+Y  Reserved for Redo
+        Rev Search    Ctrl+R (*)    Ctrl+B        Ctrl+R is Replace in KDE
+        Run           Ctrl+X        Ctrl+E        Ctrl+X is Cut in KDE
+        Run Again     Shift+Ctrl+X  Ctrl+A        Ctrl+X is Cut in KDE
+        Save Session  -/-           Ctrl+S        KDE standard
+        Search        Ctrl+S        Ctrl+F        KDE standard
+        Unkill        Ctrl+Y (*)    Shift+Ctrl+Y  Ctrl+Y is Redo in KDE
 
-      To enable Motif-style bindings in the `Edit' menu, and to make
-      Ctrl+C interrupt again, use
+      For smoother transition, keys marked with (*) are still available
+      by default, but may be re-assigned in future DDD releases.
 
-         Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
-         Ddd*editMenu.cut.acceleratorText:	Shift+Del
-         Ddd*editMenu.copy.accelerator:  	Ctrl<Key>Insert
-         Ddd*editMenu.copy.acceleratorText:	Ctrl+Ins
-         Ddd*editMenu.paste.accelerator:  	Shift<Key>Insert
-         Ddd*editMenu.paste.acceleratorText:	Shift+Ins
+      For full compliance to the KDE style guide, the Cut/Copy/Paste
+      operations must be assigned to Ctrl+X/Ctrl+C/Ctrl+V; use
 
-      in your ~/.ddd/init file.  See the `Ddd' app-defaults file to
-      change other key bindings.
+	Ddd*editMenu.cut.accelerator:       ~Shift Ctrl<Key>X
+	Ddd*editMenu.cut.acceleratorText:   Ctrl+X
+	Ddd*editMenu.copy.accelerator:      ~Shift Ctrl<Key>C
+	Ddd*editMenu.copy.acceleratorText:  Ctrl+C
+	Ddd*editMenu.paste.accelerator:     ~Shift Ctrl<Key>V
+	Ddd*editMenu.paste.acceleratorText: Ctrl+V
+
+      in your ~/.ddd/init file.  This will become the default in
+      future DDD versions.
+
+      See the `Ddd' app-defaults file to change other key bindings.
 
     - Some resources had to be renamed for clarity and/or Motif conflicts:
  
@@ -157,12 +159,13 @@ DDD 3.0 [in beta test]
 
       in your `~/.ddd/init' file.  For a full DDD 2.x look, disable images
       and captions via `Edit | Preferences | Startup | Toolbar Appareance'.
+
     - Be sure not to leave `Ddd' app-defaults files from previous
       versions behind.  DDD does not require app-defaults files; in
       fact, we recommend strongly *NOT* to use or install them.
 
-    And once more, several more minor improvements and bug fixes; see
-    the `ChangeLog' file for details.
+    And once more, there are several more minor improvements and bug
+    fixes; see the `ChangeLog' file for details.
 
 
 
