@@ -142,11 +142,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 272 (LessTif) The `select' font selection method works only once.
 
-277*When `Edit' fails, record and show the editor stderr messages.
-
 278*The `--fonts' option needs documentation.
-
-280*The `():' button in the data display does not work.
 
 281 In auto deiconify mode, the GDB console uniconifies even if other
     windows are already there.
