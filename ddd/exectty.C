@@ -582,7 +582,7 @@ static void redirect_process(string& command,
 	    // SUN DBX 3.x interprets `COMMAND 2>&1' such that COMMAND
 	    // runs in the background.  Use this kludge instead.
 	    if (!has_redirection(args, "2>"))
-		gdb_redirection += "2> " + tty_name;
+		gdb_redirection += " 2> " + tty_name;
 	    if (!has_redirection(args, ">"))
 		gdb_redirection += " > " + tty_name;
 	}
