@@ -306,4 +306,25 @@ Volunteers for fixing these and other bugs are welcome!
      the way to the top or bottom of the window before it scrolls to
      the desired place.
 
-150. (Insert your bug here)
+150. In Modula-2-mode, DDD displays are named `^tree' instead of
+     `tree^'.  [This is a GDB bug.  Here's a patch for GDB 4.16:
+
+     ===========================================================
+     *** m2-lang.c.orig	Mon Feb 24 17:24:47 1997
+     --- m2-lang.c	Mon Feb 24 17:24:58 1997
+     ***************
+     *** 377,381 ****
+           {">",   BINOP_GTR, PREC_ORDER, 0},
+           {"<",   BINOP_LESS, PREC_ORDER, 0},
+     !     {"^",   UNOP_IND, PREC_PREFIX, 0},
+           {"@",   BINOP_REPEAT, PREC_REPEAT, 0},
+           {"CAP", UNOP_CAP, PREC_BUILTIN_FUNCTION, 0},
+     --- 377,381 ----
+           {">",   BINOP_GTR, PREC_ORDER, 0},
+           {"<",   BINOP_LESS, PREC_ORDER, 0},
+     !     {"^",   UNOP_IND, PREC_SUFFIX, 1},
+           {"@",   BINOP_REPEAT, PREC_REPEAT, 0},
+           {"CAP", UNOP_CAP, PREC_BUILTIN_FUNCTION, 0},
+     ===========================================================
+
+151. (Insert your bug here)
