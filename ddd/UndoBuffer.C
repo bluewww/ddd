@@ -552,7 +552,7 @@ bool UndoBuffer::process_command(UndoBufferEntry& entry)
 	    cmd.at(i, j - i + 1) = itostring(num);
 	}
 
-	if (cmd.contains("set confirm"), 0)
+	if (cmd.contains("set confirm", 0))
 	    confirm = false;	// Don't overwrite
 
 	// Execute command.  This will result in new redo command(s)
