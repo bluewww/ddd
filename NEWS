@@ -75,6 +75,7 @@ DDD 2.2 [in development]
       execution).  On our box, this results in 35% less memory usage.
 
     Bug fixes:
+    - DDD now runs on Linux with GNU libc 5.4.35 and later.
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
       Wiegand <wiegand@kong.gsfc.nasa.gov>.
     - DDD no longer hangs while receiving large chunks of data.

@@ -251,14 +251,6 @@ LessTif
 Linux
 =====
 
-Reported by:  Andreas Zeller <zeller@acm.org>
-
-     The most recent release of the GNU C library does not work with
-     DDD: the GDB prompt does not appear.  (In fact, DDD cannot
-     process GDB output without terminating newline). This might be a
-     bug in the GNU C library; please let us know about any
-     work-arounds.
-
 Reported by: Jim Van Zandt <jrv@vanzandt.mv.com>
 
      Under slackware 3.1, the file permissions in `/dev/ptyp?' do not
@@ -278,13 +270,6 @@ Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
      commands; to open a specific source, use the GDB `info file
      FUNCTION' command, where FUNCTION is a function defined in that
      source file.
-
-Reported by:  Andreas Zeller <zeller@acm.org>
-
-     Some Motif versions cause DDD to crash when dragging and dropping
-     pixmaps (for example, breakpoint symbols).  Being written for
-     Motif 1.1, there is no special drag-and-drop handling in DDD; if
-     DDD crashes upon drag-and-drop, this is a bug in your Motif library.
 
 
 SCO
