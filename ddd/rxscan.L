@@ -343,7 +343,7 @@ B9{D}{_}\,{_}{D}	 		RETURN(&rxlist_range);
 C0[^:]*:{P}	 			RETURN(&rxfilepos);
 C1{_}{I}[^({\n=]*:[(]			RETURN(&rxdbx_baseclass);
 C2{_}[^=]+=[^=]{C}			RETURN(&rxset3_cmd);
-C3{_}DB<+{P}>+{_}			RETURN(&rxperlprompt);
-C4[^(]*::[(][^:]*:{P}[)]:		RETURN(&rxperlpos);
+C3{_}DB<+[0-9]*>+{_}			RETURN(&rxperlprompt);
+C4[^(]*::[(][^:]*:{P}[)]:.*		RETURN(&rxperlpos);
 (.|\n)				        RETURN(0);  // Anything else
 %%
