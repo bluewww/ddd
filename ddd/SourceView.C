@@ -1007,9 +1007,14 @@ void SourceView::_set_bps_cond(IntArray& _nrs, string cond,
 	    if (!ok)
 		continue;		// Command failed
 
-	    int new_bp_nr = next_breakpoint_number() + count;
 	    string commands(os);
-	    commands.gsub("@0@", itostring(new_bp_nr));
+
+	    int new_bp_nr = bp_nr;
+	    if (gdb->has_numbered_breakpoints())
+	    {
+		new_bp_nr = next_breakpoint_number() + count;
+		commands.gsub("@0@", itostring(new_bp_nr));
+	    }
 
 	    while (commands != "")
 	    {
@@ -1018,14 +1023,17 @@ void SourceView::_set_bps_cond(IntArray& _nrs, string cond,
 		commands = commands.after('\n');
 	    }
 
-	    move_breakpoint_properties(bp_nr, new_bp_nr);
-
-	    // Delete old breakpoint
 	    if (gdb->has_numbered_breakpoints())
+	    {
+		// Copy properties to new breakpoint
+		move_breakpoint_properties(bp_nr, new_bp_nr);
+
+		// Delete old breakpoint
 		delete_bp(bp_nr);
 
-	    // Next breakpoint will get the next number
-	    count++;
+		// Next breakpoint will get the next number
+		count++;
+	    }
 	}
     }
 }
