@@ -280,6 +280,8 @@ static void HelpIndexCB(Widget widget, XtPointer client_data,
 void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			XtPointer)
 {
+    Delay delay;
+
     String text = (String)client_data;
 
     Arg args[10];
