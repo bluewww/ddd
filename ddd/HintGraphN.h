@@ -81,6 +81,12 @@ public:
 	r = BoxRegion(pos() - gc.hintSize / 2, gc.hintSize);
 	return r;
     }
+
+    // Print
+    virtual void _print(ostream&, const GraphGC&) const 
+    {
+	// Do nothing
+    }
 };
 
 #endif // _DDD_HintGraphNode_h
