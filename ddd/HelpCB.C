@@ -1091,7 +1091,16 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 {
     // Delay delay;
 
+    string name = "text_help";
+
+    // If CLIENT_DATA starts with @FOO@, use FOO as dialog name
     String text = (String)client_data;
+    if (text[0] == '@')
+    {
+	name = text + 1;
+	name = name.before('@');
+	text += name.length() + 2;
+    }
 
     Arg args[10];
     Cardinal arg = 0;
@@ -1108,7 +1117,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
-	text_dialog = create_text_dialog(toplevel, "text_help", args, arg);
+	text_dialog = create_text_dialog(toplevel, name, args, arg);
 
 	if (lesstif_version <= 79)
 	    XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,

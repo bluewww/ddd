@@ -43,8 +43,7 @@
 void show_invocation(DebuggerType type);
 void show_version();
 void show_configuration();
-void show_manual();
-void show_license();
+void show(int (*formatter)(ostream& os));
 
 // WWW page
 void DDDWWWPageCB(Widget, XtPointer, XtPointer);
@@ -57,6 +56,10 @@ void GDBManualCB(Widget, XtPointer, XtPointer);
 // License
 int ddd_license(ostream& os);
 void DDDLicenseCB(Widget, XtPointer, XtPointer);
+
+// News
+int ddd_news(ostream& os);
+void DDDNewsCB(Widget, XtPointer, XtPointer);
 
 #endif // _DDD_show_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

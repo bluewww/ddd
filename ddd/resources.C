@@ -634,6 +634,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+        XtNshowNews,
+	XtCShowNews,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, show_news),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
+    {
         XtNcheckConfiguration,
 	XtCCheckConfiguration,
 	XtRBoolean,

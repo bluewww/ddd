@@ -825,7 +825,7 @@ PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 		   $(srcdir)/Ddd.in Ddd.ad.h host.h \
 		   ddd.vsl.h vr.h version.h configinfo.C \
 		   ddd.man ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
-                   COPYING.gz.C xlibdir.C eps-code.h
+                   COPYING.gz.C NEWS.gz.C xlibdir.C eps-code.h
 
 # Extra files to be built for the distribution
 # In a distribution, these should be already built.
@@ -839,7 +839,7 @@ CLEAN_STUFF	 = $(ddd)-$(VERSION)-* $(PROGS) $(DEMOS) $(PICS) \
 		   *.ky *.kys *.log *.pg *.pgs *.toc *.tp *.tps *.vr *.vrs \
 		   *.tar *.tar.gz *~ lex.* y.tab.* site.* *.sum \
 		   *.diff rcssync *.private USERINFO *.huff.C \
-		   *.txt.gz COPYING.gz *.gz.C
+		   *.txt.gz COPYING.gz NEWS.gz *.gz.C
 
 # Architecture-dependent files to be deleted from distribution
 DISTCLEAN_STUFF	 = $(CLEAN_STUFF) \
@@ -1474,8 +1474,21 @@ COPYING.gz.C: COPYING.gz
 	$(MAKE) stringify
 	-./stringify < COPYING.gz > $@ || $(RM) $@
 
+# NEWS.huff.C does NOT depend on huffencode since we don't want it
+# to get re-created after each configuration.
+NEWS.huff.C: $(srcdir)/../NEWS
+	$(MAKE) huffencode
+	-$(SED) 's///' < $(srcdir)/../NEWS | ./huffencode > $@ || $(RM) $@
+
+NEWS.gz: $(srcdir)/../NEWS
+	$(COMPRESS) $(srcdir)/../NEWS > $@
+
+NEWS.gz.C: NEWS.gz
+	$(MAKE) stringify
+	-./stringify < NEWS.gz > $@ || $(RM) $@
+
 # `make depend' fails to find this dependency :-(
-show.o: COPYING.gz.C ddd.man.txt.gz.C
+show.o: COPYING.gz.C NEWS.gz.C ddd.man.txt.gz.C
 
 
 ## The xlibdir script

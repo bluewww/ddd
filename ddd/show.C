@@ -240,6 +240,7 @@ void show_invocation(DebuggerType type)
 	"  --configuration    Show the DDD configuration flags and exit.\n"
 	"  --manual           Show the DDD manual and exit.\n"
 	"  --license          Show the DDD license and exit.\n"
+	"  --news             Show the DDD news and exit.\n"
 	"  --vsl-help         Show VSL options and exit.\n"
 	"\n"
 	"Standard X options are also accepted, such as:\n"
@@ -348,7 +349,7 @@ static int uncompress(ostream& os, const char *text, int size)
     return 0;
 }
 
-static void show(int (*formatter)(ostream& os))
+void show(int (*formatter)(ostream& os))
 {
     FILE *pager = 0;
     if (isatty(fileno(stdout)))
@@ -416,16 +417,6 @@ int ddd_license(ostream& os)
     return uncompress(os, COPYING, sizeof(COPYING) - 1);
 }
 
-void show_license()
-{
-    show(ddd_license);
-}
-
-
-//-----------------------------------------------------------------------------
-// Show License
-//-----------------------------------------------------------------------------
-
 void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 {
     StatusMsg msg("Invoking " DDD_NAME " license browser");
@@ -433,12 +424,44 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
     ostrstream license;
     int ret = ddd_license(license);
     string s(license);
+    s.prepend("@license@");
+
     TextHelpCB(w, XtPointer((char *)s), call_data);
 
     if (ret != 0 || !s.contains("GNU"))
-	post_error("The license could not be uncompressed.", 
+	post_error("The " DDD_NAME " license could not be uncompressed.", 
 		   "no_license_error", w);
 }
+
+//-----------------------------------------------------------------------------
+// News
+//-----------------------------------------------------------------------------
+
+int ddd_news(ostream& os)
+{
+    static const char NEWS[] =
+#include "NEWS.gz.C"
+	;
+
+    return uncompress(os, NEWS, sizeof(NEWS) - 1);
+}
+
+void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
+{
+    StatusMsg msg("Invoking " DDD_NAME " news browser");
+
+    ostrstream news;
+    int ret = ddd_news(news);
+    string s(news);
+    s.prepend("@news@");
+
+    TextHelpCB(w, XtPointer((char *)s), call_data);
+
+    if (ret != 0 || !s.contains(DDD_NAME))
+	post_error("The " DDD_NAME " news could not be uncompressed.", 
+		   "no_news_error", w);
+}
+
 
 
 //-----------------------------------------------------------------------------
@@ -453,16 +476,6 @@ int ddd_man(ostream& os)
 
     return uncompress(os, MANUAL, sizeof(MANUAL) - 1);
 }
-
-void show_manual()
-{
-    show(ddd_man);
-}
-
-
-//-----------------------------------------------------------------------------
-// Show Manual Page
-//-----------------------------------------------------------------------------
 
 void DDDManualCB(Widget w, XtPointer, XtPointer)
 {

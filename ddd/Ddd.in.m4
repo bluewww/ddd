@@ -1217,9 +1217,10 @@ Ddd*tool_shell.iconName:		DDD: Command Tool
 ! Don't place resize handles on dialogs
 Ddd*XmDialogShell.mwmDecorations: 26
 
-! Exception: the manual page and license page.
+! Exception: the manual and license browsers.
 Ddd*manual_help_popup.mwmDecorations: 1
-Ddd*license_popup.mwmDecorations:   1
+Ddd*license_popup.mwmDecorations:     1
+Ddd*news_popup.mwmDecorations:        1
 
 
 !-----------------------------------------------------------------------------
@@ -1233,16 +1234,19 @@ Ddd*helpLabelString: \ \ \ Help\ \ \
 Ddd*helpShowTitle: false
 
 ! Help is never acknowledged, always closed.
-Ddd*help_popup*okLabelString: Close
-Ddd*text_help_popup*okLabelString: Close
-Ddd*manual_help_popup*okLabelString: Close
+Ddd*help_popup*okLabelString: 		Close
+Ddd*license_popup*okLabelString: 	Close
+Ddd*news_popup*okLabelString: 		Close
+Ddd*manual_help_popup*okLabelString: 	Close
 
 ! Titles
 Ddd*help_popup.title:           DDD Help
 Ddd*manual_help_popup.title:    DDD Manual
 Ddd*manual_help_popup.iconName: DDD Manual
-Ddd*text_help_popup.title:      DDD License
-Ddd*text_help_popup.iconName:   DDD License
+Ddd*license_popup.title:        DDD License
+Ddd*license_popup.iconName:     DDD License
+Ddd*news_popup.title:           DDD News
+Ddd*news_popup.iconName:     	DDD News
 
 ! Help on help.
 Ddd*help_popup.help*helpString: \
@@ -1373,31 +1377,52 @@ Click on LBL_FIND_NEXT to search the previous occurrence of LBL(()).
 
 
 !-----------------------------------------------------------------------------
-! DDD license
+! DDD license and news
 !-----------------------------------------------------------------------------
 
-Ddd*text_help*form.borderWidth:		0
+Ddd*license*form.borderWidth:		0
 
-Ddd*text_help*title.labelString:      	DDD License
-Ddd*text_help*title.alignment:	        XmALIGNMENT_BEGINNING
+Ddd*license*title.labelString:      	DDD License
+Ddd*license*title.alignment:	        XmALIGNMENT_BEGINNING
 
-Ddd*text_help*text.columns:	        80
-Ddd*text_help*text.rows:	      	25
-Ddd*text_help*text.wordWrap:	        true
-Ddd*text_help*text.scrollHorizontal:    false
-Ddd*text_help*scrollBarDisplayPolicy:   XmAS_NEEDED
+Ddd*license*text.columns:	        80
+Ddd*license*text.rows:	      		25
+Ddd*license*text.wordWrap:	        true
+Ddd*license*text.scrollHorizontal:    	false
+Ddd*license*scrollBarDisplayPolicy:   	XmAS_NEEDED
 
-Ddd*text_help*textSW.width:		600
-Ddd*text_help*textSW.height:		320
+Ddd*license*textSW.width:		600
+Ddd*license*textSW.height:		320
 
-Ddd*text_help*helpString: \
+Ddd*license*helpString: \
 @rm This is the EMPH([DDD] License), a GNU General Public License.\n\
 \n\
-It describes the terms and conditions for copying,\n\
-distributing and modifying DDD.\n\
+It describes the terms and conditions for copying, distributing\n\
+and modifying DDD.\n\
 \n\
-Please see section 11, TEXT(NO WARRANTY), for the\n\
-various kind of warranty you do not have.
+Please see section 11, TEXT(NO WARRANTY), for the various kinds of warranty\n\
+you do not have.
+
+
+Ddd*news*form.borderWidth:		0
+
+Ddd*news*title.labelString:      	DDD News
+Ddd*news*title.alignment:	        XmALIGNMENT_BEGINNING
+
+Ddd*news*text.columns:	        	80
+Ddd*news*text.rows:	      		25
+Ddd*news*text.wordWrap:	        	true
+Ddd*news*text.scrollHorizontal:    	false
+Ddd*news*scrollBarDisplayPolicy:   	XmAS_NEEDED
+
+Ddd*news*textSW.width:			600
+Ddd*news*textSW.height:			320
+
+Ddd*news*helpString: \
+@rm This is the EMPH([DDD] News).\n\
+\n\
+It shows what's new in this DDD release relative to previous releases.
+
 
 
 !-----------------------------------------------------------------------------
@@ -2176,9 +2201,10 @@ DESC(On Window..., [help on the application itself])\n\
 DESC(On Help..., [help on how to use the help facility])\n\
 \n\
 DESC([[DDD]] Manual..., [the DDD on-line manual])\n\
+DESC([[DDD]] News..., [what's new in DDD])\n\
 DESC(@GDB@ Manual..., [the @GDB@ on-line manual])\n\
 \n\
-DESC([[DDD]] License..., [the DDD license])\n\
+DESC([[DDD]] License..., [copying, distributing, and modifying DDD])\n\
 DESC([[DDD]] WWW Page..., [the DDD WWW page])\n\
 \n\
 DESC(About [[DDD]]..., [some general information about DDD])
@@ -2213,18 +2239,23 @@ Ddd*helpMenu.dddManual.mnemonic:		D
 Ddd*helpMenu.dddManual.documentationString:	\
 @rm The DDD reference manual
 
+Ddd*helpMenu.news.labelString:			DDD News...
+Ddd*helpMenu.news.mnemonic:			e
+Ddd*helpMenu.news.documentationString:		\
+@rm What's new in this DDD version
+
 Ddd*helpMenu.gdbManual.labelString:		@GDB@ Manual...
 Ddd*helpMenu.gdbManual.mnemonic:		M
 Ddd*helpMenu.gdbManual.documentationString:	\
 @rm The @GDB@ reference manual
 
-Ddd*helpMenu.license.labelString:	DDD License...
-Ddd*helpMenu.license.mnemonic:		L
+Ddd*helpMenu.license.labelString:		DDD License...
+Ddd*helpMenu.license.mnemonic:			L
 Ddd*helpMenu.license.documentationString:	\
 @rm Terms and conditions for copying, distributing, and modifying DDD
 
-Ddd*helpMenu.www.labelString:		DDD WWW Page...
-Ddd*helpMenu.www.mnemonic:		P
+Ddd*helpMenu.www.labelString:			DDD WWW Page...
+Ddd*helpMenu.www.mnemonic:			P
 Ddd*helpMenu.www.documentationString:	\
 @rm Invoke a WWW browser with up-to-date DDD information
 
@@ -4560,6 +4591,14 @@ Ddd*options_save_error*helpString:	\
 Ddd*no_license_error_popup.title: DDD: No License
 Ddd*no_license_error*helpString:	\
 @rm The DDD license could not be uncompressed.\n\
+\n\
+Please verify the contents of the SAMP(.uncompressCommand) resource\n\
+in the DDD application defaults file and make sure that the given\n\
+uncompressing program is within your executable path.
+
+Ddd*no_news_error_popup.title: DDD: No News is Good News
+Ddd*no_news_error*helpString:	\
+@rm The DDD news could not be uncompressed.\n\
 \n\
 Please verify the contents of the SAMP(.uncompressCommand) resource\n\
 in the DDD application defaults file and make sure that the given\n\

@@ -65,6 +65,7 @@
 .RB "[\|" \-\-configuration "\|]"
 .RB "[\|" \-\-check-configuration "\|]"
 .RB "[\|" \-\-manual "\|]"
+.RB "[\|" \-\-news "\|]"
 .RB "[\|" \-\-license "\|]"
 .RB "[\|"\c
 .I gdb-options\c
@@ -3505,11 +3506,11 @@ tty is appended this string.  A simple value is
 .br
 .TP
 .B "uncompressCommand (\fPclass\fB UncompressCommand)"
-The command to uncompress the built-in \s-2@DDD@\s+2 manual and the
-\s-2@DDD@\s+2 license.  Takes a compressed text from standard input
-and writes the uncompressed text to standard output.  The default
-value is `\fBgzip -d -c\fR'; typical values include `\fBzcat\fR' and
-`\fBgunzip -c\fR'.
+The command to uncompress the built-in \s-2@DDD@\s+2 manual, the
+\s-2@DDD@\s+2 license, and the \s-2@DDD@\s+2 news.  Takes a compressed
+text from standard input and writes the uncompressed text to standard
+output.  The default value is `\fBgzip -d -c\fR'; typical values
+include `\fBzcat\fR' and `\fBgunzip -c\fR'.
 .TP
 .B "termType (\fPclass\fB TermType)"
 The terminal type provided by the `\fBtermCommand\fR'
@@ -3585,6 +3586,10 @@ If `\fBtrue\fR', show this \s-2@DDD@\s+2 manual page on standard
 output and exit.  If the standard output is a terminal, the manual
 page is shown in a pager (\fB$PAGER\fR, `\fBless\fR' or `\fBmore\fR').
 See also the `\fB\-\-manual\fR' option, below.
+.TP
+.B "showNews (\fPclass\fB ShowNews)"
+If `\fBtrue\fR', show the \s-2@DDD@\s+2 news on standard output and
+exit.  See also the `\fB\-\-news\fR' option, below.
 .TP
 .B "showVersion (\fPclass\fB ShowVersion)"
 If `\fBtrue\fR', show the \s-2@DDD@\s+2 version on standard output and
@@ -3959,6 +3964,9 @@ Use \fIusername\fR as remote user name.  See `\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B \-\-manual
 Show this manual page and exit.
+.TP
+.B \-\-news
+Show the \s-2@DDD@\s+2 news and exit.
 .TP
 .B \-\-no-button-tips
 Disable button tips.

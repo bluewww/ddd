@@ -490,6 +490,9 @@ static XrmOptionDescRec options[] = {
 { "--license",              XtNshowLicense,          XrmoptionNoArg, S_true },
 { "-license",               XtNshowLicense,          XrmoptionNoArg, S_true },
 
+{ "--news",                 XtNshowNews,             XrmoptionNoArg, S_true },
+{ "-news",                  XtNshowNews,             XrmoptionNoArg, S_true },
+
 { "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, S_true },
 { "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, S_true },
 
@@ -1023,6 +1026,7 @@ static MMDesc help_menu[] =
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     MMSep,
     {"dddManual",   MMPush, { DDDManualCB }},
+    {"news",        MMPush, { DDDNewsCB }},
     {"gdbManual",   MMPush, { GDBManualCB }},
     MMSep,
     {"license",     MMPush, { DDDLicenseCB }},
@@ -1613,17 +1617,21 @@ int main(int argc, char *argv[])
     if (app_data.show_configuration)
 	show_configuration();
 
-    if (app_data.show_manual)
-	show_manual();
+    if (app_data.show_news)
+	show(ddd_news);
 
     if (app_data.show_license)
-	show_license();
+	show(ddd_license);
+
+    if (app_data.show_manual)
+	show(ddd_man);
 
     if (app_data.show_version 
 	|| app_data.show_invocation 
 	|| app_data.show_configuration
-	|| app_data.show_manual
-	|| app_data.show_license)
+	|| app_data.show_news
+	|| app_data.show_license
+	|| app_data.show_manual)
 	return EXIT_SUCCESS;
 
     // From this point on, we'll be running under X.

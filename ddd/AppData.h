@@ -150,6 +150,8 @@
 #define XtCShowManual            "ShowManual"
 #define XtNshowLicense           "showLicense"
 #define XtCShowLicense           "ShowLicense"
+#define XtNshowNews              "showNews"
+#define XtCShowNews              "ShowNews"
 #define XtNcheckConfiguration    "checkConfiguration"
 #define XtCCheckConfiguration    "CheckConfiguration"
 #define XtNprintCommand          "printCommand"
@@ -310,6 +312,7 @@ struct AppData {
     Boolean show_configuration;
     Boolean show_manual;
     Boolean show_license;
+    Boolean show_news;
     Boolean check_configuration;
     String  print_command;
     String  paper_size;
