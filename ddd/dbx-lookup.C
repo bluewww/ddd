@@ -151,16 +151,20 @@ string dbx_path(const string& source)
 	gdb_question(string("setenv EDITOR ") + 
 		     (getenv("EDITOR") ? getenv("EDITOR") : "vi"));
     }
-    else
+    else if (gdb->type() == DBX)
     {
-	// No `setenv' and no `edit' command.  Check whether the
-	// `file' command with no arguments provides the full path, as
-	// in AIX DBX 3.1. This shouldn't affect other DBXs as file
-	// will simply return the same thing already contained in
-	// source.
+	// We have DBX, but no `setenv' and no `edit' command.  Check
+	// whether the `file' command with no arguments provides the
+	// full path, as in AIX DBX 3.1.  This shouldn't affect other
+	// DBX variants as `file' will simply return the same thing
+	// already contained in source.
 	gdb_question("file " + source);
 	path = gdb_question("file");
     }
+
+    read_leading_blanks(path);
+    if (!path.contains('/', 0) || path.contains(' '))
+	path = source;		// Sanity check
 
     strip_final_blanks(path);
     return path;
