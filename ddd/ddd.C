@@ -198,6 +198,7 @@ char ddd_rcsid[] =
 #include "PlotAgent.h"
 #include "SourceView.h"
 #include "Swallower.h"
+#include "TextSetS.h"
 #include "TimeOut.h"
 #include "UndoBuffer.h"
 #include "VSEFlags.h"
@@ -5932,13 +5933,13 @@ static void gdbSelectAllCB(Widget w, XtPointer client_data,
 	}
 	if (!success && XmIsText(dest))
 	{
-	    XmTextSetSelection(dest, 0, XmTextGetLastPosition(dest), tm);
+	    TextSetSelection(dest, 0, XmTextGetLastPosition(dest), tm);
 	    success = true;
 	}
 	if (!success && XmIsTextField(dest))
 	{
-	    XmTextFieldSetSelection(dest, 0, 
-				    XmTextFieldGetLastPosition(dest), tm);
+	    TextFieldSetSelection(dest, 0, 
+				  XmTextFieldGetLastPosition(dest), tm);
 	    success = true;
 	}
     }

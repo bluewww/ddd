@@ -89,6 +89,7 @@ char DataDisp_rcsid[] =
 #include "StringBox.h"		// StringBox::fontTable
 #include "StringMap.h"
 #include "TagBox.h"
+#include "TextSetS.h"
 #include "TimeOut.h"
 #include "UndoBuffer.h"
 #include "VSEFlags.h"
@@ -2463,8 +2464,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     else
     {
 	// Own the selection
-	XmTextSetSelection(graph_selection_w, 
-			   0, XmTextGetLastPosition(graph_selection_w), tm);
+	TextSetSelection(graph_selection_w, 
+			 0, XmTextGetLastPosition(graph_selection_w), tm);
     }
 }
 

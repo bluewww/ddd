@@ -38,6 +38,7 @@ char simpleMenu_rcsid[] =
 #include "config.h"
 #include "MakeMenu.h"
 #include "HelpCB.h"
+#include "TextSetS.h"
 #include "WhatNextCB.h"
 #include "events.h"
 #include "exit.h"
@@ -140,13 +141,13 @@ static Boolean select(Widget w, Widget dest, Time tm)
 
     if (!success && XmIsText(dest))
     {
-	XmTextSetSelection(dest, 0, XmTextGetLastPosition(dest), tm);
+	TextSetSelection(dest, 0, XmTextGetLastPosition(dest), tm);
 	success = True;
     }
     else if (!success && XmIsTextField(dest))
     {
-	XmTextFieldSetSelection(dest, 0, 
-				XmTextFieldGetLastPosition(dest), tm);
+	TextFieldSetSelection(dest, 0, 
+			      XmTextFieldGetLastPosition(dest), tm);
 	success = True;
     }
 

@@ -41,6 +41,7 @@ char HelpCB_rcsid[] =
 #include "MakeMenu.h"
 #include "SmartC.h"
 #include "TimeOut.h"
+#include "TextSetS.h"
 #include "ddd.h"		// process_pending_events()
 #include "findParent.h"
 #include "isid.h"
@@ -695,10 +696,10 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
 
 	lock_update_arg = true;
 
-	XmTextSetSelection(fi->text,
-			   next_occurrence,
-			   next_occurrence + key.length(),
-			   tm);
+	TextSetSelection(fi->text,
+			 next_occurrence,
+			 next_occurrence + key.length(),
+			 tm);
 	if (forward)
 	{
 	    XmTextSetInsertionPosition(fi->text, 

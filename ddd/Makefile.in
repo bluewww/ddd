@@ -748,6 +748,7 @@ XSTUFF_OBJECTS = \
 	MakeMenu.$(OBJEXT)   \
 	SpinBox.$(OBJEXT)    \
 	Swallower.$(OBJEXT)  \
+	TextSetS.$(OBJEXT)   \
 	XErrorB.$(OBJEXT)
 
 # Box library - rectangular composible graphical items

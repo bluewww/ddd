@@ -88,6 +88,7 @@ char SourceView_rcsid[] =
 #include "MakeMenu.h"
 #include "PosBuffer.h"
 #include "RefreshDI.h"
+#include "TextSetS.h"
 #include "TimeOut.h"
 #include "UndoBuffer.h"
 #include "assert.h"
@@ -4722,7 +4723,7 @@ void SourceView::find(const string& s,
     else
     {
 	// Highlight occurrence
-	XmTextSetSelection(source_text_w, pos, pos + matchlen, time);
+	TextSetSelection(source_text_w, pos, pos + matchlen, time);
 
 	// Set position
 	SetInsertionPosition(source_text_w, cursor, false);
@@ -4907,9 +4908,8 @@ void SourceView::setSelection(XtPointer client_data, XtIntervalId *)
 
     assert(XmIsText(w));
 
-    XmTextSetSelection(w, selection_startpos, selection_endpos, 
-		       selection_time);
-
+    TextSetSelection(w, selection_startpos, selection_endpos, 
+		     selection_time);
     selection_time = 0;
     set_source_argCB(w, XtPointer(false), 0);
 }
@@ -5050,7 +5050,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     {
 	// Do not scroll here.  Do not use SetInsertionPosition().
 	XmTextSetInsertionPosition(text_w, pos);
-	XmTextSetSelection(text_w, left, right, time(e));
+	TextSetSelection(text_w, left, right, time(e));
     }
     else
     {

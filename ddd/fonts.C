@@ -41,6 +41,7 @@ char fonts_rcsid[] =
 #include "LessTifH.h"
 #include "LiterateA.h"
 #include "StringSA.h"
+#include "TextSetS.h"
 #include "assert.h"
 #include "converters.h"
 #include "cook.h"
@@ -717,8 +718,8 @@ static void GotSelectionCB(Widget w, XtPointer client_data,
 
     // Get the selection again.
     // This will fail if we have multiple font selectors (FIXME).
-    XmTextSetSelection(w, 0, s.length(), 
-		       XtLastTimestampProcessed(XtDisplay(w)));
+    TextSetSelection(w, 0, s.length(), 
+		     XtLastTimestampProcessed(XtDisplay(w)));
 }
 
 // Handle `Select' button in xfontsel
@@ -761,7 +762,7 @@ void BrowseFontCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     string text = "dummy";
     XmTextSetString(info->text, (String)text);
-    XmTextSetSelection(info->text, 0, text.length(), tm);
+    TextSetSelection(info->text, 0, text.length(), tm);
     XtAddCallback(info->text, XmNlosePrimaryCallback, 
 		  SelectionLostCB, XtPointer(info));
 
