@@ -1687,8 +1687,8 @@ Ddd*menubar*fileMenu.open_source.documentationString:   \
 
 Ddd*menubar*fileMenu.open_session.labelString:	        Open Session...
 Ddd*menubar*fileMenu.open_session.mnemonic:	        e
-Ddd*menubar*fileMenu.open_session.accelerator:          ~Shift Meta<Key>O
-Ddd*menubar*fileMenu.open_session.acceleratorText:      Alt+Shift+O
+! Ddd*menubar*fileMenu.open_session.accelerator:          ~Shift Meta<Key>O
+! Ddd*menubar*fileMenu.open_session.acceleratorText:      Alt+Shift+O
 Ddd*menubar*fileMenu.open_session.documentationString:  \
 @rm Restore a previously saved DDD session
 
@@ -1849,7 +1849,7 @@ Ddd*editMenu.saveOptions.documentationString:\
 @rm Save preferences and settings for the next DDD invocation
 
 
-! View menu (for multi-window DDD)
+! View menu (for single-window DDD)
 Ddd*menubar.views.labelString:		View
 Ddd*menubar.views.mnemonic:		V
 Ddd*menubar.view*documentationString:	\
@@ -1867,26 +1867,36 @@ DESC(@GDB@ Console, [toggle display of debugger console])
 
 Ddd*viewsMenu.tool.labelString:			Command Tool...
 Ddd*viewsMenu.tool.mnemonic:			T
+! Ddd*viewsMenu.tool.acceleratorText:		Alt+Shift+T
+! Ddd*viewsMenu.tool.accelerator:		Shift Meta<Key>T
 Ddd*viewsMenu.tool.documentationString: \
 @rm Open the command tool and move it to its original position
 
 Ddd*viewsMenu.exec.labelString:			Execution Window...
-Ddd*viewsMenu.exec.mnemonic:			E
+Ddd*viewsMenu.exec.mnemonic:			x
+! Ddd*viewsMenu.exec.acceleratorText:		Alt+Shift+X
+! Ddd*viewsMenu.exec.accelerator:		Shift Meta<Key>X
 Ddd*viewsMenu.exec.documentationString: \
 @rm Open the program execution window
 
 Ddd*viewsMenu.data.labelString:			Data Window
 Ddd*viewsMenu.data.mnemonic:			D
+! Ddd*viewsMenu.data.acceleratorText:		Alt+Shift+D
+! Ddd*viewsMenu.data.accelerator:		Shift Meta<Key>D
 Ddd*viewsMenu.data.documentationString: \
 @rm Toggle showing the data window
 
 Ddd*viewsMenu.source.labelString:		Source Window
 Ddd*viewsMenu.source.mnemonic:			S
+! Ddd*viewsMenu.source.acceleratorText:		Alt+Shift+S
+! Ddd*viewsMenu.source.accelerator:		Shift Meta<Key>S
 Ddd*viewsMenu.source.documentationString: \
 @rm Toggle showing the source window
 
 Ddd*viewsMenu.console.labelString:		@GDB@ Console
 Ddd*viewsMenu.console.mnemonic:			C
+! Ddd*viewsMenu.console.acceleratorText:	Alt+Shift+C
+! Ddd*viewsMenu.console.accelerator:		Shift Meta<Key>C
 Ddd*viewsMenu.console.documentationString: \
 @rm Toggle showing the @GDB@ console
 
@@ -1909,26 +1919,36 @@ DESC(@GDB@ Console..., [open the debugger console window])
 
 Ddd*viewMenu.tool.labelString:			Command Tool...
 Ddd*viewMenu.tool.mnemonic:			T
+! Ddd*viewMenu.tool.acceleratorText:		Alt+Shift+T
+! Ddd*viewMenu.tool.accelerator:		Shift Meta<Key>T
 Ddd*viewMenu.tool.documentationString: \
 @rm Open the command tool and move it to its original position
 
 Ddd*viewMenu.exec.labelString:			Execution Window...
-Ddd*viewMenu.exec.mnemonic:			E
+Ddd*viewMenu.exec.mnemonic:			x
+! Ddd*viewMenu.exec.acceleratorText:		Alt+Shift+X
+! Ddd*viewMenu.exec.accelerator:		Shift Meta<Key>X
 Ddd*viewMenu.exec.documentationString: \
 @rm Open the program execution window
 
 Ddd*viewMenu.data.labelString:			Data Window...
 Ddd*viewMenu.data.mnemonic:			D
+! Ddd*viewMenu.data.acceleratorText:		Alt+Shift+D
+! Ddd*viewMenu.data.accelerator:		Shift Meta<Key>D
 Ddd*viewMenu.data.documentationString: \
 @rm Open the data window
 
 Ddd*viewMenu.source.labelString:		Source Window...
 Ddd*viewMenu.source.mnemonic:			S
+! Ddd*viewMenu.source.acceleratorText:		Alt+Shift+S
+! Ddd*viewMenu.source.accelerator:		Shift Meta<Key>S
 Ddd*viewMenu.source.documentationString: \
 @rm Open the source window
 
 Ddd*viewMenu.console.labelString:		@GDB@ Console...
 Ddd*viewMenu.console.mnemonic:			C
+! Ddd*viewMenu.console.acceleratorText:		Alt+Shift+C
+! Ddd*viewMenu.console.accelerator:		Shift Meta<Key>C
 Ddd*viewMenu.console.documentationString: \
 @rm Open the @GDB@ console
 
@@ -1980,7 +2000,7 @@ Ddd*menubar*programMenu.run_again.documentationString: \
 
 Ddd*menubar*programMenu.separateExecWindow.labelString:	Run in Execution Window
 Ddd*menubar*programMenu.separateExecWindow.mnemonic:	x
-Ddd*menubar*programMenu*separateExecWindow.accelerator:	Meta<Key>X
+Ddd*menubar*programMenu*separateExecWindow.accelerator:	~Shift Meta<Key>X
 Ddd*menubar*programMenu*separateExecWindow.acceleratorText: Alt+X
 Ddd*menubar*programMenu.separateExecWindow.documentationString:\
 @rm Toggle execution of debugged program in separate window
@@ -4561,7 +4581,7 @@ Click on LBL(Update) to update its contents.
 ! Other Dialogs
 !-----------------------------------------------------------------------------
 
-Ddd*busy_display_dialog_popup.title: DDD: Debugger Busy
+Ddd*busy_dialog_popup.title: DDD: Debugger Busy
 Ddd*busy_dialog.messageString:		\
 @rm @GDB@ is busy!
 Ddd*busy_dialog*helpString:	\
