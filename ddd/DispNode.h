@@ -207,7 +207,8 @@ public:
     void make_inactive();
 
     // Cluster display into TARGET
-    void cluster(int target = 0);
+    void cluster(int target);
+    inline void uncluster() { cluster(0); }
 
     // Toggle titles.  Return true iff changed.
     bool set_title(bool set);
