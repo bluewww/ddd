@@ -67,6 +67,7 @@ char DataDisp_rcsid[] =
 #include "PosBuffer.h"
 #include "IntIntAA.h"
 #include "shorten.h"
+#include "charsets.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -2842,6 +2843,28 @@ static int max_width(const StringArray& s)
     return w;
 }
 
+// Sort A
+static void sort(IntArray& a)
+{
+    // Shell sort -- simple and fast
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= a.size());
+    do {
+	h /= 3;
+	for (int i = h; i < a.size(); i++)
+	{
+	    int v = a[i];
+	    int j;
+	    for (j = i; j >= h && a[j - h] > v; j -= h)
+		a[j] = a[j - h];
+	    if (i != j)
+		a[j] = v;
+	}
+    } while (h != 1);
+}
+
 // Create labels for the list
 void DataDisp::refresh_display_list(bool silent)
 {
@@ -2877,7 +2900,7 @@ void DataDisp::refresh_display_list(bool silent)
     {
 	DispNode* dn = disp_graph->get(k);
 
-	nums += itostring(k) + ":";
+	nums += dn->disp_nr() + ":";
 
 	if (dn->nodeptr()->hidden())
 	    states += "alias of " + itostring(dn->alias_of);
@@ -2935,14 +2958,11 @@ void DataDisp::refresh_display_list(bool silent)
 	if (dn->selected() && ++selected_displays == 1)
 	{
 	    // Set up status line for single display
-	    status_line = 
-		MString(nums[count] + " ", "rm") 
-		+ MString(exprs[count], "tt")
-		+ MString(" (" + states[count], "rm");
+	    status_line = rm(nums[count] + " ") 
+		+ tt(exprs[count]) + rm(" (" + states[count]);
 	    if (detect_aliases && addrs[count] != "")
-		status_line += MString(", address ", "rm")
-		            + MString(addrs[count], "tt");
-	    status_line += MString(")", "rm");
+		status_line += rm(", address ") + tt(addrs[count]);
+	    status_line += rm(")");
 	}
 
 	count++;
@@ -2956,9 +2976,40 @@ void DataDisp::refresh_display_list(bool silent)
     if (!silent)
     {
 	if (selected_displays == 1)
-	    set_status_mstring(MString("Display ", "rm") + status_line);
+	    set_status_mstring(rm("Display ") + status_line);
 	else if (selected_displays > 1)
-	    set_status(itostring(selected_displays) + " displays");
+	{
+	    status_line = rm("Displays ");
+	    IntArray displays;
+	    for (k = disp_graph->first_nr(ref); k != 0; 
+		 k = disp_graph->next_nr(ref))
+	    {
+		DispNode* dn = disp_graph->get(k);
+		if (dn->selected())
+		    displays += atoi(dn->disp_nr());
+	    }
+
+	    sort(displays);
+	    assert(displays.size() == selected_displays);
+
+	    for (k = 0; k < displays.size(); k++)
+	    {
+		if (k > 0)
+		{
+		    if (displays.size() == 2)
+			status_line += rm(" and ");
+		    else if (k == displays.size() - 1)
+			status_line += rm(", and ");
+		    else
+			status_line += rm(", ");
+		}
+		status_line += rm(itostring(displays[k]));
+	    }
+	    status_line += rm(" (" + itostring(displays.size()) 
+			      + " displays)");
+
+	    set_status_mstring(status_line);
+	}
 	else
 	    set_status("");
     }
@@ -3002,9 +3053,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     value.gsub(RXnl, " ");
     strip_final_blanks(value);
 
-    MString prompt("Enter new value for ", "rm");
-    prompt += MString(name, "tt");
-    prompt += MString(":", "rm");
+    MString prompt = rm("Enter new value for ") + tt(name) + rm(":");
 
     Arg args[10];
     int arg = 0;
@@ -3281,7 +3330,11 @@ bool DataDisp::check_aliases()
 	}
     }
 
+
     bool suppressed = !suppressed_msg.isEmpty();
+
+    if (suppressed)
+	set_status_mstring(suppressed_msg, true);
 
     if (changed)
 	refresh_graph_edit(suppressed);
@@ -3330,7 +3383,7 @@ MString DataDisp::pretty(int disp_nr)
     if (node == 0)
 	return "";
 
-    return MString(node->disp_nr() + ": ", "rm") + MString(node->name(), "tt");
+    return rm(node->disp_nr() + ": ") + tt(node->name());
 }
 
 // Merge displays in DISPLAYS.  Return true iff changed.
@@ -3387,43 +3440,43 @@ bool DataDisp::merge_displays(IntArray displays,
 
     if (suppressed_displays.size() > 0)
     {
+	sort(suppressed_displays);
+
 	// Some displays have been suppressed.  Generate appropriate message.
 	if (!suppressed_msg.isEmpty())
-	    suppressed_msg += MString("\n", "rm");
-	suppressed_msg += MString("Suppressing ", "rm");
+	    suppressed_msg += rm("\n");
+	suppressed_msg += rm("Suppressing ");
 
 	if (suppressed_displays.size() == 1)
 	{
-	    suppressed_msg += MString("display ", "rm")
-		+ pretty(suppressed_displays[0]);
+	    suppressed_msg += rm("display ") + pretty(suppressed_displays[0]);
 	}
 	else if (suppressed_displays.size() == 2)
 	{
-	    suppressed_msg += MString("displays ", "rm") 
-		+ pretty(suppressed_displays[0]) 
-		+ MString(" and ", "rm") + pretty(suppressed_displays[1]);
+	    suppressed_msg += rm("displays " 
+				 + itostring(suppressed_displays[0])
+				 + " and "
+				 + itostring(suppressed_displays[1]));
 	}
 	else
 	{
-	    suppressed_msg += MString("displays ", "rm");
+	    suppressed_msg += rm("displays ");
 	    for (int i = 1; i < suppressed_displays.size(); i++)
 	    {
 		if (i == suppressed_displays.size() - 1)
-		    suppressed_msg += MString(", and ", "rm");
+		    suppressed_msg += rm(", and ");
 		else if (i > 1)
-		    suppressed_msg += MString(", ", "rm");
-		suppressed_msg += pretty(suppressed_displays[i]);
+		    suppressed_msg += rm(", ");
+		suppressed_msg += rm(itostring(suppressed_displays[i]));
 	    }
 	}
 
-	suppressed_msg += MString(" because ", "rm");
+	suppressed_msg += rm(" because ");
 	if (suppressed_displays.size() == 1)
-	    suppressed_msg += MString("it is an alias", "rm");
+	    suppressed_msg += rm("it is an alias");
 	else
-	    suppressed_msg += MString("they are aliases", "rm");
-	suppressed_msg += MString(" of display ", "rm") + pretty(displays[0]);
-
-	set_status_mstring(suppressed_msg, false);
+	    suppressed_msg += rm("they are aliases");
+	suppressed_msg += rm(" of display ") + pretty(displays[0]);
     }
 }
 
