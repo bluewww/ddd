@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "18 December 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "20 December 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -1596,6 +1596,12 @@ settings of `\fBprint repeats\fR' and `\fBprint elements\fR'.  But to
 recognize array structures correctly, you should have `\fBprint
 repeats\fR' set to 0.  Also, do not change the setting of `\fBprint
 elements\fR' while there are array structures in the data display.
+.PP
+When debugging at the machine level with \s-2GDB\s+2 4.12 and earlier
+as inferior debugger, use a `\fBdisplay /x $pc\fR' command to ensure
+the program counter value is updated correctly at each stop.  You may
+also enter the command in \fB$HOME/.gdbinit\fR or (better yet) upgrade
+to the most recent \s-2GDB\s+2 version.
 
 .SS "Limitations using DBX"
 When used for debugging \s-2MODULA-2\s+2 or \s-2PASCAL\s+2 programs,
