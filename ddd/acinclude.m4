@@ -941,8 +941,9 @@ dnl
 dnl ICE_STREAMPOS
 dnl -------------
 dnl
-dnl If <iostream.h> defines a `streampos' type (as type of os.tellp(), etc.), 
-dnl define `HAVE_STREAMPOS'.
+dnl If <iostream.h> or <fstream.h> define a `streampos' type 
+dnl (as type of os.tellp(), etc.), define `HAVE_STREAMPOS'.
+dnl In DDD, see `streampos.h' for details.
 dnl
 AC_DEFUN(ICE_STREAMPOS,
 [
@@ -952,7 +953,8 @@ AC_CACHE_VAL(ice_cv_have_streampos,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <iostream.h>],
+AC_TRY_COMPILE([#include <iostream.h>
+#include <fstream.h>],
 [streampos p;],
 ice_cv_have_streampos=yes,
 ice_cv_have_streampos=no)
@@ -965,9 +967,11 @@ fi
 ])dnl
 dnl
 dnl
-dnl If <iostream.h> defines a `std::streampos' type 
+dnl If <iostream.h> or <fstream.h> define a `std::streampos' type 
 dnl (as type of os.tellp(), etc.), define `HAVE_STD_STREAMPOS'.
-dnl Note: In GCC 3.0, `streampos' does not work, but `std::streampos' does :-(
+dnl (Background: In GCC 3.0, `streampos' does not work, but 
+dnl `std::streampos' does...)
+dnl In DDD, see `streampos.h' for details.
 dnl
 AC_DEFUN(ICE_STD_STREAMPOS,
 [
@@ -977,7 +981,8 @@ AC_CACHE_VAL(ice_cv_have_std_streampos,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <iostream.h>],
+AC_TRY_COMPILE([#include <iostream.h>
+#include <fstream.h>],
 [std::streampos p;],
 ice_cv_have_std_streampos=yes,
 ice_cv_have_std_streampos=no)

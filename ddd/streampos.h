@@ -39,6 +39,7 @@
 
 #include "config.h"
 #include <iostream.h>
+#include <fstream.h>
 
 #if HAVE_STREAMPOS
 #define STREAMPOS streampos
