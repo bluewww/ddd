@@ -40,9 +40,39 @@ char resolvePath_rcsid[] =
 #include "cook.h"
 #include "status.h"
 #include "version.h"
+#include "ExitCB.h"
 #include "StringA.h"
 
 #include <stdlib.h>
+
+// Return directory name
+static string dirname(const string& file)
+{
+    if (file.contains('/'))
+	return file.before('/', -1);
+    else
+	return ".";
+}
+
+// Return full path of current program
+static string myFile()
+{
+    char *my_name = saved_argv()[0];
+    if (my_name == 0)
+	my_name = ddd_NAME;
+    return cmd_file(my_name);
+}
+
+// Return my individual prefix: If I'm installed as `/usr/local/bin/ddd',
+// return `/usr/local'.
+static string myPrefix()
+{
+    string my_dir = dirname(myFile());
+    if (my_dir.contains('/'))
+	return dirname(my_dir);
+    else
+	return my_dir + "/..";
+}
 
 // Return full path of FILE, searching in a number of predefined places.
 // If not found, return "".
@@ -65,21 +95,25 @@ string resolvePath(const string& file)
 	// Look in DDD_ALT_ROOT (typically /usr/local/share/ddd)..
 	prefixes += DDD_ALT_ROOT;
 
-	// Look in standard prefix.
-	prefixes += "/usr/local/share/" ddd_NAME "-" DDD_VERSION;
-	prefixes += "/usr/local/share/" ddd_NAME;
+	for (int i = 0; i < 3; i++)
+	{
+	    string prefix;
+	    switch (i)
+	    {
+	    case 0: prefix = myPrefix();   break;
+	    case 1: prefix = "/usr/local"; break;
+	    case 2: prefix = "/usr";       break;
+	    }
 
-	// Look in standard prefix.
-	prefixes += "/usr/share/" ddd_NAME "-" DDD_VERSION;
-	prefixes += "/usr/share/" ddd_NAME;
+	    prefixes += prefix + "/share/" ddd_NAME "-" DDD_VERSION;
+	    prefixes += prefix + "/share/" ddd_NAME;
 
-	// Look in standard prefix.
-	prefixes += "/usr/local/lib/" ddd_NAME "-" DDD_VERSION;
-	prefixes += "/usr/local/lib/" ddd_NAME;
+	    prefixes += prefix + "/lib/" ddd_NAME "-" DDD_VERSION;
+	    prefixes += prefix + "/lib/" ddd_NAME;
 
-	// Look in standard prefix.
-	prefixes += "/usr/lib/" ddd_NAME "-" DDD_VERSION;
-	prefixes += "/usr/lib/" ddd_NAME;
+	    prefixes += prefix + "/" ddd_NAME "-" DDD_VERSION;
+	    prefixes += prefix + "/" ddd_NAME;
+	}
     }
 
     StatusDelay delay("Searching " + quote(file));
@@ -87,7 +121,8 @@ string resolvePath(const string& file)
     for (int i = 0; i < prefixes.size(); i++)
     {
 	string path = prefixes[i] + "/" + file;
-	if (is_regular_file(path))
+	set_status("Trying " + quote(path));
+	if (is_regular_file(path) || is_directory(path))
 	{
 	    delay.outcome = quote(path);
 	    return path;
