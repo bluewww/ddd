@@ -848,7 +848,7 @@ static DBXTranslation dbx_translations[] =
     {"rtc_biu_at_exit", "Produce memory report at exit"},
     {"run_autostart", "Let `step' and `next' implicitly start the program"},
     {"run_io", "Redirect I/O to"},
-    {"suppress_startup_message", "Suppress startup message below release"},
+    {"suppress_startup_message", "Suppress startup message below release"}
 };
 
 static string get_dbx_doc(string dbxenv, string base)
