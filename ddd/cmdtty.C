@@ -93,6 +93,9 @@ void _tty_out(const string& text)
 
 void tty_full_name(const string& pos)
 {
+    if (command_tty == 0)
+	return;
+
     if (app_data.full_name_mode)
     {
 	_tty_out("\032\032" + pos + "\n");
@@ -100,7 +103,8 @@ void tty_full_name(const string& pos)
     else
     {
 	string line = source_view->get_line(pos);
-	_tty_out(line + "\n");
+	if (line != "")
+	    _tty_out(line + "\n");
     }
 }
 

@@ -81,6 +81,7 @@ char SourceView_rcsid[] =
 #include "MString.h"
 #include "events.h"
 #include "cook.h"
+#include "misc.h"
 
 // Motif stuff
 #include <Xm/Xm.h>
@@ -4121,10 +4122,9 @@ string SourceView::get_line(string position)
     int line = get_positive_nr(position);
 
     // Sanity check: make sure the line # isn't too big
-    if (line > line_count)
-    {
-        line = line_count;
-    }
+    line = min(line, line_count);
+    if (line == 0)
+	return "";
 
     if (!file_matches(file_name, current_file_name))
 	read_file(file_name, line);
