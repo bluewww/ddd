@@ -246,16 +246,21 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	else
 	{
 	    int count = dv->number_of_childs();
-	    ListBox* args = new ListBox;
-	    for (int i = 0; i < count; i++)
-		*args += create_value_box (dv->get_child(i));
-
-	    if (dv->vertical_aligned())
-		vbox = eval("vertical_array", args);
+	    if (count == 0)
+		vbox = eval("empty_array");
 	    else
-		vbox = eval("horizontal_array", args);
+	    {
+		ListBox* args = new ListBox;
+		for (int i = 0; i < count; i++)
+		    *args += create_value_box (dv->get_child(i));
 
-	    args->unlink();
+		if (dv->vertical_aligned())
+		    vbox = eval("vertical_array", args);
+		else
+		    vbox = eval("horizontal_array", args);
+
+		args->unlink();
+	    }
 	}
 	break;
 
@@ -266,6 +271,9 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	    String collapsed_value = (dv->type() == List ? 
 				      "collapsed_list_value" :
 				      "collapsed_struct_value");
+	    String empty_value     = (dv->type() == List ? 
+				      "empty_list_value" :
+				      "empty_struct_value");
 	    String member_name     = (dv->type() == List ? 
 				      "list_member_name" :
 				      "struct_member_name");
@@ -278,27 +286,31 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	    else
 	    {
 		int count = dv->number_of_childs();
-
-		// Determine maximum member name width
-		int max_member_name_width = 0;
-		int i;
-		for (i = 0; i < count; i++)
+		if (count == 0)
+		    vbox = eval(empty_value);
+		else
 		{
-		    string child_member_name = dv->get_child(i)->name();
-		    Box *box = eval(member_name, child_member_name);
-		    max_member_name_width = 
-			max(max_member_name_width, box->size(X));
-		    box->unlink();
+		    // Determine maximum member name width
+		    int max_member_name_width = 0;
+		    int i;
+		    for (i = 0; i < count; i++)
+		    {
+			string child_member_name = dv->get_child(i)->name();
+			Box *box = eval(member_name, child_member_name);
+			max_member_name_width = 
+			    max(max_member_name_width, box->size(X));
+			box->unlink();
+		    }
+
+		    // Create children
+		    ListBox* args = new ListBox;
+		    for (i = 0; i < count; i++)
+			*args += create_value_box(dv->get_child(i), 
+						  max_member_name_width);
+
+		    vbox = eval(value, args);
+		    args->unlink();
 		}
-
-		// Create children
-		ListBox* args = new ListBox;
-		for (i = 0; i < count; i++)
-		    *args += create_value_box(dv->get_child(i), 
-					      max_member_name_width);
-
-		vbox = eval(value, args);
-		args->unlink();
 	    }
 	}
 	break;

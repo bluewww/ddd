@@ -129,7 +129,7 @@ void DispValue::init(string& value)
 	    v.simple = new SimpleDispValue;
 	    v.simple->value = read_simple_value (value);
 #if LOG_CREATE_VALUES
-	    clog << mytype << ": " << v.simple->value << "\n";
+	    clog << mytype << ": " << quote(v.simple->value) << "\n";
 #endif
 	    break;
 	}
@@ -151,7 +151,7 @@ void DispValue::init(string& value)
 	    v.pointer->dereferenced = false;
 
 #if LOG_CREATE_VALUES
-	    clog << mytype << ": " << v.pointer->value << "\n";
+	    clog << mytype << ": " << quote(v.pointer->value) << "\n";
 #endif
 	    // Hide vtable pointers.
 	    if (v.pointer->value.contains("virtual table")

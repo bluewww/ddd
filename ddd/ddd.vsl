@@ -98,6 +98,10 @@ dereferenced_pointer_value (value) ->
 collapsed_array () -> 
   array_color(vcenter(rm("[...]") & hfill()));
 
+// Empty array
+empty_array () -> 
+  array_color(vcenter(rm("[]") & hfill()));
+
 // Vertical array
 vertical_array (...) -> 
   array_color(frame(indent(vlist(hwhite() | hrule() | hwhite(), ...))));
@@ -113,6 +117,10 @@ struct_value (...) ->
 // Collapsed struct
 collapsed_struct_value () -> 
   struct_color(vcenter(rm("{...}") & hfill()));
+
+// Empty struct
+empty_struct_value () ->
+  struct_color(vcenter(rm("{}") & hfill()));
 
 // Struct member name
 struct_member_name (name) -> 
@@ -130,6 +138,10 @@ list_value (...) ->
 // Collapsed list
 collapsed_list_value () -> 
   list_color(vcenter(rm("...") & hfill()));
+
+// Empty list
+empty_list_value () -> 
+  list_color(vcenter(rm("") & hfill()));
 
 // List member name
 list_member_name (name) -> 

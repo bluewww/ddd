@@ -543,24 +543,28 @@ string read_member_name (string& value)
 {
     read_leading_junk (value);
 
-    if (value.contains('=', 0)
-	|| value.contains(')', 0)
+    if (value.contains(')', 0)
 	|| value.contains('}', 0)
 	|| value.contains(']', 0)
 	|| value.contains(',', 0))
     {
-	// Anonymous union or likewise
-	if (value.contains('=', 0))
-	{
-	    value = value.after(0);
-	    read_leading_junk(value);
-	}
+	// No value
+	return "";
+    }
 
+    if (value.contains('=', 0))
+    {
+	// Missing member name: anonymous union or likewise
+	value = value.after(0);
+	read_leading_junk(value);
 	return " ";
     }
 
     if (!value.contains(" = "))
+    {
+	// No value
 	return "";
+    }
 
     string member_name = value.before (" = ");
     value = value.after (" = ");
