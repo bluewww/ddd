@@ -27,6 +27,8 @@ DDD 2.2 [in development]
         executables.
     - Improved command tool.  The command tool is now always
       auto-raised and comes with window manager decorations.
+    - New `What Next?' help.  Gives hints on what to do next,
+      depending on current state.  Useful for beginners.
 
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
