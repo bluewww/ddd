@@ -180,6 +180,7 @@ static void complete(Widget w, XEvent *e, string input, string cmd)
     info.widget = w;
     info.event  = e;
     info.input  = input;
+    info.prefix = "";
 
     // Compare with last completions
     static Widget last_completion_w     = 0;
