@@ -4,26 +4,26 @@ dnl
 dnl Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 dnl Copyright (C) 2001-2004 Free Software Foundation, USA.
 dnl Written by Andreas Zeller <zeller@gnu.org>.
-dnl 
+dnl
 dnl This file is part of DDD.
-dnl 
+dnl
 dnl DDD is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU General Public
 dnl License as published by the Free Software Foundation; either
 dnl version 2 of the License, or (at your option) any later version.
-dnl 
+dnl
 dnl DDD is distributed in the hope that it will be useful,
 dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
 dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 dnl See the GNU General Public License for more details.
-dnl 
+dnl
 dnl You should have received a copy of the GNU General Public
 dnl License along with DDD -- see the file COPYING.
 dnl If not, write to the Free Software Foundation, Inc.,
 dnl 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-dnl 
+dnl
 dnl DDD is the data display debugger.
-dnl For details, see the DDD World-Wide-Web page, 
+dnl For details, see the DDD World-Wide-Web page,
 dnl `http://www.gnu.org/software/ddd/',
 dnl or send a mail to the DDD developers <ddd@gnu.org>.
 dnl
@@ -57,10 +57,10 @@ dnl Some simple checks.
 dnl
 AC_CANONICAL_TARGET
 AC_ARG_PROGRAM
-# Sets up automake.
-#  1.x:  minimum required version
-#  foreign:  we don't follow the normal rules for GNU packages (no COPYING
-#            file in the top srcdir, etc, etc), so stop complaining.
+dnl Sets up automake.
+dnl  1.x:  minimum required version
+dnl  foreign:  we don't follow the normal rules for GNU packages (no COPYING
+dnl            file in the top srcdir, etc, etc), so stop complaining.
 AM_INIT_AUTOMAKE([1.7.9 foreign])
 AC_PROG_MAKE_SET
 dnl
@@ -70,7 +70,7 @@ dnl
 dnl Locate programs
 dnl
 dnl Fortran.  Required to build test program.
-dnl Zdenek Sekera <zs@sgi.com> says: Don't use AC_PROG_F77, 
+dnl Zdenek Sekera <zs@sgi.com> says: Don't use AC_PROG_F77,
 dnl because this aborts construction if f77 does not work.
 dnl Lutz Jaenicke <Lutz.Jaenicke@aet.TU-Cottbus.DE> adds that on HP-UX,
 dnl f77 will fail with the "-L" linker switch on HP-UX. To get the
@@ -122,7 +122,7 @@ AC_SUBST(GCORE_COMMAND)dnl
 dnl
 AC_CHECK_PROGS(COMPFACE, compface)
 if test "$COMPFACE" = "compface"; then
-  AC_CACHE_CHECK([whether compface can input xbm files], ddd_cv_compface_xbm,
+  AC_CACHE_CHECK([whether compface can input xbm files], [ddd_cv_compface_xbm],
 	[if $COMPFACE ${srcdir}/icons/ddd.xbm > /dev/null 2>&1; then
 	 ddd_cv_compface_xbm=yes; else ddd_cv_compface_xbm=no; fi])
   if test "$ddd_cv_compface_xbm" = "yes"; then
@@ -179,7 +179,7 @@ if test "$YACC" = "bison -y"; then
 dnl
 dnl Check Bison version.  DDD wants bison 1.28 or later.
 dnl Note: Bison is only needed if a .Y file was modified.
-dnl 
+dnl
 AC_MSG_CHECKING([${YACC} version])
 YACC_VERSION=`${YACC} --version | ${SED} '1q' | ${SED} 's/.*version *//' | ${SED} 's/.*) //'`
 if test `expr "$YACC_VERSION" '>=' 1.28` = 1; then
@@ -262,7 +262,7 @@ ICE_DELETE_CR
 dnl
 dnl
 dnl The C++ compiler is set up.  Use it for further checks.
-dnl 
+dnl
 AC_LANG(C++)
 dnl
 dnl
@@ -285,7 +285,7 @@ dnl
 if test "$ddd_have_connect_in_libc" != yes; then
 dnl Solaris 2.6 wants an explicit `-lsocket' before `-lnsl'.
 dnl Reported by Emmanuel Engel <Emmanuel.Engel@lri.fr>
-dnl 
+dnl
 dnl Andreas Buschmann <Andreas.Buschmann@ks.sel.alcatel.de> says that
 dnl libsocket may _not_ go into LIBS, because otherwise the X11
 dnl configuration on Solaris will not find -lsocket -lnsl anymore.
@@ -329,7 +329,7 @@ AC_CHECK_LIB(cxxinst, main, CXXLIBS="-lcxxinst $CXXLIBS")
 fi
 dnl
 dnl
-dnl If we already have -liberty, -ltermcap, etc., 
+dnl If we already have -liberty, -ltermcap, etc.,
 dnl there is no need to build them.
 ddd_have_termcap=false
 ddd_have_libiberty=false
@@ -364,7 +364,7 @@ AS_HELP_STRING([--with-ncurses-libraries=DIR],
     LDFLAGS="${_ldflags}"
     ;;
   esac
-])  
+])
 dnl
 dnl Look for the tgetent() function - either in libtermcap, libcurses,
 dnl or use the GNU termcap library as shipped with DDD.
@@ -653,7 +653,7 @@ then
 AC_CHECK_LIB(Xmu, XmuCvtStringToOrientation,
 	XAW_LIBS="-lXmu ${XAW_LIBS}",,
 	${X_PRE_LIBS} ${XAW_LIBS} ${XT_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
-AC_CHECK_LIB(Xaw, XawTextSetInsertionPoint, 
+AC_CHECK_LIB(Xaw, XawTextSetInsertionPoint,
 	XAW_LIBS="-lXaw ${XAW_LIBS}"
 	AC_DEFINE(HAVE_ATHENA,1,[Define if you have the X Athena widgets.]),,
 	${X_PRE_LIBS} ${XAW_LIBS} ${XT_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
@@ -661,7 +661,7 @@ if test "$XAW_LIBS" = ""; then
 dnl A warning suffices here -- DDD also works without Athena.
 AC_MSG_WARN([The Athena widgets library '-lXaw' could not be found.
                     If you have the athena library, please use the
-                    configure options '--with-athena-includes=DIR' and 
+                    configure options '--with-athena-includes=DIR' and
                     '--with-athena-libraries=DIR' to specify the Xaw location.
                     If you do not have the athena library, use the configure
                     option '--without-athena' to suppress this message.
@@ -700,12 +700,12 @@ AC_CHECK_LIB(Xp, XpSelectInput,
 	AC_DEFINE(HAVE_XP,1,[Define if you have the XP library (X11R6.3 print server).]),,
 	${X_PRE_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
 dnl
-AC_CHECK_LIB(Xm, XmCreateOptionMenu, 
+AC_CHECK_LIB(Xm, XmCreateOptionMenu,
 	XM_LIBS="-lXm"
 	AC_DEFINE(HAVE_MOTIF,1,[Define if you have Motif widgets.]),,
 	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
 dnl
-AC_CHECK_LIB(Xm, xmUseVersion, 
+AC_CHECK_LIB(Xm, xmUseVersion,
 	AC_DEFINE(HAVE_XMUSEVERSION,1,[Define if the Motif library defines `xmUseVersion'.]),,
 	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
 dnl
@@ -773,7 +773,7 @@ AC_PROG_MAKE_SET
 dnl
 dnl
 dnl Find types
-dnl 
+dnl
 dnl The getgroups() check fails with SGI CC.  Use the C compiler instead.
 AC_LANG_PUSH(C)
 AC_TYPE_MODE_T
@@ -789,7 +789,7 @@ ICE_TYPE_SIG_HANDLER_ARGS
 dnl
 dnl
 dnl Find libraries and functions
-dnl 
+dnl
 AC_CHECK_FUNC(getpgrp)
 AC_CHECK_FUNC(setpgrp)
 dnl
@@ -1100,7 +1100,7 @@ AC_CONFIG_FILES([Makefile ddd/Makefile ddd/OldMakefile ddd/vr.h ddd/bld.h
 AC_CONFIG_COMMANDS([ddd/stamp-h], [date > ddd/stamp-h])
 AC_OUTPUT
 dnl
-dnl 
+dnl
 dnl Give some warnings
 dnl
 if $risky_cc; then
