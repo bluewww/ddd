@@ -5248,7 +5248,7 @@ DataDisp::DataDisp(Widget parent)
 	XtAddCallback(arg_label, XmNactivateCallback,
 		      SelectionLostCB, XtPointer(0));
 	XtAddCallback(arg_label, XmNactivateCallback, 
-		      ClearTextFieldCB, graph_arg->widget());
+		      ClearTextFieldCB, graph_arg->text());
     }
 
     // Create (unmanaged) selection widget

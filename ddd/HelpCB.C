@@ -847,7 +847,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	ArgField *arg_field;
 	Widget toolbar = create_toolbar(area, "manual", items, 0, arg_label,
 					arg_field, XmPIXMAP);
-	fi->key = arg_field->widget();
+	fi->key = arg_field->text();
 	XtAddCallback(arg_label, XmNactivateCallback, 
 		      ClearTextFieldCB, fi->key);
 

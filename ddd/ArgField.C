@@ -45,7 +45,8 @@ char ArgField_rcsid[] =
 #include "AppData.h"
 #include "buttons.h"
 #include "string-fun.h"		// strip_space()
-#include "tabs.h"		// strip_space()
+#include "tabs.h"		// tabify()
+#include "ComboBox.h"
 
 
 // Constructor
@@ -61,8 +62,7 @@ ArgField::ArgField (Widget parent, const char* name)
 	XtSetArg(args[arg], XmNmarginHeight, 2); arg++;
     }
 
-    arg_text_field = verify(XmCreateTextField(parent, name, args, arg));
-    XtManageChild(arg_text_field);
+    arg_text_field = CreateComboBox(parent, (char *)name, args, arg);
 
     XtAddCallback(arg_text_field, XmNvalueChangedCallback,
 		  valueChangedCB, this);
@@ -160,6 +160,8 @@ void ArgField::callHandlers ()
 {
     handlers.call(Empty, this, (void*)is_empty);
 }
+
+Widget ArgField::top() const { return ComboBoxTop(text()); };
 
 
 // Clear the text field given in Widget(CLIENT_DATA)

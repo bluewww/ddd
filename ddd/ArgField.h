@@ -84,7 +84,8 @@ public:
 
     void set_string(string s);
 
-    Widget widget() { return arg_text_field; };
+    Widget text() const { return arg_text_field; };
+    Widget top()  const;
 
     void addHandler (unsigned    type,
 		     HandlerProc proc,

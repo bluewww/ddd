@@ -904,7 +904,7 @@ void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
 
     popdown_shell(data_disp_shell);
 
-    Widget arg_cmd_w = XtParent(source_arg->widget());
+    Widget arg_cmd_w = XtParent(source_arg->top());
     if (data_disp->graph_cmd_w == arg_cmd_w)
     {
 	// Don't close the common toolbar

@@ -2161,7 +2161,7 @@ int main(int argc, char *argv[])
 				   arg_cmd_area, 0, arg_label, source_arg,
 				   label_type);
     XtAddCallback(arg_label, XmNactivateCallback, 
-		  ClearTextFieldCB, source_arg->widget());
+		  ClearTextFieldCB, source_arg->text());
 
     if (DataDisp::graph_cmd_w == arg_cmd_w)
     {
@@ -2170,13 +2170,13 @@ int main(int argc, char *argv[])
 		      DataDisp::SelectionLostCB, XtPointer(0));
     }
 
-    XtAddCallback(source_arg->widget(), XmNactivateCallback, 
+    XtAddCallback(source_arg->text(), XmNactivateCallback, 
 		  ActivateCB, 
 		  XtPointer(arg_cmd_area[ArgItems::Lookup].widget));
     sync_args(source_arg, data_disp->graph_arg);
 
     if (data_disp->graph_arg != 0)
-	XtAddCallback(data_disp->graph_arg->widget(), XmNactivateCallback, 
+	XtAddCallback(data_disp->graph_arg->text(), XmNactivateCallback, 
 		      ActivateCB, 
 		      XtPointer(data_disp->graph_cmd_area[0].widget));
 
@@ -3528,7 +3528,7 @@ void update_options()
     set_cut_copy_paste_bindings(data_edit_menu,    style);
 
     // Check for source toolbar
-    Widget arg_cmd_w = XtParent(source_arg->widget());
+    Widget arg_cmd_w = XtParent(source_arg->top());
     if (data_disp->graph_cmd_w == arg_cmd_w)
     {
 	// Don't close the common toolbar
@@ -5011,7 +5011,7 @@ static void gdbCutSelectionCB(Widget w, XtPointer client_data,
 
     // Try source arg
     if (!success && (win == SourceWindow || win == CommonWindow))
-	success = XmTextFieldCut(source_arg->widget(), tm);
+	success = XmTextFieldCut(source_arg->text(), tm);
 
     // Try data arg
     if (!success && (win == DataWindow || win == CommonWindow))
@@ -5043,7 +5043,7 @@ static void gdbCopySelectionCB(Widget, XtPointer client_data,
 
     // Try source arg
     if (!success && (win == SourceWindow || win == CommonWindow))
-	success = XmTextFieldCopy(source_arg->widget(), tm);
+	success = XmTextFieldCopy(source_arg->text(), tm);
 
     // Try source
     if (!success && (win == SourceWindow || win == CommonWindow))
@@ -5075,7 +5075,7 @@ static void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
 	break;
 
     case SourceWindow:
-	XmTextFieldPaste(source_arg->widget());
+	XmTextFieldPaste(source_arg->text());
 	break;
 
     default:
@@ -5091,12 +5091,12 @@ static void gdbUnselectAllCB(Widget w, XtPointer client_data,
     Time tm = time(cbs->event);
 
     XmTextClearSelection(gdb_w, tm);
-    XmTextFieldClearSelection(source_arg->widget(), tm);
+    XmTextFieldClearSelection(source_arg->text(), tm);
     XmTextClearSelection(source_view->source(), tm);
     XmTextClearSelection(source_view->code(), tm);
 
     if (data_disp->graph_arg != 0)
-	XmTextFieldClearSelection(data_disp->graph_arg->widget(), tm);
+	XmTextFieldClearSelection(data_disp->graph_arg->text(), tm);
     if (data_disp->graph_selection_w != 0)
 	XmTextClearSelection(data_disp->graph_selection_w, tm);
 
@@ -5123,7 +5123,7 @@ static void gdbSelectAllCB(Widget w, XtPointer client_data,
     case SourceWindow:
     case CommonWindow:
     {
-	Widget w = source_arg->widget();
+	Widget w = source_arg->text();
 	XmTextFieldSetSelection(w, 0, XmTextFieldGetLastPosition(w), tm);
 	break;
     }
@@ -5155,7 +5155,7 @@ static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
 
     // Try source arg
     if (!success && (win == SourceWindow || win == CommonWindow))
-	success = XmTextFieldRemove(source_arg->widget());
+	success = XmTextFieldRemove(source_arg->text());
 
     // Try data display
     if (!success && (win == DataWindow || win == CommonWindow))
@@ -5309,7 +5309,7 @@ static void gdbUpdateEditCB(Widget, XtPointer client_data, XtPointer)
 
     // Try source arg
     if (!can_cut && (win == SourceWindow || win == CommonWindow))
-	can_cut = XmTextFieldGetSelectionPosition(source_arg->widget(), 
+	can_cut = XmTextFieldGetSelectionPosition(source_arg->text(), 
 						  &start, &end);
 
     // Try data display
