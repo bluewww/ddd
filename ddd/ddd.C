@@ -5040,6 +5040,17 @@ static void gdbCutSelectionCB(Widget w, XtPointer client_data,
     Boolean success = False;
     Widget dest = XmGetDestination(XtDisplay(w));
 
+    // Try data arg
+    if (!success && (win == DataWindow || win == CommonWindow))
+    {
+	if (data_disp->have_selection())
+	{
+	    success = XmTextCopy(DataDisp::graph_selection_w, tm);
+	    if (success)
+		DataDisp::deleteCB(w, client_data, call_data);
+	}
+    }
+
     // Try destination window
     if (!success && dest != 0 && XmIsText(dest))
 	success = XmTextCut(dest, tm);
@@ -5054,17 +5065,6 @@ static void gdbCutSelectionCB(Widget w, XtPointer client_data,
     if (!success && (win == SourceWindow || win == CommonWindow))
 	success = XmTextFieldCut(source_arg->text(), tm);
 
-    // Try data arg
-    if (!success && (win == DataWindow || win == CommonWindow))
-    {
-	if (data_disp->have_selection())
-	{
-	    success = XmTextCopy(DataDisp::graph_selection_w, tm);
-	    if (success)
-		DataDisp::deleteCB(w, client_data, call_data);
-	}
-    }
-
     if (success)
 	gdbUnselectAllCB(w, client_data, call_data);
 }
@@ -5078,6 +5078,13 @@ static void gdbCopySelectionCB(Widget w, XtPointer client_data,
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
     Widget dest = XmGetDestination(XtDisplay(w));
+
+    // Try data arg
+    if (!success && (win == DataWindow || win == CommonWindow))
+	if (data_disp->have_selection())
+	{
+	    success = XmTextCopy(DataDisp::graph_selection_w, tm);
+	}
 
     // Try destination window
     if (!success && dest != 0 && XmIsText(dest))
@@ -5100,10 +5107,6 @@ static void gdbCopySelectionCB(Widget w, XtPointer client_data,
     // Try code
     if (!success && (win == SourceWindow || win == CommonWindow))
 	success = XmTextCopy(source_view->code(), tm);
-
-    // Try data arg
-    if (!success && (win == DataWindow || win == CommonWindow))
-	success = XmTextCopy(DataDisp::graph_selection_w, tm);
 }
 
 static void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer)
@@ -5115,6 +5118,13 @@ static void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer)
     Widget dest = XmGetDestination(XtDisplay(w));
     if (dest != 0)
     {
+	if (dest == DataDisp::graph_selection_w)
+	{
+	    // Don't paste into graph selection; paste into GDB
+	    // console instead
+	    dest = gdb_w;
+	}
+
 	if (!success && XmIsText(dest))
 	    success = XmTextPaste(dest);
 	if (!success && XmIsTextField(dest))
@@ -5183,6 +5193,11 @@ static void gdbSelectAllCB(Widget w, XtPointer client_data,
     Widget dest = XmGetDestination(XtDisplay(w));
     if (dest != 0)
     {
+	if (!success && dest == DataDisp::graph_selection_w)
+	{
+	    DataDisp::selectAllCB(w, client_data, call_data);
+	    success = true;
+	}
 	if (!success && XmIsText(dest))
 	{
 	    XmTextSetSelection(dest, 0, XmTextGetLastPosition(dest), tm);
@@ -5229,6 +5244,16 @@ static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
     Widget dest = XmGetDestination(XtDisplay(w));
+
+    // Try data display
+    if (!success && dest == DataDisp::graph_selection_w)
+    {
+	if (data_disp->have_selection())
+	{
+	    DataDisp::deleteCB(w, client_data, call_data);
+	    success = true;
+	}
+    }
 
     // Try destination window
     if (!success && dest != 0 && XmIsText(dest))
