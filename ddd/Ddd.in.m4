@@ -3487,7 +3487,7 @@ Ddd*toolbar*show_detail.labelString: 	Show All ()
 Ddd*toolbar*hide_detail.labelString: 	Hide ()
 Ddd*toolbar*rotate.labelString:		Rotate ()
 Ddd*toolbar*rotateAll.labelString:	Rotate All ()
-Ddd*toolbar*new.labelString:		Display ()
+Ddd*toolbar*new.labelString:		Undisplay ()
 Ddd*toolbar*set.labelString:		Set ()
 Ddd*toolbar*delete.labelString:		Undisplay ()
 
@@ -3629,7 +3629,7 @@ Ddd*toolbar*delete.documentationString:	\
 !-----------------------------------------------------------------------------
 
 Ddd*toolbar*lookup.labelString:		Lookup ()
-Ddd*toolbar*breakAt.labelString:		Break at ()
+Ddd*toolbar*breakAt.labelString:	Break at ()
 Ddd*toolbar*tempBreakAt.labelString:	Set Temporary Breakpoint at ()
 Ddd*toolbar*contUntil.labelString:	Continue Until ()
 Ddd*toolbar*enable.labelString:		Enable Breakpoint at ()
@@ -3643,8 +3643,8 @@ Ddd*toolbar*awatch.labelString:		Set access watchpoint on ()
 Ddd*toolbar*print.labelString:		Print ()
 Ddd*toolbar*printRef.labelString:	Print *()
 Ddd*toolbar*whatis.labelString:		Whatis ()
-Ddd*toolbar*display.labelString:		Display ()
-Ddd*toolbar*dispRef.labelString:		Display *()
+Ddd*toolbar*display.labelString:	Display ()
+Ddd*toolbar*dispRef.labelString:	Display *()
 Ddd*toolbar*find.labelString:		LBL_FIND_FORWARD
 Ddd*toolbar*findBackward.labelString:	LBL_FIND_BACKWARD
 Ddd*toolbar*findForward.labelString:	LBL_FIND_FORWARD
