@@ -182,8 +182,11 @@ void Delay::DestroyCB(Widget w, XtPointer, XtPointer)
 	if (_shells[i] == w)
 	{
 	    _shells[i] = 0;
-	    delete delays[i];
-	    delays[i] = 0;
+	    if (delays[i])
+	    {
+		delete delays[i];
+		delays[i] = 0;
+	    }
 	}
 }
 
@@ -200,10 +203,14 @@ void Delay::register_shell(Widget w)
 
     XtAddCallback(w, XtNdestroyCallback, DestroyCB, 0);
 
+    _Delay *new_delay = 0;
+    if (delay_count)
+	new_delay = new _Delay(w);
+
     if (i >= _shells.size())
     {
 	_shells += w;
-	delays  += (_Delay *)0;
+	delays  += new_delay;
     }
     else
     {
@@ -211,7 +218,7 @@ void Delay::register_shell(Widget w)
 	assert(delays[i] == 0);
 
 	_shells[i] = w;
-	delays[i]  = (_Delay *)0;
+	delays[i]  = new_delay;
     }
 }
 
