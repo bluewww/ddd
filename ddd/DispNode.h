@@ -225,7 +225,8 @@ public:
 
 inline bool is_cluster(DispNode *dn)
 {
-    return dn->is_user_command() && dn->user_command() == CLUSTER_COMMAND;
+    return dn->is_user_command() && 
+	dn->user_command().contains(CLUSTER_COMMAND, 0);
 }
 
 #endif // _DDD_DispNode_h

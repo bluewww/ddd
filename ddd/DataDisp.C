@@ -3204,7 +3204,7 @@ string DataDisp::new_display_cmd(const string& display_expression,
 
 bool DataDisp::is_builtin_user_command(const string& cmd)
 {
-    if (cmd == CLUSTER_COMMAND)
+    if (cmd.contains(CLUSTER_COMMAND, 0))
 	return true;
 
     return false;
@@ -3212,7 +3212,7 @@ bool DataDisp::is_builtin_user_command(const string& cmd)
 
 string DataDisp::builtin_user_command(const string& cmd, DispNode *node)
 {
-    if (cmd == CLUSTER_COMMAND)
+    if (cmd.contains(CLUSTER_COMMAND, 0))
     {
 	MapRef ref;
 	IntArray clustered_displays;
@@ -3463,7 +3463,7 @@ DispNode *DataDisp::new_user_node(const string& name,
     s.current = answer.length();
 
     // Set cluster update hook
-    if (name == "`" CLUSTER_COMMAND "`")
+    if (name.contains("`" CLUSTER_COMMAND, 0))
 	DispValue::value_hook = update_hook;
 
     // User displays work regardless of scope
@@ -3765,6 +3765,8 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 
     NewDisplayInfo *info = (NewDisplayInfo *)data;
 
+    int cluster_nr = 0;
+
     // Create and select new nodes
     int depend_nr = disp_graph->get_by_name(info->depends_on);
     for (int i = 0; i < count; i++)
@@ -3784,26 +3786,31 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 	    // Looks like an error message
 	    if (info->verbose)
 		post_gdb_message(answer, info->prompt, last_origin);
+
+	    continue;
 	}
-	else
-	{
-	    // Create new display and remember disabling message
-	    DispNode *dn = 
-		new_data_node(var, info->scope, answer, info->plotted);
-	    if (dn == 0)
-		continue;
 
-	    // Insert into graph
-	    insert_data_node(dn, depend_nr, info->clustered, info->plotted);
+	// Create new display and remember disabling message
+	DispNode *dn = 
+	    new_data_node(var, info->scope, answer, info->plotted);
+	if (dn == 0)
+	    continue;
 
-	    // Set position
-	    BoxPoint box_point = info->point;
-	    if (box_point == BoxPoint())
-		box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
+	if (cluster_nr == 0)
+	    cluster_nr = new_cluster(info->display_expression);
 
-	    dn->moveTo(box_point);
-	    dn->selected() = true;
-	}
+	// Insert into graph
+	insert_data_node(dn, depend_nr, false, info->plotted);
+
+	// Set position
+	BoxPoint box_point = info->point;
+	if (box_point == BoxPoint())
+	    box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
+
+	dn->moveTo(box_point);
+	dn->selected() = true;
+
+	dn->cluster(cluster_nr);
     }
 
     refresh_addr();
@@ -3840,10 +3847,14 @@ void DataDisp::insert_data_node(DispNode *dn, int depend_nr,
     dn->cluster(current_cluster());
 }
 
-// Create a new cluster and return its number
-int DataDisp::new_cluster()
+// Create a new cluster named NAME and return its number
+int DataDisp::new_cluster(const string& name)
 {
-    gdb_command("graph display `" CLUSTER_COMMAND "`", last_origin, 0);
+    string cmd = CLUSTER_COMMAND;
+    if (name != "")
+	cmd = cmd + " " + name;
+
+    gdb_command("graph display `"  + cmd + "`", last_origin, 0);
     return -next_ddd_display_number;
 }
 

@@ -1353,12 +1353,17 @@ string DispValue::make_title(const string& name)
 	return name;
 
     string title = user_command(name);
+
+    if (title.contains(CLUSTER_COMMAND " ", 0))
+	return title.after(CLUSTER_COMMAND " ");
+
     if (title.contains("graph ", 0))
 	title = title.after("graph ");
     else if (title.contains("info ", 0))
 	title = title.after("info ");
     else if (title.contains(" "))
 	title = title.before(" ");
+
     if (title.length() > 0)
 	title = toupper(title[0]) + title.after(0);
 
