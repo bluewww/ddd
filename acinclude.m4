@@ -1541,7 +1541,7 @@ if test "$GXX" = yes; then
   # Setup options
   CXXOPT="-DNDEBUG"
   CXXDEBUG=
-  CXXWARNINGS="-W -Wall"
+  CXXWARNINGS="-Wall -W"
   CXXSTATIC_BINDING="-Bstatic"
   CXXDYNAMIC_BINDING="-Bdynamic"
   CXXSTUFF="${MINIMAL_TOC}"
