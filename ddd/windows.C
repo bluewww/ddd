@@ -355,7 +355,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 //-----------------------------------------------------------------------------
 
 // Return number of running input shells
-static int running_shells()
+int running_shells()
 {
     int shells = 0;
 
@@ -365,8 +365,11 @@ static int running_shells()
 	shells++;
     if (data_disp_shell_state != PoppedDown)
 	shells++;
+
+#if 0
     if (tty_running())
 	shells++;
+#endif
 
     return shells;
 }

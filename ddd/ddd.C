@@ -258,6 +258,7 @@ void gdbPasteClipboardCB  (Widget, XtPointer, XtPointer);
 void gdbClearSelectionCB  (Widget, XtPointer, XtPointer);
 void gdbDeleteSelectionCB (Widget, XtPointer, XtPointer);
 void gdbUpdateEditCB      (Widget, XtPointer, XtPointer);
+void gdbUpdateFileCB      (Widget, XtPointer, XtPointer);
 void gdbUpdateViewCB      (Widget, XtPointer, XtPointer);
 
 // Preferences
@@ -472,23 +473,35 @@ XtActionsRec actions [] = {
 // Menus
 //-----------------------------------------------------------------------------
 
-static MMDesc file_menu[] = 
-{
-    { "open_file",   MMPush, { gdbOpenFileCB }},
-    { "open_core",   MMPush, { gdbOpenCoreCB }},
-    { "open_source", MMPush, { gdbOpenSourceCB }},
-    MMSep,
-    { "print",       MMPush, { graphPrintCB }},
-    { "printAgain",  MMPush, { graphQuickPrintCB }},
-    MMSep,
-    { "make",        MMPush, { gdbMakeCB }},
-    { "makeAgain",   MMPush, { gdbMakeAgainCB }},
-    MMSep,
-    { "close",       MMPush, { DDDCloseCB }},
-    { "restart",     MMPush, { DDDRestartCB }},
-    { "exit",        MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }},
-    MMEnd
+struct FileItems {
+    enum FileItem { OpenFile, OpenCore, OpenSource, Dummy1,
+		    Print, PrintAgain, Dummy2,
+		    Make, MakeAgain, Dummy3,
+		    Close, Restart, Exit
+    };
 };
+
+#define FILE_MENU \
+{ \
+    { "open_file",   MMPush, { gdbOpenFileCB }}, \
+    { "open_core",   MMPush, { gdbOpenCoreCB }}, \
+    { "open_source", MMPush, { gdbOpenSourceCB }}, \
+    MMSep, \
+    { "print",       MMPush, { graphPrintCB }}, \
+    { "printAgain",  MMPush, { graphQuickPrintCB }}, \
+    MMSep, \
+    { "make",        MMPush, { gdbMakeCB }}, \
+    { "makeAgain",   MMPush, { gdbMakeAgainCB }}, \
+    MMSep, \
+    { "close",       MMPush, { DDDCloseCB }}, \
+    { "restart",     MMPush, { DDDRestartCB }}, \
+    { "exit",        MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }}, \
+    MMEnd \
+}
+
+static MMDesc command_file_menu[] = FILE_MENU;
+static MMDesc source_file_menu[]  = FILE_MENU;
+static MMDesc data_file_menu[]    = FILE_MENU;
 
 static MMDesc program_menu[] =
 {
@@ -511,35 +524,19 @@ static MMDesc program_menu[] =
 
 enum DDDWindow { ToolWindow, GDBWindow, SourceWindow, DataWindow, ExecWindow };
 
-static MMDesc command_view_menu[] =
-{
-    { "tool",       MMPush, { gdbOpenToolWindowCB }},
-    { "console",    MMPush, { gdbOpenCommandWindowCB }},
-    { "source",     MMPush, { gdbOpenSourceWindowCB }},
-    { "data",       MMPush, { gdbOpenDataWindowCB }},
-    { "exec",       MMPush, { gdbOpenExecWindowCB }},
-    MMEnd
-};
+#define VIEW_MENU \
+{ \
+    { "tool",       MMPush, { gdbOpenToolWindowCB }}, \
+    { "console",    MMPush, { gdbOpenCommandWindowCB }}, \
+    { "source",     MMPush, { gdbOpenSourceWindowCB }}, \
+    { "data",       MMPush, { gdbOpenDataWindowCB }}, \
+    { "exec",       MMPush, { gdbOpenExecWindowCB }}, \
+    MMEnd \
+}
 
-static MMDesc source_view_menu[] =
-{
-    { "tool",       MMPush, { gdbOpenToolWindowCB }},
-    { "console",    MMPush, { gdbOpenCommandWindowCB }},
-    { "source",     MMPush, { gdbOpenSourceWindowCB }},
-    { "data",       MMPush, { gdbOpenDataWindowCB }},
-    { "exec",       MMPush, { gdbOpenExecWindowCB }},
-    MMEnd
-};
-
-static MMDesc data_view_menu[] =
-{
-    { "tool",       MMPush, { gdbOpenToolWindowCB }},
-    { "console",    MMPush, { gdbOpenCommandWindowCB }},
-    { "source",     MMPush, { gdbOpenSourceWindowCB }},
-    { "data",       MMPush, { gdbOpenDataWindowCB }},
-    { "exec",       MMPush, { gdbOpenExecWindowCB }},
-    MMEnd
-};
+static MMDesc command_view_menu[] = VIEW_MENU;
+static MMDesc source_view_menu[]  = VIEW_MENU;
+static MMDesc data_view_menu[]    = VIEW_MENU;
 
 struct EditItems {
     enum EditItem { Cut, Copy, Paste, Dummy, Clear, Delete };
@@ -935,7 +932,7 @@ static MMDesc help_menu[] =
 // Menu Bar for DDD command window
 static MMDesc command_menubar[] = 
 {
-    { "file",     MMMenu,          MMNoCB, file_menu },
+    { "file",     MMMenu,          { gdbUpdateFileCB }, command_file_menu },
     { "edit",     MMMenu,          { gdbUpdateEditCB }, command_edit_menu },
     { "options",  MMMenu,          MMNoCB, options_menu },
     { "view",     MMMenu,          { gdbUpdateViewCB }, command_view_menu },
@@ -948,7 +945,7 @@ static MMDesc command_menubar[] =
 // Menu Bar for DDD source view
 static MMDesc source_menubar[] = 
 {
-    { "file",    MMMenu,           MMNoCB, file_menu },
+    { "file",    MMMenu,           { gdbUpdateFileCB }, source_file_menu },
     { "edit",    MMMenu,           { gdbUpdateEditCB }, source_edit_menu },
     { "options", MMMenu,           MMNoCB, options_menu },
     { "view",    MMMenu,           { gdbUpdateViewCB }, source_view_menu },
@@ -962,7 +959,7 @@ static MMDesc source_menubar[] =
 // Menu Bar for DDD data window
 static MMDesc data_menubar[] = 
 {
-    { "file",    MMMenu,          MMNoCB, file_menu },
+    { "file",    MMMenu,          { gdbUpdateFileCB }, data_file_menu },
     { "edit",    MMMenu,          { gdbUpdateEditCB }, data_edit_menu },
     { "options", MMMenu,          MMNoCB, options_menu },
     { "view",    MMMenu,          { gdbUpdateViewCB }, data_view_menu },
@@ -975,7 +972,7 @@ static MMDesc data_menubar[] =
 // Menu Bar for combined DDD data/command window
 static MMDesc combined_menubar[] = 
 {
-    { "file",       MMMenu,       MMNoCB, file_menu },
+    { "file",       MMMenu,       { gdbUpdateFileCB }, command_file_menu },
     { "edit",       MMMenu,       { gdbUpdateEditCB }, command_edit_menu },
     { "options",    MMMenu,       MMNoCB, options_menu },
     { "view",       MMMenu,       { gdbUpdateViewCB }, command_view_menu },
@@ -1076,6 +1073,17 @@ inline void set_sensitive(Widget w, bool state)
 {
     if (w != 0)
 	XtSetSensitive(w, state);
+}
+
+inline void manage_child(Widget w, bool state)
+{
+    if (w != 0)
+    {
+	if (state)
+	    XtManageChild(w);
+	else
+	    XtUnmanageChild(w);
+    }
 }
 
 
@@ -3593,6 +3601,32 @@ void gdbUpdateEditCB(Widget, XtPointer, XtPointer)
     set_sensitive(command_edit_menu[EditItems::Paste].widget, b);
     set_sensitive(source_edit_menu[EditItems::Paste].widget,  b);
     set_sensitive(data_edit_menu[EditItems::Paste].widget,    false);
+}
+
+void gdbUpdateFileCB(Widget, XtPointer, XtPointer)
+{
+    // Check whether we can print something
+    Graph *graph = graphEditGetGraph(data_disp->graph_edit);
+    Boolean can_print = (graph->firstNode() != 0);
+    set_sensitive(command_file_menu[FileItems::Print].widget,      can_print);
+    set_sensitive(source_file_menu[FileItems::Print].widget,       can_print);
+    set_sensitive(data_file_menu[FileItems::Print].widget,         can_print);
+    set_sensitive(command_file_menu[FileItems::PrintAgain].widget, can_print);
+    set_sensitive(source_file_menu[FileItems::PrintAgain].widget,  can_print);
+    set_sensitive(data_file_menu[FileItems::PrintAgain].widget,    can_print);
+
+    // Check whether we can close something
+    Boolean can_close = (running_shells() > 1);
+    set_sensitive(command_file_menu[FileItems::Close].widget, can_close);
+    set_sensitive(source_file_menu[FileItems::Close].widget,  can_close);
+    set_sensitive(data_file_menu[FileItems::Close].widget,    can_close);
+
+    // If we have only one window, remove the `Close' item
+    Boolean one_window = 
+	!app_data.separate_source_window && !app_data.separate_data_window;
+    manage_child(command_file_menu[FileItems::Close].widget, !one_window);
+    manage_child(source_file_menu[FileItems::Close].widget,  !one_window);
+    manage_child(data_file_menu[FileItems::Close].widget,    !one_window);
 }
 
 void gdbUpdateViewCB(Widget, XtPointer, XtPointer)
