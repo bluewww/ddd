@@ -366,7 +366,7 @@ static void lock_ddd(Widget parent);
 static void setup_version_info();
 static void setup_environment();
 static void setup_command_tool(bool iconic);
-static void setup_options(int argc, char *argv[],
+static void setup_options(int& argc, char *argv[],
 			  StringArray& saved_options, string& gdb_name,
 			  bool& no_windows);
 static void setup_tty();
@@ -1776,6 +1776,14 @@ int main(int argc, char *argv[])
     // Lock `~/.ddd/'.
     lock_ddd(toplevel);
 
+    // Put saved options back again
+    for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
+	argv[i] = argv[i - saved_options.size()];
+    for (i = saved_options.size() - 1; i >= 0; i--)
+	argv[i + 1] = saved_options[i];
+    argc += saved_options.size();
+    argv[argc] = 0;
+
     // Create GDB interface
     gdb = new_gdb(type, app_data, app_context, argc, argv);
     gdb->trace_dialog(app_data.trace_dialog);
@@ -2161,14 +2169,6 @@ int main(int argc, char *argv[])
     
     // Load history for current session
     load_history(session_history_file(app_data.session));
-
-    // Put saved options back again
-    for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
-	argv[i] = argv[i - saved_options.size()];
-    for (i = saved_options.size() - 1; i >= 0; i--)
-	argv[i + 1] = saved_options[i];
-    argc += saved_options.size();
-    argv[argc] = 0;
 
     // Setup environment.
     setup_environment();
@@ -5638,7 +5638,7 @@ static void setup_command_tool(bool iconic)
     (void) iconic;		// Use it
 }
 
-static void setup_options(int argc, char *argv[],
+static void setup_options(int& argc, char *argv[],
 			  StringArray& saved_options, string& gdb_name,
 			  bool& no_windows)
 {
