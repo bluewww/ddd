@@ -252,14 +252,16 @@ static void ddd_xt_warning(String message);
 static void process_pending_events();
 
 // Cut and Paste
-void gdbCutSelectionCB    (Widget, XtPointer, XtPointer);
-void gdbCopySelectionCB   (Widget, XtPointer, XtPointer);
-void gdbPasteClipboardCB  (Widget, XtPointer, XtPointer);
-void gdbClearSelectionCB  (Widget, XtPointer, XtPointer);
-void gdbDeleteSelectionCB (Widget, XtPointer, XtPointer);
-void gdbUpdateEditCB      (Widget, XtPointer, XtPointer);
-void gdbUpdateFileCB      (Widget, XtPointer, XtPointer);
-void gdbUpdateViewCB      (Widget, XtPointer, XtPointer);
+static void gdbCutSelectionCB    (Widget, XtPointer, XtPointer);
+static void gdbCopySelectionCB   (Widget, XtPointer, XtPointer);
+static void gdbPasteClipboardCB  (Widget, XtPointer, XtPointer);
+static void gdbClearSelectionCB  (Widget, XtPointer, XtPointer);
+static void gdbDeleteSelectionCB (Widget, XtPointer, XtPointer);
+
+// Update menus
+static void gdbUpdateEditCB      (Widget, XtPointer, XtPointer);
+static void gdbUpdateFileCB      (Widget, XtPointer, XtPointer);
+static void gdbUpdateViewCB      (Widget, XtPointer, XtPointer);
 
 // Preferences
 static void make_preferences (Widget parent);
@@ -291,7 +293,10 @@ static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
 // Drag and drop
 static void CheckDragCB(Widget, XtPointer client_data, XtPointer call_data);
 
-// Button stuff
+// Verify view menu
+static void verify_view_menu(MMDesc *view_menu);
+
+// Verify whether buttons are active
 static void verify_buttons(MMDesc *items);
 
 
@@ -1480,6 +1485,7 @@ int main(int argc, char *argv[])
     Widget menubar_w = MMcreateMenuBar (main_window, "menubar", menubar);
     MMaddCallbacks(menubar);
     verify_buttons(menubar);
+    verify_view_menu(command_view_menu);
 
     set_option_widgets(CommandOptions);
 
@@ -1525,6 +1531,7 @@ int main(int argc, char *argv[])
 	    MMcreateMenuBar (data_main_window_w, "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
 	verify_buttons(data_menubar);
+	verify_view_menu(data_view_menu);
 
 	set_option_widgets(DataOptions);
 
@@ -1587,6 +1594,7 @@ int main(int argc, char *argv[])
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
 	MMaddCallbacks(source_menubar);
 	verify_buttons(source_menubar);
+	verify_view_menu(source_view_menu);
 
 	set_option_widgets(SourceOptions);
 
@@ -3425,7 +3433,8 @@ void gdb_out(const string& text)
 // Cut/Copy/Paste
 //-----------------------------------------------------------------------------
 
-void gdbCutSelectionCB(Widget, XtPointer client_data, XtPointer call_data)
+static void gdbCutSelectionCB(Widget, XtPointer client_data, 
+			      XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     Time tm = time(cbs->event);
@@ -3449,7 +3458,8 @@ void gdbCutSelectionCB(Widget, XtPointer client_data, XtPointer call_data)
     }
 }
 
-void gdbCopySelectionCB(Widget, XtPointer client_data, XtPointer call_data)
+static void gdbCopySelectionCB(Widget, XtPointer client_data, 
+			       XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     Time tm = time(cbs->event);
@@ -3476,7 +3486,7 @@ void gdbCopySelectionCB(Widget, XtPointer client_data, XtPointer call_data)
     }
 }
 
-void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
+static void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
 {
     DDDWindow win = DDDWindow(client_data);
     switch (win)
@@ -3500,7 +3510,7 @@ void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
     }
 }
 
-void gdbClearSelectionCB(Widget, XtPointer client_data, XtPointer)
+static void gdbClearSelectionCB(Widget, XtPointer client_data, XtPointer)
 {
     DDDWindow win = DDDWindow(client_data);
     switch (win)
@@ -3525,7 +3535,8 @@ void gdbClearSelectionCB(Widget, XtPointer client_data, XtPointer)
     }
 }
 
-void gdbDeleteSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void gdbDeleteSelectionCB(Widget w, XtPointer client_data, 
+				 XtPointer call_data)
 {
     DDDWindow win = DDDWindow(client_data);
     switch (win)
@@ -3549,7 +3560,12 @@ void gdbDeleteSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-void gdbUpdateEditCB(Widget, XtPointer, XtPointer)
+
+//-----------------------------------------------------------------------------
+// Update menus
+//-----------------------------------------------------------------------------
+
+static void gdbUpdateEditCB(Widget, XtPointer, XtPointer)
 {
     // Check whether we can copy something to the clipboard
     XmTextPosition start, end;
@@ -3593,7 +3609,7 @@ void gdbUpdateEditCB(Widget, XtPointer, XtPointer)
     set_sensitive(data_edit_menu[EditItems::Paste].widget,    false);
 }
 
-void gdbUpdateFileCB(Widget, XtPointer client_data, XtPointer)
+static void gdbUpdateFileCB(Widget, XtPointer client_data, XtPointer)
 {
     MMDesc *file_menu = (MMDesc *)client_data;
 
@@ -3627,7 +3643,10 @@ void gdbUpdateViewCB(Widget, XtPointer client_data, XtPointer)
 	       have_visible_command_window());
 
     set_sensitive(view_menu[ExecWindow].widget, app_data.separate_exec_window);
+}
 
+static void verify_view_menu(MMDesc *view_menu)
+{
     manage_child(view_menu[DataWindow].widget,
 		 app_data.separate_data_window);
     manage_child(view_menu[ToggleDataWindow].widget, 
