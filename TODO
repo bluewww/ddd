@@ -370,9 +370,7 @@ Volunteers for these and other projects are welcome!
 249 `Rotate' should be enabled as soon as there is exactly one child
     that can be rotated.
 
-250*Combine Breakpoint `Ignore Count' and `Condition' in a `Breakpoint
-    Properties' panel.  Breakpoint commands to be executed may also be
-    added.
+250*Record breakpoint commands to be executed.
 
 252 Print via the X Printer extension (-lXp).
 
@@ -396,4 +394,7 @@ Volunteers for these and other projects are welcome!
     This will allow to have a visual overview of the program behavior 
     and will be a great help to pinpoint troublesome code.
 
-277 (Insert new project ideas here)
+277 Allow in-place editing.  There is already a simple `editSource' resource,
+    but we'd have to do a lot more to realize decent editing capabilities.
+
+278 (Insert new project ideas here)
