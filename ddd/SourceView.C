@@ -7812,9 +7812,10 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
 				    Widget origin)
 {
     assert (is_source_widget(glyph) || is_code_widget(glyph));
+
     Position x, y;
-    Boolean pos_displayed = (pos != XmTextPosition(-1) 
-			     && XmTextPosToXY(glyph, pos, &x, &y));
+    Boolean pos_displayed = 
+	(pos != XmTextPosition(-1) && XmTextPosToXY(glyph, pos, &x, &y));
 
     int k = int(is_code_widget(glyph));
 
@@ -7836,11 +7837,25 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
 
 	copy_colors(drag_stop, origin);
 
-	if (origin)
+	if (origin != 0)
 	{
- 	    XtVaGetValues(origin, XmNx, &x, NULL);
+	    static Position last_x = x + stop_x_offset;
+
+	    Position origin_x = -1;
+ 	    XtVaGetValues(origin, XmNx, &origin_x, NULL);
 	    if (lesstif_version < 1000)
-		x -= 2;
+		origin_x -= 2;
+
+	    if (origin_x >= 0)
+	    {
+		// Origin is mapped
+		x = last_x = origin_x;
+	    }
+	    else
+	    {
+		// Origin is unmapped - use last recorded value
+		x = last_x;
+	    }
 	}
 	else
 	{
@@ -8394,6 +8409,12 @@ void SourceView::followGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
 	text_w = code_text_w;
     else
 	return;			// Bad widget
+
+    // Protect against more than one invocation per 50ms.
+    static Time last_time = 0;
+    if (time(e) - last_time < 50)
+	return;
+    last_time = time(e);
 
     XmTextPosition pos = glyph_position(glyph, e);
 

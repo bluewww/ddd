@@ -67,14 +67,16 @@ Source exploration
 - Double-clicking on a function call (that is, an identifier followed
   by a `(' character) will lead you to the function definition.
 
+- Dragging breakpoints works nicely with scrolling.
+
 
 Platforms
 ---------
 
-- You can build DDD out-of-the box on Windows 95 and NT (via cygwin32,
-  http://www.cygnus.com/misc/gnu-win32/).  This is useful for people
-  using GCC and GDB on Windows, or for people using DDD as a front-end
-  to JDB.  Note that you need a Windows X server to run DDD.
+- You can build DDD out-of-the box on Windows 95 and NT (using
+  cygwin32, http://www.cygnus.com/misc/gnu-win32/).  This is useful
+  for people using GCC and GDB on Windows, or for people using DDD as
+  a front-end to JDB.  A Windows X server is required.
 
 
 Customization
