@@ -149,15 +149,18 @@ Volunteers for fixing these and other bugs are welcome!
       as the _current_ values (and non the recorded ones).
 
 322*Finish Plots:
+    - Plot clusters
+    - Draw atomic values as (rotatable) lines
     - Give a diagnostic when plot did not succeed
     - Add menu for printing
     - Add menu for line styles
     - Add diagnostics when Gnuplot could not be invoked
+    - Add a delay dialog (similar to launching xterm)
     - Add Gnuplot console
     - Make swallowing (decorating) optional
     - Destroying plotter decorations is risky; better re-use them
 
-329 Something is wrong with selecting clusters as a whole: the title
+329*Something is wrong with selecting clusters as a whole: the title
     is not copied to `()'.
 
 330 (Insert new bugs here)
