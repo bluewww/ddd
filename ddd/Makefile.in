@@ -2164,15 +2164,20 @@ $(docdir)/ddd.ps: ddd.dvi
 
 ## The DDD manual in DVI format.
 
+# Be sure we have a local copy of the included sources.
+# This avoids messing around with include paths, which may
+# or may not be supported by the current tools.
+
+# Texinfo sources
 texidir = $(srcdir)/../texinfo
 
 INCLUDES = \
-	config.texi \
-	$(texidir)/gpl.texinfo \
-	$(texidir)/lgpl.texinfo \
-	$(texidir)/texinfo.tex \
-	$(texidir)/epsf.tex \
-	$(texidir)/xepsf.tex
+	config.texi  \
+	gpl.texinfo  \
+	lgpl.texinfo \
+	texinfo.tex  \
+	epsf.tex     \
+	xepsf.tex
 
 ddd.dvi: $(srcdir)/ddd.texi $(INCLUDES) $(PS_IMAGES)
 	-test -d PICS || $(LN_S) $(picdir) .
@@ -2190,8 +2195,8 @@ texinfo.tex: $(texidir)/texinfo.tex
 epsf.tex: $(texidir)/epsf.tex
 	$(RM) $@; $(LN_S) $(texidir)/epsf.tex $@
 
-$(texidir)/xepsf.tex: $(texidir)/epsf.tex
-	$(RM) $@; $(LN_S) $(texidir)/epsf.tex $@
+xepsf.tex: $(texidir)/epsf.tex
+	$(RM) $@; $(LN_S) $(texidir)/xepsf.tex $@
 
 
 ## The DDD manual in PDF format, including all pictures.
