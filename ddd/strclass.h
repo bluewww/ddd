@@ -1739,32 +1739,32 @@ inline const subString string::operator() (int pos, int len) const
     return ((string *)this)->operator()(pos, len);
 }
 
-inline const subString string::at(const string& x, int startpos = 0) const
+inline const subString string::at(const string& x, int startpos) const
 {
     return ((string *)this)->at(x, startpos);
 }
 
-inline const subString string::at(const subString&  x, int startpos = 0) const
+inline const subString string::at(const subString&  x, int startpos) const
 {
     return ((string *)this)->at(x, startpos);
 }
 
-inline const subString string::at(const char* t, int startpos = 0) const
+inline const subString string::at(const char* t, int startpos) const
 {
     return ((string *)this)->at(t, startpos);
 }
 
-inline const subString string::at(char* t, int startpos = 0) const
+inline const subString string::at(char* t, int startpos) const
 {
     return ((string *)this)->at(t, startpos);
 }
 
-inline const subString string::at(char c, int startpos = 0) const
+inline const subString string::at(char c, int startpos) const
 {
     return ((string *)this)->at(c, startpos);
 }
 
-inline const subString string::at(const regex& r, int startpos = 0) const
+inline const subString string::at(const regex& r, int startpos) const
 {
     return ((string *)this)->at(r, startpos);
 }
@@ -1775,33 +1775,33 @@ inline const subString string::before(int pos) const
     return ((string *)this)->before(pos);
 }
 
-inline const subString string::before(const string& x, int startpos = 0) const
+inline const subString string::before(const string& x, int startpos) const
 {
     return ((string *)this)->before(x, startpos);
 }
 
-inline const subString string::before(const subString& x, int startpos = 0) 
+inline const subString string::before(const subString& x, int startpos) 
     const
 {
     return ((string *)this)->before(x, startpos);
 }
 
-inline const subString string::before(const char* t, int startpos = 0) const
+inline const subString string::before(const char* t, int startpos) const
 {
     return ((string *)this)->before(t, startpos);
 }
 
-inline const subString string::before(char* t, int startpos = 0) const
+inline const subString string::before(char* t, int startpos) const
 {
     return ((string *)this)->before(t, startpos);
 }
 
-inline const subString string::before(char c, int startpos = 0) const
+inline const subString string::before(char c, int startpos) const
 {
     return ((string *)this)->before(c, startpos);
 }
 
-inline const subString string::before(const regex& r, int startpos = 0) const
+inline const subString string::before(const regex& r, int startpos) const
 {
     return ((string *)this)->before(r, startpos);
 }
@@ -1812,33 +1812,33 @@ inline const subString string::through(int pos) const
     return ((string *)this)->through(pos);
 }
 
-inline const subString string::through(const string& x, int startpos = 0) const
+inline const subString string::through(const string& x, int startpos) const
 {
     return ((string *)this)->through(x, startpos);
 }
 
-inline const subString string::through(const subString& x, int startpos = 0) 
+inline const subString string::through(const subString& x, int startpos) 
     const
 {
     return ((string *)this)->through(x, startpos);
 }
 
-inline const subString string::through(const char* t, int startpos = 0) const
+inline const subString string::through(const char* t, int startpos) const
 {
     return ((string *)this)->through(t, startpos);
 }
 
-inline const subString string::through(char* t, int startpos = 0) const
+inline const subString string::through(char* t, int startpos) const
 {
     return ((string *)this)->through(t, startpos);
 }
 
-inline const subString string::through(char c, int startpos = 0) const
+inline const subString string::through(char c, int startpos) const
 {
     return ((string *)this)->through(c, startpos);
 }
 
-inline const subString string::through(const regex& r, int startpos = 0) const
+inline const subString string::through(const regex& r, int startpos) const
 {
     return ((string *)this)->through(r, startpos);
 }
@@ -1849,32 +1849,32 @@ inline const subString string::from(int pos) const
     return ((string *)this)->from(pos);
 }
 
-inline const subString string::from(const string& x, int startpos = 0) const
+inline const subString string::from(const string& x, int startpos) const
 {
     return ((string *)this)->from(x, startpos);
 }
 
-inline const subString string::from(const subString& x, int startpos = 0) const
+inline const subString string::from(const subString& x, int startpos) const
 {
     return ((string *)this)->from(x, startpos);
 }
 
-inline const subString string::from(const char* t, int startpos = 0) const
+inline const subString string::from(const char* t, int startpos) const
 {
     return ((string *)this)->from(t, startpos);
 }
 
-inline const subString string::from(char* t, int startpos = 0) const
+inline const subString string::from(char* t, int startpos) const
 {
     return ((string *)this)->from(t, startpos);
 }
 
-inline const subString string::from(char c, int startpos = 0) const
+inline const subString string::from(char c, int startpos) const
 {
     return ((string *)this)->from(c, startpos);
 }
 
-inline const subString string::from(const regex& r, int startpos = 0) const
+inline const subString string::from(const regex& r, int startpos) const
 {
     return ((string *)this)->from(r, startpos);
 }
@@ -1885,33 +1885,33 @@ inline const subString string::after(int pos) const
     return ((string *)this)->after(pos);
 }
 
-inline const subString string::after(const string& x, int startpos = 0) const
+inline const subString string::after(const string& x, int startpos) const
 {
     return ((string *)this)->after(x, startpos);
 }
 
-inline const subString string::after(const subString& x, int startpos = 0) 
+inline const subString string::after(const subString& x, int startpos) 
     const
 {
     return ((string *)this)->after(x, startpos);
 }
 
-inline const subString string::after(const char* t, int startpos = 0) const
+inline const subString string::after(const char* t, int startpos) const
 {
     return ((string *)this)->after(t, startpos);
 }
 
-inline const subString string::after(char* t, int startpos = 0) const
+inline const subString string::after(char* t, int startpos) const
 {
     return ((string *)this)->after(t, startpos);
 }
 
-inline const subString string::after(char c, int startpos = 0) const
+inline const subString string::after(char c, int startpos) const
 {
     return ((string *)this)->after(c, startpos);
 }
 
-inline const subString string::after(const regex& r, int startpos = 0) const
+inline const subString string::after(const regex& r, int startpos) const
 {
     return ((string *)this)->after(r, startpos);
 }
