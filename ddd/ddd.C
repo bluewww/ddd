@@ -315,6 +315,10 @@ static void blink(bool set);
 static void ToggleBlinkCB(Widget, XtPointer client_data, XtPointer call_data);
 static void DisableBlinkHP(Agent *, void *, void *);
 
+// GDB Status
+static void ReportStartHP(Agent *, void *, void *);
+static void ReportDeathHP(Agent *, void *, void *);
+
 // Status history
 static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
 static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
@@ -1740,8 +1744,10 @@ int main(int argc, char *argv[])
     gdb->addHandler(ReadyForQuestion, gdb_readyHP);
     gdb->addHandler(InputEOF,         gdb_eofHP);
     gdb->addHandler(ErrorEOF,         gdb_eofHP);
+    gdb->addHandler(Started,          ReportStartHP);
     gdb->addHandler(Died,             gdb_diedHP);
     gdb->addHandler(Died,             DisableBlinkHP);
+    gdb->addHandler(Died,             ReportDeathHP);
     gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
     gdb->addHandler(LanguageChanged,  language_changedHP);
     gdb->addHandler(ReplyRequired,    gdb_selectHP);
@@ -2091,7 +2097,7 @@ int main(int argc, char *argv[])
     if (app_data.session == DEFAULT_SESSION)
     {
 	setup_delay = new Delay;
-	init_delay  = new StatusMsg("Initializing " + gdb->title());
+	init_delay  = new StatusMsg("Starting " + gdb->title());
 	unlock_status();	// We still want to see the messages
     }
     else
@@ -5158,6 +5164,42 @@ static void popup_startup_logo(Widget parent, string color_key)
 
     popup_shell(logo_shell);
     wait_until_mapped(logo, logo_shell);
+}
+
+
+//-----------------------------------------------------------------------------
+// GDB status
+//-----------------------------------------------------------------------------
+
+static StatusMsg *running_msg = 0;
+
+static void ReportStartHP(Agent *agent, void *, void *)
+{
+    GDBAgent *gdb = ptr_cast(GDBAgent, agent);
+    if (gdb == 0)
+	return;
+
+    if (running_msg != 0)
+	delete running_msg;
+
+    running_msg = new StatusMsg("Running " + gdb->title() + 
+				" (pid " + itostring(gdb->pid()) + ")");
+    unlock_status();
+}
+
+static void ReportDeathHP(Agent *agent, void *, void *call_data)
+{
+    GDBAgent *gdb = ptr_cast(GDBAgent, agent);
+    if (gdb == 0)
+	return;
+
+    char *reason = (char *)call_data;
+    if (gdb != 0)
+    {
+	running_msg->outcome = reason;
+	delete running_msg;
+	running_msg = 0;
+    }
 }
 
 
