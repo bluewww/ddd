@@ -2991,9 +2991,15 @@ void update_options()
     set_sensitive(disassemble_w, gdb->type() == GDB);
     set_toggle(disassemble_w, app_data.disassemble);
 
-    set_toggle(command_separate_exec_window_w, app_data.separate_exec_window);
-    set_toggle(source_separate_exec_window_w,  app_data.separate_exec_window);
-    set_toggle(data_separate_exec_window_w,    app_data.separate_exec_window);
+    bool separate_exec_window = 
+	app_data.separate_exec_window && gdb->has_redirection();
+    set_toggle(command_separate_exec_window_w, separate_exec_window);
+    set_toggle(source_separate_exec_window_w,  separate_exec_window);
+    set_toggle(data_separate_exec_window_w,    separate_exec_window);
+
+    set_sensitive(command_separate_exec_window_w, gdb->has_redirection());
+    set_sensitive(source_separate_exec_window_w,  gdb->has_redirection());
+    set_sensitive(data_separate_exec_window_w,    gdb->has_redirection());
 
     set_toggle(button_tips_w,            app_data.button_tips); 
     set_toggle(value_tips_w,             app_data.value_tips); 
