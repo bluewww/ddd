@@ -10,11 +10,14 @@ DDD 1.4d
     - Several people have reported problems accessing the fonts
       specified in DDD 1.4c.  We have thus now re-enabled the scheme
       from DDD 1.4b; how to change fonts is explained in the DDD FAQ.
-    - Various fixes for C++ compilers other than GCC included.
-    - Improved VSL interface.  VSL interpreter options can now be set
-      upon DDD invocation; type `ddd --vsl-help' for a list of
-      options.
-    - Some VSL problems fixed.  Thanks to Richard Wolff <rwolff@noao.edu>.
+    - Various fixes for C++ compilers other than GCC included (notably
+      Sun CC 4.0 on Solaris 2.x)
+    - The VSL interpreter can now be controlled upon DDD invocation;
+      type `ddd --vsl-help' for a list of options.  This is intended
+      for debugging forthcoming display customization.
+
+    This release should configure, compile and run out-of-the-box on
+    OSF systems.  Please let us know about any remaining problems.
 
 
 DDD 1.4c
