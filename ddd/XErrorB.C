@@ -51,7 +51,7 @@ XErrorBlocker::~XErrorBlocker()
 {
     assert(active == this);
 
-    XSync(_display, False);
+    sync();
     XSetErrorHandler(saved_handler);
     active = saved_active;
 }

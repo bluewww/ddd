@@ -49,12 +49,13 @@ class XErrorBlocker {
 
 protected:
     virtual int handle(Display *, XErrorEvent *);
+    virtual void sync() const { XSync(_display, False); }
 
 public:
     XErrorBlocker(Display *display);
     virtual ~XErrorBlocker();
 
-    bool error_occurred() const            { return _error_occurred; }
+    bool error_occurred() const            { sync(); return _error_occurred; }
     const XErrorEvent& error_event() const { return _event; }
 };
 
