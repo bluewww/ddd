@@ -918,6 +918,23 @@ static void open_session(const string& session)
     gdb_command(c);
 }
 
+// Restart GDB only.
+void RestartDebuggerCB(Widget, XtPointer, XtPointer)
+{
+    static string restart_commands;
+    unsigned long flags = 0;
+
+    (void) get_restart_commands(restart_commands, flags);
+    app_data.restart_commands = restart_commands;
+
+    // Clear all breakpoints and displays
+    source_view->reset();
+    data_disp->reset();
+
+    // Start GDB again
+    start_gdb(false);
+}
+
 
 // OK pressed in `open session'
 static void OpenThisSessionCB(Widget w, XtPointer client_data, 

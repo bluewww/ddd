@@ -122,5 +122,8 @@ extern void ShutdownSmSessionCB(Widget, XtPointer, XtPointer);
 extern void OpenSessionCB(Widget, XtPointer, XtPointer);
 extern void SaveSessionAsCB(Widget, XtPointer, XtPointer);
 
+// Restart inferior debugger
+extern void RestartDebuggerCB(Widget, XtPointer, XtPointer);
+
 #endif // _DDD_session_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
