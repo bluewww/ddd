@@ -213,7 +213,7 @@ MMDesc DataDisp::node_popup[] =
     {"rotate",        MMPush,   {DataDisp::rotateCB}},
     {"set",           MMPush,   {DataDisp::setCB}},
     MMSep,
-    {"delete",        MMPush,   {DataDisp::deleteCB}},
+    {"delete",        MMPush,   {DataDisp::deleteCB, XtPointer(True)}},
     MMEnd
 };
 
@@ -231,7 +231,7 @@ MMDesc DataDisp::graph_cmd_area[] =
                                                DataDisp::rotate_menu },
     {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
     {"delete",        MMPush | MMInsensitive | MMUnmanaged,
-     {DataDisp::deleteCB}},
+     {DataDisp::deleteCB, XtPointer(True) }},
     MMEnd
 };
 
@@ -258,7 +258,7 @@ MMDesc DataDisp::display_area[] =
     {"show_detail",  MMPush,   {DataDisp::showDetailCB, XtPointer(-1) }},
     {"hide_detail",  MMPush,   {DataDisp::hideDetailCB, XtPointer(-1) }},
     {"set",          MMPush,   {DataDisp::setCB}},
-    {"delete",       MMPush,   {DataDisp::deleteCB }},
+    {"delete",       MMPush,   {DataDisp::deleteCB, XtPointer(True) }},
     MMEnd
 };
 
@@ -718,7 +718,7 @@ void DataDisp::select_with_all_ancestors(GraphNode *node)
     BoxGraphNode *bn = ptr_cast(BoxGraphNode, node);
     if (bn != 0)
     {
-	// FIXME: this is O(n^2)
+	// FIXME: this has O(n^2)
 	MapRef ref;
 	for (DispNode* dn = disp_graph->first(ref); 
 	     dn != 0;
@@ -743,7 +743,7 @@ void DataDisp::select_with_all_ancestors(GraphNode *node)
 }
 
 // Upon deletion, select the ancestor and all siblings
-void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
+void DataDisp::deleteCB (Widget dialog, XtPointer client_data, XtPointer)
 {
     set_last_origin(dialog);
 
@@ -751,13 +751,15 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
     VarArray<GraphNode *> ancestors;
     VarArray<GraphNode *> descendants;
 
+    Boolean delete_from_display_part = Boolean(client_data);
+
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
 	DispValue *dv = dn->selected_value();
-	if (dn->selected() && dv == 0)
+	if (dn->selected() && (delete_from_display_part || dv == 0))
 	{
 	    disp_nrs += dn->disp_nr();
 
@@ -1325,14 +1327,13 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     manage_and_raise(dependent_display_dialog);
 }
 
-void DataDisp::dependentArgCB(Widget w, XtPointer client_data, 
-			      XtPointer call_data)
+void DataDisp::dependentArgCB(Widget w, XtPointer, XtPointer call_data)
 {
     DataDispCount count(disp_graph);
     if (count.selected_titles > 0)
     {
 	// Delete selected displays
-	deleteCB(w, client_data, call_data);
+	deleteCB(w, XtPointer(False), call_data);
     }
     else
     {
@@ -1693,7 +1694,7 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 	}
     }
 
-    refresh_args();
+    refresh_args(true);
     refresh_display_list();
 }
 
