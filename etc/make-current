@@ -104,12 +104,14 @@ set -x
 mkdir $tmpdir
 cd $tmpdir
 
-# Create a DDD subdirectory and make its group `ddd'
-mkdir ddd
-chgrp ddd ddd
+# Get a first DDD file out of CVS, such that `ddd' and `ddd/CVS' are created
+cvs "$server" checkout -kkv -P "$@" ddd/README
+
+# Change the group of the DDD subdirectory to `ddd'
+chgrp -R ddd ddd
 chmod g+s ddd
 
-# Get the DDD development tree out of CVS, expanding RCS keywords.
+# Now get the remainder, expanding RCS keywords.
 cvs "$server" checkout -kkv -P "$@" ddd
 cd ddd
 
