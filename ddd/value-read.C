@@ -442,7 +442,7 @@ bool read_array_end (string& value)
 
     if (value.contains("END;", 0))
     {
-	value = value.after("END;");
+	value = value.after("END");
 	return true;		// M3GDB: More stuff may follow.
     }
 
