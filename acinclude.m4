@@ -632,7 +632,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],
 [ice_cv_have_builtin_expect=no])
 AC_LANG_POP(C++)
 ])
-if test "$ice_cv_have_attribute_noreturn" = yes; then
+if test "$ice_cv_have_builtin_expect" = yes; then
 AC_DEFINE(HAVE_BUILTIN_EXPECT,1,
 [Define if your C++ compiler supports __builtin_expect.])
 fi
