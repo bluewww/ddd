@@ -2194,7 +2194,19 @@ int main(int argc, char *argv[])
 
     // Main Loop
     main_loop_entered = true;
-    setjmp(main_loop_env);
+    int sig;
+    if ((sig = setjmp(main_loop_env)))
+    {
+        // Caught a signal
+        cerr << sigName(sig) << "\n";
+
+        if (sig == SIGINT)
+	{
+	    // Propagate interrupt to GDB
+	    gdb_keyboard_command = true;
+	    _gdb_command("\003", gdb_w);
+	}
+    }
 
     for (;;)
     {
@@ -2234,10 +2246,6 @@ void ddd_install_signal()
     signal(SIGHUP, ddd_signal);
 #endif
 
-#ifdef SIGINT
-    signal(SIGINT, ddd_signal);
-#endif
-
 #ifdef SIGTERM
     signal(SIGTERM, ddd_signal);
 #endif
@@ -2248,6 +2256,10 @@ void ddd_install_fatal()
 {
     // Make sure strsignal() is initialized properly
     (void)sigName(1);
+
+#ifdef SIGINT
+    signal(SIGINT, ddd_fatal);
+#endif
 
 #ifdef SIGFPE
     signal(SIGFPE, ddd_fatal);
@@ -3480,7 +3492,7 @@ void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
 // Buttons
 //-----------------------------------------------------------------------------
 
-static string uncntrl(string name)
+static string unctrl(string name)
 {
     if (name.length() >= 2)
     {
@@ -3539,7 +3551,7 @@ Widget make_buttons(Widget parent, const string& name,
 	}
 	else if (name.contains('^'))
 	{
-	    command = uncntrl(name.from('^'));
+	    command = unctrl(name.from('^'));
 	    name = name.before('^');
 	}
 	else if (name != "" && iscntrl(name[name.length() - 1]))
@@ -4119,7 +4131,7 @@ void controlAct(Widget w, XEvent*, String *params, Cardinal *num_params)
     }
 
     gdb_keyboard_command = true;
-    _gdb_command(uncntrl(params[0]), w);
+    _gdb_command(unctrl(params[0]), w);
 }
 
 void insert_source_argAct   (Widget w, XEvent*, String*, Cardinal*)
@@ -6206,8 +6218,11 @@ static void ddd_fatal(int sig)
 	    "\n"
 	    "We thank you for your support.\n\n";
 
-	fprintf(stderr, msg, sigName(sig), sigName(sig),
-		ddd_invoke_name, ddd_invoke_name);
+	if (sig != SIGINT)
+	{
+	    fprintf(stderr, msg, sigName(sig), sigName(sig),
+		    ddd_invoke_name, ddd_invoke_name);
+	}
 
 	// Re-raise signal.  This should kill us as we return.
 	signal(sig, (void (*)(int))SIG_DFL);
@@ -6218,7 +6233,8 @@ static void ddd_fatal(int sig)
 	// Show the message in an error dialog,
 	// allowing the user to clean up manually.
 	string msg = string("Internal error (") + sigName(sig) + ")";
-	post_error(msg, "internal_error", gdb_w);
+	if (sig != SIGINT)
+	    post_error(msg, "internal_error", gdb_w);
     }
 
     // Reinstall fatal error handlers
@@ -6226,7 +6242,7 @@ static void ddd_fatal(int sig)
 
     // Return to main event loop
     fatal_entered--;
-    longjmp(main_loop_env, 1);
+    longjmp(main_loop_env, sig);
 }
 
 // Xt Warning handler
