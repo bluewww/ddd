@@ -251,4 +251,33 @@ Volunteers for fixing these and other bugs are welcome!
     2.1, does not show any breakpoint indicators.  Nor does it show
     arrows.  This does not happen with Motif 2.0.
 
-249 (Insert your bug here)
+249 Zdenek Sekera <zs@cray.com> reports:
+
+   The 'configure', process is not correct in that the Makefiles
+   generated are not "clean". What I mean is this:
+
+   a. When I have done my first complete compilation, I have all the
+      *.o everywhere I need (I have also the ddd/ddd* absolute). From
+      now on whenever I 'touch' a particular ddd/xxx.c file, I would
+      expect with the general Makefile philosophy to recompile only
+      xxx.c and nothing else.  This is NOT what happens. A lot more
+      gets recompiled.  Even better: after the first compilation, try
+      'rm ddd/ddd*' and type 'make'.  Even now something gets
+      recompiled, even if I would have expected only the load phase
+      should take place.  This is actually quite nasty because I never
+      know what other *.o files will be destroyed by recompiling when
+      I work on some xxx.c file.
+      [This is a problem with some Make flavours.  Use GNU make instead.  -AZ]
+
+   c. Some Makefiles in the subdirectories do not use CFLAGS thus
+      making it neccessary to always edit them to put in the correct
+      options.  This is very time consuming in particular on
+      (e.g. myslef) always forgets at least some little wee thing
+      somewhere....
+      [This is a problem of the libiberty and librx maintainers.  -AZ]
+
+   d. In the same veine, when I run e.g. "configure --prefix='$(HOME)'",
+      the $(HOME) does not get propagated to all Makefiles.
+      [This is a problem of the libiberty and librx maintainers.  -AZ]
+
+250 (Insert your bug here)
