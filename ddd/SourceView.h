@@ -306,6 +306,7 @@ class SourceView {
     static string last_execution_file;
     static int    last_execution_line;
     static string last_execution_pc;
+    static string last_shown_pc;
     static void _show_execution_position (string file, int line, bool silent);
 
     // Last frame position
@@ -342,10 +343,8 @@ class SourceView {
     static void setup_where_line(string& line);
 
     // Assembler code display routines.
-    static Delay *refresh_code_pending;
     static XmTextPosition find_pc(const string& pc);
     static void refresh_codeOQC(const string& answer, void *data);
-    static void refresh_codeWorkProc(XtPointer client_data, XtIntervalId *);
     static void set_code(const string& code,
 			 const string& start,
 			 const string& end);

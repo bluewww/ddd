@@ -349,7 +349,8 @@ XmTextPosition SourceView::last_end_secondary_highlight_pc = 0;
 
 string SourceView::last_execution_file = "";
 int    SourceView::last_execution_line = 0;
-string SourceView::last_execution_pc = "";
+string SourceView::last_execution_pc   = "";
+string SourceView::last_shown_pc       = "";
 
 int SourceView::last_frame_pos = 0;
 bool SourceView::frame_pos_locked = false;
@@ -2575,9 +2576,8 @@ void SourceView::show_execution_position (string position, bool stopped,
 void SourceView::clear_execution_position()
 {
     show_execution_position();
-
-    last_execution_pc   = "";
-
+    last_execution_pc = "";
+    last_shown_pc     = "";
     update_glyphs();
 }
 
@@ -5618,8 +5618,6 @@ struct RefreshInfo {
     Delay *delay;
 };
 
-Delay *SourceView::refresh_code_pending = 0;
-
 // Process `disassemble' output
 void SourceView::refresh_codeOQC(const string& answer, void *client_data)
 {
@@ -5629,48 +5627,22 @@ void SourceView::refresh_codeOQC(const string& answer, void *client_data)
     if (find_pc(info->pc) != XmTextPosition(-1))
 	show_pc(info->pc, info->mode);
 
-    if (refresh_code_pending)
-    {
-	delete refresh_code_pending;
-	refresh_code_pending = 0;
-    }
+    delete info->delay;
+    delete info;
 }
-
-void SourceView::refresh_codeWorkProc(XtPointer client_data, XtIntervalId *)
-{
-    if (!disassemble)
-    {
-	if (refresh_code_pending)
-	{
-	    delete refresh_code_pending;
-	    refresh_code_pending = 0;
-	}
-	return;
-    }
-
-    RefreshInfo *info = (RefreshInfo *)client_data;
-    bool ok = gdb->send_question(gdb->disassemble_command(info->pc),
-				 refresh_codeOQC, (void *)info);
-
-    if (!ok)
-    {
-	// Try again in 250ms
-	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 250,
-			refresh_codeWorkProc, client_data);
-    }
-}
-
-static string last_shown_pc;
 
 // Show program counter location PC
 void SourceView::show_pc(const string& pc, XmHighlightMode mode)
 {
+    last_shown_pc = pc;
+    if (mode == XmHIGHLIGHT_SELECTED)
+	last_execution_pc = pc;
+
     if (!disassemble)
 	return;
+
 	
     // clog << "Showing PC " << pc << "\n";
-
-    last_shown_pc = pc;
 
     XmTextPosition pos = find_pc(pc);
 
@@ -5691,25 +5663,13 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode)
     if (pos == XmTextPosition(-1))
     {
 	// PC not found in current code: disassemble location
-	static RefreshInfo info;
-	info.pc    = pc;
-	info.mode  = mode;
+	RefreshInfo *info = new RefreshInfo;
+	info->pc    = pc;
+	info->mode  = mode;
+	info->delay = new StatusDelay("Disassembling location " + pc);
 
-	if (refresh_code_pending)
-	{
-	    // Working proc already started: clear old status line
-	    delete refresh_code_pending;
-	}
-	else
-	{
-	    // Start new working proc: send `disassemble' command
-	    // after the running command completed.
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
-			    refresh_codeWorkProc, XtPointer(&info));
-	}
-
-	// Show new status
-	refresh_code_pending = new StatusDelay("Disassembling location " + pc);
+	gdb_command(gdb->disassemble_command(info->pc), 0,
+		    refresh_codeOQC, (void *)info);
 	return;
     }
 
@@ -5747,8 +5707,6 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode)
     // Mark current line
     if (mode == XmHIGHLIGHT_SELECTED)
     {
-	last_execution_pc = pc;
-
 	if (!display_glyphs)
 	{
 	    // Set new marker
