@@ -1093,10 +1093,10 @@ DispValue *DispValue::update(string& value,
 
     DispValue *dv = update(source, was_changed, was_initialized);
 
-    source->unlink();
-
     if (was_changed || was_initialized)
-	clear_cached_box();
+	dv->clear_cached_box();
+
+    source->unlink();
 
     return dv;
 }
@@ -1109,9 +1109,13 @@ DispValue *DispValue::update(string& value,
 DispValue *DispValue::update(DispValue *source, 
 			     bool& was_changed, bool& was_initialized)
 {
+    assert(source->OK());
+
     bool was_plotted = (plotter() != 0);
 
     DispValue *dv = _update(source, was_changed, was_initialized);
+    assert(dv->OK());
+
     if (was_plotted && was_changed)
 	dv->plot();
 
@@ -1757,3 +1761,20 @@ void DispValue::set_plot_state(const string& state) const
 static bool nop(int) { return false; }
 
 bool (*DispValue::background)(int processed) = nop;
+
+
+
+//-----------------------------------------------------------------------------
+// Debugging
+//-----------------------------------------------------------------------------
+
+bool DispValue::OK() const
+{
+    assert (_links > 0);
+    assert (_cached_box == 0 || _cached_box->OK());
+
+    for (int i = 0; i < nchildren(); i++)
+	assert(child(i)->OK());
+
+    return true;
+}
