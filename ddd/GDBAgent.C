@@ -630,7 +630,7 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	if (i < 0 || answer[i] != '(')
 	    return false;
 
-	string possible_prompt = ((string &) answer).from(i);
+	string possible_prompt = answer.from(i);
 #if RUNTIME_REGEX
 	static regex rxprompt("[(][^ )]*db[^ )]*[)] ");
 #endif
