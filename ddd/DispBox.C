@@ -152,12 +152,12 @@ void DispBox::init_vsllib(void (*background)())
 	    "#line 1 \"" Ddd_NAME "*vslDefs\"\n" +
 	    vsllib_defs;
 
-	istrstream is(defs.chars());
+	std::istringstream is(defs.chars());
 	vsllib_ptr = new ThemedVSLLib(is, VSEFlags::optimize_mode());
 #else
 	name = "vsllib/" ddd_NAME ".vsl";
 	vsllib_ptr = new ThemedVSLLib();
-	string path = resolvePath(name);
+	const string path = resolvePath(name);
 	if (!path.empty())
 	{
 	    vsllib_ptr->update(path);
