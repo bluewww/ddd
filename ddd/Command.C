@@ -308,6 +308,9 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 
     translate_command(cmd);
 
+    // Allow for recursive calls in `send_gdb_command'
+    processing_gdb_commands = false;
+
     if (is_internal_command(cmd))
     {
 	internal_command(cmd, c.callback, c.data, c.echo, c.verbose, c.prompt);
@@ -317,7 +320,10 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 	send_gdb_command(cmd, c.origin, c.callback, c.extra_callback, c.data, 
 			 c.echo, c.verbose, c.prompt, c.check, c.start_undo);
     }
+
     messagePosition = XmTextGetLastPosition(gdb_w);
+
+    processing_gdb_commands = true;
 }
 
 // True if GDB can run a command
