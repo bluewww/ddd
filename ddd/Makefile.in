@@ -191,7 +191,7 @@ LIBC       = @LIBC@
 NON_X_LIBS = @LIBS@
 
 # All libraries shown above
-LIBS = $(CXXLIBS) $(LIBRX) $(LIBTERMCAP) $(LIBIBERTY) $(LIBM) $(LIBC)
+LIBS = $(CXXLIBS) $(LIBRX) $(LIBTERMCAP) $(LIBIBERTY) $(LIBM)
 
 
 ## X Libraries
