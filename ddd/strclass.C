@@ -56,18 +56,6 @@ void string::error(const char* msg) const
     abort();
 }
 
-#if 0
-string::operator const char*() const
-{ 
-    return (const char *)chars();
-}
-
-string::operator char*() const
-{ 
-    return (char *)chars();
-}
-#endif
-
 //  globals
 
 // nil strings point here
