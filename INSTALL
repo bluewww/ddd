@@ -1,8 +1,8 @@
 Installing DDD					-*- text -*-
 **************
 
-PLEASE NOTE: The installation process has changed in this release.  Be
-sure to read the instructions below carefully.
+PLEASE NOTE: The installation process has changed in DDD 3.3.  Be sure
+to read the instructions below carefully.
 
 For compiling and installing DDD on a system, please follow these
 instructions.
@@ -54,7 +54,8 @@ We also recommend the following (optional) packages:
      kind of two-dimensional scrollbar.
 
 
-If (and only if) you make changes to the DDD sources, you may also need:
+If (and only if) you make changes to the DDD sources, or if you build
+DDD from a CVS archive, you may also need:
 
    * `automake' (after changes to Makefile templates)
    * `autoconf' (after changes to configuration files)
