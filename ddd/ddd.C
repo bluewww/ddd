@@ -2227,26 +2227,12 @@ int main(int argc, char *argv[])
     XtSetArg(args[arg], XmNargc,           original_argc); arg++;
     XtSetArg(args[arg], XmNargv,           original_argv); arg++;
 
-    if (!app_data.separate_source_window && !app_data.separate_data_window)
-    {
-	// One single window - use command shell as top-level shell
-	command_shell = 
-	    verify(XtAppCreateShell(NULL, DDD_CLASS_NAME,
-				    applicationShellWidgetClass,
-				    XtDisplay(toplevel), args, arg));
+    // Make command shell a popup shell.  
+    // The toplevel window is never realized.
+    command_shell = verify(XtCreatePopupShell("command_shell",
+					      applicationShellWidgetClass,
+					      toplevel, args, arg));
 
-	// From now on, use the command shell as parent
-	toplevel = command_shell;
-    }
-    else
-    {
-	// Separate windows - make command shell a popup shell.  
-	// The toplevel window is never realized.
-	command_shell =
-	    verify(XtCreatePopupShell("command_shell",
-				      applicationShellWidgetClass,
-				      toplevel, args, arg));
-    }
     WM_DELETE_WINDOW =
 	XmInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
     XmAddWMProtocolCallback(command_shell, WM_DELETE_WINDOW, DDDCloseCB, 0);
@@ -2598,12 +2584,9 @@ int main(int argc, char *argv[])
     set_settings_title(data_edit_menu[EditItems::Settings].widget);
 
     // Close windows explicitly requested
-    if (!app_data.data_window && 
-	(!app_data.full_name_mode || !app_data.tty_mode))
+    if (!app_data.data_window && !app_data.full_name_mode)
     {
-	// We don't want the data window (unless in full name mode,
-	// where we always open a data window - because otherwise, no
-	// window would remain and we'd be gone).
+	// We don't want the data window.
 	gdbCloseDataWindowCB(gdb_w, 0, 0);
     }
 
@@ -2622,8 +2605,7 @@ int main(int argc, char *argv[])
 	gdbCloseCodeWindowCB(gdb_w, 0, 0);
     }
 
-    if ((!app_data.debugger_console || app_data.tty_mode) &&
-	(!app_data.separate_source_window || !app_data.separate_data_window))
+    if (!app_data.debugger_console || app_data.tty_mode)
     {
 	// We don't need the debugger console, since we have a TTY.
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
@@ -2739,20 +2721,14 @@ int main(int argc, char *argv[])
 	// Startup command shell iconified; others follow as needed
 	initial_popup_shell(command_shell);
     }
-    else if ((!app_data.debugger_console || app_data.tty_mode) && 
-	     app_data.separate_source_window &&
-	     app_data.separate_data_window)
+    else if (!app_data.debugger_console || app_data.tty_mode)
     {
 	// Debugger console is closed: wait for source to pop up
     }
-    else if (!app_data.tty_mode)
+    else
     {
 	// Popup the command shell only; other shells follow as needed
 	initial_popup_shell(command_shell);
-    }
-    else
-    {
-	// TTY mode: all shells follow as needed.
     }
 
     // Trace positions and visibility of all DDD windows
