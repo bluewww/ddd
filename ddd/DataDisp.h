@@ -336,6 +336,12 @@ public:
 				bool verbose = true,
 				bool prompt = true);
 
+    // Toggle THEME on PATTERN.
+    static void toggle_themeSQ(const string& theme,
+			       const string& pattern,
+			       bool verbose = true,
+			       bool prompt = true);
+
     // Same, but return the appropriate command
     static string new_display_cmd(const string& display_expression,
 				  BoxPoint *pos = 0,
@@ -352,6 +358,8 @@ public:
 				  const string& pattern);
     static string unapply_theme_cmd(const string& theme, 
 				    const string& pattern);
+    static string toggle_theme_cmd(const string& theme, 
+				   const string& pattern);
 
     // Same, but use the GDB_COMMAND interface for enqueing commands
     static void new_display(string display_expression,
@@ -404,6 +412,12 @@ public:
 			      Widget origin = 0)
     {
 	gdb_command(unapply_theme_cmd(theme, pattern), origin);
+    }
+
+    static void toggle_theme(const string& theme, const string& pattern, 
+			     Widget origin = 0)
+    {
+	gdb_command(toggle_theme_cmd(theme, pattern), origin);
     }
 
     // Process 'info display' output in INFO_DISPLAY_ANSWER.  If

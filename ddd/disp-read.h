@@ -61,10 +61,13 @@ bool is_display_cmd(const string& cmd);
 bool is_data_cmd(const string& cmd);
 
 // True if CMD is an apply command
-bool is_apply_cmd(const string& cmd);
+bool is_apply_theme_cmd(const string& cmd);
 
 // True if CMD is an unapply command
-bool is_unapply_cmd(const string& cmd);
+bool is_unapply_theme_cmd(const string& cmd);
+
+// True if CMD is a toggle command
+bool is_toggle_theme_cmd(const string& cmd);
 
 // True if CMD deletes a data display
 bool is_delete_display_cmd(const string& cmd);

@@ -237,15 +237,21 @@ bool is_disable_display_cmd (const string& cmd)
 }
 
 // True if CMD applies a theme
-bool is_apply_cmd (const string& cmd)
+bool is_apply_theme_cmd (const string& cmd)
 {
-    return cmd.contains("apply ", 0);
+    return cmd.contains("apply theme", 0);
 }
 
 // True if CMD unapplies a theme
-bool is_unapply_cmd (const string& cmd)
+bool is_unapply_theme_cmd (const string& cmd)
 {
-    return cmd.contains("unapply ", 0);
+    return cmd.contains("unapply theme", 0);
+}
+
+// True if CMD toggles a theme
+bool is_toggle_theme_cmd (const string& cmd)
+{
+    return cmd.contains("toggle theme", 0);
 }
 
 // True if CMD changes current frame

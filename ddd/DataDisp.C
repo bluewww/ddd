@@ -599,18 +599,12 @@ void DataDisp::get_all_clusters(IntArray& numbers)
 
 string DataDisp::selected_pattern()
 {
-    DispValue *dv = selected_value();
-    if (dv == 0)
-	return "";		// Nothing selected
-
-#if 0
-    DispNode *dn = selected_node();
-    if (dv == dn->value())
-	return "";		// Top-level selection
-#endif
-    
-    return pattern(dv->full_name());
+    return pattern(source_arg->get_string());
 }
+
+#if RUNTIME_REGEX
+static regex rxindex("[[]-?[0-9][0-9]*].*");
+#endif
 
 string DataDisp::pattern(const string& expr, bool shorten)
 {
@@ -618,6 +612,15 @@ string DataDisp::pattern(const string& expr, bool shorten)
     pattern.gsub("\\", "\\\\");
     pattern.gsub("?", "\\?");
     pattern.gsub("*", "\\*");
+
+    while (shorten && pattern.contains(rxindex))
+    {
+	int opening_bracket = pattern.index(rxindex);
+	int closing_bracket = pattern.index("]", opening_bracket);
+	pattern = pattern.before(opening_bracket) + "[*]" + 
+	    pattern.after(closing_bracket);
+    }
+
     pattern.gsub("[", "\\[");
     pattern.gsub("]", "\\]");
 
@@ -633,9 +636,18 @@ string DataDisp::pattern(const string& expr, bool shorten)
 }
 
 // Apply the theme in CLIENT_DATA to the selected item.
-void DataDisp::applyThemeCB (Widget w, XtPointer client_data, XtPointer)
+void DataDisp::applyThemeCB (Widget w, XtPointer client_data, 
+			     XtPointer call_data)
 {
     set_last_origin(w);
+
+    string theme = String(client_data);
+
+    if (gdb->recording())
+    {
+	toggle_theme(theme, quote(source_arg->get_string()));
+	return;
+    }
 
     string p = selected_pattern();
     if (p == "")
@@ -644,8 +656,6 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data, XtPointer)
     DispValue *dv = selected_value();
     if (dv == 0)
 	return;
-
-    string theme = String(client_data);
 
     string doc = vsldoc(theme, DispBox::vsllib_path);
     if (doc.contains("."))
@@ -660,6 +670,13 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data, XtPointer)
 
     bool select = 
 	(pattern(dv->full_name(), true) != pattern(dv->full_name(), false));
+
+    if (!select && theme != app_data.suppress_theme)
+    {
+	// Don't ask for confirmation -- just apply.  We can undo anyway.
+	applyThemeOnThisCB(w, client_data, call_data);
+	return;
+    }
 
     Arg args[10];
     Cardinal arg = 0;
@@ -695,6 +712,14 @@ void DataDisp::unapplyThemeCB (Widget w, XtPointer client_data, XtPointer)
 {
     set_last_origin(w);
 
+    string theme = String(client_data);
+
+    if (gdb->recording())
+    {
+	toggle_theme(theme, quote(source_arg->get_string()));
+	return;
+    }
+
     if (selected_pattern() == "")
 	return;
 
@@ -702,7 +727,6 @@ void DataDisp::unapplyThemeCB (Widget w, XtPointer client_data, XtPointer)
     if (dv == 0)
 	return;
 
-    string theme = String(client_data);
     string expr = dv->full_name();
 
     ThemePattern tp = DispBox::theme_manager.pattern(theme);
@@ -770,22 +794,23 @@ void DataDisp::applyThemeOnAllCB(Widget, XtPointer client_data, XtPointer)
 // Apply the theme in CLIENT_DATA to the selected item.
 void DataDisp::applyThemeOnThisCB(Widget, XtPointer client_data, XtPointer)
 {
-    DispValue *dv = selected_value();
-    if (dv == 0)
-	return;
-
     string theme = String(client_data);
-    apply_theme(theme, pattern(dv->full_name(), false));
+    apply_theme(theme, quote(source_arg->get_string()));
 }
 
 string DataDisp::apply_theme_cmd(const string& theme, const string& pattern)
 {
-    return "graph apply " + theme + " " + pattern;
+    return "graph apply theme " + theme + " " + pattern;
 }
 
 string DataDisp::unapply_theme_cmd(const string& theme, const string& pattern)
 {
-    return "graph unapply " + theme + " " + pattern;
+    return "graph unapply theme " + theme + " " + pattern;
+}
+
+string DataDisp::toggle_theme_cmd(const string& theme, const string& pattern)
+{
+    return "graph toggle theme " + theme + " " + pattern;
 }
 
 void DataDisp::apply_themeSQ(const string& theme, const string& pattern,
@@ -834,6 +859,26 @@ void DataDisp::unapply_themeSQ(const string& theme, const string& pattern,
 	prompt();
 }
 
+void DataDisp::toggle_themeSQ(const string& theme, const string& pattern,
+			      bool verbose, bool do_prompt)
+{
+    string t = theme;
+    strip_space(t);
+
+    string p = pattern;
+    strip_space(p);
+
+    const StringArray& patterns = DispBox::theme_manager.pattern(t).patterns();
+    for (int i = 0; i < patterns.size(); i++)
+	if (patterns[i] == p)
+	{
+	    // Pattern already applied
+	    unapply_themeSQ(theme, pattern, verbose, do_prompt);
+	    return;
+	}
+
+    apply_themeSQ(theme, pattern, verbose, do_prompt);
+}
 
 //-----------------------------------------------------------------------------
 // Button Callbacks
@@ -2311,12 +2356,7 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
     {
 	const string& theme = all_themes[i];
 	Widget& button = theme_menu[i].widget;
-
-	string doc = vsldoc(theme, DispBox::vsllib_path);
-	if (doc.contains("."))
-	    doc = doc.before(".");
-	else if (doc == "")
-	    doc = theme;
+	XtVaSetValues(button, XmNuserData, (String)theme, NULL);
 
 	bool set = false;
 	for (int j = 0; j < current_themes.size(); j++)
@@ -2326,10 +2366,15 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 		break;
 	    }
 
-	XtVaSetValues(button, XmNuserData, (String)theme, NULL);
-
-	set_label(button, doc);
 	XmToggleButtonSetState(button, set, False);
+
+	string doc = vsldoc(theme, DispBox::vsllib_path);
+	if (doc.contains("."))
+	    doc = doc.before(".");
+	else if (doc == "")
+	    doc = theme;
+	set_label(button, doc);
+
 	manage_child(button, true);
     }
 

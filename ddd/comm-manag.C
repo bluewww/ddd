@@ -1081,20 +1081,18 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmd_data->graph_cmd = cmd;
 
 	    string base = cmd.after("graph ");
-	    if (is_apply_cmd(base) || is_unapply_cmd(base))
+	    if (is_apply_theme_cmd(base) || 
+		is_unapply_theme_cmd(base) ||
+		is_toggle_theme_cmd(base))
 	    {
-		string theme = base.after(" ");
+		string theme = base.after("theme");
 		strip_space(theme);
 		string pattern = theme.after(" ");
 		strip_space(pattern);
 		theme = theme.before(" ");
 		
-		if (is_apply_cmd(base))
-		    cmd_data->undo_command = 
-			data_disp->unapply_theme_cmd(theme, pattern);
-		else
-		    cmd_data->undo_command = 
-			data_disp->apply_theme_cmd(theme, pattern);
+		cmd_data->undo_command = 
+		    data_disp->toggle_theme_cmd(theme, pattern);
 
 		cmd_data->undo_is_exec = false;
 	    }
@@ -2432,27 +2430,35 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	    }
 	}
     }
-    else if (is_apply_cmd(cmd))
+    else if (is_apply_theme_cmd(cmd))
     {
-	string theme = cmd.after("apply");
+	string theme = cmd.after("theme");
 	strip_space(theme);
 	string pattern = theme.after(" ");
 	strip_space(pattern);
 	theme = theme.before(" ");
 
-	data_disp->apply_themeSQ(theme, pattern,
-				 verbose, do_prompt);
+	data_disp->apply_themeSQ(theme, pattern, verbose, do_prompt);
     }
-    else if (is_unapply_cmd(cmd))
+    else if (is_unapply_theme_cmd(cmd))
     {
-	string theme = cmd.after("apply");
+	string theme = cmd.after("theme");
 	strip_space(theme);
 	string pattern = theme.after(" ");
 	strip_space(pattern);
 	theme = theme.before(" ");
 
-	data_disp->unapply_themeSQ(theme, pattern,
-				   verbose, do_prompt);
+	data_disp->unapply_themeSQ(theme, pattern, verbose, do_prompt);
+    }
+    else if (is_toggle_theme_cmd(cmd))
+    {
+	string theme = cmd.after("theme");
+	strip_space(theme);
+	string pattern = theme.after(" ");
+	strip_space(pattern);
+	theme = theme.before(" ");
+
+	data_disp->toggle_themeSQ(theme, pattern, verbose, do_prompt);
     }
     else
     {
