@@ -70,7 +70,7 @@ DispValueType determine_type (string value)
     case DBX:
 	// DBX uses this representation for out-of-range Pascal/Modula-2
 	// enumerations.
-	if (value.matches("(scalar = ", 0))
+	if (value.contains("(scalar = ", 0))
 	    return Simple;
 
     default:
