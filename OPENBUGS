@@ -209,4 +209,8 @@ detail.
     
     I have never before seen problems like this with vtwm.
 
-732 (Insert new bugs here)
+732 Jacques Leroy <jle@star.be> reports that Electric Fence detects
+    illegal memory accesses for strncpy(), strchr(), memchr() and
+    possibly strcpy() on HPPA 712/60 + HPUX 9.03 + gcc 2.8.1.
+
+733 (Insert new bugs here)
