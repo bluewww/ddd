@@ -53,8 +53,9 @@ void tabto(string& s, int pos)
     }
 }
     
-// Replace all '\t' by filling up spaces until multiple of TAB_WIDTH is reached
-void untabify(string& str, int tab_width)
+// Replace all '\t' by filling up spaces until multiple of TAB_WIDTH
+// is reached; ignore first INDENT characters.
+void untabify(string& str, int tab_width, int indent)
 {
     char *buffer = 
 	new char[str.length() + str.freq('\t') * (tab_width - 1) + 1];
@@ -68,7 +69,10 @@ void untabify(string& str, int tab_width)
 	switch (*s)
 	{
 	case '\t':
-	    spaces = tab_width - (column % tab_width);
+	    if (column >= indent)
+		spaces = tab_width - ((column - indent) % tab_width);
+	    else
+		spaces = 1;
 	    while (spaces-- > 0)
 	    {
 		*b++ = ' ';

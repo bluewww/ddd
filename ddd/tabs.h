@@ -38,8 +38,9 @@
 // Replace first '\t' by filling up spaces until POS is reached
 void tabto(string& s, int pos);
 
-// Replace all '\t' by filling up spaces until multiple of TAB_WIDTH is reached
-void untabify(string& str, int tab_width = 8);
+// Replace all '\t' by filling up spaces until multiple of TAB_WIDTH
+// is reached; ignore first INDENT characters.
+void untabify(string& str, int tab_width = 8, int indent = 0);
 
 #endif // _DDD_tabs_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
