@@ -3420,7 +3420,7 @@ Ddd*preferences*fonts*default.labelString:	 Default Font
 Ddd*preferences*fonts*variableWidth.labelString: Variable Width
 Ddd*preferences*fonts*fixedWidth.labelString:	 Fixed Width
 
-Ddd*preferences*fonts*name.text.columns:	 31
+Ddd*preferences*fonts*name.text.columns:	 30
 Ddd*preferences*fonts*size.label.labelString:	 Size
 Ddd*preferences*fonts*size.text.columns:	 3
 Ddd*preferences*fonts*browse.labelString:	 Browse...
@@ -3472,7 +3472,7 @@ Ddd*preferences*plot*labelString:		Plot
 Ddd*preferences*plot_window*labelString:	Plot Window
 Ddd*preferences*extern*labelString:		External
 Ddd*preferences*builtin*labelString:		Builtin
-Ddd*preferences*text.columns:			48
+Ddd*preferences*text.columns:			47
 
 
 
