@@ -45,20 +45,30 @@ ThemedVSLLib::ThemedVSLLib()
 ThemedVSLLib::ThemedVSLLib(const string& lib_name, 
 			   unsigned optimizeMode)
     : VSLLib(lib_name, 0),	// Do not optimize
-      _original_lib(dup()),
+      _original_lib(dup()),	// Make a copy of unoptimized lib
       _optimizeMode(optimizeMode),
       _theme_list()
 {
-    optimize(optimizeMode);
+    optimize(optimizeMode);	// Optimize now
 }
 
 ThemedVSLLib::ThemedVSLLib(istream& is, unsigned optimizeMode)
     : VSLLib(is, 0),		// Do not optimize
-      _original_lib(dup()),
+      _original_lib(dup()),	// Make a copy of unoptimized lib
       _optimizeMode(optimizeMode),
       _theme_list()
 {
-    optimize(optimizeMode);
+    optimize(optimizeMode);	// Optimize now
+}
+
+void ThemedVSLLib::optimize(unsigned optimizeMode)
+{
+    assert (_original_lib == 0);
+
+    delete _original_lib;
+    _original_lib = dup();
+
+    VSLLib::optimize(optimizeMode);
 }
 
 void ThemedVSLLib::set_theme_list(const StringArray& themes)

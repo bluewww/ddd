@@ -130,16 +130,16 @@ extern "C" int yywrap()
 
 %}
 
-/* C-Bezeichner */
+/* C Identifiers */
 I			[_a-zA-Z][_a-zA-Z0-9]*
 
-/* C-Strings */
+/* C Strings */
 S			\"(\\.|[^\"\n])*\"
 
-/* C-Integers */
+/* C Integers */
 N			[0-9]+
 
-/* #include-Strings */
+/* #include Strings */
 CS			\"[^\"\n]*\"
 CC			\<[^\>\n]*\>
 
@@ -342,9 +342,17 @@ static int switchdown()
 #define VSL_INCLUDE_PATH "/usr/local/lib/vsl-include"
 #endif
 
-// Search file in directories -I, $VSL_INCLUDE suchen
-// as well as in ".", if THISDIR == true
-// If not found, return FILENAME
+static string dirname(const string& file)
+{
+    if (file.contains('/'))
+	return file.before('/', -1);
+    else
+	return ".";
+}
+
+// Search file in directories -I, $VSL_INCLUDE.
+// If THISDIR == true, also search in current directory,
+// If not found, return FILENAME.
 static char *searchpath(char *filename, bool thisDir)
 {
     char includeList[BUFSIZ];
@@ -370,11 +378,16 @@ static char *searchpath(char *filename, bool thisDir)
 	}
     }
 
-    // If this dir is supposed to be searched, prepend ".:"
+    // If this dir to be searched, prepend directory name of current file.
     if (thisDir)
-	strcpy(includeList, ".:");
+    {
+	string dir = dirname(yyfilename);
+	strcpy(includeList, dir + ":");
+    }
     else
+    {
 	strcpy(includeList, "");
+    }
     strncat(includeList, s, BUFSIZ - 2);
 
     // Check dirs; if file can be opened, return full path

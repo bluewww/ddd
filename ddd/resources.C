@@ -39,6 +39,7 @@ char resources_rcsid[] =
 #include "AppData.h"
 #include "stty.h"
 #include "config.h"
+#include "resolveP.h"
 
 #include <Xm/Xm.h>
 
@@ -2234,17 +2235,33 @@ XrmDatabase app_defaults(Display *display)
     // Add app-defaults file, overriding fallback defaults.
     static String app_name  = 0;
     static String app_class = 0;
-
     if (app_name == 0)
 	XtGetApplicationNameAndClass(display, &app_name, &app_class);
 
-    String app_defaults_file = 
-	XtResolvePathname(display, NULL, app_class, NULL, NULL, NULL, 0, NULL);
-    if (app_defaults_file != NULL)
+    string own_app_defaults_file = 
+	resolvePath(string(ddd_NAME) + "/" + app_class);
+
+    if (own_app_defaults_file != "")
     {
-	XrmDatabase db2 = XrmGetFileDatabase(app_defaults_file);
+	// We have an application defaults file installed in the
+	// standard place.  Use it.
+	XrmDatabase db2 = XrmGetFileDatabase(own_app_defaults_file);
 	if (db2 != 0)
 	    XrmMergeDatabases(db2, &db);
+    }
+    else
+    {
+	// No application defaults file in the standard place.
+	// Search along the usual path.
+	String official_app_defaults_file = 
+	    XtResolvePathname(display, NULL, app_class, 
+			      NULL, NULL, NULL, 0, NULL);
+	if (official_app_defaults_file != NULL)
+	{
+	    XrmDatabase db2 = XrmGetFileDatabase(official_app_defaults_file);
+	    if (db2 != 0)
+		XrmMergeDatabases(db2, &db);
+	}
     }
 
     return db;

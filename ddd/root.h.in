@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// VSL library with themes
+// DDD root directory
 
-// Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -26,41 +26,12 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
-#ifndef _DDD_ThemedVSLLib_h
-#define _DDD_ThemedVSLLib_h
+#ifndef _DDD_root_h
+#define _DDD_root_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
+// The default place where DDD keeps its resources.
+#define DDD_ROOT     "@ROOT@"
+#define DDD_ALT_ROOT "@ALT_ROOT@"
 
-#include "VSLLib.h"
-#include "StringA.h"
-
-class ThemedVSLLib: public VSLLib {
-private:
-    const VSLLib *_original_lib;
-    unsigned _optimizeMode;
-    StringArray _theme_list;
-
-public:
-    // Build
-    ThemedVSLLib();
-    ThemedVSLLib(const string& lib_name, unsigned optimizeMode = stdOpt);
-    ThemedVSLLib(istream& s, unsigned optimizeMode = stdOpt);
-
-    // Optimize
-    virtual void optimize(unsigned mode = stdOpt);
-
-    // Theme list
-    const StringArray& theme_list() const { return _theme_list; }
-    void set_theme_list(const StringArray& themes);
-
-    // Destructor
-    virtual ~ThemedVSLLib();
-
-    // Representation invariant
-    virtual bool OK() const;
-};
-
-#endif // _DDD_ThemedVSLLib_h
+#endif // _DDD_root_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

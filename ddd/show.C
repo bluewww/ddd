@@ -47,6 +47,7 @@ char show_rcsid[] =
 #include "host.h"
 #include "post.h"
 #include "regexps.h"
+#include "resolveP.h"
 #include "shell.h"
 #include "status.h"
 #include "string-fun.h"
@@ -326,21 +327,30 @@ static void show_configuration(ostream& os, bool version_only)
     os << s;
 
     // Optional stuff
-    s = "@(#)Includes " DDD_NAME " core"
-#if WITH_BUILTIN_MANUAL
-	", Manual"
-#endif
-#if WITH_BUILTIN_APP_DEFAULTS
-	", App defaults"
-#endif
+    s = "@(#)Includes "
 #ifdef XpmFormat
-	", XPM " stringize(XpmFormat) "." stringize(XpmVersion) 
-	"." stringize(XpmRevision)
+	"XPM " stringize(XpmFormat) "." stringize(XpmVersion) 
+	"." stringize(XpmRevision) ", "
 #endif
 #if HAVE_ATHENA
-	", Athena Panner"
+	"Athena Panner, "
 #endif
-	"\n";
+#if WITH_BUILTIN_VSLLIB
+	"VSL library, "
+#endif
+#if WITH_BUILTIN_MANUAL
+	"Manual, "
+#endif
+#if WITH_BUILTIN_LICENSE
+	"License, "
+#endif
+#if WITH_BUILTIN_NEWS
+	"News, "
+#endif
+#if WITH_BUILTIN_APP_DEFAULTS
+	"App defaults, "
+#endif
+	 DDD_NAME " core\n";
     s.gsub(sccs, string(""));
 
 #if WITH_READLINE
@@ -474,11 +484,25 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer)
 
 int ddd_license(ostream& os)
 {
+    (void) uncompress;		// Use it
+
+#if WITH_BUILTIN_LICENSE
     static const char COPYING[] =
 #include "COPYING.gz.C"
 	;
 
     return uncompress(os, COPYING, sizeof(COPYING) - 1);
+#else
+    ifstream is(resolvePath("COPYING"));
+    if (is.bad())
+	return 1;
+
+    int c;
+    while ((c = is.get()) != EOF)
+	os << (char)c;
+
+    return 0;
+#endif
 }
 
 void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
@@ -503,11 +527,22 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 
 int ddd_news(ostream& os)
 {
+#if WITH_BUILTIN_COPYING
     static const char NEWS[] =
 #include "NEWS.gz.C"
 	;
 
     return uncompress(os, NEWS, sizeof(NEWS) - 1);
+#else
+    ifstream is(resolvePath("NEWS"));
+    if (is.bad())
+	return 1;
+
+    int c;
+    while ((c = is.get()) != EOF)
+	os << (char)c;
+    return 0;
+#endif
 }
 
 void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
@@ -541,7 +576,6 @@ int ddd_man(ostream& os)
 
     return uncompress(os, MANUAL, sizeof(MANUAL) - 1);
 #else
-
     // Try `info ddd', `man ddd' and `man xddd'.
     string cmd = 
 	"info --subnodes -o - -f " ddd_NAME " 2> /dev/null || "

@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// VSL library with themes
+// Search DDD resources
 
 // Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
@@ -26,41 +26,18 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
-#ifndef _DDD_ThemedVSLLib_h
-#define _DDD_ThemedVSLLib_h
+#ifndef _DDD_resolvePath_h
+#define _DDD_resolvePath_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-#include "VSLLib.h"
-#include "StringA.h"
+#include "strclass.h"
 
-class ThemedVSLLib: public VSLLib {
-private:
-    const VSLLib *_original_lib;
-    unsigned _optimizeMode;
-    StringArray _theme_list;
+// Return full path of FILE, searching in a number of predefined places.
+// If not found, return "".
+extern string resolvePath(const string& file);
 
-public:
-    // Build
-    ThemedVSLLib();
-    ThemedVSLLib(const string& lib_name, unsigned optimizeMode = stdOpt);
-    ThemedVSLLib(istream& s, unsigned optimizeMode = stdOpt);
-
-    // Optimize
-    virtual void optimize(unsigned mode = stdOpt);
-
-    // Theme list
-    const StringArray& theme_list() const { return _theme_list; }
-    void set_theme_list(const StringArray& themes);
-
-    // Destructor
-    virtual ~ThemedVSLLib();
-
-    // Representation invariant
-    virtual bool OK() const;
-};
-
-#endif // _DDD_ThemedVSLLib_h
+#endif // _DDD_resolvePath_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -805,17 +805,35 @@ dnl
 dnl User-defined options
 dnl
 AC_ARG_ENABLE(builtin-manual,
-[  --disable-builtin-manual         do not compile manual into DDD], 
-	builtin_manual="$enableval", builtin_manual=yes)
+[  --enable-builtin-manual          compile manual into DDD], 
+	builtin_manual="$enableval", builtin_manual=no)
 AC_ARG_ENABLE(builtin-app-defaults,
-[  --disable-builtin-app-defaults   do not compile app-defaults file into DDD],
-	builtin_app_defaults="$enableval", builtin_app_defaults=yes)
+[  --enable-builtin-app-defaults    compile app-defaults file into DDD],
+	builtin_app_defaults="$enableval", builtin_app_defaults=no)
+AC_ARG_ENABLE(builtin-news,
+[  --enable-builtin-news            compile NEWS file into DDD],
+	builtin_news="$enableval", builtin_news=no)
+AC_ARG_ENABLE(builtin-license,
+[  --enable-builtin-license         compile COPYING file into DDD],
+	builtin_license="$enableval", builtin_license=no)
+AC_ARG_ENABLE(builtin-vsllib,
+[  --enable-builtin-vsllib          compile VSL library into DDD],
+	builtin_vsllib="$enableval", builtin_vsllib=no)
 dnl
 if test "$builtin_manual" != no; then
 AC_DEFINE(WITH_BUILTIN_MANUAL)
 fi
 if test "$builtin_app_defaults" != no; then
 AC_DEFINE(WITH_BUILTIN_APP_DEFAULTS)
+fi
+if test "$builtin_news" != no; then
+AC_DEFINE(WITH_BUILTIN_NEWS)
+fi
+if test "$builtin_license" != no; then
+AC_DEFINE(WITH_BUILTIN_LICENSE)
+fi
+if test "$builtin_vsllib" != no; then
+AC_DEFINE(WITH_BUILTIN_VSLLIB)
 fi
 dnl
 dnl Check for risky LessTif versions.

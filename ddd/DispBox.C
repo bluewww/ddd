@@ -56,6 +56,7 @@ char DispBox_rcsid[] =
 #include "tabs.h"
 #include "version.h"
 #include "regexps.h"
+#include "resolveP.h"
 
 #include <ctype.h>
 
@@ -119,9 +120,11 @@ void DispBox::init_vsllib(void (*background)())
 
     initializing = true;
 
+#if WITH_BUILTIN_VSLLIB
     static const char builtin_def[] = 
 #include "ddd.vsl.h"
 	;
+#endif
 
     // Set include search path
     VSEFlags::include_search_path = 
@@ -140,13 +143,29 @@ void DispBox::init_vsllib(void (*background)())
 
     if (string(vsllib_name) == "builtin")
     {
-	string defs = string(builtin_def)
-	    + "#line 1 \"" Ddd_NAME "*vslBaseDefs\"\n"
-	    + vsllib_base_defs
-	    + "#line 1 \"" Ddd_NAME "*vslDefs\"\n"
-	    + vsllib_defs;
+#if WITH_BUILTIN_VSLLIB
+	string defs = string(builtin_def) +
+	    "#line 1 \"" Ddd_NAME "*vslBaseDefs\"\n" +
+	    vsllib_base_defs +
+	    "#line 1 \"" Ddd_NAME "*vslDefs\"\n" +
+	    vsllib_defs;
+
 	istrstream is(defs.chars());
 	vsllib_ptr = new ThemedVSLLib(is, VSEFlags::optimize_mode());
+#else
+	vsllib_ptr = new ThemedVSLLib();
+	vsllib_ptr->update(resolvePath("vsllib/" ddd_NAME ".vsl"));
+
+	string defs =
+	    "#line 1 \"" Ddd_NAME "*vslBaseDefs\"\n" +
+	    vsllib_base_defs +
+	    "#line 1 \"" Ddd_NAME "*vslDefs\"\n" +
+	    vsllib_defs;
+
+	istrstream is(defs.chars());
+	vsllib_ptr->update(is);
+	vsllib_ptr->optimize(VSEFlags::optimize_mode());
+#endif
     }
     else
     {

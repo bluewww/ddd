@@ -48,8 +48,8 @@ SUFFIXES = .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xbmxx .xpm .xpmxx \
 	   $(IMGEXT)
 
 # Shared data installation
-dddrootdir   = $(pkgdatadir)-$(VERSION)
-dddappdir    = $(pkgdatadir)-$(VERSION)/$(ddd)
+dddrootdir    = $(pkgdatadir)-$(VERSION)
+dddappdir     = $(pkgdatadir)-$(VERSION)/$(ddd)
 
 
 # -----------------------------------------------------------------------------
@@ -454,6 +454,8 @@ DDD_SOURCES = \
 	question.h   \
 	regexps.C    \
 	regexps.h    \
+	resolveP.C   \
+	resolveP.h   \
 	resources.C  \
 	resources.h  \
 	sashes.C     \
@@ -1829,12 +1831,17 @@ $(srcdir)/acspecial.h: $(srcdir)/configure.in
 # Special program includes
 version.h: vr.h
 	@$(CMP) vr.h $@ 2> /dev/null || ( $(CAT) vr.h > $@~ && $(MV) $@~ $@ )
-build.h: bld.h
+./build.h: bld.h
 	@$(CMP) bld.h $@ 2> /dev/null || ( $(CAT) bld.h > $@~ && $(MV) $@~ $@ )
-host.h: $(srcdir)/host.h.in config.status
+./host.h: $(srcdir)/host.h.in config.status
 	$(CAT) $(srcdir)/host.h.in | \
 	$(SED) "s%@HOST_CANONICAL@%$(host_canonical)%" | \
 	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" > $@~ && \
+	$(MV) $@~ $@
+./root.h: $(srcdir)/root.h.in config.status
+	$(CAT) $(srcdir)/root.h.in | \
+	$(SED) "s%@ROOT@%$(dddrootdir)%" | \
+	$(SED) "s%@ALT_ROOT@%$(pkgdatadir)%" > $@~ && \
 	$(MV) $@~ $@
 
 
@@ -1886,6 +1893,6 @@ ddd.$(OBJEXT): $(PROG_STUFF)
 
 CLEANFILES = build.h ddd.?? ddd.??s ddd.ps ddd.pdf *.tmp ddd.html ddd.info* \
 	$(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
-DISTCLEANFILES = host.h
+DISTCLEANFILES = build.h host.h root.h
 
 diststuff: $(EXTRA_DIST)

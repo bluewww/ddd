@@ -179,6 +179,15 @@
 /* Define if you want the manual to be compiled into the executable. */
 #undef WITH_BUILTIN_MANUAL
 
+/* Define if you want the DDD news to be compiled into the executable. */
+#undef WITH_BUILTIN_NEWS
+
+/* Define if you want the DDD license to be compiled into the executable. */
+#undef WITH_BUILTIN_LICENSE
+
+/* Define if you want the DDD VSL library to be compiled into DDD. */
+#undef WITH_BUILTIN_VSLLIB
+
 /* Define if you want the app-defaults file to be compiled into the
    executable. */
 #undef WITH_BUILTIN_APP_DEFAULTS
