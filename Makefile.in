@@ -165,7 +165,7 @@ snapshot:
 	    echo "==> Making $$ddd-$$VER.tar.gz"; \
 	    rm -f $$ddd-$$VER.tar.gz; \
 	    ln -s .. proto-toplev/$$ddd-$$VER; \
-	    find . -name RCS -prune -o -name CVS -o -name PICS -prune \
+	    find . -name RCS -prune -o -name CVS -prune -o -name PICS -prune \
 		-o -name proto-toplev -prune \
 		-o -name '.[a-zA-Z0-9]*' -prune \
 		-o -name '*.o' -prune \
