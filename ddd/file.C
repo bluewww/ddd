@@ -51,6 +51,7 @@ char file_rcsid[] =
 #include "ddd.h"
 #include "filetype.h"
 #include "glob.h"
+#include "history.h"
 #include "java.h"
 #include "mydialogs.h"
 #include "post.h"
@@ -541,6 +542,20 @@ static string get_file(Widget w, XtPointer, XtPointer call_data)
 // OK pressed
 //-----------------------------------------------------------------------------
 
+static void open_file(const string& filename)
+{
+    if (gdb->type() == GDB)
+    {
+	// GDB does not always detach processes upon opening new
+	// files, so we do it explicitly
+	ProgramInfo info;
+    	if (info.attached)
+	    gdb_command("detach");
+    }
+
+    gdb_command(gdb->debug_command(filename));
+}
+
 // OK pressed in `Open File'
 static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -553,16 +568,7 @@ static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
     if (filename == NO_GDB_ANSWER)
 	return;
 
-    if (gdb->type() == GDB)
-    {
-	// GDB does not always detach processes upon opening new
-	// files, so we do it explicitly
-	ProgramInfo info;
-    	if (info.attached)
-	    gdb_command("detach");
-    }
-
-    gdb_command(gdb->debug_command(filename));
+    open_file(filename);
 }
 
 
@@ -737,6 +743,14 @@ ProgramInfo::ProgramInfo()
 		core = last_file;
 	    }
 	}
+    }
+
+    if (file != NO_GDB_ANSWER)
+    {
+	string full_path = file;
+	if (!remote_gdb())
+	    full_path = SourceView::full_path(file);
+	add_to_recent(full_path);
     }
 }
 
@@ -1247,6 +1261,20 @@ void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
 			   searchLocalExecFiles, 0,
 			   openFileDone);
     manage_and_raise(dialog);
+}
+
+void gdbOpenRecentCB(Widget, XtPointer client_data, XtPointer)
+{
+    int index = int(client_data) - 1;
+
+    StringArray recent_files;
+    get_recent(recent_files);
+
+    if (index >= 0 && index < recent_files.size())
+    {
+	string file = recent_files[index];
+	open_file(file);
+    }
 }
 
 void gdbOpenCoreCB(Widget w, XtPointer, XtPointer)

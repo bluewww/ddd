@@ -38,6 +38,7 @@
 
 // Open file, process, core, source ...
 extern void gdbOpenFileCB   (Widget, XtPointer, XtPointer);
+extern void gdbOpenRecentCB (Widget, XtPointer, XtPointer);
 extern void gdbOpenClassCB  (Widget, XtPointer, XtPointer);
 extern void gdbOpenProcessCB(Widget, XtPointer, XtPointer);
 extern void gdbOpenCoreCB   (Widget, XtPointer, XtPointer);

@@ -51,6 +51,7 @@ char comm_manager_rcsid[] =
 #include "ddd.h"
 #include "dbx-lookup.h"
 #include "exit.h"
+#include "file.h"
 #include "disp-read.h"
 #include "DispBuffer.h"
 #include "PosBuffer.h"
@@ -206,6 +207,7 @@ public:
     bool     refresh_initial_line;     // send 'info line' / `func'
     bool     refresh_file;             // send 'file'
     bool     refresh_line;             // send 'list'
+    bool     refresh_recent_files;     // get program info
     bool     refresh_pwd;	       // send 'pwd'
     bool     refresh_class_path;       // send 'use'
     bool     refresh_breakpoints;      // send 'info b'
@@ -255,6 +257,7 @@ public:
 	  refresh_initial_line(false),
 	  refresh_file(false),
 	  refresh_line(false),
+	  refresh_recent_files(false),
 	  refresh_pwd(false),
 	  refresh_class_path(false),
 	  refresh_breakpoints(false),
@@ -409,6 +412,7 @@ void start_gdb()
 	init = init.after('\n');
     }
     plus_cmd_data->n_init = cmds.size();
+    plus_cmd_data->refresh_recent_files = true;
 
     // Add some additional init commands with reply handling
     switch (gdb->type())
@@ -744,6 +748,7 @@ void send_gdb_command(string cmd, Widget origin,
 	}
 
 	plus_cmd_data->refresh_data = true;
+	plus_cmd_data->refresh_recent_files = true;
 
 	if (gdb->has_display_command())
 	    plus_cmd_data->refresh_disp_info = true;
@@ -2132,6 +2137,12 @@ void plusOQAC (const StringArray& answers,
 	// Just in case we've changed the source language
 	PosBuffer pb;
 	pb.filter(ans);
+    }
+
+    if (plus_cmd_data->refresh_recent_files)
+    {
+	// Get a current program info to update the `recent files' list
+	ProgramInfo info;
     }
 
     assert (qu_count == count);

@@ -1772,6 +1772,11 @@ Ddd*menubar*fileMenu.open_class.acceleratorText:  Ctrl+O
 Ddd*menubar*fileMenu.open_class.documentationString:   \
 @rm Open a class to be debugged
 
+Ddd*menubar*fileMenu.recent.labelString: Open Recent
+Ddd*menubar*fileMenu.recent.mnemonic:    R
+Ddd*menubar*fileMenu.recent.documentationString:   \
+@rm Reopen a program to be debugged
+
 Ddd*menubar*fileMenu.open_core.labelString: Open Core Dump...
 Ddd*menubar*fileMenu.open_core.mnemonic:    D
 Ddd*menubar*fileMenu.open_core.documentationString:   \
@@ -1783,7 +1788,7 @@ Ddd*menubar*fileMenu.open_source.documentationString:   \
 @rm Open a source file in the source window
 
 Ddd*menubar*fileMenu.open_session.labelString:	        Open Session...
-Ddd*menubar*fileMenu.open_session.mnemonic:	        e
+Ddd*menubar*fileMenu.open_session.mnemonic:	        n
 Ddd*menubar*fileMenu.open_session.accelerator:          ~Shift Ctrl<Key>N
 Ddd*menubar*fileMenu.open_session.acceleratorText:      Ctrl+N
 Ddd*menubar*fileMenu.open_session.documentationString:  \
@@ -1848,8 +1853,8 @@ Ddd*menubar*fileMenu.close.documentationString:   \
 @rm Close this window
 
 Ddd*menubar*fileMenu.restart.labelString: Restart
-Ddd*menubar*fileMenu.restart.mnemonic:	 R
-! Ddd*menubar*fileMenu.restart.accelerator:      Shift Ctrl<Key>Q
+Ddd*menubar*fileMenu.restart.mnemonic:	 e
+Ddd*menubar*fileMenu.restart.accelerator:      Shift Ctrl<Key>Q
 ! Ddd*menubar*fileMenu.restart.acceleratorText:  Shift+Ctrl+Q
 Ddd*menubar*fileMenu.restart.documentationString:   \
 @rm Close all windows and restart DDD from scratch
@@ -1860,6 +1865,18 @@ Ddd*menubar*fileMenu.exit.accelerator:	    ~Shift Ctrl<Key>Q
 Ddd*menubar*fileMenu.exit.acceleratorText:  Ctrl+Q
 Ddd*menubar*fileMenu.exit.documentationString:   \
 @rm Close all windows and exit DDD
+
+
+! Recent menu
+Ddd*menubar*recentMenu.r1.mnemonic: 1
+Ddd*menubar*recentMenu.r2.mnemonic: 2
+Ddd*menubar*recentMenu.r3.mnemonic: 3
+Ddd*menubar*recentMenu.r4.mnemonic: 4
+Ddd*menubar*recentMenu.r5.mnemonic: 5
+Ddd*menubar*recentMenu.r6.mnemonic: 6
+Ddd*menubar*recentMenu.r7.mnemonic: 7
+Ddd*menubar*recentMenu.r8.mnemonic: 8
+Ddd*menubar*recentMenu.r9.mnemonic: 9
 
 
 ! Edit menu

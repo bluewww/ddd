@@ -80,5 +80,14 @@ extern void gdbHistoryCB(Widget, XtPointer, XtPointer);
 // Tie a ComboBox to global history
 extern void tie_combo_box_to_history(Widget text, HistoryFilter filter);
 
+// Add FILE to recent file history
+extern void add_to_recent(const string& file);
+
+// Get recent file history (most recent first)
+extern void get_recent(StringArray& arr);
+
+// Tie a menu to recent files
+extern void tie_menu_to_recent_files(class MMDesc *items);
+
 #endif // _DDD_history_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

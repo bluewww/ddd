@@ -607,8 +607,30 @@ static XtActionsRec actions [] = {
 // Menus
 //-----------------------------------------------------------------------------
 
+struct RecentItems {
+    enum RecentItem { R1, R2, R3, R4, R5, R6, R7, R8, R9 };
+};
+
+#define RECENT_MENU \
+{ \
+    { "r1", MMPush, { gdbOpenRecentCB, XtPointer(1) }}, \
+    { "r2", MMPush, { gdbOpenRecentCB, XtPointer(2) }}, \
+    { "r3", MMPush, { gdbOpenRecentCB, XtPointer(3) }}, \
+    { "r4", MMPush, { gdbOpenRecentCB, XtPointer(4) }}, \
+    { "r5", MMPush, { gdbOpenRecentCB, XtPointer(5) }}, \
+    { "r6", MMPush, { gdbOpenRecentCB, XtPointer(6) }}, \
+    { "r7", MMPush, { gdbOpenRecentCB, XtPointer(7) }}, \
+    { "r8", MMPush, { gdbOpenRecentCB, XtPointer(8) }}, \
+    { "r9", MMPush, { gdbOpenRecentCB, XtPointer(9) }}, \
+    MMEnd \
+}
+
+static MMDesc command_recent_menu[] = RECENT_MENU;
+static MMDesc source_recent_menu[]  = RECENT_MENU;
+static MMDesc data_recent_menu[]    = RECENT_MENU;
+
 struct FileItems {
-    enum FileItem { OpenFile, OpenClass, OpenCore, OpenSource, Sep1,
+    enum FileItem { OpenFile, OpenClass, Recent, OpenCore, OpenSource, Sep1,
 		    OpenSession, SaveSession, Sep2,
 		    Attach, Detach, Sep3,
 		    Print, PrintAgain, Sep4,
@@ -618,10 +640,11 @@ struct FileItems {
     };
 };
 
-#define FILE_MENU \
+#define FILE_MENU(recent_menu) \
 { \
     { "open_file",     MMPush, { WhenReady, gdbOpenFileCB }}, \
     { "open_class",    MMPush | MMUnmanaged, { WhenReady, gdbOpenClassCB }}, \
+    { "recent",        MMMenu, MMNoCB, recent_menu }, \
     { "open_core",     MMPush, { WhenReady, gdbOpenCoreCB }}, \
     { "open_source",   MMPush, { gdbOpenSourceCB }}, \
     MMSep, \
@@ -646,9 +669,9 @@ struct FileItems {
     MMEnd \
 }
 
-static MMDesc command_file_menu[] = FILE_MENU;
-static MMDesc source_file_menu[]  = FILE_MENU;
-static MMDesc data_file_menu[]    = FILE_MENU;
+static MMDesc command_file_menu[] = FILE_MENU(command_recent_menu);
+static MMDesc source_file_menu[]  = FILE_MENU(source_recent_menu);
+static MMDesc data_file_menu[]    = FILE_MENU(data_recent_menu);
 
 
 struct ProgramItems {
@@ -2269,6 +2292,11 @@ int main(int argc, char *argv[])
     if (data_disp->graph_arg != 0)
 	tie_combo_box_to_history(data_disp->graph_arg->text(), 
 				 arg_history_filter);
+
+    // Tie `recent files' to history
+    tie_menu_to_recent_files(command_recent_menu);
+    tie_menu_to_recent_files(source_recent_menu);
+    tie_menu_to_recent_files(data_recent_menu);
 
     // Setup environment.
     setup_environment();
@@ -5828,7 +5856,8 @@ static void setup_version_info()
 	+ rm("    GERMANY") + cr();
 
     string log = session_log_file();
-    log.gsub(gethome(), "~");
+    if (log.contains(gethome(), 0))
+	log = "~" + log.after(gethome());
 
     helpOnVersionExtraText += cr()
 	+ rm("Send bug reports to <")

@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD command history
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -37,18 +37,23 @@ char history_rcsid[] =
 
 #include "Assoc.h"
 #include "ComboBox.h"
+#include "Command.h"
 #include "Delay.h"
 #include "DestroyCB.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
-#include "MakeMenu.h"
 #include "MString.h"
+#include "MakeMenu.h"
 #include "StringA.h"
+#include "VoidArray.h"
 #include "args.h"
 #include "cook.h"
-#include "Command.h"
 #include "ddd.h"
+#include "disp-read.h"
 #include "editing.h"
+#include "home.h"
+#include "logo.h"
+#include "misc.h"
 #include "mydialogs.h"
 #include "post.h"
 #include "regexps.h"
@@ -56,7 +61,6 @@ char history_rcsid[] =
 #include "string-fun.h"
 #include "verify.h"
 #include "wm.h"
-#include "misc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -221,6 +225,12 @@ void load_history(const string& file)
 		gdb_history += line;
 		add_to_arguments(line);
 		update_combo_boxes(line);
+		if (is_file_cmd(line, gdb))
+		{
+		    string arg = line;
+		    arg = arg.after(rxwhite);
+		    add_to_recent(arg);
+		}
 	    }
 	}
 
@@ -247,11 +257,19 @@ void save_history(const string& file, Widget origin)
 	    return;
 	}
 
+	// Save the 10 most recently opened files
+	int i;
+	StringArray recent;
+	get_recent(recent);
+	for (i = recent.size() - 1; i >= 0 && i >= recent.size() - 10; i--)
+	    os << gdb->debug_command(recent[i]) << "\n";
+
+	// Now save the command history itself
 	int start = gdb_history.size() - gdb_history_size;
 	if (start < 0)
 	    start = 0;
 
-	for (int i = start; i < gdb_history.size(); i++)
+	for (i = start; i < gdb_history.size(); i++)
 	    os << gdb_history[i] << "\n";
     }
 }
@@ -514,4 +532,86 @@ void tie_combo_box_to_history(Widget text, HistoryFilter filter)
     combo_boxes[text] = filter;
     update_combo_box(text, filter);
     XtAddCallback(text, XmNdestroyCallback, RemoveComboBoxCB, XtPointer(0));
+}
+
+
+//-----------------------------------------------------------------------------
+// Recent file history
+//-----------------------------------------------------------------------------
+
+static void update_recent_menus();
+
+// Recent files storage
+static StringArray recent_files;
+
+// Add FILE to recent file history
+void add_to_recent(const string& file)
+{
+    if (recent_files.size() > 0 && 
+	recent_files[recent_files.size() - 1] == file)
+	return;			// Already in list
+
+    for (int i = 0; i < recent_files.size(); i++)
+	if (recent_files[i] == file)
+	    recent_files[i] = ""; // Clear entry
+
+    recent_files += file;
+    update_recent_menus();
+}
+
+// Get recent file history (most recent first)
+void get_recent(StringArray& arr)
+{
+    for (int i = recent_files.size() - 1; i >= 0; i--)
+	if (recent_files[i] != "")
+	    arr += recent_files[i];
+}
+
+
+// Menus to be updated
+static VoidArray menus;
+
+static void update_recent_menu(MMDesc *items)
+{
+    StringArray recent_files;
+    get_recent(recent_files);
+
+    int i;
+    for (i = 0; i < recent_files.size() && items[i].widget != 0; i++)
+    {
+	Widget w = items[i].widget;
+	string file = recent_files[i];
+	if (file.contains(gethome(), 0))
+	    file = "~" + file.after(gethome());
+
+	MString label(itostring(i + 1) + " ");
+	label += tt(file);
+
+	set_label(w, label);
+	XtManageChild(w);
+    }
+
+    for (; items[i].widget != 0; i++)
+    {
+	Widget w = items[i].widget;
+	XtUnmanageChild(w);
+    }
+}
+
+static void update_recent_menus()
+{
+    for (int i = 0; i < menus.size(); i++)
+    {
+	MMDesc *items = (MMDesc *)menus[i];
+	update_recent_menu(items);
+    }
+}
+
+void tie_menu_to_recent_files(MMDesc *items)
+{
+    if (items == 0 || items[0].widget == 0)
+	return;
+
+    menus += (void *)items;
+    update_recent_menu(items);
 }
