@@ -932,10 +932,24 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 
 	if (subMenu != 0 && callback.callback != 0)
 	{
-	    XtAddCallback(subMenu, 
+	    XtAddCallback(subMenu,
 			  XmNmapCallback,
 			  callback.callback, 
 			  callback.closure);
+	    XtAddCallback(subMenu,
+			  XmNunmapCallback,
+			  callback.callback, 
+			  callback.closure);
+#if XmVersion >= 1002
+	    XtAddCallback(subMenu,
+			  XmNtearOffMenuActivateCallback,
+			  callback.callback, 
+			  callback.closure);
+	    XtAddCallback(subMenu,
+			  XmNtearOffMenuDeactivateCallback,
+			  callback.callback, 
+			  callback.closure);
+#endif
 	}
 	break;
     }
