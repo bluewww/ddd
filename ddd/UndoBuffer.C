@@ -49,7 +49,7 @@ char UndoBuffer_rcsid[] =
 #include "string-fun.h"
 
 #ifndef LOG_UNDO_BUFFER
-#define LOG_UNDO_BUFFER 1
+#define LOG_UNDO_BUFFER 0
 #endif
 
 #define REMAP_COMMAND "@remap "
@@ -585,26 +585,6 @@ void UndoBuffer::check_past_exec_pos()
     set_past_exec_pos(set);
 }
 
-// Goto last known execution position
-void UndoBuffer::goto_current_exec_pos()
-{
-    assert(OK());
-
-    if (!at_past_exec_pos())
-	return;
-
-    for (int i = history.size() - 1; i >= 0; i--)
-    {
-	if (history[i].exec_pos)
-	{
-	    history_position = i;
-	    process(history[i], 1);
-	    check_past_exec_pos();
-	    return;
-	}
-    }
-}
-
 // Undo and redo commands
 void UndoBuffer::undo()
 {
@@ -706,6 +686,37 @@ void UndoBuffer::clear_exec_pos()
 
     history = new_history;
 
+    check_past_exec_pos();
+}
+
+// Goto last known execution position
+void UndoBuffer::goto_current_exec_pos()
+{
+    assert(OK());
+
+    if (!at_past_exec_pos())
+	return;
+
+    UndoBufferArray new_history;
+    for (int i = 0; i < history.size(); i++)
+    {
+	if (i < history_position || history[i].exec_pos)
+	    new_history += history[i];
+    }
+
+    history = new_history;
+
+    if (history.size() > 0)
+    {
+	history_position = history.size() - 1;
+	process(history[history_position - 1], 1);
+    }
+    else
+    {
+	history_position = 0;
+    }
+
+    history_position = history.size();
     check_past_exec_pos();
 }
 
