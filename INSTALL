@@ -274,7 +274,7 @@ The simplest way to compile DDD is:
      In fact, we **STRONGLY RECOMMEND** not to install it; there is a
      whole slew of version-skew problems associated with app-defaults
      files, which are best avoided by simply not using them.  For
-     details, see step 13, above, and the comment at the `Ddd' top.
+     details, see step 14, above, and the comment at the `Ddd' top.
 
      If you absolutely want to install it (or if you configured DDD
      such that `Ddd' is not compiled into DDD), copy `Ddd' to a place
