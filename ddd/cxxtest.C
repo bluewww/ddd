@@ -49,6 +49,8 @@ public:
     Date (DayOfWeek w, int d, int m, int y)
 	: day_of_week(w), day(d), month(m), year(y)
     {}
+    virtual ~Date ()
+    {}
     void set (DayOfWeek w, int d, int m, int y)
     {
 	day_of_week = w;
@@ -56,6 +58,8 @@ public:
 	month       = m;
 	year        = y;
     }
+
+    virtual void print() {}
 };
 
 //--------------------------------------------------------------------------
@@ -66,8 +70,10 @@ public:
     Holiday (DayOfWeek w, int d, int m, int y, const char *n) :
 	Date (w, d, m, y), name(n)
     {}
-    ~Holiday ()
+    virtual ~Holiday ()
     {}
+
+    virtual void print() {}
 };
 //--------------------------------------------------------------------------
 class Tree {
@@ -105,6 +111,14 @@ void tree_test ()
     delete tree;
 }    
 //--------------------------------------------------------------------------
+void reference_test (Date& date, Date*& date_ptr)
+{
+    date = *date_ptr;
+    delete date_ptr;
+    date_ptr = 0;
+}
+
+//--------------------------------------------------------------------------
 void array_test ()
 {
     DayOfWeek days_of_week[7] = {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
@@ -120,11 +134,7 @@ void array_test ()
 
     Date dates[4];
     for (int i = 0; i < 4; i++)
-    {
-	dates[i] = *date_ptrs[i];
-	delete date_ptrs[i];
-	date_ptrs[i] = 0;
-    }
+	reference_test(dates[i], date_ptrs[i]);
 }
 //--------------------------------------------------------------------------
 struct Guni {
