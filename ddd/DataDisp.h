@@ -44,7 +44,6 @@
 // ...Act : Action function.
 // ...SQ  : calls gdb->send_question().
 // ...OQC : needed in on_question_completion; see `GDBAgent.h'.
-// ...SQA : calls gdb->send_qu_array().
 // ...OQAC: needed in on_question_array_completion; see `GDBAgent.h'.
 // ...HP  : HandlerProc.  See `HandlerL.h'
 // 
@@ -200,11 +199,13 @@ public:
     // Send queries to GDB and process answers
     //-----------------------------------------------------------------------
 
-    // Create a new display for DISPLAY_EXPRESSION.  Sends a `display'
-    // command to GDB.  If POS is set, the new display is created at
-    // this position.
+    // Create a new display for DISPLAY_EXPRESSION.
+    // If POS is set, the new display is created at this position.
+    // If DEPENDS_ON is set, the new display is made dependent on DEPENDS_ON
+    // If ORIGIN is set, the last origin is set to ORIGIN.
     static void new_displaySQ       (string display_expression,
-				     BoxPoint* pos = 0,
+				     BoxPoint *pos = 0,
+				     int depends_on = 0,
 				     Widget origin = 0);
 
     // Refresh displays.  Sends `info display' and `display' to GDB.
@@ -218,10 +219,6 @@ public:
 
     // Delete displays given in DISPLAY_NRS.  Sends `delete display' to GDB.
     static void delete_displaySQ    (IntArray& display_nrs);
-
-    // Create a new display for DISPLAY_EXPRESSION dependent on
-    // DISP_NR.  Sends a `display' command to GDB.
-    static void dependent_displaySQ (string display_expression, int disp_nr);
 
     // Process 'info display' output in INFO_DISPLAY_ANSWER.  Deletes
     // displays if needed.
@@ -245,24 +242,16 @@ private:
     static void again_new_displaySQ (XtPointer client_data, XtIntervalId *id);
 
     // Tons of helpers
-    static void new_displayOQC       (const string& answer, void* data);
-    static void new_display_extraOQC (const string& answer, void* data);
-    static void new_displaysSQA      (string display_expression, BoxPoint* p);
-    static void new_displaysOQAC     (string answers[], 
-				      void*  qu_datas[],
-				      int    count, 
-				      void*  data);
+    static void new_data_displayOQC      (const string& answer, void* data);
+    static void new_data_display_extraOQC(const string& answer, void* data);
+    static void new_data_displaysSQA     (string display_expression, 
+					  void *data);
+    static void new_data_displaysOQAC    (string answers[], 
+					  void*  qu_datas[],
+					  int    count, 
+					  void*  data);
 
-    static void new_userOQC          (const string& answer, void* data);
-
-    static void dependent_displayOQC       (const string& answer, void* data);
-    static void dependent_display_extraOQC (const string& answer, void* data);
-    static void dependent_displaysSQA      (string display_expression, 
-					    int disp_nr);
-    static void dependent_displaysOQAC     (string answers[],
-					    void*  qu_datas[],
-					    int    count,
-					    void*  data);
+    static void new_user_displayOQC  (const string& answer, void* data);
 
     static void refresh_displayOQC   (const string& answer, void*  data);
     static void refresh_displayOQAC  (string answers[],

@@ -158,47 +158,25 @@ void DispGraph::callHandlers ()
 
 
 // ***************************************************************************
-// disp_nr bei Erfolg
+// new_disp_nr bei Erfolg
 //
-int DispGraph::insert_new (int disp_nr, DispNode* dn)
+int DispGraph::insert(int new_disp_nr,
+		      DispNode* new_dn,
+		      int depends_on)
 {
-    if (idMap.contains(disp_nr))
+    if (idMap.contains(new_disp_nr))
 	return 0;
     if (idMap.length() == 0)
 	handlers.call(DispGraph_Empty, this, (void*)false);
 
-    *this += dn->nodeptr();
-    assert (Graph::OK());
-    idMap.insert (disp_nr, dn);
-
-    if (no_enabled) {
-	if (!( no_enabled = (count_all(Enabled) == 0) ))
-	    handlers.call(NoEnabled, this, (void*)false);
-    }
-    if (no_disabled) {
-	if (!( no_disabled = (count_all(Disabled) == 0) ))
-	    handlers.call(NoDisabled, this, (void*)false);
-    }
-
-    return disp_nr;
-}
-
-// ***************************************************************************
-// new_disp_nr bei Erfolg
-//
-int DispGraph::insert_dependent (int       new_disp_nr,
-				 DispNode* new_dn,
-				 int       old_disp_nr)
-{
-    assert (old_disp_nr != 0);
-    assert (idMap.contains (old_disp_nr));
-    if (idMap.contains(new_disp_nr))
-	return 0;
-
-    DispNode* old_dn = idMap.get (old_disp_nr);
-
     *this += new_dn->nodeptr();
-    *this += new LineGraphEdge (old_dn->nodeptr(), new_dn->nodeptr());
+
+    if (depends_on != 0)
+    {
+	DispNode* old_dn = idMap.get (depends_on);
+	*this += new LineGraphEdge (old_dn->nodeptr(), new_dn->nodeptr());
+    }
+    assert (Graph::OK());
 
     idMap.insert (new_disp_nr, new_dn);
 
@@ -266,151 +244,8 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
 }
 
 // ***************************************************************************
-BoxPoint DispGraph::default_dependent_box_point (DispNode *new_node,
-						 Widget w, int disp_nr) const
-{
-    Dimension grid_height = 16;
-    Dimension grid_width  = 16;
-    Cardinal rotation     = 0;
-    XtVaGetValues(w,
-		  XtNgridHeight, &grid_height,
-		  XtNgridWidth,  &grid_width,
-		  XtNrotation,   &rotation,
-		  NULL);
-
-    BoxPoint grid(grid_height, grid_width);
-    BoxPoint delta = grid * 2;
-
-    bool horizontal = rotation % 90;
-
-    BoxGraphNode *node = idMap.get(disp_nr)->nodeptr();
-
-    // clog << "node           at " << node->pos() << "\n";
-
-    // Default: place new node below/on the right of original node,
-    // depending on last layout orientation.
-    //
-    // NODE -> (new)
-
-    BoxPoint offset = horizontal ? BoxPoint(0, delta[Y]) 
-	                         : BoxPoint(delta[X], 0);
-
-    BoxPoint pos = node->pos() + offset;
-
-    // Check if we already have a successor
-    BoxGraphNode *max_child      = 0;
-    BoxGraphNode *next_max_child = 0;
-
-    // Find two greatest children
-    for (GraphEdge *edge = node->firstFrom(); 
-	 edge != 0; 
-	 edge = node->nextFrom(edge))
-    {
-	BoxDimension d = horizontal ? X : Y;
-
-	GraphNode *child = edge->to();
-	while (child->isHint())
-	    child = child->firstFrom()->to();
-	if (child->hidden())
-	    continue;
-
-	BoxGraphNode *bgn = ptr_cast(BoxGraphNode, child);
-	if (bgn == 0)
-	    continue;
-
-	if (max_child == 0 || child->pos()[d] > max_child->pos()[d])
-	{
-	    next_max_child = max_child;
-	    max_child = bgn;
-	}
-	else if (next_max_child == 0 
-		 || child->pos()[d] > next_max_child->pos()[d])
-	{
-	    next_max_child = bgn;
-	}
-    }
-
-    if (max_child && next_max_child)
-    {
-	// Re-use offset between the two last children
-	//
-	//   NODE ->         .
-	//        \->        .
-	//         \->       .
-	//          \->   NEXT_MAX_CHILD
-	//           \->  MAX_CHILD
-	//            \-> (new)
-
-	// clog << "max_child      at " << max_child->pos() << "\n";
-	// clog << "next_max_child at " << next_max_child->pos() << "\n";
-
-	// Re-use offset between last two children
-	pos = max_child->pos() + (max_child->pos() - next_max_child->pos());
-
-	// If MAX_CHILD is on the right of NEXT_MAX_CHILD, place new
-	// node on the right; if MAX_CHILD is below NEXT_MAX_CHILD,
-	// place new node below.  If position is occupied, try later
-	// in the same direction.
-	bool horizontal = 
-	    (abs(max_child->pos()[X] - next_max_child->pos()[X]) >
-	     abs(max_child->pos()[Y] - next_max_child->pos()[Y]));
-
-	offset = horizontal ? BoxPoint(delta[X], 0) : BoxPoint(0, delta[Y]);
-    }
-    else if (max_child)
-    {
-	// Place new child below last child
-	//
-	//   NODE ->     MAX_CHILD
-	//        \->    (new)
-
-	// clog << "child          at " << max_child->pos() << "\n";
-
-	// If MAX_CHILD is on the right of NODE, place new node below;
-	// if MAX_CHILD is below NODE, place new node on the right.
-	bool horizontal = 
-	    (abs(max_child->pos()[X] - node->pos()[X]) >
-	     abs(max_child->pos()[Y] - node->pos()[Y]));
-	offset = horizontal ? BoxPoint(0, delta[Y]) : BoxPoint(delta[X], 0);
-
-	pos = max_child->pos() + offset;
-    }
-    else
-    {
-	GraphEdge *edge = node->firstTo();
-	if (edge)
-	{
-	    // We have a predecessor: use this offset instead
-	    //
-	    // PARENT -> NODE -> (new)
-	    //
-
-	    GraphNode *parent = edge->from();
-
-	    // clog << "parent         at " << parent->pos() << "\n";
-
-	    // Re-use offset between parent and node
-	    pos = node->pos() + (node->pos() - parent->pos());
-
-	    // If NODE is on the right of PARENT, place new node on
-	    // the right; if NODE is below PARENT, place new node
-	    // below.
-	    bool horizontal = 
-		(abs(node->pos()[X] - parent->pos()[X]) >
-		 abs(node->pos()[Y] - parent->pos()[Y]));
-
-	    pos += horizontal ? BoxPoint(delta[X], 0) : BoxPoint(0, delta[Y]);
-	    offset = horizontal ? BoxPoint(delta[X], 0) 
-		                : BoxPoint(0, delta[Y]);
-	}
-    }
-
-    return adjust_position(new_node, w, pos, offset, grid);
-}
-
-
-// ***************************************************************************
-BoxPoint DispGraph::default_new_box_point (DispNode *new_node, Widget w) const
+BoxPoint DispGraph::default_pos(DispNode *new_node, 
+				Widget w, int depends_on) const
 {
     Dimension grid_height = 16;
     Dimension grid_width  = 16;
@@ -422,29 +257,165 @@ BoxPoint DispGraph::default_new_box_point (DispNode *new_node, Widget w) const
 		  NULL);
 
     BoxPoint grid(max(grid_height, 1), max(grid_width, 1));
+    BoxPoint delta = grid * 2;
 
     bool horizontal = rotation % 90;
 
-    // Default offset: create new displays orthogonal to dereference direction
-    BoxPoint offset = 
-	horizontal ? BoxPoint(grid[X], 0) : BoxPoint(0, grid[Y]);
+    BoxPoint pos;
+    BoxPoint offset;
 
-    // Start with the top-level visible position
-    Position x = 0;
-    Position y = 0;
-    XtVaGetValues(w, XtNx, &x, XtNy, &y, NULL);
-    BoxPoint pos(max(-x, grid[X] * 1), max(-y, grid[Y] * 2));
+    if (depends_on == 0)
+    {
+	// Default offset: create new displays orthogonal to 
+	// dereference direction
+	offset = horizontal ? BoxPoint(grid[X], 0) : BoxPoint(0, grid[Y]);
 
-    // Add size offset
-    BoxSize new_size(new_node->box()->size());
-    pos += new_size / 2;
+	// New node: start with the top-level visible position
+	Position x = 0;
+	Position y = 0;
+	XtVaGetValues(w, XtNx, &x, XtNy, &y, NULL);
+	pos = BoxPoint(max(-x, grid[X]), max(-y, grid[Y] * 2));
 
-    // Round to nearest grid position
-    pos = (pos / grid + BoxPoint(1, 1)) * grid;
+	// Add size offset
+	BoxSize new_size(new_node->box()->size());
+	pos += new_size / 2;
+
+	// Round to nearest grid position
+	pos = graphEditFinalPosition(w, pos);
+    }
+    else
+    {
+	// Dependent node
+
+	// Default offset: create new displays in dereference direction
+	offset = horizontal ? BoxPoint(0, delta[Y]) : BoxPoint(delta[X], 0);
+
+	// Place new node below/on the right of original node, depending
+	// on last layout orientation.
+	//
+	// NODE -> (new)
+
+	BoxGraphNode *node = idMap.get(depends_on)->nodeptr();
+	// clog << "node           at " << node->pos() << "\n";
+	pos = node->pos() + offset;
+
+	// Check if we already have a successor
+	BoxGraphNode *max_child      = 0;
+	BoxGraphNode *next_max_child = 0;
+
+	// Find two greatest children
+	for (GraphEdge *edge = node->firstFrom(); 
+	     edge != 0; 
+	     edge = node->nextFrom(edge))
+	{
+	    BoxDimension d = horizontal ? X : Y;
+
+	    GraphNode *child = edge->to();
+	    while (child->isHint())
+		child = child->firstFrom()->to();
+	    if (child->hidden())
+		continue;
+
+	    BoxGraphNode *bgn = ptr_cast(BoxGraphNode, child);
+	    if (bgn == 0)
+		continue;
+
+	    if (max_child == 0 || child->pos()[d] > max_child->pos()[d])
+	    {
+		next_max_child = max_child;
+		max_child = bgn;
+	    }
+	    else if (next_max_child == 0 
+		     || child->pos()[d] > next_max_child->pos()[d])
+	    {
+		next_max_child = bgn;
+	    }
+	}
+
+	if (max_child && next_max_child)
+	{
+	    // Re-use offset between the two last children
+	    //
+	    //   NODE ->         .
+	    //        \->        .
+	    //         \->       .
+	    //          \->   NEXT_MAX_CHILD
+	    //           \->  MAX_CHILD
+	    //            \-> (new)
+
+	    // clog << "max_child      at " << max_child->pos() << "\n";
+	    // clog << "next_max_child at " << next_max_child->pos() << "\n";
+
+	    // Re-use offset between last two children
+	    pos = max_child->pos() 
+		+ (max_child->pos() - next_max_child->pos());
+
+	    // If MAX_CHILD is on the right of NEXT_MAX_CHILD, place new
+	    // node on the right; if MAX_CHILD is below NEXT_MAX_CHILD,
+	    // place new node below.  If position is occupied, try later
+	    // in the same direction.
+	    bool horizontal = 
+		(abs(max_child->pos()[X] - next_max_child->pos()[X]) >
+		 abs(max_child->pos()[Y] - next_max_child->pos()[Y]));
+
+	    offset = horizontal ? 
+		BoxPoint(delta[X], 0) : BoxPoint(0, delta[Y]);
+	}
+	else if (max_child)
+	{
+	    // Place new child below last child
+	    //
+	    //   NODE ->     MAX_CHILD
+	    //        \->    (new)
+
+	    // clog << "child          at " << max_child->pos() << "\n";
+
+	    // If MAX_CHILD is on the right of NODE, place new node below;
+	    // if MAX_CHILD is below NODE, place new node on the right.
+	    bool horizontal = 
+		(abs(max_child->pos()[X] - node->pos()[X]) >
+		 abs(max_child->pos()[Y] - node->pos()[Y]));
+	    offset = horizontal ? 
+		BoxPoint(0, delta[Y]) : BoxPoint(delta[X], 0);
+
+	    pos = max_child->pos() + offset;
+	}
+	else
+	{
+	    GraphEdge *edge = node->firstTo();
+	    if (edge)
+	    {
+		// We have a predecessor: use this offset instead
+		//
+		// PARENT -> NODE -> (new)
+		//
+
+		GraphNode *parent = edge->from();
+
+		// clog << "parent         at " << parent->pos() << "\n";
+
+		// Re-use offset between parent and node
+		pos = node->pos() + (node->pos() - parent->pos());
+
+		// If NODE is on the right of PARENT, place new node on
+		// the right; if NODE is below PARENT, place new node
+		// below.
+		bool horizontal = 
+		    (abs(node->pos()[X] - parent->pos()[X]) >
+		     abs(node->pos()[Y] - parent->pos()[Y]));
+
+		offset = horizontal ? BoxPoint(delta[X], 0) 
+		    : BoxPoint(0, delta[Y]);
+		pos += offset;
+	    }
+	}
+    }
+
+    assert(pos.isValid());
+    assert(offset.isValid());
 
     return adjust_position(new_node, w, pos, offset, grid);
 }
-
 
 
 

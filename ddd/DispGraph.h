@@ -91,11 +91,8 @@ public:
     void callHandlers();
 
 
-    // Insert a new display DN named DISP_NR
-    int insert_new (int disp_nr, DispNode* dn);
-
-    // Insert a new display DN named NEW_DISP_NR dependent on OLD_DISP_NR
-    int insert_dependent (int new_disp_nr, DispNode* dn, int old_disp_nr);
+    // Insert a new display DN named DISP_NR dependent on DEPENDS_ON
+    int insert(int disp_nr, DispNode* dn, int depends_on = 0);
 
     // Make DISP_NR an alias of ALIAS_DISP_NR.  Suppress
     // ALIAS_DISP_NR.  Return true iff changed.
@@ -106,10 +103,9 @@ public:
     bool unalias (int alias_disp_nr);
 
     // Determine default positions for NEW_NODE
-    BoxPoint default_new_box_point (DispNode *new_node, Widget w) const;
-    BoxPoint default_dependent_box_point (DispNode *new_node, 
-					  Widget w, int disp_nr) const;
-    
+    BoxPoint default_pos(DispNode *new_node, Widget w, 
+			 int depends_on = 0) const;
+
     // Delete DISP_NR; return false if non-existent
     bool del (int disp_nr);
 

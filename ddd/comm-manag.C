@@ -1002,7 +1002,7 @@ void handle_graph_cmd (string cmd, Widget origin)
     if (is_display_cmd (cmd))
     {
 	string display_expression = get_display_expression (cmd);
-	data_disp->new_displaySQ(display_expression, 0, origin);
+	data_disp->new_displaySQ(display_expression, 0, 0, origin);
     }
     else if (is_refresh_cmd (cmd))
     {

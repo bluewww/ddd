@@ -317,7 +317,7 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
     disp_node_arg->refresh();
 
     string nr = disp_node_arg->disp_nr();
-    dependent_displaySQ (display_expression, get_nr(nr));
+    new_displaySQ (display_expression, 0, get_nr(nr));
 }
 
 void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
@@ -667,7 +667,7 @@ void DataDisp::popup_new_argCB (Widget    display_dialog,
 {
     set_last_origin(display_dialog);
 
-    BoxPoint* p = (BoxPoint *) client_data;
+    BoxPoint *p = (BoxPoint *) client_data;
     new_displaySQ (source_arg->get_string(), p);
 }
 
@@ -701,7 +701,7 @@ void DataDisp::dependent_displayDCB (Widget    dialog,
     case XmCR_OK :
 	XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &input);
 	if (input != "") {
-	    dependent_displaySQ (input, *disp_nr_ptr);
+	    new_displaySQ (input, 0, *disp_nr_ptr);
 	}
 	break;
     default:
@@ -1555,43 +1555,50 @@ regex RXmore_than_one ("\\[-?[0-9]+\\.\\.-?[0-9]+\\]");
 // sonst an eine Default-Position.
 //
 
-struct CallAgainInfo {
+struct NewDisplayInfo {
     StatusDelay *delay;
     string display_expression;
     BoxPoint point;
     BoxPoint *point_ptr;
+    int depends_on;
     Widget origin;
 };
 
 void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
 {
-    CallAgainInfo *info = (CallAgainInfo *)client_data;
-    new_displaySQ(info->display_expression, info->point_ptr, info->origin);
+    NewDisplayInfo *info = (NewDisplayInfo *)client_data;
+    new_displaySQ(info->display_expression, info->point_ptr, 
+		  info->depends_on, info->origin);
     delete info->delay;
     delete info;
 }
 
 void DataDisp::new_displaySQ (string display_expression, BoxPoint *p,
-			      Widget origin)
+			      int depends_on, Widget origin)
 {
+    NewDisplayInfo *info = new NewDisplayInfo;
+    info->delay = 0;
+    info->display_expression = display_expression;
+    if (p != 0)
+    {
+	info->point = *p;
+	info->point_ptr = &info->point;
+    }
+    else
+    {
+	info->point = BoxPoint();
+	info->point_ptr = 0;
+    }
+    info->depends_on = depends_on;
+    info->origin     = origin;
+
     if (!DispBox::vsllib_initialized)
     {
 	// If we don't have the VSL library yet, try again later.
-	CallAgainInfo *info = new CallAgainInfo;
-	info->delay = 
-	    new StatusDelay("Reading VSL library");
+	info->delay              = new StatusDelay("Reading VSL library");
 	info->display_expression = display_expression;
-	if (p != 0)
-	{
-	    info->point = *p;
-	    info->point_ptr = &info->point;
-	}
-	else
-	{
-	    info->point = BoxPoint(-1, -1);
-	    info->point_ptr = 0;
-	}
-	info->origin   = origin;
+	info->depends_on         = depends_on;
+	info->origin             = origin;
 
 	// Disable background processing and try again - as soon
 	// as the VSL library will be completely read, we shall enter
@@ -1610,30 +1617,18 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint *p,
 
     if (is_user_command(display_expression))
     {
-	CallAgainInfo *info = new CallAgainInfo;
-	if (p != 0)
-	{
-	    info->point = *p;
-	    info->point_ptr = &info->point;
-	}
-	else
-	{
-	    info->point = BoxPoint(-1, -1);
-	    info->point_ptr = 0;
-	}
-	info->display_expression = display_expression;
-
 	// User-defined display
 	string cmd = user_command(display_expression);
-	bool ok = gdb->send_question(cmd, new_userOQC, info);
+	bool ok = gdb->send_question(cmd, new_user_displayOQC, info);
 	if (!ok)
 	    post_gdb_busy(origin);
     }
     else
     {
 	// Data display
-	if (display_expression.contains (RXmore_than_one)) {
-	    new_displaysSQA (display_expression, p);
+	if (display_expression.contains (RXmore_than_one))
+	{
+	    new_data_displaysSQA (display_expression, info);
 	    return;
 	}
 
@@ -1642,7 +1637,7 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint *p,
 	case GDB:
 	    {
 		string cmd = gdb->display_command(display_expression);
-		bool ok = gdb->send_question (cmd, new_displayOQC, p);
+		bool ok = gdb->send_question (cmd, new_data_displayOQC, info);
 		if (!ok)
 		    post_gdb_busy(last_origin);
 	    }
@@ -1654,7 +1649,7 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint *p,
 		gdb_question(gdb->display_command(display_expression));
 		string cmd;
 		cmd = gdb->print_command(display_expression);
-		bool ok = gdb->send_question (cmd, new_displayOQC, p);
+		bool ok = gdb->send_question (cmd, new_data_displayOQC, info);
 		if (!ok)
 		    post_gdb_busy(last_origin);
 	    }
@@ -1750,18 +1745,24 @@ DispNode *DataDisp::new_user_node(const string& name, string& answer)
 
 // ***************************************************************************
 // erzeugt neuen Display-Knoten und setzt ihn an den im data-Argument
-// angegebenen Punkt (falls (BoxPoint *)data != (-1,-1))
+// angegebenen Punkt (falls (BoxPoint *)data != BoxPoint())
 //
-void DataDisp::new_displayOQC (const string& answer, void* data)
+void DataDisp::new_data_displayOQC (const string& answer, void* data)
 {
+    NewDisplayInfo *info = (NewDisplayInfo *)data;
+
     if (answer == "")
     {
 	if (gdb->has_display_command())
 	{
 	    // No display output (GDB bug).  Refresh displays explicitly.
 	    gdb->send_question (gdb->display_command(),
-				new_display_extraOQC,
+				new_data_display_extraOQC,
 				data);
+	}
+	else
+	{
+	    delete info;
 	}
 	return;
     }
@@ -1769,6 +1770,7 @@ void DataDisp::new_displayOQC (const string& answer, void* data)
     if (!contains_display (answer, gdb))
     {
 	post_gdb_message (answer, last_origin);
+	delete info;
 	return;
     }
 
@@ -1785,28 +1787,31 @@ void DataDisp::new_displayOQC (const string& answer, void* data)
     string ans = answer;
     DispNode *dn = new_data_node(ans);
     if (dn == 0)
+    {
+	delete info;
 	return;
+    }
 
     // BoxPoint berechnen
-    BoxPoint* p         = (BoxPoint *)data;
-    BoxPoint  box_point =
-	(p == 0 || *p == BoxPoint(-1,-1)) ?
-	disp_graph->default_new_box_point(dn, graph_edit) :
-	(*p);
+    BoxPoint  box_point = info->point;
+    if (box_point == BoxPoint())
+	box_point = disp_graph->default_pos(dn, graph_edit, info->depends_on);
     dn->moveTo(box_point);
     dn->selected() = true;
 
     // in den Graphen einfuegen
     string nr = dn->disp_nr();
-    disp_graph->insert_new(get_nr(nr), dn);
+    disp_graph->insert(get_nr(nr), dn, info->depends_on);
 
     refresh_addr(dn);
     refresh_graph_edit();
+
+    delete info;
 }
 
-void DataDisp::new_userOQC (const string& answer, void* data)
+void DataDisp::new_user_displayOQC (const string& answer, void* data)
 {
-    CallAgainInfo *info = (CallAgainInfo *)data;
+    NewDisplayInfo *info = (NewDisplayInfo *)data;
 
     // Unselect all nodes
     for (GraphNode *gn = disp_graph->firstNode();
@@ -1827,17 +1832,15 @@ void DataDisp::new_userOQC (const string& answer, void* data)
     }
 
     // BoxPoint berechnen
-    BoxPoint* p         = info->point_ptr;
-    BoxPoint  box_point =
-	(p == 0 || *p == BoxPoint(-1,-1)) ?
-	disp_graph->default_new_box_point(dn, graph_edit) :
-	(*p);
+    BoxPoint  box_point = info->point;
+    if (box_point == BoxPoint())
+	box_point = disp_graph->default_pos(dn, graph_edit, info->depends_on);
     dn->moveTo(box_point);
     dn->selected() = true;
 
     // in den Graphen einfuegen
     string nr = dn->disp_nr();
-    disp_graph->insert_new(get_nr(nr), dn);
+    disp_graph->insert(get_nr(nr), dn, info->depends_on);
 
     refresh_addr(dn);
     refresh_graph_edit();
@@ -1850,26 +1853,28 @@ void DataDisp::new_userOQC (const string& answer, void* data)
 // Aus den Display-Ausdruecken den ersten (neuen) herausfischen, und dann
 // der normalen Verarbeitung zufuehren.
 //
-void DataDisp::new_display_extraOQC (const string& answer, void* data)
+void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
 {
     string ans = answer;
     string display = read_next_display (ans, gdb);
-    new_displayOQC (display, data);
+    new_data_displayOQC (display, data);
 }
 
 // ***************************************************************************
 // wird von new_displaySQ aufgerufen, wenn die display_expression die
 // array-notation RXmore_than_one enthaelt.
 //
-void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
+void DataDisp::new_data_displaysSQA (string display_expression,
+				     void *data)
 {
+    NewDisplayInfo *info = (NewDisplayInfo *)data;
     assert (display_expression.contains (RXmore_than_one));
 
     // einzelne display-Ausdruecke erzeugen und display-Befehle im array 
     // abschicken...
     string prefix  = display_expression.before(RXmore_than_one);
     string postfix = display_expression.after(RXmore_than_one);
-    string range   = display_expression.from (RXmore_than_one);
+    string range   = display_expression.from(RXmore_than_one);
     range.del("[");
     int start = ::get_nr(range);
     range = range.after("..");
@@ -1879,6 +1884,7 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
     {
 	post_error("Invalid range in " + quote(display_expression), 
 		   "invalid_range_error");
+	delete info;
 	return;
     }
 
@@ -1904,7 +1910,7 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
 	{
 	    bool ok = 
 		gdb->send_qu_array (display_cmds, dummy, display_cmds.size(),
-				    new_displaysOQAC, p);
+				    new_data_displaysOQAC, info);
 	    if (!ok)
 		post_gdb_busy(last_origin);
 	}
@@ -1919,8 +1925,8 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
 	    bool ok = gdb->send_qu_array (print_cmds,
 					  dummy,
 					  print_cmds.size(),
-					  new_displaysOQAC,
-					  p);
+					  new_data_displaysOQAC,
+					  info);
 	    if (!ok)
 		post_gdb_busy(last_origin);
 	}
@@ -1929,10 +1935,10 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
 }
 
 // ***************************************************************************
-void DataDisp::new_displaysOQAC (string answers[],
-				 void*  qu_datas[],
-				 int    count,
-				 void*  data)
+void DataDisp::new_data_displaysOQAC (string answers[],
+				      void*  qu_datas[],
+				      int    count,
+				      void*  data)
 {
     // Unselect all nodes
     for (GraphNode *gn = disp_graph->firstNode();
@@ -1943,10 +1949,12 @@ void DataDisp::new_displaysOQAC (string answers[],
 	    bgn->selected() = false;
     }
 
+    NewDisplayInfo *info = (NewDisplayInfo *)data;
+
     // Create and select new nodes
     for (int i = 0; i < count; i++)
     {
-	if (!contains_display (answers[i], gdb))
+	if (!contains_display(answers[i], gdb))
 	{
 	    // Looks like an error message
 	    post_gdb_message(answers[i], last_origin);
@@ -1956,20 +1964,20 @@ void DataDisp::new_displaysOQAC (string answers[],
 	    // Create new display and remember disabling-message
 	    DispNode *dn = new_data_node(answers[i]);
 	    if (dn == 0)
-		return;
+		continue;
 
-	    BoxPoint* p = (BoxPoint *) data;
-	    BoxPoint  box_point =
-		(p == 0 || *p == BoxPoint(-1,-1)) ?
-		disp_graph->default_new_box_point(dn, graph_edit) :
-		(*p);
-
+	    BoxPoint box_point = info->point;
+	    if (box_point == BoxPoint())
+	    {
+		box_point = 
+		    disp_graph->default_pos(dn, graph_edit, info->depends_on);
+	    }
 	    dn->moveTo(box_point);
 	    dn->selected() = true;
 
 	    // Insert into graph
 	    string nr = dn->disp_nr();
-	    disp_graph->insert_new(get_nr(nr), dn);
+	    disp_graph->insert(get_nr(nr), dn, info->depends_on);
 	}
     }
     delete[] answers;
@@ -1977,6 +1985,8 @@ void DataDisp::new_displaysOQAC (string answers[],
 
     refresh_addr();
     refresh_graph_edit();
+
+    delete info;
 }
 
 
@@ -2341,265 +2351,6 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
     refresh_addr();
 }
 
-
-//-----------------------------------------------------------------------------
-// Neue abhaengige Displays erzeugen
-//-----------------------------------------------------------------------------
-
-// ***************************************************************************
-// sendet den Display-Befehl an den gdb (mit disp_nr als data).
-//
-void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
-{
-    if (display_expression == "")
-	return;
-    if (display_expression.contains (RXmore_than_one)) {
-	dependent_displaysSQA (display_expression, disp_nr);
-	return;
-    }
-
-    switch (gdb->type())
-    {
-    case GDB:
-	{
-	    string cmd = gdb->display_command(display_expression);
-	    bool ok = gdb->send_question(cmd, dependent_displayOQC, 
-					 (void *) disp_nr);
-	    if (!ok)
-		post_gdb_busy(last_origin);
-	
-	}
-	break;
-
-    case DBX:
-    case XDB:
-	{
-	    gdb_question(gdb->display_command(display_expression));
-
-	    string cmd = gdb->print_command(display_expression);
-	    bool ok = gdb->send_question(cmd, dependent_displayOQC, 
-					 (void *) disp_nr);
-	    if (!ok)
-		post_gdb_busy(last_origin);
-	
-	}
-	break;
-    }
-}
-
-// ***************************************************************************
-// ruft disp_graph->insert_dependent (answer, data).
-//
-void DataDisp::dependent_displayOQC (const string& answer, void* data)
-{
-    if (answer == "")
-    {
-	if (gdb->has_display_command())
-	{
-	    // No display output (GDB bug).  Refresh displays explicitly.
-	    gdb->send_question(gdb->display_command(),
-			       dependent_display_extraOQC, data);
-	}
-	return;
-    }
-
-    if (!contains_display (answer, gdb))
-    {
-	post_gdb_message (answer, last_origin);
-	return;
-    }
-
-    string ans = answer;
-
-    // Unselect all nodes
-    for (GraphNode *gn = disp_graph->firstNode();
-	 gn != 0; gn = disp_graph->nextNode(gn))
-    {
-	BoxGraphNode *bgn = ptr_cast(BoxGraphNode, gn);
-	if (bgn)
-	    bgn->selected() = false;
-    }
-
-    // DispNode erzeugen und ggf. disabling-Meldung merken
-    DispNode *dn = new_data_node(ans);
-    if (dn == 0)
-	return;
-
-    int old_disp_nr = int (data);
-    BoxPoint box_point = 
-	disp_graph->default_dependent_box_point(dn, graph_edit, old_disp_nr);
-    dn->moveTo(box_point);
-    dn->selected() = true;
-
-    // in den Graphen einfuegen
-    string nr = dn->disp_nr();
-    disp_graph->insert_dependent (get_nr(nr), dn, old_disp_nr);
-
-    refresh_addr(dn);
-    refresh_graph_edit();
-}
-
-// ***************************************************************************
-// Aus den Display-Ausdruecken den ersten (neuen) herausfischen, und dann
-// der normalen Verarbeitung zufuehren.
-//
-void DataDisp::dependent_display_extraOQC (const string& answer, void* data)
-{
-    string ans = answer;
-    string display = read_next_display (ans, gdb);
-    dependent_displayOQC (display, data);
-}
-
-// ***************************************************************************
-// wird von dependent_displaySQ aufgerufen, wenn die display_expression die
-// array-notation RXmore_than_one enthaelt.
-//
-void DataDisp::dependent_displaysSQA (string display_expression,
-				      int disp_nr)
-{
-    assert (display_expression.contains (RXmore_than_one));
-
-    // einzelne display-Ausdruecke erzeugen und display-Befehle im array 
-    // abschicken...
-    string prefix  = display_expression.before(RXmore_than_one);
-    string postfix = display_expression.after(RXmore_than_one);
-    string range   = display_expression.from (RXmore_than_one);
-    range.del("[");
-    int start = ::get_nr(range);
-    range = range.after("..");
-    int stop = ::get_nr(range);
-
-    if (start > stop)
-    {
-	post_error("Invalid range in " + quote(display_expression), 
-		   "invalid_range_error");
-	return;
-    }
-
-    assert (stop >= start);
-
-    StringArray display_cmds;
-    StringArray print_cmds;
-
-    for (int i = start; i < stop + 1; i++)
-    {
-	display_cmds += 
-	    gdb->display_command(prefix + "[" + itostring (i) + "]" + postfix);
-	print_cmds += 
-	    gdb->print_command(prefix + "[" + itostring (i) + "]" + postfix);
-    }
-    VoidArray dummy;
-    while (dummy.size() < display_cmds.size())
-	dummy += (void *)0;
-
-    switch (gdb->type())
-    {
-    case GDB:
-	{
-	    bool ok = gdb->send_qu_array (display_cmds,
-					  dummy,
-					  display_cmds.size(),
-					  dependent_displaysOQAC,
-					  (void *)disp_nr);
-	    if (!ok)
-		post_gdb_busy(last_origin);
-	}
-	break;
-
-    case DBX:
-    case XDB:
-	{
-	    for (int i = 0; i < display_cmds.size(); i++)
-		gdb_question(display_cmds[i]);
-
-	    bool ok = gdb->send_qu_array (print_cmds,
-					  dummy,
-					  print_cmds.size(),
-					  dependent_displaysOQAC,
-					  (void *)disp_nr);
-	    if (!ok)
-		post_gdb_busy(last_origin);
-	}
-	break;
-    }
-}
-
-// ***************************************************************************
-void DataDisp::dependent_displaysOQAC (string answers[],
-				       void*  qu_datas[],
-				       int    count,
-				       void*  data)
-{
-    int       old_disp_nr = int (data);
-    DispNode* dn = 0;
-
-    string disabling_error_msgs = "";
-
-    // Unselect all nodes
-    for (GraphNode *gn = disp_graph->firstNode();
-	 gn != 0; gn = disp_graph->nextNode(gn))
-    {
-	BoxGraphNode *bgn = ptr_cast(BoxGraphNode, gn);
-	if (bgn)
-	    bgn->selected() = false;
-    }
-
-    for (int i = 0; i < count; i++) {
-	if (!contains_display (answers[i], gdb))
-	{
-	    disabling_error_msgs += answers[i] + '\n';
-	}
-	else 
-	{
-	    // DispNode erzeugen und ggf. disabling-Meldung ausgeben
-	    string nr;
-	    string name;
-
-	    read_number_and_name(answers[i], nr, name);
-	    if (nr == "")
-		return;
-
-	    if (name == "")
-	    {
-		disabling_error_msgs += answers[i] + '\n';
-	    }
-	    else
-	    {
-		if (is_disabling (answers[i], gdb))
-		{
-		    disabling_error_msgs += answers[i] + '\n';
-		    dn = new DispNode(nr, name);
-		}
-		else
-		{
-		    dn = new DispNode(nr, name, answers[i]);
-		}
-
-		BoxPoint box_point =
-		    disp_graph->default_dependent_box_point(dn, 
-							    graph_edit, 
-							    old_disp_nr);
-		
-		dn->moveTo(box_point);
-		dn->selected() = true;
-
-		// in den Graphen einfuegen
-		string nr = dn->disp_nr();
-		disp_graph->insert_dependent(get_nr(nr), 
-					     dn, old_disp_nr);
-	    }
-	}
-    }
-
-    delete[] answers;
-    delete[] qu_datas;
-
-    if (disabling_error_msgs != "")
-	post_gdb_message(disabling_error_msgs, last_origin);
-
-    refresh_addr();
-    refresh_graph_edit();
-}
 
 
 //-----------------------------------------------------------------------------
