@@ -144,6 +144,6 @@ Volunteers for fixing these and other bugs are welcome!
     different data files all have the same color.  This does not
     happen with the external Gnuplot window.
 
-352 Make sure there is only one debug window at one time.
+352 Avoid multiple debug windows (for debugging DDD).
 
 353 (Insert new bugs here)
