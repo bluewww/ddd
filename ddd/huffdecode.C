@@ -35,7 +35,10 @@ static char huffdecode_rcsid[] =
 
 #include "strclass.h"
 
-struct HuffCode { char c; const HuffCode *left; const HuffCode *right; };
+struct HuffCode { 
+    const HuffCode *left;	// Left child  (0 if leaf)
+    const HuffCode *right;	// Right child (value if leaf)
+};
 
 #ifdef HUFFTEXT
 #include HUFFTEXT
@@ -56,7 +59,7 @@ static void huffdecode(ostream& os)
 	if (h->left == 0)
 	{
 	    // Arrived at character
-	    os << h->c;
+	    os << (char)h->right;
 	    n++;
 	    h = huffcode;
 	}

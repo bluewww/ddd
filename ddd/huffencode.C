@@ -167,7 +167,7 @@ static void write_huffman(HuffNode *tree)
     {
 	tree->number = tics++;
 	cout << "static const HuffCode _huff" << tree->number 
-	     << " = { '" << cook(tree->l.c) << "', 0, 0 };\n";
+	     << " = {0, (HuffCode *)'" << cook(tree->l.c) << "'};\n";
     }
     else
     {
@@ -176,8 +176,8 @@ static void write_huffman(HuffNode *tree)
 
 	tree->number = tics++;
 	cout << "static const HuffCode _huff" << tree->number 
-	     << " = { '\\0', &_huff" << tree->i.left->number 
-	     << ", &_huff" << tree->i.right->number << " };\n";
+	     << " = {&_huff" << tree->i.left->number 
+	     << ", &_huff" << tree->i.right->number << "};\n";
     }
 }
 
