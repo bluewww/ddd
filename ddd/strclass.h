@@ -419,11 +419,9 @@ typedef string strTmp; // for backward compatibility
 int compare(const string& x, const string& y);
 int compare(const string& x, const subString& y);
 int compare(const string& x, const char* y);
-int compare(const string& x, char* y);
 int compare(const subString& x, const string& y);
 int compare(const subString& x, const subString& y);
 int compare(const subString& x, const char* y);
-int compare(const subString& x, char* y);
 int fcompare(const string& x, const string& y); // ignore case
 
 extern strRep  _nilstrRep;
