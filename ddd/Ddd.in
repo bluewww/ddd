@@ -400,9 +400,16 @@ Ddd*debugging_poem*foreground: 	   dark green
 
 ! Glyph colors
 Ddd*source_form_w.XmPushButton.background: grey90
-Ddd*source_form_w.arrow.foreground:        dark green
-Ddd*source_form_w.break.foreground:        red4
-Ddd*source_form_w.nobreak.foreground:      grey50
+Ddd*source_form_w.plain_arrow.foreground:  dark green
+Ddd*source_form_w.grey_arrow.foreground:   dark green
+Ddd*source_form_w.plain_stop.foreground:   red4
+Ddd*source_form_w.grey_stop.foreground:    grey50
+
+Ddd*code_form_w.XmPushButton.background:   grey90
+Ddd*code_form_w.plain_arrow.foreground:    dark green
+Ddd*code_form_w.grey_arrow.foreground:     dark green
+Ddd*code_form_w.plain_stop.foreground:     red4
+Ddd*code_form_w.grey_stop.foreground:      grey50
 
 ! Data display colors
 Ddd*graph_edit.nodeColor:          black
@@ -1536,16 +1543,16 @@ Ddd*source_text_w.rows:			12
 Ddd*source_view_shell*source_text_w.rows:	20
 
 Ddd*code_text_w.columns:		88
-Ddd*code_text_w.rows:			1
-Ddd*source_view_shell*code_text_w.rows:	1
+Ddd*code_text_w.rows:			2
+Ddd*source_view_shell*code_text_w.rows:	2
 
 Ddd*source_form_w.width:		660
 Ddd*source_form_w.height:		140
 Ddd*source_view_shell*source_form_w.height: 280
 
 Ddd*code_form_w.width:			660
-Ddd*code_form_w.height:			30
-Ddd*source_view_shell*code_form_w.height: 30
+Ddd*code_form_w.height:			50
+Ddd*source_view_shell*code_form_w.height: 50
 
 
 Ddd*source_text_w.editable:		false
@@ -1701,7 +1708,7 @@ If the option @bf Find Words Only @rm is set, only complete words are found.
 
 
 !-----------------------------------------------------------------------------
-! Source Text Glyphs
+! Source and Code Glyphs
 !-----------------------------------------------------------------------------
 
 Ddd*source_form_w.XmPushButton.shadowThickness:    0
@@ -1710,16 +1717,49 @@ Ddd*source_form_w.XmPushButton.marginHeight:       0
 Ddd*source_form_w.XmPushButton.marginWidth:        0
 Ddd*source_form_w.XmPushButton.borderWidth:        0
 
-Ddd*source_form_w.arrow*contextHelpString: \
-@rm This symbol shows the current execution position.
+Ddd*source_form_w.plain_arrow*contextHelpString: \
+@bf Plain arrow\n\
+@rm shows the current execution position in the lowest frame.
 
-Ddd*source_form_w.break*contextHelpString: \
-@rm This symbol shows an enabled breakpoint at this location. \n\
+Ddd*source_form_w.grey_arrow*contextHelpString: \
+@bf Grey arrow\n\
+@rm shows the last execution position in the selected frame.
+
+Ddd*source_form_w.plain_stop*contextHelpString: \
+@bf Plain stop sign\n\
+@rm A breakpoint (enabled).\n\
 Press the @bf right mouse button @rm to change its properties.
 
-Ddd*source_form_w.nobreak*contextHelpString: \
-@rm This symbol shows a disabled breakpoint at this location. \n\
+Ddd*source_form_w.grey_stop*contextHelpString: \
+@bf Grey stop sign\n\
+@rm A breakpoint (disabled).\n\
 Press the @bf right mouse button @rm to change its properties.
+
+
+Ddd*code_form_w.XmPushButton.shadowThickness:    0
+Ddd*code_form_w.XmPushButton.highlightThickness: 0
+Ddd*code_form_w.XmPushButton.marginHeight:       0
+Ddd*code_form_w.XmPushButton.marginWidth:        0
+Ddd*code_form_w.XmPushButton.borderWidth:        0
+
+Ddd*code_form_w.plain_arrow*contextHelpString: \
+@bf Plain arrow\n\
+@rm shows the current program counter in the lowest frame.
+
+Ddd*code_form_w.grey_arrow*contextHelpString: \
+@bf Grey arrow\n\
+@rm shows the last program counter in the selected frame.
+
+Ddd*code_form_w.plain_stop*contextHelpString: \
+@bf Plain stop sign\n\
+@rm A breakpoint (enabled).\n\
+Press the @bf right mouse button @rm to change its properties.
+
+Ddd*code_form_w.grey_stop*contextHelpString: \
+@bf Grey stop sign\n\
+@rm A breakpoint (disabled).\n\
+Press the @bf right mouse button @rm to change its properties.
+
 
 !-----------------------------------------------------------------------------
 ! Command Window
