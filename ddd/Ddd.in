@@ -1994,6 +1994,7 @@ Ddd*debuggerMenu*xdb.labelString:		XDB
 !-----------------------------------------------------------------------------
 
 Ddd*settings_popup*okLabelString: Close
+Ddd*settings_popup*cancelLabelString: Reset
 Ddd*settings_popup.title: @DDD@: Debugger Settings
 Ddd*settings_popup.autoUnmanage: false
 
@@ -2018,6 +2019,7 @@ Ddd*settings*contextHelpString: \
 \n\
 These settings affect the inferior debugger only.\n\
 Click on @bf ? @rm near an item to get further information.\n\
+Click on @bf Reset @rm to restore the initial settings.\n\
 \n\
 Note: debugger settings are not saved with @DDD@ options.\n\
 Insert the resulting commands in your personal\n\

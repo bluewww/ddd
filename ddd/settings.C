@@ -47,6 +47,7 @@ const char settings_rcsid[] =
 #include <Xm/Label.h>
 #include <Xm/Separator.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "Assoc.h"
 #include "AppData.h"
@@ -61,8 +62,15 @@ const char settings_rcsid[] =
 #include "status.h"
 #include "verify.h"
 #include "wm.h"
+#include "VarArray.h"
+#include "StringSA.h"
+#include "SourceView.h"
 
-static Widget settings_form   = 0;
+static Widget settings_form  = 0;
+static Widget reset_settings = 0;
+static VarArray<Widget> entries;
+static Assoc<Widget, string> values;
+static Assoc<Widget, string> initial_values;
 
 // TextField reply
 static void SetTextCB(Widget w, XtPointer client_data, XtPointer)
@@ -125,14 +133,29 @@ static Widget command_to_widget(Widget ref, string command)
     return found;
 }
 	
+// Update state of `reset' button
+static void update_reset_settings()
+{
+    for (int i = 0; i < entries.size(); i++)
+    {
+	Widget entry = entries[i];
+	if (initial_values[entry] != values[entry])
+	{
+	    XtSetSensitive(reset_settings, True);
+	    return;
+	}
+    }
+
+    XtSetSensitive(reset_settings, False);
+}
 
 // Process output of `show' command
-void process_show(string command, string value, bool show_status)
+void process_show(string command, string value, bool init)
 {
     if (settings_form == 0)
 	return;
 
-    if (show_status)
+    if (!init)
     {
 	string msg = value;
 	if (msg.contains('\n', -1))
@@ -158,6 +181,16 @@ void process_show(string command, string value, bool show_status)
 	set_command = string("set ") + set_command.after(rxwhite);
 
     Widget button = command_to_widget(settings_form, set_command);
+
+    if (button != 0)
+    {
+	values[button] = value;
+	if (init)
+	    initial_values[button] = value;
+    }
+
+    if (!init)
+	update_reset_settings();
 
     if (button != 0 && XtIsSubclass(button, xmRowColumnWidgetClass))
     {
@@ -241,7 +274,7 @@ static EntryType entry_type(const string& base,
 	return TextFieldEntry;
 }
 
-static Assoc<string, string> gdb_question_cache;
+static StringStringAssoc gdb_question_cache;
 
 static string cached_gdb_question(const string& question)
 {
@@ -253,7 +286,7 @@ static string cached_gdb_question(const string& question)
 
 static void clear_gdb_question_cache()
 {
-    static Assoc<string, string> empty;
+    static StringStringAssoc empty;
     gdb_question_cache = empty;
 }
 
@@ -418,16 +451,6 @@ static void add_button(string line, EntryType entry_filter, int& row)
 		{
 		    string label = option.after("  ");
 		    label = label.after(rxwhite);
-#if 0
-		    if (label.contains(" based on"))
-			label = label.before(" based on");
-		    if (label.contains("Use the "))
-			label = label.after("Use the ");
-		    if (label.contains(" demangling"))
-			label = label.before(" demangling");
-		    if (label.contains(" language"))
-			label = label.before(" language");
-#endif
 
 		    if (option.contains(" auto"))
 			option = "auto";
@@ -505,10 +528,11 @@ static void add_button(string line, EntryType entry_filter, int& row)
     }
 
     // Initialize button
-    process_show(show_command, value, false);
+    process_show(show_command, value, true);
 
     XtAddCallback(help, XmNactivateCallback, 
 		  HelpOnThisCB, XtPointer(entry));
+    entries += entry;
 
     row++;
 }
@@ -540,6 +564,21 @@ static void add_separator(int& row)
     row++;
 }
 
+// Reset settings
+static void ResetSettingsCB (Widget, XtPointer, XtPointer)
+{
+    for (int i = 0; i < entries.size(); i++)
+    {
+	Widget entry = entries[i];
+	if (initial_values[entry] != values[entry])
+	{
+	    string initial_value = initial_values[entry];
+	    if (initial_value == "unlimited")
+		initial_value = "0";
+	    gdb_command(string(XtName(entry)) + " " + initial_value);
+	}
+    }
+}
 
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
@@ -562,11 +601,14 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 	XtUnmanageChild(XmSelectionBoxGetChild(settings, XmDIALOG_TEXT));
 	XtUnmanageChild(XmSelectionBoxGetChild(settings, 
 					       XmDIALOG_SELECTION_LABEL));
-	XtUnmanageChild(XmSelectionBoxGetChild(settings, 
-					       XmDIALOG_CANCEL_BUTTON));
 	XtAddCallback(settings, XmNhelpCallback, ImmediateHelpCB, 0);
 	XtAddCallback(settings, XmNokCallback, UnmanageThisCB, 
 		      XtPointer(settings));
+
+	reset_settings = 
+	    XmSelectionBoxGetChild(settings, XmDIALOG_CANCEL_BUTTON);
+	XtRemoveAllCallbacks(reset_settings, XmNactivateCallback);
+	XtAddCallback(reset_settings, XmNactivateCallback, ResetSettingsCB, 0);
 	XtVaSetValues(settings, XmNdefaultButton, Widget(0), NULL);
 
 	// Add a rowcolumn widget
@@ -606,6 +648,7 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 	add_separator(row);
 	add_settings(row, TextFieldEntry);
 	clear_gdb_question_cache();
+	update_reset_settings();
 
 	XtVaSetValues(settings_form, XmNfractionBase, row, NULL);
 	XtManageChild(settings_form);

@@ -1474,7 +1474,8 @@ are to be demangled, how many array elements are to print, and so on.
 The capabilities of the settings editor depend on the capabilities of
 your inferior debugger\(em\&that is, your \s-2GDB\s+2 version.
 Clicking on `\fB?\fR' gives an an explanation on the specific item;
-the \s-2GDB\s+2 documentation gives more details.
+the \s-2GDB\s+2 documentation gives more details.  Clicking on
+`\fBReset\fR' restores the initial settings.
 .PP
 Some debugger settings are insensitive and cannot be changed, because
 doing so would endanger \s-2@DDD@\s+2 operation.  See the
