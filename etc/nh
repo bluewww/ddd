@@ -69,6 +69,6 @@ do
 	) > $file.h
 	$path/apply-license -f $user $file.h > /dev/null
 	rm $file.h.orig
- 	${VISUAL:-vi} $file.h
+ 	echo $file.h
     fi
 done

@@ -59,6 +59,6 @@ do
 	) > $file.C
 	$path/apply-license -f $user $file.C > /dev/null
 	rm $file.C.orig
-	${VISUAL:-vi} $file.C
+	echo $file.C
     fi
 done
