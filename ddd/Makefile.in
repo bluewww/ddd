@@ -1535,7 +1535,7 @@ pub:	$(PROG_STUFF) configure $(PUB_DEST)/USERINFO
 	done
 
 $(PUB_DEST)/USERINFO:
-	-echo 'DDD development team <ddd@ips.cs.tu-bs.de>' > $@
+	-echo 'DDD Development Team <ddd@ips.cs.tu-bs.de>' > $@
 
 
 ## Make dependency stuff.
@@ -1545,19 +1545,17 @@ depend: FORCE
 
 .PRECIOUS: Makedeps
 Makedeps depend:
-	cd $(srcdir); \
-	( \
-	$(ECHO) \#' DO NOT EDIT -- generated automagically by make depend'; \
+	( $(ECHO) \#' DO NOT EDIT -- generated automagically by make depend'; \
 	$(ECHO) \#' Source: $$Id$$'; \
 	$(ECHO) ; \
-	$(CXX) -M $(CPPFLAGS) $(DEFS) $(INCLUDE) *.C \
+	$(CXX) -M $(CPPFLAGS) $(DEFS) $(INCLUDE) $(srcdir)/*.C \
+	| $(SED) 's%$(srcdir)/%%g' \
 	| $(SED) 's% /[^ ]*%%g' \
 	| $(SED) 's% \./% %g' \
 	| $(GREP) -v '^ *\\$$' \
 	| $(SED) 's% \.\./% \$$(srcdir)/\.\./%g' \
-	| $(SED) 's%^ *$$%& config.h%g' ) \
-	> Makedeps~
-	$(MV) Makedeps~ Makedeps
+	| $(SED) 's%^ *$$%& config.h%g' ) > Makedeps~
+	$(MV) Makedeps~ $(srcdir)/Makedeps
 
 ## If your `make' cannot handle the following line,
 ## just replace it by the contents of `@srcdir@/Makedeps'.
