@@ -258,7 +258,11 @@ bool is_core_cmd (const string& cmd)
 bool is_thread_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
-    static regex rxthread_cmd("[ \t]*(thread|suspend|resume)([ \t]+.*)?");
+    static regex rxthread_cmd("[ \t]*(thread"
+			      "|threadgroup"
+			      "|suspend"
+			      "|resume"
+	")([ \t]+.*)?");
 #endif
 
     return cmd.matches (rxthread_cmd);

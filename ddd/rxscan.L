@@ -327,7 +327,7 @@ J       [A-Za-z][A-Za-z0-9.]*
 <S100>([)]|[}]|end\n|END\n|end;|END;)	return &rxstr_or_cl_end;
 <S101>{x}?{_}(record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|interface|union){C} return &rxstruct_keyword_begin;
 <S102>([Tt]he{W})?[Pp]rogram{W}(exited|terminated|is{W}not{W}being{W}run|no{W}longer{W}exists){C} return &rxterminated;
-<S103>{_}(thread|suspend|resume)({W}{C})? return &rxthread_cmd;
+<S103>{_}(thread|threadgroup|suspend|resume)({W}{C})? return &rxthread_cmd;
 <S104>{_}(delete{W}|un)display({W}{C})?	return &rxundisplay;
 <S105>{_}up({W}{C})?			return &rxup_cmd;
 <S106>[A-Z]+				return &rxuppercase;
