@@ -2856,6 +2856,14 @@ string SourceView::get_word_at_pos(Widget text_w,
 // Constructor
 //----------------------------------------------------------------------------
 
+static void InstallImage(XImage *image, const string& name)
+{
+    Boolean ok = XmInstallImage(image, name);
+    if (!ok)
+	cerr << "Could not install " << quote(name) << " bitmap\n";
+}
+
+
 SourceView::SourceView(Widget parent)
 {
     XtAppContext app_context = XtWidgetToApplicationContext(parent);
@@ -2866,16 +2874,16 @@ SourceView::SourceView(Widget parent)
 	toplevel_w = XtParent(toplevel_w);
 
     // Install glyph images
-    XmInstallImage(&arrow_image,        "plain_arrow");
-    XmInstallImage(&grey_arrow_image,   "grey_arrow");
-    XmInstallImage(&signal_arrow_image, "signal_arrow");
-    XmInstallImage(&temp_arrow_image,   "temp_arrow");
-    XmInstallImage(&stop_image,         "plain_stop");
-    XmInstallImage(&cond_image,         "plain_cond");
-    XmInstallImage(&grey_stop_image,    "grey_stop");
-    XmInstallImage(&grey_cond_image,    "grey_cond");
-    XmInstallImage(&temp_stop_image,    "temp_stop");
-    XmInstallImage(&temp_cond_image,    "temp_cond");
+    InstallImage(&arrow_image,        "plain_arrow");
+    InstallImage(&grey_arrow_image,   "grey_arrow");
+    InstallImage(&signal_arrow_image, "signal_arrow");
+    InstallImage(&temp_arrow_image,   "temp_arrow");
+    InstallImage(&stop_image,         "plain_stop");
+    InstallImage(&cond_image,         "plain_cond");
+    InstallImage(&grey_stop_image,    "grey_stop");
+    InstallImage(&grey_cond_image,    "grey_cond");
+    InstallImage(&temp_stop_image,    "temp_stop");
+    InstallImage(&temp_cond_image,    "temp_cond");
 
     // Setup actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
