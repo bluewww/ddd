@@ -1842,7 +1842,6 @@ Ddd*menubar.commands*helpString:	\
 @rm This is the EMPH(Commands Menu).\n\
 \n\
 DESC(Command History..., [show all previous commands])\n\
-DESC(Command Buttons..., [edit command buttons])\n\
 \n\
 DESC(Previous, [show the previous command])\n\
 DESC(Next, [show the next command])\n\
@@ -1855,17 +1854,14 @@ DESC(Complete, [complete the current command])\n\
 DESC(Apply, [execute the current command])\n\
 \n\
 DESC(Clear Line, [clear @GDB@ command line])\n\
-DESC(Clear Window, [clear all before last @GDB@ prompt])
+DESC(Clear Window, [clear all before last @GDB@ prompt])\n\
+\n\
+DESC(Edit Buttons..., [edit command buttons])
 
 Ddd*commandsMenu.history.labelString:	        Command History...
 Ddd*commandsMenu.history.mnemonic:	        H
 Ddd*commandsMenu.history.documentationString: \
 @rm Show previous commands
-
-Ddd*commandsMenu.buttons.labelString:	        Command Buttons...
-Ddd*commandsMenu.buttons.mnemonic:	        B
-Ddd*commandsMenu.buttons.documentationString: \
-@rm Edit command buttons
 
 Ddd*commandsMenu.prev.labelString:	        Previous
 Ddd*commandsMenu.prev.mnemonic:		        P
@@ -1929,6 +1925,11 @@ Ddd*commandsMenu.clear_window.accelerator:      Ctrl Shift ~Meta<Key>U
 Ddd*commandsMenu.clear_window.acceleratorText:  Ctrl+Shift+U
 Ddd*commandsMenu.clear_window.documentationString: \
 @rm Clear all before last @GDB@ prompt
+
+Ddd*commandsMenu.buttons.labelString:	        Edit Buttons...
+Ddd*commandsMenu.buttons.mnemonic:	        B
+Ddd*commandsMenu.buttons.documentationString: \
+@rm Edit command buttons
 
 
 ! Status

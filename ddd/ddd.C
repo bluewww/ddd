@@ -690,7 +690,6 @@ static Widget apply_w;
 static MMDesc command_menu[] =
 {
     { "history",  MMPush, { gdbHistoryCB }},
-    { "buttons",  MMPush, { dddEditButtonsCB }},
     MMSep,
     { "prev",     MMPush, { gdbPrevCB }},
     { "next",     MMPush, { gdbNextCB }},
@@ -704,6 +703,8 @@ static MMDesc command_menu[] =
     MMSep,
     { "clear_line",   MMPush, { gdbClearCB }},
     { "clear_window", MMPush, { gdbClearWindowCB }},
+    MMSep,
+    { "buttons",  MMPush, { dddEditButtonsCB }},
     MMEnd
 };
 

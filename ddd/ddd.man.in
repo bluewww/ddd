@@ -2276,15 +2276,15 @@ To facilitate interaction, you can add own command buttons to
 or the data window (`\fBData Buttons\fR').
 .PP
 To define individual buttons, use the \fIButton Editor\fR, invoked via
-`\fBCommands | Command Buttons\fR'.  The button editor displays a
-text, where each line contains the command for exactly one button.
-Clicking on `\fBApply\fR' creates the appropriate buttons from the
-text.  If the text is empty (the default), no button is created.
+`\fBCommands | Edit Buttons\fR'.  The button editor displays a text,
+where each line contains the command for exactly one button.  Clicking
+on `\fBApply\fR' creates the appropriate buttons from the text.  If
+the text is empty (the default), no button is created.
 .PP
 .PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
 .PP
 As a simple example, assume you want to create a `\fBprint i\fR'
-button.  Invoke `\fBCommands | Command Buttons\fR' and enter a line
+button.  Invoke `\fBCommands | Edit Buttons\fR' and enter a line
 saying `\fBprint i\fR' in the button editor.  Then click on
 `\fBApply\fR'.  A button named `\fBPrint i\fR' will now appear below
 the debugger console\(em\&try it!  To remove the button, clear the
