@@ -1823,7 +1823,7 @@ static int index_control(const string& text)
 	case '\007':		// BEL
 	case '\010':		// BS
 	case '\011':		// HT
-	case '\012':		// NL
+     // case '\012':		// NL
 	case '\013':		// VT
 	case '\014':		// NP
 	case '\015':		// CR
@@ -1873,6 +1873,7 @@ void gdb_ctrl(char ctrl)
 	    {
 	    case '\t':
 		{
+		    // Go to next tab position
 		    const int TAB_WIDTH = 8;
 		    int column = promptPosition - startOfLine;
 		    int spaces = TAB_WIDTH - column % TAB_WIDTH;
@@ -1885,6 +1886,8 @@ void gdb_ctrl(char ctrl)
 		
 	    case '\r':
 		{
+		    // Erase last line
+		    XmTextReplace(gdb_w, startOfLine, promptPosition, "");
 		    promptPosition = startOfLine;
 		}
 		break;
@@ -1894,28 +1897,24 @@ void gdb_ctrl(char ctrl)
 
     case '\b':
 	{
+	    // Erase last character
 	    XmTextReplace(gdb_w, promptPosition - 1, promptPosition, "");
 	    promptPosition--;
 	}
 	break;
 
-    case '\n':
+    default:
 	{
-	    promptPosition = XmTextGetLastPosition(gdb_w);
-	    XmTextInsert(gdb_w, promptPosition++, "\n");
+	    // Issue control character
+	    string c;
+	    if (ctrl < ' ')
+		c = string("^") + string('@' + int(ctrl));
+	    else
+		c = "^?";
+	    XmTextInsert(gdb_w, promptPosition, (String)c);
+	    promptPosition += c.length();
 	}
 	break;
-
-    default:
-    {
-	string c;
-	if (ctrl < ' ')
-	    c = string("^") + string('@' + int(ctrl));
-	else
-	    c = "^?";
-	XmTextInsert(gdb_w, promptPosition, (String)c);
-	promptPosition += c.length();
-    }
     }
 
     // XmTextShowPosition(gdb_w, promptPosition);
@@ -1937,18 +1936,25 @@ void _gdb_out(string text)
 
     private_gdb_output = true;
 
+    // Don't care for CR if followed by NL
+    text.gsub("\r\n", "\n");
+
+    // Don't care for strings to be ignored
     static string empty;
     if (gdb_out_ignore != "")
 	text.gsub(gdb_out_ignore, empty);
 
+    // Pass TEXT to various functions
     set_selection_from_gdb(text);
     set_buttons_from_gdb(console_buttons_w, text);
     set_buttons_from_gdb(source_buttons_w, text);
     set_status_from_gdb(text);
     set_tty_from_gdb(text);
 
+    // Output TEXT on TTY
     tty_out(text);
 
+    // Output TEXT in debugger console
     char ctrl;
     do {
 	check_emergencies();
