@@ -386,6 +386,8 @@ Volunteers for fixing these and other bugs are welcome!
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
 
-180. The Alt+L and Alt+U accelerators don't work.
+181. `File | Close' does not work properly.
 
-181. (Insert your bug here)
+182. Reading a binary file causes an Abort.
+
+182. (Insert your bug here)
