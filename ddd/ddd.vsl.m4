@@ -107,13 +107,13 @@ none () -> "";
 
 // Ordinary values
 simple_value (value) -> 
-  simple_color(vcenter(value & hfill()));
+  simple_color(vcenter(value_rm(value) & hfill()));
 numeric_value (value) -> 
-  simple_color(vcenter(hfill() & value));
+  simple_color(vcenter(hfill() & value_rm(value)));
 
 // Collapsed ordinary values
 collapsed_simple_value () -> 
-  simple_color(vcenter("..." & hfill()));
+  simple_color(vcenter(value_rm("...") & hfill()));
 
 // Info texts: single lines
 text_line (line) -> 
@@ -124,15 +124,15 @@ text_value (...) -> valign(...);
 
 // Collapsed ordinary values
 collapsed_text_value () -> 
-  text_color("..." & hfill());
+  text_color(value_rm("...") & hfill());
 
 // Ordinary pointers
 pointer_value (value) -> 
-  pointer_color(vcenter(value & hfill()));
+  pointer_color(vcenter(value_rm(value) & hfill()));
 
 // Collapsed pointers
 collapsed_pointer_value () -> 
-  pointer_color(vcenter("..." & hfill()));
+  pointer_color(vcenter(value_rm("...") & hfill()));
 
 // Dereferenced pointers
 dereferenced_pointer_value (value) -> 
@@ -140,11 +140,11 @@ dereferenced_pointer_value (value) ->
 
 // Collapsed array
 collapsed_array () -> 
-  array_color(vcenter("\133...\135" & hfill()));
+  array_color(vcenter(value_rm("[...]") & hfill()));
 
 // Empty array
 empty_array () -> 
-  array_color(vcenter("\133\135" & hfill()));
+  array_color(vcenter(value_rm("[]") & hfill()));
 
 // Vertical array
 vertical_array (...) -> 
@@ -167,11 +167,11 @@ struct_value (...) ->
 
 // Collapsed struct
 collapsed_struct_value () -> 
-  struct_color(vcenter("{...}" & hfill()));
+  struct_color(vcenter(value_rm("{...}") & hfill()));
 
 // Empty struct
 empty_struct_value () ->
-  struct_color(vcenter("{}" & hfill()));
+  struct_color(vcenter(value_rm("{}") & hfill()));
 
 // Unnamed struct
 horizontal_unnamed_struct (...) -> horizontal_array(...);
@@ -179,16 +179,16 @@ vertical_unnamed_struct   (...) -> horizontal_array(...);
 
 // Struct member name
 struct_member_name (name) -> 
-  struct_color(name);
+  struct_color(value_rm(name));
 
 // Struct member
 struct_member (name, sep, value, name_width) -> 
-  vcenter(name | hspace(name_width)) 
-  & vcenter(sep) & value;
+  vcenter(value_rm(name) | hspace(name_width)) 
+  & vcenter(value_rm(sep)) & value_rm(value);
 
 // Same, but with suppressed member name
 struct_member (value) -> 
-  value;
+  value_rm(value);
 
 // List value
 list_value (...) -> 
@@ -196,11 +196,11 @@ list_value (...) ->
 
 // Collapsed list
 collapsed_list_value () -> 
-  list_color(vcenter("..." & hfill()));
+  list_color(vcenter(value_rm("...") & hfill()));
 
 // Empty list
 empty_list_value () -> 
-  list_color(vcenter("" & hfill()));
+  list_color(vcenter(value_rm("") & hfill()));
 
 // Unnamed list
 horizontal_unnamed_list (...) -> horizontal_array(...);
@@ -208,7 +208,7 @@ vertical_unnamed_list  (...)  -> horizontal_array(...);
 
 // List member name
 list_member_name (name) -> 
-  list_color(name);
+  list_color(value_rm(name));
 
 // List member
 list_member (name, sep, value, name_width) -> 
@@ -229,19 +229,19 @@ collapsed_sequence_value () ->
 
 // Reference
 reference_value (ref, value) -> 
-  reference_color(vcenter(ref & ": ") & value & hfill());
+  reference_color(vcenter(value_rm(ref & ": ")) & value & hfill());
 
 // Collapsed reference
 collapsed_reference_value () -> 
-  reference_color(vcenter("..." & hfill()));
+  reference_color(vcenter(value_rm("...") & hfill()));
 
 // Changed value
 changed_value (value) -> 
-  changed_color(it(value));
+  changed_color(value_it(value));
 
 // A value that is repeated N times
 repeated_value (value, n) ->
-  value & vcenter(" <" & dec(n) & "\327>");
+  value & vcenter(value_rm(" <" & dec(n) & "\327>"));
 
 // The entire value
 value_box (value) -> 
