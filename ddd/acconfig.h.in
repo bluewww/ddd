@@ -47,6 +47,9 @@
 /* Define if your C++ library has an ostrstream::frozen() function. */
 #undef HAVE_FROZEN_OSTRSTREAM
 
+/* Define if your C++ compiler supports `long long' types. */
+#undef HAVE_LONG_LONG
+
 /* Define if MAXPATHLEN is defined or declared in <sys/param.h>. */
 #undef HAVE_MAXPATHLEN
 

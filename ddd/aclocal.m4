@@ -335,6 +335,29 @@ fi
 ])dnl
 dnl
 dnl
+dnl
+dnl If the C++ compiler supports `long long' types,  define `HAVE_LONG_LONG'.
+dnl
+AC_DEFUN(ICE_CXX_LONG_LONG,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether ${CXX} supports long long types)
+AC_CACHE_VAL(ice_cv_have_long_long,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(,[long long a;], 
+ice_cv_have_long_long=yes, 
+ice_cv_have_long_long=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_long_long)
+if test "$ice_cv_have_long_long" = yes; then
+AC_DEFINE(HAVE_LONG_LONG)
+fi
+])dnl
+dnl
+dnl
 dnl Set output variable `CPP_TRADITIONAL' to a command that runs a 
 dnl "traditional" C preprocessor (that is, pre-ANSI-C).
 dnl Try each one of `$CPP', `$CC -E', `/lib/cpp' either without flags
