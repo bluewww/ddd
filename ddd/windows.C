@@ -43,6 +43,7 @@ char windows_rcsid[] =
 #include "assert.h"
 #include "cmdtty.h"
 #include "ddd.h"
+#include "editing.h"
 #include "exectty.h"
 #include "exit.h"
 #include "findParent.h"
@@ -1196,13 +1197,22 @@ void save_preferred_paned_sizes(Widget paned)
     }
 }
 
-const Dimension MIN_PANED_SIZE = 50;
+const Dimension MIN_PANED_SIZE = 64;
+
+static void paned_changed(Widget /* paned */)
+{
+    // Recenter the tool shell
+    recenter_tool_shell(source_view->source());
+
+    // Make sure the current command line is visible
+    end_of_lineAct(gdb_w, 0, 0, 0);
+}
 
 void manage_paned_child(Widget w)
 {
     Widget paned = XtParent(w);
 
-    if (paned == 0 || !XmIsPanedWindow(paned))
+    if (paned == 0 || !XmIsPanedWindow(paned) || XtIsManaged(w))
     {
 	XtManageChild(w);
 	return;
@@ -1305,8 +1315,7 @@ void manage_paned_child(Widget w)
 	}
     }
 
-    // Recenter the tool shell
-    recenter_tool_shell(source_view->source());
+    paned_changed(w);
 }
     
 void unmanage_paned_child(Widget w)
@@ -1314,7 +1323,7 @@ void unmanage_paned_child(Widget w)
     // Whenever we're unmanaging a child, be sure the command window
     // doesn't grow.
     Widget paned = XtParent(w);
-    if (paned == 0 || !XmIsPanedWindow(paned))
+    if (paned == 0 || !XmIsPanedWindow(paned) || !XtIsManaged(w))
     {
 	XtUnmanageChild(w);
 	return;
@@ -1367,6 +1376,5 @@ void unmanage_paned_child(Widget w)
 	XtVaSetValues(command, XmNpaneMaximum, no_constraints.max, NULL);
     }
 
-    // Recenter the tool shell
-    recenter_tool_shell(source_view->source());
+    paned_changed(w);
 }
