@@ -812,12 +812,32 @@ To run your program again, with the same arguments, select
 command tool.  You may also enter `\fBrun\fR', followed by arguments
 at the debugger prompt instead.
 .PP
-By default, input and output of the debugged program go to the
-debugger console.  As an alternative, \s-1@DDD@\s+1 can also invoke an
-\fIexecution window\fR, where the program terminal input and output is
-shown.  See `\fBProgram\(->Run in Execution Window\fR' for details.
-.PP
 .PSPIC @srcdir@/PICS/ddd-arguments.ps 15.3cm
+.\"
+.SS "Using the Execution Window"
+.PP
+By default, input and output of your program go to the debugger
+console.  As an alternative, \s-1@DDD@\s+1 can also invoke an
+\fIexecution window\fR, where the program terminal input and output is
+shown.  To activate the execution window, select `\fBProgram\(->Run in
+Execution Window\fR'.
+.PP
+While the execution window is active, \s-1@DDD@\s+1 invokes your
+program such that its standard input, output, and error streams are
+redirected to the execution window.  Note that the device
+`\fB/dev/tty\fR' still refers to the debugger console, \fInot\fR the
+execution window.
+.PP
+You can override the \s-1@DDD@\s+1 stream redirection by giving
+alternate redirection operations as arguments.  For instance, to have
+your program read from a file, but to write ro the execution window,
+invoke your program with `\fB< \fIfile\fR' as argument.  Likewise, to
+redirect the standard error output to the debugger console, use `\fB2>
+/dev/tty\fR' (assuming the inferior debugger and/or your \s-1UNIX\s+1
+shell support standard error redirection).
+.PP
+The execution window is not available in \s-1JDB\s+1, since
+\s-1JDB\s+1 does not support redirection.
 .\"
 .\"
 .SS "Attaching to a Running Process"
