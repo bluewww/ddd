@@ -483,12 +483,15 @@ AC_SUBST(LIBIBERTY)
 dnl
 dnl
 if test "$ddd_have_readline" != true; then
+    AC_MSG_NOTICE([Using bundled readline library.])
     AC_CONFIG_SUBDIRS([readline])
 fi
 if test "$ddd_have_libiberty" != true; then
+    AC_MSG_NOTICE([Using bundled libiberty library.])
     AC_CONFIG_SUBDIRS([libiberty])
 fi
 if test "$ddd_have_termcap" != true; then
+    AC_MSG_NOTICE([Using bundled termcap library.])
     AC_CONFIG_SUBDIRS([termcap])
     LIBTERMCAP="../termcap/libtermcap.a"
 fi
