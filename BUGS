@@ -251,4 +251,7 @@ Volunteers for fixing these and other bugs are welcome!
     2.1, does not show any breakpoint indicators.  Nor does it show
     arrows.  This does not happen with Motif 2.0.
 
-248 (Insert your bug here)
+248 Source popup menus are insensitive the first time they pop up.
+    Maybe they should be children of the form?
+
+249 (Insert your bug here)
