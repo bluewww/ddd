@@ -1698,6 +1698,8 @@ string DataDisp::refresh_display_command()
 		}
 		else
 		{
+		    if (i++)
+			command += ", ";
 		    command += dn->name();
 		}
 	    }
