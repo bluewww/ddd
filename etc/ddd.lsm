@@ -15,10 +15,10 @@ Author:         luetke@ips.cs.tu-bs.de (Dorothea Luetkehaus)
                 zeller@ips.cs.tu-bs.de (Andreas Zeller)
 Maintained-by:  ddd@ips.cs.tu-bs.de (DDD Maintainers)
 Primary-site:   sunsite.unc.edu /pub/Linux/devel/debuggers/ddd/
-                2497k ddd-2.2.1.tar.gz  (Source)
-                692k  ddd-2.2.1.bin.ELF.dynamic.gz    binary w/ dynamic Motif
-                1168k ddd-2.2.1.bin.ELF.semistatic.gz binary w/ static Motif
-                1634k ddd-2.2.1.bin.ELF.static.gz     binary w/ static all
+                2447k ddd-2.2.2.tar.gz  (Source)
+                692k  ddd-2.2.2.bin.ELF.dynamic.gz    binary w/ dynamic Motif
+                1168k ddd-2.2.2.bin.ELF.semistatic.gz binary w/ static Motif
+                1634k ddd-2.2.2.bin.ELF.static.gz     binary w/ static all
 Alternate-site: ftp.funet.fi /pub/OS/Linux/devel/debuggers/ddd/
 Original-site:  ftp.ips.cs.tu-bs.de /pub/local/softech/ddd/bin/linux
 Platforms:      Requires Motif (OSF/Motif >= 1.1 or LessTif >= 0.82)
