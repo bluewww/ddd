@@ -626,12 +626,7 @@ public:
 		     Time time = CurrentTime);
 
     // Locate function S; if S is omitted, locate last execution position.
-    static void lookup(string s, bool echo, bool verbose, bool prompt);
-
-    static void lookup(const string& s = "", bool silent = false)
-    {
-	lookup(s, !silent, !silent, false);
-    }
+    static void lookup(string s, bool silent = false);
 
     // Read file FILE_NAME; place cursor at INITIAL_LINE.
     static void read_file(string file_name,

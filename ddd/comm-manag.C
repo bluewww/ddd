@@ -1554,8 +1554,7 @@ void user_cmdOAC(void *data)
     if (cmd_data->lookup_arg != "")
     {
 	// As a side effect of `list X', lookup X in the source
-	source_view->lookup(cmd_data->lookup_arg, false, false, do_prompt);
-	do_prompt = false;	// `lookup' already did it for us
+	source_view->lookup(cmd_data->lookup_arg, false);
     }
 
     delete cmd_data;

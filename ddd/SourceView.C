@@ -1401,6 +1401,7 @@ void SourceView::set_source_argCB(Widget text_w,
     if (text == "")
 	return;
 
+    XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
     if (bool(client_data))
 	selection_click = false;
 
@@ -1412,8 +1413,6 @@ void SourceView::set_source_argCB(Widget text_w,
     {
 	// No selection?  If the current motion was caused by a mouse
 	// click, fetch word at current cursor position instead.
-	XmTextVerifyCallbackStruct *cbs = 
-	    (XmTextVerifyCallbackStruct *)call_data;
 	if (cbs != 0 && cbs->reason == XmCR_MOVING_INSERT_CURSOR)
 	{
 	    XEvent *event = cbs->event;
@@ -1440,7 +1439,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	}
     }
 
-    if (!have_selection && call_data == 0)
+    if (!have_selection && cbs == 0)
     {
 	// Still no selection?  We're probably called from setSelection();
 	// use the last selected word instead.
@@ -1458,6 +1457,23 @@ void SourceView::set_source_argCB(Widget text_w,
 	return;
     }
 
+    // Check for double clicks
+    bool double_click = false;
+    if (selection_click && selection_time != 0)
+    {
+	static Time last_selection_time = 0;
+
+	double_click = 
+	    last_selection_time != 0 &&
+	    (Time(selection_time - last_selection_time) <= 
+	     Time(XtGetMultiClickTime(XtDisplay(text_w))));
+
+	if (double_click)
+	    last_selection_time = 0;
+	else
+	    last_selection_time = selection_time;
+    }
+
     int startIndex = 0;
     if (startPos > 0)
 	startIndex = text.index('\n', startPos - text.length()) + 1;
@@ -1466,7 +1482,7 @@ void SourceView::set_source_argCB(Widget text_w,
     if (endPos > 0)
 	endIndex = text.index('\n', endPos - text.length()) + 1;
 
-    bool bp_selected = false;
+    bool in_bp_area = false;
     if (selection_click
 	&& startIndex == endIndex
 	&& startPos < XmTextPosition(text.length())
@@ -1474,6 +1490,9 @@ void SourceView::set_source_argCB(Widget text_w,
 	&& text[startPos] != '\n'
 	&& text[endPos] != '\n')
     {
+	string pos = "";
+	bool bp_found = false;
+
 	if (text_w == source_text_w)
 	{
 	    int line_nr = 0;
@@ -1485,9 +1504,11 @@ void SourceView::set_source_argCB(Widget text_w,
 				in_text, bp_nr) 
 		&& !in_text)
 	    {
+		in_bp_area = true;
+
 		// Selection from line number area: prepend source file name
-		source_arg->set_string(current_source_name() 
-				       + ":" + itostring(line_nr));
+		pos = current_source_name() + ":" + itostring(line_nr);
+		source_arg->set_string(pos);
 
 		// If a breakpoint is here, select this one only
 		MapRef ref;
@@ -1495,10 +1516,8 @@ void SourceView::set_source_argCB(Widget text_w,
 		     bp != 0;
 		     bp = bp_map.next(ref))
 		{
-		    bp->selected() = bp_matches(bp, line_nr);
+		    bp_found |= (bp->selected() = bp_matches(bp, line_nr));
 		}
-
-		bp_selected = true;
 	    }
 	}
 	else if (text_w == code_text_w
@@ -1509,10 +1528,12 @@ void SourceView::set_source_argCB(Widget text_w,
 	    int index = address_index(text, startPos);
 	    if (index >= 0)
 	    {
-		string address = text.from(index);
-		address = address.through(rxaddress);
+		in_bp_area = true;
 
-		source_arg->set_string(address);
+		pos = text.from(index);
+		pos = pos.through(rxaddress);
+
+		source_arg->set_string(pos);
 
 		// If a breakpoint is here, select this one only
 		MapRef ref;
@@ -1520,17 +1541,23 @@ void SourceView::set_source_argCB(Widget text_w,
 		     bp != 0;
 		     bp = bp_map.next(ref))
 		{
-		    bp->selected() = 
-			(bp->type() == BREAKPOINT
-			 && (compare_address(address, bp->address()) == 0));
+		    bp_found |= (bp->selected() = 
+				 (bp->type() == BREAKPOINT && 
+				  compare_address(pos, bp->address()) == 0));
 		}
-		
-		bp_selected = true;
 	    }
+	}
+
+	if (in_bp_area && double_click)
+	{
+	    if (bp_found)
+		clear_bp(pos, text_w);
+	    else
+		create_bp(pos, text_w);
 	}
     }
 
-    if (bp_selected)
+    if (in_bp_area)
     {
 	// Update breakpoint selection
 	process_breakpoints(last_info_output);
@@ -1549,7 +1576,11 @@ void SourceView::set_source_argCB(Widget text_w,
 	    s = s.after('\n');
 
 	if (s != "")
+	{
 	    source_arg->set_string(s);
+	    if (double_click)
+		lookup(s);	// Doesn't work yet -- FIXME
+	}
     }
 }
 
@@ -3843,12 +3874,12 @@ void SourceView::check_remainder(string& info_output)
 // Locate position
 //-----------------------------------------------------------------------
 
-void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
+void SourceView::lookup(string s, bool silent)
 {
     if (s != "" && isspace(s[0]))
 	s = s.after(rxwhite);
 
-    if (s.length() == 0)
+    if (s == "")
     {
 	// Empty argument given
 	if (last_execution_pc != "")
@@ -3868,7 +3899,7 @@ void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 	    // Show last execution position
 	    _show_execution_position(last_execution_file, 
 				     last_execution_line,
-				     !verbose);
+				     silent);
 	}
 	else
 	{
@@ -3889,14 +3920,13 @@ void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 	    {
 		Command c("list " + current_source_name() + ":" + 
 			  itostring(line));
-		c.verbose = verbose;
-		c.prompt  = do_prompt;
-		c.echo    = echo;
+		c.verbose = !silent;
+		c.echo    = !silent;
+		c.prompt  = !silent;
 		gdb_command(c);
-		do_prompt = false;
 		break;
 	    }
-
+		
 	    case JDB:
 		show_position(current_source_name()
 			      + ":" + itostring(line));
@@ -3911,7 +3941,7 @@ void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 	}
 	else
 	{
-	    if (verbose)
+	    if (!silent)
 		post_error("No line " 
 			   + itostring(line) + " in current source.",
 			   "no_such_line_error", source_text_w);
@@ -3936,7 +3966,7 @@ void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 		}
 	    }
 
-	    if (bp == 0 && verbose)
+	    if (bp == 0 && !silent)
 		post_error("No breakpoint number " + itostring(nr) + ".", 
 			   "no_such_breakpoint_error", source_text_w);
 	}
@@ -3947,11 +3977,10 @@ void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 	if (gdb->type() == GDB)
 	{
 	    Command c("list " + s);
-	    c.verbose = verbose;
-	    c.prompt  = do_prompt;
-	    c.echo    = echo;
+	    c.verbose = !silent;
+	    c.echo    = !silent;
+	    c.prompt  = !silent;
 	    gdb_command(c);
-	    do_prompt = false;
 	}
 	else
 	    show_position(s);
@@ -3965,21 +3994,20 @@ void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 	{
 	    if (s[0] == '0')	// Address given
 		s = "*" + s;
-	    if (s[0] != '\'' && s[0] != '*')
+	    if (s.length() > 0 && s[0] != '\'' && s[0] != '*')
 		s = string('\'') + s + '\'';
 	    Command c("list " + s);
-	    c.verbose = verbose;
-	    c.prompt  = do_prompt;
-	    c.echo    = echo;
+	    c.verbose = !silent;
+	    c.echo    = !silent;
+	    c.prompt  = !silent;
 	    gdb_command(c);
-	    do_prompt = false;
 	    break;
 	}
 
 	case DBX:
 	case JDB:
 	{
-	    string pos = dbx_lookup(s, !verbose);
+	    string pos = dbx_lookup(s, silent);
 	    if (pos != "")
 		show_position(pos);
 	    break;
@@ -3988,18 +4016,14 @@ void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 	case XDB:
 	{
 	    Command c("v " + s);
-	    c.verbose = verbose;
-	    c.prompt  = do_prompt;
-	    c.echo    = echo;
+	    c.verbose = !silent;
+	    c.echo    = !silent;
+	    c.prompt  = !silent;
 	    gdb_command(c);
-	    do_prompt = false;
 	    break;
 	}
 	}
     }
-
-    if (do_prompt)
-	prompt();
 }
 
 
@@ -4622,6 +4646,7 @@ void SourceView::setSelection(XtPointer client_data, XtIntervalId *)
     XmTextSetSelection(w, selection_startpos, selection_endpos, 
 		       selection_time);
 
+    selection_time = 0;
     set_source_argCB(w, XtPointer(false), 0);
 }
 
@@ -4659,6 +4684,7 @@ void SourceView::endSelectWordAct (Widget text_w, XEvent* e,
 				   String *params, Cardinal *num_params)
 {
     selection_event = *e;
+    selection_click = false;
 
     XtCallActionProc(text_w, "extend-end", e, params, *num_params);
     
