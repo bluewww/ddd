@@ -386,8 +386,14 @@ Volunteers for fixing these and other bugs are welcome!
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
 
-181. `File | Close' does not work properly.
+181* `File | Close' does not work properly.
 
-182. Reading a binary file causes an Abort.
+182* Reading a binary file causes an Abort.
 
-182. (Insert your bug here)
+183* Hitting `stepi' too fast causes a delay cursor to appear that
+     won't go.
+
+184* When the PC changes, but no line number is received, clear
+     execution arrow.
+
+185. (Insert your bug here)

@@ -355,9 +355,6 @@ Volunteers for these and other projects are welcome!
 187. Have a `commands' menu listing up all debugger commands.  Should
      be organized according to `help' classes.
 
-189. Have smarter `Edit' functions.  Cut and copy from the window that
-     owns the selection.
-
 190. Make sure pull-down menus always stay on top.
 
 191. (Insert your project idea here)
