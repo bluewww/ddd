@@ -119,5 +119,11 @@ detail.
     - Sometimes, the CMD tool "jumps" to a default location.
       With DDD 2.2.3, this happened each time a new source
       file was opened.
+    This happens with CDE on Linux.
 
-282 (Insert new bugs here)
+282 Michael Marxmeier <mike@msede.com> writes: I discovered that ddd
+    2.99.1 "run again" discards any arguments specified previously
+    with "run".  This works fine with gdb so i assume ddd is
+    responsible.
+
+284 (Insert new bugs here)

@@ -45,12 +45,13 @@ AIX
      messages below might no more apply.]
 
 
-Reported by:  Jonathan Edwards <edwards@intranet.com>,
-              L. Scott Emmons >scott_emmons@uscs.com>
+Reported by:  Andreas Zeller <zeller@ips.cs.tu-bs.de>
 
-    Do not use xlC for compiling DDD; use GCC instead.  If you use
-    xlC, the data display does not work correctly (only the very first
-    variable displayed is shown).
+    Use GNU make and GCC for building DDD.
+    * Using AIX make instead of GNU make will cause pre-built files to
+      be re-built (which is a pain if you don't have all appropriate
+      GNU tools).
+    * Using xlC instead of GCC causes a number of minor bugs in DDD.
 
 
 Reported by:  bas@phys.uva.nl (Bas V. de Bakker),
@@ -78,14 +79,12 @@ Reported by:  bas@phys.uva.nl (Bas V. de Bakker),
 
 Reported by:	Jacek M. Holeczek <holeczek@clri6f.gsi.de>
 
-    This "howto" describes the way one can get ddd-2.0 compiled on AIX 3.2
+    This "howto" describes the way one can get ddd-3.0 compiled on AIX 4.1
     using standard AIX utilities: C Set ++ for AIX Compiler (xlC), lex
-    and yacc. The same procedure should be valid on AIX 4.1.
+    and yacc. The same procedure should be valid on AIX 4.2 and AIX 3.2.
 
-    First unpack the source distribution and go to the ddd-2.0
-    subdirectory.  Then (an error in the configure script) make
-    a copy of ./ddd/dummy.c:
-            cp ./ddd/dummy.c ./ddd/dummy.c.orig
+    First unpack the source distribution and go to the ddd-3.0
+    subdirectory.
 
     Then set some environment variables:
             export CC=xlC
@@ -103,25 +102,21 @@ Reported by:	Jacek M. Holeczek <holeczek@clri6f.gsi.de>
     Then run configure:
             ./configure -v
 
-    Then restore the ddd/dummy.c:
-            cp ./ddd/dummy.c.orig ./ddd/dummy.c
-
-    Then in ./libiberty/Makefile and ./termcap/Makefile change the
-    CFLAGS from "-g" into "-O".
-
-    Then in ./ddd/config.h add a line in form:
+    On AIX 3.2 you might need to add a line in ./ddd/config.h in form:
             #define HAVE_GETHOSTNAME_DECL 1
-    (On AIX 4.1 you should have it already defined by ./configure.)
+    (On AIX 4.1, AIX 4.2 you should have it already defined by ./configure.)
 
     If you decide NOT to use gnu flex and gnu bison and use
     standard AIX lex and yacc instead, you have to remove some
     files:
-            rm ./ddd/vsl-gramma.C ./ddd/vsl-gramma.h ./ddd/vsl-lex.C
+            rm ./ddd/vsl-gramma.C ./ddd/vsl-gramma.h
+            rm ./ddd/vsl-lex.C
+            rm ./ddd/rxscan.C
 
     Now run "make clean" and then "make".
 
     If you decided to use standard AIX lex and yacc the make will
-    crash while compiling ddd/VSLRead.C. You have to edit
+    crash while compiling ./ddd/VSLRead.C. You have to edit
     ./ddd/vsl-gramma.C (after the ./ddd/vsl-gramma.C is newly
     created by yacc) and modify the declaration of yyerror:
             extern "C" void yyerror(char *s);       // added "C"
@@ -133,7 +128,10 @@ Reported by:	Jacek M. Holeczek <holeczek@clri6f.gsi.de>
             int
             yyparse()
 
-    then run "make" again.  You should get no other warnings/errors.
+    then run "make" again.  You should get no other warnings/errors except :
+      - when compiling ./ddd/mainloop.C :
+	63  1500-010: (W) WARNING in ddd_main_loop(): Infinite loop.  Program may not stop.
+        ( you can safely ignore it ).
     Finally run "make strip" and "make install".  Have fun ...
 
 DEC
