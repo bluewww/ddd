@@ -1056,7 +1056,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     int c;
     while ((c = is.get()) != EOF)
-	os.put(c);
+	os.put((unsigned char) c);
 
     XtUnmanageChild(plot->export_dialog);
 }

@@ -4918,11 +4918,12 @@ void DataDisp::update_displays(const StringArray& displays,
     }
 
     ProgressMeter s("Restoring displays");
-    for (int i = 0; i < values.size(); i++)
+    int i;
+    for (i = 0; i < values.size(); i++)
 	s.total += values[i].length();
 
     // Update values
-    for (int i = 0; i < displays.size(); i++)
+    for (i = 0; i < displays.size(); i++)
     {
 	const string& name  = displays[i];
 	const string& value = values[i];

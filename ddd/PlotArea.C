@@ -389,19 +389,17 @@ void PlotArea::plot(const string& cmds, bool clear)
 	return;
 
     // Initialize
-    Dimension width, height;
-    int depth;
-    Pixel background;
+    Dimension area_width, area_height;
+    Pixel area_background;
     XtVaGetValues(area, 
-		  XmNwidth, &width, 
-		  XmNheight, &height, 
-		  XmNdepth, &depth, 
-		  XmNbackground, &background,
+		  XmNwidth, &area_width, 
+		  XmNheight, &area_height, 
+		  XmNbackground, &area_background,
 		  NULL);
 
     // Set scaling factor between internal driver & window geometry
-    xscale = (double)width  / 4096.0;
-    yscale = (double)height / 4096.0;
+    xscale = (double)area_width  / 4096.0;
+    yscale = (double)area_height / 4096.0;
 
     cx = 0;
     cy = 0;
@@ -418,9 +416,9 @@ void PlotArea::plot(const string& cmds, bool clear)
     if (clear)
     {
 	// Set win background
-	XSetForeground(dpy, gc, background);
-	XFillRectangle(dpy, win, gc, 0, 0, width, height);
-	XSetBackground(dpy, gc, background);
+	XSetForeground(dpy, gc, area_background);
+	XFillRectangle(dpy, win, gc, 0, 0, area_width, area_height);
+	XSetBackground(dpy, gc, area_background);
     }
 
     int n = commands.freq('\n');
