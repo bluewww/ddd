@@ -152,10 +152,10 @@ static Widget command_to_widget(Widget ref, string command)
 // Issue `set' command
 static void gdb_set_command(string set_command, string value)
 {
-    if (value == "unlimited")
+    if (gdb->type() == GDB && value == "unlimited")
 	value = "0";
 
-    if (set_command == "dir" && value != "")
+    if (gdb->type() == GDB && set_command == "dir" && value != "")
     {
 	// `dir' in GDB works somewhat special: it prepends its
 	// argument to the source path instead of simply setting it.
@@ -175,6 +175,11 @@ static void gdb_set_command(string set_command, string value)
 
     if (set_command.contains("O ", 0))
     {
+	if (value.contains('\'', 0) && value.contains('\'', -1))
+	    value = unquote(value);
+	if (value == "N/A")
+	    value = "";
+
 	gdb_command(set_command + "=" + value); // Perl
     }
     else if (set_command.contains("set $", 0) && !set_command.contains(" = "))
@@ -1505,7 +1510,11 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	e_type = TextFieldEntry;
 	base  = line.before(" = ");
 	strip_space(base);
+
 	value = unquote(line.after(" = "));
+	if (value == "N/A")
+	    value = "";
+
 	set_command  = "O " + base;
 	show_command = "O " + base + "?";
 	doc = base;
@@ -2648,6 +2657,9 @@ static void get_setting(ostream& os, DebuggerType type,
 
     case PERL:
     {
+	if (value == "N/A")
+	    value = "";
+
 	string option = base.after(rxwhite);
 	bool taboo = false;
 	for (int i = 0; !taboo && i < int(XtNumber(perl_taboos)); i++)
@@ -2655,6 +2667,7 @@ static void get_setting(ostream& os, DebuggerType type,
 
 	if (!taboo)
 	    os << base << '=' << value << '\n';
+
 	break;
     }
 
