@@ -3247,7 +3247,24 @@ string DataDisp::process_displays (string& displays,
     disabling_occurred = false;
 
     if (displays.length() == 0)
-	return displays;
+    {
+	bool have_displays = false;
+	MapRef ref;
+	for (int k = disp_graph->first_nr(ref); 
+	     k != 0;
+	     k = disp_graph->next_nr(ref))
+	{
+	    DispNode* dn = disp_graph->get(k);
+	    if (!dn->is_user_command())
+	    {
+		have_displays = true;
+		break;
+	    }
+	}
+
+	if (!have_displays)
+	    return "";		// No data and no displays
+    }
 
     StatusShower s("Updating displays");
 
@@ -3400,7 +3417,24 @@ string DataDisp::process_displays (string& displays,
 void DataDisp::process_user (StringArray& answers)
 {
     if (answers.size() == 0)
-	return;
+    {
+	bool have_displays = false;
+	MapRef ref;
+	for (int k = disp_graph->first_nr(ref); 
+	     k != 0;
+	     k = disp_graph->next_nr(ref))
+	{
+	    DispNode* dn = disp_graph->get(k);
+	    if (dn->is_user_command())
+	    {
+		have_displays = true;
+		break;
+	    }
+	}
+
+	if (!have_displays)
+	    return;		// No data and no displays
+    }
 
     StatusShower s("Updating status displays");
 
