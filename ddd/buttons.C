@@ -675,6 +675,14 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	}
     }
 
+    if (gdb->type() == PYDB)
+    {
+	// PYDB states the command in the first line
+	tip = tip.after('\n');
+	strip_leading_space(tip);
+    }
+
+    // DBX (and others) restate the command name at the beginning.
     if (tip.contains(command, 0))
     {
 	string t = tip.after(command);
