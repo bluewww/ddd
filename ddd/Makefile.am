@@ -655,13 +655,15 @@ ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXP) $(LIBXPM) $(LIBXAW) $(LIBXEXT) \
 # -----------------------------------------------------------------------------
 
 # The flags we use to compile C++ files.
-# CXXOPT = -DNDEBUG -O2
+# Optimizing flags. (-DNDEBUG -O2)
 CXXOPT = @CXXOPT@
-# CXXDEBUG = -g
+# Debugging flags.  (-g)
 CXXDEBUG = @CXXDEBUG@
-# CXXWARNINGS = -W -Wall
+# Warnings.  (-W -Wall)
 CXXWARNINGS = @CXXWARNINGS@
-CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS)
+# Extras.  (-fexternal-templates -felide-constructors)
+CXXSTUFF = @CXXSTUFF@ @X_PERMISSIVE@
+CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS) $(CXXSTUFF)
 
 bin_PROGRAMS = ddd
 noinst_PROGRAMS = stringify userinfo ctest cxxtest vsl
