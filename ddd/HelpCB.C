@@ -31,14 +31,15 @@ char HelpCB_rcsid[] =
 
 #include "config.h"
 
-#include "ddd.h"		// process_pending_events()
-#include "HelpCB.h"
+#include "Agent.h"
+#include "ComboBox.h"
 #include "DestroyCB.h"
+#include "HelpCB.h"
+#include "MakeMenu.h"
+#include "TimeOut.h"
+#include "ddd.h"		// process_pending_events()
 #include "findParent.h"
 #include "longName.h"
-#include "Agent.h"
-#include "TimeOut.h"
-#include "MakeMenu.h"
 #include "toolbar.h"
 
 #include <stdio.h>
@@ -617,6 +618,43 @@ struct FindInfo {
     Widget text;		// The text to be searched
 };
 
+static bool lock_update_arg = false;
+
+static void sort(StringArray& a)
+{
+    // Shell sort -- simple and fast
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= a.size());
+    do {
+	h /= 3;
+	for (int i = h; i < a.size(); i++)
+	{
+	    string v = a[i];
+	    int j;
+	    for (j = i; j >= h && a[j - h] > v; j -= h)
+		a[j] = a[j - h];
+	    if (i != j)
+		a[j] = v;
+	}
+    } while (h != 1);
+}
+
+// Remove adjacent duplicates in A
+static void uniq(StringArray& a)
+{
+    StringArray b;
+
+    for (int i = 0; i < a.size(); i++)
+    {
+	if (i == 0 || a[i - 1] != a[i])
+	    b += a[i];
+    }
+    
+    a = b;
+}
+
 static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
 		   bool forward)
 {
@@ -629,6 +667,12 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
     String key_s = XmTextFieldGetString(fi->key);
     string key(key_s);
     XtFree(key_s);
+
+    static StringArray find_keys;
+    find_keys += key;
+    sort(find_keys);
+    uniq(find_keys);
+    ComboBoxSetList(fi->key, find_keys);
 
     String text_s = XmTextGetString(fi->text);
     string text(text_s);
@@ -665,12 +709,16 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
 	else
 	    tm = XtLastTimestampProcessed(XtDisplay(fi->text));
 
+	lock_update_arg = true;
+
 	XmTextSetSelection(fi->text,
 			   next_occurrence,
 			   next_occurrence + key.length(),
 			   tm);
 	if (!forward)
 	    XmTextSetInsertionPosition(fi->text, next_occurrence);
+
+	lock_update_arg = false;
     }
 }
 
@@ -708,6 +756,52 @@ static void HighlightSectionCB(Widget, XtPointer client_data,
 	pos++;
 
     ListSetAndSelectPos(list, pos);
+}
+
+inline bool isid(char c)
+{
+    return isalnum(c) || c == '_' || c == '$';
+}
+
+static void SetSelectionCB(Widget w, XtPointer client_data, 
+			   XtPointer call_data)
+{
+    if (lock_update_arg)
+	return;
+
+    ArgField *arg_field = (ArgField *)client_data;
+
+    string selection = "";
+    String _selection = XmTextGetSelection(w);
+    if (_selection != 0)
+    {
+	selection = _selection;
+	XtFree(_selection);
+    }
+    else
+    {
+	// No selection - get word at cursor
+	XmTextVerifyCallbackStruct *cbs = 
+	    (XmTextVerifyCallbackStruct *)call_data;
+	XmTextPosition cursor = cbs->newInsert;
+	String text = XmTextGetString(w);
+	XmTextPosition startpos, endpos;
+	startpos = endpos = cursor;
+
+	while (startpos > 0 && isid(text[startpos - 1]))
+	    startpos--;
+	while (text[endpos] != '\0' && isid(text[endpos]))
+	    endpos++;
+
+	if (endpos > startpos)
+	    selection = string(text + startpos, endpos - startpos);
+    }
+
+    if (selection != "")
+    {
+	selection.downcase();
+	arg_field->set_string(selection);
+    }
 }
 
 // Return true iff TEXT contains a manual header line at pos
@@ -823,7 +917,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	arg = 0;
 	help_index = verify(XmCreateScrolledList(area, "index", args, arg));
 	XtManageChild(help_index);
-	
+
 	arg = 0;
 	XtSetArg(args[arg], XmNeditable, False);                    arg++;
 	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT);        arg++;
@@ -872,6 +966,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
 	XtAddCallback(help_man, XmNmotionVerifyCallback,
 		      HighlightSectionCB, XtPointer(help_index));
+	XtAddCallback(help_man, XmNmotionVerifyCallback,
+		      SetSelectionCB, XtPointer(arg_field));
 
 	XtAddCallback(fi->key, XmNactivateCallback, ActivateCB,
 		      XtPointer(items[1].widget));
