@@ -359,4 +359,9 @@ Volunteers for these and other projects are welcome!
 
 321 Allow `()' expansion in auto-commands.
 
-323 (Insert new project ideas here)
+322 Add support for the Perl debugger.
+
+323 Add support for the Python debugger.  rwolff@noao.edu (Richard
+    Wolff) is (or has been?) working on that.
+
+324 (Insert new project ideas here)
