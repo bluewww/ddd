@@ -77,9 +77,13 @@ dnl there is no need to build them.
 ddd_have_termcap=false
 ddd_have_libiberty=false
 ddd_have_rx=false
+ddd_have_readline=false
 dnl
 dnl By default, DDD needs no RX library.
 ddd_have_rx=true
+dnl
+dnl Check for -lreadline
+AC_CHECK_LIB(readline, rl_callback_read_char, ddd_have_readline=true)
 dnl
 dnl Check for -liberty.
 AC_CHECK_LIB(iberty, xstrerror, ddd_have_libiberty=true)
@@ -103,6 +107,7 @@ ddd_subdirs="ddd"
 test "$ddd_have_termcap"   != true && ddd_subdirs="termcap $ddd_subdirs"
 test "$ddd_have_libiberty" != true && ddd_subdirs="libiberty $ddd_subdirs"
 test "$ddd_have_rx"        != true && ddd_subdirs="librx $ddd_subdirs"
+test "$ddd_have_readline"  != true && ddd_subdirs="readline $ddd_subdirs"
 AC_MSG_RESULT($ddd_subdirs)
 AC_CONFIG_SUBDIRS($ddd_subdirs)
 dnl
