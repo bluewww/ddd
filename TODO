@@ -333,8 +333,9 @@ Volunteers for these and other projects are welcome!
     `http://sourceware.cygnus.com/gdb/onlinedocs/gdbmi_toc.html'.
 
 383 Support JDB 1.2:
-  * Handle value pop-ups and displays
-  * Handle restart (and `load recent')
-  * Handle initialization (`ddd jtest' should load src)
+    * Handle value displays
+    * Handle restart (and `load recent')
+    * Handle initialization (`ddd jtest' should load src)
+    * Offer restart when JDB gets an internal error
 
 384 (Insert new project ideas here)
