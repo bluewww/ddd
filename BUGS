@@ -157,10 +157,10 @@ Volunteers for fixing these and other bugs are welcome!
     be cleared at least?  Or contain a string (`not active')?
 
 346 Finish Perl support:
+    - Displays (esp. lists of lists).
     - `Run' should set arguments (i.e. restart).
     - Lookup functions.
     - Settings.
-    - Display lists of lists.
 
 347*Verify buttons clears *all buttons* in SGI DBX, even basic ones
     such as `step' or `run'.  Suggestion: if `help run' doesn't give
