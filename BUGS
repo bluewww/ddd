@@ -132,4 +132,8 @@ Volunteers for fixing these and other bugs are welcome!
 363 (LessTif 0.87) Selecting something outside the source window does
     not clear the selection in the data window.
 
-367 (Insert new bugs here)
+367*Check what happens when the `ostrstream::pcount()' check cannot be 
+    compiled.  Matthew Majka <mmajka@cs5.dasd.honeywell.com> has had
+    trouble using CXX=gcc.
+
+368 (Insert new bugs here)
