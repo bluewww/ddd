@@ -87,6 +87,8 @@ Source exploration
 - Double-clicking on a function call (that is, an identifier followed
   by a `(' character) will lead you to the function definition.
 
+- The GDB `Open Source' dialog has a filter.
+
 - Dragging breakpoints works nicely with scrolling.
 
 
