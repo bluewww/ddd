@@ -1,5 +1,5 @@
 DDD 2.0 is available
-=====================
+====================
 
     Release 2.0 of the Data Display Debugger (DDD), a graphical
     front-end for GDB, DBX, and XDB debuggers, is now available at
@@ -24,14 +24,18 @@ DDD News
     interface and many bug fixes.
 
     User-visible changes to DDD 1.4:
-    - XDB support.  On popular request, DDD now supports HP's XDB debugger.
-    - Extended DBX support.  DDD determines DBX properties
-      at run-time and adapts automatically to a wide range of DBX
-      variants.  DDD now supports DBX on DEC and AIX systems.
+    - Colored displays.  You can specify individual colors for
+      pointers, arrays, structs, and so on.
     - New command tool.  All command buttons that do not take
       arguments are now located in the command tool, a small separate
       window.  The command tool can be moved wherever appropriate,
       leaving more space for window contents.
+    - XDB support.  On popular request, DDD now supports HP's XDB as
+      inferior debugger.
+    - Extended DBX support.  DDD determines DBX properties
+      at run-time and adapts automatically to a wide range of DBX
+      variants.
+    - DDD now supports DBX on DEC and AIX systems.
     - User-defined buttons are now available.  These can also
       be used to re-install the old command buttons.
     - Variable values can now be altered interactively during program
@@ -91,12 +95,15 @@ DDD News
       recognized for C++' are silently ignored.
     - You can now specify the location of own VSL libraries via the
       `vslPath' resource.
-    - The `--attach' and `--separate' options now work; they are no
-      more overridden by the settings in `~/.dddinit'.
+    - The `--attach' and `--separate' options are no more overridden
+      by the settings in `~/.dddinit'.
+    - The `-synchronous' option (for X debugging) now works;
+      `--synchronous-debugger' has been renamed to `--sync-debugger'.
     - The source window no more scrolls back to some previous position
       when adding or removing breakpoints.
     - Pagers (`more', `less', etc.) invoked by the inferior debugger
-      are properly handled.  (DDD hits space when it sees `--More--')
+      are properly handled.  (When seeing `--More--', DDD hits the
+      space key.)
 
 
 Summary of DDD
