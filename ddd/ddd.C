@@ -2137,9 +2137,9 @@ int main(int argc, char *argv[])
     }
 
 #if HAVE_ATHENA
-    // Register Xaw Converters.  This is done before installing our
-    // own converters.
-    XawInitializeDefaultConverters();
+    // Initialize Xaw widget set, registering the Xaw Converters.
+    // This is done before installing our own converters.
+    XawInitializeWidgetSet();
 #endif
 
     // Register own converters.  This must be done here to install the
