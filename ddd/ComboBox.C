@@ -120,6 +120,7 @@ static void PopdownComboListCB(Widget, XtPointer client_data, XtPointer)
 {
     ComboBoxInfo *info = (ComboBoxInfo *)client_data;
 
+    XtVaSetValues(info->button, XmNarrowDirection, XmARROW_DOWN, NULL);
     XtPopdown(info->shell);
     info->popped_up = false;
 }
@@ -135,36 +136,41 @@ static void PopupComboListCB(Widget w, XtPointer client_data,
 	return;
     }
 
-    Position text_x, text_y;
-    XtTranslateCoords(info->text, 0, 0, &text_x, &text_y);
+    // Get size and position
+    Position top_x, top_y;
+    XtTranslateCoords(info->top, 0, 0, &top_x, &top_y);
 
-    Dimension text_height = 0;
-    Dimension text_width  = 0;
-    XtVaGetValues(info->text, XmNheight, &text_height,
-		  XmNwidth, &text_width, NULL);
-
-    Position button_x, button_y;
-    XtTranslateCoords(info->button, 0, 0, &button_x, &button_y);
-
-    Dimension button_height = 0;
-    Dimension button_width  = 0;
-    XtVaGetValues(info->button, XmNheight, &button_height,
-		  XmNwidth, &button_width, NULL);
+    Dimension top_height = 0;
+    Dimension top_width  = 0;
+    XtVaGetValues(info->top, XmNheight, &top_height,
+		  XmNwidth, &top_width, NULL);
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(XtParent(info->list), NULL, &size);
 
-    Position x       = text_x;
-    Position y       = text_y + text_height;
-    Dimension width  = button_x - text_x + button_width;
+    Position x       = top_x;
+    Position y       = top_y + top_height;
+    Dimension width  = top_width;
     Dimension height = size.height;
 
     XtVaSetValues(info->shell, XmNx, x, XmNy, y, 
 		  XmNwidth, width, XmNheight, height, NULL);
-    XtPopup(info->shell, XtGrabNonexclusive);
+
+
+    // Popup shell
+    XtPopup(info->shell, XtGrabNone);
     raise_shell(info->shell);
     info->popped_up = true;
+
+    // Unmanage horizontal scrollbar
+    Widget horizontal_scrollbar = 0;
+    XtVaGetValues(XtParent(info->list), XmNhorizontalScrollBar, 
+		  &horizontal_scrollbar, NULL);
+    if (horizontal_scrollbar != 0)
+	XtUnmanageChild(horizontal_scrollbar);
+
+    XtVaSetValues(info->button, XmNarrowDirection, XmARROW_UP, NULL);
 
     static Cursor cursor = XCreateFontCursor(XtDisplay(info->shell), XC_arrow);
     XDefineCursor(XtDisplay(info->shell), XtWindow(info->shell), cursor);
@@ -390,7 +396,7 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     XtSetArg(args[arg], XmNborderWidth, 0); arg++;
     info->shell = XtCreatePopupShell("comboBoxShell", 
 				     overrideShellWidgetClass,
-				     shell, args, arg);
+				     parent, args, arg);
 
     XtAddEventHandler(info->shell, VisibilityChangeMask, False,
 		      AutoRaiseEH, XtPointer(0));
