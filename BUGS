@@ -147,8 +147,6 @@ Volunteers for fixing these and other bugs are welcome!
     end-up overlapping), because the heuristic to choose their places
     tends to put them very far.
 
-314 The `self' pointer cannot be undisplayed from `Edit Displays'.
-
-315 Double-clicking on the background has various effects.
+315 Double-clicking on the source background has various effects.
 
 316 (Insert new bugs here)
