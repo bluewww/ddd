@@ -207,11 +207,13 @@ dnl Check for Athena widget libraries
 dnl
 dnl
 XAW_LIBS=""
-AC_CHECK_LIB(Xmu, XmuCvtStringToOrientation, XAW_LIBS="-lXmu ${XAW_LIBS}",,
-	${XAW_LIBS} ${XT_LIBS} ${X11_LIBS})
-AC_CHECK_LIB(Xaw, XawTextSetInsertionPoint, XAW_LIBS="-lXaw ${XAW_LIBS}"
+AC_CHECK_LIB(Xmu, XtToolkitInitialize(); XmuCvtStringToOrientation, 
+	XAW_LIBS="-lXmu ${XAW_LIBS}",,
+	${XAW_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
+AC_CHECK_LIB(Xaw, XtToolkitInitialize(); XawTextSetInsertionPoint, 
+	XAW_LIBS="-lXaw ${XAW_LIBS}"
 	AC_DEFINE(HAVE_ATHENA_WIDGETS),,
-	${XAW_LIBS} ${XT_LIBS} ${X11_LIBS})
+	${XAW_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
 AC_SUBST(XAW_LIBS)
 if test "$XAW_LIBS" != ""; then
 AC_CHECK_HEADERS(X11/Xaw/Form.h X11/Xaw/Panner.h X11/Xaw/Porthole.h)
@@ -223,9 +225,10 @@ dnl Check for Motif widget libraries
 dnl
 dnl
 XM_LIBS=""
-AC_CHECK_LIB(Xm, XmCreateOptionMenu, XM_LIBS="-lXm"
+AC_CHECK_LIB(Xm, XtToolkitInitialize(); XmCreateOptionMenu, 
+	XM_LIBS="-lXm"
 	AC_DEFINE(HAVE_MOTIF_WIDGETS),,
-	${XEXT_LIBS} ${XT_LIBS} ${X11_LIBS})
+	${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
 AC_SUBST(XM_LIBS)
 if test "$XM_LIBS" = ""; then
 AC_MSG_WARN(could not find Motif library)
