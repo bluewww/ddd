@@ -155,9 +155,6 @@ public:
 	assert(OK());
 	assert(m.OK());
 
-	if (isEmpty())
-	    return operator = (m);
-
 	XmString old = _mstring;
 	_mstring = XmStringConcat(_mstring, m._mstring);
 	XmStringFree(old);
@@ -169,9 +166,6 @@ public:
     {
 	assert(OK());
 	assert(m.OK());
-
-	if (isEmpty())
-	    return operator = (m);
 
 	XmString old = _mstring;
 	_mstring = XmStringConcat(m._mstring, _mstring);
@@ -223,11 +217,6 @@ inline MString operator + (const MString& m1, const MString& m2)
 {
     assert(m1.OK());
     assert(m2.OK());
-
-    if (m2.isEmpty())
-	return m1;
-    if (m1.isEmpty())
-	return m2;
 
     return MString(XmStringConcat(m1.xmstring(), m2.xmstring()), true);
 }
