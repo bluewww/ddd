@@ -53,6 +53,8 @@ extern void get_focusAct         (Widget, XEvent*, String*, Cardinal*);
 extern void isearch_nextAct      (Widget, XEvent*, String*, Cardinal*);
 extern void isearch_prevAct      (Widget, XEvent*, String*, Cardinal*);
 extern void isearch_exitAct      (Widget, XEvent*, String*, Cardinal*);
+extern void popupAct             (Widget, XEvent*, String*, Cardinal*);
+
 
 // Callbacks
 extern void gdbModifyCB          (Widget, XtPointer, XtPointer);
@@ -63,6 +65,7 @@ extern void gdbNextCB            (Widget, XtPointer, XtPointer);
 extern void gdbPrevCB            (Widget, XtPointer, XtPointer);
 extern void gdbISearchNextCB     (Widget, XtPointer, XtPointer);
 extern void gdbISearchPrevCB     (Widget, XtPointer, XtPointer);
+extern void gdbISearchExitCB     (Widget, XtPointer, XtPointer);
 extern void gdbClearCB           (Widget, XtPointer, XtPointer);
 extern void gdbCompleteCB        (Widget, XtPointer, XtPointer);
 extern void gdbApplyCB           (Widget, XtPointer, XtPointer);

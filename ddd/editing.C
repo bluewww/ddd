@@ -53,6 +53,7 @@ char editing_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
+#include <Xm/RowColumn.h>	// XmMenuPosition()
 
 // True if last input was at gdb prompt
 bool gdb_input_at_prompt = true;
@@ -464,7 +465,31 @@ void delete_or_controlAct(Widget w, XEvent *e,
 	XtCallActionProc(w, "delete-next-character", e, args, *num_args);
 }
 
+//-----------------------------------------------------------------------------
+// Popup menus
+//-----------------------------------------------------------------------------
 
+static MMDesc gdb_popup[] =
+{
+    {"clear_line",   MMPush, { gdbClearCB }},
+    {"clear_window", MMPush, { gdbClearWindowCB }},
+    MMEnd
+};
+
+void popupAct(Widget, XEvent *event, String*, Cardinal*)
+{
+    static Widget gdb_popup_w = 0;
+
+    if (gdb_popup_w == 0)
+    {
+	gdb_popup_w = MMcreatePopupMenu(gdb_w, "gdb_popup", gdb_popup);
+	MMaddCallbacks(gdb_popup);
+	InstallButtonTips(gdb_popup_w);
+    }
+
+    XmMenuPosition(gdb_popup_w, &event->xbutton);
+    XtManageChild(gdb_popup_w);
+}
 
 //-----------------------------------------------------------------------------
 // Callbacks
@@ -681,6 +706,13 @@ void gdbISearchNextCB  (Widget w, XtPointer, XtPointer call_data)
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     Cardinal zero = 0;
     isearch_nextAct(w, cbs->event, 0, &zero);
+}
+
+void gdbISearchExitCB  (Widget w, XtPointer, XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Cardinal zero = 0;
+    isearch_exitAct(w, cbs->event, 0, &zero);
 }
 
 void gdbClearCB  (Widget w, XtPointer, XtPointer call_data)
