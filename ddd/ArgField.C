@@ -70,7 +70,7 @@ void ArgField::set_string (char* text_ch)
 {
     // Use the last line only
     int start = 0;
-    for (int i = 0; text_ch[i]; i++)
+    for (int i = 0; text_ch[i] != '\0'; i++)
 	if (text_ch[i] == '\n')
 	    start = i + 1;
 
