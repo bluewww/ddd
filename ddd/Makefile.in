@@ -1176,7 +1176,7 @@ HTML_IMAGES = \
 	$(picdir)/tut-value$(IMGEXT)
 
 
-## The manual page.
+## The manual page(s).
 MANS = ddd.man
 
 ## The (derived) icons.
@@ -1296,12 +1296,11 @@ PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 		   $(srcdir)/Ddd.in Ddd.ad.h host.h \
 		   $(srcdir)/ddd.vsl $(srcdir)/ddd.vsl.h \
 		   vr.h version.h bld.h build.h configinfo.C \
-		   ddd.1 ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
                    COPYING.gz.C NEWS.gz.C xlibdir.C eps-code.h .gdbinit
 
 # Extra files to be built for the distribution
 # In a distribution, these should be already built.
-DIST_STUFF	 = $(PROG_STUFF) $(MANS) $(PSS) $(ICONS)
+DIST_STUFF	 = $(PROG_STUFF) $(MANS) $(PSS) $(PDFS) $(HTMLS) $(ICONS)
 
 # Temporary Files to be cleaned, keeping configuration intact
 CLEAN_STUFF	 = $(ddd)-$(VERSION)-* $(PROGS) $(DEMOS) \
@@ -2405,7 +2404,7 @@ NEWS.gz.C: NEWS.gz
 	-./stringify < NEWS.gz > $@~ && $(MV) $@~ $@
 
 # `make depend' fails to find this dependency :-(
-show.$(OBJEXT): COPYING.gz.C NEWS.gz.C ddd.man.txt.gz.C
+show.$(OBJEXT): COPYING.gz.C NEWS.gz.C
 
 
 ## The xlibdir script
