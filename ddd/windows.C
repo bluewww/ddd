@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD window management
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -24,7 +24,7 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 char windows_rcsid[] = 
     "$Id$";
@@ -50,7 +50,9 @@ char windows_rcsid[] =
 
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
-#include <Xm/VendorE.h>
+#if XmVersion <= 1002
+#include <Xm/VendorE.h>		// XmIsMotifWMRunning()
+#endif
 #include <X11/Xutil.h>
 
 //-----------------------------------------------------------------------------
