@@ -81,16 +81,16 @@
 #undef HAVE_PTRACE_DUMPCORE
 
 /* Define if your C++ library has an ostringstream::frozen() function. */
-#undef HAVE_FROZEN_OSTRINGSTREAM
+/* Phased out: #undef HAVE_FROZEN_OSTRSTREAM */
 
 /* Define if your C++ library has an ostringstreambuf::frozen() function. */
-#undef HAVE_FROZEN_OSTRINGSTREAMBUF
+/* Phased out: #undef HAVE_FROZEN_OSTRSTREAMBUF */
 
 /* Define if your C++ library has an ostringstream::freeze() function. */
-#undef HAVE_FREEZE_OSTRINGSTREAM
+/* Phased out: #undef HAVE_FREEZE_OSTRSTREAM */
 
 /* Define if your C++ library has an ostringstreambuf::freeze() function. */
-#undef HAVE_FREEZE_OSTRINGSTREAMBUF
+/* Phased out: #undef HAVE_FREEZE_OSTRSTREAMBUF */
 
 /* Define if the ios::iostate type is defined or declared in <iostream.h>. */
 #undef HAVE_IOSTATE
@@ -156,7 +156,7 @@
 
 /* Define if ostringstream::pcount() is increased by 1 after accessing the
    string via ostringstream::str(), as in the SGI C++ I/O library. */
-#undef OSTRINGSTREAM_PCOUNT_BROKEN
+/* Phased out: #undef OSTRSTREAM_PCOUNT_BROKEN */
 
 /* Define to the signal handler type accepted by signal(). 
    See the `signal' man page and the decl in <signal.h> for the exact type.

@@ -1147,12 +1147,7 @@ static void update_processes(Widget processes, bool keep_selection)
 	  }
 	  pclose(fp);
       }
-      kill_result = os; 
-#if HAVE_FREEZE_OSTRSTREAMBUF
-      os.rdbuf()->freeze(frozen);
-#elif HAVE_FREEZE_OSTRSTREAM
-      os.freeze(frozen);
-#endif
+      kill_result = os;
     }
 #else
     string kill_result = gdb_question(gdb->shell_command(kill));
