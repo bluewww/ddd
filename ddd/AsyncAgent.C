@@ -238,58 +238,54 @@ void AsyncAgent::closeChannel(FILE *fp)
 // Terminator
 void AsyncAgent::terminateProcess(XtPointer client_data, XtIntervalId *)
 {
-    AsyncAgent *agent = (AsyncAgent *)client_data;
-    agent->_terminate();
+    pid_t pid = (pid_t)client_data;
+    kill(pid, SIGTERM);
 }
 
 void AsyncAgent::hangupProcess(XtPointer client_data, XtIntervalId *)
-{
-    AsyncAgent *agent = (AsyncAgent *)client_data;
-    agent->_hangup();
+{ 
+    pid_t pid = (pid_t)client_data;
+    kill(pid, SIGHUP);
 }
 
 void AsyncAgent::killProcess(XtPointer client_data, XtIntervalId *)
 {
-    AsyncAgent *agent = (AsyncAgent *)client_data;
-    agent->_kill();
+    pid_t pid = (pid_t)client_data;
+    kill(pid, SIGKILL);
 }
 
-void AsyncAgent::deleteAgent(XtPointer client_data, XtIntervalId *)
+void AsyncAgent::terminate(bool onExit = false)
 {
-    AsyncAgent *agent = (AsyncAgent *)client_data;
-    agent->terminate(true);
-    delete agent;
+    Agent::terminate(onExit);
+
+    if (onExit)
+	Agent::waitToTerminate();
+    else if (pid() > 0)
+    {
+	// Kill asynchronously.  We don't want to wait until the
+	// process dies, so we just send out some signals and pretend
+	// the process has terminated gracefully.
+	if (terminateTimeOut() >= 0)
+	    XtAppAddTimeOut(appContext(), terminateTimeOut() * 1000,
+			    terminateProcess, XtPointer(pid()));
+
+	if (hangupTimeOut() >= 0)
+	    XtAppAddTimeOut(appContext(), hangupTimeOut() * 1000,
+			    hangupProcess, XtPointer(pid()));
+
+	if (killTimeOut() >= 0)
+	    XtAppAddTimeOut(appContext(), killTimeOut() * 1000,
+			    killProcess, XtPointer(pid()));
+
+	// Inhibit further communication
+	abort();
+	callHandlers(Died, "Exit 0");
+    }
 }
 
 void AsyncAgent::waitToTerminate()
 {
-    // Copy agent to a "dummy" agent. This agent is used only
-    // for handling the terminating sequence. It cannot be used for I/O.
-    AsyncAgent *dummy = ptr_cast(AsyncAgent, dup());
-
-    // Remove all subclass handlers for "dummy"
-    for (unsigned type = AsyncAgent_NTypes + 1; 
-	 type < handlers.nTypes(); type++)
-	dummy->handlers.removeAll(type);
-
-    // Invoke killers for the "dummy" agent
-    if (terminateTimeOut() >= 0)
-	XtAppAddTimeOut(appContext(), terminateTimeOut() * 1000,
-	    terminateProcess, XtPointer(dummy));
-
-    if (hangupTimeOut() >= 0)
-	XtAppAddTimeOut(appContext(), hangupTimeOut() * 1000,
-	    hangupProcess, XtPointer(dummy));
-
-    if (killTimeOut() >= 0)
-	XtAppAddTimeOut(appContext(), killTimeOut() * 1000,
-	    killProcess, XtPointer(dummy));
-
-    // Delete dummy agent after all is done.
-    int deleteTimeOut = 
-	max(max(terminateTimeOut(), hangupTimeOut()), killTimeOut()) + 1;
-    XtAppAddTimeOut(appContext(), deleteTimeOut, deleteAgent,
-		    XtPointer(dummy));
+    // Do nothing
 }
 
 

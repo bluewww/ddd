@@ -33,7 +33,6 @@
 #pragma interface
 #endif
 
-
 /*
     AsyncAgent(app_context, p)
     opens a three-way communication channel to the agent p (see Agent).
@@ -102,7 +101,7 @@ const unsigned OutputException = 3;	// I/O exception (urgent msg) on output
 const unsigned InputException  = 4;	// I/O exception (urgent msg) on input
 const unsigned ErrorException  = 5;	// I/O exception (urgent msg) on error
 
-const unsigned AsyncAgent_NHandlers = 6; // number of handler types
+const unsigned AsyncAgent_NHandlers = 6; // # of handler types
 
 class AsyncAgent: public Agent {
 public:
@@ -140,10 +139,9 @@ private:
     static void callTheHandlersIfIdle(XtPointer client_data, XtIntervalId *id);
 
     // Helping functions
-    static void AsyncAgent::terminateProcess(XtPointer, XtIntervalId *);
-    static void AsyncAgent::hangupProcess(XtPointer, XtIntervalId *);
-    static void AsyncAgent::killProcess(XtPointer, XtIntervalId *);
-    static void AsyncAgent::deleteAgent(XtPointer, XtIntervalId *);
+    static void terminateProcess(XtPointer, XtIntervalId *);
+    static void hangupProcess(XtPointer, XtIntervalId *);
+    static void killProcess(XtPointer, XtIntervalId *);
 
 protected:
     // Set handler
@@ -232,6 +230,8 @@ public:
 
     // These need special management:
     virtual void abort();
+    virtual void terminate(bool onExit = false);
 };
 
-#endif
+#endif // _DDD_AsyncAgent_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

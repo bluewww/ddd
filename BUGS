@@ -311,8 +311,6 @@ Volunteers for fixing these and other bugs are welcome!
          the default in the display graph?  If I "set output-radix 16" 
          in the gdb window ddd seems to lock up very often.
 
-092* Entering ^D in TTY mode causes an abort (due to TTYAgent::dup())
-
 093* `Up' and `Down' in XDB mode won't work.
 
 095* DDD 1.5 with AIX DBX and `ctest':

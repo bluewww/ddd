@@ -148,7 +148,7 @@ protected:
 
 private:
     bool _running;	      	// flag: is child still running?
-    bool _beingTerminated;   // flag: is child just being terminated?
+    bool _beingTerminated;      // flag: is child just being terminated?
 
     int _lastStatus;        	// Status after exiting
 
@@ -433,4 +433,5 @@ public:
     }
 };
 
-#endif
+#endif // _DDD_Agent_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
