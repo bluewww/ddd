@@ -467,11 +467,20 @@ bool GDBAgent::ends_with_prompt (const string& answer)
     case GDB:
 	{
 	    // Any line ending in `(gdb) ' or `(dbx) ' is a prompt.
-	    static regex rxprompt(".*[(][^ )]*db[^ )]*[)] ");
-	    if (answer.matches(rxprompt))
+	    int i = answer.length() - 1;
+	    if (i < 0 || answer[i] != ' ')
+		return false;
+
+	    while (i >= 0 && answer[i] != '\n' && answer[i] != '(')
+		i--;
+	    if (i < 0 || answer[i] != '(')
+		return false;
+
+	    string possible_prompt = ((string &) answer).from(i);
+	    static regex rxprompt("[(][^ )]*db[^ )]*[)] ");
+	    if (possible_prompt.matches(rxprompt))
 	    {
-		last_prompt = answer;
-		last_prompt = last_prompt.from('(', -1);
+		last_prompt = possible_prompt;
 		return true;
 	    }
 	    return false;
