@@ -1263,18 +1263,18 @@ static MMDesc find_menu[] =
 };
 
 struct ArgItems {
-    enum ArgCmd { Lookup, Break, Print, Display, Watch, Find };
+    enum ArgCmd { Lookup, Find, Break, Watch, Print, Display };
 };
 
 static MMDesc arg_cmd_area[] = 
 {
     {"lookup",        MMPush,  { gdbLookupCB       }},
+    {"find",          MMPush,  { gdbFindAgainCB    }, find_menu },
     {"breakAt",       MMPush,  { gdbToggleBreakCB  }, break_menu   },
-    {"print",         MMPush,  { gdbPrintCB        }, print_menu   },
-    {"display",       MMPush,  { gdbDisplayCB      }, display_menu },
     {"watch",         MMPush,  { gdbToggleWatchCB, XtPointer(WATCH_CHANGE) }, 
                                  watch_menu },
-    {"find",          MMPush,  { gdbFindAgainCB    }, find_menu },
+    {"print",         MMPush,  { gdbPrintCB        }, print_menu   },
+    {"display",       MMPush,  { gdbDisplayCB      }, display_menu },
     MMEnd
 };
 
@@ -1828,7 +1828,10 @@ int main(int argc, char *argv[])
     // From this point on, we have a true top-level window.
 
     // Install icon images
-    install_icons(command_shell);
+    int strip_captions = 0;
+    if (!app_data.button_captions)
+	strip_captions = app_data.button_caption_height;
+    install_icons(command_shell, strip_captions);
 
     // Create main window
     Widget main_window = 
