@@ -651,7 +651,7 @@ O veryCompact=\n
 Ddd*perlSettings:
 
 Ddd*bashInitCommands: \
-  set prompt bashdb$_Dbg_less$_Dbg_greater$_Dbg_space\n\
+  set prompt bashdb$_Dbg_less$_Dbg_greater$_Dbg_space\n
 
 ! The Bash Debugger settings.  Usually overridden in `~/.ddd/init'.
 Ddd*bashSettings:
