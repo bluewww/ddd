@@ -284,6 +284,8 @@ Reported by: Andrew Gaylard <apg@users.sf.net>
     (If configure fails to link statically Motif, it can be achieved with
     "make LIBXM=/usr/lib/Motif1.2_R6/libXm.a")
 
+    Starting ddd-3.3.9, "./configure CFLAGS=-O2 CXXFLAGS=-O2; make" should
+    be enough.
 
 Reported by: jensen@Adobe.COM (Freddy Jensen)
 
@@ -414,7 +416,7 @@ Irix
 
 LessTif
 =======
-    
+
     To use DDD with LessTif, get a recent LessTif release from
     `http://www.lesstif.org'.  Be sure to apply the patches found in
     the `patches/' subdirectory.
@@ -608,5 +610,6 @@ for f in `grep -rl '^#pragma interface' .` ; do mv $f $f.old ; sed -e 's:^#pragm
 
     Furthermore, recent versions of the autotools are necessary and the
     configure script and associated files may have to be regenerated.
+    autoconf-2.5x, automake-1.7.x, and libtool-1.5+ are recommended.
 
 $Id$
