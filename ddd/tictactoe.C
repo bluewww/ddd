@@ -132,8 +132,9 @@ static bool moveDiagonal(int current_player)
     int i;
     for (i = 0; i < 3; i++)
 	sum += board[p1[i]];
+
     if (sum == (current_player*2))
-	for (int i = 0; i < 3; i++)
+	for (i = 0; i < 3; i++)
 	    if (board[p1[i]] == NO_ONE)
 	    {
 		board[p1[i]] = PLAYER2;
@@ -143,8 +144,9 @@ static bool moveDiagonal(int current_player)
     sum = 0;
     for (i = 0; i < 3; i++)
 	sum += board[p2[i]];
+
     if (sum == (current_player * 2))
-	for (int i = 0; i < 3; i++)
+	for (i = 0; i < 3; i++)
 	    if (board[p2[i]] == NO_ONE)
 	    {
 		board[p2[i]] = PLAYER2;
