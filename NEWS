@@ -4,22 +4,22 @@ DDD News						-*- text -*-
 DDD 3.2.2 [not yet released]
 =========
 
-DDD 3.2.2 brings minor bug fixes and support for JDB as of JDK 1.2.
+DDD 3.2.2 brings support for JDB as of JDK 1.2 and some bug fixes.
 
-- [JDB] JDB 1.2 is supported.
+- [JDB] DDD supports JDB as of JDK 1.2.
 
-- [GDB] GDB 5.0 is supported.
+- [GDB] DDD supports GDB 5.0.
 
-- [LessTif] LessTif 0.90 is supported.
+- [DBX] Attaching to processes works with SGI DBX, Sun DBX and other
+  DBXes as well as with Compaq Ladebug. (*)
 
-- [DBX] Attaching to processes is supported for SGI DBX, Sun DBX and others.
-  (Thanks to Arnaud Desitter <arnaud@nag.co.uk>.)
+- [LessTif] Combo boxes (drop-down text boxes) no longer shrink.
 
-- [Ladebug] Attaching to processes is supported for Compaq Ladebug.
-  (Thanks to Arnaud Desitter <arnaud@nag.co.uk>.)
+- [LessTif] Text selection works better.
 
-- Several minor memory leaks have been plugged. (Thanks to Arnaud
-  Desitter <arnaud@nag.co.uk>.)
+- Several memory leaks have been plugged. (*)
+
+(*) Thanks to Arnaud Desitter <arnaud@nag.co.uk>.
 
 
 DDD 3.2.1
@@ -86,7 +86,7 @@ Documentation
 Debuggers and Languages
 -----------------------
 
-- This release contains partial support for DEC's `ladebug' debugger.
+- This release contains partial support for the Compaq/DEC `Ladebug' debugger.
   Please send in bug reports listing remaining problems.
 
 - Parsing of JDB data has been improved.
