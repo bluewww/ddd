@@ -1,3 +1,4 @@
+# $Id$
 # Fix DDD HTML Table of Contents
 
 # Add a separator between title and table
@@ -12,3 +13,8 @@
 <A HREF="http://www.cs.tu-bs.de/softech/ddd/">DDD Home Page</A>\
 </SMALL>\
 </ADDRESS>
+
+# Set up the title
+s!<H2>\([^ ]* Edition[^<]*\)</H2>!<SPAN CLASS=caption>\1</SPAN><BR>!
+s!<H2>\(Last updated[^<]*\)</H2>!<SPAN CLASS=caption>\1</SPAN><BR>!
+s!<ADDRESS>Andreas Zeller</ADDRESS>!<P><ADDRESS CLASS=subtitle><A HREF="http://www.cs.tu-bs.de/~zeller/">Andreas Zeller</A></ADDRESS>!
