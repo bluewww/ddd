@@ -63,14 +63,16 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
     - Ever suffered from a frozen display while debugging a modal
       application?  If the debugged program is interrupted in some
       modal state, DDD will automatically make it ungrab the pointer.
-    - In the source argument field `()', pressing RETURN activates
-      the `Lookup ()' button.
     - You can now clear all argument fields `()' by clicking on the
       prompt `():'.
+    - In the source argument field `()', pressing RETURN activates
+      the `Lookup ()' button.
     - Unnecessary redisplays have been significantly reduced, causing
       much less flickering.
+    - If you specify some overloaded or ambiguous identifier, DDD now
+      lets you select from all alternatives.
     - Buttons not supported on certain debuggers (for instance,
-      `Finish' on DBX) are now automatically made insensitive.
+      `Finish' on DBX) are now made insensitive.  (optional)
     - You can search for keywords in the online DDD manual.
 
     Documentation:
@@ -101,8 +103,10 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
     - Problems with button specs ending in `...' have been fixed.
     - Line continuations (i.e. lines ending in `\') are properly handled.
     - Problems in building the `vsl' and `test-graph' programs are fixed.
-    - On Linux, drag-and-drop of pixmaps has been disabled explicitly
-      (several Linux Motif libraries are broken in this aspect).
+    - On Linux, drag-and-drop of pixmaps has been disabled explicitly.
+      (Several Linux Motif libraries are broken in this aspect.)
+    - DDD now sets the WM_COMMAND resource such that X session
+      managers can save and restore DDD state.
     - And again, dozens of minor bug fixes and improvements.
 
     Release policy:
