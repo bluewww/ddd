@@ -314,7 +314,6 @@ static void wait_until_mapped(Widget w);
 
 // Options
 string options_file();
-string default_history_file();
 
 
 // Obscure features
@@ -1337,13 +1336,16 @@ static StringArray gdb_history;
 static int gdb_current_history;
 
 // File name to save the history
-static string gdb_history_file = default_history_file();
+static string gdb_history_file;
 
 // Size of saved history
 static int    gdb_history_size = 100;
 
 // True if the history was just loaded
 static bool   gdb_new_history = true;
+
+// True if DDD is about to exit
+static bool ddd_is_exiting = false;
 
 
 //-----------------------------------------------------------------------------
@@ -1396,7 +1398,7 @@ string sh_command(string command)
 // DDD main program
 //-----------------------------------------------------------------------------
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     // This one is required for error messages
     ddd_invoke_name = argc ? argv[0] : ddd_NAME;
@@ -1862,6 +1864,13 @@ int main (int argc, char *argv[])
 
     // All widgets are created at this point.
     set_status("Welcome to " DDD_NAME " " DDD_VERSION "!");
+
+    // Setup history
+    char *home = getenv("HOME");
+    if (home == 0)
+	gdb_history_file = ".ddd_history";
+    else
+	gdb_history_file = string(home) + "/.ddd_history";
 
     // Set host specification
     gdb_host = (app_data.debugger_host ? app_data.debugger_host : "");
@@ -3870,15 +3879,6 @@ void get_focusAct (Widget w, XEvent*, String*, Cardinal*)
 // Command history
 //-----------------------------------------------------------------------------
 
-string default_history_file()
-{
-    char *home = getenv("HOME");
-    if (home == 0)
-	return ".ddd_history";
-    else
-	return string(home) + "/.ddd_history";
-}
-
 string current_line()
 {
     String str = XmTextGetString(gdb_w);
@@ -5675,6 +5675,8 @@ void remove_init_file()
 
 static void ddd_cleanup()
 {
+    ddd_is_exiting = true;
+
     remove_init_file();
     kill_exec_tty();
     if (command_shell && app_data.save_options_on_exit)
@@ -6946,6 +6948,9 @@ void post_gdb_yn(string question, Widget w)
 
 void post_gdb_busy(Widget w)
 {
+    if (ddd_is_exiting)
+	return;
+
     static Widget busy_dialog = 0;
     if (busy_dialog)
 	XtDestroyWidget(busy_dialog);
@@ -6966,6 +6971,12 @@ void post_gdb_died(string reason, Widget w)
     if (gdb_initialized && reason.contains("Exit 0"))
     {
 	DDDExitCB(find_shell(w), 0, 0);
+	return;
+    }
+
+    if (ddd_is_exiting)
+    {
+	cerr << reason << "\n";
 	return;
     }
 
@@ -6994,6 +7005,12 @@ void post_gdb_message(string text, Widget w)
     strip_final_blanks(text);
     if (text == "")
 	return;
+
+    if (ddd_is_exiting)
+    {
+	cerr << ddd_NAME << ": " << text << "\n";
+	return;
+    }
 
 #if 0
     if (status_w && !text.contains('\n'))
@@ -7027,6 +7044,11 @@ void post_gdb_message(string text, Widget w)
 void post_error (string text, String name, Widget w)
 {
     strip_final_blanks(text);
+    if (ddd_is_exiting)
+    {
+	cerr << ddd_NAME << ": " << text << "\n";
+	return;
+    }
 
 #if 0
     if (status_w && !text.contains('\n'))
@@ -7060,6 +7082,11 @@ void post_error (string text, String name, Widget w)
 void post_warning (string text, String name, Widget w)
 {
     strip_final_blanks(text);
+    if (ddd_is_exiting)
+    {
+	cerr << ddd_NAME << ": warning: " << text << "\n";
+	return;
+    }
 
 #if 0
     if (status_w && !text.contains('\n'))
