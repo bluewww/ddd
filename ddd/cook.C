@@ -302,5 +302,5 @@ string uncook(const string& cooked)
 	    uncooked << *i++;
     }
 
-    return uncooked;
+    return string(uncooked);
 }

@@ -447,7 +447,7 @@ string VSLDef::longname() const
 	os << _filename << ":" << _lineno << ": ";
     os << f_name();
 
-    return os;
+    return string(os);
 }
 
 // Delete definition *and all successors*

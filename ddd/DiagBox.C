@@ -68,7 +68,7 @@ void DiagBox::_draw(Widget w,
     // Make space info
     std::ostringstream oss;
     oss << space << '\0';
-    string ss = oss;
+    const string ss(oss);
 
     // Draw it (centered)
     StringBox *s = new StringBox(ss);
