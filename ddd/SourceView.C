@@ -714,7 +714,7 @@ void SourceView::clearJumpBP(const string&, void *)
 
 void SourceView::line_popup_temp_n_contCB (Widget w,
 					   XtPointer client_data,
-					   XtPointer call_data)
+					   XtPointer)
 {
     string address = *((string *)client_data);
     temp_n_cont(address, w);
