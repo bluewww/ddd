@@ -2244,11 +2244,10 @@ Settings\fR'.  See the `\fBDEBUGGER SETTINGS\fR' section, below.
 .SH "DEBUGGER SETTINGS"
 .\" ---------------
 .\"
-If you use \s-2GDB\s+2 (or some \s-2DBX\s+2 flavour) as inferior
-debugger, you can change its settings using `\fBEdit |
-Settings\fR'.  Using the settings editor, you can determine whether
-C++ names are to be demangled, how many array elements are to print,
-and so on.
+If you use \s-2GDB\s+2 (or some \s-2DBX\s+2 flavor) as inferior
+debugger, you can change its settings using `\fBEdit | Settings\fR'.
+Using the settings editor, you can determine whether C++ names are to
+be demangled, how many array elements are to print, and so on.
 .PP
 .PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
 .PP
@@ -2277,28 +2276,46 @@ are saved with \s-2@DDD@\s+2 options.
 \s-2@DDD@\s+2 run with \fILessTif,\fR a free Motif clone, without loss
 of functionality.  Since a \s-2@DDD@\s+2 binary may be dynamically
 bound and used with either an OSF/Motif or LessTif library, these
-hacks can be enabled and disabled at run time.  The default setting
-depends on the include files used when compiling \s-2@DDD@\s+2:
-.IP \(bu 2
-If \s-2@DDD@\s+2 was compiled using LessTif 0.99 or earlier, these
-hacks are enabled by default.  When using a dynamically bound
-\s-2@DDD@\s+2 binary with a LessTif 1.0 library or an OSF/Motif
-library, you may wish to disable the hacks.  To disable them, invoke
-\s-2@DDD@\s+2 with `\fB\-\-no\-lesstif\-hacks\fR' or set the
-`\fBlessTifHacks\fR' resource to `\fBfalse\fR'.
-.br
-.IP \(bu 2
-If \s-2@DDD@\s+2 was compiled using OSF/Motif include files or LessTif
-include files, version 1.0 or later, these hacks are disabled by
-default.  When using a dynamically bound \s-2@DDD@\s+2 binary with a
-LessTif library, version 0.99 or earlier, you may wish to enable these
-hacks.  To enable them, invoke \s-2@DDD@\s+2 with
-`\fB\-\-lesstif\-hacks\fR' or set the `\fBlessTifHacks\fR' resource to
-`\fBtrue\fR'.
+hacks can be enabled and disabled at run time.
 .PP
-All of these hacks apply to LessTif 0.79; future LessTif releases
-might need them no more.  In the \s-2@DDD@\s+2 source, these hacks are
-controlled by the string `\fBlesstif_hacks\fR'.
+Whether the hacks are included at run-time depends on the setting of
+the `\fBlessTifVersion\fR' resource.  `\fBlessTifVersion\fR' indicates
+the LessTif version against which \s-2@DDD@\s+2 is linked.  For
+LessTif version \fIx.y\fR, its value is \fIx\fR multiplied by 1000
+plus \fIy\fR\(em\&for instance, the value \fB88\fR stands for LessTif
+0.88 and the value \fB1000\fR stands for LessTif 1.0.  To specify the
+version number of the LessTif library at \s-2@DDD@\s+2 invocation, you
+can also use the option `\fB\-\-lesstif-version\fR \fIversion\fR'.
+.PP
+The default value of the `\fBlessTifVersion\fR' resource is derived
+from the LessTif library \s-2@DDD@\s+2 was compiled against (or
+\fB1000\fR when compiled against OSF/Motif).  Hence, you normally
+don't need to worry about the value of this resource.  However, if you
+use a dynamically linked \s-2@DDD@\s+2 binary with a library other
+than the one \s-2@DDD@\s+2 was compiled against, you must specify the
+version number of the library using this resource.  (Unfortunately,
+\s-2@DDD@\s+2 cannot detect this at run-time.)
+.PP
+Here are a few scenarios to illustrate this scheme:
+.IP \(bu 2
+Your \s-2@DDD@\s+2 binary was compiled against OSF/Motif, but you use
+a LessTif 0.81 dynamic library instead.  Invoke \s-2@DDD@\s+2 with
+`\fB\-\-lesstif-version 81\fR'.
+.IP \(bu 2
+Your \s-2@DDD@\s+2 binary was compiled against LessTif, but you use
+a OSF/Motif dynamic library instead.    Invoke \s-2@DDD@\s+2 with
+`\fB\-\-lesstif-version 1000\fR'.
+.IP \(bu 2
+Your \s-2@DDD@\s+2 binary was compiled against LessTif 0.81, and you
+have upgraded to LessTif 0.90.  Invoke \s-2@DDD@\s+2 with
+`\fB\-\-lesstif-version 90\fR'.
+.PP
+To find out the LessTif or OSF/Motif version \s-2@DDD@\s+2 was
+compiled against, invoke \s-2@DDD@\s+2 with the
+`\fB\-\-configuration\fR' option.
+.PP
+In the \s-2@DDD@\s+2 source, LessTif-specific hacks are controlled by
+the string `\fBlesstif_version\fR'.
 .\"
 .\" ---------------
 .SH "RESOURCES"
@@ -2510,7 +2527,7 @@ multi-level greyscale visual, `\fBg4\fR' for a 4-level greyscale
 visual, `\fBm\fR' for a dithered monochrome visual, and `\fB\fR' (the
 empty string) for no logo at all.  The value `\fBbest\fR' chooses the
 best visual available for your display.  Default is `\fBg4\fR'.
-.PP
+.br
 Note: if \s-2@DDD@\s+2 runs on a monochrome display, or if
 \s-2@DDD@\s+2 was compiled without the \s-2XPM\s+2 library, only the
 monochrome version (`\fBm\fR') can be shown.
@@ -3280,11 +3297,20 @@ This `\fB.ddd/init\fR' setting invokes an editing session for an
 .br
 .sp
 .TP
-.B "lessTifHacks (\fPclass\fB LessTifHacks)"
-If \fBtrue\fR, enable some hacks to make \s-2@DDD@\s+2 run
-properly with LessTif.  The default value is \fBtrue\fR if
-\s-2@DDD@\s+2 was compiled with a LessTif version earlier than 1.0,
-and \fBfalse\fR, otherwise.
+.B "lessTifVersion (\fPclass\fB LessTifVersion)"
+Indicates the LessTif version \s-2@DDD@\s+2 is running against.  For
+LessTif version \fIx.y\fR, the value is \fIx\fR multiplied by 1000
+plus \fIy\fR\(em\&for instance, the value \fB79\fR stands for LessTif
+0.79 and the value \fB1005\fR stands for LessTif 1.5.
+.br
+If the value of this resource is less than 1000, indicating LessTif
+0.99 or earlier, \s-2@DDD@\s+2 enables version-specific hacks to make
+\s-2@DDD@\s+2 work around LessTif bugs and deficiencies.
+.br
+If \s-2@DDD@\s+2 was compiled against LessTif, the default value is
+the value of the `\fBLessTifVersion\fR' macro in \fB<Xm/Xm.h>\fR.  If
+\s-2@DDD@\s+2 was compiled against OSF/Motif, the default value is
+\fB1000\fR, disabling all LessTif-specific hacks.
 .TP
 .B "listCoreCommand (\fPclass\fB listCoreCommand)"
 The commmand to list all core files on the remote host.  The string
@@ -3341,7 +3367,7 @@ Depending on your system, useful alternate values include `\fBps
 -ef\fR' and `\fBps -ux\fR'.  The first line of the output must either
 contain a `\fBPID\fR' title, or each line must begin with a process
 ID.
-.PP
+.br
 Note that the output of this command is filtered by \s-2@DDD@\s+2; a
 process is only shown if it can be attached to.  The \s-2@DDD@\s+2
 process itself as well as the process of the inferior debugger are
@@ -3731,9 +3757,15 @@ inferior debugger as well.
 Invoke the inferior debugger directly on the remote host \fIhostname\fR.  See
 `\fBREMOTE DEBUGGING\fR', above.
 .TP
-.B \-\-lesstif-hacks
+.B \-\-lesstif-hacks\fR
+Equivalent to `\fB\-\-lesstif-version \fIversion\fR', where
+\fIversion\fR is the version of the most recent LessTif release.
+Deprecated.
+.TP
+.B \-\-lesstif-version \fIversion\fR
 Enable some hacks to make \s-2@DDD@\s+2 run properly with LessTif.
-See also the `\fBlessTifHacks\fR' resource, above.
+See the `\fBlessTifVersion\fR' resource and `\fBUSING @DDD@ WITH
+LESSTIF\fR', above, for a discussion.
 .TP
 .B \-\-license
 Show the \s-2@DDD@\s+2 license and exit.
@@ -3765,9 +3797,8 @@ little terminal input/output, or for remote debugging.
 Display the current execution position and breakpoints as text
 characters.  Do not use glyphs.
 .TP
-.B \-\-no-lesstif-hacks
-Disable hacks to make \s-2@DDD@\s+2 run properly with LessTif.
-See also the `\fBlessTifHacks\fR' resource, above.
+.B \-\-no-lesstif-hacks\fR
+Equivalent to `\fB\-\-lesstif-version 1000\fR'.  Deprecated.
 .TP
 .B \-\-no\-source\-window
 Do not create the source window upon start-up.
@@ -4185,8 +4216,8 @@ and the \s-2BOX\s+2 library became part of Andreas' Diploma Thesis, a
 graphical syntax editor based on the Programming System Generator
 \s-2PSG\s+2.
 .PP
-In 1992, the \s-2VSL\s+2 and Box libraries were recycled for the
-\s-2NORA\s+2 project.  For \s-2NORA\s+2, an experimental
+In 1992, the \s-2VSL\s+2 and \s-2BOX\s+2 libraries were recycled for
+the \s-2NORA\s+2 project.  For \s-2NORA\s+2, an experimental
 inference-based software development tool set, Andreas wrote a graph
 editor (based on \s-2VSL\s+2 and the \s-2BOX\s+2 libraries) and
 facilities for inter-process knowledge exchange.  Based on these
