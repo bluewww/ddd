@@ -34,11 +34,9 @@ char disp_read_rcsid[] =
 #endif
 
 //-----------------------------------------------------------------------------
-// Verschiedene Routinen, die das Erkennen bzw. Lesen
-// (und Erzeugen) von display-Ausgaben erleichtern.
+// Misc routines to process `display' output
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
 #include "assert.h"
 #include "disp-read.h"
 #include "value-read.h"
@@ -52,12 +50,10 @@ char disp_read_rcsid[] =
 
 
 //----------------------------------------------------------------------------
-// fuer die Erkennung bestimmter Befehle
+// Recognize specific debugger commands
 //----------------------------------------------------------------------------
 
-// ***************************************************************************
-// false, wenn cmd ein einzelnes display erzeugt
-// 
+// True if CMD creates one signle display
 bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
 {
 #if RUNTIME_REGEX
@@ -82,6 +78,7 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
     return false;
 }
 
+// True if CMD has no effect on DDD state
 bool is_nop_cmd(const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -95,8 +92,7 @@ bool is_nop_cmd(const string& cmd)
     return cmd.matches(rxnop_cmd) && !cmd.matches(rxop_cmd);
 }
 
-// ***************************************************************************
-// 
+// True if CMD changes program state
 bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 {
 #if RUNTIME_REGEX
@@ -133,6 +129,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
     return false;
 }
 
+// True if CMD starts program
 bool is_run_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -142,6 +139,7 @@ bool is_run_cmd (const string& cmd)
     return cmd.matches (rxrun_cmd);
 }
 
+// True if CMD sets program args
 bool is_set_args_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -151,14 +149,13 @@ bool is_set_args_cmd (const string& cmd)
     return cmd.matches (rxset_args_cmd);
 }
 
+// True if CMD affects the program counter
 bool is_pc_cmd(const string& cmd)
 {
     return cmd.contains("$pc");
 }
 
-// ***************************************************************************
-// true, wenn cmd ein display erzeugt
-// 
+// True if CMD creates at least one display
 bool is_display_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -169,6 +166,7 @@ bool is_display_cmd (const string& cmd)
     return cmd.matches (rxdisplay_cmd_and_args);
 }
 
+// True if CMD changes the list of displays
 bool is_data_cmd (const string& cmd)
 {
     // enable display, disable display, delete display, undisplay
@@ -179,6 +177,7 @@ bool is_data_cmd (const string& cmd)
     return cmd.matches(rxdata);
 }
 
+// True if CMD deletes a display
 bool is_delete_display_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -188,6 +187,7 @@ bool is_delete_display_cmd (const string& cmd)
     return cmd.matches(rxundisplay);
 }
 
+// True if CMD enables a display
 bool is_enable_display_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -197,6 +197,7 @@ bool is_enable_display_cmd (const string& cmd)
     return cmd.matches(rxenable);
 }
 
+// True if CMD disables a display
 bool is_disable_display_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -206,8 +207,7 @@ bool is_disable_display_cmd (const string& cmd)
     return cmd.matches(rxdisable);
 }
 
-// ***************************************************************************
-// 
+// True if CMD changes current frame
 bool is_frame_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -223,6 +223,7 @@ bool is_frame_cmd (const string& cmd)
     return cmd.matches (rxframe_cmd);
 }
 
+// True if CMD moves up in stack
 bool is_up_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -232,6 +233,7 @@ bool is_up_cmd (const string& cmd)
     return cmd.matches (rxup_cmd);
 }
 
+// True if CMD moves down in stack
 bool is_down_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -241,6 +243,7 @@ bool is_down_cmd (const string& cmd)
     return cmd.matches (rxdown_cmd);
 }
 
+// True if CMD loads a core file
 bool is_core_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -250,8 +253,7 @@ bool is_core_cmd (const string& cmd)
     return cmd.matches (rxcore_cmd);
 }
 
-// ***************************************************************************
-// 
+// True if CMD changes the current thread
 bool is_thread_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -261,8 +263,7 @@ bool is_thread_cmd (const string& cmd)
     return cmd.matches (rxthread_cmd);
 }
 
-// ***************************************************************************
-// 
+// True if CMD changes variables
 bool is_set_cmd (const string& cmd, GDBAgent *gdb)
 {
 #if RUNTIME_REGEX
@@ -274,8 +275,7 @@ bool is_set_cmd (const string& cmd, GDBAgent *gdb)
 	(gdb->type() == GDB && cmd.matches(rxset2_cmd));
 }
 
-// ***************************************************************************
-// 
+// True if CMD changes debugger settings
 bool is_setting_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -289,8 +289,7 @@ bool is_setting_cmd (const string& cmd)
     return cmd.matches (rxsetting_cmd) || cmd.matches(rxpath_cmd);
 }
 
-// ***************************************************************************
-// 
+// True if CMD changes debuggee
 bool is_file_cmd (const string& cmd, GDBAgent *gdb)
 {
     if (cmd == "# reset")
@@ -320,8 +319,7 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
     return false;
 }
 
-// ***************************************************************************
-// 
+// True if CMD is a DDD graph command
 bool is_graph_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -331,8 +329,7 @@ bool is_graph_cmd (const string& cmd)
     return cmd.matches(rxgraph_cmd);
 }
 
-// ***************************************************************************
-// 
+// True if CMD is a refresh command
 bool is_refresh_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -342,8 +339,7 @@ bool is_refresh_cmd (const string& cmd)
     return cmd.matches(rxrefresh_cmd);
 }
 
-// ***************************************************************************
-// 
+// True if CMD affects breakpoints
 bool is_break_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -360,8 +356,7 @@ bool is_break_cmd (const string& cmd)
     return cmd.matches(rxbreak_cmd);
 }
 
-// ***************************************************************************
-// 
+// True if CMD changes current cursor position
 bool is_lookup_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -371,8 +366,7 @@ bool is_lookup_cmd (const string& cmd)
     return cmd.matches(rxlookup_cmd);
 }
 
-// ***************************************************************************
-// 
+// True if CMD changes directory
 bool is_cd_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -382,8 +376,7 @@ bool is_cd_cmd (const string& cmd)
     return cmd.matches(rxcd_cmd);
 }
 
-// ***************************************************************************
-// 
+// True if CMD invokes `make'
 bool is_make_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
@@ -393,8 +386,7 @@ bool is_make_cmd (const string& cmd)
     return cmd.matches(rxmake_cmd);
 }
 
-// ***************************************************************************
-// 
+// Fetch display expression from DISPLAY_CMD
 string get_display_expression (const string& display_cmd)
 {
 #if RUNTIME_REGEX
@@ -406,8 +398,7 @@ string get_display_expression (const string& display_cmd)
 }
 
 
-// ***************************************************************************
-// 
+// Fetch breakpoint expression from CMD
 string get_break_expression (const string& cmd)
 {
     string arg = cmd;
@@ -429,13 +420,10 @@ string get_break_expression (const string& cmd)
 
 
 //----------------------------------------------------------------------------
-// fuer das Erkennen von Displayausdruecken
+// Handle `display' output
 //----------------------------------------------------------------------------
 
-// ***************************************************************************
-// -1, wenn gdb_answer kein display enthaelt, 
-// sonst den index des ersten displays.
-// 
+// Return index of first display in GDB_ANSWER; -1 if none
 int display_index (const string& gdb_answer, GDBAgent *gdb)
 {
 #if RUNTIME_REGEX
@@ -472,17 +460,13 @@ int display_index (const string& gdb_answer, GDBAgent *gdb)
     return -1;
 }
 
-// ***************************************************************************
-// 
+// True if GDB_ANSWER contains some display
 bool contains_display (const string& gdb_answer, GDBAgent *gdb)
 {
     return display_index(gdb_answer, gdb) >= 0;
 }
 
-// ***************************************************************************
-// gibt index zurueck, an dem ein Display anfangen koennte (d.h. index eines
-// moeglichen Display-Anfangs
-// 
+// Return index of possible display start; -1 if none
 int possible_begin_of_display (string gdb_answer, GDBAgent *gdb)
 {
     int index = -1;
@@ -512,7 +496,8 @@ int possible_begin_of_display (string gdb_answer, GDBAgent *gdb)
 }
 
 
-static bool next_is_nl(string& displays)
+// True if next non-space character in DISPLAYS is a newline
+static bool next_is_nl(const string& displays)
 {
     unsigned int i = 0;
     while (i < displays.length() && displays[i] == ' ')
@@ -520,10 +505,8 @@ static bool next_is_nl(string& displays)
     return i < displays.length() && displays[i] == '\n';
 }
 
-// ***************************************************************************
-// gibt den naechsten Display zurueck falls vorhanden, und
-// schneidet diesen von displays vorne ab.
-// 
+// Return next display from DISPLAYS ("" if none); remove it from
+// DISPLAYS
 string read_next_display (string& displays, GDBAgent *)
 {
     string next_display;
@@ -542,10 +525,8 @@ string read_next_display (string& displays, GDBAgent *)
     return next_display;
 }
 
-// ***************************************************************************
-// schneidet vom display "'nr': 'name' = " vorne ab.
-// 
-string get_disp_value_str (/*const*/ string& display, GDBAgent *)
+// Return "NR: NAME = " from DISPLAY
+string get_disp_value_str (const string& display, GDBAgent *)
 {
     string d(display);
 
@@ -566,8 +547,10 @@ string get_disp_value_str (/*const*/ string& display, GDBAgent *)
     return d;
 }
 
+
+
 //----------------------------------------------------------------------------
-// fuer das Erkennen der Ausdruecke bei info display
+// Handle `info display' output
 //----------------------------------------------------------------------------
 
 #if RUNTIME_REGEX
@@ -575,11 +558,7 @@ static regex rxgdb_begin_of_display_info("[1-9][0-9]*:   ");
 static regex rxdbx_begin_of_display_info("[(][1-9][0-9]*[)] ");
 #endif
 
-// ***************************************************************************
-// -1, wenn gdb_answer kein display enthaelt, 
-// sonst den index des ersten displays.
-// 
-
+// Return index of first display in GDB_ANSWER; -1 if none
 int display_info_index (const string& gdb_answer, GDBAgent *gdb)
 {
     const regex *prx = 0;
@@ -608,11 +587,7 @@ int display_info_index (const string& gdb_answer, GDBAgent *gdb)
     return -1;
 }
 
-// ***************************************************************************
-// gibt den ersten Display-Info aus 
-// Ist kein weiteres display-info vorhanden, sind return-Wert und gdb_answer
-// gleich "".
-// 
+// Return first display info from GDB_ANSWER; "" if none.
 string read_first_disp_info (string& gdb_answer, GDBAgent *gdb)
 {
     int i = display_info_index(gdb_answer, gdb);
@@ -625,11 +600,7 @@ string read_first_disp_info (string& gdb_answer, GDBAgent *gdb)
 }
 
 
-// ***************************************************************************
-// gibt den naechsten Display-Info aus 
-// Ist kein weiteres display-info vorhanden, sind return-Wert und gdb_answer
-// gleich "".
-// 
+// Return next display info from GDB_ANSWER; "" if none.
 string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
 {
     switch (gdb->type())
@@ -688,9 +659,7 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
     return "";
 }
 
-// ***************************************************************************
-// schneidet "'nr': " vorne ab
-//
+// Remove and return "NR: " from DISPLAY.
 string get_info_disp_str (string& display_info, GDBAgent *gdb)
 {
     switch (gdb->type())
@@ -708,8 +677,7 @@ string get_info_disp_str (string& display_info, GDBAgent *gdb)
     return "";
 }
 
-// ***************************************************************************
-//
+// Check whether `disabled' entry in INFO_DISP_STR indicates an enabled display
 bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb)
 {
     switch (gdb->type())
@@ -730,11 +698,10 @@ bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb)
 
 
 //----------------------------------------------------------------------------
-// fuer Knotenerzeugung (Lesen des Display-Anfangs)
+// Process `display' output
 //----------------------------------------------------------------------------
 
-// ***************************************************************************
-//
+// Remove and return display number from DISPLAY
 string  read_disp_nr_str (string& display, GDBAgent *gdb)
 {
     switch (gdb->type())
@@ -759,8 +726,7 @@ string  read_disp_nr_str (string& display, GDBAgent *gdb)
     return "";
 }
 
-// ***************************************************************************
-// Return display name from DISPLAY; leave display value in DISPLAY
+// Remove and return display name from DISPLAY
 string read_disp_name (string& display, GDBAgent *gdb)
 {
     string name = display.before (" = ");
@@ -768,13 +734,13 @@ string read_disp_name (string& display, GDBAgent *gdb)
     return name;
 }
 
-// ***************************************************************************
-//
+// True if some display has been disabled
 bool is_disabling(const string& value, GDBAgent *gdb)
 {
     return gdb->type() == GDB && value.contains("\nDisabling display ");
 }
 
+// True if VALUE is an invalid value (i.e., an error message)
 bool is_invalid(const string& value)
 {
     // If VALUE ends in two words, it is an error message like `not

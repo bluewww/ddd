@@ -145,7 +145,7 @@ int possible_begin_of_display (string gdb_answer, GDBAgent *gdb);
 string read_next_display (string& displays, GDBAgent *gdb);
 
 // Remove and return "NR: NAME = " from DISPLAY.
-string get_disp_value_str (/*const*/ string& display, GDBAgent *gdb);
+string get_disp_value_str (const string& display, GDBAgent *gdb);
 
 
 //----------------------------------------------------------------------------

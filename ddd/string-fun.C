@@ -50,7 +50,8 @@ const regex rxblanks          (" +");
 const regex rxblanks_or_tabs  ("[ \t]+");
 #endif
 
-// ***************************************************************************
+
+// Convert NR to a string
 string itostring (int nr)
 {
     char buffer[10];
@@ -58,12 +59,14 @@ string itostring (int nr)
     return string(buffer);
 }
 
+// Remove leading parentheses
 static void read_leading_parentheses(string& s)
 {
     while (s.length() > 0 && (isspace(s[0]) || s[0] == '(' || s[0] == '['))
 	s = s.after(0);
 }
 
+// Remove trainling parentheses
 static void read_trailing_parentheses(string& s)
 {
     while (s.length() > 0 && (isspace(s[0]) || s[0] == ')' || s[0] == ']'))
@@ -72,7 +75,7 @@ static void read_trailing_parentheses(string& s)
     
     
 
-// ***************************************************************************
+// Return true iff S begins with an integer
 bool has_nr (const string& s)
 {
     string int_string(s);
@@ -80,9 +83,7 @@ bool has_nr (const string& s)
     return int_string.contains(rxint, 0);
 }
 
-// ***************************************************************************
-// gibt den Integer zurueck, der am Anfang des String steht
-// 
+// Return the integer at beginning of S, or 0 if none
 int get_nr (const string& s)
 {
     string int_string(s);
@@ -91,16 +92,14 @@ int get_nr (const string& s)
     return atoi(int_string.chars());
 }
 
-// ***************************************************************************
-// 
+// Return the integer at beginning of S, or -1 if none
 int get_positive_nr (const char* s) 
 {
     string str = s;
     return get_positive_nr (str);
 }
 
-// ***************************************************************************
-// 
+// Return the integer at beginning of S, or -1 if none
 int get_positive_nr (const string& s)
 {
     string int_string(s);
@@ -112,8 +111,7 @@ int get_positive_nr (const string& s)
     return atoi(int_string.chars());
 }
 
-
-// ***************************************************************************
+// Remove leading blanks from S
 void read_leading_blanks (string& s)
 {
     int i = 0;
@@ -122,7 +120,7 @@ void read_leading_blanks (string& s)
     s = s.from(i);
 }
 
-// ***************************************************************************
+// Remove and return a leading integer from S, or "" if none
 string read_nr_str (string& s)
 {
     string s0 = s;
@@ -141,24 +139,34 @@ string read_nr_str (string& s)
     return int_string;
 }
 
-// ***************************************************************************
+// Remove and return a leading integer from S, or 0 if none
 int read_positive_nr (string& s)
 {
     return atoi(read_nr_str(s));
 }
 
-
-// ***************************************************************************
+// Strip final characters
 void strip_final_blanks(string& text)
 {
-    while (text.length() > 0 &&
-	   isspace(text[text.length() - 1]))
-	text = text.before(int(text.length() - 1));
+    int index = text.length() - 1;
+    while (index >= 0 && isspace(text[index]))
+	index--;
+
+    if (index < 0)
+	text = "";
+    else
+	text.after(index) = "";
 }
 
-// ***************************************************************************
+// Strip final characters
 void strip_final_newlines(string& text)
 {
-    while (text.length() > 0 && text[text.length() - 1] == '\n')
-	text = text.before(int(text.length() - 1));
+    int index = text.length() - 1;
+    while (index >= 0 && text[index] == '\n')
+	index--;
+
+    if (index < 0)
+	text = "";
+    else
+	text.after(index) = "";
 }
