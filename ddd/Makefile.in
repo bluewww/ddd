@@ -345,6 +345,13 @@ RMDIR = rmdir
 # The GNU Debugger.
 GDB = gdb
 
+# The fig2dev command.
+FIG2DEV = fig2dev
+
+# Some XPM/PPM/PostScript converters
+XPMTOPPM = xpmtoppm
+PNMTOPS = pnmtops
+
 ### END OF CUSTOMIZATION SECTION ---
 ### You shouldn't need to change anything below this line.
 
@@ -1026,9 +1033,63 @@ vsl-gramma.C: vsl-gramma.Y
 VSLRead.o: vsl-lex.C vsl-gramma.h vsl-gramma.C
 
 
-## The manual page
-$(srcdir)/../doc/ddd.man.ps: $(srcdir)/ddd.man
+## The manual page.
+PICS = \
+	PICS/dddlogo21.ps        \
+	PICS/ddd-all.ps          \
+	PICS/ddd-console.ps      \
+	PICS/ddd-history.ps      \
+	PICS/ddd-open.ps         \
+	PICS/ddd-source.ps       \
+	PICS/ddd-cond.ps         \
+	PICS/ddd-line-popup.ps   \
+	PICS/ddd-bp-popup.ps     \
+	PICS/ddd-source-popup.ps \
+	PICS/ddd-arguments.ps    \
+	PICS/ddd-tool.ps         \
+	PICS/ddd-backtrace.ps
+
+$(srcdir)/../doc/ddd.man.ps: $(srcdir)/ddd.man $(PICS)
 	$(GROFF) -man $(srcdir)/ddd.man > $@
+
+PICS/ddd-all.ps: PICS/ddd-all.fig PICS/ddd-all.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-all.fig > ddd-all.ps
+
+PICS/ddd-console.ps: PICS/ddd-console.fig PICS/ddd-console.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-console.fig > ddd-console.ps
+
+PICS/ddd-history.ps: PICS/ddd-history.fig PICS/ddd-history.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-history.fig > ddd-history.ps
+
+PICS/ddd-open.ps: PICS/ddd-open.fig PICS/ddd-open.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-open.fig > ddd-open.ps
+
+PICS/ddd-source.ps: PICS/ddd-source.fig PICS/ddd-source.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-source.fig > ddd-source.ps
+
+PICS/ddd-cond.ps: PICS/ddd-cond.fig PICS/ddd-cond.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-cond.fig > ddd-cond.ps
+
+PICS/ddd-line-popup.ps: PICS/ddd-line-popup.fig PICS/ddd-line-popup.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-line-popup.fig > ddd-line-popup.ps
+
+PICS/ddd-bp-popup.ps: PICS/ddd-bp-popup.fig PICS/ddd-bp-popup.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-bp-popup.fig > ddd-bp-popup.ps
+
+PICS/ddd-source-popup.ps: PICS/ddd-source-popup.fig PICS/ddd-source-popup.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-source-popup.fig > ddd-source-popup.ps
+
+PICS/ddd-arguments.ps: PICS/ddd-arguments.fig PICS/ddd-arguments.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-arguments.fig > ddd-arguments.ps
+
+PICS/ddd-tool.ps: PICS/ddd-tool.fig PICS/ddd-tool.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-tool.fig > ddd-tool.ps
+
+PICS/ddd-backtrace.ps: PICS/ddd-backtrace.fig PICS/ddd-backtrace.xpm
+	cd PICS; $(FIG2DEV) -L ps ddd-backtrace.fig > ddd-backtrace.ps
+
+PICS/dddlogo21.ps: PICS/dddlogo21.xpm
+	$(XPMTOPPM) PICS/dddlogo21.xpm | $(PNMTOPS) -noturn > $@
 
 
 ## Configuration stuff.
