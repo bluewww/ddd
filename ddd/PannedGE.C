@@ -39,7 +39,7 @@ char PannedGraphEdit_rcsid[] =
 #include "BoxPoint.h"
 #include "verify.h"
 
-#if defined(HAVE_ATHENA_WIDGETS) \
+#if defined(HAVE_ATHENA) \
     && defined(HAVE_X11_XAW_FORM_H) \
     && defined(HAVE_X11_XAW_PANNER_H) \
     && defined(HAVE_X11_XAW_PORTHOLE_H)

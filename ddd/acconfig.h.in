@@ -98,14 +98,14 @@
 #undef REGCOMP_BROKEN
 
 /* Define if you want this program to use X Athena widgets. */
-#undef WITH_ATHENA_WIDGETS
+#undef WITH_ATHENA
 
 /* Define if you want to replace the ICE built-in 'test' command by
    the external `test' program. */
 #undef WITH_EXTERNAL_TEST
 
 /* Define if you want this program to use Motif widgets. */
-#undef WITH_MOTIF_WIDGETS
+#undef WITH_MOTIF
 
 /* Define if you want runtime-compiled regexes (not needed in DDD) */
 #undef WITH_RUNTIME_REGEX
