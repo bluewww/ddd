@@ -1721,3 +1721,27 @@ manual page into another language, under the above conditions for
 modified versions, except that this permission notice may be included
 in translations approved by the Free Software Foundation instead of in
 the original English.
+
+
+.\" --------------------
+.SH PRINTING THIS MANUAL
+.\" --------------------
+Invoke \s-2@DDD@\s+2 with the `\fB\-\-manual\fR' option to show this
+manual page on standard output.  This text output is suitable for
+installation as formatted manual page (as
+`\fB/usr/local/man/cat1/ddd.1\fR' or similar) on \s-2UNIX\s+2 systems.
+
+.PP
+A PostScript copy of this manual page, suitable for printing, is
+included in the DDD source distribution and available separately as
+.PP
+.sp
+.br
+  \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/doc/ddd-man.ps.gz\fR
+.br
+.sp
+.PP
+A \s-2ROFF\s+2 copy of this manual page, suitable for installation as
+manual page on \s-2UNIX\s+2 systems (as
+`\fB/usr/local/man/man1/ddd.1\fR' or similar), is included in the DDD
+source distribution.
