@@ -34,19 +34,24 @@
 #endif
 
 #include "strclass.h"
+#include "AppData.h"
+
 #include <X11/Intrinsic.h>
 
+// Font types
 enum DDDFont { DefaultDDDFont       = 0,
 	       VariableWidthDDDFont = 1,
 	       FixedWidthDDDFont    = 2,
 	       SymbolDDDFont        = 3 };
 
-extern void setup_fonts();
+// Setup font specs.  DB is the resource database in use.
+extern void setup_fonts(AppData& app_data, XrmDatabase db = 0);
 
 // Return font name from BASE, overriding with parts from OVERRIDE.
 // Override contains "-SPEC-SPEC-..."; each non-empty SPEC overrides
 // the default in BASE.
-extern string make_font(DDDFont base, const string& override = "");
+extern string make_font(const AppData& ad, DDDFont base, 
+			const string& override = "");
 
 // Set a new font resource
 extern void set_font(DDDFont n, const string& name);

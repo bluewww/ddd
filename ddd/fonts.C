@@ -34,10 +34,12 @@ char fonts_rcsid[] =
 #endif
 
 #include "fonts.h"
+#include "charsets.h"
 
 #include "AppData.h"
 #include "DestroyCB.h"
 #include "LiterateA.h"
+#include "StringSA.h"
 #include "assert.h"
 #include "converters.h"
 #include "cook.h"
@@ -56,7 +58,7 @@ char fonts_rcsid[] =
 
 
 //-----------------------------------------------------------------------------
-// Return font attributes
+// Return X font attributes
 //-----------------------------------------------------------------------------
 
 //  1     2    3    4     5     6  7     8    9    10   11  12   13     14
@@ -107,20 +109,20 @@ static string component(string name, FontComponent n)
 
 
 //-----------------------------------------------------------------------------
-// Access font resources
+// Access X font resources
 //-----------------------------------------------------------------------------
 
 // User-specified values
-static string userfont(DDDFont font)
+static string userfont(const AppData& ad, DDDFont font)
 {
     switch (font) 
     {
     case DefaultDDDFont:
-	return app_data.default_font;
+	return ad.default_font;
     case VariableWidthDDDFont:
-	return app_data.variable_width_font;
+	return ad.variable_width_font;
     case FixedWidthDDDFont:
-	return app_data.fixed_width_font;
+	return ad.fixed_width_font;
     case SymbolDDDFont:
 	return "";
     }
@@ -167,7 +169,7 @@ static string fallbackfont(DDDFont font)
 }
 
 // Fetch a component
-static string component(DDDFont font, FontComponent n)
+static string component(const AppData& ad, DDDFont font, FontComponent n)
 {
     if (n == PointSize)
     {
@@ -175,23 +177,23 @@ static string component(DDDFont font, FontComponent n)
 	switch(font)
 	{
 	case DefaultDDDFont:
-	    sz = app_data.default_font_size;
+	    sz = ad.default_font_size;
 	    break;
 
 	case VariableWidthDDDFont:
 	case SymbolDDDFont:
-	    sz = app_data.variable_width_font_size;
+	    sz = ad.variable_width_font_size;
 	    break;
 
 	case FixedWidthDDDFont:
-	    sz = app_data.fixed_width_font_size;
+	    sz = ad.fixed_width_font_size;
 	    break;
 	}
 
 	return itostring(sz);
     }
 
-    string w = component(userfont(font), n);
+    string w = component(userfont(ad, font), n);
     if (w == "")		// nothing specified
 	w = component(fallbackfont(font), n);
     return w;
@@ -200,7 +202,7 @@ static string component(DDDFont font, FontComponent n)
 
 
 //-----------------------------------------------------------------------------
-// Create a font name
+// Create an X font name
 //-----------------------------------------------------------------------------
 
 static string override(FontComponent new_n, 
@@ -220,14 +222,14 @@ static string override(FontComponent new_n,
     return new_font;
 }
 
-string make_font(DDDFont base, const string& override)
+string make_font(const AppData& ad, DDDFont base, const string& override)
 {
     string font = "";
     for (FontComponent n = Foundry; n <= AllComponents; n++)
     {
 	string w = component(override, n);
 	if (w == "" || w == " ")
-	    w = component(base, n);
+	    w = component(ad, base, n);
 	font += "-" + w;
     }
 
@@ -239,122 +241,235 @@ string make_font(DDDFont base, const string& override)
     return font;
 }
 
-static void define_font(const string& name, DDDFont base, 
+
+
+//-----------------------------------------------------------------------------
+// Setup X fonts
+//-----------------------------------------------------------------------------
+
+static StringStringAssoc font_defs;
+
+static void define_font(const AppData& ad,
+			const string& name, DDDFont base, 
 			const string& override = "")
 {
-    string font = make_font(base, override);
-    defineConversionMacro(name, font);
+    string font = make_font(ad, base, override);
+    defineConversionMacro(upcase(name), font);
+    font_defs[name] = font;
 
-    if (app_data.show_fonts)
-	cout << "@" << name << "@    \t" << font << "\n";
+    if (ad.show_fonts)
+    {
+	string sym;
+	if (name == MSTRING_DEFAULT_CHARSET)
+	    sym = "default";
+	else
+	    sym = "@" + name;
+	cout << sym << "\t" << font << "\n";
+    }
 }
 
+static void set_db_font(const AppData& ad, XrmDatabase& db,
+			const string& line)
+{
+    XrmPutLineResource(&db, line);
 
-static void setup_x_fonts()
+    if (ad.show_fonts)
+    {
+	string s = line;
+	s.gsub(":", ": \\\n    ");
+	s.gsub(",", ",\\\n    ");
+	cout << s << "\n\n";
+    }
+}
+
+static void setup_font_db(const AppData& ad, XrmDatabase& db)
+{
+    // Default fonts
+    string default_fontlist = 
+	font_defs[CHARSET_DEFAULT] + "=FONTLIST_DEFAULT_TAG_STRING," +
+	font_defs[CHARSET_DEFAULT] + "=charset," +
+	font_defs[CHARSET_SMALL] + "=" CHARSET_SMALL "," +
+	font_defs[CHARSET_TT] + "=" CHARSET_TT "," +
+	font_defs[CHARSET_TB] + "=" CHARSET_TB "," +
+	font_defs[CHARSET_KEY] + "=" CHARSET_KEY "," +
+	font_defs[CHARSET_RM] + "=" CHARSET_RM "," +
+	font_defs[CHARSET_SL] + "=" CHARSET_SL "," +
+	font_defs[CHARSET_BF] + "=" CHARSET_BF "," +
+	font_defs[CHARSET_BS] + "=" CHARSET_BS "," +
+	font_defs[CHARSET_LOGO] + "=" CHARSET_LOGO "," +
+	font_defs[CHARSET_LLOGO] + "=" CHARSET_LLOGO "," +
+	font_defs[CHARSET_SYMBOL] + "=" CHARSET_SYMBOL;
+
+    set_db_font(ad, db, string(DDD_CLASS_NAME "*") + 
+		XmCFontList + ": " + default_fontlist);
+
+    // Text fonts
+    string text_fontlist = 
+	font_defs[CHARSET_TEXT] + "=FONTLIST_DEFAULT_TAG_STRING," +
+	font_defs[CHARSET_TEXT] + "=charset";
+
+    set_db_font(ad, db, string(DDD_CLASS_NAME "*XmTextField.") + 
+		XmCFontList + ": " + text_fontlist);
+    set_db_font(ad, db, string(DDD_CLASS_NAME "*XmText.") + 
+		XmCFontList + ": " + text_fontlist);
+
+    // Command tool fonts
+    string tool_fontlist = 
+	font_defs[CHARSET_LIGHT] + "=FONTLIST_DEFAULT_TAG_STRING," +
+	font_defs[CHARSET_LIGHT] + "=charset";
+
+    set_db_font(ad, db, 
+		string(DDD_CLASS_NAME "*tool_buttons.run.") + 
+		XmCFontList + ": " + default_fontlist);
+    set_db_font(ad, db, 
+		string(DDD_CLASS_NAME "*tool_buttons.break.") +
+		XmCFontList + ": " + default_fontlist);
+    set_db_font(ad, db, 
+		string(DDD_CLASS_NAME "*tool_buttons*") +
+		XmCFontList + ": " + tool_fontlist);
+}
+
+static void title(const AppData& ad, const string& s)
+{
+    if (!ad.show_fonts)
+	return;
+
+    static bool title_seen = false;
+
+    if (title_seen)
+	cout << "\n\n";
+
+    cout << s << "\n" << replicate("-", s.length()) << "\n\n";
+
+    title_seen = true;
+}
+
+static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
 {
     Dimension small_size = 
-	((app_data.default_font_size * 8) / 90) * 10;
+	((ad.default_font_size * 8) / 90) * 10;
     Dimension llogo_size =
-	((app_data.default_font_size * 3) / 20) * 10;
+	((ad.default_font_size * 3) / 20) * 10;
 
     if (small_size < 80)
-	small_size = app_data.default_font_size;
+	small_size = ad.default_font_size;
 
     string small_size_s = itostring(small_size);
     string llogo_size_s = itostring(llogo_size);
 
-	
-    // Default font
-    define_font("CHARSET", DefaultDDDFont);
+    // Clear old font defs
+    static StringStringAssoc empty;
+    font_defs = empty;
 
-    define_font("SMALL", DefaultDDDFont,
+    title(ad, "Symbolic font names");
+
+    // Default font
+    define_font(ad, CHARSET_DEFAULT, DefaultDDDFont);
+
+    define_font(ad, CHARSET_SMALL, DefaultDDDFont,
 		override(PointSize, small_size_s));
 
-    define_font("LIGHT", DefaultDDDFont,
+    define_font(ad, CHARSET_LIGHT, DefaultDDDFont,
 		override(Weight, "medium",
 			 override(PointSize, small_size_s)));
 
     // Text fonts
-    define_font("TEXT", FixedWidthDDDFont);
+    define_font(ad, CHARSET_TEXT, FixedWidthDDDFont);
 
     // Text fonts
-    define_font("LOGO", VariableWidthDDDFont,
+    define_font(ad, CHARSET_LOGO, VariableWidthDDDFont,
 		override(Weight, "bold"));
 
-    define_font("LLOGO", VariableWidthDDDFont,
+    define_font(ad, CHARSET_LLOGO, VariableWidthDDDFont,
 		override(Weight, "bold",
 			 override(PointSize, llogo_size_s)));
 
-    define_font("RM", VariableWidthDDDFont,
+    define_font(ad, CHARSET_RM, VariableWidthDDDFont,
 		override(Slant, "r"));
 
-    define_font("SL", VariableWidthDDDFont,
+    define_font(ad, CHARSET_SL, VariableWidthDDDFont,
 		override(Slant, "*")); // matches `i' and `o'
 
-    define_font("BF", VariableWidthDDDFont,
+    define_font(ad, CHARSET_BF, VariableWidthDDDFont,
 		override(Weight, "bold",
 			 override(Slant, "r")));
 
-    define_font("BS", VariableWidthDDDFont,
+    define_font(ad, CHARSET_BS, VariableWidthDDDFont,
 		override(Weight, "bold",
 			 override(Slant, "*")));
 
-    define_font("TT", FixedWidthDDDFont);
+    define_font(ad, CHARSET_TT, FixedWidthDDDFont);
 
-    define_font("TB", FixedWidthDDDFont,
+    define_font(ad, CHARSET_TB, FixedWidthDDDFont,
 		override(Weight, "bold"));
 
-    define_font("KEY", VariableWidthDDDFont,
+    define_font(ad, CHARSET_KEY, VariableWidthDDDFont,
 		override(Weight, "bold"));
 
-    define_font("SYMBOL", SymbolDDDFont);
+    define_font(ad, CHARSET_SYMBOL, SymbolDDDFont);
+
+    title(ad, "Font resources");
+
+    setup_font_db(ad, db);
 }
+
+
+
+//-----------------------------------------------------------------------------
+// Set VSL font resources
+//-----------------------------------------------------------------------------
 
 static void replace_vsl_def(string& s, const string& func, const string& val)
 {
     s += "#pragma replace " + func + "\n" + func + "() = " + val + ";\n";
 }
 
-static void setup_vsl_fonts()
+static void setup_vsl_fonts(AppData& ad)
 {
     static string defs;
 
+    title(ad, "VSL defs");
+
     replace_vsl_def(defs, "stdfontsize", "0");
     replace_vsl_def(defs, "stdfontpoints",
-		    component(FixedWidthDDDFont, PointSize));
+		    component(ad, FixedWidthDDDFont, PointSize));
     replace_vsl_def(defs, "stdfontfamily", 
-		    quote(component(FixedWidthDDDFont, Family)));
+		    quote(component(ad, FixedWidthDDDFont, Family)));
     replace_vsl_def(defs, "stdfontweight", 
-		    quote(component(FixedWidthDDDFont, Weight)));
+		    quote(component(ad, FixedWidthDDDFont, Weight)));
 
-    if (app_data.show_fonts)
+    if (ad.show_fonts)
 	cout << defs;
 
-    defs += app_data.vsl_base_defs;
-    app_data.vsl_base_defs = defs;
+    defs += ad.vsl_base_defs;
+    ad.vsl_base_defs = defs;
 }
 
-void setup_fonts()
+void setup_fonts(AppData& ad, XrmDatabase db)
 {
-    setup_x_fonts();
-    setup_vsl_fonts();
+    XrmDatabase db2 = db;
+    setup_x_fonts(ad, db2);
+    assert(db == db2);
+
+    setup_vsl_fonts(ad);
 }
 
 
 
 //-----------------------------------------------------------------------------
-// Set font resources
+// Handle font resources
 //-----------------------------------------------------------------------------
 
 // Simplify font specs
-static string simplify_font(DDDFont font, const string& source)
+static string simplify_font(const AppData& ad, DDDFont font, 
+			    const string& source)
 {
     string s = "";
 
     for (FontComponent n = AllComponents; n >= Foundry; n--)
     {
 	string c = component(source, n);
-	if (s == "" && c == component(font, n))
+	if (s == "" && c == component(ad, font, n))
 	{
 	    // Default setting -- ignore
 	}
@@ -368,9 +483,9 @@ static string simplify_font(DDDFont font, const string& source)
 	s = s.after("-*-");
 
     if (s == "")
-	s = component(font, Family);
+	s = component(ad, font, Family);
     if (!s.contains('-'))
-	s += "-" + component(font, Weight);
+	s += "-" + component(ad, font, Weight);
 
 #if 0
     clog << "simplify_font(" << font_type(font) << ", " 
@@ -451,6 +566,8 @@ void SetFontSizeCB(Widget w, XtPointer client_data, XtPointer)
     update_reset_preferences();
 }
 
+
+
 //-----------------------------------------------------------------------------
 // Font browser
 //-----------------------------------------------------------------------------
@@ -495,7 +612,8 @@ static void process_font(DDDFont font, string fontspec)
 	set_font_size(font, atoi(sz));
 
     fontspec.gsub('*', ' ');
-    set_font(font, simplify_font(font, make_font(font, fontspec)));
+    set_font(font, simplify_font(app_data, font, 
+				 make_font(app_data, font, fontspec)));
 
     update_options();
 }
@@ -587,7 +705,7 @@ void BrowseFontCB(Widget w, XtPointer client_data, XtPointer call_data)
     StatusDelay delay("Invoking " + font_type(font) + " selector");
 
     string cmd = app_data.font_select_command;
-    cmd.gsub("@FONT@", make_font(DefaultDDDFont));
+    cmd.gsub("@FONT@", make_font(app_data, DefaultDDDFont));
     string type = font_type(font);
     type[0] = toupper(type[0]);
     cmd.gsub("@TYPE@", type);

@@ -1661,7 +1661,7 @@ int main(int argc, char *argv[])
     // From this point on, APP_DATA is valid.
 
     // Define font macros
-    setup_fonts();
+    setup_fonts(app_data, XtDatabase(XtDisplay(toplevel)));
 
     // Create new session dir if needed
     create_session_dir(app_data.session, messages);

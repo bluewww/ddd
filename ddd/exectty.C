@@ -122,7 +122,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     string old_ttyname = ttyname;
 
     string term_command = app_data.term_command;
-    term_command.gsub("@FONT@", make_font(FixedWidthDDDFont));
+    term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
 
     string command = 
 	

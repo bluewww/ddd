@@ -866,7 +866,10 @@ Ddd*maxBreakpointNumber: 99
 Ddd*maxDisplayNumber:    99
 
 
+
+!-----------------------------------------------------------------------------
 ! Fonts
+!-----------------------------------------------------------------------------
 
 ! The default font to use for labels, etc.
 Ddd*defaultFont:       helvetica-bold
@@ -879,67 +882,6 @@ Ddd*fixedWidthFont:    lucidatypewriter-medium
 
 ! The base font size; overrides the point settings as set above.
 Ddd*FontSize:          120
-
-
-!-----------------------------------------------------------------------------
-! Font mappings
-!-----------------------------------------------------------------------------
-
-! Font definitions.  @<font> is used to switch between fonts.
-! @charset is the default font.
-! @tt (teletype) is the fixed-width font used in texts.
-! @key is the font used for keys.
-! @rm (roman), @sl (slanted), @bf (bold face), @bs (bold slanted)
-! are some fonts for usual highlighting.
-! @llogo and @logo are used in the DDD logo.
-!
-! The symbolic font names @CHARSET@, @SMALL@, etc. are constructed
-! from the font resources, above.
-!
-! Note: These font names are also used in DDD.  See `ddd/charsets.h'.
-!
-! Note: LessTif 0.79 always wants `FONTLIST_DEFAULT_TAG_STRING' 
-! instead of `charset' for TextField and Text widgets; this must also 
-! be the first font specified.
-
-! General font definitions.
-Ddd*fontList: \
-@CHARSET@=FONTLIST_DEFAULT_TAG_STRING,\
-@CHARSET@=charset,\
-@SMALL@=small,\
-@TT@=tt,\
-@TB@=tb,\
-@KEY@=key,\
-@RM@=rm,\
-@SL@=sl,\
-@BF@=bf,\
-@BS@=bs,\
-@LLOGO@=llogo,\
-@LOGO@=logo,\
-@SYMBOL@=symbol
-
-! Fixed-width fonts.
-Ddd*XmTextField.FontList: \
-@TEXT@=FONTLIST_DEFAULT_TAG_STRING,\
-@TEXT@=charset
-Ddd*XmText.FontList:	  \
-@TEXT@=FONTLIST_DEFAULT_TAG_STRING,\
-@TEXT@=charset
-
-! Command tool fonts.
-Ddd*tool_buttons.run.fontList: \
-@CHARSET@=FONTLIST_DEFAULT_TAG_STRING,\
-@CHARSET@=charset
-Ddd*tool_buttons.break.fontList: \
-@CHARSET@=FONTLIST_DEFAULT_TAG_STRING,\
-@CHARSET@=charset
-Ddd*tool_buttons*fontList: \
-@LIGHT@=FONTLIST_DEFAULT_TAG_STRING,\
-@LIGHT@=charset
-
-
-! For fonts in the execution window, see the `termCommand' resource, above.
-! For fonts in the data display, see the `vslDefs' resource, below.
 
 
 !-----------------------------------------------------------------------------

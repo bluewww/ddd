@@ -37,6 +37,9 @@
 
 // Character sets
 
+// The default charset (for button labels, etc.)
+#define CHARSET_DEFAULT  MSTRING_DEFAULT_CHARSET
+
 // The fixed-width font used in texts.
 #define CHARSET_TT "tt"
 
@@ -54,6 +57,27 @@
 
 // Bold slanted text
 #define CHARSET_BS "bs"
+
+// Key caps
+#define CHARSET_KEY "key"
+
+// The fixed-width font used in text fields
+#define CHARSET_TEXT "text"
+
+// Logo
+#define CHARSET_LOGO "logo"
+
+// Large logo
+#define CHARSET_LLOGO "llogo"
+
+// Symbol
+#define CHARSET_SYMBOL "symbol"
+
+// Small font (for `<<' and `>>')
+#define CHARSET_SMALL "small"
+
+// Light font (for the command tool buttons)
+#define CHARSET_LIGHT "light"
 
 
 // Convenience functions
