@@ -255,15 +255,24 @@ static void read_token(const char *value, int& pos)
 	read_up_to(value, pos, '}');
 	break;
 
-// #if 0
-    case '<':
-	read_up_to(value, pos, '>');
-	break;
-// #endif
-
     case '\"':
     case '\'':
 	read_string(value, pos, value[pos]);
+	break;
+
+    case '<':
+	if (gdb->has_print_r_option())
+	{
+	    // David Kirwan <David-Kirwan@vertel.com> reports that SUN
+	    // DBX 3.0 has trouble issuing templates - the closing `>'
+	    // is missing, as in `TSL_map<unsigned = { ...'.  Hence,
+	    // don't check for the closing `>'.
+	    pos++;
+	}
+	else
+	{
+	    read_up_to(value, pos, '>');
+	}
 	break;
 
     default:
