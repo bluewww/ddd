@@ -1353,6 +1353,8 @@ void ShutdownSmSessionCB(Widget w, XtPointer, XtPointer call_data)
 	    gdb_question("set confirm off");
     }
 
+    ddd_is_restarting    = false;
+    ddd_is_shutting_down = true;
     _DDDExitCB(w, XtPointer(EXIT_SUCCESS), call_data);
 }
 

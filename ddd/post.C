@@ -182,7 +182,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
     if (gdb_initialized && gdb_is_exiting && exited)
     {
 	// Exit was expected
-	DDDExitCB(find_shell(w), XtPointer(EXIT_SUCCESS), 0);
+	_DDDExitCB(find_shell(w), XtPointer(EXIT_SUCCESS), 0);
 	return 0;
     }
 

@@ -144,6 +144,9 @@ bool ddd_is_exiting = false;
 // True if DDD is about to restart
 bool ddd_is_restarting = false;
 
+// True if DDD is about to shut down (saving current settings)
+bool ddd_is_shutting_down = false;
+
 // True if DDD has crashed and needs restarting
 bool ddd_has_crashed = false;
 
@@ -161,6 +164,21 @@ void ddd_cleanup()
 	return;
 
     ddd_is_exiting = true;
+
+
+    if (!ddd_is_restarting)
+    {
+        // Delete temporary restart session, if any
+        delete_session(restart_session(), true);
+        set_restart_session();
+    }
+
+    if (!ddd_is_shutting_down)
+    {
+      // If current session is temporary, delete it
+      if (is_temporary_session(app_data.session))
+	  delete_session(app_data.session);
+    }
 
     kill_exec_tty();
     kill_command_tty();
@@ -1066,15 +1084,8 @@ static void DDDDoneAnywayCB(Widget w, XtPointer client_data,
 // Exit after confirmation
 void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
-    // Delete temporary restart session, if any
-    delete_session(restart_session(), true);
-    set_restart_session();
-
-    // Delete temporary session, if any
-    if (is_temporary_session(app_data.session))
-	delete_session(app_data.session);
-
-    ddd_is_restarting = false;
+    ddd_is_restarting    = false;
+    ddd_is_shutting_down = false;
     DDDDoneCB(w, client_data, call_data);
 }
 
@@ -1094,7 +1105,8 @@ static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
     set_restart_session(app_data.session);
     register_environ();
 
-    ddd_is_restarting = true;
+    ddd_is_restarting    = true;
+    ddd_is_shutting_down = false;
     DDDDoneCB(w, client_data, call_data);
 }
 
