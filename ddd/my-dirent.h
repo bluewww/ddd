@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-//
+// Include <dirent.h> decls
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -26,21 +26,35 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_graph_h
-#define _DDD_graph_h
+#ifndef _DDD_my_dirent_h
+#define _DDD_my_Dirent_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-#include <X11/Intrinsic.h>
+#include "config.h"
+#include <sys/types.h>
 
-extern void graphAlignCB        (Widget, XtPointer, XtPointer);
-extern void graphRotateCB       (Widget, XtPointer, XtPointer);
-extern void graphLayoutCB       (Widget, XtPointer, XtPointer);
+extern "C" {
+// Check for dirent
+#if HAVE_DIRENT_H
+# include <dirent.h>
+# define NAMLEN(dirent) strlen((dirent)->d_name)
+#else
+# define dirent direct
+# define NAMLEN(dirent) (dirent)->d_namlen
+# if HAVE_SYS_NDIR_H
+#  include <sys/ndir.h>
+# endif
+# if HAVE_SYS_DIR_H
+#  include <sys/dir.h>
+# endif
+# if HAVE_NDIR_H
+#  include <ndir.h>
+# endif
+#endif
+}
 
-extern void graphToggleLocalsCB (Widget, XtPointer, XtPointer);
-extern void graphToggleArgsCB   (Widget, XtPointer, XtPointer);
-
-#endif // _DDD_graph_h
+#endif // _DDD_my_dirent_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

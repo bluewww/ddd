@@ -33,7 +33,7 @@ char graph_rcsid[] =
 #pragma implementation
 #endif
 
-#include "graph.h"
+#include "data.h"
 #include "DataDisp.h"
 #include "ddd.h"
 #include "status.h"
@@ -42,7 +42,6 @@ char graph_rcsid[] =
 //-----------------------------------------------------------------------------
 // Other Graph Functions
 //-----------------------------------------------------------------------------
-
 
 void graphAlignCB(Widget, XtPointer, XtPointer)
 {

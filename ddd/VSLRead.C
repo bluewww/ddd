@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#include "Alloca.h"
+#include "my-alloca.h"
 
 // Yes, alloca() must come even before this simple stuff.  Sigh.
 char VSLRead_rcsid[] = 

@@ -59,9 +59,9 @@ struct YYMEMHANDLER {\
     }\
 };\
 
-# Use "Alloca.h" instead of the huge `#if alloca' etc.
+# Use "my-alloca.h" instead of the huge `#if alloca' etc.
 \!^#ifndef alloca!,\!^#endif /\* alloca not defined.  \*/!c\
-#include "Alloca.h"   /* Added by $RCSfile$ */\
+#include "my-alloca.h"   /* Added by $RCSfile$ */\
 
 
 \!.int yystacksize!a\

@@ -23,13 +23,13 @@
 // Arranged for C++ and autoconf by Andreas Zeller
 // C++ comments indicate changes to Stallman's original C code.
 
-#include "Alloca.h"
+#include "my-alloca.h"
 
 // Yep, `#pragma alloca' must come even before this simple stuff.  Sigh.
 char glob_rcsid[] = 
     "$Id$";
 
-#include "Dirent.h"
+#include "my-dirent.h"
 
 #include "glob.h"
 

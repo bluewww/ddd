@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_Alloca_h
-#define _DDD_Alloca_h
+#ifndef _DDD_my_alloca_h
+#define _DDD_my_alloca_h
 
 #include "config.h"
 
@@ -46,5 +46,5 @@ extern "C" char *alloca(unsigned int size);
 #endif /* no alloca decl */
 #endif /* not AIX */
 
-#endif // _DDD_Alloca_h
+#endif // _DDD_my_alloca_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
