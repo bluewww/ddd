@@ -79,18 +79,21 @@ extern "C" {
 
 void show_invocation(const string& gdb_command, ostream& os)
 {
+    string command     = gdb_command;
     string gdb_version = "";
     string options     = "";
     string title       = "";
     string base        = "";
 
-    string gdb_get_help    = sh_command(gdb_command + " -h");
-    string gdb_get_version = sh_command(gdb_command + " -v");
-
     DebuggerType type;
-    bool type_ok = get_debugger_type(gdb_command, type);
+    bool type_ok = get_debugger_type(command, type);
     if (!type_ok)
 	type = GDB;
+    if (command == "")
+	command = default_debugger(command, type);
+
+    string gdb_get_help    = sh_command(command + " -h");
+    string gdb_get_version = sh_command(command + " -v");
 
     string args = "executable-file [core-file | process-id]";
 
@@ -130,9 +133,9 @@ void show_invocation(const string& gdb_command, ostream& os)
 
 		case Options:
 		    option = buf;
-		    if (option == "")
+		    if (option.contains("For more information"))
 			state = Done;
-		    else
+		    else if (option != "")
 			options += option + "\n";
 		    break;
 
