@@ -36,10 +36,6 @@ char MemCheck_rcsid[] =
 
 #include <stdlib.h>
 
-#ifdef HAVE_MALLOC_H
-#include <malloc.h>
-#endif
-
 #ifndef HAVE_MALLOC_DECL
 extern "C" void *malloc(size_t size);
 #endif
