@@ -46,7 +46,7 @@ extern void wm_set_name(Display *display, Window shell,
 			string title = "", string icon = "");
 
 // Misc functions
-void wait_until_mapped(Widget w);
+void wait_until_mapped(Widget w, Widget shell = 0);
 void raise_shell(Widget w);
 void manage_and_raise(Widget w);
 

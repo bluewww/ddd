@@ -104,12 +104,13 @@ void wm_set_name(Widget shell, string title, string icon)
 }
 
 // Wait until W is mapped
-void wait_until_mapped(Widget w)
+void wait_until_mapped(Widget w, Widget shell)
 {
     XSync(XtDisplay(w), false);
     XmUpdateDisplay(w);
 
-    Widget shell = find_shell(w);
+    if (shell == 0)
+	shell = find_shell(w);
 
     if (XtIsRealized(w) && XtIsRealized(shell))
     {
