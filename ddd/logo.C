@@ -36,6 +36,7 @@ char logo_rcsid[] =
 #include "logo.h"
 #include "config.h"
 #include "xpm.h"
+#include "assert.h"
 
 // X bitmaps
 #include "icons/ddd.xbm"
@@ -53,6 +54,11 @@ char logo_rcsid[] =
 #include <X11/Xlib.h>
 #include <X11/StringDefs.h>
 #include <Xm/Xm.h>
+
+// ANSI C++ doesn't like the XtIsRealized() macro
+#ifdef XtIsRealized
+#undef XtIsRealized
+#endif
 
 #include "AppData.h"
 #include "cook.h"
@@ -168,6 +174,8 @@ Pixmap versionlogo(Widget w)
 
     Pixel foreground, background;
 
+    assert(XtIsRealized(w));
+
     XtVaGetValues(w,
 		  XmNforeground, &foreground,
 		  XmNbackground, &background,
@@ -226,6 +234,8 @@ static Pixel color(Widget w, String name, Pixel pixel)
 // Return a DDD logo suitable for the widget W
 Pixmap dddlogo(Widget w, const string& color_key)
 {
+    assert(XtIsRealized(w));
+
     Pixmap logo = 0;
     int depth = PlanesOfScreen(XtScreen(w));
 

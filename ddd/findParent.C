@@ -52,10 +52,10 @@ Widget findShellParent(Widget w)
 
     while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsShell(w)
+		      || !XtIsRealized(w)
 		      || XtDisplay(w) == 0
 		      || XtScreen(w) == 0
-		      || XtWindow(w) == 0
-		      || !XtIsRealized(w)))
+		      || XtWindow(w) == 0))
 	w = XtParent(w);
 
     if (findParent_debug)
@@ -79,10 +79,10 @@ Widget findTopLevelShellParent(Widget w)
 
     while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsTopLevelShell(w)
+		      || !XtIsRealized(w)
 		      || XtDisplay(w) == 0
 		      || XtScreen(w) == 0
-		      || XtWindow(w) == 0
-		      || !XtIsRealized(w)))
+		      || XtWindow(w) == 0))
 	w = XtParent(w);
 
     if (findParent_debug)
@@ -110,10 +110,10 @@ Widget findTheTopLevelShell(Widget w)
     {
 	if (XtIsWidget(w)
 	    && XtIsTopLevelShell(w) 
+	    && XtIsRealized(w)
 	    && XtDisplay(w) != 0
 	    && XtScreen(w) != 0
-	    && XtWindow(w) != 0
-	    && XtIsRealized(w))
+	    && XtWindow(w) != 0)
 	    found = w;
 	w = XtParent(w);
     }
