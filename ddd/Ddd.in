@@ -1402,7 +1402,7 @@ Ddd*text_help_popup.mwmDecorations:   1
 ! Help
 !-----------------------------------------------------------------------------
 
-! Set this to true to view widget names in help texts.
+! Set this to `true' to view widget names in help texts.
 Ddd*helpShowTitle: false
 
 ! Help is never acknowledged, always closed.
@@ -1416,7 +1416,7 @@ Ddd*manual_help_popup.title: @DDD@: Manual
 
 ! Help on help.
 Ddd*help_popup.help*helpString: \
-@rm This is the @sl Help @rm window.\n\
+@rm This is the @sl Help window.@rm\n\
 \n\
 By pressing @key F1 @rm and clicking on an item,\n\
 the item's functions are explained here.\n\
@@ -1434,7 +1434,7 @@ Ddd*manual_help*text.scrollHorizontal:	false
 Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
 Ddd*manual_help*helpString: \
-@rm This is the @sl @DDD@ Manual@rm.\n\
+@rm This is the @sl @DDD@ Manual.@rm\n\
 \n\
 Select titles from the index on the left\n\
 to get help on a specific item.
@@ -1447,7 +1447,7 @@ Ddd*text_help*text.scrollHorizontal:  false
 Ddd*text_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
 Ddd*text_help*helpString: \
-@rm This is the @sl @DDD@ License@rm.\n\
+@rm This is the @sl @DDD@ License.@rm\n\
 \n\
 It describes the terms and conditions\n\
 for copying, distributing and modifying @DDD@.
@@ -1468,7 +1468,7 @@ Ddd*helpString:	\
 
 ! Some trival help
 Ddd*XmScrollBar.helpString: \
-@rm This is a @sl Scroll Bar @rm.\n\
+@rm This is a @sl Scroll Bar.@rm\n\
 \n\
 Click or hold the @bf left mouse button @rm on an arrow button\n\
 to scroll the window in the arrow direction.\n\
@@ -1479,7 +1479,7 @@ visible part of the window.
 ! @rm Scroll window
 
 Ddd*XmSash.helpString: \
-@rm This is a @sl Paned Window Sash @rm.\n\
+@rm This is a @sl Paned Window Sash.@rm\n\
 \n\
 Drag the sash with the @bf left mouse button @rm to resize window parts.
 Ddd*XmSash.tipString: \
@@ -1504,7 +1504,7 @@ Ddd*tipShell.borderWidth: 1
 !-----------------------------------------------------------------------------
 
 Ddd*menubar.helpString:		\
-@rm This is the @sl Menu bar@rm.\n\
+@rm This is the @sl Menu bar.@rm\n\
 \n\
 @tt \267 @bf File @rm - select files and exit @DDD@.\n\
 @tt \267 @bf Edit @rm - cut, copy, and paste text.\n\
@@ -1523,7 +1523,7 @@ Ddd*menubar.file*documentationString:	@rm Open program and source files
 Ddd*menubar.file.mnemonic:		F
 Ddd*menubar.file*helpString:	\
 \
-@rm This is the @sl File menu@rm.\n\
+@rm This is the @sl File menu.@rm\n\
 \n\
 @tt \267 @bf Open Program... @rm - open the program to be debugged.\n\
 @tt \267 @bf Open Core Dump... @rm - open a core dump.\n\
@@ -1596,7 +1596,7 @@ Ddd*menubar.edit*documentationString:	\
 @rm Cut, copy, paste from and to the clipboard
 Ddd*menubar.edit*helpString:	\
 \
-@rm This is the @sl Edit menu@rm.\n\
+@rm This is the @sl Edit menu.@rm\n\
 \n\
 @tt \267 @bf Cut @rm - remove the selected text to the clipboard.\n\
 @tt \267 @bf Copy @rm - copy the selected text to the clipboard\n\
@@ -1650,7 +1650,7 @@ Ddd*menubar.options*documentationString: \
 @rm Modify the debugger configuration
 
 Ddd*menubar.options*helpString:	\
-@rm This is the @sl Options @rm menu.\n\
+@rm This is the @sl Options menu.@rm\n\
 \n\
 @tt \267 @bf Preferences... @rm invokes a panel for \
 setting @DDD@ options.\n\
@@ -1716,7 +1716,7 @@ Ddd*menubar.view*documentationString:	\
 @rm Open @DDD@ windows
 Ddd*menubar.view.helpString:	\
 \
-@rm This is the @sl Windows menu@rm.\n\
+@rm This is the @sl Windows menu.@rm\n\
 \n\
 @tt \267 @bf Command Tool... @rm - show the debugger command tool.\n\
 @tt \267 @bf Debugger Console... @rm - show the debugger console.\n\
@@ -1757,7 +1757,7 @@ Ddd*menubar.program*documentationString:	\
 @rm Control the execution of the debugged program
 Ddd*menubar.program*helpString:	\
 \
-@rm This is the @sl Program menu@rm.\n\
+@rm This is the @sl Program menu.@rm\n\
 \n\
 @tt \267 @bf Run... @rm - start the debugged program.\n\
 @tt \267 @bf Run Again @rm - run with current arguments.\n\
@@ -1855,20 +1855,20 @@ Ddd*menubar.commands*documentationString: \
 @rm Enter and modify debugger commands
 Ddd*menubar.commands*helpString:	\
 \
-@rm This is the @sl Commands menu@rm.\n\
+@rm This is the @sl Commands menu.@rm\n\
 \n\
-@tt \267 @bf Command History... @rm shows the previous commands.\n\
+@tt \267 @bf Command History... @rm - show all previous commands.\n\
 \n\
 @tt \267 @bf Previous @rm - show the previous command.\n\
 @tt \267 @bf Next @rm - show the next command.\n\
 \n\
-@tt \267 @bf Complete @rm - complete the current command.\n\
-@tt \267 @bf Apply @rm - execute the current command.
-\n\
 @tt \267 @bf Search Previous @rm - incrementally search previous command.\n\
 @tt \267 @bf Search Next @rm - incrementally search next command.\n\
 \n\
-@tt \267 @bf Clear Line @rm - clear current command line.
+@tt \267 @bf Complete @rm - complete the current command.\n\
+@tt \267 @bf Apply @rm - execute the current command.\n\
+\n\
+@tt \267 @bf Clear Line @rm - clear current command line.\n\
 @tt \267 @bf Clear Window @rm - clear all before last debugger prompt.
 
 Ddd*commandsMenu.history.labelString:	        Command History...
@@ -1941,14 +1941,14 @@ Ddd*menubar.stack*documentationString:  \
 @rm Show the current program state
 Ddd*menubar.stack.helpString:	\
 \
-@rm This is the @sl Status menu@rm.\n\
+@rm This is the @sl Status menu.@rm\n\
 \n\
 @tt \267 @bf Backtrace... @rm - give a summary of how your program got \
 where it is.\n\
 @tt \267 @bf Registers... @rm - show current processor registers.\n\
 @tt \267 @bf Threads... @rm - show current program threads.\n\
 @tt \267 @bf Other... @rm - create status displays that show things \
-about the program being debugged. \
+about the program being debugged.\n\
 \n\
 @tt \267 @bf Up @rm - show the function that called the current one.\n\
 @tt \267 @bf Down @rm - show the function that was called by the current one.
@@ -1996,7 +1996,8 @@ Ddd*menubar.source*documentationString: \
 @rm Set and edit breakpoints in source files
 Ddd*menubar.source.helpString:	\
 \
-@rm This is the @sl Source menu@rm.\n\
+@rm This is the @sl Source menu.@rm\n\
+\n\
 @tt \267 @bf Edit Breakpoints... @rm - set, view, and edit breakpoints.\n\
 \n\
 @tt \267 @bf Edit Source... @rm - invoke text editor for current source.\n\
@@ -2046,7 +2047,7 @@ Ddd*menubar.data*documentationString:   \
 @rm Create and modify data displays
 Ddd*menubar.data*helpString:	\
 \
-@rm This is the @sl Data menu@rm.\n\
+@rm This is the @sl Data menu.@rm\n\
 \n\
 @tt \267 @bf Edit Displays... @rm - select, enable and delete displays.\n\
 \n\
@@ -2132,7 +2133,7 @@ Ddd*menubar.help*documentationString:   \
 @rm Get more information
 Ddd*menubar.help*helpString: \
 \
-@rm This is the @sl Help menu@rm.\n\
+@rm This is the @sl Help menu.@rm\n\
 \n\
 @tt \267 @bf About @DDD@... @rm - some general information about @DDD@.\n\
 \n\
@@ -2533,7 +2534,7 @@ Ddd*infos*scroll*helpString:
 
 ! The panel itself has a help button, too.
 Ddd*infos*helpString: \
-@rm This is the list of @sl status displays@rm.\n\
+@rm This is the list of @sl status displays.@rm\n\
 \n\
 A @sl status display @rm shows things about the program being debugged\n\
 in the data window.  Please pick your choice from the list.\n\
@@ -2784,10 +2785,13 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.documentationString:	\
 !-----------------------------------------------------------------------------
 
 Ddd*status_form*helpString: \
-@rm This is the @sl Status Line @rm.\n\
+@rm This is the @sl Status line.@rm\n\
 \n\
 It shows the last message of the inferior debugger\n\
-as well as short @DDD@ messages.
+as well as short @DDD@ messages.\n\
+\n\
+The indicator on the right side blinks whenever\n\
+the inferior debugger is busy.
 
 Ddd*status_form*borderWidth:		0
 
@@ -3210,7 +3214,7 @@ gives a short command description.\n
 !-----------------------------------------------------------------------------
 
 Ddd*source_buttons.helpString:\
-@rm This is a @sl command area @rm.\n\
+@rm This is a @sl command area.@rm\n\
 \n\
 By clicking on one of the buttons,\n\
 the corresponding command is sent to the inferior debugger.\n\
@@ -3218,7 +3222,7 @@ The context sensitive help for the buttons\n\
 gives a short command description.\n
 
 Ddd*command_buttons.helpString:\
-@rm This is a @sl command area @rm.\n\
+@rm This is a @sl command area.@rm\n\
 \n\
 By clicking on one of the buttons,\n\
 the corresponding command is sent to the inferior debugger.\n\
@@ -3226,7 +3230,7 @@ The context sensitive help for the buttons\n\
 gives a short command description.\n
 
 Ddd*data_buttons.helpString:\
-@rm This is a @sl command area @rm.\n\
+@rm This is a @sl command area.@rm\n\
 \n\
 By clicking on one of the buttons,\n\
 the corresponding command is sent to the inferior debugger.\n\
