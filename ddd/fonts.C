@@ -465,6 +465,7 @@ static void setup_vsl_fonts(AppData& ad)
     replace_vsl_def(defs, "bf", quote(font_defs[CHARSET_TB]));
     replace_vsl_def(defs, "it", quote(font_defs[CHARSET_TS]));
     replace_vsl_def(defs, "bi", quote(font_defs[CHARSET_TBS]));
+    replace_vsl_def(defs, "small", quote(font_defs[CHARSET_LIGHT]));
 
     if (ad.show_fonts)
 	cout << defs;

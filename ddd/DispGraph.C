@@ -52,8 +52,8 @@ char DispGraph_rcsid[] =
 #include "VoidArray.h"
 #include "regexps.h"
 #include "BoxEdgeA.h"
-#include "StringBox.h"
 #include "annotation.h"
+#include "DispBox.h"
 
 
 // ***************************************************************************
@@ -184,7 +184,7 @@ int DispGraph::insert(int new_disp_nr, DispNode* new_dn, int depends_on)
 	string a = annotation(old_dn->name(), new_dn->name());
 	BoxEdgeAnnotation *ann = 0;
 	if (a != "")
-	    ann = new BoxEdgeAnnotation(new StringBox(a));
+	    ann = new BoxEdgeAnnotation(DispBox::eval("annotation", a));
 
 	*this += new LineGraphEdge(old_dn->nodeptr(), new_dn->nodeptr(), ann);
     }

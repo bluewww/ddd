@@ -37,6 +37,7 @@ include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))dnl
 // Font settings
 #pragma replace stdfontfamily
 stdfontfamily() = family_typewriter();
+small(...) = rm(...);
 
 // Shadow effects
 shadow(box, thickness) =
@@ -66,12 +67,15 @@ fixed_vlist(_) = vnull();
 fixed_vlist(_, head) = vfix(head);
 fixed_vlist(sep, head, ...) = vfix(head) | sep | fixed_vlist(sep, ...);
 
-
 // The title
 title (disp_nr, name) -> 
   title_color(rm(disp_nr & ": ") & bf(name) & hfill());
 title (name) -> 
   title_color(bf(name) & hfill());
+
+// The annotation
+annotation (name) ->
+  small(name);
 
 // The "disabled" string
 disabled () -> 

@@ -97,6 +97,8 @@ private:
 protected:
     // Evaluation functions
     static Box *dup(const string& func_name, const Box *box);
+
+public:
     static Box *eval(const string& func_name, ListBox *arg)
     {
 	return dup(func_name, vsllib()->eval(func_name, arg));
