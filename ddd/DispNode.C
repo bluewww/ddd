@@ -347,6 +347,9 @@ void DispNode::cluster(int target)
 
     // Unselect it
     selected() = false;
+
+    // Mark as changed
+    mylast_refresh = ++tics;
 }
 
 // Update address with NEW_ADDR
