@@ -118,6 +118,9 @@ bool is_refresh_cmd(const string& cmd);
 // Return the string after a `display' command.
 string get_display_expression(const string& cmd);
 
+// Return the string after a `break' command
+string get_break_expression(const string& cmd);
+
 
 //----------------------------------------------------------------------------
 // Handle `display' output
@@ -170,6 +173,7 @@ bool is_disabling (const string& value, GDBAgent *gdb);
 
 // True if VALUE is an invalid value (i.e., an error message)
 bool is_invalid(const string& value);
+
 
 #endif // _DDD_disp_read_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

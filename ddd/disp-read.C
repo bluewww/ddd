@@ -332,6 +332,27 @@ string get_display_expression (const string& display_cmd)
 }
 
 
+// ***************************************************************************
+// 
+string get_break_expression (const string& cmd)
+{
+    string arg = cmd;
+
+    if (arg.contains("stop", 0))
+	arg = arg.after(' ');	    // Skip `in' or `at'
+
+    // Fetch first word after command
+    arg = arg.after(' ');
+    arg += ' ';
+
+    if (arg.contains('\'', 0))
+	arg = arg.through('\'', 1); // Handle GDB quoting
+    else
+	arg = arg.before(' ');
+
+    return arg;
+}
+
 
 //----------------------------------------------------------------------------
 // fuer das Erkennen von Displayausdruecken
