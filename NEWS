@@ -1,6 +1,11 @@
 DDD News						-*- text -*-
 ********
 
+DDD-3.3.9
+=========
+
+- Support for PHP debugger has been added. This is essentially not tested.
+
 DDD-3.3.8
 =========
 
