@@ -463,8 +463,7 @@ static void follow_tool_shell(Widget ref)
 {
     initialize_offsets();
 
-    recenter_tool_shell(source_view->source(),
-			last_top_offset, last_right_offset);
+    recenter_tool_shell(ref, last_top_offset, last_right_offset);
     get_tool_offset(last_top_offset, last_right_offset);
 }
 
@@ -1307,7 +1306,7 @@ void manage_paned_child(Widget w)
     }
 
     // Recenter the tool shell
-    follow_tool_shell(source_view->source());
+    recenter_tool_shell(source_view->source());
 }
     
 void unmanage_paned_child(Widget w)
@@ -1369,5 +1368,5 @@ void unmanage_paned_child(Widget w)
     }
 
     // Recenter the tool shell
-    follow_tool_shell(source_view->source());
+    recenter_tool_shell(source_view->source());
 }
