@@ -205,7 +205,7 @@ void initial_popup_shell(Widget w)
     else if (w == tool_shell)
 	tool_shell_state        = state;
 
-    if (iconic && w != tool_shell)
+    if (iconic || w == tool_shell)
 	XtVaSetValues(w, 
 		      XmNgeometry, "+0+0", 
 		      XmNx, 0,
@@ -215,14 +215,13 @@ void initial_popup_shell(Widget w)
     if (w == tool_shell)
     {
 	XtManageChild(tool_buttons_w);
+	if (!XtIsRealized(tool_shell))
+	    XtRealizeWidget(tool_shell);
 	if (!iconic)
 	    RecenterToolShellCB();
     }
-
-    if (w != toplevel)
-    {
+    if (w != toplevel && XtIsRealized(w))
 	XtPopup(w, XtGrabNone);
-    }
 }
 
 void popup_shell(Widget w)
@@ -231,9 +230,18 @@ void popup_shell(Widget w)
 	return;
 
     if (w == tool_shell)
-	XtManageChild(tool_buttons_w);
+    {
+	if (!XtIsRealized(tool_shell))
+	{
+	    initial_popup_shell(tool_shell);
+	    RecenterToolShellCB();
+	}
 
-    XtPopup(w, XtGrabNone);
+	XtManageChild(tool_buttons_w);
+    }
+
+    if (XtIsRealized(w))
+	XtPopup(w, XtGrabNone);
 
     if (w == command_shell)
 	command_shell_state        = PoppedUp;
@@ -245,7 +253,8 @@ void popup_shell(Widget w)
 	tool_shell_state           = PoppedUp;
 
     // Uniconify window
-    XMapWindow(XtDisplay(w), XtWindow(w));
+    if (XtIsRealized(w))
+	XMapWindow(XtDisplay(w), XtWindow(w));
     raise_shell(w);
 }
 
@@ -265,7 +274,6 @@ void popdown_shell(Widget w)
 
     if (w == tool_shell)
 	XtUnmanageChild(tool_buttons_w);
-
     if (w != command_shell)
 	XtPopdown(w);
 }
