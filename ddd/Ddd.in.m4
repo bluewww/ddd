@@ -3106,6 +3106,7 @@ Ddd*preferences*buttons*data.labelString:	Data
 Ddd*preferences*buttons*startup.labelString:	Startup
 Ddd*preferences*buttons*fonts.labelString:	Fonts
 Ddd*preferences*buttons*helpers.labelString:	Helpers
+Ddd*preferences*buttons*packing:                XmPACK_COLUMN
 
 Ddd*preferences*general*helpString:	\
 @rm These are the EMPH(General Preferences).\n\
