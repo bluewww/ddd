@@ -807,7 +807,7 @@ PROGS = $(ddd_canonical) $(ddd)
 
 ## Extra demonstration files.
 DEMOS = userinfo stringify huffencode huffdecode \
-	cxxtest ctest ftest ptest m2test \
+	cxxtest ctest grabtest ftest ptest m2test \
 	test-file test-graph vsl ttytest bug tString mmtest gcore
 
 ## Where to find texinfo files and so
@@ -1314,6 +1314,9 @@ tString: tString.o  $(HUFFMAN_OBJECTS)
 cxxtest: cxxtest.o
 	$(LINK.cc) -o $@ cxxtest.o $(LIBS)
 
+grabtest: grabtest.o
+	$(LINK.cc) -o $@ grabtest.o $(ALL_X_LIBS) $(LIBS)
+
 ctest:  ctest.o
 	$(LINK.c) -o $@ ctest.o
 
@@ -1337,6 +1340,9 @@ bug.o:	$(srcdir)/bug.C
 
 cxxtest.o: $(srcdir)/cxxtest.C
 	$(CXX) -g -c -o $@ $(srcdir)/cxxtest.C
+
+grabtest.o: $(srcdir)/grabtest.C
+	$(CXX) -g -c -o $@ $(srcdir)/grabtest.C
 
 ctest.o: $(srcdir)/ctest.c
 	$(CC) -g -c -o $@ $(srcdir)/ctest.c
