@@ -200,95 +200,6 @@ AC_SUBST(X_PERMISSIVE)
 ])dnl
 dnl
 dnl
-dnl ICE_NO_IMPLICIT_TEMPLATES
-dnl -------------------------
-dnl
-dnl If the C++ compiler accepts the `-fno-implicit-templates' flag,
-dnl set output variable `NO_IMPLICIT_TEMPLATES' to `-fno-implicit-templates',
-dnl empty otherwise.
-dnl
-AC_DEFUN([ICE_NO_IMPLICIT_TEMPLATES],
-[
-AC_REQUIRE([AC_PROG_CXX])
-if test "$GXX" = yes; then
-AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -fno-implicit-templates],
-[ice_cv_no_implicit_templates],
-[
-AC_LANG_PUSH(C++)
-ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="-fno-implicit-templates"
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
-[ice_cv_no_implicit_templates=yes], [ice_cv_no_implicit_templates=no])
-CXXFLAGS="$ice_save_cxxflags"
-AC_LANG_POP(C++)
-])
-if test "$ice_cv_no_implicit_templates" = yes; then
-NO_IMPLICIT_TEMPLATES=-fno-implicit-templates
-fi
-fi
-AC_SUBST(NO_IMPLICIT_TEMPLATES)
-])dnl
-dnl
-dnl
-dnl ICE_ELIDE_CONSTRUCTORS
-dnl ----------------------
-dnl
-dnl If the C++ compiler accepts the `-felide-constructors' flag,
-dnl set output variable `ELIDE_CONSTRUCTORS' to `-felide-constructors',
-dnl empty otherwise.
-dnl
-AC_DEFUN([ICE_ELIDE_CONSTRUCTORS],
-[
-AC_REQUIRE([AC_PROG_CXX])
-if test "$GXX" = yes; then
-AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -felide-constructors],
-[ice_cv_elide_constructors],
-[
-AC_LANG_PUSH(C++)
-ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="-felide-constructors"
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
-[ice_cv_elide_constructors=yes], [ice_cv_elide_constructors=no])
-CXXFLAGS="$ice_save_cxxflags"
-AC_LANG_POP(C++)
-])
-if test "$ice_cv_elide_constructors" = yes; then
-ELIDE_CONSTRUCTORS=-felide-constructors
-fi
-fi
-AC_SUBST(ELIDE_CONSTRUCTORS)
-])dnl
-dnl
-dnl ICE_CONSERVE_SPACE
-dnl ------------------
-dnl
-dnl If the C++ compiler accepts the `-fconserve-space' flag,
-dnl set output variable `CONSERVE_SPACE' to `-fconserve-space',
-dnl empty otherwise.
-dnl
-AC_DEFUN([ICE_CONSERVE_SPACE],
-[
-AC_REQUIRE([AC_PROG_CXX])
-if test "$GXX" = yes; then
-AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -fconserve-space],
-[ice_cv_conserve_space],
-[
-AC_LANG_PUSH(C++)
-ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="-fconserve-space"
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
-[ice_cv_conserve_space=yes], [ice_cv_conserve_space=no])
-CXXFLAGS="$ice_save_cxxflags"
-AC_LANG_POP(C++)
-])
-if test "$ice_cv_conserve_space" = yes; then
-CONSERVE_SPACE=-fconserve-space
-fi
-fi
-AC_SUBST(CONSERVE_SPACE)
-])dnl
-dnl
-dnl
 dnl
 dnl ICE_WARN_EFFECTIVE_CXX
 dnl ----------------------
@@ -1520,9 +1431,6 @@ AC_SUBST(CXXDYNAMIC_BINDING)dnl
 dnl
 if test "$GXX" = yes; then
 ICE_PERMISSIVE
-dnl ICE_NO_IMPLICIT_TEMPLATES
-ICE_ELIDE_CONSTRUCTORS
-ICE_CONSERVE_SPACE
 ICE_TRIGRAPHS
 fi
 CXXSTUFF="$CXXSTUFF $TRIGRAPHS"
