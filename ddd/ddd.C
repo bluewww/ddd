@@ -2327,6 +2327,7 @@ int main(int argc, char *argv[])
 	// window would remain and we'd be gone).
 	gdbCloseDataWindowCB(gdb_w, 0, 0);
     }
+
     if (!app_data.source_window || app_data.full_name_mode)
     {
 	// We don't need the source window, since we're invoked by Emacs.
@@ -2335,12 +2336,15 @@ int main(int argc, char *argv[])
 	if (!app_data.disassemble)
 	    gdbCloseToolWindowCB(gdb_w, 0, 0);
     }
+
     if (!app_data.disassemble)
     {
 	// We don't disassemble.
 	gdbCloseCodeWindowCB(gdb_w, 0, 0);
     }
-    if (!app_data.debugger_console || app_data.tty_mode)
+
+    if ((!app_data.debugger_console || app_data.tty_mode) &&
+	(!app_data.separate_source_window || !app_data.separate_data_window))
     {
 	// We don't need the debugger console, since we have a TTY.
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
@@ -2455,6 +2459,12 @@ int main(int argc, char *argv[])
     {
 	// Startup command shell iconified; others follow as needed
 	initial_popup_shell(command_shell);
+    }
+    else if ((!app_data.debugger_console || app_data.tty_mode) && 
+	     app_data.separate_source_window &&
+	     app_data.separate_data_window)
+    {
+	// Debugger console is closed: wait for source to pop up
     }
     else if (!app_data.tty_mode)
     {
