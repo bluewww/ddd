@@ -144,7 +144,8 @@ extern "C" {
 #endif // sun
 
 // Nico van Waes <nico@yegal.njit.edu> says: under Solaris 2.6, one
-// must include <sys/types.h> before <termios.h>.
+// must include <sys/types.h> and <sys/int_types.h> before
+// <termios.h>.
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif

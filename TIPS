@@ -113,8 +113,9 @@ Check out LBL(Edit, Preferences, Startup, Data Scrolling).
 To limit the number of array elements in a data display, set
 LBL(Edit, GDB Settings, Limit on array elements to print).
 
-If DDD cannot find a source, set the @GDB@ source path
-via LBL(Edit, @GDB@ Settings).
+If DDD cannot find a source, set the @GDB@ source path via 
+LBL(Edit, @GDB@ Settings) or enter 
+SAMP(dir sourcedir_1:sourcedir_2:...:sourcedir_n) at the GDB prompt.
 
 To enable source line numbers, set the source indentation
 (LBL(Edit, Preferences, Source, Source Indentation))
