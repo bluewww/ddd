@@ -833,6 +833,20 @@ static void add_button(Widget form, int& row, DebuggerType type,
 		    return;	// We already have `info breakpoints'.
 		if (base == "target")
 		    return;	// We already have `info files'.
+		if (base == "address")
+		    return;	// `info address' requires an argument.
+		if (base == "line")
+		    return;	// `info line' requires an argument.
+
+		// These infos produce too much output for our data
+		// window to be of any use.  Even more, `info
+		// functions' causes my X terminal to crash - AZ.
+		if (base == "types")
+		    return;
+		if (base == "functions")
+		    return;
+		if (base == "variables")
+		    return;
 
 		e_type = DisplayToggleButtonEntry;
 		strip_leading(doc, "Show ");
@@ -1232,6 +1246,16 @@ static void ResetSettingsCB (Widget, XtPointer, XtPointer)
     }
 }
 
+// Delete all infos
+static void DeleteAllInfosCB (Widget, XtPointer, XtPointer)
+{
+    for (int i = 0; i < infos_entries.size(); i++)
+    {
+	Widget entry = infos_entries[i];
+	XmToggleButtonSetState(entry, False, True);
+    }
+}
+
 // Fetch help for specific COMMAND
 static string get_help_line(string command, DebuggerType type)
 {
@@ -1277,7 +1301,8 @@ static Widget create_panel(DebuggerType type, bool create_settings)
     }
     else
     {
-	XtUnmanageChild(cancel);
+	XtRemoveAllCallbacks(cancel, XmNactivateCallback);
+	XtAddCallback(cancel, XmNactivateCallback, DeleteAllInfosCB, 0);
     }
 
     // Add a rowcolumn widget

@@ -2534,6 +2534,8 @@ A @sl status display @rm shows things about the program being debugged\n\
 in the data window.  Please pick your choice from the list.\n\
 \n\
 Click on @bf ? @rm near an item to get further information.\n\
+\n\
+Click on @bf Reset @rm to delete all status displays.\n\
 Click on @bf Close @rm to close this window.
 
 
