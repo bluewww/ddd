@@ -63,7 +63,7 @@ char layout_rcsid[] =
 const int MINXDIST    = 20;
 const int MINYDIST    = 20;
 const int XITERATIONS = 6;
-const int REVERSE     = FALSE;
+const bool REVERSE    = false;
 
 /*
  * PULLUP
@@ -71,7 +71,7 @@ const int REVERSE     = FALSE;
  * Otherwise each node will be placed on the level determined 
  * by a topological sort.
  */
-const int PULLUP     = FALSE;
+const bool PULLUP    = false;
 
 const int HINTPRIO   = 100;
 
@@ -577,7 +577,7 @@ void Layout::new_layout (GRAPH *graph)
 {
     int i;
 
-    graph->layouted = TRUE;
+    graph->layouted = true;
 
     levelsEnterNodes (graph,graph->pullup);
     sortInsertHints (graph);
@@ -672,7 +672,7 @@ void Layout::dddNodeOut (const char *, NODE *node)
     }
     node->oldx = node->x;
     node->oldy = node->y;
-    node->layouted = TRUE;
+    node->layouted = true;
 }
 
 
@@ -686,10 +686,6 @@ void Layout::dddNodeOut (const char *, NODE *node)
 #define FWDLINE "2 1 0 1 -1 0 0 0 0.000 0 1 0\n\t0 0 1.000 4.000 8.000\n\t"
 #define BKWDLINE "2 1 0 1 -1 0 0 0 0.000 0 0 1\n\t0 0 1.000 4.000 8.000\n\t"
 #define LINE "2 1 0 1 -1 0 0 0 0.000 0 0 0\n\t"
-
-#define HERE 0
-#define OTHER 1
-#define NOTHING 3
 
 /*
  * debugNode
@@ -816,7 +812,7 @@ void Layout::debugAllNodes (GRAPH *graph)
 void Layout::debugNodeXFig (NODE *nd)
 {
     EDGE *edge;
-    int arrow;
+    Arrow arrow;
     int w,h;
 
     if (nd->type == Regular) {
@@ -884,7 +880,7 @@ void Layout::debugNodeXFig (NODE *nd)
  * write a xfig-representation for a line between to nodes to stdout
  */
 
-void Layout::debugEdgeXFig (NODE *source, NODE *target, int arrow)
+void Layout::debugEdgeXFig (NODE *source, NODE *target, Arrow arrow)
 {
     int x1,y1,x2,y2;
 
@@ -1107,7 +1103,7 @@ void Layout::nodeInit (NODE* node, const ID *id , NODETYPE type)
     node->y = 0;
     node->oldx = NOPOSITION;
     node->oldy = NOPOSITION;
-    node->layouted = FALSE;
+    node->layouted = false;
     node->level = NOLEVEL;
     node->center = 0;
     node->index = 0 ;
@@ -1191,7 +1187,7 @@ void Layout::graphInit (GRAPH *graph, const char *label)
     graph->levels = 0;
     graph->level = (NODE**) 0;
 
-    graph->layouted = FALSE ; 	/* the graph was never layouted */
+    graph->layouted = false; 	/* the graph was never layouted */
 
     for ( i = 0; i < PRIME; i++) {
 	graph->hashtab[i] = (NODE*) 0;
@@ -1246,7 +1242,7 @@ NODE *Layout::graphEnterNode (GRAPH *graph, const ID *id, NODETYPE type)
 NODE *Layout::graphGetNode (GRAPH *graph, const ID *id, NODETYPE type)
 {
     int pos;
-    int found = FALSE ;
+    bool found = false;
     NODE *node;
 
     /*
@@ -1264,7 +1260,7 @@ NODE *Layout::graphGetNode (GRAPH *graph, const ID *id, NODETYPE type)
 		||  strcmp(node->attr.node.label,id->label)) {
 		node = node->hashnext;
 	    } else {
-		found = TRUE;
+		found = true;
 	    }
 	} 
 
@@ -1281,7 +1277,7 @@ NODE *Layout::graphGetNode (GRAPH *graph, const ID *id, NODETYPE type)
 		||  node->attr.hint.id != id->id) {
 		node = node->hashnext;
 	    } else {
-		found = TRUE;
+		found = true;
 	    }
 	} 
     }
@@ -1917,7 +1913,7 @@ void Layout::levelsRemoveNode (GRAPH *graph, NODE *node, int n)
  * enter all nodes to their level
  */
 
-void Layout::levelsEnterNodes (GRAPH *graph, int pullup)
+void Layout::levelsEnterNodes (GRAPH *graph, bool pullup)
 {
     int levels;
     int i;

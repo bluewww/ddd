@@ -33,14 +33,6 @@
 #pragma interface
 #endif
 
-#ifndef TRUE
-#define TRUE 1
-#endif
-
-#ifndef FALSE
-#define FALSE 0
-#endif
-
 // All these should be defined in the LayouterExpert class,
 // but I can't get gcc 2.3.3 swallow it...
 enum EDGEARROW { Here, Other };
@@ -102,7 +94,7 @@ struct _NODE {
     int x,y;                /* position */
     int oldx,oldy;          /* previous position */
 
-    int layouted;           /* flag: already layouted? */
+    bool layouted;           /* flag: already layouted? */
     int level;              /* level inside graph */
     int center;             /* avrg. bary-center of node */
     int loop;               /* flag for loop */
@@ -130,11 +122,11 @@ struct _GRAPH {
 
     int minxdist;
     int minydist;
-    int reverseflag;
+    bool reverseflag;
     int xiterations;
-    int pullup;
+    bool pullup;
 
-    int layouted;           /* flag, if graph was layouted recently */
+    bool layouted;           /* flag, if graph was layouted recently */
 };
 
 // Interface
@@ -168,13 +160,14 @@ public:
     static void inc_layout(GRAPH *graph);
     static void new_layout(GRAPH *graph);
     static void dddOutput(GRAPH *graph);
-    static void dddNodeOut(const char *graph,NODE *node);
+    static void dddNodeOut(const char *graph, NODE *node);
     static void debugNode(NODE *node);
     static void debugLevel(GRAPH *graph, int n);
     static void debugAllLevel(GRAPH *graph);
     static void debugAllNodes(GRAPH *graph);
     static void debugNodeXFig(NODE *nd);
-    static void debugEdgeXFig(NODE *source, NODE *target, int arrow);
+    enum Arrow { HERE=0, OTHER=1, NOTHING=3 };
+    static void debugEdgeXFig(NODE *source, NODE *target, Arrow arrow);
     static void debugGraphXFig(GRAPH *graph);
     static void listInit(EDGELIST *list);
     static EDGE *listInsertEdge(EDGELIST *list, NODE *node);
@@ -205,7 +198,7 @@ public:
     static void graphTabInit(GRAPHTAB *tab);
     static void levelsInsertNode(GRAPH *graph, NODE *node, int n);
     static void levelsRemoveNode(GRAPH *graph, NODE *node, int n);
-    static void levelsEnterNodes(GRAPH *graph, int pullup);
+    static void levelsEnterNodes(GRAPH *graph, bool pullup);
     static void levelsIndex(NODE **level);
     static int levelsLength(NODE **level);
     static int sortApplyLevel(GRAPH *graph);
