@@ -2871,7 +2871,7 @@ Ddd*command_toolbar*shadowThickness:		1
 ! Preferences
 !-----------------------------------------------------------------------------
 
-Ddd*preferences_popup*okLabelString: 		Close
+! Ddd*preferences_popup*okLabelString: 		Close
 Ddd*preferences_popup*cancelLabelString:	Reset
 Ddd*preferences_popup.title:			DDD Preferences
 
@@ -3216,7 +3216,7 @@ Ddd*preferences*text.columns:			50
 ! Settings
 !-----------------------------------------------------------------------------
 
-Ddd*settings_popup*okLabelString: Close
+! Ddd*settings_popup*okLabelString: Close
 Ddd*settings_popup*cancelLabelString: Reset
 Ddd*settings_popup.title: DDD: Debugger Settings
 Ddd*settings_popup.autoUnmanage: off
@@ -3268,7 +3268,7 @@ Click on LBL(OK) to close this window.
 !-----------------------------------------------------------------------------
 
 Ddd*edit_buttons_popup.title: DDD: Button Editor
-Ddd*edit_buttons_popup.okLabelString: Close
+! Ddd*edit_buttons_popup.okLabelString: Close
 
 Ddd*edit_buttons*buttons.entryAlignment:	XmALIGNMENT_CENTER
 Ddd*edit_buttons*buttons*indicatorOn:		off
@@ -3340,7 +3340,7 @@ Use LBL(Edit) | LBL(Save Options) to save all shortcuts.
 ! Status displays
 !-----------------------------------------------------------------------------
 
-Ddd*infos_popup*okLabelString: Close
+! Ddd*infos_popup*okLabelString: Close
 Ddd*infos_popup*cancelLabelString: Reset
 Ddd*infos_popup.title: DDD: Status Displays
 Ddd*infos_popup.autoUnmanage: off
@@ -5056,7 +5056,7 @@ Click on LBL(Close) to close this window.
 
 Ddd*define_command_popup.title:    		DDD: Define Command
 
-Ddd*define_command.okLabelString:    		Close
+! Ddd*define_command.okLabelString:    		Close
 Ddd*define_command.cancelLabelString:    	Apply
 
 Ddd*define_command*name.label.labelString:	Command
@@ -5108,7 +5108,7 @@ ITEM Use LBL(Edit @small>>) to edit the command definition.\n\
 ITEM Use LBL(Buttons) to place the new command on a button.\n\
 \n\
 Click on LBL(Apply) to apply the new command.\n\
-Click on LBL(Close) to close this window.
+Click on LBL(OK) to close this window.
 
 
 !-----------------------------------------------------------------------------
@@ -5390,7 +5390,7 @@ DDD keeps track of the directories you gave to the cd command,\n\
 such that you can re-use them at a later time.\n\
 Select specific directories to have them copied to the argument prompt.\n\
 \n\
-Click on LBL(OK) to change the current directory.
+Click on LBL(Change Dir) to change the current directory.
 
 
 !-----------------------------------------------------------------------------
