@@ -1035,7 +1035,7 @@ cxxtest.o: $(srcdir)/cxxtest.C
 	set -x; $(COMPILE.cc) $(INCLUDE) -o $@ $(srcdir)/cxxtest.C; \
 	fi
 
-SHORTEN_OBJECTS = strclass.o rxclass.o cook.o
+SHORTEN_OBJECTS = strclass.o rxclass.o cook.o IntIntAA.o
 shorten: $(srcdir)/shorten.C $(SHORTEN_OBJECTS)
 	@if test "$(CXXOPT)" != ""; then \
 	$(MAKE) CXXOPT= $@; \
