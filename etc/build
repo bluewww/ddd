@@ -68,9 +68,6 @@ fi
 
 # Start the batch job
 
-# We use env and make -e to set macro values, since this also works
-# in nested Makefiles.
-
 exec < /dev/null > $log 2>&1
 hostname=`uname -n || hostname`
 {
@@ -78,11 +75,13 @@ pid=$$
 echo build[pid $pid]: start at `date`
 echo ${hostname}% cd `pwd`
 if [ ! -f Makefile ]; then
-  echo ${hostname}% ./configure -v
-  ./configure -v
+  echo ${hostname}% sh $env ./configure -v
+  nice $niceval sh $env ./configure -v
 fi
 echo ${hostname}% "$invoke"
 set -x
+# We use env and make -e to set macro values, since this also works
+# in nested Makefiles.
 nice $niceval env - $env make -e $options$targets 2>&1
 set +x
 echo build[pid $pid]: done at `date`
