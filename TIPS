@@ -73,9 +73,6 @@ ITEM You can display it graphically, using LBL(Display ()).
 A quick way to manipulate variables, breakpoints, and displays
 is to press BUTTON(3) on them.
 
-The difference between LBL(OK) and LBL(Apply) is that 
-LBL(OK) pops down the dialog, while LBL(Apply) does not.
-
 Double-clicking on any value in the data display 
 will toggle more details.
 

@@ -647,11 +647,6 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 	XtUnmanageChild(XmSelectionBoxGetChild(print_dialog,
 					       XmDIALOG_APPLY_BUTTON));
 
-#if XmVersion >= 1002
-    XtManageChild(XmSelectionBoxGetChild(print_dialog,
-					 XmDIALOG_APPLY_BUTTON));
-#endif
-
     XtAddCallback(print_dialog, XmNokCallback,
 		  graphQuickPrintCB, XtPointer(1));
     XtAddCallback(print_dialog, XmNapplyCallback,
@@ -662,12 +657,9 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 		  ImmediateHelpCB, XtPointer(0));
 
     // Remove old prompt
-    Widget text = XmSelectionBoxGetChild(print_dialog, 
-					 XmDIALOG_TEXT);
-    XtUnmanageChild(text);
-    Widget label = XmSelectionBoxGetChild(print_dialog, 
-					  XmDIALOG_SELECTION_LABEL);
-    XtUnmanageChild(label);
+    XtUnmanageChild(XmSelectionBoxGetChild(print_dialog, XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(print_dialog, 
+					   XmDIALOG_SELECTION_LABEL));
 
     // Create menu
     static Widget print_to_printer;

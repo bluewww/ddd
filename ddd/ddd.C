@@ -5171,6 +5171,7 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
 	return;
 
 #ifdef LESSTIF_VERSION
+    // This only works in Lesstif.
     switch (style)
     {
     case KDEBindings:
@@ -5223,6 +5224,8 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
 static void setup_cut_copy_paste_bindings(XrmDatabase db)
 {
 #ifdef LESSTIF_VERSION
+    // In Lesstif, we can change accelerators at run-time.  See
+    // set_cut_copy_paste_bindings(), above.
     (void) db;
 #else
     // Stupid OSF/Motif won't change the accelerators once created.

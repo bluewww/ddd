@@ -270,6 +270,8 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
 	run_dialog = 
 	    verify(XmCreateSelectionDialog(find_shell(w), "run_dialog", 
 					   args, arg));
+	XtUnmanageChild(XmSelectionBoxGetChild(run_dialog, 
+					       XmDIALOG_APPLY_BUTTON));
 
 	Delay::register_shell(run_dialog);
 	XtAddCallback(run_dialog, XmNokCallback,     gdbRunDCB, 0);
@@ -338,6 +340,8 @@ void gdbMakeCB(Widget w, XtPointer, XtPointer)
 	make_dialog = 
 	    verify(XmCreateSelectionDialog(find_shell(w), 
 					   "make_dialog", args, arg));
+	XtUnmanageChild(XmSelectionBoxGetChild(make_dialog, 
+					       XmDIALOG_APPLY_BUTTON));
 
 	Delay::register_shell(make_dialog);
 	XtAddCallback(make_dialog, XmNokCallback,     gdbMakeDCB, 0);
@@ -398,6 +402,8 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
 	cd_dialog = 
 	    verify(XmCreateSelectionDialog(find_shell(w), 
 					   "cd_dialog", args, arg));
+	XtUnmanageChild(XmSelectionBoxGetChild(cd_dialog, 
+					       XmDIALOG_APPLY_BUTTON));
 
 	Delay::register_shell(cd_dialog);
 	XtAddCallback(cd_dialog, XmNokCallback,     gdbChangeDirectoryDCB, 0);

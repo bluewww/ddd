@@ -1157,11 +1157,6 @@ static void create_buttons_dialog(Widget parent)
     XtAddCallback(buttons_dialog, XmNapplyCallback,  SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNcancelCallback, ResetTextCB, 0);
 
-#if XmVersion >= 1002
-    XtManageChild(XmSelectionBoxGetChild(buttons_dialog, 
-					 XmDIALOG_APPLY_BUTTON));
-#endif
-
     XtUnmanageChild(XmSelectionBoxGetChild(buttons_dialog,
 					   XmDIALOG_SELECTION_LABEL));
     XtUnmanageChild(XmSelectionBoxGetChild(buttons_dialog, 

@@ -2862,7 +2862,7 @@ Ddd*command_toolbar*shadowThickness:		1
 ! Preferences
 !-----------------------------------------------------------------------------
 
-! Ddd*preferences_popup*okLabelString: 		Close
+Ddd*preferences_popup*okLabelString: 		Close
 Ddd*preferences_popup*cancelLabelString:	Reset
 Ddd*preferences_popup.title:			DDD Preferences
 
@@ -3207,7 +3207,7 @@ Ddd*preferences*text.columns:			50
 ! Settings
 !-----------------------------------------------------------------------------
 
-! Ddd*settings_popup*okLabelString: Close
+Ddd*settings_popup*okLabelString: Close
 Ddd*settings_popup*cancelLabelString: Reset
 Ddd*settings_popup.title: DDD: Debugger Settings
 Ddd*settings_popup.autoUnmanage: off
@@ -3255,7 +3255,7 @@ Click on LBL(OK) to close this window.
 
 
 !-----------------------------------------------------------------------------
-! Button and Shortcut Editor
+! Button Editor and Shortcut Editor
 !-----------------------------------------------------------------------------
 
 Ddd*edit_buttons_popup.title: DDD: Button Editor
@@ -3298,7 +3298,6 @@ ITEM SAMP(...) at the end keeps VAR(command) from issuing a newline.\n\
 If LBL(Enable supported buttons only) is set, DDD enables a button\n\
 if and only if its command is supported by the inferior debugger.\n\
 \n\
-Click on LBL(Apply) to apply the changes.\n\
 Click on LBL(OK) to apply the changes and close this window.\n\
 Use LBL(Edit) | LBL(Save Options) to save all button specifications.
 
@@ -3322,7 +3321,6 @@ ITEM Member access.  SAMP(().str( )) invokes the CODE(str()) method.\n\
 ITEM Pointer chains.  SAMP(*(().next)) shows what the CODE(next) \
 member points at.\n\
 \n\
-Click on LBL(Apply) to apply the changes.\n\
 Click on LBL(OK) to apply the changes and close this window.\n\
 Use LBL(Edit) | LBL(Save Options) to save all shortcuts.
 
@@ -3332,7 +3330,7 @@ Use LBL(Edit) | LBL(Save Options) to save all shortcuts.
 ! Status displays
 !-----------------------------------------------------------------------------
 
-! Ddd*infos_popup*okLabelString: Close
+Ddd*infos_popup*okLabelString: Close
 Ddd*infos_popup*cancelLabelString: Reset
 Ddd*infos_popup.title: DDD: Status Displays
 Ddd*infos_popup.autoUnmanage: off
@@ -3613,7 +3611,7 @@ Pulldown menu functions (press and hold BUTTON(1)):\
 
 define(MORE_PULLDOWN,[(hold for menu)])dnl
 
-define(NEW_DISPLAY_HELP, [\
+define(NEW_DISPLAY_MENU_HELP, [\
 DESC(Shortcut 1, [User-defined shortcut 1])\n\
 DESC(Shortcut 2, [User-defined shortcut 2]) ...\n\
 DESC(Other..., [Enter new shortcut])\n\
@@ -3627,14 +3625,17 @@ If no display is selected, display the argument LBL(()) in the data window.\n\
 Otherwise, delete the selected displays.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
-NEW_DISPLAY_HELP
-Ddd*newMenu*helpString: NEW_DISPLAY_HELP
+NEW_DISPLAY_MENU_HELP
+Ddd*newMenu*helpString: NEW_DISPLAY_MENU_HELP
 
 Ddd*toolbar*new.tipString:\
 @rm Display/Undisplay LBL(())
 Ddd*toolbar*new.documentationString:\
 @rm Display/Undisplay the argument LBL(()) in the data window \
 MORE_PULLDOWN()
+
+Ddd*toolbar*new2.documentationString:\
+@rm Display the argument LBL(()) in the data window.
 
 Ddd*toolbar*dereference.helpString:\
 LBL(Display *())\n\
@@ -3643,7 +3644,11 @@ Dereference the selected display.
 Ddd*toolbar*dereference.tipString:\
 @rm Dereference LBL(())
 Ddd*toolbar*dereference.documentationString:\
-@rm Display the dereferenced argument LBL(()) in the data window
+@rm Display the dereferenced argument LBL(()) in the data window.
+
+Ddd*toolbar*dereference2.documentationString:\
+@rm Display the dereferenced argument LBL(()) in the data window.
+
 
 define(DETAIL_HELP, [\
 DESC(Show More, [Show more details])\n\
@@ -4530,6 +4535,7 @@ Ddd*?*Reload.documentationString: \
 !-----------------------------------------------------------------------------
 
 Ddd*print_popup.title: DDD: Print Graph
+Ddd*print_popup*okLabelString: Print
 
 Ddd*print*to.labelString:		      Print To
 Ddd*print*toMenu.printer.labelString: 	      \
@@ -4586,7 +4592,7 @@ If you wish to print selected displays only, select\
 For POSTSCRIPT format only, you can also specify \
 orientation and paper size.\n\
 \n\
-To print, click on LBL(OK) or LBL(Apply).
+To print, click on LBL(Print).
 
 Ddd*paper_size_dialog_popup.title:  		DDD: Paper Size
 Ddd*paper_size_dialog.autoUnmanage:  		off
@@ -5184,7 +5190,6 @@ ITEM click on LBL(Resume) to resume the selected threads.
 
 Ddd*history_dialog_popup.title:		    DDD: Command History
 Ddd*history_dialog.listLabelString:	    Command History
-Ddd*history_dialog.cancelLabelString:	    Close
 Ddd*history_dialog*visibleItemCount:	    10
 
 Ddd*history_dialog*helpString:	    \
@@ -5195,7 +5200,7 @@ sessions, so that you can be certain of precisely what happened.\n\
 Use this window to manage the DDD command history facility.\n\
 \n\
 Select a specific command to have it copied at the @GDB@ prompt.\n\
-Click on LBL(OK) or LBL(Apply) to execute the current command.
+Click on LBL(Apply) to execute the current command.
 
 
 !-----------------------------------------------------------------------------
@@ -5231,16 +5236,6 @@ DESC(Undisp, [delete all selected displays])\n\
 \n\
 Use KEY(Ctrl)+BUTTON(1) to toggle selections.
 
-
-define(NEW_DISPLAY_HELP,
-[@rm Please enter an expression in the argument field.\n\
-The value of the expression is displayed each time the program stops.\n\
-\n\
-Variables accessible are those of the lexical environment of the current\n\
-stack frame, plus all those whose scope is global or an entire file.\n\
-\n\
-If LBL(Include in `Display ()' Menu) is set, the new display expression\n\
-becomes an item in the LBL(Display ()) menu.])dnl
 
 
 Ddd*edit_displays_dialog*new.labelString:	    New...
@@ -5308,6 +5303,16 @@ Ddd*edit_displays_dialog*delete.documentationString:  \
 ! New Display
 !-----------------------------------------------------------------------------
 
+define(NEW_DISPLAY_HELP,
+[@rm Please enter an expression in the argument field.\n\
+The value of the expression is displayed each time the program stops.\n\
+\n\
+Variables accessible are those of the lexical environment of the current\n\
+stack frame, plus all those whose scope is global or an entire file.\n\
+\n\
+If LBL(Include in `Display ()' Menu) is set, the new display expression\n\
+becomes an item in the LBL(Display ()) menu.])dnl
+
 Ddd*new_display_dialog_popup.title:          	   DDD: New Display
 Ddd*new_display_dialog.okLabelString:              Display
 Ddd*new_display_dialog*label.labelString:    	   Display Expression
@@ -5333,6 +5338,7 @@ The new display will be made dependent on the currently selected display.
 Ddd*run_dialog_popup.title: DDD: Run Program
 Ddd*run_dialog.listLabelString:		Arguments
 Ddd*run_dialog.selectionLabelString:	Run with Arguments
+Ddd*run_dialog.okLabelString:		Run
 
 Ddd*run_dialog*selectionPolicy:		XmSINGLE_SELECT
 
@@ -5343,13 +5349,13 @@ DDD keeps track of the arguments you gave to the debugged program,\n\
 such that you can re-use them at a later time.\n\
 Select specific arguments to have them copied to the argument prompt.\n\
 \n\
-Click on LBL(OK) or LBL(Apply) to start the debugged program \
-with the selected arguments.
+Click on LBL(Run) to start the debugged program with the selected arguments.
 
 
 Ddd*make_dialog_popup.title: DDD: Make
 Ddd*make_dialog.listLabelString:	Targets
-Ddd*make_dialog.selectionLabelString:	Make
+Ddd*make_dialog.selectionLabelString:	Make Target
+Ddd*make_dialog.okLabelString:		Make
 
 Ddd*make_dialog*selectionPolicy:	XmSINGLE_SELECT
 
@@ -5360,13 +5366,13 @@ DDD keeps track of the arguments you gave to the make program,\n\
 such that you can re-use them at a later time.\n\
 Select specific arguments to have them copied to the argument prompt.\n\
 \n\
-Click on LBL(OK) or LBL(Apply) to start the make program \
-with the selected arguments.
+Click on LBL(Make) to start the make program with the selected arguments.
 
 
 Ddd*cd_dialog_popup.title: DDD: Change Directory
 Ddd*cd_dialog.listLabelString:	Directories
-Ddd*cd_dialog.selectionLabelString:	Change Directory
+Ddd*cd_dialog.selectionLabelString:	Change Directory To
+Ddd*cd_dialog.okLabelString:		Change Dir
 
 Ddd*cd_dialog*selectionPolicy:	XmSINGLE_SELECT
 
@@ -5377,7 +5383,7 @@ DDD keeps track of the directories you gave to the cd command,\n\
 such that you can re-use them at a later time.\n\
 Select specific directories to have them copied to the argument prompt.\n\
 \n\
-Click on LBL(OK) or LBL(Apply) to change the current directory.
+Click on LBL(OK) to change the current directory.
 
 
 !-----------------------------------------------------------------------------

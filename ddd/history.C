@@ -304,6 +304,8 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
     Delay::register_shell(gdb_history_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(gdb_history_w, 
+					   XmDIALOG_OK_BUTTON));
+    XtUnmanageChild(XmSelectionBoxGetChild(gdb_history_w, 
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(gdb_history_w, 
 					   XmDIALOG_SELECTION_LABEL));
