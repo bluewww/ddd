@@ -87,7 +87,7 @@ string MString::str() const
 #if XmVersion >= 2000
 	case XmSTRING_COMPONENT_WIDECHAR_TEXT:
 #endif
-	    s += string(s_text == 0 ? "" : s_text);
+	    s += (s_text == 0 ? "" : s_text);
 	    break;
 
 	case XmSTRING_COMPONENT_SEPARATOR:
