@@ -2799,28 +2799,48 @@ bool DataDisp::is_builtin_user_command(const string& cmd)
     return false;
 }
 
-string DataDisp::builtin_user_command(const string& cmd)
+string DataDisp::builtin_user_command(const string& cmd, DispNode *node)
 {
     if (cmd == CLUSTER_COMMAND)
     {
-	bool displays_seen = false;
-	ostrstream os;
 	MapRef ref;
+	IntArray clustered_displays;
 	for (DispNode* dn = disp_graph->first(ref); 
 	     dn != 0;
 	     dn = disp_graph->next(ref))
 	{
-	    if (!dn->is_user_command() && !dn->deferred() && 
-		dn->active() && dn->clustered())
-	    {
-		os << dn->name() << " = " HOOK_PREFIX 
-		   << dn->disp_nr() << HOOK_POSTFIX "\n";
-		displays_seen = true;
-	    }
+	    if (!dn->clustered())
+		continue;
+	    if (dn->is_user_command())
+		continue;
+	    if (dn->deferred())
+		continue;
+	    if (!dn->active())
+		continue;
+	    if (node != 0 && dn->clustered() != node->disp_nr())
+		continue;
+	    if (node == 0 && dn->clustered() != -next_ddd_display_number)
+		continue;
+
+	    clustered_displays += dn->disp_nr();
 	}
 
-	if (!displays_seen)
+	sort(clustered_displays);
+
+	ostrstream os;
+	if (clustered_displays.size() == 0)
+	{
 	    os << "No displays.\n";
+	}
+	else
+	{
+	    for (int i = 0; i < clustered_displays.size(); i++)
+	    {
+		DispNode *dn = disp_graph->get(clustered_displays[i]);
+		os << dn->name() << " = " HOOK_PREFIX 
+		   << dn->disp_nr() << HOOK_POSTFIX "\n";
+	    }
+	}
 
 	return string(os);
     }
@@ -2861,7 +2881,7 @@ void DataDisp::refresh_builtin_user_displays()
 	    string cmd = dn->user_command();
 	    if (is_builtin_user_command(cmd))
 	    {
-		string answer = builtin_user_command(cmd);
+		string answer = builtin_user_command(cmd, dn);
 		if (answer != NO_GDB_ANSWER && dn->update(answer))
 		    changed = true;
 	    }
@@ -3860,18 +3880,41 @@ string DataDisp::delete_display_cmd(const string& name)
     return "graph undisplay " + name;
 }
 
-bool DataDisp::all_display_numbers(IntArray& display_nrs)
+// Return true iff DISPLAY_NRS contains all data displays
+bool DataDisp::all_data_displays(IntArray& display_nrs)
 {
-    IntArray all_display_nrs;
-    get_all_display_numbers(all_display_nrs);
+    // Fetch given data displays
+    IntArray data_display_nrs;
+    int i;
+    for (i = 0; i < display_nrs.size(); i++)
+	if (display_nrs[i] > 0)
+	    data_display_nrs += display_nrs[i];
 
-    if (display_nrs.size() != all_display_nrs.size())
+    if (data_display_nrs.size() < 2)
 	return false;
 
-    sort(all_display_nrs);
-    for (int i = 0; i < display_nrs.size(); i++)
-	if (display_nrs[i] != all_display_nrs[i])
-		return false;
+    // Fetch existing data displays
+    IntArray all_data_display_nrs;
+
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (!dn->deferred() && !dn->is_user_command())
+	    all_data_display_nrs += dn->disp_nr();
+    }
+
+    // Compare
+    if (data_display_nrs.size() != all_data_display_nrs.size())
+	return false;
+
+    sort(all_data_display_nrs);
+    sort(data_display_nrs);
+
+    for (i = 0; i < data_display_nrs.size(); i++)
+	if (data_display_nrs[i] != all_data_display_nrs[i])
+	    return false;
 
     return true;
 }
@@ -3887,10 +3930,9 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose,
 
     int deleted_data_displays = 0;
 
-    if (gdb->type() == GDB && verbose && 
-	display_nrs.size() >= 2 && all_display_numbers(display_nrs))
+    if (gdb->type() == GDB && verbose && all_data_displays(display_nrs))
     {
-	// We want to delete all displays.  Use GDB `undisplay'
+	// We want to delete all data displays.  Use GDB `undisplay'
 	// command without args; this will ask for confirmation.
 	deleted_data_displays = display_nrs.size();
     }

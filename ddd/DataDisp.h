@@ -197,7 +197,7 @@ class DataDisp {
     static int getDispNrAtPoint(BoxPoint point);
 
     static string numbers(IntArray& a);
-    static bool all_display_numbers(IntArray& numbers);
+    static bool all_data_displays(IntArray& numbers);
 
     static void show(Widget dialog, int depth, int more);
 
@@ -215,7 +215,7 @@ class DataDisp {
 
     // Builtin user displays
     static bool is_builtin_user_command(const string& cmd);
-    static string builtin_user_command(const string& cmd);
+    static string builtin_user_command(const string& cmd, DispNode *dn = 0);
     static void refresh_builtin_user_displays();
 
     //-----------------------------------------------------------------------
