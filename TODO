@@ -355,10 +355,7 @@ Volunteers for these and other projects are welcome!
 232. Have an `infinite' assembler window that extends in both
      directions as needed.
 
-233* Have a `bookmarks' menu like the `Highlight' menu in tkman.
-
-234* Have multiple display sets in the data display (via
-     cut/copy/paste; accessible via Alt+0 .. Alt+9)
+233. Have a `bookmarks' menu like the `Highlight' menu in tkman.
 
 235. L. Peter Deutsch <ghost@aladdin.com> suggests:
 
@@ -378,9 +375,5 @@ Volunteers for these and other projects are welcome!
       visible in the data window.  ddd already has a nice
       "preferences" facility: this would be an obvious place to add
       this capability.
-
-238. Verify SunOS DBX.
-
-239. The alias edge routing is lost after a frame change.
 
 240. (Insert your project idea here)
