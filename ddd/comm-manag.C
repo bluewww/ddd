@@ -1,7 +1,7 @@
 // $Id$
 // GDB communication manager.
 
-// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
@@ -1259,11 +1259,12 @@ void user_cmdOAC (void *data)
 	    
 	    cmd_data->disp_buffer->clear();
 
-	    // Did GDB disable any display?
+	    // If GDB disabled any display, try once more
 	    if (disabling_occurred)
 	    {
 		cmd_data->filter_disp = Filter;
 		gdb->send_user_cmd(gdb->display_command());
+		return;
 	    }
 	}
     }
