@@ -688,14 +688,14 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 		string answer = gdbHelp(cmd);
 		if (answer == NO_GDB_ANSWER)
 		{
-		    // No answer - try again in 500ms
-		    next_invocation = 500;
+		    // No answer - try again in 200ms
+		    next_invocation = 200;
 		}
 		else
 		{
 		    XtSetSensitive(button, is_known_command(answer));
 		    button = 0;	           // Don't process this one again
-		    next_invocation = 250; // Process next button in 250ms
+		    next_invocation = 500; // Process next button in 500ms
 		}
 
 		verify_id = XtAppAddTimeOut(app_context, next_invocation,
