@@ -207,10 +207,10 @@ C	(.|\n)*
 V	v(irtual{W})?t(a)?bl(e)?
 
 /* A `standard' identifier.  Also includes Perl identifiers. */
-I       ([A-Za-z_$@%][A-Za-z0-9_$]*|[$@%]([^ \n\t\f]|[0-9]+))
+I	([A-Za-z_$@%][A-Za-z0-9_$]*|[$@%]([^ \n\t\f]|[0-9]+))
 
 /* A Java class identifier */
-J       [A-Za-z_$][A-Za-z0-9_$.]*
+J	[A-Za-z_$][A-Za-z0-9_$.]*
 
 /* This lexer is quite huge.  SunOS lex and AIX lex wants some extra sizes. */
 %e 5000
