@@ -35,6 +35,7 @@ const char exit_rcsid[] =
 
 #include "exit.h"
 
+#include "AgentM.h"
 #include "AppData.h"
 #include "ExitCB.h"
 #include "HelpCB.h"
@@ -63,8 +64,8 @@ const char exit_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 
-static void ddd_signal(int sig);
-static void ddd_fatal(int sig);
+static void ddd_signal(int sig...);
+static void ddd_fatal(int sig...);
 
 // True if DDD is about to exit
 bool ddd_is_exiting = false;
@@ -200,15 +201,15 @@ void ddd_cleanup()
 }
 
 // Signal handler: clean up and re-raise signal
-static void ddd_signal(int sig)
+static void ddd_signal(int sig...)
 {
     ddd_cleanup();
-    signal(sig, (void (*)(int))SIG_DFL);
+    signal(sig, SignalProc(SIG_DFL));
     kill(getpid(), sig);
 }
 
 // Fatal signal handler: issue error message and re-raise signal
-static void ddd_fatal(int sig)
+static void ddd_fatal(int sig...)
 {
     // IF YOU GET HERE WHILE DEBUGGING DDD, READ THIS
     // ----------------------------------------------
