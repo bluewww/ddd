@@ -63,6 +63,7 @@ dnl
 dnl Not much to do here.  Configure the sub-directories.
 dnl
 dnl Use the C++ compiler for all checks.
+ICE_PROG_CC
 ICE_PROG_CXX
 AC_LANG_CPLUSPLUS
 dnl
