@@ -48,14 +48,13 @@ dddroot_DATA = NEWS COPYING
 SUBDIRS = @subdirs@
 
 
-
 # -----------------------------------------------------------------------------
 # Distribution (via etc/make-final).
 # -----------------------------------------------------------------------------
 
 # Build a DDD distribution from CVS archive.
 .PHONY: cvsdist
-cvsdist: diststuff disttouch distclean \
+cvsdist: $(srcdir)/ChangeLog diststuff disttouch distclean \
 	snapshot htmldist picsdist
 
 # Create architecture-independent files in DDD subdirectory.
@@ -185,3 +184,21 @@ picsdist:
 		--file - ) | gzip -v -9 > $$ddd-$$VER-pics.tar.gz; \
 	)
 	rm -fr proto-toplev
+
+# -----------------------------------------------------------------------------
+# ChangeLog.
+# -----------------------------------------------------------------------------
+
+# We create the ChangeLog file directly from the CVS archive.
+CVS2CL = etc/cvs2cl.pl
+USERMAP = etc/users
+$(srcdir)/ChangeLog: $(srcdir)/Makefile.am
+	cd $(srcdir); $(CVS2CL) --separate-header --no-wrap --revisions --utc --usermap $(USERMAP)
+
+
+# -----------------------------------------------------------------------------
+# Autoconf.
+# -----------------------------------------------------------------------------
+
+# Automake invokes `autoconf' without passing the `-l' option :-(
+AUTOCONF = autoconf -l ddd
