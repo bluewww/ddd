@@ -45,34 +45,26 @@
 extern regex RXblanks;
 extern regex RXblanks_or_tabs;
 
-
-// ***************************************************************************
+// Convert NR to a string
 string itostring (int nr);
 
-// ***************************************************************************
+// Return true iff S begins with an integer
 bool has_nr (const string& s);
 
-// ***************************************************************************
-// gibt den Integer zurueck, der am Anfang des String steht
-// 
-int get_nr (/*const*/ string& s);
+// Return the integer at beginning of S, or 0 if none
+int get_nr (const string& s);
 
-// ***************************************************************************
+// Return the integer at beginning of S, or -1 if none
 int get_positive_nr (const char* s);
+int get_positive_nr (const string& s);
 
-// ***************************************************************************
-int get_positive_nr (/*const*/ string& s);
-
-// ***************************************************************************
+// Remove leading blanks from S
 void read_leading_blanks (string& value);
 
-// ***************************************************************************
-// gibt den Nummer-String zurueck, der am Anfang des String steht und
-// loescht diesen aus dem uebergebenen String.
-// 
+// Remove and return a leading integer from S, or "" if none
 string read_nr_str (string& s);
 
-// ***************************************************************************
+// Remove and return a leading integer from S, or 0 if none
 int read_positive_nr (string& s);
 
 // Strip final characters

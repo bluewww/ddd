@@ -79,12 +79,12 @@ bool has_nr (const string& s)
 // ***************************************************************************
 // gibt den Integer zurueck, der am Anfang des String steht
 // 
-int get_nr (/*const*/ string& s)
+int get_nr (const string& s)
 {
     string int_string(s);
     read_leading_parentheses(int_string);
     int_string = int_string.through(rxint);
-    return atoi((const char *)int_string);
+    return atoi(int_string.chars());
 }
 
 // ***************************************************************************
@@ -97,7 +97,7 @@ int get_positive_nr (const char* s)
 
 // ***************************************************************************
 // 
-int get_positive_nr (/*const*/ string& s)
+int get_positive_nr (const string& s)
 {
     string int_string(s);
     read_leading_parentheses(int_string);
@@ -105,7 +105,7 @@ int get_positive_nr (/*const*/ string& s)
     if (int_string == "")
 	return -1;
 
-    return atoi((const char *)int_string);
+    return atoi(int_string.chars());
 }
 
 
