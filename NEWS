@@ -9,11 +9,37 @@ in the final DDD 3.1 release.  See the DDD WWW Page
 `http://www.cs.tu-bs.de/softech/ddd/' for further information.
 
 
-DDD 3.1 [in beta test]
-======================
+DDD 3.0.91
+==========
 
-DDD 3.1 brings Perl support, Python support, data plotting, Undo/Redo,
-and advanced data exploration.
+This is the second beta release of DDD 3.1, fixing a number of bugs:
+
+- Plot window cannot be opened on a number of window managers
+- DDD dumps core if Gnuplot was not found
+- `Show/Hide Detail' does not work in nested displays
+- `Select All' in Plot Window causes core dump
+- Text character breakpoints in empty lines are not shown
+- DBX `examine' command lacks a space after `x'
+- After closing the exec window, redirection args remain
+- SGI CC does not allow `&=' on bool type
+- SGI C++ ostream::pcount() implementation is not supported
+- `ddd/assert.h' has a GCC-only `#include_next' directive
+
+
+There are also some minor new features:
+
+- Tool bar location can be configured within DDD
+- Multiple DDDs can run at the same time without obnoxious warnings
+- User-defined commands can accept arguments
+
+See the DDD ChangeLog for more details.
+
+
+DDD 3.0.90
+==========
+
+This is the first beta release of DDD 3.1, bringing Perl support,
+Python support, data plotting, Undo/Redo, and advanced data exploration.
 
 
 Debuggers, Languages, and Platforms
@@ -225,8 +251,6 @@ Bug fixes
   GDB commands.
 
 - The `Home' and `End' keys work in all text fields.
-
-
 
 
 DDD 3.0
