@@ -67,6 +67,7 @@ char DataDisp_rcsid[] =
 #include "PosBuffer.h"
 #include "IntIntAA.h"
 #include "shorten.h"
+#include "AliasGE.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -3281,20 +3282,17 @@ bool DataDisp::merge_displays(IntArray displays, string& msg)
 	for (edge = node->firstFrom(); edge != 0; 
 	     edge = node->nextFrom(edge))
 	{
-	    GraphEdge *line = new LineGraphEdge(orig->nodeptr(), 
-						edge->to());
+	    GraphEdge *line = 
+		new AliasGraphEdge(displays[i], orig->nodeptr(), edge->to());
 	    *disp_graph += line;
-	    dn->edges   += (void *)line;
 	}
 	for (edge = node->firstTo(); edge != 0;
 	     edge = node->nextTo(edge))
 	{
-	    GraphEdge *line = new LineGraphEdge(edge->from(), 
-						orig->nodeptr());
+	    GraphEdge *line = 
+		new AliasGraphEdge(displays[i], edge->from(), orig->nodeptr());
 	    *disp_graph += line;
-	    dn->edges   += (void *)line;
 	}
-	dn->graph = disp_graph;
 
 	changed = true;
     }
@@ -3358,17 +3356,22 @@ bool DataDisp::unmerge_display(int disp_nr)
     // Unhide display
     node->hidden() = false;
 
-    // Delete edges
-    for (int i = 0; i < dn->edges.size(); i++)
+    // Delete alias edges associated with this node
+    VoidArray kill_edges;
+    for (GraphEdge *edge = disp_graph->firstEdge(); edge != 0; 
+	 edge = disp_graph->nextEdge(edge))
     {
-	GraphEdge *edge = (GraphEdge *)dn->edges[i];
-	*disp_graph -= edge;
-	delete edge;
+	AliasGraphEdge *alias = ptr_cast(AliasGraphEdge, edge);
+	if (alias != 0 && alias->disp_nr() == disp_nr)
+	    kill_edges += (void *)alias;
+    }
+    for (int i = 0; i < kill_edges.size(); i++)
+    {
+	AliasGraphEdge *alias = (AliasGraphEdge *)kill_edges[i];
+	*disp_graph -= alias;
+	delete alias;
     }
 
-    static VoidArray empty;
-    dn->edges    = empty;
-    dn->graph    = 0;
     dn->alias_of = 0;
 
     return true;

@@ -43,7 +43,6 @@
 #include "GraphNode.h"
 #include "HandlerL.h"
 #include "BoxGraphN.h"
-#include "VoidArray.h"
 
 // DDD includes
 #include "DispValue.h"
@@ -85,8 +84,6 @@ private:
 
 public:
     int           alias_of;	      // Alias of another display
-    Graph*        graph;	      // Graph while hidden
-    VoidArray     edges;	      // Edges while hidden
 
 protected:
     static HandlerList handlers;

@@ -517,6 +517,7 @@ TEMPLATE_OBJECTS = \
 	StringA.o    \
 	StringMap.o  \
 	StringSA.o   \
+	VoidArray.o  \
 	WidgetSA.o
 
 # Interprocess communication
@@ -675,6 +676,7 @@ DDD_OBJECTS = \
 	windows.o    \
 	wm.o         \
 	xconfig.o    \
+	AliasGE.o    \
 	ArgField.o   \
 	BreakPoint.o \
 	BreakPM.o    \
