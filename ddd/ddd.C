@@ -3182,8 +3182,10 @@ inline void set_string(Widget w, String value)
 // Reflect state in option menus
 void update_options()
 {
-    set_toggle(find_words_only_w,        app_data.find_words_only);
-    set_sensitive(disassemble_w,         gdb->type() == GDB);
+    set_toggle(find_words_only_w, app_data.find_words_only);
+    set_sensitive(disassemble_w, gdb->type() == GDB);
+    set_toggle(disassemble_w, app_data.disassemble);
+
     set_toggle(command_separate_exec_window_w, app_data.separate_exec_window);
     set_toggle(source_separate_exec_window_w,  app_data.separate_exec_window);
     set_toggle(data_separate_exec_window_w,    app_data.separate_exec_window);
