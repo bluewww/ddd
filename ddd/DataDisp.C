@@ -2052,8 +2052,9 @@ void DataDisp::refresh_displayOQAC (string answers[],
 void DataDisp::disable_displaySQ (const IntArray& display_nrs)
 {
     int k = 0;
+    int i;
     string cmd = "disable display";
-    for (int i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < display_nrs.size(); i++)
     {
 	if (display_nrs[i] > 0)
 	{
@@ -2072,7 +2073,7 @@ void DataDisp::disable_displaySQ (const IntArray& display_nrs)
     }
 
     k = 0;
-    for (int i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < display_nrs.size(); i++)
     {
 	DispNode *dn = disp_graph->get(display_nrs[i]);
 	if ((ok || dn->is_user_command()) && dn->enabled())
@@ -2108,8 +2109,9 @@ void DataDisp::disable_displayOQC (const string& answer, void *)
 void DataDisp::enable_displaySQ (const IntArray& display_nrs)
 {
     int k = 0;
+    int i;
     string cmd = "enable display";
-    for (int i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < display_nrs.size(); i++)
     {
 	if (display_nrs[i] > 0)
 	{
@@ -2127,7 +2129,7 @@ void DataDisp::enable_displaySQ (const IntArray& display_nrs)
 	    post_gdb_busy(last_origin);
     }
 
-    for (int i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < display_nrs.size(); i++)
     {
 	DispNode *dn = disp_graph->get(display_nrs[i]);
 	if (dn->is_user_command() && dn->disabled())

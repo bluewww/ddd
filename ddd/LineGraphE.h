@@ -41,7 +41,7 @@ enum Side { North = 1, South = 2, East = 4, West = 8 };
 
 class LineGraphEdge: public GraphEdge {
 public:
-    DECLARE_TYPE_INFO;
+    DECLARE_TYPE_INFO
 
 protected:
     // Find line from region B1 centered around C1 to region B2 centered

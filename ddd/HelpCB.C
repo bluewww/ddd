@@ -1327,8 +1327,7 @@ static void ShowDocumentation(XtPointer client_data, XtIntervalId *timer)
 }
 
 // Clear the documentation
-static void ClearDocumentation(XtPointer* client_data, 
-			       XtIntervalId *timer)
+static void ClearDocumentation(XtPointer client_data, XtIntervalId *timer)
 {
     (void) timer;
     assert(*timer == clear_doc_timer);
@@ -1462,57 +1461,61 @@ static void HandleTipEvent(Widget w,
     switch (event->type)
     {
     case EnterNotify:
-	if (clear_tip_timer != 0)
 	{
-	    XtRemoveTimeOut(clear_tip_timer);
-	    clear_tip_timer  = 0;
+	    if (clear_tip_timer != 0)
+	    {
+		XtRemoveTimeOut(clear_tip_timer);
+		clear_tip_timer  = 0;
 
-	    if (w != last_left_widget)
-	    {
-		// Entered other widget within HELP_CLEAR_TIP_DELAY.
-		ClearTip(w, event);
-		last_left_widget = 0;
-	    }
-	    else
-	    {
-		// Re-entered same widget -- ignore.
+		if (w != last_left_widget)
+		{
+		    // Entered other widget within HELP_CLEAR_TIP_DELAY.
+		    ClearTip(w, event);
+		    last_left_widget = 0;
+		}
+		else
+		{
+		    // Re-entered same widget -- ignore.
 #if 0
-		clog << "Wow!  Left and entered " << XtName(w) << " within " 
-		     << help_clear_tip_delay << "ms!\n";
+		    clog << "Wow!  Left and entered " << XtName(w) << " within " 
+			 << help_clear_tip_delay << "ms!\n";
 #endif
 
-		last_left_widget = 0;
-		break;
+		    last_left_widget = 0;
+		    break;
+		}
 	    }
-	}
 
-	if (!XmIsText(w))
-	{
-	    ClearTip(w, event);
-	    RaiseTip(w, event);
+	    if (!XmIsText(w))
+	    {
+		ClearTip(w, event);
+		RaiseTip(w, event);
+	    }
 	}
 	break;
 
     case LeaveNotify:
-	last_left_widget = w;
-	if (clear_tip_timer != 0)
 	{
-	    XtRemoveTimeOut(clear_tip_timer);
-	    clear_tip_timer = 0;
+	    last_left_widget = w;
+	    if (clear_tip_timer != 0)
+	    {
+		XtRemoveTimeOut(clear_tip_timer);
+		clear_tip_timer = 0;
+	    }
+
+	    // We don't clear the tip immediately, because the DDD ungrab
+	    // mechanism may cause the pointer to leave a button and
+	    // re-enter it immediately.
+
+	    static TipInfo ti;
+	    ti.event  = *event;
+	    ti.widget = w;
+
+	    clear_tip_timer = 
+		XtAppAddTimeOut(XtWidgetToApplicationContext(w),
+				help_clear_tip_delay, 
+				DoClearTip, &ti);
 	}
-
-	// We don't clear the tip immediately, because the DDD ungrab
-	// mechanism may cause the pointer to leave a button and
-	// re-enter it immediately.
-
-	static TipInfo ti;
-	ti.event  = *event;
-	ti.widget = w;
-
-	clear_tip_timer = 
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
-			    help_clear_tip_delay, 
-			    DoClearTip, &ti);
 	break;
 
     case ButtonPress:

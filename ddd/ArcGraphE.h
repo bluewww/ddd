@@ -37,7 +37,7 @@
 
 class ArcGraphEdge: public LineGraphEdge {
 public:
-    DECLARE_TYPE_INFO;
+    DECLARE_TYPE_INFO
 
 protected:
     // Copy Constructor

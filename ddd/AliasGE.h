@@ -37,7 +37,7 @@
 
 class AliasGraphEdge: public ArcGraphEdge {
 public:
-    DECLARE_TYPE_INFO;
+    DECLARE_TYPE_INFO
 
 private:
     int _disp_nr;		// Display associated with this edge

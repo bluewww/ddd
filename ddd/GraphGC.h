@@ -57,7 +57,7 @@ enum SelfEdgePosition {
 enum SelfEdgeDirection { Clockwise, Counterclockwise };
 
 struct GraphGC {
-    DECLARE_TYPE_INFO;
+    DECLARE_TYPE_INFO
 
     // Drawing stuff
     bool           redraw;	     // Redraw only marked nodes?
