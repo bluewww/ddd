@@ -123,12 +123,8 @@
 #define XtCTermCommand           "TermCommand"
 #define XtNtermType              "termType"
 #define XtCTermType              "TermType"
-#define XtNtermTimeout           "termTimeout"
-#define XtCTermTimeout           "TermTimeout"
 #define XtNuseTTYCommand         "useTTYCommand"
 #define XtCUseTTYCommand         "UseTTYCommand"
-#define XtNtermStartProcess      "termStartProcess"
-#define XtCTermStartProcess      "TermStartProcess"
 #define XtNquestionTimeout       "questionTimeout"
 #define XtCQuestionTimeout       "QuestionTimeout"
 #define XtNsynchronousDebugger   "synchronousDebugger"
@@ -376,7 +372,6 @@ struct AppData {
     String    term_command;
     String    term_type;
     Boolean   use_tty_command;
-    String    term_start_process;
     int       question_timeout;
     Boolean   synchronous_gdb;
     Boolean   terminate_on_eof;
