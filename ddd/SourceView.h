@@ -222,6 +222,9 @@ private:
     static String read_indented(string& file_name);
     static int read_current(string& file_name, bool force_reload = false);
 
+    static void SetInsertionPosition(XmTextPosition pos, 
+				     bool fromTop = false);
+
 public:
     // Constructor
     SourceView (XtAppContext app_context,

@@ -475,6 +475,53 @@ void SourceView::set_source_argCB (Widget, XtPointer client_data, XtPointer)
 
 // ***************************************************************************
 
+// Set insertion position
+void SourceView::SetInsertionPosition(XmTextPosition pos, bool fromTop)
+{
+    // Number of lines to show before or after POS
+    const int lines_above = 2;
+    const int lines_below = 4;
+
+    short rows = 0;
+    XmTextPosition current_top = 0;
+    XtVaGetValues(source_text_w, 
+		  XmNrows, &rows,
+		  XmNtopCharacter, &current_top,
+		  NULL);
+
+    // Find current relative row
+    short relative_row = 1;
+    for (XmTextPosition p = pos; p > current_top; p--)
+	if (current_text[p] == '\n')
+	    relative_row++;
+
+    if (relative_row <= lines_above || relative_row >= rows - lines_below)
+    {
+	// Determine new TOP position
+	short n = rows / 2;	// #Lines between new TOP and POS
+	if (fromTop || relative_row <= lines_above)
+	    n = lines_above;
+	else if (relative_row >= rows - lines_below)
+	    n = rows - lines_below;
+
+	XmTextPosition new_top = pos;
+	for (;;) {
+	    while (new_top > 0 && current_text[new_top - 1] != '\n')
+		new_top--;
+	    if (new_top == 0 || n-- <= 0)
+		break;
+	    new_top--;
+	}
+
+	XmTextSetTopCharacter(source_text_w, new_top);
+    }
+
+    XmTextSetInsertionPosition(source_text_w, pos);
+    XmTextShowPosition(source_text_w, pos);	// just to make sure
+}
+
+// ***************************************************************************
+
 // Read local file from FILE_NAME
 String SourceView::read_local(const string& file_name)
 {
@@ -800,20 +847,6 @@ void SourceView::read_file (string file_name,
     // The remainder may take some time...
     Delay delay;
 
-    // Set cursor position
-    short rows = 0;
-    XtVaGetValues(source_text_w,
-		  XmNrows, &rows,
-		  NULL);
-
-    XmTextPosition initial_pos = 0;
-    if (initial_line > 0 && initial_line <= line_count)
-	initial_pos = pos_of_line[initial_line] + bp_indent_amount;
-
-    XmTextPosition initial_top = 0;
-    if (initial_line > rows / 2 && initial_line <= line_count)
-	initial_top = pos_of_line[initial_line - rows / 2];
-
     // Set string and initial line
 #if XmVersion >= 1002
     XmTextDisableRedisplay(source_text_w);
@@ -822,11 +855,13 @@ void SourceView::read_file (string file_name,
 #endif
     XtVaSetValues(source_text_w,
 		  XmNvalue, String(current_text),
-		  XmNcursorPosition, initial_pos,
-		  XmNtopCharacter, initial_top,
 		  NULL);
-    XmTextSetInsertionPosition(source_text_w, initial_pos);
-    XmTextShowPosition(source_text_w, initial_pos);
+
+    XmTextPosition initial_pos = 0;
+    if (initial_line > 0 && initial_line <= line_count)
+	initial_pos = pos_of_line[initial_line] + bp_indent_amount;
+
+    SetInsertionPosition(initial_pos, true);
 #if XmVersion >= 1002
     XmTextEnableRedisplay(source_text_w);
 #elif !defined(LESSTIF_VERSION)
@@ -1329,8 +1364,7 @@ void SourceView::_show_execution_position(string file, int line)
 	return;
 
     XmTextPosition pos = pos_of_line[line];
-    XmTextSetInsertionPosition(source_text_w, pos + bp_indent_amount);
-    XmTextShowPosition(source_text_w, pos + bp_indent_amount);
+    SetInsertionPosition(pos + bp_indent_amount, false);
 
     // akt. Zeile markieren
     if (bp_indent_amount > 0) {
@@ -1386,16 +1420,8 @@ void SourceView::show_position (string position)
     // Fenster scrollt an Position
     if (line > 0 && line <= line_count)
     {
-	int pre_line = line;
-	if (line > 3)
-	    pre_line = line - 3; // Show the previous three lines as well
-
 	XmTextPosition pos = pos_of_line[line];
-	XmTextSetInsertionPosition(source_text_w, pos + bp_indent_amount);
-
-	XmTextPosition pre_pos = pos_of_line[pre_line];
-	XmTextShowPosition(source_text_w, pre_pos + bp_indent_amount);
-	XmTextShowPosition(source_text_w, pos + bp_indent_amount);
+	SetInsertionPosition(pos + bp_indent_amount, true);
 
 	last_pos = pos;
     }
@@ -1746,8 +1772,7 @@ void SourceView::goto_entry(string entry)
 
 	XmTextPosition pos = 
 	    last_start_secondary_highlight + bp_indent_amount;
-	XmTextSetInsertionPosition(source_text_w, pos);
-	XmTextShowPosition(source_text_w, pos);
+	SetInsertionPosition(pos, true);
     }
 }
 
@@ -1866,8 +1891,7 @@ void SourceView::find(const string& s,
     if (pos > 0)
     {
 	XmTextSetSelection(source_text_w, pos, pos + matchlen, time);
-	XmTextSetInsertionPosition(source_text_w, cursor);
-	XmTextShowPosition(source_text_w, cursor);
+	SetInsertionPosition(cursor, false);
     }
     else
     {
@@ -1909,8 +1933,11 @@ void SourceView::setSelection(XtPointer, XtIntervalId *)
 {
     XmTextSetSelection(source_text_w, 
 		       selection_startpos, selection_endpos, selection_time);
+
+    // Do not scroll here.  Do not use SetInsertionPosition().
     XmTextSetInsertionPosition(source_text_w, selection_pos);
     XmTextShowPosition(source_text_w, selection_pos);
+
     set_source_argCB(source_text_w, XtPointer(false), 0);
 }
 
