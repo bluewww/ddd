@@ -1298,7 +1298,7 @@ command completion and that \s-2@DDD@\s+2 exits as soon as it receives
 a \s-2EOF\s+2 on its standard input.  Also, do not try to run
 \s-2@DDD@\s+2 with \s-2@DDD@\s+2 as inferior debugger.
 .PP
-.SS "Using @DDD@ with FSF Emacs"
+.SS "Using @DDD@ with GNU Emacs"
 Use `\fBM-x gdb\fR' or `\fBM-x dbx\fR' to start a debugging session.
 At the prompt, enter `\fB@ddd@ \-\-tty\fR', followed by
 `\fB\-\-dbx\fR' or `\fB\-\-gdb\fR', if required, and the name of the
