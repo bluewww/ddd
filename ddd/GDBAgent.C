@@ -1197,6 +1197,21 @@ string GDBAgent::make_command(string args) const
 	return cmd + " " + args;
 }
 
+string GDBAgent::kill_command() const
+{
+    switch (type())
+    {
+    case GDB:
+    case DBX:
+	return "kill";
+   
+    case XDB:
+	return "k";
+    }
+
+    return "";			// Never reached
+}
+
 string GDBAgent::frame_command(string depth) const
 {
     if (!has_frame_command())

@@ -349,6 +349,7 @@ public:
     string info_args_command() const;	            // GDB: "info args"
     string disassemble_command(string pc) const;    // GDB: "disassemble PC"
     string make_command(string target) const;       // GDB: "make TARGET"
+    string kill_command() const;                    // GDB: "kill"
 
 private:
     bool questions_waiting;
