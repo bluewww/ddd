@@ -1909,8 +1909,12 @@ EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
 # Make sure all this is built before DDD.
 ddd.$(OBJEXT): $(PROG_STUFF)
 
-CLEANFILES = build.h ddd.?? ddd.??s ddd.ps ddd.pdf *.tmp ddd.html \
-	$(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
+# These should not go into the distribution.
 DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO
+
+# Have `make maintainer-clean' remove all derived files.
+MAINTAINERCLEANFILES = \
+	ddd.ps ddd.pdf ddd.html $(PROG_STUFF) \
+	$(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
 
 diststuff: $(EXTRA_DIST)
