@@ -47,9 +47,6 @@ Where to install
   [source + binaries + LSM entry from ftp/bin/linux/generic/ddd-x.y.* ]
   Typically, use `binary / hash / prompt / mput ddd-x.y.*'.
 
-  It seems that only ordinarily compressed binaries (gzip without -9)
-  are accepted here.
-
 
 Helpers
 -------

@@ -1,7 +1,7 @@
 Begin3
 Title:          ddd
-Version:        3.1.2
-Entered-date:   20DEC98
+Version:        3.1.3
+Entered-date:   06JAN99
 Description:    DDD, the Data Display Debugger, is a popular graphical
                 user interface to command-line debuggers like GDB,
                 DBX, JDB, XDB, the Perl debugger, or the Python
@@ -14,10 +14,10 @@ Author:         luetke@ips.cs.tu-bs.de (Dorothea Luetkehaus)
                 zeller@ips.cs.tu-bs.de (Andreas Zeller)
 Maintained-by:  ddd@ips.cs.tu-bs.de (DDD Maintainers)
 Primary-site:   metalab.unc.edu /pub/Linux/devel/debuggers/ddd/
-                3248k ddd-3.1.2.tar.gz  (Source)
-                1003k ddd-3.1.2.bin.ELF.dynamic.gz    binary w/ dynamic Motif
-                1496k ddd-3.1.2.bin.ELF.semistatic.gz binary w/ static Motif
-                1966k ddd-3.1.2.bin.ELF.static.gz     binary w/ static all
+                3255k ddd-3.1.3.tar.gz  (Source)
+                1000k ddd-3.1.3.bin.ELF.dynamic.gz    binary w/ dynamic Motif
+                1492k ddd-3.1.3.bin.ELF.semistatic.gz binary w/ static Motif
+                1961k ddd-3.1.3.bin.ELF.static.gz     binary w/ static all
 Alternate-site: ftp.funet.fi /pub/OS/Linux/devel/debuggers/ddd/
 Original-site:  ftp.ips.cs.tu-bs.de /pub/local/softech/ddd/bin/linux/generic/
 Platforms:      Requires Motif (LessTif >= 0.87 or OSF/Motif >= 1.2)
