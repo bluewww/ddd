@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "04 Aug 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "05 Aug 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -2443,6 +2443,14 @@ the \s-2@DDD@\s+2 source window.  If `\fBfalse\fR', the status line is
 placed at the top of the \s-2@DDD@\s+2 source window.  See also the
 `\fB\-\-status\-at\-bottom\fR' and `\fB\-\-status\-at\-top\fR'
 options, below.
+.TP
+.B "stickyTool (\fPclass\fB StickyTool)"
+If `\fBtrue\fR' (default), the command tool automatically follows
+every movement of the source window.  Whenever the source window is
+moved, the command tool is moved by the same offset such that its
+position relative to the source window remains unchanged.  If
+`\fBfalse\fR', the command tool does not follow source window
+movements.
 .\"
 .\"
 .\"

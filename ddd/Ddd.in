@@ -375,10 +375,15 @@ Ddd*tool_buttons*bottomAttachment:		XmATTACH_POSITION
 Ddd*tool_buttons*leftAttachment:		XmATTACH_POSITION
 Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
 
-
 ! Some special labels
 Ddd*tool_buttons*Forward.labelString:   Fwd
 Ddd*tool_bar*Cont.labelString:   Continue
+
+
+! Do we want a sticky command tool?  If true, the command tool follows
+! every movement of the source window, such that the relative position
+! remains unchanged.
+Ddd*stickyTool: true
 
 ! Tab width in source texts
 Ddd*tabWidth:	        8

@@ -87,6 +87,23 @@ static void recenter_tool_shell(Widget ref);
 
 static string last_tool_shell_geometry = "+0+0";
 
+static void move_tool_shell(const BoxPoint& pos)
+{
+    if (tool_shell == 0)
+	return;
+
+    ostrstream os;
+    os << "+" << pos[X] << "+" << pos[Y];
+    last_tool_shell_geometry = string(os);
+
+    // Move tool shell to POS
+    XtVaSetValues(tool_shell,
+		  XmNgeometry, last_tool_shell_geometry.chars(),
+		  XmNx, pos[X],
+		  XmNy, pos[Y],
+		  NULL);
+}
+
 static void RecenterToolShellCB(XtPointer = 0, XtIntervalId * = 0)
 {
     XWindowAttributes attr;
@@ -314,6 +331,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    tool_shell_state = Transient;
 	}
 
+	if (tool_shell != 0)
 	{
 	    // Check position of command tool
 	    Position pos_x = WidthOfScreen(XtScreen(tool_shell)) - 1;
@@ -443,6 +461,43 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 		XRaiseWindow(XtDisplay(tool_shell), XtWindow(tool_shell));
 	    }
 	}
+	break;
+    }
+
+    case ConfigureNotify:
+    {
+	if (w == source_view_shell
+	    || w == command_shell && source_view_shell == 0)
+	{
+	    static BoxPoint last_position = point(event);
+	    BoxPoint current_position = point(event);
+	    BoxPoint offset = current_position - last_position;
+	    last_position = current_position;
+	    
+	    // clog << "Source view shell moved by " << offset << "\n";
+
+	    if (app_data.sticky_tool
+		&& offset != BoxPoint(0, 0)
+		&& have_tool_window()
+		&& (tool_shell_state == PoppedUp 
+		    || tool_shell_state == Transient))
+	    {
+		XWindowAttributes attr;
+		XGetWindowAttributes(XtDisplay(tool_shell),
+				     XtWindow(tool_shell), 
+				     &attr);
+
+		int root_x, root_y;
+		Window child;
+		XTranslateCoordinates(XtDisplay(tool_shell),
+				      XtWindow(tool_shell),
+				      attr.root, 0, 0, &root_x, &root_y,
+				      &child);
+
+		move_tool_shell(BoxPoint(root_x, root_y) + offset);
+	    }
+	}
+	break;
     }
 
     default:
@@ -653,6 +708,9 @@ void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
 
 void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 {
+    if (tool_shell == 0)
+	return;
+
     XtVaSetValues(tool_shell,
 		  XmNgeometry, last_tool_shell_geometry.chars(),
 		  NULL);
@@ -838,16 +896,7 @@ static void recenter_tool_shell(Widget ref)
 			  x, y, &root_x, &root_y,
 			  &ref_child);
 
-    ostrstream os;
-    os << "+" << root_x << "+" << root_y;
-    last_tool_shell_geometry = string(os);
-
-    // Move tool shell to ROOT_X, ROOT_Y
-    XtVaSetValues(tool_shell,
-		  XmNgeometry, last_tool_shell_geometry.chars(),
-		  XmNx, root_x,
-		  XmNy, root_y,
-		  NULL);
+    move_tool_shell(BoxPoint(root_x, root_y));
 }
 
 // Store current offset of command tool in APP_DATA
