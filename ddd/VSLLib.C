@@ -880,6 +880,7 @@ bool VSLLib::OK() const
 
     // Loop #2: over internal list
     VSLDef *last_d = 0;
+    (void) last_d;		// Use it
     for (VSLDef *d = _first; d != 0; d = d->libnext())
     {
 	last_d = d;

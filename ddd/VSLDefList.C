@@ -192,6 +192,7 @@ bool VSLDefList::OK() const
 
     // Check whether _ndefs and _last are ok
     VSLDef *last_d = 0;
+    (void) last_d;		// Use it
     while (d != 0)
     {
 	last_d = d;
