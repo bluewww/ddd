@@ -621,19 +621,7 @@ DDD_OBJECTS = \
 	SourceView.o
 
 # Objects required for userinfo
-USERINFO_OBJECTS = \
-	Agent.o      \
-	AgentM.o     \
-	HandlerL.o   \
-	SignalB.o    \
-	TypeInfo.o   \
-	UniqueId.o   \
-	compare.o    \
-	hash.o       \
-	hostname.o   \
-	regex.o      \
-	sigName.o    \
-	strclass.o
+USERINFO_OBJECTS =
 
 ## All objects.
 OBJECTS = $(NORA_OBJECTS) $(DDD_OBJECTS)
@@ -814,7 +802,7 @@ dist:
 
 .PHONY: strip
 strip:	$(PROGS)
-	$(STRIP) $(PROGS)
+	-$(STRIP) $(PROGS)
 
 .PHONY: progs programs
 progs:	$(PROGS)
@@ -1034,7 +1022,8 @@ configinfo.C:   USERINFO $(srcdir)/config-info Makefile config.h
 configinfo.o:	configinfo.C configinfo.h
 
 USERINFO:	userinfo Makefile
-		@(./userinfo || echo '(unknown)') > $@
+		(./userinfo || echo '(unknown)') > $@; $(CAT) $@
+
 
 ## Make dependency stuff.
 

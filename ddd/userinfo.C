@@ -47,18 +47,20 @@ extern "C" {
 #include <unistd.h>
 #endif
 
-#include <iostream.h>
 #include <ctype.h>
 #include <pwd.h>
+
+#define NO_UNAME_AGENTS
+#include "hostname.C"
 
 // Return true if C is a letter found in real user names
 inline bool is_letter(char c)
 {
-    return isalpha(c) || isspace(c) || c == '.';
+    return isalpha(c) || isspace(c) || c == '.' || c == '-';
 }
 
 // Issue the name of the building user, in the format
-// REALNAME <USERNAME@HOSTNAME>
+// ``REALNAME <USERNAME@HOSTNAME>''
 int main()
 {
     // Fetch user
@@ -68,9 +70,14 @@ int main()
     // Issue real name
     char *s = pwd->pw_gecos; 
     while (is_letter(*s))
-	cout << *s++;
+	putchar(*s++);
 
     // Issue user and host (probable mail address)
-    cout << " <" << pwd->pw_name << "@" << fullhostname() << ">\n";
+    fputs(" <", stdout);
+    fputs(pwd->pw_name, stdout);
+    fputs("@", stdout);
+    fputs(fullhostname(), stdout);
+    fputs(">\n", stdout);
+
     return 0;
 }

@@ -31,7 +31,10 @@ char hostname_rcsid[] =
 
 #include "hostname.h"
 #include "config.h"
+
+#ifndef NO_UNAME_AGENTS
 #include "Agent.h"
+#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -86,6 +89,7 @@ char *hostname()
 	okay = true;
     }
 #endif
+#ifndef NO_UNAME_AGENTS
     if (!okay)
     {
 	Agent agent("uname -n");
@@ -97,6 +101,7 @@ char *hostname()
 	    fscanf(agent.inputfp(), "%s", buffer);
 	}
     }
+#endif
 
     if (okay)
 	return name = strcpy(new char[strlen(buffer) + 1], buffer);
