@@ -2,6 +2,7 @@
 // Read and store type and value of a displayed expression
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -539,9 +540,9 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    }
 	    else if (gdb->program_language() == LANGUAGE_PERL)
 	    {
-		// In Perl, members of A are accessed as A{...}
-		member_prefix = normalize_base(member_prefix) + "{";
-		member_suffix = "}";
+		// In Perl, members of A are accessed as A{'MEMBER_NAME'}
+		member_prefix = normalize_base(member_prefix) + "{'";
+		member_suffix = "'}";
 	    }
 	    else
 	    {

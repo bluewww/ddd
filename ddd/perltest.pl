@@ -73,6 +73,22 @@ $g = newprint("Greetings");
 &$g("earthlings");
 
 
+# Weird keys (from Matthew Persico <Matthew.Persico@lazard.com>)
+my %h = ( 'good' => {
+		     'keyIsOk' => 'valueForGoodKey'
+		    },
+	  'bad' => {
+		    '2KeyIsNotOk' => 'valueForBadKey'
+		    }
+	  );
+
+print $h{good}->{keyIsOk}, "\n";
+print $h{good}->{'keyIsOk'}, "\n";
+## Cannot even compile if this is not commented out:
+## print $h{bad}->{2KeyIsNotOk}, "\n";
+print $h{bad}->{'2KeyIsNotOk'}, "\n";
+
+
 # I/O
 print "What's your name? ";
 chop($name = <>);
@@ -81,7 +97,6 @@ print "Hello, $name!\n";
 
 # Globs
 $fh = *STDOUT;
-
 
 
 sub print_me {
