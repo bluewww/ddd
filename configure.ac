@@ -381,57 +381,69 @@ if test "x${ddd_have_termcap}" = "xfalse"; then
 fi
 dnl
 dnl Check for -lreadline (optional)
-readline_includes=
-readline_libraries=
+readline_support=no
 AC_ARG_WITH(readline,
-AC_HELP_STRING([--without-readline],[do not use the readline library]),[
+AC_HELP_STRING([--with-readline],[do use the readline library default=no]),[
   if test "$withval" = "no"; then
-    readline_includes=no
-    readline_libraries=no
+    readline_support=no
+  else
+    readline_support=yes
   fi
-])
-AC_ARG_WITH(readline-includes,
-AC_HELP_STRING([--with-readline-includes=DIR],
-               [Readline libraries are in DIR]),[
-  readline_includes="$withval"
-  case "$readline_includes" in
-  no) ;;
-  yes)
-    AC_CHECK_HEADER(readline/readline.h)
-    ;;
-  *)
-    _cppflags="${CPPFLAGS}"
-    CPPFLAGS="-I$readline_includes $CPPFLAGS"
-    AC_CHECK_HEADER(readline/readline.h, , CPPFLAGS="${_cppflags}")
-    ;;
-  esac
 ])
 LIBREADLINE=""
-AC_ARG_WITH(readline-libraries,
-AC_HELP_STRING([--with-readline-libraries=DIR],
-               [Readline libraries are in DIR]),[
-  readline_libraries="$withval"
-  case "$readline_libraries" in
-  no) ;;
-  yes)
-    AC_CHECK_LIB(readline, readline, [ddd_have_readline=true], ,
-      $LIBTERMCAP)
-    ;;
-  *)
-    _ldflags="${LDFLAGS}"
-    LDFLAGS="-L$readline_libraries $LDFLAGS"
-    AC_CHECK_LIB(readline, readline,
-		 [ddd_have_readline=true
+if test "x${readline_support}" != "xno"; then
+  AC_ARG_WITH(readline-includes,
+  AC_HELP_STRING([--with-readline-includes=DIR],
+                 [Readline libraries are in DIR]),[
+    readline_includes="$withval"
+    case "$readline_includes" in
+    no) ;;
+    yes)
+      AC_CHECK_HEADER(readline/readline.h)
+      ;;
+    *)
+      _cppflags="${CPPFLAGS}"
+      CPPFLAGS="-I$readline_includes $CPPFLAGS"
+      AC_CHECK_HEADER(readline/readline.h, , CPPFLAGS="${_cppflags}")
+      ;;
+    esac
+  ])
+  AC_ARG_WITH(readline-libraries,
+  AC_HELP_STRING([--with-readline-libraries=DIR],
+                 [Readline libraries are in DIR]),[
+    readline_libraries="$withval"
+    case "$readline_libraries" in
+    no) ;;
+    yes)
+      AC_CHECK_LIB(readline, readline,
+                   [ddd_have_readline=true
+                   LIBREADLINE="-lreadline"], ,
+                   $LIBTERMCAP)
+      ;;
+    *)
+      _ldflags="${LDFLAGS}"
+      LDFLAGS="-L$readline_libraries $LDFLAGS"
+      AC_CHECK_LIB(readline, readline,
+                  [ddd_have_readline=true
 		  LIBREADLINE="-L$readline_libraries -lreadline"], ,
-      $LIBTERMCAP)
-    LDFLAGS="${_ldflags}"
-    ;;
-  esac])
-if test "x${ddd_have_readline}" = "xfalse"; then
-  if test "x${readline_libraries}" != "xno"; then
-    AC_CHECK_LIB(readline, readline, [ddd_have_readline=true], ,
-      $LIBTERMCAP)
+                  $LIBTERMCAP)
+      LDFLAGS="${_ldflags}"
+      ;;
+    esac])
+dnl readline has not been found, test if readline is available on the system
+  if test "x${ddd_have_readline}" != "true"; then
+    AC_CHECK_LIB(readline, readline,
+                [ddd_have_readline=true
+                LIBREADLINE="-lreadline"], ,
+                $LIBTERMCAP)
   fi
+  if test "${ddd_have_readline}" != true; then
+    LIBREADLINE="../readline/readline.a"
+  fi
+  AC_DEFINE([WITH_READLINE],1,[Define if you want readline support in DDD.])
+else
+dnl do not build built-in readline
+  ddd_have_readline=true
 fi
 AC_SUBST(LIBREADLINE)
 dnl

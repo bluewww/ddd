@@ -7,6 +7,7 @@ DDD-3.3.9
 - Support for PHP debugger has been added (1). This is essentially not tested.
 - Builds with IBM xlC and on X11R5 based systems should be OK.
 - Builds without Motif/Lesstif available abort with an adequate message.
+- Builds with readline support now work.
 - Several missing files in the distribution are now included.
 - The libiberty distributed with ddd has been upgraded to the one released
   with gcc-3.3.2.
