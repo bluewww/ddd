@@ -30,7 +30,6 @@
 .TH @ddd@ 1 "2001\-01\-15" "@DDD@ @VERSION@" "GNU Tools"
 .SH "NAME"
 @ddd@ - The Data Display Debugger
-.SH ""
 .PSPIC @srcdir@/PICS/dddlogo.eps 10cm
 .\"
 .\" ---------------
