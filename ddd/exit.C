@@ -302,9 +302,21 @@ static void post_fatal(string title, string cause, string cls)
 // Show the user that a signal has been raised
 void ddd_show_signal(int sig)
 {
+    bool core_dumped = false;
+    if (sig < 0)
+    {
+	core_dumped = true;
+	sig = -sig;
+    }
+
     // Show diagnostic
     if (sig > 0)
-	cerr << sigName(sig) << "\n";
+    {
+	cerr << sigName(sig);
+	if (core_dumped)
+	    cerr << " (core dumped)";
+	cerr << "\n";
+    }
     gdb_question_running = false;
 
     // Interrupt current GDB action
@@ -317,6 +329,10 @@ void ddd_show_signal(int sig)
     {
 	string title = sigName(sig);
 	string cause = "`" + title + "' signal";
+
+	if (core_dumped)
+	    title += " (core dumped)";
+
 	post_fatal(title, cause, "Internal error");
     }
 }
@@ -441,20 +457,23 @@ static void ddd_fatal(int sig...)
     // Reinstall fatal error handlers
     ddd_install_fatal();
 
+    bool have_core_file = false;
     if (sig != SIGINT)
     {
 	// Create core file (without interrupting DDD)
+	unlink("core");
 	if (ddd_dump_core(sig))
 	{
 	    // We are the child: return to originating sequence such
 	    // that we can dump core.
 	    return;
 	}
+	have_core_file = is_core_file("core");
     }
 
     // Return to main event loop
     fatal_entered--;
-    longjmp(main_loop_env, sig);
+    longjmp(main_loop_env, have_core_file ? -sig : sig);
 }
 
 
