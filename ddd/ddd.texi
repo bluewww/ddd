@@ -67,6 +67,10 @@
 @acronym{JDB}
 @end macro
 
+@macro JDK {}
+@acronym{JDK}
+@end macro
+
 @macro UNIX {}
 @acronym{UNIX}
 @end macro
@@ -876,8 +880,8 @@ releases.  Use a recent @GDB{} version instead.}.
 @cindex @acronym{JDB}
 @cindex Java
 To debug @emph{Java byte-code programs}, you can use @DDD{} with
-@dfn{@JDB{}}, the Java debugger, as of @acronym{JDK} 1.1 and later.
-(@DDD{} has been tested with @acronym{JDK} 1.1 and @acronym{JDK} 1.2.)
+@dfn{@JDB{}}, the Java debugger, as of @JDK{} 1.1 and later.
+(@DDD{} has been tested with @JDK{} 1.1 and @JDK{} 1.2.)
 
 @item
 @cindex @acronym{PYDB}
@@ -2449,10 +2453,12 @@ Further options can be found in the @cite{xdb(1)} manual page.
 
 
 @node JDB Options
-@subsubsection JDB 1.2 Options
+@subsubsection JDB Options
 
-The following @JDB{} options are useful when using @DDD{} with @JDB{} as
-inferior debugger.
+@subsubheading JDB as of JDK 1.2
+
+The following @JDB{} options are useful when using @DDD{} with @JDB{}
+(from @JDK{} 1.2) as inferior debugger.
 
 @table @option
 @item -attach @var{address}
@@ -2491,10 +2497,11 @@ Non-standard target VM option
 @end table
 
 
-@subsubsection JDB 1.1 Options
 
-The following @JDB{} options (for JDB as of JDK 1.1) are useful when
-using @DDD{} with @JDB{} as inferior debugger.
+@subsubheading JDB as of JDK 1.1
+
+The following @JDB{} options are useful when using @DDD{} with @JDB{}
+(from @JDK{} 1.1) as inferior debugger.
 
 @table @option
 @item -host @var{hostname}
