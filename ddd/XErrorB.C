@@ -39,7 +39,9 @@ char XErrorBlocker_rcsid[] =
 XErrorBlocker *XErrorBlocker::active = 0;
 
 XErrorBlocker::XErrorBlocker(Display *display)
-    : _display(display), _error_occurred(false), _event(),
+    // Initializing `_event' causes an error in GCC 2.8.1
+    // Reported by "Derks, Victor" <Victor.Derks@nl2.vdogrp.de>
+    : _display(display), _error_occurred(false), // _event(),
       saved_handler(0), saved_active(0)
 {
     saved_handler = XSetErrorHandler(handler);

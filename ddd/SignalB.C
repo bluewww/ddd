@@ -43,7 +43,9 @@ char SignalBlocker_rcsid[] =
 // Constructor - block signal SIGNUM
 SignalBlocker::SignalBlocker(int signum)
 #ifdef SIG_SETMASK
-    : old_set()			// POSIX interface
+    // Initializing `old_set' causes an error in GCC 2.8.1
+    // Reported by "Derks, Victor" <Victor.Derks@nl2.vdogrp.de>
+    // : old_set()			// POSIX interface
 #else
     : old_mask(sigblock(sigmask(signum))); // BSD interface
 #endif
@@ -61,7 +63,9 @@ SignalBlocker::SignalBlocker(int signum)
 // Constructor - block all signals
 SignalBlocker::SignalBlocker()
 #ifdef SIG_SETMASK
-    : old_set()			// POSIX interface
+    // Initializing `old_set' causes an error in GCC 2.8.1
+    // Reported by "Derks, Victor" <Victor.Derks@nl2.vdogrp.de>
+    // : old_set()			// POSIX interface
 #else
     : old_mask(sigblock(~0));	// BSD interface
 #endif
