@@ -37,7 +37,7 @@
 #include <X11/Intrinsic.h>
 
 // Create a button row named NAME with buttons as specified in LIST
-Widget make_buttons(Widget parent, const string& name, const _XtString list);
+Widget make_buttons(Widget parent, const char *name, const _XtString list);
 
 // Assign BUTTONS the buttons specified in LIST.  If MANAGE is set,
 // (un)manage BUTTONS depending on the number of buttons.

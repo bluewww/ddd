@@ -3316,9 +3316,9 @@ string SourceView::get_word_at_pos(Widget text_w,
 
 // Install the given X bitmap as NAME
 static void InstallBitmapAsImage(unsigned char *bits, int width, int height, 
-				 const string& name)
+				 const char *name)
 {
-    Boolean ok = InstallBitmap(bits, width, height, name.chars());
+    Boolean ok = InstallBitmap(bits, width, height, name);
     if (!ok)
 	std::cerr << "Could not install " << quote(name) << " bitmap\n";
 }

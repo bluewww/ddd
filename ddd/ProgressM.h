@@ -50,7 +50,7 @@ public:
     int base;			// Data already processed
     int total;			// Total of data to be processed
 
-    ProgressMeter(const string& msg);
+    ProgressMeter(const char *msg);
     ~ProgressMeter();
 
 private:

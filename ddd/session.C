@@ -158,7 +158,7 @@ static string session_dir(const string& session)
 	return session_base_dir() + "/" + session;
 }
 
-string session_file(const string& session, const string& base)
+string session_file(const string& session, const char *base)
 {
     return session_dir(session) + "/" + base;
 }

@@ -92,7 +92,17 @@ inline MString tt(const string& text)
     return MString(text, CHARSET_TT);
 }
 
+inline MString tt(const char *text) 
+{
+    return MString(text, CHARSET_TT);
+}
+
 inline MString tb(const string& text) 
+{
+    return MString(text, CHARSET_TB);
+}
+
+inline MString tb(const char *text) 
 {
     return MString(text, CHARSET_TB);
 }
@@ -102,7 +112,17 @@ inline MString rm(const string& text)
     return MString(text, CHARSET_RM);
 }
 
+inline MString rm(const char *text) 
+{
+    return MString(text, CHARSET_RM);
+}
+
 inline MString sl(const string& text) 
+{
+    return MString(text, CHARSET_SL);
+}
+
+inline MString sl(const char *text) 
 {
     return MString(text, CHARSET_SL);
 }
@@ -112,7 +132,17 @@ inline MString bf(const string& text)
     return MString(text, CHARSET_BF);
 }
 
+inline MString bf(const char *text) 
+{
+    return MString(text, CHARSET_BF);
+}
+
 inline MString bs(const string& text) 
+{
+    return MString(text, CHARSET_BS);
+}
+
+inline MString bs(const char *text) 
 {
     return MString(text, CHARSET_BS);
 }

@@ -87,6 +87,12 @@ public:
 	set_status(cause + "...");
     }
 
+    _StatusMsg(const char *c)
+	: cause(c), outcome("done")
+    {
+	set_status(cause + "...");
+    }
+
     virtual ~_StatusMsg()
     {
 	set_status(cause + "..." + outcome + ".");
@@ -100,6 +106,11 @@ public:
     {
 	lock_status();
     }
+    StatusMsg(const char *c)
+	: _StatusMsg(c)
+    {
+	lock_status();
+    }
     virtual ~StatusMsg()
     {
 	unlock_status();
@@ -109,6 +120,9 @@ public:
 class StatusDelay: public StatusMsg, public Delay {
 public:
     StatusDelay(const string& c)
+	: StatusMsg(c)
+    {}
+    StatusDelay(const char *c)
 	: StatusMsg(c)
     {}
 };

@@ -399,7 +399,7 @@ static const string BASENAME = "%B""%S";
 static const string DELIMITER = ":";
 
 // add default search paths to path
-static void addDefaultPaths(string& path, const string& root)
+static void addDefaultPaths(string& path, const char *root)
 {
     path += DELIMITER + root + "/%L/%T/%N/" + BASENAME;
     path += DELIMITER + root + "/%l/%T/%N/" + BASENAME;
@@ -428,7 +428,7 @@ static string bitmapPath()
 	if (xapplresdir != 0)
 	    addDefaultPaths(path, xapplresdir);
 	else
-	    addDefaultPaths(path, home);
+	    addDefaultPaths(path, home.chars());
 
 	path += DELIMITER + home + BASENAME;
 	addDefaultPaths(path, "/usr/lib/X11");

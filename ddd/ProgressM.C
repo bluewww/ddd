@@ -58,7 +58,7 @@ Widget ProgressMeter::scale  = 0;
 
 ProgressMeter *ProgressMeter::active = 0;
 
-ProgressMeter::ProgressMeter(const string& _msg)
+ProgressMeter::ProgressMeter(const char *_msg)
     : current(0), base(0), total(0), msg(_msg),
       delay(_msg), last_shown(0),
       old_background(DispValue::background),

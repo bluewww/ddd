@@ -75,7 +75,7 @@ static int my_index(const string& a, const string& b)
 }
 
 // In A, substitute 1st occurrence of S1 by S2
-static bool _sub1(string& a, const string& s1, const string& s2)
+static bool _sub1(string& a, const string& s1, const char *s2)
 {
     int index = my_index(a, s1);
     if (index >= 0)
@@ -119,7 +119,7 @@ static string perl_prefix(string& expr)
     return prefix;
 }
 
-static bool sub1(string& a, string s1, const string& s2)
+static bool sub1(string& a, string s1, const char *s2)
 {
     const string prefix = c_prefix(s1);
 

@@ -49,7 +49,7 @@ const string RESTART_SESSION = "." ddd_NAME;
 string session_state_dir();
 
 // File NAME in directory of session SESSION
-string session_file(const string& session, const string& name);
+string session_file(const string& session, const char *name);
 
 // Custom calls
 inline string session_state_file(const string& session)

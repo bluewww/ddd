@@ -443,10 +443,10 @@ static void SetPrintTargetCB(Widget w, XtPointer client_data, XtPointer)
     print_target = PrintTarget((int)(long)client_data);
 }
 
-static void set_paper_size_string(const string& s)
+static void set_paper_size_string(const char *s)
 {
     Widget text = XmSelectionBoxGetChild(paper_size_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text, CONST_CAST(char*,s.chars()));
+    XmTextSetString(text, CONST_CAST(char*,s));
 
     static string current_paper_size;
     current_paper_size = s;
@@ -664,7 +664,7 @@ static bool set_paper_size(const string& s)
 	XmToggleButtonSetState(custom_paper_size, True, False);
     }
 
-    set_paper_size_string(s);
+    set_paper_size_string(s.chars());
 
     return true;
 }

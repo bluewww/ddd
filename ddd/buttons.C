@@ -1046,7 +1046,7 @@ static void register_button(WidgetArray& arr, Widget w)
 }
 
 // Create a button work area from BUTTON_LIST named NAME
-Widget make_buttons(Widget parent, const string& name, 
+Widget make_buttons(Widget parent, const char *name, 
 		    const _XtString button_list)
 {
     Arg args[10];
@@ -1059,7 +1059,7 @@ Widget make_buttons(Widget parent, const string& name,
     XtSetArg(args[arg], XmNborderWidth, 0);            arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0);        arg++;
-    Widget buttons = verify(XmCreateRowColumn(parent, CONST_CAST(char*,name.chars()), args, arg));
+    Widget buttons = verify(XmCreateRowColumn(parent, CONST_CAST(char*,name), args, arg));
 
     set_buttons(buttons, button_list);
 
