@@ -201,6 +201,10 @@ int DispGraph::insert(int new_disp_nr, DispNode* new_dn, int depends_on)
 	    handlers.call(NoDisabled, this, (void*)false);
     }
 
+    MapRef ref;
+    for (DispNode* dn = first(ref); dn != 0; dn = next(ref))
+	dn->refresh_title();
+
     return new_disp_nr;
 }
 
@@ -490,6 +494,10 @@ bool DispGraph::del (int disp_nr)
 	if (!no_disabled)
 	    if ((no_disabled = (count_all(Disabled) == 0)))
 		handlers.call(NoDisabled, this, (void*)true);
+
+	MapRef ref;
+	for (dn = first(ref); dn != 0; dn = next(ref))
+	    dn->refresh_title();
 
 	return true;
     }

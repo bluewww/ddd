@@ -70,7 +70,7 @@ public:
 
     // Create a new box; if DV == 0, create a `disabled' box
     DispBox (int disp_nr,
-	     const string& name,
+	     const string& title,
 	     const DispValue* dv = 0);
 
     ~DispBox ();
@@ -79,6 +79,11 @@ public:
 
     // Set new value to DV; if DV == 0, create a `disabled' box
     void set_value (const DispValue* dv = 0);
+
+    // Set title; if TITLE == "", disable it
+    void set_title (int disp_nr, const string& title);
+
+    bool have_title() const { return title_box != 0; }
 
 private:
     Box*   create_value_box (const DispValue* dv, int member_name_width = 0);

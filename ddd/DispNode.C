@@ -41,9 +41,11 @@ char DispNode_rcsid[] =
 #include "DispNode.h"
 
 #include "cook.h"
+#include "AppData.h"
 #include "CompositeB.h"
 #include "DispValue.h"
 #include "DispBox.h"
+#include "AliasGE.h"
 
 // Data
 HandlerList DispNode::handlers(DispNode_NTypes);
@@ -320,4 +322,50 @@ bool DispNode::alias_ok() const
     return !is_user_command()
 	&& !name().contains('/', 0) 
 	&& !name().contains('(', 0);
+}
+
+// Toggle titles
+void DispNode::refresh_title()
+{
+    bool is_dependent = false;
+    for (GraphEdge *e = nodeptr()->firstTo();
+	 e != 0; e = nodeptr()->nextTo(e))
+    {
+	if (e->from() == nodeptr())
+	    continue;		// Self edge
+	if (ptr_cast(AliasGraphEdge, e) != 0)
+	    continue;		// Alias edge
+
+	is_dependent = true;
+	break;
+    }
+
+    bool need_title = false;
+    if (is_dependent && app_data.show_dependent_display_titles)
+	need_title = true;
+    else if (!is_dependent && app_data.show_base_display_titles)
+	need_title = true;
+
+    bool changed = false;
+    if (need_title && !disp_box->have_title())
+    {
+	// Add title
+	disp_box->set_title(mydisp_nr, myname);
+	changed = true;
+    }
+    else if (!need_title && disp_box->have_title())
+    {
+	// Remove title
+	disp_box->set_title(mydisp_nr, "");
+	changed = true;
+    }
+
+    if (changed)
+    {
+	// Set value again
+	disp_box->set_value(disp_value);
+
+	// Show new box
+	mynodeptr->setBox(disp_box->box());
+    }
 }

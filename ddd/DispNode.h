@@ -188,6 +188,9 @@ public:
     // Show and hide manually
     void make_active();
     void make_inactive();
+
+    // Toggle titles
+    void refresh_title();
 };
 
 #endif // _DDD_DispNode_h

@@ -72,59 +72,12 @@ bool    DispBox::align_2d_arrays = true;
 
 // ***************************************************************************
 //
-DispBox::DispBox (int disp_nr, const string& t, const DispValue *dv)
+DispBox::DispBox (int disp_nr, const string& title, const DispValue *dv)
     : mybox(0), title_box(0)
 {
-    string title = t;
-
-    if (!is_user_command(title))
-    {
-	// Strip DBX scope information from title
-#if RUNTIME_REGEX
-	static regex rxdbx_scope("[a-zA-Z_0-9]*`");
-#endif
-	int i = 0;
-	while (int(title.length()) > max_display_title_length 
-	       && ((i = title.index(rxdbx_scope)) >= 0))
-	{
-	    title = title.before(i) + title.after('`');
-	}
-    }
-
-    // Shorten remainder
-    shorten(title, max_display_title_length);
-
     // Create display
-    VSLArg args[3];
-    if (is_user_command(title))
-    {
-	// User command: use EXPR
-	title = user_command(title);
-	if (title.contains("info ", 0))
-	    title = title.after("info ");
-	else if (title.contains(" "))
-	    title = title.before(" ");
-	if (title.length() > 0)
-	    title = toupper(title[0]) + title.after(0);
-
-	args[0] = tag(title);
-    }
-    else
-    {
-	// Normal title: use NUMBER: EXPR
-	args[0] = itostring(disp_nr);
-	args[1] = tag(title);
-    }
-
-    title_box = eval("title", args);
-    
-    args[0] = title_box;
-    if (dv)
-	args[1] = create_value_box(dv);
-    else
-	args[1] = eval("disabled");
-
-    mybox = eval("display_box", args);
+    set_title(disp_nr, title);
+    set_value(dv);
 }
 
 
@@ -178,25 +131,95 @@ void DispBox::init_vsllib(void (*background)())
 //
 DispBox::~DispBox ()
 {
-    mybox->unlink();
-    title_box->unlink();
+    if (mybox != 0)
+	mybox->unlink();
+
+    if (title_box != 0)
+	title_box->unlink();
 }
 
 // ***************************************************************************
 //
 void DispBox::set_value (const DispValue* dv)
 {
+    if (mybox != 0)
+    {
+	mybox->unlink();
+	mybox = 0;
+    }
+
     VSLArg args[3];
+    int arg = 0;
 
-    args[0] = title_box;
+    if (title_box != 0)
+	args[arg++] = title_box;
+
     if (dv)
-	args[1] = create_value_box(dv);
+	args[arg++] = create_value_box(dv);
     else
-	args[1] = eval("disabled");
-
-    mybox->unlink();
+	args[arg++] = eval("disabled");
 
     mybox = eval("display_box", args);
+}
+
+void DispBox::set_title(int disp_nr, const string& t)
+{
+    string title = t;
+
+    if (title != "")
+    {
+	if (!is_user_command(title))
+	{
+	    // Strip DBX scope information from title
+#if RUNTIME_REGEX
+	    static regex rxdbx_scope("[a-zA-Z_0-9]*`");
+#endif
+	    int i = 0;
+	    while (int(title.length()) > max_display_title_length 
+		   && ((i = title.index(rxdbx_scope)) >= 0))
+	    {
+		title = title.before(i) + title.after('`');
+	    }
+	}
+
+	// Shorten remainder
+	shorten(title, max_display_title_length);
+    }
+
+    if (title_box != 0)
+    {
+	title_box->unlink();
+	title_box = 0;
+    }
+
+    // Create title
+    if (title != "")
+    {
+	VSLArg args[3];
+	int arg = 0;
+
+	if (is_user_command(title))
+	{
+	    // User command: use EXPR
+	    title = user_command(title);
+	    if (title.contains("info ", 0))
+		title = title.after("info ");
+	    else if (title.contains(" "))
+		title = title.before(" ");
+	    if (title.length() > 0)
+		title = toupper(title[0]) + title.after(0);
+
+	    args[arg++] = tag(title);
+	}
+	else
+	{
+	    // Normal title: use NUMBER: EXPR
+	    args[arg++] = itostring(disp_nr);
+	    args[arg++] = tag(title);
+	}
+
+	title_box = eval("title", args);
+    }
 }
 
 // Return true if DV is a (right-aligned) numeric value
