@@ -992,6 +992,12 @@ Ddd*startupTips: on
 Ddd*startupTipCount: 1
 
 
+! Window Manager Stuff
+
+! Enable DDD selections in the CDE window manager.
+Ddd*enableBtn1Transfer: False
+
+
 !-----------------------------------------------------------------------------
 ! Colors
 !-----------------------------------------------------------------------------

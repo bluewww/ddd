@@ -355,6 +355,7 @@ static void ReportDeathHP(Agent *, void *, void *);
 // Status history
 static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
 static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
+static void PopdownStatusHistoryEH(Widget, XtPointer, XEvent *, Boolean *);
 
 // Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
@@ -4923,6 +4924,13 @@ static void create_status(Widget parent)
     XtAddCallback(arrow_w, XmNdisarmCallback, 
 		  PopdownStatusHistoryCB, XtPointer(0));
 
+    // Using LessTif 0.88, you can release button 1 while outside the
+    // status bar; no disarm callback is invoked.  Prevent against this.
+    XtAddEventHandler(status_w, ButtonReleaseMask, False,
+		      PopdownStatusHistoryEH, XtPointer(0));
+    XtAddEventHandler(arrow_w, ButtonReleaseMask, False, 
+		      PopdownStatusHistoryEH, XtPointer(0));
+
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(status_w, NULL, &size);
@@ -5078,6 +5086,12 @@ static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer)
 {
     if (history_shell != 0)
 	XtPopdown(history_shell);
+}
+
+static void PopdownStatusHistoryEH(Widget w, XtPointer client_data, 
+				   XEvent *event, Boolean *)
+{
+    PopdownStatusHistoryCB(w, client_data, (XtPointer)event);
 }
 
 
