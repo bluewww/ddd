@@ -2245,19 +2245,19 @@ Click on @bf Close @rm to close this window.
 ! Width and height for several Motif & Athena variants
 
 ! Motif 1.x, using ScrolledWindow
-Ddd*graph_edit_swindow.width:		620
+Ddd*graph_edit_swindow.width:		660
 Ddd*graph_edit_swindow.height:		200
 
 ! Motif 2.0, using ScrolledWindow
-Ddd*graph_editSW.width:			620
+Ddd*graph_editSW.width:			660
 Ddd*graph_editSW.height:		200
 
 ! Motif 1.x, using Porthole
-Ddd*graph_edit_porthole.width:		620
+Ddd*graph_edit_porthole.width:		660
 Ddd*graph_edit_porthole.height:		200
 
 ! Motif 2.0, using Porthole
-Ddd*graph_edit_form.width:		620
+Ddd*graph_edit_form.width:		660
 Ddd*graph_edit_form.height:		200
 
 Ddd*graph_edit_panner.backgroundPixmap:	25_foreground
@@ -2931,12 +2931,13 @@ Ddd*data_buttons.entryAlignment:    XmALIGNMENT_CENTER
 Ddd*source_buttons*alignment:	    XmALIGNMENT_CENTER
 Ddd*console_buttons*alignment:	    XmALIGNMENT_CENTER
 Ddd*data_buttons*alignment:	    XmALIGNMENT_CENTER
-! Ddd*source_buttons*marginTop:	      1
-! Ddd*source_buttons*marginBottom:    1
-! Ddd*console_buttons*marginTop:      1
-! Ddd*console_buttons*marginBottom:   1
-! Ddd*data_buttons*marginTop:      1
-! Ddd*data_buttons*marginBottom:   1
+
+Ddd*source_buttons.marginWidth:     0
+Ddd*source_buttons.marginHeight:    0
+Ddd*console_buttons.marginWidth:    0
+Ddd*console_buttons.marginHeight:   0
+Ddd*data_buttons.marginWidth:       0
+Ddd*data_buttons.marginHeight:      0
 
 ! Some buttons have a special meaning; 
 ! so we must provide help on ourselves.
