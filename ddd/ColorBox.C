@@ -111,15 +111,17 @@ void BackgroundColorBox::color_draw(Widget w,
     XGCValues gc_values;
     XGetGCValues(XtDisplay(w), gc, GCBackground | GCForeground, &gc_values);
 
-    BoxSize space   = region.space();
-    BoxPoint origin = region.origin();
+    BoxRegion r = region & exposed;
+
+    BoxSize space   = r.space();
+    BoxPoint origin = r.origin();
 
     BoxPoint width(extend(X) ? space[X] : size(X),
 		   extend(Y) ? space[Y] : size(Y));
 
     // Fill child area with background color
     XSetForeground(XtDisplay(w), gc, color());
-    XFillRectangle(XtDisplay(w), XtWindow(w), gc, 
+    XFillRectangle(XtDisplay(w), XtWindow(w), gc,
 		   origin[X], origin[Y], width[X], width[Y]);
     XSetForeground(XtDisplay(w), gc, gc_values.foreground);
 
