@@ -895,6 +895,7 @@ bool is_invalid(const string& value)
 
     return value.contains("Unknown name") 
 	|| value.contains("not active")
+	|| value.contains("not defined")
 	|| value.matches(rxinvalid_value);
 }
 

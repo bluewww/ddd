@@ -2321,54 +2321,54 @@ ProgramLanguage GDBAgent::program_language(string text)
 {
     text.downcase();
 
-    if (text.contains("language"))
+    if (type() == GDB && text.contains("language"))
     {
 	text = text.after("language");
 	text = text.before("\n");
+    }
 
-	if (text.contains("fortran"))
-	{
-	    program_language(LANGUAGE_FORTRAN);
-	}
-	else if (text.contains("java"))
-	{
-	    program_language(LANGUAGE_JAVA);
-	}
-	else if (text.contains("chill"))
-	{
-	    program_language(LANGUAGE_CHILL);
-	}
-	else if (text.contains("pascal"))
-	{
-	    program_language(LANGUAGE_PASCAL);
-	}
-	else if (text.contains("ada"))
-	{
-	    program_language(LANGUAGE_ADA);
-	}
-	else if (text.contains("c++"))
-	{
-	    program_language(LANGUAGE_C);
-	}
-	else if (text.contains("mod")
-	    || text.contains("m2")
-	    || text.contains("m3"))
-	{
-	    program_language(LANGUAGE_PASCAL);
-	}
-	else if (text.contains("c"))
-	{
-	    program_language(LANGUAGE_C);
-	}
-	else if (text.contains("auto"))
-	{
-	    // Do nothing -- keep old setting
-	}
-	else
-	{
-	    // Default setting
-	    program_language(LANGUAGE_C);
-	}
+    if (text.contains("fortran"))
+    {
+	program_language(LANGUAGE_FORTRAN);
+    }
+    else if (text.contains("java"))
+    {
+	program_language(LANGUAGE_JAVA);
+    }
+    else if (text.contains("chill"))
+    {
+	program_language(LANGUAGE_CHILL);
+    }
+    else if (text.contains("pascal"))
+    {
+	program_language(LANGUAGE_PASCAL);
+    }
+    else if (text.contains("ada"))
+    {
+	program_language(LANGUAGE_ADA);
+    }
+    else if (text.contains("c++"))
+    {
+	program_language(LANGUAGE_C);
+    }
+    else if (text.contains("mod") || 
+	     text.contains("m2") || 
+	     text.contains("m3"))
+    {
+	program_language(LANGUAGE_PASCAL);
+    }
+    else if (text.contains("c"))
+    {
+	program_language(LANGUAGE_C);
+    }
+    else if (text.contains("auto"))
+    {
+	// Do nothing -- keep old setting
+    }
+    else
+    {
+	// Default setting
+	program_language(LANGUAGE_C);
     }
 
     return program_language();

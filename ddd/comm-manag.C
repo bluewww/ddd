@@ -500,6 +500,8 @@ void start_gdb()
 	plus_cmd_data->config_givenfile = true;
 	cmds += "help cont";
 	plus_cmd_data->config_cont_sig = true;
+	cmds += "language";
+	plus_cmd_data->config_program_language = true;
 
 	cmds += "sh pwd";
 	plus_cmd_data->refresh_pwd = true;
