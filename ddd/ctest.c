@@ -226,11 +226,11 @@ void type_test ()
 	} u;
     } uni;
 
-    uni.ii = 42;
-
     float f  = 0.0;
     double d = 0.0;
     char sc  = 'a';
+
+    uni.ii = 42;
 
     (void) voidptr;		/* Dereference this */
     (void) uni;			/* Display this */
