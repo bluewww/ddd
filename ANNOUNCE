@@ -1,10 +1,10 @@
-DDD 1.4d is available
+DDD 1.5 is available
 =====================
 
-    Release 1.4d of the Data Display Debugger (DDD), a graphical
-    front-end for GDB and DBX debuggers, is now available at
+    Release 1.5 of the Data Display Debugger (DDD), a graphical
+    front-end for GDB, DBX, and XDB debuggers, is now available at
 
-        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-1.4d.tar.gz
+        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-1.5.tar.gz
 
     Diffs from earlier versions are in
 
@@ -20,77 +20,72 @@ DDD 1.4d is available
 DDD News
 ========
 
-    DDD 1.4 realizes the top ten suggestions of DDD users.  It brings
-    the long awaited machine code support, new breakpoint and
-    execution symbols, improved DBX support, enhanced integration
-    facilities, a program argument history, and lots of small features
-    and improvements.
 
-    Changes to DDD 1.3:
-    - Full machine code support: Assembler and register windows,
-      Breakpoints in machine code, no-source debugging, stepping over
-      instructions.  (GDB only)
-    - Breakpoints and the current execution position are now displayed
-      as stop signs and arrow symbols (``glyphs'').  The `old' text
-      mode is still available.
-    - Argument history: Upon program start, select from a list of
-      previously used program arguments.
-    - Using the new `--tty' option, DDD can be easily integrated with
-      other GDB/DBX front-ends.  For instance, you can have DDD run as
-      an inferior debugger from your Emacs GDB-mode, having all Emacs
-      and DDD facilities at your disposition.
-    - Improved C++ support with DBX 3.x.  Thanks to Grant McDorman
-      <grant@isgtec.com>.
-    - Displays with format expressions (`/x') are properly
-      dereferenced.
-    - Improved position history mechanism.
-    - Automatic reloading of source files when the debugged program
-      has changed; explicit reload is no longer required.
-    - File selection dialogs are synchronized: changing the directory
-      in one dialog also changes the directory in all others.
-    - Interactive dialogs for disambiguating C++ names.
-    - Several major and minor bugs have been fixed.  Special thanks to
-      Grant McDorman <grant@isgtec.com>.
-    - DDD incorporates the name of its builder in `Help/Show Version'.
-    - No more `Help on Debugging' item.  Sigh.
-    - Compilation trouble with older GCC versions as well as 
-      older C++ compilers fixed.
-    - Compilation in separate directory fixed.
-    - For older GDB versions, one may use `display /x $pc' and `print
-      /x $pc' to get the current PC value.
-    - Minor bugs in construction and installation fixed.
-    - Much faster start-up, due to delayed parsing of the VSL library.
-    - Custom paper size support for printing graphs.
-    - Paper size and printing command is saved with options.
-    - On some X11 configurations, DDD was caught in a busy loop upon
-      invocation.  Now fixed.
-    - On some Linux configurations, DDD crashed immediately upon
-      invocation.  Now fixed.
-    - Manual update of data display (`graph refresh') improved.
-    - `set' and `assign' commands automatically update the data
-      display.
-    - New releases of top-level `configure' and `libiberty' included.
-    - Building DDD creates executable with canonical name.
+    DDD 1.5 brings XDB support, extended DBX support, an improved user
+    interface and many bug fixes.
+
+    User-visible changes to DDD 1.4:
+    - XDB support.  On popular request, DDD now supports HP's XDB debugger.
+    - DBX is now also supported on DEC and AIX systems.
+    - Improved general DBX support.  DDD determines DBX properties
+      at run-time and adapts automatically to a wide range of DBX
+      variants.
+    - New command tool.  All command buttons that do not take
+      arguments are now located in the command tool, a small separate
+      window.  The command tool can be moved wherever appropriate,
+      leaving more space for window contents.
+    - User-defined buttons are now available.  These can also
+      be used to re-install the DDD 1.4 command buttons.
+    - Improved directory support.  Sources and executables can reside
+      in several different directories.
+    - Changing the current directory (`cd') is now supported.
+      File selection dialogs are synchronized with the current
+      directory.
+    - Variable values can now be altered interactively during program
+      execution.
+    - `New display' subsumes `Dependent display': if a display is
+      selected, the new display is made dependent on it.
+    - A couple of buttons have been renamed for further clarity.
+
+    Changes in configuration and building:
+    - Regular expressions now use the POSIX.2 standard regcomp/regexec
+      interface.  The slower interface is compensated by smarter calls.
+    - DDD configuration now generally attempts to link with native system
+      libraries wherever possible.  GNU termcap and librx are used
+      only if the system does not provide them.  This results in
+      smaller and (hopefully) safer DDD executables.
+    - Patches for AIX xlC C++ compiler (and probably others) included.
+      Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de>.
+
+    Several bug fixes, including:
+    - The execution window can be opened, closed and re-opened
+      without DDD crashing or hanging.
+    - Invoking a source editor via `Edit' should work fine now.
+    - The rubber band outline no more clutters the data display.
+    - On HP-UX, the `@' character is no more discarded from GDB input.
+    - On Solaris 2.x, annoying DBX warnings like `dbx: -r option only
+      recognized for C++' are silently ignored.
+    - The `vslPath' resource now works.
 
 
 Summary of DDD
 ==============
 
     The Data Display Debugger (DDD) is a comfortable graphical user
-    interface to GDB and DBX, the popular UNIX debuggers.  Besides
-    ``usual'' features such as viewing source texts and breakpoints, DDD
-    provides a *graphical data display*, where data structures are
-    displayed as graphs.  A simple mouse click dereferences pointers or
-    reveals structure contents.  Complex data structures can be explored
-    incrementally and interactively, using automatic layout if preferred.
-    Each time the program stops, the data display reflects the current
-    variable values.  Using DDD, you can reason about your application by
-    viewing its data, not just by viewing it execute lines of source
-    code.
+    interface to GDB, DBX, and XDB, the popular UNIX debuggers.
+    Besides ``usual'' features such as viewing source texts and
+    breakpoints, DDD provides a *graphical data display*, where data
+    structures are displayed as graphs.  A simple mouse click
+    dereferences pointers or reveals structure contents.  Complex data
+    structures can be explored incrementally and interactively, using
+    automatic layout if preferred.  Each time the program stops, the
+    data display reflects the current variable values.  Using DDD, you
+    can reason about your application by viewing its data, not just by
+    viewing it execute lines of source code.
 
     Other DDD features include: debugging of programs written in C,
     C++, Ada, Fortran, Pascal, or Modula-2; machine-level debugging;
-    hypertext source navigation and lookup; GDB/DBX command-line
+    hypertext source navigation and lookup; GDB/DBX/XDB command-line
     interface with full editing, history, and completion capabilities;
     breakpoint, backtrace, and history editors; optional program
     execution in terminal emulator window; debugging on remote host;
@@ -124,7 +119,8 @@ Requirements
       libiostream).
 
       Some other C++ compilers have been reported to compile DDD as
-      well, such as Sun CC 4.0.  Cfront 3.0 does not compile DDD.
+      well, such as Sun CC 4.0 or AIX xlC.  Cfront 3.0 does not
+      compile DDD.
 
     * The X window library (Xlib) and X toolkit library (Xt), X11R4 or
       later.
@@ -140,16 +136,22 @@ Requirements
 
     * Lots of virtual memory.
 
-    To run DDD, you need a GDB debugger (version 4 is required; best
-    results are achieved with 4.13 or later).  Using GDB, you can
-    debug programs written in C and C++; GNU Ada (`gnat'), GNU
-    Fortran (`g77') and GNU Modula-2 have been reported to work as
-    well.
+    To run DDD, you need an underlying command-line debugger.  Best
+    results are achieved with GDB, the GNU debugger.  (GDB 4.x is
+    required; best results are achieved with GDB 4.13 or later.)
+    Using GDB, you can debug programs written in C and C++; GNU Ada
+    (`gnat'), GNU Fortran (`g77') and GNU Modula-2 have been reported
+    to work as well.
 
-    As an alternative, DDD also supports Sun's DBX debugger.  Using
-    DBX, you can debug programs written in C, C++, Pascal and
-    Modula-2.  DBX debuggers on systems other than Sun have been
-    reported to work as well.
+    As an alternative, DDD also supports the DBX debugger as found on
+    SUN and DEC systems.  Using DBX, you can debug programs written in
+    C, C++, Pascal and Modula-2.  DBX usage has been reported to work
+    on other systems as well, notably AIX.  DDD adapts itself to a
+    wide range of DBX variants.
+
+    As another alternative, DDD also supports the XDB debugger as
+    found on HP-UX systems.  XDB usage has been tested for C programs
+    only, but may work for other languages as well.
 
 
 More Information
@@ -183,7 +185,7 @@ More Information
 DDD source FTP sites
 ====================
 
-    The DDD source package `ddd-1.4d.tar.gz' will soon be at these FTP
+    The DDD source package `ddd-1.5.tar.gz' will soon be at these FTP
     sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
     ftp.ips has a slow network connection.
 
@@ -191,38 +193,38 @@ DDD source FTP sites
 North America
 -------------
 
-  ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/ddd-1.4d.tar.gz
-  ftp://ftp.x.org/contrib/utilities/ddd-1.4d.tar.gz
-  ftp://ftp.cs.columbia.edu/archives/X11/contrib/utilities/ddd-1.4d.tar.gz
-  ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/ddd-1.4d.tar.gz
+  ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.x.org/contrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.cs.columbia.edu/archives/X11/contrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/ddd-1.5.tar.gz
 
 
 Europe
 ------
 
-  ftp://ftp.denet.dk/pub/X11/contrib/utilities/ddd-1.4d.tar.gz
-  ftp://nic.funet.fi/pub/X11/contrib/utilities/ddd-1.4d.tar.gz
-  ftp://ftp.ibp.fr/pub/X11/contrib/utilities/ddd-1.4d.tar.gz
-  ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/ddd-1.4d.tar.gz
-  ftp://ftp.luth.se/pub/X11/contrib/utilities/ddd-1.4d.tar.gz
-  ftp://ftp.sunet.se/pub/X11/contrib/utilities/ddd-1.4d.tar.gz
-  ftp://ftp.eunet.ch/archive/software/X/utilities/ddd-1.4d.tar.gz
-  ftp://ftp.NL.net/pub/windows/X/contrib/utilities/ddd-1.4d.tar.gz
-  ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/ddd-1.4d.tar.gz
+  ftp://ftp.denet.dk/pub/X11/contrib/utilities/ddd-1.5.tar.gz
+  ftp://nic.funet.fi/pub/X11/contrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.ibp.fr/pub/X11/contrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.luth.se/pub/X11/contrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.sunet.se/pub/X11/contrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.eunet.ch/archive/software/X/utilities/ddd-1.5.tar.gz
+  ftp://ftp.NL.net/pub/windows/X/contrib/utilities/ddd-1.5.tar.gz
+  ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/ddd-1.5.tar.gz
 
 
 East Asia
 ---------
 
-  ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/ddd-1.4d.tar.gz
-  ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/ddd-1.4d.tar.gz
-  ftp://NCTUCCCA.edu.tw/X/contrib/utilities/ddd-1.4d.tar.gz
+  ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/ddd-1.5.tar.gz
+  ftp://NCTUCCCA.edu.tw/X/contrib/utilities/ddd-1.5.tar.gz
 
 
 Australia
 ---------
 
-  ftp://archie.AUX11/contrib/utilities/ddd-1.4d.tar.gz
+  ftp://archie.AUX11/contrib/utilities/ddd-1.5.tar.gz
 
 
 

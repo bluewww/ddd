@@ -4,23 +4,31 @@ Changes in DDD						-*- text -*-
 DDD 1.5 (in development)
 ------------------------
 
-    User-visible changes:
-    - DDD now supports HP XDB and DEC DBX debuggers.
-    - Improved general DBX support.  DDD determines DBX features dynamically
-      at run-time and adapts to a wide range of DBX variants.
-    - Improved directory support.  Sources and executables can reside
-      in several different directories; the `cd' command works as well.
+    DDD 1.5 brings XDB support, extended DBX support, an improved user
+    interface and many bug fixes.
+
+    User-visible changes to DDD 1.4:
+    - XDB support.  On popular request, DDD now supports HP's XDB debugger.
+    - DBX is now also supported on DEC and AIX systems.
+    - Improved general DBX support.  DDD determines DBX properties
+      at run-time and adapts automatically to a wide range of DBX
+      variants.
     - New command tool.  All command buttons that do not take
       arguments are now located in the command tool, a small separate
       window.  The command tool can be moved wherever appropriate,
       leaving more space for window contents.
     - User-defined buttons are now available.  These can also
       be used to re-install the DDD 1.4 command buttons.
-    - A couple of buttons have been renamed for further clarity.
+    - Improved directory support.  Sources and executables can reside
+      in several different directories.
+    - Changing the current directory (`cd') is now supported.
+      File selection dialogs are synchronized with the current
+      directory.
+    - Variable values can now be altered interactively during program
+      execution.
     - `New display' subsumes `Dependent display': if a display is
       selected, the new display is made dependent on it.
-    - Variable values can now be changed interactively using the
-      `Set ()' button.
+    - A couple of buttons have been renamed for further clarity.
 
     Changes in configuration and building:
     - Regular expressions now use the POSIX.2 standard regcomp/regexec

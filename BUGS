@@ -319,4 +319,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 092* Entering ^D in TTY mode causes an abort (due to TTYAgent::dup())
 
-093. (Insert your bug here)
+093* `Up' and `Down' in XDB mode won't work.
+
+094. (Insert your bug here)
