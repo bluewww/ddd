@@ -366,7 +366,10 @@ Volunteers for these and other projects are welcome!
 
 242 Make programs dump core by forking and killing them.
 
-245*Support JDB threads.
+245*Finish JDB support:
+    * Display `TYPE@ADDR' (i.e. `dates' in `jtest')
+    * Threads.
+    * `Lookup' won't work.
 
 246 Martin Fick <fick@fgm.com> suggests that breakpoints should be
     toggled by double-clicking on the beginning of a line of code.
