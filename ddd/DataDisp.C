@@ -179,6 +179,8 @@ Widget     DataDisp::node_popup_w           = 0;
 bool DataDisp::ignore_update_graph_editor_selection   = false;
 bool DataDisp::ignore_update_display_editor_selection = false;
 
+int DataDisp::next_display_number = 1;
+
 
 //----------------------------------------------------------------------------
 // Origin
@@ -1477,7 +1479,7 @@ DispNode *DataDisp::new_node (string& answer)
     case DBX:
     case XDB:
 	// Assign a default number
-	disp_nr_str = itostring(disp_graph->count_all() + 1);
+	disp_nr_str = itostring(next_display_number++);
 	break;
     }
 
@@ -2213,7 +2215,7 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 	    case DBX:
 	    case XDB:
 		// Assign a default number
-		disp_nr_str = itostring(disp_graph->count_all() + 1);
+		disp_nr_str = itostring(next_display_number++);
 		break;
 	    }
 

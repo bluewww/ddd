@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _DataDisp_h
-#define _DataDisp_h
+#ifndef _DDD_DataDisp_h
+#define _DDD_DataDisp_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -269,6 +269,7 @@ private:
     static Delay *delay;
     static Widget last_origin;
     static Time last_select_time;
+    static int next_display_number;
 
     static Widget graph_popup_w;
     static Widget node_popup_w;
@@ -306,4 +307,5 @@ public:
     static void deleteCB(Widget, XtPointer, XtPointer);
 };
 
-#endif
+#endif // _DDD_DataDisp_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
