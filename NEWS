@@ -55,7 +55,7 @@ DDD 2.2 [in beta test]
       * Manual browsers are realized as top-level windows.
       * DDD no longer blocks while the manual is uncompressed and formatted.
       * DDD stores manuals in `gzip' format, saving space in executables.
-    - New `What Next' help.  Gives a hint on what you can do next,
+    - New `What Now?' help.  Gives a hint on what you can do next,
       depending on the current DDD state.  Useful for beginners.
     - Improved data display.
       * Displayed data is highlighted whenever it changes.
