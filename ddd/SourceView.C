@@ -6587,16 +6587,15 @@ void SourceView::process_frame (string& frame_output)
 	int offset = (frame - current_frame);
 	if (offset != 0)
 	{
-	    // Add undoing command
+	    // Save undoing command
 	    string c;
 	    if (gdb->has_frame_command())
 		c = gdb->frame_command(current_frame);
 	    else
 		c = gdb->relative_frame_command(-offset);
 	    undo_buffer.add_command(c, true);
-	}
-	else
-	{
+
+	    // Save state
 	    undo_buffer.add_frame(frame_output);
 	}
 
