@@ -1532,7 +1532,43 @@ void SourceView::SetInsertionPosition(Widget text_w,
 }
 
 
-// ***************************************************************************
+
+//-----------------------------------------------------------------------
+// Error handling
+//-----------------------------------------------------------------------
+
+StringArray SourceView::bad_files;
+bool SourceView::new_bad_file(const string& file_name)
+{
+    for (int i = 0; i < bad_files.size(); i++)
+	if (file_name == bad_files[i])
+	    return false;
+    bad_files += file_name;
+    return true;
+}
+
+void SourceView::post_file_error(const string& file_name,
+				 string text, String name,
+				 Widget origin)
+{
+    if (new_bad_file(file_name))
+	post_error(text, name, origin);
+}
+
+void SourceView::post_file_warning(const string& file_name,
+				   string text, String name,
+				   Widget origin)
+{
+    if (new_bad_file(file_name))
+	post_warning(text, name, origin);
+}
+
+
+
+
+//-----------------------------------------------------------------------
+// Read file
+//-----------------------------------------------------------------------
 
 // Read local file from FILE_NAME
 String SourceView::read_local(const string& file_name, long& length,
@@ -1547,8 +1583,9 @@ String SourceView::read_local(const string& file_name, long& length,
     {
 	delay.outcome = strerror(errno);
 	if (!silent)
-	    post_error (file_name + ": " + delay.outcome, 
-			"source_file_error", source_text_w);
+	    post_file_error(file_name, 
+			    file_name + ": " + delay.outcome, 
+			    "source_file_error", source_text_w);
         return 0;
     }
 
@@ -1557,8 +1594,9 @@ String SourceView::read_local(const string& file_name, long& length,
     {
 	delay.outcome = strerror(errno);
 	if (!silent)
-	    post_error (file_name + ": " + delay.outcome, 
-			"source_file_error", source_text_w);
+	    post_file_error(file_name,
+			    file_name + ": " + delay.outcome, 
+			    "source_file_error", source_text_w);
 	return 0;
     }
 
@@ -1567,8 +1605,9 @@ String SourceView::read_local(const string& file_name, long& length,
     {
 	delay.outcome = "not a regular file";
 	if (!silent)
-	    post_error (file_name + ": " + delay.outcome, 
-			"source_file_error", source_text_w);
+	    post_file_error(file_name,
+			    file_name + ": " + delay.outcome, 
+			    "source_file_error", source_text_w);
 	return 0;
     }
 
@@ -1580,8 +1619,9 @@ String SourceView::read_local(const string& file_name, long& length,
     {
 	delay.outcome = "truncated";
 	if (!silent)
-	    post_error (file_name + ": " + delay.outcome,
-			"source_trunc_error", source_text_w);
+	    post_file_error(file_name,
+			    file_name + ": " + delay.outcome,
+			    "source_trunc_error", source_text_w);
     }
     close(fd);
 
@@ -1591,8 +1631,9 @@ String SourceView::read_local(const string& file_name, long& length,
     {
 	delay.outcome = "empty file";
 	if (!silent)
-	    post_warning(file_name + ": " + delay.outcome,
-			 "source_empty_warning", source_text_w);
+	    post_file_warning(file_name,
+			      file_name + ": " + delay.outcome,
+			      "source_empty_warning", source_text_w);
     }
 
     return text;
@@ -1631,8 +1672,9 @@ String SourceView::read_remote(const string& file_name, long& length,
     if (length == 0)
     {
 	if (!silent)
-	    post_error("Cannot access remote file " + quote(file_name), 
-		       "remote_file_error", source_text_w);
+	    post_file_error(file_name,
+			    "Cannot access remote file " + quote(file_name), 
+			    "remote_file_error", source_text_w);
 	delay.outcome = "failed";
     }
 
@@ -1706,8 +1748,9 @@ String SourceView::read_class(const string& class_name,
     origin = ORIGIN_NONE;
     delay.outcome = "failed";
     if (!silent)
-	post_error ("Cannot access class " + quote(class_name),
-		    "class_error", source_text_w);
+	post_file_error(class_name,
+			"Cannot access class " + quote(class_name),
+			"class_error", source_text_w);
 
     return 0;
 }
@@ -1833,7 +1876,7 @@ String SourceView::read_indented(string& file_name, long& length,
 
     if (gdb->type() == JDB)
     {
-	// Attempt #1.  Read class from JDB.
+	// Attempt #1.  Search class in JDB `use' path.
 	text = read_class(file_name, full_file_name, origin, length, true);
     }
     else
@@ -1905,11 +1948,11 @@ String SourceView::read_indented(string& file_name, long& length,
 	// All failed - produce an appropriate error message.
 	if (gdb->type() == JDB)
 	    text = read_class(file_name, full_file_name, origin, 
-			      length, silent);
+			      length, false);
 	else if (!remote_gdb())
-	    text = read_local(full_file_name, length, silent);
+	    text = read_local(full_file_name, length, false);
 	else
-	    text = read_remote(full_file_name, length, silent);
+	    text = read_remote(full_file_name, length, false);
     }
 
     if (text == 0 || length == 0)
@@ -2015,17 +2058,12 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 	long length = 0;
 	SourceOrigin orig;
 	String indented_text = read_indented(file_name, length, orig, silent);
-	if (indented_text)
-	{
-	    current_source = string(indented_text, length);
-	    current_origin = orig;
-	    XtFree(indented_text);
-	}
-	else
-	{
-	    current_source = "";
-	    current_origin = ORIGIN_NONE;
-	}
+	if (indented_text == 0 || length == 0)
+	    return -1;		// Failure
+
+	current_source = string(indented_text, length);
+	current_origin = orig;
+	XtFree(indented_text);
 
 	if (current_source.length() > 0)
 	{
@@ -2080,6 +2118,9 @@ void SourceView::clear_file_cache()
 
     static StringOriginAssoc origin_empty;
     origin_cache      = origin_empty;
+
+    static StringArray bad_files_empty;
+    bad_files         = bad_files_empty;
 }
 
 void SourceView::reload()
@@ -2169,6 +2210,7 @@ void SourceView::read_file (string file_name,
 
     SetInsertionPosition(source_text_w, initial_pos, true);
 
+    // Set current file name
     current_file_name = file_name;
 
     // Refresh title
@@ -2262,7 +2304,10 @@ void SourceView::update_title()
 
 
 
-// ***************************************************************************
+//-----------------------------------------------------------------------
+// Breakpoint handling
+//-----------------------------------------------------------------------
+
 // Update breakpoint locations
 void SourceView::refresh_bp_disp()
 {
@@ -2422,14 +2467,15 @@ void SourceView::refresh_code_bp_disp()
 }
 
 
+//-----------------------------------------------------------------------
+// Position management
+//-----------------------------------------------------------------------
 
-// ***************************************************************************
 // Find the line number at POS
 // LINE_NR becomes the line number at POS
 // IN_TEXT becomes true iff POS is in the source area
 // BP_NR is the number of the breakpoint at POS (none: 0)
 // Return false iff failure
-//
 bool SourceView::get_line_of_pos (Widget   w,
 				  XmTextPosition pos,
 				  int&     line_nr,
@@ -3055,8 +3101,9 @@ void SourceView::create_text(Widget parent,
 
 
 
-// ***************************************************************************
-//
+//-----------------------------------------------------------------------
+// Position management
+//-----------------------------------------------------------------------
 
 // Set current execution position, based on the GDB position info
 // POSITION; no arg means clear current position.
@@ -3143,8 +3190,9 @@ void SourceView::_show_execution_position(string file, int line, bool silent)
     if (!is_current_file(file))
 	read_file(file, line, silent);
 
-    if (line < 1 || line > line_count)
+    if (!is_current_file(file) || line < 1 || line > line_count)
 	return;
+
     add_to_history(file, line);
 
     XmTextPosition pos = pos_of_line(line);
@@ -3188,8 +3236,6 @@ void SourceView::_show_execution_position(string file, int line, bool silent)
 }
 
 
-// ***************************************************************************
-//
 void SourceView::show_position (string position, bool silent)
 {
     string file_name = current_file_name;
@@ -3205,7 +3251,7 @@ void SourceView::show_position (string position, bool silent)
 	read_file(file_name, line, false, silent);
 
     // Have window scroll to correct position
-    if (line > 0 && line <= line_count)
+    if (is_current_file(file_name) && line > 0 && line <= line_count)
     {
 	add_to_history(file_name, line);
     
@@ -3219,11 +3265,13 @@ void SourceView::show_position (string position, bool silent)
 
 
 
-// ***************************************************************************
+//-----------------------------------------------------------------------
+// Process GDB output
+//-----------------------------------------------------------------------
+
 // Process reply on 'info breakpoints'.
 // Update breakpoints in BP_BAP, adding new ones or deleting existing ones.
 // Update breakpoint display by calling REFRESH_BP_DISP.
-//
 void SourceView::process_info_bp (string& info_output,
 				  const string& break_arg)
 {
@@ -3390,8 +3438,7 @@ int SourceView::next_breakpoint_number()
 }
 
 
-// ***************************************************************************
-//
+// Process GDB `info line main' output
 void SourceView::process_info_line_main(string& info_output)
 {
     clear_file_cache();
@@ -3457,8 +3504,12 @@ void SourceView::check_remainder(string& info_output)
 	post_gdb_message(info_output, source_text_w);
 }
 
-// ***************************************************************************
-//
+
+
+//-----------------------------------------------------------------------
+// Locate position
+//-----------------------------------------------------------------------
+
 void SourceView::lookup(string s, bool silent)
 {
     if (s != "" && isspace(s[0]))
@@ -3614,9 +3665,10 @@ void SourceView::lookup(string s, bool silent)
 }
 
 
-// ***************************************************************************
-// Current directory
-// ***************************************************************************
+
+//-----------------------------------------------------------------------
+// Process current working directory
+//-----------------------------------------------------------------------
 
 void SourceView::process_pwd(string& pwd_output)
 {
@@ -3660,21 +3712,26 @@ void SourceView::process_pwd(string& pwd_output)
     }
 }
 
-// ***************************************************************************
-// Current use path
-// ***************************************************************************
+
+//-----------------------------------------------------------------------
+// Process current use path
+//-----------------------------------------------------------------------
 
 void SourceView::process_use(string& use_output)
 {
     read_leading_blanks(use_output);
     strip_final_blanks(use_output);
     current_class_path = use_output;
+
+    clear_file_cache();
+    reload();
 }
 
 
-// ***************************************************************************
-// History
-// ***************************************************************************
+
+//-----------------------------------------------------------------------
+// Position history
+//-----------------------------------------------------------------------
 
 // Add position to history
 void SourceView::add_to_history(const string& file_name, int line)
@@ -3805,13 +3862,13 @@ void SourceView::goto_entry(string entry)
     if (file_name != "")
     {
 	// Lookup source
-	if (is_current_file(file_name))
+	if (!is_current_file(file_name))
 	{
 	    source_history_locked = true;
 	    read_file(file_name, line);
 	}
 
-	if (line > 0 && line <= line_count)
+	if (is_current_file(file_name) && line > 0 && line <= line_count)
 	{
 	    XmTextSetHighlight(source_text_w,
 			       last_start_secondary_highlight,
@@ -3894,9 +3951,10 @@ void SourceView::clear_history()
 }
 
 
-// ***************************************************************************
+
+//-----------------------------------------------------------------------
 // Searching
-// ***************************************************************************
+//-----------------------------------------------------------------------
 
 void SourceView::find(const string& s, 
 		      SourceView::SearchDirection direction,
@@ -4047,8 +4105,11 @@ void SourceView::find(const string& s,
 
 
 
-// ***************************************************************************
-// Return current source name
+
+//-----------------------------------------------------------------------
+// Return source name
+//-----------------------------------------------------------------------
+
 string SourceView::current_source_name()
 {
     string source = "";
@@ -4164,8 +4225,6 @@ string SourceView::current_source_name()
     return source;
 }
 
-// ***************************************************************************
-//
 string SourceView::line_of_cursor()
 {
     XmTextPosition pos = XmTextGetInsertionPosition(source_text_w);
@@ -5394,8 +5453,10 @@ string SourceView::get_line(string position)
     if (line < 1)
 	return "";
 
-    if (is_current_file(file_name))
+    if (!is_current_file(file_name))
 	read_file(file_name, line);
+    if (!is_current_file(file_name))
+	return "";
 
     XmTextPosition start = pos_of_line(line) + indent_amount(source_text_w);
     XmTextPosition end   = current_source.index('\n', start);

@@ -295,6 +295,16 @@ class SourceView {
     static StringStringAssoc source_name_cache;
     static string current_source_name();
 
+    // Files listed as erroneous
+    static StringArray bad_files;
+    static bool new_bad_file(const string& file_name);
+    static void post_file_error(const string& file_name,
+				string text, String name = 0,
+				Widget origin = 0);
+    static void post_file_warning(const string& file_name,
+				  string text, String name = 0,
+				  Widget origin = 0);
+
     // The current directory
     static string current_pwd;
 
