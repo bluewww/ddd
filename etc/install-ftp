@@ -76,7 +76,7 @@ ddd/vsl-lex.C
 ddd/vsl-gramma.C
 ddd/vsl-gramma.h
 ddd/ddd.man.txt
-ddd/ddd.man.C
+ddd/ddd.man.huff.C
 ddd/Ddd
 ddd/Ddd.ad.h
 ddd/xlibdir.C
