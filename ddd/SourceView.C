@@ -5888,13 +5888,18 @@ void SourceView::RefreshBreakpointsHP(Agent *, void *, void *call_data)
     bool gdb_ready = bool(call_data);
     if (gdb_ready && !gdb->recording())
     {
+	// Don't get called recursively
+	gdb->removeHandler(ReadyForQuestion, RefreshBreakpointsHP);
+
 	string breakpoints = gdb_question("info breakpoints");
-	if (breakpoints != NO_GDB_ANSWER)
+	if (breakpoints == NO_GDB_ANSWER)
+	{
+	    // Try again next time
+	    gdb->addHandler(ReadyForQuestion, RefreshBreakpointsHP);
+	}
+	else
 	{
 	    process_info_bp(breakpoints);
-
-	    // Don't get called again
-	    gdb->removeHandler(ReadyForQuestion, RefreshBreakpointsHP);
 	}
     }
 }
@@ -5999,7 +6004,11 @@ void SourceView::EditBreakpointCommandsCB(Widget w,
 		commands += c;
 	    cmd = cmd.after('\n');
 	}
+
 	set_bp_commands(info->nrs, commands, w);
+
+	// Update all panels in the next run
+	gdb->addHandler(Recording, RecordingHP, (void *)0);
     }
     else
     {
