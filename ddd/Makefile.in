@@ -208,6 +208,9 @@ LIBXEXT = @XEXT_LIBS@
 # Xpm library (-lXpm); needed for Motif 2.0
 LIBXPM = @XPM_LIBS@
 
+# gen library (-lgen); needed for Motif 2.0
+LIBGEN = @LIBGEN@
+
 # X toolkit library (-lXt)
 LIBXT = @XT_LIBS@
 
@@ -215,7 +218,8 @@ LIBXT = @XT_LIBS@
 LIBX11 = @X11_LIBS@ @X_EXTRA_LIBS@
 
 # All libraries shown above
-ALL_X_LIBS = $(LIBXM) $(LIBXPM) $(LIBXAW) $(LIBXEXT) $(LIBXT) $(LIBX) $(LIBX11)
+ALL_X_LIBS = \
+$(LIBXM) $(LIBXPM) $(LIBXAW) $(LIBXEXT) $(LIBXT) $(LIBX) $(LIBX11) $(LIBGEN)
 
 
 ## Installation commands.
@@ -639,7 +643,7 @@ OBJECTS = $(NORA_OBJECTS) $(DDD_OBJECTS)
 PROGS = $(ddd)
 
 ## Extra demonstration files.
-DEMOS = userinfo cxxtest ctest test-graph ttytest bug ptest m2test
+DEMOS = userinfo cxxtest ctest test-file test-graph ttytest bug ptest m2test
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
@@ -857,6 +861,9 @@ $(ddd_canonical): ddd.o $(OBJECTS)
 
 userinfo: userinfo.o $(USERINFO_OBJECTS)
 	-$(LINK.cc) -o $@ userinfo.o $(USERINFO_OBJECTS) $(NON_X_LIBS) $(LIBS)
+
+test-file: test-file.o
+	$(LINK.cc) -o $@ test-file.o $(ALL_X_LIBS)
 
 test-graph: test-graph.o $(NORA_OBJECTS) 
 	$(LINK.cc) -o $@ test-graph.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
