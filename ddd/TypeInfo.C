@@ -96,7 +96,10 @@ void TypeInfo::_setup_all_bases() const
     *_all_bases = new_all_bases;
 
     if (debug)
-	clog << "(TypeInfo: set up " << *this << ")";
+    {
+	clog << "TypeInfo: setup done for " << *this << "\n";
+	clog.flush();
+    }
 }
 	
 // Check if we can cast to info
