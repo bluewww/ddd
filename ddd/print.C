@@ -97,8 +97,8 @@ static string msg(string path, bool displays, bool to_file)
     return m;
 }
 
-// Print to FILENAME according to given BoxPrintGC
-static int print_to_file(string filename, BoxPrintGC& gc, 
+// Print to FILENAME according to given PrintGC
+static int print_to_file(string filename, PrintGC& gc, 
 			 bool selectedOnly, bool displays)
 {
     string path = filename;
@@ -194,8 +194,8 @@ static void printOutputHP(Agent *, void *, void *call_data)
 	set_status(output_buffer);
 }
 
-// Print according to given BoxPrintGC
-static int print_to_printer(string command, BoxPrintGC& gc, 
+// Print according to given PrintGC
+static int print_to_printer(string command, PrintGC& gc, 
 			    bool selectedOnly, bool displays)
 {
     string tempfile = tmpnam(0);
@@ -229,8 +229,8 @@ enum PrintTarget { TARGET_FILE, TARGET_PRINTER };
 static bool            print_selected_only = false;
 static bool            print_displays      = true;
 static bool            print_target = TARGET_PRINTER;
-static BoxPostScriptGC print_postscript_gc;
-static BoxFigGC        print_xfig_gc;
+static PostScriptPrintGC print_postscript_gc;
+static FigPrintGC        print_xfig_gc;
 static PrintType       print_type = PRINT_POSTSCRIPT;
 
 static Widget          print_dialog = 0;
@@ -279,7 +279,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
     
     case TARGET_FILE:
     {
-	BoxPrintGC *gc_ptr = 0;
+	PrintGC *gc_ptr = 0;
 	switch (print_type)
 	{
 	case PRINT_POSTSCRIPT:
@@ -290,7 +290,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	    gc_ptr = &print_xfig_gc;
 	    break;
 	}
-	BoxPrintGC& gc = *gc_ptr;
+	PrintGC& gc = *gc_ptr;
 
 	String file = XmTextFieldGetString(print_file_name_field);
 	string f = file;
@@ -417,11 +417,16 @@ static void set_paper_size_string(string s)
     app_data.paper_size = current_paper_size;
 }
 
+static void SetGCColorCB(Widget w, XtPointer, XtPointer)
+{
+    print_postscript_gc.color = XmToggleButtonGetState(w);
+}
+
 static void SetGCA3(Widget w, XtPointer, XtPointer)
 {
     if (XmToggleButtonGetState(w))
     {
-	BoxPostScriptGC a4;
+	PostScriptPrintGC a4;
 
 	print_postscript_gc.hsize = a4.vsize;
 	print_postscript_gc.vsize = a4.hsize * 2;
@@ -433,7 +438,7 @@ static void SetGCA4(Widget w, XtPointer, XtPointer)
 {
     if (XmToggleButtonGetState(w))
     {
-	BoxPostScriptGC a4;
+	PostScriptPrintGC a4;
 
 	print_postscript_gc.hsize = a4.hsize;
 	print_postscript_gc.vsize = a4.vsize;
@@ -443,7 +448,7 @@ static void SetGCA4(Widget w, XtPointer, XtPointer)
 
 static void SetGCLetter(Widget w, XtPointer, XtPointer)
 {
-    BoxPostScriptGC gc;
+    PostScriptPrintGC gc;
 
     if (XmToggleButtonGetState(w))
     {
@@ -455,7 +460,7 @@ static void SetGCLetter(Widget w, XtPointer, XtPointer)
 
 static void SetGCLegal(Widget w, XtPointer, XtPointer)
 {
-    BoxPostScriptGC gc;
+    PostScriptPrintGC gc;
 
     if (XmToggleButtonGetState(w))
     {
@@ -467,7 +472,7 @@ static void SetGCLegal(Widget w, XtPointer, XtPointer)
 
 static void SetGCExecutive(Widget w, XtPointer, XtPointer)
 {
-    BoxPostScriptGC gc;
+    PostScriptPrintGC gc;
 
     if (XmToggleButtonGetState(w))
     {
@@ -598,7 +603,7 @@ static bool set_paper_size(string s)
     if (hsize <= 0 || vsize <= 0)
 	return false;		// Error
 
-    BoxPostScriptGC gc;
+    PostScriptPrintGC gc;
 
     print_postscript_gc.hsize = hsize - gc.hoffset * 2;
     print_postscript_gc.vsize = vsize - gc.voffset * 2;
@@ -682,9 +687,9 @@ static void SetGCCustom(Widget w, XtPointer, XtPointer)
 static void SetGCOrientation(Widget w, XtPointer, XtPointer)
 {
     if (XmToggleButtonGetState(w))
-	print_postscript_gc.orientation = BoxPostScriptGC::PORTRAIT;
+	print_postscript_gc.orientation = PostScriptPrintGC::PORTRAIT;
     else
-	print_postscript_gc.orientation = BoxPostScriptGC::LANDSCAPE;
+	print_postscript_gc.orientation = PostScriptPrintGC::LANDSCAPE;
 }
 
 static void NopCB(Widget, XtPointer, XtPointer)
@@ -742,14 +747,25 @@ static void PrintCB(Widget parent, bool displays)
 	MMEnd
     };
 
-    Widget postscript_w;
+    static Widget postscript_w;
+    static Widget fig_w;
+    static MMDesc type2_menu[] = 
+    {
+	{"postscript", MMToggle, 
+	 { SetPrintTypeCB, XtPointer(PRINT_POSTSCRIPT) }, 
+	 0, &postscript_w, 0, 0 },
+	{"xfig",       MMToggle,
+	  { SetPrintTypeCB, XtPointer(PRINT_FIG) }, 0, &fig_w, 0, 0},
+	MMEnd
+    };
+
+    static Widget print_color_w;
     static MMDesc type_menu[] = 
     {
-	{"postscript", MMToggle,
-	  { SetPrintTypeCB, XtPointer(PRINT_POSTSCRIPT) }, NULL, 
-	    &postscript_w, 0, 0 },
-	{"xfig",       MMToggle,
-	  { SetPrintTypeCB, XtPointer(PRINT_FIG) }, 0, 0, 0, 0},
+	{"type2",    MMRadioPanel | MMUnmanagedLabel, 
+	 MMNoCB, type2_menu, 0, 0, 0 },
+	{"color",    MMToggle, { SetGCColorCB, 0 }, 
+	             NULL, &print_color_w, 0, 0 },
 	MMEnd
     };
 
@@ -761,7 +777,7 @@ static void PrintCB(Widget parent, bool displays)
 	MMEnd
     };
 
-    Widget print_selected_w;
+    static Widget print_selected_w;
     static MMDesc what_menu[] = 
     {
 	{"what2",    MMRadioPanel | MMUnmanagedLabel, 
@@ -771,7 +787,7 @@ static void PrintCB(Widget parent, bool displays)
 	MMEnd
     };
 
-    Widget print_portrait_w;
+    static Widget print_portrait_w;
     static MMDesc orientation_menu[] = 
     {
 	{"portrait",  MMToggle, 
@@ -797,13 +813,12 @@ static void PrintCB(Widget parent, bool displays)
 	MMEnd
     };
 
-    Widget file_type_w;
     static MMDesc menu[] =
     {
 	{"to",          MMRadioPanel, MMNoCB, print_to_menu, 0, 0, 0 },
 	{"command",     MMTextField,  MMNoCB, 0, &print_command_field, 0, 0 },
 	{"name", 	MMTextField,  MMNoCB, 0, &print_file_name_field, 0, 0},
-	{"type", 	MMRadioPanel, MMNoCB, type_menu, &file_type_w, 0, 0 },
+	{"type", 	MMPanel,      MMNoCB, type_menu, 0, 0, 0 },
 	{"what",        MMPanel,      MMNoCB, what_menu, 0, 0, 0 },
 	{"orientation", MMRadioPanel, MMNoCB, orientation_menu, 0, 0, 0 },
 	{"size",        MMRadioPanel, MMNoCB, paper_menu, 0, 0, 0 },
@@ -827,7 +842,9 @@ static void PrintCB(Widget parent, bool displays)
     XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,
 		  UnsetSensitiveCB, XtPointer(menu[2].label));
     XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,
-		  UnsetSensitiveCB, XtPointer(file_type_w));
+		  UnsetSensitiveCB, XtPointer(postscript_w));
+    XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,
+		  UnsetSensitiveCB, XtPointer(fig_w));
 
     XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,
 		  TakeFocusCB,      XtPointer(print_command_field));
@@ -842,7 +859,9 @@ static void PrintCB(Widget parent, bool displays)
     XtAddCallback(print_to_file_w, XmNvalueChangedCallback,
 		  SetSensitiveCB,   XtPointer(menu[2].label));
     XtAddCallback(print_to_file_w, XmNvalueChangedCallback,   
-		  SetSensitiveCB,   XtPointer(file_type_w));
+		  SetSensitiveCB,   XtPointer(postscript_w));
+    XtAddCallback(print_to_file_w, XmNvalueChangedCallback,   
+		  SetSensitiveCB,   XtPointer(fig_w));
 
     XtAddCallback(print_to_file_w, XmNvalueChangedCallback,
 		  TakeFocusCB,      XtPointer(print_file_name_field));
@@ -877,6 +896,7 @@ static void PrintCB(Widget parent, bool displays)
     // Set initial state
     XmToggleButtonSetState(print_to_printer_w, True, True);
     XmToggleButtonSetState(postscript_w, True, True);
+    XmToggleButtonSetState(print_color_w, False, True);
     XmToggleButtonSetState(print_selected_w, False, True);
     XmToggleButtonSetState(print_portrait_w, True, True);
     XmToggleButtonSetState(print_plots_w, !displays, True);

@@ -37,7 +37,7 @@
 #include "assert.h"
 #include "StringA.h"
 #include "IntArray.h"
-#include "Box.h"
+#include "PrintGC.h"
 
 #include <fstream.h>
 
@@ -130,7 +130,7 @@ public:
 
     // Print plot to FILENAME
     void print(const string& filename, 
-	       const BoxPrintGC& gc = BoxPostScriptGC());
+	       const PrintGC& gc = PostScriptPrintGC());
 };
 
 #endif // _DDD_PlotAgent_h

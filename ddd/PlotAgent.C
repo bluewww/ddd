@@ -345,7 +345,7 @@ void PlotAgent::dispatch(int type, char *data, int length)
 
 
 // Print plot to FILENAME
-void PlotAgent::print(const string& filename, const BoxPrintGC& gc)
+void PlotAgent::print(const string& filename, const PrintGC& gc)
 {
     ostrstream cmd;
 
@@ -355,25 +355,35 @@ void PlotAgent::print(const string& filename, const BoxPrintGC& gc)
     }
     else if (gc.isPostScript())
     {
-	const BoxPostScriptGC& ps = 
-	    ref_cast(BoxPostScriptGC, (BoxPrintGC &)gc);
+	const PostScriptPrintGC& ps = 
+	    ref_cast(PostScriptPrintGC, (PrintGC &)gc);
 
-	cmd << "set term postscript ";
+	cmd << "set term postscript";
 
 	switch (ps.orientation)
 	{
-	case BoxPostScriptGC::PORTRAIT:
+	case PostScriptPrintGC::PORTRAIT:
 	{
-	    cmd << "portrait";
+	    cmd << " portrait";
 	    break;
 	}
 
-	case BoxPostScriptGC::LANDSCAPE:
+	case PostScriptPrintGC::LANDSCAPE:
 	{
-	    cmd << "landscape";
+	    cmd << " landscape";
 	    break;
 	}
 	}
+
+	if (ps.color)
+	{
+	    cmd << " color";
+	}
+	else
+	{
+	    cmd << " monochrome";
+	}
+
 	cmd << "\n";
 
 
@@ -383,9 +393,13 @@ void PlotAgent::print(const string& filename, const BoxPrintGC& gc)
 	const int default_hsize =  7 * 72; // Default width in 1/72"
 	const int default_vsize = 10 * 72; // Default height in 1/72"
 
+	// Leave 1" extra vertical space
+	const int hoffset = 0;
+	const int voffset = 1 * 72;
+
 	// Set size
-	double xscale = double(ps.hsize) / default_hsize;
-	double yscale = double(ps.vsize) / default_vsize;
+	double xscale = double(ps.hsize - hoffset) / default_hsize;
+	double yscale = double(ps.vsize - voffset) / default_vsize;
 	cmd << "set size " << xscale << ", " << yscale << "\n";
     }
 
