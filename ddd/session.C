@@ -752,7 +752,7 @@ static void SetGCoreSensitivityCB(Widget = 0, XtPointer = 0, XtPointer = 0)
 #if HAVE_PTRACE_DUMPCORE
     set_sensitive(may_ptrace_w, set && gdb->type() == GDB);
 #else
-    set_sensitive(may_ptrace_w, False);
+    set_sensitive(may_ptrace_w, false);
 #endif
 }
 

@@ -407,7 +407,7 @@ static void SetPrintTypeCB(Widget w, XtPointer client_data, XtPointer)
 static void SetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (XmToggleButtonGetState(w))
-	set_sensitive(Widget(client_data), True);
+	set_sensitive(Widget(client_data), true);
 }
 
 static void TakeFocusCB(Widget w, XtPointer client_data, XtPointer)
@@ -419,7 +419,7 @@ static void TakeFocusCB(Widget w, XtPointer client_data, XtPointer)
 static void UnsetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (XmToggleButtonGetState(w))
-	set_sensitive(Widget(client_data), False);
+	set_sensitive(Widget(client_data), false);
 }
 
 static void SetPrintDisplaysCB(Widget w, XtPointer client_data, XtPointer)

@@ -219,7 +219,7 @@ static void gdb_set_command(const string& set_command, string value)
 // OptionMenu reply
 static void SetOptionCB(Widget w, XtPointer client_data, XtPointer)
 {
-    gdb_set_command((String)client_data, XtName(w));
+    gdb_set_command((const _XtString)client_data, XtName(w));
 }
 
 // ToggleButton reply
@@ -228,10 +228,7 @@ static void SetOnOffCB(Widget, XtPointer client_data, XtPointer call_data)
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    if (cbs->set)
-	gdb_set_command((String)client_data, "on");
-    else
-	gdb_set_command((String)client_data, "off");
+    gdb_set_command((const _XtString)client_data, cbs->set ? "on":"off");
 }
 
 // ToggleButton reply
@@ -240,10 +237,7 @@ static void SetTrueFalseCB(Widget, XtPointer client_data, XtPointer call_data)
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    if (cbs->set)
-	gdb_set_command((String)client_data, "true");
-    else
-	gdb_set_command((String)client_data, "false");
+    gdb_set_command((const _XtString)client_data, cbs->set ? "true":"false");
 }
 
 // ToggleButton reply
@@ -252,10 +246,8 @@ static void SetSensitiveCB(Widget, XtPointer client_data, XtPointer call_data)
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    if (cbs->set)
-	gdb_set_command((String)client_data, "sensitive");
-    else
-	gdb_set_command((String)client_data, "insensitive");
+    gdb_set_command((const _XtString)client_data,
+		    cbs->set ? "sensitive":"insensitive");
 }
 
 // ToggleButton reply
@@ -264,10 +256,7 @@ static void SetNumCB(Widget, XtPointer client_data, XtPointer call_data)
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    if (cbs->set)
-	gdb_set_command((String)client_data, "1");
-    else
-	gdb_set_command((String)client_data, "0");
+    gdb_set_command((const _XtString)client_data, cbs->set ? "1":"0");
 }
 
 // ToggleButton reply
@@ -276,10 +265,7 @@ static void SetNoNumCB(Widget, XtPointer client_data, XtPointer call_data)
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    if (cbs->set)
-	gdb_set_command((String)client_data, "0");
-    else
-	gdb_set_command((String)client_data, "1");
+    gdb_set_command((const _XtString)client_data, cbs->set ? "0":"1");
 }
 
 // ToggleButton reply
@@ -289,9 +275,9 @@ static void SetDisplayCB(Widget, XtPointer client_data, XtPointer call_data)
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (cbs->set)
-	data_disp->new_user_display((String)client_data);
+      data_disp->new_user_display((const _XtString)client_data);
     else
-	data_disp->delete_user_display((String)client_data);
+      data_disp->delete_user_display((const _XtString)client_data);
 }
 
 // ToggleButton reply
@@ -418,19 +404,19 @@ static void update_reset_settings_button()
 
 	    if (value != settings_values[entry])
 	    {
-		set_sensitive(reset_settings_button, True);
+		set_sensitive(reset_settings_button, true);
 		return;
 	    }
 	}
 
 	if (value != settings_initial_values[entry])
 	{
-	    set_sensitive(reset_settings_button, True);
+	    set_sensitive(reset_settings_button, true);
 	    return;
 	}
     }
 
-    set_sensitive(reset_settings_button, False);
+    set_sensitive(reset_settings_button, false);
 }
 
 static void update_apply_settings_button()
@@ -451,12 +437,12 @@ static void update_apply_settings_button()
 
 	if (value != settings_values[entry])
 	{
-	    set_sensitive(apply_settings_button, True);
+	    set_sensitive(apply_settings_button, true);
 	    return;
 	}
     }
 
-    set_sensitive(apply_settings_button, False);
+    set_sensitive(apply_settings_button, false);
 }
 
 static void update_reset_signals_button()
@@ -471,12 +457,12 @@ static void update_reset_signals_button()
 	Widget entry = signals_entries[i];
 	if (signals_initial_values[entry] != signals_values[entry])
 	{
-	    set_sensitive(reset_signals_button, True);
+	    set_sensitive(reset_signals_button, true);
 	    return;
 	}
     }
 
-    set_sensitive(reset_signals_button, False);
+    set_sensitive(reset_signals_button, false);
 }
 
 static void update_themes_buttons()
@@ -1856,7 +1842,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
 	if (base == "all")
 	{
-	    set_sensitive(send, False);
+	    set_sensitive(send, false);
 	    XtVaSetValues(pass,  XmNset, True, XtPointer(0));
 	    XtVaSetValues(print, XmNset, True, XtPointer(0));
 	    XtVaSetValues(stop,  XmNset, True, XtPointer(0));
@@ -2199,9 +2185,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
 	if (insensitive)
 	{
-	    set_sensitive(entry,  False);
-	    set_sensitive(label,  False);
-	    set_sensitive(leader, False);
+	    set_sensitive(entry,  false);
+	    set_sensitive(label,  false);
+	    set_sensitive(leader, false);
 	}
 
 	// Initialize button
@@ -2679,7 +2665,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
                                 XmNdefaultButtonShadowThickness, 1,
                                 XtPointer(0));
 
-    set_sensitive(apply_button, False);
+    set_sensitive(apply_button, false);
     XtAddCallback(help_button,
                     XmNactivateCallback, ImmediateHelpCB, XtPointer(0));
     XtAddCallback(close_button,
@@ -3756,8 +3742,8 @@ static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
     string name = current_name();
 
     XtUnmanageChild(XtParent(editor_w));
-    set_sensitive(name_w, True);
-    set_sensitive(XtParent(name_w), True);
+    set_sensitive(name_w, true);
+    set_sensitive(XtParent(name_w), true);
 
     MString label = "Edit " + MString(">>", CHARSET_SMALL);
     set_label(edit_w, label);
@@ -3802,8 +3788,8 @@ static void EditCommandDefinitionCB(Widget, XtPointer, XtPointer)
     string name = current_name();
 
     // update_define(name);
-    set_sensitive(name_w, False);
-    set_sensitive(XtParent(name_w), False);
+    set_sensitive(name_w, false);
+    set_sensitive(XtParent(name_w), false);
 
     string def = "";
     if (defs.has(name))
