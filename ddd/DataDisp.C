@@ -6070,7 +6070,7 @@ void DataDisp::delete_user_display(const string& name)
 // Language changed - re-label buttons
 //----------------------------------------------------------------------------
 
-void DataDisp::language_changedHP(Agent *source, void *, void *)
+void DataDisp::language_changedHP(Agent *, void *, void *)
 {
     string arg = source_arg->get_string();
     if (selected_value() != 0)
