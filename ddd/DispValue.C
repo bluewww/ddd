@@ -323,18 +323,11 @@ string DispValue::dereferenced_name() const
 {
     if (mytype == Pointer)
     {
-	if (gdb->has_c_pointer_syntax())
-	{
-	    string f = full_name();
-	    if (f.length() > 2 && f[0] == '/')
-		f = f.from(2);
-	    return "*(" + f + ")";
-	}
-	else
-	{
-	    // Try Pascal/Modula pointer syntax
-	    return full_name() + "^";
-	}
+	string f = full_name();
+	if (f.contains('/', 0))
+	    f = f.from(2);	// Skip /FMT expressions
+
+	return gdb->dereferenced_expr(f);
     }
     else
 	return "";

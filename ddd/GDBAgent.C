@@ -97,7 +97,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_named_values(tp == GDB || tp == DBX),
       _has_when_semicolon(tp == DBX),
       _has_err_redirection(true),
-      _has_c_pointer_syntax(true),
+      _program_language(LANGUAGE_C),
       trace_dialog(false),
       questions_waiting(false),
       _qu_data(0),
@@ -915,8 +915,42 @@ string GDBAgent::whatis_command(string text) const
     return "";			// Never reached
 }
 
+// Prefer `ptype' on `whatis' in GDB
+string GDBAgent::dereferenced_expr(string text) const
+{
+    switch (program_language())
+    {
+    case LANGUAGE_C:
+	return "*(" + text + ")";
+
+    case LANGUAGE_PASCAL:
+	return text + "^";
+
+    default:
+	return "";
+    }
+
+    return "";			// Never reached
+}
 
 
+// ***************************************************************************
+ProgramLanguage GDBAgent::program_language(string text)
+{
+    text.downcase();
+
+    if (text.contains("language"))
+    {
+	if (text.contains("mod")
+	    || text.contains("pascal")
+	    || text.contains("ada")
+	    || text.contains("m2")
+	    || text.contains("m3"))
+	    program_language(LANGUAGE_PASCAL);
+	else
+	    program_language(LANGUAGE_C);
+    }
+}
 
 // ***************************************************************************
 

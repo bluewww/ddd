@@ -86,6 +86,10 @@ void PosBuffer::filter (string& answer)
 	index = answer.index("has changed; re-reading symbols");
 	if (index > 0)
 	    recompiled = true;
+
+	index = answer.index("Current language: ");
+	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	    gdb->program_language(answer);
     }
     else if (gdb->type() == DBX)
     {

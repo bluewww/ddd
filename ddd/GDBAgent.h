@@ -63,8 +63,18 @@
 // Debugger types
 //-----------------------------------------------------------------------------
 
-enum DebuggerType    { GDB, DBX, XDB };
+enum DebuggerType { GDB, DBX, XDB };
 
+
+//-----------------------------------------------------------------------------
+// Program language
+//-----------------------------------------------------------------------------
+
+enum ProgramLanguage { 
+    LANGUAGE_C,			// C-like: C, C++
+    LANGUAGE_PASCAL,		// PASCAL-like: Pascal, Modula, Ada
+    LANGUAGE_OTHER		// Others
+};
 
 //-----------------------------------------------------------------------------
 // Typen der aufzurufenden Prozeduren
@@ -132,7 +142,8 @@ private:
     bool _has_named_values;
     bool _has_when_semicolon;
     bool _has_err_redirection;
-    bool _has_c_pointer_syntax;
+
+    ProgramLanguage _program_language;
 
 public:
     // Constructor
@@ -259,8 +270,12 @@ public:
     bool has_err_redirection(bool val) { return _has_err_redirection = val; }
 
     // True if debugger uses *X for dereferencing X
-    bool has_c_pointer_syntax() const   { return _has_c_pointer_syntax; }
-    bool has_c_pointer_syntax(bool val) { return _has_c_pointer_syntax = val; }
+    ProgramLanguage program_language() const   { return _program_language; }
+    ProgramLanguage program_language(ProgramLanguage val) 
+    {
+	return _program_language = val;
+    }
+    ProgramLanguage program_language(string text);
 
     string print_command(string expr = "") const;   // Usually "print EXPR"
     string display_command(string expr = "") const; // Usually "display EXPR"
@@ -269,6 +284,7 @@ public:
     string frame_command(string depth = "") const;  // Usually "frame EXPR"
     string echo_command(string text) const;         // Usually "echo TEXT"
     string whatis_command(string text) const;       // Usually "whatis TEXT"
+    string dereferenced_expr(string expr) const;    // Usually "*EXPR"
 
 private:
     bool trace_dialog;

@@ -650,6 +650,7 @@ DDD_OBJECTS = \
 	question.o   \
 	resources.o  \
 	sashes.o     \
+	settings.o   \
 	shell.o      \
 	show.o       \
 	source.o     \

@@ -3152,11 +3152,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    && startpos < endpos)
 	    word = text(int(startpos), int(endpos - startpos));
 
-	ref_word = "";
-	if (word.length() > 2 && word[0] == '/')
-	    ref_word = "*(" + word.from(2) + ")";
-	else if (word != "")
-	    ref_word = "*(" + word + ")";
+	ref_word = gdb->dereferenced_expr(word);
 
 	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);

@@ -127,7 +127,7 @@ typedef struct PlusCmdData {
     bool     config_err_redirection;   // try 'help run'
     bool     config_page;	       // try 'set $page = 0'
     bool     config_xdb;	       // try XDB settings
-    bool     config_c_pointer_syntax;  // try 'show language'
+    bool     config_program_language;  // try 'show language'
 
     PlusCmdData () :
 	refresh_main(false),
@@ -156,7 +156,7 @@ typedef struct PlusCmdData {
 	config_err_redirection(false),
 	config_page(false),
 	config_xdb(false),
-	config_c_pointer_syntax(false)
+	config_program_language(false)
     {}
 };
 
@@ -184,7 +184,7 @@ void start_gdb()
 	cmds += "info line main";
 	plus_cmd_data->refresh_main = true;
 	cmds += "show language";
-	plus_cmd_data->config_c_pointer_syntax = true;
+	plus_cmd_data->config_program_language = true;
 	cmds += "pwd";
 	plus_cmd_data->refresh_pwd = true;
 	cmds += "info breakpoints";
@@ -555,7 +555,7 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_err_redirection);
     assert(!plus_cmd_data->config_page);
     assert(!plus_cmd_data->config_xdb);
-    assert(!plus_cmd_data->config_c_pointer_syntax);
+    assert(!plus_cmd_data->config_program_language);
     
     // Setup additional trailing commands
     switch (gdb->type())
@@ -914,12 +914,9 @@ static void process_config_def(string&)
     // Nothing yet...
 }
 
-static void process_config_c_pointer_syntax(string& lang)
+static void process_config_program_language(string& lang)
 {
-    // Ideally, this should be done after each frame change,
-    // when GDB issues `current language is ...'.  (FIXME)
-    gdb->has_c_pointer_syntax(!lang.contains("m3") 
-			      && !lang.contains("modula"));
+    gdb->program_language(lang);
 }
 
 
@@ -1016,9 +1013,9 @@ void plusOQAC (string answers[],
 	process_config_def(answers[qu_count++]); // def finish { ... }
     }
 
-    if (plus_cmd_data->config_c_pointer_syntax) {
+    if (plus_cmd_data->config_program_language) {
 	assert (qu_count < count);
-	process_config_c_pointer_syntax(answers[qu_count++]);
+	process_config_program_language(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_pwd) {
