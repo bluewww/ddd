@@ -1215,6 +1215,7 @@ ice_cv_motif_libraries=
 # /usr/lib/Motif* are used on HP-UX (Motif).
 # /usr/lib/X11* are used on HP-UX (X and Athena).
 # /usr/dt is used on Solaris (Motif).
+# /usr/lesstif is used on Linux (Lesstif).
 # /usr/openwin is used on Solaris (X and Athena).
 # Other directories are just guesses.
 for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
@@ -1222,6 +1223,7 @@ for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
 	   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
            /usr/dt/lib /usr/openwin/lib \
 	   /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
+           /usr/lesstif*/lib /usr/lib/Lesstif* \
 	   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
 	   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
 if test -d "$dir" && test "`ls $dir/libXm.* 2> /dev/null`" != ""; then
