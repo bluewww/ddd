@@ -92,6 +92,7 @@ Widget tool_buttons_w;
 enum WindowState { PoppingUp, PoppedUp, PoppedDown, 
 		   Iconic, Transient, UnknownShell };
 
+#if LOG_EVENTS
 static ostream& operator << (ostream& os, WindowState s)
 {
     switch (s)
@@ -112,6 +113,7 @@ static ostream& operator << (ostream& os, WindowState s)
 
     return os;
 }
+#endif
 
 static WindowState& state(Widget w)
 {
