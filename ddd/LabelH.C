@@ -66,7 +66,7 @@ static GC _bottomShadowGC(XmLabelWidget _label);
 #define HACK_CLASS(w) ((w)->label_hack_class)
 
 #define TheOffset(field) XtOffset(XmLabelHackWidget, label_hack.field)
-#define PrimOffset(field) XtOffset(XmLabelHackWidget, primitive.field)
+//#define PrimOffset(field) XtOffset(XmLabelHackWidget, primitive.field)
 static XtResource resources[] =
 {
     {XTRESSTR(XmNinsensitive3D), XTRESSTR(XmCInsensitive3D), XmRBoolean, sizeof(Boolean),
