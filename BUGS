@@ -232,7 +232,7 @@ Volunteers for fixing these and other bugs are welcome!
      breakpoint; however the arrow didn't show up.  Upon continuation,
      the arrow showed up.  Minor cosmetic bug.
 
-112. toader ovidiu nicolae <ovi@phys.ksu.edu> says:
+112* toader ovidiu nicolae <ovi@phys.ksu.edu> says:
      ddd-2.0 has a square but on the bottom edge of the assembler window
      and I could resize the assembler window in a strange way but only for 
      increasing it.
@@ -254,10 +254,10 @@ Volunteers for fixing these and other bugs are welcome!
      error messages.
 
 116* With Motif 1.2 and later, there is no sash between assembler and
-     source windows in a separate source window.
+     source windows in a separate source window.  (see also 112, above)
 
 117. Under Linux slackware 3.1, the file permissions in `/dev/ptyp?' do not
-     allow for DDD <-> GDB interaction.
+     allow for DDD <-> GDB interaction.  Can we circumvent this within DDD?
 
 118. SGI CC compiles DDD, but the resulting executable soon dies with a
      segmentation fault.  [Use GCC instead.  -AZ]
@@ -274,4 +274,15 @@ Volunteers for fixing these and other bugs are welcome!
      the background.  Starting the execution TTY causes DDD to stop
      with `Suspended (tty output)'.
 
-123. (Insert your bug here)
+123. David Bianchi <bianchi@pllb.inet.it> states: Using DDD 2.0 on
+     hppa1.1-hp-hpux9.07, a SIGSEGV appears whenever we choose the
+     menu item "Open Program..." as well as "Open Core Dump..." from
+     the menu bar.
+
+124. Aleksandar Matijaca <aleksm@tuna.dztech.com> reports that at one
+     machine (Sparc 20 Solaris 2.5) at work I can press the right
+     mouse button, and get a small pop-up menu to appear so that one
+     can set breakpoints etc., however on the one at home I can't do
+     that.
+
+125. (Insert your bug here)
