@@ -759,61 +759,7 @@ void DispGraph::add_alias_edge(Widget w, int alias_disp_nr,
 {
     const GraphGC& graphGC = graphEditGetGraphGC(w);
 
-    // Check whether this is a self-referring edge
-    if (from == to)
-    {
-	// Edge to self - use two hints in lower right corner
-	//
-	// +------+
-	// |Node  |  
-	// +------+--Hint1   \
-	//        |  |        | grid
-	//        |  |        | size
-	//    Hint2--Hint3   /
-	//
-	//        \__/
-	//     grid width
-
-	Dimension grid_width  = 16;
-	Dimension grid_height = 16;
-	XtVaGetValues(w,
-		      XtNgridWidth,  &grid_width,
-		      XtNgridHeight, &grid_height,
-		      NULL);
-
-	RegionGraphNode *self = ptr_cast(RegionGraphNode, from);
-	if (self == 0)
-	    return;		// No way to add edge
-	
-	const BoxRegion& region = self->region(graphGC);
-
-	BoxPoint lower_right_corner = region.origin() + region.space();
-
-	BoxPoint pos1(lower_right_corner[X] + grid_width,
-		      lower_right_corner[Y]);
-	BoxPoint pos2(lower_right_corner[X] + grid_width,
-		      lower_right_corner[Y] + grid_height);
-	BoxPoint pos3(lower_right_corner[X],
-		      lower_right_corner[Y] + grid_height);
-
-	HintGraphNode *hint1 = new HintGraphNode(pos1);
-	HintGraphNode *hint2 = new HintGraphNode(pos2);
-	HintGraphNode *hint3 = new HintGraphNode(pos3);
-
-	*this += hint1;
-	*this += hint2;
-	*this += hint3;
-
-	*this += new AliasGraphEdge(alias_disp_nr, self, hint1);
-	*this += new AliasGraphEdge(alias_disp_nr, hint1, hint2);
-	*this += new AliasGraphEdge(alias_disp_nr, hint2, hint3);
-	*this += new AliasGraphEdge(alias_disp_nr, hint3, self);
-
-	return;
-    }
-
-    // Check whether the edge hides other edges
-    // (FIXME)
+    // Check whether the edge hides other edges (FIXME)
 
     *this += new AliasGraphEdge(alias_disp_nr, from, to);
 }
