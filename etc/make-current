@@ -199,7 +199,7 @@ if [ -f ddd-$date.tar.gz ]; then
 
   # Move dist file into target area
   rm -f $target/ddd-*.tar.gz
-  mv ddd-$date.tar.gz ddd-$date-pics.tar.gz $target
+  mv ddd-$date.tar.gz $target
 
   if $local; then
     :
