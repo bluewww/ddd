@@ -1,7 +1,7 @@
 // $Id$
 // GraphEdit Widget
 
-// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -482,10 +482,22 @@ void graphEditSizeChanged(Widget w)
     width  += extraWidth;
     height += extraHeight;
 
-    arg = 0;
-    XtSetArg(args[arg], XtNwidth, width); arg++;
-    XtSetArg(args[arg], XtNheight, height); arg++;
-    XtSetValues(w, args, arg);
+    Dimension width_return;
+    Dimension height_return;
+    XtGeometryResult result = 
+	XtMakeResizeRequest(w, width, height, &width_return, &height_return);
+    if (result == XtGeometryAlmost)
+	result = XtMakeResizeRequest(w, width_return, height_return,
+				     &width_return, &height_return);
+
+    if (result == XtGeometryYes)
+    {
+	// Normally, we should let our manager resize ourselves.
+	// But LessTif 0.87 wants it this way.
+	XtResizeWidget(w, width_return, height_return, 0);
+
+	graphEditRedraw(w);
+    }
 }
 
 // Return the graph's Graphic Context
