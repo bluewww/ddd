@@ -2,6 +2,7 @@
 // Read in VSL library
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -115,15 +116,15 @@ struct VSLVarDefinition {
 
 // Read library
 
-// Read library from stream
-VSLLib& VSLLib::read(istream& s, unsigned optimizeMode)
+// Update library from stream
+void VSLLib::update(istream& s, unsigned optimizeMode)
 {
     vsllib = this;
 
     vslstream = &s;
     vslfilename = _lib_name;
 
-    // Einlesen...
+    // Read it
     vslnameSet.reset();
     pushback_ptr = pushback;
     parse();
@@ -135,17 +136,15 @@ VSLLib& VSLLib::read(istream& s, unsigned optimizeMode)
     }
 
     // Post-processing (Binding, optimization, etc.)
-    process(optimizeMode);
+    optimize(optimizeMode);
 
     if (VSEFlags::verbose)
 	cout << ", done.\n";
-
-    return *this;
 }
 
 
-// Read library from file
-VSLLib& VSLLib::read(const string& lib_name, unsigned optimizeMode)
+// Update library from file
+void VSLLib::update(const string& lib_name, unsigned optimizeMode)
 {
     if (VSEFlags::verbose)
     {
@@ -165,10 +164,8 @@ VSLLib& VSLLib::read(const string& lib_name, unsigned optimizeMode)
 	assert(vslstream != 0);
 
 	topstack = 0;
-	read(*vslstream, optimizeMode);
+	update(*vslstream, optimizeMode);
     }
-
-    return *this;
 }
 
 

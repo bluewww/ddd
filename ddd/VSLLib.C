@@ -96,7 +96,7 @@ VSLLib::VSLLib(const string& lib_name, unsigned optimize)
     : _lib_name(lib_name), _first(0), _last(0)
 {
     initHash();
-    read(lib_name, optimize);
+    update(lib_name, optimize);
 }
 
 
@@ -105,7 +105,7 @@ VSLLib::VSLLib(istream& i, unsigned optimize)
     : _lib_name(""), _first(0), _last(0)
 {
     initHash();
-    read(i, optimize);
+    update(i, optimize);
 }
 
 
@@ -596,8 +596,8 @@ int VSLLib::cleanup()
 
 // Optimization
 
-// Processor
-void VSLLib::process(unsigned mode)
+// Main entry point
+void VSLLib::optimize(unsigned mode)
 {
     /* 
 	The sequence of optimizations is:
@@ -605,11 +605,9 @@ void VSLLib::process(unsigned mode)
 	1. resolveDefs
 	2. resolveSynonyms
 	3. foldOps     <--------+
-	4. foldConsts           | (*)
+	4. foldConsts           | (until fixpoint is reached)
 	5. inlineFuncs ---------+
 	6. countSelfReferences
-
-	((*): until no more changes occur)
 
 	Between two optimization steps, unused functions are deleted
 	(cleanup).  This speeds up optimization.

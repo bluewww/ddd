@@ -165,7 +165,7 @@ const unsigned stdOpt           = allOpts | 2;
 
 // The VSL library
 class VSLLib {
-    friend class VSLDefList;  // for VSLDefList::replace()
+    friend class VSLDefList;	    // VSLDefList::replace() needs this
 
 public:
     DECLARE_TYPE_INFO
@@ -189,9 +189,6 @@ private:
     int inlineFuncs();              // perform function inlining
     int countSelfReferences();      // count references internal to functions
     int cleanup();                  // remove unreferenced functions
-
-    // Front-end for optimizing functions
-    void process(unsigned mode = stdOpt);
 
     // Build function call with arglist as argument
     VSLNode *_call(const string& func_name, VSLNode *arglist);
@@ -263,9 +260,12 @@ public:
     VSLLib(istream& s, unsigned optimize = stdOpt);
 
     // Read
-    VSLLib& read(const string& lib_name, unsigned optimize = stdOpt);
-    VSLLib& read(istream& s, unsigned optimize = stdOpt);
+    virtual void update(const string& lib_name, unsigned optimize = stdOpt);
+    virtual void update(istream& s, unsigned optimize = stdOpt);
     static int parse();
+
+    // Optimize
+    virtual void optimize(unsigned mode = stdOpt);
 
     // Clone
     virtual VSLLib *dup() const;
