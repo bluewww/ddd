@@ -654,6 +654,27 @@ string BreakPoint::symbol() const
     return c + number_str() + c;
 }
 
+static bool is_false(const string& cond)
+{
+    return cond == "0" || cond.contains("0 && ", 0);
+}
+
+string BreakPoint::condition() const
+{
+    if (is_false(real_condition()))
+	return real_condition().after(" && ");
+    else
+	return real_condition();
+}
+
+bool BreakPoint::enabled() const
+{
+    if (is_false(real_condition()))
+	return false;
+    else
+	return myenabled;
+}
+
 
 //-----------------------------------------------------------------------------
 // Session stuff

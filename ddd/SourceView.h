@@ -175,8 +175,11 @@ class SourceView {
 	return move_bp(nr, address, origin, true);
     }
 
-    // Set condition of breakpoint NR to COND
-    static void set_bp_cond(int nr, const string& cond, Widget origin = 0);
+    // Set condition of breakpoint NR to COND.  If MAKE_FALSE is set,
+    // give COND a prefix such that it becomes `false'.  This is used
+    // in disabling breakpoints.
+    static void set_bp_cond(int nr, string cond, bool make_false = false,
+			    Widget origin = 0);
 
     // Find the line number at POS.  LINE_NR becomes the line number
     // at POS.  IN_TEXT becomes true iff POS is in the source area.

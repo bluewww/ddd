@@ -75,6 +75,9 @@ Source exploration
 - Conditional breakpoints, temporary breakpoints, and breakpoints with
   ignore counts now have their special symbols on their own.
 
+- Disabling and enabling breakpoints is now supported on all inferior
+  debuggers except JDB.
+
 - Value tips and selections work for struct members, too: you can
   point at `A.B', `A->B', or `A::B' and get the current value.
 

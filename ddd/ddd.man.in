@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-06\-12" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-06\-14" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -517,8 +517,7 @@ The `\fBDisable Breakpoint\fR' item is also accessible via the
 `\fBClear at ()\fR' button.  Just press and hold \fImouse button 1\fR
 on the button to get a popup menu.
 .PP
-Note: \s-1JDB\s+1 and some \s-1DBX\s+1 variants do not support
-breakpoint disabling.
+Note: \s-1JDB\s+1 does not support breakpoint disabling.
 .\"
 .\"
 .SS "Temporary Breakpoints"

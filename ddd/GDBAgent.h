@@ -562,6 +562,24 @@ public:
 	return type() == DBX;
     }
 
+    // True if debugger supports breakpoint conditions
+    bool has_conditions() const
+    {
+	return has_condition_command() || type() != JDB;
+    }
+
+    // True if debugger can disable breakpoints
+    bool can_disable() const
+    {
+	return has_disable_command() || has_conditions();
+    }
+
+    // True if debugger can enable breakpoints
+    bool can_enable() const
+    {
+	return has_enable_command() || has_conditions();
+    }
+
     // True if DBX output is to be processed verbatim
     bool verbatim() const        { return _verbatim; }
     bool verbatim(bool val)      { return _verbatim = val; }

@@ -121,46 +121,47 @@ public:
     BreakPoint (string& info_output, string arg = "", int number = 0);
 
     // Breakpoint number.
-    const string& number_str()   const { return mynumber_str; }
-    int           number()       const { return mynumber; }
+    const string& number_str() const { return mynumber_str; }
+    int number() const               { return mynumber; }
 
-    // Breakpoint symbol (`#N#' or `_N_')
-    string        symbol()       const;
+    // Breakpoint symbol (`#N#', `?N?', or `_N_')
+    string symbol() const;
 
     // Breakpoint type.
-    BPType        type()         const { return mytype; }
+    BPType type() const { return mytype; }
 
     // What to do when breakpoint is reached.
-    BPDispo       dispo()        const { return mydispo; }
+    BPDispo dispo() const { return mydispo; }
 
     // Whether breakpoint is enabled
-    bool          enabled()      const { return myenabled; }
+    bool enabled() const;
 
     // Breakpoint position
-    const string& file_name()    const { return myfile_name; }
-    int           line_nr()      const { return myline_nr; }
-    const string& address()      const { return myaddress; }
+    const string& file_name() const { return myfile_name; }
+    int line_nr() const             { return myline_nr; }
+    const string& address() const   { return myaddress; }
     string pos() const;
 
     // Watchpoint info
-    const string& expr()         const { return myexpr; }
-    WatchMode watch_mode()       const { return mywatch_mode; }
+    const string& expr() const   { return myexpr; }
+    WatchMode watch_mode() const { return mywatch_mode; }
 
     // Additional infos
-    const string& infos()         const { return myinfos; }
-    int ignore_count()            const { return myignore_count; }
-    const string& condition()     const { return mycondition; }
-    const StringArray& commands() const { return mycommands; }
+    const string& infos() const          { return myinfos; }
+    int ignore_count() const             { return myignore_count; }
+    const string& real_condition() const { return mycondition; }
+    const StringArray& commands() const  { return mycommands; }
+    string condition() const;
 
     // Argument of breakpoint-setting command, as passed to constructor
-    const string& arg()          const { return myarg; }
+    const string& arg() const { return myarg; }
 
     // Selection state
-    bool&         selected()        { return myselected; }
+    bool& selected() { return myselected; }
 
     // Associated glyphs in source and machine code
-    Widget&       source_glyph()    { return mysource_glyph; }
-    Widget&       code_glyph()      { return mycode_glyph; }
+    Widget& source_glyph() { return mysource_glyph; }
+    Widget& code_glyph()   { return mycode_glyph; }
 
     // True iff `enabled' status changed
     bool enabled_changed () const { return myenabled_changed; }

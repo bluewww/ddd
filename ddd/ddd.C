@@ -4726,7 +4726,7 @@ void update_arg_buttons()
     set_sensitive(break_menu[BreakItems::ClearAt2].widget,
 		  gdb->recording() || have_breakpoint_at_arg());
     set_sensitive(break_menu[BreakItems::Enable].widget,
-		  gdb->has_disable_command());
+		  gdb->can_enable());
     set_sensitive(break_menu[BreakItems::SetPC].widget,
 		  gdb->has_jump_command() || gdb->has_assign_command());
 

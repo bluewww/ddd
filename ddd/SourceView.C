@@ -925,8 +925,17 @@ bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
     return true;
 }
 
-void SourceView::set_bp_cond(int bp_nr, const string& cond, Widget w)
+void SourceView::set_bp_cond(int bp_nr, string cond,
+			     bool make_false, Widget w)
 {
+    if (make_false)
+    {
+	if (cond == "")
+	    cond = "0";
+	else
+	    cond = "0 && " + cond;
+    }
+
     if (gdb->has_condition_command())
     {
 	gdb_command(gdb->condition_command(itostring(bp_nr), cond), w);
@@ -1037,13 +1046,41 @@ bool SourceView::all_bps(const IntArray& nrs)
 void SourceView::enable_bps(IntArray& nrs, Widget w)
 {
     if (gdb->has_enable_command())
+    {
 	gdb_command(gdb->enable_command(all_numbers(nrs)), w);
+    }
+    else if (gdb->has_conditions())
+    {
+	for (int i = 0; i < nrs.size(); i++)
+	{
+	    BreakPoint *bp = bp_map.get(nrs[i]);
+	    if (bp == 0)
+		continue;
+
+	    // Clear `false' breakpoint condition
+	    set_bp_cond(bp->number(), bp->condition(), false, w);
+	}
+    }
 }
 
 void SourceView::disable_bps(IntArray& nrs, Widget w)
 {
     if (gdb->has_disable_command())
+    {
 	gdb_command(gdb->disable_command(all_numbers(nrs)), w);
+    }
+    else if (gdb->has_conditions())
+    {
+	for (int i = 0; i < nrs.size(); i++)
+	{
+	    BreakPoint *bp = bp_map.get(nrs[i]);
+	    if (bp == 0)
+		continue;
+
+	    // Set breakpoint condition to `false'
+	    set_bp_cond(bp->number(), bp->condition(), true, w);
+	}
+    }
 }
 
 void SourceView::delete_bps(IntArray& nrs, Widget w)
@@ -4845,8 +4882,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	}
 
 	// Grey out unsupported functions
-	XtSetSensitive(bp_popup[BPItms::Disable].widget, 
-		       gdb->has_disable_command());
+	XtSetSensitive(bp_popup[BPItms::Disable].widget, gdb->can_disable());
 	XtSetSensitive(bp_popup[BPItms::SetPC].widget,
 		       gdb->has_jump_command() || gdb->has_assign_command());
 
@@ -5467,9 +5503,9 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     {
 	BreakPoint *bp = bp_map.get(info->nrs[i]);
 	if (bp->enabled())
-	    can_disable = gdb->has_disable_command();
+	    can_disable = gdb->can_disable();
 	else
-	    can_enable  = gdb->has_enable_command();
+	    can_enable  = gdb->can_enable();
 
 	if (bp->dispo() != BPDEL)
 	    can_maketemp = (gdb->type() == GDB);
@@ -5737,7 +5773,14 @@ void SourceView::SetBreakpointConditionCB(Widget w,
     String cond = XmTextFieldGetString(info->condition);
 
     for (int i = 0; i < info->nrs.size(); i++)
-	set_bp_cond(info->nrs[i], cond, w);
+    {
+	BreakPoint *bp = bp_map.get(info->nrs[i]);
+	if (bp == 0)
+	    continue;
+
+	bool make_false = !bp->enabled() && !gdb->has_disable_command();
+	set_bp_cond(bp->number(), cond, make_false, w);
+    }
 
     XtFree(cond);
 }
@@ -6235,9 +6278,9 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
     XtSetSensitive(bp_area[BPButtons::Print].widget, 
 		   selected == 1 && selected_bp->type() == WATCHPOINT);
     XtSetSensitive(bp_area[BPButtons::Enable].widget,
-		   gdb->has_enable_command() && selected_disabled > 0);
+		   gdb->can_enable() && selected_disabled > 0);
     XtSetSensitive(bp_area[BPButtons::Disable].widget,
-		   gdb->has_disable_command() && selected_enabled > 0);
+		   gdb->can_disable() && selected_enabled > 0);
     XtSetSensitive(bp_area[BPButtons::Properties].widget, selected > 0);
     XtSetSensitive(bp_area[BPButtons::Delete].widget, selected > 0);
 }
