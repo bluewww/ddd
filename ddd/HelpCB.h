@@ -1,0 +1,115 @@
+// $Id$  -*- C++ -*-
+// Nora Help Callbacks
+
+// Copyright (C) 1993 Technische Universitaet Braunschweig, Germany.
+// Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+// 
+// This file is part of the NORA Library.
+// 
+// The NORA Library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Library General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+// 
+// The NORA Library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Library General Public License for more details.
+// 
+// You should have received a copy of the GNU Library General Public
+// License along with the NORA Library -- see the file COPYING.LIB.
+// If not, write to the Free Software Foundation, Inc.,
+// 675 Mass Ave, Cambridge, MA 02139, USA.
+// 
+// NORA is an experimental inference-based software development
+// environment. Contact nora@ips.cs.tu-bs.de for details.
+
+// $Log$
+// Revision 1.1  1995/05/01 15:47:29  zeller
+// Initial revision
+//
+// Revision 1.16  1995/04/12  11:47:55  zeller
+// New: ManualStringHelpCB() for built-in preformatted manual pages
+//
+// Revision 1.15  1995/04/12  00:28:43  zeller
+// New: built-in manual page browser
+//
+// Revision 1.14  1995/04/09  00:01:21  zeller
+// New: get version pixmap via widget-dependent procedure
+//
+// Revision 1.13  1995/04/08  19:31:52  zeller
+// New: provide individual pixmap for HelpOnVersion
+//
+// Revision 1.12  1995/04/05  11:21:42  zeller
+// New: HelpOnVersionCB
+// New: CommandHelpCB
+//
+
+#ifndef _Nora_HelpCB_h
+#define _Nora_HelpCB_h
+
+#include <X11/Intrinsic.h>
+#include "MString.h"
+
+// Select widget and call help on context.
+// May be used in a menu entry "Help On Context".
+extern void HelpOnContextCB(Widget widget, XtPointer client_data, 
+			    XtPointer call_data);
+
+// Call help on current shell window.
+// May be used in a menu entry "Help On Window".
+extern void HelpOnWindowCB(Widget widget, XtPointer client_data, 
+			   XtPointer call_data);
+
+// Call help on the top-level window.
+// May be used in a menu entry "Help On Version".
+extern void HelpOnVersionCB(Widget widget, XtPointer client_data, 
+			    XtPointer call_data);
+
+// Call help on help.
+// May be used in a menu entry "Help On Help".
+extern void HelpOnHelpCB(Widget widget, XtPointer client_data, 
+			 XtPointer call_data);
+
+// Call help for associated widget.
+// May be used as help callback for any primitive widget.
+extern void ImmediateHelpCB(Widget widget, XtPointer client_data, 
+			    XtPointer call_data);
+
+// Call help with "XmString s = XmString(client_data)" as text.
+// May be used for unchanged text display.
+extern void MStringHelpCB(Widget widget, XtPointer client_data, 
+			  XtPointer call_data);
+
+// Call help with "String s = String(client_data)" as text.
+// May be used for unchanged text display.
+extern void StringHelpCB(Widget widget, XtPointer client_data, 
+			 XtPointer call_data);
+
+// Call help with "String filename = String(client_data)" as text
+// May be used for file display.
+extern void FileHelpCB(Widget widget, XtPointer client_data, 
+		       XtPointer call_data);
+
+// Call help with "String command = String(client_data)" as text.
+// May be used for command output display.
+extern void CommandHelpCB(Widget widget, XtPointer client_data, 
+			  XtPointer call_data);
+
+// Call help with the manual page of the program.
+extern void HelpManualCB(Widget widget, XtPointer client_data, 
+			 XtPointer call_data);
+
+// Call help with a built-in formatted manual page "String s =
+// String(client_data)".
+extern void ManualStringHelpCB(Widget widget, XtPointer client_data, 
+			       XtPointer call_data);
+
+// Create a help text if the contextHelpString resource is not found
+extern MString (*DefaultHelpText)(Widget widget);
+
+// Pixmap to display at ``help on version''
+extern Pixmap (*helpOnVersionPixmapProc)(Widget w);
+
+#endif // _Nora_HelpCB_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
