@@ -346,3 +346,13 @@ string cmd_file(const string& command)
 
     return command;
 }
+
+// Return last modification time of FILE_NAME
+time_t last_modification_time(const string& file_name)
+{
+    struct stat sb;
+    if (stat(file_name, &sb))
+	return 0;
+
+    return sb.st_mtime;
+}

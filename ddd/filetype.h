@@ -31,6 +31,7 @@
 
 #include "bool.h"
 #include "strclass.h"
+#include <time.h>		// time_t
 
 // True if FILE_NAME is a regular file
 bool is_regular_file(const string& file_name);
@@ -67,6 +68,9 @@ bool is_directory(const string& file_name);
 
 // Return full file name of COMMAND
 string cmd_file(const string& command);
+
+// Return last modification time of FILE_NAME
+time_t last_modification_time(const string& file_name);
 
 #endif // _DDD_filetype_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
