@@ -812,7 +812,7 @@ replace_identifier	:	function_identifier
 				{
 				    ASSERT($1->OK());
 
-				    const string func_name = *$1;
+				    const string &func_name = *$1;
 				    if (vsllib->replace(func_name)
 					&& vsllib->replace("#" + func_name))
 				    {
