@@ -395,9 +395,9 @@ Widget createPannedGraphEdit(Widget parent, const _XtString name,
     static bool warned = false;
     if (!warned)
     {
-	cerr << "Warning: panned graph editors are not supported "
-	    "in this configuration.\n";
-	cerr << "Using scrolled graph editors instead.\n";
+	std::cerr << "Warning: panned graph editors are not supported "
+	  "in this configuration.\n";
+	std::cerr << "Using scrolled graph editors instead.\n";
 	warned = true;
     }
 

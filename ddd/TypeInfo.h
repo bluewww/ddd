@@ -71,7 +71,7 @@
 
 // No C++ run-time type information available - realize it manually
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 #include "assert.h"
 

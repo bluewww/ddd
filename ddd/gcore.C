@@ -42,7 +42,7 @@ char gcore_rcsid[] =
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <unistd.h>		// getopt
 
 #ifndef EXIT_SUCCESS
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 
     if (errors)
     {
-	cerr << "gcore: usage: gcore [-o file ] [-s] pid ...\n";
+	std::cerr << "gcore: usage: gcore [-o file ] [-s] pid ...\n";
     }
     else
     {
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 		continue;
 	    }
 
-	    cerr << "gcore: " << gcore_target << " dumped\n";
+	    std::cerr << "gcore: " << gcore_target << " dumped\n";
 	}
     }
 

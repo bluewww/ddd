@@ -30,7 +30,7 @@ char test_file_rcsid[] =
     "$Id$";
 
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include <Xm/Xm.h>
 #include <Xm/FileSB.h>
 
@@ -58,7 +58,7 @@ static void echoCB(Widget, XtPointer, XtPointer call_data)
     if (XmStringGetLtoR(cbs->value, DEFAULT_CHARSET, &filename)
 	&& filename != 0)
     {
-	cout << filename << "\n";
+	std::cout << filename << "\n";
 	XtFree(filename);
     }
 }

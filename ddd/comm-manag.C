@@ -2623,7 +2623,7 @@ static void process_init(const string& answer, void *)
     if (answer == NO_GDB_ANSWER)
 	return;			// Command was canceled
 
-    // cerr << answer;
+    // std::cerr << answer;
 }
 
 static void process_batch(const string& answer, void *)
@@ -2631,7 +2631,7 @@ static void process_batch(const string& answer, void *)
     if (answer == NO_GDB_ANSWER)
 	return;			// Command was canceled
 
-    // cerr << answer;
+    // std::cerr << answer;
 }
 
 static void process_config_frame(string& answer)

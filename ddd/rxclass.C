@@ -102,15 +102,15 @@ void regex::fatal(int errcode, const char *src)
     char *buffer = new char[length];
     regerror(errcode, &compiled, buffer, length);
 
-    cerr << "regex ";
+    std::cerr << "regex ";
     if (src)
-	 cerr << quote(src) << ": ";
-    cerr << "error " << errcode;
+	 std::cerr << quote(src) << ": ";
+    std::cerr << "error " << errcode;
     if (buffer[0] != '\0')
-	cerr << " - " << buffer;
-    cerr << "\n";
+	std::cerr << " - " << buffer;
+    std::cerr << "\n";
 #if !defined(REGCOMP_BROKEN) && !defined(GNU_LIBrx_USED)
-    cerr << "As a workaround, link with GNU librx - "
+    std::cerr << "As a workaround, link with GNU librx - "
 	"in `config.h', #define REGCOMP_BROKEN.\n";
 #endif
     delete[] buffer;

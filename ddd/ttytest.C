@@ -63,7 +63,7 @@ static void trace(const string& prefix, void *call_data)
     if (s_ends_with_nl)
 	s(s.length() - 1, 0) = "\\n";
 
-    cerr << prefix << s << '\n';
+    std::cerr << prefix << s << '\n';
 }
 
 // Invoked whenever text is received from the inferior
@@ -103,7 +103,7 @@ void exitHP(Agent *, void *client_data, void *)
 // Invoked whenever the inferior dies
 void diedHP(Agent *a, void *client_data, void *call_data)
 {
-    cerr << a->path() << ": " << STATIC_CAST(char *,call_data) << "\n";
+    std::cerr << a->path() << ": " << STATIC_CAST(char *,call_data) << "\n";
 
     TTYAgent& tty = *((TTYAgent *)client_data);
     tty.shutdown();
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 
     if (command.empty())
     {
-	cerr << XtName(toplevel) 
+	std::cerr << XtName(toplevel) 
 	     << ": usage: " << XtName(toplevel) << " COMMAND [ARGS...]\n";
 	return 1;
     }

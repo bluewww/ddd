@@ -13,7 +13,7 @@
 // can't nicely echo assertions because they contain quotes
 
 #define tassert(ex) {if (!(ex)) \
-                     { cerr << "failed assertion at " << __LINE__ << "\n"; \
+                     { std::cerr << "failed assertion at " << __LINE__ << "\n"; \
                        abort(); } }
 
   const string X0 = "I say: Hello";

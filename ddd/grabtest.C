@@ -31,7 +31,7 @@
 #include <unistd.h>		// sleep()
 #include <stdlib.h>		// atoi()
 #include <sys/types.h>
-#include <iostream.h>
+#include <iostream>
 #include <signal.h>
 
 int main(int argc, char *argv[])
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     Display *display = XOpenDisplay((char *)0);
     if (display == 0)
     {
-	cerr << "Cannot open display\n";
+	std::cerr << "Cannot open display\n";
 	exit(1);
     }
     Window window = DefaultRootWindow(display);
@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
     if (argc > 1 && atoi(argv[1]) > 0)
 	seconds = atoi(argv[1]);
     
-    cout << "Grabbing...";
-    cout.flush();
+    std::cout << "Grabbing...";
+    std::cout.flush();
 
     // We pass GrabModeAsync for the keyboard such that it will keep
     // on working.
@@ -67,35 +67,35 @@ int main(int argc, char *argv[])
     switch (grab_result)
     {
     case GrabSuccess:
-	cout << "GrabSuccess\n";
-	cout << "Sleeping for " << seconds << " seconds...";
-	cout.flush();
+	std::cout << "GrabSuccess\n";
+	std::cout << "Sleeping for " << seconds << " seconds...";
+	std::cout.flush();
 
 	sleep(seconds);
 	XUngrabPointer(display, CurrentTime);
 	XFlush(display);
 
-	cout << "done.\n";
+	std::cout << "done.\n";
 	break;
 
     case GrabNotViewable:
-	cout << "GrabNotViewable\n";
+	std::cout << "GrabNotViewable\n";
 	break;
 
     case AlreadyGrabbed:
-	cout << "AlreadyGrabbed\n";
+	std::cout << "AlreadyGrabbed\n";
 	break;
 
     case GrabFrozen:
-	cout << "GrabFrozen\n";
+	std::cout << "GrabFrozen\n";
 	break;
 
     case GrabInvalidTime:
-	cout << "GrabInvalidTime\n";
+	std::cout << "GrabInvalidTime\n";
 	break;
 
     default:
-	cout << grab_result << "\n";
+	std::cout << grab_result << "\n";
 	break;
     }
 

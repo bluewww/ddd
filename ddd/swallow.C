@@ -37,7 +37,7 @@ char swallow_rcsid[] =
 #include "Swallower.h"
 
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -63,7 +63,7 @@ static void CreatedCB(Widget w, XtPointer client_data, XtPointer call_data)
     Window window = findWindow(XtDisplay(w), info->window, name);
     if (window != None)
     {
-	cout << "Using window " << (void *)window << "\n";
+	std::cout << "Using window " << (void *)window << "\n";
 
 	// We got our window!
 	XtVaSetValues(w, XtNwindow, window, XtPointer(0));
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 
     if (argc < 2)
     {
-	cerr << argv[0] << ": usage: " << argv[0] << " window-name\n";
+	std::cerr << argv[0] << ": usage: " << argv[0] << " window-name\n";
 	exit(EXIT_FAILURE);
     }
 
@@ -100,13 +100,13 @@ int main(int argc, char *argv[])
 
     if (child == None)
     {
-	cout << "Waiting for " << argv[1] << " to be created\n";
+	std::cout << "Waiting for " << argv[1] << " to be created\n";
 	XtAddCallback(swallower, XtNwindowCreatedCallback, CreatedCB,
 		      XtPointer(argv[1]));
     }
     else
     {
-	cout << "Using window " << (void *)child << '\n';
+	std::cout << "Using window " << (void *)child << '\n';
 	XtRealizeWidget(toplevel);
     }
 

@@ -30,7 +30,7 @@ char test_graph_rcsid[] =
     "$Id$";
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 #include <stdlib.h>
 
@@ -201,17 +201,17 @@ void PositionChanged(Widget, XtPointer, XtPointer call_data)
 
 static void OneCB(Widget widget, XtPointer, XtPointer)
 {
-    cout << longName(widget) << "\n";
+    std::cout << longName(widget) << "\n";
 }
 
 static void TwoCB(Widget widget, XtPointer, XtPointer)
 {
-    cout << longName(widget) << "\n";
+    std::cout << longName(widget) << "\n";
 }
 
 static void ThreeCB(Widget widget, XtPointer, XtPointer)
 {
-    cout << longName(widget) << "\n";
+    std::cout << longName(widget) << "\n";
 }
 
 static MMDesc simpleMenu[] =
@@ -228,7 +228,7 @@ void Popup(Widget w, XEvent *event, String *, Cardinal *)
 {
     if (event->type != ButtonPress && event->type != ButtonRelease)
     {
-	cerr << "popup(): may only be used with button events\n";
+	std::cerr << "popup(): may only be used with button events\n";
 	return;
     }
 

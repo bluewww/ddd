@@ -118,9 +118,9 @@ int ArgNode::instantiateArgs(VSLDef *, VSLNode **node, VSLNode *values[],
 #if 0
     if (VSEFlags::show_optimize)
     {
-	cout << "\n" << cdef->longname() << ": instantiateArgs: replacing\n" 
+	std::cout << "\n" << cdef->longname() << ": instantiateArgs: replacing\n" 
 	    << *this << "\nby " << *newNode << '\n';
-	cout.flush();
+	std::cout.flush();
     }
 #endif
 
