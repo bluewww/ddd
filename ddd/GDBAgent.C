@@ -398,7 +398,9 @@ bool GDBAgent::send_qu_array (string   cmds [],
 			      OQACProc on_qu_array_completion,
 			      void*    qa_data)
 {
-    if (state != ReadyWithPrompt || qu_count == 0)
+    if (qu_count == 0)
+	return true;
+    if (state != ReadyWithPrompt)
 	return false;
 
     state = BusyOnQuArray;
@@ -407,7 +409,7 @@ bool GDBAgent::send_qu_array (string   cmds [],
 
     init_qu_array (cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
     
-    // erste Frage losschicken
+    // Send first question
     write((const char *)cmd_array[0], cmd_array[0].length());
     flush();
 
