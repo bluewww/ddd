@@ -2061,7 +2061,8 @@ Ddd*preferences*general*helpString:	\
 @rm These are the @sl General Preferences@rm.\n\
 \n\
 @tt \267 @rm If @bf Enable button tips @rm is set, @DDD@ shows a hint \
-whenever you move over a button.\n\
+whenever the mouse pointer\n\
+    moves over a button.\n\
 @tt \267 @rm If @bf Iconify all windows at once @rm is set, all @DDD@ windows \
 are iconified as a group.\n\
     Otherwise, windows are iconified separately.\n\
@@ -2072,8 +2073,9 @@ the @key TAB @rm key completes\n\
 in the @DDD@ debugger console only.\n\
 @tt \267 @rm If @bf Suppress X Warnings @rm is set, \
 X warnings are silently ignored.\n\
-@tt \267 @rm If @bf Save command history on exit @rm is set,\n\
-    the command history is automatically saved when @DDD@ exits.\n\
+@tt \267 @rm If @bf Save command history on exit @rm is set, \
+the command history is\n\
+    automatically saved when @DDD@ exits.\n\
     Otherwise, the command history is discarded.\n\
 \n\
 Use the buttons above to view and change other preferences.
@@ -2095,16 +2097,18 @@ Ddd*preferences*source*helpString:	\
 \n\
 @tt \267 @rm If @bf Use glyphs @rm is set, \
 positions and breakpoints are shown as glyphs.\n\
-    Otherwise, positions and breakpoints are shown as text.\n\
+    Otherwise, they are shown as characters in the text.\n\
 @tt \267 @rm If @bf Cache source files @rm is set, \
 source texts are cached in memory.\n\
-    Otherwise, sources are re-read upon each source change.\n\
+    Otherwise, sources are read from disk upon each source change.\n\
 @tt \267 @rm If @bf Cache machine code @rm is set, \
 disassembled code is cached in memory.\n\
     Otherwise, code is re-disassembled upon each function change.\n\
 @tt \267 @rm If @bf Refer to sources by full path name @rm is set, \n\
     source code locations are referred by full source file paths.\n\
     Otherwise, only the base name is used.\n\
+@rr \267 @rm In @bf Tab Width@rm, you can set the spacing of tab stops.\n\
+    Setting the tab width to 8 sets a tab stop every 8 characters.\n\
 \n\
 Use the buttons above to view and change other preferences.
 
@@ -2127,15 +2131,17 @@ Ddd*preferences*tabWidth.titleString:	 Tab Width
 Ddd*preferences*data*helpString:	\
 @rm These are the @sl Data Preferences@rm.\n\
 \n\
-@tt \267 @rm If @bf Show grid @rm is set, the grid is displayed.\n\
+@tt \267 @rm If @bf Show grid @rm is set, a grid is displayed\
+ in the data window.\n\
 @tt \267 @rm If @bf Show edge hints @rm is set, edge hints are displayed.\n\
 @tt \267 @rm If @bf Snap displays to grid @rm is set, \n\
     displays are always aligned on the grid.\n\
-@tt \267 @rm If @bf Compact layout @rm is set, the graph is layouted\n\
-    in a more compact fashion; suitable for homogenous structures only.\n\
+@tt \267 @rm If @bf Compact layout @rm is set, the graph is layouted\
+ in a compact fashion.\n\
+    This is suitable for homogeneous structures only.\n\
     Otherwise, the standard layout algorithm is used.\n\
-@tt \267 @rm If @bf Automatic layout @rm is set, the graph is layouted\n\
-    after each change.\n\
+@tt \267 @rm If @bf Automatic layout @rm is set, the graph is layouted\
+ after each change.\n\
     Otherwise, layout can be invoked manually.\n\
 \n\
 Use the buttons above to view and change other preferences.
