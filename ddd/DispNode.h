@@ -101,17 +101,10 @@ protected:
     
     virtual string str() const { return myname; }
 
+    DispNode(const DispNode& node);
+
 private:
-    DispNode(const DispNode& node)
-	: BoxGraphNode(node),
-	  mydisp_nr(0), myname(), myaddr(), myscope(), mydepends_on(),
-	  myactive(false), saved_node_hidden(false),
-	  mydeferred(false), myclustered(0), myconstant(false),
-	  disp_value(0), myselected_value(0), disp_box(0),
-	  mylast_change(0), alias_of(0)
-    {
-	assert(0);
-    }
+    // Prohibit assignment
     DispNode& operator = (const DispNode&) { assert(0); return *this; }
 
 public:
@@ -124,6 +117,12 @@ public:
 
     // Destructor
     ~DispNode();
+
+    // Duplication
+    GraphNode *dup() const
+    {
+	return new DispNode(*this);
+    }
 
     // Resources
     int disp_nr()  const             { return mydisp_nr; }
@@ -185,7 +184,7 @@ public:
     void select (DispValue *dv = 0);
 
     // Copy selection state from SRC
-    void copy_selection_state(DispNode *src);
+    void copy_selection_state(const DispNode& src);
 
     // Disable and enable manually
     void disable();
