@@ -4250,11 +4250,8 @@ to access core dumps, source files, or attaching to processes.\n\
 \n\
 To open a program, use LBL(File) | LBL(Open Program).
 
-Ddd*no_source.helpString: \
-@rm @GDB@ cannot find the source code of your program.\n\
-\n\
-Here are some hints that may help you out:\n\
-ITEM In order to debug a program effectively, you need to generate\n\
+define(NO_SOURCE_HELP,
+[ITEM In order to debug a program effectively, you need to generate\n\
     debugging information when you compile it.  Without debugging \
 information,\n\
     @GDB@ will be unable to locate the source code.  To request debugging\n\
@@ -4263,7 +4260,13 @@ ITEM You may need to tell @GDB@ where the source code files are.\n\
     Invoke LBL(Edit) | LBL(@GDB@ Settings) and look for appropriate entries.\n\
 ITEM Using GDB, you can continue at machine code level \
 by enabling the\n\
-    Machine Code Window.  Use LBL(Source) | LBL(Display Machine Code).
+    Machine Code Window.  Use LBL(Source) | LBL(Display Machine Code).\n])dnl
+
+Ddd*no_source_and_no_code.helpString: \
+@rm @GDB@ cannot find the source code of your program.\n\
+\n\
+Here are some hints that may help you out:\n\
+NO_SOURCE_HELP
 
 Ddd*program_not_running.helpString: \
 @rm Your program is not running.\n\
@@ -4316,16 +4319,7 @@ and there is no source code for the current execution position.\n\
 Here are some hints that may help you out:\n\
 ITEM Use LBL(Status) | LBL(Up) to step out of libraries \
 and to enter your own functions.\n\
-ITEM In order to debug a program effectively, you need to generate\n\
-    debugging information when you compile it.  Without debugging \
-information,\n\
-    @GDB@ will be unable to locate the source code.  To request debugging\n\
-    information, specify the SAMP(-g) option when you run the compiler.\n\
-ITEM You may need to tell @GDB@ where the source code files are.\n\
-    Invoke LBL(Edit) | LBL(@GDB@ Settings) and look for appropriate entries.\n\
-ITEM Using GDB, you can continue at machine code level \
-by enabling the\n\
-    Machine Code Window.  Use LBL(Source) | LBL(Display Machine Code).
+NO_SOURCE_HELP
 
 define(STOPPED_HELP,
 [ITEM To find out how you got here, use LBL(Status) | LBL(Backtrace).\n\
@@ -4341,12 +4335,12 @@ LBL(Data) | LBL(Display\n\
 ITEM To set and clear further breakpoints, use \
 LBL(Source) | LBL(Edit Breakpoints).\n\
     As a shortcut, you may also press the BUTTON(right mouse button) on a\n\
-    location or breakpoint to get a popup menu.\n])dnl
+    location or breakpoint to get a popup menu.])dnl
 
 Ddd*stopped_at_passed_signal.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
-STOPPED_HELP\
+STOPPED_HELP\n\
 \n\
 When resuming execution, the @SIGNAL_DESCRIPTION@ signal \
 will be passed to the program.\n\
@@ -4358,7 +4352,7 @@ use the @GDB@ command KBD(info handle).
 Ddd*stopped_at_ignored_signal.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
-STOPPED_HELP\
+STOPPED_HELP\n\
 \n\
 When resuming execution, the @SIGNAL_DESCRIPTION@ signal \
 will EMPH(not) be passed to the program.\n\
@@ -4370,6 +4364,6 @@ use the @GDB@ command KBD(info handle).
 Ddd*stopped.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
-STOPPED_HELP\
+STOPPED_HELP\n\
 ITEM Use the functions of the LBL(Program) menu to resume execution\n\
     and step through your program.

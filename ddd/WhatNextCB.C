@@ -78,6 +78,12 @@ static bool no_program()
     return current_file == "";
 }
 
+static bool no_source_and_no_code()
+{
+    return !source_view->have_source()
+	&& (gdb->type() != GDB || !app_data.disassemble);
+}
+
 static bool no_gdb()
 {
     return !gdb_initialized;
@@ -214,9 +220,9 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
 	return;
     }
 
-    if (!source_view->have_source())
+    if (no_source_and_no_code())
     {
-	hint_on("no_source");
+	hint_on("no_source_and_no_code");
 	return;
     }
 
