@@ -237,11 +237,14 @@ static bool have_cmd(const string& cmd)
     return cmd_file(cmd).contains('/', 0);
 }
 
-// Return an appropriate debugger type from ARGC/ARGV
-DebuggerType guess_debugger_type(int argc, char *argv[])
+// Return an appropriate debugger type from ARGC/ARGV.
+// Set SURE if debugger type could be deduced from args.
+DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 {
-    bool have_perl   = have_cmd("perl");
-    bool have_python = have_cmd("python");
+    sure = true;
+
+    static bool have_perl   = have_cmd("perl");
+    static bool have_python = have_cmd("python");
 
     // Check for Perl and Python scripts
     int i;
@@ -271,6 +274,10 @@ DebuggerType guess_debugger_type(int argc, char *argv[])
     }
 
     // Check for executables.
+    static bool have_gdb = have_cmd("gdb");
+    static bool have_dbx = have_cmd("dbx");
+    static bool have_xdb = have_cmd("xdb");
+
     for (i = 1; i < argc; i++)
     {
 	string arg = argv[i];
@@ -280,19 +287,20 @@ DebuggerType guess_debugger_type(int argc, char *argv[])
 
 	if (is_exec_file(arg))
 	{
-	    if (have_cmd("gdb"))
+	    if (have_gdb)
 		return GDB;
 
-	    if (have_cmd("dbx"))
+	    if (have_dbx)
 		return DBX;
 
-	    if (have_cmd("xdb"))
+	    if (have_xdb)
 		return XDB;
 	}
     }
 
     // Search class path for Java classes.
-    if (have_cmd("jdb"))
+    static bool have_jdb = have_cmd("jdb");
+    if (have_jdb)
     {
 	for (i = 1; i < argc; i++)
 	{
@@ -328,14 +336,16 @@ DebuggerType guess_debugger_type(int argc, char *argv[])
 	}
     }
 
+    sure = false;
+
     // Return a default inferior debugger
-    if (have_cmd("gdb"))
+    if (have_gdb)
 	return GDB;
 
-    if (have_cmd("dbx"))
+    if (have_dbx)
 	return DBX;
 
-    if (have_cmd("xdb"))
+    if (have_xdb)
 	return XDB;
 
     // Nothing found -- try GDB.

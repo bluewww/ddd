@@ -43,8 +43,9 @@ extern GDBAgent *new_gdb(DebuggerType type,
 			 XtAppContext app_context,
 			 int argc, char *argv[]);
 
-// Guess an appropriate debugger type from ARGC/ARGV
-extern DebuggerType guess_debugger_type(int argc, char *argv[]);
+// Guess an appropriate debugger type from ARGC/ARGV.
+// Set SURE if debugger type could be deduced from args.
+extern DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure);
 
 // Determine debugger type from given DEBUGGER_NAME
 extern bool get_debugger_type(const string& debugger_name, DebuggerType& type);
