@@ -15,16 +15,16 @@ To build a complete DDD from sources, you need:
 
      Some other C++ compilers have been reported to compile DDD as
      well.  Good results have been reported with Sun CC 4.0.  SGI CC
-     and AIX xlC compile DDD, but introduce some subtle errors.
-     Cfront 3.0 does not compile DDD.  In doubt, GCC is preferred.
+     and AIX xlC are not recommended - they compile DDD, but introduce
+     some subtle errors.  Cfront 3.0 does not compile DDD.
+     In doubt, GCC is preferred.
 
    * A Motif Widget library, either LessTif (0.83 or later) or
      OSF/Motif (1.1 or later).  See the DDD WWW site and the
      `patches/' directory for useful LessTif patches.  The most recent
      LessTif release is available via `http://www.lesstif.org/'.
 
-   * The X window library (Xlib) and X toolkit library (Xt), 
-     X11 Release 4 or later.
+   * The X window library (Xlib) and X toolkit library (Xt), X11R4 or later.
 
    * A `make' program.  GNU make is recommended.
 
@@ -36,8 +36,8 @@ The following packages are recommended, but not required:
      monochrome icons.
 
    * The Athena Widget library (from X11R5 or later).  Having the
-     Athena Widget library is convenient for supporting
-     two-dimensional scrollbars.
+     Athena Widget library is convenient for supporting panners -
+     a kind of two-dimensional scrollbar.
 
 
 
@@ -66,10 +66,12 @@ To run DDD, you need:
      programs.
 
 
-     (*) XDB may no longer be supported in future DDD releases.
+     (*) XDB will no longer be supported in future DDD releases.
          You can use HP's Wildebeest (WDB) instead, a free GDB port to
          HP-UX (`http://www.hp.com/lang/tools/Debuggers/WDB/').
          Please let us know your experiences with DDD and WDB.
+
+   * An X server.  Without X, DDD does not run.
 
 
 The following recommended helper applications should be in the user path:
@@ -131,10 +133,21 @@ The simplest way to compile DDD is:
 
   4. `cd' to the directory containing the DDD package source code
      (that is, the directory named `ddd-<release>', *not* `ddd') and
-     type `./configure' to configure DDD for your system.  If you're
-     using `csh' on an old version of System V, you might need to type
-     `sh ./configure -v' instead to prevent `csh' from trying to
-     execute `configure' itself.
+     type
+     
+	$ ./configure
+	
+     to configure DDD for your system.  If you're using `csh' on an
+     old version of System V, you might need to type
+
+	% sh ./configure -v
+	
+     instead to prevent `csh' from trying to execute `configure' itself.
+     If you're building DDD on Windows using Cygwin32, type
+     
+	$ bash ./configure -v
+
+     instead.
 
      Running `configure' takes awhile.  While running, it prints some
      messages telling which features it is checking for.
@@ -159,18 +172,25 @@ The simplest way to compile DDD is:
      may also have to supply their locations.  See `Optional
      features', below.
 
-  6. Now type `make' to build DDD.  Any modern MAKE flavors should do,
-     but for incremental reconstruction, GNU MAKE is required on most
+  6. Now type
+  
+	$ make
+	
+     to build DDD.  Any modern MAKE flavors should do, but for
+     incremental reconstruction, GNU MAKE is required on most
      systems.  Please report any bugs and problems to
-     `ddd-bugs@ips.cs.tu-bs.de'.
+     the DDD maintainers <ddd-bugs@ips.cs.tu-bs.de>.
 
   7. Building DDD takes awhile.  While DDD is being built, you may
      wish to read and/or print the documentation shipped with DDD.
      See the "Documentation" section, below.
 
-  8. For a simple check, type `make check'.  This creates a sample
-     program `cxxtest' and then runs DDD on it by invoking `./ddd
-     cxxtest'.  Enjoy!
+  8. For a simple check, type
+  
+	$ make check
+	
+     This creates a sample C++ program `cxxtest' and then runs DDD
+     on it by invoking `./ddd cxxtest'.  Enjoy!
 
   9. If DDD crashes immediately after startup or after a few
      interactions, first check your configuration (the output of
@@ -182,8 +202,12 @@ The simplest way to compile DDD is:
      the DDD WWW page `http://www.cs.tu-bs.de/softech/ddd/' for
      patches, people, and pointers.
 
- 10. Optionally, type `make strip' to reduce the size of the `ddd'
-     executable by stripping the debugging information.
+ 10. Optionally, type
+ 
+	$ make strip
+	
+     to reduce the size of the `ddd' executable by stripping the
+     debugging information.
 
  11. Please consider sharing your DDD binary with other people lacking
      Motif or a sane build environment.  As the DDD maintainers have
@@ -191,11 +215,14 @@ The simplest way to compile DDD is:
      binaries for every single configuration.  For details, see
      `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/bin/'.
 
- 12. Type `make install'.  This installs the DDD executable `ddd' in
-     some public place (usually in `/usr/local/bin/') and the DDD
-     manual page `ddd.1' (in `/usr/local/man/man1/').  See
-     `Installation Names', below, on how to configure DDD to use other
-     locations and names.
+ 12. Type
+ 
+	$ make install
+	
+     This installs the DDD executable `ddd' in some public place
+     (usually in `/usr/local/bin/') and the DDD manual page `ddd.1'
+     (in `/usr/local/man/man1/').  See `Installation Names', below,
+     on how to configure DDD to use other locations and names.
 
  13. Like every good X citizen, DDD comes with an application defaults
      file, named `ddd/Ddd'.  By default, this file is already compiled
@@ -209,20 +236,30 @@ The simplest way to compile DDD is:
      files are commonly found.
 
  14. You can remove the program binaries, libraries and object files
-     from the source directory by typing `make clean'.
+     from the source directory by typing
+     
+	$ make clean
 
      To also remove the Makefiles, the header files containing
      system-dependent definitions, and `config.status' (all the files
-     that `configure' created), type `make distclean'.
+     that `configure' created), type
+     
+	$ make distclean
 
      To also remove the system-independent derived files included in
      the DDD distribution for your convenience (such as LEX and YACC
-     output), type `make realclean' instead.
+     output), type
+     
+	$ make realclean
 
-     (There is also `make ultraclean' that removes *every* derived
-     file; don't use it unless you know what you do.)
+     instead.  (There is also `make ultraclean' that removes *every*
+     derived file; don't use it unless you know what you do.)
 
- 15. You can remove DDD from your system by typing `make uninstall'.
+ 15. You can remove DDD from your system by typing
+ 
+	$ make uninstall
+
+     This undoes all effects of a previous `make install'.
 
 
 Installation Details
