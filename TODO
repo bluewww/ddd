@@ -11,10 +11,6 @@ it (or include it in this list :-)
 Projects marked with an `*' represent work in progress.
 Volunteers for these and other projects are welcome!
 
-001. Have DDD ported to a free widget set -- Athena or lwlib, for
-     example.  DDD could then be included in the GNU distribution.
-     [Discarded; wait for LessTif people to finish.  -AZ]
-
 003. Support full annotation mode (`gdb --annotate=2').  This would
      make prompt recognition easier and allow full trace of the current
      GDB status.  Disadvantage: won't work with earlier GDBs and requires
@@ -277,11 +273,6 @@ Volunteers for these and other projects are welcome!
 
 144. When moving the source window, move the command tool, too.
 
-151. When `Disable/Enable' is applied to a display part, make it act like
-     `Show/Hide'; `Show/Hide' would no more be required.  Likewise,
-     apply `Delete' to display parts only.  See also 143, 128, and
-     088.
-
 152. When dereferencing, make new displays inherit the show/hide,
      enable/disable state of their ancestors.  How about selection
      state?
@@ -351,6 +342,24 @@ Volunteers for these and other projects are welcome!
 
 174. Realize Arg buttons as cascade buttons, showing a pulldown menu
      with additional functions - i.e. base conversions under `New
-     Display', `Show 1' under `Show', etc.
+     Display', `Show 1' under `Show', `Lookup type` under `Lookup`
+     etc.
 
-175. (Insert your project idea here)
+175. Theodore Papadopoulo <papadop@sophia.inria.fr> suggests a smaller 
+     font for large matrices.
+
+176. Theodore Papadopoulo <papadop@sophia.inria.fr> wants the
+     capability of "freezing" some displayed values. By this, I mean
+     that I want to have some displayed data to remain displayed
+     (presumably as a copy?) as it is at the moment the user asks for
+     this freezing.  This would give to the user a simple way of
+     comparing the state of the program in different (but related)
+     functions, in different calls of a same function or in different
+     runs of the program with different (but again related)
+     parameters. And as far as I can see it, this is purely some
+     interface stuff so does not need for any support from the
+     debugger.
+
+177. Create menu children in the background, using a work procedure.
+
+178. (Insert your project idea here)
