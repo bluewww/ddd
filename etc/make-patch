@@ -100,7 +100,7 @@ rm -fr ddd-*/etc ddd-*/tests ddd-*/.RELEASE
 echo "This patch will bring a DDD $yesterday release up to DDD $today."
 echo 
 echo "This patch only affects source files.  Derived files as contained"
-echo "in the DDD source package must be reconstructed using `make'."
+echo "in the DDD source package must be reconstructed using \`make'."
 echo
 echo "To apply this patch, do the following:"
 echo
