@@ -32,38 +32,39 @@ char hostname_rcsid[] =
 #include "hostname.h"
 #include "config.h"
 
-#ifndef NO_UNAME_AGENTS
-#include "Agent.h"
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
 extern "C" {
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-// Get hostname
-#if defined(HAVE_GETHOSTNAME)
-#if !defined(HAVE_GETHOSTNAME_DECL)
-    int gethostname(char *name, size_t size);
-#endif
-#elif defined(HAVE_UNAME)
-#ifdef HAVE_SYS_UTSNAME_H
+// Get hostname.
+// We prefer uname() on gethostname() since uname() is POSIX-defined.
+// Also, Sullivan N. Beck <sbeck@cise.ufl.edu> states that Solaris 2.6
+// has trouble with the gethostname() decl below.  Note that if uname()
+// is available, gethostname() is usually provided as a compatibility
+// function calling... guess what? uname().
+#if HAVE_UNAME
+#if HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
 #endif
-#if !defined(HAVE_UNAME_DECL)
+#if !HAVE_UNAME_DECL
     int uname(struct utsname *name);
 #endif
-#endif // defined(HAVE_UNAME)
+#elif HAVE_GETHOSTNAME
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#if !HAVE_GETHOSTNAME_DECL
+    int gethostname(char *name, size_t size);
+#endif // !HAVE_GETHOSTNAME_DECL
+#endif // HAVE_GETHOSTNAME
 
-// Get host aliases
-#if defined(HAVE_GETHOSTBYNAME) && defined(HAVE_NETDB_H)
+
+// Get host aliases.
+#if HAVE_GETHOSTBYNAME && HAVE_NETDB_H
 #include <netdb.h>
 
-#ifdef HAVE_SYS_SOCKET_H
+#if HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
 
@@ -71,8 +72,7 @@ extern "C" {
 #define AF_INET 2		// internetwork: UDP, TCP, etc.
 #endif
 
-#endif // defined(HAVE_GETHOSTBYNAME) && defined(HAVE_NETDB_H)
-
+#endif // HAVE_GETHOSTBYNAME && HAVE_NETDB_H
 }
 
 // Return the host name
@@ -86,33 +86,30 @@ char *hostname()
 
     bool okay = false;
 
-#if defined(HAVE_GETHOSTNAME)
-    if (!okay && gethostname(buffer, BUFSIZ) == 0)
-    {
-	okay = true;
-    }
-#elif defined(HAVE_UNAME)
+#if HAVE_UNAME
     struct utsname un;
     if (!okay && uname(&un) >= 0)
     {
 	strcpy(buffer, un.nodename);
 	okay = true;
     }
-#endif
+#elif HAVE_GETHOSTNAME
+    if (!okay && gethostname(buffer, BUFSIZ) == 0)
+    {
+	okay = true;
+    }
+#endif // HAVE_GETHOSTNAME
 
-#ifndef NO_UNAME_AGENTS
     if (!okay)
     {
-	Agent agent("uname -n");
-	agent.start();
-
-	if (agent.inputfp())
+	FILE *fp = popen("uname -n", "r");
+	if (fp != 0)
 	{
 	    buffer[0] = '\0';
-	    fscanf(agent.inputfp(), "%s", buffer);
+	    fscanf(fp, "%s", buffer);
 	}
+	pclose(fp);
     }
-#endif
 
     if (okay)
 	return name = strcpy(new char[strlen(buffer) + 1], buffer);
@@ -138,7 +135,7 @@ static char *_fullhostname(char *most_qualified_host)
     if (most_qualified_host == 0)
 	most_qualified_host = hostname();
 
-#ifdef HAVE_GETHOSTBYNAME
+#if HAVE_GETHOSTBYNAME
     struct hostent *h = gethostbyname(most_qualified_host);
     if (h)
     {
