@@ -2443,7 +2443,7 @@ Ddd*helpMenu.onVersion.documentationString:	\
 
 ! Ddd*preferences_popup*okLabelString: 		Close
 Ddd*preferences_popup*cancelLabelString:	Reset
-Ddd*preferences_popup.title:			DDD: Preferences
+Ddd*preferences_popup.title:			DDD Preferences
 
 Ddd*preferences*buttons.orientation: 		XmHORIZONTAL
 Ddd*preferences*buttons.borderWidth:  		0
@@ -4558,7 +4558,7 @@ LBL(Help) | LBL([DDD] Manual) or invoke DDD with the SAMP(--manual) option.\n\
 \n\
 Click on LBL(Exit) to exit DDD.
 
-Ddd*fatal_dialog_popup.title: DDD: @TITLE@
+Ddd*fatal_dialog_popup.title: DDD: Oops
 Ddd*fatal_dialog.messageString:	  \
 @rm Internal error
 Ddd*fatal_dialog*okLabelString:	       Exit
