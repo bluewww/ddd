@@ -4,7 +4,7 @@ static char * undisplay_xx_xpm[] = {
 " 	c none   m none   s Background",
 ".	c grey50 m black",
 "X	c grey50 m black",
-"o	c white  m white",
+"o	c grey75 m white",
 "     ..               ..     ",
 "   XX...XXXXXXXXXXXXX...XX   ",
 "   Xoo...ooooooooooo...ooXX  ",

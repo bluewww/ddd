@@ -549,10 +549,12 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 	$(SED) "s/static char/static unsigned char/g" > $@~
 	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
-# Old makes will fail on these rules.  In case of trouble, use GNU make.
+# Old makes will fail on pattern rules.  No big deal, unless you want to
+# modify the icons.  In case of trouble, use GNU make.
 %-xx.xpm: %.xpm
 	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
-	$(SED) 's/c black /c grey50/' $< | $(SED) "s/$$base/&_xx/" > $@
+	$(SED) 's/c black /c grey50/' $< | \
+	$(SED) 's/c white /c grey75/' | $(SED) "s/$$base/&_xx/" > $@
 
 %-xx.xbm: %-xx.xpm
 	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
@@ -1047,12 +1049,18 @@ uninstall-man:
 .PHONY: picsclean
 picsclean:
 	$(RM) $(PICS) ./#*#
-	-test -d $(picdir) && cd $(picdir) && $(RM) $(CLEAN_STUFF) ./#*#
+	-cd $(picdir) && $(RM) $(CLEAN_STUFF) ./#*#
+
+.PHONY: iconclean
+iconclean:
+	$(RM) $(ICONS) ./#*#
+	-cd $(icondir) && $(RM) $(CLEAN_STUFF) ./#*#
+	-cd $(toolbardir) && $(RM) $(CLEAN_STUFF) ./#*#
 
 .PHONY: clean
 clean:
 	$(RM) $(CLEAN_STUFF) ./#*#
-	-test -d $(picdir) && cd $(picdir) && $(RM) $(CLEAN_STUFF) ./#*#
+	-cd $(picdir) && $(RM) $(CLEAN_STUFF) ./#*#
 
 .PHONY: distclean
 distclean:

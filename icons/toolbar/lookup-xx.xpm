@@ -3,7 +3,7 @@ static char * lookup_xx_xpm[] = {
 "29 29 4 1",
 " 	c none   m none   s Background",
 ".	c grey50 m black",
-"X	c white  m white",
+"X	c grey75 m white",
 "o	c grey50 m black",
 "      .................      ",
 "      .XXXXXXXXXXXXXXX.o     ",
