@@ -3323,8 +3323,7 @@ ITEM LBL(Window Layout) sets the window layout.\n\
         where source, data, and the @GDB@ console are stacked.\n\
     SUBITEM LBL(Separate Windows) means to use a separate top-level window\n\
         for each of source, data, and the @GDB@ console.\n\
-ITEM The LBL(Cut/Copy/Paste) functions can be bound to different keys.\n\
-ITEM The LBL(Select All) function can be bound to different keys.\n\
+ITEM The LBL(Ctrl+C) and LBL(Ctrl+A) keys can be bound to different actions.\n\
 ITEM The LBL(Tool Bar) can appear as follows:\n\
     SUBITEM LBL(Images) shows a small symbol for each action, and/or\n\
     SUBITEM LBL(Captions) shows the action name below the image.\n\
@@ -3357,13 +3356,13 @@ Ddd*preferences*windows.labelString:		Window Layout
 Ddd*windowsMenu*attached.labelString:		Stacked Windows
 Ddd*windowsMenu*separate.labelString:		Separate Windows
 
-Ddd*preferences*cutCopyPaste.labelString:	Cut/Copy/Paste is on
-Ddd*cutCopyPasteMenu*kde.labelString:		Ctrl+X/Ctrl+C/Ctrl+V
-Ddd*cutCopyPasteMenu*motif.labelString:		Shift+Del/Ctrl+Ins/Shift+Ins
+Ddd*preferences*cutCopyPaste.labelString:	Ctrl+C is
+Ddd*cutCopyPasteMenu*kde.labelString:		Copy
+Ddd*cutCopyPasteMenu*motif.labelString:		Interrupt
 
-Ddd*preferences*selectAll.labelString:		Select All is on
-Ddd*selectAllMenu*kde.labelString:		Ctrl+A
-Ddd*selectAllMenu*motif.labelString:		Shift+Ctrl+A
+Ddd*preferences*selectAll.labelString:		Ctrl+A is
+Ddd*selectAllMenu*kde.labelString:		Select All
+Ddd*selectAllMenu*motif.labelString:		Beginning of Line
 
 Ddd*preferences*buttons.labelString:		Tool Bar Appearance
 Ddd*buttonsMenu*images.labelString:		Images

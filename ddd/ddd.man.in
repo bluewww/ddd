@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-11\-19" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-11\-23" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -2636,40 +2636,30 @@ option to `\fBSeparate Windows\fR'.  See also the
 `\fB\-\-attach-windows\fR' and `\fB\-\-separate-windows\fR' options,
 below.
 .PP
-To cut, copy, and paste text, \s-1@DDD@\s+1 supports two types of key
-bindings, each in accordance with a specific style guide.
+The \fBCtrl+C\fR key can be bound to different actions, each in
+accordance with a specific style guide.
 .TP
-.B "\s-1KDE\s+1-style bindings"
-This binds the Cut/Copy/Paste operations to
-\fBCtrl+X\fR/\fBCtrl+C\fR/\fBCtrl+V\fR.  These key bindings are
-conformant to the \s-1KDE\s+1 style guide.  Note that this means that
-\fBCtrl+C\fR no longer interrupts the debuggee; use \s-1\fBESC\fR\s+1 instead.
+.B "Copy"
+This setting binds \fBCtrl+C\fR to the Copy operation, as specified by
+the \s-1KDE\s+1 style guide.  In this setting, use \s-1\fBESC\fR\s+1
+to interrupt the debuggee.
 .TP
-.B "Motif-style bindings"
-This (default) setting binds Cut/Copy/Paste to
-\fBShift+Del\fR/\fBCtrl+Ins\fR/\fBShift+Ins\fR.  This is conformant to
-the Motif style guide.
+.B "Interrupt"
+This (default) setting binds \fBCtrl+C\fR to the Interrupt operation,
+as used in several \s-1UNIX\s+1 command-line programs.  In this
+setting, use \s-1\fBCtrl+Ins\fR\s+1 to copy text to the clipboard.
 .PP
-For your convenience, the Motif-style bindings are also available when 
-\s-1KDE\s+1-style bindings are enabled\(em\&that is, you can always
-use \fBShift+Del\fR/\fBCtrl+Ins\fR/\fBShift+Ins\fR to cut, copy, and
-paste text.
-.PP
-To select the entire text, \s-1@DDD@\s+1 supports two types of key
-bindings, each in accordance with a specific style guide.
+The \fBCtrl+A\fR key can be bound to different actions, too.
 .TP
-.B "\s-1KDE\s+1-style bindings"
-This (default) setting binds the Select All operation to \fBCtrl+A\fR.
-This key binding is conformant to the \s-1KDE\s+1 style guide.  Note
-that this means that \fBCtrl+A\fR no longer moves the cursor to the
-beginning of a line; use \s-1\fBHOME\fR\s+1 instead.
+.B "Select All"
+This (default) setting binds \fBCtrl+A\fR to the Select All operation,
+as specified by the \s-1KDE\s+1 style guide.  In this setting, use
+\s-1\fBHOME\fR\s+1 tp move the cursor to the beginning of a line.
 .TP
-.B "Motif-style bindings"
-This setting binds Select All to \fBShift+Ctrl+A\fR.
-.PP
-For your convenience, the Motif-style bindings are also available when
-\s-1KDE\s+1-style bindings are enabled\(em\&that is,
-\fBShift+Ctrl+A\fR always selects the entire text.
+.B "Beginning of Line"
+This setting binds \fBCtrl+A\fR to the Beginning of Line operation, as
+used in several \s-1UNIX\s+1 text-editing programs.  In this setting,
+use \s-1\fBCtrl+Shift+A\fR\s+1 to select all text.
 .PP
 The \s-1@DDD@\s+1 tool bar buttons can appear in a variety of styles:
 .TP
