@@ -227,8 +227,7 @@ Ddd*paperSize: 210mm x 297mm
 
 
 ! The `gnuplot' command.
-Ddd*plotCommand: gnuplot -xrm '*line1Color: DATA_COLOR' \
-                 -font '@FONT@' -title 'DDD: Plot Window'
+Ddd*plotCommand: gnuplot -font '@FONT@' -title 'DDD: Plot Window'
 Ddd*plotInitCommands:
 Ddd*plotSettings: set noborder\n
 
