@@ -96,6 +96,7 @@ FFLAGS=-g
 AC_SUBST(FFLAGS)
 dnl
 dnl Various programs.
+dnl
 AC_PROG_LN_S
 AC_PATH_PROGS(SH, sh)
 AC_CHECK_PROGS(TAR, gtar tar)
@@ -133,6 +134,9 @@ else
 GCORE_COMMAND=
 fi
 AC_SUBST(GCORE_COMMAND)dnl
+dnl
+dnl The debugger.
+dnl
 AC_CHECK_PROGS(DEBUGGER, gdb wdb dbx ladebug xdb jdb)dnl
 case "$DEBUGGER" in
 *gdb*) DEBUGGER_OPTION="";;
@@ -152,15 +156,41 @@ jdb) ;;
 *)   DEBUGGER_OPTION="$DEBUGGER_OPTION --debugger $DEBUGGER";
 esac
 AC_SUBST(DEBUGGER_OPTION)dnl
+dnl
+dnl Various helpers.
+dnl
 AC_CHECK_PROGS(XTERM, xterm kterm dtterm hpterm, xterm)dnl
 AC_CHECK_PROGS(XFONTSEL, xfontsel, xfontsel)dnl
 AC_PROG_INSTALL
 AC_PROG_RANLIB
+dnl
+dnl Yacc.
+dnl
 AC_PROG_YACC
 AC_MSG_CHECKING(for ${YACC} flags)
 YFLAGS=""
 AC_MSG_RESULT(${YFLAGS})
 AC_SUBST(YFLAGS)dnl
+dnl
+if test "$YACC" = "bison -y"; then
+dnl
+dnl Check Bison version.  DDD wants bison 1.28 or later.
+dnl Note: Bison is only needed if a .Y file was modified.
+dnl 
+AC_MSG_CHECKING(${YACC} version)
+YACC_VERSION=`${YACC} --version | ${SED} 's/.*version *//'`
+if test `expr "$YACC_VERSION" '>=' 1.28` = 1; then
+AC_MSG_RESULT(${YACC_VERSION} [(ok)])
+else
+AC_MSG_RESULT(${YACC_VERSION} [(too old)])
+YACC="$missing_dir/missing $(YACC)"
+AC_MSG_WARN([If you modify a .Y file or build from CVS,])
+AC_MSG_WARN([you will need Bison 1.28 or later.])
+fi
+fi
+dnl
+dnl Lex.
+dnl
 AM_PROG_LEX
 AC_MSG_CHECKING(for ${LEX} flags)
 LFLAGS=""
