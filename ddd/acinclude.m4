@@ -1,7 +1,7 @@
 dnl $Id$ -*- autoconf -*-
 dnl ICE and DDD autoconf macros
 dnl 
-dnl Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+dnl Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 dnl Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 dnl 
 dnl This file is part of the ICE Library.
@@ -1956,8 +1956,8 @@ ice_cv_motif_includes="$dir"
 break
 fi
 done
-if test "$ice_cv_motif_includes" = ""; then
-ice_cv_motif_includes=no
+if test "$ice_cv_motif_includes" = "/usr/include"; then
+ice_cv_motif_includes=
 fi
 ])
 #
@@ -2138,6 +2138,9 @@ ice_cv_athena_includes="$dir"
 break
 fi
 done
+if test "$ice_cv_athena_includes" = "/usr/include"; then
+ice_cv_athena_includes=
+fi
 ])
 #
 LIBS="$ice_athena_save_LIBS"
@@ -2313,6 +2316,9 @@ ice_cv_xpm_includes="$dir"
 break
 fi
 done
+if test "$ice_cv_xpm_includes" = "/usr/include"; then
+ice_cv_xpm_includes=
+fi
 ])
 #
 LIBS="$ice_xpm_save_LIBS"
