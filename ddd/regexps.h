@@ -121,6 +121,7 @@ extern const regex rxoptions;
 extern const regex rxout_of_range;
 extern const regex rxpath_cmd;
 extern const regex rxpc;
+extern const regex rxperlpos;
 extern const regex rxperlprompt;
 extern const regex rxprocess1;
 extern const regex rxprocess2;

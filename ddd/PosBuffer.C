@@ -187,7 +187,7 @@ void PosBuffer::filter (string& answer)
     case JDB:
     case PYDB:
     case PERL:
-	break;			// FIXME
+	break;			// Nothing special
     }
 
     // Check for terminated program
@@ -256,19 +256,19 @@ void PosBuffer::filter (string& answer)
 	    break;
 
 	case DBX:
-	    {
-		string line_s = pos_buffer;
-		if (line_s.contains(':'))
-		    line_s = line_s.after(':');
-		int line = atoi(line_s);
-		filter_line(answer, line);
-	    }
+	{
+	    string line_s = pos_buffer;
+	    if (line_s.contains(':'))
+		line_s = line_s.after(':');
+	    int line = atoi(line_s);
+	    filter_line(answer, line);
+	}
 
 	case XDB:
 	case JDB:
 	case PYDB:
 	case PERL:
-	    break;		// FIXME
+	    break;		// Nothing special
 	}
 	break;
 
@@ -505,6 +505,7 @@ void PosBuffer::filter (string& answer)
 	    if (!pc_buffer.contains(rxaddress_start, 0))
 		pc_buffer = "0x" + pc_buffer;
 	    pc_buffer = pc_buffer.through(rxaddress);
+
 	    answer.at(index1, index2 - index1 + 1) = "";
 	    if (pos_buffer != "")
 		already_read = PosComplete;
@@ -893,7 +894,7 @@ void PosBuffer::filter (string& answer)
 		already_read = PosComplete;
 	    }
 	    // Don't need the answer anymore when line matches 'Lineinfo'
-	    if (lineinfo >=0)
+	    if (lineinfo >= 0)
 	    {
 		answer = "";
 	    }
@@ -902,7 +903,86 @@ void PosBuffer::filter (string& answer)
 
 	case PERL:
 	{
-	    // FIXME
+	    // Check for regular source info
+	    int index1 = answer.index ("\032\032");
+	    
+	    if (index1 < 0) 
+	    {
+		int index_p = answer.index ("\032");
+		if (index_p >= 0 && index_p == int(answer.length()) - 1)
+		{
+		    // Possible begin of position info at end of ANSWER
+		    already_read = PosPart;
+		    answer_buffer = "\032";
+		    answer = answer.before (index_p);
+		    
+		    return;
+		}
+	    }
+	    else
+	    {
+		// ANSWER contains position info
+		int index2 = answer.index("\n", index1);
+	    
+		if (index2 == -1)
+		{
+		    // Position info is incomplete
+		    already_read = PosPart;
+		    answer_buffer = answer.from (index1);
+		    answer = answer.before (index1);
+		    return;
+		}
+		else
+		{
+		    assert (index1 < index2);
+	    
+		    // Position info is complete
+		    already_read = PosComplete;
+		    pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
+		    answer.at(index1, index2 - index1 + 1) = "";
+		}
+	    }
+
+	    if (already_read != PosComplete)
+	    {
+		// Try 'PACKAGE::(FILE:LINE):\n'
+		// INDEX points at the start of a line
+		int index = 0;
+		while (index >= 0 && answer != "")
+		{
+		    string line = answer.from(index);
+		    if (line.contains('\n'))
+			line = line.before('\n');
+		    strip_trailing_space(line);
+		    
+#if RUNTIME_REGEX
+		    static regex rxperlpos("[^(]*::[(][^:]*:[1-9][0-9]*[)]:");
+#endif
+		    if (line.matches(rxperlpos))
+		    {
+			// Fetch position
+			pos_buffer = line.after('(');
+			pos_buffer = pos_buffer.before(')');
+			already_read = PosComplete;
+
+			// Delete this line from output
+			int next_index = answer.index('\n', index);
+			if (next_index < 0)
+			    next_index = answer.length();
+			else
+			    next_index++;
+			answer.at(index, next_index - index) = "";
+			break;
+		    }
+		    else
+		    {
+			// Look at next line
+			index = answer.index('\n', index);
+			if (index >= 0)
+			    index++;
+		    }
+		}
+	    }
 	}
 	}
     }

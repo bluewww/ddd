@@ -82,9 +82,9 @@ GDBAgent *new_gdb(DebuggerType type,
 	    break;
 
 	case PERL:
-	    // Be sure to invoke the debugger.  Also enable warnings.
-	    // Load the `MCarp' package to enable stack dumps.
-	    gdb_call += " -d -w -MCarp";
+	    // Be sure to invoke the debugger.
+	    // Also load the `MCarp' package to enable stack dumps.
+	    gdb_call += " -d -MCarp";
 	    break;
 
 	case PYDB:
@@ -98,9 +98,16 @@ GDBAgent *new_gdb(DebuggerType type,
 	}
     }
 
-    for (int i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) 
+    {
 	string arg = argv[i];
 	gdb_call += " " + sh_quote(arg);
+    }
+
+    if (type == PERL && (argc <= 1 || argv[argc - 1][0] == '-'))
+    {
+	// Not invoked with a script.  Add a dummy `eval' arg.
+	gdb_call += " -e 42";
     }
 
     GDBAgent *gdb;

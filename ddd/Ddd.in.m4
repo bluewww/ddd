@@ -557,8 +557,9 @@ Ddd*pydbInitCommands:
 Ddd*pydbSettings:
 
 
-! The Perl Debugger initialization commands.  Nothing special.
-Ddd*perlInitCommands:
+! The Perl Debugger initialization commands.  Enable emacs mode.
+Ddd*perlInitCommands: \
+$DB::emacs = 1\n
 
 ! The Perl Debugger settings.  Usually overridden in `~/.ddd/init'.
 Ddd*perlSettings:
