@@ -3680,17 +3680,35 @@ static void ResetGeneralPreferencesCB(Widget, XtPointer, XtPointer)
 
 static bool general_preferences_changed()
 {
-    return app_data.button_tips != initial_app_data.button_tips
-	|| app_data.button_docs != initial_app_data.button_docs
-	|| app_data.value_tips != initial_app_data.value_tips
-	|| app_data.value_docs != initial_app_data.value_docs
-	|| app_data.global_tab_completion != 
-	    initial_app_data.global_tab_completion
-	|| app_data.group_iconify != initial_app_data.group_iconify
-	|| app_data.uniconify_when_ready != 
-	    initial_app_data.uniconify_when_ready
-	|| app_data.suppress_warnings != initial_app_data.suppress_warnings
-	|| app_data.check_grabs != initial_app_data.check_grabs;
+    if (app_data.button_tips != initial_app_data.button_tips)
+	return true;
+
+    if (app_data.button_docs != initial_app_data.button_docs)
+	return true;
+
+    if (app_data.value_tips != initial_app_data.value_tips)
+	return true;
+
+    if (app_data.value_docs != initial_app_data.value_docs)
+	return true;
+
+    if (app_data.global_tab_completion != 
+	initial_app_data.global_tab_completion)
+	return true;
+
+    if (app_data.group_iconify != initial_app_data.group_iconify)
+	return true;
+
+    if (app_data.uniconify_when_ready != initial_app_data.uniconify_when_ready)
+	return true;
+
+    if (app_data.suppress_warnings != initial_app_data.suppress_warnings)
+	return true;
+
+    if (app_data.check_grabs != initial_app_data.check_grabs)
+	return true;
+
+    return false;
 }
 
 static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
@@ -3733,18 +3751,40 @@ static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
 
 static bool source_preferences_changed()
 {
-    return app_data.display_glyphs != initial_app_data.display_glyphs
-	|| app_data.command_toolbar != initial_app_data.command_toolbar
-	|| app_data.use_source_path != initial_app_data.use_source_path
-	|| app_data.find_words_only != initial_app_data.find_words_only
-	|| app_data.find_case_sensitive != initial_app_data.find_case_sensitive
-	|| app_data.cache_source_files != initial_app_data.cache_source_files
-	|| app_data.cache_machine_code != initial_app_data.cache_machine_code
-	|| app_data.tab_width != initial_app_data.tab_width
-	|| app_data.indent_source != initial_app_data.indent_source
-	|| app_data.indent_code != initial_app_data.indent_code
-	|| app_data.display_line_numbers 
-	   != initial_app_data.display_line_numbers;
+    if (app_data.display_glyphs != initial_app_data.display_glyphs)
+	return true;
+
+    if (app_data.command_toolbar != initial_app_data.command_toolbar)
+	return true;
+
+    if (app_data.use_source_path != initial_app_data.use_source_path)
+	return true;
+
+    if (app_data.find_words_only != initial_app_data.find_words_only)
+	return true;
+
+    if (app_data.find_case_sensitive != initial_app_data.find_case_sensitive)
+	return true;
+
+    if (app_data.cache_source_files != initial_app_data.cache_source_files)
+	return true;
+
+    if (app_data.cache_machine_code != initial_app_data.cache_machine_code)
+	return true;
+
+    if (app_data.tab_width != initial_app_data.tab_width)
+	return true;
+
+    if (app_data.indent_source != initial_app_data.indent_source)
+	return true;
+
+    if (app_data.indent_code != initial_app_data.indent_code)
+	return true;
+
+    if (app_data.display_line_numbers != initial_app_data.display_line_numbers)
+	return true;
+
+    return false;
 }
 
 static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
@@ -3801,15 +3841,34 @@ static bool data_preferences_changed()
 		  XtNgridHeight, &grid_height,
 		  NULL);
 
-    return app_data.detect_aliases != initial_app_data.detect_aliases
-	|| app_data.align_2d_arrays != initial_app_data.align_2d_arrays
-	|| show_grid    != initial_show_grid
-	|| show_hints   != initial_show_hints
-	|| snap_to_grid != initial_snap_to_grid
-	|| layout_mode  != initial_layout_mode 
-	|| auto_layout  != initial_auto_layout
-	|| grid_width   != initial_grid_width
-	|| grid_height  != initial_grid_height;
+    if (app_data.detect_aliases != initial_app_data.detect_aliases)
+	return true;
+
+    if (app_data.align_2d_arrays != initial_app_data.align_2d_arrays)
+	return true;
+
+    if (show_grid    != initial_show_grid)
+	return true;
+
+    if (show_hints   != initial_show_hints)
+	return true;
+
+    if (snap_to_grid != initial_snap_to_grid)
+	return true;
+
+    if (layout_mode  != initial_layout_mode )
+	return true;
+
+    if (auto_layout  != initial_auto_layout)
+	return true;
+
+    if (grid_width   != initial_grid_width)
+	return true;
+
+    if (grid_height  != initial_grid_height)
+	return true;
+
+    return false;
 }
 
 static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
@@ -3865,21 +3924,47 @@ static bool startup_preferences_changed()
     XtVaGetValues(command_shell,
 		  XmNkeyboardFocusPolicy, &focus_policy, NULL);
 
-    return app_data.startup_tips != initial_app_data.startup_tips
-	|| app_data.cut_copy_paste_bindings
-	      != initial_app_data.cut_copy_paste_bindings
-	|| app_data.splash_screen != initial_app_data.splash_screen
-	|| separate != initial_separate
-	|| app_data.button_images != initial_app_data.button_images
-	|| app_data.button_captions != initial_app_data.button_captions
-	|| app_data.flat_toolbar_buttons 
-	      != initial_app_data.flat_toolbar_buttons
-	|| string(app_data.button_color_key) 
-	      != string(initial_app_data.button_color_key)
-	|| focus_policy != initial_focus_policy
-	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
-	|| debugger_type(app_data.debugger)
-  	      != debugger_type(initial_app_data.debugger);
+    // Christoph L. Spiel <Christoph_Spiel@physik.tu-muenchen.de>
+    // reports that his g++-2.7.2.3 chokes on large `||' expressions.
+    // Hence, instead of `return A || B || C', we say `if A return
+    // true; if B return true; if C return true; return false;'.
+    if (app_data.startup_tips != initial_app_data.startup_tips)
+	return true;
+
+    if (app_data.cut_copy_paste_bindings !=
+	initial_app_data.cut_copy_paste_bindings)
+	return true;
+
+    if (app_data.splash_screen != initial_app_data.splash_screen)
+	return true;
+
+    if (separate != initial_separate)
+	return true;
+
+    if (app_data.button_images != initial_app_data.button_images)
+	return true;
+
+    if (app_data.button_captions != initial_app_data.button_captions)
+	return true;
+
+    if (app_data.flat_toolbar_buttons != initial_app_data.flat_toolbar_buttons)
+	return true;
+
+    if (string(app_data.button_color_key) !=
+	string(initial_app_data.button_color_key))
+	return true;
+
+    if (focus_policy != initial_focus_policy)
+	return true;
+
+    if (app_data.panned_graph_editor != initial_app_data.panned_graph_editor)
+	return true;
+
+    if (debugger_type(app_data.debugger) !=
+	debugger_type(initial_app_data.debugger))
+	return true;
+
+    return false;
 }
 
 static void ResetFontPreferencesCB(Widget, XtPointer, XtPointer)
@@ -3901,18 +3986,29 @@ static void ResetFontPreferencesCB(Widget, XtPointer, XtPointer)
 
 static bool font_preferences_changed()
 {
-    return string(app_data.default_font)
-	   != string(initial_app_data.default_font) 
-	|| string(app_data.variable_width_font) 
-	   != string(initial_app_data.variable_width_font) 
-	|| string(app_data.fixed_width_font) 
-	   != string(initial_app_data.fixed_width_font) 
-	|| app_data.default_font_size 
-	   != initial_app_data.default_font_size 
-	|| app_data.variable_width_font_size
-	   != initial_app_data.variable_width_font_size 
-	|| app_data.fixed_width_font_size 
-	   != initial_app_data.fixed_width_font_size;
+    if (string(app_data.default_font) != string(initial_app_data.default_font))
+	return true;
+
+    if (string(app_data.variable_width_font) != 
+	string(initial_app_data.variable_width_font))
+	return true;
+
+    if (string(app_data.fixed_width_font) != 
+	string(initial_app_data.fixed_width_font))
+	return true;
+
+    if (app_data.default_font_size != initial_app_data.default_font_size)
+	return true;
+
+    if (app_data.variable_width_font_size != 
+	initial_app_data.variable_width_font_size)
+	return true;
+
+    if (app_data.fixed_width_font_size != 
+	initial_app_data.fixed_width_font_size)
+	return true;
+
+    return false;
 }
 
 static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
@@ -3927,18 +4023,27 @@ static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
 
 static bool helpers_preferences_changed()
 {
-    return string(app_data.edit_command) 
-	   != string(initial_app_data.edit_command)
-	|| string(app_data.get_core_command) 
-	   != string(initial_app_data.get_core_command)
-	|| string(app_data.ps_command) 
-	   != string(initial_app_data.ps_command)
-	|| string(app_data.term_command) 
-	   != string(initial_app_data.term_command)
-	|| string(app_data.uncompress_command) 
-	   != string(initial_app_data.uncompress_command)
-	|| string(app_data.www_command) 
-	   != string(initial_app_data.www_command);
+    if (string(app_data.edit_command) != string(initial_app_data.edit_command))
+	return true;
+
+    if (string(app_data.get_core_command) != 
+	string(initial_app_data.get_core_command))
+	return true;
+
+    if (string(app_data.ps_command) != string(initial_app_data.ps_command))
+	return true;
+
+    if (string(app_data.term_command) != string(initial_app_data.term_command))
+	return true;
+
+    if (string(app_data.uncompress_command) != 
+	string(initial_app_data.uncompress_command))
+	return true;
+
+    if (string(app_data.www_command) != string(initial_app_data.www_command))
+	return true;
+
+    return false;
 }
 
 
