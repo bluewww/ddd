@@ -1933,19 +1933,18 @@ int main(int argc, char *argv[])
 		 WidthOfScreen(XtScreen(tool_shell_parent)) + 1);  arg++;
 	XtSetArg(args[arg], XmNy,
 		 HeightOfScreen(XtScreen(tool_shell_parent)) + 1); arg++;
+	XtSetArg(args[arg], XmNallowShellResize, True); arg++;
 	tool_shell = 
 	    verify(XmCreateDialogShell(tool_shell_parent, 
 				       "tool_shell", args, arg));
 	Delay::register_shell(tool_shell);
+
 	arg = 0;
 	tool_buttons_w = 
 	    verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
 	add_buttons(tool_buttons_w, app_data.tool_buttons);
-
-	// We don't manage the buttons right now, because doing so
-	// causes the tool shell to pop up.  This is why
-	// `tool_buttons_w' is maintained in `windows.C'.
-
+	XtManageChild(tool_buttons_w);
+    
 	wm_set_icon(tool_shell,
 		    iconlogo(tool_buttons_w),
 		    iconmask(tool_buttons_w));

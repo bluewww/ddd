@@ -135,7 +135,6 @@ void initial_popup_shell(Widget w)
 	}
 	else
 	{
-	    XtManageChild(tool_buttons_w);
 	    XtManageChild(tool_shell);
 	    XtPopup(tool_shell, XtGrabNone);
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell), 0,
@@ -152,9 +151,6 @@ void popup_shell(Widget w)
 {
     if (w == 0)
 	return;
-
-    if (w == tool_shell)
-	XtManageChild(tool_buttons_w);
 
     XtPopup(w, XtGrabNone);
 
