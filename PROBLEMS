@@ -156,7 +156,8 @@ Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>
 
     then run "make" again.  You should get no other warnings/errors except :
       - when compiling ./ddd/mainloop.C :
-	63  1500-010: (W) WARNING in ddd_main_loop(): Infinite loop.  Program may not stop.
+	63  1500-010: (W) WARNING in ddd_main_loop(): Infinite loop.  
+            Program may not stop.
         ( this is intentional, you can safely ignore it ).
     Finally run "make strip" and "make install".  Have fun ...
 
@@ -283,7 +284,9 @@ LessTif
     With LessTif 0.84 and the patches applied, the following problems
     are currently known:
 
-    * Menu traversal by keyboard does not work; use the mouse instead.
+    * Menu traversal by keyboard does not work (yet); use the mouse instead.
+
+    * Cut/Copy/Paste operations are not (yet) implemented.
 
  
 
