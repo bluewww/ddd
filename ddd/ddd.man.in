@@ -1527,7 +1527,7 @@ describing an arc connecting the two displays and the edge hint.
 Each edge hint is a placeholder for a suppressed alias; selecting an
 edge hint is equivalent to selecting the alias.  This way, you can
 easily delete display aliases by simply selecting the edge hint and
-clicking on `\fBDelete ()\fR'.
+clicking on `\fBUndisplay ()\fR'.
 .PP
 .PSPIC @srcdir@/PICS/ddd-aliases.ps 15.3cm
 .PP
@@ -4641,7 +4641,7 @@ A breakpoint (being dragged).
 .PD 0
 .TP
 .B "undisplay-xx"
-`\fBDelete ()\fR' button.
+`\fBUndisplay ()\fR' button.
 .PD
 .TP
 .B "unwatch"

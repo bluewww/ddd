@@ -397,4 +397,10 @@ Volunteers for these and other projects are welcome!
     This will allow to have a visual overview of the program behavior 
     and will be a great help to pinpoint troublesome code.
 
-275 (Insert new project ideas here)
+275 In the toolbar, set armPixmaps correctly (they have a different
+    background color)
+
+276 Merge the `Display ()' and `Undisplay ()' buttons into one dynamic 
+    button.
+
+277 (Insert new project ideas here)
