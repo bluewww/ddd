@@ -959,7 +959,7 @@ ctest.o: $(srcdir)/ctest.c
 
 huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 	$(COMPILE.cc) -DMAIN -DHUFFTEXT='"$(srcdir)/ddd.man.huff.C"' \
-	-o $@ $(srcdir)/huffdecode.C
+	$(INCLUDE) -o $@ $(srcdir)/huffdecode.C
 
 
 ## For demonstration and debugging purposes
