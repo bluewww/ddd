@@ -518,7 +518,7 @@ void DDDManualCB(Widget w, XtPointer, XtPointer)
     int ret = ddd_man(man);
     string s(man);
 
-    MString title(DDD_NAME " Manual");
+    MString title(DDD_NAME " Reference");
     ManualStringHelpCB(w, title, s);
 
     if (ret != 0 || !s.contains(DDD_NAME))
