@@ -330,13 +330,6 @@ void user_cmdSUC (string cmd, Widget origin)
 	cmd_data->filter_disp = NoFilter;
     }
 
-    if (!gdb->has_display_command())
-    {
-	// The debugger has no `display' command.  Update display
-	// explicitly after each command.
-	plus_cmd_data->refresh_disp = true;
-    }
-
     if (is_file_cmd (cmd, gdb))
     {
 	// File may change: display main() function and update displays
@@ -377,6 +370,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	    if (gdb->has_frame_command())
 		plus_cmd_data->refresh_frame = true;
 	}
+	if (!gdb->has_display_command())
+	    plus_cmd_data->refresh_disp = true;
     }
     else if (is_frame_cmd(cmd))
     {
@@ -402,6 +397,8 @@ void user_cmdSUC (string cmd, Widget origin)
 		plus_cmd_data->refresh_line  = true;
 	    break;
 	}
+	if (!gdb->has_display_command())
+	    plus_cmd_data->refresh_disp = true;
     }
     else if (is_set_cmd(cmd))
     {
@@ -423,7 +420,7 @@ void user_cmdSUC (string cmd, Widget origin)
 		else
 		{
 		    // Update position
-		    plus_cmd_data->refresh_file      = true;
+		    plus_cmd_data->refresh_file = true;
 
 		    if (!gdb->has_func_pos())
 			plus_cmd_data->refresh_line = true;
@@ -439,6 +436,9 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_bpoints  = false;
 	plus_cmd_data->refresh_where    = false;
 	plus_cmd_data->refresh_register = false;
+
+	if (!gdb->has_display_command())
+	    plus_cmd_data->refresh_disp = true;
     }
     else if (is_cd_cmd(cmd))
     {
@@ -485,6 +485,9 @@ void user_cmdSUC (string cmd, Widget origin)
 	}
 
 	plus_cmd_data->refresh_frame = false;
+
+	if (!gdb->has_display_command())
+	    plus_cmd_data->refresh_disp = true;
     }
 
     if (gdb->type() == DBX)
@@ -610,12 +613,18 @@ void user_cmdOA (const string& answer, void* data)
 
 
 
+// For DBXes that issue positions on `func' commands, save the line found.
+static int last_lookup_line = 0;
+
 // ***************************************************************************
 // Schreibt den prompt ins gdb_w, nachdem ggf. gebufferte Displays abgearbeitet
 // sind und evtl. Restantworten ausgegeben sind (ins gdb_w).
 //
+
 void user_cmdOAC (void* data)
 {
+    last_lookup_line = 0;
+
     CmdData* cmd_data = (CmdData *) data;
 
     string answer = cmd_data->pos_buffer->answer_ended();
@@ -677,6 +686,10 @@ void user_cmdOAC (void* data)
 	    // Lookup command: do not change exec position
 	    source_view->show_position(pos);
 	}
+    }
+    else if (cmd_data->pos_buffer->lookup_found())
+    {
+	last_lookup_line = atoi(cmd_data->pos_buffer->get_lookup());
     }
     else
     {
@@ -899,8 +912,8 @@ void plusOQAC (string answers[],
 
 	if (!plus_cmd_data->refresh_line)
 	{
-	    // Set the correct file now.
-	    string pos = file + ":0";
+	    // Set the correct lookup position now.
+	    string pos = file + ":" + itostring(last_lookup_line);
 	    source_view->lookup(pos);
 	}
     }

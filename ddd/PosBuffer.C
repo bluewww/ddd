@@ -264,6 +264,14 @@ void PosBuffer::filter (string& answer)
 
 	    case DBX:
 	    {
+		static regex RXdbxfunc("[^:]*: *[1-9][0-9]*  *.*");
+		if (answer.matches(RXdbxfunc))
+		{
+		    string line = answer.after(":");
+		    line = line.through(rxint);
+		    lookup_buffer = line;
+		}
+
 		static regex RXdbxpos("[[][^]]*:[1-9][0-9]*[^]]*].*");
 		if (answer.contains(RXdbxpos))
 		{
@@ -301,7 +309,7 @@ void PosBuffer::filter (string& answer)
 			func_buffer = line.before(":");
 			line = line.after(":");
 			line = line.through(rxint);
-			answer = answer.after("\n");
+			// answer = answer.after("\n");
 		    }
 		    else
 		    {
