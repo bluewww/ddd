@@ -4,30 +4,33 @@ DDD News						-*- text -*-
 DDD-3.3.9
 =========
 
+* New features and minor improvements
 - Support for PHP debugger has been added (1).  This is essentially not
   tested.
 - Source files in subdirectories should be located automatically
   when using dbx (tested on Solaris' dbx) (2).
-- Builds with IBM xlC and on X11R5 based systems should be OK.
+- The perl version supported by DDD is now 5.8.x.  The perl debugger
+  changed between perl 5.6.x and perl 5.8.0, which made this update necessary.
+  This change is not backwards-compatible.  If it is not possible to upgrade
+  your perl version to 5.8.x or newer, then you can simply install the file
+  "perl5db.pl" from a recent perl distribution into your old perl tree.
+
+* Build fixes
+- The configure machinery has been updated to conform more closely to the
+  autoconf 2.5x requirements. Several bugs have been fixed.
+- libiberty (which provides missing standard functions) is not linked by
+  default anymore. configure has a new option '--with-libiberty' that
+  enables the libiberty support if required.
+- The libiberty distributed with ddd has been upgraded to the one included
+  in GCC 3.4 20040116. It fixes some configuration problems.
+- Builds with IBM xlC, with GCC 3.4 and on X11R5 based systems should be OK.
 - Builds on HP-UX should now work out-of-the-box. Motif is linked statically
   and the Athena libraries are now found by default.
 - Builds without Motif/Lesstif available abort with an adequate message.
 - Builds with readline support now work.
 - Builds without -DNDEBUG (i.e. with "assert" enabled) now work.
 - Several missing files in the distribution are now included.
-- The libiberty distributed with ddd has been upgraded to the one included
-  in GCC 3.4 20040116. It fixes some configuration problems.
-- libiberty (which provides missing standard functions) is not linked by
-  default anymore. configure has a new option '--with-libiberty' that
-  enables the libiberty support if required.
-- The configure machinery has been updated to conform more closely to the
-  autoconf 2.5x requirements. Several bugs have been fixed.
 - Cygwin is supported again. See PROBLEMS.
-- The perl version supported by DDD is now 5.8.x.  The perl debugger
-  changed between perl 5.6.x and perl 5.8.0, which made this update necessary.
-  This change is not backwards-compatible.  If it is not possible to upgrade
-  your perl version to 5.8.x or newer, then you can simply install the file
-  "perl5db.pl" from a recent perl distribution into your old perl tree.
 
 (1) Written by Dmitri Dmitrienko and integrated by Rocky Bernstein.
 (2) Thanks to Saurabh Tendulkar for his patch.
@@ -61,7 +64,7 @@ DDD-3.3.6
 =========
 
 - Andreas Zeller handed the role of maintainter to
-  Andrew Gaylard <apg@users.sf.net> 
+  Andrew Gaylard <apg@users.sf.net>
 - The source tree was merged back from the bashdb project's CVS into the
   original ddd CVS
 
@@ -79,7 +82,7 @@ DDD 3.3.3-3.3.5
   <schepler@math.berkeley.edu> and Rocky Bernstein <rocky@panix.com>
 
 (1) Thanks to Daniel Schepler !
-(2) Thanks to ARocky Bernstein !
+(2) Thanks to Rocky Bernstein !
 (3) Thanks to Arnaud Desitter !
 
 
