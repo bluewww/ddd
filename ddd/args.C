@@ -227,7 +227,8 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
 	int arg = 0;
 
 	run_dialog = 
-	    verify(XmCreateSelectionDialog(w, "run_dialog", args, arg));
+	    verify(XmCreateSelectionDialog(find_shell(w), "run_dialog", 
+					   args, arg));
 
 	Delay::register_shell(run_dialog);
 	XtAddCallback(run_dialog, XmNokCallback,     gdbRunDCB, 0);
@@ -287,7 +288,8 @@ void gdbMakeCB(Widget w, XtPointer, XtPointer)
 	int arg = 0;
 
 	make_dialog = 
-	    verify(XmCreateSelectionDialog(w, "make_dialog", args, arg));
+	    verify(XmCreateSelectionDialog(find_shell(w), 
+					   "make_dialog", args, arg));
 
 	Delay::register_shell(make_dialog);
 	XtAddCallback(make_dialog, XmNokCallback,     gdbMakeDCB, 0);
