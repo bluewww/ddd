@@ -34,6 +34,7 @@ char filetype_rcsid[] =
 #include "config.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 extern "C" {
 #include <sys/types.h>
@@ -150,10 +151,10 @@ bool is_core_file(const string& file_name)
     read(fd, (char *)&magic, sizeof(magic));
     close(fd);
 
-    if (magic != CORE_MAGIC)
-	return false;		// no core file
-#else
+    return magic == CORE_MAGIC;
+#else // !defined(CORE_MAGIC)
     // Let's try some heuristics to exclude other files...
+
 #if 0
     // Paul E. Raines states: My source files are on an NFS mounted
     // VMS partition that in translation all files are marked
@@ -172,9 +173,23 @@ bool is_core_file(const string& file_name)
 
     if (file_name.contains(".a", -1))
 	return false;		// looks like an archive file
-#endif
 
-    return true;
+    // FILE_NAME is a core file iff `file FILE_NAME' issues `core'.
+    string cmd = "file " + file_name;
+    FILE *fp = popen(cmd.chars(), "r");
+    if (fp != NULL)
+    {
+	char line[BUFSIZ];
+	fgets(line, sizeof(line), fp);
+	pclose(fp);
+
+	string out(line);
+	static regex rxcore(".*:.*core.*");
+	return out.matches(rxcore);
+    }
+
+    return true;		// `file' not found
+#endif // !defined(CORE_MAGIC)
 }
 
 // True if FILE_NAME is a source file
