@@ -4770,7 +4770,10 @@ string DataDisp::process_displays(string& displays,
 	    continue;
 
 	if (!disp_string_map.contains(k))
+	{
+	    undo_buffer.remove_display(dn->name());
 	    continue;
+	}
 
 	// Update existing node
 	string *strptr = disp_string_map.get(k);

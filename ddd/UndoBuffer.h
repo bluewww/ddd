@@ -56,6 +56,9 @@ private:
     // If true, next `add' creates new entry
     static bool force_new_entry;
 
+    // A collector for state values
+    static UndoBufferEntry collector;
+
     // General scheme:
     //
     // History
@@ -107,8 +110,9 @@ private:
     static bool locked;
 
     // Helpers
-    static void process_command(UndoBufferEntry& entry);
-    static void process_state(UndoBufferEntry& entry, bool restore_state);
+    static bool process_command(UndoBufferEntry& entry);
+    static bool process_state(UndoBufferEntry& entry);
+    static bool process_pos(UndoBufferEntry& entry);
 
     // True if we're undoing
     static bool undoing;
@@ -120,23 +124,30 @@ private:
     // Enter or leave `past exec' mode
     static void showing_earlier_state(bool set, StatusMsg *msg = 0);
 
+    // Remove all later entries, except for exec positions
+    static void clear_after_position();
+
+    // Remove all exec commands
+    static void clear_exec_commands();
+
+    // Remove all entries with no effect
+    static void clear_nop_commands();
+
+
 protected:
     // Add new entry
-    static void add(const UndoBufferEntry& entry);
+    static void add_entry(const UndoBufferEntry& entry);
 
     // Process entry
-    static void process_command(int entry);
-    static void process_state(int entry, bool restore_state);
+    static bool process_command(int entry);
+    static bool process_state(int entry);
+    static bool process_pos(int entry);
 
     // Log current position
     static void log();
 
     // Call when all is done.  If MSG is set, leave the outcome there.
     static void done(StatusMsg *msg = 0);
-
-    // Return true if ENTRY is in an earlier state than CURRENT 
-    static bool in_earlier_state(const UndoBufferEntry& entry,
-				 const UndoBufferEntry& current);
 
     // Get a short action description from COMMAND
     static string action(const string& command);
@@ -203,6 +214,49 @@ public:
     static void add_display_address(const string& name, const string& addr)
     {
 	add_status(UB_DISPLAY_ADDRESS_PREFIX + name, addr);
+    }
+
+    // Removals
+
+    // Remove status NAME from current history entry.
+    static void remove_status(const string& name);
+
+    static void remove_position()
+    {
+	remove_status(UB_EXEC_POS);
+	remove_status(UB_POS);
+    }
+
+    static void remove_address()
+    {
+	remove_status(UB_EXEC_ADDRESS);
+	remove_status(UB_ADDRESS);
+    }
+
+    static void remove_where()
+    {
+	remove_status(UB_WHERE);
+    }
+
+    static void remove_frame()
+    {
+	remove_status(UB_FRAME);
+    }
+
+    static void remove_registers()
+    {
+	remove_status(UB_REGISTERS);
+    }
+
+    static void remove_threads()
+    {
+	remove_status(UB_THREADS);
+    }
+
+    static void remove_display(const string& name)
+    {
+	remove_status(UB_DISPLAY_PREFIX + name);
+	remove_status(UB_DISPLAY_ADDRESS_PREFIX + name);
     }
 
     // Undo/Redo action

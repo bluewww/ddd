@@ -2451,6 +2451,10 @@ static void extra_completed (const StringArray& answers,
 
 	source_view->process_where(where_output);
     }
+    else
+    {
+	undo_buffer.remove_where();
+    }
 
     if (extra_data->refresh_frame)
     {
@@ -2478,12 +2482,20 @@ static void extra_completed (const StringArray& answers,
 	    source_view->process_frame(answer);
 	}
     }
+    else
+    {
+	undo_buffer.remove_frame();
+    }
 
     if (extra_data->refresh_registers)
 	source_view->process_registers(answers[qu_count++]);
+    else
+	undo_buffer.remove_registers();
 
     if (extra_data->refresh_threads)
 	source_view->process_threads(answers[qu_count++]);
+    else
+	undo_buffer.remove_threads();
 
     if (extra_data->refresh_data)
     {
