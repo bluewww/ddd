@@ -995,21 +995,13 @@ void send_gdb_command(string cmd, Widget origin,
 	// process or an answer to a GDB confirmation question.
 
 	bool send_ok = true;
-	if (gdb->isBusyOnQuestion())
-	{
-	    // We have a question pending.  Don't interfere.
-	    send_ok = false;
-	}
-	else
-	{
-	    if (cmd == "no")
-		command_was_cancelled = true;
+	if (cmd == "no")
+	    command_was_cancelled = true;
 
-	    // We do not wait for GDB output.  Pass CMD unprocessed to
-	    // GDB, leaving current user_data unharmed.
-	    cmd += '\n';
-	    send_ok = gdb->send_user_ctrl_cmd(cmd);
-	}
+	// We do not wait for GDB output.  Pass CMD unprocessed to
+	// GDB, leaving current user_data unharmed.
+	cmd += '\n';
+	send_ok = gdb->send_user_ctrl_cmd(cmd);
 
 	if (!send_ok)
 	    post_gdb_busy(origin);

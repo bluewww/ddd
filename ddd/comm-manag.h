@@ -42,6 +42,7 @@
 #endif
 
 #include "GDBAgent.h"
+#include "Command.h"
 
 // Note: `Command.h' is the preferred way of interacting with GDB.
 

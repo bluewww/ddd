@@ -67,6 +67,9 @@ struct CommandGroup {
 	--active;
     }
 };
+  
+// Called from callback with the complete answer
+typedef void (*OQCProc)(const string& complete_answer, void *qu_data);
 
 // Commands
 struct Command

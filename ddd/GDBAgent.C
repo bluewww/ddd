@@ -241,7 +241,6 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _qa_data(0),
       _on_answer(0),
       _on_answer_completion(0),
-      _on_question_completion(0),
       _on_qu_array_completion(0),
       complete_answer("")
 {
@@ -327,7 +326,6 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _qa_data(0),
       _on_answer(0),
       _on_answer_completion(0),
-      _on_question_completion(0),
       _on_qu_array_completion(0),
       complete_answer("")
 {}
@@ -481,7 +479,6 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without '\n'
 
 	return true;
 
-    case BusyOnQuestion:
     case BusyOnQuArray:
     case BusyOnCmd:
 	break;
@@ -536,29 +533,6 @@ bool GDBAgent::send_user_cmd_plus (const StringArray& cmds,
     callHandlers(ReadyForQuestion, (void *)false);
     user_cmd += '\n';
     write_cmd(user_cmd);
-    flush();
-
-    return true;
-}
-
-// Send CMD to GDB; upon completion, call ON_QUESTION_COMPLETION with QU_DATA
-bool GDBAgent::send_question (string  cmd,
-			      OQCProc on_question_completion,
-			      void*   qu_data)
-{
-    if (state != ReadyWithPrompt) 
-	return false;
-
-    state = BusyOnQuestion;
-    callHandlers(ReadyForQuestion, (void *)false);
-    callHandlers(ReadyForCmd, (void *)false);
-
-    _on_question_completion = on_question_completion;
-    _qu_data = qu_data;
-    complete_answer = "";
-
-    cmd += '\n';
-    write_cmd(cmd);
     flush();
 
     return true;
@@ -1467,32 +1441,6 @@ void GDBAgent::handle_input(string& answer)
 	}
 	break;
 
-    case BusyOnQuestion:
-	complete_answer += answer;
-
-	if (ends_with_prompt(complete_answer))
-	{
-	    set_exception_state(false);
-
-            // Received complete answer (GDB issued prompt)
-	    normalize_answer(complete_answer);
-
-            // Set new state
-	    state = ReadyWithPrompt;
-	    callHandlers(ReadyForQuestion, (void *)true);
-	    callHandlers(ReadyForCmd, (void *)true);
-
-	    if (_on_question_completion != 0)
-	    {
-		// We use a local copy of COMPLETE_ANSWER here, since
-		// the callback may submit a new query, overriding
-		// the original value.
-		string c(complete_answer);
-		_on_question_completion(c, _qu_data);
-	    }
-	}
-	break;
-
     case BusyOnQuArray:
 	complete_answers[qu_index] += answer;
 
@@ -1600,11 +1548,6 @@ void GDBAgent::handle_died()
     case BusyOnCmd:
 	if (_on_answer_completion != 0)
 	    _on_answer_completion (_user_data);
-	break;
-
-    case BusyOnQuestion:
-	if (_on_question_completion != 0)
-	    _on_question_completion (complete_answer, _qu_data);
 	break;
 
     case BusyOnQuArray:

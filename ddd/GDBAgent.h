@@ -30,13 +30,10 @@
 
 //-----------------------------------------------------------------------------
 // A GDBAgent creates a connection to an inferior GDB via a TTYAgent.
-// There are three ways to send commands to GDB:
+// There are two ways to send commands to GDB:
 // 1. send_user_cmd: is used for user input at the GDB prompt.  GDB output
 //    (partial answers) are processed immediately.
-// 2. send_question: is used for internal communication.  All answers
-//    are buffered until the whole answer is received.  send_question can
-//    only be used if GDB is ready for input.
-// 3. send_qu_array: issues a list of queries to GDB.  The passed function
+// 2. send_qu_array: issues a list of queries to GDB.  The passed function
 //    is called as soon as the last query is processed.  The passed function
 //    must free the memory claimed by the query array.
 //-----------------------------------------------------------------------------
@@ -107,10 +104,6 @@ typedef void (* OAProc) (const string& answer,
 // Called after the whole answer to send_user_cmd has been received
 typedef void (* OACProc) (void* user_data);
 
-// Called from send_question with the complete answer
-typedef void (* OQCProc) (const string& complete_answer,
-			  void*  qu_data);
-
 // Called from send_qu_array with the complete answers
 typedef void (* OQACProc) (const StringArray& complete_answers,
 			   const VoidArray& user_datas,
@@ -158,7 +151,6 @@ protected:
     enum State {
 	ReadyWithPrompt,
 	BusyOnCmd, 
-	BusyOnQuestion, 
 	BusyOnQuArray,
 	BusyOnInitialCmds
     };
@@ -280,10 +272,6 @@ public:
 			     string user_cmd,
 			     void* user_data = 0);
 
-    bool send_question (string  cmd,
-			OQCProc on_question_completion,
-			void*   qu_data);
-
     bool send_qu_array (const StringArray& cmds,
 			const VoidArray& qu_datas,
 			int      qu_count,
@@ -295,10 +283,6 @@ public:
     DebuggerType type()       const { return _type; }
     string title()            const;
     bool isReadyWithPrompt()  const { return state == ReadyWithPrompt; }
-    bool isBusyOnCmd()        const { return state == BusyOnCmd
-					  || state == BusyOnInitialCmds; }
-    bool isBusyOnQuestion()   const { return state == BusyOnQuestion
-					  || state == BusyOnQuArray; }
     string prompt()           const { return last_prompt; }
 
 
@@ -792,7 +776,6 @@ private:
 
     OAProc   _on_answer;
     OACProc  _on_answer_completion;
-    OQCProc  _on_question_completion;
     OQACProc _on_qu_array_completion;
 
     void    init_qu_array (const StringArray& cmds,
