@@ -130,6 +130,7 @@ protected:
     void process_jdb(string& info_output);
     void process_pydb(string& info_output);
     void process_perl(string& info_output);
+    void process_bash(string& info_output);
 
 public:
     // Create new breakpoint from INFO_OUTPUT.  ARG denotes the
@@ -204,7 +205,7 @@ public:
     // UNDO_COMMANDS contains commands to undo the change.
     // NEED_TOTAL_UNDO is set iff the change requires deleting and
     // setting a new breakpoint.
-    bool update(string& info_output, ostream& undo_commands, 
+    bool update(string& info_output, std::ostream& undo_commands, 
 		bool& need_total_undo);
 
     // Return commands to restore this breakpoint, using the dummy
@@ -212,7 +213,7 @@ public:
     // immediately in order to increase the breakpoint number.  If
     // ADDR is set, use ADDR as (fake) address.  If COND is set, use
     // COND as (fake) condition.  Return true iff successful.
-    bool get_state(ostream& os, int nr, bool as_dummy = false, 
+    bool get_state(std::ostream& os, int nr, bool as_dummy = false, 
 		   string addr = "", string cond = char(-1));
 
     // Stuff for constructing `false' breakpoint conditions

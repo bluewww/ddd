@@ -38,7 +38,7 @@
 
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 
 #include "VSLBuiltin.h"
 

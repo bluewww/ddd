@@ -30,7 +30,6 @@
 # `http://www.gnu.org/software/ddd/',
 # or send a mail to the DDD developers <ddd@gnu.org>.
 
-
 # Shared data installation
 dddrootdir   = $(pkgdatadir)-@VERSION@
 
@@ -61,5 +60,4 @@ vslroot_DATA = \
 	vsldef.vsl    \
 	vsllib.vsl
 
-# Automake invokes `autoconf' without passing the `-l' option :-(
-AUTOCONF = autoconf -l ../ddd
+EXTRA_DIST = $(vslroot_DATA)

@@ -39,7 +39,7 @@
 
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 #include "misc.h"       // max()
 
 #include "VSLNode.h"
@@ -114,8 +114,8 @@ public:
     int append(VSLNode *node);
 
     // Dump
-    void dump(ostream& s) const;
-    void _dumpTree(ostream& s) const;
+    void dump(std::ostream& s) const;
+    void _dumpTree(std::ostream& s) const;
 
     // Properties
     bool isConst() const;

@@ -95,8 +95,8 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 #include <errno.h>
 #include <string.h>
 
@@ -415,7 +415,7 @@ public:
 
     string name() const
     {
-	ostrstream os;
+	std::ostringstream os;
 	os << path();
 	if (pid() > 0)
 	    os << " [" << pid() << "]";

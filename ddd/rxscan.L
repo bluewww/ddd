@@ -140,7 +140,7 @@ extern "C" int yywrap(void)
 // Returning values
 #ifdef FLEX_SCANNER
 
-#define YY_DECL static const regex *yylex YY_PROTO(( void ))
+#define YY_DECL static const regex *yylex ( void )
 #define RETURN(x) return x
 
 #else
@@ -360,5 +360,7 @@ C5(({I}::)*{I}=)?{I}[(]{A}[)]		RETURN(&rxperlref);
 C6enter{W}.*file{W}name                 RETURN(&rxenter_file_name);
 C7[[]-?{D}]{W}*={W}[[]-?{D}]{C}         RETURN(&rxdoubleindex);
 C8{_}(r|ru|run|rer|rerun|c|cont|contin|continu|continue|R|exec)({W}{C})? RETURN(&rxcont_cmd);
+C9bashdb<+[(]*[0-9]*[)]*>+{w}		RETURN(&rxbashprompt);
+D0[(][^:]*:{P}[)]:.*	                RETURN(&rxbashpos);
 (.|\n)				        RETURN(0);  // Anything else
 %%

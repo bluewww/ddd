@@ -43,7 +43,7 @@
 
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 #include "strclass.h"
 
 #include "VSLNode.h"
@@ -69,8 +69,8 @@ protected:
 
     bool matches(const VSLNode &node) const;
 
-    void dump(ostream& s) const;
-    void _dumpTree(ostream& s) const;
+    void dump(std::ostream& s) const;
+    void _dumpTree(std::ostream& s) const;
 
 public:
     // Constructor

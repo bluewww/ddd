@@ -56,8 +56,8 @@ char show_rcsid[] =
 #include "version.h"
 #include "filetype.h"
 
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <string.h>
 #include <errno.h>
 
@@ -84,7 +84,7 @@ extern "C" {
 // Show invocation
 //-----------------------------------------------------------------------------
 
-void show_invocation(const string& gdb_command, ostream& os)
+void show_invocation(const string& gdb_command, std::ostream& os)
 {
     string command     = gdb_command;
     string gdb_version = "";
@@ -113,6 +113,7 @@ void show_invocation(const string& gdb_command, ostream& os)
 	"  --jdb              Invoke JDB as inferior debugger.",
 	"  --pydb             Invoke PYDB as inferior debugger.",
 	"  --perl             Invoke Perl as inferior debugger.",
+	"  --bash             Invoke Bash as inferior debugger.",
 	"  --wdb              Invoke WDB as inferior debugger.",
 	"  --debugger CMD     Invoke inferior debugger as CMD.",
 	"  --host USER@HOST   Run inferior debugger on HOST.",
@@ -214,6 +215,15 @@ void show_invocation(const string& gdb_command, ostream& os)
     }
     break;
 
+    case BASH:
+    {
+	title = "BASH";
+	base  = "the BASH debugger.";
+	options += "  [Berl options]     Pass option to Bash.";
+	args = "program-file [args]";
+    }
+    break;
+
     case XDB:
     {
 	title = "XDB";
@@ -258,7 +268,7 @@ void show_invocation(const string& gdb_command, ostream& os)
 #define _stringize(x) #x
 #define stringize(x) _stringize(x)
 
-static void show_configuration(ostream& os, bool version_only)
+static void show_configuration(std::ostream& os, bool version_only)
 {
     // Storing this as a string literal would create an SCCS entry
     const string sccs = "@(" + string("#)");
@@ -404,12 +414,12 @@ static void show_configuration(ostream& os, bool version_only)
     os << cinfo << "\n";
 }
 
-void show_version(ostream& os)
+void show_version(std::ostream& os)
 {
     show_configuration(os, true);
 }
 
-void show_configuration(ostream& os)
+void show_configuration(std::ostream& os)
 {    
     show_configuration(os, false);
 }
@@ -418,7 +428,7 @@ void show_configuration(ostream& os)
 // Helpers
 //-----------------------------------------------------------------------------
 
-static int uncompress(ostream& os, const char *text, int size)
+static int uncompress(std::ostream& os, const char *text, int size)
 {
     string tmpfile = tempfile();
     FILE *fp = fopen(tmpfile.chars(), "w");
@@ -462,7 +472,7 @@ static int uncompress(ostream& os, const char *text, int size)
     return 0;
 }
 
-void show(int (*formatter)(ostream& os))
+void show(int (*formatter)(std::ostream& os))
 {
     FILE *pager = 0;
     if (isatty(fileno(stdout)))
@@ -484,12 +494,12 @@ void show(int (*formatter)(ostream& os))
 
     if (pager == 0)
     {
-	formatter(cout);
-	cout << flush;
+	formatter(std::cout);
+	std::cout << std::flush;
     }
     else
     {
-	ostrstream text;
+	std::ostringstream text;
 	formatter(text);
 	string s(text);
 
@@ -522,7 +532,7 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer)
 // License
 //-----------------------------------------------------------------------------
 
-int ddd_license(ostream& os)
+int ddd_license(std::ostream& os)
 {
     (void) uncompress;		// Use it
 
@@ -534,7 +544,7 @@ int ddd_license(ostream& os)
     return uncompress(os, COPYING, sizeof(COPYING) - 1);
 #else
     const string s1 = resolvePath("COPYING"); 
-    ifstream is(s1.chars());
+    std::ifstream is(s1.chars());
     if (is.bad())
 	return 1;
 
@@ -550,7 +560,7 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 {
     StatusMsg msg("Invoking " DDD_NAME " license browser");
 
-    ostrstream license;
+    std::ostringstream license;
     int ret = ddd_license(license);
     string s(license);
     s.prepend("@license@");
@@ -566,7 +576,7 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 // News
 //-----------------------------------------------------------------------------
 
-int ddd_news(ostream& os)
+int ddd_news(std::ostream& os)
 {
 #if WITH_BUILTIN_NEWS
     static const char *NEWS =
@@ -576,7 +586,7 @@ int ddd_news(ostream& os)
     return uncompress(os, NEWS, sizeof(NEWS) - 1);
 #else
     const string s1 = resolvePath("NEWS"); 
-    ifstream is(s1.chars());
+    std::ifstream is(s1.chars());
     if (is.bad())
 	return 1;
 
@@ -591,7 +601,7 @@ void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
 {
     StatusMsg msg("Invoking " DDD_NAME " news browser");
 
-    ostrstream news;
+    std::ostringstream news;
     int ret = ddd_news(news);
     string s(news);
     s.prepend("@news@");
@@ -609,7 +619,7 @@ void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
 // Manual
 //-----------------------------------------------------------------------------
 
-int ddd_man(ostream& os)
+int ddd_man(std::ostream& os)
 {
 #if WITH_BUILTIN_MANUAL
     static const char *MANUAL =
@@ -646,7 +656,7 @@ void DDDManualCB(Widget w, XtPointer, XtPointer)
 {
     StatusMsg msg("Invoking " DDD_NAME " manual browser");
     
-    ostrstream man;
+    std::ostringstream man;
     int ret = ddd_man(man);
     string s(man);
 
@@ -686,7 +696,7 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
     FILE *fp = popen(s1.chars(), "r");
     if (fp != 0)
     {
-	ostrstream man;
+	std::ostringstream man;
 	int c;
 	int i = 0;
 	while ((c = getc(fp)) != EOF)

@@ -66,7 +66,7 @@ protected:
 	_data(box._data)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
     // Call matchCallback if matches
     bool matches (const Box &b, const Box *callbackArg = 0) const;

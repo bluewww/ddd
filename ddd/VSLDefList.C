@@ -35,8 +35,8 @@ char VSLDefList_rcsid[] =
 #endif
 
 
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 #include "assert.h"
 
 #include "VSEFlags.h"
@@ -63,13 +63,9 @@ const Box *VSLDefList::eval(Box *arg) const
 
     if (d == 0)
     {
-	const int bufsize = 1000;
-	char buffer[bufsize];
-
-	ostrstream s(buffer, sizeof buffer);
-	s << *arg << '\0';
-
-	VSLLib::eval_error("no suiting definition for " + f_name() + buffer);
+	std::ostringstream s;
+	s << *arg;
+	VSLLib::eval_error("no suiting definition for " + f_name() + s);
     }
 
     return d ? d->eval(arg) : 0;
@@ -178,7 +174,7 @@ void VSLDefList::replace()
 // Override
 void VSLDefList::override()
 {
-    ostrstream os;
+    std::ostringstream os;
     os << UniqueId();
 
     _func_name += "'";

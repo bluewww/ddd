@@ -42,7 +42,7 @@ char shell_rcsid[] =
 #include "environ.h"
 
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 
 //-----------------------------------------------------------------------------
 // Remote commands
@@ -117,7 +117,7 @@ string _sh_command(string command, bool force_local,
     return rsh;
 }
 
-string sh_command(string command, bool force_local)
+string sh_command(const string& command, bool force_local)
 {
     string ret = _sh_command(command, force_local);
     dddlog << "+  " << ret << "\n";

@@ -36,8 +36,8 @@ char gdbinit_rcsid[] =
 #include "gdbinit.h"
 
 #include <X11/Intrinsic.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <ctype.h>
 
 #include "assert.h"
@@ -90,6 +90,11 @@ GDBAgent *new_gdb(DebuggerType type,
 	    gdb_call += " -d";
 	    break;
 
+	case BASH:
+	    // Be sure to invoke the debugger.
+	    gdb_call += " --debugger";
+	    break;
+
 	case PYDB:
 	    // Nothing special.
 	    break;
@@ -107,11 +112,19 @@ GDBAgent *new_gdb(DebuggerType type,
 	gdb_call += " " + sh_quote(arg);
     }
 
-    if (type == PERL && argc <= 1)
+    if (argc <= 1) 
     {
-	// Invoked without args.  Add a dummy `eval' arg.
-	gdb_call += " -e 42";
+	if (type == PERL)
+	{
+	    // Invoked without args.  Add a dummy `eval' arg.
+	    gdb_call += " -e 42";
+	}
+	else if (type == BASH)
+	{
+	    gdb_call += " -c ': type \\\"debug *script-name*\\\" to start your script.'";
+	}
     }
+    
 
     GDBAgent *gdb;
     if (app_data.debugger_rhost == 0 || app_data.debugger_rhost[0] == '\0')
@@ -168,7 +181,7 @@ GDBAgent *new_gdb(DebuggerType type,
 // Show call in output window
 static void EchoTextCB(XtPointer client_data, XtIntervalId *)
 {
-    const string& gdb_call = *((string *)client_data);
+    const string& gdb_call = *((const string *)client_data);
     _gdb_out(gdb_call);
 }
 
@@ -217,7 +230,7 @@ static void InvokeGDBFromShellHP(Agent *source, void *client_data,
 	else
 	{
 	    // Invoke GDB...
-	    const string& gdb_call = *((string *)client_data);
+	    const string& gdb_call = *((const string *)client_data);
 	    gdb->write(gdb_call.chars(), gdb_call.length());
 
 	    // Echoing should be disabled by now.  Echo call manually...
@@ -244,7 +257,7 @@ static bool have_cmd(const string& cmd)
 
 // Return an appropriate debugger type from ARGC/ARGV.
 // Set ARG if debugger type could be deduced from an argument.
-DebuggerInfo::DebuggerInfo(int argc, const char *argv[])
+DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
     : type(DebuggerType(-1)),
       arg("")
 {
@@ -253,6 +266,7 @@ DebuggerInfo::DebuggerInfo(int argc, const char *argv[])
 
     static bool have_perl   = (fallback == PERL || have_cmd("perl"));
     static bool have_python = (fallback == PYDB || have_cmd("python"));
+    static bool have_bash   = (fallback == BASH || have_cmd("bash"));
 
     // 1. Check for Perl and Python scripts as given.
 
@@ -267,6 +281,12 @@ DebuggerInfo::DebuggerInfo(int argc, const char *argv[])
 	if (have_perl && is_perl_file(arg))
 	{
 	    type = PERL;
+	    return;
+	}
+
+	if (have_bash && is_bash_file(arg))
+	{
+	    type = BASH;
 	    return;
 	}
 
@@ -489,7 +509,8 @@ static struct table {
     { XDB,  "xdb"  },
     { JDB,  "jdb"  },
     { PYDB, "pydb" },
-    { PERL, "perl" }
+    { PERL, "perl" },
+    { BASH, "bash" }
 };
 
 // Determine debugger type from DEBUGGER_NAME

@@ -78,7 +78,7 @@ void start_have_decorated_transients(Widget parent)
     Position pos_x, pos_y;
     get_transient_pos(XtScreen(parent), pos_x, pos_y);
 
-    ostrstream os;
+    std::ostringstream os;
     os << "+" << pos_x << "+" << pos_y;
     string geometry(os);
 

@@ -41,7 +41,7 @@ char regex_rcsid[] =
 #include "cook.h"
 
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include <ctype.h>
 #include <string.h>		// strncmp()
 

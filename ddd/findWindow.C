@@ -37,7 +37,7 @@ char findWindow_rcsid[] =
 
 #include "XErrorB.h"
 #include "bool.h"
-#include <iostream.h>
+#include <iostream>
 
 #ifndef LOG_FIND_WINDOWS
 #define LOG_FIND_WINDOWS 0
@@ -47,7 +47,7 @@ inline bool eq(const _XtString s1, const _XtString s2)
 {
 #if LOG_FIND_WINDOWS
     if (s1 != 0)
-	cout << "Found " << s1 << "\n";
+	std::cout << "Found " << s1 << "\n";
 #endif
 
     return s1 != 0 && s2 != 0 && strcmp(s1, s2) == 0;

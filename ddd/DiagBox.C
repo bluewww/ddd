@@ -34,7 +34,7 @@ char DiagBox_rcsid[] =
 #endif
 
 
-#include <strstream.h>
+#include <sstream>
 
 #include "PrimitiveB.h"
 #include "StringBox.h"
@@ -66,9 +66,8 @@ void DiagBox::_draw(Widget w,
 	    origin[X], origin[Y] + i, origin[X] + space[X], origin[Y] + i);
 
     // Make space info
-    ostrstream oss;
-    ostream& os = oss;
-    os << space << '\0';
+    std::ostringstream oss;
+    oss << space << '\0';
     string ss = oss;
 
     // Draw it (centered)
@@ -85,7 +84,7 @@ void DiagBox::_draw(Widget w,
     s->unlink();
 }
 
-void DiagBox::dump(ostream& s) const
+void DiagBox::dump(std::ostream& s) const
 {
     s << "diag()";
 }

@@ -42,7 +42,7 @@ char cxxtest_rcsid[] =
 
 #include "bool.h"
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
@@ -375,8 +375,8 @@ static void tree_test()
     tree->add_threads();
 
     for (Tree *t = tree->first(); t != 0; t = t->next())
-	cout << t->name() << " ";
-    cout << "\n";
+	std::cout << t->name() << " ";
+    std::cout << "\n";
 
     (void) tree;		// Display this
 
@@ -732,9 +732,9 @@ static void cin_cout_test()
 {
     // Simple I/O
     char name[1024];
-    cout << "What's your name? ";
-    cin >> name;
-    cerr << "Hello, " << name << "!\n";
+    std::cout << "What's your name? ";
+    std::cin >> name;
+    std::cerr << "Hello, " << name << "!\n";
 }
 
 //--------------------------------------------------------------------------

@@ -38,7 +38,7 @@ char regexps_rcsid[] =
 #include "misc.h"		// min()
 #include "casts.h"
 #include <string.h>
-#include <iostream.h>
+#include <iostream>
 
 // The first DATA_LEN characters are used to choose the actual regexp.
 #define DATA_LEN 2
@@ -59,8 +59,8 @@ static int rx_matcher(void *data, const char *s, int len, int pos)
 	static int max_reported_len = 0;
 	if (required_len > max_reported_len)
 	{
-	    cerr << "Warning: LEX buffer overflow.\n";
-	    cerr << "Please raise the value of "
+	    std::cerr << "Warning: LEX buffer overflow.\n";
+	    std::cerr << "Please raise the value of "
 		"MAX_LEX_TOKEN_SIZE in `ddd/rxscan.L'\n"
 		"from " << MAX_LEX_TOKEN_SIZE << " to " 
 		 << required_len << " or more and recompile.  "
@@ -249,3 +249,6 @@ const regex rxperlref                   (rx_matcher, (void *)"C5");
 const regex rxenter_file_name           (rx_matcher, (void *)"C6");
 const regex rxdoubleindex               (rx_matcher, (void *)"C7");
 const regex rxcont_cmd                  (rx_matcher, (void *)"C8");
+const regex rxbashprompt                (rx_matcher, (void *)"C9");
+const regex rxbashpos                   (rx_matcher, (void *)"D0");
+

@@ -1,4 +1,4 @@
-// $Id$ -*- C++ -*-
+// $Id: DeleteWCB.C,v 1.1.1.1 2003/03/03 00:44:05 rockyb Exp $ -*- C++ -*-
 // Add deletion callback to window
 
 // Copyright (C) 2000 Universitaet Passau, Germany.
@@ -27,7 +27,7 @@
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
 char DeleteWindowCallBack_rcsid[] = 
-    "$Id$";
+    "$Id: DeleteWCB.C,v 1.1.1.1 2003/03/03 00:44:05 rockyb Exp $";
 
 #ifdef __GNUG__
 #pragma implementation

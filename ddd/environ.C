@@ -44,7 +44,7 @@ char environ_rcsid[] =
 static StringArray environment_names;
 
 // Put NAME=VALUE into the environment
-void put_environment(string name, string value)
+void put_environment(const string& name, const string& value)
 {
     const string env_s = name + "=" + value;
     char *env = new char[env_s.length() + 1];

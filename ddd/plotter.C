@@ -70,7 +70,7 @@ char plotter_rcsid[] =
 #include "TimeOut.h"
 
 #include <stdio.h>
-#include <fstream.h>
+#include <fstream>
 
 #include <Xm/Command.h>
 #include <Xm/MainW.h>
@@ -269,14 +269,14 @@ static void send_and_replot(PlotWindowInfo *plot, string cmd)
 
 static void slurp_file(const string& filename, string& target)
 {
-    ifstream is(filename.chars());
+    std::ifstream is(filename.chars());
     if (is.bad())
     {
 	target = "";
 	return;
     }
 
-    ostrstream s;
+    std::ostringstream s;
     int c;
     while ((c = is.get()) != EOF)
 	s << (unsigned char)c;
@@ -962,7 +962,7 @@ void clear_plot_window_cache()
 
 
 // Create a new plot window
-PlotAgent *new_plotter(string name, DispValue *source)
+PlotAgent *new_plotter(const string& name, DispValue *source)
 {
     static int tics = 1;
 
@@ -1273,8 +1273,8 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
     StatusDelay delay("Saving " + title + " data to " + quote(target));
 
     // Copy SOURCE to TARGET
-    ifstream is(source.chars());
-    ofstream os(target.chars());
+    std::ifstream is(source.chars());
+    std::ofstream os(target.chars());
 
     if (os.bad())
     {
@@ -1497,7 +1497,7 @@ static void trace(const char *prefix, void *call_data)
     s.gsub("\\n", nl);
 
     if (s_ends_with_nl)
-	s(s.length() - 1, 0) = "\\n";
+	s.at((int)(s.length() - 1), 0) = "\\n";
 
     dddlog << prefix << s << '\n';
     dddlog.flush();

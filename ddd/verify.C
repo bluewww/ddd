@@ -33,14 +33,14 @@ char verify_rcsid[] =
 #pragma implementation
 #endif
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 
 #include "verify.h"
 
 void widget_creation_error()
 {
-    cerr << "fatal: widget creation failed\n";
+    std::cerr << "fatal: widget creation failed\n";
     abort();
 }
     

@@ -36,7 +36,7 @@ char ReadLineAgent_rcsid[] =
 #include "ReadLineA.h"
 #include "config.h"
 
-#include <iostream.h>
+#include <iostream>
 
 #if WITH_READLINE
 

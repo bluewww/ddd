@@ -29,8 +29,8 @@
 char VSLErr_rcsid[] = 
     "$Id$";
 
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 #include "strclass.h"
 
 #include "VSLLib.h"
@@ -43,7 +43,7 @@ char VSLErr_rcsid[] =
 // Error handling
 void VSLLib::default_echo(const string& msg)
 {
-    cerr << msg << '\n';
+    std::cerr << msg << '\n';
 }
 
 // Evaluation errors
@@ -77,7 +77,7 @@ void VSLLib::eval_echo(const string& errmsg, const VSLDef *d)
 
 	for (i--; i >= 0; i--)
 	{
-	    ostrstream os;
+	    std::ostringstream os;
 	    os << i << " -- " << VSLDef::backtrace[i]->longname() 
 	       << *VSLDef::backtrace_args[i];
 

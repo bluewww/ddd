@@ -136,8 +136,8 @@ char DataDisp_rcsid[] =
 #include <X11/StringDefs.h>
 
 // System includes
-#include <iostream.h>
-#include <fstream.h>		// ofstream
+#include <iostream>
+#include <fstream>		// ofstream
 #include <ctype.h>
 
 
@@ -2265,7 +2265,7 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
     else if (arg == "node" || arg == "")
 	popup = node_popup_w;
     else
-	cerr << "graph-popup: bad argument " << quote(arg) << "\n";
+	std::cerr << "graph-popup: bad argument " << quote(arg) << "\n";
 
     if (popup != 0)
     {
@@ -2853,7 +2853,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     // Set selection.
     // If the entire graph is selected, include position info, too.
     bool include_position = (count.selected >= count.visible);
-    ostrstream os;
+    std::ostringstream os;
     get_selection(os, include_position);
     const string cmd(os);
 
@@ -2900,7 +2900,7 @@ bool DataDisp::get_scopes(StringArray& scopes)
 }
 
 // Write commands to restore frame #TARGET_FRAME in OS
-void DataDisp::write_frame_command(ostream& os, int& current_frame, 
+void DataDisp::write_frame_command(std::ostream& os, int& current_frame, 
 				   int target_frame)
 {
     if (target_frame != current_frame)
@@ -2930,7 +2930,7 @@ void DataDisp::write_frame_command(ostream& os, int& current_frame,
 }
 
 // Write commands to restore scope of DN in OS
-void DataDisp::write_restore_scope_command(ostream& os,
+void DataDisp::write_restore_scope_command(std::ostream& os,
 					   int& current_frame,
 					   const StringArray& scopes,
 					   DispNode *dn,
@@ -2992,7 +2992,7 @@ void DataDisp::write_restore_scope_command(ostream& os,
 }
 
 
-void DataDisp::get_node_state(ostream& os, DispNode *dn, bool include_position)
+void DataDisp::get_node_state(std::ostream& os, DispNode *dn, bool include_position)
 {
     os << "graph ";
     if (dn->plotted())
@@ -3060,7 +3060,7 @@ void DataDisp::get_node_state(ostream& os, DispNode *dn, bool include_position)
     os << '\n';
 }
 
-bool DataDisp::get_state(ostream& os,
+bool DataDisp::get_state(std::ostream& os,
 			 bool restore_state,
 			 bool include_position,
 			 const StringArray& scopes,
@@ -3451,8 +3451,8 @@ void DataDisp::get_display_numbers(const string& name, IntArray& numbers)
 }
 
 void DataDisp::new_displaySQ (string display_expression,
-			      string scope, BoxPoint *p,
-			      string depends_on,
+			      const string& scope, BoxPoint *p,
+			      const string& depends_on,
 			      DeferMode deferred, 
 			      bool clustered, bool plotted,
 			      Widget origin, bool verbose, bool do_prompt)
@@ -3744,7 +3744,7 @@ string DataDisp::builtin_user_command(const string& cmd, DispNode *node)
 
 	sort(clustered_displays);
 
-	ostrstream os;
+	std::ostringstream os;
 	if (clustered_displays.size() == 0)
 	{
 	    os << "No displays.\n";
@@ -4420,8 +4420,10 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose, bool do_prompt)
     info.prompt  = do_prompt;
     info.cmds    = cmds;
 
+    bool info_registered;
     bool ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
-				 refresh_displayOQAC, (void *)&info);
+				 refresh_displayOQAC, (void *)&info,
+				 info_registered);
 
     if (!ok || cmds.size() == 0)
     {
@@ -4894,7 +4896,7 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
     bool unclustered = false;
 
     // Build undo command
-    ostrstream undo_commands;
+    std::ostringstream undo_commands;
     int i;
     for (i = 0; i < display_nrs.size(); i++)
     {
@@ -5670,7 +5672,8 @@ void DataDisp::refresh_display_list(bool silent)
     // We refresh the list as soon as we return from the callback
     // (LessTif is sensitive about this)
     XtAppAddTimeOut(XtWidgetToApplicationContext(display_list_w),
-		    0, RefreshDisplayListCB, XtPointer(silent));
+		    0, RefreshDisplayListCB,
+		    (silent ? XtPointer(1):XtPointer(0)) );
 }
 
 
@@ -5678,9 +5681,8 @@ void DataDisp::RefreshDisplayListCB(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
 
-    // TODO dodgy cast. Use a pointer to bool and dereference it.
-    const bool silent = int(client_data);
-    int number_of_displays = disp_graph->count_all();
+    const bool silent = client_data?true:false;
+    const int number_of_displays = disp_graph->count_all();
 
     StringArray nums;
     StringArray states;
@@ -6440,8 +6442,10 @@ void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
 	    info.verbose = false;
 	    info.prompt  = false;
 	    info.cmds    = cmds;
+	    bool info_registered;
 	    ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
-				    refresh_displayOQAC, (void *)&info);
+				    refresh_displayOQAC, (void *)&info,
+				    info_registered);
 
 	    sent = cmds.size() > 0;
 	}

@@ -39,7 +39,7 @@ char DispValueType_rcsid[] =
 // Debugging stuff
 //-----------------------------------------------------------------------------
 
-ostream& operator<<(ostream& os, DispValueType type)
+std::ostream& operator<<(std::ostream& os, DispValueType type)
 {
     switch (type)
     {

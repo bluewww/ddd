@@ -92,7 +92,7 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include <Xm/PanedW.h>
 
 #include <stdio.h>
-#include <fstream.h>
+#include <fstream>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>		// strerror
@@ -1478,7 +1478,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    int ok = ptrace(PTRACE_ATTACH, info.pid, 0, 0);
 	    if (ok < 0)
 	    {
-		cerr << ddd_NAME ": PTRACE_ATTACH: "
+	      std::cerr << ddd_NAME ": PTRACE_ATTACH: "
 		     << strerror(errno) << '\n';
 	    }
 	    else
@@ -1489,7 +1489,7 @@ static bool _get_core(const string& session, unsigned long flags,
 
 		if (ok < 0)
 		{
-		    cerr << ddd_NAME ": PTRACE_DUMPCORE: "
+		  std::cerr << ddd_NAME ": PTRACE_DUMPCORE: "
 			 << strerror(errno) << '\n';
 		}
 	    
@@ -1499,7 +1499,7 @@ static bool _get_core(const string& session, unsigned long flags,
 
 		if (ok < 0)
 		{
-		    cerr << ddd_NAME ": PTRACE_DETACH: "
+		  std::cerr << ddd_NAME ": PTRACE_DETACH: "
 			 << strerror(errno) << '\n';
 		}
 	    }
@@ -1544,7 +1544,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    gcore.gsub("@FILE@", target);
 	    gcore.gsub("@PID@",  itostring(info.pid));
 	    string cmd = sh_command(gcore, true) + " 2>&1";
-	    ostrstream errs;
+	    std::ostringstream errs;
 	    FILE *fp = popen(cmd.chars(), "r");
 	    if (fp != 0)
 	    {
@@ -1561,7 +1561,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    // 4. Since `gcore' restarts the debuggee, stop it again.
 	    kill(info.pid, SIGSTOP);
 	    if (gcore_status != 0)
-		cerr << string(errs);
+		std::cerr << string(errs);
 
 	    // 5. Attach GDB again.
 	    sleep(1);
@@ -1622,7 +1622,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    // Kill the process, hopefully leaving a core file.
 
 	    // Since g77 catches SIGABRT, we disable its handler first.
-	    ostrstream os;
+	    std::ostringstream os;
 	    os << "signal(" << SIGABRT << ", " 
 	       << (unsigned long)SIG_DFL << ")";
 	    gdb_question(gdb->print_command(string(os)));
@@ -1841,6 +1841,10 @@ static void reload_options()
     case PERL:
 	settings = str(app_data.perl_settings);
 	break;
+
+    case BASH:
+	settings = str(app_data.bash_settings);
+	break;
     }
 
     init_session(restart, settings, app_data.source_init_commands);
@@ -1923,7 +1927,7 @@ void check_options_file()
 // Write state
 //-----------------------------------------------------------------------------
 
-static bool is_fallback_value(string resource, string val)
+static bool is_fallback_value(const string& resource, string val)
 {
     static XrmDatabase default_db = app_defaults(XtDisplay(find_shell()));
 
@@ -1945,7 +1949,7 @@ static bool is_fallback_value(string resource, string val)
 
     if (success)
     {
-	char *str = (char *)xrmvalue.addr;
+	const char *str = (const char *)xrmvalue.addr;
 	int len   = xrmvalue.size - 1; // includes the final `\0'
 	default_val = string(str, len);
     }
@@ -1965,7 +1969,7 @@ static bool is_fallback_value(string resource, string val)
     return val == default_val;
 }
 
-static string app_value(string resource, const string& value, 
+static string app_value(const string& resource, const string& value, 
 			bool check_default)
 {
     static String app_name  = 0;
@@ -2163,7 +2167,7 @@ static string widget_geometry(Widget w, bool include_size = false)
     XWindowAttributes attr;
     XGetWindowAttributes(XtDisplay(w), frame(w), &attr);
 
-    ostrstream geometry;
+    std::ostringstream geometry;
     if (include_size)
 	geometry << width << "x" << height;
     geometry << "+" << attr.x << "+" << attr.y;
@@ -2223,7 +2227,7 @@ bool get_restart_commands(string& restart, unsigned long flags)
     }
 
     // Stream to hold data and breakpoints
-    ostrstream rs;
+    std::ostringstream rs;
 
     // Get breakpoints and cursor position
     bool breakpoints_ok = source_view->get_state(rs);
@@ -2276,7 +2280,7 @@ bool get_restart_commands(string& restart, unsigned long flags)
     }
 
     // Stream to hold exec and core file specs
-    ostrstream es;
+    std::ostringstream es;
 
     if (reload_file)
     {
@@ -2306,6 +2310,7 @@ bool get_restart_commands(string& restart, unsigned long flags)
 	    break;
 
 	case PERL:
+	case BASH:
 	case JDB:
 	    if (info.file != "" && info.file != NO_GDB_ANSWER)
 	    {
@@ -2351,7 +2356,7 @@ bool save_options(unsigned long flags)
     // Read the file contents into memory ...
     string dddinit;
     {
-	ifstream is(file.chars());
+	std::ifstream is(file.chars());
 	if (is.bad())
 	{
 	    // File not found: create a new one
@@ -2378,7 +2383,7 @@ bool save_options(unsigned long flags)
     // ... and write them back again
     bool ok = true;
     string workfile = file + "#";
-    ofstream os(workfile.chars());
+    std::ofstream os(workfile.chars());
     if (os.bad())
     {
 	workfile = file;
@@ -2432,6 +2437,7 @@ bool save_options(unsigned long flags)
     string jdb_settings  = app_data.jdb_settings;
     string pydb_settings = app_data.pydb_settings;
     string perl_settings = app_data.perl_settings;
+    string bash_settings = app_data.bash_settings;
 
     if (need_settings() || need_save_defines())
     {
@@ -2467,6 +2473,10 @@ bool save_options(unsigned long flags)
 	case PERL:
 	    perl_settings = settings;
 	    break;
+
+	case BASH:
+	    bash_settings = settings;
+	    break;
 	}
     }
 
@@ -2476,6 +2486,7 @@ bool save_options(unsigned long flags)
     os << string_app_value(XtNjdbSettings,  jdb_settings.chars(), true)  << '\n';
     os << string_app_value(XtNpydbSettings, pydb_settings.chars(), true) << '\n';
     os << string_app_value(XtNperlSettings, perl_settings.chars(), true) << '\n';
+    os << string_app_value(XtNbashSettings, bash_settings.chars(), true) << '\n';
 
     os << "\n! Source.\n";
     os << bool_app_value(XtNfindWordsOnly,
@@ -2604,7 +2615,7 @@ bool save_options(unsigned long flags)
 
     // Themes
     os << "\n! Themes.\n";
-    ostrstream themes;
+    std::ostringstream themes;
     themes << DispBox::theme_manager;
     static string themes_s;
     themes_s = themes;
@@ -2725,6 +2736,7 @@ bool save_options(unsigned long flags)
 	string jdb_display_shortcuts  = app_data.jdb_display_shortcuts;
 	string pydb_display_shortcuts = app_data.pydb_display_shortcuts;
 	string perl_display_shortcuts = app_data.perl_display_shortcuts;
+	string bash_display_shortcuts = app_data.bash_display_shortcuts;
 
 	switch (gdb->type())
 	{
@@ -2734,6 +2746,7 @@ bool save_options(unsigned long flags)
 	case JDB:  jdb_display_shortcuts  = expr; break;
 	case PYDB: pydb_display_shortcuts = expr; break;
 	case PERL: perl_display_shortcuts = expr; break;
+	case BASH: bash_display_shortcuts = expr; break;
 	}
 
 	os << string_app_value(XtNgdbDisplayShortcuts, 
@@ -2748,6 +2761,8 @@ bool save_options(unsigned long flags)
 			       pydb_display_shortcuts.chars(), true) << '\n';
 	os << string_app_value(XtNperlDisplayShortcuts,
 			       perl_display_shortcuts.chars(), true) << '\n';
+	os << string_app_value(XtNbashDisplayShortcuts,
+			       bash_display_shortcuts.chars(), true) << '\n';
     }
 
     // Fonts

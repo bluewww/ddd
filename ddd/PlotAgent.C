@@ -111,7 +111,7 @@ void PlotAgent::end_plot()
 
 string PlotAgent::var(const char *name, double min, double max)
 {
-    ostrstream os;
+    std::ostringstream os;
 
     if (min < +DBL_MAX && max > -DBL_MAX)
     {
@@ -139,7 +139,7 @@ int PlotAgent::flush()
     else
     {
 	// Issue plot command
-	ostrstream cmd;
+	std::ostringstream cmd;
 	switch (ndim)
 	{
 	case 0:
@@ -395,7 +395,7 @@ void PlotAgent::set_state(const string& state)
 // Print plot to FILENAME
 void PlotAgent::print(const string& filename, const PrintGC& gc)
 {
-    ostrstream cmd;
+    std::ostringstream cmd;
 
     if (gc.isFig())
     {

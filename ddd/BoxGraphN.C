@@ -86,7 +86,7 @@ void BoxGraphNode::forceDraw(Widget w,
 
 
 // mark the following objects as one XFIG compound object
-static void startCompound(ostream& os, BoxRegion region)
+static void startCompound(std::ostream& os, BoxRegion region)
 {
     BoxPoint origin = region.origin();
     BoxPoint width = region.space();
@@ -96,14 +96,14 @@ static void startCompound(ostream& os, BoxRegion region)
     os << origin[X] - 1 << " " << origin[Y] + width[Y] + 1 << "\n";
 }
 
-static void endCompound(ostream& os)
+static void endCompound(std::ostream& os)
 {
     os << CMPTAIL;
 }
 
 
 // Print a BoxGraphNode
-void BoxGraphNode::_print(ostream& os, const GraphGC& gc) const
+void BoxGraphNode::_print(std::ostream& os, const GraphGC& gc) const
 {
     assert (box() != 0);
 

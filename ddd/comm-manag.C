@@ -85,7 +85,7 @@ char comm_manager_rcsid[] =
 #include "windows.h"
 
 #include <ctype.h>
-#include <fstream.h>
+#include <fstream>
 
 
 //-----------------------------------------------------------------------------
@@ -135,6 +135,7 @@ public:
     bool        disabling_occurred; // Flag: GDB disabled displays
 
     string      init_perl;	  // Perl restart commands
+    string      init_bash;	  // Bash restart commands
 
     XtIntervalId position_timer;  // Still waiting for partial position
     XtIntervalId display_timer;   // Still waiting for partial display
@@ -187,6 +188,7 @@ public:
 	  disabling_occurred(false),
 
 	  init_perl(""),
+	  init_bash(""),
 
 	  position_timer(0),
 	  display_timer(0)
@@ -236,6 +238,7 @@ private:
 	  disabling_occurred(false),
 
 	  init_perl(""),
+	  init_bash(""),
 
 	  position_timer(0),
 	  display_timer(0)
@@ -521,6 +524,8 @@ static void start_done()
 {
     // One last command to clear the delay, set up breakpoints and
     // issue prompt
+    if (gdb->type() == BASH) return;
+  
     Command c("# reset");
     c.priority = COMMAND_PRIORITY_INIT;
     c.echo     = false;
@@ -588,6 +593,11 @@ void start_gdb(bool config)
     case PERL:
 	init     = str(app_data.perl_init_commands);
 	settings = str(app_data.perl_settings);
+	break;
+
+    case BASH:
+	init     = str(app_data.bash_init_commands);
+	settings = str(app_data.bash_settings);
 	break;
     }
     string restart = str(app_data.restart_commands);
@@ -731,7 +741,8 @@ void start_gdb(bool config)
 	break;
 
     case PERL:
-	// Perl starts immediately with the execution.
+    case BASH:
+	// Perl and Bash starts immediately with execution.
 	cmd_data->new_exec_pos = true;
 
 	cmds += gdb->pwd_command();
@@ -744,6 +755,7 @@ void start_gdb(bool config)
     while (dummy.size() < cmds.size())
 	dummy += (void *)0;
 
+    bool extra_registered;
     gdb->start_plus (partial_answer_received,
 		     command_completed,
 		     cmd_data,
@@ -751,7 +763,11 @@ void start_gdb(bool config)
 		     dummy,
 		     cmds.size(),
 		     extra_completed,
-		     (void *)extra_data);
+		     (void *)extra_data,
+		     extra_registered);
+
+    if (!extra_registered)
+      delete extra_data;
 
     // Enqueue restart and settings commands.  Since we're starting up
     // and don't care for detailed diagnostics, we allow the GDB
@@ -807,7 +823,7 @@ void init_session(const string& restart, const string& settings,
 	bool recording_defines = false;
 
 	{
-	    ofstream os(info->tempfile.chars());
+	    std::ofstream os(info->tempfile.chars());
 	    while (init_commands != "")
 	    {
 		string cmd = init_commands.before('\n');
@@ -1090,7 +1106,8 @@ void send_gdb_command(string cmd, Widget origin,
 		    break;
 
 		case PERL:
-		    // Perl `l' command issues a position anyway.
+		case BASH:
+		    // Perl/bash `l' command issues a position anyway.
 		    break;
 		}
 	    }
@@ -1206,6 +1223,20 @@ void send_gdb_command(string cmd, Widget origin,
 		get_restart_commands(cmd_data->init_perl, flags);
 		cmd_data->init_perl += get_settings(gdb->type());
 		cmd_data->init_perl.prepend(app_data.perl_init_commands);
+
+		cmd_data->new_exec_pos = true;
+	    }
+	    extra_data->refresh_initial_line = false;
+	    break;
+
+	case BASH:
+	    if (!is_reset_cmd)
+	    {
+		// We're restarting Perl.  Make sure the state is preserved.
+		unsigned long flags = DONT_RELOAD_FILE;
+		get_restart_commands(cmd_data->init_bash, flags);
+		cmd_data->init_bash += get_settings(gdb->type());
+		cmd_data->init_bash.prepend(app_data.bash_init_commands);
 
 		cmd_data->new_exec_pos = true;
 	    }
@@ -1798,6 +1829,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += gdb->info_display_command();
 	break;
 
+    case BASH:
     case PERL:
 	if (extra_data->refresh_pwd)
 	    cmds += gdb->pwd_command();
@@ -1839,18 +1871,24 @@ void send_gdb_command(string cmd, Widget origin,
     extra_data->extra_commands = cmds;
 
     // Send commands
+    bool extra_registered;
     bool send_ok = gdb->send_user_cmd_plus(cmds, dummy, cmds.size(),
 					   extra_completed, (void*)extra_data,
+					   extra_registered,
 					   cmd, (void *)cmd_data);
 
+    if (!extra_registered)
+      {
+       delete extra_data;
+      }
+
     if (!send_ok)
-    {
+      {
 	// Deallocate resources
-	delete extra_data;
 	delete cmd_data;
 
 	post_gdb_busy(origin);
-    }
+      }
 }
 
 
@@ -2058,6 +2096,13 @@ static void command_completed(void *data)
 	start_done();
     }
 
+    if (cmd_data->init_bash != "")
+    {
+	init_session(cmd_data->init_bash, app_data.bash_settings, 
+		     app_data.source_init_commands);
+	start_done();
+    }
+
     if (pos_buffer && pos_buffer->started_found())
     {
 	// Program has been restarted - clear position history
@@ -2174,6 +2219,7 @@ static void command_completed(void *data)
 		file = file.before(':');
 		break;
 
+	    case BASH:
 	    case GDB:
 		// GDB always issues file names on positions...
 		break;
@@ -2368,7 +2414,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 {
     string scope;
     if (gdb->has_func_command())
-	scope = ((string&)where_answer).before('\n'); // `func' output
+	scope = where_answer.before('\n'); // `func' output
     else
 	scope = get_scope(where_answer); // `where' or `frame' output
 
@@ -2569,6 +2615,15 @@ bool is_known_command(const string& answer)
 	int last_nl = ans.index('\n', -1);
 	ans = ans.through('\n') + ans.from(last_nl + 1);
     }
+
+    if (gdb->type() == BASH) {
+      if (ans.contains("help subcommands fully not done")) 
+	return false;
+    } else if (gdb->type() == PERL) {
+      if (ans.contains("is not a debugger command"))  
+	return false;
+    }
+    
 
     if (ans.contains("program is not active")) // DBX
 	return true;
@@ -2925,6 +2980,7 @@ static void extra_completed (const StringArray& answers,
 	case JDB:
 	case PYDB:
 	case PERL:
+	case BASH:
 	{
 	    // Clear caches and such
 	    string dummy = "";
@@ -3192,9 +3248,9 @@ static void extra_completed (const StringArray& answers,
 
     if (extra_data->refresh_user)
     {
-	StringArray answers(((string *)answers) + qu_count,
+	StringArray answers_(((string *)answers) + qu_count,
 			    extra_data->n_refresh_user);
-	data_disp->process_user(answers);
+	data_disp->process_user(answers_);
 	qu_count += extra_data->n_refresh_user;
     }
 
@@ -3254,7 +3310,7 @@ static bool exception_state = false;
 
 static void AsyncAnswerHP(Agent *source, void *, void *call_data)
 {
-    string& answer = *((string *)call_data);
+    const string& answer = *((const string *)call_data);
     GDBAgent *gdb = ptr_cast(GDBAgent, source);
 
     if (gdb->type() == JDB && !exception_state)
@@ -3300,7 +3356,7 @@ void configure_jdb(const string& all_help)
     if (!gdb->has_debug_command())
     {
 	// Load initial source
-	const char **argv = (const char**)saved_argv();
+	const char * const *argv = saved_argv();
 	int argc = 0;
 	while (argv[argc] != 0)
 	    argc++;

@@ -147,7 +147,7 @@ static WidgetArray       infos_entries;
 // Functions
 //-----------------------------------------------------------------------
 
-static void get_setting(ostream& os, DebuggerType type,
+static void get_setting(std::ostream& os, DebuggerType type,
 			const string& base, string value,
 			unsigned long flags = SAVE_DEFAULT | SAVE_SESSION);
 static void set_arg();
@@ -168,7 +168,7 @@ static Widget command_to_widget(Widget ref, string command)
 }
 
 // Issue `set' command
-static void gdb_set_command(string set_command, string value)
+static void gdb_set_command(const string& set_command, string value)
 {
     if (gdb->type() == GDB && value == "unlimited")
 	value = "0";
@@ -351,7 +351,7 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
     FILE *fp = popen(s1.chars(), "r");
     if (fp != 0)
     {
-	ostrstream info;
+	std::ostringstream info;
 	int c;
 	while ((c = getc(fp)) != EOF)
 	    info << char(c);
@@ -498,7 +498,7 @@ static void update_themes_buttons()
 	if (DispBox::theme_manager.has_pattern(theme))
 	    p = DispBox::theme_manager.pattern(theme);
 
-	ostrstream os;
+	std::ostringstream os;
 	os << p;
 	string current_value = string(os);
 
@@ -512,7 +512,7 @@ static void update_themes_buttons()
 	if (have_pattern)
 	{
 	    ThemePattern p = old_tm.pattern(theme);
-	    ostrstream os;
+	    std::ostringstream os;
 	    os << p;
 	    old_value = string(os);
 	}
@@ -688,7 +688,7 @@ void save_signals_state()
 }
 
 // Process output of `show' command
-void process_show(string command, string value, bool init)
+void process_show(const string& command, string value, bool init)
 {
     if (settings_form == 0)
 	return;
@@ -722,7 +722,7 @@ void process_show(string command, string value, bool init)
 	if (start_value < 0)
 	{
 #if 0
-	    cerr << "Warning: cannot set " << quote(base)
+	    std::cerr << "Warning: cannot set " << quote(base)
 		 << " to " << quote(value) << "\n";
 #endif
 	    return;
@@ -741,7 +741,7 @@ void process_show(string command, string value, bool init)
     if (!init)
 	set_status(value);
 
-    if (gdb->type() == GDB)
+    if (gdb->type() == GDB || gdb->type() == BASH )
     {
 	if (value.contains(" is "))
 	    value = value.after(" is ", -1);
@@ -804,7 +804,7 @@ void process_show(string command, string value, bool init)
 	if (!init)
 	{
 	    // Save current state in undo buffer
-	    ostrstream command;
+	    std::ostringstream command;
 	    get_setting(command, gdb->type(), XtName(button), 
 			settings_values[button]);
 	    undo_buffer.add_command(string(command));
@@ -862,7 +862,7 @@ void process_show(string command, string value, bool init)
     }
 
 #if 0
-    cerr << "Warning: cannot set " << quote(set_command)
+    std::cerr << "Warning: cannot set " << quote(set_command)
 	 << " to " << quote(value) << "\n";
 #endif
 }
@@ -902,7 +902,7 @@ void process_handle(string output, bool init)
 	    if (w == 0)
 	    {
 #if 0
-		cerr << "Warning: cannot set " << base << " " << titles[word]
+		std::cerr << "Warning: cannot set " << base << " " << titles[word]
 		     << " to " << quote(value) << "\n";
 #endif
 		continue;
@@ -981,6 +981,14 @@ static EntryType entry_type(DebuggerType type,
 	if (base.contains("language", 0) || 
 	    base.contains("demangle", 0))
 	    return OtherOptionMenuEntry;
+	if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
+	    return OnOffToggleButtonEntry;
+	if ((value.contains("0.\n", -1) || value.contains("1.\n", -1))
+	    && is_verb(doc))
+	    return NumToggleButtonEntry;
+	break;
+
+    case BASH:
 	if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
 	    return OnOffToggleButtonEntry;
 	if ((value.contains("0.\n", -1) || value.contains("1.\n", -1))
@@ -1158,7 +1166,7 @@ static void munch_doc(string& doc)
 
 
 // Get DBX documentation
-static string _get_dbx_help(string dbxenv, string base)
+static string _get_dbx_help(const string& dbxenv, const string& base)
 {
     string dbx_help;
     if (dbxenv == "dbxenv")
@@ -1258,7 +1266,7 @@ static void compress_spaces(string& s, int width)
 }
 
 // Same, but for usage in help messages
-static string get_dbx_help(string dbxenv, string base, int width)
+static string get_dbx_help(const string& dbxenv, const string& base, int width)
 {
     string dbx_help = _get_dbx_help(dbxenv, base);
     dbx_help = dbx_help.after(base);
@@ -1285,7 +1293,7 @@ static string get_dbx_help(string dbxenv, string base, int width)
     return dbx_help;
 }
 
-string get_dbx_help(string dbxenv, string base)
+string get_dbx_help(const string& dbxenv, const string& base)
 {
     return get_dbx_help(dbxenv, base, 60);
 }
@@ -1333,7 +1341,7 @@ static DBXTranslation dbx_translations[] =
     {"suppress_startup_message", "Suppress startup message below release"}
 };
 
-static string get_dbx_doc(string dbxenv, string base)
+static string get_dbx_doc(const string& dbxenv, const string& base)
 {
     // Some specials
     for (int i = 0; i < int(XtNumber(dbx_translations)); i++)
@@ -1452,6 +1460,7 @@ string show_command(const string& cmd, DebuggerType type)
     switch (type)
     {
     case GDB:
+    case BASH:
     case PYDB:
 	show = "show ";
 	if (cmd.contains("set ", 0))
@@ -1532,6 +1541,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     {
 	switch (type)
 	{
+	case BASH:
 	case GDB:
 	case PYDB:
 	{
@@ -1973,6 +1983,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	case JDB:
 	case PYDB:
 	case PERL:
+	case BASH:
 	    return;		// FIXME
 	}
 
@@ -2209,6 +2220,7 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
     switch (type)
     {
     case GDB:
+    case BASH:
     case PYDB:
 	if (entry_filter == SignalEntry)
 	    commands = cached_gdb_question("info handle");
@@ -2396,7 +2408,7 @@ static void DeleteAllInfosCB (Widget, XtPointer, XtPointer)
 }
 
 // Fetch help for specific COMMAND
-static string get_help_line(string command, DebuggerType type)
+static string get_help_line(const string& command, DebuggerType type)
 {
     (void) type;
 
@@ -2471,7 +2483,7 @@ void get_themes(StringArray& themes)
 	char **files = glob_filename(mask.chars());
 	if (files == (char **)0)
 	{
-	    cerr << mask << ": glob failed\n";
+	    std::cerr << mask << ": glob failed\n";
 	}
 	else if (files == (char **)-1)
 	{
@@ -2911,7 +2923,7 @@ void update_themes()
 	    set = DispBox::theme_manager.pattern(theme).active();
 	}
 
-	ostrstream os;
+	std::ostringstream os;
 	os << p;
 	string value = string(os);
 	if (value == "")
@@ -2993,7 +3005,7 @@ void reset_signals()
 	need_reload_signals = true;
 }
 
-static void get_setting(ostream& os, DebuggerType type,
+static void get_setting(std::ostream& os, DebuggerType type,
 			const string& base, string value,
 			unsigned long flags)
 {
@@ -3150,6 +3162,7 @@ static void get_setting(ostream& os, DebuggerType type,
 	os << base << ' ' << value << '\n';
 	break;
 
+    case BASH:
     case XDB:
     case PYDB:
 	// Add setting
@@ -3165,7 +3178,7 @@ string get_settings(DebuggerType type, unsigned long flags)
     if (settings == 0)
 	return "";
 
-    ostrstream command;
+    std::ostringstream command;
     for (int i = 0; i < settings_entries.size(); i++)
     {
 	Widget entry = settings_entries[i];
@@ -3410,7 +3423,7 @@ static void add_button(string name, const _XtString& menu)
     menu = (String)XtNewString(s.chars());
 }
 
-static void remove_button(string name, const _XtString& menu)
+static void remove_button(const string& name, const _XtString& menu)
 {
     string s = string("\n") + menu;
     s.gsub("\n" + name + "\n", string("\n"));

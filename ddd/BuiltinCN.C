@@ -113,9 +113,9 @@ int BuiltinCallNode::foldOps(VSLDef *cdef, VSLNode** node)
     // Insert list
     if (VSEFlags::show_optimize)
     {
-	cout << "\n" << cdef->longname() << ": foldOps: replacing\n" 
+	std::cout << "\n" << cdef->longname() << ": foldOps: replacing\n" 
 	    << *this << '\n';
-	cout.flush();
+	std::cout.flush();
     }
 
     int err = callArgs->append(args->tail());
@@ -123,8 +123,8 @@ int BuiltinCallNode::foldOps(VSLDef *cdef, VSLNode** node)
     {
 	if (VSEFlags::show_optimize)
 	{
-	    cout << "ABORTING (no replace) since append impossible\n";
-	    cout.flush();
+	    std::cout << "ABORTING (no replace) since append impossible\n";
+	    std::cout.flush();
 	}
 	return changes;
     }
@@ -135,8 +135,8 @@ int BuiltinCallNode::foldOps(VSLDef *cdef, VSLNode** node)
 
     if (VSEFlags::show_optimize)
     {
-	cout << "by " << *this << '\n';
-	cout.flush();
+	std::cout << "by " << *this << '\n';
+	std::cout.flush();
     }
 
     changes++;
@@ -177,9 +177,9 @@ int BuiltinCallNode::foldConsts(VSLDef *cdef, VSLNode** node)
 	{
 	    if (VSEFlags::show_optimize)
 	    {
-		cout << "\n" << cdef->longname() << ": foldConsts: replacing\n"
+		std::cout << "\n" << cdef->longname() << ": foldConsts: replacing\n"
 		    << *this << '\n';
-		cout.flush();
+		std::cout.flush();
 	    }
 
 	    // Found 2 args arg1, arg2 that are both constant: Replace
@@ -197,8 +197,8 @@ int BuiltinCallNode::foldConsts(VSLDef *cdef, VSLNode** node)
 
 	    if (VSEFlags::show_optimize)
 	    {
-		cout << "by " << *this << '\n';
-		cout.flush();
+		std::cout << "by " << *this << '\n';
+		std::cout.flush();
 	    }
 
 	    changes++;

@@ -97,7 +97,8 @@ VSLNode *VSLLib::call(const string& name,
 
 /*** Tokens ***/
 %token IDENTIFIER		/* [_a-zA-Z][_a-zA-Z0-9]* */
-%token STRING			/* \"(\\.|[^\"\n])*\" */
+/* STRING would conflict with the definition in VSEFlags.h */
+%token VSL_STRING		/* \"(\\.|[^\"\n])*\" */
 %token INTEGER			/* [0-9]+ */
 %token ARROW			/* -> */
 %token IF			/* if */
@@ -172,16 +173,17 @@ VSLNode *VSLLib::call(const string& name,
 /*** files ***/
 
 file			:	item_list
-
+;
 item_list		:	/* empty */
 			|	item_list item
-
+;
 item			:	function_declaration ';'
 			|	function_definition ';'
 			|	override_declaration
 			|	replace_declaration
 			|	';'
 			|	error ';'
+;
 
 /*** functions ***/
 
@@ -201,7 +203,7 @@ function_declaration	:	function_header
 				    delete $1.file;
 				    $1.file = 0;
 				}
-
+;
 function_header		:	function_identifier function_argument
 				{
 				    ASSERT($1->OK());
@@ -224,7 +226,7 @@ function_header		:	function_identifier function_argument
 				    delete $1;
 				    $1 = 0;
 				}
-
+;
 function_identifier	:	identifier
 				{ $$ = $1; }
 			|	'(' EQ ')'
@@ -261,13 +263,13 @@ function_identifier	:	identifier
 				{ $$ = new string("(::)"); }
 			|	'(' NOT ')'
 				{ $$ = new string("(not)"); }
-
+;
 identifier		:	IDENTIFIER
 				{ $$ = new string((char *)vsltext); }
-
+;
 function_definition	:	local_definition
 			|	global_definition
-
+;
 local_definition	: 	local_header function_body
 				{ 
 				    ASSERT($1.pattern == 0 || 
@@ -287,7 +289,7 @@ local_definition	: 	local_header function_body
 				    delete $1.file;
 				    $1.file = 0;
 				}
-
+;
 local_header		:	function_header EQ
 				{
 				    ASSERT($1.pattern == 0 || 
@@ -306,7 +308,7 @@ local_header		:	function_header EQ
 
 				    $$ = $1;
 				}
-
+;
 global_definition	:	global_header function_body
 				{ 
 				    ASSERT($1.pattern == 0 || 
@@ -324,7 +326,7 @@ global_definition	:	global_header function_body
 				    delete $1.id;
 				    delete $1.file;
 				}
-
+;
 global_header		:	function_header ARROW
 				{
 				  if ($1.pattern)
@@ -339,10 +341,10 @@ global_header		:	function_header ARROW
 				  }
 				  $$ = $1;
 				}
-
+;
 function_body		:	box_expression_with_defs
 				{ $$ = $1; }
-
+;
 
 
 /*** expressions ***/
@@ -366,7 +368,7 @@ box_expression_with_defs:	box_expression_with_wheres
 					0;
 				    ASSERT($$ == 0 || $$->OK());
 				}
-
+;
 in_box_expression	:	IN box_expression_with_defs
 				{
 				    $$ = $2;
@@ -385,12 +387,12 @@ in_box_expression	:	IN box_expression_with_defs
 
 				    ASSERT($$ == 0 || $$->OK());
 				}
-
+;
 box_expression_with_wheres:	box_expression
 				{ $$ = $1; }
 			|	box_expression_with_where
 				{ $$ = $1; }
-
+;
 box_expression_with_where:	box_expression_with_wheres 
 				WHERE var_definition
 				{
@@ -420,7 +422,7 @@ box_expression_with_where:	box_expression_with_wheres
 
 				    ASSERT($$ == 0 || $$->OK());
 				}
-
+;
 var_definition		:	box_expression EQ box_expression
 				{
 				    ASSERT($1 == 0 || $1->OK());
@@ -429,7 +431,7 @@ var_definition		:	box_expression EQ box_expression
 				    $$.pattern = $1;
 				    $$.args    = $3;
 				}
-
+;
 
 /*** basic expressions ***/
 
@@ -449,7 +451,7 @@ box_expression		:	'(' box_expression_with_defs ')'
 				{ $$ = $1; }
 			|	argument_or_function
 				{ $$ = $1; }
-
+;
 list_expression		:	'[' ']'
 				{
 				    $$ = new EmptyListNode;
@@ -470,7 +472,7 @@ list_expression		:	'[' ']'
 				    $$ = $2;
 				    ASSERT($$ == 0 || $$->OK());
 				}
-
+;
 box_expression_list	:	box_expression_with_defs
 				{ 
 				    ASSERT($1 == 0 || $1->OK());
@@ -482,7 +484,7 @@ box_expression_list	:	box_expression_with_defs
 				{ 
 				    $$ = $1; 
 				}
-
+;
 multiple_box_expression_list:	box_expression APPEND box_expression
 				{ 
 				    ASSERT($1 == 0 || $1->OK());
@@ -508,7 +510,7 @@ multiple_box_expression_list:	box_expression APPEND box_expression
 				    $$ = new NameNode("...");
 				    ASSERT($$ == 0 || $$->OK());
 				}
-
+;
 const_expression	:	string_constant
 				{ 
 				    ASSERT($1->OK());
@@ -525,13 +527,13 @@ const_expression	:	string_constant
 				    $$ = new NumNode($1);
 				    ASSERT($$->OK());
 				}
-
-string_constant		:	STRING
+;
+string_constant		:	VSL_STRING
 				{
 				    $$ = new string(unquote((char *)vsltext));
 				    ASSERT($$->OK());
 				}
-			|	string_constant STRING
+			|	string_constant VSL_STRING
 				{ 
 				    ASSERT($1->OK());
 
@@ -540,12 +542,12 @@ string_constant		:	STRING
 
 				    ASSERT($$->OK());
 				}
-
+;
 numeric_constant	:	INTEGER
 				{
 				    $$ = atoi((char *)vsltext);
 				}
-
+;
 function_call		:	function_identifier function_argument
 				{
 				    ASSERT($1->OK());
@@ -558,7 +560,7 @@ function_call		:	function_identifier function_argument
 				    delete $1;
 				    $1 = 0;
 				}
-
+;
 unary_expression	:	NOT box_expression
 				{
 				    ASSERT($2 == 0 || $2->OK());
@@ -578,6 +580,7 @@ unary_expression	:	NOT box_expression
 					0;
 				    ASSERT($$ == 0 || $$->OK());
 				}
+;
 
 /*** operators ***/
 
@@ -713,7 +716,7 @@ binary_expression	:	box_expression EQ box_expression
 					0;
 				    ASSERT($$ == 0 || $$->OK());
 				}
-
+;
 cond_expression		:	IF box_expression
 				THEN box_expression_with_defs
 				else_expression
@@ -727,7 +730,7 @@ cond_expression		:	IF box_expression
 					new TestNode($2, $4, $5) : 0;
 				    ASSERT($$ == 0 || $$->OK());
 				}
-
+;
 else_expression		:	ELSIF box_expression
 				THEN box_expression_with_defs
 				else_expression
@@ -744,7 +747,7 @@ else_expression		:	ELSIF box_expression
 				{
 				    $$ = $2;
 				}
-
+;
 function_argument	:	list_expression
 				{
 				    $$ = $1;
@@ -756,7 +759,7 @@ function_argument	:	list_expression
 				    $$ = ($2) ? new FixListNode($2) : 0; 
 				    ASSERT($$ == 0 || $$->OK());
 				}
-
+;
 argument_or_function	:	identifier
 				{
 				    ASSERT($1->OK());
@@ -780,15 +783,15 @@ argument_or_function	:	identifier
 				    delete $1;
 				    $1 = 0;
 				}
-
+;
 
 /*** directives ***/
 
 override_declaration	:	OVERRIDE override_list
-
+;
 override_list		:	override_identifier
 			|	override_list ',' override_identifier
-
+;
 override_identifier	:	function_identifier
 				{
 				    ASSERT($1->OK());
@@ -799,12 +802,12 @@ override_identifier	:	function_identifier
 				    delete $1;
 				    $1 = 0;
 				}
-
+;
 replace_declaration	:	REPLACE replace_list
-
+;
 replace_list		:	replace_identifier
 			|	replace_list ',' replace_identifier
-
+;
 replace_identifier	:	function_identifier
 				{
 				    ASSERT($1->OK());
@@ -828,5 +831,6 @@ replace_identifier	:	function_identifier
 				    delete $1;
 				    $1 = 0;
 				}
+;
 
 %% /* DO NOT REMOVE THIS COMMENT -- MUNCH-YACC DEPENDS ON IT */

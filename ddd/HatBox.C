@@ -59,7 +59,7 @@ void HatBox::_draw(Widget w,
 }
 
 // Print
-void HatBox::_print(ostream& os, 
+void HatBox::_print(std::ostream& os, 
 		    const BoxRegion& region, 
 		    const PrintGC& gc) const
 {

@@ -35,8 +35,8 @@ char VSLDef_rcsid[] =
 #endif
 
 
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 #include <stdlib.h>
 
 #include "assert.h"
@@ -126,8 +126,8 @@ bool VSLDef::matches(const VSLNode *arg) const
     
     if (VSEFlags::show_match_defs)
     {
-	cout << "\nDef Match: " << longname() << " ? " << *arg;
-	cout.flush();
+	std::cout << "\nDef Match: " << longname() << " ? " << *arg;
+	std::cout.flush();
     }
 
     bool ret = (*_node_pattern == *arg);
@@ -135,11 +135,11 @@ bool VSLDef::matches(const VSLNode *arg) const
     if (VSEFlags::show_match_defs)
     {
 	if (ret)
-	    cout << "\nDef Match: " << longname() << " matches " << *arg;
+	    std::cout << "\nDef Match: " << longname() << " matches " << *arg;
 	else
-	    cout << "\nDef Match: " << longname() << " does not match " 
+	    std::cout << "\nDef Match: " << longname() << " does not match " 
 		<< *arg;
-	cout.flush();
+	std::cout.flush();
     }
 
     ArgNode::matchCallback = oldCB;
@@ -187,8 +187,8 @@ bool VSLDef::matches(const Box *arg) const
 
     if (VSEFlags::show_match_defs)
     {
-	cout << "\nDef Match: " << longname() << " ? " << *arg;
-	cout.flush();
+	std::cout << "\nDef Match: " << longname() << " ? " << *arg;
+	std::cout.flush();
     }
 
     if (_box_pattern == 0)
@@ -200,11 +200,11 @@ bool VSLDef::matches(const Box *arg) const
     if (VSEFlags::show_match_defs)
     {
 	if (ret)
-	    cout << "\nDef Match: " << longname() << " matches " << *arg;
+	    std::cout << "\nDef Match: " << longname() << " matches " << *arg;
 	else
-	    cout << "\nDef Match: " << longname() << " does not match " 
+	    std::cout << "\nDef Match: " << longname() << " does not match " 
 		<< *arg;
-	cout.flush();
+	std::cout.flush();
     }
 
     MatchBox::matchesAll = false;
@@ -257,14 +257,14 @@ void VSLDef::compilePattern() const
 	{
 	    if (instances[i] == 0)
 	    {
-		ostrstream os;
+		std::ostringstream os;
 		os << "invalid pattern: arg" << i 
 		   << " is never instantiated";
 		VSLLib::eval_error(os, this);
 	    }
 	    if (instances[i] > 1)
 	    {
-		ostrstream os;
+		std::ostringstream os;
 		os << "invalid pattern: arg" << i 
 		   << " is instantiated several times";
 		VSLLib::eval_error(os, this);
@@ -305,11 +305,11 @@ const Box *VSLDef::eval(Box *arg) const
     // Debugging
     if (VSEFlags::show_large_eval)
     {
-	clog << depth << " ";
+	std::clog << depth << " ";
 	for (int i = 0; i < depth; i++)
-	    clog << "  ";
+	    std::clog << "  ";
 
-	clog << longname() << *arg << "...\n";
+	std::clog << longname() << *arg << "...\n";
     }
 
     // Actual function
@@ -339,18 +339,18 @@ const Box *VSLDef::eval(Box *arg) const
     // Debugging
     if (VSEFlags::show_large_eval)
     {
-	clog << depth << " ";
+	std::clog << depth << " ";
 	for (int i = 0; i < depth; i++)
-	    clog << "  ";
+	    std::clog << "  ";
 
-	clog << longname() << *arg;
+	std::clog << longname() << *arg;
 
 	if (box == 0)
-	    clog << " FAILS";
+	    std::clog << " FAILS";
 	else
-	    clog << " = " << *box;
+	    std::clog << " = " << *box;
 
-	clog << "\n";
+	std::clog << "\n";
     }
 
     // Delete backtrace
@@ -438,7 +438,7 @@ string VSLDef::args() const
     if ((deflist->func_name())[0] == '#')
 	return string("");
 
-    ostrstream os;
+    std::ostringstream os;
 
     if (_node_pattern->isArgNode())
 	os << "(" << *_node_pattern << "...)";
@@ -463,12 +463,11 @@ string VSLDef::f_name() const
 // External function name, including location
 string VSLDef::longname() const
 {
-    ostrstream os;
-    ostream& s = os;
+    std::ostringstream os;
     
     if (_filename != "")
-	s << _filename << ":" << _lineno << ": ";
-    s << f_name();
+	os << _filename << ":" << _lineno << ": ";
+    os << f_name();
 
     return os;
 }

@@ -1065,7 +1065,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	    int start_of_title = the_text.index("\n\n", source) + 2;
 	    int end_of_title   = the_text.index("\n", start_of_title);
 	    string title = 
-		the_text(start_of_title, end_of_title - start_of_title);
+		the_text.at(start_of_title, end_of_title - start_of_title);
 
 	    // Fetch indent level, using the underline characters
 	    int start_of_underline = the_text.index('\n', start_of_title) + 1;
@@ -1334,7 +1334,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 		    if (is_title)
 		    {
 			titles += 
-			    the_text(start_of_line, source - start_of_line);
+			    the_text.at(start_of_line, source - start_of_line);
 			positions += start_of_line;
 		    }
 		}
@@ -1597,7 +1597,7 @@ TrackingEvent(Widget widget, Cursor cursor,
 		      GrabModeAsync, GrabModeAsync,
 		      confine_to_this, cursor, time) != GrabSuccess)
     {
-	cerr << "TrackingEvent: Could not grab pointer\n";
+	std::cerr << "TrackingEvent: Could not grab pointer\n";
 	return 0;
     }
 
@@ -2452,8 +2452,12 @@ static void InstallButtonTipEvents(Widget w, bool install)
 	}
     }
 
-    XmStringFree(tip_values.tipString);
-    XmStringFree(doc_values.documentationString);
+    // CvtStringToXmString and friends should be responsible for
+    // the memory management.
+    // XmStringFree(tip_values.tipString);
+    // tip_values.tipString = 0;
+    // XmStringFree(doc_values.documentationString);
+    // doc_values.documentationString = 0;
 }
 
 

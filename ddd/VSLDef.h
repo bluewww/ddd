@@ -36,7 +36,7 @@
 
 
 #include <limits.h>
-#include <iostream.h>
+#include <iostream>
 #include "strclass.h"
 #include "bool.h"
 #include "VSLNode.h"

@@ -107,7 +107,7 @@ static void fetch_address(const string& answer, int index, string& buffer)
     while (index < int(answer.length()) && !isspace(answer[index]))
 	index++;
 
-    buffer = ((string&)answer).at(start, index - start);
+    buffer = answer.at(start, index - start);
 }
 
 // Store first function name in ANSWER after INDEX in BUFFER
@@ -149,6 +149,7 @@ void PosBuffer::filter (string& answer)
     // Check program state
     switch (gdb->type())
     {
+    case BASH:
     case GDB:
     {
 	// If GDB prints a "Current function" line, it overrides whatever
@@ -310,6 +311,10 @@ void PosBuffer::filter (string& answer)
 
 	case PERL:
 	    filter_perl(answer);
+	    break;
+
+	case BASH:
+	    filter_bash(answer);
 	    break;
 	}
 
@@ -1195,6 +1200,90 @@ void PosBuffer::filter_perl(string& answer)
 	    static regex rxperlpos("[^(]*::[^(]*[(][^:]*:[1-9][0-9]*[)]:");
 #endif
 	    if (line.matches(rxperlpos))
+	    {
+		// Fetch position
+		pos_buffer = line.after('(');
+		pos_buffer = pos_buffer.before(')');
+		already_read = PosComplete;
+
+		// Delete this line from output
+		int next_index = answer.index('\n', index);
+		if (next_index < 0)
+		    next_index = answer.length();
+		else
+		    next_index++;
+		answer.at(index, next_index - index) = "";
+		break;
+	    }
+	    else
+	    {
+		// Look at next line
+		index = answer.index('\n', index);
+		if (index >= 0)
+		    index++;
+	    }
+	}
+    }
+}
+
+void PosBuffer::filter_bash(string& answer)
+{
+    // Check for regular source info
+    int index1 = answer.index ("\032\032");
+	    
+    if (index1 < 0) 
+    {
+	int index_p = answer.index ("\032");
+	if (index_p >= 0 && index_p == int(answer.length()) - 1)
+	{
+	    // Possible begin of position info at end of ANSWER
+	    answer_buffer = "\032";
+	    answer = answer.before (index_p);
+	    already_read = PosPart;
+	    return;
+	}
+    }
+    else
+    {
+	// ANSWER contains position info
+	int index2 = answer.index("\n", index1);
+	    
+	if (index2 == -1)
+	{
+	    // Position info is incomplete
+	    answer_buffer = answer.from (index1);
+	    answer = answer.before (index1);
+	    already_read = PosPart;
+	    return;
+	}
+	else
+	{
+	    assert (index1 < index2);
+	    
+	    // Position info is complete
+	    already_read = PosComplete;
+	    pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
+	    answer.at(index1, index2 - index1 + 1) = "";
+	}
+    }
+
+    if (already_read != PosComplete)
+    {
+	// Try '(FILE:LINE):\n';
+
+	// INDEX points at the start of a line
+	int index = 0;
+	while (index >= 0 && answer != "")
+	{
+	    string line = answer.from(index);
+	    if (line.contains('\n'))
+		line = line.before('\n');
+	    strip_trailing_space(line);
+		    
+#if RUNTIME_REGEX
+	    static regex rxbashpos("[(][^:]*:[1-9][0-9]*[)]:");
+#endif
+	    if (line.matches(rxbashpos))
 	    {
 		// Fetch position
 		pos_buffer = line.after('(');

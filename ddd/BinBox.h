@@ -48,7 +48,7 @@ protected:
     BinBox(const BinBox& box): HatBox(box)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
 public:
     BinBox(Box *box, const char *t = "BinBox"): HatBox(box, t)

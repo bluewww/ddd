@@ -66,7 +66,7 @@ protected:
 	_font(box._font), _ascent(box._ascent)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
     bool matches (const Box &b, const Box * = 0) const
     {
@@ -110,7 +110,7 @@ public:
     // Assign a new font
     void newFont(const string& fontname);
 
-    void _print(ostream& os, 
+    void _print(std::ostream& os, 
 		const BoxRegion& region, 
 		const PrintGC& gc) const;
 

@@ -426,7 +426,7 @@ void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
 
 
 // Print
-void Graph::begin_color(ostream& os, const PrintGC& gc,
+void Graph::begin_color(std::ostream& os, const PrintGC& gc,
 			unsigned short red,
 			unsigned short green,
 			unsigned short blue) const
@@ -446,7 +446,7 @@ void Graph::begin_color(ostream& os, const PrintGC& gc,
     }
 }
 
-void Graph::end_color(ostream& os, const PrintGC& gc) const
+void Graph::end_color(std::ostream& os, const PrintGC& gc) const
 {
     if (gc.isPostScript())
     {
@@ -457,7 +457,7 @@ void Graph::end_color(ostream& os, const PrintGC& gc) const
     }
 }
 
-void Graph::_print(ostream& os, const GraphGC& _gc) const
+void Graph::_print(std::ostream& os, const GraphGC& _gc) const
 {
     // We cannot print hints, so leave them alone
     GraphGC gc(_gc);
@@ -500,7 +500,7 @@ void Graph::_print(ostream& os, const GraphGC& _gc) const
     
 
 // Echo
-ostream& operator << (ostream& s, const Graph& g)
+std::ostream& operator << (std::ostream& s, const Graph& g)
 {
     // echo all edges
     for (GraphEdge *edge = g.firstEdge(); edge != 0; edge = g.nextEdge(edge))

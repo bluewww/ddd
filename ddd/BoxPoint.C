@@ -35,7 +35,7 @@ char BoxPoint_rcsid[] =
 
 #include "BoxPoint.h"
 
-ostream& operator << (ostream& stream, const BoxPoint& p)
+std::ostream& operator << (std::ostream& stream, const BoxPoint& p)
 {
     if (p.isValid())
 	return stream << '(' << p[X] << ", " << p[Y] << ')';

@@ -93,7 +93,7 @@ public:
 	_box->countMatchBoxes(instances);
     }
 
-    void _print(ostream& os, 
+    void _print(std::ostream& os, 
 		const BoxRegion& region, 
 		const PrintGC& gc) const;
 

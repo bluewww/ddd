@@ -177,6 +177,7 @@ static string format(const string& format, const string& size)
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
 	// No way
 	break;
     }
@@ -212,6 +213,7 @@ static string examine_command()
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
 	break;			// No way
     }
 

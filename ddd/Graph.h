@@ -50,11 +50,11 @@ private:
 
     Graph& operator = (const Graph&) { assert(0); return *this; }
 
-    void begin_color(ostream& os, const PrintGC& gc,
+    void begin_color(std::ostream& os, const PrintGC& gc,
 		     unsigned short red,
 		     unsigned short green,
 		     unsigned short blue) const;
-    void end_color(ostream& os, const PrintGC& gc) const;
+    void end_color(std::ostream& os, const PrintGC& gc) const;
 
 
 protected:
@@ -185,20 +185,20 @@ public:
     }
 
     // Printing
-    void _print(ostream& os, const GraphGC& gc) const;
-    void _printHeader(ostream& os, const GraphGC& gc) const
+    void _print(std::ostream& os, const GraphGC& gc) const;
+    void _printHeader(std::ostream& os, const GraphGC& gc) const
     {
 	Box::_printHeader(os, region(gc, gc.printSelectedNodesOnly), 
 			  *gc.printGC);
     }
-    void _printTrailer(ostream& os, const GraphGC& gc) const
+    void _printTrailer(std::ostream& os, const GraphGC& gc) const
     {
 	Box::_printTrailer(os, region(gc, gc.printSelectedNodesOnly),
 			   *gc.printGC);
     }
 
     // Custom printing function
-    void print(ostream& os, const GraphGC& gc = GraphGC()) const
+    void print(std::ostream& os, const GraphGC& gc = GraphGC()) const
     {
 	_printHeader(os, gc);
 	_print(os, gc);
@@ -213,7 +213,7 @@ public:
 };
 
 // I/O
-extern ostream& operator << (ostream& s, const Graph& g);
+extern std::ostream& operator << (std::ostream& s, const Graph& g);
 
 #endif // _DDD_Graph_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

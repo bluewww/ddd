@@ -115,7 +115,7 @@ public:
     void setBox(Box *b);
 
     // Print
-    virtual void _print(ostream& os, const GraphGC& gc) const;
+    virtual void _print(std::ostream& os, const GraphGC& gc) const;
 };
 
 #endif // _DDD_BoxGraphNode_h

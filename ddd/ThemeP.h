@@ -33,7 +33,7 @@
 #pragma interface
 #endif
 
-#include <iostream.h>
+#include <iostream>
 #include "StringA.h"
 
 class ThemePattern {
@@ -84,7 +84,7 @@ public:
     }
 
     // Convert into external representation
-    friend ostream& operator<<(ostream& os, const ThemePattern& t);
+    friend std::ostream& operator<<(std::ostream& os, const ThemePattern& t);
 
     // Matching pattern
     string matching_pattern(const string& expr) const;
@@ -96,7 +96,7 @@ public:
     }
 };
 
-ostream& operator<<(ostream& os, const ThemePattern& t);
+std::ostream& operator<<(std::ostream& os, const ThemePattern& t);
 
 #endif // _DDD_ThemePattern_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

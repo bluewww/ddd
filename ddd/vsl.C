@@ -34,7 +34,7 @@ char vsl_rcsid[] =
 // #include "MemCheckD.h"
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 #include "strclass.h"
 #include <stdlib.h>
 #include <sys/types.h>
@@ -51,7 +51,7 @@ char vsl_rcsid[] =
 #if !HAVE_ATHENA
 int main(int argc, char *argv[]) 
 {
-    cerr << "This program requires the Athena widget library.\n";
+    std::cerr << "This program requires the Athena widget library.\n";
     return EXIT_FAILURE;
 }
 #else
@@ -103,8 +103,8 @@ void redraw(Widget w, BoxRegion r, BoxRegion exposed)
 {
     if (VSEFlags::verbose)
     {
-	cout << "Redraw: " << exposed;
-	cout.flush();
+	std::cout << "Redraw: " << exposed;
+	std::cout.flush();
     }
 
     clock_t starttime = clock();
@@ -112,7 +112,7 @@ void redraw(Widget w, BoxRegion r, BoxRegion exposed)
     clock_t endtime = clock();
 
     if (VSEFlags::show_eval_time)
-	cout << " (" << (endtime - starttime) * 1000 / CLOCKS_PER_SEC
+	std::cout << " (" << (endtime - starttime) * 1000 / CLOCKS_PER_SEC
 	     << " ms)\n";
 
     Flush(w);
@@ -155,8 +155,8 @@ void QuitCB(Widget, XtPointer, XtPointer)
 {
     if (VSEFlags::verbose)
     {
-	cout << "Quit!\n";
-	cout.flush();
+	std::cout << "Quit!\n";
+	std::cout.flush();
     }
     XtDestroyApplicationContext(app_con);
 
@@ -166,7 +166,7 @@ void QuitCB(Widget, XtPointer, XtPointer)
 
     // Check if we really deleted everything
     if (UniqueId::inUse() > 0)
-	cerr << "Warning: " << UniqueId::inUse() << " IDs still in use\n";
+	std::cerr << "Warning: " << UniqueId::inUse() << " IDs still in use\n";
 
     exit(EXIT_SUCCESS);
 }
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
 	library_file = argv[1];
 	if (library_file[0] == '-')
 	{
-	    cout << argv[0] << ": usage: " << argv[0] << " [options] "
+	    std::cout << argv[0] << ": usage: " << argv[0] << " [options] "
 		<< "VSLLIB [THEMES...]\n\n" << VSEFlags::explain();
 
 	    exit(EXIT_FAILURE);
@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
 	assert(lib.OK());
 
 	if (VSEFlags::show_optimizing_time)
-	    cout << "\nRead & optimizing time: " 
+	    std::cout << "\nRead & optimizing time: " 
 		<< (endtime - starttime) / 1000 << " ms\n";
 
 	// Build themes
@@ -259,10 +259,10 @@ int main(int argc, char *argv[])
 	    assert(lib.OK());
 
 	if (VSEFlags::dump_library)
-	    cout << lib;
+	    std::cout << lib;
 
 	if (VSEFlags::dump_tree)
-	    lib.dumpTree(cout);
+	    lib.dumpTree(std::cout);
 
 	if (VSEFlags::suppress_eval)
 	    return EXIT_SUCCESS;
@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
 
 	if (def == 0)
 	{
-	    cerr << argv[0] << ": cannot find last definition (sorry)\n";
+	    std::cerr << argv[0] << ": cannot find last definition (sorry)\n";
 	    return EXIT_FAILURE;
 	}
 
@@ -293,11 +293,11 @@ int main(int argc, char *argv[])
 
 	// Show eval time
 	if (VSEFlags::show_eval_time)
-	    cout << "\nEvaluation time: " 
+	    std::cout << "\nEvaluation time: " 
 		<< (endtime - starttime) / 1000 << " ms\n";
 
 	if (result && VSEFlags::dump_picture)
-	    cout << "#!" << argv[0] << "\n#include <std.vsl>\n\nmain() -> "
+	    std::cout << "#!" << argv[0] << "\n#include <std.vsl>\n\nmain() -> "
 		<< *result << ";\n";
 
 	thebox = result;
@@ -307,14 +307,14 @@ int main(int argc, char *argv[])
 
     if (thebox && !thebox->size().isValid())
     {
-	cerr << argv[0] << ": result has no size (maybe list?)\n";
+	std::cerr << argv[0] << ": result has no size (maybe list?)\n";
 	thebox->unlink();
 	thebox = 0;
     }
 
     if (thebox == 0)
     {
-	cerr << argv[0] << ": evaluation failed (sorry)\n";
+	std::cerr << argv[0] << ": evaluation failed (sorry)\n";
 	return EXIT_FAILURE;
     }
 

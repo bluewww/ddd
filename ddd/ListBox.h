@@ -107,7 +107,7 @@ protected:
 	::abort();
     }
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
 public:
     // Constructor: head and tail
@@ -175,7 +175,7 @@ public:
 
     bool isListBox() const { return true; }
 
-    void _print(ostream&, const BoxRegion&, const PrintGC&) const
+    void _print(std::ostream&, const BoxRegion&, const PrintGC&) const
     {
 	assert(0);  // Cannot print lists
 	::abort();

@@ -266,7 +266,7 @@ static void move_tool_shell(BoxPoint pos, bool verify)
 
 	BoxPoint given_pos = pos + tool_shell_move_offset;
 
-	ostrstream os;
+	std::ostringstream os;
 	os << "+" << given_pos[X] << "+" << given_pos[Y];
 	last_tool_shell_geometry = string(os);
 	last_tool_shell_position = pos;

@@ -1,6 +1,19 @@
 # $Id$ -*- Text -*-
 # The DDD projects.
 
+A great deal of time and effort was spent in trying to get this code
+to run under modern tools: such as Bison, autoconf, automake, C++ STL,
+gcc 3.0. "make dist" and "make distcheck" should work.  But a lot more
+work and hopefully some simplification is still needed.
+
+The ddd direcotry has a bit too much in it. It contains not only
+source code to DDD but documentation files as well. As a result the
+ddd/Makefile.am has lots of rules about making the documentation that
+should go into a separate directory, like doc - which surprisingly
+doesn't contain a Makefile at all. 
+
+- - - - -
+
 This is a list of frequently suggested DDD features, which should be
 realized in some future DDD release.  If you want to realize one or
 more of these projects, please ask us (ddd@gnu.org) whether

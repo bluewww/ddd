@@ -39,7 +39,7 @@ char VSLBuiltin_rcsid[] =
 
 #include <limits.h>
 #include <math.h>
-#include <iostream.h>
+#include <iostream>
 
 #include "bool.h"
 #include "VSLLib.h"

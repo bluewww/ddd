@@ -56,7 +56,7 @@ char editing_rcsid[] =
 #include "string-fun.h"
 #include "windows.h"
 
-#include <iostream.h>
+#include <iostream>
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
@@ -385,7 +385,7 @@ void controlAct(Widget w, XEvent *ev, String *params, Cardinal *num_params)
 
     if (*num_params != 1)
     {
-	cerr << "gdb-control: usage: gdb-control(CONTROL-CHARACTER)\n";
+	std::cerr << "gdb-control: usage: gdb-control(CONTROL-CHARACTER)\n";
 	return;
     }
 
@@ -400,7 +400,7 @@ void commandAct(Widget w, XEvent *ev, String *params, Cardinal *num_params)
 
     if (*num_params != 1)
     {
-	cerr << "gdb-command: usage: gdb-command(COMMAND)\n";
+	std::cerr << "gdb-command: usage: gdb-command(COMMAND)\n";
 	return;
     }
 

@@ -37,7 +37,7 @@
 // A CallNode calls a VSL function (builtin or user-defined)
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 
 #include "VSLNode.h"
 
@@ -63,8 +63,8 @@ protected:
     virtual const Box *call(Box *arg) const = 0;
 
     // Dump name
-    void dump(ostream& s) const;
-    void _dumpTree(ostream& s) const;
+    void dump(std::ostream& s) const;
+    void _dumpTree(std::ostream& s) const;
 
     // Return name of callee
     virtual const char *func_name() const = 0;

@@ -83,7 +83,7 @@ public:
     }
 
     // Print
-    virtual void _print(ostream&, const GraphGC&) const 
+    virtual void _print(std::ostream&, const GraphGC&) const 
     {
 	// Do nothing
     }

@@ -72,7 +72,7 @@ private:
     BoxExtend _extend;		// Extensibility
     const char *_type;		// type
 
-    static void epsHeader (ostream& os, 
+    static void epsHeader (std::ostream& os, 
 			   const BoxRegion& region, 
 			   const PostScriptPrintGC& gc);
 
@@ -103,7 +103,7 @@ protected:
 
 public:
     // Save box to stream
-    virtual void dump(ostream& s) const = 0;
+    virtual void dump(std::ostream& s) const = 0;
 
     // Constructor
     Box(BoxSize s = BoxSize(0, 0), BoxExtend e = BoxExtend(0, 0), 
@@ -180,20 +180,20 @@ public:
 	      bool context_selected = false) const;
 
     // Print box; Header/trailer must be pre-/postfixed
-    virtual void _print(ostream& os, 
+    virtual void _print(std::ostream& os, 
 			const BoxRegion& region, 
 			const PrintGC& gc) const = 0;
 
     // Print Header/trailer
-    static void _printHeader(ostream& os, 
+    static void _printHeader(std::ostream& os, 
 			     const BoxRegion& region, 
 			     const PrintGC& gc);
-    static void _printTrailer(ostream& os, 
+    static void _printTrailer(std::ostream& os, 
 			      const BoxRegion& region, 
 			      const PrintGC& gc);
 
     // Custom function: print box with header and trailer
-    void print(ostream& os = cout,
+    void print(std::ostream& os = std::cout,
 	       BoxRegion region = 
 	           BoxRegion(BoxPoint(0,0), BoxSize(0,0)),
 	       const PrintGC& gc = PostScriptPrintGC()) const
@@ -246,7 +246,7 @@ public:
 
     // Debugging
     // Send box to stream
-    friend ostream& operator << (ostream& s, const Box& b);
+    friend std::ostream& operator << (std::ostream& s, const Box& b);
 
     // Invariant check
     virtual bool OK() const

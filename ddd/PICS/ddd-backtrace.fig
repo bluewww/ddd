@@ -21,7 +21,7 @@ Single
 	0 0 1.00 60.00 120.00
 	 12600 7470 14355 7470
 2 5 0 1 -1 -1 1 0 -1 0.000 0 0 -1 0 0 5
-	0 ddd-backtrace.xpm
+	0 ddd-backtrace.png
 	 4545 5908 13635 5908 13635 12780 4545 12780 4545 5908
 4 1 -1 0 0 4 24 0.0000 0 360 7335 10980 14085 Selecting a Frame from the Backtrace Viewer\001
 4 0 -1 0 0 4 24 0.0000 0 285 2655 14580 10440 Called functions\001

@@ -33,7 +33,7 @@
 #pragma interface
 #endif
 
-#include <iostream.h>
+#include <iostream>
 #include "strclass.h"
 
 // Include this file in any module you wish to debug.
@@ -117,7 +117,7 @@ public:
     static void check(void *p);
 
     // Issue a map of all allocated blocks (starting with block #start)
-    static void map(ostream& os, unsigned start = 0, const char *prefix = "");
+    static void map(std::ostream& os, unsigned start = 0, const char *prefix = "");
 
     // Return current block number
     static unsigned tic() { return tics; }
@@ -157,7 +157,7 @@ public:
 
     ~MemChecker()
     {
-	MemCheck::map(clog, start, prefix.chars());
+	MemCheck::map(std::clog, start, prefix.chars());
     }
 };
 

@@ -189,7 +189,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
     if (ddd_is_exiting)
     {
 	// GDB would not die
-	cerr << reason << "\n";
+	std::cerr << reason << "\n";
 	return 0;
     }
 
@@ -305,7 +305,7 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
     if (ddd_is_exiting)
     {
 	if (text != "")
-	    cerr << ddd_NAME << ": " << text << "\n";
+	    std::cerr << ddd_NAME << ": " << text << "\n";
 	return 0;
     }
 
@@ -362,7 +362,7 @@ Widget post_error(string text, const _XtString name, Widget w)
 
     if (ddd_is_exiting)
     {
-	cerr << ddd_NAME << ": " << text << "\n";
+	std::cerr << ddd_NAME << ": " << text << "\n";
 	return 0;
     }
 
@@ -407,7 +407,7 @@ Widget post_warning(string text, const _XtString name, Widget w)
 
     if (ddd_is_exiting)
     {
-	cerr << ddd_NAME << ": warning: " << text << "\n";
+	std::cerr << ddd_NAME << ": warning: " << text << "\n";
 	return 0;
     }
 

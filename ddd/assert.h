@@ -42,7 +42,7 @@
 #endif
 
 #include <stdlib.h>		// abort()
-#include <iostream.h>
+#include <iostream>
 
 #undef assert
 #undef _assert_fn
@@ -55,7 +55,7 @@
 #endif // !HAVE_PRETTY_FUNCTION
 
 #define assert(ex) \
-((ex) ? 1 : (cerr << _assert_fn << "\n" << __FILE__ << ":" << __LINE__ \
+((ex) ? 1 : (std::cerr << _assert_fn << "\n" << __FILE__ << ":" << __LINE__ \
 	          << ": assertion `" #ex "' failed\n", \
 	          ::abort(), 0))
 

@@ -144,7 +144,7 @@ void create_command_tool()
     Position pos_x, pos_y;
     get_transient_pos(XtScreen(tool_shell_parent), pos_x, pos_y);
 
-    ostrstream os;
+    std::ostringstream os;
 #if FIXED_COMMAND_TOOL
     os << size.width << "x" << size.height;
 #endif

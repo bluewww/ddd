@@ -82,7 +82,7 @@ static unsigned char bitmaps [3][32] =
        0xFF, 0xFF, 0xAA, 0xAA, 0xFF, 0xFF, 0x55, 0x55  }
 };
 
-static const _XtString bitmap_name_set[] =
+static const _XtString const bitmap_name_set[] =
 {
    "25_foreground",
    "50_foreground",
@@ -183,6 +183,25 @@ static Boolean CvtStringToPacking(Display *display,
         return True;                                    \
     } while(0)
 
+#define donef(type,value,failure) \
+    do {                                                \
+        if (toVal->addr != 0) {                         \
+            if (toVal->size < sizeof(type)) {           \
+                toVal->size = sizeof(type);             \
+                failure;                                \
+                return False;                           \
+            }                                           \
+            *(type *)(toVal->addr) = (value);           \
+        }                                               \
+        else {                                          \
+            static type static_val;                     \
+            static_val = (value);                       \
+            toVal->addr = (XPointer)&static_val;        \
+        }                                               \
+                                                        \
+        toVal->size = sizeof(type);                     \
+        return True;                                    \
+    } while(0)
 
 // Return string of value.  If STRIP is set, strip leading and
 // trailing whitespace.
@@ -380,7 +399,7 @@ static const string BASENAME = "%B""%S";
 static const string DELIMITER = ":";
 
 // add default search paths to path
-static void addDefaultPaths(string& path, string root)
+static void addDefaultPaths(string& path, const string& root)
 {
     path += DELIMITER + root + "/%L/%T/%N/" + BASENAME;
     path += DELIMITER + root + "/%l/%T/%N/" + BASENAME;
@@ -463,10 +482,15 @@ static int font_id_len(const string& s)
 }
 
 
-static void XmStringFreeCB(XtPointer client_data, XtIntervalId *)
+static void CvtStringToXmStringDestroy(XtAppContext /* app */,
+				       XrmValue* to,
+				       XtPointer /* converter_data */,
+				       XrmValue * /* args */,
+				       Cardinal* /* num_args */
+				       )
 {
-    XmString xs = (XmString)client_data;
-    XmStringFree(xs);
+  XmStringFree(*(XmString*)to->addr);
+  return;
 }
 
 // Convert String to XmString, using `@' for font specs: `@FONT TEXT'
@@ -574,7 +598,7 @@ static Boolean CvtStringToXmString(Display *display,
 
     if (buf.str() != txtbuf)
     {
-	cerr << "Conversion error:\n"
+	std::cerr << "Conversion error:\n"
 	     << quote(source) << "\n"
 	     << "should be\n"
 	     << quote(txtbuf) << "\n"
@@ -588,17 +612,7 @@ static Boolean CvtStringToXmString(Display *display,
 	return False;
     }
 
-#if 0
-    // TARGET is no longer being referenced after its use.  Be sure to
-    // free it at the next occasion.
-    XtAppAddTimeOut(XtDisplayToApplicationContext(display),
-		    0, XmStringFreeCB, (XtPointer)target);
-#else
-    // It seems this applies to all Motif implementations...
-    (void) XmStringFreeCB;	// Use it
-#endif
-    
-    done(XmString, target);
+    donef(XmString, target, XmStringFree(target));
 }
 
 
@@ -660,6 +674,18 @@ static Boolean CvtStringToFontStruct(Display *display,
     }
 
     done(XFontStruct *, font);
+}
+
+static void
+CvtStringToXmFontListDestroy(XtAppContext /* app */,
+			     XrmValue* to,
+			     XtPointer /* converter_data */,
+			     XrmValue* /* args */,
+			     Cardinal* /* num_args */
+			     )
+{
+  XmFontListFree( *((XmFontList *) to->addr));
+  return;
 }
 
 // Convert String to FontList, relacing `@NAME@' by symbolic font specs.
@@ -743,7 +769,7 @@ static Boolean CvtStringToXmFontList(Display *display,
 	return False;
     }
     
-    done(XmFontList, target);
+    donef(XmFontList, target, XmFontListFree(XmFontList));
 }
 
 #endif
@@ -1025,14 +1051,14 @@ void registerOwnConverters()
 
     // String -> XmString
     XtSetTypeConverter(XmRString, XmRXmString, CvtStringToXmString,
-		       XtConvertArgList(0), 0, XtCacheNone,
-		       XtDestructor(0));
+		       XtConvertArgList(0), 0, (XtCacheNone | XtCacheRefCount),
+		       CvtStringToXmStringDestroy);
 
 #if OWN_FONT_CONVERTERS
     // String -> FontList
     XtSetTypeConverter(XmRString, XmRFontList, CvtStringToXmFontList,
-		       XtConvertArgList(0), 0, XtCacheAll,
-		       XtDestructor(0));
+		       XtConvertArgList(0), 0, (XtCacheAll | XtCacheRefCount),
+		       CvtStringToXmFontListDestroy);
 
     // String -> FontStruct
     XtSetTypeConverter(XmRString, XtRFontStruct, CvtStringToFontStruct,

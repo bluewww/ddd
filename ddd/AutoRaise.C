@@ -35,7 +35,7 @@ char AutoRaise_rcsid[] =
 
 #include "AutoRaise.h"
 #include <Xm/Xm.h>
-#include <iostream.h>
+#include <iostream>
 
 #include "bool.h"
 #include "frame.h"

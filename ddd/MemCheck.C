@@ -65,7 +65,7 @@ inline void MemCheck::validate(MemCheckHeader *p, const char *src)
 {
     if (p->s.magic != MAGIC)
     {
-	cerr << src << ": memory corrupted at " << (void *)p << "\n";
+	std::cerr << src << ": memory corrupted at " << (void *)p << "\n";
 	abort();
     }
 }
@@ -122,7 +122,7 @@ void *MemCheck::alloc(unsigned nbytes)
 	    void *ret = (void *)(p + 1);
 
 	    if (log)
-		clog << "alloc: " << nbytes << " bytes "
+		std::clog << "alloc: " << nbytes << " bytes "
 		     << "in block " << p->s.tic << " at " << ret << "\n";
 	    
 	    return ret;
@@ -177,7 +177,7 @@ void MemCheck::free(void *ap)
     validate(bp, "free");
 
     if (log)
-	clog << "free:  " << bp->s.requested << " bytes "
+	std::clog << "free:  " << bp->s.requested << " bytes "
 	     << "in block " << bp->s.tic << " at " << ap << "\n";
 
     if (wipeout_free)
@@ -206,7 +206,7 @@ void MemCheck::free(void *ap)
 	if (p == allocp)
 	{
 	    // We traversed the whole list without finding the block
-	    cerr << "free: cannot find block at " << ap << "\n";
+	    std::cerr << "free: cannot find block at " << ap << "\n";
 	    abort();
 	}
     }
@@ -264,7 +264,7 @@ void MemCheck::check(void *ap)
 
 
 // Issue an allocation map -- using the alloc list
-void MemCheck::map(ostream& os, unsigned start, const char *prefix)
+void MemCheck::map(std::ostream& os, unsigned start, const char *prefix)
 {
     init();
 

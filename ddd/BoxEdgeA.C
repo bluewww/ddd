@@ -56,7 +56,7 @@ void BoxEdgeAnnotation::_draw(Widget w, const BoxPoint& p,
 
 
 // Print
-void BoxEdgeAnnotation::_print(ostream& os, const BoxPoint& p,
+void BoxEdgeAnnotation::_print(std::ostream& os, const BoxPoint& p,
 			       const GraphGC& gc) const
 {
     box()->_print(os, region(p, gc), *gc.printGC);

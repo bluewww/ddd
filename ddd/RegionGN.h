@@ -103,7 +103,7 @@ public:
 		      const GraphGC& gc) const;
 
     // Print
-    virtual void _print(ostream& os, const GraphGC& gc) const;
+    virtual void _print(std::ostream& os, const GraphGC& gc) const;
 
     // Attributes
     // Region occupied by this node

@@ -36,7 +36,7 @@ char ListNode_rcsid[] =
 
 #include "assert.h"
 #include "return.h"
-#include <iostream.h>
+#include <iostream>
 #include <misc.h>       // max()
 
 #include "VSLLib.h"
@@ -95,7 +95,7 @@ const Box *ListNode::_eval(ListBox *arglist) const
 }
 
 // Dump
-void ListNode::dump(ostream &s) const
+void ListNode::dump(std::ostream &s) const
 {
     if (VSEFlags::include_list_info)
     {
@@ -142,7 +142,7 @@ void ListNode::dump(ostream &s) const
 }
 
 // ...as tree
-void ListNode::_dumpTree(ostream& s) const
+void ListNode::_dumpTree(std::ostream& s) const
 {
     if (VSEFlags::include_list_info)
     {
@@ -417,9 +417,9 @@ int ListNode::foldConsts(VSLDef *cdef, VSLNode **node)
 
 	if (VSEFlags::show_optimize)
 	{
-	    cout << "\n" << cdef->longname() << ": foldConsts: replacing\n" 
+	    std::cout << "\n" << cdef->longname() << ": foldConsts: replacing\n" 
 		<< *this << '\n';
-	    cout.flush();
+	    std::cout.flush();
 	}
 
 	// Replace CallNode by constant
@@ -427,8 +427,8 @@ int ListNode::foldConsts(VSLDef *cdef, VSLNode **node)
 
 	if (VSEFlags::show_optimize)
 	{
-	    cout << "by " << **node << "\n";
-	    cout.flush();
+	    std::cout << "by " << **node << "\n";
+	    std::cout.flush();
 	}
 	
 	changes++;

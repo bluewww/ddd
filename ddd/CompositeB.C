@@ -132,7 +132,7 @@ bool CompositeBox::matches (const Box &b, const Box *) const
 }
 
 // Dump
-void CompositeBox::dumpComposite(ostream& s, 
+void CompositeBox::dumpComposite(std::ostream& s, 
 				 const char *sep, const char *head, const char *tail) const
 {
     s << head;

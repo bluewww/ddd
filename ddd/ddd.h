@@ -34,7 +34,7 @@
 #endif
 
 #include "strclass.h"
-#include <fstream.h>
+#include <fstream>
 
 #include <X11/Intrinsic.h>
 #include <Xm/Xm.h>
@@ -93,7 +93,7 @@ extern class SourceView *source_view;
 extern class ArgField   *source_arg;
 
 // Where to log DDD I/O
-extern ostream *_dddlog;
+extern std::ostream *_dddlog;
 #define dddlog (*_dddlog)
 extern void init_dddlog();
 

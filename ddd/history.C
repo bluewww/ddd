@@ -95,7 +95,7 @@ char history_rcsid[] =
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <fstream.h>
+#include <fstream>
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/List.h>
@@ -273,7 +273,7 @@ void load_history(const string& file)
 
     // Delay d;
 
-    ifstream is(file.chars());
+    std::ifstream is(file.chars());
     if (is.bad())
 	return;
 
@@ -360,7 +360,7 @@ void save_history(const string& file, Widget origin)
     if (file != "")
     {
 	StatusDelay delay("Saving history in " + quote(file));
-	ofstream os(file.chars());
+	std::ofstream os(file.chars());
 	if (os.bad())
 	{
 	    post_error("Cannot save history in " + quote(file),

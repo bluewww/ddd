@@ -41,7 +41,7 @@ DEFINE_TYPE_INFO_1(BinBox, HatBox)
 // BinBox
 
 // Dump [ box ]
-void BinBox::dump(ostream& s) const
+void BinBox::dump(std::ostream& s) const
 {
     s << "[" << *_box << "]";
 }

@@ -34,7 +34,7 @@ char LiterateAgent_rcsid[] =
 #endif
 
 #include "config.h"
-#include <iostream.h>
+#include <iostream>
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
@@ -173,7 +173,7 @@ int LiterateAgent::write(const char *data, int length)
 
 	    if (nitems == 0 && ++failures <= 3)
 	    {
-		ostrstream os;
+		std::ostringstream os;
 		os << "write failed (attempt #" 
 		   << failures << ", still trying)";
 		string s(os);
@@ -334,7 +334,7 @@ void LiterateAgent::dispatch(int type, const char *data, int length)
 {
   // TODO is this correction all right ?
     if (data[length] != '\0'){
-      string s1(data,length);
+      const string s1(data,length);
       const char *data_l = s1.chars();
       DataLength dl(data_l, length);
       

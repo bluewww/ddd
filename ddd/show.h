@@ -37,28 +37,28 @@
 #include "GDBAgent.h"
 #include <X11/Intrinsic.h>
 #include <X11/Xresource.h>
-#include <iostream.h>
+#include <iostream>
 
 // Help texts
-void show_invocation(const string& gdb_command, ostream& os);
-void show_version(ostream& os);
-void show_configuration(ostream& os);
-void show(int (*formatter)(ostream& os));
+void show_invocation(const string& gdb_command, std::ostream& os);
+void show_version(std::ostream& os);
+void show_configuration(std::ostream& os);
+void show(int (*formatter)(std::ostream& os));
 
 // WWW page
 void DDDWWWPageCB(Widget, XtPointer, XtPointer);
 
 // Manual
-int ddd_man(ostream& os);
+int ddd_man(std::ostream& os);
 void DDDManualCB(Widget, XtPointer, XtPointer);
 void GDBManualCB(Widget, XtPointer, XtPointer);
 
 // License
-int ddd_license(ostream& os);
+int ddd_license(std::ostream& os);
 void DDDLicenseCB(Widget, XtPointer, XtPointer);
 
 // News
-int ddd_news(ostream& os);
+int ddd_news(std::ostream& os);
 void DDDNewsCB(Widget, XtPointer, XtPointer);
 
 #endif // _DDD_show_h

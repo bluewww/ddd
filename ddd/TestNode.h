@@ -42,7 +42,7 @@
 
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 
 #include "VSLNode.h"
 #include "ListNode.h"
@@ -63,8 +63,8 @@ private:
     ListNode *_false() const { return (ListNode *)(_true()->tail()); }
 
 protected:
-    void dump(ostream& s) const;
-    void _dumpTree(ostream& s) const;
+    void dump(std::ostream& s) const;
+    void _dumpTree(std::ostream& s) const;
 
     TestNode(const TestNode& node):
 	CallNode(node)

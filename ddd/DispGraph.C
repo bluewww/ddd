@@ -1092,7 +1092,7 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
     if (!found)
     {
 	// Give up
-	cerr << "Warning: could not find edge route after " 
+	std::cerr << "Warning: could not find edge route after " 
 	     << max_iterations << " iterations\n";
 	pos1 = from->pos();
 	pos2 = to->pos();

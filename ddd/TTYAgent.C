@@ -181,6 +181,10 @@ extern "C" {
 #include <sys/stropts.h>
 #endif
 
+#if HAVE_STROPTS_H
+#include <stropts.h>
+#endif
+
 #if HAVE_SYS_SYSMACROS_H
 #include <sys/sysmacros.h>
 #ifndef minor
@@ -279,7 +283,12 @@ extern "C" int getpt();
 // figure it out now.  -- phil_brooks@MENTORG.COM (Phil Brooks)
 #if !defined(__osf__) && \
     HAVE_PTSNAME && HAVE_GRANTPT && HAVE_UNLOCKPT && HAVE_IOCTL
-#define HAVE_STREAMS 1
+#define HAVE_UNIX98PTYS 1
+#define HAVE_STREAMS_IMPLEMENTATION 1
+// FIXME: We should have a proper test for this.
+// For instance, GNU libc 2.1 on Linux (and probably HURD too) has UNIX98-style
+// pty allocation functions, but does not have a STREAMS-based implementation.
+// -- Ray Dassen // <jdassen@wi.LeidenUniv.nl>
 #endif // !defined(__osf__) && HAVE_PTSNAME && ...
 
 // Provide C++ declarations
@@ -466,14 +475,17 @@ void TTYAgent::open_master()
     }
 
 
-#if HAVE_STREAMS
-    // Try STREAMS - a SVR4 feature
+#if HAVE_UNIX98PTYS
+    // pty handling as described in "The Single UNIX Specification, Version 2"
+    // ("UNIX98"). Based on SVR4, and thus possibly streams based.
     master = -1;
 
 #if HAVE_GETPT
     // On systems with GNU libc 2.1, getpt() returns a new file
     // descriptor for the next available master pseudo-terminal.  This
     // function is a GNU extension.
+    // The GNU libc documentation explicitly mentions that its ptsname() result
+    // may be STREAMS-based (even if obtained via a getpt() result).
     master = getpt();
     if (master < 0)
 	_raiseIOMsg("getpt");
@@ -509,13 +521,15 @@ void TTYAgent::open_master()
 #ifdef TIOCFLUSH
 	    ioctl(master, TIOCFLUSH, (char *)0);
 #endif
+#if HAVE_STREAMS_IMPLEMENTATION
 	    push = true;
+#endif
 	    return;
 	}
 
 	close(master);
     }
-#endif // HAVE_STREAMS
+#endif // HAVE_UNIX98PTYS
 
     // Try PTY's
     if (stat("/dev/pty/000", &sb) == 0)
@@ -641,25 +655,31 @@ void TTYAgent::open_slave()
     }
 #endif
 
-#if HAVE_STREAMS && defined(I_PUSH)
+#if HAVE_STREAMS_IMPLEMENTATION && defined(I_PUSH)
     if (push)
     {
-	// Finish STREAMS setup by pushing TTY compatibility modules.
-	// These calls fail may fail if the modules do not exist.  For
-	// instance, HP-UX has no `ttcompat' module; Linux has no
-	// modules at all.  To avoid confusion, we do not give a
-	// warning if these calls fail due to invalid module names.
+	if (isastream(slave)) {
+	    // FIXME: the test around this block should not be necessary, but
+	    // we don't have a proper test yet to see if the pty implementation
+	    // is STREAMS-based. - Ray
 
-	if (ioctl(slave, I_PUSH, "ptem") < 0 && errno != EINVAL)
-	    _raiseIOWarning("ioctl ptem " + slave_tty());
+	    // Finish STREAMS setup by pushing TTY compatibility modules.
+	    // These calls may fail if the modules do not exist.  For
+	    // instance, HP-UX has no `ttcompat' module; Linux has no
+	    // modules at all.  To avoid confusion, we do not give a
+	    // warning if these calls fail due to invalid module names.
+
+	    if (ioctl(slave, I_PUSH, "ptem") < 0 && errno != EINVAL)
+		_raiseIOWarning("ioctl ptem " + slave_tty());
 	    
-	if (ioctl(slave, I_PUSH, "ldterm") < 0 && errno != EINVAL)
-	    _raiseIOWarning("ioctl ldterm " + slave_tty());
+	    if (ioctl(slave, I_PUSH, "ldterm") < 0 && errno != EINVAL)
+		_raiseIOWarning("ioctl ldterm " + slave_tty());
 
-	if (ioctl(slave, I_PUSH, "ttcompat") < 0 && errno != EINVAL)
-	    _raiseIOWarning("ioctl ttcompat " + slave_tty());
+	    if (ioctl(slave, I_PUSH, "ttcompat") < 0 && errno != EINVAL)
+		_raiseIOWarning("ioctl ttcompat " + slave_tty());
+	}
     }
-#endif // I_PUSH
+#endif // HAVE_STREAMS_IMPLEMENTATION && defined(I_PUSH)
 
     return;
 }
@@ -675,7 +695,7 @@ int TTYAgent::setupCommunication()
 }
 
 #if SYNCHRONIZE_PARENT_AND_CHILD
-static const char TTY_INIT[] = { 'A', '\n' };
+static const char const TTY_INIT[] = { 'A', '\n' };
 #endif
 
 

@@ -85,7 +85,7 @@ void ArcBox::__draw(Widget w,
 		    space[X] *= 2;
 		    break;
 		default:
-		    cerr << "ArcBox::_draw(): illegal start\n";
+		    std::cerr << "ArcBox::_draw(): illegal start\n";
 	    }
 	    break;
 
@@ -104,13 +104,13 @@ void ArcBox::__draw(Widget w,
 		    origin[Y] -= space[Y];
 		    break;
 		default:
-		    cerr << "ArcBox::_draw(): illegal start\n";
+		    std::cerr << "ArcBox::_draw(): illegal start\n";
 	    }
 	    space *= BoxPoint(2,2);
 	    break;
 
 	default:
-	    cerr << "ArcBox::_draw(): illegal length\n";
+	    std::cerr << "ArcBox::_draw(): illegal length\n";
     }
 
     if (space[X] > 0 && space[Y] > 0 && _length > 0)
@@ -118,7 +118,7 @@ void ArcBox::__draw(Widget w,
 		 space[X], space[Y], _start * 64, _length * 64);
 }
 
-void ArcBox::dump(ostream& s) const
+void ArcBox::dump(std::ostream& s) const
 {
     s << "arc(" << _start << "," << _length << ")";
 }
@@ -139,7 +139,7 @@ const float rad = 0.70710678118654752440;
 // drawFigArc
 //
 
-void ArcBox::_printFig(ostream& os, 
+void ArcBox::_printFig(std::ostream& os, 
 		       const BoxRegion& region, 
 		       const PrintGC &) const
 {
@@ -173,7 +173,7 @@ void ArcBox::_printFig(ostream& os,
 	    space[X] *= 2;
 	    break;
 	default:
-	    cerr << "illegal start" ;
+	    std::cerr << "illegal start" ;
 	}
 	
 	break ;
@@ -192,13 +192,13 @@ void ArcBox::_printFig(ostream& os,
 	    origin[Y] -= space[Y] ;
 	    break ;
 	default:
-	    cerr << "illegal start" ;
+	    std::cerr << "illegal start" ;
 	}
 	space[X] *= 2;
 	space[Y] *= 2;
 	break ;
     default:
-	cerr << "illegal length" ;
+	std::cerr << "illegal length" ;
     }
     
 
@@ -281,7 +281,7 @@ void ArcBox::_printFig(ostream& os,
 		break;
 		
 	    default:
-		cerr << "drawArc: illegal start\n";
+		std::cerr << "drawArc: illegal start\n";
 	    }
 	    l -= 90 ;
 	    s = (s + 90) % 360 ;
@@ -370,7 +370,7 @@ void ArcBox::_printFig(ostream& os,
 		break;
 		
 	    default:
-		cerr << "drawArc: illegal start\n";
+		std::cerr << "drawArc: illegal start\n";
 	    }
 	    l -= 90 ;
 	    s = (s + 90) % 360 ;
@@ -383,7 +383,7 @@ void ArcBox::_printFig(ostream& os,
 // drawPSArc
 //
 
-void ArcBox::_printPS(ostream& os, 
+void ArcBox::_printPS(std::ostream& os, 
 		      const BoxRegion& region, 
 		      const PrintGC &) const
 {
@@ -416,7 +416,7 @@ void ArcBox::_printPS(ostream& os,
 	    space[X] *= 2;
 	    break;
 	default:
-	    cerr << "illegal start" ;
+	    std::cerr << "illegal start" ;
 	}
 	
 	break ;
@@ -435,13 +435,13 @@ void ArcBox::_printPS(ostream& os,
 	    origin[Y] -= space[Y] ;
 	    break ;
 	default:
-	    cerr << "illegal start" ;
+	    std::cerr << "illegal start" ;
 	}
 	space[X] *= 2;
 	space[Y] *= 2;
 	break ;
     default:
-	cerr << "illegal length" ;
+	std::cerr << "illegal length" ;
     }
     
     end = (720 - s) % 360 ;
@@ -459,7 +459,7 @@ void ArcBox::_printPS(ostream& os,
 // drawArc
 //
 
-void ArcBox::_print(ostream& os, 
+void ArcBox::_print(std::ostream& os, 
 		    const BoxRegion& region, 
 		    const PrintGC& gc) const
 {

@@ -107,6 +107,7 @@ BreakPoint::BreakPoint(string& info_output, const string& arg,
     switch(gdb->type())
     {
     case GDB:
+    case BASH:
 	process_gdb(info_output);
 	break;
 
@@ -656,7 +657,7 @@ static bool equal(const StringArray& s1, const StringArray& s2)
 
 // Update breakpoint information
 bool BreakPoint::update(string& info_output,
-			ostream& undo_commands,
+			std::ostream& undo_commands,
 			bool& need_total_undo)
 {
     string file = file_name();
@@ -854,6 +855,7 @@ string BreakPoint::false_value()
     case LANGUAGE_C:
     case LANGUAGE_PYTHON:
     case LANGUAGE_OTHER:
+    case LANGUAGE_BASH:
 	return "0";
 
     case LANGUAGE_PERL:
@@ -884,6 +886,7 @@ string BreakPoint::and_op()
     {
     case LANGUAGE_C:
     case LANGUAGE_PERL:
+    case LANGUAGE_BASH:
     case LANGUAGE_JAVA:
     case LANGUAGE_OTHER:
 	return " && ";
@@ -955,7 +958,7 @@ string BreakPoint::make_false(const string& cond)
 // to increase the breakpoint number.  If ADDR is set, use ADDR as
 // (fake) address.  If COND is set, use COND as (fake) condition.
 // Return true iff successful.
-bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
+bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
 			   string pos, string cond)
 {
     if (pos == "")
@@ -973,6 +976,7 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 
     switch (gdb->type())
     {
+    case BASH:
     case GDB:
     case PYDB:
     {

@@ -35,7 +35,7 @@ extern int yylex();\
 
 # Make YYSTYPE a struct such that we can store class objects
 # (use anonymous unions to save space!)
-s!^typedef union\(.*\)$!typedef struct _YYSTYPE \1!
+s!^typedef union *[a-zA-Z_]*\(.*\)$!typedef struct _YYSTYPE \1!
 
 # We cannot use alloca with class objects.
 # Thus, we use new/delete instead (rather ugly).

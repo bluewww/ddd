@@ -38,7 +38,7 @@ char FontTable_rcsid[] =
 #include "hash.h"
 #include "strclass.h"
 
-#include <iostream.h>
+#include <iostream>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
@@ -72,7 +72,7 @@ XFontStruct *FontTable::operator[](string& name)
 
 	if (table[i].font == 0)
 	{
-	    cerr << "Warning: Could not load font \"" << name << "\"";
+	    std::cerr << "Warning: Could not load font \"" << name << "\"";
 
 	    // Try default font
 	    GC default_gc = 
@@ -84,7 +84,7 @@ XFontStruct *FontTable::operator[](string& name)
 		XFontStruct *font = XQueryFont(_display, font_id);
 		if (font != 0)
 		{
-		    cerr << ", using default font instead\n";
+		    std::cerr << ", using default font instead\n";
 		    table[i].font = font;
 		}
 	    }
@@ -96,13 +96,13 @@ XFontStruct *FontTable::operator[](string& name)
 	    XFontStruct *font = XLoadQueryFont(_display, "fixed");
 	    if (font != 0)
 	    {
-		cerr << ", using font \"fixed\" instead\n";
+		std::cerr << ", using font \"fixed\" instead\n";
 		table[i].font = font;
 	    }
 	}
 
 	if (table[i].font == 0)
-	    cerr << "\n";
+	    std::cerr << "\n";
     }
 
     return table[i].font;

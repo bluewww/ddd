@@ -35,8 +35,8 @@ char LetNode_rcsid[] =
 
 
 #include "assert.h"
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 
 #include "VSLLib.h"
 
@@ -55,14 +55,14 @@ DEFINE_TYPE_INFO_1(WhereNode, LetNode)
 // LetNode
 
 // Dump Let
-void LetNode::dump(ostream& s) const
+void LetNode::dump(std::ostream& s) const
 {
     s << "let " << *node_pattern() << " = "  << *args() 
       << "\n  in " << *body();
 }
 
 // Dump where
-void WhereNode::dump(ostream& s) const
+void WhereNode::dump(std::ostream& s) const
 {
     s << *body() 
        << "\n  where " << *node_pattern() << " = " << *args();
@@ -70,7 +70,7 @@ void WhereNode::dump(ostream& s) const
 
 
 // ...as tree
-void LetNode::_dumpTree(ostream& s) const
+void LetNode::_dumpTree(std::ostream& s) const
 {
     node_pattern()->dumpTree(s);
     s << ", ";
@@ -278,13 +278,13 @@ void LetNode::compilePatterns(VSLDef *cdef) const
 	{
 	    if (instances[i] == 0)
 	    {
-		ostrstream os;
+		std::ostringstream os;
 		os << "invalid pattern: arg" << i << " is never instantiated";
 		VSLLib::eval_error(os);
 	    }
 	    if (instances[i] > 1)
 	    {
-		ostrstream os;
+		std::ostringstream os;
 		os << "invalid pattern: arg" << i 
 		   << " is instantiated several times";
 		VSLLib::eval_error(os);
@@ -375,7 +375,7 @@ int LetNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
     for (i = _base; i < _base + _nargs; i++)
 	if (instances[i] > 0 && values[i] == 0)
 	{
-	    ostrstream os;
+	    std::ostringstream os;
 	    os << "cannot isolate arg" << i;
 	    VSLLib::eval_warning(os, cdef);
 	    fail = true;
@@ -421,9 +421,9 @@ int LetNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
 
     if (VSEFlags::show_optimize)
     {
-	cout << "\n" << cdef->longname() << ": inlineFuncs: replacing\n"
+	std::cout << "\n" << cdef->longname() << ": inlineFuncs: replacing\n"
 	    << *this << "\nby " << **node << '\n';
-	cout.flush();
+	std::cout.flush();
     }
 
     delete this;
@@ -459,8 +459,8 @@ int LetNode::_reBase(VSLDef *cdef, unsigned newBase)
 
     if (VSEFlags::show_optimize)
     {
-	cout << "\n" << cdef->longname() << ": reBase: replacing\n" << *this;
-	cout.flush();
+	std::cout << "\n" << cdef->longname() << ": reBase: replacing\n" << *this;
+	std::cout.flush();
     }
 
     // Rename vars in body
@@ -472,8 +472,8 @@ int LetNode::_reBase(VSLDef *cdef, unsigned newBase)
 
     if (VSEFlags::show_optimize)
     {
-	cout << "\nby " << *this << "\n";
-	cout.flush();
+	std::cout << "\nby " << *this << "\n";
+	std::cout.flush();
     }
 
     for (i = _base; i < _base + _nargs; i++)

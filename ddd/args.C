@@ -433,10 +433,17 @@ static void gdbChangeDirectoryDCB(Widget, XtPointer, XtPointer)
     XtFree(_args);
 
     string path = source_view->full_path(args);
-    if (gdb->type() == PERL)
-	gdb_command("chdir " + quote(path, '\''));
-    else
-	gdb_command("cd " + path);
+    switch (gdb->type()) {
+    case PERL:
+      gdb_command("chdir " + quote(path, '\''));
+      break;
+    case BASH:
+      gdb_command("eval cd " + path);
+      break;
+    default:
+      gdb_command("cd " + path);
+    }
+    
 }
 
 // Create `ChangeDirectory' dialog
@@ -486,7 +493,7 @@ static void RestartAndRunCB(Widget w,
 {
     RestartDebuggerCB(w, client_data, call_data);
 
-    string& cmd = *((string *)client_data);
+    const string& cmd = *((const string *)client_data);
     gdb_command(cmd, w);
 }
 

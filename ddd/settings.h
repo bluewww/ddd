@@ -46,7 +46,7 @@
 extern void dddPopupSettingsCB(Widget, XtPointer, XtPointer);
 
 // Process `show' output
-extern void process_show(string command, string value, bool init = false);
+extern void process_show(const string& command, string value, bool init = false);
 
 // True if settings might have changed
 extern bool need_settings();
@@ -59,7 +59,7 @@ extern string get_settings(DebuggerType type,
 			   unsigned long flags = SAVE_DEFAULT);
 
 // Get help on `DBXENV BASE'
-extern string get_dbx_help(string dbxenv, string base);
+extern string get_dbx_help(const string& dbxenv, const string& base);
 
 // Mark settings as `saved'
 extern void save_settings_state();

@@ -61,7 +61,7 @@ protected:
 	ListBox(box)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
     bool matches (const Box &b, const Box *callbackArg = 0) const;
 

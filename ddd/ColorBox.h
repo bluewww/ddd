@@ -140,7 +140,7 @@ public:
 
     Box *dup() const { return new ForegroundColorBox(*this); }
 
-    void _print(ostream& os, const BoxRegion& region, const PrintGC& gc) const;
+    void _print(std::ostream& os, const BoxRegion& region, const PrintGC& gc) const;
 };
 
 // Draw box using associated color as background
@@ -169,7 +169,7 @@ public:
 
     Box *dup() const { return new BackgroundColorBox(*this); }
 
-    void _print(ostream& os, const BoxRegion& region, const PrintGC& gc) const;
+    void _print(std::ostream& os, const BoxRegion& region, const PrintGC& gc) const;
 };
 
 #endif // _DDD_ColorBox_h

@@ -35,7 +35,7 @@ char ListBox_rcsid[] =
 
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 
 #include "ListBox.h"
 #include "VSEFlags.h"
@@ -52,7 +52,7 @@ void ListBox::_relast()
 }
 
 // Dump
-void ListBox::dump(ostream &s) const
+void ListBox::dump(std::ostream &s) const
 {
     if (VSEFlags::include_list_info)
     {

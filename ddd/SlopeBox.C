@@ -61,7 +61,7 @@ void FallBox::__draw(Widget w,
 }
 
 // Print
-void FallBox::_print(ostream& os, 
+void FallBox::_print(std::ostream& os, 
 		     const BoxRegion& region, 
 		     const PrintGC& gc) const
 {
@@ -85,7 +85,7 @@ void FallBox::_print(ostream& os,
 
 
 
-void FallBox::dump(ostream& s) const
+void FallBox::dump(std::ostream& s) const
 {
     s << "fall()";
 }
@@ -109,7 +109,7 @@ void RiseBox::__draw(Widget w,
 }
 
 // Print
-void RiseBox::_print(ostream& os, 
+void RiseBox::_print(std::ostream& os, 
 		     const BoxRegion& region, 
 		     const PrintGC& gc) const
 {
@@ -129,7 +129,7 @@ void RiseBox::_print(ostream& os,
     }
 }
     
-void RiseBox::dump(ostream& s) const
+void RiseBox::dump(std::ostream& s) const
 {
     s << "rise()";
 }

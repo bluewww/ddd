@@ -35,7 +35,7 @@ char FontFixBox_rcsid[] =
 
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 #include "FontFixBox.h"
 
 DEFINE_TYPE_INFO_1(FontFixBox, HatBox)
@@ -43,7 +43,7 @@ DEFINE_TYPE_INFO_1(FontFixBox, HatBox)
 // FontFixBox
 
 // Dump
-void FontFixBox::dump(ostream& s) const
+void FontFixBox::dump(std::ostream& s) const
 {
     s << "fontfix(" << *_box << ")";
 }

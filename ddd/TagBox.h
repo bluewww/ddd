@@ -70,7 +70,7 @@ protected:
 	_data((*(tagbox.datalink->link))(tagbox._data))
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
     // Find TagBox within P
     const TagBox *findTag(const BoxPoint&) const;

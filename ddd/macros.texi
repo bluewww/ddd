@@ -31,6 +31,10 @@
 @acronym{@value{DDD}}
 @end macro
 
+@macro BASH {}
+@acronym{BASH}
+@end macro
+
 @macro GDB {}
 @acronym{GDB}
 @end macro

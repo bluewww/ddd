@@ -71,7 +71,7 @@ protected:
 	PrimitiveBox(box)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
 public:
     RuleBox(BoxSize s = BoxSize(0, 0), BoxExtend e = BoxExtend(1, 1),
@@ -80,7 +80,7 @@ public:
     {}
 
     Box *dup() const { return new RuleBox(*this); }
-    void _print(ostream& os, 
+    void _print(std::ostream& os, 
 		const BoxRegion& r, 
 		const PrintGC& gc) const;
 };
@@ -107,7 +107,7 @@ protected:
     {}
 
 public:
-    void _print(ostream&, 
+    void _print(std::ostream&, 
 		const BoxRegion&, 
 		const PrintGC&) const
     {
@@ -132,7 +132,7 @@ protected:
 	EmptyBox(box)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
 public:
     FillBox(BoxSize s = BoxSize(0, 0), BoxExtend e = BoxExtend(1, 1)):
@@ -154,7 +154,7 @@ protected:
 	EmptyBox(box)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
 public:
     SpaceBox(BoxSize s = BoxSize(0, 0)):
@@ -176,7 +176,7 @@ protected:
 	SpaceBox(box)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
 public:
 #ifdef GCC_OK

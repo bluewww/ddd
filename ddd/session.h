@@ -90,7 +90,7 @@ inline string session_tmp_flag(const string& session)
 }
 
 // Create session directory for SESSION; leave messages in MSG
-void create_session_dir(const string& session, ostream& msg);
+void create_session_dir(const string& session, std::ostream& msg);
 
 // Same, but leave messages in status line
 void create_session_dir(const string& session);

@@ -57,9 +57,7 @@
 // Debugger types
 //-----------------------------------------------------------------------------
 
-enum DebuggerType { GDB, DBX, XDB, JDB, PYDB, PERL };
-
-
+enum DebuggerType { GDB, DBX, XDB, JDB, PYDB, PERL, BASH };
 //-----------------------------------------------------------------------------
 // Program language
 //-----------------------------------------------------------------------------
@@ -77,6 +75,7 @@ enum ProgramLanguage {
     LANGUAGE_FORTRAN,		// FORTRAN, as supported by GDB.
     LANGUAGE_PYTHON,		// Python, as supported by PYDB.
     LANGUAGE_PERL,		// Perl, as supported by Perl.
+    LANGUAGE_BASH,		// Bash, as supported by bashdb.
     LANGUAGE_OTHER		// Others
 };
 
@@ -249,12 +248,13 @@ public:
 		     const VoidArray& user_datas,
 		     int      qu_count,
 		     OQACProc on_qu_array_completion,
-		     void*    qa_data);
+		     void*    qa_data,
+		     bool&    qa_data_registered);
 
     // true iff command was sent.
     // If user_data == 0, _user_data remains unchanged.
     bool send_user_cmd      (string cmd, void* user_data = 0);  
-    bool send_user_ctrl_cmd (string cmd, void* user_data = 0);
+    bool send_user_ctrl_cmd (const string& cmd, void* user_data = 0);
 
 
     // Order of tasks:
@@ -270,6 +270,7 @@ public:
 			     int      qu_count,
 			     OQACProc on_qu_array_completion,
 			     void*    qa_data,
+			     bool&    qa_data_registered,
 			     string user_cmd,
 			     void* user_data = 0);
 
@@ -277,7 +278,8 @@ public:
 			const VoidArray& qu_datas,
 			int      qu_count,
 			OQACProc on_qu_array_completion,
-			void*    qa_data);
+			void*    qa_data,
+			bool&    qa_data_registered);
 
 
     // Resources
@@ -431,8 +433,8 @@ public:
     // True if debugger can enable breakpoints
     bool has_enable_command() const
     { 
-	return type() == GDB || type() == XDB || type() == PYDB || 
-	       has_handler_command();
+      return type() == GDB  || type() == XDB || type() == PYDB || 
+	type() == BASH || has_handler_command();
     }
     bool has_disable_command() const
     {
@@ -449,14 +451,14 @@ public:
     // True if debugger can set conditions on breakpoints
     bool has_condition_command() const
     {
-	return type() == GDB || type() == PYDB;
+      return type() == GDB || type() == PYDB || type() == BASH;
     }
 
     // True if debugger can delete breakpoints by number
     bool has_delete_command() const
     {
-	return type() == GDB || type() == XDB || 
-	       type() == DBX || type() == PYDB;
+      return type() == GDB || type() == XDB || type() == BASH ||
+	     type() == DBX || type() == PYDB;
     }
 
     // True if debugger has volatile breakpoints (i.e. breakpoints may
@@ -515,42 +517,42 @@ public:
     // True if debugger supports `cd'
     bool has_cd_command() const
     {
-	return type() == GDB || type() == XDB || 
-	       type() == DBX || type() == PYDB || type() == PERL;
+      return type() == GDB || type() == XDB || 
+	type() == DBX || type() == PYDB || type() == PERL || type() == BASH;
     }
 
     // True if debugger supports `shell'
     bool has_shell_command() const
     {
-	return type() == GDB || type() == XDB || type() == DBX || 
-	       type() == PERL;
+      return type() == GDB || type() == XDB || type() == DBX || 
+	type() == PERL || type() == BASH ;
     }
 
     // True if debugger has numbered breakpoints
     bool has_numbered_breakpoints()
     {
-	return type() == GDB || type() == DBX || type() == XDB || 
-	       type() == PYDB;
+      return type() == GDB || type() == DBX || type() == XDB || type() == BASH
+	|| type() == PYDB;
     }
 
     // True if debugger supports temporary breakpoints
     bool has_temporary_breakpoints() const
     {
-	return type() == GDB || type() == XDB || type() == PYDB || 
-	       has_when_command() || type() == PERL;
+      return type() == GDB || type() == XDB || type() == PYDB || type() == BASH
+	|| has_when_command() || type() == PERL;
     }
 
     // True if debugger supports breakpoint conditions
     bool has_breakpoint_conditions() const
     {
-	return type() == GDB || type() == XDB || 
+        return type() == GDB || type() == XDB || type() == BASH ||
 	       type() == DBX || type() == PYDB || type() == PERL;
     }
 
     // True if debugger supports breakpoint commands
     bool has_breakpoint_commands() const
     {
-	return type() == GDB || type() == XDB || 
+        return type() == GDB || type() == XDB || type() == BASH || 
 	       has_when_command() || type() == PERL;
     }
 
@@ -581,7 +583,7 @@ public:
     // True if `display X' automatically prints X
     bool display_prints_values() const
     {
-	return type() == GDB || type() == PYDB;
+      return type() == GDB || type() == PYDB || type() == BASH;
     }
 
     // True if debugger can enable displays
@@ -678,20 +680,20 @@ public:
 						    // -----------------------
     string print_command(string expr = "",          // print|output EXP
 			 bool internal = true) const;
-    string assign_command(string var,               // set variable VAR = EXPR
-			  string expr) const;
-    string display_command(string expr = "") const; // display EXPR
+    string assign_command(const string& var,        // set variable VAR = EXPR
+			  const string& expr) const;
+    string display_command(const string& expr = "") const; // display EXPR
     string where_command(int count = 0) const;	    // where COUNT
     string pwd_command() const;	                    // pwd
     string frame_command(int number) const;         // frame NUMBER
     string relative_frame_command(int offset) const;// up|down OFFSET
     string frame_command() const;                   // frame
     string func_command() const;                    // func
-    string echo_command(string text) const;         // echo TEXT
-    string whatis_command(string expr) const;       // whatis EXPR
-    string dereferenced_expr(string expr) const;    // *EXPR
+    string echo_command(const string& text) const;         // echo TEXT
+    string whatis_command(const string& expr) const;       // whatis EXPR
+    string dereferenced_expr(const string& expr) const;    // *EXPR
     string address_expr(string expr) const;         // &EXPR
-    string index_expr(string expr, string index) const; // EXPR[INDEX]
+    string index_expr(const string& expr, const string& index) const; // EXPR[INDEX]
     int default_index_base() const;                 // 0 in C, else 1
     string member_separator() const;                // " = " in C
 
@@ -700,24 +702,24 @@ public:
     string info_display_command() const;	    // info display
     string disassemble_command(string start, string end = "") const;
                                                     // disassemble START END
-    string make_command(string target) const;       // make TARGET
+    string make_command(const string& target) const;       // make TARGET
     string jump_command(string pc) const;           // jump PC
     string regs_command(bool all = true) const;	    // info registers
-    string watch_command(string expr, WatchMode w = WATCH_CHANGE) const;
+    string watch_command(const string& expr, WatchMode w = WATCH_CHANGE) const;
 				                    // watch EXPR
     string kill_command() const;                    // kill
     string enable_command(string bp = "") const;    // enable BP
     string disable_command(string bp = "") const;   // disable BP
     string delete_command(string bp = "") const;    // delete BP
-    string ignore_command(string bp, int count) const; 
+    string ignore_command(const string& bp, int count) const; 
                                                     // ignore BP COUNT
-    string condition_command(string bp, string expr) const; 
+    string condition_command(const string& bp, const string& expr) const; 
 				                    // cond BP EXPR
-    string shell_command(string cmd) const;	    // shell CMD
-    string debug_command(string file = "",          // file FILE
+    string shell_command(const string& cmd) const;	    // shell CMD
+    string debug_command(const string& file = "",          // file FILE
 			 string args = "") const;
     string signal_command(int sig) const;           // signal SIG
-    string nop_command(string comment = "") const;  // # comment
+    string nop_command(const string& comment = "") const;  // # comment
 
     // Bring VALUE of VAR into a form understood by DDD
     void munch_value(string& value, const string& var) const;

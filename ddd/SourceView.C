@@ -265,7 +265,7 @@ struct TextItms {
     };
 };
 
-static const _XtString text_cmd_labels[] =
+static const _XtString const text_cmd_labels[] =
 {
     "Print ", 
     "Display ", 
@@ -463,7 +463,7 @@ static int address_index(const string& s, int pos)
     if (eol < 0)
 	eol = s.length();
 
-    string first_line = ((string&)s).at(pos, eol - pos);
+    const string first_line = s.at(pos, eol - pos);
     int i = 0;
     while (i < int(first_line.length()) && isspace(first_line[i]))
 	i++;
@@ -562,7 +562,7 @@ void SourceView::line_popup_setCB (Widget w,
 				   XtPointer client_data,
 				   XtPointer)
 {
-    string address = *((string *)client_data);
+    const string address = *((const string *)client_data);
     create_bp(address, w);
 }
 
@@ -570,7 +570,7 @@ void SourceView::line_popup_set_tempCB (Widget w,
 					XtPointer client_data,
 					XtPointer)
 {
-    string address = *((string *)client_data);
+    const string address = *((const string *)client_data);
     create_temp_bp(address, w);
 }
 
@@ -600,6 +600,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	switch (gdb->type())
 	{
 	case GDB:
+	case BASH:
 	case PYDB:
 	    if (temp)
 		gdb_command("tbreak " + address, w);
@@ -791,7 +792,7 @@ void SourceView::line_popup_temp_n_contCB (Widget w,
 					   XtPointer client_data,
 					   XtPointer)
 {
-    string address = *((string *)client_data);
+    const string address = *((const string *)client_data);
     temp_n_cont(address, w);
 }
 
@@ -832,6 +833,7 @@ void SourceView::temp_n_cont(const string& a, Widget w)
 	gdb_command("c " + address, w);
 	break;
 
+    case BASH:
     case PERL:
 	if (is_file_pos(address))
 	    address = address.after(':');
@@ -846,7 +848,7 @@ void SourceView::line_popup_set_pcCB(Widget w,
 				     XtPointer client_data,
 				     XtPointer)
 {
-    string address = *((string *)client_data);
+    const string address = *((const string *)client_data);
     move_pc(address, w);
 }
 
@@ -904,6 +906,7 @@ bool SourceView::move_pc(const string& a, Widget w)
 	case JDB:
 	case PYDB:
 	case PERL:
+	case BASH:
 	    break;		// Never reached
 	}
 
@@ -975,7 +978,7 @@ bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
 
     // Create a new breakpoint at ADDRESS, making it inherit the
     // current settings
-    ostrstream os;
+    std::ostringstream os;
     bool ok = bp->get_state(os, 0, false, address);
     if (!ok)
 	return false;		// Command failed
@@ -1039,7 +1042,7 @@ void SourceView::_set_bps_cond(IntArray& _nrs, string cond,
 	{
 	    // Create a new breakpoint with a new condition COND, making it
 	    // inherit the current settings
-	    ostrstream os;
+	    std::ostringstream os;
 	    bool ok = bp->get_state(os, 0, false, "", c);
 	    if (!ok)
 		continue;		// Command failed
@@ -1247,6 +1250,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	case GDB:
 	case JDB:
 	case PYDB:
+	case BASH:
 	    return "clear " + pos;
 
 	case PERL:
@@ -1369,7 +1373,7 @@ void SourceView::text_popup_breakCB (Widget w,
 				     XtPointer client_data,
 				     XtPointer)
 {
-    string* word_ptr = (string*)client_data;
+    const string* word_ptr = (const string*)client_data;
     create_bp(fortranize(*word_ptr, true), w);
 }
 
@@ -1377,7 +1381,7 @@ void SourceView::text_popup_clearCB (Widget w,
 				     XtPointer client_data, 
 				     XtPointer)
 {
-    string* word_ptr = (string*)client_data;
+    const string* word_ptr = (const string*)client_data;
     clear_bp(fortranize(*word_ptr, true), w);
 }
 
@@ -1389,7 +1393,7 @@ void SourceView::text_popup_printCB (Widget w,
 				     XtPointer client_data, 
 				     XtPointer)
 {
-    string* word_ptr = (string*)client_data;
+    const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
 
     gdb_command(gdb->print_command(fortranize(*word_ptr), false), w);
@@ -1398,7 +1402,7 @@ void SourceView::text_popup_printCB (Widget w,
 void SourceView::text_popup_print_refCB (Widget w, 
 					 XtPointer client_data, XtPointer)
 {
-    string* word_ptr = (string*)client_data;
+    const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
 
     gdb_command(gdb->print_command(deref(fortranize(*word_ptr)), false), w);
@@ -1411,7 +1415,7 @@ void SourceView::text_popup_watchCB (Widget w,
 				     XtPointer client_data, 
 				     XtPointer)
 {
-    string* word_ptr = (string*)client_data;
+    const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
 
     gdb_command(gdb->watch_command(fortranize(*word_ptr)), w);
@@ -1420,7 +1424,7 @@ void SourceView::text_popup_watchCB (Widget w,
 void SourceView::text_popup_watch_refCB (Widget w, 
 					 XtPointer client_data, XtPointer)
 {
-    string* word_ptr = (string*)client_data;
+    const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
 
     gdb_command(gdb->watch_command(deref(fortranize(*word_ptr))), w);
@@ -1431,7 +1435,7 @@ void SourceView::text_popup_watch_refCB (Widget w,
 //
 void SourceView::text_popup_dispCB (Widget w, XtPointer client_data, XtPointer)
 {
-    string* word_ptr = (string*)client_data;
+    const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
 
     gdb_command("graph display " + fortranize(*word_ptr), w);
@@ -1440,7 +1444,7 @@ void SourceView::text_popup_dispCB (Widget w, XtPointer client_data, XtPointer)
 void SourceView::text_popup_disp_refCB (Widget w, 
 					XtPointer client_data, XtPointer)
 {
-    string* word_ptr = (string*)client_data;
+    const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
 
     gdb_command("graph display " + deref(fortranize(*word_ptr)), w);
@@ -1451,7 +1455,7 @@ void SourceView::text_popup_disp_refCB (Widget w,
 void SourceView::text_popup_whatisCB (Widget w, XtPointer client_data, 
 				      XtPointer)
 {
-    string* word_ptr = (string*)client_data;
+    const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
 
     gdb_command(gdb->whatis_command(fortranize(*word_ptr)), w);
@@ -1461,7 +1465,7 @@ void SourceView::text_popup_whatisCB (Widget w, XtPointer client_data,
 //
 void SourceView::text_popup_lookupCB (Widget, XtPointer client_data, XtPointer)
 {
-    string* word_ptr = (string*)client_data;
+    const string* word_ptr = (const string*)client_data;
     lookup(fortranize(*word_ptr, true));
 }
 
@@ -1598,7 +1602,7 @@ void SourceView::set_source_argCB(Widget text_w,
 				  XtPointer client_data, 
 				  XtPointer call_data)
 {
-    string& text = current_text(text_w);
+    const string& text = current_text(text_w);
     if (text == "")
 	return;
 
@@ -1759,7 +1763,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	if (startPos < XmTextPosition(text.length())
 	    && endPos < XmTextPosition(text.length()))
 	{
-	    s = text(startPos, endPos - startPos);
+	    s = text.at((int)startPos, (int)(endPos - startPos));
 	}
 
 	while (s.contains('\n'))
@@ -1771,7 +1775,7 @@ void SourceView::set_source_argCB(Widget text_w,
 }
 
 
-BreakPoint *SourceView::breakpoint_at(string arg)
+BreakPoint *SourceView::breakpoint_at(const string& arg)
 {
     MapRef ref;
     for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
@@ -1814,7 +1818,7 @@ BreakPoint *SourceView::breakpoint_at(string arg)
     return 0;
 }
 
-BreakPoint *SourceView::watchpoint_at(string expr)
+BreakPoint *SourceView::watchpoint_at(const string& expr)
 {
     for (int trial = 0; trial <= 2; trial++)
     {
@@ -1863,7 +1867,7 @@ BreakPoint *SourceView::watchpoint_at(string expr)
 // Show position POS in TEXT_W, scrolling nicely
 void SourceView::ShowPosition(Widget text_w, XmTextPosition pos, bool fromTop)
 {
-    string& text = current_text(text_w);
+    const string& text = current_text(text_w);
     if (text.length() == 0)
 	return;			// No position to show
 
@@ -2137,6 +2141,10 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 
     case PERL:
 	command = "l 1-" HUGE_LINE_NUMBER;
+	break;
+
+    case BASH:
+	command = "list 1 " HUGE_LINE_NUMBER;
 	break;
 
     case JDB:
@@ -3156,7 +3164,7 @@ void SourceView::find_word_bounds (Widget text_w,
 {
     startpos = endpos = pos;
 
-    string& text = current_text(text_w);
+    const string& text = current_text(text_w);
 
     XmTextPosition line_pos = pos;
     if (line_pos < XmTextPosition(text.length()))
@@ -3190,6 +3198,39 @@ void SourceView::find_word_bounds (Widget text_w,
 	    // Include Perl prefix character
 	    startpos -= 1;
 	    break;
+	}
+	else if (gdb->program_language() == LANGUAGE_BASH &&
+		 startpos > 1 &&
+		 is_bash_prefix(text[startpos - 1]))
+	{
+	  // Include $variable rather than variable
+	  startpos -= 1;
+	  break;
+	}
+	else if (gdb->program_language() == LANGUAGE_BASH &&
+		 startpos > 2 && text[startpos -1] == '{' &&
+		 is_bash_prefix(text[startpos - 2])
+		 )
+	{
+	  // Include ${...} rather than ...
+	  int brace_count=1;
+	  int new_endpos=startpos;
+	  for (new_endpos=startpos+1; 
+	       new_endpos < XmTextPosition(text.length()) 
+		 && new_endpos-startpos < 30; 
+	       new_endpos++) 
+	    {
+	      if (text[new_endpos] == '{') brace_count++;
+	      if (text[new_endpos] == '}') {
+		brace_count--;
+		if (brace_count==0) {
+		  startpos -= 2; // Go back over ${
+		  endpos=new_endpos+1;
+		  break;
+		}
+	      }
+	    }
+	  break;
 	}
 	else if (startpos > 2 && 
 	    isid(text[startpos - 2]) &&
@@ -3238,9 +3279,13 @@ string SourceView::get_word_at_pos(Widget text_w,
 				   XmTextPosition& startpos,
 				   XmTextPosition& endpos)
 {
-    string& text = current_text(text_w);
+    const string& text = current_text(text_w);
     if (text == "")
+      {
+	startpos = 0;
+	endpos = 0;
 	return "";
+      }
 
     if (!XmTextGetSelectionPosition(text_w, &startpos, &endpos)
 	|| pos < startpos
@@ -3275,7 +3320,7 @@ static void InstallBitmapAsImage(unsigned char *bits, int width, int height,
 {
     Boolean ok = InstallBitmap(bits, width, height, name.chars());
     if (!ok)
-	cerr << "Could not install " << quote(name) << " bitmap\n";
+	std::cerr << "Could not install " << quote(name) << " bitmap\n";
 }
 
 
@@ -3793,7 +3838,7 @@ void SourceView::clear_execution_position()
 }
 
 
-void SourceView::_show_execution_position(string file, int line, 
+void SourceView::_show_execution_position(const string& file, int line, 
 					  bool silent, bool stopped)
 {
     last_execution_file = file;
@@ -3929,6 +3974,7 @@ void SourceView::process_info_bp (string& info_output,
     switch (gdb->type())
     {
     case GDB:
+    case BASH:
 	// If this is no breakpoint info, process it as GDB message
 	if (!info_output.contains("Num", 0) && 
 	    !info_output.contains("No breakpoints", 0))
@@ -3951,7 +3997,7 @@ void SourceView::process_info_bp (string& info_output,
 
     bool changed = false;
     bool added   = false;
-    ostrstream undo_commands;
+    std::ostringstream undo_commands;
     string file = current_file_name;
 
     while (info_output != "")
@@ -3959,6 +4005,7 @@ void SourceView::process_info_bp (string& info_output,
 	int bp_nr = -1;
 	switch(gdb->type())
 	{
+	case BASH:
 	case GDB:
 	case PYDB:
 	    if (!has_nr(info_output))
@@ -4034,10 +4081,10 @@ void SourceView::process_info_bp (string& info_output,
 	    bps_not_read -= bp_nr;
 	    BreakPoint *bp = bp_map.get(bp_nr);
 
-	    ostrstream old_state;
+	    std::ostringstream old_state;
 	    undo_buffer.add_breakpoint_state(old_state, bp);
 
-	    ostrstream local_commands;
+	    std::ostringstream local_commands;
 	    bool need_total_undo = false;
 
 	    bool bp_changed = 
@@ -4157,6 +4204,7 @@ void SourceView::process_info_line_main(string& info_output)
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
     {
 	PosBuffer pos_buffer;
 	pos_buffer.filter(info_output);
@@ -4189,7 +4237,7 @@ void SourceView::process_info_line_main(string& info_output)
 	{
 	    int end_line = info_output.index('\n', line);
 	    if (end_line >= 0)
-		info_output(line, end_line - line) = "";
+		info_output.at(line, end_line - line) = "";
 	}
     }
 
@@ -4298,6 +4346,7 @@ void SourceView::lookup(string s, bool silent)
 	    case DBX:
 	    case XDB:
 	    case PYDB:
+	    case BASH:
 	    case PERL:
 		show_position(full_path(current_file_name) 
 			      + ":" + itostring(line));
@@ -4362,6 +4411,7 @@ void SourceView::lookup(string s, bool silent)
 	    break;
 	}
 
+	case BASH:
 	case PERL:
 	{
 	    Command c("l " + s);
@@ -4443,6 +4493,7 @@ void SourceView::add_position_to_history(const string& file_name, int line,
     case DBX:
     case XDB:
     case PERL:
+    case BASH:
 	break;
     }
 
@@ -4548,6 +4599,7 @@ void SourceView::process_pwd(string& pwd_output)
 	case XDB:
 	case DBX:		// 'PATH'
 	case JDB:
+	case BASH:
 	case PERL:
 	    if (pwd.contains('/', 0) && !pwd.contains(" "))
 	    {
@@ -4748,7 +4800,7 @@ void SourceView::find(const string& s,
 				 address, in_text, bp_nr))
 		line_nr = line_count;
 
-	    string occurrence = current_source(pos, matchlen);
+	    string occurrence = current_source.at(pos, matchlen);
 	    msg = "Found " + quote(occurrence) + " in " + line_of_cursor();
 	    if (wraps)
 		msg += " (wrapped)";
@@ -4847,6 +4899,7 @@ string SourceView::current_source_name()
     case DBX:
     case XDB:
     case PYDB:
+    case BASH:
     case PERL:
 	if (app_data.use_source_path)
 	{
@@ -5933,6 +5986,7 @@ static string cond_filter(const string& cmd)
 	// No conditions in JDB
 	break;
 
+    case BASH:
     case PERL:
     {
 	// FIXME
@@ -6878,6 +6932,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 
     switch (gdb->type())
     {
+    case BASH:
     case GDB:
 	// GDB frame output is caught by our routines.
 	gdb_command(gdb->frame_command(count - cbs->item_position));
@@ -7085,6 +7140,7 @@ void SourceView::process_frame(string& frame_output)
 	{
 	case GDB:
 	case PYDB:
+	case BASH:
 	    frame_nr = frame_output.after(0);
 	    break;
 
@@ -7166,6 +7222,7 @@ void SourceView::process_frame(int frame)
 	case DBX:
 	case JDB:
 	case PYDB:
+	case BASH:
 	case PERL:
 	    pos = count - frame;
 	    break;
@@ -7477,6 +7534,7 @@ void SourceView::process_threads(string& threads_output)
     case DBX:
     case XDB:
     case PYDB:
+    case BASH:
     case PERL:
     {
 	for (int i = 0; i < count; i++)
@@ -7521,6 +7579,7 @@ void SourceView::refresh_threads(bool all_threadgroups)
     case XDB:
     case PYDB:
     case PERL:
+    case BASH:
 	// No threads.
 	break;
     }
@@ -7822,7 +7881,7 @@ int SourceView::line_height(Widget text_w)
     if (!ok)
 	return 0;
 
-    string& text = current_text(text_w);
+    const string& text = current_text(text_w);
     XmTextPosition second = text.index('\n', top) + 1;
     Position second_x, second_y;
     ok = XmTextPosToXY(text_w, second, &second_x, &second_y);
@@ -9136,7 +9195,7 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
     if (num_params != 0 && *num_params == 1)
 	p = params[0];
     if (num_params != 0 && *num_params > 1)
-	cerr << "source-drop-glyph: too many parameters\n";
+	std::cerr << "source-drop-glyph: too many parameters\n";
     p.downcase();
 
     bool copy = false;
@@ -9145,7 +9204,7 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
     else if (p == "copy")
 	copy = true;
     else
-	cerr << "source-drop-glyph: unknown parameter " << quote(p) << "\n";
+	std::cerr << "source-drop-glyph: unknown parameter " << quote(p) << "\n";
 
     bool changed = false;
     if (current_drag_breakpoint)
@@ -9293,7 +9352,7 @@ static string first_address(const string& s)
     if (eol < 0)
 	eol = s.length();
 
-    string addr = ((string&)s).at(idx, eol - idx);
+    string addr = s.at(idx, eol - idx);
     return addr.through(rxaddress);
 }
 
@@ -9308,7 +9367,7 @@ static string last_address(const string& s)
     if (eol < 0)
 	eol = s.length();
 
-    string addr = ((string&)s).at(idx, eol - idx);
+    string addr = s.at(idx, eol - idx);
     return addr.through(rxaddress);
 }
 
@@ -9331,10 +9390,10 @@ void SourceView::set_code(const string& code,
 // Process output of `disassemble' command
 void SourceView::process_disassemble(const string& disassemble_output)
 {
-    int count             = ((string&)disassemble_output).freq('\n') + 1;
+    int count             = disassemble_output.freq('\n') + 1;
     string *code_list     = new string[count];
 
-    split((string &)disassemble_output, code_list, count, '\n');
+    split(disassemble_output, code_list, count, '\n');
 
     string indented_code;
     for (int i = 0; i < count; i++)
@@ -9695,7 +9754,7 @@ void SourceView::set_all_registers(bool set)
 
 
 // Some DBXes require `{ COMMAND; }', others `{ COMMAND }'.
-string SourceView::command_list(string cmd)
+string SourceView::command_list(const string& cmd)
 {
     if (gdb->has_when_semicolon())
 	return "{ " + cmd + "; }";
@@ -9733,7 +9792,7 @@ bool SourceView::have_selection()
 int SourceView::max_breakpoint_number = 99;
 
 // Return DDD commands to restore current state (breakpoints, etc.)
-bool SourceView::get_state(ostream& os)
+bool SourceView::get_state(std::ostream& os)
 {
     IntArray breakpoint_nrs;
     bool ok = true;
@@ -9781,6 +9840,7 @@ bool SourceView::get_state(ostream& os)
     case DBX:
     case JDB:
     case PERL:
+    case BASH:
 	break;			// FIXME
 
     case XDB:

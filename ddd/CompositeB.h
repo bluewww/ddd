@@ -91,7 +91,7 @@ protected:
     }
 
     // Dump
-    void dumpComposite(ostream& s, 
+    void dumpComposite(std::ostream& s, 
 	const char *sep = ", ", const char *head = "(", const char *tail = ") ") const;
 
     bool matches (const Box &, const Box * = 0) const;

@@ -104,7 +104,7 @@ VSLLib::VSLLib(const string& lib_name, unsigned optimizeMode)
 
 
 // Init VSL library and read from stream
-VSLLib::VSLLib(istream& i, unsigned optimizeMode)
+VSLLib::VSLLib(std::istream& i, unsigned optimizeMode)
     : _lib_name(""), _first(0), _last(0)
 {
     initHash();
@@ -221,13 +221,13 @@ const Box *VSLLib::eval(const string& func_name, ListBox *a) const
 
     if (VSEFlags::show_huge_eval)
     {
-	clog << func_name << *a;
+	std::clog << func_name << *a;
 	if (result)
-	    clog << " = " << *result;
+	    std::clog << " = " << *result;
 	else
-	    clog << " FAILS";
+	    std::clog << " FAILS";
 
-	clog << "\n";
+	std::clog << "\n";
     }
 
     return result;
@@ -331,7 +331,7 @@ void VSLLib::init_from(const VSLLib& lib)
     const VSLDef *d;
     for (d = lib._first; d != 0; d = d->libnext())
     {
-	// clog << "Adding: " << d->func_name() << "\n";
+	// std::clog << "Adding: " << d->func_name() << "\n";
 
 	add(d->deflist->func_name(),
 	    d->node_pattern() ? d->node_pattern()->dup() : 0,
@@ -592,8 +592,8 @@ int VSLLib::cleanup()
 	    if (VSEFlags::show_optimize)
 	    {
 		for (VSLDef *e = dflist->first(); e != 0; e = e->listnext())
-		    cout << "\n" << e->longname() << ": removed";
-		cout.flush();
+		    std::cout << "\n" << e->longname() << ": removed";
+		std::cout.flush();
 	    }
 
 	    // Find pointer from predecessor and have it point to the successor
@@ -740,7 +740,7 @@ void VSLLib::optimize(unsigned mode)
 // Debugging
 
 // Dump
-ostream& operator << (ostream& s, const VSLLib& lib)
+std::ostream& operator << (std::ostream& s, const VSLLib& lib)
 {
     s << "// " << lib._lib_name << "\n\n";
 
@@ -788,7 +788,7 @@ ostream& operator << (ostream& s, const VSLLib& lib)
 
 
 // ...as tree
-void VSLLib::dumpTree(ostream& s) const
+void VSLLib::dumpTree(std::ostream& s) const
 {
     bool old = StringBox::quoted;
     StringBox::quoted = true;

@@ -46,7 +46,7 @@ protected:
 	PrimitiveBox(box)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 
@@ -60,7 +60,7 @@ public:
 
     Box *dup() const { return new DiagBox(*this); }
 
-    virtual void _print(ostream&, 
+    virtual void _print(std::ostream&, 
 			const BoxRegion&, 
 			const PrintGC&) const
     {

@@ -53,7 +53,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2001-08-01
+@set DATE 31 March, 2003
 
 @c Index stuff
 @c Labels
@@ -85,7 +85,8 @@
     /Title (Debugging with DDD)
     /Author (Andreas Zeller)
     /Subject (DDD - the Data Display Debugger)
-    /Keywords (Debugging Debugger DDD GNU GDB DBX XDB JDB Ladebug WDB Python Perl)
+    /Keywords (Debugging Debugger DDD GNU GDB DBX XDB JDB Ladebug WDB 
+               Python Perl Bash)
 }
 @fi
 @end iftex
@@ -299,6 +300,7 @@ Inferior Debugger Options
 * JDB Options::                 
 * PYDB Options::                
 * Perl Options::                
+* Bash Options::                
 
 Persistent Sessions
 
@@ -331,6 +333,7 @@ Initializing the Inferior Debugger
 * JDB Initialization::          
 * PYDB Initialization::         
 * Perl Initialization::         
+* Bash Initialization::         
 * Finding a Place to Start::    
 * Opening the Selection::       
 
@@ -668,6 +671,7 @@ Configuration Notes
 * XDB::                         Using @DDD{} with @XDB{}
 * JDB::                         Using @DDD{} with @JDB{}
 * Perl::                        Using @DDD{} with Perl
+* Bash::                        Using @DDD{} with Bash
 * LessTif::                     Using @DDD{} with LessTif
 
 Using @value{DDD} with GDB
@@ -820,6 +824,14 @@ To debug @emph{Python programs}, you can use @DDD{} with
 @cindex Perl
 To debug @emph{Perl programs}, you can use @DDD{} with the @dfn{Perl
 debugger,} as of Perl 5.003 and later.
+
+@item
+@cindex Bash
+@cindex Bash
+To debug @emph{Bash programs}, you need a version Bash that supports
+extended debugging support. To get this enhanced version see
+@uref{http://bashdb.sourceforge.net}. You will need version
+2.05b-debugger-0.32 or later to work with @DDD{}.
 @end itemize
 
 @xref{Choosing an Inferior Debugger}, for choosing the appropriate
@@ -1029,6 +1041,13 @@ command tool.
 
 @item January, 2001
 @DDD{} 3.3: Data themes, JDB 1.2 support, VxWorks support.
+
+@item November, 2002
+@DDD{} 3.3.2: Bash support.
+
+@item March, 2003
+@DDD{} 3.3.3: Better Bash support. Compiles using modern tools thanks
+to Daniel Schepler.
 @end table
 
 
@@ -1548,8 +1567,9 @@ Normally, the inferior debugger is determined by the program to analyze:
 
 @itemize @bullet
 @item 
-If the program requires a specific interpreter, such as Java, Python, or
-Perl, then you should use a @JDB{}, @PYDB{}, or Perl inferior debugger.
+If the program requires a specific interpreter, such as Java, Python,
+Perl or Bash, then you should use a @JDB{}, @PYDB{}, Perl, or Bash
+inferior debugger.
 
 Use
 
@@ -1568,8 +1588,15 @@ Use
 @value{ddd} --perl @var{program}
 @end example
 
+@cindex Bash, invoking @DDD{} with
+@example
+@value{ddd} --bash @var{program}
+@value{ddd} --interpreter='@emph{path-to-debugger-bash} --debugger' @var{program}
+@end example
+
 @noindent
-to run @DDD{} with @JDB{}, @PYDB{}, or Perl as inferior debugger.
+to run @DDD{} with @JDB{}, @PYDB{}, Perl, or Bash as an inferior
+debugger.
 
 @item
 If the program is an executable binary, you should use @GDB{}, @DBX{},
@@ -2309,6 +2336,7 @@ different inferior debuggers supported by @DDD{}.
 * JDB Options::                 
 * PYDB Options::                
 * Perl Options::                
+* Bash Options::                
 @end menu
 
 @node GDB Options
@@ -2534,6 +2562,13 @@ enables several important warnings.  For further options, see the
 @cite{perlrun(1)} manual page.
 
 
+@node Bash Options
+@subsubsection Bash Options
+
+If you have the proper bash installed, the option needed to specify
+debugging support is @option{--debugger}. (If your bash doesn't
+understand this option you need to pick up a version of bash that does
+from @uref{http://bashdb.sourceforge.net}.) 
 
 @node Multiple Instances
 @subsection Multiple @value{DDD} Instances
@@ -3119,11 +3154,12 @@ resource regardless of @DDD{} arguments.
 
 @defvr Resource debugger (class Debugger)
 The type of the inferior debugger to invoke (@samp{gdb}, @samp{dbx},
-@samp{ladebug}, @samp{xdb}, @samp{jdb}, @samp{pydb}, or @samp{perl}).
+@samp{ladebug}, @samp{xdb}, @samp{jdb}, @samp{pydb}, @samp{perl}, or
+@samp{bash}).
 
 This resource is usually set through the @option{--gdb}, @option{--dbx},
-@option{--ladebug}, @option{--xdb}, @option{--jdb}, @option{--pydb}, and
-@option{--perl}, options; @xref{Options}, for details.
+@option{--ladebug}, @option{--xdb}, @option{--jdb}, @option{--pydb}, 
+@option{--perl}, and @option{--bash} options; @xref{Options}, for details.
 @end defvr
 
 @defvr Resource debuggerCommand (class DebuggerCommand)
@@ -3151,6 +3187,7 @@ inferior debugger (@pxref{Customizing}).
 * JDB Initialization::          
 * PYDB Initialization::         
 * Perl Initialization::         
+* Bash Initialization::         
 * Finding a Place to Start::    
 * Opening the Selection::       
 @end menu
@@ -3294,6 +3331,25 @@ This string contains a list of newline-separated commands that are
 also initially sent to the Perl debugger.  By default, it is empty.
 
 This resource is used by @DDD{} to save and restore Perl
+debugger settings.
+@end defvr
+
+
+@node Bash Initialization
+@subsubsection Bash Initialization
+
+@defvr Resource bashInitCommands (class InitCommands)
+This string contains a list of newline-separated commands that are
+initially sent to the Bash debugger.  By default, it is empty.
+
+This resource may be used to customize the Bash debugger.
+@end defvr
+
+@defvr Resource bash (class Settings)
+This string contains a list of newline-separated commands that are
+also initially sent to the Perl debugger.  By default, it is empty.
+
+This resource is used by @DDD{} to save and restore Bash
 debugger settings.
 @end defvr
 
@@ -3771,6 +3827,7 @@ for details.
 @lbindex JDB Console
 @lbindex PYDB Console
 @lbindex Perl Console
+@lbindex Bash Console
 Open the debugger console.  @xref{Commands}, for details.
 
 @item Source Window
@@ -4227,6 +4284,7 @@ Shows what's new in this @DDD{} release.
 @lbindex JDB Reference
 @lbindex PYDB Reference
 @lbindex Perl Reference
+@lbindex Bash Reference
 Shows the on-line documentation for the inferior debugger.
 
 @item @DDD{} License
@@ -4354,7 +4412,6 @@ conformant to the KDE style guide.  Note that this means that
 
 Some @DDD{} commands require an @emph{argument}.  This argument
 is specified in the @emph{argument field}, labeled @samp{():}.
-@lbindex ():
 Basically, there are four ways to set arguments:
 
 @itemize @bullet
@@ -4928,6 +4985,7 @@ Of course, you can always refer to the @emph{on-line documentation}:
 @lbindex JDB Reference
 @lbindex PYDB Reference
 @lbindex Perl Reference
+@lbindex Bash Reference
 @samp{Help @result{} Debugger Reference} shows you the
 on-line documentation of the inferior debugger.
 
@@ -5787,7 +5845,7 @@ information when you compile it.  This debugging information is stored
 in the object file; it describes the data type of each variable or
 function and the correspondence between source line numbers and
 addresses in the executable code.@footnote{If you use @DDD{} to
-debug Perl or Python scripts, then this section does not apply.}
+debug Perl, Python or Bash scripts, then this section does not apply.}
 
 To request debugging information, specify the @option{-g} option when you
 run the compiler.
@@ -5864,7 +5922,7 @@ directories.
 
 If a previous run of the program has crashed and you want to find out
 why, you can have @DDD{} examine its @dfn{core dump}.@footnote{@JDB{},
-@PYDB{}, and Perl do not support core dumps.}
+@PYDB{}, Perl, and Bash do not support core dumps.}
 
 @lbindex Open
 To open a core dump for the program, select @samp{File @result{} Open
@@ -6173,8 +6231,8 @@ enough place to display breakpoint locations.  Default: @code{0}.
 
 By default, @DDD{} uses a minimum indentation for script languages.
 @defvr Resource indentScript (class Indent)
-The minimum indentation for script languages, such as Perl and Python.
-Default: @code{4}.
+The minimum indentation for script languages, such as Perl, Python, and
+Bash.  Default: @code{4}.
 @end defvr
 
 The maximum width of line numbers is controlled by this resource.
@@ -7222,8 +7280,8 @@ executed in the console window.
 
 If the debugged program is already running in some process, you can
 @dfn{attach} to this process (instead of starting a new one with
-@samp{Run}).@footnote{@JDB{}, @PYDB{}, and Perl do not support attaching the
-debugger to running processes.}
+@samp{Run}).@footnote{@JDB{}, @PYDB{}, Perl, and Bash do not support
+attaching the debugger to running processes.}
 
 @lbindex Attach
 @lbindex Attach to Process
@@ -7442,8 +7500,8 @@ executed, in order to examine its execution in more detail.
 To set the execution position to the current location, use @samp{Set
 Execution Position} from the breakpoint popup menu.  This item is also
 accessible by pressing and holding the @samp{Break/Clear}
-button.@footnote{@JDB{}, @PYDB{}, and Perl do not support altering the
-execution position.}
+button.@footnote{@JDB{}, @PYDB{}, Perl, and Bash do not support
+altering the execution position.}
 
 @cindex Execution position, dragging
 As a quicker alternative, you can also press @emph{mouse button 1} on
@@ -9138,6 +9196,12 @@ A newline-separated list of display expressions to be included in the
 @samp{dbxDisplayShortcuts}, above.
 @end defvr
 
+@defvr Resource bashDisplayShortcuts (class DisplayShortcuts)
+A newline-separated list of display expressions to be included in the
+@samp{New Display} menu for Bash.  See the description of
+@samp{dbxDisplayShortcuts}, above.
+@end defvr
+
 @defvr Resource pydbDisplayShortcuts (class DisplayShortcuts)
 A newline-separated list of display expressions to be included in the
 @samp{New Display} menu for @PYDB{}.  See the description of
@@ -10493,10 +10557,11 @@ type in and edit these commands directly.
 
 In the @emph{debugger console}, you can interact with the command
 interface of the inferior debugger.  Enter commands at the
-@emph{debugger prompt}---that is, @samp{(gdb)} for @GDB{}, @samp{(dbx)} for
-@DBX{}, @samp{(ladebug)} for Ladebug, @samp{>} for @XDB{}, @samp{>} and
-@samp{@var{thread}[@var{depth}]} for @JDB{}, or @samp{(Pydb)} for @PYDB{}, or
-@samp{DB<>} for Perl.  You can use arbitrary debugger commands; use the
+@emph{debugger prompt}---that is, @samp{(gdb)} for @GDB{},
+@samp{(dbx)} for @DBX{}, @samp{(ladebug)} for Ladebug, @samp{>} for
+@XDB{}, @samp{>} and @samp{@var{thread}[@var{depth}]} for @JDB{}, or
+@samp{(Pydb)} for @PYDB{}, or @samp{DB<>} for Perl, or
+@samp{bashdb<>} for Bash.  You can use arbitrary debugger commands; use the
 @key{Return} key to enter them.
 
 @menu
@@ -12228,6 +12293,7 @@ on standard output.  Default is @samp{off}.  @xref{Options}, for the
 * XDB::                         Using @DDD{} with @XDB{}
 * JDB::                         Using @DDD{} with @JDB{}
 * Perl::                        Using @DDD{} with Perl
+* Bash::                        Using @DDD{} with Bash
 * LessTif::                     Using @DDD{} with LessTif
 @end menu
 
@@ -12240,6 +12306,7 @@ These settings with their correct values are:
 set height 0
 set width 0
 set verbose off
+set annotate 1
 set prompt (gdb) 
 @end example
 
@@ -12462,7 +12529,7 @@ output is likely to slow down @DDD{} considerably.  In such a
 case, have the program run with @option{-debug} in a separate window and
 attach @JDB{} to it using the @option{-passwd} option.
 
-@node  Perl
+@node Perl
 @section Using @value{DDD} with Perl
 
 There is no automatic data display in Perl.  As a workaround,
@@ -12470,6 +12537,33 @@ There is no automatic data display in Perl.  As a workaround,
 means that variable names are interpreted according to the current
 frame; variables outside the current frame cannot be displayed.
 
+
+@node Bash
+@section Using @value{DDD} with Bash
+
+@BASH{} support is rather new. As a programming language, @BASH{} is
+not feature rich: there are no record structures or hash tables (yet),
+no pointers, package variable scoping or methods. So much of the data
+display and visualization features of @value{DDD} are disabled.
+
+As with any scripting or interpreted language like Perl, stepping
+a machine-language instructions (commands Stepi/Nexti) doesn't exist. 
+
+Some @BASH{} settings are essential for @DDD{} to work correctly.
+These settings with their correct values are:
+
+@example
+set annotate 1
+set prompt set prompt bashdb$_Dbg_less$_Dbg_greater$_Dbg_space
+@end example
+
+@DDD{} sets these values automatically when invoking @BASH{}; if these
+values are changed, there may be some malfunctions.
+
+Pay special attention when the prompt has extra angle brackets (a
+nested shell) or has any parenthesis (is in a subshell). Quitting may
+merely exit out of one of these nested (sub)shells rather than leave
+the program.
 
 @node LessTif
 @section Using @value{DDD} with LessTif

@@ -59,7 +59,7 @@ char exectty_rcsid[] =
 #include "windows.h"
 #include "wm.h"
 
-#include <fstream.h>
+#include <fstream>
 #include <signal.h>
 #include <unistd.h>
 
@@ -216,7 +216,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     {
 	// We're already running.  Don't start a new tty
 	// if the old one is still running.
-	ostrstream os;
+	std::ostringstream os;
 	os << "kill -2 " << pid << " 2>/dev/null"
 	   << " || ( " << command << " )";
 	command = string(os);
@@ -237,7 +237,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 
 	if (reply.length() > 2)
 	{
-	    istrstream is(reply.chars());
+	    std::istringstream is(reply.chars());
 	    is >> ttyname >> pid >> term >> windowid;
 	}
 
@@ -482,6 +482,7 @@ static int gdb_set_tty(string tty_name = "",
 
     case XDB:
     case JDB:
+    case BASH:
     case PYDB:	// for now
 	// No way to set environment variables
 	break;
@@ -652,6 +653,9 @@ static void redirect_process(string& command,
     case JDB:
 	break;			// No redirection in JDB
 
+    case BASH:
+	break;			// No redirection in BASH (for now)
+
     case PYDB:
 	break;			// No redirection in PYDB (for now)
     }
@@ -776,7 +780,7 @@ static void initialize_tty(const string& tty_name, const string& tty_term)
     }
     else
     {
-	ofstream tty(tty_name.chars());
+	std::ofstream tty(tty_name.chars());
 	tty << init;
     }
 }
@@ -971,7 +975,7 @@ void kill_exec_tty(bool killed)
 
 	if (remote_gdb())
 	{
-	    ostrstream os;
+	    std::ostringstream os;
 	    os << "kill -" << SIGHUP << " " << separate_tty_pid 
 	       << " >/dev/null </dev/null 2>&1 &";
 	    Agent agent(sh_command(string(os)));

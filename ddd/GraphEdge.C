@@ -135,7 +135,7 @@ void GraphEdge::dequeue()
     
     
 
-ostream& operator << (ostream& s, GraphEdge& e)
+std::ostream& operator << (std::ostream& s, GraphEdge& e)
 {
     return s << "( " << *(e.from()) << " -> " << *(e.to()) << " )";
 }
@@ -253,7 +253,7 @@ static BoxPoint crosspoint (BoxRegion &region, BoxPoint &p)
 // drawEdge
 // 
 
-void GraphEdge::_print(ostream& os, const GraphGC &gc) const
+void GraphEdge::_print(std::ostream& os, const GraphGC &gc) const
 {
     // Don't print if we're hidden
     if (hidden())

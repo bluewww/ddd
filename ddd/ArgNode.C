@@ -34,7 +34,7 @@ char ArgNode_rcsid[] =
 #endif
 
 
-#include <strstream.h>
+#include <sstream>
 #include "assert.h"
 #include "VSLLib.h"
 #include "ArgNode.h"
@@ -61,7 +61,7 @@ const Box *ArgNode::_eval(ListBox *arglist) const
 
     if (box == 0)
     {
-	ostrstream os;
+	std::ostringstream os;
 	os << "arg" << _id << " cannot be isolated";
 	VSLLib::eval_error(os);
     }
@@ -70,13 +70,13 @@ const Box *ArgNode::_eval(ListBox *arglist) const
 }
 
 // Dump ArgNode
-void ArgNode::dump(ostream& s) const
+void ArgNode::dump(std::ostream& s) const
 {
     s << "arg" << _id;
 }
 
 // Dump as tree
-void ArgNode::_dumpTree(ostream& s) const
+void ArgNode::_dumpTree(std::ostream& s) const
 {
     s << _id;
 }

@@ -38,7 +38,7 @@
 // A DummyNode matches all other nodes if `DummyNode::matchesAll' is true.
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 
 #include "VSLNode.h"
 #include "Box.h"
@@ -55,7 +55,7 @@ protected:
 	VSLNode(node)
     {}
     
-    void dump(ostream& s) const
+    void dump(std::ostream& s) const
     {
 	s << "_";
     }

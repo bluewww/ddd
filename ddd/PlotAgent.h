@@ -40,7 +40,7 @@
 #include "PrintGC.h"
 #include "ChunkQueue.h"
 
-#include <fstream.h>
+#include <fstream>
 
 // Event types
 const unsigned Plot = LiterateAgent_NTypes;   // Plot data received
@@ -58,7 +58,7 @@ private:
     StringArray values;		// Scalars
 
     IntArray dims;		// Dimensions of scalars
-    ofstream plot_os;		// Stream used for adding data
+    std::ofstream plot_os;		// Stream used for adding data
     int ndim;			// Number of dimensions used so far
 
     double x_min, x_max;	// Minimum and maximum values

@@ -36,7 +36,7 @@ char ThemeManager_rcsid[] =
 #include "ThemeM.h"
 #include "string-fun.h"
 
-#include <iostream.h>
+#include <iostream>
 
 #ifndef LOG_THEMES
 #define LOG_THEMES 0
@@ -94,7 +94,7 @@ ThemeManager::ThemeManager(const string& rep)
     delete[] subs;
 }
 
-ostream& operator<<(ostream& os, const ThemeManager& t)
+std::ostream& operator<<(std::ostream& os, const ThemeManager& t)
 {
     for (StringThemePatternAssocIter i(t.map); i.ok(); i = i.next())
     {

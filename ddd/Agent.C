@@ -37,7 +37,7 @@ char Agent_rcsid[] =
 #include "config.h"
 #include "casts.h"
 
-#include <iostream.h>
+#include <iostream>
 
 #include <errno.h>
 #include <signal.h>
@@ -79,7 +79,7 @@ void Agent::defaultHandler(Agent *source, void *, void *call_data)
 {
     const string msg = STATIC_CAST(char *,call_data);
     if (msg != "Exit 0")
-	cerr << source->name() << ": " << msg << "\n";
+	std::cerr << source->name() << ": " << msg << "\n";
 }
 
 void Agent::addDefaultHandler(unsigned type)
@@ -100,7 +100,7 @@ void Agent::setRunning()
 #if 0
     Agent *agent = runningAgents.search(pid());
     if (agent != 0)
-	cerr << "Warning: Agent " << agent->name() << " started twice\n";
+	std::cerr << "Warning: Agent " << agent->name() << " started twice\n";
 #endif
 
     runningAgents += this;

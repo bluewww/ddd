@@ -126,7 +126,7 @@ public:
 };
 
 // I/O
-inline ostream& operator << (ostream& stream, const BoxExtend& extend)
+inline std::ostream& operator << (std::ostream& stream, const BoxExtend& extend)
 {
     const BoxPoint& p = extend;
     return operator << (stream, p);

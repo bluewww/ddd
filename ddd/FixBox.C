@@ -44,7 +44,7 @@ DEFINE_TYPE_INFO_1(VFixBox, FixBox)
 // HFixBox
 
 // Dump
-void HFixBox::dump(ostream& s) const
+void HFixBox::dump(std::ostream& s) const
 {
     s << "hfix(" << *_box << ")";
 }
@@ -53,7 +53,7 @@ void HFixBox::dump(ostream& s) const
 // VFixBox
 
 // Dump
-void VFixBox::dump(ostream& s) const
+void VFixBox::dump(std::ostream& s) const
 {
     s << "vfix(" << *_box << ")";
 }

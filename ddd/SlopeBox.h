@@ -75,7 +75,7 @@ protected:
 	SlopeBox(box)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
 public:
     RiseBox(BoxCoordinate linethickness = 1, const char *t = "RiseBox"):
@@ -86,7 +86,7 @@ public:
 
     Box *dup() const { return new RiseBox(*this); }
 
-    void _print(ostream& os, 
+    void _print(std::ostream& os, 
 		const BoxRegion& region, 
 		const PrintGC& gc) const;
 };
@@ -109,7 +109,7 @@ protected:
 	SlopeBox(box)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
 public:
     FallBox(BoxCoordinate linethickness = 1, const char *t = "FallBox"):
@@ -120,7 +120,7 @@ public:
 
     Box *dup() const { return new FallBox(*this); }
 
-    void _print(ostream& os, 
+    void _print(std::ostream& os, 
 		const BoxRegion& region, 
 		const PrintGC& gc) const;
 };

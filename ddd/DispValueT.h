@@ -33,7 +33,7 @@
 #pragma interface
 #endif
 
-#include <iostream.h>
+#include <iostream>
 
 // Various types of elements that can be read
 enum DispValueType {
@@ -48,7 +48,7 @@ enum DispValueType {
     Text			// Multi-line text.  Last member of a list.
 };
 
-ostream& operator<<(ostream& os, DispValueType type);
+std::ostream& operator<<(std::ostream& os, DispValueType type);
 
 #endif // _DDD_DispValueType_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

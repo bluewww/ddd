@@ -33,7 +33,7 @@ char ScrolledGraphEdit_rcsid[] =
 #pragma implementation
 #endif
 
-#include <iostream.h>
+#include <iostream>
 #include "ScrolleGEP.h"
 #include "GraphEdit.h"
 #include "verify.h"

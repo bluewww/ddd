@@ -47,7 +47,7 @@ protected:
 	HatBox(box)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
 public:
     FontFixBox(Box *box, const char *t = "FontFixBox"):

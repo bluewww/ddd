@@ -168,7 +168,7 @@ void DispBox::init_vsllib(void (*background)())
 		"#line 1 \"" Ddd_NAME "*vslDefs\"\n" +
 		vsllib_defs;
 
-	    istrstream is(defs.chars());
+	    std::istringstream is(defs.chars());
 	    vsllib_ptr->update(is);
 	    vsllib_ptr->optimize(VSEFlags::optimize_mode());
 	}

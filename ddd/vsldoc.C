@@ -80,7 +80,7 @@ string vsldoc(string file, const string& path)
     if (fp == 0)
 	return "";
 
-    ostrstream os;
+    std::ostringstream os;
     int c;
     while ((c = getc(fp)) != EOF)
 	os << (char)c;

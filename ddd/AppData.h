@@ -73,6 +73,8 @@
 #define XtNpydbSettings          "pydbSettings"
 #define XtNperlInitCommands      "perlInitCommands"
 #define XtNperlSettings          "perlSettings"
+#define XtNbashInitCommands      "bashInitCommands"
+#define XtNbashSettings          "bashSettings"
 #define XtNrestartCommands       "restartCommands"
 #define XtCInitCommands          "InitCommands"
 #define XtNsourceInitCommands    "sourceInitCommands"
@@ -125,6 +127,7 @@
 #define XtNjdbDisplayShortcuts   "jdbDisplayShortcuts"
 #define XtNpydbDisplayShortcuts  "pydbDisplayShortcuts"
 #define XtNperlDisplayShortcuts  "perlDisplayShortcuts"
+#define XtNbashDisplayShortcuts  "bashDisplayShortcuts"
 #define XtCDisplayShortcuts      "DisplayShortcuts"
 #define XtNconsoleButtons        "consoleButtons"
 #define XtNsourceButtons         "sourceButtons"
@@ -437,6 +440,8 @@ struct AppData {
     const _XtString    pydb_init_commands;
     const _XtString    pydb_settings;
     const _XtString    perl_init_commands;
+    const _XtString    bash_init_commands;
+    const _XtString    bash_settings;
     const _XtString    perl_settings;
     const _XtString    restart_commands;
     Boolean   source_init_commands;
@@ -470,6 +475,7 @@ struct AppData {
     const _XtString    jdb_display_shortcuts;
     const _XtString    pydb_display_shortcuts;
     const _XtString    perl_display_shortcuts;
+    const _XtString    bash_display_shortcuts;
     const _XtString    console_buttons;
     const _XtString    source_buttons;
     const _XtString    data_buttons;

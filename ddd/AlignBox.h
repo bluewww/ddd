@@ -123,7 +123,7 @@ protected:
 	AlignBox(box)
     {}
 
-    void dump(ostream& s) const { dumpComposite(s, " & "); }
+    void dump(std::ostream& s) const { dumpComposite(s, " & "); }
 
     virtual void _draw(Widget w, 
 		       const BoxRegion& r, 
@@ -143,7 +143,7 @@ public:
 
     void addSize(Box *b);
 
-    virtual void _print(ostream& os, 
+    virtual void _print(std::ostream& os, 
 			const BoxRegion& region, 
 			const PrintGC& gc) const;
 
@@ -176,7 +176,7 @@ protected:
 	AlignBox(box)
     {}
 
-    void dump(ostream& s) const { dumpComposite(s, " | "); }
+    void dump(std::ostream& s) const { dumpComposite(s, " | "); }
 
 public:
     VAlignBox(unsigned initialSize = 2, const char *t = "VAlignBox"):
@@ -188,7 +188,7 @@ public:
 
     void addSize(Box *b);
 
-    virtual void _print(ostream& os, 
+    virtual void _print(std::ostream& os, 
 			const BoxRegion& region, 
 			const PrintGC& gc) const;
 
@@ -218,7 +218,7 @@ protected:
 	AlignBox(box)
     {}
 
-    void dump(ostream& s) const { dumpComposite(s, " ^ "); }
+    void dump(std::ostream& s) const { dumpComposite(s, " ^ "); }
 
 public:
     UAlignBox(unsigned initialSize = 2, const char *t = "UAlignBox"):
@@ -230,7 +230,7 @@ public:
 
     void addSize(Box *b);
 
-    virtual void _print(ostream& os, 
+    virtual void _print(std::ostream& os, 
 			const BoxRegion& region, 
 			const PrintGC& gc) const;
 
@@ -260,7 +260,7 @@ protected:
 	AlignBox(box)
     {}
 
-    void dump(ostream& s) const { dumpComposite(s, " ~ "); }
+    void dump(std::ostream& s) const { dumpComposite(s, " ~ "); }
 
 public:
     TAlignBox(unsigned initialSize = 2, const char *t = "TAlignBox"):
@@ -272,7 +272,7 @@ public:
 
     void addSize(Box *b);
 
-    virtual void _print(ostream& os, 
+    virtual void _print(std::ostream& os, 
 			const BoxRegion& region, 
 			const PrintGC& gc) const;
 

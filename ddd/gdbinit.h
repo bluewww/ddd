@@ -50,7 +50,7 @@ struct DebuggerInfo {
     DebuggerType type;
     string arg;
 
-    DebuggerInfo(int argc, const char *argv[]);
+    DebuggerInfo(int argc, const char * const argv[]);
 };
 
 // Determine debugger type from given DEBUGGER_NAME

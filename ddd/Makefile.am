@@ -45,7 +45,7 @@ RM   = rm -f
 
 # Suffixes used in this file.
 SUFFIXES = .C .c .Y .L .txt .xbm .xbmxx .xpm .xpmxx \
-	   .xface .fig .eps .jpg .png .gif .pdf $(IMGEXT)
+	   .xface .fig .eps .jpg .png .gif .pdf $(IMGEXT) $(IMGEXT2)
 
 # Shared data installation
 dddrootdir    = $(pkgdatadir)-$(VERSION)
@@ -57,17 +57,19 @@ dddappdir     = $(pkgdatadir)-$(VERSION)/$(ddd)
 # -----------------------------------------------------------------------------
 
 # General-purpose utilities: strings, regexps, run-type type info...
-BASE_SOURCES = \
+BASE_SRC = \
 	assert.h     \
 	basename.C   \
 	basename.h   \
 	bool.h       \
+	casts.h      \
 	compare.C    \
 	compare.h    \
 	cook.C       \
 	cook.h       \
 	cwd.C        \
 	cwd.h        \
+	ddd.h        \
 	explicit.h   \
 	getrlimit.h  \
 	glob.C       \
@@ -113,7 +115,7 @@ BASE_SOURCES = \
 	UniqueId.h
 
 # Instantiated templates
-TEMPLATE_SOURCES = \
+TEMPLATE_SRC = \
 	Assoc.h      \
 	IntIntAA.C   \
 	IntIntAA.h   \
@@ -137,7 +139,7 @@ TEMPLATE_SOURCES = \
 
 # Interprocess communication
 # Top-level class is `Agent', declared in `Agent.h'
-AGENT_SOURCES = \
+AGENT_SRC = \
 	Agent.C      \
 	Agent.h      \
 	AgentM.C     \
@@ -161,7 +163,7 @@ AGENT_SOURCES = \
 
 # Miscellaneous utilities for X programs: Motif strings, hourglasses,
 # context-sensitive help...
-XSTUFF_SOURCES = \
+XSTUFF_SRC = \
 	charsets.C   \
 	charsets.h   \
 	converters.C \
@@ -205,7 +207,7 @@ XSTUFF_SOURCES = \
 	XErrorB.h
 
 # Same, but for Motif
-MSTUFF_SOURCES = \
+MSTUFF_SRC = \
 	freeXmST.C   \
 	freeXmST.h   \
 	LabelH.C     \
@@ -226,7 +228,7 @@ MSTUFF_SOURCES = \
 
 # Box library - rectangular composible graphical items
 # Top-level class is `Box', declared in `Box.h'
-BOX_SOURCES = \
+BOX_SRC = \
 	eps-code.h   \
 	printBox.C   \
 	printBox.h   \
@@ -290,7 +292,7 @@ BOX_SOURCES = \
 
 # VSL library - building boxes from structured data
 # Top-level class is `VSLLib', declared in `VSLLib.h'
-VSL_SOURCES = \
+VSL_SRC = \
 	ArgNode.C    \
 	ArgNode.h    \
 	BuiltinCN.C  \
@@ -335,7 +337,7 @@ VSL_SOURCES = \
 # Graph structure, graph layout and graph editor widget
 # Top-level classes are `Graph', declared in `Graph.h'
 # and the `GraphEdit' widget, declared in `GraphEdit.h'.
-GRAPH_SOURCES = \
+GRAPH_SRC = \
 	ArcGraphE.C  \
 	ArcGraphE.h  \
 	BoxEdgeA.C   \
@@ -381,7 +383,7 @@ GRAPH_SOURCES = \
 
 # The DDD application itself.  `ddd.C' is the main program, `SourceView.C'
 # is the source window, `DataDisp.C' is the data window.
-DDD_SOURCES = \
+DDD_SRC = \
 	annotation.C \
 	annotation.h \
 	args.C       \
@@ -478,8 +480,6 @@ DDD_SOURCES = \
 	show.h       \
 	simpleMenu.C \
 	simpleMenu.h \
-	configinfo.C \
-	configinfo.h \
 	source.C     \
 	source.h     \
 	status.C     \
@@ -539,6 +539,7 @@ DDD_SOURCES = \
 	DispValueA.h \
 	DispValueT.C \
 	DispValueT.h \
+	DynArray.h   \
 	EntryType.C  \
 	EntryType.h  \
 	GDBAgent.C   \
@@ -549,6 +550,8 @@ DDD_SOURCES = \
 	HistoryD.h   \
 	HistoryF.C   \
 	HistoryF.h   \
+	IntArray.h   \
+	Map.h        \
 	MinMaxA.C    \
 	MinMaxA.h    \
 	PlotAgent.C  \
@@ -581,6 +584,20 @@ DDD_SOURCES = \
 	WhatNextCB.C \
 	WhatNextCB.h
 
+# Automatically generated source files which should not be distributed.
+nodist_ddd_SOURCES = \
+	configinfo.C \
+	build.h      \
+	host.h       \
+	root.h       \
+	version.h    \
+	Ddd.ad.h
+
+# Make sure needed headers are built before trying to compile these files
+# (Assume ddd.C is the first source file to be built.)
+ddd.o: version.h host.h root.h
+resources.o: Ddd.ad.h
+show.o: build.h
 
 # -----------------------------------------------------------------------------
 # Local Libraries.
@@ -677,15 +694,15 @@ CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS) $(CXXSTUFF)
 bin_PROGRAMS = ddd
 noinst_PROGRAMS = stringify userinfo ctest cxxtest vsl
 ddd_SOURCES = ddd.C \
-	$(BASE_SOURCES) \
-	$(TEMPLATE_SOURCES) \
-	$(AGENT_SOURCES) \
-	$(XSTUFF_SOURCES) \
-	$(MSTUFF_SOURCES) \
-	$(BOX_SOURCES) \
-	$(VSL_SOURCES) \
-	$(GRAPH_SOURCES) \
-	$(DDD_SOURCES)
+	$(BASE_SRC) \
+	$(TEMPLATE_SRC) \
+	$(AGENT_SRC) \
+	$(XSTUFF_SRC) \
+	$(MSTUFF_SRC) \
+	$(BOX_SRC) \
+	$(VSL_SRC) \
+	$(GRAPH_SRC) \
+	$(DDD_SRC)
 
 stringify_SOURCES = stringify.C
 userinfo_SOURCES  = userinfo.C
@@ -694,20 +711,20 @@ cxxtest_SOURCES   = cxxtest.C
 vsl_SOURCES       = vsl.C \
 	DocSpace.c \
 	DocSpace.h \
-	$(BASE_SOURCES) \
-	$(TEMPLATE_SOURCES) \
-	$(AGENT_SOURCES) \
-	$(XSTUFF_SOURCES) \
-	$(MSTUFF_SOURCES) \
-	$(BOX_SOURCES) \
-	$(VSL_SOURCES)
+	DocSpaceP.h \
+	$(BASE_SRC) \
+	$(TEMPLATE_SRC) \
+	$(AGENT_SRC) \
+	$(XSTUFF_SRC) \
+	$(MSTUFF_SRC) \
+	$(BOX_SRC) \
+	$(VSL_SRC)
 
 cxxtest_LDADD = $(LIBM)
 ddd_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 vsl_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
 INCLUDES = -I$(srcdir)/.. $(X_INCLUDE)
-
 
 # -----------------------------------------------------------------------------
 # DDD Applocation Defaults.
@@ -764,7 +781,7 @@ $(vsldir)/ddd.vsl: $(srcdir)/ddd.vsl.m4 $(srcdir)/colors.m4
 		echo "include(srcdir()/ddd.vsl.m4)dnl" \
 	) | $(M4) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
-VSLSOURCES = \
+VSLSRC = \
 	$(vsldir)/std.vsl \
 	$(vsldir)/builtin.vsl \
 	$(vsldir)/tab.vsl \
@@ -772,13 +789,13 @@ VSLSOURCES = \
 	$(vsldir)/colors.vsl \
 	$(vsldir)/list.vsl
 
-$(srcdir)/ddd.vsl.h: $(vsldir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSOURCES)
+$(srcdir)/ddd.vsl.h: $(vsldir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSRC)
 	$(CAT) $(vsldir)/ddd.vsl > tmp.c
 	$(VSL_CPP) tmp.c | $(SED) -f $(srcdir)/vsl2c.sed | $(DELETE_CR) > $@
 	$(RM) tmp.c
 
 .PHONY: vsllib
-vsllib: $(vsldir)/ddd.vsl $(VSLSOURCES)
+vsllib: $(vsldir)/ddd.vsl $(VSLSRC)
 
 
 # -----------------------------------------------------------------------------
@@ -850,7 +867,7 @@ regexps.$(OBJEXT): rxscan.C
 # Reference.
 # ddd.info.txt does NOT depend on ddd.info since we don't want it to get
 # re-created after each configuration.
-$(srcdir)/ddd.info.txt: $(srcdir)/ddd.texi configure.in
+$(srcdir)/ddd.info.txt: $(srcdir)/ddd.texi $(srcdir)/../configure.ac
 	$(MAKE) ddd.info
 	info --subnodes -o - -f $(srcdir)/ddd.info | $(DELETE_CR) > $@~ \
 	    && $(MV) $@~ $@
@@ -1058,26 +1075,36 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 
 # Icons and logos.
 
+# The (derived) icons.
+# Icon directories
+icondir = $(top_srcdir)/icons
+buildicondir = $(top_builddir)/icons
+cursorsdir = $(icondir)/cursors
+glyphsdir = $(icondir)/glyphs
+tictactoedir = $(icondir)/tictactoe
+toolbardir = $(buildicondir)/toolbar
+
+
 .PHONY: icons
 icons:	$(ICONS)
 	@:
 
 # All X bitmaps are derived from the XPM sources.
 
-$(icondir)/dddmask.xpm: $(icondir)/ddd.xpm
+$(buildicondir)/dddmask.xpm: $(icondir)/ddd.xpm
 	$(SED) 's/[wW]hite/black/g' $(icondir)/ddd.xpm | $(DELETE_CR) > $@
 
-$(icondir)/ddd.xbm: $(icondir)/ddd.xpm
+$(buildicondir)/ddd.xbm: $(icondir)/ddd.xpm
 
-$(icondir)/ddd.xface: $(icondir)/ddd.xbm
+$(buildicondir)/ddd.xface: $(buildicondir)/ddd.xbm
 
-$(icondir)/dddmask.xbm: $(icondir)/dddmask.xpm
+$(buildicondir)/dddmask.xbm: $(icondir)/dddmask.xpm
 
 # Original filter for dddsplash to extract g4 info
 # $(SED) 's/[	 ][cmg][ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' | \
 #
 
-$(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
+$(buildicondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 	@$(ECHO) "Creating $@"
 	@-$(CAT) $(icondir)/dddsplash.xpm | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PNMGAMMA) 0.4 | $(PPMTOPGM) | \
@@ -1086,15 +1113,67 @@ $(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 	$(SED) "s/static char/static unsigned char/g" | $(DELETE_CR) > $@~
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
-$(icondir)/dddlogo.xpm: $(icondir)/dddsplash.xpm
-	$(CONVERT) -pen white \
+$(buildicondir)/dddlogo.xpm: $(icondir)/dddsplash.xpm
+	$(CONVERT) -fill white \
 	-draw 'rectangle 0,0 409,139' -draw 'rectangle 1,1 408,138' $< $@
 
 
-# The (derived) icons.
-# Icon directories
-icondir = $(srcdir)/../icons
-toolbardir = $(icondir)/toolbar
+XBM_GLYPH_ICONS = \
+	$(glyphsdir)/arrow.xbm \
+	$(glyphsdir)/cond.xbm \
+	$(glyphsdir)/dragarrow.xbm \
+	$(glyphsdir)/dragcond.xbm \
+	$(glyphsdir)/dragstop.xbm \
+	$(glyphsdir)/dragtemp.xbm \
+	$(glyphsdir)/greyarrow.xbm \
+	$(glyphsdir)/greycond.xbm \
+	$(glyphsdir)/greysignal.xbm \
+	$(glyphsdir)/greystop.xbm \
+	$(glyphsdir)/greytemp.xbm \
+	$(glyphsdir)/pastarrow.xbm \
+	$(glyphsdir)/signalarrow.xbm \
+	$(glyphsdir)/stop.xbm \
+	$(glyphsdir)/temp.xbm
+
+XBM_CURSORS_ICONS = \
+	$(cursorsdir)/time16.xbm \
+	$(cursorsdir)/time16m.xbm \
+	$(cursorsdir)/time32.xbm \
+	$(cursorsdir)/time32m.xbm
+
+XBM_TICTACTOE_ICONS = \
+	$(tictactoedir)/circle.xbm \
+	$(tictactoedir)/cross.xbm \
+	$(tictactoedir)/empty.xbm
+
+# XBM icons are derived from XPM sources
+XPM_ICONS = \
+	$(toolbardir)/breakat.xpm \
+	$(toolbardir)/clearat.xpm \
+	$(toolbardir)/cluster.xpm \
+	$(toolbardir)/delete.xpm \
+	$(toolbardir)/deref.xpm \
+	$(toolbardir)/disable.xpm \
+	$(toolbardir)/display.xpm \
+	$(toolbardir)/findbwd.xpm \
+	$(toolbardir)/findfwd.xpm \
+	$(toolbardir)/enable.xpm \
+	$(toolbardir)/hide.xpm \
+	$(toolbardir)/lookup.xpm \
+	$(toolbardir)/maketemp.xpm \
+	$(toolbardir)/newbreak.xpm \
+	$(toolbardir)/newdisplay.xpm \
+	$(toolbardir)/newwatch.xpm \
+	$(toolbardir)/plot.xpm \
+	$(toolbardir)/print.xpm \
+	$(toolbardir)/properties.xpm \
+	$(toolbardir)/rotate.xpm \
+	$(toolbardir)/set.xpm \
+	$(toolbardir)/show.xpm \
+	$(toolbardir)/uncluster.xpm \
+	$(toolbardir)/undisplay.xpm \
+	$(toolbardir)/unwatch.xpm \
+	$(toolbardir)/watch.xpm 
 
 # XBM icons are derived from XPM sources
 XBM_ICONS = \
@@ -1183,18 +1262,24 @@ XBM_XX_ICONS = \
 	$(toolbardir)/unwatch.xbmxx \
 	$(toolbardir)/watch.xbmxx
 
-# All derived icons
+# All icons
 # Order is significant here!  First sources, then derived files.
 ICONS = \
+	$(icondir)/ddd.xpm \
 	$(icondir)/ddd.xbm \
+	$(icondir)/dddback.xpm \
+	$(icondir)/dddmask.xpm \
 	$(icondir)/dddmask.xbm \
-	$(icondir)/dddsplash.xbm \
-	$(icondir)/ddd.xface \
+	$(icondir)/dddsplash.xpm \
+	$(buildicondir)/dddsplash.xbm \
+	$(buildicondir)/ddd.xface \
+	$(XPM_ICONS) \
+	$(XBM_CURSORS_ICONS) \
+	$(XBM_GLYPH_ICONS) \
+	$(XBM_TICTACTOE_ICONS) \
 	$(XBM_ICONS) \
 	$(XPM_XX_ICONS) \
 	$(XBM_XX_ICONS)
-
-
 
 # -----------------------------------------------------------------------------
 # DDD Manual.
@@ -1219,10 +1304,10 @@ $(srcdir)/config.texi: cfg.texi
 	( $(CAT) cfg.texi > $@~ && $(MV) $@~ $@ )
 
 $(srcdir)/gpl.texinfo: $(texidir)/gpl.texinfo
-	$(RM) $@; $(LN_S) $(texidir)/gpl.texinfo $@
+	$(RM) $@; cp $(texidir)/gpl.texinfo $@
 
 $(srcdir)/gfdl.texinfo: $(texidir)/gfdl.texinfo
-	$(RM) $@; $(LN_S) $(texidir)/gfdl.texinfo $@
+	$(RM) $@; cp $(texidir)/gfdl.texinfo $@
 
 ddd.dvi: $(PS_IMAGES) $(ddd_TEXINFOS)
 
@@ -1231,25 +1316,27 @@ ddd-themes.dvi: $(ddd_themes_TEXINFOS)
 
 # The DDD manual in PostScript format, including all pictures.
 
+docdir = $(srcdir)/../doc
+builddocdir = $(top_builddir)/doc
+
 .PHONY: ps
 ps: $(docdir)/ddd.ps $(docdir)/ddd-themes.ps
 
-$(docdir)/ddd.ps: ddd.dvi
+$(builddocdir)/ddd.ps: ddd.dvi
 	$(DVIPS) ddd.dvi -o $@
 
-$(docdir)/ddd-themes.ps: ddd-themes.dvi
+$(builddocdir)/ddd-themes.ps: ddd-themes.dvi
 	$(DVIPS) ddd-themes.dvi -o $@
-
 
 # The DDD manual in PDF format, including all pictures.
 
 .PHONY: pdf
-pdf: $(docdir)/ddd.pdf $(docdir)/ddd-themes.pdf
+pdf: $(builddocdir)/ddd.pdf $(builddocdir)/ddd-themes.pdf
 
-$(docdir)/ddd.pdf: ddd.pdf
+$(builddocdir)/ddd.pdf: ddd.pdf
 	$(INSTALL_DATA) ddd.pdf $@
 
-$(docdir)/ddd-themes.pdf: ddd-themes.pdf
+$(builddocdir)/ddd-themes.pdf: ddd-themes.pdf
 	$(INSTALL_DATA) ddd-themes.pdf $@
 
 ddd.pdf: $(PDF_IMAGES) $(ddd_TEXINFOS)
@@ -1260,8 +1347,7 @@ ddd-themes.pdf: $(ddd_themes_TEXINFOS)
 
 # The DDD manual in HTML format.
 
-docdir = $(srcdir)/../doc
-htmldir = $(docdir)/html
+htmldir = $(builddocdir)/html
 
 .PHONY: html
 html: $(htmldir)/ddd.html $(htmldir)/ddd-themes.html
@@ -1271,13 +1357,13 @@ $(htmldir)/ddd.html $(htmldir)/ddd-themes.html: \
 	style.css $(srcdir)/fix-html.sed
 	@-test -d $(htmldir) || mkdir $(htmldir)
 	@-test -d $(htmldir)/PICS || mkdir $(htmldir)/PICS
-	@-test -d PICS || $(LN_S) $(picdir) .
+	@-test -d PICS || mkdir PICS
 	$(RM) ddd*.html
-	$(MAKEINFO) --html -I $(srcdir) -I $(texidir) $(srcdir)/ddd-themes.texi
-	$(MAKEINFO) --html -I $(srcdir) -I $(texidir) $(srcdir)/ddd.texi
+	$(MAKEINFO) --html -I $(srcdir) -I $(texidir) $(srcdir)/ddd-themes.texi --no-split
+	$(MAKEINFO) --html -I $(srcdir) -I $(texidir) $(srcdir)/ddd.texi --no-split
 	for file in ddd*.html; do \
 		$(SED) -f $(srcdir)/fix-html.sed $$file | \
-		$(SED) 's/@IMGEXT@/\$(IMGEXT)/g' > $$file~ && \
+		$(SED) 's/$(IMGEXT)/\$(IMGEXT2)/g' > $$file~ && \
 		$(MV) $$file~ $$file; \
 	done
 	cd $(htmldir) && $(RM) ddd*.html style.css PICS/*
@@ -1303,7 +1389,8 @@ ddd.1:   ddd.man $(srcdir)/unumlaut.sed
 # -----------------------------------------------------------------------------
 
 # The image extension (.jpg, .png, or .gif)
-IMGEXT     = .jpg
+IMGEXT     = .png
+IMGEXT2    = .jpg
 
 # Width of image in HTML manual (pixels)
 IMAGE_WIDTH = 800
@@ -1328,9 +1415,6 @@ XPMTOPPM   = xpmtoppm
 # The ImageMagick `convert' program (convert)
 CONVERT    = convert
 
-# The face-generating program from the `compface' package.  (xbm2xface.pl)
-XBM2XFACE  = xbm2xface.pl
-
 # The epstopdf program.  (epstopdf)
 # Available from http://www.tug.org/applications/pdftex/epstopdf
 EPSTOPDF = epstopdf
@@ -1351,8 +1435,8 @@ FIG2PDF = $(FIG2DEV) -L pdf
 .eps.jpg:
 	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
 
-.eps.png:
-	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
+##.eps.png:
+##	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
 
 .eps.pdf:
 	$(EPSTOPDF) $< --outfile=$@
@@ -1366,344 +1450,350 @@ FIG2PDF = $(FIG2DEV) -L pdf
 # Our `texinfo.tex' must reside in the current directory, otherwise
 # texi2dvi will use the default.
 .texi.pdf:
-	@-test -d PICS || $(LN_S) $(picdir) .
+	@-test -d PICS || mkdir PICS
 	@-test -f texinfo.tex || $(LN_S) $(texidir)/texinfo.tex .
 	$(TEXI2PDF) --pdf -I $(srcdir) -I $(texidir) $<
 
 .texi.dvi:
-	@-test -d PICS || $(LN_S) $(picdir) .
+	@-test -d PICS || mkdir PICS
 	@-test -f texinfo.tex || $(LN_S) $(texidir)/texinfo.tex .
 	$(TEXI2DVI) -I $(srcdir) -I $(texidir) $<
+
+.dvi.ps:
+	test -d $(docdir) || mkdir $(docdir)
+	$(DVIPS) $< -o $@
+
 
 # PostScript pictures in the DDD manual.
 # All of these are generated from FIG and XPM files.
 picdir = $(srcdir)/PICS
+buildpicdir = $(top_builddir)/ddd/PICS
 PS_IMAGES = \
-	$(picdir)/disclaimer.eps           \
-	$(picdir)/dddlogo.eps		   \
-	$(picdir)/dddsplash.eps            \
-	$(picdir)/ddd-aliases.eps          \
-	$(picdir)/ddd-all.eps              \
-	$(picdir)/ddd-arguments.eps        \
-	$(picdir)/ddd-attach.eps           \
-	$(picdir)/ddd-backtrace.eps	   \
-	$(picdir)/ddd-bp-popup.eps         \
-	$(picdir)/ddd-bp-properties.eps    \
-	$(picdir)/ddd-button-editor.eps    \
-	$(picdir)/ddd-clusters.eps         \
-	$(picdir)/ddd-code.eps             \
-	$(picdir)/ddd-console.eps          \
-	$(picdir)/ddd-data-prefs.eps       \
-	$(picdir)/ddd-define-command.eps   \
-	$(picdir)/ddd-display.eps          \
-	$(picdir)/ddd-drag.eps             \
-	$(picdir)/ddd-edit-breakpoints.eps \
-	$(picdir)/ddd-edit-displays.eps    \
-	$(picdir)/ddd-examine.eps          \
-	$(picdir)/ddd-font-prefs.eps       \
-	$(picdir)/ddd-general-prefs.eps    \
-	$(picdir)/ddd-helpers.eps  	   \
-	$(picdir)/ddd-hide-display.eps     \
-	$(picdir)/ddd-history.eps          \
-	$(picdir)/ddd-layout.eps           \
-	$(picdir)/ddd-line-popup.eps       \
-	$(picdir)/ddd-locals.eps	   \
-	$(picdir)/ddd-open.eps             \
-	$(picdir)/ddd-open-session.eps     \
-	$(picdir)/ddd-plots.eps            \
-	$(picdir)/ddd-print-graph.eps      \
-	$(picdir)/ddd-print-output.eps     \
-	$(picdir)/ddd-print-popup.eps      \
-	$(picdir)/ddd-registers.eps        \
-	$(picdir)/ddd-repeats.eps          \
-	$(picdir)/ddd-rotate-display.eps   \
-	$(picdir)/ddd-save-session.eps     \
-	$(picdir)/ddd-select-display.eps   \
-	$(picdir)/ddd-separate.eps         \
-	$(picdir)/ddd-set.eps	           \
-	$(picdir)/ddd-settings.eps         \
-	$(picdir)/ddd-shortcuts.eps        \
-	$(picdir)/ddd-shortcut-editor.eps  \
-	$(picdir)/ddd-signals.eps          \
-	$(picdir)/ddd-source-popup.eps     \
-	$(picdir)/ddd-source-prefs.eps     \
-	$(picdir)/ddd-source.eps           \
-	$(picdir)/ddd-startup-prefs.eps    \
-	$(picdir)/ddd-status-displays.eps  \
-	$(picdir)/ddd-suppress.eps         \
-	$(picdir)/ddd-themes.eps           \
-	$(picdir)/ddd-threads.eps          \
-	$(picdir)/ddd-tool.eps             \
-	$(picdir)/ddd-toolbar.eps          \
-	$(picdir)/ddd-toolbars.eps         \
-	$(picdir)/ddd-value-tip.eps        \
-	$(picdir)/tut-backtrace.eps        \
-	$(picdir)/tut-display.eps          \
-	$(picdir)/tut-finish.eps           \
-	$(picdir)/tut-invoke.eps           \
-	$(picdir)/tut-run.eps              \
-	$(picdir)/tut-set.eps              \
-	$(picdir)/tut-value.eps
+	$(buildpicdir)/disclaimer.eps           \
+	$(buildpicdir)/dddback.eps		\
+	$(buildpicdir)/dddlogo.eps		\
+	$(buildpicdir)/dddsplash.eps            \
+	$(buildpicdir)/ddd-aliases.eps          \
+	$(buildpicdir)/ddd-all.eps              \
+	$(buildpicdir)/ddd-arguments.eps        \
+	$(buildpicdir)/ddd-attach.eps           \
+	$(buildpicdir)/ddd-backtrace.eps	\
+	$(buildpicdir)/ddd-bp-popup.eps         \
+	$(buildpicdir)/ddd-bp-properties.eps    \
+	$(buildpicdir)/ddd-button-editor.eps    \
+	$(buildpicdir)/ddd-clusters.eps         \
+	$(buildpicdir)/ddd-code.eps             \
+	$(buildpicdir)/ddd-console.eps          \
+	$(buildpicdir)/ddd-data-prefs.eps       \
+	$(buildpicdir)/ddd-define-command.eps   \
+	$(buildpicdir)/ddd-display.eps          \
+	$(buildpicdir)/ddd-drag.eps             \
+	$(buildpicdir)/ddd-edit-breakpoints.eps \
+	$(buildpicdir)/ddd-edit-displays.eps    \
+	$(buildpicdir)/ddd-examine.eps          \
+	$(buildpicdir)/ddd-font-prefs.eps       \
+	$(buildpicdir)/ddd-general-prefs.eps    \
+	$(buildpicdir)/ddd-helpers.eps  	\
+	$(buildpicdir)/ddd-hide-display.eps     \
+	$(buildpicdir)/ddd-history.eps          \
+	$(buildpicdir)/ddd-layout.eps           \
+	$(buildpicdir)/ddd-line-popup.eps       \
+	$(buildpicdir)/ddd-locals.eps	        \
+	$(buildpicdir)/ddd-open.eps             \
+	$(buildpicdir)/ddd-open-session.eps     \
+	$(buildpicdir)/ddd-plots.eps            \
+	$(buildpicdir)/ddd-print-graph.eps      \
+	$(buildpicdir)/ddd-print-output.eps     \
+	$(buildpicdir)/ddd-print-popup.eps      \
+	$(buildpicdir)/ddd-registers.eps        \
+	$(buildpicdir)/ddd-repeats.eps          \
+	$(buildpicdir)/ddd-rotate-display.eps   \
+	$(buildpicdir)/ddd-save-session.eps     \
+	$(buildpicdir)/ddd-select-display.eps   \
+	$(buildpicdir)/ddd-separate.eps         \
+	$(buildpicdir)/ddd-set.eps	        \
+	$(buildpicdir)/ddd-settings.eps         \
+	$(buildpicdir)/ddd-shortcuts.eps        \
+	$(buildpicdir)/ddd-shortcut-editor.eps  \
+	$(buildpicdir)/ddd-signals.eps          \
+	$(buildpicdir)/ddd-source-popup.eps     \
+	$(buildpicdir)/ddd-source-prefs.eps     \
+	$(buildpicdir)/ddd-source.eps           \
+	$(buildpicdir)/ddd-startup-prefs.eps    \
+	$(buildpicdir)/ddd-status-displays.eps  \
+	$(buildpicdir)/ddd-suppress.eps         \
+	$(buildpicdir)/ddd-themes.eps           \
+	$(buildpicdir)/ddd-threads.eps          \
+	$(buildpicdir)/ddd-tool.eps             \
+	$(buildpicdir)/ddd-toolbar.eps          \
+	$(buildpicdir)/ddd-toolbars.eps         \
+	$(buildpicdir)/ddd-value-tip.eps        \
+	$(buildpicdir)/tut-backtrace.eps        \
+	$(buildpicdir)/tut-display.eps          \
+	$(buildpicdir)/tut-finish.eps           \
+	$(buildpicdir)/tut-invoke.eps           \
+	$(buildpicdir)/tut-run.eps              \
+	$(buildpicdir)/tut-set.eps              \
+	$(buildpicdir)/tut-value.eps
 
 PDF_IMAGES = \
-	$(picdir)/disclaimer.pdf           \
-	$(picdir)/dddback.pdf		   \
-	$(picdir)/dddlogo.pdf              \
-	$(picdir)/dddsplash.pdf            \
-	$(picdir)/ddd-aliases.pdf          \
-	$(picdir)/ddd-all.pdf              \
-	$(picdir)/ddd-arguments.pdf        \
-	$(picdir)/ddd-attach.pdf           \
-	$(picdir)/ddd-backtrace.pdf	   \
-	$(picdir)/ddd-bp-popup.pdf         \
-	$(picdir)/ddd-bp-properties.pdf    \
-	$(picdir)/ddd-button-editor.pdf    \
-	$(picdir)/ddd-clusters.pdf         \
-	$(picdir)/ddd-code.pdf             \
-	$(picdir)/ddd-console.pdf          \
-	$(picdir)/ddd-data-prefs.pdf       \
-	$(picdir)/ddd-define-command.pdf   \
-	$(picdir)/ddd-display.pdf          \
-	$(picdir)/ddd-drag.pdf             \
-	$(picdir)/ddd-edit-breakpoints.pdf \
-	$(picdir)/ddd-edit-displays.pdf    \
-	$(picdir)/ddd-examine.pdf          \
-	$(picdir)/ddd-font-prefs.pdf       \
-	$(picdir)/ddd-general-prefs.pdf    \
-	$(picdir)/ddd-helpers.pdf  	   \
-	$(picdir)/ddd-hide-display.pdf     \
-	$(picdir)/ddd-history.pdf          \
-	$(picdir)/ddd-layout.pdf           \
-	$(picdir)/ddd-line-popup.pdf       \
-	$(picdir)/ddd-locals.pdf	   \
-	$(picdir)/ddd-open.pdf             \
-	$(picdir)/ddd-open-session.pdf     \
-	$(picdir)/ddd-plots.pdf            \
-	$(picdir)/ddd-print-graph.pdf      \
-	$(picdir)/ddd-print-output.pdf     \
-	$(picdir)/ddd-print-popup.pdf      \
-	$(picdir)/ddd-registers.pdf        \
-	$(picdir)/ddd-repeats.pdf          \
-	$(picdir)/ddd-rotate-display.pdf   \
-	$(picdir)/ddd-save-session.pdf     \
-	$(picdir)/ddd-select-display.pdf   \
-	$(picdir)/ddd-separate.pdf         \
-	$(picdir)/ddd-set.pdf	           \
-	$(picdir)/ddd-settings.pdf         \
-	$(picdir)/ddd-shortcuts.pdf        \
-	$(picdir)/ddd-shortcut-editor.pdf  \
-	$(picdir)/ddd-signals.pdf          \
-	$(picdir)/ddd-source-popup.pdf     \
-	$(picdir)/ddd-source-prefs.pdf     \
-	$(picdir)/ddd-source.pdf           \
-	$(picdir)/ddd-startup-prefs.pdf    \
-	$(picdir)/ddd-status-displays.pdf  \
-	$(picdir)/ddd-suppress.pdf         \
-	$(picdir)/ddd-themes.pdf           \
-	$(picdir)/ddd-threads.pdf          \
-	$(picdir)/ddd-tool.pdf             \
-	$(picdir)/ddd-toolbar.pdf          \
-	$(picdir)/ddd-toolbars.pdf         \
-	$(picdir)/ddd-value-tip.pdf        \
-	$(picdir)/tut-backtrace.pdf        \
-	$(picdir)/tut-display.pdf          \
-	$(picdir)/tut-finish.pdf           \
-	$(picdir)/tut-invoke.pdf           \
-	$(picdir)/tut-run.pdf              \
-	$(picdir)/tut-set.pdf              \
-	$(picdir)/tut-value.pdf
+	$(buildpicdir)/disclaimer.pdf           \
+	$(buildpicdir)/dddback.pdf		\
+	$(buildpicdir)/dddlogo.pdf              \
+	$(buildpicdir)/dddsplash.pdf            \
+	$(buildpicdir)/ddd-aliases.pdf          \
+	$(buildpicdir)/ddd-all.pdf              \
+	$(buildpicdir)/ddd-arguments.pdf        \
+	$(buildpicdir)/ddd-attach.pdf           \
+	$(buildpicdir)/ddd-backtrace.pdf	\
+	$(buildpicdir)/ddd-bp-popup.pdf         \
+	$(buildpicdir)/ddd-bp-properties.pdf    \
+	$(buildpicdir)/ddd-button-editor.pdf    \
+	$(buildpicdir)/ddd-clusters.pdf         \
+	$(buildpicdir)/ddd-code.pdf             \
+	$(buildpicdir)/ddd-console.pdf          \
+	$(buildpicdir)/ddd-data-prefs.pdf       \
+	$(buildpicdir)/ddd-define-command.pdf   \
+	$(buildpicdir)/ddd-display.pdf          \
+	$(buildpicdir)/ddd-drag.pdf             \
+	$(buildpicdir)/ddd-edit-breakpoints.pdf \
+	$(buildpicdir)/ddd-edit-displays.pdf    \
+	$(buildpicdir)/ddd-examine.pdf          \
+	$(buildpicdir)/ddd-font-prefs.pdf       \
+	$(buildpicdir)/ddd-general-prefs.pdf    \
+	$(buildpicdir)/ddd-helpers.pdf  	\
+	$(buildpicdir)/ddd-hide-display.pdf     \
+	$(buildpicdir)/ddd-history.pdf          \
+	$(buildpicdir)/ddd-layout.pdf           \
+	$(buildpicdir)/ddd-line-popup.pdf       \
+	$(buildpicdir)/ddd-locals.pdf	        \
+	$(buildpicdir)/ddd-open.pdf             \
+	$(buildpicdir)/ddd-open-session.pdf     \
+	$(buildpicdir)/ddd-plots.pdf            \
+	$(buildpicdir)/ddd-print-graph.pdf      \
+	$(buildpicdir)/ddd-print-output.pdf     \
+	$(buildpicdir)/ddd-print-popup.pdf      \
+	$(buildpicdir)/ddd-registers.pdf        \
+	$(buildpicdir)/ddd-repeats.pdf          \
+	$(buildpicdir)/ddd-rotate-display.pdf   \
+	$(buildpicdir)/ddd-save-session.pdf     \
+	$(buildpicdir)/ddd-select-display.pdf   \
+	$(buildpicdir)/ddd-separate.pdf         \
+	$(buildpicdir)/ddd-set.pdf	        \
+	$(buildpicdir)/ddd-settings.pdf         \
+	$(buildpicdir)/ddd-shortcuts.pdf        \
+	$(buildpicdir)/ddd-shortcut-editor.pdf  \
+	$(buildpicdir)/ddd-signals.pdf          \
+	$(buildpicdir)/ddd-source-popup.pdf     \
+	$(buildpicdir)/ddd-source-prefs.pdf     \
+	$(buildpicdir)/ddd-source.pdf           \
+	$(buildpicdir)/ddd-startup-prefs.pdf    \
+	$(buildpicdir)/ddd-status-displays.pdf  \
+	$(buildpicdir)/ddd-suppress.pdf         \
+	$(buildpicdir)/ddd-themes.pdf           \
+	$(buildpicdir)/ddd-threads.pdf          \
+	$(buildpicdir)/ddd-tool.pdf             \
+	$(buildpicdir)/ddd-toolbar.pdf          \
+	$(buildpicdir)/ddd-toolbars.pdf         \
+	$(buildpicdir)/ddd-value-tip.pdf        \
+	$(buildpicdir)/tut-backtrace.pdf        \
+	$(buildpicdir)/tut-display.pdf          \
+	$(buildpicdir)/tut-finish.pdf           \
+	$(buildpicdir)/tut-invoke.pdf           \
+	$(buildpicdir)/tut-run.pdf              \
+	$(buildpicdir)/tut-set.pdf              \
+	$(buildpicdir)/tut-value.pdf
 
 HTML_IMAGES = \
-	$(picdir)/disclaimer$(IMGEXT)           \
-	$(picdir)/dddback$(IMGEXT)		\
-	$(picdir)/dddlogo$(IMGEXT)              \
-	$(picdir)/dddsplash$(IMGEXT)            \
-	$(picdir)/ddd-aliases$(IMGEXT)          \
-	$(picdir)/ddd-all$(IMGEXT)              \
-	$(picdir)/ddd-arguments$(IMGEXT)        \
-	$(picdir)/ddd-attach$(IMGEXT)           \
-	$(picdir)/ddd-backtrace$(IMGEXT)	\
-	$(picdir)/ddd-bp-popup$(IMGEXT)         \
-	$(picdir)/ddd-bp-properties$(IMGEXT)    \
-	$(picdir)/ddd-button-editor$(IMGEXT)    \
-	$(picdir)/ddd-clusters$(IMGEXT)         \
-	$(picdir)/ddd-code$(IMGEXT)             \
-	$(picdir)/ddd-console$(IMGEXT)          \
-	$(picdir)/ddd-data-prefs$(IMGEXT)       \
-	$(picdir)/ddd-define-command$(IMGEXT)   \
-	$(picdir)/ddd-display$(IMGEXT)          \
-	$(picdir)/ddd-drag$(IMGEXT)             \
-	$(picdir)/ddd-edit-breakpoints$(IMGEXT) \
-	$(picdir)/ddd-edit-displays$(IMGEXT)    \
-	$(picdir)/ddd-examine$(IMGEXT)          \
-	$(picdir)/ddd-font-prefs$(IMGEXT)       \
-	$(picdir)/ddd-general-prefs$(IMGEXT)    \
-	$(picdir)/ddd-helpers$(IMGEXT)  	\
-	$(picdir)/ddd-hide-display$(IMGEXT)     \
-	$(picdir)/ddd-history$(IMGEXT)          \
-	$(picdir)/ddd-layout$(IMGEXT)           \
-	$(picdir)/ddd-line-popup$(IMGEXT)       \
-	$(picdir)/ddd-locals$(IMGEXT)	        \
-	$(picdir)/ddd-open$(IMGEXT)             \
-	$(picdir)/ddd-open-session$(IMGEXT)     \
-	$(picdir)/ddd-plots$(IMGEXT)            \
-	$(picdir)/ddd-print-graph$(IMGEXT)      \
-	$(picdir)/ddd-print-output$(IMGEXT)     \
-	$(picdir)/ddd-print-popup$(IMGEXT)      \
-	$(picdir)/ddd-registers$(IMGEXT)        \
-	$(picdir)/ddd-repeats$(IMGEXT)          \
-	$(picdir)/ddd-rotate-display$(IMGEXT)   \
-	$(picdir)/ddd-save-session$(IMGEXT)     \
-	$(picdir)/ddd-select-display$(IMGEXT)   \
-	$(picdir)/ddd-separate$(IMGEXT)         \
-	$(picdir)/ddd-set$(IMGEXT)	        \
-	$(picdir)/ddd-settings$(IMGEXT)         \
-	$(picdir)/ddd-shortcuts$(IMGEXT)        \
-	$(picdir)/ddd-shortcut-editor$(IMGEXT)  \
-	$(picdir)/ddd-signals$(IMGEXT)          \
-	$(picdir)/ddd-source-popup$(IMGEXT)     \
-	$(picdir)/ddd-source-prefs$(IMGEXT)     \
-	$(picdir)/ddd-source$(IMGEXT)           \
-	$(picdir)/ddd-startup-prefs$(IMGEXT)    \
-	$(picdir)/ddd-status-displays$(IMGEXT)  \
-	$(picdir)/ddd-suppress$(IMGEXT)         \
-	$(picdir)/ddd-tool$(IMGEXT)             \
-	$(picdir)/ddd-toolbar$(IMGEXT)          \
-	$(picdir)/ddd-toolbars$(IMGEXT)         \
-	$(picdir)/ddd-themes$(IMGEXT)           \
-	$(picdir)/ddd-threads$(IMGEXT)          \
-	$(picdir)/ddd-value-tip$(IMGEXT)        \
-	$(picdir)/tut-backtrace$(IMGEXT)        \
-	$(picdir)/tut-display$(IMGEXT)          \
-	$(picdir)/tut-finish$(IMGEXT)           \
-	$(picdir)/tut-invoke$(IMGEXT)           \
-	$(picdir)/tut-run$(IMGEXT)              \
-	$(picdir)/tut-set$(IMGEXT)              \
-	$(picdir)/tut-value$(IMGEXT)
+	$(buildpicdir)/disclaimer$(IMGEXT2)           \
+	$(buildpicdir)/dddback$(IMGEXT2)	      \
+	$(buildpicdir)/dddlogo$(IMGEXT2)              \
+	$(buildpicdir)/dddsplash$(IMGEXT2)            \
+	$(buildpicdir)/ddd-aliases$(IMGEXT2)          \
+	$(buildpicdir)/ddd-all$(IMGEXT2)              \
+	$(buildpicdir)/ddd-arguments$(IMGEXT2)        \
+	$(buildpicdir)/ddd-attach$(IMGEXT2)           \
+	$(buildpicdir)/ddd-backtrace$(IMGEXT2)	      \
+	$(buildpicdir)/ddd-bp-popup$(IMGEXT2)         \
+	$(buildpicdir)/ddd-bp-properties$(IMGEXT2)    \
+	$(buildpicdir)/ddd-button-editor$(IMGEXT2)    \
+	$(buildpicdir)/ddd-clusters$(IMGEXT2)         \
+	$(buildpicdir)/ddd-code$(IMGEXT2)             \
+	$(buildpicdir)/ddd-console$(IMGEXT2)          \
+	$(buildpicdir)/ddd-data-prefs$(IMGEXT2)       \
+	$(buildpicdir)/ddd-define-command$(IMGEXT2)   \
+	$(buildpicdir)/ddd-display$(IMGEXT2)          \
+	$(buildpicdir)/ddd-drag$(IMGEXT2)             \
+	$(buildpicdir)/ddd-edit-breakpoints$(IMGEXT2) \
+	$(buildpicdir)/ddd-edit-displays$(IMGEXT2)    \
+	$(buildpicdir)/ddd-examine$(IMGEXT2)          \
+	$(buildpicdir)/ddd-font-prefs$(IMGEXT2)       \
+	$(buildpicdir)/ddd-general-prefs$(IMGEXT2)    \
+	$(buildpicdir)/ddd-helpers$(IMGEXT2)  	     \
+	$(buildpicdir)/ddd-hide-display$(IMGEXT2)     \
+	$(buildpicdir)/ddd-history$(IMGEXT2)          \
+	$(buildpicdir)/ddd-layout$(IMGEXT2)           \
+	$(buildpicdir)/ddd-line-popup$(IMGEXT2)       \
+	$(buildpicdir)/ddd-locals$(IMGEXT2)	     \
+	$(buildpicdir)/ddd-open$(IMGEXT2)             \
+	$(buildpicdir)/ddd-open-session$(IMGEXT2)     \
+	$(buildpicdir)/ddd-plots$(IMGEXT2)            \
+	$(buildpicdir)/ddd-print-graph$(IMGEXT2)      \
+	$(buildpicdir)/ddd-print-output$(IMGEXT2)     \
+	$(buildpicdir)/ddd-print-popup$(IMGEXT2)      \
+	$(buildpicdir)/ddd-registers$(IMGEXT2)        \
+	$(buildpicdir)/ddd-repeats$(IMGEXT2)          \
+	$(buildpicdir)/ddd-rotate-display$(IMGEXT2)   \
+	$(buildpicdir)/ddd-save-session$(IMGEXT2)     \
+	$(buildpicdir)/ddd-select-display$(IMGEXT2)   \
+	$(buildpicdir)/ddd-separate$(IMGEXT2)         \
+	$(buildpicdir)/ddd-set$(IMGEXT2)	             \
+	$(buildpicdir)/ddd-settings$(IMGEXT2)         \
+	$(buildpicdir)/ddd-shortcuts$(IMGEXT2)        \
+	$(buildpicdir)/ddd-shortcut-editor$(IMGEXT2)  \
+	$(buildpicdir)/ddd-signals$(IMGEXT2)          \
+	$(buildpicdir)/ddd-source-popup$(IMGEXT2)     \
+	$(buildpicdir)/ddd-source-prefs$(IMGEXT2)     \
+	$(buildpicdir)/ddd-source$(IMGEXT2)           \
+	$(buildpicdir)/ddd-startup-prefs$(IMGEXT2)    \
+	$(buildpicdir)/ddd-status-displays$(IMGEXT2)  \
+	$(buildpicdir)/ddd-suppress$(IMGEXT2)         \
+	$(buildpicdir)/ddd-tool$(IMGEXT2)             \
+	$(buildpicdir)/ddd-toolbar$(IMGEXT2)          \
+	$(buildpicdir)/ddd-toolbars$(IMGEXT2)         \
+	$(buildpicdir)/ddd-themes$(IMGEXT2)           \
+	$(buildpicdir)/ddd-threads$(IMGEXT2)          \
+	$(buildpicdir)/ddd-value-tip$(IMGEXT2)        \
+	$(buildpicdir)/tut-backtrace$(IMGEXT2)        \
+	$(buildpicdir)/tut-display$(IMGEXT2)          \
+	$(buildpicdir)/tut-finish$(IMGEXT2)           \
+	$(buildpicdir)/tut-invoke$(IMGEXT2)           \
+	$(buildpicdir)/tut-run$(IMGEXT2)              \
+	$(buildpicdir)/tut-set$(IMGEXT2)              \
+	$(buildpicdir)/tut-value$(IMGEXT2)
 
 # All derived pictures
 IMAGES = $(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
 
-
 # Included pictures
 
-$(picdir)/ddd-all.eps: \
-	$(picdir)/ddd-all.fig $(picdir)/ddd-all.xpm
-$(picdir)/ddd-console.eps: \
-	$(picdir)/ddd-console.fig $(picdir)/ddd-console.xpm
-$(picdir)/ddd-history.eps: \
-	$(picdir)/ddd-history.fig $(picdir)/ddd-history.xpm
-$(picdir)/ddd-open.eps: \
-	$(picdir)/ddd-open.fig $(picdir)/ddd-open.xpm
-$(picdir)/ddd-source.eps: \
-	$(picdir)/ddd-source.fig $(picdir)/ddd-source.xpm
-$(picdir)/ddd-line-popup.eps: \
-	$(picdir)/ddd-line-popup.fig $(picdir)/ddd-line-popup.xpm
-$(picdir)/ddd-bp-popup.eps: \
-	$(picdir)/ddd-bp-popup.fig $(picdir)/ddd-bp-popup.xpm
-$(picdir)/ddd-source-popup.eps: \
-	$(picdir)/ddd-source-popup.fig $(picdir)/ddd-source-popup.xpm
-$(picdir)/ddd-arguments.eps: \
-	$(picdir)/ddd-arguments.fig $(picdir)/ddd-arguments.xpm
-$(picdir)/ddd-tool.eps: \
-	$(picdir)/ddd-tool.fig $(picdir)/ddd-tool.xpm
-$(picdir)/ddd-backtrace.eps: \
-	$(picdir)/ddd-backtrace.fig $(picdir)/ddd-backtrace.xpm
-$(picdir)/ddd-value-tip.eps: \
-	$(picdir)/ddd-value-tip.fig $(picdir)/ddd-value-tip.xpm
-$(picdir)/ddd-print-popup.eps: \
-	$(picdir)/ddd-print-popup.fig $(picdir)/ddd-print-popup.xpm
-$(picdir)/ddd-select-display.eps: \
-	$(picdir)/ddd-select-display.fig $(picdir)/ddd-select-display.xpm
-$(picdir)/ddd-hide-display.eps: \
-	$(picdir)/ddd-hide-display.fig $(picdir)/ddd-hide-display.xpm
-$(picdir)/ddd-rotate-display.eps: \
-	$(picdir)/ddd-rotate-display.fig $(picdir)/ddd-rotate-display.xpm
-$(picdir)/ddd-locals.eps: \
-	$(picdir)/ddd-locals.fig $(picdir)/ddd-locals.xpm
-$(picdir)/ddd-status-displays.eps: \
-	$(picdir)/ddd-status-displays.fig $(picdir)/ddd-status-displays.xpm
-$(picdir)/ddd-set.eps: \
-	$(picdir)/ddd-set.fig $(picdir)/ddd-set.xpm
-$(picdir)/ddd-layout.eps: \
-	$(picdir)/ddd-layout.fig $(picdir)/ddd-layout.xpm
-$(picdir)/ddd-print-graph.eps: \
-	$(picdir)/ddd-print-graph.fig $(picdir)/ddd-print-graph.xpm
-$(picdir)/ddd-print-output.eps: \
+$(buildpicdir)/ddd-all.eps: \
+	$(picdir)/ddd-all.fig $(picdir)/ddd-all.png
+$(buildpicdir)/ddd-console.eps: \
+	$(picdir)/ddd-console.fig $(picdir)/ddd-console.png
+$(buildpicdir)/ddd-history.eps: \
+	$(picdir)/ddd-history.fig $(picdir)/ddd-history.png
+$(buildpicdir)/ddd-open.eps: \
+	$(picdir)/ddd-open.fig $(picdir)/ddd-open.png
+$(buildpicdir)/ddd-source.eps: \
+	$(picdir)/ddd-source.fig $(picdir)/ddd-source.png
+$(buildpicdir)/ddd-line-popup.eps: \
+	$(picdir)/ddd-line-popup.fig $(picdir)/ddd-line-popup.png
+$(buildpicdir)/ddd-bp-popup.eps: \
+	$(picdir)/ddd-bp-popup.fig $(picdir)/ddd-bp-popup.png
+$(buildpicdir)/ddd-source-popup.eps: \
+	$(picdir)/ddd-source-popup.fig $(picdir)/ddd-source-popup.png
+$(buildpicdir)/ddd-arguments.eps: \
+	$(picdir)/ddd-arguments.fig $(picdir)/ddd-arguments.png
+$(buildpicdir)/ddd-tool.eps: \
+	$(picdir)/ddd-tool.fig $(picdir)/ddd-tool.png
+$(buildpicdir)/ddd-backtrace.eps: \
+	$(picdir)/ddd-backtrace.fig $(picdir)/ddd-backtrace.png
+$(buildpicdir)/ddd-value-tip.eps: \
+	$(picdir)/ddd-value-tip.fig $(picdir)/ddd-value-tip.png
+$(buildpicdir)/ddd-print-popup.eps: \
+	$(picdir)/ddd-print-popup.fig $(picdir)/ddd-print-popup.png
+$(buildpicdir)/ddd-select-display.eps: \
+	$(picdir)/ddd-select-display.fig $(picdir)/ddd-select-display.png
+$(buildpicdir)/ddd-hide-display.eps: \
+	$(picdir)/ddd-hide-display.fig $(picdir)/ddd-hide-display.png
+$(buildpicdir)/ddd-rotate-display.eps: \
+	$(picdir)/ddd-rotate-display.fig $(picdir)/ddd-rotate-display.png
+$(buildpicdir)/ddd-locals.eps: \
+	$(picdir)/ddd-locals.fig $(picdir)/ddd-locals.png
+$(buildpicdir)/ddd-status-displays.eps: \
+	$(picdir)/ddd-status-displays.fig $(picdir)/ddd-status-displays.png
+$(buildpicdir)/ddd-set.eps: \
+	$(picdir)/ddd-set.fig $(picdir)/ddd-set.png
+$(buildpicdir)/ddd-layout.eps: \
+	$(picdir)/ddd-layout.fig $(picdir)/ddd-layout.png
+$(buildpicdir)/ddd-print-graph.eps: \
+	$(picdir)/ddd-print-graph.fig $(picdir)/ddd-print-graph.png
+$(buildpicdir)/ddd-print-output.eps: \
 	$(picdir)/ddd-print-output.fig $(picdir)/ddd-graph.ps
-$(picdir)/ddd-code.eps: \
-	$(picdir)/ddd-code.fig $(picdir)/ddd-code.xpm
-$(picdir)/ddd-registers.eps: \
-	$(picdir)/ddd-registers.fig $(picdir)/ddd-registers.xpm
-$(picdir)/ddd-general-prefs.eps: \
-	$(picdir)/ddd-general-prefs.fig $(picdir)/ddd-general-prefs.xpm 
-$(picdir)/ddd-helpers.eps: \
-	$(picdir)/ddd-helpers.fig $(picdir)/ddd-helpers.xpm 
-$(picdir)/ddd-source-prefs.eps: \
-	$(picdir)/ddd-source-prefs.fig $(picdir)/ddd-source-prefs.xpm
-$(picdir)/ddd-data-prefs.eps: \
-	$(picdir)/ddd-data-prefs.fig $(picdir)/ddd-data-prefs.xpm
-$(picdir)/ddd-startup-prefs.eps: \
-	$(picdir)/ddd-startup-prefs.fig $(picdir)/ddd-startup-prefs.xpm
-$(picdir)/ddd-settings.eps: \
-	$(picdir)/ddd-settings.fig $(picdir)/ddd-settings.xpm
-$(picdir)/ddd-threads.eps: \
-	$(picdir)/ddd-threads.fig $(picdir)/ddd-threads.xpm
-$(picdir)/ddd-aliases.eps: \
-	$(picdir)/ddd-aliases.fig $(picdir)/ddd-aliases.xpm
-$(picdir)/ddd-edit-displays.eps: \
-	$(picdir)/ddd-edit-displays.fig $(picdir)/ddd-edit-displays.xpm
-$(picdir)/ddd-attach.eps: \
-	$(picdir)/ddd-attach.fig $(picdir)/ddd-attach.xpm
-$(picdir)/ddd-save-session.eps: \
-	$(picdir)/ddd-save-session.fig $(picdir)/ddd-save-session.xpm
-$(picdir)/ddd-open-session.eps: \
-	$(picdir)/ddd-open-session.fig $(picdir)/ddd-open-session.xpm
-$(picdir)/ddd-button-editor.eps: \
-	$(picdir)/ddd-button-editor.fig $(picdir)/ddd-button-editor.xpm
-$(picdir)/ddd-shortcuts.eps: \
-	$(picdir)/ddd-shortcuts.fig $(picdir)/ddd-shortcuts.xpm
-$(picdir)/ddd-shortcut-editor.eps: \
-	$(picdir)/ddd-shortcut-editor.fig $(picdir)/ddd-shortcut-editor.xpm
-$(picdir)/ddd-drag.eps: \
+$(buildpicdir)/ddd-code.eps: \
+	$(picdir)/ddd-code.fig $(picdir)/ddd-code.png
+$(buildpicdir)/ddd-registers.eps: \
+	$(picdir)/ddd-registers.fig $(picdir)/ddd-registers.png
+$(buildpicdir)/ddd-general-prefs.eps: \
+	$(picdir)/ddd-general-prefs.fig $(picdir)/ddd-general-prefs.png 
+$(buildpicdir)/ddd-helpers.eps: \
+	$(picdir)/ddd-helpers.fig $(picdir)/ddd-helpers.png 
+$(buildpicdir)/ddd-source-prefs.eps: \
+	$(picdir)/ddd-source-prefs.fig $(picdir)/ddd-source-prefs.png
+$(buildpicdir)/ddd-data-prefs.eps: \
+	$(picdir)/ddd-data-prefs.fig $(picdir)/ddd-data-prefs.png
+$(buildpicdir)/ddd-startup-prefs.eps: \
+	$(picdir)/ddd-startup-prefs.fig $(picdir)/ddd-startup-prefs.png
+$(buildpicdir)/ddd-settings.eps: \
+	$(picdir)/ddd-settings.fig $(picdir)/ddd-settings.png
+$(buildpicdir)/ddd-threads.eps: \
+	$(picdir)/ddd-threads.fig $(picdir)/ddd-threads.png
+$(buildpicdir)/ddd-aliases.eps: \
+	$(picdir)/ddd-aliases.fig $(picdir)/ddd-aliases.png
+$(buildpicdir)/ddd-edit-displays.eps: \
+	$(picdir)/ddd-edit-displays.fig $(picdir)/ddd-edit-displays.png
+$(buildpicdir)/ddd-attach.eps: \
+	$(picdir)/ddd-attach.fig $(picdir)/ddd-attach.png
+$(buildpicdir)/ddd-save-session.eps: \
+	$(picdir)/ddd-save-session.fig $(picdir)/ddd-save-session.png
+$(buildpicdir)/ddd-open-session.eps: \
+	$(picdir)/ddd-open-session.fig $(picdir)/ddd-open-session.png
+$(buildpicdir)/ddd-button-editor.eps: \
+	$(picdir)/ddd-button-editor.fig $(picdir)/ddd-button-editor.png
+$(buildpicdir)/ddd-shortcuts.eps: \
+	$(picdir)/ddd-shortcuts.fig $(picdir)/ddd-shortcuts.png
+$(buildpicdir)/ddd-shortcut-editor.eps: \
+	$(picdir)/ddd-shortcut-editor.fig $(picdir)/ddd-shortcut-editor.png
+$(buildpicdir)/ddd-drag.eps: \
 	$(picdir)/ddd-drag.fig \
-	$(picdir)/ddd-drag1.xpm \
-	$(picdir)/ddd-drag2.xpm \
-	$(picdir)/ddd-drag3.xpm
-$(picdir)/disclaimer.eps: \
+	$(picdir)/ddd-drag1.png \
+	$(picdir)/ddd-drag2.png \
+	$(picdir)/ddd-drag3.png
+$(buildpicdir)/disclaimer.eps: \
 	$(picdir)/disclaimer.fig
-$(picdir)/ddd-separate.eps: \
-	$(picdir)/ddd-separate.fig $(picdir)/ddd-separate.xpm
-$(picdir)/ddd-bp-properties.eps: \
-	$(picdir)/ddd-bp-properties.fig $(picdir)/ddd-bp-properties.xpm
-$(picdir)/ddd-edit-breakpoints.eps: \
-	$(picdir)/ddd-edit-breakpoints.fig $(picdir)/ddd-edit-breakpoints.xpm
-$(picdir)/ddd-display.eps: \
-	$(picdir)/ddd-display.fig $(picdir)/ddd-display.xpm
-$(picdir)/ddd-repeats.eps: \
-	$(picdir)/ddd-repeats.fig $(picdir)/ddd-repeats.xpm
-$(picdir)/ddd-toolbar.eps: \
-	$(picdir)/ddd-toolbar.fig $(picdir)/ddd-toolbar.xpm
-$(picdir)/ddd-font-prefs.eps: \
-	$(picdir)/ddd-font-prefs.fig $(picdir)/ddd-font-prefs.xpm
-$(picdir)/ddd-define-command.eps: \
-	$(picdir)/ddd-define-command.fig $(picdir)/ddd-define-command.xpm
-$(picdir)/ddd-signals.eps: \
-	$(picdir)/ddd-signals.fig $(picdir)/ddd-signals.xpm
-$(picdir)/ddd-examine.eps: \
-	$(picdir)/ddd-examine.fig $(picdir)/ddd-examine.xpm
-$(picdir)/ddd-clusters.eps: \
+$(buildpicdir)/ddd-separate.eps: \
+	$(picdir)/ddd-separate.fig $(picdir)/ddd-separate.png
+$(buildpicdir)/ddd-bp-properties.eps: \
+	$(picdir)/ddd-bp-properties.fig $(picdir)/ddd-bp-properties.png
+$(buildpicdir)/ddd-edit-breakpoints.eps: \
+	$(picdir)/ddd-edit-breakpoints.fig $(picdir)/ddd-edit-breakpoints.png
+$(buildpicdir)/ddd-display.eps: \
+	$(picdir)/ddd-display.fig $(picdir)/ddd-display.png
+$(buildpicdir)/ddd-repeats.eps: \
+	$(picdir)/ddd-repeats.fig $(picdir)/ddd-repeats.png
+$(buildpicdir)/ddd-toolbar.eps: \
+	$(picdir)/ddd-toolbar.fig $(picdir)/ddd-toolbar.png
+$(buildpicdir)/ddd-font-prefs.eps: \
+	$(picdir)/ddd-font-prefs.fig $(picdir)/ddd-font-prefs.png
+$(buildpicdir)/ddd-define-command.eps: \
+	$(picdir)/ddd-define-command.fig $(picdir)/ddd-define-command.png
+$(buildpicdir)/ddd-signals.eps: \
+	$(picdir)/ddd-signals.fig $(picdir)/ddd-signals.png
+$(buildpicdir)/ddd-examine.eps: \
+	$(picdir)/ddd-examine.fig $(picdir)/ddd-examine.png
+$(buildpicdir)/ddd-clusters.eps: \
 	$(picdir)/ddd-clusters.fig \
 	$(picdir)/clustered.ps $(picdir)/unclustered.ps
-$(picdir)/ddd-plots.eps: \
-	$(picdir)/ddd-plots.fig $(picdir)/ddd-plots.xpm
-$(picdir)/ddd-toolbars.eps: \
+$(buildpicdir)/ddd-plots.eps: \
+	$(picdir)/ddd-plots.fig $(picdir)/ddd-plots.png
+$(buildpicdir)/ddd-toolbars.eps: \
 	$(picdir)/ddd-toolbars.fig \
-	$(picdir)/ddd-toolbar-1.xpm \
-	$(picdir)/ddd-toolbar-2.xpm \
-	$(picdir)/ddd-toolbar-3.xpm \
-	$(picdir)/ddd-toolbar-4.xpm
-$(picdir)/ddd-themes.eps: \
+	$(picdir)/ddd-toolbar-1.png \
+	$(picdir)/ddd-toolbar-2.png \
+	$(picdir)/ddd-toolbar-3.png \
+	$(picdir)/ddd-toolbar-4.png
+PICS/Make$(buildpicdir)/ddd-themes.eps: \
 	$(picdir)/ddd-themes.fig \
 	$(picdir)/theme-none.ps \
 	$(picdir)/theme-backgrounds.ps \
@@ -1711,197 +1801,197 @@ $(picdir)/ddd-themes.eps: \
 	$(picdir)/theme-small-values.ps \
 	$(picdir)/theme-tiny-values.ps \
 	$(picdir)/theme-suppress.ps
-$(picdir)/ddd-suppress.eps: \
+$(buildpicdir)/ddd-suppress.eps: \
 	$(picdir)/ddd-suppress.fig \
 	$(picdir)/theme-tree-full.ps \
 	$(picdir)/theme-tree-part.ps
-$(picdir)/tut-backtrace.eps: \
-	$(picdir)/tut-backtrace.fig $(picdir)/tut-backtrace.xpm
-$(picdir)/tut-display.eps: \
-	$(picdir)/tut-display.fig $(picdir)/tut-display.xpm
-$(picdir)/tut-finish.eps: \
-	$(picdir)/tut-finish.fig $(picdir)/tut-finish.xpm
-$(picdir)/tut-invoke.eps: \
-	$(picdir)/tut-invoke.fig $(picdir)/tut-invoke.xpm
-$(picdir)/tut-run.eps: \
-	$(picdir)/tut-run.fig $(picdir)/tut-run.xpm
-$(picdir)/tut-set.eps: \
-	$(picdir)/tut-set.fig $(picdir)/tut-set.xpm
-$(picdir)/tut-value.eps: \
-	$(picdir)/tut-value.fig $(picdir)/tut-value.xpm
+$(buildpicdir)/tut-backtrace.eps: \
+	$(picdir)/tut-backtrace.fig $(picdir)/tut-backtrace.png
+$(buildpicdir)/tut-display.eps: \
+	$(picdir)/tut-display.fig $(picdir)/tut-display.png
+$(buildpicdir)/tut-finish.eps: \
+	$(picdir)/tut-finish.fig $(picdir)/tut-finish.png
+$(buildpicdir)/tut-invoke.eps: \
+	$(picdir)/tut-invoke.fig $(picdir)/tut-invoke.png
+$(buildpicdir)/tut-run.eps: \
+	$(picdir)/tut-run.fig $(picdir)/tut-run.png
+$(buildpicdir)/tut-set.eps: \
+	$(picdir)/tut-set.fig $(picdir)/tut-set.png
+$(buildpicdir)/tut-value.eps: \
+	$(picdir)/tut-value.fig $(picdir)/tut-value.png
 
 
 # JPEGs are derived from EPS files
 
-$(picdir)/ddd-all$(IMGEXT):              $(picdir)/ddd-all.eps
-$(picdir)/ddd-console$(IMGEXT):          $(picdir)/ddd-console.eps
-$(picdir)/ddd-history$(IMGEXT):          $(picdir)/ddd-history.eps
-$(picdir)/ddd-open$(IMGEXT):             $(picdir)/ddd-open.eps
-$(picdir)/ddd-source$(IMGEXT):           $(picdir)/ddd-source.eps
-$(picdir)/ddd-line-popup$(IMGEXT):       $(picdir)/ddd-line-popup.eps
-$(picdir)/ddd-bp-popup$(IMGEXT):         $(picdir)/ddd-bp-popup.eps
-$(picdir)/ddd-source-popup$(IMGEXT):     $(picdir)/ddd-source-popup.eps
-$(picdir)/ddd-arguments$(IMGEXT):        $(picdir)/ddd-arguments.eps
-$(picdir)/ddd-tool$(IMGEXT):             $(picdir)/ddd-tool.eps
-$(picdir)/ddd-backtrace$(IMGEXT):        $(picdir)/ddd-backtrace.eps
-$(picdir)/ddd-value-tip$(IMGEXT):        $(picdir)/ddd-value-tip.eps
-$(picdir)/ddd-print-popup$(IMGEXT):      $(picdir)/ddd-print-popup.eps
-$(picdir)/ddd-select-display$(IMGEXT):   $(picdir)/ddd-select-display.eps
-$(picdir)/ddd-hide-display$(IMGEXT):     $(picdir)/ddd-hide-display.eps
-$(picdir)/ddd-rotate-display$(IMGEXT):   $(picdir)/ddd-rotate-display.eps
-$(picdir)/ddd-locals$(IMGEXT):           $(picdir)/ddd-locals.eps
-$(picdir)/ddd-status-displays$(IMGEXT):  $(picdir)/ddd-status-displays.eps
-$(picdir)/ddd-set$(IMGEXT):              $(picdir)/ddd-set.eps
-$(picdir)/ddd-layout$(IMGEXT):           $(picdir)/ddd-layout.eps
-$(picdir)/ddd-print-graph$(IMGEXT):      $(picdir)/ddd-print-graph.eps
-$(picdir)/ddd-print-output$(IMGEXT):     $(picdir)/ddd-print-output.eps
-$(picdir)/ddd-code$(IMGEXT):             $(picdir)/ddd-code.eps
-$(picdir)/ddd-registers$(IMGEXT):        $(picdir)/ddd-registers.eps
-$(picdir)/ddd-general-prefs$(IMGEXT):    $(picdir)/ddd-general-prefs.eps
-$(picdir)/ddd-helpers$(IMGEXT):          $(picdir)/ddd-helpers.eps
-$(picdir)/ddd-source-prefs$(IMGEXT):     $(picdir)/ddd-source-prefs.eps
-$(picdir)/ddd-data-prefs$(IMGEXT):       $(picdir)/ddd-data-prefs.eps
-$(picdir)/ddd-startup-prefs$(IMGEXT):    $(picdir)/ddd-startup-prefs.eps
-$(picdir)/ddd-settings$(IMGEXT):         $(picdir)/ddd-settings.eps
-$(picdir)/ddd-threads$(IMGEXT):          $(picdir)/ddd-threads.eps
-$(picdir)/ddd-aliases$(IMGEXT):          $(picdir)/ddd-aliases.eps
-$(picdir)/ddd-edit-displays$(IMGEXT):    $(picdir)/ddd-edit-displays.eps
-$(picdir)/ddd-attach$(IMGEXT):           $(picdir)/ddd-attach.eps
-$(picdir)/ddd-save-session$(IMGEXT):     $(picdir)/ddd-save-session.eps
-$(picdir)/ddd-open-session$(IMGEXT):     $(picdir)/ddd-open-session.eps
-$(picdir)/ddd-button-editor$(IMGEXT):    $(picdir)/ddd-button-editor.eps
-$(picdir)/ddd-shortcuts$(IMGEXT):        $(picdir)/ddd-shortcuts.eps
-$(picdir)/ddd-shortcut-editor$(IMGEXT):  $(picdir)/ddd-shortcut-editor.eps
-$(picdir)/ddd-drag$(IMGEXT):             $(picdir)/ddd-drag.eps
-$(picdir)/disclaimer$(IMGEXT):           $(picdir)/disclaimer.eps
-$(picdir)/ddd-separate$(IMGEXT):         $(picdir)/ddd-separate.eps
-$(picdir)/ddd-bp-properties$(IMGEXT):    $(picdir)/ddd-bp-properties.eps
-$(picdir)/ddd-edit-breakpoints$(IMGEXT): $(picdir)/ddd-edit-breakpoints.eps
-$(picdir)/ddd-display$(IMGEXT):          $(picdir)/ddd-display.eps
-$(picdir)/ddd-repeats$(IMGEXT):          $(picdir)/ddd-repeats.eps
-$(picdir)/ddd-toolbar$(IMGEXT):          $(picdir)/ddd-toolbar.eps
-$(picdir)/ddd-font-prefs$(IMGEXT):       $(picdir)/ddd-font-prefs.eps
-$(picdir)/ddd-define-command$(IMGEXT):   $(picdir)/ddd-define-command.eps
-$(picdir)/ddd-signals$(IMGEXT):          $(picdir)/ddd-signals.eps
-$(picdir)/ddd-examine$(IMGEXT):          $(picdir)/ddd-examine.eps
-$(picdir)/ddd-clusters$(IMGEXT):         $(picdir)/ddd-clusters.eps
-$(picdir)/ddd-plots$(IMGEXT):            $(picdir)/ddd-plots.eps
-$(picdir)/ddd-suppress$(IMGEXT):         $(picdir)/ddd-suppress.eps
-$(picdir)/ddd-toolbars$(IMGEXT):         $(picdir)/ddd-toolbars.eps
-$(picdir)/ddd-themes$(IMGEXT):           $(picdir)/ddd-themes.eps
-$(picdir)/tut-backtrace$(IMGEXT):	 $(picdir)/tut-backtrace.eps
-$(picdir)/tut-display$(IMGEXT):	         $(picdir)/tut-display.eps
-$(picdir)/tut-finish$(IMGEXT):	         $(picdir)/tut-finish.eps
-$(picdir)/tut-invoke$(IMGEXT):	         $(picdir)/tut-invoke.eps
-$(picdir)/tut-run$(IMGEXT):	         $(picdir)/tut-run.eps
-$(picdir)/tut-set$(IMGEXT):	         $(picdir)/tut-set.eps
-$(picdir)/tut-value$(IMGEXT):	         $(picdir)/tut-value.eps
+$(buildpicdir)/ddd-all$(IMGEXT2):             $(buildpicdir)/ddd-all.eps
+$(buildpicdir)/ddd-console$(IMGEXT2):         $(buildpicdir)/ddd-console.eps
+$(buildpicdir)/ddd-history$(IMGEXT2):         $(buildpicdir)/ddd-history.eps
+$(buildpicdir)/ddd-open$(IMGEXT2):            $(buildpicdir)/ddd-open.eps
+$(buildpicdir)/ddd-source$(IMGEXT2):          $(buildpicdir)/ddd-source.eps
+$(buildpicdir)/ddd-line-popup$(IMGEXT2):      $(buildpicdir)/ddd-line-popup.eps
+$(buildpicdir)/ddd-bp-popup$(IMGEXT2):        $(buildpicdir)/ddd-bp-popup.eps
+$(buildpicdir)/ddd-source-popup$(IMGEXT2):    $(buildpicdir)/ddd-source-popup.eps
+$(buildpicdir)/ddd-arguments$(IMGEXT2):       $(buildpicdir)/ddd-arguments.eps
+$(buildpicdir)/ddd-tool$(IMGEXT2):            $(buildpicdir)/ddd-tool.eps
+$(buildpicdir)/ddd-backtrace$(IMGEXT2):       $(buildpicdir)/ddd-backtrace.eps
+$(buildpicdir)/ddd-value-tip$(IMGEXT2):       $(buildpicdir)/ddd-value-tip.eps
+$(buildpicdir)/ddd-print-popup$(IMGEXT2):     $(buildpicdir)/ddd-print-popup.eps
+$(buildpicdir)/ddd-select-display$(IMGEXT2):  $(buildpicdir)/ddd-select-display.eps
+$(buildpicdir)/ddd-hide-display$(IMGEXT2):    $(buildpicdir)/ddd-hide-display.eps
+$(buildpicdir)/ddd-rotate-display$(IMGEXT2):  $(buildpicdir)/ddd-rotate-display.eps
+$(buildpicdir)/ddd-locals$(IMGEXT2):          $(buildpicdir)/ddd-locals.eps
+$(buildpicdir)/ddd-status-displays$(IMGEXT2): $(buildpicdir)/ddd-status-displays.eps
+$(buildpicdir)/ddd-set$(IMGEXT2):             $(buildpicdir)/ddd-set.eps
+$(buildpicdir)/ddd-layout$(IMGEXT2):          $(buildpicdir)/ddd-layout.eps
+$(buildpicdir)/ddd-print-graph$(IMGEXT2):     $(buildpicdir)/ddd-print-graph.eps
+$(buildpicdir)/ddd-print-output$(IMGEXT2):    $(buildpicdir)/ddd-print-output.eps
+$(buildpicdir)/ddd-code$(IMGEXT2):            $(buildpicdir)/ddd-code.eps
+$(buildpicdir)/ddd-registers$(IMGEXT2):       $(buildpicdir)/ddd-registers.eps
+$(buildpicdir)/ddd-general-prefs$(IMGEXT2):   $(buildpicdir)/ddd-general-prefs.eps
+$(buildpicdir)/ddd-helpers$(IMGEXT2):         $(buildpicdir)/ddd-helpers.eps
+$(buildpicdir)/ddd-source-prefs$(IMGEXT2):    $(buildpicdir)/ddd-source-prefs.eps
+$(buildpicdir)/ddd-data-prefs$(IMGEXT2):      $(buildpicdir)/ddd-data-prefs.eps
+$(buildpicdir)/ddd-startup-prefs$(IMGEXT2):   $(buildpicdir)/ddd-startup-prefs.eps
+$(buildpicdir)/ddd-settings$(IMGEXT2):        $(buildpicdir)/ddd-settings.eps
+$(buildpicdir)/ddd-threads$(IMGEXT2):         $(buildpicdir)/ddd-threads.eps
+$(buildpicdir)/ddd-aliases$(IMGEXT2):         $(buildpicdir)/ddd-aliases.eps
+$(buildpicdir)/ddd-edit-displays$(IMGEXT2):   $(buildpicdir)/ddd-edit-displays.eps
+$(buildpicdir)/ddd-attach$(IMGEXT2):          $(buildpicdir)/ddd-attach.eps
+$(buildpicdir)/ddd-save-session$(IMGEXT2):    $(buildpicdir)/ddd-save-session.eps
+$(buildpicdir)/ddd-open-session$(IMGEXT2):    $(buildpicdir)/ddd-open-session.eps
+$(buildpicdir)/ddd-button-editor$(IMGEXT2):   $(buildpicdir)/ddd-button-editor.eps
+$(buildpicdir)/ddd-shortcuts$(IMGEXT2):       $(buildpicdir)/ddd-shortcuts.eps
+$(buildpicdir)/ddd-shortcut-editor$(IMGEXT2): $(buildpicdir)/ddd-shortcut-editor.eps
+$(buildpicdir)/ddd-drag$(IMGEXT2):            $(buildpicdir)/ddd-drag.eps
+$(buildpicdir)/disclaimer$(IMGEXT2):          $(buildpicdir)/disclaimer.eps
+$(buildpicdir)/ddd-separate$(IMGEXT2):        $(buildpicdir)/ddd-separate.eps
+$(buildpicdir)/ddd-bp-properties$(IMGEXT2):   $(buildpicdir)/ddd-bp-properties.eps
+$(buildpicdir)/ddd-edit-breakpoints$(IMGEXT2): $(buildpicdir)/ddd-edit-breakpoints.eps
+$(buildpicdir)/ddd-display$(IMGEXT2):         $(buildpicdir)/ddd-display.eps
+$(buildpicdir)/ddd-repeats$(IMGEXT2):         $(buildpicdir)/ddd-repeats.eps
+$(buildpicdir)/ddd-toolbar$(IMGEXT2):         $(buildpicdir)/ddd-toolbar.eps
+$(buildpicdir)/ddd-font-prefs$(IMGEXT2):      $(buildpicdir)/ddd-font-prefs.eps
+$(buildpicdir)/ddd-define-command$(IMGEXT2):  $(buildpicdir)/ddd-define-command.eps
+$(buildpicdir)/ddd-signals$(IMGEXT2):         $(buildpicdir)/ddd-signals.eps
+$(buildpicdir)/ddd-examine$(IMGEXT2):         $(buildpicdir)/ddd-examine.eps
+$(buildpicdir)/ddd-clusters$(IMGEXT2):        $(buildpicdir)/ddd-clusters.eps
+$(buildpicdir)/ddd-plots$(IMGEXT2):           $(buildpicdir)/ddd-plots.eps
+$(buildpicdir)/ddd-suppress$(IMGEXT2):        $(buildpicdir)/ddd-suppress.eps
+$(buildpicdir)/ddd-toolbars$(IMGEXT2):        $(buildpicdir)/ddd-toolbars.eps
+$(buildpicdir)/ddd-themes$(IMGEXT2):          $(buildpicdir)/ddd-themes.eps
+$(buildpicdir)/tut-backtrace$(IMGEXT2):	      $(buildpicdir)/tut-backtrace.eps
+$(buildpicdir)/tut-display$(IMGEXT2):	      $(buildpicdir)/tut-display.eps
+$(buildpicdir)/tut-finish$(IMGEXT2):	      $(buildpicdir)/tut-finish.eps
+$(buildpicdir)/tut-invoke$(IMGEXT2):	      $(buildpicdir)/tut-invoke.eps
+$(buildpicdir)/tut-run$(IMGEXT2):	      $(buildpicdir)/tut-run.eps
+$(buildpicdir)/tut-set$(IMGEXT2):	      $(buildpicdir)/tut-set.eps
+$(buildpicdir)/tut-value$(IMGEXT2):	      $(buildpicdir)/tut-value.eps
 
 
 # PDFs are also derived from EPS files.
 # (We could also generate them directly from FIG files, but this
 # would mean to duplicate all dependencies as above.)
 
-$(picdir)/ddd-all.pdf:              $(picdir)/ddd-all.eps
-$(picdir)/ddd-console.pdf:          $(picdir)/ddd-console.eps
-$(picdir)/ddd-history.pdf:          $(picdir)/ddd-history.eps
-$(picdir)/ddd-open.pdf:             $(picdir)/ddd-open.eps
-$(picdir)/ddd-source.pdf:           $(picdir)/ddd-source.eps
-$(picdir)/ddd-line-popup.pdf:       $(picdir)/ddd-line-popup.eps
-$(picdir)/ddd-bp-popup.pdf:         $(picdir)/ddd-bp-popup.eps
-$(picdir)/ddd-source-popup.pdf:     $(picdir)/ddd-source-popup.eps
-$(picdir)/ddd-arguments.pdf:        $(picdir)/ddd-arguments.eps
-$(picdir)/ddd-tool.pdf:             $(picdir)/ddd-tool.eps
-$(picdir)/ddd-backtrace.pdf:        $(picdir)/ddd-backtrace.eps
-$(picdir)/ddd-value-tip.pdf:        $(picdir)/ddd-value-tip.eps
-$(picdir)/ddd-print-popup.pdf:      $(picdir)/ddd-print-popup.eps
-$(picdir)/ddd-select-display.pdf:   $(picdir)/ddd-select-display.eps
-$(picdir)/ddd-hide-display.pdf:     $(picdir)/ddd-hide-display.eps
-$(picdir)/ddd-rotate-display.pdf:   $(picdir)/ddd-rotate-display.eps
-$(picdir)/ddd-locals.pdf:           $(picdir)/ddd-locals.eps
-$(picdir)/ddd-status-displays.pdf:  $(picdir)/ddd-status-displays.eps
-$(picdir)/ddd-set.pdf:              $(picdir)/ddd-set.eps
-$(picdir)/ddd-layout.pdf:           $(picdir)/ddd-layout.eps
-$(picdir)/ddd-print-graph.pdf:      $(picdir)/ddd-print-graph.eps
-$(picdir)/ddd-print-output.pdf:     $(picdir)/ddd-print-output.eps
-$(picdir)/ddd-code.pdf:             $(picdir)/ddd-code.eps
-$(picdir)/ddd-registers.pdf:        $(picdir)/ddd-registers.eps
-$(picdir)/ddd-general-prefs.pdf:    $(picdir)/ddd-general-prefs.eps
-$(picdir)/ddd-helpers.pdf:          $(picdir)/ddd-helpers.eps
-$(picdir)/ddd-source-prefs.pdf:     $(picdir)/ddd-source-prefs.eps
-$(picdir)/ddd-data-prefs.pdf:       $(picdir)/ddd-data-prefs.eps
-$(picdir)/ddd-startup-prefs.pdf:    $(picdir)/ddd-startup-prefs.eps
-$(picdir)/ddd-settings.pdf:         $(picdir)/ddd-settings.eps
-$(picdir)/ddd-threads.pdf:          $(picdir)/ddd-threads.eps
-$(picdir)/ddd-aliases.pdf:          $(picdir)/ddd-aliases.eps
-$(picdir)/ddd-edit-displays.pdf:    $(picdir)/ddd-edit-displays.eps
-$(picdir)/ddd-attach.pdf:           $(picdir)/ddd-attach.eps
-$(picdir)/ddd-save-session.pdf:     $(picdir)/ddd-save-session.eps
-$(picdir)/ddd-open-session.pdf:     $(picdir)/ddd-open-session.eps
-$(picdir)/ddd-button-editor.pdf:    $(picdir)/ddd-button-editor.eps
-$(picdir)/ddd-shortcuts.pdf:        $(picdir)/ddd-shortcuts.eps
-$(picdir)/ddd-shortcut-editor.pdf:  $(picdir)/ddd-shortcut-editor.eps
-$(picdir)/ddd-drag.pdf:             $(picdir)/ddd-drag.eps
-$(picdir)/disclaimer.pdf:           $(picdir)/disclaimer.eps
-$(picdir)/ddd-separate.pdf:         $(picdir)/ddd-separate.eps
-$(picdir)/ddd-bp-properties.pdf:    $(picdir)/ddd-bp-properties.eps
-$(picdir)/ddd-edit-breakpoints.pdf: $(picdir)/ddd-edit-breakpoints.eps
-$(picdir)/ddd-display.pdf:          $(picdir)/ddd-display.eps
-$(picdir)/ddd-repeats.pdf:          $(picdir)/ddd-repeats.eps
-$(picdir)/ddd-toolbar.pdf:          $(picdir)/ddd-toolbar.eps
-$(picdir)/ddd-font-prefs.pdf:       $(picdir)/ddd-font-prefs.eps
-$(picdir)/ddd-define-command.pdf:   $(picdir)/ddd-define-command.eps
-$(picdir)/ddd-signals.pdf:          $(picdir)/ddd-signals.eps
-$(picdir)/ddd-examine.pdf:          $(picdir)/ddd-examine.eps
-$(picdir)/ddd-clusters.pdf:         $(picdir)/ddd-clusters.eps
-$(picdir)/ddd-plots.pdf:            $(picdir)/ddd-plots.eps
-$(picdir)/ddd-suppress.pdf:         $(picdir)/ddd-suppress.eps
-$(picdir)/ddd-toolbars.pdf:         $(picdir)/ddd-toolbars.eps
-$(picdir)/ddd-themes.pdf:           $(picdir)/ddd-themes.eps
-$(picdir)/tut-backtrace.pdf:	    $(picdir)/tut-backtrace.eps
-$(picdir)/tut-display.pdf:          $(picdir)/tut-display.eps
-$(picdir)/tut-finish.pdf:           $(picdir)/tut-finish.eps
-$(picdir)/tut-invoke.pdf:	    $(picdir)/tut-invoke.eps
-$(picdir)/tut-run.pdf:	            $(picdir)/tut-run.eps
-$(picdir)/tut-set.pdf:	            $(picdir)/tut-set.eps
-$(picdir)/tut-value.pdf:            $(picdir)/tut-value.eps
+$(buildpicdir)/ddd-all.pdf:              $(buildpicdir)/ddd-all.eps
+$(buildpicdir)/ddd-console.pdf:          $(buildpicdir)/ddd-console.eps
+$(buildpicdir)/ddd-history.pdf:          $(buildpicdir)/ddd-history.eps
+$(buildpicdir)/ddd-open.pdf:             $(buildpicdir)/ddd-open.eps
+$(buildpicdir)/ddd-source.pdf:           $(buildpicdir)/ddd-source.eps
+$(buildpicdir)/ddd-line-popup.pdf:       $(buildpicdir)/ddd-line-popup.eps
+$(buildpicdir)/ddd-bp-popup.pdf:         $(buildpicdir)/ddd-bp-popup.eps
+$(buildpicdir)/ddd-source-popup.pdf:     $(buildpicdir)/ddd-source-popup.eps
+$(buildpicdir)/ddd-arguments.pdf:        $(buildpicdir)/ddd-arguments.eps
+$(buildpicdir)/ddd-tool.pdf:             $(buildpicdir)/ddd-tool.eps
+$(buildpicdir)/ddd-backtrace.pdf:        $(buildpicdir)/ddd-backtrace.eps
+$(buildpicdir)/ddd-value-tip.pdf:        $(buildpicdir)/ddd-value-tip.eps
+$(buildpicdir)/ddd-print-popup.pdf:      $(buildpicdir)/ddd-print-popup.eps
+$(buildpicdir)/ddd-select-display.pdf:   $(buildpicdir)/ddd-select-display.eps
+$(buildpicdir)/ddd-hide-display.pdf:     $(buildpicdir)/ddd-hide-display.eps
+$(buildpicdir)/ddd-rotate-display.pdf:   $(buildpicdir)/ddd-rotate-display.eps
+$(buildpicdir)/ddd-locals.pdf:           $(buildpicdir)/ddd-locals.eps
+$(buildpicdir)/ddd-status-displays.pdf:  $(buildpicdir)/ddd-status-displays.eps
+$(buildpicdir)/ddd-set.pdf:              $(buildpicdir)/ddd-set.eps
+$(buildpicdir)/ddd-layout.pdf:           $(buildpicdir)/ddd-layout.eps
+$(buildpicdir)/ddd-print-graph.pdf:      $(buildpicdir)/ddd-print-graph.eps
+$(buildpicdir)/ddd-print-output.pdf:     $(buildpicdir)/ddd-print-output.eps
+$(buildpicdir)/ddd-code.pdf:             $(buildpicdir)/ddd-code.eps
+$(buildpicdir)/ddd-registers.pdf:        $(buildpicdir)/ddd-registers.eps
+$(buildpicdir)/ddd-general-prefs.pdf:    $(buildpicdir)/ddd-general-prefs.eps
+$(buildpicdir)/ddd-helpers.pdf:          $(buildpicdir)/ddd-helpers.eps
+$(buildpicdir)/ddd-source-prefs.pdf:     $(buildpicdir)/ddd-source-prefs.eps
+$(buildpicdir)/ddd-data-prefs.pdf:       $(buildpicdir)/ddd-data-prefs.eps
+$(buildpicdir)/ddd-startup-prefs.pdf:    $(buildpicdir)/ddd-startup-prefs.eps
+$(buildpicdir)/ddd-settings.pdf:         $(buildpicdir)/ddd-settings.eps
+$(buildpicdir)/ddd-threads.pdf:          $(buildpicdir)/ddd-threads.eps
+$(buildpicdir)/ddd-aliases.pdf:          $(buildpicdir)/ddd-aliases.eps
+$(buildpicdir)/ddd-edit-displays.pdf:    $(buildpicdir)/ddd-edit-displays.eps
+$(buildpicdir)/ddd-attach.pdf:           $(buildpicdir)/ddd-attach.eps
+$(buildpicdir)/ddd-save-session.pdf:     $(buildpicdir)/ddd-save-session.eps
+$(buildpicdir)/ddd-open-session.pdf:     $(buildpicdir)/ddd-open-session.eps
+$(buildpicdir)/ddd-button-editor.pdf:    $(buildpicdir)/ddd-button-editor.eps
+$(buildpicdir)/ddd-shortcuts.pdf:        $(buildpicdir)/ddd-shortcuts.eps
+$(buildpicdir)/ddd-shortcut-editor.pdf:  $(buildpicdir)/ddd-shortcut-editor.eps
+$(buildpicdir)/ddd-drag.pdf:             $(buildpicdir)/ddd-drag.eps
+$(buildpicdir)/disclaimer.pdf:           $(buildpicdir)/disclaimer.eps
+$(buildpicdir)/ddd-separate.pdf:         $(buildpicdir)/ddd-separate.eps
+$(buildpicdir)/ddd-bp-properties.pdf:    $(buildpicdir)/ddd-bp-properties.eps
+$(buildpicdir)/ddd-edit-breakpoints.pdf: $(buildpicdir)/ddd-edit-breakpoints.eps
+$(buildpicdir)/ddd-display.pdf:          $(buildpicdir)/ddd-display.eps
+$(buildpicdir)/ddd-repeats.pdf:          $(buildpicdir)/ddd-repeats.eps
+$(buildpicdir)/ddd-toolbar.pdf:          $(buildpicdir)/ddd-toolbar.eps
+$(buildpicdir)/ddd-font-prefs.pdf:       $(buildpicdir)/ddd-font-prefs.eps
+$(buildpicdir)/ddd-define-command.pdf:   $(buildpicdir)/ddd-define-command.eps
+$(buildpicdir)/ddd-signals.pdf:          $(buildpicdir)/ddd-signals.eps
+$(buildpicdir)/ddd-examine.pdf:          $(buildpicdir)/ddd-examine.eps
+$(buildpicdir)/ddd-clusters.pdf:         $(buildpicdir)/ddd-clusters.eps
+$(buildpicdir)/ddd-plots.pdf:            $(buildpicdir)/ddd-plots.eps
+$(buildpicdir)/ddd-suppress.pdf:         $(buildpicdir)/ddd-suppress.eps
+$(buildpicdir)/ddd-toolbars.pdf:         $(buildpicdir)/ddd-toolbars.eps
+$(buildpicdir)/ddd-themes.pdf:           $(buildpicdir)/ddd-themes.eps
+$(buildpicdir)/tut-backtrace.pdf:	 $(buildpicdir)/tut-backtrace.eps
+$(buildpicdir)/tut-display.pdf:          $(buildpicdir)/tut-display.eps
+$(buildpicdir)/tut-finish.pdf:           $(buildpicdir)/tut-finish.eps
+$(buildpicdir)/tut-invoke.pdf:	    	 $(buildpicdir)/tut-invoke.eps
+$(buildpicdir)/tut-run.pdf:	         $(buildpicdir)/tut-run.eps
+$(buildpicdir)/tut-set.pdf:	         $(buildpicdir)/tut-set.eps
+$(buildpicdir)/tut-value.pdf:            $(buildpicdir)/tut-value.eps
 
 
 # The logo comes in XPM source
-$(picdir)/dddsplash.eps: $(icondir)/dddsplash.xpm
+$(buildpicdir)/dddsplash.eps: $(icondir)/dddsplash.xpm
 	$(CONVERT) $(icondir)/dddsplash.xpm $@
 
-$(picdir)/dddsplash.gif: $(icondir)/dddsplash.xpm
+$(buildpicdir)/dddsplash.gif: $(icondir)/dddsplash.xpm
 	$(CONVERT) $(icondir)/dddsplash.xpm $@
 
-$(picdir)/dddsplash.jpg: $(icondir)/dddsplash.xpm
+$(buildpicdir)/dddsplash.jpg: $(icondir)/dddsplash.xpm
 	$(CONVERT) -quality 100 $(icondir)/dddsplash.xpm $@
 
-$(picdir)/dddsplash.png: $(icondir)/dddsplash.xpm
+$(buildpicdir)/dddsplash.png: $(icondir)/dddsplash.xpm
 	$(CONVERT) -quality 100 $(icondir)/dddsplash.xpm $@
 
-$(picdir)/dddlogo.eps: $(icondir)/dddlogo.xpm
+$(buildpicdir)/dddlogo.eps: $(icondir)/dddlogo.xpm
 	$(CONVERT) $(icondir)/dddlogo.xpm $@
 
-$(picdir)/dddlogo.gif: $(icondir)/dddlogo.xpm
+$(buildpicdir)/dddlogo.gif: $(icondir)/dddlogo.xpm
 	$(CONVERT) $(icondir)/dddlogo.xpm $@
 
-$(picdir)/dddlogo.jpg: $(icondir)/dddlogo.xpm
+$(buildpicdir)/dddlogo.jpg: $(icondir)/dddlogo.xpm
 	$(CONVERT) -quality 100 $(icondir)/dddlogo.xpm $@
 
-$(picdir)/dddlogo.png: $(icondir)/dddlogo.xpm
+$(buildpicdir)/dddlogo.png: $(icondir)/dddlogo.xpm
 	$(CONVERT) -quality 100 $(icondir)/dddlogo.xpm $@
 
-$(picdir)/dddback.eps: $(icondir)/dddback.xpm
+$(buildpicdir)/dddback.eps: $(icondir)/dddback.xpm
 	$(CONVERT) $(icondir)/dddback.xpm $@
 
-$(picdir)/dddback.gif: $(icondir)/dddback.xpm
+$(buildpicdir)/dddback.gif: $(icondir)/dddback.xpm
 	$(CONVERT) $(icondir)/dddback.xpm $@
 
-$(picdir)/dddback.jpg: $(icondir)/dddback.xpm
+$(buildpicdir)/dddback.jpg: $(icondir)/dddback.xpm
 	$(CONVERT) -quality 100 $(icondir)/dddback.xpm $@
 
-$(picdir)/dddback.png: $(icondir)/dddback.xpm
+$(buildpicdir)/dddback.png: $(icondir)/dddback.xpm
 	$(CONVERT) -quality 100 $(icondir)/dddback.xpm $@
 
 
@@ -1921,13 +2011,13 @@ target_canonical = @host@
 
 # Special rules for configuration.
 # autoheader might not change config.h.in
-stamp-h: config.h.in config.status
-	CONFIG_FILES= CONFIG_HEADERS=config.h ./config.status
+stamp-h: config.h.in $(top_builddir)/config.status
+	CONFIG_FILES= CONFIG_HEADERS=config.h $(top_builddir)/config.status
 	$(DATE) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 $(srcdir)/config.h.in: stamp-h.in
 $(srcdir)/stamp-h.in: $(srcdir)/acconfig.h
-	cd $(srcdir) && $(AUTOHEADER)
+	cd $(srcdir)/.. && $(AUTOHEADER) -I ddd
 	$(DATE) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 $(srcdir)/acconfig.h: $(srcdir)/acconfig.h.in $(srcdir)/acspecial.h
@@ -1936,8 +2026,8 @@ $(srcdir)/acconfig.h: $(srcdir)/acconfig.h.in $(srcdir)/acspecial.h
 		echo "include(srcdir()/acconfig.h.in)dnl" \
 	) | $(M4) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
-$(srcdir)/acspecial.h: $(srcdir)/configure.in
-	$(GREP) '^ICE_[a-zA-Z0-9_]* *(' $(srcdir)/configure.in > $@~ && \
+$(srcdir)/acspecial.h: $(srcdir)/../configure.ac
+	$(GREP) '^ICE_[a-zA-Z0-9_]* *(' $(srcdir)/../configure.ac > $@~ && \
 	$(MV) $@~ $@
 
 # Special program includes
@@ -1949,12 +2039,12 @@ version.h: vr.h
 build.h: bld.h
 	@$(CMP) bld.h $@ 2> /dev/null || \
 	    ( $(CAT) bld.h | $(DELETE_CR) > $@~ && $(MV) $@~ $@ )
-host.h: $(srcdir)/host.h.in config.status
+host.h: $(srcdir)/host.h.in $(top_builddir)/config.status
 	$(CAT) $(srcdir)/host.h.in | \
 	$(SED) "s%@HOST_CANONICAL@%$(host_canonical)%" | \
 	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" | \
 	    $(DELETE_CR) > $@~ && $(MV) $@~ $@
-root.h: $(srcdir)/root.h.in config.status
+root.h: $(srcdir)/root.h.in $(top_builddir)/config.status
 	$(CAT) $(srcdir)/root.h.in | \
 	$(SED) "s%@ROOT@%$(dddrootdir)%" | \
 	$(SED) "s%@ALT_ROOT@%$(pkgdatadir)%" | \
@@ -1978,8 +2068,8 @@ REL = 1
 # RPM spec
 .PHONY:	spec
 spec: ../$(ddd)-$(VERSION)-$(REL).spec
-../$(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/../ddd.spec.in config.status
-	CONFIG_FILES=../ddd.spec CONFIG_HEADERS= $(SHELL) ./config.status
+../$(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/../ddd.spec.in $(top_builddir)/config.status
+	CONFIG_FILES=../ddd.spec CONFIG_HEADERS= $(SHELL) $(top_builddir)/config.status
 	$(SED) 's/@REL@/$(REL)/g' ../ddd.spec > $@
 	$(RM) ../ddd.spec
 
@@ -1987,31 +2077,44 @@ spec: ../$(ddd)-$(VERSION)-$(REL).spec
 # In a distribution, these should be already built.
 #
 # Order is significant here!  First source files, then derived files.
-PROG_STUFF = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
-             acconfig.h acspecial.h stamp-h.in config.h \
-             $(srcdir)/tips.m4 $(srcdir)/tips.html \
-             $(srcdir)/Ddd.in Ddd.ad.h host.h \
-             $(vsldir)/ddd.vsl $(srcdir)/ddd.vsl.h \
-             vr.h version.h bld.h build.h root.h configinfo.C \
+PROG_STUFF = vsl-lex.L $(LEXTOCXX) vsl-lex.C \
+	     $(YACCTOCXX).bison $(YACCTOCXX).sun \
+	     vsl-gramma.Y $(YACCTOCXX) yacctoC.h vsl-gramma.h vsl-gramma.C \
+	     rxscan.L rxscan.C acconfig.h.in acconfig.h \
+	     acspecial.h stamp-h.in \
+             $(srcdir)/../TIPS $(srcdir)/tips.m4 \
+	     $(srcdir)/tips2m4.awk $(srcdir)/tips.html \
+	     $(srcdir)/macros.m4 $(srcdir)/colors.m4 \
+             $(srcdir)/Ddd.in.m4 $(srcdir)/Ddd.in \
+	     host.h.in $(srcdir)/vsl2c.sed \
+             $(srcdir)/ddd.vsl.m4 $(vsldir)/ddd.vsl $(srcdir)/ddd.vsl.h \
+             root.h.in $(srcdir)/COPYING.gz $(srcdir)/NEWS.gz \
              $(srcdir)/COPYING.gz.C $(srcdir)/NEWS.gz.C \
 	     $(srcdir)/ddd.info.txt.gz.C $(srcdir)/ddd.info \
-             xlibdir.C eps-code.h .gdbinit $(ICONS)
+             xlibdir.txt xlibdir.C $(srcdir)/header.str \
+	     $(srcdir)/trailer.str $(srcdir)/eps-code.x eps-code.h \
+	     .gdbinit $(ICONS)
 
 # Additional files to be included in the distribution.
 DIST_STUFF = ../$(ddd)-$(VERSION)-$(REL).spec \
-             $(man_MANS) \
+	     $(srcdir)/header.ps $(srcdir)/trailer.ps \
 	     $(docdir)/ddd.ps $(docdir)/ddd.pdf \
 	     $(docdir)/ddd-themes.ps $(docdir)/ddd-themes.pdf \
-	     $(htmldir)/ddd.html
+	     $(docdir)/ddd-paper.ps \
+	     $(htmldir)/ddd.html $(srcdir)/ad2c.sed $(srcdir)/config-info \
+	     style.css $(srcdir)/fix-html.sed \
+	     $(srcdir)/unumlaut.sed
 
 # Let automake know what we need.
-EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
+EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF) $(IMAGES)
 
 # Make sure all this is built before DDD.
 ddd.$(OBJEXT): $(PROG_STUFF)
 
 # These should not go into the distribution.
-DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO $(IMAGES)
+DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO \
+	$(top_builddir)/ddd/stamp-h $(man_MANS) configinfo.C \
+	version.h Ddd.ad.h
 
 # `make mostlyclean' should also remove these temporary Texinfo files.
 MOSTLYCLEANFILES = ddd.au ddd.cm ddd.cms ddd.en ddd.fl ddd.fls ddd.lb ddd.lbs \
@@ -2020,7 +2123,14 @@ MOSTLYCLEANFILES = ddd.au ddd.cm ddd.cms ddd.en ddd.fl ddd.fls ddd.lb ddd.lbs \
 	ddd-themes.tmp ddd-themes.html ddd-themes.pdf ddd-themes.ps
 
 # Have `make maintainer-clean' remove _all_ derived files.
-MAINTAINERCLEANFILES = $(PROG_STUFF)
+MAINTAINERCLEANFILES = Ddd.in ddd.vsl.h ddd.info.txt.gz gfdl.texinfo \
+	NEWS.gz.C ddd.info.txt.gz.C ddd.info \
+	NEWS.gz ddd.info.txt tips.m4 gpl.texinfo vsl-lex.C \
+	COPYING.gz acspecial.h config.h.in config.texi vsl-gramma.C \
+	vsl-gramma.h xlibdir.C trailer.str stamp-h.in tips.html \
+	COPYING.gz.C header.str version.h rxscan.C acconfig.h \
+	../icons/ddd.xface ../icons/dddsplash.xbm \
+	../vsllib/ddd.vsl
 
 # `make diststuff' creates all files required for a distribution.
 diststuff: $(EXTRA_DIST)

@@ -80,7 +80,7 @@ Ddd*appDefaultsVersion: @VERSION@
 ! User-settable resources
 !-----------------------------------------------------------------------------
 
-! The inferior debugger type. One of: gdb, dbx, xdb, jdb, pydb, or perl.
+! The inferior debugger type. One of: gdb, dbx, xdb, jdb, pydb, perl or bash.
 Ddd*debugger: gdb
 
 ! If true, determine debugger automatically from args upon start-up.
@@ -338,7 +338,11 @@ Ddd*wwwCommand: \
    mozilla -remote 'openURL(@URL@)' \
 || netscape -remote 'openURL(@URL@)' \
 || ${WWWBROWSER-false} '@URL@' \
+|| galeon 'openURL(@URL@)' \
+|| skipstone 'openURL(@URL@)' \
+|| light 'openURL(@URL@)' \
 || mozilla '@URL@' \
+|| konqueror 'openURL(@URL@)' \
 || kfmbrowser '@URL@' \
 || netscape '@URL@' \
 || gnudoit '(w3-fetch \042@URL@\042)' \
@@ -646,6 +650,11 @@ O veryCompact=\n
 ! The Perl Debugger settings.  Usually overridden in `~/.ddd/init'.
 Ddd*perlSettings:
 
+Ddd*bashInitCommands: \
+  set prompt bashdb$_Dbg_less$_Dbg_greater$_Dbg_space\n\
+
+! The Bash Debugger settings.  Usually overridden in `~/.ddd/init'.
+Ddd*bashSettings:
 
 ! If on, let GDB source all initialization commands from a temporary file.
 ! This is slightly faster than processing each command separately,
@@ -3604,6 +3613,7 @@ Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 Ddd*debuggerMenu*pydb.labelString:		PYDB
 Ddd*debuggerMenu*perl.labelString:		Perl
+Ddd*debuggerMenu*bash.labelString:		Bash
 Ddd*debuggerMenu.numColumns:	      	        1
 
 Ddd*preferences*startupWindows.labelString:     Startup Windows

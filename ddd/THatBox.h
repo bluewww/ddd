@@ -53,7 +53,7 @@ protected:
 	HatBox(box)
     {}
 
-    virtual void dump(ostream& s) const { _box->dump(s); }
+    virtual void dump(std::ostream& s) const { _box->dump(s); }
 
 public:
     TransparentHatBox(Box *box):

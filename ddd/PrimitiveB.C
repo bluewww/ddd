@@ -82,12 +82,12 @@ void RuleBox::_draw(Widget w,
     }
 }
 
-void RuleBox::dump(ostream& s) const
+void RuleBox::dump(std::ostream& s) const
 {
     s << "rule" << size();
 }
 
-void RuleBox::_print(ostream& os, 
+void RuleBox::_print(std::ostream& os, 
 		     const BoxRegion& region, 
 		     const PrintGC& gc) const
 {
@@ -159,7 +159,7 @@ void RuleBox::_print(ostream& os,
 
 // FillBox
 
-void FillBox::dump(ostream& s) const
+void FillBox::dump(std::ostream& s) const
 {
     s << "fill" << size();
 }
@@ -167,7 +167,7 @@ void FillBox::dump(ostream& s) const
 
 // SpaceBox
 
-void SpaceBox::dump(ostream& s) const
+void SpaceBox::dump(std::ostream& s) const
 {
     s << "space" << size();
 }
@@ -175,7 +175,7 @@ void SpaceBox::dump(ostream& s) const
 
 // SquareBox
 
-void SquareBox::dump(ostream& s) const
+void SquareBox::dump(std::ostream& s) const
 {
     s << size(X);
 }

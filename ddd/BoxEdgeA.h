@@ -91,7 +91,7 @@ public:
     Box *box() const { return _box; }
 
     // Print
-    virtual void _print(ostream& os, const BoxPoint& p, 
+    virtual void _print(std::ostream& os, const BoxPoint& p, 
 			const GraphGC& gc) const;
 
     // Size used by annotation

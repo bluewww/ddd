@@ -294,9 +294,9 @@ public:
     // If PLOTTED is set, plot display.
     // If ORIGIN is set, the last origin is set to ORIGIN.
     static void new_displaySQ(string display_expression,
-			      string scope,
+			      const string& scope,
 			      BoxPoint *pos = 0,
-			      string depends_on = "",
+			      const string& depends_on = "",
 			      DeferMode deferred = DeferAlways,
 			      bool clustered = false,
 			      bool plotted = false,
@@ -534,21 +534,21 @@ private:
     static int alias_display_nr(GraphNode *node);
 
     // State stuff
-    static void write_frame_command(ostream& os, int& current_frame, 
+    static void write_frame_command(std::ostream& os, int& current_frame, 
 				   int target_frame);
-    static void write_restore_scope_command(ostream& os,
+    static void write_restore_scope_command(std::ostream& os,
 					    int& current_frame,
 					    const StringArray& scopes,
 					    DispNode *dn,
 					    bool& ok);
 
-    static bool get_state(ostream& os,
+    static bool get_state(std::ostream& os,
 			  bool restore_state,
 			  bool include_position,
 			  const StringArray& scopes,
 			  int target_frame);
 
-    static void get_node_state(ostream& os, DispNode *dn,
+    static void get_node_state(std::ostream& os, DispNode *dn,
 			       bool include_position);
 
     // Reset done
@@ -620,7 +620,7 @@ public:
 
     // Write current selection as DDD commands to OS
     // Return true iff all went well
-    static bool get_selection(ostream& os, bool include_position = false);
+    static bool get_selection(std::ostream& os, bool include_position = false);
 
     // The maximum display number when saving states
     static int max_display_number;
@@ -628,7 +628,7 @@ public:
     // Return DDD commands to restore current state (displays, etc.)
     // Return true iff all went well.  SCOPES are obtained via
     // GET_SCOPES (see below).  TARGET_FRAME indicates final frame.
-    static bool get_state(ostream& os, const StringArray& scopes, 
+    static bool get_state(std::ostream& os, const StringArray& scopes, 
 			  int target_frame = 0);
     static bool get_scopes(StringArray& scopes);
 
@@ -664,13 +664,13 @@ public:
     static void make_sane();
 };
 
-inline bool DataDisp::get_selection(ostream& os, bool include_position)
+inline bool DataDisp::get_selection(std::ostream& os, bool include_position)
 {
     StringArray dummy;
     return get_state(os, false, include_position, dummy, 0);
 }
 
-inline bool DataDisp::get_state(ostream& os, const StringArray& scopes, 
+inline bool DataDisp::get_state(std::ostream& os, const StringArray& scopes, 
 				int target_frame)
 {
     return get_state(os, true, true, scopes, target_frame);

@@ -62,7 +62,7 @@ bool MatchBox::matches (const Box &box, const Box *callbackArg) const
 }
 
 // Dump
-void MatchBox::dump(ostream& s) const
+void MatchBox::dump(std::ostream& s) const
 {
     s << "<" << _data << ">";
 }

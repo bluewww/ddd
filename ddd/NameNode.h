@@ -38,7 +38,7 @@
 
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 #include "strclass.h"
 
 #include "VSLNode.h"
@@ -59,8 +59,8 @@ protected:
 	_name(node._name)
     {}
 
-    void dump(ostream& s) const;
-    void _dumpTree(ostream& s) const;
+    void dump(std::ostream& s) const;
+    void _dumpTree(std::ostream& s) const;
 
 public:
     // Constructor

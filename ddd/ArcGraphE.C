@@ -90,10 +90,10 @@ void ArcGraphEdge::drawLine(Widget w,
 			    const BoxRegion& exposed, 
 			    const GraphGC& gc) const
 {
-    makeLine(w, exposed, cout, gc);
+    makeLine(w, exposed, std::cout, gc);
 }
 
-void ArcGraphEdge::_print(ostream& os,
+void ArcGraphEdge::_print(std::ostream& os,
 			  const GraphGC& gc) const
 {
     makeLine(0, BoxRegion(), os, gc);
@@ -101,7 +101,7 @@ void ArcGraphEdge::_print(ostream& os,
 
 void ArcGraphEdge::makeLine(Widget w,
 			    const BoxRegion& exposed,
-			    ostream& os,
+			    std::ostream& os,
 			    const GraphGC& gc) const
 {
     HintGraphNode   *arc_hint = 0;

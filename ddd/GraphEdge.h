@@ -134,7 +134,7 @@ public:
     }
 
     // Printing
-    virtual void _print(ostream& os, const GraphGC& gc) const;
+    virtual void _print(std::ostream& os, const GraphGC& gc) const;
 
     // Region occupied by edge - if none, BoxRegion()
     virtual BoxRegion region(const GraphGC&) const { return BoxRegion(); }
@@ -143,7 +143,7 @@ public:
     virtual bool OK() const;
 };
 
-extern ostream& operator << (ostream& s, GraphEdge& e);
+extern std::ostream& operator << (std::ostream& s, GraphEdge& e);
 
 #endif // _DDD_GraphEdge_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

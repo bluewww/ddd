@@ -106,7 +106,7 @@ char exit_rcsid[] =
 #include "wm.h"
 
 #include <signal.h>
-#include <iostream.h>
+#include <iostream>
 #include <ctype.h>
 #include <errno.h>
 #include <sys/wait.h>
@@ -370,7 +370,7 @@ void ddd_show_signal(int sig)
 	string s = sigName(sig);
 	if (core_dumped)
 	    s += " (core dumped)";
-	cerr << s << "\n";
+	std::cerr << s << "\n";
     }
     gdb_question_running = false;
 
@@ -648,7 +648,7 @@ void ddd_install_x_fatal()
 static void PostXtErrorCB(XtPointer client_data, XtIntervalId *)
 {
     string *msg_ptr = (string *)client_data;
-    string msg = *msg_ptr;
+    const string msg = *msg_ptr;
     delete msg_ptr;
 
     const string title = msg.before('\v');
@@ -678,7 +678,7 @@ static void ddd_xt_error(String message = 0)
     static int entered = 0;
 
     // Issue error on stderr
-    cerr << "Error: " << message << "\n";
+    std::cerr << "Error: " << message << "\n";
 
     const string title = message;
     const string cause = "Xt error";
@@ -713,7 +713,7 @@ void ddd_install_xt_error(XtAppContext app_context)
 static void PostXErrorCB(XtPointer client_data, XtIntervalId *)
 {
     string *msg_ptr = (string *)client_data;
-    string msg = *msg_ptr;
+    const string msg = *msg_ptr;
     delete msg_ptr;
 
     const string title = msg.before('\v');
@@ -734,7 +734,7 @@ static string xtext(Display *display, const char *code, const char *def, int arg
 // Give a diagnostic on EVENT on OS.  Patterned after
 // _XPrintDefaultError(dpy, event, fp) in X11R6.3, but also issue the
 // widget associated with the resource (as in Netscape).
-static void print_x_error(Display *display, XErrorEvent *event, ostream& os)
+static void print_x_error(Display *display, XErrorEvent *event, std::ostream& os)
 {
     char buffer[BUFSIZ];
     XGetErrorText(display, event->error_code, buffer, sizeof buffer);
@@ -870,14 +870,14 @@ extern "C" {
 
 	    // Exit after diagnostics
 	    ddd_cleanup();
-	    print_x_error(display, event, cerr);
+	    print_x_error(display, event, std::cerr);
 	    print_x_error(display, event, dddlog);
 	    print_fatal_msg(title.chars(), cause.chars(), "X error");
 	    exit(EXIT_FAILURE);
 	}
 
 	// Issue error on stderr and DDD log
-	print_x_error(display, event, cerr);
+	print_x_error(display, event, std::cerr);
 	print_x_error(display, event, dddlog);
 
 	if (xt_error_app_context != 0)
@@ -997,7 +997,7 @@ void gdb_diedHP(Agent *gdb, void *, void *call_data)
 	    String s = XmTextGetString(gdb_w);
 	    string message = s + messagePosition;
 	    XtFree(s);
-	    cerr << message;
+	    std::cerr << message;
 	}
 
 	_DDDExitCB(gdb_w, XtPointer(EXIT_FAILURE), XtPointer(0));
@@ -1171,13 +1171,13 @@ static void debug_ddd(bool core_dumped)
 }
 
 // Insert `where' info into LOG
-void report_core(ostream& log)
+void report_core(std::ostream& log)
 {
     if (!is_core_file("core"))
 	return;
 
     string tmpfile = tempfile();
-    ofstream os(tmpfile.chars());
+    std::ofstream os(tmpfile.chars());
     os << 
 	"set verbose off\n"
 	"set height 0\n"

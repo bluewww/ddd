@@ -145,7 +145,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
 	font = XLoadQueryFont(dpy, "fixed");
     if (font == 0)
     {
-	cerr << "Cannot load font\n";
+	std::cerr << "Cannot load font\n";
 	exit(1);
     }
     
@@ -155,7 +155,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
     pointsize = values.pointsize;
     if (pointsize <= 0 || pointsize > 10) 
     {
-	cerr << "Invalid point size " << pointsize << "\n";
+	std::cerr << "Invalid point size " << pointsize << "\n";
 	pointsize = 1;
     }
 
@@ -185,7 +185,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
 	    XColor xcolor;
 	    if (!XParseColor(dpy, cmap, color.chars(), &xcolor))
 	    {
-		cerr << "Unable to parse " << quote(color) 
+		std::cerr << "Unable to parse " << quote(color) 
 		     << ".  Using black.\n";
 		colors[i] = black;
 	    }
@@ -196,7 +196,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
 		}
 		else
 		{
-		    cerr << "Cannot allocate " << quote(color)
+		    std::cerr << "Cannot allocate " << quote(color)
 			 << ".  Using black.\n";
 		    colors[i] = black;
 		}
@@ -245,7 +245,7 @@ void PlotArea::plot_nop(const char *)
 // Unknown command
 void PlotArea::plot_unknown(const char *command)
 {
-    cerr << "PlotArea: unknown plot command " << quote(command) << "\n";
+    std::cerr << "PlotArea: unknown plot command " << quote(command) << "\n";
 }
 
 void PlotArea::plot_vector(const char *buf)

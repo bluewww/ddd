@@ -15,6 +15,7 @@ Table of Contents
       + GCC 3.0 prereleases
       + GCC and libg++
     * HP-UX
+    * Irix
     * LessTif
     * Linux
     * OSF/1
@@ -278,7 +279,6 @@ Reported by: jensen@Adobe.COM (Freddy Jensen)
         From: LIBXM = -lXm
         To:   LIBXM = /usr/lib/Motif1.2_R6/libXm.a
     
-
 Reported by:  (various)
 
     Lutz Jaenicke <Lutz.Jaenicke@aet.TU-Cottbus.DE> reports that he
@@ -303,6 +303,10 @@ Reported by:  (various)
       linking is not necessary in this setup.
       (Athena Widgets are only available as ".a" static libraries, so I decided
       against include them.)
+    * To get the Athena Widgets, use:
+      ./configure \
+       --with-athena-includes=/usr/contrib/X11R6/include \
+       --with-athena-libraries=/usr/contrib/X11R6/lib
     * IMPORTANT: I just installed the latest aCC patch, released 
       around yesterday (2000/02/02)!!! Its number is PHSS_20959.
       Without it, linking failed with
@@ -374,6 +378,17 @@ Reported by:  (various)
     `-mmillicode-long-calls' when compiling.  It should permit fixes
     into shared library calls (these errors only occur with shared
     libraries).
+
+Irix
+====
+
+    To use the MIPSPro compilers with Motif 2.1, the configure line is:
+    env CC='cc -n32' CXX='CC -n32' \
+     CFLAGS='-O' CXXFLAGS='-O' \
+     ./configure \
+     --with-motif-includes=/usr/Motif-2.1/include \
+     --with-motif-libraries=/usr/Motif-2.1/lib32 \
+     --x-libraries=/usr/lib32
 
 LessTif
 =======

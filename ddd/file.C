@@ -259,7 +259,7 @@ static Widget create_file_dialog(Widget w, const _XtString name,
 
 
 // Synchronize file dialogs with current directory
-void process_cd(string pwd)
+void process_cd(const string& pwd)
 {
     current_file_filter = pwd + "/*";
 
@@ -342,7 +342,7 @@ static void searchRemote(Widget fs,
 
 	if (nitems == 1 || nitems % 10 == 0)
 	{
-	    ostrstream status;
+	    std::ostringstream status;
 	    status << delay_message << "... ("
 		   << nitems << " processed)";
 	    string s(status);
@@ -418,7 +418,7 @@ static void searchLocal(Widget fs,
     char **files = glob_filename(mask);
     if (files == (char **)0)
     {
-	cerr << mask << ": glob failed\n";
+	std::cerr << mask << ": glob failed\n";
     }
     else if (files == (char **)-1)
     {
@@ -449,7 +449,7 @@ static void searchLocal(Widget fs,
 	    int old_percent = ((i - 1) * 100) / count;
 	    if (percent % 10 == 0 && old_percent % 10 != 0)
 	    {
-		ostrstream status;
+		std::ostringstream status;
 		status << delay_message << "... ("
 		       << percent << "% processed)";
 		string s(status);
@@ -492,6 +492,10 @@ static void searchLocalExecFiles(Widget fs,
 	break;
 
     case PERL:
+	searchLocal(fs, cbs, is_perl_file);
+	break;
+
+    case BASH:
 	searchLocal(fs, cbs, is_perl_file);
 	break;
 
@@ -637,6 +641,7 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 	case JDB:
 	case PYDB:
 	case PERL:
+	case BASH:
 	    break;		// FIXME
 	}
     }
@@ -856,6 +861,21 @@ ProgramInfo::ProgramInfo()
 	break;			// FIXME
 
     case PERL:
+	// Use the program we were invoked with
+	file = gdb->program();
+	if (file.matches(rxint))
+	    file = "";		// Invoked with a constant expression
+
+	if (file == "")
+	{
+	    // Not invoked with a program?  Use the current file, then.
+	    file = source_view->file_of_cursor();
+	    file = file.before(":");
+	}
+	core = "";
+	break;
+
+    case BASH:
 	// Use the program we were invoked with
 	file = gdb->program();
 	if (file.matches(rxint))
@@ -1115,7 +1135,7 @@ static void update_processes(Widget processes, bool keep_selection)
     // Fix for Sun: use /usr/bin/kill
     string kill_result;
     {
-      ostrstream os;
+      std::ostringstream os;
       kill += " 2>&1";
       FILE *fp = popen(kill.chars(), "r");
       if (fp != 0)
@@ -1128,7 +1148,11 @@ static void update_processes(Widget processes, bool keep_selection)
 	  pclose(fp);
       }
       kill_result = os; 
-      os.rdbuf()->freeze(0);
+#if HAVE_FREEZE_OSTRSTREAMBUF
+      os.rdbuf()->freeze(frozen);
+#elif HAVE_FREEZE_OSTRSTREAM
+      os.freeze(frozen);
+#endif
     }
 #else
     string kill_result = gdb_question(gdb->shell_command(kill));

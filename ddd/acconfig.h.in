@@ -80,17 +80,17 @@
 /* Define if ptrace() supports a PTRACE_DUMPCORE request to dump core files. */
 #undef HAVE_PTRACE_DUMPCORE
 
-/* Define if your C++ library has an ostrstream::frozen() function. */
-#undef HAVE_FROZEN_OSTRSTREAM
+/* Define if your C++ library has an ostringstream::frozen() function. */
+#undef HAVE_FROZEN_OSTRINGSTREAM
 
-/* Define if your C++ library has an ostrstreambuf::frozen() function. */
-#undef HAVE_FROZEN_OSTRSTREAMBUF
+/* Define if your C++ library has an ostringstreambuf::frozen() function. */
+#undef HAVE_FROZEN_OSTRINGSTREAMBUF
 
-/* Define if your C++ library has an ostrstream::freeze() function. */
-#undef HAVE_FREEZE_OSTRSTREAM
+/* Define if your C++ library has an ostringstream::freeze() function. */
+#undef HAVE_FREEZE_OSTRINGSTREAM
 
-/* Define if your C++ library has an ostrstreambuf::freeze() function. */
-#undef HAVE_FREEZE_OSTRSTREAMBUF
+/* Define if your C++ library has an ostringstreambuf::freeze() function. */
+#undef HAVE_FREEZE_OSTRINGSTREAMBUF
 
 /* Define if the ios::iostate type is defined or declared in <iostream.h>. */
 #undef HAVE_IOSTATE
@@ -154,9 +154,9 @@
    must not be freed after setting. */
 #undef MOTIF_DIALOGS_OWN_SELECTION_LIST
 
-/* Define if ostrstream::pcount() is increased by 1 after accessing the
-   string via ostrstream::str(), as in the SGI C++ I/O library. */
-#undef OSTRSTREAM_PCOUNT_BROKEN
+/* Define if ostringstream::pcount() is increased by 1 after accessing the
+   string via ostringstream::str(), as in the SGI C++ I/O library. */
+#undef OSTRINGSTREAM_PCOUNT_BROKEN
 
 /* Define to the signal handler type accepted by signal(). 
    See the `signal' man page and the decl in <signal.h> for the exact type.

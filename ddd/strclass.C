@@ -43,7 +43,7 @@ extern "C" int malloc_verify();
 #include "return.h"
 #include <ctype.h>
 #include <limits.h>
-#include <new.h>
+#include <new>
 #include <stdlib.h>
 
 #if HAVE_LIMITS_H
@@ -52,7 +52,7 @@ extern "C" int malloc_verify();
 
 void string::error(const char* msg) const
 {
-    cerr << "string: " << msg << "\n";
+    std::cerr << "string: " << msg << "\n";
     abort();
 }
 
@@ -181,7 +181,7 @@ inline static strRep* string_Snew(int newsiz)
 #if 0
     if ((unsigned long)allocsiz >= MAX_STRREP_SIZE)
     {
-	cerr << "string: requested length out of range\n";
+	std::cerr << "string: requested length out of range\n";
 	abort();
     }
 #endif
@@ -903,12 +903,24 @@ subString string::at(int first, int len)
     return _substr(first, len);
 }
 
-subString string::operator() (int first, int len)
+constSubString string::at(int first, int len) const
 {
     return _substr(first, len);
 }
 
+#if 0
+subString string::operator() (int first, int len)
+{
+    return _substr(first, len);
+}
+#endif
+
 subString string::before(int pos)
+{
+    return _substr(0, pos);
+}
+
+constSubString string::before(int pos) const
 {
     return _substr(0, pos);
 }
@@ -918,7 +930,17 @@ subString string::through(int pos)
     return _substr(0, pos+1);
 }
 
+constSubString string::through(int pos) const
+{
+    return _substr(0, pos+1);
+}
+
 subString string::after(int pos)
+{
+    return _substr(pos + 1, length() - (pos + 1));
+}
+
+constSubString string::after(int pos) const
 {
     return _substr(pos + 1, length() - (pos + 1));
 }
@@ -928,7 +950,18 @@ subString string::from(int pos)
     return _substr(pos, length() - pos);
 }
 
+constSubString string::from(int pos) const
+{
+    return _substr(pos, length() - pos);
+}
+
 subString string::at(const string& y, int startpos)
+{
+    int first = search(startpos, length(), y.chars(), y.length());
+    return _substr(first,  y.length());
+}
+
+constSubString string::at(const string& y, int startpos) const
 {
     int first = search(startpos, length(), y.chars(), y.length());
     return _substr(first,  y.length());
@@ -940,7 +973,20 @@ subString string::at(const subString& y, int startpos)
     return _substr(first, y.length());
 }
 
+constSubString string::at(const constSubString& y, int startpos) const
+{
+    int first = search(startpos, length(), y.chars(), y.length());
+    return _substr(first, y.length());
+}
+
 subString string::at(const regex& r, int startpos)
+{
+    int mlen;
+    int first = r.search(chars(), length(), mlen, startpos);
+    return _substr(first, mlen);
+}
+
+constSubString string::at(const regex& r, int startpos) const
 {
     int mlen;
     int first = r.search(chars(), length(), mlen, startpos);
@@ -954,7 +1000,20 @@ subString string::at(const char* t, int startpos)
     return _substr(first, tlen);
 }
 
+constSubString string::at(const char* t, int startpos) const
+{
+    int tlen = slen(t);
+    int first = search(startpos, length(), t, tlen);
+    return _substr(first, tlen);
+}
+
 subString string::at(char c, int startpos)
+{
+    int first = search(startpos, length(), c);
+    return _substr(first, 1);
+}
+
+constSubString string::at(char c, int startpos) const
 {
     int first = search(startpos, length(), c);
     return _substr(first, 1);
@@ -966,7 +1025,19 @@ subString string::before(const string& y, int startpos)
     return _substr(0, last);
 }
 
+constSubString string::before(const string& y, int startpos) const
+{
+    int last = search(startpos, length(), y.chars(), y.length());
+    return _substr(0, last);
+}
+
 subString string::before(const subString& y, int startpos)
+{
+    int last = search(startpos, length(), y.chars(), y.length());
+    return _substr(0, last);
+}
+
+constSubString string::before(const constSubString& y, int startpos) const
 {
     int last = search(startpos, length(), y.chars(), y.length());
     return _substr(0, last);
@@ -979,13 +1050,33 @@ subString string::before(const regex& r, int startpos)
     return _substr(0, first);
 }
 
+constSubString string::before(const regex& r, int startpos) const
+{
+    int mlen;
+    int first = r.search(chars(), length(), mlen, startpos);
+    return _substr(0, first);
+}
+
 subString string::before(char c, int startpos)
 {
     int last = search(startpos, length(), c);
     return _substr(0, last);
 }
 
+constSubString string::before(char c, int startpos) const
+{
+    int last = search(startpos, length(), c);
+    return _substr(0, last);
+}
+
 subString string::before(const char* t, int startpos)
+{
+    int tlen = slen(t);
+    int last = search(startpos, length(), t, tlen);
+    return _substr(0, last);
+}
+
+constSubString string::before(const char* t, int startpos) const
 {
     int tlen = slen(t);
     int last = search(startpos, length(), t, tlen);
@@ -1000,7 +1091,23 @@ subString string::through(const string& y, int startpos)
     return _substr(0, last);
 }
 
+constSubString string::through(const string& y, int startpos) const
+{
+    int last = search(startpos, length(), y.chars(), y.length());
+    if (last >= 0)
+	last += y.length();
+    return _substr(0, last);
+}
+
 subString string::through(const subString& y, int startpos)
+{
+    int last = search(startpos, length(), y.chars(), y.length());
+    if (last >= 0)
+	last += y.length();
+    return _substr(0, last);
+}
+
+constSubString string::through(const constSubString& y, int startpos) const
 {
     int last = search(startpos, length(), y.chars(), y.length());
     if (last >= 0)
@@ -1017,7 +1124,24 @@ subString string::through(const regex& r, int startpos)
     return _substr(0, first);
 }
 
+constSubString string::through(const regex& r, int startpos) const
+{
+    int mlen;
+    int first = r.search(chars(), length(), mlen, startpos);
+    if (first >= 0)
+	first += mlen;
+    return _substr(0, first);
+}
+
 subString string::through(char c, int startpos)
+{
+    int last = search(startpos, length(), c);
+    if (last >= 0)
+	last += 1;
+    return _substr(0, last);
+}
+
+constSubString string::through(char c, int startpos) const
 {
     int last = search(startpos, length(), c);
     if (last >= 0)
@@ -1034,7 +1158,24 @@ subString string::through(const char* t, int startpos)
     return _substr(0, last);
 }
 
+constSubString string::through(const char* t, int startpos) const
+{
+    int tlen = slen(t);
+    int last = search(startpos, length(), t, tlen);
+    if (last >= 0)
+	last += tlen;
+    return _substr(0, last);
+}
+
 subString string::after(const string& y, int startpos)
+{
+    int first = search(startpos, length(), y.chars(), y.length());
+    if (first >= 0)
+	first += y.length();
+    return _substr(first, length() - first);
+}
+
+constSubString string::after(const string& y, int startpos) const
 {
     int first = search(startpos, length(), y.chars(), y.length());
     if (first >= 0)
@@ -1050,7 +1191,23 @@ subString string::after(const subString& y, int startpos)
     return _substr(first, length() - first);
 }
 
+constSubString string::after(const constSubString& y, int startpos) const
+{
+    int first = search(startpos, length(), y.chars(), y.length());
+    if (first >= 0)
+	first += y.length();
+    return _substr(first, length() - first);
+}
+
 subString string::after(char c, int startpos)
+{
+    int first = search(startpos, length(), c);
+    if (first >= 0)
+	first += 1;
+    return _substr(first, length() - first);
+}
+
+constSubString string::after(char c, int startpos) const
 {
     int first = search(startpos, length(), c);
     if (first >= 0)
@@ -1067,7 +1224,25 @@ subString string::after(const regex& r, int startpos)
     return _substr(first, length() - first);
 }
 
+constSubString string::after(const regex& r, int startpos) const
+{
+    int mlen;
+    int first = r.search(chars(), length(), mlen, startpos);
+    if (first >= 0)
+	first += mlen;
+    return _substr(first, length() - first);
+}
+
 subString string::after(const char* t, int startpos)
+{
+    int tlen = slen(t);
+    int first = search(startpos, length(), t, tlen);
+    if (first >= 0)
+	first += tlen;
+    return _substr(first, length() - first);
+}
+
+constSubString string::after(const char* t, int startpos) const
 {
     int tlen = slen(t);
     int first = search(startpos, length(), t, tlen);
@@ -1082,7 +1257,19 @@ subString string::from(const string& y, int startpos)
     return _substr(first, length() - first);
 }
 
+constSubString string::from(const string& y, int startpos) const
+{
+    int first = search(startpos, length(), y.chars(), y.length());
+    return _substr(first, length() - first);
+}
+
 subString string::from(const subString& y, int startpos)
+{
+    int first = search(startpos, length(), y.chars(), y.length());
+    return _substr(first, length() - first);
+}
+
+constSubString string::from(const constSubString& y, int startpos) const
 {
     int first = search(startpos, length(), y.chars(), y.length());
     return _substr(first, length() - first);
@@ -1095,7 +1282,20 @@ subString string::from(const regex& r, int startpos)
     return _substr(first, length() - first);
 }
 
+constSubString string::from(const regex& r, int startpos) const
+{
+    int mlen;
+    int first = r.search(chars(), length(), mlen, startpos);
+    return _substr(first, length() - first);
+}
+
 subString string::from(char c, int startpos)
+{
+    int first = search(startpos, length(), c);
+    return _substr(first, length() - first);
+}
+
+constSubString string::from(char c, int startpos) const
 {
     int first = search(startpos, length(), c);
     return _substr(first, length() - first);
@@ -1108,6 +1308,12 @@ subString string::from(const char* t, int startpos)
     return _substr(first, length() - first);
 }
 
+constSubString string::from(const char *t, int startpos) const
+{
+    int tlen = slen(t);
+    int first = search(startpos, length(), t, tlen);
+    return _substr(first, length() - first);
+}
 
 
 /*
@@ -1154,7 +1360,7 @@ int split(const string& src, string *results, int n, const regex& r)
     return i;
 }
 
-string join(string *src, int n, const string& separator) RETURNS(x)
+string join(const string *src, int n, const string& separator) RETURNS(x)
 {
     RETURN_OBJECT(string, x);
     string sep = separator;
@@ -1401,28 +1607,28 @@ string common_suffix(const string& x, const string& y, int startpos)
 
 // IO
 
-istream& operator>>(istream& s, string& x)
+std::istream& operator>>(std::istream& s, string& x)
 {
     // Read whitespace
     if (!s.good()) 
     {
-	s.clear(ios::failbit|s.rdstate());
+	s.clear(std::ios::failbit|s.rdstate());
 	return s;
     }
 
-    if (s.flags() & ios::skipws)
+    if (s.flags() & std::ios::skipws)
 	ws(s);
 
     if (!s.good()) 
     {
-	s.clear(ios::failbit|s.rdstate());
+	s.clear(std::ios::failbit|s.rdstate());
 	return s;
     }
 
     int ch;
     unsigned i = 0;
     x.rep = string_Sresize(x.rep, 20);
-    register streambuf *sb = s.rdbuf();
+    register std::streambuf *sb = s.rdbuf();
     while ((ch = sb->sbumpc()) != EOF)
     {
 	if (isspace(ch))
@@ -1435,37 +1641,37 @@ istream& operator>>(istream& s, string& x)
     x.rep->len = i;
 
     if (i == 0)
-	s.clear(ios::failbit|s.rdstate());
+	s.clear(std::ios::failbit|s.rdstate());
     if (ch == EOF)
-	s.clear(ios::eofbit|s.rdstate());
+	s.clear(std::ios::eofbit|s.rdstate());
 	
     return s;
 }
 
-int readline(istream& s, string& x, char terminator, int discard)
+int readline(std::istream& s, string& x, char terminator, int discard)
 {
     assert(!x.consuming());
 
     // Read whitespace
     if (!s.good()) 
     {
-	s.clear(ios::failbit|s.rdstate());
+	s.clear(std::ios::failbit|s.rdstate());
 	return 0;
     }
 
-    if (s.flags() & ios::skipws)
+    if (s.flags() & std::ios::skipws)
 	ws(s);
 
     if (!s.good()) 
     {
-	s.clear(ios::failbit|s.rdstate());
+	s.clear(std::ios::failbit|s.rdstate());
 	return 0;
     }
 
     int ch;
     unsigned i = 0;
     x.rep = string_Sresize(x.rep, 80);
-    register streambuf *sb = s.rdbuf();
+    register std::streambuf *sb = s.rdbuf();
     while ((ch = sb->sbumpc()) != EOF)
     {
 	if (ch != terminator || !discard)
@@ -1480,7 +1686,7 @@ int readline(istream& s, string& x, char terminator, int discard)
     x.rep->s[i] = 0;
     x.rep->len = i;
     if (ch == EOF)
-	s.clear(s.rdstate() | ios::eofbit);
+	s.clear(s.rdstate() | std::ios::eofbit);
     return i;
 }
 
@@ -1539,6 +1745,14 @@ bool string::OK() const
 }
 
 bool subString::OK() const
+{
+    // Check for legal string and pos and len outside bounds
+    if (!S.OK() || pos + len > S.rep->len)
+	S.error("subString invariant failure");
+    return true;
+}
+
+bool constSubString::OK() const
 {
     // Check for legal string and pos and len outside bounds
     if (!S.OK() || pos + len > S.rep->len)

@@ -47,7 +47,7 @@ void tabto(string& s, int pos)
 	if (s[i] == '\t')
 	{
 	    int offset = pos - i;
-	    s(i, 1) = replicate(string(' '), offset);
+	    s.at(i, 1) = replicate(string(' '), offset);
 	    return;
 	}
     }

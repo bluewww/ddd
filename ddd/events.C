@@ -33,7 +33,7 @@ char events_rcsid[] =
 
 static void invalid_event(const char *func)
 {
-    cerr << func << ": invalid event\n";
+    std::cerr << func << ": invalid event\n";
 }
 
 // Event location

@@ -66,6 +66,7 @@ protected:
     void filter_jdb(string& answer);
     void filter_pydb(string& answer);
     void filter_perl(string& answer);
+    void filter_bash(string& answer);
 
     // Filter all lines from ANSWER beginning with current line.  This
     // is required to suppress the line number output after a

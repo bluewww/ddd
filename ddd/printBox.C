@@ -58,7 +58,7 @@ static const char *BOUND =   "%%BoundingBox: ";
 // origin of the graph is upper left!
 //
 
-void Box::epsHeader (ostream& os, 
+void Box::epsHeader (std::ostream& os, 
 		     const BoxRegion& region, 
 		     const PostScriptPrintGC& gc)
 {
@@ -136,7 +136,7 @@ void Box::epsHeader (ostream& os,
 
 // public interface
 
-void Box::_printHeader(ostream& os, 
+void Box::_printHeader(std::ostream& os, 
 		       const BoxRegion& region, 
 		       const PrintGC& gc)
 {
@@ -151,7 +151,7 @@ void Box::_printHeader(ostream& os,
     }
 }
 
-void Box::_printTrailer(ostream& os, const BoxRegion&, const PrintGC& gc)
+void Box::_printTrailer(std::ostream& os, const BoxRegion&, const PrintGC& gc)
 {
     if (gc.isPostScript())
     {

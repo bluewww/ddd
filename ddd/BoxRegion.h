@@ -36,7 +36,7 @@
 
 // A BoxRegion is a rectangular area which has an ORIGIN and a SPACE.
 
-#include <iostream.h>
+#include <iostream>
 #include "misc.h"
 #include "BoxPoint.h"
 #include "BoxSize.h"
@@ -108,7 +108,7 @@ public:
     }
 
     // Debugging
-    friend ostream& operator << (ostream& s, const BoxRegion& r);
+    friend std::ostream& operator << (std::ostream& s, const BoxRegion& r);
 };
 
 // Check if P is contained in R

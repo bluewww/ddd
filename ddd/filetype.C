@@ -54,12 +54,12 @@ extern "C" {
 #include <fcntl.h>
 }
 
-#if HAVE_LIBELF_H
+#if defined(HAVE_LIBELF_H) && defined(__powerpc__)
 #include  <libelf.h>
 #ifndef EM_PPC
 #define EM_PPC 20
 #endif
-#endif // HAVE_LIBELF_H
+#endif // defined(HAVE_LIBELF_H) && defined(__powerpc__)
 
 #include "regexps.h"
 
@@ -142,7 +142,7 @@ bool is_exec_file(const string& file_name)
 // True if FILE_NAME is a PPC file
 static bool is_ppc_file(const string& file_name)
 {
-#if HAVE_LIBELF_H
+#if defined(HAVE_LIBELF_H) && defined(__powerpc__)
     Elf32_Ehdr *   ehdr;
     Elf *          elf;
     int       	   fd;
@@ -178,7 +178,7 @@ static bool is_ppc_file(const string& file_name)
 #else
     (void) file_name;		// Use it
     return false;
-#endif // HAVE_LIBELF_H
+#endif // defined(HAVE_LIBELF_H) && defined(__powerpc__)
 }
 
 // True if FILE_NAME is an executable binary debuggee
@@ -365,6 +365,19 @@ bool is_perl_file(const string& file_name)
 	file_name.contains(".pm", -1) || 
 	file_name.contains(".perl", -1) || 
 	has_hashbang(file_name, "perl"))
+	return true;
+
+    return false;
+}
+
+// A Perl file is a standard source file which ends in '.pl' or `.pm'
+bool is_bash_file(const string& file_name)
+{
+    if (!is_source_file(file_name))
+	return false;
+
+    if (file_name.contains(".sh", -1) || 
+	has_hashbang(file_name, "bash"))
 	return true;
 
     return false;

@@ -48,7 +48,7 @@ char session_rcsid[] =
 #include <signal.h>		// kill()
 #include <string.h>		// strerror()
 #include <errno.h>
-#include <fstream.h>
+#include <fstream>
 #include <pwd.h>
 
 #include "AppData.h"
@@ -170,12 +170,12 @@ string session_file(const string& session, const string& base)
 
 class StreamAction {
 private:
-    ostream& stream;
+    std::ostream& stream;
     string action;
     bool ok;
 
 public:
-    StreamAction(ostream& os, const string& c)
+    StreamAction(std::ostream& os, const string& c)
 	: stream(os), action(c), ok(true)
     {
 	stream << action << "...\n";
@@ -192,7 +192,7 @@ public:
     }
 };
 
-static int makedir(string name, ostream& msg, bool user_only = false)
+static int makedir(const string& name, std::ostream& msg, bool user_only = false)
 {
     StreamAction action(msg, "Creating " + quote(name + "/"));
 
@@ -211,7 +211,7 @@ static int makedir(string name, ostream& msg, bool user_only = false)
     return ret;
 }
 
-static void copy(const string& from_name, const string& to_name, ostream& msg)
+static void copy(const string& from_name, const string& to_name, std::ostream& msg)
 {
     FILE *from = fopen(from_name.chars(), "r");
     if (from == 0)
@@ -258,7 +258,7 @@ void set_temporary_session(const string& session, bool temporary)
     if (temporary)
     {
         const string s1 = session_tmp_flag(session); 
-	ofstream os(s1.chars());
+	std::ofstream os(s1.chars());
 	os << "This session will be deleted unless saved explicitly.\n";
     }
     else
@@ -269,7 +269,7 @@ void set_temporary_session(const string& session, bool temporary)
 }
 
 // Create DDD state directory
-static void create_session_state_dir(ostream& msg)
+static void create_session_state_dir(std::ostream& msg)
 {
     // Create or find state directory
     if (!is_directory(session_state_dir()) && 
@@ -293,7 +293,7 @@ static void create_session_state_dir(ostream& msg)
 }
 
 // Create session directory
-void create_session_dir(const string& session, ostream& msg)
+void create_session_dir(const string& session, std::ostream& msg)
 {
     // Create state directory
     create_session_state_dir(msg);
@@ -316,7 +316,7 @@ void create_session_dir(const string& session, ostream& msg)
 // Same, but issue messages in status line
 void create_session_dir(const string& session)
 {
-    ostrstream messages;
+    std::ostringstream messages;
     create_session_dir(session, messages);
     string msg(messages);
     while (msg != "")
@@ -340,7 +340,7 @@ bool lock_session_dir(Display *display,
     string lock_file = session_lock_file(session);
 
     {
-	ifstream is(lock_file.chars());
+	std::ifstream is(lock_file.chars());
 	if (!is.bad())
 	{
 	    string version;
@@ -379,7 +379,7 @@ bool lock_session_dir(Display *display,
 	else
 	    username = itostring(getuid());
 
-	ofstream os(lock_file.chars());
+	std::ofstream os(lock_file.chars());
 	os << DDD_NAME "-" DDD_VERSION
 	   << " " << fullhostname()
 	   << " " << getpid()
@@ -396,7 +396,7 @@ bool unlock_session_dir(const string& session)
 {
     string lock_file = session_lock_file(session);
 
-    ifstream is(lock_file.chars());
+    std::ifstream is(lock_file.chars());
     if (!is.bad())
     {
 	// There is a lock -- check whether it's ours
@@ -433,7 +433,7 @@ static void get_sessions(StringArray& arr)
     char **files = glob_filename(mask.chars());
     if (files == (char **)0)
     {
-	cerr << mask << ": glob failed\n";
+	std::cerr << mask << ": glob failed\n";
     }
     else if (files == (char **)-1)
     {
@@ -985,6 +985,7 @@ static void open_session(const string& session)
     case JDB:  shortcuts = XtNjdbDisplayShortcuts;  break;
     case PYDB: shortcuts = XtNpydbDisplayShortcuts; break;
     case PERL: shortcuts = XtNperlDisplayShortcuts; break;
+    case BASH: shortcuts = XtNbashDisplayShortcuts; break;
     }
 
     display_shortcuts = get_resource(db, shortcuts, XtCDisplayShortcuts);
@@ -1008,6 +1009,9 @@ static void open_session(const string& session)
 	break;
     case PERL:
 	app_data.perl_display_shortcuts = display_shortcuts.chars();
+	break;
+    case BASH:
+	app_data.bash_display_shortcuts = display_shortcuts.chars();
 	break;
     }
     update_user_buttons();
@@ -1047,6 +1051,10 @@ static void open_session(const string& session)
 
     case PERL:
 	settings = get_resource(db, XtNperlSettings, XtCSettings);
+	break;
+
+    case BASH:
+	settings = get_resource(db, XtNbashSettings, XtCSettings);
 	break;
     }
     init_session(restart, settings, app_data.source_init_commands);
@@ -1099,6 +1107,10 @@ void RestartDebuggerCB(Widget, XtPointer, XtPointer)
 	break;
 
     case PERL:
+	app_data.perl_settings = settings.chars();
+	break;
+
+    case BASH:
 	app_data.perl_settings = settings.chars();
 	break;
     }
@@ -1198,7 +1210,7 @@ static void AskSmShutdownCB       (Widget w, XtPointer, XtPointer call_data);
 static void ConfirmSmShutdownCB   (Widget w, XtPointer, XtPointer call_data);
 static void CancelSmShutdownCB    (Widget w, XtPointer, XtPointer call_data);
 
-static void ask(string text, const _XtString name,
+static void ask(const string& text, const _XtString name,
 		XtCheckpointToken token, Widget w,
 		XtCallbackProc yes, XtCallbackProc no);
 
@@ -1359,7 +1371,7 @@ void ShutdownSmSessionCB(Widget w, XtPointer, XtPointer call_data)
 }
 
 // Create a confirmation dialog
-static void ask(string text, const _XtString name, XtCheckpointToken token, Widget w,
+static void ask(const string& text, const _XtString name, XtCheckpointToken token, Widget w,
 		XtCallbackProc yes, XtCallbackProc no)
 {
     // Program is still running; request confirmation

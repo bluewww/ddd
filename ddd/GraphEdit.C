@@ -36,8 +36,8 @@ char GraphEdit_rcsid[] =
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 
 #include <Xm/Xm.h>
 #include <Xm/ScrolledW.h>
@@ -1053,7 +1053,7 @@ static Boolean CvtDimensionToString (Display *display, XrmValue *,
 
     Dimension d = *((Dimension *)fromVal->addr);
 
-    ostrstream os;
+    std::ostringstream os;
     os << d;
     string os_s(os);
     String s = (String)XtNewString(os_s.chars());
@@ -1074,7 +1074,7 @@ static Boolean CvtCardinalToString (Display *display, XrmValue *,
 
     Cardinal d = *((Cardinal *)fromVal->addr);
 
-    ostrstream os;
+    std::ostringstream os;
     os << d;
     string os_s(os);
     String s = (String)XtNewString(os_s.chars());
@@ -2338,7 +2338,7 @@ static void MoveSelected(Widget w, XEvent *, String *params,
 
     if (num_params == 0 || *num_params != 2)
     {
-	cerr << "move-selected: usage: move-selected(X, Y)\n";
+	std::cerr << "move-selected: usage: move-selected(X, Y)\n";
 	return;
     }
 
@@ -2365,7 +2365,7 @@ static void MoveSelected(Widget w, XEvent *, String *params,
 	    c = strtol(str, &ptr, 0);
 	    if (ptr == str)
 	    {
-		cerr << "move-selected: illegal argument " << str << "\n";
+		std::cerr << "move-selected: illegal argument " << str << "\n";
 		return;
 	    }
 	}
@@ -2564,7 +2564,7 @@ static int get_new_rotation(Widget w, const _XtString *params, Cardinal *num_par
 
     if (new_rotation % 90 != 0)
     {
-	cerr << name << ": usage: " << name << "(" 
+	std::cerr << name << ": usage: " << name << "(" 
 	     << extra_args << "[[+-]DEGREES]), "
 	    "where DEGREES is a multiple of 90\n";
 	return -1;
@@ -2886,7 +2886,7 @@ static void _Layout(Widget w, XEvent *event, String *params,
     Layout::remove_graph(graph_name);
 
     // ... and re-rotate it.
-    ostrstream os;
+    std::ostringstream os;
     os << new_rotation;
 
     string rotation_s = os;
@@ -2972,7 +2972,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
     else if (p == "both")
 	themode = Both;
     else
-	cerr << "show-edges: bad mode " << '`' << p << "'" << "\n";
+	std::cerr << "show-edges: bad mode " << '`' << p << "'" << "\n";
 
     for (GraphEdge *edge = graph->firstEdge(); edge != 0;
 	edge = graph->nextEdge(edge))

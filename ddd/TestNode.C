@@ -34,7 +34,7 @@ char TestNode_rcsid[] =
 #endif
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 
 #include "VSLLib.h"
 
@@ -49,7 +49,7 @@ DEFINE_TYPE_INFO_1(TestNode, CallNode)
 // TestNode
 
 // Dump
-void TestNode::dump(ostream& s) const
+void TestNode::dump(std::ostream& s) const
 {
     s << "if "    << *test()
       << " then " << *thetrue()
@@ -58,7 +58,7 @@ void TestNode::dump(ostream& s) const
 }
 
 // ...as tree
-void TestNode::_dumpTree(ostream& s) const
+void TestNode::_dumpTree(std::ostream& s) const
 {
     test()->dumpTree(s);
     s << ", ";
@@ -131,9 +131,9 @@ int TestNode::foldConsts(VSLDef *cdef, VSLNode **node)
 	{
 	    if (VSEFlags::show_optimize)
 	    {
-		cout << "\n" << cdef->longname() << ": foldConsts: replacing\n" 
+		std::cout << "\n" << cdef->longname() << ": foldConsts: replacing\n" 
 		    << *this << '\n';
-		cout.flush();
+		std::cout.flush();
 	    }
 
 	    // Replace TestNode by first or second alternative
@@ -145,8 +145,8 @@ int TestNode::foldConsts(VSLDef *cdef, VSLNode **node)
 
 	    if (VSEFlags::show_optimize)
 	    {
-		cout << "by " << **node << "\n";
-		cout.flush();
+		std::cout << "by " << **node << "\n";
+		std::cout.flush();
 	    }
 		
 	    changes++;

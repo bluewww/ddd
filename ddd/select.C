@@ -164,7 +164,7 @@ static void select_from_gdb(string& question, string& reply)
 }
 
 // Select a file
-static void select_file(string& /* question */, string& reply)
+static void select_file(const string& /* question */, string& reply)
 {
     gdbOpenFileCB(find_shell(), 0, 0);
 

@@ -32,7 +32,7 @@ char VSEFlags_rcsid[] =
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <strstream.h>
+#include <sstream>
 #include <ctype.h>
 #include <X11/Intrinsic.h>
 
@@ -292,7 +292,7 @@ void VSEFlags::parse(int& argc, const char**& argv, const char *args)
     // Parse arguments
     if (_parse(argc, argv, false))
     {
-	cerr << argv[0] << ": usage: " << argv[0] << " [options] "
+	std::cerr << argv[0] << ": usage: " << argv[0] << " [options] "
 	     << args << "\n\n" << explain();
 
 	exit(EXIT_FAILURE);
@@ -409,25 +409,25 @@ bool VSEFlags::_parse(int& argc, const char**& argv, bool vsl_prefix_required)
 		if (show_flags)
 		{
 		    // Show processed option
-		    cout << "processed flag: " << argv[arg] << " => -";
+		    std::cout << "processed flag: " << argv[arg] << " => -";
 
 		    if (no && entry.type == BOOLEAN)
 		    {
 			if (entryName.contains("debug-"))
-			    cout << entryName.through("debug-") << "no-" 
+			    std::cout << entryName.through("debug-") << "no-" 
 				 << entryName.after("debug-");
 			else if (entryName.contains("optimize-"))
-			    cout << entryName.through("optimize-") << "no-" 
+			    std::cout << entryName.through("optimize-") << "no-" 
 				 << entryName.after("optimize-");
 			else
-			    cout << "no-" << entryName;
+			    std::cout << "no-" << entryName;
 		    }
 		    else
-			cout << entryName;
+			std::cout << entryName;
 
 		    for (int i = 1; i < skip; i++)
-			cout << " " << argv[arg + i];
-		    cout << "\n";
+			std::cout << " " << argv[arg + i];
+		    std::cout << "\n";
 		}
 	    }
 	}
@@ -488,7 +488,7 @@ void VSEFlags::getDefaults(bool warn)
 	    }
 
 	    if (warn)
-		cerr << "Warning: could not find .vserc, ~/.vserc or vserc\n";
+		std::cerr << "Warning: could not find .vserc, ~/.vserc or vserc\n";
 	    return;
 	}
     }
@@ -519,7 +519,7 @@ void VSEFlags::getDefaults(bool warn)
 
 	    for (int i = 1; i < myargc; i++)
 		if (myargv[i][0] == '-')
-		    cerr << filename << ": unknown option " << myargv[i] 
+		    std::cerr << filename << ": unknown option " << myargv[i] 
 			 << "\n";
 	}
     } while (nargs != EOF);
@@ -594,7 +594,7 @@ string VSEFlags::explain(bool vsl_prefix_required)
 
 		if (intptr)
 		{
-		    ostrstream os;
+		    std::ostringstream os;
 		    os << " (default: " << *intptr << ")";
 		    deflt = string(os);
 		}

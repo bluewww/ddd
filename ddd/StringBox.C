@@ -44,7 +44,7 @@ char StringBox_rcsid[] =
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 #include <ctype.h>
-#include <strstream.h>
+#include <sstream>
 
 #include "VSEFlags.h"
 
@@ -102,7 +102,7 @@ void StringBox::_draw(Widget w,
 }
 
 
-void StringBox::dump(ostream& s) const
+void StringBox::dump(std::ostream& s) const
 {
     const char *quote = "\"";
     if (StringBox::quoted)
@@ -185,7 +185,7 @@ static FONTMAP *matchFont(const char *xfont)
 }
 
 
-void StringBox::_print(ostream& os, 
+void StringBox::_print(std::ostream& os, 
 		       const BoxRegion& region, 
 		       const PrintGC& gc) const
 {

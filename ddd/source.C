@@ -54,7 +54,7 @@ char source_rcsid[] =
 #include "status.h"
 #include "fortranize.h"
 
-#include <iostream.h>
+#include <iostream>
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 

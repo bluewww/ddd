@@ -35,7 +35,7 @@
 #endif
 
 
-#include <iostream.h>
+#include <iostream>
 #include "strclass.h"
 
 #include "bool.h"
@@ -266,11 +266,11 @@ public:
     // Build
     VSLLib();
     VSLLib(const string& lib_name, unsigned optimize = stdOpt);
-    VSLLib(istream& s, unsigned optimize = stdOpt);
+    VSLLib(std::istream& s, unsigned optimize = stdOpt);
 
     // Read
     virtual void update(const string& lib_name);
-    virtual void update(istream& is);
+    virtual void update(std::istream& is);
     static int parse();
 
     // Optimize
@@ -322,8 +322,8 @@ public:
     static void eval_warning(const string& s, const VSLDef *def = 0);
 
     // Debugging
-    friend ostream& operator << (ostream& s, const VSLLib& lib);
-    void dumpTree(ostream& s) const;
+    friend std::ostream& operator << (std::ostream& s, const VSLLib& lib);
+    void dumpTree(std::ostream& s) const;
     VSLDef *lastdef()  { return _last; }
     VSLDef *firstdef() { return _first; }
 

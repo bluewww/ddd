@@ -65,8 +65,7 @@ SRCS = termcap.c tparam.c version.c
 OBJS = termcap.o tparam.o version.o
 HDRS = termcap.h
 DISTFILES = $(SRCS) $(HDRS) ChangeLog COPYING README INSTALL NEWS \
-termcap.texi \
-texinfo.tex Makefile.in configure configure.in
+termcap.texi Makefile.in configure configure.in
 
 all:	libtermcap.a
 

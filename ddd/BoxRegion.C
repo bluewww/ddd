@@ -68,7 +68,7 @@ BoxRegion BoxRegion::operator | (const BoxRegion& r) const
 }
 
 // Dump
-ostream& operator << (ostream& s, const BoxRegion& r)
+std::ostream& operator << (std::ostream& s, const BoxRegion& r)
 {
     return s << r.origin() << r.space();
 }

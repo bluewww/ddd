@@ -75,6 +75,7 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
 	return false;
     }
 
@@ -416,6 +417,9 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
 
     case PERL:
 	return cmd.contains("exec ", 0);
+
+    case BASH:
+	return cmd.contains("exec ", 0);
     }
 
     assert(0);
@@ -643,6 +647,7 @@ int display_index (const string& gdb_answer, GDBAgent *gdb)
     case XDB:
     case JDB:
     case PERL:
+    case BASH:
 	prx = &rxdbx_begin_of_display;
 	break;
     }
@@ -803,6 +808,7 @@ int display_info_index (const string& gdb_answer, GDBAgent *gdb)
     case JDB:
     case XDB:
     case PERL:
+    case BASH:
 	return -1;		// No displays in these debuggers
     }
 
@@ -886,6 +892,7 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
     case XDB:
     case JDB:
     case PERL:
+    case BASH:
 	break;			// FIXME
     }
 
@@ -893,7 +900,7 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
 }
 
 // Remove and return "NR: " from DISPLAY.
-string get_info_disp_str (string& display_info, GDBAgent *gdb)
+string get_info_disp_str (const string& display_info, GDBAgent *gdb)
 {
     switch (gdb->type())
     {
@@ -907,6 +914,7 @@ string get_info_disp_str (string& display_info, GDBAgent *gdb)
     case XDB:
     case JDB:
     case PERL:
+    case BASH:
 	return "";		// FIXME
     }
 
@@ -928,6 +936,7 @@ bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb)
     case XDB:
     case JDB:
     case PERL:
+    case BASH:
 	return false;		// FIXME
     }
 
@@ -962,6 +971,7 @@ string  read_disp_nr_str (string& display, GDBAgent *gdb)
     case XDB:
     case JDB:
     case PERL:
+    case BASH:
 	return "";		// FIXME
     }
 
@@ -1059,6 +1069,6 @@ string get_scope(const string& where_output)
 
     int start_of_name = index + 1;
 
-    return ((string &)where_output).at(start_of_name, 
-				       end_of_name - start_of_name);
+    return where_output.at(start_of_name, 
+			   end_of_name - start_of_name);
 }

@@ -62,7 +62,7 @@ void Box::draw(Widget w,
 	return;
 
     if (VSEFlag(show_draw))
-	cout << "\n[" << r;
+	std::cout << "\n[" << r;
 
     // Make sure we have enough space
     assert(!(size() > r.space()));
@@ -75,7 +75,7 @@ void Box::draw(Widget w,
     _draw(w, r, exposed, gc, context_selected);
 
     if (VSEFlag(show_draw))
-	cout << "]";
+	std::cout << "]";
 }
 
 
@@ -100,8 +100,8 @@ bool Box::operator == (const Box &b) const
 {
     if (VSEFlag(show_match_boxes))
     {
-	cout << "\nBox match: " << *this << " ? " << b;
-	cout.flush();
+	std::cout << "\nBox match: " << *this << " ? " << b;
+	std::cout.flush();
     }
 
     bool flag = (this == &b) || matchMe().matches(b.matchMe(), &b);
@@ -109,11 +109,11 @@ bool Box::operator == (const Box &b) const
     if (VSEFlag(show_match_boxes))
     {
 	if (flag)
-	    cout << "\nBox match: " << *this << " == " << b;
+	    std::cout << "\nBox match: " << *this << " == " << b;
 	else
-	    cout << "\nBox match: " << *this << " != " << b;
+	    std::cout << "\nBox match: " << *this << " != " << b;
 
-	cout.flush();
+	std::cout.flush();
     }
     
     return flag;
@@ -188,7 +188,7 @@ bool Box::selected(BoxPoint p) const
 // Debugging
 
 // Dump Box
-ostream &operator << (ostream& s, const Box& b)
+std::ostream &operator << (std::ostream& s, const Box& b)
 {
     if (VSEFlags::max_info_nesting != 0)
     {

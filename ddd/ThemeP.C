@@ -38,7 +38,7 @@ char ThemePattern_rcsid[] =
 #include "glob.h"
 #include "string-fun.h"
 
-#include <iostream.h>
+#include <iostream>
 
 #ifndef LOG_THEME_PATTERNS
 #define LOG_THEME_PATTERNS 0
@@ -61,7 +61,7 @@ ThemePattern::ThemePattern(const string& rep, bool active)
     delete[] subs;
 }
 
-ostream& operator<<(ostream& os, const ThemePattern& p)
+std::ostream& operator<<(std::ostream& os, const ThemePattern& p)
 {
     for (int i = 0; i < p.patterns().size(); i++)
     {

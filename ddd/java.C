@@ -427,7 +427,7 @@ static string _java_class_file(const string& class_name, bool search_classes)
 			int start = i;
 			while (start > 0 && isid(class_file[start - 1]))
 			    start--;
-			src_class = class_file(start, i - start);
+			src_class = class_file.at(start, i - start);
 
 			// Search for this class file instead.
 			c = java_class_file(src_class, false);
@@ -441,7 +441,7 @@ static string _java_class_file(const string& class_name, bool search_classes)
 			while (start >= 0 && class_file[start] != '\001')
 			    start--;
 			start += 3;	// Skip \001 LENGTH
-			src_class = class_file(start, i - start);
+			src_class = class_file.at(start, i - start);
 			    
 			c = java_class_file(src_class, false);
 			if (c != "")

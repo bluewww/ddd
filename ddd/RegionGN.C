@@ -33,7 +33,7 @@ char RegionGraphNode_rcsid[] =
 #pragma implementation
 #endif
 
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 
 #include <X11/X.h>
@@ -97,7 +97,7 @@ void RegionGraphNode::draw(Widget w,
 // cleanRegion
 // clean a region with white ink
 //
-static void cleanRegion (ostream& os, const GraphGC& gc, BoxRegion region)
+static void cleanRegion (std::ostream& os, const GraphGC& gc, BoxRegion region)
 {
       BoxPoint origin = region.origin();
       BoxPoint width = region.space();
@@ -127,7 +127,7 @@ static void cleanRegion (ostream& os, const GraphGC& gc, BoxRegion region)
 }
 
 // Print a RegionGraphNode
-void RegionGraphNode::_print(ostream& os, const GraphGC& gc) const
+void RegionGraphNode::_print(std::ostream& os, const GraphGC& gc) const
 {
     cleanRegion(os, gc, region(gc));
 }

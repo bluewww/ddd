@@ -39,7 +39,7 @@
 class DispValue;
 
 // Create a new plot window
-PlotAgent *new_plotter(string name, DispValue *src);
+PlotAgent *new_plotter(const string& name, DispValue *src);
 
 // Clear cached plot decorations
 void clear_plot_window_cache();

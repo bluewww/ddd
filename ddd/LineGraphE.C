@@ -354,7 +354,7 @@ void LineGraphEdge::drawSelf(Widget w,
     drawArrowHead(w, exposed, gc, info.arrow_pos, info.arrow_alpha);
 }
 
-void LineGraphEdge::printSelf(ostream& os, const GraphGC &gc) const
+void LineGraphEdge::printSelf(std::ostream& os, const GraphGC &gc) const
 {
     assert(from() == to());
 
@@ -450,7 +450,7 @@ BoxPoint LineGraphEdge::annotationPosition(const GraphGC &gc) const
     return l1 + (l2 - l1) / 2;
 }
 
-void LineGraphEdge::_print(ostream& os, const GraphGC &gc) const
+void LineGraphEdge::_print(std::ostream& os, const GraphGC &gc) const
 {
     if (from() == to())
     {

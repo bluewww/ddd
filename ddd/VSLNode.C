@@ -35,7 +35,7 @@ char VSLNode_rcsid[] =
 
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 
 #include "VSLLib.h"
 #include "VSEFlags.h"
@@ -53,14 +53,14 @@ bool VSLNode::sideEffectsProhibited = false;
 bool VSLNode::sideEffectsOccured    = false;
 
 // Dump VSL expression
-ostream& operator << (ostream& s, const VSLNode& node)
+std::ostream& operator << (std::ostream& s, const VSLNode& node)
 {
     node.dump(s);
     return s;
 }
 
 // ...as tree
-void VSLNode::dumpTree(ostream& s) const
+void VSLNode::dumpTree(std::ostream& s) const
 {
     static unsigned depth = 1;
 
@@ -81,27 +81,27 @@ const Box *VSLNode::eval(ListBox *arglist) const
 {
     if (VSEFlags::show_tiny_eval)
     {
-	clog << *this;
+	std::clog << *this;
 	if (arglist)
-	    clog << " " << *arglist;
+	    std::clog << " " << *arglist;
 
-	clog << "...";
+	std::clog << "...";
     }
 
     const Box *box = _eval(arglist);
 
     if (VSEFlags::show_tiny_eval)
     {
-	clog << *this;
+	std::clog << *this;
 	if (arglist)
-	    cout << " " << *arglist;
+	    std::cout << " " << *arglist;
 
 	if (box == 0)
-	    clog << " FAILS";
+	    std::clog << " FAILS";
 	else
-	    clog << " = " << *box;
+	    std::clog << " = " << *box;
 
-	clog << "\n";
+	std::clog << "\n";
     }
 
     return box;
@@ -116,8 +116,8 @@ bool VSLNode::operator == (const VSLNode &node) const
 {
     if (VSEFlags::show_match_nodes)
     {
-	cout << "\nNode match: " << *this << " ? " << node;
-	cout.flush();
+	std::cout << "\nNode match: " << *this << " ? " << node;
+	std::cout.flush();
     }
 
     bool flag = (this == &node) || matches(node);
@@ -128,11 +128,11 @@ bool VSLNode::operator == (const VSLNode &node) const
     if (VSEFlags::show_match_nodes)
     {
 	if (flag)
-	    cout << "\nNode match: " << *this << " == " << node;
+	    std::cout << "\nNode match: " << *this << " == " << node;
 	else
-	    cout << "\nNode match: " << *this << " != " << node;
+	    std::cout << "\nNode match: " << *this << " != " << node;
 	
-	cout.flush();
+	std::cout.flush();
     }
 
     return flag;

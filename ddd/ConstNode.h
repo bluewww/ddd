@@ -38,7 +38,7 @@
 
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 
 #include "VSLNode.h"
 #include "Box.h"
@@ -57,8 +57,8 @@ protected:
 	VSLNode(node), _box(node._box->link())
     {}
     
-    void dump(ostream& s) const;
-    void _dumpTree(ostream& s) const;
+    void dump(std::ostream& s) const;
+    void _dumpTree(std::ostream& s) const;
 
     bool matches(const VSLNode& node) const
     {

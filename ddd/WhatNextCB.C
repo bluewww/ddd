@@ -96,7 +96,7 @@ static bool code_but_no_source()
 
 // Return 1 if the signal specified in PROGRAM_STATE is passed to the
 // program; 0 if not, -1 if undecided.
-static int passed_to_program(string program_state)
+static int passed_to_program(const string& program_state)
 {
     string signal = program_state.from("SIG");
     signal = signal.through(rxalpha);

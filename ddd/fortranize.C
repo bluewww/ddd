@@ -72,7 +72,7 @@ static string _fortranize_globals(const string& id)
 
 // Return ID in `fortranized' form -- that is, in lower/upper case and
 // with appended `_'.  If GLOBALS_FIRST is set, try global symbols first.
-string _fortranize(const string& id, bool globals_first)
+static string _fortranize(const string& id, bool globals_first)
 {
     if (globals_first)
     {

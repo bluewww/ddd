@@ -48,5 +48,11 @@ inline bool is_perl_prefix(char c)
     return c == '@' || c == '%' || c == '$';
 }
 
+// True if C is a Perl prefix character
+inline bool is_bash_prefix(char c)
+{
+    return c == '$';
+}
+
 #endif // _DDD_isid_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

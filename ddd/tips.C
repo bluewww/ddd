@@ -49,8 +49,8 @@ char tips_rcsid[] =
 #include "verify.h"
 #include "wm.h"
 
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
@@ -82,7 +82,7 @@ static MString get_tip_of_the_day(Widget w, int n)
     return MString(values.tip, true);
 }
 
-static string app_value(string resource, const string& value)
+static string app_value(const string& resource, const string& value)
 {
     String app_name;
     String app_class;
@@ -100,7 +100,7 @@ static void SaveTipCountCB(Widget, XtPointer = 0, XtPointer = 0)
     create_session_dir(DEFAULT_SESSION);
     const string file = session_tips_file();
 
-    ofstream os(file.chars());
+    std::ofstream os(file.chars());
     os << 
 	"! " DDD_NAME " tips file\n"
 	"\n"

@@ -70,7 +70,7 @@ public:
 protected:
     HFixBox(const HFixBox& box): FixBox(box)
     {}
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
 public:
     HFixBox(Box *box, const char *t = "HFixBox"): FixBox(box, t)
@@ -97,7 +97,7 @@ public:
 protected:
     VFixBox(const VFixBox& box): FixBox(box)
     {}
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
 public:
     VFixBox(Box *box, const char *t = "VFixBox"): FixBox(box, t)

@@ -52,7 +52,7 @@ ThemedVSLLib::ThemedVSLLib(const string& lib_name,
     optimize(optimizeMode);	// Optimize now
 }
 
-ThemedVSLLib::ThemedVSLLib(istream& is, unsigned optimizeMode)
+ThemedVSLLib::ThemedVSLLib(std::istream& is, unsigned optimizeMode)
     : VSLLib(is, 0),		// Do not optimize
       _original_lib(dup()),	// Make a copy of unoptimized lib
       _optimizeMode(optimizeMode),

@@ -30,7 +30,7 @@ char findParent_rcsid[] =
     "$Id$";
 
 #include <Xm/Xm.h>
-#include <iostream.h>
+#include <iostream>
 
 #include "findParent.h"
 #include "longName.h"
@@ -48,7 +48,7 @@ bool findParent_debug = false;
 Widget findShellParent(Widget w)
 {
     if (findParent_debug)
-	clog << "findShellParent(" << longName(w) << ") = ";
+	std::clog << "findShellParent(" << longName(w) << ") = ";
 
     while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsShell(w)
@@ -61,10 +61,10 @@ Widget findShellParent(Widget w)
     if (findParent_debug)
     {
 	if (w != 0)
-	    clog << longName(w);
+	    std::clog << longName(w);
 	else
-	    clog << "(none)";
-	clog << "\n";
+	    std::clog << "(none)";
+	std::clog << "\n";
     }
 
     return w;
@@ -75,7 +75,7 @@ Widget findShellParent(Widget w)
 Widget findTopLevelShellParent(Widget w)
 {
     if (findParent_debug)
-	clog << "findTopLevelShellParent(" << longName(w) << ") = ";
+	std::clog << "findTopLevelShellParent(" << longName(w) << ") = ";
 
     while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsTopLevelShell(w)
@@ -88,10 +88,10 @@ Widget findTopLevelShellParent(Widget w)
     if (findParent_debug)
     {
 	if (w != 0)
-	    clog << longName(w);
+	    std::clog << longName(w);
 	else
-	    clog << "(none)";
-	clog << "\n";
+	    std::clog << "(none)";
+	std::clog << "\n";
     }
 
     return w;
@@ -102,7 +102,7 @@ Widget findTopLevelShellParent(Widget w)
 Widget findTheTopLevelShell(Widget w)
 {
     if (findParent_debug)
-	clog << "findTopLevelShellParent(" << longName(w) << ") = ";
+	std::clog << "findTopLevelShellParent(" << longName(w) << ") = ";
 
     Widget found = 0;
 
@@ -121,10 +121,10 @@ Widget findTheTopLevelShell(Widget w)
     if (findParent_debug)
     {
 	if (found != 0)
-	    clog << longName(found);
+	    std::clog << longName(found);
 	else
-	    clog << "(none)";
-	clog << "\n";
+	    std::clog << "(none)";
+	std::clog << "\n";
     }
 
     return found;

@@ -39,7 +39,7 @@ char AsyncAgent_rcsid[] =
 #include "misc.h"
 
 #include <sys/types.h>
-#include <strstream.h>
+#include <sstream>
 #include <unistd.h>
 #include <stdlib.h>
 

@@ -35,7 +35,7 @@
 
 #include "StringTPA.h"
 #include "ThemeP.h"
-#include <iostream.h>
+#include <iostream>
 
 class ThemeManager {
 private:
@@ -72,7 +72,7 @@ public:
     }
 
     // Convert into external representation
-    friend ostream& operator<<(ostream& os, const ThemeManager& t);
+    friend std::ostream& operator<<(std::ostream& os, const ThemeManager& t);
 
     // Get list of themes for an expression
     StringArray themes(const string& expr);
@@ -98,7 +98,7 @@ public:
     }
 };
 
-ostream& operator<<(ostream& os, const ThemeManager& t);
+std::ostream& operator<<(std::ostream& os, const ThemeManager& t);
 
 #endif // _DDD_ThemeManager_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

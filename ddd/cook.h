@@ -56,7 +56,7 @@ extern string uncook(const string& cooked);
 // Strip quotes
 inline string _unquote(const string& s)
 {
-    return ((string&)s).at(1, s.length() - 2);
+    return s.at(1, s.length() - 2);
 }
 
 // Enclose S in quotes QUOTE
@@ -75,8 +75,8 @@ inline string unquote(const string& s)
 inline string unquote(const string& s, char quote)
 {
     if (s.length() > 0 && 
-	((string&)s)[0] == quote && 
-	((string&)s)[s.length() - 1] == quote)
+	s[0] == quote && 
+	s[s.length() - 1] == quote)
 	return unquote(s);
     else
 	return s;

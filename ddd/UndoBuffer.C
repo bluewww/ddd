@@ -479,7 +479,7 @@ void UndoBuffer::remap_breakpoint(int old_bp, int new_bp)
     }
 }
 
-void UndoBuffer::add_breakpoint_state(ostream& os, BreakPoint *bp)
+void UndoBuffer::add_breakpoint_state(std::ostream& os, BreakPoint *bp)
 {
     os << REMAP_COMMAND << "@" << bp->number() << "@\n";
     bp->get_state(os, bp->number());

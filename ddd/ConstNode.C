@@ -34,7 +34,7 @@ char ConstNode_rcsid[] =
 #endif
 
 
-#include <iostream.h>
+#include <iostream>
 #include "assert.h"
 #include "VSLLib.h"
 #include "VSEFlags.h"
@@ -54,7 +54,7 @@ const Box *ConstNode::_eval(ListBox *) const
 }
 
 // Dump
-void ConstNode::dump(ostream& s) const
+void ConstNode::dump(std::ostream& s) const
 {
     if (VSEFlags::include_const_info)
 	s << *_box;
@@ -63,7 +63,7 @@ void ConstNode::dump(ostream& s) const
 }
 
 // ...as tree
-void ConstNode::_dumpTree(ostream& s) const
+void ConstNode::_dumpTree(std::ostream& s) const
 {
     bool old = StringBox::quoted;
     StringBox::quoted = true;

@@ -58,7 +58,7 @@ protected:
     // Joint function for drawing and printing
     void makeLine(Widget w,
 		  const BoxRegion& exposed,
-		  ostream& os,
+		  std::ostream& os,
 		  const GraphGC& gc) const;
 
 public:
@@ -71,7 +71,7 @@ public:
     virtual ~ArcGraphEdge() {}
 
     // Printing
-    void _print(ostream& os, const GraphGC &gc) const;
+    void _print(std::ostream& os, const GraphGC &gc) const;
 
     // Duplicator
     GraphEdge *dup() const

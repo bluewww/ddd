@@ -33,7 +33,7 @@
 #pragma interface
 #endif
 
-#include <iostream.h>
+#include <iostream>
 #include "strclass.h"
 
 #if HAVE_CONFIG_H
@@ -49,14 +49,14 @@ public:
     _Logger(const string& function, const string& args)
 	: _function(function), _args(args)
     {
-	clog << ++depth
+	std::clog << ++depth
 	     << " " << _function 
 	     << "(" << _args << ")"
 	     << "...\n";
     }
     ~_Logger()
     {
-	clog << depth--
+	std::clog << depth--
 	     << " " << _function 
 	     << "(" << _args << ")"
 	     << "...done.\n";

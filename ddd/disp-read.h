@@ -207,7 +207,7 @@ string read_first_disp_info (string& gdb_answer, GDBAgent *gdb);
 string read_next_disp_info (string& gdb_answer, GDBAgent *gdb);
 
 // Remove and return "NR: " from DISPLAY.
-string get_info_disp_str (string& display, GDBAgent *gdb);
+string get_info_disp_str (const string& display, GDBAgent *gdb);
 
 // Check whether `disabled' entry in INFO_DISP_STR indicates an enabled display
 bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb);

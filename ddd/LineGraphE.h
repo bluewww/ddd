@@ -78,7 +78,7 @@ protected:
 			       double alpha) const;
 
     // Print self edge.
-    virtual void printSelf(ostream& os, const GraphGC &gc) const;
+    virtual void printSelf(std::ostream& os, const GraphGC &gc) const;
 
     // Find annotation position.
     virtual BoxPoint annotationPosition(const GraphGC &gc) const;
@@ -140,7 +140,7 @@ protected:
 
 public:
     // Printing
-    void _print(ostream& os, const GraphGC &gc) const;
+    void _print(std::ostream& os, const GraphGC &gc) const;
 
     GraphEdge *dup() const
     {

@@ -34,7 +34,7 @@
 #endif
 
 #include <X11/Intrinsic.h>
-#include <iostream.h>
+#include <iostream>
 
 #include "bool.h"
 #include "ExitCB.h"
@@ -57,7 +57,7 @@ extern void DDDDebugCB   (Widget, XtPointer, XtPointer); // Debug DDD
 extern void DDDDumpCoreCB(Widget, XtPointer, XtPointer); // Dump Core
 
 // Core dumps
-extern void report_core(ostream& os);
+extern void report_core(std::ostream& os);
 
 // Helpers
 class Agent;

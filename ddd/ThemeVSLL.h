@@ -60,7 +60,7 @@ public:
     // Build
     ThemedVSLLib();
     ThemedVSLLib(const string& lib_name, unsigned optimizeMode = stdOpt);
-    ThemedVSLLib(istream& s, unsigned optimizeMode = stdOpt);
+    ThemedVSLLib(std::istream& s, unsigned optimizeMode = stdOpt);
 
     // Optimize
     virtual void optimize(unsigned mode = stdOpt);

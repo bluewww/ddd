@@ -42,7 +42,7 @@
 
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 
 #include "VSLNode.h"
 #include "ListNode.h"
@@ -76,8 +76,8 @@ private:
     bool domatch(const VSLNode *arg) const;    // Match against Ausdruck
 
 protected:
-    void dump(ostream& s) const;
-    void _dumpTree(ostream& s) const;
+    void dump(std::ostream& s) const;
+    void _dumpTree(std::ostream& s) const;
 
     LetNode(const LetNode& node):
 	CallNode(node),
@@ -169,7 +169,7 @@ public:
     DECLARE_TYPE_INFO
 
 protected:
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
     // Copy
     WhereNode(WhereNode& node):

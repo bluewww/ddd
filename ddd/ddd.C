@@ -280,8 +280,8 @@ char ddd_rcsid[] =
 
 // Standard stuff
 #include <stdlib.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <time.h>
 #include <signal.h>
 
@@ -526,6 +526,11 @@ static XrmOptionDescRec options[] = {
                                         XrmoptionNoArg,  CONST_CAST(char*,"perl") },
 { CONST_CAST(char*,"-perl"),                  CONST_CAST(char *,XtNdebugger),             
                                         XrmoptionNoArg,  CONST_CAST(char*,"perl") },
+
+{ CONST_CAST(char*,"--bash"),                 CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"bash") },
+{ CONST_CAST(char*,"-bash"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"bash") },
 
 { CONST_CAST(char*,"--trace"),                CONST_CAST(char *,XtNtrace),                
                                         XrmoptionNoArg,  CONST_CAST(char*,ON) },
@@ -1496,6 +1501,7 @@ static Widget set_debugger_xdb_w;
 static Widget set_debugger_jdb_w;
 static Widget set_debugger_pydb_w;
 static Widget set_debugger_perl_w;
+static Widget set_debugger_bash_w;
 static MMDesc debugger_menu [] = 
 {
     { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
@@ -1510,6 +1516,8 @@ static MMDesc debugger_menu [] =
       0, &set_debugger_pydb_w, 0, 0 },
     { "perl", MMToggle, { dddSetDebuggerCB, XtPointer(PERL) },
       0, &set_debugger_perl_w, 0, 0 },
+    { "bash", MMToggle, { dddSetDebuggerCB, XtPointer(BASH) },
+      0, &set_debugger_bash_w, 0, 0 },
     MMEnd
 };
 
@@ -2044,7 +2052,7 @@ int main(int argc, char *argv[])
     ddd_install_x_fatal();
     ddd_install_x_error();
 
-    ostrstream messages;
+    std::ostringstream messages;
 
     // Set up a `~/.ddd/' directory hierarchy
     create_session_dir(DEFAULT_SESSION, messages);
@@ -2278,7 +2286,7 @@ int main(int argc, char *argv[])
     // Forward messages found so far into cerr
     {
 	string msg(messages);
-	cerr << msg;
+	std::cerr << msg;
     }
 
     // Set up VSL resources
@@ -2289,7 +2297,7 @@ int main(int argc, char *argv[])
 	if (VSEFlags::parse_vsl(argc, tmp_argv))
 	{
 	    // Show VSL usage...
-	    cout << VSEFlags::explain(true);
+	    std::cout << VSEFlags::explain(true);
 	    return EXIT_FAILURE;
 	}
 
@@ -2342,12 +2350,12 @@ int main(int argc, char *argv[])
     if (debugger_type == DebuggerType(-1))
     {
 	// Guess debugger type from args
-	DebuggerInfo info(argc, (const char**)argv);
+	DebuggerInfo info(argc, argv);
 	debugger_type = info.type;
 
 	if (!app_data.auto_debugger)
 	{
-	    cerr << "Unknown debugger type " << quote(app_data.debugger)
+	    std::cerr << "Unknown debugger type " << quote(app_data.debugger)
 		 << ", using " << quote(default_debugger(app_data.debugger,
 							 debugger_type))
 		 << "instead\n";
@@ -2380,7 +2388,7 @@ int main(int argc, char *argv[])
 
     if (gdb_host == "" && string(app_data.debugger_host_login) != "")
     {
-	cerr << argv[0] << ": --login requires --rhost or --host\n";
+	std::cerr << argv[0] << ": --login requires --rhost or --host\n";
 	return EXIT_FAILURE;
     }
 
@@ -3267,7 +3275,7 @@ static void ddd_check_version()
     // Check for expired versions
     if (ddd_expired())
     {
-	ostrstream msg;
+	std::ostringstream msg;
 	msg << "This " DDD_NAME " version (" DDD_VERSION ") has expired since "
 	    << ddd_expiration_date() << ".\n"
 	    << "Please upgrade to the recent " DDD_NAME " version.";
@@ -3287,15 +3295,15 @@ XrmDatabase GetFileDatabase(const string& filename)
 
     string tmpfile = tempfile();
 
-    ofstream os(tmpfile.chars());
-    ifstream is(filename.chars());
+    std::ofstream os(tmpfile.chars());
+    std::ifstream is(filename.chars());
 
 #if 0
     clog << "Copying " << filename.chars() << " to " << tmpfile << "\n";
 #endif
 
     // Resources to ignore upon copying
-    static const char *do_not_copy[] = 
+    static const char * const do_not_copy[] = 
     { 
 	XmNwidth, XmNheight,	              // Shell sizes
 	XmNcolumns, XmNrows,	              // Text window sizes
@@ -3340,7 +3348,7 @@ XrmDatabase GetFileDatabase(const string& filename)
 		if (line.contains(res) && version_mismatch)
 		{
 #if 0
-		    cerr << "Warning: ignoring " << line 
+		    std::cerr << "Warning: ignoring " << line 
 			 << " in " << filename.chars() << "\n";
 #endif
 		    copy = false;
@@ -3378,8 +3386,8 @@ XrmDatabase GetFileDatabase(const string& filename)
 // Install DDD log
 //-----------------------------------------------------------------------------
 
-static ostrstream devnull;
-ostream *_dddlog = &devnull;
+static std::ostringstream devnull;
+std::ostream *_dddlog = &devnull;
 
 void init_dddlog()
 {
@@ -3388,12 +3396,12 @@ void init_dddlog()
 
     if (app_data.trace)
     {
-	_dddlog = &clog;
+	_dddlog = &std::clog;
     }
     else
     {
         const string tmp_1_ = session_log_file();
-	static ofstream log(tmp_1_.chars());
+	static std::ofstream log(tmp_1_.chars());
 	_dddlog = &log;
     }
 
@@ -3505,6 +3513,7 @@ static void set_shortcut_menu(DataDisp *data_disp)
     case JDB:  display_shortcuts = app_data.jdb_display_shortcuts;  break;
     case PYDB: display_shortcuts = app_data.pydb_display_shortcuts; break;
     case PERL: display_shortcuts = app_data.perl_display_shortcuts; break;
+    case BASH: display_shortcuts = app_data.bash_display_shortcuts; break;
     }
     set_shortcut_menu(data_disp, display_shortcuts);
 }
@@ -3772,7 +3781,7 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     string geometry;
     if (lock_dialog_x >= 0 && lock_dialog_y >= 0)
     {
-	ostrstream os;
+	std::ostringstream os;
 	os << "+" << lock_dialog_x << "+" << lock_dialog_y;
 	geometry = string(os);
 	XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
@@ -4181,6 +4190,7 @@ void update_options()
     set_toggle(set_debugger_jdb_w,  debugger_type == JDB);
     set_toggle(set_debugger_pydb_w, debugger_type == PYDB);
     set_toggle(set_debugger_perl_w, debugger_type == PERL);
+    set_toggle(set_debugger_bash_w, debugger_type == BASH);
     set_toggle(auto_debugger_w, app_data.auto_debugger);
 
     set_toggle(splash_screen_w, app_data.splash_screen);
@@ -4765,6 +4775,7 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_debugger_jdb_w,  type_ok && debugger_type == JDB);
     notify_set_toggle(set_debugger_pydb_w, type_ok && debugger_type == PYDB);
     notify_set_toggle(set_debugger_perl_w, type_ok && debugger_type == PERL);
+    notify_set_toggle(set_debugger_bash_w, type_ok && debugger_type == BASH);
     notify_set_toggle(auto_debugger_w,
 		      !type_ok || initial_app_data.auto_debugger);
 
@@ -5620,7 +5631,7 @@ static void language_changedHP(Agent *, void *, void *)
 
 
 // Language changed - report it
-static ostream& operator<< (ostream& os, ProgramLanguage lang)
+static std::ostream& operator<< (std::ostream& os, ProgramLanguage lang)
 {
     switch (lang)
     {
@@ -5630,6 +5641,7 @@ static ostream& operator<< (ostream& os, ProgramLanguage lang)
     case LANGUAGE_ADA:     os << "Ada";           break;
     case LANGUAGE_PYTHON:  os << "Python";        break;
     case LANGUAGE_PERL:    os << "Perl";          break;
+    case LANGUAGE_BASH:    os << "Bash";          break;
     case LANGUAGE_CHILL:   os << "Chill";         break;
     case LANGUAGE_FORTRAN: os << "Fortran";       break;
     case LANGUAGE_OTHER:   os << "(unknown)";     break;
@@ -5640,7 +5652,7 @@ static ostream& operator<< (ostream& os, ProgramLanguage lang)
 
 static void report_languageHP(Agent *, void *, void *)
 {
-    ostrstream os;
+    std::ostringstream os;
     os << "Current language: " << gdb->program_language();
     set_status(string(os));
 }
@@ -6843,7 +6855,7 @@ static void ddd_xt_warning(String message)
 
 	if (!informed)
 	{
-	    cerr << "(Annoyed?  "
+	    std::cerr << "(Annoyed?  "
 		"Try 'Edit->Preferences->General->Suppress X Warnings'!)\n";
 	    informed = true;
 	}
@@ -7124,7 +7136,7 @@ static void sync_args(ArgField *source, ArgField *target)
 
 static void check_log(const string& logname, DebuggerType& type)
 {
-    ifstream log(logname.chars());
+    std::ifstream log(logname.chars());
     if (log.bad())
     {
 	(void) fopen(logname.chars(), "r");
@@ -7197,19 +7209,19 @@ static void setup_show(XrmDatabase db, const char *app_name, const char *gdb_nam
     if (app_data.show_version || 
 	have_set_resource(db, app_name, XtNshowVersion))
     {
-	show_version(cout);
+	show_version(std::cout);
 	cont = false;
     }
     if (app_data.show_invocation ||
 	have_set_resource(db, app_name, XtNshowInvocation))
     {
-	show_invocation(gdb_name, cout);
+	show_invocation(gdb_name, std::cout);
 	cont = false;
     }
     if (app_data.show_configuration ||
 	have_set_resource(db, app_name, XtNshowConfiguration))
     {
-	show_configuration(cout);
+	show_configuration(std::cout);
 	cont = false;
     }
     if (app_data.show_news ||
@@ -7243,7 +7255,7 @@ static void setup_show(XrmDatabase db, const char *app_name, const char *gdb_nam
 // `helpOnVersionString' resource.
 static void setup_version_info()
 {
-    ostrstream os;
+    std::ostringstream os;
     show_configuration(os);
     string cinfo(os);
 
@@ -7258,9 +7270,9 @@ static void setup_version_info()
 #if 0
  	helpOnVersionExtraText += cr();	// place e-mail on separate line
 #endif
-	helpOnVersionExtraText += rm(cinfo(cinfo_lt, 1));
+	helpOnVersionExtraText += rm(cinfo.at(cinfo_lt, 1));
 	helpOnVersionExtraText += 
-	    tt(cinfo(cinfo_lt + 1, cinfo_gt - cinfo_lt - 1));
+	    tt(cinfo.at(cinfo_lt + 1, cinfo_gt - cinfo_lt - 1));
 	helpOnVersionExtraText += rm(cinfo.from(cinfo_gt));
     }
     else
@@ -7415,6 +7427,7 @@ static void setup_environment()
     case GDB:
     case DBX:
     case PERL:
+    case BASH:
 	// The debugger console has few capabilities.
 	// When starting the execution TTY, we set the correct type.
 	put_environment("TERM", "dumb");
@@ -7606,7 +7619,7 @@ static void setup_ddd_version_warnings()
     // Check for app-defaults
     if (app_data.app_defaults_version == 0)
     {
-	cerr << "Error: No `" DDD_CLASS_NAME "' application defaults file\n"
+	std::cerr << "Error: No `" DDD_CLASS_NAME "' application defaults file\n"
 	    "To resolve this problem, you can:\n"
 	    "* set the XAPPLRESDIR environment variable "
 	    "to the location of the file `" DDD_CLASS_NAME "', or\n"
@@ -7622,7 +7635,7 @@ static void setup_ddd_version_warnings()
     }
     else if (string(app_data.app_defaults_version) != DDD_VERSION)
     {
-	cerr << "Warning: using `" DDD_CLASS_NAME "' app-defaults file"
+	std::cerr << "Warning: using `" DDD_CLASS_NAME "' app-defaults file"
 	     << " for " DDD_NAME " " << app_data.app_defaults_version 
 	     << " (this is " DDD_NAME " " DDD_VERSION ")\n"
 	     << "Continue at own risk.\n";
@@ -7640,7 +7653,7 @@ static void setup_ddd_version_warnings()
     if (app_data.dddinit_version && 
 	string(app_data.dddinit_version) != DDD_VERSION)
     {
-	cerr << "Warning: using "
+	std::cerr << "Warning: using "
 	     << quote(session_state_file(app_data.session))
 	     << " file for " DDD_NAME " " << app_data.dddinit_version
 	     << "\n(this is " DDD_NAME " " DDD_VERSION ")."
@@ -7666,7 +7679,7 @@ static void setup_motif_version_warnings()
 #if HAVE_XMUSEVERSION
     if (xmUseVersion != XmVersion)
     {
-	cerr << "Warning: This " DDD_NAME " requires a Motif "
+	std::cerr << "Warning: This " DDD_NAME " requires a Motif "
 	     << XmVersion / 1000 << "." << XmVersion % 1000 
 	     << " library (using Motif "
 	     << xmUseVersion / 1000 << "." << xmUseVersion % 1000 
@@ -7677,7 +7690,7 @@ static void setup_motif_version_warnings()
 #endif
 
     if (risky)
-	cerr << "Continue at own risk.\n";
+	std::cerr << "Continue at own risk.\n";
 }
 
 static void setup_auto_command_prefix()
@@ -7689,7 +7702,7 @@ static void setup_auto_command_prefix()
     if (prefix.length() < 3)
     {
 	// No prefix or insufficient prefix -- generate a new one
-	ostrstream key;
+	std::ostringstream key;
 	key << ddd_NAME << "-" << getpid() << "-" 
 	    << (long)time((time_t *)0) << ": ";
 	prefix = key;
@@ -7771,6 +7784,7 @@ static void setup_options()
     set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
     set_sensitive(set_debugger_perl_w, have_cmd("perl"));
+    set_sensitive(set_debugger_bash_w, have_cmd("bash"));
 
     bool can_dump = (gdb->type() == JDB);
     // (gdb->print_command("", true) != gdb->print_command("", false));

@@ -51,7 +51,7 @@ bool CallNode::matchesAll = false;
 
 
 // Dump function name
-void CallNode::dump(ostream& s) const
+void CallNode::dump(std::ostream& s) const
 {
     s << func_name();
 
@@ -65,7 +65,7 @@ void CallNode::dump(ostream& s) const
 }
 
 // ...as tree
-void CallNode::_dumpTree(ostream& s) const
+void CallNode::_dumpTree(std::ostream& s) const
 {
     s << "\"" << func_name() << "\", ";
     _arg->dumpTree(s);
@@ -199,17 +199,17 @@ int CallNode::foldConsts(VSLDef *cdef, VSLNode **node)
 	// Replace CallNode by constant
 	if (VSEFlags::show_optimize)
 	{
-	    cout << "\n" << cdef->longname() << ": foldConsts: replacing\n" 
+	    std::cout << "\n" << cdef->longname() << ": foldConsts: replacing\n" 
 		<< *this << '\n';
-	    cout.flush();
+	    std::cout.flush();
 	}
 
 	*node = new ConstNode((Box *)result);
 
 	if (VSEFlags::show_optimize)
 	{
-	    cout << "by " << **node << "\n";
-	    cout.flush();
+	    std::cout << "by " << **node << "\n";
+	    std::cout.flush();
 	}
 	
 	changes++;

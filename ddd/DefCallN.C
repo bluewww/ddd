@@ -35,8 +35,8 @@ char DefCallNode_rcsid[] =
 
 
 #include "assert.h"
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 
 #include "VSLLib.h"
 #include "VSLDef.h"
@@ -149,12 +149,9 @@ int DefCallNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
 
     if (found == 0 && def == 0)
     {
-	const int bufsize = 1000;
-	char buffer[bufsize];
-	ostrstream s(buffer, sizeof buffer);
-	s << *this << '\0';
-
-	VSLLib::eval_warning("no suitable definition for " + string(buffer), 
+        std::ostringstream s;
+	s << *this;
+	VSLLib::eval_warning("no suitable definition for " + string(s),
 			     cdef);
     }
 
@@ -169,9 +166,9 @@ int DefCallNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
 
     if (VSEFlags::show_optimize)
     {
-	cout << "\n" << cdef->longname() << ": resolveDefs: resolving\n" 
+	std::cout << "\n" << cdef->longname() << ": resolveDefs: resolving\n" 
 	    << *this << "\nto " << _def->longname() << "\n";
-	cout.flush();
+	std::cout.flush();
     }
 
     return ++changes;
@@ -211,9 +208,9 @@ int DefCallNode::resolveSynonyms(VSLDef *cdef, VSLNode **node)
 
     if (VSEFlags::show_optimize)
     {
-	cout << "\n" << cdef->longname() << ": resolveSynonyms: replacing\n" 
+	std::cout << "\n" << cdef->longname() << ": resolveSynonyms: replacing\n" 
 	    << *this << "\n";
-	cout.flush();
+	std::cout.flush();
     }
 
     if (call_syn->isDefCallNode())
@@ -255,8 +252,8 @@ int DefCallNode::resolveSynonyms(VSLDef *cdef, VSLNode **node)
 
     if (VSEFlags::show_optimize)
     {
-	cout << "by " << **node << "\n";
-	cout.flush();
+	std::cout << "by " << **node << "\n";
+	std::cout.flush();
     }
 
     return changes;
@@ -303,7 +300,7 @@ int DefCallNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
     for (i = 0; i < _def->nargs(); i++)
 	if (instances[i] > 0 && values[i] == 0)
 	{
-	    ostrstream os;
+	    std::ostringstream os;
 	    os << "cannot isolate arg " << i;
 	    VSLLib::eval_warning(os, _def);
 	    fail = true;
@@ -348,9 +345,9 @@ int DefCallNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
 
     if (VSEFlags::show_optimize)
     {
-	cout << "\n" << cdef->longname() << ": inlineFuncs: replacing\n" 
+	std::cout << "\n" << cdef->longname() << ": inlineFuncs: replacing\n" 
 	    << *this << "\nby " << **node << '\n';
-	cout.flush();
+	std::cout.flush();
     }
 
     delete this;
@@ -371,10 +368,10 @@ int DefCallNode::countSelfReferences(VSLDef *cdef, VSLDefList *deflist)
     {
 	if (VSEFlags::show_optimize)
 	{
-	    cout << "\n" << cdef->longname() 
+	    std::cout << "\n" << cdef->longname() 
 		<< ": countSelfReferences: found self-reference to " 
 		<< deflist->f_name();
-	    cout.flush();
+	    std::cout.flush();
 	}
 
 	deflist->self_references++;

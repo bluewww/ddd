@@ -195,7 +195,7 @@ class SourceView {
 			      int make_false, Widget origin);
 
     // Set condition of breakpoints NRS to COND.
-    inline static void set_bps_cond(IntArray& nrs, string cond,
+    inline static void set_bps_cond(IntArray& nrs, const string& cond,
 				    Widget origin = 0)
     {
 	_set_bps_cond(nrs, cond, -1, origin);
@@ -402,7 +402,7 @@ class SourceView {
     static int    last_execution_line;
     static string last_execution_pc;
     static string last_shown_pc;
-    static void _show_execution_position (string file, int line, 
+    static void _show_execution_position (const string& file, int line, 
 					  bool silent, bool stopped);
 
     // Last frame position
@@ -837,7 +837,7 @@ public:
     static string delete_command(int bp_nr);
 
     // Return `{ COMMAND; }'
-    static string command_list(string cmd);
+    static string command_list(const string& cmd);
 
     // Return current directory
     static string pwd() { return current_pwd; }
@@ -872,10 +872,10 @@ public:
     static string bp_pos(int num);
 
     // Return the breakpoint at POS (0 if none)
-    static BreakPoint *breakpoint_at(string pos);
+    static BreakPoint *breakpoint_at(const string& pos);
 
     // Return the watchpoint at EXPR (0 if none)
-    static BreakPoint *watchpoint_at(string expr);
+    static BreakPoint *watchpoint_at(const string& expr);
 
     // Get the word at position of EVENT
     static string get_word_at_event(Widget w,
@@ -910,7 +910,7 @@ public:
     static int get_frame() { return current_frame; }
 
     // Return debugger command(s) to restore current state (breakpoints, etc.)
-    static bool get_state(ostream& os);
+    static bool get_state(std::ostream& os);
 
     // Clear entire state, using GDB commands
     static void reset();

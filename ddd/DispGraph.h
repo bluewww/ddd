@@ -148,7 +148,7 @@ public:
     int next_nr  (MapRef& ref, Displaying e = Both) const;
 
     // Print graph to OS
-    void print(ostream& os, const GraphGC& gc = GraphGC()) const
+    void print(std::ostream& os, const GraphGC& gc = GraphGC()) const
     {
 	Graph::print(os, gc);
     }

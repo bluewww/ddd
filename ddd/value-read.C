@@ -207,7 +207,7 @@ static DispValueType _determine_type (string& value)
 		while (j >= 0 && !isspace(value[j]))
 		    j--;
 		j++;
-		string first_member = value(j, end_of_member_name - j);
+		string first_member = value.at(j, end_of_member_name - j);
 		strip_space(first_member);
 		if (first_member.contains(rxint, 0) || 
 		    first_member.contains(rxaddress, 0))
@@ -297,16 +297,16 @@ static DispValueType _determine_type (string& value)
     return Simple;
 }
 
-DispValueType determine_type(const string& value)
+DispValueType determine_type(string& value)
 {
 #if LOG_DETERMINE_TYPE
     clog << quote(value);
 #endif
 
     const char *v = value.chars();
-    ((string &)value).consuming(true);
-    DispValueType type = _determine_type((string &)value);
-    ((string &)value) = v;
+    value.consuming(true);
+    DispValueType type = _determine_type(value);
+    value = v;
 
 #if LOG_DETERMINE_TYPE
     clog << " has type " << type << "\n";

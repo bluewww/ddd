@@ -35,9 +35,9 @@ char VSLRead_rcsid[] =
 
 #include <stdlib.h>
 #include <limits.h>
-#include <iostream.h>
-#include <fstream.h>
-#include <strstream.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "assert.h"
 #include "strclass.h"
@@ -117,7 +117,7 @@ struct VSLVarDefinition {
 // Read library
 
 // Update library from stream
-void VSLLib::update(istream& s)
+void VSLLib::update(std::istream& s)
 {
     vsllib = this;
 
@@ -132,12 +132,12 @@ void VSLLib::update(istream& s)
 
     if (VSEFlags::verbose)
     {
-	cout << ")";
-	cout.flush();
+	std::cout << ")";
+	std::cout.flush();
     }
 
     if (VSEFlags::verbose)
-	cout << ", done.\n";
+	std::cout << ", done.\n";
 
     // Reset name and file number
     vsllinenumber = 0;
@@ -151,11 +151,11 @@ void VSLLib::update(const string& lib_name)
     if (VSEFlags::verbose)
     {
 	if (lib_name == "")
-	    cout << "standard input";
+	    std::cout << "standard input";
 	else
-	    cout << lib_name;
-	cout << ": reading";
-	cout.flush();
+	    std::cout << lib_name;
+	std::cout << ": reading";
+	std::cout.flush();
     }
 
     vslfilename = lib_name;
@@ -187,12 +187,11 @@ void vslerror(const char *s)
 // Parsing message
 void VSLLib::parse_echo(const string& msg)
 {
-    ostrstream os;
-    ostream& s = os;
+    std::ostringstream os;
 
     if (vsllinenumber > 0)
-	s << vslfilename << ":" << vsllinenumber << ": ";
-    s << msg;
+	os << vslfilename << ":" << vsllinenumber << ": ";
+    os << msg;
     echo(os);
 }
 

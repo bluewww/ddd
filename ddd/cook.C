@@ -34,7 +34,7 @@ char cook_rcsid[] =
 #endif
 
 #include <ctype.h>
-#include <strstream.h>
+#include <sstream>
 #include <stdio.h>
 
 #include "bool.h"
@@ -43,7 +43,7 @@ char cook_rcsid[] =
 // Transform RAW into C string
 string _cook(const string& raw, bool for_postscript)
 {
-    ostrstream cooked;
+    std::ostringstream cooked;
     const char *raw_s = raw.chars();
 
     for (unsigned i = 0; i < raw.length(); i++)
@@ -189,7 +189,7 @@ static int digit(char c)
 // Transform COOKED into C string
 string uncook(const string& cooked)
 {
-    ostrstream uncooked;
+    std::ostringstream uncooked;
     int n;
     int count;
 

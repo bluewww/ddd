@@ -67,7 +67,7 @@ typedef char oRiGiNaL_char;
 static const char **ddd_xpm = 0;
 #endif
 
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/StringDefs.h>
@@ -90,32 +90,32 @@ static int xpm(const _XtString name, int ret)
 {
     if (ret != XpmSuccess)
     {
-	cerr << "XPM: " << name << ": ";
+	std::cerr << "XPM: " << name << ": ";
 	switch (ret)
 	{
 	case XpmColorError:
-	    cerr << "warning: failed to allocate some color\n";
+	    std::cerr << "warning: failed to allocate some color\n";
 	    ret = XpmSuccess;	// ignore
 	    break;
 
 	case XpmOpenFailed:
-	    cerr << "could not open file\n";
+	    std::cerr << "could not open file\n";
 	    break;
 
 	case XpmFileInvalid:
-	    cerr << "could not parse file\n";
+	    std::cerr << "could not parse file\n";
 	    break;
 	    
 	case XpmNoMemory:
-	    cerr << "insufficient working storage\n";
+	    std::cerr << "insufficient working storage\n";
 	    break;
 
 	case XpmColorFailed:
-	    cerr << "no color found\n";
+	    std::cerr << "no color found\n";
 	    break;
 
 	default:
-	    cerr << "error " << ret << "\n";
+	    std::cerr << "error " << ret << "\n";
 	    break;
 	}
     }
@@ -139,7 +139,7 @@ static void add_color_key(XpmAttributes& attr, const string& color_key)
     else
     {
 	if (color_key != "best")
-	    cerr << "XPM: invalid color key " << quote(color_key) << "\n";
+	    std::cerr << "XPM: invalid color key " << quote(color_key) << "\n";
 
 	attr.valuemask &= ~XpmColorKey;
     }
@@ -513,7 +513,7 @@ static XImage *get_subimage(XImage *image, const _XtString geometry,
 {
     if (geometry == 0)
     {
-	cerr << "No " << resource << "\n";
+	std::cerr << "No " << resource << "\n";
 	return 0;
     }
 	
@@ -529,7 +529,7 @@ static XImage *get_subimage(XImage *image, const _XtString geometry,
 
     if (cross != 'x' || sign_x == '\0' || sign_y == '\0')
     {
-	cerr << "Cannot parse " << resource << " " << quote(geometry) << "\n";
+	std::cerr << "Cannot parse " << resource << " " << quote(geometry) << "\n";
 	return 0;
     }
 
@@ -541,14 +541,14 @@ static XImage *get_subimage(XImage *image, const _XtString geometry,
     if (x < 0 || y < 0 || 
 	x + width > image->width || y + height > image->height)
     {
-	cerr << "No such " << resource << " " << quote(geometry) << " in " 
+	std::cerr << "No such " << resource << " " << quote(geometry) << " in " 
 	     << name << "\n";
 	return 0;
     }
 
     if (image->f.sub_image == 0)
     {
-	cerr << "Cannot get subimage of " << name 
+	std::cerr << "Cannot get subimage of " << name 
 	     << " - requires X11R6 or XPM";
 	return 0;
     }
@@ -556,7 +556,7 @@ static XImage *get_subimage(XImage *image, const _XtString geometry,
     XImage *subimage = XSubImage(image, x, y, width, height);
     if (subimage == 0)
     {
-	cerr << "Invalid " << resource << " " << quote(geometry) << " in "
+	std::cerr << "Invalid " << resource << " " << quote(geometry) << " in "
 	     << name << "\n";
 	return 0;
     }
@@ -569,7 +569,7 @@ static XImage *get_button_subimage(XImage *image, const _XtString name)
     if (!app_data.button_images && !app_data.button_captions)
     {
 #if 0				// This is a legitimate DDD setting
-	cerr << "Must set either " << XtNbuttonImages << " or " 
+	std::cerr << "Must set either " << XtNbuttonImages << " or " 
 	     << XtNbuttonCaptions << "\n";
 #endif
 	return 0;
@@ -645,7 +645,7 @@ static void install_icon(Widget w, const _XtString name,
 		return;
 	}
 
-	cerr << "Could not install " << quote(name) << " pixmap\n";
+	std::cerr << "Could not install " << quote(name) << " pixmap\n";
 	if (image != 0)
 	    XDestroyImage(image);
     }
@@ -677,7 +677,7 @@ static void install_icon(Widget w, const _XtString name,
     if (ok)
 	return;
 
-    cerr << "Could not install " << quote(name) << " bitmap\n";
+    std::cerr << "Could not install " << quote(name) << " bitmap\n";
     if (image != 0)
 	XDestroyImage(image);
 }

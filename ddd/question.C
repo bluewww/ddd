@@ -47,7 +47,7 @@ char question_rcsid[] =
 #include "disp-read.h"
 
 #include <X11/Intrinsic.h>
-#include <iostream.h>
+#include <iostream>
 
 #ifndef LOG_GDB_QUESTION
 #define LOG_GDB_QUESTION 0

@@ -250,6 +250,26 @@ XtResource ddd_resources[] = {
 	XtPointer("")
     },
 
+    { 
+	CONST_CAST(char *,XtNbashInitCommands), 
+	CONST_CAST(char *,XtCInitCommands), 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, bash_init_commands), 
+	XtRString,
+	XtPointer("")
+    },
+
+    { 
+	CONST_CAST(char *,XtNbashSettings), 
+	CONST_CAST(char *,XtCSettings), 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, bash_settings),
+	XtRString,
+	XtPointer("")
+    },
+
     {
 	CONST_CAST(char *,XtNrestartCommands),
 	CONST_CAST(char *,XtCInitCommands),
@@ -566,6 +586,16 @@ XtResource ddd_resources[] = {
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, perl_display_shortcuts),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
+	CONST_CAST(char *,XtNbashDisplayShortcuts),
+	CONST_CAST(char *,XtCDisplayShortcuts),
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, bash_display_shortcuts),
 	XtRString,
 	XtPointer("")
     },

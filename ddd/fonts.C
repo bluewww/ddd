@@ -279,7 +279,7 @@ static void define_font(const AppData& ad,
 	    sym = "default";
 	else
 	    sym = "@" + name;
-	cout << sym << "\t" << font << "\n";
+	std::cout << sym << "\t" << font << "\n";
     }
 }
 
@@ -293,7 +293,7 @@ static void set_db_font(const AppData& ad, XrmDatabase& db,
 	string s = line;
 	s.gsub(":", ": \\\n   ");
 	s.gsub(",", ",\\\n    ");
-	cout << s << "\n\n";
+	std::cout << s << "\n\n";
     }
 }
 
@@ -373,9 +373,9 @@ static void title(const AppData& ad, const string& s)
     static bool title_seen = false;
 
     if (title_seen)
-	cout << "\n\n";
+	std::cout << "\n\n";
 
-    cout << s << "\n" << replicate(string("-"), s.length()) << "\n\n";
+    std::cout << s << "\n" << replicate(string("-"), s.length()) << "\n\n";
 
     title_seen = true;
 }
@@ -531,7 +531,7 @@ static void setup_vsl_fonts(AppData& ad)
 		     VariableWidthDDDFont);
 
     if (ad.show_fonts)
-	cout << defs;
+	std::cout << defs;
 
     defs += ad.vsl_base_defs;
     ad.vsl_base_defs = defs.chars();

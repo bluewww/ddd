@@ -47,13 +47,13 @@ DEFINE_TYPE_INFO_1(NameNode, VSLNode)
 // NameNode
 
 // Dump
-void NameNode::dump(ostream& s) const
+void NameNode::dump(std::ostream& s) const
 {
     s << _name;
 }
 
 // ...as tree
-void NameNode::_dumpTree(ostream& s) const
+void NameNode::_dumpTree(std::ostream& s) const
 {
     s << "\"" << _name << "\"";
 }
@@ -74,9 +74,9 @@ int NameNode::resolveName(VSLDef *cdef, VSLNode **node, string& name,
 
 	if (VSEFlags::show_vars)
 	{
-	    cout << "\n" << cdef->longname() << ":resolveNames: replacing " 
+	    std::cout << "\n" << cdef->longname() << ":resolveNames: replacing " 
 		<< *this << " by " << **node;
-	    cout.flush();
+	    std::cout.flush();
 	}
 
 	delete this; 

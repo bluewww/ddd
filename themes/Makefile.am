@@ -47,6 +47,4 @@ themesroot_DATA = \
 	suppress.vsl \
 	tinyvalues.vsl
 
-
-# Automake invokes `autoconf' without passing the `-l' option :-(
-AUTOCONF = autoconf -l ../ddd
+EXTRA_DIST = $(themesroot_DATA)

@@ -47,7 +47,7 @@ char tictactoe_rcsid[] =
 #include <Xm/PushB.h>
 #include <Xm/SelectioB.h>	// XmCreatePromptDialog()
 
-#include <iostream.h>
+#include <iostream>
 #include <unistd.h>
 
 #include "Command.h"
@@ -458,7 +458,7 @@ static void InstallBitmapAsImage(unsigned char *bits, int width, int height,
 {
     Boolean ok = InstallBitmap(bits, width, height, name.chars());
     if (!ok)
-	cerr << "Could not install " << quote(name) << " bitmap\n";
+	std::cerr << "Could not install " << quote(name) << " bitmap\n";
 }
 
 static void install_images()

@@ -40,7 +40,7 @@
 #include "BoxC.h"
 #include "BoxD.h"
 #include "bool.h"
-#include <iostream.h>
+#include <iostream>
 class BoxRegion;
 
 #define CHECK_VALID(p) { if (!isValid() || !p.isValid()) return Point(); }
@@ -172,7 +172,7 @@ public:
     }
 
     // I/O
-    friend ostream& operator << (ostream& stream, 
+    friend std::ostream& operator << (std::ostream& stream, 
 				 const BoxPoint& point);
 };
 

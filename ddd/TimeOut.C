@@ -38,7 +38,7 @@ char TimeOut_rcsid[] =
 #include "assert.h"
 #include "bool.h"
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>		// abort()
 
 #undef XtAppAddTimeOut
@@ -193,7 +193,7 @@ void MyRemoveTimeOut(XtIntervalId tic, const char *file, int line)
     }
 
     // Timer not found - either already called or removed
-    cerr << "TimeOut: " << file << ":" << line << ": timer " 
+    std::cerr << "TimeOut: " << file << ":" << line << ": timer " 
 	 << tic << " expired\n";
 
     // `It is an error to remove a timer that has already gone off.'

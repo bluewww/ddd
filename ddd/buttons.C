@@ -407,6 +407,7 @@ static string gdbSettingsValue(string command)
 {
     switch (gdb->type())
     {
+    case BASH:
     case GDB:
 	if (command.contains("set ", 0))
 	{
@@ -552,7 +553,7 @@ string assignment_value(const string& expr)
     return value;
 }
 
-static void strip_through(string& s, string key)
+static void strip_through(string& s, const string& key)
 {
     int key_index = s.index(key);
     int nl_index  = s.index('\n');
@@ -604,7 +605,8 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     // Otherwise, we might point at `i++' or `f()' and have weird side
     // effects.
     MString clear = for_documentation ? rm(" ") : MString(0, true);
-    if (bp_help.xmstring() == 0 && !expr.matches(rxchain))
+    if (bp_help.xmstring() == 0 && !expr.matches(rxchain) 
+	&& gdb->type() != BASH)
 	return clear;
 
     // Change EVENT such that the popup tip will remain at the same
@@ -1117,7 +1119,7 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 	// DDD 2.1 and earlier used `:' to separate buttons
 	button_list.gsub(':', '\n');
 
-	cerr << "Warning: converting " << quote(_button_list) << "\n"
+	std::cerr << "Warning: converting " << quote(_button_list) << "\n"
 	     << "to new format " << quote(button_list) << "\n";
     }
 
@@ -1536,6 +1538,7 @@ static void create_buttons_dialog(Widget parent)
     case JDB:  str = &app_data.jdb_display_shortcuts;  break;
     case PYDB: str = &app_data.pydb_display_shortcuts; break;
     case PERL: str = &app_data.perl_display_shortcuts; break;
+    case BASH: str = &app_data.bash_display_shortcuts; break;
     }
 
     shortcut_w = 
@@ -1613,6 +1616,7 @@ void refresh_button_editor()
     case JDB:  str = &app_data.jdb_display_shortcuts;  break;
     case PYDB: str = &app_data.pydb_display_shortcuts; break;
     case PERL: str = &app_data.perl_display_shortcuts; break;
+    case BASH: str = &app_data.bash_display_shortcuts; break;
     }
 
     *str = STATIC_CAST(String,XtNewString(expr.chars()));

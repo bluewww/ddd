@@ -156,7 +156,7 @@ void BackgroundColorBox::color_draw(Widget w,
 
 
 // Print using foreground color
-void ForegroundColorBox::_print(ostream& os, const BoxRegion& region, 
+void ForegroundColorBox::_print(std::ostream& os, const BoxRegion& region, 
 				const PrintGC& gc) const
 {
     // Set foreground color
@@ -194,7 +194,7 @@ void ForegroundColorBox::_print(ostream& os, const BoxRegion& region,
 }
 
 // Print using background color
-void BackgroundColorBox::_print(ostream& os, const BoxRegion& region, 
+void BackgroundColorBox::_print(std::ostream& os, const BoxRegion& region, 
 				const PrintGC& gc) const
 {
     if (gc.isPostScript())

@@ -41,10 +41,10 @@
 #include "bool.h"
 #include "DispValueT.h"
 
-#include <iostream.h>
+#include <iostream>
 
 // Determine type of next element in VALUE
-DispValueType determine_type (const string& value);
+DispValueType determine_type (string& value);
 
 // Read single token from VALUE
 string read_token (string& value);

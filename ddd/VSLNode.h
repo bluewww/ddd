@@ -39,7 +39,7 @@
 
 
 #include "assert.h"
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 #include "TypeInfo.h"
 
@@ -76,8 +76,8 @@ protected:
     {}
 
     // Dump
-    virtual void dump(ostream& s) const = 0;      // as VSL epxr
-    virtual void _dumpTree(ostream&) const {}     // as tree
+    virtual void dump(std::ostream& s) const = 0;      // as VSL epxr
+    virtual void _dumpTree(std::ostream&) const {}     // as tree
 
     virtual bool matches(const VSLNode& node) const
     {
@@ -172,8 +172,8 @@ public:
     virtual bool OK() const;
 
     // Dump
-    friend ostream& operator << (ostream& s, const VSLNode& node); // als VSL
-    void dumpTree(ostream& s) const;                               // als Baum
+    friend std::ostream& operator << (std::ostream& s, const VSLNode& node); // als VSL
+    void dumpTree(std::ostream& s) const;                               // als Baum
 };
 
 #endif

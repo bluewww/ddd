@@ -114,7 +114,7 @@ public:
 };
 
 // I/O
-inline ostream& operator << (ostream& stream, const BoxSize& size)
+inline std::ostream& operator << (std::ostream& stream, const BoxSize& size)
 {
     const BoxPoint& p = size;
     return operator << (stream, p);

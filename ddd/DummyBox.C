@@ -49,7 +49,7 @@ bool DummyBox::matches(const Box& box, const Box *) const
 }
 
 // Dump
-void DummyBox::dump(ostream& s) const
+void DummyBox::dump(std::ostream& s) const
 {
     s << "<_>";
 }

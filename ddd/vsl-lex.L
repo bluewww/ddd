@@ -41,7 +41,7 @@ char VSL_lex_rcsid[] =
 
 static const int max_include_nesting = 40;    // max include nesting
 
-static istream	*streamstack[max_include_nesting]; // File descriptors
+static std::istream *streamstack[max_include_nesting]; // File descriptors
 static string	namestack[max_include_nesting];	   // File names
 static int	linestack[max_include_nesting];	   // File lines
 static int	topstack = 0;			   // Next free position
@@ -50,15 +50,42 @@ static int	topstack = 0;			   // Next free position
 static YY_BUFFER_STATE bufstack[max_include_nesting]; // Buffer states
 #endif
 
-static istream *yystream = &cin;
+static std::istream *yystream = &std::cin;
 
 static int yylinenumber;
 
 static int switchdown(void);
-static int switchup(const char *filename, bool thisdir);
+//static int switchup(const char *filename, bool thisdir);
 
 static char pushback[BUFSIZ];
 static char *pushback_ptr = pushback;
+
+static const char *searchpath(const char *filename, bool thisDir);
+
+class yyNameSet {
+private:
+    string _name;
+    yyNameSet *_next;
+
+public:
+    yyNameSet(const char *name)
+	: _name(name), _next(0)
+    {}
+    ~yyNameSet()	   { reset(); }
+    void reset();
+    int add(const char *name);
+
+private:
+    yyNameSet(const yyNameSet&)
+	: _name(), _next(0)
+    {
+	assert(0);
+    }
+    yyNameSet& operator = (const yyNameSet&)
+    {
+	assert(0); return *this;
+    }
+} yynameSet("xyzzy");
 
 inline int do_unput(char c) 
 {
@@ -82,6 +109,83 @@ static int do_input(void)
     if (c == '\n')
 	yylinenumber++;
     return c;
+}
+
+// Switch to file FILENAME
+static int switchup(const char *filename, bool thisdir) 
+{
+    if (string(filename) != "")
+    {
+	// Search file
+	filename = searchpath(filename, thisdir);
+
+	// Add to name set; if we already have read it, don't care
+	if (yynameSet.add(filename))
+	    return 0;
+    }
+
+    if (topstack >= max_include_nesting)
+    {
+	VSLLib::parse_error("too many #include's");
+	return -1;
+    }
+
+#ifdef FLEX_SCANNER
+    if (YY_CURRENT_BUFFER == 0)
+    {
+	vslrestart(stdin);
+    }
+
+    bufstack[topstack]	  = YY_CURRENT_BUFFER;
+#endif
+
+    streamstack[topstack] = yystream;
+    namestack[topstack]	  = yyfilename;
+    linestack[topstack]	  = yylinenumber;
+    topstack++;
+
+    yylinenumber = 1;
+    yyfilename = filename;
+
+#ifdef FLEX_SCANNER
+    yy_switch_to_buffer(yy_new_buffer(stdin, YY_BUF_SIZE));
+#endif
+
+    if (string(filename) == "")
+    {
+	yystream   = &std::cin;
+	yyfilename = "standard input";
+    }
+    else
+    {
+#if BAD_ISTREAM
+    yystream = 0;
+    FILE *fp = fopen(filename, "r");
+    if (fp == 0 || fclose(fp) == EOF) 
+    {
+#else
+    yystream = new ifstream(filename, ios::in);
+    if (!yystream->readable()) 
+    {
+#endif
+	switchdown();
+	VSLLib::parse_error(string(filename) + ": " + strerror(errno));
+	return -1;
+    }
+
+#if BAD_ISTREAM
+    // yystream can now be opened
+    yystream = new std::ifstream(filename, std::ios::in);
+#endif
+    }
+
+    if (VSEFlags::verbose)
+    {
+	std::cout << "(" << yyfilename;
+	std::cout.flush();
+    }
+
+    return 0;
 }
 
 // The way SUN lex wants input
@@ -149,7 +253,7 @@ W			[ \f\t]*
 
 %%
 
-{S}		return STRING;			// string
+{S}		return VSL_STRING;		// string
 
 "//".*		BREAK				// C++ comment
 "/*"		{				// C comment
@@ -256,31 +360,6 @@ where		return WHERE;
 "\n"		BREAK				// Likewise
 .		return yytext[0];		// All other characters
 %%
-class yyNameSet {
-private:
-    string _name;
-    yyNameSet *_next;
-
-public:
-    yyNameSet(const char *name)
-	: _name(name), _next(0)
-    {}
-    ~yyNameSet()	   { reset(); }
-    void reset();
-    int add(const char *name);
-
-private:
-    yyNameSet(const yyNameSet&)
-	: _name(), _next(0)
-    {
-	assert(0);
-    }
-    yyNameSet& operator = (const yyNameSet&)
-    {
-	assert(0); return *this;
-    }
-} yynameSet("xyzzy");
-
 // Delete name set
 void yyNameSet::reset()
 { 
@@ -319,8 +398,8 @@ static int switchdown(void)
     {
 	if (VSEFlags::verbose)
 	{
-	    cout << ")";
-	    cout.flush();
+	    std::cout << ")";
+	    std::cout.flush();
 	}
 	delete yystream;
     }
@@ -414,88 +493,4 @@ static const char *searchpath(const char *filename, bool thisDir)
     }
 
     return filename;
-}
-
-// Switch to file FILENAME
-static int switchup(const char *filename, bool thisdir) 
-{
-    if (string(filename) != "")
-    {
-	// Search file
-	filename = searchpath(filename, thisdir);
-
-	// Add to name set; if we already have read it, don't care
-	if (yynameSet.add(filename))
-	    return 0;
-    }
-
-    if (topstack >= max_include_nesting)
-    {
-	VSLLib::parse_error("too many #include's");
-	return -1;
-    }
-
-#ifdef FLEX_SCANNER
-    if (YY_CURRENT_BUFFER == 0)
-    {
-	YY_CURRENT_BUFFER = yy_new_buffer(stdin, YY_BUF_SIZE);
-	yy_load_buffer_state();
-    }
-
-    bufstack[topstack]	  = YY_CURRENT_BUFFER;
-#endif
-
-    streamstack[topstack] = yystream;
-    namestack[topstack]	  = yyfilename;
-    linestack[topstack]	  = yylinenumber;
-    topstack++;
-
-    yylinenumber = 1;
-    yyfilename = filename;
-
-#ifdef FLEX_SCANNER
-    yy_switch_to_buffer(yy_new_buffer(stdin, YY_BUF_SIZE));
-#endif
-
-    if (string(filename) == "")
-    {
-	yystream   = &cin;
-	yyfilename = "standard input";
-    }
-    else
-    {
-#if BAD_ISTREAM
-    yystream = 0;
-    FILE *fp = fopen(filename, "r");
-    if (fp == 0 || fclose(fp) == EOF) 
-    {
-#else
-    yystream = new ifstream(filename, ios::in);
-    if (!yystream->readable()) 
-    {
-#endif
-	switchdown();
-	VSLLib::parse_error(string(filename) + ": " + strerror(errno));
-	return -1;
-    }
-
-#if BAD_ISTREAM
-    // yystream can now be opened
-    yystream = new ifstream(filename, ios::in);
-#endif
-    }
-
-    if (VSEFlags::verbose)
-    {
-	cout << "(" << yyfilename;
-	cout.flush();
-    }
-
-#ifdef FLEX_SCANNER
-    // Avoid warnings about unused vslunput() function
-    if (false)
-	vslunput(0, 0);		// Never called
-#endif
-
-    return 0;
 }

@@ -64,8 +64,8 @@ char print_rcsid[] =
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <string.h>		// strerror()
 #include <errno.h>
 #include <unistd.h>
@@ -92,7 +92,7 @@ char print_rcsid[] =
 // Printing Dialog
 //-----------------------------------------------------------------------------
 
-static string msg(string path, bool displays, bool to_file)
+static string msg(const string& path, bool displays, bool to_file)
 {
     string m = "Printing ";
     if (displays)
@@ -109,7 +109,7 @@ static string msg(string path, bool displays, bool to_file)
 }
 
 // Print to FILENAME according to given PrintGC
-static int print_to_file(string filename, PrintGC& gc, 
+static int print_to_file(const string& filename, PrintGC& gc, 
 			 bool selectedOnly, bool displays)
 {
     string path = filename;
@@ -135,7 +135,7 @@ static int print_to_file(string filename, PrintGC& gc,
     graphGC.printGC = &gc;
     graphGC.printSelectedNodesOnly = selectedOnly;
 
-    ofstream os(filename.chars());
+    std::ofstream os(filename.chars());
     if (os.bad())
     {
 	FILE *fp = fopen(filename.chars(), "w");
@@ -443,7 +443,7 @@ static void SetPrintTargetCB(Widget w, XtPointer client_data, XtPointer)
     print_target = PrintTarget((int)(long)client_data);
 }
 
-static void set_paper_size_string(string s)
+static void set_paper_size_string(const string& s)
 {
     Widget text = XmSelectionBoxGetChild(paper_size_dialog, XmDIALOG_TEXT);
     XmTextSetString(text, CONST_CAST(char*,s.chars()));
@@ -605,7 +605,7 @@ inline bool near(int i, int j)
     return abs(i - j) <= 2;
 }
 
-static void get_paper_size(string s, int& hsize, int& vsize)
+static void get_paper_size(const string& s, int& hsize, int& vsize)
 {
     char delim = '\0';
 
@@ -631,7 +631,7 @@ static void get_paper_size(string s, int& hsize, int& vsize)
     vsize = points(s_vsize);
 }
 
-static bool set_paper_size(string s)
+static bool set_paper_size(const string& s)
 {
     int hsize, vsize;
     get_paper_size(s, hsize, vsize);

@@ -31,6 +31,18 @@
 # `http://www.gnu.org/software/ddd/',
 # or send a mail to the DDD developers <ddd@gnu.org>.
 
+TERMCAP_DISTFILES = \
+	termcap/termcap.h termcap/termcap.c \
+	termcap/tparam.c termcap/version.c \
+	termcap/ChangeLog termcap/COPYING termcap/README \
+	termcap/INSTALL termcap/NEWS \
+	termcap/termcap.texi \
+	termcap/Makefile.in termcap/configure \
+	termcap/configure.in
+
+TEXINFO_DISTFILES = \
+	texinfo/epsf.tex texinfo/gfdl.texinfo texinfo/gpl.texinfo \
+	texinfo/lgpl.texinfo texinfo/texinfo.tex 
 
 # Shared data installation
 dddrootdir   = $(pkgdatadir)-$(VERSION)
@@ -46,7 +58,7 @@ dddroot_DATA = NEWS COPYING
 # Subdirectories.
 # -----------------------------------------------------------------------------
 
-SUBDIRS = @subdirs@
+SUBDIRS = @subdirs@ themes vsllib ddd
 
 
 # -----------------------------------------------------------------------------
@@ -203,13 +215,16 @@ picsdist:
 CVS2CL = etc/cvs2cl.pl
 USERMAP = etc/users
 $(srcdir)/ChangeLog: $(srcdir)/Makefile.am
-	cd $(srcdir); $(CVS2CL) --separate-header --no-wrap --revisions --utc --usermap $(USERMAP)
-	rm -f $(srcdir)/ChangeLog.bak
-
+	if (cd $(srcdir); $(CVS2CL) --separate-header --no-wrap --revisions --utc --usermap $(USERMAP) ); then \
+	rm -f $(srcdir)/ChangeLog.bak \
+	else true; fi
 
 # -----------------------------------------------------------------------------
 # Autoconf.
 # -----------------------------------------------------------------------------
 
-# Automake invokes `autoconf' without passing the `-l' option :-(
-AUTOCONF = autoconf -l ddd
+EXTRA_DIST = ddd.spec.in $(TERMCAP_DISTFILES) $(TEXINFO_DISTFILES) \
+	readline $(CVS2CL) $(USERMAP)
+
+dist-hook:
+	rm -rf `find $(distdir)/readline -name CVS`

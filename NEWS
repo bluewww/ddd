@@ -1,5 +1,15 @@
 DDD News						-*- text -*-
 ********
+DDD 3.3.3-3.3.5
+=========
+
+- Major changes to get this to compile with modern auto-tools, Bison,
+  Flex, and C++ STL.
+
+- Support for Bash debugging.
+
+  This fork of the code put together by Daniel Schepler
+  <schepler@math.berkeley.edu> and Rocky Bernstein <rocky@panix.com>
 
 DDD 3.3.2
 =========

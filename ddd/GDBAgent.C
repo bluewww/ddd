@@ -160,8 +160,8 @@ char GDBAgent_rcsid[] =
 #include "casts.h"
 
 #include <stdlib.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <ctype.h>
 
 #ifndef EXIT_SUCCESS
@@ -189,16 +189,16 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       state(BusyOnInitialCmds),
       _type(tp),
       _user_data(0),
-      _has_frame_command(tp == GDB || tp == XDB),
+      _has_frame_command(tp == GDB || tp == XDB || tp == BASH),
       _has_func_command(tp == DBX),
       _has_run_io_command(false),
       _has_print_r_option(false),
       _has_output_command(false),
       _has_where_h_option(false),
-      _has_display_command(tp == GDB || tp == DBX || tp == PYDB),
-      _has_clear_command(tp == GDB || tp == DBX || tp == JDB || tp == PERL),
+      _has_display_command(tp == GDB || tp == DBX || tp == PYDB || tp == BASH),
+      _has_clear_command(tp == GDB || tp == DBX || tp == JDB || tp == PERL || tp == BASH),
       _has_handler_command(false),
-      _has_pwd_command(tp == GDB || tp == DBX || tp == PYDB || tp == PERL),
+      _has_pwd_command(tp == GDB || tp == DBX || tp == PYDB || tp == PERL || tp == BASH),
       _has_setenv_command(tp == DBX),
       _has_edit_command(tp == DBX),
       _has_make_command(tp == GDB || tp == DBX || tp == PERL),
@@ -222,6 +222,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _program_language((tp == JDB) ? LANGUAGE_JAVA :
 			(tp == PYDB) ? LANGUAGE_PYTHON : 
 			(tp == PERL) ? LANGUAGE_PERL : 
+			(tp == BASH) ? LANGUAGE_BASH : 
 			LANGUAGE_C),
       _verbatim(false),
       _recording(false),
@@ -264,7 +265,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
     // Setup watch mode
     if (type() == GDB)
 	_has_watch_command = WATCH_CHANGE | WATCH_READ | WATCH_WRITE;
-    else if (type() == DBX)
+    else if (type() == DBX || type() == BASH)
 	_has_watch_command = WATCH_CHANGE;
     else
 	_has_watch_command = 0;
@@ -359,6 +360,9 @@ string GDBAgent::title() const
 
     case PERL:
 	return "Perl";
+
+    case BASH:
+	return "Bash";
     }
 
     return "debugger";
@@ -438,14 +442,17 @@ void GDBAgent::start_plus (OAProc   on_answer,
 			   const VoidArray& qu_datas,
 			   int      qu_count,
 			   OQACProc on_qu_array_completion,
-			   void*    qa_data)
+			   void*    qa_data,
+			   bool&    qa_data_registered)
 {
+    qa_data_registered = false;
     state = BusyOnInitialCmds;
 
     if (qu_count > 0) {
 	questions_waiting = true;
 	init_qu_array(cmds, qu_datas, qu_count, 
 		      on_qu_array_completion, qa_data);
+	qa_data_registered = true;
     }
 
     do_start(on_answer, on_answer_completion, user_data);
@@ -492,7 +499,7 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without '\n'
 }
 
 // Send CMD to GDB (unconditionally), associated with USER_DATA.
-bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
+bool GDBAgent::send_user_ctrl_cmd(const string& cmd, void *user_data)
 {
     if (user_data)
 	_user_data = user_data;
@@ -516,9 +523,11 @@ bool GDBAgent::send_user_cmd_plus (const StringArray& cmds,
 				   int      qu_count,
 				   OQACProc on_qu_array_completion,
 				   void*    qa_data,
+				   bool& qa_data_registered,
 				   string   user_cmd,
 				   void* user_data)
 {
+    qa_data_registered = false;
     if (state != ReadyWithPrompt) 
 	return false;
 
@@ -529,6 +538,7 @@ bool GDBAgent::send_user_cmd_plus (const StringArray& cmds,
 	questions_waiting = true;
 	init_qu_array(cmds, qu_datas, qu_count,
 		      on_qu_array_completion, qa_data);
+	qa_data_registered = true;
     }
 
     // Process command
@@ -547,8 +557,10 @@ bool GDBAgent::send_qu_array (const StringArray& cmds,
 			      const VoidArray& qu_datas,
 			      int      qu_count,
 			      OQACProc on_qu_array_completion,
-			      void*    qa_data)
+			      void*    qa_data,
+			      bool& qa_data_registered)
 {
+    qa_data_registered = false;
     if (qu_count == 0)
 	return true;
     if (state != ReadyWithPrompt)
@@ -559,7 +571,8 @@ bool GDBAgent::send_qu_array (const StringArray& cmds,
     callHandlers(ReadyForCmd, (void *)false);
 
     init_qu_array(cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
-    
+    qa_data_registered = true;
+
     // Send first question
     write_cmd(cmd_array[0]);
     flush();
@@ -653,7 +666,7 @@ bool GDBAgent::ends_with_prompt (const string& ans)
     case XDB:
     {
 	// Any line equal to `>' is a prompt.
-	unsigned beginning_of_line = answer.index('\n', -1) + 1;
+	const unsigned beginning_of_line = answer.index('\n', -1) + 1;
 	if (beginning_of_line < answer.length()
 	    && answer.length() > 0
 	    && answer[beginning_of_line] == '>')
@@ -664,6 +677,31 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	return false;
     }
 
+    case BASH:
+    {
+	// Any line ending in `bashdb<...> ' is a prompt.
+	// Since N does not make sense in DDD, we use `DB<> ' instead.
+
+#if RUNTIME_REGEX
+	static regex rxbashprompt("bashdb<+[(][0-9][)]*>+");
+#endif
+
+	int i = answer.length() - 1;
+	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
+	    return false;
+
+	while (i >= 0 && answer[i] != '\n' ) {
+	  if (answer.contains("bashdb<", i)) {
+	    string possible_prompt = answer.from(i);
+	    if (possible_prompt.matches(rxbashprompt)) {
+	      last_prompt = possible_prompt;
+	      return true;
+	    }
+	  }
+	  i--;
+	}
+	return false;
+    }
     case PERL:
     {
 	// Any line ending in `DB<N> ' is a prompt.
@@ -721,8 +759,8 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	}
 
 	// Check for non-threaded prompt as the last line
-	int beginning_of_line = answer.index('\n', -1) + 1;
-	string possible_prompt = ((string &) answer).from(beginning_of_line);
+	const int beginning_of_line = answer.index('\n', -1) + 1;
+	const string possible_prompt = answer.from(beginning_of_line);
 	if (possible_prompt.matches(rxjdbprompt_nothread))
 	{
 	    last_prompt = possible_prompt;
@@ -734,7 +772,7 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	while (last_nl >= 0)
 	{
 	    last_nl = answer.index('\n', last_nl - answer.length());
-	    int beginning_of_line = last_nl + 1;
+	    const int beginning_of_line = last_nl + 1;
 
 	    match_len = rxjdbprompt.match(answer.chars(), answer.length(), 
 					  beginning_of_line);
@@ -840,6 +878,7 @@ bool GDBAgent::ends_with_secondary_prompt (const string& ans)
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
 	// Is there any secondary prompt in these debuggers? (FIXME)
 	return false;
     }
@@ -852,6 +891,9 @@ bool GDBAgent::ends_with_yn (const string& answer)
 {
     if (ends_in(answer, "(y or n) "))
 	return true;		// GDB
+
+    if (ends_in(answer, "(y/n): "))
+	return true;		// BASH
 
     if (ends_in(answer, "(yes or no) "))
 	return true;
@@ -969,6 +1011,7 @@ void GDBAgent::cut_off_prompt(string& answer) const
 	break;
     }
 
+    case BASH:
     case JDB:
     {
 	// Check for prompt at the end of the last line
@@ -997,7 +1040,7 @@ void GDBAgent::strip_dbx_comments(string& s) const
 	    int eol = s.index('\n', warning) + 1;
 	    if (eol <= 0)
 		eol = s.length();
-	    s(warning, eol - warning) = "";
+	    s.at(warning, eol - warning) = "";
 	}
     }
 
@@ -1302,7 +1345,7 @@ void GDBAgent::handle_more(string& answer)
 	flush();
 
 	// Ignore the last line (containing the `More' prompt)
-	int last_beginning_of_line = answer.index('\n', -1) + 1;
+	const int last_beginning_of_line = answer.index('\n', -1) + 1;
 	answer.from(last_beginning_of_line) = "";
     }
 }
@@ -1652,6 +1695,7 @@ string GDBAgent::print_command(string expr, bool internal) const
 	cmd = "p";
 	break;
 
+    case BASH:
     case PERL:
 	cmd = "x";
 	break;
@@ -1671,7 +1715,7 @@ string GDBAgent::print_command(string expr, bool internal) const
 }
 
 // DBX 3.0 wants `display -r' instead of `display' for C++
-string GDBAgent::display_command(string expr) const
+string GDBAgent::display_command(const string& expr) const
 {
     if (!has_display_command())
 	return "";
@@ -1704,6 +1748,7 @@ string GDBAgent::where_command(int count) const
 	    cmd = "where";
 	break;
 
+    case BASH:
     case PERL:
 	cmd = "T";
 	break;
@@ -1736,6 +1781,7 @@ string GDBAgent::info_locals_command() const
     case JDB:
 	return "locals";
 
+    case BASH:
     case PERL:
 	return "V";
     }
@@ -1749,6 +1795,7 @@ string GDBAgent::info_args_command() const
     {
     case GDB:
     case PYDB:
+    case BASH:
 	return "info args";
 
     default:
@@ -1760,7 +1807,7 @@ string GDBAgent::info_args_command() const
 
 string GDBAgent::info_display_command() const
 {
-    if (type() == GDB)
+    if (type() == GDB || type() == BASH)
 	return "info display";
     else
 	return display_command();
@@ -1783,6 +1830,9 @@ string GDBAgent::pwd_command() const
     case XDB:
 	return "!pwd";
 
+    case BASH:
+	return "!! pwd";
+
     case PERL:
 	return "p $ENV{'PWD'} || `pwd`";
 
@@ -1795,7 +1845,7 @@ string GDBAgent::pwd_command() const
 }
 
 // Some DBXes want `sh make' instead of `make'
-string GDBAgent::make_command(string args) const
+string GDBAgent::make_command(const string& args) const
 {
     string cmd;
     switch (type())
@@ -1817,6 +1867,10 @@ string GDBAgent::make_command(string args) const
 	    return "system 'make'";
 	else
 	    return "system 'make " + args + "'";
+
+    case BASH:
+	cmd = "!! make";
+	break;
 
     case JDB:
     case PYDB:
@@ -1853,6 +1907,7 @@ string GDBAgent::jump_command(string pos) const
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
 	return "";		// Not available
     }
 
@@ -1883,6 +1938,7 @@ string GDBAgent::regs_command(bool all) const
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
 	return "";		// Not available
     }
 
@@ -1890,7 +1946,7 @@ string GDBAgent::regs_command(bool all) const
 }
 
 // Watch expressions
-string GDBAgent::watch_command(string expr, WatchMode w) const
+string GDBAgent::watch_command(const string& expr, WatchMode w) const
 {
     if ((has_watch_command() & w) != w)
 	return "";
@@ -1922,6 +1978,11 @@ string GDBAgent::watch_command(string expr, WatchMode w) const
 	}
 	return "";
 
+    case BASH:
+	if ((w & WATCH_CHANGE) == WATCH_CHANGE)
+	    return "watch " + expr;
+	return "";
+   
     case XDB:
 	// Not available.  (There is the `assertion' concept which is
 	// similar but won't fit into the DDD GUI.)
@@ -1961,6 +2022,7 @@ string GDBAgent::kill_command() const
 
     case JDB:
     case PERL:
+    case BASH:
 	return "";		// Not available
     }
 
@@ -1973,6 +2035,7 @@ string GDBAgent::frame_command() const
     {
     case GDB:
     case DBX:
+    case BASH:
 	if (has_frame_command())
 	    return "frame";
 	else
@@ -2001,6 +2064,7 @@ string GDBAgent::frame_command(int num) const
     {
     case GDB:
     case DBX:
+    case BASH:
 	return frame_command() + " " + itostring(num);
 
     case XDB:
@@ -2042,6 +2106,7 @@ string GDBAgent::func_command() const
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
 	return frame_command();
 
     case DBX:
@@ -2052,12 +2117,15 @@ string GDBAgent::func_command() const
 }
 
 // Each debugger has its own way of echoing (sigh)
-string GDBAgent::echo_command(string text) const
+string GDBAgent::echo_command(const string& text) const
 {
     switch (type())
     {
     case GDB:
 	return "echo " + cook(text);
+
+    case BASH:
+	return "print " + quote(text);
 
     case DBX:
 	return print_command(quote(text), false);
@@ -2079,7 +2147,7 @@ string GDBAgent::echo_command(string text) const
 }
 
 // Prefer `ptype' on `whatis' in GDB
-string GDBAgent::whatis_command(string text) const
+string GDBAgent::whatis_command(const string& text) const
 {
     switch (type())
     {
@@ -2101,6 +2169,9 @@ string GDBAgent::whatis_command(string text) const
 
     case PERL:
 	return "";		// Who knows?
+
+    case BASH:
+	return "";		// Can't do yet.
     }
 
     return "";			// Never reached
@@ -2116,6 +2187,7 @@ string GDBAgent::enable_command(string bp) const
     {
     case GDB:
     case PYDB:
+    case BASH:
 	return "enable" + bp;
 
     case DBX:
@@ -2147,6 +2219,7 @@ string GDBAgent::disable_command(string bp) const
     {
     case GDB:
     case PYDB:
+    case BASH:
 	return "disable" + bp;
 
     case DBX:
@@ -2179,6 +2252,7 @@ string GDBAgent::delete_command(string bp) const
     case DBX:
     case GDB:
     case PYDB:
+    case BASH:
 	return "delete" + bp;
 
     case XDB:
@@ -2193,7 +2267,7 @@ string GDBAgent::delete_command(string bp) const
 }
 
 // Set ignore count of breakpoint BP to COUNT
-string GDBAgent::ignore_command(string bp, int count) const
+string GDBAgent::ignore_command(const string& bp, int count) const
 {
     switch (type())
     {
@@ -2212,6 +2286,7 @@ string GDBAgent::ignore_command(string bp, int count) const
 
     case JDB:
     case PERL:
+    case BASH:
 	return "";		// Not available
     }
 
@@ -2219,12 +2294,13 @@ string GDBAgent::ignore_command(string bp, int count) const
 }
 
 // Set condition of breakpoint BP to EXPR
-string GDBAgent::condition_command(string bp, string expr) const
+string GDBAgent::condition_command(const string& bp, const string& expr) const
 {
     switch (type())
     {
     case GDB:
     case PYDB:
+    case BASH:
 	return "condition " + bp + " " + expr;
 
     case DBX:
@@ -2238,10 +2314,11 @@ string GDBAgent::condition_command(string bp, string expr) const
 }
 
 // Return shell escape command
-string GDBAgent::shell_command(string cmd) const
+string GDBAgent::shell_command(const string& cmd) const
 {
     switch (type())
     {
+    case BASH:
     case GDB:
 	return "shell " + cmd;
 
@@ -2358,7 +2435,7 @@ string GDBAgent::quote_file(const string& file) const
 }
 
 // Return command to debug PROGRAM
-string GDBAgent::debug_command(string program, string args) const
+string GDBAgent::debug_command(const string& program, string args) const
 {
     if (args != "" && !args.contains(' ', 0))
 	args = " " + args;
@@ -2390,6 +2467,9 @@ string GDBAgent::debug_command(string program, string args) const
 
     case PERL:
 	return "exec " + quote(debugger() + " -d " + program + args);
+
+    case BASH:
+	return "debug " + program + args;
     }
 
     return "";			// Never reached
@@ -2417,6 +2497,7 @@ string GDBAgent::signal_command(int sig) const
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
 	return "";		// Not available
     }
 
@@ -2425,7 +2506,7 @@ string GDBAgent::signal_command(int sig) const
 
 
 // Return a command that does nothing.
-string GDBAgent::nop_command(string comment) const
+string GDBAgent::nop_command(const string& comment) const
 {
     if (type() == JDB)
 	return " ";
@@ -2467,6 +2548,9 @@ string GDBAgent::run_command(string args) const
 
     case PERL:
 	return "exec " + quote(debugger() + " -d " + program() + args);
+
+    case BASH:
+	return "restart";
     }
 
     return "";			// Never reached
@@ -2480,6 +2564,7 @@ string GDBAgent::rerun_command() const
     case GDB:
     case JDB:
     case PYDB:
+    case BASH:
 	return "run";
 
     case DBX:
@@ -2523,6 +2608,7 @@ string GDBAgent::attach_command(int pid, const string& file) const
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
 	break;
     }
 
@@ -2546,6 +2632,7 @@ string GDBAgent::detach_command(int pid) const
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
 	break;
     }
 
@@ -2578,7 +2665,7 @@ string GDBAgent::append_suffix(const string& expr, const string& suffix)
 }
 
 // Dereference an expression.
-string GDBAgent::dereferenced_expr(string expr) const
+string GDBAgent::dereferenced_expr(const string& expr) const
 {
     switch (program_language())
     {
@@ -2615,8 +2702,9 @@ string GDBAgent::dereferenced_expr(string expr) const
 	// GDB 4.16.gnat.1.13 prepends `*' as in C
 	return prepend_prefix("*", expr);
 
+    case LANGUAGE_BASH:
     case LANGUAGE_PYTHON:
-	return "";		// No such thing in Python/PYDB
+	return "";		// No such thing in Python/PYDB and bash
 
     case LANGUAGE_OTHER:
 	return expr;		// All other languages
@@ -2651,8 +2739,9 @@ string GDBAgent::address_expr(string expr) const
     case LANGUAGE_PYTHON:
 	return "";		// Not supported in Python
 
+    case LANGUAGE_BASH:
     case LANGUAGE_PERL:
-	return "";		// No such thing in Perl
+	return "";		// No such thing in bash/Perl
 
     case LANGUAGE_ADA:
 	return "";		// Not supported in GNAT/Ada
@@ -2665,7 +2754,7 @@ string GDBAgent::address_expr(string expr) const
 }
 
 // Give the index of an expression.
-string GDBAgent::index_expr(string expr, string index) const
+string GDBAgent::index_expr(const string& expr, const string& index) const
 {
     switch (program_language())
     {
@@ -2678,6 +2767,9 @@ string GDBAgent::index_expr(string expr, string index) const
 	    return '$' + expr.after(0) + "[" + index + "]";
 	else
 	    return expr + "[" + index + "]";
+
+    case LANGUAGE_BASH:
+      return "${" + expr + "[" + index + "]}";
 
     default:
 	break;
@@ -2702,6 +2794,7 @@ int GDBAgent::default_index_base() const
     case LANGUAGE_JAVA:
     case LANGUAGE_PYTHON:
     case LANGUAGE_PERL:
+    case LANGUAGE_BASH:
     case LANGUAGE_OTHER:
 	return 0;
     }
@@ -2725,6 +2818,9 @@ string GDBAgent::member_separator() const
     case LANGUAGE_JAVA:
 	return ": ";
 
+    case LANGUAGE_BASH:
+        return "";
+
     case LANGUAGE_ADA:
     case LANGUAGE_PERL:
 	return " => ";
@@ -2734,7 +2830,7 @@ string GDBAgent::member_separator() const
 }
 
 // Return assignment command
-string GDBAgent::assign_command(string var, string expr) const
+string GDBAgent::assign_command(const string& var, const string& expr) const
 {
     string cmd;
 
@@ -2763,6 +2859,13 @@ string GDBAgent::assign_command(string var, string expr) const
 	cmd = "";		// No command needed
 	break;
 
+    case BASH:
+	if (var != "" || !is_bash_prefix(var[0]))
+	    return "";		// Cannot set this
+
+	cmd = "eval ";		// No command needed
+	break;
+
     case JDB:
 	if (has_debug_command())
 	    return "";		// JDB 1.1: not available
@@ -2780,6 +2883,7 @@ string GDBAgent::assign_command(string var, string expr) const
     case LANGUAGE_FORTRAN:
     case LANGUAGE_PYTHON:	// FIXME: vrbl names can conflict with commands
     case LANGUAGE_PERL:
+    case LANGUAGE_BASH:
     case LANGUAGE_OTHER:
 	cmd += "=";
 	break;
@@ -2820,6 +2924,7 @@ void GDBAgent::normalize_address(string& addr) const
 	case LANGUAGE_ADA:
 	case LANGUAGE_PYTHON:
 	case LANGUAGE_PERL:
+	case LANGUAGE_BASH:
 	case LANGUAGE_OTHER:
 	    addr.prepend("0x");
 	    break;
@@ -2870,6 +2975,7 @@ string GDBAgent::history_file() const
     case JDB:
     case PYDB:
     case PERL:
+    case BASH:
 	return "";		// Unknown
 
     case XDB:
@@ -2922,7 +3028,7 @@ ProgramLanguage GDBAgent::program_language(string text)
     static struct {
 	const char *name;
 	ProgramLanguage language;
-    } language_table[] = {
+    } const language_table[] = {
 	{ "fortran", LANGUAGE_FORTRAN },
 	{ "f",       LANGUAGE_FORTRAN }, // F77, F90, F
 	{ "java",    LANGUAGE_JAVA },
@@ -2932,6 +3038,7 @@ ProgramLanguage GDBAgent::program_language(string text)
 	{ "m",       LANGUAGE_PASCAL }, // M2, M3 or likewise
 	{ "ada",     LANGUAGE_ADA },
 	{ "python",  LANGUAGE_PYTHON },
+	{ "bash",    LANGUAGE_BASH },
 	{ "perl",    LANGUAGE_PERL },
 	{ "c",       LANGUAGE_C },
 	{ "c++",     LANGUAGE_C },
@@ -3082,7 +3189,7 @@ void GDBAgent::PanicHP(Agent *source, void *, void *call_data)
     GDBAgent *gdb = ptr_cast(GDBAgent, source);
     if (gdb != 0)
 	path = downcase(gdb->title());
-    cerr << path << ": " << msg << "\n";
+    std::cerr << path << ": " << msg << "\n";
 }
 
 void GDBAgent::StrangeHP(Agent *source, void *client_data, void *call_data)

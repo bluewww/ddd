@@ -123,7 +123,7 @@ void HAlignBox::addSize(Box *b)
 }
 
 
-void HAlignBox::_print(ostream& os, 
+void HAlignBox::_print(std::ostream& os, 
 		       const BoxRegion& region, 
 		       const PrintGC& gc) const
 {
@@ -181,7 +181,7 @@ void VAlignBox::addSize(Box *b)
     }
 }
 
-void VAlignBox::_print(ostream& os, 
+void VAlignBox::_print(std::ostream& os, 
 		       const BoxRegion& region, 
 		       const PrintGC& gc) const
 {
@@ -260,7 +260,7 @@ void UAlignBox::_draw(Widget w,
 }
 
 // Print
-void UAlignBox::_print(ostream& os, 
+void UAlignBox::_print(std::ostream& os, 
 		       const BoxRegion& region, 
 		       const PrintGC& gc) const
 {
@@ -348,7 +348,7 @@ void TAlignBox::_draw(Widget w,
     }
 }
 
-void TAlignBox::_print(ostream& os, 
+void TAlignBox::_print(std::ostream& os, 
 		       const BoxRegion& region, 
 		       const PrintGC& gc) const
 {

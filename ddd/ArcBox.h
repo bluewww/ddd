@@ -58,10 +58,10 @@ private:
 		GC gc, 
 		bool context_selected) const;
 
-    void _printPS(ostream& os, 
+    void _printPS(std::ostream& os, 
 		  const BoxRegion& region, 
 		  const PrintGC& gc) const;
-    void _printFig(ostream& os, 
+    void _printFig(std::ostream& os, 
 		   const BoxRegion& region, 
 		   const PrintGC& gc) const;
 	
@@ -70,7 +70,7 @@ protected:
 	LineBox(box), _start(box._start), _length(box._length)
     {}
 
-    void dump(ostream& s) const;
+    void dump(std::ostream& s) const;
 
     bool matches (const Box &b, const Box * = 0) const
     {
@@ -87,7 +87,7 @@ public:
 
     Box *dup() const { return new ArcBox(*this); }
 
-    virtual void _print(ostream& os, 
+    virtual void _print(std::ostream& os, 
 			const BoxRegion& region, 
 			const PrintGC& gc) const;
 

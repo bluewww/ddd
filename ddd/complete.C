@@ -439,7 +439,7 @@ void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 			char c = last_word[i];
 			if (!isid(c))
 			{
-			    input(last_space + 1, 0) = '\'';
+			    input.at(last_space + 1, 0) = '\'';
 			    break;
 			}
 		    }
@@ -497,7 +497,7 @@ static void _complete_argAct(Widget w,
 		    char c = input[i];
 		    if (!isid(c))
 		    {
-			input(0, 0) = '\'';
+			input.at(0, 0) = '\'';
 			break;
 		    }
 		}

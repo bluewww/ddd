@@ -143,7 +143,7 @@ void TagBox::_draw(Widget w,
 
 
 // Dump TagBox
-void TagBox::dump(ostream& s) const
+void TagBox::dump(std::ostream& s) const
 {
     MarkBox::dump(s);
 

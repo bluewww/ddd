@@ -38,8 +38,8 @@
 // positions; in some compilers, this is implementation-defined.  
 
 #include "config.h"
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 
 #if HAVE_STREAMPOS
 #define STREAMPOS streampos

@@ -42,8 +42,8 @@ char logplayer_rcsid[] =
 #include "config.h"
 #include "streampos.h"
 
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -127,7 +127,7 @@ void logplayer(const string& logname)
     // All this is really ugly.  Works well as a hack for debugging DDD,
     // but not really worth anything else.
 
-    static ifstream log(logname.chars());
+    static std::ifstream log(logname.chars());
     if (log.bad())
     {
 	(void) fopen(logname.chars(), "r");
@@ -230,7 +230,7 @@ void logplayer(const string& logname)
 			// Report line
 			char buffer[256];
 			sprintf(buffer, "%4d", command_no);
-			ostrstream os;
+			std::ostringstream os;
 			os << buffer << " " << in << "\n";
 			put(os);
 
@@ -296,11 +296,11 @@ void logplayer(const string& logname)
 			if (echoing)
 			    put(ddd_line + "\r\n");
 
-			ifstream is(logname.chars());
+			std::ifstream is(logname.chars());
 			int line = 1;
 			bool at_start_of_line = true;
 
-			ostrstream os;
+			std::ostringstream os;
 			for (;;)
 			{
 			    char c;
@@ -330,7 +330,7 @@ void logplayer(const string& logname)
 
 		if (!scanning && ddd_line == ".")
 		{
-		    ostrstream os;
+		    std::ostringstream os;
 		    os << "Expecting " 
 		       << command_no << " " << quote(in) << "\n";
 		    put(os);
@@ -375,7 +375,7 @@ void logplayer(const string& logname)
 	    else if (initializing)
 	    {
 		// No prompt found
-		cerr << logname << ": invalid or incomplete log\n";
+		std::cerr << logname << ": invalid or incomplete log\n";
 		exit(EXIT_FAILURE);
 	    }
 	    else

@@ -38,7 +38,7 @@
 #include "Box.h"
 #include "bool.h"
 #include "GraphGC.h"
-#include <strstream.h>
+#include <sstream>
 
 class GraphEdge;
 class Graph;
@@ -121,7 +121,7 @@ public:
     virtual const BoxRegion& sensitiveRegion(const GraphGC& gc) const = 0;
     virtual string str() const 
     { 
-	ostrstream os;
+	std::ostringstream os;
 	os << id();
 	return string(os);
     }
@@ -169,7 +169,7 @@ public:
     }
 
     // Printing
-    virtual void _print(ostream&, const GraphGC&) const
+    virtual void _print(std::ostream&, const GraphGC&) const
     {
 	// Default: do nothing
     }
@@ -178,7 +178,7 @@ public:
     virtual bool OK() const;
 };
 
-inline ostream& operator << (ostream& s, GraphNode& node)
+inline std::ostream& operator << (std::ostream& s, GraphNode& node)
 {
     return s << node.str();
 }
