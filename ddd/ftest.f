@@ -14,14 +14,16 @@ C     i586-unknown-linux-gnulibc1.
 C     (This is actually an obsolete version of dnrm2 -- consult the
 c     current Netlib BLAS.)
 
-      integer i
+      integer i, j
       double precision a(1:100)
-      double precision b(0:99)
+      double precision b(0:9, 2:4)
       do i=1,100
          a(i)=0.D0
       enddo
-      do i=0,99
-         b(i)=0.D0
+      do i=0,9
+         do j=2,4
+            b(i,j)=0.D0
+         enddo
       enddo
       if (dnrm2(100,a,1) .ne. 0.0) call exit(1)
       end
