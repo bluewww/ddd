@@ -213,8 +213,8 @@ Building DDD
 
 - Cygwin is supported.
 
-- On AIX, `configure' handles linker TOC overflows by adding the flag
-  `-Wl,-bbigtoc' to the linker flags.
+- On AIX, `configure' prevents linker TOC overflows via the linker
+  flag `-Wl,-bbigtoc' or the compiler flag `-mminimal-toc'.
 
 - On SGI, `configure' works around a bug in the CC C++ I/O library
   that causes `ostrstream::pcount()' to increase by 1 after
