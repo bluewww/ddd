@@ -1936,9 +1936,6 @@ Graph\fR'.  Enter the printing command in the `\fBPrint Command\fR'
 field.  Click on the `\fBOK\fR' or the `\fBApply\fR' button to start
 printing.
 .PP
-To re-print the display graph using the previous settings, select
-`\fBFile\(->Print Again\fR'.
-.PP
 As an alternative, you may also print the graph in a file.  Click on
 the `\fBFile\fR' button and enter the file name in the `\fBFile
 Name\fR' field.  Click on the `\fBPrint\fR' button to create the file.
@@ -1946,12 +1943,12 @@ Name\fR' field.  Click on the `\fBPrint\fR' button to create the file.
 When the graph is printed in a file, two formats are available:
 .br
 .IP \(bu 2
-\fBPostScript\fR - suitable for enclosing the graph in another document;
+\fBPostScript\fR\(em\&suitable for enclosing the graph in another document;
 .br
 .IP \(bu 2
-\fB\s-1FIG\s+1\fR - suitable for editing, using the \s-1XFIG\s+1 graphic
-editor, or for conversion into other formats (among others
-\s-1IBMGL\s+1, \s-1L\s-1A\s+1T\dE\uX\s+1, \s-1PIC\s+1), 
+\fB\s-1FIG\s+1\fR\(em\&suitable for postprocessing, using the
+\s-1XFIG\s+1 graphic editor, or for conversion into other formats
+(among others \s-1IBMGL\s+1, \s-1L\s-1A\s+1T\dE\uX\s+1, \s-1PIC\s+1),
 using the \s-1TRANSFIG\s+1 or \s-1FIG2DEV\s+1 package.
 .PP
 .PSPIC @srcdir@/PICS/ddd-print-output.ps 15.3cm
@@ -4335,15 +4332,15 @@ created.
 .TP
 .B "flatToolbarButtons (\fPclass\fB FlatButtons)"
 If `\fBon\fR' (default), all tool bar buttons with images or captions
-are given a `flat' appearance - the 3-D border only shows up when the
+are given a `flat' appearance\(em\&the 3-D border only shows up when the
 pointer is over the icon.  If `\fBoff\fR', the 3-D border is shown all
 the time.
 .TP
 .B "flatDialogButtons (\fPclass\fB FlatButtons)"
 If `\fBon\fR' (default), all dialog buttons with images or captions
-are given a `flat' appearance - the 3-D border only shows up when the
-pointer is over the icon.  If `\fBoff\fR', the 3-D border is shown all
-the time.
+are given a `flat' appearance\(em\&the 3-D border only shows up when
+the pointer is over the icon.  If `\fBoff\fR', the 3-D border is shown
+all the time.
 .TP
 .B "sourceButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be added under the debugger
