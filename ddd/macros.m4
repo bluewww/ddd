@@ -1,7 +1,7 @@
 dnl $Id$
 dnl Macros for Ddd app-defaults file
 dnl
-dnl Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+dnl Copyright (C) 1997-1998 Technische Universitaet Braunschweig, Germany.
 dnl Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 dnl 
 dnl This file is part of the DDD Library.
@@ -60,7 +60,9 @@ dnl
 dnl DESC(ITEM, DESC) issues `* ITEM - DESC.', with ITEM in bold.
 define([DESC], [ifelse([$1], , [[DESC]], [@tt \267 LBL($1) - $2.])])dnl
 dnl
-dnl LBL(foo) is used for describing labels
+dnl LBL(foo) is used for describing labels.
+dnl Not sure whether we should use @charset (the default charset used 
+dnl for buttons) or @bf (for emphasis) here...
 define([LBL], [ifelse([$1], , [[LBL]], [@bf $1@rm ])])dnl
 dnl
 dnl TEXT(k) is used for describing visible text
@@ -116,8 +118,8 @@ dnl Constants
 dnl ---------
 dnl
 dnl LBL_FIND_PREV and LBL_FIND_NEXT are the labels used for the Find buttons
-define([LBL_FIND_PREV], [@bf Find@small<< @bf()@rm ])dnl
-define([LBL_FIND_NEXT], [@bf Find@small>> @bf()@rm ])dnl
+define([LBL_FIND_PREV], [@charset Find@small<< @charset()@rm ])dnl
+define([LBL_FIND_NEXT], [@charset Find@small>> @charset()@rm ])dnl
 dnl
 dnl POSTSCRIPT includes a (TM) symbol
 define([POSTSCRIPT], [PostScript@symbol \344 @rm ])dnl
