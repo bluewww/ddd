@@ -35,6 +35,7 @@ char windows_rcsid[] =
 
 #define LOG_GEOMETRY 0
 #define LOG_EVENTS   0
+#define LOG_MOVES    0
 
 #include "windows.h"
 
@@ -231,6 +232,10 @@ static void move_tool_shell(BoxPoint pos)
 
     if (pos != tool_shell_pos())
     {
+#if LOG_MOVES
+    clog << "Moving tool to: " << pos[X] << ", " << pos[Y] << "\n";
+#endif
+
 	ostrstream os;
 	os << "+" << pos[X] << "+" << pos[Y];
 	last_tool_shell_geometry = string(os);
@@ -288,9 +293,7 @@ static void RecenterToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 static void follow_tool_shell(Widget ref)
 {
     initialize_offsets();
-
     recenter_tool_shell(ref, last_top_offset, last_right_offset);
-    get_tool_offset(ref, last_top_offset, last_right_offset);
 }
 
 static void FollowToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
@@ -570,6 +573,8 @@ inline void raise_tool_above(Widget w)
 	raise_tool_above(XtWindow(w));
 }
 
+static XtIntervalId recentering_tool_shell_timer = 0;
+
 void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 {
     bool synthetic = (state(w) == Transient);
@@ -719,19 +724,22 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    if (w == tool_shell)
 	    {
 		// Command tool has been moved
-#if LOG_EVENTS
+#if LOG_EVENTS || LOG_MOVES
 		clog << "Tool has been moved to " << point(event) << "\n";
 #endif
 
-		// Record offset
-		get_tool_offset(0, last_top_offset, last_right_offset);
+		if (recentering_tool_shell_timer == 0)
+		{
+		    // Record offset
+		    get_tool_offset(0, last_top_offset, last_right_offset);
+		}
 	    }
 
 	    if (w == source_view_shell || 
 		w == command_shell && source_view_shell == 0)
 	    {
 		// Source shell has been moved -- let command tool follow
-#if LOG_EVENTS
+#if LOG_EVENTS || LOG_MOVES
 		clog << "Shell has been moved to " << point(event) << "\n";
 #endif
 
@@ -1120,6 +1128,13 @@ void gdbToggleToolWindowCB(Widget w, XtPointer client_data,
 // Command tool placement
 //-----------------------------------------------------------------------------
 
+static void RecenteredToolShellCB(XtPointer, XtIntervalId *id)
+{
+    (void) id;			// Use it
+    assert (*id == recentering_tool_shell_timer);
+    recentering_tool_shell_timer = 0;
+}
+
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref)
 {
@@ -1140,6 +1155,11 @@ static void recenter_tool_shell(Widget ref, int top_offset, int right_offset)
 	!XtIsRealized(ref) || !XtIsRealized(tool_shell) ||
 	state(tool_shell) != PoppedUp)
 	return;
+
+#if LOG_MOVES
+    clog << "Recentering tool to offset: " << right_offset 
+	 << ", " << top_offset << "\n";
+#endif
 
     Window ref_window  = XtWindow(ref);
     Window tool_window = XtWindow(tool_shell);
@@ -1186,6 +1206,13 @@ static void recenter_tool_shell(Widget ref, int top_offset, int right_offset)
     last_top_offset     = top_offset;
     last_right_offset   = right_offset;
     offsets_initialized = true;
+
+    if (recentering_tool_shell_timer)
+	XtRemoveTimeOut(recentering_tool_shell_timer);
+
+    recentering_tool_shell_timer = 
+	XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell), 
+			500, RecenteredToolShellCB, XtPointer(0));
 }
 
 
@@ -1262,6 +1289,10 @@ static bool get_tool_offset(Widget ref, int& top_offset, int& right_offset)
 
     x -= frame_attributes.width - frame_x + frame_attributes.border_width;
     y -= frame_y + frame_attributes.border_width;
+
+#if LOG_MOVES
+    clog << "Current offset: " << x << ", " << y << "\n";
+#endif
 
     top_offset   = y;
     right_offset = x;
