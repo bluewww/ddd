@@ -144,11 +144,10 @@ Volunteers for fixing these and other bugs are welcome!
 316*Alias hints of clustered displays remain in place.
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
-320*Finish Undo/Redo:
-    - Redoing displays queries the _current_ frame from GDB, as well
-      as the _current_ values (and not the recorded ones).
-    - Up/Down does not change program state, hence undoing `up N'
-      should result in `down N' (but what about display values?)
+320 Finish Undo/Redo:
+    - graph undisplay `NAME` should delete *all* displays named NAME
+    - undo/redo may make clusters (or user displays?) inactive - they
+      should all be restored at the end
     - Document it all
 
 322*Finish Plots:
