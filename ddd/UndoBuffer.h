@@ -107,14 +107,11 @@ private:
     static bool locked;
 
     // Helpers
-    static void process_command(const UndoBufferEntry& entry,
-				int direction);
-    static void process_state(const UndoBufferEntry& entry, 
-			      bool restore_state);
+    static void process_command(UndoBufferEntry& entry);
+    static void process_state(UndoBufferEntry& entry, bool restore_state);
 
-    // Count undoing commands
-    static int own_processed;
-    static int own_direction;
+    // True if we're undoing
+    static bool undoing;
 
     // Rename all breakpoints from OLD_BP_NR to NEW_BP_NR
     static void remap_breakpoint(int old_bp_nr, int new_bp_nr);
@@ -128,7 +125,7 @@ protected:
     static void add(const UndoBufferEntry& entry);
 
     // Process entry
-    static void process_command(int entry, int direction);
+    static void process_command(int entry);
     static void process_state(int entry, bool restore_state);
 
     // Log current position

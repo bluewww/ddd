@@ -65,11 +65,8 @@ int UndoBuffer::history_position = 0;
 // Current entry we're processing
 int UndoBuffer::current_entry = 0;
 
-// Number of commands we have undone
-int UndoBuffer::own_processed = 0;
-
-// Direction we're currently working at
-int UndoBuffer::own_direction = 0;
+// True if we're undoing
+bool UndoBuffer::undoing = false;
 
 // If true, ignore all changes and additions
 bool UndoBuffer::locked = false;
@@ -235,14 +232,15 @@ void UndoBuffer::add_command(const string& command, bool exec)
 
     string command_key = exec ? UB_EXEC_COMMAND : UB_COMMAND;
 
-    if (own_direction == 0)
+    if (!undoing)
     {
 	// Regular command
 	add_status(command_key, c);
 	return;
     }
 
-    // We're called from undo or redo
+    // We're called from undo or redo via process_command() - 
+    // replace currently executed command by its undo command.
 
 #if LOG_UNDO_BUFFER
     clog << "Adding " << command_key << " = " << quote(command) << "\n";
@@ -253,43 +251,10 @@ void UndoBuffer::add_command(const string& command, bool exec)
 
     UndoBufferEntry& entry = history[current_entry];
 
-    if (own_direction < 0 && own_processed == 0)
-    {
-	// Called from undo => a `redo' command: replace current
-
-	entry.remove(UB_COMMAND);
-	entry.remove(UB_EXEC_COMMAND);
-	entry[command_key] = c;
-	own_processed++;
-    }
-    else if (own_direction < 0 && own_processed > 0)
-    {
-	// Called from undo => another `redo' command; prepend before last
-
+    if (entry.has(command_key))
 	entry[command_key].prepend(c + '\n');
-	own_processed++;
-    }
-    else if (own_direction > 0 && own_processed == 0)
-    {
-	// Called from redo => an `undo' command: replace current
-
-	entry.remove(UB_COMMAND);
-	entry.remove(UB_EXEC_COMMAND);
-	entry[command_key] = c;
-	own_processed++;
-    }
-    else if (own_direction > 0 && own_processed > 0)
-    {
-	// Called from redo => another `undo' command: prepend to previous
-
-	entry[command_key].prepend(c + '\n');
-	own_processed++;
-    }
     else
-    {
-	// This can't happen.
-	assert(0);
-    }
+	entry[command_key] = c;
 
     done();
 }
@@ -370,7 +335,7 @@ void UndoBuffer::add_breakpoint_state(ostream& os, BreakPoint *bp)
     bp->get_state(os, bp->number());
 }
 
-void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
+void UndoBuffer::process_command(UndoBufferEntry& entry)
 {
     // Process command
     string commands;
@@ -381,10 +346,12 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
     else
 	return;
 
+    entry.remove(UB_COMMAND);
+    entry.remove(UB_EXEC_COMMAND);
+
     string original_commands = commands;
     int bp_count = 0;
-    own_processed = 0;
-    own_direction = direction;
+    undoing = true;
 
     while (commands != "")
     {
@@ -419,6 +386,8 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
 	    cmd.at(i, j - i + 1) = itostring(num);
 	}
 
+	// Execute command.  This will result in new redo command(s)
+	// being passed to add_command().
 	Command c(cmd);
 	c.priority = COMMAND_PRIORITY_SYSTEM;
 	gdb_command(c);
@@ -427,18 +396,15 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
 	syncCommandQueue();
     }
 
-    if (original_commands != "" && own_processed == 0)
+    if (!entry.has(UB_COMMAND) && !entry.has(UB_EXEC_COMMAND))
     {
-	cerr << "Undo: warning: " 
-	     << quote(original_commands)
-	     << " did not leave redo commands\n";
+	cerr << "Undo: " << quote(original_commands) << " cannot be redone\n";
     }
 
-    own_direction = 0;
+    undoing = false;
 }
 
-void UndoBuffer::process_state(const UndoBufferEntry& entry, 
-			       bool restore_state)
+void UndoBuffer::process_state(UndoBufferEntry& entry, bool restore_state)
 {
     // Process position
     string pos = "";
@@ -540,14 +506,14 @@ void UndoBuffer::process_state(const UndoBufferEntry& entry,
     locked = false;
 }
 
-void UndoBuffer::process_command(int entry, int direction)
+void UndoBuffer::process_command(int entry)
 {
     assert(OK());
 
     locked = true;
 
     current_entry = entry;
-    process_command(history[entry], direction);
+    process_command(history[entry]);
 
     locked = false;
 }
@@ -579,7 +545,7 @@ void UndoBuffer::undo()
     StatusDelay delay("Undoing " + undo_action());
    
     // Undo most recent command
-    process_command(history_position - 1, -1);
+    process_command(history_position - 1);
 
     if (history_position > 1)
     {
@@ -611,7 +577,7 @@ void UndoBuffer::redo()
 
     // Redo next command and restore state
     process_state(history_position, showing_earlier_state());
-    process_command(history_position, 1);
+    process_command(history_position);
     
     history_position++;
 
@@ -795,7 +761,7 @@ void UndoBuffer::restore_current_state()
 
     if (history.size() > 0)
     {
-	process_command(history.size() - 1, 1);
+	process_command(history.size() - 1);
 	process_state(history.size() - 1, true);
     }
 
