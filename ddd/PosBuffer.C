@@ -465,7 +465,7 @@ void PosBuffer::filter (string& answer)
 		{
 		    string file = answer.after('\"', index_p);
 		    file = file.before('\"');
-		    answer_buffer = file + ":1";
+		    pos_buffer = file + ":1";
 		    already_read = PosComplete;
 		    return;
 		}
