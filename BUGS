@@ -305,7 +305,17 @@ Volunteers for fixing these and other bugs are welcome!
      do) to get rid of it, that makes ddd exit in a very abrupt
      manner. (This happens on HP-UX 10.20.)
 
-226. Run cxxtest.  While it runs, enable machine code.  Interrupt.
-     Watch DDD die.
+227. mbennett@manu.com says: If I open the "GDB Settings" (under the
+     "Edit" menu) dialog box and set the path in the TextBox, there is
+     no effect. On the other hand, If I use the 'directory' command
+     directly in the GDB Console window, the source path is modified
+     correctly in GDB, but DDD displays a message in the status line:
 
-227. (Insert your bug here)
+     Undefined show command: "directory". Try "help show".
+
+     I'm guessing the DDD knows that the source search path has been
+     modified, and is trying to get the path from GDB using "show
+     directory".  However, the correct GDB command for this is: "show
+     directories".
+
+228. (Insert your bug here)
