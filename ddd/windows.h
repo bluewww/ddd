@@ -87,10 +87,6 @@ extern bool have_visible_exec_window();
 extern bool have_visible_tool_window();
 
 
-// Find the WM frame surrounding WINDOW
-Window frame(Display *display, Window window);
-inline Window frame(Widget w) { return frame(XtDisplay(w), XtWindow(w)); }
-
 // Close current window
 extern void DDDCloseCB              (Widget, XtPointer, XtPointer);
 

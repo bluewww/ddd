@@ -54,7 +54,7 @@ char MakeMenu_rcsid[] =
 #include "bool.h"
 #include "verify.h"
 #include "findParent.h"
-#include "windows.h"
+#include "frame.h"
 
 // Pushmenu callbacks
 static void ArmPushMenuCB(Widget, XtPointer, XtPointer);

@@ -48,6 +48,7 @@ char options_rcsid[] =
 #include "ddd.h"
 #include "file.h"
 #include "filetype.h"
+#include "frame.h"
 #include "post.h"
 #include "session.h"
 #include "settings.h"

@@ -212,6 +212,7 @@ extern "C" {
 #include "expired.h"
 #include "file.h"
 #include "findParent.h"
+#include "frame.h"
 #include "gdbinit.h"
 #include "graph.h"
 #include "history.h"

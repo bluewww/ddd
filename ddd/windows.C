@@ -46,6 +46,7 @@ char windows_rcsid[] =
 #include "exectty.h"
 #include "exit.h"
 #include "findParent.h"
+#include "frame.h"
 #include "wm.h"
 
 #include <Xm/Xm.h>
@@ -953,32 +954,6 @@ void gdbToggleToolWindowCB(Widget w, XtPointer client_data,
 //-----------------------------------------------------------------------------
 // Command tool placement
 //-----------------------------------------------------------------------------
-
-// Find the WM frame surrounding WINDOW
-Window frame(Display *display, Window window)
-{
-    Window w = window;
-    for (;;)
-    {
-	Window root;
-	Window parent;
-	Window *children = 0;
-	unsigned int nchildren;
-	Status ok = 
-	    XQueryTree(display, w, &root, &parent, &children, &nchildren);
-	XFree(children);
-
-	if (!ok)
-	    break;
-
-	if (parent == root)
-	    return w;		// Got it
-
-	w = parent;
-    }
-
-    return window;		// Not found
-}
 
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref)
