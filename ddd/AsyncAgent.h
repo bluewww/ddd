@@ -236,7 +236,7 @@ public:
     XtAppContext appContext() const { return _appContext; }
 
     // Constructors
-    AsyncAgent(XtAppContext app_context, string pth, 
+    AsyncAgent(XtAppContext app_context, const string& pth, 
 	       unsigned nTypes = AsyncAgent_NTypes):
 	Agent(pth, nTypes), _appContext(app_context), workProcs(0), 
 	new_status(0), status_change_pending(false)

@@ -69,7 +69,7 @@ protected:
 
 public:
     // Constructors
-    TTYAgent(XtAppContext app_context, string pth,
+    TTYAgent(XtAppContext app_context, const string& pth,
 	     unsigned nTypes = TTYAgent_NTypes):
         LiterateAgent(app_context, pth, nTypes),
 	_master_tty(), _slave_tty(),

@@ -281,7 +281,7 @@ public:
     static AgentManager runningAgents;
 
     // Constructor for Agent users
-    Agent(string pth, unsigned nTypes = Agent_NTypes):
+    Agent(const string& pth, unsigned nTypes = Agent_NTypes):
 	_pid(0), _inputfp(0), _outputfp(0), _errorfp(0),
 	_running(false), _beingTerminated(false), _lastStatus(-1),
 	_terminateTimeOut(10), _hangupTimeOut(5), _killTimeOut(15),

@@ -145,7 +145,7 @@ protected:
 
 public:
     // Constructor for Agent users
-    LiterateAgent(XtAppContext app_context, string pth,
+    LiterateAgent(XtAppContext app_context, const string& pth,
 		  unsigned nTypes = LiterateAgent_NTypes):
 	AsyncAgent(app_context, pth, nTypes), activeIO(false),
 	_block_tty_input(default_block_tty_input())
