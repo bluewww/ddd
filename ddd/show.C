@@ -46,6 +46,7 @@ char show_rcsid[] =
 #include "regexps.h"
 #include "shell.h"
 #include "status.h"
+#include "string-fun.h"
 #include "version.h"
 #include "filetype.h"
 
@@ -375,9 +376,10 @@ static void show_configuration(ostream& os, bool version_only)
     s.gsub(sccs, string(""));
     os << s;
 
-    string cinfo = string(config_info).before("\n");
-    while (cinfo.contains(' ', -1))
-	cinfo = cinfo.before(int(cinfo.length()) - 1);
+    string cinfo = config_info;
+    cinfo = cinfo.before("\n");
+    strip_space(cinfo);
+
     os << cinfo << "\n";
 }
 
