@@ -752,8 +752,8 @@ if test "$GXX" = yes; then
   CXXSTUFF=
   for flag in $CXXFLAGS; do
     case $flag in
-      -O)  CXXOPT="$CXXOPT -O3";;
-      -O2) CXXOPT="$CXXOPT -O3";;
+      -O)  CXXOPT="$CXXOPT -O2";;
+      -O2) CXXOPT="$CXXOPT -O2";;
       -O*) CXXOPT="$CXXOPT $flag";;
       -g*) CXXDEBUG="$flag";;
       -W*) CXXWARNINGS="$CXXWARNINGS $flag";;
