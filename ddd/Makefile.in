@@ -452,7 +452,7 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include $(X_INCLUDE)
 	$(SED) 's/^ *include "\([^"][^.]*\)[^"]*"/#include "\1.C"/' | \
 	$(SED) '/^[^#]/s/\(["'"'"'\\]\)/\\\1/g' | \
 	$(SED) '/^[^#]/s/.*/"&\\n"/' | \
-	$(SED) 's//\\b/' | \
+	$(SED) 's//\\b/g' | \
 	$(SED) 's/^$$/"\\n"/' \
 	) > tmp.C; \
 	$(CPP) -C -P -undef $(CPPFLAGS) $(DEFS) $(INCLUDE) tmp.C > $@; \
