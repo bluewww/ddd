@@ -3873,9 +3873,10 @@ public:
     bool verbose;
     bool prompt;
     IntArray display_nrs;
+    StringArray cmds;
 
     RefreshInfo()
-	: verbose(false), prompt(false), display_nrs()
+	: verbose(false), prompt(false), display_nrs(), cmds()
     {}
 
     ~RefreshInfo()
@@ -3883,7 +3884,7 @@ public:
 
 private:
     RefreshInfo(const RefreshInfo&)
-	: verbose(false), prompt(false), display_nrs()
+	: verbose(false), prompt(false), display_nrs(), cmds()
     {
 	assert(0);
     }
@@ -3987,6 +3988,7 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose, bool do_prompt)
     static RefreshInfo info;
     info.verbose = verbose;
     info.prompt  = do_prompt;
+    info.cmds    = cmds;
 
     bool ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
 				 refresh_displayOQAC, (void *)&info);
@@ -4023,9 +4025,20 @@ void DataDisp::refresh_displayOQAC (const StringArray& answers,
 	    break;
 
 	case PROCESS_DATA:
-	    data_answers += answers[i];
+	{
+	    const string& cmd = info->cmds[i];
+	    string var = cmd.after(rxwhite);
+
+	    if (!gdb->has_named_values())
+		data_answers += var + " = ";
+
+	    string value = answers[i];
+	    gdb->munch_value(value, var);
+	    data_answers += value + "\n";
+
 	    data_answers_seen++;
 	    break;
+	}
 
 	case PROCESS_USER:
 	    user_answers += answers[i];
@@ -5963,6 +5976,7 @@ void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
 	    static RefreshInfo info;
 	    info.verbose = false;
 	    info.prompt  = false;
+	    info.cmds    = cmds;
 	    ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
 				    refresh_displayOQAC, (void *)&info);
 
