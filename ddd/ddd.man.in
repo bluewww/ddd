@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "1 May 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "7 May 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -1705,6 +1705,15 @@ that the \s-2TTY\s+2 interface does not support line editing and
 command completion and that \s-2@DDD@\s+2 exits as soon as it receives
 a \s-2EOF\s+2 on its standard input.  Also, do not try to run
 \s-2@DDD@\s+2 with \s-2@DDD@\s+2 as inferior debugger.
+.PP
+The `\fB\-\-tty\fR' option automatically disables the debugger
+console, as its facilities are supposed to be provided by the
+integrating front-end.  If the front-end also provides source and/or
+data facilities, you may be interested in disabling the \s-2@DDD@\s+2
+source window or the \s-2@DDD@\s+2 data window, too.  Use the
+`\fB\-\-no\-source\-window\fR' and `\fB\-\-no\-data\-window\fR'
+options for this purpose.
+.\"
 .\"
 .SS "Using @DDD@ with GNU Emacs"
 .\"
