@@ -8,11 +8,12 @@ DDD 1.1
     caused DDD to crash upon various occasions, often after a few
     interactions.
 
-    Under certain circumstances, the hourglass cursor routines could
-    corrupt the stack at a random point and thus throw a time bomb
-    into DDD, making DDD fail at unpredictable (and unrepeatable)
-    places.  This bug has been fixed; some other minor bugs were
-    fixed, too.  See the `ChangeLog' file for details.
+    Under certain circumstances and on many architectures, the
+    hourglass cursor routines could corrupt the stack at a random
+    point and thus throw a time bomb into DDD, making DDD fail at
+    unpredictable (and unrepeatable) places.  This bug has been fixed;
+    some other minor bugs were fixed, too.  See the `ChangeLog' file
+    for details.
 
     Changes to DDD 1.0:
     - C++ References and VTables are fully supported.

@@ -17,16 +17,16 @@ DDD News
     that caused DDD to crash upon various occasions, often after a few
     interactions.
 
-    Under certain circumstances, the hourglass cursor routines could
-    corrupt the stack at a random point and thus throw a time bomb
-    into DDD, making DDD fail at unpredictable (and unrepeatable)
-    places.  This bug has been fixed; some other minor bugs were
-    fixed, too.
+    Under certain circumstances and on many architectures, the
+    hourglass cursor routines could corrupt the stack at a random
+    point and thus throw a time bomb into DDD, making DDD fail at
+    unpredictable (and unrepeatable) places.  This bug has been fixed;
+    some other minor bugs were fixed, too.  See the `ChangeLog' file
+    for details.
 
     Our sincere apologies to all who got and tried to compile and run
     a defective DDD.  Thanks to all who sent in bug reports and helped
-    us track this bug down.  Thanks to all who encouraged us in our
-    work.
+    us track this bug down.
 
     Changes to DDD 1.0:
     - C++ References and VTables are fully supported.
