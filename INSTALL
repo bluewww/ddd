@@ -13,11 +13,11 @@ Build Requirements
 
 To build a complete DDD from sources, you need:
 
-   * The GNU C++ compiler (2.7.2 or later), including a matching
+   * The GNU C++ compiler (2.95 or later), including a matching
      C++ I/O runtime library (libstdc++ or libg++).
 
-     Some other C++ compilers have been reported to compile DDD as
-     well; we recommend to use GCC 2.95 or later.
+     Some other C++ compilers, including older GCC versions have been
+     reported to compile DDD as well; we recommend GCC 2.95 or later.
 
    * A M*tif Widget library.  Either
 

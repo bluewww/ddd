@@ -213,7 +213,7 @@ in `gnu/ddd'.
 DDD 3.3 requires 
 - LessTif 0.90 or later, available from `http://www.lesstif.org/' 
   (or any other M*tif library)
-- GCC 2.7.2 or later (or any other C++ compiler)
+- GCC 2.95 or later (or any other C++ compiler)
 
 The most recent (not necessarily tested) snapshots of DDD will be
 placed on `alpha.gnu.org' in `gnu/ddd'.
