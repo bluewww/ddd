@@ -105,10 +105,10 @@ public:
     // Other tree functions
     void compilePatterns(VSLDef *cdef) const;
     void uncompilePatterns(VSLDef *cdef) const;
-    int resolveName(VSLDef *cdef, VSLNode **node, string& name, unsigned id);
+    int resolveName(VSLDef *cdef, VSLNode **node, const string& name, unsigned id);
     int _resolveNames(VSLDef *cdef, unsigned base);
     void rebind(const class VSLLib *);
-    string firstName() const;
+    const string& firstName() const;
 
     // Append to list
     int append(VSLNode *node);

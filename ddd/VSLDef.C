@@ -372,7 +372,7 @@ int VSLDef::resolveNames()
     int changes = expr()->resolveNames(this, nargs());
 
     // Now replace all NameNodes in the pattern by equivalent ArgNodes.
-    string s = "";
+    string s;
     unsigned offset = 0;
 
     while (!(s = node_pattern()->firstName(), s).empty())

@@ -144,7 +144,7 @@ int CallNode::countSelfReferences(VSLDef *cdef, VSLDefList *deflist)
     return arg()->countSelfReferences(cdef, deflist);
 }
 
-int CallNode::resolveName(VSLDef *cdef, VSLNode ** /* node */, string& name,
+int CallNode::resolveName(VSLDef *cdef, VSLNode ** /* node */, const string& name,
     unsigned id)
 {
     // assert(this == *node); 
@@ -166,7 +166,7 @@ void CallNode::rebind(const class VSLLib *lib)
     arg()->rebind(lib);
 }
 
-string CallNode::firstName() const
+const string& CallNode::firstName() const
 {
     return arg()->firstName();
 }

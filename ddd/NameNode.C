@@ -62,7 +62,7 @@ void NameNode::_dumpTree(std::ostream& s) const
 // Replace
 
 // Replace name by variable
-int NameNode::resolveName(VSLDef *cdef, VSLNode **node, string& name, 
+int NameNode::resolveName(VSLDef *cdef, VSLNode **node, const string& name, 
 			  unsigned id)
 {
     assert (this == *node);

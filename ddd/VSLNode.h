@@ -129,7 +129,7 @@ public:
     virtual void compilePatterns(VSLDef *) const            { return; }
     virtual void uncompilePatterns(VSLDef *) const          { return; }
     virtual int resolveName(VSLDef *, VSLNode **, 
-	string& , unsigned)                                 { return 0; }
+	const string& , unsigned)                           { return 0; }
     virtual int _resolveNames(VSLDef *, unsigned)           { return 0; }
     int resolveNames(VSLDef *cdef, unsigned base)
     {
@@ -139,7 +139,7 @@ public:
     virtual void rebind(const class VSLLib *) { return; }
     
 
-    virtual string firstName() const          { return ""; }
+    virtual const string& firstName() const          { return _nilstring; }
 
     // Check type
     virtual bool isConst() const = 0;

@@ -81,8 +81,8 @@ public:
     unsigned nargs() const    { return 1; }
 
     // Replace name by variable
-    int resolveName(VSLDef *cdef, VSLNode **node, string& name, unsigned id);
-    string firstName() const { return _name; }
+    int resolveName(VSLDef *cdef, VSLNode **node, const string& name, unsigned id);
+    const string& firstName() const { return _name; }
 
     // Representation invariant
     bool OK() const;

@@ -326,7 +326,7 @@ int ListNode::countSelfReferences(VSLDef *cdef, VSLDefList *deflist)
     return changes;
 }
 
-int ListNode::resolveName(VSLDef *cdef, VSLNode **/* node */, string& name,
+int ListNode::resolveName(VSLDef *cdef, VSLNode **/* node */, const string& name,
     unsigned id)
 {
     int changes = 0;
@@ -369,12 +369,13 @@ void ListNode::rebind(const class VSLLib *lib)
     tail()->rebind(lib);
 }
 
-string ListNode::firstName() const
+const string& ListNode::firstName() const
 {
-    string s = head()->firstName();
-    if (s.empty())
-	s = tail()->firstName();
-    return s;
+    const string& s = head()->firstName();
+    return
+      s.empty() ?
+      tail()->firstName() :
+      s;
 }
 
 
