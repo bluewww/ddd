@@ -78,7 +78,7 @@ char SourceView_rcsid[] =
 #include "AppData.h"
 #include "ComboBox.h"
 #include "Command.h"
-#include "DataDisp.h"
+#include "DataDisp.h"		// Only for `DataDisp::SelectionLostCB'
 #include "Delay.h"
 #include "DestroyCB.h"
 #include "HelpCB.h"
