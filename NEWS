@@ -5,7 +5,7 @@ DDD 2.2 [in development]
 ------------------------
 
     User-visible changes to DDD 2.1:
-    - The DDD windows now use less horizontal space:
+    - The DDD windows now require less width:
       + Source line numbers have been turned off (can be restored);
         the breakpoint area extends to the first non-blank character.
       + The `Disable ()' button for disabling displays has gone;
@@ -16,6 +16,10 @@ DDD 2.2 [in development]
       manually and save options.
     - The manual compiled within DDD now uses `gzip' format, relying
       on an external `gzip' program.
+
+    Bug fixes:
+    - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
+      Wiegand <wiegand@kong.gsfc.nasa.gov>.
 
 
 DDD 2.1.1

@@ -365,4 +365,6 @@ Volunteers for these and other projects are welcome!
 178. Offer more dereferencing options, which may be user-customizable.
      Instead of just providing `Display *()', offer also `Display /o ()', etc.
 
-179. (Insert your project idea here)
+179. Add `libgdb' as an alternate communication method.
+
+180. (Insert your project idea here)
