@@ -147,12 +147,6 @@ class SourceView {
     static void clearBP(void *client_data, XtIntervalId *timer);
     static void clearJumpBP(const string& answer, void *client_data);
 
-    // Create temp breakpoint at ADDRESS
-    static void create_temp_bp(const string& address, Widget origin = 0);
-
-    // Move PC to ADDRESS
-    static void move_pc(const string& address, Widget origin = 0);
-
     // Move breakpoint N to ADDRESS
     static void move_bp(int nr, const string& address, Widget origin = 0);
 
@@ -601,6 +595,27 @@ public:
     // The next breakpoint number (the highest last seen + 1)
     static int next_breakpoint_number();
 
+    // Create or clear a breakpoint at position A.  If SET, create a
+    // breakpoint; if not SET, delete it.  If TEMP, make the breakpoint
+    // temporary.
+    static void set_bp(const string& a, bool set, bool temp, 
+		       Widget origin = 0);
+
+    // Custom calls
+    static void create_bp(const string& a, Widget origin = 0);
+    static void create_temp_bp(const string& a, Widget origin = 0);
+    static void clear_bp(const string& a, Widget origin = 0);
+
+    // Create a temporary breakpoint at A and continue execution.
+    static void temp_n_cont(const string& a, Widget origin = 0);
+
+    // Enable or disable breakpoint NR
+    static void enable_bp(int nr,  Widget origin = 0);
+    static void disable_bp(int nr, Widget origin = 0);
+
+    // Move PC to ADDRESS
+    static void move_pc(const string& address, Widget origin = 0);
+
     // Return `clear ARG' command.  If CLEAR_NEXT is set, attempt to
     // guess the next event number and clear this one as well.
     static string clear_command(string arg, bool clear_next = false);
@@ -635,8 +650,8 @@ public:
     // Get the position of breakpoint NUM
     static string bp_pos(int num);
 
-    // Return the number of the breakpoint at POS (0 if none)
-    static int bp_at(string pos);
+    // Return the breakpoint at POS (0 if none)
+    static BreakPoint *bp_at(string pos);
 
     // Get the word at position of EVENT
     static string get_word_at_event(Widget w,
@@ -674,6 +689,21 @@ public:
     static string full_path(string file);
     static const char *basename(const char *);
 };
+
+inline void SourceView::create_bp(const string& a, Widget w)
+{
+    set_bp(a, true, false, w);
+}
+
+inline void SourceView::create_temp_bp(const string& a, Widget w)
+{
+    set_bp(a, true, true, w);
+}
+
+inline void SourceView::clear_bp(const string& a, Widget w)
+{
+    set_bp(a, false, false, w);
+}
 
 #endif // _DDD_SourceView_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
