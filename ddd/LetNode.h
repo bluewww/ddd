@@ -173,7 +173,7 @@ protected:
     void dump(std::ostream& s) const;
 
     // Copy
-    WhereNode(WhereNode& node):
+    WhereNode(const WhereNode& node):
 	LetNode(node)
     {}
 

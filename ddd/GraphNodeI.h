@@ -178,7 +178,7 @@ public:
     virtual bool OK() const;
 };
 
-inline std::ostream& operator << (std::ostream& s, GraphNode& node)
+inline std::ostream& operator << (std::ostream& s, const GraphNode& node)
 {
     return s << node.str();
 }

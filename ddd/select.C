@@ -73,7 +73,7 @@ static void CancelCB(Widget, XtPointer client_data, XtPointer)
 
 
 // Answer GDB question
-static void select_from_gdb(string& question, string& reply)
+static void select_from_gdb(const string& question, string& reply)
 {
     int count       = question.freq('\n') + 1;
     string *choices = new string[count];

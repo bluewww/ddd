@@ -80,7 +80,7 @@ public:
 	: CallNode(a, type), _index(i)
     {}
 
-    BuiltinCallNode(BuiltinCallNode &node, VSLNode *a,
+    BuiltinCallNode(const BuiltinCallNode &node, VSLNode *a,
 		    const char *type = "BuiltinCallNode")
 	: CallNode(a, type), _index(node._index)
     {}
