@@ -1,5 +1,5 @@
 // $Id$
-// Nora Destroy Callbacks
+// Destroy Callbacks
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_DestroyCB_h
-#define _Nora_DestroyCB_h
+#ifndef _DDD_DestroyCB_h
+#define _DDD_DestroyCB_h
 
 #include <X11/Intrinsic.h>
 

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_BoxSize_h
-#define _Nora_BoxSize_h
+#ifndef _DDD_BoxSize_h
+#define _DDD_BoxSize_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -113,5 +113,5 @@ inline ostream& operator << (ostream& stream, const BoxSize& size)
 
 #define NoSize BoxSize()
 
-#endif // _Nora_BoxSize_h
+#endif // _DDD_BoxSize_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

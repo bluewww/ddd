@@ -39,11 +39,11 @@
 #pragma interface
 #endif
 
-// includes von Nora-Zeugs
+// Misc includes
 #include "strclass.h"
 #include "bool.h"
 
-// includes von eigenem Zeugs
+// DDD includes
 #include "GDBAgent.h"
 
 //----------------------------------------------------------------------------

@@ -40,11 +40,11 @@ char BreakPoint_rcsid[] =
 #include "BreakPoint.h"
 #include <ctype.h>
 
-// includes von Nora-Zeugs
+// Misc includes
 #include "assert.h"
 #include "cook.h"
 
-// includes eigener Sachen
+// DDD includes
 #include "string-fun.h"
 #include "comm-manag.h"
 #include "ddd.h"

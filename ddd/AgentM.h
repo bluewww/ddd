@@ -30,8 +30,8 @@
 // especially terminating child agents upon exiting
 // and searching an agent with given pid
 
-#ifndef _Nora_AgentManager_h
-#define _Nora_AgentManager_h
+#ifndef _DDD_AgentManager_h
+#define _DDD_AgentManager_h
 
 #ifdef __GNUG__
 #pragma interface

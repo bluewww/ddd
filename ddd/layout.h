@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_layout_h
-#define _Nora_layout_h
+#ifndef _DDD_layout_h
+#define _DDD_layout_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -164,11 +164,11 @@ public:
     // static GRAPHTAB tab;
 
     // Helpers
-    static void noraDebug(char *g);
+    static void dddDebug(char *g);
     static void inc_layout(GRAPH *graph);
     static void new_layout(GRAPH *graph);
-    static void noraOutput(GRAPH *graph);
-    static void noraNodeOut(char *graph,NODE *node);
+    static void dddOutput(GRAPH *graph);
+    static void dddNodeOut(char *graph,NODE *node);
     static void debugNode(NODE *node);
     static void debugLevel(GRAPH *graph, int n);
     static void debugAllLevel(GRAPH *graph);
@@ -238,5 +238,5 @@ public:
     static void sortGraphVertical(GRAPH *graph);
 };
 
-#endif // _Nora_layout_h
+#endif // _DDD_layout_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

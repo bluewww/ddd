@@ -29,14 +29,14 @@
 char bug_rcsid[] = 
     "$Id$";
 
-// includes von Motif-Zeugs
+// Motif includes
 #include <Xm/Xm.h>
 
-// includes von Nora-Zeugs
+// Misc includes
 #include "strclass.h"
 #include "assert.h"
 
-// sonstige includes
+// System includes
 extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>

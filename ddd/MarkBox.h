@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_MarkBox_h
-#define _Nora_MarkBox_h
+#ifndef _DDD_MarkBox_h
+#define _DDD_MarkBox_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -72,5 +72,5 @@ public:
     const BoxRegion& __region() const { return _region; }
 };
 
-#endif // _Nora_MarkBox_h
+#endif // _DDD_MarkBox_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_SignalCleanup_h
-#define _Nora_SignalCleanup_h
+#ifndef _DDD_SignalCleanup_h
+#define _DDD_SignalCleanup_h
 
 /*
     The sole purpose of this class is to ensure that all destructors

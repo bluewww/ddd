@@ -50,10 +50,10 @@
 // 
 //-----------------------------------------------------------------------------
 
-// includes von Motif-Zeugs
+// Motif includes
 #include <Xm/Xm.h>
 
-// includes von Nora-Zeugs
+// Misc includes
 #include "strclass.h"
 #include "MakeMenu.h"
 #include "HelpCB.h"
@@ -63,7 +63,7 @@
 #include "VSLLib.h"
 #include "Delay.h"
 
-// includes eigener Sachen
+// DDD includes
 #include "ArgField.h"
 #include "GDBAgent.h"
 #include "DispGraph.h"

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_ScrolledGraphEdit_h
-#define _Nora_ScrolledGraphEdit_h
+#ifndef _DDD_ScrolledGraphEdit_h
+#define _DDD_ScrolledGraphEdit_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -48,5 +48,5 @@ extern WidgetClass scrolledGraphEditWidgetClass;
 Widget createScrolledGraphEdit(Widget parent, String name, ArgList arglist,
 			       Cardinal argcount);
 
-#endif // _Nora_ScrolledGraphEdit_h
+#endif // _DDD_ScrolledGraphEdit_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_BoxPoint_h
-#define _Nora_BoxPoint_h
+#ifndef _DDD_BoxPoint_h
+#define _DDD_BoxPoint_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -208,5 +208,5 @@ inline bool operator <= (const BoxPoint& p1, const BoxPoint& p2)
 
 #define NoPoint Point()
 
-#endif // _Nora_BoxPoint_h
+#endif // _DDD_BoxPoint_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_TrueNode_h
-#define _Nora_TrueNode_h
+#ifndef _DDD_TrueNode_h
+#define _DDD_TrueNode_h
 
 #ifdef __GNUG__
 #pragma interface

@@ -39,10 +39,10 @@
 // wenn das Textfeld leer wird, gefuellt wird bzw. geandert wird.
 //-----------------------------------------------------------------------------
 
-// includes von Motif-Zeugs
+// Motif includes
 #include <Xm/TextF.h>
 
-// includes von Nora-Zeugs
+// Misc includes
 #include "HandlerL.h"
 #include "bool.h"
 #include "strclass.h"

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_BoxCoordinate_h
-#define _Nora_BoxCoordinate_h
+#ifndef _DDD_BoxCoordinate_h
+#define _DDD_BoxCoordinate_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -39,5 +39,5 @@ typedef int BoxCoordinate;
 
 const BoxCoordinate NoCoordinate = INT_MIN;
 
-#endif // _Nora_BoxCoordinate_h
+#endif // _DDD_BoxCoordinate_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

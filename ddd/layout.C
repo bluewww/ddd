@@ -540,14 +540,14 @@ void Layout::layout (char *g)
 	} else {
 		new_layout(graph);
 	}
-	noraOutput (graph);
+	dddOutput (graph);
 
 }
 
 /*
  * debug
  */
-void Layout::noraDebug (char *g)
+void Layout::dddDebug (char *g)
 
 {
 	GRAPH *graph;
@@ -675,12 +675,12 @@ void Layout::new_layout (GRAPH *graph)
 }
 
 /*
- * noraOutput
+ * dddOutput
  * echo the changes to stdout. For each node its new position will
  * be written out. 
  */
 
-void Layout::noraOutput (GRAPH *graph)
+void Layout::dddOutput (GRAPH *graph)
 {
     int i;
     NODE *node;
@@ -688,18 +688,18 @@ void Layout::noraOutput (GRAPH *graph)
     for (i = 0; i < PRIME; i++) {
 	node = graph->hashtab[i];
 	while (node) {
-	    noraNodeOut (graph->label, node);
+	    dddNodeOut (graph->label, node);
 	    node = node->hashnext;
 	}
     }
 }
 
 /*
- * noraNodeOut
+ * dddNodeOut
  * write out the node position 
  */
 
-void Layout::noraNodeOut (char *, NODE *node)
+void Layout::dddNodeOut (char *, NODE *node)
 
 {
     if (node->x == node->oldx && node->y == node->oldy) {

@@ -285,8 +285,8 @@ static int switchdown()
     return 0;
 }
 
-#ifndef NORA_VSL_PATH
-#define NORA_VSL_PATH "/usr/local/Nora/lib/vsl-include"
+#ifndef VSL_INCLUDE_PATH
+#define VSL_INCLUDE_PATH "/usr/local/lib/vsl-include"
 #endif
 
 // Datei in Verzeichnissen -I, $VSL_INCLUDE suchen 
@@ -305,7 +305,7 @@ static char *searchpath(char *filename, bool thisDir)
 	if (s == NULL)
 	{
 	    static string path = 
-		string(NORA_VSL_PATH) +
+		string(VSL_INCLUDE_PATH) +
 		":/usr/local/vse/vsl-include"
 		":/usr/vse/vsl-include"
 		":/usr/local/lib/vse/vsl-include"

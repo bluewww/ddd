@@ -1,7 +1,7 @@
 // $Id$  -*- C++ -*-
-// Nora Help Callback
+// Interactive Help Callbacks
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
 // This file is part of the DDD Library.

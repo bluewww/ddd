@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_BoxWeight_h
-#define _Nora_BoxWeight_h
+#ifndef _DDD_BoxWeight_h
+#define _DDD_BoxWeight_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -35,5 +35,5 @@
 
 typedef int BoxWeight;
 
-#endif // _Nora_BoxWeight_h
+#endif // _DDD_BoxWeight_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

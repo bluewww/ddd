@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_TTYAgent_h
-#define _Nora_TTYAgent_h
+#ifndef _DDD_TTYAgent_h
+#define _DDD_TTYAgent_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -99,5 +99,5 @@ public:
     const string& slave_tty() const  { return _slave_tty; }
 };
 
-#endif // _Nora_TTYAgent_h
+#endif // _DDD_TTYAgent_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

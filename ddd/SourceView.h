@@ -51,16 +51,16 @@
 #pragma interface
 #endif
 
-// includes von Motif-Zeugs
+// Motif includes
 #include <Xm/Xm.h>
 
-// includes von Nora-Zeugs
+// Misc includes
 #include "strclass.h"
 #include "Assoc.h"
 #include "MakeMenu.h"
 #include "StringA.h"
 
-// includes eigener Sachen
+// DDD includes
 #include "ArgField.h"
 #include "GDBAgent.h"
 #include "BreakPoint.h"

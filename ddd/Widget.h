@@ -26,13 +26,13 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_Widget_h
-#define _Nora_Widget_h
+#ifndef _DDD_Widget_h
+#define _DDD_Widget_h
 
 extern "C" {
     typedef struct _WidgetRec *Widget;
     typedef struct _XGC *GC;
 }
 
-#endif // _Nora_Widget_h
+#endif // _DDD_Widget_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

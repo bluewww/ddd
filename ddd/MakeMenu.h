@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_MakeMenu_h
-#define _Nora_MakeMenu_h
+#ifndef _DDD_MakeMenu_h
+#define _DDD_MakeMenu_h
 
 // Main types
 typedef int MMType;

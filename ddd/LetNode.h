@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_LetNode_h
-#define _Nora_LetNode_h
+#ifndef _DDD_LetNode_h
+#define _DDD_LetNode_h
 
 #ifdef __GNUG__
 #pragma interface

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_fileSelectionBoxFilename_h
-#define _Nora_fileSelectionBoxFilename_h
+#ifndef _DDD_fileSelectionBoxFilename_h
+#define _DDD_fileSelectionBoxFilename_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -38,5 +38,5 @@
 
 extern string fileSelectionBoxFilename(XtPointer call_data);
 
-#endif // _Nora_fileSelectionBoxFilename_h
+#endif // _DDD_fileSelectionBoxFilename_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

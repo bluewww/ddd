@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_FontTable_h
-#define _Nora_FontTable_h
+#ifndef _DDD_FontTable_h
+#define _DDD_FontTable_h
 
 #ifdef __GNUG__
 #pragma interface

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_ExitCB_h
-#define _Nora_ExitCB_h
+#ifndef _DDD_ExitCB_h
+#define _DDD_ExitCB_h
 
 // leave program
 extern void ExitCB(Widget widget, XtPointer client_data, XtPointer call_data);

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_BoxRegion_h
-#define _Nora_BoxRegion_h
+#ifndef _DDD_BoxRegion_h
+#define _DDD_BoxRegion_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -114,5 +114,5 @@ inline bool operator <= (const BoxPoint& p, const BoxRegion& r)
     return true;
 }
 
-#endif // _Nora_BoxRegion_h
+#endif // _DDD_BoxRegion_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

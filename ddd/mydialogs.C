@@ -42,18 +42,18 @@ char mydialogs_rcsid[] =
 
 #include <stdlib.h>
 
-// includes von Motif-Zeugs
+// Motif includes
 #include <Xm/Xm.h>
 #include <Xm/SelectioB.h>
 #include <Xm/List.h>
 
-// includes von Nora-Zeugs
+// Misc includes
 #include "assert.h"
 #include "DestroyCB.h"
 #include "HelpCB.h"
 #include "MString.h"
 
-// includes eigener Sachen
+// Own includes
 #include "string-fun.h"
 
 

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_HintGraphNode_h
-#define _Nora_HintGraphNode_h
+#ifndef _DDD_HintGraphNode_h
+#define _DDD_HintGraphNode_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -79,5 +79,5 @@ public:
     }
 };
 
-#endif // _Nora_HintGraphNode_h
+#endif // _DDD_HintGraphNode_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

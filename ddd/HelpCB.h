@@ -1,5 +1,5 @@
 // $Id$  -*- C++ -*-
-// Nora Help Callbacks
+// Interactive Help Callbacks
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_HelpCB_h
-#define _Nora_HelpCB_h
+#ifndef _DDD_HelpCB_h
+#define _DDD_HelpCB_h
 
 #include <X11/Intrinsic.h>
 #include "MString.h"
@@ -95,5 +95,5 @@ extern Pixmap (*helpOnVersionPixmapProc)(Widget w);
 // Additional text to display at ``help on version''
 extern MString helpOnVersionExtraText;
 
-#endif // _Nora_HelpCB_h
+#endif // _DDD_HelpCB_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

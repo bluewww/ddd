@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_bool_h
-#define _Nora_bool_h
+#ifndef _DDD_bool_h
+#define _DDD_bool_h
 
 #include "config.h"
 
@@ -40,5 +40,5 @@ const bool true  = 1;
 
 #endif
 
-#endif // _Nora_bool_h
+#endif // _DDD_bool_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

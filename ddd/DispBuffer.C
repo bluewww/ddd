@@ -39,14 +39,14 @@ char DispBuffer_rcsid[] =
 
 #include "DispBuffer.h"
 
-// includes eigener Sachen
+// Misc includes
+#include "assert.h"
+#include "cook.h"
+
+// DDD includes
 #include "disp-read.h"
 #include "comm-manag.h"
 #include "ddd.h"
-
-// includes von Nora-Zeugs
-#include "assert.h"
-#include "cook.h"
 
 void DispBuffer::filter (string& answer)
 {

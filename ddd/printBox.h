@@ -27,8 +27,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_printBox_h
-#define _Nora_printBox_h
+#ifndef _DDD_printBox_h
+#define _DDD_printBox_h
 
 /*
 (1) The very first line is a comment line containing the name and version:
@@ -255,5 +255,5 @@
 #define TEXTHEAD1 "4 0 " // +font +font_size
 #define TEXTHEAD2 " 0 -1 0 0.000 4 "
 
-#endif // _Nora_printBox_h
+#endif // _DDD_printBox_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

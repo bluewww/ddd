@@ -37,10 +37,10 @@
 #pragma interface
 #endif
 
-// includes von Motif-Zeugs
+// Motif includes
 #include <Xm/Xm.h>
 
-// includes von Nora-Zeugs
+// DDD includes
 #include "strclass.h"
 #include "bool.h"
 

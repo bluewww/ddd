@@ -33,7 +33,7 @@ AC_DEFUN(ICE_PROG_CC,
 [
 AC_REQUIRE([AC_ISC_POSIX])
 AC_REQUIRE([AC_PROG_CC])
-AC_MSG_CHECKING(whether ${CC} compiles a simple C program)
+AC_MSG_CHECKING(whether ${CC} compiles and links a simple C program)
 AC_CACHE_VAL(ice_cv_prog_cc,
 [
 AC_LANG_SAVE
@@ -53,7 +53,7 @@ dnl
 AC_DEFUN(ICE_PROG_CXX,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ${CXX} compiles a simple C++ program)
+AC_MSG_CHECKING(whether ${CXX} compiles and links a simple C++ program)
 AC_CACHE_VAL(ice_cv_prog_cxx,
 [
 AC_LANG_SAVE

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_converters_h
-#define _Nora_converters_h
+#ifndef _DDD_converters_h
+#define _DDD_converters_h
 
 // Convert String to Widget
 extern Boolean CvtStringToWidget(Display *display, 

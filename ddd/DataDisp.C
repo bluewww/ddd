@@ -43,9 +43,9 @@ char DataDisp_rcsid[] =
 
 #include "DataDisp.h"
 
-// includes von Nora-Zeugs
-#include "GraphEdit.h"   // fuer XtNgraph
-#include "StringBox.h"   // fuer StringBox::fontTable
+// Misc includes
+#include "GraphEdit.h"		// XtNgraph
+#include "StringBox.h"		// StringBox::fontTable
 #include "ScrolledGE.h"
 #include "PannedGE.h"
 #include "VSEFlags.h"
@@ -62,18 +62,18 @@ char DataDisp_rcsid[] =
 #include "question.h"
 #include "commandQ.h"
 
-// includes von Motif-Zeugs
+// Motif includes
 #include <Xm/MessageB.h>
-#include <Xm/RowColumn.h>  // fuer XmMenuPosition()
-#include <Xm/SelectioB.h>  // fuer XmCreatePromptDialog()
-#include <Xm/TextF.h>      // fuer XmTextFieldGetString()
+#include <Xm/RowColumn.h>	// XmMenuPosition()
+#include <Xm/SelectioB.h>	// XmCreatePromptDialog()
+#include <Xm/TextF.h>		// XmTextFieldGetString()
 #include <Xm/Text.h>
 #include <Xm/Label.h>
 #include <Xm/List.h>
 #include <X11/StringDefs.h>
 
-// includes eigener Sachen
-#include "DispNode.h" // fuer Konstruktoren
+// DDD includes
+#include "DispNode.h"		// Constructors
 #include "disp-read.h"
 #include "string-fun.h"
 #include "comm-manag.h"
@@ -84,9 +84,9 @@ char DataDisp_rcsid[] =
 #include "verify.h"
 #include "windows.h"
 
-// sonstige includes
+// System includes
 #include <iostream.h>
-#include <fstream.h> // fuer ofstream
+#include <fstream.h>		// ofstream
 #include <iomanip.h>
 #include <ctype.h>
 

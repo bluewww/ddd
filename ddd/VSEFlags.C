@@ -42,8 +42,8 @@ char VSEFlags_rcsid[] =
 #include "VSLLib.h"
 #include "config.h"
 
-#ifndef NORA_LIB_PATH
-#define NORA_LIB_PATH "/usr/local/Nora/lib/vsl-include"
+#ifndef VSL_INCLUDE_PATH
+#define VSL_INCLUDE_PATH "/usr/local/lib/vsl-include"
 #endif
 
 #ifndef EXIT_SUCCESS
@@ -467,7 +467,7 @@ void VSEFlags::getDefaults(bool warn)
 	if (fp == NULL)
 	{
 	    static string path = 
-		string(NORA_LIB_PATH) +
+		string(VSL_INCLUDE_PATH) +
 		":/usr/local/vse"
 		":/usr/vse"
 		":/usr/local/lib/vse"

@@ -39,7 +39,7 @@
 
 #include <X11/Intrinsic.h>
 
-// includes von Nora-Zeugs
+// Misc includes
 #include "strclass.h"
 #include "bool.h"
 

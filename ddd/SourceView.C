@@ -74,7 +74,7 @@ char SourceView_rcsid[] =
 #include "SourceView.h"
 #include "IntArray.h"
 
-// Nora stuff
+// Misc stuff
 #include "assert.h"
 #include "HelpCB.h"
 #include "DestroyCB.h"

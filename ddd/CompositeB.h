@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_CompositeBox_h
-#define _Nora_CompositeBox_h
+#ifndef _DDD_CompositeBox_h
+#define _DDD_CompositeBox_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -132,5 +132,5 @@ public:
     bool OK() const;
 };
 
-#endif // _Nora_CompositeBox_h
+#endif // _DDD_CompositeBox_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

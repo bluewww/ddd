@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_Delay_h
-#define _Nora_Delay_h
+#ifndef _DDD_Delay_h
+#define _DDD_Delay_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -82,5 +82,5 @@ public:
     static const WidgetArray& shells() { return _shells; }
 };
 
-#endif // _Nora_Delay_h
+#endif // _DDD_Delay_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

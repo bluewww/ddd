@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_BoxDimension_h
-#define _Nora_BoxDimension_h
+#ifndef _DDD_BoxDimension_h
+#define _DDD_BoxDimension_h
 
 // Used to be an enum, but ANSI C++ forbids incrementing an enum
 typedef int BoxDimension;
@@ -36,5 +36,5 @@ const BoxDimension X           = 0;
 const BoxDimension Y           = 1;
 const BoxDimension NDimensions = 2;
 
-#endif // _Nora_BoxDimension_h
+#endif // _DDD_BoxDimension_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

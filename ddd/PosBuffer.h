@@ -38,7 +38,7 @@
 #pragma interface
 #endif
 
-// includes von Nora-Zeugs
+// Misc includes
 #include "bool.h"
 #include "strclass.h"
 

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_compare_h
-#define _Nora_compare_h
+#ifndef _DDD_compare_h
+#define _DDD_compare_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -70,5 +70,5 @@ inline int compare(void *t1, void *t2)
 
 #undef DECLARE_COMPARE
 
-#endif // _Nora_compare_h
+#endif // _DDD_compare_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

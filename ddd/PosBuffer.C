@@ -36,15 +36,17 @@ char PosBuffer_rcsid[] =
 //-----------------------------------------------------------------------------
 // Implementation von PosBuffer.h
 //-----------------------------------------------------------------------------
+
+// Misc includes
+#include "assert.h"
+#include "cook.h"
+
+// DDD includes
 #include "PosBuffer.h"
 #include "comm-manag.h"
 #include "string-fun.h"
 #include "ddd.h"
 #include "GDBAgent.h"
-
-// includes von Nora-Zeugs
-#include "assert.h"
-#include "cook.h"
 
 // Filter all lines from ANSWER beginning with LINE
 // This is required to suppress the line number output
