@@ -725,8 +725,8 @@ If you appreciate this software, please send a picture postcard to:\n\
     D-38092 Braunschweig\n\
     @sl GERMANY @rm\n\
 \n\
-Send bug reports to @tt ddd-bugs@ ips.cs.tu-bs.de@rm\n\
-Send comments and suggestions to @tt ddd@ ips.cs.tu-bs.de@rm
+Send bug reports to `@tt ddd-bugs@ ips.cs.tu-bs.de@rm'\n\
+Send comments and suggestions to `@tt ddd@ ips.cs.tu-bs.de@rm'
 
 ! The default Help Text.
 Ddd*contextHelpString:	\
@@ -2236,16 +2236,17 @@ For more details, consult your system documentation.
 Ddd*internal_error.title: @DDD@: Internal Error
 Ddd*internal_error*contextHelpString: \
 @rm Congratulations!  You have found a bug in @DDD@.\n\
-Please save your work immediately; @DDD@ may fail again soon.\n\
+You should better save your work immediately; @DDD@ may fail again soon.\n\
 \n\
-Please send a bug report to @tt ddd-bugs@ ips.cs.tu-bs.de@rm,\n\
+Please send a bug report to `@tt ddd-bugs@ ips.cs.tu-bs.de@rm',\n\
 giving a subject like\n\
 \n\
     @DDD@ @VERSION@ (@host@) gets fatal signal\n\
 \n\
 To enable us to fix the bug, you should include the following information:\n\
 @tt \267 @rm What you were doing to get this message.  Report all the facts.\n\
-@tt \267 @rm The @DDD@ configuration.  Run `ddd --configuration' to get it.\n\
+@tt \267 @rm The @DDD@ configuration.  \n\
+Run `@tt ddd --configuration @rm' to get it.\n\
 See also the section ``Reporting Bugs'' in the @DDD@ manual page.\n\
 \n\
 We thank you for your support.
