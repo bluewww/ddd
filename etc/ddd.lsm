@@ -4,10 +4,10 @@ Version:        3.0
 Entered-date:   18JUN98
 Description:    The Data Display Debugger (DDD) is a popular graphical
                 user interface to command-line debuggers like GDB, DBX,
-		JDB, and XDB.  DDD provides a graphical data display
+                JDB, and XDB.  DDD provides a graphical data display
                 where complex data structures can be explored
                 incrementally and interactively.  See the DDD WWW page
-		`http://www.cs.tu-bs.de/softech/ddd/' for details.
+                `http://www.cs.tu-bs.de/softech/ddd/' for details.
 Keywords:       DDD, GUI, Debugger, GDB, Visualization
 Author:         luetke@ips.cs.tu-bs.de (Dorothea Luetkehaus)
                 zeller@ips.cs.tu-bs.de (Andreas Zeller)
