@@ -370,7 +370,4 @@ Volunteers for fixing these and other bugs are welcome!
 193* `close' does not work on the main window when separate windows
      are used.
 
-194. When a session is restored via DDD start-up, the current
-     execution position is not shown.
-
 195. (Insert your bug here)
