@@ -5,25 +5,27 @@
 # Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 # 
-# This file is part of DDD.
+# This file is part of the DDD Library.
 # 
-# DDD is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public
+# The DDD Library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
 # 
-# DDD is distributed in the hope that it will be useful,
+# The DDD Library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the GNU General Public License for more details.
+# See the GNU Library General Public License for more details.
 # 
-# You should have received a copy of the GNU General Public
-# License along with ICE -- see the file COPYING.
+# You should have received a copy of the GNU Library General Public
+# License along with the DDD Library -- see the file COPYING.LIB.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # 
-# DDD is the GDB-based data display debugger.
-# Contact ddd@ips.cs.tu-bs.de for details.
+# DDD is the data display debugger.
+# For details, see the DDD World-Wide-Web page, 
+# `http://www.cs.tu-bs.de/softech/ddd/',
+# or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
 # Name of the FTP server (use "" if local)
 # ftp=ftp
@@ -69,12 +71,16 @@ README="ANNOUNCE    \
 # Documentation files
 DOC="ddd.man.ps ddd.man-nopics.ps"
 
+# Sample files
+SAMPLES="ddd.man ddd.man.txt sample.dddinit Ddd"
+
 # Files to be ignored in DIFF files
 DIFF_IGNORE="
 doc/ddd*.ps
 ddd/vsl-lex.C
 ddd/vsl-gramma.C
 ddd/vsl-gramma.h
+ddd/*.man
 ddd/*.man.txt
 ddd/*.huff.C
 ddd/xlibdir.C
@@ -149,11 +155,18 @@ if $doc; then
   for doc in $DOC; do
     gmake ../doc/$doc
   done
+  for sample in $SAMPLES; do
+    gmake $sample
+  done
 
   echo installing $DOC...
   $rsh "cd $dir/doc; /bin/rm -f $DOC"
   (cd ../doc; $rcp -p $DOC $ftpdir/doc)
   $rsh "cd $dir/doc; gzip -f -v -9 $DOC"
+
+  echo installing $SAMPLES...
+  $rsh "cd $dir/doc; /bin/rm -f $SAMPLES"
+  $rcp -p $SAMPLES $ftpdir/doc
 
   (cd ../doc; rm -f $DOC)
   )
