@@ -100,7 +100,7 @@ void show_invocation(const string& gdb_command, ostream& os)
     string args = "executable-file [core-file | process-id]";
 
     // Set up DDD options
-    static char *options_string[] = {
+    static const char *options_string[] = {
 	"  --gdb              Invoke GDB as inferior debugger.",
 	"  --dbx              Invoke DBX as inferior debugger.",
 	"  --ladebug          Invoke Ladebug as inferior debugger.",
@@ -275,20 +275,40 @@ static void show_configuration(ostream& os, bool version_only)
     s = "\n@(#)Compiled with "
 #ifdef __GNUC__
 	"GCC "
-#ifdef __VERSION__
+# ifdef __VERSION__
 	__VERSION__
-#else  // !defined(__VERSION__)
+# else  // !defined(__VERSION__)
 	stringize(__GNUC__)
-#ifdef __GNUC_MINOR__
+#  ifdef __GNUC_MINOR__
         "." stringize(__GNUC_MINOR__)
-#endif
-#endif // !defined(__VERSION__)
-	// " (" CXX_NAME ")"
+#  endif
+# endif // !defined(__VERSION__)
 
 #elif defined(__SUNPRO_CC)
 	"SunPRO CC " stringize(__SUNPRO_CC)
-	// " (" CXX_NAME ")"
 
+#elif defined(__sgi) && defined (_COMPILER_VERSION)
+	"MIPSPro CC " stringize(_COMPILER_VERSION)
+
+#elif defined(__DECCXX) && defined (__DECCXX_VER)
+	"Compaq cxx " stringize(__DECCXX_VER)
+
+#elif defined (__HP_aCC)
+	"HP aCC " stringize(__HP_aCC)
+
+#elif defined (__xlC__)
+# if defined (__IBMCPP__)
+	"IBM Visual Age " stringize(__IBMCPP__) " (" stringize(__xlC__) ")"
+# else
+	"IBM xlC " stringize(__xlC__)
+# endif
+
+#elif defined(_MSC_VER)
+	"MS VC++ " stringize(_MSC_VER)
+  
+#elif defined(__BORLANDC__)
+	"Borland C++ " stringize(__BORLANDC__)
+  
 #elif defined(CXX_NAME)
 	CXX_NAME
 #else  // Anything else
