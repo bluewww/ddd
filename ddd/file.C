@@ -595,11 +595,18 @@ static void open_file(const string& filename)
     if (gdb_initialized)
     {
 	string cmd = gdb->debug_command(filename);
+	if (cmd != "")
+	{
+	    if (gdb->type() == PERL)
+		cmd.gsub("perl", string(app_data.debugger_command));
 
-	if (gdb->type() == PERL)
-	    cmd.gsub("perl", string(app_data.debugger_command));
-
-	gdb_command(cmd);
+	    gdb_command(cmd);
+	}
+	else
+	{
+	    // No `debug' command - load source instead
+	    source_view->read_file(filename);
+	}
     }
 }
 
