@@ -544,6 +544,7 @@ AGENT_OBJECTS = \
 	DataLength.o \
 	HandlerL.o   \
 	LiterateA.o  \
+	TimeOut.o    \
 	TTYAgent.o
 
 # Miscellaneous utilities for X programs: Motif strings, hourglasses,
@@ -561,8 +562,7 @@ XSTUFF_OBJECTS = \
 	ExitCB.o     \
 	LessTifH.o   \
 	MString.o    \
-	MakeMenu.o   \
-	TimeOut.o
+	MakeMenu.o
 
 # Box library - rectangular composible graphical items
 # Top-level class is `Box', declared in `Box.h'
