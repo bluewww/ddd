@@ -307,7 +307,7 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
     case DBX:
 	{
 #if RUNTIME_REGEX
-	    static regex rxdebug_cmd("[ \t]*debug([ \t]+.*)?");
+	    static regex rxdebug_cmd("[ \t]*(debug|givenfile)([ \t]+.*)?");
 #endif
 	    return cmd.matches (rxdebug_cmd);
 	}

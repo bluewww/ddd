@@ -229,6 +229,7 @@ typedef struct PlusCmdData {
     bool     config_when_semicolon;    // try 'help when'
     bool     config_delete_comma;      // try 'delete 4711 4712'
     bool     config_err_redirection;   // try 'help run'
+    bool     config_givenfile;         // try 'help givenfile'
     bool     config_xdb;	       // try XDB settings
     bool     config_output;            // try 'output'
     bool     config_program_language;  // try 'show language'
@@ -276,6 +277,7 @@ typedef struct PlusCmdData {
 	config_when_semicolon(false),
 	config_delete_comma(false),
 	config_err_redirection(false),
+	config_givenfile(false),
 	config_xdb(false),
 	config_output(false),
 	config_program_language(false)
@@ -432,6 +434,8 @@ void start_gdb()
 	plus_cmd_data->config_delete_comma = true;
 	cmds += "help run";
 	plus_cmd_data->config_err_redirection = true;
+	cmds += "help givenfile";
+	plus_cmd_data->config_givenfile = true;
 
 	cmds += "sh pwd";
 	plus_cmd_data->refresh_pwd = true;
@@ -902,6 +906,7 @@ void send_gdb_command(string cmd, Widget origin,
     assert(!plus_cmd_data->config_when_semicolon);
     assert(!plus_cmd_data->config_delete_comma);
     assert(!plus_cmd_data->config_err_redirection);
+    assert(!plus_cmd_data->config_givenfile);
     assert(!plus_cmd_data->config_xdb);
     assert(!plus_cmd_data->config_output);
     assert(!plus_cmd_data->config_program_language);
@@ -1542,6 +1547,11 @@ static void process_config_err_redirection(string& answer)
     gdb->has_err_redirection(answer.contains(">&"));
 }
 
+static void process_config_givenfile(string& answer)
+{
+    gdb->has_givenfile_command(is_known_command(answer));
+}
+
 static void process_config_tm(string& answer)
 {
     // If the `tm' command we just sent SUSPENDED macros instead of
@@ -1712,6 +1722,11 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_err_redirection) {
 	assert (qu_count < count);
 	process_config_err_redirection(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_givenfile) {
+	assert (qu_count < count);
+	process_config_givenfile(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_output) {

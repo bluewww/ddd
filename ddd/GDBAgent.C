@@ -218,6 +218,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_when_semicolon(tp == DBX),
       _has_delete_comma(false),
       _has_err_redirection(true),
+      _has_givenfile_command(false),
       _program_language(LANGUAGE_C),
       _trace_dialog(false),
       _verbatim(false),
@@ -276,6 +277,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_when_semicolon(gdb.has_when_semicolon()),
       _has_delete_comma(gdb.has_delete_comma()),
       _has_err_redirection(gdb.has_err_redirection()),
+      _has_givenfile_command(gdb.has_givenfile_command()),
       _program_language(gdb.program_language()),
       _trace_dialog(gdb.trace_dialog()),
       _verbatim(gdb.verbatim()),
@@ -1731,6 +1733,26 @@ string GDBAgent::shell_command(string cmd) const
 
     case XDB:
 	return "!" + cmd;
+    }
+    return "";			// Never reached
+}
+
+// Return command to debug PROGRAM
+string GDBAgent::debug_command(string program) const
+{
+    switch (type())
+    {
+    case GDB:
+	return "file " + program;
+
+    case DBX:
+	if (has_givenfile_command())
+	    return "givenfile " + program; // SGI DBX
+	else
+	    return "debug " + program;     // SUN DBX
+
+    case XDB:
+	return "";		// FIXME
     }
     return "";			// Never reached
 }

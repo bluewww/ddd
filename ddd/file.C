@@ -638,26 +638,16 @@ static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
     if (filename == NO_GDB_ANSWER)
 	return;
 
-    ProgramInfo info;
-
-    switch(gdb->type())
+    if (gdb->type() == GDB)
     {
-    case GDB:
 	// GDB does not always detach processes upon opening new
 	// files, so we do it explicitly
-	if (info.attached)
+	ProgramInfo info;
+    	if (info.attached)
 	    gdb_command("detach");
-
-	gdb_command("file " + filename);
-	break;
-	
-    case DBX:
-	gdb_command("debug " + filename);
-	break;
-
-    case XDB:
-	break;		// FIXME
     }
+
+    gdb_command(gdb->debug_command(filename));
 }
 
 // Process selection
