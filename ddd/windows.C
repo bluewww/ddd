@@ -218,6 +218,32 @@ static BoxPoint tool_shell_pos()
     return BoxPoint(root_x, root_y);
 }
 
+static XtIntervalId move_tool_shell_timer = 0;
+
+static BoxPoint last_tool_shell_position;
+static BoxPoint tool_shell_move_offset(0, 0);
+
+static void move_tool_shell(BoxPoint pos);
+
+static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
+{
+    (void) id;			// Use it
+    assert (*id == move_tool_shell_timer);
+    move_tool_shell_timer = 0;
+
+#if LOG_MOVES
+    clog << "Tool position found:    " << tool_shell_pos() << "\n";
+    clog << "Tool position expected: " << last_tool_shell_position << "\n";
+#endif
+
+    BoxPoint diff = tool_shell_pos() - last_tool_shell_position;
+    if (diff != BoxPoint(0, 0))
+    {
+	tool_shell_move_offset = -diff;
+	move_tool_shell(last_tool_shell_position);
+    }
+}
+
 // Move tool shell to POS
 static void move_tool_shell(BoxPoint pos)
 {
@@ -233,19 +259,30 @@ static void move_tool_shell(BoxPoint pos)
     if (pos != tool_shell_pos())
     {
 #if LOG_MOVES
-    clog << "Moving tool to: " << pos[X] << ", " << pos[Y] << "\n";
+	clog << "Moving tool to: " << pos[X] << ", " << pos[Y] << "\n";
 #endif
 
+	BoxPoint given_pos = pos + tool_shell_move_offset;
+
 	ostrstream os;
-	os << "+" << pos[X] << "+" << pos[Y];
+	os << "+" << given_pos[X] << "+" << given_pos[Y];
 	last_tool_shell_geometry = string(os);
+	last_tool_shell_position = pos;
 
 	// Move tool shell to POS
 	XtVaSetValues(tool_shell,
 		      XmNgeometry, last_tool_shell_geometry.chars(),
-		      XmNx, pos[X],
-		      XmNy, pos[Y],
+		      XmNx, given_pos[X],
+		      XmNy, given_pos[Y],
 		      NULL);
+
+	// Verify tool shell position
+	if (move_tool_shell_timer != 0)
+	    XtRemoveTimeOut(move_tool_shell_timer);
+
+	move_tool_shell_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell),
+			    100, VerifyToolShellPositionCB, XtPointer(0));
     }
 }
 

@@ -7,6 +7,8 @@ DDD 3.1.7
 DDD 3.1.7 fixes a number of minor bugs.
 
 - Auto-raised menus work much better (enabled by default).
+- The `floating' command tool now correctly follows movements of the 
+  main window under KDE and other window managers.
 - The register window is updated when the current frame changes.
 - Value tips of strings containing ` = ' are displayed correctly.
 - In file names, `//' is no longer normalized to `/'.  This is useful 
@@ -16,7 +18,8 @@ DDD 3.1.7 fixes a number of minor bugs.
   longer clutters program arguments.
 - [JDB] Thread names with dashes are handled correctly.
 - [HP-UX] Renaming the `~/.ddd/init' file during saving options works.
-- [Build] DDD checks whether -fpermissive is required for old X headers.
+- [Build] If supported, `-isystem' is used for including system headers.
+- [Build] If supported and required, `-fpermissive' is used for old X headers.
 
 There are no new features in DDD 3.1.7.  You don't need to upgrade
 unless you suffer from one of these problems.
