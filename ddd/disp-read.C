@@ -81,7 +81,7 @@ bool is_nop_cmd(const string& cmd)
 {
 #if RUNTIME_REGEX
     // All these command have no effect on DDD state...
-    static regex rxnop_cmd("[ \t]*(echo|help|show|info|where|shell|sh)([ \t]+.*)?");
+    static regex rxnop_cmd("[ \t]*(echo|help|show|info|where|shell|sh|x)([ \t]+.*)?");
 
     // ... except for this one.
     static regex rxop_cmd("[ \t]*(info[ \t]+line)([ \t]+.*)?");

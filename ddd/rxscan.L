@@ -289,7 +289,7 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 66\n{c}[*]		 		RETURN(&rxnlstar);
 67no[nt][ -]?(0|zero|null)		RETURN(&rxnonzero1);
 68!={_}(0|zero|null)			RETURN(&rxnonzero2);
-69{_}(echo|help|show|info|where|shell|sh)({W}{C})?	RETURN(&rxnop_cmd);
+69{_}(echo|help|show|info|where|shell|sh|x)({W}{C})?	RETURN(&rxnop_cmd);
 70@{D}@					RETURN(&rxnum);
 71{_}(info{W}line)({W}{C})?		RETURN(&rxop_cmd);
 72-[bcdeiIopPrRsx]			RETURN(&rxoptions);
