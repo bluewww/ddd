@@ -293,6 +293,9 @@ dnl If the C++ compiler accepts the `-trigraphs' flag,
 dnl set output variable `TRIGRAPHS' to `-trigraphs'.  Otherwise,
 dnl leave it empty.
 dnl
+dnl Note: I'm not fond of trigraphs, but enabling `-trigraphs' allows us
+dnl to detect incompatibilities with other C++ compilers
+dnl
 AC_DEFUN(ICE_TRIGRAPHS,
 [
 AC_REQUIRE([AC_PROG_CXX])
