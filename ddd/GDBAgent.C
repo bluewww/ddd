@@ -311,7 +311,7 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without `\n'
 	state = BusyOnCmd;
 	callHandlers(ReadyForQuestion, (void *)false);
 	cmd += '\n';
-	write((const char *)cmd, cmd.length());
+	write(cmd.chars(), cmd.length());
 	flush();
 
 	return true;
@@ -337,7 +337,7 @@ bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
     if (cmd == '\004' && state == ReadyWithPrompt)
 	state = BusyOnCmd;
 
-    write((const char *)cmd, cmd.length());
+    write(cmd.chars(), cmd.length());
     flush();
     return true;
 }
@@ -367,7 +367,7 @@ bool GDBAgent::send_user_cmd_plus (string   cmds[],
     state = BusyOnCmd;
     callHandlers(ReadyForQuestion, (void *)false);
     user_cmd += '\n';
-    write((const char *)user_cmd, user_cmd.length());
+    write(user_cmd.chars(), user_cmd.length());
     flush();
 
     return true;
@@ -392,7 +392,7 @@ bool GDBAgent::send_question (string  cmd,
     complete_answer = "";
 
     cmd += '\n';
-    write((const char *)cmd, cmd.length());
+    write(cmd.chars(), cmd.length());
     flush();
 
     return true;
@@ -418,7 +418,7 @@ bool GDBAgent::send_qu_array (string   cmds [],
     init_qu_array (cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
     
     // Send first question
-    write((const char *)cmd_array[0], cmd_array[0].length());
+    write(cmd_array[0].chars(), cmd_array[0].length());
     flush();
 
     return true;
@@ -574,24 +574,24 @@ string GDBAgent::requires_reply (const string& answer)
 	|| last_line.contains("return"))
     {
 #if RUNTIME_REGEX
-	static regex rxq(".*[(]END[)][^\n]*");
+	static regex rxq(".*[(]end[)][^\n]*");
 #endif
-	if (answer.matches(rxq, last_line_index))
+	if (last_line.matches(rxq))
 	    return "q";		// Stop this
 
 #if RUNTIME_REGEX
-	static regex rxspace(".*(--More--|line [0-9])[^\n]*");
+	static regex rxspace(".*(--more--|line [0-9])[^\n]*");
 #endif
-	if (answer.matches(rxspace, last_line_index))
+	if (last_line.matches(rxspace))
 	    return " ";		// Keep on scrolling
 
 #if RUNTIME_REGEX
-	static regex rxreturn(".*([(]press RETURN[)]"
-			      "|Hit RETURN to continue"
-			      "|Type <return> to continue"
-			      "|More [(]n if no[)][?])[^\n]*");
+	static regex rxreturn(".*([(]press return[)]"
+			      "|hit return to continue"
+			      "|type <return> to continue"
+			      "|more [(]n if no[)][?])[^\n]*");
 #endif
-	if (answer.matches(rxreturn, last_line_index))
+	if (last_line.matches(rxreturn))
 	    return "\n";		// Keep on scrolling
 
 	if (type() == XDB)
@@ -600,9 +600,9 @@ string GDBAgent::requires_reply (const string& answer)
 	    // GDBAgent::requires_reply 
 	    // -- wiegand@kong.gsfc.nasa.gov (Robert Wiegand)
 #if RUNTIME_REGEX
-	    static regex rxxdb(".*Standard input: END.*");
+	    static regex rxxdb(".*standard input: END.*");
 #endif
-	    if (answer.matches(rxxdb, last_line_index))
+	    if (last_line.matches(rxxdb))
 		return "\n";	// Keep on scrolling
 	}
     }
@@ -941,7 +941,7 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 		    gdb->state = BusyOnQuArray;
 
 		    // Send first question
-		    gdb->write((const char *)gdb->cmd_array[0],
+		    gdb->write(gdb->cmd_array[0].chars(),
 			       gdb->cmd_array[0].length());
 		    gdb->flush();
 		}
@@ -960,7 +960,7 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 		gdb->callHandlers(ReadyForCmd, (void *)false);
 
 		// Send first question
-		gdb->write((const char *)gdb->cmd_array[0],
+		gdb->write(gdb->cmd_array[0].chars(),
 		      gdb->cmd_array[0].length());
 		gdb->flush();
 	    }
@@ -1037,7 +1037,7 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	    else
 	    {
 		// Send next question
-		gdb->write((const char *)gdb->cmd_array[gdb->qu_index], 
+		gdb->write(gdb->cmd_array[gdb->qu_index].chars(),
 			   gdb->cmd_array[gdb->qu_index].length());
 		gdb->flush();
 	    }
