@@ -34,8 +34,8 @@ _font(box, font) = font(box, font);
 _fontfix(box) = fontfix(box);
 
 // Standard interface
-#pragma override font
-font(box, font) = _fontfix(_font(box, string(font)));
+//#pragma override font
+the_font(box, font) = _fontfix(_font(box, string(font)));
 
 // Constants
 slant_unslanted()    = "r";
@@ -138,15 +138,15 @@ fontname_bi(family, size) =
 
 
 // Macros for font settings
-rm(box) = font(box, fontname_rm());
-bf(box) = font(box, fontname_bf());
-it(box) = font(box, fontname_it());
-bi(box) = font(box, fontname_bi());
+rm(box) = the_font(box, fontname_rm());
+bf(box) = the_font(box, fontname_bf());
+it(box) = the_font(box, fontname_it());
+bi(box) = the_font(box, fontname_bi());
 
-rm(box, family) = font(box, fontname_rm(family));
-bf(box, family) = font(box, fontname_bf(family));
-it(box, family) = font(box, fontname_it(family));
-bi(box, family) = font(box, fontname_bi(family));
+rm(box, family) = the_font(box, fontname_rm(family));
+bf(box, family) = the_font(box, fontname_bf(family));
+it(box, family) = the_font(box, fontname_it(family));
+bi(box, family) = the_font(box, fontname_bi(family));
 
 rm(box, family, size) = font(box, fontname_rm(family, size));
 bf(box, family, size) = font(box, fontname_bf(family, size));
