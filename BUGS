@@ -160,4 +160,6 @@ Volunteers for fixing these and other bugs are welcome!
     - Make swallowing (decorating) optional
     - Destroying plotter decorations is risky; better re-use them
 
-325 (Insert new bugs here)
+325 Issue a diagnostic if a man page is not found.
+
+326 (Insert new bugs here)

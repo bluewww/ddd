@@ -5,7 +5,17 @@ DDD News						-*- text -*-
 DDD 3.1 [in development]
 ========================
 
-DDD 3.1 brings undo/redo, edge annotations, and display clusters.
+DDD 3.1 brings Python support, Undo/Redo, and advanced data exploration.
+
+
+Python support
+--------------
+
+- DDD now supports debugging Python programs.  This feature uses the
+  `pydb' command-line debugger included in this distribution; see the
+  `pydb' sub-directory for notes.
+
+  Python support was contributed by Richard Wolff <rwolff@noao.edu>.
 
 
 Undoing commands
@@ -31,6 +41,9 @@ Data exploration
 
 - Titles on dependent displays are now disabled by default, as they
   can be inferred from edge annotations.  Saves screen space.
+
+- Data plotting.  The `Plot' button lets you plot one- and
+  two-dimensional numeric arrays.  Requires Gnuplot.
 
 - Clusters.  You can join several data displays into a cluster display,
   showing data like local variables.  Saves screen space.
