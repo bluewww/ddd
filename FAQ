@@ -60,8 +60,30 @@ your own text font.
 6. When I hit a break point, can the break line
    be brought to the center of the source window ?
 
-Again, by altering the code - I guess I'll realize that in the next
+Again, by altering the code - I guess I'll realize that in a future
 DDD release.
+
+
+7. I compiled DDD on my machine and it fails.  I got the executable
+   from your FTP site and it runs.  What is the difference? Is there
+   some compilation setup I need to do, or is the executable patched?
+
+It is a frequently observed effect that our executables work while the
+executables of DDD users fail.  This is simply due to the fact that we
+test them throroughly.  The usual test a new DDD distribution has to
+pass is to configure, compile, and run out-of-the-box on half a dozen
+machines and configurations.
+
+We do not really know why our executables work while others fail,
+although the source code is identical.  A simple explanation may be
+that the compilation environment (C compiler, C++ compiler,
+libraries...) have slight differences (aka bugs) from site to site.
+We have set up DDD such that it works on our site - for instance, some
+DDD parts work around compiler bugs detected on a specific machine.
+Users compiling DDD on their local machine will encounter other
+problems, but will not know how to fix them.  That is, while the DDD
+code stays the same, the executables may vary a lot.
+
 
 
 $Id$

@@ -95,12 +95,7 @@ Volunteers for fixing these and other bugs are welcome!
       current directory from GDB and this won't work if GDB hangs.]
      [May be fixed in DDD 1.0a and later.]
 
-024. On mips-sgi-irix5.2, DDD issues a message `(gdb) write failed:
-     Bad file number' and hangs.  Reported by ckumarad@oci.utoronto.ca
-     (Carl Kumaradas) and baird@asc.on.ca (Warren Baird).  [Anyone
-     willing to fix this? The pty is created in `TTYAgent.C', using
-     the SGI _getpty() function; the master side is accessed in
-     `LiterateA.C'.]
+024. [fixed]
 
 025. DBX on mips-dec-ultrix4 is only partially supported since it has
      an entirely different output format than Sun's DBX.  [If someone
@@ -111,7 +106,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 027. [fixed]
 
-028. The `-iconic' option does not work.
+028. [fixed]
 
 029. [fixed]
 
@@ -179,4 +174,7 @@ Volunteers for fixing these and other bugs are welcome!
      know if you need any other info.
      [A bug in Motif 1.1 - does not occur in later Motif versions].
 
-041. (Insert your bug here)
+041. Starting DDD iconified under vtwm causes trouble with group
+     iconification.
+
+042. (Insert your bug here)

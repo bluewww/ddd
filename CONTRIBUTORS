@@ -20,11 +20,15 @@ contributed to the success of DDD.  Starring in historical order,
     MARTIN KOHLSCHMIDT provided substantial hints for distributing DDD
 	binaries.
 
-    MICHAEL BUSSIECK and NEAL BECKER were the first to make DDD run on
-	HP-UX machines and reported configuration bugs.
+    NEAL BECKER was the first to make DDD run on HP-UX machines 
+        and reported configuration bugs.
+
+    MICHAEL BUSSIECK provided the first official DDD Linux binary.
 
     STEFAN MÜLLER and BAS V. DE BAKKER were the first to make DDD run
         on AIX machines and provided appropriate patches.
+
+    KENT WILLIAMS made DDD run on SGI/IRIX machines.
 
 Thanks to all others who are not mentioned here and helped in the
 success of DDD.

@@ -8,17 +8,27 @@ DDD 1.2
     the `ChangeLog' file for details.
 
     Changes to DDD 1.1:
-    - DDD now also compiles using other C++ compilers than GCC (well -
-      we tried Sun's CC and it worked).  All remaining GCC- or
-      libg++-specific code should be removed now.
-    - DDD now runs on SGI/IRIX machines.
-    - Interrupting running processes via the Interrupt button now
-      works correctly on Solaris, HP-UX, and other systems.
+    - DDD source code should now be ANSI/ISO C++ conformant - all GCC-
+      or libg++-specific code should be gone.  DDD now also compiles
+      using other C++ compilers than GCC (Sun's 2.3 Solaris CC works
+      fine; AT&T Cfront 3.0 has trouble with some inline functions).
+    - DDD should now run correctly on SGI/IRIX machines.
+    - Interrupting processes via the Interrupt button now works
+      correctly on Solaris, HP-UX, and other systems.
     - Improved support for GDB artificial arrays.
-    - The GDB command window has additional control character support.
-    - X warnings can be suppressed.
+    - The GDB command window has improved control character support.
+      Tabs, Carriage returns, Backspaces and so on are processed
+      correctly.  Unprintable characters are also handled.
+    - There is an option to suppress X warnings.  This may be useful
+      for people annoyed by tons of Motif Keysym warnings.
 
     Thanks to all who sent in bug reports and suggestions.
+
+    As building DDD is still a major challenge for some users, we
+    encourage everyone to share her/his binaries with others.  See the
+    file ftp.ips.cs.tu-bs.de:/pub/local/softech/ddd/bin/README for
+    details.
+
 
 DDD 1.1
 -------
