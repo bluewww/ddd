@@ -72,7 +72,7 @@ Summary of DDD
     code.
 
     Other DDD features include: debugging of programs written in C,
-    C++, ADA, FORTRAN, Pascal, or MODULA-2; hypertext source
+    C++, Ada, Fortran, Pascal, or Modula-2; hypertext source
     navigation and lookup; GDB/DBX command-line interface with full
     editing, history, and completion capabilities; breakpoint,
     backtrace, and history editors; optional program execution in
@@ -123,13 +123,13 @@ Requirements
 
     To run DDD, you need a GDB debugger (version 4 is required; best
     results are achieved with 4.13 or later).  Using GDB, you can
-    debug programs written in C and C++; GNU ADA (`gnats'), GNU
-    FORTRAN (`g77') and GNU MODULA-2 have been reported to work as
+    debug programs written in C and C++; GNU Ada (`gnats'), GNU
+    Fortran (`g77') and GNU Modula-2 have been reported to work as
     well.
 
     As an alternative, DDD also supports Sun's DBX debugger.  Using
     DBX, you can debug programs written in C, C++, Pascal and
-    MODULA-2.  DBX debuggers on systems other than Sun have been
+    Modula-2.  DBX debuggers on systems other than Sun have been
     reported to work as well.
 
 

@@ -646,7 +646,7 @@ displays are automatically selected.
 .\"
 If a display is composed from several values (that is, a C/C++
 \fIclass\fR, \fIstruct\fR, \fIunion\fR, or \fIarray\fR; or a
-\s-2PASCAL\s+2/\s-2MODULA-2\s+2 \fIRECORD\fR or \fIARRAY\fR), you can
+Pascal/Modula \fIRECORD\fR or \fIARRAY\fR), you can
 select individual parts by clicking on their names or values.  The
 resulting expression is shown in the \fIargument field\fR, below.
 .PP
@@ -1604,7 +1604,7 @@ also enter the command in \fB$HOME/.gdbinit\fR or (better yet) upgrade
 to the most recent \s-2GDB\s+2 version.
 
 .SS "Limitations using DBX"
-When used for debugging \s-2MODULA-2\s+2 or \s-2PASCAL\s+2 programs,
+When used for debugging Modula-2 or Pascal programs,
 \s-2DDD\s+2 always numerates array elements starting with zero,
 instead of using correct array subscripts.  This shall be fixed in a
 future \s-2@DDD@\s+2 release.
