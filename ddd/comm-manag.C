@@ -2325,6 +2325,9 @@ void plusOQAC (const StringArray& answers,
     {
 	// Get a current program info to update the `recent files' list
 	ProgramInfo info;
+
+	// Update the source list in `Open Source'
+	update_sources();
     }
 
     assert (qu_count == count);

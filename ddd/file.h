@@ -49,6 +49,9 @@ extern void gdbLookupSourceCB (Widget, XtPointer, XtPointer);
 // Get all sources from GDB
 void get_gdb_sources(StringArray& sources_list);
 
+// Update sources list
+void update_sources();
+
 // When entering `cd', change path in file selection boxes
 extern void process_cd(string pwd);
 

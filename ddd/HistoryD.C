@@ -90,11 +90,8 @@ static bool try_arg(const string& cmd, string prefix, string& arg)
 	}
 	else if (is_file_pos(arg))
 	{
-	    // FILE:LINE arg -- use only base name with line 1
-	    string file = arg.before(':');
-	    string base = basename(file);
-	    arg = base + ":1";
-	    return true;
+	    // FILE:LINE arg -- ignore
+	    return false;
 	}
 	else if (arg.matches(rxint))
 	{

@@ -4782,7 +4782,7 @@ Ddd*sources.listLabelString:		Sources
 Ddd*sources.selectionLabelString: 	Open Source
 Ddd*sources*selectionPolicy:		XmSINGLE_SELECT
 Ddd*sources*okLabelString:	 	Open
-Ddd*sources*applyLabelString:	 	Update
+Ddd*sources*applyLabelString:	 	Lookup
 Ddd*sources*helpString:	\
 @rm Please select a source to be opened.\n\
 \n\
@@ -4790,8 +4790,8 @@ These are the accessible source files of your program.\n\
 To search for other sources, select LBL(Edit, @GDB@ Settings)\n\
 and add their directories to the source path.\n\
 \n\
-Click on LBL(Open) to open the selected source.\n\
-Click on LBL(Update) to update the list of sources.
+Click on LBL(Open) to open the selected source and close this window.\n\
+Click on LBL(Lookup) to lookup the selected source.
 
 
 Ddd*sessions_to_open_popup.title: 		DDD: Open Session

@@ -259,6 +259,21 @@ static Widget create_file_dialog(Widget w, String name,
 }
 
 
+// Synchronize file dialogs with current directory
+void process_cd(string pwd)
+{
+    current_file_filter = pwd + "/*";
+
+    for (int i = 0; i < file_filters.size(); i++)
+    {
+	if (file_filters[i] != 0)
+	{
+	    XmTextSetString(file_filters[i], current_file_filter);
+	    break;
+	}
+    }
+}
+
 static char delay_message[] = "Filtering files";
 
 // Search for remote files and directories, using the command CMD
@@ -1361,12 +1376,6 @@ static void update_sources(Widget sources)
     delete[] selected;
 }
 
-static void gdbUpdateSourcesCB(Widget, XtPointer client_data, XtPointer)
-{
-    Widget sources = Widget(client_data);
-    update_sources(sources);
-}
-
 // OK pressed in `Lookup Source'
 static void lookupSourceDone(Widget w,
 			     XtPointer client_data, 
@@ -1395,10 +1404,7 @@ static void lookupSourceDone(Widget w,
     }
 
     if (source != "")
-    {
-	XtUnmanageChild(w);
 	source_view->lookup(source + ":1");
-    }
 }
 
 
@@ -1553,6 +1559,8 @@ void gdbOpenClassCB(Widget w, XtPointer, XtPointer)
     manage_and_raise(dialog);
 }
 
+static Widget source_list = 0;
+
 void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     if (gdb->type() != GDB)
@@ -1561,8 +1569,7 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	return;
     }
 
-    static Widget dialog = 0;
-    static Widget sources = 0;
+    static Widget dialog  = 0;
 
     if (dialog == 0)
     {
@@ -1580,42 +1587,35 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
 					       XmDIALOG_TEXT));
 
-	sources = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
+	source_list = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
 
-	XtAddCallback(sources, XmNsingleSelectionCallback,
-		      SelectSourceCB, XtPointer(sources));
-	XtAddCallback(sources, XmNmultipleSelectionCallback,
-		      SelectSourceCB, XtPointer(sources));
-	XtAddCallback(sources, XmNextendedSelectionCallback,
-		      SelectSourceCB, XtPointer(sources));
-	XtAddCallback(sources, XmNbrowseSelectionCallback,
-		      SelectSourceCB, XtPointer(sources));
+	XtAddCallback(source_list, XmNsingleSelectionCallback,
+		      SelectSourceCB, XtPointer(source_list));
+	XtAddCallback(source_list, XmNmultipleSelectionCallback,
+		      SelectSourceCB, XtPointer(source_list));
+	XtAddCallback(source_list, XmNextendedSelectionCallback,
+		      SelectSourceCB, XtPointer(source_list));
+	XtAddCallback(source_list, XmNbrowseSelectionCallback,
+		      SelectSourceCB, XtPointer(source_list));
 
 	XtAddCallback(dialog, XmNokCallback, 
-		      lookupSourceDone, XtPointer(sources));
+		      lookupSourceDone, XtPointer(source_list));
+	XtAddCallback(dialog, XmNokCallback, 
+		      UnmanageThisCB, XtPointer(dialog));
 	XtAddCallback(dialog, XmNapplyCallback, 
-		      gdbUpdateSourcesCB, XtPointer(sources));
+		      lookupSourceDone, XtPointer(source_list));
 	XtAddCallback(dialog, XmNcancelCallback, 
 		      UnmanageThisCB, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
     }
 
-    update_sources(sources);
+    update_sources(source_list);
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
 }
 
-// Synchronize file dialogs with current directory
-void process_cd(string pwd)
+void update_sources()
 {
-    current_file_filter = pwd + "/*";
-
-    for (int i = 0; i < file_filters.size(); i++)
-    {
-	if (file_filters[i] != 0)
-	{
-	    XmTextSetString(file_filters[i], current_file_filter);
-	    break;
-	}
-    }
+    if (source_list != 0)
+	update_sources(source_list);
 }
