@@ -28,7 +28,7 @@
 % Send bug reports to bug-texinfo@prep.ai.mit.edu.
 % Please include a *precise* test case in each bug report.
 
-% Modified by Thanh for creating hypertexted PDF
+% Modified by Thanh and Zeller for creating hypertexted PDF
 
 % Make it possible to create a .fmt file just by loading this file:
 % if the underlying format is not loaded, start by loading it now.
@@ -389,7 +389,10 @@
 
 % @@ prints an @
 % Kludge this until the fonts are right (grr).
-\def\@{{\tt \char '100}}
+% \def\@{{\tt \char '100}}
+
+% This may fail with CMR fonts, but is required for getting @email links right
+\let\@=@
 
 % This is turned off because it was never documented
 % and you can use @w{...} around a quote to suppress ligatures.
@@ -1431,20 +1434,14 @@ where each line of input produces a line of output.}
 \else{\tclose{\kbdfont\look}}\fi
 \else{\tclose{\kbdfont\look}}\fi}
 
-\def\makeurl#1{\bgroup
+\def\makeurl#1#2{\bgroup
     \leavevmode\Red
+    \catcode`\@=11%
+    \catcode`~=11%
     \pdfannotlink 
         attr{/Border [0 0 0]} 
-        user{/Subtype /Link /A << /S /URI /URI (#1) >>}
-    \samp{#1}
-    \Black\pdfendlink\egroup}
-
-\def\makeemail#1{\bgroup
-    \leavevmode\Red
-    \pdfannotlink 
-        attr{/Border [0 0 0]} 
-        user{/Subtype /Link /A << /S /URI /URI (mailto:#1) >>}
-    \samp{#1}
+        user{/Subtype /Link /A << /S /URI /URI (#1) >>}%
+    {#2}%
     \Black\pdfendlink\egroup}
 
 % @url.  Quotes do not seem necessary, so use \code.
@@ -1458,20 +1455,20 @@ where each line of input produces a line of output.}
 \def\urefxxx#1,#2,#3\finish{%
   \setbox0 = \hbox{\ignorespaces #2}%
   \ifdim\wd0 > 0pt
-    \unhbox0\ (\code{\makeurl{#1}})%
+    \unhbox0\ (\code{\makeurl{#1}{#1}})%
   \else
-    \code{\makeurl{#1}}%
+    \code{\makeurl{#1}{#1}}%
   \fi
 }
 
-% Same applies to @email.
+% @email is like @uref, except that it puts a `mailto:' URL.
 \def\email#1{\emailxxx #1,,\finish}
 \def\emailxxx#1,#2,#3\finish{%
   \setbox0 = \hbox{\ignorespaces #2}%
   \ifdim\wd0 > 0pt
-    \unhbox0\ (\code{\makeemail{#1}})%
+    \unhbox0\ (\code{\makeurl{mailto:#1}{#1}})%
   \else
-    \code{\makeemail{#1}}%
+    \code{\makeurl{mailto:#1}{#1}}%
   \fi
 }
 
