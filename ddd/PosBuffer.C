@@ -43,6 +43,25 @@ char PosBuffer_rcsid[] =
 #include "assert.h"
 #include "cook.h"
 
+// Filter all lines from ANSWER beginning with LINE
+// This is required to suppress the line number output
+// after a `stopping in' message.
+static void filter_line(string& answer, int line)
+{
+    if (line <= 0)
+	return;
+
+    int pos = 0;
+    do {
+	if (atoi((char *)answer + pos) == line)
+	{
+	    answer = answer.before(pos) + answer.after('\n', pos);
+	    break;
+	}
+	pos = answer.index('\n', pos) + 1;
+    } while (pos > 0);
+}
+
 void PosBuffer::filter (string& answer)
 {
     // Positionsangabe abfangen und puffern, Rest zurueckgeben
@@ -51,6 +70,20 @@ void PosBuffer::filter (string& answer)
 	// Nichts mehr zu filtern
 	assert (pos_buffer != "");
 	assert (answer_buffer == "");
+
+	// Skip possible line number info
+	switch (gdb->type())
+	{
+	case GDB:
+	    break;
+
+	case DBX:
+	    string line_s = pos_buffer;
+	    if (line_s.contains(':'))
+		line_s = line_s.after(':');
+	    int line = atoi(line_s);
+	    filter_line(answer, line);
+	}
 	break;
     case PosPart:
 	answer.prepend (answer_buffer);
@@ -134,17 +167,7 @@ void PosBuffer::filter (string& answer)
 		    else
 			pos_buffer = line;
 		    already_read = PosComplete;
-
-		    // Skip possible line number info
-		    string stopped_info = answer;
-		    if (stopped_info.contains('\n'))
-			stopped_info = stopped_info.through('\n');
-		    do {
-			answer = answer.after('\n');
-		    } while (answer != "" 
-			     && atoi(answer) != 0 
-			     && atoi(answer) == atoi(line));
-		    answer = stopped_info + answer;
+		    filter_line(answer, atoi(line));
 		}
 		else if (answer.contains("Current function is "))
 		{
