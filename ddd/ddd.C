@@ -1088,7 +1088,7 @@ int main(int argc, char *argv[])
     register_restart(argv);
 
     // This one is required for error messages
-    char *program_name = argc ? argv[0] : ddd_NAME;
+    char *program_name = argc > 0 ? argv[0] : ddd_NAME;
 
     // Install signal handlers
 
@@ -1233,15 +1233,13 @@ int main(int argc, char *argv[])
     XrmParseCommand(&dddinit, options, XtNumber(options), 
 		    DDD_CLASS_NAME, &argc, argv);
 
+    // Create application shell
     XtAppContext app_context;
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
-    Widget toplevel = XtAppInitialize(&app_context,
-				      DDD_CLASS_NAME,
-				      0, 0,
-				      &argc, argv,
-				      ddd_fallback_resources,
-				      args, arg);
+    Widget toplevel = 
+	XtAppInitialize(&app_context, DDD_CLASS_NAME,
+			0, 0, &argc, argv, ddd_fallback_resources, args, arg);
 
     // Merge in ~/.dddinit resources
     XrmDatabase target = XtDatabase(XtDisplay(toplevel));
@@ -1255,15 +1253,8 @@ int main(int argc, char *argv[])
 	return EXIT_FAILURE;
     }
 
-    // Setup toplevel window
-#ifdef HAVE_X11_XMU_EDITRES_H
-    XtAddEventHandler(toplevel, EventMask(0), true,
-		      XtEventHandler(_XEditResCheckMessages), NULL);
-#endif
-
+    // Setup top-level actions
     XtAppAddActions(app_context, actions, XtNumber(actions));
-    Atom WM_DELETE_WINDOW =
-	XmInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
 
     // Get and save application resources
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
@@ -1381,20 +1372,41 @@ int main(int argc, char *argv[])
 #endif
 
     // Create command shell
+
+    // Use original arguments
+    char **original_argv = saved_argv();
+    int original_argc = 0;
+    while (original_argv[original_argc] != 0)
+	original_argc++;
+
+    arg = 0;
+    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+    XtSetArg(args[arg], XmNargc,           original_argc); arg++;
+    XtSetArg(args[arg], XmNargv,           original_argv); arg++;
+
     if (!app_data.separate_source_window && !app_data.separate_data_window)
     {
-	// Whole DDD in one window - use toplevel shell
-	command_shell = toplevel;
+	// One single window - use command shell as top-level shell
+	command_shell = 
+	    verify(XtAppCreateShell(NULL, DDD_CLASS_NAME, 
+				    applicationShellWidgetClass,
+				    XtDisplay(toplevel), args, arg));
+	
+	// The old top-level shell is no longer needed
+	XtDestroyWidget(toplevel);
+	toplevel = command_shell;
     }
     else
     {
-	arg = 0;
-	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+	// Separate windows - make command shell a popup shell.  
+	// The toplevel window is never realized.
 	command_shell =
 	    verify(XtCreatePopupShell("command_shell",
-				      topLevelShellWidgetClass,
+				      applicationShellWidgetClass,
 				      toplevel, args, arg));
     }
+    Atom WM_DELETE_WINDOW =
+	XmInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
     XmAddWMProtocolCallback(command_shell,
 			    WM_DELETE_WINDOW, gdbCloseCommandWindowCB, 0);
 #ifdef HAVE_X11_XMU_EDITRES_H
@@ -2136,6 +2148,27 @@ static void set_option_widgets(DDDOption opt)
     disassemble_w[opt]          = disassemble_w[0];
 }
 
+static void set_toggle(Widget w, Boolean new_state, bool notify = false)
+{
+    assert(XmIsToggleButton(w));
+
+    Boolean old_state;
+    XtVaGetValues(w, XmNset, &old_state, NULL);
+
+    if (old_state != new_state)
+    {
+	if (notify)
+	    XmToggleButtonSetState(w, new_state, True);
+	else
+	    XtVaSetValues(w, XmNset, new_state, NULL);
+    }
+}
+
+inline void notify_set_toggle(Widget w, Boolean new_state)
+{
+    set_toggle(w, new_state, true);
+}
+
 // Reflect state in option menus
 void update_options()
 {
@@ -2144,53 +2177,33 @@ void update_options()
 	if (separate_exec_window_w[i] == 0)
 	    continue;		// Shell not realized
 
-	XtVaSetValues(separate_exec_window_w[i],
-		      XmNset, app_data.separate_exec_window, NULL);
-	XtVaSetValues(disassemble_w[i],
-		      XmNset, app_data.disassemble, NULL);
-	XtVaSetValues(find_words_only_w[i],
-		      XmNset, app_data.find_words_only, NULL);
+	set_toggle(separate_exec_window_w[i], app_data.separate_exec_window);
+	set_toggle(disassemble_w[i], app_data.disassemble);
+	set_toggle(find_words_only_w[i], app_data.find_words_only);
 	set_sensitive(disassemble_w[i], gdb->type() == GDB);
     }
 
-    XtVaSetValues(button_tips_w,
-		  XmNset, app_data.button_tips, NULL); 
-    XtVaSetValues(value_tips_w,
-		  XmNset, app_data.value_tips, NULL); 
-    XtVaSetValues(button_docs_w,
-		  XmNset, app_data.button_docs, NULL); 
-    XtVaSetValues(value_docs_w,
-		  XmNset, app_data.value_docs, NULL); 
-    XtVaSetValues(set_global_completion_w,
-		  XmNset, app_data.global_tab_completion, NULL);
-    XtVaSetValues(set_console_completion_w,
-		  XmNset, !app_data.global_tab_completion, NULL);
-    XtVaSetValues(group_iconify_w,
-		  XmNset, app_data.group_iconify, NULL);
-    XtVaSetValues(ungrab_mouse_pointer_w,
-		  XmNset, app_data.ungrab_mouse_pointer, NULL);
-    XtVaSetValues(save_history_on_exit_w,
-		  XmNset, app_data.save_history_on_exit, NULL);
+    set_toggle(button_tips_w,            app_data.button_tips); 
+    set_toggle(value_tips_w,             app_data.value_tips); 
+    set_toggle(button_docs_w,            app_data.button_docs); 
+    set_toggle(value_docs_w,             app_data.value_docs); 
+    set_toggle(set_global_completion_w,  app_data.global_tab_completion);
+    set_toggle(set_console_completion_w, !app_data.global_tab_completion);
+    set_toggle(group_iconify_w,          app_data.group_iconify);
+    set_toggle(ungrab_mouse_pointer_w,   app_data.ungrab_mouse_pointer);
+    set_toggle(save_history_on_exit_w,   app_data.save_history_on_exit);
 
-    XtVaSetValues(cache_source_files_w,
-		  XmNset, app_data.cache_source_files, NULL);
-    XtVaSetValues(cache_machine_code_w,
-		  XmNset, app_data.cache_machine_code, NULL);
-    XtVaSetValues(set_display_glyphs_w,
-		  XmNset, app_data.display_glyphs, NULL);
-    XtVaSetValues(set_display_text_w,
-		  XmNset, !app_data.display_glyphs, NULL);
-    XtVaSetValues(set_refer_path_w,
-		  XmNset, app_data.use_source_path, NULL);
-    XtVaSetValues(set_refer_base_w,
-		  XmNset, !app_data.use_source_path, NULL);
-    XtVaSetValues(tab_width_w,
-		  XmNvalue, app_data.tab_width, NULL);
+    set_toggle(cache_source_files_w,     app_data.cache_source_files);
+    set_toggle(cache_machine_code_w,     app_data.cache_machine_code);
+    set_toggle(set_display_glyphs_w,     app_data.display_glyphs);
+    set_toggle(set_display_text_w,       !app_data.display_glyphs);
+    set_toggle(set_refer_path_w,         app_data.use_source_path);
+    set_toggle(set_refer_base_w,         !app_data.use_source_path);
 
-    XtVaSetValues(led_w, XmNset, app_data.blink_while_busy, NULL);
+    XtVaSetValues(tab_width_w, XmNvalue, app_data.tab_width, NULL);
 
-    XtVaSetValues(suppress_warnings_w,
-		  XmNset, app_data.suppress_warnings, NULL);
+    set_toggle(led_w,                    app_data.blink_while_busy);
+    set_toggle(suppress_warnings_w,      app_data.suppress_warnings);
 
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
     set_sensitive(set_refer_base_w, gdb->type() != GDB);
@@ -2212,10 +2225,8 @@ void update_options()
 		  XtNgridHeight, &grid_height,
 		  NULL);
 
-    XtVaSetValues(graph_detect_aliases_w,
-		  XmNset, app_data.detect_aliases, NULL);
-    XtVaSetValues(detect_aliases_w,
-		  XmNset, app_data.detect_aliases, NULL);
+    set_toggle(graph_detect_aliases_w, app_data.detect_aliases);
+    set_toggle(detect_aliases_w, app_data.detect_aliases);
 
     if (!show_grid && XtIsSensitive(graph_snap_to_grid_w))
     {
@@ -2230,58 +2241,43 @@ void update_options()
     }
     else
     {
-	XtVaSetValues(graph_snap_to_grid_w, XmNset, snap_to_grid, NULL);
+	set_toggle(graph_snap_to_grid_w, snap_to_grid);
     }
 
     set_sensitive(graph_snap_to_grid_w, show_grid);
     set_sensitive(align_w, show_grid);
 
-    XtVaSetValues(graph_show_hints_w, XmNset, show_hints, NULL);
-    XtVaSetValues(graph_auto_layout_w, XmNset, auto_layout, NULL);
-    XtVaSetValues(graph_compact_layout_w, XmNset, 
-		  layout_mode == CompactLayoutMode, NULL);
+    set_toggle(graph_show_hints_w, show_hints);
+    set_toggle(graph_auto_layout_w, auto_layout);
+    set_toggle(graph_compact_layout_w, layout_mode == CompactLayoutMode);
+
     XtVaSetValues(graph_grid_size_w, XmNvalue, show_grid ? grid_width : 0, 
 		  NULL);
 
 
     unsigned char policy = '\0';
-    XtVaGetValues(command_shell, 
-		  XmNkeyboardFocusPolicy, &policy,
-		  NULL);
-    XtVaSetValues(set_focus_pointer_w,
-		  XmNset, policy == XmPOINTER, NULL);
-    XtVaSetValues(set_focus_explicit_w,
-		  XmNset, policy == XmEXPLICIT, NULL);
+    XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, NULL);
+    set_toggle(set_focus_pointer_w,        policy == XmPOINTER);
+    set_toggle(set_focus_explicit_w,       policy == XmEXPLICIT);
 
-    XtVaSetValues(set_scrolling_panner_w,
-		  XmNset, app_data.panned_graph_editor, NULL);
-    XtVaSetValues(set_scrolling_scrollbars_w,
-		  XmNset, !app_data.panned_graph_editor, NULL);
+    set_toggle(set_scrolling_panner_w,     app_data.panned_graph_editor);
+    set_toggle(set_scrolling_scrollbars_w, !app_data.panned_graph_editor);
 
-    XtVaSetValues(set_status_bottom_w,
-		  XmNset, app_data.status_at_bottom, NULL);
-    XtVaSetValues(set_status_top_w,
-		  XmNset, !app_data.status_at_bottom, NULL);
+    set_toggle(set_status_bottom_w,        app_data.status_at_bottom);
+    set_toggle(set_status_top_w,           !app_data.status_at_bottom);
 
-    XtVaSetValues(set_tool_buttons_in_tool_bar_w,
-		  XmNset, app_data.tool_bar, NULL);
-    XtVaSetValues(set_tool_buttons_in_command_tool_w,
-		  XmNset, !app_data.tool_bar, NULL);
+    set_toggle(set_tool_buttons_in_tool_bar_w,     app_data.tool_bar);
+    set_toggle(set_tool_buttons_in_command_tool_w, !app_data.tool_bar);
 
     Boolean separate = 
 	app_data.separate_data_window || app_data.separate_source_window;
-    XtVaSetValues(set_separate_windows_w,
-		  XmNset, separate, NULL);
-    XtVaSetValues(set_attached_windows_w,
-		  XmNset, !separate, NULL);
+    set_toggle(set_separate_windows_w, separate);
+    set_toggle(set_attached_windows_w, !separate);
 
     DebuggerType type = debugger_type(app_data.debugger);
-    XtVaSetValues(set_debugger_gdb_w,
-		  XmNset, type == GDB, NULL);
-    XtVaSetValues(set_debugger_dbx_w,
-		  XmNset, type == DBX, NULL);
-    XtVaSetValues(set_debugger_xdb_w,
-		  XmNset, type == XDB, NULL);
+    set_toggle(set_debugger_gdb_w, type == GDB);
+    set_toggle(set_debugger_dbx_w, type == DBX);
+    set_toggle(set_debugger_xdb_w, type == XDB);
 
     if (app_data.cache_source_files != source_view->cache_source_files)
     {
@@ -2343,12 +2339,6 @@ static Widget preferences_dialog;
 static Widget reset_preferences_w;
 static Widget current_panel;
 
-static void set_toggle(Widget w, Boolean set)
-{
-    if (XmToggleButtonGetState(w) != set)
-	XmToggleButtonSetState(w, set, True);
-}
-
 void save_option_state()
 {
     initial_app_data = app_data;
@@ -2372,18 +2362,20 @@ void save_option_state()
 
 static void ResetGeneralPreferencesCB(Widget, XtPointer, XtPointer)
 {
-    set_toggle(button_tips_w, initial_app_data.button_tips);
-    set_toggle(button_docs_w, initial_app_data.button_docs);
-    set_toggle(value_tips_w, initial_app_data.value_tips);
-    set_toggle(value_docs_w, initial_app_data.value_docs);
-    set_toggle(set_global_completion_w, 
+    notify_set_toggle(button_tips_w, initial_app_data.button_tips);
+    notify_set_toggle(button_docs_w, initial_app_data.button_docs);
+    notify_set_toggle(value_tips_w, initial_app_data.value_tips);
+    notify_set_toggle(value_docs_w, initial_app_data.value_docs);
+    notify_set_toggle(set_global_completion_w, 
 	       initial_app_data.global_tab_completion);
-    set_toggle(set_console_completion_w, 
+    notify_set_toggle(set_console_completion_w, 
 	       !initial_app_data.global_tab_completion);
-    set_toggle(group_iconify_w, initial_app_data.group_iconify);
-    set_toggle(suppress_warnings_w, initial_app_data.suppress_warnings);
-    set_toggle(ungrab_mouse_pointer_w, initial_app_data.ungrab_mouse_pointer);
-    set_toggle(save_history_on_exit_w, initial_app_data.save_history_on_exit);
+    notify_set_toggle(group_iconify_w, initial_app_data.group_iconify);
+    notify_set_toggle(suppress_warnings_w, initial_app_data.suppress_warnings);
+    notify_set_toggle(ungrab_mouse_pointer_w, 
+		      initial_app_data.ungrab_mouse_pointer);
+    notify_set_toggle(save_history_on_exit_w, 
+		      initial_app_data.save_history_on_exit);
 }
 
 static bool general_preferences_changed()
@@ -2404,12 +2396,14 @@ static bool general_preferences_changed()
 
 static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
 {
-    set_toggle(set_display_glyphs_w, initial_app_data.display_glyphs);
-    set_toggle(set_display_glyphs_w, !initial_app_data.display_glyphs);
-    set_toggle(set_refer_path_w, initial_app_data.use_source_path);
-    set_toggle(set_refer_base_w, !initial_app_data.use_source_path);
-    set_toggle(cache_source_files_w, initial_app_data.cache_source_files);
-    set_toggle(cache_machine_code_w, initial_app_data.cache_machine_code);
+    notify_set_toggle(set_display_glyphs_w, initial_app_data.display_glyphs);
+    notify_set_toggle(set_display_glyphs_w, !initial_app_data.display_glyphs);
+    notify_set_toggle(set_refer_path_w, initial_app_data.use_source_path);
+    notify_set_toggle(set_refer_base_w, !initial_app_data.use_source_path);
+    notify_set_toggle(cache_source_files_w, 
+		      initial_app_data.cache_source_files);
+    notify_set_toggle(cache_machine_code_w, 
+		      initial_app_data.cache_machine_code);
 
     if (app_data.tab_width != initial_app_data.tab_width)
     {
@@ -2429,14 +2423,14 @@ static bool source_preferences_changed()
 
 static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 {
-    set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
-    set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
+    notify_set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
+    notify_set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
 
-    set_toggle(graph_show_hints_w, initial_show_hints);
-    set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
-    set_toggle(graph_compact_layout_w, 
+    notify_set_toggle(graph_show_hints_w, initial_show_hints);
+    notify_set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
+    notify_set_toggle(graph_compact_layout_w, 
 	       initial_layout_mode == CompactLayoutMode);
-    set_toggle(graph_auto_layout_w, initial_auto_layout);
+    notify_set_toggle(graph_auto_layout_w, initial_auto_layout);
 
     Dimension grid_width, grid_height;
     Boolean show_grid;
@@ -2492,27 +2486,31 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     Boolean separate = initial_app_data.separate_data_window 
 	|| initial_app_data.separate_source_window;
 
-    set_toggle(set_separate_windows_w, separate);
-    set_toggle(set_attached_windows_w, !separate);
+    notify_set_toggle(set_separate_windows_w, separate);
+    notify_set_toggle(set_attached_windows_w, !separate);
 
-    set_toggle(set_status_bottom_w, initial_app_data.status_at_bottom);
-    set_toggle(set_status_top_w, !initial_app_data.status_at_bottom);
+    notify_set_toggle(set_status_bottom_w, initial_app_data.status_at_bottom);
+    notify_set_toggle(set_status_top_w, !initial_app_data.status_at_bottom);
 
-    set_toggle(set_tool_buttons_in_tool_bar_w, initial_app_data.tool_bar);
-    set_toggle(set_tool_buttons_in_command_tool_w, !initial_app_data.tool_bar);
+    notify_set_toggle(set_tool_buttons_in_tool_bar_w, 
+		      initial_app_data.tool_bar);
+    notify_set_toggle(set_tool_buttons_in_command_tool_w, 
+		      !initial_app_data.tool_bar);
 
-    set_toggle(set_focus_pointer_w, initial_focus_policy == XmPOINTER);
-    set_toggle(set_focus_explicit_w, initial_focus_policy == XmEXPLICIT);
+    notify_set_toggle(set_focus_pointer_w, 
+		      initial_focus_policy == XmPOINTER);
+    notify_set_toggle(set_focus_explicit_w,
+		      initial_focus_policy == XmEXPLICIT);
 
-    set_toggle(set_scrolling_panner_w, 
+    notify_set_toggle(set_scrolling_panner_w, 
 	       initial_app_data.panned_graph_editor);
-    set_toggle(set_scrolling_scrollbars_w, 
+    notify_set_toggle(set_scrolling_scrollbars_w, 
 	       !initial_app_data.panned_graph_editor);
 
     DebuggerType type = debugger_type(initial_app_data.debugger);
-    set_toggle(set_debugger_gdb_w, type == GDB);
-    set_toggle(set_debugger_dbx_w, type == DBX);
-    set_toggle(set_debugger_xdb_w, type == XDB);
+    notify_set_toggle(set_debugger_gdb_w, type == GDB);
+    notify_set_toggle(set_debugger_dbx_w, type == DBX);
+    notify_set_toggle(set_debugger_xdb_w, type == XDB);
 }
 
 bool startup_preferences_changed()
@@ -2818,7 +2816,7 @@ static void create_status(Widget parent)
 		  XmNpaneMinimum, new_height,
 		  NULL);
 
-    XtVaSetValues(led_w, XmNset, app_data.blink_while_busy, NULL);
+    set_toggle(led_w, app_data.blink_while_busy);
     blink(true);
 }
 
