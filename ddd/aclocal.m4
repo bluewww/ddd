@@ -53,6 +53,27 @@ dnl
 AC_DEFUN(ICE_PROG_CXX,
 [
 AC_REQUIRE([AC_PROG_CXX])
+dnl
+if test "$CXX" = gcc; then
+dnl
+dnl Using gcc as C++ compiler requires linkage with -lstdc++ or -lg++
+dnl
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_CHECK_LIB(m, sin)
+AC_CHECK_LIB(stdc++, cout)
+case "$LIBS" in
+*-lstdc++*)
+dnl -lstdc++ found - proceed
+;;
+*)
+dnl -lstdc++ not found - try -lg++ instead
+AC_CHECK_LIB(g++, cout)
+;;
+esac
+AC_LANG_RESTORE
+fi
+dnl
 AC_MSG_CHECKING(whether ${CXX} compiles and links a simple C++ program)
 AC_CACHE_VAL(ice_cv_prog_cxx,
 [

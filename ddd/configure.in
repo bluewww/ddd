@@ -170,12 +170,6 @@ if test "$ddd_check_both" = 1; then
 fi
 AC_CHECK_LIB(nsl, gethostbyname, LIBS="$LIBS -lnsl")
 AC_CHECK_FUNC(gethostbyname)
-dnl
-dnl If we use gcc or g++, link with -lstdc++ if it exists
-if test "$GXX" = yes; then
-AC_CHECK_LIB(stdc++, cout, LIBS="$LIBS -lstdc++")
-fi
-dnl
 AC_CHECK_LIB(m, sin, LIBM="-lm")
 AC_SUBST(LIBM)
 dnl
