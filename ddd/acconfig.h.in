@@ -52,6 +52,12 @@
 /* Define if your C++ compiler supports `bool' types. */
 #undef HAVE_BOOL
 
+/* Define if your C++ compiler supports the `mutable' keyword. */
+#undef HAVE_MUTABLE
+
+/* Define if your C++ compiler supports the `explicit' keyword. */
+#undef HAVE_EXPLICIT
+
 /* Define if your C++ compiler supports exception handling. */
 #undef HAVE_EXCEPTIONS
 

@@ -385,6 +385,58 @@ fi
 dnl
 dnl
 dnl
+dnl ICE_CXX_EXPLICIT
+dnl ----------------
+dnl
+dnl If the C++ compiler accepts the `explicit' keyword, define `HAVE_EXPLICIT'.
+dnl
+AC_DEFUN(ICE_CXX_EXPLICIT,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports explicit constructors)
+AC_CACHE_VAL(ice_cv_have_explicit,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(,[class A { public: explicit A(int) {} };],
+ice_cv_have_explicit=yes,
+ice_cv_have_explicit=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_explicit)
+if test "$ice_cv_have_explicit" = yes; then
+AC_DEFINE(HAVE_EXPLICIT)
+fi
+])dnl
+dnl
+dnl
+dnl
+dnl ICE_CXX_MUTABLE
+dnl ----------------
+dnl
+dnl If the C++ compiler accepts the `mutable' keyword, define `HAVE_MUTABLE'.
+dnl
+AC_DEFUN(ICE_CXX_MUTABLE,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports mutable members)
+AC_CACHE_VAL(ice_cv_have_mutable,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(,[struct A { mutable int x; };],
+ice_cv_have_mutable=yes,
+ice_cv_have_mutable=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_mutable)
+if test "$ice_cv_have_mutable" = yes; then
+AC_DEFINE(HAVE_MUTABLE)
+fi
+])dnl
+dnl
+dnl
+dnl
 dnl ICE_CXX_NAMED_RETURN_VALUES
 dnl ---------------------------
 dnl
