@@ -6816,6 +6816,7 @@ static void setup_version_info()
 	+ rm(" for " DDD_NAME "; see the ") + cr()
 	+ rm(DDD_NAME " License for details.") + cr();
 
+#if 0
     helpOnVersionExtraText += cr()
 	+ rm("If you find " DDD_NAME " useful, please send "
 	     "us a picture postcard:") + cr()
@@ -6823,6 +6824,7 @@ static void setup_version_info()
 	+ rm("    Free Software Foundation") + cr()
 	+ rm("    59 Temple Place - Suite 330") + cr()
 	+ rm("    Boston, MA  02111-1307, USA") + cr();
+#endif
 
     string log = session_log_file();
     if (log.contains(gethome(), 0))
@@ -6839,7 +6841,7 @@ static void setup_version_info()
     helpOnVersionExtraText += cr()
 	+ rm(DDD_NAME " WWW page: ") + tt(app_data.www_page) + cr()
 	+ rm(DDD_NAME " mailing list: <")
-	+ tt("help-ddd-request@gnu.org") + rm(">") + cr();
+	+ tt("ddd-request@gnu.org") + rm(">") + cr();
 }
 
 
