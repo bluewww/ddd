@@ -930,25 +930,37 @@ DispValue *DispValue::update(DispValue *source,
 	    // We do so by creating a new list of children.  `Old' children
 	    // that still are reported get updated; `new' children are added.
 	    DispValueArray new_children;
+	    DispValueArray processed_children;
 	    for (int j = 0; j < source->nchildren(); j++)
 	    {
-		bool found = false;
-		for (int i = 0; !found && i < nchildren(); i++)
+		DispValue *c = 0;
+		for (int i = 0; c == 0 && i < nchildren(); i++)
 		{
+		    bool processed = false;
+		    for (int k = 0; k < processed_children.size(); k++)
+		    {
+			if (child(i) == processed_children[k])
+			    processed = true;
+		    }
+		    if (processed)
+			continue;
+
 		    if (child(i)->full_name() == source->child(j)->full_name())
 		    {
-			new_children += child(i)->update(source->child(j),
-							 was_changed,
-							 was_initialized);
-			found = true;
+			c = child(i)->update(source->child(j),
+					     was_changed,
+					     was_initialized);
+			processed_children += child(i);
 		    }
 		}
 
-		if (!found)
+		if (c == 0)
 		{
-		    // New child
-		    new_children += source->child(j)->link();
+		    // Child not found
+		    c = source->child(j);
 		}
+
+		new_children += c->link();
 	    }
 	    _children = new_children;
 	    was_changed = was_initialized = true;
