@@ -1380,6 +1380,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNtypedAliases,
+	XtCTypedAliases,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, typed_aliases),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNdeleteAliasDisplays,
 	XtCDeleteAliasDisplays,
 	XmRBoolean,

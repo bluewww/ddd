@@ -5050,8 +5050,17 @@ bool DataDisp::check_aliases()
     if (!detect_aliases)
 	return false;
 
-    // Group displays into equivalence classes depending on their address.
-    StringIntArrayAssoc equivalences;
+    // Group displays into equivalence classes depending on their
+    // address and their structure.
+
+    // EQUIVALENCES is an assoc table classed according to addresses.
+    // Each entry is a list of tables.  Each table contains
+    // structurally equivalent display numbers.
+
+    // If the `typedAliases' resource is `off', all displays
+    // go into one category, regardless of structure.
+
+    StringIntArrayArrayAssoc equivalences;
 
     MapRef ref;
     for (int k = disp_graph->first_nr(ref); 
@@ -5060,30 +5069,60 @@ bool DataDisp::check_aliases()
     {
 	DispNode *dn = disp_graph->get(k);
 	if (dn != 0 && dn->alias_ok())
-	    equivalences[dn->addr()] += k;
+	{
+	    IntArrayArray& list = equivalences[dn->addr()];
+
+	    // Search for structurally equivalent entries in DISPLAY_TABLE.
+	    bool added = false;
+	    for (int i = 0; !added && i < list.size(); i++)
+	    {
+		IntArray& displays = list[i];
+		assert (displays.size() > 0);
+
+		DispNode *d1 = disp_graph->get(displays[0]);
+		if (!app_data.typed_aliases ||
+		    dn->value()->structurally_equal(d1->value()))
+		{
+		    displays += k;
+		    added = true;
+		}
+	    }
+
+	    if (!added)
+	    {
+		IntArray new_displays;
+		new_displays += k;
+		list += new_displays;
+	    }
+	}
     }
 
     // Merge displays with identical address.
     bool changed    = false;
     bool suppressed = false;
 
-    for (StringIntArrayAssocIter iter(equivalences); iter.ok(); iter++)
+    for (StringIntArrayArrayAssocIter iter(equivalences); iter.ok(); iter++)
     {
 	string addr = iter.key();
-	IntArray& displays = iter.value();
+	IntArrayArray& list = iter.value();
+	assert(list.size() > 0);
 
-	assert(displays.size() > 0);
+	for (int i = 0; i < list.size(); i++)
+	{
+	    IntArray& displays = list[i];
+	    assert(displays.size() > 0);
 
-	if (addr == "" || displays.size() == 1)
-	{
-	    // No address or just one display -- unmerge them
-	    for (int i = 0; i < displays.size(); i++)
-		changed = unmerge_display(displays[i]) || changed;
-	}
-	else
-	{
-	    // Multiple displays at one location
-	    merge_displays(displays, changed, suppressed);
+	    if (addr == "" || displays.size() == 1)
+	    {
+		// No address or just one display -- unmerge them
+		for (int k = 0; k < displays.size(); k++)
+		    changed = unmerge_display(displays[k]) || changed;
+	    }
+	    else
+	    {
+		// Multiple displays at one location
+		merge_displays(displays, changed, suppressed);
+	    }
 	}
     }
 

@@ -526,6 +526,9 @@ Ddd*autoCommandPrefix:
 ! Shall we detect aliases?  (expensive)
 Ddd*detectAliases:		off
 
+! Shall we require structural equivalence for aliases?
+Ddd*typedAliases:		on
+
 ! Shall we delete aliases together with the aliased displays?
 Ddd*deleteAliasDisplays:	on
 

@@ -278,6 +278,8 @@
 #define XtCGrabAction            "GrabAction"
 #define XtNdetectAliases         "detectAliases"
 #define XtCDetectAliases         "DetectAliases"
+#define XtNtypedAliases          "typedAliases"
+#define XtCTypedAliases          "TypedAliases"
 #define XtNdeleteAliasDisplays   "deleteAliasDisplays"
 #define XtCDeleteAliasDisplays   "DeleteAliasDisplays"
 #define XtNalign2dArrays         "align2dArrays"
@@ -471,6 +473,7 @@ struct AppData {
     Cardinal  grab_action_delay;
     String    grab_action;
     Boolean   detect_aliases;
+    Boolean   typed_aliases;
     Boolean   delete_alias_displays;
     Boolean   align_2d_arrays;
     Boolean   expand_repeated_values;

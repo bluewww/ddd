@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-07\-31" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-08\-01" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -4015,6 +4015,12 @@ See also the `\fB\-\-scrolled-graph-editor\fR' and
 .B "paperSize (\fPclass\fB PaperSize)"
 The paper size used for printing, in format \fIwidth\fR x
 \fIheight\fR.  The default is A4 format, or `\fB210mm \(mu 297mm\fR'.
+.TP
+.B "typedAliases (\fPclass\fB TypedAliases)"
+If `\fBon\fR' (default), \s-1@DDD@\s+1 requires structural equivalence
+in order to recognize shared data structures.  If this is `\fBoff\fR',
+two displays at the same address are considered aliases, regardless of
+their structure.
 .TP
 .B "vslBaseDefs (\fPclass\fB VSLDefs)"
 A string with additional \s-1VSL\s+1 definitions that are appended to
