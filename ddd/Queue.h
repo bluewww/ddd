@@ -2,6 +2,7 @@
 // Queue template
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of the ICE Library.
@@ -153,8 +154,6 @@ public:
     {
 	QueueRec<E> *rec = new QueueRec<E>(e);
 	rec->next = _first;
-	if (_first == _last)
-	    _last = rec;
 	_first = rec;
     }
 
