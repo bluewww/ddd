@@ -26,7 +26,10 @@
 # Contact ddd@ips.cs.tu-bs.de for details.
 
 # $Log$
-# Revision 1.3  1995/05/02 11:58:49  zeller
+# Revision 1.4  1995/05/21 11:55:46  zeller
+# Fix: install src link correctly
+#
+# Revision 1.3  1995/05/02  11:58:49  zeller
 # New: PROJECTS file renamed TODO (to avoid confusion with PROBLEMS)
 #
 # Revision 1.2  1995/05/02  09:37:31  zeller
@@ -58,6 +61,7 @@ README="ANNOUNCE    \
         BUGS        \
         COPYING     \
         COPYING.LIB \
+	FAQ         \
 	INSTALL     \
 	NEWS        \
 	PROBLEMS    \
@@ -223,7 +227,7 @@ if $diff; then
 fi
 
 if $link; then
-  dist_base=`echo $dist | sed 's%.*-\(.*\)\.[0-9]*\.tar.*%\1%'`
+  dist_base=`echo $dist | sed 's%.*-\(.*\)[a-z]*\.tar.*%\1%'`
   link=ddd-$dist_base.tar.gz
   echo installing link from $link to src/$DIST...
   $rsh "cd $dir; /bin/rm -f $link; ln -s src/$DIST $link"
