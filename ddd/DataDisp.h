@@ -297,9 +297,10 @@ private:
     // True iff aliases are to be checked regardless of address changes
     static bool force_check_aliases;
 
-    // Merge displays in DISPLAYS.  Return true iff changed.
-    // Accumulate messages in SUPPRESSED_MSG.
-    static bool merge_displays(IntArray displays, MString& suppressed_msg);
+    // Merge displays in DISPLAYS.  Set CHANGED iff changed.  Set
+    // SUPPRESSED if displays were suppressed.
+    static void merge_displays(IntArray displays, 
+			       bool& changed, bool& suppressed);
 
     // Unmerge display DISP_NR; return true iff change
     static bool unmerge_display(int disp_nr);

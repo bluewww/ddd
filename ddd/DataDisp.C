@@ -3329,8 +3329,8 @@ bool DataDisp::check_aliases()
     }
 
     // Merge displays with identical address.
-    bool changed = false;
-    MString suppressed_msg;
+    bool changed    = false;
+    bool suppressed = false;
 
     for (StringIntArrayAssocIter iter(equivalences); iter.ok(); iter++)
     {
@@ -3348,15 +3348,9 @@ bool DataDisp::check_aliases()
 	else
 	{
 	    // Multiple displays at one location
-	    changed = merge_displays(displays, suppressed_msg) || changed;
+	    merge_displays(displays, changed, suppressed);
 	}
     }
-
-
-    bool suppressed = !suppressed_msg.isEmpty();
-
-    if (suppressed)
-	set_status_mstring(suppressed_msg, true);
 
     if (changed)
 	refresh_graph_edit(suppressed);
@@ -3408,10 +3402,10 @@ MString DataDisp::pretty(int disp_nr)
     return rm(node->disp_nr() + ": ") + tt(node->name());
 }
 
-// Merge displays in DISPLAYS.  Return true iff changed.
-// Accumulate messages in SUPPRESSED_MSG.
-bool DataDisp::merge_displays(IntArray displays,
-			      MString& suppressed_msg)
+// Merge displays in DISPLAYS.  Set CHANGED iff changed.  Set
+// SUPPRESSED if displays were suppressed.
+void DataDisp::merge_displays(IntArray displays,
+			      bool& changed, bool& suppressed)
 {
     assert(displays.size() > 0);
 
@@ -3426,7 +3420,6 @@ bool DataDisp::merge_displays(IntArray displays,
     }
 #endif
 
-    bool changed = false;
     DispNode *d0 = disp_graph->get(displays[0]);
     if (d0->nodeptr()->hidden())
     {
@@ -3462,43 +3455,45 @@ bool DataDisp::merge_displays(IntArray displays,
 
     if (suppressed_displays.size() > 0)
     {
+	suppressed = true;
+
 	sort(suppressed_displays);
 
 	// Some displays have been suppressed.  Generate appropriate message.
-	if (!suppressed_msg.isEmpty())
-	    suppressed_msg += rm("\n");
-	suppressed_msg += rm("Suppressing ");
+	MString msg = rm("Suppressing ");
 
 	if (suppressed_displays.size() == 1)
 	{
-	    suppressed_msg += rm("display ") + pretty(suppressed_displays[0]);
+	    msg += rm("display ") + pretty(suppressed_displays[0]);
 	}
 	else if (suppressed_displays.size() == 2)
 	{
-	    suppressed_msg += rm("displays " 
-				 + itostring(suppressed_displays[0])
-				 + " and "
-				 + itostring(suppressed_displays[1]));
+	    msg += rm("displays " 
+		      + itostring(suppressed_displays[0])
+		      + " and "
+		      + itostring(suppressed_displays[1]));
 	}
 	else
 	{
-	    suppressed_msg += rm("displays ");
+	    msg += rm("displays ");
 	    for (int i = 1; i < suppressed_displays.size(); i++)
 	    {
 		if (i == suppressed_displays.size() - 1)
-		    suppressed_msg += rm(", and ");
+		    msg += rm(", and ");
 		else if (i > 1)
-		    suppressed_msg += rm(", ");
-		suppressed_msg += rm(itostring(suppressed_displays[i]));
+		    msg += rm(", ");
+		msg += rm(itostring(suppressed_displays[i]));
 	    }
 	}
 
-	suppressed_msg += rm(" because ");
+	msg += rm(" because ");
 	if (suppressed_displays.size() == 1)
-	    suppressed_msg += rm("it is an alias");
+	    msg += rm("it is an alias");
 	else
-	    suppressed_msg += rm("they are aliases");
-	suppressed_msg += rm(" of display ") + pretty(displays[0]);
+	    msg += rm("they are aliases");
+	msg += rm(" of display ") + pretty(displays[0]);
+
+	set_status_mstring(msg);
     }
 }
 
