@@ -30,20 +30,20 @@ dnl
 dnl
 dnl
 dnl
+dnl Zdenek Sekera <zs@cray.com> says that if CDPATH is set, it may break
+dnl this script.
+unset CDPATH
+dnl
+AC_INIT
 dnl
 dnl Revision Control.
 dnl
 AC_PREREQ(2.53)
 AC_REVISION([$Id$])
 dnl
-dnl Zdenek Sekera <zs@cray.com> says that if CDPATH is set, it may break
-dnl this script.
-unset CDPATH
-dnl
-dnl
 dnl Initialization.
 dnl
-AC_INIT([NEWS])
+AC_CONFIG_SRCDIR([NEWS])
 AM_CONFIG_HEADER([ddd/config.h])
 dnl
 dnl Some simple checks.
@@ -53,11 +53,6 @@ AC_ARG_PROGRAM
 DDD_VERSION
 AM_INIT_AUTOMAKE(${PACKAGE}, ${VERSION})
 AC_PROG_MAKE_SET
-dnl
-dnl
-dnl Check for POSIX stuff (required by AC_FIND_X)
-dnl
-AC_ISC_POSIX
 dnl
 dnl
 dnl
@@ -170,7 +165,7 @@ dnl Check Bison version.  DDD wants bison 1.28 or later.
 dnl Note: Bison is only needed if a .Y file was modified.
 dnl 
 AC_MSG_CHECKING(${YACC} version)
-YACC_VERSION=`${YACC} --version | ${SED} 's/.*version *//'`
+YACC_VERSION=`${YACC} --version | ${SED} '1q' | ${SED} 's/.*version *//' | ${SED} 's/.*) //'`
 if test `expr "$YACC_VERSION" '>=' 1.28` = 1; then
 AC_MSG_RESULT(${YACC_VERSION} [(ok)])
 else
