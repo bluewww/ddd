@@ -113,6 +113,7 @@ char DataDisp_rcsid[] =
 #include "toolbar.h"
 #include "value-read.h"
 #include "verify.h"
+#include "version.h"
 #include "windows.h"
 #include "wm.h"
 
@@ -121,6 +122,7 @@ char DataDisp_rcsid[] =
 #include <Xm/MessageB.h>
 #include <Xm/ToggleB.h>
 #include <Xm/RowColumn.h>	// XmMenuPosition()
+#include <Xm/Scale.h>
 #include <Xm/SelectioB.h>	// XmCreatePromptDialog()
 #include <Xm/TextF.h>		// XmTextFieldGetString()
 #include <Xm/Label.h>
@@ -3146,6 +3148,7 @@ struct StatusShower {
     static const int DIALOG_THRESHOLD;
 
     static Widget dialog;
+    static Widget scale;
 
     bool process(int remaining_length);
 
@@ -3179,6 +3182,15 @@ struct StatusShower {
 						 XmDIALOG_OK_BUTTON));
 	    XtUnmanageChild(XmMessageBoxGetChild(dialog, 
 						 XmDIALOG_HELP_BUTTON));
+
+	    arg = 0;
+	    XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
+	    XtSetArg(args[arg], XmNeditable, False);           arg++;
+#if XmVersion >= 2000
+	    XtSetArg(args[arg], XmNslidingMode, XmTHERMOMETER); arg++;
+#endif
+	    scale = verify(XmCreateScale(dialog, "scale", args, arg));
+	    XtManageChild(scale);
 	}
     }
 
@@ -3213,7 +3225,9 @@ private:
 
 const int StatusShower::UPDATE_THRESHOLD = 512;
 const int StatusShower::DIALOG_THRESHOLD = 4096;
+
 Widget StatusShower::dialog = 0;
+Widget StatusShower::scale  = 0;
 
 StatusShower *StatusShower::active = 0;
 
@@ -3231,21 +3245,29 @@ bool StatusShower::process(int remaining_length)
     clog << "Processed " << processed << "/" <<  total << " characters\n";
 #endif
 
-    if (processed - last_shown >= UPDATE_THRESHOLD)
-    {
-	// Another bunch of characters processed.  Wow!
-	int percent = (processed * 100) / total;
-	set_status(msg + "... (" + itostring(percent) + "% processed)", true);
-	last_shown = processed;
-    }
-
     if (!aborted && total >= DIALOG_THRESHOLD && !XtIsManaged(dialog))
     {
 	MString mmsg = rm(msg + "...");
 	XtVaSetValues(dialog, XmNmessageString, mmsg.xmstring(), NULL);
+	string title = DDD_NAME ": " + capitalize(msg);
+	XtVaSetValues(XtParent(dialog), XmNtitle, (char *)title, NULL);
 	XtAddCallback(dialog, XmNcancelCallback, CancelCB, 
 		      XtPointer(&aborted));
 	manage_and_raise(dialog);
+    }
+
+    if (processed - last_shown >= UPDATE_THRESHOLD)
+    {
+	// Another bunch of characters processed.  Wow!
+	int percent = (processed * 100) / total;
+
+	if (XtIsManaged(dialog))
+	    XmScaleSetValue(scale, percent);
+	else
+	    set_status(msg + "... (" + itostring(percent) + "% processed)", 
+		       true);
+
+	last_shown = processed;
     }
 
     // Interrupt if emergency
@@ -4813,8 +4835,6 @@ void DataDisp::update_displays(const StringArray& displays,
 	    return;		// No data and no displays
     }
 
-    StatusShower s("Restoring displays");
-
     bool changed      = false;
     bool addr_changed = false;
 
@@ -4845,6 +4865,10 @@ void DataDisp::update_displays(const StringArray& displays,
 	}
     }
 
+    StatusShower s("Restoring displays");
+    for (int i = 0; i < values.size(); i++)
+	s.total += values[i].length();
+
     // Update values
     for (int i = 0; i < displays.size(); i++)
     {
@@ -4859,6 +4883,8 @@ void DataDisp::update_displays(const StringArray& displays,
 	    if (dn->name() != name)
 		continue;
 
+	    s.current = value.length();
+
 	    string v = value;
 	    if (dn->update(v))
 		changed = true;
@@ -4868,6 +4894,8 @@ void DataDisp::update_displays(const StringArray& displays,
 		dn->set_addr(addr);
 		addr_changed = true;
 	    }
+
+	    s.base += s.current;
 	}
     }
 
