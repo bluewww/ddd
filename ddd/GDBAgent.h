@@ -212,9 +212,11 @@ private:
 protected:
     // Return PREFIX + EXPR, parenthesizing EXPR if needed
     static string prepend_prefix(const string& prefix, const string& expr);
+    static string prepend_prefix(const char *prefix, const string& expr);
 
     // Return EXPR + SUFFIX, parenthesizing EXPR if needed
     static string append_suffix(const string& expr, const string& suffix);
+    static string append_suffix(const string& expr, const char *suffix);
 
     // General trace function
     void trace(const char *prefix, void *call_data) const;
@@ -688,11 +690,18 @@ public:
     // Several commands
 				                    // GDB command
 						    // -----------------------
-    string print_command(const string& expr = "",   // print|output EXP
+    string print_command(const char *expr = "",     // print|output EXP
 			 bool internal = true) const;
+    string print_command(const string& expr,
+			 bool internal = true) const {
+      return print_command(expr.chars(), internal);
+    }
     string assign_command(const string& var,        // set variable VAR = EXPR
 			  const string& expr) const;
-    string display_command(const string& expr = "") const; // display EXPR
+    string display_command(const char *expr = "") const; // display EXPR
+    string display_command(const string& expr) const {
+      return display_command(expr.chars());
+    }
     string where_command(int count = 0) const;	    // where COUNT
     string pwd_command() const;	                    // pwd
     string frame_command(int number) const;         // frame NUMBER
@@ -710,8 +719,11 @@ public:
     string info_locals_command() const;	            // info locals
     string info_args_command() const;	            // info args
     string info_display_command() const;	    // info display
-    string disassemble_command(string start, const string& end = "") const;
+    string disassemble_command(string start, const char *end = "") const;
                                                     // disassemble START END
+    string disassemble_command(const string &start, const string& end ) const {
+      return disassemble_command(start, end.chars() );
+    }
     string make_command(const string& target) const;       // make TARGET
     string jump_command(const string& pc) const;    // jump PC
     string regs_command(bool all = true) const;	    // info registers
@@ -723,13 +735,22 @@ public:
     string delete_command(string bp = "") const;    // delete BP
     string ignore_command(const string& bp, int count) const; 
                                                     // ignore BP COUNT
-    string condition_command(const string& bp, const string& expr) const; 
+    string condition_command(const string& bp, const string& expr) const {
+      return condition_command(bp, expr.chars() );
+    }
+    string condition_command(const string& bp, const char *expr) const;
 				                    // cond BP EXPR
     string shell_command(const string& cmd) const;	    // shell CMD
-    string debug_command(const string& file = "",          // file FILE
+    string debug_command(const char *file = "",          // file FILE
 			 string args = "") const;
+    string debug_command(const string& file, string args = "") const {
+      return debug_command( file.chars(), args );
+    }
     string signal_command(int sig) const;           // signal SIG
-    string nop_command(const string& comment = "") const;  // # comment
+    string nop_command(const char *comment = "") const;  // # comment
+    string nop_command(const string& comment) const {
+      return nop_command(comment.chars());
+    }
 
     // Bring VALUE of VAR into a form understood by DDD
     void munch_value(string& value, const string& var) const;

@@ -579,7 +579,7 @@ void SourceView::line_popup_set_tempCB (Widget w,
 // temporary.  If COND is given, break only iff COND evals to true. W
 // is the origin.
 void SourceView::set_bp(const string& a, bool set, bool temp, 
-			const string& cond, Widget w)
+			const char *cond, Widget w)
 {
     CommandGroup cg;
 
@@ -612,12 +612,12 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	case DBX:
 	{
 	    string cond_suffix = "";
-	    if (!cond.empty())
+	    if (strlen(cond) != 0)
 	    {
 		if (gdb->has_handler_command())
-		    cond_suffix = " -if " + cond;
+		    cond_suffix = string(" -if ") + cond;
 		else
-		    cond_suffix = " if " + cond;
+		    cond_suffix = string(" if ") + cond;
 	    }
 
 	    if (address.contains('*', 0))
@@ -706,8 +706,8 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	    if (temp)
 		command += " \\1t";
 
-	    if (!cond.empty() && !gdb->has_condition_command())
-		command += " {if " + cond + " {} {Q;c}}";
+	    if (strlen(cond) != 0 && !gdb->has_condition_command())
+		command += " {if " + string(cond) + " {} {Q;c}}";
 
 	    gdb_command(command, w);
 	    break;
@@ -725,8 +725,10 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	    }
 
 	    string command = "b " + address;
-	    if (!cond.empty() && !gdb->has_condition_command())
-		command += " " + cond;
+	    if (strlen(cond) != 0 && !gdb->has_condition_command()) {
+		command += ' ';
+		command += cond;
+	    }
 
 	    gdb_command(command, w);
 
@@ -747,7 +749,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	}
 	}
 
-	if (!cond.empty() && gdb->has_condition_command())
+	if (strlen(cond) != 0 && gdb->has_condition_command())
 	{
 	    // Add condition
 	    gdb_command(gdb->condition_command(itostring(new_bps), cond), w);
@@ -2689,9 +2691,9 @@ void SourceView::read_file (string file_name,
     update_title();
 
     // Refresh breakpoints
-    static IntIntArrayAssoc empty_bps;
+    static const IntIntArrayAssoc empty_bps;
     bps_in_line = empty_bps;
-    static StringArray empty_addresses;
+    static const StringArray empty_addresses;
     bp_addresses = empty_addresses;
     refresh_bp_disp(true);
 
@@ -2828,7 +2830,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
 	}
     }
 
-    static IntIntArrayAssoc empty_bps;
+    static const IntIntArrayAssoc empty_bps;
     bps_in_line = empty_bps;
 
     if (display_glyphs)
@@ -3654,7 +3656,7 @@ void SourceView::CheckModificationCB(Widget, XtPointer client_data,
 }
 
 // Create source or code window
-void SourceView::create_text(Widget parent, const string& base, bool editable,
+void SourceView::create_text(Widget parent, const char *base, bool editable,
 			     Widget& form, Widget& text)
 {
     Arg args[15];
@@ -3664,7 +3666,7 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
     arg = 0;
     XtSetArg(args[arg], XmNmarginHeight, 0);    arg++;
     XtSetArg(args[arg], XmNmarginWidth,  0);    arg++;
-    string form_name = base + "_form_w";
+    const string form_name = string(base) + "_form_w";
     form = verify(XmCreateForm(parent, XMST(form_name.chars()), args, arg));
 
     arg = 0;
@@ -3703,7 +3705,7 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
 	XtSetArg(args[arg], XmNeditable, editable); arg++;
     }
 
-    string text_name = base + "_text_w";
+    const string text_name = string(base) + "_text_w";
     text = verify(XmCreateScrolledText(form, XMST(text_name.chars()), args, arg));
     XtManageChild(text);
 

@@ -159,7 +159,7 @@ class SourceView {
 
     // Create text or code widget
     static void create_text(Widget parent,
-			    const string& base, bool editable,
+			    const char *base, bool editable,
 			    Widget& form, Widget& text);
 
     // Refresh displays
@@ -766,7 +766,7 @@ public:
     // breakpoint temporary.  If COND is given, break only iff COND
     // evals to true.  ORIGIN is the origin.
     static void set_bp(const string& a, bool set, bool temp, 
-		       const string& cond = "", Widget origin = 0);
+		       const char *cond = "", Widget origin = 0);
 
     // Custom calls
     static void create_bp(const string& a, Widget origin = 0);

@@ -628,8 +628,8 @@ void GDBAgent::init_qu_array (const StringArray& cmds,
     _qu_count = qu_count;
     _qa_data  = qa_data;
 
-    StringArray empty_s;
-    VoidArray   empty_v;
+    static const StringArray empty_s;
+    static const VoidArray   empty_v;
 
     complete_answers = empty_s;
     cmd_array        = empty_s;
@@ -851,9 +851,9 @@ bool GDBAgent::ends_with_prompt (const string& ans)
     return false;		// Never reached
 }
 
-static bool ends_in(const string& answer, const string& prompt)
+static bool ends_in(const string& answer, const char *prompt)
 {
-    return answer.contains(prompt, answer.length() - prompt.length());
+    return answer.contains(prompt, answer.length() - strlen(prompt));
 }
 
 // JDB should be applied on itself.
@@ -1733,7 +1733,7 @@ void GDBAgent::handle_died()
 //-----------------------------------------------------------------------------
 
 // DBX 3.0 wants `print -r' instead of `print' for C++
-string GDBAgent::print_command(const string& expr, bool internal) const
+string GDBAgent::print_command(const char *expr, bool internal) const
 {
     string cmd;
 
@@ -1769,26 +1769,30 @@ string GDBAgent::print_command(const string& expr, bool internal) const
 	break;
     }
 
-    if (!expr.empty())
-	cmd += " " + expr;
+    if (strlen(expr) != 0) {
+	cmd += ' ';
+	cmd += expr;
+    }
 
     return cmd;
 }
 
 // DBX 3.0 wants `display -r' instead of `display' for C++
-string GDBAgent::display_command(const string& expr) const
+string GDBAgent::display_command(const char *expr) const
 {
     string cmd;
     if (!has_display_command())
 	return cmd;
 
-    if (has_print_r_option() && !expr.empty())
+    if (has_print_r_option() && strlen(expr) != 0)
 	cmd = "display -r";
     else
 	cmd = "display";
 
-    if (!expr.empty())
-	cmd += " " + expr;
+    if (strlen(expr) != 0) {
+        cmd += ' ';
+        cmd += expr;
+    }
 
     return cmd;
 }
@@ -2376,7 +2380,7 @@ string GDBAgent::ignore_command(const string& bp, int count) const
 }
 
 // Set condition of breakpoint BP to EXPR
-string GDBAgent::condition_command(const string& bp, const string& expr) const
+string GDBAgent::condition_command(const string& bp, const char *expr) const
 {
     switch (type())
     {
@@ -2519,7 +2523,7 @@ string GDBAgent::quote_file(const string& file) const
 }
 
 // Return command to debug PROGRAM
-string GDBAgent::debug_command(const string& program, string args) const
+string GDBAgent::debug_command(const char *program, string args) const
 {
     if (!args.empty() && !args.contains(' ', 0))
 	args.prepend(' ');
@@ -2534,27 +2538,27 @@ string GDBAgent::debug_command(const string& program, string args) const
 
     case DBG:
     case PYDB:
-	return "file " + program;
+	return string("file ") + program;
 
     case DBX:
 	if (is_ladebug())
-	    return "load " + program;       // Compaq Ladebug
+	    return string("load ") + program;       // Compaq Ladebug
 	else if (has_givenfile_command())
-	    return "givenfile " + program; // SGI DBX
+	    return string("givenfile ") + program; // SGI DBX
 	else
-	    return "debug " + program;     // SUN DBX
+	    return string("debug ") + program;     // SUN DBX
 
     case XDB:
-	return "#file " + program; // just a dummy
+	return string("#file ") + program; // just a dummy
 
     case JDB:
-	return "load " + program;
+	return string("load ") + program;
 
     case PERL:
 	return "exec " + quote(debugger() + " -d " + program + args);
 
     case BASH:
-	return "debug " + program + args;
+	return string("debug ") + program + args;
     }
 
     return "";			// Never reached
@@ -2592,12 +2596,12 @@ string GDBAgent::signal_command(int sig) const
 
 
 // Return a command that does nothing.
-string GDBAgent::nop_command(const string& comment) const
+string GDBAgent::nop_command(const char *comment) const
 {
     if (type() == JDB)
 	return " ";
 
-    return "# " + comment;	// Works for all other inferior debuggers
+    return string("# ") + comment;	// Works for all other inferior debuggers
 }
 
 // Run program with given ARGS
@@ -2733,23 +2737,33 @@ string GDBAgent::detach_command(int pid) const
 // Return PREFIX + EXPR, parenthesizing EXPR if needed
 string GDBAgent::prepend_prefix(const string& prefix, const string& expr)
 {
+  return prepend_prefix( prefix.chars(), expr);
+}
+
+string GDBAgent::prepend_prefix(const char *prefix, const string& expr)
+{
     if (expr.matches(rxidentifier)
 	|| expr.contains("(", 0) && expr.contains(")", -1))
 	return prefix + expr;
     else if (expr.empty())
 	return prefix;
     else
-	return prefix + "(" + expr + ")";
+	return string(prefix) + "(" + expr + ")";
 }
 
 // Return EXPR + SUFFIX, parenthesizing EXPR if needed
-string GDBAgent::append_suffix(const string& expr, const string& suffix)
+string GDBAgent::append_suffix(const string& expr, const string &suffix)
+{
+  return append_suffix( expr, suffix.chars() );
+}
+
+string GDBAgent::append_suffix(const string& expr, const char *suffix)
 {
     if (expr.matches(rxidentifier)
 	|| expr.contains("(", 0) && expr.contains(")", -1))
 	return expr + suffix;
     else if (expr.empty())
-	return suffix;
+	return string(suffix);
     else
 	return "(" + expr + ")" + suffix;
 }
@@ -3038,7 +3052,7 @@ void GDBAgent::normalize_address(string& addr) const
 }
 
 // Return disassemble command
-string GDBAgent::disassemble_command(string start, const string& end) const
+string GDBAgent::disassemble_command(string start, const char *end) const
 {
     string cmd;
     if (type() != GDB)
@@ -3047,11 +3061,12 @@ string GDBAgent::disassemble_command(string start, const string& end) const
     normalize_address(start);
     cmd = "disassemble " + start;
 
-    if (!end.empty())
+    if (strlen(end) != 0)
     {
         string end_( end );
 	normalize_address(end_);
-	cmd += " " + end_;
+	cmd += ' ';
+	cmd += end_;
     }
     return cmd;
 }
