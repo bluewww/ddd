@@ -1316,25 +1316,36 @@ static void gdbUpdateSourcesCB(Widget, XtPointer client_data, XtPointer)
 }
 
 // OK pressed in `Lookup Source'
-static void lookupSourceDone(Widget w, XtPointer client_data, XtPointer)
+static void lookupSourceDone(Widget w,
+			     XtPointer client_data, 
+			     XtPointer call_data)
 {
-    Widget sources = Widget(client_data);
-    int *position_list;
-    int position_count;
-    if (XmListGetSelectedPos(sources, &position_list, &position_count))
+    string source = get_item(w, client_data, call_data);
+    if (source.contains('/'))
     {
-	if (position_count == 1)
+	// Expand to full path name
+	Widget sources = Widget(client_data);
+	int *position_list = 0;
+	int position_count = 0;
+	if (XmListGetSelectedPos(sources, &position_list, &position_count))
 	{
-	    int pos = position_list[0];
-	    pos--;
-	    if (pos < 0)
-		pos = all_sources.size() - 1;
+	    if (position_count == 1)
+	    {
+		int pos = position_list[0];
+		pos--;
+		if (pos < 0)
+		    pos = all_sources.size() - 1;
+		source = all_sources[pos];
+	    }
 
-	    XtUnmanageChild(w);
-	    source_view->lookup(all_sources[pos] + ":1");
+	    XtFree((char *)position_list);
 	}
+    }
 
-	XtFree((char *)position_list);
+    if (source != "")
+    {
+	XtUnmanageChild(w);
+	source_view->lookup(source + ":1");
     }
 }
 
