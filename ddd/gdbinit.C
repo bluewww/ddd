@@ -72,6 +72,7 @@ GDBAgent *new_gdb(DebuggerType type,
 	break;
 
     case JDB:
+    case PYDB:
 	// Nothing special.
 	break;
 

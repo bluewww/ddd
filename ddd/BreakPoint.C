@@ -124,6 +124,7 @@ bool BreakPoint::update (string& info_output)
     switch(gdb->type())
     {
     case GDB:
+    case PYDB:
 	{
 	    // Read type (`breakpoint' or `watchpoint')
 	    // The type may be prefixed by `hw ' or other details.
@@ -682,6 +683,7 @@ string BreakPoint::false_value()
     switch (gdb->program_language())
     {
     case LANGUAGE_C:
+    case LANGUAGE_PYTHON:
     case LANGUAGE_OTHER:
 	return "0";
 
@@ -717,6 +719,9 @@ string BreakPoint::and_op()
     case LANGUAGE_PASCAL:
     case LANGUAGE_ADA:
 	return " AND ";
+
+    case LANGUAGE_PYTHON:
+	return " and ";
     }
 
     return " && ";
@@ -772,6 +777,7 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
     switch (gdb->type())
     {
     case GDB:
+    case PYDB:
     {
 	switch (type())
 	{

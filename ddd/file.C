@@ -480,6 +480,19 @@ static void searchLocal(Widget fs,
 		  NULL);
 }
 
+// A pydb source file is a standard source file which ends in '.py'
+bool is_pydb_source_file(const string& file_name)
+{
+    int where;
+    //does it end in '.py'?
+    where = file_name.length() - 3;
+    if (! file_name.matches(".py", where))
+    {
+	return false;
+    }
+    return (is_source_file(file_name));
+}
+
 static void searchLocalExecFiles(Widget fs,
 				 XmFileSelectionBoxCallbackStruct *cbs)
 {
@@ -495,9 +508,15 @@ static void searchLocalCoreFiles(Widget fs,
 static void searchLocalSourceFiles(Widget fs,
 				   XmFileSelectionBoxCallbackStruct *cbs)
 {
-    searchLocal(fs, cbs, is_source_file);
+    if (gdb->type() == PYDB)
+    {
+	searchLocal(fs, cbs, is_pydb_source_file);
+    }
+    else
+    {
+	searchLocal(fs, cbs, is_source_file);
+    }
 }
-
 
 // Get the file name from the file selection box W
 static string get_file(Widget w, XtPointer, XtPointer call_data)
@@ -596,6 +615,7 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 
 	case XDB:
 	case JDB:
+	case PYDB:
 	    break;		// FIXME
 	}
     }
@@ -610,6 +630,10 @@ static void openSourceDone(Widget w, XtPointer client_data,
 	return;
 
     XtUnmanageChild(w);
+
+    // For PYDB, issue a 'file filename' command
+    if (gdb->type() == PYDB)
+	gdb_command(gdb->debug_command(filename));
 
     if (filename != NO_GDB_ANSWER)
 	source_view->read_file(filename);
@@ -643,6 +667,7 @@ ProgramInfo::ProgramInfo()
     switch(gdb->type())
     {
     case GDB:
+    case PYDB:
     {
 	string ans = gdb_question("info files");
 	if (ans == NO_GDB_ANSWER)
@@ -1098,6 +1123,7 @@ static void openProcessDone(Widget w, XtPointer client_data,
 
     case XDB:
     case JDB:
+    case PYDB:
 	break;		// FIXME
     }
 }
@@ -1435,6 +1461,11 @@ void gdbOpenRecentCB(Widget, XtPointer client_data, XtPointer)
     {
 	string file = recent_files[index];
 	open_file(file);
+	// This is a kludge as I don't [yet] understand how to force the
+	// reading of the source file automatically, as is done when an
+	// compiled executable is opened.
+	if (gdb->type() == PYDB)
+	    source_view->read_file(file);
     }
 }
 
@@ -1458,13 +1489,14 @@ void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
 			   openSourceDone);
     manage_and_raise(dialog);
 
-    if (gdb->type() != JDB)
+    if ((gdb->type() != JDB) && (gdb->type() != PYDB))
     {
 	warn_if_no_program(dialog);
     }
     else
     {
 	// JDB works well without executable
+	// PYDB doesn't use an executable
     }
 }
 

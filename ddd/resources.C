@@ -177,6 +177,26 @@ XtResource ddd_resources[] = {
 	XtPointer("")
     },
 
+
+    { 
+	XtNpydbInitCommands, 
+	XtCInitCommands, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, pydb_init_commands), 
+	XtRString,
+	XtPointer("import os\n")
+    },
+
+    { 
+	XtNpydbSettings, 
+	XtCSettings, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, pydb_settings), 
+	XtRString,
+	XtPointer("")
+    },
     {
 	XtNrestartCommands,
 	XtCInitCommands,

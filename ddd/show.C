@@ -157,6 +157,14 @@ void show_invocation(DebuggerType type, ostream& os)
 	}
 	break;
 
+    case PYDB:
+	{
+	    title = "PYDB";
+	    base  = "PYDB, the Python debugger.";
+	    options = "  [PYDB options]      Pass option to PYDB.\n";
+	}
+	break;
+
     case XDB:
 	{
 	    title = "XDB";
@@ -229,6 +237,7 @@ void show_invocation(DebuggerType type, ostream& os)
 	"  --gdb              Invoke GDB as inferior debugger.\n"
 	"  --xdb              Invoke XDB as inferior debugger.\n"
 	"  --jdb              Invoke JDB as inferior debugger.\n"
+	"  --pydb             Invoke PYDB as inferior debugger.\n"
 	"  --debugger NAME    Invoke inferior debugger as NAME.\n"
 	"  --host USER@HOST   Run inferior debugger on HOST.\n"
 	"  --rhost USER@HOST  Like --host, but use a rlogin connection.\n"

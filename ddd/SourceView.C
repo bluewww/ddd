@@ -571,6 +571,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	switch (gdb->type())
 	{
 	case GDB:
+	case PYDB:
 	    if (temp)
 		gdb_command("tbreak " + address, w);
 	    else
@@ -748,6 +749,7 @@ void SourceView::temp_n_cont(const string& a, Widget w)
     
     case DBX:
     case JDB:
+    case PYDB:
     {
 	int old_max_breakpoint_number_seen = max_breakpoint_number_seen;
 
@@ -832,6 +834,7 @@ bool SourceView::move_pc(const string& a, Widget w)
 	    break;
 
 	case JDB:
+	case PYDB:
 	    break;		// Never reached
 	}
 
@@ -1040,7 +1043,7 @@ string SourceView::numbers(const IntArray& nrs)
 // Same, but use "" if we have GDB and all numbers are used
 string SourceView::all_numbers(const IntArray& nrs)
 {
-    if (gdb->type() == GDB && all_bps(nrs))
+    if ((gdb->type() == GDB || gdb->type() == PYDB) && all_bps(nrs))
 	return "";		// In GDB, no arg means `all'
     else
 	return numbers(nrs);
@@ -1050,7 +1053,7 @@ string SourceView::all_numbers(const IntArray& nrs)
 // a GDB delete/disable/enable command can be given without args.
 bool SourceView::all_bps(const IntArray& nrs)
 {
-    if (gdb->type() != GDB || nrs.size() < 2)
+    if ((gdb->type() != GDB && gdb->type() != PYDB) || nrs.size() < 2)
 	return false;
 
     MapRef ref;
@@ -1164,6 +1167,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	{
 	case GDB:
 	case JDB:
+	case PYDB:
 	    return "clear " + pos;
 
 	case DBX:
@@ -1424,7 +1428,7 @@ bool SourceView::file_matches(const string& file1, const string& file2)
 
 bool SourceView::is_current_file(const string& file)
 {
-    if (gdb->type() == JDB)
+    if (gdb->type() == JDB || gdb->type() == PYDB)
 	return file == current_source_name();
     else
 	return file_matches(file, current_file_name);
@@ -1982,6 +1986,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 	break;
 
     case DBX:
+    case PYDB:
 	command = "list 1,1000000";
 	break;
 
@@ -3708,6 +3713,7 @@ void SourceView::process_info_bp (string& info_output,
     case DBX:
     case XDB:
     case JDB:
+    case PYDB:
 	break;
     }
 				    
@@ -3726,6 +3732,7 @@ void SourceView::process_info_bp (string& info_output,
 	switch(gdb->type())
 	{
 	case GDB:
+	case PYDB:
 	    if (!has_nr(info_output))
 	    {
 		// Skip this line
@@ -3866,6 +3873,7 @@ void SourceView::process_info_line_main(string& info_output)
     case GDB:
     case XDB:
     case JDB:
+    case PYDB:
 	{
 	    PosBuffer pos_buffer;
 	    pos_buffer.filter(info_output);
@@ -3986,6 +3994,7 @@ void SourceView::lookup(string s, bool silent)
 
 	    case DBX:
 	    case XDB:
+	    case PYDB:
 		show_position(full_path(current_file_name) 
 			      + ":" + itostring(line));
 		break;
@@ -4046,6 +4055,7 @@ void SourceView::lookup(string s, bool silent)
 	switch (gdb->type())
 	{
 	case GDB:
+	case PYDB:
 	{
 	    if (s[0] == '0')	// Address given
 		s = "*" + s;
@@ -4118,6 +4128,7 @@ void SourceView::process_pwd(string& pwd_output)
 	case XDB:
 	case DBX:		// 'PATH'
 	case JDB:
+	case PYDB:
 	    if (pwd.contains('/', 0) && !pwd.contains(" "))
 	    {
 		current_pwd = pwd;
@@ -4165,6 +4176,7 @@ void SourceView::add_to_history(const string& file_name, int line)
     {
     case GDB:
     case JDB:
+    case PYDB:
 	// Use source names instead.
 	if (source_name_cache.has(file_name))
 	    source_name = source_name_cache[file_name];
@@ -4649,6 +4661,7 @@ string SourceView::current_source_name()
 
     case DBX:
     case XDB:
+    case PYDB:
 	if (app_data.use_source_path)
 	{
 	    // DBX and XDB use full file names.
@@ -5591,7 +5604,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 	    can_enable  = gdb->can_enable();
 
 	if (bp->dispo() != BPDEL)
-	    can_maketemp = (gdb->type() == GDB);
+	    can_maketemp = (gdb->type() == GDB || gdb->type() == PYDB);
 
 	if (bp->type() == WATCHPOINT)
 	    can_print = true;
@@ -5631,6 +5644,7 @@ static string cond_filter(const string& cmd)
     switch (gdb->type())
     {
     case GDB:
+    case PYDB:
 	if (cmd.contains("cond", 0))
 	{
 	    // Skip command
@@ -6286,7 +6300,7 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     }
 
     setLabelList(breakpoint_list_w, breakpoint_list, selected, count,
-		 gdb->type() == GDB && count > 1, false);
+		 (gdb->type() == GDB || gdb->type() == PYDB) && count > 1, false);
     UpdateBreakpointButtonsCB(breakpoint_list_w, XtPointer(0), XtPointer(0));
 
     delete[] breakpoint_list;
@@ -6406,6 +6420,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 
     case DBX:
     case JDB:
+    case PYDB:
 	if (gdb->has_frame_command())
 	{
 	    // Issue `frame' command
@@ -6413,7 +6428,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	}
 	else
 	{
-	    // JDB and some DBXes lack a `frame' command.
+	    // JDB, PYDB and some DBXes lack a `frame' command.
 	    // Use `up N'/`down N' instead.
 	    int offset = cbs->item_position - last_frame_pos;
 	    if (offset == -1)
@@ -6554,6 +6569,7 @@ void SourceView::process_frame (string& frame_output)
 	switch (gdb->type())
 	{
 	case GDB:
+	case PYDB:
 	    frame_nr = frame_output.after(0);
 	    break;
 
@@ -6597,6 +6613,7 @@ void SourceView::process_frame (string& frame_output)
 	case GDB:
 	case DBX:
 	case JDB:
+	case PYDB:
 	    pos = count - frame;
 	    break;
 
@@ -6878,6 +6895,7 @@ void SourceView::process_threads(string& threads_output)
 
     case DBX:
     case XDB:
+    case PYDB:
     {
 	for (int i = 0; i < count; i++)
 	    selected[i] = false;
@@ -6918,6 +6936,7 @@ void SourceView::refresh_threads(bool all_threadgroups)
     }
     case DBX:
     case XDB:
+    case PYDB:
 	// No threads.
 	break;
     }
@@ -9091,6 +9110,7 @@ bool SourceView::get_state(ostream& os)
     switch (gdb->type())
     {
     case GDB:
+    case PYDB:
 	os << "info line " << line_of_cursor() << '\n';
 	break;
 

@@ -60,6 +60,8 @@
 #define XtNxdbSettings           "xdbSettings"
 #define XtNjdbInitCommands       "jdbInitCommands"
 #define XtNjdbSettings           "jdbSettings"
+#define XtNpydbInitCommands       "pydbInitCommands"
+#define XtNpydbSettings           "pydbSettings"
 #define XtNrestartCommands       "restartCommands"
 #define XtCInitCommands          "InitCommands"
 #define XtNsourceInitCommands    "sourceInitCommands"
@@ -342,6 +344,8 @@ struct AppData {
     String    xdb_settings;
     String    jdb_init_commands;
     String    jdb_settings;
+    String    pydb_init_commands;
+    String    pydb_settings;
     String    restart_commands;
     Boolean   source_init_commands;
     String    vsl_path;

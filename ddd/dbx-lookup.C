@@ -69,6 +69,7 @@ string dbx_lookup(const string& func_name, bool silent)
     case GDB:
     case DBX:
     case JDB:
+    case PYDB:
 	reply = gdb_question("list " + func_name, 0, true);
 	break;
 
@@ -88,6 +89,7 @@ string dbx_lookup(const string& func_name, bool silent)
     switch (gdb->type())
     {
     case GDB:
+    case PYDB:	// XXX
     {
 	file = reply.from('\"');
 	file = file.before('\"');

@@ -419,6 +419,9 @@ static XrmOptionDescRec options[] = {
 { "--jdb",                  XtNdebugger,             XrmoptionNoArg,  "jdb" },
 { "-jdb",                   XtNdebugger,             XrmoptionNoArg,  "jdb" },
 
+{ "--pydb",                  XtNdebugger,             XrmoptionNoArg,  "pydb" },
+{ "-pydb",                   XtNdebugger,             XrmoptionNoArg,  "pydb" },
+
 { "--trace",                XtCTrace,                XrmoptionNoArg,  ON },
 { "-trace",                 XtCTrace,                XrmoptionNoArg,  ON },
 
@@ -1096,6 +1099,7 @@ static Widget set_debugger_gdb_w;
 static Widget set_debugger_dbx_w;
 static Widget set_debugger_xdb_w;
 static Widget set_debugger_jdb_w;
+static Widget set_debugger_pydb_w;
 static MMDesc debugger_menu [] = 
 {
     { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
@@ -1106,6 +1110,8 @@ static MMDesc debugger_menu [] =
       NULL, &set_debugger_xdb_w },
     { "jdb", MMToggle, { dddSetDebuggerCB, XtPointer(JDB) },
       NULL, &set_debugger_jdb_w },
+    { "pydb", MMToggle, { dddSetDebuggerCB, XtPointer(PYDB) },
+      NULL, &set_debugger_pydb_w },
     MMEnd
 };
 
@@ -3546,11 +3552,13 @@ void update_options()
     set_toggle(set_debugger_dbx_w, type == DBX);
     set_toggle(set_debugger_xdb_w, type == XDB);
     set_toggle(set_debugger_jdb_w, type == JDB);
+    set_toggle(set_debugger_pydb_w, type == PYDB);
 
     set_sensitive(set_debugger_gdb_w, have_cmd("gdb"));
     set_sensitive(set_debugger_dbx_w, have_cmd("dbx"));
     set_sensitive(set_debugger_xdb_w, have_cmd("xdb"));
     set_sensitive(set_debugger_jdb_w, have_cmd("jdb"));
+    set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
 
     set_toggle(splash_screen_w, app_data.splash_screen);
     set_toggle(startup_tips_w,  app_data.startup_tips);
@@ -4008,6 +4016,7 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_debugger_dbx_w, type == DBX);
     notify_set_toggle(set_debugger_xdb_w, type == XDB);
     notify_set_toggle(set_debugger_jdb_w, type == JDB);
+    notify_set_toggle(set_debugger_pydb_w, type == PYDB);
 
     BindingStyle style = initial_app_data.cut_copy_paste_bindings;
     notify_set_toggle(kde_binding_w, style == KDEBindings);
@@ -6170,6 +6179,7 @@ static void setup_environment()
 
     case XDB:
     case JDB:
+    case PYDB:
 	// In XDB and JDB, we have no means to set the TTY type
 	// afterwards.  Set the execution TTY type right now.
 	put_environment("TERM", app_data.term_type);
@@ -6312,7 +6322,8 @@ static void setup_options(int& argc, char *argv[],
 	if (arg == "--dbx" || arg == "-dbx" 
 	    || arg == "--gdb" || arg == "-gdb"
 	    || arg == "--xdb" || arg == "-xdb"
-	    || arg == "--jdb" || arg == "-jdb")
+	    || arg == "--jdb" || arg == "-jdb"
+	    || arg == "--pydb" || arg == "-pydb")
 	{
 	    gdb_name = arg.after('-', -1);
 	    gdb_option_pos    = i;
@@ -6475,7 +6486,7 @@ static void setup_auto_command_prefix()
 static void setup_options()
 {
     set_sensitive(disassemble_w,        gdb->type() == GDB);
-    set_sensitive(code_indent_w,        gdb->type() == GDB);
+    set_sensitive(code_indent_w,        gdb->type() == GDB || gdb->type() == PYDB);
     set_sensitive(examine_w,            gdb->type() == GDB);
     set_sensitive(print_examine_w,      gdb->type() == GDB);
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
@@ -6539,7 +6550,7 @@ static void setup_options()
     set_sensitive(registers_w, gdb->has_regs_command());
     set_sensitive(threads_w,   gdb->type() == GDB || gdb->type() == JDB);
     set_sensitive(signals_w,   gdb->type() == GDB);
-    set_sensitive(infos_w,     gdb->type() == GDB);
+    set_sensitive(infos_w,     gdb->type() == GDB || gdb->type() == PYDB);
 }
 
 static void setup_core_limit()

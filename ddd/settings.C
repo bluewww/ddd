@@ -699,6 +699,7 @@ static EntryType entry_type(DebuggerType type,
 
     case XDB:
     case JDB:
+    case PYDB:
 	break;			// FIXME
     }
 
@@ -1133,6 +1134,7 @@ string show_command(const string& cmd, DebuggerType type)
     switch (type)
     {
     case GDB:
+    case PYDB:
 	show = "show ";
 	if (cmd.contains("set ", 0))
 	    show += cmd.after("set ");
@@ -1185,6 +1187,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     switch (type)
     {
     case GDB:
+    case PYDB:
     {
 	if (!line.contains(" -- ") && !line.contains("SIG", 0))
 	    return;			// No help line
@@ -1551,6 +1554,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
 	case XDB:
 	case JDB:
+	case PYDB:
 	    return;		// FIXME
 	}
 
@@ -1736,6 +1740,7 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
     switch (type)
     {
     case GDB:
+    case PYDB:
 	if (entry_filter == SignalEntry)
 	    commands = cached_gdb_question("info signals");
 	else
@@ -2267,6 +2272,7 @@ string get_settings(DebuggerType type)
 
 	case XDB:
 	case JDB:
+	case PYDB:
 	    // Add setting
 	    command += base + ' ' + value + '\n';
 	    break;

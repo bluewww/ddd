@@ -895,6 +895,10 @@ static void open_session(const string& session)
     case JDB:
 	settings = get_resource(db, XtNjdbSettings, XtCSettings);
 	break;
+
+    case PYDB:
+	settings = get_resource(db, XtNpydbSettings, XtCSettings);
+	break;
     }
     init_session(restart, settings);
 

@@ -142,6 +142,7 @@ void translate_command(string& command)
 
     case GDB:
     case DBX:
+    case PYDB:
 	break;
     }
 
