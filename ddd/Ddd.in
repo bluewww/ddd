@@ -291,16 +291,16 @@ Ddd*cacheSourceFiles:		true
 
 
 ! Focus policy
-! XmPOINTER means point-and-type, XmEXPLICIT means click-and-type.
-! Rather than accepting the user's default, we use XmPOINTER here because:
-! 1. Using XmEXPLICIT focus policy works bad with a panned graph editor,
+! POINTER means point-and-type, EXPLICIT means click-and-type.
+! Rather than accepting the user's default, we use POINTER here because:
+! 1. Using EXPLICIT focus policy works bad with a panned graph editor,
 !    since Motif has trouble with assigning focus to Athena Widgets.
 ! 2. Several users use DDD in a non-Motif environment, where the click-to-type
 !    methaphor is inappropriate.
 ! 3. DDD users usually are wither novices or experienced programmers,
 !    who are often confused and/or embarrassed by explicit focus.
 ! Users unsatisfied with this setting can change it at run-time.
-Ddd*keyboardFocusPolicy:	XmPOINTER
+Ddd*keyboardFocusPolicy:	POINTER
 
 ! X Warnings
 ! Do we wish to suppress X warnings?
@@ -1592,7 +1592,8 @@ Ddd*command_buttons*contextHelpString:
 ! so we must provide help on ourselves.
 Ddd*?*interrupt.contextHelpString: \
 @bf Interrupt\n\
-@rm Interrupt the debugged process.  (Equivalent to @key Ctrl+C@rm).
+@rm Interrupt the debugged process or current debugger command.\n\
+(Equivalent to @key Ctrl+C@rm).
 
 Ddd*?*Yes.contextHelpString:    \
 @bf Yes\n\
@@ -1874,7 +1875,7 @@ so on down the stack, down to the currently executing frame.\n\
 \n\
 You can make a specific frame the current one by selecting it\n\
 in this window.  You can also move around by pressing \
-@bf Up @rm or @bf Down @rm.
+@bf Up @rm or @bf Down@rm.
 
 
 !-----------------------------------------------------------------------------
@@ -2032,7 +2033,7 @@ Ddd*busy_dialog*contextHelpString:	\
 Please try again when the `@tt (gdb)@rm' or `@tt (dbx)@rm' \
 prompt appears.\n\
 You may also interrupt the current debugging command by selecting\n\
-@bf Interrupt @rm from the @bf File @rm menu.
+@bf Interrupt @rm from the @bf Program @rm menu.
 
 Ddd*quit_dialog_popup.title: @DDD@: Debugger Still Busy
 Ddd*quit_dialog.messageString:   \
@@ -2045,7 +2046,7 @@ Ddd*quit_dialog*contextHelpString:	\
 Maybe the debugged process is still running.\n\
 \n\
 Before killing a running debugger, you should try to interrupt it\n\
-(by selecting @bf Interrupt @rm from the @bf File @rm menu).
+(by selecting @bf Interrupt @rm from the @bf Program @rm menu).
 
 Ddd*exited_dialog_popup.title: @DDD@: Debugger Exited
 Ddd*exited_dialog.messageString:   \

@@ -70,7 +70,7 @@ public:
     VSLNode *dup() const { return new NameNode(*this); }
 
     // Auswerten
-    const Box *_eval(ListBox *arglist) const        { assert(0); return 0; }
+    const Box *_eval(ListBox *) const        { assert(0); return 0; }
 
     // Ressourcen
     bool isConst() const   { return false; }

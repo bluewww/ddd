@@ -54,7 +54,7 @@ public:
 
     Box *dup() const { return new FontFixBox(*this); }
 
-    void newFont(const string& font) {} // font change stops here
+    void newFont(const string&) {} // font change stops here
 };
 
 #endif

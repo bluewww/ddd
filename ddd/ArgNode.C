@@ -97,7 +97,7 @@ bool ArgNode::matches(const VSLNode &node) const
 // instantiateArgs: In Ausdruecken der Form f(arg1, arg2, ...) 
 // arg1 .. argn durch konkrete Argumente ersetzen
 
-int ArgNode::instantiateArgs(VSLDef *cdef, VSLNode **node, VSLNode *values[],
+int ArgNode::instantiateArgs(VSLDef *, VSLNode **node, VSLNode *values[],
     unsigned base, unsigned n)
 // Knoten durch entsprechenden Ausdruck aus 'values' ersetzen
 {
@@ -128,7 +128,7 @@ int ArgNode::instantiateArgs(VSLDef *cdef, VSLNode **node, VSLNode *values[],
     return 1;
 }
 
-void ArgNode::countArgNodes(VSLDef *cdef, int instances[],
+void ArgNode::countArgNodes(VSLDef *, int instances[],
     unsigned base, unsigned n)
 // Instanzen-Zaehler hinaufsetzen
 {

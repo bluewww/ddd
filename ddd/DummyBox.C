@@ -41,7 +41,7 @@ DEFINE_TYPE_INFO_1(DummyBox, ListBox)
 
 bool DummyBox::matchesAll = false;
 
-bool DummyBox::matches(const Box& box, const Box *callbackArg) const
+bool DummyBox::matches(const Box& box, const Box *) const
 {
     return matchesAll || ListBox::matches(box);
 }

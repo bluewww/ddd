@@ -43,7 +43,7 @@ protected:
 			   const GraphGC& gc) const;
 
 public:
-    HintGraphNode(BoxPoint& initialPos = BoxPoint()):
+    HintGraphNode(const BoxPoint& initialPos = BoxPoint()):
        RegionGraphNode(initialPos, BoxSize(0,0))
     {}
 

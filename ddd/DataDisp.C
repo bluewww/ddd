@@ -194,9 +194,7 @@ static void set_label(Widget w, string label)
 //-----------------------------------------------------------------------------
 // Button Callbacks
 //-----------------------------------------------------------------------------
-void DataDisp::dereferenceCB(Widget w, 
-			     XtPointer client_data, 
-			     XtPointer call_data)
+void DataDisp::dereferenceCB(Widget w, XtPointer, XtPointer)
 {
     last_origin = w;
 
@@ -209,13 +207,11 @@ void DataDisp::dereferenceCB(Widget w,
     disp_value_arg->dereference();
     disp_node_arg->refresh();
 
-    dependent_displaySQ (display_expression, 
-			 get_positive_nr(disp_node_arg->disp_nr()));
+    string nr = disp_node_arg->disp_nr();
+    dependent_displaySQ (display_expression, get_positive_nr(nr));
 }
 
-void DataDisp::toggleDetailCB(Widget dialog, 
-			      XtPointer client_data, 
-			      XtPointer call_data)
+void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 {
     last_origin = dialog;
 
@@ -246,9 +242,7 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	refresh_graph_edit();
 }
 
-void DataDisp::showDetailCB (Widget    dialog, 
-			     XtPointer client_data, 
-			     XtPointer call_data)
+void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
 {
     last_origin = dialog;
 
@@ -279,9 +273,7 @@ void DataDisp::showDetailCB (Widget    dialog,
 	refresh_graph_edit();
 }
 
-void DataDisp::hideDetailCB (Widget    dialog, 
-			     XtPointer client_data, 
-			     XtPointer call_data)
+void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 {
     last_origin = dialog;
 
@@ -312,9 +304,7 @@ void DataDisp::hideDetailCB (Widget    dialog,
 	refresh_graph_edit();
 }
 
-void DataDisp::toggleRotateCB(Widget w, 
-			      XtPointer client_data, 
-			      XtPointer call_data)
+void DataDisp::toggleRotateCB(Widget w, XtPointer, XtPointer)
 {
     last_origin = w;
 
@@ -333,9 +323,7 @@ void DataDisp::toggleRotateCB(Widget w,
 }
 
 
-void DataDisp::toggleDisableCB (Widget dialog, 
-				XtPointer client_data, 
-				XtPointer call_data)
+void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
 {
     last_origin = dialog;
 
@@ -352,7 +340,8 @@ void DataDisp::toggleDisableCB (Widget dialog,
     {
 	if (dn->selected())
 	{
-	    disp_nrs[i++] = get_positive_nr(dn->disp_nr());
+	    string nr = dn->disp_nr();
+	    disp_nrs[i++] = get_positive_nr(nr);
 	    if (dn->enabled())
 		do_enable = false;
 	    if (dn->disabled())
@@ -396,9 +385,7 @@ static void select_with_all_ancestors(GraphNode *node)
 }
 
 // Upon deletion, select the ancestor and all siblings
-void DataDisp::deleteCB (Widget    dialog, 
-			 XtPointer client_data, 
-			 XtPointer call_data)
+void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 {
     last_origin = dialog;
 
@@ -418,10 +405,12 @@ void DataDisp::deleteCB (Widget    dialog,
     {
 	if (dn->selected())
 	{
-	    disp_nrs[i++] = get_positive_nr(dn->disp_nr());
+	    string nr = dn->disp_nr();
+	    disp_nrs[i++] = get_positive_nr(nr);
 
 	    // Select all ancestors
-	    for (GraphEdge *edge = dn->nodeptr()->firstTo();
+	    GraphEdge *edge;
+	    for (edge = dn->nodeptr()->firstTo();
 		 edge != 0; edge = dn->nodeptr()->nextTo(edge))
 	    {
 		GraphNode *ancestor = edge->from();
@@ -460,9 +449,7 @@ void DataDisp::deleteCB (Widget    dialog,
 }
 
 
-void DataDisp::dependentCB(Widget w, 
-			   XtPointer client_data, 
-			   XtPointer call_data)
+void DataDisp::dependentCB(Widget w, XtPointer, XtPointer)
 {
     last_origin = w;
 
@@ -471,8 +458,9 @@ void DataDisp::dependentCB(Widget w,
     if (disp_node_arg == 0 || disp_value_arg == 0)
 	return;
 
+    string nr = disp_node_arg->disp_nr();
     static int* disp_nr_ptr = new int;
-    *disp_nr_ptr = get_positive_nr(disp_node_arg->disp_nr());
+    *disp_nr_ptr = get_positive_nr(nr);
 
     static Widget dependent_display_dialog = 0;
     if (!dependent_display_dialog) {
@@ -502,16 +490,13 @@ void DataDisp::dependentCB(Widget w,
 }
 
 
-void DataDisp::refreshCB(Widget w, 
-			 XtPointer client_data, 
-			 XtPointer call_data)
+void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
 {
     last_origin = w;
     refresh_graph_edit();
 }
 
-void DataDisp::selectAllCB(Widget w, 
-			   XtPointer client_data, XtPointer call_data)
+void DataDisp::selectAllCB(Widget w, XtPointer, XtPointer)
 {
     last_origin = w;
     XtCallActionProc(graph_edit, 
@@ -519,17 +504,13 @@ void DataDisp::selectAllCB(Widget w,
     refresh_graph_edit();
 }
 
-void DataDisp::newCB(Widget w, 
-		     XtPointer client_data, 
-		     XtPointer call_data)
+void DataDisp::newCB(Widget w, XtPointer, XtPointer)
 {
     last_origin = w;
     new_displayCD();
 }
 
-void DataDisp::enableCB(Widget w, 
-			XtPointer client_data, 
-			XtPointer call_data)
+void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
 {
     last_origin = w;
 
@@ -542,7 +523,10 @@ void DataDisp::enableCB(Widget w,
 	 dn = disp_graph->next(ref))
     {
 	if (dn->selected() && dn->disabled())
-	    disp_nrs[i++] = get_positive_nr(dn->disp_nr());
+	{
+	    string nr = dn->disp_nr();
+	    disp_nrs[i++] = get_positive_nr(nr);
+	}
     }
 
     if (i > 0)
@@ -551,9 +535,7 @@ void DataDisp::enableCB(Widget w,
     delete[] disp_nrs;
 }
 
-void DataDisp::disableCB(Widget w, 
-			 XtPointer client_data, 
-			 XtPointer call_data)
+void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 {
     last_origin = w;
 
@@ -566,7 +548,10 @@ void DataDisp::disableCB(Widget w,
 	 dn = disp_graph->next(ref))
     {
 	if (dn->selected() && dn->enabled())
-	    disp_nrs[i++] = get_positive_nr(dn->disp_nr());
+	{
+	    string nr = dn->disp_nr();
+	    disp_nrs[i++] = get_positive_nr(nr);
+	}
     }
 
     if (i > 0)
@@ -582,7 +567,7 @@ void DataDisp::disableCB(Widget w,
 //
 void DataDisp::popup_new_argCB (Widget    display_dialog,
 				XtPointer client_data,
-				XtPointer call_data)
+				XtPointer)
 {
     last_origin = display_dialog;
 
@@ -595,7 +580,7 @@ void DataDisp::popup_new_argCB (Widget    display_dialog,
 //
 void DataDisp::popup_newCB (Widget    display_dialog,
 			    XtPointer client_data,
-			    XtPointer call_data)
+			    XtPointer)
 {
     last_origin = display_dialog;
 
@@ -783,12 +768,12 @@ void DataDisp::no_displaysHP (void*, void* , void* call_data)
 		   (!empty && gdb->isReadyWithPrompt()));
 }
 
-void DataDisp::source_argHP (void*, void* , void* call_data)
+void DataDisp::source_argHP (void*, void* , void*)
 {
     refresh_args();
 }
 
-void DataDisp::graph_argHP (void*, void* , void* call_data)
+void DataDisp::graph_argHP (void*, void* , void*)
 {
     refresh_args();
 }
@@ -811,7 +796,7 @@ void DataDisp::graph_unselectHP (void*, void*, void*)
     fill_labels();
 }
 
-void DataDisp::gdb_ready_for_questionHP (void*, void* , void* call_data)
+void DataDisp::gdb_ready_for_questionHP (void*, void* , void*)
 {
     refresh_args();
 }
@@ -851,7 +836,7 @@ void DataDisp::graph_selectAct (Widget w,
 {
     // Let multi-clicks pass right through
     Time t = time(event);
-    if (t - last_select_time > XtGetMultiClickTime(XtDisplay(w)))
+    if (Time(t - last_select_time) > Time(XtGetMultiClickTime(XtDisplay(w))))
 	set_args(point(event));
     last_select_time = t;
 
@@ -866,17 +851,14 @@ void DataDisp::graph_select_or_moveAct (Widget w,
 {
     // Let multi-clicks pass right through
     Time t = time(event);
-    if (t - last_select_time > XtGetMultiClickTime(XtDisplay(w)))
+    if (Time(t - last_select_time) > Time(XtGetMultiClickTime(XtDisplay(w))))
 	set_args(point(event));
     last_select_time = t;
 
     XtCallActionProc(graph_edit, "select-or-move", event, args, *num_args);
 }
 
-void DataDisp::graph_popupAct (Widget w,
-			       XEvent* event,
-			       String* str,
-			       Cardinal* c)
+void DataDisp::graph_popupAct (Widget, XEvent* event, String*, Cardinal*)
 {
     static BoxPoint* p = 0;
     if (p == 0)
@@ -1227,9 +1209,7 @@ void DataDisp::refresh_args()
 
 
 // Update graph editor selection after a change in the display editor
-void DataDisp::UpdateGraphEditorSelectionCB(Widget w,
-					    XtPointer client_data,
-					    XtPointer call_data)
+void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 {
     // Avoid recursive and mutually recursive calls
     if (ignore_update_graph_editor_selection)
@@ -1246,7 +1226,8 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget w,
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	int display_nr = get_positive_nr(dn->disp_nr());
+	string nr = dn->disp_nr();
+	int display_nr = get_positive_nr(nr);
 
 	bool select = false;
 	for (int i = 0; display_nrs[i] > 0; i++)
@@ -1274,9 +1255,7 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget w,
 }
 
 // Update display editor selection after a change in the graph editor
-void DataDisp::UpdateDisplayEditorSelectionCB(Widget w,
-					      XtPointer client_data,
-					      XtPointer call_data)
+void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
 {
     // Avoid recursive and mutually recursive calls
     if (ignore_update_display_editor_selection)
@@ -1297,9 +1276,7 @@ void DataDisp::UpdateDisplayEditorSelectionCB(Widget w,
 // Sorting nodes for layout
 //-----------------------------------------------------------------------
 
-void DataDisp::CompareNodesCB(Widget w,
-			      XtPointer client_data,
-			      XtPointer call_data)
+void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
 {
     GraphEditCompareNodesInfo *info = (GraphEditCompareNodesInfo *)call_data;
 
@@ -1505,7 +1482,8 @@ void DataDisp::new_displayOQC (string answer, void* data)
 	dn->selected() = true;
 
 	// in den Graphen einfuegen
-	disp_graph->insert_new (get_positive_nr(dn->disp_nr()), dn);
+	string nr = dn->disp_nr();
+	disp_graph->insert_new (get_positive_nr(nr), dn);
 	refresh_graph_edit();
     }
 }
@@ -1629,7 +1607,8 @@ void DataDisp::new_displaysOQAC (string answers[],
 	    dn->selected() = true;
 
 	    // Insert into graph
-	    disp_graph->insert_new (get_positive_nr(dn->disp_nr()), dn);
+	    string nr = dn->disp_nr();
+	    disp_graph->insert_new (get_positive_nr(nr), dn);
 	}
     }
     delete[] answers;
@@ -1658,8 +1637,7 @@ void DataDisp::refresh_displaySQ ()
 // ***************************************************************************
 // Aktualisiert die Displays entsprechend.
 //
-void DataDisp::refresh_displayOQC (string answer,
-				      void*  data)
+void DataDisp::refresh_displayOQC (string answer, void *)
 {
     bool disabling_occurred;
 
@@ -1712,7 +1690,7 @@ void DataDisp::refresh_displaySQA (Widget origin)
 void DataDisp::refresh_displayOQAC (string answers[],
 				    void*  qu_datas[],
 				    int    count,
-				    void*  data)
+				    void*  )
 {
     if (count >= 1)
     {
@@ -1773,7 +1751,7 @@ void DataDisp::disable_displaySQ (int display_nrs[], int count)
 // ***************************************************************************
 // Bei nicht-leerer Antwort Ausgabe als Fehlermeldung.
 //
-void DataDisp::disable_displayOQC (string answer, void* data)
+void DataDisp::disable_displayOQC (string answer, void *)
 {
     if (answer != "")
 	post_gdb_message (answer, last_origin);
@@ -1807,7 +1785,7 @@ void DataDisp::enable_displaySQ (int display_nrs[], int count)
 // ***************************************************************************
 // Bei nicht-leerer Antwort Ausgabe als Fehlermeldung.
 //
-void DataDisp::enable_displayOQC (string answer, void* data)
+void DataDisp::enable_displayOQC (string answer, void *)
 {
     if (answer != "")
 	post_gdb_message (answer, last_origin);
@@ -1871,7 +1849,7 @@ void DataDisp::delete_displaySQ (int display_nrs[], int count)
 // ***************************************************************************
 // Bei nicht-leerer Antwort Ausgabe als Fehlermeldung.
 //
-void DataDisp::delete_displayOQC (string answer, void* data)
+void DataDisp::delete_displayOQC (string answer, void *)
 {
     switch (gdb->type())
     {
@@ -1975,8 +1953,8 @@ void DataDisp::dependent_displayOQC (string answer, void* data)
 	dn->selected() = true;
 
 	// in den Graphen einfuegen
-	disp_graph->insert_dependent (get_positive_nr(dn->disp_nr()),
-				      dn, old_disp_nr);
+	string nr = dn->disp_nr();
+	disp_graph->insert_dependent (get_positive_nr(nr), dn, old_disp_nr);
 	refresh_graph_edit();
     }
 }
@@ -2126,8 +2104,8 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 	    dn->selected() = true;
 
 	    // in den Graphen einfuegen
-	    disp_graph->insert_dependent (get_positive_nr(dn->disp_nr()),
-					  dn, old_disp_nr);
+	    string nr = dn->disp_nr();
+	    disp_graph->insert_dependent(get_positive_nr(nr), dn, old_disp_nr);
 	}
     }
 
@@ -2269,7 +2247,8 @@ string DataDisp::process_displays (string& displays,
 	    {
 		if (dn->name() == disp_name)
 		{
-		    disp_nr = get_positive_nr(dn->disp_nr());
+		    string nr = dn->disp_nr();
+		    disp_nr = get_positive_nr(nr);
 		    break;
 		}
 	    }
@@ -2380,7 +2359,8 @@ static void sort(string labels[], bool selected[], int size)
 	{
 	    string v = labels[i];
 	    bool   b = selected[i];
-	    for (int j = i; 
+	    int    j;
+	    for (j = i; 
 		 j >= h && get_positive_nr(labels[j - h]) > get_positive_nr(v);
 		 j -= h)
 	    {
@@ -2445,9 +2425,7 @@ void DataDisp::fill_labels()
 }
 
 
-void DataDisp::EditDisplaysCB(Widget w,
-			      XtPointer client_data,
-			      XtPointer call_data)
+void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
 {
     XtManageChild(edit_displays_dialog_w);
 }
@@ -2458,7 +2436,7 @@ void DataDisp::EditDisplaysCB(Widget w,
 //----------------------------------------------------------------------------
 DataDisp::DataDisp (XtAppContext app_context,
 		    Widget parent,
-		    String vslpath,
+		    String /* vslpath */,
 		    String vslLibrary,
 		    int    max_name_length,
 		    bool   panned)

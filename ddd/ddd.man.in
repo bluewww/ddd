@@ -1435,7 +1435,7 @@ Your \s-2@DDD@\s+2 configuration.  Invoke \s-2@DDD@\s+2 as
   \fB@ddd@ \-\-configuration\fR
 .sp
 .br
-to get the configuration information.  If this does npt work, please
+to get the configuration information.  If this does not work, please
 include at least the \s-2@DDD@\s+2 version, the type of machine you
 are using, and its operating system name and version number.
 .br

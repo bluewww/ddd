@@ -178,7 +178,7 @@ void cin_cout_test ()
     cout << "Hello, " << name << "!\n";
 }
 //--------------------------------------------------------------------------
-int main (int argc, char* argv[])
+int main (int /* argc */, char ** /* argv */)
 {
     int i = 42;
     tree_test();

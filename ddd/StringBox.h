@@ -64,7 +64,7 @@ protected:
 
     void dump(ostream& s) const;
 
-    bool matches (const Box &b, const Box *callbackArg = 0) const
+    bool matches (const Box &b, const Box * = 0) const
     {
 	return PrimitiveBox::matches(b) &&
 	    _string == ((StringBox *)&b)->_string;  // dirty trick

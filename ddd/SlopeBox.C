@@ -47,9 +47,9 @@ DEFINE_TYPE_INFO_1(RiseBox, SlopeBox)
 // FallBox anzeigen
 void FallBox::__draw(Widget w, 
 		     const BoxRegion& r, 
-		     const BoxRegion& exposed, 
+		     const BoxRegion&, 
 		     GC gc,
-		     bool context_selected) const
+		     bool) const
 {
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();
@@ -95,9 +95,9 @@ void FallBox::dump(ostream& s) const
 // RiseBox anzeigen
 void RiseBox::__draw(Widget w, 
 		     const BoxRegion& r, 
-		     const BoxRegion& exposed, 
+		     const BoxRegion&, 
 		     GC gc,
-		     bool context_selected) const
+		     bool) const
 {
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();

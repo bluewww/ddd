@@ -466,9 +466,9 @@ void VSEFlags::getDefaults()
 	    argv[2] = "";
 	    if (nargs >= 1)
 	    {
-		argv[1] = XtNewString(buf1);
+		argv[1] = String(XtNewString(buf1));
 		if (nargs >= 2)
-		    argv[2] = XtNewString(buf2);
+		    argv[2] = String(XtNewString(buf2));
 	    }
 	    int myargc = nargs + 1;
 	    char **myargv = argv;

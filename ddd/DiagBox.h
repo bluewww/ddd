@@ -54,9 +54,9 @@ public:
 
     Box *dup() const { return new DiagBox(*this); }
 
-    virtual void _print(ostream& os, 
-			const BoxRegion& region, 
-			const BoxPrintGC& gc) const
+    virtual void _print(ostream&, 
+			const BoxRegion&, 
+			const BoxPrintGC&) const
     {
 	// do nothing
     }

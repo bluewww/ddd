@@ -66,7 +66,7 @@ protected:
 
     void dump(ostream& s) const;
 
-    bool matches (const Box &b, const Box *callbackArg = 0) const
+    bool matches (const Box &b, const Box * = 0) const
     {
 	return LineBox::matches(b) &&
 	    _start == ((ArcBox *)&b)->_start &&

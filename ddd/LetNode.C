@@ -84,7 +84,7 @@ const Box *LetNode::_eval(ListBox *arglst) const
     const Box *result = 0;
 
     if (arglst)
-	assert(_base == arglst->length());
+	assert(int(_base) == arglst->length());
 
     // Argumente fuer Pattern bilden
     const Box *patternArgs = args()->eval(arglst);
@@ -212,7 +212,8 @@ ListBox* LetNode::arglist(const Box *a) const
 	return (ListBox *)((Box *)a)->link();
     }
 
-    for (unsigned i = _base; i < _base + _nargs; i++)
+    unsigned i;
+    for (i = _base; i < _base + _nargs; i++)
 	box_instances[i] = 0;
 
     bool ok = domatch(a);
@@ -247,7 +248,8 @@ void LetNode::compilePatterns(VSLDef *cdef) const
 
     // Als Argumente Liste von MatchBoxen uebergeben
     ListBox *list = new ListBox;
-    for (unsigned i = 0; i < _base + _nargs; i++)
+    unsigned i;
+    for (i = 0; i < _base + _nargs; i++)
     {
 	MatchBox *m = new MatchBox(i);
 	(*list) += m;
@@ -315,7 +317,7 @@ int LetNode::_resolveNames(VSLDef *cdef, unsigned base)
     // Jetzt alle NameNode's im Pattern durch entsprechende
     // ArgNode's ersetzen.
     string s = "";
-    int offset = 0;
+    unsigned offset = 0;
 
     while ((s = node_pattern()->firstName(), s) != "")
     {
@@ -361,7 +363,8 @@ int LetNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
 
     // Instanzen-Zaehler erzeugen
     int *instances = new int [_base + _nargs];
-    for (unsigned i = 0; i < _base + _nargs; i++)
+    unsigned i;
+    for (i = 0; i < _base + _nargs; i++)
 	instances[i] = 0;
 
     // Zaehlen, wie oft einzelne Variablen benutzt werden
@@ -453,7 +456,8 @@ int LetNode::_reBase(VSLDef *cdef, unsigned newBase)
 	changes = body()->reBase(cdef, newBase + _nargs);
 
     VSLNode **argnodes = new VSLNode *[_base + _nargs];
-    for (unsigned i = 0; i < _base; i++)
+    unsigned i;
+    for (i = 0; i < _base; i++)
 	argnodes[i] = 0;
     for (i = _base; i < _base + _nargs; i++)
 	argnodes[i] = new ArgNode(i + offset);

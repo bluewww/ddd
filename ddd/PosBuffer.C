@@ -102,7 +102,7 @@ void PosBuffer::filter (string& answer)
 		{
 		    int index_p = answer.index ("\032");
 
-		    if (index_p == answer.length() - 1) {
+		    if (index_p == int(answer.length()) - 1) {
 			// moegl. Beginn einer Positionsangabe
 			// am Ende von answer
 			already_read = PosPart;

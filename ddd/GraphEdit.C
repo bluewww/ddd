@@ -62,7 +62,7 @@ static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
 
 // Compute default foreground
 
-static void defaultForeground(Widget w, int offset, XrmValue *value)
+static void defaultForeground(Widget w, int, XrmValue *value)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     value->addr = caddr_t(&_w->primitive.foreground);
@@ -549,9 +549,9 @@ void graphEditRedrawNode(Widget w, GraphNode *node)
 
 // Convert String to EdgeAttachMode and vice-versa
 
-static Boolean CvtStringToEdgeAttachMode (Display *display, XrmValue *args,
+static Boolean CvtStringToEdgeAttachMode (Display *display, XrmValue *,
     Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
-    XtPointer *converter_data)
+    XtPointer *)
 {
     EdgeAttachMode mode = Straight;
 
@@ -577,9 +577,9 @@ static Boolean CvtStringToEdgeAttachMode (Display *display, XrmValue *args,
     done(EdgeAttachMode, mode);
 }
 
-static Boolean CvtEdgeAttachModeToString (Display *display, XrmValue *args,
+static Boolean CvtEdgeAttachModeToString (Display *display, XrmValue *,
     Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
-    XtPointer *converter_data)
+    XtPointer *)
 {
     if (*num_args != 0)
 	XtAppWarningMsg(XtDisplayToApplicationContext(display),
@@ -613,9 +613,9 @@ static Boolean CvtEdgeAttachModeToString (Display *display, XrmValue *args,
 
 // Convert String to LayoutMode
 
-static Boolean CvtStringToLayoutMode (Display *display, XrmValue *args,
+static Boolean CvtStringToLayoutMode (Display *display, XrmValue *,
     Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
-    XtPointer *converter_data)
+    XtPointer *)
 {
     LayoutMode mode = RegularLayoutMode;
 
@@ -640,9 +640,9 @@ static Boolean CvtStringToLayoutMode (Display *display, XrmValue *args,
 }
 
 
-static Boolean CvtLayoutModeToString (Display *display, XrmValue *args,
+static Boolean CvtLayoutModeToString (Display *display, XrmValue *,
     Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
-    XtPointer *converter_data)
+    XtPointer *)
 {
     if (*num_args != 0)
 	XtAppWarningMsg(XtDisplayToApplicationContext(display),
@@ -673,9 +673,9 @@ static Boolean CvtLayoutModeToString (Display *display, XrmValue *args,
 
 // Standard Converters
 
-static Boolean CvtBooleanToString (Display *display, XrmValue *args,
+static Boolean CvtBooleanToString (Display *display, XrmValue *,
     Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
-    XtPointer *converter_data)
+    XtPointer *)
 {
     if (*num_args != 0)
 	XtAppWarningMsg(XtDisplayToApplicationContext(display),
@@ -703,9 +703,9 @@ static Boolean CvtBooleanToString (Display *display, XrmValue *args,
     done(String, s);
 }
 
-static Boolean CvtDimensionToString (Display *display, XrmValue *args,
+static Boolean CvtDimensionToString (Display *display, XrmValue *,
     Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
-    XtPointer *converter_data)
+    XtPointer *)
 {
     if (*num_args != 0)
 	XtAppWarningMsg(XtDisplayToApplicationContext(display),
@@ -719,13 +719,14 @@ static Boolean CvtDimensionToString (Display *display, XrmValue *args,
     ostrstream os;
     os << d;
     string os_s(os);
+    String s = String(XtNewString(String(os_s)));
 
-    done(String, XtNewString(String(os_s)));
+    done(String, s);
 }
 
-static Boolean CvtCardinalToString (Display *display, XrmValue *args,
+static Boolean CvtCardinalToString (Display *display, XrmValue *,
     Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
-    XtPointer *converter_data)
+    XtPointer *)
 {
     if (*num_args != 0)
 	XtAppWarningMsg(XtDisplayToApplicationContext(display),
@@ -739,8 +740,9 @@ static Boolean CvtCardinalToString (Display *display, XrmValue *args,
     ostrstream os;
     os << d;
     string os_s(os);
+    String s = String(XtNewString(String(os_s)));
 
-    done(String, XtNewString(String(os_s)));
+    done(String, s);
 }
 
 
@@ -884,8 +886,7 @@ static void setGraphGC(Widget w)
 }
 
 
-static void Initialize(Widget request, Widget w, ArgList args,
-    Cardinal *num_args)
+static void Initialize(Widget, Widget w, ArgList, Cardinal *)
 {
     // read-only
     const GraphEditWidget _w        = GraphEditWidget(w);
@@ -961,7 +962,7 @@ static void Realize(Widget w,
 
 
 // Redisplay widget
-static void Redisplay(Widget w, XEvent *event, Region region)
+static void Redisplay(Widget w, XEvent *event, Region)
 {
     const GraphEditWidget _w      = GraphEditWidget(w);
     const Graph* graph            = _w->graphEdit.graph;
@@ -989,8 +990,8 @@ static void Redisplay(Widget w, XEvent *event, Region region)
 
 
 // Set widget values
-static Boolean SetValues(Widget old, Widget request, Widget new_w,
-    ArgList args, Cardinal *num_args)
+static Boolean SetValues(Widget old, Widget, Widget new_w, 
+			 ArgList, Cardinal *)
 {
     GraphEditWidget before = GraphEditWidget(old);
     GraphEditWidget after  = GraphEditWidget(new_w);
@@ -1052,7 +1053,7 @@ static Boolean SetValues(Widget old, Widget request, Widget new_w,
 }
 
 // Destroy widget
-static void Destroy(Widget w)
+static void Destroy(Widget)
 {
     // delete graph?
 }
@@ -1386,8 +1387,7 @@ static void selectionChanged(Widget w)
 // Action functions
 
 // Select all nodes
-static bool _SelectAll(Widget w, XEvent *event, String *params,
-    Cardinal *num_params)
+static bool _SelectAll(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->graphEdit.graph;
@@ -1417,8 +1417,7 @@ static void SelectAll(Widget w, XEvent *event, String *params,
 
 
 // Unselect all nodes
-static bool _UnselectAll(Widget w, XEvent *event, String *params,
-    Cardinal *num_params)
+static bool _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->graphEdit.graph;
@@ -1495,7 +1494,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 
     Time t = time(event);
     bool double_click = 
-	(Time(t - lastSelectTime) <= XtGetMultiClickTime(XtDisplay(w)));
+	(Time(t - lastSelectTime) <= Time(XtGetMultiClickTime(XtDisplay(w))));
     lastSelectTime = t;
 
     GraphNode *node = graphEditGetNodeAtPoint(w, p);
@@ -1585,8 +1584,7 @@ static void Extend(Widget w, XEvent *event, String *params,
 }
 
 // Keep on acting...
-static void Follow(Widget w, XEvent *event, String *params,
-    Cardinal *num_params)
+static void Follow(Widget w, XEvent *event, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
     const BoxPoint startAction = _w->graphEdit.startAction;
@@ -1674,8 +1672,7 @@ static void move_selected_nodes(Widget w, const BoxPoint& offset)
     graphEditRedraw(w);
 }
 
-static void End(Widget w, XEvent *event, String *params,
-    Cardinal *num_params)
+static void End(Widget w, XEvent *event, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
@@ -1743,7 +1740,7 @@ static void End(Widget w, XEvent *event, String *params,
 }
 
 // Key movement action
-static void MoveSelected(Widget w, XEvent *event, String *params, 
+static void MoveSelected(Widget w, XEvent *, String *params, 
 			 Cardinal *num_params)
 {
     const GraphEditWidget _w      = GraphEditWidget(w);
@@ -1765,7 +1762,8 @@ static void MoveSelected(Widget w, XEvent *event, String *params,
     offset_s[X] = params[0];
     offset_s[Y] = params[1];
 
-    for (BoxDimension d = X; d <= Y; d++)
+    BoxDimension d;
+    for (d = X; d <= Y; d++)
     {
 	BoxCoordinate& c = offset[d];
 	string& s = offset_s[d];
@@ -1840,8 +1838,7 @@ static void select_single_node(Widget w, GraphNode *selectNode)
 }
 
 // Select first node
-static void SelectFirst(Widget w, XEvent *event, String *params, 
-			Cardinal *num_params)
+static void SelectFirst(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
@@ -1850,8 +1847,7 @@ static void SelectFirst(Widget w, XEvent *event, String *params,
 }
 
 // Select next node
-static void SelectNext(Widget w, XEvent *event, String *params, 
-		       Cardinal *num_params)
+static void SelectNext(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
@@ -1875,8 +1871,7 @@ static void SelectNext(Widget w, XEvent *event, String *params,
 }
 
 // Select previous node
-static void SelectPrev(Widget w, XEvent *event, String *params, 
-		       Cardinal *num_params)
+static void SelectPrev(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->graphEdit.graph;
@@ -1901,8 +1896,8 @@ static void SelectPrev(Widget w, XEvent *event, String *params,
 
 
 // Snap nodes to grid
-static void _SnapToGrid(Widget w, XEvent *event, String *params,
-    Cardinal *num_params)
+static void _SnapToGrid(Widget w, XEvent *, String *params, 
+			Cardinal *num_params)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
@@ -2286,8 +2281,7 @@ static void DoLayout(Widget w, XEvent *event, String *params,
 
 
 // Normalize graph
-static void _Normalize(Widget w, XEvent *event, String *params,
-    Cardinal *num_params)
+static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
@@ -2325,8 +2319,8 @@ static void Normalize(Widget w, XEvent *event, String *params,
 
 // Show and hide edges
 
-static void considerEdges(Widget w, XEvent *event, String *params,
-    Cardinal *num_params, bool shallBeHidden)
+static void considerEdges(Widget w, XEvent *, String *params,
+			  Cardinal *num_params, bool shallBeHidden)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->graphEdit.graph;

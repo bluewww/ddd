@@ -46,7 +46,7 @@ DEFINE_TYPE_INFO_1(ConstNode, VSLNode)
 // ConstNode
 
 // Konstante auswerten
-const Box *ConstNode::_eval(ListBox *arglist) const
+const Box *ConstNode::_eval(ListBox *) const
 {
     return _box->link();
 }

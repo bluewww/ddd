@@ -238,7 +238,7 @@ public:
     {
 	rec = rec->next;
     }
-    void operator ++ (int dummy)
+    void operator ++ (int)
     {
 	rec = rec->next;
     }

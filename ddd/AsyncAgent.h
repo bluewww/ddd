@@ -177,7 +177,7 @@ private:
 
 public:
     // Constructors
-    AsyncAgent(XtAppContext app_context, char *pth, 
+    AsyncAgent(XtAppContext app_context, string pth, 
 	       unsigned nTypes = AsyncAgent_NTypes):
 	Agent(pth, nTypes), _appContext(app_context), workProcs(0)
     {

@@ -75,7 +75,7 @@ protected:
 
     // Knoten ausgeben
     virtual void dump(ostream& s) const = 0;      // als VSL-Ausdruck
-    virtual void _dumpTree(ostream& s) const {}   // als Baum (default: nichts)
+    virtual void _dumpTree(ostream&) const {}     // als Baum (default: nichts)
 
     virtual bool matches(const VSLNode& node) const
     {
@@ -103,19 +103,18 @@ public:
     virtual const Box *_eval(ListBox *arglist) const = 0;
 
     // Optimierungs-Funktionen (Default: nichts tun)
-    virtual int resolveDefs(VSLDef *cdef, 
-	bool complain_recursive = true)                      { return 0; }
-    virtual int resolveSynonyms(VSLDef *cdef, VSLNode **node)   { return 0; }
-    virtual int foldOps(VSLDef *cdef, VSLNode **node)           { return 0; }
-    virtual int foldConsts(VSLDef *cdef, VSLNode **node)        { return 0; }
-    virtual int countSelfReferences(VSLDef *cdef, 
-	VSLDefList *deflist)                                    { return 0; }
-    virtual int inlineFuncs(VSLDef *cdef, VSLNode **node)       { return 0; }
-    virtual int instantiateArgs(VSLDef *cdef, VSLNode **node,
-	VSLNode *values[], unsigned base, unsigned n)           { return 0; }
-    virtual void countArgNodes(VSLDef *cdef, int instances[],
-	unsigned base, unsigned n)                              { return; }
-    virtual int _reBase(VSLDef *cdef, unsigned newBase)         { return 0; }
+    virtual int resolveDefs(VSLDef *, bool = true)      { return 0; }
+    virtual int resolveSynonyms(VSLDef *, VSLNode **)   { return 0; }
+    virtual int foldOps(VSLDef *, VSLNode **)           { return 0; }
+    virtual int foldConsts(VSLDef *, VSLNode **)        { return 0; }
+    virtual int countSelfReferences(VSLDef *, 
+	VSLDefList *)                                   { return 0; }
+    virtual int inlineFuncs(VSLDef *, VSLNode **)       { return 0; }
+    virtual int instantiateArgs(VSLDef *, VSLNode **,
+	VSLNode **, unsigned , unsigned)                { return 0; }
+    virtual void countArgNodes(VSLDef *, int[],
+	unsigned , unsigned )                           { return; }
+    virtual int _reBase(VSLDef *, unsigned )            { return 0; }
     int reBase(VSLDef *cdef, unsigned newBase) 
     { 
 	int changes = _reBase(cdef, newBase);
@@ -124,11 +123,11 @@ public:
     }
 
     // Sonstige Baum-Operationen (Default: nichts tun)
-    virtual void compilePatterns(VSLDef *cdef) const            { return; }
-    virtual void uncompilePatterns(VSLDef *cdef) const          { return; }
-    virtual int resolveName(VSLDef *cdef, VSLNode **node, 
-	string& name, unsigned id)                              { return 0; }
-    virtual int _resolveNames(VSLDef *cdef, unsigned base)      { return 0; }
+    virtual void compilePatterns(VSLDef *) const            { return; }
+    virtual void uncompilePatterns(VSLDef *) const          { return; }
+    virtual int resolveName(VSLDef *, VSLNode **, 
+	string& , unsigned)                                 { return 0; }
+    virtual int _resolveNames(VSLDef *, unsigned)           { return 0; }
     int resolveNames(VSLDef *cdef, unsigned base)
     {
 	_base = base;

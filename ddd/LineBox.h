@@ -48,7 +48,7 @@ protected:
 	PrimitiveBox(box), _linethickness(box._linethickness)
     {}
 
-    bool matches (const Box &b, const Box *callbackArg = 0) const
+    bool matches (const Box &b, const Box * = 0) const
     {
 	return PrimitiveBox::matches(b) &&
 	    _linethickness == ((LineBox *)&b)->_linethickness;  // dirty trick

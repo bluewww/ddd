@@ -50,7 +50,8 @@ void DiagBox::_draw(Widget w,
     const BoxPoint origin = r.origin();
 
     // Draw a 10-pixel-grid
-    for (BoxCoordinate i = 0; i < space[X]; i += 10)
+    BoxCoordinate i;
+    for (i = 0; i < space[X]; i += 10)
 	XDrawLine(XtDisplay(w), XtWindow(w), gc,
 	    origin[X] + i, origin[Y], origin[X] + i, origin[Y] + space[Y]);
 

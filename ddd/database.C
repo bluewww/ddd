@@ -129,7 +129,8 @@ void meltdown(Display *dpy)
     sleep(1);
 
     short *heights = new short[DisplayWidth(dpy, screen)];
-    for (int i = 0; i < DisplayWidth(dpy, screen); i++)
+    int i;
+    for (i = 0; i < DisplayWidth(dpy, screen); i++)
 	heights[i] = 0;
 
     int	finished = 0;

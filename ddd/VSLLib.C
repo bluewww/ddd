@@ -105,7 +105,8 @@ VSLDefList* VSLLib::deflist(const string& func_name) const
     unsigned hashcode = hashpjw(func_name) % hashSize;
 
     // Definitionsliste mit passendem Namen suchen
-    for (VSLDefList *d = defs[hashcode];
+    VSLDefList *d;
+    for (d = defs[hashcode];
 	d != 0 && d->func_name() != func_name; d = d->next())
 	;
 
@@ -335,7 +336,8 @@ int VSLLib::compilePatterns()
     int changes = 0;
 
     // Zunaechst alle Pattern loeschen.
-    for (VSLDef *cdef = _first; cdef != 0; cdef = cdef->libnext())
+    VSLDef *cdef;
+    for (cdef = _first; cdef != 0; cdef = cdef->libnext())
     {
 	BACKGROUND();
 
@@ -461,7 +463,8 @@ int VSLLib::countSelfReferences()
     int changes = 0;
 
     // Zunaechst alle self_references auf 0 setzen
-    for (VSLDef *cdef = _first; cdef != 0; cdef = cdef->libnext())
+    VSLDef *cdef;
+    for (cdef = _first; cdef != 0; cdef = cdef->libnext())
     {
 	VSLDefList *dflist = cdef->deflist;
 	dflist->self_references = 0;
@@ -513,7 +516,8 @@ int VSLLib::cleanup()
 		defs[dflist->hashcode] = dflist->next();
 	    else
 	    {
-		for (VSLDefList *prev = defs[dflist->hashcode];
+		VSLDefList *prev;
+		for (prev = defs[dflist->hashcode];
 		    prev != 0 && prev->next() != dflist; prev = prev->next())
 		    ;
 		assert (prev->next() == dflist);

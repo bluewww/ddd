@@ -83,9 +83,9 @@ void ArgField::set_string (char* text_ch)
     }
 }
 
-void ArgField::valueChangedCB(Widget w,
+void ArgField::valueChangedCB(Widget,
 			      XtPointer client_data,
-			      XtPointer call_data)
+			      XtPointer)
 {
     ArgField *arg_field = (ArgField *)client_data;
     arg_field->handlers.call(Changed, arg_field);
@@ -107,9 +107,9 @@ void ArgField::valueChangedCB(Widget w,
     }
 }
 
-void ArgField::losePrimaryCB(Widget w,
+void ArgField::losePrimaryCB(Widget,
 			     XtPointer client_data,
-			     XtPointer call_data)
+			     XtPointer)
 {
     ArgField *arg_field = (ArgField *)client_data;
     arg_field->handlers.call(LosePrimary, arg_field, 0);

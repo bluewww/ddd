@@ -69,7 +69,8 @@ void VSLLib::eval_echo(const string& errmsg, const VSLDef *d)
 	echo(line);
 	echo("Current stack:");
 
-	for (int i = 0; VSLDef::backtrace[i] != 0; i++)
+	int i;
+	for (i = 0; VSLDef::backtrace[i] != 0; i++)
 	    ;
 
 	for (i--; i >= 0; i--)

@@ -129,7 +129,8 @@ int DefCallNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
     CallNode::matchesAll = true;
 
     VSLDef *found = 0;
-    for (VSLDef *def = _deflist->first(); def != 0; def = def->listnext())
+    VSLDef *def;
+    for (def = _deflist->first(); def != 0; def = def->listnext())
 	if (def->matches(arg()))
 	    if (found == 0)
 		found = def;        // Erste passende Definition
@@ -287,7 +288,8 @@ int DefCallNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
 
     // Instanzen-Zaehler erzeugen
     int *instances = new int [_def->nargs()];
-    for (unsigned i = 0; i < _def->nargs(); i++)
+    unsigned i;
+    for (i = 0; i < _def->nargs(); i++)
 	instances[i] = 0;
 
     // Zaehlen, wie oft einzelne Variablen benutzt werden

@@ -75,7 +75,7 @@ public:
 	return new DummyNode(*this);
     }
 
-    const Box *_eval(ListBox *arglist) const    
+    const Box *_eval(ListBox *) const    
     { 
 	return new DummyBox; 
     }

@@ -135,7 +135,7 @@ protected:
 
 public:
     // Constructors
-    LiterateAgent(XtAppContext app_context, char *pth,
+    LiterateAgent(XtAppContext app_context, string pth,
 		  unsigned nTypes = LiterateAgent_NTypes):
 	AsyncAgent(app_context, pth, nTypes), activeIO(false)
     {}

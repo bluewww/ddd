@@ -58,12 +58,12 @@ protected:
 	Box(box), _box(box._box->link())
     {}
 
-    bool matches (const Box &b, const Box *callbackArg = 0) const
+    bool matches (const Box &b, const Box * = 0) const
     {
 	return Box::matches(b) && *_box == *(((HatBox *)&b)->_box);
     }
 
-    const TagBox *findTag(BoxPoint p = BoxPoint(-1, -1)) const
+    const TagBox *findTag(const BoxPoint& p) const
     {
 	return _box->findTag(p);
     }

@@ -44,7 +44,7 @@ char MakeMenu_rcsid[] =
 #include "bool.h"
 
 // Add items to shell
-static void addItems(Widget parent, Widget shell, MMDesc items[], 
+static void addItems(Widget /* parent */, Widget shell, MMDesc items[], 
 		     bool ignore_seps = false)
 {
     Arg args[10];

@@ -80,7 +80,7 @@ void Box::draw(Widget w,
 // Vergleichen
 
 // Boxen vergleichen (intern)
-bool Box::matches(const Box &b, const Box *callbackArg) const
+bool Box::matches(const Box &b, const Box *) const
 {
     return (size() == b.size() &&
 	extend() == b.extend() &&

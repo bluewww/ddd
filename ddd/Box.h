@@ -196,7 +196,7 @@ public:
     virtual Box* resize() { return this; }
 
     // Propagate new font
-    virtual void newFont(const string& font) { resize(); }
+    virtual void newFont(const string&) { resize(); }
 
     // Draw
     void draw(Widget w, 
@@ -260,12 +260,16 @@ public:
     // Search functions
 
     // Count MatchBoxes
-    virtual void countMatchBoxes(int instances[]) const {}
+    virtual void countMatchBoxes(int[]) const {}
 
     // Return TagBox for a point (No Punkt: outermost)
-    virtual const TagBox *findTag(BoxPoint p = BoxPoint(-1, -1)) const 
+    virtual const TagBox *findTag(const BoxPoint&) const 
     { 
 	return 0;
+    }
+    const TagBox *findTag() const
+    {
+	return findTag(BoxPoint(-1, -1));
     }
 
     // Debugging

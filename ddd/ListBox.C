@@ -43,7 +43,8 @@ DEFINE_TYPE_INFO_1(ListBox, CompositeBox)
 // _last neu berechnen
 void ListBox::_relast()
 {
-    for (const ListBox *l = this; !l->isEmpty(); l = l->tail())
+    const ListBox *l;
+    for (l = this; !l->isEmpty(); l = l->tail())
 	;
     _last = l;
 }
@@ -136,7 +137,7 @@ void ListBox::uncons(ListBox *attach)
 
 
 // Auf Gleichheit pruefen
-bool ListBox::matches(const Box &b, const Box *callbackArg) const
+bool ListBox::matches(const Box &b, const Box *) const
 {
     return CompositeBox::matches(b);
 }

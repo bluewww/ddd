@@ -2432,8 +2432,8 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
     wm_set_icon(XtDisplay(shell), XtWindow(shell), icon, mask);
 }
 
-void wm_set_group_leader(Display *display,
-			 Window shell_window, Window leader_window)
+void wm_set_group_leader(Display * /* display */,
+			 Window /* shell_window */, Window /* leader_window */)
 {
     // Disabled, since (at least in fvwm) it has no effect but to
     // disable generation of individual icons.
@@ -2898,7 +2898,8 @@ static void sort(char *a[], int size)
 	for (int i = h; i < size; i++)
 	{
 	    char *v = a[i];
-	    for (int j = i; j >= h && strcmp(a[j - h], v) > 0; j -= h)
+	    int j;
+	    for (j = i; j >= h && strcmp(a[j - h], v) > 0; j -= h)
 		a[j] = a[j - h];
 	    if (i != j)
 		a[j] = v;
@@ -2927,7 +2928,8 @@ static void searchLocal(Widget fs,
     }
     else
     {
-	for (int count = 0; files[count] != 0; count++)
+	int count;
+	for (count = 0; files[count] != 0; count++)
 	    ;
 	sort(files, count);
 
@@ -2985,7 +2987,7 @@ static void searchLocalSourceFiles(Widget fs,
 }
 
 
-string get_file(Widget w, XtPointer client_data, XtPointer call_data)
+string get_file(Widget w, XtPointer, XtPointer call_data)
 {
     XmFileSelectionBoxCallbackStruct *cbs = 
 	(XmFileSelectionBoxCallbackStruct *)call_data;
@@ -3084,7 +3086,7 @@ void openSourceDone(Widget w, XtPointer client_data, XtPointer call_data)
 	source_view->read_file(filename);
 }
 
-void gdbOpenFileCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 0;
     if (dialog == 0)
@@ -3100,7 +3102,7 @@ void gdbOpenFileCB(Widget w, XtPointer client_data, XtPointer call_data)
     XtManageChild(dialog);
 }
 
-void gdbOpenCoreCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbOpenCoreCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 0;
     if (dialog == 0)
@@ -3116,7 +3118,7 @@ void gdbOpenCoreCB(Widget w, XtPointer client_data, XtPointer call_data)
     XtManageChild(dialog);
 }
 
-void gdbOpenSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 0;
     if (dialog == 0)
@@ -3258,8 +3260,7 @@ void iconify_tty(Widget shell)
 }
 
 
-void StructureNotifyEH(Widget w, XtPointer call_data, 
-		       XEvent *event, Boolean *continue_to_dispatch)
+void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 {
     bool synthetic = false;
 
@@ -3397,26 +3398,22 @@ void gdbCloseExecWindowCB(Widget w,
 }
 
 
-void gdbOpenCommandWindowCB(Widget w, 
-			    XtPointer client_data, XtPointer call_data)
+void gdbOpenCommandWindowCB(Widget, XtPointer, XtPointer)
 {
     popup_shell(command_shell);
 }
 
-void gdbOpenSourceWindowCB(Widget w, 
-			   XtPointer client_data, XtPointer call_data)
+void gdbOpenSourceWindowCB(Widget, XtPointer, XtPointer)
 {
     popup_shell(source_view_shell);
 }
 
-void gdbOpenDataWindowCB(Widget w,
-			 XtPointer client_data, XtPointer call_data)
+void gdbOpenDataWindowCB(Widget, XtPointer, XtPointer)
 {
     popup_shell(data_disp_shell);
 }
 
-void gdbOpenExecWindowCB(Widget w,
-			 XtPointer client_data, XtPointer call_data)
+void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
 {
     if (separate_tty_pid == 0)
 	startup_exec_tty();
@@ -4308,14 +4305,14 @@ void process_history_save(string answer)
 }
 
 // History viewer
-void SelectHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
+void SelectHistoryCB(Widget, XtPointer, XtPointer call_data)
 {
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
     gdb_current_history = cbs->item_position - 1;
     set_line_from_history();
 }
 
-void HistoryDestroyedCB(Widget w, XtPointer client_data, XtPointer call_data)
+void HistoryDestroyedCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget old_gdb_history_w = Widget(client_data);
     if (gdb_history_w == old_gdb_history_w)
@@ -4325,7 +4322,7 @@ void HistoryDestroyedCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-void gdbHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbHistoryCB(Widget w, XtPointer, XtPointer)
 {
     if (gdb_history_w)
     {
@@ -4492,7 +4489,7 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-void gdbBreakArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbBreakArgCmdCB(Widget w, XtPointer, XtPointer)
 {
     string arg = source_arg->get_string();
     string pos;
@@ -4529,7 +4526,7 @@ void gdbBreakArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-void gdbClearArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbClearArgCmdCB(Widget w, XtPointer, XtPointer)
 {
     string pos;
     string arg = source_arg->get_string();
@@ -4565,7 +4562,7 @@ void gdbClearArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-void gdbLineArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbLineArgCmdCB(Widget w, XtPointer client_data, XtPointer)
 {
     string cmd = String(client_data);
     string arg = source_arg->get_string();
@@ -4573,7 +4570,7 @@ void gdbLineArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
     gdb_command(cmd + arg, w);
 }
 
-void gdbItemArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbItemArgCmdCB(Widget w, XtPointer client_data, XtPointer)
 {
     string cmd = String(client_data);
     string arg = source_arg->get_string();
@@ -4582,13 +4579,13 @@ void gdbItemArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
 	gdb_command(cmd + arg, w);
 }
 
-void gdbLookupCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbLookupCB(Widget, XtPointer, XtPointer)
 {
     string arg = source_arg->get_string();
     source_view->lookup(arg);
 }
 
-void gdbFindForwardCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbFindForwardCB(Widget, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = 
 	(XmPushButtonCallbackStruct *)call_data;
@@ -4598,7 +4595,7 @@ void gdbFindForwardCB(Widget w, XtPointer client_data, XtPointer call_data)
 		      app_data.find_words_only, time(cbs->event));
 }
 
-void gdbFindBackwardCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbFindBackwardCB(Widget, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = 
 	(XmPushButtonCallbackStruct *)call_data;
@@ -4608,31 +4605,31 @@ void gdbFindBackwardCB(Widget w, XtPointer client_data, XtPointer call_data)
 		      app_data.find_words_only, time(cbs->event));
 }
 
-void gdbGoBackCB  (Widget w, XtPointer client_data, XtPointer call_data)
+void gdbGoBackCB  (Widget, XtPointer, XtPointer)
 {
     source_view->go_back();
 }
 
-void gdbGoForwardCB  (Widget w, XtPointer client_data, XtPointer call_data)
+void gdbGoForwardCB  (Widget, XtPointer, XtPointer)
 {
     source_view->go_forward();
 }
 
-void gdbPrevCB  (Widget w, XtPointer client_data, XtPointer call_data)
+void gdbPrevCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     Cardinal zero = 0;
     prev_historyAct(w, cbs->event, 0, &zero);
 }
 
-void gdbNextCB  (Widget w, XtPointer client_data, XtPointer call_data)
+void gdbNextCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     Cardinal zero = 0;
     next_historyAct(w, cbs->event, 0, &zero);
 }
 
-void gdbClearCB  (Widget w, XtPointer client_data, XtPointer call_data)
+void gdbClearCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
 
@@ -4641,7 +4638,7 @@ void gdbClearCB  (Widget w, XtPointer client_data, XtPointer call_data)
     set_lineAct(w, cbs->event, args, &num_args);
 }
 
-void gdbCompleteCB  (Widget w, XtPointer client_data, XtPointer call_data)
+void gdbCompleteCB  (Widget w, XtPointer, XtPointer call_data)
 {
     if (!gdb->isReadyWithPrompt())
     {
@@ -4656,7 +4653,7 @@ void gdbCompleteCB  (Widget w, XtPointer client_data, XtPointer call_data)
     complete_commandAct(gdb_w, cbs->event, 0, &zero);
 }
 
-void gdbApplyCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbApplyCB(Widget w, XtPointer, XtPointer call_data)
 {
     if (!gdb->isReadyWithPrompt())
     {
@@ -4671,7 +4668,7 @@ void gdbApplyCB(Widget w, XtPointer client_data, XtPointer call_data)
     XtCallActionProc(gdb_w, "process-return", cbs->event, 0, zero);
 }
 
-void gdbCutSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbCutSelectionCB(Widget, XtPointer client_data, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     Time tm = time(cbs->event);
@@ -4697,7 +4694,7 @@ void gdbCutSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-void gdbCopySelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbCopySelectionCB(Widget, XtPointer client_data, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     Time tm = time(cbs->event);
@@ -4723,7 +4720,7 @@ void gdbCopySelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
 {
     DDDWindow win = DDDWindow(client_data);
     switch (win)
@@ -4746,7 +4743,7 @@ void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-void gdbClearSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbClearSelectionCB(Widget, XtPointer client_data, XtPointer)
 {
     DDDWindow win = DDDWindow(client_data);
     switch (win)
@@ -4808,7 +4805,7 @@ inline void set_sensitive(Widget w, bool state)
     XtSetSensitive(w, state);
 }
 
-void source_argHP (void *_arg_field, void *client_data, void* call_data)
+void source_argHP (void *_arg_field, void *, void *)
 {
     ArgField *arg_field = (ArgField *)_arg_field;
     string arg = arg_field->get_string();
@@ -4825,7 +4822,7 @@ void source_argHP (void *_arg_field, void *client_data, void* call_data)
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
 }
 
-void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbUpdateEditCB(Widget, XtPointer, XtPointer)
 {
     // Check whether we can copy something to the clipboard
     XmTextPosition start, end;
@@ -4869,7 +4866,7 @@ void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer call_data)
     set_sensitive(data_edit_menu[EditItems::Paste].widget,    false);
 }
 
-void gdbUpdateViewCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbUpdateViewCB(Widget, XtPointer, XtPointer)
 {
     // Check whether the execution tty is running
 
@@ -4914,7 +4911,7 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
     set_sensitive(stack_w, gdb_ready);
 }
 
-void gdb_ready_for_cmdHP (void*, void*, void* call_data)
+void gdb_ready_for_cmdHP (void *, void *, void *)
 {
     // Nothing yet...
 }
@@ -4929,7 +4926,7 @@ struct GDBReply {
     bool received;    // true iff we found an answer
 };
 
-static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *timer)
+static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
 {
     GDBReply *reply = (GDBReply *)client_data;
     reply->answer   = string(-1);
@@ -5125,7 +5122,8 @@ static void sort(string a[], int size)
 	for (int i = h; i < size; i++)
 	{
 	    string v = a[i];
-	    for (int j = i; j >= h && a[j - h] > v; j -= h)
+	    int j;
+	    for (j = i; j >= h && a[j - h] > v; j -= h)
 		a[j] = a[j - h];
 	    if (i != j)
 		a[j] = v;
@@ -5360,7 +5358,8 @@ void complete_reply(string complete_answer, void *qu_data)
     {
 	// Find common prefix
 	string common_pfx = completions[0];
-	for (int i = 1; i < completions_size; i++)
+	int i;
+	for (i = 1; i < completions_size; i++)
 	    common_pfx = common_prefix(common_pfx, completions[i]);
 
 	if (completions_size > 1 && input == common_pfx)
@@ -5515,9 +5514,7 @@ void move_to_end_of_line(XtPointer, XtIntervalId *)
 }
 
 // Veto changes before the current input line
-void gdbModifyCB(Widget gdb_w,
-		 XtPointer client_data,
-		 XtPointer call_data)
+void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
 {
     if (private_gdb_output)
 	return;
@@ -5554,9 +5551,7 @@ void gdbModifyCB(Widget gdb_w,
 }
 
 // Veto key-based cursor movements before current line
-void gdbMotionCB(Widget gdb_w,
-		 XtPointer client_data,
-		 XtPointer call_data)
+void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
 {
     if (private_gdb_output)
 	return;
@@ -5584,9 +5579,7 @@ void gdbMotionCB(Widget gdb_w,
 }
 
 // Send completed lines to GDB
-void gdbChangeCB(Widget w,
-		 XtPointer client_data,
-		 XtPointer call_data)
+void gdbChangeCB(Widget w, XtPointer, XtPointer)
 {
     if (private_gdb_output)
 	return;
@@ -5720,7 +5713,8 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 		  XmNnumChildren, &num_children,
 		  NULL);
 
-    for (int i = 0; i < int(num_children); i++)
+    int i;
+    for (i = 0; i < int(num_children); i++)
 	XtManageChild(children[i]);
     for (i = 0; i < int(num_children); i++)
     {
@@ -6271,8 +6265,7 @@ static Widget          print_file_name_field = 0;
 
 
 // Go and print according to local state
-void graphQuickPrintCB(Widget w, 
-		       XtPointer client_data, XtPointer call_data)
+void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (print_to_printer)
     {
@@ -6343,47 +6336,40 @@ void graphQuickPrintCB(Widget w,
     }
 }
 
-static void SetPrintTypeCB(Widget w,
-			   XtPointer client_data, 
-			   XtPointer call_data)
+static void SetPrintTypeCB(Widget, XtPointer client_data, XtPointer)
 {
     print_type = PrintType(client_data);
 }
 
-static void SetSensitiveCB(Widget w, XtPointer client_data, 
-			   XtPointer call_data)
+static void SetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (XmToggleButtonGetState(w))
 	XtSetSensitive(Widget(client_data), True);
 }
 
-static void TakeFocusCB(Widget w, XtPointer client_data, 
-			XtPointer call_data)
+static void TakeFocusCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (XmToggleButtonGetState(w))
 	XmProcessTraversal(Widget(client_data), XmTRAVERSE_CURRENT);
 }
 
-static void UnsetSensitiveCB(Widget w, XtPointer client_data, 
-			     XtPointer call_data)
+static void UnsetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (XmToggleButtonGetState(w))
 	XtSetSensitive(Widget(client_data), False);
 }
 
-static void SetPrintSelectedNodesCB(Widget w, XtPointer client_data, 
-				    XtPointer call_data)
+static void SetPrintSelectedNodesCB(Widget w, XtPointer, XtPointer)
 {
     print_selected_only = XmToggleButtonGetState(w);
 }
 
-static void SetPrintTargetCB(Widget w, XtPointer client_data, 
-			     XtPointer call_data)
+static void SetPrintTargetCB(Widget w, XtPointer, XtPointer)
 {
     print_to_printer = XmToggleButtonGetState(w);
 }
 
-static void SetGCA4(Widget w, XtPointer client_data, XtPointer call_data)
+static void SetGCA4(Widget w, XtPointer, XtPointer)
 {
     if (XmToggleButtonGetState(w))
     {
@@ -6394,7 +6380,7 @@ static void SetGCA4(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-static void SetGCLetter(Widget w, XtPointer client_data, XtPointer call_data)
+static void SetGCLetter(Widget w, XtPointer, XtPointer)
 {
     BoxPostScriptGC gc;
 
@@ -6405,7 +6391,7 @@ static void SetGCLetter(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-static void SetGCLegal(Widget w, XtPointer client_data, XtPointer call_data)
+static void SetGCLegal(Widget w, XtPointer, XtPointer)
 {
     BoxPostScriptGC gc;
 
@@ -6416,8 +6402,7 @@ static void SetGCLegal(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-static void SetGCExecutive(Widget w, 
-			   XtPointer client_data, XtPointer call_data)
+static void SetGCExecutive(Widget w, XtPointer, XtPointer)
 {
     BoxPostScriptGC gc;
 
@@ -6428,8 +6413,7 @@ static void SetGCExecutive(Widget w,
     }
 }
 
-static void SetGCOrientation(Widget w, XtPointer client_data, 
-			     XtPointer call_data)
+static void SetGCOrientation(Widget w, XtPointer, XtPointer)
 {
     if (XmToggleButtonGetState(w))
 	print_postscript_gc.orientation = BoxPostScriptGC::PORTRAIT;
@@ -6437,7 +6421,7 @@ static void SetGCOrientation(Widget w, XtPointer client_data,
 	print_postscript_gc.orientation = BoxPostScriptGC::LANDSCAPE;
 }
 
-void graphPrintCB(Widget w, XtPointer client_data, XtPointer call_data)
+void graphPrintCB(Widget w, XtPointer, XtPointer)
 {
     if (print_dialog != 0)
     {
@@ -6645,7 +6629,7 @@ void graphPrintCB(Widget w, XtPointer client_data, XtPointer call_data)
 // Other Graph Functions
 //-----------------------------------------------------------------------------
 
-void graphToggleShowGridCB(Widget w, XtPointer, XtPointer call_data)
+void graphToggleShowGridCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
@@ -6664,7 +6648,7 @@ void graphToggleShowGridCB(Widget w, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
-void graphToggleShowHintsCB(Widget w, XtPointer, XtPointer call_data)
+void graphToggleShowHintsCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
@@ -6684,7 +6668,7 @@ void graphToggleShowHintsCB(Widget w, XtPointer, XtPointer call_data)
 }
 
 
-void graphToggleSnapToGridCB(Widget w, XtPointer, XtPointer call_data)
+void graphToggleSnapToGridCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
@@ -6704,7 +6688,7 @@ void graphToggleSnapToGridCB(Widget w, XtPointer, XtPointer call_data)
 }
 
 
-void graphToggleCompactLayoutCB(Widget w, XtPointer, XtPointer call_data)
+void graphToggleCompactLayoutCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
@@ -6727,7 +6711,7 @@ void graphToggleCompactLayoutCB(Widget w, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
-void graphToggleAutoLayoutCB(Widget w, XtPointer, XtPointer call_data)
+void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
@@ -6771,7 +6755,7 @@ void graphLayoutCB(Widget w, XtPointer client_data, XtPointer call_data)
     graphRefreshCB(w, client_data, call_data);
 }
 
-void graphRefreshCB(Widget w, XtPointer client_data, XtPointer call_data)
+void graphRefreshCB(Widget, XtPointer, XtPointer)
 {
     data_disp->refresh_graph_edit();
 }
@@ -6918,7 +6902,7 @@ void dddToggleSuppressWarningsCB (Widget, XtPointer, XtPointer call_data)
 //-----------------------------------------------------------------------------
 // Startup Options
 //-----------------------------------------------------------------------------
-static void post_startup_warning(Widget w)
+static void post_startup_warning(Widget /* w */)
 {
 #if 0
     post_warning(
@@ -7212,7 +7196,7 @@ static void wait_until_mapped(Widget w)
 static bool dungeon_collapsed = false;
 extern void meltdown(Display *display);
 
-static void DungeonCollapseCB(XtPointer client_data, XtIntervalId *id)
+static void DungeonCollapseCB(XtPointer client_data, XtIntervalId *)
 {
     Widget w = Widget(client_data);
 

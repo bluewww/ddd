@@ -90,7 +90,7 @@ int get_positive_nr (/*const*/ string& s)
 void read_leading_blanks (string& s)
 {
     int i = 0;
-    while (i < s.length() && isspace(s[i]))
+    while (i < int(s.length()) && isspace(s[i]))
 	i++;
     s = s.from(i);
 }

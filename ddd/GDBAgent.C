@@ -396,7 +396,7 @@ void GDBAgent::cut_off_prompt (string& answer)
 // ***************************************************************************
 // Received data from GDB
 //
-void GDBAgent::InputHP (Agent* agent, void* client_data, void* call_data)
+void GDBAgent::InputHP (Agent *, void* client_data, void* call_data)
 {
     GDBAgent*   gdb   = (GDBAgent *) client_data;
     DataLength* dl    = (DataLength *) call_data;
@@ -555,7 +555,7 @@ void GDBAgent::InputHP (Agent* agent, void* client_data, void* call_data)
 
 // ***************************************************************************
 
-void GDBAgent::DiedHP (Agent *agent, void* client_data, void* call_data)
+void GDBAgent::DiedHP (Agent *, void *, void* call_data)
 {
     char *reason = (char *)call_data;
     post_gdb_died(reason);
@@ -565,7 +565,7 @@ void GDBAgent::DiedHP (Agent *agent, void* client_data, void* call_data)
 // ***************************************************************************
 // Handle error messages
 //
-void GDBAgent::PanicHP (Agent *source, void *client_data, void *call_data)
+void GDBAgent::PanicHP (Agent *source, void *, void *call_data)
 {
     string msg = (char *)call_data;
 
@@ -610,20 +610,17 @@ static void trace(const string& prefix, void *call_data)
     clog << prefix << s << '\n';
 }
     
-void GDBAgent::traceInputHP(Agent *source, 
-			    void *client_data, void *call_data)
+void GDBAgent::traceInputHP(Agent *, void *, void *call_data)
 {
     trace("<- ", call_data);
 }
 
-void GDBAgent::traceOutputHP(Agent *source, 
-			     void *client_data, void *call_data)
+void GDBAgent::traceOutputHP(Agent *, void *, void *call_data)
 {
     trace("-> ", call_data);
 }
 
-
-void GDBAgent::traceErrorHP (Agent *source, void *client_data, void *call_data)
+void GDBAgent::traceErrorHP (Agent *, void *, void *call_data)
 {
     trace("<= ", call_data);
 }

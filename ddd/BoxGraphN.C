@@ -39,7 +39,7 @@ DEFINE_TYPE_INFO_1(BoxGraphNode, RegionGraphNode)
 
 // Draw a BoxGraphNode
 void BoxGraphNode::forceDraw(Widget w, 
-			     const BoxRegion& exposed, 
+			     const BoxRegion&, 
 			     const GraphGC& gc) const
 {
     // We do not check for exposures here --

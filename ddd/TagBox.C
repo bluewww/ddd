@@ -54,19 +54,19 @@ static Data *default_link(Data *dta)
 }
 
 // Default-Freigabe-Funktion
-static void default_unlink(Data *dta)
+static void default_unlink(Data *)
 {
     return;
 }
 
 // Dummy-Funktion zur Bestimmung, ob ausgewaehlt
-static bool default_selected(Data *dta)
+static bool default_selected(Data *)
 {
     return false;   // Default: "nicht ausgewaehlt" zurueckgeben
 }
 
 // Dummy-Funktion zur Bestimmung des Tag-Namens
-static string default_name(Data *dta)
+static string default_name(Data *)
 {
     return "";      // Default: Kein Name
 }
@@ -89,7 +89,7 @@ DataLink TagBox::default_datalink =
 
 
 // TagBox suchen, in der Punkt p liegt und tag zurueckgeben
-const TagBox *TagBox::findTag(BoxPoint p) const
+const TagBox *TagBox::findTag(const BoxPoint& p) const
 {
     // Sonderfall: obersten Tag zurueckgeben
     if (p == BoxPoint(-1, -1))

@@ -85,7 +85,7 @@ public:
 
     // Attributes
     // Region occupied by this node
-    virtual const BoxRegion& region(const GraphGC& gc) const
+    virtual const BoxRegion& region(const GraphGC&) const
     { 
 	return _region; 
     }

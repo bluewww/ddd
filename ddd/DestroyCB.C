@@ -34,28 +34,28 @@ char DestroyCB_rcsid[] =
 // callbacks
 
 // destroy the surrounding shell
-void DestroyShellCB(Widget widget, XtPointer client_data, XtPointer call_data)
+void DestroyShellCB(Widget widget, XtPointer, XtPointer)
 {
     Widget shell = findShellParent(widget);
     XtDestroyWidget(shell);
 }
 
 // destroy specific widget
-void DestroyThisCB(Widget widget, XtPointer client_data, XtPointer call_data)
+void DestroyThisCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget w = Widget(client_data);
     XtDestroyWidget(w);
 }
 
 // unmanage the surrounding shell
-void UnmanageShellCB(Widget widget, XtPointer client_data, XtPointer call_data)
+void UnmanageShellCB(Widget widget, XtPointer, XtPointer)
 {
     Widget shell = findShellParent(widget);
     XtUnmanageChild(shell);
 }
 
 // unmanage specific widget
-void UnmanageThisCB(Widget widget, XtPointer client_data, XtPointer call_data)
+void UnmanageThisCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget w = Widget(client_data);
     XtUnmanageChild(w);

@@ -125,7 +125,7 @@ static String bitmap_name_set[] =
 Boolean CvtStringToWidget(Display *display, 
 			  XrmValue *args, Cardinal *num_args, 
 			  XrmValue *fromVal, XrmValue *toVal,
-			  XtPointer *converter_data)
+			  XtPointer *)
 {
     // convert first arg into parent    
     if (*num_args != 1) 
@@ -157,7 +157,7 @@ Boolean CvtStringToWidget(Display *display,
 Boolean CvtStringToPixmap(Display *display, 
 			  XrmValue *args, Cardinal *num_args, 
 			  XrmValue *fromVal, XrmValue *toVal,
-			  XtPointer *converter_data)
+			  XtPointer *)
 {
     // Default parameters
     Screen *screen   = DefaultScreenOfDisplay(display);
@@ -209,9 +209,9 @@ static String locateBitmap(Display *display, String basename);
 // Convert String to Bitmap
 // A Bitmap will be read in as bitmap file -- 1 and 0 values remain unchanged.
 Boolean CvtStringToBitmap(Display *display, 
-			  XrmValue *args, Cardinal *num_args, 
+			  XrmValue *, Cardinal *, 
 			  XrmValue *fromVal, XrmValue *toVal,
-			  XtPointer *converter_data)
+			  XtPointer *)
 {
     // Fetch a drawable
     Window window = None;
@@ -381,9 +381,9 @@ static String locateBitmap(Display *display, String basename)
 // `@[font-id] TEXT' makes TEXT be displayed in font font-id
 // `@[space]' displays a single `@'.
 Boolean CvtStringToXmString(Display *display, 
-			    XrmValue *args, Cardinal *num_args, 
+			    XrmValue *, Cardinal *, 
 			    XrmValue *fromVal, XrmValue *toVal,
-			    XtPointer *converter_data)
+			    XtPointer *)
 {
     const string font_esc = "@";
 
@@ -441,11 +441,11 @@ Boolean CvtStringToXmString(Display *display,
 // suitable for the specification of the XmNentryAlignment-resource in 
 // RowColumn-widgets (or anything else using alignment-resources)
 Boolean CvtStringToAlignment(Display*   display, 
-                             XrmValue*  args,
-                             Cardinal*  num_args, 
+                             XrmValue*  ,
+                             Cardinal*  , 
                              XrmValue*  fromVal,
                              XrmValue*  toVal,
-                             XtPointer* converter_data)
+                             XtPointer* )
 {
     String theAlignment = downcase((String)fromVal->addr);
  
@@ -468,11 +468,11 @@ Boolean CvtStringToAlignment(Display*   display,
 // suitable for the specification of the XmNorientation-resource in 
 // RowColumn-widgets (or anything else using orientation-resources)
 Boolean CvtStringToOrientation(Display*         display, 
-                               XrmValue*        args,
-                               Cardinal*        num_args, 
+                               XrmValue*        ,
+                               Cardinal*        , 
                                XrmValue*        fromVal,
                                XrmValue*        toVal,
-                               XtPointer*       converter_data)
+                               XtPointer*       )
 {
     String theOrientation = downcase((String)fromVal->addr);
   
@@ -493,11 +493,11 @@ Boolean CvtStringToOrientation(Display*         display,
 // suitable for the specification of the XmNpacking-resource in
 // RowColumn-widgets (or anything else using packing-resources)
 Boolean CvtStringToPacking(Display*     display, 
-                           XrmValue*    args,
-                           Cardinal*    num_args, 
+                           XrmValue*    ,
+                           Cardinal*    , 
                            XrmValue*    fromVal,
                            XrmValue*    toVal,
-                           XtPointer*   converter_data)
+                           XtPointer*   )
 {
     String thePacking = downcase((String)fromVal->addr);
   

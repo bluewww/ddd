@@ -167,8 +167,8 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
 void AsyncAgent::dispatch(int *, XtInputId *inputId)
 {
     // search handler
-    for (unsigned type = 0; 
-	 type < AsyncAgent_NHandlers && id(type) != *inputId; type++)
+    unsigned type;
+    for (type = 0; type < AsyncAgent_NHandlers && id(type) != *inputId; type++)
 	;
     
     // call it

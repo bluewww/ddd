@@ -91,11 +91,11 @@ public:
     DECLARE_TYPE_INFO
 
 protected:
-    virtual void _draw(Widget w, 
-		       const BoxRegion& region, 
-		       const BoxRegion& exposed,
-		       GC gc, 
-		       bool context_selected) const
+    virtual void _draw(Widget, 
+		       const BoxRegion&, 
+		       const BoxRegion&,
+		       GC, 
+		       bool) const
     {
 	// do nothing
     }
@@ -105,9 +105,9 @@ protected:
     {}
 
 public:
-    void _print(ostream& os, 
-		const BoxRegion& r, 
-		const BoxPrintGC& gc) const
+    void _print(ostream&, 
+		const BoxRegion&, 
+		const BoxPrintGC&) const
     {
 	// do nothing
     }

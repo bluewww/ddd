@@ -193,7 +193,7 @@ bool VSLDefList::OK() const
 {
     VSLDef *d = _first;
     VSLDef *lastdef = d;
-    int count = 0;
+    unsigned count = 0;
 
     // Pruefen, ob _ndefs und _last ok
     while (d != 0)

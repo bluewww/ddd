@@ -84,9 +84,9 @@ protected:
     void dumpComposite(ostream& s, 
 	char *sep = ", ", char *head = "(", char *tail = ") ") const;
 
-    bool matches (const Box &b, const Box *callbackArg = 0) const;
+    bool matches (const Box &, const Box * = 0) const;
 
-    const TagBox *findTag(BoxPoint p = BoxPoint(-1, -1)) const;
+    const TagBox *findTag(const BoxPoint&) const;
 
 
 public:

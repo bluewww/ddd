@@ -334,7 +334,7 @@ void Layout::set_node_position (char *g, char *node, int x, int y)
  * (X, Y), this has no effect.
  */
 
-void Layout::add_edge_hint (char *g, char *node1, char *node2, int x, int y)
+void Layout::add_edge_hint (char *, char *, char *, int, int)
 
 {
 
@@ -345,7 +345,7 @@ void Layout::add_edge_hint (char *g, char *node1, char *node2, int x, int y)
  * If there is no such hint, this action has no effect.  
  */
 
-void Layout::remove_edge_hint (char *g, char *node1, char *node2, int x, int y)
+void Layout::remove_edge_hint (char *, char *, char *, int, int)
 
 {
 
@@ -697,7 +697,7 @@ void Layout::noraOutput (GRAPH *graph)
  * write out the node position 
  */
 
-void Layout::noraNodeOut (char *graph, NODE *node)
+void Layout::noraNodeOut (char *, NODE *node)
 
 {
     if (node->x == node->oldx && node->y == node->oldy) {
@@ -1514,7 +1514,7 @@ void Layout::graphAddLevels (GRAPH *graph, int n)
  * TODO: check for dublicates and loops
  */
 
-void Layout::graphInsertEdge (GRAPH *graph,NODE *source,NODE *target)
+void Layout::graphInsertEdge (GRAPH *, NODE *source, NODE *target)
 
 {
 	EDGE *from;

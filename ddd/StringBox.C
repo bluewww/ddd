@@ -87,9 +87,9 @@ Box *StringBox::resize()
 // StringBox anzeigen
 void StringBox::_draw(Widget w, 
 		      const BoxRegion& r, 
-		      const BoxRegion& exposed, 
+		      const BoxRegion&, 
 		      GC gc,
-		      bool context_selected) const
+		      bool) const
 {
     BoxPoint origin = r.origin();
 

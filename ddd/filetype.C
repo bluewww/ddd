@@ -224,7 +224,7 @@ bool is_fig_file(const string& file_name)
 }
 
 // True if FILE_NAME is an XWD file
-bool is_xwd_file(const string& file_name)
+bool is_xwd_file(const string& /* file_name */)
 {
     // No simple way to determine this portably... *sigh*
     return false;

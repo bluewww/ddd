@@ -117,7 +117,8 @@ string DispBox::short_name (string name, int length)
     }
 
     // Strip pointer chains
-    while (name.length() > length && name.contains(RXpointer_name_pointer))
+    while (name.length() > unsigned(length)
+	   && name.contains(RXpointer_name_pointer))
     {
 	string postfix = name.after(RXpointer_name_pointer);
 	name = name.before(RXpointer_name_pointer);
@@ -182,7 +183,8 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 
 	    // Determine maximum member name width
 	    int max_member_name_width = 0;
-	    for (int i = 0; i < count; i++)
+	    int i;
+	    for (i = 0; i < count; i++)
 	    {
 		string child_member_name = dv->get_child(i)->name();
 		Box *box = eval("struct_member_name", child_member_name);

@@ -90,11 +90,11 @@ protected:
 	CompositeBox(box), _last(0)
     {}
 
-    virtual void _draw(Widget w, 
-		       const BoxRegion& r, 
-		       const BoxRegion& exposed,
-		       GC gc, 
-		       bool context_selected) const
+    virtual void _draw(Widget, 
+		       const BoxRegion&, 
+		       const BoxRegion&,
+		       GC, 
+		       bool) const
     {
 	assert(0);  // ListBox kann nicht gezeichnet werden
 	::abort();
@@ -158,7 +158,8 @@ public:
     int length()
     {
 	const ListBox *t = this;
-	for (int i = 0; !t->isEmpty(); i++)
+	int i;
+	for (i = 0; !t->isEmpty(); i++)
 	    t = t->tail();
 	return i;
     }
@@ -167,7 +168,7 @@ public:
 
     bool isListBox() const { return true; }
 
-    void _print(ostream& os, const BoxRegion& r, const BoxPrintGC& gc) const
+    void _print(ostream&, const BoxRegion&, const BoxPrintGC&) const
     {
 	assert(0);  // ListBox kann nicht gedruckt werden
 	::abort();

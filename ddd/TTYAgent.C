@@ -350,8 +350,8 @@ void TTYAgent::open_master()
     if (stat("/dev/ptym", &sb) == 0 && S_ISDIR(sb.st_mode))
     {
 	// Try PTY's in /dev/ptym/ptyXX and /dev/pty/ttyXX -- a HP-UX feature
-	for (int i = 0; i < p1.length(); i++)
-	    for (int j = 0; j < p2.length(); j++)
+	for (int i = 0; i < int(p1.length()); i++)
+	    for (int j = 0; j < int(p2.length()); j++)
 	    {
 		string nr  = string(p1[i]) + p2[j];
 		string pty = "/dev/ptym/pty" + nr;
@@ -374,8 +374,8 @@ void TTYAgent::open_master()
     }
 
     // Try PTY's in /dev/pty?? -- a BSD and USG feature
-    for (int i = 0; i < p1.length(); i++)
-	for (int j = 0; j < p2.length(); j++)
+    for (int i = 0; i < int(p1.length()); i++)
+	for (int j = 0; j < int(p2.length()); j++)
 	{
 	    string nr  = string(p1[i]) + p2[j];
 	    string pty = "/dev/pty" + nr;

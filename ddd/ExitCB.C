@@ -37,14 +37,13 @@ char ExitCB_rcsid[] =
 // callbacks
 
 // leave program
-void ExitCB(Widget widget, XtPointer client_data, XtPointer call_data)
+void ExitCB(Widget, XtPointer, XtPointer)
 {
     exit(0);
 }
 
 // same, but with interaction
-void ExitAfterConfirmationCB(Widget widget, XtPointer client_data,
-			     XtPointer call_data)
+void ExitAfterConfirmationCB(Widget widget, XtPointer, XtPointer)
 {
     Arg args[10];
     int arg;

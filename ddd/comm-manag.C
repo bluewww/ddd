@@ -77,7 +77,7 @@ typedef struct CmdData {
 	     DispBuffer* db = 0,
 	     PosBuffer*  pb = 0,
 	     bool     nep= false,
-	     bool     nfp= false) :
+	     bool     /* nfp */ = false) :
 	filter_disp (fd),
 	disp_buffer (db),
 	pos_buffer (pb),
@@ -553,9 +553,9 @@ void user_cmdOAC (void* data)
 	{
 
 	    bool disabling_occurred;
-	    string not_my_displays = data_disp->process_displays
-		(cmd_data->disp_buffer->get_displays(),
-		 disabling_occurred);
+	    string displays = cmd_data->disp_buffer->get_displays();
+	    string not_my_displays = 
+		data_disp->process_displays(displays, disabling_occurred);
 	    gdb_out(not_my_displays);
 
 	    cmd_data->disp_buffer->clear();

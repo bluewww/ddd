@@ -68,7 +68,7 @@ protected:
 
     void dump(ostream& s) const;
 
-    const TagBox *findTag(BoxPoint p = BoxPoint(-1, -1)) const;
+    const TagBox *findTag(const BoxPoint&) const;
 
 public:
     // Constructor

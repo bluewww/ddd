@@ -114,7 +114,7 @@ void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
     _MStringHelpCB(widget, XtPointer(text.xmstring()), call_data, true);
 }
 
-void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
+void ImmediateHelpCB(Widget widget, XtPointer, XtPointer call_data)
 {
     if (widget == 0)
 	return;
@@ -124,7 +124,7 @@ void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
 }
 
-void HelpOnWindowCB(Widget widget, XtPointer client_data, XtPointer call_data)
+void HelpOnWindowCB(Widget widget, XtPointer, XtPointer call_data)
 {
     // Get a shell window
     Widget shell = findTopLevelShellParent(widget);
@@ -133,7 +133,7 @@ void HelpOnWindowCB(Widget widget, XtPointer client_data, XtPointer call_data)
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
 }
 
-void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
+void HelpOnVersionCB(Widget widget, XtPointer, XtPointer call_data)
 {
     // Get the top-level shell window
     Widget shell = widget;
@@ -151,8 +151,7 @@ void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
 		   false, pixmap);
 }
 
-static void HelpDestroyCB(Widget widget, XtPointer client_data, 
-			  XtPointer call_data)
+static void HelpDestroyCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget old_dialog = Widget(client_data);
     if (old_dialog == help_dialog)
@@ -190,7 +189,7 @@ void MStringHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 
 static void _MStringHelpCB(Widget widget, 
 			   XtPointer client_data, 
-			   XtPointer call_data,
+			   XtPointer,
 			   bool help_on_help,
 			   Pixmap pixmap)
 {
@@ -272,7 +271,7 @@ static void HelpIndexCB(Widget widget, XtPointer client_data,
 
 // Note: this assumes `groff -Tascii -man' format.
 void ManualStringHelpCB(Widget widget, XtPointer client_data, 
-			XtPointer call_data)
+			XtPointer)
 {
     String text = String(client_data);
 
@@ -332,7 +331,7 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 
 
     // Strip manual headers and footers
-    int source = 0;
+    unsigned source = 0;
     int target = 0;
     int line = 0;
 
@@ -352,7 +351,8 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
     int size = stripped_text.length();
     bool *underlined    = new bool[size];
     bool *doublestriked = new bool[size];
-    for (int i = 0; i < size; i++)
+    int i;
+    for (i = 0; i < size; i++)
 	underlined[i] = doublestriked[i] = false;
 
     source = 0;
@@ -441,7 +441,7 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 
     XmTextPosition underlining    = 0;
     XmTextPosition doublestriking = 0;
-    for (i = 0; i < stripped_text.length(); i++)
+    for (i = 0; i < int(stripped_text.length()); i++)
     {
 	if (doublestriked[i] && !doublestriking)
 	{
@@ -479,7 +479,7 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 }
 
 
-void FileHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
+void FileHelpCB(Widget widget, XtPointer client_data, XtPointer)
 {
     Delay delay;
 
@@ -575,7 +575,7 @@ void CommandHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 }
 
 
-void HelpManualCB(Widget widget, XtPointer client_data, XtPointer call_data)
+void HelpManualCB(Widget widget, XtPointer, XtPointer call_data)
 {
     Widget toplevel = widget;
     while (XtParent(toplevel))

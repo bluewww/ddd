@@ -297,9 +297,7 @@ void SourceView::bp_popup_deleteCB (Widget,
 
 // ***************************************************************************
 //
-void SourceView::bp_popup_disableCB (Widget,
-				     XtPointer client_data,
-				     XtPointer call_data)
+void SourceView::bp_popup_disableCB (Widget, XtPointer client_data, XtPointer)
 {
     int bp_nr = *((int *)client_data);
 
@@ -315,9 +313,7 @@ void SourceView::bp_popup_disableCB (Widget,
 
 // ***************************************************************************
 //
-void SourceView::text_popup_breakCB (Widget,
-				     XtPointer client_data,
-				     XtPointer call_data)
+void SourceView::text_popup_breakCB (Widget, XtPointer client_data, XtPointer)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
@@ -340,9 +336,7 @@ void SourceView::text_popup_breakCB (Widget,
     }
 }
 
-void SourceView::text_popup_clearCB (Widget,
-				     XtPointer client_data,
-				     XtPointer call_data)
+void SourceView::text_popup_clearCB (Widget, XtPointer client_data, XtPointer)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
@@ -369,9 +363,7 @@ void SourceView::text_popup_clearCB (Widget,
 
 // ***************************************************************************
 //
-void SourceView::text_popup_printCB (Widget,
-				     XtPointer client_data,
-				     XtPointer call_data)
+void SourceView::text_popup_printCB (Widget, XtPointer client_data, XtPointer)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
@@ -383,9 +375,7 @@ void SourceView::text_popup_printCB (Widget,
 
 // ***************************************************************************
 //
-void SourceView::text_popup_dispCB (Widget,
-				    XtPointer client_data,
-				    XtPointer call_data)
+void SourceView::text_popup_dispCB (Widget, XtPointer client_data, XtPointer)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
@@ -396,9 +386,7 @@ void SourceView::text_popup_dispCB (Widget,
 
 // ***************************************************************************
 //
-void SourceView::text_popup_lookupCB (Widget,
-				      XtPointer client_data,
-				      XtPointer call_data)
+void SourceView::text_popup_lookupCB (Widget, XtPointer client_data, XtPointer)
 {
     string* word_ptr = (string*)client_data;
     lookup(*word_ptr);
@@ -414,9 +402,7 @@ static bool selection_click = false;
 
 static string last_info_output = "";
 
-void SourceView::set_source_argCB (Widget, 
-				   XtPointer client_data, 
-				   XtPointer call_data)
+void SourceView::set_source_argCB (Widget, XtPointer client_data, XtPointer)
 {
     if (current_text == "")
 	return;
@@ -699,7 +685,8 @@ String SourceView::read_indented(string& file_name)
     while (*text_ptr != '\0')
     {
 	// Increase line number
-	for (int i = bp_indent_amount - 2; i >= 0; i--)
+	int i;
+	for (i = bp_indent_amount - 2; i >= 0; i--)
 	{
 	    char& c = line_no_s[i];
 	    if (c == ' ')
@@ -982,14 +969,13 @@ void SourceView::refresh_bp_disp ()
 	}
 	else
 	{
-	    for (i = insert_string.length();
-		 i < bp_indent_amount-1;
-		 i++)
+	    for (i = insert_string.length(); 
+		 i < int(bp_indent_amount) - 1; i++)
 	    {
 		insert_string += current_text[pos + i];
 	    }
 	}
-	assert(insert_string.length() == bp_indent_amount - 1);
+	assert(insert_string.length() == unsigned(bp_indent_amount - 1));
 
 	XmTextReplace (source_text_w,
 		       pos, pos + bp_indent_amount - 1,
@@ -1110,7 +1096,7 @@ void SourceView::refresh_bpsSQ ()
 
 // ***************************************************************************
 //
-void SourceView::refresh_bpsOQC (string answer, void* data)
+void SourceView::refresh_bpsOQC (string answer, void *)
 {
     process_info_bp (answer);
 }
@@ -1560,7 +1546,7 @@ void SourceView::process_info_line_main(string& info_output)
     // Strip 'No symbol table is loaded.' info
     String strips[] = {"Line ", "No symbol table is loaded."};
 
-    for (int i = 0; i < XtNumber(strips); i++)
+    for (int i = 0; i < int(XtNumber(strips)); i++)
     {
 	int line = info_output.index(strips[i]);
 	if (line >= 0)
@@ -1631,9 +1617,8 @@ void SourceView::lookup(string s)
 	if (nr >= 0)
 	{
 	    MapRef ref;
-	    for (BreakPoint* bp = bp_map.first(ref);
-		 bp != 0;
-		 bp = bp_map.next(ref))
+	    BreakPoint *bp;
+	    for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
 	    {
 		if (nr == bp->number())
 		{
@@ -1913,7 +1898,7 @@ static XmTextPosition selection_endpos;
 static XmTextPosition selection_pos;
 static Time selection_time;
 
-void SourceView::setSelection(XtPointer client_data, XtIntervalId *timer)
+void SourceView::setSelection(XtPointer, XtIntervalId *)
 {
     XmTextSetSelection(source_text_w, 
 		       selection_startpos, selection_endpos, selection_time);
@@ -1975,7 +1960,7 @@ void SourceView::endSelectWordAct (Widget w, XEvent* e,
 //-----------------------------------------------------------------------------
 // Reaktion auf Klicken der rechten Maus-Taste
 //----------------------------------------------------------------------------
-void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
+void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 {
     if (e->type != ButtonPress)
 	return;
@@ -2116,9 +2101,7 @@ Widget SourceView::widget() { return source_view_w; }
 // Breakpoint selection
 //----------------------------------------------------------------------------
 
-void SourceView::NewBreakpointDCB(Widget w, 
-				 XtPointer client_data, 
-				 XtPointer call_data)
+void SourceView::NewBreakpointDCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
@@ -2166,9 +2149,7 @@ void SourceView::NewBreakpointDCB(Widget w,
     }
 }
 
-void SourceView::NewBreakpointCB(Widget w,
-				 XtPointer client_data,
-				 XtPointer call_data)
+void SourceView::NewBreakpointCB(Widget, XtPointer, XtPointer)
 {
     static Widget new_breakpoint_dialog = 0;
     if (new_breakpoint_dialog == 0)
@@ -2192,7 +2173,7 @@ void SourceView::NewBreakpointCB(Widget w,
 
 
 // Edit breakpoint condition
-void SourceView::EditBreakpointConditionDCB(Widget w, 
+void SourceView::EditBreakpointConditionDCB(Widget, 
 					    XtPointer client_data, 
 					    XtPointer call_data)
 {
@@ -2223,9 +2204,9 @@ void SourceView::EditBreakpointConditionDCB(Widget w,
     XtFree(input);
 }
 
-void SourceView::EditBreakpointConditionCB(Widget w,
+void SourceView::EditBreakpointConditionCB(Widget,
 					   XtPointer client_data,
-					   XtPointer call_data)
+					   XtPointer)
 {
     if (breakpoint_list_w == 0)
 	return;
@@ -2288,7 +2269,7 @@ void SourceView::EditBreakpointConditionCB(Widget w,
 
 
 // Edit breakpoint ignore count
-void SourceView::EditBreakpointIgnoreCountDCB(Widget w, 
+void SourceView::EditBreakpointIgnoreCountDCB(Widget, 
 					      XtPointer client_data, 
 					      XtPointer call_data)
 {
@@ -2322,9 +2303,9 @@ void SourceView::EditBreakpointIgnoreCountDCB(Widget w,
     XtFree(input);
 }
 
-void SourceView::EditBreakpointIgnoreCountCB(Widget w,
+void SourceView::EditBreakpointIgnoreCountCB(Widget,
 					     XtPointer client_data,
-					     XtPointer call_data)
+					     XtPointer)
 {
     if (breakpoint_list_w == 0)
 	return;
@@ -2384,9 +2365,9 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget w,
 }
 
 
-void SourceView::BreakpointCmdCB(Widget w,
+void SourceView::BreakpointCmdCB(Widget,
 				 XtPointer client_data,
-				 XtPointer call_data)
+				 XtPointer)
 {
     if (breakpoint_list_w == 0)
 	return;
@@ -2403,9 +2384,7 @@ void SourceView::BreakpointCmdCB(Widget w,
     delete[] breakpoint_nrs;
 }
 
-void SourceView::LookupBreakpointCB(Widget w,
-				    XtPointer client_data,
-				    XtPointer call_data)
+void SourceView::LookupBreakpointCB(Widget, XtPointer, XtPointer)
 {
     if (breakpoint_list_w == 0)
 	return;
@@ -2464,15 +2443,14 @@ void SourceView::fill_labels(const string& info_output)
     delete[] selected;
 }
 
-void SourceView::UpdateBreakpointButtonsCB(Widget w, 
-					   XtPointer client_data, 
-					   XtPointer call_data)
+void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, XtPointer)
 {
     if (edit_breakpoints_dialog_w == 0)
 	return;
 
     int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
-    for (int count = 0; breakpoint_nrs[count] != 0; count++)
+    int count;
+    for (count = 0; breakpoint_nrs[count] != 0; count++)
 	;
 
     // Update selection
@@ -2515,9 +2493,7 @@ void SourceView::UpdateBreakpointButtonsCB(Widget w,
 		   count > 0);
 }
 
-void SourceView::EditBreakpointsCB(Widget w,
-				   XtPointer client_data,
-				   XtPointer call_data)
+void SourceView::EditBreakpointsCB(Widget, XtPointer, XtPointer)
 {
     if (edit_breakpoints_dialog_w)
 	XtManageChild(edit_breakpoints_dialog_w);
@@ -2534,8 +2510,7 @@ void SourceView::StackDialogPoppedDownCB (Widget, XtPointer, XtPointer)
     stack_dialog_popped_up = false;
 }
 
-void SourceView::SelectFrameCB (Widget w, 
-				XtPointer client_data, XtPointer call_data)
+void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
 
@@ -2659,7 +2634,8 @@ void SourceView::process_where (string& where_output)
 	count--;
 
     // Invert list such that `Up' and `Down' make sense
-    for (int i = 0; i < count / 2; i++)
+    int i;
+    for (i = 0; i < count / 2; i++)
     {
 	string tmp = frame_list[i];
 	frame_list[i] = frame_list[count - i - 1];

@@ -564,19 +564,19 @@ static Box *square(ListBox *args)
     return new SquareBox(max(arg->size(X), arg->size(Y)));
 }
 
-static Box *fill(ListBox *args)
+static Box *fill(ListBox *)
 // fill()
 {
     return new FillBox;
 }
 
-static Box *rule(ListBox *args)
+static Box *rule(ListBox *)
 // rule()
 {
     return new RuleBox;
 }
 
-static Box *diag(ListBox *args)
+static Box *diag(ListBox *)
 // diag()
 {
     return new DiagBox;
@@ -585,7 +585,7 @@ static Box *diag(ListBox *args)
 
 // Default-Boxen
 
-static Box *undef(ListBox *args)
+static Box *undef(ListBox *)
 // Platzhalter fuer undefinierte Box
 {
     return new StringBox("???");
@@ -679,7 +679,7 @@ int VSLBuiltin::resolve(const string& func_nm)
 // fuer gegebenen Namen Funktionszeiger zurueckgeben;
 // wenn nicht gefunden, 0 zurueckgeben.
 {
-    for (int i = 0; i < sizeof(builtins) / sizeof(builtins[0]); i++)
+    for (int i = 0; i < int(sizeof(builtins) / sizeof(builtins[0])); i++)
 	if (func_nm == builtins[i].func_name)
 	    return i;
 
@@ -689,37 +689,37 @@ int VSLBuiltin::resolve(const string& func_nm)
 
 BuiltinFunc VSLBuiltin::func(int idx)
 {
-    assert (idx >= 0 && idx < sizeof(builtins) / sizeof(builtins[0]));
+    assert (idx >= 0 && idx < int(sizeof(builtins) / sizeof(builtins[0])));
     return builtins[idx].eval_func;
 }
 
 bool VSLBuiltin::isAssoc(int idx)
 {
-    assert (idx >= 0 && idx < sizeof(builtins) / sizeof(builtins[0]));
+    assert (idx >= 0 && idx < int(sizeof(builtins) / sizeof(builtins[0])));
     return builtins[idx].isAssoc;
 }
 
 bool VSLBuiltin::hasSideEffects(int idx)
 {
-    assert (idx >= 0 && idx < sizeof(builtins) / sizeof(builtins[0]));
+    assert (idx >= 0 && idx < int(sizeof(builtins) / sizeof(builtins[0])));
     return builtins[idx].hasSideEffects;
 }
 
 bool VSLBuiltin::isInfix(int idx)
 {
-    assert (idx >= 0 && idx < sizeof(builtins) / sizeof(builtins[0]));
+    assert (idx >= 0 && idx < int(sizeof(builtins) / sizeof(builtins[0])));
     return builtins[idx].isInfix;
 }
 
 char *VSLBuiltin::func_name(int idx)
 {
-    assert (idx >= 0 && idx < sizeof(builtins) / sizeof(builtins[0]));
+    assert (idx >= 0 && idx < int(sizeof(builtins) / sizeof(builtins[0])));
     return builtins[idx].func_name;
 }
 
 char *VSLBuiltin::ext_name(int idx)
 {
-    assert (idx >= 0 && idx < sizeof(builtins) / sizeof(builtins[0]));
+    assert (idx >= 0 && idx < int(sizeof(builtins) / sizeof(builtins[0])));
     char *s = builtins[idx].ext_name;
     return s != 0 ? s : builtins[idx].func_name;
 }

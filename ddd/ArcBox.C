@@ -47,8 +47,8 @@ DEFINE_TYPE_INFO_1(ArcBox, LineBox)
 // ArcBox anzeigen
 void ArcBox::__draw(Widget w, 
 		    const BoxRegion& r, 
-		    const BoxRegion& exposed, GC gc, 
-		    bool context_selected) const
+		    const BoxRegion& , GC gc, 
+		    bool) const
 {
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();
@@ -142,7 +142,7 @@ const float pi  = 3.14159265358979323846;
 
 void ArcBox::_printFig(ostream& os, 
 		       const BoxRegion& region, 
-		       const BoxPrintGC &gc) const
+		       const BoxPrintGC &) const
 {
     BoxPoint origin = region.origin() ;
     BoxPoint space = region.space();
@@ -386,7 +386,7 @@ void ArcBox::_printFig(ostream& os,
 
 void ArcBox::_printPS(ostream& os, 
 		      const BoxRegion& region, 
-		      const BoxPrintGC &gc) const
+		      const BoxPrintGC &) const
 {
     BoxPoint origin = region.origin() ;
     BoxPoint space = region.space();

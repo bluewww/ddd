@@ -390,7 +390,7 @@ void Agent::waitToTerminate()
 {
     int sig = 0;
 
-    for (unsigned seconds = 0; running(); seconds++)
+    for (int seconds = 0; running(); seconds++)
     {
 	sig = 0;
 

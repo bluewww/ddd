@@ -69,7 +69,7 @@ protected:
 
     // Dummy-Funktionen (werden nie aufgerufen)
     char *func_name() const       { assert(0); return "test"; }
-    const Box *call(Box *a) const { assert(0); return 0; }
+    const Box *call(Box *) const  { assert(0); return 0; }
 
 public:
     // TestNode erzeugen

@@ -214,7 +214,8 @@ void MemCheck::free(void *ap)
 void MemCheck::_free(MemCheckHeader *bp)
 {
     // search neighbouring blocks in free list
-    for (MemCheckHeader *p = freep; !(bp > p && bp < p->s.ptr); p = p->s.ptr)
+    MemCheckHeader *p;
+    for (p = freep; !(bp > p && bp < p->s.ptr); p = p->s.ptr)
     {
 	validate(p, "free");
 	

@@ -176,7 +176,7 @@ _Delay::~_Delay()
 }
 
 // Make sure we do not attempt to delete a delay on a destroyed widget
-void _Delay::DestroyCB(Widget w, XtPointer client_data, XtPointer call_data)
+void _Delay::DestroyCB(Widget, XtPointer client_data, XtPointer)
 {
     _Delay *delay = (_Delay *)client_data;
     assert(ptr_cast(_Delay, delay));
@@ -238,7 +238,8 @@ void Delay::register_shell(Widget widget)
     assert(delays.size() == _shells.size());
 
     // Check if the shell is already registered
-    for (int i = 0; i < _shells.size(); i++)
+    int i;
+    for (i = 0; i < _shells.size(); i++)
 	if (_shells[i] == widget)
 	    return;
 

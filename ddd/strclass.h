@@ -1113,7 +1113,7 @@ inline int subString::contains(const regex& r) const
 
 inline int subString::matches(const regex& r) const
 {
-    return r.match(chars(), len, 0) == len;
+    return unsigned(r.match(chars(), len, 0)) == len;
 }
 
 

@@ -185,7 +185,8 @@ void VSLDef::compilePattern() const
 
     // Als Argumente Liste von MatchBoxen uebergeben
     ListBox *list = new ListBox;
-    for (unsigned i = 0; i < nargs(); i++)
+    unsigned i;
+    for (i = 0; i < nargs(); i++)
     {
 	MatchBox *m = new MatchBox(i);
 	(*list) += m;
@@ -327,8 +328,9 @@ ListBox *VSLDef::arglist(const Box *arg) const
 	assert (arg->isListBox());
 	return (ListBox *)((Box *)arg)->link();
     }
-	
-    for (unsigned i = 0; i < nargs(); i++)
+
+    unsigned i;
+    for (i = 0; i < nargs(); i++)
 	box_instances[i] = 0;
 
     bool ok = matches(arg);
@@ -356,7 +358,7 @@ int VSLDef::resolveNames()
     // Jetzt alle NameNode's im Pattern durch entsprechende
     // ArgNode's ersetzen.
     string s = "";
-    int offset = 0;
+    unsigned offset = 0;
 
     while ((s = node_pattern()->firstName(), s) != "")
     {

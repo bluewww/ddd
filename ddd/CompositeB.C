@@ -84,7 +84,7 @@ string CompositeBox::str() const
 }
 
 // TagBox zu Punkt p in CompositeBox suchen
-const TagBox *CompositeBox::findTag(BoxPoint p) const
+const TagBox *CompositeBox::findTag(const BoxPoint& p) const
 {
     if (p != BoxPoint(-1, -1))
 	for (int i = 0; i < nchildren(); i++)
@@ -108,7 +108,7 @@ void CompositeBox::countMatchBoxes(int instances[]) const
 }
 
 // Auf Gleichheit pruefen
-bool CompositeBox::matches (const Box &b, const Box *callbackArg) const
+bool CompositeBox::matches (const Box &b, const Box *) const
 {
     // Groesse und BoxExtend nicht vergleichen,
     // da MatchBoxen die Groesse 0 haben

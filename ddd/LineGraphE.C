@@ -164,7 +164,7 @@ void LineGraphEdge::findLine(BoxPoint& c1, BoxPoint& c2,
     p2 = c2;
 
     // select appropriate clipping procedure
-    for (int i = 0; i < sizeof(clipMap)/sizeof(clipMap[0]); i++)
+    for (int i = 0; i < int(sizeof(clipMap)/sizeof(clipMap[0])); i++)
 	if (gc.edgeAttachMode == clipMap[i].mode)
 	{
 	    clipMap[i].proc(b1, side1, p1, c2);
@@ -180,7 +180,7 @@ void LineGraphEdge::findLine(BoxPoint& c1, BoxPoint& c2,
 // Draw
 
 void LineGraphEdge::_draw(Widget w, 
-			  const BoxRegion& exposed, 
+			  const BoxRegion&, 
 			  const GraphGC& gc) const
 {
     // Get node starting points

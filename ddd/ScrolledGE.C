@@ -120,17 +120,7 @@ WidgetClass scrolledGraphEditWidgetClass =
 static void Resize(Widget w)
 {
     // resize child if it's a graphEdit child
-    WidgetList children;
-    int num_children;
-
-    XtVaGetValues(w,
-		  XtNchildren, &children,
-		  XtNnumChildren, &num_children,
-		  NULL);
-
-    assert(num_children == 1);
-
-    Widget child = children[0];
+    Widget child = ScrolledGraphEditWidget(w)->swindow.WorkWindow;
     if (child && XtIsSubclass(child, graphEditWidgetClass))
 	graphEditSizeChanged(child);
 

@@ -367,7 +367,7 @@ int possible_begin_of_display(string gdb_answer, DebuggerType type)
 // gibt den naechsten Display zurueck falls vorhanden, und
 // schneidet diesen von displays vorne ab.
 // 
-string read_next_display (string& displays, DebuggerType type)
+string read_next_display (string& displays, DebuggerType)
 {
     string next_display;
 
@@ -387,7 +387,7 @@ string read_next_display (string& displays, DebuggerType type)
 // ***************************************************************************
 // schneidet vom display "'nr': 'name' = " vorne ab.
 // 
-string get_disp_value_str (/*const*/ string& display, DebuggerType type)
+string get_disp_value_str (/*const*/ string& display, DebuggerType)
 {
     return display.after (" = ");
 }
@@ -548,7 +548,7 @@ string  read_disp_nr_str (string& display, DebuggerType type)
 
 // ***************************************************************************
 //
-string  read_disp_name   (string& display, DebuggerType type)
+string  read_disp_name   (string& display, DebuggerType)
 {
     string name = display.before (" = ");
     display = display.after (" = ");

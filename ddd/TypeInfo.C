@@ -68,7 +68,8 @@ void TypeInfo::_setup_all_bases() const
 	BaseIterator direct_bases(*this, BaseIterator::direct);
 	while ((direct_info = direct_bases()) != 0)
 	{
-	    for (int i = 0; i < count; i++)
+	    int i;
+	    for (i = 0; i < count; i++)
 		if (new_all_bases[i] == direct_info)
 		    break;
 	    if (i >= count)
@@ -78,7 +79,8 @@ void TypeInfo::_setup_all_bases() const
 	    const TypeInfo *indirect_info;
 	    while ((indirect_info = all_bases()) != 0)
 	    {
-		for (int i = 0; i < count; i++)
+		int i;
+		for (i = 0; i < count; i++)
 		    if (new_all_bases[i] == indirect_info)
 			break;
 		if (i >= count)

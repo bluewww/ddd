@@ -102,9 +102,9 @@ public:
     virtual void moveTo(const BoxPoint& newPos) = 0;
 
     // draw
-    virtual void draw(Widget w, 
-		      const BoxRegion& exposed, 
-		      const GraphGC& gc) const
+    virtual void draw(Widget, 
+		      const BoxRegion&, 
+		      const GraphGC&) const
     {
 	// default: do nothing
     }
@@ -123,7 +123,7 @@ public:
 
 
     // printing
-    virtual void _print(ostream& os, const GraphGC& gc) const
+    virtual void _print(ostream&, const GraphGC&) const
     {
 	// default: do nothing
     }

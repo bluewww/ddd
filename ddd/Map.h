@@ -74,10 +74,10 @@ public:
     // 0, falls nicht vorhanden, sonst bel. enth. Key
     // simuliert 0-terminierte Liste
     Key first_key(MapRef& ln) const;
-    Key next_key(MapRef& ln) const;
+    static Key next_key(MapRef& ln);
     
     Contents* first(MapRef& ln) const;
-    Contents* next(MapRef& ln) const;
+    static Contents* next(MapRef& ln);
     
     inline int length()  const { return _length; }
 
@@ -236,7 +236,7 @@ Key Map<Key, Contents>::first_key(MapRef& ref) const {
 }
 
 template <class Key, class Contents>
-Key Map<Key, Contents>::next_key(MapRef& ref) const {
+Key Map<Key, Contents>::next_key(MapRef& ref) {
 //----------------------========-----
     // durchlaeuft 0-terminierte Liste
     if (ref == 0 ) {
@@ -266,7 +266,7 @@ Contents* Map<Key, Contents>::first(MapRef& ref) const {
 }
 
 template <class Key, class Contents>
-Contents* Map<Key, Contents>::next(MapRef& ref) const {
+Contents* Map<Key, Contents>::next(MapRef& ref) {
 //----------------------------====---------
     // durchlaeuft 0-terminierte Liste
     if (ref == 0 ) {
