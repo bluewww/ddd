@@ -512,12 +512,14 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    assert(subitems != 0);
 
 	    arg = 0;
-	    XtSetArg(args[arg], XmNorientation,  XmHORIZONTAL); arg++;
-	    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-	    XtSetArg(args[arg], XmNentryBorder,  0); arg++;
-	    XtSetArg(args[arg], XmNspacing,      0); arg++;
-	    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
-	    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+	    XtSetArg(args[arg], XmNorientation,     XmHORIZONTAL); arg++;
+	    XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+	    XtSetArg(args[arg], XmNentryBorder,     0); arg++;
+	    XtSetArg(args[arg], XmNspacing,         0); arg++;
+	    XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
+	    XtSetArg(args[arg], XmNmarginHeight,    0); arg++;
+	    XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
+
 	    widget = verify(XmCreateRowColumn(shell, panelName, args, arg));
 
 	    arg = 0;
@@ -574,12 +576,14 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    XtSetArg(args[arg], XmNorientation,  XmHORIZONTAL); arg++;
-	    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-	    XtSetArg(args[arg], XmNentryBorder,  0); arg++;
-	    XtSetArg(args[arg], XmNspacing,      0); arg++;
-	    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
-	    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+	    XtSetArg(args[arg], XmNorientation,     XmHORIZONTAL); arg++;
+	    XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+	    XtSetArg(args[arg], XmNentryBorder,     0); arg++;
+	    XtSetArg(args[arg], XmNspacing,         0); arg++;
+	    XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
+	    XtSetArg(args[arg], XmNmarginHeight,    0); arg++;
+	    XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
+
 	    panel = verify(XmCreateRowColumn(shell, name, args, arg));
 
 	    arg = 0;
