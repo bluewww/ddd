@@ -115,8 +115,14 @@ AC_MSG_RESULT(${LFLAGS})
 AC_SUBST(LFLAGS)dnl
 AC_PROG_AWK
 AC_PROG_CC
+if test "$CC" = ""; then
+AC_MSG_ERROR(could not find C compiler)
+fi
 AC_PROG_CPP
 AC_PROG_CXX
+if test "$CXX" = ""; then
+AC_MSG_ERROR(could not find C++ compiler)
+fi
 AC_PROG_CXXCPP
 dnl
 dnl
@@ -155,6 +161,8 @@ ICE_FIND_ATHENA
 dnl
 dnl
 dnl
+dnl
+dnl
 LIBS="$LIBS $X_PRE_LIBS $X_EXTRA_LIBS"
 CFLAGS="$CFLAGS $X_CFLAGS"
 CPPFLAGS="$CPPFLAGS $X_CFLAGS"
@@ -164,6 +172,9 @@ dnl Check for X library
 dnl
 X11_LIBS=""
 AC_CHECK_LIB(X11, XOpenDisplay, X11_LIBS="-lX11")
+if test "$X11_LIBS" = ""; then
+AC_MSG_WARN(could not find X11 library)
+fi
 AC_SUBST(X_LIBS)
 AC_SUBST(X11_LIBS)
 AC_SUBST(X_PRE_LIBS)
@@ -173,6 +184,9 @@ dnl Check for X toolkit libraries
 dnl
 XT_LIBS=""
 AC_CHECK_LIB(Xt, XtInitialize, XT_LIBS="-lXt",,${X11_LIBS})
+if test "$XT_LIBS" = ""; then
+AC_MSG_WARN(could not find X toolkit library)
+fi
 AC_SUBST(XT_LIBS)
 dnl
 dnl
@@ -208,8 +222,20 @@ AC_CHECK_LIB(Xm, XmCreateOptionMenu, XM_LIBS="-lXm"
 	AC_DEFINE(HAVE_MOTIF_WIDGETS),,
 	${XEXT_LIBS} ${XT_LIBS} ${X11_LIBS})
 AC_SUBST(XM_LIBS)
+if test "$XM_LIBS" = ""; then
+AC_MSG_WARN(could not find Motif library)
+fi
 dnl
 dnl
+dnl
+dnl
+dnl Autoconf bug fix: Sun CC 3.0 requires `-R lib', g++ requires `-Rlib'.
+dnl Do this after all checks have been done using a C compiler.
+changequote(,)dnl
+case "$CXX" in
+  *CC) X_LIBS="`echo $X_LIBS | $SED 's, -R\([^ ]\), -R \1,g'`"
+esac
+changequote([,])dnl
 dnl
 dnl
 LIBS="$ice_save_LIBS"
