@@ -5287,7 +5287,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
     if (info->sync_commands)
     {
-	for (int i = 1; i < info->nrs.size(); i++)
+	for (i = 1; i < info->nrs.size(); i++)
 	    set_bp_commands(info->nrs[i], bp->commands());
 	info->sync_commands = false;
     }
