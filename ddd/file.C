@@ -1174,8 +1174,8 @@ static string get_class(Widget, XtPointer client_data, XtPointer)
 
     if (classids.size() == 1)
 	return classids[0];
-    else
-	return "";
+
+    return "";
 }
 
 // Select a class

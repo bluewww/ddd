@@ -5475,6 +5475,7 @@ void SourceView::SetBreakpointIgnoreCountNowCB(XtPointer client_data,
 	(BreakpointPropertiesInfo *)client_data;
 
     assert (info->timer == *id);
+    (void) id;			// Use it
     info->timer = 0;
 
     String _count = XmTextFieldGetString(info->ignore);
