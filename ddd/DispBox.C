@@ -72,12 +72,13 @@ bool    DispBox::align_2d_arrays = true;
 
 // ***************************************************************************
 //
-DispBox::DispBox (int disp_nr, const string& title, const DispValue *dv)
+DispBox::DispBox (int disp_nr, const string& title, 
+		  const DispValue *dv, const DispValue *parent)
     : mybox(0), title_box(0)
 {
     // Create display
     set_title(disp_nr, title);
-    set_value(dv);
+    set_value(dv, parent);
 }
 
 
@@ -140,7 +141,7 @@ DispBox::~DispBox ()
 
 // ***************************************************************************
 //
-void DispBox::set_value (const DispValue* dv)
+void DispBox::set_value (const DispValue* dv, const DispValue *parent)
 {
     if (mybox != 0)
     {
@@ -155,7 +156,7 @@ void DispBox::set_value (const DispValue* dv)
 	args[arg++] = title_box;
 
     if (dv)
-	args[arg++] = create_value_box(dv);
+	args[arg++] = create_value_box(dv, parent);
     else
 	args[arg++] = eval("disabled");
 
@@ -223,10 +224,11 @@ void DispBox::set_title(int disp_nr, const string& t)
 }
 
 // Return true if DV is a (right-aligned) numeric value
-static bool is_numeric(const DispValue *dv)
+bool DispBox::is_numeric(const DispValue *dv, const DispValue *parent)
 {
-    if (dv->parent() != 0 && dv->parent()->type() != Array)
+    if (parent != 0 && parent->type() != Array)
 	return false;
+
     if (dv->value() == "")
 	return false;
     if (dv->value().contains(' '))
@@ -238,7 +240,9 @@ static bool is_numeric(const DispValue *dv)
 
 // ***************************************************************************
 // Create a Box for the value DV
-Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
+Box* DispBox::create_value_box (const DispValue *dv,
+				const DispValue *parent,
+				int member_name_width)
 {
     Box* vbox = 0;
 
@@ -251,7 +255,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	else
 	{
 	    // Flush numeric values to the right, unless in a struct
-	    if (is_numeric(dv))
+	    if (is_numeric(dv, parent))
 		vbox = eval("numeric_value", dv->value());
 	    else
 		vbox = eval("simple_value", dv->value());
@@ -364,7 +368,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 			    {
 				DispValue *cc = c->get_child(j);
 				ListBox *args = new ListBox;
-				*args += create_value_box(cc);
+				*args += create_value_box(cc, c);
 				Box *b = eval("twodim_array_elem", args);
 				*row += b;
 				b->unlink();
@@ -393,7 +397,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 				if (i < c->nchildren())
 				{
 				    DispValue *cc = c->get_child(i);
-				    elem = create_value_box(cc);
+				    elem = create_value_box(cc, c);
 				}
 				else
 				{
@@ -425,7 +429,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 		    // One-dimensional array
 		    ListBox* args = new ListBox;
 		    for (int i = 0; i < count; i++)
-			*args += create_value_box (dv->get_child(i));
+			*args += create_value_box (dv->get_child(i), dv);
 
 		    if (dv->vertical_aligned())
 			vbox = eval("vertical_array", args);
@@ -449,7 +453,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	    ListBox* args = new ListBox;
 	    int count = dv->nchildren();
 	    for (int i = 0; i < count; i++)
-		*args += create_value_box(dv->get_child(i));
+		*args += create_value_box(dv->get_child(i), dv);
 
 	    vbox = eval("sequence_value", args);
 	    args->unlink();
@@ -497,7 +501,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 		// Create children
 		ListBox* args = new ListBox;
 		for (i = 0; i < count; i++)
-		    *args += create_value_box(dv->get_child(i), 
+		    *args += create_value_box(dv->get_child(i), dv,
 					      max_member_name_width);
 
 		vbox = eval(value, args);
@@ -515,7 +519,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	{
 	    ListBox* args = new ListBox;
 	    for (int i = 0; i < 2; i++)
-		*args += create_value_box (dv->get_child(i));
+		*args += create_value_box (dv->get_child(i), dv);
 
 	    vbox = eval("reference_value", args);
 	    args->unlink();
@@ -541,9 +545,9 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
     }
 
     // Add member name
-    if (dv->depth() > 0)
+    if (parent != 0)
     {
-	switch (dv->parent()->type())
+	switch (parent->type())
 	{
 	case List:
 	    if (dv->type() != Text)

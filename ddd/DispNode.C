@@ -80,7 +80,7 @@ DispNode::DispNode (int disp_nr,
     if (value != "")
     {
 	string v = value;
-	disp_value = new DispValue(0, 0, v, myname, myname);
+	disp_value = DispValue::parse(v, myname);
 	mystr = mystr.before(int(mystr.length() - v.length()));
 	set_addr(disp_value->addr());
     }
@@ -95,9 +95,11 @@ DispNode::DispNode (int disp_nr,
 // Destructor
 DispNode::~DispNode()
 {
-    delete disp_value;
-    delete mynodeptr;
+    if (disp_value != 0)
+	disp_value->unlink();
+
     delete disp_box;
+    delete mynodeptr;
 }
 
 // User-defined displays (status displays)
@@ -152,7 +154,7 @@ bool DispNode::update(string& value)
     { 
 	// We have not read a value yet
 	mystr = value;
-	disp_value = new DispValue(0, 0, value, myname, myname);
+	disp_value = DispValue::parse(value, myname);
 	mystr = mystr.before(int(mystr.length() - value.length()));
 	set_addr(disp_value->addr());
 	changed = true;
@@ -208,7 +210,11 @@ bool DispNode::update(string& value)
 // Re-create box from current disp_value
 void DispNode::refresh ()
 {
-    disp_box->set_value(enabled() ? disp_value : 0);
+    if (enabled())
+	disp_box->set_value(disp_value);
+    else
+	disp_box->set_value(0);
+	
     mynodeptr->setBox(disp_box->box());
     select(selected_value());
 }
@@ -276,7 +282,7 @@ void DispNode::disable()
     {
 	myenabled = false;
 	handlers.call(DispNode_Disabled, this, (void *)true);
-	disp_box->set_value();
+	disp_box->set_value(0);
 	mynodeptr->setBox (disp_box->box());
     }
 }

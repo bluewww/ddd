@@ -53,6 +53,8 @@ private:
     DispBox(const DispBox&): mybox(0), title_box(0) { assert(0); }
     DispBox& operator = (const DispBox&) { assert(0); return *this; }
 
+    static bool is_numeric(const DispValue *dv, const DispValue *parent);
+
 public:
     // Must be initialized from outside!
     static string  vsllib_name;
@@ -68,17 +70,16 @@ public:
     // Initialize VSL library, using BACKGROUND as work proc
     static void init_vsllib(void (*background)() = 0);
 
-    // Create a new box; if DV == 0, create a `disabled' box
-    DispBox (int disp_nr,
-	     const string& title,
-	     const DispValue* dv = 0);
+    // Create a new box.  If DV == 0, create a disabled box.
+    DispBox (int disp_nr, const string& title, 
+	     const DispValue *dv = 0, const DispValue *parent = 0);
 
     ~DispBox ();
 
     Box* box () const { return mybox; }
 
-    // Set new value to DV; if DV == 0, create a `disabled' box
-    void set_value (const DispValue* dv = 0);
+    // Set new value to DV.  If DV == 0, make it disabled.
+    void set_value (const DispValue *dv, const DispValue *parent = 0);
 
     // Set title; if TITLE == "", disable it
     void set_title (int disp_nr, const string& title);
@@ -86,7 +87,9 @@ public:
     bool have_title() const { return title_box != 0; }
 
 private:
-    Box*   create_value_box (const DispValue* dv, int member_name_width = 0);
+    Box* create_value_box (const DispValue *dv,
+			   const DispValue *parent,
+			   int member_name_width = 0);
 
     static VSLLib dummylib;
     static VSLLib *vsllib_ptr;

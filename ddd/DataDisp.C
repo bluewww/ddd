@@ -2872,7 +2872,8 @@ DispValue *DataDisp::update_hook(string& value)
     if (dn == 0)
 	return 0;
 
-    return dn->value()->dup();
+    // Share the clustered DispValue with the original display
+    return dn->value()->link();
 }
 
 void DataDisp::refresh_builtin_user_displays()
