@@ -1387,7 +1387,7 @@ int main(int argc, char *argv[])
     // variable DDD_NO_SIGNAL_HANDLERS is set, we do not install
     // signal handlers, causing DDD to report signals immediately.
 
-    if (getenv("DDD_NO_SIGNAL_HANDLERS") == 0)
+    if (getenv(DDD_NAME "_NO_SIGNAL_HANDLERS") == 0)
     {
 	ddd_install_signal();	         // Cleanup upon termination
 	ddd_install_fatal(program_name); // Fatal error
@@ -5227,10 +5227,11 @@ static void setup_version_info()
     int cinfo_gt = cinfo.index('>');
     if (cinfo_lt >= 0 && cinfo_gt >= 0)
     {
-	helpOnVersionExtraText = rm(cinfo.through(cinfo_lt));
+	helpOnVersionExtraText = rm(cinfo.before(cinfo_lt));
 	helpOnVersionExtraText += cr();
-	helpOnVersionExtraText += tt(cinfo(cinfo_lt + 1, 
-					   cinfo_gt - cinfo_lt - 1));
+	helpOnVersionExtraText += rm(cinfo(cinfo_lt, 1));
+	helpOnVersionExtraText += 
+	    tt(cinfo(cinfo_lt + 1, cinfo_gt - cinfo_lt - 1));
 	helpOnVersionExtraText += rm(cinfo.from(cinfo_gt));
     }
     else
@@ -5259,8 +5260,9 @@ static void setup_version_info()
 	+ rm(" to see the") + cr()
 	+ rm("conditions.  There is ") + sl("absolutely no warranty") 
 	+ rm(" for " DDD_NAME "; see the ") + cr()
-	+ rm(DDD_NAME " License for details.") + cr()
-	+ cr()
+	+ rm(DDD_NAME " License for details.") + cr();
+
+    helpOnVersionExtraText += cr()
 	+ sl(DDD_NAME " needs your support!")
 	+ rm(" If you have any " DDD_NAME " success stories, ") + cr()
         + rm("please write them down on a picture postcard "
@@ -5270,15 +5272,20 @@ static void setup_version_info()
 	+ rm("    Abteilung Softwaretechnologie") + cr()
 	+ rm("    B\374ltenweg 88") + cr()
 	+ rm("    D-38092 Braunschweig") + cr()
-	+ rm("    GERMANY") + cr()
-	+ cr()
+	+ rm("    GERMANY") + cr();
+
+    string log = session_log_file();
+    log.gsub(home_dir(), string("~"));
+
+    helpOnVersionExtraText += cr()
 	+ rm("Send bug reports to <")
-	+ tt(ddd_NAME "-bugs@ips.cs.tu-bs.de") + rm(">;") + cr()
-	+ rm("see the " DDD_NAME " manual "
-	     "for details on reporting bugs.") + cr()
+	+ tt(ddd_NAME "-bugs@ips.cs.tu-bs.de") + rm(">.") + cr()
+	+ rm("Please include the ") + tt(log) + rm(" file;")
+	+ rm(" see the " DDD_NAME " manual for details.") + cr()
 	+ rm("Send comments and suggestions to <")
-	+ tt(ddd_NAME "@ips.cs.tu-bs.de") + rm(">.") + cr()
-	+ cr()
+	+ tt(ddd_NAME "@ips.cs.tu-bs.de") + rm(">.") + cr();
+
+    helpOnVersionExtraText += cr()
 	+ rm(DDD_NAME " WWW page: ") + tt(app_data.www_page) + cr()
 	+ rm(DDD_NAME " discussions: <")
 	+ tt(ddd_NAME "-users-request@ips.cs.tu-bs.de") + rm(">") + cr()
