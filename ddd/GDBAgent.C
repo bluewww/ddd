@@ -386,61 +386,76 @@ void GDBAgent::strip_comments(string& s)
     if (type() != DBX && version() != DBX3)
 	return;
 
-    if (!s.contains('/'))
-	return;
-
-    char quoted = '\0';
-
-    unsigned int i = 0;
-    while (i < s.length())
+    if (s.contains('/'))
     {
-	char c = s[i++];
-	switch (c)
+	// Check for C and C++ comments
+	char quoted = '\0';
+
+	unsigned int i = 0;
+	while (i < s.length())
 	{
-	case '\\':
-	    if (i < s.length())
-		i++;
-	    break;
-
-	case '\'':
-	case '\"':
-	    if (c == quoted)
-		quoted = '\0';
-	    else if (!quoted)
-		quoted = c;
-	    break;
-
-	case '/':
-	    if (i < s.length() && !quoted)
+	    char c = s[i++];
+	    switch (c)
 	    {
-		if (s[i] == '*')
+	    case '\\':
+		if (i < s.length())
+		    i++;
+		break;
+
+	    case '\'':
+	    case '\"':
+		if (c == quoted)
+		    quoted = '\0';
+		else if (!quoted)
+		    quoted = c;
+		break;
+
+	    case '/':
+		if (i < s.length() && !quoted)
 		{
-		    /* C-style comment */
-		    int end = s.index("*/", i + 1);
-		    if (end == -1)
+		    if (s[i] == '*')
 		    {
-			// unterminated comment -- keep it now
-			break;
+			/* C-style comment */
+			int end = s.index("*/", i + 1);
+			if (end == -1)
+			{
+			    // unterminated comment -- keep it now
+			    break;
+			}
+
+			// Remove comment
+			i--;
+			s.at(int(i), int(end - i + 2)) = "";
 		    }
+		    else if (s[i] == '/')
+		    {
+			// C++-style comment
+			int end = s.index('\n', i + 1);
+			i--;
 
-		    // Remove comment
-		    i--;
-		    s.at(int(i), int(end - i + 2)) = "";
-		}
-		else if (s[i] == '/')
-		{
-		    // C++-style comment
-		    int end = s.index('\n', i + 1);
-		    i--;
-
-		    // Remove comment
-		    if (end == -1)
-			s.from(int(i)) = "";
-		    else
-			s.at(int(i), int(end - i + 1)) = "";
+			// Remove comment
+			if (end == -1)
+			    s.from(int(i)) = "";
+			else
+			    s.at(int(i), int(end - i + 1)) = "";
+		    }
 		}
 	    }
 	}
+    }
+
+    if (s.contains("dbx: warning:"))
+    {
+	// Weed out annoying DBX warnings like
+	// `dbx: warning: -r option only recognized for C++' and
+	// `dbx: warning: unknown language, 'c' assumed'
+
+	static regex RXdbxwarn1("dbx: warning:[^\n]*"
+				"option only recognized for[^\n]*\n");
+	static regex RXdbxwarn2("dbx: warning:[^\n]*"
+				"unknown language[^\n]*\n");
+	s.gsub(RXdbxwarn1, "");
+	s.gsub(RXdbxwarn2, "");
     }
 }
 
