@@ -839,7 +839,7 @@ public:
     static string pwd() { return current_pwd; }
 
     // Return current class path
-    static string class_path() { return current_class_path; }
+    static string class_path();
 
     // Return current source file name
     static string name_of_source() { return current_source_name(); }

@@ -800,7 +800,6 @@ DDD_OBJECTS = \
 	cmdtty.o     \
 	comm-manag.o \
 	complete.o   \
-	configinfo.o \
 	ctrl.o       \
 	data.o       \
 	dbx-lookup.o \
@@ -840,6 +839,7 @@ DDD_OBJECTS = \
 	shell.o      \
 	shorten.o    \
 	show.o       \
+	configinfo.o \
 	source.o     \
 	status.o     \
 	string-fun.o \
