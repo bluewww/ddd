@@ -334,16 +334,21 @@ void TTYAgent::open_master()
 	    {
 		if (tty_ok(line))
 		{
-		    _master_tty = line;
-		    _slave_tty  = line;
-
 #if defined(SGI3) || defined(sgi3)
 		    int ptynum = minor(sb.st_rdev);
 		    char buffer[BUFSIZ];
 		    sprintf(buffer, "/dev/ttyq%d", ptynum);
-		    _slave_tty = buffer;
-#endif
+		    if (tty_ok(buffer))
+		    {
+			_master_tty = line;
+			_slave_tty  = buffer;
+			return;
+		    }
+#else
+		    _master_tty = line;
+		    _slave_tty  = line;
 		    return;
+#endif
 		}
 	    }
 	    close(master);
