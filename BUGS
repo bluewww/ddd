@@ -138,4 +138,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 371 Reduce flickering when setting options.
 
-373 (Insert new bugs here)
+373 In `Define Command', changing the `()' toggle does not change
+    defined buttons.
+
+374 (Insert new bugs here)
