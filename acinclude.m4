@@ -1477,7 +1477,8 @@ if test "$GXX" = yes; then
   fi
 
   # Setup options
-  CXXOPT="-DNDEBUG"
+  # CXXOPT="-DNDEBUG"
+  CXXOPT=
   CXXDEBUG=
   CXXWARNINGS="-Wall -W -Wwrite-strings"
   CXXSTATIC_BINDING="-Bstatic"
@@ -1510,7 +1511,8 @@ else
       ;;
   esac
 
-  CXXOPT="-DNDEBUG"
+  #CXXOPT="-DNDEBUG"
+  CXXOPT=
   CXXDEBUG="${XS_DEBUG_INFO}"
   CXXWARNINGS=
   CXXSTATIC_BINDING="-static"
