@@ -81,8 +81,8 @@ Cursor _Delay::hourglass_cursor()
     Display *display = XtDisplay(widget);
 
 #if defined(SMALL_HOURGLASS_CURSOR) || defined(LARGE_HORGLASS_CURSOR)
-    Window rootWindow = DefaultRootWindow(display);
-    Screen *defaultScreen = DefaultScreenOfDisplay(display);
+    Screen *screen = XtScreen(widget);
+    Window rootWindow = RootWindowOfScreen(screen);
 
     char *cursor_bits             = time16_bits;
     char *cursor_mask_bits        = time16m_bits;
@@ -115,10 +115,10 @@ Cursor _Delay::hourglass_cursor()
 			      cursor_width, cursor_height);
     
     XColor cursor_colors[2];
-    cursor_colors[0].pixel = BlackPixelOfScreen(defaultScreen);
-    cursor_colors[1].pixel = WhitePixelOfScreen(defaultScreen);
+    cursor_colors[0].pixel = BlackPixelOfScreen(screen);
+    cursor_colors[1].pixel = WhitePixelOfScreen(screen);
 
-    XQueryColors(display, DefaultColormapOfScreen(defaultScreen), 
+    XQueryColors(display, DefaultColormapOfScreen(screen), 
 		 cursor_colors, 2);
 
     hourglass_cache = 
