@@ -208,17 +208,11 @@ void ddd_install_signal()
 #endif
 }
 
-static char *ddd_invoke_name = ddd_NAME;
-
 // Setup signals: Issue message on fatal errors
-void ddd_install_fatal(char *program_name)
+void ddd_install_fatal(char * /* program_name */)
 {
     // Make sure strsignal() is initialized properly
     (void)sigName(1);
-
-    // Save program name
-    if (program_name != 0 && program_name[0] != '\0')
-	ddd_invoke_name = program_name;
 
     // Install signal handlers
 #ifdef SIGINT
@@ -399,8 +393,6 @@ void ddd_show_exception(const char *c, const char *what)
 // Issue fatal message on stderr
 static void print_fatal_msg(char *title, char *cause, char *cls)
 {
-    (void) ddd_invoke_name;	// Use it
-
     static const char *msg =
 	"\n%s (%s).\n"
 	"\n"
@@ -582,13 +574,10 @@ static void PostXtErrorCB(XtPointer client_data, XtIntervalId *)
     post_fatal(title, cause, "X Toolkit Error");
 }
 
-static XtErrorHandler old_xt_error_handler;
 static XtAppContext xt_error_app_context = 0;
 
 static void ddd_xt_error(String message = 0)
 {
-    (void) old_xt_error_handler; // Use it
-
     ddd_has_crashed = true;
 
     dddlog << "!  Xt error";
@@ -630,7 +619,7 @@ static void ddd_xt_error(String message = 0)
 
 void ddd_install_xt_error(XtAppContext app_context)
 {
-    old_xt_error_handler = XtAppSetErrorHandler(app_context, ddd_xt_error);
+    (void) XtAppSetErrorHandler(app_context, ddd_xt_error);
     xt_error_app_context = app_context;
 }
 

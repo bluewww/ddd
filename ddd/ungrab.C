@@ -166,9 +166,6 @@ bool GrabCheckLocker::lock = false;
 
 static void CheckUngrabCB(XtPointer client_data, XtIntervalId *)
 {
-    static XtIntervalId check_ungrab_timer;
-    check_ungrab_timer = 0;
-
     int& count = *((int *)client_data);
 
     // Don't delay further checks
@@ -233,10 +230,8 @@ static void CheckUngrabCB(XtPointer client_data, XtIntervalId *)
 	// Try again in 1s.
 	count--;
     
-	check_ungrab_timer = 
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w),
-			    1000,
-			    CheckUngrabCB, XtPointer(&count));
+	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 1000,
+			CheckUngrabCB, XtPointer(&count));
     }
 }
 

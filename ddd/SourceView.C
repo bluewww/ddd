@@ -413,9 +413,10 @@ int SourceView::max_breakpoint_number_seen = 0;
 
 static XmTextPosition selection_startpos;
 static XmTextPosition selection_endpos;
-static XmTextPosition selection_pos;
 static Time           selection_time;
+#if XtSpecificationRelease < 6
 static XEvent         selection_event;
+#endif
 
 
 //-----------------------------------------------------------------------
@@ -1516,8 +1517,10 @@ void SourceView::set_source_argCB(Widget text_w,
 	have_selection = True;
     }
 
+#if XtSpecificationRelease < 6
     // Don't use this selection event again.
     selection_event.type = KeyPress;
+#endif
 
     if (!have_selection)
     {
@@ -4718,7 +4721,9 @@ void SourceView::setSelection(XtPointer client_data, XtIntervalId *)
 void SourceView::startSelectWordAct (Widget text_w, XEvent* e, 
 				     String *params, Cardinal *num_params)
 {
+#if XtSpecificationRelease < 6
     selection_event = *e;
+#endif
 
     XtCallActionProc(text_w, "grab-focus", e, params, *num_params);
 
@@ -4738,7 +4743,6 @@ void SourceView::startSelectWordAct (Widget text_w, XEvent* e,
     selection_click    = true;
     selection_startpos = startpos;
     selection_endpos   = endpos;
-    selection_pos      = pos;
     selection_time     = time(e);
 
     XtAppAddTimeOut(XtWidgetToApplicationContext(text_w), 0, setSelection, 
@@ -4748,17 +4752,15 @@ void SourceView::startSelectWordAct (Widget text_w, XEvent* e,
 void SourceView::endSelectWordAct (Widget text_w, XEvent* e, 
 				   String *params, Cardinal *num_params)
 {
+#if XtSpecificationRelease < 6
     selection_event = *e;
+#endif
     selection_click = false;
 
     XtCallActionProc(text_w, "extend-end", e, params, *num_params);
     
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
-    
-    XButtonEvent *event = &e->xbutton;
-
-    XmTextPosition pos = XmTextXYToPos (text_w, event->x, event->y);
 
     XmTextPosition startpos, endpos;
     if (XmTextGetSelectionPosition(text_w, &startpos, &endpos))
@@ -4767,7 +4769,6 @@ void SourceView::endSelectWordAct (Widget text_w, XEvent* e,
 	selection_endpos   = endpos;
     }
 
-    selection_pos  = pos;
     selection_time = time(e);
 
     XtAppAddTimeOut(XtWidgetToApplicationContext(text_w), 0, setSelection,

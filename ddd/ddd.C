@@ -655,26 +655,26 @@ struct FileItems {
 
 #define FILE_MENU(recent_menu) \
 { \
-    { "open_file",     MMPush, { WhenReady, gdbOpenFileCB }}, \
-    { "open_class",    MMPush | MMUnmanaged, { WhenReady, gdbOpenClassCB }}, \
+    { "open_file",     MMPush, { WhenReady, XtPointer(gdbOpenFileCB) }}, \
+    { "open_class",    MMPush | MMUnmanaged, { WhenReady, XtPointer(gdbOpenClassCB) }}, \
     { "recent",        MMMenu, MMNoCB, recent_menu }, \
-    { "open_core",     MMPush, { WhenReady, gdbOpenCoreCB }}, \
+    { "open_core",     MMPush, { WhenReady, XtPointer(gdbOpenCoreCB) }}, \
     { "open_source",   MMPush, { gdbLookupSourceCB }}, \
     MMSep, \
-    { "open_session",  MMPush, { WhenReady, OpenSessionCB }}, \
-    { "save_session",  MMPush, { WhenReady, SaveSessionAsCB }}, \
+    { "open_session",  MMPush, { WhenReady, XtPointer(OpenSessionCB) }}, \
+    { "save_session",  MMPush, { WhenReady, XtPointer(SaveSessionAsCB) }}, \
     MMSep, \
-    { "attach",        MMPush, { WhenReady, gdbOpenProcessCB }}, \
+    { "attach",        MMPush, { WhenReady, XtPointer(gdbOpenProcessCB) }}, \
     { "detach",        MMPush, { gdbCommandCB, "detach" }}, \
     MMSep, \
     { "print",         MMPush, { graphPrintCB }}, \
     { "printAgain",    MMPush | MMUnmanaged, \
  	                       { graphQuickPrintCB, XtPointer(1) }}, \
     { "separator",     MMSeparator | MMUnmanaged }, \
-    { "cd",            MMPush, { WhenReady, gdbChangeDirectoryCB }}, \
+    { "cd",            MMPush, { WhenReady, XtPointer(gdbChangeDirectoryCB) }}, \
     { "separator",     MMSeparator | MMUnmanaged }, \
-    { "make",          MMPush, { WhenReady, gdbMakeCB }}, \
-    { "makeAgain",     MMPush | MMUnmanaged, { WhenReady, gdbMakeAgainCB }}, \
+    { "make",          MMPush, { WhenReady, XtPointer(gdbMakeCB) }}, \
+    { "makeAgain",     MMPush | MMUnmanaged, { WhenReady, XtPointer(gdbMakeAgainCB) }}, \
     MMSep, \
     { "close",         MMPush, { DDDCloseCB }}, \
     { "restart",       MMPush, { DDDRestartCB }}, \
@@ -788,7 +788,7 @@ struct EditItems {
     { "selectAll",   MMPush,  { gdbSelectAllCB,       XtPointer(win) }}, \
     MMSep, \
     { "preferences", MMPush,  { dddPopupPreferencesCB }}, \
-    { "settings",    MMPush,  { WhenReady, dddPopupSettingsCB }}, \
+    { "settings",    MMPush,  { WhenReady, XtPointer(dddPopupSettingsCB) }}, \
     MMSep, \
     { "saveOptions", MMPush,  { DDDSaveOptionsCB, XtPointer(SAVE_DEFAULT) }}, \
     MMEnd \
@@ -812,8 +812,9 @@ static MMDesc command_menu[] =
     { "isearch_next", MMPush, { gdbISearchNextCB }},
     { "isearch_exit", MMPush, { gdbISearchExitCB }},
     MMSep,
-    { "complete", MMPush, { WhenReady, gdbCompleteCB }, NULL, &complete_w },
-    { "apply",    MMPush, { WhenReady, gdbApplyCB }},
+    { "complete", MMPush, { WhenReady, XtPointer(gdbCompleteCB) }, 
+      NULL, &complete_w },
+    { "apply",    MMPush, { WhenReady, XtPointer(gdbApplyCB) }},
     MMSep,
     { "clear_line",   MMPush, { gdbClearCB }},
     { "clear_window", MMPush, { gdbClearWindowCB }},
@@ -829,12 +830,16 @@ static Widget signals_w;
 
 static MMDesc stack_menu[] =
 {
-    { "stack",      MMPush,  { WhenReady, SourceView::ViewStackFramesCB }},
-    { "registers",  MMPush,  { WhenReady, SourceView::ViewRegistersCB },
+    { "stack",      MMPush,  { WhenReady, 
+			       XtPointer(SourceView::ViewStackFramesCB) }},
+    { "registers",  MMPush,  { WhenReady, 
+			       XtPointer(SourceView::ViewRegistersCB) },
       NULL, &registers_w },
-    { "threads",    MMPush,  { WhenReady, SourceView::ViewThreadsCB },
+    { "threads",    MMPush,  { WhenReady,
+			       XtPointer(SourceView::ViewThreadsCB) },
       NULL, &threads_w },
-    { "signals",    MMPush,  { WhenReady, dddPopupSignalsCB },
+    { "signals",    MMPush,  { WhenReady,
+			       XtPointer(dddPopupSignalsCB) },
       NULL, &signals_w },
     MMSep,
     { "up",         MMPush,  { gdbCommandCB, "up" }},
@@ -1231,7 +1236,7 @@ static MMDesc data_menu[] =
     MMSep,
     { "info locals", MMToggle,  { graphToggleLocalsCB }, NULL, &locals_w },
     { "info args",   MMToggle,  { graphToggleArgsCB }, NULL, &args_w },
-    { "infos",       MMPush,    { WhenReady, dddPopupInfosCB }, 
+    { "infos",       MMPush,    { WhenReady, XtPointer(dddPopupInfosCB) }, 
       NULL, &infos_w },
     MMSep,
     { "align",      MMPush,    { graphAlignCB  }, NULL, &align_w },

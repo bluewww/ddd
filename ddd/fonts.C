@@ -72,16 +72,16 @@ const int Foundry       = 1;
 const int Family        = 2;
 const int Weight        = 3;
 const int Slant         = 4;
-const int sWidth        = 5;
-const int Ad            = 6;
-const int PixelSize     = 7;
+// const int sWidth     = 5;
+// const int Ad         = 6;
+// const int PixelSize  = 7;
 const int PointSize     = 8;
-const int ResX          = 9;
-const int ResY          = 10;
-const int Spacing       = 11;
-const int AvgWidth      = 12;
-const int Registry      = 13;
-const int Encoding      = 14;
+// const int ResX       = 9;
+// const int ResY       = 10;
+// const int Spacing    = 11;
+// const int AvgWidth   = 12;
+// const int Registry   = 13;
+// const int Encoding   = 14;
 
 const int AllComponents = 14;
 
@@ -90,23 +90,6 @@ typedef int FontComponent;
 // Return the Nth component from NAME, or DEFAULT_VALUE if none
 static string component(string name, FontComponent n)
 {
-    // Use all these constants.  AIX CC gives warnings otherwise.
-    (void) Foundry;
-    (void) Family;
-    (void) Weight;
-    (void) Slant;
-    (void) sWidth;
-    (void) Ad;
-    (void) PixelSize;
-    (void) PointSize;
-    (void) ResX;
-    (void) ResY;
-    (void) Spacing;
-    (void) AvgWidth;
-    (void) Registry;
-    (void) Encoding;
-    (void) AllComponents;
-
     // If name does not begin with `-', assume it's a font family
     if (!name.contains('-', 0))
 	name.prepend("-*-");

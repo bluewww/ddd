@@ -192,19 +192,15 @@ bool VSLDefList::OK() const
 // Pruefen, ob alles in Ordnung (*inklusive* Nachfolger)
 {
     VSLDef *d = _first;
-    VSLDef *lastdef = d;
     unsigned count = 0;
 
     // Pruefen, ob _ndefs und _last ok
     while (d != 0)
     {
-	lastdef = d;
 	d = d->listnext();
 	count++;
     }
     assert (count == _ndefs);
-    (void) lastdef;		// Use it
-    assert (lastdef == _last);
 
     // Pruefen, ob Zeiger auf DefList ok
     d = _first;

@@ -2489,15 +2489,12 @@ static String &target_string(ButtonTarget t)
     {
     case ConsoleTarget:
 	return app_data.console_buttons;
-	break;
 
     case SourceTarget:
 	return app_data.source_buttons;
-	break;
 
     case DataTarget:
 	return app_data.data_buttons;
-	break;
     }
 
     static String null = 0;

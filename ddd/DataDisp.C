@@ -1887,8 +1887,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(graph_popup[GraphItms::SelectAll].widget, count.visible > 0);
 
     Boolean dereference_ok  = False;
-    Boolean rotate_ok       = False;
-    Boolean rotate_state    = False;
+    Boolean rotate_ok = False;
 
     if (disp_value_arg != 0)
     {
@@ -1905,8 +1904,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	    break;
 
 	case Array:
-	    rotate_ok     = disp_value_arg->expanded();
-	    rotate_state  = disp_value_arg->vertical_aligned();
+	    rotate_ok = disp_value_arg->expanded();
 	    break;
 
 	case List:

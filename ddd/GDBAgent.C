@@ -1568,10 +1568,10 @@ string GDBAgent::info_args_command() const
 	return "info args";
 
     default:
-	return info_locals_command();
+	break;
     }
 
-    return "";			// Never reached
+    return info_locals_command();
 }
 
 string GDBAgent::info_display_command() const
@@ -2080,12 +2080,9 @@ string GDBAgent::dereferenced_expr(string expr) const
 	    // GDB dereferences JAVA references by prepending `*'
 	    return prepend_prefix("*", expr);
 	}
-	else
-	{
-	    // JDB (and others?) dereference automatically
-	    return expr;
-	}
-	break;
+
+	// JDB (and others?) dereference automatically
+	return expr;
 
     case LANGUAGE_CHILL:
 	return append_suffix(expr, "->");
@@ -2147,10 +2144,11 @@ string GDBAgent::index_expr(string expr, string index) const
 	return expr + "(" + index + ")";
 
     default:
-	return expr + "[" + index + "]";
+	break;
     }
 
-    return "";			// All other languages
+    // All other languages
+    return expr + "[" + index + "]";
 }
 
 // Return default index base
