@@ -76,6 +76,8 @@
 #define XtCDataButtons           "DataButtons"
 #define XtNtoolButtons           "toolButtons"
 #define XtCToolButtons           "ToolButtons"
+#define XtNtoolBar               "toolBar"
+#define XtCToolBar               "ToolBar"
 #define XtNseparateDataWindow    "separateDataWindow"
 #define XtNseparateSourceWindow  "separateSourceWindow"
 #define XtNseparateExecWindow    "separateExecWindow"
@@ -208,6 +210,7 @@ struct AppData {
     String  source_buttons;
     String  data_buttons;
     String  tool_buttons;
+    Boolean tool_bar;
     Boolean separate_data_window;
     Boolean separate_source_window;
     Boolean separate_exec_window;

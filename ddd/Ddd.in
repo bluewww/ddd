@@ -256,10 +256,10 @@ Ddd*dataButtons:
 
 ! The command tool buttons, as of DDD 2.0 and later.
 Ddd*toolButtons: \
-run:break^C:step:stepi:next:nexti:cont:finish:\
-up:down:Back:Forward:Edit:kill
+run:step:stepi:next:nexti:cont:finish:\
+up:down:Back:Forward:Edit:kill:break^C
 
-Ddd*tool_buttons.break.labelString: Interrupt
+Ddd*break.labelString: Interrupt
 
 ! The number of rows in the command tool.
 Ddd*tool_buttons.fractionBase:			8
@@ -363,7 +363,8 @@ Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
 
 
 ! Some special labels
-Ddd*Forward.labelString:   Fwd
+Ddd*tool_buttons*Forward.labelString:   Fwd
+Ddd*tool_bar*Cont.labelString:   Continue
 
 
 ! Number of columns used for line numbers in the source window
@@ -435,7 +436,7 @@ Ddd*graph_edit.moveDelta:	4
 
 ! The selection tile pixmap.  Usual choices are Motif built-in pixmaps.
 ! If this resource is left unspecified, nodes are simply inverted.
-! *graph_edit.selectTile:	25_foreground
+! Ddd*graph_edit.selectTile:	25_foreground
 
 ! Do we wish opaque movement? (doesn't work yet)
 Ddd*graph_edit.opaqueMove:	false
@@ -2257,24 +2258,35 @@ Ddd*preferences*startup*helpString:   \
 @rm These are the @sl Startup Preferences@rm.\n\
 \n\
 @tt \267 @bf Windows @rm sets the window layout.\n\
-    @bf Separate windows @rm means to use one source window,\n\
+    @bf separate windows @rm means to use one source window,\n\
     one data window, and one debugger console window.\n\
-    @bf One single window @rm means to use one single window\n\
-    for source, data, and the debugger console.\n\
+    @bf one single window @rm means to use one single window\n\
+    for source, data, and the debugger console. (*)\n\
+\n\
+@tt \267 The @bf Status line @rm can be placed\n\
+    @bf at bottom of source@rm, in order to display menu descriptions, \
+or\n\
+    @bf at top of source@rm, as in @DDD@ 2.0 and earlier. (*)\n\
+\n\
+@tt \267 The @bf Tool buttons @rm can be placed\n\
+    in the @bf command tool @rm which can be moved around @DDD@, \
+or\n\
+    in the @bf source window@rm, as in @DDD@ 1.4 and earlier.\n\
 \n\
 @tt \267 @bf Keyboard focus @rm sets the keyboard focus policy.\n\
-    @bf Click to type @rm means that you must click on a window\n\
+    @bf click-to-type @rm means that you must click on a window\n\
     to direct the keyboard focus to it.\n\
-    @bf Point to type @rm means that pointing to the window suffices.\n\
+    @bf point-to-type @rm means that pointing to the window suffices.\n\
 \n\
 @tt \267 @bf Data Scrolling @rm sets the data window scrolling mode.\n\
     @bf Panner @rm means to use a two-dimensional scrollbar\n\
     (not available in all configurations).\n\
-    @bf Scrollbars @rm means to use two scrollbars.\n\
+    @bf Scrollbars @rm means to use two scrollbars. (*)\n\
 \n\
-@tt \267 @bf Debugger Type @rm sets the type of inferior debugger to use.\n\
+@tt \267 @bf Debugger Type @rm sets the type of inferior debugger to use. \
+(*)\n\
 \n\
-Note: these startup preferences take effect only after saving options\n\
+(*) Note: these startup preferences take effect only after saving options\n\
 and restarting @DDD@.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
@@ -2282,37 +2294,44 @@ Click on @bf Reset @rm to restore the saved preferences.
 
 Ddd*preferences*startup*adjustMargin:		false
 
-Ddd*preferences*windows.labelString:		Windows:
+Ddd*preferences*windows.labelString:		@DDD@ comes in
 Ddd*preferences*windows.alignment:		XmALIGNMENT_END
-Ddd*preferences*windows.width:			120
+Ddd*preferences*windows.width:			200
 Ddd*preferences*windows.recomputeSize:		false
-Ddd*windowsMenu*separate.labelString:		Separate windows
-Ddd*windowsMenu*attached.labelString:		One single window
+Ddd*windowsMenu*separate.labelString:		separate windows
+Ddd*windowsMenu*attached.labelString:		one single window
 
-Ddd*preferences*statusPosition.labelString:	Status line:
+Ddd*preferences*statusPosition.labelString:	Status line is located
 Ddd*preferences*statusPosition.alignment:	XmALIGNMENT_END
-Ddd*preferences*statusPosition.width:		120
+Ddd*preferences*statusPosition.width:		200
 Ddd*preferences*statusPosition.recomputeSize:	false
-Ddd*statusPositionMenu*bottom.labelString:	At bottom
-Ddd*statusPositionMenu*top.labelString:		At top
+Ddd*statusPositionMenu*bottom.labelString:	at bottom of source
+Ddd*statusPositionMenu*top.labelString:		at top of source
 
-Ddd*preferences*keyboardFocus.labelString:	Keyboard focus:
+Ddd*preferences*toolButtons.labelString:	Tool buttons are located
+Ddd*preferences*toolButtons.alignment:		XmALIGNMENT_END
+Ddd*preferences*toolButtons.width:		200
+Ddd*preferences*toolButtons.recomputeSize:	false
+Ddd*toolButtonsMenu*commandTool.labelString:	in command tool
+Ddd*toolButtonsMenu*sourceWindow.labelString:   in source window
+
+Ddd*preferences*keyboardFocus.labelString:	Keyboard focus is
 Ddd*preferences*keyboardFocus.alignment:	XmALIGNMENT_END
-Ddd*preferences*keyboardFocus.width:		120
+Ddd*preferences*keyboardFocus.width:		200
 Ddd*preferences*keyboardFocus.recomputeSize:	false
-Ddd*keyboardFocusMenu*explicit.labelString:	Click to type
-Ddd*keyboardFocusMenu*pointer.labelString:	Point to type
+Ddd*keyboardFocusMenu*explicit.labelString:	click-to-type
+Ddd*keyboardFocusMenu*pointer.labelString:	point-to-type
 
-Ddd*preferences*dataScrolling.labelString:	Data scrolling:
+Ddd*preferences*dataScrolling.labelString:	Data is scrolled using
 Ddd*preferences*dataScrolling.alignment:	XmALIGNMENT_END
-Ddd*preferences*dataScrolling.width:		120
+Ddd*preferences*dataScrolling.width:		200
 Ddd*preferences*dataScrolling.recomputeSize:	false
-Ddd*dataScrollingMenu*panner.labelString:	Panner
-Ddd*dataScrollingMenu*scrollbars.labelString:	Scrollbars
+Ddd*dataScrollingMenu*panner.labelString:	a panner
+Ddd*dataScrollingMenu*scrollbars.labelString:	two scrollbars
 
-Ddd*preferences*debugger.labelString:		Debugger type:
+Ddd*preferences*debugger.labelString:		Debugger type is
 Ddd*preferences*debugger.alignment:		XmALIGNMENT_END
-Ddd*preferences*debugger.width:			120
+Ddd*preferences*debugger.width:			200
 Ddd*preferences*debugger.recomputeSize:		false
 Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
@@ -3040,11 +3059,14 @@ Ddd*source_buttons*XmPushButton.helpString:
 Ddd*console_buttons*XmPushButton.helpString:
 Ddd*data_buttons*XmPushButton.helpString:
 Ddd*tool_buttons*XmPushButton.helpString:
+Ddd*tool_bar*XmPushButton.helpString:
 
+! Same applies for button tips.
 Ddd*source_buttons*XmPushButton.tipString:
 Ddd*console_buttons*XmPushButton.tipString:
 Ddd*data_buttons*XmPushButton.tipString:
 Ddd*tool_buttons*XmPushButton.tipString:
+Ddd*tool_bar*XmPushButton.tipString:
 
 ! Special spacing
 Ddd*source_buttons.spacing:	    0
@@ -3080,6 +3102,8 @@ Ddd*data_buttons*break.tipString: \
 Ddd*console_buttons*break.tipString: \
 @rm Interrupt debugged program
 Ddd*tool_buttons*break.tipString: \
+@rm Interrupt debugged program
+Ddd*tool_bar*break.tipString: \
 @rm Interrupt debugged program
 Ddd*?*break.documentationString: \
 @rm Interrupt the debugged process or current debugger command

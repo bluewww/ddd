@@ -467,6 +467,21 @@ void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
     post_startup_warning(w);
 }
 
+void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
+{
+    Boolean state = Boolean(client_data != 0);
+
+    app_data.tool_bar = state;
+
+    if (state)
+	set_status("Enabling Tool Bar.");
+    else
+	set_status("Enabling Command Tool.");
+
+    update_options();
+    post_startup_warning(w);
+}
+
 void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 {
     unsigned char policy = (unsigned char)int(client_data);
@@ -514,11 +529,9 @@ void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
     app_data.panned_graph_editor = state;
 
     if (state)
-	set_status("Next " DDD_NAME
-		   " invocation will start-up with a panned graph editor.");
+	set_status(next_ddd_will_start_with + "a panned graph editor.");
     else
-	set_status("Next " DDD_NAME 
-		   " invocation will start-up with a scrolled graph editor.");
+	set_status(next_ddd_will_start_with + "a scrolled graph editor.");
 
     update_options();
     post_startup_warning(w);
@@ -543,8 +556,8 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
 	break;
     }
 
-    set_status(string("Next " DDD_NAME " invocation will start-up with a ") +
-	       upcase(app_data.debugger) + " debugger.");
+    set_status(next_ddd_will_start_with + "a " 
+	       + upcase(app_data.debugger) + " debugger.");
 
     update_options();
     post_startup_warning(w);
@@ -713,6 +726,8 @@ void save_options(Widget origin)
 			 app_data.value_docs) << "\n";
     os << bool_app_value(XtNstatusAtBottom,
 			 app_data.status_at_bottom) << "\n";
+    os << bool_app_value(XtNtoolBar,
+			 app_data.tool_bar) << "\n";
     os << bool_app_value(XtNseparateExecWindow,
 			 app_data.separate_exec_window) << "\n";
     if (!app_data.separate_source_window && !app_data.separate_data_window)

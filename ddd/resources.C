@@ -234,6 +234,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNtoolBar,
+	XtCToolBar,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, tool_bar),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
+    {
 	XtNseparateDataWindow,
 	XtCSeparate,
 	XtRBoolean,

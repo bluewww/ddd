@@ -745,6 +745,17 @@ static MMDesc status_position_menu [] =
     MMEnd
 };
 
+static Widget set_tool_buttons_in_tool_bar_w;
+static Widget set_tool_buttons_in_command_tool_w;
+static MMDesc tool_buttons_menu [] = 
+{
+    { "commandTool",  MMToggle, { dddSetToolBarCB, XtPointer(False) },
+      NULL, &set_tool_buttons_in_command_tool_w },
+    { "sourceWindow", MMToggle, { dddSetToolBarCB, XtPointer(True) },
+      NULL, &set_tool_buttons_in_tool_bar_w },
+    MMEnd
+};
+
 static Widget set_focus_pointer_w;
 static Widget set_focus_explicit_w;
 static MMDesc keyboard_focus_menu [] = 
@@ -787,6 +798,7 @@ static MMDesc startup_preferences_menu [] =
 {
     { "windows",         MMRadioPanel, MMNoCB, window_mode_menu },
     { "statusPosition",  MMRadioPanel, MMNoCB, status_position_menu },
+    { "toolButtons",     MMRadioPanel, MMNoCB, tool_buttons_menu },
     { "keyboardFocus",   MMRadioPanel, MMNoCB, keyboard_focus_menu },
     { "dataScrolling",   MMRadioPanel, MMNoCB, data_scrolling_menu },
     { "debugger",        MMRadioPanel, MMNoCB, debugger_menu },
@@ -972,6 +984,7 @@ XmTextPosition messagePosition;
 static Widget console_buttons_w;
 static Widget source_buttons_w;
 static Widget data_buttons_w;
+static Widget tool_bar_w;
 
 // Strings to be ignored in GDB output
 string gdb_out_ignore = "";
@@ -1482,6 +1495,12 @@ int main(int argc, char *argv[])
 		  XmNpaneMinimum, new_height,
 		  NULL);
 
+    // Tool bar (optional)
+    tool_bar_w = make_buttons(source_view_parent, "tool_bar", 
+			      app_data.tool_buttons);
+    if (tool_bar_w != 0)
+	XtUnmanageChild(tool_bar_w);
+
     // Source buttons (optional)
     source_buttons_w = make_buttons(source_view_parent, "source_buttons", 
 				    app_data.source_buttons);
@@ -1759,15 +1778,19 @@ int main(int argc, char *argv[])
 	XtAddEventHandler(tool_shell, StructureNotifyMask, False,
 			  StructureNotifyEH, XtPointer(0));
 #endif
-
-	if (source_view_shell || iconic || app_data.tty_mode)
+	
+	if (app_data.tool_bar)
+	{
+	    // The command tool is not needed, as we have a tool bar.
+	}
+	else if (source_view_shell || iconic || app_data.tty_mode)
 	{
 	    // We don't need the command tool right now - 
 	    // wait for source window to map
 	}
 	else
 	{
-	    // OK, raise it
+	    // OK, raise the command tool
 	    initial_popup_shell(tool_shell);
 	}
     }
@@ -2054,6 +2077,11 @@ void update_options()
     XtVaSetValues(set_status_top_w,
 		  XmNset, !app_data.status_at_bottom, NULL);
 
+    XtVaSetValues(set_tool_buttons_in_tool_bar_w,
+		  XmNset, app_data.tool_bar, NULL);
+    XtVaSetValues(set_tool_buttons_in_command_tool_w,
+		  XmNset, !app_data.tool_bar, NULL);
+
     Boolean separate = 
 	app_data.separate_data_window || app_data.separate_source_window;
     XtVaSetValues(set_separate_windows_w,
@@ -2087,6 +2115,17 @@ void update_options()
     source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);
+
+    if (app_data.tool_bar && tool_bar_w != 0 && !XtIsManaged(tool_bar_w))
+    {
+	XtManageChild(tool_bar_w);
+	gdbCloseToolWindowCB(command_shell, 0, 0);
+    }
+    else if (!app_data.tool_bar && tool_bar_w != 0 && XtIsManaged(tool_bar_w))
+    {
+	XtUnmanageChild(tool_bar_w);
+	gdbOpenToolWindowCB(command_shell, 0, 0);
+    }
 
     EnableButtonTips(app_data.button_tips);
     EnableButtonDocs(app_data.button_docs);
@@ -2230,8 +2269,12 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
 
     set_toggle(set_separate_windows_w, separate);
     set_toggle(set_attached_windows_w, !separate);
+
     set_toggle(set_status_bottom_w, initial_app_data.status_at_bottom);
     set_toggle(set_status_top_w, !initial_app_data.status_at_bottom);
+
+    set_toggle(set_tool_buttons_in_tool_bar_w, initial_app_data.tool_bar);
+    set_toggle(set_tool_buttons_in_command_tool_w, !initial_app_data.tool_bar);
 
     set_toggle(set_focus_pointer_w, initial_focus_policy == XmPOINTER);
     set_toggle(set_focus_explicit_w, initial_focus_policy == XmEXPLICIT);
@@ -2262,6 +2305,7 @@ bool startup_preferences_changed()
 
     return separate != initial_separate
 	|| app_data.status_at_bottom != initial_app_data.status_at_bottom
+	|| app_data.tool_bar != initial_app_data.tool_bar
 	|| focus_policy != initial_focus_policy
 	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
 	|| debugger_type(app_data.debugger) 
@@ -2478,6 +2522,7 @@ static void create_status(Widget parent)
 		  NULL);
 }
 
+
 //-----------------------------------------------------------------------------
 // Helpers
 //-----------------------------------------------------------------------------
@@ -2693,6 +2738,7 @@ void _gdb_out(string text)
     set_buttons_from_gdb(console_buttons_w, text);
     set_buttons_from_gdb(source_buttons_w, text);
     set_buttons_from_gdb(data_buttons_w, text);
+    set_buttons_from_gdb(tool_bar_w, text);
     set_status_from_gdb(text);
     set_tty_from_gdb(text);
 

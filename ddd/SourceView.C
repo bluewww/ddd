@@ -1575,7 +1575,9 @@ void SourceView::read_file (string file_name,
 	    Widget shell = source_view_shell ? 
 				source_view_shell : command_shell;
 	    initial_popup_shell(shell);
-	    initial_popup_shell(tool_shell);
+
+	    if (!app_data.tool_bar)
+		initial_popup_shell(tool_shell);
 
 	    initial_popup = false;
 	}

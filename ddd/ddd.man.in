@@ -2264,9 +2264,16 @@ See also the `\fBconsoleButtons\fR' and `\fBdataButtons\fR' resources,
 above, and the `\fBtoolButtons\fR' resource, below.
 .RE
 .TP
+.B "toolBar (\fPclass\fB ToolBar)"
+Whether the tool buttons (see  the `\fBtoolButtons\fR' resource,
+below) should be shown in a tool bar below the source window
+(\fBtrue\fR) or within the command tool (\fBfalse\fR, default).
+Enabling the tool bar disables the command tool and vice versa.
+.TP
 .B "toolButtons (\fPclass\fB ToolButtons)"
-A colon-separated list of buttons to be included in the command tool.
-Each button issues the command given by its name.  See the
+A colon-separated list of buttons to be included in the command tool
+or the tool bar (see the `\fBtoolBar\fR' resource, above).  Each
+button issues the command given by its name.  See the
 `\fBconsoleButtons\fR' resource, above, for details on button syntax.
 .RS
 .PP
