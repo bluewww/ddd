@@ -126,10 +126,11 @@ class SourceView {
 
     static Widget create_glyph(Widget form_w, String name, 
 			       char *bits, int width, int height);
-    static void map_glyph(Widget w, Position x, Position y);
+    static void map_glyph(Widget& w, Position x, Position y);
     static void update_title ();
     static void update_glyphs ();
     static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
+    static Boolean CreateGlyphsWorkProc(XtPointer);
     static void MoveCursorToGlyphPosCB(Widget, XtPointer, XtPointer);
     static int line_height (Widget text_w);
 
@@ -391,6 +392,7 @@ public:
     // Clear caches
     static void clear_file_cache();
     static void clear_code_cache();
+    static void clear_history();
 
     // Get the line at POSITION
     static string get_line(string position);

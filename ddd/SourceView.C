@@ -262,7 +262,7 @@ bool SourceView::register_dialog_popped_up = false;
 bool SourceView::cache_source_files     = true;
 bool SourceView::cache_machine_code     = true;
 bool SourceView::display_glyphs         = true;
-bool SourceView::disassemble            = false;
+bool SourceView::disassemble            = true;
 
 int  SourceView::bp_indent_amount   = 0;
 int  SourceView::code_indent_amount = 4;
@@ -1695,7 +1695,8 @@ SourceView::SourceView (XtAppContext app_context,
     code_text_w = 
 	verify(XmCreateScrolledText(code_form_w, "code_text_w", args, arg));
     XtManageChild(code_text_w);
-    XtManageChild(code_form_w);
+    if (disassemble)
+	XtManageChild(code_form_w);
 
 #ifndef LESSTIF_VERSION		// won't work with LessTif 1.0
     XtAddCallback(code_text_w, XmNgainPrimaryCallback,
@@ -1887,6 +1888,9 @@ SourceView::SourceView (XtAppContext app_context,
 
     // Setup actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
+
+    // Create glyphs in the background
+    XtAppAddWorkProc (app_context, CreateGlyphsWorkProc, XtPointer(0));
 }
 
 
@@ -2224,7 +2228,7 @@ void SourceView::lookup(string s)
     {
 	// Empty argument given
 	if (last_execution_pc != "")
-	    show_pc(last_execution_pc);
+	    show_pc(last_execution_pc, XmHIGHLIGHT_SELECTED);
 
 	if (last_execution_file != "")
 	{
@@ -2496,6 +2500,16 @@ void SourceView::go_forward()
 {
     if (history_position + 1 < history.size())
 	goto_entry(history[++history_position]);
+}
+
+// Clear history
+void SourceView::clear_history()
+{
+    static StringArray empty;
+    history               = empty;
+    history_position      = 0;
+    code_history_locked   = false;
+    source_history_locked = false;
 }
 
 
@@ -3893,8 +3907,11 @@ int SourceView::line_height(Widget text_w)
     return height;
 }
 
-void SourceView::map_glyph(Widget w, Position x, Position y)
+void SourceView::map_glyph(Widget& w, Position x, Position y)
 {
+    while (w == 0)
+	CreateGlyphsWorkProc(0);
+
     // clog << "Mapping glyph at (" << x << ", " << y << ")\n";
 
     assert(is_code_widget(w) || is_source_widget(w));
@@ -3975,51 +3992,85 @@ const int stop_x_offset = +6;
 // Additional offset for multiple breakpoints (pixels)
 const int multiple_stop_x_offset = stop_width - 2;
 
-void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
+
+// Glyph locations
+static Widget _plain_arrow_w[2] = {0, 0};
+static Widget _grey_arrow_w[2]  = {0, 0};
+static Widget _plain_stops_w[2][max_glyphs + 1];
+static Widget _grey_stops_w[2][max_glyphs + 1];
+
+Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 {
-    // clog << "Updating glyphs...\n";
+    static bool all_done = false;
 
-    static Widget _plain_arrow_w[2] = {0, 0};
-    static Widget _grey_arrow_w[2]  = {0, 0};
-    static Widget _plain_stops_w[2][max_glyphs + 1];
-    static Widget _grey_stops_w[2][max_glyphs + 1];
+    if (all_done)
+	return True;
 
-    if (_plain_arrow_w[0] == 0)
+    int k;
+    for (k = 0; k < 2; k++)
     {
-	// Initialize glyphs
+	// On the Form widget, later children are displayed
+	// on top of earlier children.  A stop sign hiding an arrow
+	// gives more pleasing results than vice-versa, so place arrow
+	// glyph below sign glyphs.
 
-	for (int k = 0; k < 2; k++)
+	Widget form_w = k ? code_form_w : source_form_w;
+
+	if (_plain_arrow_w[k] == 0)
 	{
-	    // On the Form widget, later children are displayed
-	    // on top of earlier children.  A stop sign hiding an arrow
-	    // gives more pleasing results than vice-versa, so place arrow
-	    // glyph below sign glyphs.
-
-	    Widget form_w = k ? code_form_w : source_form_w;
-
 	    _plain_arrow_w[k] = 
 		create_glyph(form_w, "plain_arrow",
 			     arrow_bits, 
 			     arrow_width,
 			     arrow_height);
+	    return False;
+	}
 
+	if (_grey_arrow_w[k] == 0)
+	{
 	    _grey_arrow_w[k] = 
 		create_glyph(form_w, "grey_arrow",
 			     greyarrow_bits, 
 			     greyarrow_width, 
 			     greyarrow_height);
+	    return False;
+	}
+    }
+   
+    for (k = 0; k < 2; k++)
+    {
+	Widget form_w = k ? code_form_w : source_form_w;
 
-	    int i;
-	    for (i = 0; i < max_glyphs; i++)
+	int i;
+	for (i = 0; i < max_glyphs; i++)
+	{
+	    if (_grey_stops_w[k][i] == 0)
+	    {
 		_grey_stops_w[k][i] = 
 		    create_glyph(form_w, "grey_stop", greystop_bits, 
 				 greystop_width, greystop_height);
-	    for (i = 0; i < max_glyphs; i++)
+		return False;
+	    }
+	}
+	for (i = 0; i < max_glyphs; i++)
+	{
+	    if (_plain_stops_w[k][i] == 0)
+	    {
 		_plain_stops_w[k][i] = 
 		    create_glyph(form_w, "plain_stop", stop_bits, 
 				 stop_width, stop_height);
+		return False;
+	    }
 	}
     }
+
+    all_done = true;
+    return True;
+}
+
+void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
+{
+    // clog << "Updating glyphs...\n";
 
     // Show source position
     // clog << "Source arrow:\n";
@@ -4043,18 +4094,24 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	if (at_lowest_frame)
 	{
 	    map_glyph(source_plain_arrow_w, x + arrow_x_offset, y);
-	    XtUnmapWidget(source_grey_arrow_w);
+
+	    if (source_grey_arrow_w)
+		XtUnmapWidget(source_grey_arrow_w);
 	}
 	else
 	{
 	    map_glyph(source_grey_arrow_w, x + arrow_x_offset, y);
-	    XtUnmapWidget(source_plain_arrow_w);
+
+	    if (source_plain_arrow_w)
+		XtUnmapWidget(source_plain_arrow_w);
 	}
     }
     else
     {
-	XtUnmapWidget(source_plain_arrow_w);
-	XtUnmapWidget(source_grey_arrow_w);
+	if (source_plain_arrow_w)
+	    XtUnmapWidget(source_plain_arrow_w);
+	if (source_grey_arrow_w)
+	    XtUnmapWidget(source_grey_arrow_w);
     }
 
 
@@ -4075,18 +4132,22 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	if (at_lowest_frame)
 	{
 	    map_glyph(code_plain_arrow_w, x + arrow_x_offset, y);
-	    XtUnmapWidget(code_grey_arrow_w);
+	    if (code_grey_arrow_w)
+		XtUnmapWidget(code_grey_arrow_w);
 	}
 	else
 	{
 	    map_glyph(code_grey_arrow_w, x + arrow_x_offset, y);
-	    XtUnmapWidget(code_plain_arrow_w);
+	    if (code_plain_arrow_w)
+		XtUnmapWidget(code_plain_arrow_w);
 	}
     }
     else
     {
-	XtUnmapWidget(code_plain_arrow_w);
-	XtUnmapWidget(code_grey_arrow_w);
+	if (code_plain_arrow_w)
+	    XtUnmapWidget(code_plain_arrow_w);
+	if (code_grey_arrow_w)
+	    XtUnmapWidget(code_grey_arrow_w);
     }
 
 
@@ -4126,6 +4187,9 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 		    XmTextPosToXY(source_text_w, pos, &x, &y);
 		if (pos_displayed)
 		{
+		    while (!CreateGlyphsWorkProc(0))
+			;
+
 		    Widget glyph = 0;
 		    if (bp->enabled())
 			glyph = source_plain_stops_w[source_p] ? 
@@ -4176,6 +4240,9 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 		XmTextPosToXY(code_text_w, pos, &x, &y);
 	    if (pos_displayed)
 	    {
+		while (!CreateGlyphsWorkProc(0))
+		    ;
+
 		Widget glyph = 0;
 		if (bp->enabled())
 		    glyph = code_plain_stops_w[code_p] ? 
@@ -4217,22 +4284,25 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 // Change setting of display_glyphs
 void SourceView::set_display_glyphs(bool set)
 {
-    if (XtIsRealized(source_text_w))
+    if (display_glyphs != set)
     {
-	display_glyphs = false;	
-	show_execution_position();
-	UpdateGlyphsWorkProc(0, 0);
+	if (XtIsRealized(source_text_w))
+	{
+	    display_glyphs = false;	
+	    show_execution_position();
+	    UpdateGlyphsWorkProc(0, 0);
 
-	display_glyphs = true;
-	refresh_bp_disp();
-    }
+	    display_glyphs = true;
+	    refresh_bp_disp();
+	}
 
-    display_glyphs = set;
+	display_glyphs = set;
 
-    if (XtIsRealized(source_text_w))
-    {
-	refresh_bp_disp();
-	lookup();
+	if (XtIsRealized(source_text_w))
+	{
+	    refresh_bp_disp();
+	    lookup();
+	}
     }
 }
 
@@ -4377,6 +4447,12 @@ void SourceView::refresh_codeOQC(const string& answer, void *client_data)
 
 void SourceView::refresh_codeWorkProc(XtPointer client_data, XtIntervalId *)
 {
+    if (!disassemble)
+    {
+	refresh_code_pending = false;
+	return;
+    }
+
     RefreshInfo *info = (RefreshInfo *)client_data;
     bool ok = gdb->send_question("disassemble " + info->pc, 
 				 refresh_codeOQC, (void *)info);
@@ -4507,4 +4583,20 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode)
 }
 
 void SourceView::set_disassemble(bool set)
-{}
+{
+    if (disassemble != set)
+    {
+	disassemble = set;
+
+	if (!disassemble)
+	    XtUnmanageChild(code_form_w);
+	else
+	{
+	    XtManageChild(code_form_w);
+	    if (last_execution_pc == "")
+		lookup(line_of_cursor());
+	    else
+		show_pc(last_execution_pc, XmHIGHLIGHT_SELECTED);
+	}
+    }
+}
