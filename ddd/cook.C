@@ -44,10 +44,12 @@ string _cook(CONST_REF(string) raw, bool for_postscript) RETURNS(cooked)
 {
     RETURN_OBJECT(string, cooked);
     cooked = "";
+    const char *raw_s = (char *)raw;
 
     for (unsigned i = 0; i < raw.length(); i++)
     {
-	unsigned char c = (unsigned) ((string &)raw)[i];
+	char cc = raw_s[i];
+	unsigned char c = (unsigned char)cc;
 
 	switch(c) 
 	{
