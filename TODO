@@ -275,10 +275,9 @@ Volunteers for these and other projects are welcome!
 135. Have node reference points be at the upper left instead of the
      center.
 
-140. When clicking on the status line, show the last N messages.
-
-141. Show AliasGraphEdges as arcs.
-
 142. Have a way to display the current DDD status.
 
-143. (Insert your project idea here)
+143. Have a list of regexes that match suppressed displays.  See also
+     #128 and #088.
+
+144. (Insert your project idea here)
