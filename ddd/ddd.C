@@ -2639,6 +2639,8 @@ static void create_status(Widget parent)
 		  XmNpaneMaximum, new_height,
 		  XmNpaneMinimum, new_height,
 		  NULL);
+
+    blink(true);
 }
 
 
