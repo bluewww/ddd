@@ -156,8 +156,10 @@ private:
     int _hangupTimeOut;    	// hangup TimeOut (in s)
     int _killTimeOut;      	// kill TimeOut (in s)
 
+protected:
     HandlerList handlers;   	// error handlers
 
+private:
     int to_child[2];		// pipes
     int to_parent[2];
     int to_parent_error[2];

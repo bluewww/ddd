@@ -186,6 +186,9 @@ private:
     }
 
 public:
+    // Resources
+    XtAppContext appContext() const { return _appContext; }
+
     // Constructors
     AsyncAgent(XtAppContext app_context, string pth, 
 	       unsigned nTypes = AsyncAgent_NTypes):
@@ -209,6 +212,14 @@ public:
 	initHandlers();
     }
 
+    // Duplicator
+    AsyncAgent(const AsyncAgent& c):
+	Agent(c), _appContext(c.appContext()), workProcs(0)
+    {
+	initHandlers();
+    }
+    virtual Agent *dup() const { return new AsyncAgent(*this); }
+
     // Destructor
     ~AsyncAgent()
     {
@@ -219,19 +230,8 @@ public:
 	clearHandlers();
     }
 
-    // Duplicator
-    AsyncAgent(const AsyncAgent& c):
-	Agent(c), _appContext(c._appContext)
-    {
-	initHandlers();
-    }
-    virtual Agent *dup() const { return new AsyncAgent(*this); }
-
     // These need special management:
     virtual void abort();
-
-    // resources
-    XtAppContext appContext()  { return _appContext; }
 };
 
 #endif

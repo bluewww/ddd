@@ -266,8 +266,13 @@ void AsyncAgent::waitToTerminate()
     // Copy agent to a "dummy" agent. This agent is used only
     // for handling the terminating sequence. It cannot be used for I/O.
     AsyncAgent *dummy = ptr_cast(AsyncAgent, dup());
-    dummy->removeAllHandlers();
 
+    // Remove all subclass handlers for "dummy"
+    for (unsigned type = AsyncAgent_NTypes + 1; 
+	 type < handlers.nTypes(); type++)
+	dummy->handlers.removeAll(type);
+
+    // Invoke killers for the "dummy" agent
     if (terminateTimeOut() >= 0)
 	XtAppAddTimeOut(appContext(), terminateTimeOut() * 1000,
 	    terminateProcess, XtPointer(dummy));
