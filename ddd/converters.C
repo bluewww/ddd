@@ -548,7 +548,7 @@ static Boolean CvtStringToXmString(Display *display,
 
 	while (segment.contains('\n'))
 	{
-	    buf += MString(segment.before('\n'), charset) + cr();
+	    buf += MString(segment.before('\n').chars(), charset) + cr();
 	    segment = segment.after('\n');
 	}
 
