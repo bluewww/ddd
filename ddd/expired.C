@@ -70,7 +70,7 @@ static time_t ddd_expiration_time()
     expiration_tm.tm_hour  = 0;
     expiration_tm.tm_mday  = day;
     expiration_tm.tm_mon   = month - 1;
-    expiration_tm.tm_year  = year - 1900;
+    expiration_tm.tm_year  = year - 1900; // No, this is no Y2K problem.  -AZ
     expiration_tm.tm_wday  = -1;
     expiration_tm.tm_yday  = -1;
     expiration_tm.tm_isdst = -1;
@@ -94,7 +94,8 @@ string ddd_expiration_date()
 
 #if HAVE_STRFTIME
     char buffer[1024];
-    strftime(buffer, sizeof buffer, "%x", localtime(&expiration_time));
+    strftime(buffer, sizeof buffer, "%A, %Y-%m-%d, at %H:%M", 
+	     localtime(&expiration_time));
     pretty_expiration_date = buffer;
 #elif HAVE_ASCTIME
     pretty_expiration_date = asctime(localtime(&expiration_time));
