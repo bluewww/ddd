@@ -198,7 +198,16 @@ AC_PATH_XTRA
 ICE_FIND_MOTIF
 ICE_FIND_ATHENA
 dnl
+dnl Autoconf bug fix: Sun CC 3.0 requires `-R lib', g++ requires `-Rlib'.
+changequote(,)dnl
+case "$CXX" in
+  *CC) X_LIBS="`echo $X_LIBS | $SED 's, -R\([^ ]\), -R \1,g'`"
+esac
+changequote([,])dnl
 dnl
+dnl
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
 dnl
 dnl
 dnl
@@ -210,7 +219,12 @@ dnl
 dnl Check for X library
 dnl
 X11_LIBS=""
-AC_CHECK_LIB(X11, XOpenDisplay, X11_LIBS="-lX11",,)
+AC_CHECK_LIB(X11, 
+[return 0; } 
+ extern "C" void XOpenDisplay(); 
+ int t2() { XOpenDisplay
+],
+X11_LIBS="-lX11",,)
 if test "$X11_LIBS" = ""; then
 AC_MSG_WARN(could not find X11 library)
 fi
@@ -222,7 +236,12 @@ dnl
 dnl Check for X toolkit libraries
 dnl
 XT_LIBS=""
-AC_CHECK_LIB(Xt, XtToolkitInitialize, XT_LIBS="-lXt",,${X11_LIBS})
+AC_CHECK_LIB(Xt, 
+[return 0; } 
+ extern "C" void XtToolkitInitialize(); 
+ int t2() { XtToolkitInitialize
+], 
+XT_LIBS="-lXt",,${X11_LIBS})
 if test "$XT_LIBS" = ""; then
 AC_MSG_WARN(could not find X toolkit library)
 fi
@@ -233,7 +252,12 @@ dnl Check for X extension libraries
 dnl
 dnl
 XEXT_LIBS=""
-AC_CHECK_LIB(Xext, XShapeQueryVersion, XEXT_LIBS="-lXext",,${X11_LIBS})
+AC_CHECK_LIB(Xext, 
+[return 0; } 
+ extern "C" void XShapeQueryVersion(); 
+ int t2() { XShapeQueryVersion
+], 
+XEXT_LIBS="-lXext",,${X11_LIBS})
 AC_SUBST(XEXT_LIBS)
 dnl
 dnl
@@ -241,10 +265,20 @@ dnl Check for Athena widget libraries
 dnl
 dnl
 XAW_LIBS=""
-AC_CHECK_LIB(Xmu, XtToolkitInitialize(); XmuCvtStringToOrientation, 
+AC_CHECK_LIB(Xmu, 
+[return 0; } 
+ extern "C" void XtToolkitInitialize(); 
+ extern "C" void XmuCvtStringToOrientation(); 
+ int t2() { XtToolkitInitialize(); XmuCvtStringToOrientation
+], 
 	XAW_LIBS="-lXmu ${XAW_LIBS}",,
 	${XAW_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
-AC_CHECK_LIB(Xaw, XtToolkitInitialize(); XawTextSetInsertionPoint, 
+AC_CHECK_LIB(Xaw, 
+[return 0; } 
+ extern "C" void XtToolkitInitialize(); 
+ extern "C" void XawTextSetInsertionPoint(); 
+ int t2() { XtToolkitInitialize(); XawTextSetInsertionPoint
+], 
 	XAW_LIBS="-lXaw ${XAW_LIBS}"
 	AC_DEFINE(HAVE_ATHENA_WIDGETS),,
 	${XAW_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
@@ -259,8 +293,12 @@ dnl Check for Xpm widget libraries
 dnl
 dnl
 XPM_LIBS=""
-AC_CHECK_LIB(Xpm, XpmCreatePixmapFromXpmImage,
-	XPM_LIBS='-lXpm'
+AC_CHECK_LIB(Xpm,
+[return 0; } 
+ extern "C" void XpmCreatePixmapFromXpmImage();
+ int t2() { XpmCreatePixmapFromXpmImage
+],
+	XPM_LIBS="-lXpm"
 	AC_DEFINE(HAVE_XPM_WIDGETS),,
 	${X11_LIBS})
 AC_SUBST(XPM_LIBS)
@@ -270,7 +308,12 @@ dnl Check for Motif widget libraries
 dnl
 dnl
 XM_LIBS=""
-AC_CHECK_LIB(Xm, XtToolkitInitialize(); XmCreateOptionMenu, 
+AC_CHECK_LIB(Xm, 
+[return 0; } 
+ extern "C" void XtToolkitInitialize(); 
+ extern "C" void XmCreateOptionMenu();
+ int t2() { XtToolkitInitialize(); XmCreateOptionMenu
+], 
 	XM_LIBS="-lXm"
 	AC_DEFINE(HAVE_MOTIF_WIDGETS),,
 	${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
@@ -282,19 +325,11 @@ dnl
 dnl
 dnl
 dnl
-dnl Autoconf bug fix: Sun CC 3.0 requires `-R lib', g++ requires `-Rlib'.
-dnl Do this after all checks have been done using a C compiler.
-changequote(,)dnl
-case "$CXX" in
-  *CC) X_LIBS="`echo $X_LIBS | $SED 's, -R\([^ ]\), -R \1,g'`"
-esac
-changequote([,])dnl
-dnl
-dnl
 LIBS="$ice_save_LIBS"
 CFLAGS="$ice_save_CFLAGS"
 CPPFLAGS="$ice_save_CPPFLAGS"
 LDFLAGS="$ice_save_CFLAGS"
+AC_LANG_RESTORE
 fi
 dnl
 dnl
