@@ -5,7 +5,7 @@ DDD 2.2 [in development]
 ------------------------
 
     DDD 2.2 brings persistent sessions, an improved user interface,
-    attaching to running processes, user-defined commands, and more.
+    attaching to running processes, display shortcuts, and more.
 
     User-visible changes to DDD 2.1:
     - Persistent sessions.  You can now save the entire debugger and
@@ -36,11 +36,11 @@ DDD 2.2 [in development]
       Due to the new layout, DDD now requires less width and height.
       If you already have a `~/.dddinit' file, resize DDD manually and
       save options.
-    - Support for debugging processes running outside of DDD.  You can
-      attach to a running process, examine it, and resume execution.
     - Display shortcuts.  Once you have changed `p' to `(char *) p'
       manually, DDD provides a menu shortcut for converting arbitrary
       values to `(char *)'.
+    - Support for debugging processes running outside of DDD.  You can
+      attach to a running process, examine it, and resume execution.
     - Improved online manuals:
       + Multiple manual browsers are supported.
       + Manual browsers are realized as top-level windows.
@@ -75,21 +75,21 @@ DDD 2.2 [in development]
       under `~/.ddd/'.  The file `~/.dddinit' has been replaced by
       `~/.ddd/init'; `~/.ddd_history' is now `~/.ddd/history'.  The
       new directory `~/.ddd/sessions/' contains saved DDD sessions.
-    - Your favourite window manager should now show multi-color DDD
-      icons. (requires XPM)
+    - Your window manager should now show multi-color DDD icons.
+      (requires XPM; can be disabled)
     - During start-up, DDD shows a multi-color logo in a transient
       window. (requires XPM; can be disabled)
     - Memory savings.  DDD regular expressions are now compiled during
       DDD construction (instead of being compiled during DDD
-      execution).  On our box, DDD now requires 35% less memory.
+      execution).  DDD now typically requires 35% less memory.
 
     Bug fixes:
-    - DDD now runs on Linux with GNU libc 5.4.35 and later.
+    - DDD now runs on Linux with GNU libc 5.4.38 and later.
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
       Wiegand <wiegand@kong.gsfc.nasa.gov>.
     - DDD no longer hangs while receiving large chunks of data.
     - Significant speed-ups in processing debugger and program output.
-    - Some memory leaks and some X resource leaks have been tightened.
+    - Several memory leaks and X resource leaks have been tightened.
     - DDD no longer requires the librx library.  Hence, librx errors
       can no more cause DDD to crash.
     - A serious bug that caused timers to be inadvertently removed has
