@@ -68,7 +68,7 @@ dnl Find installation prefix and name.
 dnl
 AC_PREFIX_PROGRAM(gcc)
 AC_ARG_PROGRAM
-ICE_PATH_INFO
+dnl ICE_PATH_INFO
 dnl
 dnl
 dnl

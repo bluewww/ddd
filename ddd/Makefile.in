@@ -41,7 +41,7 @@ VPATH = @srcdir@
 bindir = $(exec_prefix)/bin
 
 # Where to put the info file.
-infodir = @infodir@
+infodir = $(prefix)/info
 
 # Where to put the manual page.
 mandir  = $(prefix)/man
