@@ -1025,8 +1025,7 @@ Makedeps depend:
 	$(ECHO) \#' Source: $$Id$$'; \
 	$(ECHO) ; \
 	$(CXX) -M $(CPPFLAGS) $(DEFS) $(INCLUDE) *.C | \
-	$(SED) 's%[^-/+_.a-zA-Z0-9]\.*/[-/+_.a-zA-Z0-9]*%%g' | \
-	$(GREP) -v '^ *\\$$' | \
+	$(SED) 's% /[^ ]*%%g' | $(SED) 's% \./% %g' | $(GREP) -v '^ *\\$$' | \
 	$(SED) 's%^ *$$%& config.h%g' ) > Makedeps~
 	$(MV) Makedeps~ Makedeps
 
