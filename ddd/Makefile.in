@@ -695,7 +695,7 @@ IDXS = *.cp *.fn *.ky *.pg *.tp *.vr
 DVIS =
 
 ## The postscript files.
-PSS =
+PSS = $(srcdir)/../doc/ddd.man.ps
 
 ## The HTML files.
 # HTML_BASES = ddd_toc.html dddint_toc.html
