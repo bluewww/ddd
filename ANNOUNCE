@@ -23,14 +23,28 @@ For details, see the local NEWS file or the DDD WWW page at
 What do I need to build DDD?
 ----------------------------
 
-Ideally, nothing - Binaries of DDD 3.1 for several architectures are
-available at the DDD FTP sites.
+To build DDD 3.1 from sources, you need:
 
-To build DDD from sources, you need:
+* The DDD 3.1 source package, `ddd-3.1.tar.gz'.  MD5 checksum:
+
+	04771fb822eafcb4d66f983290464a92  ddd-3.1.tar.gz
+
 * Motif.  Typically LessTif (>= 0.87) or OSF/Motif (>= 1.2).
 * A C++ compiler.  Typically GCC (>= 2.7.2).
 
 For details, see the local INSTALL file or the DDD WWW page at
+
+    http://www.cs.tu-bs.de/softech/ddd/
+
+
+Where can I get a DDD binary?
+-----------------------------
+
+Self-contained DDD 3.1 binaries for several architectures are
+available at the DDD FTP sites.
+
+For details, see the `bin/README' file at the DDD FTP sites or
+the DDD WWW page at
 
     http://www.cs.tu-bs.de/softech/ddd/
 
@@ -56,9 +70,9 @@ DDD is available from a number of FTP sites:
 
 * ftp://metalab.unc.edu/pub/Linux/devel/debuggers/ddd/
 
-  FTP server for Linux and contributions.  Carries DDD sources and
-  Linux binaries.  Mirrored in several places; the file `MIRRORS'
-  contains a list.
+  FTP server for Linux and contributions (formerly known as sunsite).
+  Carries DDD sources and Linux binaries.  Mirrored in several places;
+  the file `MIRRORS' contains a list.
 
 * ftp://ftp.x.org/contrib/utilities/
 
