@@ -873,7 +873,7 @@ Ddd*variableWidthFont: helvetica-medium
 Ddd*fixedWidthFont:    lucidatypewriter-medium
 
 ! The base font size; overrides the point settings as set above.
-Ddd*FontSize:          90
+Ddd*FontSize:          120
 
 
 !-----------------------------------------------------------------------------

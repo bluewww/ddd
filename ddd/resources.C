@@ -243,7 +243,7 @@ XtResource ddd_resources[] = {
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, default_font_size),
 	XmRImmediate,
-	XtPointer(90)
+	XtPointer(120)
     },
 
     {
@@ -253,7 +253,7 @@ XtResource ddd_resources[] = {
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, variable_width_font_size),
 	XmRImmediate,
-	XtPointer(90)
+	XtPointer(120)
     },
 
     {
@@ -263,7 +263,7 @@ XtResource ddd_resources[] = {
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, fixed_width_font_size),
 	XmRImmediate,
-	XtPointer(90)
+	XtPointer(120)
     },
 
     { 

@@ -2727,7 +2727,7 @@ in your `\fB$HOME/.@ddd@/init\fR' file.
 The size of the default \s-2@DDD@\s+2 font, in 1/10 points.  This
 ressource overrides any font size specification in the
 `\fBdefaultFont\fR' ressource (see above).  The default value is
-\fB90\fR for a 9.0 point font.
+\fB120\fR for a 12.0 point font.
 .TP
 .B "variableWidthFont (\fPclass\fR Font)"
 The variable width \s-2@DDD@\s+2 font to use for help texts and messages.
@@ -2750,7 +2750,7 @@ in your `\fB$HOME/.@ddd@/init\fR' file.
 The size of the variable width \s-2@DDD@\s+2 font, in 1/10 points.
 This ressource overrides any font size specification in the
 `\fBvariableWidthFont\fR' ressource (see above).  The default value is
-\fB90\fR for a 9.0 point font.
+\fB120\fR for a 12.0 point font.
 .TP
 .B "fixedWidthFont (\fPclass\fR Font)"
 The fixed width \s-2@DDD@\s+2 font to use for source code, the
@@ -2775,14 +2775,14 @@ in your `\fB$HOME/.@ddd@/init\fR' file.
 The size of the fixed width \s-2@DDD@\s+2 font, in 1/10 points.  This
 ressource overrides any font size specification in the
 `\fBfixedWidthFont\fR' ressource (see above).  The default value is
-\fB90\fR for a 9.0 point font.
+\fB120\fR for a 12.0 point font.
 .PP
 As all font size resources have the same class (and by default the
 same value), you can easily change the default \s-2@DDD@\s+2 font size
-to, say, 12.0 points by inserting a line
+to, say, 9.0 points by inserting a line
 .sp
 .br
-  \fB@Ddd@*FontSize: 120\fR
+  \fB@Ddd@*FontSize: 90\fR
 .br
 .sp
 in your `\fB$HOME/.@ddd@/init\fR' file.
