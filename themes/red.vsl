@@ -1,0 +1,9 @@
+// $Id$
+// Red background.  Use this with a self-defined button
+// associated with the command `graph apply red.vsl "()"'.
+
+#pragma override old_value_box
+old_value_box(...) = value_box(...);
+
+#pragma override value_box
+value_box(value) -> color(value, "black", "#ffc0c0");

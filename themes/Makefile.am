@@ -40,6 +40,8 @@ dddrootdir   = $(pkgdatadir)-@VERSION@
 
 themesrootdir = $(dddrootdir)/themes
 themesroot_DATA = \
+	green.vsl \
+	red.vsl \
 	smalltitles.vsl \
 	smallvalues.vsl \
 	suppress.vsl \
