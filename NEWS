@@ -1,6 +1,23 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 2.1.1
+---------
+
+    DDD 2.1.1 includes some hacks that make DDD run with LessTif, a
+    free Motif clone, without loss of functionality.  DDD now no more
+    depends on proprietary software like OSF/Motif.
+
+    Apart from these hacks, functionality is unchanged with respect to
+    DDD 2.1 (no new features, no bug fixes).  If you have DDD 2.1 up
+    and running, there is no need to upgrade to DDD 2.1.1.
+
+    As of this release, DDD is included in GNU CD-ROMs by the Free
+    Software Foundation (aka the GNU people).  DDD distributions are
+    now numbered according to the GNU Maintenance Instructions.
+
+
+
 DDD 2.1
 -------
 
