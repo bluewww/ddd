@@ -2809,7 +2809,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
 	themode = Both;
     else
 	cerr << "show-edges(" << themode << "): bad mode " 
-	     << quote(themode) << "\n";
+	     << '`' << themode << "'" << "\n";
 
     for (GraphEdge *edge = graph->firstEdge(); edge != 0;
 	edge = graph->nextEdge(edge))

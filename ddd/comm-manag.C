@@ -516,7 +516,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    char c = cmd[0];
 
 	    if (c < ' ')
-		gdb_out("^" + string('@' + int(c)));
+		gdb_out(string("^") + char('@' + c));
 	    else
 		gdb_out("^?");	// DEL
 	}

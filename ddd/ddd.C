@@ -4551,7 +4551,7 @@ void gdb_ctrl(char ctrl)
 	// Issue control character
 	string c;
 	if (ctrl < ' ')
-	    c = "^" + string('@' + int(ctrl));
+	    c = string("^") + char('@' + ctrl);
 	else
 	    c = "^?";
 	XmTextInsert(gdb_w, promptPosition, (String)c);
