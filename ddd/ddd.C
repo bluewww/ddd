@@ -261,7 +261,7 @@ static Boolean ddd_setup_done(XtPointer client_data);
 static void ddd_xt_warning(String message);
 
 // Event handling
-static void process_pending_events();
+void process_pending_events();
 
 // Cut and Paste
 static void gdbCutSelectionCB    (Widget, XtPointer, XtPointer);
@@ -311,6 +311,8 @@ static void verify_buttons(MMDesc *items);
 // Fix the size of the status line
 static void fix_status_size();
 
+// Decorate new shell
+static void decorate_new_shell(Widget w);
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -1472,6 +1474,9 @@ int main(int argc, char *argv[])
     gdb->addHandler(LanguageChanged,  language_changedHP);
     gdb->addHandler(ReplyRequired,    gdb_selectHP);
 
+    // Setup shell creation
+    Delay::shell_registered = decorate_new_shell;
+
     // Create command shell
 
     // Use original arguments
@@ -1514,7 +1519,6 @@ int main(int argc, char *argv[])
     XtAddEventHandler(command_shell, EventMask(0), true,
 		      XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
-    Delay::register_shell(command_shell);
 
 
     // Create main window
@@ -1567,7 +1571,6 @@ int main(int argc, char *argv[])
 	XtAddEventHandler(data_disp_shell, EventMask(0), true,
 			  XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
-	Delay::register_shell(data_disp_shell);
 
 	data_main_window_w = 
 	    verify(XtVaCreateManagedWidget("data_main_window",
@@ -1629,7 +1632,6 @@ int main(int argc, char *argv[])
 	XtAddEventHandler(source_view_shell, EventMask(0), true,
 			  XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
-	Delay::register_shell(source_view_shell);
 
 	source_main_window_w = 
 	    verify(XtVaCreateManagedWidget("source_main_window",
@@ -1873,28 +1875,18 @@ int main(int argc, char *argv[])
 
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
-    wm_set_icon(command_shell, iconlogo(gdb_w), iconmask(gdb_w));
+    Delay::register_shell(command_shell);
 
     if (data_disp_shell)
     {
 	XtRealizeWidget(data_disp_shell);
-	wm_set_icon(data_disp_shell,
-		    iconlogo(data_main_window_w),
-		    iconmask(data_main_window_w));
-	wm_set_group_leader(XtDisplay(data_disp_shell),
-			    XtWindow(data_disp_shell),
-			    XtWindow(command_shell));
+	Delay::register_shell(data_disp_shell);
     }
 
     if (source_view_shell)
     {
 	XtRealizeWidget(source_view_shell);
-	wm_set_icon(source_view_shell,
-		    iconlogo(source_main_window_w),
-		    iconmask(source_main_window_w));
-	wm_set_group_leader(XtDisplay(source_view_shell),
-			    XtWindow(source_view_shell),
-			    XtWindow(command_shell));
+	Delay::register_shell(source_view_shell);
     }
 
     // Remove unnecessary sashes
@@ -2031,7 +2023,6 @@ int main(int argc, char *argv[])
 	XmAddWMProtocolCallback(tool_shell, WM_DELETE_WINDOW, 
 				gdbCloseToolWindowCB, 0);
 
-	Delay::register_shell(tool_shell);
 
 	arg = 0;
 	tool_buttons_w = 
@@ -2040,13 +2031,7 @@ int main(int argc, char *argv[])
 
 	XtManageChild(tool_buttons_w);
 	XtRealizeWidget(tool_shell);
-    
-	wm_set_icon(tool_shell,
-		    iconlogo(tool_buttons_w),
-		    iconmask(tool_buttons_w));
-	wm_set_group_leader(XtDisplay(tool_shell),
-			    XtWindow(tool_shell),
-			    XtWindow(tool_shell_parent));
+	Delay::register_shell(tool_shell);
 
 #if 0
 	XtAddEventHandler(tool_shell, structure_mask, False,
@@ -2154,7 +2139,7 @@ void process_next_event()
     }
 }
 
-static void process_pending_events()
+void process_pending_events()
 {
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
     while (XtAppPending(app_context))
@@ -3994,6 +3979,16 @@ static void language_changedHP(Agent *source, void *, void *)
 		  NULL);
 }
 
+
+//-----------------------------------------------------------------------------
+// Configure new shell
+//-----------------------------------------------------------------------------
+
+static void decorate_new_shell(Widget w)
+{
+    // Set DDD logo as icon for new shell
+    wm_set_icon(w, iconlogo(w), iconmask(w));
+}
 
 //-----------------------------------------------------------------------------
 // Misc functions

@@ -70,6 +70,8 @@ DEFINE_TYPE_INFO_0(Delay);
 #endif
 #endif
 
+void (*Delay::shell_registered)(Widget w) = 0;
+
 Cursor _Delay::hourglass_cache = 0;
 Cursor _Delay::current_cursor = 0;
 
@@ -271,6 +273,9 @@ void Delay::register_shell(Widget widget)
 #if LOG_DELAY
     clog << "Registering " << XtName(widget) << " in slot " << i << "\n";
 #endif
+
+    if (shell_registered != 0)
+	shell_registered(widget);
 
     assert(delays.size() == _shells.size());
 }

@@ -80,6 +80,8 @@ public:
     virtual ~Delay();
     static void register_shell(Widget w);
     static const WidgetArray& shells() { return _shells; }
+
+    static void (*shell_registered)(Widget w);
 };
 
 #endif // _DDD_Delay_h
