@@ -39,7 +39,8 @@ echo '#include "configinfo.h"'
 echo 
 echo "const char *config_info = "
 (
-    echo "Built `date '+%x' || date '+%D' || date` by $userinfo."
+    echo "Built `date '+%x' 2> /dev/null || date '+%D' 2> /dev/null || date` \
+by $userinfo."
     echo "                                        "
     echo Features:
     (
