@@ -244,7 +244,7 @@ Volunteers for these and other projects are welcome!
      implemented as follows: use the `ptype' output to display types
      graphically; dereference type names as required.  -AZ]
 
-113. In DBX, use `setenv EDITOR echo' and `edit' to determine the
+113* In DBX, use `setenv EDITOR echo' and `edit' to determine the
      full path of the current source file.  Be sure to reset EDITOR to
      its original value afterwards, such that the debuggee won't be
      confused.
