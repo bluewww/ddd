@@ -343,9 +343,12 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
     case Text:
     {
-	// Read in entire text
-	_value = value;
-	value = value.from(int(value.length())); // assigns ""
+	// Read in a line of text
+	if (value.contains('\n'))
+	    _value = value.through('\n');
+	else
+	    _value = value;
+	value = value.after('\n');
 #if LOG_CREATE_VALUES
 	clog << mytype << ": " << quote(_value) << "\n";
 #endif
@@ -559,22 +562,9 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    if (member_name == "")
 	    {
 		// Some struct stuff that is not a member
-		char *old_value = value;
-
 		DispValue *dv = parse_child(depth, value, myfull_name, "");
 
-		bool consume = true;
-		if (value == old_value)
-		{
-		    // Nothing consumed - stop here
-		    consume = false;
-		}
-		else if (dv->type() == Simple && dv->value() == "")
-		{
-		    // Empty value - stop here
-		    consume = false;
-		}
-		else if (dv->type() == Struct)
+		if (dv->type() == Struct)
 		{
 		    // What's this - a struct within a struct?  Just
 		    // adopt the members.
@@ -585,12 +575,6 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 			DispValue *dv2 = dv->child(i)->link();
 			_children += dv2;
 		    }
-		    consume = false;
-		}
-
-		if (!consume)
-		{
-		    // Discard the value just read
 		    dv->unlink();
 		}
 		else
@@ -643,7 +627,26 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		    full_name = member_prefix + member_name + member_suffix;
 		}
 
-		_children += parse_child(depth, value, full_name, member_name);
+		DispValue *child = 
+		    parse_child(depth, value, full_name, member_name);
+
+		if (child->type() == Text)
+		{
+		    // Found a text as child - child value must be empty
+		    string empty = "";
+		    _children += 
+			parse_child(depth, empty, full_name, member_name);
+
+		    string v = child->value();
+		    strip_space(v);
+		    if (v != "")
+			_children += child;
+		}
+		else
+		{
+		    _children += child;
+		}
+
 		more_values = read_multiple_values && read_struct_next(value);
 	    }
 
