@@ -120,12 +120,12 @@ CXXLIBS = @CXXLIBS@
 ## The C compiler (for demos only)
 
 # What we use to compile C files.
-# CC = @CC@
-CC = cc
+# CC = cc
+CC = @CC@
 
 # The flags we use to compile C files.
-# CFLAGS = @CFLAGS@
-CFLAGS = -g
+# CFLAGS = -g
+CFLAGS = @CFLAGS@
 
 
 ## The Pascal compiler (for demos only)
@@ -209,7 +209,7 @@ LIBXT = @XT_LIBS@
 LIBX11 = @X11_LIBS@ @X_EXTRA_LIBS@
 
 # All libraries shown above
-ALL_X_LIBS = $(LIBX) $(LIBXM) $(LIBXPM) $(LIBXAW) $(LIBXEXT) $(LIBXT) $(LIBX11)
+ALL_X_LIBS = $(LIBXM) $(LIBXPM) $(LIBXAW) $(LIBXEXT) $(LIBXT) $(LIBX) $(LIBX11)
 
 
 ## Installation commands.
@@ -890,7 +890,6 @@ ctest.o: $(srcdir)/ctest.c
 ## For demonstration and debugging purposes
 check:	Ddd ddd cxxtest
 	XAPPLRESDIR=. ./ddd cxxtest
-	
 
 
 ## Lex and Yacc stuff.
@@ -938,7 +937,7 @@ $(srcdir)/acconfig.h: $(srcdir)/acconfig.h.in $(srcdir)/acspecial.h
 
 $(srcdir)/acspecial.h: $(srcdir)/configure.in
 	$(GREP) '^ICE_[a-zA-Z0-9_]* *(' $(srcdir)/configure.in > $@
-	
+
 
 # config.status might not change config.h
 config.h: stamp-h
