@@ -1635,7 +1635,7 @@ void DataDisp::new_displaysOQAC (string answers[],
 //
 void DataDisp::refresh_displaySQ () 
 {
-    bool ok;
+    bool ok = false;
 
     switch (gdb->type())
     {
@@ -1689,7 +1689,7 @@ void DataDisp::refresh_displaySQA (Widget origin)
 
     string cmds[2];
     void*  dummy[2];
-    bool ok;
+    bool ok = false;
 
     switch (gdb->type())
     {
