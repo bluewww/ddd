@@ -414,7 +414,4 @@ Volunteers for these and other projects are welcome!
 
 298*If an item is selected in the reference browser, have it copied to `():'.
 
-299*When defining new GDB commands, have some way to select among the
-    existing ones.  A ComboBox would do just fine.
-
 300 (Insert new project ideas here)
