@@ -386,4 +386,8 @@ Volunteers for fixing these and other bugs are welcome!
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
 
-178. (Insert your bug here)
+178. Starting DDD 2.1.90 with `-iconic': no command tool.
+
+179. DDD 2.1.90: DBX is sent `info breakpoints' commands.
+
+180. (Insert your bug here)

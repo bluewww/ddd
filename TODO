@@ -382,8 +382,8 @@ Volunteers for these and other projects are welcome!
 
 181. If the DDD WWW page server is down, try a mirror site.
 
-182. Use an alternate method for realizing the command tool.  Make it a
-     toplevel window (with restricted decoration) that raises itself
-     each time it is obscured by some other DDD window.
+183. Have a way to re-dereference until a NULL pointer is encountered.
 
-183. (Insert your project idea here)
+184. Include support for the `attach' command.
+
+185. (Insert your project idea here)
