@@ -1509,22 +1509,22 @@ loc stats:
 
 ## EPS code stuff.
 
-header.str:     header.ps
-		sed 's/^.*$$/"&\\n"/' header.ps > header.str
+$(srcdir)/header.str: $(srcdir)/header.ps
+	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/header.ps > $@
 
-trailer.str:    trailer.ps
-		sed 's/^.*$$/"&\\n"/' trailer.ps > trailer.str
+$(srcdir)/trailer.str: $(srcdir)/trailer.ps
+	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/trailer.ps > $@
 
-eps-code.h:     header.str trailer.str eps-code.x
-		sed -e '/prolog/r header.str' \
-		    -e '/trailer/r trailer.str' \
-		    eps-code.x > eps-code.h
+$(srcdir)/eps-code.h: \
+	$(srcdir)/header.str $(srcdir)/trailer.str $(srcdir)/eps-code.x
+	$(SED) -e '/prolog/r $(srcdir)/header.str' \
+	       -e '/trailer/r $(srcdir)/trailer.str' $(srcdir)/eps-code.x > $@
 
 
 ## Configuration info stuff
-configinfo.C:   USERINFO $(srcdir)/config-info
-		$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO USERINFO > $@
-		-$(CAT) $(srcdir)/USERINFO 2> /dev/null || $(CAT) USERINFO
+configinfo.C: USERINFO $(srcdir)/config-info
+	$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO USERINFO > $@
+	-$(CAT) $(srcdir)/USERINFO 2> /dev/null || $(CAT) USERINFO
 
 # configinfo.C:	Makefile config.h
 
@@ -1532,16 +1532,14 @@ configinfo.o:	configinfo.C configinfo.h
 
 # If `~/.ddd_userinfo' exists, use this file as personal identification
 
-USERINFO:	userinfo
-		-(cat $$HOME/.ddd_userinfo \
-		  || ./userinfo \
-		  || echo '(unknown)') > $@
+USERINFO: userinfo
+	-(cat $$HOME/.ddd_userinfo || ./userinfo || echo '(unknown)') > $@
 
 
 ## Update the shared source tree.  For development only.
 
 PUB_DEST=/ftp/ips/pub/misc/$(ddd)-$(VERSION)/ddd
-PUB_SRC=`ls -t /usr/local/share/CVS/ddd/ddd | sed 's/,v//'`
+PUB_SRC=`ls -t /usr/local/share/CVS/ddd/ddd | $(SED) 's/,v//'`
 GTEST=/usr/local/gnubin/test
 
 .PHONY: pub
