@@ -1,18 +1,22 @@
 # $Id$ -*- Text -*-
-# The list of known DDD bugs.
+# The list of known DDD bugs (reproduced).
 
 Note: For problems occurring when *building* DDD, see the file `PROBLEMS'.
       For reported bugs that could not yet be reproduced, see `OPENBUGS'.
 
 This is a list of known (i.e. reproducible) DDD bugs, which should be
-fixed in some future DDD release.  If you want to fix one or more of
-these bugs, please ask us (at ddd@ips.cs.tu-bs.de) whether there are
-already people working on that bug.  Similar, if you find a bug, be
-sure to report it to us (at ddd-bugs@ips.cs.tu-bs.de) such that we may
-fix it (or include it in this list :-)
+fixed in some future DDD release.  
+
+If you find a bug, be sure to report it to <ddd-bugs@ips.cs.tu-bs.de>
+such that we may fix it (or include it in this list :-)
+
+If you want to fix some of these, please ask <ddd@ips.cs.tu-bs.de>
+whether there are already people working on that bug.
 
 Projects marked with an `*' are to be fixed in the next DDD release.
 Volunteers for fixing these and other bugs are welcome!
+
+-- list starts here --
 
 001 It's too big and too slow.  [This one will never get fixed]
 

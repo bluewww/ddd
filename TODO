@@ -233,25 +233,6 @@ Volunteers for these and other projects are welcome!
 
 233 Have a `bookmarks' menu like the `Highlight' menu in tkman.
 
-235 L. Peter Deutsch <ghost@aladdin.com> suggests:
-
-    * There are 4 different styles of command selection in the GUI:
-      menu bar (at the top), individual command buttons (2 rows),
-      floating 2-D button panel (Run, Interrupt, etc.), and pop-up
-      menus.  I think the GUI would look better with fewer styles,
-      but I'm not sure how I would recommend doing it.  I think it
-      would be especially nice to remove the two bars of buttons
-      across the window, which currently take up nearly 1" of
-      vertical space that I would prefer to have available for other
-      things.  My first thought is to turn those two bars into
-      floating panels like the Run / Interrupt panel.
-
-   * I would like to be able to select the font for each window,
-     specifically so that I can use a smaller font to get more data
-     visible in the data window.  ddd already has a nice
-     "preferences" facility: this would be an obvious place to add
-     this capability.
-
 240 If a new display A' is created from some display A, copy the
     selection state in A to A'.  This way, you can easily dereference
     a series of `next' pointers just by pressing `Display *' again and 

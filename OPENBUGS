@@ -1,5 +1,5 @@
 # $Id$ -*- Text -*-
-# The list of reported DDD bugs.
+# The list of reported DDD bugs (not yet reproduced).
 
 Note: For problems occurring when *building* DDD, see the file `PROBLEMS'.
       For known bugs that could be reproduced, see the file `BUGS'.
@@ -7,6 +7,8 @@ Note: For problems occurring when *building* DDD, see the file `PROBLEMS'.
 This is a list of reported DDD bugs which could not yet be reproduced.
 Feel free to investigate into one of these problems or send in more
 detail.
+
+-- list starts here --
 
 700 mayer@paradigml.com (Ron Mayer) says:
 
@@ -118,6 +120,7 @@ detail.
     returned. When the new cmd window position is calculated this will
     result in a slight move.
 
+    [See also 723 -AZ]
     [Could we check for the frame that actually adds a border?  -AZ]
 
 714 Michael Marxmeier <mike@msede.com> writes: I discovered that ddd
@@ -173,12 +176,11 @@ detail.
     e.g. fvwm it works correct. Does someone have an idea?'
 
 723 Stefan von Dombrowski <Stefan.von.Dombrowski@dlr.de> says:
-
     A minor problem though: When one uses a seperate tool window this
     window doesn't keep its relative position with respect to the main
     window.  Every time you move the main window a constant offset is
     added to the relative position of the tool window. This has the
     effect that the tool window at last moves to the lower left of the
-    screen.
+    screen.  [See also 713 -AZ]
 
 724 (Insert new bugs here)
