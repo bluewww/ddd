@@ -85,7 +85,7 @@
 @c Info Dir settings
 @dircategory Miscellaneous
 @direntry
-* DDD-Themes: (ddd).              Writing DDD Themes.
+* DDD-Themes: (ddd-themes).       Writing DDD Themes.
 @end direntry
 @c %**end of header
 
