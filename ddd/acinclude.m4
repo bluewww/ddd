@@ -2763,13 +2763,13 @@ dnl
 dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
-VERSION=3.2.95
+VERSION=3.3
 dnl
 dnl The version nickname.
-NICKNAME="Apollo 13"
+NICKNAME="Blues by Night"
 dnl 
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
-dnl After this date, users are requested to update the product.
+dnl After this date, users are requested to update DDD.
 dnl An empty expiration date means no expiration.
 EXPIRES=
 dnl
