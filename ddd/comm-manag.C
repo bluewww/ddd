@@ -645,7 +645,8 @@ void send_gdb_command(string cmd, Widget origin,
 	plus_cmd_data->refresh_threads = true;
     }
 
-    if (data_disp->count_data_displays() == 0)
+    if (data_disp->count_data_displays() == 0 || 
+	!gdb->has_display_command())
     {
 	// No displays
 	cmd_data->filter_disp = NoFilter;
@@ -653,7 +654,7 @@ void send_gdb_command(string cmd, Widget origin,
 
     if (!check || is_nop_cmd(cmd) || is_graph_cmd(cmd))
     {
-	cmd_data->filter_disp            = NoFilter;
+	cmd_data->filter_disp = NoFilter;
 
 	if (is_nop_cmd(cmd) || is_graph_cmd(cmd))
 	{
@@ -728,7 +729,8 @@ void send_gdb_command(string cmd, Widget origin,
     else if (is_running_cmd(cmd, gdb) || is_pc_cmd(cmd))
     {
 	// New displays and new exec position
-	cmd_data->filter_disp = Filter;
+	if (gdb->has_display_command())
+	    cmd_data->filter_disp = Filter;
 	cmd_data->new_exec_pos = true;
 	if (gdb->type() == DBX)
 	{
@@ -748,8 +750,8 @@ void send_gdb_command(string cmd, Widget origin,
     else if (is_frame_cmd(cmd))
     {
 	// Update displays
-	cmd_data->filter_disp            = NoFilter;
-	cmd_data->new_frame_pos          = true;
+	cmd_data->filter_disp   = NoFilter;
+	cmd_data->new_frame_pos = true;
 
 	plus_cmd_data->refresh_breakpoints = false;
 	plus_cmd_data->refresh_where       = false;
@@ -767,9 +769,9 @@ void send_gdb_command(string cmd, Widget origin,
     else if (is_thread_cmd(cmd) || is_core_cmd(cmd))
     {
 	// Update displays
-	cmd_data->filter_disp            = NoFilter;
-	cmd_data->new_frame_pos          = true;
-	cmd_data->new_exec_pos           = true;
+	cmd_data->filter_disp   = NoFilter;
+	cmd_data->new_frame_pos = true;
+	cmd_data->new_exec_pos  = true;
 
 	plus_cmd_data->refresh_breakpoints = is_thread_cmd(cmd);
 	plus_cmd_data->refresh_where       = true;
@@ -1304,6 +1306,8 @@ void user_cmdOAC (void *data)
     // Process displays
     if (check && cmd_data->filter_disp != NoFilter)
     {
+	assert(gdb->has_display_command());
+
 	if (verbose)
 	    gdb_out(cmd_data->disp_buffer->answer_ended());
 
