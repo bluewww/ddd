@@ -951,7 +951,7 @@ void SourceView::move_bp(int bp_nr, const string& a, Widget w)
 	string file = address.before(':');
 	int line    = get_positive_nr(address.after(':'));
 
-	if (file_matches(file, bp->file_name()) && line == bp->line_nr())
+	if (bp_matches(bp, file, line))
 	    return;		// Breakpoint already at address
     }
 
@@ -1030,10 +1030,7 @@ string SourceView::delete_command(int bp_nr)
     {
 	BreakPoint *bp = bp_map.get(bp_nr);
 	if (bp != 0)
-	{
-	    string pos = bp->file_name() + ":" + itostring(bp->line_nr());
-	    return clear_command(pos);
-	}
+	    return clear_command(bp->pos());
     }
 
     return "";			// No way to delete a breakpoint (*sigh*)
@@ -1300,12 +1297,17 @@ bool SourceView::base_matches(const string& file1, const string& file2)
 }
 
 // Check if BP occurs in the current source text
-bool SourceView::bp_matches(BreakPoint *bp)
+bool SourceView::bp_matches(BreakPoint *bp, int line)
 {
-    return bp->type() == BREAKPOINT
-	    && (bp->file_name() == ""
-		|| file_matches(bp->file_name(), current_source_name())
-		|| file_matches(bp->file_name(), current_file_name));
+    return bp_matches(bp, current_source_name(), line) || 
+	bp_matches(bp, current_file_name, line);
+}
+
+bool SourceView::bp_matches(BreakPoint *bp, const string& file, int line)
+{
+    return bp->type() == BREAKPOINT && 
+	(line == 0 || bp->line_nr() == line) &&
+	(bp->file_name() == "" || file_matches(bp->file_name(), file));
 }
 
 // ***************************************************************************
@@ -1409,8 +1411,7 @@ void SourceView::set_source_argCB(Widget text_w,
 		     bp != 0;
 		     bp = bp_map.next(ref))
 		{
-		    bp->selected() = 
-			bp_matches(bp) && bp->line_nr() == line_nr;
+		    bp->selected() = bp_matches(bp, line_nr);
 		}
 
 		bp_selected = true;
@@ -1479,7 +1480,7 @@ BreakPoint *SourceView::breakpoint_at(string arg)
 	if (arg.matches(rxint))
 	{
 	    // Line number for current source given
-	    if (bp_matches(bp) && bp->line_nr() == atoi(arg))
+	    if (bp_matches(bp, atoi(arg)))
 		return bp;
 	}
 	else
@@ -1502,8 +1503,7 @@ BreakPoint *SourceView::breakpoint_at(string arg)
 		string file = pos.before(':');
 		string line = pos.after(':');
 
-		if (file_matches(bp->file_name(), file) 
-		    && bp->line_nr() == atoi(line))
+		if (bp_matches(bp, file, atoi(line)))
 		    return bp;
 	    }
 	}
@@ -3658,17 +3658,8 @@ void SourceView::lookup(string s, bool silent)
 	    {
 		if (nr == bp->number())
 		{
-		    if (bp->file_name() != "")
-		    {
-			show_position(bp->file_name() + ":" + 
-				      itostring(bp->line_nr()));
-			show_pc(bp->address());
-		    }
-		    else
-		    {
-			show_position(itostring(bp->line_nr()));
-			show_pc(bp->address());
-		    }
+		    show_position(bp->pos());
+		    show_pc(bp->address());
 		    break;
 		}
 	    }
@@ -5040,13 +5031,13 @@ int SourceView::jdb_breakpoint(const string& bp_info)
 
     string class_name = bp_info.before(colon);
     read_leading_blanks(class_name);
-    int line_no = get_positive_nr(bp_info.after(colon));
-    if (line_no <= 0 || class_name.contains(' '))
+    int line = get_positive_nr(bp_info.after(colon));
+    if (line <= 0 || class_name.contains(' '))
 	return -1;		// no breakpoint
 
     MapRef ref;
     for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-	if (bp->line_nr() == line_no && bp->file_name() == class_name)
+	if (bp_matches(bp, class_name, line))
 	    return bp->number(); // existing breakpoint
 
     return 0;			// new breakpoint
@@ -7355,9 +7346,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	 bp = bp_map.next(ref))
     {
 	if (bp->number() >= first_bp
-	    && bp->line_nr() == line_no
-	    && (bp->file_name() == "" 
-		|| file_matches(bp->file_name(), file)))
+	    && bp_matches(bp, file, line_no))
 	    {
 		if (bps != "")
 		    bps += gdb->has_delete_comma() ? ", " : " ";
@@ -7394,7 +7383,7 @@ string SourceView::bp_pos(int num)
     if (bp == 0)
 	return "";
     else
-	return bp->file_name() + ":" + itostring(bp->line_nr());
+	return bp->pos();
 }
 
 
@@ -7516,8 +7505,7 @@ void SourceView::reset()
 	for (BreakPoint *bp = bp_map.first(ref); bp != 0; 
 	     bp = bp_map.next(ref))
 	{
-	    string pos = bp->file_name() + ":" + itostring(bp->line_nr());
-	    Command c(clear_command(pos));
+	    Command c(clear_command(bp->pos()));
 	    c.verbose  = false;
 	    c.check    = true;
 	    c.priority = COMMAND_PRIORITY_INIT;

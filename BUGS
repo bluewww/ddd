@@ -242,13 +242,10 @@ Volunteers for fixing these and other bugs are welcome!
     options. At that point DDD dies and the options file is not
     updated.
 
-240 If a member name contains `.', quote it. (vtables on GDB/Linux)
+240*If a member name contains `.', quote it. (vtables on GDB/Linux)
 
 241 Lev Makhlis <mlev@writeme.com> states that DDD 2.2.3
     (i586-pc-linux-gnulibc1) consistently crashes if I run it when no
     ~/.ddd exists.
-
-242 In Sun DBX, clicking on a breakpoint glyph initiates a drag.
-    `Clear at ()' won't work correctly.
 
 243 (Insert your bug here)

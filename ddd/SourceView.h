@@ -276,10 +276,19 @@ class SourceView {
     static StringArray bp_addresses;
     static XmTextPosition pos_of_line(int line);
 
-    // Return TRUE if breakpoint BP is in current file
-    static bool bp_matches(BreakPoint *bp);
+    // True iff breakpoint BP is in current file (at LINE, if given)
+    static bool bp_matches(BreakPoint *bp, int line = 0);
+
+    // True iff breakpoint BP is in FILE (at LINE, if given)
+    static bool bp_matches(BreakPoint *bp, const string& file, int line = 0);
+
+    // True iff FILE1 is equal to FILE2
     static bool file_matches(const string& file1, const string& file2);
+
+    // True iff the base names of FILE1 and FILE2 are equal
     static bool base_matches(const string& file1, const string& file2);
+
+    // True iff FILE is the currently loaded file
     static bool is_current_file(const string& file);
 
     static StringStringAssoc file_cache;

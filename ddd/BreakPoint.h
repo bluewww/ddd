@@ -134,6 +134,7 @@ public:
     const string& file_name()    const { return myfile_name; }
     int           line_nr()      const { return myline_nr; }
     const string& address()      const { return myaddress; }
+    string pos() const;
 
     // Watchpoint info
     const string& expr()         const { return myexpr; }
