@@ -252,6 +252,9 @@ void DispNode::make_inactive()
 	mynodeptr->hidden() = true;
 	myactive = false;
     }
+
+    // Unselect it
+    mynodeptr->selected() = false;
 }
 
 // Show display
