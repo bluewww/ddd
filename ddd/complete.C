@@ -183,8 +183,8 @@ static void complete(Widget w, XEvent *e, string input, string cmd)
     // Compare with last completions
     static Widget last_completion_w     = 0;
     static int    last_completion_index = -1;
-    static string last_completion       = string(-1);
-    
+    static string last_completion       = string(char(-1));
+
     if (completions_size > 0 
 	&& completions
 	&& completions[0] != ""
