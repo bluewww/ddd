@@ -158,6 +158,10 @@ using LBL(File) | LBL(Attach to Process).
 To execute frequently used commands with one mouse click,
 define your own DDD buttons via LBL(Commands) | LBL(Edit Buttons).
 
+In the Breakpoint and Display Editors,
+you can toggle the selection with KEY(Ctrl)+BUTTON(1).
+This allows you to select non-contiguous ranges of items.
+
 To change the properties of multiple breakpoints at once,
 select them in the breakpoint editor (LBL(Source) | LBL(Edit Breakpoints))
 and click on LBL(Properties).  Just go ahead!
@@ -165,6 +169,9 @@ and click on LBL(Properties).  Just go ahead!
 Even while in the source window, you can enter and edit GDB commands.
 Try KEY(Ctrl+P), KEY(Ctrl+N), KEY(Ctrl+B), KEY(Ctrl+F) for cursor movement
 and finish entering commands with KEY_RETURN.
+
+You can record commands to be executed when a breakpoint is hit.
+In the LBL(Breakpoint Properties) panel, try LBL(Record) and LBL(End).
 
 You can easily resume a saved DDD VAR(session)
 by invoking DDD as KBD([ddd] =VAR(session)).
@@ -177,8 +184,8 @@ linking with Electric Fence SAMP(efence) or the SAMP(dbmalloc) library.
 See the DDD WWW page for links.
 BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
-Prevention is better than cure.  Document your assumptions using CODE(<assert.h>) 
-or GNU NANA.  See the DDD WWW page for links.
+Prevention is better than cure.  Document your assumptions using
+CODE(<assert.h>) or GNU NANA.  See the DDD WWW page for links.
 BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
 The debugger isn't a substitute for good thinking.  But, in some

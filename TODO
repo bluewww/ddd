@@ -398,4 +398,8 @@ Volunteers for these and other projects are welcome!
 
 283 Create a DDD face for DDD-related mail.
 
-284 (Insert new project ideas here)
+284*Allow users to setup default font sizes.  Include an editor in
+    the `Preferences' panel, calling `xfontsel' for each resource.
+    Any component not equal to `*' can be taken.
+
+285 (Insert new project ideas here)
