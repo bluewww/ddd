@@ -1,7 +1,7 @@
-DDD 3.3.7 is available					-*- text -*-
+DDD 3.3.8 is available					-*- text -*-
 **********************
 
-Release 3.3.7 of DDD, the Data Display Debugger, is now available.
+Release 3.3.8 of DDD, the Data Display Debugger, is now available.
 
 
 What is DDD?
@@ -25,12 +25,18 @@ What's new in DDD?
 DDD-3.3.8
 ========
 
+- The settings, signals, themes, and status-display windows are now resizable
+  (if your window-manager can resize transient dialog windows).
+- The settings are now read correctly when using gdb 5.x and 6.0.
 - A memory corruption has been fixed in strclass.h.
 - Several other memory management problems have been fixed.
 - configure options --enable-builtin-app-defaults and --enable-builtin-vsllib
   should work again.
 - Speed improvements, partly by avoiding the creation of temporary objects.
 - Bug fixes in perl mode (1).
+- Builds on HPUX-10.20 now work OK (see the PROBLEMS file).
+- The libiberty distributed with ddd has been upgraded to the one released
+  with gcc-3.3.1.  This helps DDD to build on NetBSD.
 
 (1) Thanks to Christian Hattemer and Peter Ernst.
 
