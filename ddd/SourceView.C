@@ -83,8 +83,9 @@ char SourceView_rcsid[] =
 #include "IntArray.h"
 #include "MakeMenu.h"
 #include "PosBuffer.h"
-#include "UndoBuffer.h"
+#include "RefreshDI.h"
 #include "TimeOut.h"
+#include "UndoBuffer.h"
 #include "assert.h"
 #include "buttons.h"
 #include "charsets.h"
@@ -8830,38 +8831,14 @@ XmTextPosition SourceView::find_pc(const string& pc)
 }
 
 
-struct RefreshInfo {
-    string pc;
-    XmHighlightMode mode;
-    StatusDelay *delay;
-
-    RefreshInfo(const string& p, XmHighlightMode m, const string& msg);
-
-private:
-    RefreshInfo(const RefreshInfo& info)
-	: pc(info.pc), mode(info.mode), delay(0)
-    {
-	assert(0);
-    }
-    RefreshInfo& operator = (const RefreshInfo&)
-    {
-	assert(0); return *this;
-    }
-};
-
-// EGCS 1.0 wants this to be non-inlined
-RefreshInfo::RefreshInfo(const string& p, XmHighlightMode m, const string& msg)
-    : pc(p), mode(m), delay(new StatusDelay(msg))
-{}
-
 // Process `disassemble' output
 void SourceView::refresh_codeOQC(const string& answer, void *client_data)
 {
-    RefreshInfo *info = (RefreshInfo *)client_data;
+    RefreshDisassembleInfo *info = (RefreshDisassembleInfo *)client_data;
 
     if (answer == NO_GDB_ANSWER)
     {
-	info->delay->outcome = "failed";
+	info->delay.outcome = "failed";
     }
     else
     {
@@ -8871,7 +8848,6 @@ void SourceView::refresh_codeOQC(const string& answer, void *client_data)
 	    show_pc(info->pc, info->mode);
     }
 
-    delete info->delay;
     delete info;
 }
 
@@ -9032,7 +9008,8 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	if (end != "")
 	    msg += " to " + end;
 
-	RefreshInfo *info = new RefreshInfo(pc, mode, msg);
+	RefreshDisassembleInfo *info = 
+	    new RefreshDisassembleInfo(pc, mode, msg);
 
 	gdb_command(gdb->disassemble_command(start, end), 0,
 		    refresh_codeOQC, (void *)info);

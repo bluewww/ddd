@@ -787,7 +787,6 @@ LIB_OBJECTS = \
 
 # The DDD application itself.  `ddd.C' is the main program, `SourceView.C'
 # is the source window, `DataDisp.C' is the data window.
-# `configinfo' comes after `show' such that `what DDD' issues the configuration
 DDD_OBJECTS = \
 	annotation.o \
 	args.o       \
@@ -867,6 +866,7 @@ DDD_OBJECTS = \
 	MinMaxA.o    \
 	PlotAgent.o  \
 	PosBuffer.o  \
+	RefreshDI.o  \
 	SmartC.o     \
 	SourceView.o \
 	UndoBuffer.o \
