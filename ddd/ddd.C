@@ -1861,6 +1861,7 @@ static void make_preferences(Widget parent)
     arg = 0;
     preferences_dialog = 
 	verify(XmCreatePromptDialog(parent, "preferences", args, arg));
+    Delay::register_shell(preferences_dialog);
 
     // Remove old prompt and cancel button
     Widget text = XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_TEXT);
