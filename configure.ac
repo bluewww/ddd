@@ -402,7 +402,7 @@ LIBREADLINE=""
 if test "x${readline_support}" != "xno"; then
   AC_ARG_WITH(readline-includes,
   AS_HELP_STRING([--with-readline-includes=DIR],
-                 [Readline libraries are in DIR]),[
+                 [Readline include files are in DIR]),[
     readline_includes="$withval"
     case "$readline_includes" in
     no) ;;
