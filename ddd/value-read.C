@@ -102,12 +102,12 @@ DispValueType determine_type (string value)
 	// struct member -- that is, a ` = ' before any other
 	// sub-struct or struct end.
 	static regex RXstr_or_cl_begin_s("([(]|[{])");
-	static regex RXstr_or_cl_end_s("([)]|[}])");
+	static regex RXstr_or_cl_end("([)]|[}]|end\n|END\n|end;|END;)");
 
 	string v = value.after(RXstr_or_cl_begin_s);
-	int end_pos = v.index(RXstr_or_cl_end_s);
+	int end_pos = v.index(RXstr_or_cl_end);
 	int eq_pos  = v.index(" = ");
-	int str_pos = v.index(RXstr_or_cl_begin_s);
+	int str_pos = v.index(RXstr_or_cl_begin);
 
 	if (eq_pos > 0 
 	    && (end_pos < 0 || end_pos > eq_pos)
