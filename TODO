@@ -378,4 +378,7 @@ Volunteers for these and other projects are welcome!
 247 Hans Zuidam <hans@brandinnovators.com> wants to make scrolling a
     source window a little slower when dragging breakpoints.
 
-249 (Insert your project idea here)
+249 `Rotate' should be enabled as soon as there is exactly one child
+    that can be rotated.
+
+250 (Insert your project idea here)

@@ -248,4 +248,6 @@ Volunteers for fixing these and other bugs are welcome!
     (i586-pc-linux-gnulibc1) consistently crashes if he runs it when
     no `~/.ddd/' exists.
 
-243 (Insert your bug here)
+243 How come "graph display `echo [a, b, c]`" is not shown as array?
+
+244 (Insert your bug here)
