@@ -208,8 +208,8 @@ string  read_disp_name   (string& display, GDBAgent *gdb);
 // True if some display has been disabled
 bool is_disabling (const string& value, GDBAgent *gdb);
 
-// True if VALUE is an invalid value (i.e., an error message)
-bool is_invalid(const string& value);
+// True if VALUE is an valid value (i.e., not an error message)
+bool is_valid(const string& value, GDBAgent *gdb);
 
 
 

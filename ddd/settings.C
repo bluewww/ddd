@@ -1840,9 +1840,9 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
     case DBX:
     {
 	// Some DBXes know `dbxenv'; others know `set'.  We cannot use
-	// is_invalid() or likewise here, since the output may contain
-	// `error' strings that would cause is_invalid() to fail.
-	// Just try both and use the longer reply (may take time).
+	// is_valid() or likewise here, since the output may contain
+	// `error' strings that would cause is_valid() to fail.  Just
+	// try both and use the longer reply (may take time).
 
 	// Exception: on Sun DBX, `set' causes a dump of all
 	// environment variables.  Don't use this.

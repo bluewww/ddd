@@ -544,14 +544,6 @@ static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
     return startpos;
 }
 
-static bool is_invalid_value(const string& value)
-{
-    if (gdb->program_language() == LANGUAGE_PERL)
-	return false;		// Everything is valid in Perl
-
-    return is_invalid(value);
-}
-
 // Get tip string for text widget WIDGET.
 static MString gdbDefaultValueText(Widget widget, XEvent *event, 
 				   bool for_documentation)
@@ -620,7 +612,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     if (tip == NO_GDB_ANSWER)
 	return MString(0, true);
 
-    if (is_invalid_value(tip) && widget == source_view->code())
+    if (!is_valid(tip) && widget == source_view->code())
     {
 	// Get register value - look up `$pc' when pointing at `pc'
 	name = expr;
@@ -640,7 +632,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	}
     }
 
-    if (is_invalid_value(tip))
+    if (!is_valid(tip))
 	return clear;
 
     tip = get_disp_value_str(tip, gdb);

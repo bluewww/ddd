@@ -2655,12 +2655,13 @@ static void extra_completed (const StringArray& answers,
 	string ans = "";
 	for (int i = 0; i < extra_data->n_refresh_data; i++)
 	{
-	    if (!gdb->has_named_values())
-	    {
-		const string& cmd = extra_data->extra_commands[qu_count];
-		ans += cmd.after(rxwhite) + " = ";
-	    }
-	    ans += answers[qu_count++];
+	    const string& cmd = extra_data->extra_commands[qu_count];
+	    string var = cmd.after(rxwhite);
+	    ans += var + " = ";
+
+	    string value = answers[qu_count++];
+	    gdb->munch_value(value, var);
+	    ans += value;
 	}
 
 	if (extra_data->n_refresh_data > 0)

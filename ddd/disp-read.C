@@ -944,9 +944,12 @@ bool is_disabling(const string& value, GDBAgent *gdb)
     return gdb->type() == GDB && value.contains("\nDisabling display ");
 }
 
-// True if VALUE is an invalid value (i.e., an error message)
-bool is_invalid(const string& value)
+// True if VALUE is an valid value (i.e., no error message)
+bool is_valid(const string& value, GDBAgent *gdb)
 {
+    if (gdb->program_language() == LANGUAGE_PERL)
+	return true;		// Everything is valid in perl
+
     // If VALUE ends in two words, it is an error message like `not
     // active' or `no symbol in current context.'.  XDB issues
     // `Unknown name "Foo" (UE369)' and `Local is not active (UE421)'.
@@ -957,10 +960,10 @@ bool is_invalid(const string& value)
 				 ")\n?");
 #endif
 
-    return value.contains("Unknown name") 
-	|| value.contains("not active")
-	|| value.contains("not defined")
-	|| value.matches(rxinvalid_value);
+    return !value.contains("Unknown name") 
+	&& !value.contains("not active")
+	&& !value.contains("not defined")
+	&& !value.matches(rxinvalid_value);
 }
 
 
