@@ -4,6 +4,10 @@ DDD News						-*- text -*-
 DDD-3.3.9
 =========
 
+Note: Building ddd from source requires a reasonably standard conformant
+C++ compiler. GCC 3.1.x or later should work. Older versions will not.
+Specific flags for other compilers are documented in PROBLEMS.
+
 * New features and minor improvements
 - Support for PHP debugger has been added (1).  This is essentially not
   tested.
