@@ -3144,7 +3144,7 @@ static void extra_completed (const StringArray& answers,
 
     if (extra_data->refresh_user)
     {
-	StringArray answers_(((string *)answers) + qu_count,
+	StringArray answers_(answers.values() + qu_count,
 			    extra_data->n_refresh_user);
 	data_disp->process_user(answers_);
 	qu_count += extra_data->n_refresh_user;

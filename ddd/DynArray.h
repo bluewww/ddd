@@ -86,8 +86,10 @@ public:
     T& operator[](int i) const { return _value(i); }
     T& operator[](int i)       { return value(i); }
     T* values() const          { return _values; }
+#if 0
     operator const T*() const  { return values(); }
     operator       T*() const  { return values(); }
+#endif
 
     // Constructors
     DynArray(int initial_size = 0):
@@ -139,7 +141,7 @@ public:
     }
 
     // Comparison
-    bool operator == (const DynArray<T>& m)
+    bool operator == (const DynArray<T>& m) const
     {
 	if (this == &m)
 	    return true;	// THIS == THIS
@@ -156,7 +158,7 @@ public:
 	return true;
     }
 
-    bool operator != (const DynArray<T>& m)
+    bool operator != (const DynArray<T>& m) const
     {
 	return !(operator == (m));
     }

@@ -7052,7 +7052,7 @@ void SourceView::process_where(string& where_output)
 	frames += frame;
     }
     delete[] frame_list;
-    frame_list = frames;
+    frame_list = frames.values();
     count = frames.size();
 
     if (gdb->type() != XDB)
