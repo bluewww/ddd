@@ -595,6 +595,9 @@ String SourceView::read_from_gdb(const string& file_name)
     int j = 0;
     while (i < listing.length())
     {
+	while (i < listing.length() && isspace(listing[i]))
+	    i++;
+
 	if (isdigit(listing[i]))
 	{
 	    // Skip line number
