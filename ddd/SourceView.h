@@ -417,6 +417,9 @@ class SourceView {
     // Glyphs
     //-----------------------------------------------------------------------
 
+    // Create a pixmap from BITS suitable for the widget W
+    static Pixmap pixmap(Widget w, unsigned char *bits, int width, int height);
+
     // Create glyph in FORM_W named NAME from given BITS
     static Widget create_glyph(Widget form_w, String name, 
 			       unsigned char *bits, int width, int height);
@@ -662,6 +665,9 @@ public:
 
     // Set the max number of glyphs
     static void set_max_glyphs(int max_glyphs);
+
+    // Whether to cache glyph images
+    static bool cache_glyph_images;
 
     // Maximum length of expr in source popup
     static int max_popup_expr_length;

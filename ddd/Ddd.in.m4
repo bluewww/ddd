@@ -633,6 +633,9 @@ Ddd*displayGlyphs: true
 ! What is the maximum number of glyphs at one time?
 Ddd*maxGlyphs: 10
 
+! Shall we cache glyph images?  (Won't work with Motif 2.1 on XFree86)
+! Ddd*cacheGlyphImages: true
+
 ! Do we wish to display line numbers? (Default in DDD 2.1.1 and earlier)
 Ddd*displayLineNumbers: false
 
@@ -953,6 +956,7 @@ Ddd*graph_edit.outlineColor:	   grey50
 !-----------------------------------------------------------------------------
 
 ! These bitmap names are predefined by DDD.  Feel free to use others.
+! Note: if `cacheGlyphImages' is set, these bitmap names are ignored.
 Ddd*plain_arrow.labelPixmap:	plain_arrow
 Ddd*grey_arrow.labelPixmap:	grey_arrow
 Ddd*temp_arrow.labelPixmap:	temp_arrow

@@ -25,6 +25,8 @@ DDD 2.3 [in development]
     Bug fixes:
     - Using Sun DBX 3.x, data displays are no longer cluttered by DBX
       warnings.
+    - DDD now works around a Motif 2.1/XFree86 bug that caused glyphs
+      to disappear.  See the `cacheGlyphImages' resource for details.
 
     Changes in configuration and building:
     - LessTif 0.83 is supported.  See `patches/' for some useful patches.

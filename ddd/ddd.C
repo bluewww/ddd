@@ -1982,6 +1982,7 @@ int main(int argc, char *argv[])
 
     source_view = new SourceView(source_view_parent);
     source_view->set_max_glyphs(app_data.max_glyphs);
+    source_view->cache_glyph_images = app_data.cache_glyph_images;
 
     if (app_data.separate_source_window)
     {

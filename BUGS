@@ -246,11 +246,6 @@ Volunteers for fixing these and other bugs are welcome!
     (i586-pc-linux-gnulibc1) consistently crashes if he runs it when
     no `~/.ddd/' exists.
 
-244 Antonello Biancalana <promind@tecnonet.it> and Richard (Ruth?)
-    <rruth@computer.org> report that DDD, when compiled with Motif
-    2.1 and running on an XFree86 server (as in RedHat 5.0), does not
-    show glyphs.  (Motif 2.0 worked in this respect.)
-
 249 Zdenek Sekera <zs@cray.com> reports:
 
    The 'configure', process is not correct in that the Makefiles

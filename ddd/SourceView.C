@@ -5989,6 +5989,10 @@ string SourceView::get_line(string position)
 // Glyph stuff
 //----------------------------------------------------------------------------
 
+
+// Whether to cache glyph images
+bool SourceView::cache_glyph_images = true;
+
 // Change number of glyphs
 void SourceView::set_max_glyphs (int nmax)
 {
@@ -6070,6 +6074,25 @@ void SourceView::MoveCursorToGlyphPosCB(Widget w,
     XtCallActionProc(text_w, "source-start-select-word", e, params, 0);
 }
 
+
+// Create a pixmap from BITS suitable for the widget W
+Pixmap SourceView::pixmap(Widget w, unsigned char *bits, int width, int height)
+{
+    Pixel foreground, background;
+
+    XtVaGetValues(w,
+		  XmNforeground, &foreground,
+		  XmNbackground, &background,
+		  NULL);
+
+    int depth = PlanesOfScreen(XtScreen(w));
+    Pixmap pix = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w), 
+					     (char *)bits, width, height, 
+					     foreground, background, depth);
+    return pix;
+}
+
+
 #if XmVERSION >= 2
 const int motif_offset = 1;  // Motif 2.0 adds a 1 pixel border around glyphs
 #else
@@ -6079,7 +6102,7 @@ const int motif_offset = 0;  // Motif 1.x does not
 // Create glyph in FORM_W named NAME from given BITS
 Widget SourceView::create_glyph(Widget form_w,
 				String name,
-				unsigned char */* bits */,
+				unsigned char *bits,
 				int width, int height)
 {
     Arg args[20];
@@ -6119,6 +6142,11 @@ Widget SourceView::create_glyph(Widget form_w,
     XtVaGetValues(w, XmNbackground, &background, NULL);
 
     arg = 0;
+    if (!cache_glyph_images)
+    {
+	Pixmap pix = pixmap(w, bits, width, height);
+	XtSetArg(args[arg], XmNlabelPixmap, pix); arg++;
+    }
     XtSetArg(args[arg], XmNwidth,       new_width);  arg++;
     XtSetArg(args[arg], XmNheight,      new_height); arg++;
     XtSetArg(args[arg], XmNfillOnArm,   True);       arg++;

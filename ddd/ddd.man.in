@@ -654,6 +654,17 @@ command line interface.)
 .PP
 Breakpoints are indicated by a plain stop sign, or as
 `\fB#\fIn\fB#\fR', where \fIn\fR is the breakpoint number.
+.PP
+Note: some Motif/X server combinations may fail to display stop signs
+correctly.  If this happens, try writing in your
+`\fB$HOME/.@ddd@/init\fR' file:
+.br
+.sp
+  \fB@Ddd@*cacheGlyphImages: off\fR
+.sp
+.br
+and restart @DDD@.  See also the `\fBcacheGlyphImages\fR' resource in
+the `\fBRESOURCES\fR' section, below.
 .\"
 .\"
 .SS "Setting Breakpoints by Name"
@@ -2911,6 +2922,13 @@ Whether the display of variable values in the status line is enabled
 .SS "Source Window"
 .\"
 The following resources determine the \s-2@DDD@\s+2 source window.
+.TP
+.B "cacheGlyphImages (\fPclass\fB CacheMachineCode)"
+Whether to cache (share) glyph images (`\fBtrue\fR') or not
+(`\fBfalse\fR').  Caching glyph images requires less X resources, but
+has been reported to fail with Motif 2.1 on XFree86 servers.  Default
+is `\fBfalse\fR' for Motif 2.1 or later on Linux machines, and
+`\fBtrue\fR' otherwise.
 .TP
 .B "cacheMachineCode (\fPclass\fB CacheMachineCode)"
 Whether to cache disassembled machine code (`\fBtrue\fR', default) or

@@ -194,6 +194,8 @@
 #define XtCDisplayGlyphs         "DisplayGlyphs"
 #define XtNmaxGlyphs             "maxGlyphs"
 #define XtCMaxGlyphs             "MaxGlyphs"
+#define XtNcacheGlyphImages      "cacheGlyphImages"
+#define XtCCacheGlyphImages      "CacheGlyphImages"
 #define XtNdisplayLineNumbers    "displayLineNumbers"
 #define XtCDisplayLineNumbers    "DisplayLineNumbers"
 #define XtNdisassemble           "disassemble"
@@ -353,6 +355,7 @@ struct AppData {
     Boolean full_name_mode;
     Boolean display_glyphs;
     int     max_glyphs;
+    Boolean cache_glyph_images;
     Boolean display_line_numbers;
     Boolean disassemble;
     int     max_disassemble;

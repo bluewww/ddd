@@ -874,6 +874,21 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNcacheGlyphImages,
+	XtCCacheGlyphImages,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, cache_glyph_images),
+	XtRImmediate,
+#if defined(__linux__) && XmVersion >= 2001
+	// Motif 2.1 on XFree86 servers has trouble with cached images.
+	XtPointer(False)
+#else
+	XtPointer(True)
+#endif
+    },
+
+    {
 	XtNdisplayLineNumbers,
 	XtCDisplayLineNumbers,
 	XtRBoolean,
