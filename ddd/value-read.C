@@ -177,10 +177,17 @@ DispValueType determine_type (string value)
 
 #else
     int pointer_index = 0;
+
     if (value.contains('(', 0))
-	pointer_index = value.index(')') + 1;
-    while (value.contains(' ', pointer_index))
-	pointer_index++;
+    {
+	int space_index = value.index(')') + 1;
+	if (value.contains(' ', space_index))
+	{
+	    pointer_index = space_index;
+	    while (value.contains(' ', pointer_index))
+		pointer_index++;
+	}
+    }
     if (value.contains(rxaddress, pointer_index))
 	return Pointer;
 
