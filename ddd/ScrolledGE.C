@@ -38,7 +38,7 @@ char ScrolledGraphEdit_rcsid[] =
 #include "GraphEdit.h"
 #include "verify.h"
 
-// We have no special class for scrolling a graoh editor, but use the
+// We have no special class for scrolling a graph editor, but use the
 // Motif ScrolledWindow class instead.
 
 WidgetClass scrolledGraphEditWidgetClass = xmScrolledWindowWidgetClass;
@@ -58,6 +58,10 @@ Widget createScrolledGraphEdit(Widget parent, String name,
     XtSetArg(args[arg], XmNscrollingPolicy, XmAUTOMATIC); arg++;
     string swindow_name = string(name) + "_swindow";
 
+    XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+    XtSetArg(args[arg], XmNspacing,         0); arg++;
+    XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
+
     Widget scrolledWindow = 
 	verify(XtCreateManagedWidget((char *)swindow_name, 
 				     scrolledGraphEditWidgetClass,
@@ -67,9 +71,20 @@ Widget createScrolledGraphEdit(Widget parent, String name,
 	verify(XtCreateManagedWidget(name, graphEditWidgetClass,
 				     scrolledWindow, arglist, argcount));
 
-
     XtAddEventHandler(scrolledWindow, StructureNotifyMask, False,
 		      ResizeEH, XtPointer(graphEdit));
+
+    // Propagate requested width and height of graph editor to scrolled window
+    Dimension width, height;
+    XtVaGetValues(graphEdit, 
+		  XtNrequestedWidth, &width,
+		  XtNrequestedHeight, &height,
+		  NULL);
+
+    if (width > 0)
+	XtVaSetValues(scrolledWindow, XmNwidth, width, NULL);
+    if (height > 0)
+	XtVaSetValues(scrolledWindow, XmNheight, height, NULL);
 
     return graphEdit;
 }
