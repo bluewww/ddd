@@ -52,6 +52,7 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer);
 // Manual
 void ddd_man(ostream& os);
 void DDDManualCB(Widget, XtPointer, XtPointer);
+void GDBManualCB(Widget, XtPointer, XtPointer);
 
 // License
 void ddd_license(ostream& os);

@@ -103,12 +103,48 @@ void show_manual()
 // Show Manual Page
 //-----------------------------------------------------------------------------
 
-void DDDManualCB(Widget w, XtPointer, XtPointer call_data)
+void DDDManualCB(Widget w, XtPointer, XtPointer)
 {
-    StatusDelay delay("Formatting manual page");
+    StatusDelay delay("Formatting " DDD_NAME " manual page");
 
     ostrstream man;
     ddd_man(man);
     string s(man);
-    ManualStringHelpCB(w, XtPointer((char *)s), call_data);
+
+    MString title(DDD_NAME " Manual");
+    ManualStringHelpCB(w, title, s);
+}
+
+void GDBManualCB(Widget w, XtPointer, XtPointer)
+{
+    StatusDelay delay("Formatting " + gdb->title() + " manual page");
+
+    string cmd = "man " + downcase(gdb->title());
+
+#if 0				// Needs support in `HelpCB.C'
+    if (gdb->type() == GDB)
+    {
+	// Try `info' first
+	cmd.prepend("info --subnodes -o - -f " 
+		    + downcase(gdb->title()) + " || ");
+    }
+#endif
+
+    cmd = sh_command(cmd);
+
+    FILE *fp = popen(cmd, "r");
+    if (fp != 0)
+    {
+	ostrstream man;
+
+	int c;
+	while ((c = getc(fp)) != EOF)
+	    man << char(c);
+	
+	string s(man);
+	MString title(gdb->title() + " Manual");
+	ManualStringHelpCB(w, title, s);
+
+	pclose(fp);
+    }
 }

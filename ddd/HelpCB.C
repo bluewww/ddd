@@ -621,16 +621,24 @@ static void HighlightSectionCB(Widget w, XtPointer client_data,
 void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			XtPointer)
 {
-    Delay delay;
+    static MString null(0, true);
+    string text((char *)client_data);
 
-    String text = (String)client_data;
+    ManualStringHelpCB(widget, null, text);
+}
+
+void ManualStringHelpCB(Widget widget, const MString& title,
+			const string& text)
+{
+    Delay delay;
 
     Arg args[10];
     Cardinal arg = 0;
 
-    static Widget help_man    = 0;
-    static Widget help_index  = 0;
-    static Widget text_dialog = 0;
+    static Widget help_man     = 0;
+    static Widget help_index   = 0;
+    static Widget text_dialog  = 0;
+    static Widget dialog_title = 0;
 
     if (help_man == 0)
     {
@@ -653,12 +661,12 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM);     arg++;
 	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
 	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
-	Widget title = verify(XmCreateLabel(form, "title", args, arg));
-	XtManageChild(title);
+	dialog_title = verify(XmCreateLabel(form, "title", args, arg));
+	XtManageChild(dialog_title);
 
 	arg = 0;
  	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
- 	XtSetArg(args[arg], XmNtopWidget,        title);             arg++;
+ 	XtSetArg(args[arg], XmNtopWidget,        dialog_title);      arg++;
 	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
 	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
 	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
@@ -673,7 +681,7 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 	arg = 0;
 	XtSetArg(args[arg], XmNeditable,         False);             arg++;
 	XtSetArg(args[arg], XmNeditMode,         XmMULTI_LINE_EDIT); arg++;
-	XtSetArg(args[arg], XmNvalue,            text);              arg++;
+	XtSetArg(args[arg], XmNvalue,            text.chars());      arg++;
 	help_man = verify(XmCreateScrolledText(area, "text", args, arg));
 	XtManageChild(help_man);
 
@@ -749,10 +757,12 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 	InstallButtonTips(text_dialog);
     }
 
-    string stripped_text(text);
-
+    // Set title
+    if (!title.isNull())
+	XtVaSetValues(dialog_title, XmNlabelString, title.xmstring(), NULL);
 
     // Strip manual headers and footers
+    string stripped_text(text);
     unsigned source = 0;
     int target = 0;
     int line = 0;

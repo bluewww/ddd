@@ -104,6 +104,8 @@ extern void TextHelpCB(Widget widget, XtPointer client_data,
 // (String)client_data".
 extern void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			       XtPointer call_data);
+extern void ManualStringHelpCB(Widget widget, const MString& title,
+			       const string& text);
 
 // (Un)install button tips on W.
 extern void InstallButtonTips(Widget w, bool install = true);

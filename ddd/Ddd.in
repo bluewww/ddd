@@ -2067,10 +2067,15 @@ Ddd*helpMenu.onHelp.mnemonic:		H
 Ddd*helpMenu.onHelp.documentationString:	\
 @rm How to use the context-sensitive help
 
-Ddd*helpMenu.index.labelString:		@DDD@ Manual...
-Ddd*helpMenu.index.mnemonic:		M
-Ddd*helpMenu.index.documentationString:	\
+Ddd*helpMenu.dddManual.labelString:		@DDD@ Manual...
+Ddd*helpMenu.dddManual.mnemonic:		D
+Ddd*helpMenu.dddManual.documentationString:	\
 @rm The @DDD@ reference manual
+
+Ddd*helpMenu.gdbManual.labelString:		@GDB@ Manual...
+Ddd*helpMenu.gdbManual.mnemonic:		M
+Ddd*helpMenu.gdbManual.documentationString:	\
+@rm The @GDB@ reference manual
 
 Ddd*helpMenu.license.labelString:	@DDD@ License...
 Ddd*helpMenu.license.mnemonic:		L

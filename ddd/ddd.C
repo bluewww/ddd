@@ -924,7 +924,9 @@ static MMDesc help_menu[] =
     {"onWindow",    MMPush, { HelpOnWindowCB }, NULL, &help_on_window_w },
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     MMSep,
-    {"index",       MMPush, { DDDManualCB }},
+    {"dddManual",   MMPush, { DDDManualCB }},
+    {"gdbManual",   MMPush, { GDBManualCB }},
+    MMSep,
     {"license",     MMPush, { DDDLicenseCB }},
     {"www",         MMPush, { DDDWWWPageCB }},
     MMEnd
@@ -1374,6 +1376,21 @@ int main(int argc, char *argv[])
     (void) CheckDragCB;		// Use it
 #endif
 
+    // Create GDB interface
+    gdb = new_gdb(type, app_data, app_context, argc, argv);
+    gdb->trace_dialog(app_data.trace_dialog);
+    defineConversionMacro("GDB", gdb->title());
+
+    // Set up GDB handlers
+    gdb->removeAllHandlers(Died);
+    gdb->addHandler(ReadyForQuestion, gdb_ready_for_questionHP);
+    gdb->addHandler(ReadyForCmd,      gdb_ready_for_cmdHP);
+    gdb->addHandler(InputEOF,         gdb_eofHP);
+    gdb->addHandler(ErrorEOF,         gdb_eofHP);
+    gdb->addHandler(Died,             gdb_diedHP);
+    gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
+    gdb->addHandler(ReplyRequired,    gdb_selectHP);
+
     // Create command shell
 
     // Use original arguments
@@ -1713,20 +1730,7 @@ int main(int argc, char *argv[])
     // Let the debugger know that we're here
     put_environment(DDD_NAME, ddd_NAME "-" DDD_VERSION "-" DDD_HOST);
 
-    // Create GDB interface
-    gdb = new_gdb(type, app_data, app_context, argc, argv);
-    gdb->trace_dialog(app_data.trace_dialog);
-    defineConversionMacro("GDB", gdb->title());
-
     // Setup handlers
-    gdb->removeAllHandlers(Died);
-    gdb->addHandler(ReadyForQuestion, gdb_ready_for_questionHP);
-    gdb->addHandler(ReadyForCmd,      gdb_ready_for_cmdHP);
-    gdb->addHandler(InputEOF,         gdb_eofHP);
-    gdb->addHandler(ErrorEOF,         gdb_eofHP);
-    gdb->addHandler(Died,             gdb_diedHP);
-    gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
-    gdb->addHandler(ReplyRequired,    gdb_selectHP);
     DataDisp::set_handlers();
 
     source_arg->addHandler (Changed, source_argHP);
