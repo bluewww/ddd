@@ -83,6 +83,7 @@ doc/ddd*.ps
 ddd/vsl-lex.C
 ddd/vsl-gramma.C
 ddd/vsl-gramma.h
+ddd/rxscan.C
 ddd/*.man
 ddd/*.man.txt
 ddd/*.huff.C
