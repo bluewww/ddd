@@ -327,6 +327,48 @@ void DispBox::shorten_title(string& name)
     shorten(name, max_display_title_length);
 }
 
+
+// Default duplicator
+Data *DispBox::link_link(Data *dta)
+{
+    return dta;
+}
+
+// Default deletion
+void DispBox::link_unlink(Data *)
+{
+    return;
+}
+
+// Default selection
+bool DispBox::link_selected(Data *)
+{
+    return false;   // Default: non-selected
+}
+
+string DispBox::link_name(Data *d)
+{
+    DispValue *dv = (DispValue *)d;
+    if (dv == 0)
+	return "";
+
+    return dv->full_name();
+}
+
+// Default tag info
+string DispBox::link_info(Data *d)
+{
+    return link_name(d);   // Default: none
+}
+
+DataLink DispBox::data_link = {
+    DispBox::link_link,		// link
+    DispBox::link_unlink,	// unlink
+    DispBox::link_selected,	// selected
+    DispBox::link_name,	        // name of data
+    DispBox::link_info		// debugging info of data
+};
+
 void DispBox::set_title(const DispValue *dv, int disp_nr, string name)
 {
     if (title_box != 0)
@@ -777,7 +819,7 @@ Box *DispBox::create_value_box (const DispValue *dv,
     if (dv != 0)
     {
 	Data *data = (Data *)dv;
-	vbox = vbox->tag(data);
+	vbox = vbox->tag(data, &data_link);
     }
 
     assert_ok(vbox->OK());

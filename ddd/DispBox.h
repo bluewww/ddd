@@ -41,6 +41,7 @@
 #include "Box.h"
 #include "ThemeVSLL.h"
 #include "VSLArgList.h"
+#include "DataLink.h"
 #include "DispValue.h"
 #include "ThemeM.h"
 #include "assert.h"
@@ -64,6 +65,14 @@ private:
     static bool is_numeric(const DispValue *dv, const DispValue *parent);
 
     static struct VSLLibCache *vsllib_cache;
+
+protected:
+    static DataLink data_link;
+    static Data *link_link(Data *);
+    static void link_unlink(Data *);
+    static bool link_selected(Data *);
+    static string link_info(Data *);
+    static string link_name(Data *);
 
 public:
     // Must be initialized from outside!
