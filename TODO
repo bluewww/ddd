@@ -335,6 +335,13 @@ Volunteers for these and other projects are welcome!
      color highlighted whenever it changes.
 
 165. Have an optional mode where line numbers are shown in the status line.
-     The source layout may be changed such that line numbers are shown no more.
+     The source layout may be changed such that line numbers are shown
+     no more.
+
+166. When the inferior debugger crashes, offer to restart it.  This
+     may be done by replaying all previously issued commands (except
+     the last one, of course).  Commands with external side-effects
+     (such as running or making the program as well as shell commands)
+     should be ignored.
  
-166. (Insert your project idea here)
+167. (Insert your project idea here)

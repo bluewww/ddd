@@ -18,7 +18,8 @@ E-Mail
 
 * lsm@execpc.com            (DDD lsm entry; subject `add')
 
-Major releases only:
+
+Major releases only (no more than once a year)
 
 * xannounce@x.org              (for `comp.windows.x.announce')
 * linux-announce@news.ornl.gov (for `comp.os.linux.announce')
@@ -30,10 +31,10 @@ USENET News
 (wait a few days whether the announcements get through)
 
 * comp.unix.programmer
-* comp.windows.x
-* comp.windows.x.apps
 * gnu.misc.discuss
 * gnu.utils.help
+* comp.windows.x      (not needed if comp.windows.x.announce has it)
+* comp.windows.x.apps (dito)
 
 
 Where to install

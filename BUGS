@@ -350,7 +350,7 @@ Volunteers for fixing these and other bugs are welcome!
      ULTRIX and HP-UX `man' formats (probably problems with others,
      too)
 
-172. Jonathan Edwards <edwards@intranet.com> says: If I interupt my
+172. Jonathan Edwards <edwards@intranet.com> says: If I interrupt my
      program while it is running, my data displays are not updated,
      and instead I get the info in the debugger console.
 
@@ -364,5 +364,12 @@ Volunteers for fixing these and other bugs are welcome!
      - The debugger console often looses the text cursor; typing
        commands is still possible; 'clear window' brings the cursor
        back.
+
+174. Command tool placement problems.  Graham Gough
+     <graham@cs.man.ac.uk> states: I'm running fvwm2 with a 2x2
+     virtual screen arrangement. If I start xddd in the top left
+     screen, the command pad always appears in the bottom left screen
+     (in the top right corner). 2.0 doesn't give this behaviour: the
+     command pad pops up in the screen on which I start it.
 
 175. (Insert your bug here)
