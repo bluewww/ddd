@@ -241,13 +241,12 @@ int TTYAgent::open_master()
 	    _slave_tty  = line;
 	    return master;
 	}
-	return master;
     }
 #endif
 
     if (stat("/dev/ptc", &sb) == 0)
     {
-	// Try /dev/ptc - an AIX feature
+	// Try /dev/ptc - an AIX and SGI3 feature
 	master = open("/dev/ptc", O_RDWR);
 	if (master >= 0)
 	{
@@ -260,8 +259,6 @@ int TTYAgent::open_master()
 		    _slave_tty  = line;
 
 #if defined(SGI3) || defined(sgi3)
-		    // This seems to be a bug on SGI3 machines.
-		    // Can someone enlighten me?
 		    int ptynum = minor(sb.st_rdev);
 		    char buffer[BUFSIZ];
 		    sprintf(buffer, "/dev/ttyq%d", ptynum);
@@ -296,6 +293,7 @@ int TTYAgent::open_master()
 #ifdef TIOCFLUSH
 		ioctl(master, TIOCFLUSH, (char *)0);
 #endif
+		push_needed = true;
 		return master;
 	    }
 
@@ -307,7 +305,6 @@ int TTYAgent::open_master()
 #endif
 
     // Try PTY's
-
     if (stat("/dev/pty/000", &sb) == 0)
     {
 	// Try PTY's in /dev/pty/XXX and /dev/ttypXXX -- a UNICOS feature
@@ -408,16 +405,18 @@ int TTYAgent::open_slave()
 	return -1;
     }
 
-#ifdef HAVE_STREAMS
 #ifdef I_PUSH
-    if (ioctl(slave, I_PUSH, "ptem"))
-	_raiseIOWarning("ioctl ptem " + slave_tty());
-    if (ioctl(slave, I_PUSH, "ldterm"))
-	_raiseIOWarning("ioctl ldterm " + slave_tty());
-    if (ioctl(slave, I_PUSH, "ttcompat"))
-	_raiseIOWarning("ioctl ttcompat " + slave_tty());
+    if (push_needed)
+    {
+	// Finish STREAMS setup.
+	if (ioctl(slave, I_PUSH, "ptem"))
+	    _raiseIOWarning("ioctl ptem " + slave_tty());
+	if (ioctl(slave, I_PUSH, "ldterm"))
+	    _raiseIOWarning("ioctl ldterm " + slave_tty());
+	if (ioctl(slave, I_PUSH, "ttcompat"))
+	    _raiseIOWarning("ioctl ttcompat " + slave_tty());
+    }
 #endif // I_PUSH
-#endif // HAVE_STREAMS
 
     return slave;
 }
