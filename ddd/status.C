@@ -113,32 +113,35 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
     last_yn = yn;
 
-    XtSetSensitive(buttons, false);
-
-    WidgetList children;
-    Cardinal num_children;
-
-    XtVaGetValues(buttons,
-		  XmNchildren, &children,
-		  XmNnumChildren, &num_children,
-		  NULL);
-
-    int i;
-    for (i = 0; i < int(num_children); i++)
-	XtManageChild(children[i]);
-    for (i = 0; i < int(num_children); i++)
+    if (XtIsComposite(buttons))
     {
+	XtSetSensitive(buttons, false);
+
+	WidgetList children   = 0;
+	Cardinal num_children = 0;
+
+	XtVaGetValues(buttons,
+		      XmNchildren, &children,
+		      XmNnumChildren, &num_children,
+		      NULL);
+
+	int i;
+	for (i = 0; i < int(num_children); i++)
+	    XtManageChild(children[i]);
+	for (i = 0; i < int(num_children); i++)
+	{
 	
-	Widget w = children[i];
-	string name = XtName(w);
+	    Widget w = children[i];
+	    string name = XtName(w);
 
-	if (yn == (name == "Yes" || name == "No"))
-	    XtManageChild(w);
-	else
-	    XtUnmanageChild(w);
+	    if (yn == (name == "Yes" || name == "No"))
+		XtManageChild(w);
+	    else
+		XtUnmanageChild(w);
+	}
+
+	XtSetSensitive(buttons, true);
     }
-
-    XtSetSensitive(buttons, true);
 }
 
 void SelectCB(Widget dialog, XtPointer, XtPointer)

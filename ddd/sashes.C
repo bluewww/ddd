@@ -80,16 +80,19 @@ void untraverse_sashes(Widget paned)
     if (paned == 0 || !XmIsPanedWindow(paned))
 	return;
 
-    WidgetList children = 0;
-    int num_children    = 0;
+    if (XtIsComposite(paned))
+    {
+	WidgetList children   = 0;
+	Cardinal num_children = 0;
 
-    XtVaGetValues(paned,
-		  XtNchildren, &children,
-		  XtNnumChildren, &num_children,
-		  NULL);
+	XtVaGetValues(paned,
+		      XtNchildren, &children,
+		      XtNnumChildren, &num_children,
+		      NULL);
 
-    if (children)
-	for (int i = 0; i < num_children; i++)
-	    if (XmIsSash(children[i]))
-		XtVaSetValues(children[i], XmNtraversalOn, False, NULL);
+	if (children)
+	    for (int i = 0; i < int(num_children); i++)
+		if (XmIsSash(children[i]))
+		    XtVaSetValues(children[i], XmNtraversalOn, False, NULL);
+    }
 }
