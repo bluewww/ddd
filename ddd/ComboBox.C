@@ -266,10 +266,40 @@ void ComboBoxSetList(Widget text, const StringArray& items)
 {
     Widget list = ComboBoxList(text);
 
+    // Check for value change
+    XmStringTable old_items;
+    int old_items_count = 0;
+
+    XtVaGetValues(list,
+		  XmNitemCount, &old_items_count,
+		  XmNitems,     &old_items,
+		  NULL);
+
+    int i;
+    if (old_items_count == items.size())
+    {
+	for (i = 0; i < items.size(); i++)
+	{
+	    String _old_item;
+	    XmStringGetLtoR(old_items[i], CHARSET_TT, &_old_item);
+	    string old_item(_old_item);
+	    XtFree(_old_item);
+
+	    if (old_item != items[i])
+		break;
+	}
+
+	if (i >= items.size())
+	{
+	    // All elements are equal
+	    return;
+	}
+    }
+
+    // Set new values
     XmStringTable xmlist = 
 	XmStringTable(XtMalloc(items.size() * sizeof(XmString)));
 
-    int i;
     for (i = 0; i < items.size(); i++)
 	xmlist[i] = XmStringCreateLtoR(items[i], CHARSET_TT);
 
