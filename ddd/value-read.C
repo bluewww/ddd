@@ -48,11 +48,17 @@ char value_read_rcsid[] =
 #include "ddd.h"
 #include "GDBAgent.h"
 
+static regex RXindex("[[]-?[0-9][0-9]*]");
+
 // ***************************************************************************
 DispValueType determine_type (string value)
 {
     read_leading_blanks (value);
     strip_final_blanks (value);
+
+    // DBX on DEC prepends `[N]' before array member N
+    if (value.contains(RXindex, 0))
+	value = value.after(RXindex);
 
     static regex 
 	RXreference("([(][^)]*[)] )? *@ *(0x[0-9a-f]+|[(]nil[)]) *:.*");
@@ -72,7 +78,7 @@ DispValueType determine_type (string value)
     }
 
     static regex 
-	RXstr_or_cl_begin("({\n|record\n|RECORD\n|struct|class).*");
+	RXstr_or_cl_begin("({\n|record\n|RECORD\n|struct|class|union).*");
 
     if (value.contains(" = ") && value.matches(RXstr_or_cl_begin))
 	return StructOrClass;
@@ -296,7 +302,9 @@ bool read_array_begin (string& value)
     read_leading_blanks (value);
 
     // DBX on DEC prepends `struct' or `class' before each struct
-    if (value.contains("struct", 0) || value.contains("class", 0))
+    if (value.contains("struct", 0) 
+	|| value.contains("class", 0) 
+	|| value.contains("union", 0))
 	value = value.after(' ');
 
     if (value.contains('{', 0))
@@ -312,6 +320,12 @@ bool read_array_begin (string& value)
     else
 	return false;
 
+    read_leading_blanks (value);
+
+    // DBX on DEC prepends `[N]' before array member N
+    if (value.contains(RXindex, 0))
+	value = value.after(RXindex);
+
     return true;
 }
 
@@ -325,13 +339,9 @@ bool read_array_next (string& value)
     
     read_leading_blanks (value);
 
-    static regex RXindex("[[]-?[0-9][0-9]*]");
+    // DBX on DEC prepends `[N]' before array member N
     if (value.contains(RXindex, 0))
-    {
-	// DBX on DEC prepends `[N]' before array member N
 	value = value.after(RXindex);
-	return value != "";
-    }
 
     if (value.contains(',', 0))
     {
