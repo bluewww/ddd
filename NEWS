@@ -26,6 +26,7 @@ the `BUGS' and `PROBLEMS' files).  If your system is not in the list
 above, please let us share your experiences.
 
 Changes to DDD 0.9:
+- Several last-minute bugs have been fixed.
 - New `Program' menu, introduces keyboard accelerators for frequently
   used commands.
 - Graph printing reworked; you can now set paper size and graph
