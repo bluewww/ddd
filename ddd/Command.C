@@ -172,7 +172,8 @@ void _gdb_command(const Command& c)
 	    add_to_history(cmd);
 	}
 
-	handle_running_commands(cmd, c.origin);
+	if (!gdb->recording())
+	    handle_running_commands(cmd, c.origin);
 
 	if (cmd.length() == 0)
 	{
