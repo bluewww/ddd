@@ -36,8 +36,8 @@ DDD 2.0
       * The `Break ()' and `Clear ()' buttons are now named `Break at ()'
         and `Clear at ()', respectively.
       * The `Dereference' button is now named `Display *'.
-    - You can now incrementally search through the command history
-      using Ctrl+R and Ctrl+S in the debugger console.
+    - DDD now supports GDB-like incremental search in the command history.
+      It is invoked through Ctrl+R and Ctrl+S in the debugger console.
     - Incremental search required some changes in keyboard shortcuts.
       `Run' is now Ctrl+Z, `Step' is Ctrl+I, and `Next' is Ctrl+J.
     - The `Save Options on Exit' function has been removed, as it
