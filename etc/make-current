@@ -149,7 +149,7 @@ ln -s $CVSROOT/CVSROOT/ddd-log-97 ChangeLog-97
 ln -s $CVSROOT/CVSROOT/ddd-log-96 ChangeLog-96
 ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-95
 (cd ddd && aclocal)
-autoconf
+autoconf -l ddd
 (cd ddd && autoconf)
 (cd termcap && autoconf)
 sh ./configure --x-libraries=/usr/X11R5/lib --x-includes=/usr/X11R5/include -v
