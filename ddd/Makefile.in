@@ -503,6 +503,7 @@ BASE_OBJECTS = \
 # Instantiated `DynArray' and `VarArray' templates
 ARRAY_OBJECTS = \
 	StringA.o    \
+	StringMap.o  \
 	IntArray.o   \
 	VoidArray.o
 
@@ -662,12 +663,14 @@ DDD_OBJECTS = \
 	xconfig.o    \
 	ArgField.o   \
 	BreakPoint.o \
+	BreakPM.o    \
 	CodeCache.o  \
 	DataDisp.o   \
 	DispBox.o    \
 	DispBuffer.o \
 	DispGraph.o  \
 	DispNode.o   \
+	DispNodeM.o  \
 	DispValue.o  \
 	GDBAgent.o   \
 	PosBuffer.o  \
@@ -951,7 +954,7 @@ tString: tString.o  $(HUFFMAN_OBJECTS)
 	$(LINK.cc) -o $@ tString.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
 cxxtest: cxxtest.o
-	$(LINK.cc) -o $@ cxxtest.o
+	$(LINK.cc) -o $@ cxxtest.o $(LIBS)
 
 ctest:  ctest.o
 	$(LINK.c) -o $@ ctest.o
