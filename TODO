@@ -407,8 +407,8 @@ Volunteers for these and other projects are welcome!
 298*If an item (a word) is selected in the reference browser, have it
     copied to `():'.
 
-303*Have a better algorithm to identify the home directory.  If a dir
-    has the same device and inode number as the home dir, replace it
-    by `~'.
+303*Shorten the `Open Recent' menu items.  It should suffice to
+    show the base names; the full names can still be shown in the
+    status line.
 
 304 (Insert new project ideas here)
