@@ -3275,12 +3275,14 @@ static void CheckDragCB(Widget, XtPointer, XtPointer call_data)
 // Context help
 //-----------------------------------------------------------------------------
 
-static MString saved_status_message(0, true);
+static StatusMsg *context_help_msg = 0;
 
 static void PreHelpOnContext(Widget w, XtPointer, XtPointer)
 {
-    saved_status_message = current_status();
-    set_status("Please click on the item you want information for.");
+    delete context_help_msg;
+    context_help_msg = 
+	new StatusMsg("Please click on the item you want information for");
+
     XFlush(XtDisplay(w));
 }
 
@@ -3288,14 +3290,12 @@ static void PostHelpOnItem(Widget item)
 {
     if (item != 0)
     {
-	MString msg = rm("Selected ") + tt(longName(item));
-	set_status_mstring(msg);
+	if (context_help_msg != 0)
+	    context_help_msg->outcome = longName(item);
     }
-    else if (!saved_status_message.isNull())
-    {
-	set_status_mstring(saved_status_message);
-	saved_status_message = MString(0, true);
-    }
+
+    delete context_help_msg;
+    context_help_msg = 0;
 }
 
 
