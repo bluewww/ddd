@@ -373,7 +373,7 @@ Volunteers for fixing these and other bugs are welcome!
      file).
 
 202. Hal Manuel <hemanuel@gar.esys.com> states that he gets a command
-     tool no matter what preference he has saved.
+     tool no matter what preference he has saved.  HP-UX problem?
 
 203. On IRIX6.3 and DBX, the green arrow indicating the current
      execution position is always at the first line of the currently
@@ -387,4 +387,32 @@ Volunteers for fixing these and other bugs are welcome!
 210. With Motif 2.0, pressing Backspace in the source window has no
      effect.
 
-211. (Insert your bug here)
+211. Graham Hudspith <ghudspit@mltsa.uk.lucent.com> reports that the
+     HP-UX version of DDD 2.1.95 crashes at start-up.
+
+212. Make sure "assert.h" is not loaded upon configuration (even if
+     `.' is in the <...> include path)
+
+213* Fred Damen <damenf@cig.mot.com> says: I have been using the new
+     ddd with sun's dbx 4.0 and have noticed somethings that could be
+     better.
+     1) The arrow/stop sign do not show. independant of the setting
+        for glyphs or text.  They do show when using gdb.
+
+     2) When the execution window is started the string '2>
+        /dev/pts/12' gets passed to the debugged program instead of
+        being processed by the shell.  I have tcsh as my login shell
+        and I suppose that if I had a sh variant as a login shell this
+        would work.  Also, when executing 'run' after 'Run in
+        execution window' is set to DBX console the string '2>
+        /dev/pts/12 < /dev/pts/12 > /dev/pts/12' is passed to the
+        debugged program and it seems as though by this time the pty
+        12 is already reserved.
+
+        Suggestion: You may want to connect the debugged program's
+        stdio to ddd's stdio.  i.e. the debugged program's output
+        shows up on the tty that the ddd/debugged program was executed
+        on.  ddd's output can be sent to a file if the distinction
+        needs to be made.
+
+214. (Insert your bug here)
