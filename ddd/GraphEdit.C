@@ -632,9 +632,11 @@ void graphEditRedrawNode(Widget w, GraphNode *node)
 {
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
-    node->redraw() = True;
-
-    StartRedraw(w);
+    if (!node->hidden())
+    {
+	node->redraw() = True;
+	StartRedraw(w);
+    }
 }
 
 // Disable redrawing for a while; return old state
@@ -1705,8 +1707,8 @@ static Boolean _SelectAll(Widget w, XEvent *, String *, Cardinal *)
     const Graph* graph       = _w->graphEdit.graph;
 
     Boolean changed = False;
-    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
-	node = graph->nextVisibleNode(node))
+    for (GraphNode *node = graph->firstNode(); node != 0;
+	node = graph->nextNode(node))
     {
 	if (!node->selected())
 	{
@@ -1734,8 +1736,8 @@ static Boolean _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
     const Graph* graph       = _w->graphEdit.graph;
 
     Boolean changed = False;
-    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
-	node = graph->nextVisibleNode(node))
+    for (GraphNode *node = graph->firstNode(); node != 0;
+	node = graph->nextNode(node))
     {
 	if (node->selected())
 	{
@@ -1762,7 +1764,7 @@ static void find_connected_nodes(GraphNode *root, VarArray<GraphNode *>& nodes)
 	if (nodes[i] == root)
 	    return;
 
-    if (!root->hidden())
+    // if (!root->hidden()) 
 	nodes += root;
 
     GraphEdge *edge;
