@@ -1174,10 +1174,10 @@ osfPageDown:	<Key>Next\n\
 osfBeginLine:	<Key>Home\n\
 osfEndLine:	<Key>End\n
 
-dnl These command shotcuts were used in DDD 3.0,
+dnl These command shortcuts were used in DDD 3.0,
 dnl before being bound to function keys.
 define(SHORTCUTS,[\
-Ctrl<Key>E:     	gdb-command(run)\n\
+Shift Ctrl<Key>E:     	gdb-command(run)\n\
 Shift Ctrl<Key>K:       gdb-command(kill)\n\
 Ctrl<Key>bracketleft:   gdb-command(until)\n\
 Ctrl<Key>bracketright:  gdb-command(finish)\n\
@@ -1199,6 +1199,7 @@ Shift Ctrl<Key>A:	select-all()	    	    \n\
 Ctrl<Key>B:		gdb-isearch-prev()    	    \n\
 Ctrl<Key>C:		gdb-control(^C)		    \n\
 Ctrl<Key>D:		gdb-delete-or-control(^D)   \n\
+~Shift Ctrl<Key>E:	gdb-end-of-line()           \n\
 Ctrl<Key>F:		gdb-isearch-next()     	    \n\
 Ctrl<Key>G:		gdb-control(^C)		    \n\
 <Key>Break:		gdb-interrupt()		    \n\
@@ -1249,6 +1250,7 @@ define(EMACS_TRANSLATIONS, [SHORTCUTS \
 Shift Ctrl<Key>A:	select-all()	    	    \n\
 Ctrl<Key>B:		gdb-backward-character()    \n\
 Ctrl<Key>D:		delete-next-character()     \n\
+Ctrl<Key>E:		end-of-line()               \n\
 Ctrl<Key>F:		gdb-forward-character()	    \n\
 Ctrl<Key>G:		gdb-control(^C)		    \n\
 <Key>Break:		gdb-interrupt()		    \n\
@@ -1381,6 +1383,7 @@ define(SOURCE_TRANSLATIONS,[\
 Shift Ctrl<Key>A:	select-all()	    	    \n\
 Ctrl<Key>B:		gdb-isearch-prev()    	    \n\
 Ctrl<Key>C:             gdb-control(^C)             \n\
+Ctrl<Key>E:             end-of-line()               \n\
 Ctrl<Key>F:		gdb-isearch-next()	    \n\
 Ctrl<Key>G:             gdb-control(^C)             \n\
 Ctrl<Key>N:		gdb-next-history()	    \n\

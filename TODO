@@ -315,6 +315,10 @@ Volunteers for these and other projects are welcome!
 376 In DBX (at least on AIX), `cont 0' continues with no signal.
     There is also `cont sig 0' on SunOS DBX.
 
-377 Add tiny `+'/`-' buttons to structures to ease folding and unfolding.
+377 Add tiny `+'/`-' buttons to structures to ease folding and
+     unfolding.
 
-378 (Insert new project ideas here)
+378 Allow disassembling always N bytes, regardless of function
+    borders. (Useful for functions with ASM labels).
+
+379 (Insert new project ideas here)

@@ -1750,7 +1750,8 @@ vsl-lex.C: $(srcdir)/vsl-lex.L
 	$(MV) $(LEX_OUTPUT_ROOT).C $@
 	$(RM) $(LEX_OUTPUT_ROOT).c
 
-vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y
+vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
+	$(YACCTOCXX) $(YACCTOCXX).bison $(YACCTOCXX).h $(YACCTOCXX).sun
 	$(YACC.Y) -d $(srcdir)/vsl-gramma.Y
 	$(YACCTOCXX) -prefix vsl
 	$(MV) y.tab.H vsl-gramma.h

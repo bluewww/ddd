@@ -1,7 +1,7 @@
 dnl $Id$
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+dnl Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 dnl Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 dnl 
 dnl This file is part of DDD.
@@ -518,6 +518,14 @@ AC_CHECK_LIB(Xm, XmCreateOptionMenu,
 dnl
 AC_CHECK_LIB(Xm, xmUseVersion, 
 	AC_DEFINE(HAVE_XMUSEVERSION),,
+	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
+dnl
+AC_CHECK_LIB(Xm, XmInstallImage,
+	AC_DEFINE(HAVE_XMINSTALLIMAGE),,
+	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
+dnl
+AC_CHECK_LIB(Xm, Xm21InstallImage,
+	AC_DEFINE(HAVE_XM21INSTALLIMAGE),,
 	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
 fi
 if test "$XM_LIBS" = ""; then

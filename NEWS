@@ -11,10 +11,12 @@ DDD 3.2 brings not much yet.
   have an `Apply' button that applies changes to text fields.
 - In TTY mode, you can edit and complete the command line as in GDB.
   (Uses GNU readline library.)
-- DDD now uses the locale as specified by the environment (such as
-  $LANG).  This allows input of locale characters in DDD dialogs;
-  error messages may also come up in your locale.  If you experience
-  any problems, set LANG=C when invoking DDD.
+- DDD uses the locale as specified by the environment (such as $LANG).
+  This allows input of locale characters in DDD dialogs; error
+  messages may also come up in your locale.  If you experience any
+  problems, set LANG=C when invoking DDD.
+- Ctrl+E moves the cursor to the end of the line.  For a `Run'
+  shortcut, use F2/F3 or Shift+Ctrl+E.
 - [Perl] DDD supports temporary breakpoints in Perl.
 - [GDB] DDD saves the GDB source directory path with the current session.
 - [JDB] DDD saves the JDB class path only with the current session.

@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Create an XImage from bitmap data
 
-// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1998-1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -210,18 +210,18 @@ XImage *CreateImageFromBitmapData(unsigned char *bits, int width, int height)
 
 Boolean InstallImage(XImage *image, char *image_name)
 {
-    // Dave Larson <davlarso@plains.nodak.edu> writes:
-    // DDD doesn't work with the Motif 2.1 libraries shipped w/ Solaris 7:
-    // the pixmap cache is not being seached for the pixmaps.
+    // Dave Larson <davlarso@plains.nodak.edu> writes: DDD doesn't
+    // work with the Motif 2.1 libraries shipped w/ Solaris 7: the
+    // pixmap cache is not being seached for the pixmaps.
     //
     // I did discover a very simple fix and I have to clue why it
     // works. I was digging through the headers for Motif 2.1 and
     // discovered many of the functions such as XmInstallImage have
     // Xm21InstallImage equivalents that take the exact same
-    // arguements.  If I simply change the three calls to
+    // arguments.  If I simply change the three calls to
     // XmInstallImage to Xm21InstallImage, the problem is solved.
 
-#if XmVersion >= 2001
+#if HAVE_XM21INSTALLIMAGE
     return Xm21InstallImage(image, image_name);
 #else
     return XmInstallImage(image, image_name);
