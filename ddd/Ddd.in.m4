@@ -4889,11 +4889,7 @@ Ddd.main_window.helpString: MAIN_WINDOW_HELP
 ! Debugger Console
 !-----------------------------------------------------------------------------
 
-Ddd*gdb_w.value: \
-GNU DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
-Copyright \251 1995-1999 Technische Universit\344t Braunschweig, Germany.\n\
-Copyright \251 1999-2000 Universit\344t Passau, Germany.\n
-
+Ddd*gdb_w.value: 
 Ddd*gdb_w.editable:			on
 Ddd*gdb_w.allowResize:			on
 Ddd*gdb_w.editMode:			XmMULTI_LINE_EDIT
@@ -6611,7 +6607,7 @@ You should better restart DDD now; DDD may fail again soon.\n\
 If you can reproduce this bug, please send a bug report\n\
 to EMAIL(bug-[ddd]@ gnu.org), giving a subject like\n\
 \n\
-    DDD @VERSION@ (@host@) gets @CAUSE@\n\
+    DDD @VERSION@ (@THEHOST@) gets @CAUSE@\n\
 \n\
 To enable us to fix the bug, you should include the following information:\n\
 ITEM What you were doing to get this message.  Report all the facts.\n\

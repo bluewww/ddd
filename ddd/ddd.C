@@ -2271,6 +2271,7 @@ int main(int argc, char *argv[])
     // Create GDB interface
     gdb = new_gdb(debugger_type, app_data, app_context, argc, argv);
     defineConversionMacro("GDB", gdb->title());
+    defineConversionMacro("THEHOST", DDD_HOST);
 
     // Set up GDB handlers
     gdb->addHandler(ReadyForQuestion, gdb_readyHP);
@@ -6976,7 +6977,7 @@ static void setup_version_info()
 	+ rm(DDD_NAME " mailing list: <")
 	+ tt("ddd-request@gnu.org") + rm(">") + cr();
 
-#if 0	             // Right now, this generates too many LessTif warnings
+#if SHOW_COPYRIGHT_IN_SOURCE_WINDOW
     // Duplicate version info in source window
     string s =
 	"/----------------------------------------\\\n"
@@ -6996,6 +6997,14 @@ static void setup_version_info()
     s.gsub("\256", "->");
     s += "To start, select `Help->What Now?'.";
     XmTextSetString(SourceView::source(), s);
+#else
+    XmTextSetString(gdb_w, 
+		    "GNU " DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
+		    "by Dorothea L\374tkehaus and Andreas Zeller.\n"
+		    "Copyright \251 1995-1999 "
+		    "Technische Universit\344t Braunschweig, Germany.\n"
+		    "Copyright \251 1999-2000 "
+		    "Universit\344t Passau, Germany.\n");
 #endif
 }
 
