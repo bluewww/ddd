@@ -245,6 +245,9 @@ LessTif
     003. Menu items are not made insensitive as they ought to be.
          [behavioral]
 
+    004. Dragging a line in the `Backtrace' window causes DDD to
+         crash.
+
 
 Linux
 =====

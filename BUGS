@@ -242,7 +242,8 @@ Volunteers for fixing these and other bugs are welcome!
     the debugger LED on the bottom right never stops flashing.  If I
     try to do anything it gives me the "The debugger is busy error"
     and keeps flashing away.  I've let it sit for up to an hour
-    before and it never stops.
+    before and it never stops.  The same has been reported by Andi
+    Kleen <ak@muc.de> for Linux.
 
 228 Chip Atkinson <chip@XiG.com> and Bernie Borenstein
     <bernieb@deltanet.com> state that after enabling `ungrab mouse
