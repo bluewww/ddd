@@ -1930,7 +1930,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(display_area[DisplayItms::New].widget, true);
 
     // Dereference
-    bool record_ok = gdb->recording() && arg_ok;
+    bool recording = gdb->recording() && emptyCommandQueue();
+    bool record_ok = recording && arg_ok;
     set_sensitive(node_popup[NodeItms::Dereference].widget,
 		  dereference_ok);
     set_sensitive(shortcut_menu[ShortcutItms::Dereference2].widget,
@@ -1947,7 +1948,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(rotate_menu[RotateItms::RotateAll].widget, rotate_ok);
 
     // Show/Hide Detail
-    if (gdb->recording())
+    if (recording)
     {
 	// Recording
 	set_label(node_popup[NodeItms::Detail].widget, "Show All");
