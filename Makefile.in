@@ -133,6 +133,8 @@ snapshot:
 		-o -name '.[a-zA-Z0-9]*' -prune \
 		-o -name '*.o' -prune \
 		-o -name '*.a' -prune \
+		-o -name '*~' -prune \
+		-o -name '*#' -prune \
 		-o \( -name "$$ddd" -type l \) -prune \
 		-o -name "$$ddd-$$VER-*" -prune \
 		-o -name "userinfo" -prune \
