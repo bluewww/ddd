@@ -72,16 +72,19 @@ DispBox::DispBox (int disp_nr, const string& t, const DispValue *dv)
 {
     string title = t;
 
-    // Strip DBX scope information from title
-#if !WITH_FAST_RX
-    static regex rxdbx_scope("[a-zA-Z_0-9]*`");
-#endif
-    while (int(title.length()) > max_display_title_length 
-	   && title.contains(rxdbx_scope))
+    if (!is_user_command(title))
     {
-	string postfix = title.after(rxdbx_scope);
-	title = title.before(rxdbx_scope);
-	title += postfix;
+	// Strip DBX scope information from title
+#if !WITH_FAST_RX
+	static regex rxdbx_scope("[a-zA-Z_0-9]*`");
+#endif
+	while (int(title.length()) > max_display_title_length 
+	       && title.contains(rxdbx_scope))
+	{
+	    string postfix = title.after(rxdbx_scope);
+	    title = title.before(rxdbx_scope);
+	    title += postfix;
+	}
     }
 
     // Shorten remainder
