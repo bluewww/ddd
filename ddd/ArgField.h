@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _ArgField_h
-#define _ArgField_h
+#ifndef _DDD_ArgField_h
+#define _DDD_ArgField_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -96,4 +96,6 @@ public:
 };
 
 
-#endif
+#endif // _DDD_ArgField_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
+

@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _BreakPoint_h
-#define _BreakPoint_h
+#ifndef _DDD_BreakPoint_h
+#define _DDD_BreakPoint_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -108,4 +108,5 @@ public:
 };
 
 
-#endif
+#endif // _DDD_BreakPoint_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

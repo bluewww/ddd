@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef __PannedGraphEditPrivate_h__
-#define __PannedGraphEditPrivate_h__
+#ifndef _DDD_PannedGraphEditPrivate_h
+#define _DDD_PannedGraphEditPrivate_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -80,5 +80,5 @@ typedef struct _PannedGraphEditRec {
     PannedGraphEditPart   pannedGraphEdit;
 } PannedGraphEditRec;
 
-#endif // __PannedGraphEditPrivate_h__
+#endif // _DDD_PannedGraphEditPrivate_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

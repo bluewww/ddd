@@ -34,8 +34,8 @@
 // ...OAC : fuer on_answer_completion, Typ: OACProc, siehe gdbAgent.
 //-----------------------------------------------------------------------------
 
-#ifndef _comm_manag_h
-#define _comm_manag_h
+#ifndef _DDD_comm_manag_h
+#define _DDD_comm_manag_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -69,7 +69,5 @@ void user_cmdSUC (string cmd, Widget origin = 0);
 //
 void user_rawSUC (string cmd, Widget origin = 0);
 
-#endif
-
-
-
+#endif // _DDD_comm_manag_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

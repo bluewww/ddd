@@ -33,8 +33,8 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-#ifndef _Map_h
-#define _Map_h
+#ifndef _DDD_Map_h
+#define _DDD_Map_h
 
 #if defined(__GNUC_MINOR__) && (__GNUC_MINOR__ >= 5)
 #pragma interface
@@ -282,4 +282,6 @@ Contents* Map<Key, Contents>::next(MapRef& ref) {
     }
 }
 
-#endif
+#endif // _DDD_Map_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
+

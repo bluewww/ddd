@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef __ScrolledGraphEditPrivate_h__
-#define __ScrolledGraphEditPrivate_h__
+#ifndef _DDD_ScrolledGraphEditPrivate_h
+#define _DDD_ScrolledGraphEditPrivate_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -86,5 +86,5 @@ typedef struct _ScrolledGraphEditRec {
     ScrolledGraphEditPart sge;
 } ScrolledGraphEditRec;
 
-#endif // __ScrolledGraphEditPrivate_h__
+#endif // _DDD_ScrolledGraphEditPrivate_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

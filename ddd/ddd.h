@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _ddd_h
-#define _ddd_h
+#ifndef _DDD_ddd_h
+#define _DDD_ddd_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -89,4 +89,6 @@ extern string gdb_out_ignore;
 // Pass the COMMAND given in CLIENT_DATA to gdb_command()
 void gdbCommandCB(Widget w, XtPointer call_data, XtPointer client_data);
 
-#endif
+#endif // _DDD_ddd_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
+

@@ -30,8 +30,8 @@
 // Erzeugung von Motif-Dialogen zur Auswahl von Display-Ausdruecken
 //-----------------------------------------------------------------------------
 
-#ifndef _mydialogs_h
-#define _mydialogs_h
+#ifndef _DDD_mydialogs_h
+#define _DDD_mydialogs_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -65,4 +65,5 @@ void setLabelList (Widget  selectionList,
 // The default list charset
 #define LIST_CHARSET "tt"
 
-#endif
+#endif // _DDD_mydialogs_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

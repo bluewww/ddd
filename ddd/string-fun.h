@@ -30,8 +30,8 @@
 // Verschiedene Funktionen auf string
 //-----------------------------------------------------------------------------
 
-#ifndef _string_fun_h
-#define _string_fun_h
+#ifndef _DDD_string_fun_h
+#define _DDD_string_fun_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -76,4 +76,5 @@ int read_positive_nr (string& s);
 void strip_final_blanks(string& text);
 void strip_final_newlines(string& text);
 
-#endif
+#endif // _DDD_string_fun_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

@@ -30,8 +30,8 @@
 // Funktionen zum Lesen von Variablenwerten in string-Darstellung
 //-----------------------------------------------------------------------------
 
-#ifndef _value_read_h
-#define _value_read_h
+#ifndef _DDD_value_read_h
+#define _DDD_value_read_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -83,5 +83,5 @@ bool is_BaseClass_name (const string& name);
 // 
 void cut_BaseClass_name (string& full_name);
 
-
-#endif
+#endif // _DDD_value_read_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

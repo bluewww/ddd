@@ -32,8 +32,8 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-#ifndef _disp_read_h
-#define _disp_read_h
+#ifndef _DDD_disp_read_h
+#define _DDD_disp_read_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -187,4 +187,6 @@ string  read_disp_name   (string& display, GDBAgent *gdb);
 bool is_disabling (const string& value, GDBAgent *gdb);
 bool is_not_active (const string& value, GDBAgent *gdb);
 
-#endif
+#endif // _DDD_disp_read_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
+
