@@ -137,13 +137,13 @@ Agent::Agent(const Agent& c):
 
 void Agent::restoreParentIO()
 {
-    // nothing specific to do here
+    // Nothing specific to do here
 }
 
 // start Agent
 void Agent::start()
 {
-    // start child process if we're not listening to stdin
+    // Start child process if we're not listening to stdin
     if (pid() >= 0)
 	startChildProcess();
     else
@@ -153,8 +153,11 @@ void Agent::start()
 // Start the child process
 void Agent::startChildProcess()
 {
-    // Kill whatever's still running there
-    terminate();
+    if (running())
+    {
+	// Kill whatever's still running there
+	terminate();
+    }
 
     if (setupCommunication())
     {

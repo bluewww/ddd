@@ -293,7 +293,7 @@ void AsyncAgent::terminate(bool onExit)
     {
 	Agent::waitToTerminate();
     }
-    else if (pid() > 0 && !killing_asynchronously)
+    else if (pid() > 0 && running() && !killing_asynchronously)
     {
 	// Kill asynchronously.  We don't want to wait until the
 	// process dies, so we just send out some signals and pretend
