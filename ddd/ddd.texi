@@ -3396,8 +3396,8 @@ debuggee in the debugger console is not possible.  If @samp{off}, output
 is shown as soon as it arrives, enabling interaction, but making it
 harder for @DDD{} to parse the output.  If @samp{auto} (default), output
 is buffered if and only if the execution window is open, which redirects
-debuggee output and thus enables interaction.  @xref{Using the execution
-window}, for details.
+debuggee output and thus enables interaction.  @xref{Using the Execution
+Window}, for details.
 @end defvr
 
 @defvr Resource displayTimeout (class DisplayTimeout)
