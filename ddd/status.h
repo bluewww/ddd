@@ -79,15 +79,17 @@ private:
     string cause;
 
 public:
+    string outcome;
+
     _StatusMsg(const string& c)
-	: cause(c)
+	: cause(c), outcome("done")
     {
 	set_status(cause + "...");
     }
 
     virtual ~_StatusMsg()
     {
-	set_status(cause + "...done.");
+	set_status(cause + "..." + outcome + ".");
     }
 };
 

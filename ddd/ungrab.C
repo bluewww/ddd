@@ -171,8 +171,7 @@ void ungrab_mouse_pointer()
     // We use `print' instead of `call' and `XSync' instead of `XFlush'.
     // Normally, these two calls should not harm the debuggee.
 
-    string msg = "Ungrabbing mouse pointer...";
-    set_status(msg);
+    StatusDelay delay("Ungrabbing mouse pointer");
 
     string ungrab_result_s = 
 	gdb_value("XUngrabPointer(" + display_symbol + ", " 
@@ -181,7 +180,5 @@ void ungrab_mouse_pointer()
 	gdb_value("XSync(" + display_symbol + ", " + itostring(True) + ")");
 
     if (is_invalid(ungrab_result_s) || is_invalid(sync_result_s))
-	set_status(msg + "failed.");
-    else
-	set_status(msg + "done.");
+	delay.outcome = "failed";
 }
