@@ -543,6 +543,7 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 BASE_OBJECTS = \
 	compare.o    \
 	cook.o       \
+	cwd.o        \
 	glob.o       \
 	hash.o       \
 	rxclass.o    \
