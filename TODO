@@ -44,12 +44,6 @@ Volunteers for these and other projects are welcome!
 037 Group dereference.  If multiple pointers are selected,
     dereference them all.
 
-049 albrecht@igpm.rwth-aachen.de (Harald Albrecht):
-    The dialog windows (especially the backtrace dialog) should not
-    exceed a specific size (at least, they should not be larger than
-    the screen :-).  Also, the DDD dialogs should be iconified on
-    their own, without always laying on top of the main windows.
-
 050 Include algorithm animation; for instance, in a way similar to
     LENS (see ftp.cc.gatech.edu:pub/people/stasko).  Suggested by
     bruce@liverpool.ac.uk (Bruce Stephens).
@@ -76,24 +70,6 @@ Volunteers for these and other projects are welcome!
 071 Matthias Kurz <mk@baerlap.north.de> suggests code annotations
     (i.e. comments and graphics that are associated with certain
     variable/function names in the code).
-
-076 Henrik Seidel <henrik@satchmo.physik.tu-berlin.de> says:
-
-    I am missing a feature which would be very useful (but, maybe,
-    difficult to implement). Maybe it is already there and I just
-    don't see it: I would love to be able to save the layout and the
-    variables of the graphic display, so that I can use the same
-    layout if I continue debugging the program tomorrow. More
-    important, I do not like it so much that I have to re-establish
-    the graphic display each time I recompile. Currently, after
-    recompiling all variables displayed in the previous version of the
-    program are now undefined, probably because addresses have
-    changed. Is there a trick to make them be defined again? If not,
-    it might be a good idea to save the displayed variables not by
-    their address but, more source-code oriented, by their scope and
-    name. That way, it shouldn't be too difficult to save the
-    displayed variables and find the corresponding variables even
-    after recompiling.
 
 078 Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
     mirrors?
@@ -375,8 +351,8 @@ Volunteers for these and other projects are welcome!
     This will allow to have a visual overview of the program behavior 
     and will be a great help to pinpoint troublesome code.
 
-277 Allow in-place editing.  There is already a simple `editSource' resource,
-    but we'd have to do a lot more to realize decent editing
+277 Allow in-place editing.  There is already a simple `editSource'
+    resource, but we'd have to do a lot more to realize decent editing
     capabilities.
 
 287 Have the DDD windows be resized in font increments.
@@ -404,4 +380,7 @@ Volunteers for these and other projects are welcome!
 304 If the source window size has changed (via panes?), recenter the
     command tool.
 
-305 (Insert new project ideas here)
+305 Have all icons parsed from one big XPM file (and use subimages to
+    create individual icons), such that the icon creation time is minimized.
+
+306 (Insert new project ideas here)
