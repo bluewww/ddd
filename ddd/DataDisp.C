@@ -1375,6 +1375,7 @@ public:
     bool create_cluster;
     string cluster_name;
     static int cluster_nr;
+    static int cluster_offset;
 
     NewDisplayInfo()
 	: display_expression(),
@@ -1426,7 +1427,8 @@ private:
     }
 };
 
-int NewDisplayInfo::cluster_nr = 0;
+int NewDisplayInfo::cluster_nr     = 0;
+int NewDisplayInfo::cluster_offset = 0;
 
 void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
 {
@@ -3133,7 +3135,8 @@ void DataDisp::new_displaySQ (string display_expression,
 	if (ret || expressions.size() == 0)
 	    return;
 
-	info.cluster_nr = 0;
+	info.cluster_nr     = 0;
+	info.cluster_offset = 0;
 
 	if (expressions.size() > 1)
 	{
@@ -3157,6 +3160,10 @@ void DataDisp::new_displaySQ (string display_expression,
 	    }
 	    else
 	    {
+		// The cluster is created after the last expression.
+		// Be sure to specify the correct display number
+		info.cluster_offset = expressions.size() - 1;
+
 		gdb_command(gdb->display_command(expressions[i]),
 			    last_origin, OQCProc(0), (void *)0);
 		gdb_command(gdb->print_command(expressions[i], true),
@@ -3727,7 +3734,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     if (box_point == BoxPoint())
 	box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
     dn->moveTo(box_point);
-    dn->cluster(info->cluster_nr);
+    dn->cluster(info->cluster_nr - info->cluster_offset);
     select_node(dn, depend_nr);
 
     refresh_addr(dn);
