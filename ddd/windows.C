@@ -84,6 +84,19 @@ bool popups_disabled = false;
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref);
 
+// Place command tool in upper right edge of REF, with a distance of
+// TOP_OFFSET and RIGHT_OFFSET
+static void recenter_tool_shell(Widget ref, int top_offset, int right_offset);
+
+// Get current offset of command tool in TOP_OFFSET and RIGHT_OFFSET;
+// return true iff successful.
+static bool get_tool_offset(int& top_offset, int& right_offset);
+
+// Last offsets as actually used
+static int last_top_offset;
+static int last_right_offset;
+static bool offsets_initialized = false;
+
 // Last saved geometry of tool shell
 static string last_tool_shell_geometry = "+0+0";
 
@@ -529,35 +542,40 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 
     case ConfigureNotify:
     {
-	if (w == source_view_shell
-	    || w == command_shell && source_view_shell == 0)
+	if (app_data.sticky_tool
+	    && have_tool_window()
+	    && (tool_shell_state == PoppedUp 
+		|| tool_shell_state == Transient))
 	{
-	    static BoxPoint last_position = point(event);
-	    BoxPoint current_position = point(event);
-	    BoxPoint offset = current_position - last_position;
-	    last_position = current_position;
-	    
-	    // clog << "Source view shell moved by " << offset << "\n";
+	    // Let `sticky' command tool follow the source window
 
-	    if (app_data.sticky_tool
-		&& offset != BoxPoint(0, 0)
-		&& have_tool_window()
-		&& (tool_shell_state == PoppedUp 
-		    || tool_shell_state == Transient))
+	    if (!offsets_initialized)
 	    {
-		XWindowAttributes attr;
-		XGetWindowAttributes(XtDisplay(tool_shell),
-				     XtWindow(tool_shell), 
-				     &attr);
+		last_top_offset   = app_data.tool_top_offset;
+		last_right_offset = app_data.tool_right_offset;
+		offsets_initialized = true;
+	    }
 
-		int root_x, root_y;
-		Window child;
-		XTranslateCoordinates(XtDisplay(tool_shell),
-				      XtWindow(tool_shell),
-				      attr.root, 0, 0, &root_x, &root_y,
-				      &child);
+	    if (w == tool_shell)
+	    {
+		// Command tool has been moved
+		clog << "Tool has been moved to " << point(event) << "\n";
 
-		move_tool_shell(BoxPoint(root_x, root_y) + offset);
+		// Record offset
+		get_tool_offset(last_top_offset, last_right_offset);
+	    }
+
+	    if (offsets_initialized
+		&& (w == source_view_shell
+		    || w == command_shell && source_view_shell == 0))
+	    {
+		// Source shell has been moved -- follow movement
+		clog << "Shell has been moved to " << point(event) << "\n";
+
+		// Let command tool follow
+		recenter_tool_shell(source_view->source(),
+				    last_top_offset, last_right_offset);
+		get_tool_offset(last_top_offset, last_right_offset);
 	    }
 	}
 	break;
@@ -911,6 +929,14 @@ Window frame(Display *display, Window window)
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref)
 {
+    recenter_tool_shell(ref, app_data.tool_top_offset,
+			app_data.tool_right_offset);
+}
+
+// Place command tool in upper right edge of REF, with a distance of
+// TOP_OFFSET and RIGHT_OFFSET
+static void recenter_tool_shell(Widget ref, int top_offset, int right_offset)
+{
     if (ref == 0 || tool_shell == 0)
 	return;
 
@@ -932,9 +958,8 @@ static void recenter_tool_shell(Widget ref)
 			 &frame_attributes);
 
     // Determine new position relative to REF
-    int x = ref_attributes.width - tool_attributes.width 
-	- app_data.tool_right_offset;
-    int y = app_data.tool_top_offset;
+    int x = ref_attributes.width - tool_attributes.width - right_offset;
+    int y = top_offset;
 
     // Correct them relative to frame thickness
     int frame_x, frame_y;
@@ -958,13 +983,15 @@ static void recenter_tool_shell(Widget ref)
     move_tool_shell(BoxPoint(root_x, root_y));
 }
 
-// Store current offset of command tool in APP_DATA
-void get_tool_offset()
+
+// Get current offset of command tool in TOP_OFFSET and RIGHT_OFFSET;
+// return true iff successful.
+static bool get_tool_offset(int& top_offset, int& right_offset)
 {
     Widget ref = source_view->source();
 
     if (ref == 0 || tool_shell == 0)
-	return;
+	return false;
 
     Window ref_window  = XtWindow(ref);
     Window tool_window = XtWindow(tool_shell);
@@ -982,6 +1009,17 @@ void get_tool_offset()
     XWindowAttributes frame_attributes;
     XGetWindowAttributes(XtDisplay(tool_shell), tool_frame, 
 			 &frame_attributes);
+
+    // If the tool frame is off the screen, don't store the offset
+    if (frame_attributes.x < 0
+	|| frame_attributes.y < 0
+	|| frame_attributes.x + frame_attributes.width
+	   > WidthOfScreen(XtScreen(tool_shell))
+	|| frame_attributes.y + frame_attributes.height
+	   > HeightOfScreen(XtScreen(tool_shell)))
+    {
+	return false;
+    }
 
     // Fetch root coordinates of upper right edge of command tool
     int tool_x, tool_y;
@@ -1014,6 +1052,21 @@ void get_tool_offset()
     x -= frame_attributes.width - frame_x + frame_attributes.border_width;
     y -= frame_y + frame_attributes.border_width;
 
-    app_data.tool_top_offset   = y;
-    app_data.tool_right_offset = x;
+    top_offset   = y;
+    right_offset = x;
+    return true;
+}
+
+// Store current offset of command tool in APP_DATA
+void get_tool_offset()
+{
+    if (!offsets_initialized)
+    {
+	last_top_offset   = app_data.tool_top_offset;
+	last_right_offset = app_data.tool_right_offset;
+    }
+
+    get_tool_offset(last_top_offset, last_right_offset);
+    app_data.tool_top_offset   = last_top_offset;
+    app_data.tool_right_offset = last_right_offset;
 }

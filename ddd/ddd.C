@@ -1976,7 +1976,7 @@ int main(int argc, char *argv[])
     if (!app_data.debugger_console)
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
 
-    // If some window is iconified, iconify all others as well
+    // Trace positions and visibility of all DDD windows
     const int structure_mask = StructureNotifyMask | VisibilityChangeMask;
     if (command_shell)
 	XtAddEventHandler(command_shell, structure_mask, False,
@@ -2050,13 +2050,8 @@ int main(int argc, char *argv[])
 	XtRealizeWidget(tool_shell);
 	Delay::register_shell(tool_shell);
 
-#if 0
 	XtAddEventHandler(tool_shell, structure_mask, False,
 			  StructureNotifyEH, XtPointer(0));
-#else
-	XtAddEventHandler(tool_shell, VisibilityChangeMask, False,
-			  StructureNotifyEH, XtPointer(0));
-#endif
 	
 	if (app_data.tool_bar)
 	{
