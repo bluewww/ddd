@@ -2928,12 +2928,9 @@ static void ApplyCB(Widget, XtPointer, XtPointer)
 
 MMDesc commands_menu[] =
 {
-    { "record", MMPush, \
-      { RecordCommandDefinitionCB }, 0, &record_w },
-    { "end",    MMPush | MMInsensitive, \
-      { EndCommandDefinitionCB }, 0, &end_w },
-    { "edit",   MMPush, \
-      { ToggleEditCommandDefinitionCB }, 0, &edit_w },
+    { "record", MMPush, { RecordCommandDefinitionCB }, 0, &record_w },
+    { "end",    MMPush | MMInsensitive, { EndCommandDefinitionCB }, 0, &end_w},
+    { "edit",   MMPush, { ToggleEditCommandDefinitionCB }, 0, &edit_w },
     MMEnd
 };
 
