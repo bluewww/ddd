@@ -639,9 +639,9 @@ static void PopupTip(XtPointer client_data, XtIntervalId *id)
 
 	arg = 0;
 	XtSetArg(args[arg], XmNallowShellResize, true); arg++;
-	tip_shell = XtCreateWidget("tipShell",
-				   overrideShellWidgetClass, 
-				   findTheTopLevelShell(w), args, arg);
+	tip_shell = verify(XtCreateWidget("tipShell",
+					  overrideShellWidgetClass, 
+					  findTheTopLevelShell(w), args, arg));
 
 	arg = 0;
 	XtSetArg(args[arg], XmNlabelString, tip.xmstring()); arg++;
@@ -940,6 +940,14 @@ static void HandleTipEvent(Widget w,
 // (Un)install toolbar tips for W
 static void InstallTipEvents(Widget w, bool install)
 {
+    // If no `tipString' resource is specified, don't install handler
+    resource_values values;
+    XtGetApplicationResources(w, &values, 
+			      subresources, XtNumber(subresources), 
+			      NULL, 0);
+    if (values.tipString == 0)
+	return;
+
 #if 0
     clog << (install ? "Installing" : "Uninstalling")
 	 << " event handler for " << cook(longName(w)) << "\n";
