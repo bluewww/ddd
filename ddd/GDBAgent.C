@@ -1248,23 +1248,27 @@ void GDBAgent::handle_input(string& answer)
 		callHandlers(ReadyForQuestion, (void *)true);
 		callHandlers(ReadyForCmd, (void *)true);
 
-		if (questions_waiting)
-		{
-		    // We did not call the OACProc yet.
-		    if (_on_answer_completion != 0)
-			_on_answer_completion (_user_data);
-
-		    questions_waiting = false;
-		}
-
-		if (_on_qu_array_completion != 0)
+		if (questions_waiting || _on_qu_array_completion != 0)
 		{
 		    // We use a local copy of the answers and user
 		    // data here, since the callback may submit a new
 		    // query, overriding the original value.
 		    StringArray answers(complete_answers);
 		    VoidArray datas(_qu_datas);
-		    _on_qu_array_completion (answers, datas, _qa_data);
+		    OQACProc array_completion  = _on_qu_array_completion;
+		    OACProc  answer_completion = _on_answer_completion;
+		    void *array_data           = _qa_data;
+
+		    if (questions_waiting)
+		    {
+			// We did not call the OACProc yet.
+			questions_waiting = false;
+
+			if (answer_completion != 0)
+			    answer_completion(_user_data);
+		    }
+		    if (array_completion != 0)
+			array_completion(answers, datas, array_data);
 		}
 	    }
 	    else
