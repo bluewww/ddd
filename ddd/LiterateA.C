@@ -295,6 +295,19 @@ int LiterateAgent::_read(char*& data, FILE *fp)
 
 	if (s != 0)
 	    queue.append(buffer, strlen(buffer));
+	else if (false
+#ifdef EAGAIN
+		 || errno == EAGAIN
+#endif
+#ifdef EWOULDBLOCK
+		 || errno == EWOULDBLOCK
+#endif
+	    )
+	{
+	    // Linux libc 5.4.39 and later treats EAGAIN and
+	    // EWOULDBLOCK as EOF condition.  This is a bad idea.
+	    clearerr(fp);
+	}
     }
     else
     {
