@@ -129,6 +129,9 @@ void setLabelList (Widget  selectionList,
 		   bool    highlight_title,
 		   bool    notify)
 {
+    if (selectionList == 0)
+	return;
+
     XmStringTable xmlabel_list = 
 	makeXmStringTable(label_list, list_length, highlight_title);
 
@@ -161,6 +164,9 @@ void updateLabelList (Widget  selectionList,
 		      string  label_list[],
 		      int     list_length)
 {
+    if (selectionList == 0)
+	return;
+
     XmStringTable items;
     int items_count = 0;
 
@@ -207,6 +213,9 @@ void getDisplayNumbers(Widget selectionList, IntArray& disp_nrs)
 {
     static IntArray empty;
     disp_nrs = empty;
+
+    if (selectionList == 0)
+	return;
 
     XmStringTable selected_items;
     int selected_items_count = 0;
@@ -271,6 +280,9 @@ static void freeXmStringTable (XmStringTable xmlist, int list_length)
 // Select POS in LIST and make it visible
 void ListSetAndSelectPos(Widget list, int pos)
 {
+    if (list == 0)
+	return;
+
     assert(XmIsList(list));
 
     int top_item      = 0;
