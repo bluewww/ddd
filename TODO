@@ -365,4 +365,13 @@ Volunteers for these and other projects are welcome!
 213. Support the Solaris DBX `handler' command to enable and disable
      breakpoints.
 
-215. (Insert your project idea here)
+215. Raoul Beauduin <beauduin@ori.u-tokyo.ac.jp> suggests to change
+     the green arrow in the source window into a green bar. Makes it
+     easier to follow the line.
+     [You can turn off glyphs and get a black bar.  -AZ]
+
+216. Raoul Beauduin <beauduin@ori.u-tokyo.ac.jp> wants to be able to
+     view the content of an array graphically.  Useful when you know
+     what kind of array you are expecting (symmetric, diagonal ...)
+
+217. (Insert your project idea here)
