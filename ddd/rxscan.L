@@ -235,7 +235,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S013>{_}cd({W}{C})?			return &rxcd_cmd;
 <S014>[^:]*:[^:]*:{_}{D}{C}		return &rxcolons;
 <S015>{C}:{C}core{C}		 	return &rxcore;
-<S016>{_}core(-file)?({W}{C})?		return &rxcore_cmd;
+<S016>{_}(attach|core(-file)?)({W}{C})?	return &rxcore_cmd;
 <S017>\r\r*\n				return &rxcrlf;
 <S018>{_}[a-z ]*display({W}-?{D}{C})?	return &rxdata;
 <S019>[^ \t\n)}][^=\n]*{w}={w}		return &rxdbx_begin_of_display;

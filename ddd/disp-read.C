@@ -243,11 +243,11 @@ bool is_down_cmd (const string& cmd)
     return cmd.matches (rxdown_cmd);
 }
 
-// True if CMD loads a core file
+// True if CMD loads a new state (core file or process)
 bool is_core_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
-    static regex rxcore_cmd("[ \t]*(core|core-file)([ \t]+.*)?");
+    static regex rxcore_cmd("[ \t]*(attach|core|core-file)([ \t]+.*)?");
 #endif
 
     return cmd.matches (rxcore_cmd);
