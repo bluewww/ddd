@@ -4931,7 +4931,7 @@ Ddd*plot_command.promptString:			gnuplot>
 Ddd*plot_command_dialog*helpString:     \
 WIDGET(Plot Command)\n\
 \n\
-Please enter a Gnuplot command at the SAMP(gnuplot>) prompt.\n\
+You can now enter a Gnuplot command at the SAMP(gnuplot>) prompt.\n\
 The plot will automatically be refreshed after execution.\n\
 \n\
 See the Gnuplot documentation for useful commands.
@@ -5530,7 +5530,7 @@ Ddd*new_breakpoint_dialog.textAccelerators:
 
 Ddd*new_breakpoint_dialog*helpString:	\
 \
-@rm Please enter a breakpoint you want to set.\n\
+@rm You can now enter a breakpoint you want to set.\n\
 Enter its name in the argument field.\n\
 \n\
 The argument may be a EMPH(line number), a EMPH(function name),\
@@ -5557,7 +5557,7 @@ Ddd*new_watchpoint_dialog.okLabelString: Set
 Ddd*new_watchpoint_dialog.textAccelerators:
 
 Ddd*new_watchpoint_dialog*helpString:	\
-@rm Please enter a variable whose value you want to watch.\n\
+@rm You can now enter a variable whose value you want to watch.\n\
 Enter its name in the argument field.\n\
 \n\
 DESC(Set Watchpoint, [stop whenever the variable value changes])\n\
@@ -5984,7 +5984,7 @@ Ddd*edit_displays_dialog*delete.documentationString:  \
 !-----------------------------------------------------------------------------
 
 define(NEW_DISPLAY_HELP,
-[@rm Please enter an expression in the argument field.\n\
+[@rm You can now enter an expression in the argument field.\n\
 The value of the expression is displayed each time the program stops.\n\
 \n\
 Variables accessible are those of the lexical environment of the current\n\
