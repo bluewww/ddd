@@ -51,11 +51,11 @@ Boolean MString::OK() const
 // Return all characters in M
 string MString::str() const
 {
-    string s = "";
-
     XmString m = xmstring();
     if (m == 0)
 	return "";
+
+    string s = "";
 
     XmStringContext c;
     XmStringInitContext(&c, m);
@@ -78,18 +78,6 @@ string MString::str() const
 	if (t == XmSTRING_COMPONENT_UNKNOWN && s_uv == 0)
 	    t = XmSTRING_COMPONENT_END;
 
-	// Place string values in strings
-	string text(s_text == 0 ? "" : s_text);
-	string cs(s_cs == 0 ? "" : s_cs);
-	string uv;
-	if (s_uv != 0)
-	    uv = string((char *)s_uv, ul);
-
-	// Free unused memory
-	XtFree(s_text);
-	XtFree(s_cs);
-	XtFree((char *)s_uv);
-
 	switch (t)
 	{
 	case XmSTRING_COMPONENT_TEXT:
@@ -99,16 +87,21 @@ string MString::str() const
 #if XmVersion >= 2000
 	case XmSTRING_COMPONENT_WIDECHAR_TEXT:
 #endif
-	    s += text;
+	    s += string(s_text == 0 ? "" : s_text);
 	    break;
 
 	case XmSTRING_COMPONENT_SEPARATOR:
-	    s += "\n";
+	    s += '\n';
 	    break;
 
 	default:
 	    break;
 	}
+
+	// Free unused memory
+	XtFree(s_text);
+	XtFree(s_cs);
+	XtFree((char *)s_uv);
     }
 
     XmStringFreeContext(c);

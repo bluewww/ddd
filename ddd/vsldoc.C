@@ -98,7 +98,7 @@ string vsldoc(const string& file, const string& path)
 	if (!line.contains("$", 0)) // RCS comment
 	{
 	    if (doc != "")
-		doc += "\n";
+		doc += '\n';
 	    doc += line;
 	}
 	contents = contents.after("\n");

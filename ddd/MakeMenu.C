@@ -288,10 +288,12 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
     Arg args[10];
     int arg;
 
+    static const string textName  = "text";
+    static const string labelName = "label";
     // Create lots of buttons...
     for (MMDesc *item = items; item != 0 && item->name != 0; item++)
     {
-	const char *name        = item->name;
+	const char * const name = item->name;
 	MMType flags            = item->type;
 	MMType type             = flags & MMTypeMask;
 	Widget& widget          = item->widget;
@@ -303,9 +305,6 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    continue;		// Don't create
 
 	const string subMenuName = string(name) + "Menu";
-	const string panelName   = string(name) + "Panel";
-	static const string textName  = "text";
-	static const string labelName = "label";
 	Widget subMenu = 0;
 	Widget panel   = 0;
 	bool flat = false;
@@ -489,6 +488,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	{
 	    // Create a label with an associated panel
 	    assert(subitems != 0);
+	    const string panelName   = string(name) + "Panel";
 
 	    bool have_label = 
 		(name[0] != '\0' && (flags & MMUnmanagedLabel) == 0);

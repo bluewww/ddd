@@ -515,7 +515,7 @@ const_expression	:	string_constant
 				{ 
 				    ASSERT($1->OK());
 
-				    const string name(*$1);
+				    const string& name(*$1);
 				    $$ = new StringNode(name);
 				    delete $1;
 				    $1 = 0;
@@ -796,7 +796,7 @@ override_identifier	:	function_identifier
 				{
 				    ASSERT($1->OK());
 
-				    const string func_name = *$1;
+				    const string& func_name = *$1;
 				    vsllib->override(func_name);
 
 				    delete $1;

@@ -3291,9 +3291,7 @@ static void ddd_check_version()
 // resources such as window sizes.
 XrmDatabase GetFileDatabase(const string& filename)
 {
-    string version_found = "";
-
-    string tmpfile = tempfile();
+    const string tmpfile = tempfile();
 
     std::ofstream os(tmpfile.chars());
     std::ifstream is(filename.chars());
@@ -3328,7 +3326,7 @@ XrmDatabase GetFileDatabase(const string& filename)
 	{
 	    if (line.contains(XtNdddinitVersion ":"))
 	    {
-		version_found = line.after(":");
+	        string version_found = line.after(":");
 		strip_space(version_found);
 
 		if (version_found != DDD_VERSION)
@@ -3344,7 +3342,7 @@ XrmDatabase GetFileDatabase(const string& filename)
 
 	    for (int i = 0; copy && i < int(XtNumber(do_not_copy)); i++)
 	    {
-		string res = string(".") + do_not_copy[i] + ":";
+		const string res = string(".") + do_not_copy[i] + ":";
 		if (line.contains(res) && version_mismatch)
 		{
 #if 0

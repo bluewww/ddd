@@ -161,7 +161,9 @@ typedef struct _GraphEditPart {
     XtCallbackList preLayoutProc;         // Called before layouting
     XtCallbackList postLayoutProc;        // Called after layouting
     XtCallbackList preSelectionProc;      // Called before selection
+} GraphEditPart;
 
+typedef struct _GraphEditPartPrivate {
     // Private state
     GraphEditState state;	// Current state
 
@@ -187,12 +189,18 @@ typedef struct _GraphEditPart {
     Boolean sizeChanged;	// Flag: size changed in SetValues
     Boolean redisplayEnabled;	// Flag: redisplay is enabled
 
-} GraphEditPart;
+} GraphEditPartPrivate;
 
+// This struct is split into two parts. The first is a POD and can therefore
+// be used with "offsetof". The second contains classes.
 typedef struct _GraphEditRec {
+  struct Res {
     CorePart        core;
     XmPrimitivePart primitive;
     GraphEditPart   graphEdit;
+  };
+  Res res_;				// Plain Old Data (POD)
+  GraphEditPartPrivate graphEditP;	// Class
 } GraphEditRec;
 
 #endif // _DDD_GraphEditP_h

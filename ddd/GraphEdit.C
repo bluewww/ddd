@@ -86,14 +86,14 @@ static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
 static void defaultForeground(Widget w, int, XrmValue *value)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    value->addr = XPointer(&_w->primitive.foreground);
+    value->addr = XPointer(&_w->res_.primitive.foreground);
 }
 
 
 // Resource list
 
 static XtResource resources[] = {
-#define offset(field) XtOffsetOf(GraphEditRec, graphEdit.field)
+#define offset(field) XtOffsetOf(_GraphEditRec::Res, graphEdit.field)
     // {name, class, type, size, offset, default_type, default_addr}
     { CONST_CAST(char *,XtNgraph), CONST_CAST(char *,XtCGraph), XtRPointer, sizeof(Graph *),
         offset(graph), XtRImmediate, XtPointer(0) },
@@ -457,12 +457,12 @@ void graphEditSizeChanged(Widget w)
     int arg;
 
     const GraphEditWidget _w            = GraphEditWidget(w);
-    const Graph* graph                  = _w->graphEdit.graph;
-    const Dimension highlight_thickness = _w->primitive.highlight_thickness;
-    Boolean& sizeChanged                = _w->graphEdit.sizeChanged;
-    const GraphGC& graphGC              = _w->graphEdit.graphGC;
-    const Dimension extraWidth          = _w->graphEdit.extraWidth;
-    const Dimension extraHeight         = _w->graphEdit.extraHeight;
+    const Graph* graph                  = _w->res_.graphEdit.graph;
+    const Dimension highlight_thickness = _w->res_.primitive.highlight_thickness;
+    Boolean& sizeChanged                = _w->graphEditP.sizeChanged;
+    const GraphGC& graphGC              = _w->graphEditP.graphGC;
+    const Dimension extraWidth          = _w->res_.graphEdit.extraWidth;
+    const Dimension extraHeight         = _w->res_.graphEdit.extraHeight;
 
     // Could it be this is invoked without any graph yet?
     if (graph == 0)
@@ -528,7 +528,7 @@ const GraphGC& graphEditGetGraphGC(Widget w)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w = GraphEditWidget(w);
-    const GraphGC& graphGC   = _w->graphEdit.graphGC;
+    const GraphGC& graphGC   = _w->graphEditP.graphGC;
 
     return graphGC;
 }
@@ -539,7 +539,7 @@ Graph *graphEditGetGraph(Widget w)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     GraphEditWidget _w = GraphEditWidget(w);
-    return _w->graphEdit.graph;
+    return _w->res_.graphEdit.graph;
 }
 
 
@@ -547,12 +547,12 @@ Graph *graphEditGetGraph(Widget w)
 static void setGrid(Widget w, Boolean reset = False)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Pixel     gridColor  = _w->graphEdit.gridColor;
-    const Pixel     background = _w->core.background_pixel;
-    const Boolean   showGrid   = _w->graphEdit.showGrid;
-    Dimension& gridHeight      = _w->graphEdit.gridHeight;
-    Dimension& gridWidth       = _w->graphEdit.gridWidth;
-    Pixmap& gridPixmap         = _w->graphEdit.gridPixmap;
+    const Pixel     gridColor  = _w->res_.graphEdit.gridColor;
+    const Pixel     background = _w->res_.core.background_pixel;
+    const Boolean   showGrid   = _w->res_.graphEdit.showGrid;
+    Dimension& gridHeight      = _w->res_.graphEdit.gridHeight;
+    Dimension& gridWidth       = _w->res_.graphEdit.gridWidth;
+    Pixmap& gridPixmap         = _w->graphEditP.gridPixmap;
 
     gridWidth  = max(gridWidth,  2);
     gridHeight = max(gridHeight, 2);
@@ -600,13 +600,13 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 {
     const Widget w                      = Widget(client_data);
     const GraphEditWidget _w            = GraphEditWidget(w);
-    const Graph* graph                  = _w->graphEdit.graph;
-    const GraphGC& graphGC              = _w->graphEdit.graphGC;
-    const Boolean sizeChanged           = _w->graphEdit.sizeChanged;
-    const Boolean redisplayEnabled      = _w->graphEdit.redisplayEnabled;
-    const Boolean highlight_drawn       = _w->primitive.highlight_drawn;
-    const Dimension highlight_thickness = _w->primitive.highlight_thickness;
-    XtIntervalId& redrawTimer           = _w->graphEdit.redrawTimer;
+    const Graph* graph                  = _w->res_.graphEdit.graph;
+    const GraphGC& graphGC              = _w->graphEditP.graphGC;
+    const Boolean sizeChanged           = _w->graphEditP.sizeChanged;
+    const Boolean redisplayEnabled      = _w->graphEditP.redisplayEnabled;
+    const Boolean highlight_drawn       = _w->res_.primitive.highlight_drawn;
+    const Dimension highlight_thickness = _w->res_.primitive.highlight_thickness;
+    XtIntervalId& redrawTimer           = _w->graphEditP.redrawTimer;
 
     (void) id;			// Use it
     assert(redrawTimer == *id);
@@ -647,8 +647,8 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
     {
 	XClearArea(XtDisplay(w), XtWindow(w),
 		   highlight_thickness, highlight_thickness, 
-		   _w->core.width  - highlight_thickness * 2, 
-		   _w->core.height - highlight_thickness * 2,
+		   _w->res_.core.width  - highlight_thickness * 2, 
+		   _w->res_.core.height - highlight_thickness * 2,
 		   False);
 
 	graph->draw(w, EVERYWHERE, graphGC);
@@ -675,7 +675,7 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 static void StartRedraw(Widget w)
 {
     const GraphEditWidget _w  = GraphEditWidget(w);
-    XtIntervalId& redrawTimer = _w->graphEdit.redrawTimer;
+    XtIntervalId& redrawTimer = _w->graphEditP.redrawTimer;
 
     if (redrawTimer != 0)
 	return;			// Redraw pending
@@ -691,7 +691,7 @@ void graphEditRedraw(Widget w)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Graph* graph         = _w->graphEdit.graph;
+    const Graph* graph         = _w->res_.graphEdit.graph;
 
     for (GraphNode *node = graph->firstVisibleNode(); 
 	 node != 0;
@@ -719,7 +719,7 @@ Boolean graphEditEnableRedisplay(Widget w, Boolean state)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w   = GraphEditWidget(w);
-    Boolean& redisplayEnabled  = _w->graphEdit.redisplayEnabled;
+    Boolean& redisplayEnabled  = _w->graphEditP.redisplayEnabled;
 
     Boolean old_state = redisplayEnabled;
     redisplayEnabled = state;
@@ -1151,23 +1151,23 @@ static void setGCs(Widget w)
     const GraphEditWidget _w        = GraphEditWidget(w);
 
     // read-only
-    const Dimension edgeWidth       = _w->graphEdit.edgeWidth;
-    const Pixmap selectTile         = _w->graphEdit.selectTile;
-    const Pixel background          = _w->core.background_pixel;
-    const Pixel nodeColor           = _w->graphEdit.nodeColor;
-    const Pixel edgeColor           = _w->graphEdit.edgeColor;
-    const Pixel frameColor          = _w->graphEdit.frameColor;
-    const Pixel outlineColor        = _w->graphEdit.outlineColor;
-    const Pixel selectColor         = _w->graphEdit.selectColor;
-    const Boolean dashedLines       = _w->graphEdit.dashedLines;
+    const Dimension edgeWidth       = _w->res_.graphEdit.edgeWidth;
+    const Pixmap selectTile         = _w->res_.graphEdit.selectTile;
+    const Pixel background          = _w->res_.core.background_pixel;
+    const Pixel nodeColor           = _w->res_.graphEdit.nodeColor;
+    const Pixel edgeColor           = _w->res_.graphEdit.edgeColor;
+    const Pixel frameColor          = _w->res_.graphEdit.frameColor;
+    const Pixel outlineColor        = _w->res_.graphEdit.outlineColor;
+    const Pixel selectColor         = _w->res_.graphEdit.selectColor;
+    const Boolean dashedLines       = _w->res_.graphEdit.dashedLines;
 
     // write-only
-    GC& nodeGC                      = _w->graphEdit.nodeGC;
-    GC& edgeGC                      = _w->graphEdit.edgeGC;
-    GC& invertGC                    = _w->graphEdit.invertGC;
-    GC& clearGC                     = _w->graphEdit.clearGC;
-    GC& frameGC                     = _w->graphEdit.frameGC;
-    GC& outlineGC                   = _w->graphEdit.outlineGC;
+    GC& nodeGC                      = _w->graphEditP.nodeGC;
+    GC& edgeGC                      = _w->graphEditP.edgeGC;
+    GC& invertGC                    = _w->graphEditP.invertGC;
+    GC& clearGC                     = _w->graphEditP.clearGC;
+    GC& frameGC                     = _w->graphEditP.frameGC;
+    GC& outlineGC                   = _w->graphEditP.outlineGC;
 
     int line_style = dashedLines ? LineOnOffDash : LineSolid;
 
@@ -1232,27 +1232,27 @@ static void setGraphGC(Widget w)
     const GraphEditWidget _w        = GraphEditWidget(w);
 
     // Read only
-    const Dimension arrowAngle      = _w->graphEdit.arrowAngle;
-    const Dimension arrowLength     = _w->graphEdit.arrowLength;
-    const Dimension hintSize        = _w->graphEdit.hintSize;
-    const Boolean showHints         = _w->graphEdit.showHints;
-    const Boolean showAnnotations   = _w->graphEdit.showAnnotations;
-    const GC nodeGC                 = _w->graphEdit.nodeGC;
-    const GC edgeGC                 = _w->graphEdit.edgeGC;
-    const GC invertGC               = _w->graphEdit.invertGC;
-    const GC clearGC                = _w->graphEdit.clearGC;
+    const Dimension arrowAngle      = _w->res_.graphEdit.arrowAngle;
+    const Dimension arrowLength     = _w->res_.graphEdit.arrowLength;
+    const Dimension hintSize        = _w->res_.graphEdit.hintSize;
+    const Boolean showHints         = _w->res_.graphEdit.showHints;
+    const Boolean showAnnotations   = _w->res_.graphEdit.showAnnotations;
+    const GC nodeGC                 = _w->graphEditP.nodeGC;
+    const GC edgeGC                 = _w->graphEditP.edgeGC;
+    const GC invertGC               = _w->graphEditP.invertGC;
+    const GC clearGC                = _w->graphEditP.clearGC;
 
     const Dimension selfEdgeDiameter = 
-	_w->graphEdit.selfEdgeDiameter;
+	_w->res_.graphEdit.selfEdgeDiameter;
     const SelfEdgePosition selfEdgePosition = 
-	_w->graphEdit.selfEdgePosition;
+	_w->res_.graphEdit.selfEdgePosition;
     const SelfEdgeDirection selfEdgeDirection = 
-	_w->graphEdit.selfEdgeDirection;
+	_w->res_.graphEdit.selfEdgeDirection;
     const EdgeAttachMode edgeAttachMode = 
-	EdgeAttachMode(_w->graphEdit.edgeAttachMode);
+	EdgeAttachMode(_w->res_.graphEdit.edgeAttachMode);
 
     // Write only
-    GraphGC& graphGC                = _w->graphEdit.graphGC;
+    GraphGC& graphGC                = _w->graphEditP.graphGC;
 
     // Set graphGC
     graphGC = GraphGC(nodeGC, edgeGC, invertGC, clearGC);
@@ -1268,12 +1268,12 @@ static void setGraphGC(Widget w)
 
     // Get print colors
 
-    if (_w->graphEdit.nodePrintColor != 0)
+    if (_w->res_.graphEdit.nodePrintColor != 0)
     {
 	XColor exact_def;
 	Status ok = 
-	    XParseColor(XtDisplay(w), _w->core.colormap, 
-			_w->graphEdit.nodePrintColor, &exact_def);
+	    XParseColor(XtDisplay(w), _w->res_.core.colormap, 
+			_w->res_.graphEdit.nodePrintColor, &exact_def);
 
 	if (ok)
 	{
@@ -1289,16 +1289,16 @@ static void setGraphGC(Widget w)
 			    "GraphEdit::Initialize", "badColor",
 			    "XtToolkitError",
 			    "Cannot parse " XtNnodePrintColor " \"%s\"",
-			    (String *)&_w->graphEdit.nodePrintColor, &one);
+			    (String *)&_w->res_.graphEdit.nodePrintColor, &one);
 	}
     }
 
-    if (_w->graphEdit.edgePrintColor != 0)
+    if (_w->res_.graphEdit.edgePrintColor != 0)
     {
 	XColor exact_def;
 	Status ok = 
-	    XParseColor(XtDisplay(w), _w->core.colormap, 
-			_w->graphEdit.edgePrintColor, &exact_def);
+	    XParseColor(XtDisplay(w), _w->res_.core.colormap, 
+			_w->res_.graphEdit.edgePrintColor, &exact_def);
 
 	if (ok)
 	{
@@ -1314,7 +1314,7 @@ static void setGraphGC(Widget w)
 			    "GraphEdit::Initialize", "badColor",
 			    "XtToolkitError",
 			    "Cannot parse " XtNedgePrintColor " spec \"%s\"",
-			    (String *)&_w->graphEdit.edgePrintColor, &one);
+			    (String *)&_w->res_.graphEdit.edgePrintColor, &one);
 	}
     }
 }
@@ -1326,20 +1326,20 @@ static void Initialize(Widget request, Widget w, ArgList, Cardinal *)
     const GraphEditWidget _w        = GraphEditWidget(w);
 
     // write-only
-    GraphEditState& state           = _w->graphEdit.state;
-    Cursor& moveCursor              = _w->graphEdit.moveCursor;
-    Cursor& selectCursor            = _w->graphEdit.selectCursor;
-    Cursor& selectBottomLeftCursor  = _w->graphEdit.selectBottomLeftCursor;
-    Cursor& selectBottomRightCursor = _w->graphEdit.selectBottomRightCursor;
-    Cursor& selectTopLeftCursor     = _w->graphEdit.selectTopLeftCursor;
-    Cursor& selectTopRightCursor    = _w->graphEdit.selectTopRightCursor;
-    Pixmap& gridPixmap              = _w->graphEdit.gridPixmap;
-    Boolean& sizeChanged            = _w->graphEdit.sizeChanged;
-    Boolean& redisplayEnabled       = _w->graphEdit.redisplayEnabled;
-    Time& lastSelectTime            = _w->graphEdit.lastSelectTime;
-    XtIntervalId& redrawTimer       = _w->graphEdit.redrawTimer;
-    Dimension& requestedWidth       = _w->graphEdit.requestedWidth;
-    Dimension& requestedHeight      = _w->graphEdit.requestedHeight;
+    GraphEditState& state           = _w->graphEditP.state;
+    Cursor& moveCursor              = _w->res_.graphEdit.moveCursor;
+    Cursor& selectCursor            = _w->res_.graphEdit.selectCursor;
+    Cursor& selectBottomLeftCursor  = _w->res_.graphEdit.selectBottomLeftCursor;
+    Cursor& selectBottomRightCursor = _w->res_.graphEdit.selectBottomRightCursor;
+    Cursor& selectTopLeftCursor     = _w->res_.graphEdit.selectTopLeftCursor;
+    Cursor& selectTopRightCursor    = _w->res_.graphEdit.selectTopRightCursor;
+    Pixmap& gridPixmap              = _w->graphEditP.gridPixmap;
+    Boolean& sizeChanged            = _w->graphEditP.sizeChanged;
+    Boolean& redisplayEnabled       = _w->graphEditP.redisplayEnabled;
+    Time& lastSelectTime            = _w->graphEditP.lastSelectTime;
+    XtIntervalId& redrawTimer       = _w->graphEditP.redrawTimer;
+    Dimension& requestedWidth       = _w->res_.graphEdit.requestedWidth;
+    Dimension& requestedHeight      = _w->res_.graphEdit.requestedHeight;
 
     // init state
     state = NopState;
@@ -1401,7 +1401,7 @@ static void Realize(Widget w,
 		    XSetWindowAttributes *attributes)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    Cursor defaultCursor     = _w->graphEdit.defaultCursor;
+    Cursor defaultCursor     = _w->res_.graphEdit.defaultCursor;
 
     // Call superclass realize method
     graphEditClassRec.core_class.superclass->
@@ -1416,11 +1416,11 @@ static void Realize(Widget w,
 static void Redisplay(Widget w, XEvent *event, Region)
 {
     const GraphEditWidget _w       = GraphEditWidget(w);
-    const Graph* graph             = _w->graphEdit.graph;
-    const GraphGC& graphGC         = _w->graphEdit.graphGC;
-    const Boolean sizeChanged      = _w->graphEdit.sizeChanged;
-    const Boolean redisplayEnabled = _w->graphEdit.redisplayEnabled;
-    const Boolean highlight_drawn  = _w->primitive.highlight_drawn;
+    const Graph* graph             = _w->res_.graphEdit.graph;
+    const GraphGC& graphGC         = _w->graphEditP.graphGC;
+    const Boolean sizeChanged      = _w->graphEditP.sizeChanged;
+    const Boolean redisplayEnabled = _w->graphEditP.redisplayEnabled;
+    const Boolean highlight_drawn  = _w->res_.primitive.highlight_drawn;
 
     if (!redisplayEnabled)
     {
@@ -1451,19 +1451,19 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
     Boolean redisplay = False;
 
     // redisplay graph if changed
-    if (before->graphEdit.graph != after->graphEdit.graph)
+    if (before->res_.graphEdit.graph != after->res_.graphEdit.graph)
     {
 	redisplay = True;
 
 	// Re-layout if auto-layout is enabled
-	if (after->graphEdit.autoLayout)
+	if (after->res_.graphEdit.autoLayout)
 	{
 	    Cardinal zero = 0;
 	    _Layout(new_w, 0, 0, &zero);
 	}
 
 	// Snap to grid if enabled
-	if (after->graphEdit.snapToGrid)
+	if (after->res_.graphEdit.snapToGrid)
 	{
 	    Cardinal zero = 0;
 	    _SnapToGrid(new_w, 0, 0, &zero);
@@ -1473,15 +1473,15 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
     Boolean new_gcs = False;
 
     // reset GCs if changed
-    if (before->graphEdit.edgeWidth      != after->graphEdit.edgeWidth ||
-	before->graphEdit.selectTile     != after->graphEdit.selectTile ||
-	before->graphEdit.dashedLines    != after->graphEdit.dashedLines ||
-	before->graphEdit.nodeColor      != after->graphEdit.nodeColor ||
-	before->graphEdit.edgeColor      != after->graphEdit.edgeColor ||
-	before->graphEdit.frameColor     != after->graphEdit.frameColor ||
-	before->graphEdit.outlineColor   != after->graphEdit.outlineColor ||
-	before->graphEdit.gridColor      != after->graphEdit.gridColor ||
-	before->graphEdit.selectColor    != after->graphEdit.selectColor)
+    if (before->res_.graphEdit.edgeWidth      != after->res_.graphEdit.edgeWidth ||
+	before->res_.graphEdit.selectTile     != after->res_.graphEdit.selectTile ||
+	before->res_.graphEdit.dashedLines    != after->res_.graphEdit.dashedLines ||
+	before->res_.graphEdit.nodeColor      != after->res_.graphEdit.nodeColor ||
+	before->res_.graphEdit.edgeColor      != after->res_.graphEdit.edgeColor ||
+	before->res_.graphEdit.frameColor     != after->res_.graphEdit.frameColor ||
+	before->res_.graphEdit.outlineColor   != after->res_.graphEdit.outlineColor ||
+	before->res_.graphEdit.gridColor      != after->res_.graphEdit.gridColor ||
+	before->res_.graphEdit.selectColor    != after->res_.graphEdit.selectColor)
     {    
 	setGCs(new_w);
 	new_gcs = True;
@@ -1490,34 +1490,34 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
 
     // reset GraphGC if changed
     if (new_gcs ||
-	before->graphEdit.arrowAngle      != after->graphEdit.arrowAngle     ||
-	before->graphEdit.arrowLength     != after->graphEdit.arrowLength    ||
-	before->graphEdit.showHints       != after->graphEdit.showHints      ||
-	before->graphEdit.hintSize        != after->graphEdit.hintSize       ||
-	before->graphEdit.edgeAttachMode  != after->graphEdit.edgeAttachMode ||
-	before->graphEdit.showAnnotations != after->graphEdit.showAnnotations)
+	before->res_.graphEdit.arrowAngle      != after->res_.graphEdit.arrowAngle     ||
+	before->res_.graphEdit.arrowLength     != after->res_.graphEdit.arrowLength    ||
+	before->res_.graphEdit.showHints       != after->res_.graphEdit.showHints      ||
+	before->res_.graphEdit.hintSize        != after->res_.graphEdit.hintSize       ||
+	before->res_.graphEdit.edgeAttachMode  != after->res_.graphEdit.edgeAttachMode ||
+	before->res_.graphEdit.showAnnotations != after->res_.graphEdit.showAnnotations)
     {
 	setGraphGC(new_w);
 	redisplay = True;
     }
 
-    if (before->graphEdit.nodePrintColor != after->graphEdit.nodePrintColor ||
-	before->graphEdit.edgePrintColor != after->graphEdit.edgePrintColor)
+    if (before->res_.graphEdit.nodePrintColor != after->res_.graphEdit.nodePrintColor ||
+	before->res_.graphEdit.edgePrintColor != after->res_.graphEdit.edgePrintColor)
     {
 	setGraphGC(new_w);
     }
 
     // reset grid pixmap if changed
-    if (before->graphEdit.gridWidth  != after->graphEdit.gridWidth  ||
-	before->graphEdit.gridHeight != after->graphEdit.gridHeight ||
-	before->graphEdit.showGrid   != after->graphEdit.showGrid)
+    if (before->res_.graphEdit.gridWidth  != after->res_.graphEdit.gridWidth  ||
+	before->res_.graphEdit.gridHeight != after->res_.graphEdit.gridHeight ||
+	before->res_.graphEdit.showGrid   != after->res_.graphEdit.showGrid)
     {
 	setGrid(new_w, True);
 	redisplay = True;
     }
 
     // Always recompute size
-    after->graphEdit.sizeChanged = True;
+    after->graphEditP.sizeChanged = True;
 
     return redisplay;
 }
@@ -1541,8 +1541,8 @@ GraphNode *graphEditGetNodeAtPoint(Widget w, BoxPoint p)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w  = GraphEditWidget(w);
-    const Graph* graph        = _w->graphEdit.graph;
-    GraphGC& graphGC          = _w->graphEdit.graphGC;
+    const Graph* graph        = _w->res_.graphEdit.graph;
+    GraphGC& graphGC          = _w->graphEditP.graphGC;
     GraphNode *found = 0;
 
     // Could it be this is invoked without any graph yet?
@@ -1570,8 +1570,8 @@ GraphNode *graphEditGetNodeAtEvent(Widget w, XEvent *event)
 static BoxRegion frameRegion(Widget w)
 {
     const GraphEditWidget _w    = GraphEditWidget(w);
-    const BoxPoint& startAction = _w->graphEdit.startAction;
-    const BoxPoint& endAction   = _w->graphEdit.endAction;
+    const BoxPoint& startAction = _w->graphEditP.startAction;
+    const BoxPoint& endAction   = _w->graphEditP.endAction;
 
     BoxPoint origin(min(startAction[X], endAction[X]),
 	min(startAction[Y], endAction[Y]));
@@ -1586,14 +1586,14 @@ static BoxRegion frameRegion(Widget w)
 static void setRegionCursor(Widget w)
 {
     const GraphEditWidget _w    = GraphEditWidget(w);
-    const BoxPoint& startAction = _w->graphEdit.startAction;
-    const BoxPoint& endAction   = _w->graphEdit.endAction;
+    const BoxPoint& startAction = _w->graphEditP.startAction;
+    const BoxPoint& endAction   = _w->graphEditP.endAction;
 
-    Cursor selectCursor            = _w->graphEdit.selectCursor;
-    Cursor selectBottomLeftCursor  = _w->graphEdit.selectBottomLeftCursor;
-    Cursor selectBottomRightCursor = _w->graphEdit.selectBottomRightCursor;
-    Cursor selectTopLeftCursor     = _w->graphEdit.selectTopLeftCursor;
-    Cursor selectTopRightCursor    = _w->graphEdit.selectTopRightCursor;
+    Cursor selectCursor            = _w->res_.graphEdit.selectCursor;
+    Cursor selectBottomLeftCursor  = _w->res_.graphEdit.selectBottomLeftCursor;
+    Cursor selectBottomRightCursor = _w->res_.graphEdit.selectBottomRightCursor;
+    Cursor selectTopLeftCursor     = _w->res_.graphEdit.selectTopLeftCursor;
+    Cursor selectTopRightCursor    = _w->res_.graphEdit.selectTopRightCursor;
 
     Cursor cursor = selectCursor;
 
@@ -1629,7 +1629,7 @@ inline void myXDrawLine(Display *display,
 static void redrawSelectFrame(Widget w, const BoxRegion& r)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    const GC frameGC = _w->graphEdit.frameGC;
+    const GC frameGC = _w->graphEditP.frameGC;
 
     Display *display = XtDisplay(w);
     Window window    = XtWindow(w);
@@ -1683,7 +1683,7 @@ inline void drawSelectFrame(Widget w)
 static void redrawSelectFrame(Widget w, BoxPoint& p)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    BoxPoint& endAction      = _w->graphEdit.endAction;
+    BoxPoint& endAction      = _w->graphEditP.endAction;
 
     BoxRegion r0 = frameRegion(w);
     endAction = p;
@@ -1697,10 +1697,10 @@ static void redrawSelectFrame(Widget w, BoxPoint& p)
 static void getMinimalOffset(Widget w)
 {
     const GraphEditWidget _w            = GraphEditWidget(w);
-    const Graph* graph                  = _w->graphEdit.graph;
-    const Dimension highlight_thickness = _w->primitive.highlight_thickness;
-    const GraphGC& graphGC              = _w->graphEdit.graphGC;
-    BoxPoint& minimalOffset             = _w->graphEdit.minimalOffset;
+    const Graph* graph                  = _w->res_.graphEdit.graph;
+    const Dimension highlight_thickness = _w->res_.primitive.highlight_thickness;
+    const GraphGC& graphGC              = _w->graphEditP.graphGC;
+    BoxPoint& minimalOffset             = _w->graphEditP.minimalOffset;
 
     const Dimension min_origin = highlight_thickness + 2;
 
@@ -1731,12 +1731,12 @@ static void getMinimalOffset(Widget w)
 static BoxPoint actionOffset(Widget w)
 {
     const GraphEditWidget _w      = GraphEditWidget(w);
-    const Dimension gridWidth     = _w->graphEdit.gridWidth;
-    const Dimension gridHeight    = _w->graphEdit.gridHeight;
-    const Boolean snapToGrid      = _w->graphEdit.snapToGrid;
-    const BoxPoint& startAction   = _w->graphEdit.startAction;
-    const BoxPoint& endAction     = _w->graphEdit.endAction;
-    const BoxPoint& minimalOffset = _w->graphEdit.minimalOffset;
+    const Dimension gridWidth     = _w->res_.graphEdit.gridWidth;
+    const Dimension gridHeight    = _w->res_.graphEdit.gridHeight;
+    const Boolean snapToGrid      = _w->res_.graphEdit.snapToGrid;
+    const BoxPoint& startAction   = _w->graphEditP.startAction;
+    const BoxPoint& endAction     = _w->graphEditP.endAction;
+    const BoxPoint& minimalOffset = _w->graphEditP.minimalOffset;
 
     BoxPoint offset = endAction - startAction;
     BoxPoint grid(gridWidth, gridHeight);
@@ -1763,12 +1763,12 @@ static BoxPoint actionOffset(Widget w)
 static void drawOutlines(Widget w, const BoxPoint& offset)
 {
     const GraphEditWidget _w            = GraphEditWidget(w);
-    const Graph* graph                  = _w->graphEdit.graph;
-    const Boolean rubberArrows          = _w->graphEdit.rubberArrows;
-    const Boolean rubberAnnotations     = _w->graphEdit.rubberAnnotations;
-    const Boolean rubberEdges           = _w->graphEdit.rubberEdges;
-    const GraphGC& graphGC              = _w->graphEdit.graphGC;
-    const GC& outlineGC                 = _w->graphEdit.outlineGC;
+    const Graph* graph                  = _w->res_.graphEdit.graph;
+    const Boolean rubberArrows          = _w->res_.graphEdit.rubberArrows;
+    const Boolean rubberAnnotations     = _w->res_.graphEdit.rubberAnnotations;
+    const Boolean rubberEdges           = _w->res_.graphEdit.rubberEdges;
+    const GraphGC& graphGC              = _w->graphEditP.graphGC;
+    const GC& outlineGC                 = _w->graphEditP.outlineGC;
 
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
 	node = graph->nextVisibleNode(node))
@@ -1807,7 +1807,7 @@ static void moveTo(Widget w,
 		   Boolean isLast)
 {
     const GraphEditWidget _w  = GraphEditWidget(w);
-    Graph* graph              = _w->graphEdit.graph;
+    Graph* graph              = _w->res_.graphEdit.graph;
 
     if (node->pos() != newPos)
     {
@@ -1829,7 +1829,7 @@ static void moveTo(Widget w,
 static void selectionChanged(Widget w, XEvent *event, Boolean double_click)
 {
     const GraphEditWidget _w  = GraphEditWidget(w);
-    Graph* graph              = _w->graphEdit.graph;
+    Graph* graph              = _w->res_.graphEdit.graph;
 
     GraphEditSelectionChangedInfo info;
     info.graph        = graph;
@@ -1846,7 +1846,7 @@ static void selectionChanged(Widget w, XEvent *event, Boolean double_click)
 static Boolean _SelectAll(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    const Graph* graph       = _w->graphEdit.graph;
+    const Graph* graph       = _w->res_.graphEdit.graph;
 
     Boolean changed = False;
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
@@ -1875,7 +1875,7 @@ static void SelectAll(Widget w, XEvent *event, String *params,
 static Boolean _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    const Graph* graph       = _w->graphEdit.graph;
+    const Graph* graph       = _w->res_.graphEdit.graph;
 
     Boolean changed = False;
     for (GraphNode *node = graph->firstNode(); node != 0;
@@ -1951,7 +1951,7 @@ void graphEditRaiseNode(Widget w, GraphNode *node)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w = GraphEditWidget(w);
-    Graph* graph             = _w->graphEdit.graph;
+    Graph* graph             = _w->res_.graphEdit.graph;
 
     // The last node in the list is drawn last (i.e. on top)
     graph->makeNodeLast(node);
@@ -1961,7 +1961,7 @@ void graphEditRaiseNode(Widget w, GraphNode *node)
 static void raise_node(Widget w, GraphNode *node)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    Boolean autoRaise        = _w->graphEdit.autoRaise;
+    Boolean autoRaise        = _w->res_.graphEdit.autoRaise;
 
     if (autoRaise)
 	graphEditRaiseNode(w, node);
@@ -1973,13 +1973,13 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 {
     const GraphEditWidget _w = GraphEditWidget(w);
 
-    Graph* graph             = _w->graphEdit.graph;
-    Cursor moveCursor        = _w->graphEdit.moveCursor;
+    Graph* graph             = _w->res_.graphEdit.graph;
+    Cursor moveCursor        = _w->res_.graphEdit.moveCursor;
 
-    GraphEditState& state    = _w->graphEdit.state;
-    BoxPoint& startAction    = _w->graphEdit.startAction;
-    BoxPoint& endAction      = _w->graphEdit.endAction;
-    Time& lastSelectTime     = _w->graphEdit.lastSelectTime;
+    GraphEditState& state    = _w->graphEditP.state;
+    BoxPoint& startAction    = _w->graphEditP.startAction;
+    BoxPoint& endAction      = _w->graphEditP.endAction;
+    Time& lastSelectTime     = _w->graphEditP.lastSelectTime;
 
     // Get the input focus
     XmProcessTraversal(w, XmTRAVERSE_CURRENT);
@@ -2144,11 +2144,11 @@ static void Toggle(Widget w, XEvent *event, String *params,
 static void Follow(Widget w, XEvent *event, String *, Cardinal *)
 {
     const GraphEditWidget _w    = GraphEditWidget(w);
-    const BoxPoint& startAction = _w->graphEdit.startAction;
-    BoxPoint& endAction         = _w->graphEdit.endAction;
-    GraphEditState& state       = _w->graphEdit.state;
-    BoxPoint& lastOffset        = _w->graphEdit.lastOffset;
-    const Dimension moveDelta   = _w->graphEdit.moveDelta;
+    const BoxPoint& startAction = _w->graphEditP.startAction;
+    BoxPoint& endAction         = _w->graphEditP.endAction;
+    GraphEditState& state       = _w->graphEditP.state;
+    BoxPoint& lastOffset        = _w->graphEditP.lastOffset;
+    const Dimension moveDelta   = _w->res_.graphEdit.moveDelta;
 
     BoxPoint p = point(event);
 
@@ -2197,8 +2197,8 @@ static void Follow(Widget w, XEvent *event, String *, Cardinal *)
 static void move_selected_nodes(Widget w, const BoxPoint& offset)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Graph* graph         = _w->graphEdit.graph;
-    const GraphGC& graphGC     = _w->graphEdit.graphGC;
+    const Graph* graph         = _w->res_.graphEdit.graph;
+    const GraphGC& graphGC     = _w->graphEditP.graphGC;
 
     if (offset == BoxPoint(0, 0))
 	return;
@@ -2232,13 +2232,13 @@ static void move_selected_nodes(Widget w, const BoxPoint& offset)
 static void End(Widget w, XEvent *event, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Graph* graph         = _w->graphEdit.graph;
-    const GraphGC& graphGC     = _w->graphEdit.graphGC;
-    const BoxPoint& lastOffset = _w->graphEdit.lastOffset;
-    Cursor defaultCursor       = _w->graphEdit.defaultCursor;
+    const Graph* graph         = _w->res_.graphEdit.graph;
+    const GraphGC& graphGC     = _w->graphEditP.graphGC;
+    const BoxPoint& lastOffset = _w->graphEditP.lastOffset;
+    Cursor defaultCursor       = _w->res_.graphEdit.defaultCursor;
 
-    BoxPoint& endAction        = _w->graphEdit.endAction;
-    GraphEditState& state      = _w->graphEdit.state;
+    BoxPoint& endAction        = _w->graphEditP.endAction;
+    GraphEditState& state      = _w->graphEditP.state;
 
     Boolean changed = False;
 
@@ -2330,9 +2330,9 @@ static void MoveSelected(Widget w, XEvent *, String *params,
 			 Cardinal *num_params)
 {
     const GraphEditWidget _w      = GraphEditWidget(w);
-    const Dimension gridWidth     = _w->graphEdit.gridWidth;
-    const Dimension gridHeight    = _w->graphEdit.gridHeight;
-    const BoxPoint& minimalOffset = _w->graphEdit.minimalOffset;
+    const Dimension gridWidth     = _w->res_.graphEdit.gridWidth;
+    const Dimension gridHeight    = _w->res_.graphEdit.gridHeight;
+    const BoxPoint& minimalOffset = _w->graphEditP.minimalOffset;
 
     BoxPoint grid(gridWidth, gridHeight);
 
@@ -2395,7 +2395,7 @@ static void select_single_node(Widget w, XEvent *event, GraphNode *selectNode)
 	return;
 
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Graph* graph         = _w->graphEdit.graph;
+    const Graph* graph         = _w->res_.graphEdit.graph;
 
     Boolean changed = False;
 
@@ -2427,7 +2427,7 @@ static void select_single_node(Widget w, XEvent *event, GraphNode *selectNode)
 static void SelectFirst(Widget w, XEvent *event, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Graph* graph         = _w->graphEdit.graph;
+    const Graph* graph         = _w->res_.graphEdit.graph;
 
     select_single_node(w, event, graph->firstVisibleNode());
 }
@@ -2436,7 +2436,7 @@ static void SelectFirst(Widget w, XEvent *event, String *, Cardinal *)
 static void SelectNext(Widget w, XEvent *event, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Graph* graph         = _w->graphEdit.graph;
+    const Graph* graph         = _w->res_.graphEdit.graph;
 
     GraphNode *selectNode = 0;
     for (GraphNode *node = graph->firstVisibleNode(); 
@@ -2460,7 +2460,7 @@ static void SelectNext(Widget w, XEvent *event, String *, Cardinal *)
 static void SelectPrev(Widget w, XEvent *event, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    const Graph* graph       = _w->graphEdit.graph;
+    const Graph* graph       = _w->res_.graphEdit.graph;
 
     GraphNode *lastNode = 0;
     GraphNode *selectNode = 0;
@@ -2498,9 +2498,9 @@ BoxPoint graphEditFinalPosition(Widget w, const BoxPoint& p)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Boolean snapToGrid   = _w->graphEdit.snapToGrid;
-    const Dimension gridWidth  = _w->graphEdit.gridWidth;
-    const Dimension gridHeight = _w->graphEdit.gridHeight;
+    const Boolean snapToGrid   = _w->res_.graphEdit.snapToGrid;
+    const Dimension gridWidth  = _w->res_.graphEdit.gridWidth;
+    const Dimension gridHeight = _w->res_.graphEdit.gridHeight;
 
     if (snapToGrid)
     {
@@ -2516,9 +2516,9 @@ static void _SnapToGrid(Widget w, XEvent *, String *params,
 			Cardinal *num_params)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Graph* graph         = _w->graphEdit.graph;
-    const Dimension gridWidth  = _w->graphEdit.gridWidth;
-    const Dimension gridHeight = _w->graphEdit.gridHeight;
+    const Graph* graph         = _w->res_.graphEdit.graph;
+    const Dimension gridWidth  = _w->res_.graphEdit.gridWidth;
+    const Dimension gridHeight = _w->res_.graphEdit.gridHeight;
 
     BoxPoint grid(gridWidth, gridHeight);
 
@@ -2551,7 +2551,7 @@ static int get_new_rotation(Widget w, const _XtString *params, Cardinal *num_par
 			    const _XtString extra_args = "")
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Cardinal rotation    = _w->graphEdit.rotation;
+    const Cardinal rotation    = _w->res_.graphEdit.rotation;
 
     string param = "";
     if (num_params && *num_params >= 1)
@@ -2584,16 +2584,16 @@ static void _Rotate(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Graph* graph         = _w->graphEdit.graph;
-    Cardinal& rotation         = _w->graphEdit.rotation;
+    const Graph* graph         = _w->res_.graphEdit.graph;
+    Cardinal& rotation         = _w->res_.graphEdit.rotation;
 
     int new_rotation = 
 	get_new_rotation(w, CONST_CAST(const _XtString*,params), num_params, "rotate", "+90");
     if (new_rotation < 0)
 	return;
 
-    int width  = _w->core.width;
-    int height = _w->core.height;
+    int width  = _w->res_.core.width;
+    int height = _w->res_.core.height;
 
     for (int offset  = (rotation - new_rotation + 360) % 360;
 	 offset > 0; offset -= 90)
@@ -2629,7 +2629,7 @@ static void Rotate(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Boolean autoLayout   = _w->graphEdit.autoLayout;
+    const Boolean autoLayout   = _w->res_.graphEdit.autoLayout;
 
     _Rotate(w, event, params, num_params);
     if (autoLayout)
@@ -2790,11 +2790,11 @@ static void _Layout(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    Graph* graph               = _w->graphEdit.graph;
-    const GraphGC& graphGC     = _w->graphEdit.graphGC;
-    Cardinal& rotation         = _w->graphEdit.rotation;
-    LayoutMode mode            = _w->graphEdit.layoutMode;
-    Boolean& autoLayout        = _w->graphEdit.autoLayout;
+    Graph* graph               = _w->res_.graphEdit.graph;
+    const GraphGC& graphGC     = _w->graphEditP.graphGC;
+    Cardinal& rotation         = _w->res_.graphEdit.rotation;
+    LayoutMode mode            = _w->res_.graphEdit.layoutMode;
+    Boolean& autoLayout        = _w->res_.graphEdit.autoLayout;
 
     static const char *graph_name = "graph";
 
@@ -2917,10 +2917,10 @@ static void DoLayout(Widget w, XEvent *event, String *params,
 static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
-    const Graph* graph         = _w->graphEdit.graph;
-    const GraphGC& graphGC     = _w->graphEdit.graphGC;
-    const Dimension gridHeight = _w->graphEdit.gridHeight;
-    const Dimension gridWidth  = _w->graphEdit.gridWidth;
+    const Graph* graph         = _w->res_.graphEdit.graph;
+    const GraphGC& graphGC     = _w->graphEditP.graphGC;
+    const Dimension gridHeight = _w->res_.graphEdit.gridHeight;
+    const Dimension gridWidth  = _w->res_.graphEdit.gridWidth;
 
     BoxRegion r = graph->region(graphGC);
 
@@ -2953,7 +2953,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
 			  Cardinal *num_params, Boolean shallBeHidden)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    const Graph* graph       = _w->graphEdit.graph;
+    const Graph* graph       = _w->res_.graphEdit.graph;
 
     // get the mode
     enum { Nope = 0, Both = 1, From = 2, To = 3, Any = 4 } themode = Nope;
