@@ -1205,8 +1205,9 @@ ctest:  ctest.o
 ptest:  ptest.o
 	$(LINK.p) -o $@ ptest.o
 
-m2test: m2test.mod
-	$(COMPILE_AND_LINK.m2) -o $@ -e $@ m2test.mod -lmodula2 -ltermcap
+m2test: $(srcdir)/m2test.mod
+	$(COMPILE_AND_LINK.m2) -o $@ -e $@ $(srcdir)/m2test.mod \
+	-lmodula2 -ltermcap
 
 ftest:	ftest.o
 	$(LINK.f) -o $@ ftest.o
