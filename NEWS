@@ -36,6 +36,7 @@ DDD-3.3.9
 - Builds without Motif/Lesstif available abort with an adequate message.
 - Builds with readline support now work. readline is not bundled anymore.
 - Builds without -DNDEBUG (i.e. with "assert" enabled) now work.
+  Default build enables assertions (i.e. -DNDEBUG is not used).
 - Several missing files in the distribution are now included.
 - Cygwin is supported again. See PROBLEMS.
 
