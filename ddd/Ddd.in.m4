@@ -519,6 +519,9 @@ Ddd*autoCommandPrefix:
 ! Shall we detect aliases?  (expensive)
 Ddd*detectAliases:		off
 
+! Shall we delete aliases together with the aliased displays?
+Ddd*deleteAliasDisplays:	on
+
 ! Shall we layout two-dimensional arrays as tables?
 Ddd*align2dArrays:		on
 
