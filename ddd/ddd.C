@@ -5109,9 +5109,7 @@ static void start_have_decorated_transients(Widget parent)
     init_label = verify(XmCreateLabel(init_shell, ddd_NAME, args, arg));
     XtManageChild(init_label);
 
-    XtRealizeWidget(init_shell);
-    popup_shell(init_shell);
-    XFlush(XtDisplay(init_shell));
+    XFlush(XtDisplay(init_label));
 }
 
 static bool have_decorated_transients()
@@ -5120,6 +5118,8 @@ static bool have_decorated_transients()
 	start_have_decorated_transients(command_shell);
 
     wait_until_mapped(init_label, init_shell);
+    XmUpdateDisplay(init_label);
+    XSync(XtDisplay(init_label), False);
 
     XWindowAttributes shell_attributes;
     XGetWindowAttributes(XtDisplay(init_shell), XtWindow(init_shell), 
