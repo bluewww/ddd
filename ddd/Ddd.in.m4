@@ -1345,16 +1345,16 @@ define(GDB_TRANSLATIONS,[\
 ~Ctrl ~Meta<Key>bar:		     gdb-process()\n\
 ~Ctrl ~Meta<Key>braceright:	     gdb-process()\n\
 ~Ctrl ~Meta<Key>asciitilde:	     gdb-process()\n\
-~Ctrl ~Meta<Key>KP_0:		     gdb-process()\n\
-~Ctrl ~Meta<Key>KP_1:		     gdb-process()\n\
-~Ctrl ~Meta<Key>KP_2:		     gdb-process()\n\
-~Ctrl ~Meta<Key>KP_3:		     gdb-process()\n\
-~Ctrl ~Meta<Key>KP_4:		     gdb-process()\n\
-~Ctrl ~Meta<Key>KP_5:		     gdb-process()\n\
-~Ctrl ~Meta<Key>KP_6:		     gdb-process()\n\
-~Ctrl ~Meta<Key>KP_7:		     gdb-process()\n\
-~Ctrl ~Meta<Key>KP_8:		     gdb-process()\n\
-~Ctrl ~Meta<Key>KP_9:		     gdb-process()\n\
+~Ctrl ~Meta ~Shift<Key>KP_0:	     gdb-process()\n\
+~Ctrl ~Meta ~Shift<Key>KP_1:	     gdb-process()\n\
+~Ctrl ~Meta ~Shift<Key>KP_2:	     gdb-process()\n\
+~Ctrl ~Meta ~Shift<Key>KP_3:	     gdb-process()\n\
+~Ctrl ~Meta ~Shift<Key>KP_4:	     gdb-process()\n\
+~Ctrl ~Meta ~Shift<Key>KP_5:	     gdb-process()\n\
+~Ctrl ~Meta ~Shift<Key>KP_6:	     gdb-process()\n\
+~Ctrl ~Meta ~Shift<Key>KP_7:	     gdb-process()\n\
+~Ctrl ~Meta ~Shift<Key>KP_8:	     gdb-process()\n\
+~Ctrl ~Meta ~Shift<Key>KP_9:	     gdb-process()\n\
 ~Ctrl ~Meta<Key>KP_Space:	     gdb-process()\n\
 ~Ctrl ~Meta<Key>KP_Tab:		     gdb-process()\n\
 ~Ctrl ~Meta<Key>KP_Enter:	     gdb-process()\n\
