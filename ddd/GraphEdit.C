@@ -339,7 +339,7 @@ static void Destroy(Widget w);
 
 GraphEditClassRec graphEditClassRec = {
   {	 /* core fields */
-    /* superclass               */  xmPrimitiveWidgetClass,
+    /* superclass               */  (WidgetClass) &xmPrimitiveClassRec,
     /* class_name               */  "GraphEdit",
     /* widget_size              */  sizeof(GraphEditRec),
     /* class_initialize         */  ClassInitialize,
