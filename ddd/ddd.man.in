@@ -1307,7 +1307,7 @@ program to be debugged.  Proceed as usual.
 .SS "Using @DDD@ with XEmacs"
 Set the variable \fBgdb-command-name\fR to \fB"ddd"\fR, by inserting
 the following line in your \fB$HOME/.emacs\fR file or evaluating it
-via \fBESC ESC\fR:
+via \fBESC ESC ESC\fR:
 .br
 .sp
   \fB(setq gdb-command-name "@ddd@")\fR
@@ -1495,9 +1495,13 @@ D-38092 Braunschweig
 .br
 .DE
 .PP
-You may also leave a message in the DDD guestbook (accessible via the
-\s-2@DDD@\s+2 \s-2WWW\s+2 page, 
-`\fBhttp://www.cs.tu-bs.de/softech/ddd/\fR')
+You may also leave a message in the \s-2@DDD@\s+2 Guestbook.
+It is accessible via our \s-2@DDD@\s+2 \s-2WWW\s+2 page,
+.sp
+.br
+  \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR .
+.br
+.sp
 .PP
 .\"
 .\" ---------------
@@ -1601,7 +1605,7 @@ in slightly better performance on single-processor systems.
 Show the interaction between \s-2@DDD@\s+2 and the inferior debugger
 on standard error.  This is useful for debugging \s-2@DDD@\s+2.
 .TP
-.B \-\-trace\-shell
+.B \-\-trace\-shell\-commands
 Show the shell commands issued by \s-2@DDD@\s+2 on standard error.  This
 is useful for debugging \s-2@DDD@\s+2.
 .TP
@@ -1716,10 +1720,9 @@ The \s-2@DDD@\s+2
 For more information on this list, send a mail to
 .sp
 .br
-   \fBddd-users-request@ips.cs.tu-bs.de\fR
+   \fBddd-users-request@ips.cs.tu-bs.de\fR  .
 .br
 .sp
-.PP
 .\"
 .\" ---------------
 .SH LIMITATIONS
@@ -1760,29 +1763,28 @@ to the most recent \s-2GDB\s+2 version.
 .PP
 .\"
 .SS "Limitations using DBX"
-When used for debugging Modula-2 or Pascal programs,
-\s-2DDD\s+2 always numerates array elements starting with zero,
-instead of using correct array subscripts.  This shall be fixed in a
-future \s-2@DDD@\s+2 release.
+When used for debugging Modula-2 or Pascal programs, \s-2DDD\s+2
+always numerates array elements starting with zero, instead of using
+correct array subscripts.
 .PP
-Using \s-2DBX\s+2 3.x or later as inferior debugger, \s-2@DDD@\s+2
-strips C-style and C++-style comments from the \s-2DBX\s+2 output in
-order to operate properly.  This also affects the output of the
-debugged program when sent to the debugger console.  Using the separate
-execution window avoids these problems.
+Using \s-2DBX\s+2 as inferior debugger, \s-2@DDD@\s+2 strips C-style
+and C++-style comments from the \s-2DBX\s+2 output in order to operate
+properly.  This also affects the output of the debugged program when
+sent to the debugger console.  Using the separate execution window
+avoids these problems.
 .PP
-Some \s-2DBX\s+2 versions (notably \s-2DEC\s+2 \s-2DBX\s+2) do not
-support the `\fBdisplay\fR' command.  As a workaround, \s-2@DDD@\s+2
-uses the `\fBprint\fR' command to access data values.  Consequently,
-data outside the current frame cannot be displayed; under certain
-circumstances, local displays may also be affected.
+In some \s-2DBX\s+2 versions (notably \s-2DEC\s+2 \s-2DBX\s+2 and
+\s-2AIX\s+2 \s-2DBX\s+2), there is no automatic data display.
+As a workaround, \s-2@DDD@\s+2 uses the `\fBprint\fR' command to
+access data values.  Consequently, variables outside the current frame
+cannot be displayed; under certain circumstances, other displays may
+also be affected.
 .\"
 .SS "Limitations using XDB"
-\s-2XDB\s+2 does not support the `\fBdisplay\fR' command.  As a
-workaround, \s-2@DDD@\s+2 uses the `\fBp\fR' command to access data
-values.  Consequently, data outside the current frame
-cannot be displayed; under certain circumstances, local displays may
-also be affected.
+There is no automatic data display in \s-2XDB\s+2.  As a workaround,
+\s-2@DDD@\s+2 uses the `\fBp\fR' command to access data values.
+Consequently, variables outside the current frame cannot be displayed;
+under certain circumstances, other displays may also be affected.
 .\"
 .SS "General Limitations"
 If command output is sent to the debugger console, it is impossible for
@@ -1840,7 +1842,6 @@ Before sending in a bug report, try to find out whether the problem
 cause really lies within \s-2@DDD@\s+2.  A common cause of problems
 are incomplete or missing X or Motif installations, for instance, or
 bugs in the X server or Motif itself.  Running \s-2@DDD@\s+2 as
-.PP
 .br
 .sp
   \fB@ddd@ \-\-check\-configuration\fR
@@ -1848,19 +1849,18 @@ bugs in the X server or Motif itself.  Running \s-2@DDD@\s+2 as
 .br
 checks for common problems and gives hints on how to repair them.
 .PP
-Another potential cause of problems is the inferior \s-2GDB\s+2 or
-\s-2DBX\s+2 debugger; although unlikely, they may have bugs.  To find
-out whether a bug was caused by \s-2GDB\s+2 or \s-2DBX\s+2, run
-\s-2@DDD@\s+2 as
+Another potential cause of problems is the inferior debugger;
+occasionally, they show bugs, too.  To find out whether a bug was
+caused by the inferior debugger, run \s-2@DDD@\s+2 as
 .br
 .sp
-  \fB@ddd@ \-\-trace\-dialog\fR
+  \fB@ddd@ \-\-trace\fR
 .sp
 .br
-This shows the dialog between \s-2@DDD@\s+2 and the inferior
-debugger on standard error while \s-2@DDD@\s+2 is running.  Compare
-the debugger output to the \s-2@DDD@\s+2 output and determine which
-one is wrong.
+This shows the dialog between \s-2@DDD@\s+2 and the inferior debugger
+on standard error while \s-2@DDD@\s+2 is running.  Compare the
+debugger output to the output of \s-2@DDD@\s+2 and determine which one
+is wrong.
 .\"
 .SS "How to Report Bugs"
 Here are some guidelines for bug reports:
@@ -1998,13 +1998,11 @@ installation as formatted manual page (as
 .PP
 A PostScript copy of this manual page, suitable for printing, is
 included in the DDD source distribution and available separately as
-.PP
 .sp
 .br
   \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/doc/ddd-man.ps.gz\fR
 .br
 .sp
-.PP
 A \s-2ROFF\s+2 copy of this manual page, suitable for installation as
 manual page on \s-2UNIX\s+2 systems (as
 `\fB/usr/local/man/man1/ddd.1\fR' or similar), is included in the DDD
