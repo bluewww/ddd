@@ -3041,7 +3041,15 @@ void SourceView::find_word_bounds (Widget text_w,
 	while (startpos > 0 && isid(text[startpos - 1]))
 	    startpos--;
 
-	if (startpos > 2 && 
+	if (gdb->program_language() == LANGUAGE_PERL &&
+	    startpos > 1 &&
+	    is_perl_prefix(text[startpos - 1]))
+	{
+	    // Include Perl prefix character
+	    startpos -= 1;
+	    break;
+	}
+	else if (startpos > 2 && 
 	    isid(text[startpos - 2]) &&
 	    text[startpos - 1] == '.')
 	{
