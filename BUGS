@@ -142,4 +142,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 371 Is the command shell raised each time a new display is created?
 
-372 (Insert new bugs here)
+372 guess_debugger_type() must look in PATH for executables.
+
+373 (Insert new bugs here)
