@@ -2270,6 +2270,10 @@ void SourceView::process_info_bp (string& info_output)
     // DEC dbx issues empty lines, which causes trouble
     info_output.gsub("\n\n", "\n");
 
+    // SGI dbx issues `Process PID' before numbers
+    static regex rxprocess("Process[ \t]+[0-9]+:[ \t]*");
+    info_output.gsub(rxprocess, "");
+
     last_info_output = info_output;
 
     switch (gdb->type())
@@ -2321,7 +2325,7 @@ void SourceView::process_info_bp (string& info_output)
 	    {
 		// SGI IRIX DBX issues `Process PID: ' 
 		// before status lines.
-		static regex rxprocess("Process [0-9]+:");
+		static regex rxprocess("Process[ \t]+[0-9]+:");
 		if (info_output.contains(rxprocess, 0))
 		    info_output = info_output.after(':');
 		read_leading_blanks(info_output);
