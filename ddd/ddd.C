@@ -1151,13 +1151,14 @@ static MMDesc command_menu[] =
 };
 
 static Widget stack_w;
-static Widget code_w;
 static Widget register_w;
 
 static MMDesc stack_menu[] =
 {
     { "stack",       MMPush, { SourceView::ViewStackFramesCB }, 
       NULL, &stack_w },
+    { "registers",  MMPush,  { SourceView::ViewRegistersCB },
+      NULL, &register_w },
     MMSep,
     { "up",         MMPush,  { gdbCommandCB, "up" }},
     { "down",       MMPush,  { gdbCommandCB, "down" }},
@@ -1173,15 +1174,6 @@ static MMDesc source_menu[] =
     MMSep,
     { "back",       MMPush,  { gdbGoBackCB }},
     { "forward",    MMPush,  { gdbGoForwardCB }},
-    MMEnd
-};
-
-static MMDesc machine_menu[] =
-{
-    { "code",       MMPush,  { SourceView::ViewCodeCB },
-      NULL, &code_w },
-    { "registers",  MMPush,  { SourceView::ViewRegistersCB },
-      NULL, &register_w },
     MMEnd
 };
 
@@ -1371,7 +1363,6 @@ static MMDesc source_menubar[] =
     { "program", MMMenu,           MMNoCB, program_menu },
     { "stack",   MMMenu,           MMNoCB, stack_menu },
     { "source",  MMMenu,           MMNoCB, source_menu },
-    { "machine", MMMenu,           MMNoCB, machine_menu },
     { "help",    MMMenu | MMHelp,  MMNoCB, help_menu },
     MMEnd
 };
@@ -1400,7 +1391,6 @@ static MMDesc combined_menubar[] =
     { "commands",   MMMenu,       MMNoCB, command_menu },
     { "stack",      MMMenu,       MMNoCB, stack_menu },
     { "source",     MMMenu,       MMNoCB, source_menu },
-    { "machine",    MMMenu,       MMNoCB, machine_menu },
     { "data",       MMMenu,       MMNoCB, data_menu },
     { "help", MMMenu | MMHelp,    MMNoCB, help_menu },
     MMEnd
@@ -5174,7 +5164,6 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
     }
 
     set_sensitive(stack_w,    gdb_ready);
-    set_sensitive(code_w,     gdb_ready && gdb->type() == GDB);
     set_sensitive(register_w, gdb_ready && gdb->type() == GDB);
 }
 
@@ -6352,6 +6341,9 @@ void remove_init_file()
 
 static void ddd_cleanup()
 {
+    if (ddd_is_exiting)
+	return;
+
     ddd_is_exiting = true;
 
     remove_init_file();
@@ -6390,7 +6382,7 @@ static void ddd_fatal(int sig)
 
     static int fatal_entered = 0;
 
-    if (fatal_entered++ || !main_loop_entered)
+    if (fatal_entered++ || !main_loop_entered || ddd_is_exiting)
     {
 	static const char msg[] =
 	    "\nInternal error (%s).\n"
