@@ -45,15 +45,38 @@ char MakeMenu_rcsid[] =
 #include <Xm/Separator.h>
 #include <Xm/Scale.h>
 #include <Xm/Label.h>
+#include <Xm/MenuShell.h>
 
 #include "LessTifH.h"
 #include "bool.h"
 #include "verify.h"
+#include "findParent.h"
+
+// Pushmenu callbacks
+static void ArmPushMenuCB(Widget, XtPointer, XtPointer);
+static void PopupPushMenuAct(Widget w, XEvent* e, String *, Cardinal *);
+
+static XtActionsRec actions [] = {
+    {"popup-push-menu",            PopupPushMenuAct },
+};
+
+static char extraTranslations[] = 
+    "None<Btn3Down>:	popup-push-menu()\n"
+;
 
 // Add items to shell
 static void addItems(Widget /* parent */, Widget shell, MMDesc items[], 
 		     bool ignore_seps = false)
 {
+    static bool actions_added = false;
+		
+    if (!actions_added)
+    {
+	XtAppAddActions(XtWidgetToApplicationContext(shell), 
+			actions, XtNumber(actions));
+	actions_added = true;
+    }
+
     Arg args[10];
     int arg;
 
@@ -66,8 +89,8 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	Widget *widgetptr       = item->widgetptr;
 	MMDesc *subitems        = item->items;
 
-	char subMenuName[200];
-	char panelName[200];
+	string subMenuName = string(name) + "Menu";
+	string panelName   = string(name) + "Panel";
 	Widget subMenu  = 0;
 	Widget label    = 0;
 
@@ -75,9 +98,11 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	{
 	case MMPush:
 	    // Create a PushButton
-	    assert(subitems == 0);
+	    if (subitems != 0)
+		subMenu = MMcreatePopupMenu(shell, subMenuName, subitems);
 
 	    arg = 0;
+	    XtSetArg(args[arg], XmNuserData, subMenu); arg++;
 	    widget = verify(XmCreatePushButton(shell, name, args, arg));
 	    break;
 
@@ -101,7 +126,6 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    // Create a CascadeButton and a new PulldownMenu
 	    assert(subitems != 0);
 
-	    strcpy(subMenuName, string(name) + "Menu");
 	    subMenu = MMcreatePulldownMenu(shell, subMenuName, subitems);
 
 	    arg = 0;
@@ -146,7 +170,6 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    // Create a CascadeButton and a new PulldownMenu
 	    assert(subitems != 0);
 
-	    strcpy(subMenuName, string(name) + "Menu");
 	    subMenu = MMcreateRadioPulldownMenu(shell, subMenuName, subitems);
 
 	    arg = 0;
@@ -158,7 +181,6 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    // Create an option menu
 	    assert(subitems != 0);
 
-	    strcpy(subMenuName, string(name) + "Menu");
 	    subMenu = MMcreatePulldownMenu(shell, subMenuName, subitems);
 
 	    arg = 0;
@@ -172,8 +194,6 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    // Create a label with an associated panel
 	    assert(subitems != 0);
 
-	    strcpy(panelName, string(name) + "Panel");
-
 	    arg = 0;
 	    XtSetArg(args[arg], XmNorientation,  XmHORIZONTAL); arg++;
 	    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
@@ -186,8 +206,6 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    arg = 0;
 	    label = verify(XmCreateLabel(widget, name, args, arg));
 	    XtManageChild(label);
-
-	    strcpy(subMenuName, string(name) + "Menu");
 
 	    switch (type)
 	    {
@@ -261,10 +279,10 @@ Widget MMcreatePulldownMenu(Widget parent, String name, MMDesc items[])
     int arg;
 
     arg = 0;
-    Widget shell = verify(XmCreatePulldownMenu(parent, name, args, arg));
-    addItems(parent, shell, items);
+    Widget menu = verify(XmCreatePulldownMenu(parent, name, args, arg));
+    addItems(parent, menu, items);
 
-    return shell;
+    return menu;
 }
 
 // Create radio pulldown menu from items
@@ -278,10 +296,10 @@ Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[])
     XtSetArg(args[arg], XmNentryClass, xmToggleButtonWidgetClass); arg++;
     XtSetArg(args[arg], XmNradioBehavior, True); arg++;
 
-    Widget shell = verify(XmCreatePulldownMenu(parent, name, args, arg));
-    addItems(parent, shell, items);
+    Widget menu = verify(XmCreatePulldownMenu(parent, name, args, arg));
+    addItems(parent, menu, items);
 
-    return shell;
+    return menu;
 }
 
 // Create popup menu from items
@@ -291,10 +309,10 @@ Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[])
     int arg;
 
     arg = 0;
-    Widget shell = verify(XmCreatePopupMenu(parent, name, args, arg));
-    addItems(parent, shell, items);
+    Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
+    addItems(parent, menu, items);
 
-    return shell;
+    return menu;
 }
 
 
@@ -319,12 +337,7 @@ Widget MMcreateWorkArea(Widget parent, String name, MMDesc items[])
     int arg;
 
     arg = 0;
-    Widget bar = XmCreateWorkArea(parent, name, args, arg);
-    if (bar == 0)
-    {
-	// LessTif 0.1 doesn't have work areas
-	bar = verify(XmCreateRowColumn(parent, name, args, arg));
-    }
+    Widget bar = verify(XmCreateWorkArea(parent, name, args, arg));
     addItems(parent, bar, items, true);
     XtManageChild(bar);
 
@@ -398,6 +411,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     MMType type             = item->type;
     Widget widget           = item->widget;
     XtCallbackRec callback  = item->callback;
+    Widget subMenu          = 0;
     
     if (callback.closure == 0)
 	callback.closure = default_closure;
@@ -405,6 +419,21 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     switch(type & MMTypeMask) 
     {
     case MMPush:
+	arg = 0;
+	XtSetArg(args[arg], XmNuserData, &subMenu); arg++;
+	XtGetValues(widget, args, arg);
+
+	if (subMenu != 0)
+	{
+	    // A 'push menu' is a menu associated with a push button.
+	    // It pops up after pressing the button a certain time.
+	    XtAddCallback(widget, XmNarmCallback, ArmPushMenuCB, 
+			  subMenu);
+	    static XtTranslations translations = 
+		XtParseTranslationTable(extraTranslations);
+	    XtAugmentTranslations(widget, translations);
+	}
+
 	if (callback.callback != 0)
 	    XtAddCallback(widget, 
 			  XmNactivateCallback,
@@ -428,7 +457,6 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     case MMMenu:
     case MMRadioMenu:
     case MMOptionMenu:
-	Widget subMenu;
 	arg = 0;
 	XtSetArg(args[arg], XmNsubMenuId, &subMenu); arg++;
 	XtGetValues(widget, args, arg);
@@ -473,4 +501,105 @@ static void addHelpCallback(MMDesc *item, XtPointer closure)
 void MMaddHelpCallback(MMDesc items[], XtCallbackProc proc)
 {
     MMonItems(items, addHelpCallback, XtPointer(proc));
+}
+
+// Handle PushButton menu popups
+
+static XEvent last_push_menu_event; // Just save it
+
+// Remove time out again
+static void RemoveTimeOutCB(Widget w, XtPointer client_data, XtPointer)
+{
+    XtIntervalId id = (XtIntervalId)client_data;
+    XtRemoveTimeOut(id);
+    XtRemoveCallback(w, XmNdisarmCallback, RemoveTimeOutCB, XtPointer(id));
+}
+
+// Popup menu right now
+static void PopupPushMenuCB(XtPointer client_data, XtIntervalId *id)
+{
+    Widget w = (Widget)client_data;
+
+    XtRemoveCallback(w, XmNdisarmCallback, RemoveTimeOutCB, XtPointer(*id));
+
+    // Popup the menu
+    XtCallActionProc(w, "popup-push-menu", &last_push_menu_event, 0, 0);
+
+    // Unactivate pushbutton
+    XtCallActionProc(w, "Disarm",          &last_push_menu_event, 0, 0);
+
+#if XmVersion < 1002
+    // In Motif 1.1, the PushButton does not redisplay after being disarmed
+    XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, True);
+#endif
+}
+
+void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
+{
+    if (!XmIsPushButton(w))
+	return;
+
+    Widget subMenu;
+    XtVaGetValues(w, XmNuserData, &subMenu, XtPointer(0));
+    if (subMenu == 0)
+	return;
+
+    Widget shell = XtParent(subMenu);
+
+    // Attempt to place menu below button
+    Position button_x, button_y;
+    XtTranslateCoords(w, 0, 0, &button_x, &button_y);
+
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight;
+    unsigned char unit_type;
+
+    XtQueryGeometry(w, NULL, &size);
+    XtVaGetValues(w, XmNunitType, &unit_type, NULL);
+    Dimension button_height = XmConvertUnits(w, XmVERTICAL, XmPIXELS,
+					     size.height, unit_type);
+    Position x = button_x;
+    Position y = button_y + button_height;
+
+    event->xbutton.x_root = x;
+    event->xbutton.y_root = y;
+    XmMenuPosition(subMenu, &event->xbutton);
+
+    XtManageChild(subMenu);
+    XtPopup(shell, XtGrabNone);
+}
+
+
+// Popup menu after some delay
+struct subresource_values {
+    int push_menu_popup_time;	// Delay before popping up menu
+};
+
+static XtResource subresources[] = {
+    {
+	XtNpushMenuPopupTime,
+	XtCPushMenuPopupTime,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(subresource_values, push_menu_popup_time), 
+	XmRImmediate,
+	XtPointer(500)
+    }
+};
+
+static void ArmPushMenuCB(Widget w, XtPointer, XtPointer call_data)
+{
+    subresource_values values;
+    XtGetApplicationResources(w, &values, 
+			      subresources, XtNumber(subresources), 
+			      NULL, 0);
+
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs && cbs->event)
+	last_push_menu_event = *cbs->event;
+
+    XtIntervalId id = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 
+				      values.push_menu_popup_time, 
+				      PopupPushMenuCB, w);
+    XtAddCallback(w, XmNdisarmCallback, RemoveTimeOutCB, XtPointer(id));
 }

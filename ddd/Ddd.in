@@ -560,6 +560,9 @@ Ddd*clearDocDelay:		1000
 ! Time (in ms) to spend before clearing a button or value tip.
 Ddd*clearTipDelay:		50
 
+! Time (in ms) to spend before a push button menu pops up
+Ddd*pushMenuPopupTime:		250
+
 
 ! Should the status line be placed at the bottom?
 Ddd*statusAtBottom:		true
@@ -1169,7 +1172,6 @@ Ddd*graph_edit.translations: #override \
 None<Btn1Down>:		graph-select-or-move()\n\
 None<Btn2Down>:		graph-toggle-or-move()\n\
 None<Btn3Down>:		graph-select() graph-popup-menu()\n
-
 
 !-----------------------------------------------------------------------------
 ! Titles
