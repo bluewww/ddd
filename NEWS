@@ -169,6 +169,9 @@ Settings
     Multiple DDD Instances are Running' to re-enable it.
   See also the `checkOptions' and `warnIfLocked' resources.
 
+- User-defined commands can accept a symbolic argument.  See the `()'
+  toggle button in `Commands->Define Command'.
+
 - History customization.  You can customize the number of items in
   pop-down value histories as well as the way they are sorted.  See
   the `popdownHistorySize' and `sortPopdownHistory' resources.

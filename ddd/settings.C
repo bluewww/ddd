@@ -130,6 +130,7 @@ static WidgetArray       infos_entries;
 
 static void get_setting(ostream& os, DebuggerType type,
 			const string& base, string value);
+static void set_arg();
 
 
 // Find widget for command COMMAND
@@ -2703,6 +2704,7 @@ bool is_defined_cmd(const string& command)
 // Data
 
 static Widget name_w;		// Name of defined command
+static Widget arg_w;		// `()' toggle
 static Widget record_w;		// `Record' button
 static Widget end_w;		// `End' button
 static Widget edit_w;		// `Edit>>' button
@@ -2721,8 +2723,19 @@ static string current_name()
 
 // Button stuff
 
+// Name of GDB argument
+static const string arg0 = "$arg0";
+
+static bool is_arg_command(const string& name)
+{
+    return defs.has(name) && defs[name].contains(arg0);
+}
+
 static void add_button(string name, String& menu)
 {
+    if (XmToggleButtonGetState(arg_w) || is_arg_command(name))
+	name += " ()";
+
     string s = menu;
     if (s != "" && !s.contains('\n', -1))
 	s += '\n';
@@ -2734,6 +2747,7 @@ static void remove_button(string name, String& menu)
 {
     string s = string("\n") + menu;
     s.gsub("\n" + name + "\n", string("\n"));
+    s.gsub("\n" + name + " ()\n", string("\n"));
     menu = (String)XtNewString(s.chars() + 1);
 }
 
@@ -2799,7 +2813,8 @@ static void refresh_toggle(ButtonTarget t)
     Boolean old_state;
     XtVaGetValues(w, XmNset, &old_state, NULL);
 
-    Boolean new_state = s.contains("\n" + name + "\n");
+    Boolean new_state = 
+	s.contains("\n" + name + "\n") || s.contains("\n" + name + " ()\n");
     if (old_state != new_state)
 	XtVaSetValues(w, XmNset, new_state, NULL);
 
@@ -2837,7 +2852,7 @@ static void refresh_combo_box()
 // Editing stuff
 
 // Text field has changed -- update buttons
-void UpdateDefinePanelCB(Widget, XtPointer, XtPointer)
+void UpdateDefinePanelCB(Widget w, XtPointer, XtPointer)
 {
     if (name_w == 0)
 	return;			// Not yet created
@@ -2845,13 +2860,18 @@ void UpdateDefinePanelCB(Widget, XtPointer, XtPointer)
     string name = current_name();
 
     set_sensitive(record_w, !gdb->recording() && name != "");
-    set_sensitive(apply_w,  !gdb->recording() && name != "" && defs.has(name));
+    set_sensitive(apply_w,  !gdb->recording() && name != "");
     set_sensitive(end_w,    gdb->recording());
     set_sensitive(edit_w,   !gdb->recording() && name != "");
 
     set_sensitive(name_w, !gdb->recording());
     set_sensitive(XtParent(name_w), !gdb->recording());
     set_sensitive(editor_w, !gdb->recording());
+
+    set_arg();
+
+    if (w != 0 && !gdb->recording() && defs.has(name))
+	XmToggleButtonSetState(arg_w, is_arg_command(name), False);
 
     refresh_toggles();
 }
@@ -2993,12 +3013,75 @@ static void ToggleEditCommandDefinitionCB(Widget w, XtPointer client_data,
 // Apply the given command
 static void ApplyCB(Widget, XtPointer, XtPointer)
 {
-    string name = current_name();
-    if (name != "")
- 	gdb_command(name);
+    string cmd = current_name();
+    if (cmd == "")
+	return;
+
+    if (XmToggleButtonGetState(arg_w))
+	cmd += " " + source_arg->get_string();
+
+    gdb_command(cmd);
 }
 
-MMDesc commands_menu[] =
+// Force argument to `()'
+static void ForceArg0HP(void *, void *, void *)
+{
+    static bool called = false;
+    if (called)
+	return;
+
+    called = true;
+    set_arg();
+    called = false;
+}
+
+static void set_arg()
+{
+    static string saved_arg;
+    static bool have_saved_arg = false;
+
+    if (gdb->recording() && XmToggleButtonGetState(arg_w))
+    {
+	if (!have_saved_arg)
+	{
+	    saved_arg = source_arg->get_string();
+	    have_saved_arg = true;
+
+	    source_arg->set_string(arg0);
+
+	    reset_status_lock();
+	    MString msg = 
+		rm("Using ") + bf("()") + rm(" as symbolic argument");
+	    set_status_mstring(msg);
+	}
+
+	source_arg->addHandler(Changed, ForceArg0HP);
+	set_sensitive(source_arg->top(), False);
+    }
+    else
+    {
+	source_arg->removeHandler(Changed, ForceArg0HP);
+	set_sensitive(source_arg->top(), True);
+
+	if (have_saved_arg)
+	{
+	    source_arg->set_string(saved_arg);
+	    have_saved_arg = false;
+
+	    reset_status_lock();
+	    MString msg = 
+		rm("Using ") + bf("()") + rm(" as literal argument");
+	    set_status_mstring(msg);
+	}
+    }
+}
+
+static void ToggleArgCB(Widget, XtPointer, XtPointer)
+{
+    set_arg();
+}
+
+static MMDesc commands_menu[] =
 {
     { "record", MMPush, 
       { RecordCommandDefinitionCB, 0 }, 0, &record_w, 0, 0 },
@@ -3009,9 +3092,17 @@ MMDesc commands_menu[] =
     MMEnd
 };
 
+static MMDesc name_menu[] =
+{
+    { "name",     MMComboBox | MMUnmanagedLabel, 
+      { UpdateDefinePanelCB, 0 }, 0, &name_w, 0, 0 },
+    { "arg",      MMToggle, { ToggleArgCB, 0 }, 0, &arg_w, 0, 0 },
+    MMEnd
+};
+
 static MMDesc panel_menu[] = 
 {
-    { "name",     MMComboBox, { UpdateDefinePanelCB, 0 }, 0, &name_w, 0, 0 },
+    { "name",     MMButtonPanel, MMNoCB, name_menu, 0, 0, 0 },
     { "commands", MMButtonPanel, MMNoCB, commands_menu, 0, 0, 0 },
     { "button",   MMButtonPanel, MMNoCB, button_menu, 0, 0, 0 },
     MMEnd
@@ -3046,7 +3137,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 					       XmDIALOG_CANCEL_BUTTON));
 	apply_w = XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
 	XtManageChild(apply_w);
-	
+
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
 	Widget form = XmCreateRowColumn(dialog, "form", args, arg);

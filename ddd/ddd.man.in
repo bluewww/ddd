@@ -2910,7 +2910,7 @@ labels for user-defined buttons.  See the examples in `\fBUser-defined
 Buttons\fR' in the `\fBRESOURCES\fR' section, below.
 .\"
 .\"
-.SS "Defining Commands with GDB"
+.SS "Defining Simple Commands using GDB"
 .\"
 Aside from breakpoint commands (see `\fBBreakpoint commands\fR',
 above), \s-1@DDD@\s+1 also allows you to store sequences of commands
@@ -2963,11 +2963,65 @@ doing omit the messages when used in a user-defined command.
 To save all command definitions, use `\fBEdit\(->Save Options\fR'.
 .\" .PP
 .\" \s-1@DDD@\s+1 commands that are part of \s-1GDB\s+1 command
-.\" definitions are realized transparently as \fIauto-commands\fR; see the
-.\" next section for a discussion.
+.\" definitions are realized transparently as \fIauto-commands\fR; see 
+.\" \fBDefining Commands using Other Debuggers\fR, below, for a discussion.
 .\"
 .\"
-.SS "Defining Commands with Other Debuggers"
+.SS "Defining Argument Commands using GDB"
+.\"
+If you want to pass arguments to user-defined commands, you can enable 
+the `\fB()\fR' toggle button in the Command Editor.  Enabling
+`\fB()\fR' has two effects:
+.IP \(bu 2
+While recording commands, all references to the argument field are
+taken \fIsymbolically\fR instead of literally.  The argument field
+value is frozen to \fB$arg0\fR, which is how \s-1GDB\s+1 denotes the
+argument of a user-defined command.  When \s-1GDB\s+1 executes the
+command, it will replace \fB$arg0\fR by the current command argument.
+.IP \(bu 2
+When assigning a button to the command, the command will be suffixed
+by the current contents of the argument field.
+.PP
+While defining a command, you can toggle the `\fB()\fR' button as you
+wish to switch between using the argument field symbolically and
+literally.
+.PP
+As an example, let us define a command `\fBcontuntil\fR' that will set
+a breakpoint in the given argument and continue execution.
+.IP \(bu 2
+Enter `\fBcontuntil\fR' in the `\fBDefinition\fR' field.
+.IP \(bu 2
+Enable the `\fB()\fR' toggle button.
+.IP \(bu 2
+Now click on `\fBRecord\fR' to start recording.  Note that the
+contents of the argument field change to `\fB$arg0\fR'.
+.IP \(bu 2
+Click on `\fBBreak at ()\fR' to create a breakpoint.  Note that the
+recorded breakpoint command refers to `\fB$arg0\fR'.
+.IP \(bu 2
+Click on `\fBCont\fR' to continue execution.
+.IP \(bu 2
+Click on `\fBEnd\fR' to end recording.  Note that the argument field
+is restored to its original value.
+.IP \(bu 2
+Finally, click on one of the `\fBButton\fR' locations.  This creates a 
+`\fBContuntil ()\fR' button where `\fB()\fR' will be replaced by the
+current contents of the argument field\(em\&and thus passed to the
+`\fBcontuntil\fR' command.
+.IP \(bu 2
+You can now either use the `\fBContuntil ()\fR' button or enter a
+`\fBcontuntil\fR' command at the \s-1GDB\s+1 prompt.  (If you plan to
+use the command frequently, you may wish to define a `\fBcu\fR'
+command, which again calls `\fBcontuntil\fR' with its argument.  This
+is a nice exercise.)
+.PP
+There is a little drawback with parametrized commands: a user-defined
+command in \s-1GDB\s+1 has no means to access the argument list as a
+whole; only the first argument (up to whitespace) is processed.  This
+may change in future \s-1GDB\s+1 releases.
+.\"
+.\"
+.SS "Defining Commands using Other Debuggers"
 .\"
 If your inferior debugger allows you to define own command sequences,
 you can also use these user-defined commands within \s-1@DDD@\s+1;

@@ -5691,8 +5691,17 @@ Ddd*define_command_popup.title:    		DDD: Define Command
 
 ! Ddd*define_command.okLabelString:    		Close
 
-Ddd*define_command*name.label.labelString:	Command
-Ddd*define_command*name*text*columns:       	30
+Ddd*define_command*name.labelString:		Command
+Ddd*define_command*name*text*columns:       	25
+
+Ddd*define_command*arg.labelString:		()
+Ddd*define_command*arg*indicatorOn:		off
+Ddd*define_command*arg*shadowThickness:		2
+
+Ddd*define_command*arg.tipString: \
+@rm Toggle symbolic argument
+Ddd*define_command*arg.documentationString: \
+@rm When enabled, use LBL(()) as symbolic argument
 
 Ddd*define_command*commands.labelString:	Definition
 Ddd*define_command*commandsMenu.packing:	XmPACK_COLUMN
@@ -5738,6 +5747,9 @@ ITEM Now interact with DDD.\n\
 ITEM Click on LBL(End) to stop the recording.\n\
 ITEM Use LBL(Edit @small>>) to edit the command definition.\n\
 ITEM Use LBL(Button) to place the new command on a button.\n\
+\n\
+To define a command with argument, enable the LBL(()) toggle.\n\
+This will make the command use LBL(()) as symbolic argument.\n\
 \n\
 Click on LBL(Apply) to apply the new command.\n\
 Click on LBL(OK) to close this window.

@@ -332,9 +332,6 @@ Volunteers for these and other projects are welcome!
 349 Access Java `.jar' class archives.
 
 350 Harri Pasanen <harri@trema.com> suggests:
-    - Allow to pass arguments to defined commands.  More specifically,
-      I mean having a command specification where the (): argument
-      would be used as $arg0 for the defined command.
     - Incremental search for the source window is also something I miss.
 
 351 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
