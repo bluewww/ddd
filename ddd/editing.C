@@ -47,7 +47,6 @@ char editing_rcsid[] =
 #include "cook.h"
 #include "ctrl.h"
 #include "ddd.h"
-#include "disp-read.h"
 #include "history.h"
 #include "misc.h"
 #include "post.h"
@@ -686,7 +685,8 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 
     string input = current_line();
 
-    if (gdb_input_at_prompt)
+    bool at_prompt = gdb_input_at_prompt;
+    if (at_prompt)
 	input.gsub("\\\n", "");
 
     int newlines = input.freq('\n');
@@ -724,18 +724,10 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 		}
 	    }
 
-	    if (gdb_input_at_prompt)
+	    if (at_prompt)
 	    {
 		// We're typing at the GDB prompt: place CMD in command queue
 		gdb_command(cmd, w);
-
-		if (is_running_cmd(cmd, gdb))
-		{
-		    // We're getting a `run' (or `next' or `step')
-		    // command followed by other input.  Treat the
-		    // following input as user interaction.
-		    gdb_input_at_prompt = false;
-		}
 	    }
 	    else
 	    {

@@ -1123,6 +1123,9 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmd_data->undo_command = gdb->rerun_command();
 	cmd_data->undo_is_exec = true;
 #endif
+
+	// Any later input is user interaction.
+	gdb_input_at_prompt = false;
     }
     else if (is_thread_cmd(cmd) || is_core_cmd(cmd))
     {
@@ -1290,6 +1293,9 @@ void send_gdb_command(string cmd, Widget origin,
 	extra_data->refresh_frame       = true;
 	extra_data->refresh_data        = true;
 	extra_data->refresh_threads     = true;
+
+	// Any later input is user interaction.
+	gdb_input_at_prompt = false;
     }
 
     if (undo_buffer.showing_earlier_state() && !cmd_data->new_exec_pos)
