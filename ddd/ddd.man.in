@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "18 May 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "12 August 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -875,6 +875,46 @@ To re-print the display graph using the previous settings, select the
 As an alternative, you may also print the graph in a file.  Click on
 the `\fBFile\fR' button and enter the file name in the `\fBFile
 Name\fR' field.  Click on the `\fBPrint\fR' button to create the file.
+
+.\" ---------------------
+.SH "EDITING SOURCE CODE"
+.\" ---------------------
+.\"
+In \s-2@DDD@\s+2 itself, you cannot change the source file currently
+displayed.  \s-2@DDD@\s+2 allows you to invoke a \fItext editor\fR
+instead.  To invoke a text editor for the current source file, select
+the `\fBEdit\fR' button or the `\fBEdit Source...\fR' item from the
+`\fBSource\fR' menu.
+.PP
+The editor command is specified in the `\fBeditCommand\fR' resource.
+By default, \s-2@DDD@\s+2 tries to invoke the first available editor
+from the following list:
+.br
+.IP \(bu 2
+The editor specified in the `\fBXEDITOR\fR' environment variable;
+.br
+.IP \(bu 2
+The `\fBgnuclient\fR' program, invoking a separate window from a running
+\fBEmacs\fR editor;
+.br
+.IP \(bu 2
+The `\fBemacsclient\fR' program, invoking a separate window from a running
+\fBEmacs\fR editor;
+.br
+.IP \(bu 2
+A `\fBxterm\fR' terminal emulator running the editor specified in the
+`\fBEDITOR\fR' environment variable;
+.br
+.IP \(bu 2
+A `\fBxterm\fR' terminal emulator running the `\fBvi\fR' editor.
+.PP
+After the editor has exited, the source code shown is automatically
+brought up-to-date.
+.PP
+If you have \s-2@DDD@\s+2 and an editor running in parallel, you can
+also update the source code manually by selecting the `\fBReload\fR'
+button or the `\fBReload Source...\fR' item from the `\fBSource\fR'
+menu.  This reloads the source code shown from the source file.
 
 .\" ---------------
 .SH QUITTING @DDD@
