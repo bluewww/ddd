@@ -320,24 +320,18 @@ Volunteers for these and other projects are welcome!
 304 If the source window size has changed (via panes?), recenter the
     command tool.
 
-305 Have all icons parsed from one big XPM file (and use subimages to
-    create individual icons), such that the icon creation time is
-    minimized.
+305 Have all icons parsed from one big XPM file (use a subimage for
+    each icon), such that the icon creation time is minimized.
 
 308 Here's a list of GDB concepts that are not yet covered by the DDD GUI:
     * Tracepoints: trace, collect, ...  Is there any doc for that?
     * Overlays: overlay...  Is there any doc for that?
     * Symbol files: symbol-file, add-shared-symbol-file, sharedlibrary.
     * Exception breakpoints: catch.
-    * Regular expression breakpoints: rbreak.
     * Conditions: if, while.
     * Remote debugging: remote, tfind.
     * Return from frame: return.
     * Shell command: shell.
-
-310 Include `NEWS.gz.C' and `COPYING.gz.C' in the distribution.
-
-311*`Examine Memory' and `rbreak' need documentation.
 
 313 Rubber_Buccaneer@Galactic.Headquarters.org thinks that the window
     containing the short cut buttons,i.e. step, next, etc.  should
@@ -348,4 +342,4 @@ Volunteers for these and other projects are welcome!
     menu that I discovered this, as the tear-off help window and the
     short cuts box are clearly related.'
 
-313 (Insert new project ideas here)
+314 (Insert new project ideas here)

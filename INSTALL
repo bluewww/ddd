@@ -92,13 +92,18 @@ The following recommended helper applications should be in the user path:
 Basic Installation
 ==================
 
+Basically, to build DDD from sources, you enter two commands:
+
+	$ ./configure
+	$ make
+
 The `configure' shell script attempts to guess correct values for
 various system-dependent variables used during compilation.  It uses
 those values to create a `Makefile' in each directory of the DDD
 package.  It also creates some `.h' files containing system-dependent
 definitions.  Finally, it creates a shell script `config.status' that
-you can run in the future to recreate the current configuration, a file
-`config.cache' that saves the results of its tests to speed up
+you can run in the future to recreate the current configuration, a
+file `config.cache' that saves the results of its tests to speed up
 reconfiguring, and a file `config.log' containing compiler output
 (useful mainly for debugging `configure').
 
