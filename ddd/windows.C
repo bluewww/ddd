@@ -71,7 +71,7 @@ static WindowState tool_shell_state        = PoppedDown;
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref);
 
-static void RecenterToolShellCB(Widget, XtIntervalId *)
+static void RecenterToolShellCB(XtPointer, XtIntervalId *)
 {
     XWindowAttributes attr;
     XGetWindowAttributes(XtDisplay(tool_buttons_w), 
