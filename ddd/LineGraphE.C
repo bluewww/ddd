@@ -52,10 +52,8 @@ DEFINE_TYPE_INFO_1(LineGraphEdge, GraphEdge)
 
 // find the points to draw line at
 
-enum Side { North = 1, South = 2, East = 4, West = 8 };
-
 // Clip point <p> to side <side> of region <b>
-static void moveToSide(BoxRegion& b, int side, BoxPoint& p, BoxPoint&)
+void LineGraphEdge::moveToSide(BoxRegion& b, int side, BoxPoint& p, BoxPoint&)
 {
     assert(side == North || side == South || side == East || side == West);
 
@@ -79,7 +77,8 @@ static void moveToSide(BoxRegion& b, int side, BoxPoint& p, BoxPoint&)
 
 
 // Clip point <p> to side <side> of region <b> centered around <c>
-static void clipToSide(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c)
+void LineGraphEdge::clipToSide(BoxRegion& b, int side, 
+			       BoxPoint& p, BoxPoint& c)
 {
     assert(side == North || side == South || side == East || side == West);
 
@@ -105,8 +104,8 @@ static void clipToSide(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c)
 
 // Clip point <p> to side <side> of region <b> centered around <c>
 // Assume that b contains a circle
-static void clipToCircle(BoxRegion& b, int /* side */, 
-			 BoxPoint& p, BoxPoint& c)
+void LineGraphEdge::clipToCircle(BoxRegion& b, int /* side */, 
+				 BoxPoint& p, BoxPoint& c)
 {
     // assert(side == North || side == South || side == East || side == West);
 
@@ -119,20 +118,6 @@ static void clipToCircle(BoxRegion& b, int /* side */,
 	p[Y] += BoxCoordinate((radius * (c[Y] - p[Y])) / hyp);
     }
 }
-
-
-typedef void (*ClipProc)(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c);
-
-struct ClipMapRec {
-    EdgeAttachMode mode;
-    ClipProc       proc;
-};
-
-const ClipMapRec clipMap[] = {
-    {Straight, clipToSide},
-    {Circle,   clipToCircle},
-    {Centered, moveToSide}
-};
 
 // Find line from region <b1> centered around <c1>
 // to region <b2> centered around <c2>
@@ -166,8 +151,23 @@ void LineGraphEdge::findLine(BoxPoint& c1, BoxPoint& c2,
     p1 = c1;
     p2 = c2;
 
-    // select appropriate clipping procedure
-    for (int i = 0; i < int(sizeof(clipMap)/sizeof(clipMap[0])); i++)
+    // Select appropriate clipping procedure
+    typedef void (*ClipProc)(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c);
+
+    struct ClipMapRec {
+	EdgeAttachMode mode;
+	ClipProc       proc;
+    };
+
+    static const ClipMapRec clipMap[] = 
+    {
+	{Straight, LineGraphEdge::clipToSide},
+	{Circle,   LineGraphEdge::clipToCircle},
+	{Centered, LineGraphEdge::moveToSide},
+	{Straight, 0}
+    };
+
+    for (int i = 0; clipMap[i].proc != 0; i++)
 	if (gc.edgeAttachMode == clipMap[i].mode)
 	{
 	    clipMap[i].proc(b1, side1, p1, c2);

@@ -37,9 +37,11 @@
 #include "GraphEdge.h"
 #include "Box.h"
 
+enum Side { North = 1, South = 2, East = 4, West = 8 };
+
 class LineGraphEdge: public GraphEdge {
 public:
-    DECLARE_TYPE_INFO
+    DECLARE_TYPE_INFO;
 
 protected:
     // Find line between b1 and b2 in p1/p2
@@ -58,6 +60,17 @@ protected:
 	GraphEdge(edge)
     {}
 
+private:
+    // Clip point P to side SIDE of region B
+    static void moveToSide  (BoxRegion& b, int side, BoxPoint& p, BoxPoint& c);
+
+    // Clip point P to side SIDE of region B centered around C
+    static void clipToSide  (BoxRegion& b, int side, BoxPoint& p, BoxPoint& c);
+
+    // Clip point P to side SIDE of region B centered around C;
+    // Assume that B contains a circle
+    static void clipToCircle(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c);
+
 public:
     // Constructor
     LineGraphEdge(GraphNode *f, GraphNode *t):
@@ -73,4 +86,5 @@ public:
     }
 };
 
-#endif
+#endif // _DDD_LineGraphEdge_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
