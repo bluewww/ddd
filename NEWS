@@ -81,6 +81,7 @@ DDD 3.0 [in beta test]
     - DBX settings also work with SGI DBX.
     - DBX on Solaris 2.5 (prompting with `(dbx N)') is supported.
 
+
     Bug fixes:
     - Data displays are no longer cluttered by Sun DBX 3.0 warnings.
     - Paned window management has been improved a lot.
@@ -100,11 +101,16 @@ DDD 3.0 [in beta test]
     - The DDD splash screen (and all other XPM stuff, too) now also
       accepts `close' colors.
 
+    Once more, there are several more minor improvements and bug
+    fixes; see the `ChangeLog' file for details.
+
+
     Changes in configuration and building:
     - LessTif 0.84 is supported (and a standard test environment of
       the DDD developers).  See `patches/' for some useful patches.
     - GDB 4.17 is supported.
     - GCC 2.8.1 with enabled optimization is supported.
+
 
     Compatibility notes:
     - Several key bindings have been re-assigned for compliance with
@@ -138,8 +144,7 @@ DDD 3.0 [in beta test]
       For full compliance to the KDE style guide, the Cut/Copy/Paste
       operations must be assigned to Ctrl+X/Ctrl+C/Ctrl+V.  This is
       done by setting `Edit->Preferences->Startup->Cut/Copy/Paste
-      Bindings' to `KDE style'.  This may also become the default in
-      future DDD versions.
+      Bindings' to `KDE style'.
 
       See the `Ddd' app-defaults file to change other key bindings.
 
@@ -176,8 +181,15 @@ DDD 3.0 [in beta test]
       versions behind.  DDD does not require app-defaults files; in
       fact, we recommend strongly *NOT* to use or install them.
 
-    And once more, there are several more minor improvements and bug
-    fixes; see the `ChangeLog' file for details.
+
+    Future directions:
+    - XDB-specific code will no longer be maintained.  You should be
+      able to use HP's Wildebeest (WDB) instead, a free GDB port to
+      HP-UX (`http://www.hp.com/lang/tools/Debuggers/WDB/').  Please
+      let us know your experiences with DDD and WDB.
+    - The default for Cut/Copy/Paste Bindings will be the KDE style.
+    - For further ideas and possible extensions, see the file `TODO';
+      send your suggestions to `ddd-users@ips.cs.tu-bs.de'.
 
 
 
