@@ -166,7 +166,9 @@ private:
     bool _trace_dialog;
     bool _verbatim;
 
-    string last_prompt;
+    string last_prompt;		// Last prompt received
+    string last_written;	// Last command sent
+    bool echo_mode_warning;	// True if warned about echo mode
 
 protected:
     // Return PREFIX + EXPR, parenthesizing EXPR if needed
@@ -365,6 +367,19 @@ public:
     string kill_command() const;                    // GDB: "kill"
     string history_file() const;                    // GDB: "~/.gdb_history"
 
+    // Send DATA to process
+    virtual int write(const char *data, int length)
+    {
+	last_written = string(data, length);
+	return TTYAgent::write(data, length);
+    }
+
+    // Custom function
+    int write(const string& data)
+    {
+	return write(data.chars(), data.length());
+    }
+
 private:
     bool questions_waiting;
 
@@ -402,9 +417,10 @@ private:
 protected:
     string complete_answer;
 
-    static void InputHP(Agent *, void *, void *);
-    static void PanicHP(Agent *, void *, void *);
-    static void DiedHP (Agent *, void *, void *);
+    static void InputHP  (Agent *, void *, void *);
+    static void PanicHP  (Agent *, void *, void *);
+    static void StrangeHP(Agent *, void *, void *);
+    static void DiedHP   (Agent *, void *, void *);
 
     static void traceInputHP (Agent *, void *, void *);
     static void traceOutputHP(Agent *, void *, void *);

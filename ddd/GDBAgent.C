@@ -111,6 +111,8 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _trace_dialog(false),
       _verbatim(false),
       last_prompt(""),
+      last_written(""),
+      echo_mode_warning(false),
       questions_waiting(false),
       _qu_data(0),
       qu_index(0),
@@ -132,7 +134,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
 
     // Add own handlers
     addHandler(Panic,   PanicHP);
-    addHandler(Strange, PanicHP);
+    addHandler(Strange, StrangeHP);
     addHandler(Died,    DiedHP);
     addHandler(Input,   InputHP);
 }
@@ -163,6 +165,8 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _program_language(gdb.program_language()),
       _trace_dialog(gdb.trace_dialog()),
       _verbatim(gdb.verbatim()),
+      last_written(""),
+      echo_mode_warning(false),
       questions_waiting(false),
       _qu_data(0),
       qu_index(0),
@@ -297,7 +301,7 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without `\n'
 	state = BusyOnCmd;
 	callHandlers(ReadyForQuestion, (void *)false);
 	cmd += '\n';
-	write(cmd.chars(), cmd.length());
+	write(cmd);
 	flush();
 
 	return true;
@@ -323,7 +327,7 @@ bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
     if (cmd == '\004' && state == ReadyWithPrompt)
 	state = BusyOnCmd;
 
-    write(cmd.chars(), cmd.length());
+    write(cmd);
     flush();
     return true;
 }
@@ -353,7 +357,7 @@ bool GDBAgent::send_user_cmd_plus (string   cmds[],
     state = BusyOnCmd;
     callHandlers(ReadyForQuestion, (void *)false);
     user_cmd += '\n';
-    write(user_cmd.chars(), user_cmd.length());
+    write(user_cmd);
     flush();
 
     return true;
@@ -378,7 +382,7 @@ bool GDBAgent::send_question (string  cmd,
     complete_answer = "";
 
     cmd += '\n';
-    write(cmd.chars(), cmd.length());
+    write(cmd);
     flush();
 
     return true;
@@ -404,7 +408,7 @@ bool GDBAgent::send_qu_array (string   cmds [],
     init_qu_array (cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
     
     // Send first question
-    write(cmd_array[0].chars(), cmd_array[0].length());
+    write(cmd_array[0]);
     flush();
 
     return true;
@@ -856,17 +860,38 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
     DataLength* dl = (DataLength *) call_data;
     string answer(dl->data, dl->length);
 
+    // Check for echo
+    if (gdb->last_written != "")
+    {
+	string a = answer;
+	a.gsub('\r', "");
+	if (a.contains(gdb->last_written, 0))
+	{
+	    answer = a.after(gdb->last_written);
+
+	    if (!gdb->echo_mode_warning)
+	    {
+		gdb->raiseWarning("running in echo mode");
+		gdb->echo_mode_warning = true;
+	    }
+
+	    gdb->last_written = "";
+	}
+    }
+
+    // Check for `More' prompt
     string reply = gdb->requires_reply(answer);
     if (reply != "")
     {
 	// Oops - this should not happen.  Just hit the reply key.
-	gdb->write(reply, reply.length());
+	gdb->write(reply);
 	gdb->flush();
 
-	// Ignore the `more' prompt
+	// Ignore the `More' prompt
 	answer += '\r';
     }
 
+    // Check for secondary prompt
     if (gdb->ends_with_secondary_prompt(answer))
     {
 	// GDB requires more information here: probably the
@@ -883,13 +908,14 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	gdb->callHandlers(ReplyRequired, (void *)&info);
 
 	// Send reply immediately
-	gdb->write(info.reply, info.reply.length());
+	gdb->write(info.reply);
 	gdb->flush();
 
 	// Ignore the selection
 	answer = info.question;
     }
 
+    // Handle all other GDB output
     switch (gdb->state)
     {
     case ReadyWithPrompt:
@@ -932,8 +958,7 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 		    gdb->state = BusyOnQuArray;
 
 		    // Send first question
-		    gdb->write(gdb->cmd_array[0].chars(),
-			       gdb->cmd_array[0].length());
+		    gdb->write(gdb->cmd_array[0]);
 		    gdb->flush();
 		}
 	    }
@@ -951,8 +976,7 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 		gdb->callHandlers(ReadyForCmd, (void *)false);
 
 		// Send first question
-		gdb->write(gdb->cmd_array[0].chars(),
-		      gdb->cmd_array[0].length());
+		gdb->write(gdb->cmd_array[0]);
 		gdb->flush();
 	    }
 	}
@@ -1028,8 +1052,7 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	    else
 	    {
 		// Send next question
-		gdb->write(gdb->cmd_array[gdb->qu_index].chars(),
-			   gdb->cmd_array[gdb->qu_index].length());
+		gdb->write(gdb->cmd_array[gdb->qu_index]);
 		gdb->flush();
 	    }
 	}
@@ -1618,15 +1641,21 @@ ProgramLanguage GDBAgent::program_language(string text)
 // ***************************************************************************
 // Handle error messages
 //
-void GDBAgent::PanicHP (Agent *source, void *, void *call_data)
+void GDBAgent::PanicHP(Agent *source, void *, void *call_data)
 {
     string msg = (char *)call_data;
-
+    string path = source->path();
     GDBAgent *gdb = ptr_cast(GDBAgent, source);
     if (gdb != 0)
-	cerr << gdb->prompt() << msg << "\n";
-    else
-	cerr << source->path() << ": " << msg << "\n";
+	path = downcase(gdb->title());
+    cerr << path << ": " << msg << "\n";
+}
+
+void GDBAgent::StrangeHP(Agent *source, void *client_data, void *call_data)
+{
+    string msg = (char *)call_data;
+    msg.prepend("warning: ");
+    PanicHP(source, client_data, (char *)msg);
 }
 
 // ***************************************************************************
@@ -1637,4 +1666,3 @@ int GDBAgent::setupChildCommunication()
     // Nothing special...
     return TTYAgent::setupChildCommunication();
 }
-
