@@ -74,6 +74,10 @@ Examining Data
 User Interface
 --------------
 
+- The default DDD font has been changed from `helvetica-bold' to
+  `helvetica-medium', thus integrating better into KDE and GNOME
+  environments.
+
 - You can interact with the debugger while the program is running;
   DDD automatically interrupts and resumes debuggee execution.  See the
   `stopAndContinue' resource for details.

@@ -959,7 +959,7 @@ Ddd*grabAction:  cont
 ! Fonts.
 
 ! The default font to use for labels, etc.
-Ddd*defaultFont:       helvetica-bold
+Ddd*defaultFont:       helvetica-medium
 
 ! The font to use for help texts.
 Ddd*variableWidthFont: helvetica-medium
