@@ -1118,6 +1118,9 @@ int main(int argc, char *argv[])
 	     << "Please save options.\n";
     }
 
+    // Register own converters
+    registerOwnConverters();
+
     // Create command shell
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
@@ -1141,8 +1144,7 @@ int main(int argc, char *argv[])
 					command_shell,
 					NULL));
 
-    // Register own converters
-    // Do this now to override Motif converters.
+    // Re-register own converters to override Motif converters.
     registerOwnConverters();
 
     // Create menu bar
@@ -1170,9 +1172,13 @@ int main(int argc, char *argv[])
 	XtWidgetGeometry size;
 	size.request_mode = CWHeight;
 	XtQueryGeometry(status_w, NULL, &size);
+	unsigned char unit_type;
+	XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
+	int new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
+					size.height, unit_type);
 	XtVaSetValues(status_w,
-		      XmNpaneMaximum, size.height,
-		      XmNpaneMinimum, size.height,
+		      XmNpaneMaximum, new_height,
+		      XmNpaneMinimum, new_height,
 		      NULL);
     }
 
@@ -1279,9 +1285,13 @@ int main(int argc, char *argv[])
 	XtWidgetGeometry size;
 	size.request_mode = CWHeight;
 	XtQueryGeometry(status_w, NULL, &size);
+	unsigned char unit_type;
+	XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
+	int new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
+					size.height, unit_type);
 	XtVaSetValues(status_w,
-		      XmNpaneMaximum, size.height,
-		      XmNpaneMinimum, size.height,
+		      XmNpaneMaximum, new_height,
+		      XmNpaneMinimum, new_height,
 		      NULL);
     }
 
@@ -1316,9 +1326,13 @@ int main(int argc, char *argv[])
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(arg_cmd_w, NULL, &size);
+    unsigned char unit_type;
+    XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
+    int new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
+				    size.height, unit_type);
     XtVaSetValues(arg_cmd_w,
-		  XmNpaneMaximum, size.height,
-		  XmNpaneMinimum, size.height,
+		  XmNpaneMaximum, new_height,
+		  XmNpaneMinimum, new_height,
 		  NULL);
 
     // source_area (Befehle mit PushButton an gdb) ----------------------------
@@ -1914,9 +1928,16 @@ static void make_preferences(Widget parent)
     add_panel(change, buttons, "startup", startup_preferences_menu, 
 	      max_width, max_height, false);
 
+    unsigned char unit_type;
+    XtVaGetValues(change, XmNunitType, &unit_type, NULL);
+    int new_height = XmConvertUnits(change, XmVERTICAL, XmPIXELS, 
+				    max_height, unit_type);
+    int new_width  = XmConvertUnits(change, XmHORIZONTAL, XmPIXELS, 
+				    max_width, unit_type);
+
     XtVaSetValues(change,
-		  XmNwidth, max_width,
-		  XmNheight, max_height,
+		  XmNwidth, new_width,
+		  XmNheight, new_height,
 		  XmNresizeWidth, False,
 		  XmNresizeHeight, False,
 		  NULL);

@@ -105,9 +105,13 @@ Widget make_buttons(Widget parent, const string& name,
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(buttons, NULL, &size);
+    unsigned char unit_type;
+    XtVaGetValues(buttons, XmNunitType, &unit_type, NULL);
+    int new_height = XmConvertUnits(buttons, XmVERTICAL, XmPIXELS, 
+				    size.height, unit_type);
     XtVaSetValues(buttons,
-		  XmNpaneMaximum, size.height,
-		  XmNpaneMinimum, size.height,
+		  XmNpaneMaximum, new_height,
+		  XmNpaneMinimum, new_height,
 		  NULL);
 
     return buttons;

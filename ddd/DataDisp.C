@@ -2695,9 +2695,13 @@ DataDisp::DataDisp (XtAppContext app_context,
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(graph_cmd_w, NULL, &size);
+    unsigned char unit_type;
+    XtVaGetValues(graph_cmd_w, XmNunitType, &unit_type, NULL);
+    int new_height = XmConvertUnits(graph_cmd_w, XmVERTICAL, XmPIXELS, 
+				    size.height, unit_type);
     XtVaSetValues(graph_cmd_w,
-		  XmNpaneMaximum, size.height,
-		  XmNpaneMinimum, size.height,
+		  XmNpaneMaximum, new_height,
+		  XmNpaneMinimum, new_height,
 		  NULL);
 
     // Create display editor
