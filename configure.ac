@@ -325,41 +325,31 @@ AC_CHECK_LIB(cxxinst, main, CXXLIBS="-lcxxinst $CXXLIBS")
 fi
 dnl
 dnl
-dnl If we already have -ltermcap, etc.,
-dnl there is no need to build them.
-ddd_have_termcap=false
+dnl Check for -ltermcap or compatible.
 dnl
-dnl check for ncurses
-ncurses_libraries=
-AC_ARG_WITH(ncurses,
-AS_HELP_STRING([--without-ncurses],[do not use the Ncurses library]),[
-  if test "$withval" = "no"; then
-    ncurses_libraries=no
-  fi
+ddd_termlib=
+AC_ARG_WITH([termlib],
+AS_HELP_STRING([--with-termlib=LIB],
+[terminal library is LIB=mytinfo|ncurses|curses|termcap|terminfo|...]),[
+ case "${withval}" in
+ no)
+  AC_MSG_ERROR([A termcap compatible library is necessary.])
+  ;;
+ yes) ;;
+ *) ddd_termlib="${withval}" ;;
+ esac
 ])
-AC_ARG_WITH(ncurses-libraries,
-AS_HELP_STRING([--with-ncurses-libraries=DIR],
-               [Ncurses libraries are in DIR]),[
-  ncurses_libraries="$withval"
-  case "$ncurses_libraries" in
-  no) ;;
-  yes)
-    AC_CHECK_LIB(ncurses, tgetent, [LIBTERMCAP="-lncurses";
-      ddd_have_termcap=true])
-    ;;
-  *)
-    _ldflags="${LDFLAGS}"
-    LDFLAGS="${LDFLAGS} -L$ncurses_libraries"
-    AC_CHECK_LIB(ncurses, tgetent,
-      [LIBTERMCAP="-L$ncurses_libraries -lncurses";
-      ddd_have_termcap=true])
-    LDFLAGS="${_ldflags}"
-    ;;
+ddd_termlib_libraries_path=
+AC_ARG_WITH([termlib-libraries],
+AS_HELP_STRING([--with-termlib-libraries=DIR],
+               [termlib libraries are in DIR]),[
+  case "${withval}" in
+  no|yes) ;;
+  *) ddd_termlib_libraries_path="${withval}" ;;
   esac
 ])
 dnl
-dnl Look for the tgetent() function - either in libtermcap, libcurses,
-dnl or use the GNU termcap library as shipped with DDD.
+dnl Look for the tgetent() function - either in libtermcap, libcurses,...
 dnl
 dnl On FreeBSD systems, `-lmytinfo' is preferred to `-lncurses'.
 dnl Reported by Vincenzo Capuano <vcapuano@esoc.esa.de>
@@ -367,22 +357,33 @@ dnl
 dnl On Linux ELF systems, `-lncurses' is preferred to `-ltermcap'.
 dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
 dnl
-if test "x${ddd_have_termcap}" = "xfalse"; then
-  if test "x$ncurses_libraries" = "xno"; then
-    _termlib="mytinfo curses termcap terminfo termlib"
-  else
-    _termlib="mytinfo ncurses curses termcap terminfo termlib"
-  fi
-  for termlib in ${_termlib}; do
-     AC_CHECK_LIB(${termlib}, tgetent, [LIBTERMCAP="-l${termlib}";
-       ddd_have_termcap=true; break])
-  done
+ddd_have_termcap=false
+dnl
+_termlib="${ddd_termlib}"
+if test "x${ddd_termlib}" = x; then
+  _termlib="mytinfo ncurses curses termcap terminfo termlib"
 fi
+_termlib_path=
+if test x"${ddd_termlib_libraries_path}" != x; then
+  _termlib_path="-L${ddd_termlib_libraries_path} "
+fi
+_ldflags="${LDFLAGS}"
+for termlib in ${_termlib}; do
+   LDFLAGS="${_termlib_path}${LDFLAGS}"
+   AC_CHECK_LIB(${termlib}, tgetent, [LIBTERMCAP="${_termlib_path}-l${termlib}";
+     ddd_have_termcap=true; break])
+done
+LDFLAGS="${_ldflags}"
+dnl
+if test "$ddd_have_termcap" != true; then
+  AC_MSG_ERROR([Cannot find termcap compatible library.])
+fi
+AC_SUBST(LIBTERMCAP)
 dnl
 dnl Check for -lreadline (optional)
 dnl
 readline_support=no
-AC_ARG_WITH(readline,
+AC_ARG_WITH([readline],
 AS_HELP_STRING([--with-readline],
                [do use the readline library default=no]),[
   if test "$withval" = "no"; then
@@ -466,14 +467,6 @@ fi
 if test "x${ddd_valgrind_include_found}" != "xno"; then
   AC_DEFINE([WITH_VALGRIND],1,[Define if you want valgrind leak check of DDD.])
 fi
-dnl
-dnl
-if test "$ddd_have_termcap" != true; then
-    AC_MSG_NOTICE([Using bundled termcap library.])
-    AC_CONFIG_SUBDIRS([termcap])
-    LIBTERMCAP="../termcap/libtermcap.a"
-fi
-AC_SUBST(LIBTERMCAP)
 dnl
 dnl
 dnl `streampos' and `iostate' types

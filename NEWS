@@ -12,6 +12,10 @@ DDD-3.3.10
   from CVS repository.
 - A warning is emitted if a version of g++ older than 3.1 is used.
 - libiberty is neither linked nor bundled anymore.
+- GNU libtermcap is not bundled anymore. A termcap like library (such as
+  ncurses) is now required to build ddd.
+  configure has '--with-termlib=LIB' and '--with-termlib-libraries=DIR'
+  to offer a finer control on the choice of library.
 
 DDD-3.3.9
 =========

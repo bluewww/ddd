@@ -207,12 +207,12 @@ LDFLAGS = @LDFLAGS@ @BIG_TOC@
 
 ## Local libraries
 
-# POSIX regex routines (from system or ../librx/librx.a)
+# POSIX regex routines (from system)
 # LIBRX      = @LIBRX@
 LIBRX      =
-# termcap routines (from system or ../termcap/libtermcap.a)
+# termcap routines (from system)
 LIBTERMCAP = @LIBTERMCAP@
-# -lreadline library (../readline/libreadline.a)
+# -lreadline library (from system)
 LIBREADLINE = @LIBREADLINE@
 # Yacc library (-ly)
 LIBY       = @LIBY@

@@ -588,10 +588,10 @@ show.o: build.h
 # Local Libraries.
 # -----------------------------------------------------------------------------
 
-# POSIX regex routines (from system or ../librx/librx.a)
+# POSIX regex routines (from system)
 # LIBRX      = @LIBRX@
 LIBRX      =
-# termcap routines (from system or ../termcap/libtermcap.a)
+# termcap routines (from system)
 LIBTERMCAP = @LIBTERMCAP@
 # -lreadline library (from system)
 LIBREADLINE = @LIBREADLINE@

@@ -31,15 +31,6 @@
 # `http://www.gnu.org/software/ddd/',
 # or send a mail to the DDD developers <ddd@gnu.org>.
 
-TERMCAP_DISTFILES = \
-	termcap/termcap.h termcap/termcap.c \
-	termcap/tparam.c termcap/version.c \
-	termcap/ChangeLog termcap/COPYING termcap/README \
-	termcap/INSTALL termcap/NEWS \
-	termcap/termcap.texi \
-	termcap/Makefile.in termcap/configure \
-	termcap/configure.in
-
 TEXINFO_DISTFILES = \
 	texinfo/epsf.tex texinfo/gfdl.texinfo texinfo/gpl.texinfo \
 	texinfo/lgpl.texinfo texinfo/texinfo.tex ddd/PICS
@@ -58,7 +49,7 @@ dddroot_DATA = NEWS COPYING
 # Subdirectories.
 # -----------------------------------------------------------------------------
 
-SUBDIRS = @subdirs@ themes vsllib ddd
+SUBDIRS = themes vsllib ddd
 
 
 # -----------------------------------------------------------------------------
@@ -222,7 +213,6 @@ $(srcdir)/ChangeLog: $(srcdir)/Makefile.am
 
 EXTRA_DIST = \
 	ddd.spec.in \
-	$(TERMCAP_DISTFILES) \
 	$(TEXINFO_DISTFILES) \
 	$(CVS2CL) \
 	$(USERMAP) \

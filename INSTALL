@@ -475,10 +475,10 @@ these packages:
      `--with-readline-includes=DIR' and `--with-readline-libraries=DIR'
      to specify their locations.  See also `Locating Libraries', below.
    
-   * If `configure' doesn't find the Ncurses include and library files
+   * If `configure' doesn't find a termcap compatible library files
      automatically, you can use the `configure' options
-     `--with-ncurses-includes=DIR' and `--with-ncurses-libraries=DIR'
-     to specify their locations.  See also `Locating Libraries', below.
+     `--with-termlib=LIB' and `--with-termlib-libraries=DIR'
+     to specify their locations. See also `Locating Libraries', below.
 
 
 You can also configure DDD to _ignore_ some external packages:
