@@ -850,68 +850,75 @@ Ddd*maxBreakpointNumber: 99
 Ddd*maxDisplayNumber:    99
 
 
-!-----------------------------------------------------------------------------
 ! Fonts
+
+! The default font to use for labels, etc.
+Ddd*defaultFont:       -*-helvetica-bold-r-*-*-*-90-*-*-*-*-iso8859-*
+
+! The font to use for help texts.
+Ddd*variableWidthFont: -*-helvetica-medium-r-*-*-*-90-*-*-*-*-iso8859-*
+
+! The font to use for fixed-width fields, such as the source code.
+Ddd*fixedWidthFont:    -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-iso8859-*
+
+! The base font size; overrides the point settings as set above.
+Ddd*FontSize:          90
+
+
+!-----------------------------------------------------------------------------
+! Font mappings
 !-----------------------------------------------------------------------------
 
 ! Font definitions.  @<font> is used to switch between fonts.
 ! @charset is the default font.
 ! @tt (teletype) is the fixed-width font used in texts.
-! @tb (teletype bold) is the bold variant of @tt.
 ! @key is the font used for keys.
 ! @rm (roman), @sl (slanted), @bf (bold face), @bs (bold slanted)
 ! are some fonts for usual highlighting.
-! @Logo and @logo are used in the DDD logo.
+! @llogo and @logo are used in the DDD logo.
+!
+! The symbolic font names @CHARSET@, @SMALL@, etc. are constructed
+! from the font resources, above.
 !
 ! Note: These font names are also used in DDD.  See `ddd/charsets.h'.
 !
 ! Note: LessTif 0.79 always wants `FONTLIST_DEFAULT_TAG_STRING' 
 ! instead of `charset' for TextField and Text widgets; this must also 
 ! be the first font specified.
-!
-! Note: To switch between resolution-independent and resolution-dependent
-! settings, run
-! * `rm Ddd.in; make RESOLUTION=pixels Ddd' - resolution-dependent setting
-! * `rm Ddd.in; make RESOLUTION=points Ddd' - resolution-independent setting
-! Also see the file `ddd/macros.m4' for setting font sizes.
 
 ! General font definitions.
 Ddd*fontList: \
--*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=charset,\
--*-helvetica-bold-r-*-*-FONT_SMALL-*-*-*-*-iso8859-*=small,\
--*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=tt,\
--*-lucidatypewriter-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=tb,\
--*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=key,\
--*-helvetica-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=rm,\
--*-helvetica-medium-o-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=sl,\
--*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=bf,\
--*-helvetica-bold-o-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=bs,\
--*-helvetica-bold-r-*-*-FONT_LARGE-*-*-*-*-iso8859-*=Logo,\
--*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=logo,\
--*-symbol-*-*-*-*-FONT_NORMAL-*-*-*-*-*-*=symbol
+@CHARSET@=FONTLIST_DEFAULT_TAG_STRING,\
+@CHARSET@=charset,\
+@SMALL@=small,\
+@TT@=tt,\
+@KEY@=key,\
+@RM@=rm,\
+@SL@=sl,\
+@BF@=bf,\
+@BS@=bs,\
+@LLOGO@=llogo,\
+@LOGO@=logo,\
+@SYMBOL@=symbol
 
-
-! Fixed-width fonts.  `lucidatypewriter' is the font the DDD developers
-! prefer; another popular choice is `courier'.
+! Fixed-width fonts.
 Ddd*XmTextField.FontList: \
--*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=charset
+@TEXT@=FONTLIST_DEFAULT_TAG_STRING,\
+@TEXT@=charset
 Ddd*XmText.FontList:	  \
--*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=charset
+@TEXT@=FONTLIST_DEFAULT_TAG_STRING,\
+@TEXT@=charset
 
-
-! Command tool fonts.  Slightly smaller.
+! Command tool fonts.
 Ddd*tool_buttons.run.fontList: \
--*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=charset
+@CHARSET@=FONTLIST_DEFAULT_TAG_STRING,\
+@CHARSET@=charset
 Ddd*tool_buttons.break.fontList: \
--*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=charset
+@CHARSET@=FONTLIST_DEFAULT_TAG_STRING,\
+@CHARSET@=charset
 Ddd*tool_buttons*fontList: \
--*-helvetica-medium-r-*-*-FONT_SMALL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-helvetica-medium-r-*-*-FONT_SMALL-*-*-*-*-iso8859-*=charset
+@LIGHT@=FONTLIST_DEFAULT_TAG_STRING,\
+@LIGHT@=charset
 
 
 ! For fonts in the execution window, see the `termCommand' resource, above.
@@ -1071,13 +1078,6 @@ Ddd*grey_cond.labelPixmap:	grey_cond
 ! stdfontsize()   = 0;	\n\
 ! stdfontpoints() = 90;	\n\
 ! stdfontweight() = weight_medium();
-
-! Predefined changes: set up font sizes
-Ddd*vslBaseDefs: \
-#replace stdfontsize\n\
-#replace stdfontpoints\n\
-stdfontsize()   = VSL_PIXELS;\n\
-stdfontpoints() = VSL_POINTS;
 
 ! See the file `ddd.vsl' for further definitions to override here.
 
@@ -1572,8 +1572,8 @@ Have fun with DDD!
 ! The official announcement.
 ! Build information (like `ddd --configuration') is appended to this text.
 Ddd*helpOnVersionString:	\
-@Logo DDD@logo: \
-The @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
+@llogo DDD@logo: \
+The @llogo D@logo ata @llogo D@logo isplay @llogo D@logo ebugger\n\
 @rm by Dorothea L\374tkehaus and Andreas Zeller.\n\n
 
 ! The default Help Text.

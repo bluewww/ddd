@@ -45,6 +45,7 @@ char converters_rcsid[] =
 #include "strclass.h"
 #include "charsets.h"
 #include "StringSA.h"
+#include "string-fun.h"
 
 #include <Xm/Xm.h>
 
@@ -104,6 +105,52 @@ extern "C" {
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
+
+// Declarations
+
+// Convert String to Widget
+static Boolean CvtStringToWidget(Display *display, 
+				 XrmValue *args, Cardinal *num_args, 
+				 XrmValue *fromVal, XrmValue *toVal,
+				 XtPointer *converter_data);
+
+// Convert String to Pixmap, converting 1s and 0s to fg/bg color
+static Boolean CvtStringToPixmap(Display *display, 
+				 XrmValue *args, Cardinal *num_args, 
+				 XrmValue *fromVal, XrmValue *toVal,
+				 XtPointer *converter_data);
+
+// Convert String to Bitmap, leaving 1s and 0s untouched
+static Boolean CvtStringToBitmap(Display *display, 
+				 XrmValue *args, Cardinal *num_args, 
+				 XrmValue *fromVal, XrmValue *toVal,
+				 XtPointer *converter_data);
+
+// Convert String to XmString, using `@' for font specs
+static Boolean CvtStringToXmString(Display *display, 
+				   XrmValue *args, Cardinal *num_args, 
+				   XrmValue *fromVal, XrmValue *toVal,
+				   XtPointer *converter_data);
+
+// Convert String to Alignment
+static Boolean CvtStringToAlignment(Display *display, 
+				    XrmValue *args, Cardinal *num_args, 
+				    XrmValue *fromVal, XrmValue *toVal,
+				    XtPointer *converter_data);
+
+// Convert String to Orientation
+static Boolean CvtStringToOrientation(Display *display, 
+				      XrmValue *args, Cardinal *num_args, 
+				      XrmValue *fromVal, XrmValue *toVal,
+				      XtPointer *converter_data);
+
+// Convert String to Packing
+static Boolean CvtStringToPacking(Display *display, 
+				  XrmValue *args, Cardinal *num_args, 
+				  XrmValue *fromVal, XrmValue *toVal,
+				  XtPointer *converter_data);
+
+
 
 // Return a value of given type
 #define done(type, value) \
@@ -189,10 +236,10 @@ Boolean CvtStringToWidget(Display *display,
 // A Pixmap will be read in as bitmap file
 // 1 and 0 values are set according to the widget's 
 // foreground/background colors.
-Boolean CvtStringToPixmap(Display *display, 
-			  XrmValue *args, Cardinal *num_args, 
-			  XrmValue *fromVal, XrmValue *toVal,
-			  XtPointer *)
+static Boolean CvtStringToPixmap(Display *display, 
+				 XrmValue *args, Cardinal *num_args, 
+				 XrmValue *fromVal, XrmValue *toVal,
+				 XtPointer *)
 {
     // Default parameters
     Screen *screen   = DefaultScreenOfDisplay(display);
@@ -242,10 +289,10 @@ static String locateBitmap(Display *display, String basename);
 
 // Convert String to Bitmap
 // A Bitmap will be read in as bitmap file -- 1 and 0 values remain unchanged.
-Boolean CvtStringToBitmap(Display *display, 
-			  XrmValue *, Cardinal *, 
-			  XrmValue *fromVal, XrmValue *toVal,
-			  XtPointer *)
+static Boolean CvtStringToBitmap(Display *display, 
+				 XrmValue *, Cardinal *, 
+				 XrmValue *fromVal, XrmValue *toVal,
+				 XtPointer *)
 {
     // Fetch a drawable
     Window window = None;
@@ -428,10 +475,10 @@ static int font_id_len(const string& s)
 // Convert String to XmString, using `@' for font specs: `@FONT TEXT'
 // makes TEXT be displayed in font FONT; a single space after FONT is
 // eaten.  `@ ' displays a single `@'.
-Boolean CvtStringToXmString(Display *display, 
-			    XrmValue *, Cardinal *, 
-			    XrmValue *fromVal, XrmValue *toVal,
-			    XtPointer *)
+static Boolean CvtStringToXmString(Display *display, 
+				   XrmValue *, Cardinal *, 
+				   XrmValue *fromVal, XrmValue *toVal,
+				   XtPointer *)
 {
     const string font_esc = "@";
 
@@ -527,15 +574,150 @@ Boolean CvtStringToXmString(Display *display,
 }
 
 
+static bool convert_fontspec(Display *display,
+			     string& fontspec, const string& name)
+{
+    if (fontspec.contains('@', 0))
+    {
+	string c = fontspec.after('@');
+	c = c.before('@');
+	if (conversionMacroTable.has(c))
+	{
+	    // Replace macro by value
+	    fontspec = conversionMacroTable[c];
+	}
+	else
+	{
+	    // No such macro
+	    Cardinal num_params = 1;
+	    String params = (String)c.chars();
+	    XtAppWarningMsg(XtDisplayToApplicationContext(display),
+			    "noSuchMacro", name.chars(),
+			    "XtToolkitError",
+			    "No such macro: @%s@",
+			    &params, &num_params);
+	    return false;
+	}
+    }
+
+    return true;
+}
+
+// Convert String to FontStruct, relacing `@NAME@' by symbolic font specs.
+static Boolean CvtStringToFontStruct(Display *display, 
+				     XrmValue *, Cardinal *, 
+				     XrmValue *fromVal, XrmValue *toVal,
+				     XtPointer *)
+{
+    string fontspec = str(fromVal, false);
+    strip_space(fontspec);
+
+    if (!convert_fontspec(display, fontspec, "CvtStringToFontStruct"))
+	return False;
+
+    XFontStruct *font = XLoadQueryFont(display, fontspec);
+    if (font == 0)
+    {
+	Cardinal num_params = 1;
+	String params = (String)fontspec.chars();
+	XtAppWarningMsg(XtDisplayToApplicationContext(display),
+			"noSuchFont", "CvtStringToFontStruct",
+			"XtToolkitError",
+			"No such font: %s",
+			&params, &num_params);
+	return False;
+    }
+
+    done(XFontStruct *, font);
+}
+
+// Convert String to FontList, relacing `@NAME@' by symbolic font specs.
+static Boolean CvtStringToXmFontList(Display *display, 
+				     XrmValue *, Cardinal *, 
+				     XrmValue *fromVal, XrmValue *toVal,
+				     XtPointer *)
+{
+    // Get string
+    string source = str(fromVal, false);
+
+    int n_segments = source.freq(',') + 1;
+    string *segments = new string[n_segments];
+    
+    split(source, segments, n_segments, ',');
+
+    XmFontList target = 0;
+    for (int i = 0; i < n_segments; i++)
+    {
+	const string& segment = segments[i];
+	string fontspec = segment.before('=');
+	string charset  = segment.after('=');
+
+	strip_space(fontspec);
+	strip_space(charset);
+
+	if (fontspec == "" || charset == "")
+	{
+	    Cardinal num_params = 1;
+	    String params = (String)segment.chars();
+	    XtAppWarningMsg(XtDisplayToApplicationContext(display),
+			    "syntaxError", "CvtStringToXmFontList",
+			    "XtToolkitError",
+			    "Syntax error in %s",
+			    &params, &num_params);
+	    continue;
+	}
+
+	if (!convert_fontspec(display, fontspec, "CvtStringToXmFontList"))
+	    continue;
+
+#if XmVersion < 1002
+	XFontStruct *font = XLoadQueryFont(display, fontspec);
+	if (font == 0)
+	{
+	    Cardinal num_params = 1;
+	    String params = (String)fontspec.chars();
+	    XtAppWarningMsg(XtDisplayToApplicationContext(display),
+			    "noSuchFont", "CvtStringToXmFontList",
+			    "XtToolkitError",
+			    "No such font: %s",
+			    &params, &num_params);
+	    continue;
+	}
+
+	if (target == 0)
+	    target = XmFontListCreate(font, charset);
+	else
+	    target = XmFontListAdd(target, font, charset);
+
+#else  // XmVersion >= 1002
+	XmFontListEntry entry = XmFontListEntryLoad(display, (char *)fontspec, 
+						    XmFONT_IS_FONT, charset);
+	target = XmFontListAppendEntry(target, entry);
+	XmFontListEntryFree(&entry);
+#endif
+    }
+
+    delete[] segments;
+
+    if (target == 0)
+    {
+	XtDisplayStringConversionWarning(display, fromVal->addr, XmRXmString);
+	return False;
+    }
+    
+    done(XmFontList, target);
+}
+
+
 // Convert the strings 'beginning', 'center' and 'end' in any case to a value
 // suitable for the specification of the XmNentryAlignment-resource in 
 // RowColumn-widgets (or anything else using alignment-resources)
-Boolean CvtStringToAlignment(Display*   display, 
-                             XrmValue*  ,
-                             Cardinal*  , 
-                             XrmValue*  fromVal,
-                             XrmValue*  toVal,
-                             XtPointer* )
+static Boolean CvtStringToAlignment(Display*   display, 
+				    XrmValue*  ,
+				    Cardinal*  , 
+				    XrmValue*  fromVal,
+				    XrmValue*  toVal,
+				    XtPointer* )
 {
     string theAlignment = str(fromVal, true);
     theAlignment.downcase();
@@ -560,12 +742,12 @@ Boolean CvtStringToAlignment(Display*   display,
 // Convert the strings 'vertical' and 'horizontal' in any case to a value
 // suitable for the specification of the XmNorientation-resource in 
 // RowColumn-widgets (or anything else using orientation-resources)
-Boolean CvtStringToOrientation(Display*         display, 
-                               XrmValue*        ,
-                               Cardinal*        , 
-                               XrmValue*        fromVal,
-                               XrmValue*        toVal,
-                               XtPointer*       )
+static Boolean CvtStringToOrientation(Display*         display, 
+				      XrmValue*        ,
+				      Cardinal*        , 
+				      XrmValue*        fromVal,
+				      XrmValue*        toVal,
+				      XtPointer*       )
 {
     string theOrientation = str(fromVal, true);
     theOrientation.downcase();
@@ -588,12 +770,12 @@ Boolean CvtStringToOrientation(Display*         display,
 // Convert the strings 'tight', 'column' and 'none' in any case to a value
 // suitable for the specification of the XmNpacking-resource in
 // RowColumn-widgets (or anything else using packing-resources)
-Boolean CvtStringToPacking(Display*     display, 
-                           XrmValue*    ,
-                           Cardinal*    , 
-                           XrmValue*    fromVal,
-                           XrmValue*    toVal,
-                           XtPointer*   )
+static Boolean CvtStringToPacking(Display*     display, 
+				  XrmValue*    ,
+				  Cardinal*    , 
+				  XrmValue*    fromVal,
+				  XrmValue*    toVal,
+				  XtPointer*   )
 {
     string thePacking = str(fromVal, true);
     thePacking.downcase();
@@ -616,12 +798,12 @@ Boolean CvtStringToPacking(Display*     display,
 
 // Convert the strings 'pixels', '100th_millimeters' and so on
 // to unit types.
-Boolean CvtStringToUnitType(Display*     display, 
-			    XrmValue*    ,
-			    Cardinal*    , 
-			    XrmValue*    fromVal,
-			    XrmValue*    toVal,
-			    XtPointer*   )
+static Boolean CvtStringToUnitType(Display*     display, 
+				   XrmValue*    ,
+				   Cardinal*    , 
+				   XrmValue*    fromVal,
+				   XrmValue*    toVal,
+				   XtPointer*   )
 {
     string theType = str(fromVal, true);
     theType.downcase();
@@ -667,12 +849,12 @@ Boolean CvtStringToOnOff(Display*     display,
 }
 
 // Convert a string to Cardinal.
-Boolean CvtStringToCardinal(Display*     display, 
-			    XrmValue*    ,
-			    Cardinal*    , 
-			    XrmValue*    fromVal,
-			    XrmValue*    toVal,
-			    XtPointer*   )
+static Boolean CvtStringToCardinal(Display*     display, 
+				   XrmValue*    ,
+				   Cardinal*    , 
+				   XrmValue*    fromVal,
+				   XrmValue*    toVal,
+				   XtPointer*   )
 {
     string value = str(fromVal, true);
     char *ptr = 0;
@@ -732,6 +914,16 @@ void registerOwnConverters()
     // string -> xmstring
     XtSetTypeConverter(XmRString, XmRXmString, CvtStringToXmString,
 		       NULL, 0, XtCacheNone,
+		       XtDestructor(NULL));
+
+    // string -> fontlist
+    XtSetTypeConverter(XmRString, XmRFontList, CvtStringToXmFontList,
+		       NULL, 0, XtCacheAll,
+		       XtDestructor(NULL));
+
+    // string -> fontstruct
+    XtSetTypeConverter(XmRString, XtRFontStruct, CvtStringToFontStruct,
+		       NULL, 0, XtCacheAll,
 		       XtDestructor(NULL));
 
     // string -> unitType

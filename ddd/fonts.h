@@ -1,7 +1,7 @@
-// $Id$
-// Own converters
+// $Id$ -*- C++ -*-
+// Setup DDD fonts
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -26,22 +26,14 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_converters_h
-#define _DDD_converters_h
+#ifndef _DDD_fonts_h
+#define _DDD_fonts_h
 
-#include <X11/Intrinsic.h>
+#ifdef __GNUG__
+#pragma interface
+#endif
 
-// Convert String to OnOff
-Boolean CvtStringToOnOff(Display *display, 
-			 XrmValue *args, Cardinal *num_args, 
-			 XrmValue *fromVal, XrmValue *toVal,
-			 XtPointer *converter_data);
+extern void setup_fonts();
 
-// Register all converters
-extern void registerOwnConverters();
-
-// Define a macro: @NAME@ will be replaced by VALUE in CvtStringToXmString
-void defineConversionMacro(String name, String value);
-
-#endif // _DDD_converters_h
+#endif // _DDD_fonts_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

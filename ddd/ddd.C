@@ -213,6 +213,7 @@ char ddd_rcsid[] =
 #include "expired.h"
 #include "file.h"
 #include "findParent.h"
+#include "fonts.h"
 #include "frame.h"
 #include "gdbinit.h"
 #include "getrlimit.h"
@@ -1648,6 +1649,9 @@ int main(int argc, char *argv[])
 
     // From this point on, APP_DATA is valid.
 
+    // Define font macros
+    setup_fonts();
+
     // Create new session dir if needed
     create_session_dir(app_data.session, messages);
 
@@ -1793,6 +1797,10 @@ int main(int argc, char *argv[])
 #else
     (void) CheckDragCB;		// Use it
 #endif
+
+    // Re-register own converters.  Motif may have overridden some of
+    // these, so register them again.
+    registerOwnConverters();
 
     // Show splash screen
     Boolean iconic;

@@ -69,6 +69,18 @@
 #define XtNvslDefs               "vslDefs"
 #define XtNvslBaseDefs           "vslBaseDefs"
 #define XtCVSLDefs               "VSLDefs"
+#define XtNdefaultFont           "defaultFont"
+#define XtNvariableWidthFont     "variableWidthFont"
+#define XtNfixedWidthFont        "fixedWidthFont"
+#ifndef XtCFont
+#define XtCFont                  "Font"
+#endif
+#define XtNdefaultFontSize       "defaultFontSize"
+#define XtNvariableWidthFontSize "variableWidthFontSize"
+#define XtNfixedWidthFontSize    "fixedWidthFontSize"
+#define XtCFontSize              "FontSize"
+#define XtNfontSelectCommand     "fontSelectCommand"
+#define XtCFontSelectCommand     "FontSelectCommand"
 #define XtNtabWidth              "tabWidth"
 #define XtCTabWidth              "TabWidth"
 #define XtNlinesAboveCursor      "linesAboveCursor"
@@ -319,6 +331,13 @@ struct AppData {
     String    vsl_library;
     String    vsl_defs;
     String    vsl_base_defs;
+    String    default_font;
+    String    variable_width_font;
+    String    fixed_width_font;
+    Cardinal  default_font_size;
+    Cardinal  variable_width_font_size;
+    Cardinal  fixed_width_font_size;
+    String    font_select_command;
     Cardinal  tab_width;
     Cardinal  lines_above_cursor;
     Cardinal  lines_below_cursor;

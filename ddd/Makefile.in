@@ -62,14 +62,6 @@ host_canonical = @host@
 target_canonical = @host@
 
 
-## Special settings.
-
-# The font resolution scheme to use.  (points | pixels)
-# `points' means to use resolution-independent font sizes.
-# `pixels' means to use resolution-dependent font sizes.
-RESOLUTION = points
-
-
 ## Special commands.
 
 # The sed command.  (sed)
@@ -738,6 +730,7 @@ DDD_OBJECTS = \
 	expired.o    \
 	file.o       \
 	filetype.o   \
+	fonts.o      \
 	fortranize.o \
 	gdbinit.o    \
 	graph.o      \
@@ -1224,12 +1217,10 @@ $(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 $(srcdir)/macros.m4
 	( \
 	( \
 		echo "define(srcdir, \`$(srcdir)')dnl"; \
-		echo "define(FONT_RESOLUTION, \`$(RESOLUTION)')dnl"; \
 		echo "include(srcdir()/Ddd.in.m4)dnl" \
 	) | $(M4); \
         ( \
 		echo "define(srcdir, \`$(srcdir)')dnl"; \
-		echo "define(FONT_RESOLUTION, \`$(RESOLUTION)')dnl"; \
 		echo "include(srcdir()/tips.m4)dnl" \
 	) | $(M4); \
 	) > $@~ && $(MV) $@~ $@

@@ -207,6 +207,76 @@ XtResource ddd_resources[] = {
     },
 
     { 
+	XtNdefaultFont, 
+	XtCFont, 
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, default_font),
+	XtRString, 
+	XtPointer("-*-helvetica-bold-r-*")
+    },
+
+    { 
+	XtNvariableWidthFont, 
+	XtCFont,
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, variable_width_font),
+	XtRString,
+	XtPointer("-*-helvetica-medium-r-*")
+    },
+
+    { 
+	XtNfixedWidthFont, 
+	XtCFont,
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, fixed_width_font),
+	XtRString,
+	XtPointer("-*-courier-medium-r-*")
+    },
+
+    {
+	XtNdefaultFontSize,
+	XtCFontSize,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, default_font_size),
+	XmRImmediate,
+	XtPointer(90)
+    },
+
+    {
+	XtNvariableWidthFontSize,
+	XtCFontSize,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, variable_width_font_size),
+	XmRImmediate,
+	XtPointer(90)
+    },
+
+    {
+	XtNfixedWidthFontSize,
+	XtCFontSize,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, fixed_width_font_size),
+	XmRImmediate,
+	XtPointer(90)
+    },
+
+    { 
+	XtNfontSelectCommand, 
+	XtCFontSelectCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, font_select_command),
+	XtRString,
+	XtPointer("xfontsel -print")
+    },
+
+    { 
 	XtNvslDefs, 
 	XtCVSLDefs, 
 	XtRString, 
