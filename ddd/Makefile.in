@@ -631,13 +631,14 @@ CLEAN_STUFF	 = $(PROGS) $(DEMOS) core *.o *.a *.s *.i \
 		   *.aux *.cp *.cps *.fn *.fns *.flc \
 		   *.ky *.kys *.log *.pg *.pgs *.toc *.tp *.tps *.vr *.vrs \
 		   *.tar *.tar.gz *~ lex.* y.tab.* site.* *.sum \
-		   *.diff rcssync *.private ./#*#
+		   *.diff rcssync *.private
 
 # Files to be deleted from distribution
 DISTCLEAN_STUFF	 = $(CLEAN_STUFF) ddd.man.ps \
 		   config.status config.h host.h paths.h \
 		   Makefile MakeOut LOG \
-		   config.log config.cache configinfo.C stamp-h
+		   config.log config.cache configinfo.C stamp-h \
+		   Ddd Ddd.ad.h ddd.man vr.h
 
 # Any files that can be reconstructed, except configure script
 REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF)
@@ -700,22 +701,22 @@ uninstall-man:
 
 .PHONY: clean
 clean:
-	$(RM) $(CLEAN_STUFF)
+	$(RM) $(CLEAN_STUFF) ./#*#
 
 .PHONY: distclean
 distclean:
-	$(RM) $(DISTCLEAN_STUFF)
+	$(RM) $(DISTCLEAN_STUFF) ./#*#
 
 .PHONY: mostlyclean
 mostlyclean: clean
 
 .PHONY: realclean
 realclean:
-	$(RM) $(REALCLEAN_STUFF)
+	$(RM) $(REALCLEAN_STUFF) ./#*#
 
 .PHONY: ultraclean
 ultraclean:
-	$(RM) $(ULTRACLEAN_STUFF)
+	$(RM) $(ULTRACLEAN_STUFF) ./#*#
 
 .PHONY: TAGS
 TAGS:
