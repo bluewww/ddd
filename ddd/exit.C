@@ -864,9 +864,10 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     XtCallbackProc closure = ddd_is_restarting ? RestartCB : ExitCB;
 
-    if (startup_preferences_changed())
+    if (startup_preferences_changed() && !ddd_is_restarting)
     {
-	// Startup options are still changed; request confirmation
+	// Startup options are still changed;
+	// request confirmation before exit
 	static Widget save_options_dialog = 0;
 	if (save_options_dialog == 0)
 	{

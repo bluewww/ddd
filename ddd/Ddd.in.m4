@@ -2874,6 +2874,8 @@ ITEM If LBL(Display two-dimensional arrays as tables) is set, the elements\
  arrays.\n\
 ITEM If LBL(Auto-align displays) is set,\n\
     each display is aligned on the nearest grid point.\n\
+ITEM If LBL(Show edge hints) is set,\n\
+    aliased displays are indicated as small rectangles on edges.\n\
 ITEM If LBL(Use compact layout) is set, the graph is layouted \
 in a compact fashion.\n\
     This is suitable for homogeneous structures only.\n\
@@ -2939,10 +2941,14 @@ ITEM LBL(Data Scrolling) sets the data window scrolling mode.\n\
         (not available in all DDD configurations).\n\
     SUBITEM LBL(Scrollbars) means to use two scrollbars.\n\
 \n\
-ITEM LBL(Debugger Type) sets the type of inferior debugger to use.\n\
+ITEM LBL(Debugger Type) sets the type of the inferior debugger.\n\
 \n\
 ITEM LBL(Splash Screen) lets you choose among different DDD splash screens,\n\
     or LBL(None), disabling it.\n\
+\n\
+ITEM LBL(Show Tip of the Day) determines whether DDD shows the tip \
+of the day\n\
+    upon startup.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
@@ -2995,6 +3001,9 @@ Ddd*showStartupLogoMenu*color.labelString:	Color
 Ddd*showStartupLogoMenu*grey.labelString:	Grey
 Ddd*showStartupLogoMenu*grey4.labelString:	Grey4
 Ddd*showStartupLogoMenu*none.labelString:	None
+
+Ddd*preferences*showStartupTips.labelString:	Show Tip of the Day
+
 
 Ddd*preferences*helpers*helpString: \
 @rm These are the EMPH([DDD] Helpers), external applications used by DDD.\n\

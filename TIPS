@@ -124,6 +124,9 @@ CODE(run       )      - possibly giving arguments here
 
 ! Advanced tips.
 
+To get rid of these tips of the day, unset
+LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Show Tip of the Day).
+
 You can have each of DDD, @GDB@ and the debugged program run on
 different machines.  See the DDD KBD(--rhost) option for details.
 
@@ -168,8 +171,8 @@ nothing helps you more in debugging than to try to explain your problem
 (what your code should do, and what it actually does) to someone else.
 BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
-Do you have any more DDD tips of the day?
-Send suggestions to EMAIL(ddd@ ips.cs.tu-bs.de).
+If you have any more DDD tips of the day,
+please send them to the DDD developers EMAIL([ddd]@ ips.cs.tu-bs.de).
 
 ! If you have other questions, comments or suggestions, contact The King
 ! via electronic mail to EMAIL(elvis@ graceland.gnu.ai.mit.edu).  The King will

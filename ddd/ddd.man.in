@@ -4747,7 +4747,8 @@ inferior debugger.
 The \s-2@DDD@\s+2 `restart' session.
 .TP
 .B $HOME/.@ddd@/tips
-\s-2@DDD@\s+2 tips resource file.  Contains the current tips counter.
+\s-2@DDD@\s+2 tips resource file.  Contains the number of the next tip
+of the day.
 .TP
 .B $HOME/.gdbinit
 \s-2GDB\s+2 initialization file.

@@ -40,6 +40,7 @@ char tips_rcsid[] =
 #include "DestroyCB.h"
 #include "HelpCB.h"
 #include "cook.h"
+#include "ddd.h"
 #include "post.h"
 #include "session.h"
 #include "string-fun.h"
@@ -99,15 +100,13 @@ static void SaveTipCountCB(Widget, XtPointer = 0, XtPointer = 0)
     os << 
 	"! " DDD_NAME " tips file\n"
 	"\n"
-       << app_value(XtNstartupTips, 
-		    (app_data.startup_tips ? "on" : "off")) << "\n"
        << app_value(XtNstartupTipCount,
 		    itostring(++app_data.startup_tip_count)) << "\n";
 
     os.close();
     if (os.bad())
     {
-	post_error("Cannot save tip resources in " + quote(file),
+	post_error("Cannot save tip count in " + quote(file),
 		   "options_save_error");
     }
 }
@@ -158,12 +157,14 @@ static void NextTipCB(Widget w, XtPointer, XtPointer)
     refresh_tip_dialog(w);
 }
 
-void SetStartupTipsCB(Widget w, XtPointer, XtPointer call_data)
+void SetStartupTipsCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.startup_tips = info->set;
+
+    update_options();
 }
 
 void TipOfTheDayCB(Widget w, XtPointer, XtPointer)

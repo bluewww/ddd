@@ -958,7 +958,7 @@ static MMDesc data_preferences_menu[] =
       NULL, &graph_detect_aliases_w },
     { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB },
       NULL, &graph_align_2d_arrays_w },
-    { "showHints",     MMToggle | MMUnmanaged,  { graphToggleShowHintsCB },
+    { "showHints",     MMToggle,  { graphToggleShowHintsCB },
       NULL, &graph_show_hints_w },
     { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB },
       NULL, &graph_snap_to_grid_w },
@@ -1065,6 +1065,8 @@ static MMDesc startup_logo_menu [] =
     MMEnd
 };
 
+static Widget startup_tips_w;
+
 static MMDesc startup_preferences_menu [] =
 {
     { "windows",         MMRadioPanel,  MMNoCB, window_mode_menu },
@@ -1074,6 +1076,8 @@ static MMDesc startup_preferences_menu [] =
     { "dataScrolling",   MMRadioPanel,  MMNoCB, data_scrolling_menu },
     { "debugger",        MMRadioPanel,  MMNoCB, debugger_menu },
     { "showStartupLogo", MMRadioPanel,  MMNoCB, startup_logo_menu },
+    { "showStartupTips", MMToggle, { SetStartupTipsCB }, 
+      NULL, &startup_tips_w },
     MMEnd
 };
 
@@ -3306,6 +3310,8 @@ void update_options()
     set_toggle(startup_logo_grey4_w, color_key == "g4");
     set_toggle(startup_logo_none_w,  color_key == "");
 
+    set_toggle(startup_tips_w, app_data.startup_tips);
+
     if (app_data.cache_source_files != source_view->cache_source_files)
     {
 	source_view->cache_source_files = app_data.cache_source_files;
@@ -3593,22 +3599,25 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(graph_auto_layout_w, initial_auto_layout);
 
     Dimension grid_width, grid_height;
-    Boolean show_grid;
+    Boolean show_grid, show_hints;
 
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
 		  XtNshowGrid,   &show_grid,
+		  XtNshowHints,  &show_hints,
 		  NULL);
 
     if (grid_width     != initial_grid_width 
 	|| grid_height != initial_grid_height
-	|| show_grid   != initial_show_grid)
+	|| show_grid   != initial_show_grid
+	|| show_hints  != initial_show_hints)
     {
 	XtVaSetValues(data_disp->graph_edit,
 		      XtNgridWidth,  grid_width  = initial_grid_width,
 		      XtNgridHeight, grid_height = initial_grid_height,
 		      XtNshowGrid,   show_grid   = initial_show_grid,
+		      XtNshowHints,  show_hints  = initial_show_hints,
 		      NULL);
 		      
 	update_options();
@@ -3679,6 +3688,8 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(startup_logo_grey_w,  color_key == "g");
     notify_set_toggle(startup_logo_grey4_w, color_key == "g4");
     notify_set_toggle(startup_logo_none_w,  color_key == "");
+
+    notify_set_toggle(startup_tips_w, initial_app_data.startup_tips);
 }
 
 
@@ -3695,7 +3706,8 @@ bool startup_preferences_changed()
     XtVaGetValues(command_shell,
 		  XmNkeyboardFocusPolicy, &focus_policy, NULL);
 
-    return separate != initial_separate
+    return app_data.startup_tips != initial_app_data.startup_tips
+	|| separate != initial_separate
 	|| app_data.button_images != initial_app_data.button_images
 	|| app_data.button_captions != initial_app_data.button_captions
 	|| app_data.command_toolbar != initial_app_data.command_toolbar

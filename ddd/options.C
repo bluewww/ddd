@@ -1564,6 +1564,8 @@ bool save_options(unsigned long flags)
 			   app_data.paper_size) << "\n";
     os << bool_app_value(XtNblinkWhileBusy,
 			 app_data.blink_while_busy) << "\n";
+    os << bool_app_value(XtNstartupTips, 
+			 app_data.startup_tips) << "\n";
 
 
     // Graph editor
