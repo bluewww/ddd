@@ -5063,7 +5063,7 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     strip_final_blanks(info_breakpoints_output);
     if (info_breakpoints_output == "")
     {
-	if (gdb->have_watch_command())
+	if (gdb->has_watch_command())
 	    info_breakpoints_output = "No breakpoints or watchpoints.";
 	else
 	    info_breakpoints_output = "No breakpoints.";
