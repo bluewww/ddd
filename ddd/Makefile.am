@@ -39,6 +39,7 @@ MV = mv
 ECHO = echo
 GREP = grep
 DATE = date
+CMP = cmp
 
 # The fig2dev command.  (fig2dev)
 FIG2DEV = fig2dev
@@ -704,7 +705,8 @@ ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXP) $(LIBXPM) $(LIBXAW) $(LIBXEXT) \
 
 
 
-bin_PROGRAMS = ddd cxxtest ctest userinfo
+bin_PROGRAMS = ddd
+EXTRA_PROGRAMS = stringify userinfo ctest cxxtest
 ddd_SOURCES = ddd.C \
 	$(BASE_SOURCES) \
 	$(TEMPLATE_SOURCES) \
@@ -716,9 +718,10 @@ ddd_SOURCES = ddd.C \
 	$(GRAPH_SOURCES) \
 	$(DDD_SOURCES)
 
-cxxtest_SOURCES = cxxtest.C
-ctest_SOURCES   = ctest.c
+stringify_SOURCES = cxxtest.C
 userinfo_SOURCES = userinfo.C
+ctest_SOURCES   = ctest.c
+cxxtest_SOURCES = cxxtest.C
 
 ddd_LDADD = $(ALL_X_LIBS) $(DDD_LIBS) 
 X_INCLUDE = @X_CFLAGS@
@@ -1681,8 +1684,8 @@ rxscan.C: $(srcdir)/rxscan.L
 # ddd.info.txt does NOT depend on ddd.info since we don't want it to get
 # re-created after each configuration.
 ddd.info.txt: $(srcdir)/ddd.texi configure.in
-	$(MAKE) $(docdir)/ddd.info
-	info --subnodes -o - -f $(docdir)/ddd.info > $@~ && $(MV) $@~ $@
+	$(MAKE) ddd.info
+	info --subnodes -o - -f ddd.info > $@~ && $(MV) $@~ $@
 
 # ddd.man.txt may reside in $(srcdir) or `.' , hence the `$?'
 ddd.info.txt.gz: ddd.info.txt
@@ -1816,6 +1819,8 @@ DIST_STUFF = ../$(ddd)-$(VERSION)-$(REL).spec \
 
 # Let automake know what we need
 EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
+
+all: $(PROG_STUFF)
 
 CLEANFILES = build.h ddd.?? ddd.??s ddd.ps ddd.pdf *.tmp
 DISTCLEANFILES = host.h
