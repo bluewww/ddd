@@ -276,4 +276,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 277 When the editor fails, record and show its stderr messages.
 
-278 (Insert new bugs here)
+278 The `--fonts' option needs documentation.
+
+279 (Insert new bugs here)
