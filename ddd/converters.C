@@ -389,8 +389,8 @@ Boolean CvtStringToXmString(Display *display,
 {
     const string font_esc = "@";
 
-    const regex font_id("[_A-Za-z][-_A-Za-z0-9]*", true);
-    const regex blank("[ \t]*", true);
+    static regex font_id("[_A-Za-z][-_A-Za-z0-9]*");
+    static regex blank("[ \t]*");
 
     // get string
     string source = (String)fromVal->addr;
