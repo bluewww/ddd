@@ -2003,7 +2003,7 @@ DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO $(IMAGES)
 MOSTLYCLEANFILES = ddd.au ddd.cm ddd.cms ddd.en ddd.fl ddd.fls ddd.lb ddd.lbs \
 	ddd.tmp ddd.html ddd.pdf ddd.ps \
 	ddd-themes.au ddd-themes.fl ddd-themes.fls \
-	ddd-themes.tmp ddd-themes.html ddd-themes.pdf ddd-themes.ps \
+	ddd-themes.tmp ddd-themes.html ddd-themes.pdf ddd-themes.ps
 
 # Have `make maintainer-clean' remove _all_ derived files.
 MAINTAINERCLEANFILES = $(PROG_STUFF)
