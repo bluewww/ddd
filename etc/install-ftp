@@ -1,0 +1,227 @@
+#!/bin/sh
+# $Id$
+# Install DDD release on our FTP server
+
+# Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+# Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+# 
+# This file is part of DDD.
+# 
+# DDD is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+# 
+# DDD is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with ICE -- see the file COPYING.
+# If not, write to the Free Software Foundation, Inc.,
+# 675 Mass Ave, Cambridge, MA 02139, USA.
+# 
+# DDD is the GDB-based data display debugger.
+# Contact ddd@ips.cs.tu-bs.de for details.
+
+# $Log$
+# Revision 1.1  1995/05/01 15:48:41  zeller
+# Initial revision
+#
+
+# Name of the ftp server (use "" if local)
+ftp=ftp
+
+# Directory
+dir=/ftp/pub/local/softech/ddd
+
+# rsh and rcp commands
+if [ "$ftp" = "" ]; then
+  rsh="sh -c"
+  rcp=cp
+  ftpdir=$dir
+else
+  rsh="rsh $ftp"
+  rcp="rcp"
+  ftpdir=$ftp:$dir
+fi
+
+# Introduction files
+README="ANNOUNCE    \
+        BUGS        \
+        COPYING     \
+        COPYING.LIB \
+	INSTALL     \
+	NEWS        \
+	PROBLEMS    \
+	PROJECTS    \
+	README      \
+"
+
+# Distribution files
+DDD=ddd-*.tar.gz
+DIST=`ls $DDD`
+
+if [ "$DIST" = "" ]; then
+   echo "cannot find dist file" >&2
+   exit 1
+fi
+
+# Manual files
+DVI="ddd.man.ps"
+
+# Files to be ignored in DIFF files
+DIFF_IGNORE="
+doc/ddd*.ps
+ddd/vsl-lex.C
+ddd/vsl-gramma.C
+ddd/vsl-gramma.h
+ddd/ddd.man.txt
+ddd/ddd.man.C
+ddd/Ddd
+ddd/Ddd.ad.h
+ddd/xlibdir.C
+"
+
+readme=false
+dist=false
+doc=false
+diff=false
+link=false
+
+# Comment out any of the following to disable installation
+readme=true
+dist=true
+doc=true
+diff=true
+link=true
+
+if $readme; then
+  echo installing $README in $ftpdir...
+  $rsh "cd $dir; /bin/rm -f $README"
+  $rcp $README $ftpdir
+fi
+
+if $dist; then
+  echo installing $DIST in $ftpdir/src...
+  $rsh "cd $dir/src; /bin/rm -f $DIST"
+  $rcp $DIST $ftpdir/src
+fi
+
+if $doc; then
+  (
+  cd ddd
+  if [ ! -f Makefile ]; then
+    echo configuring ddd...
+    ./configure -v
+  fi
+
+  echo making $DVI...
+  for dvi in $DVI; do
+    gmake ../doc/$dvi
+  done
+
+  echo installing $DVI...
+  $rsh "cd $dir/doc; /bin/rm -f $DVI"
+  (cd ../doc; $rcp $DVI $ftpdir/doc)
+  $rsh "cd $dir/doc; gzip -f -v -9 $DVI"
+
+  (cd ../doc; rm -f $DVI)
+  )
+fi
+
+if $diff; then
+  echo installing diffs...
+  for dist in $DIST; do
+    dist_version=`echo $dist | sed 's%.*-\(.*\)\.tar.*%\1%'`
+    dist_release=ddd-$dist_version
+    echo unpacking $dist...
+    rm -fr $dist_release
+    gtar zxf $dist
+    for file in `$rsh "cd $dir/src; ls -t $DDD | head -2"`; do
+      if [ "$file" = "$dist" ]; then
+	continue
+      fi
+      file_version=`echo $file | sed 's%.*-\(.*\)\.tar.*%\1%'`
+      file_release=ddd-$file_version
+      diff=$file_release-$dist_version.diff
+
+      rm -f $diff
+      rm -fr $file
+      echo getting $file...
+      $rcp $ftpdir/src/$file .
+      rm -fr $file_release
+      echo unpacking $file_release...
+      gtar zxf $file
+
+      echo writing $diff header...
+      (
+      echo "This patch will bring a $file_release release up to $dist_release."
+      echo
+      echo "To apply this patch, do the following:";
+      echo
+      echo "1. Change to the directory containing the $file_release"
+      echo "   top-level directory."
+      echo
+      echo "2. Apply this patch on $file_release, using \`patch':"
+      echo "   % patch -p < $diff"
+      echo
+      echo "3. Rename the \`$file_release' directory to \`$dist_release':"
+      echo "   % mv $file_release $dist_release"
+      echo
+      echo "4. Consider removing unnecessary .orig files, using \`find:'"
+      echo "   % find $dist_release -name '*.orig' -exec rm -f {} \;"
+      echo
+      echo "5. Consider removing files no more present in $dist_release."
+      echo "   You can find these files by looking for the text"
+      echo "   \`Only in $file_release:', below."
+      echo
+      echo "That's all.  $dist_release should now be identical to the distributed version"
+      echo "-- besides any changes you made, of course."
+      echo
+      echo "Note that changes in the following files are NOT included in this patch,"
+      echo "since these files can easily be reconstructed using \`make':"
+      echo "$DIFF_IGNORE" | sed 's/^/    &/'
+      echo
+      echo "Please report any bugs to ddd-bugs@ips.cs.tu-bs.de."
+      echo
+      # echo "Prereq: $file_release"
+      # echo
+      ) > $diff
+
+      (cd $file_release; rm -f $DIFF_IGNORE)
+      (cd $dist_release; tar cf - $DIFF_IGNORE) | 
+      (cd $file_release; tar xfBp -)
+
+      echo finding $diff...
+      gdiff -c2prP $file_release $dist_release | grep -v '^\\' >> $diff
+
+      echo packing $diff...
+      rm -f $diff.gz
+      gzip -9 -c $diff > $diff.gz
+      chmod -w $diff $diff.gz
+
+      echo installing $diff...
+      $rsh "cd $dir/diffs; /bin/rm -f $diff.gz"
+      $rcp $diff.gz $ftpdir/diffs
+
+      echo removing $file_release...
+      rm -fr $file $file_release
+
+    done
+    echo removing $dist_release...
+    rm -fr $dist_release
+  done
+fi
+
+if $link; then
+  dist_base=`echo $dist | sed 's%.*-\(.*\)\.[0-9]*\.tar.*%\1%'`
+  link=ddd-$dist_base.tar.gz
+  echo installing link from $link to src/$DIST...
+  $rsh "cd $dir; /bin/rm -f $link; ln -s src/$DIST $link"
+fi
+
+# That's all, folks
+echo done.
+exit 0

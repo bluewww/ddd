@@ -1,0 +1,66 @@
+#!/bin/sh
+# Check various sites
+
+SHELL=/bin/sh
+
+(
+for site in \
+ftp.crl.research.digital.com:/pub/X11/contrib \
+ftp.x.org:/contrib \
+ftp.marcam.com:/R6/contrib \
+ftp.cs.columbia.edu:/archives/X11R6/contrib \
+ftp.acsu.buffalo.edu:/pub/R6 \
+ftp.digex.net:/pub/X11/contrib \
+ftp.arl.mil:/pub/X11/contrib \
+ftp.uu.net:/systems/window-sys/X/contrib \
+sws1.ctd.ornl.gov:/unix/X11R6/contrib: \
+gatekeeper.dec.com:/pub/X11/contrib \
+ftp.Austria.EU.net:/pub/x11/x11r6/contrib \
+ftp.eunet.be:/contrib \
+ftp.zel.etf.hr:/pub/X11/contrib \
+ftp.eunet.cz:/pub/x11/R6/contrib \
+ftp.denet.dk:/pub/X11/contrib \
+osiris.dknet.dk:/pub/X11/contrib \
+ftp.eunet.fi:/X11R6/contrib \
+nic.funet.fi:/pub/X11/contrib \
+ftp.inria.fr:/X/contrib-R6 \
+ftp.ibp.fr:/pub/X11/contrib \
+ftp.germany.eu.net:/pub/X11/XConsortium/contrib \
+ftp.uni-paderborn.de:/pub/X11/contrib \
+sunserv.sztaki.hu:/pub/R6-contrib \
+ftp.ieunet.ie:/pub/R6/contrib \
+ftp.dsi.unimi.it:/export \
+ftp.iunet.it:/X11/contrib \
+ftp.eunet.no:/pub/X11/contrib \
+ftp.unit.no:/pub/X11/contrib \
+ftp.icm.edu.pl:/pub/X11/contrib \
+ftp.puug.pt:/pub/X11R6/contrib \
+ftp.kiae.su:/x11/X11R6/contrib \
+ftp.luth.se:/pub/X11/contrib \
+ftp.sunet.se:/pub/X11/contrib \
+ftp.eunet.ch:/archive/software/X \
+ftp.switch.ch:/mirror/X11/contrib \
+ftp.EU.net:/X11/contrib \
+ftp.NL.net:/pub/windows/X/contrib \
+ftp.britain.eu.net:/pub/X11R6-contrib \
+src.doc.ic.ac.uk:/packages/X11-contrib \
+ftp.cs.cuhk.hk:/pub/Xcontrib \
+ftp.iij.ad.jp:/pub/X/contrib \
+ftp.ec.kyushu-u.ac.jp:/pub/contrib \
+SunSITE.sut.ac.jp:/pub/archives/X11/R6contrib \
+ftp.u-tokyo.ac.jp:/pub/X11R6-contrib \
+sh.wide.ad.jp:/X11R6-contrib \
+wnoc-nara-ss2.wide.ad.jp:/pub/X11R6-contrib \
+ftp.inter.spin.ad.jp:/pub/unix/R6/contrib \
+NCTUCCCA.edu.tw:/X/contrib \
+archie.AU:X11/contrib \
+munnari.OZ.AU:X.V11/contrib
+do
+ftp=`echo $site | cut -d: -f1`
+dir=`echo $site | cut -d: -f2`
+echo open $ftp
+echo cd $dir/utilities
+echo ls xxgdb*
+echo close
+done
+) | ftp -v
