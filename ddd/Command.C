@@ -154,7 +154,6 @@ void translate_command(string& command)
 void _gdb_command(const Command& c)
 {
     string cmd = c.command;
-    translate_command(cmd);
 
     if (gdb->isReadyWithPrompt())
     {
@@ -168,7 +167,7 @@ void _gdb_command(const Command& c)
 	{
 	    promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
 	}
-	else if (c.command.length() > 0 && c.verbose)
+	else if (cmd.length() > 0 && c.verbose)
 	{
 	    add_to_history(cmd);
 	}
@@ -198,6 +197,7 @@ void _gdb_command(const Command& c)
 		      ClearOriginCB, 0);
     }
 
+    translate_command(cmd);
     send_gdb_command(cmd, c.origin, c.callback, c.data, c.verbose, c.check);
     messagePosition = XmTextGetLastPosition(gdb_w);
 }
