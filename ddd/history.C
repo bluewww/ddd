@@ -64,6 +64,7 @@ char history_rcsid[] =
 #include "shell.h"
 #include "status.h"
 #include "string-fun.h"
+#include "uniquify.h"
 #include "verify.h"
 #include "wm.h"
 
@@ -596,86 +597,26 @@ void get_recent(StringArray& arr)
 // Menus to be updated
 static VoidArray menus;
 
-static const char *file_basename(const char *name)
-{
-    const char *base = name;
-
-    while (*name)
-    {
-	if (*name++ == '/')
-	    base = name;
-    }
-
-    return base;
-}
-
-// FULL_PATH is /X/Y/Z/NAME; expand NAME to Z/NAME.
-static bool expand_label(string& name, const string& full_path, char sep)
-{
-    // Set index to the last SEP before NAME
-    int index = full_path.length() - name.length();
-    index = full_path.index(sep, index - full_path.length() - 1);
-
-    if (index >= 1)
-    {
-	// Set index to the last SEP before Z
-	index--;
-	index = full_path.index(sep, index - full_path.length() - 1);
-    }
-
-    if (index >= 1)
-    {
-	name = full_path.after(index);
-	return true;
-    }
-    else
-    {
-	name = full_path;
-	return false;
-    }
-}
-
 static void update_recent_menu(MMDesc *items)
 {
     StringArray recent_files;
-    get_recent(recent_files);
+    {
+	StringArray r;
+	get_recent(r);
+	for (int i = 0; i < r.size() && items[i].widget != 0; i++)
+	    recent_files += r[i];
+    }
 
-    int i;
-
-    // Start with base names
-    StringArray labels;
-    for (i = 0; i < recent_files.size() && items[i].widget != 0; i++)
-	labels += file_basename(recent_files[i]);
-
-    // While there are any duplicate labels, add the directory names
+    // Uniquify labels
     char sep = '/';
     if (gdb->type() == JDB)
 	sep = '.';
 
-    i = 0;
-    while (i < labels.size())
-    {
-	bool expanded = false;
-	for (int j = i + 1; j < labels.size(); j++)
-	{
-	    if (labels[i] == labels[j])
-	    {
-		if (expand_label(labels[j], recent_files[j], sep))
-		    expanded = true;
-	    }
-	}
-
-	if (expanded && expand_label(labels[i], recent_files[i], sep))
-	{
-	    // Try again with expanded labels
-	}
-	else
-	{
-	    i++;
-	}
-    }
+    StringArray labels;
+    uniquify(recent_files, labels, sep);
 
     // Set labels
+    int i;
     for (i = 0; i < labels.size(); i++)
     {
 	MString label(itostring(i + 1) + " ");
