@@ -33,6 +33,9 @@
 #pragma interface
 #endif
 
+
+// A BoxRegion is a rectangular area which has an ORIGIN and a SPACE.
+
 #include <iostream.h>
 #include "misc.h"
 #include "BoxPoint.h"
@@ -45,7 +48,9 @@ class BoxRegion {
 private:
     BoxPoint _origin;
     BoxSize  _space;
+
 public:
+    // Constructors
     BoxRegion(const BoxPoint& o, const BoxSize& s):
 	_origin(o), _space(s)
     {}
@@ -61,6 +66,7 @@ public:
 	_origin(r._origin), _space(r._space)
     {}
 
+    // Resources
     BoxPoint& origin()                    { return _origin; }
     BoxCoordinate& origin(BoxDimension d) { return _origin[d]; }
     BoxSize& space()                      { return _space; }
@@ -71,13 +77,13 @@ public:
     const BoxSize& space() const                      { return _space; }
     const BoxCoordinate& space(BoxDimension d) const  { return _space[d]; }
 
-    // Vergleichsoperatoren
+    // Comparison
     bool operator == (const BoxRegion& r) const
     { return origin() == r.origin() && space() == r.space(); }
     bool operator != (const BoxRegion& r) const
     { return origin() != r.origin() || space() != r.space(); }
 
-    // Pruefen, ob BoxRegion (teilweise oder ganz) in r enthalten ist
+    // Check if BoxRegion is (partially) contained in R
     bool operator <= (const BoxRegion& r) const
     {
 	for (BoxDimension d = X; d <= Y; d++)
@@ -88,13 +94,13 @@ public:
 	return true;
     }
 
-    // Schnittmenge zweier Regionen berechnen
+    // Rectangular intersection of two regions
     BoxRegion operator & (const BoxRegion& r) const;
 
-    // Vereinigung zweier Regionen berechnen
+    // Rectangular union of two regions
     BoxRegion operator | (const BoxRegion& r) const;
 
-    // Pruefen, ob leerer Bereich
+    // Check if region is empty
     bool isEmpty() const
     {
 	return space() <= BoxSize(0,0);
@@ -104,7 +110,7 @@ public:
     friend ostream& operator << (ostream& s, const BoxRegion& r);
 };
 
-// Pruefen, ob Punkt p in r enthalten ist
+// Check if P is contained in R
 inline bool operator <= (const BoxPoint& p, const BoxRegion& r)
 {
     for (BoxDimension d = X; d <= Y; d++)

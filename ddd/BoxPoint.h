@@ -33,10 +33,9 @@
 #pragma interface
 #endif
 
-// BoxPoint beschreibt Paare von Koordinaten, die per BoxDimension (X oder Y)
-// angesprochen werden. BoxPoint wird typischerweise fuer Positionen
-// benutzt, aber auch als Basisklasse fuer Groessen (BoxSize)
-// und Ausdehnungsfaehigkeiten (BoxExtend).
+// A BoxPoint is a pair of coordinates accessed by a BoxDimension (X
+// or Y).  A BoxPoint is typically used for positions, but is also a
+// base class for sizes (BoxSize) and extents (BoxExtend)
 
 #include "BoxC.h"
 #include "BoxD.h"
@@ -50,6 +49,8 @@ class BoxPoint {
 protected:
     BoxCoordinate point[NDimensions];
 public:
+
+    // Constructors
     BoxPoint(BoxCoordinate x, BoxCoordinate y) 
     {
 	point[X] = x;
@@ -69,11 +70,13 @@ public:
 	point[Y] = p.point[Y];
     }
 
+    // Check for validity
     bool isValid() const
     {
 	return point[X] != NoCoordinate && point[Y] != NoCoordinate;
     }
 
+    // Operators
     BoxPoint operator + (const BoxPoint& p) const
     {
 	if (isValid() && p.isValid())
@@ -151,6 +154,7 @@ public:
 	}
     }
 
+    // Resources
     const BoxCoordinate& operator [] (const BoxDimension& dimension) const
     {
 	return point[dimension];
@@ -160,10 +164,12 @@ public:
 	return point[dimension];
     }
 
+    // I/O
     friend ostream& operator << (ostream& stream, 
 				 const BoxPoint& point);
 };
 
+// Comparisons
 inline bool operator == (const BoxPoint& p1, const BoxPoint& p2)
 {
     return p1[X] == p2[X] && p1[Y] == p2[Y];

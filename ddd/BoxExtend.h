@@ -33,19 +33,21 @@
 #pragma interface
 #endif
 
-
-// BoxExtend beschreibt Ausdehnungsfaehigkeiten (insbesondere von Boxen).
-// Eine Ausdehnung von 0 heisst: keine Ausdehnung moeglich.
-// Je groesser eine Ausdehnung, um so mehr wird der betreffenden Box
-// freier Restplatz zugewiesen. Hat etwa im Ausdruck a & b
-// die Box a eine Ausdehnungsfaehigkeit von 1 und die Box b eine von 2, 
-// so wird a 1/3 und b 2/3 des freien Restplatzes zugewiesen.
+// A `BoxExtend' denotes the extensibility of a box - that is, how
+// much the box extends to fill up available space.  An extensibility
+// of 0 means that the box will not extend at all.  The bigger the
+// extensibility, the more remaining space is assigned to the box.
+// For example, let A and B be two boxes; A has a horizontal
+// extensibility of 1, B has a horizontal extensibility of 2.  If A
+// and B are horizontally concatenated, A gets 1/3 of the remaining
+// space and B gets 2/3 of the remaining space.
 
 #include "BoxPoint.h"
 #include "misc.h" // min(), max()
 
 class BoxExtend: public BoxPoint {
 public:
+    // Constructors
     BoxExtend(BoxCoordinate x_extend, BoxCoordinate y_extend):
 	BoxPoint(x_extend, y_extend)
     {}
@@ -59,6 +61,7 @@ public:
 	BoxPoint(p)
     {}
 
+    // Horizontal concatenation
     BoxExtend operator & (const BoxExtend& e) 
     {
 	if (isValid() && e.isValid())
@@ -68,6 +71,7 @@ public:
 	    return BoxExtend();
     }
 
+    // Vertical concatenation
     BoxExtend operator | (const BoxExtend& e) 
     {
 	if (isValid() && e.isValid())
@@ -77,6 +81,7 @@ public:
 	    return BoxExtend();
     }
 
+    // Stacked concatenation
     BoxExtend operator ^ (const BoxExtend& e) 
     {
 	if (isValid() && e.isValid())
@@ -86,6 +91,7 @@ public:
 	    return BoxExtend();
     }
 
+    // Assignment versions
     void operator &= (const BoxExtend& e) 
     {
 	if (isValid() && e.isValid())
@@ -111,6 +117,7 @@ public:
 	}
     }
 
+    // Set extensibility to zero
     void fix (BoxDimension dimension) 
     {
 	if (isValid())
@@ -118,7 +125,7 @@ public:
     }
 };
 
-
+// I/O
 inline ostream& operator << (ostream& stream, const BoxExtend& extend)
 {
     const BoxPoint& p = extend;

@@ -34,13 +34,14 @@
 #endif
 
 
-// BoxSize beschreibt Groessen (insbesondere von Boxen).
+// A BoxSize denotes a two-dimensional size (especially box sizes).
 
 #include "BoxPoint.h"
 #include "misc.h" // max()
 
 class BoxSize: public BoxPoint {
 public:
+    // Constructors
     BoxSize(BoxCoordinate x_size, BoxCoordinate y_size): 
 	BoxPoint(x_size, y_size) 
     {}
@@ -54,6 +55,8 @@ public:
 	BoxPoint(p) 
     {}
 
+    // Operators
+    // Horizontal concatenation
     BoxSize operator & (const BoxSize& s) 
     {
 	if (isValid() && s.isValid())
@@ -62,6 +65,8 @@ public:
 	else
 	    return BoxSize();
     }
+
+    // Vertical concatenation
     BoxSize operator | (const BoxSize& s) 
     {
 	if (isValid() && s.isValid())
@@ -70,6 +75,8 @@ public:
 	else
 	    return BoxSize();
     }
+
+    // Stacked concatenation (maximum size)
     BoxSize operator ^ (const BoxSize& s) 
     {
 	if (isValid() && s.isValid())
@@ -79,6 +86,7 @@ public:
 	    return BoxSize();
     }
 
+    // Assignment versions
     void operator &= (const BoxSize& s) 
     {
 	if (isValid() && s.isValid())
@@ -105,6 +113,7 @@ public:
     }
 };
 
+// I/O
 inline ostream& operator << (ostream& stream, const BoxSize& size)
 {
     const BoxPoint& p = size;
