@@ -80,7 +80,7 @@ char comm_manager_rcsid[] =
 enum Filtering {NoFilter, TryFilter, Filter};
 
 // Additional data given to every single command.
-typedef struct CmdData {
+struct CmdData {
     Widget      origin;		  // Origin of this command
     Filtering   filter_disp;      // NoFilter:  do not filter displays.
 				  // TryFilter: do filter if present.
@@ -188,7 +188,7 @@ void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
 
 
 // Additional data given to extra commands.
-typedef struct PlusCmdData {
+struct PlusCmdData {
     int      n_init;	               // # of initialization commands
 
     bool     refresh_initial_line;     // send 'info line' / `func'
@@ -1176,6 +1176,13 @@ static string last_pos_found;	// Last position found
 static bool last_new_exec_pos;	// True if last command was new exec position
 static bool last_new_frame_pos;	// True if last command was new frame position
 
+// Return current JDB frame; 0 if none
+inline int jdb_frame()
+{
+    return get_positive_nr(gdb->prompt().from("["));
+}
+
+// Command completed
 void user_cmdOAC (void *data)
 {
     gdb_is_exiting = false;
@@ -1279,7 +1286,12 @@ void user_cmdOAC (void *data)
 	last_new_exec_pos =  cmd_data->new_exec_pos;
 	last_new_frame_pos = cmd_data->new_frame_pos;
 
-	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
+	if (gdb->type() == JDB && jdb_frame() > 1)
+	{
+	    // A breakpoint was reached at some lower frame.  Don't
+	    // change the current position now.
+	}
+	else if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
 	{
 	    source_view->show_execution_position(pos, cmd_data->new_exec_pos, 
 						 pos_buffer->signaled_found());
@@ -1299,7 +1311,7 @@ void user_cmdOAC (void *data)
 	    source_view->show_execution_position();
     }
 
-    // up/down is done: set frame position in backtrace window
+    // Up/Down is done: set frame position in backtrace window
     if (cmd_data->set_frame_pos)
     {
 	if (cmd_data->set_frame_func != "")
@@ -1863,7 +1875,24 @@ void plusOQAC (const StringArray& answers,
     }
 
     if (plus_cmd_data->refresh_where)
-	source_view->process_where(answers[qu_count++]);
+    {
+	string& where_output = answers[qu_count++];
+
+	if (gdb->type() == JDB)
+	{
+	    // In JDB, the first line issued by `where' is also the
+	    // current exec position in the current frame.
+	    PosBuffer pb;
+	    string w(where_output);
+	    pb.filter(w);
+	    pb.answer_ended();
+
+	    if (pb.pos_found())
+		source_view->show_execution_position(pb.get_position());
+	}
+
+	source_view->process_where(where_output);
+    }
 
     if (plus_cmd_data->refresh_frame)
     {

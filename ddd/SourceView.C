@@ -5126,11 +5126,8 @@ void SourceView::setup_where_line(string& line)
 }
 
 // Return current JDB frame; 0 if none
-static int jdb_frame()
+inline int jdb_frame()
 {
-    if (gdb->type() != JDB)
-	return 0;
-
     return get_positive_nr(gdb->prompt().from("["));
 }
 
@@ -5144,19 +5141,6 @@ void SourceView::process_where(string& where_output)
 
     while (count > 0 && frame_list[count - 1] == "")
 	count--;
-
-    if (gdb->type() == JDB)
-    {
-        // In JDB, the first line issued by `where' is also the
-        // current line in the current frame
-        PosBuffer pb;
-	string w(where_output);
-        pb.filter(w);
-        pb.answer_ended();
-
-	if (pb.pos_found())
-	    show_execution_position(pb.get_position());
-    }
 
     if (gdb->type() != XDB)
     {
