@@ -979,6 +979,26 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNstartupTips,
+	XtCStartupTips,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, startup_tips),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNstartupTipCount,
+	XtCStartupTipCount,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, startup_tip_count),
+	XtRImmediate,
+	XtPointer(0)
+    },
+
+    {
 	XtNstatusAtBottom,
 	XtCStatusAtBottom,
 	XtRBoolean,

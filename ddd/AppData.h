@@ -212,6 +212,10 @@
 #define XtNbuttonDocs            "buttonDocs"
 #define XtNvalueDocs             "valueDocs"
 #define XtCDocs                  "Docs"
+#define XtNstartupTips           "startupTips"
+#define XtCStartupTips           "StartupTips"
+#define XtNstartupTipCount       "startupTipCount"
+#define XtCStartupTipCount       "StartupTipCount"
 #define XtNstatusAtBottom        "statusAtBottom"
 #define XtCStatusAtBottom        "StatusAtBottom"
 #define XtNmaxDisplayTitleLength "maxDisplayTitleLength"
@@ -365,6 +369,8 @@ struct AppData {
     Boolean value_tips;
     Boolean button_docs;
     Boolean value_docs;
+    Boolean startup_tips;
+    int     startup_tip_count;
     Boolean status_at_bottom;
     int     max_display_title_length;
     int     max_popup_expr_length;
