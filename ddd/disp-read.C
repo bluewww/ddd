@@ -746,6 +746,7 @@ string  read_disp_nr_str (string& display, GDBAgent *gdb)
 // Remove and return display name from DISPLAY
 string read_disp_name (string& display, GDBAgent *gdb)
 {
+    read_leading_blanks(display);
     string name = display.before (" = ");
     display = get_disp_value_str(display, gdb);
     return name;
