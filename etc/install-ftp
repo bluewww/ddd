@@ -233,6 +233,10 @@ if $diff; then
       echo
       echo "To apply this patch, do the following:";
       echo
+      echo "0. To re-create the \`configure' scripts, you need GNU autoconf"
+      echo "   and GNU automake.  Get them via \`http://www.gnu.org'."
+      echo
+      echo
       echo "1. Change to the directory containing the $file_release"
       echo "   top-level directory, such that \`./$file_release/ANNOUNCE'"
       echo "   contains the $file_release announcement."
@@ -280,8 +284,6 @@ if $diff; then
       echo
       echo "$DIFF_IGNORE" | sed 's/^/    &/'
       echo
-      echo "To re-create \`configure' and \`config.h' files, "
-      echo "\`make' requires GNU autoconf.  See \`http://www.gnu.org/' for details."
       echo
       echo "Please report any bugs or problems to ddd-bugs@ips.cs.tu-bs.de."
       echo
