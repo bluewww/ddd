@@ -622,10 +622,10 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     }
 
     static Widget dependent_display_dialog = 0;
-    if (!dependent_display_dialog) {
-
+    if (dependent_display_dialog == 0)
+    {
 	dependent_display_dialog = 
-	    verify(XmCreatePromptDialog (graph_edit,
+	    verify(XmCreatePromptDialog (find_shell(w),
 					 "dependent_display_dialog",
 					 NULL, 0));
 	Delay::register_shell(dependent_display_dialog);
@@ -681,7 +681,7 @@ void DataDisp::unselectAllCB(Widget w, XtPointer, XtPointer)
 void DataDisp::newCB(Widget w, XtPointer, XtPointer)
 {
     set_last_origin(w);
-    new_displayCD();
+    new_displayCD(w);
 }
 
 void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
@@ -749,7 +749,7 @@ void DataDisp::popup_newCB (Widget    display_dialog,
     set_last_origin(display_dialog);
 
     BoxPoint *p = (BoxPoint *) client_data;
-    new_displayCD(*p);
+    new_displayCD(display_dialog, *p);
 }
 
 
@@ -819,14 +819,15 @@ void DataDisp::new_displayDCB (Widget    display_dialog,
 // Erzeugt Dialog zur Eingabe einer neuen Display-Expression.
 // Wird ein Boxpoint uebergeben, so wird der neue Knoten dorthin gesetzt.
 // 
-void DataDisp::new_displayCD (BoxPoint box_point)
+void DataDisp::new_displayCD (Widget w, BoxPoint box_point)
 {
     static BoxPoint* p;
     static Widget new_display_dialog = 0;
-    if (!new_display_dialog) {
+    if (!new_display_dialog)
+    {
 	p = new BoxPoint(box_point);
 	new_display_dialog = 
-	    verify(XmCreatePromptDialog (graph_edit,
+	    verify(XmCreatePromptDialog (find_shell(w),
 					 "new_display_dialog",
 					 NULL, 0));
 	Delay::register_shell(new_display_dialog);
@@ -1808,6 +1809,7 @@ public:
     BoxPoint *point_ptr;
     string depends_on;
     Widget origin;
+    bool verbose;
 
     NewDisplayInfo()
 	: point_ptr(0), depends_on(""), origin(0)
@@ -1821,13 +1823,14 @@ void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
     new_displaySQ(info->display_expression, info->scope, info->point_ptr, 
-		  info->depends_on, info->origin);
+		  info->depends_on, info->origin, info->verbose);
     delete info;
 }
 
 void DataDisp::new_displaySQ (string display_expression,
 			      string scope, BoxPoint *p,
-			      string depends_on, Widget origin)
+			      string depends_on, Widget origin,
+			      bool verbose)
 {
     // Check arguments
     if (depends_on != "")
@@ -1835,14 +1838,17 @@ void DataDisp::new_displaySQ (string display_expression,
 	int depend_nr = disp_graph->get_by_name(depends_on);
 	if (depend_nr == 0)
 	{
-	    post_gdb_message("No display named " + quote(depends_on) + ".\n");
+	    if (verbose)
+		post_gdb_message("No display named " 
+				 + quote(depends_on) + ".\n");
 	    return;
 	}
 	DispNode *dn = disp_graph->get(depend_nr);
 	if (dn == 0)
 	{
-	    post_gdb_message("No display number " + 
-			     itostring(depend_nr) + ".\n");
+	    if (verbose)
+		post_gdb_message("No display number " + 
+				 itostring(depend_nr) + ".\n");
 	    return;
 	}
     }
@@ -1850,6 +1856,7 @@ void DataDisp::new_displaySQ (string display_expression,
     NewDisplayInfo *info = new NewDisplayInfo;
     info->display_expression = display_expression;
     info->scope = scope;
+    info->verbose = verbose;
     if (p != 0)
     {
 	info->point = *p;
@@ -2076,7 +2083,8 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 
     if (!contains_display (answer, gdb))
     {
-	post_gdb_message(answer, last_origin);
+	if (info->verbose)
+	    post_gdb_message(answer, last_origin);
 	delete info;
 	return;
     }

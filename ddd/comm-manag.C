@@ -253,10 +253,16 @@ typedef struct PlusCmdData {
 static void user_cmdOA  (const string&, void *);
 static void user_cmdOAC (void *);
 static void plusOQAC (string [], void *[], int, void *);
-static bool handle_graph_cmd(string& cmd, const string& where_answer,
-			     Widget origin = 0);
 
+// Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
+// to a `where 1' command; return true iff recognized
+static bool handle_graph_cmd(string& cmd, const string& where_answer,
+			     Widget origin = 0, bool verbose = true);
+
+// Handle output of initialization commands
 static void process_init(const string& answer, void *data = 0);
+
+// Handle output of batch commands
 static void process_batch(const string& answer, void *data = 0);
 
 static string print_cookie = "4711";
@@ -1046,7 +1052,7 @@ void user_cmdOAC (void *data)
 	// Process graph command
 	string cmd = cmd_data->graph_cmd;
 	bool ok = handle_graph_cmd(cmd, cmd_data->user_answer, 
-				   cmd_data->origin);
+				   cmd_data->origin, cmd_data->user_verbose);
 	if (!ok)
 	{
 	    // Unknown command -- try again with base command
@@ -1191,7 +1197,8 @@ void read_numbers(string command, IntArray& numbers)
 
 // Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
 // to a `where 1' command; return true iff recognized
-bool handle_graph_cmd(string& cmd, const string& where_answer, Widget origin)
+static bool handle_graph_cmd(string& cmd, const string& where_answer, 
+			     Widget origin, bool verbose)
 {
     string scope;
     if (gdb->has_func_command())
@@ -1253,7 +1260,7 @@ bool handle_graph_cmd(string& cmd, const string& where_answer, Widget origin)
 	cmd = reverse(rcmd);
 	string display_expression = get_display_expression(cmd);
 	data_disp->new_displaySQ(display_expression, scope,
-				 pos, depends_on, origin);
+				 pos, depends_on, origin, verbose);
     }
     else if (is_refresh_cmd(cmd))
     {

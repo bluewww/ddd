@@ -137,7 +137,7 @@ class DataDisp {
     //-----------------------------------------------------------------------
     // Create dialogs
     //-----------------------------------------------------------------------
-    static void new_displayCD (BoxPoint box_point = BoxPoint());
+    static void new_displayCD (Widget w, BoxPoint box_point = BoxPoint());
 
     //-----------------------------------------------------------------------
     // Set sensitivity
@@ -210,7 +210,8 @@ public:
 			      string scope,
 			      BoxPoint *pos = 0,
 			      string depends_on = "",
-			      Widget origin = 0);
+			      Widget origin = 0,
+			      bool verbose = true);
 
     // Refresh displays.  Sends `info display' and `display' to GDB.
     static void refresh_displaySQ   (Widget origin = 0);
