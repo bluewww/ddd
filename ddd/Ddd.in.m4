@@ -2363,7 +2363,7 @@ Ddd*menubar.help*helpString: \
 \
 @rm This is the EMPH(Help Menu).\n\
 \n\
-DESC(What Next..., [give help on what to do next])\n\
+DESC(What Now?..., [give help on what to do now])\n\
 \n\
 DESC(On Context..., [click on an item and get help on it])\n\
 DESC(On Window..., [help on the application itself])\n\
@@ -2378,12 +2378,12 @@ DESC([[DDD]] WWW Page..., [the DDD WWW page])\n\
 \n\
 DESC(About [[DDD]]..., [some general information about DDD])
 
-Ddd*helpMenu.whatNext.labelString:		What Next...
+Ddd*helpMenu.whatNext.labelString:		What Now?...
 Ddd*helpMenu.whatNext.mnemonic:			N
 Ddd*helpMenu.whatNext.accelerator:		Shift ~Ctrl<Key>F1
 Ddd*helpMenu.whatNext.acceleratorText:		Shift+F1
 Ddd*helpMenu.whatNext.documentationString:	\
-@rm Get a suggestion on what to do next
+@rm Explain the current situation and suggest what to do next
 
 Ddd*helpMenu.onContext.labelString:		On Context...
 Ddd*helpMenu.onContext.mnemonic:		C
