@@ -89,7 +89,8 @@ $(DISTCLEAN_TARGETS): FORCE
 	    else exit 1; fi; \
           else true; fi; \
         done
-	rm -f config.status config.cache config.log Makefile MakeOut .gdbhist
+	rm -f config.status config.cache config.log Makefile MakeOut
+	rm -f .gdbhist *.spec
 
 
 # other recursive targets
