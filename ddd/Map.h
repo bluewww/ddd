@@ -40,25 +40,28 @@
 #pragma interface
 #endif
 
+#include "bool.h"
 #include "assert.h"
 
-typedef void* MapRef;
+typedef void *MapRef;
 
 template <class Key, class Contents>
 class Map {
-    // Realisierung als Liste;
-    struct ListNode {
+    // Internal list node
+    struct MapNode {
 	Key key;
-	Contents* cont;
-	ListNode* _next;
+	Contents *cont;
+	MapNode *_next;
     };
-    
-    ListNode* _first;
+
+private:
+    MapNode *_first;
     int _length;
 
-    ListNode* search (Key k) const {
-	// falls nicht vorhanden 0 zurueckgeben
-	ListNode* ln;
+    // Search K; return 0 if not found
+    MapNode *search(Key k) const
+    {
+	MapNode *ln;
 	
 	ln = _first;
 	while (ln != 0 && !(ln->key == k)) 
@@ -67,16 +70,16 @@ class Map {
     }
 
 public:
-    // leere Map erzeugen
-    Map ()
+    // Create empty map
+    Map()
 	: _first(0), _length(0) 
     {}
 
-    // leert die Map
-    void clear ()
+    // Remove all elements
+    void clear()
     {
-	ListNode* ln;
-	ListNode* prev;
+	MapNode *ln;
+	MapNode *prev;
 
 	ln = _first;
 	while (ln != 0) {
@@ -88,12 +91,13 @@ public:
 	_length = 0;
     }
 
-    // leert die Map, und ruft delete fuer alle Contents-Pointer auf
-    void delete_all_contents ()
+    // Remove all elements, delete'ing each content
+    void delete_all_contents()
     {
-	ListNode *ln   = _first;
-	ListNode* prev = 0;
-	while (ln != 0) {
+	MapNode *ln   = _first;
+	MapNode *prev = 0;
+	while (ln != 0)
+	{
 	    prev = ln;
 	    ln = ln->_next;
 	    delete prev->cont;
@@ -104,19 +108,23 @@ public:
     }
 
     
-    // Destructor (Map vorher leeren)
-    ~Map() { clear(); }
-    
-    // einfuegen bzw ueberschreiben; 0 bei c == 0 (kein Einfuegen)
-    int insert (Key k, Contents* c)
+    // Destructor
+    ~Map()
     {
-	if (c == 0) // nichts leeres einfuegen
+	clear();
+    }
+    
+    // Insert or overwrite
+    int insert(Key k, Contents* c)
+    {
+	if (c == 0) // Don't add empty stuff
 	    return 0;
 
-	// einfuegen bzw ueberschreiben
-	ListNode* ln = search (k);
-	if (ln == 0) {
-	    ln = new ListNode;
+	MapNode *ln = search(k);
+	if (ln == 0)
+	{
+	    // Insert
+	    ln = new MapNode;
 	    ln->key = k;
 	    ln->cont = c;
 
@@ -124,69 +132,76 @@ public:
 	    _first = ln;
 	    _length++;
 	}
-	else {
+	else
+	{
+	    // Overwrite
 	    ln->cont = c;
 	}
 	return 1;
     }
     
-    // loeschen, falls vorhanden
-    void del (Key k)
+    // Delete K if found
+    void del(Key k)
     {
 	if (_first == 0)
 	    return;
     
-	ListNode* prev = 0;
-	ListNode* ln = _first;
+	MapNode *prev = 0;
+	MapNode *ln = _first;
     
-	while (ln != 0 && !(ln->key == k)) {
+	while (ln != 0 && !(ln->key == k))
+	{
 	    prev = ln;
 	    ln = ln->_next;
 	}
 
 	if (ln == 0)
-	    return; // nicht gefunden
+	    return; // not found
 		       
-	if (prev == 0) {
-	    // erstes Element loeschen
-	    assert (_first == ln);
+	if (prev == 0)
+	{
+	    // delete first element
+	    assert(_first == ln);
 	    _first = _first->_next;
 	    delete ln;
 	    _length--;
 	}
-	else {
+	else
+	{
 	    prev->_next = ln->_next;
 	    delete ln;
 	    _length--;
 	}
-	assert (!contains(k));
+	assert(!contains(k));
     }
 
-    // falls nicht vorhanden 0 zurueckgeben
-    Contents* get (Key k) const
+    // Get contents of K; return 0 if not found
+    Contents *get(Key k) const
     {
-	ListNode* ln = search (k);
+	MapNode *ln = search(k);
 	if (ln == 0)
 	    return 0;
 	else 
 	    return ln->cont;
     }
     
-    // 1, wenn enthalten, sonst 0
-    int contains (Key k) const
+    // true if K is contained
+    bool contains(Key k) const
     {
-	return (search (k) != 0);
+	return search (k) != 0;
     }
     
-    // 0, falls nicht vorhanden, sonst bel. enth. Key
-    // simuliert 0-terminierte Liste
+    // Return first key, or 0 if not found.
+    // This simulates a 0-terminated list.
     Key first_key(MapRef& ref) const
     {
-	if (_first == 0) {
+	if (_first == 0)
+	{
 	    ref = 0;
 	    return 0;
 	}
-	else {
+	else
+	{
 	    ref = _first->_next;
 	    return _first->key;
 	}
@@ -194,51 +209,60 @@ public:
 
     static Key next_key(MapRef& ref)
     {
-	if (ref == 0 ) {
-	    //am Ende angelangt
+	if (ref == 0)
+	{
+	    // at the end
 	    return 0;
 	}
-	else {
-	    ListNode* current_ln = (ListNode *) ref;
+	else
+	{
+	    MapNode *current_ln = (MapNode *) ref;
 	    ref = current_ln->_next;
 	    return current_ln->key;
 	}
     }
-    
-    Contents* first(MapRef& ref) const
+
+    // Return first contents, or 0 if not found
+    Contents *first(MapRef& ref) const
     {
-	if (_first == 0) {
+	if (_first == 0)
+	{
 	    ref = 0;
 	    return 0;
 	}
-	else {
+	else
+	{
 	    ref = _first->_next;
 	    return _first->cont;
 	}
     }
 
-    static Contents* next(MapRef& ref)
+    static Contents *next(MapRef& ref)
     {
-	// durchlaeuft 0-terminierte Liste
-	if (ref == 0 ) {
-	    //am Ende angelangt
+	if (ref == 0)
+	{
+	    // at the end
 	    return 0;
 	}
-	else {
-	    ListNode* current_ln = (ListNode *) ref;
+	else
+	{
+	    MapNode *current_ln = (MapNode *) ref;
 	    ref = current_ln->_next;
 	    return current_ln->cont;
 	}
     }
-    
+
     inline int length()  const { return _length; }
 
 private:
+    // No copy constructor
     Map(const Map<Key, Contents>&)
 	: _first(0), _length(0)
     {
 	assert(0);
     }
+
+    // No assignment
     Map<Key, Contents>& operator = (const Map<Key, Contents>&)
     {
 	assert(0); return *this;
