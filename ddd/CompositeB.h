@@ -31,7 +31,6 @@
 
 
 #include "assert.h"
-#include <values.h>
 #include "Box.h"
 #include "Widget.h"
 

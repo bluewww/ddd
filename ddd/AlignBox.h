@@ -37,7 +37,6 @@
 
 
 #include "assert.h"
-#include <values.h>
 #include "CompositeB.h"
 #include "Widget.h"
 

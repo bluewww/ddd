@@ -35,7 +35,7 @@
 // Eine ListBox ist eine Liste von Boxen.
 
 
-#include <values.h>
+#include <limits.h>
 #include <stdlib.h>
 
 #include "CompositeB.h"

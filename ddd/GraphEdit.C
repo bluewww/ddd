@@ -57,7 +57,7 @@ char GraphEdit_rcsid[] =
 #include "layout.h"
 
 
-static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(MAXINT, MAXINT));
+static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
 
 
 // Compute default foreground

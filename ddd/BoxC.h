@@ -27,11 +27,11 @@
 #pragma interface
 #endif
 
-#include <values.h>
+#include <limits.h>
 
 typedef int BoxCoordinate;
 
-const BoxCoordinate NoCoordinate = -MAXINT;
+const BoxCoordinate NoCoordinate = INT_MIN;
 
 #endif // _Nora_BoxCoordinate_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

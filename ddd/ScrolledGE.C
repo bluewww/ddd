@@ -35,7 +35,7 @@ char ScrolledGraphEdit_rcsid[] =
 #include "ScrolleGEP.h"
 #include "GraphEdit.h"
 
-#define EVERYWHERE (BoxRegion(BoxPoint(0,0), BoxSize(MAXINT, MAXINT)))
+#define EVERYWHERE (BoxRegion(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX)))
 
 
 // Method function declarations
@@ -121,7 +121,7 @@ static void Resize(Widget w)
 {
     // resize child if it's a graphEdit child
     Widget child = ScrolledGraphEditWidget(w)->swindow.WorkWindow;
-    if (XtIsSubclass(child, graphEditWidgetClass))
+    if (child && XtIsSubclass(child, graphEditWidgetClass))
 	graphEditSizeChanged(child);
 
     // call superclass resize method

@@ -126,7 +126,7 @@ public:
     }
     void draw(Widget w) const
     {
-	draw(w, BoxRegion(BoxPoint(0, 0), BoxSize(MAXINT, MAXINT)));
+	draw(w, BoxRegion(BoxPoint(0, 0), BoxSize(INT_MAX, INT_MAX)));
     }
 
     // Printing

@@ -35,7 +35,7 @@ char LineGraphEdge_rcsid[] =
 #include "assert.h"
 
 #include <math.h>
-#include <values.h>
+#include <limits.h>
 #include <string.h>
 #include <stdlib.h>
 

@@ -202,7 +202,7 @@ public:
     void draw(Widget w, 
 	      const BoxRegion& region, 
 	      const BoxRegion& exposed = BoxRegion(BoxPoint(0,0),
-						   BoxSize(MAXINT, MAXINT)), 
+						   BoxSize(INT_MAX, INT_MAX)), 
 	      GC gc = 0, 
 	      bool context_selected = false) const;
 

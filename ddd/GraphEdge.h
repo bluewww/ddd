@@ -96,7 +96,7 @@ public:
 
     // Graphics
     void draw(Widget w, const BoxRegion& exposed = BoxRegion(BoxPoint(0, 0),
-	BoxSize(MAXINT, MAXINT)), const GraphGC& gc = GraphGC()) const
+	BoxSize(INT_MAX, INT_MAX)), const GraphGC& gc = GraphGC()) const
     {
 	if (!_hidden)
 	    _draw(w, exposed, gc);
