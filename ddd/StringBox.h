@@ -83,7 +83,7 @@ public:
     // Constructor
     StringBox(const string& s = "", const char *fontname = "fixed",
 	const char *t = "StringBox"):
-	PrimitiveBox(BoxSize(0,0), BoxExtend(false, false), t),
+	PrimitiveBox(BoxSize(0,0), BoxExtend(0, 0), t),
 	_string(s), _fontname(fontname), _font(0), _ascent(0)
     {
 	newFont();
@@ -91,7 +91,7 @@ public:
 
     StringBox(const char *s = "", const char *fontname = "fixed",
 	const char *t = "StringBox"):
-	PrimitiveBox(BoxSize(0,0), BoxExtend(false, false), t),
+	PrimitiveBox(BoxSize(0,0), BoxExtend(0, 0), t),
 	_string(s), _fontname(fontname), _font(0), _ascent(0)
     {
 	newFont();
@@ -99,7 +99,7 @@ public:
 
     StringBox(const string& s, XFontStruct *fnt,
 	const char *t = "StringBox"):
-	PrimitiveBox(BoxSize(0,0), BoxExtend(false, false), t),
+	PrimitiveBox(BoxSize(0,0), BoxExtend(0, 0), t),
 	_string(s), _fontname("?"), _font(fnt), _ascent(0)
     {
 	resize();
