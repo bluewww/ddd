@@ -3817,13 +3817,11 @@ void SourceView::process_where (string& where_output)
 	// Remove argument list and file paths
 	// (otherwise line can be too long for dbx)
 	//   ... n.b. with templates, line can still be rather long
-	if (gdb->type() != GDB)
-	{
-	    static regex arglist("[(][^)]*[)]");
-	    static regex filepath("/.*/");
-	    frame_list[i].gsub(arglist, "()");
-	    frame_list[i].gsub(filepath, "");
-	}
+	static regex arglist("[(][^)]*[)]");
+	static regex filepath("/.*/");
+	frame_list[i].gsub(arglist, "()");
+	frame_list[i].gsub(filepath, "");
+
 	if (int(frame_list[i].length()) < min_width)
 	{
 	    frame_list[i] += 
@@ -4331,6 +4329,9 @@ void SourceView::update_glyphs()
     }
 }
 
+
+static bool checking_scroll = false;
+
 // Invoked by scrolling keys
 void SourceView::updateGlyphsAct(Widget, XEvent*, String *, Cardinal *)
 {
@@ -4340,12 +4341,18 @@ void SourceView::updateGlyphsAct(Widget, XEvent*, String *, Cardinal *)
 // Invoked whenever the text widget may be about to scroll
 void SourceView::CheckScrollCB(Widget, XtPointer, XtPointer)
 {
-    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
-		    CheckScrollWorkProc, XtPointer(0));
+    if (!checking_scroll)
+	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
+			CheckScrollWorkProc, XtPointer(0));
 }
     
 void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
 {
+    if (checking_scroll)
+	return;
+
+    checking_scroll = true;
+
     XmTextPosition old_top = last_top;
     last_top = XmTextGetTopCharacter(source_text_w);
 
@@ -4353,6 +4360,8 @@ void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
     last_top_pc = XmTextGetTopCharacter(code_text_w);
     if (old_top != last_top || old_top_pc != last_top_pc)
 	UpdateGlyphsWorkProc(client_data, id);
+
+    checking_scroll = false;
 }
 
 // Maximum number of simultaneous glyphs on the screen
