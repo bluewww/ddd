@@ -83,11 +83,24 @@ dnl
 dnl By default, DDD needs no RX library.
 ddd_have_rx=true
 dnl
-dnl Check for -lreadline
-AC_CHECK_LIB(readline, rl_callback_read_char, ddd_have_readline=true)
-dnl
-dnl Check for -liberty.
-AC_CHECK_LIB(iberty, xstrerror, ddd_have_libiberty=true)
+dnl check for ncurses
+AC_ARG_WITH(ncurses,
+[  --with-ncurses[=DIR]             use ncurses library in DIR],[
+  case "$with_ncurses" in
+  no) ;;
+  yes)
+    AC_CHECK_LIB(ncurses, tgetent, [LIBTERMCAP="-lncurses";
+      ddd_have_termcap=true])
+    ;;
+  *)
+    _ldflags="${LDFLAGS}"
+    LDFLAGS="${LDFLAGS} -L$with_ncurses/lib"
+    AC_CHECK_LIB(ncurses, tgetent, [LIBTERMCAP="-L$with_ncurses/lib -lncurses";
+      ddd_have_termcap=true])
+    LDFLAGS="${_ldflags}"
+    ;;
+  esac
+])  
 dnl
 dnl Look for the tgetent() function - either in libtermcap, libcurses,
 dnl or use the GNU termcap library as shipped with DDD.
@@ -97,10 +110,42 @@ dnl Reported by Vincenzo Capuano <vcapuano@esoc.esa.de>
 dnl
 dnl On Linux ELF systems, `-lncurses' is preferred to `-ltermcap'.
 dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
-ddd_have_termcap=false
-for termlib in mytinfo ncurses curses termcap terminfo termlib; do
-   AC_CHECK_LIB(${termlib}, tgetent, [ddd_have_termcap=true; break])
-done
+dnl
+if test "x${ddd_have_termcap}" = "xfalse"; then
+  if test "x$with_ncurses" = "xno"; then
+    _termlib="mytinfo curses termcap terminfo termlib"
+  else
+    _termlib="mytinfo ncurses curses termcap terminfo termlib"
+  fi
+  for termlib in ${_termlib}; do
+     AC_CHECK_LIB(${termlib}, tgetent, [LIBTERMCAP="-l${termlib}";
+       ddd_have_termcap=true; break])
+  done
+fi
+AC_SUBST(LIBTERMCAP)
+dnl
+dnl Check for -lreadline (optional)
+readline=yes
+AC_ARG_WITH(readline,
+[  --with-readline[=DIR]            use readline library in DIR
+  --without-readline               do not support tty command line editing],[
+  case "$with_readline" in
+  no) ;;
+  yes)
+    AC_CHECK_LIB(readline, readline, [ddd_have_readline=true], ,
+      $LIBTERMCAP)
+    ;;
+  *)
+    _ldflags="${LDFLAGS}"
+    LDFLAGS="-L$with_readline/lib $LDFLAGS"
+    AC_CHECK_LIB(readline, readline, [ddd_have_readline=true], ,
+      $LIBTERMCAP)
+    LDFLAGS="${_ldflags}"
+    ;;
+  esac])
+dnl
+dnl Check for -liberty.
+AC_CHECK_LIB(iberty, xstrerror, ddd_have_libiberty=true)
 dnl
 dnl
 AC_MSG_CHECKING([for packages to be configured and built])
