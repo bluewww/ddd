@@ -307,6 +307,10 @@ set prompt (gdb) \n
 ! Users unsatisfied with this setting can change it at run-time.
 *keyboardFocusPolicy: POINTER
 
+! X Warnings
+! Do we wish to suppress X warnings?
+*suppressWarnings:	false
+
 
 !-----------------------------------------------------------------------------
 ! Fonts
@@ -850,6 +854,7 @@ Drag the sash with the @bf left mouse button @rm to resize window parts.
   terminal window; useful for programs using terminal I/O.  Otherwise,\n\
   the program is run in the @DDD@ command window.\n\
   This change takes effect the next time the program is run.\n\
+* If @bf Suppress X Warnings @rm is set, X warnings are silently ignored.\n\
 * If @bf Save Options on Exit @rm is set, the options are\n\
   automatically saved when @DDD@ exits.  Otherwise, options are discarded.\n\
 * If @bf Save History on Exit @rm is set, the command history is\n\
@@ -904,6 +909,9 @@ and restarting @DDD@)\n\
 
 *generalOptionsMenu.separateExecWindow.labelString: Run in Execution Window
 *generalOptionsMenu.separateExecWindow.mnemonic:    E
+
+*generalOptionsMenu.suppressWarnings.labelString:   Suppress X Warnings
+*generalOptionsMenu.suppressWarnings.mnemonic:	    W
 
 *generalOptionsMenu.saveOptionsOnExit.labelString:  Save Options on Exit
 *generalOptionsMenu.saveOptionsOnExit.mnemonic:     O

@@ -123,6 +123,8 @@
 #define XtCSaveHistoryOnExit     "SaveHistoryOnExit"
 #define XtNcacheSourceFiles      "cacheSourceFiles"
 #define XtCCacheSourceFiles      "CacheSourceFiles"
+#define XtNsuppressWarnings      "suppressWarnings"
+#define XtCSuppressWarnings      "SuppressWarnings"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -170,6 +172,7 @@ typedef struct {
     Boolean save_options_on_exit;
     Boolean save_history_on_exit;
     Boolean cache_source_files;
+    Boolean suppress_warnings;
     String  dddinit_version;
     String  app_defaults_version;
 } AppData;
