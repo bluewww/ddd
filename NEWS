@@ -35,6 +35,8 @@ Data exploration
 
 - `Set ()' now allows to set structs as a whole.
 
+- Anonymous unions are no longer prefixed by `='.
+
 
 Miscellaneous
 -------------

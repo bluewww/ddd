@@ -34,7 +34,7 @@ char DispBox_rcsid[] =
 #endif
 
 //-----------------------------------------------------------------------------
-// Klasse zur Erzeugung von DispBoxen mit VSL.
+// Create DispBoxes via VSL
 //-----------------------------------------------------------------------------
 
 #include "assert.h"
@@ -531,8 +531,15 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 
 	case StructOrClass:
 	case BaseClass:
-	    vbox = eval("struct_member", dv->name(), vbox->link(), 
-			member_name_width);
+	    if (dv->name() == "" || dv->name().matches(rxwhite))
+	    {
+		// Don't prepend an empty member name
+	    }
+	    else
+	    {
+		vbox = eval("struct_member", dv->name(), vbox->link(), 
+			    member_name_width);
+	    }
 	    break;
 
 	case Sequence:
