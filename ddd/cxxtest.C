@@ -288,6 +288,8 @@ void tree_test()
 	cout << t->name() << " ";
     cout << "\n";
 
+    (void) tree;		// Display this
+
     tree->date.set(Tue, 29, 11, 1994);
     tree->date.set(Wed, 30, 11, 1994);
 
@@ -304,6 +306,8 @@ void list_test(int start)
     list->next                   = new List(a_global + start++);
     list->next->next             = new List(a_global + start++);
     list->next->next->next       = list;
+
+    (void) list;		// Display this
 
     delete list->next->next;
     delete list->next;
@@ -335,9 +339,9 @@ void array_test()
 
     int array[12][12];
 
-    (void) twodim;		// Use it
-    (void) days_of_week;	// Use it
-    (void) array;		// Use it
+    (void) twodim;		// Display this
+    (void) days_of_week;	// Display this
+    (void) array;		// Display this
 
     // Initialize array
     for (int i = 0; i < int(sizeof(array) / sizeof(array[0])); i++)
@@ -397,10 +401,12 @@ void plot_test()
 {
     static int ir[100];
 
-    for (int i = 0; i < numbers(ir); i++)
-	ir[i] = rnd(100);
+    for (int k = 0; k < numbers(ir); k++)
+	ir[k] = rnd(100);
 
     shell_sort(ir, numbers(ir));
+
+    (void) ir;			// Plot this
 
     static double dr[10][100];
     double pi = 3.14159265358979323846;
@@ -409,7 +415,7 @@ void plot_test()
 	for (int j = 0; j < numbers(dr[0]); j++)
 	    dr[i][j] = i * i * sin(j * 2 * pi / numbers(dr[0]) * 3);
 
-    (void) dr;
+    (void) dr;			// Plot this
 }
 
 //--------------------------------------------------------------------------
