@@ -747,7 +747,7 @@ PROGS = $(ddd)
 
 ## Extra demonstration files.
 DEMOS = userinfo stringify huffencode huffdecode cxxtest ctest test-file \
-	test-graph vsl ttytest bug ptest m2test tString mmtest
+	test-graph vsl ttytest bug ptest m2test tString mmtest gcore
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
@@ -1139,6 +1139,9 @@ stringify: stringify.o
 
 mmtest: mmtest.o $(LIB_OBJECTS) 
 	$(LINK.cc) -o $@ mmtest.o $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+
+gcore: gcore.o $(HUFFMAN_OBJECTS)
+	$(LINK.cc) -o $@ gcore.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
 test-file: test-file.o
 	$(LINK.cc) -o $@ test-file.o $(ALL_X_LIBS)
