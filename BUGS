@@ -165,4 +165,6 @@ Volunteers for fixing these and other bugs are welcome!
 333 Text character breakpoints are not displayed in empty lines
     with zero indentation.
 
+338 Occasionally, Undo displays bogus `Showing earlier state' messages.
+
 338 (Insert new bugs here)
