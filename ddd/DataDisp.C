@@ -100,21 +100,22 @@ char DataDisp_rcsid[] =
 #include <X11/StringDefs.h>
 
 // DDD includes
-#include "DispNode.h"		// Constructors
-#include "disp-read.h"
-#include "string-fun.h"
-#include "comm-manag.h"
-#include "Map.h"
-#include "mydialogs.h"
-#include "ddd.h"
+#include "AppData.h"		// Constructors
 #include "ArgField.h"
-#include "verify.h"
+#include "DispNode.h"		// Constructors
+#include "LessTifH.h"
+#include "MakeMenu.h"
+#include "Map.h"
+#include "comm-manag.h"
+#include "ddd.h"
+#include "disp-read.h"
+#include "mydialogs.h"
+#include "regexps.h"
+#include "string-fun.h"
 #include "toolbar.h"
+#include "verify.h"
 #include "windows.h"
 #include "wm.h"
-#include "LessTifH.h"
-#include "regexps.h"
-#include "MakeMenu.h"
 
 // System includes
 #include <iostream.h>
@@ -243,8 +244,7 @@ MMDesc DataDisp::graph_cmd_area[] =
     {"rotate",        MMPush | MMInsensitive, {DataDisp::rotateCB},
                                                DataDisp::rotate_menu },
     {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
-    {"delete",        MMPush | MMInsensitive | MMUnmanaged,
-     {DataDisp::deleteCB, XtPointer(True) }},
+    {"delete",        MMPush | MMInsensitive, {DataDisp::deleteCB, XtPointer(True) }},
     MMEnd
 };
 
@@ -271,7 +271,7 @@ MMDesc DataDisp::display_area[] =
     {"show_detail",  MMPush,   {DataDisp::showDetailCB, XtPointer(-1) }},
     {"hide_detail",  MMPush,   {DataDisp::hideDetailCB, XtPointer(-1) }},
     {"set",          MMPush,   {DataDisp::setCB}},
-    {"delete",       MMPush,   {DataDisp::deleteCB, XtPointer(True) }},
+    {"delete",       MMPush | MMHelp, {DataDisp::deleteCB, XtPointer(True) }},
     MMEnd
 };
 
@@ -1361,15 +1361,18 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 void DataDisp::displayArgCB(Widget w, XtPointer client_data, 
 			    XtPointer call_data)
 {
-    DataDispCount count(disp_graph);
     DispValue *disp_value_arg = selected_value();
 
+#if 0
+    DataDispCount count(disp_graph);
     if (count.selected_titles > 0)
     {
 	// Delete selected displays
 	deleteCB(w, XtPointer(False), call_data);
     }
-    else if (disp_value_arg != 0 && disp_value_arg->type() == Pointer)
+    else 
+#endif
+    if (disp_value_arg != 0 && disp_value_arg->type() == Pointer)
     {
 	// Dereference selected pointer
 	dereferenceCB(w, client_data, call_data);
@@ -1892,12 +1895,15 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 
     // New
+#if 0
     if (count.selected_titles > 0)
     {
 	set_label(graph_cmd_area[CmdItms::New].widget,
 		  "Undisplay ()", UNDISPLAY_ICON);
     }
-    else if (dereference_ok)
+    else
+#endif
+    if (dereference_ok)
     {
 	string label("Display " + gdb->dereferenced_expr("()"));
 	set_label(graph_cmd_area[CmdItms::New].widget, label, DISPREF_ICON);
@@ -5105,28 +5111,29 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
 // Constructor
 //----------------------------------------------------------------------------
 
-DataDisp::DataDisp(Widget parent,
-		   string vsl_path, string vsl_library, string vsl_defs,
-		   bool panned, bool toolbar_at_bottom,
-		   unsigned char label_type)
+DataDisp::DataDisp(Widget parent)
 {
     XtAppContext app_context = XtWidgetToApplicationContext(parent);
 
     registerOwnConverters();
 
     // Init globals
-    StringBox::fontTable     = new FontTable (XtDisplay(parent));
-    DispBox::vsllib_name     = vsl_library;
-    DispBox::vsllib_path     = vsl_path;
-    DispBox::vsllib_defs     = vsl_defs;
+    StringBox::fontTable = new FontTable (XtDisplay(parent));
+    DispBox::vsllib_name = app_data.vsl_library;
+    DispBox::vsllib_path = app_data.vsl_path;
+    DispBox::vsllib_defs = string(app_data.vsl_base_defs) + app_data.vsl_defs;
 
     // Create graph
     disp_graph = new DispGraph();
     disp_graph->addHandler(DispGraph_Empty, no_displaysHP);
 
-    Widget arg_label = 0;
+    // Create graph toolbar
+    unsigned char label_type = XmSTRING;
+    if (app_data.button_captions || app_data.button_images)
+	label_type = XmPIXMAP;
 
-    if (graph_cmd_w == 0 && !toolbar_at_bottom)
+    Widget arg_label = 0;
+    if (graph_cmd_w == 0 && !app_data.toolbars_at_bottom)
     {
 	graph_cmd_w = create_toolbar(parent, "graph", 
 				     graph_cmd_area, 0, arg_label, graph_arg,
@@ -5138,7 +5145,7 @@ DataDisp::DataDisp(Widget parent,
     int arg = 0;
     XtSetArg (args[arg], XtNgraph, (Graph *)disp_graph); arg++;
 
-    if (panned)
+    if (app_data.panned_graph_editor)
     {
 	graph_edit = createPannedGraphEdit(parent, "graph_edit", args, arg);
 	graph_form_w = pannerOfGraphEdit(graph_edit);
@@ -5179,7 +5186,7 @@ DataDisp::DataDisp(Widget parent,
 void DataDisp::create_shells()
 {
     Arg args[10];
-    int arg = 0;
+    Cardinal arg = 0;
 
     // Create menus
     graph_popup_w = 
@@ -5197,15 +5204,12 @@ void DataDisp::create_shells()
     disp_graph->callHandlers();
 
     // Create display editor
+    arg = 0;
+    XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
     edit_displays_dialog_w =
-	verify(XmCreatePromptDialog(find_shell(graph_edit), 
-				    "edit_displays_dialog", 
-				    NULL, 0));
-
-    if (lesstif_version <= 79)
-	XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
-					       XmDIALOG_APPLY_BUTTON));
-
+	verify(XmCreateSelectionDialog(find_shell(graph_edit), 
+				       "edit_displays_dialog", 
+				       args, arg));
     Delay::register_shell(edit_displays_dialog_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
@@ -5213,30 +5217,37 @@ void DataDisp::create_shells()
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
 					   XmDIALOG_CANCEL_BUTTON));
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
+					   XmDIALOG_APPLY_BUTTON));
+    XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
 					   XmDIALOG_SELECTION_LABEL));
+    XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
+					   XmDIALOG_LIST_LABEL));
 
-    Widget form1 = 
-	verify(XmCreateRowColumn(edit_displays_dialog_w, "form1", NULL, 0));
+    display_list_w = 
+	XmSelectionBoxGetChild(edit_displays_dialog_w, XmDIALOG_LIST);
 
-    Widget label =
-	verify(XmCreateLabel(form1, "displays", NULL, 0));
+    if (app_data.flat_dialog_buttons)
+    {
+	for (MMDesc *item = display_area; item != 0 && item->name != 0; item++)
+	{
+	    if ((item->type & MMTypeMask) == MMPush)
+		item->type = (MMFlatPush | (item->type & ~MMTypeMask));
+	}
+    }
 
-    Widget form2 = 
-	verify(XmCreateRowColumn(form1, "form2", NULL, 0));
+    Widget buttons = verify(MMcreateWorkArea(edit_displays_dialog_w, 
+					     "buttons", display_area));
+    XtVaSetValues(buttons,
+		  XmNmarginWidth,     0, 
+		  XmNmarginHeight,    0, 
+		  XmNborderWidth,     0,
+		  XmNshadowThickness, 0, 
+		  XmNspacing,         0,
+		  NULL);
 
-    arg = 0;
-    display_list_w = verify(XmCreateScrolledList(form2, "list", args, arg));
-    Widget buttons = 
-	verify(MMcreateWorkArea(form2, "buttons", display_area));
     MMaddCallbacks (display_area);
     MMaddHelpCallback(display_area, ImmediateHelpCB);
     register_menu_shell(display_area);
-
-    XtManageChild (buttons);
-    XtManageChild (display_list_w);
-    XtManageChild (label);
-    XtManageChild (form2);
-    XtManageChild (form1);
 
     // Add widget callbacks
     XtAddCallback(graph_edit, XtNpreSelectionCallback,
@@ -5250,7 +5261,7 @@ void DataDisp::create_shells()
     XtAddCallback(graph_edit, XtNpostLayoutCallback,
 		  PostLayoutCB, XtPointer(this));
 
-    if (display_list_w)
+    if (display_list_w != 0)
     {
 	XtAddCallback(display_list_w,
 		      XmNsingleSelectionCallback,
@@ -5270,7 +5281,7 @@ void DataDisp::create_shells()
 		      0);
     }
 
-    if (edit_displays_dialog_w)
+    if (edit_displays_dialog_w != 0)
     {
 	XtAddCallback(edit_displays_dialog_w,
 		      XmNokCallback,

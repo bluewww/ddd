@@ -453,13 +453,7 @@ public:
     static bool bump_displays;
 
     // Constructor
-    DataDisp (Widget       parent,
-	      string       vsl_path,           // from APP_DATA
-	      string       vsl_library,        // from APP_DATA
-	      string       vsl_defs,           // from APP_DATA
-	      bool         panned,             // from APP_DATA
-	      bool         toolbar_at_bottom,  // from APP_DATA
-	      unsigned char label_type);       // from APP_DATA
+    DataDisp(Widget parent);
 
     void create_shells();
 
