@@ -199,8 +199,8 @@ dnl
 rpath=
 RPATH=
 AC_ARG_ENABLE(rpath,
-[  --enable-rpath=PATH     search run-time libraries in PATH], 
-	rpath="$enableval", rpath=)
+AC_HELP_STRING([--enable-rpath=PATH],[search run-time libraries in PATH]),
+[rpath="$enableval"],[rpath=])
 if test "$rpath" != ""; then
 RPATH="-R`echo $rpath | sed 's/:/ -R/g'`"
 fi
@@ -332,14 +332,15 @@ dnl check for ncurses
 ncurses_includes=
 ncurses_libraries=
 AC_ARG_WITH(ncurses,
-[  --without-ncurses                do not use the Ncurses library],[
+AC_HELP_STRING([--without-ncurses],[do not use the Ncurses library]),[
   if test "$withval" = "no"; then
     ncurses_includes=no
     ncurses_libraries=no
   fi
 ])
 AC_ARG_WITH(ncurses-libraries,
-[  --with-ncurses-libraries=DIR     Ncurses libraries are in DIR],[
+AC_HELP_STRING([--with-ncurses-libraries=DIR],
+               [Ncurses libraries are in DIR]),[
   ncurses_libraries="$withval"
   case "$ncurses_libraries" in
   no) ;;
@@ -383,15 +384,15 @@ dnl Check for -lreadline (optional)
 readline_includes=
 readline_libraries=
 AC_ARG_WITH(readline,
-[  --without-readline               do not use the readline library],[
+AC_HELP_STRING([--without-readline],[do not use the readline library]),[
   if test "$withval" = "no"; then
     readline_includes=no
     readline_libraries=no
   fi
 ])
 AC_ARG_WITH(readline-includes,
-[  --with-readline-includes=DIR
-                          Readline libraries are in DIR],[
+AC_HELP_STRING([--with-readline-includes=DIR],
+               [Readline libraries are in DIR]),[
   readline_includes="$withval"
   case "$readline_includes" in
   no) ;;
@@ -407,7 +408,8 @@ AC_ARG_WITH(readline-includes,
 ])
 LIBREADLINE=""
 AC_ARG_WITH(readline-libraries,
-[  --with-readline-libraries=DIR    Readline libraries are in DIR],[
+AC_HELP_STRING([--with-readline-libraries=DIR],
+               [Readline libraries are in DIR]),[
   readline_libraries="$withval"
   case "$readline_libraries" in
   no) ;;
@@ -975,21 +977,21 @@ dnl
 dnl User-defined options
 dnl
 AC_ARG_ENABLE(builtin-manual,
-[  --enable-builtin-manual compile manual into DDD], 
+AC_HELP_STRING([--enable-builtin-manual],[compile manual into DDD]),
 	builtin_manual="$enableval", builtin_manual=no)
 AC_ARG_ENABLE(builtin-app-defaults,
-[  --enable-builtin-app-defaults
-                          compile app-defaults file into DDD],
+AC_HELP_STRING([--enable-builtin-app-defaults],
+               [compile app-defaults file into DDD]),
 	builtin_app_defaults="$enableval", builtin_app_defaults=no)
 AC_ARG_ENABLE(builtin-news,
-[  --enable-builtin-news   compile NEWS file into DDD],
+AC_HELP_STRING([--enable-builtin-news],[compile NEWS file into DDD]),
 	builtin_news="$enableval", builtin_news=no)
 AC_ARG_ENABLE(builtin-license,
-[  --enable-builtin-license
-                          compile COPYING file into DDD],
+AC_HELP_STRING([--enable-builtin-license],
+               [compile COPYING file into DDD]),
 	builtin_license="$enableval", builtin_license=no)
 AC_ARG_ENABLE(builtin-vsllib,
-[  --enable-builtin-vsllib compile VSL library into DDD],
+AC_HELP_STRING([--enable-builtin-vsllib],[compile VSL library into DDD]),
 	builtin_vsllib="$enableval", builtin_vsllib=no)
 dnl
 if test "$builtin_manual" != no; then
