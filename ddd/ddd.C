@@ -286,6 +286,7 @@ static void gdb_recordingHP    (Agent *, void *, void *);
 static void gdb_panicHP        (Agent *, void *, void *);
 static void gdb_echo_detectedHP(Agent *, void *, void *);
 static void language_changedHP (Agent *, void *, void *);
+static void report_languageHP  (Agent *, void *, void *);
 static void source_argHP       (void *, void *, void *call_data);
 
 // Warning proc
@@ -1991,6 +1992,7 @@ int main(int argc, char *argv[])
     gdb->addHandler(Died,             ReportDeathHP);
     gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
     gdb->addHandler(LanguageChanged,  language_changedHP);
+    gdb->addHandler(LanguageChanged,  report_languageHP);
     gdb->addHandler(ReplyRequired,    gdb_selectHP);
     gdb->addHandler(Panic,            gdb_panicHP);
     gdb->addHandler(Strange,          gdb_strangeHP);
@@ -4869,6 +4871,32 @@ static void language_changedHP(Agent *, void *, void *)
 {
     update_arg_buttons();
 }
+
+
+// Language changed - report it
+static ostream& operator<< (ostream& os, ProgramLanguage lang)
+{
+    switch (lang)
+    {
+    case LANGUAGE_C:       os << "c/c++";         break;
+    case LANGUAGE_JAVA:    os << "java";          break;
+    case LANGUAGE_PASCAL:  os << "pascal/modula"; break;
+    case LANGUAGE_ADA:     os << "ada";           break;
+    case LANGUAGE_CHILL:   os << "chill";         break;
+    case LANGUAGE_FORTRAN: os << "fortran";       break;
+    case LANGUAGE_OTHER:   os << "(unknown)";     break;
+    }
+
+    return os;
+}
+
+static void report_languageHP(Agent *, void *, void *)
+{
+    ostrstream os;
+    os << "Current language: " << gdb->program_language();
+    set_status(string(os));
+}
+
 
 void update_user_buttons()
 {
