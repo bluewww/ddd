@@ -2299,24 +2299,28 @@ String SourceView::read_indented(string& file_name, long& length,
 
 	if (indent < script_indent_amount)
 	{
-	    // Check for empty line
-	    int blanks = 0;
-	    while (blanks < script_indent_amount && t < length && 
-		   isspace(text[t + blanks]) && text[t + blanks] != '\n')
-		blanks++;
+	    // Check for empty line or line starting with '\t'
+	    int spaces = 0;
+	    while (t + spaces < length && text[t + spaces] == ' ')
+		spaces++;
 
-	    if (text[t + blanks] == '\n')
+	    if (spaces < script_indent_amount)
 	    {
-		// Replace empty line by some spaces, such that we can
-		// display text character breakpoints
-		for (int i = 0; i < script_indent_amount; i++)
-		    *pos_ptr++ = ' ';
-
-		t += blanks;
+		if (t + spaces >= length ||
+		    text[t + spaces] == '\n' ||
+		    text[t + spaces] == '\t')
+		{
+		    // Prepend a few space characters
+		    while (spaces < script_indent_amount)
+		    {
+			*pos_ptr++ = ' ';
+			spaces++;
+		    }
+		}
 	    }
 	}
 
-	// Ordinary line: just copy it
+	// Copy remainder of line
 	while (t < length && text[t] != '\n')
 	    *pos_ptr++ = text[t++];
 
@@ -8463,7 +8467,7 @@ MString SourceView::help_on_pos(Widget w, XmTextPosition pos,
     if (!pos_found || bp_nr == 0)
 	return MString(0, true);
 
-    ref = pos_of_line(line_nr) + indent_amount(source_text_w) - 1;
+    ref = pos_of_line(line_nr) + 2;
     return help_on_bp(bp_nr, detailed);
 }
 
