@@ -329,14 +329,6 @@ Volunteers for these and other projects are welcome!
     <flechsig@itp.uni-hannover.de> suggests a pop-up with some
     check-boxes where each box is one bit.
 
-319 Profiling shows the following functions are quite expensive.
-    Optimize them.
-
-    * gdbUpdateEditCB() \ 
-    * gdbUpdateViewCB()  - only if menu is torn off or popped up
-    * gdbUpdateFileCB() /
-    * CvtStringToXmString() - too many string concats
-
 320 Have an undo/redo facility, e.g. for breakpoints and displays.
     All we need is to generate an `undoing' command for each command
     we send to GDB.
