@@ -125,7 +125,8 @@ void PosBuffer::filter (string& answer)
 		    static regex 
 			rxframe("#[0-9][0-9]*  *0x[a-fA-F0-9][a-fA-F0-9]*");
 		    int pc_index = answer.index(rxframe);
-		    if (pc_index >= 0)
+		    if (pc_index == 0
+			|| pc_index > 0 && answer[pc_index - 1] == '\n')
 		    {
 			pc_buffer = answer.from(pc_index);
 			pc_buffer = pc_buffer.from("0x");
@@ -153,8 +154,8 @@ void PosBuffer::filter (string& answer)
 		    // `ADDRESS in FUNCTION'
 		    static regex rxsignal("0x[a-fA-F0-9][a-fA-F0-9]*");
 		    int pc_index = answer.index(rxsignal);
-		    if (pc_index >= 0 
-			&& (pc_index == 0 || answer[pc_index - 1] == '\n'))
+		    if (pc_index == 0 
+		        || pc_index > 0 && answer[pc_index - 1] == '\n')
 		    {
 			pc_buffer = answer.from(pc_index);
 			pc_buffer = pc_buffer.from("0x");
