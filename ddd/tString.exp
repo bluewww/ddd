@@ -1,4 +1,4 @@
-an empty String:
+an empty string:
 A string initialized to Hello:Hello
 A string initialized to previous string:Hello
 A string initialized to previous string.at(1, 2):el
@@ -24,21 +24,21 @@ z = x.before(2) = He
 z = x.after(Hel) = lo
 x.after(Hel) = p; x = Help
 z = x.after(3) = o
-z =   a bc; z = z.after(RXwhite); z =a bc
+z =   a bc; z = z.after(rxwhite); z =a bc
 x.gsub(l, ll); x = Hellllo
 x.gsub(r, ...); x = Hello should have been replaced by this string
-x.gsub(RXwhite, #); x = Hello#should#have#been#replaced#by#this#string
+x.gsub(rxwhite, #); x = Hello#should#have#been#replaced#by#this#string
 z = x+y; z.del(loworl); z = Held
 reverse(x) = olleH
 x.reverse() = olleH
 upcase(x) = HELLO
 downcase(x) = hello
 capitalize(x) = Hello
-capitalize(z) = He Asked:'This Is Nathan's Book?'. 'No, It's Not',I Said.
+capitalize(z) = He Asked:'This Is Nathan'S Book?'. 'No, It'S Not',I Said.
 z = replicate(*, 10) = **********
 z = This string	has
 five words
-from split(z, RXwhite, w, 10), n words = 5:
+from split(z, rxwhite, w, 10), n words = 5:
 This
 string
 has
