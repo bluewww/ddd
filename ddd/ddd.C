@@ -142,6 +142,7 @@ char ddd_rcsid[] =
 #include <Xm/MainW.h>
 #include <Xm/PanedW.h>
 #include <Xm/Label.h>
+#include <Xm/LabelG.h>
 #include <Xm/Frame.h>
 #include <Xm/Text.h>
 #include <Xm/MessageB.h>
@@ -155,6 +156,11 @@ char ddd_rcsid[] =
 #include <Xm/PushB.h>
 #include <Xm/ArrowB.h>
 #include <X11/Shell.h>
+
+#if XmVersion >= 1002
+#include <Xm/Display.h>
+#include <Xm/DragDrop.h>
+#endif
 
 #ifdef HAVE_X11_XMU_EDITRES_H
 #include <X11/Xmu/Editres.h>
@@ -197,6 +203,7 @@ char ddd_rcsid[] =
 #include "history.h"
 #include "host.h"
 #include "logo.h"
+#include "longName.h"
 #include "options.h"
 #include "post.h"
 #include "print.h"
@@ -286,6 +293,9 @@ static void ShowGDBStatusCB(Widget w, XtPointer, XtPointer);
 
 // Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
+
+// Drag and drop
+static void CheckDragCB(Widget, XtPointer client_data, XtPointer call_data);
 
 
 //-----------------------------------------------------------------------------
@@ -1372,6 +1382,15 @@ int main(int argc, char *argv[])
     help_clear_doc_delay  = app_data.clear_doc_delay;
     help_clear_tip_delay  = app_data.clear_tip_delay;
 
+#ifdef XmNdragStartCallback
+    // Setup drag and drop callback
+    Widget display_w = verify(XmGetXmDisplay(XtDisplay(toplevel)));
+    XtAddCallback(display_w, XmNdragStartCallback,
+		  CheckDragCB, NULL);
+#else
+    (void) CheckDragCB;		// Use it
+#endif
+
     // Create command shell
     if (!app_data.separate_source_window && !app_data.separate_data_window)
     {
@@ -2071,6 +2090,32 @@ static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data)
     
     Widget button = Widget(client_data);
     XtCallActionProc(button, "ArmAndActivate", cbs->event, (String *)0, 0);
+}
+
+//-----------------------------------------------------------------------------
+// Drag and drop
+//-----------------------------------------------------------------------------
+
+static void CheckDragCB(Widget, XtPointer, XtPointer call_data)
+{
+    (void) call_data;		// Use it
+
+    // Some Linux Motif implementations have trouble dragging pixmaps.
+    // Disable this, such that we don't get drowned in bug reports.
+#if defined(XmNdragStartCallback) && defined(__linux__)
+    XmDragStartCallbackStruct *cbs = (XmDragStartCallbackStruct *)call_data;
+    Widget w = cbs->widget;
+    // clog << "Dragging from " << longName(w) << "\n";
+
+    if (XtIsSubclass(w, xmLabelWidgetClass) 
+	|| XtIsSubclass(w, xmLabelGadgetClass))
+    {
+	unsigned char label_type = XmSTRING;
+	XtVaGetValues(w, XmNlabelType, &label_type, NULL);
+	if (label_type == XmPIXMAP)
+	    cbs->doit = False;
+    }
+#endif // XmNdragStartCallback
 }
 
 //-----------------------------------------------------------------------------
