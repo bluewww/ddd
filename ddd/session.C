@@ -918,12 +918,30 @@ static void open_session(const string& session)
     app_data.console_buttons = console_buttons;
 
     static string display_shortcuts;
-    display_shortcuts = 
-	get_resource(db, XtNdisplayShortcuts, XtCDisplayShortcuts);
-    app_data.display_shortcuts = display_shortcuts;
 
+    String shortcuts = 0;
+    switch (gdb->type())
+    {
+    case GDB:  shortcuts = XtNgdbDisplayShortcuts;  break;
+    case DBX:  shortcuts = XtNdbxDisplayShortcuts;  break;
+    case XDB:  shortcuts = XtNxdbDisplayShortcuts;  break;
+    case JDB:  shortcuts = XtNjdbDisplayShortcuts;  break;
+    case PYDB: shortcuts = XtNpydbDisplayShortcuts; break;
+    case PERL: shortcuts = XtNperlDisplayShortcuts; break;
+    }
+
+    display_shortcuts = get_resource(db, shortcuts, XtCDisplayShortcuts);
+
+    switch (gdb->type())
+    {
+    case GDB:  app_data.gdb_display_shortcuts  = display_shortcuts; break;
+    case DBX:  app_data.dbx_display_shortcuts  = display_shortcuts; break;
+    case XDB:  app_data.xdb_display_shortcuts  = display_shortcuts; break;
+    case JDB:  app_data.jdb_display_shortcuts  = display_shortcuts; break;
+    case PYDB: app_data.pydb_display_shortcuts = display_shortcuts; break;
+    case PERL: app_data.perl_display_shortcuts = display_shortcuts; break;
+    }
     update_user_buttons();
-
 
     // Set options
     int tab_width = atoi(get_resource(db, XtNtabWidth, XtCTabWidth));

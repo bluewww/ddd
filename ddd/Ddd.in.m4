@@ -485,10 +485,33 @@ Ddd*autoRaiseMenu: off
 ! Shortcuts
 ! A newline-separated list of expressions to be included in the
 ! `Display ()' menu.  This is usually edited at run-time.
-Ddd*displayShortcuts: \
+!
+! As defaults, we provide some useful base conversions.
+Ddd*gdbDisplayShortcuts: \
+/t ()	// Convert to Bin\n\
 /d ()	// Convert to Dec\n\
 /x ()	// Convert to Hex\n\
 /o ()	// Convert to Oct
+
+Ddd*dbxDisplayShortcuts:  \
+(long)(())	// Convert to Dec\n\
+(void *)(())	// Convert to Hex
+
+Ddd*xdbDisplayShortcuts:   \
+(long)(())	// Convert to Dec\n\
+(void *)(())	// Convert to Hex
+
+Ddd*jdbDisplayShortcuts:
+
+Ddd*pydbDisplayShortcuts:  \
+/t ()	// Convert to Bin\n\
+/d ()	// Convert to Dec\n\
+/x ()	// Convert to Hex\n\
+/o ()	// Convert to Oct
+
+Ddd*perlDisplayShortcuts:  \
+hex(())	// Convert to Hex\n\
+oct(())	// Convert to Oct
 
 
 ! Tab width in source texts

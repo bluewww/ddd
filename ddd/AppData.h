@@ -112,7 +112,12 @@
 #define XtCSourceEditing         "SourceEditing"
 #define XtNlineBufferedConsole   "lineBufferredConsole"
 #define XtCLineBuffered          "LineBuffered"
-#define XtNdisplayShortcuts      "displayShortcuts"
+#define XtNgdbDisplayShortcuts   "gdbDisplayShortcuts"
+#define XtNdbxDisplayShortcuts   "dbxDisplayShortcuts"
+#define XtNxdbDisplayShortcuts   "xdbDisplayShortcuts"
+#define XtNjdbDisplayShortcuts   "jdbDisplayShortcuts"
+#define XtNpydbDisplayShortcuts  "pydbDisplayShortcuts"
+#define XtNperlDisplayShortcuts  "perlDisplayShortcuts"
 #define XtCDisplayShortcuts      "DisplayShortcuts"
 #define XtNconsoleButtons        "consoleButtons"
 #define XtNsourceButtons         "sourceButtons"
@@ -421,7 +426,12 @@ struct AppData {
     Cardinal  line_number_width;
     Boolean   source_editing;
     Boolean   line_buffered_console;
-    String    display_shortcuts;
+    String    gdb_display_shortcuts;
+    String    dbx_display_shortcuts;
+    String    xdb_display_shortcuts;
+    String    jdb_display_shortcuts;
+    String    pydb_display_shortcuts;
+    String    perl_display_shortcuts;
     String    console_buttons;
     String    source_buttons;
     String    data_buttons;

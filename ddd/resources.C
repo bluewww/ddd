@@ -468,11 +468,61 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdisplayShortcuts,
+	XtNgdbDisplayShortcuts,
 	XtCDisplayShortcuts,
 	XtRString,
 	sizeof(String),
-	XtOffsetOf(AppData, display_shortcuts),
+	XtOffsetOf(AppData, gdb_display_shortcuts),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
+	XtNdbxDisplayShortcuts,
+	XtCDisplayShortcuts,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, dbx_display_shortcuts),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
+	XtNxdbDisplayShortcuts,
+	XtCDisplayShortcuts,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, xdb_display_shortcuts),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
+	XtNjdbDisplayShortcuts,
+	XtCDisplayShortcuts,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, jdb_display_shortcuts),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
+	XtNpydbDisplayShortcuts,
+	XtCDisplayShortcuts,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, pydb_display_shortcuts),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
+	XtNperlDisplayShortcuts,
+	XtCDisplayShortcuts,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, perl_display_shortcuts),
 	XtRString,
 	XtPointer("")
     },

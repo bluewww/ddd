@@ -1492,9 +1492,21 @@ static void create_buttons_dialog(Widget parent)
     Widget data_w = 
 	add_button("data", buttons_dialog, button_box, text, vfy,
 		   app_data.data_buttons);
+
+    String *str = 0;
+    switch (gdb->type())
+    {
+    case GDB:  str = &app_data.gdb_display_shortcuts;  break;
+    case DBX:  str = &app_data.dbx_display_shortcuts;  break;
+    case XDB:  str = &app_data.xdb_display_shortcuts;  break;
+    case JDB:  str = &app_data.jdb_display_shortcuts;  break;
+    case PYDB: str = &app_data.pydb_display_shortcuts; break;
+    case PERL: str = &app_data.perl_display_shortcuts; break;
+    }
+
     shortcut_w = 
-	add_button("shortcuts", buttons_dialog, button_box, text, vfy,
-		   app_data.display_shortcuts, true);
+	add_button("shortcuts", buttons_dialog, button_box, text, vfy, 
+		   *str, true);
 
     XmToggleButtonSetState(source_w, True, False);
     (void) data_w;
@@ -1558,10 +1570,21 @@ void refresh_button_editor()
 	    expr += string('\t') + app_data.label_delimiter + ' ' + labels[i];
     }
 
-    app_data.display_shortcuts = (String)XtNewString(expr.chars());
+    String *str = 0;
+    switch (gdb->type())
+    {
+    case GDB:  str = &app_data.gdb_display_shortcuts;  break;
+    case DBX:  str = &app_data.dbx_display_shortcuts;  break;
+    case XDB:  str = &app_data.xdb_display_shortcuts;  break;
+    case JDB:  str = &app_data.jdb_display_shortcuts;  break;
+    case PYDB: str = &app_data.pydb_display_shortcuts; break;
+    case PERL: str = &app_data.perl_display_shortcuts; break;
+    }
 
-    if (active_info != 0 && active_info->str == &app_data.display_shortcuts)
-	XmTextSetString(active_info->text, app_data.display_shortcuts);
+    *str = (String)XtNewString(expr.chars());
+
+    if (active_info != 0 && active_info->str == str)
+	XmTextSetString(active_info->text, *str);
 }
 
 

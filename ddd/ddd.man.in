@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-11\-23" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-11\-24" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -1519,11 +1519,12 @@ the text is empty, the `\fBNew Display\fR' menu will be empty, too.
 \s-1@DDD@\s+1 also allows you to specify individual labels for
 user-defined buttons.  You can write such a label after the
 expression, separated by `\fB//\fR'.  This feature is used in the
-default contents of the `\fBNew Display\fR' menu, where each of the
-base conversions has a label:
+default contents of the \s-1GDB\s+1 `\fBNew Display\fR' menu, where
+each of the base conversions has a label:
 .br
 .sp
-    \fB/d ()	// Convert to Dec
+    \fB/t ()	// Convert to Bin
+    /d ()	// Convert to Dec
     /x ()	// Convert to Hex
     /o ()	// Convert to Oct\fR
 .sp
@@ -4452,6 +4453,10 @@ are given a `flat' appearance\(em\&the 3-D border only shows up when
 the pointer is over the icon.  If `\fBoff\fR', the 3-D border is shown
 all the time.
 .TP
+.B "labelDelimiter (\fPclass\fB LabelDelimiter)"
+The string used to separate labels from commands and shortcuts.
+Default is `\fB//\fR'.
+.TP
 .B "sourceButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be added under the debugger
 console.  Each button issues the command given by its name.  See the
@@ -4543,6 +4548,50 @@ unknown, the button is disabled.  If this resource is `\fBoff\fR', no
 checking is done: all commands are accepted \*(lqas is\*(rq.
 .\"
 .\"
+.SS "User-Defined New Display Menu"
+.\"
+The following resources control the user-defined `\fBNew Display\fR' menu.
+.\"
+.TP
+.B "dbxDisplayShortcuts (\fPclass\fB DisplayShortcuts)"
+A newline-separated list of display expressions to be included in the
+`\fBNew Display\fR' menu for \s-1DBX\s+1.  If a line contains a label
+delimiter (the string `\fB//\fR'; can be changed via the
+`\fBlabelDelimiter\fR' resource), the string before the delimiter is
+used as \fIexpression\fR, and the string after the delimiter is used
+as label.  Otherwise, the label is `\fBDisplay \fIexpression\fR'.
+Upon activation, the string `\fB()\fR' in \fIexpression\fR is replaced
+by the name of the currently selected display.
+.TP
+.B "gdbDisplayShortcuts (\fPclass\fB DisplayShortcuts)"
+A newline-separated list of display expressions to be included in the
+`\fBNew Display\fR' menu for \s-1GDB\s+1.  See the description of
+`\fBdbxDisplayShortcuts\fR', above.
+.TP
+.B "jdbDisplayShortcuts (\fPclass\fB DisplayShortcuts)"
+A newline-separated list of display expressions to be included in the
+`\fBNew Display\fR' menu for \s-1JDB\s+1.  See the description of
+`\fBdbxDisplayShortcuts\fR', above.
+.TP
+.B "labelDelimiter (\fPclass\fB LabelDelimiter)"
+The string used to separate labels from commands and shortcuts.
+Default is `\fB//\fR'.
+.TP
+.B "perlDisplayShortcuts (\fPclass\fB DisplayShortcuts)"
+A newline-separated list of display expressions to be included in the
+`\fBNew Display\fR' menu for Perl.  See the description of
+`\fBdbxDisplayShortcuts\fR', above.
+.TP
+.B "pydbDisplayShortcuts (\fPclass\fB DisplayShortcuts)"
+A newline-separated list of display expressions to be included in the
+`\fBNew Display\fR' menu for \s-1PYDB\s+1.  See the description of
+`\fBdbxDisplayShortcuts\fR', above.
+.TP
+.B "xdbDisplayShortcuts (\fPclass\fB DisplayShortcuts)"
+A newline-separated list of display expressions to be included in the
+`\fBNew Display\fR' menu for \s-1XDB\s+1.  See the description of
+`\fBdbxDisplayShortcuts\fR', above.
+.\"
 .\"
 .SS "Data Display"
 .\"
@@ -4585,16 +4634,6 @@ structures.  See `\fBExamining shared data structures\fR', above, for
 a discussion.  The default is `\fBoff\fR', meaning that shared data
 structures are not recognized.
 .TP
-.B "displayShortcuts (\fPclass\fB DisplayShortcuts)"
-A newline-separated list of display expressions to be included in the
-`\fBNew Display\fR' menu.  If a line contains a label delimiter (the
-string `\fB//\fR'; can be changed via the `\fBlabelDelimiter\fR'
-resource), the string before the delimiter is used as
-\fIexpression\fR, and the string after the delimiter is used as label.
-Otherwise, the label is `\fBDisplay \fIexpression\fR'.  Upon
-activation, the string `\fB()\fR' in \fIexpression\fR is replaced by
-the name of the currently selected display.
-.TP
 .B "expandRepeatedValues (\fPclass\fB ExpandRepeatedValues)"
 \s-1GDB\s+1 can print repeated array elements as `\fIVALUE\fB
 <repeated \fIN\fB times>\fR'.  If `\fBexpandRepeatedValues\fR' is
@@ -4607,10 +4646,6 @@ the name of the currently selected display.
 If some display gets out of scope and this resource is `\fBon\fR'
 (default), \s-1@DDD@\s+1 removes it from the data display.  If this is
 `\fBoff\fR', it is simply disabled.
-.TP
-.B "labelDelimiter (\fPclass\fB LabelDelimiter)"
-The string used to separate labels from commands and shortcuts.
-Default is `\fB//\fR'.
 .TP
 .B "pannedGraphEditor (\fPclass\fB PannedGraphEditor)"
 The control to scroll the graph.  

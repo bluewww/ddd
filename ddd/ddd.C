@@ -356,6 +356,7 @@ static void verify_buttons(MMDesc *items);
 
 // Setup shortcut menu
 static void set_shortcut_menu(DataDisp *data_disp, string expressions);
+static void set_shortcut_menu(DataDisp *data_disp);
 
 // Fix the size of the status line
 static void fix_status_size();
@@ -2671,7 +2672,7 @@ int main(int argc, char *argv[])
     // realized, since LessTif won't make the shells transient otherwise.
     source_view->create_shells();
     data_disp->create_shells();
-    set_shortcut_menu(data_disp, app_data.display_shortcuts);
+    set_shortcut_menu(data_disp);
 
     // Create preference panels
     make_preferences(paned_work_w);
@@ -3006,19 +3007,24 @@ XrmDatabase GetFileDatabase(char *filename)
 		if (version_found != DDD_VERSION)
 		    version_mismatch = true;
 	    }
-	    else
+
+#define XtNdisplayShortcuts "displayShortcuts"
+
+	    if (line.contains(XtNdisplayShortcuts ":"))
 	    {
-		for (int i = 0; copy && i < int(XtNumber(do_not_copy)); i++)
+		line.gsub(XtNdisplayShortcuts ":", XtNgdbDisplayShortcuts ":");
+	    }
+
+	    for (int i = 0; copy && i < int(XtNumber(do_not_copy)); i++)
+	    {
+		string res = string(".") + do_not_copy[i] + ":";
+		if (line.contains(res) && version_mismatch)
 		{
-		    string res = string(".") + do_not_copy[i] + ":";
-		    if (line.contains(res) && version_mismatch)
-		    {
 #if 0
-			cerr << "Warning: ignoring " << line 
-			     << " in " << filename << "\n";
+		    cerr << "Warning: ignoring " << line 
+			 << " in " << filename << "\n";
 #endif
-			copy = false;
-		    }
+		    copy = false;
 		}
 	    }
 	}
@@ -3133,6 +3139,21 @@ static void set_shortcut_menu(DataDisp *data_disp, string exprs)
     data_disp->set_shortcut_menu(items_s, labels_s);
 
     delete[] items;
+}
+
+static void set_shortcut_menu(DataDisp *data_disp)
+{
+    string display_shortcuts;
+    switch (gdb->type())
+    {
+    case GDB:  display_shortcuts = app_data.gdb_display_shortcuts;  break;
+    case DBX:  display_shortcuts = app_data.dbx_display_shortcuts;  break;
+    case XDB:  display_shortcuts = app_data.xdb_display_shortcuts;  break;
+    case JDB:  display_shortcuts = app_data.jdb_display_shortcuts;  break;
+    case PYDB: display_shortcuts = app_data.pydb_display_shortcuts; break;
+    case PERL: display_shortcuts = app_data.perl_display_shortcuts; break;
+    }
+    set_shortcut_menu(data_disp, display_shortcuts);
 }
 
 //-----------------------------------------------------------------------------
@@ -5196,7 +5217,7 @@ void update_user_buttons()
     set_buttons(data_buttons_w,    app_data.data_buttons);
     set_buttons(source_buttons_w,  app_data.source_buttons);
     set_buttons(console_buttons_w, app_data.console_buttons);
-    set_shortcut_menu(data_disp,   app_data.display_shortcuts);
+    set_shortcut_menu(data_disp);
 }
 
 
