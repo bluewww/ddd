@@ -1657,7 +1657,7 @@ int main(int argc, char *argv[])
 	XmInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
 
     // Get application resources
-    XtVaGetApplicationResources(toplevel, &app_data,
+    XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
 				resources, XtNumber(resources),
 				NULL);
 
