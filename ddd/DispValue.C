@@ -147,7 +147,7 @@ DispValue::DispValue (DispValue* parent,
       myfull_name(f_n), print_name(p_n), changed(false), myrepeats(1),
       _value(""), _dereferenced(false), _children(0),
       _index_base(0), _have_index_base(false), _alignment(Horizontal),
-      _plotter(0), _links(1)
+      _plotter(0), _cached_box(0), _links(1)
 {
     init(parent, depth, value, given_type);
 
@@ -164,18 +164,21 @@ DispValue::DispValue (const DispValue& dv)
       _value(dv.value()), _dereferenced(false), _children(dv.nchildren()), 
        _index_base(dv._index_base), 
       _have_index_base(dv._have_index_base), _alignment(dv._alignment),
-      _links(1)
+      _plotter(0), _cached_box(0), _links(1)
 {
     for (int i = 0; i < dv.nchildren(); i++)
     {
 	_children += dv.child(i)->dup();
     }
+
+    if (dv.cached_box() != 0)
+	_cached_box = dv.cached_box()->link();
 }
 
 
 // True if more sequence members are coming
 bool DispValue::sequence_pending(const string& value, 
-				 const DispValue *parent) const
+				 const DispValue *parent)
 {
     if (parent != 0)
     {
@@ -700,6 +703,8 @@ void DispValue::clear()
 	delete plotter();
 	_plotter = 0;
     }
+
+    clear_cached_box();
 }
 
 //-----------------------------------------------------------------------------
@@ -853,6 +858,9 @@ DispValue *DispValue::update(string& value,
     DispValue *dv = update(source, was_changed, was_initialized);
 
     source->unlink();
+
+    if (was_changed || was_initialized)
+	clear_cached_box();
 
     return dv;
 }

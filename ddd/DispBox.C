@@ -241,6 +241,9 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 {
     Box *vbox = 0;
 
+    if (dv->cached_box() != 0)
+	return dv->cached_box()->link();
+
     switch (dv->type())
     {
     case Simple:
@@ -537,6 +540,8 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
     {
 	vbox = eval("changed_value", vbox->link());
     }
+
+    ((DispValue *)dv)->set_cached_box(vbox);
 
     return vbox;
 }

@@ -42,6 +42,7 @@
 #include "DispValueA.h"
 #include "DispValueT.h"
 #include "StringSA.h"
+#include "Box.h"
 
 class Agent;
 class PlotAgent;
@@ -70,7 +71,10 @@ class DispValue {
     // Plotting stuff
     PlotAgent *_plotter;	// Plotting agent
 
-    // initialize from VALUE.  If TYPE is given, use TYPE as type
+    // Caching stuff
+    Box *_cached_box;		// Last box
+
+    // Initialize from VALUE.  If TYPE is given, use TYPE as type
     // instead of inferring it.
     void init(DispValue *parent, int depth, 
 	      string& value, DispValueType type = UnknownType);
@@ -107,20 +111,44 @@ class DispValue {
     DispValue *_update(DispValue *source, 
 		       bool& was_changed, bool& was_initialized);
 
+    // Clear cached box
+    void clear_cached_box()
+    {
+	if (_cached_box != 0)
+	{
+	    _cached_box->unlink();
+	    _cached_box = 0;
+	}
+    }
+
 protected:
     int _links;			// #references (>= 1)
 
     // Array, Struct
     // Expand/collapse single value
-    void _expand()    { myexpanded = true;  }
-    void _collapse()  { myexpanded = false; }
+    void _expand()
+    {
+	if (myexpanded)
+	    return;
+
+	myexpanded = true;
+	clear_cached_box();
+    }
+    void _collapse()
+    {
+	if (myexpanded)
+	    return;
+
+	myexpanded = false;
+	clear_cached_box();
+    }
 
     // Plot Agent
     PlotAgent *plotter() const { return _plotter; }
 
     // True if more sequence members are coming
-    bool sequence_pending(const string& value, 
-			  const DispValue *parent) const;
+    static bool sequence_pending(const string& value, 
+				 const DispValue *parent);
 
     // Numeric value
     string num_value() const;
@@ -209,10 +237,10 @@ public:
     const string& addr()       const { return myaddr; }
     int repeats()              const { return myrepeats; }
 
-    int& repeats()       { return myrepeats; }
-    string& full_name()  { return myfull_name; }
-    string& name()       { return print_name; }
-    bool& enabled()      { return myenabled; }
+    int& repeats()       { clear_cached_box(); return myrepeats; }
+    string& full_name()  { clear_cached_box(); return myfull_name; }
+    string& name()       { clear_cached_box(); return print_name; }
+    bool& enabled()      { clear_cached_box(); return myenabled; }
 
     bool is_changed() const { return changed; }
     bool expanded()   const { return myexpanded; }
@@ -259,12 +287,32 @@ public:
     // Array
     bool vertical_aligned()   const { return _alignment == Vertical; }
     bool horizontal_aligned() const { return _alignment == Horizontal; }
-    void align_vertical()   { _alignment = Vertical; }
-    void align_horizontal() { _alignment = Horizontal; }
+    void align_vertical()
+    {
+	if (_alignment == Vertical)
+	    return;
+
+	_alignment = Vertical;
+	clear_cached_box();
+    }
+    void align_horizontal()
+    {
+	if (_alignment == Horizontal)
+	    return;
+
+	_alignment = Horizontal;
+	clear_cached_box();
+    }
 
     // Pointer
-    void dereference(bool set = true) { _dereferenced = set; }
+    void dereference(bool set = true)
+    {
+	if (_dereferenced)
+	    return;
 
+	_dereferenced = set;
+	clear_cached_box();
+    }
 
     // Updating
 
@@ -315,6 +363,17 @@ public:
 
     // Hook for inserting previously computed DispValues
     static DispValue *(*value_hook)(string& value);
+
+    // Box cache
+    Box *cached_box() const
+    {
+	return _cached_box;
+    }
+    void set_cached_box(Box *value)
+    {
+	clear_cached_box();
+	_cached_box = value->link();
+    }
 };
 
 #endif // _DDD_DispValue_h
