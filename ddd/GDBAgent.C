@@ -631,8 +631,11 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
     DataLength* dl    = (DataLength *) call_data;
     string      answer(dl->data, dl->length);
 
-    // Get rid of any control combinations
+    // Get rid of any control combinations ...
     gdb->strip_control(answer);
+
+    // ... as well as of annoying DBX comments and messages
+    gdb->strip_comments(answer);
 
     string reply = gdb->requires_reply(answer);
     if (reply != "")
@@ -679,7 +682,6 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	{
             // Received complete answer (GDB issued prompt)
 	    gdb->cut_off_prompt (answer);
-	    gdb->strip_comments (answer);
 
 	    if (answer != "" && gdb->_on_answer != 0)
 		gdb->_on_answer (answer, gdb->_user_data);
@@ -739,7 +741,6 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	{
             // Received complete answer (GDB issued prompt)
 	    gdb->cut_off_prompt (answer);
-	    gdb->strip_comments (answer);
 
 	    gdb->complete_answer += answer;
 
@@ -764,7 +765,6 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	{
             // Received complete answer (GDB issued prompt)
 	    gdb->cut_off_prompt (answer);
-	    gdb->strip_comments (answer);
 
 	    gdb->complete_answers[gdb->qu_index] += answer;
 
