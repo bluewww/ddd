@@ -2657,10 +2657,10 @@ static void BlinkCB(XtPointer client_data, XtIntervalId *)
     XtVaSetValues(led_w, XmNfillOnSelect, new_state, NULL);
     XFlush(XtDisplay(led_w));
 
-    if ((blinker_active || new_state) && app_data.blink_rate > 0)
+    if ((blinker_active || new_state) && app_data.busy_blink_rate > 0)
     {
 	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
-				      app_data.blink_rate, BlinkCB, 
+				      app_data.busy_blink_rate, BlinkCB, 
 				      XtPointer(!new_state));
     }
     else

@@ -541,9 +541,9 @@ Ddd*clearDocDelay:		1000
 Ddd*clearTipDelay:		50
 
 
-! Blink rate (in ms) of the status LED.  A value of 0 prevents 
-! the status LED from blinking.
-Ddd.blinkRate:			500
+! Blink rate (in ms) of the busy LED - the LED showing that the inferior
+! debugger is busy.  A value of 0 prevents the busy LED from blinking.
+Ddd*busyBlinkRate:		500
 
 
 ! The maximum length of a data display title (in characters)

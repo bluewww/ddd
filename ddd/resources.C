@@ -824,11 +824,11 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XmNblinkRate,
+	XtNbusyBlinkRate,
 	XmCBlinkRate,
 	XmRInt,
 	sizeof(int),
-	XtOffsetOf(AppData, blink_rate),
+	XtOffsetOf(AppData, busy_blink_rate),
 	XmRImmediate,
 	XtPointer(500)
     },
