@@ -1089,8 +1089,8 @@ static MMDesc file_menu[] =
 
 static MMDesc program_menu[] =
 {
-    { "run",         MMPush, { gdbCommandCB, "run" }},
-    { "run_with_args", MMPush, { gdbRunWithArgsCB }},
+    { "run",         MMPush, { gdbRunWithArgsCB }},
+    { "run_again",   MMPush, { gdbCommandCB, "run" }},
     MMSep,
     { "step",        MMPush, { gdbCommandCB, "step" }},
     { "stepi",       MMPush, { gdbCommandCB, "stepi" }},
@@ -5309,30 +5309,32 @@ void gdbRunWithArgsDCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 void gdbRunWithArgsCB(Widget w, XtPointer, XtPointer)
 {
-    static Widget run_with_args_dialog  = 0;
-    static Widget run_with_args_command = 0;
+    static Widget run_dialog  = 0;
+    static Widget run_command = 0;
 
-    if (run_with_args_dialog == 0)
+    if (run_dialog == 0)
     {
-	run_with_args_dialog = 
-	    verify(XmCreatePromptDialog(w, "run_with_args_dialog", NULL, 0));
+	Arg args[10];
+	int arg = 0;
 
-	run_with_args_command =
-	    verify(XmCreateCommand(run_with_args_dialog, 
-				   "run_with_args_command", NULL, 0));
-	XtManageChild(run_with_args_command);
+	run_dialog = 
+	    verify(XmCreatePromptDialog(w, "run_dialog", args, arg));
 
-	Delay::register_shell(run_with_args_dialog);
-	XtAddCallback(run_with_args_dialog, XmNokCallback, 
-		      gdbRunWithArgsDCB, XtPointer(run_with_args_command));
-	XtAddCallback(run_with_args_dialog, XmNhelpCallback, 
+	run_command =
+	    verify(XmCreateCommand(run_dialog, "run_command", NULL, 0));
+	XtManageChild(run_command);
+
+	Delay::register_shell(run_dialog);
+	XtAddCallback(run_dialog, XmNokCallback, 
+		      gdbRunWithArgsDCB, XtPointer(run_command));
+	XtAddCallback(run_dialog, XmNhelpCallback, 
 		      ImmediateHelpCB, 0);
-	XtAddCallback(run_with_args_command, XmNcommandEnteredCallback,
+	XtAddCallback(run_command, XmNcommandEnteredCallback,
 		      gdbRunWithArgsDCB, XtPointer(0));
 
-	XtUnmanageChild(XmSelectionBoxGetChild(run_with_args_dialog,
+	XtUnmanageChild(XmSelectionBoxGetChild(run_dialog,
 					       XmDIALOG_TEXT));
-	XtUnmanageChild(XmSelectionBoxGetChild(run_with_args_dialog,
+	XtUnmanageChild(XmSelectionBoxGetChild(run_dialog,
 					       XmDIALOG_SELECTION_LABEL));
     }
 
@@ -5343,10 +5345,10 @@ void gdbRunWithArgsCB(Widget w, XtPointer, XtPointer)
     if (args != "")
     {
 	MString margs(args);
-	XmCommandSetValue(run_with_args_command, margs.xmstring());
+	XmCommandSetValue(run_command, margs.xmstring());
     }
 
-    XtManageChild(run_with_args_dialog);
+    XtManageChild(run_dialog);
 }
 
 //-----------------------------------------------------------------------------

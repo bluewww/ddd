@@ -697,7 +697,7 @@ None<Key>Escape:	gdb-complete-arg(file)      \n\
 None<Key>Home:		beginning-of-line()         \n\
 None<Key>End:		end-of-line()               \n
 
-Ddd*run_with_args_dialog*XmText.translations: #override \
+Ddd*run_dialog*XmText.translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
 Ctrl<Key>B:     	backward-character()        \n\
 Ctrl<Key>D:     	delete-next-character()     \n\
@@ -1183,8 +1183,8 @@ Ddd*menubar.program*contextHelpString:	\
 \
 @rm This is the @sl Program menu@rm.\n\
 \n\
-@tt \267 @bf Run @rm - start the debugged program.\n\
-@tt \267 @bf Run with Arguments @rm - run with given arguments.\n\
+@tt \267 @bf Run... @rm - start the debugged program.\n\
+@tt \267 @bf Run Again @rm - run with current arguments.\n\
 \n\
 @tt \267 @bf Step @rm - step program until it reaches \
 a different source line.\n\
@@ -1199,15 +1199,15 @@ but proceed through subroutine calls.\n\
 @tt \267 @bf Kill @rm - Kill execution of program being debugged.\n\
 @tt \267 @bf Interrupt @rm - interrupt program (or current debugger command).
 
-Ddd*menubar*programMenu.run.labelString: 	   Run
-Ddd*menubar*programMenu.run.mnemonic:	           R
+Ddd*menubar*programMenu.run.labelString: 	   Run...
+Ddd*menubar*programMenu.run.mnemonic:	   	   R
 Ddd*menubar*programMenu.run.accelerator:           Ctrl ~Shift<Key>R
 Ddd*menubar*programMenu.run.acceleratorText:       Ctrl+R
 
-Ddd*menubar*programMenu.run_with_args.labelString: 	Run with Arguments...
-Ddd*menubar*programMenu.run_with_args.mnemonic:	   	A
-Ddd*menubar*programMenu.run_with_args.accelerator:      Ctrl Shift<Key>R
-Ddd*menubar*programMenu.run_with_args.acceleratorText:  Ctrl+Shift+R
+Ddd*menubar*programMenu.run_again.labelString: 	   Run Again
+Ddd*menubar*programMenu.run_again.mnemonic:	   A
+Ddd*menubar*programMenu.run_again.accelerator:     Ctrl Shift<Key>R
+Ddd*menubar*programMenu.run_again.acceleratorText: Ctrl+Shift+R
 
 Ddd*menubar*programMenu.step.labelString: 	   Step
 Ddd*menubar*programMenu.step.mnemonic:	           S
@@ -2359,15 +2359,15 @@ Ddd*edit_displays_dialog*buttons*delete.contextHelpString:  \
 @rm Delete the selected data display(s).
 
 
-Ddd*run_with_args_dialog.title: @DDD@: Arguments
-Ddd*run_with_args_dialog.okLabelString:	 Run
-Ddd*run_with_args_command.promptString:	 Arguments
-Ddd*run_with_args_command.marginWidth:	 0
-Ddd*run_with_args_command.marginHeight:	 10
-Ddd*run_with_args_dialog*XmList.fontList: \
+Ddd*run_dialog.title: @DDD@: Arguments
+Ddd*run_dialog.okLabelString:	 Run
+Ddd*run_command.promptString:	 Arguments
+Ddd*run_command.marginWidth:	 0
+Ddd*run_command.marginHeight:	 10
+Ddd*run_dialog*XmList.fontList: \
 -*-lucidatypewriter-medium-r-*-*-12-*=charset
 
-Ddd*run_with_args_dialog*contextHelpString:	\
+Ddd*run_dialog*contextHelpString:	\
 @rm Please select the arguments for the debugged program.\n\
 Press @bf Run @rm to run the program with the selected arguments.\n\
 Press @bf Cancel @rm if you do not want to run the program now.
