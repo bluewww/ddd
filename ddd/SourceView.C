@@ -78,8 +78,9 @@ char SourceView_rcsid[] =
 
 // Glyphs
 #include "arrow.xbm"
-#include "break.xbm"
-#include "nobreak.xbm"
+#include "stop.xbm"
+#include "greystop.xbm"
+#include "greyarrow.xbm"
 
 // Additional macros
 inline int isid(char c)
@@ -235,20 +236,28 @@ string SourceView::current_code;
 string SourceView::current_code_start;
 string SourceView::current_code_end;
 
-XmTextPosition SourceView::last_pos = 0;
-XmTextPosition SourceView::last_top = 0;
-XmTextPosition SourceView::last_start_highlight = 0;
-XmTextPosition SourceView::last_end_highlight = 0;
+XmTextPosition SourceView::last_top                = 0;
+XmTextPosition SourceView::last_pos                = 0;
+XmTextPosition SourceView::last_start_highlight    = 0;
+XmTextPosition SourceView::last_end_highlight      = 0;
+
+XmTextPosition SourceView::last_top_pc             = 0;
+XmTextPosition SourceView::last_pos_pc             = 0;
+XmTextPosition SourceView::last_start_highlight_pc = 0;
+XmTextPosition SourceView::last_end_highlight_pc   = 0;
 
 XmTextPosition SourceView::last_start_secondary_highlight = 0;
 XmTextPosition SourceView::last_end_secondary_highlight = 0;
 
 string SourceView::last_execution_file = "";
 int    SourceView::last_execution_line = 0;
+string SourceView::last_execution_pc = "";
 
 StringArray SourceView::history;
 int SourceView::history_position = 0;
 bool SourceView::history_locked = false;
+
+bool SourceView::at_lowest_frame = true;
 
 //-----------------------------------------------------------------------
 // Helping functions
@@ -1611,6 +1620,8 @@ void SourceView::show_execution_position (string position)
 	return;
     }
 
+    at_lowest_frame = true;
+
     string file_name = current_file_name;
 
     if (position.contains(':'))
@@ -1694,7 +1705,7 @@ void SourceView::_show_execution_position(string file, int line)
     last_start_highlight = pos;
     last_end_highlight   = pos_line_end;
 
-    update_glyphs ();
+    update_glyphs();
 }
 
 
@@ -1916,19 +1927,19 @@ void SourceView::lookup(string s)
     if (s == "")
     {
 	// Empty argument given
-	if (last_execution_file == "")
-	{
-	    post_error("No current execution position.", 
-		       "source_position_error", source_text_w);
-	    return;
-	}
+	if (last_execution_pc != "")
+	    show_pc(last_execution_pc);
 
-	if (gdb->type() == GDB)
-	    gdb_command("info line " 
-			+ basename(last_execution_file) 
-			+ ":" + itostring(last_execution_line));
-	else
-	    _show_execution_position(last_execution_file, last_execution_line);
+	if (last_execution_file != "")
+	{
+	    if (gdb->type() == GDB)
+		gdb_command("info line " 
+			    + basename(last_execution_file) 
+			    + ":" + itostring(last_execution_line));
+	    else
+		_show_execution_position(last_execution_file, 
+					 last_execution_line);
+	}
     }
     else if (isdigit(s[0]))
     {
@@ -3100,6 +3111,8 @@ void SourceView::process_frame (string& frame_output)
 	if (gdb->type() == DBX)
 	    frame--;		    // GDB uses origin-0, DBX uses origin-1
 
+	at_lowest_frame = (frame == 0);
+
 	int count         = 0;
 	int top_item      = 0;
 	int visible_items = 0;
@@ -3120,6 +3133,8 @@ void SourceView::process_frame (string& frame_output)
 
 	XtSetSensitive(up_w,   pos > 1);
 	XtSetSensitive(down_w, pos < count);
+
+	update_glyphs();
     }
     else
     {
@@ -3537,7 +3552,10 @@ void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
 {
     XmTextPosition old_top = last_top;
     last_top = XmTextGetTopCharacter(source_text_w);
-    if (old_top != last_top)
+
+    XmTextPosition old_top_pc = last_top_pc;
+    last_top_pc = XmTextGetTopCharacter(code_text_w);
+    if (old_top != last_top || old_top_pc != last_top_pc)
 	UpdateGlyphsWorkProc(client_data, id);
 }
 
@@ -3554,45 +3572,52 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 {
     // clog << "Updating glyphs...\n";
 
-    static Widget _arrow_w[2] = {0, 0};
-    static Widget _breaks_w[2][max_glyphs + 1];
-    static Widget _nobreaks_w[2][max_glyphs + 1];
+    static Widget _plain_arrow_w[2] = {0, 0};
+    static Widget _grey_arrow_w[2]  = {0, 0};
+    static Widget _plain_stops_w[2][max_glyphs + 1];
+    static Widget _grey_stops_w[2][max_glyphs + 1];
 
-    int k;
-    for (k = 0; k < 2; k++)
+    if (_plain_arrow_w[0] == 0)
     {
-	Widget form_w      = k ? code_form_w : source_form_w;
-	Widget& arrow_w    = _arrow_w[k];
-	Widget *breaks_w   = _breaks_w[k];
-	Widget *nobreaks_w = _nobreaks_w[k];
+	// Initialize glyphs
 
-	if (arrow_w == 0)
+	for (int k = 0; k < 2; k++)
 	{
 	    // On the Form widget, later children are displayed
 	    // on top of earlier children.  A stop sign hiding an arrow
 	    // gives more pleasing results than vice-versa, so place arrow
 	    // glyph below sign glyphs.
-	    arrow_w = create_glyph(form_w, "arrow", 
-				   arrow_bits, arrow_width, arrow_height);
 
-	    for (int i = 0; i < max_glyphs; i++)
-	    {
-		breaks_w[i] = 
-		    create_glyph(form_w, "break", break_bits, 
-				 break_width, break_height);
-		nobreaks_w[i] = 
-		    create_glyph(form_w, "nobreak", nobreak_bits, 
-				 nobreak_width, nobreak_height);
-	    }
+	    Widget form_w = k ? code_form_w : source_form_w;
+
+	    _plain_arrow_w[k] = 
+		create_glyph(form_w, "plain_arrow",
+			     arrow_bits, 
+			     arrow_width,
+			     arrow_height);
+
+	    _grey_arrow_w[k] = 
+		create_glyph(form_w, "grey_arrow",
+			     greyarrow_bits, 
+			     greyarrow_width, 
+			     greyarrow_height);
+
+	    int i;
+	    for (i = 0; i < max_glyphs; i++)
+		_grey_stops_w[k][i] = 
+		    create_glyph(form_w, "grey_stop", greystop_bits, 
+				 greystop_width, greystop_height);
+	    for (i = 0; i < max_glyphs; i++)
+		_plain_stops_w[k][i] = 
+		    create_glyph(form_w, "plain_stop", stop_bits, 
+				 stop_width, stop_height);
 	}
     }
 
-    int _b[2];   _b[0] = 0;  _b[1] = 0;
-    int _nb[2]; _nb[0] = 0; _nb[1] = 0;
-
     // Show source position
-    // clog << "Arrow:\n";
-    Widget& source_arrow_w = _arrow_w[0];
+    // clog << "Source arrow:\n";
+    Widget& source_plain_arrow_w = _plain_arrow_w[0];
+    Widget& source_grey_arrow_w  = _grey_arrow_w[0];
     Position x, y;
     XmTextPosition pos;
     Boolean pos_displayed = False;
@@ -3607,17 +3632,67 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
     }
 
     if (pos_displayed)
-	map_glyph(source_arrow_w, x + arrow_x_offset, y);
+    {
+	if (at_lowest_frame)
+	{
+	    map_glyph(source_plain_arrow_w, x + arrow_x_offset, y);
+	    XtUnmapWidget(source_grey_arrow_w);
+	}
+	else
+	{
+	    map_glyph(source_grey_arrow_w, x + arrow_x_offset, y);
+	    XtUnmapWidget(source_plain_arrow_w);
+	}
+    }
     else
-	XtUnmapWidget(source_arrow_w);
+    {
+	XtUnmapWidget(source_plain_arrow_w);
+	XtUnmapWidget(source_grey_arrow_w);
+    }
+
+
+    // Show PC
+    // clog << "Code arrow:\n";
+    Widget& code_plain_arrow_w = _plain_arrow_w[1];
+    Widget& code_grey_arrow_w  = _grey_arrow_w[1];
+    pos_displayed = False;
+    if (display_glyphs && last_execution_pc != "")
+    {
+	pos = find_pc(last_execution_pc);
+	if (pos != XmTextPosition(-1))
+	    pos_displayed = XmTextPosToXY(code_text_w, pos, &x, &y);
+    }
+
+    if (pos_displayed)
+    {
+	if (at_lowest_frame)
+	{
+	    map_glyph(code_plain_arrow_w, x + arrow_x_offset, y);
+	    XtUnmapWidget(code_grey_arrow_w);
+	}
+	else
+	{
+	    map_glyph(code_grey_arrow_w, x + arrow_x_offset, y);
+	    XtUnmapWidget(code_plain_arrow_w);
+	}
+    }
+    else
+    {
+	XtUnmapWidget(code_plain_arrow_w);
+	XtUnmapWidget(code_grey_arrow_w);
+    }
+
+
+    int _p[2]; _p[0] = 0; _p[1] = 0;
+    int _g[2]; _g[0] = 0; _g[1] = 0;
 
     // Show source breakpoints
     if (display_glyphs)
     {
-	Widget *source_breaks_w   = _breaks_w[0];
-	Widget *source_nobreaks_w = _nobreaks_w[0];
-	int& source_b             = _b[0];
-	int& source_nb            = _nb[0];
+	Widget *source_plain_stops_w = _plain_stops_w[0];
+	Widget *source_grey_stops_w  = _grey_stops_w[0];
+	int& source_p                = _p[0];
+	int& source_g                = _g[0];
 
 	// Map breakpoint glyphs
 	// clog << "Breakpoints:\n";
@@ -3641,11 +3716,11 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 		{
 		    Widget glyph = 0;
 		    if (bp->enabled())
-			glyph = source_breaks_w[source_b] ? 
-			    source_breaks_w[source_b++] : 0;
+			glyph = source_plain_stops_w[source_p] ? 
+			    source_plain_stops_w[source_p++] : 0;
 		    else
-			glyph = source_nobreaks_w[source_nb] ? 
-			    source_nobreaks_w[source_nb++] : 0;
+			glyph = source_grey_stops_w[source_g] ? 
+			    source_grey_stops_w[source_g++] : 0;
 
 		    if (glyph != 0)
 			map_glyph(glyph, x + break_x_offset, y);
@@ -3654,13 +3729,13 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	}
     }
 
-    for (k = 0; k < 2; k++)
+    for (int k = 0; k < 2; k++)
     {
 	// Unmap remaining glyphs
 	Widget w;
-	while ((w = _breaks_w[k][_b[k]++]))
+	while ((w = _plain_stops_w[k][_p[k]++]))
 	    XtUnmapWidget(w);
-	while ((w = _nobreaks_w[k][_nb[k]++]))
+	while ((w = _grey_stops_w[k][_g[k]++]))
 	    XtUnmapWidget(w);
     }
 
@@ -3688,9 +3763,7 @@ void SourceView::set_display_glyphs(bool set)
     if (XtIsRealized(source_text_w))
     {
 	refresh_bp_disp();
-
-	if (last_execution_file != "")
-	    lookup();
+	lookup();
     }
 }
 
@@ -3729,6 +3802,22 @@ static string last_address(string s)
     return s.through(rxalphanum);
 }
 
+void SourceView::set_code(const string& code,
+			  const string& start,
+			  const string& end)
+{
+    XmTextSetString(code_text_w, (String)code);
+    XmTextSetHighlight (code_text_w, 0, code.length(), XmHIGHLIGHT_NORMAL);
+    
+    current_code       = code;
+    current_code_start = start;
+    current_code_end   = end;
+
+    last_pos_pc             = 0;
+    last_start_highlight_pc = 0;
+    last_end_highlight_pc   = 0;
+}
+
 // Process output of `disassemble' command
 void SourceView::process_disassemble(const string& disassemble_output)
 {
@@ -3747,10 +3836,9 @@ void SourceView::process_disassemble(const string& disassemble_output)
 	indented_code += line + '\n';
     }
 
-    XmTextSetString(code_text_w, (String)indented_code);
-    current_code       = indented_code;
-    current_code_start = first_address(disassemble_output);
-    current_code_end   = last_address(disassemble_output);
+    set_code(indented_code,
+	     first_address(disassemble_output),
+	     last_address(disassemble_output));
 
     if (cache_machine_code
 	&& current_code_start != ""
@@ -3801,27 +3889,30 @@ XmTextPosition SourceView::find_pc(const string& pc)
 }
 
 
+struct RefreshInfo {
+    string pc;
+    XmHighlightMode mode;
+};
+
 bool SourceView::refresh_code_pending = false;
 
 // Process `disassemble' output
 void SourceView::refresh_codeOQC(const string& answer, void *client_data)
 {
-    string *ppc = (string *)client_data;
-    string& pc = *ppc;
+    RefreshInfo *info = (RefreshInfo *)client_data;
     process_disassemble(answer);
 
-    if (find_pc(pc) != XmTextPosition(-1))
-	show_pc(pc);
+    if (find_pc(info->pc) != XmTextPosition(-1))
+	show_pc(info->pc, info->mode);
 
     refresh_code_pending = false;
 }
 
 void SourceView::refresh_codeWorkProc(XtPointer client_data, XtIntervalId *)
 {
-    string *ppc = (string *)client_data;
-    string& pc = *ppc;
-    bool ok = gdb->send_question("disassemble " + pc, 
-				 refresh_codeOQC, (void *)&pc);
+    RefreshInfo *info = (RefreshInfo *)client_data;
+    bool ok = gdb->send_question("disassemble " + info->pc, 
+				 refresh_codeOQC, (void *)info);
 
     if (!ok)
     {
@@ -3832,7 +3923,7 @@ void SourceView::refresh_codeWorkProc(XtPointer client_data, XtIntervalId *)
 }
 
 // Show program counter location PC
-void SourceView::show_pc (const string& pc)
+void SourceView::show_pc(const string& pc, XmHighlightMode mode)
 {
     // clog << "Showing PC " << pc << "\n";
 
@@ -3847,10 +3938,7 @@ void SourceView::show_pc (const string& pc)
 	if (compare_address(pc, cce.start) >= 0 
 	    && compare_address(pc, cce.end) <= 0)
 	{
-	    XmTextSetString(code_text_w, (String)cce.code);
-	    current_code       = cce.code;
-	    current_code_start = cce.start;
-	    current_code_end   = cce.end;
+	    set_code(cce.code, cce.start, cce.end);
 	    pos = find_pc(pc);
 	}
     }
@@ -3858,14 +3946,15 @@ void SourceView::show_pc (const string& pc)
     if (pos == XmTextPosition(-1))
     {
 	// PC not found in current code: disassemble location
-	static string last_pc;
-	last_pc = pc;
+	static RefreshInfo info;
+	info.pc   = pc;
+	info.mode = mode;
 	if (!refresh_code_pending)
 	{
 	    // Send `disassemble' command only after the running command
 	    // has ended.
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
-			    refresh_codeWorkProc, XtPointer(&last_pc));
+			    refresh_codeWorkProc, XtPointer(&info));
 	    refresh_code_pending = true;
 	}
 	return;
@@ -3875,4 +3964,62 @@ void SourceView::show_pc (const string& pc)
 	return;
 
     SetInsertionPosition(code_text_w, pos + code_indent_amount);
+
+    // Mark current line
+    if (mode == XmHIGHLIGHT_SELECTED)
+    {
+	last_execution_pc = pc;
+	at_lowest_frame = true;
+
+	if (!display_glyphs)
+	{
+	    // Set new marker
+	    if (last_pos_pc)
+		XmTextReplace (code_text_w,
+			       last_pos_pc + code_indent_amount - 1,
+			       last_pos_pc + code_indent_amount,
+			       " ");
+	    XmTextReplace (code_text_w,
+			   pos + code_indent_amount - 1,
+			   pos + code_indent_amount,
+			   ">");
+    
+	    XmTextPosition pos_line_end = 0;
+	    if (current_code != "")
+		pos_line_end = current_code.index('\n', pos) + 1;
+
+	    if (pos_line_end)
+	    {
+		if (pos != last_start_highlight_pc 
+		    || pos_line_end != last_end_highlight_pc)
+		{
+		    if (last_start_highlight_pc)
+		    {
+			XmTextSetHighlight (code_text_w,
+					    last_start_highlight_pc, 
+					    last_end_highlight_pc,
+					    XmHIGHLIGHT_NORMAL);
+		    }
+
+		    XmTextSetHighlight (code_text_w,
+					pos, pos_line_end,
+					XmHIGHLIGHT_SELECTED);
+		}
+
+		last_start_highlight_pc = pos;
+		last_end_highlight_pc   = pos_line_end;
+	    }
+	    last_pos_pc             = pos;
+	}
+    }
+
+    if (mode == XmHIGHLIGHT_SECONDARY_SELECTED)
+    {
+	// ...
+    }
+
+    if (mode == XmHIGHLIGHT_SELECTED)
+	update_glyphs();
 }
+
+

@@ -218,6 +218,8 @@ private:
 
     static bool display_glyphs;	// True if glyphs are to be displayed
 
+    static bool at_lowest_frame;              // True if at lowest frame
+
     // The indenting amount
     static int  bp_indent_amount;
 
@@ -237,13 +239,19 @@ private:
     static string current_code_start;
     static string current_code_end;
 
-    static XmTextPosition last_pos;
     static XmTextPosition last_top;
+    static XmTextPosition last_pos;
     static XmTextPosition last_start_highlight;
     static XmTextPosition last_end_highlight;
 
+    static XmTextPosition last_top_pc;
+    static XmTextPosition last_pos_pc;
+    static XmTextPosition last_start_highlight_pc;
+    static XmTextPosition last_end_highlight_pc;
+
     static string last_execution_file;
     static int    last_execution_line;
+    static string last_execution_pc;
     static void _show_execution_position (string file, int line);
 
     static String read_local(const string& file_name, long& length);
@@ -265,6 +273,9 @@ private:
     static XmTextPosition find_pc(const string& pc);
     static void refresh_codeOQC(const string& answer, void *data);
     static void refresh_codeWorkProc(XtPointer client_data, XtIntervalId *);
+    static void set_code(const string& code,
+			 const string& start,
+			 const string& end);
 
 public:
     // Constructor
@@ -281,8 +292,10 @@ public:
     // Set cursor position, based on the GDB position info POSITION
     static void show_position           (string position);
 
-    // Set PC position to location POSITION
-    static void show_pc                 (const string& pc);
+    // Set pc position to location PC; return start of line
+    // If MODE is given, highlight PC line
+    static void show_pc (const string& pc, 
+			 XmHighlightMode mode = XmHIGHLIGHT_NORMAL);
 
     // Handle breakpoint information
     static void process_info_bp         (string& info_output);

@@ -620,7 +620,11 @@ void user_cmdOAC (void* data)
     // Set PC position
     if (cmd_data->pos_buffer->pc_found())
     {
-	source_view->show_pc(cmd_data->pos_buffer->get_pc());
+	string pc = cmd_data->pos_buffer->get_pc();
+	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
+	    source_view->show_pc(pc, XmHIGHLIGHT_SELECTED);
+	else
+	    source_view->show_pc(pc, XmHIGHLIGHT_NORMAL);
     }
 
     // Process displays
