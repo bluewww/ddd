@@ -101,7 +101,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
 	command = default_debugger(command, type);
 
     string gdb_get_help    = sh_command(command + " -h");
-    string gdb_get_version = sh_command(command + " -v");
+    //string gdb_get_version = sh_command(command + " -v");
 
     string args = "executable-file [core-file | process-id]";
 
@@ -406,6 +406,9 @@ static void show_configuration(std::ostream& os, bool version_only)
 #endif
 #if WITH_BUILTIN_APP_DEFAULTS
 	"App defaults, "
+#endif
+#if defined(WITH_VALGRIND)
+        "Self Valgrind leak check, "
 #endif
 	 DDD_NAME " core\n";
     s.gsub(sccs, string(""));

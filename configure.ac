@@ -412,7 +412,7 @@ if test "x${readline_support}" != "xno"; then
     *)
       _cppflags="${CPPFLAGS}"
       CPPFLAGS="-I$readline_includes $CPPFLAGS"
-      AC_CHECK_HEADER(readline/readline.h, , CPPFLAGS="${_cppflags}")
+      AC_CHECK_HEADER(readline/readline.h,,[CPPFLAGS="${_cppflags}"])
       ;;
     esac
   ])
@@ -480,6 +480,25 @@ else
   LIBIBERTY=""
 fi
 AC_SUBST(LIBIBERTY)
+dnl
+dnl valgrind leak check support
+dnl It enables a leak check of ddd in the maintenance menu.
+dnl
+ddd_valgrind_include_found=no
+AC_ARG_WITH([valgrind-includes],
+ AS_HELP_STRING([--with-valgrind-includes=DIR],
+                [valgrind include files are in DIR]),[
+ AC_MSG_NOTICE([Valgrind leak support required.])
+ CPPFLAGS="-I$withval $CPPFLAGS"
+ AC_CHECK_HEADER([valgrind/memcheck.h],[ddd_valgrind_include_found=yes],
+                 AC_MSG_ERROR([Cannot find valgrind include files.]))
+])
+if test "x${ddd_valgrind_include_found}" != "xno"; then
+  AC_CHECK_HEADER([valgrind/memcheck.h],[ddd_valgrind_include_found=yes])
+fi
+if test "x${ddd_valgrind_include_found}" != "xno"; then
+  AC_DEFINE([WITH_VALGRIND],1,[Define if you want valgrind leak check of DDD.])
+fi
 dnl
 dnl
 if test "$ddd_have_readline" != true; then

@@ -1754,6 +1754,7 @@ static MMDesc crash_menu[] =
 
 static Widget debug_ddd_w       = 0;
 static Widget dump_core_w       = 0;
+static Widget valgrindLeakCheck_w = 0;
 
 static MMDesc maintenance_menu[] = 
 {
@@ -1762,6 +1763,9 @@ static MMDesc maintenance_menu[] =
     { "tictactoe",     MMPush, { TicTacToeCB, 0 }, 0, 0, 0, 0 },
     MMSep,
     { "crash",         MMRadioMenu, MMNoCB, crash_menu, 0, 0, 0 },
+    MMSep,
+    { "valgrindLeak",  MMPush | MMUnmanaged, { dddValgrindLeakCheckCB, 0 },
+      0, &valgrindLeakCheck_w, 0, 0 },
     MMSep,
     { "remove",        MMPush, { dddClearMaintenanceCB, 0 }, 0, 0, 0, 0 },
     MMEnd
@@ -4398,6 +4402,10 @@ void update_options()
 
     // Maintenance
     manage_child(maintenance_w, app_data.maintenance);
+    const bool ValgrindLeak = ValgrindLeakBuiltin();
+    manage_child(valgrindLeakCheck_w, ValgrindLeak);
+    if (ValgrindLeak)
+      set_sensitive(valgrindLeakCheck_w, RunningOnValgrind());
 
     set_toggle(crash_debug_w,
 	       app_data.dump_core && app_data.debug_core_dumps);

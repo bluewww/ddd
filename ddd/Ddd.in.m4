@@ -8,6 +8,7 @@ Ddd*appDefaultsVersion: @VERSION@
 ! Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 ! Copyright (C) 1999-2001 Universitaet Passau, Germany.
 ! Copyright (C) 2001 Universitaet des Saarlandes, Germany.
+! Copyright (C) 2001-2004 Free Software Foundation, Inc.
 ! Written by Andreas Zeller <zeller@gnu.org>.
 ! 
 ! This file is part of DDD.
@@ -3022,6 +3023,11 @@ Ddd*maintenanceMenu.crash.labelString:		When DDD Crashes
 Ddd*maintenanceMenu.crash.mnemonic:		W
 Ddd*maintenanceMenu.crash.documentationString:	\
 @rm What to do when DDD crashes
+
+Ddd*maintenanceMenu.valgrindLeak.labelString:	Do Valgrind Leak Check
+Ddd*maintenanceMenu.valgrindLeak.mnemonic:	L
+Ddd*maintenanceMenu.valgrindLeak.documentationString:	\
+@rm Do a self Valgrind leak check
 
 Ddd*maintenanceMenu.remove.labelString:         Remove Menu
 Ddd*maintenanceMenu.remove.mnemonic:		R

@@ -2,6 +2,7 @@
 // Exit DDD
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001-2004 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -55,6 +56,11 @@ extern void DDDExitCB    (Widget, XtPointer, XtPointer); // Exit DDD
 extern void DDDRestartCB (Widget, XtPointer, XtPointer); // Restart DDD
 extern void DDDDebugCB   (Widget, XtPointer, XtPointer); // Debug DDD
 extern void DDDDumpCoreCB(Widget, XtPointer, XtPointer); // Dump Core
+
+// Valgrind
+extern void dddValgrindLeakCheckCB(Widget, XtPointer, XtPointer);
+extern bool ValgrindLeakBuiltin();
+extern bool RunningOnValgrind();
 
 // Core dumps
 extern void report_core(std::ostream& os);

@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 2001 Universitaet Passau, Germany.
+// Copyright (C) 2001-2004 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -1205,4 +1206,32 @@ void DDDDebugCB(Widget, XtPointer client_data, XtPointer)
 {
     bool core_dumped = (int)(long)client_data;
     debug_ddd(core_dumped);
+}
+
+#if defined(WITH_VALGRIND)
+# include <valgrind/memcheck.h>
+#else
+# define VALGRIND_DO_LEAK_CHECK
+# define RUNNING_ON_VALGRIND false
+#endif
+
+// Is Valgrind leak check built-in ?
+bool ValgrindLeakBuiltin()
+{
+#if defined(WITH_VALGRIND)
+  return true;
+#else
+  return false;
+#endif
+}
+
+// Is ddd running under valgrind supervision ?
+bool RunningOnValgrind()
+{
+  return RUNNING_ON_VALGRIND;
+}
+
+void dddValgrindLeakCheckCB(Widget, XtPointer, XtPointer)
+{
+  VALGRIND_DO_LEAK_CHECK
 }
