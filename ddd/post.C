@@ -155,9 +155,9 @@ void post_gdb_message(string text, Widget w)
 	return;
     }
 
-    if (gdb->isReadyWithPrompt() && !text.contains('\n'))
+    if (gdb->isReadyWithPrompt())
     {
-	gdb_out("\n" + text + "\n" + gdb->default_prompt());
+	gdb_out(text + "\n");
 	return;
     }
 
