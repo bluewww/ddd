@@ -2317,11 +2317,19 @@ SourceView::SourceView (XtAppContext app_context,
     XtAppAddWorkProc (app_context, CreateGlyphsWorkProc, XtPointer(0));
 }
 
+// LessTif 0.79 doesn't like setting `editable' to false, hence prohibit
+// changes via this callback
+static void InhibitModificationCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
+    cbs->doit = False;
+}
 
+// Create source or code window
 void SourceView::create_text(Widget parent,
 			     const string& base, Widget& form, Widget& text)
 {
-    Arg args[10];
+    Arg args[15];
     int arg = 0;
 
     // Create text window
@@ -2332,11 +2340,17 @@ void SourceView::create_text(Widget parent,
     form = verify(XmCreateForm(parent, form_name, args, arg));
 
     arg = 0;
-    XtSetArg(args[arg], XmNselectionArrayCount, 1); arg++;
-    XtSetArg(args[arg], XmNtopAttachment,     XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNbottomAttachment,  XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNleftAttachment,    XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNrightAttachment,   XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNselectionArrayCount, 1);               arg++;
+    XtSetArg(args[arg], XmNtopAttachment,     XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNbottomAttachment,  XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNleftAttachment,    XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNrightAttachment,   XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNallowResize,       True);              arg++;
+    XtSetArg(args[arg], XmNeditMode,          XmMULTI_LINE_EDIT); arg++;
+    XtSetArg(args[arg], XmNautoShowCursorPosition, True);         arg++;
+    XtSetArg(args[arg], XmNcursorPositionVisible, True);          arg++;
+    XtSetArg(args[arg], XmNeditable, lesstif_hacks_enabled);      arg++;
+
     string text_name = base + "_text_w";
     text = verify(XmCreateScrolledText(form, text_name, args, arg));
     XtManageChild(text);
@@ -2345,7 +2359,11 @@ void SourceView::create_text(Widget parent,
 		  set_source_argCB, XtPointer(false));
     XtAddCallback(text, XmNmotionVerifyCallback,
 		  set_source_argCB, XtPointer(true));
-    XtAddCallback(text, XmNmotionVerifyCallback, CheckScrollCB, 0);
+    XtAddCallback(text, XmNmotionVerifyCallback, 
+		  CheckScrollCB, XtPointer(0));
+    XtAddCallback(text, XmNmodifyVerifyCallback,
+		  InhibitModificationCB, XtPointer(0));
+		  
     InstallTextTips(text);
 
     // Fetch scrollbar ID and add callbacks

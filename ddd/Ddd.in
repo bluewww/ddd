@@ -2793,20 +2793,9 @@ Ddd*source_form_w.height:		320
 Ddd*code_form_w.width:			660
 Ddd*code_form_w.height:			50
 
-
-Ddd*source_text_w.editable:		false
-Ddd*source_text_w.allowResize:		true
-Ddd*source_text_w.editMode:		XmMULTI_LINE_EDIT
-Ddd*source_text_w.autoShowCursorPosition: true
-Ddd*source_text_w.cursorPositionVisible: true
 Ddd*source_text_w.scrollHorizontal:	false
 Ddd*source_text_w.wordWrap:		true
 
-Ddd*code_text_w.editable:		false
-Ddd*code_text_w.allowResize:		true
-Ddd*code_text_w.editMode:		XmMULTI_LINE_EDIT
-Ddd*code_text_w.autoShowCursorPosition:	true
-Ddd*code_text_w.cursorPositionVisible:	true
 Ddd*code_text_w.scrollHorizontal:	false
 Ddd*code_text_w.wordWrap:		true
 
