@@ -1,8 +1,8 @@
 #! /bin/sh
 # $Id$
-# Install DDD release on our FTP server
+# Install DDD release on local FTP server
 
-# Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 # 
 # This file is part of DDD.
@@ -25,11 +25,11 @@
 # DDD is the GDB-based data display debugger.
 # Contact ddd@ips.cs.tu-bs.de for details.
 
-# Name of the ftp server (use "" if local)
+# Name of the FTP server (use "" if local)
 # ftp=ftp
 ftp=
 
-# Directory
+# Directory on FTP server
 dir=/ftp/pub/local/softech/ddd
 
 # rsh and rcp commands
@@ -62,11 +62,12 @@ README="ANNOUNCE    \
 	NEWS        \
 	PROBLEMS    \
 	README      \
+        README-BETA \
 	TODO        \
 "
 
-# Manual files
-DVI="ddd.man.ps"
+# Documentation files
+DOC="ddd.man.ps"
 
 # Files to be ignored in DIFF files
 DIFF_IGNORE="
@@ -74,9 +75,8 @@ doc/ddd*.ps
 ddd/vsl-lex.C
 ddd/vsl-gramma.C
 ddd/vsl-gramma.h
-ddd/ddd.man.txt
-ddd/ddd.man.huff.C
-ddd/COPYING.huff.C
+ddd/*.man.txt
+ddd/*.huff.C
 ddd/xlibdir.C
 "
 
@@ -145,17 +145,17 @@ if $doc; then
     ./configure -v
   fi
 
-  echo making $DVI...
-  for dvi in $DVI; do
-    gmake ../doc/$dvi
+  echo making $DOC...
+  for doc in $DOC; do
+    gmake ../doc/$doc
   done
 
-  echo installing $DVI...
-  $rsh "cd $dir/doc; /bin/rm -f $DVI"
-  (cd ../doc; $rcp -p $DVI $ftpdir/doc)
-  $rsh "cd $dir/doc; gzip -f -v -9 $DVI"
+  echo installing $DOC...
+  $rsh "cd $dir/doc; /bin/rm -f $DOC"
+  (cd ../doc; $rcp -p $DOC $ftpdir/doc)
+  $rsh "cd $dir/doc; gzip -f -v -9 $DOC"
 
-  (cd ../doc; rm -f $DVI)
+  (cd ../doc; rm -f $DOC)
   )
 fi
 
@@ -166,6 +166,9 @@ if $diff; then
   fi
   echo installing diffs...
   for dist in $DIST; do
+    case $dist in
+      *-pics*) continue;;
+    esac
     dist_version=`echo $dist | sed 's%.*-\(.*\)\.tar.*%\1%'`
     dist_release=ddd-$dist_version
     echo unpacking $dist...
@@ -274,12 +277,16 @@ if $link; then
      echo "cannot find dist file" >&2
      exit 1
   fi
-  dist_base=`echo $dist | sed 's%.*-\(.*\)[a-z]*\.tar.*%\1%'`
-  link=ddd-$dist_base.tar.gz
-  echo installing link from $link to src/$DIST...
-  $rsh "cd $dir; /bin/rm -f $link; ln -s src/$DIST $link"
+  for dist in $DIST; do
+    case $dist in
+      *-pics*) continue;;
+    esac
+    dist_base=`echo $dist | sed 's%.*-\(.*\)[a-z]*\.tar.*%\1%'`
+    link=ddd-$dist_base.tar.gz
+    echo installing link from $link to src/$dist...
+    $rsh "cd $dir; /bin/rm -f $link; ln -s src/$dist $link"
+  done
 fi
 
-# That's all, folks
-# echo done.
+# That's all, folks!
 exit 0
