@@ -921,8 +921,10 @@ Ddd*source_form_w.grey_arrow.foreground:   DarkGreen
 Ddd*source_form_w.temp_arrow.foreground:   DarkGreen
 Ddd*source_form_w.signal_arrow.foreground: red4
 Ddd*source_form_w.plain_stop.foreground:   red4
+Ddd*source_form_w.plain_cond.foreground:   red4
 Ddd*source_form_w.temp_stop.foreground:    red4
 Ddd*source_form_w.grey_stop.foreground:	   grey50
+Ddd*source_form_w.grey_cond.foreground:	   grey50
 
 Ddd*code_form_w.XmPushButton.background:   grey90
 Ddd*code_form_w.plain_arrow.foreground:	   DarkGreen
@@ -930,8 +932,10 @@ Ddd*code_form_w.grey_arrow.foreground:	   DarkGreen
 Ddd*code_form_w.temp_arrow.foreground:     DarkGreen
 Ddd*code_form_w.signal_arrow.foreground:   red4
 Ddd*code_form_w.plain_stop.foreground:	   red4
+Ddd*code_form_w.plain_cond.foreground:	   red4
 Ddd*code_form_w.temp_stop.foreground:      red4
 Ddd*code_form_w.grey_stop.foreground:	   grey50
+Ddd*code_form_w.grey_cond.foreground:	   grey50
 
 ! Graph colors
 Ddd*graph_edit.nodeColor:	   black
@@ -954,8 +958,10 @@ Ddd*grey_arrow.labelPixmap:	grey_arrow
 Ddd*temp_arrow.labelPixmap:	temp_arrow
 Ddd*signal_arrow.labelPixmap:	signal_arrow
 Ddd*plain_stop.labelPixmap:	plain_stop
+Ddd*plain_cond.labelPixmap:	plain_cond
 Ddd*temp_stop.labelPixmap:	temp_stop
 Ddd*grey_stop.labelPixmap:	grey_stop
+Ddd*grey_cond.labelPixmap:	grey_cond
 
 
 !-----------------------------------------------------------------------------
@@ -3662,6 +3668,10 @@ Ddd*arg_cmd_w.arg_cmd_area*tempBreakAt.labelString:	\
 Set Temporary Breakpoint at ()
 Ddd*arg_cmd_w.arg_cmd_area*contUntil.labelString:	Continue Until ()
 Ddd*arg_cmd_w.arg_cmd_area*enable.labelString:		Enable Breakpoint at ()
+Ddd*arg_cmd_w.arg_cmd_area*condition.labelString:	\
+Edit Condition at ()
+Ddd*arg_cmd_w.arg_cmd_area*ignore_count.labelString:	\
+Edit Ignore Count at ()
 Ddd*arg_cmd_w.arg_cmd_area*setPC.labelString:		\
 Set Execution Position to ()
 Ddd*arg_cmd_w.arg_cmd_area*watch.labelString:		Unwatch ()
@@ -3707,6 +3717,8 @@ define(BREAK_HELP, [\
 DESC(Set Temporary Breakpoint at (), [set temporary breakpoint])\n\
 DESC(Continue Until (), [set temporary breakpoint and resume execution])\n\
 DESC(Enable / Disable Breakpoint at (), [enable or disable breakpoint])\n\
+DESC(Edit Condition at (), [edit breakpoint condition])\n\
+DESC(Edit Ignore Count at (), [edit breakpoint ignore count])\n\
 DESC(Set Execution Position to (), [move execution position])
 ])dnl
 
@@ -3730,6 +3742,10 @@ Ddd*arg_cmd_w.arg_cmd_area*contUntil.documentationString: \
 @rm Set a temporary breakpoint at LBL(()) and resume execution
 Ddd*arg_cmd_w.arg_cmd_area*enable.documentationString: \
 @rm Enable or disable the breakpoint at the argument LBL(())
+Ddd*arg_cmd_w.arg_cmd_area*condition.documentationString: \
+@rm Edit the breakpoint condition at the argument LBL(())
+Ddd*arg_cmd_w.arg_cmd_area*ignore_count.documentationString: \
+@rm Edit the breakpoint ignore count at the argument LBL(())
 Ddd*arg_cmd_w.arg_cmd_area*setPC.documentationString: \
 @rm Set the current execution position to LBL(())
 
@@ -3912,6 +3928,25 @@ Ddd*plain_stop.documentationString:
 
 Ddd*grey_stop.helpString: \
 STRONG(Breakpoint (disabled))\n\
+A disabled breakpoint has no effect until reenabled.\n\
+\n\
+To change the breakpoint properties, press BUTTON(3).\n\
+To move it to another location, drag it using BUTTON(1).
+Ddd*grey_stop.tipString: 
+Ddd*grey_stop.documentationString: 
+
+Ddd*plain_cond.helpString: \
+STRONG(Conditional breakpoint (enabled))\n\
+The debugged program will stop when reaching this location\n\
+if the associated condition is true.\n\
+\n\
+To change the breakpoint properties, press BUTTON(3).\n\
+To move it to another location, drag it using BUTTON(1).
+Ddd*plain_stop.tipString: 
+Ddd*plain_stop.documentationString: 
+
+Ddd*grey_cond.helpString: \
+STRONG(Conditional breakpoint (disabled))\n\
 A disabled breakpoint has no effect until reenabled.\n\
 \n\
 To change the breakpoint properties, press BUTTON(3).\n\

@@ -150,33 +150,33 @@ bool have_enabled_breakpoint_at_arg()
 
 void gdbBreakAtCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::create_bp(current_arg(true), w);
+    source_view->create_bp(current_arg(true), w);
 }
 
 void gdbTempBreakAtCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::create_temp_bp(current_arg(true), w);
+    source_view->create_temp_bp(current_arg(true), w);
 }
 
 void gdbClearAtCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::clear_bp(current_arg(true), w);
+    source_view->clear_bp(current_arg(true), w);
 }
 
 void gdbToggleBreakCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::set_bp(current_arg(true), 
+    source_view->set_bp(current_arg(true), 
 		       !have_breakpoint_at_arg(), false, "", w);
 }
 
 void gdbContUntilCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::temp_n_cont(current_arg(true), w);
+    source_view->temp_n_cont(current_arg(true), w);
 }
 
 void gdbSetPCCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::move_pc(current_arg(true), w);
+    source_view->move_pc(current_arg(true), w);
 }
 
 void gdbToggleEnableCB(Widget w, XtPointer, XtPointer)
@@ -185,10 +185,24 @@ void gdbToggleEnableCB(Widget w, XtPointer, XtPointer)
     if (bp != 0)
     {
 	if (bp->enabled())
-	    SourceView::disable_bp(bp->number(), w);
+	    source_view->disable_bp(bp->number(), w);
 	else
-	    SourceView::enable_bp(bp->number(), w);
+	    source_view->enable_bp(bp->number(), w);
     }
+}
+
+void gdbEditConditionCB(Widget w, XtPointer, XtPointer)
+{
+    BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
+    if (bp != 0)
+	source_view->edit_breakpoint_condition(bp->number());
+}
+
+void gdbEditIgnoreCountCB(Widget w, XtPointer, XtPointer)
+{
+    BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
+    if (bp != 0)
+	source_view->edit_breakpoint_ignore_count(bp->number());
 }
 
 

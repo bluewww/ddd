@@ -1240,15 +1240,20 @@ static MMDesc watch_menu[] =
 };
 
 struct BreakItems {
-    enum ArgCmd { TempBreak, Enable, ContUntil, SetPC };
+    enum ArgCmd { TempBreak, Enable, Sep1, Condition, IgnoreCount, Sep2,
+		  ContUntil, SetPC };
 };
 
 static MMDesc break_menu[] = 
 {
-    { "tempBreakAt", MMPush, { gdbTempBreakAtCB }},
-    { "enable",      MMPush, { gdbToggleEnableCB }},
-    { "contUntil",   MMPush, { gdbContUntilCB }},
-    { "setPC",       MMPush, { gdbSetPCCB }},
+    { "tempBreakAt",  MMPush, { gdbTempBreakAtCB }},
+    { "enable",       MMPush, { gdbToggleEnableCB }},
+    MMSep,
+    { "condition",    MMPush, { gdbEditConditionCB }},
+    { "ignore_count", MMPush, { gdbEditIgnoreCountCB }},
+    MMSep,
+    { "contUntil",    MMPush, { gdbContUntilCB }},
+    { "setPC",        MMPush, { gdbSetPCCB }},
     MMEnd
 };
 
@@ -4270,9 +4275,13 @@ void update_arg_buttons()
     else
 	set_label(arg_cmd_area[ArgItems::Break].widget, "Break at ()");
 
-    manage_child(break_menu[BreakItems::TempBreak].widget, !have_break);
-    manage_child(break_menu[BreakItems::Enable].widget,    have_break);
-    manage_child(break_menu[BreakItems::ContUntil].widget, !have_break);
+    manage_child(break_menu[BreakItems::TempBreak].widget,   !have_break);
+    manage_child(break_menu[BreakItems::Enable].widget,      have_break);
+    manage_child(break_menu[BreakItems::Sep1].widget,        have_break);
+    manage_child(break_menu[BreakItems::Condition].widget,   have_break);
+    manage_child(break_menu[BreakItems::IgnoreCount].widget, have_break);
+    manage_child(break_menu[BreakItems::Sep2].widget,        have_break);
+    manage_child(break_menu[BreakItems::ContUntil].widget,   !have_break);
 
     bool break_enabled = have_enabled_breakpoint_at_arg();
     if (break_enabled)
