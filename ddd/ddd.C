@@ -1,0 +1,7045 @@
+// $Id$
+// DDD main program
+
+// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Written by Dorothea Luetkehaus (luetke@ips.cs.tu-bs.de)
+// and Andreas Zeller (zeller@ips.cs.tu-bs.de).
+// 
+// This file is part of DDD.
+// 
+// DDD is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+// 
+// DDD is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with DDD -- see the file COPYING.
+// If not, write to the Free Software Foundation, Inc.,
+// 675 Mass Ave, Cambridge, MA 02139, USA.
+// 
+// DDD is the GDB-based data display debugger.
+// Contact ddd@ips.cs.tu-bs.de for details.
+
+// This file does most of the application work in DDD.  That is:
+// - DDD main function
+// - Creation of Source and Data Windows
+// - Menu bars
+// - Handling of separate execution window
+// - Command window
+// - Command completion
+// and more...
+// (Some day, this file shall be split into several modules. - AZ)
+
+static const char rcsid[] =
+    "$Id$";
+
+//-----------------------------------------------------------------------------
+// Name conventions used:
+// ...CB : Callback function,
+// ...DCB: Dialog callback function,
+// ...CD : Create a dialog
+// ...Act: Action procedure
+// ...HP : Handler procedure (see `HandlerL.h' for details)
+//-----------------------------------------------------------------------------
+
+#ifdef __GNUG__
+#pragma implementation
+#pragma implementation "Map.h"
+#pragma implementation "Queue.h"
+#endif
+
+#include "config.h"
+// #include "MemCheckD.h"
+
+//-----------------------------------------------------------------------------
+// Includes
+//-----------------------------------------------------------------------------
+
+// Motif stuff
+#include <Xm/Xm.h>
+#include <Xm/AtomMgr.h>
+#include <Xm/MainW.h>
+#include <Xm/PanedW.h>
+#include <Xm/Command.h>
+#include <Xm/Label.h>
+#include <Xm/List.h>      // XmListSelectPos()
+#include <Xm/Text.h>
+#include <Xm/TextF.h>
+#include <Xm/MessageB.h>
+#include <Xm/RowColumn.h> // XmCreateWorkArea()
+#include <Xm/PushB.h>
+#include <Xm/ToggleB.h>
+#include <Xm/CutPaste.h>
+#include <Xm/Protocols.h>
+#include <Xm/SelectioB.h>
+#include <Xm/FileSB.h>
+#include <Xm/Frame.h>
+#include <X11/Shell.h>
+#include <X11/Xlib.h>	  // Event names
+#include <X11/Xutil.h>	  // Window manager functions
+
+extern "C" {
+#define new new_w
+#define class class_w
+#include <Xm/SashP.h>	  // XmIsSash()
+#undef class
+#undef new
+}
+
+#ifdef HAVE_X11_XMU_EDITRES_H
+#include <X11/Xmu/Editres.h>
+#endif
+
+// Nora stuff
+#include "assert.h"
+#include "cook.h"
+#include "strclass.h"
+#include "bool.h"
+#include "MakeMenu.h"
+#include "MString.h"
+#include "HelpCB.h"
+#include "ExitCB.h"
+#include "DestroyCB.h"
+#include "events.h"
+#include "Queue.h"
+#include "StringA.h"
+#include "findParent.h"
+#include "longName.h"
+#include "hostname.h"
+#include "fileSBF.h"
+#include "GraphEdit.h"
+#include "sigName.h"
+
+
+// DDD stuff
+#include "ddd.h"
+#include "comm-manag.h"
+#include "disp-read.h"
+#include "string-fun.h"
+#include "GDBAgent.h"
+#include "DataDisp.h"
+#include "ArgField.h"
+#include "filetype.h"
+#include "version.h"
+#include "configinfo.h"
+#include "xconfig.h"
+#include "host.h"
+#include "strings.h"
+#include "mydialogs.h"
+
+
+// Standard stuff
+#include <iostream.h>
+#include <fstream.h>
+#include <strstream.h>
+#include <string.h>
+#include <ctype.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+// GNU stuff
+extern "C" {
+#include <termcap/termcap.h>
+}
+#include "glob.h"
+
+// Icon stuff
+#include "dddlogo.xbm"
+#include "dddmask.xbm"
+
+//-----------------------------------------------------------------------------
+// Forward function decls
+//-----------------------------------------------------------------------------
+// Callbacks
+void gdbModifyCB       (Widget, XtPointer, XtPointer);
+void gdbMotionCB       (Widget, XtPointer, XtPointer);
+void gdbChangeCB       (Widget, XtPointer, XtPointer);
+void gdbBreakArgCmdCB  (Widget, XtPointer, XtPointer);
+void gdbClearArgCmdCB  (Widget, XtPointer, XtPointer);
+void gdbLineArgCmdCB   (Widget, XtPointer, XtPointer);
+void gdbItemArgCmdCB   (Widget, XtPointer, XtPointer);
+void gdbLookupCB       (Widget, XtPointer, XtPointer);
+void gdbFindForwardCB  (Widget, XtPointer, XtPointer);
+void gdbFindBackwardCB (Widget, XtPointer, XtPointer);
+
+void gdbGoBackCB       (Widget, XtPointer, XtPointer);
+void gdbGoForwardCB    (Widget, XtPointer, XtPointer);
+
+void gdbHistoryCB  (Widget, XtPointer, XtPointer);
+void gdbNextCB     (Widget, XtPointer, XtPointer);
+void gdbPrevCB     (Widget, XtPointer, XtPointer);
+void gdbClearCB    (Widget, XtPointer, XtPointer);
+void gdbCompleteCB (Widget, XtPointer, XtPointer);
+void gdbApplyCB    (Widget, XtPointer, XtPointer);
+
+void gdbCutSelectionCB   (Widget, XtPointer, XtPointer);
+void gdbCopySelectionCB  (Widget, XtPointer, XtPointer);
+void gdbPasteClipboardCB (Widget, XtPointer, XtPointer);
+void gdbClearSelectionCB (Widget, XtPointer, XtPointer);
+void gdbDeleteSelectionCB(Widget, XtPointer, XtPointer);
+void gdbUpdateEditCB     (Widget, XtPointer, XtPointer);
+void gdbUpdateViewCB     (Widget, XtPointer, XtPointer);
+
+void gdbOpenFileCB           (Widget, XtPointer, XtPointer);
+void gdbOpenCoreCB           (Widget, XtPointer, XtPointer);
+void gdbOpenSourceCB         (Widget, XtPointer, XtPointer);
+
+void gdbOpenCommandWindowCB  (Widget, XtPointer, XtPointer);
+void gdbOpenSourceWindowCB   (Widget, XtPointer, XtPointer);
+void gdbOpenDataWindowCB     (Widget, XtPointer, XtPointer);
+void gdbOpenExecWindowCB     (Widget, XtPointer, XtPointer);
+
+void gdbCloseCommandWindowCB (Widget, XtPointer, XtPointer);
+void gdbCloseSourceWindowCB  (Widget, XtPointer, XtPointer);
+void gdbCloseDataWindowCB    (Widget, XtPointer, XtPointer);
+void gdbCloseExecWindowCB    (Widget, XtPointer, XtPointer);
+
+void DDDExitCB               (Widget, XtPointer, XtPointer);
+void DDDCloseCB              (Widget, XtPointer, XtPointer);
+void DDDSaveOptionsCB        (Widget, XtPointer, XtPointer);
+
+void graphQuickPrintCB       (Widget, XtPointer, XtPointer);
+void graphPrintCB            (Widget, XtPointer, XtPointer);
+void graphConvertCB          (Widget, XtPointer, XtPointer);
+
+void graphToggleShowGridCB      (Widget, XtPointer, XtPointer);
+void graphToggleShowHintsCB     (Widget, XtPointer, XtPointer);
+void graphToggleSnapToGridCB    (Widget, XtPointer, XtPointer);
+void graphToggleCompactLayoutCB (Widget, XtPointer, XtPointer);
+void graphToggleAutoLayoutCB    (Widget, XtPointer, XtPointer);
+
+void graphAlignCB            (Widget, XtPointer, XtPointer);
+void graphRotateCB           (Widget, XtPointer, XtPointer);
+void graphLayoutCB           (Widget, XtPointer, XtPointer);
+void graphRefreshCB          (Widget, XtPointer, XtPointer);
+
+void sourceToggleFindWordsOnlyCB (Widget, XtPointer, XtPointer);
+
+void dddToggleGroupIconifyCB       (Widget, XtPointer, XtPointer);
+void dddToggleGlobalTabCompletionCB(Widget, XtPointer, XtPointer);
+void dddToggleSeparateExecWindowCB (Widget, XtPointer, XtPointer);
+void dddToggleSaveOptionsOnExitCB  (Widget, XtPointer, XtPointer);
+void dddToggleSaveHistoryOnExitCB  (Widget, XtPointer, XtPointer);
+void dddSetSeparateWindowsCB       (Widget, XtPointer, XtPointer);
+void dddSetKeyboardFocusPolicyCB   (Widget, XtPointer, XtPointer);
+void dddSetPannerCB                (Widget, XtPointer, XtPointer);
+void dddSetDebuggerCB              (Widget, XtPointer, XtPointer);
+
+void StructureNotifyEH(Widget, XtPointer, XEvent *, Boolean *);
+
+
+// Handling of help texts
+MString gdbDefaultHelp(Widget widget);
+
+// Buttons and state
+void set_buttons_from_gdb(string& text);
+void set_buttons_from_gdb(Widget w, string& text);
+void set_status_from_gdb(const string& text);
+void set_status(const string& text);
+void update_options();
+
+// Callbacks
+void gdb_ready_for_questionHP (void *, void *, void *);
+void gdb_ready_for_cmdHP      (void *, void *, void *);
+void gdb_eofHP                (Agent *, void *, void *);
+
+
+// Actions
+void controlAct           (Widget, XEvent*, String*, Cardinal*);
+void prev_historyAct      (Widget, XEvent*, String*, Cardinal*);
+void next_historyAct      (Widget, XEvent*, String*, Cardinal*);
+void forward_characterAct (Widget, XEvent*, String*, Cardinal*);
+void backward_characterAct(Widget, XEvent*, String*, Cardinal*);
+void beginning_of_lineAct (Widget, XEvent*, String*, Cardinal*);
+void end_of_lineAct       (Widget, XEvent*, String*, Cardinal*);
+void set_lineAct          (Widget, XEvent*, String*, Cardinal*);
+void complete_commandAct  (Widget, XEvent*, String*, Cardinal*);
+void complete_argAct      (Widget, XEvent*, String*, Cardinal*);
+void complete_tabAct      (Widget, XEvent*, String*, Cardinal*);
+void delete_or_controlAct (Widget, XEvent*, String*, Cardinal*);
+void insert_source_argAct (Widget, XEvent*, String*, Cardinal*);
+void insert_graph_argAct  (Widget, XEvent*, String*, Cardinal*);
+void next_tab_groupAct    (Widget, XEvent*, String*, Cardinal*);
+void prev_tab_groupAct    (Widget, XEvent*, String*, Cardinal*);
+void get_focusAct         (Widget, XEvent*, String*, Cardinal*);
+
+// Cleanup
+static void save_options(Widget origin);
+static void ddd_cleanup();
+static void ddd_signal(int sig);
+static void ddd_fatal(int sig);
+static void ddd_install_fatal();
+static void ddd_install_signal();
+
+// Button creator
+Widget make_buttons(Widget parent, const string& name, const string& list);
+
+// Sash killer
+void unmanage_sashes(Widget paned);
+void untraverse_sashes(Widget paned);
+
+// Helper for empty source arg field
+void source_argHP (void*, void*, void* call_data);
+
+// Execution TTY
+void startup_exec_tty();
+void startup_exec_tty(string& command, Widget origin = 0);
+void kill_exec_tty();
+void remove_init_file();
+
+// Help texts
+void show_invocation(DebuggerType type);
+void show_version();
+void show_configuration();
+void show_resources(XrmDatabase database);
+void show_manual();
+
+// DDD logos
+Pixmap iconlogo(Widget shell);
+Pixmap iconmask(Widget shell);
+Pixmap versionlogo(Widget shell);
+
+// Window manager
+void wm_set_icon(Display *display, Window shell, Pixmap icon, Pixmap mask);
+void wm_set_name(Display *display, Window shell, 
+		 string title = "", string icon = "");
+void wm_set_group_leader(Display *display, Window shell, Window leader_shell);
+static void wait_until_mapped(Widget w);
+
+// Options
+string options_file();
+string default_history_file();
+
+
+// Obscure features
+void handle_obscure_commands(string& command, Widget origin);
+
+
+//-----------------------------------------------------------------------------
+// Xt Stuff
+//-----------------------------------------------------------------------------
+
+// Application resource definitions
+static XtResource resources[] = {
+    { 
+	XtNdebugger,
+	XtCDebugger,
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, debugger), 
+	XtRString, 
+	XtPointer("")
+    },
+    { 
+	XtNdebuggerCommand,
+	XtCDebuggerCommand,
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, debugger_command), 
+	XtRString, 
+	XtPointer("")
+    },
+    { 
+	XtNtraceDialog, 
+	XtCTrace, 
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, trace_dialog),
+	XmRImmediate, 
+	XtPointer(False)
+    },
+    { 
+	XtNtraceShellCommands,
+	XtCTrace,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, trace_shell_commands),
+	XmRImmediate, 
+	XtPointer(False)
+    },
+    { 
+	XtNgdbInitCommands, 
+	XtCGDBInitCommands, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, gdb_initial_cmds), 
+	XtRString,
+	XtPointer(
+	    "set height 0\n"
+	    "set width 0\n"
+	    "set print pretty\n"
+	    "set print array\n"
+	    "set print repeats 0\n" 
+	    "set verbose off\n"
+	    "set prompt (gdb) \n")
+    },
+    { 
+	XtNdbxInitCommands, 
+	XtCDBXInitCommands, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, dbx_initial_cmds), 
+	XtRString,
+	XtPointer("")
+    },
+    { 
+	XtNvslPath, 
+	XtCVSLPath, 
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, vslPath), 
+	XtRString, 
+	XtPointer(".")
+    },
+    { 
+	XtNvslLibrary, 
+	XtCVSLLibrary, 
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, vslLibrary), 
+	XtRString, 
+	XtPointer("builtin")
+    },
+    {
+	XtNmaxNameLength,
+	XtCMaxNameLength,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, max_name_length),
+	XmRImmediate,
+	XtPointer(32)
+    },
+    {
+	XtNindentAmount,
+	XtCIndentAmount,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, indent_amount),
+	XmRImmediate,
+	XtPointer(8)
+    },
+    {
+	XtNcommandButtons,
+	XtCCommandButtons,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, command_buttons),
+	XtRString,
+	XtPointer("Yes:No:Interrupt^C")
+    },
+    {
+	XtNsourceButtons,
+	XtCSourceButtons,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, source_buttons),
+	XtRString,
+	XtPointer("run:next:step:continue:finish:up:down")
+    },
+    {
+	XtNseparateDataWindow,
+	XtCSeparate,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, separate_data_window),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+	XtNseparateSourceWindow,
+	XtCSeparate,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, separate_source_window),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+	XtNseparateExecWindow,
+	XtCSeparate,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, separate_exec_window),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+	XtNtermCommand,
+	XtCTermCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, term_command),
+	XtRString,
+	XtPointer("xterm -e /bin/sh -c")
+    },
+    {
+	XtNtermType,
+	XtCTermType,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, term_type),
+	XtRString,
+	XtPointer("xterm")
+   },
+   {
+	XtNuseTTYCommand,
+	XtCUseTTYCommand,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, use_tty_command),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+	XtNquestionTimeout,
+	XtCQuestionTimeout,
+	XtRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, question_timeout),
+	XtRImmediate,
+	XtPointer(5)
+    },
+    {
+	XtNsynchronousDebugger,
+	XtCSynchronousDebugger,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, synchronous_gdb),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+        XtNdebuggerHost,
+	XtCDebuggerHost,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, debugger_host),
+	XtRString,
+	XtPointer("")
+    },
+    {
+        XtNdebuggerHostLogin,
+	XtCDebuggerHostLogin,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, debugger_host_login),
+	XtRString,
+	XtPointer("")
+    },
+    {
+        XtNrshCommand,
+	XtCRshCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, rsh_command),
+	XtRString,
+	XtPointer("rsh")
+    },
+    {
+        XtNlistExecCommand,
+	XtCListExecCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, list_exec_command),
+	XtRString,
+	XtPointer("file @MASK@ | grep  '.*:.*exec.*' | cut -d: -f1")
+    },
+    {
+        XtNlistSourceCommand,
+	XtCListSourceCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, list_source_command),
+	XtRString,
+	XtPointer("file @MASK@ | grep '.*:.*text.*' | cut -d: -f1")
+    },
+    {
+        XtNlistCoreCommand,
+	XtCListCoreCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, list_core_command),
+	XtRString,
+	XtPointer("file @MASK@ | grep '.*:.*core.*' | cut -d: -f1")
+    },
+    {
+        XtNlistDirCommand,
+	XtCListDirCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, list_dir_command),
+	XtRString,
+	XtPointer("file @MASK@ | grep '.*:.*directory.*' | cut -d: -f1")
+    },
+    {
+        XtNshowInvocation,
+	XtCShowInvocation,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, show_invocation),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+        XtNshowVersion,
+	XtCShowVersion,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, show_version),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+        XtNshowConfiguration,
+	XtCShowConfiguration,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, show_configuration),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+        XtNshowResources,
+	XtCShowResources,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, show_resources),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+        XtNshowManual,
+	XtCShowManual,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, show_manual),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+        XtNcheckConfiguration,
+	XtCCheckConfiguration,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, check_configuration),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+        XtNprintCommand,
+	XtCPrintCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, print_command),
+	XtRString,
+	XtPointer("lpr -r -P@PRINTER@ -#@COPIES@ @FILE@")
+    },
+    {
+        XtNprinter,
+	XtCPrinter,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, printer),
+	XtRString,
+	XtPointer("lp")
+    },
+    {
+        XtNpannedGraphEditor,
+	XtCPannedGraphEditor,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, panned_graph_editor),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+        XtNfindWordsOnly,
+	XtCFindWordsOnly,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, find_words_only),
+	XtRImmediate,
+	XtPointer(True)
+    },
+    {
+	XtNgroupIconify,
+	XtCGroupIconify,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, group_iconify),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+	XtNglobalTabCompletion,
+	XtCGlobalTabCompletion,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, global_tab_completion),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+	XtNsaveOptionsOnExit,
+	XtCSaveOptionsOnExit,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, save_options_on_exit),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
+	XtNsaveHistoryOnExit,
+	XtCSaveHistoryOnExit,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, save_history_on_exit),
+	XtRImmediate,
+	XtPointer(True)
+    },
+    {
+	XtNdddinitVersion,
+	XtCVersion,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, dddinit_version),
+	XtRString,
+	XtPointer(0)
+    },
+    {
+	XtNappDefaultsVersion,
+	XtCVersion,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, app_defaults_version),
+	XtRString,
+	XtPointer(0)
+    },
+};
+
+
+// Options
+// Note: we support both the GDB '--OPTION' and the X '-OPTION' convention.
+static XrmOptionDescRec options[] = {
+{ "--debugger",             XtNdebuggerCommand,      XrmoptionSepArg, NULL },
+{ "-debugger",              XtNdebuggerCommand,      XrmoptionSepArg, NULL },
+
+{ "--gdb",                  XtNdebugger,             XrmoptionNoArg,  "gdb" },
+{ "-gdb",                   XtNdebugger,             XrmoptionNoArg,  "gdb" },
+
+{ "--dbx",                  XtNdebugger,             XrmoptionNoArg,  "dbx" },
+{ "-dbx",                   XtNdebugger,             XrmoptionNoArg,  "dbx" },
+
+{ "--trace",                XtCTrace,                XrmoptionNoArg,  "true" },
+{ "-trace",                 XtCTrace,                XrmoptionNoArg,  "true" },
+
+{ "--trace-dialog",         XtNtraceDialog,          XrmoptionNoArg,  "true" },
+{ "-trace-dialog",          XtNtraceDialog,          XrmoptionNoArg,  "true" },
+
+{ "--trace-shell-commands", XtNtraceShellCommands,   XrmoptionNoArg,  "true" },
+{ "-trace-shell-commands",  XtNtraceShellCommands,   XrmoptionNoArg,  "true" },
+
+{ "--vsl-library",          XtNvslLibrary,           XrmoptionSepArg, NULL },
+{ "-vsl-library",           XtNvslLibrary,           XrmoptionSepArg, NULL },
+
+{ "--vsl-path",             XtNvslPath,              XrmoptionSepArg, NULL },
+{ "-vsl-path",              XtNvslPath,              XrmoptionSepArg, NULL },
+
+{ "--namelength",           XtNmaxNameLength,        XrmoptionSepArg, NULL },
+{ "-namelength",            XtNmaxNameLength,        XrmoptionSepArg, NULL },
+
+{ "--separate",             XtCSeparate,             XrmoptionNoArg, "true" },
+{ "-separate",              XtCSeparate,             XrmoptionNoArg, "true" },
+{ "--separate-windows",     XtCSeparate,             XrmoptionNoArg, "true" },
+{ "-separate-windows",      XtCSeparate,             XrmoptionNoArg, "true" },
+
+{ "--separate-source-window",XtNseparateSourceWindow, XrmoptionNoArg, "true" },
+{ "-separate-source-window", XtNseparateSourceWindow, XrmoptionNoArg, "true" },
+
+{ "--separate-data-window", XtNseparateDataWindow,   XrmoptionNoArg, "true" },
+{ "-separate-data-window",  XtNseparateDataWindow,   XrmoptionNoArg, "true" },
+
+{ "--attach",               XtCSeparate,             XrmoptionNoArg, "false" },
+{ "-attach",                XtCSeparate,             XrmoptionNoArg, "false" },
+{ "--attach-windows",       XtCSeparate,             XrmoptionNoArg, "false" },
+{ "-attach-windows",        XtCSeparate,             XrmoptionNoArg, "false" },
+
+{ "--attach-source-window", XtNseparateSourceWindow, XrmoptionNoArg, "false" },
+{ "-attach-source-window",  XtNseparateSourceWindow, XrmoptionNoArg, "false" },
+
+{ "--attach-data-window",   XtNseparateDataWindow,   XrmoptionNoArg, "false" },
+{ "-attach-data-window",    XtNseparateDataWindow,   XrmoptionNoArg, "false" },
+
+{ "--exec-window",          XtNseparateExecWindow,   XrmoptionNoArg, "true" },
+{ "-exec-window",           XtNseparateExecWindow,   XrmoptionNoArg, "true" },
+
+{ "--no-exec-window",       XtNseparateExecWindow,   XrmoptionNoArg, "false" },
+{ "-no-exec-window",        XtNseparateExecWindow,   XrmoptionNoArg, "false" },
+
+{ "--panned-graph-editor",  XtNpannedGraphEditor,    XrmoptionNoArg, "true" },
+{ "-panned-graph-editor",   XtNpannedGraphEditor,    XrmoptionNoArg, "true" },
+
+{ "--scrolled-graph-editor", XtNpannedGraphEditor,   XrmoptionNoArg, "false" },
+{ "-scrolled-graph-editor", XtNpannedGraphEditor,    XrmoptionNoArg, "false" },
+
+{ "--synchronous-debugger", XtNsynchronousDebugger,  XrmoptionNoArg, "true" },
+{ "-synchronous-debugger",  XtNsynchronousDebugger,  XrmoptionNoArg, "true" },
+
+{ "--host",                 XtNdebuggerHost,         XrmoptionSepArg, NULL },
+{ "-host",                  XtNdebuggerHost,         XrmoptionSepArg, NULL },
+
+{ "--login",                XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
+{ "-login",                 XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
+{ "-l",                     XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
+
+{ "--version",              XtNshowVersion,          XrmoptionNoArg, "true" },
+{ "-version",               XtNshowVersion,          XrmoptionNoArg, "true" },
+{ "-v",                     XtNshowVersion,          XrmoptionNoArg, "true" },
+
+{ "--configuration",        XtNshowConfiguration,    XrmoptionNoArg, "true" },
+{ "-configuration",         XtNshowConfiguration,    XrmoptionNoArg, "true" },
+
+{ "--resources",            XtNshowResources,        XrmoptionNoArg, "true" },
+{ "-resources",             XtNshowResources,        XrmoptionNoArg, "true" },
+
+{ "--manual",               XtNshowManual,           XrmoptionNoArg, "true" },
+{ "-manual",                XtNshowManual,           XrmoptionNoArg, "true" },
+
+{ "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, "true" },
+{ "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, "true" },
+
+{ "--help",                 XtNshowInvocation,       XrmoptionNoArg, "true" },
+{ "-help",                  XtNshowInvocation,       XrmoptionNoArg, "true" },
+{ "-h",                     XtNshowInvocation,       XrmoptionNoArg, "true" },
+{ "--?",                    XtNshowInvocation,       XrmoptionNoArg, "true" },
+{ "-?",                     XtNshowInvocation,       XrmoptionNoArg, "true" },
+
+};
+
+// Actions
+XtActionsRec actions [] = {
+    {"gdb-control",            controlAct},
+    {"gdb-delete-or-control",  delete_or_controlAct},
+    {"gdb-prev-history",       prev_historyAct},
+    {"gdb-previous-history",   prev_historyAct},
+    {"gdb-next-history",       next_historyAct},
+    {"gdb-beginning-of-line",  beginning_of_lineAct},
+    {"gdb-end-of-line",        end_of_lineAct},
+    {"gdb-forward-character",  forward_characterAct},
+    {"gdb-backward-character", backward_characterAct},
+    {"gdb-set-line",           set_lineAct},
+    {"gdb-complete-command",   complete_commandAct},
+    {"gdb-complete-arg",       complete_argAct},
+    {"gdb-complete-tab",       complete_tabAct},
+    {"gdb-insert-source-arg",  insert_source_argAct},
+    {"gdb-insert-graph-arg",   insert_graph_argAct},
+    {"ddd-next-tab-group",     next_tab_groupAct},
+    {"ddd-prev-tab-group",     prev_tab_groupAct},
+    {"ddd-previous-tab-group", prev_tab_groupAct},
+    {"ddd-get-focus",          get_focusAct},
+};
+
+
+//-----------------------------------------------------------------------------
+// Menus
+//-----------------------------------------------------------------------------
+
+static MMDesc file_menu[] = 
+{
+    { "open_file",   MMPush, { gdbOpenFileCB }},
+    { "open_core",   MMPush, { gdbOpenCoreCB }},
+    { "open_source", MMPush, { gdbOpenSourceCB }},
+    MMSep,
+    { "run",         MMPush, { gdbCommandCB, "run" }},
+    { "interrupt",   MMPush, { gdbCommandCB, "\003" }},
+    { "continue",    MMPush, { gdbCommandCB, "cont" }},
+    MMSep,
+    { "close",       MMPush, { DDDCloseCB }},
+    { "quit",        MMPush, { DDDExitCB }},
+    MMEnd
+};
+
+enum DDDWindow { GDBWindow, SourceWindow, DataWindow, ExecWindow };
+
+static MMDesc command_view_menu[] =
+{
+    { "command",    MMPush, { gdbOpenCommandWindowCB }},
+    { "source",     MMPush, { gdbOpenSourceWindowCB }},
+    { "data",       MMPush, { gdbOpenDataWindowCB }},
+    { "exec",       MMPush, { gdbOpenExecWindowCB }},
+    MMEnd
+};
+
+static MMDesc source_view_menu[] =
+{
+    { "command",    MMPush, { gdbOpenCommandWindowCB }},
+    { "source",     MMPush, { gdbOpenSourceWindowCB }},
+    { "data",       MMPush, { gdbOpenDataWindowCB }},
+    { "exec",       MMPush, { gdbOpenExecWindowCB }},
+    MMEnd
+};
+
+static MMDesc data_view_menu[] =
+{
+    { "command",    MMPush, { gdbOpenCommandWindowCB }},
+    { "source",     MMPush, { gdbOpenSourceWindowCB }},
+    { "data",       MMPush, { gdbOpenDataWindowCB }},
+    { "exec",       MMPush, { gdbOpenExecWindowCB }},
+    MMEnd
+};
+
+struct EditItems {
+    enum EditItem { Cut, Copy, Paste, Dummy, Clear, Delete };
+};
+
+static MMDesc command_edit_menu[] = 
+{
+    { "cut",    MMPush, { gdbCutSelectionCB,    XtPointer(GDBWindow) }},
+    { "copy",   MMPush, { gdbCopySelectionCB,   XtPointer(GDBWindow) }},
+    { "paste",  MMPush, { gdbPasteClipboardCB,  XtPointer(GDBWindow) }},
+    MMSep,
+    { "clear",  MMPush, { gdbClearSelectionCB,  XtPointer(GDBWindow) }},
+    { "delete", MMPush, { gdbDeleteSelectionCB, XtPointer(GDBWindow) }},
+    MMEnd
+};
+
+static MMDesc source_edit_menu[] = 
+{
+    { "cut",    MMPush, { gdbCutSelectionCB,    XtPointer(SourceWindow) }},
+    { "copy",   MMPush, { gdbCopySelectionCB,   XtPointer(SourceWindow) }},
+    { "paste",  MMPush, { gdbPasteClipboardCB,  XtPointer(SourceWindow) }},
+    MMSep,
+    { "clear",  MMPush, { gdbClearSelectionCB,  XtPointer(SourceWindow) }},
+    { "delete", MMPush, { gdbDeleteSelectionCB, XtPointer(SourceWindow) }},
+    MMEnd
+};
+
+static MMDesc data_edit_menu[] = 
+{
+    { "cut",    MMPush | MMInsensitive, 
+          { gdbCutSelectionCB,    XtPointer(DataWindow) }},
+    { "copy",   MMPush, 
+          { gdbCopySelectionCB,   XtPointer(DataWindow) }},
+    { "paste",  MMPush | MMInsensitive,
+          { gdbPasteClipboardCB,  XtPointer(DataWindow) }},
+    MMSep,
+    { "clear",  MMPush | MMInsensitive, 
+	  { gdbClearSelectionCB,  XtPointer(DataWindow) }},
+    { "delete", MMPush | MMInsensitive, 
+	  { gdbDeleteSelectionCB, XtPointer(DataWindow) }},
+    MMEnd
+};
+
+static MMDesc command_menu[] =
+{
+    { "history",  MMPush, { gdbHistoryCB }},
+    MMSep,
+    { "prev",     MMPush, { gdbPrevCB }},
+    { "next",     MMPush, { gdbNextCB }},
+    { "complete", MMPush, { gdbCompleteCB }},
+    MMEnd
+};
+
+static Widget stack_w;
+
+static MMDesc stack_menu[] =
+{
+    { "stack",       MMPush, { SourceView::ViewStackFramesCB }, 
+      NULL, &stack_w },
+    MMSep,
+    { "up",         MMPush,  { gdbCommandCB, "up" }},
+    { "down",       MMPush,  { gdbCommandCB, "down" }},
+    MMEnd
+};
+
+static MMDesc source_menu[] =
+{
+    { "breakpoints", MMPush, { SourceView::EditBreakpointsCB }},
+    MMSep,
+    { "back",       MMPush,  { gdbGoBackCB }},
+    { "forward",    MMPush,  { gdbGoForwardCB }},
+    MMEnd
+};
+
+// Option widgets
+
+
+// All these widgets come in four times:
+// w[0] holds the last created widget.
+// w[<DDDOption>] holds the widget for the menu in window <DDDOption>.
+
+enum DDDOption { DummyOptions   = 0, 
+		 CommandOptions = 1, 
+		 SourceOptions  = 2,
+		 DataOptions    = 3 };
+
+static Widget group_iconify_w[4];
+static Widget global_tab_completion_w[4];
+static Widget separate_exec_window_w[4];
+static Widget save_options_on_exit_w[4];
+static Widget save_history_on_exit_w[4];
+static Widget graph_show_grid_w[4];
+static Widget graph_show_hints_w[4];
+static Widget graph_snap_to_grid_w[4];
+static Widget graph_compact_layout_w[4];
+static Widget graph_auto_layout_w[4];
+static Widget find_words_only_w[4];
+static Widget set_focus_pointer_w[4];
+static Widget set_focus_explicit_w[4];
+static Widget set_scrolling_panner_w[4];
+static Widget set_scrolling_scrollbars_w[4];
+static Widget set_debugger_gdb_w[4];
+static Widget set_debugger_dbx_w[4];
+static Widget set_separate_windows_w[4];
+static Widget set_attached_windows_w[4];
+
+static MMDesc ddd_options_menu[] = 
+{
+    { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB }, 
+      NULL, group_iconify_w },
+    { "globalTabCompletion", MMToggle, { dddToggleGlobalTabCompletionCB }, 
+      NULL, global_tab_completion_w },
+    { "separateExecWindow",  MMToggle, { dddToggleSeparateExecWindowCB }, 
+      NULL, separate_exec_window_w },
+    { "saveOptionsOnExit",   MMToggle, { dddToggleSaveOptionsOnExitCB }, 
+      NULL, save_options_on_exit_w },
+    { "saveHistoryOnExit",   MMToggle, { dddToggleSaveHistoryOnExitCB }, 
+      NULL, save_history_on_exit_w },
+    MMEnd
+};
+
+static MMDesc source_options_menu[] = 
+{
+    { "findWordsOnly", MMToggle, { sourceToggleFindWordsOnlyCB }, 
+      NULL, find_words_only_w },
+    MMEnd
+};
+
+static MMDesc data_options_menu[] = 
+{
+    { "showGrid",   MMToggle,  { graphToggleShowGridCB }, 
+      NULL, graph_show_grid_w },
+    { "showHints",  MMToggle,  { graphToggleShowHintsCB },
+      NULL, graph_show_hints_w },
+    { "snapToGrid", MMToggle,  { graphToggleSnapToGridCB },
+      NULL, graph_snap_to_grid_w },
+    { "compactLayout", MMToggle, { graphToggleCompactLayoutCB },
+      NULL, graph_compact_layout_w },
+    { "autoLayout", MMToggle,  { graphToggleAutoLayoutCB },
+      NULL, graph_auto_layout_w },
+    MMEnd
+};
+
+static MMDesc window_mode_menu [] = 
+{
+    { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(True) },
+      NULL, set_separate_windows_w },
+    { "attached", MMToggle, { dddSetSeparateWindowsCB, XtPointer(False) },
+      NULL, set_attached_windows_w },
+    MMEnd
+};
+
+static MMDesc keyboard_focus_menu [] = 
+{
+    { "pointer",  MMToggle, { dddSetKeyboardFocusPolicyCB, 
+			    XtPointer(XmPOINTER) },
+      NULL, set_focus_pointer_w },
+    { "explicit", MMToggle, { dddSetKeyboardFocusPolicyCB, 
+			    XtPointer(XmEXPLICIT) },
+      NULL, set_focus_explicit_w },
+    MMEnd
+};
+
+static MMDesc data_scrolling_menu [] = 
+{
+    { "panner", MMToggle,     { dddSetPannerCB, XtPointer(True) },
+      NULL, set_scrolling_panner_w },
+    { "scrollbars", MMToggle, { dddSetPannerCB, XtPointer(False) },
+      NULL, set_scrolling_scrollbars_w },
+    MMEnd
+};
+
+static MMDesc debugger_menu [] = 
+{
+    { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
+      NULL, set_debugger_gdb_w },
+    { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
+      NULL, set_debugger_dbx_w },
+    MMEnd
+};
+
+static MMDesc startup_options_menu [] =
+{
+    { "windows",         MMRadioMenu, MMNoCB, window_mode_menu },
+    { "keyboardFocus",   MMRadioMenu, MMNoCB, keyboard_focus_menu },
+    { "dataScrolling",   MMRadioMenu, MMNoCB, data_scrolling_menu },
+    { "debugger",        MMRadioMenu, MMNoCB, debugger_menu },
+    MMEnd
+};
+
+static MMDesc options_menu [] =
+{
+    { "generalOptions", MMMenu, MMNoCB, ddd_options_menu     },
+    { "sourceOptions",  MMMenu, MMNoCB, source_options_menu  },
+    { "dataOptions",    MMMenu, MMNoCB, data_options_menu    },
+    { "startupOptions", MMMenu, MMNoCB, startup_options_menu    },
+    MMSep,
+    { "saveOptions",    MMPush,   { DDDSaveOptionsCB }},
+    MMEnd
+};
+
+static MMDesc data_menu[] = 
+{
+    { "displays",   MMPush,    { DataDisp::EditDisplaysCB }},
+    MMSep,
+    { "selectAll",  MMPush,    { DataDisp::selectAllCB }},
+    { "refresh",    MMPush,    { DataDisp::refreshCB }},
+    MMEnd
+};
+
+static MMDesc graph_menu[] = 
+{
+    { "align",      MMPush,    { graphAlignCB  }},
+    { "rotate",     MMPush,    { graphRotateCB }},
+    { "layout",     MMPush,    { graphLayoutCB }},
+    MMSep,
+    { "print",      MMPush,    { graphPrintCB }},
+    { "quickPrint", MMPush,    { graphQuickPrintCB }},
+    { "convert",    MMPush,    { graphConvertCB }},
+    MMEnd
+};
+
+static MMDesc help_menu[] = 
+{
+    {"onContext", MMPush, { HelpOnContextCB }},
+    {"onWindow",  MMPush, { HelpOnWindowCB }},
+    {"onHelp",    MMPush, { HelpOnHelpCB }},
+    {"onVersion", MMPush, { HelpOnVersionCB }},
+    {"index",     MMPush, { ManualStringHelpCB, XtPointer(ddd_man_page) }},
+    MMEnd
+};
+
+// Menu Bar for DDD command window
+static MMDesc command_menubar[] = 
+{
+    { "file", MMMenu,          MMNoCB, file_menu },
+    { "edit", MMMenu,          { gdbUpdateEditCB }, command_edit_menu },
+    { "options", MMMenu,       MMNoCB, options_menu },
+    { "view", MMMenu,          { gdbUpdateViewCB }, command_view_menu },
+    { "commands", MMMenu,      MMNoCB, command_menu },
+    { "help", MMMenu | MMHelp, MMNoCB, help_menu },
+    MMEnd
+};
+
+// Menu Bar for DDD source view
+static MMDesc source_menubar[] = 
+{
+    { "file",   MMMenu,          MMNoCB, file_menu },
+    { "edit",   MMMenu,          { gdbUpdateEditCB }, source_edit_menu },
+    { "options", MMMenu,         MMNoCB, options_menu },
+    { "view",   MMMenu,          { gdbUpdateViewCB }, source_view_menu },
+    { "stack",  MMMenu,          MMNoCB, stack_menu },
+    { "source", MMMenu,          MMNoCB, source_menu },
+    { "help",   MMMenu | MMHelp, MMNoCB, help_menu },
+    MMEnd
+};
+
+// Menu Bar for DDD data window
+static MMDesc data_menubar[] = 
+{
+    { "file",  MMMenu,          MMNoCB, file_menu },
+    { "edit",  MMMenu,          { gdbUpdateEditCB }, data_edit_menu },
+    { "options", MMMenu,        MMNoCB, options_menu },
+    { "view",  MMMenu,          { gdbUpdateViewCB }, data_view_menu },
+    { "data",  MMMenu,          MMNoCB, data_menu },
+    { "graph", MMMenu,          MMNoCB, graph_menu },
+    { "help",  MMMenu | MMHelp, MMNoCB, help_menu },
+    MMEnd
+};
+
+// Menu Bar for combined DDD data/command window
+static MMDesc combined_menubar[] = 
+{
+    { "file",       MMMenu,       MMNoCB, file_menu },
+    { "edit",       MMMenu,       { gdbUpdateEditCB }, command_edit_menu },
+    { "options",    MMMenu,       MMNoCB, options_menu },
+    { "view",       MMMenu,       { gdbUpdateViewCB }, command_view_menu },
+    { "commands",   MMMenu,       MMNoCB, command_menu },
+    { "stack",      MMMenu,       MMNoCB, stack_menu },
+    { "source",     MMMenu,       MMNoCB, source_menu },
+    { "data",       MMMenu,       MMNoCB, data_menu },
+    { "graph",      MMMenu,       MMNoCB, graph_menu },
+    { "help", MMMenu | MMHelp,  MMNoCB, help_menu },
+    MMEnd
+};
+
+
+struct ArgItems {
+    enum ArgCmd { Lookup, Break, Clear, Print, Display, 
+		  FindForward, FindBackward };
+};
+
+static MMDesc arg_cmd_area[] = 
+{
+    {"lookup",        MMPush,  { gdbLookupCB,       0}},
+    {"break",         MMPush,  { gdbBreakArgCmdCB,  0}},
+    {"clear",         MMPush,  { gdbClearArgCmdCB,  0}},
+    {"print",         MMPush,  { gdbItemArgCmdCB,   "print "         }},
+    {"display",       MMPush,  { gdbItemArgCmdCB,   "graph display " }},
+    {"find_backward", MMPush,  { gdbFindBackwardCB, 0}},
+    {"find_forward",  MMPush,  { gdbFindForwardCB,  0}},
+    MMEnd
+};
+
+
+
+//-----------------------------------------------------------------------------
+// Global variables
+//-----------------------------------------------------------------------------
+
+// All communication with GDB passes through this variable
+GDBAgent*     gdb = 0;
+
+// Application resources
+AppData       app_data;
+
+// Data display
+DataDisp*     data_disp;
+
+// Source display
+SourceView*   source_view;
+
+// Argument field
+ArgField*     source_arg;
+
+// Argument command list
+Widget arg_cmd_w;
+
+// GDB input/output widget
+Widget gdb_w;
+
+// GDB status indicator (only used if separate source window is used)
+Widget status_w;
+
+// GDB yes/no widget
+static Widget yn_dialog;
+
+// Last output position
+XmTextPosition promptPosition;
+
+// Last message position
+XmTextPosition messagePosition;
+
+// Application context
+XtAppContext app_context;
+
+// Completion delay flag
+Delay *completion_delay = 0;
+
+// Buttons
+Widget command_buttons_w;
+Widget source_buttons_w;
+
+// Shells (only used if separate windows are used)
+Widget command_shell;
+Widget data_disp_shell;
+Widget source_view_shell;
+
+// Flags: shell state
+enum WindowState { PoppedUp, PoppedDown, Iconic };
+WindowState command_shell_state     = PoppedDown;
+WindowState data_disp_shell_state   = PoppedDown;
+WindowState source_view_shell_state = PoppedDown;
+
+// Separate TTY for command execution
+// TTY name
+string separate_tty_name = "/dev/tty";
+
+// TTY pid (0: not initialized, -1: failed)
+pid_t separate_tty_pid   = 0;
+
+// TTY terminal type
+string separate_tty_term  = "dumb";
+
+// TTY pipe agent
+LiterateAgent *separate_tty_agent = 0;
+
+// TTY window
+Window separate_tty_window = 0;
+
+// Current GDB TTY
+string gdb_tty = "";
+
+// True if the next line is to be displayed in the status line
+bool show_next_line_in_status = false;
+
+// True if the next 'Starting' line is to be displayed in the separate tty
+bool show_starting_line_in_tty    = false;
+
+// Strings to be ignored in GDB output
+string gdb_out_ignore = "";
+
+// GDB command redirection
+string gdb_redirection = "";
+
+// Command management
+static bool private_gdb_output;   // true if output is running
+static bool private_gdb_input;    // true if input is running
+static bool private_gdb_history;  // true if history command was issued
+static bool gdb_keyboard_command; // true if last cmd came from GDB window
+static Widget gdb_last_origin;    // origin of last command
+
+// History viewer
+static Widget gdb_history_w  = 0;
+static Widget gdb_commands_w = 0;
+
+// Host management
+string gdb_host = "";		  // non-empty if separate host
+
+// true, if initial gdb prompt appeared
+static bool gdb_initialized;
+
+// GDB initialization file (may be remote)
+static string gdb_init_file;
+
+// Our invocation name
+static char *ddd_invoke_name = ddd_NAME;
+
+// True if options were changed
+static bool options_changed = false;
+static bool startup_options_changed = false;
+
+// True if last input was at gdb prompt
+static bool gdb_input_at_prompt = true;
+
+// History storage
+static StringArray gdb_history;
+
+// Index to current history entry
+static int gdb_current_history;
+
+// File name to save the history
+static string gdb_history_file = default_history_file();
+
+// Size of saved history
+static int    gdb_history_size = 100;
+
+// True if the history was just loaded
+static bool   gdb_new_history = true;
+
+
+//-----------------------------------------------------------------------------
+// Remote commands
+//-----------------------------------------------------------------------------
+
+bool remote_gdb()
+{
+    return gdb_host != "";
+}
+
+string sh_quote(string s)
+{
+    s.gsub('\'', "'\\''");
+    return string('\'') + s + '\'';
+}
+
+static string _sh_command(string command)
+{
+    if (!remote_gdb())
+	return "/bin/sh -c " + sh_quote(command);
+
+    string rsh = app_data.rsh_command;
+    string login = app_data.debugger_host_login;
+    if (login != "")
+	rsh += " -l " + login;
+
+    string display = getenv("DISPLAY");
+    if (display.contains("unix:", 0) || display.contains(":", 0))
+	display = string(fullhostname()) + display.from(":");
+	
+    string settings = "DISPLAY='" + display + "'; export DISPLAY; ";
+    command = settings + command;
+
+    rsh += " " + gdb_host + " /bin/sh -c " + sh_quote(sh_quote(command));
+
+    return rsh;
+}
+
+string sh_command(string command)
+{
+    string ret = _sh_command(command);
+    if (app_data.trace_shell_commands)
+	clog << "+ " << ret << "\n";
+    return ret;
+}
+
+
+//-----------------------------------------------------------------------------
+// DDD main program
+//-----------------------------------------------------------------------------
+
+int main (int argc, char *argv[])
+{
+    // This one is required for error messages
+    ddd_invoke_name = argc ? argv[0] : ddd_NAME;
+
+    // Install signal handlers
+
+    // On some systems (notably HP-UX), GDB has trouble finding what
+    // function invoked the signal handler.  Hence, if the environment
+    // variable DDD_NO_SIGNAL_HANDLERS is set, we do not install
+    // signal handlers, causing DDD to report signals immediately.
+
+    if (getenv("DDD_NO_SIGNAL_HANDLERS") == 0)
+    {
+	ddd_install_signal();	// Cleanup upon termination
+	ddd_install_fatal();	// Fatal error
+    }
+
+#ifdef SIGCHLD
+    // Setup signals: Restore default action for SIGCHLD signals.
+    // Without asynchronous signal handling, DDD still runs well and
+    // is less dependent on OS-specific signal handling.
+    signal(SIGCHLD, (void (*)(int))SIG_DFL);
+#endif
+
+    // Check if we are to run without windows
+    bool no_windows = 0;
+
+    // Don't run DDD setuid.  DDD invokes shell commands and even
+    // shell scripts, such that all known problems of setuid shell
+    // scripts apply.
+    if (geteuid() != getuid())
+	no_windows = true;
+
+    // Check if the `--nw' option was given
+    string gdb_name = "gdb";
+    int gdb_option_pos = -1;
+    for (int i = 1; i < argc; i++)
+    {
+	string arg = string(argv[i]);
+	if (arg == "--debugger" && i < argc - 1)
+	{
+	    gdb_name = argv[i + 1];
+	    gdb_option_pos = i;
+	}
+
+	if (arg == "--nw" || arg == "-nw")
+	{
+	    if (gdb_option_pos >= 0)
+	    {
+		for (int j = gdb_option_pos; j < argc - 2; j++)
+		    argv[j] = argv[j + 2];
+		argc -= 2;
+	    }
+	}
+    }
+
+    if (no_windows)
+    {
+	execvp(gdb_name, argv);
+	perror(gdb_name);
+	return 1;
+    }
+
+    // Initialize X toolkit
+    Arg args[10];
+    int arg = 0;
+
+    // Read ~/.dddinit resources
+    XrmDatabase dddinit = XrmGetFileDatabase(options_file());
+    if (dddinit == 0)
+	dddinit = XrmGetStringDatabase("");
+
+    // Let command-line arguments override ~/.dddinit
+    XrmParseCommand(&dddinit, options, XtNumber(options), 
+		    DDD_CLASS_NAME, &argc, argv);
+
+    Widget toplevel = XtAppInitialize(&app_context,
+				      DDD_CLASS_NAME,
+				      0, 0,
+				      &argc, argv,
+				      ddd_fallback_resources,
+				      args, arg);
+
+    // Merge in ~/.dddinit resources
+    XrmDatabase target = XtDatabase(XtDisplay(toplevel));
+    XrmMergeDatabases(dddinit, &target);
+
+    // Setup toplevel window
+#if defined(HAVE_X11_XMU_EDITRES_H)
+    XtAddEventHandler(toplevel, EventMask(0), true,
+		      _XEditResCheckMessages, NULL);
+#endif
+
+    XtAppAddActions(app_context, actions, XtNumber(actions));
+    Atom WM_DELETE_WINDOW =
+	XmInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
+
+    // Get application resources
+    XtVaGetApplicationResources(toplevel, &app_data,
+				resources, XtNumber(resources),
+				NULL);
+
+    // Check the X configuration
+    if (app_data.check_configuration)
+	return check_x_configuration(toplevel, true);
+
+    // If needed, fix the X configuration silently
+    check_x_configuration(toplevel, false);
+
+    // Set up debugger defaults
+    if (app_data.debugger[0] == '\0')
+    {
+	if (app_data.debugger_command[0] == '\0')
+	    app_data.debugger_command = gdb_name;
+	app_data.debugger = app_data.debugger_command;
+    }
+    DebuggerType type = debugger_type(app_data.debugger);
+    if (app_data.debugger_command[0] == '\0')
+	app_data.debugger_command = app_data.debugger;
+
+    // Check for --version, --help, etc.
+    if (app_data.show_version)
+	show_version();
+
+    if (app_data.show_invocation)
+	show_invocation(type);
+
+    if (app_data.show_configuration)
+	show_configuration();
+
+    if (app_data.show_resources)
+	show_resources(XtDatabase(XtDisplay(toplevel)));
+
+    if (app_data.show_manual)
+	show_manual();
+
+    if (app_data.show_version 
+	|| app_data.show_invocation 
+	|| app_data.show_configuration
+	|| app_data.show_resources
+	|| app_data.show_manual)
+	return 0;
+
+    // Warn for incompatible `Ddd' and `~/.dddinit' files
+    if (app_data.app_defaults_version == 0)
+    {
+	cerr << XtName(toplevel) 
+	     << ": warning: no version information in `" 
+	    DDD_CLASS_NAME "' app-defaults-file\n";
+    }
+    else if (string(app_data.app_defaults_version) != DDD_VERSION)
+    {
+	cerr << XtName(toplevel) 
+	     << ": warning: using `" DDD_CLASS_NAME 
+	     << "' app-defaults file for " DDD_NAME " " 
+	     << app_data.app_defaults_version 
+	     << " (this is " DDD_NAME " " DDD_VERSION ")\n";
+    }
+
+    if (app_data.dddinit_version && 
+	string(app_data.dddinit_version) != DDD_VERSION)
+    {
+	cerr << XtName(toplevel) 
+	     << ": warning: using `~/.dddinit' file for " << DDD_NAME " " 
+	     << app_data.dddinit_version
+	     << " (this is " DDD_NAME " " DDD_VERSION ").\n"
+	     << "Please save options.\n";
+    }
+
+
+    // Create command shell
+    arg = 0;
+    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+    command_shell =
+	XtCreatePopupShell("command_shell",
+			   topLevelShellWidgetClass,
+			   toplevel, args, arg);
+    XmAddWMProtocolCallback(command_shell,
+			    WM_DELETE_WINDOW, gdbCloseCommandWindowCB, 0);
+#if defined(HAVE_X11_XMU_EDITRES_H)
+    XtAddEventHandler(command_shell, EventMask(0), true,
+		      _XEditResCheckMessages, NULL);
+#endif
+    Delay::register_shell(command_shell);
+
+
+    // Create main window
+    Widget main_window = XtVaCreateManagedWidget ("main_window",
+						  xmMainWindowWidgetClass,
+						  command_shell,
+						  NULL);
+
+    // Create menu bar
+    MMDesc *menubar = combined_menubar;
+    if (app_data.separate_data_window && app_data.separate_source_window)
+	menubar = command_menubar;
+
+    Widget menubar_w = MMcreateMenuBar (main_window, "menubar", menubar);
+    MMaddCallbacks(menubar);
+
+    group_iconify_w[CommandOptions]            = group_iconify_w[0];
+    global_tab_completion_w[CommandOptions]    = global_tab_completion_w[0];
+    separate_exec_window_w[CommandOptions]     = separate_exec_window_w[0];
+    save_options_on_exit_w[CommandOptions]     = save_options_on_exit_w[0];
+    save_history_on_exit_w[CommandOptions]     = save_history_on_exit_w[0];
+    graph_show_grid_w[CommandOptions]          = graph_show_grid_w[0];
+    graph_show_hints_w[CommandOptions]         = graph_show_hints_w[0];
+    graph_snap_to_grid_w[CommandOptions]       = graph_snap_to_grid_w[0];
+    graph_compact_layout_w[CommandOptions]     = graph_compact_layout_w[0];
+    graph_auto_layout_w[CommandOptions]        = graph_auto_layout_w[0];
+    find_words_only_w[CommandOptions]          = find_words_only_w[0];
+    set_focus_pointer_w[CommandOptions]        = set_focus_pointer_w[0];
+    set_focus_explicit_w[CommandOptions]       = set_focus_explicit_w[0];
+    set_scrolling_panner_w[CommandOptions]     = set_scrolling_panner_w[0];
+    set_scrolling_scrollbars_w[CommandOptions] = set_scrolling_scrollbars_w[0];
+    set_debugger_gdb_w[CommandOptions]         = set_debugger_gdb_w[0];
+    set_debugger_dbx_w[CommandOptions]         = set_debugger_dbx_w[0];
+    set_separate_windows_w[CommandOptions]     = set_separate_windows_w[0];
+    set_attached_windows_w[CommandOptions]     = set_attached_windows_w[0];
+
+
+    // Create Paned Window
+    Widget paned_work_w = XtVaCreateWidget ("paned_work_w",
+					    xmPanedWindowWidgetClass,
+					    main_window,
+					    NULL);
+
+    if (!app_data.separate_source_window)
+    {
+	status_w = XmCreateLabel(paned_work_w, "status_w", NULL, 0);
+	XtManageChild(status_w);
+
+	XtWidgetGeometry size;
+	size.request_mode = CWHeight;
+	XtQueryGeometry(status_w, NULL, &size);
+	XtVaSetValues(status_w,
+		      XmNpaneMaximum, size.height,
+		      XmNpaneMinimum, size.height,
+		      NULL);
+    }
+
+    // Graph area
+    Widget data_disp_parent = paned_work_w;
+    Widget data_menubar_w = 0;
+    Widget data_main_window_w = 0;
+    if (app_data.separate_data_window)
+    {
+	arg = 0;
+	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+	data_disp_shell =
+	    XtCreatePopupShell("data_disp_shell",
+			       topLevelShellWidgetClass,
+			       toplevel, args, arg);
+	XmAddWMProtocolCallback(data_disp_shell,
+				WM_DELETE_WINDOW, gdbCloseDataWindowCB, 0);
+#if defined(HAVE_X11_XMU_EDITRES_H)
+	XtAddEventHandler(data_disp_shell, EventMask(0), true,
+			  _XEditResCheckMessages, NULL);
+#endif
+	Delay::register_shell(data_disp_shell);
+
+	data_main_window_w = 
+	    XtVaCreateManagedWidget("data_main_window",
+				    xmMainWindowWidgetClass,
+				    data_disp_shell,
+				    NULL);
+
+	// Add menu bar
+	data_menubar_w = 
+	    MMcreateMenuBar (data_main_window_w, "menubar", data_menubar);
+	MMaddCallbacks(data_menubar);
+
+	group_iconify_w[DataOptions]            = group_iconify_w[0];
+	global_tab_completion_w[DataOptions]    = global_tab_completion_w[0];
+	separate_exec_window_w[DataOptions]     = separate_exec_window_w[0];
+	save_options_on_exit_w[DataOptions]     = save_options_on_exit_w[0];
+	save_history_on_exit_w[DataOptions]     = save_history_on_exit_w[0];
+	graph_show_grid_w[DataOptions]          = graph_show_grid_w[0];
+	graph_show_hints_w[DataOptions]         = graph_show_hints_w[0];
+	graph_snap_to_grid_w[DataOptions]       = graph_snap_to_grid_w[0];
+	graph_compact_layout_w[DataOptions]     = graph_compact_layout_w[0];
+	graph_auto_layout_w[DataOptions]        = graph_auto_layout_w[0];
+	find_words_only_w[DataOptions]          = find_words_only_w[0];
+	set_focus_pointer_w[DataOptions]        = set_focus_pointer_w[0];
+	set_focus_explicit_w[DataOptions]       = set_focus_explicit_w[0];
+	set_scrolling_panner_w[DataOptions]     = set_scrolling_panner_w[0];
+	set_scrolling_scrollbars_w[DataOptions] = 
+	    set_scrolling_scrollbars_w[0];
+	set_debugger_gdb_w[DataOptions]         = set_debugger_gdb_w[0];
+	set_debugger_dbx_w[DataOptions]         = set_debugger_dbx_w[0];
+	set_separate_windows_w[DataOptions]     = set_separate_windows_w[0];
+	set_attached_windows_w[DataOptions]     = set_attached_windows_w[0];
+
+	data_disp_parent = 
+	    XtVaCreateManagedWidget ("data_paned_work_w",
+				     xmPanedWindowWidgetClass,
+				     data_main_window_w,
+				     NULL);
+    }
+				  
+    data_disp = new DataDisp (app_context,
+			      data_disp_parent,
+			      app_data.vslPath,
+			      app_data.vslLibrary,
+			      app_data.max_name_length,
+			      app_data.panned_graph_editor);
+
+    if (app_data.separate_data_window)
+    {
+	// More values for main window
+	XtVaSetValues (data_main_window_w,
+		       XmNmenuBar,    data_menubar_w,
+		       XmNworkWindow, data_disp_parent,
+		       NULL);
+    }
+
+    // Source window
+    Widget source_view_parent = paned_work_w;
+    Widget source_menubar_w = 0;
+    Widget source_main_window_w = 0;
+    if (app_data.separate_source_window)
+    {
+	arg = 0;
+	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+	source_view_shell = 
+	    XtCreatePopupShell("source_view_shell",
+			       topLevelShellWidgetClass,
+			       toplevel, args, arg);
+	XmAddWMProtocolCallback(source_view_shell,
+				WM_DELETE_WINDOW, gdbCloseSourceWindowCB, 0);
+#if defined(HAVE_X11_XMU_EDITRES_H)
+	XtAddEventHandler(source_view_shell, EventMask(0), true,
+			  _XEditResCheckMessages, NULL);
+#endif
+	Delay::register_shell(source_view_shell);
+
+	source_main_window_w = 
+	    XtVaCreateManagedWidget("source_main_window",
+				    xmMainWindowWidgetClass,
+				    source_view_shell,
+				    NULL);
+
+	// Add menu bar
+	source_menubar_w = 
+	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
+	MMaddCallbacks(source_menubar);
+
+	group_iconify_w[SourceOptions]            = group_iconify_w[0];
+	global_tab_completion_w[SourceOptions]    = global_tab_completion_w[0];
+	separate_exec_window_w[SourceOptions]     = separate_exec_window_w[0];
+	save_options_on_exit_w[SourceOptions]     = save_options_on_exit_w[0];
+	save_history_on_exit_w[SourceOptions]     = save_history_on_exit_w[0];
+	graph_show_grid_w[SourceOptions]          = graph_show_grid_w[0];
+	graph_show_hints_w[SourceOptions]         = graph_show_hints_w[0];
+	graph_snap_to_grid_w[SourceOptions]       = graph_snap_to_grid_w[0];
+	graph_compact_layout_w[SourceOptions]     = graph_compact_layout_w[0];
+	graph_auto_layout_w[SourceOptions]        = graph_auto_layout_w[0];
+	find_words_only_w[SourceOptions]          = find_words_only_w[0];
+	set_focus_pointer_w[SourceOptions]        = set_focus_pointer_w[0];
+	set_focus_explicit_w[SourceOptions]       = set_focus_explicit_w[0];
+	set_scrolling_panner_w[SourceOptions]     = set_scrolling_panner_w[0];
+	set_scrolling_scrollbars_w[SourceOptions] = 
+	    set_scrolling_scrollbars_w[0];
+	set_debugger_gdb_w[SourceOptions]         = set_debugger_gdb_w[0];
+	set_debugger_dbx_w[SourceOptions]         = set_debugger_dbx_w[0];
+	set_separate_windows_w[SourceOptions]     = set_separate_windows_w[0];
+	set_attached_windows_w[SourceOptions]     = set_attached_windows_w[0];
+
+	source_view_parent = 
+	    XtVaCreateManagedWidget ("source_paned_work_w",
+				     xmPanedWindowWidgetClass,
+				     source_main_window_w,
+				     NULL);
+	status_w = XmCreateLabel(source_view_parent, "status_w", NULL, 0);
+	XtManageChild(status_w);
+
+	XtWidgetGeometry size;
+	size.request_mode = CWHeight;
+	XtQueryGeometry(status_w, NULL, &size);
+	XtVaSetValues(status_w,
+		      XmNpaneMaximum, size.height,
+		      XmNpaneMinimum, size.height,
+		      NULL);
+    }
+
+    source_view = new SourceView(app_context,
+				 source_view_parent,
+				 app_data.indent_amount);
+
+    if (app_data.separate_source_window)
+    {
+	// More values for main window
+	XtVaSetValues (source_main_window_w,
+		       XmNmenuBar,    source_menubar_w,
+		       XmNworkWindow, source_view_parent,
+		       NULL);
+    }
+
+    // Argument field and commands
+    arg_cmd_w = 
+	XmCreateRowColumn(source_view_parent, "arg_cmd_w", NULL, 0);
+
+    XtVaCreateManagedWidget("arg_label",
+			    xmLabelWidgetClass,
+			    arg_cmd_w,
+			    NULL);
+
+    source_arg = new ArgField (arg_cmd_w, "source_arg");
+
+    MMcreateWorkArea(arg_cmd_w, "arg_cmd_area", arg_cmd_area);
+    MMaddCallbacks (arg_cmd_area);
+    XtManageChild (arg_cmd_w);
+
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight;
+    XtQueryGeometry(arg_cmd_w, NULL, &size);
+    XtVaSetValues(arg_cmd_w,
+		  XmNpaneMaximum, size.height,
+		  XmNpaneMinimum, size.height,
+		  NULL);
+
+    // source_area (Befehle mit PushButton an gdb) ----------------------------
+    source_buttons_w = make_buttons(source_view_parent, "source_buttons", 
+				    app_data.source_buttons);
+
+    // GDB window
+    gdb_w = XmCreateScrolledText(paned_work_w,
+				 "gdb_w",
+				 NULL, 0);
+    XtAddCallback (gdb_w,
+		   XmNmodifyVerifyCallback,
+		   gdbModifyCB,
+		   NULL);
+    XtAddCallback (gdb_w,
+		   XmNmotionVerifyCallback,
+		   gdbMotionCB,
+		   NULL);
+    XtAddCallback (gdb_w,
+		   XmNvalueChangedCallback,
+		   gdbChangeCB,
+		   NULL);
+    XtManageChild (gdb_w);
+
+    // Don't edit the text until the first prompt appears.
+    XmTextSetEditable(gdb_w, false);
+
+    // source_area (Befehle mit PushButton an gdb) ----------------------------
+    command_buttons_w = make_buttons(paned_work_w, "command_buttons", 
+				     app_data.command_buttons);
+
+    // Paned Window is done
+    XtManageChild (paned_work_w);
+
+    // More values for main window
+    XtVaSetValues (main_window,
+		   XmNmenuBar,    menubar_w,
+		   XmNworkWindow, paned_work_w,
+		   NULL);
+
+
+    // All widgets are created at this point.
+    set_status("Welcome to " DDD_NAME " " DDD_VERSION "!");
+
+    // Set host specification
+    gdb_host = (app_data.debugger_host ? app_data.debugger_host : "");
+
+    string initial_cmds;
+    switch (type)
+    {
+    case GDB:
+	initial_cmds = app_data.gdb_initial_cmds;
+	break;
+    case DBX:
+	initial_cmds = app_data.dbx_initial_cmds;
+	break;
+    }
+
+    if (initial_cmds == "")
+	gdb_init_file = "";
+    else
+    {
+	// Set initial commands
+	if (remote_gdb())
+	{
+	    gdb_init_file = "${TMPDIR-/tmp}/ddd" + itostring(getpid());
+	    Agent cat(sh_command("cat > " + gdb_init_file));
+	    cat.start();
+
+	    FILE *fp = cat.outputfp();
+	    fputs(initial_cmds, fp);
+	}
+	else
+	{
+	    gdb_init_file = tmpnam(0);
+	    ofstream os(gdb_init_file);
+	    os << initial_cmds << "\n";
+	}
+    }
+
+    // Startup debugger
+    string gdb_call = 
+	sh_command("exec " + 
+		   build_gdb_call(type, 
+				  app_data.debugger_command,
+				  gdb_init_file,
+				  argc, argv));
+
+    gdb = new GDBAgent(app_context, gdb_call, type);
+
+    gdb->set_trace_dialog(app_data.trace_dialog);
+
+    // Setup handlers
+    gdb->addBusyHandler(GDBAgent::ReadyForQuestion, gdb_ready_for_questionHP);
+    gdb->addBusyHandler(GDBAgent::ReadyForCmd,      gdb_ready_for_cmdHP);
+    gdb->addHandler    (GDBAgent::InputEOF,         gdb_eofHP);
+    gdb->addHandler    (GDBAgent::ErrorEOF,         gdb_eofHP);
+    DataDisp::set_handlers();
+
+    source_arg->addHandler (ArgField::Changed, source_argHP);
+    source_arg->callHandlers();
+
+    // Set the terminal type
+    static string term_env = string("TERM=") + app_data.term_type;
+    putenv(term_env);
+
+    // Setup insertion position
+    promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
+    XmTextSetInsertionPosition(gdb_w, messagePosition);
+
+    // Setup option states
+    update_options();
+
+    // Setup help pixmap
+    helpOnVersionPixmapProc = versionlogo;
+
+    // Go for it
+    XtRealizeWidget(command_shell);
+    wm_set_icon(XtDisplay(command_shell), XtWindow(command_shell),
+		iconlogo(gdb_w), iconmask(gdb_w));
+
+    if (data_disp_shell)
+    {
+	XtRealizeWidget(data_disp_shell);
+	wm_set_icon(XtDisplay(data_disp_shell),
+		    XtWindow(data_disp_shell),
+		    iconlogo(data_main_window_w),
+		    iconmask(data_main_window_w));
+	wm_set_group_leader(XtDisplay(data_disp_shell),
+			    XtWindow(data_disp_shell),
+			    XtWindow(command_shell));
+    }
+
+    if (source_view_shell)
+    {
+	XtRealizeWidget(source_view_shell);
+	wm_set_icon(XtDisplay(source_view_shell),
+		    XtWindow(source_view_shell),
+		    iconlogo(source_main_window_w),
+		    iconmask(source_main_window_w));
+	wm_set_group_leader(XtDisplay(source_view_shell),
+			    XtWindow(source_view_shell),
+			    XtWindow(command_shell));
+    }
+
+
+    // Remove unnecessary sashes
+    if (source_view_shell)
+	unmanage_sashes(source_view_parent);
+    if (data_disp_shell)
+	unmanage_sashes(data_disp_parent);
+    if (source_view_shell && data_disp_shell)
+	unmanage_sashes(paned_work_w);
+    else
+	untraverse_sashes(paned_work_w);
+
+    // Get a command shell
+    popup_shell(command_shell);
+
+    // If some window is iconified, iconify all others as well
+    if (command_shell)
+	XtAddEventHandler(command_shell, StructureNotifyMask, False,
+			  StructureNotifyEH, XtPointer(0));
+    if (source_view_shell)
+	XtAddEventHandler(source_view_shell, StructureNotifyMask, False,
+			  StructureNotifyEH, XtPointer(0));
+    if (data_disp_shell)
+	XtAddEventHandler(data_disp_shell, StructureNotifyMask, False,
+			  StructureNotifyEH, XtPointer(0));
+
+    // Wait for the command shell to be mapped, such that we don't
+    // lose debugger output.  This also decreases system load on
+    // single-processor machines since DDD is idle when the debugger
+    // starts.
+    wait_until_mapped(command_shell);
+    XmUpdateDisplay(command_shell);
+
+    // Start debugger
+    start_gdb();
+    gdb_tty = gdb->slave_tty();
+
+    // Main Loop
+    for (;;)
+    {
+	// Check if GDB is still running
+	gdb->running();
+
+	if (app_data.synchronous_gdb && gdb->isBusyOnQuestion())
+	{
+	    // Synchronous mode: wait for GDB to answer question
+	    XtAppProcessEvent(app_context, XtIMAlternateInput);
+	}
+	else if (XtAppPending(app_context) & XtIMAlternateInput)
+	{
+	    // Process pending GDB output
+	    XtAppProcessEvent(app_context, XtIMAlternateInput);
+	}
+	else
+	{
+	    // Process next X event
+	    XtAppProcessEvent(app_context, XtIMAll);
+	}
+    }
+
+    // Never reached...
+    return 0;
+}
+
+
+//-----------------------------------------------------------------------------
+// Signal handling
+//-----------------------------------------------------------------------------
+
+// Setup signals: Cleanup on termination
+void ddd_install_signal()
+{
+#ifdef SIGHUP
+    signal(SIGHUP, ddd_signal);
+#endif
+
+#ifdef SIGINT
+    signal(SIGINT, ddd_signal);
+#endif
+
+#ifdef SIGTERM
+    signal(SIGTERM, ddd_signal);
+#endif
+}
+
+// Setup signals: Issue message on fatal errors
+void ddd_install_fatal()
+{
+    // Make sure strsignal() is initialized properly
+    (void)sigName(1);
+
+#ifdef SIGFPE
+    signal(SIGFPE, ddd_fatal);
+#endif
+
+#ifdef SIGILL
+    signal(SIGILL, ddd_fatal);
+#endif
+
+#ifdef SIGSEGV
+    signal(SIGSEGV, ddd_fatal);
+#endif
+
+#ifdef SIGBUS
+    signal(SIGBUS, ddd_fatal);
+#endif
+
+#ifdef SIGABRT
+    signal(SIGABRT, ddd_fatal);
+#endif
+
+#ifdef SIGIOT
+    signal(SIGIOT, ddd_fatal);
+#endif
+
+#ifdef SIGTRAP
+    signal(SIGTRAP, ddd_fatal);
+#endif
+
+#ifdef SIGEMT
+    signal(SIGEMT, ddd_fatal);
+#endif
+
+#ifdef SIGSYS
+    signal(SIGSYS, ddd_fatal);
+#endif
+}
+
+//-----------------------------------------------------------------------------
+// Option handling
+//-----------------------------------------------------------------------------
+
+// Reflect state in option menus
+void update_options()
+{
+    Arg args[10];
+    int arg = 0;
+
+    for (int i = 1; i < 4; i++)
+    {
+	if (group_iconify_w[i] == 0)
+	    continue;
+
+	XtVaSetValues(group_iconify_w[i],
+		      XmNset, app_data.group_iconify, NULL);
+	XtVaSetValues(global_tab_completion_w[i],
+		      XmNset, app_data.global_tab_completion, NULL);
+	XtVaSetValues(separate_exec_window_w[i],
+		      XmNset, app_data.separate_exec_window, NULL);
+	XtVaSetValues(save_options_on_exit_w[i],
+		      XmNset, app_data.save_options_on_exit, NULL);
+	XtVaSetValues(save_history_on_exit_w[i],
+		      XmNset, app_data.save_history_on_exit, NULL);
+
+	XtVaSetValues(find_words_only_w[i],
+		      XmNset, app_data.find_words_only, NULL);
+
+	Boolean state;
+	arg = 0;
+	XtSetArg(args[arg], XtNshowGrid, &state); arg++;
+	XtGetValues(data_disp->graph_edit, args, arg);
+	arg = 0;
+	XtSetArg(args[arg], XmNset, state); arg++;
+	XtSetValues(graph_show_grid_w[i], args, arg);
+
+	arg = 0;
+	XtSetArg(args[arg], XtNsnapToGrid, &state); arg++;
+	XtGetValues(data_disp->graph_edit, args, arg);
+	arg = 0;
+	XtSetArg(args[arg], XmNset, state); arg++;
+	XtSetValues(graph_snap_to_grid_w[i], args, arg);
+
+	arg = 0;
+	XtSetArg(args[arg], XtNshowHints, &state); arg++;
+	XtGetValues(data_disp->graph_edit, args, arg);
+	arg = 0;
+	XtSetArg(args[arg], XmNset, state); arg++;
+	XtSetValues(graph_show_hints_w[i], args, arg);
+
+	LayoutMode mode;
+	arg = 0;
+	XtSetArg(args[arg], XtNlayoutMode, &mode); arg++;
+	XtGetValues(data_disp->graph_edit, args, arg);
+	arg = 0;
+	XtSetArg(args[arg], XmNset, mode == CompactLayoutMode); arg++;
+	XtSetValues(graph_compact_layout_w[i], args, arg);
+
+	arg = 0;
+	XtSetArg(args[arg], XtNautoLayout, &state); arg++;
+	XtGetValues(data_disp->graph_edit, args, arg);
+	arg = 0;
+	XtSetArg(args[arg], XmNset, state); arg++;
+	XtSetValues(graph_auto_layout_w[i], args, arg);
+
+	unsigned char policy = '\0';
+	XtVaGetValues(command_shell, 
+		      XmNkeyboardFocusPolicy, &policy,
+		      NULL);
+	XtVaSetValues(set_focus_pointer_w[i],
+		      XmNset, policy == XmPOINTER, NULL);
+	XtVaSetValues(set_focus_explicit_w[i],
+		      XmNset, policy == XmEXPLICIT, NULL);
+
+	XtVaSetValues(set_scrolling_panner_w[i],
+		      XmNset, app_data.panned_graph_editor, NULL);
+	XtVaSetValues(set_scrolling_scrollbars_w[i],
+		      XmNset, !app_data.panned_graph_editor, NULL);
+
+	Boolean separate = 
+	    app_data.separate_data_window || app_data.separate_source_window;
+	XtVaSetValues(set_separate_windows_w[i],
+		      XmNset, separate, NULL);
+	XtVaSetValues(set_attached_windows_w[i],
+		      XmNset, !separate, NULL);
+
+	DebuggerType type = debugger_type(app_data.debugger);
+	XtVaSetValues(set_debugger_gdb_w[i],
+		      XmNset, type == GDB, NULL);
+	XtVaSetValues(set_debugger_dbx_w[i],
+		      XmNset, type == DBX, NULL);
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+// DDD logo
+//-----------------------------------------------------------------------------
+
+// Return pixmaps suitable for icons on the root window
+Pixmap iconlogo(Widget w)
+{
+    GC gc = DefaultGC(XtDisplay(w), XScreenNumberOfScreen(XtScreen(w)));
+    XGCValues gcv;
+    XGetGCValues(XtDisplay(w), gc, GCForeground | GCBackground, &gcv);
+		      
+    int depth = PlanesOfScreen(XtScreen(w));
+    Pixmap icon = 
+	XCreatePixmapFromBitmapData(XtDisplay(w),
+				    RootWindowOfScreen(XtScreen(w)),
+				    dddlogo_bits,
+				    dddlogo_width, dddlogo_height,
+				    gcv.foreground, gcv.background,
+				    depth);
+
+    return icon;
+}
+
+Pixmap iconmask(Widget w)
+{
+    return XCreateBitmapFromData(XtDisplay(w),
+				 RootWindowOfScreen(XtScreen(w)),
+				 dddmask_bits,
+				 dddmask_width, dddmask_height);
+}
+
+// Return pixmaps suitable for the widget W
+Pixmap versionlogo(Widget w)
+{
+    Pixel foreground, background;
+
+    XtVaGetValues(w,
+		  XmNforeground, &foreground,
+		  XmNbackground, &background,
+		  NULL);
+
+    int depth = PlanesOfScreen(XtScreen(w));
+    Pixmap logo = 
+	XCreatePixmapFromBitmapData(XtDisplay(w),
+				    XtWindow(w),
+				    dddlogo_bits,
+				    dddlogo_width, dddlogo_height,
+				    foreground, background,
+				    depth);
+
+    return logo;
+}
+
+
+//-----------------------------------------------------------------------------
+// Window Manager Functions
+//-----------------------------------------------------------------------------
+    
+void wm_set_icon(Display *display, Window shell_window, 
+		 Pixmap icon, Pixmap mask)
+{
+    XWMHints *wm_hints = XAllocWMHints();
+
+    wm_hints->flags       = IconPixmapHint | IconMaskHint;
+    wm_hints->icon_pixmap = icon;
+    wm_hints->icon_mask   = mask;
+
+    XSetWMHints(display, shell_window, wm_hints);
+
+    XFree(wm_hints);
+}
+
+void wm_set_group_leader(Display *display,
+			 Window shell_window, Window leader_window)
+{
+    // Disabled, since (at least in fvwm) it has no effect but to
+    // disable generation of individual icons.
+#if 0
+    XWMHints *wm_hints = XAllocWMHints();
+
+    wm_hints->flags        = WindowGroupHint;
+    wm_hints->window_group = leader_window;
+
+    XSetWMHints(display, shell_window, wm_hints);
+
+    XFree(wm_hints);
+#endif
+}
+
+void wm_set_name(Display *display, Window shell_window,
+		 string title, string icon)
+{
+    strip_final_blanks(title);
+    strip_final_blanks(icon);
+
+    if (title != "")
+	XStoreName(display, shell_window, String(title));
+    if (icon != "")
+	XSetIconName(display, shell_window, String(icon));
+}
+					   
+
+//-----------------------------------------------------------------------------
+// Show version
+//-----------------------------------------------------------------------------
+
+void show_version()
+{
+    cout << DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
+	"Copyright 1995 TU Braunschweig, Germany.\n";
+}
+
+//-----------------------------------------------------------------------------
+// Show invocation
+//-----------------------------------------------------------------------------
+
+void show_invocation(DebuggerType type)
+{
+    string gdb_version = "";
+    string options     = "";
+    string base        = "";
+
+    string gdb_help = sh_command(string(app_data.debugger_command) 
+				 + " -h");
+    switch (type)
+    {
+    case GDB:
+    {
+	base = "GDB, the GNU debugger.";
+
+	Agent help(gdb_help);
+	help.start();
+
+	FILE *fp = help.inputfp();
+	if (fp)
+	{
+	    enum { Init, Options, Other, Done } state = Init;
+	    char buf[BUFSIZ];
+
+	    while (fgets(buf, sizeof(buf), fp))
+	    {
+		if (buf[0] && buf[strlen(buf) - 1] == '\n')
+		    buf[strlen(buf) - 1] = '\0';
+
+		string option;
+		switch (state)
+		{
+		case Init:
+		    gdb_version = string(buf) + "\n";
+		    state = Other;
+		    break;
+
+		case Other:
+		    if (string(buf).contains("Options:"))
+			state = Options;
+		    break;
+
+		case Options:
+		    option = buf;
+		    if (option == "")
+			state = Done;
+		    else
+			options += option + "\n";
+		    break;
+
+		case Done:
+		    break;
+		}
+	    }
+	}
+	break;
+
+    }
+    case DBX:
+	base = "DBX, the UNIX debugger.";
+	options = "  [DBX options]      Pass option to DBX.\n";
+	break;
+    }
+
+    show_version();
+    cout << gdb_version <<
+	"This is DDD, the data display debugger, based on "
+	<< base << "\n" << 
+	"Usage:\n"
+	"    " ddd_NAME " [options]"
+	" executable-file [core-file or process-id]]\n"
+	"Options:\n"
+	<< options <<
+	"  --dbx              Invoke DBX as underlying debugger.\n"
+	"  --gdb              Invoke GDB as underlying debugger.\n"
+	"  --debugger NAME    Invoke debugger as NAME.\n"
+	"  --host HOST        Run debugger on HOST.\n"
+	"  --login LOGIN      Use LOGIN for connecting to host.\n"
+	"  --vsl-library LIB  Load VSL library LIB.\n"
+	"  --vsl-path PATH    Look for VSL libraries in PATH.\n"
+	"  --trace-dialog     Show debugger input/output"
+	" on standard error.\n"
+	"  --trace-shell      Show shell commands"
+	" on standard error.\n"
+	"  --exec-window      Create a window for"
+	" running debugged programs.\n"
+	"  --no-exec-window   Do not create a window for"
+	" running debugged programs.\n"
+	"  --attach-windows   Attach data and source windows to"
+	" command window.\n"
+	"  --separate-windows Do not attach data and source windows to"
+	" command window.\n"
+	"  --scrolled-graph   Use scrollbars for moving the data display.\n"
+	"  --panned-graph     Use a panner for moving the data display.\n"
+	"  --version          Show the DDD version and exit.\n"
+	"  --configuration    Show the DDD configuration flags and exit.\n"
+	"  --manual           Show the DDD manual and exit.\n"
+	"\n"
+	"Standard X options are also accepted, such as:\n"
+	"  -display DISPLAY    Run on X server DISPLAY.\n"
+	"  -geometry GEOMETRY  Specify initial size and location.\n"
+	"  -foreground COLOR   Use COLOR as foreground color.\n"
+	"  -background COLOR   Use COLOR as background color.\n"
+	"  -xrm RESOURCE       Specify a resource name and value.\n"
+	"\n"
+	"For more information, consult the " DDD_NAME " `Help' menu,"
+	" type `help' from\n"
+	"within " DDD_NAME ","
+	"or consult the manual pages of " DDD_NAME " and your debugger.\n";
+}
+
+
+//-----------------------------------------------------------------------------
+// Show Configuration
+//-----------------------------------------------------------------------------
+
+#define _stringize(x) #x
+#define stringize(x) _stringize(x)
+
+void show_configuration()
+{    
+    show_version();
+    cout << 
+	"Using X" stringize(X_PROTOCOL) "R" stringize(XlibSpecificationRelease)
+	 ", Xt" stringize(X_PROTOCOL) "R" stringize(XtSpecificationRelease)
+	 ", Motif " stringize(XmVERSION) "." stringize(XmREVISION) "\n";
+    cout << "\n" << config_info;
+}
+
+
+//-----------------------------------------------------------------------------
+// Show Resources
+//-----------------------------------------------------------------------------
+
+void show_resources(XrmDatabase db)
+{
+    string tmpfile = tmpnam(0);
+    XrmPutFileDatabase(db, tmpfile);
+    
+    {
+	ifstream is(tmpfile);
+	int c;
+	while ((c = is.get()) != EOF)
+	    cout.put(char(c));
+    }
+
+    unlink(tmpfile);
+}
+
+
+//-----------------------------------------------------------------------------
+// Show Manual Page
+//-----------------------------------------------------------------------------
+
+void show_manual()
+{
+    FILE *fp = 0;
+    if (isatty(fileno(stdout)))
+    {
+	char *pager = getenv("PAGER");
+	if (fp == 0 && pager != 0)
+	    fp = popen(pager, "w");
+	if (fp == 0)
+	    fp = popen("less", "w");
+	if (fp == 0)
+	    fp = popen("more", "w");
+    }
+    if (fp == 0)
+    {
+	fputs(ddd_man_page, stdout);
+    }
+    else
+    {
+	fputs(ddd_man_page, fp);
+	pclose(fp);
+    }
+}
+
+//-----------------------------------------------------------------------------
+// Shell counter
+//-----------------------------------------------------------------------------
+
+int running_shells()
+{
+    return int(command_shell_state != PoppedDown)
+	+ int(source_view_shell_state != PoppedDown)
+	+ int(data_disp_shell_state != PoppedDown);
+}
+
+
+//-----------------------------------------------------------------------------
+// Opening files
+//-----------------------------------------------------------------------------
+
+static Widget find_shell(Widget w)
+{
+    if (w == 0)
+	w = gdb_last_origin;
+    if (w == 0)
+	return command_shell;
+
+    Widget parent = findTopLevelShellParent(w);
+    if (parent == 0)
+	return command_shell;
+
+    if (!XtIsRealized(parent))
+	return command_shell;
+
+    XWindowAttributes xwa;
+    XGetWindowAttributes(XtDisplay(parent), XtWindow(parent), &xwa);
+    if (xwa.map_state != IsViewable)
+	return command_shell;
+
+    return parent;
+}
+
+typedef void (*FileSearchProc)(Widget fs, 
+			       XmFileSelectionBoxCallbackStruct *cbs);
+
+Widget file_dialog(Widget w, const string& name,
+		   FileSearchProc do_search_files,
+		   FileSearchProc do_search_dirs,
+		   XtCallbackProc ok_callback)
+{
+    Delay delay(w);
+
+    Arg args[10];
+    int arg = 0;
+
+    string pwd;
+
+    arg = 0;
+    if (do_search_files)
+    {
+	XtSetArg(args[arg], XmNfileSearchProc, do_search_files); arg++;
+    }
+    if (do_search_dirs)
+    {
+	XtSetArg(args[arg], XmNdirSearchProc, do_search_dirs); arg++;
+    }
+
+    if (remote_gdb())
+    {
+	pwd = gdb_question("pwd");
+	if (pwd == string(-1))
+	{
+	    post_error("Cannot get current remote directory", "pwd_error");
+	    pwd = "";
+	}
+	else
+	{
+	    switch(gdb->type())
+	    {
+	    case GDB:
+		pwd = pwd.after("directory ");
+		pwd = pwd.before(int(pwd.length()) - 2);
+		break;
+
+	    case DBX:
+		pwd = pwd.before('\n');
+		break;
+	    }
+	}
+
+	if (pwd != "")
+	{
+	    static MString xmpwd;
+	    xmpwd = pwd;
+	    XtSetArg(args[arg], XmNdirectory, XmString(xmpwd)); arg++;
+	}
+    }
+
+    Widget dialog = 
+	XmCreateFileSelectionDialog(find_shell(w), name, args, arg);
+    Delay::register_shell(dialog);
+    XtAddCallback(dialog, XmNokCallback,     ok_callback, 0);
+    XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
+		  XtPointer(dialog));
+    XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+
+    return dialog;
+}
+
+static void searchRemote(Widget fs,
+			 XmFileSelectionBoxCallbackStruct *cbs,
+			 String cmd,
+			 bool search_dirs)
+{
+    Delay delay(fs);
+
+    int nitems = 0;
+    int size = 256;
+    XmStringTable items = 
+	XmStringTable(XtMalloc(size * sizeof(XmString)));
+
+    String mask;
+    if (!XmStringGetLtoR(cbs->mask, MSTRING_DEFAULT_CHARSET, &mask))
+	return;
+    String dir;
+    if (!XmStringGetLtoR(cbs->dir, MSTRING_DEFAULT_CHARSET, &dir))
+	return;
+
+    if (search_dirs)
+    {
+	string extra_dir = string(dir) + ".";
+	items[nitems++] = 
+	    XmStringCreateLtoR(extra_dir, MSTRING_DEFAULT_CHARSET);
+	extra_dir = string(dir) + "..";
+	items[nitems++] = 
+	    XmStringCreateLtoR(extra_dir, MSTRING_DEFAULT_CHARSET);
+    }
+
+    string command = cmd;
+    command.gsub("@MASK@", mask);
+    command = sh_command(command);
+
+    Agent search(command);
+    search.start();
+
+    FILE *fp = search.inputfp();
+    if (fp == 0)
+    {
+	perror(command);
+	return;
+    }
+
+    char buf[BUFSIZ];
+    while (fgets(buf, sizeof(buf), fp))
+    {
+	if (buf[0] && buf[strlen(buf) - 1] == '\n')
+	    buf[strlen(buf) - 1] = '\0';
+
+	if (nitems >= size)
+	{
+	    size += 256;
+	    items = XmStringTable(XtRealloc((char *)items,
+					    size * sizeof(XmString)));
+	}
+	    
+	items[nitems++] = XmStringCreateLtoR(buf, MSTRING_DEFAULT_CHARSET);
+    }
+
+    if (search_dirs)
+    {
+	XtVaSetValues(fs,
+		      XmNdirListItems,     items,
+		      XmNdirListItemCount, nitems,
+		      XmNdirectoryValid,   True,
+		      XmNlistUpdated,      True,
+		      NULL);
+    }
+    else
+    {
+	if (nitems > 0)
+	{
+	    XtVaSetValues(fs,
+			  XmNfileListItems,     items,
+			  XmNfileListItemCount, nitems,
+			  XmNdirSpec,           items[0],
+			  XmNlistUpdated,       True,
+			  NULL);
+	}
+	else
+	{
+	    XtVaSetValues(fs,
+			  XmNfileListItems,     0,
+			  XmNfileListItemCount, 0,
+			  XmNlistUpdated,       True,
+			  NULL);
+	}
+    }
+}
+
+
+static void searchRemoteExecFiles(Widget fs,
+				  XmFileSelectionBoxCallbackStruct *cbs)
+{
+    searchRemote(fs, cbs, app_data.list_exec_command, false);
+}
+
+static void searchRemoteCoreFiles(Widget fs,
+				  XmFileSelectionBoxCallbackStruct *cbs)
+{
+    searchRemote(fs, cbs, app_data.list_core_command, false);
+}
+
+static void searchRemoteSourceFiles(Widget fs,
+				    XmFileSelectionBoxCallbackStruct *cbs)
+{
+    searchRemote(fs, cbs, app_data.list_source_command, false);
+}
+
+static void searchRemoteDirectories(Widget fs,
+				    XmFileSelectionBoxCallbackStruct *cbs)
+{
+    searchRemote(fs, cbs, app_data.list_dir_command, true);
+}
+
+static void sort(char *a[], int size)
+{
+    // Shell sort -- simple and fast
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= size);
+    do {
+	h /= 3;
+	for (int i = h; i < size; i++)
+	{
+	    char *v = a[i];
+	    for (int j = i; j >= h && strcmp(a[j - h], v) > 0; j -= h)
+		a[j] = a[j - h];
+	    if (i != j)
+		a[j] = v;
+	}
+    } while (h != 1);
+}
+
+static void searchLocal(Widget fs,
+			XmFileSelectionBoxCallbackStruct *cbs,
+			bool is_okay(const string& file_name))
+{
+    Delay delay(fs);
+
+    String mask;
+    if (!XmStringGetLtoR(cbs->mask, MSTRING_DEFAULT_CHARSET, &mask))
+	return;
+
+    char **files = glob_filename(mask);
+    if (files == (char **)0)
+    {
+	cerr << mask << ": glob failed\n";
+    }
+    else if (files == (char **)-1)
+    {
+	post_error(string(mask) + ": " + strerror(errno));
+    }
+    else
+    {
+	for (int count = 0; files[count] != 0; count++)
+	    ;
+	sort(files, count);
+
+	XmStringTable items = 
+	    XmStringTable(XtMalloc(count * sizeof(XmString)));
+
+	int nitems = 0;
+	for (int i = 0; files[i] != 0; i++)
+	{
+	    if (is_okay(files[i]))
+		items[nitems++] = XmStringCreateLtoR(files[i], 
+						     MSTRING_DEFAULT_CHARSET);
+	    free(files[i]);
+	}
+	free(files);
+
+	if (nitems > 0)
+	{
+	    XtVaSetValues(fs,
+			  XmNfileListItems,     items,
+			  XmNfileListItemCount, nitems,
+			  XmNdirSpec,           items[0],
+			  XmNlistUpdated,       True,
+			  NULL);
+
+	    XtFree((char *)items);
+	    return;
+	}
+    }
+
+    // Error or nothing found 
+    XtVaSetValues(fs,
+		  XmNfileListItems,     0,
+		  XmNfileListItemCount, 0,
+		  XmNlistUpdated,       True,
+		  NULL);
+}
+
+static void searchLocalExecFiles(Widget fs,
+				 XmFileSelectionBoxCallbackStruct *cbs)
+{
+    searchLocal(fs, cbs, is_exec_file);
+}
+
+static void searchLocalCoreFiles(Widget fs,
+				 XmFileSelectionBoxCallbackStruct *cbs)
+{
+    searchLocal(fs, cbs, is_core_file);
+}
+
+static void searchLocalSourceFiles(Widget fs,
+				   XmFileSelectionBoxCallbackStruct *cbs)
+{
+    searchLocal(fs, cbs, is_source_file);
+}
+
+
+string get_file(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmFileSelectionBoxCallbackStruct *cbs = 
+	(XmFileSelectionBoxCallbackStruct *)call_data;
+
+    String s;
+    if (!XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &s))
+	return string(-1);
+
+    string filename = s;
+    XtFree(s);
+
+    if (filename == "" || filename[0] != '/')
+    {
+	String dir;
+	if (!XmStringGetLtoR(cbs->dir, MSTRING_DEFAULT_CHARSET, &dir))
+	    return string(-1);
+
+	filename = string(dir) + "/" + filename;
+	XtFree(dir);
+    }
+
+    if (is_directory(filename))
+    {
+	MString filter(filename);
+	XmFileSelectionDoSearch(w, filter);
+	return "";
+    }
+
+    return filename;
+}
+
+void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    string filename = get_file(w, client_data, call_data);
+    if (filename == "")
+	return;
+
+    XtUnmanageChild(w);
+
+    if (filename != string(-1))
+    {
+	switch(gdb->type())
+	{
+	case GDB:
+	    gdb_command("file " + filename);
+	    break;
+
+	case DBX:
+	    gdb_command("debug " + filename);
+	    break;
+	}
+    }
+}
+
+void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    string corefile = get_file(w, client_data, call_data);
+    if (corefile == "")
+	return;
+
+    XtUnmanageChild(w);
+
+    if (corefile != string(-1))
+    {
+	switch(gdb->type())
+	{
+	case GDB:
+	    gdb_command("core-file " + corefile);
+	    break;
+
+	case DBX:
+	    string file = gdb_question("debug");
+	    if (file == string(-1))
+		post_gdb_busy();
+	    else if (file.contains("Debugging: ", 0))
+	    {
+		file = file.after(": ");
+		strip_final_blanks(file);
+		gdb_command("debug " + file + " " + corefile);
+	    }
+	    else
+		post_gdb_message(file);
+	}
+    }
+}
+
+void openSourceDone(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    string filename = get_file(w, client_data, call_data);
+    if (filename == "")
+	return;
+
+    XtUnmanageChild(w);
+
+    if (filename != string(-1))
+	source_view->read_file(filename);
+}
+
+void gdbOpenFileCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    static Widget dialog = 0;
+    if (dialog == 0)
+    {
+	if (remote_gdb())
+	    dialog = file_dialog(w, "exec_files", searchRemoteExecFiles, 
+				 searchRemoteDirectories, openFileDone);
+	else
+	    dialog = file_dialog(w, "exec_files", searchLocalExecFiles, 
+				 0, openFileDone);
+    }
+
+    XtManageChild(dialog);
+}
+
+void gdbOpenCoreCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    static Widget dialog = 0;
+    if (dialog == 0)
+    {
+	if (remote_gdb())
+	    dialog = file_dialog(w, "core_files", searchRemoteCoreFiles, 
+				 searchRemoteDirectories, openCoreDone);
+	else
+	    dialog = file_dialog(w, "core_files", searchLocalCoreFiles, 
+				 0, openCoreDone);
+    }
+
+    XtManageChild(dialog);
+}
+
+void gdbOpenSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    static Widget dialog = 0;
+    if (dialog == 0)
+    {
+	if (remote_gdb())
+	    dialog = file_dialog(w, "source_files", searchRemoteSourceFiles, 
+				 searchRemoteDirectories, openSourceDone);
+	else
+	    dialog = file_dialog(w, "source_files", searchLocalSourceFiles, 
+				 0, openSourceDone);
+    }
+
+    XtManageChild(dialog);
+}
+
+
+//-----------------------------------------------------------------------------
+// Window management
+//-----------------------------------------------------------------------------
+
+void popup_shell(Widget w)
+{
+    if (w == 0)
+	return;
+
+    XtPopup(w, XtGrabNone);
+
+    if (w == command_shell)
+	command_shell_state        = PoppedUp;
+    else if (w == data_disp_shell)
+	data_disp_shell_state      = PoppedUp;
+    else if (w == source_view_shell)
+	source_view_shell_state    = PoppedUp;
+
+    // Deiconify window
+    XMapWindow(XtDisplay(w), XtWindow(w));
+
+    // Place window on top
+    XWindowChanges changes;
+    changes.stack_mode = Above;
+    XReconfigureWMWindow(XtDisplay(w), XtWindow(w), 
+			 XScreenNumberOfScreen(XtScreen(w)),
+			 CWStackMode, &changes);
+
+#if 0
+    wait_until_mapped(w);
+
+    // Get focus
+    XSetInputFocus(XtDisplay(w), XtWindow(w), RevertToParent, 
+		   XtLastTimestampProcessed(XtDisplay(w)));
+#endif
+
+    // Try this one
+    XmProcessTraversal(w, XmTRAVERSE_CURRENT);
+}
+
+void popdown_shell(Widget w)
+{
+    if (w == 0)
+	return;
+
+    if (w == command_shell)
+	command_shell_state     = PoppedDown;
+    else if (w == data_disp_shell)
+	data_disp_shell_state   = PoppedDown;
+    else if (w == source_view_shell)
+	source_view_shell_state = PoppedDown;
+
+    XtPopdown(w);
+}
+
+void iconify_shell(Widget w)
+{
+    if (w == 0)
+	return;
+
+    if (w == command_shell)
+	command_shell_state     = Iconic;
+    else if (w == data_disp_shell)
+	data_disp_shell_state   = Iconic;
+    else if (w == source_view_shell)
+	source_view_shell_state = Iconic;
+
+    XIconifyWindow(XtDisplay(w), XtWindow(w),
+		   XScreenNumberOfScreen(XtScreen(w)));
+}
+
+void popup_tty(Widget shell)
+{
+    if (separate_tty_window)
+    {
+	// Deiconify window
+	XMapWindow(XtDisplay(shell), separate_tty_window);
+
+	// Place window on top
+	XWindowChanges changes;
+	changes.stack_mode = Above;
+	XReconfigureWMWindow(XtDisplay(shell), separate_tty_window, 
+			     XScreenNumberOfScreen(XtScreen(shell)),
+			     CWStackMode, &changes);
+    }
+}
+
+void iconify_tty(Widget shell)
+{
+    if (separate_tty_window)
+    {
+	XIconifyWindow(XtDisplay(shell), separate_tty_window,
+		       XScreenNumberOfScreen(XtScreen(shell)));
+    }
+}
+
+
+void StructureNotifyEH(Widget w, XtPointer call_data, 
+		       XEvent *event, Boolean *continue_to_dispatch)
+{
+    switch (event->type)
+    {
+    case MapNotify:
+	// clog << XtName(w) << " is mapped\n";
+
+	// Reflect state
+	if (w == command_shell)
+	    command_shell_state     = PoppedUp;
+	else if (w == data_disp_shell)
+	    data_disp_shell_state   = PoppedUp;
+	else if (w == source_view_shell)
+	    source_view_shell_state = PoppedUp;
+
+	if (app_data.group_iconify)
+	{
+	    // Map all other windows as well
+	    if (command_shell_state == Iconic)
+		popup_shell(command_shell);
+	    if (data_disp_shell_state == Iconic)
+		popup_shell(data_disp_shell);
+	    if (source_view_shell_state == Iconic)
+		popup_shell(source_view_shell);
+	    popup_tty(command_shell);
+	}
+	break;
+
+    case UnmapNotify:
+	// clog << XtName(w) << " is unmapped\n";
+
+	// Reflect state
+	if (w == command_shell && command_shell_state == PoppedUp)
+	    command_shell_state = Iconic;
+	else if (w == data_disp_shell && data_disp_shell_state == PoppedUp)
+	    data_disp_shell_state = Iconic;
+	else if (w == source_view_shell && source_view_shell_state == PoppedUp)
+	    source_view_shell_state = Iconic;
+
+	if (app_data.group_iconify &&
+	    (command_shell_state == Iconic
+	     || data_disp_shell_state == Iconic
+	     || source_view_shell_state == Iconic))
+	{
+	    // Iconify all windows
+	    if (command_shell_state == PoppedUp)
+		iconify_shell(command_shell);
+	    if (data_disp_shell_state == PoppedUp)
+		iconify_shell(data_disp_shell);
+	    if (source_view_shell_state == PoppedUp)
+		iconify_shell(source_view_shell);
+	    iconify_tty(command_shell);
+	}
+	break;
+
+    default:
+	// Any other event...
+	break;
+    }
+}
+
+
+void gdbCloseCommandWindowCB(Widget w, 
+			    XtPointer client_data, XtPointer call_data)
+{
+    if (running_shells() == 1)
+    {
+	DDDExitCB(w, client_data, call_data);
+	return;
+    }
+    popdown_shell(command_shell);
+}
+
+void gdbCloseSourceWindowCB(Widget w, 
+			   XtPointer client_data, XtPointer call_data)
+{
+    if (running_shells() == 1)
+    {
+	DDDExitCB(w, client_data, call_data);
+	return;
+    }
+    popdown_shell(source_view_shell);
+}
+
+void gdbCloseDataWindowCB(Widget w,
+			 XtPointer client_data, XtPointer call_data)
+{
+    if (running_shells() == 1)
+    {
+	DDDExitCB(w, client_data, call_data);
+	return;
+    }
+    popdown_shell(data_disp_shell);
+}
+
+void gdbCloseExecWindowCB(Widget w,
+			 XtPointer client_data, XtPointer call_data)
+{
+    if (running_shells() == 1)
+    {
+	DDDExitCB(w, client_data, call_data);
+	return;
+    }
+    kill_exec_tty();
+}
+
+
+void gdbOpenCommandWindowCB(Widget w, 
+			    XtPointer client_data, XtPointer call_data)
+{
+    popup_shell(command_shell);
+}
+
+void gdbOpenSourceWindowCB(Widget w, 
+			   XtPointer client_data, XtPointer call_data)
+{
+    popup_shell(source_view_shell);
+}
+
+void gdbOpenDataWindowCB(Widget w,
+			 XtPointer client_data, XtPointer call_data)
+{
+    popup_shell(data_disp_shell);
+}
+
+void gdbOpenExecWindowCB(Widget w,
+			 XtPointer client_data, XtPointer call_data)
+{
+    if (separate_tty_pid == 0)
+	startup_exec_tty();
+    popup_tty(command_shell);
+}
+
+
+//-----------------------------------------------------------------------------
+// Buttons
+//-----------------------------------------------------------------------------
+
+static string uncntrl(string name)
+{
+    if (name.length() >= 2)
+    {
+	if (name[0] == '^')
+	    if (name[1] == '?')
+		return '\177';
+	    else
+		return char(toupper(name[1]) - '@');
+
+	if (name[0] == '\\')
+	    return uncook(name);
+    }
+
+    if (name.length() == 1 && isalpha(name[0]))
+	return char(toupper(name[0]) - '@');
+
+    return name;
+}
+
+Widget make_buttons(Widget parent, const string& name, 
+		    const string& button_list)
+{
+    if (button_list == "")
+	return 0;
+
+    Widget buttons = XmCreateWorkArea(parent, name, 0, 0);
+
+    int colons = button_list.freq(':') + 1;
+    string *commands = new string[colons];
+    split(button_list, commands, colons, ':');
+
+    for (int i = 0; i < colons; i++)
+    {
+	XtCallbackProc callback = gdbCommandCB;
+
+	string name = commands[i];
+	string command = name;
+	if (name.contains("..."))
+	{
+	    name = name.before("...");
+	    command = name + ' ';
+	}
+	else if (name.contains('^'))
+	{
+	    command = uncntrl(name.from('^'));
+	    name = name.before('^');
+	}
+	else if (name != "" && iscntrl(name[name.length() - 1]))
+	{
+	    command = string(name[name.length() - 1]);
+	    name = name.before(-1);
+	}
+
+	Widget button = XmCreatePushButton(buttons, name, 0, 0);
+	XtManageChild(button);
+
+	if (name == "Yes")
+	{
+	    command = "yes";
+	    XtUnmanageChild(button);
+	}
+	else if (name == "No")
+	{
+	    command = "no";
+	    XtUnmanageChild(button);
+	}
+	else if (name == "Prev")
+	    callback = gdbPrevCB;
+	else if (name == "Next")
+	    callback = gdbNextCB;
+	else if (name == "Clear")
+	    callback = gdbClearCB;
+	else if (name == "Complete")
+	    callback = gdbCompleteCB;
+	else if (name == "Apply")
+	    callback = gdbApplyCB;
+	else if (name == "Back")
+	    callback = gdbGoBackCB;
+	else if (name == "Forward")
+	    callback = gdbGoForwardCB;
+
+	XtAddCallback(button, XmNactivateCallback, callback,
+		      (XtPointer)XtNewString(command));
+    }
+    delete[] commands;
+    DefaultHelpText = gdbDefaultHelp;
+
+    XtManageChild(buttons);
+
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight;
+    XtQueryGeometry(buttons, NULL, &size);
+    XtVaSetValues(buttons,
+		  XmNpaneMaximum, size.height,
+		  XmNpaneMinimum, size.height,
+		  NULL);
+
+    return buttons;
+}
+
+
+//-----------------------------------------------------------------------------
+// Sashes
+//-----------------------------------------------------------------------------
+
+
+// Destroy all sashes of PANED
+void unmanage_sashes(Widget paned)
+{
+    untraverse_sashes(paned);
+
+    if (!XmIsPanedWindow(paned))
+	return;
+
+    WidgetList children;
+    int num_children;
+
+    XtVaGetValues(paned,
+		  XtNchildren, &children,
+		  XtNnumChildren, &num_children,
+		  NULL);
+
+    for (int i = 0; i < num_children; i++)
+	if (XmIsSash(children[i]))
+	{
+	    XtUnmanageChild(children[i]);
+	    XtUnmapWidget(children[i]);
+	}
+}
+
+// Disable traversal for all sashes of PANED
+void untraverse_sashes(Widget paned)
+{
+    if (!XmIsPanedWindow(paned))
+	return;
+
+    WidgetList children;
+    int num_children;
+
+    XtVaGetValues(paned,
+		  XtNchildren, &children,
+		  XtNnumChildren, &num_children,
+		  NULL);
+
+    for (int i = 0; i < num_children; i++)
+	if (XmIsSash(children[i]))
+	    XtVaSetValues(children[i], XmNtraversalOn, False, NULL);
+}
+
+//-----------------------------------------------------------------------------
+// Separate tty
+//-----------------------------------------------------------------------------
+
+// Create a separate tty window; return its name and process id
+void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
+			 LiterateAgent*& tty_agent, 
+			 Window& windowid, Widget origin)
+{
+    // If we're already running, all is done.
+    if (pid > 0 && !remote_gdb() && kill(pid, 0) == 0)
+	return;
+
+    if (pid > 0)
+	set_status("Restarting execution tty.");
+    else
+	set_status("Starting execution tty.");
+
+    Delay delay;
+
+    string old_ttyname = ttyname;
+
+    string command = 
+	
+	// Set up a temporary file in TMP.
+	"tmp=${TMPDIR-/tmp}/ddd$$; export tmp; "
+
+	// Be sure to remove it when exiting...
+	"trap \"rm -f $tmp\" 0; "
+
+	// ... or being interrupted.
+	"trap 'exit 1' 1 2 15; "
+
+	// Now execute the xterm command
+	+ string(app_data.term_command) +
+
+	// which saves TTY, PID, TERM, and WINDOWID in TMP and goes to
+	// sleep forever.  Signal 2 (SIGINT) is blocked for two
+	// reasons: first, we dont want ^C to kill the tty window;
+	// second, later invocations will send us SIGINT to find out
+	// whether we're still alive.
+	" '"
+	"echo `tty` $$ $TERM $WINDOWID >$tmp; "
+	"trap \"\" 2; "
+	"while true; do sleep 3600; done"
+	"' "
+
+	// The whole thing is redirected and in the background such
+	// that rsh won't wait for us.
+	">/dev/null </dev/null 2>&1 & "
+
+	// The main file waits for TMP to be created...
+	"while test ! -s $tmp; do sleep 1; done; "
+
+	// ...and sends TMP's contents to stdout, where DDD is waiting.
+	"cat $tmp";
+
+    if (pid > 0 && remote_gdb())
+    {
+	// We're already running.  Don't start a new tty
+	// if the old one is still running.
+	ostrstream os;
+	os << "kill -2 " << pid << " 2>/dev/null"
+	   << " || ( " << command << " )";
+	command = string(os);
+    }
+
+    command = sh_command(command);
+
+    Agent tty(command);
+    tty.start();
+
+    FILE *fp = tty.inputfp();
+    if (fp != 0)
+    {
+	char reply[BUFSIZ];
+	fgets(reply, BUFSIZ, fp);
+
+	if (strlen(reply) > 2)
+	{
+	    istrstream is(reply);
+	    is >> ttyname >> pid >> term >> windowid;
+	}
+    }
+
+    // Sanity check
+    if (ttyname == "" || ttyname[0] != '/')
+	pid = -1;
+
+    if (pid < 0)
+	post_error("Could not start execution tty", "tty_exec_error", origin);
+
+    if (pid < 0 || ttyname != old_ttyname)
+    {
+	// Close old tty stream
+	if (tty_agent)
+	{
+	    delete tty_agent;
+	    tty_agent = 0;
+	}
+    }
+
+    if (pid > 0 && tty_agent == 0)
+    {
+	// Open new tty stream
+	if (remote_gdb())
+	{
+	    string command = sh_command("cat -u > " + ttyname);
+
+	    tty_agent = new LiterateAgent(app_context, command);
+	    tty_agent->start();
+	}
+	else
+	{
+	    FILE *ttyfp = fopen(ttyname, "w");
+	    tty_agent = new LiterateAgent(app_context, stdin, ttyfp, stderr);
+	    tty_agent->start();
+	}
+    }
+
+    // Set icon and group leader
+    if (windowid)
+    {
+	wm_set_icon(XtDisplay(command_shell), windowid,
+		    iconlogo(command_shell), iconmask(command_shell));
+	wm_set_group_leader(XtDisplay(command_shell), windowid,
+			    XtWindow(command_shell));
+    }
+}
+
+void get_args(string command, string& base, string& args)
+{
+    // Find (last) arguments to `run' command
+    base = command;
+    args = "";
+
+    if (command.contains(rxwhite))
+    {
+	base = command.before(rxwhite);
+	args = command.after(rxwhite);
+    }
+
+    if (args == "" && gdb->type() == GDB)
+    {
+	args = gdb_question("show args");
+	if (!args.contains("Arguments", 0))
+	    args = "";
+	else
+	{
+	    if (args.contains('"'))
+	    {
+		args = args.after('"');
+		args = args.before('"', -1);
+	    }
+	}
+    }
+}
+
+
+void gdb_set_tty(const string& tty_name,
+		 const string& term_type,
+		 Widget origin)
+{
+    if (gdb->type() != GDB)
+	return;
+
+    if (tty_name != gdb_tty)
+    {
+	// Issue `tty' command to perform redirection
+	string tty_cmd = string("tty ") + tty_name;
+	string reply = gdb_question(tty_cmd);
+
+	if (reply == string(-1))
+	{
+	    post_error("GDB I/O error: cannot send tty command", 
+		       "tty_command_error", origin);
+	}
+	else if (reply != "")
+	{
+	    post_gdb_message(reply, origin);
+	}
+	else
+	    gdb_tty = tty_name;
+    }
+
+    // Set remote terminal type
+    string env_cmd = string("set environment TERM ") + term_type;
+    string reply = gdb_question(env_cmd);
+    if (reply == string(-1))
+    {
+	post_error("GDB I/O error: cannot send tty command", 
+		   "tty_command_error", origin);
+    }
+    else if (reply != "")
+    {
+	post_gdb_message(reply, origin);
+    }
+}
+
+    
+
+void redirect_process(string& command,
+		      const string& tty_name,
+		      Widget origin)
+{
+    if (gdb->type() == GDB && app_data.use_tty_command)
+    {
+	// Issue `tty' command to perform redirection
+	gdb_set_tty(tty_name, app_data.term_type, origin);
+	return;
+    }
+
+    char *shell_s = getenv("SHELL");
+    if (shell_s == 0)
+	shell_s = "/bin/sh";
+    string shell(shell_s);
+
+    if (gdb->type() == GDB && remote_gdb())
+    {
+	// Make sure we use /bin/sh on a remote GDB
+	shell = "/bin/sh";
+	string reply = gdb_question("set environment SHELL " + shell);
+    }
+
+    // Append appropriate redirection directives
+    string base;
+    string args;
+    get_args(command, base, args);
+
+    gdb_redirection = "";
+    if (!args.contains("<"))
+	gdb_redirection = "< " + tty_name;
+
+    if (!args.contains(">"))
+    {
+	switch (gdb->type())
+	{
+	case GDB:
+	{
+	    static regex RXcsh(".*csh$", true);
+	    static regex RXrc(".*rc$", true);
+
+	    if (shell.matches(RXcsh))
+	    {
+		// csh, tcsh
+		gdb_redirection += " >&! " + tty_name;
+	    }
+	    else if (shell.matches(RXrc))
+	    {
+		// rc (from tim@pipex.net)
+		gdb_redirection += " >" + tty_name + " >[2=1]";
+	    }
+	    else
+	    {
+		// sh, bsh, ksh, bash, zsh, sh5, ...
+		gdb_redirection += " >" + tty_name + " 2>&1";
+	    }
+	}
+	break;
+
+	case DBX:
+	    // DBX has its own parsing; it does not allow to redirect the
+	    // error channel. *Sigh*.
+	    gdb_redirection +=  " > " + tty_name;
+	    break;
+	}
+    }
+
+    string new_args;
+    if (gdb_redirection != "" && !args.contains(gdb_redirection))
+    {
+	if (args == "")
+	    new_args = gdb_redirection;
+	else
+	    new_args = gdb_redirection + " " + args;
+    }
+
+    gdb_out_ignore = gdb_redirection;
+    command = base + " " + new_args;
+}
+
+void unredirect_process(string& command,
+			Widget origin)
+{
+    if (gdb_redirection != "")
+    {
+	// Disable output redirection upon next run
+	string base;
+	string args;
+	get_args(command, base, args);
+	if (args.contains(gdb_redirection) && gdb->type() == GDB)
+	{
+	    args = args.before(gdb_redirection);
+	    strip_final_blanks(args);
+	    string reply = gdb_question("set args " + args);
+	    if (reply != "")
+		post_gdb_message(reply, origin);
+	}
+    }
+
+    // Issue `tty' command to perform redirection
+    gdb_set_tty(gdb->slave_tty(), "dumb", origin);
+
+    gdb_redirection = "";
+    gdb_out_ignore = "";
+}
+
+
+inline void addcap(string& s, const char *cap, char *& b)
+{
+    const char *str = tgetstr(cap, &b);
+    if (str)
+	s += str;
+}
+    
+void initialize_tty(LiterateAgent *tty_agent, const string& tty_term)
+{
+    char buffer[2048];
+    string init;
+
+    int success = tgetent(buffer, tty_term);
+    if (success > 0)
+    {
+	char caps[2048];
+	char *b = caps;
+
+	addcap(init, "rs", b);	// Reset from strange mode
+	addcap(init, "is", b);	// Ordinary reset
+	addcap(init, "cl", b);	// Clear screen
+    }
+
+    if (init.length() > 0)
+    {
+	tty_agent->write(init, init.length());
+	tty_agent->flush();
+    }
+}
+
+void set_tty_title(string message, Window tty_window)
+{
+    string init = "";
+
+    string title = string(DDD_NAME) + ": Execution Window";
+    string icon  = title;
+
+    message = message.after(": ");
+    static string empty;
+    if (gdb_out_ignore != "")
+	message.gsub(gdb_out_ignore, empty);
+
+    string program = message;
+    if (program.contains(' '))
+	program = program.before(' ');
+
+    if (program != "")
+    {
+	string program_base = program;
+	if (program_base.contains('/'))
+	    program_base = program_base.after('/', -1);
+
+	title = string(DDD_NAME) + ": " + message;
+	icon  = string(DDD_NAME) + ": " + program_base;
+    }
+
+    if (tty_window)
+	wm_set_name(XtDisplay(command_shell), tty_window,
+		    title, icon);
+}
+
+void handle_running_commands(string& command, Widget origin)
+{
+    // Make sure we see control messages such as `Starting program'
+    if (is_running_cmd(command, gdb->type()))
+	show_next_line_in_status = true;
+
+    if (is_run_cmd(command))
+	startup_exec_tty(command, origin);
+}
+
+void startup_exec_tty()
+{
+    string dummy = "";
+    startup_exec_tty(dummy);
+}
+
+void startup_exec_tty(string& command, Widget origin)
+{
+    if (app_data.separate_exec_window 
+	&& separate_tty_pid >= 0
+	&& gdb->isReadyWithPrompt())
+    {
+	// Launch separate tty if not running
+	launch_separate_tty(separate_tty_name, 
+			    separate_tty_pid,
+			    separate_tty_term,
+			    separate_tty_agent,
+			    separate_tty_window,
+			    origin);
+
+	if (separate_tty_pid < 0)
+	    return;
+
+	// Initialize tty
+	initialize_tty(separate_tty_agent, separate_tty_term);
+
+	// Set title from `starting program...' message
+	show_starting_line_in_tty = true;
+
+	// Tell GDB to redirect process I/O to this tty
+	redirect_process(command, separate_tty_name, origin);
+    }
+    else
+    {
+	// Close running tty
+	kill_exec_tty();
+
+	// Tell GDB not to redirect its process I/O
+	unredirect_process(command, origin);
+    }
+}
+
+
+void set_tty_from_gdb(const string& text)
+{
+    if (private_gdb_input)
+	return;
+    if (!show_starting_line_in_tty)
+	return;
+    if (!text.contains("Starting program") && !text.contains("Running:"))
+	return;
+
+    show_starting_line_in_tty = false;
+
+    if (separate_tty_pid <= 0 || separate_tty_agent == 0)
+	return;
+
+    set_tty_title(text, separate_tty_window);
+}
+
+//-----------------------------------------------------------------------------
+// GDB command management
+//-----------------------------------------------------------------------------
+
+void _gdb_command(string command, Widget origin)
+{
+    set_status("");
+
+    if (command.length() == 1 && iscntrl(command[0]))
+	promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
+
+    handle_running_commands(command, origin);
+    handle_obscure_commands(command, origin);
+
+    gdb_keyboard_command = private_gdb_input;
+    gdb_last_origin = (gdb_keyboard_command ? gdb_w : origin);
+    user_cmdSUC(command, origin);
+    messagePosition = XmTextGetLastPosition(gdb_w);
+}
+    
+
+void controlAct(Widget w, XEvent*, String *params, Cardinal *num_params)
+{
+    if (*num_params != 1)
+    {
+	cerr << "gdb-control: usage: gdb-control(CONTROL-CHARACTER)\n";
+	return;
+    }
+
+    gdb_keyboard_command = true;
+    _gdb_command(uncntrl(params[0]), w);
+}
+
+void insert_source_argAct   (Widget w, XEvent*, String*, Cardinal*)
+{
+    string arg = source_arg->get_string();
+    if (XmIsText(w)) {
+	if (XmTextGetEditable) {
+	    XmTextPosition pos = XmTextGetInsertionPosition(w);
+	    XmTextReplace(w, pos, pos, String(arg));
+	}
+    }
+    else if (XmIsTextField(w)) {
+	if (XmTextFieldGetEditable) {
+	    XmTextPosition pos = XmTextFieldGetInsertionPosition(w);
+	    XmTextFieldReplace(w, pos, pos, String(arg));
+	}
+    }
+}
+
+void insert_graph_argAct (Widget w, XEvent*, String*, Cardinal*)
+{
+    string arg = DataDisp::graph_arg->get_string();
+    if (XmIsText(w)) {
+	if (XmTextGetEditable) {
+	    XmTextPosition pos = XmTextGetInsertionPosition(w);
+	    XmTextReplace(w, pos, pos, String(arg));
+	}
+    }
+    else if (XmIsTextField(w)) {
+	if (XmTextFieldGetEditable) {
+	    XmTextPosition pos = XmTextFieldGetInsertionPosition(w);
+	    XmTextFieldReplace(w, pos, pos, String(arg));
+	}
+    }
+}
+
+void next_tab_groupAct (Widget w, XEvent*, String*, Cardinal*)
+{
+    XmProcessTraversal(w, XmTRAVERSE_NEXT_TAB_GROUP);
+}
+
+void prev_tab_groupAct (Widget w, XEvent*, String*, Cardinal*)
+{
+    XmProcessTraversal(w, XmTRAVERSE_PREV_TAB_GROUP);
+}
+
+void get_focusAct (Widget w, XEvent*, String*, Cardinal*)
+{
+    XmProcessTraversal(w, XmTRAVERSE_CURRENT);
+}
+
+//-----------------------------------------------------------------------------
+// Command history
+//-----------------------------------------------------------------------------
+
+string default_history_file()
+{
+    char *home = getenv("HOME");
+    if (home == 0)
+	return ".ddd_history";
+    else
+	return string(home) + "/.ddd_history";
+}
+
+string current_line()
+{
+    String str = XmTextGetString(gdb_w);
+    string input(str + promptPosition, 
+		 XmTextGetLastPosition(gdb_w) - promptPosition);
+    XtFree(str);
+    return input;
+}
+
+void set_line_from_history()
+{
+    private_gdb_history = true;
+
+    const string& input = gdb_history[gdb_current_history];
+    XmTextReplace(gdb_w, promptPosition,
+		  XmTextGetLastPosition(gdb_w), String(input));
+    XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
+
+    if (gdb_history_w)
+    {
+	int pos = gdb_current_history + 1;
+
+	int top_item      = 0;
+	int visible_items = 0;
+	XtVaGetValues(gdb_commands_w,
+		      XmNtopItemPosition, &top_item,
+		      XmNvisibleItemCount, &visible_items,
+		      NULL);
+
+	XmListSelectPos(gdb_commands_w, pos, False);
+	if (pos == 1)
+	    XmListSetPos(gdb_commands_w, pos);
+	else if (pos - 1 < top_item)
+	    XmListSetPos(gdb_commands_w, pos - 1);
+	else if (pos + 1 >= top_item + visible_items)
+	    XmListSetBottomPos(gdb_commands_w, pos + 1);
+    }
+
+    private_gdb_history = false;
+}
+
+void set_history_from_line(const string& line)
+{
+    while (gdb_history.size() < 1)
+	gdb_history += "";
+    gdb_history[gdb_history.size() - 1] = line;
+
+    if (gdb_history_w)
+    {
+	int pos = gdb_history.size();
+
+	// XmListReplaceItemsPos() disturbs the current selection, so
+	// save it here
+	int *selected;
+	int selected_count;
+	if (!XmListGetSelectedPos(gdb_commands_w, &selected, &selected_count))
+	    selected = 0;
+
+	MString xm_line(line, LIST_CHARSET);
+	XmString xms = XmString(xm_line);
+	XmListReplaceItemsPos(gdb_commands_w, &xms, 1, pos);
+
+	if (selected)
+	{
+	    // Restore old selection
+	    for (int i = 0; i < selected_count; i++)
+		XmListSelectPos(gdb_commands_w, selected[i], False);
+	    XtFree((char *)selected);
+	}
+    }
+}
+
+// Enter LINE in history
+void add_to_history(const string& line)
+{
+    if (!gdb->isReadyWithPrompt())
+	return;
+
+    set_history_from_line(line);
+
+    if (gdb_history.size() < 2 || line != gdb_history[gdb_history.size() - 2])
+    {
+	gdb_history += "";
+
+	if (gdb_history_w)
+	{
+	    MString xm_line(line, LIST_CHARSET);
+	    int pos = gdb_history.size();
+	    XmListAddItem(gdb_commands_w, xm_line, pos - 1);
+	    XmListSelectPos(gdb_commands_w, 0, False);
+	    XmListSetBottomPos(gdb_commands_w, 0);
+	}
+    }
+
+    gdb_current_history = gdb_history.size();
+    set_history_from_line("");
+
+    if (gdb_history_w)
+    {
+	XmListSelectPos(gdb_commands_w, 0, False);
+	XmListSetBottomPos(gdb_commands_w, 0);
+    }
+
+    gdb_new_history = false;
+}
+
+// Load history from history file
+static void load_history()
+{
+    if (gdb_history_file != "")
+    {
+	Delay d;
+
+	ifstream is(gdb_history_file);
+	if (is.bad())
+	    return;
+
+	static StringArray empty;
+	gdb_history = empty;
+
+	assert(gdb_history.size() == 0);
+
+	while (is)
+	{
+	    char buffer[BUFSIZ];
+	    buffer[0] = '\0';
+
+	    is.getline(buffer, sizeof(buffer));
+	    if (buffer[0] != '\0')
+		gdb_history += buffer;
+	}
+
+	gdb_history += "";
+	gdb_current_history = gdb_history.size() - 1;
+	gdb_new_history = true;
+    }
+}
+
+// Save history into history file
+static void save_history(Widget origin)
+{
+    if (gdb_history_file != "")
+    {
+	StatusDelay delay("Saving history in " + quote(gdb_history_file));
+	ofstream os(gdb_history_file);
+	if (os.bad())
+	{
+	    post_error("Cannot save history in " + quote(gdb_history_file),
+		       "history_save_error", origin);
+	    return;
+	}
+
+	int start = gdb_history.size() - gdb_history_size;
+	if (start < 0)
+	    start = 0;
+
+	for (int i = start; i < gdb_history.size(); i++)
+	    os << gdb_history[i] << "\n";
+    }
+}
+
+// Set history file name
+void process_history_filename(string answer)
+{
+    answer = answer.after('"');
+    answer = answer.before('"');
+    gdb_history_file = answer;
+
+    static bool history_initialized = false;
+    if (!history_initialized)
+    {
+	history_initialized = true;
+	load_history();
+    }
+}
+
+// Set history size
+void process_history_size(string answer)
+{
+    answer = answer.from(rxint);
+    int ret = get_positive_nr(answer);
+    if (ret >= 0)
+	gdb_history_size = ret;
+}
+
+// Set history save
+void process_history_save(string answer)
+{
+    // A `set save history on' in ~/.gdbinit causes the DDD history to
+    // be saved (since otherwise, it would be overwritten by the GDB
+    // history, which is cluttered with internal DDD commands).
+
+    if (answer.contains("is on"))
+    {
+	app_data.save_history_on_exit = true;
+	update_options();
+    }
+}
+
+// History viewer
+void SelectHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
+    gdb_current_history = cbs->item_position - 1;
+    set_line_from_history();
+}
+
+void HistoryDestroyedCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    gdb_commands_w = gdb_history_w = 0;
+}
+
+void gdbHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    if (gdb_history_w)
+    {
+	XtManageChild(gdb_history_w);
+	return;
+    }
+
+    Arg args[10];
+    int arg;
+	
+    // Create history viewer
+    arg = 0;
+    gdb_history_w =
+	XmCreateSelectionDialog(w, "history_dialog", args, arg);
+    Delay::register_shell(gdb_history_w);
+
+    XtUnmanageChild(XmSelectionBoxGetChild(gdb_history_w, 
+					   XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(gdb_history_w, 
+					   XmDIALOG_SELECTION_LABEL));
+    XtUnmanageChild(XmSelectionBoxGetChild(gdb_history_w, 
+					   XmDIALOG_CANCEL_BUTTON));
+
+    gdb_commands_w = XmSelectionBoxGetChild(gdb_history_w, XmDIALOG_LIST);
+    XtVaSetValues(gdb_commands_w,
+		  XmNselectionPolicy, XmSINGLE_SELECT,
+		  NULL);
+
+    Widget apply_w = XmSelectionBoxGetChild(gdb_history_w, 
+					    XmDIALOG_APPLY_BUTTON);
+    XtVaSetValues(gdb_history_w,
+		  XmNdefaultButton, apply_w,
+		  NULL);
+
+    XtAddCallback(gdb_commands_w,
+		  XmNsingleSelectionCallback, SelectHistoryCB, 0);
+    XtAddCallback(gdb_commands_w,
+		  XmNmultipleSelectionCallback, SelectHistoryCB, 0);
+    XtAddCallback(gdb_commands_w,
+		  XmNextendedSelectionCallback, SelectHistoryCB, 0);
+    XtAddCallback(gdb_commands_w,
+		  XmNbrowseSelectionCallback, SelectHistoryCB, 0);
+
+    XtAddCallback(gdb_history_w, XmNokCallback, DestroyThisCB, gdb_history_w);
+    XtAddCallback(gdb_history_w, XmNapplyCallback, gdbApplyCB, 0);
+    XtAddCallback(gdb_history_w, XmNhelpCallback,  ImmediateHelpCB, 0);
+    XtAddCallback(gdb_history_w, XmNdestroyCallback, HistoryDestroyedCB, 0);
+
+    bool *selected = new bool[gdb_history.size() + 1];
+    for (int i = 0; i < gdb_history.size() + 1; i++)
+	selected[i] = false;
+    selected[gdb_current_history] = true;
+
+    setLabelList(gdb_commands_w, gdb_history, selected, gdb_history.size());
+
+    set_history_from_line(current_line());
+    XmListSelectPos(gdb_commands_w, 0, False);
+    XmListSetBottomPos(gdb_commands_w, 0);
+
+    XtManageChild(gdb_history_w);
+}
+
+
+//-----------------------------------------------------------------------------
+// Command queue
+//-----------------------------------------------------------------------------
+
+// Command queue
+struct Command
+{
+    string command;		// Command text
+    Widget origin;		// Origin
+
+    Command(const string& cmd, Widget w = 0)
+	: command(cmd), origin(w)
+    {}
+    Command(const Command& c)
+	: command(c.command), origin(c.origin)
+    {}
+    Command& operator = (const Command& c)
+    {
+	if (this != &c)
+	{
+	    command = c.command;
+	    origin = c.origin;
+	}
+    }
+    bool operator == (const Command& c)
+    {
+	return this == &c || command == c.command && origin == c.origin;
+    }
+};
+
+Queue<Command> commandQueue;
+
+void clearCommandQueue()
+{
+    while (!commandQueue.isEmpty())
+	commandQueue -= commandQueue.first();
+}
+
+void gdb_command(const string& cmd, Widget origin)
+{
+    if (cmd.length() == 1 && iscntrl(cmd[0]) || cmd == "yes" ||	cmd == "no")
+    {
+	_gdb_command(cmd, origin);
+	clearCommandQueue();
+	return;
+    }
+
+    if (gdb->isReadyWithPrompt() && commandQueue.isEmpty())
+    {
+	add_to_history(cmd);
+	_gdb_command(cmd, origin);
+    }
+    else
+	commandQueue += Command(cmd, origin);
+}
+
+void processCommandQueue(XtPointer, XtIntervalId *)
+{
+    if (!gdb->isReadyWithPrompt())
+    {
+	// Try again later...
+	XtAppAddTimeOut(app_context, 200, processCommandQueue, XtPointer(0));
+    }
+
+    if (!commandQueue.isEmpty())
+    {
+	Command& c = commandQueue.first();
+	Command cmd(c);
+	commandQueue -= c;
+
+	add_to_history(cmd.command);
+	_gdb_command(cmd.command, cmd.origin);
+	gdb_keyboard_command = false;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+// Callbacks
+//-----------------------------------------------------------------------------
+
+void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+
+    string command = String(client_data);
+    if (command.contains("..."))
+    {
+	command = command.before("...") + " ";
+	String args[1];
+	args[0] = command;
+	gdbClearCB(w, client_data, call_data);
+	XtCallActionProc(gdb_w, "insert-string", cbs->event, args, 1);
+    }
+    else
+    {
+	gdb_command(command, w);
+    }
+}
+
+void gdbBreakArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    string arg = source_arg->get_string();
+    string pos;
+
+    switch (gdb->type())
+    {
+    case GDB:
+	gdb_command("break " + arg, w);
+	break;
+
+    case DBX:
+	if (arg.matches(rxint))
+	{
+	    // Line number given
+	    gdb_command("stop at " + arg, w);
+	}
+	else if (arg.contains(":") && !arg.contains("::"))
+	{
+	    // Function:Line given
+	    pos = arg;
+	}
+	else
+	{
+	    // Function name given
+	    pos = dbx_lookup(arg);
+	}
+
+	if (pos != "")
+	{
+	    gdb_command("file " + pos.before(":"), w);
+	    gdb_command("stop at " + pos.after(":"), w);
+	}
+	break;
+    }
+}
+
+void gdbClearArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    string pos;
+    string arg = source_arg->get_string();
+    switch (gdb->type())
+    {
+    case GDB:
+	gdb_command("clear " + arg);
+	break;
+
+    case DBX:
+	if (arg.matches(rxint))
+	{
+	    // Line number given
+	    gdb_command("clear " + arg);
+	}
+	else if (arg.contains(":") && !arg.contains("::"))
+	{
+	    // Function:Line given
+	    pos = arg;
+	}
+	else
+	{
+	    // Function name given
+	    pos = dbx_lookup(arg);
+	}
+
+	if (pos != "")
+	{
+	    gdb_command("file " + pos.before(":"), w);
+	    gdb_command("clear " + pos.after(":"), w);
+	}
+	break;
+    }
+}
+
+void gdbLineArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    string cmd = String(client_data);
+    string arg = source_arg->get_string();
+
+    gdb_command(cmd + arg, w);
+}
+
+void gdbItemArgCmdCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    string cmd = String(client_data);
+    string arg = source_arg->get_string();
+
+    if (arg != "" && !arg.matches(rxwhite))
+	gdb_command(cmd + arg, w);
+}
+
+void gdbLookupCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    string arg = source_arg->get_string();
+    source_view->lookup(arg);
+}
+
+void gdbFindForwardCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = 
+	(XmPushButtonCallbackStruct *)call_data;
+
+    string s = source_arg->get_string();
+    source_view->find(s, SourceView::forward, 
+		      app_data.find_words_only, time(cbs->event));
+}
+
+void gdbFindBackwardCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = 
+	(XmPushButtonCallbackStruct *)call_data;
+
+    string s = source_arg->get_string();
+    source_view->find(s, SourceView::backward, 
+		      app_data.find_words_only, time(cbs->event));
+}
+
+void gdbGoBackCB  (Widget w, XtPointer client_data, XtPointer call_data)
+{
+    source_view->go_back();
+}
+
+void gdbGoForwardCB  (Widget w, XtPointer client_data, XtPointer call_data)
+{
+    source_view->go_forward();
+}
+
+void gdbPrevCB  (Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Cardinal zero = 0;
+    prev_historyAct(w, cbs->event, 0, &zero);
+}
+
+void gdbNextCB  (Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Cardinal zero = 0;
+    next_historyAct(w, cbs->event, 0, &zero);
+}
+
+void gdbClearCB  (Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+
+    String args[1] = {""};
+    Cardinal num_args = 1;
+    set_lineAct(w, cbs->event, args, &num_args);
+}
+
+void gdbCompleteCB  (Widget w, XtPointer client_data, XtPointer call_data)
+{
+    if (!gdb->isReadyWithPrompt())
+    {
+	post_gdb_busy(w);
+	return;
+    }
+
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+
+    Cardinal zero = 0;
+    end_of_lineAct(gdb_w, cbs->event, 0, &zero);
+    complete_commandAct(gdb_w, cbs->event, 0, &zero);
+}
+
+void gdbApplyCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    if (!gdb->isReadyWithPrompt())
+    {
+	post_gdb_busy(w);
+	return;
+    }
+
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+
+    Cardinal zero = 0;
+    end_of_lineAct(gdb_w, cbs->event, 0, &zero);
+    XtCallActionProc(gdb_w, "process-return", cbs->event, 0, zero);
+}
+
+void gdbCutSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Time tm = time(cbs->event);
+
+    DDDWindow win = DDDWindow(client_data);
+    switch (win)
+    {
+    case GDBWindow:
+	XmTextCut(gdb_w, tm);
+	break;
+
+    case SourceWindow:
+	XmTextFieldCut(source_arg->widget(), tm);
+	break;
+
+    case DataWindow:
+	// Cannot cut from data window
+	break;
+
+    case ExecWindow:
+	// Cannot cut from exec window
+	break;
+    }
+}
+
+void gdbCopySelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Time tm = time(cbs->event);
+    
+    DDDWindow win = DDDWindow(client_data);
+    switch (win)
+    {
+    case GDBWindow:
+	XmTextCopy(gdb_w, tm);
+	break;
+
+    case SourceWindow:
+	XmTextFieldCopy(source_arg->widget(), tm);
+	break;
+
+    case DataWindow:
+	XmTextFieldCopy(DataDisp::graph_arg->widget(), tm);
+	break;
+
+    case ExecWindow:
+	// Cannot copy from exec window
+	break;
+    }
+}
+
+void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    DDDWindow win = DDDWindow(client_data);
+    switch (win)
+    {
+    case GDBWindow:
+	XmTextPaste(gdb_w);
+	break;
+
+    case SourceWindow:
+	XmTextFieldPaste(source_arg->widget());
+	break;
+
+    case DataWindow:
+	// Cannot paste into data window
+	break;
+
+    case ExecWindow:
+	// Cannot paste into exec window
+	break;
+    }
+}
+
+void gdbClearSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    DDDWindow win = DDDWindow(client_data);
+    switch (win)
+    {
+    case GDBWindow:
+	XmTextReplace(gdb_w, promptPosition, 
+		      XmTextGetLastPosition(gdb_w), "");
+	break;
+
+    case SourceWindow:
+	source_arg->set_string("");
+	break;
+
+    case DataWindow:
+	DataDisp::graph_arg->set_string("");
+	break;
+
+    case ExecWindow:
+	// Cannot clear exec window
+	break;
+    }
+}
+
+void gdbDeleteSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    DDDWindow win = DDDWindow(client_data);
+    switch (win)
+    {
+    case GDBWindow:
+	XmTextRemove(gdb_w);
+	break;
+
+    case SourceWindow:
+	XmTextFieldRemove(source_arg->widget());
+	break;
+
+    case DataWindow:
+	DataDisp::deleteCB(w, client_data, call_data);
+	break;
+
+    case ExecWindow:
+	// Cannot delete from exec window
+	break;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+// Set sensitivity
+//-----------------------------------------------------------------------------
+
+inline void set_sensitive(Widget w, bool state)
+{
+    if (w == 0)
+	return;
+
+    if (XtIsSensitive(w) == state)
+	return;
+    XtSetSensitive(w, state);
+}
+
+void source_argHP (void *_arg_field, void *client_data, void* call_data)
+{
+    ArgField *arg_field = (ArgField *)_arg_field;
+    string arg = arg_field->get_string();
+
+    bool can_find = (arg != "");
+
+    set_sensitive(arg_cmd_area[ArgItems::FindBackward].widget, can_find);
+    set_sensitive(arg_cmd_area[ArgItems::FindForward].widget,  can_find);
+
+    bool can_print = 
+	can_find && (arg.contains("::") || !arg.contains(":"));
+
+    set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
+    set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
+}
+
+void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    // Check whether we can copy something to the clipboard
+    XmTextPosition start, end;
+
+    Boolean b = XmTextGetSelectionPosition(gdb_w, &start, &end);
+    set_sensitive(command_edit_menu[EditItems::Cut].widget,    b);
+    set_sensitive(command_edit_menu[EditItems::Copy].widget,   b);
+    set_sensitive(command_edit_menu[EditItems::Delete].widget, b);
+
+    b = XmTextFieldGetSelectionPosition(source_arg->widget(), &start, &end);
+    set_sensitive(source_edit_menu[EditItems::Cut].widget,    b);
+    set_sensitive(source_edit_menu[EditItems::Copy].widget,   b);
+    set_sensitive(source_edit_menu[EditItems::Delete].widget, b);
+
+    b = XmTextFieldGetSelectionPosition(DataDisp::graph_arg->widget(), 
+					&start, &end);
+    set_sensitive(data_edit_menu[EditItems::Cut].widget,    false);
+    set_sensitive(data_edit_menu[EditItems::Copy].widget,   b);
+    set_sensitive(data_edit_menu[EditItems::Delete].widget, b);
+
+
+#if 0				// This doesn't work -- AZ
+    // Check whether we can get something from the clipboard
+    Display *display = XtDisplay(command_shell);
+    int count;
+#if XmVersion >= 1002
+    unsigned long max_length;
+#else
+    int max_length;
+#endif
+    int c = XmClipboardInquireCount(display, 
+				    DefaultRootWindow(display),
+				    &count, &max_length);
+    b = (c == ClipboardSuccess);
+#else
+    b = true;
+#endif
+
+    set_sensitive(command_edit_menu[EditItems::Paste].widget, b);
+    set_sensitive(source_edit_menu[EditItems::Paste].widget,  b);
+    set_sensitive(data_edit_menu[EditItems::Paste].widget,    false);
+}
+
+void gdbUpdateViewCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    // Check whether the execution tty is running
+
+    Boolean b = (separate_tty_pid > 0);
+    set_sensitive(command_view_menu[ExecWindow].widget, b);
+    set_sensitive(source_view_menu[ExecWindow].widget,  b);
+    set_sensitive(data_view_menu[ExecWindow].widget,    b);
+}
+    
+
+//-----------------------------------------------------------------------------
+// Handlers
+//-----------------------------------------------------------------------------
+
+void gdb_ready_for_questionHP (void*, void*, void* call_data)
+{
+    bool gdb_ready = bool(call_data);
+    if (gdb_ready)
+    {
+	if (!gdb_initialized)
+	{
+	    gdb_initialized = true;
+	    XmTextSetEditable(gdb_w, true);
+
+	    // Kill initialization file
+	    remove_init_file();
+
+	    // Load the default history (for debuggers that don't
+	    // provide history); the ``real'' history is read as reply
+	    // to the ``show history filename'' command.
+	    load_history();
+	}
+
+	if (!commandQueue.isEmpty())
+	    XtAppAddTimeOut(app_context, 0, processCommandQueue, XtPointer(0));
+
+	if (completion_delay)
+	    delete completion_delay;
+	completion_delay = 0;
+    }
+
+    set_sensitive(stack_w, gdb_ready);
+}
+
+void gdb_ready_for_cmdHP (void*, void*, void* call_data)
+{
+    // Nothing yet...
+}
+
+
+//-----------------------------------------------------------------------------
+// Synchronized questions
+//-----------------------------------------------------------------------------
+
+struct GDBReply {
+    string answer;    // The answer text (string(-1) if timeout)
+    bool received;    // true iff we found an answer
+};
+
+static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *timer)
+{
+    GDBReply *reply = (GDBReply *)client_data;
+    reply->answer   = string(-1);
+    reply->received = true;
+}
+
+static void gdb_reply(string complete_answer, void *qu_data)
+{
+    GDBReply *reply = (GDBReply *)qu_data;
+    reply->answer   = complete_answer;
+    reply->received = true;
+}
+
+string gdb_question(const string& command, int timeout)
+{
+    static bool running = false;
+
+    if (running)
+	return string(-1);
+    running = true;
+
+    static GDBReply reply;
+    reply.received = false;
+
+    bool ok = gdb->send_question(command, gdb_reply, (void *)&reply);
+    if (!ok)
+	return string(-1);	// GDB not ready
+
+    if (timeout == 0)
+	timeout = app_data.question_timeout;
+
+    XtIntervalId timer = 0;
+    if (timeout > 0)
+    {
+	timer = XtAppAddTimeOut(app_context, timeout * 1000,
+				gdb_reply_timeout, (void *)&reply);
+    }
+
+    while (!reply.received && gdb->running())
+	XtAppProcessEvent(app_context, XtIMTimer | XtIMAlternateInput);
+
+    if (reply.answer != string(-1))
+    {
+	if (timer && timeout > 0)
+	    XtRemoveTimeOut(timer);
+    }
+
+    running = false;
+
+    return reply.answer;
+}
+
+// ***************************************************************************
+// Lookup location of FUNC using DBX
+
+static Assoc<string, string> pos_cache;
+
+string dbx_lookup(const string& func_name)
+{
+    if (pos_cache.has(func_name))
+	return pos_cache[func_name];
+
+    string reply = gdb_question("func " + func_name);
+    if (reply == string(-1))
+    {
+	post_gdb_busy();
+	return "";
+    }
+    if (reply != "")
+    {
+	post_gdb_message(reply);
+	return "";
+    }
+
+    string file    = gdb_question("file");
+    strip_final_blanks(file);
+    string listing = gdb_question("list");
+
+    // DBX lists 10 lines; the current line is the 5th one.
+    string pos = file + ":" + itostring(atoi(listing) + 5);
+
+    pos_cache[func_name] = pos;
+    return pos;
+}
+
+void clear_dbx_lookup_cache()
+{
+    static Assoc<string, string> empty;
+    pos_cache = empty;
+}
+
+//-----------------------------------------------------------------------------
+// Default help texts (especially buttons)
+//-----------------------------------------------------------------------------
+
+MString gdbDefaultHelp(Widget widget)
+{
+    string name = XtName(widget);
+
+    string help = gdb_question("help " + name);
+    if (help == string(-1))
+    {
+	help = "No help available now.\n"
+	    "Please try again when the debugger is ready.";
+    }
+    strip_final_blanks(help);
+
+    return MString(name + "\n", "bf") +	MString(help, "rm");
+}
+
+//-----------------------------------------------------------------------------
+// Editing commands
+//-----------------------------------------------------------------------------
+
+void prev_historyAct(Widget, XEvent*, String*, Cardinal*)
+{
+    if (gdb_current_history == 0)
+	return;
+
+    while (gdb_current_history >= gdb_history.size())
+	gdb_current_history--;
+    gdb_current_history--;
+    set_line_from_history();
+}
+
+void next_historyAct(Widget, XEvent*, String*, Cardinal*)
+{
+    if (gdb_current_history >= gdb_history.size() - 1)
+	return;
+
+    gdb_current_history++;
+    set_line_from_history();
+}
+
+void beginning_of_lineAct(Widget, XEvent*, String*, Cardinal*)
+{
+    XmTextSetInsertionPosition(gdb_w, promptPosition);
+}
+
+void end_of_lineAct(Widget, XEvent*, String*, Cardinal*)
+{
+    XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
+}
+
+void forward_characterAct(Widget w, XEvent *e, 
+			  String *args, Cardinal *num_args)
+{
+    XtCallActionProc(w, "forward-character", e, args, *num_args);
+}
+
+void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
+{
+    XmTextPosition pos = XmTextGetInsertionPosition(gdb_w);
+    if (pos > promptPosition)
+	XmTextSetInsertionPosition(gdb_w, pos - 1);
+}
+
+void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
+{
+    string input = "";
+    if (num_params > 0)
+	input = params[0];
+    XmTextReplace(gdb_w, promptPosition, 
+		  XmTextGetLastPosition(gdb_w), String(input));
+}
+
+void delete_or_controlAct(Widget w, XEvent *e, 
+			  String *args, Cardinal *num_args)
+{
+    string input = current_line();
+    strip_final_newlines(input);
+    if (input == "")
+	XtCallActionProc(w, "gdb-control", e, args, *num_args);
+    else
+	XtCallActionProc(w, "delete-next-character", e, args, *num_args);
+}
+
+
+//-----------------------------------------------------------------------------
+// Line Completion
+//-----------------------------------------------------------------------------
+
+// Sort A
+static void sort(string a[], int size)
+{
+    // Shell sort -- simple and fast
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= size);
+    do {
+	h /= 3;
+	for (int i = h; i < size; i++)
+	{
+	    string v = a[i];
+	    for (int j = i; j >= h && a[j - h] > v; j -= h)
+		a[j] = a[j - h];
+	    if (i != j)
+		a[j] = v;
+	}
+    } while (h != 1);
+}
+
+// Remove adjacent duplicates in A
+static void uniq(string a[], int& size)
+{
+    int j = 1;
+    for (int i = 1; i < size; i++)
+	if (a[i] != a[j - 1])
+	    a[j++] = a[i];
+    
+    size = j;
+}
+
+// Info passed to reply functions
+struct CompletionInfo {
+    Widget widget;		// Widget
+    XEvent *event;		// Event 
+    string input;		// Current input
+};
+
+void complete_reply(string complete_answer, void *qu_data);
+
+// Set completion
+void set_completion(const CompletionInfo& info, string completion)
+{
+    // Set input to common prefix
+    if (info.widget == gdb_w)
+    {
+	private_gdb_output = true;
+
+	XmTextReplace(gdb_w, promptPosition,
+		      XmTextGetLastPosition(gdb_w), 
+		      String(completion));
+
+	private_gdb_output = false;
+    }
+    else
+    {
+	if (XmIsTextField(info.widget))
+	{
+	    XmTextFieldSetString(info.widget, String(completion));
+	}
+	else if (XmIsText(info.widget))
+	{
+	    XmTextSetString(info.widget, String(completion));
+	}
+    }
+}
+
+// Same, but for single possible completion
+string complete_single_completion(string completion)
+{
+    // Only one possible expansion: Add final single quote if
+    // necessary and add final space as well.
+
+    if (completion.freq('\'') % 2 != 0)
+	completion += '\'';
+    completion += ' ';
+
+    return completion;
+}
+
+
+// All completions are done
+void completion_done(const CompletionInfo& info)
+{
+    if (XmIsTextField(info.widget))
+    {
+	XmTextPosition last_pos = 
+	    XmTextFieldGetLastPosition(info.widget);
+	XmTextFieldSetInsertionPosition(info.widget, last_pos);
+	XmTextFieldShowPosition(info.widget, last_pos);
+	XmTextFieldSetEditable(info.widget, true);
+    }
+    else if (XmIsText(info.widget))
+    {
+	XmTextPosition last_pos = 
+	    XmTextGetLastPosition(info.widget);
+	XmTextSetInsertionPosition(info.widget, last_pos);
+	XmTextShowPosition(info.widget, last_pos);
+	XmTextSetEditable(info.widget, true);
+    }
+
+    XmTextSetEditable(gdb_w, true);
+
+    if (completion_delay)
+	delete completion_delay;
+    completion_delay = 0;
+}
+
+static string *completions  = 0;
+static int completions_size = 0;
+
+// Send completion question
+void complete(Widget w, XEvent *e, string input, string cmd)
+{
+    static CompletionInfo info;
+    info.widget = w;
+    info.event  = e;
+    info.input  = input;
+
+    // Compare with last completions
+    static Widget last_completion_w     = 0;
+    static int    last_completion_index = -1;
+    static string last_completion       = string(-1);
+    
+    if (completions_size > 0 
+	&& completions
+	&& completions[0] != ""
+	&& w == last_completion_w)
+    {
+	// Check if this is to be the next completion
+	string next_completion = "";
+
+	if (input == last_completion)
+	{
+	    // We have already shown possible completions:
+	    // Expand to first completion
+	    last_completion_index = 0;
+	    next_completion = complete_single_completion(completions[0]);
+	}
+	else if (completions_size > 1
+		 && last_completion_index >= 0 
+		 && input == complete_single_completion(
+		     completions[last_completion_index]))
+	{
+	    if (last_completion_index < completions_size - 1)
+	    {
+		// Show next completion
+		next_completion = complete_single_completion(
+		    completions[++last_completion_index]);
+	    }
+	    else
+	    {
+		// All completions shown; re-start with initial input
+		last_completion_index = -1;
+		next_completion = last_completion;
+	    }
+	}
+
+	if (next_completion != "")
+	{
+	    set_completion(info, next_completion);
+	    completion_done(info);
+	    return;
+	}
+    }
+
+    // Start a new completion session
+
+    // Clear old completions
+    last_completion_w     = w;
+    last_completion       = input;
+    last_completion_index = -1;
+
+    if (completions)
+    {
+	delete[] completions;
+	completions = 0;
+    }
+    completions_size = 0;
+
+    // Issue diagnostic if completion doesn't work right now
+    if (!gdb->isReadyWithPrompt())
+    {
+	post_gdb_busy(w);
+	return;
+    }
+
+    // Go and ask GDB for completions.
+    string complete_cmd = "complete " + cmd;
+
+    if (XmIsTextField(w))
+	XmTextFieldSetEditable(w, false);
+    else if (XmIsText(w))
+	XmTextSetEditable(w, false);
+    XmTextSetEditable(gdb_w, false);
+    
+    gdb->send_question(complete_cmd, complete_reply, (void *)&info);
+
+    completion_delay = new Delay;
+}
+
+
+// Handle possible completions
+void complete_reply(string complete_answer, void *qu_data)
+{
+    const CompletionInfo& info = *((CompletionInfo *)qu_data);
+
+    bool from_gdb_w = (info.widget == gdb_w);
+
+    string input = info.input;
+    if (input != "" && isspace(input[0]))
+	input = input.after(rxwhite);
+
+    assert(completions == 0);
+
+    int lines = complete_answer.freq('\n') + 1;
+    completions      = new string[lines];
+    completions_size = split(complete_answer, completions, lines, '\n');
+    sort(completions, completions_size);
+    uniq(completions, completions_size);
+
+    if (!from_gdb_w)
+    {
+	// Strip initial `break' command
+	for (int i = 0; i < completions_size; i++)
+	    completions[i] = completions[i].after(' ');
+    }
+
+    if (completions_size == 0 || completions[0] == "")
+    {
+	// No completion (sigh)
+	XtCallActionProc(gdb_w, "beep", info.event, 0, 0);
+    }
+    else if (completions[0].index("Undefined command:") == 0)
+    {
+	// GDB versions earlier than 4.13 do not support
+	// the `complete' command.
+
+	string message;
+	for (int i = 0; i < completions_size; i++)
+	    message += completions[i] + '\n';
+	post_error(message, "no_completion_error", info.widget);
+    }
+    else
+    {
+	// Find common prefix
+	string common_pfx = completions[0];
+	for (int i = 1; i < completions_size; i++)
+	    common_pfx = common_prefix(common_pfx, completions[i]);
+
+	if (completions_size > 1 && input == common_pfx)
+	{
+	    // We're already as far as we can get
+	    if (from_gdb_w)
+	    {
+		// Show possible expansions in command window.
+		int skip = common_pfx.index(rxwhite, -1) + 1;
+	    
+		string insertion;
+		if (from_gdb_w)
+		    insertion += input;
+		insertion += "\n";
+		for (i = 0; i < completions_size; i++)
+		{
+		    insertion += completions[i].from(skip);
+		    insertion += "\n";
+		}
+		gdb_out(insertion);
+		gdb_out(gdb->default_prompt());
+
+		XmTextSetInsertionPosition(gdb_w, 
+					   XmTextGetLastPosition(gdb_w));
+	    }
+	}
+	else
+	{
+	    string completion = common_pfx;
+	    if (completions_size == 1)
+		completion = complete_single_completion(completion);
+	    set_completion(info, completion);
+	}
+    }
+
+    completion_done(info);
+}
+
+// Complete current GDB command
+void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
+{
+    if (gdb->type() != GDB
+	|| w != gdb_w
+	|| XmTextGetInsertionPosition(w) != XmTextGetLastPosition(w))
+    {
+	if (XmIsText(w))
+	    XtCallActionProc(w, "process-tab", e, args, *num_args);
+	else if (XmIsPrimitive(w))
+	    XtCallActionProc(w, "PrimitiveNextTabGroup", e, args, *num_args);
+	return;
+    }
+
+    // Insert single quote if necessary
+    string input = current_line();
+    if (is_break_cmd(input))
+    {
+	int last_space = input.index(rxwhite, -1);
+	if (last_space >= 0)
+	{
+	    string last_word = input.after(last_space);
+	    if (last_word.length() > 0 && last_word[0] != '\'')
+	    {
+		for (int i = 0; i < last_word.length(); i++)
+		{
+		    char c = last_word[i];
+		    if (!isalnum(c) && c != '_')
+		    {
+			input(last_space + 1, 0) = '\'';
+			break;
+		    }
+		}
+	    }
+	}
+    }
+
+    complete(w, e, input, input);
+}
+
+
+// Complete GDB argument
+static void _complete_argAct(Widget w, 
+			     XEvent *e, 
+			     String* args, 
+			     Cardinal* num_args,
+			     bool tab)
+{
+    if ((tab && !app_data.global_tab_completion) || gdb->type() != GDB)
+    {
+	if (XmIsText(w))
+	    XtCallActionProc(w, "process-tab", e, args, *num_args);
+	else if (XmIsPrimitive(w))
+	    XtCallActionProc(w, "PrimitiveNextTabGroup", e, args, *num_args);
+	return;
+    }
+
+    // The command to use as prefix for completions
+    string base = "print";
+    if (*num_args >= 1)
+	base = args[0];
+
+    // Insert single quote if necessary
+    String _input = 0;
+    if (XmIsTextField(w))
+	_input = XmTextFieldGetString(w);
+    else if (XmIsText(w))
+	_input = XmTextGetString(w);
+
+    if (_input == 0)
+	return;
+
+    string input(_input);
+    XtFree(_input);
+
+    if (is_break_cmd(base))
+    {
+	if (input.length() > 0 && input[0] != '\'')
+	{
+	    for (int i = 0; i < input.length(); i++)
+	    {
+		char c = input[i];
+		if (!isalnum(c) && c != '_')
+		{
+		    input(0, 0) = '\'';
+		    break;
+		}
+	    }
+	}
+    }
+
+    complete(w, e, input, base + " " + input);
+}
+
+void complete_argAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
+{
+    _complete_argAct(w, e, args, num_args, false);
+}
+
+void complete_tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
+{
+    _complete_argAct(w, e, args, num_args, true);
+}
+
+//-----------------------------------------------------------------------------
+// Text Callbacks
+//-----------------------------------------------------------------------------
+
+void move_to_end_of_line(XtPointer, XtIntervalId *)
+{
+    XmTextPosition lastPos = XmTextGetLastPosition(gdb_w);
+    XmTextSetInsertionPosition(gdb_w, lastPos);
+    XmTextShowPosition(gdb_w, lastPos);
+}
+
+// Veto changes before the current input line
+void gdbModifyCB(Widget gdb_w,
+		 XtPointer client_data,
+		 XtPointer call_data)
+{
+    if (private_gdb_output)
+	return;
+
+    XmTextVerifyCallbackStruct *change = 
+	(XmTextVerifyCallbackStruct *)call_data;
+
+    if (change->startPos < promptPosition && change->text->length == 0)
+    {
+	// Attempt to delete text before prompt
+#if 0
+	// This causes a core dump on Solaris.  - AZ
+	change->doit = false;
+#else
+	// Make it a no-op
+	change->startPos = change->endPos = change->newInsert = 
+	    change->currInsert;
+#endif
+	return;
+    }
+
+    // Make sure newlines are always inserted at the end of the line
+    if (change->startPos == change->endPos &&
+	(change->startPos < promptPosition || 
+	 (change->text->length == 1 && change->text->ptr[0] == '\n')))
+    {
+	// Add any text at end of text window
+	XmTextPosition lastPos = XmTextGetLastPosition(gdb_w);
+	change->newInsert = change->startPos = change->endPos = lastPos;
+	
+	XtAppAddTimeOut(app_context, 0, move_to_end_of_line, XtPointer(0));
+    }
+}
+
+// Veto key-based cursor movements before current line
+void gdbMotionCB(Widget gdb_w,
+		 XtPointer client_data,
+		 XtPointer call_data)
+{
+    if (private_gdb_output)
+	return;
+
+    XmTextVerifyCallbackStruct *change = 
+	(XmTextVerifyCallbackStruct *)call_data;
+
+    if (change->newInsert >= promptPosition)
+	return;
+
+    // We are before the current prompt: don't change the cursor
+    // position if a key was pressed.
+    if (change->event != NULL && 
+	(change->event->type == KeyPress || change->event->type == KeyRelease))
+    {
+#if 0
+	// This causes a core dump on Solaris.  - AZ
+	change->doit = false;
+#else
+	// Make it a no-op.
+	change->newInsert = change->currInsert;
+#endif
+    }
+}
+
+// Send completed lines to GDB
+void gdbChangeCB(Widget w,
+		 XtPointer client_data,
+		 XtPointer call_data)
+{
+    if (private_gdb_output)
+	return;
+
+    if (gdb->isReadyWithPrompt())
+	gdb_input_at_prompt = true;
+
+    string input = current_line();
+
+    int newlines = input.freq('\n');
+    string *lines = new string[newlines + 1];
+    split(input, lines, newlines, '\n');
+
+    private_gdb_input = true;
+
+    if (newlines == 0)
+    {
+	if (!private_gdb_history)
+	    set_history_from_line(input);
+    }
+    else
+    {
+	// Process entered lines
+	promptPosition = XmTextGetLastPosition(w);
+	for (int i = 0; i < newlines; i++)
+	{
+	    string cmd = lines[i];
+
+	    if (gdb_input_at_prompt)
+	    {
+		if (cmd.matches(rxwhite) || cmd == "")
+		{
+		    // Empty line: repeat last command
+		    if (gdb_history.size() >= 2 && !gdb_new_history)
+		    {
+			cmd = gdb_history[gdb_history.size() - 2];
+		    }
+		    else
+		    {
+			// No history yet -- perform a no-op command
+			cmd = "echo";
+		    }
+		}
+		else
+		{
+		    // Add new command to history
+		    add_to_history(cmd);
+		}
+	    }
+
+	    if (gdb_input_at_prompt && !gdb->isReadyWithPrompt())
+	    {
+		// GDB is busy and the command last typed at the GDB
+		// prompt did not cause any output yet (e.g. a new
+		// prompt or diagnostic message).  Since sending CMD
+		// directly may interfere with internal communication,
+		// place CMD in the command queue instead.
+
+		gdb_command(cmd, w);
+	    }
+	    else
+	    {
+		// Process anything else right now, clearing the
+		// command queue.
+
+		clearCommandQueue();
+		_gdb_command(cmd, w);
+	    }
+	}
+    }
+
+    private_gdb_input = false;
+
+    delete[] lines;
+}
+
+
+//-----------------------------------------------------------------------------
+// Prompt recognition
+//-----------------------------------------------------------------------------
+
+void set_buttons_from_gdb(string& text)
+{
+    set_buttons_from_gdb(command_buttons_w, text);
+    set_buttons_from_gdb(source_buttons_w, text);
+}
+
+void set_buttons_from_gdb(Widget buttons, string& text)
+{
+    if (buttons == 0)
+	return;
+
+    static regex rxyn("(y[es]* or n[o]*) *$");
+
+    int yn_index = text.index(rxyn);
+    bool yn = (yn_index >= 0);
+
+    if (yn && !gdb_keyboard_command)
+    {
+	// Fetch previous output lines, in case this is a multi-line message.
+	String s = XmTextGetString(gdb_w);
+	string prompt(s);
+	XtFree(s);
+	int pos = prompt.index('(', -1);
+	if (pos >= 0)
+	    pos = prompt.index('\n', pos) + 1;
+	if (pos == 0)
+	    pos = messagePosition;
+
+	XmTextReplace(gdb_w, pos, XmTextGetLastPosition(gdb_w), "");
+
+	prompt = prompt.from(pos) + text.before(rxyn);
+	post_gdb_yn(prompt);
+	text = "";
+	return;
+    }
+
+    static bool last_yn = false;
+    if (yn == last_yn)
+	return;
+
+    last_yn = yn;
+
+    XtSetSensitive(buttons, false);
+
+    WidgetList children;
+    Cardinal num_children;
+
+    XtVaGetValues(buttons,
+		  XmNchildren, &children,
+		  XmNnumChildren, &num_children,
+		  NULL);
+
+    for (int i = 0; i < num_children; i++)
+	XtManageChild(children[i]);
+    for (i = 0; i < num_children; i++)
+    {
+	
+	Widget w = children[i];
+	string name = XtName(w);
+
+	if (yn == (name == "Yes" || name == "No"))
+	    XtManageChild(w);
+	else
+	    XtUnmanageChild(w);
+    }
+
+    XtSetSensitive(buttons, true);
+}
+
+void YnCB(Widget dialog, 
+	  XtPointer client_data, 
+	  XtPointer call_data)
+{
+    private_gdb_input = true;
+    gdbCommandCB(dialog, client_data, call_data);
+    private_gdb_input = false;
+    if (yn_dialog)
+	XtUnmanageChild(yn_dialog);
+}
+
+
+//-----------------------------------------------------------------------------
+// Status recognition
+//-----------------------------------------------------------------------------
+
+void set_status_from_gdb(const string& text)
+{
+    if (private_gdb_input)
+	return;
+
+    if (!show_next_line_in_status && !text.matches(gdb->prompt()))
+	return;
+
+    // Fetch line before prompt in GDB window
+    String s = XmTextGetString(gdb_w);
+    string message = s + messagePosition;
+    XtFree(s);
+
+    if (message == "" && text.contains('\n'))
+	message = text;
+
+    if (show_next_line_in_status && 
+	(message == "" || message[message.length() - 1] != '\n'))
+	return;
+
+    // Skip prompt and uncomplete lines
+    int idx = message.index('\n', -1);
+    if (idx >= 0)
+	message = message.before(idx);
+
+    strip_final_newlines(message);
+    if (message == "" && text.contains('\n'))
+	message = text;
+
+    if (show_next_line_in_status)
+    {
+	messagePosition = XmTextGetLastPosition(gdb_w) + text.length();
+	show_next_line_in_status = false;
+	message.gsub('\n', ' ');
+    }
+    else
+    {
+	// Show first line only
+	while (message != "" && message[0] == '\n')
+	    message = message.after('\n');
+	if (message.contains('\n'))
+	    message = message.before('\n');
+    }
+
+    strip_final_newlines(message);
+    if (message == "")
+	return;
+
+    set_status(message);
+}
+
+void set_status(const string& message)
+{
+    if (status_w == 0)
+	return;
+
+    string m = message;
+    if (m != "" && !m.contains("=") && isascii(m[0]) && islower(m[0]))
+	m[0] = toupper(m[0]);
+
+    MString msg(m, "rm");
+    XtVaSetValues(status_w,
+		  XmNlabelString, XmString(msg),
+		  NULL);
+}
+
+//-----------------------------------------------------------------------------
+// Output
+//-----------------------------------------------------------------------------
+
+// Append TEXT to GDB output
+void _gdb_out(string text)
+{
+    if (text == "")
+	return;
+
+    gdb_input_at_prompt = false;
+
+    if (promptPosition == 0)
+	promptPosition = XmTextGetLastPosition(gdb_w);
+
+    private_gdb_output = true;
+
+    static string empty;
+    if (gdb_out_ignore != "")
+	text.gsub(gdb_out_ignore, empty);
+
+    set_buttons_from_gdb(text);
+    set_status_from_gdb(text);
+    set_tty_from_gdb(text);
+
+    XmTextInsert(gdb_w, promptPosition, text);
+    promptPosition += text.length();
+
+    XmTextPosition lastPos = XmTextGetLastPosition(gdb_w);
+    XmTextSetInsertionPosition(gdb_w, lastPos);
+    XmTextShowPosition(gdb_w, lastPos);
+
+    private_gdb_output = false;
+}
+
+
+void gdb_out(const string& text)
+{
+    if (private_gdb_input)
+	return;
+
+    _gdb_out(text);
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Exiting
+//-----------------------------------------------------------------------------
+
+// Some cleanup actions...
+
+void kill_exec_tty()
+{
+    if (separate_tty_pid > 0)
+    {
+	if (remote_gdb())
+	{
+	    ostrstream os;
+	    os << "kill -" << SIGHUP << " " << separate_tty_pid 
+	       << " >/dev/null </dev/null 2>&1 &";
+	    Agent agent(sh_command(string(os)));
+	    agent.start();
+	    agent.wait();
+	}
+	else
+	    kill(separate_tty_pid, SIGHUP);
+    }
+
+    separate_tty_pid    = 0;
+    separate_tty_window = 0;
+}
+
+void remove_init_file()
+{
+    if (gdb_init_file != "")
+    {
+	if (remote_gdb())
+	{
+	    string rm_init_file = sh_command(
+		"rm -f " + gdb_init_file + " >/dev/null </dev/null 2>&1 &");
+	    Agent agent(rm_init_file);
+	    agent.start();
+	    agent.wait();
+	}
+	else
+	{
+	    unlink(String(gdb_init_file));
+	}
+	gdb_init_file = "";
+    }
+}
+
+static void ddd_cleanup()
+{
+    remove_init_file();
+    kill_exec_tty();
+    if (command_shell && app_data.save_options_on_exit)
+	save_options(command_shell);
+    if (command_shell && app_data.save_history_on_exit)
+	save_history(command_shell);
+    if (gdb)
+	gdb->shutdown();
+}
+
+// Signal handler: clean up and re-raise signal
+static void ddd_signal(int sig)
+{
+    ddd_cleanup();
+    signal(sig, (void (*)(int))SIG_DFL);
+    kill(getpid(), sig);
+}
+
+// Fatal signal handler: issue error message and re-raise signal
+static void ddd_fatal(int sig)
+{
+    // IF YOU GET HERE WHILE DEBUGGING DDD, READ THIS
+    // ----------------------------------------------
+    //
+    // On some systems, especially HP-UX, the stack frame gets corrupted
+    // when a program exits via a signal handler - one cannot determine
+    // the place the signal handler was called from, which makes debugging
+    // impossible.
+    // 
+    // You can circumvent this problem by invoking the debugged DDD
+    // process with the environment variable DDD_NO_SIGNAL_HANDLERS set.
+    // This disables installation of the `ddd_fatal' signal handler
+    // and makes it possible for you to determine the problem cause.
+
+    static const char msg[] =
+	"\nInternal error (%s).\n"
+	"\n"
+	"Congratulations!  You have found a bug in " DDD_NAME ".\n"
+	"\n"
+	"Please send a bug report to `ddd-bugs@ips.cs.tu-bs.de', "
+	"giving a subject like\n"
+	"\n"
+	"    " DDD_NAME " " DDD_VERSION " (" DDD_HOST ") gets `%s' signal\n"
+	"\n"
+	"To enable us to fix the bug, you should include "
+	"the following information:\n"
+	"  * What you were doing to get this message.  "
+	"Report all the facts.\n"
+	"  * The " DDD_NAME " configuration.  "
+	"Run %s --configuration' to get it.\n"
+	"  * Possible problems in your system configuration.  Run\n"
+	"    `%s --check-configuration' to get a report.\n"
+	"  * The debugger you were using (e.g. `gdb' or `dbx'), "
+	"and its version.\n"
+	"  * If a core file was generated in your directory, please run\n"
+	"    `%s --gdb %s core', and type `where' at the `(gdb)' prompt.\n"
+	"See also the section \"Reporting Bugs\" "
+	"in the " DDD_NAME " manual page.\n"
+	"\n"
+	"We thank you for your support.\n\n";
+
+    fprintf(stderr, msg, sigName(sig), sigName(sig),
+	    ddd_invoke_name, ddd_invoke_name, 
+	    ddd_invoke_name, ddd_invoke_name);
+
+    // Re-raise signal.  This should kill us as we return.
+    signal(sig, (void (*)(int))SIG_DFL);
+    kill(getpid(), sig);
+}
+
+
+
+// Close callback
+void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    if (running_shells() == 1)
+    {
+	DDDExitCB(w, client_data, call_data);
+	return;
+    }
+
+    Widget shell = findTopLevelShellParent(w);
+    popdown_shell(shell);
+}
+
+void SaveOptionsAndExitCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    ddd_cleanup();
+
+    DDDSaveOptionsCB(w, client_data, call_data);
+    ExitCB(w, client_data, call_data);
+}
+
+// Exit callback
+void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    ddd_cleanup();
+
+    if (startup_options_changed)
+    {
+	// Startup options are still changed; request confirmation
+	if (yn_dialog)
+	    XtDestroyWidget(yn_dialog);
+	yn_dialog = XmCreateQuestionDialog(find_shell(w),
+					   "save_options_dialog", NULL, 0);
+	Delay::register_shell(yn_dialog);
+	XtAddCallback (yn_dialog, XmNokCallback,     SaveOptionsAndExitCB, 0);
+	XtAddCallback (yn_dialog, XmNcancelCallback, ExitCB, 0);
+	XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+	XtManageChild(yn_dialog);
+    }
+    else
+	ExitCB(w, client_data, call_data);
+}
+
+// Exit after confirmation
+void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    if (gdb == 0 || !gdb->running())
+    {
+	_DDDExitCB(w, client_data, call_data);
+	return;
+    }
+
+    if (gdb->isReadyWithPrompt())
+    {
+	gdb_command("quit");
+	return;
+    }
+
+    // Debugger is still running; request confirmation
+    if (yn_dialog)
+	XtDestroyWidget(yn_dialog);
+    yn_dialog = XmCreateQuestionDialog(find_shell(w),
+				       "quit_dialog", NULL, 0);
+    Delay::register_shell(yn_dialog);
+    XtAddCallback (yn_dialog, XmNokCallback,     _DDDExitCB, 0);
+    XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+
+    XtManageChild(yn_dialog);
+}
+
+// EOF on input/output detected
+void gdb_eofHP(Agent *, void *, void *)
+{
+    // Kill and exit
+    gdb->terminate();
+}
+
+
+//-----------------------------------------------------------------------------
+// Graph Conversion
+//-----------------------------------------------------------------------------
+
+static Widget convert_dialog = 0;
+
+// convert according to given BoxPrintGC
+static void convert(string filename, BoxPrintGC& gc, bool selectedOnly)
+{
+    // Get the graph
+    Graph *graph = graphEditGetGraph(data_disp->graph_edit);
+
+    // Get and set the GC
+    GraphGC graphGC = graphEditGetGraphGC(data_disp->graph_edit);
+    graphGC.printGC = &gc;
+    graphGC.printSelectedNodesOnly = selectedOnly;
+
+    ofstream os(filename);
+    if (os.bad())
+    {
+	FILE *fp = fopen(filename, "w");
+	post_error("Cannot open " + quote(filename) + ": " + strerror(errno), 
+		   "convert_failed_error",
+		   data_disp->graph_edit);
+	if (fp)
+	    fclose(fp);
+	return;
+    }
+
+    graph->print(os, graphGC);
+}
+
+
+static void convertToPostScript(string filename, bool selectedOnly)
+{
+    StatusDelay delay(string("Saving graph (PostScript Format) in ") +
+		      quote(filename));
+
+    BoxPostScriptGC gc;
+    convert(filename, gc, selectedOnly);
+}
+
+static void convertToFig(string filename, bool selectedOnly)
+{
+    StatusDelay delay(string("Saving graph (FIG Format) in ") +
+		      quote(filename));
+
+    BoxFigGC gc;
+    convert(filename, gc, selectedOnly);
+}
+
+static void convertToDump(string filename)
+{
+    StatusDelay delay(string("Saving graph (X Window Dump Format) in ") +
+		      quote(filename));
+    
+    const bool printFrame = True;
+
+    Widget shell = data_disp_shell;
+    if (shell == 0)
+	shell = command_shell;
+
+    Window window = XtWindow(shell);
+
+    if (printFrame)
+    {
+	// Fetch window manager window
+	Window root;
+	Window parent;
+	Window *children = 0;
+	unsigned int nchildren;
+
+	if (XQueryTree(XtDisplay(shell), XtWindow(shell),
+		       &root, &parent, &children, &nchildren))
+	{
+	    XFree(children);
+
+	    if (parent != root)
+		window = parent;
+	}
+    }
+
+    // Don't let the conversion dialog obscure the graph window
+    XtUnmanageChild(convert_dialog);
+    if (data_disp_shell)
+	popup_shell(data_disp_shell);
+
+    // Wait until convert dialog is really invisible
+    XWindowAttributes attr;
+    while (XGetWindowAttributes(XtDisplay(convert_dialog), 
+				XtWindow(convert_dialog), &attr)
+	   && attr.map_state == IsViewable)
+    {
+	XEvent event;
+	XtAppNextEvent(XtWidgetToApplicationContext(convert_dialog), &event);
+	XtDispatchEvent(&event);
+    }
+
+    // Check for exposure events and redraw the graph
+    XmUpdateDisplay(convert_dialog);
+
+    if (fork() == 0)
+    {
+	// Write window to dump
+	char id[20];
+	sprintf(id, "%#lx", window);
+	execlp("xwd", "xwd", "-id", id, "-out", String(filename), String(0));
+
+	cerr << "error: could not exec xwd\n";
+	exit(1);
+    }
+
+    // Allow 5 seconds to do dump -- quick'n dirty
+    sleep(5);
+
+    XtManageChild(convert_dialog);
+}
+
+enum ConvertType { CONVERT_POSTSCRIPT, CONVERT_FIG, CONVERT_DUMP };
+
+static ConvertType convert_type   = CONVERT_POSTSCRIPT;
+static bool convert_selected_only = false;
+
+static void _DoGraphConvertCB(Widget w, 
+			     XtPointer client_data, 
+			     XtPointer call_data)
+{
+    String filename = String(client_data);
+
+    switch (convert_type)
+    {
+    case CONVERT_POSTSCRIPT:
+	convertToPostScript(filename, convert_selected_only);
+	break;
+    case CONVERT_FIG:
+	convertToFig(filename, convert_selected_only);
+	break;
+    case CONVERT_DUMP:
+	convertToDump(filename);
+	break;
+    }
+}
+
+static void DoGraphConvertCB(Widget w, 
+			     XtPointer client_data, 
+			     XtPointer call_data)
+{
+    static string filename;
+    filename = fileSelectionBoxFilename(call_data);
+
+    if (access(filename, F_OK) == -1)
+    {
+	_DoGraphConvertCB(w, XtPointer(String(filename)), call_data);
+    }
+    else
+    {
+	Widget dialog = 
+	    XmCreateQuestionDialog(findTopLevelShellParent(w),
+				   "confirm_overwrite_dialog", NULL, 0);
+	Delay::register_shell(dialog);
+	XtAddCallback(dialog, XmNokCallback, 
+		      _DoGraphConvertCB, XtPointer(String(filename)));
+	XtAddCallback(dialog, XmNcancelCallback, 
+		      DestroyThisCB, XtPointer(dialog));
+	XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+
+	XtManageChild(dialog);
+    }
+}
+
+static void SetConvertTypeCB(Widget w,
+			     XtPointer client_data, 
+			     XtPointer call_data)
+{
+    convert_type = (ConvertType)client_data;
+}
+
+static void SetConvertSelectedNodesCB(Widget w,
+				      XtPointer client_data, 
+				      XtPointer call_data)
+{
+    convert_selected_only = XmToggleButtonGetState(w);
+}
+
+bool is_picture_file(const string& file_name)
+{
+    return (is_postscript_file(file_name)
+	    || is_fig_file(file_name)
+	    || is_xwd_file(file_name))
+	&& access(file_name, W_OK) == 0;
+}
+
+static void searchLocalPictureFiles(Widget fs,
+				    XmFileSelectionBoxCallbackStruct *cbs)
+{
+    searchLocal(fs, cbs, is_picture_file);
+}
+
+void graphConvertCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    if (convert_dialog)
+    {
+	// Dialog already created -- pop it up again
+	XtUnmanageChild(convert_dialog);
+	XtManageChild(convert_dialog);
+	return;
+    }
+
+    Arg args[10];
+    Cardinal num_args;
+
+    num_args = 0;
+    XtSetArg(args[num_args], XmNfileSearchProc, 
+	     searchLocalPictureFiles); num_args++;
+    convert_dialog = 
+	XmCreateFileSelectionDialog(data_disp->graph_edit, "convert_popup",
+				    args, num_args);
+    Delay::register_shell(convert_dialog);
+
+    XtAddCallback(convert_dialog, XmNokCallback,
+		  DoGraphConvertCB, XtPointer(0));
+    XtAddCallback(convert_dialog, XmNcancelCallback,
+		  UnmanageThisCB, XtPointer(convert_dialog));
+    XtAddCallback(convert_dialog, XmNhelpCallback,
+		  ImmediateHelpCB, XtPointer(0));
+
+    // Create work area
+    Widget options = XmCreateRowColumn(convert_dialog, "options", 
+				       ArgList(0), 0);
+    XtManageChild(options);
+
+    // Build "What to convert" prompt
+    Widget what_frame    = XmCreateFrame(options, "what", ArgList(0), 0);
+    Widget what          = XmCreateRadioBox(what_frame, "what", ArgList(0), 0);
+    Widget all           = XmCreateToggleButton(what, "all", 
+						ArgList(0), 0);
+    Widget selected      = XmCreateToggleButton(what, "selected", 
+						ArgList(0), 0);
+    XmToggleButtonSetState(selected, convert_selected_only, True);
+    XmToggleButtonSetState(all, !convert_selected_only, True);
+    XtAddCallback(selected, XmNvalueChangedCallback, 
+		  SetConvertSelectedNodesCB, XtPointer(0));
+    XtManageChild(what_frame);
+    XtManageChild(what);
+    XtManageChild(all);
+    XtManageChild(selected);
+
+    // Build "File Type" prompt
+    Widget type_menu     = XmCreatePulldownMenu(options, "pulldown", 
+						ArgList(0), 0);
+    Widget postscript    = XmCreatePushButton(type_menu, "postscript", 
+					      ArgList(0), 0);
+    Widget fig           = XmCreatePushButton(type_menu, "fig", 
+					      ArgList(0), 0);
+    Widget dump          = XmCreatePushButton(type_menu, "dump",
+					      ArgList(0), 0);
+    XtAddCallback(postscript, XmNactivateCallback, 
+		  SetConvertTypeCB, XtPointer(CONVERT_POSTSCRIPT));
+    XtAddCallback(fig, XmNactivateCallback, 
+		  SetConvertTypeCB, XtPointer(CONVERT_FIG));
+    XtAddCallback(dump, XmNactivateCallback, 
+		  SetConvertTypeCB, XtPointer(CONVERT_DUMP));
+    XtManageChild(postscript);
+    XtManageChild(fig);
+    XtManageChild(dump);
+
+    num_args = 0;
+    XtSetArg(args[num_args], XmNsubMenuId, type_menu); num_args++;
+    Widget type = XmCreateOptionMenu(options, "type", args, num_args);
+    XtManageChild(type);
+
+    XtManageChild(convert_dialog);
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Printing Graphs
+//-----------------------------------------------------------------------------
+
+static string printer_name      = "lp";
+static int printer_copies       = 1;
+static bool print_selected_only = false;
+
+static void print(string printername, int ncopies, bool selectedOnly)
+{
+    string tempfile = tmpnam(0);
+    convertToPostScript(tempfile, selectedOnly);
+
+    StatusDelay delay("Printing graph");
+
+    ostrstream os;
+    os << ncopies;
+    string ncopies_s(os);
+
+    string command = app_data.print_command;
+    command.gsub("@PRINTER@", printername);
+    command.gsub("@COPIES@", ncopies_s);
+    command.gsub("@FILE@", tempfile);
+
+    Agent agent(command);
+    agent.start();
+    agent.wait();
+
+    unlink(tempfile);
+}
+
+void VerifyPrinterCopiesCB(Widget w, 
+			   XtPointer client_data, 
+			   XtPointer call_data)
+{
+    XmTextVerifyPtr p = XmTextVerifyPtr(call_data);
+    char *s = p->text->ptr;
+
+    if (s != String(0))
+    {
+	// Inhibit entering of non-digits
+	for (int i = 0; i < p->text->length; i++)
+	    if (!isdigit(s[i]))
+		p->doit = False;
+    }
+}
+
+void SetPrinterNameCB(Widget w, 
+		      XtPointer client_data, 
+		      XtPointer call_data)
+{
+    String s = XmTextFieldGetString(w);
+    printer_name = s;
+    XtFree(s);
+}
+
+void SetPrinterCopiesCB(Widget w, 
+			XtPointer client_data, 
+			XtPointer call_data)
+{
+    String s = XmTextFieldGetString(w);
+    printer_copies = atoi(s);
+    XtFree(s);
+}
+
+void SetPrintSelectedNodesCB(Widget w, XtPointer client_data, 
+			     XtPointer call_data)
+{
+    print_selected_only = XmToggleButtonGetState(w);
+}
+
+void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    print(printer_name, printer_copies, print_selected_only);
+}
+
+void graphPrintCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    static Widget print_dialog = 0;
+
+    if (print_dialog != 0)
+    {
+	// Dialog already created -- pop it up again
+	XtUnmanageChild(print_dialog);
+	XtManageChild(print_dialog);
+	return;
+    }
+
+    Arg args[10];
+    Cardinal num_args;
+
+    print_dialog = XmCreatePromptDialog(data_disp->graph_edit, 
+					"print", ArgList(0), 0);
+    Delay::register_shell(print_dialog);
+    XtAddCallback(print_dialog, XmNokCallback,     
+		  graphQuickPrintCB, XtPointer(0));
+    XtAddCallback(print_dialog, XmNcancelCallback, 
+		  UnmanageThisCB, XtPointer(print_dialog));
+    XtAddCallback(print_dialog, XmNhelpCallback,   
+		  ImmediateHelpCB, XtPointer(0));
+
+    // Remove old prompt
+    Widget text = XmSelectionBoxGetChild(print_dialog, 
+					 XmDIALOG_TEXT);
+    XtUnmanageChild(text);
+    Widget label = XmSelectionBoxGetChild(print_dialog, 
+					  XmDIALOG_SELECTION_LABEL);
+    XtUnmanageChild(label);
+
+    // Create work area
+    Widget options = XmCreateRowColumn(print_dialog, "options", ArgList(0), 0);
+    XtManageChild(options);
+
+    // Build "Printer" and "Copies" prompts
+    Widget printer_line   = XmCreateRowColumn(options, "printer_line", 
+					      ArgList(0), 0);
+    XtManageChild(printer_line);
+    
+    Widget printer        = XmCreateRowColumn(printer_line, "printer", 
+					      ArgList(0), 0);
+    Widget printer_prompt = XmCreateLabel(printer, "prompt", ArgList(0), 0);
+    Widget printer_entry  = XmCreateTextField(printer, "entry", ArgList(0), 0);
+    XtManageChild(printer);
+    XtManageChild(printer_prompt);
+    XtManageChild(printer_entry);
+    XtAddCallback(printer_entry, XmNvalueChangedCallback, 
+		  SetPrinterNameCB, XtPointer(0));
+
+    String p;
+    if (p = getenv("PRINTER"))
+	printer_name = p;
+    else if (p = getenv("LPDEST"))
+	printer_name = p;
+    else
+	printer_name = app_data.printer;
+    XmTextFieldSetString(printer_entry, String(printer_name));
+
+    Widget copies        = XmCreateRowColumn(printer_line, "copies", 
+					     ArgList(0), 0);
+    Widget copies_prompt = XmCreateLabel(copies, "prompt", ArgList(0), 0);
+    Widget copies_entry  = XmCreateTextField(copies, "entry", ArgList(0), 0);
+    XtManageChild(copies);
+    XtManageChild(copies_prompt);
+    XtManageChild(copies_entry);
+    XtAddCallback(copies_entry, XmNvalueChangedCallback, 
+		  SetPrinterCopiesCB, XtPointer(0));
+    XtAddCallback(copies_entry, XmNmodifyVerifyCallback, 
+		  VerifyPrinterCopiesCB, XtPointer(0));
+    ostrstream os;
+    os << printer_copies << '\0';
+    XmTextFieldSetString(copies_entry, os.str());
+
+    // Build "What to print" prompt
+    Widget what_frame    = XmCreateFrame(options, "what", ArgList(0), 0);
+    Widget what          = XmCreateRadioBox(what_frame, "what", ArgList(0), 0);
+    Widget all           = XmCreateToggleButton(what, "all", 
+						ArgList(0), 0);
+    Widget selected      = XmCreateToggleButton(what, "selected", 
+						ArgList(0), 0);
+    XmToggleButtonSetState(selected, print_selected_only, True);
+    XmToggleButtonSetState(all, !print_selected_only, True);
+    XtAddCallback(selected, XmNvalueChangedCallback, 
+		  SetPrintSelectedNodesCB, XtPointer(0));
+    XtManageChild(what_frame);
+    XtManageChild(what);
+    XtManageChild(all);
+    XtManageChild(selected);
+    
+    // Build "Printer Type" prompt
+    Widget type_menu     = XmCreatePulldownMenu(options, "pulldown", 
+						ArgList(0), 0);
+    Widget postscript    = XmCreatePushButton(type_menu, "postscript", 
+					      ArgList(0), 0);
+    Widget laserjet      = XmCreatePushButton(type_menu, "laserjet", 
+					      ArgList(0), 0);
+    Widget line_printer  = XmCreatePushButton(type_menu, "line_printer",
+					      ArgList(0), 0);
+    XtManageChild(postscript);
+    XtManageChild(laserjet);
+    XtManageChild(line_printer);
+
+    XtSetSensitive(laserjet,     False);
+    XtSetSensitive(line_printer, False);
+
+    num_args = 0;
+    XtSetArg(args[num_args], XmNsubMenuId, type_menu); num_args++;
+    Widget type = XmCreateOptionMenu(options, "type", args, num_args);
+    XtManageChild(type);
+
+
+    XtManageChild(print_dialog);
+}
+
+
+//-----------------------------------------------------------------------------
+// Other Graph Functions
+//-----------------------------------------------------------------------------
+
+void graphToggleShowGridCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    Arg args[10];
+    Cardinal arg = 0;
+    XtSetArg(args[arg], XtNshowGrid, info->set); arg++;
+    XtSetValues(data_disp->graph_edit, args, arg);
+
+    if (info->set)
+	set_status("Grid on.");
+    else
+	set_status("Grid off.");
+
+    update_options();
+    options_changed = true;
+}
+
+void graphToggleShowHintsCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    Arg args[10];
+    Cardinal arg = 0;
+    XtSetArg(args[arg], XtNshowHints, info->set); arg++;
+    XtSetValues(data_disp->graph_edit, args, arg);
+
+    if (info->set)
+	set_status("Hints on.");
+    else
+	set_status("Hints off.");
+
+    update_options();
+    options_changed = true;
+}
+
+
+void graphToggleSnapToGridCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    Arg args[10];
+    Cardinal arg = 0;
+    XtSetArg(args[arg], XtNsnapToGrid, info->set); arg++;
+    XtSetValues(data_disp->graph_edit, args, arg);
+
+    if (info->set)
+	set_status("Snap to grid on.");
+    else
+	set_status("Snap to grid off.");
+
+    update_options();
+    options_changed = true;
+}
+
+
+void graphToggleCompactLayoutCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    LayoutMode mode = RegularLayoutMode;
+    if (info->set)
+	mode = CompactLayoutMode;
+
+    Arg args[10];
+    Cardinal arg = 0;
+    XtSetArg(args[arg], XtNlayoutMode, mode); arg++;
+    XtSetValues(data_disp->graph_edit, args, arg);
+
+    if (info->set)
+	set_status("Compact layout enabled.");
+    else
+	set_status("Regular layout enabled.");
+
+    update_options();
+    options_changed = true;
+}
+
+void graphToggleAutoLayoutCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    Arg args[10];
+    Cardinal arg = 0;
+    XtSetArg(args[arg], XtNautoLayout, info->set); arg++;
+    XtSetValues(data_disp->graph_edit, args, arg);
+
+    if (info->set)
+	set_status("Automatic Layout on.");
+    else
+	set_status("Automatic Layout off.");
+
+    update_options();
+    options_changed = true;
+}
+
+
+void graphAlignCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XtCallActionProc(data_disp->graph_edit, 
+		     "snap-to-grid", (XEvent *)0, (String *)0, 0);
+    graphRefreshCB(w, client_data, call_data);
+}
+
+void graphRotateCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    String params[1];
+    params[0] = "+90";
+
+    XtCallActionProc(data_disp->graph_edit, 
+		     "rotate", (XEvent *)0, params, 1);
+    graphRefreshCB(w, client_data, call_data);
+}
+
+void graphLayoutCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XtCallActionProc(data_disp->graph_edit, 
+		     "layout", (XEvent *)0, 0, 0);
+    graphRefreshCB(w, client_data, call_data);
+}
+
+void graphRefreshCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    data_disp->refresh_graph_edit();
+}
+
+//-----------------------------------------------------------------------------
+// Source Options
+//-----------------------------------------------------------------------------
+
+void sourceToggleFindWordsOnlyCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.find_words_only = info->set;
+
+    if (info->set)
+	set_status("Finding only complete words.");
+    else
+	set_status("Finding arbitrary occurrences.");
+
+    update_options();
+    options_changed = true;
+}
+
+//-----------------------------------------------------------------------------
+// General Options
+//-----------------------------------------------------------------------------
+
+void dddToggleGroupIconifyCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.group_iconify = info->set;
+
+    if (info->set)
+	set_status(DDD_NAME " windows are iconified as a group.");
+    else
+	set_status(DDD_NAME " windows are iconified separately.");
+
+    update_options();
+    options_changed = true;
+}
+
+void dddToggleGlobalTabCompletionCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.global_tab_completion = info->set;
+
+    if (info->set)
+	set_status("TAB key completes in all " DDD_NAME " windows.");
+    else
+	set_status("TAB key completes in " DDD_NAME " command window only.");
+
+    update_options();
+    options_changed = true;
+}
+
+void dddToggleSeparateExecWindowCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.separate_exec_window = info->set;
+
+    if (info->set)
+	set_status("Debugged program will be executed in a "
+		   "separate execution window.");
+    else
+	set_status("Debugged program will be executed in the " 
+		   DDD_NAME " command window.");
+
+    update_options();
+    options_changed = true;
+}
+
+void dddToggleSaveOptionsOnExitCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.save_options_on_exit = info->set;
+
+    if (info->set)
+	set_status("Options will be saved when " DDD_NAME " exits.");
+    else
+	set_status("Options must be saved manually.");
+
+    update_options();
+    options_changed = true;
+}
+
+void dddToggleSaveHistoryOnExitCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.save_history_on_exit = info->set;
+
+    if (info->set)
+	set_status("History will be saved when " DDD_NAME " exits.");
+    else
+	set_status("History will not be saved.");
+
+    update_options();
+    options_changed = true;
+}
+
+
+//-----------------------------------------------------------------------------
+// Startup Options
+//-----------------------------------------------------------------------------
+static void post_startup_warning(Widget w)
+{
+#if 0
+    post_warning(
+	"This change will be effective only after\n"
+	"options are saved and " DDD_NAME " is restarted.", 
+	"startup_warning", w);
+#endif
+}
+
+void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
+{
+    Boolean state = Boolean(client_data);
+
+    app_data.separate_data_window   = state;
+    app_data.separate_source_window = state;
+
+    if (state)
+	set_status("Next " DDD_NAME
+		   " invocation will start-up with separate windows.");
+    else
+	set_status("Next " DDD_NAME 
+		   " invocation will start-up with one single window.");
+
+    update_options();
+    post_startup_warning(w);
+    startup_options_changed = options_changed = true;
+}
+
+void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
+{
+    unsigned char policy = (unsigned char)client_data;
+
+    const WidgetArray& shells = Delay::shells();
+    for (int i = 0; i < shells.size(); i++)
+    {
+	Widget shell = shells[i];
+	while (shell && !XmIsVendorShell(shell))
+	    shell = XtParent(shell);
+	if (shell)
+	{
+	    XtVaSetValues(shell,
+			  XmNkeyboardFocusPolicy, policy,
+			  NULL);
+	}
+    }
+
+    string keyboardFocusPolicy = string("*") + XmNkeyboardFocusPolicy;
+    XrmDatabase target = XtDatabase(XtDisplay(w));
+    switch (policy)
+    {
+    case XmEXPLICIT:
+	XrmPutStringResource(&target, keyboardFocusPolicy,  "EXPLICIT");
+	set_status("Setting click-to-type keyboard focus policy.");
+	break;
+
+    case XmPOINTER:
+	XrmPutStringResource(&target, keyboardFocusPolicy,  "POINTER");
+	set_status("Setting pointer-driven keyboard focus policy.");
+	break;
+    }
+
+    update_options();
+    startup_options_changed = options_changed = true;
+}
+
+void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
+{
+    Boolean state = Boolean(client_data);
+    app_data.panned_graph_editor = state;
+
+    if (state)
+	set_status("Next " DDD_NAME
+		   " invocation will start-up with a panned graph editor.");
+    else
+	set_status("Next " DDD_NAME 
+		   " invocation will start-up with a scrolled graph editor.");
+
+    update_options();
+    post_startup_warning(w);
+    startup_options_changed = options_changed = true;
+}
+
+void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
+{
+    DebuggerType type = DebuggerType(client_data);
+
+    switch (type)
+    {
+    case DBX:
+	app_data.debugger = "dbx";
+	set_status("Next " DDD_NAME
+		   " invocation will start-up with a DBX debugger.");
+	break;
+
+    case GDB:
+	app_data.debugger = "gdb";
+	set_status("Next " DDD_NAME
+		   " invocation will start-up with a GDB debugger.");
+	break;
+    }
+
+    update_options();
+    post_startup_warning(w);
+    startup_options_changed = options_changed = true;
+}
+
+//-----------------------------------------------------------------------------
+// Option management
+//-----------------------------------------------------------------------------
+
+inline String bool_value(bool value)
+{
+    return value ? "true" : "false";
+}
+
+inline string bool_app_value(const string& name, bool value)
+{
+    return "*" + name + ": " + bool_value(value);
+}
+
+inline string string_app_value(const string& name, const string& value)
+{
+    return "*" + name + ": " + value;
+}
+
+inline string int_app_value(const string& name, int value)
+{
+    return "*" + name + ": " + itostring(value);
+}
+
+string widget_value(Widget w, String name)
+{
+    String value = 0;
+    XtVaGetValues(w, 
+		  XtVaTypedArg, name, XtRString, &value, sizeof(value),
+		  NULL);
+
+    if (value == 0)
+	value = XtNewString("");
+
+    return string_app_value(string(XtName(w)) + "." + name, value);
+}
+
+string options_file()
+{
+    char *home = getenv("HOME");
+    if (home == 0)
+    {
+	static int warned = 0;
+	if (warned++ == 0)
+	    cerr << "Warning: environment variable HOME undefined\n";
+	return ".dddinit";
+    }
+
+    return string(home) + "/.dddinit";
+}
+
+static void save_options(Widget origin)
+{
+    StatusDelay delay("Saving options in " + quote(options_file()));
+    string file = options_file();
+
+    const char delimiter[] = "! DO NOT ADD ANYTHING BELOW THIS LINE";
+
+    // Read the file contents into memory ...
+    string dddinit;
+    ifstream is(file);
+    if (is.bad())
+    {
+	// File not found: create a new one
+	dddinit = 
+	    "! DDD initialization file\n"
+	    "! Enter your personal DDD resources here.\n"
+	    "\n";
+    }
+    else
+    {
+	char buffer[BUFSIZ];
+	while (is)
+	{
+	    buffer[0] = '\0';
+	    is.getline(buffer, sizeof(buffer));
+	    if (string(buffer).contains(delimiter, 0))
+		break;
+	    dddinit += buffer;
+	    dddinit += '\n';
+	}
+    }
+
+    // ... and write them back again
+    ofstream os(file);
+    if (os.bad())
+    {
+	post_error("Cannot save options in " + quote(file),
+		   "options_save_error", origin);
+	return;
+    }
+
+    os << dddinit
+       << delimiter
+       << " -- " DDD_NAME " WILL OVERWRITE IT\n";
+
+    // The version
+    os << string_app_value(XtNdddinitVersion,
+			   DDD_VERSION) << "\n";
+
+    // Some settable top-level defaults
+    os << bool_app_value(XtNfindWordsOnly,
+			 app_data.find_words_only) << "\n";
+    os << bool_app_value(XtNgroupIconify,
+			 app_data.group_iconify)   << "\n";
+    os << bool_app_value(XtNseparateExecWindow,
+			 app_data.separate_exec_window) << "\n";
+    os << bool_app_value(XtNseparateSourceWindow,
+			 app_data.separate_source_window) << "\n";
+    os << bool_app_value(XtNseparateDataWindow,
+			 app_data.separate_data_window) << "\n";
+    os << bool_app_value(XtNpannedGraphEditor,
+			 app_data.panned_graph_editor) << "\n";
+    os << bool_app_value(XtNsaveOptionsOnExit,
+			 app_data.save_options_on_exit) << "\n";
+    os << bool_app_value(XtNsaveHistoryOnExit,
+			 app_data.save_history_on_exit) << "\n";
+    os << string_app_value(XtNdebugger,
+			   app_data.debugger) << "\n";
+
+    unsigned char policy = '\0';
+    XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, NULL);
+    switch (policy)
+    {
+    case XmPOINTER:
+	os << string_app_value(XmNkeyboardFocusPolicy, "POINTER") << "\n";
+	break;
+    case XmEXPLICIT:
+	os << string_app_value(XmNkeyboardFocusPolicy, "EXPLICIT") << "\n";
+	break;
+    }
+
+    // Some settable graph editor defaults
+    os << widget_value(data_disp->graph_edit, XtNshowGrid)   << "\n";
+    os << widget_value(data_disp->graph_edit, XtNsnapToGrid) << "\n";
+    os << widget_value(data_disp->graph_edit, XtNshowHints)  << "\n";
+    os << widget_value(data_disp->graph_edit, XtNlayoutMode) << "\n";
+    os << widget_value(data_disp->graph_edit, XtNautoLayout) << "\n";
+
+    startup_options_changed = options_changed = false;
+}
+
+void DDDSaveOptionsCB (Widget w, XtPointer, XtPointer)
+{
+    save_options(w);
+}
+
+
+//-----------------------------------------------------------------------------
+// Obscure Features
+//-----------------------------------------------------------------------------
+
+// Wait until W is mapped
+static void wait_until_mapped(Widget w)
+{
+    Widget shell = find_shell(w);
+
+    if (XtIsRealized(w) && XtIsRealized(shell))
+    {
+	XWindowAttributes attr;
+	while (XGetWindowAttributes(XtDisplay(w), XtWindow(w), &attr)
+	       && attr.map_state != IsViewable)
+	{
+	    if (XGetWindowAttributes(XtDisplay(shell), XtWindow(shell), &attr)
+		&& attr.map_state != IsViewable)
+		break;		// Shell is withdrawn or iconic
+
+	    // Wait for exposure event
+	    XEvent event;
+	    XtAppNextEvent(XtWidgetToApplicationContext(w), &event);
+	    XtDispatchEvent(&event);
+	}
+    }
+
+    XmUpdateDisplay(w);
+    XSync(XtDisplay(w), false);
+}
+
+static bool dungeon_collapsed = false;
+extern void meltdown(Display *display);
+
+static void DungeonCollapseCB(XtPointer client_data, XtIntervalId *id)
+{
+    Widget w = Widget(client_data);
+
+    static Widget dungeon_error = 0;
+    if (dungeon_error)
+	XtDestroyWidget(dungeon_error);
+
+    Widget shell = find_shell(w);
+    dungeon_error = 
+	XmCreateErrorDialog(shell, "dungeon_collapse_error", NULL, 0);
+    Delay::register_shell(dungeon_error);
+    XtUnmanageChild(XmMessageBoxGetChild 
+		    (dungeon_error, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback(dungeon_error, XmNhelpCallback, ImmediateHelpCB, NULL);
+
+    MString mtext("Suddenly, the dungeon collapses.", "rm");
+    XtVaSetValues (dungeon_error,
+		   XmNmessageString, XmString(mtext),
+		   NULL);
+
+    XtManageChild(dungeon_error);
+    wait_until_mapped(dungeon_error);
+
+    sleep(2);
+
+    meltdown(XtDisplay(w));
+
+    dungeon_collapsed = true;
+}
+
+#define CMP(x, y, z) (cmd[x] == cmd[y] + (z))
+
+void handle_obscure_commands(string& cmd, Widget origin)
+{
+    // The DDD Display Dungeon is a mythical entity where all deleted
+    // displays of all DDD instantiations go.  Entering the display
+    // dungeon reveals the internals of all programs ever having been
+    // debugged with DDD.  Be aware, however, that this is not for the
+    // faint-hearted; it requires special magical energy and a
+    // supremous power of will to enter the dungeon.  Attempts to
+    // force its entry without being sufficiently prepared may cause
+    // the dungeon to collapse, taking the adventurer and all of its
+    // possessions into debris.                             -- AZ
+
+    if (cmd.length() == 5
+	&& CMP(1, 0, 1) && CMP(3, 0, 2)	&& CMP(4, 3, -1) && CMP(2, 1, 1)
+	&& cmd[0] + cmd[1] + cmd[2] + cmd[3] + cmd[4] + '<' == 666)
+    {
+	if (dungeon_collapsed)
+	{
+	    cmd = "echo Nothing happens.\\n";
+	}
+	else
+	{
+	    cmd = "echo The dungeon shakes violently! \\n";
+
+	    static int dungeon_collapsing = 0;
+	    if (dungeon_collapsing++ == 0)
+	    {
+		Widget w = origin ? origin : command_shell;
+
+		XtAppAddTimeOut(XtWidgetToApplicationContext(w), 10000, 
+				DungeonCollapseCB, 
+				XtPointer(w));
+	    }
+	}
+    }
+}
+
+    
+
+//-----------------------------------------------------------------------------
+// Dialogs
+//-----------------------------------------------------------------------------
+
+void post_gdb_yn(string question, Widget w)
+{
+    strip_final_blanks(question);
+    if (question == "")
+	return;
+
+    if (yn_dialog)
+	XtDestroyWidget(yn_dialog);
+    yn_dialog = XmCreateQuestionDialog(find_shell(w),
+				       "yn_dialog", NULL, 0);
+    Delay::register_shell(yn_dialog);
+    XtAddCallback (yn_dialog, XmNokCallback,     YnCB, (void *)"yes");
+    XtAddCallback (yn_dialog, XmNcancelCallback, YnCB, (void *)"no");
+    XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+
+    XmString xmtext = XmStringCreateLtoR (question, "rm");
+    XtVaSetValues (yn_dialog, XmNmessageString, xmtext, NULL);
+    XmStringFree (xmtext);
+
+    XtManageChild (yn_dialog);
+}
+
+void post_gdb_busy(Widget w)
+{
+    static Widget busy_dialog = 0;
+    if (busy_dialog)
+	XtDestroyWidget(busy_dialog);
+
+    busy_dialog = 
+	XmCreateWorkingDialog (find_shell(w), "busy_dialog", NULL, 0);
+    Delay::register_shell(busy_dialog);
+    XtUnmanageChild(XmMessageBoxGetChild 
+		    (busy_dialog, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback(busy_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+    XtManageChild(busy_dialog);
+}
+
+void post_gdb_died(string reason, Widget w)
+{
+    strip_final_blanks(reason);
+
+    if (gdb_initialized && reason.contains("Exit 0"))
+    {
+	DDDExitCB(find_shell(w), 0, 0);
+	return;
+    }
+
+    string gdb_path = app_data.debugger_command;
+    if (gdb_path.contains(" "))
+	gdb_path = gdb_path.before(" ");
+    _gdb_out("\n" + gdb_path + ": " + reason + "\n");
+
+    static Widget died_dialog = 0;
+    if (died_dialog)
+	XtDestroyWidget(died_dialog);
+    died_dialog = 
+	XmCreateErrorDialog (find_shell(w), "terminated_dialog", NULL, 0);
+    Delay::register_shell(died_dialog);
+
+    XtUnmanageChild (XmMessageBoxGetChild 
+		     (died_dialog, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback (died_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+    XtAddCallback (died_dialog, XmNokCallback,   DDDExitCB,       NULL);
+
+    XtManageChild (died_dialog);
+}
+
+void post_gdb_message(string text, Widget w)
+{
+    strip_final_blanks(text);
+    if (text == "")
+	return;
+
+#if 0
+    if (status_w && !text.contains('\n'))
+    {
+	set_status(text);
+	return;
+    }
+#endif
+
+    static Widget gdb_message_dialog = 0;
+    if (gdb_message_dialog)
+	XtDestroyWidget(gdb_message_dialog);
+    gdb_message_dialog = 
+	XmCreateWarningDialog (find_shell(w), "gdb_message_dialog", NULL, 0);
+    Delay::register_shell(gdb_message_dialog);
+    XtUnmanageChild (XmMessageBoxGetChild 
+		     (gdb_message_dialog, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback (gdb_message_dialog,
+		   XmNhelpCallback,
+		   ImmediateHelpCB,
+		   NULL);
+
+    MString mtext(text, "rm");
+    XtVaSetValues (gdb_message_dialog,
+		   XmNmessageString, XmString(mtext),
+		   NULL);
+
+    XtManageChild (gdb_message_dialog);
+}
+
+void post_error (string text, String name, Widget w)
+{
+    strip_final_blanks(text);
+
+#if 0
+    if (status_w && !text.contains('\n'))
+    {
+	set_status(text);
+	return;
+    }
+#endif
+
+    if (name == 0)
+	name = "ddd_error";
+
+    static Widget ddd_error = 0;
+    if (ddd_error)
+	XtDestroyWidget(ddd_error);
+    ddd_error = 
+	XmCreateErrorDialog (find_shell(w), name, NULL, 0);
+    Delay::register_shell(ddd_error);
+    XtUnmanageChild (XmMessageBoxGetChild 
+		     (ddd_error, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback (ddd_error, XmNhelpCallback, ImmediateHelpCB, NULL);
+
+    MString mtext(text, "rm");
+    XtVaSetValues (ddd_error,
+		   XmNmessageString, XmString(mtext),
+		   NULL);
+
+    XtManageChild (ddd_error);
+}
+
+void post_warning (string text, String name, Widget w)
+{
+    strip_final_blanks(text);
+
+#if 0
+    if (status_w && !text.contains('\n'))
+    {
+	set_status(text);
+	return;
+    }
+#endif
+
+    if (name == 0)
+	name = "ddd_warning";
+
+    static Widget ddd_warning = 0;
+    if (ddd_warning)
+	XtDestroyWidget(ddd_warning);
+    ddd_warning = 
+	XmCreateWarningDialog (find_shell(w), name, NULL, 0);
+    Delay::register_shell(ddd_warning);
+    XtUnmanageChild (XmMessageBoxGetChild 
+		     (ddd_warning, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback (ddd_warning, XmNhelpCallback, ImmediateHelpCB, NULL);
+
+    MString mtext(text, "rm");
+    XtVaSetValues (ddd_warning,
+		   XmNmessageString, XmString(mtext),
+		   NULL);
+
+    XtManageChild (ddd_warning);
+}
