@@ -341,8 +341,12 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
 	if (end >= 0)
 	    s = s.before(end);
 
-	s.gsub("ee *Note ", "ee `");
-	s.gsub("*Note ", "See `");
+	s.gsub("ee\n*Note\n", "ee\n`");
+	s.gsub("ee *Note\n",  "ee\n`");
+	s.gsub("ee\n*Note ",  "ee\n`");
+	s.gsub("ee *Note ",   "ee `");
+	s.gsub("*Note ",      "See `");
+	s.gsub("*Note\n",     "See\n`");
 	s.gsub("::", "' in libc info");
 	s.gsub("`C-", "`Ctrl+");
 
