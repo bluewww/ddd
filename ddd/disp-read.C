@@ -111,8 +111,8 @@ bool is_info_line_cmd(const string& cmd)
     return cmd.matches(rxop_cmd);
 }
 
-// True if CMD changes program state
-bool is_running_cmd (const string& cmd, GDBAgent *gdb)
+// True if CMD executes debuggee
+bool is_running_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
     static regex rxrunning_cmd(
@@ -129,27 +129,9 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 	"|fin|fini|finis|finish"
         "|R|S|exec"
 	")([ \t]+.*)?");
-
-    static regex rxdisplay("[ \t]*(disp|displ|displa|display)([ \t]+.*)?");
 #endif
 
-    switch (gdb->type())
-    {
-    case GDB:
-	return cmd.matches(rxrunning_cmd)
-	    || cmd.matches(rxdisplay)
-	    || is_display_cmd(cmd);
-
-    case DBX:
-    case XDB:
-    case JDB:
-    case PYDB:
-    case PERL:
-	return cmd.matches (rxrunning_cmd)
-	    || is_display_cmd(cmd);
-    }
-
-    return false;
+    return cmd.matches(rxrunning_cmd);
 }
 
 // True if CMD starts program
@@ -160,6 +142,17 @@ bool is_run_cmd (const string& cmd)
 #endif
 
     return cmd.matches (rxrun_cmd);
+}
+
+// True if CMD runs debuggee for an indefinite period of time
+bool is_cont_cmd(const string& cmd)
+{
+#if RUNTIME_REGEX
+    static regex rxcont_cmd("[ \t]*(r|ru|run|rer|rerun|c|cont|contin|"
+			    "continu|continue|R|exec)([ \t]+.*)?");
+#endif
+
+    return cmd.matches (rxcont_cmd);
 }
 
 // True if CMD kills program

@@ -78,14 +78,17 @@ bool is_disable_display_cmd(const string& cmd);
 // True if CMD enables a data display
 bool is_enable_display_cmd(const string& cmd);
 
-// True if CMD executes debuggee and shows new displays
-bool is_running_cmd(const string& cmd, GDBAgent *gdb);
+// True if CMD executes debuggee
+bool is_running_cmd(const string& cmd);
 
 // True if CMD changes current execution position
 bool is_pc_cmd(const string& cmd);
 
 // True if CMD starts debuggee
 bool is_run_cmd(const string& cmd);
+
+// True if CMD runs debuggee for an indefinite period of time
+bool is_cont_cmd(const string& cmd);
 
 // True if CMD kills debuggee
 bool is_kill_cmd(const string& cmd);

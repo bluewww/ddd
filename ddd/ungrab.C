@@ -183,7 +183,7 @@ static void CheckUngrabCB(XtPointer client_data, XtIntervalId *)
 	msg += rm("Quitting " + gdb->title());
     else if (cmd == "kill")
 	msg += rm("Killing debuggee");
-    else if (is_running_cmd(cmd, gdb))
+    else if (is_running_cmd(cmd))
 	msg += rm("Continuing execution");
     else
 	msg += rm("Taking action");

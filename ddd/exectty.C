@@ -825,7 +825,7 @@ static void handle_rerun(string& command)
 {
     if (!gdb->has_rerun_command())
 	return;
-    if (!is_running_cmd(command, gdb))
+    if (!is_running_cmd(command))
 	return;
 
     static string last_args = "";
@@ -856,7 +856,7 @@ static void handle_rerun(string& command)
 void handle_running_commands(string& command, Widget origin)
 {
     // Make sure we see control messages such as `Starting program'
-    if (is_running_cmd(command, gdb))
+    if (is_running_cmd(command))
 	show_next_line_in_status = true;
 
     if (is_run_cmd(command))
