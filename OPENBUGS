@@ -107,22 +107,6 @@ detail.
     HP-UX box, the tooltips are not complete: "Set/Delete Breakpo???",
     "Display/Undisplay???", etc.
 
-713 Michael Marxmeier <mike@msede.com> writes: When configuring a
-    separate Command Tool (with separate windows), its location
-    relative to the source window changes.
-
-    The border size is not accounted for. Everytime you change the
-    location of the source window, the distance shrinks.  This happens
-    with CDE on Linux.
-
-    The border_width structure member (XWindowAttributes) seems to be
-    always zero in recenter_tool_shell() although no error is
-    returned. When the new cmd window position is calculated this will
-    result in a slight move.
-
-    [See also 723 -AZ]
-    [Could we check for the frame that actually adds a border?  -AZ]
-
 714 Michael Marxmeier <mike@msede.com> writes: I discovered that ddd
     2.99.1 "run again" discards any arguments specified previously
     with "run".  This works fine with gdb so i assume ddd is
@@ -175,14 +159,6 @@ detail.
     start ddd, the window with the buttons "run", "stop", "step",
     "stepi", ... appears for a short time and then disappears. On
     e.g. fvwm it works correct. Does someone have an idea?'
-
-723 Stefan von Dombrowski <Stefan.von.Dombrowski@dlr.de> says:
-    A minor problem though: When one uses a seperate tool window this
-    window doesn't keep its relative position with respect to the main
-    window.  Every time you move the main window a constant offset is
-    added to the relative position of the tool window. This has the
-    effect that the tool window at last moves to the lower left of the
-    screen.  [See also 713 -AZ]
 
 724 Art Werschulz <agw@dsm.fordham.edu> reports a huge command tool on 
     his DEC Alpha system using fvwm.  The problem happens with fvwm
