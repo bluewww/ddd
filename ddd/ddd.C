@@ -1418,7 +1418,11 @@ int main(int argc, char *argv[])
 	    {
 		if (argv[i][0] == '=')
 		{
-		    argv[i] = argv[i] + 1;
+		    // Delete '='
+		    int j = 0;
+		    while ((argv[i][j] = argv[i][j + 1]))
+			j++;
+			
 		    session_id = (char *)SourceView::basename(argv[i]);
 		    session_value.addr = session_id;
 		    session_value.size = strlen(session_id) + 1;
