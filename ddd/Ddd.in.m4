@@ -3669,9 +3669,9 @@ Set Temporary Breakpoint at ()
 Ddd*arg_cmd_w.arg_cmd_area*contUntil.labelString:	Continue Until ()
 Ddd*arg_cmd_w.arg_cmd_area*enable.labelString:		Enable Breakpoint at ()
 Ddd*arg_cmd_w.arg_cmd_area*condition.labelString:	\
-Edit Condition at ()
+Set Condition at ()...
 Ddd*arg_cmd_w.arg_cmd_area*ignore_count.labelString:	\
-Edit Ignore Count at ()
+Set Ignore Count at ()...
 Ddd*arg_cmd_w.arg_cmd_area*setPC.labelString:		\
 Set Execution Position to ()
 Ddd*arg_cmd_w.arg_cmd_area*watch.labelString:		Unwatch ()
@@ -3717,8 +3717,8 @@ define(BREAK_HELP, [\
 DESC(Set Temporary Breakpoint at (), [set temporary breakpoint])\n\
 DESC(Continue Until (), [set temporary breakpoint and resume execution])\n\
 DESC(Enable / Disable Breakpoint at (), [enable or disable breakpoint])\n\
-DESC(Edit Condition at (), [edit breakpoint condition])\n\
-DESC(Edit Ignore Count at (), [edit breakpoint ignore count])\n\
+DESC(Set Condition at ()..., [set breakpoint condition])\n\
+DESC(Set Ignore Count at ()..., [set breakpoint ignore count])\n\
 DESC(Set Execution Position to (), [move execution position])
 ])dnl
 
@@ -3743,9 +3743,9 @@ Ddd*arg_cmd_w.arg_cmd_area*contUntil.documentationString: \
 Ddd*arg_cmd_w.arg_cmd_area*enable.documentationString: \
 @rm Enable or disable the breakpoint at the argument LBL(())
 Ddd*arg_cmd_w.arg_cmd_area*condition.documentationString: \
-@rm Edit the breakpoint condition at the argument LBL(())
+@rm Specify a condition for the breakpoint at LBL(())
 Ddd*arg_cmd_w.arg_cmd_area*ignore_count.documentationString: \
-@rm Edit the breakpoint ignore count at the argument LBL(())
+@rm Specify how many crossings of the breakpoint at LBL(()) are to be ignored
 Ddd*arg_cmd_w.arg_cmd_area*setPC.documentationString: \
 @rm Set the current execution position to LBL(())
 
@@ -3942,8 +3942,8 @@ if the associated condition is true.\n\
 \n\
 To change the breakpoint properties, press BUTTON(3).\n\
 To move it to another location, drag it using BUTTON(1).
-Ddd*plain_stop.tipString: 
-Ddd*plain_stop.documentationString: 
+Ddd*plain_cond.tipString: 
+Ddd*plain_cond.documentationString: 
 
 Ddd*grey_cond.helpString: \
 STRONG(Conditional breakpoint (disabled))\n\
@@ -3951,8 +3951,8 @@ A disabled breakpoint has no effect until reenabled.\n\
 \n\
 To change the breakpoint properties, press BUTTON(3).\n\
 To move it to another location, drag it using BUTTON(1).
-Ddd*grey_stop.tipString: 
-Ddd*grey_stop.documentationString: 
+Ddd*grey_cond.tipString: 
+Ddd*grey_cond.documentationString: 
 
 
 
