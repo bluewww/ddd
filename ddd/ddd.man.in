@@ -4577,11 +4577,32 @@ The suffix `\fB-arm\fR' indicates an armed variant (Button is pushed).
 .B "@ddd@"
 \s-2@DDD@\s+2 icon.
 .TP
+.B "delete"
+`\fBDelete ()\fR' button.
+.TP
+.B "disable"
+`\fBDisable\fR' button.
+.TP
 .B "dispref"
 `\fBDisplay * ()\fR' button.
 .TP
 .B "display"
 `\fBDisplay ()\fR' button.
+.TP
+.B "drag_arrow"
+The execution pointer (being dragged).
+.TP
+.B "drag_cond"
+A conditional breakpoint (being dragged).
+.TP
+.B "drag_stop"
+A breakpoint (being dragged).
+.TP
+.B "drag_temp"
+A temporary breakpoint (being dragged).
+.TP
+.B "enable"
+`\fBEnable\fR' button.
 .TP
 .B "find_forward"
 `\fBFind\s-2>>\s+2 ()\fR' button.
@@ -4598,11 +4619,26 @@ A conditional breakpoint (disabled).
 .B "grey_stop"
 A breakpoint (disabled).
 .TP
+.B "grey_temp"
+A temporary breakpoint (disabled).
+.TP
 .B "hide"
 `\fBHide ()\fR' button.
 .TP
 .B "lookup"
 `\fBLookup ()\fR' button.
+.TP
+.B "maketemp"
+`\fBMake Temporary\fR' button.
+.TP
+.B "new_break"
+`\fBNew Breakpoint\fR' button.
+.TP
+.B "new_display"
+`\fBNew Display\fR' button.
+.TP
+.B "new_watch"
+`\fBNew Watchpoint\fR' button.
 .TP
 .B "plain_arrow"
 The execution pointer.
@@ -4613,8 +4649,14 @@ A conditional breakpoint (enabled).
 .B "plain_stop"
 A breakpoint (enabled).
 .TP
+.B "plain_temp"
+A temporary breakpoint (enabled).
+.TP
 .B "print"
 `\fBPrint ()\fR' button.
+.TP
+.B "properties"
+`\fBProperties\fR' button.
 .TP
 .B "rotate"
 `\fBRotate ()\fR' button.
@@ -4628,26 +4670,14 @@ A breakpoint (enabled).
 .B "signal_arrow"
 The execution pointer (stopped by signal).
 .TP
-.B "temp_arrow"
-The execution pointer (being dragged).
-.TP
-.B "temp_cond"
-A conditional breakpoint (being dragged).
-.TP
-.B "temp_stop"
-A breakpoint (being dragged).
-.TP
 .B "undisplay"
 `\fBUndisplay ()\fR' button.
-.PD
 .TP
 .B "unwatch"
 `\fBUnwatch ()\fR' button.
-.PD
 .TP
 .B "watch"
 `\fBWatch ()\fR' button.
-.PD
 .PP
 .\" ---------------
 .SH "ENVIRONMENT"
