@@ -129,19 +129,19 @@ void translate_command(string& command)
 	break;
 
     case JDB:
-	// JDB uses `step up' instead of `finish'.
-	if (command == "finish")
-	    command = "step up";
-
 	// Typing ^C at JDB kills it, which is not what the user
 	// expects.  Simply suspend all threads instead.
 	if (command == '\003')
 	    command = "suspend";
 
+	// FALL THROUGH
+    case DBX:
+	// DBX and JDB use `step up' instead of `finish'.
+	if (command == "finish")
+	    command = "step up";
 	break;
 
     case GDB:
-    case DBX:
 	break;
     }
 

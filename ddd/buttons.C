@@ -230,6 +230,12 @@ static string gdbHelp(string command)
 	command = "step";
     }
 
+    if (gdb->type() == DBX && command == "step up")
+    {
+	// Don't ask for `step up'; ask for `step' instead.
+	command = "step";
+    }
+
     string help = NO_GDB_ANSWER;
 
     if (is_graph_cmd(command))
