@@ -317,8 +317,8 @@ static void CheckDragCB(Widget, XtPointer client_data, XtPointer call_data);
 // Verify whether buttons are active
 static void verify_buttons(MMDesc *items);
 
-// Setup custom menu
-static void set_custom_menu(DataDisp *data_disp, string expressions);
+// Setup shortcut menu
+static void set_shortcut_menu(DataDisp *data_disp, string expressions);
 
 // Register shells of menu ITEMS.
 void register_menu_shell(MMDesc *items);
@@ -1843,7 +1843,7 @@ int main(int argc, char *argv[])
 			      app_data.vsl_library,
 			      app_data.vsl_defs,
 			      app_data.panned_graph_editor);
-    set_custom_menu(data_disp, app_data.display_expressions);
+    set_shortcut_menu(data_disp, app_data.display_shortcuts);
 
     if (app_data.separate_data_window)
     {
@@ -2568,10 +2568,10 @@ static void verify_buttons(MMDesc *items)
 }
 
 //-----------------------------------------------------------------------------
-// Create DataDisp custom menu
+// Create DataDisp shortcut menu
 //-----------------------------------------------------------------------------
 
-static void set_custom_menu(DataDisp *data_disp, string exprs)
+static void set_shortcut_menu(DataDisp *data_disp, string exprs)
 {
     int newlines = exprs.freq('\n') + 1;
     string *items = new string[newlines];
@@ -2581,7 +2581,7 @@ static void set_custom_menu(DataDisp *data_disp, string exprs)
     for (int i = 0; i < newlines; i++)
 	items_s += items[i];
 
-    data_disp->set_custom_menu(items_s);
+    data_disp->set_shortcut_menu(items_s);
 
     delete[] items;
 }

@@ -1215,11 +1215,11 @@ bool save_options(unsigned long flags)
 			    + XtNgridHeight, grid_height) << "\n";
     }
 
-    // Display expressions
-    os << "\n! Display expressions\n";
+    // Shortcut expressions
+    os << "\n! Display Shortcuts\n";
     {
 	StringArray exprs;
-	data_disp->get_custom_menu(exprs);
+	data_disp->get_shortcut_menu(exprs);
 	string expr;
 	for (int i = 0; i < exprs.size(); i++)
 	{
@@ -1227,7 +1227,7 @@ bool save_options(unsigned long flags)
 		expr += '\n';
 	    expr += exprs[i];
 	}
-	os << string_app_value(XtNdisplayExpressions, expr) << "\n";
+	os << string_app_value(XtNdisplayShortcuts, expr) << "\n";
     }
 
     // Widget sizes.

@@ -3988,9 +3988,9 @@ DESC(Delete, [delete all selected displays])
 
 Ddd*new_display_dialog_popup.title: DDD: New Display
 Ddd*new_display_dialog.selectionLabelString: Display Expression
-Ddd*new_display_dialog.custom.alignment: XmALIGNMENT_BEGINNING
-Ddd*new_display_dialog.custom.labelString:	\
-Include in Display Menu
+Ddd*new_display_dialog.shortcut.alignment: XmALIGNMENT_BEGINNING
+Ddd*new_display_dialog.shortcut.labelString:	\
+Include in Shortcut Menu
 
 Ddd*new_display_dialog*helpString:	\
 \
@@ -4005,9 +4005,9 @@ become a shortcut in the SAMP(Display) and SAMP(New Display) popup menus.
 
 Ddd*dependent_display_dialog_popup.title: DDD: Dependent Display
 Ddd*dependent_display_dialog.selectionLabelString: Display Expression
-Ddd*dependent_display_dialog.custom.alignment: XmALIGNMENT_BEGINNING
-Ddd*dependent_display_dialog.custom.labelString:	\
-Include in Display Menu
+Ddd*dependent_display_dialog.shortcut.alignment: XmALIGNMENT_BEGINNING
+Ddd*dependent_display_dialog.shortcut.labelString:	\
+Include in Shortcut Menu
 
 Ddd*dependent_display_dialog*helpString:	\
 @rm Please modify the display expression displayed in the argument field.\n\

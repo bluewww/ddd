@@ -101,7 +101,7 @@ class DataDisp {
     static void hideDetailCB            (Widget, XtPointer, XtPointer);
     static void dependentCB             (Widget, XtPointer, XtPointer);
     static void setCB                   (Widget, XtPointer, XtPointer);
-    static void customCB                (Widget, XtPointer, XtPointer);
+    static void shortcutCB              (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
     // Popup menu callbacks
@@ -197,16 +197,16 @@ class DataDisp {
     //-----------------------------------------------------------------------
     static MMDesc graph_popup[];
     static MMDesc node_popup[];
-    static MMDesc custom_popup[];
+    static MMDesc shortcut_popup[];
     static MMDesc graph_cmd_area[];
     static MMDesc display_area[];
     static MMDesc detail_menu[];
-    static MMDesc custom_menu[];
+    static MMDesc shortcut_menu[];
 
-    // Array of custom expressions
-    static StringArray custom_exprs;
+    // Array of shortcut expressions
+    static StringArray shortcut_exprs;
 
-    static void add_custom_expr(const string& expr);
+    static void add_shortcut_expr(const string& expr);
 
 public:
     //-----------------------------------------------------------------------
@@ -266,11 +266,11 @@ public:
     // Process data output in ANSWERS.
     static void process_addr(StringArray& answers);
 
-    // Set custom menu to expressions EXPRS
-    static void set_custom_menu(const StringArray& exprs);
+    // Set shortcut menu to expressions EXPRS
+    static void set_shortcut_menu(const StringArray& exprs);
 
-    // Return current custom menu items
-    static void get_custom_menu(StringArray& exprs);
+    // Return current shortcut menu items
+    static void get_shortcut_menu(StringArray& exprs);
 
 private:
     // Call me back again
@@ -440,9 +440,9 @@ inline bool DataDisp::get_state(ostream& os, const StringArray& scopes)
     return get_state(os, true, scopes);
 }
 
-inline void DataDisp::get_custom_menu(StringArray& exprs)
+inline void DataDisp::get_shortcut_menu(StringArray& exprs)
 {
-    exprs = custom_exprs;
+    exprs = shortcut_exprs;
 }
 
 #endif // _DDD_DataDisp_h

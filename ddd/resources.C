@@ -267,11 +267,11 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdisplayExpressions,
-	XtCDisplayExpressions,
+	XtNdisplayShortcuts,
+	XtCDisplayShortcuts,
 	XtRString,
 	sizeof(String),
-	XtOffsetOf(AppData, display_expressions),
+	XtOffsetOf(AppData, display_shortcuts),
 	XtRString,
 	XtPointer("")
     },

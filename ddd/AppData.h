@@ -79,8 +79,8 @@
 #define XtCLineNumberWidth       "LineNumberWidth"
 #define XtNlineBufferedConsole   "lineBufferredConsole"
 #define XtCLineBuffered          "LineBuffered"
-#define XtNdisplayExpressions    "displayExpressions"
-#define XtCDisplayExpressions    "DisplayExpressions"
+#define XtNdisplayShortcuts      "displayShortcuts"
+#define XtCDisplayShortcuts      "DisplayShortcuts"
 #define XtNconsoleButtons        "consoleButtons"
 #define XtNsourceButtons         "sourceButtons"
 #define XtNdataButtons           "dataButtons"
@@ -271,7 +271,7 @@ struct AppData {
     int     indent_code;
     int     line_number_width;
     Boolean line_buffered_console;
-    String  display_expressions;
+    String  display_shortcuts;
     String  console_buttons;
     String  source_buttons;
     String  data_buttons;

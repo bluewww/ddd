@@ -139,60 +139,60 @@ MMDesc DataDisp::graph_popup[] =
     MMEnd
 };
 
-const int custom_popup_base =  2;  // Index of first custom menu
-const int custom_items      = 20; // Number of custom items
+const int shortcut_popup_base =  2;  // Index of first shortcut menu
+const int shortcut_items      = 20; // Number of shortcut items
 
-MMDesc DataDisp::custom_popup[] =
+MMDesc DataDisp::shortcut_popup[] =
 {
     {"new",      MMPush,   { DataDisp::dependentCB }},
     MMSep,
-    {"custom1",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(1) }},
-    {"custom2",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(2) }},
-    {"custom3",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(3) }},
-    {"custom4",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(4) }},
-    {"custom5",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(5) }},
-    {"custom6",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(6) }},
-    {"custom7",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(7) }},
-    {"custom8",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(8) }},
-    {"custom9",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(9) }},
-    {"custom10", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(10) }},
-    {"custom11", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(11) }},
-    {"custom12", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(12) }},
-    {"custom13", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(13) }},
-    {"custom14", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(14) }},
-    {"custom15", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(15) }},
-    {"custom16", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(16) }},
-    {"custom17", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(17) }},
-    {"custom18", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(18) }},
-    {"custom19", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(19) }},
-    {"custom20", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(20) }},
+    {"1",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(1)  }},
+    {"2",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(2)  }},
+    {"3",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(3)  }},
+    {"4",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(4)  }},
+    {"5",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(5)  }},
+    {"6",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(6)  }},
+    {"7",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(7)  }},
+    {"8",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(8)  }},
+    {"9",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(9)  }},
+    {"10", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(10) }},
+    {"11", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(11) }},
+    {"12", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(12) }},
+    {"13", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(13) }},
+    {"14", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(14) }},
+    {"15", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(15) }},
+    {"16", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(16) }},
+    {"17", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(17) }},
+    {"18", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(18) }},
+    {"19", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(19) }},
+    {"20", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(20) }},
     MMEnd,
 };
 
-const int custom_menu_base = 0;  // Index of first custom item
+const int shortcut_menu_base = 0;  // Index of first shortcut item
 
-MMDesc DataDisp::custom_menu[] =
+MMDesc DataDisp::shortcut_menu[] =
 {
-    {"custom1",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(1) }},
-    {"custom2",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(2) }},
-    {"custom3",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(3) }},
-    {"custom4",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(4) }},
-    {"custom5",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(5) }},
-    {"custom6",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(6) }},
-    {"custom7",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(7) }},
-    {"custom8",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(8) }},
-    {"custom9",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(9) }},
-    {"custom10", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(10) }},
-    {"custom11", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(11) }},
-    {"custom12", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(12) }},
-    {"custom13", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(13) }},
-    {"custom14", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(14) }},
-    {"custom15", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(15) }},
-    {"custom16", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(16) }},
-    {"custom17", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(17) }},
-    {"custom18", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(18) }},
-    {"custom19", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(19) }},
-    {"custom20", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(20) }},
+    {"1",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(1)  }},
+    {"2",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(2)  }},
+    {"3",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(3)  }},
+    {"4",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(4)  }},
+    {"5",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(5)  }},
+    {"6",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(6)  }},
+    {"7",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(7)  }},
+    {"8",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(8)  }},
+    {"9",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(9)  }},
+    {"10", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(10) }},
+    {"11", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(11) }},
+    {"12", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(12) }},
+    {"13", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(13) }},
+    {"14", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(14) }},
+    {"15", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(15) }},
+    {"16", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(16) }},
+    {"17", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(17) }},
+    {"18", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(18) }},
+    {"19", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(19) }},
+    {"20", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(20) }},
     MMEnd,
 };
 
@@ -202,7 +202,7 @@ struct PopupItms { enum Itms {Dereference, New, Sep1, Detail, Rotate, Set,
 MMDesc DataDisp::node_popup[] =
 {
     {"dereference",   MMPush,   {DataDisp::dereferenceCB}},
-    {"new",           MMMenu,   MMNoCB, DataDisp::custom_popup },
+    {"new",           MMMenu,   MMNoCB, DataDisp::shortcut_popup },
     MMSep,
     {"detail",        MMPush,   {DataDisp::toggleDetailCB, XtPointer(-1)}},
     {"rotate",        MMPush,   {DataDisp::toggleRotateCB}},
@@ -222,7 +222,7 @@ MMDesc DataDisp::graph_cmd_area[] =
                                                DataDisp::detail_menu },
     {"rotate",        MMPush | MMInsensitive, {DataDisp::toggleRotateCB}},
     {"new",           MMPush,                 {DataDisp::dependentCB},
-                                               DataDisp::custom_menu },
+                                               DataDisp::shortcut_menu },
     {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
     {"delete",        MMPush | MMInsensitive, {DataDisp::deleteCB}},
     MMEnd
@@ -275,8 +275,8 @@ XtIntervalId DataDisp::refresh_args_timer       = 0;
 XtIntervalId DataDisp::refresh_addr_timer       = 0;
 XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
 
-// Array of custom expressions
-StringArray DataDisp::custom_exprs;
+// Array of shortcut expressions
+StringArray DataDisp::shortcut_exprs;
 
 
 //----------------------------------------------------------------------------
@@ -776,16 +776,16 @@ void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 }
 
 
-void DataDisp::customCB(Widget w, XtPointer client_data, XtPointer)
+void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
 {
     int number = int(client_data) - 1;
 
     assert (number >= 0);
-    assert (number < custom_exprs.size());
+    assert (number < shortcut_exprs.size());
 
     set_last_origin(w);
 
-    string expr = custom_exprs[number];
+    string expr = shortcut_exprs[number];
     if (expr.contains('\t'))
 	expr = expr.before('\t');
 
@@ -810,13 +810,13 @@ void DataDisp::customCB(Widget w, XtPointer client_data, XtPointer)
     new_display(expr, 0, depends_on, w);
 }
 
-// Set custom menu to expressions EXPRS
-void DataDisp::set_custom_menu(const StringArray& exprs)
+// Set shortcut menu to expressions EXPRS
+void DataDisp::set_shortcut_menu(const StringArray& exprs)
 {
-    for (int i = 0; i < custom_items; i++)
+    for (int i = 0; i < shortcut_items; i++)
     {
-	Widget popup_item = custom_popup[custom_popup_base + i].widget;
-	Widget menu_item  = custom_menu [custom_menu_base  + i].widget;
+	Widget popup_item = shortcut_popup[shortcut_popup_base + i].widget;
+	Widget menu_item  = shortcut_menu [shortcut_menu_base  + i].widget;
 
 	if (i < exprs.size())
 	{
@@ -841,14 +841,14 @@ void DataDisp::set_custom_menu(const StringArray& exprs)
 	}
     }
 
-    custom_exprs = exprs;
+    shortcut_exprs = exprs;
 }
 
-// Add one expr to custom menus
-void DataDisp::add_custom_expr(const string& expr)
+// Add one expr to shortcut menus
+void DataDisp::add_shortcut_expr(const string& expr)
 {
-    custom_exprs += expr;
-    set_custom_menu(custom_exprs);
+    shortcut_exprs += expr;
+    set_shortcut_menu(shortcut_exprs);
     refresh_args();
 }
 
@@ -897,11 +897,11 @@ public:
     BoxPoint *point_ptr;
     string depends_on;
     Widget origin;
-    Widget custom;
+    Widget shortcut;
     bool verbose;
 
     NewDisplayInfo()
-	: point_ptr(0), depends_on(""), origin(0), custom(0)
+	: point_ptr(0), depends_on(""), origin(0), shortcut(0)
     {}
 
     ~NewDisplayInfo()
@@ -926,12 +926,12 @@ void DataDisp::new_displayDCB (Widget    display_dialog,
     if (expr != "")
 	new_display(expr, info->point_ptr, info->depends_on, info->origin);
 
-    if (info->custom != 0 && XmToggleButtonGetState(info->custom))
+    if (info->shortcut != 0 && XmToggleButtonGetState(info->shortcut))
     {
-	// Add expression to custom menu
+	// Add expression to shortcut menu
 	expr.gsub("()", "( )");
 	expr.gsub(info->display_expression, string("()"));
-	add_custom_expr(expr);
+	add_shortcut_expr(expr);
     }
 }
 
@@ -960,12 +960,12 @@ void DataDisp::new_displayCD (Widget w, BoxPoint box_point)
 		      ImmediateHelpCB, NULL);
 	XtAddCallback(new_display_dialog, XmNokCallback, 
 		      new_displayDCB, XtPointer(&info));
-	info.custom = verify(XmCreateToggleButton(new_display_dialog,
-						  "custom", NULL, 0));
-	XtManageChild(info.custom);
+	info.shortcut = verify(XmCreateToggleButton(new_display_dialog,
+						    "shortcut", NULL, 0));
+	XtManageChild(info.shortcut);
     }
 
-    XmToggleButtonSetState(info.custom, False, False);
+    XmToggleButtonSetState(info.shortcut, False, False);
 
     *(info.point_ptr) = box_point;
     info.display_expression = source_arg->get_string();
@@ -1024,12 +1024,12 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 		       new_displayDCB,
 		       XtPointer(&info));
 
-	info.custom = verify(XmCreateToggleButton(dependent_display_dialog,
-						  "custom", NULL, 0));
-	XtManageChild(info.custom);
+	info.shortcut = verify(XmCreateToggleButton(dependent_display_dialog,
+						    "shortcut", NULL, 0));
+	XtManageChild(info.shortcut);
     }
 
-    XmToggleButtonSetState(info.custom, False, False);
+    XmToggleButtonSetState(info.shortcut, False, False);
 
     info.display_expression = disp_value_arg->full_name();
     Widget text = 
@@ -1562,10 +1562,10 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(display_area[DisplayItms::Set].widget, 
 		  count_selected == 1 && count_selected_data == 1);
 
-    // Custom menu
-    for (int i = 0; i < custom_items && i < custom_exprs.size(); i++)
+    // Shortcut menu
+    for (int i = 0; i < shortcut_items && i < shortcut_exprs.size(); i++)
     {
-	const string& expr = custom_exprs[i];
+	const string& expr = shortcut_exprs[i];
 	bool sens = false;
 	if (!expr.contains("()"))
 	    sens = true;	// Argument not needed
@@ -1576,8 +1576,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	else if (disp_node_arg)
 	    sens = true;	// Exactly one expression selected
 
-	set_sensitive(custom_popup[custom_popup_base + i].widget, sens);
-	set_sensitive(custom_menu [custom_menu_base  + i].widget, sens);
+	set_sensitive(shortcut_popup[shortcut_popup_base + i].widget, sens);
+	set_sensitive(shortcut_menu [shortcut_menu_base  + i].widget, sens);
     }
 
     // Argument field
