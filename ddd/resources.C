@@ -987,6 +987,26 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNautoRaiseTool,
+	XtCAutoRaiseTool,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, auto_raise_tool),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNdecorateTool,
+	XtCDecorateTool,
+	XtROnOff,
+	sizeof(OnOff),
+	XtOffsetOf(AppData, decorate_tool),
+	XmRImmediate,
+	XtPointer(Auto)
+    },
+
+    {
 	XtNstickyTool,
 	XtCStickyTool,
 	XmRBoolean,

@@ -34,6 +34,7 @@
 #include <X11/Xlib.h>
 
 #include "version.h"
+#include "OnOff.h"
 
 // The DDD application class name
 #define DDD_CLASS_NAME           Ddd_NAME
@@ -217,6 +218,10 @@
 #define XtCStatusHistorySize     "StatusHistorySize"
 #define XtNverifyButtons         "verifyButtons"
 #define XtCVerifyButtons         "VerifyButtons"
+#define XtNautoRaiseTool         "autoRaiseTool"
+#define XtCAutoRaiseTool         "AutoRaiseTool"
+#define XtNdecorateTool          "decorateTool"
+#define XtCDecorateTool          "DecorateTool"
 #define XtNstickyTool            "stickyTool"
 #define XtCStickyTool            "StickyTool"
 #define XtNtoolRightOffset       "toolRightOffset"
@@ -328,6 +333,8 @@ struct AppData {
     Boolean detect_aliases;
     int     status_history_size;
     Boolean verify_buttons;
+    Boolean auto_raise_tool;
+    OnOff   decorate_tool;
     Boolean sticky_tool;
     int     tool_right_offset;
     int     tool_top_offset;

@@ -1356,6 +1356,12 @@ int main(int argc, char *argv[])
     // Setup top-level actions
     XtAppAddActions(app_context, actions, XtNumber(actions));
 
+    // Register string -> OnOff converter; this must be done before
+    // reading application defaults.
+    XtSetTypeConverter(XmRString, XtROnOff, CvtStringToOnOff,
+		       NULL, 0, XtCacheAll, 
+		       XtDestructor(NULL));
+
     // Get and save application resources
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
 				ddd_resources, ddd_resources_size,
@@ -1898,8 +1904,11 @@ int main(int argc, char *argv[])
 	Delay::register_shell(source_view_shell);
     }
 
-    // Check for decorated transient windows
-    start_have_decorated_transients(command_shell);
+    if (app_data.decorate_tool == Auto)
+    {
+	// Check for decorated transient windows
+	start_have_decorated_transients(command_shell);
+    }
 
     // Remove unnecessary sashes
     untraverse_sashes(source_view_parent);
@@ -2024,7 +2033,21 @@ int main(int argc, char *argv[])
 	// not decorate transient windows such as DialogShells.  In
 	// this case, use a TopLevel shell instead and rely on the DDD
 	// auto-raise mechanisms defined in `windows.C'.
-	if (have_decorated_transients())
+	bool use_transient_tool_shell;
+	switch (app_data.decorate_tool)
+	{
+	case On:
+	    use_transient_tool_shell = false;
+	    break;
+	case Off:
+	    use_transient_tool_shell = true;
+	    break;
+	case Auto:
+	    use_transient_tool_shell = have_decorated_transients();
+	    break;
+	}
+
+	if (use_transient_tool_shell)
 	{
 	    tool_shell = 
 		verify(XmCreateDialogShell(tool_shell_parent, 
@@ -4313,8 +4336,8 @@ static bool have_decorated_transients()
     XtUnmapWidget(init_shell);
     DestroyWhenIdle(init_shell);
 
-    // If the window manager frame is larger than the shell window,
-    // assume the shell is decorated.
+    // If the window manager frame is more than 5 pixels larger than
+    // the shell window, assume the shell is decorated.
     return frame_attributes.height - shell_attributes.height > 5;
 }
 

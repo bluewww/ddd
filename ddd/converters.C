@@ -40,6 +40,7 @@ char converters_rcsid[] =
 #include <X11/CoreP.h>
 
 #include "bool.h"
+#include "OnOff.h"
 #include "strclass.h"
 #include "charsets.h"
 #include "StringSA.h"
@@ -378,9 +379,9 @@ static String locateBitmap(Display *display, String basename)
 // Macro tables
 static StringStringAssoc conversionMacroTable;
 
-// Convert String to XmString, using `@' for font specs:
-// `@[font-id] TEXT' makes TEXT be displayed in font font-id
-// `@[space]' displays a single `@'.
+// Convert String to XmString, using `@' for font specs: `@FONT TEXT'
+// makes TEXT be displayed in font FONT; a single space after FONT is
+// eaten.  `@ ' displays a single `@'.
 Boolean CvtStringToXmString(Display *display, 
 			    XrmValue *, Cardinal *, 
 			    XrmValue *fromVal, XrmValue *toVal,
@@ -591,9 +592,29 @@ Boolean CvtStringToUnitType(Display*     display,
     return False;
 }
 
+// Convert the strings 'on', `off', `auto' to OnOff values
+Boolean CvtStringToOnOff(Display*     display, 
+			 XrmValue*    ,
+			 Cardinal*    , 
+			 XrmValue*    fromVal,
+			 XrmValue*    toVal,
+			 XtPointer*   )
+{
+    string value = downcase((String)fromVal->addr);
+    value.gsub('_', ' ');
 
-// register all converters
+    if (value == "on" || value == "true" || value == "yes")
+	done(OnOff, On);
+    else if (value == "off" || value == "false" || value == "no")
+	done(OnOff, Off);
+    else if (value == "when needed" || value == "automatic" || value == "auto")
+	done(OnOff, Auto);
 
+    XtDisplayStringConversionWarning(display, fromVal->addr, XtROnOff);
+    return False;
+}
+
+// Register all converters
 void registerOwnConverters()
 {
     static XtConvertArgRec parentCvtArgs[] = {
@@ -638,6 +659,10 @@ void registerOwnConverters()
 		       NULL, 0, XtCacheAll, 
 		       XtDestructor(NULL));
 
+    // string -> OnOff
+    XtSetTypeConverter(XmRString, XtROnOff, CvtStringToOnOff,
+		       NULL, 0, XtCacheAll, 
+		       XtDestructor(NULL));
 
     // The following three were contributed by Thorsten Sommer
     // (sommer@ips.cs.tu-bs.de):
@@ -658,6 +683,7 @@ void registerOwnConverters()
 		       XtDestructor(NULL));
 }
 
+// Define a macro: @NAME@ will be replaced by VALUE in CvtStringToXmString
 void defineConversionMacro(String name, String value)
 {
     conversionMacroTable[name] = value;

@@ -511,9 +511,10 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    tool_shell_visibility = event->xvisibility.state;
 
 	// Check whether command tool is obscured by some DDD shell
-	if (obscures(command_shell, tool_shell)
-	    || obscures(data_disp_shell, tool_shell)
-	    || obscures(source_view_shell, tool_shell))
+	if (app_data.auto_raise_tool
+	    && (obscures(command_shell, tool_shell)
+		|| obscures(data_disp_shell, tool_shell)
+		|| obscures(source_view_shell, tool_shell)))
 	{
 	    // Command tool is obscured
 	    if (XmIsMotifWMRunning(tool_shell) && XmIsDialogShell(tool_shell))
@@ -532,8 +533,9 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 
 #if 0				// Doesn't work yet - AZ
 	// Check whether command tool is obscured by the exec window
-	if (obscures(XtDisplay(tool_shell), exec_tty_window(), 
-		     XtWindow(tool_shell)))
+	if (app_data.auto_raise_tool
+	    && obscures(XtDisplay(tool_shell), exec_tty_window(), 
+			XtWindow(tool_shell)))
 	    raise_tool_above(exec_tty_window());
 #endif
 
@@ -559,7 +561,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    if (w == tool_shell)
 	    {
 		// Command tool has been moved
-		clog << "Tool has been moved to " << point(event) << "\n";
+		// clog << "Tool has been moved to " << point(event) << "\n";
 
 		// Record offset
 		get_tool_offset(last_top_offset, last_right_offset);
@@ -570,7 +572,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 		    || w == command_shell && source_view_shell == 0))
 	    {
 		// Source shell has been moved -- follow movement
-		clog << "Shell has been moved to " << point(event) << "\n";
+		// clog << "Shell has been moved to " << point(event) << "\n";
 
 		// Let command tool follow
 		recenter_tool_shell(source_view->source(),

@@ -388,10 +388,29 @@ Ddd*tool_buttons*Forward.labelString:   Fwd
 Ddd*tool_bar*Cont.labelString:   Continue
 
 
+! Command tool stuff.
+
 ! Do we want a sticky command tool?  If true, the command tool follows
 ! every movement of the source window, such that the relative position
 ! remains unchanged.
 Ddd*stickyTool: true
+
+! Do we want a decorated command tool?
+! * If `true', DDD will set up the command tool as a top-level window,
+!   which is decorated like DDD main windows.
+! * If `false', DDD realizes the command tool as a transient window, which
+!   may be decorated or not, depending on the settings of your window
+!   manager.
+! * If `auto', DDD checks the window manager.  If it decorates
+!   transients, the command tool is realized as a transient, and as
+!   a top-level-window. otherwise.
+Ddd*decoratedTool: auto
+
+! Do we want an auto-raised command tool?  If true, DDD will always 
+! keep the command tool on top of other DDD windows.  If this setting
+! interferes with your window manager, set this resource to false.
+Ddd*autoRaiseTool: true
+
 
 ! Tab width in source texts
 Ddd*tabWidth:	        8

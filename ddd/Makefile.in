@@ -544,6 +544,7 @@ AGENT_OBJECTS = \
 # Miscellaneous utilities for X programs: Motif strings, hourglasses,
 # context-sensitive help...
 XSTUFF_OBJECTS = \
+	charsets.o   \
 	converters.o \
 	events.o     \
 	findParent.o \
@@ -647,7 +648,6 @@ LIB_OBJECTS = \
 DDD_OBJECTS = \
 	args.o       \
 	buttons.o    \
-	charsets.o   \
 	cmdtty.o     \
 	configinfo.o \
 	comm-manag.o \

@@ -2407,10 +2407,45 @@ source code locations only by their base names.  If this is
 .\"
 .SS "Window Creation and Layout"
 .\"
-The following resources determine \s-2@DDD@\s+2 window creation and layout.
+The following resources determine \s-2@DDD@\s+2 window creation and
+layout.
+.TP
+.B "autoRaiseTool (\fPclass\fB AutoRaiseTool)"
+If `\fBtrue\fR' (default), \s-2@DDD@\s+2 will always keep the command
+tool on top of other \s-2@DDD@\s+2 windows.  If this setting
+interferes with your window manager, or if your window manager keeps
+the command tool on top anyway, set this resource to `\fBfalse\fR'.
 .TP
 .B "dataWindow (\fPclass\fB Window)"
 If `\fBfalse\fR', no data window is created upon start-up.
+.TP
+.B "decorateTool (\fPclass\fB DecorateTool)"
+This resource controls the decoration of the command tool.
+.RS
+.br
+.IP \(bu 2
+If this is `\fBfalse\fR', the command tool is created as a
+\fItransient window\fR.  Several window managers keep transient
+windows automatically on top of their parents, which is appropriate
+for the command tool.  However, your window manager may be configured
+not to decorate transient windows, which means that you cannot easily
+move the command tool around.
+.IP \(bu 2
+If this is `\fBtrue\fR', \s-2@DDD@\s+2 realizes the command tool as a
+\fItop-level window\fR.  Such windows are always decorated by the
+window manager.  However, top-level windows are not automatically kept
+on top of other windows, such that you may wish to set the
+`\fBautoRaiseTool\fR' resource, too.
+.IP \(bu 2
+If this is `\fBauto\fR' (default), \s-2@DDD@\s+2 checks whether the
+window manager decorates transients.  If yes, the command tool is
+realized as a transient window (as in the \fBfalse\fR setting); if no,
+the command tool is realized as a top-level window (as in the
+\fBtrue\fR setting).  Hence, the command tool is always decorated
+using the `best' method, but the extra check takes some time.
+.br
+.RE
+.PP
 .TP
 .B "debuggerConsole (\fPclass\fB Window)"
 If `\fBfalse\fR', no debugger console is created upon start-up.
@@ -2452,6 +2487,7 @@ moved, the command tool is moved by the same offset such that its
 position relative to the source window remains unchanged.  If
 `\fBfalse\fR', the command tool does not follow source window
 movements.
+.PP
 .\"
 .\"
 .\"

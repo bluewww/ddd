@@ -29,6 +29,8 @@
 #ifndef _DDD_converters_h
 #define _DDD_converters_h
 
+#include <X11/Intrinsic.h>
+
 // Convert String to Widget
 extern Boolean CvtStringToWidget(Display *display, 
 				 XrmValue *args, Cardinal *num_args, 
@@ -70,6 +72,12 @@ extern Boolean CvtStringToPacking(Display *display,
 				  XrmValue *args, Cardinal *num_args, 
 				  XrmValue *fromVal, XrmValue *toVal,
 				  XtPointer *converter_data);
+
+// Convert String to OnOff
+Boolean CvtStringToOnOff(Display *display, 
+			 XrmValue *args, Cardinal *num_args, 
+			 XrmValue *fromVal, XrmValue *toVal,
+			 XtPointer *converter_data);
 
 // Register all converters
 extern void registerOwnConverters();
