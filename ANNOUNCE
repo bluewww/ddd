@@ -183,16 +183,6 @@ What is DDD, anyway?
     interface; GDB/DBX/XDB command-line interface with full editing,
     history, and completion capabilities.  DDD has been designed to
     compete with well-known commercial debuggers.
-
-    Of course, there are also features of DDD you may not like.
-    First, DDD is quite huge.  If you have a simple debugging task on
-    a system with few resources, DDD may not be the system of choice.
-    There is a FAQ entry on how to configure DDD for minimal resources
-    and maximum speed.  Second, DDD uses Motif.  This is a problem for
-    free software purists, but will disappear in a few months when
-    free Motif implementations such as LessTif become generally
-    usable.  For those who lack Motif, we distribute contributed DDD
-    binaries for all important platforms.
     
     Speaking of platforms: DDD configures, compiles and runs
     out-of-the-box on every major UNIX platform, including AIX
@@ -225,14 +215,10 @@ What do I need to build DDD?
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
 
-       * The Motif Widget library (release 1.1 or later).  Best
-         results are achieved using OSF/Motif 2.0 in conjunction with the
-         Athena Widget library.
-
-	 DDD also compiles and runs with LessTif, a free OSF/Motif clone.
-	 As of LessTif 0.75a, the resulting DDD executable is already
-	 quite usable.  See the file `PROBLEMS' for a recent list of
-	 problems and fixes.
+       * A Motif Widget library, version 1.1 or later.  Best results
+         are achieved using OSF/Motif 2.0.  DDD now also compiles and
+         runs with LessTif, a free Motif clone, release 0.79 or later,
+         without loss of functionality.
 
        * Optionally, in addition to the Motif widget library, the
          Athena Widget library (release 5 or later).  Having the
