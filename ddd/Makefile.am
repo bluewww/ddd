@@ -41,6 +41,7 @@ ECHO = echo
 GREP = grep
 DATE = date
 CMP  = cmp
+RM   = rm -f
 
 # Suffixes used in this file.
 SUFFIXES = .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xbmxx .xpm .xpmxx \
