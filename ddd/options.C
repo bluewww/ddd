@@ -43,6 +43,7 @@ char options_rcsid[] =
 #include "GDBAgent.h"
 #include "GraphEdit.h"
 #include "SourceView.h"
+#include "TimeOut.h"
 #include "cook.h"
 #include "Command.h"
 #include "comm-manag.h"
@@ -78,6 +79,7 @@ char options_rcsid[] =
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>		// strerror
+#include <time.h>		// ctime
 
 #include <limits.h>
 #ifndef ARG_MAX
@@ -1513,6 +1515,11 @@ static bool options_file_has_changed(ChangeMode mode, bool reset)
 
     time_t modification_time = last_modification_time(options_file);
 
+#if 0
+    clog << quote(options_file) << " last modified " 
+	 << ctime(&modification_time);
+#endif
+
     if (reset || last_acknowledge == 0)
 	last_acknowledge = modification_time;
     if ((reset && mode == ACCESS) || last_access == 0)
@@ -1659,18 +1666,17 @@ static void DontReloadOptionsCB(Widget, XtPointer, XtPointer)
     options_file_has_changed(ACKNOWLEDGE, true);
 }
 
-void check_options_file(XtPointer client_data, XtIntervalId *id)
+// Pending timer
+static XtIntervalId check_options_timer = 0;
+
+static void CheckOptionsFileCB(XtPointer client_data, XtIntervalId *id)
 {
-    static bool check_pending;
-    if (id != 0)
-    {
-	// Called from XtAppAddTimeOut()
-	check_pending = false;
-    }
+    assert(*id == check_options_timer);
+    check_options_timer = 0;
 
     if (options_file_has_changed(ACKNOWLEDGE))
     {
-	// File has changed since last acknowledgement
+	// Options file has changed since last acknowledgement -- offer reload
 	static Widget dialog = 0;
 
 	if (dialog == 0)
@@ -1687,14 +1693,25 @@ void check_options_file(XtPointer client_data, XtIntervalId *id)
 	if (!XtIsManaged(dialog))
 	    manage_and_raise(dialog);
     }
-
-    if (!check_pending && app_data.check_options > 0)
+    
+    if (app_data.check_options > 0)
     {
-	XtAppAddTimeOut(XtWidgetToApplicationContext(find_shell()),
-			app_data.check_options * 1000,
-			check_options_file, client_data);
-	check_pending = true;
+	// Try again later
+	check_options_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(find_shell()),
+			    app_data.check_options * 1000,
+			    CheckOptionsFileCB, client_data);
     }
+}
+
+void check_options_file()
+{
+    if (check_options_timer != 0)
+	XtRemoveTimeOut(check_options_timer);
+
+    check_options_timer = 
+	XtAppAddTimeOut(XtWidgetToApplicationContext(find_shell()), 0,
+			CheckOptionsFileCB, XtPointer(0));
 }
 
 
