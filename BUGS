@@ -90,13 +90,6 @@ Volunteers for fixing these and other bugs are welcome!
 051. grant@isgtec.com (Grant McDorman) has run purify on DDD and
      reported some memory leaks as well as bad memory accesses.
 
-053. emeijer@us.oracle.com (Edwin Meijer) states:
-     I tried the following scenario: 
-     > exec program [arg,....] 
-     and while my program was in a sleep I did:  
-     > ddd --dbx program process-id 
-     ddd seemed to start up fine, but after loading it core-dumped. 
-
 056. `Select All' does not select hints.
 
 060. Frank Dohrmann <frank@kaa.desy.de> says that on his Sun-Sparc
@@ -240,4 +233,11 @@ Volunteers for fixing these and other bugs are welcome!
      explicitly re-disassemble (with caching disabled).  
      [Does anyone care?  -AZ]
 
-106. (Insert your bug here)
+107. Jonathan Edwards <edwards@blight.IntraNet.com> says that DDD/DBX
+     hangs up on his powerpc-ibm-aix4.2.0.0 box after a few `step's.
+     Besides that, the source window does not respond to movement in
+     the backtrace window.
+     [I could not reproduce this bug.  Does this also happen on 
+      other configurations?  -AZ]
+
+108. (Insert your bug here)
