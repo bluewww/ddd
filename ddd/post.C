@@ -78,6 +78,7 @@ static void ClearReferenceCB(Widget w, XtPointer client_data, XtPointer)
 
     if (reference != 0)
     {
+	(void) w;		// Use it
 	assert(reference == w);
 	reference = 0;
     }
