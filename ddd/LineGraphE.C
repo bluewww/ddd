@@ -295,7 +295,7 @@ void LineGraphEdge::drawSelf(Widget w,
     diameter = radius * 2;
 
     BoxPoint position(region.origin());	// Upper left corner of the arc
-    int start;			        // Start of the arc (in degrees)
+    int start = 0;		        // Start of the arc (in degrees)
     const int extend = 270;	        // Extend of the arc (in degrees)
 
     switch (gc.selfEdgePosition)
@@ -327,7 +327,7 @@ void LineGraphEdge::drawSelf(Widget w,
 	     start * 64, extend * 64);
 
     // Find arrow angle
-    int arrow_angle;
+    int arrow_angle = 0;
     switch (gc.selfEdgeDirection)
     {
     case Clockwise:
