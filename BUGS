@@ -354,4 +354,6 @@ Volunteers for fixing these and other bugs are welcome!
      [I could not reproduce this.  Jonathan's DDD is compiled with AIX
      xlC.  Is this the reason?  -AZ]
 
-165. (Insert your bug here)
+165. The data display `list_test @ 10' is not correctly parsed.
+
+166. (Insert your bug here)

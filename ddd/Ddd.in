@@ -3974,8 +3974,8 @@ The current value of the expression is shown each time the program stops.\n\
 Variables accessible are those of the lexical environment of the selected\n\
 stack frame, plus all those whose scope is global or an entire file.\n\
 \n\
-@tt $@sl NUM @rm gets previous value number @sl NUM.@rm\
-  @tt $ @rm and @tt$$ @rm are the last two values.\n\
+@tt $@sl NUM @rm gets previous value number @sl NUM.  \
+@tt $ @rm and @tt $$ @rm are the last two values.\n\
 @tt $$@sl NUM @rm refers to @sl NUM@rm'th value back from the last one.\n\
 Names starting with @tt$ @rm refer to registers\
  (with the values they would have\n\
@@ -3989,7 +3989,7 @@ Use assignment expressions to give values to convenience variables.\n\
 \n\
 @tt @ \
  @rm is a binary operator for treating consecutive data objects\n\
-anywhere in memory as an array. @sl FOO@tt@ @sl NUM @rm\
+anywhere in memory as an array. @sl FOO@tt @ @sl NUM @rm\
  gives an array whose first\n\
 element is @sl FOO@rm, whose second element is stored in the space following\n\
 where @sl FOO @rm is stored, etc. @sl FOO @rm must be an expression \
