@@ -1469,8 +1469,166 @@ file to customize \s-2GDB\s+2.
 classes.  The following resources are specific to \s-2@DDD@\s+2.
 .\"
 .\"
+.SS "Setting @DDD@ Fonts"
+This is the default font setting in \s-2@DDD@\s+2:
+.sp
+.br
+  \fB@Ddd@*fontList: \\
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\\
+  -*-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*=small,\\
+  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=tt,\\
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=key,\\
+  -*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*=rm,\\
+  -*-helvetica-medium-o-*-*-12-*-*-*-*-*-*-*=sl,\\
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=bf,\\
+  -*-helvetica-bold-o-*-*-12-*-*-*-*-*-*-*=bs,\\
+  -*-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*=Logo,\\
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=logo,\\
+  -*-symbol-*-*-*-12-*-*-*-*-*-*-*=symbol\fR
+.br
+.sp
+.TP
+The font names are used as follows:
+.TP 10
+.B "charset" 
+The default font in buttons, menus, etc.
+.TP 10
+.B "small"
+The default font in a slightly smaller size. 
+.TP 10
+.B "tt"
+The fixed-width font (teletype) used in texts.
+.TP 10
+.B "key"
+The font used for describing key caps.
+.TP 10
+.B "rm"
+Roman font.  In help texts.
+.TP 10
+.B "sl"
+Slanted font.  In help texts.
+.TP 10
+.B "bf"
+Bold face.  In help texts.
+.TP 10
+.B "bs"
+Slanted bold face.  In help texts.
+.TP 10
+.B "Logo"
+The \s-2@DDD@\s+2 logo font (uppercase letters).
+.TP 10
+.B "logo"
+The \s-2@DDD@\s+2 logo font (lowercase letters).
+.TP 10
+.B "symbol"
+The symbol font.  In help texts.
+.PP
+Here is an alternative, resolution-independent setting, which you may
+copy into your `\fB$HOME/.dddinit\fR' file:
+.sp
+.br
+  \fB@Ddd@*fontList: \\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\\
+  -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\\
+  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\\
+  -*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=rm,\\
+  -*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=bf,\\
+  -*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\\
+  -*-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*=Logo,\\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\\
+  -*-symbol-*-*-*-*-90-*-*-*-*-*-*=symbol\fR
+.br
+.sp
+The fonts in text fields and lists are specified as follows:
+.sp
+.br
+  \fB@Ddd@*XmTextField.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+  @Ddd@*XmText.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+  @Ddd@*XmList.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset\fR
+.br
+.sp
+And here is another resolution-independent alternative:
+.sp
+.br
+  \fB@Ddd@*XmTextField.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+  @Ddd@*XmText.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+  @Ddd@*XmList.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset\fR
+.br
+.sp
+These are the fonts in the command tool:
+.sp
+.br
+  \fB@Ddd@*tool_buttons.run.fontList: \\
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
+  @Ddd@*tool_buttons.break.fontList: \\
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
+  @Ddd@*tool_buttons*fontList: \\
+  -*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*=charset\fR
+.br
+.sp
+The resolution-independent alternative looks like this:
+.sp
+.br
+  \fB@Ddd@*tool_buttons.run.fontList: \\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+  @Ddd@*tool_buttons.break.fontList: \\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+  @Ddd@*tool_buttons*fontList: \\
+  -*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset\fR
+.br
+.sp
+Pick your choice and copy and modify the appropriate resources to your
+`\fB$HOME/.dddinit\fR' file.  For fonts within the data display, see
+the `\fBvslDefs\fR' resource, below.
+.\"
+.\"
+.\"
+.SS "Setting @DDD@ Colors"
+.PP
+These are the most important color resources used in \s-2@DDD@\s+2:
+.sp
+.br
+  \fB@Ddd@*foreground:              black
+.br
+  @Ddd@*background:              grey
+.br
+  @Ddd@*XmText.background:       grey90
+.br
+  @Ddd@*XmTextField.background:  grey90
+.br
+  @Ddd@*GraphEdit.background:    grey90
+.br
+  @Ddd@*XmList.background:       grey90
+.sp
+  @Ddd@*graph_edit.nodeColor:    black
+.br
+  @Ddd@*graph_edit.edgeColor:    blue4
+.br
+  @Ddd@*graph_edit.selectColor:  black
+.br
+  @Ddd@*graph_edit.gridColor:    black
+.br
+  @Ddd@*graph_edit.frameColor:   grey50
+.br
+  @Ddd@*graph_edit.outlineColor: grey50\fR
+.br
+.sp
+Again, you can copy and modify the appropriate resources to your
+`\fB$HOME/.dddinit\fR' file.  For colors within the data display, see
+the `\fBvslDefs\fR' resource, below.
+.\"
+.\"
 .\"
 .SS "Options and Preferences"
+The following resources determine \s-2@DDD@\s+2 options and preferences.
 .TP
 .B "cacheMachineCode (\fPclass\fB CacheMachineCode)"
 Whether to cache disassembled machine code (`\fBtrue\fR', default) or
@@ -1562,6 +1720,7 @@ different X or Motif configuration.  By default, this is
 .\"
 .\"
 .SS "Debugger Settings"
+The following resources determine the inferior debugger.
 .TP
 .B "dbxInitCommands (\fPclass\fB DBXInitCommands)"
 This string contains a list of newline-separated commands that are
@@ -1652,6 +1811,7 @@ documentation for details.
 .\"
 .\"
 .SS "User-defined Buttons"
+The following resources can be used to create user-defined buttons.
 .TP
 .B "consoleButtons (\fPclass\fB ConsoleButtons)"
 A colon-separated list of buttons to be added under the debugger
@@ -1837,162 +1997,8 @@ positions for \fIall\fR buttons in the command tool.  See the
 .\"
 .\"
 .\"
-.SS "Fonts and Colors"
-.TP
-.B "General font settings"
-These are the fonts used in \s-2@DDD@\s+2:
-.RS
-.TP 10
-.B "charset" 
-The default font in buttons, menus, etc.
-.TP 10
-.B "small"
-The default font in a slightly smaller size. 
-.TP 10
-.B "tt"
-The fixed-width font (teletype) used in texts.
-.TP 10
-.B "key"
-The font used for describing key caps.
-.TP 10
-.B "rm"
-Roman font.  In help texts.
-.TP 10
-.B "sl"
-Slanted font.  In help texts.
-.TP 10
-.B "bf"
-Bold face.  In help texts.
-.TP 10
-.B "bs"
-Slanted bold face.  In help texts.
-.TP 10
-.B "Logo"
-The \s-2@DDD@\s+2 logo font (uppercase letters).
-.TP 10
-.B "logo"
-The \s-2@DDD@\s+2 logo font (lowercase letters).
-.TP 10
-.B "symbol"
-The symbol font.  In help texts.
-.RE
-.sp
-.RS
-This is the default font setting:
-.sp
-.br
-  \fB@Ddd@*fontList: \\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\\
-  -*-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*=small,\\
-  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=tt,\\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=key,\\
-  -*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*=rm,\\
-  -*-helvetica-medium-o-*-*-12-*-*-*-*-*-*-*=sl,\\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=bf,\\
-  -*-helvetica-bold-o-*-*-12-*-*-*-*-*-*-*=bs,\\
-  -*-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*=Logo,\\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=logo,\\
-  -*-symbol-*-*-*-12-*-*-*-*-*-*-*=symbol
-.br
-.sp
-Here is an alternative, resolution-independent setting.
-.sp
-.br
-  \fB@Ddd@*fontList: \\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\\
-  -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\\
-  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\\
-  -*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=rm,\\
-  -*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=bf,\\
-  -*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\\
-  -*-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*=Logo,\\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\\
-  -*-symbol-*-*-*-*-90-*-*-*-*-*-*=symbol\fR
-.br
-.sp
-The fonts in text fields are specified as follows:
-.sp
-.br
-  \fB@Ddd@*XmTextField.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
-  @Ddd@*XmText.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
-  @Ddd@*XmList.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset\fR
-.br
-.sp
-Here is the resolution-independent alternative:
-.sp
-.br
-  \fB@Ddd@*XmTextField.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
-  @Ddd@*XmText.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
-  @Ddd@*XmList.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset\fR
-.br
-.sp
-These are the fonts in the command tool:
-.sp
-.br
-  \fB@Ddd@*tool_buttons.run.fontList: \\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
-  @Ddd@*tool_buttons.break.fontList: \\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
-  @Ddd@*tool_buttons*fontList: \\
-  -*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*=charset\fR
-.br
-.sp
-Here is the resolution-independent alternative:
-.sp
-.br
-  \fB@Ddd@*tool_buttons.run.fontList: \\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
-  @Ddd@*tool_buttons.break.fontList: \\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
-  @Ddd@*tool_buttons*fontList: \\
-  -*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset\fR
-.br
-.sp
-For fonts in the data display, see the `\fBvslDefs\fR' resource,
-below.
-.RE
-.sp
-.TP
-.B "General color settings"
-These are the most important color resources used in \s-2@DDD@\s+2:
-.sp
-.br
-\fB@Ddd@*foreground:              black
-.br
-@Ddd@*background:              grey
-.br
-@Ddd@*XmText.background:       grey90
-.br
-@Ddd@*XmTextField.background:  grey90
-.br
-@Ddd@*GraphEdit.background:    grey90
-.br
-@Ddd@*XmList.background:       grey90
-.sp
-@Ddd@*graph_edit.nodeColor:    black
-.br
-@Ddd@*graph_edit.edgeColor:    blue4
-.br
-@Ddd@*graph_edit.selectColor:  black
-.br
-@Ddd@*graph_edit.gridColor:    black
-.br
-@Ddd@*graph_edit.frameColor:   grey50
-.br
-@Ddd@*graph_edit.outlineColor: grey50\fR
-.br
-.sp
-For colors within the data displays, see the `\fBvslDefs\fR' resource,
-below.
-.RE
+.SS "Data Display Resources"
+The following resources control the data display.
 .TP
 .B "vslDefs (\fPclass\fB VSLDefs)"
 A string with additional \s-2VSL\s+2 definitions that are appended to
@@ -2004,7 +2010,7 @@ The general pattern to replace a function definition \fIFUNCTION\fR with a new
 definition \fINEW_DEF\fR is:
 .sp
 .br
-\fB#replace \fIFUNCTION\fR
+\fB#pragma replace \fIFUNCTION\fR
 .br
 \fIFUNCTION\fB(\fIARGS\fR...\fB) = \fINEW_DEF\fB;\fR
 .br
@@ -2052,22 +2058,22 @@ The font family used.  One of \fBfamily_times()\fR,
 \fBfamily_new_century()\fR, or \fBfamily_typewriter()\fR (default).
 .TP 10
 .B "stdfontsize()"
-The font size used (in pixels).  0 means to use
+The font size used (in pixels).  \fB0\fR means to use
 \fBstdfontpoints()\fR instead.  Default value: \fB12\fR.
 .TP 10
 .B "stdfontpoints()"
-The font size used (in 1/10 points).  0 (default) means to use
+The font size used (in 1/10 points).  \fB0\fR (default) means to use
 \fBstdfontsize()\fR instead.
 .TP 10
 .B "stdfontweight()"
-The font weight used.  One of \fBweight_medium()\fR (default) or
+The font weight used.  Either \fBweight_medium()\fR (default) or
 \fBweight_bold()\fR.
 .PP
 To set the pointer color to "red4", use
 .sp
 .br
   \fB@Ddd@*vslDefs: \\
-  #replace pointer_color\\n\\
+  #pragma replace pointer_color\\n\\
   pointer_color(box) = color(box, "red4");\\n\fR
 .br
 .sp
@@ -2075,8 +2081,8 @@ To set the default font size to resolution-independent 10.0 points, use
 .sp
 .br
   \fB@Ddd@*vslDefs: \\
-  #replace stdfontsize\\n\\
-  #replace stdfontpoints\\n\\
+  #pragma replace stdfontsize\\n\\
+  #pragma replace stdfontpoints\\n\\
   stdfontsize() = 0;\\n
   stdfontpoints() = 100;\\n\fR
 .br
@@ -2085,8 +2091,8 @@ To set the default font to 12-pixel courier, use
 .sp
 .br
   \fB@Ddd@*vslDefs: \\
-  #replace stdfontsize\\n\\
-  #replace stdfontfamily\\n\\
+  #pragma replace stdfontsize\\n\\
+  #pragma replace stdfontfamily\\n\\
   stdfontsize() = 12;\\n\\
   stdfontfamily() = family_courier();\\n\fR
 .br
@@ -2105,20 +2111,18 @@ include files.  Default is `\fB.\fR', the current directory.
 .RS
 .PP
 If your \s-2@DDD@\s+2 source distribution is installed in
-`\fB/usr/local/src\fR', you can use the following settings to read the
+`\fB/opt/src\fR', you can use the following settings to read the
 \s-2VSL\s+2 library from `\fB/home/joe/ddd.vsl\fR':
 .sp
 .br
   \fB@Ddd@*vslLibrary:  /home/joe/ddd.vsl
   @Ddd@*vslPath:  \\
-  .:/usr/local/src/ddd/ddd:\\
-  /usr/local/src/ddd/vsllib\fR
+  .:/opt/src/ddd/ddd:/opt/src/ddd/vsllib\fR
 .br
 .sp
 \s-2VSL\s+2 include files referenced by `\fB/home/joe/ddd.vsl\fR' are
 searched first in the current directory `\fB.\fR', then in
-`\fB/usr/local/src/ddd/ddd/\fR', and then in
-`\fB/usr/local/src/ddd/vsllib/\fR'.
+`\fB/opt/src/ddd/ddd/\fR', and then in `\fB/opt/src/ddd/vsllib/\fR'.
 .PP
 Instead of supplying another \s-2VSL\s+2 library, it is often easier
 to specify some minor changes to the built-in library.  See the
@@ -2130,7 +2134,8 @@ to specify some minor changes to the built-in library.  See the
 .\"
 .\"
 .\"
-.SS "Helper Programs"
+.SS "Customizing Helper Programs"
+The following resources determine external programs invoked by \s-2@DDD@\s+2.
 .TP
 .B "editCommand (\fPclass\fB EditCommand)"
 A command string to invoke an editor on the specific file.
@@ -2221,7 +2226,6 @@ tty is appended this string.  A simple value is
 .br
   \fB@Ddd@*termCommand: xterm -e /bin/sh -c\fR
 .br
-.sp
 .TP
 .B "termType (\fPclass\fB TermType)"
 The terminal type provided by the `\fBtermCommand\fR'
@@ -2258,7 +2262,9 @@ The \s-2@DDD@\s+2 \s-2WWW\s+2 page.  Value:
 .\"
 .\"
 .\"
-.SS "Diagnostics"
+.SS "Obtaining Diagnostics"
+The following resources are used for debugging \s-2@DDD@\s+2 and to
+obtain specific \s-2@DDD@\s+2 information.
 .TP
 .B "appDefaultsVersion (\fPclass\fB Version)"
 The version of the \s-2@DDD@\s+2 app-defaults file.  If this string
@@ -2310,9 +2316,9 @@ standard output.  Default is `\fBfalse\fR'.
 .\"
 .\"
 .SS "More Resources"
-See the `\fBDdd\fR' application defaults file for more information
-about setting \s-2@DDD@\s+2 resources.  The `\fBDdd\fR' file comes
-with the \s-2@DDD@\s+2 distribution.
+The `\fBDdd\fR' application defaults file contains even more
+information about setting \s-2@DDD@\s+2 resources.  The `\fBDdd\fR'
+file comes with the \s-2@DDD@\s+2 distribution.
 .\"
 .\" ---------------
 .SH "EXTENDING @DDD@"
