@@ -100,7 +100,7 @@ end
 
 define perl
     ddd
-    set args --perl --trace xbm2xface.pl
+    set args --perl --trace @srcdir@/perltest.pl
 end
 document perl
     Setup environment for debugging DDD with Perl
