@@ -384,6 +384,7 @@ Volunteers for these and other projects are welcome!
 
 183. Have a way to re-dereference until a NULL pointer is encountered.
 
-184. Include support for the `attach' command.
+185. Make sure that `open core' and `attach' only work if there is a
+     current executable.
 
-185. (Insert your project idea here)
+186. (Insert your project idea here)
