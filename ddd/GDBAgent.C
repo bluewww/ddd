@@ -444,23 +444,26 @@ bool GDBAgent::ends_with_secondary_prompt (const string& answer)
 string GDBAgent::requires_reply (const string& answer)
 {
     // GDB says: `---Type <return> to continue, or q <return> to quit---'
-    // DBX 3.0 says: `(END)' and `(press RETURN)'
+    // DBX 3.0 says: `line N', `(END)' and `(press RETURN)'
     // XDB says: `--More--' and `Hit RETURN to continue'.
     // Escape sequences may also be embedded, but the prompt never
     // ends in a newline.
-    static regex RXspace(".*--More--[^\n]*");
+
+    if (answer.contains('\n', -1) || ends_with_prompt(answer))
+	return "";
+
+    static regex RXq(".*[(]END[)][^\n]*");
+    if (answer.matches(RXq))
+	return "q";		// Stop this
+
+    static regex RXspace(".*(--More--|line [0-9]|\a)[^\n]*");
+    if (answer.matches(RXspace))
+	return " ";		// Keep on scrolling
+
     static regex 
 	RXreturn(".*([(]press RETURN[)]|Hit RETURN to continue)[^\n]*");
-    static regex RXq(".*[(]END[)][^\n]*");
-
-    if (answer.contains('\n', -1))
-	return "";
-    if (answer.matches(RXspace))
-	return " ";
     if (answer.matches(RXreturn))
-	return "\n";
-    if (answer.matches(RXq))
-	return "q";
+	return "\n";		// Keep on scrolling
 
     return "";
 }
@@ -586,7 +589,7 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	gdb->flush();
 
 	// Ignore the `more' prompt
-	answer = answer.before('\n', -1);
+	answer += '\r';
     }
 
     if (gdb->ends_with_secondary_prompt(answer))
