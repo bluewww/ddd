@@ -5,7 +5,7 @@
 
 @c Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
 @c Copyright (C) 1999 Universitaet Passau, Germany.
-@c Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+@c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
 @c This file is part of DDD.
 @c 
@@ -26,8 +26,8 @@
 @c 
 @c DDD is the data display debugger.
 @c For details, see the DDD World-Wide-Web page, 
-@c `http://www.cs.tu-bs.de/softech/ddd/',
-@c or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+@c `http://www.gnu.org/software/ddd/',
+@c or send a mail to the DDD developers <ddd@gnu.org>.
 
 @c %**start of header
 @c !!set DDD manual's edition---not the same as DDD version!
@@ -89,10 +89,10 @@ Innstrasse 33 @*
 D-94032 Passau @*
 GERMANY
 
-E-mail: @email{@value{ddd}@@fmi.uni-passau.de}
+E-mail: @email{@value{ddd}@@gnu.org}
 
 @value{DDD} and this manual are available via @*
-@uref{http://www.fmi.uni-passau.de/st/ddd/, the @value{DDD} WWW page}.
+@uref{http://www.gnu.org/software/ddd/, the @value{DDD} WWW page}.
 @end group
 
 Permission is granted to make and distribute verbatim copies of
@@ -137,7 +137,7 @@ into another language, under the above conditions for modified versions.
 @page
 @tex
 {\parskip=0pt
-\hfill (Send bugs and comments on @value{DDD} to ddd\@fmi.uni-passau.de.)\par
+\hfill (Send bugs and comments on @value{DDD} to bug-ddd\@gnu.org.)\par
 \hfill {\it Debugging with @value{DDD}}\par
 \hfill \TeX{}info \texinfoversion\par
 }
@@ -157,10 +157,10 @@ Innstrasse 33 @*
 D-94032 Passau @*
 GERMANY
 
-E-mail: @email{@value{ddd}@@fmi.uni-passau.de} @*
+E-mail: @email{@value{ddd}@@gnu.org} @*
 
 @value{DDD} and this manual are available via @*
-@uref{http://www.fmi.uni-passau.de/st/ddd/, the @value{DDD} WWW page}.
+@uref{http://www.gnu.org/software/ddd/, the @value{DDD} WWW page}.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -344,7 +344,7 @@ comes without pictures.  You should have a local copy installed, which
 you can browse via Emacs, the standalone @file{info} program, or from
 DDD via @samp{Help @result{} @value{DDD} Manual}.
 
-The @uref{http://www.fmi.uni-passau.de/st/ddd/, @value{DDD} WWW page}
+The @uref{http://www.gnu.org/software/ddd/, @value{DDD} WWW page}
 holds DDD info files for downloading.
 
 @item
@@ -352,7 +352,7 @@ The @emph{HTML} format is used for browsing on bitmap devices; it
 includes several pictures.  You can view it using a HTML browser,
 typically from a local copy.  
 
-The @uref{http://www.fmi.uni-passau.de/st/ddd/, @value{DDD} WWW page}
+The @uref{http://www.gnu.org/software/ddd/, @value{DDD} WWW page}
 holds online copies of the most recent @value{DDD} manual.
 You can also download HTML files there to install them locally
 (recommended).
@@ -361,7 +361,7 @@ You can also download HTML files there to install them locally
 The @emph{PostScript} format is used for printing on paper; it comes
 with pictures as well.  
 
-The @uref{http://www.fmi.uni-passau.de/st/ddd/, @value{DDD} WWW page}
+The @uref{http://www.gnu.org/software/ddd/, @value{DDD} WWW page}
 holds this manual in PostScript format.
 @end itemize
 
@@ -480,7 +480,7 @@ GERMANY
 
 @cindex Guestbook
 You may also leave a message in the @emph{@value{DDD} Guestbook}. It is
-accessible via @uref{http://www.fmi.uni-passau.de/st/ddd/, the
+accessible via @uref{http://www.gnu.org/software/ddd/, the
 @value{DDD} WWW page}.
 
 
@@ -8345,7 +8345,7 @@ Page}:
 
 @defvr Resource wwwPage (class WWWPage)
 The @value{DDD} WWW page.  Value:
-@uref{http://www.fmi.uni-passau.de/st/ddd/}
+@uref{http://www.gnu.org/software/ddd/}
 @end defvr
 
 

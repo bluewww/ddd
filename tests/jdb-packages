@@ -1,11 +1,11 @@
 From owner-ddd-bugs@ibr.cs.tu-bs.de  Mon Dec 14 19:42:44 1998
 From: Jonathan Edwards <edwards@intranet.com>
 Subject: [ddd-bugs] Java package source error
-To: ddd-bugs@ips.cs.tu-bs.de
+To: bug-ddd@gnu.org
 Date: Mon, 14 Dec 1998 13:39:11 -0500 (EST)
 Received: from mumm.ibr.cs.tu-bs.de (majordom@mumm.ibr.cs.tu-bs.de [134.169.34.190])
 	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with ESMTP id TAA09490
-	for <zeller@ips.cs.tu-bs.de>; Mon, 14 Dec 1998 19:42:39 +0100
+	for <zeller@gnu.org>; Mon, 14 Dec 1998 19:42:39 +0100
 Received: by mumm.ibr.cs.tu-bs.de (8.9.1/8.9.0) id TAA22062
 	for ddd-bugs-outgoing; Mon, 14 Dec 1998 19:42:35 +0100 (MET)
 Received: from infbssys.ips.cs.tu-bs.de (root@infbssys.ips.cs.tu-bs.de [134.169.32.1])
@@ -13,7 +13,7 @@ Received: from infbssys.ips.cs.tu-bs.de (root@infbssys.ips.cs.tu-bs.de [134.169.
 	for <ddd-bugs@ibr.cs.tu-bs.de>; Mon, 14 Dec 1998 19:42:30 +0100 (MET)
 Received: from omega.intranet.com (omega.intranet.com [208.195.240.42])
 	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with SMTP id TAA09484
-	for <ddd-bugs@ips.cs.tu-bs.de>; Mon, 14 Dec 1998 19:42:14 +0100
+	for <bug-ddd@gnu.org>; Mon, 14 Dec 1998 19:42:14 +0100
 Received: by omega.intranet.com; (5.65v3.2/1.3/10May95) id AA26132; Mon, 14 Dec 1998 13:45:47 -0500
 Received: from somewhere by smtpxd
 Received: from somewhere by smtpxd
@@ -155,11 +155,11 @@ $  ddd pkg.Test
 -----
 This message is brought to you via the `ddd-bugs' mailing list.
 
-Send messages to all subscribers:           ddd-bugs@ips.cs.tu-bs.de
-Administrative requests (unsubscribing...): ddd-bugs-request@ips.cs.tu-bs.de
+Send messages to all subscribers:           bug-ddd@gnu.org
+Administrative requests (unsubscribing...): bug-ddd-request@gnu.org
 
-Message archive:     http://www.cs.tu-bs.de/softech/ddd/ddd-bugs/
-Recent DDD info:     http://www.cs.tu-bs.de/softech/ddd/
+Message archive:     http://www.gnu.org/software/ddd/ddd-bugs/
+Recent DDD info:     http://www.gnu.org/software/ddd/
 Recent DDD software: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
 DDD mirror sites:    ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/
                      ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/

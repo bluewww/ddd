@@ -63,7 +63,7 @@ To run DDD, you need:
 
      If you are running a UNIX system, you certainly have X.  For
      Windows systems, free X servers are available.  See the DDD FAQ
-     under `http://www.cs.tu-bs.de/softech/ddd/' for useful links.
+     under `http://www.gnu.org/software/ddd/' for useful links.
 
    * A command-line debugger (the so-called `inferior' debugger).
 
@@ -146,7 +146,7 @@ it or regenerate `configure' using a newer version of `autoconf'.
 
 The simplest way to compile DDD is:
 
-  1. See the DDD WWW page, `http://www.cs.tu-bs.de/softech/ddd/',
+  1. See the DDD WWW page, `http://www.gnu.org/software/ddd/',
      for recent release notes.
 
   2. See the file `PROBLEMS' for known problems during build and
@@ -228,8 +228,8 @@ The simplest way to compile DDD is:
 
      Then, see the `PROBLEMS' and `BUGS' files for known problems.  If
      the problem is not listed, report it to the DDD maintainers
-     <ddd-bugs@ips.cs.tu-bs.de>.  If you need help and assistance, see
-     the DDD WWW page `http://www.cs.tu-bs.de/softech/ddd/' for
+     <bug-ddd@gnu.org>.  If you need help and assistance, see
+     the DDD WWW page `http://www.gnu.org/software/ddd/' for
      patches, people, and pointers.
 
  11. Optionally, type
@@ -531,7 +531,7 @@ Abort compilation and fix the problem.
 
 If you find the warning can be avoided by changing some code or by
 changing the DDD build process, please send a bug report to the DDD
-maintainers <ddd-bugs@ips.cs.tu-bs.de>.  Be sure to include a context
+maintainers <bug-ddd@gnu.org>.  Be sure to include a context
 diff (`diff -c5') between the original and the changed file(s).
 
 
@@ -549,7 +549,7 @@ listed there, please ask a local expert for help.
 
 If you find the error can be avoided by changing some DDD code or by
 changing the DDD build process, please send a bug report to the DDD
-maintainers <ddd-bugs@ips.cs.tu-bs.de>.  Be sure to include a context
+maintainers <bug-ddd@gnu.org>.  Be sure to include a context
 diff (`diff -c5') between the original and the changed file(s).
 
 

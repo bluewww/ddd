@@ -2,7 +2,7 @@
 static char * dddsplash_xpm[] = {
 /* $Id$
  * DDD Splash Screen.  Copyright (C) 1998 Stefan Stiasny <sc@swi.ml.org>
- * For details on DDD, see `http://www.cs.tu-bs.de/softech/ddd/'.
+ * For details on DDD, see `http://www.gnu.org/software/ddd/'.
  * width height ncolors chars_per_pixel */
 "   410   140       32            1",
 /* colors */

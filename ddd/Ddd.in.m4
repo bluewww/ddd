@@ -7,7 +7,7 @@ Ddd*appDefaultsVersion: @VERSION@
 
 ! Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 ! Copyright (C) 1999 Universitaet Passau, Germany.
-! Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+! Written by Andreas Zeller <zeller@gnu.org>.
 ! 
 ! This file is part of DDD.
 ! 
@@ -28,8 +28,8 @@ Ddd*appDefaultsVersion: @VERSION@
 ! 
 ! DDD is the data display debugger.
 ! For details, see the DDD World-Wide-Web page, 
-! `http://www.cs.tu-bs.de/softech/ddd/',
-! or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+! `http://www.gnu.org/software/ddd/',
+! or send a mail to the DDD developers <ddd@gnu.org>.
 
 ! =================================================================
 ! NOTE: If you're looking here for things to customize, look
@@ -300,7 +300,7 @@ Ddd*uncompressCommand: @UNCOMPRESS@
 
 
 ! The DDD WWW page.
-Ddd*wwwPage: http://www.fmi.uni-passau.de/st/ddd/
+Ddd*wwwPage: http://www.gnu.org/software/ddd/
 
 
 ! Command to invoke a WWW browser.  @URL@ stands for the URL to open.
@@ -6456,7 +6456,7 @@ Ddd*fatal_dialog*helpString: \
 You should better restart DDD now; DDD may fail again soon.\n\
 \n\
 If you can reproduce this bug, please send a bug report\n\
-to EMAIL([ddd]-bugs@ fmi.uni-passau.de), giving a subject like\n\
+to EMAIL(bug-[ddd]@gnu.org), giving a subject like\n\
 \n\
     DDD @VERSION@ (@host@) gets @CAUSE@\n\
 \n\

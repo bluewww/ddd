@@ -390,7 +390,7 @@ DDD 2.1
       for us or just reported it to us so we could fix it, then this
       release scheme may not be good enough for you.  Therefore, we
       now also have a daily snapshot of our CVS repository.  See the
-      DDD WWW page `http://www.cs.tu-bs.de/softech/ddd/' for details.
+      DDD WWW page `http://www.gnu.org/software/ddd/' for details.
 
 
 
@@ -702,7 +702,7 @@ DDD 1.3b
     - DDD can now be interrupted using the SIGINT signal.
     - In the breakpoint editor, you can now set multiple breakpoint
       conditions and ignore counts at a time.
-    - The DDD WWW page has moved to `http://www.cs.tu-bs.de/softech/ddd/'.
+    - The DDD WWW page has moved to `http://www.gnu.org/software/ddd/'.
 
 
 DDD 1.3a

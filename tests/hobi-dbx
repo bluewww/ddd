@@ -4,10 +4,10 @@ X-VM-v5-Data: ([nil nil nil nil nil nil nil nil nil]
 	["12291" "Tue" "4" "August" "1998" "18:12:22" "+0200" "Hobi" "hobelsbe@forwiss.uni-passau.de" "<35C732E6.280EC4F1@forwiss.uni-passau.de>" "384" "Re: Debug Sessions in Solaris DBX" "^From:" nil nil "8" "1998080416:12:22" "Debug Sessions in Solaris DBX" nil "<13767.11352.720512.2129@infbssts.ips.cs.tu-bs.de>" ("<35C70566.C4C35EC2@forwiss.uni-passau.de>" "<ogu33sonbd.fsf@infbssts.ips.cs.tu-bs.de>" "<35C716F3.D408A15C@forwiss.uni-passau.de>" "<13767.6156.125632.16569@infbssts.ips.cs.tu-bs.de>" "<35C71D1C.56C7658C@forwiss.uni-passau.de>" "<13767.8212.512904.44050@infbssts.ips.cs.tu-bs.de>" "<35C72A32.7513A866@forwiss.uni-passau.de>" "<13767.11352.720512.2129@infbssts.ips.cs.tu-bs.de>")]
 	nil)
 Received: from sauron.forwiss.uni-passau.de (sauron.forwiss.uni-passau.de [132.231.20.100]) by infbssys.ips.cs.tu-bs.de with ESMTP id SAA15381
-  (8.8.8/IDA-1.6 for <zeller@ips.cs.tu-bs.de>); Tue, 4 Aug 1998 18:12:23 +0200
+  (8.8.8/IDA-1.6 for <zeller@gnu.org>); Tue, 4 Aug 1998 18:12:23 +0200
 Received: from forwiss.uni-passau.de (bombadill.forwiss.uni-passau.de [132.231.20.16])
 	by sauron.forwiss.uni-passau.de (8.8.8/8.8.8) with ESMTP id SAA24590
-	for <zeller@ips.cs.tu-bs.de>; Tue, 4 Aug 1998 18:12:22 +0200 (MET DST)
+	for <zeller@gnu.org>; Tue, 4 Aug 1998 18:12:22 +0200 (MET DST)
 Message-ID: <35C732E6.280EC4F1@forwiss.uni-passau.de>
 Organization: Forwiss Passau
 X-Mailer: Mozilla 4.5b1 [en] (X11; I; SunOS 5.5.1 sun4u)
@@ -24,7 +24,7 @@ Content-Type: multipart/mixed;
  boundary="------------93C788B121EA033F863B3DBC"
 From: Hobi <hobelsbe@forwiss.uni-passau.de>
 Sender: hobelsbe@forwiss.uni-passau.de
-To: Andreas Zeller <zeller@ips.cs.tu-bs.de>
+To: Andreas Zeller <zeller@gnu.org>
 Subject: Re: Debug Sessions in Solaris DBX
 Date: Tue, 04 Aug 1998 18:12:22 +0200
 

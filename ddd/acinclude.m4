@@ -2,7 +2,7 @@ dnl $Id$ -*- autoconf -*-
 dnl ICE and DDD autoconf macros
 dnl 
 dnl Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
-dnl Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
 dnl This file is part of the ICE Library.
 dnl 
@@ -28,8 +28,8 @@ dnl or send a mail to the ICE developers at `ice@ips.cs.tu-bs.de'.
 dnl
 dnl DDD is the data display debugger.
 dnl For details, see the DDD World-Wide-Web page, 
-dnl `http://www.cs.tu-bs.de/softech/ddd/',
-dnl or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+dnl `http://www.gnu.org/software/ddd/',
+dnl or send a mail to the DDD developers <ddd@gnu.org>.
 dnl
 dnl
 dnl ICE_PROG_CC and ICE_PROG_CXX

@@ -10,7 +10,7 @@
 \!<BODY!a\
 <ADDRESS>\
 <SMALL CLASS=header>\
-<A HREF="http://www.fmi.uni-passau.de/st/ddd/">DDD Home Page</A>\
+<A HREF="http://www.gnu.org/software/ddd/">DDD Home Page</A>\
 </SMALL>\
 </ADDRESS>
 

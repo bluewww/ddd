@@ -1,19 +1,19 @@
 From zs@sgi.com  Wed Dec  2 14:32:52 1998
 From: Zdenek Sekera <zs@sgi.com>
 Subject: Re: [ddd-bugs] ddd 11-25, run/rerun has problems
-To: Andreas Zeller <zeller@ips.cs.tu-bs.de>
+To: Andreas Zeller <zeller@gnu.org>
 Date: Wed, 02 Dec 1998 14:27:23 +0100
 Organization: Silicon Graphics
 Received: from eugate.sgi.com (eugate.sgi.com [193.73.159.10])
 	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with ESMTP id OAA15312
-	for <zeller@ips.cs.tu-bs.de>; Wed, 2 Dec 1998 14:29:43 +0100
+	for <zeller@gnu.org>; Wed, 2 Dec 1998 14:29:43 +0100
 Received: from sgls.gland.sgi.com (sgls.gland.sgi.com [144.253.147.2]) by eugate.sgi.com (980305.SGI.8.8.8-aspam-6.2/980304.SGI-aspam-europe) via SMTP id OAA00636
-	for <@eugate.sgi.com:zeller@ips.cs.tu-bs.de>; Wed, 2 Dec 1998 14:29:24 +0100 (MET)
+	for <@eugate.sgi.com:zeller@gnu.org>; Wed, 2 Dec 1998 14:29:24 +0100 (MET)
 	mail_from (zs@sgi.com)
 Received: from strad.gland.sgi.com by sgls.gland.sgi.com via ESMTP (950413.SGI.8.6.12/930416.SGI)
-	for <@sgls.gland.sgi.com:zeller@ips.cs.tu-bs.de> id OAA10043; Wed, 2 Dec 1998 14:27:27 +0100
+	for <@sgls.gland.sgi.com:zeller@gnu.org> id OAA10043; Wed, 2 Dec 1998 14:27:27 +0100
 Received: from sgi.com by strad.gland.sgi.com via ESMTP (980427.SGI.8.8.8/930416.SGI)
-	for <zeller@ips.cs.tu-bs.de> id OAA83891; Wed, 2 Dec 1998 14:27:23 +0100 (MET)
+	for <zeller@gnu.org> id OAA83891; Wed, 2 Dec 1998 14:27:23 +0100 (MET)
 Sender: zs@sgi.com
 Message-ID: <3665403B.8C6A5D5E@sgi.com>
 X-Mailer: Mozilla 4.07C-SGI [en] (X11; I; IRIX 6.5 IP22)

@@ -2,7 +2,7 @@
 // DDD interface to GDB commands
 
 // Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
-// Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+// Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
 // 
@@ -23,8 +23,8 @@
 // 
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
-// `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+// `http://www.gnu.org/software/ddd/',
+// or send a mail to the DDD developers <ddd@gnu.org>.
 
 // Whenever I think of DDD, I'm reminded of that song by Trio that was 
 // featured in those Volkswagen commercials -- "Da Da Da".

@@ -3,7 +3,7 @@
 # Install DDD release on local FTP server
 
 # Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
-# Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+# Written by Andreas Zeller <zeller@gnu.org>.
 # 
 # This file is part of the DDD Library.
 # 
@@ -24,8 +24,8 @@
 # 
 # DDD is the data display debugger.
 # For details, see the DDD World-Wide-Web page, 
-# `http://www.cs.tu-bs.de/softech/ddd/',
-# or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+# `http://www.gnu.org/software/ddd/',
+# or send a mail to the DDD developers <ddd@gnu.org>.
 
 # Name of the FTP server (use "" if local)
 # ftp=ftp
@@ -286,7 +286,7 @@ if $diff; then
       echo "$DIFF_IGNORE" | sed 's/^/    &/'
       echo
       echo
-      echo "Please report any bugs or problems to ddd-bugs@ips.cs.tu-bs.de."
+      echo "Please report any bugs or problems to bug-ddd@gnu.org."
       echo
       # echo "Prereq: $file_release"
       # echo

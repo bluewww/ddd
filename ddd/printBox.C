@@ -23,8 +23,8 @@
 // 
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
-// `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+// `http://www.gnu.org/software/ddd/',
+// or send a mail to the DDD developers <ddd@gnu.org>.
 
 char printBox_rcsid[] = 
     "$Id$";

@@ -1,0 +1,13 @@
+# Translations applied to move DDD to GNU
+
+s/zeller\(@*\)ips\.cs\.tu-bs\.de/zeller\1gnu.org/g
+s/andreas.zeller\(@@*\)fmi\.uni-passau\.de/zeller\1gnu.org/g
+s/ddd\(@@*\)ips\.cs\.tu-bs\.de/ddd\1gnu.org/g
+s/ddd\(@@*\)fmi\.uni-passau\.de/ddd\1gnu.org/g
+s,ddd-bugs\(@@*\)ips\.cs\.tu-bs\.de,bug-ddd\1gnu.org,g
+s,ddd-users\(@@*\)ips\.cs\.tu-bs\.de,help-ddd\1gnu.org,g
+s,www\.cs\.tu-bs\.de/softech/ddd/,www.gnu.org/software/ddd/,g
+s,www\.fmi\.uni-passau\.de/st/ddd/,www.gnu.org/software/ddd/,g
+s,ddd-bugs-request\(@@*\)ips\.cs\.tu-bs\.de,bug-ddd-request\1gnu.org,g
+s,ddd-users-request\(@@*\)ips\.cs\.tu-bs\.de,help-ddd-request\1gnu.org,g
+

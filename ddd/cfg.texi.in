@@ -3,7 +3,7 @@
 @c @configure_input@
 
 @c Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
-@c Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+@c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
 @c This file is part of DDD.
 @c 
@@ -24,8 +24,8 @@
 @c 
 @c DDD is the data display debugger.
 @c For details, see the DDD World-Wide-Web page, 
-@c `http://www.cs.tu-bs.de/softech/ddd/',
-@c or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+@c `http://www.gnu.org/software/ddd/',
+@c or send a mail to the DDD developers <ddd@gnu.org>.
 
 @c The product name.
 @set ddd @ddd@

@@ -2,7 +2,7 @@
 // Some DDD strings.
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+// Written by Andreas Zeller (zeller@gnu.org).
 // 
 // This file is part of the DDD Library.
 // 
@@ -23,8 +23,8 @@
 // 
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
-// `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// `http://www.gnu.org/software/ddd/',
+// or send a mail to the DDD developers at `ddd@gnu.org'.
 
 #ifndef _DDD_strings_h
 #define _DDD_strings_h

@@ -2,7 +2,7 @@
 // Macros for named return values (GNU C++ extension)
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+// Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of the ICE Library.
 // 

@@ -1,7 +1,7 @@
 dnl $Id$
 dnl 
 dnl Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
-dnl Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
 dnl This file is part of DDD.
 dnl 
@@ -22,8 +22,8 @@ dnl 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 dnl 
 dnl DDD is the data display debugger.
 dnl For details, see the DDD World-Wide-Web page, 
-dnl `http://www.cs.tu-bs.de/softech/ddd/',
-dnl or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+dnl `http://www.gnu.org/software/ddd/',
+dnl or send a mail to the DDD developers <ddd@gnu.org>.
 dnl
 dnl
 dnl M4 setup

@@ -2,7 +2,7 @@
 // Tic-Tac-Toe Game
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
-// Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+// Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
 // 
@@ -23,8 +23,8 @@
 // 
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
-// `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+// `http://www.gnu.org/software/ddd/',
+// or send a mail to the DDD developers <ddd@gnu.org>.
 
 // Based on a Java program by Scott L. Patterson <scott@uniqsys.com>.
 // See http://www.uniqsys.com/~scpatt/java/TicTacToe/ for details.

@@ -1,12 +1,12 @@
 From owner-ddd-bugs@ibr.cs.tu-bs.de  Mon Oct  5 13:57:43 1998
 From: Paolo Barbante <barbante@vki.ac.be>
 Subject: DDD 1998-09-01 (alphaev56-dec-osf4.0b) gets `Segmentation fault' signal
-To: ddd-bugs@ips.cs.tu-bs.de
+To: bug-ddd@gnu.org
 Date: Mon, 05 Oct 1998 13:56:15 +0200
 Organization: von Karman Institute for Fluid Dynamics
 Received: from mumm.ibr.cs.tu-bs.de (majordom@mumm.ibr.cs.tu-bs.de [134.169.34.190])
 	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with ESMTP id NAA17726
-	for <zeller@ips.cs.tu-bs.de>; Mon, 5 Oct 1998 13:57:42 +0200
+	for <zeller@gnu.org>; Mon, 5 Oct 1998 13:57:42 +0200
 Received: by mumm.ibr.cs.tu-bs.de (8.9.1/8.9.0) id NAA01352
 	for ddd-bugs-outgoing; Mon, 5 Oct 1998 13:57:14 +0200 (MET DST)
 Received: from infbssys.ips.cs.tu-bs.de (root@infbssys.ips.cs.tu-bs.de [134.169.32.1])
@@ -14,7 +14,7 @@ Received: from infbssys.ips.cs.tu-bs.de (root@infbssys.ips.cs.tu-bs.de [134.169.
 	for <ddd-bugs@ibr.cs.tu-bs.de>; Mon, 5 Oct 1998 13:57:13 +0200 (MET DST)
 Received: from server.vki.ac.be (server.vki.ac.be [193.190.162.1])
 	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with SMTP id NAA17719
-	for <ddd-bugs@ips.cs.tu-bs.de>; Mon, 5 Oct 1998 13:57:04 +0200
+	for <bug-ddd@gnu.org>; Mon, 5 Oct 1998 13:57:04 +0200
 Received: from aricp64.vki.ac.be by server.vki.ac.be (5.65v4.0/1.1.8.2/10Aug95-0928AM)
 	id AA09173; Mon, 5 Oct 1998 13:56:48 +0200
 Message-Id: <3618B3DF.C5C304A@vki.ac.be>
@@ -487,11 +487,11 @@ inconvenience.)
 -----
 This message is brought to you via the `ddd-bugs' mailing list.
 
-Send messages to all subscribers:           ddd-bugs@ips.cs.tu-bs.de
-Administrative requests (unsubscribing...): ddd-bugs-request@ips.cs.tu-bs.de
+Send messages to all subscribers:           bug-ddd@gnu.org
+Administrative requests (unsubscribing...): bug-ddd-request@gnu.org
 
-Message archive:     http://www.cs.tu-bs.de/softech/ddd/ddd-bugs/
-Recent DDD info:     http://www.cs.tu-bs.de/softech/ddd/
+Message archive:     http://www.gnu.org/software/ddd/ddd-bugs/
+Recent DDD info:     http://www.gnu.org/software/ddd/
 Recent DDD software: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
 DDD mirror sites:    ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/
                      ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/

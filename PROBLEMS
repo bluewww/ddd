@@ -39,7 +39,7 @@ Reported by: Rick Flower <Rick.Flower@trw.com>
 AIX
 ===
 
-Reported by: Andreas Zeller <ddd@ips.cs.tu-bs.de>
+Reported by: Andreas Zeller <ddd@gnu.org>
 
     Some EGCS versions on AIX have trouble compiling DDD.  If you get
     internal compiler errors, try compiling the affected modules
@@ -62,7 +62,7 @@ Reported by: Brian Cameron <bcameron@tuc.com>
 	#undef math_exception
 
 
-Reported by: Andreas Zeller <ddd@ips.cs.tu-bs.de>
+Reported by: Andreas Zeller <ddd@gnu.org>
 
     Because of a limitation in the AIX linker, linking of DDD may stop
     with the message "TOC overflow".  The AIX Table of Contents (TOC)

@@ -2,7 +2,7 @@
 // Exit DDD (including fatal exits)
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
-// Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+// Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
 // 
@@ -23,8 +23,8 @@
 // 
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
-// `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+// `http://www.gnu.org/software/ddd/',
+// or send a mail to the DDD developers <ddd@gnu.org>.
 
 char exit_rcsid[] = 
     "$Id$";
@@ -414,7 +414,7 @@ static void print_fatal_msg(char *title, char *cause, char *cls)
 	"Oops!  You have found a bug in " DDD_NAME ".\n"
 	"\n"
 	"If you can reproduce this bug, please send a bug report\n"
-	"to <ddd-bugs@ips.cs.tu-bs.de>, giving a subject like\n"
+	"to <bug-ddd@gnu.org>, giving a subject like\n"
 	"\n"
 	"    " DDD_NAME " " DDD_VERSION 
 	" (" DDD_HOST ") gets %s\n"

@@ -7,13 +7,13 @@ E-Mail
 Text is found in `ANNOUNCE'.
 Title: `DDD X.Y [for Z] is available - graphical debugger front-end'
 Headers: `Followup-to: poster', 
-         `Reply-to: ddd@ips.cs.tu-bs.de'
+         `Reply-to: ddd@gnu.org'
          `X-Face: [ddd/icons/ddd.xface]'
 
 * ddd-announce@ips.cs.tu-bs.de    (DDD announcements)
   CC: 	elf@ee.ryerson.ca         (X11 apps FAQ, `comp.windows.x.apps')
 	bug-gdb@gnu.org           (for `gnu.gdb.bug')
-  Reply-To: ddd@ips.cs.tu-bs.de
+  Reply-To: ddd@gnu.org
 
 * lsm@execpc.com            	  (DDD lsm entry; subject `add')
 

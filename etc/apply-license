@@ -5,7 +5,7 @@
 # If -f is given, add license to files that did not have one.
 
 # Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
-# Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+# Written by Andreas Zeller <zeller@gnu.org>.
 # 
 # This file is part of ICE.
 # 
@@ -82,7 +82,7 @@ for file in "$@"; do
   mailname2=
   if [ "$written_by" = "" -o $force_name = true ]; then
     fullname1=$fullname
-    mailname1=andreas.zeller@fmi.uni-passau.de
+    mailname1=zeller@gnu.org
   else
     fullname1=`echo "$written_by" | sed 's/.*Written by *\([^<]*\) *<.*/\1/
 s/ $//g'`
@@ -155,8 +155,8 @@ For details, see the ICE World-Wide-Web page, \
 or send a mail to the ICE developers <ice@ips.cs.tu-bs.de>.';;
     DDD)      project_detail='DDD is the data display debugger.\
 For details, see the DDD World-Wide-Web page, \
-`http://www.cs.tu-bs.de/softech/ddd/'"'"',\
-or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.';;
+`http://www.gnu.org/software/ddd/'"'"',\
+or send a mail to the DDD developers <ddd@gnu.org>.';;
     *)        project_detail='FOOBAR is fouled up beyond all recognition.\
 Contact foobar@kremvax.su.org for details.';;
   esac

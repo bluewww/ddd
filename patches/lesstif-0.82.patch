@@ -9,7 +9,7 @@ From zeller Fri Nov 21 19:33:36 1997
 Subject: Modifier mapping trouble in LessTif 0.82, and a patch
 To: lesstif@hungry.com (LessTif Mailing List)
 Date: Fri, 21 Nov 1997 19:33:36 +0100 (MET)
-Cc: ddd-bugs@ips.cs.tu-bs.de (DDD Maintainers)
+Cc: bug-ddd@gnu.org (DDD Maintainers)
 X-Organization: TU Braunschweig, Abt. Softwaretechnologie
 X-Postal-Address: Bueltenweg 88, D-38092 Braunschweig, Germany
 X-Telephone: +49 531 391-7580
@@ -260,11 +260,11 @@ Andreas Zeller     Technische Universitaet Braunschweig, Germany
 
 From zeller Fri Nov 21 19:42:35 1997
 Date: Fri, 21 Nov 97 19:42:35 XXX
-From: Andreas Zeller <zeller@ips.cs.tu-bs.de>
+From: Andreas Zeller <zeller@gnu.org>
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="D0Fi1SCUe6"
 Content-Transfer-Encoding: 7bit
-To: DDD Maintainers <ddd-bugs@ips.cs.tu-bs.de>
+To: DDD Maintainers <bug-ddd@gnu.org>
 Subject: RE: Modifier mapping trouble in LessTif 0.82, and a patch
 X-Mailer: VM 6.34 under 20.3 "Chisinau" XEmacs  Lucid
 Status: RO
@@ -282,7 +282,7 @@ Content-Type: message/rfc822
 Content-Transfer-Encoding: 7bit
 
 Received: from gypsum.dsc.com (gypsum.dsc.com [192.146.147.185]) by infbssys.ips.cs.tu-bs.de with SMTP id UAA03525
-  (8.8.7/IDA-1.6 for <zeller@ips.cs.tu-bs.de>); Fri, 21 Nov 1997 20:39:12 +0100
+  (8.8.7/IDA-1.6 for <zeller@gnu.org>); Fri, 21 Nov 1997 20:39:12 +0100
 Received: by gypsum.dsc.com with SMTP (Microsoft Exchange Server Internet Mail Connector Version 4.0.995.52)
 	id <01BCF672.1EDA7830@gypsum.dsc.com>; Fri, 21 Nov 1997 11:39:26 -0800
 Message-ID: <c=US%a=_%p=DSC%l=GYPSUM-971121193924Z-41804@gypsum.dsc.com>
@@ -292,7 +292,7 @@ Content-Type: text/plain; charset="us-ascii"
 From: "Miers, Mitch" <mlm@dsc.com>
 To: "'lesstif@Hungry.COM'" <lesstif@Hungry.COM>,
         "'Andreas Zeller'"
-	 <zeller@ips.cs.tu-bs.de>
+	 <zeller@gnu.org>
 Subject: RE: Modifier mapping trouble in LessTif 0.82, and a patch
 Date: Fri, 21 Nov 1997 11:39:24 -0800
 
@@ -438,7 +438,7 @@ Andreas Zeller     Technische Universitaet Braunschweig, Germany
 
 From zeller Wed Dec  3 10:05:25 1997
 Date: Wed, 3 Dec 97 10:05:25 XXX
-From: Andreas Zeller <zeller@ips.cs.tu-bs.de>
+From: Andreas Zeller <zeller@gnu.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
@@ -480,7 +480,7 @@ Andreas Zeller
 
 From zeller Wed Dec  3 11:36:36 1997
 Date: Wed, 3 Dec 97 11:36:36 XXX
-From: Andreas Zeller <zeller@ips.cs.tu-bs.de>
+From: Andreas Zeller <zeller@gnu.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
@@ -553,7 +553,7 @@ From zeller Wed Dec  3 16:02:23 1997
 Subject: _XmTextNextX() does not handle 8-bit characters, and a patch
 To: lesstif@hungry.com (LessTif Mailing List)
 Date: Wed, 3 Dec 1997 16:02:23 +0100 (MET)
-Cc: ddd-bugs@ips.cs.tu-bs.de (DDD Maintainers)
+Cc: bug-ddd@gnu.org (DDD Maintainers)
 X-Organization: TU Braunschweig, Abt. Softwaretechnologie
 X-Postal-Address: Bueltenweg 88, D-38092 Braunschweig, Germany
 X-Telephone: +49 531 391-7580

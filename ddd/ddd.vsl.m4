@@ -4,7 +4,7 @@ include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))dnl
 DDD_VSL_WARNING
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
-// Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+// Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
 // 
@@ -25,8 +25,8 @@ DDD_VSL_WARNING
 // 
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
-// `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+// `http://www.gnu.org/software/ddd/',
+// or send a mail to the DDD developers <ddd@gnu.org>.
 
 // Includes
 #include <std.vsl>

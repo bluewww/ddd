@@ -1,11 +1,11 @@
 From jh_chen@hotmail.com  Thu Dec  3 22:20:30 1998
 From: "Jason Chen" <jh_chen@hotmail.com>
 Subject: Re: [ddd-bugs] Using DDD to debug perl program with log
-To: zeller@ips.cs.tu-bs.de
+To: zeller@gnu.org
 Date: Thu, 03 Dec 1998 13:10:36 PST
 Received: from hotmail.com (f249.hotmail.com [207.82.251.140])
 	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with SMTP id WAA03054
-	for <zeller@ips.cs.tu-bs.de>; Thu, 3 Dec 1998 22:13:48 +0100
+	for <zeller@gnu.org>; Thu, 3 Dec 1998 22:13:48 +0100
 Received: (qmail 22952 invoked by uid 0); 3 Dec 1998 21:10:38 -0000
 Message-ID: <19981203211038.22950.qmail@hotmail.com>
 Received: from 198.93.2.17 by www.hotmail.com with HTTP;

@@ -3,7 +3,7 @@
 .\" @configure_input@
 .\"
 .\" Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
-.\" Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+.\" Written by Andreas Zeller <zeller@gnu.org>.
 .\" 
 .\" This file is part of DDD.
 .\" 
@@ -24,8 +24,8 @@
 .\" 
 .\" DDD is the data display debugger.
 .\" For details, see the DDD World-Wide-Web page, 
-.\" `http://www.cs.tu-bs.de/softech/ddd/',
-.\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+.\" `http://www.gnu.org/software/ddd/',
+.\" or send a mail to the DDD developers <ddd@gnu.org>.
 .\"
 .TH @ddd@ 1 "1999\-05\-15" "@DDD@ @VERSION@"
 .SH "NAME"
@@ -5162,7 +5162,7 @@ if this fails, it starts a new \fBnetscape-4.0\fR process.
 The \s-1@DDD@\s+1 \s-1WWW\s+1 page.  Value:
 .sp
 .br
-  \fB@Ddd@*wwwPage: http://www.cs.tu-bs.de/softech/ddd/\fR
+  \fB@Ddd@*wwwPage: http://www.gnu.org/software/ddd/\fR
 .br
 .sp
 .\"
@@ -6146,20 +6146,20 @@ The \s-1@DDD@\s+1 \fI\s-1FTP\s+1 site,\fR
 The \s-1@DDD@\s+1 \fI\s-1WWW\s+1 page,\fR
 .sp
 .br
-  \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR
+  \fBhttp://www.gnu.org/software/ddd/\fR
 .br
 .sp
 .PP
 The \s-1@DDD@\s+1 \fIMailing List,\fR
 .sp
 .br
-   \fBddd-users@ips.cs.tu-bs.de\fR
+   \fBhelp-ddd@gnu.org\fR
 .br
 .sp
 For more information on this list, send a mail to
 .sp
 .br
-   \fBddd-users-request@ips.cs.tu-bs.de\fR .
+   \fBhelp-ddd-request@gnu.org\fR .
 .br
 .sp
 .PP
@@ -6293,7 +6293,7 @@ We recommend that you send bug reports for \s-1@DDD@\s+1 via electronic
 mail to
 .sp
 .br
-  \fBddd-bugs@ips.cs.tu-bs.de\fR
+  \fBbug-ddd@gnu.org\fR
 .br
 .sp
 As a last resort, send bug reports on paper to:
@@ -6482,7 +6482,7 @@ December, 1998
 .\" ---------------
 .\"
 If you have any contributions to be incorporated into \s-1@DDD@\s+1,
-please send them to `\fBddd@ips.cs.tu-bs.de\fR'.  For suggestions on
+please send them to `\fBddd@gnu.org\fR'.  For suggestions on
 what might be done, see the file `\fBTODO\fR' in the \s-1@DDD@\s+1
 distribution.
 .\"
@@ -6511,7 +6511,7 @@ You may also leave a message in the \fI\s-1@DDD@\s+1 Guestbook\fR. It
 is accessible via the \s-1@DDD@\s+1 \s-1WWW\s+1 page,
 .sp
 .br
-  \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR .
+  \fBhttp://www.gnu.org/software/ddd/\fR .
 .br
 .sp
 .PP

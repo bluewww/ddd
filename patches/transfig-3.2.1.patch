@@ -4,12 +4,12 @@ Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Message-ID: <14241.43640.391787.635843@keywest.fmi.uni-passau.de>
 X-Mailer: VM 6.71 under 21.1 (patch 4) "Arches" XEmacs Lucid
-Reply-To: andreas.zeller@fmi.uni-passau.de
+Reply-To: zeller@gnu.org
 X-Face: #NChu>5Y'i4]ij,:]2`bIksKEG`Sr_==:yd?K5>QWFX9H]qhG3&2I<rhc`b3nB;V}^}A2h^
  a.{_rvj-#m-HKW/]WQ>CCFpTT\@$guG5pN`&G<*h'-uy3NY2r+XPm}5EHDTHZURJ@.'|4'h](=MwHT
  x[RZ3TI,)>*96Z):z5RR-R#0fT]MkFE41(D?`&\u44g%>>8~on|1Z)W#Yb6Yd|D)H0|CxktK>np,Ue
  SK%
-From: Andreas Zeller <andreas.zeller@fmi.uni-passau.de>
+From: Andreas Zeller <zeller@gnu.org>
 To: xfig-bugs@epb1.lbl.gov
 Subject: fig2dev patch (Transfig 3.2.1)
 Date: Fri, 30 Jul 1999 15:36:56 +0200 (CEST)

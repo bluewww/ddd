@@ -4,7 +4,7 @@
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 1999 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
-// and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+// and Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
 // 
@@ -25,8 +25,8 @@
 // 
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
-// `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+// `http://www.gnu.org/software/ddd/',
+// or send a mail to the DDD developers <ddd@gnu.org>.
 
 char ddd_rcsid[] =
     "$Id$";
@@ -6823,32 +6823,26 @@ static void setup_version_info()
 	+ rm("If you find " DDD_NAME " useful, please send "
 	     "us a picture postcard:") + cr()
 	+ cr()
-	+ rm("    Universit\344t Passau") + cr()
-	+ rm("    Lehrstuhl f\374r Softwaresysteme") + cr()
-	+ rm("    Innstra\337e 33") + cr()
-	+ rm("    D-94032 Passau") + cr()
-	+ rm("    GERMANY") + cr();
+	+ rm("    Free Software Foundation") + cr()
+	+ rm("    59 Temple Place - Suite 330") + cr()
+	+ rm("    Boston, MA  02111-1307, USA") + cr();
 
     string log = session_log_file();
     if (log.contains(gethome(), 0))
 	log = "~" + log.after(gethome());
 
-#define ddd_DOMAIN "fmi.uni-passau.de"
-
     helpOnVersionExtraText += cr()
 	+ rm("Send bug reports to <")
-	+ tt(ddd_NAME "-bugs@" ddd_DOMAIN) + rm(">.") + cr()
+	+ tt("ddd-bugs@gnu.org") + rm(">.") + cr()
 	+ rm("Always include the ") + tt(log) + rm(" file;")
 	+ rm(" see the " DDD_NAME " manual for details.") + cr()
 	+ rm("Send comments and suggestions to <")
-	+ tt(ddd_NAME "@" ddd_DOMAIN) + rm(">.") + cr();
+	+ tt("ddd@gnu.org") + rm(">.") + cr();
 
     helpOnVersionExtraText += cr()
 	+ rm(DDD_NAME " WWW page: ") + tt(app_data.www_page) + cr()
-	+ rm(DDD_NAME " discussions: <")
-	+ tt(ddd_NAME "-users-request@" ddd_DOMAIN) + rm(">") + cr()
-	+ rm(DDD_NAME " announcements: <")
-	+ tt(ddd_NAME "-announce-request@" ddd_DOMAIN) + rm(">");
+	+ rm(DDD_NAME " mailing list: <")
+	+ tt("help-ddd-request@gnu.org") + rm(">") + cr()
 }
 
 

@@ -20,7 +20,7 @@ advanced data exploration, and several more new features and bug fixes.
 
 For details, see the local NEWS file or the DDD WWW page at
 
-    http://www.cs.tu-bs.de/softech/ddd/
+    http://www.gnu.org/software/ddd/
 
 
 What do I need to build DDD?
@@ -37,7 +37,7 @@ To build DDD 3.1.6 from sources, you need:
 
 For details, see the local INSTALL file or the DDD WWW page at
 
-    http://www.cs.tu-bs.de/softech/ddd/
+    http://www.gnu.org/software/ddd/
 
 
 Where can I get a DDD binary?
@@ -49,7 +49,7 @@ the DDD FTP sites.
 For details, see the `bin/README' file at the DDD FTP sites or
 the DDD WWW page at
 
-    http://www.cs.tu-bs.de/softech/ddd/
+    http://www.gnu.org/software/ddd/
 
 
 Getting DDD
@@ -87,4 +87,4 @@ Have fun with DDD!
 
 -- 
 Andreas Zeller      Technische Universitaet Braunschweig, Germany
-                    ddd@ips.cs.tu-bs.de  http://www.cs.tu-bs.de/softech/ddd/
+                    ddd@gnu.org  http://www.gnu.org/software/ddd/

@@ -1,7 +1,7 @@
 From owner-ddd-bugs@ibr.cs.tu-bs.de  Tue Dec  8 18:45:47 1998
 From: Yann Dirson <dirson@thotscf1.thomson-csf.fr>
 Subject: [ddd-bugs] 3.1.1: bug in (un)folding sub-structures
-To: DDD Bug Report Address <ddd-bugs@ips.cs.tu-bs.de>
+To: DDD Bug Report Address <bug-ddd@gnu.org>
 CC: dirson@thotscf1.thomson-csf.fr
 Date: Tue, 08 Dec 1998 17:50:11 +0100
 Organization: Logatique / Thomson Training & Simulation
@@ -98,7 +98,7 @@ DDD 3.1.1 (sparc-sun-solaris2.5.1), Copyright (C) 1998 TU Braunschweig.
 Compiled with GCC 2.7.2.3, libstdc++ 2.7.2
 Requires X11R5, Xt11R5, Motif 1.2.3 (OSF/Motif Version 1.2.3)
 Includes DDD core, manual, app-defaults, XPM 3.4.6, Athena Panner
-Built 1998-12-06 by the DDD Development Team <ddd@ips.cs.tu-bs.de>.
+Built 1998-12-06 by the DDD Development Team <ddd@gnu.org>.
 $  ddd-3.1.1-sparc-sun-solaris2.5.1
 +  /bin/sh -c 'exec gdb -q -fullname'
 #  Hello, world!
