@@ -124,17 +124,10 @@ void Box::epsHeader (ostream& os,
     if (gc.orientation == BoxPostScriptGC::LANDSCAPE)
 	os << gc.hsize + gc.hoffset << " 0 translate 90 rotate\n";
 
-    int hmove, vmove;
-    switch (gc.orientation)
-    {
-    case BoxPostScriptGC::PORTRAIT:
-    case BoxPostScriptGC::LANDSCAPE:
-	hmove = gc.hoffset - origin[X];
-	vmove = gc.voffset + space[Y] + origin[Y];
-	break;
-    }
-
     // Write scaling
+    int hmove = gc.hoffset - origin[X];
+    int vmove = gc.voffset + space[Y] + origin[Y];
+
     os << hmove << " " << vmove << " translate\n"
        << scale << " " << -scale << " scale\n";
 }
