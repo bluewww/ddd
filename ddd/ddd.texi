@@ -2,7 +2,7 @@
 @c $Id$
 @c DDD Manual
 
-@c Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+@c Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
 @c Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 @c 
 @c This file is part of DDD.
@@ -86,7 +86,7 @@ Phone: +49 531 391-7580
 Fax: +49 531 391-8940
 E-mail: @email{@value{ddd}@@ips.cs.tu-bs.de}
 
-@value{DDD} and this manual are available via @*
+@value{DDD} and this manual are available via
 @uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
 @end format
 
@@ -179,33 +179,10 @@ into another language, under the above conditions for modified versions.
 
 
 @ifinfo
+This document describes @value{DDD}, the Data Display Debugger,
+
 This is the @value{EDITION} Edition of @cite{Debugging with
 @value{DDD}}, @value{DATE}, for @value{DDD} Version @value{VERSION}.
-
-Copyright @copyright{} 1999 Technische Universit@"at Braunschweig @*
-Institut f@"ur Software @*
-Abteilung Softwaretechnologie @*
-B@"ultenweg 88 @*
-D-38092 Braunschweig @*
-GERMANY @*
-
-Phone: +49 531 391-7580 @*
-Fax: +49 531 391-8940 @*
-E-mail: @email{@value{ddd}@@ips.cs.tu-bs.de}
-
-@value{DDD} and this manual are available via
-@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
-
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided also that the
-sections entitled ``Copying'' and ``GNU General Public License'' are
-included exactly as in the original, and provided that the entire
-resulting derived work is distributed under the terms of a permission
-notice identical to this one.
-
-Permission is granted to copy and distribute translations of this manual
-into another language, under the above conditions for modified versions.
-
 @end ifinfo
 
 @menu
@@ -323,7 +300,7 @@ In 1992, the VSL and Box libraries were recycled for the NORA project.
 For NORA, an experimental inference-based software development tool set,
 Andreas wrote a graph editor (based on VSL and the Box libraries) and
 facilities for inter-process knowledge exchange.  Based on these tools,
-@emph{Dorothea L@"tkehaus} (now @emph{Dorothea Krabiell}) realized
+@emph{Dorothea L@"utkehaus} (now @emph{Dorothea Krabiell}) realized
 @value{DDD} as her Diploma Thesis, 1994
 @auindex L@"utkehaus, Dorothea
 @cindex NORA
@@ -371,10 +348,10 @@ command tool.
 @node Support
 @unnumberedsec DDD Needs Your Support!
 
-@value{DDD} needs your support!  If you have any success stories related
-to @value{DDD}, please write them down on a picture postcard and send
-them to us:
-
+If you have any success story related to @value{DDD}, please write it
+down on a picture postcard and send it to us:
+@cindex Success story
+@cindex Postcard
 
 @format
 Technische Universit@"at Braunschweig
@@ -388,6 +365,7 @@ GERMANY
 You may also leave a message in the @emph{@value{DDD} Guestbook}. It is
 accessible via @uref{http://www.cs.tu-bs.de/softech/ddd/, the
 @value{DDD} WWW page}.
+@cindex Guestbook
 
 
 @node Invocation
@@ -447,7 +425,7 @@ named @file{1234}; @value{DDD} does check for a core file first).
 
 @menu
 * Inferior debugger::           
-* DDD-Specific Options::        
+* Options::                     
 * X Options::                   
 * Debugger-Specific Options::   
 @end menu
@@ -493,13 +471,14 @@ inferior debugger automatically, but only if arguments are given.}  Use
 to run GDB, DBX, XDB, JDB, PYDB or Perl as inferior debugger.
 
 
-@node DDD-Specific Options
+@node Options
 @subsection @value{DDD}-Specific Options
 
 You can further control how @value{DDD} starts up using the following
 options.  All options may be abbreviated, as long as they are
 unambiguous; single dashes @samp{-} instead of double dashes @samp{--}
-may also be used.
+may also be used.  Almost all options control a specific @value{DDD}
+resource or resource class (@pxref{Customizing}).
 
 @value{DDD} also understands the usual X options such as @samp{-display}
 or @samp{-geometry}; @xref{X Options}, for details.
@@ -514,30 +493,74 @@ the inferior debugger that conflicts with an X option, or with a
 Attach the source and data windows to the debugger console, creating
 one single big @value{DDD} window.  This is the default setting.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{Separate} resource class to @samp{off}.  @xref{Window Layout}, for
+details.
+
 @item --attach-source-window
 Attach only the source window to the debugger console.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{separateSourceWindow} resource to @samp{off}.  @xref{Window
+Layout}, for details.
 
 @item --attach-data-window
 Attach only the source window to the debugger console.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{separateDataWindow} resource to @samp{off}.  @xref{Window Layout},
+for details.
+
 @item --automatic-debugger
 Determine the inferior debugger automatically from the given arguments.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{autoDebugger} resource to @samp{on}.  @xref{Debugger Interaction},
+for details.
 
 @item --button-tips
 Enable button tips.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{buttonTips} resource to @samp{on}.  @xref{Customizing Help}, for
+details.
+
+
 @item --configuration
-Print the @value{DDD} configuration settings on standard output and exit.
+Print the @value{DDD} configuration settings on standard output and
+exit.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{showConfiguration} resource to @samp{on}.  @xref{Diagnostics}, for
+details.
+
+
 
 @item --check-configuration
 Check the @value{DDD} environment (in particular, the X configuration),
 report any possible problem causes and exit.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{checkConfiguration} resource to @samp{on}.  @xref{Diagnostics},
+for details.
+
+
 @item --data-window
-Create the data window upon start-up.
+Open the data window upon start-up.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{openDataWindow} resource to @samp{on}.  @xref{Toggling Windows},
+for details.
+
+
 
 @item --dbx
-Run the DBX debugger as inferior debugger.
+Run DBX as inferior debugger.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{debugger} resource to @samp{dbx}.  @xref{Debugger Interaction},
+for details.
+
 
 @item --debugger @var{name}
 Invoke the inferior debugger @var{name}.  This is useful if you have
@@ -559,46 +582,106 @@ inferior debugger is specified as well.  That is, use one of the options
 @samp{--gdb}, @samp{--dbx}, @samp{--xdb}, @samp{--jdb}, @samp{--pydb},
 or @samp{--perl} (unless the default setting works fine).
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{debuggerCommand} resource to @var{name}.  @xref{Debugger
+Interaction}, for details.
+
+
 @item --debugger-console
-Create the debugger console upon start-up.
+Open the debugger console upon start-up.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{openDebuggerConsole} resource to @samp{on}.  @xref{Toggling
+Windows}, for details.
+
 
 @item --disassemble
 Disassemble the source code.  See also the @samp{--no-disassemble}
 option, below.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{disassemble} resource to @samp{on}.  @xref{Customizing Machine
+Code}, for details.
+
+
 @item --exec-window
-Run the debugged program in a specially created execution window.
-This is useful for programs that have special terminal requirements
-not provided by the debugger window, as raw keyboard processing or
-terminal control sequences.
+Run the debugged program in a specially created execution window.  This
+is useful for programs that have special terminal requirements not
+provided by the debugger window, as raw keyboard processing or terminal
+control sequences.  @xref{Using the Execution Window}, for details.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{separateExecWindow} resource to @samp{on}.  @xref{Customizing
+Execution}, for details.
+
+
+@item --font @var{fontname}
+@itemx -fn @var{fontname}
+Use @var{fontname} as default font.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{defaultFont} resource to @samp{fontname}.  @xref{Fonts}, for
+details.
+
 
 @item --fonts
 Show the font definitions used by @value{DDD} on standard output.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{showFonts} resource to @samp{on}.  @xref{Diagnostics}, for
+details.
+
 
 @item --fontsize @var{size}
 Set the default font size to @var{size} (in 1/10 points).  To make
 @value{DDD} use 12-point fonts, say @samp{--fontsize 120}.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{FontSize} resource class to @samp{size}.  @xref{Fonts}, for
+details.
+
+
 @item --fullname
 @itemx -f
-Enable TTY interface, taking additional debugger commands from standard
-input and forwarding debugger output on standard output.  Current
-positions are issued in GDB @samp{-fullname} format suitable for
+Enable the TTY interface, taking additional debugger commands from
+standard input and forwarding debugger output on standard output.
+Current positions are issued in GDB @samp{-fullname} format suitable for
 debugger front-ends.  By default, both the debugger console and source
-window are disabled.
+window are disabled.  @xref{TTY mode}, for a discussion.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{TTYMode} resource class to @samp{on}.  @xref{TTY mode}, for
+details.
+
 
 @item --gdb
-Run the GDB debugger as inferior debugger.
+Run GDB as inferior debugger.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{debugger} resource to @samp{gdb}.  @xref{Debugger Interaction},
+for details.
+
 
 @item --glyphs
 Display the current execution position and breakpoints as glyphs.  See
 also the @samp{--no-glyphs} option, below.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{displayGlyphs} resource to @samp{on}.  @xref{Customizing Source},
+for details.
+
+
 
 @item --help
 @itemx -h
 @itemx -?
 Give a list of frequently used options.  Show options of the inferior
 debugger as well.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{showInvocation} resource to @samp{on}.  @xref{Diagnostics}, for
+details.
+
 
 @item --host @var{hostname}
 @itemx --host @var{username}@@@var{hostname}
@@ -607,98 +690,222 @@ If @var{username} is given and the @samp{--login} option is not used,
 use @var{username} as remote user name.  @xref{Remote Debugger}, for
 details.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{debuggerHost} resource to @var{hostname}.  @xref{Remote Debugger},
+for details.
+
 @item --jdb
 Run JDB as inferior debugger.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{debugger} resource to @samp{gdb}.  @xref{Debugger Interaction},
+for details.
+
+
 @item --lesstif-hacks
 Equivalent to @samp{--lesstif-version 999}.  Deprecated.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{lessTifVersion} resource to @samp{999}.  @xref{LessTif}, for
+details.
+
+
 
 @item --lesstif-version @var{version}
 Enable some hacks to make @value{DDD} run properly with LessTif.
 @xref{LessTif}, for a discussion.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{lessTifVersion} resource to @var{version}.  @xref{LessTif}, for
+details.
+
+
 @item --license
 Print the @value{DDD} license on standard output and exit.
 @cindex License, showing on standard output
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{showLicense} resource to @var{on}.  @xref{Diagnostics}, for
+details.
+
+
 
 @item --login @var{username}
 @itemx -l @var{username}
 Use @var{username} as remote user name.  @xref{Remote Debugger}, for details.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{debuggerHostLogin} resource to @var{username}.  @xref{Remote
+Debugger}, for details.
+
+
 @item --maintenance
-Enable the top-level @samp{Maintenance} menu with options for
-debugging @value{DDD}.
+Enable the top-level @samp{Maintenance} menu with options for debugging
+@value{DDD}.  @xref{Maintenance Menu}, for details.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{maintenance} resource to @var{on}.  @xref{Maintenance Menu}, for
+details.
+
 
 @item --manual
-Print the @value{DDD} manual page on standard output and exit.
+Print the @value{DDD} manual on standard output and exit.
 @cindex Manual, showing on standard output
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{showManual} resource to @var{on}.  @xref{Diagnostics}, for
+details.
+
+
 
 @item --news
 Print the @value{DDD} news on standard output and exit.
 @cindex News, showing on standard output
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{showNews} resource to @var{on}.  @xref{Diagnostics}, for details.
+
+
+
 @item --no-button-tips
 Disable button tips.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{buttonTips} resource to @samp{off}.  @xref{Customizing Help}, for
+details.
+
 @item --no-data-window
-Do not create the data window upon start-up.
+Do not open the data window upon start-up.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{openDataWindow} resource to @samp{off}.  @xref{Toggling Windows},
+for details.
+
 
 @item --no-debugger-console
-Do not create the debugger console upon start-up.
+Do not open the debugger console upon start-up.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{openDebuggerConsole} resource to @samp{off}.  @xref{Toggling
+Windows}, for details.
+
+
 
 @item --no-disassemble
 Do not disassemble the source code.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{disassemble} resource to @samp{off}.  @xref{Customizing Machine
+Code}, for details.
+
+
 @item --no-exec-window
 Do not run the debugged program in a specially created execution window;
 use the debugger console instead.  Useful for programs that have little
-terminal input/output, or for remote debugging.
+terminal input/output, or for remote debugging.  @xref{Using the
+Execution Window}, for details.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{separateExecWindow} resource to @samp{off}.  @xref{Customizing
+Execution}, for details.
+
 
 @item --no-glyphs
-Display the current execution position and breakpoints as text
-characters.  Do not use glyphs.
+Do not use glyphs; display the current execution position and
+breakpoints as text characters.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{displayGlyphs} resource to @samp{off}.  @xref{Customizing Source},
+for details.
+
 
 @item --no-lesstif-hacks
 Equivalent to @samp{--lesstif-version 1000}.  Deprecated.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{lessTifVersion} resource to @samp{1000}.  @xref{LessTif}, for
+details.
+
+
 @item --no-maintenance
 Do not enable the top-level @samp{Maintenance} menu with options for
-debugging @value{DDD}.
+debugging @value{DDD}.  This is the default.  @xref{Maintenance Menu},
+for details.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{maintenance} resource to @var{off}.  @xref{Maintenance Menu}, for
+details.
+
+
+
 
 @item --no-source-window
-Do not create the source window upon start-up.
+Do not open the source window upon start-up.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{openSourceWindow} resource to @samp{off}.  @xref{Toggling
+Windows}, for details.
+
+
 
 @item --no-value-tips
 Disable value tips.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{valueTips} resource to @samp{off}.  @xref{Value Tips}, for
+details.
+
+
 
 @item --nw
 Do not use the X window interface.  Start the inferior debugger on
 the local host.
 
+
 @item --perl
 Run Perl as inferior debugger.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{debugger} resource to @samp{perl}.  @xref{Debugger Interaction},
+for details.
 
 @item --pydb
 Run PYDB as inferior debugger.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{debugger} resource to @samp{pydb}.  @xref{Debugger Interaction},
+for details.
+
+
 @item --panned-graph-editor
 Use an Athena panner to scroll the data window.  Most people prefer
 panners on scroll bars, since panners allow two-dimensional scrolling.
-However, the panner is off by default, since some Motif
-implementations do not work well with Athena widgets.  See also
-@strong{--scrolled-graph-editor}, below.
+However, the panner is off by default, since some Motif implementations
+do not work well with Athena widgets.  @xref{Customizing Displays}; see also
+@samp{--scrolled-graph-editor}, below.
 
-@item --play @var{log-file}
+Giving this option is equivalent to setting the @value{DDD}
+@samp{pannedGraphEditor} resource to @samp{on}.  @xref{Customizing
+Displays}, for details.
+
+
+
+@item --play-log @var{log-file}
 Recapitulate a previous @value{DDD} session.
 
 @example
-@value{ddd} --PLAY @var{log-file}
+@value{ddd} --play-log @var{log-file}
 @end example
 
 @noindent
 invokes @value{DDD} as inferior debugger, simulating the inferior
 debugger given in @var{log-file} (see below).  This is useful for
 debugging @value{DDD}.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{playLog} resource to @samp{on}.  @xref{Debugger Interaction}, for
+details.
+
 
 @item --PLAY @var{log-file}
 Simulate an inferior debugger.  @var{log-file} is a
@@ -708,6 +915,7 @@ this command and re-issue the logged reply; if the command is not found,
 do nothing.  This is used by the @samp{--play} option.
 @flindex log
 
+
 @item --rhost @var{hostname}
 @itemx --rhost @var{username}@@@var{hostname}
 Run the inferior debugger interactively on the remote host
@@ -715,37 +923,90 @@ Run the inferior debugger interactively on the remote host
 option is not used, use @var{username} as remote user name.
 @xref{Remote Debugger}, for details.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{debuggerRHost} resource to @var{hostname}.  @xref{Remote
+Debugger}, for details.
+
+
 @item --scrolled-graph-editor
 Use Motif scroll bars to scroll the data window.  This is the default in
-most @value{DDD} configurations.  See also
-@strong{--panned-graph-editor}, above.
- 
+most @value{DDD} configurations.  @xref{Customizing Displays}; see also
+@samp{--panned-graph-editor}, above.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{pannedGraphEditor} resource to @samp{off}.  @xref{Customizing
+Displays}, for details.
+
+
 @item --separate-windows
+@itemx --separate
 Separate the console, source and data windows.  See also the
 @samp{--attach} options, above.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{Separate} resource class to @samp{off}.  @xref{Window Layout}, for
+details.
+
+
+
 @item --session @var{session}
-Load @var{session} upon start-up.
+Load @var{session} upon start-up.  @xref{Opening Sessions}, for details.
 @cindex Session, setting when invoking @value{DDD}
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{session} resource to @var{session}.  @xref{Opening Sessions}, for
+details.
+
 
 @item --source-window
 Open the source window upon start-up.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{openSourceWindow} resource to @samp{on}.  @xref{Toggling Windows},
+for details.
+
+
 @item --status-at-bottom
 Place the status line at the bottom of the source window.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{statusAtBottom} resource to @samp{on}.  @xref{Window Layout}, for
+details.
+
+
 @item --status-at-top
 Place the status line at the top of the source window.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{statusAtBottom} resource to @samp{off}.  @xref{Window Layout}, for
+details.
+
 
 @item --sync-debugger
 Do not process X events while the debugger is busy.  This may result
 in slightly better performance on single-processor systems.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{synchronousDebugger} resource to @samp{on}.  @xref{Debugger
+Interaction}, for details.
+
+
 @item --toolbars-at-bottom
-Place the toolbars the bottom of the window.
+Place the toolbars at the bottom of the respective window.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{toolbarsAtBottom} resource to @samp{on}.  @xref{Window Layout},
+for details.
+
+
 
 @item --toolbars-at-top
-Place the toolbars at the top of the window.
+Place the toolbars at the top of the respective window.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{toolbarsAtBottom} resource to @samp{off}.  @xref{Window Layout},
+for details.
+
 
 @item --trace
 Show the interaction between @value{DDD} and the inferior debugger on
@@ -756,6 +1017,11 @@ such that you can also do a post-mortem debugging.
 @flindex log
 @flindex ~
 
+Giving this option is equivalent to setting the @value{DDD} @samp{trace}
+resource to @var{on}.  @xref{Diagnostics}, for details.
+
+
+
 @item --tty
 @itemx -t
 Enable TTY interface, taking additional debugger commands from
@@ -764,28 +1030,56 @@ Current positions are issued in a format readable for humans.  By
 default, the debugger console is disabled.
 @cindex TTY mode, setting when invoking @value{DDD}
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{ttyMode} resource to @samp{on}.  @xref{TTY mode}, for details.
+
+
 @item --value-tips
 Enable value tips.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{valueTips} resource to @samp{on}.  @xref{Value Tips}, for details.
+
 
 @item --version
 @itemx -v
 Print the @value{DDD} version on standard output and exit.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{showVersion} resource to @samp{on}.  @xref{Diagnostics}, for
+details.
+
 
 @item --vsl-library @var{library}
 Load the VSL library @var{library} instead of using the
 @value{DDD} built-in library.  This is useful for customizing
 display shapes and fonts.
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{vslLibrary} resource to @var{library}.  @xref{Customizing VSL},
+for details.
+
+
 @item --vsl-path @var{path}
 Search VSL libraries in @var{path} (a colon-separated directory list).
 
+Giving this option is equivalent to setting the @value{DDD}
+@samp{vslPath} resource to @var{path}.  @xref{Customizing VSL}, for
+details.
+
+
 @item --vsl-help
-Show a list of further options controlling the VSL
-interpreter.  These options are intended for debugging purposes and
-are subject to change without further notice.
+Show a list of further options controlling the VSL interpreter.  These
+options are intended for debugging purposes and are subject to change
+without further notice.
+
 
 @item --xdb
 Run XDB as inferior debugger.
+
+Giving this option is equivalent to setting the @value{DDD}
+@samp{debugger} resource to @samp{xdb}.  @xref{Debugger Interaction},
+for details.
 @end table
 
 
@@ -829,7 +1123,8 @@ Specify a resource name and value to override any defaults.
 @subsection Debugger-Specific Options
 
 All options @value{DDD} does not recognize are passed to the inferior
-debugger.  This section lists the most useful options.
+debugger.  This section lists the most useful options of the different
+inferior debuggers supported by @value{DDD}.
 
 @menu
 * GDB Options::                 
@@ -1033,7 +1328,7 @@ end-of-file character (usually @key{Ctrl+D}).  Closing the last
 @cindex Quitting
 @cmindex quit
 
-An interrupt (@key{ESC} or @strong{Interrupt}) does not exit from
+An interrupt (@key{ESC} or @samp{Interrupt}) does not exit from
 @value{DDD}, but rather terminates the action of any debugger command
 that is in progress and returns to the debugger command level.  It is
 safe to type the interrupt character at any time because the debugger
@@ -1043,9 +1338,9 @@ does not allow it to take effect until a time when it is safe.
 @cindex Execution, interrupting
 
 In case an ordinary interrupt does not succeed, you can also use an
-abort (@strong{Ctrl+\} or @strong{Abort}), which sends a QUIT signal to
-the inferior debugger.  Use this in emergencies only; the inferior
-debugger may be left inconsistent or even exit after a QUIT signal.
+abort (@key{Ctrl+\} or @samp{Abort}), which sends a QUIT signal to the
+inferior debugger.  Use this in emergencies only; the inferior debugger
+may be left inconsistent or even exit after a QUIT signal.
 @kindex Ctrl+\
 @lbindex Abort
 @cindex Aborting execution
@@ -1067,15 +1362,17 @@ and restart @value{DDD}.
 
 
 
+
 @node Basics
 @chapter DDD Basics
 
 @menu
 * Windows::                     
-* Pulldown Menu::               
-* Command Tool::                
-* Tool Bar::                    
 * Getting Help::                
+* Undoing Commands::            
+* Menu Bar::                    
+* Tool Bar::                    
+* Command Tool::                
 @end menu
 
 @node Windows
@@ -1086,17 +1383,20 @@ and restart @value{DDD}.
 @itemize @bullet
 @item
 The @emph{Data Window} shows the current data of the debugged program.
+@cindex Data Window
 @item
 The @emph{Source Window} shows the current source code of the debugged
 program.
+@cindex Source Window
 @item
 The @emph{Debugger Console} accepts debugger commands and shows debugger
 messages.
+@cindex Debugger Console
 @end itemize
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-all, 15cm}
+@center @image{PICS/ddd-all, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -1106,12 +1406,15 @@ Besides these main windows, there are some other optional windows:
 @item
 The @emph{Command Tool} offers buttons for frequently used commands.
 It is usually placed on the source window.
+@cindex Command Tool
 @item
 The @emph{Machine Code Window} shows the current machine code.  It is
 usually placed beneath the current source.
+@cindex Machine Code Window
 @item
 The @emph{Execution Window} shows the input and output of the debugged
 program.
+@cindex Execution Window
 @end itemize
 
 @value{DDD} also has several temporary @emph{dialogs} for showing and
@@ -1119,60 +1422,1030 @@ entering additional information.
 
 
 @menu
-* Command Tool::                
-* Tool Bar::                    
+* Customizing Windows::         
 @end menu
 
-@node Pulldown Menu
-@section The Pulldown Menu
+@node Customizing Windows
+@subsection Customizing the @value{DDD} Windows
+
+You can customize the @value{DDD} Windows in various ways
+(@pxref{Customizing}).
+
+@menu
+* Splash Screen::               
+* Window Layout::               
+* Fonts::                       
+* Toggling Windows::            
+* Text Fields::                 
+* Icons::                       
+* Adding Buttons::              
+@end menu
+
+@node Splash Screen
+@subsubsection Splash Screen
 
 ...
 
+@defvr Resource splashScreen (class SplashScreen)
+If @samp{on} (default), show a @value{DDD} splash screen upon
+start-up.
+@end defvr
 
-@node Command Tool
-@section The Command Tool
+@defvr Resource splashScreenColorKey (class ColorKey)
+The color key to use for the @value{DDD} splash screen.  Possible
+values include:
 
-The command tool is a small window containing frequently used
-@value{DDD} commands.  It can be moved around on top of the @value{DDD}
-windows, but it can also be placed besides them.  
+@itemize @bullet
+@item 
+@samp{c} (default) for a color visual, 
+@item 
+@samp{g} for a multi-level greyscale visual,
+@item 
+@samp{g4} for a 4-level greyscale visual, and
+@item 
+@samp{m} for a dithered monochrome visual.
+@item
+@samp{best} chooses the best visual available for your display.
+@end itemize
 
-By default, the command tool @emph{sticks} to the @value{DDD} source
-window: Whenever you move the @value{DDD} source window, the command
-tool follows such that the distance between source window and command
-tool remains the same.  By default, the command tool is also
-@emph{auto-raised}, such that it stays on top of other @value{DDD}
-windows.
+Please note: if @value{DDD} runs on a monochrome display, or if
+@value{DDD} was compiled without the XPM library, only the monochrome
+version (@samp{m}) can be shown.
+@end defvr
 
-The command tool can be configured to appear as a command tool bar above
-the source window; see @samp{Edit @result{} Preferences @result{} Source
-@result{} Tool Buttons Location} for details.
 
-Whenever you save @value{DDD} state, @value{DDD} also saves the distance
-between command tool and source window, such that you can select your
-own individual command tool placement.  To move the command tool to its
-saved position, use @samp{View @result{} Command Tool}.
+@node Window Layout
+@subsubsection Window Layout
+
+By default, @value{DDD} stacks commands, source, and data in one single
+top-level window.  To have separate top-level windows for source, data,
+and debugger console, set @samp{Edit @result{} Preferences @result{}
+Window Layout @samp{} Separate Windows}.
+@lbindex Window Layout
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-tool, 15cm}
+@center @image{PICS/ddd-separate, 16cm}
 @sp 1
 @end ifnotinfo
 
-These are the buttons of the command tool.  Note that not all buttons
-may be inactive, depending on the current state and the capabilities of
-the inferior debugger.
+Here are the related @value{DDD} resources:
+
+@defvr Resource separateDataWindow (class Separate)
+If @samp{on}, the data window and the debugger console are realized in
+different top-level windows.  If @samp{off} (default), the data window
+is attached to the debugger console.
+@end defvr
+
+@defvr Resource separateSourceWindow (class Separate)
+If @samp{on}, the source window and the debugger console are realized in
+different top-level windows.  If @samp{off} (default), the source window
+is attached to the debugger console.
+@end defvr
+
+By default, the @value{DDD} tool bars are located on top of the window.
+If you prefer the tool bar being located at the bottom, as in
+@value{DDD} 2.x and earlier, set @samp{Edit @result{} Preferences
+@result{} Startup @result{} Tool Bar Appearance @result{} Bottom}.
+@lbindex Tool Bar Appearance
+
+This is related to the @samp{toolbarsAtBottom} resource:
+
+@defvr Resource toolbarsAtBottom (class ToolbarsAtBottom)
+Whether source and data tool bars should be placed above source and
+data, respectively (@samp{off}, default), or below, as in @value{DDD}
+2.x (@samp{on}).
+@end defvr
+
+The bottom setting is only supported for separate tool bars---that is,
+you must either choose separate windows or configure the tool bar to
+have neither images nor captions (@pxref{Customizing the Tool Bar}).
+
+You can choose whether there should be one tool bar or two tool bars:
+
+@defvr Resource commonToolBar (class ToolBar)
+Whether the tool bar buttons should be shown in one common tool bar at
+the top of the common @value{DDD} window (@samp{on}, default), or
+whether they should be placed in two separate tool bars, one for data,
+and one for source operations, as in @value{DDD} 2.x (@samp{off}).
+@end defvr
+
+You can also choose to place the status line at the top.
+
+@defvr Resource statusAtBottom (class StatusAtBottom)
+If @samp{on} (default), the status line is placed at the bottom of the
+@value{DDD} source window.  If @samp{off}, the status line is placed at
+the top of the @value{DDD} source window (as in @value{DDD} 1.x).
+@end defvr
+
+@xref{Options}, for options to set these resources upon @value{DDD}
+invocation.
+
+
+@node Fonts
+@subsubsection Fonts
+@cindex Fonts
+
+You can configure the basic @value{DDD} fonts at run-time.  Each
+font is specified using two members:
+
+@itemize @bullet
+@item
+The @dfn{font family} is an X font specifications, where the initial
+@samp{@var{foundry}-} specification may be omitted, as well as any
+specification after @var{family}.  Thus, a pair
+@samp{@var{family}-@var{weight}} usually suffices.
+
+@item
+The @dfn{font size} is given as (resolution-independent) 1/10 points.
+@end itemize
+
+To specify fonts, select @samp{Edit @result{} Preferences @result{}
+Fonts}.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-font-prefs, 16cm}
+@sp 1
+@end ifnotinfo
+
+The @samp{Browse} button opens a font selection program, where you can
+select fonts and attributes interactively.  Clicking @samp{quit} or
+@samp{select} in the font selector causes all non-default values to be
+transferred to the @value{DDD} font preferences panel.
+
+The following fonts can be set using the preferences panel:
+
+@table @code
+@item Default Font
+The default @value{DDD} font to use for labels, menus, and buttons.
+Default is @samp{helvetica-bold}.
+
+@item Variable Width
+The variable width @value{DDD} font to use for help texts and messages.
+Default is @samp{helvetica-medium}.
+
+@item Fixed Width
+The fixed width @value{DDD} font to use for source code, the debugger
+console, text fields, data displays, and the execution window.  Default
+is @samp{lucidatypewriter-medium}.
+@end table
+
+Changes in this panel will not take effect immediately.  Instead, you
+can
+
+@itemize @bullet
+@item
+save options (using @samp{Edit @result{} Save Options}) to make the change
+effective for future @value{DDD} sessions,
+@item
+or restart @value{DDD} (using @samp{File @result{} Restart @value{DDD}})
+to make it effective for the restarted @value{DDD} session.
+@end itemize
+
+After having made changes in the panel, @value{DDD} will automatically
+offer you to restart itself, such that you can see the changes taking
+effect.  Note that even after restarting, you still must save options to
+make the changes permanent.
+
+The @samp{Reset} button restores the most recently saved preferences.
+
+Here are the resources related to font specifications:
+
+@defvr Resource defaultFont (class Font)
+The default @value{DDD} font to use for labels, menus, buttons, etc.
+The font is specified as an X font spec, where the initial @var{Foundry}
+specification may be omitted, as well as any specification after
+@var{Family}.  Default value is @samp{helvetica-bold}.
+
+To set the default @value{DDD} font to, say, @samp{helvetica medium},
+insert a line
+
+@example
+@value{Ddd}*defaultFont: helvetica-medium
+@end example
+
+@noindent
+in your @samp{~/.@value{ddd}/init} file.
+@end defvr
+
+@defvr Resource defaultFontSize  (class FontSize)
+The size of the default @value{DDD} font, in 1/10 points.  This resource
+overrides any font size specification in the @samp{defaultFont} resource
+(see above).  The default value is @samp{120} for a 12.0 point font.
+@end defvr
+
+@defvr Resource variableWidthFont (class Font)
+The variable width @value{DDD} font to use for help texts and messages.
+The font is specified as an X font spec, where the initial @var{Foundry}
+specification may be omitted, as well as any specification after
+@var{Family}.  Default value is @samp{helvetica-medium-r}.
+
+To set the variable width @value{DDD} font family to, say,
+@samp{times}, insert a line
+
+@example
+@value{Ddd}*fixedWidthFont: times-medium
+@end example
+
+@noindent
+in your @samp{~/.@value{ddd}/init} file.
+@end defvr
+
+@defvr Resource variableWidthFontSize  (class FontSize)
+The size of the variable width @value{DDD} font, in 1/10 points.  This
+resource overrides any font size specification in the
+@samp{variableWidthFont} resource (see above).  The default value is
+@samp{120} for a 12.0 point font.
+@end defvr
+
+@defvr Resource fixedWidthFont (class Font)
+The fixed width @value{DDD} font to use for source code, the debugger
+console, text fields, data displays, and the execution window.  The font
+is specified as an X font spec, where the initial @var{Foundry}
+specification may be omitted, as well as any specification after
+@var{Family}.  Defaults to @samp{lucidatypewriter-medium}.
+
+To set the fixed width @value{DDD} font family to, say, @samp{courier},
+insert a line
+
+@example
+@value{Ddd}*fixedWidthFont: courier-medium
+@end example
+
+@noindent
+in your @samp{~/.@value{ddd}/init} file.
+@end defvr
+
+@defvr Resource fixedWidthFontSize  (class FontSize)
+The size of the fixed width @value{DDD} font, in 1/10 points.  This
+resource overrides any font size specification in the
+@samp{fixedWidthFont} resource (see above).  The default value is
+@samp{120} for a 12.0 point font.
+@end defvr
+
+As all font size resources have the same class (and by default the
+same value), you can easily change the default @value{DDD} font size
+to, say, 9.0 points by inserting a line
+
+@example
+@value{Ddd}*FontSize: 90
+@end example
+
+@noindent
+in your @samp{~/.@value{ddd}/init} file.
+
+Here's how to specify the command to select fonts:
+
+@defvr Resource fontSelectCommand (class FontSelectCommand)
+A command to select from a list of fonts.  The string @samp{@@FONT@@} is
+replaced by the current @value{DDD} default font; the string
+@samp{@@TYPE@@} is replaced by a symbolic name of the @value{DDD} font
+to edit.  The program must either place the name of the selected font in
+the @code{PRIMARY} selection or print the selected font on standard
+output.  A typical value is:
+@example
+@value{Ddd}*fontSelectCommand: xfontsel -print
+@end example
+@pindex xfontsel
+@end defvr
+
+@xref{Options}, for options to set these resources upon @value{DDD}
+invocation.
+
+
+@node Toggling Windows
+@subsubsection Toggling Windows
+
+In the default stacked window setting, you can turn the individual
+@value{DDD} windows on and off by toggling the respective items in the
+@samp{View} menu (@pxref{View Menu}).  When using separate windows
+(@pxref{Window Layout}), you can close the individual windows via
+@samp{File @result{} Close}.
+
+Whether windows are opened or closed when starting @value{DDD} is
+controlled by the following resources:
+
+@defvr Resource openDataWindow (class Window)
+If @samp{off} (default), the data window is closed upon start-up.
+@end defvr
+
+@defvr Resource openDebuggerConsole (class Window)
+If @samp{off}, the debugger console is closed upon start-up.
+@end defvr
+
+@defvr Resource openSourceWindow (class Window)
+If @samp{off}, the source window is closed upon start-up.
+@end defvr
+
+@xref{Options}, for options to set these resources upon @value{DDD}
+invocation.
+
+
+@node Text Fields
+@subsubsection Text Fields
+
+@defvr Resource popdownHistorySize (class HistorySize)
+The maximum number of items to display in pop-down value histories.  A
+value of @samp{0} (default) means an unlimited number of values.
+@end defvr
+
+@defvr Resource sortPopdownHistory (class SortPopdownHistory)
+If @samp{on} (default), items in the pop-down value histories are sorted
+alphabetically.  If @samp{off}, most recently used values will appear at
+the top.
+@end defvr
+
+
+@node Icons
+@subsubsection Icons
+
+...
+
+@defvr Resource groupIconify (class GroupIconify)
+If this is @samp{on}, (un)iconifying any @value{DDD} window
+causes all other @value{DDD} windows to (un)iconify as well.
+Default is @samp{off}, meaning that each @value{DDD} window can
+be iconified on its own.
+@end defvr
+
+@defvr Resource uniconifyWhenReady (class UniconifyWhenReady)
+If this is @samp{on} (default), the @value{DDD} windows are uniconified
+automatically whenever GDB becomes ready.  This way, you can iconify
+@value{DDD} during some longer operation and have it uniconify itself as
+soon as the program stops.  Setting this to @samp{off} leaves the
+@value{DDD} windows iconified.
+@end defvr
+
+
+@node Adding Buttons
+@subsubsection Adding Buttons
+
+You can extend @value{DDD} with new buttons.  @xref{Defining Buttons},
+for details.
+
+
+@node Getting Help
+@section Getting Help
+@cindex Help
+
+@value{DDD} has an extensive on-line help system.  Here's how to get
+help while working with @value{DDD}.
+
+@itemize @bullet
+@item
+You can get a short help text on most @value{DDD} buttons by simply
+moving the mouse pointer on it and leave it there.  After a second, a
+small window (called @dfn{button tip}; also known as @dfn{tool tip} or
+@dfn{balloon help}) pops up, giving a hint on the button's meaning.  The
+button tip disappears as soon as you move the mouse pointer to another
+item.
+@cindex Button tip
+@cindex Tool tip
+@cindex Balloon help
+@cindex Help, on buttons
+@cindex Tip, on buttons
+
+@item
+The @emph{status line} also displays information about the currently selected
+item.  By clicking on the status line, you can redisplay the most
+recent messages.
+@cindex Help, in the status line
+@cindex Status line
+
+@item
+You can get detailed help on any visible @value{DDD} item.  Just
+point on the item you want help and press the @samp{F1} key.  This
+pops up a detailed help text.
+@cindex Help, on items
+@cindex Context-sensitive help
+@kindex F1
+
+@item
+The @value{DDD} dialogs all contain @samp{Help} buttons that give
+detailed information about the dialog.
+@lbindex Help
+
+@item
+You can get help on debugger commands by entering @samp{help} at the
+debugger prompt.  @xref{Entering Commands}, for details on entering
+commands.
+@cindex Help, on commands
+@cmindex help
+
+@item
+If you are totally stuck, try @samp{Help @result{} What Now?} (the
+@samp{What Now} item in the @samp{Help} menu) or press @key{Ctrl+F1}.
+Depending on the current state, @value{DDD} will give you some hints on
+what you can do next.
+@lbindex What Now?
+@kindex Ctrl+F1
+@cindex Help, when stuck
+
+@item
+Of course, you can always refer to the @emph{on-line documentation}:
+@itemize @minus
+@item
+@samp{Help @result{} @value{DDD} Reference} gives you access to the
+@value{DDD} manual, the ultimate @value{DDD} reference.
+@lbindex DDD Reference
+
+@item
+@samp{Help @result{} Debugger Reference} shows you the
+on-line documentation of the inferior debugger.
+@lbindex Debugger Reference
+@lbindex GDB Reference
+@lbindex DBX Reference
+@lbindex XDB Reference
+@lbindex JDB Reference
+@lbindex PYDB Reference
+@lbindex Perl Reference
+
+@item
+@samp{Help @result{} @value{DDD} WWW Page} gives you access to the
+latest and greatest information on @value{DDD}.
+@lbindex DDD WWW Page
+@end itemize
+
+@item
+Finally, the @value{DDD} @dfn{Tip Of The Day} gives you important hints
+with each new @value{DDD} invocation.
+@cindex Tip of the day
+@end itemize
+
+If, after all, you made a mistake, don't worry: almost every @value{DDD}
+command can be undone.  @xref{Undoing Commands}, for details.
+
+
+@menu
+* Customizing Help::            
+@end menu
+
+@node Customizing Help
+@subsection Customizing @value{DDD} Help
+
+@value{DDD} Help can be customized in various ways
+(@pxref{Customizing}).
+
+@menu
+* Button tips::                 
+* Tip of the day::              
+* Help Helpers::                
+@end menu
+
+@node Button tips
+@subsubsection Button Tips
+
+Button tips are helpful for novices, but may be distracting for
+experienced users.  You can turn off button tips via @samp{Edit
+@result{} Preferences @result{} General @result{} Automatic display of
+Button Hints @result{} as Popup Tips}.
+@lbindex Automatic Display of Button Hints
+@cindex Button tips, turning off
+
+You can also turn off the hint that is displayed in the status line.
+Just toggle @samp{Edit @result{} Preferences @result{} General @result{}
+Automatic Display of Button Hints @result{} in the Status Line}.
+
+Here are related @value{DDD} resources:
+
+@defvr Resource buttonTips (class Tips)
+If @samp{on} (default), enable button tips.
+@end defvr
+
+@defvr Resource buttonDocs (class Docs)
+If @samp{on} (default), show button hints in the status line.
+@end defvr
+
+
+@node Tip of the day
+@subsubsection Tip of the day
+
+You can turn off the tip of the day by toggling @samp{Edit @result{}
+Preferences @result{} Startup @result{} Startup Windows @result{} Tip of
+the Day}.
+@cindex Tip of the day, turning off
+
+Here is the related @value{DDD} resource:
+
+@defvr Resource startupTips (class StartupTips)
+If @samp{on} (default), show a tip of the day upon @value{DDD} startup.
+@end defvr
+
+@xref{Options}, for options to set this resource upon @value{DDD}
+invocation.
+
+The actual tips are controlled by these resources:
+
+@defvr Resource startupTipCount (class StartupTipCount)
+The number @var{n} of the tip of the day to be shown at startup.  See
+also the @samp{tip@var{n}} resources.
+@end defvr
+
+@defvr Resource tip@var{n} (class Tip)
+The tip of the day numbered @var{n} (a string).
+@end defvr
+
+
+
+@node Help Helpers
+@subsubsection Help Helpers
+
+...
+
+@defvr Resource uncompressCommand (class UncompressCommand)
+The command to uncompress the built-in @value{DDD} manual, the
+@value{DDD} license, and the @value{DDD} news.  Takes a compressed text
+from standard input and writes the uncompressed text to standard output.
+The default value is @samp{gzip -d -c}; typical values include
+@samp{zcat} and @samp{gunzip -c}.
+@end defvr
+
+
+@defvr Resource wwwCommand (class WWWCommand)
+The command to invoke a WWW browser.  The string @samp{@@URL@@} is
+replaced by the URL to open.  Default is to try a running Netscape first
+(trying @samp{mozilla}, then @samp{netscape}), then @samp{$WWWBROWSER},
+then to invoke a new Netscape process, then to let a running Emacs do
+the job, then to invoke Mosaic, then to invoke Lynx in an xterm.
+@enindex WWWBROWSER
+@pindex netscape
+@pindex mozilla
+@pindex emacs
+@pindex mosaic
+@pindex lynx
+
+To specify @samp{netscape-4.0} as browser, use the setting:
+
+@example
+Ddd*wwwCommand: \
+     netscape-4.0 -remote 'openURL(@@URL@@)' \
+  || netscape-4.0 '@@URL@@'
+@end example
+
+This command first tries to connect to a running @code{netscape-4.0}
+browser; if this fails, it starts a new @code{netscape-4.0} process.
+@end defvr
+
+@defvr Resource wwwPage (class WWWPage)
+The @value{DDD} WWW page.  Value:
+@uref{http://www.cs.tu-bs.de/softech/ddd/}
+@end defvr
+
+
+
+@node Undoing Commands
+@section Undoing Commands
+
+Almost every @value{DDD} command can be undone, using @samp{Edit
+@result{} Undo} or the @samp{Undo} button on the command tool.
+@lbindex Undo
+@cindex Undoing commands
+
+Likewise, @samp{Edit @result{} Redo} repeats the command most recently
+undone.
+@lbindex Redo
+@cindex Redoing commands
+
+The @samp{Edit} menu shows which commands are to be undone and redone
+next; this is also indicated by the popup help on the @samp{Undo} and
+@samp{Redo} buttons.
+
+
+@menu
+* Customizing Undo::            
+@end menu
+
+@node Customizing Undo
+@subsection Customizing Undo
+
+@value{DDD} Undo can be customized in various ways
+(@pxref{Customizing}).
+
+To set a maximum size for the undo buffer, set @samp{Edit @result{}
+Preferences @result{} General @result{} Undo Buffer Size}.
+@lbindex Undo Buffer Size
+
+This is related to the @samp{maxUndoSize} resource:
+
+@defvr Resource maxUndoSize (class MaxUndoSize)
+The maximum memory usage (in bytes) of the undo buffer.  Useful for
+limiting @value{DDD} memory usage.  A negative value means to place no
+limit.  Default is @samp{2000000}, or 2000 kBytes.
+@end defvr
+
+You can also limit the number of entries in the undo buffer, regardless
+of size:
+
+@defvr Resource maxUndoDepth (class MaxUndoDepth)
+The maximum number of entries in the undo buffer.  This limits the
+number of actions that can be undone, and the number of states that
+can be shown in historic mode.  Useful for limiting @value{DDD}
+memory usage.  A negative value (default) means to place no limit.
+@end defvr
+
+
+@node Menu Bar
+@section The Menu Bar
+
+The @value{DDD} Menu Bar gives you access to all @value{DDD} functions.
+
+@table @code
+@item File
+@lbindex File
+Perform file-related operations such as selecting programs, processes,
+and sessions, printing graphs, recompiling, as well as exiting
+@value{DDD}.
+
+@item Edit
+@lbindex Edit
+Perform standard editing operations, such as cutting, copying, pasting,
+and killing selected text.  Also allows editing @value{DDD} options and
+preferences.
+
+@item View
+@lbindex View
+Allows accessing the individual @value{DDD} windows.
+
+@item Program
+@lbindex Program
+Perform operations related to the program being debugged, such as
+starting and stopping the program.
+
+@item Commands
+@lbindex Commands
+Perform operations related to @value{DDD} commands, such as accessing
+the command history or defining new commands.
+
+@item Status
+@lbindex Status
+Examine the program status, such as the stack traces, registers, or
+threads.
+
+@item Source
+@lbindex Source
+Perform source-related operations such as looking up items or editing
+breakpoints.
+
+@item Data
+@lbindex Data
+Perform data-related operations such as editing displays or layouting
+the display graph.
+
+@item Maintenance
+@lbindex Maintenance
+Perform operations that are useful for debugging @value{DDD}.  By
+default, this menu is disabled.
+
+@item Help
+@lbindex Help
+Give help on @value{DDD} usage.
+@end table
+
+
+There are two ways of selecting an item from a pull-down menu:
+
+@itemize @bullet
+@item Select an item in the menu bar by moving the cursor over it and
+click @emph{mouse button 1}.  Then move the cursor over the menu item
+you want to choose and click left again.
+
+@item Select an item in the menu bar by moving the cursor over it and
+click and hold @emph{mouse button 1}.  With the mouse button depressed,
+move the cursor over the menu item you want, then release it to make
+your selection.
+@end itemize
+
+The menus can also be @dfn{torn off} (i.e. turned into a persistent
+window) by selecting the dashed line at the top.
+
+If a command in the pull-down menu is not applicable in a given
+situation, the command is @dfn{disabled} and its name appears faded.
+You cannot invoke items that are faded.  For example, many commands on
+the @samp{Edit} menu appear faded until you select text on which they
+are to operate; after you select a block of text, edit commands are
+enabled.
+
+@menu
+* File Menu::                   
+* Edit Menu::                   
+* View Menu::                   
+* Program Menu::                
+* Commands Menu::               
+* Status Menu::                 
+* Source Menu::                 
+* Data Menu::                   
+* Maintenance Menu::            
+* Help Menu::                   
+@end menu
+
+@node File Menu
+@subsection The File Menu
+@lbindex File
+
+The @samp{File} menu contains file-related operations such as selecting
+programs, processes, and sessions, printing graphs, recompiling, as well
+as exiting @value{DDD}.
+
+@table @code
+@item Open Program
+@itemx Open Class
+@lbindex Open Program
+@lbindex Open Class
+Open a program or class to be debugged.  @xref{Opening Programs}, for details.
+
+@item Open Recent
+@lbindex Open Recent
+Re-open a recently opened program to be debugged.  @xref{Opening
+Programs}, for details.
+
+@item Open Core Dump
+@lbindex Open Core Dump
+Open a core dump for the currently debugged program.  @xref{Opening Core
+Dumps}, for details.
+
+@item Open Source
+@lbindex Open Source
+Open a source file of the currently debugged program.  @xref{Opening
+Source Files}, for details.
+
+@item Open Session
+@lbindex Open Session
+Open a previously saved @value{DDD} session.  @xref{Opening Sessions},
+for details.
+
+@item Save Session As
+@lbindex Save Session As
+Save the current @value{DDD} session such that you can resume it later.
+@xref{Saving Sessions}, for details.
+
+@item Attach to Process
+@lbindex Attach to Process
+Attach to a running process of the debugged program.  @xref{Attaching to
+a Process}, for details.
+
+@item Detach Process
+@lbindex Detach Process
+Detach from the running process.  @xref{Attaching to a Process}, for
+details.
+
+@item Print Graph
+@lbindex Print Graph
+Print the current graph on a printer.  @xref{Printing the Graph}, for
+details.
+
+@item Change Directory
+@lbindex Change Directory
+Change the working directory of your program.  @xref{Working Directory}, 
+for details.
+
+@item Make
+@lbindex Make
+Run the @code{make} program.  @xref{Recompiling}, for details.
+
+@item Close
+@lbindex Close
+Close this @value{DDD} window.
+
+@item Restart
+@lbindex Restart
+Restart @value{DDD}.
+
+@item Exit
+@lbindex Exit
+Exit @value{DDD}.
+@end table
+
+
+@node Edit Menu
+@subsection The Edit Menu
+@lbindex Edit
+
+The @samp{Edit} menu contains standard editing operations, such as
+cutting, copying, pasting, and killing selected text.  Also allows
+editing @value{DDD} options and preferences.
+
+@table @code
+@item Undo
+@lbindex Undo
+Undo the most recent action.  Almost all commands can be undone this
+way.  @xref{Undoing Commands}, for details.
+
+@item Redo
+@lbindex Redo
+Redo the action most recently undone.  Every command undone can be
+redone this way.  @xref{Undoing Commands}, for details.
+
+@item Cut
+@lbindex Cut
+Removes the selected text block from the current text area and makes it
+the X clipboard selection.  Before executing this command, you have to
+select a region in a text area---either with the mouse or with the usual
+text selection keys.
+
+This item can also be applied to displays (@pxref{Deleting Displays}).
+
+@item Copy
+@lbindex Copy
+Makes a selected text block the X clipboard selection.  You can select
+text by selecting a text region with the usual text selection keys or
+with the mouse.  @xref{Customizing the Edit Menu}, for changing the
+default accelerator.
+
+This item can also be applied to displays (@pxref{Deleting Displays}).
+
+@item Paste
+@lbindex Paste
+Inserts the current value of the X clipboard selection in the most
+recently selected text area.  You can paste in text you have placed in
+the clipboard using @samp{Copy} or @samp{Cut}.  You can also use
+@samp{Paste} to insert text that was pasted into the clipboard from
+other applications.
+
+@item Clear
+@lbindex Clear
+Clears the most recently selected text area.
+
+@item Delete
+@lbindex Delete
+Removes the selected text block from the most recently selected text
+area, but does not make it the X clipboard selection.
+
+This item can also be applied to displays (@pxref{Deleting Displays}).
+
+@item Select All
+@lbindex Select All
+Selects all characters from the most recently selected text area.
+@xref{Customizing the Edit Menu}, for changing the default accelerator.
+
+@item Preferences
+@lbindex Preferences
+Allows you to customize @value{DDD} interactively.  @xref{Customizing},
+for details.
+
+@item Debugger Settings
+@lbindex Debugger Settings
+@lbindex GDB Settings
+@lbindex DBX Settings
+@lbindex XDB Settings
+@lbindex JDB Settings
+@lbindex PYDB Settings
+@lbindex Perl Settings
+Allows you to customize the inferior debugger.  @xref{Debugger
+Settings}, for details.
+
+@item Save Options
+@lbindex Save Options
+Saves all preferences and settings for the next @value{DDD} invocation.
+@xref{Saving Options}, for details.
+@end table
+
+
+@menu
+* Customizing the Edit Menu::   
+@end menu
+
+@node Customizing the Edit Menu
+@subsubsection Customizing the Edit Menu
+
+The @samp{Edit} Menu can be customized in various ways
+(@pxref{Customizing}).  Select @samp{Edit @result{} Preferences
+@result{} Startup} to customize it.
+
+The @key{Ctrl+C} key can be bound to different actions, each in
+accordance with a specific style guide.
+@kindex Ctrl+C
+@lbindex Ctrl+C is
+
+@table @code
+@item Copy
+This setting binds @key{Ctrl+C} to the Copy operation, as specified by
+the KDE style guide.  In this setting, use @key{ESC} to interrupt the
+debuggee.
+@kindex ESC
+
+@item Interrupt
+This (default) setting binds @key{Ctrl+C} to the Interrupt operation, as
+used in several UNIX command-line programs.  In this setting, use
+@key{Ctrl+Ins} to copy text to the clipboard.
+@kindex Ctrl+C
+@end table
+
+The @key{Ctrl+A} key can be bound to different actions, too.
+@lbindex Ctrl+A is
+
+@table @code
+@item Select All
+This (default) setting binds @key{Ctrl+A} to the @samp{Select All}
+operation, as specified by the KDE style guide.  In this setting, use
+@key{Home} to move the cursor to the beginning of a line.
+@kindex Home
+
+@item Beginning of Line
+This setting binds @key{Ctrl+A} to the @samp{Beginning of Line}
+operation, as used in several UNIX text-editing programs.  In this
+setting, use @key{Ctrl+Shift+A} to select all text.
+@kindex Ctrl+Shift+A
+@end table
+
+Here are the related @value{DDD} resources:
+
+@defvr Resource cutCopyPasteBindings (class BindingStyle)
+Controls the key bindings for clipboard operations.
+
+@itemize @bullet
+@item
+If this is @samp{Motif} (default), Cut/Copy/Paste is on
+@key{Shift+Del}/@key{Ctrl+Ins}/@key{Shift+Ins}.  This is conformant to
+the Motif style guide.
+@item
+If this is @samp{KDE}, Cut/Copy/Paste is on
+@key{Ctrl+X}/@key{Ctrl+C}/@key{Ctrl+V}.  This is conformant to the KDE
+style guide.  Note that this means that @key{Ctrl+C} no longer
+interrupts the debuggee; use @key{ESC} instead.
+@end itemize
+@end defvr
+
+@defvr Resource selectAllBindings (class BindingStyle)
+Controls the key bindings for the @samp{Select All} operation.
+
+@itemize @bullet
+@item
+If this is @samp{Motif}, Select All is on @key{Shift+Ctrl+A}.
+@item
+If this is @samp{KDE} (default), Select All is on @key{Ctrl+A}.  This is
+conformant to the KDE style guide.  Note that this means that
+@key{Ctrl+A} no longer moves the cursor to the beginning of a line; use
+@key{Home} instead.
+@end itemize
+@end defvr
+
+
+@node View Menu
+@subsection The View Menu
+@lbindex View
+
+The @samp{View} menu allows accessing the individual @value{DDD}
+windows.
+
+@table @code
+@item Command Tool
+@lbindex Command Tool
+Open and recenter the command tool.  @xref{Command Tool}, for details.
+
+@item Execution Window
+@lbindex Execution Window
+Open the separate execution window.  @xref{Using the Execution Window},
+for details.
+
+@item Debugger Console
+@lbindex GDB Console
+@lbindex DBX Console
+@lbindex XDB Console
+@lbindex JDB Console
+@lbindex PYDB Console
+@lbindex Perl Console
+Open the debugger console.  @xref{Commands}, for details.
+
+@item Source Window
+@lbindex Source Window
+Open the source window.  @xref{Navigating}, for details.
+
+@item Data Window
+@lbindex Data Window
+Open the data window.  @xref{Displaying Values}, for details.
+
+@item Machine Code Window
+@lbindex Machine Code Window
+Show machine code.  @xref{Machine Code}, for details.
+@end table
+
+
+@node Program Menu
+@subsection The Program Menu
+@lbindex Program
+
+The @samp{Program} menu performs operations related to the program being
+debugged, such as starting and stopping the program.
+
+Most of these operations are also found on the command tool
+(@pxref{Command Tool}).
 
 @table @code
 @item Run
 @lbindex Run
-Start program execution.  When you click this button, your program will
-begin to execute immediately.  @xref{Starting Program Execution}, for
-details.
+Start program execution, prompting for program arguments.
+@xref{Starting Program Execution}, for details.
 
-@item Interrupt
-@lbindex Interrupt
-Interrupt program execution.  This is equivalent to sending an interrupt
-signal to the process.  @xref{Stopping the Program}, for details.
+@item Run Again
+@lbindex Run Again
+Start program execution with the most recently used arguments.
+@xref{Starting Program Execution}, for details.
+
+@item Run in Execution Window
+@lbindex Run in Execution Window
+If enabled, start next program execution in separate execution window.
+@xref{Using the Execution Window}, for details.
 
 @item Step
 @lbindex Step
@@ -1180,8 +2453,8 @@ Continue running your program until control reaches a different source
 line, then stop it and return control to @value{DDD}.  @xref{Resuming
 Execution}, for details.
 
-@item Stepi
-@lbindex Stepi
+@item Step Instruction
+@lbindex Step Instruction
 Execute one machine instruction, then stop and return to @value{DDD}.
 @xref{Machine Code Execution}, for details.
 
@@ -1192,8 +2465,8 @@ frame.  This is similar to @samp{Step}, but function calls that appear
 within the line of code are executed without stopping.
 @xref{Resuming Execution}, for details.
 
-@item Nexti
-@lbindex Nexti
+@item Next Instruction
+@lbindex Next Instruction
 Execute one machine instruction, but if it is a function call,
 proceed until the function returns.
 @xref{Machine Code Execution}, for details.
@@ -1209,38 +2482,393 @@ Continue running until just after function in the selected stack frame
 returns.  Print the returned value (if any).  @xref{Resuming Execution},
 for details.
 
+@item Continue
+@lbindex Continue
+Resume program execution, at the address where your program last
+stopped; any breakpoints set at that address are bypassed.
+@xref{Resuming Execution}, for details.
+
+@item Continue Without Signal
+@lbindex Continue Without Signal
+Continue execution without giving a signal.  This is useful when your
+program stopped on account of a signal and would ordinary see the signal
+when resumed with @samp{Continue}.  @xref{Signals}, for details.
+
+@item Kill
+@lbindex Kill
+Kill the process of the debugged program.  @xref{Killing the Program},
+for details.
+
+@item Interrupt
+@lbindex Interrupt
+Interrupt program execution.  This is equivalent to sending an interrupt
+signal to the process.  @xref{Stopping the Program}, for details.
+
+@item Abort
+@lbindex Abort
+Abort program execution (and maybe debugger execution, too).  This is
+equivalent to sending an abort signal to the process.  @xref{Quitting},
+for details.
+@end table
+
+
+@node Commands Menu
+@subsection The Commands Menu
+@lbindex Commands
+
+The @samp{Commands} menu performs operations related to @value{DDD}
+commands, such as accessing the command history or defining new
+commands.
+
+Most of these items are not meant to be actually executed via the menu;
+instead, they serve as @emph{reminder} for the equivalent keyboard
+commands.
+
+@table @code
+@item Command History
+@lbindex Command History
+View the command history.  @xref{Command History}, for details.
+
+@item Previous
+@lbindex Previous
+Show the previous command from the command history.  @xref{Command
+History}, for details.
+
+@item Next
+@lbindex Next
+Show the next command from the command history.  @xref{Command History},
+for details.
+
+@item Find Backward
+@lbindex Find Backward
+Do an incremental search backward through the command history.
+@xref{Command History}, for details.
+
+@item Find Forward
+@lbindex Find Forward
+Do an incremental search forward through the command history.
+@xref{Command History}, for details.
+
+@item Quit Search
+@lbindex Quit Search
+Quit incremental search through the command history.  @xref{Command
+History}, for details.
+
+@item Complete
+@lbindex Complete
+Complete the current command in the debugger console.  @xref{Entering
+Commands}, for details.
+
+@item Apply
+@lbindex Apply
+Apply the current command in the debugger console.  @xref{Entering
+Commands}, for details.
+
+@item Clear Line
+@lbindex Clear Line
+Clear the current command line in the debugger console.  @xref{Entering
+Commands}, for details.
+
+@item Clear Window
+@lbindex Clear Window
+Clear the debugger console.  @xref{Entering Commands}, for details.
+
+@item Define Command
+@lbindex Define Command
+Define a new debugger command.  @xref{Defining Commands}, for details.
+
+@item Edit Buttons
+@lbindex Edit Buttons
+Customize @value{DDD} buttons.  @xref{Defining Buttons}, for details.
+@end table
+
+
+@node Status Menu
+@subsection The Status Menu
+@lbindex Status
+
+The @samp{Status} menu lets you examine the program status, such as the
+stack traces, registers, or threads.
+
+@table @code
+@item Backtrace
+@lbindex Backtrace
+View the current backtrace.  @xref{Backtraces}, for a discussion.
+
+@item Registers
+@lbindex Registers
+View the current register contents.  @xref{Registers}, for details.
+
+@item Threads
+@lbindex Threads
+View the current threads.  @xref{Threads}, for details.
+
+@item Threads
+@lbindex Threads
+View and edit the current signal handling.  @xref{Signals}, for details.
+
 @item Up
 @lbindex Up
 Select the stack frame (i.e. the function) that called this one.  This
 advances toward the outermost frame, to higher frame numbers, to frames
-that have existed longer.  @xref{Examining the Stack}, for details.
+that have existed longer.  @xref{Stack}, for details.
 
 @item Down
 @lbindex Down
 Select the stack frame (i.e. the function) that was called by this one.
 This advances toward the innermost frame, to lower frame numbers, to
-frames that were created more recently.  @xref{Examining the Stack}, for 
+frames that were created more recently.  @xref{Stack}, for details.
+@end table
+
+
+@node Source Menu
+@subsection The Source Menu
+@lbindex Source
+
+The @samp{Source} menu performs source-related operations such as
+looking up items or editing breakpoints.
+
+@table @code
+@item Edit Breakpoints
+@lbindex Edit Breakpoints
+Edit all Breakpoints.  @xref{Editing all Breakpoints}, for details.
+
+@item Lookup ()
+@lbindex Lookup ()
+Look up the argument @samp{()} in the source code.  @xref{Looking up
+Definitions}, for details.
+
+
+@item Find >> ()
+@lbindex Find >> ()
+Look up the next occurrence of the argument @samp{()} in the current
+source code.  @xref{Textual Search}, for details.
+
+@item Find << ()
+@lbindex Find << ()
+Look up the previous occurrence of the argument @samp{()} in the current
+source code.  @xref{Textual Search}, for details.
+
+
+@item Find Words Only
+@lbindex Find Words Only
+If enabled, find only complete words.  @xref{Textual Search}, for
 details.
 
-@item Undo
-@lbindex Undo
-Undo the most recent action.  Almost all commands can be undone this
-way.  @xref{Undoing Commands}, for details.
 
-@item Redo
-@lbindex Redo
-Redo the action most recently undone.  Every command undone can be
-redone this way.  @xref{Undoing Commands}, for details.
+@item Find Case Sensitive
+@lbindex Find Case Sensitive
+If enabled, find is case-sensitive.  @xref{Textual Search}, for details.
 
-@item Edit
-@lbindex Edit
+
+@item Display Line Numbers
+@lbindex Display Line Numbers
+If enabled, prefix source lines with their line number.
+@xref{Customizing Source}, for details.
+
+
+@item Display Machine Code
+@lbindex Display Machine Code
+If enabled, show machine code.  @xref{Machine Code}, for details.
+
+
+@item Edit Source
+@lbindex Edit Source
 Invoke an editor for the current source file.  @xref{Editing Source
 Code}, for details.
 
-@item Make
-@lbindex Make
-Run the @code{make} program with the most recently given arguments.
-@xref{Recompiling}, for details.
+@item Reload Source
+@lbindex Reload Source
+Reload the current source file.  @xref{Editing Source Code}, for
+details.
+@end table
+
+
+@node Data Menu
+@subsection The Data Menu
+@lbindex Data
+
+The @samp{Data} menu performs data-related operations such as editing
+displays or layouting the display graph.
+
+@table @code
+@item Edit Displays
+@lbindex Edit Displays
+Invoke the Display Editor.  @xref{Editing all Displays}, for details.
+
+@item Edit Watchpoints
+@lbindex Edit Watchpoints
+Edit all Watchpoints.  @xref{Editing all Watchpoints}, for details.
+
+@item Examine Memory
+@lbindex Examine Memory
+View a memory dump.  @xref{Examining Memory}, for details.
+
+@item Print ()
+@lbindex Print ()
+Print the value of @samp{()} in the debugger console.  @xref{Printing
+Values}, for details.
+
+@item Display ()
+@lbindex Display ()
+Display the value of @samp{()} in the data window.  @xref{Displaying
+Values}, for details.
+
+@item Detect Aliases
+@lbindex Detect Aliases
+If enabled, detect shared data structures.  @xref{Shared Structures},
+for a discussion.
+
+@item Display Local Variables
+@lbindex Display Local Variables
+Show all local variables in a display.  @xref{Displaying Local
+Variables}, for details.
+
+@item Display Arguments
+@lbindex Display Arguments
+Show all arguments of the current function in a display.
+@xref{Displaying Local Variables}, for details.
+
+@item More Status Displays
+@lbindex More Status Displays
+Show current debugging information in a display.  @xref{Displaying
+Program Status}, for details.
+
+@item Align on Grid
+@lbindex Align on Grid
+Align all displays on the grid.  @xref{Aligning Displays}, for a
+discussion.
+
+@item Rotate Graph
+@lbindex Rotate Graph
+Rotate the graph by 90 degrees.  @xref{Rotating the Graph}, for details.
+
+@item Layout Graph
+@lbindex Layout Graph
+Layout the graph.  @xref{Layouting the Graph}, for details.
+
+@item Refresh
+@lbindex Refresh
+Update all values in the data window.  @xref{Refreshing the Data
+Window}, for details.
+@end table
+
+
+@node Maintenance Menu
+@subsection The Maintenance Menu
+@lbindex Maintenance
+
+The @samp{Maintenance} menu performs operations that are useful for
+debugging @value{DDD}.  
+
+By default, this menu is disabled; it is enabled by specifically
+requesting it at @value{DDD} invocation (via the @samp{--maintenance}
+option; @pxref{Options}).  It is also enabled when @value{DDD} gets a
+fatal signal.
+
+@table @code
+@item Debug @value{DDD}
+@lbindex Debug @value{DDD}
+Invoke a debugger (typically, GDB) and attach it to this @value{DDD}
+process.  This is useful only if you are a @value{DDD} maintainer.
+
+@item Dump Core Now
+@lbindex Dump Core Now
+Make this @value{DDD} process dump core.  This can also be achieved by
+sending @value{DDD} a @code{SIGUSR1} signal.
+
+@item Tic Tac Toe
+@lbindex Tic Tac Toe
+@cindex Tic Tac Toe game
+Invoke a Tic Tac Toe game.  You must try to get three stop signs in a
+row, while preventing @value{DDD} from doing so with his skulls.  Click
+on @samp{New Game} to restart.
+@lbindex New Game
+
+@item When @value{DDD} Crashes
+@lbindex When @value{DDD} Crashes
+Select what to do when @value{DDD} gets a fatal signal.
+
+@table @code
+@item Debug @value{DDD}
+@lbindex Debug @value{DDD}
+Invoke a debugger on the @value{DDD} core dump when @value{DDD}
+crashes.  This is useful only if you are a @value{DDD} maintainer.
+
+@item Dump Core
+@lbindex Dump Core
+Just dump core when @value{DDD} crashes; don't invoke a debugger.  This
+is the default setting, as the core dump may contain important
+information required for debugging @value{DDD}.
+
+@item Do Nothing
+@lbindex Do Nothing
+Do not dump core or invoke a debugger when @value{DDD} crashes.
+@end table
+
+@item Remove Menu
+@lbindex Remove Menu
+Make this menu inaccessible again.
+@end table
+
+@node Help Menu
+@subsection The Help Menu
+@lbindex Help
+
+The @samp{Help} menu gives help on @value{DDD} usage.  @xref{Getting
+Help}, for a discussion on how to get help within @value{DDD}.
+
+
+@table @code
+@item Overview
+@lbindex Overview
+Explains the most important concepts of @value{DDD} help.
+
+@item On Item
+@lbindex On item
+Lets you click on an item to get help on it.
+
+@item On Window
+@lbindex On item
+Gives you help on this @value{DDD} window.
+
+@item What Now
+@lbindex What Now
+Gives a hint on what to do next.
+
+@item Tip of the Day
+@lbindex Tip of the Day
+Shows the current tip of the day.
+
+@item @value{DDD} Reference
+@lbindex DDD Reference
+Shows the @value{DDD} Manual.
+
+@item @value{DDD} News
+@lbindex DDD News
+Shows what's new in this @value{DDD} release.
+
+@item Debugger Reference
+@lbindex Debugger Reference
+@lbindex GDB Reference
+@lbindex DBX Reference
+@lbindex XDB Reference
+@lbindex JDB Reference
+@lbindex PYDB Reference
+@lbindex Perl Reference
+Shows the on-line documentation for the inferior debugger.
+
+@item @value{DDD} License
+@lbindex DDD License
+Shows the @value{DDD} License (@pxref{License}).
+
+@item @value{DDD} WWW Page
+@lbindex DDD WWW Page
+Invokes a WWW browser for the @value{DDD} WWW page.
+
+@item About @value{DDD}
+@lbindex About @value{DDD}
+Shows version and copyright information.
 @end table
 
 
@@ -1278,11 +2906,22 @@ this is indicated by a small arrow in the upper right corner.  Pressing
 and holding @emph{mouse button 1} on such a button will pop up a menu
 with further operations.
 
+
+@menu
+* Tool Bar Buttons::            
+* Customizing the Menu Bar::    
+* Customizing the Tool Bar::    
+@end menu
+
+@node Tool Bar Buttons
+@subsection The Tool Bar Buttons
+
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-toolbar, 15cm}
+@center @image{PICS/ddd-toolbar, 16cm}
 @sp 1
 @end ifnotinfo
+
 
 These are the buttons of the tool bar.  Note that not all buttons may be
 inactive, depending on the current state and the capabilities of the
@@ -1293,7 +2932,7 @@ inferior debugger.
 @lbindex Lookup
 @cindex Looking up items
 
-Look up the argument @samp{()} in the code.  @xref{Looking up
+Look up the argument @samp{()} in the source code.  @xref{Looking up
 Definitions}, for details.
 
 
@@ -1409,122 +3048,414 @@ details.
 
 Undisplay (delete) the selected display(s).  @xref{Deleting Displays},
 for details.
-
 @end table
 
 
-@node Getting Help
-@section Getting Help
-@cindex Help
+@node Customizing the Menu Bar
+@subsection Customizing the Menu Bar
 
-@value{DDD} has an extensive on-line help system.  Here's how to get
-help while working with @value{DDD}.
+The Menu Bar can be customized in various ways (@pxref{Customizing}).
 
-@itemize @bullet
-@item
-You can get a short help text on most @value{DDD} buttons by simply
-moving the mouse pointer on it and leave it there.  After a second, a
-small window (called @emph{button tip}) pops up, giving a hint on the
-button's meaning.  The button tip disappears as soon as you move the
-mouse pointer to another item.
-@cindex Button tip
-@cindex Help, on buttons
-@cindex Tip, on buttons
+@defvr Resource autoRaiseMenu (class AutoRaiseMenu)
+If @samp{on} (default), @value{DDD} will always keep the pull down menu
+on top of the @value{DDD} main window.  If this setting interferes with
+your window manager, or if your window manager does not auto-raise
+windows, set this resource to @samp{off}.
+@end defvr
 
-@item
-The @emph{status line} also displays information about the currently selected
-item.  By clicking on the status line, you can redisplay the most
-recent messages.
-@cindex Help, in the status line
-@cindex Status line
 
-@item
-You can get detailed help on any visible @value{DDD} item.  Just
-point on the item you want help and press the @samp{F1} key.  This
-pops up a detailed help text.
-@cindex Help, on items
-@cindex Context-sensitive help
-@kindex F1
 
-@item
-The @value{DDD} dialogs all contain @samp{Help} buttons that give
-detailed information about the dialog.
-@lbindex Help
+@node Customizing the Tool Bar
+@subsection Customizing the Tool Bar
 
-@item
-You can get help on debugger commands by entering @samp{help} at the
-debugger prompt.  @xref{Entering Commands}, for details on entering
-commands.
-@cindex Help, on commands
-@cmindex help
+The @value{DDD} tool bar buttons can appear in a variety of styles,
+customized via @samp{Edit @result{} Preferences @result{} Startup}.
 
-@item
-And if you are totally stuck, try @samp{Help @result{} What Now?} (the
-@samp{What Now} item in the @samp{Help} menu) or press @key{Ctrl+F1}.
-Depending on the current state, @value{DDD} will give you some hints on
-what you can do next.
-@lbindex What Now?
-@kindex Ctrl+F1
-@cindex Help, when stuck
-@end itemize
+@table @code
+@item Images
+This lets each tool bar button show an image illustrating the action.
 
-If, after all, you made a mistake, don't worry: Almost every @value{DDD}
-command can be undone.  @xref{Undoing Commands}, for details.
+@item Captions
+This shows the action name below the image.
+@end table
+
+The default is to have images as well as captions, but you can choose to
+have only images (saving space) or only captions.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-toolbars, 16cm}
+@sp 1
+@end ifnotinfo
+
+If you choose to have neither images nor captions, tool bar buttons are
+labeled like other buttons, as in @value{DDD} 2.x.  Note that this
+implies that in the stacked window configuration, the common tool bar
+cannot be displayed; it is replaced by two separate tool bars, as in
+@value{DDD} 2.x.
+
+If you enable @samp{Flat} buttons (default), the border of tool bar
+buttons will appear only if the mouse pointer is over them.  This
+latest-and-greatest GUI invention can be disabled, such that the button
+border is always shown.
+
+If you enable @samp{Color} buttons, tool bar images will be colored when
+entered.  If @value{DDD} was built using Motif 2.0 and later, you can
+also choose a third setting, where buttons appear in color all the time.
+
+Here are the related resources:
+
+@defvr Resource activeButtonColorKey (class ColorKey)
+The XPM color key to use for the images of active buttons
+(entered or armed).  @samp{c} means color, @samp{g} (default) means
+grey, and @samp{m} means monochrome.
+@end defvr
+
+@defvr Resource buttonCaptions (class ButtonCaptions)
+Whether the tool bar buttons should be shown using captions
+(@samp{on}, default) or not (@samp{off}).  If neither captions nor
+images are enabled, tool bar buttons are shown using ordinary labels.
+See also @samp{buttonImages}, below.
+@end defvr
+
+@defvr Resource buttonCaptionGeometry (class ButtonCaptionGeometry)
+The geometry of the caption subimage within the button icons.  Default
+is @samp{29x7+0-0}.
+@end defvr
+
+@defvr Resource buttonImages (class ButtonImages)
+Whether the tool bar buttons should be shown using images (@samp{on},
+default) or not (@samp{off}).  If neither captions nor images are
+enabled, tool bar buttons are shown using ordinary labels.  See also
+@samp{buttonCaptions}, above.
+@end defvr
+
+@defvr Resource buttonImageGeometry (class ButtonImageGeometry)
+The geometry of the image within the button icon.  Default is
+@samp{25x21+2+0}.
+@end defvr
+
+@defvr Resource buttonColorKey (class ColorKey)
+The XPM color key to use for the images of inactive buttons
+(non-entered or insensitive).  @samp{c} means color, @samp{g}
+(default) means grey, and @samp{m} means monochrome.
+@end defvr
+
+@defvr Resource flatToolbarButtons (class FlatButtons)
+If @samp{on} (default), all tool bar buttons with images or captions
+are given a `flat' appearance---the 3-D border only shows up when the
+pointer is over the icon.  If @samp{off}, the 3-D border is shown all
+the time.
+@end defvr
+
+@defvr Resource flatDialogButtons (class FlatButtons)
+If @samp{on} (default), all dialog buttons with images or captions
+are given a `flat' appearance---the 3-D border only shows up when
+the pointer is over the icon.  If @samp{off}, the 3-D border is shown
+all the time.
+@end defvr
+
+
+@node Command Tool
+@section The Command Tool
+
+The command tool is a small window that gives you access to the most
+frequently used @value{DDD} commands.  It can be moved around on top of
+the @value{DDD} windows, but it can also be placed besides them.
+
+By default, the command tool @emph{sticks} to the @value{DDD} source
+window: Whenever you move the @value{DDD} source window, the command
+tool follows such that the distance between source window and command
+tool remains the same.  By default, the command tool is also
+@emph{auto-raised}, such that it stays on top of other @value{DDD}
+windows.
+
+The command tool can be configured to appear as a command tool bar above
+the source window; see @samp{Edit @result{} Preferences @result{} Source
+@result{} Tool Buttons Location} for details.
+
+Whenever you save @value{DDD} state, @value{DDD} also saves the distance
+between command tool and source window, such that you can select your
+own individual command tool placement.  To move the command tool to its
+saved position, use @samp{View @result{} Command Tool}.
 
 
 @menu
-* Undoing Commands::            
+* Command Tool Buttons::        
+* Customizing the Command Tool::  
 @end menu
 
-@node Undoing Commands
-@subsection Undoing Commands
+@node Command Tool Buttons
+@subsection Command Tool Buttons
 
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-tool, 16cm}
+@sp 1
+@end ifnotinfo
+
+These are the buttons of the command tool.  Note that not all buttons
+may be inactive, depending on the current state and the capabilities of
+the inferior debugger.
+
+@table @code
+@item Run
+@lbindex Run
+Start program execution.  When you click this button, your program will
+begin to execute immediately.  @xref{Starting Program Execution}, for
+details.
+
+@item Interrupt
+@lbindex Interrupt
+Interrupt program execution.  This is equivalent to sending an interrupt
+signal to the process.  @xref{Stopping the Program}, for details.
+
+@item Step
+@lbindex Step
+Continue running your program until control reaches a different source
+line, then stop it and return control to @value{DDD}.  @xref{Resuming
+Execution}, for details.
+
+@item Stepi
+@lbindex Stepi
+Execute one machine instruction, then stop and return to @value{DDD}.
+@xref{Machine Code Execution}, for details.
+
+@item Next
+@lbindex Next
+Continue to the next source line in the current (innermost) stack
+frame.  This is similar to @samp{Step}, but function calls that appear
+within the line of code are executed without stopping.
+@xref{Resuming Execution}, for details.
+
+@item Nexti
+@lbindex Nexti
+Execute one machine instruction, but if it is a function call,
+proceed until the function returns.
+@xref{Machine Code Execution}, for details.
+
+@item Until
+@lbindex Until
+Continue running until a source line past the current line, in the
+current stack frame, is reached.  @xref{Resuming Execution}, for details.
+
+@item Finish
+@lbindex Finish
+Continue running until just after function in the selected stack frame
+returns.  Print the returned value (if any).  @xref{Resuming Execution},
+for details.
+
+@item Cont
+@lbindex Cont
+Resume program execution, at the address where your program last
+stopped; any breakpoints set at that address are bypassed.
+@xref{Resuming Execution}, for details.
+
+@item Kill
+@lbindex Kill
+Kill the process of the debugged program.  @xref{Killing the Program},
+for details.
+
+@item Up
+@lbindex Up
+Select the stack frame (i.e. the function) that called this one.  This
+advances toward the outermost frame, to higher frame numbers, to frames
+that have existed longer.  @xref{Stack}, for details.
+
+@item Down
+@lbindex Down
+Select the stack frame (i.e. the function) that was called by this one.
+This advances toward the innermost frame, to lower frame numbers, to
+frames that were created more recently.  @xref{Stack}, for details.
+
+@item Undo
 @lbindex Undo
+Undo the most recent action.  Almost all commands can be undone this
+way.  @xref{Undoing Commands}, for details.
+
+@item Redo
 @lbindex Redo
-@kindex Ctrl+Z
-@kindex Ctrl+Y
-@cindex Undoing commands
-@cindex Redoing commands
+Redo the action most recently undone.  Every command undone can be
+redone this way.  @xref{Undoing Commands}, for details.
 
-Almost every @value{DDD} command can be undone, using @samp{Edit
-@result{} Undo} or the @samp{Undo} button on the command tool.
+@item Edit
+@lbindex Edit
+Invoke an editor for the current source file.  @xref{Editing Source
+Code}, for details.
 
-Likewise, @samp{Edit @result{} Redo} repeats the command most recently
-undone.
+@item Make
+@lbindex Make
+Run the @code{make} program with the most recently given arguments.
+@xref{Recompiling}, for details.
+@end table
+
+
+@node Customizing the Command Tool
+@subsection Customizing the Command Tool
+
+The Command Tool can be customized in various ways (@pxref{Customizing}).
+
+@menu
+* Disabling the Command Tool::  
+* Customizing Tool Position::   
+* Customizing Tool Decoration::  
+* Customizing Tool Buttons::    
+@end menu
+
+@node Disabling the Command Tool
+@subsubsection Disabling the Command Tool
+
+You can disable the command tool and show its buttons in a separate row
+beneath the tool bar.  To disable the command tool, set @samp{Edit
+@result{} Preferences @result{} Source @result{} Tool Buttons Location
+@result{} Source Window}.
+@lbindex Tool Buttons Location
+
+Here's the related resource:
+
+@defvr Resource commandToolBar (class ToolBar)
+Whether the tool buttons (see the @samp{toolButtons} resource, below)
+should be shown in a tool bar above the source window (@samp{on}) or
+within the command tool (@samp{off}, default).  Enabling the command
+tool bar disables the command tool and vice versa.
+@end defvr
+
+
+@node Customizing Tool Position
+@subsubsection Command Tool Position
+
+The following resources control the position of the command tool:
+
+@defvr Resource autoRaiseTool (class AutoRaiseTool)
+If @samp{on} (default), @value{DDD} will always keep the command tool on
+top of other @value{DDD} windows.  If this setting interferes with your
+window manager, or if your window manager keeps the command tool on top
+anyway, set this resource to @samp{off}.
+@end defvr
+
+@defvr Resource stickyTool (class StickyTool)
+If @samp{on} (default), the command tool automatically follows every
+movement of the source window.  Whenever the source window is moved, the
+command tool is moved by the same offset such that its position relative
+to the source window remains unchanged.  If @samp{off}, the command tool
+does not follow source window movements.
+@end defvr
+
+@defvr Resource toolRightOffset (class Offset)
+The distance between the right border of the command tool and the
+right border of the source text (in pixels).  Default is 8.
+@end defvr
+
+@defvr Resource toolTopOffset (class Offset)
+The distance between the upper border of the command tool and the
+upper border of the source text (in pixels).  Default is 8.
+@end defvr
+
+
+@node Customizing Tool Decoration
+@subsubsection Customizing Tool Decoration
+
+The following resources control the decoration of the command tool:
+
+@defvr Resource decorateTool (class Decorate)
+This resource controls the decoration of the command tool.
+
+@itemize @bullet
+@item
+If this is @samp{off}, the command tool is created as a @emph{transient
+window}.  Several window managers keep transient windows automatically
+on top of their parents, which is appropriate for the command tool.
+However, your window manager may be configured not to decorate transient
+windows, which means that you cannot easily move the command tool
+around.
+
+@item
+If this is @samp{on}, @value{DDD} realizes the command tool as a
+@emph{top-level window}.  Such windows are always decorated by the
+window manager.  However, top-level windows are not automatically kept
+on top of other windows, such that you may wish to set the
+@samp{autoRaiseTool} resource, too.
+
+@item
+If this is @samp{auto} (default), @value{DDD} checks whether the window
+manager decorates transients.  If yes, the command tool is realized as a
+transient window (as in the @samp{off} setting); if no, the command tool
+is realized as a top-level window (as in the @samp{on} setting).  Hence,
+the command tool is always decorated using the ``best'' method, but the
+extra check takes some time.
+@end itemize
+@end defvr
+
+
+@node Customizing Tool Buttons
+@subsubsection Customizing Command Tool Buttons
+
+The following resources control the command tool buttons:
+
+@defvr Resource toolButtons (class Buttons)
+A newline-separated list of buttons to be included in the command tool
+or the command tool bar (@pxref{Disabling the Command Tool}).  Each
+button issues the command given by its name.  @xref{Defining Buttons},
+for details on button syntax.
+
+The default resource value is
+
+@example
+Ddd*toolButtons: \
+run\nbreak^C\nstep\nstepi\nnext\nnexti\n\
+until\nfinish\ncont\n\kill\n\
+up\ndown\nBack\nForward\nEdit\nMake
+@end example
+
+For each button, its location in the command tool must be specified
+using @samp{XmForm} constraint resources.  See the @samp{Ddd}
+application defaults file for instructions.
+
+If the @samp{toolButtons} resource value is empty, the command tool is
+not created.
+@end defvr
+
+The following resources control whether command tool buttons are made
+insensitive:
+
+@defvr Resource verifyButtons (class VerifyButtons)
+If @samp{on} (default), verify for each button whether its command is
+actually supported by the inferior debugger.  If the command is unknown,
+the button is disabled.  If this resource is @samp{off}, no checking is
+done: all commands are accepted ``as is''.
+@end defvr
+
+...
 
 
 @node Customizing
 @chapter Customizing @value{DDD}
 
-...
+@value{DDD} is controlled by several @emph{resources}---user-defined
+variables that take specific values in order to control and customize
+@value{DDD} behavior.
+
+Most @value{DDD} resources can be set interactively while @value{DDD} is
+running or when invoking @value{DDD}.  @xref{Resource Index}, for the
+full list of @value{DDD} resources.
 
 @menu
-* Customizing Basics::          
-* Customizing Windows::         
-* Customizing Help::            
+* Getting Resources::           
+* Debugger Interaction::        
 * Debugger Settings::           
 * Saving Options::              
 * Other Customizations::        
+* Customizing Customization::   
 @end menu
 
-@node Customizing Basics
-@section Customizing Basics
 
-...
-
-@menu
-* Specifying Resources::        
-@end menu
-
-@node Specifying Resources
-@subsection Specifying @value{DDD} Resources
+@node Getting Resources
+@section Where @value{DDD} gets its Resources
 @cindex Resources
 
-@value{DDD} is controlled by several @emph{resource}---user-defined
-variables that take specific values in order to control and customize
-@value{DDD} behavior.  Just like any X program, @value{DDD} has a number
-of places to get resource values from.  For @value{DDD}, the most
-important places to specify resources are:
+Just like any X program, @value{DDD} has a number of places to get
+resource values from.  For @value{DDD}, the most important places to
+specify resources are:
 
 @itemize @bullet
 @item
@@ -1546,7 +3477,7 @@ you use a @file{@value{Ddd}} application-defaults file, you will not be
 able to maintain multiple @value{DDD} versions at the same time.  This
 is why the suiting @file{@value{Ddd}} is normally compiled into the
 @value{DDD} executable.}
-@flindex @value{Ddd}
+@flindex Ddd
 
 @item
 The command-line options.  These options override all other resource
@@ -1568,44 +3499,119 @@ you would specify in @file{~/.@value{ddd}/init}:
 @value{Ddd}*pollChildStatus: off
 @end example
 
-@xref{Resource Index}, for a full list of @value{DDD} resources.  For
-more details on resource specifications, see the section
-@cite{RESOURCES} in the @cite{X(1)} manual page.
+For more details on the syntax of resource specifications, see the
+section @cite{RESOURCES} in the @cite{X(1)} manual page.
 
 
 
-@node Customizing Windows
-@section Customizing the @value{DDD} Windows
-
-...
-
-By default, @value{DDD} places these main windows stacked into one
-single top-level window, but @value{DDD} can also be configured to
-treat each one separately.
-
-@ifnotinfo
-@sp 1
-@center @image{PICS/ddd-separate, 15cm}
-@sp 1
-@end ifnotinfo
+@node Debugger Interaction
+@section Customizing the Interaction with the Inferior Debugger
 
 ...
 
 
 @menu
-* Defining Buttons::            
+* Debugger Invocation::         
+* Debugger Initialization::     
+* Debugger Communication::      
 @end menu
 
-@node Defining Buttons
-@subsection Defining Buttons
+@node Debugger Invocation
+@subsection Invoking an Inferior Debugger
+
+The following @value{DDD} resources control the invocation of the
+inferior debugger.
+
+@defvr Resource autoDebugger (class AutoDebugger)
+If this is @samp{on} (default), @value{DDD} will attempt to determine
+the debugger type from its arguments, possibly overriding the
+@samp{debugger} resource (see below).  If this is @samp{off},
+@value{DDD} will invoke the debugger specified by the @samp{debugger}
+resource regardless of @value{DDD} arguments.
+@end defvr
+
+@defvr Resource debugger (class Debugger)
+The type of the inferior debugger to invoke (@samp{gdb}, @samp{dbx},
+@samp{xdb}, @samp{jdb}, @samp{pydb}, or @samp{perl}).  
+
+This resource is usually set through the @samp{--gdb}, @samp{--dbx},
+@samp{--xdb}, @samp{--jdb}, @samp{--pydb}, and @samp{--perl}, options;
+@xref{Options}, for details.
+@end defvr
+
+@defvr Resource debuggerCommand (class DebuggerCommand)
+The name under which the inferior debugger is to be invoked.  If this
+string is empty (default), the debugger type (@samp{debugger} resource)
+is used.
+
+This resource is usually set through the @samp{--debugger} option;
+@xref{Options}, for details.
+@end defvr
+
+
+
+
+@node Debugger Initialization
+@subsection Initializing the Inferior Debugger
 
 ...
 
 
-@node Customizing Help
-@section Customizing the @value{DDD} Help
+@defvr Resource sourceInitCommands (class SourceInitCommands)
+If @samp{on} (default), @value{DDD} writes all GDB initialization
+commands into a temporary file and makes GDB read this file, rather than
+sending each initialization command separately.  This results in faster
+startup (especially if you have several user-defined commands).  If
+@samp{off}, @value{DDD} makes GDB process each command separately.
+@end defvr
+
+
+
+@node Debugger Communication
+@subsection Communication with the Inferior Debugger
+
+@defvr Resource blockTTYInput (class BlockTTYInput)
+Whether @value{DDD} should block when reading data from the inferior
+debugger via the pseudo-tty interface.  Most UNIX systems except Linux
+@emph{require} this; set it to @samp{on}.  On Linux, set it to
+@samp{off}.  The value @samp{auto} (default) will always select the
+``best'' choice (that is, the best choice known to the @value{DDD}
+developers).
+@end defvr
+
+@defvr Resource displayTimeout (class DisplayTimeout)
+The time (in ms) to wait for the inferior debugger to finish a partial
+display information.  Default is @samp{2000}.
+@end defvr
+
+@defvr Resource positionTimeout (class PositionTimeout)
+The time (in ms) to wait for the inferior debugger to finish a partial
+position information.  Default is @samp{500}.
+@end defvr
+
+@defvr Resource questionTimeout (class QuestionTimeout)
+The time (in seconds) to wait for the inferior debugger to reply.
+Default is @samp{10}.
+@end defvr
+
+@defvr Resource synchronousDebugger (class SynchronousDebugger)
+If @samp{on}, X events are not processed while the debugger is busy.
+This may result in slightly better performance on single-processor
+systems.  @xref{Options}, for the @samp{--sync-debugger} option.
+@end defvr
+
+@defvr Resource terminateOnEOF (class TerminateOnEOF)
+If @samp{on}, @value{DDD} terminates the inferior debugger when
+@value{DDD} detects an EOF condition (that is, as soon as the inferior
+debugger closes its output channel).  This was the default behavior in
+@value{DDD} 2.x and earlier.  If @samp{off} (default), @value{DDD} takes
+no special action.
+@end defvr
 
 ...
+
+
+
 
 
 @node Debugger Settings
@@ -1624,6 +3630,28 @@ treat each one separately.
 @section Other Customizations
 
 ...
+
+
+@node Customizing Customization
+@section Customizing Customization
+
+...
+
+@defvr Resource checkOptions (class CheckOptions)
+Every @emph{N} seconds, where @emph{N} is the value of this resource,
+@value{DDD} checks whether the options file has changed.  Default is
+@samp{30}, which means that every 30 seconds, @value{DDD} checks for the
+options file.  Setting this resource to @samp{0} disables checking for
+changed option files.
+@end defvr
+
+@defvr Resource warnIfLocked (class WarnIfLocked)
+Whether to warn if multiple @value{DDD} instances are running
+(@samp{on}) or not (@samp{off}, default).
+@end defvr
+
+
+
 
 
 @node Navigating
@@ -1705,7 +3733,7 @@ a list of available classes to choose from.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-open, 15cm}
+@center @image{PICS/ddd-open, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -1782,7 +3810,7 @@ to find its definition.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-source-popup, 15cm}
+@center @image{PICS/ddd-source-popup, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -1827,13 +3855,134 @@ location you looked for.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-source, 15cm}
+@center @image{PICS/ddd-source, 16cm}
 @sp 1
 @end ifnotinfo
 
 
 @node Customizing Source
 @section Customizing the Source Window
+
+@defvr Resource filterFiles (class FilterFiles)
+If this is @samp{on} (default), @value{DDD} filters files when opening
+execution files, core dumps, or source files, such that the selection
+shows only suitable files.  This requires that @value{DDD} opens each
+file, which may take time.  If this is @samp{off}, @value{DDD} always
+presents all available files.
+@end defvr
+
+@defvr Resource cacheGlyphImages (class CacheMachineCode)
+Whether to cache (share) glyph images (@samp{on}) or not
+(@samp{off}).  Caching glyph images requires less X resources, but
+has been reported to fail with Motif 2.1 on XFree86 servers.  Default
+is @samp{off} for Motif 2.1 or later on Linux machines, and
+@samp{on} otherwise.
+@end defvr
+
+@defvr Resource cacheMachineCode (class CacheMachineCode)
+Whether to cache disassembled machine code (@samp{on}, default) or
+not (@samp{off}).  Caching machine code requires more memory, but
+makes @value{DDD} run faster.
+@end defvr
+
+@defvr Resource cacheSourceFiles (class CacheSourceFiles)
+Whether to cache source files (@samp{on}, default) or not
+(@samp{off}).  Caching source files requires more memory, but makes
+@value{DDD} run faster.
+@end defvr
+
+@defvr Resource disassemble (class Disassemble)
+If this is @samp{on}, the source code is automatically disassembled.
+The default is @samp{off}.  @xref{Options}, for the @samp{--disassemble}
+and @samp{--no-disassemble} options.
+@end defvr
+
+@defvr Resource displayGlyphs (class DisplayGlyphs)
+If this is @samp{on}, the current execution position and breakpoints are
+displayed as glyphs; otherwise, they are shown through characters in the
+text.  The default is @samp{on}.  @xref{Options}, for the
+@samp{--glyphs} and @samp{--no-glyphs} options.
+@end defvr
+
+@defvr Resource displayLineNumbers (class DisplayLineNumbers)
+If this is @samp{on}, lines in the source text are prefixed with
+their respective line number.  The default is @samp{off}.
+@end defvr
+
+@defvr Resource findCaseSensitive (class FindCaseSensitive)
+If this is @samp{on} (default), the @samp{Find} commands are
+case-sensitive.  Otherwise, occurrences are found regardless of case.
+@end defvr
+
+@defvr Resource findWordsOnly (class FindWordsOnly)
+If this is @samp{on} (default), the @samp{Find} commands find
+complete words only.  Otherwise, arbitrary occurrences are found.
+@end defvr
+
+@defvr Resource glyphUpdateDelay (class GlyphUpdateDelay)
+A delay (in ms) that says how much time to wait before updating glyphs
+while scrolling the source text.  A small value results in glyphs
+being scrolled with the text, a large value disables glyphs while
+scrolling and makes scrolling faster.  Default: @samp{10}.
+@end defvr
+
+@defvr Resource indentCode (class Indent)
+The number of columns to indent the machine code, such that there is
+enough place to display breakpoint locations.  Default: @samp{4}.
+@end defvr
+
+@defvr Resource indentSource (class Indent)
+The number of columns to indent the source code, such that there is
+enough place to display breakpoint locations.  Default: @samp{0}.
+@end defvr
+
+@defvr Resource indentScript (class Indent)
+The minimum indentation for script languages, such as Perl and Python.
+Default: @samp{4}.
+@end defvr
+
+@defvr Resource lineNumberWidth (class LineNumberWidth)
+The number of columns to use for line numbers (if displaying line
+numbers is enabled).  Line numbers wider than this value extend into
+the breakpoint space.  Default: @samp{4}.
+@end defvr
+
+@defvr Resource linesAboveCursor (class LinesAboveCursor)
+The minimum number of lines to show before the current location.
+Default is @samp{2}.
+@end defvr
+
+@defvr Resource linesBelowCursor (class LinesBelowCursor)
+The minimum number of lines to show after the current location.
+Default is @samp{3}.
+@end defvr
+
+@defvr Resource maxDisassemble (class MaxDisassemble)
+Maximum number of bytes to disassemble (default: @samp{256}).  If this
+is zero, the entire current function is disassembled.
+@end defvr
+
+@defvr Resource maxGlyphs (class MaxGlyphs)
+The maximum number of glyphs to be displayed (default: @samp{10}).
+Raising this value causes more glyphs to be allocated, possibly
+wasting resources that are never needed.
+@end defvr
+
+@defvr Resource sourceEditing (class SourceEditing)
+If this is @samp{on}, the displayed source code becomes editable.
+This is an experimental feature and may become obsolete in future
+@value{DDD} releases.  Default if @samp{off}.
+@end defvr
+
+@defvr Resource tabWidth (class TabWidth)
+The tab width used in the source window (default: @samp{8})
+@end defvr
+
+@defvr Resource useSourcePath (class UseSourcePath)
+If this is @samp{off} (default), the inferior debugger refers to
+source code locations only by their base names.  If this is
+@samp{on} (default), @value{DDD} uses the full source code paths.
+@end defvr
 
 ...
 
@@ -1904,7 +4053,7 @@ from the line popup menu.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-line-popup, 15cm}
+@center @image{PICS/ddd-line-popup, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -1991,7 +4140,7 @@ popup menu.  To enable it again, select @samp{Enable Breakpoint}.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-bp-popup, 15cm}
+@center @image{PICS/ddd-bp-popup, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -2079,7 +4228,7 @@ current properties of the selected breakpoint.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-bp-properties, 15cm}
+@center @image{PICS/ddd-bp-properties, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -2251,7 +4400,7 @@ displays the state of all breakpoints.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-edit-breakpoints, 15cm}
+@center @image{PICS/ddd-edit-breakpoints, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -2262,13 +4411,13 @@ selection.  To edit the properties of all selected breakpoints, click on
 
 
 @node Hardware-Assisted Breakpoints
-@subsection Hardware-Assisted breakpoints
+@subsection Hardware-Assisted Breakpoints
 @cindex Breakpoint, hardware-assisted
 
 Using GDB, a few more commands related to breakpoints can be invoked
 through the debugger console:
 
-@table @samp
+@table @code
 @item hbreak @emph{position}
 @cmindex hbreak
 Sets a hardware-assisted breakpoint at @emph{position}.  This command
@@ -2292,8 +4441,8 @@ gdb, Debugging with GDB}, for details.
 @cindex Watchpoint
 
 You can make the program stop as soon as some variable value changes, or
-when some variable is read or written.  This is called `setting a
-@emph{watchpoint} on a variable'.  @footnote{Watchpoints are available
+when some variable is read or written.  This is called @dfn{setting a
+@emph{watchpoint} on a variable}.  @footnote{Watchpoints are available
 in GDB and some DBX variants only.  In XDB, a similar feature is
 available via XDB @emph{assertions}; see the XDB documentation for
 details.}
@@ -2377,6 +4526,7 @@ argument field and click the @samp{Unwatch} button.
 ...
 
 
+
 @node Running the Program
 @chapter Running the Program
 @cindex Running the debugged program
@@ -2388,15 +4538,16 @@ output, debug an already running process, or kill a child process.
 @menu
 * Starting Program Execution::  
 * Using the Execution Window::  
-* Attaching to a Running Process::  
+* Attaching to a Process::      
 * Stopping the Program::        
 * Resuming Execution::          
-* Continuing at a Different Address::  
-* Examining the Stack::         
+* Continuing Somewhere Else::   
+* Stack::                       
 * Undoing Program Execution::   
-* Examining Threads::           
-* Handling Signals::            
+* Threads::                     
+* Signals::                     
 * Killing the Program::         
+* Stopping While Grabbed::      
 * Customizing Execution::       
 @end menu
 
@@ -2414,7 +4565,7 @@ the @samp{Run} button to start execution with the selected arguments.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-arguments, 15cm}
+@center @image{PICS/ddd-arguments, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -2517,8 +4668,7 @@ starts your program, diverting its output to the file @var{outfile}.
 @emph{Warning:} While input and output redirection work, you cannot use
 pipes to pass the output of the program you are debugging to another
 program; if you attempt this, @value{DDD} is likely to wind up debugging
-the wrong program.  @xref{Attaching to a Running Process}, for an
-alternative.
+the wrong program.  @xref{Attaching to a Process}, for an alternative.
 @cindex Pipes
 
 
@@ -2550,7 +4700,7 @@ standard error output to the debugger console, use @samp{2> /dev/tty}
 error redirection).
 
 
-@node Attaching to a Running Process
+@node Attaching to a Process
 @section Attaching to a Running Process
 @cindex Process, attaching
 
@@ -2567,7 +4717,7 @@ the @samp{Attach} button to attach to the specified process.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-attach, 15cm}
+@center @image{PICS/ddd-attach, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -2617,16 +4767,20 @@ A breakpoint is reached.  @xref{Breakpoints}, for details.
 A watchpoint is reached.  @xref{Watchpoints}, for details.
 
 @item
-A signal is received.  @xref{Handling Signals}, for details.
+A signal is received.  @xref{Signals}, for details.
 
 @item
 Execution completes.
 @end itemize
 
 You can interrupt a running program any time by clicking the
-@samp{Interrupt} button or typing @key{ESC} in a @value{DDD} window.
+@samp{Interrupt} button or typing @key{ESC} in a @value{DDD}
+window.@footnote{If @key{Ctrl+C} is not bound to @samp{Copy}
+(@pxref{Customizing the Edit Menu}), you can also use @key{Ctrl+C} to
+interrupt the running program.}
 @lbindex Interrupt
 @kindex ESC
+@kindex Ctrl+C
 
 Unless execution has completed, the current execution position is
 highlighted by an arrow.
@@ -2645,7 +4799,7 @@ position are bypassed.
 @lbindex Continue
 
 
-@subsection Stepping One line
+@subsection Stepping one Line
 @cindex Execution, one line
 @cindex Continue, one line
 
@@ -2707,9 +4861,9 @@ click on the @samp{Until} button.  This is useful to avoid single
 stepping through a loop more than once.
 @lbindex Until
 
-In GDB, @samp{Until} is like @samp{Next} command, except that when
-@samp{Until} encounters a jump, it automatically continues execution
-until the program counter is greater than the address of the jump.
+@samp{Until} is like @samp{Next}, except that when @samp{Until}
+encounters a jump, it automatically continues execution until the
+program counter is greater than the address of the jump.
 
 This means that when you reach the end of a loop after single stepping
 though it, @samp{until} makes your program continue execution until it
@@ -2720,9 +4874,8 @@ step through the next iteration.
 @samp{Until} always stops your program if it attempts to exit the
 current stack frame.
 
-@samp{Until} with no argument works by means of single instruction
-stepping, and hence is slower than continuing until a breakpoint is
-reached.
+@samp{Until} works by means of single instruction stepping, and hence is
+slower than continuing until a breakpoint is reached.
 
 
 @subsection Continuing Until Function Returns
@@ -2734,7 +4887,7 @@ To continue running until the current function returns, use the
 @lbindex Finish
 
 
-@node Continuing at a Different Address
+@node Continuing Somewhere Else
 @section Continuing at a Different Address
 @cindex Execution, at different address
 @cindex Continue, at different address
@@ -2763,7 +4916,7 @@ is not possible.  Set the execution position explicitly instead.}
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-drag, 15cm}
+@center @image{PICS/ddd-drag, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -2783,7 +4936,7 @@ execution.
 @lbindex Continue
 
 
-@node Examining the Stack
+@node Stack
 @section Examining the Stack
 
 When your program has stopped, the first thing you need to know is
@@ -2866,7 +5019,7 @@ Backtrace}.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-backtrace, 15cm}
+@center @image{PICS/ddd-backtrace, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -2988,7 +5141,7 @@ This returns a list of all previously recorded values of the variable
 displayed at earlier program stops in order to record values.
 
 
-@node Examining Threads
+@node Threads
 @section Examining Threads
 @cindex Threads
 
@@ -3008,7 +5161,7 @@ thread.@footnote{Currently, threads are supported in GDB and JDB only.}
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-threads, 15cm}
+@center @image{PICS/ddd-threads, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -3034,7 +5187,7 @@ For more information on threads, see the JDB and GDB documentation
 Programs with Multiple Threads, gdb, Debugging with GDB}).
 
 
-@node Handling Signals
+@node Signals
 @section Handling Signals
 
 A signal is an asynchronous event that can happen in a program.  The
@@ -3096,7 +5249,7 @@ If unset, GDB should not allow your program to see this signal.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-signals, 15cm}
+@center @image{PICS/ddd-signals, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -3160,11 +5313,92 @@ you next click on @samp{Run}, GDB notices that the file has changed, and
 reads the symbol table again (while trying to preserve your current
 debugger state).
 
+@node Stopping While Grabbed
+@section Stopping While the X Server is Grabbed
+
+...
+
 
 @node Customizing Execution
 @section Customizing Execution
 
 ...
+
+@defvr Resource useTTYCommand (class UseTTYCommand)
+If @samp{on}, use the GDB @samp{tty} command for redirecting
+input/output to the separate execution window.  If @samp{off}, use
+explicit redirection through shell redirection operators @samp{<} and
+@samp{>}.  The default is @samp{off} (explicit redirection), since on
+some systems, the @samp{tty} command does not work properly on some GDB
+versions.
+@end defvr
+
+@defvr Resource checkGrabs (class CheckGrabs)
+When debugging a modal X application, @value{DDD} may interrupt it while
+it has grabbed the pointer, making further interaction impossible.  If
+this is @samp{on} (default), @value{DDD} will check after each
+interaction whether the pointer is grabbed.  If this is so, @value{DDD}
+will automatically continue execution of debugged program.
+@end defvr
+
+@defvr Resource checkGrabDelay (class CheckGrabDelay)
+The time to wait (in ms) after a debugger command before checking for a
+grabbed pointer.  If @value{DDD} sees some pointer event within this
+delay, the pointer cannot be grabbed and an explicit check for a grabbed
+pointer is unnecessary.  Default is @samp{5000}, or 5 seconds.
+@end defvr
+
+@defvr Resource grabAction (class grabAction)
+The action to take after having detected a grabbed mouse pointer.
+This is a list of newline-separated commands.  Default is
+@samp{cont}, meaning to continue the debuggee.  Other possible
+choices include @samp{kill} (killing the debuggee) or @samp{quit}
+(exiting @value{DDD}).
+@end defvr
+
+@defvr Resource grabActionDelay (class grabActionDelay)
+The time to wait (in ms) before taking an action due to having
+detected a grabbed pointer.  During this delay, a working dialog pops
+up telling the user about imminent execution of the grab action (see
+the @samp{grabAction} resource, above).  If the pointer grab is
+released within this delay, the working dialog pops down and no action 
+is taken.  This is done to exclude pointer grabs from sources other
+than the debugged program (including @value{DDD}).  Default is
+@samp{10000}, or 10 seconds.
+@end defvr
+
+@defvr Resource psCommand (class PsCommand)
+The command to get a list of processes.  Usually @samp{ps}.
+Depending on your system, useful alternate values include @samp{ps
+-ef} and @samp{ps ux}.  The first line of the output must either
+contain a @samp{PID} title, or each line must begin with a process
+ID.
+
+Note that the output of this command is filtered by @value{DDD}; a
+process is only shown if it can be attached to.  The @value{DDD}
+process itself as well as the process of the inferior debugger are
+suppressed, too.
+@end defvr
+
+
+@defvr Resource termCommand (class TermCommand)
+The command to invoke a separate TTY for showing the input/output of the
+debugged program.  A Bourne shell command to run in the separate TTY is
+appended to this string.  The string @samp{@@FONT@@} is replaced by the
+name of the fixed width font used by @value{DDD}.  A simple value is
+
+@example
+Ddd*termCommand: xterm -fn @@FONT@@ -e /bin/sh -c
+@end example
+@pindex xterm
+@end defvr
+
+@defvr Resource termType (class TermType)
+The terminal type provided by the @samp{termCommand} resource---that is,
+the value of the @samp{TERM} environment variable to be passed to the
+debugged program.  Default: @samp{xterm}.
+@enindex TERM
+@end defvr
 
 
 
@@ -3234,9 +5468,22 @@ also shown in the status line.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-value-tip, 15cm}
+@center @image{PICS/ddd-value-tip, 16cm}
 @sp 1
 @end ifnotinfo
+
+...
+
+@defvr Resource valueTips (class Tips)
+Whether value tips are enabled (@samp{on}, default) or not
+(@samp{off}).  Value tips affect @value{DDD} performance and may
+be distracting for some experienced users.
+@end defvr
+
+@defvr Resource valueDocs (class Docs)
+Whether the display of variable values in the status line is enabled
+(@samp{on}, default) or not (@samp{off}).
+@end defvr
 
 
 @node Printing Values
@@ -3257,7 +5504,7 @@ the variable name and select the @samp{Print} item from the popup menu.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-print-popup, 15cm}
+@center @image{PICS/ddd-print-popup, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -3320,6 +5567,7 @@ Click on @samp{Undisplay} to delete the selected display.
 * Creating Multiple Displays::  
 * Refreshing the Data Window::  
 * Clustering Displays::         
+* Editing all Displays::        
 * Deleting Displays::           
 @end menu
 
@@ -3336,7 +5584,7 @@ automatically as soon as you create a display.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-display, 15cm}
+@center @image{PICS/ddd-display, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -3418,12 +5666,13 @@ button 1}.
 @cindex Display, selecting
 @cindex Selecting single displays
 
-You can @emph{extend} an existing selection by pressing the
-@strong{Shift} key while selecting.  You can also @emph{toggle} an
-existing selection by pressing the @strong{Shift} key while selecting
-already selected displays.
+You can @emph{extend} an existing selection by pressing the @key{Shift}
+key while selecting.  You can also @emph{toggle} an existing selection
+by pressing the @key{Shift} key while selecting already selected
+displays.
 @cindex Extending display selection
 @cindex Display selection
+@kindex Shift
 
 Single displays may also be selected by using the arrow keys @key{Up},
 @key{Down}, @key{Left}, and @key{Right}.
@@ -3439,15 +5688,16 @@ displays fitting in the rectangle are selected when mouse button 1 is
 released.
 @cindex Selecting multiple displays
 
-If the @strong{Shift} key is pressed while selecting, the existing
+If the @key{Shift} key is pressed while selecting, the existing
 selection is @emph{extended}.
+@kindex Shift
 
 By double-clicking on a display title, the display itself and all
 connected displays are automatically selected.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-select-display, 15cm}
+@center @image{PICS/ddd-select-display, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -3479,14 +5729,14 @@ button.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-hide-display, 15cm}
+@center @image{PICS/ddd-hide-display, 16cm}
 @sp 1
 @end ifnotinfo
 
 When pressing and holding @emph{mouse button 1} on the @samp{Show/Hide}
 button, a menu pops up with even more alternatives:
 
-@table @samp
+@table @code
 @item Show More ()
 Shows details of all aggregates currently hidden, but not of their
 sub-aggregates.  You can invoke this item several times in a row to
@@ -3518,7 +5768,7 @@ will be shown; if the entire value is shown, double-clicking will
 value until you get the right amount of details.
 
 If @emph{all} details of a display are hidden, the display is called
-@emph{disabled}; this is indicated by the string `@emph{(Disabled)}.
+@emph{disabled}; this is indicated by the string @samp{(Disabled)}.
 @cindex Disabled displays
 @cindex Displays, disabled
 
@@ -3577,7 +5827,7 @@ dereferenced.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-locals, 15cm}
+@center @image{PICS/ddd-locals, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -3615,7 +5865,7 @@ Displays} and pick your choice from the list.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-status-displays, 15cm}
+@center @image{PICS/ddd-status-displays, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -3711,7 +5961,7 @@ Preferences @result{} Data @result{} Cluster Data Displays}.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-clusters, 15cm}
+@center @image{PICS/ddd-clusters, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -3735,6 +5985,12 @@ You can uncluster all current and future displays by disabling
 Displays}.
 @lbindex Cluster Data Displays
 @end itemize
+
+
+@node Editing all Displays
+@subsubsection Editing all Displays
+
+...
 
 
 @node Deleting Displays
@@ -3826,7 +6082,7 @@ array and select @samp{Rotate} from the popup menu.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-rotate-display, 15cm}
+@center @image{PICS/ddd-rotate-display, 16cm}
 @sp 1
 @end ifnotinfo
 
@@ -3894,20 +6150,20 @@ Using GDB, an array value that is repeated 10 or more times is displayed
 only once.  The value is shown with a @samp{<@var{n}x>} postfix added,
 where @var{n} is the number of times the value is repeated.  Thus, the
 display @samp{0x0 <30x>} stands for 30 array elements, each with the
-value @strong{0x0}.  This saves a lot of display space, especially with
+value @samp{0x0}.  This saves a lot of display space, especially with
 homogeneous arrays.
 
 @ifnotinfo
 @sp 1
-@center @image{PICS/ddd-repeats, 15cm}
+@center @image{PICS/ddd-repeats, 16cm}
 @sp 1
 @end ifnotinfo
 
 The default GDB threshold for repeated array values is 10.  You can
 change it via @samp{Edit @result{} GDB Settings @result{} Threshold for
-repeated print elements}.  Setting the threshold to @strong{0} will
-cause GDB (and @value{DDD}) to display each array element individually.
-Be sure to refresh the data window via @samp{Data @result{} Refresh
+repeated print elements}.  Setting the threshold to @samp{0} will cause
+GDB (and @value{DDD}) to display each array element individually.  Be
+sure to refresh the data window via @samp{Data @result{} Refresh
 Displays} after a change in GDB settings.
 @lbindex Threshold for repeated print elements
 @lbindex Refresh Displays
@@ -3921,7 +6177,7 @@ GDB can print repeated array elements as @samp{@var{value} <repeated
 @var{n} times>}.  If @samp{expandRepeatedValues} is @samp{on},
 @value{DDD} will display @var{n} instances of @var{value} instead.  If
 @samp{expandRepeatedValues} is @samp{off} (default), @value{DDD} will
-display @emph{VALUE} with @samp{<@var{n}x>} appended to indicate the
+display @var{value} with @samp{<@var{n}x>} appended to indicate the
 repetition.
 @end defvr
 
@@ -3986,12 +6242,319 @@ repetition.
 @subsection Printing the Graph
 
 
+...
+
+@defvr Resource printCommand (class PrintCommand)
+The command to print a PostScript file.  Usually @samp{lp} or
+@samp{lpr}.
+@end defvr
+
+
 @node Customizing Displays
 @subsection Customizing Displays
 
 ...
 
+@defvr Resource align2dArrays (class Align2dArrays)
+If @samp{on} (default), @value{DDD} lays out two-dimensional arrays
+as tables, such that all array elements are aligned with each other.
+If @samp{off}, @value{DDD} treats a two-dimensional array as an
+array of one-dimensional arrays, each aligned on its own.
+@end defvr
 
+@defvr Resource autoCloseDataWindow (class AutoClose)
+If this is @samp{on} (default) and @value{DDD} is in stacked window
+mode, deleting the last display automatically closes the data window.
+If this is @samp{off}, the data window stays open even after deleting
+the last display.
+@end defvr
+
+@defvr Resource bumpDisplays (class BumpDisplays)
+If some display @var{d} changes size and this resource is @samp{on}
+(default), @value{DDD} assigns new positions to displays below and on
+the right of @var{d} such that the distance between displays remains
+constant.  If this is @samp{off}, other displays are not rearranged.
+@end defvr
+
+@defvr Resource clusterDisplays (class ClusterDisplays)
+If @samp{on}, new independent data displays will automatically be
+clustered.  Default is @samp{off}, meaning to leave new displays
+unclustered.
+@end defvr
+
+@defvr Resource deleteAliasDisplays (class DeleteAliasDisplays)
+If this is @samp{on} (default), the @samp{Undisplay ()} button also
+deletes all aliases of the selected displays.  If this is @samp{off},
+only the selected displays are deleted; the aliases remain, and one of
+the aliases will be unsuppressed.
+@end defvr
+
+@defvr Resource detectAliases (class DetectAliases)
+If @samp{on}, @value{DDD} attempts to recognize shared data
+structures.  See @samp{Examining shared data structures}, above, for
+a discussion.  The default is @samp{off}, meaning that shared data
+structures are not recognized.
+@end defvr
+
+@defvr Resource expandRepeatedValues (class ExpandRepeatedValues)
+GDB can print repeated array elements as @samp{@var{value} <repeated
+@var{n} times>}.  If @samp{expandRepeatedValues} is @samp{on},
+@value{DDD} will display @var{n} instances of @var{value} instead.  If
+@samp{expandRepeatedValues} is @samp{off} (default), @value{DDD} will
+display @var{value} with @samp{<@var{n}x>} appended to indicate the
+repetition.
+@end defvr
+
+@defvr Resource hideInactiveDisplays (class HideInactiveDisplays)
+If some display gets out of scope and this resource is @samp{on}
+(default), @value{DDD} removes it from the data display.  If this is
+@samp{off}, it is simply disabled.
+@end defvr
+
+@defvr Resource pannedGraphEditor (class PannedGraphEditor)
+The control to scroll the graph.  
+
+@itemize @bullet
+@item
+If this is @samp{on}, an Athena panner is used (a kind of
+two-directional scrollbar).
+@item
+If this is @samp{off} (default), two Motif scrollbars are used.
+@end itemize
+
+@xref{Options}, for the @samp{--scrolled-graph-editor} and
+@samp{--panned-graph-editor} options.
+@end defvr
+
+@defvr Resource paperSize (class PaperSize)
+The paper size used for printing, in format @var{width} x @var{height}.
+The default is A4 format, or @samp{210mm x 297mm}.
+@end defvr
+
+@defvr Resource showBaseDisplayTitles (class ShowDisplayTitles)
+Whether to assign titles to base (independent) displays or not.
+Default is @samp{on}.
+@end defvr
+
+@defvr Resource showDependentDisplayTitles (class ShowDisplayTitles)
+Whether to assign titles to dependent displays or not.  Default is
+@samp{off}.
+@end defvr
+
+@defvr Resource typedAliases (class TypedAliases)
+If @samp{on} (default), @value{DDD} requires structural equivalence in
+order to recognize shared data structures.  If this is @samp{off}, two
+displays at the same address are considered aliases, regardless of their
+structure.
+@end defvr
+
+
+@menu
+* Customizing Shortcuts::       
+* Customizing VSL::             
+@end menu
+
+
+@node Customizing Shortcuts
+@subsubsection Customizing Shortcuts
+
+...
+
+The following resources control the user-defined @samp{New Display}
+menu.
+
+@defvr Resource dbxDisplayShortcuts (class DisplayShortcuts)
+A newline-separated list of display expressions to be included in the
+@samp{New Display} menu for DBX.  
+
+If a line contains a label delimiter (the string @samp{//}; can be
+changed via the @samp{labelDelimiter} resource), the string before the
+delimiter is used as @var{expression}, and the string after the
+delimiter is used as label.  Otherwise, the label is @samp{Display
+@var{expression}}.  Upon activation, the string @samp{()} in
+@var{expression} is replaced by the name of the currently selected
+display.
+@end defvr
+
+@defvr Resource gdbDisplayShortcuts (class DisplayShortcuts)
+A newline-separated list of display expressions to be included in the
+@samp{New Display} menu for GDB.  See the description of
+@samp{dbxDisplayShortcuts}, above.
+@end defvr
+
+@defvr Resource jdbDisplayShortcuts (class DisplayShortcuts)
+A newline-separated list of display expressions to be included in the
+@samp{New Display} menu for JDB.  See the description of
+@samp{dbxDisplayShortcuts}, above.
+@end defvr
+
+@defvr Resource labelDelimiter (class LabelDelimiter)
+The string used to separate labels from commands and shortcuts.
+Default is @samp{//}.
+@end defvr
+
+@defvr Resource perlDisplayShortcuts (class DisplayShortcuts)
+A newline-separated list of display expressions to be included in the
+@samp{New Display} menu for Perl.  See the description of
+@samp{dbxDisplayShortcuts}, above.
+@end defvr
+
+@defvr Resource pydbDisplayShortcuts (class DisplayShortcuts)
+A newline-separated list of display expressions to be included in the
+@samp{New Display} menu for PYDB.  See the description of
+@samp{dbxDisplayShortcuts}, above.
+@end defvr
+
+@defvr Resource xdbDisplayShortcuts (class DisplayShortcuts)
+A newline-separated list of display expressions to be included in the
+@samp{New Display} menu for XDB.  See the description of
+@samp{dbxDisplayShortcuts}, above.
+@end defvr
+
+
+
+@node Customizing VSL
+@subsubsection Customizing VSL
+
+
+@defvr Resource vslBaseDefs (class VSLDefs)
+A string with additional VSL definitions that are appended to
+the builtin VSL library.  This resource is prepended to the
+@samp{vslDefs} resource below and set in the @value{DDD}
+application defaults file; don't change it.
+@end defvr
+
+@defvr Resource vslDefs (class VSLDefs)
+A string with additional VSL definitions that are appended to the
+builtin VSL library.  The default value is an empty string.  This
+resource can be used to override specific VSL definitions that affect
+the data display.
+
+The general pattern to replace a function definition @var{function}
+with a new definition @var{new_def} is:
+
+@example
+#pragma replace @var{function}
+function(@var{args}@dots{}) = @var{new_def};
+@end example
+
+The following VSL functions are frequently used:
+@table @code
+@item color(@var{box}, @var{foreground} [, @var{background}])
+Set the @var{foreground} and @var{background} colors of @var{box}.
+
+@item display_color(@var{box})
+The color used in data displays.
+Default: @samp{color(@var{box}, "black", "white")}
+
+@item title_color(@var{box})
+The color used in the title bar.
+Default: @samp{color(@var{box}, "black")}
+
+@item disabled_color(@var{box})
+The color used for disabled boxes.
+Default: @samp{color(@var{box}, "white", "grey50")}
+
+@item simple_color(@var{box})
+The color used for simple values.
+Default: @samp{color(@var{box}, "black")}
+
+@item pointer_color(@var{box})
+The color used for pointers.
+Default: @samp{color(@var{box}, "blue4")}
+
+@item struct_color(@var{box})
+The color used for structures.
+Default: @samp{color(@var{box}, "black")}
+
+@item array_color(@var{box})
+The color used for arrays.
+Default: @samp{color(@var{box}, "blue4")}
+
+@item reference_color(@var{box})
+The color used for references.
+Default: @samp{color(@var{box}, "blue4")}
+
+@item changed_color(@var{box})
+The color used for changed values.
+Default: @samp{color(@var{box}, "black", "#ffffcc")}
+
+@item stdfontfamily()
+The font family used.  One of @samp{family_times()}, 
+@samp{family_courier()}, @samp{family_helvetica()}, 
+@samp{family_new_century()}, or @samp{family_typewriter()} (default).
+
+@item stdfontsize()
+The font size used (in pixels).  @samp{0} (default) means to use
+@samp{stdfontpoints()} instead.
+
+@item stdfontpoints()
+The font size used (in 1/10 points).  @samp{0} means to use
+@samp{stdfontsize()} instead.  Default value: @samp{90}.
+
+@item stdfontweight()
+The font weight used.  Either @samp{weight_medium()} (default) or
+@samp{weight_bold()}.
+@end table
+
+To set the pointer color to "red4", use
+
+@example
+Ddd*vslDefs: \
+#pragma replace pointer_color\n\
+pointer_color(box) = color(box, "red4");\n
+@end example
+
+To set the default font size to resolution-independent 10.0 points, use
+
+@example
+Ddd*vslDefs: \
+#pragma replace stdfontsize\n\
+#pragma replace stdfontpoints\n\
+stdfontsize() = 0;\n
+stdfontpoints() = 100;\n
+@end example
+
+To set the default font to 12-pixel courier, use
+
+@example
+Ddd*vslDefs: \
+#pragma replace stdfontsize\n\
+#pragma replace stdfontfamily\n\
+stdfontsize() = 12;\n\
+stdfontfamily() = family_courier();\n
+@end example
+
+See the file @samp{ddd.vsl} for further definitions to override using
+the @samp{vslDefs} resource.
+@end defvr
+
+@defvr Resource vslLibrary (class VSLLibrary)
+The VSL library to use.  @samp{builtin} (default) means to
+use the built-in library, any other value is used as file name.
+@end defvr
+
+@defvr Resource vslPath (class VSLPath)
+A colon-separated list of directories to search for VSL
+include files.  Default is @samp{.}, the current directory.
+@end defvr
+
+If your @value{DDD} source distribution is installed in @file{/opt/src},
+you can use the following settings to read the VSL library from
+@file{/home/joe/ddd.vsl}:
+
+@example
+Ddd*vslLibrary: /home/joe/ddd.vsl
+Ddd*vslPath:    .:/opt/src/ddd/ddd:/opt/src/ddd/vsllib
+@end example
+
+VSL include files referenced by @file{/home/joe/ddd.vsl} are searched
+first in the current directory @file{.}, then in
+@file{/opt/src/ddd/ddd/}, and then in @file{/opt/src/ddd/vsllib/}.
+
+Instead of supplying another VSL library, it is often easier to specify
+some minor changes to the built-in library.  See the @samp{vslDefs}
+resource, above, for details.
 
 
 @node Plotting Values
@@ -4041,6 +6604,71 @@ repetition.
 ...
 
 
+The following resources control the plot window.
+
+
+@defvr Resource plotTermType (class PlotTermType)
+The Gnuplot terminal type.  Can have one of two values:
+@itemize @bullet
+@item
+If this is @samp{x11}, @value{DDD} \(lqswallows\(rq the Gnuplot
+output window into its own user interface.  Some window managers,
+notably MWM, have trouble with swallowing techniques.
+@item
+Setting this resource to @samp{xlib} (default) makes @value{DDD}
+provide a @emph{builtin plot window} instead.  In this mode, plots work
+well with any window manager, but are less customizable (Gnuplot
+resources are not understood).
+@end itemize
+@end defvr
+
+@defvr Resource plotCommand (class PlotCommand)
+The name of a Gnuplot executable.  Default is @samp{gnuplot},
+followed by some options to set up colors and the initial geometry.
+@end defvr
+
+@defvr Resource plotWindowClass (class PlotWindowClass)
+The class of the Gnuplot output window.  When invoking Gnuplot,
+@value{DDD} waits for a window with this class and incorporates it into
+its own user interface (unless @samp{plotTermType} is @samp{xlib}; see
+above).  Default is @samp{Gnuplot}.
+@end defvr
+
+@defvr Resource plotWindowDelay (class WindowDelay)
+The time (in ms) to wait for the creation of the Gnuplot window.  Before
+this delay, @value{DDD} looks at each newly created window to see
+whether this is the plot window to swallow.  This is cheap, but
+unfortunately, some window managers do not pass the creation event to
+@value{DDD}.  If this delay has passed, and @value{DDD} has not found
+the plot window, @value{DDD} searches @emph{all} existing windows, which
+is pretty expensive.  Default time is @samp{2000}.
+@end defvr
+
+@defvr Resource plotInitCommands (class PlotInitCommands)
+The initial Gnuplot commands issued by @value{DDD}.  Default is:
+
+@example
+set parametric
+set urange [0:1]
+set vrange [0:1]
+set trange [0:1]
+@end example
+
+The @samp{parametric} setting is required to make Gnuplot understand the
+data files as generated @value{DDD}.  The range commands are used to
+plot scalars.
+@end defvr
+
+@defvr Resource plot2dSettings (class PlotSettings)
+Additional initial settings for 2-D plots.  Default is @samp{set
+noborder}.  Feel free to customize these settings as desired.
+@end defvr
+
+@defvr Resource plot3dSettings (class PlotSettings)
+Additional initial settings for 3-D plots.  Default is @samp{set
+border}.  Feel free to customize these settings as desired.
+@end defvr
+
 
 @node Examining Memory
 @section Examining Memory
@@ -4054,26 +6682,23 @@ repetition.
 ...
 
 @menu
-* Examining Machine Code::      
+* Machine Code::                
 * Machine Code Execution::      
-* Examining Registers::         
+* Registers::                   
+* Customizing Machine Code::    
 @end menu
 
-@node Examining Machine Code
+@node Machine Code
 @section Examining Machine Code
 
 @node Machine Code Execution
 @section Machine Code Execution
 
-@node Examining Registers
+@node Registers
 @section Examining Registers
 
-@menu
-* Customizing Machine Code::    
-@end menu
-
 @node Customizing Machine Code
-@subsection Customizing Machine Code
+@section Customizing Machine Code
 
 ...
 
@@ -4107,6 +6732,40 @@ repetition.
 
 ...
 
+@defvr Resource editCommand (class EditCommand)
+A command string to invoke an editor on the specific file.
+@samp{@@LINE@@} is replaced by the current line number, @samp{@@FILE@@}
+by the file name.  The default is to invoke @samp{$XEDITOR} first, then
+@samp{$EDITOR}, then @file{vi}:
+@enindex XEDITOR
+@enindex EDITOR
+@pindex vi
+
+@example
+Ddd*editCommand: \
+$@{XEDITOR-false@} +@@LINE@@ @@FILE@@ || \
+xterm -e $@{EDITOR-vi@} +@@LINE@@ @@FILE@@
+@end example
+@end defvr
+
+This @samp{~/.ddd/init} setting invokes an editing session
+for an @emph{XEmacs} editor running @emph{gnuserv}:
+
+@example
+Ddd*editCommand: gnuclient +@@LINE@@ @@FILE@@
+@end example
+@pindex gnuclient
+
+This @samp{~/.ddd/init} setting invokes an editing session for an
+@emph{Emacs} editor running @emph{emacsserver}:
+
+@example
+Ddd*editCommand: emacsclient +@@LINE@@ @@FILE@@
+@end example
+@pindex emacsclient
+
+...
+
 
 
 @node Commands
@@ -4117,7 +6776,8 @@ repetition.
 @menu
 * Entering Commands::           
 * Command History::             
-* User-Defined Commands::       
+* Defining Commands::           
+* Defining Buttons::            
 * Customizing the Command-Line Interface::  
 @end menu
 
@@ -4162,8 +6822,13 @@ repetition.
 @section The Command History
 
 
-@node User-Defined Commands
-@section User-Defined Commands
+@node Defining Commands
+@section Defining Commands
+
+
+@node Defining Buttons
+@section Defining Buttons
+
 
 @menu
 * GDB Simple Commands::         
@@ -4183,6 +6848,25 @@ repetition.
 
 @node Customizing the Command-Line Interface
 @section Customizing the Command-Line Interface
+
+@defvr Resource globalTabCompletion (class GlobalTabCompletion)
+If this is @samp{on} (default), the @key{TAB} key completes arguments in
+all windows.  If this is @samp{off}, the @key{TAB} key completes
+arguments in the debugger console only.
+@end defvr
+
+@defvr Resource saveHistoryOnExit (class SaveHistoryOnExit)
+If @samp{on} (default), the command history is automatically saved
+when @value{DDD} exits.
+@end defvr
+
+@defvr Resource lineBufferedConsole (class LineBuffered)
+If this is @samp{on} (default), each line from the inferior is
+output on each own, such that the final line is placed at the bottom
+of the debugger console.  If this is @samp{off}, all lines are
+output as a whole.  This is faster, but results in a random position
+of the last line.
+@end defvr
 
 ...
 
@@ -4219,6 +6903,15 @@ Also: X sessions
 
 ...
 
+@defvr Resource getCoreCommand (class GetCoreCommand)
+A command to get a core dump of a running process (typically,
+@samp{gcore}) @samp{@@FILE@@} is replaced by the base name of the file
+to create; @samp{@@PID@@} is replaced by the process id.  The output
+must be written to @samp{@@FILE@@.@@PID@@}.
+
+Leave this entry empty if you have no @samp{gcore} or similar command.
+@end defvr
+
 
 
 @node Special Set-Ups
@@ -4232,6 +6925,61 @@ Also: X sessions
 
 @node Remote Debugger
 @section Using @value{DDD} with a Remote Debugger
+
+...
+
+
+@defvr Resource rshCommand (class RshCommand)
+The remote shell command to invoke TTY-based commands on remote hosts.
+Usually, @samp{remsh}, @samp{rsh}, @samp{ssh}, or @samp{on}.
+@end defvr
+
+@defvr Resource listCoreCommand (class listCoreCommand)
+The command to list all core files on the remote host.  The string
+@samp{@@MASK@@} is replaced by a file filter.  The default setting is:
+
+@example
+Ddd*listCoreCommand: \
+file @@MASK@@ | grep '.*:.*core.*' | cut -d: -f1
+@end example
+@end defvr
+@pindex file
+
+@defvr Resource listDirCommand (class listDirCommand)
+The command to list all directories on the remote host.  The string
+@samp{@@MASK@@} is replaced by a file filter.  The default setting is:
+
+@example
+Ddd*listDirCommand: \
+file @@MASK@@ | grep '.*:.*directory.*' | cut -d: -f1
+@end example
+@end defvr
+@pindex file
+
+@defvr Resource listExecCommand (class listExecCommand)
+The command to list all executable files on the remote host.  The string
+@samp{@@MASK@@} is replaced by a file filter.  The default setting is:
+
+@example
+Ddd*listExecCommand: \
+file @@MASK@@ | grep '.*:.*exec.*' \
+  | grep -v  '.*:.*script.*' \
+  | cut -d: -f1 | grep -v '.*\.o$'
+@end example
+@end defvr
+@pindex file
+
+@defvr Resource listSourceCommand (class listSourceCommand)
+The command to list all source files on the remote host.  The string
+@samp{@@MASK@@} is replaced by a file filter.  The default setting is:
+
+@example
+Ddd*listSourceCommand: \
+file @@MASK@@ | grep '.*:.*text.*' | cut -d: -f1
+@end example
+@end defvr
+@pindex file
+
 
 @node Remote Program
 @section Using @value{DDD} with a Remote Program
@@ -4257,6 +7005,7 @@ Also: X sessions
 * Is it a DDD Bug?::            
 * How to Report Bugs::          
 * What to Include in a Bug Report::  
+* Diagnostics::                 
 @end menu
 
 @node Where to Send Bug Reports
@@ -4270,6 +7019,101 @@ Also: X sessions
 
 @node What to Include in a Bug Report
 @section What to Include in a Bug Report
+
+@node Diagnostics
+@section Getting Diagnostics
+
+...
+
+
+@defvr Resource appDefaultsVersion (class Version)
+The version of the @value{DDD} app-defaults file.  If this string
+does not match the version of the current @value{DDD} executable,
+@value{DDD} issues a warning.
+@end defvr
+
+@defvr Resource checkConfiguration (class CheckConfiguration)
+If @samp{on}, check the @value{DDD} environment (in particular, the
+X configuration), report any possible problem causes and exit.
+@xref{Options}, for the @samp{--check-configuration} option.
+@end defvr
+
+@defvr Resource dddinitVersion (class Version)
+The version of the @value{DDD} executable that last wrote the
+@samp{~/.ddd/init} file.  If this string does not match the
+version of the current @value{DDD} executable, @value{DDD} issues
+a warning.
+@end defvr
+
+@defvr Resource debugCoreDumps (class DebugCoreDumps)
+If @samp{on}, @value{DDD} invokes a debugger on itself when
+receiving a fatal signal.
+@end defvr
+
+@defvr Resource dumpCore (class DumpCore)
+If @samp{on} (default), @value{DDD} dumps core when receiving a
+fatal signal.
+@end defvr
+
+@defvr Resource maintenance (class Maintenance)
+If @samp{on}, enables the top-level @samp{Maintenance} menu
+(@pxref{Maintenance Menu}) with additional options.  @xref{Options}, for
+the @samp{--maintenance} option.
+@end defvr
+
+@defvr Resource showConfiguration (class ShowConfiguration)
+If @samp{on}, show the @value{DDD} configuration on standard output and
+exit.  @xref{Options}, for the @samp{--configuration} option.
+@end defvr
+
+@defvr Resource showFonts (class ShowFonts)
+If @samp{on}, show the @value{DDD} font definitions on standard output
+and exit.  @xref{Options}, for the @samp{--fonts} option.
+@end defvr
+
+@defvr Resource showInvocation (class ShowInvocation)
+If @samp{on}, show the @value{DDD} invocation options on standard
+output and exit.  @xref{Options}, for the @samp{--help} option.
+@end defvr
+
+@defvr Resource showLicense (class ShowLicense)
+If @samp{on}, show the @value{DDD} license on standard output and
+exit.  @xref{Options}, for the @samp{--license} option.
+@end defvr
+
+@defvr Resource showManual (class ShowManual)
+If @samp{on}, show this @value{DDD} manual page on standard output and
+exit.  If the standard output is a terminal, the manual page is shown in
+a pager (@samp{$PAGER}, @samp{less} or @samp{more}).  @xref{Options},
+for the @samp{--manual} option.
+@enindex PAGER
+@pindex less
+@pindex more
+@end defvr
+
+@defvr Resource showNews (class ShowNews)
+If @samp{on}, show the @value{DDD} news on standard output and
+exit.  @xref{Options}, for the @samp{--news} option.
+@end defvr
+
+@defvr Resource showVersion (class ShowVersion)
+If @samp{on}, show the @value{DDD} version on standard output and
+exit.  @xref{Options}, for the @samp{--version} option.
+@end defvr
+
+@defvr Resource suppressWarnings (class SuppressWarnings)
+If @samp{on}, X warnings are suppressed.  This is sometimes useful for
+executables that were built on a machine with a different X or Motif
+configuration.  By default, this is @samp{off}.
+@end defvr
+
+@defvr Resource trace (class Trace)
+If @samp{on}, show the dialog between @value{DDD} and the inferior
+debugger on standard output.  Default is @samp{off}.  @xref{Options},
+for the @samp{--trace} option.
+@end defvr
+
+
 
 @c C
 @node Copyright
@@ -4339,6 +7183,25 @@ Also: X sessions
 
 @node LessTif
 @section Using @value{DDD} with LessTif
+
+...
+
+@defvr Resource lessTifVersion (class LessTifVersion)
+Indicates the LessTif version @value{DDD} is running against.  For
+LessTif version @emph{x.y}, the value is @emph{x} multiplied by 1000
+plus @emph{y}---for instance, the value @samp{79} stands for LessTif
+0.79 and the value @samp{1005} stands for LessTif 1.5.
+
+If the value of this resource is less than 1000, indicating LessTif
+0.99 or earlier, @value{DDD} enables version-specific hacks to make
+@value{DDD} work around LessTif bugs and deficiencies.
+
+If @value{DDD} was compiled against LessTif, the default value is the
+value of the @samp{LessTifVersion} macro in @file{<Xm/Xm.h>}.  If
+@value{DDD} was compiled against OSF/Motif, the default value is
+@samp{1000}, disabling all LessTif-specific hacks.
+@end defvr
+
 
 @node Printing this Manual
 @appendix Printing this Manual
