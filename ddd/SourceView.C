@@ -79,6 +79,11 @@ inline int isid(char c)
     return isalnum(c) || c == '_';
 }
 
+// Test for regular file - see stat(3)
+#ifndef S_ISREG
+#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#endif
+
 
 // ***************************************************************************
 //-----------------------------------------------------------------------
@@ -530,7 +535,8 @@ String SourceView::read_local(const string& file_name)
 	return 0;
     }
 
-    if ((statb.st_mode & S_IFMT) != S_IFREG)
+    // Avoid loading from directory, socket, device, or otherwise.
+    if (!S_ISREG(statb.st_mode))
     {
 	post_error (file_name + ": not a regular file", 
 		    "source_file_error", source_view_w);
