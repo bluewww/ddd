@@ -538,12 +538,16 @@ static int (*old_x_fatal_handler)(Display *display) = 0;
 // Fatal X I/O error handler: cleanup and issue error message
 static int ddd_x_fatal(Display *display)
 {
+    int saved_errno = errno;
+
     ddd_has_crashed = true;
 
     dddlog << "!  X I/O error\n";
     dddlog.flush();
 
     ddd_cleanup();
+
+    errno = saved_errno;
     return old_x_fatal_handler(display);
 }
 
