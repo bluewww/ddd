@@ -38,6 +38,7 @@
 #include "StringA.h"
 #include "IntArray.h"
 #include "PrintGC.h"
+#include "ChunkQueue.h"
 
 #include <fstream.h>
 
@@ -55,13 +56,17 @@ private:
     StringArray files;		// Temporary files allocated by this Agent
     StringArray titles;		// Titles currently plotted
     StringArray values;		// Scalars
+
     IntArray dims;		// Dimensions of scalars
     ofstream plot_os;		// Stream used for adding data
     int ndim;			// Number of dimensions used so far
+
     double x_min, x_max;	// Minimum and maximum values
     double y_min, y_max;
     double v_min, v_max;
-    string plot_commands;	// Plotting commands received so far
+
+    ChunkQueue plot_data;	// Plotting commands received so far
+
     string init_commands;	// Initialization commands
     bool need_reset;		// Reset with next plot
     int last_ndim;		// Last number of dimensions
@@ -88,7 +93,7 @@ public:
 	  x_min(0.0), x_max(0.0),
 	  y_min(0.0), y_max(0.0),
 	  v_min(0.0), v_max(0.0),
-	  plot_commands(""),
+	  plot_data(),
 	  init_commands(""),
 	  need_reset(false),
 	  last_ndim(0)

@@ -329,7 +329,8 @@ void PlotAgent::dispatch(int type, char *data, int length)
 	return;
     }
 
-    bool getting_plot_data = plot_commands.length() > 0;
+    bool getting_plot_data = (plot_data.length() > 0);
+
     if (data[0] == 'G' && data[1] == '\n')
     {
 	// Enter graphics mode
@@ -339,7 +340,7 @@ void PlotAgent::dispatch(int type, char *data, int length)
     if (getting_plot_data)
     {
 	// Continue plot
-	plot_commands += string(data, length);
+	plot_data.append(data, length);
     }
     else
     {
@@ -347,16 +348,20 @@ void PlotAgent::dispatch(int type, char *data, int length)
 	return;
     }
 
-    if (plot_commands.contains("E\n"))
+    // Process any chunks up to 'E\n' received so far
+    for (int i = 0; i < plot_data.length() - 1; i++)
     {
-	// Leave graphics mode
+	char *commands = plot_data.data();
+	if (commands[i] == 'E' && commands[i + 1] == '\n')
+	{
+	    // Process commands
+	    DataLength dl(commands, i + 1);
+	    callHandlers(Plot, &dl);
 
-	string plot = plot_commands.through("E\n");
+	    plot_data.discard(i + 1);
 
-	DataLength dl(plot.chars(), plot.length());
-	callHandlers(Plot, &dl);
-
-	plot_commands = plot_commands.after("E\n");
+	    i = 0;
+	}
     }
 }
 
