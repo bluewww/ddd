@@ -41,6 +41,7 @@ char wm_rcsid[] =
 #include "findParent.h"
 
 #include <Xm/Xm.h>
+#include <X11/Xutil.h>
 
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
@@ -114,7 +115,7 @@ void wait_until_mapped(Widget w, Widget shell)
 
     if (XtIsRealized(w) && XtIsRealized(shell))
     {
-	XWindowAttributes attr;
+  	XWindowAttributes attr;
 	while (XGetWindowAttributes(XtDisplay(w), XtWindow(w), &attr)
 	       && attr.map_state != IsViewable)
 	{
@@ -158,6 +159,18 @@ void manage_and_raise(Widget w)
 {
     if (w != 0)
     {
+	// If shell is withdrawn or iconic, realize dialog as icon
+	bool iconic = false;
+	Widget shell = find_shell(w);
+  	XWindowAttributes attr;
+	iconic = (!XtIsRealized(shell)
+		  || XGetWindowAttributes(XtDisplay(shell), 
+					  XtWindow(shell), &attr)
+		  && attr.map_state != IsViewable);
+
+	if (iconic)
+	    XtVaSetValues(w, XmNinitialState, IconicState, NULL);
+
 	XtManageChild(w);
 	raise_shell(w);
     }
