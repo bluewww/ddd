@@ -242,7 +242,10 @@ void DispValue::init(DispValue *parent, int depth, string& value,
     clog << "Building value from " << quote(value) << "\n";
 #endif
 
-    string initial_value = value;
+    // Be sure the value is not changed in memory
+    value.consuming(true);
+
+    char *initial_value = value;
 
     static DispValueArray empty(0);
     _children = empty;
@@ -283,7 +286,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
     {
 	// Read in entire text
 	_value = value;
-	value = "";
+	value = value.from(value.length());
 #if LOG_CREATE_VALUES
 	clog << mytype << ": " << quote(_value) << "\n";
 #endif
@@ -299,8 +302,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	clog << mytype << ": " << quote(_value) << "\n";
 #endif
 	// Hide vtable pointers.
-	if (_value.contains("virtual table")
-	    || _value.contains("vtable"))
+	if (_value.contains("virtual table") || _value.contains("vtable"))
 	    myexpanded = false;
 	break;
     }
@@ -343,7 +345,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	// The array has at least one element.  Otherwise, GDB
 	// would treat it as a pointer.
 	do {
-	    string repeated_value = value;
+	    char *repeated_value = value;
 	    string member_name = 
 		gdb->index_expr("", itostring(array_index++));
 	    DispValue *dv = parse_child(depth, value,
@@ -475,7 +477,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    if (member_name == "")
 	    {
 		// Some struct stuff that is not a member
-		string old_value = value;
+		char *old_value = value;
 
 		DispValue *dv = parse_child(depth, value, myfull_name, "");
 
@@ -646,7 +648,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		need_clear = false;
 	    }
 	    
-	    string old_value = value;
+	    char *old_value = value;
 
 	    DispValue *dv = parse_child(depth, value, myfull_name);
 

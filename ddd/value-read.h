@@ -44,7 +44,7 @@
 #include <iostream.h>
 
 // Determine type of next element in VALUE
-DispValueType determine_type (string value);
+DispValueType determine_type (const string& value);
 
 // Read single token from VALUE
 string read_token (string& value);

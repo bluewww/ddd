@@ -119,10 +119,12 @@ static DispValueType _determine_type (string& value)
     if (value.matches(rxstruct_begin))
     {
 	// Check for empty struct.
-	string v = value;
+	char *v = value;
 	string addr;
-	bool ok = read_struct_begin(v, addr);
-	if (ok && v.contains(rxstruct_end, 0))
+	bool ok = (read_struct_begin(value, addr) && 
+		   value.contains(rxstruct_end, 0));
+	value = v;
+	if (ok)
 	    return Struct;
 
 	// Check for leading keywords.
@@ -232,13 +234,15 @@ static DispValueType _determine_type (string& value)
     return Simple;
 }
 
-DispValueType determine_type(string value)
+DispValueType determine_type(const string& value)
 {
 #if LOG_DETERMINE_TYPE
     clog << quote(value);
 #endif
 
-    DispValueType type = _determine_type(value);
+    char *v = value;
+    DispValueType type = _determine_type((string &)value);
+    ((string &)value) = v;
 
 #if LOG_DETERMINE_TYPE
     clog << " has type " << type << "\n";
@@ -423,16 +427,19 @@ string read_token(string& value)
 
 bool is_ending(const string& value)
 {
-    string v = value;
-    strip_leading_space(v);
+    int i = 0;
+    while (i < int(value.length()) && isspace(value[i]))
+	i++;
+    if (i >= int(value.length()))
+	return false;
 
-    return v.contains('}', 0)
-	|| v.contains(')', 0)
-	|| v.contains(']', 0)
-	|| v.contains("end\n", 0)
-	|| v.contains("END\n", 0)
-	|| v == "end"
-	|| v == "END";
+    return value.contains('}', i)
+	|| value.contains(')', i)
+	|| value.contains(']', i)
+	|| value.contains("end\n", i)
+	|| value.contains("END\n", i)
+	|| value.from(i) == "end"
+	|| value.from(i) == "END";
 }
 
 bool is_delimited(const string& value)
@@ -759,9 +766,11 @@ string read_member_name (string& value)
 	return "<" + base + ">";
     }
 
-    string v = value;
-    if (v.contains('\n'))
-	v = v.before('\n');
+    string v;
+    if (value.contains('\n'))
+	v = value.before('\n');
+    else
+	v = value;
 
     bool strip_qualifiers = true;
 
