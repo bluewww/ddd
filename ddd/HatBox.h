@@ -95,8 +95,8 @@ public:
 		const BoxRegion& region, 
 		const BoxPrintGC& gc) const;
 
-    BoxSize corner() const { return _box->corner(); }
-    string str() const { return _box->str(); }
+    BoxSize corner() const       { return _box->corner(); }
+    string str() const           { return _box->str(); }
 };
 
 #endif

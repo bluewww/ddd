@@ -130,9 +130,6 @@ public:
     void countMatchBoxes(int instances[]) const;
 
     bool OK() const;
-
-    // Obsolete calls
-    int nsons() const { return nchildren(); }
 };
 
 #endif // _Nora_CompositeBox_h

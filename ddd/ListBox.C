@@ -166,7 +166,7 @@ bool ListBox::OK() const
     assert (nchildren() == 0 || nchildren() == 2);
     assert (_last && _last->isEmpty());
 
-    if (nsons() == 2)
+    if (nchildren() == 2)
     {
 	assert (head() && head()->OK());
 	assert (tail() && tail()->OK());
