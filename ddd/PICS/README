@@ -1,0 +1,19 @@
+# $Id$ -*- Text -*-
+
+This directory contains the pictures contained in the PostScript copy
+of the DDD manual.  These pictures are needed only if you want to
+re-create the PostScript DDD manual, so they are not part of the
+standard DDD source distribution.
+
+To re-create the DDD Manual, enter the `ddd' directory (one level
+above the `PICS' directory) and enter `make postscript'.
+
+The following suffixes are used:
+
+	.xpm	- XPM file
+	.fig	- FIG file (from the XFIG graphic editor)
+	.eps	- encapsulated PostScript file.
+
+-- 
+Andreas Zeller (ddd@ips.cs.tu-bs.de)
+Technische Universitaet Braunschweig, Germany
