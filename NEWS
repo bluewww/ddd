@@ -159,6 +159,16 @@ User Interface
 Settings
 --------
 
+- You can safely run multiple DDD instances at the same time.
+  * DDD detects when option files have been changed (e.g. by saving
+    options in another DDD instance) and offers reloading option files.
+  * Likewise, when saving options, DDD warns against overwriting
+    option files that have been changed by another DDD instance.
+  * The initial warning about running multiple DDD instances is
+    disabled by default.  Use `Edit->Preferences->General->Warn if
+    Multiple DDD Instances are Running' to re-enable it.
+  See also the `checkOptions' and `warnIfLocked' resources.
+
 - History customization.  You can customize the number of items in
   pop-down value histories as well as the way they are sorted.  See
   the `popdownHistorySize' and `sortPopdownHistory' resources.

@@ -1159,6 +1159,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNcheckOptions,
+	XtCCheckOptions,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, check_options),
+	XtRImmediate,
+	XtPointer(30)
+    },
+
+    {
 	XtNttyMode,
 	XtCTTYMode,
 	XtRBoolean,
@@ -1928,6 +1938,46 @@ struct AppDataInitializer {
     AppDataInitializer();
 } app_data_initializer;
 
+static void CopyArg(XtPointer src, XtPointer dst, Cardinal size)
+{
+    // This stuff is taken from Xt11R6.3 _XtCopyArg().  I hope it
+    // gets all possible conversions right...
+
+    if (size > sizeof(XtArgVal))
+    {
+	memmove((char *)dst, (char *)src, (int)size);
+    }
+    else 
+    {
+	union {
+	    long longval;
+	    int intval;
+	    short shortval;
+	    char charval;
+	    char* charptr;
+	    XtPointer ptr;
+	} u;
+	char *p = (char*)&u;
+	if (size == sizeof(long))
+	    u.longval = (long)src;
+	else if (size == sizeof(int))
+	    u.intval = (int)(long)src;
+	else if (size == sizeof(short))
+	    u.shortval = (short)(long)src;
+	else if (size == sizeof(char))
+	    u.charval = (char)(long)src;
+	else if (size == sizeof(XtPointer))
+	    u.ptr = (XtPointer)src;
+	else if (size == sizeof(char*))
+	    u.charptr = (char*)src;
+	else
+	    p = (char*)&src;
+
+	memmove((char *)dst, (char *)p, (int)size);
+    }
+}
+
+
 // This constructor is invoked before program start
 AppDataInitializer::AppDataInitializer()
 {
@@ -1939,41 +1989,7 @@ AppDataInitializer::AppDataInitializer()
 	XtPointer dst = ((char *)&app_data) + res.resource_offset;
 	Cardinal size = res.resource_size;
 
-	// This stuff is taken from Xt11R6.3 _XtCopyArg().  I hope it
-	// gets all possible conversions right...
-
-	if (size > sizeof(XtArgVal))
-	{
-	    memmove((char *)dst, (char *)src, (int)size);
-	}
-	else 
-	{
-	    union {
-		long longval;
-		int intval;
-		short shortval;
-		char charval;
-		char* charptr;
-		XtPointer ptr;
-	    } u;
-	    char *p = (char*)&u;
-	    if (size == sizeof(long))
-		u.longval = (long)src;
-	    else if (size == sizeof(int))
-		u.intval = (int)(long)src;
-	    else if (size == sizeof(short))
-		u.shortval = (short)(long)src;
-	    else if (size == sizeof(char))
-		u.charval = (char)(long)src;
-	    else if (size == sizeof(XtPointer))
-		u.ptr = (XtPointer)src;
-	    else if (size == sizeof(char*))
-		u.charptr = (char*)src;
-	    else
-		p = (char*)&src;
-
-	    memmove((char *)dst, (char *)p, (int)size);
-	}
+	CopyArg(src, dst, size);
     }
 }
 

@@ -239,6 +239,8 @@
 #define XtCSuppressWarnings      "SuppressWarnings"
 #define XtNwarnIfLocked          "warnIfLocked"
 #define XtCWarnIfLocked          "WarnIfLocked"
+#define XtNcheckOptions          "checkOptions"
+#define XtCCheckOptions          "CheckOptions"
 #define XtNttyMode               "ttyMode"
 #define XtNfullNameMode          "fullNameMode"
 #define XtCTTYMode               "TTYMode"
@@ -482,6 +484,7 @@ struct AppData {
     Boolean   cache_machine_code;
     Boolean   suppress_warnings;
     Boolean   warn_if_locked;
+    Cardinal  check_options;
     Boolean   tty_mode;
     OnOff     block_tty_input;
     Boolean   full_name_mode;

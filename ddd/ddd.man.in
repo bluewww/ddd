@@ -3634,6 +3634,13 @@ a grabbed pointer.  If \s-1@DDD@\s+1 sees some pointer event within
 this delay, the pointer cannot be grabbed and an explicit check for a
 grabbed pointer is unnecessary.  Default is \fB5000\fR, or 5 seconds.
 .TP
+.B "checkOptions (\fPclass\fB CheckOptions)"
+Every \fIN\fR seconds, where \fIN\fR is the value of this resource,
+\s-1@DDD@\s+1 checks whether the options file has changed.  Default is
+\fB30\fR, which means that every 30 seconds, \s-1@DDD@\s+1 checks for
+the options file.  Setting this resource to \fB0\fR disables checking
+for changed option files.
+.TP
 .B "cutCopyPasteBindings (\fPclass\fB BindingStyle)"
 Controls the key bindings for cut, copy, and paste operations.
 .br
@@ -3746,6 +3753,10 @@ be distracting for some experienced users.
 .B "valueDocs (\fPclass\fB Docs)"
 Whether the display of variable values in the status line is enabled
 (`\fBon\fR', default) or not (`\fBoff\fR').
+.TP
+.B "warnIfLocked (\fPclass\fB WarnIfLocked)"
+Whether to warn if multiple \s-1@DDD@\s+1 instances are running
+(`\fBon\fR') or not (`\fBoff\fR', default).
 .\"
 .\"
 .SS "Source Window"

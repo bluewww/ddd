@@ -3410,8 +3410,12 @@ static Boolean session_setup_done(XtPointer)
 	    app_data.initial_session = 0;
 	}
 
+	// From now on, verify the state file for changes
+	check_options_file();
+
 	return True;		// Remove from the list of work procs
     }
+
     return False;		// Get called again
 }
 
@@ -3456,10 +3460,8 @@ Boolean ddd_setup_done(XtPointer)
 	}
 	return True;		// Remove from the list of work procs
     }
-    else
-    {
-	return False;		// Keep on processing the command queue
-    }
+
+    return False;		// Keep on processing the command queue
 }
 
 
@@ -4657,6 +4659,7 @@ static void make_preferences(Widget parent)
 static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer)
 {
     manage_and_raise(preferences_dialog);
+    check_options_file();
 }
 
 

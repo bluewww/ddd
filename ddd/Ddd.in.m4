@@ -831,6 +831,11 @@ Ddd*suppressWarnings: off
 ! Do we wish to warn if multiple DDD instances are running?
 Ddd*warnIfLocked: off
 
+! Options file checking.
+! Check for changes to the options file (typically, `~/.ddd/init')
+! every N seconds.
+Ddd*checkOptions: 30
+
 
 ! Grab checking.
 
@@ -6339,6 +6344,35 @@ ITEM The current data displays will be deferred.\n\
 \n\
 To save the entire state without a core dump, click on LBL(Yes).\n\
 To cancel saving the session, click on LBL(No).
+
+define(OPTIONS_CHANGED_HELP, 
+[@rm The options file has changed on disk.\n\
+\n\
+This typically happens when\n\
+ITEM options were saved from another DDD instance, or\n\
+ITEM the options file has been edited using a text editor.\n])
+
+Ddd*reload_options_dialog_popup.title: DDD: Reload Options
+Ddd*reload_options_dialog.messageString: \
+@rm Options have changed on disk.  Reload them?
+Ddd*reload_options_dialog*helpString: \
+OPTIONS_CHANGED_HELP\n\
+To load the changed options file into this DDD instance, click on LBL(OK).\n\
+To ignore the changed options file, click on LBL(Cancel).\n\
+\n\
+Use LBL(File, Save Session) to save the current options in a session.
+
+
+Ddd*overwrite_options_dialog_popup.title: DDD: Overwrite Options
+Ddd*overwrite_options_dialog.messageString: \
+@rm Options have changed on disk.  Overwrite them?
+Ddd*overwrite_options_dialog*helpString: \
+OPTIONS_CHANGED_HELP\n\
+To overwrite the changed options file, click on LBL(OK).\n\
+To cancel saving options, click on LBL(Cancel).\n\
+\n\
+Use LBL(File, Save Session) to save the current options in a session.
+
 
 Ddd*lock_dialog_popup.title: DDD: There can be only one
 Ddd*lock_dialog*helpString:	\

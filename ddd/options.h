@@ -66,6 +66,8 @@ bool save_options(unsigned long flags);
 // Get restarting commands in RESTART, using FLAGS
 bool get_restart_commands(string& restart, unsigned long flags);
 
+// Check options file
+void check_options_file(XtPointer client_data = 0, XtIntervalId *id = 0);
 
 // Lots and lots of callbacks
 extern void sourceToggleFindWordsOnlyCB     (Widget, XtPointer, XtPointer);

@@ -45,6 +45,7 @@ char options_rcsid[] =
 #include "SourceView.h"
 #include "cook.h"
 #include "Command.h"
+#include "comm-manag.h"
 #include "ddd.h"
 #include "file.h"
 #include "filetype.h"
@@ -113,6 +114,18 @@ extern "C" FILE *popen(const char *command, const char *mode);
 #if !HAVE_PCLOSE_DECL
 extern "C" int pclose(FILE *stream);
 #endif
+
+
+//-----------------------------------------------------------------------------
+// Helper Decls
+//-----------------------------------------------------------------------------
+
+// If the current state file has changed, return true.
+// If MODE is ACKNOWLEDGE, refer to last acknowledgement time.  
+// If MODE is ACCESS, refer to last access time (read or write).
+// If RESET is given, reset modification time.
+enum ChangeMode { ACKNOWLEDGE, ACCESS };
+static bool options_file_has_changed(ChangeMode mode, bool reset = false);
 
 
 //-----------------------------------------------------------------------------
@@ -1479,6 +1492,213 @@ static bool must_kill_to_get_core()
 
 
 //-----------------------------------------------------------------------------
+// Reload state
+//-----------------------------------------------------------------------------
+
+static bool options_file_has_changed(ChangeMode mode, bool reset)
+{
+    static string last_options_file = "";
+    static time_t last_access      = 0;
+    static time_t last_acknowledge = 0;
+
+    string options_file = session_state_file(app_data.session);
+
+    if (options_file != last_options_file)
+    {
+	// Name of state file has changed
+	last_options_file = options_file;
+	mode  = ACCESS;
+	reset = true;
+    }
+
+    time_t modification_time = last_modification_time(options_file);
+
+    if (reset || last_acknowledge == 0)
+	last_acknowledge = modification_time;
+    if ((reset && mode == ACCESS) || last_access == 0)
+	last_access = modification_time;
+
+    time_t& last_time = (mode == ACKNOWLEDGE ? last_acknowledge : last_access);
+    if (modification_time > last_time)
+    {
+	// File has been written since last check
+	return true;
+    }
+
+    // File is unchanged
+    return false;
+}
+
+inline String str(String s)
+{
+    return s != 0 ? s : "";
+}
+
+static Boolean done_if_idle(XtPointer data)
+{
+    if (emptyCommandQueue() && gdb->isReadyWithPrompt())
+    {
+	update_settings();	// Refresh settings and signals
+	update_signals();
+
+	delete (Delay *)data;
+	return True;		// Remove from the list of work procs
+    }
+
+    return False;		// Get called again
+}
+
+static void done(const string&, void *data)
+{
+    XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
+		     done_if_idle, data);
+}
+
+static void reload_options()
+{
+    static string session;
+    session = app_data.session;
+
+    string file = session_state_file(session);
+
+    StatusDelay *delay_ptr = 
+	new StatusDelay("Loading options from " + quote(file));
+
+    XrmDatabase session_db = XrmGetFileDatabase(file);
+
+    Widget toplevel = find_shell();
+    while (XtParent(toplevel) != 0)
+	toplevel = XtParent(toplevel);
+
+    if (session_db == 0)
+    {
+	delay_ptr->outcome = "failed";
+	delete delay_ptr;
+	return;
+    }
+
+    XrmDatabase target = XtDatabase(XtDisplay(toplevel));
+
+#if 0				// This causes core dumps. - AZ
+    XrmDatabase default_db = app_defaults(XtDisplay(toplevel));
+    if (default_db != 0)
+	XrmMergeDatabases(default_db, &target);
+#endif
+
+    XrmMergeDatabases(session_db, &target);
+
+    XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
+				ddd_resources, ddd_resources_size, NULL);
+
+    // Keep session ID across reloads
+    app_data.session = session;
+
+    save_option_state();
+    options_file_has_changed(ACCESS, true);
+
+    // Set options and buttons
+    update_options();
+    update_user_buttons();
+
+    // Pop down settings and signals panel (such that GDB settings
+    // and signals will be updated from scratch)
+    reset_settings();
+    reset_signals();
+
+    // Load GDB settings.  Don't care about init or restart commands here.
+    string restart = "";
+    string settings;
+    switch (gdb->type())
+    {
+    case GDB:
+	settings = str(app_data.gdb_settings);
+	break;
+
+    case DBX:
+	settings = str(app_data.dbx_settings);
+	break;
+
+    case XDB:
+	settings = str(app_data.xdb_settings);
+	break;
+
+    case JDB:
+	settings = str(app_data.jdb_settings);
+	break;
+
+    case PYDB:
+	settings = str(app_data.pydb_settings);
+	break;
+
+    case PERL:
+	settings = str(app_data.perl_settings);
+	break;
+    }
+
+    init_session(restart, settings, app_data.source_init_commands);
+
+    // One last command to reload the new settings
+    Command c("# reset");
+    c.callback = done;
+    c.data     = (void *)(Delay *)delay_ptr;
+    c.priority = COMMAND_PRIORITY_BATCH;
+    c.verbose  = false;
+    c.prompt   = false;
+    c.check    = true;
+    gdb_command(c);
+}
+
+static void ReloadOptionsCB(Widget, XtPointer, XtPointer)
+{
+    reload_options();
+}
+
+static void DontReloadOptionsCB(Widget, XtPointer, XtPointer)
+{
+    // Acknowledge change
+    options_file_has_changed(ACKNOWLEDGE, true);
+}
+
+void check_options_file(XtPointer client_data, XtIntervalId *id)
+{
+    static bool check_pending;
+    if (id != 0)
+    {
+	// Called from XtAppAddTimeOut()
+	check_pending = false;
+    }
+
+    if (options_file_has_changed(ACKNOWLEDGE))
+    {
+	// File has changed since last acknowledgement
+	static Widget dialog = 0;
+
+	if (dialog == 0)
+	{
+	    dialog = verify(XmCreateQuestionDialog(find_shell(),
+						   "reload_options_dialog",
+						   0, 0));
+	    Delay::register_shell(dialog);
+	    XtAddCallback(dialog, XmNokCallback,     ReloadOptionsCB, 0);
+	    XtAddCallback(dialog, XmNcancelCallback, DontReloadOptionsCB, 0);
+	    XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+	}
+
+	if (!XtIsManaged(dialog))
+	    manage_and_raise(dialog);
+    }
+
+    if (!check_pending && app_data.check_options > 0)
+    {
+	XtAppAddTimeOut(XtWidgetToApplicationContext(find_shell()),
+			app_data.check_options * 1000,
+			check_options_file, client_data);
+	check_pending = true;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
 // Write state
 //-----------------------------------------------------------------------------
 
@@ -2319,6 +2539,7 @@ bool save_options(unsigned long flags)
     {
 	save_option_state();
 	save_settings_state();
+	options_file_has_changed(ACCESS, true);
     }
 
     return ok;
@@ -2342,6 +2563,23 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
     {
 	// No current session; cannot save
 	return;
+    }
+    else if (options_file_has_changed(ACCESS))
+    {
+	// Options file has changed since last access; request confirmation
+	static Widget dialog = 0;
+	if (dialog)
+	    DestroyWhenIdle(dialog);
+
+	dialog = verify(XmCreateQuestionDialog(find_shell(w), 
+					       "overwrite_options_dialog",
+					       0, 0));
+	Delay::register_shell(dialog);
+	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
+		      XtPointer(flags));
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+
+	manage_and_raise(dialog);
     }
     else if (saving_options_kills_program(flags))
     {
