@@ -157,8 +157,6 @@ Volunteers for fixing these and other bugs are welcome!
     be cleared at least?  Or contain a string (`not active')?
 
 346 Finish Perl support:
-    - A disabled breakpoint can no longer be selected.
-    - A moved breakpoint cannot be moved again.  Glyph confusion?
     - `Source->Info Breakpoints' lacks proper info.
     - `Run' should set arguments.  Assign to $@?
     - If inferior debugger exits, restart it.  Vital for Perl and JDB.
