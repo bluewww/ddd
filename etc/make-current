@@ -86,7 +86,7 @@ date=$year-$month-$day
 
 if $final; then
   # This is a final release; use the expiration date from the file.
-  eval `cvs checkout "$@" -p ddd/ddd/configure.in 2> /dev/null | \
+  eval `cvs checkout "$@" -p ddd/ddd/acinclude.in 2> /dev/null | \
    egrep '^(EXPIRES|VERSION|NICKNAME)='`
   expires=$EXPIRES
   date=$VERSION
@@ -150,8 +150,8 @@ VERSION='$date'
 /^# EXPIRES=/a\
 EXPIRES='$expires'
 
-' < ddd/configure.in > ddd/configure.in~
-mv ddd/configure.in~ ddd/configure.in
+' < ddd/acinclude.in > ddd/acinclude.in~
+mv ddd/acinclude.in~ ddd/acinclude.in
 fi
 
 # Add ChangeLog files.
