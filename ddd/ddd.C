@@ -3721,6 +3721,7 @@ void update_options()
     source_view->set_indent(app_data.indent_source, app_data.indent_code);
 
     source_view->line_indent_amount   = app_data.line_number_width;
+    source_view->script_indent_amount = app_data.indent_script;
     source_view->lines_above_cursor   = app_data.lines_above_cursor;
     source_view->lines_below_cursor   = app_data.lines_below_cursor;
 
