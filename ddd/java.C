@@ -251,6 +251,7 @@ void get_java_classes(StringArray& classes_list, bool with_source_only)
     }
 
     smart_sort(classes_list);
+    uniq(classes_list);
 }
 
 // Remove `.java' and `.class' suffix from S
