@@ -2048,9 +2048,6 @@ where it is.\n\
 @tt \267 @bf Registers... @rm - show current processor registers.\n\
 @tt \267 @bf Threads... @rm - show current program threads.\n\
 \n\
-@tt \267 @bf Status Displays... @rm - create status displays that show things \
-about the program being debugged.\n\
-\n\
 @tt \267 @bf Up @rm - show the function that called the current one.\n\
 @tt \267 @bf Down @rm - show the function that was called by the current one.
 
@@ -2068,11 +2065,6 @@ Ddd*stackMenu.threads.labelString:	Threads...
 Ddd*stackMenu.threads.mnemonic:		T
 Ddd*stackMenu.threads.documentationString: \
 @rm Show and select current program threads
-
-Ddd*stackMenu.infos.labelString:	Status Displays...
-Ddd*stackMenu.infos.mnemonic:		S
-Ddd*stackMenu.infos.documentationString: \
-@rm Show various things about the program being debugged
 
 Ddd*stackMenu.up.labelString:		Up
 Ddd*stackMenu.up.mnemonic:		U
@@ -2151,6 +2143,8 @@ Ddd*menubar.data*helpString:	\
 @rm This is the @sl Data menu.@rm\n\
 \n\
 @tt \267 @bf Edit Displays... @rm - select, enable and delete displays.\n\
+@tt \267 @bf Status Displays... @rm - create status displays that show things \
+about the program being debugged.\n\
 \n\
 @tt \267 @bf Display Local Variables @rm - show current local variables.\n\
 @tt \267 @bf Display Arguments @rm - show current argument variables.\n\
@@ -2168,6 +2162,11 @@ Ddd*dataMenu.displays.labelString:	Edit Displays...
 Ddd*dataMenu.displays.mnemonic:		E
 Ddd*dataMenu.displays.documentationString: \
 @rm Select, enable and delete displays
+
+Ddd*dataMenu.infos.labelString:		Status Displays...
+Ddd*dataMenu.infos.mnemonic:		t
+Ddd*dataMenu.infos.documentationString: \
+@rm Show various things about the program being debugged
 
 ! This item is visible in GDB only.
 Ddd*dataMenu.info locals.labelString:	Display Local Variables
@@ -2633,7 +2632,7 @@ Click on @bf Close @rm to close this window.
 
 
 !-----------------------------------------------------------------------------
-! Info displays
+! Status displays
 !-----------------------------------------------------------------------------
 
 Ddd*infos_popup*okLabelString: Close

@@ -1085,7 +1085,7 @@ a status display named `\fBWhere\fR' is created that shows the current
 backtrace.
 .PP
 If you are using \s-2GDB\s+2, \s-2@DDD@\s+2 provides a panel from
-which you can choose useful status displays.  In the `\fBStatus\fR'
+which you can choose useful status displays.  In the `\fBData\fR'
 menu, select the `\fBStatus Displays...\fR' item and pick your choice
 from the list.
 .PP
