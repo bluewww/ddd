@@ -1990,6 +1990,10 @@ DispNode *DataDisp::selected_node()
 
 	    // Cluster remains selected
 	}
+	else if (dn->clustered() == selection->clustered())
+	{
+	    // Differing nodes in same cluster
+	}
 	else
 	{
 	    return 0;		// Differing nodes
