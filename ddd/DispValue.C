@@ -451,14 +451,15 @@ void DispValue::init(string& value, DispValueType given_type)
 		{
 		    member_prefix += ".";
 		}
+
+		read_str_or_cl_begin (value);
 	    }
 
-	    read_str_or_cl_begin (value);
-	
 	    bool more_values = true;
 	    string member_name = read_member_name (value);
 	    int i = 0;
-	    while (more_values && member_name != "") {
+	    while (more_values && member_name != "")
+	    {
 		v.str_or_cl->member_count++;
 		if (is_BaseClass_name (member_name) || member_name == " ")
 		{
@@ -495,13 +496,17 @@ void DispValue::init(string& value, DispValueType given_type)
 		    return;
 		}
 	    }
-	    read_str_or_cl_end (value);
 
 	    if (mytype == List && value != "")
 	    {
 		// Add remaining value as text
 		v.str_or_cl->members[v.str_or_cl->member_count++] = 
 		    new DispValue(this, depth() + 1, value, "", "");
+	    }
+	    else
+	    {
+		// Skip the remainder
+		read_str_or_cl_end(value);
 	    }
 
 #if LOG_CREATE_VALUES

@@ -246,8 +246,6 @@ Volunteers for fixing these and other bugs are welcome!
     (i586-pc-linux-gnulibc1) consistently crashes if he runs it when
     no `~/.ddd/' exists.
 
-243 How come "graph display `echo [a, b, c]`" is not shown as array?
-
 244 Antonello Biancalana <promind@tecnonet.it> reports that DDD, when
     compiled with Motif 2.1, does not show any breakpoint indicators.
     Nor does it show arrows.  This does not happen with Motif 2.0.
