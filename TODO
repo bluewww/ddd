@@ -38,10 +38,6 @@ Volunteers for these and other projects are welcome!
      b) Move one object on top of the other
      c) Draw a special `identity edge' between the two objects.
 
-011. Have local source files without path indication located via the
-     GDB directories setting.  Maybe through the `info source'
-     and `show directories' commands?
-
 017. Have the graph editor scroll automatically when the pointer drags
      something out of the visible part of the window.
 
@@ -81,20 +77,11 @@ Volunteers for these and other projects are welcome!
 056. Have current arguments (`info args') and local variables (`info
      locals') be displayed.
 
-058. leo@dmbsdi.datamar.com.ar says: I'm using ddd v1.4 with dbx on SGI
-     with IRIX 5.3.  1) When I debug inside the operating system I
-     receive all the time a window telling that I don't have source.
-
 060. When using a dynamic version of libstdc++, configure fails
      to add its location to the -R flag.
 
-063* Have a (generic) panel for GDB options.  Inquire setting and
+063* Have a (generic) panel for debugger options.  Inquire setting and
      documentation strings via `show'.
-
-064. Have scrolling parameters user-configurable.
-
-066. Upgrade rx library to rx-1.0.  Should be less buggy (and more
-     portable).
 
 067. Andy Gill (andy@dcs.gla.ac.uk) wants more options to
      `graph display': ``for example,
@@ -114,7 +101,7 @@ Volunteers for these and other projects are welcome!
      `whatis') inserted into the source popup menu, such that users
      can inquire variable types.
 
-069* Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
+069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
 
      3. Add a way to cast a display. What I mean is that when I debug some
         code with a `generic' C function which takes a void* and a tag that
@@ -125,7 +112,7 @@ Volunteers for these and other projects are welcome!
         display', type the cast there, and then delete the original display
         (because what we want is in the casted display).
 
-     4* Let one colorize the displays. By using regexps on types or
+     4. Let one colorize the displays. By using regexps on types or
         names of the fields, it would already be extremely useful (or
         with a match on the typed expression, having a list of regexps
         to match, the first match giving color, so that given blue for

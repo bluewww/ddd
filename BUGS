@@ -174,14 +174,6 @@ Volunteers for fixing these and other bugs are welcome!
      crashes after receiving too much data from GDB (e.g. `info
      functions').
 
-078. Rubber banding problems.  C. Thewalt <thewalt@ce.Berkeley.EDU>
-     says: When dragging with the left button down in the data window
-     to select several objects the rubber band outline gets all messed
-     up. The outline draws in the wrong place, not just within the
-     selected rectangle, but also in the upper left corner of the
-     window regardless of where the selection rectangle starts.
-     [Fixed in DDD 1.5?  -AZ]
-
 079. Window resize problems.  louie@dbmx.com (Lewis Alderton) says: I
      am running using FVWM (virtual window manager) and when the
      breakpoints and stack-frame windows pop up, they appear as the
@@ -259,9 +251,12 @@ Volunteers for fixing these and other bugs are welcome!
          the default in the display graph?  If I "set output-radix 16" 
          in the gdb window ddd seems to lock up very often.
 
-095* DDD 1.5 with AIX DBX and `ctest':
+095* DDD 2.0 with AIX DBX and `ctest':
      - displaying `dates' causes a seg fault.
 
 099* With DEC DBX, a display once disabled is never enabled again.
 
-100. (Insert your bug here)
+100. Self-modifying code is not detected automatically; users must
+     explicitly re-disassemble (with caching disabled).
+
+101. (Insert your bug here)
