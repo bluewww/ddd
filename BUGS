@@ -200,7 +200,7 @@ Volunteers for fixing these and other bugs are welcome!
 051. grant@isgtec.com (Grant McDorman) has run purify on DDD and
      reported some memory leaks as well as bad memory accesses.
 
-052. DDD crashes if the `lucidatypewriter' font is not found.
+052. [fixed]
 
 053. emeijer@us.oracle.com (Edwin Meijer) states:
      I tried the following scenario: 

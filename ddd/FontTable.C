@@ -46,30 +46,61 @@ DEFINE_TYPE_INFO_0(FontTable)
 
 // FontTable
 
-// Hash-Code erzeugen
+// Return hash code
 inline unsigned hash(const char *name)
 {
     return hashpjw(name) % MAX_FONTS;
 }
 
-// XFontStruct zu Fontnamen zurueckgeben
+// Return XFontStruct for given font name NAME
 XFontStruct *FontTable::operator[](string& name)
 {
     int i = hash(name);
     while (table[i].font != 0 && name != table[i].name)
     {
-	assert (i < MAX_FONTS);   // Ueberlauf: Zuviele Fonts
+	assert (i < MAX_FONTS);   // Too many fonts
 	i = (i >= MAX_FONTS) ? 0 : i + 1;
     }
 
     if (table[i].font == 0 && name != table[i].name)
     {
-	// Neuen Font eintragen
+	// Insert new font
 	table[i].name = name;
 	table[i].font = XLoadQueryFont(_display, name);
 
 	if (table[i].font == 0)
-	    cerr << "Warning: could not load font \"" << name << "\"\n";
+	{
+	    cerr << "Warning: could not load font \"" << name << "\"";
+
+	    // Try default font
+	    GC default_gc = 
+		DefaultGCOfScreen(DefaultScreenOfDisplay(_display));
+	    XGCValues gc_values;
+	    if (XGetGCValues(_display, default_gc, GCFont, &gc_values))
+	    {
+		const Font& font_id = gc_values.font;
+		XFontStruct *font = XQueryFont(_display, font_id);
+		if (font != 0)
+		{
+		    cerr << ", using default font instead\n";
+		    table[i].font = font;
+		}
+	    }
+	}
+
+	if (table[i].font == 0)
+	{
+	    // Try "fixed" font
+	    XFontStruct *font = XLoadQueryFont(_display, "fixed");
+	    if (font != 0)
+	    {
+		cerr << ", using font \"fixed\" instead\n";
+		table[i].font = font;
+	    }
+	}
+
+	if (table[i].font == 0)
+	    cerr << "\n";
     }
 
     return table[i].font;
