@@ -5018,23 +5018,29 @@ void SourceView::setup_where_line(string& line)
 {
     const int min_width = 40;
 
-    // Remove file paths (otherwise line can be too long for DBX)
-    //   ... n.b. with templates, line can still be rather long
-#if RUNTIME_REGEX
-    static regex rxfilepath("[^\"\' /]*/");
-#endif
-    line.gsub(rxfilepath, "");
-
-    // Shorten argument lists `(a = 1, b = 2, ...)' to `()'
-#if RUNTIME_REGEX
-    static regex rxarglist("[(][^0-9][^)]*[)]");
-#endif
-    int start = index(line, rxarglist, "(");
-    if (start > 0)
+    if (gdb->type() != JDB)
     {
-	int end = line.index(')', -1);
-	if (end > start)
-	line = line.through(start) + line.from(end);
+	// Remove file paths (otherwise line can be too long for DBX)
+	//   ... n.b. with templates, line can still be rather long
+#if RUNTIME_REGEX
+	static regex rxfilepath("[^\"\' /]*/");
+#endif
+	line.gsub(rxfilepath, "");
+    }
+
+    if (gdb->type() != JDB)
+    {
+	// Shorten argument lists `(a = 1, b = 2, ...)' to `()'
+#if RUNTIME_REGEX
+	static regex rxarglist("[(][^0-9][^)]*[)]");
+#endif
+	int start = index(line, rxarglist, "(");
+	if (start > 0)
+	{
+	    int end = line.index(')', -1);
+	    if (end > start)
+		line = line.through(start) + line.from(end);
+	}
     }
 
     if (int(line.length()) < min_width)
