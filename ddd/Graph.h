@@ -56,8 +56,13 @@ protected:
     void removeNode(GraphNode* node);
     void removeEdge(GraphEdge* edge);
 
-    // needed by the Copy-Constructor
+    bool haveNode(GraphNode* node) const { return node->graph == this; }
+    bool haveEdge(GraphEdge* edge) const { return edge->graph == this; }
+
+    // Needed by copy constructor
     GraphNode *getNode(GraphNode *node, const Graph& graph) const;
+
+    // Copy constructor
     Graph(const Graph& graph);
 
 public:
@@ -94,8 +99,12 @@ public:
     void operator += (GraphNode *node)
     {
 	assert(node->next == 0);	// node must not be used yet
-	node->next = node;		// now it is used
-	node->prev = node;
+	assert(node->prev == 0);
+	assert(node->graph == 0);
+
+	node->next  = node;		// now it is used
+	node->prev  = node;
+	node->graph = this;
 	addNodes(node);
     }
 
@@ -103,22 +112,24 @@ public:
     void operator += (GraphEdge *edge)
     {
 	assert(edge->next == 0);	// edge must not be used yet
-	edge->next = edge;		// now it is used
-	edge->prev = edge;
+	assert(edge->prev == 0);
+	assert(edge->graph == 0);
+
+	edge->next  = edge;		// now it is used
+	edge->prev  = edge;
+	edge->graph = this;
 	addEdges(edge);
     }
 
     // Remove Node
     void operator -= (GraphNode *node)
     {
-	assert(node->next != 0);	// node must be used
 	removeNode(node);
     }
 
     // Remove Edge
     void operator -= (GraphEdge *edge)
     {
-	assert(edge->next != 0);	// edge must be used
 	removeEdge(edge);
     }
 
@@ -175,7 +186,7 @@ public:
 	Box::_printTrailer(os, region(gc), *gc.printGC);
     }
 
-    // Custom function
+    // Custom printing function
     void print(ostream& os, const GraphGC& gc = GraphGC()) const
     {
 	_printHeader(os, gc);
@@ -186,11 +197,11 @@ public:
     // Total Region
     BoxRegion region(const GraphGC& gc) const;
 
-    // representation invariant
+    // Representation invariant
     virtual bool OK() const;
 };
 
-// Echo
+// I/O
 extern ostream& operator << (ostream& s, const Graph& g);
 
 #endif // _DDD_Graph_h

@@ -65,6 +65,7 @@ private:
     // maintained by Graph
     GraphEdge *next;		// For collectors
     GraphEdge *prev;
+    Graph *graph;
 
 protected:
     // Graphics
@@ -88,7 +89,8 @@ protected:
         _prevFrom(0),
         _prevTo(0),
         next(0),
-        prev(0)
+        prev(0),
+	graph(0)
     {}
 
 public:
@@ -98,7 +100,7 @@ public:
         _hidden(false),
         _nextFrom(0), _nextTo(0),
         _prevFrom(0), _prevTo(0),
-        next(0), prev(0)
+        next(0), prev(0), graph(0)
     {}
 
     // Destructor

@@ -79,8 +79,11 @@ Graph::Graph(const Graph &org_graph)
 	{
 	    new_node = node->dup();  // copy node
 	    assert(new_node->next == 0);
-	    new_node->next = new_node;	     
-	    new_node->prev = new_node;
+	    assert(new_node->prev == 0);
+	    assert(new_node->graph == 0);
+	    new_node->next  = new_node;	     
+	    new_node->prev  = new_node;
+	    new_node->graph = this;
 	    addNodes(new_node); // add new_node to graph
 	    node = node->next;
 
@@ -98,8 +101,11 @@ Graph::Graph(const Graph &org_graph)
 	do {
 	    new_edge = edge->dup();
 	    assert(new_edge->next == 0);	// edge must not be used yet
-	    new_edge->next = new_edge;		// now it is used
-	    new_edge->prev = new_edge;
+	    assert(new_edge->prev == 0);
+	    assert(new_edge->graph == 0);
+	    new_edge->next  = new_edge;		// now it is used
+	    new_edge->prev  = new_edge;
+	    new_edge->graph = this;
 	    addUsedEdges(new_edge); // because of "enqueue" in addEdges()
 	    edge = edge->next;
 
@@ -207,6 +213,8 @@ void Graph::addUsedEdges(GraphEdge *edges)
 // Make NODE first node in node list
 void Graph::makeNodeFirst(GraphNode *node)
 {
+    if (!haveNode(node))
+	return;
     if (node == _firstNode)
 	return;
 
@@ -230,6 +238,8 @@ void Graph::makeNodeFirst(GraphNode *node)
 // Make NODE last node in node list
 void Graph::makeNodeLast(GraphNode *node)
 {
+    if (!haveNode(node))
+	return;
     if (node == _firstNode->prev)
 	return;
 
@@ -255,6 +265,8 @@ void Graph::makeNodeLast(GraphNode *node)
 // Make EDGE first edge in edge list
 void Graph::makeEdgeFirst(GraphEdge *edge)
 {
+    if (!haveEdge(edge))
+	return;
     if (edge == _firstEdge)
 	return;
 
@@ -278,6 +290,8 @@ void Graph::makeEdgeFirst(GraphEdge *edge)
 // Make EDGE last edge in edge list
 void Graph::makeEdgeLast(GraphEdge *edge)
 {
+    if (!haveEdge(edge))
+	return;
     if (edge == _firstEdge->prev)
 	return;
 
@@ -303,6 +317,9 @@ void Graph::makeEdgeLast(GraphEdge *edge)
 // Remove Node
 void Graph::removeNode(GraphNode *node)
 {
+    if (!haveNode(node))
+	return;
+
     GraphEdge *e;
 
     // Remove edges
@@ -326,13 +343,18 @@ void Graph::removeNode(GraphNode *node)
 	node->prev->next = node->next;
 	node->next->prev = node->prev;
     }
-    node->next = 0;
-    node->prev = 0;
+
+    node->next  = 0;
+    node->prev  = 0;
+    node->graph = 0;
 }
 
 // Remove Edge
 void Graph::removeEdge(GraphEdge *edge)
 {
+    if (!haveEdge(edge))
+	return;
+
     edge->dequeue();
 
     if (edge == _firstEdge)
@@ -350,9 +372,12 @@ void Graph::removeEdge(GraphEdge *edge)
 	edge->prev->next = edge->next;
 	edge->next->prev = edge->prev;
     }
-    edge->next = 0;
-    edge->prev = 0;
+
+    edge->next  = 0;
+    edge->prev  = 0;
+    edge->graph = 0;
 }
+
 
 // Get the equal node to "org_node"
 // needed by the Copy-Constructor

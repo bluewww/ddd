@@ -59,6 +59,7 @@ private:
     // maintained by Graph
     GraphNode *next;		// For collectors
     GraphNode *prev;		// For collectors
+    Graph *graph;		// For collectors
 
 protected:
     // Copy Constructor
@@ -68,7 +69,8 @@ protected:
 	_firstFrom(0),
 	_firstTo(0),
 	next(0),
-	prev(0)
+	prev(0),
+	graph(0)
     {}
 
 public:
@@ -77,7 +79,7 @@ public:
     // Constructor
     GraphNode():
 	_selected(false), _hidden(false),
-	_firstFrom(0), _firstTo(0), next(0), prev(0), count(0)
+	_firstFrom(0), _firstTo(0), next(0), prev(0), graph(0), count(0)
     {}
 
     // Destructor
