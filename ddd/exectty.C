@@ -167,6 +167,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     MString msg = rm("Starting ") + tt(base) + rm("...");
     XtVaSetValues(dialog, XmNmessageString, msg.xmstring(), NULL);
     manage_and_raise(dialog);
+    wait_until_mapped(dialog);
 
     StatusDelay delay("Starting Execution Window");
 

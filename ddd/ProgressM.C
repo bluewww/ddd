@@ -133,6 +133,7 @@ bool ProgressMeter::process(int remaining_length)
 	XtAddCallback(dialog, XmNcancelCallback, CancelCB, 
 		      XtPointer(&aborted));
 	manage_and_raise(dialog);
+	wait_until_mapped(dialog);
     }
 
     if (processed - last_shown >= UPDATE_THRESHOLD)
