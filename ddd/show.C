@@ -301,9 +301,6 @@ static void show_configuration(std::ostream& os, bool version_only)
         "." stringize(__GNUC_MINOR__)
 #  endif
 # endif // !defined(__VERSION__)
-# ifdef _SGI_COMPILER_VERSION
-        "\nSGI Pro64 " stringize(_SGI_COMPILER_VERSION)
-# endif
 
 #elif defined(__SUNPRO_CC)
 	"SunPRO CC " stringize(__SUNPRO_CC)
@@ -330,8 +327,8 @@ static void show_configuration(std::ostream& os, bool version_only)
 #elif defined(__BORLANDC__)
 	"Borland C++ " stringize(__BORLANDC__)
 
-#elif defined(__ICL)
-        "Intel C++ " stringize(__ICL)
+#elif defined(__INTEL_COMPILER)
+        "Intel C++ " stringize(__INTEL_COMPILER)
 
 #elif defined(CXX_NAME)
 	CXX_NAME
