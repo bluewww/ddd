@@ -218,6 +218,45 @@ extern "C" {
 #define O_APPEND FAPPEND
 #endif
 
+// Open a tty.
+// Like open(TTY, FLAGS), but care for EAGAIN and EWOULDBLOCK conditions
+int TTYAgent::open_tty(const char *tty, int flags = O_RDWR) const
+{
+    for (;;)
+    {
+	int fd = open(tty, flags);
+	if (fd >= 0)
+	    return fd;
+
+	if (false
+#ifdef EAGAIN
+	    || errno == EAGAIN
+#endif
+#ifdef EWOULDBLOCK
+	    || errno == EWOULDBLOCK
+#endif
+	    )
+	{
+	    // Resource temporarily unavailable: an operation that
+	    // would block was attempted on an object that has
+	    // non-blocking mode selected.  Trying the same operation
+	    // again will block until some external condition makes it
+	    // possible to read, write, or connect (whatever the
+	    // operation).  So, we just try again.
+	    continue;
+	}
+	else
+	{
+	    // Some other error condition
+	    return -1;
+	}
+    }
+
+    // Never reached
+    return -1;
+}
+
+
 // Open master side of pty.
 // Depending on the host features, we try a large variety of possibilities.
 void TTYAgent::open_master()
@@ -268,7 +307,7 @@ void TTYAgent::open_master()
     if (stat("/dev/ptc", &sb) == 0)
     {
 	// Try /dev/ptc - an AIX and SGI3 feature
-	master = open("/dev/ptc", O_RDWR);
+	master = open_tty("/dev/ptc");
 	if (master >= 0)
 	{
 	    line = ttyname(master);
@@ -296,7 +335,7 @@ void TTYAgent::open_master()
     if (stat("/dev/ptmx", &sb) == 0)
     {
 	// Try STREAMS - a SVR4 feature
-	master = open("/dev/ptmx", O_RDWR);
+	master = open_tty("/dev/ptmx");
 	if (master >= 0)
 	{
 	    line = ptsname(master);
@@ -343,7 +382,7 @@ void TTYAgent::open_master()
 	    string pty = string("/dev/pty/") + nr;
 	    string tty = string("/dev/ttyp") + nr;
 		
-	    master = open(pty.chars(), O_RDWR);
+	    master = open_tty(pty.chars());
 	    if (master >= 0)
 	    {
 		if (access(tty, R_OK | W_OK) != 0)
@@ -372,7 +411,7 @@ void TTYAgent::open_master()
 		string pty = "/dev/ptym/pty" + nr;
 		string tty = "/dev/pty/tty" + nr;
 		
-		master = open(pty.chars(), O_RDWR);
+		master = open_tty(pty.chars());
 		if (master >= 0)
 		{
 		    if (access(tty, R_OK | W_OK) != 0)
@@ -403,7 +442,7 @@ void TTYAgent::open_master()
 		string pty = prefix + "/dev/pty" + nr;
 		string tty = prefix + "/dev/tty" + nr;
 
-		master = open(pty.chars(), O_RDWR);
+		master = open_tty(pty.chars());
 		if (master >= 0)
 		{
 		    if (access(tty, R_OK | W_OK) != 0)
@@ -429,7 +468,8 @@ void TTYAgent::open_master()
 // in slave_tty by open_master.
 void TTYAgent::open_slave()
 {
-    if ((slave = open(slave_tty().chars(), O_RDWR)) < 0)
+    slave = open_tty(slave_tty().chars());
+    if (slave < 0)
     {
 	_raiseIOMsg("cannot open " + slave_tty());
 	return;
@@ -544,9 +584,9 @@ int TTYAgent::setupChildCommunication()
 
 #if HAVE_TCGETSID && HAVE_TCGETPGRP
     if ((tcgetsid(STDIN_FILENO) != tcgetpgrp(STDIN_FILENO)) &&
-	(fd = open("/dev/tty", O_RDWR | O_NONBLOCK)) > 0)
+	(fd = open_tty("/dev/tty", O_RDWR | O_NONBLOCK)) > 0)
 #else  // !HAVE_TCGETSID
-    if ((fd = open("/dev/tty", O_RDWR)) > 0)
+    if ((fd = open_tty("/dev/tty")) > 0)
 #endif // !HAVE_TCGETSID
     {
   	result = ioctl(fd, TIOCNOTTY, 0);

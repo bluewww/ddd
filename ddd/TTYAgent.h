@@ -36,6 +36,7 @@
 #include "LiterateA.h"
 #include <unistd.h>
 #include <stdlib.h>
+#include <fcntl.h>		// O_RDWR
 
 const unsigned TTYAgent_NTypes = LiterateAgent_NTypes;
 
@@ -54,10 +55,14 @@ private:
     void open_slave();	  // open slave tty 
 
 protected:
-    // hooks for alternative communication schemes
+    // Hooks for alternative communication schemes
     virtual int setupCommunication();
     virtual int setupChildCommunication();
     virtual int setupParentCommunication();
+
+    // Open a tty.
+    // Like open(TTY, FLAGS), but care for EAGAIN and EWOULDBLOCK conditions
+    virtual int open_tty(const char *tty, int flags = O_RDWR) const;
     
 public:
     // Constructors
