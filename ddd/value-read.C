@@ -162,7 +162,39 @@ static DispValueType _determine_type (string& value)
 		break;
 
 	    case '=':
+	    {
+		// We have a member.
+		//
+		// DEC DBX issues arrays of strings as
+		//
+		//     {
+		//         [0] 0x400188 = "Pioneering"
+		//         [1] 0x10000dd0 = "women"
+		//         [2] 0x10000dcc = "in"
+		//     }
+		//
+		// Avoid interpreting these addresses as struct members.
+
+		int j = i - 2;	// Character before `='
+		while (j >= 0 && isspace(value[j]))
+		    j--;
+		int end_of_member_name = j + 1;
+		while (j >= 0 && !isspace(value[j]))
+		    j--;
+		j++;
+		string first_member = value(j, end_of_member_name - j);
+		strip_space(first_member);
+		if (first_member.contains(rxint, 0) || 
+		    first_member.contains(rxaddress, 0))
+		{
+		    // The first `member' is a number or an address.
+		    // This is not a struct; it's an array.
+		    return Array;
+		}
+
+		// In all other cases, we have a struct.
 		return Struct;
+	    }
 
 	    case '(':
 	    case '{':
