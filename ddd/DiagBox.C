@@ -77,7 +77,7 @@ void DiagBox::_draw(Widget w,
     const BoxPoint stringOrigin = origin + space/2 - stringSize/2;
 
     XClearArea(XtDisplay(w), XtWindow(w), stringOrigin[X], stringOrigin[Y],
-	stringSize[X], stringSize[Y], false);
+	stringSize[X], stringSize[Y], False);
     s->draw(w, BoxRegion(stringOrigin, stringSize), exposed,
 	    gc, context_selected);
 
