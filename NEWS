@@ -8,7 +8,7 @@ Just a couple of minor bug fixes:
 
 * The option to create new displays `left-to-right' is restored upon startup.
 * Fortran struct members are accessed as `A%B' instead of `A.B'.
-* Structural display changes no longer cause plots to crash.
+* Structure changes in plotted displays no longer crash DDD.
 * You can specify the top-level geometry via `-geometry'.
 * The `pydb' debugger has been fixed to work with recent Python releases.
 * DDD honors the TMPDIR environment variable for creating temporary files.
