@@ -553,7 +553,13 @@ fi
 dnl
 dnl
 dnl Setup library loading flags
-ICE_SETUP_RPATH
+dnl
+dnl FIXME: Don't use this right now.  Some systems/environments rely
+dnl on $LD_RUN_PATH specifying library locations, and using -rpath
+dnl overrides these settings.  If you need -rpath, it might be better
+dnl to set LD_RUN_PATH instead.
+dnl
+dnl ICE_SETUP_RPATH
 dnl
 dnl
 dnl Check for Make characteristics
