@@ -3706,6 +3706,10 @@ static void untabify(string& s, int offset = 8)
 
 void SourceView::process_register(string& register_output)
 {
+    register_output.gsub(";\n", "\n");
+    register_output.gsub("; ", "\n");
+    register_output.gsub(";", "\n");
+
     int count             = register_output.freq('\n') + 1;
     string *register_list = new string[count];
     bool *selected        = new bool[count];
@@ -3761,9 +3765,7 @@ void SourceView::SelectRegisterCB (Widget, XtPointer, XtPointer call_data)
 
     if (item != "" && item[item.length() - 1] != '.')
     {
-	if (item.contains(' '))
-	    item = "/x $" + item.before(' ');
-
+	item = "/x $" + item.through(rxalphanum);
 	source_arg->set_string(item);
     }
 }
