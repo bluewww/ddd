@@ -52,8 +52,8 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
         with the `Exit' menu item (which issues a `quit' command).
     - DBX settings can now be viewed and changed at run time, using
       the `Settings' panel.
-    - In GDB, there is a panel for displaying various things about 
-      the program being debugged.
+    - In GDB, there is a `status displays' panel for displaying 
+      various things about the program being debugged.
     - Reading the VSL library is now realized as a background job,
       reducing startup time drastically.
     - In the data window, the middle mouse button now toggles 
@@ -62,7 +62,7 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
       popup menu which you can use to clear the line or the window.
     - Ever suffered from a frozen display while debugging a modal
       application?  If the debugged program is interrupted in some modal
-      state, DDD will automatically make it ungrab the pointer, 
+      state, DDD will automatically make it ungrab the pointer.
     - In the source argument field `()', pressing RETURN activates
       the `Lookup ()' button.
     - Unnecessary redisplays have been significantly reduced, causing
