@@ -1,7 +1,7 @@
 // $Id$
 // Data Display
 
-// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
@@ -4809,6 +4809,7 @@ string DataDisp::process_displays(string& displays,
 		post_gdb_message(error_msg);
 		dn->make_active();
 		dn->disable();
+		refresh_graph_edit();
 	    }
 	    else
 	    {
