@@ -3961,6 +3961,21 @@ void SourceView::lookup(string s, bool silent)
 				 XmTextGetInsertionPosition(source_text_w));
 	}
     }
+    else if (is_file_pos(s))
+    {
+	// FILE:LINE given
+	add_current_to_history();
+	if (gdb->type() == GDB)
+	{
+	    Command c("list " + s);
+	    c.verbose = !silent;
+	    c.echo    = !silent;
+	    c.prompt  = !silent;
+	    gdb_command(c);
+	}
+	else
+	    show_position(s);
+    }
     else if (s[0] != '0' && isdigit(s[0]))
     {
 	// Line number given
@@ -4026,21 +4041,6 @@ void SourceView::lookup(string s, bool silent)
 		post_error("No breakpoint number " + itostring(nr) + ".", 
 			   "no_such_breakpoint_error", source_text_w);
 	}
-    }
-    else if (is_file_pos(s))
-    {
-	// FILE:LINE given
-	add_current_to_history();
-	if (gdb->type() == GDB)
-	{
-	    Command c("list " + s);
-	    c.verbose = !silent;
-	    c.echo    = !silent;
-	    c.prompt  = !silent;
-	    gdb_command(c);
-	}
-	else
-	    show_position(s);
     }
     else
     {
