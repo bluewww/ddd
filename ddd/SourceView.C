@@ -3073,13 +3073,15 @@ void SourceView::create_shells()
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
 					   XmDIALOG_SELECTION_LABEL));
-    XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
-					   XmDIALOG_CANCEL_BUTTON));
 
     if (gdb->type() != JDB)
+    {
+	XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
+					       XmDIALOG_OK_BUTTON));
 	XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
 					       XmDIALOG_APPLY_BUTTON));
-	
+    }
+
     arg = 0;
     thread_list_w = XmSelectionBoxGetChild(thread_dialog_w, XmDIALOG_LIST);
     XtVaSetValues(thread_list_w,
@@ -3096,11 +3098,13 @@ void SourceView::create_shells()
 		  XmNbrowseSelectionCallback, SelectThreadCB, 0);
 
     XtAddCallback(thread_dialog_w,
-		  XmNokCallback, UnmanageThisCB, thread_dialog_w);
+		  XmNcancelCallback, UnmanageThisCB, thread_dialog_w);
     XtAddCallback(thread_dialog_w,
-		  XmNokCallback, ThreadDialogPoppedDownCB, 0);
+		  XmNcancelCallback, ThreadDialogPoppedDownCB, 0);
     XtAddCallback(thread_dialog_w,
-		  XmNapplyCallback, ViewThreadsCB, XtPointer(true));
+		  XmNokCallback,     ThreadCommandCB, "suspend");
+    XtAddCallback(thread_dialog_w,
+		  XmNapplyCallback,  ThreadCommandCB, "resume");
     XtAddCallback(thread_dialog_w,
 		  XmNhelpCallback, ImmediateHelpCB, 0);
 
@@ -5409,6 +5413,12 @@ inline int jdb_frame()
     return get_positive_nr(gdb->prompt().from("["));
 }
 
+// Return current JDB thread; "" if none
+inline string jdb_thread()
+{
+    return gdb->prompt().before("[");
+}
+
 void SourceView::process_where(string& where_output)
 {
     int count          = where_output.freq('\n') + 1;
@@ -5683,6 +5693,8 @@ void SourceView::SelectRegisterCB (Widget, XtPointer, XtPointer call_data)
 // Thread stuff
 //----------------------------------------------------------------------------
 
+string SourceView::current_threadgroup = "system";
+
 void SourceView::process_threads(string& threads_output)
 {
     if (threads_output == NO_GDB_ANSWER 
@@ -5716,14 +5728,35 @@ void SourceView::process_threads(string& threads_output)
 
     case JDB:
     {
-	string current_thread = gdb->prompt().before('[');
+	string current_thread = jdb_thread();
+	current_threadgroup = "";
 	for (int i = 0; i < count; i++)
 	{
-	    string thread = thread_list[i].after("0x");
-	    thread = thread.after(" ");
-	    read_leading_blanks(thread);
+	    selected[i] = false;
+	    string item = thread_list[i];
 
-	    selected[i] = thread.contains(current_thread + " ", 0);
+	    if (item.contains("Group ", 0))
+	    {
+		if (current_threadgroup != "")
+		{
+		    current_threadgroup = "system"; // Multiple threadgroups
+		}
+		else
+		{
+		    current_threadgroup = item.after(" ");
+		    read_leading_blanks(current_threadgroup);
+		    current_threadgroup = current_threadgroup.before(":");
+		}
+	    }
+	    else
+	    {
+		string thread = item.after("0x");
+		thread = thread.after(" ");
+		read_leading_blanks(thread);
+
+		if (thread.contains(current_thread + " ", 0))
+		    selected[i] = true;
+	    }
 	}
 	break;
     }
@@ -5761,12 +5794,11 @@ void SourceView::refresh_threads(bool all_threadgroups)
 	    // the threads of *all* threadgroups, not only system threads.
 	    // This command will also automatically trigger an update.
 	    gdb_command("threadgroup system");
+	    syncCommandQueue();
 	}
-	else
-	{
-	    string threads = gdb_question("threads");
-	    process_threads(threads);
-	}
+
+	string threads = gdb_question("threads");
+	process_threads(threads);
 	break;
     }
     case DBX:
@@ -5776,16 +5808,30 @@ void SourceView::refresh_threads(bool all_threadgroups)
     }
 }
 
-void SourceView::ViewThreadsCB(Widget, XtPointer client_data, XtPointer)
+void SourceView::ViewThreadsCB(Widget, XtPointer, XtPointer)
 {
-    refresh_threads(bool(client_data));
+    refresh_threads(true);
     manage_and_raise(thread_dialog_w);
     thread_dialog_popped_up = true;
 }
 
-void SourceView::ThreadDialogPoppedDownCB (Widget, XtPointer, XtPointer)
+void SourceView::ThreadDialogPoppedDownCB(Widget, XtPointer, XtPointer)
 {
     thread_dialog_popped_up = false;
+}
+
+void SourceView::ThreadCommandCB(Widget w, XtPointer client_data, XtPointer)
+{
+    string command = (char *)client_data;
+
+    // Get the selected threads
+    IntArray threads;
+    getDisplayNumbers(thread_list_w, threads);
+
+    for (int i = 0; i < threads.size(); i++)
+	command += " " + itostring(threads[i]);
+
+    gdb_command(command, w);
 }
 
 void SourceView::SelectThreadCB(Widget w, XtPointer, XtPointer)
@@ -5795,7 +5841,10 @@ void SourceView::SelectThreadCB(Widget w, XtPointer, XtPointer)
     getDisplayNumbers(thread_list_w, threads);
 
     if (threads.size() == 1)
+    {
+	// Make single thread the default thread.
 	gdb_command("thread " + itostring(threads[0]), w);
+    }
     else if (threads.size() == 0 && gdb->type() == JDB)
     {
 	// Check if we have selected a threadgroup
@@ -5820,6 +5869,10 @@ void SourceView::SelectThreadCB(Widget w, XtPointer, XtPointer)
 		string threadgroup = item.after(" ");
 		read_leading_blanks(threadgroup);
 		threadgroup = threadgroup.before(":");
+
+		if (threadgroup == current_threadgroup)
+		    threadgroup = "system"; // show all threadgroups
+
 		gdb_command("threadgroup " + threadgroup, w);
 	    }
 	}

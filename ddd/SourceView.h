@@ -134,6 +134,7 @@ class SourceView {
     static void SelectFrameCB    (Widget, XtPointer, XtPointer);
     static void SelectRegisterCB (Widget, XtPointer, XtPointer);
     static void SelectThreadCB   (Widget, XtPointer, XtPointer);
+    static void ThreadCommandCB  (Widget, XtPointer, XtPointer);
 
     static void SetWatchModeCB(Widget, XtPointer, XtPointer);
 
@@ -328,6 +329,9 @@ class SourceView {
 
     // The current JDB search path
     static string current_class_path;
+
+    // The current JDB threadgroup.
+    static string current_threadgroup;
 
     // Some positions in source text.
     static XmTextPosition last_top;

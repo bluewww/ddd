@@ -780,7 +780,7 @@ static MMDesc stack_menu[] =
       NULL, &stack_w },
     { "registers",  MMPush,  { SourceView::ViewRegistersCB },
       NULL, &registers_w },
-    { "threads",    MMPush,  { SourceView::ViewThreadsCB, XtPointer(false) },
+    { "threads",    MMPush,  { SourceView::ViewThreadsCB },
       NULL, &threads_w },
     MMSep,
     { "up",         MMPush,  { gdbCommandCB, "up" },

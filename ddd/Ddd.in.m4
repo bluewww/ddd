@@ -4669,8 +4669,9 @@ If LBL(All registers) is set, all registers are shown.
 
 Ddd*thread_dialog_popup.title:	     	     DDD: Threads
 Ddd*thread_dialog.listLabelString:	     Threads
-Ddd*thread_dialog.okLabelString:	     Close
-Ddd*thread_dialog.applyLabelString:	     All Threads
+Ddd*thread_dialog.cancelLabelString:	     Close
+Ddd*thread_dialog.okLabelString:	     Suspend
+Ddd*thread_dialog.applyLabelString:	     Resume
 Ddd*thread_dialog.listVisibleItemCount:      10
 
 Ddd*thread_dialog*box.orientation:  XmHORIZONTAL
@@ -4686,8 +4687,12 @@ of the current thread.\n\
 \n\
 Select any thread to make it the current thread.\n\
 \n\
-In JDB, select a threadgroup to view all threads of this threadgroup.\n\
-In JDB, click on LBL(All Threads) to view all threads of all threadgroups.
+In JDB, select a threadgroup to switch between viewing all threads\n\
+and the threads of this threadgroup.\n\
+In JDB, click on LBL(Suspend) to suspend the selected thread.\n\
+In JDB, click on LBL(Resume) to resume the selected thread.
+
+
 
 
 
