@@ -886,6 +886,7 @@ static WidgetArray up_buttons;
 static WidgetArray down_buttons;
 static WidgetArray undo_buttons;
 static WidgetArray redo_buttons;
+static WidgetArray edit_buttons;
 
 void refresh_buttons()
 {
@@ -900,6 +901,8 @@ void refresh_buttons()
     for (i = 0; i < redo_buttons.size(); i++)
 	set_sensitive(redo_buttons[i], 
 		      undo_buffer.redo_action() != NO_GDB_ANSWER);
+    for (i = 0; i < edit_buttons.size(); i++)
+	set_sensitive(edit_buttons[i], source_view->have_source());
 }
 
 static void RemoveFromArrayCB(Widget w, XtPointer client_data, XtPointer)
@@ -1093,6 +1096,8 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	    callback = gdbCompleteCB;
 	else if (name == "Apply")
 	    callback = gdbApplyCB;
+	else if (name == "Make")
+	    callback = gdbMakeAgainCB;
 	else if (name == "Undo" || name == "Back")
 	{
 	    callback = gdbUndoCB;
@@ -1104,11 +1109,15 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	    register_button(redo_buttons, button);
 	}
 	else if (name == "Edit")
+	{
 	    callback = gdbEditSourceCB;
-	else if (name == "Make")
-	    callback = gdbMakeAgainCB;
+	    register_button(edit_buttons, button);
+	}
 	else if (name == "Reload")
+	{
 	    callback = gdbReloadSourceCB;
+	    register_button(edit_buttons, button);
+	}
 
 	if (name == "up")
 	    register_button(up_buttons, button);
@@ -1160,6 +1169,9 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
     TextPosOfEvent            = textPosOfEvent;
 
     DisplayDocumentation      = showDocumentationInStatusLine;
+
+    // Set sensitivity
+    refresh_buttons();
 
     // Install tips
     InstallButtonTips(buttons);

@@ -354,12 +354,9 @@ Volunteers for these and other projects are welcome!
 334 When looking at a C++ identifier X, try `this->X' if `X' is not
     found.  Better yet, try `CLASS::X' if we're in a CLASS member.
 
-335 `Edit' and `Reload' buttons should be insensitive if we have no
-    current source.
-
 336 Plot array data using gnuplot.  See also 273.
 
-337 Hobi <hobelsbe@forwiss.uni-passau.de> wants that selecting text in 
-    the debugger console should be copied to `()'.
+337 Hobi <hobelsbe@forwiss.uni-passau.de> suggests that selecting text
+    in the debugger console should be copied to `()'.
 
 338 (Insert new project ideas here)
