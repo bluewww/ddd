@@ -414,6 +414,12 @@ public:
 	return type() == GDB || type() == XDB || type() == DBX;
     }
 
+    // True if debugger supports assignments redirection
+    bool has_assign_command() const
+    {
+	return type() == GDB || type() == XDB || type() == DBX;
+    }
+
     // True if debugger dialog is traced on clog
     bool trace_dialog() const    { return _trace_dialog; }
     bool trace_dialog(bool val);

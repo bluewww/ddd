@@ -202,8 +202,8 @@ MMDesc DataDisp::rotate_menu[] =
     MMEnd
 };
 
-struct PopupItms { enum Itms {Dereference, New, Sep1, Detail, Rotate, Set,
-			      Sep2, Delete }; };
+struct NodeItms { enum Itms {Dereference, New, Sep1, Detail, Rotate, Set,
+			     Sep2, Delete }; };
 
 MMDesc DataDisp::node_popup[] =
 {
@@ -1730,7 +1730,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 
     // Dereference
-    set_sensitive(node_popup[PopupItms::Dereference].widget,
+    set_sensitive(node_popup[NodeItms::Dereference].widget,
 		  dereference_ok);
     set_sensitive(graph_cmd_area[CmdItms::Dereference].widget,
 		  dereference_ok);
@@ -1742,7 +1742,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(display_area[DisplayItms::New].widget, true);
 
     // Rotate
-    set_sensitive(node_popup[PopupItms::Rotate].widget,
+    set_sensitive(node_popup[NodeItms::Rotate].widget,
 		  rotate_ok);
     set_sensitive(graph_cmd_area[CmdItms::Rotate].widget,
 		  rotate_ok);
@@ -1753,23 +1753,23 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     if (count.selected_expanded > 0 && count.selected_collapsed == 0)
     {
 	// Only expanded displays selected
-	set_label(node_popup[PopupItms::Detail].widget, "Hide All");
+	set_label(node_popup[NodeItms::Detail].widget, "Hide All");
 	set_label(graph_cmd_area[CmdItms::Detail].widget, "Hide ()");
-	set_sensitive(node_popup[PopupItms::Detail].widget, true);
+	set_sensitive(node_popup[NodeItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
     }
     else if (count.selected_collapsed > 0)
     {
 	// Some collapsed displays selected
-	set_label(node_popup[PopupItms::Detail].widget, "Show All");
+	set_label(node_popup[NodeItms::Detail].widget, "Show All");
 	set_label(graph_cmd_area[CmdItms::Detail].widget, "Show ()");
-	set_sensitive(node_popup[PopupItms::Detail].widget, true);
+	set_sensitive(node_popup[NodeItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
     }
     else
     {
 	// Expanded as well as collapsed displays selected
-	set_sensitive(node_popup[PopupItms::Detail].widget, false);
+	set_sensitive(node_popup[NodeItms::Detail].widget, false);
 	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, false);
     }
 
@@ -1788,14 +1788,17 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  count.selected_expanded > 0);
 
     // Delete
-    set_sensitive(graph_cmd_area[CmdItms::Delete].widget, count.selected);
-    set_sensitive(display_area[DisplayItms::Delete].widget, count.selected);
+    set_sensitive(graph_cmd_area[CmdItms::Delete].widget, 
+		  count.selected > 0);
+    set_sensitive(display_area[DisplayItms::Delete].widget, 
+		  count.selected > 0);
 
     // Set
-    set_sensitive(graph_cmd_area[CmdItms::Set].widget, 
-		  count.selected == 1 && count.selected_data == 1);
-    set_sensitive(display_area[DisplayItms::Set].widget, 
-		  count.selected == 1 && count.selected_data == 1);
+    bool have_set = gdb->has_assign_command() && 
+	count.selected == 1 && count.selected_data == 1;
+    set_sensitive(graph_cmd_area[CmdItms::Set].widget,   have_set);
+    set_sensitive(display_area[DisplayItms::Set].widget, have_set);
+    set_sensitive(node_popup[NodeItms::Set].widget, gdb->has_assign_command());
 
     // Shortcut menu
     for (int i = 0; i < shortcut_items && i < shortcut_exprs.size(); i++)
@@ -3999,6 +4002,9 @@ void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
 
 void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 {
+    if (!gdb->has_assign_command())
+	return;
+
     DispValue *disp_value = selected_value();
     if (disp_value == 0)
 	return;
@@ -4129,7 +4135,7 @@ void DataDisp::language_changedHP(Agent *source, void *, void *)
 
     string label("Display " + gdb->dereferenced_expr("()"));
 
-    set_label(node_popup[PopupItms::Dereference].widget, label);
+    set_label(node_popup[NodeItms::Dereference].widget, label);
     set_label(display_area[DisplayItms::Dereference].widget, label);
     set_label(graph_cmd_area[CmdItms::Dereference].widget, label);
 }
