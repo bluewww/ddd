@@ -91,6 +91,7 @@ public:
     Date date;
     Tree *left;
     Tree *right;
+    static int shared;
 
     Tree(int v, char *n):
 	value(v), name(n), left(0), right(0)
@@ -103,6 +104,9 @@ public:
 	    delete right;
     }
 };
+
+int Tree::shared = 4711;
+
 //--------------------------------------------------------------------------
 class List {
     int value;
