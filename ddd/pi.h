@@ -32,8 +32,12 @@
 #include <math.h>
 
 #ifndef PI
+#ifdef M_PI
+#define PI M_PI
+#else // !defined(M_PI)
 #define PI 3.14159265358979323846264338327
-#endif
+#endif // !defined(M_PI)
+#endif // !defined(PI)
 
 #endif // _DDD_pi_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
