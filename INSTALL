@@ -59,30 +59,38 @@ To run DDD, you need:
 
      - To debug binary executables, best results are achieved with
        GDB, the GNU debugger.  (GDB 4.x is required; we recommend GDB
-       4.17 or later.)  Using GDB, you can debug programs written in
-       C, C++, GNU Java (`guavac'), GNU Ada (`gnat'), GNU Fortran
-       (`g77') and GNU Modula-2.
+       5.0 or later.)  Using GDB, you can debug programs written in C,
+       C++, GNU Java (`guavac'), GNU Ada (`gnat'), GNU Fortran (`g77'),
+       GNU Chill and GNU Modula-2.
 
      - As an alternative to GDB, DDD also supports the DBX debugger as
-       found on SUN, DEC, AIX, and IRIX systems.  This is useful if
-       you use a compiler that is better supported by DBX than by GDB.
-       DDD adapts automatically to a wide range of DBX variants.
+       found on SUN, Compaq, DEC, AIX, and IRIX systems.  DDD adapts
+       automatically to a wide range of DBX variants.
+
+       Note: In DDD, GDB support is better than DBX support.  Try GDB first.
 
      - As an alternative to GDB, DDD also supports the `ladebug'
-       debugger as found on some DEC systems.  This is useful if you use
-       a compiler that is better supported by `ladebug' than by GDB.
+       debugger as found on some Compaq and DEC systems.  This is useful
+       if you use a compiler that is better supported by `ladebug' than
+       by GDB.
 
-     - As another alternative, DDD may also support the XDB debugger
-       as found on HP-UX systems.  XDB usage has been tested for 
-       C programs only, but may work for other languages as well.
+       Note: In DDD, GDB support is better than `ladebug' support.
+       Try GDB first.
 
-       Note that XDB will no longer be maintained in future DDD
-       releases.  You can also use HP's Wildebeest instead, a free GDB
-       port to HP-UX (`http://www.hp.com/lang/tools/Debuggers/WDB/').
-       WDB extensions are also found in GDB 4.18 and later.
+     - As another alternative, DDD also supports the XDB debugger as
+       found on HP-UX systems.  XDB usage has been tested for C programs
+       only, but may work for other languages as well.
+
+       Note: In DDD, GDB support is much better than XDB support;
+       in fact, XDB-related code is no longer maintained.
+       Try GDB 4.18 or later; they support HP-UX compilers.
 
      - To debug Java bytecode programs, DDD supports JDB, the Java
        Debugger, as of JDK 1.1 and later.
+
+       Please note: JDB is more a `proof of concept' than a real
+       debugger.  DDD does its best to overcome JDB's limitations, but
+       if you have an alternative to DDD/JDB, try it first.
 
      - To debug Python programs, DDD supports PYDB, a PDB extension.
        PYDB is included in the DDD distribution.

@@ -1,7 +1,7 @@
-DDD 3.2.1 is available					-*- text -*-
+DDD 3.2.2 is available					-*- text -*-
 **********************
 
-Release 3.2.1 of DDD, the Data Display Debugger, is now available.
+Release 3.2.2 of DDD, the Data Display Debugger, is now available.
 
 
 What is DDD?
@@ -20,40 +20,35 @@ There is more information available at the GNU DDD homepage at
 What's new in DDD?
 ==================
 
-DDD 3.2.1 brings some minor bug fixes and major LessTif bug workarounds.
+DDD 3.2.2 brings support for JDB as of JDK 1.2 and some bug fixes.
 
-- [LessTif] Helpers (such as uncompressing the DDD manual) works fine.
+- [JDB] DDD supports JDB as of JDK 1.2.
 
-- [LessTif] The `Print' dialog (esp. printing to file) works fine.
+- [GDB] DDD supports GDB 5.0.
 
-- [LessTif] Restarting DDD (while saving settings) works fine.
+- [DBX] Attaching to processes works with SGI DBX, Sun DBX and other
+  DBXes as well as with Compaq Ladebug. (*)
 
-- [LessTif] Small fixes for building with LessTif on SGI.
+- [LessTif] Combo boxes (drop-down text boxes) no longer shrink.
 
-- [Perl] In the data display, Perl hash keys are properly quoted.
+- [LessTif] Text selection works better.
 
-- [Ladebug] More Ladebug variants are supported.
+- Several memory leaks have been plugged. (*)
 
-- [Ladebug] `Edit -> Ladebug settings' should work.
+- [Build] Respect CXXFLAGS settings.
 
-- A string pointer error on 64 bit machines has been fixed.
-
-- Minor bugs with clustered displays have been fixed.
-
-- DDD makes more attempts in locating the initial main function.
-
-- DDD PostScript documentation can be printed on multiple pages per sheet.
+(*) Thanks to Arnaud Desitter <arnaud@nag.co.uk>.
 
 
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-The ddd-3.2.1.tar.gz distribution file has been placed on `ftp.gnu.org'
+The ddd-3.2.2.tar.gz distribution file has been placed on `ftp.gnu.org'
 in `gnu/ddd'.
 
-DDD 3.2.1 requires LessTif 0.89 or higher (see http://www.lesstif.org/)
-and GCC 2.7.2 or higher.
+DDD 3.2.2 requires LessTif 0.90 or later (see http://www.lesstif.org/)
+and GCC 2.7.2 or later.
 
 The most recent (not necessarily tested) snapshots of DDD will be
 placed on `alpha.gnu.org' in `gnu/ddd'.
@@ -67,7 +62,7 @@ Bug reports can be sent to <bug-ddd@gnu.org>.
 
 Enjoy!
 
-DDD maintainers <ddd@gnu.org>
+The DDD maintainers <ddd@gnu.org>
 
 
 
