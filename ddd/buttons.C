@@ -222,17 +222,18 @@ static string gdbHelpName(Widget widget)
     return name;
 }
 
-static string gdbHelp(string command)
+static string gdbHelp(string original_command)
 {
-    translate_command(command);
+    translate_command(original_command);
 
-    if (gdb->type() == JDB && command == "next")
+    string command = original_command;
+    if (gdb->type() == JDB && original_command == "next")
     {
 	// JDB 1.1 has an undocumented `next' command.  Treat it like `step'.
 	command = "step";
     }
 
-    if (gdb->type() == DBX && command == "step up")
+    if (gdb->type() == DBX && original_command == "step up")
     {
 	// Don't ask for `step up'; ask for `step' instead.
 	command = "step";
@@ -318,6 +319,10 @@ static string gdbHelp(string command)
     }
 
     strip_space(help);
+
+    // `step up' help is part of `step' help.
+    if (original_command == "step up" && !help.contains(original_command))
+	return "undefined command";
 
     if (help != NO_GDB_ANSWER)
 	help_cache[command] = help;
