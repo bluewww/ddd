@@ -1391,8 +1391,8 @@ memory usage, unset the `\fBCache machine code\fR' option.
 .PP
 Some \s-2DBX\s+2 and \s-2XDB\s+2 variants do not properly handle paths
 in source file specifications.  If you want the inferior debugger to
-refer to source locations by source base names only, set the `\fBRefer
-to sources by base names only\fR' option.
+refer to source locations by source base names only, unset the `\fBRefer
+to sources by full path name\fR' option.
 .\"
 .SS "Data Preferences"
 By default, \s-2@DDD@\s+2 displays a grid in the data window to
@@ -1689,11 +1689,6 @@ be iconified on its own.
 The number of columns used for the code line number display (default:
 \fB8\fR)
 .TP
-.B "ignoreSourcePath (\fPclass\fB IgnoreSourcePath)"
-If this is `\fBtrue\fR', the inferior debugger refers to source code
-locations only by their base names.  If this is `\fBfalse\fR'
-(default), \s-2DDD\s+2 uses the full source code paths.
-.TP
 .B "maxNameLength (\fPclass\fB MaxNameLength)"
 The maximum number of characters allowed in a data display title
 (default: \fB20\fR).  Components of longer names are replaced by
@@ -1741,6 +1736,11 @@ If `\fBtrue\fR', X warnings are suppressed.  This is
 sometimes useful for executables that were built on a machine with a
 different X or Motif configuration.  By default, this is
 `\fBfalse\fR'.
+.TP
+.B "useSourcePath (\fPclass\fB UseSourcePath)"
+If this is `\fBfalse\fR' (default), the inferior debugger refers to
+source code locations only by their base names.  If this is
+`\fBtrue\fR' (default), \s-2DDD\s+2 uses the full source code paths.
 .\"
 .\"
 .\"

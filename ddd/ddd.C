@@ -600,7 +600,7 @@ static MMDesc general_preferences_menu[] =
 static Widget display_glyphs_w;
 static Widget cache_source_files_w;
 static Widget cache_machine_code_w;
-static Widget ignore_source_path_w;
+static Widget use_source_path_w;
 
 static MMDesc source_preferences_menu[] = 
 {
@@ -610,8 +610,8 @@ static MMDesc source_preferences_menu[] =
       NULL, &cache_source_files_w },
     { "cacheMachineCode", MMToggle, { sourceToggleCacheMachineCodeCB }, 
       NULL, &cache_machine_code_w },
-    { "ignoreSourcePath", MMToggle, { sourceToggleIgnoreSourcePathCB }, 
-      NULL, &ignore_source_path_w },
+    { "useSourcePath", MMToggle, { sourceToggleUseSourcePathCB }, 
+      NULL, &use_source_path_w },
     MMEnd
 };
 
@@ -1726,8 +1726,8 @@ void update_options()
 		  XmNset, app_data.cache_source_files, NULL);
     XtVaSetValues(cache_machine_code_w,
 		  XmNset, app_data.cache_machine_code, NULL);
-    XtVaSetValues(ignore_source_path_w,
-		  XmNset, app_data.ignore_source_path, NULL);
+    XtVaSetValues(use_source_path_w,
+		  XmNset, app_data.use_source_path, NULL);
     XtVaSetValues(display_glyphs_w,
 		  XmNset, app_data.display_glyphs, NULL);
 
@@ -1735,7 +1735,7 @@ void update_options()
 		  XmNset, app_data.suppress_warnings, NULL);
 
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
-    set_sensitive(ignore_source_path_w, gdb->type() != GDB);
+    set_sensitive(use_source_path_w, gdb->type() != GDB);
 
     Boolean state;
     arg = 0;

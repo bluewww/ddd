@@ -3021,7 +3021,7 @@ string SourceView::current_source_name()
 
     case DBX:
     case XDB:
-	if (!app_data.ignore_source_path)
+	if (app_data.use_source_path)
 	{
 	    // DBX and XDB use full file names.
 	    source = full_path(current_file_name);
