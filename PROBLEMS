@@ -63,6 +63,10 @@ Reported by:  taob@gate.sinica.edu.tw (Brian Tao)
 
     Use `gmake' (GNU make) instead of `make' for building DDD.
 
+Reported by: Vincenzo Capuano <vcapuano@esoc.esa.de>
+
+    Add `-lmytinfo' as additional library to build DDD.
+
 
 GCC 2.3, 2.4, 2.5
 =================
@@ -95,6 +99,12 @@ Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
      commands; to open a specific source, use the GDB `info file
      FUNCTION' command, where FUNCTION is a function defined in that
      source file.
+
+Reported by: Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>
+
+     I had to remove the double `-lc' when linking DDD to avoid a
+     segmentation fault immediately after startup.
+
 
 
 SunOS 4.1 and X11R6

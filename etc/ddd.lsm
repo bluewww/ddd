@@ -27,13 +27,13 @@ Author:         luetke@ips.cs.tu-bs.de (Dorothea Luetkehaus)
                 zeller@ips.cs.tu-bs.de (Andreas Zeller)
 Maintained-by:  ddd@ips.cs.tu-bs.de (DDD Maintainers)
 Primary-site:   sunsite.unc.edu /pub/Linux/devel/debuggers
-                1117kB ddd-1.3e.tar.gz                            (Source)
-                803kB  ddd-1.3b-i586-unknown-linux-aout-static.gz (Binary)
-                1182kB ddd-1.3d-i486-unknown-linux-elf-static.gz  (Binary)
+                1117kB ddd-1.3e.tar.gz  (Source)
+                803kB  ddd-1.3b-aout.gz (Binary)
+                1182kB ddd-1.3d-elf.gz  (Binary)
 Alternate-site: ftp.funet.fi /pub/OS/Linux/devel/debuggers
-                1117kB ddd-1.3e.tar.gz                            (Source)
-                803kB  ddd-1.3b-i586-unknown-linux-aout-static.gz (Binary)
-                1182kB ddd-1.3d-i486-unknown-linux-elf-static.gz  (Binary)
+                1117kB ddd-1.3e.tar.gz  (Source)
+                803kB  ddd-1.3b-aout.gz (Binary)
+                1182kB ddd-1.3d-elf.gz  (Binary)
 Original-site:  ftp.ips.cs.tu-bs.de /pub/local/softech/ddd/
 Platform:       Building DDD: C++ compiler (GCC 2.6.3 or later preferred),
                 OSF/Motif library.
