@@ -3288,7 +3288,7 @@ Ddd*settings*helpString: \
 @rm These are the EMPH(@GDB@ Settings).\n\
 \n\
 All settings (except source and object paths) can be saved\n\
-using LBL(Edit) | LBL(Save Options).\n\
+using LBL(Edit, Save Options).\n\
 \n\
 Click on LBL(?) near an item to get further information.\n\
 In a text field, press the KEY_RETURN key to commit the changes.\n\
@@ -3343,7 +3343,7 @@ If LBL(Enable supported buttons only) is set, DDD enables a button\n\
 if and only if its command is supported by the inferior debugger.\n\
 \n\
 Click on LBL(OK) to apply the changes and close this window.\n\
-Use LBL(Edit) | LBL(Save Options) to save all button specifications.
+Use LBL(Edit, Save Options) to save all button specifications.
 
 Ddd*edit_buttons*shortcuts*helpString: \
 WIDGET(Shortcut Editor)\n\
@@ -3366,7 +3366,7 @@ ITEM Pointer chains.  SAMP(*(().next)) shows what the CODE(next) \
 member points at.\n\
 \n\
 Click on LBL(OK) to apply the changes and close this window.\n\
-Use LBL(Edit) | LBL(Save Options) to save all shortcuts.
+Use LBL(Edit, Save Options) to save all shortcuts.
 
 
 
@@ -3942,7 +3942,7 @@ Stop whenever the value of LBL(()) changes.\n\
 LBL(Watch ()) sets a EMPH(watchpoint) on LBL(()) - a special breakpoint that\n\
 stops your program whenever the value of LBL(()) changes.
 \n\
-To see all watchpoints, select LBL(Data) | LBL(Edit Watchpoints).\n\
+To see all watchpoints, select LBL(Data, Edit Watchpoints).\n\
 \n\
 LBL(Unwatch()) deletes the EMPH(watchpoint) associated with LBL(()).\n\
 \n\
@@ -3971,7 +3971,7 @@ LBL(LBL_FIND_BACKWARD / LBL_FIND_FORWARD)\n\
 \n\
 Search an occurrence of LBL(()) in the current source text.\n\
 \n\
-See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.\n\
+See LBL(Edit, Preferences, Source) for search settings.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
 FIND_HELP
@@ -4107,7 +4107,7 @@ debugged program.\n\
 The upper area shows the source code.\n\
 The lower area shows the machine code.\n\
 \n\
-Use LBL(Help) | LBL(On Item) to get\n\
+Use LBL(Help, On Item) to get\n\
 detailed help on each of these areas.
 
 
@@ -4315,7 +4315,7 @@ ITEM At the bottom, the EMPH(@GDB@ Console) allows for \
 interaction\n\
     with @GDB@ and the debugged program.\n\
 \n\
-Use LBL(Help) | LBL(On Item) to get detailed \
+Use LBL(Help, On Item) to get detailed \
 help on any of these areas.])dnl
 
 Ddd.helpString:	            MAIN_WINDOW_HELP
@@ -4677,7 +4677,7 @@ Ddd*core_files_popup*helpString:	   \
 The core dump is used for examining memory and registers.\n\
 No argument means to have no core file.\n\
 \n\
-Before using LBL(Open Core), you should use LBL(File) | LBL(Open Program)\n\
+Before using LBL(Open Core), you should use LBL(File, Open Program)\n\
 to specify the program causing the core dump, and to load its symbol table.\n\
 \n\
 Click on LBL(Open) to open the selected core dump.\n\
@@ -4692,7 +4692,7 @@ Ddd*source_files_popup*helpString:    \
 The source file is shown in the source window and may be used\n\
 for setting or clearing breakpoints.\n\
 \n\
-Before using LBL(Open Core), you should use LBL(File) | LBL(Open Program)\n\
+Before using LBL(Open Core), you should use LBL(File, Open Program)\n\
 to specify the executable program, and to load its symbol table.\n\
 \n\
 Click on LBL(Open) to open the selected source file.\n\
@@ -4720,7 +4720,7 @@ LBL(Detach Process) to release it from DDD control.  Detaching \
 the process\n\
 continues its execution.\n\
 \n\
-Before using LBL(Attach), you should use LBL(File) | LBL(Open Program)\n\
+Before using LBL(Attach), you should use LBL(File, Open Program)\n\
 to specify the program running in the process, and to load its symbol table.\n\
 \n\
 Click on LBL(Attach) to attach to the selected process.\n\
@@ -4737,7 +4737,7 @@ Ddd*classes*helpString:	\
 @rm Please select a class to be debugged.\n\
 \n\
 These classes all have corresponding CODE(.java) sources in the class path.\n\
-To search for other classes, select LBL(Edit) | LBL(JDB Settings)\n\
+To search for other classes, select LBL(Edit, JDB Settings)\n\
 and add their directories to the class path.\n\
 \n\
 Click on LBL(Open) to open the selected class.\n\
@@ -5453,7 +5453,7 @@ Ddd*busy_dialog*helpString:	\
 \n\
 You may wish to wait until the @GDB@ prompt appears,\n\
 or interrupt the current debugging command by selecting\n\
-LBL(Program) | LBL(Interrupt) (or typing KEY(Ctrl+G)).\n\
+LBL(Program, Interrupt) (or typing KEY(Ctrl+G)).\n\
 \n\
 If @GDB@ is busy running your debugged program, interrupting\n\
 @GDB@ means to interrupt program execution, such that you can\n\
@@ -5473,7 +5473,7 @@ Ddd*quit_dialog*helpString:	\
 The debugged program may be still running.\n\
 \n\
 Before killing a running @GDB@, you should try to interrupt it\n\
-(by selecting LBL(Program) | LBL(Interrupt)).
+(by selecting LBL(Program, Interrupt)).
 
 Ddd*shutdown_dialog_popup.title: DDD: Program Running
 ! Ddd*shutdown_dialog.messageString:	 \
@@ -5548,7 +5548,7 @@ ITEM DDD passes all unknown options to @GDB@.  If @GDB@ choked on\n\
 ITEM If @GDB@ could not be invoked due to some communication failure,\n\
     try changing the SAMP(.blockTTYInput) resource.\n\
 For details on options and resources, see the DDD manual: select\n\
-LBL(Help) | LBL([DDD] Reference) \
+LBL(Help, [DDD] Reference) \
 or invoke DDD with the SAMP(--manual) option.\n\
 \n\
 Click on LBL(Exit) to exit DDD.
@@ -5635,7 +5635,7 @@ ITEM EMPH(Restart [DDD]), affecting the restarted DDD session only.\n\
 \n\
 To see your changes take effect, click on LBL(Yes) to restart DDD.\n\
 Otherwise, click on LBL(No) and be sure to save your changes\n\
-using LBL(Edit) | LBL(Save Options).
+using LBL(Edit, Save Options).
 
 Ddd*set_dialog_popup.title: DDD: Set Value
 Ddd*set_dialog*helpString:	\
@@ -5717,7 +5717,7 @@ a\n\
 \n\
 ITEM If your personal FILE(~/.[ddd]/init) file or some session \
 FILE(init) file is out of date,\n\
-    use LBL(Edit) | LBL(Save Options) to update it.
+    use LBL(Edit, Save Options) to update it.
 
 Ddd*class_error_popup.title: DDD: No Class
 Ddd*class_error*helpString:	\
@@ -5759,7 +5759,7 @@ Ddd*source_find_error_popup.title: DDD: Not Found
 Ddd*source_find_error*helpString:	\
 @rm The given argument LBL(()) can not be found in the source text.\n\
 \n\
-See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.
+See LBL(Edit, Preferences, Source) for search settings.
 
 Ddd*manual_find_error_popup.title: DDD: Not Found
 Ddd*manual_find_error*helpString:	\
@@ -5796,7 +5796,7 @@ to access core dumps, source files, or attaching to processes.\n\
 You can ignore this warning and proceed, but @GDB@ may be unable\n\
 to display symbolic values and determine locations.\n\
 \n\
-To open a program, use LBL(File) | LBL(Open Program).
+To open a program, use LBL(File, Open Program).
 
 
 Ddd*print_empty_graph_error_popup.title: DDD: Nothing to Print
@@ -5815,8 +5815,9 @@ Ddd*tty_exec_error*helpString:	\
 could not be invoked.  The debugged process will execute in the\n\
 @GDB@ console instead.\n\
 \n\
-Please verify the contents of the LBL(Edit) | LBL(Preferences) | \n\
-LBL(Helpers) | LBL(Execution Window) resource and make sure that the given\n\
+Please verify the contents of the\n\
+LBL(Edit, Preferences, Helpers, Execution Window)\n\
+setting and make sure that the given\n\
 terminal program is within your executable path.
 
 Ddd*tty_command_error_popup.title: DDD: TTY Failed
@@ -5854,9 +5855,9 @@ Ddd*options_save_error*helpString:	\
 define(COULD_NOT_BE_UNCOMPRESSED,
 [could not be uncompressed.\n\
 \n\
-Please verify the contents of the \
-LBL(Edit) | LBL(Preferences) | LBL(Helpers) |\n\
-LBL(Uncompress) resource and make sure that the given\n\
+Please verify the contents of the\n\
+LBL(Edit, Preferences, Helpers, Uncompress)\n\
+setting and make sure that the given\n\
 uncompressing program is within your executable path.])dnl
 
 Ddd*no_license_error_popup.title: DDD: No License
@@ -5915,7 +5916,7 @@ Ddd*expired_warning_popup.title: DDD: DDD Expired
 Ddd*expired_warning*helpString: \
 @rm DDD @VERSION@ has been superseded by a newer DDD version.\n\
 DDD @VERSION@ should no longer be used.\n\
-To get the most recent DDD version, see the LBL(Help) | LBL([DDD] WWW Page).
+To get the most recent DDD version, see the LBL(Help, [DDD] WWW Page).
 
 Ddd*core_missing_warning_popup.title: DDD: Core Missing
 Ddd*core_missing_warning*helpString: \
@@ -5923,8 +5924,8 @@ Ddd*core_missing_warning*helpString: \
 This means that the current memory contents and execution position\n\
 will be lost when restoring the session.\n\
 \n\
-Please verify the LBL(Edit) | LBL(Preferences) | LBL(Helpers) | \
-LBL(Get Core File) settings;\n\
+Please verify the settings in\n\
+LBL(Edit, Preferences, Helpers, Get Core File);\n\
 try again without helper if appropriate.\n\
 \n\
 Also be sure that you have not disabled core dumps\n\
@@ -5958,7 +5959,7 @@ Ddd*too_many_shortcuts_warning_popup.title: DDD: Too many Shortcuts
 Ddd*too_many_shortcuts_warning*helpString:	\
 @rm DDD has not enough room for all display shortcuts and will\n\
 only display the most recently created shortcuts.\n\
-To edit the list of display shortcuts, use LBL(New Display) | LBL(Edit).
+To edit the list of display shortcuts, use LBL(Display, Edit Menu).
 
 Ddd*gdb_io_error_popup.title: DDD: I/O Error
 Ddd*gdb_io_error*helpString: \
@@ -6003,7 +6004,7 @@ Ddd*no_program.helpString: \
 @rm You have not opened any program yet.  @GDB@ needs a debuggee\n\
 to access core dumps, source files, or attaching to processes.\n\
 \n\
-To open a program, use LBL(File) | LBL(Open Program).
+To open a program, use LBL(File, Open Program).
 
 define(NO_SOURCE_HELP,
 [ITEM In order to debug a program effectively, you need to generate\n\
@@ -6012,10 +6013,10 @@ information,\n\
     @GDB@ will be unable to locate the source code.  To request debugging\n\
     information, specify the SAMP(-g) option when you run the compiler.\n\
 ITEM You may need to tell @GDB@ where the source code files are.\n\
-    Invoke LBL(Edit) | LBL(@GDB@ Settings) and look for appropriate entries.\n\
+    Invoke LBL(Edit, @GDB@ Settings) and look for appropriate entries.\n\
 ITEM Using GDB, you can continue at machine code level \
 by enabling the\n\
-    Machine Code Window.  Use LBL(Source) | LBL(Display Machine Code).])dnl
+    Machine Code Window.  Use LBL(Source, Display Machine Code).])dnl
 
 Ddd*no_source_and_no_code.helpString: \
 @rm @GDB@ cannot find the source code of your program.\n\
@@ -6032,22 +6033,22 @@ for execution when a breakpoint is reached or for user-defined commands.\n\
 \n\
 ITEM To end the recording, click on LBL(End) \
 or enter KBD(end) at the @GDB@ prompt.\n\
-ITEM To cancel the recording, select LBL(Program) | LBL(Interrupt) \
+ITEM To cancel the recording, select LBL(Program, Interrupt) \
 or press KEY(Ctrl+G).
 
 Ddd*program_not_running.helpString: \
 @rm Your program is not running.\n\
 \n\
 You may now choose between the following:\n\
-ITEM Start the program, using LBL(Program) | LBL(Run). \
+ITEM Start the program, using LBL(Program, Run). \
 You may wish to \n\
     set some breakpoints beforehand, using LBL(Break at ()) and \n\
-    LBL(Source) | LBL(Edit Breakpoints).\n\
+    LBL(Source, Edit Breakpoints).\n\
     To find specific functions, use LBL(Lookup ()).\n\
 ITEM If your program is already running outside of DDD, you can\n\
-    attach to its running process, using LBL(File) | LBL(Attach to Process).\n\
+    attach to its running process, using LBL(File, Attach to Process).\n\
 ITEM If some previous invocation of your program has failed, and\n\
-    you want to know why, use LBL(File) | LBL(Open Core Dump) to open\n\
+    you want to know why, use LBL(File, Open Core Dump) to open\n\
     its core dump.
 
 Ddd*item_selected.helpString: \
@@ -6069,7 +6070,7 @@ ITEM To modify the appearance of the selected display, use \
 LBL(Hide ()) and LBL(Rotate ()).\n\
 ITEM To change the value of the selected display, use LBL(Set ()).\n\
 ITEM To delete the selected displays, use LBL(Delete ()).\n\
-ITEM Use LBL(Data) | LBL(Edit Displays) for further editing.
+ITEM Use LBL(Data, Edit Displays) for further editing.
 
 Ddd*command_entered.helpString: \
 @rm You have entered some command at the @GDB@ prompt.\n\
@@ -6085,12 +6086,12 @@ Ddd*code_but_no_source.helpString: \
 and there is no source code for the current execution position.\n\
 \n\
 Here are some hints that may help you out:\n\
-ITEM Use LBL(Status) | LBL(Up) to step out of libraries \
+ITEM Use LBL(Status, Up) to step out of libraries \
 and to enter your own functions.\n\
 NO_SOURCE_HELP
 
 define(STOPPED_HELP,
-[ITEM To find out how you got here, use LBL(Status) | LBL(Backtrace).\n\
+[ITEM To find out how you got here, use LBL(Status, Backtrace).\n\
 ITEM To examine a variable value, select it first (click on an \
 occurrence).\n\
     Then use LBL(Print ()) (for simple values) and LBL(Display ()) \
@@ -6098,10 +6099,9 @@ occurrence).\n\
     values).  As a shortcut, you may also press BUTTON(3)\n\
     to get a popup menu.\n\
 ITEM You can display all local variables at once using \
-LBL(Data) | LBL(Display\n\
-    Local Variables).\n\
+LBL(Data, Display Local Variables).\n\
 ITEM To set and clear further breakpoints, use \
-LBL(Source) | LBL(Edit Breakpoints).\n\
+LBL(Source. Edit Breakpoints).\n\
     As a shortcut, you may also press BUTTON(3) on a\n\
     location or breakpoint to get a popup menu.])dnl
 

@@ -247,7 +247,7 @@ The command tool is a small window containing frequently used
 Whenever you save \s-1@DDD@\s+1 state, \s-1@DDD@\s+1 also saves the
 distance between command tool and source window, such that you can
 select your own individual command tool placement.  To move the
-command tool to its saved position, use `\fBView | Command Tool\fR'.
+command tool to its saved position, use `\fBView\(->Command Tool\fR'.
 .PP
 By default, the command tool \fIsticks\fR to the \s-1@DDD@\s+1 source
 window: Whenever you move the \s-1@DDD@\s+1 source window, the command
@@ -257,7 +257,7 @@ tool remains the same.  By default, the command tool is also
 windows.
 .PP
 The command tool can be configured to appear as a command tool bar
-above the source window; see `\fBEdit | Preferences | Source | Tool
+above the source window; see `\fBEdit\(->Preferences\(->Source\(->Tool
 Buttons Location\fR' for details.
 .PP
 .PSPIC @srcdir@/PICS/ddd-tool.ps 15.3cm
@@ -334,7 +334,7 @@ See `\fBEntering Commands\fR', below, for details on entering commands.
 .\"
 .SS "Are You Stuck?"
 .\"
-In case you're stuck, try `\fBHelp | What Now?\fR' (the `\fBWhat
+In case you're stuck, try `\fBHelp\(->What Now?\fR' (the `\fBWhat
 Now\fR' item in the `\fBHelp\fR' menu) or press \fBCtrl+F1\fR.
 Depending on the current state, \s-1@DDD@\s+1 will give you some hints
 on what you can do.
@@ -351,20 +351,21 @@ sources.
 .PP
 .PSPIC @srcdir@/PICS/ddd-open.ps 15.3cm
 .PP
-To open a program to be debugged, select `\fBFile | Open Program\fR'.
+To open a program to be debugged, select `\fBFile\(->Open Program\fR'.
 .PP
-In \s-1JDB\s+1, select `\fBFile | Open Class\fR' instead.  This gives
+In \s-1JDB\s+1, select `\fBFile\(->Open Class\fR' instead.  This gives
 you a list of available classes to choose from.
 .PP
-To re-open a recently debugged program or class, select `\fBFile |
-Open Recent\fR' and choose a program or class from the list.
+To re-open a recently debugged program or class, select
+`\fBFile\(->Open Recent\fR' and choose a program or class from the
+list.
 .PP
-To open a core dump for the program, select `\fBFile | Open Core
+To open a core dump for the program, select `\fBFile\(->Open Core
 Dump\fR'.  Before `\fBOpen Core Dump\fR', you should first use
-`\fBFile | Open Program\fR' to specify the program that generated the
+`\fBFile\(->Open Program\fR' to specify the program that generated the
 core dump and to load its symbol table.
 .PP
-To open an arbitrary source file, select `\fBFile | Open Source\fR'.
+To open an arbitrary source file, select `\fBFile\(->Open Source\fR'.
 You can use the source file for debugging purposes only if the given
 source file is actually related to the debugged program.
 .PP
@@ -379,7 +380,7 @@ time.
 .\"
 As soon as the source of the debugged program is available, the
 \fIsource window\fR displays its current source text.  (If a source
-text cannot be found, use `\fBEdit | GDB Settings\fR' to specify
+text cannot be found, use `\fBEdit\(->GDB Settings\fR' to specify
 source text directories.)
 .PP
 In the source window, you can lookup and examine function and variable
@@ -415,7 +416,7 @@ As an alternative, you can enter the item in the argument field and
 click on one of the `\fBFind\fR' buttons.
 .PP
 By default, \s-1@DDD@\s+1 finds only complete words.  To search for
-arbitrary substrings, change the value of the `\fBSource | Find Words
+arbitrary substrings, change the value of the `\fBSource\(->Find Words
 Only\fR' option.
 .\"
 .SS "Looking up Previous Locations"
@@ -450,7 +451,7 @@ line popup menu.
 As another alternative, you can enter the file and line number in the
 argument field and click on the `\fBBreak at ()\fR' button.
 .PP
-As yet another alternative, you can select `\fBSource | Edit
+As yet another alternative, you can select `\fBSource\(->Edit
 Breakpoints\fR'.  Click on the `\fBBreak\fR' button and enter the
 location.
 .PP
@@ -489,7 +490,7 @@ As a shorter alternative, you can simply press \fImouse button 3\fR on the
 function name and select the `\fBbreak\fR' item from the popup menu.
 .PP
 As yet another alternative, you can click on `\fBNew\fR' from the
-Breakpoint editor (invoked through `\fBSource | Edit Breakpoints\fR')
+Breakpoint editor (invoked through `\fBSource\(->Edit Breakpoints\fR')
 and enter the function name.
 .\"
 .\"
@@ -504,7 +505,7 @@ Breakpoint\fR'.
 .PP
 As an alternative, you can select the breakpoint and click on
 `\fBDisable\fR' or `\fBEnable\fR' in the Breakpoint editor (invoked
-through `\fBSource | Edit Breakpoints\fR'.
+through `\fBSource\(->Edit Breakpoints\fR'.
 .PP
 Disabled breakpoints are indicated by a grey stop sign, or 
 `\fB_\fIn\fB_\fR', where \fIn\fR is the breakpoint number.
@@ -556,8 +557,8 @@ breakpoint and select the `\fBDelete Breakpoint\fR' item from the
 popup menu.
 .PP
 As yet another alternative, you can select the breakpoint and click on
-`\fBDelete\fR' in the Breakpoint editor (invoked through `\fBSource |
-Edit Breakpoints\fR').
+`\fBDelete\fR' in the Breakpoint editor (invoked through
+`\fBSource\(->Edit Breakpoints\fR').
 .\"
 .\"
 .SS "Editing Breakpoint Properties"
@@ -651,8 +652,8 @@ Delete and set breakpoints instead.
 .\"
 .SS "Looking up Breakpoints"
 .\"
-If you wish to lookup a specific breakpoint, select `\fBSource | Edit
-Breakpoints | Lookup\fR'.  After selecting a breakpoint from the list
+If you wish to lookup a specific breakpoint, select `\fBSource\(->Edit
+Breakpoints\(->Lookup\fR'.  After selecting a breakpoint from the list
 and clicking the `\fBLookup\fR' button, the breakpoint location is
 displayed.
 .PP
@@ -663,7 +664,7 @@ button to find its definition.
 .\"
 .SS "Editing all Breakpoints"
 .\"
-To view and edit all breakpoints at once, select `\fBSource | Edit
+To view and edit all breakpoints at once, select `\fBSource\(->Edit
 Breakpoints\fR'.  This will popup the \fIBreakpoint Editor\fR which
 displays the state of all breakpoints.
 .PP
@@ -737,7 +738,7 @@ variable.
 .\"
 .SS "Editing all Watchpoints"
 .\"
-To view and edit all watchpoints at once, select `\fBData | Edit
+To view and edit all watchpoints at once, select `\fBData\(->Edit
 Watchpoints\fR'.  This will popup the \fIWatchpoint Editor\fR which
 displays the state of all watchpoints.
 .PP
@@ -759,21 +760,22 @@ argument field and click the `\fBUnwatch ()\fR' button.
 .\"
 .SS "Starting Program Execution"
 .\"
-To start execution of the debugged program, select `\fBProgram |
-Run\fR'.  You will then be prompted for the arguments to pass to your
-program.  You can either select from a list of previously used
-arguments or enter own arguments in the text field.  Afterwards, press
-the `\fBOK\fR' button to start execution with the selected arguments.
+To start execution of the debugged program, select
+`\fBProgram\(->Run\fR'.  You will then be prompted for the arguments
+to pass to your program.  You can either select from a list of
+previously used arguments or enter own arguments in the text field.
+Afterwards, press the `\fBOK\fR' button to start execution with the
+selected arguments.
 .PP
-To run your program again, with the same arguments, select `\fBProgram
-| Run Again\fR' or press the `\fBRun\fR' button on the command tool.
-You may also enter `\fBrun\fR', followed by arguments at the debugger
-prompt instead.
+To run your program again, with the same arguments, select
+`\fBProgram\(->Run Again\fR' or press the `\fBRun\fR' button on the
+command tool.  You may also enter `\fBrun\fR', followed by arguments
+at the debugger prompt instead.
 .PP
 By default, input and output of the debugged program go to the
 debugger console.  As an alternative, \s-1@DDD@\s+1 can also invoke an
 \fIexecution window\fR, where the program terminal input and output is
-shown.  See `\fBProgram | Run in Execution Window\fR' for details.
+shown.  See `\fBProgram\(->Run in Execution Window\fR' for details.
 .PP
 .PSPIC @srcdir@/PICS/ddd-arguments.ps 15.3cm
 .\"
@@ -782,7 +784,7 @@ shown.  See `\fBProgram | Run in Execution Window\fR' for details.
 .\"
 If the debugged program is already running in some process, you can
 \fIattach\fR to this process (instead of starting a new one with
-`\fBRun\fR').  Select `\fBFile | Attach to Process\fR' to choose from
+`\fBRun\fR').  Select `\fBFile\(->Attach to Process\fR' to choose from
 a list of processes.  Afterwards, press the `\fBAttach\fR' button to
 attach to the specified process.
 .PP
@@ -801,15 +803,15 @@ Program\fR' to specify the program running in the process and load its
 symbol table.
 .PP
 When you have finished debugging the attached process, you can use the
-`\fBFile | Detach Process\fR' to release it from \s-1@DDD@\s+1
+`\fBFile\(->Detach Process\fR' to release it from \s-1@DDD@\s+1
 control.  Detaching the process continues its execution.  After
 `\fBDetach Process\fR', that process and \s-1@DDD@\s+1 become
 completely independent once more, and you are ready to attach another
 process or start one with `\fBRun\fR'.
 .PP
 You can customize the list of processes shown by defining an alternate
-command to list processes.  See `\fBEdit | Preferences | Helpers |
-List Processes\fR'.
+command to list processes.  See
+`\fBEdit\(->Preferences\(->Helpers\(->List Processes\fR'.
 .PP
 Note: \s-1JDB\s+1 does not support attaching to processes.
 .\"
@@ -889,7 +891,7 @@ where it stopped and how it got there.
 .PP
 \s-1@DDD@\s+1 provides a \fIbacktrace window\fR showing a summary of 
 how your program got where it is.  To enable the backtrace window,
-select `\fBStatus | Backtrace\fR'.
+select `\fBStatus\(->Backtrace\fR'.
 .PP
 The `\fBUp\fR' button selects the function that called the current
 one.
@@ -922,8 +924,10 @@ threads currently active in your program and lets you select the
 \s-1@DDD@\s+1 shows all program information from the perspective of
 the current thread.
 .PP
+.PSPIC @srcdir@/PICS/ddd-threads.ps 15.3cm
+.PP
 To view all currently active threads in your program, select
-`\fBStatus | Threads\fR'.  The current thread is highlighted.  Select
+`\fBStatus\(->Threads\fR'.  The current thread is highlighted.  Select
 any thread to make it the current thread.
 .PP
 Using \s-1JDB\s+1, additional functionality is available:
@@ -931,11 +935,9 @@ Using \s-1JDB\s+1, additional functionality is available:
 Select a \fIthreadgroup\fR to switch between viewing all threads and
 the threads of the selected threadgroup;
 .IP \(bu 2
-Click on LBL(Suspend) to suspend execution of the selected threads;
+Click on `\fBSuspend\fR' to suspend execution of the selected threads;
 .IP \(bu 2
-Click on LBL(Resume) to resume execution of the selected threads.
-.PP
-.PSPIC @srcdir@/PICS/ddd-threads.ps 15.3cm
+Click on `\fBResume\fR' to resume execution of the selected threads.
 .PP
 For more information on threads, see the \s-1JDB\s+1 and \s-1GDB\s+2
 documentation.
@@ -1205,7 +1207,7 @@ conversions.
 The `\fBOther\fR' entry in the shortcut menu lets you create a new
 display that \fIextends\fR the shortcut menu.  As an example, assume
 you have selected a display named `\fBdate_ptr\fR'.  Selecting
-`\fBDisplay | Other\fR' pops up a dialog that allows you to enter a
+`\fBDisplay\(->Other\fR' pops up a dialog that allows you to enter a
 new expression to be displayed -- for instance, you can cast the
 display `\fBdate_ptr\fR' to a new display `\fB(char *)date_ptr\fR'.
 If the `\fBInclude in `\fBNew Display\fR' Menu\fR' toggle was
@@ -1264,12 +1266,12 @@ holding the `\fBDisplay ()\fR' button.
 .\"
 .SS "Displaying Local Variables"
 .\"
-You can display all local variables at once by choosing `\fBData |
-Display Local Variables\fR'.  When using \s-1DBX\s+1, \s-1XDB\s+1, or
-\s-1JDB\s+1, this displays all local variables, including the
-arguments of the current function.  When using \s-1GDB\s+1, function
-arguments are contained in a separate display, activated by
-`\fBDisplay Arguments\fR'.
+You can display all local variables at once by choosing
+`\fBData\(->Display Local Variables\fR'.  When using \s-1DBX\s+1,
+\s-1XDB\s+1, or \s-1JDB\s+1, this displays all local variables,
+including the arguments of the current function.  When using
+\s-1GDB\s+1, function arguments are contained in a separate display,
+activated by `\fBDisplay Arguments\fR'.
 .PP
 The display showing the local variables can be manipulated just like
 any other data display.  Individual variables can be selected and
@@ -1299,8 +1301,8 @@ a status display named `\fBWhere\fR' is created that shows the current
 backtrace.
 .PP
 If you are using \s-1GDB\s+1, \s-1@DDD@\s+1 provides a panel from
-which you can choose useful status displays.  Select `\fBData |
-Status Displays\fR' and pick your choice from the list.
+which you can choose useful status displays.  Select
+`\fBData\(->Status Displays\fR' and pick your choice from the list.
 .PP
 .PSPIC @srcdir@/PICS/ddd-status-displays.ps 15.3cm
 .PP
@@ -1353,11 +1355,12 @@ space, especially with homogeneous arrays.
 .PSPIC @srcdir@/PICS/ddd-repeats.ps 15.3cm
 .PP
 The default \s-1GDB\s+1 threshold for repeated array values is 10.
-You can change it via `\fBEdit | GDB Settings | Threshold for repeated
-print elements\fR'.  Setting the threshold to \fB0\fR will cause
-\s-1GDB\s+1 (and \s-1@DDD@\s+1) to display each array element
-individually.  Be sure to refresh the data window via `\fBData |
-Refresh Displays\fR' after a change in \s-1GDB\s+1 settings.
+You can change it via `\fBEdit\(->GDB Settings\(->Threshold for
+repeated print elements\fR'.  Setting the threshold to \fB0\fR will
+cause \s-1GDB\s+1 (and \s-1@DDD@\s+1) to display each array element
+individually.  Be sure to refresh the data window via
+`\fBData\(->Refresh Displays\fR' after a change in \s-1GDB\s+1
+settings.
 .PP
 You can also configure \s-1@DDD@\s+1 to display each array element
 individually, regardless of \s-1GDB\s+1 settings; see the
@@ -1391,7 +1394,7 @@ window explicitly.  This is especially the case whenever you changed
 debugger settings that could affect the data format, and want the data 
 window to reflect these settings.
 .PP
-You can refresh the data window by selecting `\fBData | Refresh
+You can refresh the data window by selecting `\fBData\(->Refresh
 Displays\fR'.
 .PP
 As an alternative, you can press \fImouse button 3\fR on the background of
@@ -1416,7 +1419,7 @@ When a display is deleted, its immediate ancestors and descendants are
 automatically selected, so that you can easily delete entire graphs.
 .PP
 To delete several displays at once, select the `\fBDelete\fR' item in
-the Display Editor (invoked via `\fBData | Edit Displays\fR').  Select
+the Display Editor (invoked via `\fBData\(->Edit Displays\fR').  Select
 any number of display items in the usual way and delete them by
 pressing `\fBDelete\fR'.
 .PP
@@ -1447,7 +1450,7 @@ situations.  \s-1@DDD@\s+1 recognizes if two or more data displays are
 stored at the same physical address, and if this is so, merges all
 these \fIaliases\fR into one single data display, the \fIoriginal data
 display\fR.  This mode is called \fIAlias Detection\fR; it is enabled
-via the `\fBData | Detect Aliases\fR'.
+via the `\fBData\(->Detect Aliases\fR'.
 .PP
 When alias detection is enabled, \s-1@DDD@\s+1 inquires the memory
 location (the \fIaddress\fR) of each data display after each program
@@ -1549,31 +1552,32 @@ by moving the edge hint around.
 .SS "Aligning Displays"
 .\"
 You can align all displays on the nearest grid position by selecting
-`\fBData | Align on Grid\fR'.  This is useful for keeping edges
+`\fBData\(->Align on Grid\fR'.  This is useful for keeping edges
 horizontal or vertical.
 .PP
-You can enforce alignment by selecting `\fBEdit | Preferences |
-Data | Auto-align displays on nearest grid point\fR'.  If
-this feature is enabled, displays can be moved on grid positions only.
+You can enforce alignment by selecting
+`\fBEdit\(->Preferences\(->Data\(->Auto-align displays on nearest grid
+point\fR'.  If this feature is enabled, displays can be moved on grid
+positions only.
 .\"
 .\"
 .SS "Layouting the Display Graph"
 .\"
-You can layout the entire graph as a tree by selecting `\fBData |
-Layout Graph\fR'.
+You can layout the entire graph as a tree by selecting
+`\fBData\(->Layout Graph\fR'.
 .PP
 Layouting the graph may introduce \fIedge hints\fR; that is, edges are
 no more straight lines, but lead to an edge hint and from there to
 their destination.  Edge hints can be moved around like arbitrary
 displays.
 .PP
-To enable a more compact layout, you can set the `\fBEdit |
-Preferences | Data | Use compact layout\fR' option.  This
-realizes an alternate layout algorithm, where successors are placed
-next to their parents.  This algorithm is suitable for homogeneous
-data structures only.
+To enable a more compact layout, you can set the
+`\fBEdit\(->Preferences\(->Data\(->Use compact layout\fR' option.
+This realizes an alternate layout algorithm, where successors are
+placed next to their parents.  This algorithm is suitable for
+homogeneous data structures only.
 .PP
-You can enforce layout by setting `\fBEdit | Preferences | Data | 
+You can enforce layout by setting `\fBEdit\(->Preferences\(->Data\(->
 Re-layout graph automatically\fR'.  If automatic layout is enabled,
 the graph is layouted after each change.
 .PP
@@ -1583,7 +1587,7 @@ the graph is layouted after each change.
 .SS "Rotating the Display Graph"
 .\"
 You can rotate the entire graph clockwise by 90 degrees by selecting
-`\fBData | Rotate Graph\fR'.
+`\fBData\(->Rotate Graph\fR'.
 .PP
 If the graph was previously layouted, you may need to layout it again.
 Subsequent layouts will respect the direction of the last rotation.
@@ -1596,13 +1600,13 @@ printers or into files.  This is useful for documenting program states.
 .PP
 .PSPIC @srcdir@/PICS/ddd-print-graph.ps 15.3cm
 .PP
-To print the graph on a PostScript printer, select `\fBFile | Print
+To print the graph on a PostScript printer, select `\fBFile\(->Print
 Graph\fR'.  Enter the printing command in the `\fBPrint Command\fR'
 field.  Click on the `\fBOK\fR' or the `\fBApply\fR' button to start
 printing.
 .PP
 To re-print the display graph using the previous settings, select
-`\fBFile | Print Again\fR'.
+`\fBFile\(->Print Again\fR'.
 .PP
 As an alternative, you may also print the graph in a file.  Click on
 the `\fBFile\fR' button and enter the file name in the `\fBFile
@@ -1641,7 +1645,7 @@ special machine code and register windows for this task.
 .\"
 .SS "Examining Machine Code"
 .\"
-To enable machine-level support, select `\fBSource | Display Machine
+To enable machine-level support, select `\fBSource\(->Display Machine
 Code\fR'.  With machine code enabled, an additional \fImachine
 code window\fR shows up, displaying the machine code of the current
 function.  By moving the sash at the right of the separating line
@@ -1690,7 +1694,7 @@ subroutine calls are executed without stopping.
 .\"
 \s-1@DDD@\s+1 provides a \fIregister window\fR showing the machine
 register values after each program stop.  To enable the register
-window, select `\fBStatus | Registers\fR'.
+window, select `\fBStatus\(->Registers\fR'.
 .PP
 By selecting one of the registers, its name is copied to the argument
 field.  You can use it as value for `\fBDisplay ()\fR', for instance,
@@ -1706,7 +1710,7 @@ to have its value displayed in the data window.
 In \s-1@DDD@\s+1 itself, you cannot change the source file currently
 displayed.  \s-1@DDD@\s+1 allows you to invoke a \fItext editor\fR
 instead.  To invoke a text editor for the current source file, select
-the `\fBEdit\fR' button or `\fBSource | Edit Source\fR'.
+the `\fBEdit\fR' button or `\fBSource\(->Edit Source\fR'.
 .PP
 The editor command is specified in the `\fBeditCommand\fR' resource.
 By default, \s-1@DDD@\s+1 tries to invoke the first available editor
@@ -1720,14 +1724,14 @@ An `\fBxterm\fR' terminal emulator running the editor specified in the
 .IP \(bu 2
 An `\fBxterm\fR' terminal emulator running the `\fBvi\fR' editor.
 .PP
-(You can change this setting via `\fBEdit | Preferences | Helpers |
-Edit Sources\fR'.)
+(You can change this setting via
+`\fBEdit\(->Preferences\(->Helpers\(->Edit Sources\fR'.)
 .PP
 After the editor has exited, the source code shown is automatically
 brought up-to-date.
 .PP
 If you have \s-1@DDD@\s+1 and an editor running in parallel, you can
-also update the source code manually via `\fBSource | Reload
+also update the source code manually via `\fBSource\(->Reload
 Source\fR'.  This reloads the source code shown from the source file.
 Since \s-1@DDD@\s+1 automatically reloads the source code if the debugged
 program has been recompiled, this should seldom be necessary.
@@ -1749,8 +1753,8 @@ debugger commands; use the \s-1\fBRETURN\fR\s+1 key to enter them.
 .PP
 You can \fIrepeat\fR previous and next commands by pressing the
 `\fBUp\fR' and `\fBDown\fR' arrow keys, respectively.  If you enter an
-empty line, the last command is repeated as well.  `\fBCommands |
-Command History\fR' shows the command history.
+empty line, the last command is repeated as well.
+`\fBCommands\(->Command History\fR' shows the command history.
 .PP
 You can \fIsearch\fR for previous commands by pressing `\fBCtrl+B\fR'.
 This invokes \fIincremental search mode,\fR where you can enter a
@@ -1984,14 +1988,14 @@ documentation.
 .\" ---------------
 .\"
 You can set up your personal \s-1@DDD@\s+1 preferences by using the
-`\fBEdit | Preferences\fR' menu from the menu bar.  These preferences
+`\fBEdit\(->Preferences\fR' menu from the menu bar.  These preferences
 affect your running \s-1@DDD@\s+1 process only, unless you save these
 preferences for a later \s-1@DDD@\s+1 invocation.  Frequently used
 preferences can also be found in the individual menus.
 .\"
 .SS "Frequently Used Preferences"
 If you want to run your debugged process in a separate terminal
-emulator window, set `\fBProgram | Run in Execution Window\fR'.
+emulator window, set `\fBProgram\(->Run in Execution Window\fR'.
 This is useful for programs that have special terminal requirements
 not provided by the debugger window, as raw keyboard processing or
 terminal control sequences.
@@ -1999,18 +2003,18 @@ terminal control sequences.
 By default, \s-1@DDD@\s+1 finds only complete words.  This is
 convenient for clicking on an identifier in the source text and search
 for exactly this identifier.  If you want to find all occurrences,
-including word parts, unset `\fBSource | Find Words Only\fR'.
+including word parts, unset `\fBSource\(->Find Words Only\fR'.
 .PP
 By default, \s-1@DDD@\s+1 find is case-sensitive.  This is convenient
 for case-sensitive programming languages.  If you want to find all
-occurrences, regardless of case, unset `\fBSource | Find Case
+occurrences, regardless of case, unset `\fBSource\(->Find Case
 Sensitive\fR'.
 .PP
 If you wish to display machine code of selected functions, set
-`\fBSource | Display Machine Code\fR'.  This makes \s-1@DDD@\s+1 run
+`\fBSource\(->Display Machine Code\fR'.  This makes \s-1@DDD@\s+1 run
 a little slower, so it is disabled by default.
 .PP
-Through `\fBEdit | Preferences\fR', you can set up more \s-1@DDD@\s+1
+Through `\fBEdit\(->Preferences\fR', you can set up more \s-1@DDD@\s+1
 preferences, which are discussed here.
 .\"
 .\"
@@ -2165,10 +2169,10 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 If you change one of the resources in this panel, the change will not
 take effect immediately.  Instead, you can
 .IP \(bu 2
-save options (using `\fBEdit\fR' | `\fBSave Options\fR') to make the
+save options (using `\fBEdit\fR'\(->`\fBSave Options\fR') to make the
 change effective for future \s-1@DDD@\s+1 sessions,
 .IP \(bu 2
-or restart \s-1@DDD@\s+1 (using `\fBFile\fR' | `\fBRestart
+or restart \s-1@DDD@\s+1 (using `\fBFile\fR'\(->`\fBRestart
 \s-1DDD\s+1\fR') to make it effective for the restarted \s-1@DDD@\s+1
 session.
 .PP
@@ -2290,10 +2294,10 @@ Default value is `\fBlucidatypewriter-medium\fR'.
 Just like startup preferences, changes in this panel will not take
 effect immediately.  Instead, you can
 .IP \(bu 2
-save options (using `\fBEdit\fR' | `\fBSave Options\fR') to make the
+save options (using `\fBEdit\fR'\(->`\fBSave Options\fR') to make the
 change effective for future \s-1@DDD@\s+1 sessions,
 .IP \(bu 2
-or restart \s-1@DDD@\s+1 (using `\fBFile\fR' | `\fBRestart
+or restart \s-1@DDD@\s+1 (using `\fBFile\fR'\(->`\fBRestart
 \s-1DDD\s+1\fR') to make it effective for the restarted \s-1@DDD@\s+1
 session.
 .PP
@@ -2325,9 +2329,9 @@ kill the debuggee in order to get a core file.  See also the
 `\fBgetCoreCommand\fR' resource, below.
 .PP
 `\fBList Processes\fR' is a command to get a list of processes, like
-`\fBps\fR'.  The output of this command is shown in the `\fBFile |
-Attach to Process\fR' dialog.  See also the `\fBpsCommand\fR'
-resource, below.
+`\fBps\fR'.  The output of this command is shown in the
+`\fBFile\(->Attach to Process\fR' dialog.  See also the
+`\fBpsCommand\fR' resource, below.
 .PP
 In `\fBExecution Window\fR', you can enter a command to start a 
 terminal emulator.  To this command, \s-1@DDD@\s+1 appends Bourne
@@ -2353,7 +2357,7 @@ below.
 .\"
 .SS "Saving Options"
 .\"
-You can save the current option settings by selecting `\fBEdit | Save
+You can save the current option settings by selecting `\fBEdit\(->Save
 Options\fR'.  Options are saved in a file named `\fB.@ddd@/init\fR' in
 your home directory.  If a session \fIsession\fR is active, options 
 will be saved in `\fB$HOME/.@ddd@/sessions/\fIsession\fB/init\fR' instead.
@@ -2363,8 +2367,8 @@ will be saved in `\fB$HOME/.@ddd@/sessions/\fIsession\fB/init\fR' instead.
 Other personal \s-1@DDD@\s+1 resources can also be set in your
 `\fB.@ddd@/init\fR' file.  See the `\fBRESOURCES\fR' section, below.
 .PP
-The inferior debugger can be customized via `\fBEdit |
-Settings\fR'.  See the `\fBDEBUGGER SETTINGS\fR' section, below.
+The inferior debugger can be customized via `\fBEdit\(->Settings\fR'.
+See the `\fBDEBUGGER SETTINGS\fR' section, below.
 .\"
 .\"
 .\"
@@ -2373,7 +2377,7 @@ Settings\fR'.  See the `\fBDEBUGGER SETTINGS\fR' section, below.
 .\" ---------------
 .\"
 If you use \s-1GDB\s+1 (or some \s-1DBX\s+1 flavor) as inferior
-debugger, you can change its settings using `\fBEdit | Settings\fR'.
+debugger, you can change its settings using `\fBEdit\(->Settings\fR'.
 Using the settings editor, you can determine whether C++ names are to
 be demangled, how many array elements are to print, and so on.
 .PP
@@ -2407,13 +2411,13 @@ To facilitate interaction, you can add own command buttons to
 or the data window (`\fBData Buttons\fR').
 .PP
 To define individual buttons, use the \fIButton Editor\fR, invoked via
-`\fBCommands | Edit Buttons\fR'.  The button editor displays a text,
+`\fBCommands\(->Edit Buttons\fR'.  The button editor displays a text,
 where each line contains the command for exactly one button.  Clicking
 on `\fBOK\fR' creates the appropriate buttons from the text.  If the
 text is empty (the default), no button is created.
 .PP
 As a simple example, assume you want to create a `\fBprint i\fR'
-button.  Invoke `\fBCommands | Edit Buttons\fR' and enter a line
+button.  Invoke `\fBCommands\(->Edit Buttons\fR' and enter a line
 saying `\fBprint i\fR' in the button editor.  Then click on
 `\fBOK\fR'.  A button named `\fBPrint i\fR' will now appear below the
 debugger console\(em\&try it!  To remove the button, reopen the button
@@ -2436,7 +2440,7 @@ above), \s-1@DDD@\s+1 also allows you to store sequences of commands
 as a user-defined \s-1GDB\s+1 command.  A \fIuser-defined command\fR
 is a sequence of \s-1GDB\s+1 commands to which you assign a new name
 as a command.  Using \s-1@DDD@\s+1, this is done via the \fICommand
-Editor\fR, invoked via `\fBCommands | Define Command\fR'.
+Editor\fR, invoked via `\fBCommands\(->Define Command\fR'.
 .PP
 .PSPIC @srcdir@/PICS/ddd-define-command.ps 15.3cm
 .PP
@@ -2467,7 +2471,7 @@ user-defined command.
 For convenience, you can assign a button to the defined command.
 Enabling one of the `\fBButton\fR' locations will add a button with
 the given command to the specified location.  If you want to edit the
-button, select `\fBCommands | Edit Buttons\fR'; see also `\fBDefining
+button, select `\fBCommands\(->Edit Buttons\fR'; see also `\fBDefining
 Buttons\fR', above.
 .PP
 When user-defined \s-1GDB\s+1 commands are executed, the commands of
@@ -2557,7 +2561,7 @@ your own \fIprefix\fR; it must be at least three characters long.
 .SH "QUITTING @DDD@"
 .\" ---------------
 .\"
-To exit \s-1@DDD@\s+1, select `\fBFile | Exit\fR'.  You may also type
+To exit \s-1@DDD@\s+1, select `\fBFile\(->Exit\fR'.  You may also type
 the `\fBquit\fR' command at the debugger prompt or press \fBCtrl+Q\fR.
 \s-1GDB\s+1 and \s-1XDB\s+1 also accept the `\fBq\fR' command or an
 end-of-file character (usually \fBCtrl+D\fR).  Closing the last
@@ -2599,7 +2603,7 @@ If you want to interrupt your current \s-1@DDD@\s+1 session, you can
 save its entire \s-1@DDD@\s+1 state in a file and restore it later.
 .\"
 .SS "Saving Sessions"
-To save a session, select `\fBFile | Save Session As\fR'.  You will 
+To save a session, select `\fBFile\(->Save Session As\fR'.  You will 
 be asked for
 .br
 .IP \(bu 2 
@@ -2647,7 +2651,7 @@ were created.
 .\"
 .\"
 .SS "Opening Sessions"
-To resume a previously saved session, select `\fBFile | Open
+To resume a previously saved session, select `\fBFile\(->Open
 Session\fR' and choose a session name from the list.  After clicking
 on `\fBOpen\fR', the entire \s-1@DDD@\s+1 state will be restored from
 the given session.
@@ -2667,8 +2671,8 @@ files, resources, etc.) will be lost.  However, you can restart the
 program, re-using the restored breakpoints and data displays.
 .\"
 .SS "Deleting Sessions"
-To delete sessions that are no longer needed, select `\fBFile | Open
-Session\fR' or `\fBFile | Save Session\fR'.  Select the sessions you
+To delete sessions that are no longer needed, select `\fBFile\(->Open
+Session\fR' or `\fBFile\(->Save Session\fR'.  Select the sessions you
 want to delete and click on `\fBDelete\fR'.
 .PP
 The default session cannot be deleted.
@@ -5555,7 +5559,7 @@ See the License for more details.
 You should have received a copy of the License along with
 \s-1@DDD@\s+1.  If not, invoke \s-1@DDD@\s+1 with the
 `\fB\-\-license\fR' option; this will print a copy on standard output.
-To read the License from within \s-1@DDD@\s+1, use `\fBHelp | @DDD@
+To read the License from within \s-1@DDD@\s+1, use `\fBHelp\(->@DDD@
 License\fR'.
 .PP
 This \s-1@DDD@\s+1 manual page is Copyright \(co 1995, 1996, 1997, 1998

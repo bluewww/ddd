@@ -63,7 +63,7 @@ pressing and holding BUTTON(1) on them will pop up a menu
 with additional options.
 
 You can interrupt @GDB@ and the current program by clicking on
-LBL(Program) | LBL(Interrupt) or pressing KEY(Ctrl+G).
+LBL(Program, Interrupt) or pressing KEY(Ctrl+G).
 
 There are three ways to show the value of a variable:
 ITEM You can view its value, simply by pointing at it;
@@ -80,28 +80,28 @@ will toggle more details.
 ! Intermediate tips.
 
 If you want to customize the DDD fonts, see
-LBL(Edit) | LBL(Preferences) | LBL(Fonts).
+LBL(Edit, Preferences, Fonts).
 
 When using GDB, all text fields have command and argument completion
 with KEY(Tab), just like the shell.  In a file selection box, type part of
 a filename, hit KEY(Tab), and voila!  It's completed.
 
 You can always recenter the command tool
-by selecting LBL(View) | LBL(Command Tool),
+by selecting LBL(View, Command Tool),
 or by pressing KEY(Alt+8).
 
 To scroll the data display, most users find a EMPH(panner)
 much more convenient than two scrollbars.
-Check out LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Data Scrolling).
+Check out LBL(Edit, Preferences, Startup, Data Scrolling).
 
 To limit the number of array elements in a data display, set
-LBL(Edit) | LBL(GDB Settings) | LBL(Limit on array elements to print).
+LBL(Edit, GDB Settings, Limit on array elements to print).
 
-If DDD cannot find a source, don't use LBL(File) | LBL(Open Source).
-Instead, set the @GDB@ source path via LBL(Edit) | LBL(@GDB@ Settings).
+If DDD cannot find a source, don't use LBL(File, Open Source).
+Instead, set the @GDB@ source path via LBL(Edit, @GDB@ Settings).
 
 To see the EMPH(actual) type of a C++ object in GDB, set
-LBL(Edit) | LBL(GDB Settings) | LBL(Set printing of object's derived type).
+LBL(Edit, GDB Settings, Set printing of object's derived type).
 
 To display VAR(data) in hexadecimal format, display it and choose
 LBL(Convert to Hex) from the LBL(Display ()) menu, 
@@ -118,8 +118,8 @@ You can move breakpoints by dragging them.
 Just press and hold BUTTON(1) on a breakpoint,
 move it to the new position and release BUTTON(1) again.
 
-! You can save space by disabling toolbar captions.
-! See LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Toolbar Appearance).
+You can save space by disabling toolbar captions.
+See LBL(Edit, Preferences, Startup, Toolbar Appearance).
 
 To have GDB start your program automatically upon startup,
 put the following lines in your FILE(.gdbinit) file:
@@ -130,7 +130,7 @@ CODE(run       )      - possibly giving arguments here
 ! Advanced tips.
 
 To get rid of these tips of the day, unset
-LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Show Tip of the Day).
+LBL(Edit, Preferences, Startup, Show Tip of the Day).
 
 To display the first VAR(n) elements of a variable-length array VAR(ptr),
 enter KBD(graph display VAR(ptr)\1330\135@ VAR(n)) at the GDB prompt.
@@ -147,24 +147,24 @@ the LBL(Edit) menu.  Together with CODE(xclipboard), you can manage
 arbitrary collections of data displays.
 
 Do you want to stop this debugging session and resume later?
-Use LBL(File) | LBL(Save Session)!
+Use LBL(File, Save Session)!
 
 To debug a child process, put a call to SAMP(sleep) in the child right
 after the SAMP(fork) call.  Run the program and attach to the child process
-using LBL(File) | LBL(Attach to Process).
+using LBL(File, Attach to Process).
 
 Using GDB, you can define your own canned sequences of commands.
-Try `LBL(Commands) | LBL(Define Command)'.
+Try `LBL(Commands, Define Command)'.
 
 You can assign user-defined buttons to frequently used commands.
-Try `LBL(Commands) | LBL(Edit Buttons)'.
+Try `LBL(Commands, Edit Buttons)'.
 
 In the Breakpoint and Display Editors,
 you can toggle the selection with KEY(Ctrl)+BUTTON(1).
 This allows you to select non-contiguous ranges of items.
 
 To change the properties of multiple breakpoints at once,
-select them in the breakpoint editor (LBL(Source) | LBL(Edit Breakpoints))
+select them in the breakpoint editor (LBL(Source, Edit Breakpoints))
 and click on LBL(Properties).
 
 Even while in the source window, you can enter and edit GDB commands:

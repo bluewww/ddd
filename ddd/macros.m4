@@ -60,13 +60,28 @@ dnl
 dnl DASH makes a dash.
 define([DASH], [@tt -@rm ])dnl
 dnl
+dnl SEP is the postscript arrow symbol.
+define([SEP], [@symbol \256])dnl
+dnl define([SEP], [@rm  | @bf ])dnl
+dnl
 dnl DESC(ITEM, DESC) issues `* ITEM - DESC.', with ITEM in bold.
 define([DESC], [ifelse([$1], , [[DESC]], [@tt \267 LBL($1) DASH $2.])])dnl
 dnl
-dnl LBL(FOO) is used for describing the label titled FOO
+dnl LBL(FOO) is used for describing the label titled FOO.
+dnl LBL(F1, F2, ..., Fn) describes the sequence F1->F2->...->Fn.
 dnl Not sure whether we should use @charset (the default charset used 
 dnl for buttons) or @bf (for emphasis) here...
-define([LBL], [ifelse([$1], , [[LBL]], [@bf $1@rm ])])dnl
+define([_LBL], [ifelse([$1], , [[_LBL]], [@bf $1[]])dnl
+ifelse([$2], ,,[SEP()_LBL($2)])dnl
+ifelse([$3], ,,[SEP()_LBL($3)])dnl
+ifelse([$4], ,,[SEP()_LBL($4)])dnl
+ifelse([$5], ,,[SEP()_LBL($5)])dnl
+ifelse([$6], ,,[SEP()_LBL($6)])dnl
+ifelse([$7], ,,[SEP()_LBL($7)])dnl
+ifelse([$8], ,,[SEP()_LBL($8)])dnl
+ifelse([$9], ,,[SEP()_LBL($9)])dnl
+])dnl
+define([LBL], [ifelse([$1], , [[LBL]], _LBL($1,$2,$3,$4,$5,$6,$7,$8,$9)@rm )])dnl
 dnl
 dnl WIDGET(FOO) is used for describing the item with the symbolic name FOO.
 define([WIDGET], [ifelse([$1], , [[WIDGET]], [@bs $1@rm ])])dnl
@@ -149,6 +164,7 @@ define([ONE_HALF], [\275])dnl
 dnl
 dnl TIMES is the x symbol.
 define([TIMES], [\327])dnl
+dnl
 dnl
 dnl DDD is defined as `@DDD@', which `configure' replaces by `DDD' again
 dnl Same applies to `Ddd' and `ddd'.  This allows `configure' to set up
