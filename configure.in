@@ -52,13 +52,6 @@ AM_INIT_AUTOMAKE(package, version, do-not-define)
 AC_PROG_MAKE_SET
 dnl
 dnl
-dnl Do not run these tests, but be sure to include their --with options.  
-if false; then
-ICE_FIND_MOTIF
-ICE_FIND_ATHENA
-fi
-dnl
-dnl
 dnl
 dnl Not much to do here.  Configure the sub-directories.
 dnl
@@ -66,6 +59,13 @@ dnl Use the C++ compiler for all checks.
 ICE_PROG_CC
 ICE_PROG_CXX
 AC_LANG_CPLUSPLUS
+dnl
+dnl
+dnl Do not run these tests, but be sure to include their --with options.  
+if false; then
+ICE_FIND_MOTIF
+ICE_FIND_ATHENA
+fi
 dnl
 # Avoid calling config.guess again.  In libiberty, this destroys dummy.c.
 case "$ac_configure_args" in
