@@ -173,8 +173,11 @@ class DataDisp {
 				   const string& answer);
     static DispNode *new_user_node(const string& name, const string& scope,
 				   const string& answer);
+    static DispNode *new_deferred_node(const string& expr, const string& scope,
+				       const BoxPoint& pos,
+				       const string& depends_on);
 
-    static int getDispNrAtPoint (BoxPoint point);
+    static int getDispNrAtPoint(BoxPoint point);
 
     static string numbers(IntArray& a);
 
@@ -233,15 +236,18 @@ public:
     //-----------------------------------------------------------------------
 
     // Create a new display for DISPLAY_EXPRESSION.
-    // SCOPE is the name of the current function (must match backtrace output)
+    // SCOPE is the name of the current function (must match backtrace
+    // output) or a scope to be reached; see DEFERRED, below.
     // If POS is set, the new display is created at this position.
     // If DEPENDS_ON is set, the new display is made dependent on
-    // DEPENDS_ON (a display number or name)
+    // DEPENDS_ON (a display number or name).
+    // If DEFERRED is set, defer creation until SCOPE is reached.
     // If ORIGIN is set, the last origin is set to ORIGIN.
     static void new_displaySQ(string display_expression,
 			      string scope,
 			      BoxPoint *pos = 0,
 			      string depends_on = "",
+			      bool deferred = false,
 			      Widget origin = 0,
 			      bool verbose = true);
 
@@ -284,6 +290,9 @@ public:
 
     // Process data output in ANSWERS.
     static void process_addr(StringArray& answers);
+
+    // Process current scope
+    static void process_scope(const string& scope);
 
     // Set shortcut menu to expressions EXPRS
     static void set_shortcut_menu(const StringArray& exprs,

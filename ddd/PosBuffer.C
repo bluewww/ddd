@@ -84,6 +84,9 @@ static bool has_prefix(const string& answer, const string& prefix)
 // Store first address in ANSWER after INDEX in BUFFER
 static void fetch_address(const string& answer, int index, string& buffer)
 {
+    if (buffer != "")
+	return;			// Already have an address
+
     while (index < int(answer.length()) && !is_address_start(answer[index]))
 	index++;
 
@@ -97,6 +100,36 @@ static void fetch_address(const string& answer, int index, string& buffer)
 
     buffer = ((string&)answer).at(start, index - start);
 }
+
+// Store first function name in ANSWER after INDEX in BUFFER
+static void fetch_function(const string& answer, int index, string& buffer,
+			   bool in_required = false)
+{
+    if (buffer != "")
+	return;			// Already have a function
+
+    string line = answer.from(index);
+    line = line.before('\n');
+    if (in_required)
+	line = line.after(" in ");
+
+    // The function name is the word before the opening parenthesis
+    line = line.before('(');
+    strip_final_blanks(line);
+    int ws_index = line.index(' ', -1) + 1;
+    line = line.from(ws_index);
+    read_leading_blanks(line);
+    if (line != "" && line.contains(rxidentifier, 0))
+	buffer = line;
+}
+
+// Same, but requires " in " before function
+inline void fetch_in_function(const string& answer, int index, string& buffer)
+{
+    fetch_function(answer, index, buffer, true);
+}
+
+
 
 // Fetch position from GDB output ANSWER.
 void PosBuffer::filter (string& answer)
@@ -263,38 +296,40 @@ void PosBuffer::filter (string& answer)
 		}
 	    }
 	    
-	    if (pc_buffer == "")
+	    if (pc_buffer == "" || func_buffer == "")
 	    {
-		// `Breakpoint N, ADDRESS in FUNCTION'
+		// `Breakpoint N, ADDRESS in FUNCTION (ARGS...)'
 #if RUNTIME_REGEX
-		static regex rxstopped("Breakpoint  *[1-9][0-9]*,  *"
-				       RXADDRESS);
+		static regex rxstopped_addr("Breakpoint  *[1-9][0-9]*,  *"
+					    RXADDRESS);
 #endif
-		int pc_index = index(answer, rxstopped, "Breakpoint");
+		int pc_index = index(answer, rxstopped_addr, "Breakpoint");
 		if (pc_index >= 0)
 		{
 		    pc_index = answer.index(',');
 		    fetch_address(answer, pc_index, pc_buffer);
+		    fetch_in_function(answer, pc_index, func_buffer);
 		}
 	    }
 	    
-	    if (pc_buffer == "")
+	    if (pc_buffer == "" || func_buffer == "")
 	    {
-		// `#FRAME ADDRESS in FUNCTION'
+		// `#FRAME ADDRESS in FUNCTION (ARGS...)'
 #if RUNTIME_REGEX
-		static regex rxframe("#[0-9][0-9]*  *" RXADDRESS);
+		static regex rxframe_addr("#[0-9][0-9]*  *" RXADDRESS);
 #endif
 		
-		int pc_index = index(answer, rxframe, "#");
+		int pc_index = index(answer, rxframe_addr, "#");
 		if (pc_index == 0
 		    || pc_index > 0 && answer[pc_index - 1] == '\n')
 		{
 		    pc_index = answer.index(' ');
 		    fetch_address(answer, pc_index, pc_buffer);
+		    fetch_in_function(answer, pc_index, func_buffer);
 		}
 	    }
 	    
-	    if (pc_buffer == "")
+	    if (pc_buffer == "" || func_buffer == "")
 	    {
 		// `No line number available for 
 		// address ADDRESS <FUNCTION>'
@@ -307,9 +342,17 @@ void PosBuffer::filter (string& answer)
 		{
 		    pc_index = answer.index(' ');
 		    fetch_address(answer, pc_index, pc_buffer);
+		    if (func_buffer == "")
+		    {
+			string line = answer.from(pc_index);
+			line = line.after('<');
+			line = line.before('>');
+			if (line != "")
+			    func_buffer = line;
+		    }
 		}
 	    }
-	    
+
 	    if (pc_buffer == "" && answer != "")
 	    {
 		// `ADDRESS in FUNCTION'
@@ -333,6 +376,46 @@ void PosBuffer::filter (string& answer)
 		if (pc_index >= 0)
 		{
 		    fetch_address(answer, pc_index, pc_buffer);
+		    fetch_in_function(answer, pc_index, func_buffer);
+		}
+	    }
+
+	    // Try to find out current function name, even for
+	    // non-existing addresses
+	    if (func_buffer == "")
+	    {
+		// `Breakpoint N, FUNCTION (ARGS...)'
+#if RUNTIME_REGEX
+		static regex rxstopped_func("Breakpoint  *[1-9][0-9]*,  *");
+#endif
+		int bp_index = index(answer, rxstopped_func, "Breakpoint");
+		if (bp_index >= 0)
+		    fetch_function(answer, bp_index, func_buffer);
+	    }
+
+	    if (func_buffer == "")
+	    {
+		// `#FRAME FUNCTION'
+#if RUNTIME_REGEX
+		static regex rxframe_func("#[0-9][0-9]*  *[a-zA-Z_].*[(]");
+#endif
+		int frame_index = index(answer, rxframe_addr, "#");
+		if (frame_index == 0
+		    || frame_index > 0 && answer[frame_index - 1] == '\n')
+		{
+		    fetch_function(answer, frame_index, func_buffer);
+		}
+	    }
+
+	    if (func_buffer == "")
+	    {
+		// FUNCTION (ARGS...) at FILE:POS
+		int at_index = answer.index(" at ");
+		if (at_index > 0)
+		{
+		    int nl_index = 
+			answer.index('\n', at_index - answer.length() - 1) + 1;
+		    fetch_function(answer, nl_index, func_buffer);
 		}
 	    }
 	    

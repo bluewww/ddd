@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-03-24" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-04-01" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -1114,15 +1114,28 @@ Finally, you may also enter
 .sp
 .br
   \fBgraph display \fIexpr\fR [\|\fBat (\fIx, y\fB)\fR\|] [\|\fBdependent
-on \fIdisplay\fR\|]
+on \fIdisplay\fR\|] [\|\fBwhen in \fIscope\fR\|]
 .sp
 .br
-\&at the debugger prompt.  If the suffix `\fBat \fB(\fIx, y\fB)\fR' is
-specified, the new data display is created at the position (\fIx\fR,
-\fIy\fR); otherwise, a default position is assigned.  If the suffix
-`\fBdependent on \fIdisplay\fR' is given, an edge from the display
-numbered or named \fIdisplay\fR to the new display is created;
-otherwise, no edge is created.
+\&at the debugger prompt.  The options have the following meaning:
+.br
+.IP \(bu 2
+If the suffix `\fBat \fB(\fIx, y\fB)\fR' is specified, the new data
+display is created at the position (\fIx\fR, \fIy\fR).  Otherwise, a
+default position is assigned.
+.br
+.IP \(bu 2
+If the suffix `\fBdependent on \fIdisplay\fR' is given, an edge from
+the display numbered or named \fIdisplay\fR to the new display is
+created.  Otherwise, no edge is created.
+.br
+.IP \(bu 2
+If the suffix `\fBwhen in \fIscope\fR' is given, display creation is
+\fIdeferred\fR until execution reaches the given \fIscope\fR (a
+function name, as in the backtrace output).  Otherwise, the display is
+created immediately.
+.br
+.PP
 .\"
 .\"
 .SS "Selecting Displays"
@@ -1860,8 +1873,9 @@ program has been recompiled, this should seldom be necessary.
 .SH "PERSISTENT SESSIONS"
 .\" ---------------
 .\"
-Note: Persistent sessions are supported with \s-2GDB\s+2 running on the
-local machine only.
+Note: Persistent sessions are supported with \s-2GDB\s+2 running on
+the local machine only.  Support for other \s-2DBX\s+2, \s-2XDB\s+2,
+and \s-2JDB\s+2 is partially implemented; your mileage may vary.
 .PP
 If you want to interrupt your current \s-2@DDD@\s+2 session, you can
 save its entire \s-2@DDD@\s+2 state in a file and restore it later.
@@ -1875,7 +1889,8 @@ a symbolic session name \fIsession\fR and
 .br
 .IP \(bu 2 
 whether to include a core dump of the debugged program.
-Including a core dump is necessary for restoring data displays.
+Including a core dump is necessary for restoring memory contents and
+the current execution position.
 .PP
 After clicking on `\fBSave\fR', the session is saved in 
 `\fB$HOME/.@ddd@/sessions/\fIsession\fR'.

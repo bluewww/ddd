@@ -291,10 +291,24 @@ StringArray DataDisp::shortcut_labels;
 
 //----------------------------------------------------------------------------
 // Helpers
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+
+// Return A <= B
+inline bool default_le(int a, int b) { return a <= b; }
+
+// If A and B are both negative, reverse order.  This way, we'll get
+// -1, -2, -3, -4, ..., 0, 1, 2, 3, 4 when sorting.
+inline bool absolute_le(int a, int b)
+{
+    if (a < 0 && b < 0)
+	return b <= a;
+    else
+	return a <= b;
+}
+
 
 // Sort A
-static void sort(IntArray& a)
+static void sort(IntArray& a, bool (*le)(int, int) = default_le)
 {
     // Shell sort -- simple and fast
     int h = 1;
@@ -307,7 +321,7 @@ static void sort(IntArray& a)
 	{
 	    int v = a[i];
 	    int j;
-	    for (j = i; j >= h && a[j - h] > v; j -= h)
+	    for (j = i; j >= h && !le(a[j - h], v); j -= h)
 		a[j] = a[j - h];
 	    if (i != j)
 		a[j] = v;
@@ -342,6 +356,7 @@ void DataDisp::set_last_origin(Widget w)
 	XtAddCallback(last_origin, XtNdestroyCallback, ClearOriginCB, 0);
     }
 }
+
 
 //----------------------------------------------------------------------------
 // Sensitivity
@@ -382,7 +397,7 @@ int DataDisp::count_data_displays()
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (!dn->is_user_command())
+	if (!dn->is_user_command() && !dn->deferred())
 	    count++;
     }
 
@@ -995,20 +1010,23 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 	if (dn->selected())
 	{
 	    selected++;
-	    if (!dn->is_user_command())
-		selected_data++;
-
-	    if (dn->disabled())
-		selected_collapsed++;
-	    else
+	    if (!dn->deferred())
 	    {
-		DispValue *dv = dn->selected_value();
-		if (dv == 0)
-		    dv = dn->value();
-		if (dv != 0)
+		if (!dn->is_user_command())
+		    selected_data++;
+
+		if (dn->disabled())
+		    selected_collapsed++;
+		else
 		{
-		    selected_expanded  += int(dv->expanded());
-		    selected_collapsed += dv->collapsedAll();
+		    DispValue *dv = dn->selected_value();
+		    if (dv == 0)
+			dv = dn->value();
+		    if (dv != 0)
+		    {
+			selected_expanded  += int(dv->expanded());
+			selected_collapsed += dv->collapsedAll();
+		    }
 		}
 	    }
 	}
@@ -1103,6 +1121,7 @@ public:
     Widget shortcut;
     Widget text;
     bool verbose;
+    bool deferred;
 
     NewDisplayInfo()
 	: display_expression(),
@@ -1114,7 +1133,8 @@ public:
 	  origin(0),
 	  shortcut(0),
 	  text(0),
-	  verbose(false)
+	  verbose(false),
+	  deferred(false)
     {}
 
     ~NewDisplayInfo()
@@ -1131,7 +1151,8 @@ private:
 	  origin(0),
 	  shortcut(0),
 	  text(0),
-	  verbose(false)
+	  verbose(false),
+	  deferred(false)
     {
 	assert(0);
     }
@@ -1933,16 +1954,22 @@ void DataDisp::write_restore_scope_command(ostream& os,
 					   DispNode *dn,
 					   bool& ok)
 {
-    int target_frame = -1;
-
+    if (dn->deferred())
+    {
+	// No need to restore frame for a deferred node
+	return;
+    }
     if (dn->is_user_command())
     {
-	// User displays are always evaluated on the current frame
-	target_frame = 0;
+	// No need to restore frame for user displays
+	return;
     }
-    else if (dn->scope() == "")
+
+    int target_frame = -1;
+
+    if (dn->scope() == "")
     {
-	// A global, maybe?  Evaluate on main frame
+	// No scope - maybe a global?
 	target_frame = scopes.size() - 1;	// Return to main frame
     }
     else
@@ -1958,9 +1985,9 @@ void DataDisp::write_restore_scope_command(ostream& os,
 
     if (target_frame < 0)
     {
-	// Cannot restore frame
+	// Not in current backtrace - deferring display
 	MString msg;
-	msg += rm("Cannot save display ");
+	msg += rm("Deferring display ");
 	msg += rm(itostring(dn->disp_nr()) + ": ");
 	msg += tt(dn->name());
 
@@ -1972,13 +1999,16 @@ void DataDisp::write_restore_scope_command(ostream& os,
 	}
 
 	set_status_mstring(msg);
-	ok = false;
 
-	target_frame = scopes.size() - 1;	// Return to main frame
+	// OK remains set here - this is no fatal error
+	(void) ok;
+
+	return;
     }
 
     write_frame_command(os, current_frame, target_frame);
 }
+
 
 bool DataDisp::get_state(ostream& os,
 			 bool restore_state,
@@ -2000,7 +2030,7 @@ bool DataDisp::get_state(ostream& os,
 	if (restore_state || dn->selected())
 	    nrs += dn->disp_nr();
     }
-    sort(nrs);
+    sort(nrs, absolute_le);
 
     bool ok = true;
     if (restore_state && scopes.size() == 0 && need_core_to_restore())
@@ -2025,22 +2055,35 @@ bool DataDisp::get_state(ostream& os,
 
 	// Write position
 	if (include_position)
-	    os << " at " << dn->nodeptr()->pos();
-
-	// Write dependencies
-	GraphEdge *edge;
-	for (edge = dn->nodeptr()->firstTo();
-	     edge != 0; edge = dn->nodeptr()->nextTo(edge))
 	{
-	    BoxGraphNode *ancestor = ptr_cast(BoxGraphNode, edge->from());
-	    if (ancestor != 0)
-	    {
-		int depnr = disp_graph->get_nr(ancestor);
-		DispNode *depnode = disp_graph->get(depnr);
+	    BoxPoint pos = dn->nodeptr()->pos();
+	    if (pos.isValid())
+		os << " at " << pos;
+	}
 
-		os << " dependent on " << depnode->name();
+	// Write dependency
+	string depends_on = "";
+	if (dn->deferred())
+	{
+	    depends_on = dn->depends_on();
+	}
+	else
+	{
+	    for (GraphEdge *edge = dn->nodeptr()->firstTo();
+		 edge != 0; edge = dn->nodeptr()->nextTo(edge))
+	    {
+		BoxGraphNode *ancestor = ptr_cast(BoxGraphNode, edge->from());
+		if (ancestor != 0)
+		{
+		    int depnr = disp_graph->get_nr(ancestor);
+		    DispNode *depnode = disp_graph->get(depnr);
+		    depends_on = depnode->name();
+		    break;
+		}
 	    }
 	}
+	if (depends_on != "")
+	    os << " dependent on " << depends_on;
 
 	// Write scope
 	if (dn->scope() != "")
@@ -2068,7 +2111,7 @@ bool DataDisp::need_core_to_restore()
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->scope() != "")
+	if (!dn->deferred() && dn->scope() != "")
 	    return true;
     }
 
@@ -2086,7 +2129,13 @@ void DataDisp::reset()
 {
     // Clear all data displays
     IntArray display_nrs;
-    getDisplayNumbers(display_list_w, display_nrs);
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	display_nrs += dn->disp_nr();
+    }
 
     if (display_nrs.size() > 0)
     {
@@ -2290,17 +2339,18 @@ void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
     new_displaySQ(info->display_expression, info->scope, info->point_ptr, 
-		  info->depends_on, info->origin, info->verbose);
+		  info->depends_on, info->deferred, info->origin, 
+		  info->verbose);
     delete info;
 }
 
 void DataDisp::new_displaySQ (string display_expression,
 			      string scope, BoxPoint *p,
-			      string depends_on, Widget origin,
-			      bool verbose)
+			      string depends_on, bool deferred,
+			      Widget origin, bool verbose)
 {
     // Check arguments
-    if (depends_on != "")
+    if (!deferred && depends_on != "")
     {
 	int depend_nr = disp_graph->get_by_name(depends_on);
 	if (depend_nr == 0)
@@ -2322,8 +2372,9 @@ void DataDisp::new_displaySQ (string display_expression,
 
     NewDisplayInfo *info = new NewDisplayInfo;
     info->display_expression = display_expression;
-    info->scope = scope;
-    info->verbose = verbose;
+    info->scope              = scope;
+    info->verbose            = verbose;
+    info->deferred           = deferred;
     if (p != 0)
     {
 	info->point = *p;
@@ -2364,7 +2415,23 @@ void DataDisp::new_displaySQ (string display_expression,
     if (display_expression == "")
 	return;
 
-    if (is_user_command(display_expression))
+    if (deferred)
+    {
+	// Create deferred display now
+	DispNode *dn = new_deferred_node(display_expression, scope, 
+					 info->point, depends_on);
+
+	// Insert deferred node into graph
+	disp_graph->insert(dn->disp_nr(), dn);
+
+	if (verbose)
+	    prompt();
+
+	delete info;
+
+	refresh_display_list();
+    }
+    else if (is_user_command(display_expression))
     {
 	// User-defined display
 	string cmd = user_command(display_expression);
@@ -2561,7 +2628,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 	return 0;
     }
 
-    // Naming a data display after the GDB display name cause trouble
+    // Naming a data display after the GDB display name causes trouble
     // when displaying functions: `display tree_test' creates a
     // display named `tree_test(void)', and while `print tree_test'
     // works fine, `print tree_test(void)' fails.  We may use quotes,
@@ -2624,6 +2691,31 @@ DispNode *DataDisp::new_user_node(const string& name,
     // User displays work regardless of scope
     return new DispNode(nr, name, "", answer);
 }
+
+DispNode *DataDisp::new_deferred_node(const string& expr, const string& scope,
+				      const BoxPoint& pos,
+				      const string& depends_on)
+{
+    // Assign a default number
+    int nr = -(next_ddd_display_number++);
+
+    // A `dummy' answer (never shown)
+    string answer = "<deferred>";
+
+    StatusShower s("Deferring display");
+    s.total   = answer.length();
+    s.current = answer.length();
+
+    DispNode *dn = new DispNode(nr, expr, scope, answer);
+    dn->deferred() = true;
+    dn->make_inactive();
+    dn->depends_on() = depends_on;
+    dn->moveTo(pos);
+
+    return dn;
+}
+
+
 
 // Create new data display from ANSWER
 void DataDisp::new_data_displayOQC (const string& answer, void* data)
@@ -2917,7 +3009,7 @@ int DataDisp::add_refresh_data_commands(StringArray& cmds)
 	     dn != 0;
 	     dn = disp_graph->next(ref))
 	{
-	    if (!dn->is_user_command())
+	    if (!dn->is_user_command() && !dn->deferred())
 		cmds += gdb->print_command(dn->name());
 	}
     }
@@ -2934,7 +3026,7 @@ int DataDisp::add_refresh_user_commands(StringArray& cmds)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->is_user_command() && dn->enabled())
+	if (dn->is_user_command() && dn->enabled() && !dn->deferred())
 	    cmds += dn->user_command();
     }
 
@@ -3222,7 +3314,8 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose)
     for (i = 0; i < display_nrs.size(); i++)
     {
 	DispNode *dn = disp_graph->get(display_nrs[i]);
-	if (dn != 0 && dn->is_user_command() && dn->disabled())
+	if (dn != 0 && dn->is_user_command() && 
+	    dn->disabled() && !dn->deferred())
 	{
 	    dn->enable();
 	    dn->value()->expandAll();
@@ -3343,7 +3436,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
 // Handle output of 'info display'
 //-----------------------------------------------------------------------------
 
-void DataDisp::process_info_display (string& info_display_answer)
+void DataDisp::process_info_display(string& info_display_answer)
 {
     int disp_nr;
     StringMap info_disp_string_map;
@@ -3381,11 +3474,43 @@ void DataDisp::process_info_display (string& info_display_answer)
 	     k = disp_graph->next_nr(ref))
     {
 	DispNode *dn = disp_graph->get(k);
-	if (!dn->is_user_command())
+	if (!dn->is_user_command() && !dn->deferred())
 	{
 	    if (!info_disp_string_map.contains (k))
 	    {
-		// Display is not contained in `display' output
+		// The DDD display is not contained in the GDB
+		// `display' output.  Such things can happen if the
+		// debuggee has changed; GDB deletes all displays
+		// then.  We simply defer the existing displays such
+		// that they can be restored later.
+
+		// Fetch old position and dependent info
+		BoxPoint pos = dn->nodeptr()->pos();
+
+		string depends_on = "";
+		for (GraphEdge *edge = dn->nodeptr()->firstTo();
+		     edge != 0; edge = dn->nodeptr()->nextTo(edge))
+		{
+		    BoxGraphNode *ancestor = 
+			ptr_cast(BoxGraphNode, edge->from());
+		    if (ancestor != 0)
+		    {
+			int depnr = disp_graph->get_nr(ancestor);
+			DispNode *depnode = disp_graph->get(depnr);
+			if (depnode != 0)
+			{
+			    depends_on = depnode->name();
+			    break;
+			}
+		    }
+		}
+
+		// Create new deferred node
+		DispNode *new_dn = new_deferred_node(dn->name(), dn->scope(), 
+						     pos, depends_on);
+		disp_graph->insert(new_dn->disp_nr(), new_dn);
+
+		// Delete old node
 		disp_graph->del(k);
 		changed = deleted = true;
 	    }
@@ -3558,7 +3683,7 @@ string DataDisp::process_displays(string& displays,
     for (k = disp_graph->first_nr(ref); k != 0; k = disp_graph->next_nr(ref))
     {
 	DispNode* dn = disp_graph->get(k);
-	if (dn->is_user_command())
+	if (dn->is_user_command() || dn->deferred())
 	    continue;
 
 	if (disp_string_map.contains(k))
@@ -3584,7 +3709,7 @@ string DataDisp::process_displays(string& displays,
     for (k = disp_graph->first_nr(ref); k != 0; k = disp_graph->next_nr(ref))
     {
 	DispNode* dn = disp_graph->get(k);
-	if (dn->is_user_command())
+	if (dn->is_user_command() || dn->deferred())
 	    continue;
 
 	if (!disp_string_map.contains(k))
@@ -3624,7 +3749,11 @@ string DataDisp::process_displays(string& displays,
     return not_my_displays;
 }
 
+
+//-----------------------------------------------------------------------------
 // Handle output of user commands
+//-----------------------------------------------------------------------------
+
 void DataDisp::process_user (StringArray& answers)
 {
     if (answers.size() == 0)
@@ -3636,7 +3765,7 @@ void DataDisp::process_user (StringArray& answers)
 	     k = disp_graph->next_nr(ref))
 	{
 	    DispNode* dn = disp_graph->get(k);
-	    if (dn->is_user_command())
+	    if (dn->is_user_command() && !dn->deferred())
 	    {
 		have_displays = true;
 		break;
@@ -3662,7 +3791,7 @@ void DataDisp::process_user (StringArray& answers)
     {
 	DispNode* dn = disp_graph->get(k);
 
-	if (dn->is_user_command() && dn->enabled())
+	if (dn->is_user_command() && dn->enabled() && !dn->deferred())
 	{
 	    string answer = answers[i++];
 
@@ -3677,6 +3806,45 @@ void DataDisp::process_user (StringArray& answers)
 
     if (changed) 
 	refresh_graph_edit();
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Handle change of current scope
+//-----------------------------------------------------------------------------
+
+void DataDisp::process_scope(const string& scope)
+{
+    // Fetch deferred displays that are in current scope
+    IntArray deferred_displays;
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->deferred() && dn->scope() == scope)
+	    deferred_displays += dn->disp_nr();
+    }
+
+    if (deferred_displays.size() > 0)
+    {
+	// Enable these displays
+	StatusDelay delay("Enabling deferred displays");
+	sort(deferred_displays, absolute_le);
+
+	for (int i = 0; i < deferred_displays.size(); i++)
+	{
+	    DispNode *dn = disp_graph->get(deferred_displays[i]);
+	    assert(dn != 0 && dn->deferred());
+
+	    BoxPoint pos = dn->nodeptr()->pos();
+	    new_displaySQ(dn->name(), scope, &pos,
+			  dn->depends_on(), false, 0, false);
+
+	    disp_graph->del(deferred_displays[i]);
+	}
+    }
 }
 
 
@@ -3776,7 +3944,9 @@ void DataDisp::refresh_display_list(bool silent)
 
 	nums += itostring(dn->disp_nr()) + ":";
 
-	if (!dn->active())
+	if (dn->deferred())
+	    states += "deferred";
+	else if (!dn->active())
 	    states += "not active";
 	else if (dn->nodeptr()->hidden())
 	    states += "alias of " + itostring(dn->alias_of);

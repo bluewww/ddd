@@ -391,9 +391,6 @@ Volunteers for these and other projects are welcome!
 
 254 If an XEmacs is running, use its frame for displaying the text.
 
-255 Associate a `scope SCOPE' option with the `graph display'
-    command, such that the display is activated as soon as we stop in
-    SCOPE.  This would allow saving and restoring data displays even
-    without or with invalid core dumps.
+256 Add a `hint of the day' that might be shown at start-up.
 
-256 (Insert your project idea here)
+257 (Insert your project idea here)

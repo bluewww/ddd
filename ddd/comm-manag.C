@@ -46,6 +46,7 @@ char comm_manager_rcsid[] =
 #include "comm-manag.h"
 
 #include "bool.h"
+#include "cook.h"
 #include "Command.h"
 #include "ddd.h"
 #include "dbx-lookup.h"
@@ -1265,6 +1266,12 @@ void user_cmdOAC (void *data)
 	string pos  = pos_buffer->get_position();
 	string func = pos_buffer->get_function();
 
+	if (func != "")
+	{
+	    // clog << "Current function is " << quote(func) << "\n";
+	    data_disp->process_scope(func);
+	}
+
 	last_pos_found = pos;
 	tty_full_name(pos);
 
@@ -1484,8 +1491,17 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 
 	cmd = reverse(rcmd);
 	string display_expression = get_display_expression(cmd);
-	data_disp->new_displaySQ(display_expression, scope,
-				 pos, depends_on, origin, verbose);
+
+	if (when_in != "" && when_in != scope)
+	{
+	    data_disp->new_displaySQ(display_expression, when_in, pos,
+				     depends_on, true, origin, verbose);
+	}
+	else
+	{
+	    data_disp->new_displaySQ(display_expression, scope, pos,
+				     depends_on, false, origin, verbose);
+	}
     }
     else if (is_refresh_cmd(cmd))
     {

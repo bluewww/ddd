@@ -227,6 +227,8 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 %s S112
 %s S113
 %s S114
+%s S115
+%s S116
 
 %%
 <S001>address{W}{A}			return &rxaddr;
@@ -271,7 +273,7 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 <S040>{_}file({W}{C})?			return &rxfile_cmd;
 <S041>[^ "'/]*\/			return &rxfilepath;
 <S042>{_}use{W}{C}			return &rxuse_cmd;
-<S043>#{D}{W}{A}			return &rxframe;
+<S043>#{D}{W}{A}			return &rxframe_addr;
 <S044>{_}(up|do|down|f|fra|fram|frame|suspend|resume|top|V)({W}{C})? return &rxframe_cmd;
 <S045>[a-zA-Z0-9_$][(]			return &rxfunction_call;
 <S046>{P}:{W}[^ ]			return &rxgdb_begin_of_display;
@@ -325,7 +327,7 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 <S094>([][a-zA-Z0-9_$().]|->)*		return &rxsimple;
 <S095>{_}disp(lay){W}[^ ]+		return &rxsingle_display_cmd;
 <S096>{C}(--More--|line{w}{d}).* 	return &rxspace;
-<S097>Breakpoint{W}{P}\,{W}{A}	return &rxstopped;
+<S097>Breakpoint{W}{P}\,{W}{A}		return &rxstopped_addr;
 <S098>{x}?{_}([(]|[{]|record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|interface|union){C}	return &rxstr_or_cl_begin;
 <S099>(>|[[][1-9][0-9]*[]])[ ]          return &rxjdbprompt_nothread;
 <S100>([)]|[}]|end\n|END\n|end;|END;)	return &rxstr_or_cl_end;
@@ -343,5 +345,7 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 <S112>[<]repeats{W}{P}{W}times[>]       return &rxrepeats;
 <S113>{I}(([.]|->){I})*			return &rxchain;
 <S114>{W}ni{W}nehw{W}		        return &rxwhen;
+<S115>Breakpoint{W}{P}\,{W}		return &rxstopped_func;
+<S116>#{D}{W}{I}[^ \f\t\n]*{W}[(]	return &rxframe_func;
 <*>.|\n				        return 0;  // Anything else
 %%

@@ -114,8 +114,9 @@ static void MyTimerProc(XtPointer client_data, XtIntervalId *)
 	}
     }
 
-    (void) removed;		// Use it
-    assert (removed);
+    assert(removed);
+    if (!removed)		// Just use it
+	abort();
 
 #if LOG_TIMERS
     clog << "TimeOut: " << tm->file << ":" << tm->line << ": timer " 

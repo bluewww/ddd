@@ -39,6 +39,7 @@
 
 // Misc includes
 #include "strclass.h"
+#include "assert.h"
 #include "bool.h"
 #include "GraphNode.h"
 #include "HandlerL.h"
@@ -75,9 +76,11 @@ private:
     string        myname;	      // Display expression
     string        myaddr;	      // Location of expression
     string        myscope;	      // Program location where created
+    string        mydepends_on;	      // Display we depend upon (when deferred)
     bool          myenabled;	      // Flag: is display enabled?
     bool          myactive;	      // Flag: is display active (in scope)?
     bool          saved_node_hidden;  // Saved `hidden' flag of node
+    bool          mydeferred;	      // Flag: is display deferred?
     BoxGraphNode* mynodeptr;	      // Associated graph node 
     DispValue*    disp_value;	      // Associated value
     DispValue*    myselected_value;   // Selected value within DISP_VALUE
@@ -95,10 +98,10 @@ protected:
 
 private:
     DispNode(const DispNode&)
-	: mydisp_nr(0), myname(), myaddr(), myscope(),
+	: mydisp_nr(0), myname(), myaddr(), myscope(), mydepends_on(),
 	  myenabled(false), myactive(false), saved_node_hidden(false),
-	  mynodeptr(0), disp_value(0), myselected_value(0), disp_box(0),
-	  mylast_change(0), alias_of(0)
+	  mydeferred(false), mynodeptr(0), disp_value(0), 
+	  myselected_value(0), disp_box(0), mylast_change(0), alias_of(0)
     {
 	assert(0);
     }
@@ -116,14 +119,26 @@ public:
     ~DispNode();
 
     // Resources
-    int disp_nr()  const        { return mydisp_nr; }
-    const string& name() const  { return myname; }
-    const string& addr() const  { return myaddr; }
-    const string& scope() const { return myscope; }
+    int disp_nr()  const             { return mydisp_nr; }
+    const string& name() const       { return myname; }
+    const string& addr() const       { return myaddr; }
+    const string& scope() const      { return myscope; }
+    const string& depends_on() const 
+    {
+	assert(deferred()); 
+	return mydepends_on;
+    }
+    string& depends_on()
+    { 
+	assert(deferred()); 
+	return mydepends_on;
+    }
 
     bool enabled()  const   { return myenabled; }
     bool disabled() const   { return !myenabled; }
     bool active() const     { return myactive; }
+    bool deferred() const   { return mydeferred; }
+    bool& deferred()        { return mydeferred; }
 
     int last_change() const { return mylast_change; }
 

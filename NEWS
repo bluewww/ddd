@@ -13,14 +13,19 @@ DDD 2.3 [in development]
       All data display features are available in Java.
     - Watchpoints.  You can have the debugged program stop
       automatically whenever a particular variable is read or written.
-    - DBX settings now also work with SGI DBX.
-    - The maximum number of glyphs is now configurable at startup time.
-      See the `maxGlyphs' resource for details.
+    - Deferred displays.  When restoring sessions, displays whose data
+      is not active are re-created automatically as soon as their old
+      scope is re-entered.  This allows saving data displays even
+      without core dumps and preserves data displays across
+      recompilations of the debuggee.
     - Tear-off menus are supported (and enabled by default).
     - Conditional breakpoints and breakpoints with ignore counts are now
       indicated by special breakpoint symbols.
     - Value tips and selections now work for struct members, too: you
       can point at `A.B' or `A->B' and get the current value.
+    - The maximum number of glyphs is now configurable at startup time.
+      See the `maxGlyphs' resource for details.
+    - DBX settings now also work with SGI DBX.
 
     Bug fixes:
     - Using Sun DBX 3.x, data displays are no longer cluttered by DBX

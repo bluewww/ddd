@@ -4462,7 +4462,7 @@ such that you can exit debugging sessions and resume later.\n\
 \n\
 If LBL(Include Core Dump) is set, DDD includes a core dump of the\n\
 program being debugged.  This allows DDD to restore memory\n\
-contents and data displays when resuming the session.\n\
+contents and data displays when restoring the session.\n\
 \n\
 DDD provides up to three ways to get a core dump:\n\
 DESC([Killing the Debuggee], [kill the debugged program.])\n\
@@ -4905,7 +4905,7 @@ Ddd*quit_dialog*cancelLabelString:   No
 Ddd*quit_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*quit_dialog*helpString:	\
 @rm @GDB@ is busy and does not react to the KBD(quit) command.\n\
-The debugged program is probably still running.\n\
+The debugged program may be still running.\n\
 \n\
 Before killing a running @GDB@, you should try to interrupt it\n\
 (by selecting LBL(Program) | LBL(Interrupt)).
@@ -5074,11 +5074,12 @@ Ddd*kill_to_save_dialog.messageString: \
 Ddd*kill_to_save_dialog.okLabelString:     Yes
 Ddd*kill_to_save_dialog.cancelLabelString: No
 Ddd*kill_to_save_dialog*helpString: \
-@rm In order to restore the data displays of this session, DDD requires\n\
-a core dump reflecting the current memory contents.  Unfortunately, \n\
-DDD must kill the program for that.\n\
+@rm In order to restore the current memory contents and the\n\
+current execution position, DDD requires a core dump.\n\
+Unfortunately, DDD must kill the program for that.\n\
 \n\
-To kill your program and save the entire state, click on LBL(Yes).
+To kill your program and save memory contents, click on LBL(Yes).\n\
+To cancel saving the session, click on LBL(No).
 
 Ddd*confirm_restart_dialog_popup.title: DDD: Restart Session
 Ddd*confirm_restart_dialog.messageString: \
@@ -5091,15 +5092,23 @@ For more details, consult the @GDB@ documentation.
 
 Ddd*data_not_saved_dialog_popup.title: DDD: Save Session
 Ddd*data_not_saved_dialog.messageString: \
-@rm Without a core dump, DDD will not be able to restore data displays.\
-  Proceed anyway?
+@rm Without a core dump, the current execution position\n\
+and memory contents will not be saved.  Proceed anyway?
 Ddd*data_not_saved_dialog.okLabelString:     Yes
 Ddd*data_not_saved_dialog.cancelLabelString: No
 Ddd*data_not_saved_dialog*helpString: \
-@rm In order to restore the data displays of this session, DDD requires\n\
-a core dump reflecting the current memory contents.\n\
+@rm In order to restore the current execution position and memory contents,\n\
+DDD requires a core dump of the debugged program.\n\
 \n\
-To save the entire state without a core dump, click on LBL(Yes).
+Without a core dump,\n\
+ITEM The current execution position and memory contents will be lost.\n\
+    The debugged program must be restarted when restoring the session.\n\
+ITEM The current data displays will be deferred.\n\
+    When restoring the session and running the program, they will be created\n\
+    as soon as their current scope is reached.\n\
+\n\
+To save the entire state without a core dump, click on LBL(Yes).\n\
+To cancel saving the session, click on LBL(No).
 
 Ddd*lock_dialog_popup.title: DDD: There can be only one
 Ddd*lock_dialog*helpString:	\
@@ -5333,8 +5342,8 @@ To get the most recent DDD version, see the LBL(Help) | LBL([DDD] WWW Page).
 Ddd*core_missing_warning_popup.title: DDD: Core Missing
 Ddd*core_missing_warning*helpString: \
 @rm DDD could not get a core dump of the debugged program.\n\
-This means that the currently displayed data will be lost when\n\
-restoring the session.\n\
+This means that the current memory contents and execution position\n\
+will be lost when restoring the session.\n\
 \n\
 Please verify the LBL(Edit) | LBL(Preferences) | LBL(Helpers) | \
 LBL(Get Core File) settings;\n\
@@ -5345,20 +5354,19 @@ Also be sure that you have not disabled core dumps\n\
 in your shell startup file)
 
 Ddd*program_name_missing_warning_popup.title: DDD: Program Name Missing
-Ddd*program_name_missing_warning: \
+Ddd*program_name_missing_warning*helpString: \
 @rm DDD could not determine the name of the current debuggee.\n\
 Please try again when @GDB@ is ready.
 
 Ddd*breakpoint_missing_warning_popup.title: DDD: Breakpoints Missing
-Ddd*breakpoint_missing_warning: \
+Ddd*breakpoint_missing_warning*helpString: \
 @rm DDD could not save the current breakpoint state.\n\
 Please try again when @GDB@ is ready.
 
 Ddd*displays_missing_warning_popup.title: DDD: Data Displays Missing
-Ddd*displays_missing_warning: \
+Ddd*displays_missing_warning*helpString: \
 @rm DDD could not save the entire data display state.\n\
-DDD can only save displays that are defined within the current backtrace.\n\
-All other displays must be restored manually when restoring the session.
+Please try again when @GDB@ is ready.
 
 Ddd*no_sessions_error_popup.title: DDD: No Sessions
 Ddd*no_sessions_error*helpString: \
