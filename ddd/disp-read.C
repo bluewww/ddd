@@ -102,6 +102,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 	"|u|unt|unti|until"
 	"|s|si|step|stepi"
 	"|n|ni|next|nexti"
+	"|j|ju|jump"
 	"|fin|fini|finis|finish"
         "|R|S"
 	")([ \t]+.*)?");
@@ -135,10 +136,14 @@ bool is_run_cmd (const string& cmd)
 
 bool is_set_args_cmd (const string& cmd)
 {
-    static regex RXset_args_cmd(
-	"[ \t]*set[ \t]+args([ \t]+.*)?");
+    static regex RXset_args_cmd("[ \t]*set[ \t]+args([ \t]+.*)?");
 
     return cmd.matches (RXset_args_cmd);
+}
+
+bool is_pc_cmd(const string& cmd)
+{
+    return cmd.contains("$pc");
 }
 
 // ***************************************************************************
@@ -228,11 +233,13 @@ bool is_thread_cmd (const string& cmd)
 
 // ***************************************************************************
 // 
-bool is_set_cmd (const string& cmd)
+bool is_set_cmd (const string& cmd, GDBAgent *gdb)
 {
-    static regex RXset_cmd("[ \t]*(set[ \t]+var[a-z]*|assign|pq)([ \t]+.*)?");
+    static regex RXset1_cmd("[ \t]*(set[ \t]+var[a-z]*|assign|pq)([ \t]+.*)?");
+    static regex RXset2_cmd("[ \t]*(set|p|print|output)[ \t]+[^=]+=[^=].*");
 
-    return cmd.matches (RXset_cmd);
+    return cmd.matches(RXset1_cmd) || 
+	(gdb->type() == GDB && cmd.matches(RXset2_cmd));
 }
 
 // ***************************************************************************
@@ -242,8 +249,6 @@ bool is_setting_cmd (const string& cmd)
     static regex RXsetting_cmd("[ \t]*(set|dbxenv)[ \t]+.*");
     static regex RXpath_cmd("[ \t]*(dir|directory|path)([ \t]+.*)?");
 
-    if (cmd.contains(" = ") && !cmd.contains(" $"))
-	return false;		// `set' command applied to variables
     if (is_set_args_cmd(cmd))
 	return false;		// `set args' command
 

@@ -168,6 +168,7 @@ typedef struct PlusCmdData {
     bool     refresh_bpoints;          // send 'info b'
     bool     refresh_where;            // send 'where'
     bool     refresh_frame;            // send 'frame'
+    bool     refresh_pc;               // refresh pc
     bool     refresh_registers;        // send 'info registers'
     bool     refresh_threads;          // send 'info threads'
     bool     refresh_data;             // send 'display'
@@ -201,6 +202,7 @@ typedef struct PlusCmdData {
     bool     config_err_redirection;   // try 'help run'
     bool     config_xdb;	       // try XDB settings
     bool     config_output;            // try 'output'
+    bool     config_jump;              // try 'jump'
     bool     config_program_language;  // try 'show language'
 
     PlusCmdData () :
@@ -213,6 +215,7 @@ typedef struct PlusCmdData {
 	refresh_bpoints(false),
 	refresh_where(false),
 	refresh_frame(false),
+	refresh_pc(false),
 	refresh_registers(false),
 	refresh_threads(false),
 	refresh_data(false),
@@ -246,6 +249,7 @@ typedef struct PlusCmdData {
 	config_err_redirection(false),
 	config_xdb(false),
 	config_output(false),
+	config_jump(false),
 	config_program_language(false)
     {}
 };
@@ -357,6 +361,8 @@ void start_gdb()
 	plus_cmd_data->refresh_initial_line = true;
 	cmds += "output " + print_cookie;
 	plus_cmd_data->config_output = true;
+	cmds += "help jump";
+	plus_cmd_data->config_jump = true;
 	cmds += "show language";
 	plus_cmd_data->config_program_language = true;
 	cmds += "pwd";
@@ -625,7 +631,7 @@ void user_cmdSUC (string cmd, Widget origin,
 	plus_cmd_data->refresh_threads   = false;
 	plus_cmd_data->refresh_addr      = false;
     }
-    else if (is_running_cmd(cmd, gdb))
+    else if (is_running_cmd(cmd, gdb) || is_pc_cmd(cmd))
     {
 	// New displays and new exec position
 	cmd_data->filter_disp = Filter;
@@ -636,6 +642,11 @@ void user_cmdSUC (string cmd, Widget origin,
 	    // plus_cmd_data->refresh_line  = true;
 	    if (gdb->has_frame_command())
 		plus_cmd_data->refresh_frame = true;
+	}
+	if (is_pc_cmd(cmd))
+	{
+	    plus_cmd_data->refresh_frame = true;
+	    plus_cmd_data->refresh_pc    = true;
 	}
 	if (!gdb->has_display_command())
 	    plus_cmd_data->refresh_data = true;
@@ -672,7 +683,7 @@ void user_cmdSUC (string cmd, Widget origin,
 	plus_cmd_data->refresh_data      = true;
 	plus_cmd_data->refresh_threads   = true;
     }
-    else if (is_set_cmd(cmd))
+    else if (is_set_cmd(cmd, gdb))
     {
 	// Update displays
 	plus_cmd_data->refresh_data = true;
@@ -727,9 +738,7 @@ void user_cmdSUC (string cmd, Widget origin,
     }
 
     if (is_break_cmd(cmd))
-    {
 	plus_cmd_data->break_arg = get_break_expression(cmd);
-    }
 
     if (cmd_data->new_exec_pos
 	|| plus_cmd_data->refresh_frame 
@@ -817,6 +826,7 @@ void user_cmdSUC (string cmd, Widget origin,
     assert(!plus_cmd_data->config_err_redirection);
     assert(!plus_cmd_data->config_xdb);
     assert(!plus_cmd_data->config_output);
+    assert(!plus_cmd_data->config_jump);
     assert(!plus_cmd_data->config_program_language);
     
     // Setup additional trailing commands
@@ -890,10 +900,7 @@ void user_cmdSUC (string cmd, Widget origin,
 	if (plus_cmd_data->refresh_where)
 	    cmds += "where";
 	if (plus_cmd_data->refresh_frame)
-	{
-	    assert(gdb->has_frame_command());
 	    cmds += gdb->frame_command();
-	}
 	assert (!plus_cmd_data->refresh_registers);
 	assert (!plus_cmd_data->refresh_threads);
 	if (plus_cmd_data->refresh_data)
@@ -952,14 +959,12 @@ void user_cmdSUC (string cmd, Widget origin,
 
     if (cmd_data->graph_cmd != "")
     {
-	// Instead of DDD `graph' commands, we send a `frame' or
-	// `where 1' command to get the current scope.
+	// Instead of DDD `graph' commands, we send a `func' or
+	// `frame' command to get the current scope.
 	if (gdb->has_func_command())
 	    cmd = gdb->func_command();
-	else if (gdb->has_frame_command())
-	    cmd = gdb->frame_command();
 	else
-	    cmd = gdb->where_command(1);
+	    cmd = gdb->frame_command();
     }
 
     // Send commands
@@ -1379,6 +1384,11 @@ static void process_config_output(string& answer)
 			    && answer.contains(print_cookie));
 }
 
+static void process_config_jump(string& answer)
+{
+    gdb->has_jump_command(is_known_command(answer));
+}
+
 static void process_config_where_h(string& answer)
 {
     gdb->has_where_h_option(is_known_command(answer));
@@ -1606,6 +1616,11 @@ void plusOQAC (string answers[],
 	process_config_output(answers[qu_count++]);
     }
 
+    if (plus_cmd_data->config_jump) {
+	assert (qu_count < count);
+	process_config_jump(answers[qu_count++]);
+    }
+
     if (plus_cmd_data->config_program_language) {
 	assert (qu_count < count);
 	process_config_program_language(answers[qu_count++]);
@@ -1696,7 +1711,18 @@ void plusOQAC (string answers[],
 
     if (plus_cmd_data->refresh_frame) {
 	assert (qu_count < count);
-	source_view->process_frame(answers[qu_count++]);
+	string& answer = answers[qu_count++];
+
+	if (plus_cmd_data->refresh_pc)
+	{
+	    PosBuffer pb;
+	    pb.filter(answer);
+	    if (pb.pos_found())
+		source_view->show_execution_position(pb.get_position(), true);
+	    if (pb.pc_found())
+		source_view->show_pc(pb.get_pc(), XmHIGHLIGHT_SELECTED, true);
+	}
+	source_view->process_frame(answer);
     }
 
     if (plus_cmd_data->refresh_registers) {

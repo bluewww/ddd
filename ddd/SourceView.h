@@ -90,14 +90,12 @@ class SourceView {
     static void line_popup_setCB         (Widget, XtPointer, XtPointer);
     static void line_popup_set_tempCB    (Widget, XtPointer, XtPointer);
     static void line_popup_temp_n_contCB (Widget, XtPointer, XtPointer);
-
-    static void address_popup_setCB         (Widget, XtPointer, XtPointer);
-    static void address_popup_set_tempCB    (Widget, XtPointer, XtPointer);
-    static void address_popup_temp_n_contCB (Widget, XtPointer, XtPointer);
+    static void line_popup_set_pcCB      (Widget, XtPointer, XtPointer);
 
     static void bp_popup_infoCB          (Widget, XtPointer, XtPointer);
     static void bp_popup_deleteCB        (Widget, XtPointer, XtPointer);
     static void bp_popup_disableCB       (Widget, XtPointer, XtPointer);
+    static void bp_popup_set_pcCB        (Widget, XtPointer, XtPointer);
 
     static void text_popup_printCB       (Widget, XtPointer, XtPointer);
     static void text_popup_dispCB        (Widget, XtPointer, XtPointer);
@@ -146,6 +144,9 @@ class SourceView {
     static void refresh_source_bp_disp ();
     static void refresh_code_bp_disp ();
 
+    static void clearBP(void *client_data, XtIntervalId *timer);
+    static void clearJumpBP(const string& answer, void *client_data);
+
     // Find the line number at POS
     // LINE_NR becomes the line number at POS
     // IN_TEXT becomes true iff POS is in the source area
@@ -188,8 +189,7 @@ class SourceView {
     //-----------------------------------------------------------------------
     static MMDesc line_popup[];
     static MMDesc address_popup[];
-    static MMDesc bp_popup_gdb[];
-    static MMDesc bp_popup_dbx[];
+    static MMDesc bp_popup[];
     static MMDesc text_popup[];
     static MMDesc bp_area[];
 

@@ -99,6 +99,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_setenv_command(tp == DBX),
       _has_edit_command(tp == DBX),
       _has_make_command(tp == GDB || tp == DBX),
+      _has_jump_command(tp == GDB),
       _has_named_values(tp == GDB || tp == DBX),
       _has_when_command(tp == DBX),
       _has_when_semicolon(tp == DBX),
@@ -165,6 +166,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_setenv_command(gdb.has_setenv_command()),
       _has_edit_command(gdb.has_edit_command()),
       _has_make_command(gdb.has_make_command()),
+      _has_jump_command(gdb.has_jump_command()),
       _has_named_values(gdb.has_named_values()),
       _has_when_command(gdb.has_when_command()),
       _has_when_semicolon(gdb.has_when_semicolon()),
@@ -1205,6 +1207,15 @@ string GDBAgent::make_command(string args) const
 	return cmd + " " + args;
 }
 
+// Some DBXes want `sh make' instead of `make'
+string GDBAgent::jump_command(string pos) const
+{
+    if (!has_jump_command())
+	return "";
+
+    return "jump " + pos;
+}
+
 string GDBAgent::kill_command() const
 {
     switch (type())
@@ -1222,14 +1233,14 @@ string GDBAgent::kill_command() const
 
 string GDBAgent::frame_command() const
 {
-    if (!has_frame_command())
-	return "";
-
     switch (type())
     {
     case GDB:
     case DBX:
-	return "frame";
+	if (has_frame_command())
+	    return "frame";
+	else
+	    return where_command(1);
 
     case XDB:
 	return print_command("$depth");

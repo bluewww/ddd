@@ -154,6 +154,7 @@ private:
     bool _has_setenv_command;
     bool _has_edit_command;
     bool _has_make_command;
+    bool _has_jump_command;
     bool _has_named_values;
     bool _has_when_command;
     bool _has_when_semicolon;
@@ -295,6 +296,10 @@ public:
     bool has_make_command() const      { return _has_make_command; }
     bool has_make_command(bool val)    { return _has_make_command = val; }
 
+    // True if debugger has `jump' command
+    bool has_jump_command() const      { return _has_jump_command; }
+    bool has_jump_command(bool val)    { return _has_jump_command = val; }
+
     // True if debugger issues `NAME = VALUE' upon `print' commands
     bool has_named_values() const      { return _has_named_values; }
     bool has_named_values(bool val)    { return _has_named_values = val; }
@@ -356,6 +361,7 @@ public:
     string info_args_command() const;	            // GDB: "info args"
     string disassemble_command(string pc) const;    // GDB: "disassemble PC"
     string make_command(string target) const;       // GDB: "make TARGET"
+    string jump_command(string pc) const;           // GDB: "jump PC"
     string kill_command() const;                    // GDB: "kill"
 
 private:

@@ -172,27 +172,22 @@ XtActionsRec SourceView::actions [] = {
 //-----------------------------------------------------------------------
 
 // Popup menus - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-struct LineItms { enum Itms {SetBP, SetTempBP, TempNContBP}; };
-MMDesc SourceView::line_popup[] =
+struct LineItms { enum Itms {SetBP, SetTempBP, Sep1, TempNContBP, 
+			     Sep2, SetPC}; };
+MMDesc SourceView::line_popup[] = 
 {
     {"set",         MMPush, {SourceView::line_popup_setCB}},
     {"set_temp",    MMPush, {SourceView::line_popup_set_tempCB}},
+    MMSep,
     {"temp_n_cont", MMPush, {SourceView::line_popup_temp_n_contCB}},
-    MMEnd
-};
-
-struct AddressItms { enum Itms {SetBP, SetTempBP, TempNContBP}; };
-MMDesc SourceView::address_popup[] =
-{
-    {"set",         MMPush, {SourceView::address_popup_setCB}},
-    {"set_temp",    MMPush, {SourceView::address_popup_set_tempCB}},
-    {"temp_n_cont", MMPush, {SourceView::address_popup_temp_n_contCB}},
+    MMSep,
+    {"set_pc",      MMPush, {SourceView::line_popup_set_pcCB}},
     MMEnd
 };
 
 struct BPItms { enum Itms {Disable, Sep1, Condition, IgnoreCount, 
-			   Sep2, Delete}; };
-MMDesc SourceView::bp_popup_gdb[] =
+			   Sep2, Delete, Sep3, SetPC}; };
+MMDesc SourceView::bp_popup[] =
 {
     {"disable",      MMPush, {SourceView::bp_popup_disableCB}},
     MMSep,
@@ -200,12 +195,8 @@ MMDesc SourceView::bp_popup_gdb[] =
     {"ignore_count", MMPush, {SourceView::EditBreakpointIgnoreCountCB}},
     MMSep,
     {"delete",       MMPush, {SourceView::bp_popup_deleteCB}},
-    MMEnd
-};
-
-MMDesc SourceView::bp_popup_dbx[] =
-{
-    {"delete",       MMPush, {SourceView::bp_popup_deleteCB}},
+    MMSep,
+    {"set_pc",       MMPush, {SourceView::bp_popup_set_pcCB}},
     MMEnd
 };
 
@@ -409,6 +400,24 @@ static void sort(IntArray& a)
     } while (h != 1);
 }
 
+// Return index of RXADDRESS in S, beginning from POS.  Stop search at newline.
+static int address_index(const string& s, int pos)
+{
+    int eol = s.index('\n');
+    if (eol < 0)
+	eol = s.length();
+
+    string first_line = ((string&)s).at(pos, eol - pos);
+    int i = 0;
+    while (i < int(first_line.length()) && isspace(first_line[i]))
+	i++;
+    i = first_line.index(rxaddress_start, i);
+    if (i < 0)
+	return -1;
+    else
+	return pos + i;
+}
+
 // Return true if W is a descendant of code_form_w
 bool SourceView::is_code_widget(Widget w)
 {
@@ -469,41 +478,26 @@ void SourceView::line_popup_setCB (Widget w,
 				   XtPointer client_data,
 				   XtPointer)
 {
-    int line_nr = *((int *)client_data);
-    switch (gdb->type())
-    {
-    case GDB:
-	gdb_command("break " + current_source_name() + ":" + 
-		    itostring(line_nr), w);
-	break;
-	
-    case DBX:
-	gdb_command("file " + current_source_name(), w);
-	gdb_command("stop at " + itostring(line_nr), w);
-	break;
-
-    case XDB:
-	gdb_command("b " + current_source_name() + ":" + 
-		    itostring(line_nr), w);
-    }
-}
-
-void SourceView::address_popup_setCB (Widget w,
-				      XtPointer client_data,
-				      XtPointer)
-{
     string address = *((string *)client_data);
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("break *" + address, w);
+	gdb_command("break " + address, w);
 	break;
 	
     case DBX:
-	gdb_command("stopi at " + address, w);
+	if (address.contains('*', 0))
+	    gdb_command("stopi at " + address.after('*'), w);
+	else
+	{
+	    gdb_command("file " + address.before(':'), w);
+	    gdb_command("stop at " + address.after(':'), w);
+	}
 	break;
 
     case XDB:
+	if (address.contains('*', 0))
+	    address = address.after('*');
 	gdb_command("b " + address, w);
 	break;
     }
@@ -515,113 +509,136 @@ void SourceView::line_popup_set_tempCB (Widget w,
 					XtPointer client_data,
 					XtPointer)
 {
-    int line_nr = *((int *)client_data);
-
-    switch (gdb->type())
-    {
-    case GDB:
-	gdb_command("tbreak " + current_source_name() + ":" + 
-		    itostring(line_nr), w);
-	break;
-
-    case DBX:
-	{
-	    gdb_command("file " + current_source_name(), w);
-	    gdb_command("stop at " + itostring(line_nr), w);
-
-	    // Make sure we get the number of the temporary breakpoint
-	    syncCommandQueue();
-
-	    string line = itostring(line_nr);
-	    string clear_cmd = clear_command(line, true);
-	    gdb_command("when at " + line + " " + command_list(clear_cmd), w);
-	}
-        break;
-
-    case XDB:
-	gdb_command("b " + current_source_name() + ":" + itostring(line_nr)
-		    + " \\1t", w);
-	break;
-    }
-}
-
-void SourceView::address_popup_set_tempCB (Widget w,
-					   XtPointer client_data,
-					   XtPointer)
-{
     string address = *((string *)client_data);
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("tbreak *" + address, w);
+	gdb_command("tbreak " + address, w);
 	break;
 
     case DBX:
+	if (address.contains('*', 0))
 	{
+	    address = address.after('*');
 	    gdb_command("stopi at " + address, w);
-
-	    // Make sure we get the number of the temporary breakpoint
+	    
 	    syncCommandQueue();
 	    gdb_command("when $pc == " + address + " "
 			+ command_list(clear_command(address, true)), w);
 	}
+	else
+	{
+	    string file = address.before(':');
+	    string line = address.after(':');
+	    gdb_command("file " + file, w);
+	    gdb_command("stop at " + line, w);
+	    
+	    syncCommandQueue();
+	    string clear_cmd = clear_command(line, true);
+	    gdb_command("when at " + line + " " 
+			+ command_list(clear_cmd), w);
+	}
 	break;
 
     case XDB:
-	gdb_command("ba " + address + " \\1t", w);
+	if (address.contains('*', 0))
+	    gdb_command("ba " + address.after('*') + " \\1t", w);
+	else
+	    gdb_command("b " + address + " \\1t", w);
 	break;
     }
 }
 
 // ***************************************************************************
 //
-void SourceView::line_popup_temp_n_contCB (Widget w,
-					   XtPointer client_data,
-					   XtPointer call_data)
+void SourceView::clearBP(XtPointer client_data, XtIntervalId *)
 {
-    int line_nr = *((int *)client_data);
-    switch (gdb->type())
+    int bp_nr = int(client_data);
+    BreakPoint *bp = bp_map.get(bp_nr);
+    if (bp != 0)
     {
-    case GDB:
-#if 0				// GDB `until' only works in the current frame
-	gdb_command("until " + current_source_name() + ":" + 
-		    itostring(line_nr), w);
-	break;
-#endif
-    
-    case DBX:
-	line_popup_set_tempCB(w, client_data, call_data);
-	gdb_command("cont", w);
-	break;
-
-    case XDB:
-	gdb_command("c " + current_source_name() + ":" + 
-		    itostring(line_nr), w);
-	break;
+	// Delete last breakpoint
+	bp_popup_deleteCB(source_text_w, XtPointer(&bp_nr), 0);
     }
 }
 
-void SourceView::address_popup_temp_n_contCB (Widget w,
-					      XtPointer client_data,
-					      XtPointer call_data)
+void SourceView::clearJumpBP(const string&, void *)
+{
+    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0, clearBP, 
+		    XtPointer(max_breakpoint_number_seen));
+}
+
+void SourceView::line_popup_temp_n_contCB (Widget w,
+					   XtPointer client_data,
+					   XtPointer call_data)
 {
     string address = *((string *)client_data);
     switch (gdb->type())
     {
     case GDB:
 #if 0				// GDB `until' only works in the current frame
-	gdb_command("until *" + address, w);
+	gdb_command("until " + address, w);
 	break;
 #endif
     
     case DBX:
+    {
+	// Create a temporary breakpoint
 	line_popup_set_tempCB(w, client_data, call_data);
-	gdb_command("cont", w);
+
+	// Make sure the temporary breakpoint is deleted after the
+	// `cont' command
+	Command c("cont", w);
+	c.callback = clearJumpBP;
+	gdb_command(c);
 	break;
+    }
 
     case XDB:
+	if (address.contains('*', 0))
+	    address = address.after('*');
 	gdb_command("c " + address, w);
 	break;
+    }
+}
+
+// ***************************************************************************
+//
+void SourceView::line_popup_set_pcCB(Widget w, 
+				     XtPointer client_data,
+				     XtPointer call_data)
+{
+    string address = *((string *)client_data);
+
+    if (gdb->has_jump_command())
+    {
+	// We prefer the GDB `jump' command since it requires
+	// confirmation when jumping out of the current function.
+
+	// Create a temporary breakpoint
+	line_popup_set_tempCB(w, client_data, call_data);
+
+	// Jump to the new address and clear the breakpoint again
+	Command c(gdb->jump_command(address));
+	c.callback = clearJumpBP;
+	gdb_command(c);
+    }
+    else
+    {
+	// Use the `set $pc = ADDR' alternative
+	if (address.contains('*', 0))
+	{
+	    address = address.after('*');
+	}
+	else
+	{
+	    lookup(address, true);
+	    syncCommandQueue();
+	    address = last_shown_pc;
+	}
+
+	if (address != "")
+	    gdb_command(gdb->assign_command("$pc", address), w);
     }
 }
 
@@ -679,6 +696,21 @@ void SourceView::bp_popup_disableCB (Widget w,
 
     cmd += itostring(bp_nr);
     gdb_command(cmd, w);
+}
+
+
+// ***************************************************************************
+//
+void SourceView::bp_popup_set_pcCB(Widget w, XtPointer client_data, 
+				   XtPointer call_data)
+{
+    int bp_nr = *((int *)client_data);
+    BreakPoint *bp = bp_map.get(bp_nr);
+    if (bp != 0 && bp->address() != "")
+    {
+	string address = '*' + bp->address();
+	line_popup_set_pcCB(w, XtPointer(&address), call_data);
+    }
 }
 
 // ***************************************************************************
@@ -908,24 +940,6 @@ bool SourceView::bp_matches(BreakPoint *bp)
 static bool selection_click = false;
 
 static string last_info_output = "";
-
-// Return index of RXADDRESS in S, beginning from POS.  Stop search at newline.
-static int address_index(const string& s, int pos)
-{
-    int eol = s.index('\n');
-    if (eol < 0)
-	eol = s.length();
-
-    string first_line = ((string&)s).at(pos, eol - pos);
-    int i = 0;
-    while (i < int(first_line.length()) && isspace(first_line[i]))
-	i++;
-    i = first_line.index(rxaddress_start, i);
-    if (i < 0)
-	return -1;
-    else
-	return pos + i;
-}
 
 void SourceView::set_source_argCB(Widget text_w, 
 				  XtPointer client_data, 
@@ -2966,8 +2980,12 @@ void SourceView::lookup(string s, bool silent)
 	if (line > 0 && line <= line_count)
 	{
 	    if (gdb->type() == GDB)
-		gdb_command("info line " + current_source_name()
-			    + ":" + itostring(line));
+	    {
+		Command c("info line " + current_source_name()
+			  + ":" + itostring(line));
+		c.verbose = !silent;
+		gdb_command(c);
+	    }
 	    else
 		show_position(full_path(current_file_name) 
 			      + ":" + itostring(line));
@@ -3017,7 +3035,11 @@ void SourceView::lookup(string s, bool silent)
     {
 	// File:line given
 	if (gdb->type() == GDB)
-	    gdb_command("info line " + s);
+	{
+	    Command c("info line " + s);
+	    c.verbose = !silent;
+	    gdb_command(c);
+	}
 	else
 	    show_position(s);
     }
@@ -3027,24 +3049,32 @@ void SourceView::lookup(string s, bool silent)
 	switch (gdb->type())
 	{
 	case GDB:
+	{
 	    if (s[0] == '0')	// Address given
 		s = "*" + s;
 	    if (s.length() > 0 && s[0] != '\'' && s[0] != '*')
 		s = string('\'') + s + '\'';
-	    gdb_command("info line " + s);
+	    Command c("info line " + s);
+	    c.verbose = !silent;
+	    gdb_command(c);
 	    break;
+	}
 
 	case DBX:
-	    {
-		string pos = dbx_lookup(s);
-		if (pos != "")
-		    show_position(pos);
-	    }
+	{
+	    string pos = dbx_lookup(s);
+	    if (pos != "")
+		show_position(pos);
 	    break;
+	}
 
 	case XDB:
-	    gdb_command("v " + s);
+	{
+	    Command c("v" + s);
+	    c.verbose = !silent;
+	    gdb_command(c);
 	    break;
+	}
 	}
     }
 }
@@ -3756,12 +3786,11 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	XmTextSetInsertionPosition(text_w, pos);
     }
 
-    static int line_nr;
+    int line_nr;
     bool in_text;
     static int bp_nr;
     static string address;
-    bool pos_found = 
-	get_line_of_pos (w, pos, line_nr, address, in_text, bp_nr);
+    bool pos_found = get_line_of_pos(w, pos, line_nr, address, in_text, bp_nr);
     bool right_of_text = 
 	pos < XmTextPosition(current_text(w).length()) 
 	&& current_text(w)[pos] == '\n';
@@ -3772,44 +3801,36 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	static Widget bp_popup_w = 0;
 
 	if (bp_popup_w == 0) {
-	    MMDesc *bp_popup = 0;
-	    switch (gdb->type())
-	    {
-	    case GDB:
-	    case XDB:
-		bp_popup = bp_popup_gdb;
-		break;
-
-	    case DBX:
-		bp_popup = bp_popup_dbx;
-		break;
-	    }
-
 	    bp_popup_w = MMcreatePopupMenu (text_w, "bp_popup", bp_popup);
-	    MMaddCallbacks (bp_popup, XtPointer (&bp_nr));
+	    MMaddCallbacks (bp_popup, XtPointer(&bp_nr));
 	    InstallButtonTips(bp_popup_w);
 	}
 
 	switch (gdb->type())
 	{
+	case DBX:
+	    // We don't support these items in DBX
+	    XtUnmanageChild(bp_popup[BPItms::Disable].widget);
+	    XtUnmanageChild(bp_popup[BPItms::IgnoreCount].widget);
+	    
+	    // FALL THROUGH
 	case XDB:
 	    // We don't support these items in XDB
-	    XtUnmanageChild(bp_popup_gdb[BPItms::Sep1].widget);
-	    XtUnmanageChild(bp_popup_gdb[BPItms::Condition].widget);
-	    XtUnmanageChild(bp_popup_gdb[BPItms::Sep2].widget);
+	    XtUnmanageChild(bp_popup[BPItms::Sep1].widget);
+	    XtUnmanageChild(bp_popup[BPItms::Sep2].widget);
+	    XtUnmanageChild(bp_popup[BPItms::Sep3].widget);
+	    XtUnmanageChild(bp_popup[BPItms::Condition].widget);
+	    XtUnmanageChild(bp_popup[BPItms::SetPC].widget);
 
 	    // FALL THROUGH
 	case GDB:
 	    {
 		MString label(bp_map.get(bp_nr)->enabled() ? 
 			      "Disable Breakpoint" : "Enable Breakpoint");
-		XtVaSetValues(bp_popup_gdb[BPItms::Disable].widget,
+		XtVaSetValues(bp_popup[BPItms::Disable].widget,
 			      XmNlabelString, label.xmstring(),
 			      NULL);
 	    }
-	    break;
-
-	case DBX:
 	    break;
 	}
 
@@ -3821,46 +3842,31 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	     && (!in_text || right_of_text))
     {
 	// Create popup menu for selected line
+	static Widget line_popup_w = 0;
+	if (line_popup_w == 0)
+	{
+	    line_popup_w = MMcreatePopupMenu (w, "line_popup", line_popup);
+	    MMaddCallbacks (line_popup, XtPointer(&address));
+	    InstallButtonTips(line_popup_w);
+
+	    if (gdb->type() == DBX && !gdb->has_when_command())
+	    {
+		XtUnmanageChild(line_popup[LineItms::SetTempBP].widget);
+		XtUnmanageChild(line_popup[LineItms::TempNContBP].widget);
+	    }
+	    if (gdb->type() != GDB)
+	    {
+		XtUnmanageChild(line_popup[LineItms::Sep2].widget);
+		XtUnmanageChild(line_popup[LineItms::SetPC].widget);
+	    }
+	}
+
 	if (is_source_widget(w))
-	{
-	    static Widget line_popup_w = 0;
-	    if (line_popup_w == 0)
-	    {
-		line_popup_w = 
-		    MMcreatePopupMenu (w, "line_popup", line_popup);
-		MMaddCallbacks (line_popup, XtPointer(&line_nr));
-		InstallButtonTips(line_popup_w);
-
-		if (gdb->type() == DBX && !gdb->has_when_command())
-		{
-		    XtUnmanageChild(line_popup[LineItms::SetTempBP].widget);
-		    XtUnmanageChild(line_popup[LineItms::TempNContBP].widget);
-		}
-	    }
-	    XmMenuPosition (line_popup_w, event);
-	    XtManageChild (line_popup_w);
-	}
-	else if (is_code_widget(w))
-	{
-	    static Widget address_popup_w = 0;
-	    if (address_popup_w == 0)
-	    {
-		address_popup_w = 
-		    MMcreatePopupMenu (w, "address_popup", address_popup);
-		MMaddCallbacks (address_popup, XtPointer(&address));
-		InstallButtonTips(address_popup_w);
-
-		if (gdb->type() == DBX && !gdb->has_when_command())
-		{
-		    XtUnmanageChild(
-			address_popup[AddressItms::SetTempBP].widget);
-		    XtUnmanageChild(
-			address_popup[AddressItms::TempNContBP].widget);
-		}
-	    }
-	    XmMenuPosition (address_popup_w, event);
-	    XtManageChild (address_popup_w);
-	}
+	    address = current_source_name() + ":" + itostring(line_nr);
+	else
+	    address = '*' + address;
+	XmMenuPosition (line_popup_w, event);
+	XtManageChild (line_popup_w);
     }
     else
     {

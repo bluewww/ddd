@@ -74,6 +74,9 @@ bool is_enable_display_cmd(const string& cmd);
 // True if CMD executes debuggee and shows new displays
 bool is_running_cmd(const string& cmd, GDBAgent *gdb);
 
+// True if CMD changes current execution position
+bool is_pc_cmd(const string& cmd);
+
 // True if CMD starts debuggee
 bool is_run_cmd(const string& cmd);
 
@@ -92,7 +95,7 @@ bool is_core_cmd(const string& cmd);
 bool is_thread_cmd(const string& cmd);
 
 // True if CMD changes variable values.
-bool is_set_cmd(const string& cmd);
+bool is_set_cmd(const string& cmd, GDBAgent *gdb);
 
 // True if CMD changes debugger settings.
 bool is_setting_cmd(const string& cmd);

@@ -170,17 +170,22 @@ static ostream& operator<<(ostream& os, const CommandQueue& queue)
 
 void clearCommandQueue()
 {
-    while (!commandQueue.isEmpty())
+    CommandQueue oldCommandQueue(commandQueue);
+    static CommandQueue emptyQueue;
+    commandQueue = emptyQueue;
+
+    while (!oldCommandQueue.isEmpty())
     {
-	const Command& cmd = commandQueue.first();
+	const Command& cmd = oldCommandQueue.first();
 	if (cmd.callback != 0)
 	{
 	    // We're deleting a command with associated callback.
 	    // Call callback with NO_GDB_ANSWER such that it can clean
-	    // up the associated data.
+	    // up the associated data.  Commands added by the callback
+	    // will be added to the command queue.
 	    cmd.callback(NO_GDB_ANSWER, cmd.data);
 	}
-	commandQueue -= cmd;
+	oldCommandQueue -= cmd;
     }
 
 #if LOG_QUEUE
