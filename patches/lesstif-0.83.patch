@@ -1,0 +1,498 @@
+# $Id$
+
+This file contains a variety of patches for lesstif-0.83.  Although
+none of them is really serious, we suggest that these patches be
+applied (using `patch -l < lesstif-0.83.patch') before building
+LessTif and running DDD with LessTif.
+
+
+Subject: LessTif 0.83: Modifiers cause XBell on read-only Text, and a patch
+To: lesstif@hungry.com (LessTif Mailing List)
+Date: Sun, 15 Mar 1998 17:43:52 +0100 (MET)
+
+Hi!
+
+The following problem occurs in LessTif 0.83 and earlier:
+
+* Pressing a modifier while the pointer is over a read-only Text
+  widget causes the X bell to be rung.
+
+The enclosed patch fixes this.
+
+Thanks for your work,
+
+-- 
+Andreas Zeller     Technische Universitaet Braunschweig, Germany
+                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+*** lesstif-0.83/lib/Xm/TextIn.c.orig       Sun Mar 15 17:33:39 1998
+--- lesstif-0.83/lib/Xm/TextIn.c    Sun Mar 15 17:35:20 1998
+***************
+*** 543,552 ****
+--- 543,558 ----
+      if (len <= 0)
+      {
+        return;
+      }
+  
++     if (!Text_Editable(w))
++     {
++       VerifyBell(w);
++       return;
++     }
++ 
+      (*Text_Output(w)->DrawInsertionPoint) (w, Text_CursorPos(w), off);
+  
+      blockrec.ptr = XtMalloc(len + 1);
+      blockrec.length = len;
+      blockrec.format = XmFMT_8_BIT;
+***************
+*** 1889,1904 ****
+      char buf[INSERTCHARBUFSIZ];
+      KeySym keysym;
+      int len, status;
+  
+      DEBUGOUT(XdbDebug(__FILE__, w, "SelfInsert"));
+- 
+-     if (!Text_Editable(w))
+-     {
+-       VerifyBell((XmTextWidget)w);
+-       return;
+-     }
+  
+      len = XmImMbLookupString((Widget)w, (XKeyPressedEvent *)ev, buf, INSERTCHARBUFSIZ, &keysym, &status);
+  
+      if (XdbInDebug(__FILE__, w))
+      {
+--- 1895,1904 ----
+*** lesstif-0.83/lib/Xm/TextF.c.orig        Fri Mar 13 18:43:10 1998
+--- lesstif-0.83/lib/Xm/TextF.c     Sun Mar 15 17:39:23 1998
+***************
+*** 2714,2723 ****
+--- 2714,2734 ----
+  }
+  
+  static void
+  DoInsert(XmTextFieldWidget w, XEvent *ev, char *buf, int len)
+  {
++     if (len <= 0)
++     {
++       return;
++     }
++ 
++     if (!TextF_Editable(w))
++     {
++       VerifyBell(w);
++       return;
++     }
++ 
+      if (XdbInDebug(__FILE__, (Widget)w))
+      {
+      char *tmp;
+  
+        /* buf is not necessarily NULL terminated!!!! */
+***************
+*** 4029,4047 ****
+      char buf[INSERTCHARBUFSIZ];
+      KeySym keysym;
+      int len, status;
+  
+      DBGW("self_insert");
+- 
+-     if (!TextF_Editable(tfw))
+-     {
+-       if (TextF_VerifyBell(tfw))
+-       {
+-           beep((Widget)tfw, ev, params, num_params);
+-       }
+-       return;
+-     }
+  
+      len = XmImMbLookupString((Widget)tfw,
+                             (XKeyPressedEvent *)ev, buf,
+                             INSERTCHARBUFSIZ,
+                             &keysym,
+--- 4040,4049 ----
+
+Subject: XmTrackingEvent() bugs in LessTif 0.83, and a patch
+To: lesstif@hungry.com (LessTif Mailing List)
+Date: Tue, 17 Mar 1998 12:39:23 +0100 (MET)
+
+Hi!
+
+I reported two bugs in LessTif 0.83 XmTrackingEvent(); the enclosed
+patch fixes them.
+
+>  In XmTrackingEvent(), a KeyRelease event causes the tracking to be
+>  finished right away.  This has a disadvantage: if I invoke
+>  XmTrackingEvent using some key (say, F1), the tracking is finished
+>  as soon as the key is released.  In M*tif, AFAIK, tracking is not
+>  influenced by key events.  Suggestion: check for ButtonRelease
+>  events only.
+
+The patch modifies XmTrackingEvent() such that the tracking is
+finished only if a key is first pressed, then released, in accordance
+with the Motif 1.2 spec.
+
+> In LessTif 0.83 (TrackLoc.c), XmTrackingEvent() does not return
+> anything in event_return.
+
+The patch fixes this problem, too.
+
+The patch also fixes the following improvements:
+
+* If the pointer grab fails, issues an error message
+* Use XtLastTimestampProcessed() instead of CurrentTime for grabs
+
+Happy hacking,
+-- 
+Andreas Zeller     Technische Universitaet Braunschweig, Germany
+                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+*** lesstif-0.83/lib/Xm/TrackLoc.c.orig     Tue Mar 17 12:09:15 1998
+--- lesstif-0.83/lib/Xm/TrackLoc.c  Tue Mar 17 12:25:21 1998
+***************
+*** 34,43 ****
+--- 34,45 ----
+  XmTrackingEvent(Widget widget, Cursor cursor,
+                Boolean confine_to, XEvent *event_return)
+  {
+      Window confine_to_this;
+      XEvent ev;
++     Boolean key_pressed = False;
++     Time time;
+  
+      if (confine_to)
+      {
+        confine_to_this = XtWindow(widget);
+      }
+***************
+*** 46,75 ****
+        confine_to_this = None;
+      }
+  
+      DEBUGOUT(XdbDebug(__FILE__, widget, "XmTrackingEvent: XtGrabPointer()\n"));
+  
+!     XtGrabPointer(widget,
+!                 True,
+!                 ButtonReleaseMask | ButtonPressMask,
+!                 GrabModeAsync,
+!                 GrabModeAsync,
+!                 confine_to_this,
+!                 cursor,
+!                 CurrentTime);
+  
+      while (True)
+      {
+        XtAppNextEvent(XtWidgetToApplicationContext(widget), &ev);
+  
+!       if (ev.xbutton.type == KeyRelease ||
+!           (ev.xbutton.type == ButtonRelease && ev.xbutton.button == 1))
+        {
+            DEBUGOUT(XdbDebug(__FILE__, widget,
+                              "XmTrackingEvent: XtUngrabPointer()\n"));
+  
+!           XtUngrabPointer(widget, CurrentTime);
+  
+            /* If the button was clicked outside of this programs windows,
+             * the widget that grabbed the pointer will get the event.  So,
+             * we check the bounds of the widget against the coordinates of
+             * the event.  If they're outside, we return NULL.  Otherwise we
+--- 48,88 ----
+        confine_to_this = None;
+      }
+  
+      DEBUGOUT(XdbDebug(__FILE__, widget, "XmTrackingEvent: XtGrabPointer()\n"));
+  
+!     time = XtLastTimestampProcessed(XtDisplay(widget));
+!     if (XtGrabPointer(widget, True,
+!                     ButtonReleaseMask | ButtonPressMask,
+!                     GrabModeAsync, GrabModeAsync,
+!                     confine_to_this, cursor, time) != GrabSuccess)
+!     {
+!       _XmWarning(widget, "XmTrackingEvent: Could not grab pointer");
+!       return NULL;
+!     }
+  
+      while (True)
+      {
+        XtAppNextEvent(XtWidgetToApplicationContext(widget), &ev);
++       time = XtLastTimestampProcessed(XtDisplay(widget));
+  
+!       if (ev.xbutton.type == KeyPress)
+        {
++           /* Avoid exiting upon releasing the key that caused
++                XmTrackingEvent() to be invoked */
++           key_pressed = True;
++       }
++       else if ((ev.xbutton.type == KeyRelease && key_pressed) ||
++                (ev.xbutton.type == ButtonRelease && ev.xbutton.button == 1))
++       {
++           if (event_return != NULL)
++               *event_return = ev;
++ 
+            DEBUGOUT(XdbDebug(__FILE__, widget,
+                              "XmTrackingEvent: XtUngrabPointer()\n"));
+  
+!           XtUngrabPointer(widget, time);
+  
+            /* If the button was clicked outside of this programs windows,
+             * the widget that grabbed the pointer will get the event.  So,
+             * we check the bounds of the widget against the coordinates of
+             * the event.  If they're outside, we return NULL.  Otherwise we
+
+Subject: An XmCvtXmStringToText() implementation
+To: lesstif@hungry.com (LessTif Mailing List)
+Date: Tue, 17 Mar 1998 15:23:39 +0100 (MET)
+
+Hi!
+
+I want to contribute an implementation of the XmCvtXmStringToText()
+function - a XmString -> String converter.  Among others, this
+converter is useful in creating the titles of tear-off menus (see
+second mail).
+
+Greetings,
+
+-- 
+Andreas Zeller     Technische Universitaet Braunschweig, Germany
+                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+
+*** lesstif-0.83/lib/Xm/ResConvert.c.orig   Tue Mar 17 15:18:35 1998
+--- lesstif-0.83/lib/Xm/ResConvert.c        Tue Mar 17 15:16:42 1998
+***************
+*** 908,919 ****
+  Boolean
+  XmCvtXmStringToText(Display *display, XrmValuePtr args,
+                    Cardinal *num_args, XrmValue *from_val, XrmValue *to_val,
+                    XtPointer *converter_data)
+  {
+!     DEBUGOUT(XdbDebug(__FILE__, NULL, "XmCvtXmStringToText\n"));
+!     return False;
+  }
+  
+  /*
+   * Compare two strings to see if they're equivalent. This one is used
+   * whenever comparing motif constants with resource string values. The
+--- 908,980 ----
+  Boolean
+  XmCvtXmStringToText(Display *display, XrmValuePtr args,
+                    Cardinal *num_args, XrmValue *from_val, XrmValue *to_val,
+                    XtPointer *converter_data)
+  {
+!     char *value = strdup("");
+!     XmString m = (XmString)from_val->addr;
+!     XmStringContext c;
+!     XmStringComponentType t = XmSTRING_COMPONENT_UNKNOWN;
+! 
+!     if (*num_args != 0)
+!     {
+!       XtWarningMsg("wrongParameters", "XmCvtXmStringToText",
+!                    "XtToolkitError",
+!                    "XmString to String conversion needs no extra arguments",
+!                    (String *)NULL, (Cardinal *)NULL);
+!     }
+! 
+!     XmStringInitContext(&c, m);
+! 
+!     while (t != XmSTRING_COMPONENT_END)
+!     {
+!       char *s_text            = NULL;
+!       XmStringCharSet s_cs    = NULL;
+!       XmStringDirection d     = XmSTRING_DIRECTION_DEFAULT;
+!       XmStringComponentType u = XmSTRING_COMPONENT_UNKNOWN;
+!       unsigned short ul       = 0;
+!       unsigned char *s_uv     = NULL;
+!       char *text              = NULL;
+!       
+!       t = XmStringGetNextComponent(c, &s_text, &s_cs, &d, &u, &ul, &s_uv);
+! 
+!       switch (t)
+!       {
+!       case XmSTRING_COMPONENT_TEXT:
+!       case XmSTRING_COMPONENT_LOCALE_TEXT:
+!           text = s_text;
+!           break;
+! 
+!       case XmSTRING_COMPONENT_SEPARATOR:
+!           text = "\n";
+!           break;
+! 
+!       default:
+!           /* Unknown component */
+!           text = NULL;
+!           break;
+!       }
+! 
+!       if (text != NULL)
+!       {
+!           value = XtRealloc(value, strlen(value) + strlen(text) + 1);
+!           strcat(value, text);
+!       }
+! 
+!       XtFree(s_text);
+!       XtFree(s_cs);
+!       XtFree((char *)s_uv);
+!     }
+! 
+!     to_val->addr = value;
+!     to_val->size = strlen(value);  /* FIXME: should this be sizeof(value)? */
+! 
+!     DEBUGOUT(XdbDebug(__FILE__, NULL,
+!                     "XmCvtXmStringToText(%p) => %s\n",
+!                     from_val->addr, to_val->addr));
+! 
+!     return True;
+  }
+  
+  /*
+   * Compare two strings to see if they're equivalent. This one is used
+   * whenever comparing motif constants with resource string values. The
+
+Subject: An improved method for determining tear-off titles
+To: lesstif@hungry.com (LessTif Mailing List)
+Date: Tue, 17 Mar 1998 15:26:41 +0100 (MET)
+
+Hi!
+
+The default implementation of tear-off menus uses XmStringGetLtoR() to
+copy the label string to the tear-off menu title.  This fails on a
+number of occasions - if the label does not use a standard font, or
+uses accelerators, for example.  The included patch makes tear-off
+menus use the XmCvtXmStringToText() converter instead; an
+implementation is given in a second mail.
+
+Greetings,
+
+-- 
+Andreas Zeller     Technische Universitaet Braunschweig, Germany
+                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+
+*** lesstif-0.83/lib/Xm/TearOff.c.orig      Tue Mar 17 15:18:21 1998
+--- lesstif-0.83/lib/Xm/TearOff.c   Tue Mar 17 15:16:34 1998
+***************
+*** 352,378 ****
+  
+      sprintf(to_shell_name, "%s%s",
+                RC_CascadeBtn(w) ? XtName(RC_CascadeBtn(w)) : "",
+                TEAR_OFF_SHELL_NAME);
+      {
+!     XmString string;
+!     unsigned char type;
+  
+        if ( RC_Type(w) != XmMENU_POPUP)
+        {
+            XtVaGetValues(RC_CascadeBtn(w),
+                    XmNlabelString, &string,
+                    XmNlabelType, &type,
+                    NULL);
+            if (type == XmSTRING)
+            {
+!               XmStringGetLtoR(string, XmFONTLIST_DEFAULT_TAG, &to_shell_title);
+                XmStringFree(string);
+            }
+            else
+            {
+!                   to_shell_title = strdup("");
+            }
+        }
+        else
+        {
+                to_shell_title = strdup("");
+--- 352,394 ----
+  
+      sprintf(to_shell_name, "%s%s",
+                RC_CascadeBtn(w) ? XtName(RC_CascadeBtn(w)) : "",
+                TEAR_OFF_SHELL_NAME);
+      {
+!       XmString string;
+!       unsigned char type;
+  
+        if ( RC_Type(w) != XmMENU_POPUP)
+        {
+            XtVaGetValues(RC_CascadeBtn(w),
+                    XmNlabelString, &string,
+                    XmNlabelType, &type,
+                    NULL);
+            if (type == XmSTRING)
+            {
+!               /* Invoke XmString -> String converter */
+!               Cardinal zero = 0;
+!               XrmValue from;
+!               XrmValue to;
+!               from.addr = (char *)string;
+! 
+!               if (XmCvtXmStringToText(XtDisplay(w), NULL, &zero, 
+!                                       &from, &to, NULL))
+!               {
+!                   to_shell_title = to.addr;
+!               }
+!               else
+!               {
+!                   /* converter failed - use simple fallback */
+!                   XmStringGetLtoR(string, XmFONTLIST_DEFAULT_TAG, 
+!                                   &to_shell_title);
+!               }
+                XmStringFree(string);
+            }
+            else
+            {
+!               to_shell_title = strdup("");
+            }
+        }
+        else
+        {
+                to_shell_title = strdup("");
+
+Subject: Button3 popup menus are insensitive the first time they pop up, 
+	 and a patch
+To: lesstif@hungry.com (LessTif Mailing List)
+Date: Fri, 20 Mar 1998 12:49:58 +0100 (MET)
+
+Hi!
+
+In LessTif 0.83, a popup menu bound to Button3 is insensitive the
+first time they pop up - the menu is not placed in drag mode, as it
+should be.  The enclosed patch to RowColumn.c:_XmPostPopupMenu() fixes
+this problem; in the long run, one should care to pass a correct event
+structure to _XmPostPopupMenu().
+
+This was the last outstanding problem with DDD and LessTif 0.83.  You
+guys surely have done a great work.
+
+Happy hacking,
+
+-- 
+Andreas Zeller     Technische Universitaet Braunschweig, Germany
+                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+*** lesstif-0.83/lib/Xm/RowColumn.c.orig	Fri Mar 13 23:25:33 1998
+--- lesstif-0.83/lib/Xm/RowColumn.c	Fri Mar 20 13:06:51 1998
+***************
+*** 3050,3060 ****
+      DEBUGOUT(XdbDebug(__FILE__, wid, "PostPopupMenu()\n"));
+  
+      time = XtLastTimestampProcessed(XtDisplay(wid));
+      if (type == 0)
+      {
+! 	type = KeyPress;
+      }
+  
+      state->RC_ButtonEventStatus.waiting_to_be_managed = False;
+      state->RC_ButtonEventStatus.time = time;
+  
+--- 3050,3066 ----
+      DEBUGOUT(XdbDebug(__FILE__, wid, "PostPopupMenu()\n"));
+  
+      time = XtLastTimestampProcessed(XtDisplay(wid));
+      if (type == 0)
+      {
+! 	/* Was KeyPress in LessTif 0.83, but this makes button3 popup
+!            menus insensitive the first time they pop up - they are not
+!            placed in drag mode.
+! 	   - Andreas Zeller <zeller@ips.cs.tu-bs.de>
+! 	   FIXME: Don't know whether this breaks keypress popup menus. */
+! 	   
+! 	type = ButtonPress;
+      }
+  
+      state->RC_ButtonEventStatus.waiting_to_be_managed = False;
+      state->RC_ButtonEventStatus.time = time;
+  
