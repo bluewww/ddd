@@ -8,7 +8,7 @@ static char * ddd_xpm[] = {
 /* Colors */
 "       c None      m None  g None   g4 None   s Background ",
 ".	c black     m black g black  g4 black  s Legs       ",
-"X	c grey      m white g grey   g4 grey   s Stripe     ",
+"X	c grey      m white g grey   g4 grey   s Body       ",
 "-	c grey      m white g grey   g4 grey   s Border     ",
 "o      c #000040   m black g grey25 g4 grey25 s Handle1    ",
 "O	c blue4     m black g grey25 g4 grey25 s Handle2    ",
