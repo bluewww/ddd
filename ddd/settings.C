@@ -1722,6 +1722,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    strip_space(base);
 
 	    value = unquote(line.after(" = "));
+
 	    if (value == "N/A")
 		value = "";
 
@@ -2578,141 +2579,72 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 
     Arg args[10];
     int arg=0;
-
-    // Create a popup dialog window
-    // I can't figure out how to connect the window-close button
-    // to the Close-button callback, so it's disabled for now... FIXME
-    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
-    XtSetArg(args[arg], XmNmwmDecorations, MWM_DECOR_ALL); arg++;
-    // DialogShell seems to ignore this resource,
-    // so we do the same work ourselves at the end of this function
-    XtSetArg(args[arg], XmNdefaultPosition, True); arg++;
-    Widget panel = verify(XmCreateDialogShell(
-                            find_shell(),
-                            XMST(dialog_name.chars()),
-                            args, arg));
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
+    Widget panel = verify(XmCreatePromptDialog(find_shell(), 
+					       CONST_CAST(char*,dialog_name.chars()), args, arg));
     Delay::register_shell(panel);
 
-    // create a paned widget in it
-    Widget pane = XtVaCreateWidget("pane",
-                                   xmPanedWindowWidgetClass, panel,
-                                   XmNsashWidth, 1,
-                                   XmNsashHeight, 1,
-                                   XtPointer(0));
+    Widget apply_button = XmSelectionBoxGetChild(panel, XmDIALOG_OK_BUTTON);
+    set_sensitive(apply_button, False);
 
-    // create a form widget in the top half
-    Widget form0 = XtVaCreateWidget("form0",
-                                    xmFormWidgetClass, pane, XtPointer(0));
+    Widget reset_button = XmSelectionBoxGetChild(panel, XmDIALOG_APPLY_BUTTON);
+    XtManageChild(reset_button);
 
-    // create another form widget in the bottom half
-    Widget form1 = XtVaCreateWidget("form1",
-                                    xmFormWidgetClass, pane,
-                                    XmNfractionBase, 9,
-                                    XtPointer(0));
+    // Remove old prompt
+    XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_SELECTION_LABEL));
 
-    Widget apply_button =
-        XtVaCreateManagedWidget("Apply",
-                                xmPushButtonWidgetClass,   form1,
-                                XmNtopAttachment,          XmATTACH_FORM,
-                                XmNbottomAttachment,       XmATTACH_FORM,
-                                XmNleftAttachment,         XmATTACH_POSITION,
-                                XmNleftPosition,           1,
-                                XmNrightAttachment,        XmATTACH_POSITION,
-                                XmNrightPosition,          2,
-                                XmNshowAsDefault,          False,
-                                XmNdefaultButtonShadowThickness, 1,
-                                XtPointer(0));
-
-    Widget reset_button =
-        XtVaCreateManagedWidget("Reset",
-                                xmPushButtonWidgetClass,   form1,
-                                XmNtopAttachment,          XmATTACH_FORM,
-                                XmNbottomAttachment,       XmATTACH_FORM,
-                                XmNleftAttachment,         XmATTACH_POSITION,
-                                XmNleftPosition,           3,
-                                XmNrightAttachment,        XmATTACH_POSITION,
-                                XmNrightPosition,          4,
-                                XmNshowAsDefault,          False,
-                                XmNdefaultButtonShadowThickness, 1,
-                                XtPointer(0));
-
-    Widget close_button =
-        XtVaCreateManagedWidget("Close",
-                                xmPushButtonWidgetClass,   form1,
-                                XmNsensitive,              True,
-                                XmNtopAttachment,          XmATTACH_FORM,
-                                XmNbottomAttachment,       XmATTACH_FORM,
-                                XmNleftAttachment,         XmATTACH_POSITION,
-                                XmNleftPosition,           5,
-                                XmNrightAttachment,        XmATTACH_POSITION,
-                                XmNrightPosition,          6,
-                                XmNshowAsDefault,          True,
-                                XmNdefaultButtonShadowThickness, 1,
-                                XtPointer(0));
-
-    Widget help_button =
-        XtVaCreateManagedWidget("Help",
-                                xmPushButtonWidgetClass,   form1,
-                                XmNtopAttachment,          XmATTACH_FORM,
-                                XmNbottomAttachment,       XmATTACH_FORM,
-                                XmNleftAttachment,         XmATTACH_POSITION,
-                                XmNleftPosition,           7,
-                                XmNrightAttachment,        XmATTACH_POSITION,
-                                XmNrightPosition,          8,
-                                XmNshowAsDefault,          False,
-                                XmNdefaultButtonShadowThickness, 1,
-                                XtPointer(0));
-
-    set_sensitive(apply_button, false);
-    XtAddCallback(help_button,
-                    XmNactivateCallback, ImmediateHelpCB, XtPointer(0));
-    XtAddCallback(close_button,
-                    XmNactivateCallback, UnmanageThisCB, XtPointer(panel));
+    XtAddCallback(panel, XmNhelpCallback, ImmediateHelpCB, 0);
+    XtAddCallback(panel, XmNcancelCallback, UnmanageThisCB, XtPointer(panel));
 
     switch (stype)
     {
     case SETTINGS:
-	XtAddCallback(apply_button,
-                        XmNactivateCallback, ApplySettingsCB, XtPointer(0));
-	XtAddCallback(reset_button,
-                        XmNactivateCallback, ResetSettingsCB, XtPointer(0));
+	XtAddCallback(panel, XmNokCallback, ApplySettingsCB, 0);
+	XtAddCallback(panel, XmNapplyCallback, ResetSettingsCB, 0);
 	apply_settings_button = apply_button;
 	break;
 
     case INFOS:
-	XtAddCallback(apply_button,
-                        XmNactivateCallback, DeleteAllInfosCB, XtPointer(0));
+	XtAddCallback(panel, XmNapplyCallback, DeleteAllInfosCB, 0);
+	XtUnmanageChild(apply_button); // No text entries
 	break;
 
     case SIGNALS:
-	XtAddCallback(apply_button,
-                        XmNactivateCallback, ResetSignalsCB, XtPointer(0));
+	XtAddCallback(panel, XmNapplyCallback, ResetSignalsCB, 0);
+	XtUnmanageChild(apply_button); // No text entries
 	break;
 
     case THEMES:
-	XtAddCallback(apply_button,
-                        XmNactivateCallback, ApplyThemesCB, XtPointer(0));
-	XtAddCallback(reset_button,
-                        XmNactivateCallback, ResetThemesCB, XtPointer(0));
+	XtAddCallback(panel, XmNokCallback,    ApplyThemesCB, 0);
+	XtAddCallback(panel, XmNapplyCallback, ResetThemesCB, 0);
 	apply_themes_button = apply_button;
 	break;
     }
 
+    // Add a rowcolumn widget
+    arg = 0;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNspacing,      0); arg++;
+    Widget column =
+        verify(XmCreateRowColumn(panel, CONST_CAST(char *,"column"), args, arg));
+    XtManageChild(column);
 
     // Add a label
     arg = 0;
     MString xmtitle(title_msg);
     XtSetArg(args[arg], XmNlabelString, xmtitle.xmstring()); arg++;
-    Widget title = verify(XmCreateLabel(form0,
-                            XMST("title"), args, arg));
+    Widget title = verify(XmCreateLabel(column, CONST_CAST(char *,"title"), args, arg));
     XtManageChild(title);
 
     // Add a scrolled window.
     arg = 0;
     XtSetArg(args[arg], XmNvisualPolicy, XmCONSTANT); arg++;
     XtSetArg(args[arg], XmNscrollingPolicy, XmAUTOMATIC); arg++;
-    Widget scroll = verify(XmCreateScrolledWindow(form0,
-                                XMST("scroll"), args, arg));
+    Widget scroll = 
+	verify(XmCreateScrolledWindow(column, CONST_CAST(char *,"scroll"), args, arg));
     fix_clip_window_translations(scroll);
 
     // Add a form.
@@ -2898,16 +2830,11 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
                   XtPointer(0));
 
     XtManageChild(scroll);
-    XtManageChild(form0);
-    XtManageChild(form1);
-    XtManageChild(pane);
 
     // prevent the action area from growing when the window is resized
     Dimension h, w, x, y;
-    XtVaGetValues(close_button, XmNheight, &h, XtPointer(0));
-    XtVaSetValues(form1, XmNpaneMaximum, h, XmNpaneMinimum, h, XtPointer(0));
 
-    // prevent the window from being made smaller than it initially is
+    // prevent the window from being made smaller or bigger than it initially is
     XtVaGetValues(panel,
                   XmNwidth,  &w,
                   XmNheight, &h,
@@ -2920,6 +2847,8 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     XtVaSetValues(panel,
                   XmNminWidth,  w,
                   XmNminHeight, h,
+                  XmNmaxWidth,  w,
+                  XmNmaxHeight, h,
                   XtPointer(0));
 
     // Center this dialog window in it's parent widget
