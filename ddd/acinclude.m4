@@ -1500,6 +1500,8 @@ dnl
 AC_DEFUN(ICE_CXX_OPTIONS,
 [
 if test "$GXX" = yes; then
+  # GCC options.
+
   # Check warnings
   ICE_WARN_EFFECTIVE_CXX
   ICE_WARN_UNINITIALIZED
@@ -1525,8 +1527,6 @@ if test "$GXX" = yes; then
 
   for flag in $CXXFLAGS; do
     case $flag in
-      -O)  CXXOPT="$CXXOPT -O2";;
-      -O2) CXXOPT="$CXXOPT -O2";;
       -O*) CXXOPT="$CXXOPT $flag";;
       -g*) CXXDEBUG="$flag";;
       -W*) CXXWARNINGS="$CXXWARNINGS $flag";;
@@ -1534,6 +1534,8 @@ if test "$GXX" = yes; then
     esac
   done
 else
+  # Other options.
+
   case "$CXX" in
     *CC)
       case "$host_os" in
