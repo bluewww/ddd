@@ -4,7 +4,7 @@ static char * ddd_drag3_xpm@[] = {
 "156 155 7 1",
 /* colors */
 " 	c #6a6a6a",
-".	c white",
+".	c #ffffff",
 "X	c #c0c0c0",
 "o	c #838383",
 "O	c #000000",

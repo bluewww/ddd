@@ -5,7 +5,7 @@ static char * ddd_print_graph_xpm@[] = {
 /* colors */
 " 	c #551a8b",
 ".	c #ff00ff",
-"X	c white",
+"X	c #ffffff",
 "o	c #737373",
 "O	c #bfbfbf",
 "+	c #7f7f7f",
