@@ -6317,7 +6317,6 @@ bool SourceView::update_source_glyphs = false;
 void SourceView::update_glyphs(Widget glyph)
 {
     static XtWorkProcId update_glyph_id = 0;
-    static time_t update_glyph_called   = 0;
 
     if (glyph == 0)
 	update_source_glyphs = update_code_glyphs = true;
@@ -6326,13 +6325,12 @@ void SourceView::update_glyphs(Widget glyph)
     else if (is_code_widget(glyph))
 	update_code_glyphs = true;
 
-    if (update_glyph_id == 0)
-    {
-	update_glyph_id = 
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
-			    UpdateGlyphsWorkProc, XtPointer(&update_glyph_id));
-	update_glyph_called = time((time_t *)0);
-    }
+    if (update_glyph_id != 0)
+	XtRemoveTimeOut(update_glyph_id);
+
+    update_glyph_id = 
+	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 1,
+			UpdateGlyphsWorkProc, XtPointer(&update_glyph_id));
 }
 
 
@@ -6346,17 +6344,18 @@ void SourceView::updateGlyphsAct(Widget, XEvent*, String *, Cardinal *)
 void SourceView::CheckScrollCB(Widget, XtPointer, XtPointer)
 {
     static XtIntervalId check_scroll_id = 0;
-    static time_t check_scroll_called = 0;
 
-    if (check_scroll_id == 0)
+    if (check_scroll_id != 0)
     {
-	check_scroll_id = 
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
-			    CheckScrollWorkProc, XtPointer(&check_scroll_id));
-	check_scroll_called = time((time_t *)0);
+	XtRemoveTimeOut(check_scroll_id);
+	check_scroll_id = 0;
     }
-}
     
+    check_scroll_id = 
+	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 1,
+			CheckScrollWorkProc, XtPointer(&check_scroll_id));
+}
+
 void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
