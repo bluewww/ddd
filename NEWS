@@ -1,6 +1,13 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 1.3e
+--------
+
+    Fixes some compilation trouble with older GCC versions as well as
+    older C++ compilers.  Functionality is identical to 1.3d.
+
+
 DDD 1.3d
 --------
 
@@ -10,8 +17,7 @@ DDD 1.3d
     - `Continue Until Here' (was `Set Temporary and Continue')
       now also stops if current stack frame is left (GDB only)
     - More patches for Linux ELF incorporated.  Thanks to 
-      lee@champion.tcs.co.jp (Lee Hounshell) and
-      jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
+      lee@tcs.com (Lee Hounshell) and jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
     - Non-textual source files (binary characters, no newline at end)
       are now processed correctly.
     - Basic support for DEC's dbx included.

@@ -75,8 +75,10 @@ HP-UX
 
     Various linking problems have been reported.  This is probably due
     to an error in the HP-UX linker.  According to some DDD users, the
-    problem can be solved by using GNU binutils (such as ld and ar)
-    instead of the HP-UX binutils.
+    problem can be solved by using patched versions of the GNU
+    binutils (such as ld and ar) instead of the HP-UX binutils.
+    For more information on HP-PA versions of the GNU tools, see
+    `ftp://jaguar.cs.utah.edu/dist/pagnutools.html'.
 
 
 LINUX

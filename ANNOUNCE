@@ -1,10 +1,10 @@
-DDD 1.3d is available
+DDD 1.3e is available
 =====================
 
-Release 1.3d of the Data Display Debugger (DDD), a graphical
+Release 1.3e of the Data Display Debugger (DDD), a graphical
 front-end for GDB and DBX debuggers, is now available at
 
-    ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-1.3d.tar.gz
+    ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-1.3e.tar.gz
 
 Diffs from earlier versions are in
 
@@ -20,7 +20,7 @@ Please try a closer FTP site first; see below for a list.
 DDD News
 ========
 
-DDD 1.3d now also compiles using GCC 2.7.0 and GCC 2.7.1; some new
+DDD 1.3e now also compiles using GCC 2.7.0 and GCC 2.7.1; some new
 features have been added and several minor bugs fixed.  Some bugs
 remain; see the `BUGS' file for details.
 
@@ -58,7 +58,7 @@ Changes to DDD 1.2:
 - Patches for FreeBSD incorporated.  Thanks to smcarey@mailbox.syr.edu
   (Shawn M. Carey).
 - Patches for recent Linux boxes (using ELF format) incorporated.
-  Thanks to lee@champion.tcs.co.jp (Lee Hounshell).
+  Thanks to lee@tcs.com (Lee Hounshell).
 - Patches for DEC Alpha OSF/1 incorporated; see the `PROBLEMS'
   file for special building instructions.  Thanks to
   tuppa@iue.tuwien.ac.at (Walter Tuppa)
@@ -175,7 +175,7 @@ Send suggestions and bug reports for DDD to `ddd-bugs@ips.cs.tu-bs.de'.
 DDD source FTP sites
 ====================
 
-The DDD source package `ddd-1.3d.tar.gz' will soon be at these FTP
+The DDD source package `ddd-1.3e.tar.gz' will soon be at these FTP
 sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
 ftp.ips has a slow network connection.
 
@@ -183,39 +183,39 @@ ftp.ips has a slow network connection.
 North America
 -------------
 
-ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/ddd-1.3d.tar.gz
-ftp://ftp.x.org/contrib/utilities/ddd-1.3d.tar.gz
-ftp://ftp.cs.columbia.edu/archives/X11R6/contrib/utilities/ddd-1.3d.tar.gz
-ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/ddd-1.3d.tar.gz
+ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/ddd-1.3e.tar.gz
+ftp://ftp.x.org/contrib/utilities/ddd-1.3e.tar.gz
+ftp://ftp.cs.columbia.edu/archives/X11R6/contrib/utilities/ddd-1.3e.tar.gz
+ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/ddd-1.3e.tar.gz
 
 
 Europe
 ------
 
-ftp://ftp.denet.dk/pub/X11/contrib/utilities/ddd-1.3d.tar.gz
-ftp://nic.funet.fi/pub/X11/contrib/utilities/ddd-1.3d.tar.gz
-ftp://ftp.ibp.fr/pub/X11/contrib/utilities/ddd-1.3d.tar.gz
-ftp://ftp.germany.eu.net/pub/X11/XConsortium/contrib/utilities/ddd-1.3d.tar.gz
-ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/ddd-1.3d.tar.gz
-ftp://ftp.luth.se/pub/X11/contrib/utilities/ddd-1.3d.tar.gz
-ftp://ftp.sunet.se/pub/X11/contrib/utilities/ddd-1.3d.tar.gz
-ftp://ftp.eunet.ch/archive/software/X/utilities/ddd-1.3d.tar.gz
-ftp://ftp.NL.net/pub/windows/X/contrib/utilities/ddd-1.3d.tar.gz
-ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/ddd-1.3d.tar.gz
+ftp://ftp.denet.dk/pub/X11/contrib/utilities/ddd-1.3e.tar.gz
+ftp://nic.funet.fi/pub/X11/contrib/utilities/ddd-1.3e.tar.gz
+ftp://ftp.ibp.fr/pub/X11/contrib/utilities/ddd-1.3e.tar.gz
+ftp://ftp.germany.eu.net/pub/X11/XConsortium/contrib/utilities/ddd-1.3e.tar.gz
+ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/ddd-1.3e.tar.gz
+ftp://ftp.luth.se/pub/X11/contrib/utilities/ddd-1.3e.tar.gz
+ftp://ftp.sunet.se/pub/X11/contrib/utilities/ddd-1.3e.tar.gz
+ftp://ftp.eunet.ch/archive/software/X/utilities/ddd-1.3e.tar.gz
+ftp://ftp.NL.net/pub/windows/X/contrib/utilities/ddd-1.3e.tar.gz
+ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/ddd-1.3e.tar.gz
 
 
 East Asia
 ---------
 
-ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/ddd-1.3d.tar.gz
-ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/ddd-1.3d.tar.gz
-ftp://NCTUCCCA.edu.tw/X/contrib/utilities/ddd-1.3d.tar.gz
+ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/ddd-1.3e.tar.gz
+ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/ddd-1.3e.tar.gz
+ftp://NCTUCCCA.edu.tw/X/contrib/utilities/ddd-1.3e.tar.gz
 
 
 Australia
 ---------
 
-ftp://archie.AUX11/contrib/utilities/ddd-1.3d.tar.gz
+ftp://archie.AUX11/contrib/utilities/ddd-1.3e.tar.gz
 
 
 
