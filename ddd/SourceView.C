@@ -3959,12 +3959,10 @@ void SourceView::setSelection(XtPointer client_data, XtIntervalId *)
 {
     Widget w = (Widget)client_data;
 
+    assert(XmIsText(w));
+
     XmTextSetSelection(w, selection_startpos, selection_endpos, 
 		       selection_time);
-
-    // Do not scroll here.  Do not use SetInsertionPosition().
-    XmTextSetInsertionPosition(w, selection_pos);
-    XmTextShowPosition(w, selection_pos);
 
     set_source_argCB(w, XtPointer(false), 0);
 }
