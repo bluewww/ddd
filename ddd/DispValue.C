@@ -1,8 +1,9 @@
 // $Id$
 // Read and store type and value of a displayed expression
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
+// and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
 // 
@@ -51,9 +52,12 @@ char DispValue_rcsid[] =
 #include "cook.h"
 #include "GDBAgent.h"
 #include "ddd.h"
+#include "question.h"
 #include "misc.h"
 #include "DispNode.h"
 #include "regexps.h"
+
+#include <ctype.h>
 
 //-----------------------------------------------------------------------------
 // Type decls
@@ -90,10 +94,14 @@ class ArrayDispValue {
 public:
     DispValueArray members;
     int            member_count;
+    int            index_base;
+    bool           have_index_base;
     Alignment      align;
 
     ArrayDispValue()
-	: members(), member_count(0), align(Horizontal)
+	: members(), member_count(0),
+	  index_base(-1), have_index_base(false),
+	  align(Horizontal)
     {}
 };
 
@@ -108,6 +116,64 @@ public:
     {}
 };
 
+
+//-----------------------------------------------------------------------------
+// Helpers
+//-----------------------------------------------------------------------------
+
+StringStringAssoc DispValue::type_cache;
+
+// Get index base of expr EXPR in dimension DIM
+int DispValue::index_base(const string& expr, int dim)
+{
+    if (gdb->program_language() != LANGUAGE_FORTRAN)
+	return gdb->default_index_base();
+
+    string base = expr;
+    if (base.contains('('))
+	base = base.before('(');
+    if (!type_cache.has(base))
+	type_cache[base] = gdb_question(gdb->whatis_command(base));
+    string type = type_cache[base];
+
+    // GDB issues array information as `type = real*8 (0:9,2:12)'.
+    // However, the first dimension in the type output comes last in
+    // the printed array.
+    int colon = type.length();
+    while (colon >= 0 && dim-- >= 0)
+	colon = type.index(':', colon - type.length() - 1);
+    if (colon < 0)
+	return  gdb->default_index_base(); // Not found
+
+    while (colon >= 0 && isdigit(type[colon - 1]))
+	colon--;
+
+    return atoi((char *)type + colon);
+}
+
+// In FORTRAN mode, GDB issues last dimensions first.  Insert new
+// dimension before first dimension and convert to FORTRAN
+// multi-dimension syntax.
+string DispValue::add_member_name(const string& base, 
+				  const string& member_name)
+{
+    if (gdb->program_language() == LANGUAGE_FORTRAN && 
+	member_name.contains('(', 0) &&	base.contains('('))
+    {
+	return base.before('(') + member_name.before(')') + ", " + 
+	    base.after('(');
+    }
+    else
+    {
+	return base + member_name;
+    }
+}
+
+void DispValue::clear_type_cache()
+{
+    static StringStringAssoc empty;
+    type_cache = empty;
+}
 
 //-----------------------------------------------------------------------------
 // Function defs
@@ -254,7 +320,7 @@ void DispValue::init(string& value, DispValueType given_type)
     case Array:
 	{
 #if RUNTIME_REGEX
-	    static regex rxsimple("([][a-zA-Z0-9_().]|->)*");
+	    static regex rxsimple("([][a-zA-Z0-9_$().]|->)*");
 #endif
 
 	    string base = myfull_name;
@@ -284,19 +350,23 @@ void DispValue::init(string& value, DispValueType given_type)
 
 	    // Read the array elements.  Assume that the type is the
 	    // same across all elements.
-	    string member_name;
 	    DispValueType member_type = UnknownType;
-	    int array_index = gdb->default_index_base();
+	    if (!v.array->have_index_base)
+	    {
+		v.array->index_base = index_base(base, depth());
+		v.array->have_index_base = true;
+	    }
+	    int array_index = v.array->index_base;
 
 	    // The array has at least one element.  Otherwise, GDB
 	    // would treat it as a pointer.
 	    do {
 		string repeated_value = value;
-		member_name = gdb->index_expr("", array_index++);
+		string member_name = gdb->index_expr("", array_index++);
 		DispValue *dv = 
 		    new DispValue(this, depth() + 1, value,
-				  base + member_name, member_name, 
-				  member_type);
+				  add_member_name(base, member_name), 
+				  member_name, member_type);
 		member_type = dv->type();
 		v.array->members[v.array->member_count++] = dv;
 
@@ -307,10 +377,9 @@ void DispValue::init(string& value, DispValueType given_type)
 		    member_name = gdb->index_expr("", array_index++);
 		    string val = repeated_value;
 		    DispValue *repeated_dv = 
-			new DispValue(this, depth() + 1,
-				      val,
-				      base + member_name, member_name,
-				      member_type);
+			new DispValue(this, depth() + 1, val,
+				      add_member_name(base, member_name),
+				      member_name, member_type);
 		    v.array->members[v.array->member_count++] = repeated_dv;
 		}
 

@@ -59,6 +59,7 @@ char comm_manager_rcsid[] =
 #include "history.h"
 #include "SourceView.h"
 #include "DataDisp.h"
+#include "DispValue.h"
 #include "version.h"
 #include "VoidArray.h"
 #include "buttons.h"
@@ -824,6 +825,7 @@ void send_gdb_command(string cmd, Widget origin,
     {
 	// New program state: clear value cache
 	clear_value_cache();
+	DispValue::clear_type_cache();
     }
 
     if (plus_cmd_data->refresh_frame && !gdb->has_frame_command())

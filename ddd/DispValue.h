@@ -41,6 +41,7 @@
 #include "bool.h"
 #include "Box.h"
 #include "value-read.h"
+#include "StringSA.h"
 
 //-----------------------------------------------------------------------------
 class DispValue {
@@ -70,6 +71,12 @@ class DispValue {
     {
 	assert(0); return *this;
     }
+
+    // Helpers
+    static StringStringAssoc type_cache;
+    static int index_base(const string& expr, int dim);
+    static string add_member_name(const string& base, 
+				  const string& member_name);
 
 protected:
     // Makes sense only for type() == Array, StructOrClass, BaseClass
@@ -160,6 +167,9 @@ public:
     // Background processing.  PROCESSED is the number of characters
     // processed so far.  If this returns true, abort operation.
     static bool (*background)(int processed);
+
+    // Clear cache of all types read so far
+    static void clear_type_cache();
 };
 
 #endif // _DDD_DispValue_h
