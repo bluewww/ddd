@@ -2553,7 +2553,7 @@ bool save_options(unsigned long flags)
 		  XtNgridWidth, &grid_width,
 		  XtNgridHeight, &grid_height,
 		  NULL);
-    if (grid_width == grid_height)
+    if (!save_session && grid_width == grid_height)
     {
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
 			    + XtCGridSize, grid_width, true) << '\n';
@@ -2634,7 +2634,8 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNbuttonCaptions,
 			 app_data.button_captions) << '\n';
 
-    if (app_data.flat_toolbar_buttons == app_data.flat_dialog_buttons)
+    if (!save_session &&
+	app_data.flat_toolbar_buttons == app_data.flat_dialog_buttons)
     {
 	os << bool_app_value(XtCFlatButtons,
 			     app_data.flat_toolbar_buttons) << '\n';
@@ -2735,7 +2736,8 @@ bool save_options(unsigned long flags)
 			   app_data.fixed_width_font, true) << '\n';
     os << string_app_value(XtNdataFont,
 			   app_data.data_font, true) << '\n';
-    if (app_data.default_font_size == app_data.variable_width_font_size &&
+    if (!save_session &&
+	app_data.default_font_size == app_data.variable_width_font_size &&
 	app_data.default_font_size == app_data.fixed_width_font_size &&
 	app_data.default_font_size == app_data.data_font_size)
     {
@@ -2763,11 +2765,13 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNopenDebuggerConsole, 
 			 app_data.debugger_console) << '\n';
 
-    if (!app_data.separate_source_window && !app_data.separate_data_window)
+    if (!save_session && 
+	!app_data.separate_source_window && !app_data.separate_data_window)
     {
 	os << bool_app_value(XtCSeparate, false) << '\n';
     }
-    else if (app_data.separate_source_window && app_data.separate_data_window)
+    else if (!save_session &&
+	     app_data.separate_source_window && app_data.separate_data_window)
     {
 	os << bool_app_value(XtCSeparate, true) << '\n';
     }
