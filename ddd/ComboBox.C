@@ -323,7 +323,8 @@ void ComboBoxSetList(Widget text, const StringArray& items)
 //-----------------------------------------------------------------------
 
 // Create a combo box
-Widget CreateComboBox(Widget parent, const _XtString name, ArgList _args, Cardinal _arg)
+Widget CreateComboBox(Widget parent, const _XtString name, 
+		      ArgList _args, Cardinal _arg)
 {
     ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
@@ -358,7 +359,8 @@ Widget CreateComboBox(Widget parent, const _XtString name, ArgList _args, Cardin
     XtSetArg(args[arg], XmNresizable,          False);         arg++;
     for (Cardinal i = 0; i < _arg; i++)
 	args[arg++] = _args[i];
-    Widget combo = verify(XmCreateDropDownComboBox(form, name, args, arg));
+    Widget combo = verify(XmCreateDropDownComboBox(form, (char *)name, 
+						   args, arg));
     XtManageChild(combo);
 
     arg = 0;
