@@ -124,9 +124,7 @@ const string NO_SESSION = "[none]";
 // Session files
 // ---------------------------------------------------------------------------
 
-static string dddbase = ddd_NAME;
-
-static string home_dir()
+string home_dir()
 {
     char *home = getenv("HOME");
     if (home == 0)
@@ -142,16 +140,16 @@ static string home_dir()
 
 string session_state_dir()
 {
-    char *ddd_state = getenv("DDD_STATE");
+    char *ddd_state = getenv(DDD_NAME "_STATE");
     if (ddd_state != 0)
 	return ddd_state;
     else
-	return home_dir() + "/." + dddbase;
+	return home_dir() + "/." ddd_NAME;
 }
 
 static string session_base_dir()
 {
-    char *ddd_sessions = getenv("DDD_SESSIONS");
+    char *ddd_sessions = getenv(DDD_NAME "_SESSIONS");
     if (ddd_sessions != 0)
 	return ddd_sessions;
     else
@@ -964,15 +962,15 @@ void OpenSessionCB(Widget w, XtPointer, XtPointer)
 // Name of restart session
 string restart_session()
 {
-    if (getenv("DDD_SESSION") != 0)
-	return getenv("DDD_SESSION");
+    if (getenv(DDD_NAME "_SESSION") != 0)
+	return getenv(DDD_NAME "_SESSION");
     return "";
 }
 
 void set_restart_session(const string& session)
 {
     static string env;
-    env = "DDD_SESSION=" + session;
+    env = DDD_NAME "_SESSION=" + session;
     putenv(env);
 }
 

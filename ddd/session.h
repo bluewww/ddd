@@ -45,6 +45,9 @@ const string RESTART_SESSION = "." ddd_NAME;
 
 // Return session directories
 
+// Home directory ($HOME)
+string home_dir();
+
 // Root of DDD state (usually, `~/.ddd')
 string session_state_dir();
 
