@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-11\-15" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-11\-17" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -3462,6 +3462,10 @@ operation than normal.
 To help you find problems due to remote execution, run \s-1@DDD@\s+1
 with the `\fB\-\-trace\fR' option.  This prints the shell commands
 issued by \s-1@DDD@\s+1 on standard error.
+.br
+.IP \(bu 2
+See also the `\fBrshCommand\fR' and `\fBsetRemoteDisplay\fR'
+resources, below.
 .\"
 .\"
 .SS "Using @DDD@ with a Remote Program"
@@ -4980,7 +4984,14 @@ suppressed, too.
 .TP
 .B "rshCommand (\fPclass\fB RshCommand)"
 The remote shell command to invoke \s-1TTY\s+1-based commands on
-remote hosts.  Usually, `\fBremsh\fR', `\fBrsh\fR', or `\fBon\fR'.
+remote hosts.  Usually, `\fBremsh\fR', `\fBrsh\fR', `\fBssh\fR', or
+`\fBon\fR'.
+.TP
+.B "setRemoteDisplay (\fPclass\fB SetRemoteDisplay)"
+Whether to pass the `\fBDISPLAY\fR' environment variable to commands
+on remote hosts.  This may be set to `\fNoff\fR' if the remote shell
+command sets `\fBDISPLAY\fR' (such as `\fBssh\fR') and you do not want
+\s-1@DDD@\s+1 to override this setting.  Default is `\fBon\fR'.
 .TP
 .B "termCommand (\fPclass\fB TermCommand)"
 The command to invoke a separate \s-1TTY\s+1 for showing the
@@ -4993,18 +5004,18 @@ in the separate \s-1TTY\s+1 is appended to this string.  The string
   \fB@Ddd@*termCommand: xterm \-fn @FONT@ \-e /bin/sh \-c\fR
 .br
 .TP
+.B "termType (\fPclass\fB TermType)"
+The terminal type provided by the `\fBtermCommand\fR'
+resource\(em\&that is, the value of the \fBTERM\fR environment
+variable to be passed to the debugged program.  Default:
+`\fBxterm\fR'.
+.TP
 .B "uncompressCommand (\fPclass\fB UncompressCommand)"
 The command to uncompress the built-in \s-1@DDD@\s+1 manual, the
 \s-1@DDD@\s+1 license, and the \s-1@DDD@\s+1 news.  Takes a compressed
 text from standard input and writes the uncompressed text to standard
 output.  The default value is `\fBgzip -d -c\fR'; typical values
 include `\fBzcat\fR' and `\fBgunzip -c\fR'.
-.TP
-.B "termType (\fPclass\fB TermType)"
-The terminal type provided by the `\fBtermCommand\fR'
-resource\(em\&that is, the value of the \fBTERM\fR environment
-variable to be passed to the debugged program.  Default:
-`\fBxterm\fR'.
 .TP
 .B "wwwCommand (\fPclass\fB WWWCommand)"
 The command to invoke a \s-1WWW\s+1 browser.  The string `\fB@URL@\fR'

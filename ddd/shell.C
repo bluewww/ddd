@@ -65,6 +65,8 @@ string sh_quote(string s)
 string _sh_command(string command, bool force_local, 
 		   bool force_display_settings)
 {
+    bool local = force_local || !remote_gdb();
+
     // Fetch display settings
     string display;
     if (command_shell != 0)
@@ -88,11 +90,11 @@ string _sh_command(string command, bool force_local,
     }
 
     string settings = "";
-    if (display != "")
+    if (display != "" && (local || app_data.set_remote_display))
 	settings += "DISPLAY=" + sh_quote(display) + "; export DISPLAY; ";
     settings += set_environment_command();
 
-    if (force_local || !remote_gdb())
+    if (local)
     {
 	if (command == "")
 	    return "";
