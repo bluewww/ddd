@@ -389,7 +389,7 @@ string SourceView::current_code_start;
 string SourceView::current_code_end;
 
 string SourceView::current_pwd        = cwd();
-string SourceView::current_class_path = ".";
+string SourceView::current_class_path = NO_GDB_ANSWER;
 
 XmTextPosition SourceView::last_top                = 0;
 XmTextPosition SourceView::last_pos                = 0;
@@ -4478,21 +4478,38 @@ void SourceView::process_pwd(string& pwd_output)
 
 void SourceView::process_use(string& use_output)
 {
-    strip_space(use_output);
-    current_class_path = use_output;
+    if (use_output == NO_GDB_ANSWER)
+	return;
 
-    clear_file_cache();
-    reload();
+    strip_space(use_output);
+
+    string path_prefix = "";
+    char *p = getenv("CLASSPATH");
+    if (p != 0)
+	path_prefix = string(p) + ":";
+    if (!use_output.contains(path_prefix, 0))
+	use_output.prepend(path_prefix);
+
+    if (current_class_path != use_output)
+    {
+	current_class_path = use_output;
+	clear_file_cache();
+	reload();
+    }
 }
 
 string SourceView::class_path()
 {
-    char *p = getenv("CLASSPATH");
-    if (p != 0)
+    if (gdb->type() == JDB && current_class_path == NO_GDB_ANSWER)
     {
-	string path = p;
-	if (!current_class_path.contains(path + ":", 0))
-	    current_class_path.prepend(path + ":");
+	string use = gdb_question("use");
+	process_use(use);
+    }
+
+    if (current_class_path == NO_GDB_ANSWER)
+    {
+	char *p = getenv("CLASSPATH");
+	return p ? p : ".";
     }
 
     return current_class_path;
