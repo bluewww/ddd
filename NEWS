@@ -369,6 +369,7 @@ DDD 2.2
       * DDD supports DBX and XDB breakpoint conditions.
       * With SUN DBX 3.x, DDD also supports disabled breakpoints 
         and ignore counts.
+      * DBX on Solaris 2.5 (prompting with `(dbx N)') is supported.
     - User-defined DDD commands.  DDD now provides a simple facility
       that allows the inferior debugger to execute DDD commands.  For
       details, see `User-Defined Commands' in the DDD manual.
