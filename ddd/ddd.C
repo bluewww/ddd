@@ -4710,6 +4710,10 @@ static void gdb_recordingHP(Agent *, void *, void *call_data)
 
     if (recording)
 	recording_msg = new StatusMsg("Recording commands");
+
+    // Recording state affects toolbar button sensitivity
+    update_arg_buttons();
+    data_disp->refresh_args();
 }
 
 
