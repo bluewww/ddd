@@ -679,6 +679,7 @@ static void trace(const string& prefix, void *call_data)
 	s(s.length() - 1, 0) = "\\n";
 
     clog << prefix << s << '\n';
+    clog.flush();
 }
     
 void GDBAgent::traceInputHP(Agent *, void *, void *call_data)
