@@ -645,6 +645,7 @@ BASE_OBJECTS = \
 	strclass.o   \
 	tabs.o       \
 	uniquify.o   \
+	PrintGC.o    \
 	SignalB.o    \
 	TypeInfo.o   \
 	UniqueId.o   \
