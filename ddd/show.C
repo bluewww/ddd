@@ -66,6 +66,10 @@ extern "C" FILE *popen(const char *command, const char *mode);
 extern "C" int pclose(FILE *stream);
 #endif
 
+#if !HAVE_XMUSEVERSION
+extern int xmUseVersion;
+#endif
+
 //-----------------------------------------------------------------------------
 // Show version
 //-----------------------------------------------------------------------------
@@ -331,13 +335,11 @@ void show_configuration(ostream& os)
     s.gsub(" )", ")");
     os << s;
 
-#if HAVE_XMUSEVERSION
     if (xmUseVersion != XmVersion)
     {
 	os << "(Actually using Motif " << xmUseVersion / 1000 
 	   << "." << xmUseVersion % 1000 << ")\n";
     }
-#endif
 
     // Optional stuff
     s = "@(#)Includes " DDD_NAME " manual"
