@@ -1080,10 +1080,9 @@ MString DataDisp::shortcut_help(Widget w)
 
 
 //-----------------------------------------------------------------------------
-// Double click callback
+// Count displays
 //-----------------------------------------------------------------------------
 
-// Counter
 struct DataDispCount {
     int all;			// Total # of displays
     int visible;		// # of non-hidden displays
@@ -1156,6 +1155,11 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
     }
 }
 
+
+//-----------------------------------------------------------------------------
+// Double click callback
+//-----------------------------------------------------------------------------
+
 void DataDisp::DoubleClickCB(Widget w, XtPointer client_data, 
 			     XtPointer call_data)
 {
@@ -1168,11 +1172,11 @@ void DataDisp::DoubleClickCB(Widget w, XtPointer client_data,
     if (info->node == 0)
 	return;			// Double-click on background
 
-    DispNode *disp_node_arg   = data_disp->selected_node();
+    DispNode *disp_node_arg = ptr_cast(DispNode, info->node);
     if (disp_node_arg == 0)
-	return;			// No selection
-
-    DispValue *disp_value_arg;
+	disp_node_arg = data_disp->selected_node();
+    if (disp_node_arg == 0)
+	return;
 
     // Do the right thing
     if (disp_node_arg->disabled())
@@ -1181,7 +1185,7 @@ void DataDisp::DoubleClickCB(Widget w, XtPointer client_data,
     }
     else
     {
-	disp_value_arg = disp_node_arg->selected_value();
+	DispValue *disp_value_arg = disp_node_arg->selected_value();
 	if (disp_value_arg == 0)
 	    return;			// No selected value within node
 
