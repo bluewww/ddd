@@ -4178,6 +4178,16 @@ If LBL(Include Core Dump) is set, DDD includes a core dump of the\n\
 program being debugged.  This allows DDD to restore memory\n\
 contents and data displays when resuming the session.\n\
 \n\
+DDD provides up to three ways to get a core dump:\n\
+DESC([Killing the Debuggee], [kill the debugged program.])\n\
+    Works fine, but loses the current process.\n\
+DESC([The `gcore' Command], [an external program to get a core\n\
+    file from a running process.])\n\
+    The process may continue for a few steps after the `gcore'\n\
+    command is done.\n\
+DESC([The ptrace() call], [a system call to get a core file])\n\
+    Safe, but may result in a hanging GDB.\n\
+\n\
 Click on LBL(Save) to save the current DDD session.\n\
 Click on LBL(Delete) to delete the selected session.
 

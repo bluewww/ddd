@@ -354,8 +354,6 @@ Volunteers for these and other projects are welcome!
      if I run it from within xemacs, I've manually hided it with the
      window manager, but still...
 
-231* Let the user specify which method to use for getting core dumps.
-
 232. Have an `infinite' assembler window that extends in both
      directions as needed.
 
