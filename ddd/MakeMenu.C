@@ -41,8 +41,6 @@ char MakeMenu_rcsid[] =
 #include <Xm/CascadeB.h>
 #include <Xm/Separator.h>
 #include <Xm/Label.h>
-#include <Xm/SelectioB.h>
-#include <Xm/MessageB.h>
 
 #include "MakeMenu.h"
 #include "bool.h"
@@ -283,7 +281,7 @@ Widget MMcreatePanel(Widget parent, String name, MMDesc items[])
     int arg;
 
     arg = 0;
-    Widget panel = verify(XmCreateRowColumn(parent, name, args, arg));
+    Widget panel = verify(XmCreateWorkArea(parent, name, args, arg));
     addItems(parent, panel, items);
     XtManageChild(panel);
 
