@@ -3342,6 +3342,14 @@ Ddd*common.arg.columns:				10
 ! For the common toolbar, only pixmap buttons make sense.
 Ddd*common.toolbar.XmPushButton.labelType: 	XmPIXMAP
 
+Ddd*toolbar*helpString: \
+WIDGET(Toolbar)\n\
+\n\
+Set the argument LBL(()) for the command buttons on the right.\n\
+\n\
+To get help on a command button, just point on it and press KEY_HELP.\n\
+The item's functionality will be explained here.
+
 
 ! All other values from the graph and source toolbar, below, apply here, too.
 
