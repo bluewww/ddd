@@ -361,6 +361,18 @@ class SourceView {
 
     static MString help_on_bp(int bp, bool detailed);
 
+    // Disassembler stuff
+    // Normalize ADDRESS
+    static void normalize_address(string& address);
+
+    // Make address from ADDRESS
+    static string make_address(long address);
+
+    // Return FUNCTION and OFFSET at ADDRESS
+    static void get_func_at(const string& address, string& func, int& offset);
+    
+    // Check if function at PC is larger than MAX_SIZE
+    static bool function_is_larger_than(string pc, int max_size);
 
     //-----------------------------------------------------------------------
     // Glyphs

@@ -6415,7 +6415,7 @@ void SourceView::refresh_codeOQC(const string& answer, void *client_data)
     delete info;
 }
 
-static void normalize_address(string& addr)
+void SourceView::normalize_address(string& addr)
 {
     addr.downcase();
     if (addr.contains("0", 0))
@@ -6429,22 +6429,73 @@ static void normalize_address(string& addr)
     addr.prepend("0x");
 }
 
-static string make_address(long pc)
+string SourceView::make_address(long pc)
 {
     ostrstream os;
     os << "0x" << setbase(16) << (unsigned long)pc;
     return string(os);
 }
 
-static string get_func_at(const string& address)
+// Return FUNCTION and OFFSET at ADDRESS
+void SourceView::get_func_at(const string& address, string& func, int& offset)
 {
-    string x = gdb_question("x /i " + address);
-    x = x.after("<");
-    x = x.before(">");
-    if (x.contains("+"))
-	x = x.before("+");
-    return x;
+    // GDB issues /i lines in the format
+    // `ADDR <FUNC[+OFFSET]> INSTRUCTIONS', as in
+    // `0xef7be49c <_IO_file_underflow+128>:\torcc  %o0, %g0, %o2\n'
+    func = gdb_question("x /i " + address);
+
+    // Find func
+    func = func.after("<");
+    func = func.before(">");
+
+    // Find offset
+    offset = 0;
+    int plus = func.index('+');
+    if (plus >= 0)
+    {
+	offset = atoi(func.chars() + plus + 1);
+	func = func.before(plus);
+    }
 }
+
+// Return TRUE iff the function at PC is larger than MAX_SIZE.
+bool SourceView::function_is_larger_than(string pc, int max_size)
+{
+    if (gdb->type() != GDB)
+	return false;
+
+    // Get function name at PC
+    normalize_address(pc);
+    string pc_func;
+    int pc_offset;
+    get_func_at(pc, pc_func, pc_offset);
+
+    if (pc_offset > max_size)
+    {
+	// We're already more than MAX_SIZE bytes away from the
+	// function start: function is too large.
+	return true;
+    }
+
+    // Get the function name at function start + MAX_SIZE.  If this is
+    // the same name as the name at start, the function is too large.
+    long pc_l = strtol(pc.chars(), NULL, 0);
+    long next_l = pc_l - pc_offset + max_size;
+    string next = make_address(next_l);
+
+    string next_func;
+    int next_offset;
+    get_func_at(next, next_func, next_offset);
+
+    if (pc_func == next_func)
+    {
+	// We're still within the same function: function is too large.
+	return true;
+    }
+
+    return false;
+}
+
 
 // Show program counter location PC
 // If MODE is given, highlight PC line.
@@ -6491,24 +6542,12 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 
 	string start = pc;
 	string end   = "";
-	if (app_data.max_disassemble > 0 && gdb->type() == GDB)
+	if (app_data.max_disassemble > 0 && 
+	    function_is_larger_than(pc, app_data.max_disassemble))
 	{
-	    // Verify function size.  We get the function name at PC
-	    // and the function name at PC + MAX_DISASSEMBLE.  If both
-	    // function names are equal, the function is too large.
-	    normalize_address(start);
-	    long start_l = strtol(start.chars(), NULL, 0);
-	    long next_l  = start_l + app_data.max_disassemble;
-	    string next  = make_address(next_l);
-
-	    string start_func = get_func_at(start);
-	    string next_func  = get_func_at(next);
-
-	    if (start_func == next_func)
-	    {
-		// Disassemble only MAX_DISASSEMBLE bytes after PC
-		end = next;
-	    }
+	    // Disassemble only MAX_DISASSEMBLE bytes after PC
+	    long pc_l = strtol(pc.chars(), NULL, 0);
+	    end = make_address(pc_l + app_data.max_disassemble);
 	}
 
 	string msg = "Disassembling location " + start;
