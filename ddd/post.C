@@ -209,7 +209,7 @@ Widget post_gdb_message(string text, Widget w)
 
     if (gdb->isReadyWithPrompt())
     {
-	gdb_out("\r" + text + "\n" + gdb->prompt());
+	_gdb_out("\r" + text + "\n" + gdb->prompt());
 	return 0;
     }
 
