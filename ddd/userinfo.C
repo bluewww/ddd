@@ -121,7 +121,7 @@ static char *email_from_signature(const char *home, const char *dotrc)
 	char line[BUFSIZ];
 	while (fgets(line, sizeof(line), fp) != NULL)
 	{
-	    char *s = strchr(line, '@');
+	    const char *s = strchr(line, '@');
 	    if (s != 0)
 	    {
 		static char buffer[BUFSIZ];
@@ -163,11 +163,11 @@ static bool is_email(const char *s)
     if (s == 0)
 	return false;
 
-    char *at = strchr(s, '@');
+    const char *at = strchr(s, '@');
     if (at == 0 || at == s || at[1] == '\0')
 	return false;
 
-    char *dot = strchr(s, '.');
+    const char *dot = strchr(s, '.');
     if (dot == 0 || dot == s || dot[1] == '\0')
 	return false;
 

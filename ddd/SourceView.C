@@ -2882,7 +2882,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
     }
 }
 
-void SourceView::refresh_code_bp_disp(bool reset = false)
+void SourceView::refresh_code_bp_disp(bool reset)
 {
     if (display_glyphs && !reset)
 	return;
