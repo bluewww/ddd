@@ -92,6 +92,8 @@ DispBox::DispBox (string disp_nr,
 	title = user_command(title);
 	if (title.contains("info ", 0))
 	    title = title.after("info ");
+	if (title.contains("proc ", 0))
+	    title = title.after("proc ");
 	if (title.contains(" "))
 	    title = title.before(" ");
 	if (title.length() > 0)
