@@ -108,7 +108,7 @@ Volunteers for fixing these and other bugs are welcome!
      Xxgdb, mxgdb and xde all display the full 64 bits of this data
      type.
 
-064. After changing the source code, the current execution glyph is
+064* After changing the source code, the current execution glyph is
      not cleared.
 
 067. On Solaris 2.x, when attaching with DBX to a running process, 
