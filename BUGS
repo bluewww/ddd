@@ -292,6 +292,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 139. With Solaris 2.5.1, DDD recurses endlessly in glob_filename().
      Reported by Deepak Mulchandani <dmm@jurassic.eng.sun.com>
+     [Can anyone reproduce this?  -AZ]
 
 144. Warren Nagourney <warren@dirac.phys.washington.edu> says: When I
      push on the upper or lower scrolling arrow in the source window,
@@ -327,14 +328,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 155. DBX `dump` output is not understood if local arrays are shown.
      (DBX prints these as `ARRAY')
-
-157. ilcooper@tasc.com (Ira Cooper) says:
-     The status message "The debugger is busy" keeps popping up, is
-     there a way to not have it tell me that?  I consider this a bug
-     in that normally the debugger comes back to me in less time than
-     it takes the dialog to pop up ;-).
-     [I could not reproduce this.  Ira's DDD is compiled with g++ 2.6.3.
-     Is this the reason?  -AZ]
 
 159. Jonathan Edwards <edwards@intranet.com> says:
      A status display only shows once. After stepping the program it
