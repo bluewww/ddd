@@ -486,6 +486,7 @@ StringArray SourceView::bp_addresses;
 StringStringAssoc SourceView::file_cache;
 StringOriginAssoc SourceView::origin_cache;
 StringStringAssoc SourceView::source_name_cache;
+StringStringAssoc SourceView::file_name_cache;
 CodeCache SourceView::code_cache;
 
 string SourceView::current_source;
@@ -1780,6 +1781,13 @@ String SourceView::read_remote(const string& file_name, long& length,
     return text;
 }
 
+#define JAVA_SUFFIX ".java"
+
+static void strip_java_suffix(string& s)
+{
+    if (s.contains(JAVA_SUFFIX, -1))
+	s = s.before(int(int(s.length()) - strlen(JAVA_SUFFIX)));
+}
 
 // Read class CLASS_NAME
 String SourceView::read_class(const string& class_name, 
@@ -1790,10 +1798,9 @@ String SourceView::read_class(const string& class_name,
     length = 0;
 
     string base = class_name;
-    if (base.contains(".java", -1))
-	base = base.before(int(int(base.length()) - strlen(".java")));
+    strip_java_suffix(base);
     base.gsub(".", "/");
-    base += ".java";
+    base += JAVA_SUFFIX;
 
     string use = class_path();
     while (use != "")
@@ -2155,6 +2162,7 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
     {
 	current_source = file_cache[file_name];
 	current_origin = origin_cache[file_name];
+	file_name      = file_name_cache[file_name];
     }
     else
     {
@@ -2172,11 +2180,13 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 	{
 	    file_cache[file_name]             = current_source;
 	    origin_cache[file_name]           = current_origin;
+	    file_name_cache[file_name]        = file_name;
 
 	    if (file_name != requested_file_name)
 	    {
-		file_cache[requested_file_name]   = current_source;
-		origin_cache[requested_file_name] = current_origin;
+		file_cache[requested_file_name]      = current_source;
+		origin_cache[requested_file_name]    = current_origin;
+		file_name_cache[requested_file_name] = file_name;
 	    }
 	}
 
@@ -2224,6 +2234,7 @@ void SourceView::clear_file_cache()
     static StringStringAssoc string_empty;
     file_cache        = string_empty;
     source_name_cache = string_empty;
+    file_name_cache   = string_empty;
 
     static StringOriginAssoc origin_empty;
     origin_cache      = origin_empty;
@@ -4325,6 +4336,11 @@ string SourceView::current_source_name()
 	{
 	    // Use the source name as stored by read_class()
 	    source = source_name_cache[current_file_name];
+	}
+	if (source == "")
+	{
+	    source = basename(current_file_name.chars());
+	    strip_java_suffix(source);
 	}
 	break;
     }

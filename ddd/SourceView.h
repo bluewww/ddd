@@ -310,6 +310,9 @@ class SourceView {
     static StringStringAssoc source_name_cache;
     static string current_source_name();
 
+    // File name of current source (for JDB)
+    static StringStringAssoc file_name_cache;
+
     // Files listed as erroneous
     static StringArray bad_files;
     static bool new_bad_file(const string& file_name);
