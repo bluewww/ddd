@@ -333,6 +333,7 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
     else
     {
+	command.gsub("()", source_arg->get_string());
 	gdb_command(command, w);
     }
 }
