@@ -216,14 +216,16 @@ lists all the lower level nodes in the document.
 @end ifinfo
 
 @menu
-* Welcome::                     
-* Creating Displays::           
-* Writing Themes::              
-* DDD VSL Functions::           
-* VSL Library::                 
-* VSL Reference::               
-* Documentation License::       
-* Index::                       
+* Welcome::                     What this manual is about.
+* Creating Displays::           How DDD visualizes data.
+* Writing Themes::              How you can customize the visualization.
+
+* DDD VSL Functions::           All the VSL functions used by DDD.
+* VSL Library::                 The standard VSL functions.
+* VSL Reference::               Syntax and semantics of VSL.
+
+* Documentation License::       The license of this document.
+* Index::                       All VSL functions.
 @end menu
 
 @ifnothtml
@@ -283,8 +285,8 @@ We begin with a short discussion of how @DDD{} actually creates displays
 from data.
 
 @menu
-* Handling Boxes::              
-* Building Boxes from Data::    
+* Handling Boxes::              How boxes group into displays.
+* Building Boxes from Data::    How DDD computes boxes.
 @end menu
 
 @node Handling Boxes
@@ -329,7 +331,7 @@ frame(text) = hrule()
 
 Here, @code{hrule()} and @code{vrule()} are primitive functions
 returning horizontal and vertical lines, respectively.  The @samp{&} and
-@samp{|} operators construct horizontal and vertical alignments fro
+@samp{|} operators construct horizontal and vertical alignments from
 their arguments.
 
 @VSL{} provides basic facilities like pattern matching and variable numbers
@@ -447,9 +449,11 @@ specific @VSL{} definitions.
 
 
 @menu
-* Display Title Color::         
-* General Scheme::              
-* Overriding vs. Replacing::    
+* Display Title Color::         A simple theme example.
+* General Scheme::              How to write themes in general.
+* Overriding vs. Replacing::    Referring to existing definitions.
+* A Complex Example::           Displaying NULL values in red.
+* Future Work::                 The road goes on...
 @end menu
 
 
@@ -519,7 +523,7 @@ definition @var{definition}.  It is composed of two parts:
 @itemize @minus
 @item
 The @samp{#pragma replace} declaration removes the original definition
-of @var{function}.   @xref{Redefining Functions}, for details.
+of @var{function}.  @xref{VSL Redefining Functions}, for details.
 
 @item
 The following line provides a new @var{definition} for @var{function}.
@@ -560,7 +564,7 @@ You're done!
 In certain cases, you may not want to replace the original definition by
 your own, but rather @emph{extend} the original definition.
 
-As an example, consider the @samp{value_box} function (@xref{Displaying
+As an example, consider the @samp{value_box} function (@pxref{Displaying
 Data Displays}).  It is applied to every single value displayed.  By
 default, it does nothing.  So we could write a theme that leaves a
 little white space around values:
