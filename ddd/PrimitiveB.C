@@ -49,7 +49,7 @@ DEFINE_TYPE_INFO_1(SquareBox, SpaceBox)
 
 // RuleBox
 
-// RuleBox anzeigen
+// Draw RuleBox
 void RuleBox::_draw(Widget w, 
 		    const BoxRegion& r, 
 		    const BoxRegion&, 
