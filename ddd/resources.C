@@ -592,7 +592,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, plot_init_commands),
 	XtRString,
-	XtPointer("")
+	XtPointer("set parametric")
     },
 
     {
@@ -602,7 +602,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, plot_2d_settings),
 	XtRString,
-	XtPointer("set noparametric")
+	XtPointer("")
     },
 
     {
@@ -612,7 +612,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, plot_3d_settings),
 	XtRString,
-	XtPointer("set parametric")
+	XtPointer("")
     },
 
    {
