@@ -87,9 +87,14 @@ void Box::draw(Widget w,
 // Boxen vergleichen (intern)
 bool Box::matches(const Box &b, const Box *) const
 {
-    return (size() == b.size() &&
-	extend() == b.extend() &&
-	strcmp(type(), b.type()) == 0);
+    if (strcmp(type(), b.type()))
+	return false;
+
+    for (BoxDimension d = X; d <= Y; d++)
+	if (extend(d) == 0 && size(d) != b.size(d))
+	    return false;
+
+    return true;
 }
 
 
