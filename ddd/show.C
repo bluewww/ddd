@@ -73,6 +73,7 @@ void show_invocation(DebuggerType type)
 {
     string gdb_version = "";
     string options     = "";
+    string title       = "";
     string base        = "";
 
     string gdb_get_help = 
@@ -84,7 +85,8 @@ void show_invocation(DebuggerType type)
     {
     case GDB:
 	{
-	    base = "GDB, the GNU debugger.";
+	    title = "GDB";
+	    base  = "GDB, the GNU debugger.";
 
 	    Agent help(gdb_get_help);
 	    help.start();
@@ -131,14 +133,16 @@ void show_invocation(DebuggerType type)
 
     case DBX:
 	{
-	    base = "DBX, the UNIX debugger.";
+	    title = "DBX";
+	    base  = "DBX, the UNIX debugger.";
 	    options = "  [DBX options]      Pass option to DBX.\n";
 	}
 	break;
 
     case XDB:
 	{
-	    base = "XDB, the HP-UX debugger.";
+	    title = "XDB";
+	    base  = "XDB, the HP-UX debugger.";
 
 	    Agent version(gdb_get_version);
 	    version.start();
@@ -235,17 +239,17 @@ void show_invocation(DebuggerType type)
 	"  --vsl-help         Show VSL options and exit.\n"
 	"\n"
 	"Standard X options are also accepted, such as:\n"
-	"  -display DISPLAY    Run on X server DISPLAY.\n"
-	"  -geometry GEOMETRY  Specify initial size and location.\n"
-	"  -foreground COLOR   Use COLOR as foreground color.\n"
-	"  -background COLOR   Use COLOR as background color.\n"
-	"  -xrm RESOURCE       Specify a resource name and value.\n"
+	"  -display DISPLAY   Run on X server DISPLAY.\n"
+	"  -geometry GEOMETRY Specify initial size and location.\n"
+	"  -iconic            Start-up in iconic mode.\n"
+	"  -foreground COLOR  Use COLOR as foreground color.\n"
+	"  -background COLOR  Use COLOR as background color.\n"
+	"  -xrm RESOURCE      Specify a resource name and value.\n"
 	"\n"
 	"For more information, consult the " DDD_NAME " `Help' menu,"
 	" type `help' from\n"
 	"within " DDD_NAME ", "
-	"or consult the manual pages of " DDD_NAME " and the"
-	" inferior debugger.\n";
+	"and see the " DDD_NAME " and " << title << " documentation.\n";
 }
 
 
