@@ -275,7 +275,8 @@ Widget     DataDisp::graph_popup_w          = 0;
 Widget     DataDisp::node_popup_w           = 0;
 Widget     DataDisp::shortcut_popup_w       = 0;
 
-bool DataDisp::detect_aliases = false;
+bool DataDisp::detect_aliases   = false;
+bool DataDisp::arg_needs_update = false;
 
 int DataDisp::next_ddd_display_number = 1;
 int DataDisp::next_gdb_display_number = 1;
@@ -681,7 +682,26 @@ void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
 
 void DataDisp::select_with_all_descendants(GraphNode *node)
 {
-    if (!node->selected())
+    bool selected = node->selected();
+
+    BoxGraphNode *bn = ptr_cast(BoxGraphNode, node);
+    if (bn != 0)
+    {
+	// FIXME: this is O(n^2)
+	MapRef ref;
+	for (DispNode* dn = disp_graph->first(ref); 
+	     dn != 0;
+	     dn = disp_graph->next(ref))
+	{
+	    if (dn->nodeptr() == node)
+	    {
+		dn->select(0);
+		break;
+	    }
+	}
+    }
+
+    if (!selected)
     {
 	node->selected() = true;
 	
@@ -693,7 +713,26 @@ void DataDisp::select_with_all_descendants(GraphNode *node)
 
 void DataDisp::select_with_all_ancestors(GraphNode *node)
 {
-    if (!node->selected())
+    bool selected = node->selected();
+
+    BoxGraphNode *bn = ptr_cast(BoxGraphNode, node);
+    if (bn != 0)
+    {
+	// FIXME: this is O(n^2)
+	MapRef ref;
+	for (DispNode* dn = disp_graph->first(ref); 
+	     dn != 0;
+	     dn = disp_graph->next(ref))
+	{
+	    if (dn->nodeptr() == node)
+	    {
+		dn->select(0);
+		break;
+	    }
+	}
+    }
+
+    if (!selected)
     {
 	node->selected() = true;
 	
@@ -718,10 +757,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 	 dn = disp_graph->next(ref))
     {
 	DispValue *dv = dn->selected_value();
-	if (dv == 0)
-	    dv = dn->value();
-
-	if (dn->selected() && dv == dn->value())
+	if (dn->selected() && dv == 0)
 	{
 	    disp_nrs += dn->disp_nr();
 
@@ -1008,9 +1044,6 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 	    {
 		DispValue *dv = dn->selected_value();
 		if (dv == 0)
-		    dv = dn->value();
-
-		if (dv == dn->value())
 		    selected_titles++;
 
 		if (!dn->is_user_command())
@@ -1699,8 +1732,11 @@ DispValue *DataDisp::selected_value()
     return dn->value();
 }
 
-void DataDisp::refresh_args()
+void DataDisp::refresh_args(bool update_arg)
 {
+    if (update_arg)
+	arg_needs_update = true;
+
     if (refresh_args_timer == 0)
     {
 	refresh_args_timer = 
@@ -1895,19 +1931,23 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 
     // Argument field
-    if (count.selected > 0)
+    if (arg_needs_update)
     {
-	string arg;
-	if (disp_value_arg)
+	if (count.selected > 0)
 	{
-	    arg = disp_value_arg->full_name();
-	    source_arg->set_string(arg);
+	    string arg;
+	    if (disp_value_arg)
+	    {
+		arg = disp_value_arg->full_name();
+		source_arg->set_string(arg);
+	    }
+	    else if (disp_node_arg)
+	    {
+		arg = disp_node_arg->name();
+		source_arg->set_string(arg);
+	    }
 	}
-	else if (disp_node_arg)
-	{
-	    arg = disp_node_arg->name();
-	    source_arg->set_string(arg);
-	}
+	arg_needs_update = false;
     }
 
     // Set selection.
@@ -2254,7 +2294,7 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	}
     }
 
-    refresh_args();
+    refresh_args(true);
     refresh_display_list();
 }
 
@@ -2281,7 +2321,7 @@ void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
 	}
     }
 
-    refresh_args();
+    refresh_args(true);
     refresh_display_list();
 }
 

@@ -342,7 +342,7 @@ public:
 				  StringArray& labels);
 
     // Refresh argument buttons
-    static void refresh_args();
+    static void refresh_args(bool update_arg = false);
 
 private:
     // Call me back again
@@ -387,6 +387,7 @@ private:
     static int next_ddd_display_number;
     static int next_gdb_display_number;
     static bool detect_aliases;
+    static bool arg_needs_update;
 
     static Widget graph_popup_w;
     static Widget node_popup_w;
