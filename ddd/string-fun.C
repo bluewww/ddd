@@ -76,7 +76,10 @@ int get_positive_nr (const char* s)
 int get_positive_nr (/*const*/ string& s)
 {
     string int_string(s);
-    while (int_string.contains('(', 0) || int_string.contains('[', 0))
+    while (int_string != ""
+	   && (isspace(int_string[0])
+	       || int_string[0] == '('
+	       || int_string[0] == '['))
 	int_string = int_string.after(0);
 
     int_string = int_string.through(rxint);
