@@ -219,6 +219,8 @@
 #define XtCStartupTipCount       "StartupTipCount"
 #define XtNstatusAtBottom        "statusAtBottom"
 #define XtCStatusAtBottom        "StatusAtBottom"
+#define XtNtoolbarsAtBottom      "toolbarsAtBottom"
+#define XtCToolbarsAtBottom      "ToolbarsAtBottom"
 #define XtNmaxDisplayTitleLength "maxDisplayTitleLength"
 #define XtNmaxPopupExprLength    "maxPopupExprLength"
 #define XtNmaxValueTipLength     "maxValueTipLength"
@@ -382,6 +384,7 @@ struct AppData {
     Boolean   startup_tips;
     int       startup_tip_count;
     Boolean   status_at_bottom;
+    Boolean   toolbars_at_bottom;
     Cardinal  max_display_title_length;
     Cardinal  max_popup_expr_length;
     Cardinal  max_value_tip_length;

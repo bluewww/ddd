@@ -1019,6 +1019,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNtoolbarsAtBottom,
+	XtCToolbarsAtBottom,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, toolbars_at_bottom),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNmaxDisplayTitleLength,
 	XtCMaxLength,
 	XtRCardinal,

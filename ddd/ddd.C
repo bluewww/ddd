@@ -1296,7 +1296,7 @@ SourceView*   source_view;
 // Argument field
 ArgField*     source_arg;
 
-// Argument command list
+// Argument toolbar
 static Widget arg_cmd_w;
 
 // GDB input/output widget
@@ -1876,6 +1876,13 @@ int main(int argc, char *argv[])
 				   arg_label, source_arg);
 
 	DataDisp::graph_cmd_w = arg_cmd_w;
+
+	if (command_toolbar_w == 0)
+	{
+	    command_toolbar_w = make_buttons(paned_work_w, 
+					     "command_toolbar", 
+					     app_data.tool_buttons);
+	}
     }
 
     // Data window
@@ -1911,6 +1918,10 @@ int main(int argc, char *argv[])
 	verify_buttons(data_menubar);
 	register_menu_shell(data_menubar);
 
+	if (data_buttons_w == 0 && !app_data.toolbars_at_bottom)
+	    data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
+					  app_data.data_buttons);
+
 	data_disp_parent = 
 	    verify(XtVaCreateManagedWidget ("data_paned_work_w",
 					    xmPanedWindowWidgetClass,
@@ -1918,12 +1929,17 @@ int main(int argc, char *argv[])
 					    NULL));
     }
 
+    if (data_buttons_w == 0 && !app_data.toolbars_at_bottom)
+	data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
+				      app_data.data_buttons);
+
     // Create data display
     data_disp = new DataDisp(data_disp_parent,
 			     app_data.vsl_path,
 			     app_data.vsl_library,
 			     app_data.vsl_defs,
-			     app_data.panned_graph_editor);
+			     app_data.panned_graph_editor,
+			     app_data.toolbars_at_bottom);
 
     if (app_data.separate_data_window)
     {
@@ -1934,9 +1950,9 @@ int main(int argc, char *argv[])
 		       NULL);
     }
 
-    // Data buttons (optional)
-    data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
-				  app_data.data_buttons);
+    if (data_buttons_w == 0)
+	data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
+				      app_data.data_buttons);
 
     // Source window
     Widget source_view_parent = paned_work_w;
@@ -1971,6 +1987,7 @@ int main(int argc, char *argv[])
 	verify_buttons(source_menubar);
 	register_menu_shell(source_menubar);
 
+	// Add source window
 	source_view_parent = 
 	    verify(XtVaCreateManagedWidget ("source_paned_work_w",
 					    xmPanedWindowWidgetClass,
@@ -1980,6 +1997,48 @@ int main(int argc, char *argv[])
 	// Status line
 	if (!app_data.status_at_bottom)
 	    create_status(source_view_parent);
+
+	// Add toolbar
+	if (arg_cmd_w == 0 && !app_data.toolbars_at_bottom)
+	{
+	    arg_cmd_w = create_toolbar(source_view_parent, "source",
+				       arg_cmd_area, 0, arg_label, source_arg);
+	}
+
+	if (command_toolbar_w == 0 && !app_data.toolbars_at_bottom)
+	{
+	    command_toolbar_w = make_buttons(source_view_parent, 
+					     "command_toolbar", 
+					     app_data.tool_buttons);
+	}
+
+	if (source_buttons_w == 0 && !app_data.toolbars_at_bottom)
+	{
+	    source_buttons_w = make_buttons(source_view_parent, 
+					    "source_buttons", 
+					    app_data.source_buttons);
+	}
+    }
+
+    // Add toolbar
+    if (arg_cmd_w == 0 && !app_data.toolbars_at_bottom)
+    {
+	arg_cmd_w = create_toolbar(source_view_parent, "source",
+				   arg_cmd_area, 0, arg_label, source_arg);
+    }
+
+    if (command_toolbar_w == 0 && !app_data.toolbars_at_bottom)
+    {
+	command_toolbar_w = make_buttons(source_view_parent, 
+					 "command_toolbar", 
+					 app_data.tool_buttons);
+    }
+
+    if (source_buttons_w == 0 && !app_data.toolbars_at_bottom)
+    {
+	source_buttons_w = make_buttons(source_view_parent, 
+					"source_buttons", 
+					app_data.source_buttons);
     }
 
     source_view = new SourceView(source_view_parent);
@@ -1997,10 +2056,8 @@ int main(int argc, char *argv[])
 
     // Source tool bar
     if (arg_cmd_w == 0)
-    {
 	arg_cmd_w = create_toolbar(source_view_parent, "source",
 				   arg_cmd_area, 0, arg_label, source_arg);
-    }
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  ClearTextFieldCB, source_arg->widget());
     XtAddCallback(source_arg->widget(), XmNactivateCallback, 
@@ -2008,15 +2065,23 @@ int main(int argc, char *argv[])
 		  XtPointer(arg_cmd_area[ArgItems::Lookup].widget));
     sync_args(source_arg, data_disp->graph_arg);
 
-    // Command tool bar (optional)
-    command_toolbar_w = make_buttons(source_view_parent, "command_toolbar", 
-				     app_data.tool_buttons);
+    if (data_disp->graph_arg != 0)
+	XtAddCallback(data_disp->graph_arg->widget(), XmNactivateCallback, 
+		      ActivateCB, 
+		      XtPointer(data_disp->graph_cmd_area[0].widget));
+
+    if (command_toolbar_w == 0)
+    {
+	command_toolbar_w = make_buttons(source_view_parent, 
+					 "command_toolbar", 
+					 app_data.tool_buttons);
+    }
     if (command_toolbar_w != 0)
 	XtUnmanageChild(command_toolbar_w);
 
-    // Source buttons (optional)
-    source_buttons_w = make_buttons(source_view_parent, "source_buttons", 
-				    app_data.source_buttons);
+    if (source_buttons_w == 0)
+	source_buttons_w = make_buttons(source_view_parent, "source_buttons", 
+					app_data.source_buttons);
 
     // Status line
     if (app_data.separate_source_window && app_data.status_at_bottom)
@@ -2024,6 +2089,10 @@ int main(int argc, char *argv[])
 
 
     // GDB window
+    if (console_buttons_w == 0 && !app_data.toolbars_at_bottom)
+	console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
+					 app_data.console_buttons);
+
     gdb_w = verify(XmCreateScrolledText(paned_work_w,
 					"gdb_w",
 					NULL, 0));
@@ -2046,9 +2115,9 @@ int main(int argc, char *argv[])
     XmTextSetEditable(gdb_w, false);
 #endif
 
-    // Console buttons (optional)
-    console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
-				     app_data.console_buttons);
+    if (console_buttons_w == 0)
+	console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
+					 app_data.console_buttons);
 
     // Status line
     if (app_data.status_at_bottom && !app_data.separate_source_window)
@@ -2169,15 +2238,32 @@ int main(int argc, char *argv[])
     // Create preference panels
     make_preferences(paned_work_w);
 
-    if (!app_data.separate_source_window &&
-	!app_data.separate_data_window)
+    if (!app_data.separate_source_window && !app_data.separate_data_window)
     {
-	// In one-window mode, close SourceView and DataDisp until we
-	// have data available
+	// In one-window mode, close source window until we have some
+	// source and close data window until we have some data.
 	save_preferred_paned_sizes(paned_work_w);
-	XtUnmanageChild(source_view->source_form());
-	XtUnmanageChild(source_view->code_form());
-	XtUnmanageChild(data_disp->graph_form());
+
+	Widget widgets[10];
+	int w = 0;
+	widgets[w++] = source_view->code_form();
+	widgets[w++] = source_view->source_form();
+	widgets[w++] = data_disp->graph_form();
+
+	if (data_disp->graph_cmd_w != arg_cmd_w)
+	    widgets[w++] = data_disp->graph_cmd_w;
+
+	if (lesstif_version < 1000)
+	{
+	    // In LessTif 0.83, the order in which the paned window
+	    // widgets are unmanaged makes a difference.
+	    while (w > 0)
+		XtUnmanageChild(widgets[--w]);
+	}
+	else
+	{
+	    XtUnmanageChildren(widgets, w);
+	}
     }
 
     // Save option states
@@ -5506,6 +5592,7 @@ static void setup_command_tool(bool iconic)
 	initial_popup_shell(tool_shell);
     }
 #endif
+    (void) iconic;		// Use it
 }
 
 static void setup_options(int argc, char *argv[],

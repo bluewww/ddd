@@ -441,10 +441,11 @@ public:
 
     // Constructor
     DataDisp (Widget       parent,
-	      String       vsl_path,         // from app_data
-	      String       vsl_library,      // from app_data
-	      String       vsl_defs,         // from app_data
-	      bool         panned);          // from app_data
+	      String       vsl_path,           // from APP_DATA
+	      String       vsl_library,        // from APP_DATA
+	      String       vsl_defs,           // from APP_DATA
+	      bool         panned,             // from APP_DATA
+	      bool         toolbar_at_bottom); // from APP_DATA
 
     void create_shells();
 

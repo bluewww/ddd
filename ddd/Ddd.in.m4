@@ -694,6 +694,9 @@ Ddd*pushMenuPopupTime: 400
 ! Should the status line be placed at the bottom?
 Ddd*statusAtBottom: true
 
+! Should the toolbars be placed at the bottom (default in DDD 2.x and earlier)?
+Ddd*toolbarsAtBottom: false
+
 ! Number of status messages to be kept in status history
 Ddd*statusHistorySize: 20
 
