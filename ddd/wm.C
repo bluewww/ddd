@@ -76,23 +76,6 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 #endif
 }
 
-void wm_set_group_leader(Display * /* display */,
-			 Window /* shell_window */, Window /* leader_window */)
-{
-    // Disabled, since (at least in fvwm) it has no effect but to
-    // disable generation of individual icons.
-#if 0
-    XWMHints *wm_hints = XAllocWMHints();
-
-    wm_hints->flags        = WindowGroupHint;
-    wm_hints->window_group = leader_window;
-
-    XSetWMHints(display, shell_window, wm_hints);
-
-    XFree((void *)wm_hints);
-#endif
-}
-
 void wm_set_name(Display *display, Window shell_window,
 		 string title, string icon)
 {

@@ -45,9 +45,6 @@ extern void wm_set_name(Widget shell, string title = "", string icon = "");
 extern void wm_set_name(Display *display, Window shell,
 			string title = "", string icon = "");
 
-extern void wm_set_group_leader(Display *display, Window shell,
-				Window leader_shell);
-
 // Misc functions
 void wait_until_mapped(Widget w);
 void raise_shell(Widget w);

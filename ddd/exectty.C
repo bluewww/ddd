@@ -190,8 +190,6 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     {
 	wm_set_icon(XtDisplay(command_shell), windowid,
 		    iconlogo(command_shell), iconmask(command_shell));
-	wm_set_group_leader(XtDisplay(command_shell), windowid,
-			    XtWindow(command_shell));
     }
 
     // Be sure to be notified when the TTY window is deleted
