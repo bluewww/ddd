@@ -42,6 +42,7 @@ char SpinBox_rcsid[] =
 #include "strclass.h"
 #include "string-fun.h"
 #include "verify.h"
+#include "TimeOut.h"
 
 #include <stdlib.h>
 

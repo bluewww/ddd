@@ -43,6 +43,7 @@ char ComboBox_rcsid[] =
 #include "charsets.h"
 #include "verify.h"
 #include "wm.h"
+#include "TimeOut.h"
 
 #include <Xm/Xm.h>
 #include <Xm/ArrowB.h>

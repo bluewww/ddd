@@ -51,6 +51,7 @@ char fonts_rcsid[] =
 #include "strclass.h"
 #include "string-fun.h"
 #include "post.h"
+#include "TimeOut.h"
 
 #include <stdlib.h>		// atoi()
 #include <ctype.h>
