@@ -42,5 +42,12 @@ void tabto(string& s, int pos);
 // is reached; ignore first INDENT characters.
 void untabify(string& str, int tab_width = 8, int indent = 0);
 
+// Same, but untabify only for non-standard settings
+inline void untabify_if_needed(string& str, int tab_width = 8, int indent = 0)
+{
+    if (tab_width != 8 || indent % tab_width != 0)
+	untabify(str, tab_width, indent);
+}
+
 #endif // _DDD_tabs_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
