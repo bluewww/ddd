@@ -367,13 +367,10 @@ Volunteers for these and other projects are welcome!
      hotkey package (in
      `http://www.igpm.rwth-aachen.de/~albrecht/mnem.html')
 
-202* Have an improved way of saving state.  There should be menu
-     entries saying:
-
-     Save Options  - save process-independent state
-     Save Session  - save entire state (aka checkpoint)
-
-     Upon `Exit', if breakpoints, displays, etc. would be lost,
-     ask for confirmation and offer to save.
+202* More session stuff:
+     - Have an `Open session...' and a `Save Session As...' item.
+       
+     - Restoring a session should also restore the executable and
+       core settings (i.e. the debugger command).
 
 203. (Insert your project idea here)
