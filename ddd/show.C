@@ -2,6 +2,7 @@
 // DDD info functions
 
 // Copyright (C) 1996-2000 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Universitaet des Saarlandes, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -61,6 +62,9 @@ char show_rcsid[] =
 #include <errno.h>
 
 #include "Xpm.h"
+#if HAVE_ATHENA
+#include <X11/Xaw/XawInit.h>
+#endif
 #include "HelpCB.h"
 
 #if !HAVE_POPEN_DECL
@@ -257,16 +261,18 @@ void show_invocation(const string& gdb_command, ostream& os)
 static void show_configuration(ostream& os, bool version_only)
 {
     // Storing this as a string literal would create an SCCS entry
-    string sccs = "@(" + string("#)");
+    const string sccs = "@(" + string("#)");
 
     string s;
 
     // Version info
     s = string("@(#)GNU " DDD_NAME " " DDD_VERSION " (" DDD_HOST ")\n") +
 	"@(#)Copyright (C) 1995-1999 " 
-	"Technische Universit\344t Braunschweig, Germany.\n" +
+	"Technische Universit\344t Braunschweig, Germany.\n"
         "@(#)Copyright (C) 1999-2001 "
-	"Universit\344t Passau, Germany.\n";
+	"Universit\344t Passau, Germany.\n"
+        "@(#)Copyright (C) 2001 "
+	"Universit\344t des Saarlandes, Germany.\n";
     s.gsub(sccs, string(""));
     os << s;
 
@@ -358,8 +364,12 @@ static void show_configuration(ostream& os, bool version_only)
 	"." stringize(XpmRevision) ", "
 #endif
 #if HAVE_ATHENA
-	"Athena Panner, "
-#endif
+	"Athena Panner"
+#if defined(XawVersion)
+        " (" stringize(XawVersion) ")"
+#endif	
+	", "
+#endif // HAVE_ATHENA
 #if WITH_BUILTIN_VSLLIB
 	"VSL library, "
 #endif
@@ -408,7 +418,7 @@ void show_configuration(ostream& os)
 static int uncompress(ostream& os, const char *text, int size)
 {
     string tmpfile = tempfile();
-    FILE *fp = fopen(tmpfile, "w");
+    FILE *fp = fopen(tmpfile.chars(), "w");
     if (fp == 0)
     {
 	os << tmpfile << ": " << strerror(errno);
@@ -426,7 +436,8 @@ static int uncompress(ostream& os, const char *text, int size)
 
     string cmd = string(app_data.uncompress_command) + " < " + tmpfile;
 
-    fp = popen(sh_command(cmd, true) + " 2>&1", "r");
+    const string s1 = sh_command(cmd, true) + " 2>&1";  
+    fp = popen(s1.chars(), "r");
     if (fp == 0)
     {
 	os << app_data.uncompress_command << ": " << strerror(errno);
@@ -444,7 +455,7 @@ static int uncompress(ostream& os, const char *text, int size)
     }
     pclose(fp);
 
-    unlink(tmpfile);
+    unlink(tmpfile.chars());
     return 0;
 }
 
@@ -460,11 +471,12 @@ void show(int (*formatter)(ostream& os))
 	// 4. cat  (I wonder if this can ever happen)
 	string cmd = "less || more || cat";
 
-	char *env_pager = getenv("PAGER");
+	const char *env_pager = getenv("PAGER");
 	if (env_pager != 0)
 	    cmd = string(env_pager) + " || " + cmd;
 	cmd = "( " + cmd + " )";
-	pager = popen(sh_command(cmd), "w");
+	const string s1 = sh_command(cmd);
+	pager = popen(s1.chars(), "w");
     }
 
     if (pager == 0)
@@ -498,7 +510,7 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer)
     cmd.gsub("@URL@", url);
     cmd += " &";
     cmd = sh_command(cmd, true);
-    system(cmd);
+    system(cmd.chars());
 }
 
 
@@ -512,13 +524,14 @@ int ddd_license(ostream& os)
     (void) uncompress;		// Use it
 
 #if WITH_BUILTIN_LICENSE
-    static const char COPYING[] =
+    static const char *COPYING =
 #include "COPYING.gz.C"
 	;
 
     return uncompress(os, COPYING, sizeof(COPYING) - 1);
 #else
-    ifstream is(resolvePath("COPYING"));
+    const string s1 = resolvePath("COPYING"); 
+    ifstream is(s1.chars());
     if (is.bad())
 	return 1;
 
@@ -539,7 +552,7 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
     string s(license);
     s.prepend("@license@");
 
-    TextHelpCB(w, XtPointer((char *)s), call_data);
+    TextHelpCB(w, XtPointer(s.chars()), call_data);
 
     if (ret != 0 || !s.contains("GNU"))
 	post_error("The " DDD_NAME " license could not be uncompressed.", 
@@ -553,13 +566,14 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 int ddd_news(ostream& os)
 {
 #if WITH_BUILTIN_NEWS
-    static const char NEWS[] =
+    static const char *NEWS =
 #include "NEWS.gz.C"
 	;
 
     return uncompress(os, NEWS, sizeof(NEWS) - 1);
 #else
-    ifstream is(resolvePath("NEWS"));
+    const string s1 = resolvePath("NEWS"); 
+    ifstream is(s1.chars());
     if (is.bad())
 	return 1;
 
@@ -579,7 +593,7 @@ void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
     string s(news);
     s.prepend("@news@");
 
-    TextHelpCB(w, XtPointer((char *)s), call_data);
+    TextHelpCB(w, XtPointer(s.chars()), call_data);
 
     if (ret != 0 || !s.contains(DDD_NAME))
 	post_error("The " DDD_NAME " news could not be uncompressed.", 
@@ -595,7 +609,7 @@ void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
 int ddd_man(ostream& os)
 {
 #if WITH_BUILTIN_MANUAL
-    static const char MANUAL[] =
+    static const char *MANUAL =
 #include "ddd.info.txt.gz.C"
 	;
 
@@ -606,7 +620,8 @@ int ddd_man(ostream& os)
 	"info --subnodes -o - -f " ddd_NAME " 2> /dev/null || "
 	"man " ddd_NAME " || man x" ddd_NAME;
 
-    FILE *fp = popen(sh_command(cmd), "r");
+    const string s1 = sh_command(cmd);
+    FILE *fp = popen(s1.chars(), "r");
     if (fp == 0)
 	return -1;
 
@@ -664,7 +679,8 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
 	cmd.prepend("info --subnodes -o - -f " + key + " 2> /dev/null || ");
     }
 
-    FILE *fp = popen(sh_command(cmd), "r");
+    const string s1 = sh_command(cmd); 
+    FILE *fp = popen(s1.chars(), "r");
     if (fp != 0)
     {
 	ostrstream man;
