@@ -371,6 +371,33 @@ void controlAct(Widget w, XEvent*, String *params, Cardinal *num_params)
     gdb_keyboard_command = true;
 }
 
+void commandAct(Widget w, XEvent*, String *params, Cardinal *num_params)
+{
+    clear_isearch();
+
+    if (*num_params != 1)
+    {
+	cerr << "gdb-command: usage: gdb-command(COMMAND)\n";
+	return;
+    }
+
+    gdb_keyboard_command = true;
+    _gdb_command(params[0], w);
+    gdb_keyboard_command = true;
+}
+
+void processAct(Widget w, XEvent *e, String *, Cardinal *)
+{
+    if (e->type != KeyPress && e->type != KeyRelease)
+	return;
+
+    clear_isearch();
+
+    // Forward event to GDB console
+    e->xkey.window = XtWindow(gdb_w);
+    XtDispatchEvent(e);
+}
+
 void insert_source_argAct   (Widget w, XEvent*, String*, Cardinal*)
 {
     clear_isearch();

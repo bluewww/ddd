@@ -38,22 +38,24 @@
 #include "strclass.h"
 
 // Actions
-extern void controlAct           (Widget, XEvent*, String*, Cardinal*);
-extern void forward_characterAct (Widget, XEvent*, String*, Cardinal*);
-extern void backward_characterAct(Widget, XEvent*, String*, Cardinal*);
-extern void beginning_of_lineAct (Widget, XEvent*, String*, Cardinal*);
-extern void end_of_lineAct       (Widget, XEvent*, String*, Cardinal*);
-extern void set_lineAct          (Widget, XEvent*, String*, Cardinal*);
-extern void delete_or_controlAct (Widget, XEvent*, String*, Cardinal*);
-extern void insert_source_argAct (Widget, XEvent*, String*, Cardinal*);
-extern void insert_graph_argAct  (Widget, XEvent*, String*, Cardinal*);
-extern void next_tab_groupAct    (Widget, XEvent*, String*, Cardinal*);
-extern void prev_tab_groupAct    (Widget, XEvent*, String*, Cardinal*);
-extern void get_focusAct         (Widget, XEvent*, String*, Cardinal*);
-extern void isearch_nextAct      (Widget, XEvent*, String*, Cardinal*);
-extern void isearch_prevAct      (Widget, XEvent*, String*, Cardinal*);
-extern void isearch_exitAct      (Widget, XEvent*, String*, Cardinal*);
-extern void popupAct             (Widget, XEvent*, String*, Cardinal*);
+extern void controlAct            (Widget, XEvent*, String*, Cardinal*);
+extern void commandAct            (Widget, XEvent*, String*, Cardinal*);
+extern void processAct            (Widget, XEvent*, String*, Cardinal*);
+extern void forward_characterAct  (Widget, XEvent*, String*, Cardinal*);
+extern void backward_characterAct (Widget, XEvent*, String*, Cardinal*);
+extern void beginning_of_lineAct  (Widget, XEvent*, String*, Cardinal*);
+extern void end_of_lineAct        (Widget, XEvent*, String*, Cardinal*);
+extern void set_lineAct           (Widget, XEvent*, String*, Cardinal*);
+extern void delete_or_controlAct  (Widget, XEvent*, String*, Cardinal*);
+extern void insert_source_argAct  (Widget, XEvent*, String*, Cardinal*);
+extern void insert_graph_argAct   (Widget, XEvent*, String*, Cardinal*);
+extern void next_tab_groupAct     (Widget, XEvent*, String*, Cardinal*);
+extern void prev_tab_groupAct     (Widget, XEvent*, String*, Cardinal*);
+extern void get_focusAct          (Widget, XEvent*, String*, Cardinal*);
+extern void isearch_nextAct       (Widget, XEvent*, String*, Cardinal*);
+extern void isearch_prevAct       (Widget, XEvent*, String*, Cardinal*);
+extern void isearch_exitAct       (Widget, XEvent*, String*, Cardinal*);
+extern void popupAct              (Widget, XEvent*, String*, Cardinal*);
 
 
 // Callbacks
