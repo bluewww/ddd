@@ -114,7 +114,6 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       last_prompt(""),
       last_written(""),
       echoed_characters(-1),
-      echo_mode_warning(false),
       questions_waiting(false),
       _qu_data(0),
       qu_index(0),
@@ -170,7 +169,6 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _verbatim(gdb.verbatim()),
       last_written(""),
       echoed_characters(-1),
-      echo_mode_warning(false),
       questions_waiting(false),
       _qu_data(0),
       qu_index(0),
@@ -822,20 +820,21 @@ void GDBAgent::strip_xdb_control(string &answer)
 	else if (c == '\033')
 	{
 	    // eat chars through end of control;
-	    if ((c = answer[i++]) == '[')
+	    if (i < length && (c = answer[i++]) == '[')
 	    {
-		if ((c = answer[i++]) == 'J' || c == 'K')
+		if (i < length && (c = answer[i++]) == 'J' || c == 'K')
 		    ;
 		else if (c == 'm')
 			;
 		else if (isdigit(c))
 		{
-		    if (isdigit(c = answer[i++]))
+		    if (i < length && isdigit(c = answer[i++]))
 		    {
 		        // check for ;1H
-			if ((c = answer[i++]) == ';' &&
-				(c = answer[i++]) == '1' &&
-				(c = answer[i++]) == 'H')
+			if (i < length - 2 
+			    && (c = answer[i++]) == ';' 
+			    && (c = answer[i++]) == '1' 
+			    && (c = answer[i++]) == 'H')
 			    ;
 			else
 			    bad_xdb_control(answer, i, c, ";1H");
@@ -859,12 +858,19 @@ void GDBAgent::strip_xdb_control(string &answer)
 void GDBAgent::bad_xdb_control(const string &s, int p, char c, 
 			       const char *expecting)
 {
+    (void) s;			// Use them
+    (void) p;
+    (void) c;
+    (void) expecting;
+
+#if 0
     if (p >= (int) s.length())
 	cerr << "tried to get character " << p << " from " << s << "\n";
     else
 	cerr << "bad character [" << (char) c << ", " << (int) c <<
 		"] at position " << p << " in " << s <<
 		" [expecting " << expecting << "]\n";
+#endif
 }
 
 
@@ -876,6 +882,10 @@ void GDBAgent::bad_xdb_control(const string &s, int p, char c,
 // ***************************************************************************
 // Received data from GDB
 //
+
+// Number of characters to be echoed for echo detection
+const int ECHO_THRESHOLD = 4;
+
 void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 {
     GDBAgent* gdb = ptr_cast(GDBAgent, agent);
@@ -909,20 +919,15 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	    }
 	}
 
-	if (e >= int(gdb->last_written.length()))
+	if (e >= ECHO_THRESHOLD && e >= int(gdb->last_written.length()))
 	{
 	    // All characters last written have been echoed.
 	    // => Remove echoed characters and keep on processing
+	    gdb->callHandlers(EchoDetected);
 	    answer = answer.from(i);
 	    gdb->echoed_characters = -1;
-
-	    if (!gdb->echo_mode_warning)
-	    {
-		gdb->callHandlers(EchoDetected);
-		gdb->echo_mode_warning = true;
-	    }
 	}
-	else if (i >= int(answer.length()))
+	else if (i >= ECHO_THRESHOLD && i >= int(answer.length()))
 	{
 	    // All characters received so far have been echoed.
 	    // => Wait for next input
@@ -938,7 +943,6 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	}
     }
 
-
     // Check for `More' prompt
     string reply = gdb->requires_reply(answer);
     if (reply != "")
@@ -947,10 +951,10 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	gdb->write(reply);
 	gdb->flush();
 
-	// Ignore the `More' prompt
-	answer += '\r';
+	// Ignore the last line (containing the `More' prompt)
+	int last_beginning_of_line = answer.index('\n', -1) + 1;
+	answer.from(last_beginning_of_line) = "";
     }
-
 
     // Check for secondary prompt
     if (gdb->ends_with_secondary_prompt(answer))
@@ -975,7 +979,6 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	// Ignore the selection
 	answer = info.question;
     }
-
 
     // Handle all other GDB output, depending on current state.
     switch (gdb->state)

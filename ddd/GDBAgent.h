@@ -171,7 +171,6 @@ private:
     string last_prompt;		// Last prompt received
     string last_written;	// Last command sent
     int echoed_characters;      // # of echoed characters so far (-1: no echo)
-    bool echo_mode_warning;	// True if warned about echo mode
 
 protected:
     // Return PREFIX + EXPR, parenthesizing EXPR if needed
