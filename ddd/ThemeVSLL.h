@@ -51,6 +51,12 @@ public:
     // Theme list
     const StringArray& theme_list() const { return _theme_list; }
     void set_theme_list(const StringArray& themes);
+
+    // Destructor
+    virtual ~ThemedVSLLib();
+
+    // Representation invariant
+    virtual bool OK() const;
 };
 
 #endif // _DDD_ThemedVSLLib_h

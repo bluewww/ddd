@@ -80,3 +80,17 @@ void ThemedVSLLib::set_theme_list(const StringArray& themes)
     _theme_list = themes;
 }
 
+// Destructor
+ThemedVSLLib::~ThemedVSLLib()
+{
+    delete _original_lib;
+}
+
+// Representation invariant
+bool ThemedVSLLib::OK() const
+{
+    assert(VSLLib::OK());
+    assert(_original_lib == 0 || _original_lib->OK());
+
+    return true;
+}
