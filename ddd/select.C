@@ -147,12 +147,14 @@ void gdb_selectHP(Agent *, void *, void *call_data)
 {
     ReplyRequiredInfo *info = (ReplyRequiredInfo *)call_data;
 
+#if 0
     if (gdb_keyboard_command)
     {
 	// Use the GDB console to answer this query
 	info->reply = "";
 	return;
     }
+#endif
 
     // Fetch previous output lines, in case this is a multi-line message.
     String s = XmTextGetString(gdb_w);
@@ -160,11 +162,11 @@ void gdb_selectHP(Agent *, void *, void *call_data)
     XtFree(s);
     prompt = prompt.from(int(messagePosition)) + info->question;
 
-    // Set reply
-    info->reply = select_from_gdb(prompt);
-
-    // Show neither prompt nor reply
+    // Issue prompt right now
+    _gdb_out(info->question);
     info->question = "";
-    XmTextReplace(gdb_w, messagePosition, 
-		  XmTextGetLastPosition(gdb_w), "");
+
+    // Set and issue reply
+    info->reply = select_from_gdb(prompt);
+    _gdb_out(info->reply);
 }
