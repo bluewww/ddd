@@ -2733,6 +2733,9 @@ The default font in a slightly smaller size.
 .B "tt"
 The fixed-width font (teletype) used in texts.
 .TP 10
+.B "tb"
+A bold fixed-width font (teletype) used in texts.
+.TP 10
 .B "key"
 The font used for describing key caps.
 .TP 10
