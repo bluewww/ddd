@@ -14,16 +14,12 @@ DDD 2.0 (in development)
       arguments are now located in the command tool, a small separate
       window.  The command tool can be moved wherever appropriate,
       leaving more space for window contents.
-    - XDB support.  On popular request, DDD now supports HP's XDB as
-      inferior debugger.
-    - Extended DBX support.  DDD determines DBX properties
-      at run-time and adapts automatically to a wide range of DBX
-      variants.
-    - DDD now supports DBX on DEC and AIX systems.
     - User-defined buttons are now available.  These can also
       be used to re-install the old command buttons.
     - Variable values can now be altered interactively during program
       execution.
+    - You can inquire the types of variables and functions (`whatis') 
+      through the source popup menu.
     - `New display' subsumes `Dependent display': if a display is
       selected, the new display is made dependent on it.
     - Some items have been renamed for further clarity:
@@ -40,6 +36,16 @@ DDD 2.0 (in development)
     - Ctrl+C has now the highest priority of all processed events.
     - The DDD License can now be viewed from within DDD.
 
+    Supported debuggers and languages:
+    - XDB support.  On popular request, DDD now supports HP's XDB as
+      inferior debugger.
+    - Extended DBX support.  DDD determines DBX properties
+      at run-time and adapts automatically to a wide range of DBX
+      variants.
+    - DDD now supports DBX on DEC and AIX systems.
+    - Improved GDB support for Modula-2 and Modula-3 programs.
+      Thanks to Peter Klein <pk@i3.informatik.rwth-aachen.de>.
+
     Changes in configuration and building:
     - Regular expressions now use the POSIX.2 standard regcomp/regexec
       interface.  The slower interface is compensated by smarter calls.
@@ -52,8 +58,9 @@ DDD 2.0 (in development)
       C++ compilers exist in the world.
     - You can specify `--without-athena' to avoid searching for and
       linking with Athena libraries.
-    - Patches for AIX xlC C++ compiler (and probably others) included.
-      Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de>.
+    - Patches for AIX xlC, GCC 2.8.0 and probably other C++ compilers
+      included.  Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de> and
+      Jason Merrill <jason@cygnus.com>.
     - DDD now compiles and runs unchanged with LessTif, a free Motif
       clone under construction.  Note that `runs' is relative: As of
       LessTif 0.50, DDD is still far from being usable.  This will
