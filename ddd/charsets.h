@@ -65,8 +65,11 @@ inline MString bf(const string& text) { return MString(text, CHARSET_BF); }
 inline MString bs(const string& text) { return MString(text, CHARSET_BS); }
 
 // Newline function
+#if XmVERSION == 1 && XmREVISION <= 1
+inline MString cr() { return rm("\n"); }
+#else
 inline MString cr() { return MString(XmStringSeparatorCreate(), true); }
-
+#endif
 
 #endif // _DDD_charsets_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
