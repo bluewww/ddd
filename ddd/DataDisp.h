@@ -97,6 +97,7 @@ class DataDisp {
     static void enableCB                (Widget, XtPointer, XtPointer);
     static void disableCB               (Widget, XtPointer, XtPointer);
     static void showDetailCB            (Widget, XtPointer, XtPointer);
+    static void showMoreDetailCB        (Widget, XtPointer, XtPointer);
     static void hideDetailCB            (Widget, XtPointer, XtPointer);
     static void dependentCB             (Widget, XtPointer, XtPointer);
     static void setCB                   (Widget, XtPointer, XtPointer);
@@ -169,6 +170,8 @@ class DataDisp {
 
     static string numbers(IntArray& a);
 
+    static void show(Widget dialog, int depth, int more);
+
 
     //-----------------------------------------------------------------------
     // Actions
@@ -196,6 +199,7 @@ class DataDisp {
     static MMDesc node_popup[];
     static MMDesc graph_cmd_area[];
     static MMDesc display_area[];
+    static MMDesc detail_menu[];
 
 
 public:

@@ -64,6 +64,12 @@ class DispValue {
     void init(string& value);
     void clear();
 
+protected:
+    // Makes sense only for type() == Array, StructOrClass, BaseClass
+    // Expand/collapse single value
+    void _expand()    { myexpanded = true;  }
+    void _collapse()  { myexpanded = false; }
+
 public:
     // The DispValue type is determined from VALUE
     DispValue (DispValue* parent, 
@@ -100,18 +106,24 @@ public:
     // Makes sense only for type() == Pointer
     void dereference();
 
-    // Makes sense only for type() == Array, StructOrClass, BaseClass
-    // Expand/collapse single value
-    void expand()    { myexpanded = true;  }
-    void collapse()  { myexpanded = false; }
+    // Expand/collapse entire tree.  If DEPTH is non-negative, expand
+    // DEPTH levels only.  If DEPTH is negative, expand all.
+    void collapseAll(int depth = -1);
+    void expandAll(int depth = -1);
 
-    // Expand/collapse entire tree
-    void collapseAll();
-    void expandAll();
+    // Custom calls
+    void collapse() { collapseAll(1); }
+    void expand()   { expandAll(1); }
 
     // Count expanded or selected nodes in tree
     int expandedAll()  const;
     int collapsedAll() const;
+
+    // Return height of entire tree
+    int height() const;
+
+    // Return height of expanded tree
+    int heightExpanded() const;
 
     // Makes sense only for type() == Array
     void align_vertical();

@@ -51,6 +51,7 @@ char DispValue_rcsid[] =
 #include "cook.h"
 #include "GDBAgent.h"
 #include "ddd.h"
+#include "misc.h"
 #include "DispNode.h"
 #include "regexps.h"
 
@@ -548,24 +549,32 @@ void DispValue::align_horizontal ()
 
 
 // Expand.  Like expand(), but expand entire subtree
-void DispValue::expandAll()
+void DispValue::expandAll(int depth)
 {
-    expand();
+    if (depth == 0)
+	return;
+
+    _expand();
+
     for (int i = 0; i < number_of_childs(); i++)
     {
 	DispValue *child = get_child(i);
-	child->expandAll();
+	child->expandAll(depth - 1);
     }
 }
 
 // Collapse.  Like collapse(), but collapse entire subtree
-void DispValue::collapseAll()
+void DispValue::collapseAll(int depth)
 {
-    collapse();
+    if (depth == 0)
+	return;
+
+    _collapse();
+
     for (int i = 0; i < number_of_childs(); i++)
     {
 	DispValue *child = get_child(i);
-	child->collapseAll();
+	child->collapseAll(depth - 1);
     }
 }
 
@@ -591,6 +600,37 @@ int DispValue::collapsedAll() const
 	count += get_child(i)->collapsedAll();
 
     return count;
+}
+
+
+// Return height of entire tree
+int DispValue::height() const
+{
+    int d = 0;
+
+    for (int i = 0; i < number_of_childs(); i++)
+	d = max(d, get_child(i)->height());
+
+    return d + 1;
+}
+
+// Return height of expanded tree
+int DispValue::heightExpanded() const
+{
+    if (collapsed())
+	return 0;
+
+    int d = 0;
+
+    for (int i = 0; i < number_of_childs(); i++)
+    {
+	if (get_child(i)->collapsed())
+	    return 1;
+
+	d = max(d, get_child(i)->heightExpanded());
+    }
+
+    return d + 1;
 }
 
 

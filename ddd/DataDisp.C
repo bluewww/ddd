@@ -106,6 +106,7 @@ char DataDisp_rcsid[] =
 #include <iomanip.h>
 #include <ctype.h>
 
+extern void register_menu_shell(MMDesc *items);
 
 //-----------------------------------------------------------------------
 // Xt-Zeugs
@@ -143,7 +144,7 @@ struct ValueItms { enum Itms {Dereference, Detail, Rotate, Dependent,
 MMDesc DataDisp::node_popup[] =
 {
     {"dereference",   MMPush,   {DataDisp::dereferenceCB}},
-    {"detail",        MMPush,   {DataDisp::toggleDetailCB}},
+    {"detail",        MMPush,   {DataDisp::toggleDetailCB, XtPointer(-1)}},
     {"rotate",        MMPush,   {DataDisp::toggleRotateCB}},
     {"dependent",     MMPush,   {DataDisp::dependentCB}},
     MMSep,
@@ -156,13 +157,28 @@ MMDesc DataDisp::node_popup[] =
 MMDesc DataDisp::graph_cmd_area[] =
 {
     {"dereference",   MMPush | MMInsensitive, {DataDisp::dereferenceCB}},
-    {"detail",        MMPush | MMInsensitive, {DataDisp::toggleDetailCB}},
+    {"detail",        MMPush | MMInsensitive, {DataDisp::toggleDetailCB,
+					       XtPointer(-1) }, 
+                                               DataDisp::detail_menu },
     {"rotate",        MMPush | MMInsensitive, {DataDisp::toggleRotateCB}},
     {"dependent",     MMPush, {DataDisp::dependentCB}},
     MMSep,
     {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
     MMSep,
     {"delete",        MMPush | MMInsensitive, {DataDisp::deleteCB}},
+    MMEnd
+};
+
+
+struct DetailItms { enum Itms { ShowMore, ShowJust, 
+				ShowDetail, HideDetail }; };
+
+MMDesc DataDisp::detail_menu[] =
+{
+    {"show_more",    MMPush, {DataDisp::showMoreDetailCB, XtPointer(1) }},
+    {"show_just",    MMPush, {DataDisp::showDetailCB, XtPointer(1) }},
+    {"show_detail",  MMPush, {DataDisp::showDetailCB, XtPointer(-1) }},
+    {"hide_detail",  MMPush, {DataDisp::hideDetailCB, XtPointer(-1) }},
     MMEnd
 };
 
@@ -173,8 +189,8 @@ MMDesc DataDisp::display_area[] =
 {
     {"dependent",    MMPush,   {DataDisp::dependentCB }},
     {"dereference",  MMPush,   {DataDisp::dereferenceCB }},
-    {"show_detail",  MMPush,   {DataDisp::showDetailCB}},
-    {"hide_detail",  MMPush,   {DataDisp::hideDetailCB}},
+    {"show_detail",  MMPush,   {DataDisp::showDetailCB, XtPointer(-1) }},
+    {"hide_detail",  MMPush,   {DataDisp::hideDetailCB, XtPointer(-1) }},
     {"set",          MMPush,   {DataDisp::setCB}},
     {"delete",       MMPush,   {DataDisp::deleteCB }},
     MMEnd
@@ -323,8 +339,10 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
     new_display(display_expression, 0, itostring(disp_node_arg->disp_nr()));
 }
 
-void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
+void DataDisp::toggleDetailCB(Widget dialog, XtPointer client_data, XtPointer)
 {
+    int depth = int(client_data);
+
     set_last_origin(dialog);
 
     IntArray disp_nrs;
@@ -362,7 +380,9 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 	    }
 	    else if (dv->collapsedAll() > 0)
 	    {
-		dv->expandAll();
+		// Expand just this value
+		dv->collapseAll();
+		dv->expandAll(depth);
 
 		if (dv == dn->value() && dn->disabled())
 		{
@@ -378,6 +398,7 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 	    }
 	    else
 	    {
+		// Collapse this value
 		dv->collapse();
 
 		if (dv == dn->value() && dn->enabled())
@@ -404,7 +425,20 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 	refresh_graph_edit();
 }
 
-void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
+void DataDisp::showDetailCB (Widget dialog, XtPointer client_data, XtPointer)
+{
+    int depth = int(client_data);
+    show(dialog, depth, 0);
+}
+
+void DataDisp::showMoreDetailCB(Widget dialog, XtPointer client_data, 
+				XtPointer)
+{
+    int more = int(client_data);
+    show(dialog, 0, more);
+}
+
+void DataDisp::show(Widget dialog, int depth, int more)
 {
     set_last_origin(dialog);
     IntArray disp_nrs;
@@ -428,10 +462,14 @@ void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
 		dv = dn->value();
 	    if (dv == 0)
 		continue;
-	    
-	    if (dv->collapsedAll() > 0)
+
+	    if (more != 0)
+		depth = dv->heightExpanded() + more;
+
+	    if (depth > 0 || dv->collapsedAll() > 0)
 	    {
-		dv->expandAll();
+		dv->collapseAll();
+		dv->expandAll(depth);
 		dn->refresh();
 		changed = true;
 	    }
@@ -443,6 +481,8 @@ void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
     if (changed)
 	refresh_graph_edit();
 }
+
+
 
 void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 {
@@ -481,6 +521,7 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
     if (changed)
 	refresh_graph_edit();
 }
+
 
 void DataDisp::toggleRotateCB(Widget w, XtPointer, XtPointer)
 {
@@ -990,9 +1031,14 @@ void DataDisp::graph_dereferenceAct (Widget w, XEvent*, String*, Cardinal*)
     dereferenceCB(w, 0, 0);
 }
 
-void DataDisp::graph_detailAct (Widget w, XEvent*, String*, Cardinal*)
+void DataDisp::graph_detailAct (Widget w, XEvent *, 
+				String *params, Cardinal *num_params)
 {
-    toggleDetailCB(w, 0, 0);
+    int depth = -1;
+    if (params != 0 && num_params != 0 && *num_params >= 1)
+	depth = atoi(params[0]);
+
+    toggleDetailCB(w, XtPointer(depth), 0);
 }
 
 void DataDisp::graph_rotateAct (Widget w, XEvent*, String*, Cardinal*)
@@ -1354,6 +1400,15 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(display_area[DisplayItms::ShowDetail].widget, 
 		  count_selected_collapsed > 0);
     set_sensitive(display_area[DisplayItms::HideDetail].widget, 
+		  count_selected_expanded > 0);
+
+    set_sensitive(detail_menu[DetailItms::ShowMore].widget, 
+		  count_selected_collapsed > 0);
+    set_sensitive(detail_menu[DetailItms::ShowJust].widget, 
+		  count_selected > 0);
+    set_sensitive(detail_menu[DetailItms::ShowDetail].widget, 
+		  count_selected_collapsed > 0);
+    set_sensitive(detail_menu[DetailItms::HideDetail].widget, 
 		  count_selected_expanded > 0);
 
     // Delete
@@ -3933,6 +3988,7 @@ DataDisp::DataDisp (XtAppContext app_context,
     MMcreateWorkArea(graph_cmd_w, "graph_cmd_area", graph_cmd_area);
     MMaddCallbacks(graph_cmd_area);
     XtManageChild(graph_cmd_w);
+    register_menu_shell(graph_cmd_area);
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
@@ -3986,6 +4042,7 @@ DataDisp::DataDisp (XtAppContext app_context,
     Widget buttons = 
 	verify(MMcreateWorkArea(form2, "buttons", display_area));
     MMaddCallbacks (display_area);
+    register_menu_shell(display_area);
 
     XtManageChild (buttons);
     XtManageChild (display_list_w);
