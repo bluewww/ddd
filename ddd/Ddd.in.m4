@@ -406,7 +406,7 @@ Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
 
 ! Some special labels
 Ddd*tool_buttons*Forward.labelString:   Fwd
-Ddd*tool_bar*Cont.labelString:   Continue
+Ddd*command_tool_bar*Cont.labelString:   Continue
 
 
 
@@ -1664,7 +1664,7 @@ What's new in this DDD release relative to previous releases.
 
 
 !-----------------------------------------------------------------------------
-! Toolbar tips
+! Button tips
 !-----------------------------------------------------------------------------
 
 ! These colors are taken from Netscape.  The basic idea is that you might
@@ -4197,14 +4197,14 @@ Ddd*source_buttons*XmPushButton.helpString:
 Ddd*console_buttons*XmPushButton.helpString:
 Ddd*data_buttons*XmPushButton.helpString:
 Ddd*tool_buttons*XmPushButton.helpString:
-Ddd*tool_bar*XmPushButton.helpString:
+Ddd*command_tool_bar*XmPushButton.helpString:
 
 ! Same applies for button tips.
 Ddd*source_buttons*XmPushButton.tipString:
 Ddd*console_buttons*XmPushButton.tipString:
 Ddd*data_buttons*XmPushButton.tipString:
 Ddd*tool_buttons*XmPushButton.tipString:
-Ddd*tool_bar*XmPushButton.tipString:
+Ddd*command_tool_bar*XmPushButton.tipString:
 
 ! Special spacing
 Ddd*source_buttons.spacing:	    0
@@ -4242,7 +4242,7 @@ Ddd*console_buttons*break.tipString: \
 @rm Interrupt debugged program
 Ddd*tool_buttons*break.tipString: \
 @rm Interrupt debugged program
-Ddd*tool_bar*break.tipString: \
+Ddd*command_tool_bar*break.tipString: \
 @rm Interrupt debugged program
 Ddd*?*break.documentationString: \
 @rm Interrupt the debugged process (or current @GDB@ command)

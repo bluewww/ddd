@@ -458,7 +458,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	if (!synthetic
 	    && (w == source_view_shell
 		|| (source_view_shell == 0 && w == command_shell))
-	    && !app_data.tool_bar && app_data.source_window)
+	    && !app_data.command_tool_bar && app_data.source_window)
 	{
 	    // Popup command tool again
 	    popup_shell(tool_shell);

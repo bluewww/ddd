@@ -364,11 +364,21 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNtoolBar,
+	XtNcommandToolBar,
 	XtCToolBar,
 	XtRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, tool_bar),
+	XtOffsetOf(AppData, command_tool_bar),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
+    {
+	XtNargToolBar,
+	XtCToolBar,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, arg_tool_bar),
 	XtRImmediate,
 	XtPointer(False)
     },

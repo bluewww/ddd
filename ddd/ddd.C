@@ -1321,7 +1321,7 @@ XmTextPosition messagePosition;
 static Widget console_buttons_w;
 static Widget source_buttons_w;
 static Widget data_buttons_w;
-static Widget tool_bar_w;
+static Widget command_tool_bar_w;
 
 // Strings to be ignored in GDB output
 string gdb_out_ignore = "";
@@ -2011,10 +2011,10 @@ int main(int argc, char *argv[])
 		  NULL);
 
     // Tool bar (optional)
-    tool_bar_w = make_buttons(source_view_parent, "tool_bar", 
-			      app_data.tool_buttons);
-    if (tool_bar_w != 0)
-	XtUnmanageChild(tool_bar_w);
+    command_tool_bar_w = make_buttons(source_view_parent, "command_tool_bar", 
+				      app_data.tool_buttons);
+    if (command_tool_bar_w != 0)
+	XtUnmanageChild(command_tool_bar_w);
 
     // Source buttons (optional)
     source_buttons_w = make_buttons(source_view_parent, "source_buttons", 
@@ -3162,8 +3162,8 @@ void update_options()
     set_toggle(set_status_bottom_w,        app_data.status_at_bottom);
     set_toggle(set_status_top_w,           !app_data.status_at_bottom);
 
-    set_toggle(set_tool_buttons_in_tool_bar_w,     app_data.tool_bar);
-    set_toggle(set_tool_buttons_in_command_tool_w, !app_data.tool_bar);
+    set_toggle(set_tool_buttons_in_tool_bar_w,     app_data.command_tool_bar);
+    set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_tool_bar);
 
     Boolean separate = 
 	app_data.separate_data_window || app_data.separate_source_window;
@@ -3220,15 +3220,17 @@ void update_options()
 	// data_disp->refresh_display();
     }
 
-    if (app_data.tool_bar && tool_bar_w != 0 && !XtIsManaged(tool_bar_w))
+    if (app_data.command_tool_bar && 
+	command_tool_bar_w != 0 && !XtIsManaged(command_tool_bar_w))
     {
 	if (app_data.source_window)
-	    XtManageChild(tool_bar_w);
+	    XtManageChild(command_tool_bar_w);
 	gdbCloseToolWindowCB(command_shell, 0, 0);
     }
-    else if (!app_data.tool_bar && tool_bar_w != 0 && XtIsManaged(tool_bar_w))
+    else if (!app_data.command_tool_bar && 
+	     command_tool_bar_w != 0 && XtIsManaged(command_tool_bar_w))
     {
-	XtUnmanageChild(tool_bar_w);
+	XtUnmanageChild(command_tool_bar_w);
 	if (app_data.source_window)
 	    gdbOpenToolWindowCB(command_shell, 0, 0);
     }
@@ -3511,9 +3513,9 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_status_top_w, !initial_app_data.status_at_bottom);
 
     notify_set_toggle(set_tool_buttons_in_tool_bar_w, 
-		      initial_app_data.tool_bar);
+		      initial_app_data.command_tool_bar);
     notify_set_toggle(set_tool_buttons_in_command_tool_w, 
-		      !initial_app_data.tool_bar);
+		      !initial_app_data.command_tool_bar);
 
     notify_set_toggle(set_focus_pointer_w, 
 		      initial_focus_policy == XmPOINTER);
@@ -3555,7 +3557,7 @@ bool startup_preferences_changed()
 
     return separate != initial_separate
 	|| app_data.status_at_bottom != initial_app_data.status_at_bottom
-	|| app_data.tool_bar != initial_app_data.tool_bar
+	|| app_data.command_tool_bar != initial_app_data.command_tool_bar
 	|| focus_policy != initial_focus_policy
 	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
 	|| debugger_type(app_data.debugger)
@@ -4588,7 +4590,7 @@ void _gdb_out(string text)
     set_buttons_from_gdb(console_buttons_w, text);
     set_buttons_from_gdb(source_buttons_w, text);
     set_buttons_from_gdb(data_buttons_w, text);
-    set_buttons_from_gdb(tool_bar_w, text);
+    set_buttons_from_gdb(command_tool_bar_w, text);
     set_status_from_gdb(text);
     set_tty_from_gdb(text);
 
@@ -5448,9 +5450,9 @@ static void setup_command_tool(bool iconic)
     XtAddEventHandler(tool_shell, STRUCTURE_MASK, False,
 		      StructureNotifyEH, XtPointer(0));
 
-    if (app_data.tool_bar)
+    if (app_data.command_tool_bar)
     {
-	// The command tool is not needed, as we have a tool bar.
+	// The command tool is not needed, as we have a command tool bar.
     }
     else if (!app_data.source_window)
     {

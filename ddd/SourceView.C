@@ -2376,7 +2376,7 @@ void SourceView::read_file (string file_name,
 	    source_view_shell : command_shell;
 	initial_popup_shell(shell);
 
-	if (!app_data.tool_bar)
+	if (!app_data.command_tool_bar)
 	    initial_popup_shell(tool_shell);
     }
 }

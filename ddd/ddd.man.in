@@ -2486,7 +2486,7 @@ takes only effect after you have saved options and restarted
 \s-2@DDD@\s+2.  Pick your choice.
 .PP
 \s-2@DDD@\s+2 can locate the tool buttons in the command tool (`\fBin
-command tool\fR') or in another line of buttons below the program
+command tool\fR') or in a \fIcommand tool bar\fR below the program
 source (`\fBin source window\fR').  Pick your choice.
 .PP
 By default, \s-2@DDD@\s+2 directs keyboard input to the item your
@@ -3300,7 +3300,14 @@ also initially sent to \s-2XDB\s+2.  By default, it is empty.
 .\"
 .SS "User-defined Buttons"
 .\"
-The following resources can be used to create user-defined buttons.
+The following resources can be used to create and control user-defined
+buttons.
+.TP
+.B "commandToolBar (\fPclass\fB ToolBar)"
+Whether the tool buttons (see the `\fBtoolButtons\fR' resource, below)
+should be shown in a tool bar below the source window (\fBtrue\fR) or
+within the command tool (\fBfalse\fR, default).  Enabling the command
+tool bar disables the command tool and vice versa.
 .TP
 .B "consoleButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be added under the debugger
@@ -3446,16 +3453,10 @@ See also the `\fBconsoleButtons\fR' and `\fBdataButtons\fR' resources,
 above, and the `\fBtoolButtons\fR' resource, below.
 .RE
 .TP
-.B "toolBar (\fPclass\fB ToolBar)"
-Whether the tool buttons (see  the `\fBtoolButtons\fR' resource,
-below) should be shown in a tool bar below the source window
-(\fBtrue\fR) or within the command tool (\fBfalse\fR, default).
-Enabling the tool bar disables the command tool and vice versa.
-.TP
 .B "toolButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be included in the command tool
-or the tool bar (see the `\fBtoolBar\fR' resource, above).  Each
-button issues the command given by its name.  See the
+or the command tool bar (see the `\fBcommandToolBar\fR' resource,
+above).  Each button issues the command given by its name.  See the
 `\fBconsoleButtons\fR' resource, above, for details on button syntax.
 .RS
 .PP

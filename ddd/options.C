@@ -632,11 +632,11 @@ void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = int(client_data);
 
-    app_data.tool_bar = state;
+    app_data.command_tool_bar = state;
     string tool_buttons_are_located_in = "Tool buttons are located in ";
 
     if (state)
-	set_status(tool_buttons_are_located_in + "source window.");
+	set_status(tool_buttons_are_located_in + "command tool bar.");
     else
 	set_status(tool_buttons_are_located_in + "command tool.");
 
@@ -1499,8 +1499,8 @@ bool save_options(unsigned long flags)
 			 app_data.value_docs) << "\n";
     os << bool_app_value(XtNstatusAtBottom,
 			 app_data.status_at_bottom) << "\n";
-    os << bool_app_value(XtNtoolBar,
-			 app_data.tool_bar) << "\n";
+    os << bool_app_value(XtNcommandToolBar,
+			 app_data.command_tool_bar) << "\n";
     os << bool_app_value(XtNseparateExecWindow,
 			 app_data.separate_exec_window) << "\n";
     if (!app_data.separate_source_window && !app_data.separate_data_window)
