@@ -224,24 +224,6 @@ Volunteers for fixing these and other bugs are welcome!
 211. Graham Hudspith <ghudspit@mltsa.uk.lucent.com> reports that the
      HP-UX version of DDD 2.1.95 crashes at start-up.
 
-213. DDD 2.1.95 does not work with Sun DBX 4.0.  Fred Damen 
-     <damenf@cig.mot.com> reports:
-
-     1) The arrow/stop sign do not show. independant of the setting
-        for glyphs or text.  They do show when using gdb.
-
-     2) When the execution window is started the string '2>
-        /dev/pts/12' gets passed to the debugged program instead of
-        being processed by the shell.  I have tcsh as my login shell
-        and I suppose that if I had a sh variant as a login shell this
-        would work.  Also, when executing 'run' after 'Run in
-        execution window' is set to DBX console the string '2>
-        /dev/pts/12 < /dev/pts/12 > /dev/pts/12' is passed to the
-        debugged program and it seems as though by this time the pty
-        12 is already reserved.
-
-     [Should be fixed in DDD 2.2  -AZ]
-
 215. With separate windows, a newly created assembler window has zero
      height.
 
