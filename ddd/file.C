@@ -715,8 +715,8 @@ static void sort(StringArray& a)
     } while (h != 1);
 }
 
-// Check whether LINE is a valid PS line
-static bool valid_ps_line(const string& line, const string& command)
+// Check whether LINE is a valid PS line.  Exclude occurrences of PS_COMMAND.
+static bool valid_ps_line(const string& line, const string& ps_command)
 {
     int pid = ps_pid(line);
     if (pid == 0)
@@ -734,8 +734,13 @@ static bool valid_ps_line(const string& line, const string& command)
     if (pid == gdb->pid())
 	return false;		// Neither should you debug GDB by itself.
 
-    if (line.contains(command))
-	return false;		// This one should now be dead.
+    string ps = ps_command;
+    if (ps.contains(rxwhite))
+	ps = ps.before(rxwhite);
+
+    static regex rxps(".*[/ ]" + ps + "($| ).*");
+    if (line.matches(rxps))
+	return false;		// Don't issue lines containing `ps'.
 
     return true;
 }
@@ -758,8 +763,12 @@ static void update_processes(Widget processes, bool keep_selection)
     {
 	if (c == '\n')
 	{
-	    if (first_line || valid_ps_line(line, cmd))
+	    if (first_line || valid_ps_line(line, app_data.ps_command))
 		process_list += line;
+#if 0
+	    else
+		clog << "Excluded: " << line << "\n";
+#endif
 
 	    if (first_line)
 	    {
