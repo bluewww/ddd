@@ -440,8 +440,7 @@ void SourceView::line_popup_set_tempCB (Widget w,
 	// Make sure we get the number of the temporary breakpoint
 	syncCommandQueue();
 	gdb_command("when at " + itostring(line_nr) 
-		    + " { " + clear_command(itostring(line_nr)) 
-		    + "; }", w);
+		    + command_list(clear_command(itostring(line_nr))), w);
 	break;
     }
 }
@@ -462,10 +461,8 @@ void SourceView::address_popup_set_tempCB (Widget w,
 
 	// Make sure we get the number of the temporary breakpoint
 	syncCommandQueue();
-
-	gdb_command("when at " + itostring(line_nr) 
-		    + " { " + clear_command(itostring(line_nr)) 
-		    + "; }", w);
+	gdb_command("when $pc == " + address 
+		    + command_list(clear_command(address)), w);
 	break;
     }
 }
@@ -4853,5 +4850,14 @@ string SourceView::clear_command(string pos)
 	return string("delete ") + bps;
     else
 	return "";
+}
+
+// Some DBXes require `{ COMMAND; }', others `{ COMMAND }'.
+string SourceView::command_list(string cmd)
+{
+    if (gdb->has_when_semicolon())
+	return "{ " + cmd + "; }";
+    else
+	return "{ " + cmd + " }";
 }
 

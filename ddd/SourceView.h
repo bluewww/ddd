@@ -418,6 +418,9 @@ public:
     // Return `clear ARG' command
     static string clear_command(string arg);
 
+    // Return `{ COMMAND; }'
+    static string command_list(string cmd);
+
     // Clear caches
     static void clear_file_cache();
     static void clear_code_cache();
