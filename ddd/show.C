@@ -219,7 +219,7 @@ void show_invocation(DebuggerType type, ostream& os)
 
     show_version(os);
     os << gdb_version <<
-	"This is DDD, the data display debugger, based on "
+	"This is " DDD_NAME ", the data display debugger, based on "
 	<< base << "\n" << 
 	"Usage:\n"
 	"    " ddd_NAME " [options...]"
@@ -229,6 +229,7 @@ void show_invocation(DebuggerType type, ostream& os)
 	"  --dbx              Invoke DBX as inferior debugger.\n"
 	"  --gdb              Invoke GDB as inferior debugger.\n"
 	"  --xdb              Invoke XDB as inferior debugger.\n"
+	"  --jdb              Invoke JDB as inferior debugger.\n"
 	"  --debugger NAME    Invoke inferior debugger as NAME.\n"
 	"  --host HOST        Run inferior debugger on HOST.\n"
 	"  --login LOGIN      Use LOGIN for connecting to host.\n"
