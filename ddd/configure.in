@@ -316,6 +316,9 @@ AC_CHECK_LIB(Xm, XmCreateOptionMenu,
 fi
 if test "$XM_LIBS" = ""; then
 AC_MSG_WARN(could not find Motif library)
+dnl Set this unconditionally - without Motif, we won't get far
+XM_LIBS="-lXm"
+AC_DEFINE(HAVE_MOTIF_WIDGETS)
 fi
 AC_SUBST(XM_LIBS)
 dnl
