@@ -377,5 +377,15 @@ Volunteers for fixing these and other bugs are welcome!
 129. Displaying `*tree' in `cxxtest.C' with `set print vtbl on' gives
      a bad display.
 
-129. (Insert your bug here)
+130. Bad help text for `Break at ()' button, for `Close' and `Help' in
+     `Preferences'.  `Restart' and `Quit' are missing in menu helps.
 
+131. `Find<<' and `Find>>' should be in the `Edit' menu (at least for
+     sources)
+
+132. `PgUp' and `PgDn' don't scroll the debugger console.
+
+133. In Linux, clicking the middle mouse button on a breakpoint symbol
+     causes a segmentation fault.
+
+134. (Insert your bug here)
