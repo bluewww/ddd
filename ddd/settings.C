@@ -44,6 +44,7 @@ char settings_rcsid[] =
 #include <Xm/Form.h>
 #include <Xm/Label.h>
 #include <Xm/LabelG.h>
+#include <Xm/MwmUtil.h>
 #include <Xm/Separator.h>
 #include <ctype.h>
 #include <string.h>
@@ -2580,8 +2581,9 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 
     // Create a popup dialog window
     // I can't figure out how to connect the window-close button
-    // to the Close-button callback, so it's disable for now... FIXME
+    // to the Close-button callback, so it's disabled for now... FIXME
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+    XtSetArg(args[arg], XmNmwmDecorations, MWM_DECOR_ALL); arg++;
     // DialogShell seems to ignore this resource,
     // so we do the same work ourselves at the end of this function
     XtSetArg(args[arg], XmNdefaultPosition, True); arg++;
@@ -2852,7 +2854,14 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 		  XmNspacing, &spacing,
 		  XtPointer(0));
 
-    if (height + spacing > MAX_HEIGHT)
+
+    // Ask Xt for the main shell's height;
+    // we'll make our dialog no taller than 0.75 of this value
+    Dimension recommended_height;
+    XtVaGetValues(find_shell(), XmNheight, &recommended_height, XtPointer(0));
+    recommended_height = recommended_height * 3 / 4;
+    
+    if (height + spacing > recommended_height )
     {
 	// Form must be scrolled
 	Dimension scrollbar_width = 15;   // Additional space for scrollbar
@@ -2866,7 +2875,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 	}
 	
 	XtVaSetValues(scroll,
-		      XmNheight, MAX_HEIGHT,
+		      XmNheight, recommended_height,
 		      XmNwidth, max_width + 
 		                spacing + scrollbar_width + EXTRA_WIDTH,
 		      XtPointer(0));
