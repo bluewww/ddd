@@ -3804,7 +3804,10 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose, bool do_prompt)
     if (origin)
 	set_last_origin(origin);
 
-    // Process all displays
+    // Some sanitizing actions...
+    make_sane();
+
+    // Now for the refreshments.  Process all displays.
     StringArray cmds;
     VoidArray dummy;
 
@@ -4836,6 +4839,18 @@ void DataDisp::update_displays(const StringArray& displays,
 	refresh_display_list(suppressed);
 }
 
+// Restore sane state after undoing / redoing
+void DataDisp::make_sane()
+{
+    // Activate all user displays.  Undo may leave them deactivated.
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0; dn = disp_graph->next(ref))
+    {
+	if (dn->is_user_command())
+	    dn->make_active();
+    }
+}
 
 //-----------------------------------------------------------------------------
 // Handle output of user commands

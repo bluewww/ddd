@@ -594,6 +594,9 @@ public:
     static void update_displays(const StringArray& names, 
 				const StringArray& values,
 				const StringArray& addrs);
+
+    // Restore sane state
+    static void make_sane();
 };
 
 inline bool DataDisp::get_selection(ostream& os, bool include_position)
