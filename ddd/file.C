@@ -42,6 +42,7 @@ char file_rcsid[] =
 #include "MString.h"
 #include "Delay.h"
 #include "DestroyCB.h"
+#include "ExitCB.h"
 #include "HelpCB.h"
 #include "SourceView.h"
 #include "VarArray.h"
@@ -478,19 +479,14 @@ static string get_file(Widget w, XtPointer, XtPointer call_data)
     return filename;
 }
 
-// Get FILENAME and PID of current debuggee.  NO_GDB_ANSWER for
-// FILENAME means debuggee cannot be determined; "" means no debuggee.
-// ATTACHED is true iff we're debugging an attached process.
-// RUNNING is true iff the program is running.
-// STATE is a verbose description of the program state.
-void get_program_state(string& filename, int& pid, 
-		       bool& attached, bool& running, string& state)
+// Get information on current debuggee
+ProgramInfo::ProgramInfo()
+    : file(NO_GDB_ANSWER),
+      core(NO_GDB_ANSWER),
+      pid(0),
+      attached(false),
+      running(false)
 {
-    filename = NO_GDB_ANSWER;
-    pid      = 0;
-    attached = false;
-    running  = false;
-
     if (source_view->have_exec_pos())
     {
 	state = "has stopped";
@@ -505,60 +501,95 @@ void get_program_state(string& filename, int& pid,
     switch(gdb->type())
     {
     case GDB:
-        {
-	    string ans = gdb_question("info files");
-	    if (ans == NO_GDB_ANSWER)
-		return;
+    {
+	string ans = gdb_question("info files");
+	if (ans == NO_GDB_ANSWER)
+	    break;
 
-	    filename = "";
+	file = "";
+	if (ans.contains("Symbols from "))
+	{
+	    file = ans.after("Symbols from ");
+	    file = file.before(".\n");
+	    file = unquote(file);
+	}
 
-	    if (ans.contains("Symbols from "))
-	    {
-		filename = ans.after("Symbols from ");
-		filename = filename.before(".\n");
-		filename = unquote(filename);
-	    }
+	core = "";
+	if (ans.contains("core dump"))
+	{
+	    core = ans.after("core dump");
+	    core = core.after('`');
+	    core = core.before("',");
+	}
 
-	    if (ans.contains("process "))
-	    {
-		string p = ans.after("process ");
-		pid = atoi(p.chars());
-	    }
+	if (ans.contains("process "))
+	{
+	    string p = ans.after("process ");
+	    pid = atoi(p.chars());
+	}
 
-	    attached = ans.contains("attached process ");
+	attached = ans.contains("attached process ");
 
-	    ans = gdb_question("info program");
-	    if (ans == NO_GDB_ANSWER)
-		return;
+	ans = gdb_question("info program");
+	if (ans == NO_GDB_ANSWER)
+	    break;
 
-	    if (ans.contains("not being run"))
-		running = false;
-	    else if (ans.contains("\nIt stopped "))
-	    {
-		state = ans.from("\nIt stopped ");
-		state = "has " + state.after("\nIt ");
-		state = state.before('.');
-		running = true;
-	    }
+	if (ans.contains("not being run"))
+	    running = false;
+	else if (ans.contains("\nIt stopped "))
+	{
+	    state = ans.from("\nIt stopped ");
+	    state = "has " + state.after("\nIt ");
+	    state = state.before('.');
+	    running = true;
 	}
 	break;
+    }
 
     case DBX:
-        {
-	    string ans = gdb_question("debug");
-	    if (ans == NO_GDB_ANSWER)
-		return;
+    {
+	string ans = gdb_question("debug");
+	if (ans == NO_GDB_ANSWER)
+	    break;
 
-	    if (ans.contains("Debugging: ", 0))
-	    {
-		filename = ans.after(": ");
-		strip_final_blanks(filename);
-	    }
+	if (ans.contains("Debugging: ", 0))
+	{
+	    file = ans.after(": ");
+	    strip_final_blanks(file);
 	}
 	break;
+    }
 
     case XDB:
 	break;			// FIXME
+    }
+
+    // As a fallback, get core file and executable from argument list.
+    // Works only on local file system and is more a guess.
+    char **argv = saved_argv();
+    int argc = 0;
+    while (argv[argc] != 0)
+	argc++;
+
+    // All debuggers supported by GDB have [EXEC [CORE]] as their last 
+    // arguments.
+    if ((file == NO_GDB_ANSWER || core == NO_GDB_ANSWER) && argc >= 2)
+    {
+	string last_file = cmd_file(argv[argc - 1]);
+	if (is_exec_file(last_file))
+	{
+	    file = last_file;
+	    core = "";
+	}
+	else if (argc >= 3)
+	{
+	    string prev_file = cmd_file(argv[argc - 2]);
+	    if (is_exec_file(prev_file) && is_core_file(last_file))
+	    {
+		file = prev_file;
+		core = last_file;
+	    }
+	}
     }
 }
 
@@ -577,17 +608,14 @@ static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
     if (filename == NO_GDB_ANSWER)
 	return;
 
-    string current_file;
-    int current_pid;
-    bool attached;
-    get_current_file(current_file, current_pid, attached);
+    ProgramInfo info;
 
     switch(gdb->type())
     {
     case GDB:
 	// GDB does not always detach processes upon opening new
 	// files, so we do it explicitly
-	if (attached)
+	if (info.attached)
 	    gdb_command("detach");
 
 	gdb_command("file " + filename);
@@ -665,10 +693,7 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
     if (corefile == "")
 	return;
 
-    string current_file;
-    int current_pid;
-    bool attached;
-    get_current_file(current_file, current_pid, attached);
+    ProgramInfo info;
 
     XtUnmanageChild(w);
 
@@ -681,8 +706,8 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 	    break;
 
 	case DBX:
-	    if (current_file != NO_GDB_ANSWER && current_file != "")
-		gdb_command("debug " + current_file + " " + corefile);
+	    if (info.file != NO_GDB_ANSWER && info.file != "")
+		gdb_command("debug " + info.file + " " + info.core);
 	    else
 		post_error("No program.", "no_program", w);
 	    break;
@@ -853,22 +878,19 @@ static void update_processes(Widget processes, bool keep_selection)
     if (pos < 0)
     {
 	// Create new selection from current file and current pid.
-	string current_file;
-	int current_pid;
-	bool attached;
-	get_current_file(current_file, current_pid, attached);
+	ProgramInfo info;
 
 	// Check for current pid; if found, highlight it.
 	for (i = 0; pos < 0 && i < process_list.size(); i++)
 	{
-	    if (current_pid != 0 && ps_pid(process_list[i]) == current_pid)
+	    if (info.pid != 0 && ps_pid(process_list[i]) == info.pid)
 		pos = i;
 	}
 
 	if (pos < 0)
 	{
 	    // Not found? Try leftmost occurrence of process base name.
-	    string current_base = basename(current_file.chars());
+	    string current_base = basename(info.file.chars());
 	    int leftmost = INT_MAX;
 	    for (i = 0; i < process_list.size(); i++)
 	    {
@@ -927,12 +949,9 @@ static void openProcessDone(Widget w, XtPointer client_data,
 
     XtUnmanageChild(w);
 
-    string current_file;
-    int current_pid;
-    bool attached;
-    get_current_file(current_file, current_pid, attached);
+    ProgramInfo info;
 
-    if (pid == current_pid)
+    if (pid == info.pid)
     {
 	set_status("Already attached to process " + itostring(pid) + ".");
 	return;
@@ -943,7 +962,7 @@ static void openProcessDone(Widget w, XtPointer client_data,
     case GDB:
 	// GDB does not always detach processes upon opening new
 	// files, so we do it explicitly
-	if (attached)
+	if (info.attached)
 	    gdb_command("detach");
 
 	// Attach to new process
@@ -952,8 +971,8 @@ static void openProcessDone(Widget w, XtPointer client_data,
 	
     case DBX:
 	// Attach to new process
-	if (current_file != NO_GDB_ANSWER && current_file != "")
-	    gdb_command("debug " + current_file + " " + itostring(pid));
+	if (info.file != NO_GDB_ANSWER && info.file != "")
+	    gdb_command("debug " + info.file + " " + itostring(pid));
 	else
 	    post_error("No program.", "no_program", w);
 	break;
@@ -975,12 +994,9 @@ static void RemoveCallbacksCB(Widget w, XtPointer client_data, XtPointer)
 // If we don't have a current executable, issue a warning.
 static void warn_if_no_program(Widget popdown)
 {
-    string current_file;
-    int current_pid;
-    bool attached;
-    get_current_file(current_file, current_pid, attached);
+    ProgramInfo info;
 
-    if (current_file == "")
+    if (info.file == "")
     {
 	Widget warning = post_warning("Please open a program first.", 
 				      "no_program", popdown);

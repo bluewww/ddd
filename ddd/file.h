@@ -46,39 +46,17 @@ extern void gdbOpenSourceCB (Widget, XtPointer, XtPointer);
 extern void process_cd(string pwd);
 
 
+// Capture information on current program
+struct ProgramInfo {
+    string file;		// Filename of current debuggee
+    string core;		// Current core file
+    int    pid;			// PID of debuggee
+    bool   attached;		// Flag: is GDB attached to process?
+    bool   running;		// Flag: is program running?
+    string state;		// Verbose state description
 
-// Get FILENAME and PID of current debuggee.  NO_GDB_ANSWER for
-// FILENAME means debuggee cannot be determined; "" means no debuggee.
-// ATTACHED is true iff we're debugging an attached process.
-// RUNNING is true iff the program is running.
-// STATE is a verbose description of the program state.
-extern void get_program_state(string& filename, int& pid, 
-			      bool& attached, bool& running, string& state);
-
-
-// Compatibility custom calls
-inline void get_current_file(string& filename, int& pid, bool& attached)
-{
-    bool running;
-    string state;
-    get_program_state(filename, pid, attached, running, state);
-}
-
-inline bool program_running(string& state)
-{
-    string filename;
-    int pid;
-    bool attached;
-    bool running;
-    get_program_state(filename, pid, attached, running, state);
-    return running;
-}
-
-inline bool program_running()
-{
-    string state;
-    return program_running(state);
-}
+    ProgramInfo();		// Initialize
+};
 
 #endif // _DDD_file_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
