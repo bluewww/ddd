@@ -43,14 +43,16 @@ struct PositionHistoryEntry {
     int line;
     string address;		// Machine code position
     string displays;		// Displayed values
+    bool exec_pos;		// True if execution position
 
     PositionHistoryEntry()
-	: file(""), line(0), address(""), displays(NO_GDB_ANSWER)
+	: file(""), line(0), address(""), displays(NO_GDB_ANSWER),
+	  exec_pos(false)
     {}
 
     PositionHistoryEntry(const PositionHistoryEntry& entry)
 	: file(entry.file), line(entry.line), address(entry.address),
-	  displays(entry.displays)
+	  displays(entry.displays), exec_pos(entry.exec_pos)
     {}
 
     PositionHistoryEntry& operator = (const PositionHistoryEntry& entry)
@@ -59,6 +61,7 @@ struct PositionHistoryEntry {
 	line     = entry.line;
 	address  = entry.address;
 	displays = entry.displays;
+	exec_pos = entry.exec_pos;
 
 	return *this;
     }
@@ -68,7 +71,8 @@ struct PositionHistoryEntry {
 	return (file == entry.file && 
 		line == entry.line &&
 		address == entry.address &&
-		displays == entry.displays);
+		displays == entry.displays &&
+		exec_pos == entry.exec_pos);
     }
 
     bool operator != (const PositionHistoryEntry& entry) const

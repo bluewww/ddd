@@ -2452,7 +2452,7 @@ void SourceView::read_file (string file_name,
     if (error)
 	return;
 
-    add_position_to_history(file_name, initial_line);
+    add_position_to_history(file_name, initial_line, false);
 
     // The remainder may take some time...
     Delay delay;
@@ -3546,7 +3546,7 @@ void SourceView::show_execution_position (string position, bool stopped,
 	}
 
 	// Show current position
-	_show_execution_position(file_name, line, silent);
+	_show_execution_position(file_name, line, silent, stopped);
     }
 }
 
@@ -3560,7 +3560,8 @@ void SourceView::clear_execution_position()
 }
 
 
-void SourceView::_show_execution_position(string file, int line, bool silent)
+void SourceView::_show_execution_position(string file, int line, 
+					  bool silent, bool stopped)
 {
     last_execution_file = file;
     last_execution_line = line;
@@ -3571,7 +3572,7 @@ void SourceView::_show_execution_position(string file, int line, bool silent)
     if (!is_current_file(file) || line < 1 || line > line_count)
 	return;
 
-    add_position_to_history(file, line);
+    add_position_to_history(file, line, stopped);
 
     XmTextPosition pos = pos_of_line(line);
     int indent = indent_amount(source_text_w, pos);
@@ -3658,7 +3659,7 @@ void SourceView::show_position (string position, bool silent)
 	   
 	if (line > 0 && line <= line_count)
 	{
- 	    add_position_to_history(file_name, line);
+ 	    add_position_to_history(file_name, line, false);
     
 	    XmTextPosition pos = pos_of_line(line);
 	    int indent = indent_amount(source_text_w, pos);
@@ -3946,7 +3947,7 @@ void SourceView::lookup(string s, bool silent)
 	    // Show last execution position
 	    _show_execution_position(last_execution_file, 
 				     last_execution_line,
-				     silent);
+				     silent, false);
 	}
 	else
 	{
@@ -4099,7 +4100,7 @@ void SourceView::add_current_to_history()
     pos_found = get_line_of_pos(source_text_w, pos, line_nr, address, 
 				in_text, bp_nr);
     if (pos_found)
-	add_position_to_history(current_source_name(), line_nr);
+	add_position_to_history(current_source_name(), line_nr, false);
 
 
     // Get position in machine code
@@ -4107,11 +4108,12 @@ void SourceView::add_current_to_history()
     pos_found = get_line_of_pos(code_text_w, pos, line_nr, address, 
 				in_text, bp_nr);
     if (pos_found && address != "")
-	position_history.add_address(address);
+	position_history.add_address(address, false);
 }
 
 // Add position to history
-void SourceView::add_position_to_history(const string& file_name, int line)
+void SourceView::add_position_to_history(const string& file_name, int line, 
+					 bool exec_pos)
 {
     string source_name = file_name;
     switch (gdb->type())
@@ -4128,7 +4130,7 @@ void SourceView::add_position_to_history(const string& file_name, int line)
 	break;
     }
 
-    position_history.add_position(source_name, line);
+    position_history.add_position(source_name, line, exec_pos);
 }
 
 // Lookup entry from position history
@@ -8820,7 +8822,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	return;
 
     SetInsertionPosition(code_text_w, pos + indent_amount(code_text_w));
-    position_history.add_address(pc);
+    position_history.add_address(pc, stopped);
 
     XmTextPosition pos_line_end = 0;
     if (current_code != "")

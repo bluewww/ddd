@@ -62,52 +62,79 @@ bool PositionHistory::locked = false;
 
 void PositionHistory::add(const PositionHistoryEntry& entry)
 {
+    if (entry.exec_pos)
+    {
+	// Adding a new execution position - remove all non-exec
+	// positions from history
+	PositionHistoryArray new_history;
+	for (int i = 0; i < history.size(); i++)
+	{
+	    if (history[i].exec_pos)
+		new_history += history[i];
+	}
+	history = new_history;
+	history_position = history.size();
+    }
+
     if (history_position < history.size())
     {
 	history[history_position++] = entry;
+
+	if (!entry.exec_pos)
+	{
+	    // Adding a non-exec position - remove all later non-exec
+	    // entries in history
+	    PositionHistoryArray new_history;
+	    for (int i = 0; i < history.size(); i++)
+	    {
+		if (i < history_position || history[i].exec_pos)
+		    new_history += history[i];
+	    }
+	    history = new_history;
+	}
     }
     else
     {
 	history += entry;
 	history_position = history.size();
     }
-
-    PositionHistoryArray new_history;
-    for (int i = 0; i < history_position; i++)
-	new_history += history[i];
-    history = new_history;
 }
 
 // Add position to history
-void PositionHistory::add_position(const string& source_name, int line)
+void PositionHistory::add_position(const string& source_name, int line,
+				   bool exec_pos)
 {
     if (locked)
 	return;
 
-    PositionHistoryEntry entry;
-    entry.file = source_name;
-    entry.line = line;
+    PositionHistoryEntry new_entry;
+    new_entry.file     = source_name;
+    new_entry.line     = line;
+    new_entry.exec_pos = exec_pos;
 
     PositionHistoryEntry current_entry;
     if (history.size() > 0 && history_position > 0)
     {
 	current_entry = history[history_position - 1];
 	current_entry.address = "";
+	if (exec_pos)
+	    current_entry.exec_pos = true;
     }
 
-    if (entry != current_entry)
-	add(entry);
+    if (new_entry != current_entry)
+	add(new_entry);
 
     log();
 }
 
 // Add address to history
-void PositionHistory::add_address(const string& address)
+void PositionHistory::add_address(const string& address, bool exec_pos)
 {
     if (locked)
 	return;
 
     PositionHistoryEntry new_entry;
+    new_entry.exec_pos = exec_pos;
 
     if (history.size() > 0)
     {
@@ -115,7 +142,9 @@ void PositionHistory::add_address(const string& address)
 	if (current_entry.address == "")
 	{
 	    // Append address to current position
-	    current_entry.address = address;
+	    current_entry.address  = address;
+	    if (exec_pos)
+		current_entry.exec_pos = true;
 	}
 	else if (current_entry.address != address)
 	{
@@ -217,7 +246,13 @@ void PositionHistory::log()
     {
 	const PositionHistoryEntry& entry = history[i];
 
-	clog << i << (i == history_position - 1 ? "*\t" : " \t");
+	clog << i;
+	if (i == history_position - 1)
+	    clog << "*";
+	if (entry.exec_pos)
+	    clog << ">";
+	clog << '\t';
+
 	if (entry.file != "")
 	    clog << entry.file << ":" << entry.line;
 	else

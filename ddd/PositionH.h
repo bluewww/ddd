@@ -58,10 +58,15 @@ protected:
     static void log();
 
 public:
-    // Add position to history
-    void add_position(const string& file_name, int line);
-    void add_address(const string& address);
+    // Add position to history.  If EXEC_POS is set, this is a new
+    // execution position.
+    void add_position(const string& file_name, int line, bool exec_pos);
+    void add_address(const string& address, bool exec_pos);
+
+    // Add list of displays to history
     void add_displays(const string& displays);
+
+    // Add single new display to history
     void add_display(const string& display);
 
     // Lookup previous/next position; return true iff successful

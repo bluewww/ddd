@@ -79,12 +79,9 @@ struct BreakpointPropertiesInfo;
 
 //-----------------------------------------------------------------------------
 class SourceView {
-
-    // Position history
-    static void add_current_to_history();
-    static void add_position_to_history(const string& file_name, int line);
-
+    //-----------------------------------------------------------------------
     // Callbacks
+    //-----------------------------------------------------------------------
     static void set_source_argCB         (Widget, XtPointer, XtPointer);
 
     static void line_popup_setCB         (Widget, XtPointer, XtPointer);
@@ -151,19 +148,25 @@ class SourceView {
     static void ThreadCommandCB  (Widget, XtPointer, XtPointer);
 
     static void SetWatchModeCB(Widget, XtPointer, XtPointer);
-
-    static void update_title ();
     static void ActivateGlyphCB(Widget, XtPointer, XtPointer);
-    static int line_height (Widget text_w);
 
+    // Set shell title
+    static void update_title();
+
+    // Return height of a text line
+    static int line_height(Widget text_w);
+
+    // Create text or code widget
     static void create_text(Widget parent,
 			    const string& base, bool editable,
 			    Widget& form, Widget& text);
 
-    static void refresh_bp_disp ();
-    static void refresh_source_bp_disp ();
-    static void refresh_code_bp_disp ();
+    // Refresh displays
+    static void refresh_bp_disp();
+    static void refresh_source_bp_disp();
+    static void refresh_code_bp_disp();
 
+    // Clear breakpoint helpers
     static void clearBP(void *client_data, XtIntervalId *timer);
     static void clearJumpBP(const string& answer, void *client_data);
 
@@ -174,6 +177,11 @@ class SourceView {
     {
 	return move_bp(nr, address, origin, true);
     }
+
+    // Position history
+    static void add_current_to_history();
+    static void add_position_to_history(const string& file_name, int line,
+					bool exec_pos);
 
     // Set condition of breakpoints NRS to COND.
     // * If COND is char(-1), preserve old condition.
@@ -392,7 +400,8 @@ class SourceView {
     static int    last_execution_line;
     static string last_execution_pc;
     static string last_shown_pc;
-    static void _show_execution_position (string file, int line, bool silent);
+    static void _show_execution_position (string file, int line, 
+					  bool silent, bool stopped);
 
     // Last frame position
     static int last_frame_pos;
