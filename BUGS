@@ -249,4 +249,11 @@ Volunteers for fixing these and other bugs are welcome!
      allows to do updates without immediate redisplay."
      [You won't believe it, but the DDD developers still use Motif 1.1  -AZ]
 
-115. (Insert your bug here)
+115. When getting the source code via `list', DEC DBX prefixes lines
+     with `>' and `*', which results in these lines being treated as
+     error messages.
+
+116. With Motif 1.2 and later, there is no sash between assembler and
+     source windows in a separate source window.
+
+117. (Insert your bug here)
