@@ -198,12 +198,17 @@ if $diff; then
       echo "   contains the $file_release announement."
       echo
       echo
-      echo "2. Apply this patch on $file_release, using \`patch':"
+      echo "2. Create a symbolic link from \`$file_release' to \`$dist_release'":
+      echo
+      echo "   % ln -s $file_release $dist_release"
+      echo
+      echo
+      echo "3. Apply this patch on $file_release, using \`patch':"
       echo
       echo "   % patch < $diff"
       echo
       echo
-      echo "3. Check for any rejected patches (in \`.rej' files):"
+      echo "4. Check for any rejected patches (in \`.rej' files):"
       echo
       echo "   % find $file_release -name '*.rej' -print"
       echo
@@ -211,17 +216,17 @@ if $diff; then
       echo "   can also be reconstructed using \`make'."
       echo
       echo
-      echo "4. Consider removing unnecessary \`.orig' files, using \`find:'"
+      echo "5. Consider removing unnecessary \`.orig' files, using \`find:'"
       echo
       echo "   % find $file_release -name '*.orig' -exec rm -f {} \;"
       echo
       echo
-      echo "5. Consider removing files no more present in $dist_release."
+      echo "6. Consider removing files no more present in $dist_release."
       echo "   You can find these files by looking for the text"
       echo "   \`Only in $file_release:', below."
       echo
       echo
-      echo "6. Rename the \`$file_release' directory to \`$dist_release':"
+      echo "7. Rename the \`$file_release' directory to \`$dist_release':"
       echo
       echo "   % mv $file_release $dist_release"
       echo
