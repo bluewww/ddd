@@ -1,9 +1,9 @@
 #!/bin/sh
 # $Id$
-# add a license disclaimer to the given files if not already present
-# if -l NAME is given, author is NAME 
+# Add a license disclaimer to the given files unless already present
+# If -l NAME is given, author is NAME 
 
-# Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 # 
 # This file is part of ICE.
@@ -26,8 +26,7 @@
 # ICE is the incremental configuration environment.
 # For details, see the ICE World-Wide-Web page, 
 # `http://www.cs.tu-bs.de/softech/ice/',
-# or send a mail to the ICE developers at `ice@ips.cs.tu-bs.de'.
-
+# or send a mail to the ICE developers <ice@ips.cs.tu-bs.de>.
 
 this=`basename $0`
 path=`dirname $0`
@@ -64,7 +63,7 @@ s/ $//g'`
 
   # If we have a 'lib' in the path, take the library license.
   # Use the general license otherwise.
-  fullfile=`pwd`/`basename $file`  
+  fullfile=`pwd`/`basename $file`
   case $fullfile in
     */lib/*) library=true;;
     */lib)   library=true;;
@@ -86,11 +85,11 @@ environment. Contact nora@ips.cs.tu-bs.de for details.';;
     ICE)      project_detail='ICE is the incremental configuration environment.\
 For details, see the ICE World-Wide-Web page, \
 `http://www.cs.tu-bs.de/softech/ice/'"'"',\
-or send a mail to the ICE developers at `ice@ips.cs.tu-bs.de'"'"'.';;
+or send a mail to the ICE developers <ice@ips.cs.tu-bs.de>.';;
     DDD)      project_detail='DDD is the data display debugger.\
 For details, see the DDD World-Wide-Web page, \
 `http://www.cs.tu-bs.de/softech/ddd/'"'"',\
-or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'"'"'.';;
+or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.';;
     *)        project_detail='FOOBAR is fouled up beyond all recognition.\
 Contact foobar@kremvax.su.org for details.';;
   esac
