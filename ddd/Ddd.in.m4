@@ -6408,18 +6408,18 @@ Please confirm that this is what you want.
 Ddd*terminated_dialog.dialogTitle: DDD: Debugger Terminated
 ! Ddd*terminated_dialog.messageString:   \
 ! @rm @GDB@ terminated abnormally.
-Ddd*terminated_dialog*okLabelString:	   Restart
+Ddd*terminated_dialog*okLabelString:	   Restart @GDB@
 Ddd*terminated_dialog*cancelLabelString:   Exit
 Ddd*terminated_dialog*helpString:	\
 @rm @GDB@ terminated abnormally.  Without @GDB@, DDD cannot run.\n\
 \n\
-Click on LBL(Restart) to restart @GDB@.\n\
+Click on LBL(Restart @GDB@) to restart @GDB@.\n\
 Click on LBL(Exit) to exit DDD.
 
 Ddd*exception_dialog.dialogTitle: DDD: Internal Debugger Exception
 ! Ddd*exception_dialog.messageString:   \
 ! @rm Internal @GDB@ error.
-Ddd*exception_dialog*okLabelString:	      Restart
+Ddd*exception_dialog*okLabelString:	  Restart @GDB@
 Ddd*exception_dialog*cancelLabelString:   Exit
 Ddd*exception_dialog*helpString:	\
 @rm @GDB@ caught an internal exception and may be in an undefined state.\n\
@@ -6427,31 +6427,31 @@ Ddd*exception_dialog*helpString:	\
 DDD users have reported that this frequently happens when @GDB@ attempts\n\
 to access undefined variables.  You can avoid this by disabling the\n\
 automatic display of variable values\n\
-(via LBL(Edit, Preferences, General, Automatic Display of Variable Values).\n\
+(via LBL(Edit, Preferences, General, Automatic Display of Variable Values)).\n\
 \n\
-Click on LBL(Restart) to restart @GDB@.\n\
+Click on LBL(Restart @GDB@) to restart @GDB@.\n\
 Click on LBL(Exit) to exit DDD.
 
 Ddd*exited_dialog.dialogTitle: DDD: Debugger Exited
 ! Ddd*exited_dialog.messageString:   \
 ! @rm @GDB@ exited.
-Ddd*exited_dialog*okLabelString:	Restart
+Ddd*exited_dialog*okLabelString:	Restart @GDB@
 Ddd*exited_dialog*cancelLabelString:	Exit
 Ddd*exited_dialog*helpString:	\
 @rm @GDB@ has exited.  Without @GDB@, DDD cannot run.\n\
 \n\
-Click on LBL(Restart) to restart @GDB@.\n\
+Click on LBL(Restart @GDB@) to restart @GDB@.\n\
 Click on LBL(Exit) to exit DDD.
 
 Ddd*done_dialog.dialogTitle: DDD: Program Exited
 ! Ddd*done_dialog.messageString:   \
 ! @rm Your program exited.
-Ddd*done_dialog*okLabelString:		Restart
+Ddd*done_dialog*okLabelString:		Restart @GDB@
 Ddd*done_dialog*cancelLabelString:	Exit
 Ddd*done_dialog*helpString:	\
 @rm Your program has exited, and so did @GDB@.\n\
 \n\
-Click on LBL(Restart) to restart @GDB@.\n\
+Click on LBL(Restart @GDB@) to restart @GDB@.\n\
 Click on LBL(Exit) to exit DDD.
 
 Ddd*no_debugger_dialog.dialogTitle: DDD: No Debugger

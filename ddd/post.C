@@ -222,7 +222,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
 	    // In JDB, the debugger may hang after raising an exception
 	    _gdb_out("\n" + reason + "\n");
 
-	    msg = rm("Internal " + gdb->title() + " error");
+	    msg = rm(gdb->title() + " raised an internal exception");
 	    name = "exception_dialog";
 	}
 	else
