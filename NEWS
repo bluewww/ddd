@@ -91,6 +91,7 @@ DDD 2.2 [in development]
       Wiegand <wiegand@kong.gsfc.nasa.gov>.
     - DDD no longer hangs while receiving large chunks of data.
     - Significant speed-ups in processing debugger and program output.
+      Processing displays can now be interrupted using Ctrl+C.
     - Several memory leaks and X resource leaks have been tightened.
     - DDD no longer requires the librx library.  Hence, librx errors
       can no more cause DDD to crash.
