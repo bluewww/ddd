@@ -83,7 +83,7 @@ DispValueType determine_type (string value)
     // XDB issues the struct address before each struct.
     static regex 
 	RXstr_or_cl_begin("(0(0|x)[0-9a-f]+|[(]nil[)])? *"
-			  "([(]|{|record\n|RECORD\n|RECORD |OBJECT "
+			  "([(]|[{]|record\n|RECORD\n|RECORD |OBJECT "
 			  "|struct|class|union).*");
 
     if (value.matches(RXstr_or_cl_begin))
@@ -101,8 +101,8 @@ DispValueType determine_type (string value)
 	// disambiguate between arrays and structs, we check for some
 	// struct member -- that is, a ` = ' before any other
 	// sub-struct or struct end.
-	static regex RXstr_or_cl_begin_s("([(]|{)");
-	static regex RXstr_or_cl_end_s("([)]|})");
+	static regex RXstr_or_cl_begin_s("([(]|[{])");
+	static regex RXstr_or_cl_end_s("([)]|[}])");
 
 	string v = value.after(RXstr_or_cl_begin_s);
 	int end_pos = v.index(RXstr_or_cl_end_s);

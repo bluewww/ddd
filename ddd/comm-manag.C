@@ -920,7 +920,7 @@ static void process_config_named_values(string& answer)
 
 static void process_config_when_semicolon(string& answer)
 {
-    static regex rxsemicolon_and_brace("; *}");
+    static regex rxsemicolon_and_brace("; *[}]");
     gdb->has_when_semicolon(answer.contains(rxsemicolon_and_brace));
 }
 
