@@ -156,11 +156,13 @@ protected:
     void makehash();
 
 public:
+#ifndef __GNUG__
     // Construction
     TypeInfo(char *name, BaseList direct_bases, BaseList *all_bases):
 	_name(name), _direct_bases(direct_bases), _all_bases(all_bases),
 	_hash(0)
     {}
+#endif
      
     // Debugging
     // We cannot use a bool here, since it may be initialized to late
