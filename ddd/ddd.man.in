@@ -2328,7 +2328,8 @@ If non-empty, show a \s-2@DDD@\s+2 logo upon start-up.  Possible
 values include: `\fBc\fR' for a color visual, `\fBg\fR' for a
 multi-level greyscale visual, `\fBg4\fR' for a 4-level greyscale
 visual, `\fBm\fR' for a dithered monochrome visual, and `\fB\fR' (the
-empty string) for no logo at all.  Default is `\fBg4\fR'.
+empty string) for no logo at all.  The value `\fBbest\fR' chooses the
+best visual available for your display.  Default is `\fBg4\fR'.
 .PP
 Note: if \s-2@DDD@\s+2 runs on a monochrome display, or if
 \s-2@DDD@\s+2 was compiled without the \s-2XPM\s+2 library, only the
@@ -2425,13 +2426,19 @@ source code locations only by their base names.  If this is
 .SS "Window Creation and Layout"
 .\"
 The following resources determine \s-2@DDD@\s+2 window creation and
-layout.
+layout as well as the interaction with the X window manager.
 .TP
 .B "autoRaiseTool (\fPclass\fB AutoRaiseTool)"
 If `\fBtrue\fR' (default), \s-2@DDD@\s+2 will always keep the command
 tool on top of other \s-2@DDD@\s+2 windows.  If this setting
 interferes with your window manager, or if your window manager keeps
 the command tool on top anyway, set this resource to `\fBfalse\fR'.
+.TP
+.B "colorIcons (\fPclass\fB ColorIcons)"
+If `\fBtrue\fR' (default), \s-2@DDD@\s+2 uses multi-color icons.  If
+your window manager has trouble with multi-color icons, set this
+resource to `\fBfalse\fR'. If `\fBfalse\fR', \s-2@DDD@\s+2 will use
+black-and-white icons.
 .TP
 .B "dataWindow (\fPclass\fB Window)"
 If `\fBfalse\fR', no data window is created upon start-up.

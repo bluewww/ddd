@@ -676,7 +676,7 @@ Ddd*highlightThickness:		1
 
 
 
-! Startup logo
+! Logos and icons
 
 ! DDD can display its startup logo in five different ways:
 !
@@ -689,6 +689,11 @@ Ddd*highlightThickness:		1
 ! Use the key given in parentheses as resource value.
 ! Default is `g4' for 4 shades of grey.
 Ddd*showStartupLogo: g4
+
+! Whether to use multi-color icons.  Multi-color icons are not strictly
+! ICCM-compliant, although supported by most window managers.  In case
+! your window manager has trouble with DDD icons, set this to `false'.
+Ddd*colorIcons: true
 
 
 ! Session Defaults

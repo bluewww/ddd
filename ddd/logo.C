@@ -58,6 +58,7 @@ char logo_rcsid[] =
 #include <X11/StringDefs.h>
 #include <Xm/Xm.h>
 
+#include "AppData.h"
 #include "cook.h"
 
 //-----------------------------------------------------------------------------
@@ -121,7 +122,7 @@ static int xpm(String name, int ret)
 
     return ret;
 }
-#endif
+#endif // defined(XpmVersion)
 
 // Return pixmaps suitable for icons on the root window
 Pixmap iconlogo(Widget w)
@@ -130,28 +131,31 @@ Pixmap iconlogo(Widget w)
     Pixmap icon  = 0;
 
 #ifdef XpmVersion
-    // Try XPM file
-    XWindowAttributes root_attr;
-    XGetWindowAttributes(XtDisplay(w), root, &root_attr);
+    if (app_data.color_icons)
+    {
+	// Try XPM file
+	XWindowAttributes root_attr;
+	XGetWindowAttributes(XtDisplay(w), root, &root_attr);
 
-    XpmAttributes attr;
-    attr.valuemask = XpmVisual | XpmColormap | XpmDepth;
-    attr.visual   = root_attr.visual;
-    attr.colormap = root_attr.colormap;
-    attr.depth    = root_attr.depth;
+	XpmAttributes attr;
+	attr.valuemask = XpmVisual | XpmColormap | XpmDepth;
+	attr.visual   = root_attr.visual;
+	attr.colormap = root_attr.colormap;
+	attr.depth    = root_attr.depth;
 
-    int ret = xpm("ddd.xpm", 
-		  XpmCreatePixmapFromData(XtDisplay(w), root,
-					  ddd_xpm, &icon, (Pixmap *)0, &attr));
-    XpmFreeAttributes(&attr);
+	int ret = xpm("ddd.xpm", XpmCreatePixmapFromData(XtDisplay(w), root,
+							 ddd_xpm, &icon, 
+							 (Pixmap *)0, &attr));
+	XpmFreeAttributes(&attr);
 
-    if (ret == XpmSuccess)
-	return icon;
+	if (ret == XpmSuccess)
+	    return icon;
 
-    if (icon != 0)
-	XFreePixmap(XtDisplay(w), icon);
-    icon = 0;
-#endif
+	if (icon != 0)
+	    XFreePixmap(XtDisplay(w), icon);
+	icon = 0;
+    }
+#endif // defined(XpmVersion)
 
     // Try bitmap instead
     GC gc = DefaultGC(XtDisplay(w), XScreenNumberOfScreen(XtScreen(w)));
@@ -204,9 +208,9 @@ Pixmap versionlogo(Widget w)
     attr.colorsymbols = &cs;
     attr.numsymbols   = 1;
         
-    int ret = xpm("ddd.xpm",
-		  XpmCreatePixmapFromData(XtDisplay(w), XtWindow(w),
-					  ddd_xpm, &logo, (Pixmap *)0, &attr));
+    int ret = xpm("ddd.xpm", XpmCreatePixmapFromData(XtDisplay(w), XtWindow(w),
+						     ddd_xpm, &logo, 
+						     (Pixmap *)0, &attr));
     XpmFreeAttributes(&attr);
 
     if (ret == XpmSuccess)
@@ -215,7 +219,7 @@ Pixmap versionlogo(Widget w)
     if (logo != 0)
 	XFreePixmap(XtDisplay(w), logo);
     logo = 0;
-#endif
+#endif // defined(XpmVersion)
 
     int depth = PlanesOfScreen(XtScreen(w));
     logo = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w),
@@ -246,9 +250,9 @@ Pixmap dddlogo(Widget w, const string& color_key)
 
     int depth = PlanesOfScreen(XtScreen(w));
 
+#ifdef XpmVersion
     if (depth > 1 && color_key != "m")
     {
-#ifdef XpmVersion
 	XWindowAttributes win_attr;
 	XGetWindowAttributes(XtDisplay(w), XtWindow(w), &win_attr);
 
@@ -258,8 +262,8 @@ Pixmap dddlogo(Widget w, const string& color_key)
 	attr.colormap     = win_attr.colormap;
 	attr.depth        = win_attr.depth;
 
-#ifdef XpmColorKey
-	attr.valuemask    |= XpmColorKey;
+#ifdef XpmColorKey		// Not available in XPM 3.2 and earlier
+	attr.valuemask |= XpmColorKey;
 	if (color_key == "c")
 	    attr.color_key = XPM_COLOR;
 	else if (color_key == "g4")
@@ -270,12 +274,15 @@ Pixmap dddlogo(Widget w, const string& color_key)
 	    attr.color_key = XPM_MONO;
 	else
 	{
-	    cerr << "invalid color key specification " 
-		 << quote(color_key) << "\n";
+	    if (color_key != "best")
+	    {
+		cerr << "XPM: dddlogo.xpm: invalid color key " 
+		     << quote(color_key) << "\n";
+	    }
 	    attr.valuemask &= ~XpmColorKey;
 	}
-#endif
-        
+#endif // defined(XpmColorKey)
+
 	int ret = xpm("dddlogo.xpm",
 		      XpmCreatePixmapFromData(XtDisplay(w), XtWindow(w),
 					      dddlogo_xpm, &logo, 
@@ -288,8 +295,8 @@ Pixmap dddlogo(Widget w, const string& color_key)
 	if (logo != 0)
 	    XFreePixmap(XtDisplay(w), logo);
 	logo = 0;
-#endif
     }
+#endif // defined(XpmVersion)
 
     logo = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w),
 				       dddlogo_bits,

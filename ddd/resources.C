@@ -1131,6 +1131,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNcolorIcons,
+	XtCColorIcons,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, color_icons),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,
