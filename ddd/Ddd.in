@@ -2465,8 +2465,8 @@ Ddd*fatal_dialog*contextHelpString: \
 @rm Congratulations!  You have found a bug in @DDD@.\n\
 You should better save your work immediately; @DDD@ may fail again soon.\n\
 \n\
-Please send a bug report to `@tt ddd-bugs@ ips.cs.tu-bs.de@rm',\n\
-giving a subject like\n\
+If you can reproduce this bug, please send a bug report\n\
+to `@tt ddd-bugs@ ips.cs.tu-bs.de@rm', giving a subject like\n\
 \n\
     @DDD@ @VERSION@ (@host@) gets fatal signal\n\
 \n\
