@@ -1,6 +1,11 @@
 /* XPM */
 static char * dddsplash_xpm[] = {
-"410 140 32 1",
+/* $Id$
+ * DDD Splash Screen.  Copyright (C) 1998 Stefan Stiasny <sc@swi.ml.org>
+ * For details on DDD, see `http://www.cs.tu-bs.de/softech/ddd/'.
+ * width height ncolors chars_per_pixel */
+"  410   140    32      1",
+/* Colors */
 " 	c #E8E8E8E8E9E9",
 ".	c #B8B8B8B8B7B7",
 "X	c #030303030404",
@@ -33,6 +38,7 @@ static char * dddsplash_xpm[] = {
 "0	c #DADA31313232",
 "q	c #81811C1C1C1C",
 "w	c #D6D69C9C7474",
+/* Pixels */
 "                                                                                                                                                                                                                                                                                                                                                                                                                          ",
 ".                                                                                                                                                                                                                                                                                                                                                                                                                        X",
 "..ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooXX",
