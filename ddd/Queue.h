@@ -166,7 +166,7 @@ public:
     }
     QueueIter& operator = (const Queue<E>& queue)
     {
-	rec = queue._first;
+	rec = queue.firstRec();
 	return *this;
     }
 
