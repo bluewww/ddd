@@ -43,7 +43,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2000-05-25
+@set DATE 2000-06-01
 
 
 @c Macros
