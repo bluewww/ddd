@@ -2068,8 +2068,8 @@ Examples:\n\
 @tt 42cm x 59.4cm @rm (A2 paper)\n\
 @tt  7in x 10in   @rm (Executive paper)\n\
 \n\
-The following units are recognized:\n\
-@tt pt @rm (points), @tt in @rm (inches), \
+Recognized units include:\n\
+@tt pt @rm (points), @tt in @rm (inches), \n\
 @tt mm @rm (millimeters), @tt cm @rm (centimeters).
 
 
