@@ -6,9 +6,11 @@ DDD 1.0a
 
 Bug fix release.
 
-For unknown reasons, on some architectures, DDD choked soon after
-destroying some of its widgets.  This bug, and other minor bugs, have
-been fixed.
+On many architectures, this DDD release should be much more robust.
+For unknown reasons, DDD 1.0 choked soon after destroying some of its
+widgets - a bug that must have been introduced at the very end of the
+beta test phase and thus have gone by unnoticed.  This bug, and some
+other minor bugs, have been fixed.
 
 
 
