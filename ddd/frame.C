@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-//
+// Find the WM frame surrounding WINDOW
 
 // Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.

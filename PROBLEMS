@@ -285,6 +285,9 @@ LessTif
 Linux
 =====
 
+Intel
+-----
+
 Reported by: Jim Van Zandt <jrv@vanzandt.mv.com>
 
      Under slackware 3.1, the file permissions in `/dev/ptyp?' do not
@@ -304,6 +307,20 @@ Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
      commands; to open a specific source, use the GDB `info file
      FUNCTION' command, where FUNCTION is a function defined in that
      source file.
+
+Alpha
+-----
+
+Reported by:  J.H.M. Dassen <jdassen@wi.leidenuniv.nl>
+
+    The kernel headers before Linux 2.1.61 and 2.0.32 don't work
+    correctly with glibc.  Compiling C programs is possible in most
+    cases but C++ programs have (due to the change of the name lookups
+    for `struct's) problems.  One prominent example is `struct
+    fd_set'.
+     
+    There might be some problems left but 2.1.61/2.0.32 fix most of
+    the known ones.  See the BUGS file for other known problems.
 
 SCO
 ===
