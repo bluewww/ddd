@@ -53,6 +53,7 @@ const char file_rcsid[] =
 #include "question.h"
 #include "shell.h"
 #include "strclass.h"
+#include "status.h"
 #include "string-fun.h"
 #include "verify.h"
 
@@ -190,13 +191,15 @@ static Widget file_dialog(Widget w, const string& name,
     return dialog;
 }
 
+static char delay_message[] = "Filtering files";
+
 // Search for remote files and directories, using the command CMD
 static void searchRemote(Widget fs,
 			 XmFileSelectionBoxCallbackStruct *cbs,
 			 String cmd,
 			 bool search_dirs)
 {
-    Delay delay(fs);
+    StatusDelay delay(delay_message);
 
     int nitems = 0;
     int size = 256;
@@ -248,6 +251,15 @@ static void searchRemote(Widget fs,
 	}
 	    
 	items[nitems++] = XmStringCreateLtoR(buf, MSTRING_DEFAULT_CHARSET);
+
+	if (nitems == 1 || nitems % 10 == 0)
+	{
+	    ostrstream status;
+	    status << delay_message << "... ("
+		   << nitems << " processed)";
+	    string s(status);
+	    set_status(s);
+	}
     }
 
     if (search_dirs)
@@ -332,8 +344,6 @@ static void searchLocal(Widget fs,
 			XmFileSelectionBoxCallbackStruct *cbs,
 			bool is_okay(const string& file_name))
 {
-    Delay delay(fs);
-
     String mask;
     if (!XmStringGetLtoR(cbs->mask, MSTRING_DEFAULT_CHARSET, &mask))
 	return;
@@ -349,6 +359,8 @@ static void searchLocal(Widget fs,
     }
     else
     {
+	StatusDelay delay(delay_message);
+
 	int count;
 	for (count = 0; files[count] != 0; count++)
 	    ;
@@ -364,6 +376,16 @@ static void searchLocal(Widget fs,
 		items[nitems++] = XmStringCreateLtoR(files[i], 
 						     MSTRING_DEFAULT_CHARSET);
 	    free(files[i]);
+
+	    int percent = i * 100 / count;
+	    if (nitems == 1 || percent % 10 == 0)
+	    {
+		ostrstream status;
+		status << delay_message << "... ("
+		       << percent << "% processed)";
+		string s(status);
+		set_status(s);
+	    }
 	}
 	free(files);
 
