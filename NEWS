@@ -116,7 +116,7 @@ DDD 2.2 [in beta test]
 
     Bug fixes:
     - DDD no longer hangs while receiving large chunks of data.
-    - DDD is now also works with echoing TTY connections.
+    - DDD now also works with echoing TTY connections.
     - Significant speed-ups in processing debugger and program output.
     - Several memory leaks and X resource leaks have been tightened.
     - DDD no longer requires the librx library.  Consequently, librx
