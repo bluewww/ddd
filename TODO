@@ -362,4 +362,6 @@ Volunteers for these and other projects are welcome!
 348 Allow debugger interaction while the program is running.  Simply
     interrupt the debuggee, do debugger action, and resume execution.
 
-349 (Insert new project ideas here)
+349 Access Java `.jar' class archives.
+
+350 (Insert new project ideas here)
