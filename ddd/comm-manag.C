@@ -1844,7 +1844,7 @@ static CmdData *current_cmd_data = 0;
 // Return GDB output that has not been echoed yet
 string buffered_gdb_output()
 {
-    string output = "";
+    string output;
     if (current_cmd_data != 0)
     {
 	if (current_cmd_data->pos_buffer != 0)

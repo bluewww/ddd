@@ -1329,9 +1329,9 @@ string PosBuffer::answer_ended ()
     case PosPart:
     {
 	assert (pos_buffer.empty());
-	string ans = answer_buffer;
+	const string ans = auto_cmd_part + answer_buffer;
 	answer_buffer = "";
-	return auto_cmd_part + ans;
+	return ans;
     }
 
     case PosComplete:

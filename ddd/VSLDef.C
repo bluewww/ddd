@@ -410,9 +410,10 @@ int VSLDef::resolveNames()
 // Create function args (for error messages, etc.)
 string VSLDef::args() const
 {
+    string ans;
     // Konstant: has no arg
     if ((deflist->func_name())[0] == '#')
-	return string("");
+	return ans;
 
     std::ostringstream os;
 
@@ -421,7 +422,8 @@ string VSLDef::args() const
     else
 	os << *_node_pattern;
 
-    return os;
+    ans = os;
+    return ans;
 }
 
 // Internal function name
