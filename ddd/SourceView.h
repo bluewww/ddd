@@ -587,7 +587,7 @@ private:
     static int max_breakpoint_number_seen;
 
     // Return breakpoint number of BP_INFO; 0 if new; -1 if none
-    static int breakpoint_number(const string& bp_info);
+    static int breakpoint_number(const string& bp_info, string& file);
 
     // Get numbers of selected breakpoints
     static void getBreakpointNumbers(IntArray& numbers);

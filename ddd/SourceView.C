@@ -3989,12 +3989,12 @@ void SourceView::process_info_bp (string& info_output,
 	    bp_nr = get_positive_nr(info_output);
 	    break;
 
-	case JDB:
 	case PERL:
+	case JDB:
 	{
 	    // JDB and Perl have no breakpoint numbers.
 	    // Check if we already have a breakpoint at this location.
-	    bp_nr = breakpoint_number(info_output);
+	    bp_nr = breakpoint_number(info_output, file);
 	    if (bp_nr == 0)
 		bp_nr = max_breakpoint_number_seen + 1;	// new breakpoint
 	    if (bp_nr < 0)
@@ -4098,7 +4098,7 @@ void SourceView::process_info_bp (string& info_output,
     {
 	BreakPoint *bp = bp_map.get(bps_not_read[i]);
 
-	// Perl only lists breakpoints in the current file
+	// Older Perl versions only listed breakpoints in the current file
 	if (gdb->type() == PERL && !bp_matches(bp, current_file_name))
 	    continue;
 
@@ -6605,10 +6605,10 @@ void SourceView::PrintWatchpointCB(Widget w, XtPointer client_data, XtPointer)
 
 
 // Return breakpoint of BP_INFO; 0 if new; -1 if none
-int SourceView::breakpoint_number(const string& bp_info)
+int SourceView::breakpoint_number(const string& bp_info, string& file)
 { 
-    string class_name = current_source_name();
     int line = 0;
+
 
     switch (gdb->type())
     {
@@ -6618,13 +6618,32 @@ int SourceView::breakpoint_number(const string& bp_info)
 	if (colon < 0)
 	    return -1;		// No breakpoint
 
-	class_name = bp_info.before(colon);
+	file = bp_info.before(colon);
 	line = get_positive_nr(bp_info.after(colon));
 	break;
     }
     case PERL:
     {
-	line = get_positive_nr(bp_info);
+	string info_output = bp_info;
+
+	// Check for `FILE:' at the beginning
+	if (!info_output.contains(' ', 0))
+	{
+	    string first_line;
+	    if (info_output.contains('\n'))
+		first_line = info_output.before('\n');
+	    else
+		first_line = info_output;
+
+	    if (first_line.contains(':', -1))
+	    {
+		// Get leading file name
+		file = first_line.before(':');
+		info_output = info_output.after('\n');
+	    }
+	}
+
+	line = get_positive_nr(info_output);
 	break;
     }
 
@@ -6636,14 +6655,14 @@ int SourceView::breakpoint_number(const string& bp_info)
 	return -1;		// No breakpoint
 
     // Strip JDB 1.2 info like `breakpoint', etc.
-    strip_space(class_name);
-    int last_space = class_name.index(" ", -1);
+    strip_space(file);
+    int last_space = file.index(" ", -1);
     if (last_space > 0)
-	class_name = class_name.after(last_space);
+	file = file.after(last_space);
 
     MapRef ref;
     for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
-	if (bp_matches(bp, class_name, line))
+	if (bp_matches(bp, file, line))
 	    return bp->number(); // Existing breakpoint
 
     return 0;		       // New breakpoint
@@ -6676,13 +6695,15 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
 	count--;
 
     bool select = false;
+    string file = current_source_name();
+
     for (int i = 0; i < count; i++)
     {
 	string& bp_info = breakpoint_list[i];
 	if (!gdb->has_numbered_breakpoints())
 	{
-	    // JDB has no breakpoint numbers -- insert our own
-	    int bp_nr = breakpoint_number(bp_info);
+	    // JDB and Perl have no breakpoint numbers -- insert our own
+	    int bp_nr = breakpoint_number(bp_info, file);
 	    if (bp_nr > 0)
 	    {
 		string s = itostring(bp_nr) + "    ";
