@@ -285,106 +285,98 @@ static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
     return startpos;
 }
 
-static MString gdbDefaultText(Widget widget, XEvent *event, 
-			      bool for_documentation)
+// Get tip string for text widget WIDGET.
+static MString gdbDefaultValueText(Widget widget, XEvent *event, 
+				   bool for_documentation)
 {
-    static MString empty = rm(" ");
+    assert (XmIsText(widget));
 
-    string tip;
-    if (XmIsText(widget))
+    XmTextPosition startpos, endpos;
+    string expr = 
+	source_view->get_word_at_event(widget, event, startpos, endpos);
+    if (expr == "")
+	return MString(0, true); // Nothing pointed at
+
+    // Don't invoke the debugger if EXPR is not an identifier.
+    // Otherwise, we might point at `i++' or `f()' and have weird side
+    // effects.
+    MString clear = for_documentation ? rm(" ") : MString(0, true);
+    if (!expr.matches(rxidentifier))
+	return clear;
+
+    // Change EVENT such that the popup tip will remain at the same
+    // position
+    Position x, y;
+    if (XmTextPosToXY(widget, endpos, &x, &y))
     {
-	// Text tip
-	XmTextPosition startpos, endpos;
-	string expr = 
-	    source_view->get_word_at_event(widget, event, startpos, endpos);
-	if (expr == "")
-	    return MString(0, true); // Nothing pointed at
-
-	// Don't invoke the debugger if EXPR is not an identifier.
-	// Otherwise, we might point at `i++' or `f()' and have weird
-	// side effects.
-	if (!expr.matches(rxidentifier))
+	switch (event->type)
 	{
-	    if (for_documentation)
-		return empty;
-	    else
-		return MString(0, true);
+	case MotionNotify:
+	    event->xmotion.x = x;
+	    event->xmotion.y = y;
+	    break;
+
+	case EnterNotify:
+	case LeaveNotify:
+	    event->xcrossing.x = x;
+	    event->xcrossing.y = y;
+	    break;
 	}
+    }
 
-	Position x, y;
-	if (XmTextPosToXY(widget, endpos, &x, &y))
-	{
-	    switch (event->type)
-	    {
-	    case MotionNotify:
-		event->xmotion.x = x;
-		event->xmotion.y = y;
-		break;
+    // Get value of ordinary variable
+    string tip = gdbValue(expr);
+    if (tip == NO_GDB_ANSWER)
+	return MString(0, true);
 
-	    case EnterNotify:
-	    case LeaveNotify:
-		event->xcrossing.x = x;
-		event->xcrossing.y = y;
-		break;
-	    }
-	}
-
-	// Get value of ordinary variable
+    if (is_invalid(tip) && widget == source_view->code())
+    {
+	// Get register value - look up `$pc' when pointing at `pc'
+	expr.prepend("$");
 	tip = gdbValue(expr);
 	if (tip == NO_GDB_ANSWER)
 	    return MString(0, true);
 
-	if (is_invalid(tip) && widget == source_view->code())
+	if (tip.matches(rxint))
 	{
-	    // Get register value - look up `$pc' when pointing at `pc'
-	    expr.prepend("$");
-	    tip = gdbValue(expr);
-	    if (tip == NO_GDB_ANSWER)
-		return MString(0, true);
-
-	    if (tip.matches(rxint))
-	    {
-		// Show hex value as well.  We don't do a local
-		// conversion here, but ask GDB instead, since the hex
-		// format may be language-dependent.
-		string hextip = gdbValue("/x " + expr);
-		if (hextip != NO_GDB_ANSWER)
-		    tip = hextip + " (" + tip + ")";
-	    }
-	}
-	    
-	if (is_invalid(tip))
-	{
-	    if (for_documentation)
-		return empty;
-	    else
-		return MString(0, true);
-	}
-
-	tip = get_disp_value_str(tip, gdb);
-	if (tip == "void")
-	    return MString(0, true);
-
-	if (for_documentation)
-	{
-	    shorten(tip, max_value_doc_length - expr.length());
-
-	    // The status line also shows the name we're pointing at
-	    MString mtip = tt(tip);
-	    mtip.prepend(rm(expr + " = "));
-	    return mtip;
-	}
-	else
-	{
-	    // The value tip just shows the value
-	    shorten(tip, max_value_tip_length);
-	    return tt(tip);
+	    // Show hex value as well.  We don't do a local
+	    // conversion here, but ask GDB instead, since the hex
+	    // format may be language-dependent.
+	    string hextip = gdbValue("/x " + expr);
+	    if (hextip != NO_GDB_ANSWER)
+		tip = hextip + " (" + tip + ")";
 	}
     }
+	    
+    if (is_invalid(tip))
+	return clear;
 
-    // Button tip
+    tip = get_disp_value_str(tip, gdb);
+    if (tip == "void")
+	return clear;		// Empty variable
+
+    if (for_documentation)
+    {
+	shorten(tip, max_value_doc_length - expr.length());
+
+	// The status line also shows the name we're pointing at
+	MString mtip = tt(tip);
+	mtip.prepend(rm(expr + " = "));
+	return mtip;
+    }
+    else
+    {
+	// The value tip just shows the value
+	shorten(tip, max_value_tip_length);
+	return tt(tip);
+    }
+}
+
+// Get tip string for button widget WIDGET.
+static MString gdbDefaultButtonText(Widget widget, XEvent *, bool)
+{
     string help_name = gdbHelpName(widget);
-    tip = gdbHelp(help_name);
+    string tip = gdbHelp(help_name);
     if (tip == NO_GDB_ANSWER)
 	return MString(0, true);
     if (tip.contains(help_name, 0))
@@ -402,6 +394,16 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	tip = tip.before('.');
 
     return rm(tip);
+}
+
+
+static MString gdbDefaultText(Widget widget, XEvent *event, 
+			      bool for_documentation)
+{
+    if (XmIsText(widget))
+	return gdbDefaultValueText(widget, event, for_documentation);
+    else
+	return gdbDefaultButtonText(widget, event, for_documentation);
 }
 
 static MString gdbDefaultTipText(Widget widget, XEvent *event)
