@@ -411,7 +411,7 @@ static void read_token(const char *value, int& pos)
 	break;
 
     case '<':
-	if (gdb->has_print_r_option())
+	if (gdb && gdb->has_print_r_option())
 	{
 	    // David Kirwan <David-Kirwan@vertel.com> reports that SUN
 	    // DBX 3.0 has trouble issuing templates - the closing `>'
@@ -434,7 +434,7 @@ static void read_token(const char *value, int& pos)
 	    while (isalnum(value[pos]))
 		pos++;
 
-	    if (gdb->program_language() != LANGUAGE_JAVA)
+	    if (gdb && gdb->program_language() != LANGUAGE_JAVA)
 	    {
 		string name(value + start, pos - start);
 		if (name == "record")
