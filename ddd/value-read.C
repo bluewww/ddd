@@ -68,7 +68,7 @@ static regex rxdbx_baseclass("[ \t\n]*[a-zA-Z_$][^({\n=]*:[(]");
 // Determine the type of VALUE.
 static DispValueType _determine_type (string& value)
 {
-    strip_space (value);
+    strip_leading_space(value);
 
     // DBX on DEC prepends `[N]' before array member N
     if (value.matches(rxindex))
@@ -222,11 +222,11 @@ static DispValueType _determine_type (string& value)
     }
 
     // Arrays.
-    if (value.contains('{', 0) /* && value.contains('}', -1) */)
+    if (value.contains('{', 0))
 	return Array;
-    if (value.contains('[', 0) /* && value.contains(']', -1) */)
+    if (value.contains('[', 0))
 	return Array;
-    if (value.contains('(', 0) /* && value.contains(')', -1) */)
+    if (value.contains('(', 0))
 	return Array;
 
     // Simple values.
