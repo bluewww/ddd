@@ -941,10 +941,8 @@ static MMDesc startup_preferences_menu [] =
 
 
 // Data
-static Widget info_locals_w    = 0;
-static Widget info_args_w      = 0;
-static Widget dump_w           = 0;
-static Widget l_w              = 0;
+static Widget locals_w         = 0;
+static Widget args_w           = 0;
 static Widget detect_aliases_w = 0;
 static Widget infos_w          = 0;
 static Widget align_w          = 0;
@@ -956,15 +954,9 @@ static MMDesc data_menu[] =
     { "detectAliases", MMToggle, { graphToggleDetectAliasesCB },
       NULL, &detect_aliases_w },
     MMSep,
-    { "l",           MMToggle | MMUnmanaged, { graphToggleLocalsCB },
-      NULL, &l_w },
-    { "dump",        MMToggle | MMUnmanaged, { graphToggleLocalsCB },
-      NULL, &dump_w },
-    { "info locals", MMToggle | MMUnmanaged, { graphToggleLocalsCB },
-      NULL, &info_locals_w },
-    { "info args",   MMToggle | MMUnmanaged, { graphToggleArgsCB },
-      NULL, &info_args_w },
-    { "infos",      MMPush,    { dddPopupInfosCB }, NULL, &infos_w },
+    { "info locals", MMToggle,  { graphToggleLocalsCB }, NULL, &locals_w },
+    { "info args",   MMToggle,  { graphToggleArgsCB }, NULL, &args_w },
+    { "infos",       MMPush,    { dddPopupInfosCB }, NULL, &infos_w },
     MMSep,
     { "align",      MMPush,    { graphAlignCB  }, NULL, &align_w },
     { "rotate",     MMPush,    { graphRotateCB }},
@@ -1933,35 +1925,22 @@ int main(int argc, char *argv[])
     // Setup option states
     update_options();
 
-    // Setup info button states
-    switch (gdb->type())
+    // Setup info buttons
+
+    // Our info routines require that the widgets be named after the
+    // info command.  Ugly hack.
+    strcpy(XtName(locals_w), gdb->info_locals_command());
+    strcpy(XtName(args_w),   gdb->info_args_command());
+
+    if (gdb->info_locals_command() != gdb->info_args_command())
     {
-    case XDB:
-	XtDestroyWidget(info_locals_w);
-	XtDestroyWidget(info_args_w);
-	XtDestroyWidget(dump_w);
-	XtManageChild(l_w);
-
-	register_info_button(l_w);
-	break;
-
-    case DBX:
-	XtDestroyWidget(info_locals_w);
-	XtDestroyWidget(info_args_w);
-	XtManageChild(dump_w);
-	XtDestroyWidget(l_w);
-
-	register_info_button(dump_w);
-	break;
-
-    case GDB:
-	XtManageChild(info_locals_w);
-	XtManageChild(info_args_w);
-	XtDestroyWidget(dump_w);
-	XtDestroyWidget(l_w);
-
-	register_info_button(info_locals_w);
-	register_info_button(info_args_w);
+	register_info_button(locals_w);
+	register_info_button(args_w);
+    }
+    else
+    {
+	register_info_button(locals_w);
+	XtUnmanageChild(args_w);
     }
     update_infos();
 
