@@ -129,6 +129,11 @@ static XtResource resources[] = {
     { XtNextraHeight, XtCExtraSize, XtRDimension, sizeof(Dimension),
 	offset(extraHeight), XtRImmediate, XtPointer(0) },
 
+    { XtNrequestedWidth, XtCRequestedSize, XtRDimension, sizeof(Dimension),
+	offset(requestedWidth), XtRImmediate, XtPointer(0) },
+    { XtNrequestedHeight, XtCRequestedSize, XtRDimension, sizeof(Dimension),
+	offset(requestedHeight), XtRImmediate, XtPointer(0) },
+
     { XtNselectTile, XtCBitmap, XtRBitmap, sizeof(Pixmap),
 	offset(selectTile), XtRImmediate, XtPointer(0)},
 
@@ -426,16 +431,22 @@ void graphEditSizeChanged(Widget w)
 
     Widget parent = XtParent(w);
     if (!XmIsScrolledWindow(parent))
-	parent = XtParent(parent);	// skip clipping window
+	parent = XtParent(parent);	// Skip clipping window
     if (XmIsScrolledWindow(parent))
     {
+	// Get the size allowed by our parent
+	Dimension parentSpacing;
+
 	arg = 0;
-	XtSetArg(args[arg], XtNwidth, &parentWidth); arg++;
-	XtSetArg(args[arg], XtNheight, &parentHeight); arg++;
+	XtSetArg(args[arg], XtNwidth,   &parentWidth);   arg++;
+	XtSetArg(args[arg], XtNheight,  &parentHeight);  arg++;
+	XtSetArg(args[arg], XmNspacing, &parentSpacing); arg++;
 	XtGetValues(parent, args, arg);
 
-	parentWidth  -= 4;	// Don't ask. I really can't imagine 
-	parentHeight -= 4;	// why this has to be just 4.
+	if (parentWidth >= parentSpacing)
+	    parentWidth -= parentSpacing;
+	if (parentHeight >= parentSpacing)
+	    parentHeight -= parentSpacing;
     }
 
     Dimension width  = max(parentWidth, myWidth);
@@ -1191,7 +1202,7 @@ static void setGraphGC(Widget w)
 }
 
 
-static void Initialize(Widget, Widget w, ArgList, Cardinal *)
+static void Initialize(Widget request, Widget w, ArgList, Cardinal *)
 {
     // read-only
     const GraphEditWidget _w        = GraphEditWidget(w);
@@ -1209,6 +1220,8 @@ static void Initialize(Widget, Widget w, ArgList, Cardinal *)
     Boolean& redisplayEnabled       = _w->graphEdit.redisplayEnabled;
     Time& lastSelectTime            = _w->graphEdit.lastSelectTime;
     XtIntervalId& redrawTimer       = _w->graphEdit.redrawTimer;
+    Dimension& requestedWidth       = _w->graphEdit.requestedWidth;
+    Dimension& requestedHeight      = _w->graphEdit.requestedHeight;
 
     // init state
     state = NopState;
@@ -1241,6 +1254,10 @@ static void Initialize(Widget, Widget w, ArgList, Cardinal *)
     createCursor(w, selectBottomRightCursor, XC_lr_angle);
     createCursor(w, selectTopLeftCursor,     XC_ul_angle);
     createCursor(w, selectTopRightCursor,    XC_ur_angle);
+
+    // save requested size
+    requestedWidth  = request->core.width;
+    requestedHeight = request->core.height;
 
     // set size
     graphEditSizeChanged(w);
