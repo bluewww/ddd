@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "6 December 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "10 December 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -79,8 +79,10 @@
 .RB "[\|" \c
 .I program
 .RB "[\|" \c
-.IR core \||\|
-.IR process-id "\|]\|]"
+.I core \c
+\||\|
+.I process-id\c
+\|]\|]
 .ad b
 .TP
 but usually just
