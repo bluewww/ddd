@@ -790,7 +790,20 @@ string GDBAgent::print_command(string expr) const
     if (expr != "")
     {
 	if (!has_named_values())
-	    cmd = echo_command(expr + " = ") + "; " + cmd;
+	{
+	    switch (type())
+	    {
+	    case DBX:
+		cmd += quote(expr + " =") + ",";
+		break;
+
+	    case GDB:
+	    case XDB:
+		cmd = echo_command(expr + " = ") + "; " + cmd;
+		break;
+	    }
+	}
+
 	cmd += " " + expr;
     }
 
