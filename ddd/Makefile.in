@@ -571,6 +571,7 @@ XSTUFF_OBJECTS = \
 	events.o     \
 	findParent.o \
 	fileSBF.o    \
+	frame.o      \
 	longName.o   \
 	verify.o     \
 	Delay.o      \
@@ -1107,6 +1108,7 @@ ddd.vsl.h: $(srcdir)/../vsllib/std.vsl
 ddd.vsl.h: $(srcdir)/../vsllib/fonts.vsl
 ddd.vsl.h: $(srcdir)/../vsllib/colors.vsl
 ddd.vsl.h: $(srcdir)/../vsllib/builtin.vsl
+ddd.vsl.h: $(srcdir)/../vsllib/tab.vsl
 
 
 ## The programs.
