@@ -53,7 +53,7 @@ protected:
     // Add a value
     virtual void add(const T& v)
     {
-	value(_size) = v;	// gcc-2.3.3 chokes on having _size++ here
+        this->value(_size) = v;	// gcc-2.3.3 chokes on having _size++ here
 	_size++;
     }
 
