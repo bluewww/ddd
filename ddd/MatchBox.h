@@ -73,7 +73,7 @@ protected:
 
 public:
     // Constructor
-    MatchBox(int d, char *t = "MatchBox"):
+    MatchBox(int d, const char *t = "MatchBox"):
 	DummyBox(t),
 	_data(d)
     {}

@@ -54,7 +54,7 @@ protected:
 		       GC gc, bool context_selected) const;
 
 public:
-    DiagBox(char *t = "DiagBox"):
+    DiagBox(const char *t = "DiagBox"):
 	PrimitiveBox(BoxSize(0,0), BoxExtend(true, true), t) 
     {}
 

@@ -309,7 +309,7 @@ void ComboBoxSetList(Widget text, const StringArray& items)
 //-----------------------------------------------------------------------
 
 // Create a combo box
-Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
+Widget CreateComboBox(Widget parent, const _XtString name, ArgList _args, Cardinal _arg)
 {
     ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
@@ -322,7 +322,7 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
     XtSetArg(args[arg], XmNborderWidth,        0); arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    info->top = verify(XmCreateFrame(parent, "frame", args, arg));
+    info->top = verify(XmCreateFrame(parent, (char *)"frame", args, arg));
     XtManageChild(info->top);
 
     arg = 0;
@@ -330,7 +330,7 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
     XtSetArg(args[arg], XmNborderWidth,        0); arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    Widget form = verify(XmCreateForm(info->top, "form", args, arg));
+    Widget form = verify(XmCreateForm(info->top, (char *)"form", args, arg));
     XtManageChild(form);
 
 #if USE_XM_COMBOBOX
@@ -390,7 +390,7 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     XtSetArg(args[arg], XmNresizable,          False); arg++;
     for (Cardinal i = 0; i < _arg; i++)
 	args[arg++] = _args[i];
-    info->text = verify(XmCreateTextField(form, name, args, arg));
+    info->text = verify(XmCreateTextField(form, (char *)name, args, arg));
     XtManageChild(info->text);
 
     Pixel foreground;
@@ -406,7 +406,8 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     XtSetArg(args[arg], XmNrightAttachment,    XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNtopAttachment,      XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNbottomAttachment,   XmATTACH_FORM); arg++;
-    info->button = XmCreateArrowButton(form, "comboBoxArrow", args, arg);
+    info->button = XmCreateArrowButton(form, 
+				       (char *)"comboBoxArrow", args, arg);
     XtManageChild(info->button);
 
     XtVaSetValues(info->text,
@@ -443,7 +444,7 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
 
     arg = 0;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    info->list = XmCreateScrolledList(info->shell, "list", args, arg);
+    info->list = XmCreateScrolledList(info->shell, (char *)"list", args, arg);
     XtManageChild(info->list);
 
     // Keep shell on top

@@ -64,7 +64,7 @@ protected:
 
 public:
     // Constructor
-    NameNode(string nm, char *type = "NameNode"):
+    NameNode(string nm, const char *type = "NameNode"):
 	VSLNode(type), _name(nm)
     {}
 

@@ -371,10 +371,10 @@ class SourceView {
     static StringArray bad_files;
     static bool new_bad_file(const string& file_name);
     static void post_file_error(const string& file_name,
-				string text, String name = 0,
+				string text, const _XtString name = 0,
 				Widget origin = 0);
     static void post_file_warning(const string& file_name,
-				  string text, String name = 0,
+				  string text, const _XtString name = 0,
 				  Widget origin = 0);
 
     // The current directory
@@ -482,7 +482,7 @@ class SourceView {
     static Pixmap pixmap(Widget w, unsigned char *bits, int width, int height);
 
     // Create glyph in FORM_W named NAME from given BITS
-    static Widget create_glyph(Widget form_w, String name, 
+    static Widget create_glyph(Widget form_w, const _XtString name, 
 			       unsigned char *bits, int width, int height);
 
     // Map glyph W in (X, Y)

@@ -31,7 +31,7 @@ char events_rcsid[] =
 
 #include "events.h"
 
-static void invalid_event(char *func)
+static void invalid_event(const char *func)
 {
     cerr << func << ": invalid event\n";
 }

@@ -66,7 +66,7 @@ static MString get_tip_of_the_day(Widget w, int n)
 
     XtResource r;
     r.resource_name   = tip_name;
-    r.resource_class  = "Tip";
+    r.resource_class  = (char *)"Tip";
     r.resource_type   = XmRXmString;
     r.resource_size   = sizeof(XmString);
     r.resource_offset = XtOffsetOf(tip_of_the_day_resource_values, tip);
@@ -178,7 +178,8 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	tip_dialog = 
-	    verify(XmCreateInformationDialog(find_shell(w), "tip_dialog", 
+	    verify(XmCreateInformationDialog(find_shell(w), 
+					     (char *)"tip_dialog", 
 					     args, arg));
 
 	XtAddCallback(tip_dialog, XmNokCallback, UnmanageThisCB, 

@@ -333,11 +333,11 @@ static void initBoard()
 }
 
 // Convert NAME into a color, using PIX as default
-static Pixel color(Widget w, String name, Pixel pixel)
+static Pixel color(Widget w, const _XtString name, Pixel pixel)
 {
     XrmValue from, to;
     from.size = strlen(name);
-    from.addr = name;
+    from.addr = (char *)name;
     to.size   = sizeof(pixel);
     to.addr   = (String)&pixel;
 
@@ -351,7 +351,7 @@ static void repaint()
 
     for (int i = 1; i <= 9; i++)
     {
-	char *name = 0;
+	const char *name = 0;
 	switch (board[i])
 	{
 	case NO_ONE:
@@ -385,7 +385,7 @@ static void repaint()
 		foreground = BlackPixelOfScreen(XtScreen(buttons[i]));
 	}
 
-	Pixmap p = XmGetPixmap(XtScreen(buttons[i]), name, 
+	Pixmap p = XmGetPixmap(XtScreen(buttons[i]), (char *)name, 
 			       foreground, background);
 	XtVaSetValues(buttons[i],
 		      XmNlabelType, XmPIXMAP,
@@ -508,12 +508,12 @@ static Widget create_tictactoe(Widget parent)
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL);  arg++;
     XtSetArg(args[arg], XmNpacking,     XmPACK_COLUMN); arg++;
     XtSetArg(args[arg], XmNnumColumns,  3);             arg++;
-    board = XmCreateRowColumn(parent, "board", args, arg);
+    board = XmCreateRowColumn(parent, (char *)"board", args, arg);
 
     for (int i = 1; i <= 9; i++)
     {
 	arg = 0;
-	buttons[i] = XmCreatePushButton(board, "field", args, arg);
+	buttons[i] = XmCreatePushButton(board, (char *)"field", args, arg);
 	XtManageChild(buttons[i]);
 	XtAddCallback(buttons[i], XmNactivateCallback, 
 		      MakeMoveCB, XtPointer(i));
@@ -533,7 +533,7 @@ void TicTacToeCB(Widget, XtPointer, XtPointer)
 
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(),
-					     "tictactoe", args, arg));
+					     (char *)"tictactoe", args, arg));
 	Delay::register_shell(dialog);
 
 	if (lesstif_version <= 79)

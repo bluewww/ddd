@@ -92,6 +92,7 @@ char settings_rcsid[] =
 #include "version.h"
 #include "vsldoc.h"
 #include "wm.h"
+#include "charsets.h"
 
 #if !HAVE_PCLOSE_DECL
 extern "C" int pclose(FILE *stream);
@@ -883,7 +884,7 @@ void process_handle(string output, bool init)
 	    continue;
 
 	line = line.after(rxwhite);
-	static String titles[3] = { "stop", "print", "pass" };
+	static const _XtString titles[3] = { "stop", "print", "pass" };
 
 	for (int word = 0; word <= 2; word++)
 	{
@@ -1287,8 +1288,8 @@ string get_dbx_help(string dbxenv, string base)
 }
 
 struct DBXTranslation {
-    String base;
-    String doc;
+    const _XtString base;
+    const _XtString doc;
 };
 
 static DBXTranslation dbx_translations[] = 
@@ -1487,7 +1488,7 @@ string show_command(const string& cmd, DebuggerType type)
 }
 
 // In Perl, make these options insensitive
-static String perl_taboos[] = 
+static const _XtString perl_taboos[] = 
 {
     "TTY",
     "noTTY",
@@ -1814,7 +1815,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);  arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
     XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
-    Widget help = verify(XmCreatePushButton(form, "help", args, arg));
+    Widget help = verify(XmCreatePushButton(form, (char *)"help", args, arg));
     XtManageChild(help);
 
     Widget send  = 0;
@@ -1854,7 +1855,8 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     {
 	// `set check'
 	arg = 0;
-	Widget menu = verify(XmCreatePulldownMenu(form, "menu", args, arg));
+	Widget menu = verify(XmCreatePulldownMenu(form, 
+						  (char *)"menu", args, arg));
 
 	// Possible options are contained in the help string
 	string options = cached_gdb_question("help " + set_command);
@@ -1904,7 +1906,8 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	// set follow-fork-mode / set disassembly-flavor / 
 	// set scheduler-locking
 	arg = 0;
-	Widget menu = verify(XmCreatePulldownMenu(form, "menu", args, arg));
+	Widget menu = verify(XmCreatePulldownMenu(form, 
+						  (char *)"menu", args, arg));
 
 	string options;
 	char separator = '\n';
@@ -2089,7 +2092,8 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_OPPOSITE_WIDGET); arg++;
     XtSetArg(args[arg], XmNtopWidget,        label);             arg++;
     XtSetArg(args[arg], XmNtopOffset,        top_offset);        arg++;
-    Widget leader = verify(XmCreateSeparator(form, "leader", args, arg));
+    Widget leader = verify(XmCreateSeparator(form, 
+					     (char *)"leader", args, arg));
     XtManageChild(leader);
 
     // Add help callback
@@ -2184,7 +2188,7 @@ static void add_separator(Widget form, int& row)
     XtSetArg(args[arg], XmNtopPosition,      row);               arg++;
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-    Widget sep = verify(XmCreateSeparator(form, "sep", args, arg));
+    Widget sep = verify(XmCreateSeparator(form, (char *)"sep", args, arg));
     XtManageChild(sep);
     row++;
 }
@@ -2414,7 +2418,7 @@ static void fix_clip_window_translations(Widget scroll)
     if (!have_clip_actions)
     {
 	static XtActionsRec clip_actions[] = {
-	    {"clip-do", ClipDo}
+	    {(char *)"clip-do", ClipDo}
 	};
 
 	XtAppAddActions(XtWidgetToApplicationContext(scroll), 
@@ -2583,26 +2587,26 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNspacing,      0); arg++;
     Widget column =
-        verify(XmCreateRowColumn(panel, "column", args, arg));
+        verify(XmCreateRowColumn(panel, (char *)"column", args, arg));
     XtManageChild(column);
 
     // Add a label
     arg = 0;
     MString xmtitle(title_msg);
     XtSetArg(args[arg], XmNlabelString, xmtitle.xmstring()); arg++;
-    Widget title = verify(XmCreateLabel(column, "title", args, arg));
+    Widget title = verify(XmCreateLabel(column, (char *)"title", args, arg));
     XtManageChild(title);
 
     // Add a scrolled window.
     arg = 0;
     XtSetArg(args[arg], XmNscrollingPolicy, XmAUTOMATIC); arg++;
     Widget scroll = 
-	verify(XmCreateScrolledWindow(column, "scroll", args, arg));
+	verify(XmCreateScrolledWindow(column, (char *)"scroll", args, arg));
     fix_clip_window_translations(scroll);
 
     // Add a form.
     arg = 0;
-    Widget form = verify(XmCreateForm(scroll, "form", args, arg));
+    Widget form = verify(XmCreateForm(scroll, (char *)"form", args, arg));
 
     switch (stype)
     {
@@ -3577,7 +3581,7 @@ static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
     set_sensitive(name_w, True);
     set_sensitive(XtParent(name_w), True);
 
-    MString label = "Edit " + MString(">>", "small");
+    MString label = "Edit " + MString(">>", CHARSET_SMALL);
     set_label(edit_w, label);
 
     String _commands = XmTextGetString(editor_w);
@@ -3630,7 +3634,7 @@ static void EditCommandDefinitionCB(Widget, XtPointer, XtPointer)
     XmTextSetString(editor_w, (String)def);
 
     XtManageChild(XtParent(editor_w));
-    MString label = "Edit " + MString("<<", "small");
+    MString label = "Edit " + MString("<<", CHARSET_SMALL);
     set_label(edit_w, label);
 }
 
@@ -3758,7 +3762,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 	int arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
-					     "define_command",
+					     (char *)"define_command",
 					     args, arg));
 
 	// Remove old prompt
@@ -3778,7 +3782,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
-	Widget form = XmCreateRowColumn(dialog, "form", args, arg);
+	Widget form = XmCreateRowColumn(dialog, (char *)"form", args, arg);
 	XtManageChild(form);
 
 	Widget panel = MMcreatePanel(form, "panel", panel_menu);
@@ -3790,7 +3794,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 
 	arg = 0;
 	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
-        editor_w = XmCreateScrolledText(form, "text", args, arg);
+        editor_w = XmCreateScrolledText(form, (char *)"text", args, arg);
 	XtUnmanageChild(XtParent(editor_w));
 	XtManageChild(editor_w);
 

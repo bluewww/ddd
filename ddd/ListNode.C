@@ -55,7 +55,7 @@ DEFINE_TYPE_INFO_1(ListNode, VSLNode)
 // ListNode
 
 // Constructor
-ListNode::ListNode(VSLNode *hd, VSLNode *tl, char *type)
+ListNode::ListNode(VSLNode *hd, VSLNode *tl, const char *type)
     : VSLNode(type), _head(hd), _tail(tl)
 {
     assert(hd != 0);

@@ -45,7 +45,7 @@ extern WidgetClass scrolledGraphEditWidgetClass;
 // Declare special access functions
 
 // Create a graph editor with scrollbars; return the graph editor widget ID
-Widget createScrolledGraphEdit(Widget parent, String name, ArgList arglist,
+Widget createScrolledGraphEdit(Widget parent, const _XtString name, ArgList arglist,
 			       Cardinal argcount);
 
 // For a given graph editor W, return its scroller

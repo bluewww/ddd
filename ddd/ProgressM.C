@@ -73,9 +73,10 @@ ProgressMeter::ProgressMeter(const string& _msg)
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNdialogStyle, 
 		 XmDIALOG_FULL_APPLICATION_MODAL); arg++;
-	dialog = verify(XmCreateWorkingDialog(find_shell(), 
-					      "update_displays_dialog", 
-					      args, arg));
+	dialog = verify(
+	    XmCreateWorkingDialog(find_shell(), 
+				  (char *)"update_displays_dialog", 
+				  args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
 					     XmDIALOG_OK_BUTTON));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
@@ -87,7 +88,7 @@ ProgressMeter::ProgressMeter(const string& _msg)
 #if XmVersion >= 2000
 	XtSetArg(args[arg], XmNslidingMode, XmTHERMOMETER); arg++;
 #endif
-	scale = verify(XmCreateScale(dialog, "scale", args, arg));
+	scale = verify(XmCreateScale(dialog, (char *)"scale", args, arg));
 	XtManageChild(scale);
     }
 }

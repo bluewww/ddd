@@ -50,7 +50,7 @@ static void ResizeEH(Widget, XtPointer client_data, XEvent *, Boolean *)
     graphEditSizeChanged(graphEdit);
 }
 
-Widget createScrolledGraphEdit(Widget parent, String name,
+Widget createScrolledGraphEdit(Widget parent, const _XtString name,
 			       ArgList arglist, Cardinal argcount)
 {
     Arg args[10];

@@ -51,7 +51,7 @@ protected:
     void dump(ostream& s) const;
 
 public:
-    BinBox(Box *box, char *t = "BinBox"): HatBox(box, t)
+    BinBox(Box *box, const char *t = "BinBox"): HatBox(box, t)
     { 
 	theextend()[X] = extend(X) > 0;
 	theextend()[Y] = extend(Y) > 0;

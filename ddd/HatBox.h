@@ -73,7 +73,7 @@ private:
     HatBox& operator = (const HatBox&) { assert(0); return *this; }
 
 public:
-    HatBox(Box *box, char *t = "HatBox"): 
+    HatBox(Box *box, const char *t = "HatBox"): 
 	Box(box->size(), box->extend(), t), _box(box->link())
     {}
     ~HatBox() { _box->unlink(); }

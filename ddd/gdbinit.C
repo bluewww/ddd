@@ -244,7 +244,7 @@ static bool have_cmd(const string& cmd)
 
 // Return an appropriate debugger type from ARGC/ARGV.
 // Set ARG if debugger type could be deduced from an argument.
-DebuggerInfo::DebuggerInfo(int argc, char *argv[])
+DebuggerInfo::DebuggerInfo(int argc, const char *argv[])
     : type(DebuggerType(-1)),
       arg("")
 {
@@ -362,7 +362,7 @@ DebuggerInfo::DebuggerInfo(int argc, char *argv[])
 	if (arg.contains('-', 0))
 	    continue;		// Option
 
-	char *path_s = getenv("PATH");
+	const char *path_s = getenv("PATH");
 	if (path_s == 0)
 	    path_s = ".";
 
@@ -424,7 +424,7 @@ DebuggerInfo::DebuggerInfo(int argc, char *argv[])
 	    if (arg.contains('/', 0))
 		continue;		// File
 
-	    char *classpath_s = getenv("CLASSPATH");
+	    const char *classpath_s = getenv("CLASSPATH");
 	    if (classpath_s == 0)
 		classpath_s = ".";
 
@@ -479,7 +479,7 @@ DebuggerInfo::DebuggerInfo(int argc, char *argv[])
 
 static struct table {
     DebuggerType type;
-    char *cmd;
+    const char *cmd;
 } debuggers[] =
 {
     { GDB,  "gdb"  },
@@ -507,7 +507,7 @@ bool get_debugger_type(const string& debugger_name, DebuggerType& type)
     return false;
 }
 
-char *default_debugger(const string& debugger_name, DebuggerType type)
+const char *default_debugger(const string& debugger_name, DebuggerType type)
 {
     if (type == DBX && debugger_name == "ladebug")
     {

@@ -41,7 +41,7 @@ Boolean CvtStringToOnOff(Display *display,
 extern void registerOwnConverters();
 
 // Define a macro: @NAME@ will be replaced by VALUE in CvtStringToXmString
-void defineConversionMacro(String name, String value);
+void defineConversionMacro(const _XtString name, const _XtString value);
 
 #endif // _DDD_converters_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

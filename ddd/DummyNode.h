@@ -67,7 +67,7 @@ protected:
 
 public:
     // Constructor
-    DummyNode(char *type = "DummyNode")
+    DummyNode(const char *type = "DummyNode")
 	: VSLNode(type)
     {}
 

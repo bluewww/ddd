@@ -46,8 +46,8 @@ char resources_rcsid[] =
 // Application resource definitions
 XtResource ddd_resources[] = {
     {
-	XtNsession,
-	XtCSessionID,
+	(char *)XtNsession,
+	(char *)XtCSessionID,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, session),
@@ -56,8 +56,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNinitialSession,
-	XtCSessionID,
+	(char *)XtNinitialSession,
+	(char *)XtCSessionID,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, initial_session),
@@ -66,8 +66,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNdebugger,
-	XtCDebugger,
+	(char *)XtNdebugger,
+	(char *)XtCDebugger,
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, debugger), 
@@ -76,8 +76,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNdebuggerCommand,
-	XtCDebuggerCommand,
+	(char *)XtNdebuggerCommand,
+	(char *)XtCDebuggerCommand,
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, debugger_command), 
@@ -86,8 +86,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNautoDebugger, 
-	XtCAutoDebugger, 
+	(char *)XtNautoDebugger, 
+	(char *)XtCAutoDebugger, 
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, auto_debugger),
@@ -96,8 +96,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNopenSelection, 
-	XtCOpenSelection, 
+	(char *)XtNopenSelection, 
+	(char *)XtCOpenSelection, 
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, open_selection),
@@ -106,8 +106,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNtrace, 
-	XtCTrace, 
+	(char *)XtNtrace, 
+	(char *)XtCTrace, 
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, trace),
@@ -116,8 +116,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNplayLog,
-	XtCPlayLog,
+	(char *)XtNplayLog,
+	(char *)XtCPlayLog,
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, play_log), 
@@ -126,8 +126,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNgdbInitCommands, 
-	XtCInitCommands, 
+	(char *)XtNgdbInitCommands, 
+	(char *)XtCInitCommands, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, gdb_init_commands), 
@@ -140,8 +140,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNgdbSettings, 
-	XtCSettings, 
+	(char *)XtNgdbSettings, 
+	(char *)XtCSettings, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, gdb_settings), 
@@ -150,8 +150,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNdbxInitCommands, 
-	XtCInitCommands, 
+	(char *)XtNdbxInitCommands, 
+	(char *)XtCInitCommands, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, dbx_init_commands), 
@@ -160,8 +160,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNdbxSettings, 
-	XtCSettings, 
+	(char *)XtNdbxSettings, 
+	(char *)XtCSettings, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, dbx_settings), 
@@ -170,8 +170,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNxdbInitCommands, 
-	XtCInitCommands, 
+	(char *)XtNxdbInitCommands, 
+	(char *)XtCInitCommands, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, xdb_init_commands), 
@@ -180,8 +180,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNxdbSettings, 
-	XtCSettings, 
+	(char *)XtNxdbSettings, 
+	(char *)XtCSettings, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, xdb_settings), 
@@ -190,8 +190,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNjdbInitCommands, 
-	XtCInitCommands, 
+	(char *)XtNjdbInitCommands, 
+	(char *)XtCInitCommands, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, jdb_init_commands), 
@@ -200,8 +200,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNjdbSettings, 
-	XtCSettings, 
+	(char *)XtNjdbSettings, 
+	(char *)XtCSettings, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, jdb_settings), 
@@ -210,8 +210,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNpydbInitCommands, 
-	XtCInitCommands, 
+	(char *)XtNpydbInitCommands, 
+	(char *)XtCInitCommands, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, pydb_init_commands), 
@@ -220,8 +220,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNpydbSettings, 
-	XtCSettings, 
+	(char *)XtNpydbSettings, 
+	(char *)XtCSettings, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, pydb_settings), 
@@ -230,8 +230,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNperlInitCommands, 
-	XtCInitCommands, 
+	(char *)XtNperlInitCommands, 
+	(char *)XtCInitCommands, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, perl_init_commands), 
@@ -240,8 +240,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNperlSettings, 
-	XtCSettings, 
+	(char *)XtNperlSettings, 
+	(char *)XtCSettings, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, perl_settings),
@@ -250,8 +250,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNrestartCommands,
-	XtCInitCommands,
+	(char *)XtNrestartCommands,
+	(char *)XtCInitCommands,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, restart_commands), 
@@ -260,8 +260,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNsourceInitCommands,
-	XtCSourceInitCommands,
+	(char *)XtNsourceInitCommands,
+	(char *)XtCSourceInitCommands,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, source_init_commands),
@@ -270,8 +270,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNinitSymbols,
-	XtCInitSymbols,
+	(char *)XtNinitSymbols,
+	(char *)XtCInitSymbols,
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, init_symbols),
@@ -280,8 +280,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNvslPath, 
-	XtCVSLPath, 
+	(char *)XtNvslPath, 
+	(char *)XtCVSLPath, 
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, vsl_path),
@@ -290,8 +290,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNvslLibrary, 
-	XtCVSLLibrary, 
+	(char *)XtNvslLibrary, 
+	(char *)XtCVSLLibrary, 
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, vsl_library), 
@@ -300,8 +300,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNdefaultFont, 
-	XtCFont, 
+	(char *)XtNdefaultFont, 
+	(char *)XtCFont, 
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, default_font),
@@ -310,8 +310,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNvariableWidthFont, 
-	XtCFont,
+	(char *)XtNvariableWidthFont, 
+	(char *)XtCFont,
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, variable_width_font),
@@ -320,7 +320,7 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNfixedWidthFont, 
+	(char *)XtNfixedWidthFont, 
 	XtCFont,
 	XtRString, 
 	sizeof(String),
@@ -330,7 +330,7 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNdataFont, 
+	(char *)XtNdataFont, 
 	XtCFont,
 	XtRString, 
 	sizeof(String),
@@ -340,8 +340,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdefaultFontSize,
-	XtCFontSize,
+	(char *)XtNdefaultFontSize,
+	(char *)XtCFontSize,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, default_font_size),
@@ -350,8 +350,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNvariableWidthFontSize,
-	XtCFontSize,
+	(char *)XtNvariableWidthFontSize,
+	(char *)XtCFontSize,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, variable_width_font_size),
@@ -360,8 +360,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNfixedWidthFontSize,
-	XtCFontSize,
+	(char *)XtNfixedWidthFontSize,
+	(char *)XtCFontSize,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, fixed_width_font_size),
@@ -370,8 +370,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdataFontSize,
-	XtCFontSize,
+	(char *)XtNdataFontSize,
+	(char *)XtCFontSize,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, data_font_size),
@@ -380,8 +380,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNfontSelectCommand, 
-	XtCFontSelectCommand,
+	(char *)XtNfontSelectCommand, 
+	(char *)XtCFontSelectCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, font_select_command),
@@ -390,8 +390,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNvslDefs, 
-	XtCVSLDefs, 
+	(char *)XtNvslDefs, 
+	(char *)XtCVSLDefs, 
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, vsl_defs),
@@ -400,8 +400,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNvslBaseDefs, 
-	XtCVSLDefs, 
+	(char *)XtNvslBaseDefs, 
+	(char *)XtCVSLDefs, 
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, vsl_base_defs),
@@ -410,8 +410,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNtabWidth,
-	XtCTabWidth,
+	(char *)XtNtabWidth,
+	(char *)XtCTabWidth,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, tab_width),
@@ -420,8 +420,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNlinesAboveCursor,
-	XtCLinesAboveCursor,
+	(char *)XtNlinesAboveCursor,
+	(char *)XtCLinesAboveCursor,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, lines_above_cursor),
@@ -430,8 +430,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNlinesBelowCursor,
-	XtCLinesBelowCursor,
+	(char *)XtNlinesBelowCursor,
+	(char *)XtCLinesBelowCursor,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, lines_below_cursor),
@@ -440,8 +440,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNindentSource,
-	XtCIndent,
+	(char *)XtNindentSource,
+	(char *)XtCIndent,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, indent_source),
@@ -450,8 +450,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNindentScript,
-	XtCIndent,
+	(char *)XtNindentScript,
+	(char *)XtCIndent,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, indent_script),
@@ -460,8 +460,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNindentCode,
-	XtCIndent,
+	(char *)XtNindentCode,
+	(char *)XtCIndent,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, indent_code),
@@ -470,8 +470,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNlineNumberWidth,
-	XtCLineNumberWidth,
+	(char *)XtNlineNumberWidth,
+	(char *)XtCLineNumberWidth,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, line_number_width),
@@ -480,8 +480,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNsourceEditing,
-	XtCSourceEditing,
+	(char *)XtNsourceEditing,
+	(char *)XtCSourceEditing,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, source_editing),
@@ -490,8 +490,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNlineBufferedConsole,
-	XtCLineBuffered,
+	(char *)XtNlineBufferedConsole,
+	(char *)XtCLineBuffered,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, line_buffered_console),
@@ -500,9 +500,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNconsoleHasFocus,
-	XtCConsoleHasFocus,
-	XtROnOff,
+	(char *)XtNconsoleHasFocus,
+	(char *)XtCConsoleHasFocus,
+	(char *)XtROnOff,
 	sizeof(OnOff),
 	XtOffsetOf(AppData, console_has_focus),
 	XmRImmediate,
@@ -510,8 +510,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNgdbDisplayShortcuts,
-	XtCDisplayShortcuts,
+	(char *)XtNgdbDisplayShortcuts,
+	(char *)XtCDisplayShortcuts,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, gdb_display_shortcuts),
@@ -520,8 +520,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdbxDisplayShortcuts,
-	XtCDisplayShortcuts,
+	(char *)XtNdbxDisplayShortcuts,
+	(char *)XtCDisplayShortcuts,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, dbx_display_shortcuts),
@@ -530,8 +530,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNxdbDisplayShortcuts,
-	XtCDisplayShortcuts,
+	(char *)XtNxdbDisplayShortcuts,
+	(char *)XtCDisplayShortcuts,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, xdb_display_shortcuts),
@@ -540,8 +540,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNjdbDisplayShortcuts,
-	XtCDisplayShortcuts,
+	(char *)XtNjdbDisplayShortcuts,
+	(char *)XtCDisplayShortcuts,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, jdb_display_shortcuts),
@@ -550,8 +550,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNpydbDisplayShortcuts,
-	XtCDisplayShortcuts,
+	(char *)XtNpydbDisplayShortcuts,
+	(char *)XtCDisplayShortcuts,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, pydb_display_shortcuts),
@@ -560,8 +560,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNperlDisplayShortcuts,
-	XtCDisplayShortcuts,
+	(char *)XtNperlDisplayShortcuts,
+	(char *)XtCDisplayShortcuts,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, perl_display_shortcuts),
@@ -570,8 +570,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNconsoleButtons,
-	XtCButtons,
+	(char *)XtNconsoleButtons,
+	(char *)XtCButtons,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, console_buttons),
@@ -580,8 +580,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNsourceButtons,
-	XtCButtons,
+	(char *)XtNsourceButtons,
+	(char *)XtCButtons,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, source_buttons),
@@ -590,8 +590,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdataButtons,
-	XtCButtons,
+	(char *)XtNdataButtons,
+	(char *)XtCButtons,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, data_buttons),
@@ -600,8 +600,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNtoolButtons,
-	XtCButtons,
+	(char *)XtNtoolButtons,
+	(char *)XtCButtons,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, tool_buttons),
@@ -617,8 +617,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNlabelDelimiter,
-	XtCLabelDelimiter,
+	(char *)XtNlabelDelimiter,
+	(char *)XtCLabelDelimiter,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, label_delimiter),
@@ -627,8 +627,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNcommandToolBar,
-	XtCToolBar,
+	(char *)XtNcommandToolBar,
+	(char *)XtCToolBar,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, command_toolbar),
@@ -637,8 +637,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNcommonToolBar,
-	XtCToolBar,
+	(char *)XtNcommonToolBar,
+	(char *)XtCToolBar,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, common_toolbar),
@@ -647,8 +647,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNseparateDataWindow,
-	XtCSeparate,
+	(char *)XtNseparateDataWindow,
+	(char *)XtCSeparate,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, separate_data_window),
@@ -657,8 +657,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNseparateSourceWindow,
-	XtCSeparate,
+	(char *)XtNseparateSourceWindow,
+	(char *)XtCSeparate,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, separate_source_window),
@@ -667,8 +667,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNseparateExecWindow,
-	XtCSeparate,
+	(char *)XtNseparateExecWindow,
+	(char *)XtCSeparate,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, separate_exec_window),
@@ -677,8 +677,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNopenDataWindow,
-	XtCWindow,
+	(char *)XtNopenDataWindow,
+	(char *)XtCWindow,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, data_window),
@@ -687,8 +687,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNopenSourceWindow,
-	XtCWindow,
+	(char *)XtNopenSourceWindow,
+	(char *)XtCWindow,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, source_window),
@@ -697,8 +697,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNopenDebuggerConsole,
-	XtCWindow,
+	(char *)XtNopenDebuggerConsole,
+	(char *)XtCWindow,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, debugger_console),
@@ -707,8 +707,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNautoCloseDataWindow,
-	XtCAutoClose,
+	(char *)XtNautoCloseDataWindow,
+	(char *)XtCAutoClose,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, auto_close_data_window),
@@ -717,8 +717,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNplotCommand,
-	XtCPlotCommand,
+	(char *)XtNplotCommand,
+	(char *)XtCPlotCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_command),
@@ -727,8 +727,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNplotTermType,
-	XtCPlotTermType,
+	(char *)XtNplotTermType,
+	(char *)XtCPlotTermType,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_term_type),
@@ -737,8 +737,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNplotWindowClass,
-	XtCPlotWindowClass,
+	(char *)XtNplotWindowClass,
+	(char *)XtCPlotWindowClass,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_window_class),
@@ -747,8 +747,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNplotWindowDelay,
-	XtCWindowDelay,
+	(char *)XtNplotWindowDelay,
+	(char *)XtCWindowDelay,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, plot_window_delay),
@@ -757,8 +757,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNplotInitCommands,
-	XtCPlotInitCommands,
+	(char *)XtNplotInitCommands,
+	(char *)XtCPlotInitCommands,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_init_commands),
@@ -767,8 +767,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNplot2dSettings,
-	XtCPlotSettings,
+	(char *)XtNplot2dSettings,
+	(char *)XtCPlotSettings,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_2d_settings),
@@ -777,8 +777,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNplot3dSettings,
-	XtCPlotSettings,
+	(char *)XtNplot3dSettings,
+	(char *)XtCPlotSettings,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_3d_settings),
@@ -787,8 +787,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNtermCommand,
-	XtCTermCommand,
+	(char *)XtNtermCommand,
+	(char *)XtCTermCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, term_command),
@@ -797,8 +797,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNtermType,
-	XtCTermType,
+	(char *)XtNtermType,
+	(char *)XtCTermType,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, term_type),
@@ -807,8 +807,8 @@ XtResource ddd_resources[] = {
    },
 
    {
-	XtNuseTTYCommand,
-	XtCUseTTYCommand,
+	(char *)XtNuseTTYCommand,
+	(char *)XtCUseTTYCommand,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, use_tty_command),
@@ -817,8 +817,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNquestionTimeout,
-	XtCQuestionTimeout,
+	(char *)XtNquestionTimeout,
+	(char *)XtCQuestionTimeout,
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, question_timeout),
@@ -827,8 +827,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNpositionTimeout,
-	XtCPositionTimeout,
+	(char *)XtNpositionTimeout,
+	(char *)XtCPositionTimeout,
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, position_timeout),
@@ -837,8 +837,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdisplayTimeout,
-	XtCDisplayTimeout,
+	(char *)XtNdisplayTimeout,
+	(char *)XtCDisplayTimeout,
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, display_timeout),
@@ -847,8 +847,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNsynchronousDebugger,
-	XtCSynchronousDebugger,
+	(char *)XtNsynchronousDebugger,
+	(char *)XtCSynchronousDebugger,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, synchronous_gdb),
@@ -857,8 +857,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNterminateOnEOF,
-	XtCTerminateOnEOF,
+	(char *)XtNterminateOnEOF,
+	(char *)XtCTerminateOnEOF,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, terminate_on_eof),
@@ -867,8 +867,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNpollChildStatus,
-	XtCPollChildStatus,
+	(char *)XtNpollChildStatus,
+	(char *)XtCPollChildStatus,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, poll_child_status),
@@ -877,8 +877,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNdebuggerHost,
-	XtCDebuggerHost,
+        (char *)XtNdebuggerHost,
+	(char *)XtCDebuggerHost,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, debugger_host),
@@ -887,8 +887,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNdebuggerHostLogin,
-	XtCDebuggerHostLogin,
+        (char *)XtNdebuggerHostLogin,
+	(char *)XtCDebuggerHostLogin,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, debugger_host_login),
@@ -897,8 +897,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNrHostInitCommands,
-	XtCRHostInitCommands,
+        (char *)XtNrHostInitCommands,
+	(char *)XtCRHostInitCommands,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, rhost_init_commands),
@@ -907,8 +907,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNdebuggerRHost,
-	XtCDebuggerRHost,
+        (char *)XtNdebuggerRHost,
+	(char *)XtCDebuggerRHost,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, debugger_rhost),
@@ -917,8 +917,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNrshCommand,
-	XtCRshCommand,
+        (char *)XtNrshCommand,
+	(char *)XtCRshCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, rsh_command),
@@ -927,8 +927,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNfilterFiles,
-	XtCFilterFiles,
+	(char *)XtNfilterFiles,
+	(char *)XtCFilterFiles,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, filter_files),
@@ -937,8 +937,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNlistExecCommand,
-	XtCListExecCommand,
+        (char *)XtNlistExecCommand,
+	(char *)XtCListExecCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, list_exec_command),
@@ -947,8 +947,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNlistSourceCommand,
-	XtCListSourceCommand,
+        (char *)XtNlistSourceCommand,
+	(char *)XtCListSourceCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, list_source_command),
@@ -957,8 +957,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNlistCoreCommand,
-	XtCListCoreCommand,
+        (char *)XtNlistCoreCommand,
+	(char *)XtCListCoreCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, list_core_command),
@@ -967,8 +967,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNlistDirCommand,
-	XtCListDirCommand,
+        (char *)XtNlistDirCommand,
+	(char *)XtCListDirCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, list_dir_command),
@@ -977,8 +977,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNuncompressCommand,
-	XtCUncompressCommand,
+        (char *)XtNuncompressCommand,
+	(char *)XtCUncompressCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, uncompress_command),
@@ -987,8 +987,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNpsCommand,
-	XtCPsCommand,
+        (char *)XtNpsCommand,
+	(char *)XtCPsCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, ps_command),
@@ -997,8 +997,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNwwwPage,
-	XtCWWWPage,
+        (char *)XtNwwwPage,
+	(char *)XtCWWWPage,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, www_page),
@@ -1007,8 +1007,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNwwwCommand,
-	XtCWWWCommand,
+        (char *)XtNwwwCommand,
+	(char *)XtCWWWCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, www_command),
@@ -1017,8 +1017,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNshowInvocation,
-	XtCShowInvocation,
+        (char *)XtNshowInvocation,
+	(char *)XtCShowInvocation,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_invocation),
@@ -1027,8 +1027,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNshowVersion,
-	XtCShowVersion,
+        (char *)XtNshowVersion,
+	(char *)XtCShowVersion,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_version),
@@ -1037,8 +1037,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNshowConfiguration,
-	XtCShowConfiguration,
+        (char *)XtNshowConfiguration,
+	(char *)XtCShowConfiguration,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_configuration),
@@ -1047,8 +1047,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNshowManual,
-	XtCShowManual,
+        (char *)XtNshowManual,
+	(char *)XtCShowManual,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_manual),
@@ -1057,8 +1057,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNshowLicense,
-	XtCShowLicense,
+        (char *)XtNshowLicense,
+	(char *)XtCShowLicense,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_license),
@@ -1067,8 +1067,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNshowNews,
-	XtCShowNews,
+        (char *)XtNshowNews,
+	(char *)XtCShowNews,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_news),
@@ -1077,8 +1077,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNshowFonts,
-	XtCShowFonts,
+        (char *)XtNshowFonts,
+	(char *)XtCShowFonts,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_fonts),
@@ -1087,8 +1087,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNcheckConfiguration,
-	XtCCheckConfiguration,
+        (char *)XtNcheckConfiguration,
+	(char *)XtCCheckConfiguration,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, check_configuration),
@@ -1097,8 +1097,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNprintCommand,
-	XtCPrintCommand,
+        (char *)XtNprintCommand,
+	(char *)XtCPrintCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, print_command),
@@ -1107,8 +1107,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNpaperSize,
-	XtCPaperSize,
+        (char *)XtNpaperSize,
+	(char *)XtCPaperSize,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, paper_size),
@@ -1117,8 +1117,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNgetCoreCommand,
-	XtCGetCoreCommand,
+        (char *)XtNgetCoreCommand,
+	(char *)XtCGetCoreCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, get_core_command),
@@ -1127,8 +1127,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNeditCommand,
-	XtCEditCommand,
+        (char *)XtNeditCommand,
+	(char *)XtCEditCommand,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, edit_command),
@@ -1137,8 +1137,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNpannedGraphEditor,
-	XtCPannedGraphEditor,
+        (char *)XtNpannedGraphEditor,
+	(char *)XtCPannedGraphEditor,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, panned_graph_editor),
@@ -1147,8 +1147,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNfindWordsOnly,
-	XtCFindWordsOnly,
+        (char *)XtNfindWordsOnly,
+	(char *)XtCFindWordsOnly,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, find_words_only),
@@ -1157,8 +1157,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNfindCaseSensitive,
-	XtCFindCaseSensitive,
+        (char *)XtNfindCaseSensitive,
+	(char *)XtCFindCaseSensitive,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, find_case_sensitive),
@@ -1167,8 +1167,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNgroupIconify,
-	XtCGroupIconify,
+	(char *)XtNgroupIconify,
+	(char *)XtCGroupIconify,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, group_iconify),
@@ -1177,8 +1177,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNuniconifyWhenReady,
-	XtCUniconifyWhenReady,
+	(char *)XtNuniconifyWhenReady,
+	(char *)XtCUniconifyWhenReady,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, uniconify_when_ready),
@@ -1187,8 +1187,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNtransientDialogs,
-	XtCTransientDialogs,
+	(char *)XtNtransientDialogs,
+	(char *)XtCTransientDialogs,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, transient_dialogs),
@@ -1197,8 +1197,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNglobalTabCompletion,
-	XtCGlobalTabCompletion,
+	(char *)XtNglobalTabCompletion,
+	(char *)XtCGlobalTabCompletion,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, global_tab_completion),
@@ -1207,8 +1207,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNsaveHistoryOnExit,
-	XtCSaveHistoryOnExit,
+	(char *)XtNsaveHistoryOnExit,
+	(char *)XtCSaveHistoryOnExit,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, save_history_on_exit),
@@ -1217,8 +1217,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNcacheSourceFiles,
-	XtCCacheSourceFiles,
+	(char *)XtNcacheSourceFiles,
+	(char *)XtCCacheSourceFiles,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, cache_source_files),
@@ -1227,8 +1227,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNcacheMachineCode,
-	XtCCacheMachineCode,
+	(char *)XtNcacheMachineCode,
+	(char *)XtCCacheMachineCode,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, cache_machine_code),
@@ -1237,8 +1237,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNsuppressWarnings,
-	XtCSuppressWarnings,
+	(char *)XtNsuppressWarnings,
+	(char *)XtCSuppressWarnings,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, suppress_warnings),
@@ -1247,8 +1247,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNwarnIfLocked,
-	XtCWarnIfLocked,
+	(char *)XtNwarnIfLocked,
+	(char *)XtCWarnIfLocked,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, warn_if_locked),
@@ -1257,8 +1257,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNcheckOptions,
-	XtCCheckOptions,
+	(char *)XtNcheckOptions,
+	(char *)XtCCheckOptions,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, check_options),
@@ -1267,8 +1267,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNttyMode,
-	XtCTTYMode,
+	(char *)XtNttyMode,
+	(char *)XtCTTYMode,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, tty_mode),
@@ -1277,9 +1277,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNblockTTYInput,
-	XtCBlockTTYInput,
-	XtROnOff,
+	(char *)XtNblockTTYInput,
+	(char *)XtCBlockTTYInput,
+	(char *)XtROnOff,
 	sizeof(OnOff),
 	XtOffsetOf(AppData, block_tty_input),
 	XmRImmediate,
@@ -1287,9 +1287,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbufferGDBOutput,
-	XtCBufferGDBOutput,
-	XtROnOff,
+	(char *)XtNbufferGDBOutput,
+	(char *)XtCBufferGDBOutput,
+	(char *)XtROnOff,
 	sizeof(OnOff),
 	XtOffsetOf(AppData, buffer_gdb_output),
 	XmRImmediate,
@@ -1297,8 +1297,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNannotate,
-	XtCAnnotate,
+	(char *)XtNannotate,
+	(char *)XtCAnnotate,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, annotate),
@@ -1307,8 +1307,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdisplayGlyphs,
-	XtCDisplayGlyphs,
+	(char *)XtNdisplayGlyphs,
+	(char *)XtCDisplayGlyphs,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, display_glyphs),
@@ -1317,8 +1317,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxGlyphs,
-	XtCMaxGlyphs,
+	(char *)XtNmaxGlyphs,
+	(char *)XtCMaxGlyphs,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_glyphs),
@@ -1327,8 +1327,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNcacheGlyphImages,
-	XtCCacheGlyphImages,
+	(char *)XtNcacheGlyphImages,
+	(char *)XtCCacheGlyphImages,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, cache_glyph_images),
@@ -1342,8 +1342,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNglyphUpdateDelay,
-	XtCGlyphUpdateDelay,
+	(char *)XtNglyphUpdateDelay,
+	(char *)XtCGlyphUpdateDelay,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, glyph_update_delay),
@@ -1352,8 +1352,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdisplayLineNumbers,
-	XtCDisplayLineNumbers,
+	(char *)XtNdisplayLineNumbers,
+	(char *)XtCDisplayLineNumbers,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, display_line_numbers),
@@ -1362,8 +1362,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdisassemble,
-	XtCDisassemble,
+	(char *)XtNdisassemble,
+	(char *)XtCDisassemble,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, disassemble),
@@ -1372,8 +1372,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxDisassemble,
-	XtCMaxDisassemble,
+	(char *)XtNmaxDisassemble,
+	(char *)XtCMaxDisassemble,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_disassemble),
@@ -1382,8 +1382,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNuseSourcePath,
-	XtCUseSourcePath,
+	(char *)XtNuseSourcePath,
+	(char *)XtCUseSourcePath,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, use_source_path),
@@ -1392,8 +1392,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNallRegisters,
-	XtCAllRegisters,
+	(char *)XtNallRegisters,
+	(char *)XtCAllRegisters,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, all_registers),
@@ -1402,8 +1402,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbuttonTips,
-	XtCTips,
+	(char *)XtNbuttonTips,
+	(char *)XtCTips,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, button_tips),
@@ -1412,8 +1412,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNvalueTips,
-	XtCTips,
+	(char *)XtNvalueTips,
+	(char *)XtCTips,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, value_tips),
@@ -1422,8 +1422,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbuttonDocs,
-	XtCDocs,
+	(char *)XtNbuttonDocs,
+	(char *)XtCDocs,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, button_docs),
@@ -1432,8 +1432,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNvalueDocs,
-	XtCDocs,
+	(char *)XtNvalueDocs,
+	(char *)XtCDocs,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, value_docs),
@@ -1442,8 +1442,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNstartupTips,
-	XtCStartupTips,
+	(char *)XtNstartupTips,
+	(char *)XtCStartupTips,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, startup_tips),
@@ -1452,8 +1452,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNstartupTipCount,
-	XtCStartupTipCount,
+	(char *)XtNstartupTipCount,
+	(char *)XtCStartupTipCount,
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, startup_tip_count),
@@ -1462,8 +1462,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNstatusAtBottom,
-	XtCStatusAtBottom,
+	(char *)XtNstatusAtBottom,
+	(char *)XtCStatusAtBottom,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, status_at_bottom),
@@ -1472,8 +1472,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNtoolbarsAtBottom,
-	XtCToolbarsAtBottom,
+	(char *)XtNtoolbarsAtBottom,
+	(char *)XtCToolbarsAtBottom,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, toolbars_at_bottom),
@@ -1482,8 +1482,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxDisplayTitleLength,
-	XtCMaxLength,
+	(char *)XtNmaxDisplayTitleLength,
+	(char *)XtCMaxLength,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_display_title_length),
@@ -1492,8 +1492,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxPopupExprLength,
-	XtCMaxLength,
+	(char *)XtNmaxPopupExprLength,
+	(char *)XtCMaxLength,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_popup_expr_length),
@@ -1502,8 +1502,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxValueTipLength,
-	XtCMaxLength,
+	(char *)XtNmaxValueTipLength,
+	(char *)XtCMaxLength,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_value_tip_length),
@@ -1512,8 +1512,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxValueDocLength,
-	XtCMaxLength,
+	(char *)XtNmaxValueDocLength,
+	(char *)XtCMaxLength,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_value_doc_length),
@@ -1522,8 +1522,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbuttonTipDelay,
-	XtCTipDelay,
+	(char *)XtNbuttonTipDelay,
+	(char *)XtCTipDelay,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, button_tip_delay),
@@ -1532,8 +1532,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNvalueTipDelay,
-	XtCTipDelay,
+	(char *)XtNvalueTipDelay,
+	(char *)XtCTipDelay,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, value_tip_delay),
@@ -1542,8 +1542,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbuttonDocDelay,
-	XtCDocDelay,
+	(char *)XtNbuttonDocDelay,
+	(char *)XtCDocDelay,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, button_doc_delay),
@@ -1552,8 +1552,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNvalueDocDelay,
-	XtCDocDelay,
+	(char *)XtNvalueDocDelay,
+	(char *)XtCDocDelay,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, value_doc_delay),
@@ -1562,8 +1562,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNclearDocDelay,
-	XtCClearDelay,
+	(char *)XtNclearDocDelay,
+	(char *)XtCClearDelay,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, clear_doc_delay),
@@ -1572,8 +1572,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNclearTipDelay,
-	XtCClearDelay,
+	(char *)XtNclearTipDelay,
+	(char *)XtCClearDelay,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, clear_tip_delay),
@@ -1582,8 +1582,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNblinkWhileBusy,
-	XtCBlinkWhileBusy,
+	(char *)XtNblinkWhileBusy,
+	(char *)XtCBlinkWhileBusy,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, blink_while_busy),
@@ -1592,8 +1592,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbusyBlinkRate,
-	XmCBlinkRate,
+	(char *)XtNbusyBlinkRate,
+	(char *)XmCBlinkRate,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, busy_blink_rate),
@@ -1602,8 +1602,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNcheckGrabs,
-	XtCCheckGrabs,
+	(char *)XtNcheckGrabs,
+	(char *)XtCCheckGrabs,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, check_grabs),
@@ -1612,8 +1612,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNcheckGrabDelay,
-	XtCCheckGrabDelay,
+	(char *)XtNcheckGrabDelay,
+	(char *)XtCCheckGrabDelay,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, check_grab_delay),
@@ -1622,8 +1622,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNgrabActionDelay,
-	XtCGrabActionDelay,
+	(char *)XtNgrabActionDelay,
+	(char *)XtCGrabActionDelay,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, grab_action_delay),
@@ -1632,8 +1632,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNgrabAction,
-	XtCGrabAction,
+	(char *)XtNgrabAction,
+	(char *)XtCGrabAction,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, grab_action),
@@ -1642,8 +1642,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdetectAliases,
-	XtCDetectAliases,
+	(char *)XtNdetectAliases,
+	(char *)XtCDetectAliases,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, detect_aliases),
@@ -1652,8 +1652,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNtypedAliases,
-	XtCTypedAliases,
+	(char *)XtNtypedAliases,
+	(char *)XtCTypedAliases,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, typed_aliases),
@@ -1662,8 +1662,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdeleteAliasDisplays,
-	XtCDeleteAliasDisplays,
+	(char *)XtNdeleteAliasDisplays,
+	(char *)XtCDeleteAliasDisplays,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, delete_alias_displays),
@@ -1672,8 +1672,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNalign2dArrays,
-	XtCAlign2dArrays,
+	(char *)XtNalign2dArrays,
+	(char *)XtCAlign2dArrays,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, align_2d_arrays),
@@ -1682,8 +1682,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNarrayOrientation,
-	XtCOrientation,
+	(char *)XtNarrayOrientation,
+	(char *)XtCOrientation,
 	XtROrientation,
 	sizeof(unsigned char),
 	XtOffsetOf(AppData, array_orientation),
@@ -1692,8 +1692,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNstructOrientation,
-	XtCOrientation,
+	(char *)XtNstructOrientation,
+	(char *)XtCOrientation,
 	XtROrientation,
 	sizeof(unsigned char),
 	XtOffsetOf(AppData, struct_orientation),
@@ -1702,8 +1702,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNshowMemberNames,
-	XtCShowMemberNames,
+	(char *)XtNshowMemberNames,
+	(char *)XtCShowMemberNames,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_member_names),
@@ -1712,8 +1712,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNexpandRepeatedValues,
-	XtCExpandRepeatedValues,
+	(char *)XtNexpandRepeatedValues,
+	(char *)XtCExpandRepeatedValues,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, expand_repeated_values),
@@ -1722,8 +1722,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbumpDisplays,
-	XtCBumpDisplays,
+	(char *)XtNbumpDisplays,
+	(char *)XtCBumpDisplays,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, bump_displays),
@@ -1732,8 +1732,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNhideInactiveDisplays,
-	XtCHideInactiveDisplays,
+	(char *)XtNhideInactiveDisplays,
+	(char *)XtCHideInactiveDisplays,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, hide_inactive_displays),
@@ -1742,8 +1742,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNshowBaseDisplayTitles,
-	XtCShowDisplayTitles,
+	(char *)XtNshowBaseDisplayTitles,
+	(char *)XtCShowDisplayTitles,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_base_display_titles),
@@ -1752,8 +1752,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNshowDependentDisplayTitles,
-	XtCShowDisplayTitles,
+	(char *)XtNshowDependentDisplayTitles,
+	(char *)XtCShowDisplayTitles,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_dependent_display_titles),
@@ -1762,8 +1762,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNclusterDisplays,
-	XtCClusterDisplays,
+	(char *)XtNclusterDisplays,
+	(char *)XtCClusterDisplays,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, cluster_displays),
@@ -1772,8 +1772,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdisplayPlacement,
-	XtCOrientation,
+	(char *)XtNdisplayPlacement,
+	(char *)XtCOrientation,
 	XtROrientation,
 	sizeof(unsigned char),
 	XtOffsetOf(AppData, display_placement),
@@ -1782,8 +1782,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNstatusHistorySize,
-	XtCHistorySize,
+	(char *)XtNstatusHistorySize,
+	(char *)XtCHistorySize,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, status_history_size),
@@ -1792,8 +1792,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNpopdownHistorySize,
-	XtCHistorySize,
+	(char *)XtNpopdownHistorySize,
+	(char *)XtCHistorySize,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, popdown_history_size),
@@ -1802,8 +1802,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNsortPopdownHistory,
-	XtCSortPopdownHistory,
+	(char *)XtNsortPopdownHistory,
+	(char *)XtCSortPopdownHistory,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, sort_popdown_history),
@@ -1812,8 +1812,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNverifyButtons,
-	XtCVerifyButtons,
+	(char *)XtNverifyButtons,
+	(char *)XtCVerifyButtons,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, verify_buttons),
@@ -1822,8 +1822,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNautoRaiseTool,
-	XtCAutoRaiseTool,
+	(char *)XtNautoRaiseTool,
+	(char *)XtCAutoRaiseTool,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, auto_raise_tool),
@@ -1832,9 +1832,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdecorateTool,
-	XtCDecorate,
-	XtROnOff,
+	(char *)XtNdecorateTool,
+	(char *)XtCDecorate,
+	(char *)XtROnOff,
 	sizeof(OnOff),
 	XtOffsetOf(AppData, decorate_tool),
 	XmRImmediate,
@@ -1842,8 +1842,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNstickyTool,
-	XtCStickyTool,
+	(char *)XtNstickyTool,
+	(char *)XtCStickyTool,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, sticky_tool),
@@ -1852,8 +1852,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNtoolRightOffset,
-	XtCToolOffset,
+	(char *)XtNtoolRightOffset,
+	(char *)XtCToolOffset,
 	XmRPosition,
 	sizeof(Position),
 	XtOffsetOf(AppData, tool_right_offset),
@@ -1862,8 +1862,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNtoolTopOffset,
-	XtCToolOffset,
+	(char *)XtNtoolTopOffset,
+	(char *)XtCToolOffset,
 	XmRPosition,
 	sizeof(Position),
 	XtOffsetOf(AppData, tool_top_offset),
@@ -1872,8 +1872,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbuttonCaptions,
-	XtCButtonCaptions,
+	(char *)XtNbuttonCaptions,
+	(char *)XtCButtonCaptions,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, button_captions),
@@ -1882,8 +1882,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbuttonImages,
-	XtCButtonImages,
+	(char *)XtNbuttonImages,
+	(char *)XtCButtonImages,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, button_images),
@@ -1892,8 +1892,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbuttonCaptionGeometry,
-	XtCButtonCaptionGeometry,
+	(char *)XtNbuttonCaptionGeometry,
+	(char *)XtCButtonCaptionGeometry,
 	XmRString,
 	sizeof(String),
 	XtOffsetOf(AppData, button_caption_geometry),
@@ -1902,8 +1902,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbuttonImageGeometry,
-	XtCButtonImageGeometry,
+	(char *)XtNbuttonImageGeometry,
+	(char *)XtCButtonImageGeometry,
 	XmRString,
 	sizeof(String),
 	XtOffsetOf(AppData, button_image_geometry),
@@ -1912,8 +1912,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNflatToolbarButtons,
-	XtCFlatButtons,
+	(char *)XtNflatToolbarButtons,
+	(char *)XtCFlatButtons,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, flat_toolbar_buttons),
@@ -1922,8 +1922,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNflatDialogButtons,
-	XtCFlatButtons,
+	(char *)XtNflatDialogButtons,
+	(char *)XtCFlatButtons,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, flat_dialog_buttons),
@@ -1932,8 +1932,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbuttonColorKey,
-	XtCColorKey,
+	(char *)XtNbuttonColorKey,
+	(char *)XtCColorKey,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, button_color_key),
@@ -1942,8 +1942,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNactiveButtonColorKey,
-	XtCColorKey,
+	(char *)XtNactiveButtonColorKey,
+	(char *)XtCColorKey,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, active_button_color_key),
@@ -1952,8 +1952,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNsplashScreenColorKey,
-	XtCColorKey,
+	(char *)XtNsplashScreenColorKey,
+	(char *)XtCColorKey,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, splash_screen_color_key),
@@ -1962,8 +1962,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNautoCommands,
-	XtCAutoCommands,
+	(char *)XtNautoCommands,
+	(char *)XtCAutoCommands,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, auto_commands),
@@ -1972,8 +1972,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNautoCommandPrefix,
-	XtCAutoCommandPrefix,
+	(char *)XtNautoCommandPrefix,
+	(char *)XtCAutoCommandPrefix,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, auto_command_prefix),
@@ -1982,8 +1982,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxBreakpointNumber,
-	XtCMaxNumber,
+	(char *)XtNmaxBreakpointNumber,
+	(char *)XtCMaxNumber,
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, max_breakpoint_number),
@@ -1992,8 +1992,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxDisplayNumber,
-	XtCMaxNumber,
+	(char *)XtNmaxDisplayNumber,
+	(char *)XtCMaxNumber,
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, max_display_number),
@@ -2002,8 +2002,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNsplashScreen,
-	XtCSplashScreen,
+	(char *)XtNsplashScreen,
+	(char *)XtCSplashScreen,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, splash_screen),
@@ -2012,8 +2012,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNcolorWMIcons,
-	XtCColorWMIcons,
+	(char *)XtNcolorWMIcons,
+	(char *)XtCColorWMIcons,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, color_wm_icons),
@@ -2022,9 +2022,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNcutCopyPasteBindings,
-	XtCBindingStyle,
-	XtRBindingStyle,
+	(char *)XtNcutCopyPasteBindings,
+	(char *)XtCBindingStyle,
+	(char *)XtRBindingStyle,
 	sizeof(BindingStyle),
 	XtOffsetOf(AppData, cut_copy_paste_bindings),
 	XmRImmediate,
@@ -2032,9 +2032,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNselectAllBindings,
-	XtCBindingStyle,
-	XtRBindingStyle,
+	(char *)XtNselectAllBindings,
+	(char *)XtCBindingStyle,
+	(char *)XtRBindingStyle,
 	sizeof(BindingStyle),
 	XtOffsetOf(AppData, select_all_bindings),
 	XmRImmediate,
@@ -2042,8 +2042,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxUndoDepth,
-	XtCMaxUndoDepth,
+	(char *)XtNmaxUndoDepth,
+	(char *)XtCMaxUndoDepth,
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, max_undo_depth),
@@ -2052,8 +2052,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxUndoSize,
-	XtCMaxUndoSize,
+	(char *)XtNmaxUndoSize,
+	(char *)XtCMaxUndoSize,
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, max_undo_size),
@@ -2062,8 +2062,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNthemes,
-	XtCThemes,
+	(char *)XtNthemes,
+	(char *)XtCThemes,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, themes),
@@ -2072,8 +2072,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNsuppressTheme,
-	XtCTheme,
+	(char *)XtNsuppressTheme,
+	(char *)XtCTheme,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, suppress_theme),
@@ -2082,8 +2082,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaintenance,
-	XtCMaintenance,
+	(char *)XtNmaintenance,
+	(char *)XtCMaintenance,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, maintenance),
@@ -2092,8 +2092,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdumpCore,
-	XtCDumpCore,
+	(char *)XtNdumpCore,
+	(char *)XtCDumpCore,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, dump_core),
@@ -2102,8 +2102,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdebugCoreDumps,
-	XtCDebugCoreDumps,
+	(char *)XtNdebugCoreDumps,
+	(char *)XtCDebugCoreDumps,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, debug_core_dumps),
@@ -2112,8 +2112,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNlessTifVersion,
-	XtCLessTifVersion,
+	(char *)XtNlessTifVersion,
+	(char *)XtCLessTifVersion,
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, lesstif_version),
@@ -2126,8 +2126,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdddinitVersion,
-	XtCVersion,
+	(char *)XtNdddinitVersion,
+	(char *)XtCVersion,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, dddinit_version),
@@ -2136,8 +2136,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNappDefaultsVersion,
-	XtCVersion,
+	(char *)XtNappDefaultsVersion,
+	(char *)XtCVersion,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, app_defaults_version),
@@ -2193,10 +2193,10 @@ static void CopyArg(XtPointer src, XtPointer dest, Cardinal size)
 	    int intval;
 	    short shortval;
 	    char charval;
-	    char* charptr;
+	    char * charptr;
 	    XtPointer ptr;
 	} u;
-	char *p = (char*)&u;
+	char *p = (char *)&u;
 	if (size == sizeof(long))
 	    u.longval = (long)src;
 	else if (size == sizeof(int))
@@ -2207,10 +2207,10 @@ static void CopyArg(XtPointer src, XtPointer dest, Cardinal size)
 	    u.charval = (char)(long)src;
 	else if (size == sizeof(XtPointer))
 	    u.ptr = (XtPointer)src;
-	else if (size == sizeof(char*))
-	    u.charptr = (char*)src;
+	else if (size == sizeof(char *))
+	    u.charptr = (char *)src;
 	else
-	    p = (char*)&src;
+	    p = (char *)&src;
 
 	copy((char *)dest, (char *)p, size);
     }

@@ -311,7 +311,8 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
 	int arg = 0;
 
 	run_dialog = 
-	    verify(XmCreateSelectionDialog(find_shell(w), "run_dialog", 
+	    verify(XmCreateSelectionDialog(find_shell(w), 
+					   (char *)"run_dialog", 
 					   args, arg));
 	XtUnmanageChild(XmSelectionBoxGetChild(run_dialog, 
 					       XmDIALOG_APPLY_BUTTON));
@@ -381,7 +382,8 @@ void gdbMakeCB(Widget w, XtPointer, XtPointer)
 
 	make_dialog = 
 	    verify(XmCreateSelectionDialog(find_shell(w), 
-					   "make_dialog", args, arg));
+					   (char *)"make_dialog", 
+					   args, arg));
 	XtUnmanageChild(XmSelectionBoxGetChild(make_dialog, 
 					       XmDIALOG_APPLY_BUTTON));
 
@@ -447,7 +449,8 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
 
 	cd_dialog = 
 	    verify(XmCreateSelectionDialog(find_shell(w), 
-					   "cd_dialog", args, arg));
+					   (char *)"cd_dialog", 
+					   args, arg));
 	XtUnmanageChild(XmSelectionBoxGetChild(cd_dialog, 
 					       XmDIALOG_APPLY_BUTTON));
 
@@ -520,8 +523,8 @@ bool add_running_arguments(string& cmd, Widget origin)
 	{
 	    restart_jdb = 
 		verify(XmCreateQuestionDialog(find_shell(origin),
-					      "confirm_restart_gdb_dialog", 
-					      NULL, 0));
+				 (char *)"confirm_restart_gdb_dialog", 
+				 NULL, 0));
 	    Delay::register_shell(restart_jdb);
 	    XtAddCallback(restart_jdb, XmNhelpCallback,   
 			  ImmediateHelpCB, NULL);

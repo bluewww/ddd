@@ -154,7 +154,7 @@ static Widget create_spin_arrow(Widget parent, unsigned char direction,
     XtSetArg(args[arg], XmNarrowDirection,  direction);  arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0);          arg++;
     XtSetArg(args[arg], XmNforeground,      foreground); arg++;
-    Widget arrow = XmCreateArrowButton(parent, "arrow", args, arg);
+    Widget arrow = XmCreateArrowButton(parent, (char *)"arrow", args, arg);
     XtManageChild(arrow);
 
     XtAddCallback(arrow, XmNarmCallback, StartSpinCB, XtPointer(text));

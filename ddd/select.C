@@ -123,7 +123,8 @@ static void select_from_gdb(string& question, string& reply)
 
 	gdb_selection_dialog = 
 	    verify(XmCreateSelectionDialog(find_shell(gdb_w),
-					   "gdb_selection_dialog", args, arg));
+					   (char *)"gdb_selection_dialog",
+					   args, arg));
 	Delay::register_shell(gdb_selection_dialog);
 
 	XtUnmanageChild(XmSelectionBoxGetChild(gdb_selection_dialog,

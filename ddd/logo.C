@@ -2,6 +2,7 @@
 // DDD logos and logo functions
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -51,11 +52,19 @@ char logo_rcsid[] =
 
 // X pixmaps
 #ifdef XpmVersion
+
+// To avoid compilation warnings, make all char *'s constant
+// We cannot do this in the XPM file since this violates XPM format specs
+typedef char oRiGiNaL_char;
+#define char const oRiGiNaL_char
+
 #include "icons/ddd.xpm"
 #include "icons/dddsplash.xpm"
 
+#undef char
+
 #else
-static char **ddd_xpm = 0;
+static const char **ddd_xpm = 0;
 #endif
 
 #include <iostream.h>
@@ -77,7 +86,7 @@ static char **ddd_xpm = 0;
 
 #ifdef XpmVersion
 
-static int xpm(String name, int ret)
+static int xpm(const _XtString name, int ret)
 {
     if (ret != XpmSuccess)
     {
@@ -177,9 +186,11 @@ static Pixmap _iconlogo(Widget w)
 	attr.depth    = root_attr.depth;
 	add_closeness(attr);
 
-	int ret = xpm("ddd.xpm", XpmCreatePixmapFromData(XtDisplay(w), root,
-							 ddd_xpm, &icon, 
-							 (Pixmap *)0, &attr));
+	int ret = xpm("ddd.xpm", 
+		      XpmCreatePixmapFromData(XtDisplay(w), root,
+					      (char **)ddd_xpm, 
+					      &icon, 
+					      (Pixmap *)0, &attr));
 	XpmFreeAttributes(&attr);
 
 	if (ret == XpmSuccess)
@@ -228,11 +239,11 @@ Pixmap iconmask(Widget w)
 
 
 // Convert NAME into a color, using PIX as default
-static Pixel color(Widget w, String name, Pixel pixel)
+static Pixel color(Widget w, const _XtString name, Pixel pixel)
 {
     XrmValue from, to;
     from.size = strlen(name);
-    from.addr = name;
+    from.addr = (char *)name;
     to.size   = sizeof(pixel);
     to.addr   = (String)&pixel;
 
@@ -274,7 +285,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 
 	int ret = xpm("dddsplash.xpm",
 		      XpmCreatePixmapFromData(XtDisplay(w), window,
-					      dddsplash_xpm, &logo, 
+					      (char **)dddsplash_xpm, &logo, 
 					      (Pixmap *)0, &attr));
 	XpmFreeAttributes(&attr);
 
@@ -364,6 +375,12 @@ Pixmap dddsplash(Widget w, const string& color_key,
 #include "icons/toolbar/watch.xbmxx"
 
 #ifdef XpmVersion
+
+// To avoid compilation warnings, make all char *'s constant
+// We cannot do this in the XPM file since this violates XPM format specs
+typedef char oRiGiNaL_char;
+#define char const oRiGiNaL_char
+
 // X Pixmaps
 #include "icons/toolbar/breakat.xpm"
 #include "icons/toolbar/clearat.xpm"
@@ -420,60 +437,62 @@ Pixmap dddsplash(Widget w, const string& color_key,
 #include "icons/toolbar/unwatch.xpmxx"
 #include "icons/toolbar/watch.xpmxx"
 
-#else
-static char **breakat_xpm        = 0;
-static char **clearat_xpm        = 0;
-static char **cluster_xpm        = 0;
-static char **delete_xpm         = 0;
-static char **deref_xpm          = 0;
-static char **disable_xpm        = 0;
-static char **display_xpm        = 0;
-static char **enable_xpm         = 0;
-static char **findbwd_xpm        = 0;
-static char **findfwd_xpm        = 0;
-static char **hide_xpm           = 0;
-static char **lookup_xpm         = 0;
-static char **maketemp_xpm       = 0;
-static char **newbreak_xpm       = 0;
-static char **newdisplay_xpm     = 0;
-static char **newwatch_xpm       = 0;
-static char **plot_xpm           = 0;
-static char **print_xpm          = 0;
-static char **properties_xpm     = 0;
-static char **rotate_xpm         = 0;
-static char **set_xpm            = 0;
-static char **show_xpm           = 0;
-static char **uncluster_xpm      = 0;
-static char **undisplay_xpm      = 0;
-static char **unwatch_xpm        = 0;
-static char **watch_xpm          = 0;
+#undef char
 
-static char **breakat_xx_xpm     = 0;
-static char **clearat_xx_xpm     = 0;
-static char **cluster_xx_xpm     = 0;
-static char **delete_xx_xpm      = 0;
-static char **deref_xx_xpm       = 0;
-static char **disable_xx_xpm     = 0;
-static char **display_xx_xpm     = 0;
-static char **enable_xx_xpm      = 0;
-static char **findbwd_xx_xpm     = 0;
-static char **findfwd_xx_xpm     = 0;
-static char **hide_xx_xpm        = 0;
-static char **lookup_xx_xpm      = 0;
-static char **maketemp_xx_xpm    = 0;
-static char **newbreak_xx_xpm    = 0;
-static char **newdisplay_xx_xpm  = 0;
-static char **newwatch_xx_xpm    = 0;
-static char **plot_xx_xpm        = 0;
-static char **print_xx_xpm       = 0;
-static char **properties_xx_xpm  = 0;
-static char **rotate_xx_xpm      = 0;
-static char **set_xx_xpm         = 0;
-static char **show_xx_xpm        = 0;
-static char **uncluster_xx_xpm   = 0;
-static char **undisplay_xx_xpm   = 0;
-static char **unwatch_xx_xpm     = 0;
-static char **watch_xx_xpm       = 0;
+#else
+static const char **breakat_xpm        = 0;
+static const char **clearat_xpm        = 0;
+static const char **cluster_xpm        = 0;
+static const char **delete_xpm         = 0;
+static const char **deref_xpm          = 0;
+static const char **disable_xpm        = 0;
+static const char **display_xpm        = 0;
+static const char **enable_xpm         = 0;
+static const char **findbwd_xpm        = 0;
+static const char **findfwd_xpm        = 0;
+static const char **hide_xpm           = 0;
+static const char **lookup_xpm         = 0;
+static const char **maketemp_xpm       = 0;
+static const char **newbreak_xpm       = 0;
+static const char **newdisplay_xpm     = 0;
+static const char **newwatch_xpm       = 0;
+static const char **plot_xpm           = 0;
+static const char **print_xpm          = 0;
+static const char **properties_xpm     = 0;
+static const char **rotate_xpm         = 0;
+static const char **set_xpm            = 0;
+static const char **show_xpm           = 0;
+static const char **uncluster_xpm      = 0;
+static const char **undisplay_xpm      = 0;
+static const char **unwatch_xpm        = 0;
+static const char **watch_xpm          = 0;
+
+static const char **breakat_xx_xpm     = 0;
+static const char **clearat_xx_xpm     = 0;
+static const char **cluster_xx_xpm     = 0;
+static const char **delete_xx_xpm      = 0;
+static const char **deref_xx_xpm       = 0;
+static const char **disable_xx_xpm     = 0;
+static const char **display_xx_xpm     = 0;
+static const char **enable_xx_xpm      = 0;
+static const char **findbwd_xx_xpm     = 0;
+static const char **findfwd_xx_xpm     = 0;
+static const char **hide_xx_xpm        = 0;
+static const char **lookup_xx_xpm      = 0;
+static const char **maketemp_xx_xpm    = 0;
+static const char **newbreak_xx_xpm    = 0;
+static const char **newdisplay_xx_xpm  = 0;
+static const char **newwatch_xx_xpm    = 0;
+static const char **plot_xx_xpm        = 0;
+static const char **print_xx_xpm       = 0;
+static const char **properties_xx_xpm  = 0;
+static const char **rotate_xx_xpm      = 0;
+static const char **set_xx_xpm         = 0;
+static const char **show_xx_xpm        = 0;
+static const char **uncluster_xx_xpm   = 0;
+static const char **undisplay_xx_xpm   = 0;
+static const char **unwatch_xx_xpm     = 0;
+static const char **watch_xx_xpm       = 0;
 #endif // !XpmVersion
 
 static char get_sign(string& g)
@@ -489,8 +508,8 @@ static char get_sign(string& g)
 }
 
 static XImage *get_subimage(XImage *image, String geometry, 
-			    String name = "image",
-			    String resource = "geometry")
+			    const _XtString name = "image",
+			    const _XtString resource = "geometry")
 {
     if (geometry == 0)
     {
@@ -545,7 +564,7 @@ static XImage *get_subimage(XImage *image, String geometry,
     return subimage;
 }
 
-static XImage *get_button_subimage(XImage *image, String name)
+static XImage *get_button_subimage(XImage *image, const _XtString name)
 {
     if (!app_data.button_images && !app_data.button_captions)
     {
@@ -569,8 +588,9 @@ static XImage *get_button_subimage(XImage *image, String name)
 
 
 
-static void install_icon(Widget w, String name,
-			 char **xpm_data, unsigned char *xbm_data,
+static void install_icon(Widget w, const _XtString name,
+			 const char **xpm_data, 
+			 const unsigned char *xbm_data,
 			 int width, int height,
 			 const string& color_key,
 			 Pixel background,
@@ -583,7 +603,7 @@ static void install_icon(Widget w, String name,
     if (depth > 1 && color_key != "m")
     {
 	XpmColorSymbol cs;
-	cs.name  = "Background";
+	cs.name  = (char *)"Background";
 	cs.value = 0;
 	cs.pixel = background;
 
@@ -602,7 +622,7 @@ static void install_icon(Widget w, String name,
 	XImage *shape = 0;
 
 	int ret = 
-	    xpm(name, XpmCreateImageFromData(XtDisplay(w), xpm_data, 
+	    xpm(name, XpmCreateImageFromData(XtDisplay(w), (char **)xpm_data, 
 					     &image, &shape, &attr));
 
 	XpmFreeAttributes(&attr);
@@ -638,7 +658,8 @@ static void install_icon(Widget w, String name,
 #endif // !defined(XpmVersion)
 
     // Install the bitmap version
-    XImage *image = CreateImageFromBitmapData(xbm_data, width, height);
+    XImage *image = CreateImageFromBitmapData((unsigned char *)xbm_data, 
+					      width, height);
 
     if (is_button)
     {
@@ -661,10 +682,11 @@ static void install_icon(Widget w, String name,
 	XDestroyImage(image);
 }
 
-static void install_button_icon(Widget w, String name,
-				char **xpm_data, char **xpm_xx_data,
-				unsigned char *xbm_data,
-				unsigned char *xbm_xx_data,
+static void install_button_icon(Widget w, const _XtString name,
+				const char **xpm_data, 
+				const char **xpm_xx_data,
+				const unsigned char *xbm_data,
+				const unsigned char *xbm_xx_data,
 				int width, int height, 
 				const string& color_key,
 				const string& active_color_key,
@@ -930,7 +952,7 @@ void install_icons(Widget shell,
 // Set pixmap and label
 //-----------------------------------------------------------------------
 
-void set_label(Widget w, const MString& new_label, char *image)
+void set_label(Widget w, const MString& new_label, const char *image)
 {
     if (w == 0)
 	return;

@@ -82,7 +82,7 @@ void Flush(Widget w)
 }
 
 // Standard resources
-String fallback_resources[] = 
+const _XtString fallback_resources[] = 
     { "*Viewport.width:    400", "*Viewport.height: 400", NULL };
 
 // These should be part of ExposeCB...
@@ -188,18 +188,18 @@ ListBox *vsl_args(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     // Set flags
-    VSEFlags::parse(argc, argv, "vsllib");
+    VSEFlags::parse(argc, (const char**)argv, "vsllib");
 
     // Init toolkit
     Widget toplevel = XtAppInitialize(&app_con, "Vsl", NULL, ZERO, 
-				      &argc, argv, fallback_resources, 
+				      &argc, argv, (char**)fallback_resources, 
 				      NULL, ZERO);
 
     // Create Viewport
     Arg arglist[10];        // Arguments
     int a = 0;              // Argument counter
-    XtSetArg(arglist[a], XtNallowHoriz, true); a++;
-    XtSetArg(arglist[a], XtNallowVert,  true); a++;
+    XtSetArg(arglist[a], (char *)XtNallowHoriz, true); a++;
+    XtSetArg(arglist[a], (char *)XtNallowVert,  true); a++;
     Widget viewport = XtCreateManagedWidget("viewport", viewportWidgetClass, 
 					    toplevel, arglist, a);
 

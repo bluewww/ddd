@@ -54,10 +54,10 @@ struct VSLBuiltin {
     static bool hasSideEffects(int functionIndex);
 
     // Internal representation ("__op_halign")
-    static char *func_name(int functionIndex);
+    static const char *func_name(int functionIndex);
 
     // External representation ("(&)")
-    static char *ext_name(int functionIndex);
+    static const char *ext_name(int functionIndex);
 
     // Flag: dump EXT_NAME infix?
     static bool isInfix(int functionIndex);

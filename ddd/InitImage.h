@@ -44,7 +44,7 @@ extern XImage *CreateImageFromBitmapData(unsigned char *bits,
 					 int width, int height);
 
 // Install IMAGE in Motif cache
-Boolean InstallImage(XImage *image, char *name);
+Boolean InstallImage(XImage *image, const char *name);
 
 // Install bitmap in Motif cache
 Boolean InstallBitmap(unsigned char *bits, int width, int height, char *name);

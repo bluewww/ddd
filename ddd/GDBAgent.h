@@ -223,7 +223,7 @@ protected:
     static string append_suffix(const string& expr, const string& suffix);
 
     // General trace function
-    void trace(char *prefix, void *call_data) const;
+    void trace(const char *prefix, void *call_data) const;
 
     // Perl specials
     static void munch_perl_array(string& value, bool hash);

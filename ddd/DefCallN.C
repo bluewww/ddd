@@ -56,14 +56,14 @@ DEFINE_TYPE_INFO_1(DefCallNode, CallNode)
 // DefCallNode
 
 // Constructor
-DefCallNode::DefCallNode(VSLDef *def, VSLNode *a, char *type):
+DefCallNode::DefCallNode(VSLDef *def, VSLNode *a, const char *type):
     CallNode(a, type), _def(def), _deflist(def->deflist)
 {
     _deflist->references++;
 }
 
 // Constructor
-DefCallNode::DefCallNode(VSLDefList *deflist, VSLNode *a, char *type):
+DefCallNode::DefCallNode(VSLDefList *deflist, VSLNode *a, const char *type):
     CallNode(a, type), _def(0), _deflist(deflist)
 {
     _deflist->references++;
@@ -98,9 +98,9 @@ const Box *DefCallNode::call(Box *a) const
 }
 
 // Return function name
-char *DefCallNode::func_name() const
+const char *DefCallNode::func_name() const
 {
-    return (char *)_deflist->f_name();
+    return _deflist->f_name();
 }
 
 

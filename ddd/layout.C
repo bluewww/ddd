@@ -1019,7 +1019,7 @@ void Layout::listRemoveEdge (EDGELIST *list, EDGE *edge)
 	    }
 	}
     }
-    free ((char*)edge);
+    free ((char *)edge);
     /*
      * correct number of entries 
      */
@@ -1083,7 +1083,7 @@ void Layout::listRemove (EDGELIST *list)
     edge = list->head;
     while (edge) {
 	tmp = edge->next;
-	free ((char*) edge);
+	free ((char *) edge);
 	edge = tmp;
     }
     list->head = (EDGE*) NULL;
@@ -1122,7 +1122,7 @@ void Layout::nodeInit (NODE* node, ID *id , NODETYPE type)
     node->type = type;
 
     if ( type == Regular ) {
-	node->attr.node.label = (char*) malloc (strlen(id->label)+5);
+	node->attr.node.label = (char *) malloc (strlen(id->label)+5);
 	if (!node->attr.node.label) {
 	    fprintf (stderr,"nodeInit: out of memory!\n");
 	    exit (MEMORY_ERROR);
@@ -1157,7 +1157,7 @@ void Layout::nodeRemove (NODE *node)
 	listRemove (&node->attr.node.down);
     }
 	
-    free ((char*)node);
+    free ((char *)node);
 }
 
 /*****************************************************************************
@@ -1395,7 +1395,7 @@ void Layout::graphCreateLevels (GRAPH *graph, int n)
 
 void Layout::graphRemoveLevels (GRAPH *graph)
 {
-    free ( (char*) graph->level);
+    free ( (char *) graph->level);
     graph->level = (NODE**) NULL;
     graph->levels = 0;
 }
@@ -1436,7 +1436,7 @@ void Layout::graphAddLevels (GRAPH *graph, int n)
      * make the new table to the actual table
      */
     graph->levels += n;
-    free ((char*) graph->level);
+    free ((char *) graph->level);
     graph->level = newtab;
 }
 
@@ -1825,7 +1825,7 @@ void Layout::graphRemove (GRAPHTAB *tab, char *label)
 	}
     }
     free (graph->label);
-    free ((char*) graph);
+    free ((char *) graph);
 }
 
 /*
@@ -2414,7 +2414,7 @@ void Layout::sortByCenter (NODE **level)
 
     /* sort the index */
 
-    qsort ( (char*) index , len, sizeof (NODE*), 
+    qsort ( (char *) index , len, sizeof (NODE*), 
 	    (QuicksortCompareProc)sortCmpCenters );
 
     /*
@@ -2432,7 +2432,7 @@ void Layout::sortByCenter (NODE **level)
     }
     (*tmp)->right = (NODE*) NULL;
 
-    free ( (char*) index);
+    free ( (char *) index);
 }
 
 #if 0
@@ -2621,7 +2621,7 @@ void Layout::sortLevelUpX (NODE **level, int dist)
      * sort the index by node priority (from low to high)
      */
 
-    qsort ( (char*)index, len, sizeof (NODE*), 
+    qsort ( (char *)index, len, sizeof (NODE*), 
 	    (QuicksortCompareProc)sortCmpUpperPrio);
 
     tmp = index;
@@ -2631,7 +2631,7 @@ void Layout::sortLevelUpX (NODE **level, int dist)
 	tmp++;
     }
 
-    free ( (char*) index);
+    free ( (char *) index);
 }
 
 /*
@@ -2672,7 +2672,7 @@ void Layout::sortLevelDownX (NODE **level, int dist)
      * sort the index by node priority (from low to high)
      */
 
-    qsort ( (char*)index, len, sizeof (NODE*), 
+    qsort ( (char *)index, len, sizeof (NODE*), 
 	    (QuicksortCompareProc)sortCmpLowerPrio);
 
     tmp = index;
@@ -2682,7 +2682,7 @@ void Layout::sortLevelDownX (NODE **level, int dist)
 	tmp++;
     }
 
-    free ( (char*) index);
+    free ( (char *) index);
 }
 
 /*

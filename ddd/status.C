@@ -88,9 +88,9 @@ static bool log_status = true;
 // Status lock
 //-----------------------------------------------------------------------------
 
-void lock_status()       { status_locked++;   }
-void unlock_status()     { if (status_locked > 0) status_locked--; }
-void reset_status_lock() { status_locked = 0; }
+void lock_status(void)       { status_locked++;   }
+void unlock_status(void)     { if (status_locked > 0) status_locked--; }
+void reset_status_lock(void) { status_locked = 0; }
 
 
 //-----------------------------------------------------------------------------
@@ -136,7 +136,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	if (pos == 0)
 	    pos = messagePosition;
 
-	XmTextReplace(gdb_w, pos, XmTextGetLastPosition(gdb_w), "");
+	XmTextReplace(gdb_w, pos, XmTextGetLastPosition(gdb_w), (char *)"");
 	promptPosition = pos;
 
 	prompt = prompt.from(pos);
@@ -216,7 +216,7 @@ static Widget create_status_history(Widget parent)
     XtSetArg(args[arg], XmNallowShellResize, True); arg++;
     XtSetArg(args[arg], XmNwidth,            10);   arg++;
     XtSetArg(args[arg], XmNheight,           10);   arg++;
-    history_shell = verify(XmCreateMenuShell(parent, "status_history", 
+    history_shell = verify(XmCreateMenuShell(parent, (char *)"status_history", 
 					     args, arg));
 
     arg = 0;
@@ -226,13 +226,15 @@ static Widget create_status_history(Widget parent)
     XtSetArg(args[arg], XmNresizeHeight, True); arg++;
     XtSetArg(args[arg], XmNborderWidth, 0);     arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
-    history_row = verify(XmCreateRowColumn(history_shell, "row", args, arg));
+    history_row = verify(XmCreateRowColumn(history_shell, (char *)"row", 
+					   args, arg));
     XtManageChild(history_row);
 
     arg = 0;
     XtSetArg(args[arg], XmNresizable, True); arg++;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
-    history_label = verify(XmCreateLabel(history_row, "label", args, arg));
+    history_label = verify(XmCreateLabel(history_row, (char *)"label", 
+					 args, arg));
     XtManageChild(history_label);
 					   
     return history_shell;
@@ -564,7 +566,7 @@ void set_status_mstring(MString message, bool temporary)
     }
 }
 
-const MString& current_status()
+const MString& current_status(void)
 {
     return current_status_text;
 }

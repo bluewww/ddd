@@ -337,7 +337,7 @@ void graphToggleShowHintsCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], XtNshowHints, info->set); arg++;
+    XtSetArg(args[arg], (char *)XtNshowHints, info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -355,7 +355,7 @@ void graphToggleShowAnnotationsCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], XtNshowAnnotations, info->set); arg++;
+    XtSetArg(args[arg], (char *)XtNshowAnnotations, info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -406,7 +406,7 @@ void graphToggleSnapToGridCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], XtNsnapToGrid, info->set); arg++;
+    XtSetArg(args[arg], (char *)XtNsnapToGrid, info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -429,7 +429,7 @@ void graphToggleCompactLayoutCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], XtNlayoutMode, mode); arg++;
+    XtSetArg(args[arg], (char *)XtNlayoutMode, mode); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -447,7 +447,7 @@ void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], XtNautoLayout, info->set); arg++;
+    XtSetArg(args[arg], (char *)XtNautoLayout, info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -482,15 +482,15 @@ void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
 
     if (info->value >= 2)
     {
-	XtSetArg(args[arg], XtNgridWidth,  info->value); arg++;
-	XtSetArg(args[arg], XtNgridHeight, info->value); arg++;
-	XtSetArg(args[arg], XtNshowGrid,   True); arg++;
+	XtSetArg(args[arg], (char *)XtNgridWidth,  info->value); arg++;
+	XtSetArg(args[arg], (char *)XtNgridHeight, info->value); arg++;
+	XtSetArg(args[arg], (char *)XtNshowGrid,   True); arg++;
 	XtSetValues(data_disp->graph_edit, args, arg);
 	set_status("Grid size set to " + itostring(info->value) + ".");
     }
     else
     {
-	XtSetArg(args[arg], XtNshowGrid, False); arg++;
+	XtSetArg(args[arg], (char *)XtNshowGrid, False); arg++;
 	XtSetValues(data_disp->graph_edit, args, arg);
 	set_status("Grid off.");
     }
@@ -516,14 +516,14 @@ void graphSetDisplayPlacementCB(Widget, XtPointer client_data,
 	switch (orientation)
 	{
 	case XmVERTICAL:
-	    XtSetArg(args[arg], XtNrotation, 0); arg++;
+	    XtSetArg(args[arg], (char *)XtNrotation, 0); arg++;
 	    XtSetValues(data_disp->graph_edit, args, arg);
 	    set_status("New displays will be placed "
 		       "below the downmost display.");
 	    break;
 	    
 	case XmHORIZONTAL:
-	    XtSetArg(args[arg], XtNrotation, 90); arg++;
+	    XtSetArg(args[arg], (char *)XtNrotation, 90); arg++;
 	    XtSetValues(data_disp->graph_edit, args, arg);
 	    set_status("New displays will be placed on the "
 		       "right of the rightmost display.");
@@ -1862,9 +1862,10 @@ static void CheckOptionsFileCB(XtPointer client_data, XtIntervalId *id)
 
 	if (dialog == 0)
 	{
-	    dialog = verify(XmCreateQuestionDialog(find_shell(),
-						   "reload_options_dialog",
-						   0, 0));
+	    dialog = verify(XmCreateQuestionDialog(
+				find_shell(),
+				(char *)"reload_options_dialog",
+				0, 0));
 	    Delay::register_shell(dialog);
 	    XtAddCallback(dialog, XmNokCallback,     ReloadOptionsCB, 0);
 	    XtAddCallback(dialog, XmNcancelCallback, DontReloadOptionsCB, 0);
@@ -1975,7 +1976,7 @@ inline String bool_value(bool value)
     return value ? (String)"on" : (String)"off";
 }
 
-inline String binding_value(BindingStyle value)
+inline const _XtString binding_value(BindingStyle value)
 {
     switch (value)
     {
@@ -2008,7 +2009,7 @@ static string binding_app_value(const string& name, BindingStyle value,
 }
 
 
-static string string_app_value(const string& name, String v,
+static string string_app_value(const string& name, const _XtString v,
 			       bool check_default = false)
 {
     if (v == 0)
@@ -2032,7 +2033,7 @@ static string string_app_value(const string& name, String v,
     return app_value(name, value, check_default);
 }
 
-static string widget_value(Widget w, String name, bool check_default = false)
+static string widget_value(Widget w, const _XtString name, bool check_default = false)
 {
     String value = 0;
     XtVaGetValues(w, 
@@ -2885,9 +2886,10 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
-	dialog = verify(XmCreateQuestionDialog(find_shell(w), 
-					       "overwrite_options_dialog",
-					       0, 0));
+	dialog = verify(XmCreateQuestionDialog(
+			    find_shell(w), 
+			    (char *)"overwrite_options_dialog",
+			    0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
 		      XtPointer(flags));
@@ -2902,9 +2904,10 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
-	dialog = verify(XmCreateQuestionDialog(find_shell(w), 
-					       "kill_to_save_dialog",
-					       0, 0));
+	dialog = verify(XmCreateQuestionDialog(
+			    find_shell(w), 
+			    (char *)"kill_to_save_dialog",
+			    0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
 		      XtPointer(flags | MAY_KILL));
@@ -2919,9 +2922,10 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
-	dialog = verify(XmCreateQuestionDialog(find_shell(w), 
-					       "data_not_saved_dialog",
-					       0, 0));
+	dialog = verify(XmCreateQuestionDialog(
+			    find_shell(w), 
+			    (char *)"data_not_saved_dialog",
+			    0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
 		      XtPointer(flags));

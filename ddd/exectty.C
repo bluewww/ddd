@@ -153,7 +153,8 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 	XtSetArg(args[arg], XmNdialogStyle, 
 		 XmDIALOG_FULL_APPLICATION_MODAL); arg++;
 	dialog = verify(XmCreateWorkingDialog(find_shell(origin), 
-					      "launch_tty_dialog", args, arg));
+					      (char *)"launch_tty_dialog", 
+					      args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
 					     XmDIALOG_OK_BUTTON));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
@@ -582,7 +583,7 @@ static void redirect_process(string& command,
 	    }
 	    else
 	    {
-		char *shell_s = getenv("SHELL");
+		const char *shell_s = getenv("SHELL");
 		if (shell_s == 0)
 		    shell_s = "/bin/sh";
 		shell = shell_s;

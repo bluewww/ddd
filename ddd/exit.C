@@ -216,7 +216,7 @@ void ddd_install_signal()
 }
 
 // Setup signals: Issue message on fatal errors
-void ddd_install_fatal(char * /* program_name */)
+void ddd_install_fatal(const char * /* program_name */)
 {
     // Make sure strsignal() is initialized properly
     (void)sigName(1);
@@ -282,7 +282,8 @@ static void post_fatal(string title, string cause, string cls,
     if (fatal_dialog == 0)
     {
 	fatal_dialog = verify(XmCreateErrorDialog (find_shell(),
-						   "fatal_dialog", 0, 0));
+						   (char *)"fatal_dialog", 
+						   0, 0));
 	Delay::register_shell(fatal_dialog);
 
 	XtAddCallback(fatal_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
@@ -290,7 +291,8 @@ static void post_fatal(string title, string cause, string cls,
 		      DDDRestartCB, XtPointer(EXIT_FAILURE));
 
 #if XmVersion >= 1002
-	Widget exit = verify(XmCreatePushButton(fatal_dialog, "exit", 0, 0));
+	Widget exit = verify(XmCreatePushButton(fatal_dialog, 
+						(char *)"exit", 0, 0));
 	XtManageChild(exit);
 	XtAddCallback(exit, XmNactivateCallback,
 		      DDDExitCB, XtPointer(EXIT_FAILURE));
@@ -692,9 +694,9 @@ static void PostXErrorCB(XtPointer client_data, XtIntervalId *)
     post_fatal(title, cause, "X Error");
 }
 
-static string xtext(Display *display, char *code, char *def, int arg = 0)
+static string xtext(Display *display, const char *code, const char *def, int arg = 0)
 {
-    char *mtype = "XlibMessage";
+    const char *mtype = "XlibMessage";
     char format[BUFSIZ];
     char message[BUFSIZ];
     XGetErrorDatabaseText(display, mtype, code, def, format, sizeof format);
@@ -1030,7 +1032,8 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     quit_dialog = verify(XmCreateQuestionDialog(find_shell(w),
-					      "quit_dialog", args, arg));
+						(char *)"quit_dialog", 
+						args, arg));
     Delay::register_shell(quit_dialog);
     XtAddCallback(quit_dialog, XmNokCallback,   DDDDoneAnywayCB, client_data);
     XtAddCallback(quit_dialog, XmNcancelCallback, UnmanageThisCB, quit_dialog);
@@ -1101,9 +1104,10 @@ void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
-	dialog = verify(XmCreateQuestionDialog(find_shell(w),
-					       "confirm_restart_dialog",
-					       0, 0));
+	dialog = verify(
+	    XmCreateQuestionDialog(find_shell(w),
+				   (char *)"confirm_restart_dialog",
+				   0, 0));
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, _DDDRestartCB,
 		      XtPointer(flags | MAY_KILL));

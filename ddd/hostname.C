@@ -90,9 +90,9 @@ extern "C" {
 #endif
 
 // Return local host name
-char *hostname()
+const char *hostname()
 {
-    static char *name = 0;
+    static const char *name = 0;
     if (name != 0)
 	return name;
 
@@ -145,7 +145,7 @@ inline int dots(const char *str)
 }
 
 // Return most qualified name for the current host
-static char *_fullhostname(char *most_qualified_host)
+static const char *_fullhostname(const char *most_qualified_host)
 {
     // Try local name
     if (most_qualified_host == 0)
@@ -191,7 +191,7 @@ static char *_fullhostname(char *most_qualified_host)
 
 
 // Return and cache a fully qualified name for the current host
-char *fullhostname(char *host)
+const char *fullhostname(const char *host)
 {
     // Buffer for local host name
     static char *name = 0;
@@ -199,7 +199,7 @@ char *fullhostname(char *host)
     if (name && host == 0)
 	return name;
 
-    char *n = _fullhostname(host);
+    const char *n = _fullhostname(host);
     if (host == 0)
 	return name = strcpy(new char[strlen(n) + 1], n);
     else

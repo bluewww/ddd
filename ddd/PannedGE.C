@@ -68,15 +68,15 @@ static XtResource resources[] = {
 #define offset(field) XtOffsetOf(PannedGraphEditRec, pannedGraphEdit.field)
     // {name, class, type, size, offset, default_type, default_addr}
 
-    { XtNminimumPannerWidth, XtCMinimumPannerWidth, XtRDimension, 
+    { (char *)XtNminimumPannerWidth, (char *)XtCMinimumPannerWidth, XtRDimension, 
       sizeof(Dimension), offset(minimumPannerWidth), 
       XtRImmediate, XtPointer(50) },
 
-    { XtNminimumPannerHeight, XtCMinimumPannerHeight, XtRDimension, 
+    { (char *)XtNminimumPannerHeight, (char *)XtCMinimumPannerHeight, XtRDimension, 
       sizeof(Dimension), offset(minimumPannerHeight), 
       XtRImmediate, XtPointer(50) },
 
-    { XtNmaximumScale, XtCMaximumScale, XtRDimension, 
+    { (char *)XtNmaximumScale, (char *)XtCMaximumScale, XtRDimension, 
       sizeof(Dimension), offset(maximumScale), 
       XtRImmediate, XtPointer(33) }
 
@@ -95,7 +95,7 @@ static XtResource resources[] = {
 struct _PannedGraphEditClassRec pannedGraphEditClassRec = {
   {	 /* core fields */
     /* superclass               */  portholeWidgetClass,
-    /* class_name               */  "PannedGraphEdit",
+    /* class_name               */  (char *)"PannedGraphEdit",
     /* widget_size              */  sizeof(PannedGraphEditRec),
     /* class_initialize         */  XawInitializeWidgetSet,
     /* class_part_initialize    */  XtWidgetClassProc(0),
@@ -164,7 +164,7 @@ static void Resize(Widget w)
 
 
 // create a graph editor with panner; return the graph editor widget ID
-Widget createPannedGraphEdit(Widget parent, String name, 
+Widget createPannedGraphEdit(Widget parent, const _XtString name, 
 			     ArgList graph_edit_args,
 			     Cardinal graph_edit_arg)
 {
@@ -173,31 +173,31 @@ Widget createPannedGraphEdit(Widget parent, String name,
 
     string form_name = string(name) + "_form";
     arg = 0;
-    XtSetArg(args[arg], XtNborderWidth,     0); arg++;
-    XtSetArg(args[arg], XtNdefaultDistance, 0); arg++;
+    XtSetArg(args[arg], (char *)XtNborderWidth,     0); arg++;
+    XtSetArg(args[arg], (char *)XtNdefaultDistance, 0); arg++;
     Widget form =
 	verify(XtCreateManagedWidget(form_name, 
 				     formWidgetClass, parent, args, arg));
 
     string panner_name = string(name) + "_panner";
     arg = 0;
-    XtSetArg(args[arg], XtNresize,    False);          arg++;
-    XtSetArg(args[arg], XtNresizable, True);           arg++;
-    XtSetArg(args[arg], XtNbottom,    XawChainBottom); arg++;
-    XtSetArg(args[arg], XtNtop,       XawChainBottom); arg++;
-    XtSetArg(args[arg], XtNleft,      XawChainRight);  arg++;
-    XtSetArg(args[arg], XtNright,     XawChainRight);  arg++;
+    XtSetArg(args[arg], (char *)XtNresize,    False);          arg++;
+    XtSetArg(args[arg], (char *)XtNresizable, True);           arg++;
+    XtSetArg(args[arg], (char *)XtNbottom,    (char *)XawChainBottom); arg++;
+    XtSetArg(args[arg], (char *)XtNtop,       (char *)XawChainBottom); arg++;
+    XtSetArg(args[arg], (char *)XtNleft,      (char *)XawChainRight);  arg++;
+    XtSetArg(args[arg], (char *)XtNright,     (char *)XawChainRight);  arg++;
     Widget panner = 
 	verify(XtCreateWidget(panner_name, 
 			      pannerWidgetClass, form, args, arg));
 
     string porthole_name = string(name) + "_porthole";
     arg = 0;
-    XtSetArg(args[arg], XtNresizable, True);           arg++;
-    XtSetArg(args[arg], XtNbottom,    XawChainBottom); arg++;
-    XtSetArg(args[arg], XtNtop,       XawChainTop);    arg++;
-    XtSetArg(args[arg], XtNleft,      XawChainLeft);   arg++;
-    XtSetArg(args[arg], XtNright,     XawChainRight);  arg++;
+    XtSetArg(args[arg], (char *)XtNresizable, True);           arg++;
+    XtSetArg(args[arg], (char *)XtNbottom,    (char *)XawChainBottom); arg++;
+    XtSetArg(args[arg], (char *)XtNtop,       (char *)XawChainTop);    arg++;
+    XtSetArg(args[arg], (char *)XtNleft,      (char *)XawChainLeft);   arg++;
+    XtSetArg(args[arg], (char *)XtNright,     (char *)XawChainRight);  arg++;
     Widget porthole = 
 	verify(XtCreateManagedWidget(porthole_name,
 				     pannedGraphEditWidgetClass, 
@@ -258,14 +258,14 @@ static void PortholeCB(Widget w,
     Widget graph_edit = children[0];
 
     arg = 0;
-    XtSetArg (args[arg], XtNsliderX, report->slider_x); arg++;
-    XtSetArg (args[arg], XtNsliderY, report->slider_y); arg++;
+    XtSetArg (args[arg], (char *)XtNsliderX, report->slider_x); arg++;
+    XtSetArg (args[arg], (char *)XtNsliderY, report->slider_y); arg++;
     if (report->changed != (XawPRSliderX | XawPRSliderY))
     {
-	XtSetArg (args[arg], XtNsliderWidth,  report->slider_width);  arg++;
-	XtSetArg (args[arg], XtNsliderHeight, report->slider_height); arg++;
-	XtSetArg (args[arg], XtNcanvasWidth,  report->canvas_width);  arg++;
-	XtSetArg (args[arg], XtNcanvasHeight, report->canvas_height); arg++;
+	XtSetArg (args[arg], (char *)XtNsliderWidth,  report->slider_width);  arg++;
+	XtSetArg (args[arg], (char *)XtNsliderHeight, report->slider_height); arg++;
+	XtSetArg (args[arg], (char *)XtNcanvasWidth,  report->canvas_width);  arg++;
+	XtSetArg (args[arg], (char *)XtNcanvasHeight, report->canvas_height); arg++;
     }
     XtSetValues (panner, args, arg);
 
@@ -384,7 +384,7 @@ Widget pannerOfGraphEdit(Widget w)
 
 #include "ScrolledGE.h"
 
-Widget createPannedGraphEdit(Widget parent, String name, 
+Widget createPannedGraphEdit(Widget parent, const _XtString name, 
 			     ArgList graph_edit_args,
 			     Cardinal graph_edit_arg)
 {

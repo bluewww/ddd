@@ -125,8 +125,8 @@ struct doc_resource_values {
 
 static XtResource help_subresources[] = {
     {
-	XtNhelpString,
-	XtCHelpString,
+	(char *)XtNhelpString,
+	(char *)XtCHelpString,
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(help_resource_values, helpString),
@@ -135,8 +135,8 @@ static XtResource help_subresources[] = {
     },
 
     {
-	XtNhelpShowTitle,
-	XtCHelpShowTitle,
+	(char *)XtNhelpShowTitle,
+	(char *)XtCHelpShowTitle,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(help_resource_values, showTitle),
@@ -147,8 +147,8 @@ static XtResource help_subresources[] = {
 
 static XtResource help_on_version_subresources[] = {
     {
-	XtNhelpOnVersionString,
-	XtCHelpOnVersionString,
+	(char *)XtNhelpOnVersionString,
+	(char *)XtCHelpOnVersionString,
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(help_on_version_resource_values, helpOnVersionString),
@@ -157,8 +157,8 @@ static XtResource help_on_version_subresources[] = {
     },
 
     {
-	XtNhelpShowTitle,
-	XtCHelpShowTitle,
+	(char *)XtNhelpShowTitle,
+	(char *)XtCHelpShowTitle,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(help_on_version_resource_values, showTitle),
@@ -169,8 +169,8 @@ static XtResource help_on_version_subresources[] = {
 
 static XtResource tip_subresources[] = {
     {
-	XtNtipString,
-	XtCTipString,
+	(char *)XtNtipString,
+	(char *)XtCTipString,
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(tip_resource_values, tipString), 
@@ -181,8 +181,8 @@ static XtResource tip_subresources[] = {
 
 static XtResource doc_subresources[] = {
     {
-	XtNdocumentationString,
-	XtCDocumentationString,
+	(char *)XtNdocumentationString,
+	(char *)XtCDocumentationString,
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(doc_resource_values, documentationString), 
@@ -566,7 +566,8 @@ static void _MStringHelpCB(Widget widget,
 	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
 
 	help_dialog = 
-	    verify(XmCreateInformationDialog(shell, "help", args, arg));
+	    verify(XmCreateInformationDialog(shell, 
+					     (char *)"help", args, arg));
 	Delay::register_shell(help_dialog);
 	XtAddCallback(help_dialog, XmNhelpCallback,
 		      HelpOnHelpCB, 0);
@@ -830,14 +831,14 @@ static void CloseCB(Widget w, XtPointer, XtPointer)
 
 // Create an empty dialog within a top-level-shell
 // FIXME: This should be part of core DDD!
-static Widget create_text_dialog(Widget parent, String name, 
+static Widget create_text_dialog(Widget parent, const _XtString name, 
 				 Arg *args, int arg, Widget& bar)
 {
     Widget shell = verify(XtCreateWidget(name, topLevelShellWidgetClass,
 					 parent, args, arg));
 
     arg = 0;
-    Widget w = XmCreateMainWindow(shell, name, args, arg);
+    Widget w = XmCreateMainWindow(shell, (char *)name, args, arg);
     XtManageChild(w);
 
     MMDesc file_menu[] = 
@@ -1103,7 +1104,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
     XtSetArg(args[arg], XmNborderWidth,        0); arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    Widget form = verify(XmCreateForm(text_dialog, "form", args, arg));
+    Widget form = verify(XmCreateForm(text_dialog, (char *)"form", args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
@@ -1114,7 +1115,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
-    Widget area = verify(XmCreatePanedWindow(form, "help_area", args, arg));
+    Widget area = verify(XmCreatePanedWindow(form, 
+					     (char *)"help_area", args, arg));
     XtManageChild(area);
 
     FindInfo *fi = new FindInfo;
@@ -1140,7 +1142,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     MMaddCallbacks(simple_edit_menu, XtPointer(fi->key));
 
     arg = 0;
-    Widget help_index = verify(XmCreateScrolledList(area, "index", args, arg));
+    Widget help_index = 
+	verify(XmCreateScrolledList(area, (char *)"index", args, arg));
     XtManageChild(help_index);
     if (lesstif_version < 90)
 	set_scrolled_window_size(help_index);
@@ -1179,7 +1182,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     XtSetArg(args[arg], XmNeditable, False);             arg++;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
     XtSetArg(args[arg], XmNvalue,    "");                arg++;
-    Widget help_man = verify(XmCreateScrolledText(area, "text", args, arg));
+    Widget help_man = 
+	verify(XmCreateScrolledText(area, (char *)"text", args, arg));
     XtManageChild(help_man);
     if (lesstif_version < 90)
 	set_scrolled_window_size(help_man);
@@ -1418,7 +1422,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 					    menubar);
 
     arg = 0;
-    Widget form = verify(XmCreateForm(text_dialog, "form", args, arg));
+    Widget form = verify(XmCreateForm(text_dialog, (char *)"form", args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
@@ -1429,7 +1433,8 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
-    Widget area = verify(XmCreatePanedWindow(form, "help_area", args, arg));
+    Widget area = verify(
+	XmCreatePanedWindow(form, (char *)"help_area", args, arg));
     XtManageChild(area);
 
     FindInfo *fi = new FindInfo;
@@ -1482,7 +1487,8 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     XtSetArg(args[arg], XmNeditable,         False);             arg++;
     XtSetArg(args[arg], XmNeditMode,         XmMULTI_LINE_EDIT); arg++;
     XtSetArg(args[arg], XmNvalue,            text); arg++;
-    Widget help_text = verify(XmCreateScrolledText(area, "text", args, arg));
+    Widget help_text = verify(
+	XmCreateScrolledText(area, (char *)"text", args, arg));
     XtManageChild(help_text);
     if (lesstif_version < 90)
 	set_scrolled_window_size(help_text);
@@ -1859,7 +1865,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtSetArg(args[arg], XmNwidth,            10);               arg++;
 	XtSetArg(args[arg], XmNheight,           10);               arg++;
 	tip_shell = verify(XmCreateMenuShell(findTheTopLevelShell(w),
-					     "tipShell", args, arg));
+					     (char *)"tipShell", args, arg));
 
 	arg = 0;
 	XtSetArg(args[arg], XmNmarginWidth, 0);                     arg++;
@@ -1868,14 +1874,15 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtSetArg(args[arg], XmNresizeHeight, True);                 arg++;
 	XtSetArg(args[arg], XmNborderWidth, 0);                     arg++;
 	XtSetArg(args[arg], XmNshadowThickness, 0);                 arg++;
-	tip_row = verify(XmCreateRowColumn(tip_shell, "tipRow", args, arg));
+	tip_row = verify(
+	    XmCreateRowColumn(tip_shell, (char *)"tipRow", args, arg));
 	XtManageChild(tip_row);
 
 	arg = 0;
 	XtSetArg(args[arg], XmNlabelString, tip.xmstring());        arg++;
 	XtSetArg(args[arg], XmNrecomputeSize, true);                arg++;
 	XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING);   arg++;
-	tip_label = XmCreateLabel(tip_row, "tipLabel", args, arg);
+	tip_label = XmCreateLabel(tip_row, (char *)"tipLabel", args, arg);
 	XtManageChild(tip_label);
 
 	// Simple hack to ensure shell is realized

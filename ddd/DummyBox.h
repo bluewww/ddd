@@ -67,7 +67,7 @@ protected:
 
 public:
     // Constructor
-    DummyBox(char *t = "DummyBox"):
+    DummyBox(const char *t = "DummyBox"):
 	ListBox(t)
     {}
 

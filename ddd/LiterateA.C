@@ -122,7 +122,7 @@ bool LiterateAgent::default_block_tty_input()
 // ---------------------------------------------------------------------------
 
 // Input data handling
-int LiterateAgent::readInput(char*& data)
+int LiterateAgent::readInput(const char*& data)
 {
     data = "";
     if (inputfp() == 0 || !activeIO)
@@ -132,7 +132,7 @@ int LiterateAgent::readInput(char*& data)
 }
 
 // Error data handling
-int LiterateAgent::readError(char*& data)
+int LiterateAgent::readError(const char*& data)
 {
     data = "";
     if (errorfp() == 0 || !activeIO)
@@ -189,7 +189,7 @@ int LiterateAgent::write(const char *data, int length)
 	}
 
 	assert(nitems > 0);
-	dispatch(Output, (char *)data, nitems);
+	dispatch(Output, data, nitems);
 
 	length -= nitems;
 	data += nitems;
@@ -264,7 +264,7 @@ int LiterateAgent::_readNonBlocking(char *buffer, int nelems, FILE *fp)
 
 
 // Read from fp
-int LiterateAgent::_read(char*& data, FILE *fp)
+int LiterateAgent::_read(const char*& data, FILE *fp)
 {
     static ChunkQueue queue(ARG_MAX);
 
@@ -313,12 +313,12 @@ int LiterateAgent::_read(char*& data, FILE *fp)
     return queue.length();
 }
 
-int LiterateAgent::_readInput(char*& data)
+int LiterateAgent::_readInput(const char*& data)
 {
     return _read(data, inputfp());
 }
 
-int LiterateAgent::_readError(char*& data)
+int LiterateAgent::_readError(const char*& data)
 {
     return _read(data, errorfp());
 }
@@ -330,19 +330,22 @@ int LiterateAgent::_readError(char*& data)
 // ---------------------------------------------------------------------------
 
 // dispatch data to <type> handler 
-void LiterateAgent::dispatch(int type, char *data, int length)
+void LiterateAgent::dispatch(int type, const char *data, int length)
 {
-    char c = data[length];
-    if (c != '\0')
-	data[length] = '\0';
-
-    DataLength dl(data, length);
-
-    // call global handlers
-    callHandlers(type, &dl);
-
-    if (c != '\0')
-	data[length] = c;
+  // TODO is this correction all right ?
+    if (data[length] != '\0'){
+      string s1(data,length);
+      const char *data_l = s1;
+      DataLength dl(data_l, length);
+      
+      // call global handlers
+      callHandlers(type, &dl);
+    } else {
+      DataLength dl(data, length);
+      
+      // call global handlers
+      callHandlers(type, &dl);
+    }
 }
     
 
@@ -360,7 +363,7 @@ void LiterateAgent::outputReady(AsyncAgent *c)
 void LiterateAgent::inputReady(AsyncAgent *c)
 {
     char data[ARG_MAX];
-    char *datap = data;
+    const char *datap = data;
     LiterateAgent *lc = ptr_cast(LiterateAgent, c);
     if (lc != 0)
     {
@@ -375,7 +378,7 @@ void LiterateAgent::inputReady(AsyncAgent *c)
 void LiterateAgent::errorReady(AsyncAgent *c)
 {
     char data[ARG_MAX];
-    char *datap = data;
+    const char *datap = data;
     LiterateAgent *lc = ptr_cast(LiterateAgent, c);
     if (lc != 0)
     {
@@ -390,7 +393,7 @@ void LiterateAgent::errorReady(AsyncAgent *c)
 // Input Data is available: read all and call Input handlers of current job
 void LiterateAgent::readAndDispatchInput(bool expectEOF)
 {
-    char *data;
+    const char *data;
 
     int length = readInput(data);
     if (length > 0)
@@ -409,7 +412,7 @@ void LiterateAgent::readAndDispatchInput(bool expectEOF)
 // Error Data is available: read all and call Error handlers of current job
 void LiterateAgent::readAndDispatchError(bool expectEOF)
 {
-    char *data;
+    const char *data;
 
     int length = readError(data);
     if (length > 0)

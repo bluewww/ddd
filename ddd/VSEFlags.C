@@ -120,9 +120,9 @@ bool VSEFlags::suppress_eval             = false;
 bool VSEFlags::issue_nooptionals         = false;
 
 // arguments
-char *VSEFlags::library_file             = "";
-char *VSEFlags::document_file            = "";
-char *VSEFlags::startup_file             = "";
+const char *VSEFlags::library_file             = "";
+const char *VSEFlags::document_file            = "";
+const char *VSEFlags::startup_file             = "";
 
 // mode options
 bool VSEFlags::bag_mode                  = false;
@@ -136,7 +136,7 @@ int VSEFlags::max_eval_nesting           = 500;
 int VSEFlags::max_info_nesting           = -1;
 int VSEFlags::max_pattern_variables      = 256;
 int VSEFlags::loops                      = 1;
-char *VSEFlags::include_search_path      = "";
+const char *VSEFlags::include_search_path      = "";
 
 
 // Table options <-> names
@@ -284,7 +284,7 @@ VSEOptionTableEntry VSEFlags::optionTable[] = {
 };
 
 // Read options; show help and exit if required
-void VSEFlags::parse(int& argc, char**& argv, char *args)
+void VSEFlags::parse(int& argc, const char**& argv, const char *args)
 {
     // Get default settings
     getDefaults(true);
@@ -299,7 +299,7 @@ void VSEFlags::parse(int& argc, char**& argv, char *args)
     }
 }
 
-bool VSEFlags::parse_vsl(int& argc, char**& argv)
+bool VSEFlags::parse_vsl(int& argc, const char**& argv)
 {
     // Get default settings
     getDefaults(false);
@@ -309,7 +309,7 @@ bool VSEFlags::parse_vsl(int& argc, char**& argv)
     
 
 // Read options; return true if help is required
-bool VSEFlags::_parse(int& argc, char**& argv, bool vsl_prefix_required)
+bool VSEFlags::_parse(int& argc, const char**& argv, bool vsl_prefix_required)
 {
     int arg = 1;
 
@@ -392,7 +392,7 @@ bool VSEFlags::_parse(int& argc, char**& argv, bool vsl_prefix_required)
 		    {
 			if (arg + 1 < argc)
 			{
-			    char **stringptr = (char **)entry.flag;
+			    const char **stringptr = (const char **)entry.flag;
 			    if (stringptr)
 				*stringptr = argv[arg + 1];
 			    skip = 2;
@@ -493,7 +493,7 @@ void VSEFlags::getDefaults(bool warn)
 	}
     }
 
-    static char *argv[3];
+    static const char *argv[3];
     static char buf1[BUFSIZ];
     static char buf2[BUFSIZ];
 
@@ -513,7 +513,7 @@ void VSEFlags::getDefaults(bool warn)
 		    argv[2] = (String)XtNewString(buf2);
 	    }
 	    int myargc = nargs + 1;
-	    char **myargv = argv;
+	    const char **myargv = argv;
 
 	    _parse(myargc, myargv, false);
 

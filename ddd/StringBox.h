@@ -80,7 +80,7 @@ public:
 
     // Constructor
     StringBox(const string& s = "", const string& fontname = "fixed",
-	char *t = "StringBox"):
+	const char *t = "StringBox"):
 	PrimitiveBox(BoxSize(0,0), BoxExtend(false, false), t),
 	_string(s), _fontname(fontname), _font(0), _ascent(0)
     {
@@ -88,7 +88,7 @@ public:
     }
 
     StringBox(const string& s, XFontStruct *fnt,
-	char *t = "StringBox"):
+	const char *t = "StringBox"):
 	PrimitiveBox(BoxSize(0,0), BoxExtend(false, false), t),
 	_string(s), _fontname("?"), _font(fnt), _ascent(0)
     {

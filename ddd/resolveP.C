@@ -57,7 +57,7 @@ static string dirname(const string& file)
 // Return full path of current program
 static string myFile()
 {
-    char *my_name = saved_argv()[0];
+    const char *my_name = saved_argv()[0];
     if (my_name == 0)
 	my_name = ddd_NAME;
     return cmd_file(my_name);

@@ -30,10 +30,10 @@
 #define _DDD_hostname_h
 
 // Return name of current host
-extern char *hostname();
+extern const char *hostname();
 
 // Return ``official'' network name of HOST (none: current host)
-extern char *fullhostname(char *host = 0);
+extern const char *fullhostname(const char *host = 0);
 
 #endif // _hostname_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

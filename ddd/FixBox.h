@@ -52,7 +52,7 @@ protected:
     {}
 
 public:
-    FixBox(Box *box, char *t = "FixBox"): HatBox(box, t)
+    FixBox(Box *box, const char *t = "FixBox"): HatBox(box, t)
     {}
     
     // Must be overloaded by subclasses
@@ -73,7 +73,7 @@ protected:
     void dump(ostream& s) const;
 
 public:
-    HFixBox(Box *box, char *t = "HFixBox"): FixBox(box, t)
+    HFixBox(Box *box, const char *t = "HFixBox"): FixBox(box, t)
     { theextend().fix(X); }
 
     Box *resize()
@@ -100,7 +100,7 @@ protected:
     void dump(ostream& s) const;
 
 public:
-    VFixBox(Box *box, char *t = "VFixBox"): FixBox(box, t)
+    VFixBox(Box *box, const char *t = "VFixBox"): FixBox(box, t)
     { theextend().fix(Y); }
 
     Box *resize()

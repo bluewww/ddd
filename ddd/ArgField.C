@@ -166,7 +166,7 @@ Widget ArgField::top() const { return ComboBoxTop(text()); };
 void ClearTextFieldCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget arg_field = Widget(client_data);
-    XmTextFieldSetString(arg_field, "");
+    XmTextFieldSetString(arg_field, (char *)"");
 }
 
 // Create a `():' label named "arg_label" for ARG_FIELD

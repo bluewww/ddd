@@ -864,7 +864,7 @@ void gdbClearWindowCB(Widget, XtPointer, XtPointer)
 
     private_gdb_output = true;
 
-    XmTextReplace(gdb_w, 0, start, "");
+    XmTextReplace(gdb_w, 0, start, (char *)"");
 
     promptPosition  -= start;
     messagePosition -= start;

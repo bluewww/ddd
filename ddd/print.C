@@ -333,9 +333,10 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	    if (confirm_overwrite_dialog)
 		DestroyWhenIdle(confirm_overwrite_dialog);
 	    confirm_overwrite_dialog = 
-		verify(XmCreateQuestionDialog(find_shell(w),
-					      "confirm_overwrite_dialog", 
-					      NULL, 0));
+		verify(
+		    XmCreateQuestionDialog(find_shell(w),
+					   (char *)"confirm_overwrite_dialog", 
+					   NULL, 0));
 	    Delay::register_shell(confirm_overwrite_dialog);
 	    XtAddCallback(confirm_overwrite_dialog, 
 			  XmNokCallback, PrintAgainCB, 
@@ -775,7 +776,8 @@ static void BrowseNameCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNpattern, pattern.xmstring()); arg++;
 	dialog = 
 	    verify(XmCreateFileSelectionDialog(find_shell(w), 
-					       "browse_print", args, arg));
+					       (char *)"browse_print", 
+					       args, arg));
 
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, SetPrintFileNameCB, 0);
@@ -815,7 +817,8 @@ static void PrintCB(Widget parent, bool displays)
     Cardinal arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     print_dialog = 
-	verify(XmCreatePromptDialog(find_shell(parent), "print", args, arg));
+	verify(XmCreatePromptDialog(find_shell(parent), (char *)"print", 
+				    args, arg));
     Delay::register_shell(print_dialog);
 
     if (lesstif_version <= 79)
@@ -988,7 +991,8 @@ static void PrintCB(Widget parent, bool displays)
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     paper_size_dialog = 
-	verify(XmCreatePromptDialog(find_shell(parent), "paper_size_dialog", 
+	verify(XmCreatePromptDialog(find_shell(parent), 
+				    (char *)"paper_size_dialog", 
 				    args, arg));
     Delay::register_shell(paper_size_dialog);
 

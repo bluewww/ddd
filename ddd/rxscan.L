@@ -83,7 +83,7 @@ static int the_length;		// Number of characters to read
 #define YY_NO_UNPUT
 
 // Reset the scanner
-static void reset_scanner() { yyrestart(yyin); }
+static void reset_scanner(void) { yyrestart(yyin); }
 
 #else // !defined(FLEX_SCANNER)
 
@@ -99,7 +99,7 @@ inline int do_unput(char c)
     return c;
 }
 
-static int do_input() 
+static int do_input(void) 
 {
     if (pushback_ptr != pushback)
 	return *--pushback_ptr;
@@ -125,13 +125,13 @@ static int do_input()
 #endif
 
 // Reset the scanner
-static void reset_scanner() { pushback_ptr = pushback; }
+static void reset_scanner(void) { pushback_ptr = pushback; }
 
 #endif // !defined(FLEX_SCANNER)
 
 
 #define YY_SKIP_YYWRAP
-extern "C" int yywrap()
+extern "C" int yywrap(void)
 {
     return 1;
 }

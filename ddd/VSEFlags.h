@@ -38,8 +38,8 @@ enum VSEEntryType { LAST, BOOLEAN, INT, STRING, TITLE };
 // Table Options <-> Names
 struct VSEOptionTableEntry {
     VSEEntryType type;  // Type
-    char *name;         // Name
-    char *usage;        // Usage (Meaning)
+    const char *name;         // Name
+    const char *usage;        // Usage (Meaning)
     void *flag;         // Pointer to corresponding flag
 };
 
@@ -115,10 +115,10 @@ public:
     static bool issue_nooptionals;
 
     // name options
-    static char *library_file;
-    static char *document_file;
-    static char *startup_file;
-    static char *include_search_path;
+    static const char *library_file;
+    static const char *document_file;
+    static const char *startup_file;
+    static const char *include_search_path;
 
     // num options
     static int max_eval_nesting;
@@ -127,16 +127,16 @@ public:
     static int loops;
 
     // Helpers
-    static bool _parse(int& argc, char**& argv, bool vsl_prefix_required);
+    static bool _parse(int& argc, const char**& argv, bool vsl_prefix_required);
     static void getDefaults(bool warn = false);
     static string explain(bool vsl_prefix_required = false);
 
     // Main interface for VSL/VSE
-    static void parse(int& argc, char**& argv, char *args = " files...");
+    static void parse(int& argc, const char**& argv, const char *args = " files...");
 
     // Main interface for other applications; all options require
     // `-vsl' or `--vsl' prefix.  Return TRUE upon error.
-    static bool parse_vsl(int& argc, char**& argv);
+    static bool parse_vsl(int& argc, const char**& argv);
 };
 
 

@@ -110,7 +110,7 @@ void ReadLineAgent::abort()
     LiterateAgent::abort();
 }
 
-int ReadLineAgent::_readInput(char *& data)
+int ReadLineAgent::_readInput(const char *& data)
 {
     if (!running())
     {

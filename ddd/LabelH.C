@@ -68,7 +68,7 @@ static GC _bottomShadowGC(XmLabelWidget _label);
 #define PrimOffset(field) XtOffset(XmLabelHackWidget, primitive.field)
 static XtResource resources[] =
 {
-    {XmNinsensitive3D, XmCInsensitive3D, XmRBoolean, sizeof(Boolean),
+    {(char *)XmNinsensitive3D, (char *)XmCInsensitive3D, XmRBoolean, sizeof(Boolean),
      TheOffset(insensitive3D), XmRImmediate, (XtPointer)TRUE},
 };
 
@@ -100,7 +100,7 @@ XmLabelHackClassRec xmLabelHackClassRec =
 {
     {
 	(WidgetClass)&xmLabelClassRec,		/* superclass */
-	"XmLabelHack",				/* class_name */
+	(char *)"XmLabelHack",				/* class_name */
 	(Cardinal)sizeof(XmLabelHackRec),	/* widget size */
 	(XtProc)NULL,				/* class_init */
 	(XtWidgetClassProc)NULL,		/* class_part_init */

@@ -210,7 +210,7 @@ class DataDisp {
 
     static void show(Widget dialog, int depth, int more);
 
-    static Widget create_display_dialog(Widget parent, String name,
+    static Widget create_display_dialog(Widget parent, const _XtString name,
 					NewDisplayInfo& info);
 
     static void rotate_value(DispValue *dv, bool all = false);
@@ -248,7 +248,7 @@ class DataDisp {
     static void graph_rotateAct         (Widget, XEvent*, String*, Cardinal*);
     static void graph_dependentAct      (Widget, XEvent*, String*, Cardinal*);
 
-    static void call_selection_proc(Widget, String, XEvent*, String*, Cardinal,
+    static void call_selection_proc(Widget, const _XtString, XEvent*, String*, Cardinal,
 				    SelectionMode mode);
 
     //-----------------------------------------------------------------------

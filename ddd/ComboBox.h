@@ -37,7 +37,7 @@
 #include "StringA.h"
 
 // Create a combo box
-Widget CreateComboBox(Widget parent, String name, ArgList args, Cardinal arg);
+Widget CreateComboBox(Widget parent, const _XtString name, ArgList args, Cardinal arg);
 
 // Set the combo box value list
 void ComboBoxSetList(Widget name, const StringArray& items);

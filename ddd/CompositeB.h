@@ -92,7 +92,7 @@ protected:
 
     // Dump
     void dumpComposite(ostream& s, 
-	char *sep = ", ", char *head = "(", char *tail = ") ") const;
+	const char *sep = ", ", const char *head = "(", const char *tail = ") ") const;
 
     bool matches (const Box &, const Box * = 0) const;
 
@@ -101,7 +101,7 @@ protected:
 
 public:
     // Konstruktor
-    CompositeBox(unsigned initialSize = 2, char *t = "CompositeBox"):
+    CompositeBox(unsigned initialSize = 2, const char *t = "CompositeBox"):
 	Box(BoxSize(0, 0), BoxExtend(0, 0), t), 
 	_size(initialSize), 
 	_nchildren(0),

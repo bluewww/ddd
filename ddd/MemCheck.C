@@ -61,7 +61,7 @@ unsigned MemCheck::freeBytes;	// Bytes in free list
 unsigned MemCheck::allocBytes;	// Bytes in alloc list
 
 // Validate a header pointer
-inline void MemCheck::validate(MemCheckHeader *p, char *src)
+inline void MemCheck::validate(MemCheckHeader *p, const char *src)
 {
     if (p->s.magic != MAGIC)
     {
@@ -264,7 +264,7 @@ void MemCheck::check(void *ap)
 
 
 // Issue an allocation map -- using the alloc list
-void MemCheck::map(ostream& os, unsigned start, char *prefix)
+void MemCheck::map(ostream& os, unsigned start, const char *prefix)
 {
     init();
 

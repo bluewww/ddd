@@ -145,17 +145,17 @@ char DataDisp_rcsid[] =
 // Xt Stuff
 //-----------------------------------------------------------------------
 XtActionsRec DataDisp::actions [] = {
-    {"graph-select",         DataDisp::graph_selectAct},
-    {"graph-select-or-move", DataDisp::graph_select_or_moveAct},
-    {"graph-extend",         DataDisp::graph_extendAct},
-    {"graph-extend-or-move", DataDisp::graph_extend_or_moveAct},
-    {"graph-toggle",         DataDisp::graph_toggleAct},
-    {"graph-toggle-or-move", DataDisp::graph_toggle_or_moveAct},
-    {"graph-popup-menu",     DataDisp::graph_popupAct},
-    {"graph-dereference",    DataDisp::graph_dereferenceAct},
-    {"graph-detail",         DataDisp::graph_detailAct},
-    {"graph-rotate",         DataDisp::graph_rotateAct},
-    {"graph-dependent",      DataDisp::graph_dependentAct}
+    {(char *)"graph-select",         DataDisp::graph_selectAct},
+    {(char *)"graph-select-or-move", DataDisp::graph_select_or_moveAct},
+    {(char *)"graph-extend",         DataDisp::graph_extendAct},
+    {(char *)"graph-extend-or-move", DataDisp::graph_extend_or_moveAct},
+    {(char *)"graph-toggle",         DataDisp::graph_toggleAct},
+    {(char *)"graph-toggle-or-move", DataDisp::graph_toggle_or_moveAct},
+    {(char *)"graph-popup-menu",     DataDisp::graph_popupAct},
+    {(char *)"graph-dereference",    DataDisp::graph_dereferenceAct},
+    {(char *)"graph-detail",         DataDisp::graph_detailAct},
+    {(char *)"graph-rotate",         DataDisp::graph_rotateAct},
+    {(char *)"graph-dependent",      DataDisp::graph_dependentAct}
 };
 
 
@@ -674,7 +674,7 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data, XtPointer)
     if (select)
     {
 	arg = 0;
-	Widget apply = XmCreatePushButton(dialog, "apply", args, arg);
+	Widget apply = XmCreatePushButton(dialog, (char *)"apply", args, arg);
 	XtManageChild(apply);
 	XtAddCallback(apply, XmNactivateCallback, 
 		      applyThemeOnThisCB, client_data);
@@ -1769,14 +1769,14 @@ void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
     }
 }
 
-Widget DataDisp::create_display_dialog(Widget parent, String name,
+Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
 				       NewDisplayInfo& info)
 {
     Arg args[10];
     int arg = 0;
 
     Widget dialog = verify(XmCreatePromptDialog(find_shell(parent),
-						name, args, arg));
+						(char *)name, args, arg));
     Delay::register_shell(dialog);
 
     if (lesstif_version <= 79)
@@ -1792,12 +1792,12 @@ Widget DataDisp::create_display_dialog(Widget parent, String name,
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
-    Widget box = verify(XmCreateRowColumn(dialog, "box", args, arg));
+    Widget box = verify(XmCreateRowColumn(dialog, (char *)"box", args, arg));
     XtManageChild(box);
 
     arg = 0;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
-    Widget label = verify(XmCreateLabel(box, "label", args, arg));
+    Widget label = verify(XmCreateLabel(box, (char *)"label", args, arg));
     XtManageChild(label);
 
     arg = 0;
@@ -1812,17 +1812,18 @@ Widget DataDisp::create_display_dialog(Widget parent, String name,
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
-    Widget box2 = verify(XmCreateRowColumn(box, "box2", args, arg));
+    Widget box2 = verify(XmCreateRowColumn(box, (char *)"box2", args, arg));
     XtManageChild(box2);
 
     arg = 0;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
-    info.shortcut = verify(XmCreateToggleButton(box2, "shortcut", args, arg));
+    info.shortcut = verify(
+	XmCreateToggleButton(box2, (char *)"shortcut", args, arg));
     XtManageChild(info.shortcut);
 
-    Widget display = verify(XmCreateLabel(box2, "display", args, arg));
+    Widget display = verify(XmCreateLabel(box2, (char *)"display", args, arg));
     XtManageChild(display);
-    Widget menu = verify(XmCreateLabel(box2, "menu", args, arg));
+    Widget menu = verify(XmCreateLabel(box2, (char *)"menu", args, arg));
     XtManageChild(menu);
 
     return dialog;
@@ -2127,7 +2128,7 @@ Time DataDisp::last_select_time = 0;
 
 // The GraphEdit actions with some data display magic prepended
 void DataDisp::call_selection_proc(Widget w,
-				   String name,
+				   const _XtString name,
 				   XEvent* event,
 				   String* args,
 				   Cardinal num_args,
@@ -5921,7 +5922,8 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
     XtSetArg(args[arg], XmNautoUnmanage,   False);     arg++;
     info->dialog = 
-	verify(XmCreatePromptDialog(find_shell(w), "set_dialog", args, arg));
+	verify(XmCreatePromptDialog(find_shell(w), 
+				    (char *)"set_dialog", args, arg));
 
     Delay::register_shell(info->dialog);
 
@@ -5941,14 +5943,15 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
-    Widget box = verify(XmCreateRowColumn(info->dialog, "box", args, arg));
+    Widget box = verify(XmCreateRowColumn(info->dialog, 
+					  (char *)"box", args, arg));
     XtManageChild(box);
 
     arg = 0;
     MString prompt = MString("Set value of ") + tt(name);
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     XtSetArg(args[arg], XmNlabelString, prompt.xmstring());   arg++;
-    Widget label = verify(XmCreateLabel(box, "label", args, arg));
+    Widget label = verify(XmCreateLabel(box, (char *)"label", args, arg));
     XtManageChild(label);
 
     arg = 0;
@@ -6896,11 +6899,12 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
     // Create graph editor
     Arg args[10];
     int arg = 0;
-    XtSetArg (args[arg], XtNgraph, (Graph *)disp_graph); arg++;
+    XtSetArg (args[arg], (char *)XtNgraph, (Graph *)disp_graph); arg++;
 
     if (app_data.panned_graph_editor)
     {
-	graph_edit = createPannedGraphEdit(parent, "graph_edit", args, arg);
+	graph_edit = createPannedGraphEdit(parent, 
+					   (char *)"graph_edit", args, arg);
 	graph_form_w = pannerOfGraphEdit(graph_edit);
     }
     else
@@ -6935,7 +6939,7 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 
     // Create (unmanaged) selection widget
     graph_selection_w =
-	verify(XmCreateText(graph_cmd_w, "graph_selection", NULL, 0));
+	verify(XmCreateText(graph_cmd_w, (char *)"graph_selection", NULL, 0));
     XtAddCallback(graph_selection_w, XmNlosePrimaryCallback, 
 		  SelectionLostCB, XtPointer(0));
 }

@@ -150,7 +150,6 @@ char ddd_rcsid[] =
 #include <Xm/Text.h>
 #include <Xm/MessageB.h>
 #include <Xm/RowColumn.h>	// XmCreateWorkArea()
-#include <Xm/Protocols.h>
 #include <Xm/SelectioB.h>
 #include <Xm/DialogS.h>
 #include <Xm/Form.h>
@@ -184,6 +183,7 @@ char ddd_rcsid[] =
 #include "AppData.h"
 #include "ArgField.h"
 #include "DataDisp.h"
+#include "DeleteWCB.h"
 #include "DestroyCB.h"
 #include "DispGraph.h"
 #include "DispGraph.h"
@@ -401,7 +401,7 @@ static bool lock_ddd(Widget parent, LockInfo& info);
 // Various setups
 static void setup_version_info();
 static void setup_environment();
-static void setup_options(int& argc, char *argv[],
+static void setup_options(int& argc, const char *argv[],
 			  StringArray& saved_options, string& gdb_name,
 			  bool& no_windows);
 static void setup_command_tty();
@@ -422,7 +422,7 @@ static void PostHelpOnItem(Widget item);
 static void check_log(const string& logname, DebuggerType& type);
 
 // Add current selection as argument
-static void add_arg_from_selection(Widget toplevel, int& argc, char **&argv);
+static void add_arg_from_selection(Widget toplevel, int& argc, const char **&argv);
 
 #if XmVersion < 2000
 static void toggleOverstrikeAct (Widget, XEvent*, String*, Cardinal*) {}
@@ -455,254 +455,254 @@ static char OFF[] = "off";
 // Options
 // Note: we support both the GDB '--OPTION' and the X '-OPTION' convention.
 static XrmOptionDescRec options[] = {
-{ "--session",              XtNsession,              XrmoptionSepArg, NULL },
-{ "-session",               XtNsession,              XrmoptionSepArg, NULL },
+{ (char *)"--session",              (char *)XtNsession,              XrmoptionSepArg, NULL },
+{ (char *)"-session",               (char *)XtNsession,              XrmoptionSepArg, NULL },
 
-{ "-xtsessionID",           XtNsession,              XrmoptionSepArg, NULL },
+{ (char *)"-xtsessionID",           (char *)XtNsession,              XrmoptionSepArg, NULL },
 
-{ "--debugger",             XtNdebuggerCommand,      XrmoptionSepArg, NULL },
-{ "-debugger",              XtNdebuggerCommand,      XrmoptionSepArg, NULL },
+{ (char *)"--debugger",             (char *)XtNdebuggerCommand,      XrmoptionSepArg, NULL },
+{ (char *)"-debugger",              (char *)XtNdebuggerCommand,      XrmoptionSepArg, NULL },
 
-{ "--automatic-debugger",   XtNautoDebugger,         XrmoptionNoArg,  ON },
-{ "-automatic-debugger",    XtNautoDebugger,         XrmoptionNoArg,  ON },
+{ (char *)"--automatic-debugger",   (char *)XtNautoDebugger,         XrmoptionNoArg,  ON },
+{ (char *)"-automatic-debugger",    (char *)XtNautoDebugger,         XrmoptionNoArg,  ON },
 
-{ "--gdb",                  XtNdebugger,             XrmoptionNoArg,  "gdb" },
-{ "-gdb",                   XtNdebugger,             XrmoptionNoArg,  "gdb" },
+{ (char *)"--gdb",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"gdb" },
+{ (char *)"-gdb",                   (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"gdb" },
 
-{ "--dbx",                  XtNdebugger,             XrmoptionNoArg,  "dbx" },
-{ "-dbx",                   XtNdebugger,             XrmoptionNoArg,  "dbx" },
+{ (char *)"--dbx",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"dbx" },
+{ (char *)"-dbx",                   (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"dbx" },
 
-{ "--ladebug",              XtNdebugger,            XrmoptionNoArg, "ladebug"},
-{ "-ladebug", 		    XtNdebugger,            XrmoptionNoArg, "ladebug"},
+{ (char *)"--ladebug",              (char *)XtNdebugger,            XrmoptionNoArg, (char *)"ladebug"},
+{ (char *)"-ladebug", 		   (char *)XtNdebugger,            XrmoptionNoArg, (char *)"ladebug"},
 
-{ "--xdb",                  XtNdebugger,             XrmoptionNoArg,  "xdb" },
-{ "-xdb",                   XtNdebugger,             XrmoptionNoArg,  "xdb" },
+{ (char *)"--xdb",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"xdb" },
+{ (char *)"-xdb",                   (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"xdb" },
 
-{ "--jdb",                  XtNdebugger,             XrmoptionNoArg,  "jdb" },
-{ "-jdb",                   XtNdebugger,             XrmoptionNoArg,  "jdb" },
+{ (char *)"--jdb",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"jdb" },
+{ (char *)"-jdb",                   (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"jdb" },
 
-{ "--pydb",                 XtNdebugger,             XrmoptionNoArg,  "pydb" },
-{ "-pydb",                  XtNdebugger,             XrmoptionNoArg,  "pydb" },
+{ (char *)"--pydb",                 (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"pydb" },
+{ (char *)"-pydb",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"pydb" },
 
-{ "--perl",                 XtNdebugger,             XrmoptionNoArg,  "perl" },
-{ "-perl",                  XtNdebugger,             XrmoptionNoArg,  "perl" },
+{ (char *)"--perl",                 (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"perl" },
+{ (char *)"-perl",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"perl" },
 
-{ "--trace",                XtNtrace,                XrmoptionNoArg,  ON },
-{ "-trace",                 XtNtrace,                XrmoptionNoArg,  ON },
+{ (char *)"--trace",                (char *)XtNtrace,                XrmoptionNoArg,  ON },
+{ (char *)"-trace",                 (char *)XtNtrace,                XrmoptionNoArg,  ON },
 
-{ "--play-log",		    XtNplayLog,              XrmoptionSepArg, NULL },
-{ "-play-log",		    XtNplayLog,              XrmoptionSepArg, NULL },
+{ (char *)"--play-log",		   (char *)XtNplayLog,              XrmoptionSepArg, NULL },
+{ (char *)"-play-log",		   (char *)XtNplayLog,              XrmoptionSepArg, NULL },
 
-{ "--font",                 XtNdefaultFont,          XrmoptionSepArg, NULL },
-{ "-font",                  XtNdefaultFont,          XrmoptionSepArg, NULL },
-{ "-fn",                    XtNdefaultFont,          XrmoptionSepArg, NULL },
+{ (char *)"--font",                 (char *)XtNdefaultFont,          XrmoptionSepArg, NULL },
+{ (char *)"-font",                  (char *)XtNdefaultFont,          XrmoptionSepArg, NULL },
+{ (char *)"-fn",                    (char *)XtNdefaultFont,          XrmoptionSepArg, NULL },
 
-{ "--fontsize",             XtCFontSize,             XrmoptionSepArg, NULL },
-{ "-fontsize",              XtCFontSize,             XrmoptionSepArg, NULL },
+{ (char *)"--fontsize",             (char *)XtCFontSize,             XrmoptionSepArg, NULL },
+{ (char *)"-fontsize",              (char *)XtCFontSize,             XrmoptionSepArg, NULL },
 
-{ "--vsl-library",          XtNvslLibrary,           XrmoptionSepArg, NULL },
-{ "-vsl-library",           XtNvslLibrary,           XrmoptionSepArg, NULL },
+{ (char *)"--vsl-library",          (char *)XtNvslLibrary,           XrmoptionSepArg, NULL },
+{ (char *)"-vsl-library",           (char *)XtNvslLibrary,           XrmoptionSepArg, NULL },
 
-{ "--vsl-path",             XtNvslPath,              XrmoptionSepArg, NULL },
-{ "-vsl-path",              XtNvslPath,              XrmoptionSepArg, NULL },
+{ (char *)"--vsl-path",             (char *)XtNvslPath,              XrmoptionSepArg, NULL },
+{ (char *)"-vsl-path",              (char *)XtNvslPath,              XrmoptionSepArg, NULL },
 
-{ "--separate",             XtCSeparate,             XrmoptionNoArg, ON },
-{ "-separate",              XtCSeparate,             XrmoptionNoArg, ON },
-{ "--separate-windows",     XtCSeparate,             XrmoptionNoArg, ON },
-{ "-separate-windows",      XtCSeparate,             XrmoptionNoArg, ON },
+{ (char *)"--separate",             (char *)XtCSeparate,             XrmoptionNoArg, ON },
+{ (char *)"-separate",              (char *)XtCSeparate,             XrmoptionNoArg, ON },
+{ (char *)"--separate-windows",     (char *)XtCSeparate,             XrmoptionNoArg, ON },
+{ (char *)"-separate-windows",      (char *)XtCSeparate,             XrmoptionNoArg, ON },
 
-{ "--separate-source-window", XtNseparateSourceWindow, XrmoptionNoArg, ON },
-{ "-separate-source-window",  XtNseparateSourceWindow, XrmoptionNoArg, ON },
+{ (char *)"--separate-source-window", (char *)XtNseparateSourceWindow, XrmoptionNoArg, ON },
+{ (char *)"-separate-source-window",  (char *)XtNseparateSourceWindow, XrmoptionNoArg, ON },
 
-{ "--separate-data-window", XtNseparateDataWindow,   XrmoptionNoArg, ON },
-{ "-separate-data-window",  XtNseparateDataWindow,   XrmoptionNoArg, ON },
+{ (char *)"--separate-data-window", (char *)XtNseparateDataWindow,   XrmoptionNoArg, ON },
+{ (char *)"-separate-data-window",  (char *)XtNseparateDataWindow,   XrmoptionNoArg, ON },
 
-{ "--attach",               XtCSeparate,             XrmoptionNoArg, OFF },
-{ "-attach",                XtCSeparate,             XrmoptionNoArg, OFF },
-{ "--attach-windows",       XtCSeparate,             XrmoptionNoArg, OFF },
-{ "-attach-windows",        XtCSeparate,             XrmoptionNoArg, OFF },
+{ (char *)"--attach",               (char *)XtCSeparate,             XrmoptionNoArg, OFF },
+{ (char *)"-attach",                (char *)XtCSeparate,             XrmoptionNoArg, OFF },
+{ (char *)"--attach-windows",       (char *)XtCSeparate,             XrmoptionNoArg, OFF },
+{ (char *)"-attach-windows",        (char *)XtCSeparate,             XrmoptionNoArg, OFF },
 
-{ "--attach-source-window", XtNseparateSourceWindow, XrmoptionNoArg, OFF },
-{ "-attach-source-window",  XtNseparateSourceWindow, XrmoptionNoArg, OFF },
+{ (char *)"--attach-source-window", (char *)XtNseparateSourceWindow, XrmoptionNoArg, OFF },
+{ (char *)"-attach-source-window",  (char *)XtNseparateSourceWindow, XrmoptionNoArg, OFF },
 
-{ "--attach-data-window",   XtNseparateDataWindow,   XrmoptionNoArg, OFF },
-{ "-attach-data-window",    XtNseparateDataWindow,   XrmoptionNoArg, OFF },
+{ (char *)"--attach-data-window",   (char *)XtNseparateDataWindow,   XrmoptionNoArg, OFF },
+{ (char *)"-attach-data-window",    (char *)XtNseparateDataWindow,   XrmoptionNoArg, OFF },
 
-{ "--exec-window",          XtNseparateExecWindow,   XrmoptionNoArg, ON },
-{ "-exec-window",           XtNseparateExecWindow,   XrmoptionNoArg, ON },
+{ (char *)"--exec-window",          (char *)XtNseparateExecWindow,   XrmoptionNoArg, ON },
+{ (char *)"-exec-window",           (char *)XtNseparateExecWindow,   XrmoptionNoArg, ON },
 
-{ "--no-exec-window",       XtNseparateExecWindow,   XrmoptionNoArg, OFF },
-{ "-no-exec-window",        XtNseparateExecWindow,   XrmoptionNoArg, OFF },
+{ (char *)"--no-exec-window",       (char *)XtNseparateExecWindow,   XrmoptionNoArg, OFF },
+{ (char *)"-no-exec-window",        (char *)XtNseparateExecWindow,   XrmoptionNoArg, OFF },
 
-{ "--source-window",        XtNopenSourceWindow,     XrmoptionNoArg, ON },
-{ "-source-window",         XtNopenSourceWindow,     XrmoptionNoArg, ON },
+{ (char *)"--source-window",        (char *)XtNopenSourceWindow,     XrmoptionNoArg, ON },
+{ (char *)"-source-window",         (char *)XtNopenSourceWindow,     XrmoptionNoArg, ON },
 
-{ "--no-source-window",     XtNopenSourceWindow,     XrmoptionNoArg, OFF },
-{ "-no-source-window",      XtNopenSourceWindow,     XrmoptionNoArg, OFF },
+{ (char *)"--no-source-window",     (char *)XtNopenSourceWindow,     XrmoptionNoArg, OFF },
+{ (char *)"-no-source-window",      (char *)XtNopenSourceWindow,     XrmoptionNoArg, OFF },
 
-{ "--data-window",          XtNopenDataWindow,       XrmoptionNoArg, ON },
-{ "-data-window",           XtNopenDataWindow,       XrmoptionNoArg, ON },
+{ (char *)"--data-window",          (char *)XtNopenDataWindow,       XrmoptionNoArg, ON },
+{ (char *)"-data-window",           (char *)XtNopenDataWindow,       XrmoptionNoArg, ON },
 
-{ "--no-data-window",       XtNopenDataWindow,       XrmoptionNoArg, OFF },
-{ "-no-data-window",        XtNopenDataWindow,       XrmoptionNoArg, OFF },
+{ (char *)"--no-data-window",       (char *)XtNopenDataWindow,       XrmoptionNoArg, OFF },
+{ (char *)"-no-data-window",        (char *)XtNopenDataWindow,       XrmoptionNoArg, OFF },
 
-{ "--debugger-console",     XtNopenDebuggerConsole,  XrmoptionNoArg, ON },
-{ "-debugger-console",      XtNopenDebuggerConsole,  XrmoptionNoArg, ON },
+{ (char *)"--debugger-console",     (char *)XtNopenDebuggerConsole,  XrmoptionNoArg, ON },
+{ (char *)"-debugger-console",      (char *)XtNopenDebuggerConsole,  XrmoptionNoArg, ON },
 
-{ "--no-debugger-console",  XtNopenDebuggerConsole,  XrmoptionNoArg, OFF },
-{ "-no-debugger-console",   XtNopenDebuggerConsole,  XrmoptionNoArg, OFF },
+{ (char *)"--no-debugger-console",  (char *)XtNopenDebuggerConsole,  XrmoptionNoArg, OFF },
+{ (char *)"-no-debugger-console",   (char *)XtNopenDebuggerConsole,  XrmoptionNoArg, OFF },
 
-{ "--button-tips",          XtNbuttonTips,           XrmoptionNoArg, ON },
-{ "-button-tips",           XtNbuttonTips,           XrmoptionNoArg, ON },
+{ (char *)"--button-tips",          (char *)XtNbuttonTips,           XrmoptionNoArg, ON },
+{ (char *)"-button-tips",           (char *)XtNbuttonTips,           XrmoptionNoArg, ON },
 
-{ "--no-button-tips",       XtNbuttonTips,           XrmoptionNoArg, OFF },
-{ "-no-button-tips",        XtNbuttonTips,           XrmoptionNoArg, OFF },
+{ (char *)"--no-button-tips",       (char *)XtNbuttonTips,           XrmoptionNoArg, OFF },
+{ (char *)"-no-button-tips",        (char *)XtNbuttonTips,           XrmoptionNoArg, OFF },
 
-{ "--value-tips",           XtNvalueTips,            XrmoptionNoArg, ON },
-{ "-value-tips",            XtNvalueTips,            XrmoptionNoArg, ON },
+{ (char *)"--value-tips",           (char *)XtNvalueTips,            XrmoptionNoArg, ON },
+{ (char *)"-value-tips",            (char *)XtNvalueTips,            XrmoptionNoArg, ON },
 
-{ "--no-value-tips",        XtNvalueTips,            XrmoptionNoArg, OFF },
-{ "-no-value-tips",         XtNvalueTips,            XrmoptionNoArg, OFF },
+{ (char *)"--no-value-tips",        (char *)XtNvalueTips,            XrmoptionNoArg, OFF },
+{ (char *)"-no-value-tips",         (char *)XtNvalueTips,            XrmoptionNoArg, OFF },
 
-{ "--status-at-bottom",     XtNstatusAtBottom,       XrmoptionNoArg, ON },
-{ "-status-at-bottom",      XtNstatusAtBottom,       XrmoptionNoArg, ON },
+{ (char *)"--status-at-bottom",     (char *)XtNstatusAtBottom,       XrmoptionNoArg, ON },
+{ (char *)"-status-at-bottom",      (char *)XtNstatusAtBottom,       XrmoptionNoArg, ON },
 
-{ "--status-at-top",        XtNstatusAtBottom,       XrmoptionNoArg, OFF },
-{ "-status-at-top",         XtNstatusAtBottom,       XrmoptionNoArg, OFF },
+{ (char *)"--status-at-top",        (char *)XtNstatusAtBottom,       XrmoptionNoArg, OFF },
+{ (char *)"-status-at-top",         (char *)XtNstatusAtBottom,       XrmoptionNoArg, OFF },
 
-{ "--toolbars-at-bottom",   XtNtoolbarsAtBottom,     XrmoptionNoArg, ON },
-{ "-toolbars-at-bottom",    XtNtoolbarsAtBottom,     XrmoptionNoArg, ON },
+{ (char *)"--toolbars-at-bottom",   (char *)XtNtoolbarsAtBottom,     XrmoptionNoArg, ON },
+{ (char *)"-toolbars-at-bottom",    (char *)XtNtoolbarsAtBottom,     XrmoptionNoArg, ON },
 
-{ "--toolbars-at-top",      XtNtoolbarsAtBottom,     XrmoptionNoArg, OFF },
-{ "-toolbars-at-top",       XtNtoolbarsAtBottom,     XrmoptionNoArg, OFF },
+{ (char *)"--toolbars-at-top",      (char *)XtNtoolbarsAtBottom,     XrmoptionNoArg, OFF },
+{ (char *)"-toolbars-at-top",       (char *)XtNtoolbarsAtBottom,     XrmoptionNoArg, OFF },
 
-{ "--panned-graph-editor",  XtNpannedGraphEditor,    XrmoptionNoArg, ON },
-{ "-panned-graph-editor",   XtNpannedGraphEditor,    XrmoptionNoArg, ON },
+{ (char *)"--panned-graph-editor",  (char *)XtNpannedGraphEditor,    XrmoptionNoArg, ON },
+{ (char *)"-panned-graph-editor",   (char *)XtNpannedGraphEditor,    XrmoptionNoArg, ON },
 
-{ "--scrolled-graph-editor", XtNpannedGraphEditor,   XrmoptionNoArg, OFF },
-{ "-scrolled-graph-editor", XtNpannedGraphEditor,    XrmoptionNoArg, OFF },
+{ (char *)"--scrolled-graph-editor", (char *)XtNpannedGraphEditor,   XrmoptionNoArg, OFF },
+{ (char *)"-scrolled-graph-editor", (char *)XtNpannedGraphEditor,    XrmoptionNoArg, OFF },
 
-{ "--sync-debugger",        XtNsynchronousDebugger,  XrmoptionNoArg, ON },
-{ "-sync-debugger",         XtNsynchronousDebugger,  XrmoptionNoArg, ON },
+{ (char *)"--sync-debugger",        (char *)XtNsynchronousDebugger,  XrmoptionNoArg, ON },
+{ (char *)"-sync-debugger",         (char *)XtNsynchronousDebugger,  XrmoptionNoArg, ON },
 
-{ "--disassemble",          XtNdisassemble,          XrmoptionNoArg, ON },
-{ "-disassemble",           XtNdisassemble,          XrmoptionNoArg, ON },
+{ (char *)"--disassemble",          (char *)XtNdisassemble,          XrmoptionNoArg, ON },
+{ (char *)"-disassemble",           (char *)XtNdisassemble,          XrmoptionNoArg, ON },
 
-{ "--no-disassemble",       XtNdisassemble,          XrmoptionNoArg, OFF },
-{ "-no-disassemble",        XtNdisassemble,          XrmoptionNoArg, OFF },
+{ (char *)"--no-disassemble",       (char *)XtNdisassemble,          XrmoptionNoArg, OFF },
+{ (char *)"-no-disassemble",        (char *)XtNdisassemble,          XrmoptionNoArg, OFF },
 
-{ "--glyphs",               XtNdisplayGlyphs,        XrmoptionNoArg, ON },
-{ "-glyphs",                XtNdisplayGlyphs,        XrmoptionNoArg, ON },
+{ (char *)"--glyphs",               (char *)XtNdisplayGlyphs,        XrmoptionNoArg, ON },
+{ (char *)"-glyphs",                (char *)XtNdisplayGlyphs,        XrmoptionNoArg, ON },
 
-{ "--no-glyphs",            XtNdisplayGlyphs,        XrmoptionNoArg, OFF },
-{ "-no-glyphs",             XtNdisplayGlyphs,        XrmoptionNoArg, OFF },
+{ (char *)"--no-glyphs",            (char *)XtNdisplayGlyphs,        XrmoptionNoArg, OFF },
+{ (char *)"-no-glyphs",             (char *)XtNdisplayGlyphs,        XrmoptionNoArg, OFF },
 
-{ "--host",                 XtNdebuggerHost,         XrmoptionSepArg, NULL },
-{ "-host",                  XtNdebuggerHost,         XrmoptionSepArg, NULL },
+{ (char *)"--host",                 (char *)XtNdebuggerHost,         XrmoptionSepArg, NULL },
+{ (char *)"-host",                  (char *)XtNdebuggerHost,         XrmoptionSepArg, NULL },
 
-{ "--rhost",                XtNdebuggerRHost,        XrmoptionSepArg, NULL },
-{ "-rhost",                 XtNdebuggerRHost,        XrmoptionSepArg, NULL },
+{ (char *)"--rhost",                (char *)XtNdebuggerRHost,        XrmoptionSepArg, NULL },
+{ (char *)"-rhost",                 (char *)XtNdebuggerRHost,        XrmoptionSepArg, NULL },
 
-{ "--login",                XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
-{ "-login",                 XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
-{ "-l",                     XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
+{ (char *)"--login",                (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
+{ (char *)"-login",                 (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
+{ (char *)"-l",                     (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
 
-{ "--tty",                  XtNttyMode,              XrmoptionNoArg, ON },
-{ "-tty",                   XtNttyMode,              XrmoptionNoArg, ON },
-{ "-t",                     XtNttyMode,              XrmoptionNoArg, ON },
+{ (char *)"--tty",                  (char *)XtNttyMode,              XrmoptionNoArg, ON },
+{ (char *)"-tty",                   (char *)XtNttyMode,              XrmoptionNoArg, ON },
+{ (char *)"-t",                     (char *)XtNttyMode,              XrmoptionNoArg, ON },
 
-{ "--fullname",             XtNannotate,             XrmoptionNoArg, "1" },
-{ "-fullname",              XtNannotate,             XrmoptionNoArg, "1" },
-{ "-f",                     XtNannotate,             XrmoptionNoArg, "1" },
+{ (char *)"--fullname",             (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
+{ (char *)"-fullname",              (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
+{ (char *)"-f",                     (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
 
-{ "--annotate",             XtNannotate,             XrmoptionSepArg, NULL },
-{ "-annotate",              XtNannotate,             XrmoptionSepArg, NULL },
+{ (char *)"--annotate",             (char *)XtNannotate,             XrmoptionSepArg, NULL },
+{ (char *)"-annotate",              (char *)XtNannotate,             XrmoptionSepArg, NULL },
 
-{ "--annotate=0",           XtNannotate,             XrmoptionNoArg, "0" },
-{ "-annotate=0",            XtNannotate,             XrmoptionNoArg, "0" },
+{ (char *)"--annotate=0",           (char *)XtNannotate,             XrmoptionNoArg, (char *)"0" },
+{ (char *)"-annotate=0",            (char *)XtNannotate,             XrmoptionNoArg, (char *)"0" },
 
-{ "--annotate=1",           XtNannotate,             XrmoptionNoArg, "1" },
-{ "-annotate=1",            XtNannotate,             XrmoptionNoArg, "1" },
+{ (char *)"--annotate=1",           (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
+{ (char *)"-annotate=1",            (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
 
-{ "--annotate=2",           XtNannotate,             XrmoptionNoArg, "2" },
-{ "-annotate=2",            XtNannotate,             XrmoptionNoArg, "2" },
+{ (char *)"--annotate=2",           (char *)XtNannotate,             XrmoptionNoArg, (char *)"2" },
+{ (char *)"-annotate=2",            (char *)XtNannotate,             XrmoptionNoArg, (char *)"2" },
 
-{ "--version",              XtNshowVersion,          XrmoptionNoArg, ON },
-{ "-version",               XtNshowVersion,          XrmoptionNoArg, ON },
-{ "-v",                     XtNshowVersion,          XrmoptionNoArg, ON },
+{ (char *)"--version",              (char *)XtNshowVersion,          XrmoptionNoArg, ON },
+{ (char *)"-version",               (char *)XtNshowVersion,          XrmoptionNoArg, ON },
+{ (char *)"-v",                     (char *)XtNshowVersion,          XrmoptionNoArg, ON },
 
-{ "--configuration",        XtNshowConfiguration,    XrmoptionNoArg, ON },
-{ "-configuration",         XtNshowConfiguration,    XrmoptionNoArg, ON },
+{ (char *)"--configuration",        (char *)XtNshowConfiguration,    XrmoptionNoArg, ON },
+{ (char *)"-configuration",         (char *)XtNshowConfiguration,    XrmoptionNoArg, ON },
 
-{ "--manual",               XtNshowManual,           XrmoptionNoArg, ON },
-{ "-manual",                XtNshowManual,           XrmoptionNoArg, ON },
+{ (char *)"--manual",               (char *)XtNshowManual,           XrmoptionNoArg, ON },
+{ (char *)"-manual",                (char *)XtNshowManual,           XrmoptionNoArg, ON },
 
-{ "--maintenance",          XtNmaintenance,          XrmoptionNoArg, ON },
-{ "-maintenance",           XtNmaintenance,          XrmoptionNoArg, ON },
+{ (char *)"--maintenance",          (char *)XtNmaintenance,          XrmoptionNoArg, ON },
+{ (char *)"-maintenance",           (char *)XtNmaintenance,          XrmoptionNoArg, ON },
 
-{ "--no-maintenance",       XtNmaintenance,          XrmoptionNoArg, OFF },
-{ "-no-maintenance",        XtNmaintenance,          XrmoptionNoArg, OFF },
+{ (char *)"--no-maintenance",       (char *)XtNmaintenance,          XrmoptionNoArg, OFF },
+{ (char *)"-no-maintenance",        (char *)XtNmaintenance,          XrmoptionNoArg, OFF },
 
-{ "--license",              XtNshowLicense,          XrmoptionNoArg, ON },
-{ "-license",               XtNshowLicense,          XrmoptionNoArg, ON },
+{ (char *)"--license",              (char *)XtNshowLicense,          XrmoptionNoArg, ON },
+{ (char *)"-license",               (char *)XtNshowLicense,          XrmoptionNoArg, ON },
 
-{ "--news",                 XtNshowNews,             XrmoptionNoArg, ON },
-{ "-news",                  XtNshowNews,             XrmoptionNoArg, ON },
+{ (char *)"--news",                 (char *)XtNshowNews,             XrmoptionNoArg, ON },
+{ (char *)"-news",                  (char *)XtNshowNews,             XrmoptionNoArg, ON },
 
-{ "--fonts",                XtNshowFonts,            XrmoptionNoArg, ON },
-{ "-fonts",                 XtNshowFonts,            XrmoptionNoArg, ON },
+{ (char *)"--fonts",                (char *)XtNshowFonts,            XrmoptionNoArg, ON },
+{ (char *)"-fonts",                 (char *)XtNshowFonts,            XrmoptionNoArg, ON },
 
-{ "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, ON },
-{ "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, ON },
+{ (char *)"--check-configuration",  (char *)XtNcheckConfiguration,   XrmoptionNoArg, ON },
+{ (char *)"-check-configuration",   (char *)XtNcheckConfiguration,   XrmoptionNoArg, ON },
 
-{ "--lesstif-hacks",        XtNlessTifVersion,       XrmoptionNoArg, "999" },
-{ "-lesstif-hacks",         XtNlessTifVersion,       XrmoptionNoArg, "999" },
+{ (char *)"--lesstif-hacks",        (char *)XtNlessTifVersion,       XrmoptionNoArg, (char *)"999" },
+{ (char *)"-lesstif-hacks",         (char *)XtNlessTifVersion,       XrmoptionNoArg, (char *)"999" },
 
-{ "--no-lesstif-hacks",     XtNlessTifVersion,       XrmoptionNoArg, "1000" },
-{ "-no-lesstif-hacks",      XtNlessTifVersion,       XrmoptionNoArg, "1000" },
+{ (char *)"--no-lesstif-hacks",     (char *)XtNlessTifVersion,       XrmoptionNoArg, (char *)"1000" },
+{ (char *)"-no-lesstif-hacks",      (char *)XtNlessTifVersion,       XrmoptionNoArg, (char *)"1000" },
 
-{ "--lesstif-version",      XtNlessTifVersion,       XrmoptionSepArg, NULL },
-{ "-lesstif-version",       XtNlessTifVersion,       XrmoptionSepArg, NULL },
+{ (char *)"--lesstif-version",      (char *)XtNlessTifVersion,       XrmoptionSepArg, NULL },
+{ (char *)"-lesstif-version",       (char *)XtNlessTifVersion,       XrmoptionSepArg, NULL },
 
-{ "--help",                 XtNshowInvocation,       XrmoptionNoArg, ON },
-{ "-help",                  XtNshowInvocation,       XrmoptionNoArg, ON },
-{ "-h",                     XtNshowInvocation,       XrmoptionNoArg, ON },
-{ "--?",                    XtNshowInvocation,       XrmoptionNoArg, ON },
-{ "-?",                     XtNshowInvocation,       XrmoptionNoArg, ON },
+{ (char *)"--help",                 (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
+{ (char *)"-help",                  (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
+{ (char *)"-h",                     (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
+{ (char *)"--?",                    (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
+{ (char *)"-?",                     (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
 
 };
 
 // Actions
 static XtActionsRec actions [] = {
-    {"gdb-control",            controlAct},
-    {"gdb-interrupt",          interruptAct},
-    {"gdb-command",            commandAct},
-    {"gdb-process",            processAct},
-    {"gdb-delete-or-control",  delete_or_controlAct},
-    {"gdb-prev-history",       prev_historyAct},
-    {"gdb-previous-history",   prev_historyAct},
-    {"gdb-next-history",       next_historyAct},
-    {"gdb-beginning-of-line",  beginning_of_lineAct},
-    {"gdb-end-of-line",        end_of_lineAct},
-    {"gdb-forward-character",  forward_characterAct},
-    {"gdb-backward-character", backward_characterAct},
-    {"gdb-set-line",           set_lineAct},
-    {"gdb-complete-command",   complete_commandAct},
-    {"gdb-complete-arg",       complete_argAct},
-    {"gdb-complete-tab",       complete_tabAct},
-    {"gdb-insert-source-arg",  insert_source_argAct},
-    {"gdb-insert-graph-arg",   insert_graph_argAct},
-    {"gdb-isearch-prev",       isearch_prevAct},
-    {"gdb-isearch-next",       isearch_nextAct},
-    {"gdb-isearch-exit",       isearch_exitAct},
-    {"gdb-popup-menu",         popupAct},
-    {"ddd-next-tab-group",     next_tab_groupAct},
-    {"ddd-prev-tab-group",     prev_tab_groupAct},
-    {"ddd-previous-tab-group", prev_tab_groupAct},
-    {"ddd-get-focus",          get_focusAct},
-    {"ddd-select-all",         select_allAct},
+    {(char *)"gdb-control",            controlAct},
+    {(char *)"gdb-interrupt",          interruptAct},
+    {(char *)"gdb-command",            commandAct},
+    {(char *)"gdb-process",            processAct},
+    {(char *)"gdb-delete-or-control",  delete_or_controlAct},
+    {(char *)"gdb-prev-history",       prev_historyAct},
+    {(char *)"gdb-previous-history",   prev_historyAct},
+    {(char *)"gdb-next-history",       next_historyAct},
+    {(char *)"gdb-beginning-of-line",  beginning_of_lineAct},
+    {(char *)"gdb-end-of-line",        end_of_lineAct},
+    {(char *)"gdb-forward-character",  forward_characterAct},
+    {(char *)"gdb-backward-character", backward_characterAct},
+    {(char *)"gdb-set-line",           set_lineAct},
+    {(char *)"gdb-complete-command",   complete_commandAct},
+    {(char *)"gdb-complete-arg",       complete_argAct},
+    {(char *)"gdb-complete-tab",       complete_tabAct},
+    {(char *)"gdb-insert-source-arg",  insert_source_argAct},
+    {(char *)"gdb-insert-graph-arg",   insert_graph_argAct},
+    {(char *)"gdb-isearch-prev",       isearch_prevAct},
+    {(char *)"gdb-isearch-next",       isearch_nextAct},
+    {(char *)"gdb-isearch-exit",       isearch_exitAct},
+    {(char *)"gdb-popup-menu",         popupAct},
+    {(char *)"ddd-next-tab-group",     next_tab_groupAct},
+    {(char *)"ddd-prev-tab-group",     prev_tab_groupAct},
+    {(char *)"ddd-previous-tab-group", prev_tab_groupAct},
+    {(char *)"ddd-get-focus",          get_focusAct},
+    {(char *)"ddd-select-all",         select_allAct},
 #if XmVersion < 2000
-    {"toggle-overstrike",      toggleOverstrikeAct},
+    {(char *)"toggle-overstrike",      toggleOverstrikeAct},
 #endif
 };
 
@@ -1795,9 +1795,6 @@ static Delay *setup_delay = 0;
 // Events to note for window visibility
 const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
 
-// The atom for the delete-window protocol
-static Atom WM_DELETE_WINDOW;
-
 // Message handling
 static MString version_warnings;
 
@@ -1819,11 +1816,11 @@ int main(int argc, char *argv[])
 #endif
 
     // Save environment for restart.
-    register_argv(argv);
+    register_argv((const char**)argv);
     register_environ();
 
     // This one is required for error messages
-    char *program_name = (char *)(argc > 0 ? argv[0] : ddd_NAME);
+    const char *program_name = (argc > 0 ? argv[0] : ddd_NAME);
 
     // Install signal handlers
 
@@ -1854,7 +1851,7 @@ int main(int argc, char *argv[])
     // and options that would otherwise be eaten by Xt
     StringArray saved_options;
     string gdb_name = "";
-    setup_options(argc, argv, saved_options, gdb_name, no_windows);
+    setup_options(argc, (const char**)argv, saved_options, gdb_name, no_windows);
 
     // If we don't want windows, just start GDB.
     if (no_windows)
@@ -1892,7 +1889,7 @@ int main(int argc, char *argv[])
 
     // Let command-line arguments override ~/.ddd/init
     XrmParseCommand(&dddinit, options, XtNumber(options), 
-		    DDD_CLASS_NAME, &argc, argv);
+		    DDD_CLASS_NAME, &argc, (char**)argv);
 
     String session_id = 0;
     if (session_id == 0)
@@ -2105,7 +2102,7 @@ int main(int argc, char *argv[])
     }
 
     // Set up VSL resources
-    if (VSEFlags::parse_vsl(argc, argv))
+    if (VSEFlags::parse_vsl(argc, (const char**)argv))
     {
 	// Show VSL usage...
 	cout << VSEFlags::explain(true);
@@ -2116,7 +2113,7 @@ int main(int argc, char *argv[])
     if (argc == 1 && app_data.open_selection)
     {
 	// No args given - try to get one from current selection
-	add_arg_from_selection(toplevel, argc, argv);
+	add_arg_from_selection(toplevel, argc, (const char**)argv);
     }
 
     // Check the X configuration
@@ -2153,7 +2150,7 @@ int main(int argc, char *argv[])
     if (debugger_type == DebuggerType(-1))
     {
 	// Guess debugger type from args
-	DebuggerInfo info(argc, argv);
+	DebuggerInfo info(argc, (const char**)argv);
 	debugger_type = info.type;
 
 	if (!app_data.auto_debugger)
@@ -2339,19 +2336,18 @@ int main(int argc, char *argv[])
 
     // Make command shell a popup shell.  
     // The toplevel window is never realized.
-    command_shell = verify(XtCreatePopupShell("command_shell",
+    command_shell = verify(XtCreatePopupShell((char *)"command_shell",
 					      applicationShellWidgetClass,
 					      toplevel, args, arg));
 
-    WM_DELETE_WINDOW =
-	XmInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
-    XmAddWMProtocolCallback(command_shell, WM_DELETE_WINDOW, DDDCloseCB, 0);
+    AddDeleteWindowCallback(command_shell, DDDCloseCB);
 
     // From this point on, we have a true top-level window.
 
     // Create main window
     arg = 0;
-    Widget main_window = XmCreateMainWindow(command_shell, "main_window",
+    Widget main_window = XmCreateMainWindow(command_shell, 
+					    (char *)"main_window",
 					    args, arg);
     XtManageChild(main_window);
 
@@ -2374,9 +2370,10 @@ int main(int argc, char *argv[])
     XtSetArg(args[arg], XmNborderWidth,     0); arg++;
     XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
-    Widget paned_work_w = verify(XmCreatePanedWindow(main_window,
-						     "paned_work_w",
-						     args, arg));
+    Widget paned_work_w = 
+	verify(XmCreatePanedWindow(main_window,
+				   (char *)"paned_work_w",
+				   args, arg));
     XtManageChild(paned_work_w);
 
     // Status line
@@ -2426,21 +2423,23 @@ int main(int argc, char *argv[])
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	data_disp_shell =
-	    verify(XtCreatePopupShell("data_disp_shell",
+	    verify(XtCreatePopupShell((char *)"data_disp_shell",
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
-	XmAddWMProtocolCallback(data_disp_shell, WM_DELETE_WINDOW, 
-				DDDCloseCB, 0);
+
+	AddDeleteWindowCallback(data_disp_shell, DDDCloseCB);
 
 	arg = 0;
-	data_main_window_w = XmCreateMainWindow(data_disp_shell, 
-						"data_main_window",
-						args, arg);
+	data_main_window_w = 
+	    XmCreateMainWindow(data_disp_shell, 
+			       (char *)"data_main_window",
+			       args, arg);
 	XtManageChild(data_main_window_w);
 
 	// Add menu bar
 	data_menubar_w = 
-	    MMcreateMenuBar (data_main_window_w, "menubar", data_menubar);
+	    MMcreateMenuBar (data_main_window_w, 
+			     (char *)"menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
 	MMaddHelpCallback(menubar, ImmediateHelpCB);
 	verify_buttons(data_menubar);
@@ -2450,9 +2449,10 @@ int main(int argc, char *argv[])
 	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
 	XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
 	XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
-	data_disp_parent = verify(XmCreatePanedWindow(data_main_window_w,
-						      "data_paned_work_w",
-						      args, arg));
+	data_disp_parent = 
+	    verify(XmCreatePanedWindow(data_main_window_w,
+				       (char *)"data_paned_work_w",
+				       args, arg));
 	XtManageChild(data_disp_parent);
     }
 
@@ -2481,16 +2481,16 @@ int main(int argc, char *argv[])
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	source_view_shell = 
-	    verify(XtCreatePopupShell("source_view_shell",
+	    verify(XtCreatePopupShell((char *)"source_view_shell",
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
-	XmAddWMProtocolCallback(source_view_shell, WM_DELETE_WINDOW, 
-				DDDCloseCB, 0);
+	AddDeleteWindowCallback(source_view_shell, DDDCloseCB);
 
 	arg = 0;
-	source_main_window_w = XmCreateMainWindow(source_view_shell,
-						  "source_main_window",
-						  args, arg);
+	source_main_window_w = 
+	    XmCreateMainWindow(source_view_shell,
+			       (char *)"source_main_window",
+			       args, arg);
 	XtManageChild(source_main_window_w);
 
 	// Add menu bar
@@ -2508,7 +2508,8 @@ int main(int argc, char *argv[])
 	XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 	source_view_parent = 
 	    verify(XmCreatePanedWindow(source_main_window_w, 
-				       "source_paned_work_w", args, arg));
+				       (char *)"source_paned_work_w", 
+				       args, arg));
 	XtManageChild(source_view_parent);
 
 	// Status line
@@ -2599,7 +2600,8 @@ int main(int argc, char *argv[])
 					 app_data.console_buttons);
 
     arg = 0;
-    gdb_w = verify(XmCreateScrolledText(paned_work_w, "gdb_w", args, arg));
+    gdb_w = verify(XmCreateScrolledText(paned_work_w, 
+					(char *)"gdb_w", args, arg));
 
     XtAddCallback (gdb_w,
 		   XmNmodifyVerifyCallback,
@@ -3033,7 +3035,8 @@ static void ddd_check_version()
 	XtSetArg(args[arg], XmNmessageString, 
 		 version_warnings.xmstring()); arg++;
 	Widget warning = 
-	    verify(XmCreateWarningDialog(command_shell, "bad_version_warning",
+	    verify(XmCreateWarningDialog(command_shell, 
+					 (char *)"bad_version_warning",
 					 args, arg));
 	Delay::register_shell(warning);
 	XtUnmanageChild(XmMessageBoxGetChild(warning, XmDIALOG_CANCEL_BUTTON));
@@ -3100,7 +3103,7 @@ XrmDatabase GetFileDatabase(char *filename)
 #endif
 
     // Resources to ignore upon copying
-    static char *do_not_copy[] = 
+    static const char *do_not_copy[] = 
     { 
 	XmNwidth, XmNheight,	              // Shell sizes
 	XmNcolumns, XmNrows,	              // Text window sizes
@@ -3590,11 +3593,13 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     }
 
     Widget lock_dialog =
-	verify(XmCreateQuestionDialog(parent, "lock_dialog", args, arg));
+	verify(XmCreateQuestionDialog(parent, (char *)"lock_dialog", 
+				      args, arg));
     Delay::register_shell(lock_dialog);
 
 #if XmVersion >= 1002
-    Widget kill = verify(XmCreatePushButton(lock_dialog, "kill", 0, 0));
+    Widget kill = verify(XmCreatePushButton(lock_dialog, (char *)"kill", 
+					    0, 0));
     XtManageChild(kill);
     XtAddCallback(kill, XmNactivateCallback,
 		  KillLockerCB, XtPointer(&info));
@@ -4050,7 +4055,7 @@ void update_options()
 
     // Set `find' label
     Widget find_label_ref = 0;
-    char *icon = 0;
+    const char *icon = 0;
     switch (current_find_direction())
     {
     case SourceView::forward:
@@ -4826,7 +4831,7 @@ static void ChangePanelCB(Widget, XtPointer client_data, XtPointer call_data)
 }
 
 static Widget add_panel(Widget parent, Widget buttons, 
-			String name, MMDesc items[],
+			const _XtString name, MMDesc items[],
 			Dimension& max_width, Dimension& max_height,
 			bool set = false)
 {
@@ -4838,7 +4843,7 @@ static Widget add_panel(Widget parent, Widget buttons,
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-    Widget form = verify(XmCreateRowColumn(parent, name, args, arg));
+    Widget form = verify(XmCreateRowColumn(parent, (char *)name, args, arg));
     XtManageChild(form);
 
     // Add panel
@@ -4862,7 +4867,7 @@ static Widget add_panel(Widget parent, Widget buttons,
 
     // Add button
     arg = 0;
-    Widget button = verify(XmCreateToggleButton(buttons, name, args, arg));
+    Widget button = verify(XmCreateToggleButton(buttons, (char *)name, args, arg));
     XtManageChild(button);
 
     XtAddCallback(button, XmNvalueChangedCallback, ChangePanelCB, 
@@ -4889,7 +4894,8 @@ static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
 	{
 	    restart_dialog = 
 		verify(XmCreateQuestionDialog(find_shell(dialog), 
-					      "restart_dialog", 0, 0));
+					      (char *)"restart_dialog",
+					      0, 0));
 	    Delay::register_shell(restart_dialog);
 	    XtAddCallback(restart_dialog, XmNokCallback,
 			  DDDRestartCB, 0);
@@ -4908,7 +4914,8 @@ static void make_preferences(Widget parent)
 
     arg = 0;
     preferences_dialog = 
-	verify(XmCreatePromptDialog(parent, "preferences", args, arg));
+	verify(XmCreatePromptDialog(parent, 
+				    (char *)"preferences", args, arg));
     Delay::register_shell(preferences_dialog);
     XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), NULL);
     XtAddCallback(preferences_dialog, XmNunmapCallback, OfferRestartCB, NULL);
@@ -4934,16 +4941,17 @@ static void make_preferences(Widget parent)
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     Widget box =
-	verify(XmCreateRowColumn(preferences_dialog, "box", args, arg));
+	verify(XmCreateRowColumn(preferences_dialog, (char *)"box", 
+				 args, arg));
     XtManageChild(box);
 
     arg = 0;
     Widget buttons =
-	verify(XmCreateRadioBox(box, "buttons", args, arg));
+	verify(XmCreateRadioBox(box, (char *)"buttons", args, arg));
     XtManageChild(buttons);
 
     arg = 0;
-    Widget frame = verify(XmCreateFrame(box, "frame", args, arg));
+    Widget frame = verify(XmCreateFrame(box, (char *)"frame", args, arg));
     XtManageChild(frame);
 
     arg = 0;
@@ -4951,7 +4959,7 @@ static void make_preferences(Widget parent)
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     Widget change =
-	verify(XmCreateRowColumn(frame, "change", args, arg));
+	verify(XmCreateRowColumn(frame, (char *)"change", args, arg));
     XtManageChild(change);
 
     Dimension max_width  = 0;
@@ -4999,7 +5007,7 @@ static void create_status(Widget parent)
     int arg = 0;
     XtSetArg(args[arg], XmNresizePolicy, XmRESIZE_ANY); arg++;
     Widget status_form = 
-	verify(XmCreateForm(parent, "status_form", args, arg));
+	verify(XmCreateForm(parent, (char *)"status_form", args, arg));
     XtManageChild(status_form);
 
     // Create LED
@@ -5017,7 +5025,8 @@ static void create_status(Widget parent)
 	XtSetArg(args[arg], XmNlabelString, spaces.xmstring()); arg++;
     }
 
-    led_w = verify(XmCreateToggleButton(status_form, "led", args, arg));
+    led_w = verify(XmCreateToggleButton(status_form, 
+					(char *)"led", args, arg));
     XtManageChild(led_w);
 
     XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtPointer(0));
@@ -5036,7 +5045,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNarrowDirection, 
 	     (app_data.status_at_bottom ? XmARROW_UP : XmARROW_DOWN)); arg++;
     Widget arrow_w = 
-	verify(XmCreateArrowButton(status_form, "arrow", args, arg));
+	verify(XmCreateArrowButton(status_form, (char *)"arrow", args, arg));
     XtManageChild(arrow_w);
 
     // Give some `dummy' status message.  Some Motif versions limit
@@ -5056,7 +5065,8 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNresizable,        False); arg++;
     XtSetArg(args[arg], XmNrecomputeSize,    False); arg++;
     XtSetArg(args[arg], XmNshadowThickness,  0); arg++;
-    status_w = verify(XmCreatePushButton(status_form, "status", args, arg));
+    status_w = verify(XmCreatePushButton(status_form, 
+					 (char *)"status", args, arg));
     XtManageChild(status_w);
 
     // Initialize status history
@@ -5561,7 +5571,7 @@ static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
 // I/O warnings
 //-----------------------------------------------------------------------------
 
-static void gdb_msgHP(Agent *source, void *call_data, char *name)
+static void gdb_msgHP(Agent *source, void *call_data, const char *name)
 {
     if (source->pid() == 0)
     {
@@ -5720,7 +5730,7 @@ static void gdb_ctrl(char ctrl)
 	case '\r':
 	{
 	    // Erase last line
-	    XmTextReplace(gdb_w, startOfLine, promptPosition, "");
+	    XmTextReplace(gdb_w, startOfLine, promptPosition, (char *)"");
 	    promptPosition = startOfLine;
 	}
 	break;
@@ -5731,7 +5741,7 @@ static void gdb_ctrl(char ctrl)
     case '\b':
     {
 	// Erase last character
-	XmTextReplace(gdb_w, promptPosition - 1, promptPosition, "");
+	XmTextReplace(gdb_w, promptPosition - 1, promptPosition, (char *)"");
 	promptPosition--;
     }
     break;
@@ -6222,7 +6232,7 @@ static void setup_cut_copy_paste_bindings(XrmDatabase db)
 {
     // Stupid OSF/Motif won't change the accelerators once created.
     // Set resources explicitly.
-    String resources = 0;
+    const _XtString resources = 0;
     switch (app_data.cut_copy_paste_bindings)
     {
     case KDEBindings:
@@ -6286,7 +6296,7 @@ static void setup_select_all_bindings(XrmDatabase db)
 {
     // Stupid OSF/Motif won't change the accelerators once created.
     // Set resources explicitly.
-    String resources = 0;
+    const _XtString resources = 0;
     switch (app_data.select_all_bindings)
     {
     case KDEBindings:
@@ -6667,7 +6677,7 @@ static void popup_splash_screen(Widget parent, string color_key)
     XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     Widget splash = 
-	verify(XmCreateDrawingArea(splash_shell, "splash", args, arg));
+	verify(XmCreateDrawingArea(splash_shell, (char *)"splash", args, arg));
     XtManageChild(splash);
 
     Dimension width, height;
@@ -6772,7 +6782,8 @@ static void vsl_echo(const string& msg)
 	XtSetArg(args[arg], XmNautoUnmanage,   False);              arg++;
 	XtSetArg(args[arg], XmNmessageString,  message.xmstring()); arg++;
 	dialog = verify(XmCreateWarningDialog(find_shell(gdb_w), 
-					      "vsl_message", args, arg));
+					      (char *)"vsl_message", 
+					      args, arg));
 
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
 					     XmDIALOG_CANCEL_BUTTON));
@@ -6896,7 +6907,7 @@ static void check_log(const string& logname, DebuggerType& type)
 //-----------------------------------------------------------------------------
 
 // Return true iff resource is defined and set
-static string resource_value(XrmDatabase db, string app_name, char *res_name)
+static string resource_value(XrmDatabase db, string app_name, const char *res_name)
 {
     string str_name  = app_name + "." + res_name;
     string str_class = string(DDD_CLASS_NAME) + "." + res_name;
@@ -6925,7 +6936,7 @@ static bool is_set(string value)
     return false;
 }
 
-inline bool have_set_resource(XrmDatabase db, char *app_name, char *res_name)
+inline bool have_set_resource(XrmDatabase db, char *app_name, const char *res_name)
 {
     return is_set(resource_value(db, app_name, res_name));
 }
@@ -7083,7 +7094,7 @@ static void setup_version_info()
     s += "To start, select `Help->What Now?'.";
     XmTextSetString(SourceView::source(), s);
 #else
-    XmTextSetString(gdb_w, 
+    XmTextSetString(gdb_w, (char *)
 		    "GNU " DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
 		    "by Dorothea L\374tkehaus and Andreas Zeller.\n"
 		    "Copyright \251 1995-1999 "
@@ -7095,7 +7106,7 @@ static void setup_version_info()
 
 
 // Add current selection as argument
-static void add_arg_from_selection(Widget toplevel, int& argc, char **&argv)
+static void add_arg_from_selection(Widget toplevel, int& argc, const char **&argv)
 {
     assert(argc == 1);
 
@@ -7133,7 +7144,7 @@ static void add_arg_from_selection(Widget toplevel, int& argc, char **&argv)
 	    continue;			// No selection
 
 	const int new_argc = 2;
-	static char *new_argv[new_argc + 1];
+	static const char *new_argv[new_argc + 1];
 	new_argv[0] = argv[0];
 	new_argv[1] = selection;
 	new_argv[2] = 0;
@@ -7182,7 +7193,7 @@ static void setup_environment()
     put_environment(DDD_NAME, ddd_NAME "-" DDD_VERSION "-" DDD_HOST);
 }
 
-static void setup_options(int& argc, char *argv[],
+static void setup_options(int& argc, const char *argv[],
 			  StringArray& saved_options, string& gdb_name,
 			  bool& no_windows)
 {

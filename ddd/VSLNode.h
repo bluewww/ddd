@@ -58,7 +58,7 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    char *_type;    // Type
+    const char *_type;    // Type
 
 protected:
     unsigned _base; // Number of arguments in context
@@ -88,7 +88,7 @@ private:
 
 public:
     // Constructor
-    VSLNode(char *type = "VSLNode")
+    VSLNode(const char *type = "VSLNode")
 	: _type(type), _base(0)
     {}
 

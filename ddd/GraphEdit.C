@@ -95,131 +95,131 @@ static void defaultForeground(Widget w, int, XrmValue *value)
 static XtResource resources[] = {
 #define offset(field) XtOffsetOf(GraphEditRec, graphEdit.field)
     // {name, class, type, size, offset, default_type, default_addr}
-    { XtNgraph, XtCGraph, XtRPointer, sizeof(Graph *),
-	offset(graph), XtRImmediate, XtPointer(NULL) },
-    { XtNmoveDelta, XtCMoveDelta, XtRDimension, sizeof(Dimension),
+    { (char *)XtNgraph, (char *)XtCGraph, XtRPointer, sizeof(Graph *),
+        offset(graph), XtRImmediate, XtPointer(NULL) },
+    { (char *)XtNmoveDelta, (char *)XtCMoveDelta, XtRDimension, sizeof(Dimension),
 	offset(moveDelta), XtRImmediate, XtPointer(4) },
-    { XtNrubberEdges, XtCRubberEdges, XtRBoolean, sizeof(Boolean),
+    { (char *)XtNrubberEdges, (char *)XtCRubberEdges, XtRBoolean, sizeof(Boolean),
 	offset(rubberEdges), XtRImmediate, XtPointer(True) },
-    { XtNrubberArrows, XtCRubberEdges, XtRBoolean, sizeof(Boolean),
+    { (char *)XtNrubberArrows, (char *)XtCRubberEdges, XtRBoolean, sizeof(Boolean),
 	offset(rubberArrows), XtRImmediate, XtPointer(False) },
-    { XtNrubberAnnotations, XtCRubberAnnotations, XtRBoolean, sizeof(Boolean),
+    { (char *)XtNrubberAnnotations, (char *)XtCRubberAnnotations, XtRBoolean, sizeof(Boolean),
 	offset(rubberAnnotations), XtRImmediate, XtPointer(False) },
-    { XtNopaqueMove, XtCOpaqueMove, XtRBoolean, sizeof(Boolean),
+    { (char *)XtNopaqueMove, (char *)XtCOpaqueMove, XtRBoolean, sizeof(Boolean),
 	offset(opaqueMove), XtRImmediate, XtPointer(False) },
 
-    { XtNautoRaise, XtCAutoRaise, XtRBoolean, sizeof(Boolean),
+    { (char *)XtNautoRaise, (char *)XtCAutoRaise, XtRBoolean, sizeof(Boolean),
 	offset(autoRaise), XtRImmediate, XtPointer(True) },
 
-    { XtNshowHints, XtCShowHints, XtRBoolean, sizeof(Boolean),
+    {(char *) XtNshowHints, (char *)XtCShowHints, XtRBoolean, sizeof(Boolean),
 	offset(showHints), XtRImmediate, XtPointer(False) },
-    { XtNhintSize, XtCHintSize, XtRDimension, sizeof(Dimension),
+    { (char *)XtNhintSize, (char *)XtCHintSize, XtRDimension, sizeof(Dimension),
 	offset(hintSize), XtRImmediate, XtPointer(6) },
 
-    { XtNshowAnnotations, XtCShowAnnotations, XtRBoolean, sizeof(Boolean),
+    { (char *)XtNshowAnnotations, (char *)XtCShowAnnotations, XtRBoolean, sizeof(Boolean),
 	offset(showAnnotations), XtRImmediate, XtPointer(True) },
 
-    { XtNgridWidth, XtCGridSize, XtRDimension, sizeof(Dimension),
+    { (char *)XtNgridWidth, (char *)XtCGridSize, XtRDimension, sizeof(Dimension),
 	offset(gridWidth), XtRImmediate, XtPointer(16) },
-    { XtNgridHeight, XtCGridSize, XtRDimension, sizeof(Dimension),
+    { (char *)XtNgridHeight, (char *)XtCGridSize, XtRDimension, sizeof(Dimension),
 	offset(gridHeight), XtRImmediate, XtPointer(16) },
 
-    { XtNshowGrid, XtCShowGrid, XtRBoolean, sizeof(Boolean),
+    { (char *)XtNshowGrid, (char *)XtCShowGrid, XtRBoolean, sizeof(Boolean),
 	offset(showGrid), XtRImmediate, XtPointer(False) },
-    { XtNsnapToGrid, XtCSnapToGrid, XtRBoolean, sizeof(Boolean),
+    { (char *)XtNsnapToGrid, (char *)XtCSnapToGrid, XtRBoolean, sizeof(Boolean),
 	offset(snapToGrid), XtRImmediate, XtPointer(False) },
 
-    { XtNautoLayout, XtCAutoLayout, XtRBoolean, sizeof(Boolean),
+    { (char *)XtNautoLayout, (char *)XtCAutoLayout, XtRBoolean, sizeof(Boolean),
 	offset(autoLayout), XtRImmediate, XtPointer(False) },
 
-    { XtNrotation, XtCRotation, XtRCardinal, sizeof(Cardinal),
+    { (char *)XtNrotation, (char *)XtCRotation, XtRCardinal, sizeof(Cardinal),
 	offset(rotation), XtRImmediate, XtPointer(0)},
 
-    { XtNedgeWidth, XtCEdgeWidth, XtRDimension, sizeof(Dimension),
+    { (char *)XtNedgeWidth, (char *)XtCEdgeWidth, XtRDimension, sizeof(Dimension),
 	offset(edgeWidth), XtRImmediate, XtPointer(0) },
-    { XtNarrowAngle, XtCArrowAngle, XtRDimension, sizeof(Dimension),
+    { (char *)XtNarrowAngle, (char *)XtCArrowAngle, XtRDimension, sizeof(Dimension),
 	offset(arrowAngle), XtRImmediate, XtPointer(30) },
-    { XtNarrowLength, XtCArrowLength, XtRDimension, sizeof(Dimension),
+    { (char *)XtNarrowLength, (char *)XtCArrowLength, XtRDimension, sizeof(Dimension),
 	offset(arrowLength), XtRImmediate, XtPointer(10) },
-    { XtNselfEdgeDiameter, XtCSelfEdgeDiameter, XtRDimension, 
+    { (char *)XtNselfEdgeDiameter, (char *)XtCSelfEdgeDiameter, XtRDimension, 
         sizeof(Dimension), offset(selfEdgeDiameter), 
         XtRImmediate, XtPointer(32) },
 
-    { XtNextraWidth, XtCExtraSize, XtRDimension, sizeof(Dimension),
+    { (char *)XtNextraWidth, (char *)XtCExtraSize, XtRDimension, sizeof(Dimension),
 	offset(extraWidth), XtRImmediate, XtPointer(0) },
-    { XtNextraHeight, XtCExtraSize, XtRDimension, sizeof(Dimension),
+    { (char *)XtNextraHeight, (char *)XtCExtraSize, XtRDimension, sizeof(Dimension),
 	offset(extraHeight), XtRImmediate, XtPointer(0) },
 
-    { XtNrequestedWidth, XtCRequestedSize, XtRDimension, sizeof(Dimension),
+    { (char *)XtNrequestedWidth, (char *)XtCRequestedSize, XtRDimension, sizeof(Dimension),
 	offset(requestedWidth), XtRImmediate, XtPointer(0) },
-    { XtNrequestedHeight, XtCRequestedSize, XtRDimension, sizeof(Dimension),
+    { (char *)XtNrequestedHeight, (char *)XtCRequestedSize, XtRDimension, sizeof(Dimension),
 	offset(requestedHeight), XtRImmediate, XtPointer(0) },
 
-    { XtNselectTile, XtCBitmap, XtRBitmap, sizeof(Pixmap),
+    { (char *)XtNselectTile, (char *)XtCBitmap, XtRBitmap, sizeof(Pixmap),
 	offset(selectTile), XtRImmediate, XtPointer(0)},
 
-    { XtNedgeAttachMode, XtCEdgeAttachMode, XtREdgeAttachMode,
+    { (char *)XtNedgeAttachMode, (char *)XtCEdgeAttachMode, (char *)XtREdgeAttachMode,
 	sizeof(EdgeAttachMode), offset(edgeAttachMode), 
         XtRImmediate, XtPointer(Straight) },
-    { XtNlayoutMode, XtCLayoutMode, XtRLayoutMode,
+    { (char *)XtNlayoutMode, (char *)XtCLayoutMode, (char *)XtRLayoutMode,
 	sizeof(LayoutMode), offset(layoutMode), 
         XtRImmediate, XtPointer(RegularLayoutMode) },
-    { XtNselfEdgePosition, XtCSelfEdgePosition, XtRSelfEdgePosition,
+    { (char *)XtNselfEdgePosition, (char *)XtCSelfEdgePosition, (char *)XtRSelfEdgePosition,
 	sizeof(SelfEdgePosition), offset(selfEdgePosition), 
         XtRImmediate, XtPointer(NorthEast) },
-    { XtNselfEdgeDirection, XtCSelfEdgeDirection, XtRSelfEdgeDirection,
+    { (char *)XtNselfEdgeDirection, (char *)XtCSelfEdgeDirection, (char *)XtRSelfEdgeDirection,
 	sizeof(SelfEdgeDirection), offset(selfEdgeDirection), 
         XtRImmediate, XtPointer(Counterclockwise) },
-    { XtNdashedLines, XtCDashedLines, XtRBoolean,
+    { (char *)XtNdashedLines, (char *)XtCDashedLines, XtRBoolean,
 	sizeof(Boolean), offset(dashedLines), 
         XtRImmediate, XtPointer(False) },
 
-    { XtNdefaultCursor, XtCCursor, XtRCursor, sizeof(Cursor),
+    { (char *)XtNdefaultCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
 	offset(defaultCursor), XtRImmediate, XtPointer(0)},
-    { XtNmoveCursor, XtCCursor, XtRCursor, sizeof(Cursor),
+    { (char *)XtNmoveCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
 	offset(moveCursor), XtRImmediate, XtPointer(0)},
-    { XtNselectCursor, XtCCursor, XtRCursor, sizeof(Cursor),
+    { (char *)XtNselectCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
 	offset(selectCursor), XtRImmediate, XtPointer(0)},
-    { XtNselectBottomLeftCursor, XtCCursor, XtRCursor, sizeof(Cursor),
+    { (char *)XtNselectBottomLeftCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
 	offset(selectBottomLeftCursor), XtRImmediate, XtPointer(0)},
-    { XtNselectBottomRightCursor, XtCCursor, XtRCursor, sizeof(Cursor),
+    { (char *)XtNselectBottomRightCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
 	offset(selectBottomRightCursor), XtRImmediate, XtPointer(0)},
-    { XtNselectTopLeftCursor, XtCCursor, XtRCursor, sizeof(Cursor),
+    { (char *)XtNselectTopLeftCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
 	offset(selectTopLeftCursor), XtRImmediate, XtPointer(0)},
-    { XtNselectTopRightCursor, XtCCursor, XtRCursor, sizeof(Cursor),
+    { (char *)XtNselectTopRightCursor, (char *)XtCCursor, XtRCursor, sizeof(Cursor),
 	offset(selectTopRightCursor), XtRImmediate, XtPointer(0)},
 
-    { XtNnodeColor, XtCColor, XtRPixel, sizeof(Pixel),
+    { (char *)XtNnodeColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
 	offset(nodeColor), XtRCallProc, XtPointer(defaultForeground) },
-    { XtNedgeColor, XtCColor, XtRPixel, sizeof(Pixel),
+    { (char *)XtNedgeColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
 	offset(edgeColor), XtRCallProc, XtPointer(defaultForeground) },
-    { XtNframeColor, XtCColor, XtRPixel, sizeof(Pixel),
+    { (char *)XtNframeColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
 	offset(frameColor), XtRCallProc, XtPointer(defaultForeground) },
-    { XtNoutlineColor, XtCColor, XtRPixel, sizeof(Pixel),
+    { (char *)XtNoutlineColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
 	offset(outlineColor), XtRCallProc, XtPointer(defaultForeground) },
-    { XtNgridColor, XtCColor, XtRPixel, sizeof(Pixel),
+    { (char *)XtNgridColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
 	offset(gridColor), XtRCallProc, XtPointer(defaultForeground) },
-    { XtNselectColor, XtCColor, XtRPixel, sizeof(Pixel),
+    { (char *)XtNselectColor, (char *)XtCColor, XtRPixel, sizeof(Pixel),
 	offset(selectColor), XtRCallProc, XtPointer(defaultForeground) },
 
-    { XtNnodePrintColor, XtCColor, XtRString, sizeof(String),
+    { (char *)XtNnodePrintColor, (char *)XtCColor, XtRString, sizeof(String),
 	offset(nodePrintColor), XtRImmediate, 0 },
-    { XtNedgePrintColor, XtCColor, XtRString, sizeof(String),
+    { (char *)XtNedgePrintColor, (char *)XtCColor, XtRString, sizeof(String),
 	offset(edgePrintColor), XtRImmediate, 0 },
 
-    { XtNpositionChangedCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+    { (char *)XtNpositionChangedCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(positionChangedProc), XtRCallback, XtPointer(0) },
-    { XtNselectionChangedCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+    { (char *)XtNselectionChangedCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(selectionChangedProc), XtRCallback, XtPointer(0) },
-    { XtNsizeChangedCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+    { (char *)XtNsizeChangedCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(sizeChangedProc), XtRCallback, XtPointer(0) },
-    { XtNcompareNodesCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+    { (char *)XtNcompareNodesCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(compareNodesProc), XtRCallback, XtPointer(0) },
-    { XtNpreLayoutCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+    { (char *)XtNpreLayoutCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(preLayoutProc), XtRCallback, XtPointer(0) },
-    { XtNpostLayoutCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+    { (char *)XtNpostLayoutCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(postLayoutProc), XtRCallback, XtPointer(0) },
-    { XtNpreSelectionCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+    { (char *)XtNpreSelectionCallback, (char *)XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(preSelectionProc), XtRCallback, XtPointer(0) },
 
 #undef offset
@@ -257,30 +257,30 @@ static void _Normalize  (Widget, XEvent *, String *, Cardinal *);
 // Actions table
 
 static XtActionsRec actions[] = {
-    { "select",         Select },        // select()
-    { "extend",         Extend },        // extend()
-    { "toggle",         Toggle },        // toggle()
-    { "select-or-move", SelectOrMove },	 // select-or-move()
-    { "extend-or-move", ExtendOrMove },	 // extend-or-move()
-    { "toggle-or-move", ToggleOrMove },	 // toggle-or-move()
-    { "move-selected",  MoveSelected },	 // move-selected(X, Y)
-    { "follow",		Follow },        // follow()
-    { "end",		End },           // end()
-    { "show-edges",	ShowEdges },     // show-edges([any|both|from|to])
-    { "hide-edges", 	HideEdges },     // hide-edges([any|both|from|to])
-    { "select-all", 	SelectAll },     // select-all()
-    { "select-first", 	SelectFirst },   // select-first()
-    { "select-next", 	SelectNext },    // select-next()
-    { "select-prev", 	SelectPrev },    // select-prev()
-    { "unselect-all", 	UnselectAll },   // unselect-all()
-    { "snap-to-grid",	SnapToGrid },    // snap-to-grid()
-    { "_snap-to-grid",	_SnapToGrid },
-    { "rotate",		Rotate },        // rotate([[+|-]DEGREES])
-    { "_rotate",	_Rotate },
-    { "layout",		DoLayout },      // layout([regular|compact],
-    { "_layout",	_Layout },       //         [[+|-]DEGREES]])
-    { "normalize",	Normalize },     // normalize()
-    { "_normalize",	_Normalize },
+    { (char *)"select",         Select },        // select()
+    { (char *)"extend",         Extend },        // extend()
+    { (char *)"toggle",         Toggle },        // toggle()
+    { (char *)"select-or-move", SelectOrMove },	 // select-or-move()
+    { (char *)"extend-or-move", ExtendOrMove },	 // extend-or-move()
+    { (char *)"toggle-or-move", ToggleOrMove },	 // toggle-or-move()
+    { (char *)"move-selected",  MoveSelected },	 // move-selected(X, Y)
+    { (char *)"follow",		Follow },        // follow()
+    { (char *)"end",		End },           // end()
+    { (char *)"show-edges",	ShowEdges },     // show-edges([any|both|from|to])
+    { (char *)"hide-edges", 	HideEdges },     // hide-edges([any|both|from|to])
+    { (char *)"select-all", 	SelectAll },     // select-all()
+    { (char *)"select-first", 	SelectFirst },   // select-first()
+    { (char *)"select-next", 	SelectNext },    // select-next()
+    { (char *)"select-prev", 	SelectPrev },    // select-prev()
+    { (char *)"unselect-all", 	UnselectAll },   // unselect-all()
+    { (char *)"snap-to-grid",	SnapToGrid },    // snap-to-grid()
+    { (char *)"_snap-to-grid",	_SnapToGrid },
+    { (char *)"rotate",		Rotate },        // rotate([[+|-]DEGREES])
+    { (char *)"_rotate",	_Rotate },
+    { (char *)"layout",		DoLayout },      // layout([regular|compact],
+    { (char *)"_layout",	_Layout },       //         [[+|-]DEGREES]])
+    { (char *)"normalize",	Normalize },     // normalize()
+    { (char *)"_normalize",	_Normalize },
 };
 
 
@@ -390,7 +390,7 @@ static void Destroy(Widget w);
 GraphEditClassRec graphEditClassRec = {
   {	 /* core fields */
     /* superclass               */  (WidgetClass) &xmPrimitiveClassRec,
-    /* class_name               */  "GraphEdit",
+    /* class_name               */  (char *)"GraphEdit",
     /* widget_size              */  sizeof(GraphEditRec),
     /* class_initialize         */  ClassInitialize,
     /* class_part_initialize    */  NULL,
@@ -799,7 +799,7 @@ static Boolean CvtEdgeAttachModeToString (Display *display, XrmValue *,
 
     EdgeAttachMode mode = *((EdgeAttachMode *)fromVal->addr);
 
-    String s = "unknown";
+    const _XtString s = "unknown";
     switch (mode)
     {
     case Straight:
@@ -816,7 +816,7 @@ static Boolean CvtEdgeAttachModeToString (Display *display, XrmValue *,
 	break;
     }
 
-    done(String, s);
+    done(const _XtString, s);
 }
 
 
@@ -862,7 +862,7 @@ static Boolean CvtLayoutModeToString (Display *display, XrmValue *,
 
     LayoutMode mode = *((LayoutMode *)fromVal->addr);
 
-    String s = "unknown";
+    const _XtString s = "unknown";
     switch (mode)
     {
     case RegularLayoutMode:
@@ -876,7 +876,7 @@ static Boolean CvtLayoutModeToString (Display *display, XrmValue *,
 	break;
     }
 
-    done(String, s);
+    done(const _XtString, s);
 }
 
 
@@ -924,7 +924,7 @@ static Boolean CvtSelfEdgePositionToString (Display *display, XrmValue *,
 
     SelfEdgePosition pos = *((SelfEdgePosition *)fromVal->addr);
 
-    String s = "unknown";
+    const _XtString s = "unknown";
     switch (pos)
     {
     case NorthWest:
@@ -944,7 +944,7 @@ static Boolean CvtSelfEdgePositionToString (Display *display, XrmValue *,
 	break;
     }
 
-    done(String, s);
+    done(const _XtString, s);
 }
 
 
@@ -988,7 +988,7 @@ static Boolean CvtSelfEdgeDirectionToString (Display *display, XrmValue *,
 
     SelfEdgeDirection pos = *((SelfEdgeDirection *)fromVal->addr);
 
-    String s = "unknown";
+    const _XtString s = "unknown";
     switch (pos)
     {
     case Clockwise:
@@ -1002,7 +1002,7 @@ static Boolean CvtSelfEdgeDirectionToString (Display *display, XrmValue *,
 	break;
     }
 
-    done(String, s);
+    done(const _XtString, s);
 }
 
 
@@ -1023,7 +1023,7 @@ static Boolean CvtBooleanToString (Display *display, XrmValue *,
 
     Boolean mode = *((Boolean *)fromVal->addr);
 
-    String s = "unknown";
+    const _XtString s = "unknown";
     switch (mode)
     {
     case True:
@@ -1037,7 +1037,7 @@ static Boolean CvtBooleanToString (Display *display, XrmValue *,
 	break;
     }
 
-    done(String, s);
+    done(const _XtString, s);
 }
 
 static Boolean CvtDimensionToString (Display *display, XrmValue *,
@@ -2547,8 +2547,8 @@ static void SnapToGrid(Widget w, XEvent *event, String *params,
 }
 
 static int get_new_rotation(Widget w, String *params, Cardinal *num_params,
-			    String name, String default_param, 
-			    String extra_args = "")
+			    const _XtString name, const _XtString default_param, 
+			    const _XtString extra_args = "")
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Cardinal rotation    = _w->graphEdit.rotation;

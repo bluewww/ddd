@@ -50,7 +50,7 @@ protected:
     void dump(ostream& s) const;
 
 public:
-    FontFixBox(Box *box, char *t = "FontFixBox"):
+    FontFixBox(Box *box, const char *t = "FontFixBox"):
 	HatBox(box, t)
     {}
 

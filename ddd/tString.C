@@ -372,7 +372,7 @@ void splittest()
   assert(w[2] == "has");
   assert(w[3] == "five");
   assert(w[4] == "words");
-  assert(w[5] == (char*)0);
+  assert(w[5] == (char *)0);
 
   z = join(w, nw, "/");
   cout << "z = join(w, nw, /); z =" << z << "\n";

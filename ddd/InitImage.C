@@ -208,7 +208,7 @@ XImage *CreateImageFromBitmapData(unsigned char *bits, int width, int height)
     return image;
 }
 
-Boolean InstallImage(XImage *image, char *image_name)
+Boolean InstallImage(XImage *image, const char *image_name)
 {
     // Dave Larson <davlarso@plains.nodak.edu> writes: DDD doesn't
     // work with the Motif 2.1 libraries shipped w/ Solaris 7: the
@@ -222,9 +222,9 @@ Boolean InstallImage(XImage *image, char *image_name)
     // XmInstallImage to Xm21InstallImage, the problem is solved.
 
 #if HAVE_XM21INSTALLIMAGE
-    return Xm21InstallImage(image, image_name);
+    return Xm21InstallImage(image, (char *)image_name);
 #else
-    return XmInstallImage(image, image_name);
+    return XmInstallImage(image, (char *)image_name);
 #endif
 }
 

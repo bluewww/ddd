@@ -47,7 +47,7 @@ void set_status(string message, bool temporary = false);
 void set_status_mstring(MString text, bool temporary = false);
 
 // Return current contents of status line
-extern const MString& current_status();
+extern const MString& current_status(void);
 
 // Status history
 extern Widget status_history(Widget parent);
@@ -69,9 +69,9 @@ extern bool show_next_line_in_status;
 extern int status_history_size;
 
 // Status lock
-void lock_status();		// Place a lock on status
-void unlock_status();		// Remove lock from status
-void reset_status_lock();	// Remove all locks from status
+void lock_status(void);		// Place a lock on status
+void unlock_status(void);		// Remove lock from status
+void reset_status_lock(void);	// Remove all locks from status
 
 // These are convenient for setting the status during a function
 class _StatusMsg {

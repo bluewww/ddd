@@ -107,7 +107,7 @@ void PlotAgent::end_plot()
     plot_os.close();
 }
 
-string PlotAgent::var(char *name, double min, double max)
+string PlotAgent::var(const char *name, double min, double max)
 {
     ostrstream os;
 
@@ -343,7 +343,7 @@ void PlotAgent::add_break()
 
 
 // Handle plot commands
-void PlotAgent::dispatch(int type, char *data, int length)
+void PlotAgent::dispatch(int type, const char *data, int length)
 {
     if (type != int(Input) || length < 2)
     {

@@ -174,7 +174,7 @@ void VSLLib::update(const string& lib_name)
 // Error handling
 
 // Yacc-specific error handling
-void vslerror(char *s)
+void vslerror(const char *s)
 {
     string errmsg = s;
 

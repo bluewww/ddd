@@ -3213,7 +3213,7 @@ void configure_jdb(const string& all_help)
     if (!gdb->has_debug_command())
     {
 	// Load initial source
-	char **argv = saved_argv();
+	const char **argv = (const char**)saved_argv();
 	int argc = 0;
 	while (argv[argc] != 0)
 	    argc++;

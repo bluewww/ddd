@@ -78,7 +78,7 @@ static unsigned char bitmaps [3][32] =
        0xFF, 0xFF, 0xAA, 0xAA, 0xFF, 0xFF, 0x55, 0x55  }
 };
 
-static String bitmap_name_set[] =
+static const _XtString bitmap_name_set[] =
 {
    "25_foreground",
    "50_foreground",
@@ -1059,7 +1059,7 @@ void registerOwnConverters()
 }
 
 // Define a macro: @NAME@ will be replaced by VALUE in CvtStringToXmString
-void defineConversionMacro(String name, String value)
+void defineConversionMacro(const _XtString name, const _XtString value)
 {
     conversionMacroTable[name] = value;
 }

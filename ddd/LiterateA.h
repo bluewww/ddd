@@ -101,7 +101,7 @@ private:
 	}
     }
 
-    int _read(char*& data, FILE *fp); // Simple read function
+    int _read(const char*& data, FILE *fp); // Simple read function
     int _readNonBlocking(char* data, int size, FILE *fp); // Read what's there
 
     // Event Handlers
@@ -122,17 +122,17 @@ public:
 
 protected:
     // Input data handling
-    int readInput(char*& data);
-    virtual int _readInput(char *& data);
+    int readInput(const char*& data);
+    virtual int _readInput(const char *& data);
     virtual void readAndDispatchInput(bool expectEOF = false);
 
     // Error data handling
-    int readError(char*& data);
-    virtual int _readError(char *& data);
+    int readError(const char*& data);
+    virtual int _readError(const char *& data);
     virtual void readAndDispatchError(bool expectEOF = false);
 
     // Event management
-    virtual void dispatch(int type, char *data, int length); // dispatch data
+    virtual void dispatch(int type, const char *data, int length); // dispatch data
 
     // Called when handlers were changed
     void handlerChange();

@@ -61,11 +61,11 @@ char WhatNextCB_rcsid[] =
 #include <Xm/MessageB.h>
 
 // Show a suggestion named NAME
-static void hint_on(String name)
+static void hint_on(const _XtString name)
 {
     // Create some `dummy' widget and create a help text for it
     Widget suggestion = 
-	verify(XmCreateInformationDialog(find_shell(), name, 0, 0));
+	verify(XmCreateInformationDialog(find_shell(), (char *)name, 0, 0));
 
     ImmediateHelpCB(suggestion, XtPointer(0), XtPointer(0));
 

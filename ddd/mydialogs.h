@@ -48,7 +48,7 @@
 
 // Create a selection box with a top-level shell.  This is like
 // XmCreateSelectionDialog, but the parent is a top-level shell.
-Widget createTopLevelSelectionDialog(Widget parent, String name,
+Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 				     ArgList args, Cardinal num_args);
 
 // Get the item numbers

@@ -65,11 +65,11 @@ char mydialogs_rcsid[] =
 
 
 // Create a selection box with a top-level shell
-Widget createTopLevelSelectionDialog(Widget parent, String name,
+Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 				     ArgList args, Cardinal num_args)
 {
     if (app_data.transient_dialogs)
-	return XmCreateSelectionDialog(parent, name, args, num_args);
+	return XmCreateSelectionDialog(parent, (char *)name, args, num_args);
 
     ArgList new_args = new Arg[num_args + 10];
     Cardinal arg = 0;
@@ -97,7 +97,7 @@ Widget createTopLevelSelectionDialog(Widget parent, String name,
     Widget shell = verify(XtCreateWidget(shell_name.chars(), 
 					 topLevelShellWidgetClass,
 					 parent, new_args, arg));
-    Widget box = XmCreateSelectionBox(shell, name, new_args, arg);
+    Widget box = XmCreateSelectionBox(shell, (char *)name, new_args, arg);
 
     delete[] new_args;
 

@@ -61,7 +61,7 @@ protected:
 
     const Box *call(Box *arg) const;
 
-    char *func_name() const;
+    const char *func_name() const;
 
     bool matches(const VSLNode& node) const
     {
@@ -84,10 +84,10 @@ public:
     }
 
     // Create from def
-    DefCallNode(VSLDef *def, VSLNode *arg, char *type = "DefCallNode");
+    DefCallNode(VSLDef *def, VSLNode *arg, const char *type = "DefCallNode");
 
     // Create from list of defs
-    DefCallNode(VSLDefList *deflist, VSLNode *arg, char *type = "DefCallNode");
+    DefCallNode(VSLDefList *deflist, VSLNode *arg, const char *type = "DefCallNode");
 
     // Destructor
     ~DefCallNode();

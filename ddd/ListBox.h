@@ -111,7 +111,7 @@ protected:
 
 public:
     // Constructor: head and tail
-    ListBox(Box *hd, ListBox *tl, char *t = "ListBox"):
+    ListBox(Box *hd, ListBox *tl, const char *t = "ListBox"):
 	CompositeBox(2, t), _last(tl->_last)
     {
 	thesize()   = BoxSize();
@@ -122,7 +122,7 @@ public:
     }
 
     // Constructor: empty list
-    ListBox(char *t = "ListBox"):
+    ListBox(const char *t = "ListBox"):
 	CompositeBox(2, t), _last(this)
     {
 	thesize()   = BoxSize();

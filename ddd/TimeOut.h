@@ -40,13 +40,13 @@ extern XtIntervalId MyAppAddTimeOut(XtAppContext app_context,
 				    unsigned long interval,
 				    XtTimerCallbackProc proc,
 				    XtPointer closure,
-				    String file = 0,
+				    const char *file = 0,
 				    int line = 0);
 
 // Like XtRemoveTimeOut(), but unregister TIMER from internal list. 
 // Trigger an error if TIMER is not found (i.e. expired or removed)
 extern void MyRemoveTimeOut(XtIntervalId timer,
-			    String file = 0,
+			    const char *file = 0,
 			    int line = 0);
 
 // Be sure not to intermix these!  A timer added with MyAppAddTimeOut()
@@ -57,9 +57,9 @@ extern void MyRemoveTimeOut(XtIntervalId timer,
 // replacement routines instead of the Xt functions.
 #if !defined(NDEBUG)
 #define XtAppAddTimeOut(a, i, p, c) \
-    MyAppAddTimeOut((a), (i), (p), (c), __FILE__, __LINE__)
+    MyAppAddTimeOut((a), (i), (p), (c), (const char *)__FILE__, __LINE__)
 #define XtRemoveTimeOut(timer) \
-    MyRemoveTimeOut((timer), __FILE__, __LINE__)
+    MyRemoveTimeOut((timer), (const char *)__FILE__, __LINE__)
 #endif // !defined(NDEBUG)
 
 // Diagnostics

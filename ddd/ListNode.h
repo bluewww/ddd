@@ -69,7 +69,7 @@ private:
     ListNode& operator = (const ListNode&) { assert(0); return *this; }
 
 public:
-    ListNode(VSLNode *hd, VSLNode *tl, char *type = "ListNode");
+    ListNode(VSLNode *hd, VSLNode *tl, const char *type = "ListNode");
     VSLNode *dup() const { return new ListNode(*this); }
 
     // Destructor (including args)

@@ -49,8 +49,8 @@ extern Widget post_gdb_message(string text, bool prompt = true,
 			       Widget origin = 0);
 extern Widget post_gdb_yn(string text, Widget origin = 0);
 extern Widget post_gdb_died(string reason, int gdb_status, Widget origin = 0);
-extern Widget post_error(string text, String name = 0, Widget origin = 0);
-extern Widget post_warning(string text, String name = 0, Widget origin = 0);
+extern Widget post_error(string text, const _XtString name = 0, Widget origin = 0);
+extern Widget post_warning(string text, const _XtString name = 0, Widget origin = 0);
 
 // Unpost specific messages
 extern void unpost_gdb_busy();

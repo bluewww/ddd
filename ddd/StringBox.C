@@ -104,7 +104,7 @@ void StringBox::_draw(Widget w,
 
 void StringBox::dump(ostream& s) const
 {
-    char *quote = "\"";
+    const char *quote = "\"";
     if (StringBox::quoted)
 	quote = "\\\"";
 
@@ -131,8 +131,8 @@ void StringBox::newFont(const string& fontname)
 
 // Print
 typedef struct fontmap {
-	char *xfont ;
-	char *psfont ;
+	const char *xfont ;
+	const char *psfont ;
 	int figfont ;
 } FONTMAP ;
 

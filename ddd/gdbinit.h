@@ -50,16 +50,16 @@ struct DebuggerInfo {
     DebuggerType type;
     string arg;
 
-    DebuggerInfo(int argc, char *argv[]);
+    DebuggerInfo(int argc, const char *argv[]);
 };
 
 // Determine debugger type from given DEBUGGER_NAME
 extern bool get_debugger_type(const string& debugger_name, DebuggerType& type);
 
 // Return default program for TYPE
-extern char *default_debugger(const string& debugger_name, DebuggerType type);
+extern const char *default_debugger(const string& debugger_name, DebuggerType type);
 
-inline char *default_debugger(DebuggerType type)
+inline const char *default_debugger(DebuggerType type)
 {
     return default_debugger("", type);
 }

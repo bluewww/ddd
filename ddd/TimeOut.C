@@ -135,7 +135,7 @@ XtIntervalId MyAppAddTimeOut(XtAppContext app_context,
 			     unsigned long interval,
 			     XtTimerCallbackProc proc,
 			     XtPointer closure,
-			     String file, int line)
+			     const char *file, int line)
 {
     TimerInfo *tm = new TimerInfo;
     tm->timer    = XtAppAddTimeOut(app_context, interval, 
@@ -165,7 +165,7 @@ XtIntervalId MyAppAddTimeOut(XtAppContext app_context,
 
 // Like XtRemoveTimeOut(), but unregister TIMER from internal list. 
 // Trigger an error if TIMER is not found (i.e. expired or removed)
-void MyRemoveTimeOut(XtIntervalId tic, String file, int line)
+void MyRemoveTimeOut(XtIntervalId tic, const char *file, int line)
 {
     TimerInfo *tp = 0;
     for (TimerInfo *ti = pending_timers; ti != 0; tp = ti, ti = ti->next)

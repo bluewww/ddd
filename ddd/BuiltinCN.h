@@ -64,7 +64,7 @@ protected:
 
     const Box *call(Box *arg) const;
 
-    char *func_name() const { return VSLBuiltin::ext_name(_index); }
+    const char *func_name() const { return VSLBuiltin::ext_name(_index); }
     bool isInfix() const { return VSLBuiltin::isInfix(_index); }
 
     bool matches (const VSLNode& node) const
@@ -76,12 +76,12 @@ protected:
 public:
     // Constructor
     BuiltinCallNode(int i, VSLNode *a,
-		    char *type = "BuiltinCallNode")
+		    const char *type = "BuiltinCallNode")
 	: CallNode(a, type), _index(i)
     {}
 
     BuiltinCallNode(BuiltinCallNode &node, VSLNode *a,
-		    char *type = "BuiltinCallNode")
+		    const char *type = "BuiltinCallNode")
 	: CallNode(a, type), _index(node._index)
     {}
 

@@ -30,7 +30,7 @@
 1i\
 // This file was modified for -*- C++ -*-\
 // using $RCSfile$ $Revision$\
-extern void yyerror(char *s);\
+extern void yyerror(const char *s);\
 extern int yylex();\
 
 # Make YYSTYPE a struct such that we can store class objects

@@ -184,16 +184,16 @@ extern "C" {
 // Xt stuff
 //-----------------------------------------------------------------------
 XtActionsRec SourceView::actions [] = {
-    {"source-popup-menu",        SourceView::srcpopupAct        },
-    {"source-start-select-word", SourceView::startSelectWordAct },
-    {"source-end-select-word",   SourceView::endSelectWordAct   },
-    {"source-update-glyphs",     SourceView::updateGlyphsAct    },
-    {"source-drag-glyph",        SourceView::dragGlyphAct       },
-    {"source-follow-glyph",      SourceView::followGlyphAct     },
-    {"source-drop-glyph",        SourceView::dropGlyphAct       },
-    {"source-delete-glyph",      SourceView::deleteGlyphAct     },
-    {"source-double-click",      SourceView::doubleClickAct     },
-    {"source-set-arg",           SourceView::setArgAct          },
+    {(char *)"source-popup-menu",        SourceView::srcpopupAct        },
+    {(char *)"source-start-select-word", SourceView::startSelectWordAct },
+    {(char *)"source-end-select-word",   SourceView::endSelectWordAct   },
+    {(char *)"source-update-glyphs",     SourceView::updateGlyphsAct    },
+    {(char *)"source-drag-glyph",        SourceView::dragGlyphAct       },
+    {(char *)"source-follow-glyph",      SourceView::followGlyphAct     },
+    {(char *)"source-drop-glyph",        SourceView::dropGlyphAct       },
+    {(char *)"source-delete-glyph",      SourceView::deleteGlyphAct     },
+    {(char *)"source-double-click",      SourceView::doubleClickAct     },
+    {(char *)"source-set-arg",           SourceView::setArgAct          },
 };
 
 //-----------------------------------------------------------------------
@@ -268,7 +268,7 @@ struct TextItms {
     };
 };
 
-static String text_cmd_labels[] =
+static const _XtString text_cmd_labels[] =
 {
     "Print ", 
     "Display ", 
@@ -1928,7 +1928,7 @@ bool SourceView::new_bad_file(const string& file_name)
 }
 
 void SourceView::post_file_error(const string& file_name,
-				 string text, String name,
+				 string text, const _XtString name,
 				 Widget origin)
 {
     if (new_bad_file(file_name))
@@ -1936,7 +1936,7 @@ void SourceView::post_file_error(const string& file_name,
 }
 
 void SourceView::post_file_warning(const string& file_name,
-				   string text, String name,
+				   string text, const _XtString name,
 				   Widget origin)
 {
     if (new_bad_file(file_name))
@@ -3488,19 +3488,19 @@ void SourceView::create_shells()
 					   XmDIALOG_CANCEL_BUTTON));
 
     arg = 0;
-    Widget box = XmCreateRadioBox(register_dialog_w, "box", args, arg);
+    Widget box = XmCreateRadioBox(register_dialog_w, (char *)"box", args, arg);
     XtManageChild(box);
 
     arg = 0;
     XtSetArg(args[arg], XmNset, !all_registers); arg++;
     int_registers_w = 
-	XmCreateToggleButton(box, "int_registers", args, arg);
+	XmCreateToggleButton(box, (char *)"int_registers", args, arg);
     XtManageChild(int_registers_w);
 
     arg = 0;
     XtSetArg(args[arg], XmNset, all_registers); arg++;
     all_registers_w = 
-	XmCreateToggleButton(box, "all_registers", args, arg);
+	XmCreateToggleButton(box, (char *)"all_registers", args, arg);
     XtManageChild(all_registers_w);
 
     XtAddCallback(all_registers_w, XmNvalueChangedCallback, 
@@ -4170,7 +4170,7 @@ void SourceView::process_info_line_main(string& info_output)
 
     // Strip 'Line <n> of <file> starts at <address>...' info
     // Strip 'No symbol table is loaded.' info
-    String strips[] = {"Line ", "No symbol table is loaded."};
+    const _XtString strips[] = {"Line ", "No symbol table is loaded."};
 
     for (int i = 0; i < int(XtNumber(strips)); i++)
     {
@@ -4986,8 +4986,8 @@ void SourceView::set_text_popup_resource(int item, const string& arg)
 	// Set up resources for yet-to-be-created popup menu
 	string db = string(DDD_CLASS_NAME "*text_popup.") 
 	    + text_popup[item].name + "." + XmNlabelString + ": "
-	    + "@" CHARSET_RM " " + text_cmd_labels[item] 
-	    + " @" CHARSET_TT " " + arg;
+	    + "@" + CHARSET_RM + " " + text_cmd_labels[item] 
+	    + " @" + CHARSET_TT + " " + arg;
 
 	XrmDatabase res = XrmGetStringDatabase(db.chars());
 	XrmDatabase target = XtDatabase(XtDisplay(source_text_w));
@@ -5394,7 +5394,7 @@ void SourceView::NewBreakpointCB(Widget w, XtPointer, XtPointer)
 	Arg args[10];
 	Cardinal arg = 0;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
-					     "new_breakpoint_dialog",
+					     (char *)"new_breakpoint_dialog",
 					     args, arg));
 	Delay::register_shell(dialog);
 
@@ -5409,10 +5409,10 @@ void SourceView::NewBreakpointCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
 	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-	Widget box = XmCreateRowColumn(dialog, "box", args, arg);
+	Widget box = XmCreateRowColumn(dialog, (char *)"box", args, arg);
 	XtManageChild(box);
 
-	Widget label = XmCreateLabel(box, "label", args, arg);
+	Widget label = XmCreateLabel(box, (char *)"label", args, arg);
 	XtManageChild(label);
 
 	arg = 0;
@@ -5482,7 +5482,7 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	Arg args[10];
 	Cardinal arg = 0;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
-					     "new_watchpoint_dialog",
+					     (char *)"new_watchpoint_dialog",
 					     args, arg));
 	Delay::register_shell(dialog);
 
@@ -5497,7 +5497,7 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
 	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-	Widget box = XmCreateRowColumn(dialog, "box", args, arg);
+	Widget box = XmCreateRowColumn(dialog, (char *)"box", args, arg);
 	XtManageChild(box);
 
 	arg = 0;
@@ -5971,7 +5971,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     info->dialog = 
 	verify(XmCreatePromptDialog(source_text_w,
-				    "breakpoint_properties",
+				    (char *)"breakpoint_properties",
 				    args, arg));
 
     Widget apply = XmSelectionBoxGetChild(info->dialog, XmDIALOG_APPLY_BUTTON);
@@ -6044,7 +6044,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     arg = 0;
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
-    Widget form = XmCreateRowColumn(info->dialog, "form", args, arg);
+    Widget form = XmCreateRowColumn(info->dialog, (char *)"form", args, arg);
     XtManageChild(form);
 
     Widget panel = MMcreatePanel(form, "panel", panel_menu);
@@ -6065,7 +6065,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     arg = 0;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
-    info->editor = XmCreateScrolledText(form, "text", args, arg);
+    info->editor = XmCreateScrolledText(form, (char *)"text", args, arg);
     XtUnmanageChild(XtParent(info->editor));
     XtManageChild(info->editor);
 
@@ -6452,7 +6452,7 @@ void SourceView::EditBreakpointCommandsCB(Widget w,
     if (XtIsManaged(XtParent(info->editor)))
     {
 	XtUnmanageChild(XtParent(info->editor));
-	MString label = "Edit " + MString(">>", "small");
+	MString label = "Edit " + MString(">>", CHARSET_SMALL);
 	set_label(info->edit, label);
 
 	String _commands = XmTextGetString(info->editor);
@@ -6478,7 +6478,7 @@ void SourceView::EditBreakpointCommandsCB(Widget w,
     else
     {
 	XtManageChild(XtParent(info->editor));
-	MString label = "Edit " + MString("<<", "small");
+	MString label = "Edit " + MString("<<", CHARSET_SMALL);
 	set_label(info->edit, label);
     }
 }
@@ -7709,7 +7709,7 @@ Pixmap SourceView::pixmap(Widget w, unsigned char *bits, int width, int height)
 
 // Create glyph in FORM_W named NAME from given BITS
 Widget SourceView::create_glyph(Widget form_w,
-				String name,
+				const _XtString name,
 				unsigned char *bits,
 				int width, int height)
 {
@@ -7745,7 +7745,7 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNfillOnArm,          True);          arg++;
     XtSetArg(args[arg], XmNarmColor,           background);    arg++;
     XtSetArg(args[arg], XmNbackground,         background);    arg++;
-    Widget w = verify(XmCreatePushButton(form_w, name, args, arg));
+    Widget w = verify(XmCreatePushButton(form_w, (char *)name, args, arg));
 
     if (XtIsRealized(form_w))
 	XtRealizeWidget(w);

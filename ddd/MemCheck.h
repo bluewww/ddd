@@ -101,7 +101,7 @@ private:
 
     static MemCheckHeader *morecore(unsigned nunits);
     static void _free(MemCheckHeader *bp);
-    static void validate(MemCheckHeader *bp, char *src);
+    static void validate(MemCheckHeader *bp, const char *src);
 
     // initialize
     static void init();
@@ -117,7 +117,7 @@ public:
     static void check(void *p);
 
     // Issue a map of all allocated blocks (starting with block #start)
-    static void map(ostream& os, unsigned start = 0, char *prefix = "");
+    static void map(ostream& os, unsigned start = 0, const char *prefix = "");
 
     // Return current block number
     static unsigned tic() { return tics; }
@@ -151,7 +151,7 @@ private:
     unsigned start;
 
 public:
-    MemChecker(char *pfx = ""):
+    MemChecker(const char *pfx = ""):
         prefix(pfx), start(MemCheck::tic())
     {}
 

@@ -414,8 +414,8 @@
 struct AppData {
     String    session;
     String    initial_session;
-    String    debugger;
-    String    debugger_command;
+    const _XtString    debugger;
+    const _XtString    debugger_command;
     Boolean   auto_debugger;
     Boolean   open_selection;
     Boolean   trace;
@@ -479,7 +479,7 @@ struct AppData {
     Boolean   debugger_console;
     Boolean   auto_close_data_window;
     String    plot_command;
-    String    plot_term_type;
+    const _XtString    plot_term_type;
     String    plot_window_class;
     Cardinal  plot_window_delay;
     String    plot_init_commands;
@@ -599,11 +599,11 @@ struct AppData {
     String    button_image_geometry;
     Boolean   flat_toolbar_buttons;
     Boolean   flat_dialog_buttons;
-    String    button_color_key;
-    String    active_button_color_key;
+    const _XtString    button_color_key;
+    const _XtString    active_button_color_key;
     String    splash_screen_color_key;
     Boolean   auto_commands;
-    String    auto_command_prefix;
+    const _XtString    auto_command_prefix;
     int       max_breakpoint_number;
     int       max_display_number;
     Boolean   splash_screen;
@@ -618,7 +618,7 @@ struct AppData {
     Boolean   dump_core;
     Boolean   debug_core_dumps;
     int       lesstif_version;
-    String    dddinit_version;
+    const _XtString    dddinit_version;
     String    app_defaults_version;
 };
 

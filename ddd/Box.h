@@ -70,7 +70,7 @@ private:
     UniqueId _id;		// Identifier
     BoxSize _size;		// Size
     BoxExtend _extend;		// Extensibility
-    char *_type;		// type
+    const char *_type;		// type
 
     static void epsHeader (ostream& os, 
 			   const BoxRegion& region, 
@@ -107,7 +107,7 @@ public:
 
     // Constructor
     Box(BoxSize s = BoxSize(0, 0), BoxExtend e = BoxExtend(0, 0), 
-	char *t = "Box"):
+	const char *t = "Box"):
 	_id(), _size(s), _extend(e), _type(t), _links(1)
     {}
 

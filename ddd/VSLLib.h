@@ -65,7 +65,7 @@ public:
 	:_box(0)
     {}
 
-    VSLArg(char *s)
+    VSLArg(const char *s)
 	:_box(new StringBox(s))
     {}
     
@@ -208,22 +208,22 @@ private:
 		  VSLNode *arg3);
 
     // same, but with char *
-    VSLNode *call(char *func_name) 
+    VSLNode *call(const char *func_name) 
     { 
 	return call(string(func_name)); 
     }
-    VSLNode *call(char *func_name, 
+    VSLNode *call(const char *func_name, 
 		  VSLNode *arg1)
     { 
 	return call(string(func_name), arg1); 
     }
-    VSLNode *call(char *func_name, 
+    VSLNode *call(const char *func_name, 
 		  VSLNode *arg1,
 		  VSLNode *arg2)
     { 
 	return call(string(func_name), arg1, arg2);
     }
-    VSLNode *call(char *func_name, 
+    VSLNode *call(const char *func_name, 
 		  VSLNode *arg1,
 		  VSLNode *arg2,
 		  VSLNode *arg3)

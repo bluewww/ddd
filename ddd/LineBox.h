@@ -71,7 +71,7 @@ protected:
 			bool context_selected) const = 0;
 
 public:
-    LineBox(BoxCoordinate linethickness = 1, char *t = "LineBox"):
+    LineBox(BoxCoordinate linethickness = 1, const char *t = "LineBox"):
 	PrimitiveBox(BoxSize(0,0), BoxExtend(true, true), t),
 	_linethickness(linethickness)
     {}

@@ -58,6 +58,7 @@ char plotter_rcsid[] =
 #include "AppData.h"
 #include "Command.h"
 #include "Delay.h"
+#include "DeleteWCB.h"
 #include "HelpCB.h"
 #include "MakeMenu.h"
 #include "PlotArea.h"
@@ -75,7 +76,6 @@ char plotter_rcsid[] =
 #include <Xm/MessageB.h>
 #include <Xm/AtomMgr.h>
 #include <Xm/FileSB.h>
-#include <Xm/Protocols.h>
 #include <Xm/DrawingA.h>
 #include <Xm/ScrolledW.h>
 #include <Xm/SelectioB.h>
@@ -743,7 +743,7 @@ static void PlotterNotFoundHP(Agent *plotter, void *client_data, void *)
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     Widget dialog = 
 	verify(XmCreateErrorDialog(find_shell(),
-				   "no_plotter_dialog", args, arg));
+				   (char *)"no_plotter_dialog", args, arg));
     XtUnmanageChild(XmMessageBoxGetChild
 		    (dialog, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
@@ -789,13 +789,11 @@ static PlotWindowInfo *new_decoration(const string& name)
 	plot->shell = verify(XtCreateWidget("plot", topLevelShellWidgetClass,
 					    find_shell(), args, arg));
 
-	Atom WM_DELETE_WINDOW = 
-	    XmInternAtom(XtDisplay(plot->shell), "WM_DELETE_WINDOW", False);
-	XmAddWMProtocolCallback(plot->shell, WM_DELETE_WINDOW, 
-				CancelPlotCB, XtPointer(plot));
+	AddDeleteWindowCallback(plot->shell, CancelPlotCB, XtPointer(plot));
 
 	arg = 0;
-	Widget main_window = XmCreateMainWindow(plot->shell, "main_window", 
+	Widget main_window = XmCreateMainWindow(plot->shell, 
+						(char *)"main_window", 
 						args, arg);
 	XtManageChild(main_window);
 
@@ -813,7 +811,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 	XtSetArg(args[arg], XmNscrollingPolicy, XmAPPLICATION_DEFINED); arg++;
 	XtSetArg(args[arg], XmNvisualPolicy,    XmVARIABLE);            arg++;
 	Widget scroll = 
-	    XmCreateScrolledWindow(main_window, "scroll", args, arg);
+	    XmCreateScrolledWindow(main_window, (char *)"scroll", args, arg);
 	XtManageChild(scroll);
 
 	// Create work window
@@ -823,7 +821,8 @@ static PlotWindowInfo *new_decoration(const string& name)
 	{
 	    // xlib type - create plot area to draw plot commands
 	    arg = 0;
-	    work = XmCreateDrawingArea(scroll, PLOT_AREA_NAME, args, arg);
+	    work = XmCreateDrawingArea(scroll, 
+				       (char *)PLOT_AREA_NAME, args, arg);
 	    XtManageChild(work);
 
 	    plot->area = 
@@ -854,14 +853,14 @@ static PlotWindowInfo *new_decoration(const string& name)
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL);      arg++;
 	XtSetArg(args[arg], XmNminimum,     0);                 arg++;
 	XtSetArg(args[arg], XmNmaximum,     360 + slider_size); arg++;
-	plot->hsb = XmCreateScrollBar(scroll, "hsb", args, arg);
+	plot->hsb = XmCreateScrollBar(scroll, (char *)"hsb", args, arg);
 	XtManageChild(plot->hsb);
 
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmVERTICAL);        arg++;
 	XtSetArg(args[arg], XmNminimum,     0);                 arg++;
 	XtSetArg(args[arg], XmNmaximum,     180 + slider_size); arg++;
-	plot->vsb = XmCreateScrollBar(scroll, "vsb", args, arg);
+	plot->vsb = XmCreateScrollBar(scroll, (char *)"vsb", args, arg);
 	XtManageChild(plot->vsb);
 
 	XtAddCallback(plot->hsb, XmNvalueChangedCallback,
@@ -966,7 +965,7 @@ PlotAgent *new_plotter(string name, DispValue *source)
 	Arg args[10];
 	Cardinal arg = 0;
 	dialog = verify(XmCreateWorkingDialog(find_shell(),
-					      "launch_plot_dialog", 
+					      (char *)"launch_plot_dialog", 
 					      args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog,
 					     XmDIALOG_OK_BUTTON));
@@ -1131,7 +1130,8 @@ static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
 	Arg args[10];
 	Cardinal arg = 0;
 	Widget dialog = 
-	    verify(XmCreatePromptDialog(plot->shell, "plot_command_dialog",
+	    verify(XmCreatePromptDialog(plot->shell,
+					(char *)"plot_command_dialog",
 					args, arg));
 	Delay::register_shell(dialog);
 	plot->command_dialog = dialog;
@@ -1152,7 +1152,7 @@ static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
 
 	arg = 0;
 	Widget command = 
-	    verify(XmCreateCommand(dialog, "plot_command", args, arg));
+	    verify(XmCreateCommand(dialog, (char *)"plot_command", args, arg));
 	plot->command = command;
 	XtManageChild(command);
 
@@ -1216,7 +1216,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
 		 XmDIALOG_FULL_APPLICATION_MODAL); arg++;
 	confirm_overwrite_dialog = 
 	    verify(XmCreateQuestionDialog(plot->shell,
-					  "confirm_overwrite_dialog", 
+					  (char *)"confirm_overwrite_dialog", 
 					  args, arg));
 	Delay::register_shell(confirm_overwrite_dialog);
 
@@ -1281,7 +1281,8 @@ static void ExportPlotCB(Widget w, XtPointer client_data, XtPointer call_data)
 	Cardinal arg = 0;
 	Widget dialog = 
 	    verify(XmCreateFileSelectionDialog(plot->shell, 
-					       "export_data", args, arg));
+					       (char *)"export_data", 
+					       args, arg));
 	plot->export_dialog = dialog;
 
 	Delay::register_shell(dialog);
@@ -1453,7 +1454,7 @@ static void SetStatusHP(Agent *, void *client_data, void *call_data)
 // Trace communication
 //-------------------------------------------------------------------------
 
-static void trace(char *prefix, void *call_data)
+static void trace(const char *prefix, void *call_data)
 {
     DataLength* dl = (DataLength *) call_data;
     string s(dl->data, dl->length);

@@ -435,7 +435,7 @@ glob_filename (char *pathname)
   if (filename == NULL)
     {
       filename = pathname;
-      directory_name = "";
+      directory_name = (char *)"";
       directory_len = 0;
     }
   else

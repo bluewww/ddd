@@ -1422,14 +1422,14 @@ static void SetVerifyButtonsCB(Widget, XtPointer, XtPointer call_data)
 }
 
 
-static Widget add_button(String name, 
+static Widget add_button(const _XtString name, 
 			 Widget dialog, Widget buttons, 
 			 Widget text, Widget vfy,
 			 String& str, bool shortcuts = false)
 {
     Arg args[10];
     Cardinal arg = 0;
-    Widget button = XmCreateToggleButton(buttons, name, args, arg);
+    Widget button = XmCreateToggleButton(buttons, (char *)name, args, arg);
     XtManageChild(button);
 
     ChangeTextInfo *info = new ChangeTextInfo;
@@ -1456,7 +1456,7 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     buttons_dialog = 
 	verify(XmCreatePromptDialog(find_shell(parent), 
-				    "edit_buttons", args, arg));
+				    (char *)"edit_buttons", args, arg));
 
     XtAddCallback(buttons_dialog, XmNokCallback,     SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNokCallback,     
@@ -1476,7 +1476,7 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
     Widget box = 
-	verify(XmCreateRowColumn(buttons_dialog, "box", args, arg));
+	verify(XmCreateRowColumn(buttons_dialog, (char *)"box", args, arg));
     XtManageChild(box);
 
     arg = 0;
@@ -1484,7 +1484,8 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
-    shortcut_label = verify(XmCreateLabel(box, "shortcuts", args, arg));
+    shortcut_label = verify(XmCreateLabel(box, 
+					  (char *)"shortcuts", args, arg));
     XtManageChild(shortcut_label);
 
     arg = 0;
@@ -1493,17 +1494,18 @@ static void create_buttons_dialog(Widget parent)
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNorientation,  XmHORIZONTAL); arg++;
     button_box = 
-	verify(XmCreateRadioBox(box, "buttons", args, arg));
+	verify(XmCreateRadioBox(box, (char *)"buttons", args, arg));
     XtManageChild(button_box);
 
     arg = 0;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
-    Widget text = verify(XmCreateScrolledText(box, "text", args, arg));
+    Widget text = verify(XmCreateScrolledText(box, (char *)"text", args, arg));
     XtManageChild(text);
 
     arg = 0;
     XtSetArg(args[arg], XmNset, app_data.verify_buttons); arg++;
-    Widget vfy = verify(XmCreateToggleButton(box, "verify", args, arg));
+    Widget vfy = verify(XmCreateToggleButton(box, 
+					     (char *)"verify", args, arg));
     XtManageChild(vfy);
     XtAddCallback(vfy, XmNvalueChangedCallback, SetVerifyButtonsCB, 0);
 

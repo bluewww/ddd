@@ -38,6 +38,7 @@ char post_rcsid[] =
 #include "AppData.h"
 #include "Command.h"
 #include "Delay.h"
+#include "DeleteWCB.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
 #include "TimeOut.h"
@@ -55,7 +56,6 @@ char post_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/AtomMgr.h>
 #include <Xm/MessageB.h>
-#include <Xm/Protocols.h>
 
 #include <signal.h>
 #include <unistd.h>
@@ -104,17 +104,15 @@ Widget post_gdb_yn(string question, Widget w)
     {
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
-						  "yn_dialog", args, arg));
+						  (char *)"yn_dialog", 
+						  args, arg));
 	Delay::register_shell(yn_dialog);
 	XtAddCallback (yn_dialog, XmNokCallback,     YnCB, (void *)"yes");
 	XtAddCallback (yn_dialog, XmNcancelCallback, YnCB, (void *)"no");
 	XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
 	// If the dialog is closed, assume `no'.
-	Atom WM_DELETE_WINDOW =
-	    XmInternAtom(XtDisplay(yn_dialog), "WM_DELETE_WINDOW", False);
-	XmAddWMProtocolCallback(XtParent(yn_dialog), WM_DELETE_WINDOW, 
-				YnCB, (caddr_t)"no");
+	AddDeleteWindowCallback(XtParent(yn_dialog), YnCB, XtPointer("no"));
     }
     else
     {
@@ -146,7 +144,8 @@ Widget post_gdb_busy(Widget w)
     if (busy_dialog == 0)
     {
 	busy_dialog = 
-	    verify(XmCreateWorkingDialog(find_shell(w), "busy_dialog", 
+	    verify(XmCreateWorkingDialog(find_shell(w), 
+					 (char *)"busy_dialog", 
 					 NULL, 0));
 	Delay::register_shell(busy_dialog);
 	XtUnmanageChild(XmMessageBoxGetChild(busy_dialog, 
@@ -200,7 +199,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
     Widget shell = find_shell(w);
     if (gdb_initialized)
     {
-	String name;
+	const _XtString name;
 	MString msg;
 
 	if (gdb->has_exec_files() && exited)
@@ -237,9 +236,9 @@ Widget post_gdb_died(string reason, int state, Widget w)
 	arg = 0;
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
 	if (exited)
-	    dialog = verify(XmCreateWarningDialog(shell, name, args, arg));
+	    dialog = verify(XmCreateWarningDialog(shell, (char *)name, args, arg));
 	else
-	    dialog = verify(XmCreateErrorDialog(shell, name, args, arg));
+	    dialog = verify(XmCreateErrorDialog(shell, (char *)name, args, arg));
 
 	XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
 	XtAddCallback(dialog, XmNokCallback,     RestartDebuggerCB, NULL);
@@ -251,7 +250,8 @@ Widget post_gdb_died(string reason, int state, Widget w)
 	arg = 0;
 	MString msg = rm(gdb->title() + " could not be started.");
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
-	dialog = verify(XmCreateErrorDialog(shell, "no_debugger_dialog", 
+	dialog = verify(XmCreateErrorDialog(shell, 
+					    (char *)"no_debugger_dialog", 
 					    args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, XmDIALOG_CANCEL_BUTTON));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
@@ -327,7 +327,8 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
     if (gdb_message_dialog == 0)
     {
 	gdb_message_dialog = 
-	    verify(XmCreateWarningDialog(find_shell(w), "gdb_message_dialog",
+	    verify(XmCreateWarningDialog(find_shell(w),
+					 (char *)"gdb_message_dialog",
 					 args, arg));
 	Delay::register_shell(gdb_message_dialog);
 	XtUnmanageChild(XmMessageBoxGetChild(gdb_message_dialog, 
@@ -349,7 +350,7 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
 // DDD errors
 //-----------------------------------------------------------------------------
 
-Widget post_error(string text, String name, Widget w)
+Widget post_error(string text, const _XtString name, Widget w)
 {
     strip_trailing_space(text);
 
@@ -380,7 +381,7 @@ Widget post_error(string text, String name, Widget w)
     XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
 
     Widget ddd_error = 
-	verify(XmCreateErrorDialog(find_shell(w), name, args, arg));
+	verify(XmCreateErrorDialog(find_shell(w), (char *)name, args, arg));
     Delay::register_shell(ddd_error);
     XtUnmanageChild(XmMessageBoxGetChild(ddd_error, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(ddd_error, XmNhelpCallback, ImmediateHelpCB, NULL);
@@ -394,7 +395,7 @@ Widget post_error(string text, String name, Widget w)
 // DDD warnings
 //-----------------------------------------------------------------------------
 
-Widget post_warning(string text, String name, Widget w)
+Widget post_warning(string text, const _XtString name, Widget w)
 {
     strip_trailing_space(text);
 
@@ -425,7 +426,7 @@ Widget post_warning(string text, String name, Widget w)
     XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
 
     Widget ddd_warning = 
-	verify(XmCreateWarningDialog(find_shell(w), name, args, arg));
+	verify(XmCreateWarningDialog(find_shell(w), (char *)name, args, arg));
     Delay::register_shell(ddd_warning);
     XtUnmanageChild(XmMessageBoxGetChild(ddd_warning, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(ddd_warning, XmNhelpCallback, ImmediateHelpCB, NULL);

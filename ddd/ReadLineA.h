@@ -45,7 +45,7 @@ private:
 
 protected:
     // Input data handling
-    virtual int _readInput(char *& data);
+    virtual int _readInput(const char *& data);
 
     // Clear prompt mode
     static void make_sane();

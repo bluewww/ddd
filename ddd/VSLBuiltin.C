@@ -697,8 +697,8 @@ static Box *fail(ListBox *args)
 // Table of predefined functions
 
 struct BuiltinRec {
-    char* ext_name;         // Function name (external; 0 = func_name)
-    char* func_name;        // Function name (internal)
+    const char* ext_name;         // Function name (external; 0 = func_name)
+    const char* func_name;        // Function name (internal)
     bool isAssoc;           // Flag: associative?
     bool hasSideEffects;    // Flag: side effects?
     bool isInfix;           // Flag: dump infix?
@@ -797,15 +797,15 @@ bool VSLBuiltin::isInfix(int idx)
     return builtins[idx].isInfix;
 }
 
-char *VSLBuiltin::func_name(int idx)
+const char *VSLBuiltin::func_name(int idx)
 {
     assert (idx >= 0 && idx < int(sizeof(builtins) / sizeof(builtins[0])));
     return builtins[idx].func_name;
 }
 
-char *VSLBuiltin::ext_name(int idx)
+const char *VSLBuiltin::ext_name(int idx)
 {
     assert (idx >= 0 && idx < int(sizeof(builtins) / sizeof(builtins[0])));
-    char *s = builtins[idx].ext_name;
+    const char *s = builtins[idx].ext_name;
     return s != 0 ? s : builtins[idx].func_name;
 }

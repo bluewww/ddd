@@ -237,7 +237,7 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
-					     "examine_dialog",
+					     (char *)"examine_dialog",
 					     args, arg));
 	Delay::register_shell(dialog);
 

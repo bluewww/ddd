@@ -338,7 +338,7 @@ static bool read_up_to(const char *value, int& pos, char delim)
 }
 
 // Read tokens up to word DELIM
-static bool read_up_to(const char *value, int& pos, char* delim)
+static bool read_up_to(const char *value, int& pos, const char* delim)
 {
     if (value[pos] == '\0')
 	return false;

@@ -41,80 +41,80 @@
 #define CHARSET_DEFAULT  MSTRING_DEFAULT_CHARSET
 
 // The fixed-width font used in texts.
-#define CHARSET_TT "tt"
+#define CHARSET_TT XmStringCharSet("tt")
 
 // The bold variant of TT.
-#define CHARSET_TB "tb"
+#define CHARSET_TB XmStringCharSet("tb")
 
 // The slanted variant of TT.
-#define CHARSET_TS "ts"
+#define CHARSET_TS XmStringCharSet("ts")
 
 // The bold slanted variant of TT.
-#define CHARSET_TBS "tbs"
+#define CHARSET_TBS XmStringCharSet("tbs")
 
 // Roman text.
-#define CHARSET_RM "rm"
+#define CHARSET_RM XmStringCharSet("rm")
 
 // Slanted text
-#define CHARSET_SL "sl"
+#define CHARSET_SL XmStringCharSet("sl")
 
 // Bold face text
-#define CHARSET_BF "bf"
+#define CHARSET_BF XmStringCharSet("bf")
 
 // Bold slanted text
-#define CHARSET_BS "bs"
+#define CHARSET_BS XmStringCharSet("bs")
 
 // Key caps
-#define CHARSET_KEY "key"
+#define CHARSET_KEY XmStringCharSet("key")
 
 // The fixed-width font used in text fields
-#define CHARSET_TEXT "text"
+#define CHARSET_TEXT XmStringCharSet("text")
 
 // Logo
-#define CHARSET_LOGO "logo"
+#define CHARSET_LOGO XmStringCharSet("logo")
 
 // Large logo
-#define CHARSET_LLOGO "llogo"
+#define CHARSET_LLOGO XmStringCharSet("llogo")
 
 // Symbol
-#define CHARSET_SYMBOL "symbol"
+#define CHARSET_SYMBOL XmStringCharSet("symbol")
 
 // Small font (for `<<' and `>>')
-#define CHARSET_SMALL "small"
+#define CHARSET_SMALL XmStringCharSet("small")
 
 // Light font (for the command tool buttons)
-#define CHARSET_LIGHT "light"
+#define CHARSET_LIGHT XmStringCharSet("light")
 
 
 // Convenience functions
 inline MString tt(const string& text) 
 {
-    return MString(text, (const char *)CHARSET_TT);
+    return MString(text, CHARSET_TT);
 }
 
 inline MString tb(const string& text) 
 {
-    return MString(text, (const char *)CHARSET_TB);
+    return MString(text, CHARSET_TB);
 }
 
 inline MString rm(const string& text) 
 {
-    return MString(text, (const char *)CHARSET_RM);
+    return MString(text, CHARSET_RM);
 }
 
 inline MString sl(const string& text) 
 {
-    return MString(text, (const char *)CHARSET_SL);
+    return MString(text, CHARSET_SL);
 }
 
 inline MString bf(const string& text) 
 {
-    return MString(text, (const char *)CHARSET_BF);
+    return MString(text, CHARSET_BF);
 }
 
 inline MString bs(const string& text) 
 {
-    return MString(text, (const char *)CHARSET_BS);
+    return MString(text, CHARSET_BS);
 }
 
 

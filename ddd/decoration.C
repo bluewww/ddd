@@ -87,12 +87,14 @@ void start_have_decorated_transients(Widget parent)
     XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
     XtSetArg(args[arg], XmNx, pos_x);                   arg++;
     XtSetArg(args[arg], XmNy, pos_y);                   arg++;
-    init_shell = verify(XmCreateDialogShell(parent, "init_shell", args, arg));
+    init_shell = verify(XmCreateDialogShell(parent, 
+					    (char *)"init_shell", args, arg));
 
     arg = 0;
     MString label(DDD_NAME " " DDD_VERSION);
     XtSetArg(args[arg], XmNlabelString, label.xmstring()); arg++;
-    init_label = verify(XmCreateLabel(init_shell, ddd_NAME, args, arg));
+    init_label = verify(XmCreateLabel(init_shell, 
+				      (char *)ddd_NAME, args, arg));
     XtManageChild(init_label);
 }
 

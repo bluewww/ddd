@@ -74,7 +74,7 @@ private:
 
 public:
     // Constructor
-    ConstNode(Box *box, char *type = "ConstNode"): 
+    ConstNode(Box *box, const char *type = "ConstNode"): 
 	VSLNode(type), _box(box)
     {}
 

@@ -63,7 +63,7 @@ inline void install_icons(Widget shell,
 
 // Set label of W to NEW_LABEL (and its pixmap to IMAGE_NAME, if given)
 extern void set_label(Widget w, const MString& new_label, 
-		      char *image_name = 0);
+		      const char *image_name = 0);
 
 // Icon names
 #define DDD_ICON           ddd_NAME

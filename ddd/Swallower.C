@@ -47,10 +47,10 @@ static XtResource resources[] = {
 #define offset(field) XtOffsetOf(SwallowerRec, swallower.field)
     // {name, class, type, size, offset, default_type, default_addr}
     { XtNwindow, XtCWindow, XtRPointer, sizeof(Window),
-	offset(window), XtRImmediate, XtPointer(None) },
-    { XtNwindowGoneCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+        offset(window), XtRImmediate, XtPointer(None) },
+    { (char *)XtNwindowGoneCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(windowGoneProc), XtRCallback, XtPointer(0) },
-    { XtNwindowCreatedCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+    { (char *)XtNwindowCreatedCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(windowCreatedProc), XtRCallback, XtPointer(0) },
 #undef offset
 };
@@ -88,7 +88,7 @@ static void CheckIfWindowHasGone(Widget w, XtPointer, XEvent *, Boolean *);
 SwallowerClassRec swallowerClassRec = {
   {	 /* core fields */
     /* superclass               */  (WidgetClass) &coreClassRec,
-    /* class_name               */  "Swallower",
+    /* class_name               */  (char *)"Swallower",
     /* widget_size              */  sizeof(SwallowerRec),
     /* class_initialize         */  ClassInitialize,
     /* class_part_initialize    */  NULL,

@@ -552,7 +552,7 @@ static void SelectSessionCB(Widget sessions,
 }
 
 // Create custom session dialog
-static Widget create_session_panel(Widget parent, String name,
+static Widget create_session_panel(Widget parent, const _XtString name,
 				   XtCallbackProc ok,
 				   XtCallbackProc apply)
 {
@@ -561,7 +561,7 @@ static Widget create_session_panel(Widget parent, String name,
 
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     Widget dialog = 
-	verify(XmCreateSelectionDialog(find_shell(parent), name, args, arg));
+	verify(XmCreateSelectionDialog(find_shell(parent), (char *)name, args, arg));
 
     Delay::register_shell(dialog);
 
@@ -955,7 +955,7 @@ static void open_session(const string& session)
 
     static string display_shortcuts;
 
-    String shortcuts = 0;
+    const _XtString shortcuts = 0;
     switch (gdb->type())
     {
     case GDB:  shortcuts = XtNgdbDisplayShortcuts;  break;
@@ -1164,7 +1164,7 @@ static void AskSmShutdownCB       (Widget w, XtPointer, XtPointer call_data);
 static void ConfirmSmShutdownCB   (Widget w, XtPointer, XtPointer call_data);
 static void CancelSmShutdownCB    (Widget w, XtPointer, XtPointer call_data);
 
-static void ask(string text, String name,
+static void ask(string text, const _XtString name,
 		XtCheckpointToken token, Widget w,
 		XtCallbackProc yes, XtCallbackProc no);
 
@@ -1327,7 +1327,7 @@ void ShutdownSmSessionCB(Widget w, XtPointer, XtPointer call_data)
 }
 
 // Create a confirmation dialog
-static void ask(string text, String name, XtCheckpointToken token, Widget w,
+static void ask(string text, const _XtString name, XtCheckpointToken token, Widget w,
 		XtCallbackProc yes, XtCallbackProc no)
 {
     // Program is still running; request confirmation
@@ -1344,7 +1344,7 @@ static void ask(string text, String name, XtCheckpointToken token, Widget w,
     {
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     }
-    dialog = verify(XmCreateQuestionDialog(find_shell(w), name,
+    dialog = verify(XmCreateQuestionDialog(find_shell(w), (char *)name,
 					   args, arg));
     Delay::register_shell(dialog);
     XtAddCallback(dialog, XmNokCallback,     yes, XtPointer(token));

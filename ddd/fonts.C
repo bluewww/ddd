@@ -319,17 +319,17 @@ static void setup_font_db(const AppData& ad, XrmDatabase& db)
 {
     // Default fonts
     string special_fontlist = 
-	font_defs[CHARSET_SMALL] + "=" CHARSET_SMALL "," +
-	font_defs[CHARSET_TT] + "=" CHARSET_TT "," +
-	font_defs[CHARSET_TB] + "=" CHARSET_TB "," +
-	font_defs[CHARSET_KEY] + "=" CHARSET_KEY "," +
-	font_defs[CHARSET_RM] + "=" CHARSET_RM "," +
-	font_defs[CHARSET_SL] + "=" CHARSET_SL "," +
-	font_defs[CHARSET_BF] + "=" CHARSET_BF "," +
-	font_defs[CHARSET_BS] + "=" CHARSET_BS "," +
-	font_defs[CHARSET_LOGO] + "=" CHARSET_LOGO "," +
-	font_defs[CHARSET_LLOGO] + "=" CHARSET_LLOGO "," +
-	font_defs[CHARSET_SYMBOL] + "=" CHARSET_SYMBOL;
+	font_defs[CHARSET_SMALL] + "=" + CHARSET_SMALL + "," +
+	font_defs[CHARSET_TT] + "=" + CHARSET_TT + "," +
+	font_defs[CHARSET_TB] + "=" + CHARSET_TB + "," +
+	font_defs[CHARSET_KEY] + "=" + CHARSET_KEY + "," +
+	font_defs[CHARSET_RM] + "=" + CHARSET_RM + "," +
+	font_defs[CHARSET_SL] + "=" + CHARSET_SL + "," +
+	font_defs[CHARSET_BF] + "=" + CHARSET_BF + "," +
+	font_defs[CHARSET_BS] + "=" + CHARSET_BS + "," +
+	font_defs[CHARSET_LOGO] + "=" + CHARSET_LOGO + "," +
+	font_defs[CHARSET_LLOGO] + "=" + CHARSET_LLOGO + "," +
+	font_defs[CHARSET_SYMBOL] + "=" + CHARSET_SYMBOL;
 
 
     string default_fontlist = 
@@ -824,7 +824,7 @@ void BrowseFontCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     // Create a TextField to fetch the selection
     FontSelectInfo *info = new FontSelectInfo;
-    info->text = XmCreateText(XtParent(w), "text", 0, 0);
+    info->text = XmCreateText(XtParent(w), (char *)"text", 0, 0);
     info->font = font;
 
     XtRealizeWidget(info->text);

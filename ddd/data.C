@@ -55,11 +55,11 @@ void graphRotateCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Rotating graph");
 
-    String params[1];
+    const _XtString params[1];
     params[0] = "+90";
 
     XtCallActionProc(data_disp->graph_edit,
-		     "rotate", (XEvent *)0, params, 1);
+		     "rotate", (XEvent *)0, (char**)params, 1);
 }
 
 void graphLayoutCB(Widget, XtPointer, XtPointer)

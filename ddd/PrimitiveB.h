@@ -48,7 +48,7 @@ protected:
 
 public:
     PrimitiveBox(BoxSize s = BoxSize(0,0), BoxExtend e = BoxExtend(0, 0),
-	char *t = "PrimitiveBox"):
+	const char *t = "PrimitiveBox"):
 	Box(s, e, t)
     {}
 };
@@ -75,7 +75,7 @@ protected:
 
 public:
     RuleBox(BoxSize s = BoxSize(0, 0), BoxExtend e = BoxExtend(1, 1),
-	char *t = "RuleBox"): 
+	const char *t = "RuleBox"): 
 	PrimitiveBox(s, e, t) 
     {}
 
@@ -115,7 +115,7 @@ public:
     }
 
     EmptyBox(BoxSize s = BoxSize(0,0), BoxExtend e = BoxExtend(0, 0),
-	char *t = "EmptyBox"):
+	const char *t = "EmptyBox"):
 	PrimitiveBox(s, e, t)
     {}
 };

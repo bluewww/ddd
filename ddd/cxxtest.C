@@ -438,7 +438,7 @@ static void array_test()
     // Play with rotate and show/hide buttons
     DayOfWeek days_of_week[7] = {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
 
-    char *twodim [2][3] = {{ "Pioneering", "women", "in"},
+    const char *twodim [2][3] = {{ "Pioneering", "women", "in"},
 			   { "computer", "science", "!"}};
 
     int array[12][12];
@@ -678,13 +678,16 @@ static void type_test()
 
     guni.ii = int(pi * sqrt2 * sc);
 
-    const int MAX = 80;
+#define LOCAL_MAX 80
+    const int MAX = LOCAL_MAX;
+    (void) MAX;			// Use it
 
     static struct lkls {
-	char n1[MAX];
-	char n2[MAX];
+	char n1[LOCAL_MAX];
+	char n2[LOCAL_MAX];
 	struct lkls *down;
     } mine;
+#undef LOCAL_MAX
 
     mine.n1[0] = 'a';		// Test for "`\000' repeated 79 times"
     mine.n2[0] = 'b';

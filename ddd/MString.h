@@ -59,12 +59,14 @@ public:
 	assert(OK());
     }
 
+#if 0
     MString(char *text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
 	_mstring(text ? XmStringCreateLtoR(text, charset) : 0)
     {
 	assert(OK());
     }
+#endif
 
     MString(const string& text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):

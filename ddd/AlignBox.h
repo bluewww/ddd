@@ -98,7 +98,7 @@ protected:
 
 public:
     AlignBox(unsigned initialSize = 2, 
-	char *t = "AlignBox"):
+	const char *t = "AlignBox"):
 	CompositeBox(initialSize, t), _corner(0,0)
     {}
 
@@ -134,7 +134,7 @@ protected:
     }
 
 public:
-    HAlignBox(unsigned initialSize = 2, char *t = "HAlignBox"):
+    HAlignBox(unsigned initialSize = 2, const char *t = "HAlignBox"):
 	AlignBox(initialSize, t) 
     {}
 
@@ -179,7 +179,7 @@ protected:
     void dump(ostream& s) const { dumpComposite(s, " | "); }
 
 public:
-    VAlignBox(unsigned initialSize = 2, char *t = "VAlignBox"):
+    VAlignBox(unsigned initialSize = 2, const char *t = "VAlignBox"):
 	    AlignBox(initialSize, t)
     {}
 
@@ -221,7 +221,7 @@ protected:
     void dump(ostream& s) const { dumpComposite(s, " ^ "); }
 
 public:
-    UAlignBox(unsigned initialSize = 2, char *t = "UAlignBox"):
+    UAlignBox(unsigned initialSize = 2, const char *t = "UAlignBox"):
 	AlignBox(initialSize, t)
     {}
 
@@ -263,7 +263,7 @@ protected:
     void dump(ostream& s) const { dumpComposite(s, " ~ "); }
 
 public:
-    TAlignBox(unsigned initialSize = 2, char *t = "TAlignBox"):
+    TAlignBox(unsigned initialSize = 2, const char *t = "TAlignBox"):
 	AlignBox(initialSize, t)
     {}
 

@@ -62,7 +62,7 @@ extern WidgetClass pannedGraphEditWidgetClass;
 // Declare special access functions
 
 // Create a graph editor with panner; return the graph editor widget ID
-Widget createPannedGraphEdit(Widget parent, String name, ArgList arglist,
+Widget createPannedGraphEdit(Widget parent, const _XtString name, ArgList arglist,
 			     Cardinal argcount);
 
 // For a given graph editor W, return its panner

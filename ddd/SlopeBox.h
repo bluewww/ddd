@@ -50,7 +50,7 @@ protected:
     {}
 
 public:
-    SlopeBox(BoxCoordinate linethickness = 1, char *t = "SlopeBox"):
+    SlopeBox(BoxCoordinate linethickness = 1, const char *t = "SlopeBox"):
 	LineBox(linethickness, t) 
     {}
     ~SlopeBox()
@@ -78,7 +78,7 @@ protected:
     void dump(ostream& s) const;
 
 public:
-    RiseBox(BoxCoordinate linethickness = 1, char *t = "RiseBox"):
+    RiseBox(BoxCoordinate linethickness = 1, const char *t = "RiseBox"):
 	SlopeBox(linethickness, t)
     {}
     ~RiseBox()
@@ -112,7 +112,7 @@ protected:
     void dump(ostream& s) const;
 
 public:
-    FallBox(BoxCoordinate linethickness = 1, char *t = "FallBox"):
+    FallBox(BoxCoordinate linethickness = 1, const char *t = "FallBox"):
 	SlopeBox(linethickness, t)
     {}
     ~FallBox()

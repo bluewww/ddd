@@ -70,7 +70,7 @@ inline bool is_junk(char c)
 
 // Return e-mail address from preferences file DOTRC in HOME dir.
 // Format of preferences line is `TAG E-MAIL-ADDRESS'.
-static char *email_from_preferences(char *home, char *dotrc, char *tag)
+static char *email_from_preferences(const char *home, const char *dotrc, const char *tag)
 {
     char preferences[BUFSIZ];
     strcpy(preferences, home);
@@ -108,7 +108,7 @@ static char *email_from_preferences(char *home, char *dotrc, char *tag)
 
 // Return e-mail address from signature file DOTRC in HOME dir.  Find
 // the first `@' and return the surrounding string.
-static char *email_from_signature(char *home, char *dotrc)
+static char *email_from_signature(const char *home, const char *dotrc)
 {
     char signature[BUFSIZ];
     strcpy(signature, home);
@@ -158,7 +158,7 @@ static char *email_from_pwd(struct passwd *pwd)
 
 // Check if S looks like an e-mail address.  S must contain a `@' and
 // a `.', neither at the beginning nor at the end.
-static bool is_email(char *s)
+static bool is_email(const char *s)
 {
     if (s == 0)
 	return false;
@@ -175,9 +175,9 @@ static bool is_email(char *s)
 }
 
 // Return an e-mail address for user PWD.
-static char *email(struct passwd *pwd)
+static const char *email(struct passwd *pwd)
 {
-    char *s = 0;
+    const char *s = 0;
 
     // Try Netscape and Lynx preferences
 

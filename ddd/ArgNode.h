@@ -74,7 +74,7 @@ protected:
 
 public:
     // Constructor
-    ArgNode(unsigned i, char *type = "ArgNode"):
+    ArgNode(unsigned i, const char *type = "ArgNode"):
 	DummyNode(type), _id(i)
     {}
 

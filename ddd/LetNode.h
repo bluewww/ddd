@@ -92,7 +92,7 @@ protected:
     }
 
     // Never called
-    char *func_name() const       { assert(0); return "let"; }
+    const char *func_name() const       { assert(0); return "let"; }
     const Box *call(Box *) const  { assert(0); return 0; }
 
 private:
@@ -100,7 +100,7 @@ private:
 
 public:
     // Constructor
-    LetNode(VSLNode *p, VSLNode *a, VSLNode *b, char *type = "LetNode"):
+    LetNode(VSLNode *p, VSLNode *a, VSLNode *b, const char *type = "LetNode"):
 	CallNode(new FixListNode(a, b), type),
 	_node_pattern(p),
 	_box_pattern(0),

@@ -68,7 +68,7 @@ void RestartCB(Widget, XtPointer, XtPointer)
 }
 
 // Save argv
-void register_argv(char *argv[])
+void register_argv(const char *argv[])
 {
     int argc = 0;
     while (argv[argc] != 0)

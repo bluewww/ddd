@@ -59,7 +59,7 @@ string current_clipboard(Widget w)
     // Figure out how much we need to paste
     unsigned long len;
     do {
-	result = XmClipboardInquireLength(dpy, win, "STRING", &len);
+	result = XmClipboardInquireLength(dpy, win, (char *)"STRING", &len);
     } while (result == XmClipboardLocked);
 
     if (result != XmClipboardSuccess)
@@ -75,7 +75,7 @@ string current_clipboard(Widget w)
     int private_id;
 #endif
     do {
-	result = XmClipboardRetrieve(dpy, win, "STRING",
+	result = XmClipboardRetrieve(dpy, win, (char *)"STRING",
 				     buf, len, &nbytes, &private_id);
     } while (result == XmClipboardLocked);
 

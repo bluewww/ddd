@@ -161,7 +161,8 @@ static void CheckUngrabCB(XtPointer client_data, XtIntervalId *)
     if (dialog == 0)
     {
 	dialog = 
-	    verify(XmCreateWorkingDialog(find_shell(gdb_w), "grab_warning",
+	    verify(XmCreateWorkingDialog(find_shell(gdb_w), 
+					 (char *)"grab_warning",
 					 NULL, 0));
 	Delay::register_shell(dialog);
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, XmDIALOG_OK_BUTTON));

@@ -238,7 +238,7 @@ static Widget file_dialog(Widget w, const string& name,
 }
 
 // Create various file dialogs
-static Widget create_file_dialog(Widget w, String name,
+static Widget create_file_dialog(Widget w, const _XtString name,
 				 FileSearchProc searchRemoteFiles       = 0,
 				 FileSearchProc searchRemoteDirectories = 0,
 				 FileSearchProc searchLocalFiles        = 0,
@@ -834,6 +834,8 @@ ProgramInfo::ProgramInfo()
 	    }	    
 	}
 
+	// AD TODO: shouldn't it be an "else" ?
+
 	string ans = gdb_question(gdb->debug_command());
 	if (ans != NO_GDB_ANSWER)
 	{
@@ -1107,7 +1109,28 @@ static void update_processes(Widget processes, bool keep_selection)
 	if (pids[i])
 	    kill += string(" ") + itostring(pids[i]);
     }
+#if defined(__sun) 
+    // bypass underlying debugger
+    // Fix for Sun: use /usr/bin/kill
+    string kill_result;
+    {
+      ostrstream os;
+      kill += " 2>&1";
+      FILE *fp = popen(kill.chars(), "r");
+      if (fp != NULL){
+	int c;
+	while ((c = getc(fp)) != EOF)
+	  {
+	    os << (char)c;
+	  }
+	pclose(fp);
+      }
+      kill_result = os; 
+      os.rdbuf()->freeze(0);
+    }
+#else
     string kill_result = gdb_question(gdb->shell_command(kill));
+#endif
     i = 0;
     while (i >= 0)
     {
@@ -1708,7 +1731,8 @@ void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
     
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreateSelectionDialog(find_shell(w), 
-						"processes", args, arg));
+						(char *)"processes", 
+						args, arg));
 
 	Delay::register_shell(dialog);
 
@@ -1754,7 +1778,7 @@ void gdbOpenClassCB(Widget w, XtPointer, XtPointer)
     
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreateSelectionDialog(find_shell(w), 
-						"classes", args, arg));
+						(char *)"classes", args, arg));
 
 	Delay::register_shell(dialog);
 
@@ -1829,7 +1853,7 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtSetArg(args[arg], XmNchildPlacement, XmPLACE_TOP); arg++;
 #endif
 	dialog = verify(XmCreateSelectionDialog(find_shell(w), 
-						"sources", args, arg));
+						(char *)"sources", args, arg));
 
 	Delay::register_shell(dialog);
 
@@ -1845,7 +1869,7 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtSetArg(args[arg], XmNadjustMargin,    False); arg++;
 	XtSetArg(args[arg], XmNshadowThickness, 0);     arg++;
 	XtSetArg(args[arg], XmNspacing,         0);     arg++;
-	Widget bigbox = XmCreateRowColumn(dialog, "bigbox", args, arg);
+	Widget bigbox = XmCreateRowColumn(dialog, (char *)"bigbox", args, arg);
 	XtManageChild(bigbox);
 
 	arg = 0;
@@ -1855,25 +1879,26 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtSetArg(args[arg], XmNadjustMargin,    False); arg++;
 	XtSetArg(args[arg], XmNshadowThickness, 0);     arg++;
 	XtSetArg(args[arg], XmNspacing,         0);     arg++;
-	Widget box = XmCreateRowColumn(bigbox, "box", args, arg);
+	Widget box = XmCreateRowColumn(bigbox, (char *)"box", args, arg);
 	XtManageChild(box);
 
 	arg = 0;
-	Widget label = XmCreateLabel(box, "label", args, arg);
+	Widget label = XmCreateLabel(box, (char *)"label", args, arg);
 	XtManageChild(label);
 
 	arg = 0;
-	source_filter = XmCreateTextField(box, "filter", args, arg);
+	source_filter = XmCreateTextField(box, (char *)"filter", args, arg);
 	XtManageChild(source_filter);
 
 	arg = 0;
 	Widget sharedlibrary = 
-	    XmCreatePushButton(bigbox, "sharedlibrary", args, arg);
+	    XmCreatePushButton(bigbox, (char *)"sharedlibrary", args, arg);
 	XtManageChild(sharedlibrary);
 
 #if XmVersion >= 1002
 	arg = 0;
-	Widget lookup = XmCreatePushButton(dialog, "lookup", args, arg);
+	Widget lookup = XmCreatePushButton(dialog, 
+					   (char *)"lookup", args, arg);
 	XtManageChild(lookup);
 #endif
 

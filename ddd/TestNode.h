@@ -71,13 +71,13 @@ protected:
     {}
 
     // Dummy functions (never called)
-    char *func_name() const       { assert(0); return "test"; }
+    const char *func_name() const       { assert(0); return "test"; }
     const Box *call(Box *) const  { assert(0); return 0; }
 
 public:
     // Constructor
     TestNode(VSLNode *tst, VSLNode *t, VSLNode *f, 
-	     char *type = "TestNode")
+	     const char *type = "TestNode")
 	: CallNode(new FixListNode(tst, t, f), type)
     {}
 

@@ -81,7 +81,7 @@ protected:
 
 public:
     ArcBox(BoxDegrees start, BoxDegrees length,
-	   BoxCoordinate linethickness = 1, char * t = "ArcBox")
+	   BoxCoordinate linethickness = 1, const char * t = "ArcBox")
 	: LineBox(linethickness, t), _start(start), _length(length)
     {}
 

@@ -126,9 +126,9 @@ static void clear(Widget w, Widget dest)
 	return;
 
     if (XmIsText(dest))
-	XmTextSetString(dest, "");
+	XmTextSetString(dest, (char *)"");
     else if (XmIsTextField(dest))
-	XmTextFieldSetString(dest, "");
+	XmTextFieldSetString(dest, (char *)"");
 }
 
 

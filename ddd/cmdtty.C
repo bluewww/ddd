@@ -165,7 +165,7 @@ bool tty_running()
 }
 
 // Annotations
-void annotate(char *text)
+void annotate(const char *text)
 {
     if (app_data.annotate < 2)
 	return;

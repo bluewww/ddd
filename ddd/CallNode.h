@@ -67,7 +67,7 @@ protected:
     void _dumpTree(ostream& s) const;
 
     // Return name of callee
-    virtual char *func_name() const = 0;
+    virtual const char *func_name() const = 0;
 
     // Flag: Dump function name infix?
     virtual bool isInfix() const { return false; }
@@ -91,7 +91,7 @@ public:
     VSLNode* arg() const { return _arg; }
 
     // Constructor
-    CallNode(VSLNode *a, char *type = "CallNode"):
+    CallNode(VSLNode *a, const char *type = "CallNode"):
 	VSLNode(type), _arg(a)
     {}
 

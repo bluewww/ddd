@@ -53,7 +53,7 @@ static istream *yystream = &cin;
 
 static int yylinenumber;
 
-static int switchdown();
+static int switchdown(void);
 static int switchup(char *filename, bool thisdir);
 
 static char pushback[BUFSIZ];
@@ -67,7 +67,7 @@ inline int do_unput(char c)
     return c;
 }
 
-static int do_input() 
+static int do_input(void) 
 {
     if (pushback_ptr != pushback)
 	return *--pushback_ptr;
@@ -106,7 +106,7 @@ static int do_input()
 
 #undef yywrap
 #define YY_SKIP_YYWRAP
-extern "C" int yywrap() 
+extern "C" int yywrap(void) 
 { 
     if (switchdown())
 	return 1;
@@ -309,7 +309,7 @@ static void switchreset()
 
 
 // Return to original file
-static int switchdown() 
+static int switchdown(void) 
 {
     if (topstack <= 0)
 	return -1;
@@ -358,7 +358,7 @@ static char *searchpath(char *filename, bool thisDir)
     char includeList[BUFSIZ];
 
     // If "-I" is given, use this path
-    char *s = VSEFlags::include_search_path;
+    const char *s = VSEFlags::include_search_path;
     if (s == NULL || s[0] == '\0')
     {
 	// Otherwise: Use environment or default path

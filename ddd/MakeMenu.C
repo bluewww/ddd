@@ -81,8 +81,8 @@ static void PopupPushMenuAct(Widget w, XEvent* e, String *, Cardinal *);
 static void DecoratePushMenuAct(Widget w, XEvent* e, String *, Cardinal *);
 
 static XtActionsRec actions [] = {
-    {"popup-push-menu",            PopupPushMenuAct },
-    {"decorate-push-menu",         DecoratePushMenuAct },
+    {(char *)"popup-push-menu",            PopupPushMenuAct },
+    {(char *)"decorate-push-menu",         DecoratePushMenuAct },
 };
 
 static char pushMenuTranslations[] = 
@@ -132,7 +132,7 @@ static void flatten_button(Widget w, bool switch_colors = true)
 	Arg args[10];
 	Cardinal arg = 0;
 
-	Pixmap empty = XmGetPixmap(XtScreen(w), "background", 
+	Pixmap empty = XmGetPixmap(XtScreen(w), (char *)"background", 
 				   background, background);
 
 	XtSetArg(args[arg], XmNbottomShadowPixmap, empty); arg++;
@@ -315,7 +315,8 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    {
 		Pixel background;
 		XtVaGetValues(shell, XmNbackground, &background, NULL);
-		Pixmap empty = XmGetPixmap(XtScreen(shell), "background", 
+		Pixmap empty = XmGetPixmap(XtScreen(shell), 
+					   (char *)"background", 
 					   background, background);
 
 		XtSetArg(args[arg], XmNbottomShadowPixmap, empty); arg++;
@@ -489,7 +490,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    if (have_label)
 		XtManageChild(label);
 
-	    Widget (*create_panel)(Widget, String, MMDesc[], 
+	    Widget (*create_panel)(Widget, const _XtString, MMDesc[], 
 				   ArgList, Cardinal) = 0;
 
 	    switch (type)
@@ -663,10 +664,10 @@ Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[],
 }
 
 // Create popup menu from items
-Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[],
+Widget MMcreatePopupMenu(Widget parent, const _XtString name, MMDesc items[],
 			 ArgList args, Cardinal arg)
 {
-    Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
+    Widget menu = verify(XmCreatePopupMenu(parent, (char *)name, args, arg));
     MMaddItems(menu, items);
     auto_raise(XtParent(menu));
 
@@ -675,10 +676,10 @@ Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[],
 
 
 // Create menu bar from items
-Widget MMcreateMenuBar(Widget parent, String name, MMDesc items[],
+Widget MMcreateMenuBar(Widget parent, const _XtString name, MMDesc items[],
 		       ArgList args, Cardinal arg)
 {
-    Widget bar = verify(XmCreateMenuBar(parent, name, args, arg));
+    Widget bar = verify(XmCreateMenuBar(parent, (char *)name, args, arg));
     MMaddItems(bar, items);
     XtManageChild(bar);
 
@@ -686,10 +687,10 @@ Widget MMcreateMenuBar(Widget parent, String name, MMDesc items[],
 }
 
 // Create work area from items
-Widget MMcreateWorkArea(Widget parent, String name, MMDesc items[],
+Widget MMcreateWorkArea(Widget parent, const _XtString name, MMDesc items[],
 			ArgList args, Cardinal arg)
 {
-    Widget bar = verify(XmCreateWorkArea(parent, name, args, arg));
+    Widget bar = verify(XmCreateWorkArea(parent, (char *)name, args, arg));
     MMaddItems(bar, items, true);
     XtManageChild(bar);
 
@@ -697,10 +698,10 @@ Widget MMcreateWorkArea(Widget parent, String name, MMDesc items[],
 }
 
 // Create panel from items
-Widget MMcreatePanel(Widget parent, String name, MMDesc items[],
+Widget MMcreatePanel(Widget parent, const _XtString name, MMDesc items[],
 		     ArgList args, Cardinal arg)
 {
-    Widget panel = verify(XmCreateWorkArea(parent, name, args, arg));
+    Widget panel = verify(XmCreateWorkArea(parent, (char *)name, args, arg));
     MMaddItems(panel, items);
     XtManageChild(panel);
 
@@ -739,7 +740,7 @@ void MMadjustPanel(MMDesc items[], Dimension space)
 }
 
 // Create radio panel from items
-Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[],
+Widget MMcreateRadioPanel(Widget parent, const _XtString name, MMDesc items[],
 			  ArgList _args, Cardinal _arg)
 {
     ArgList args = new Arg[_arg + 10];
@@ -752,7 +753,7 @@ Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[],
     for (Cardinal i = 0; i < _arg; i++)
 	args[arg++] = _args[i];
 
-    Widget panel = verify(XmCreateRowColumn(parent, name, args, arg));
+    Widget panel = verify(XmCreateRowColumn(parent, (char *)name, args, arg));
     MMaddItems(panel, items);
     XtManageChild(panel);
 
@@ -761,10 +762,10 @@ Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[],
 }
 
 // Create button panel from items
-Widget MMcreateButtonPanel(Widget parent, String name, MMDesc items[],
+Widget MMcreateButtonPanel(Widget parent, const _XtString name, MMDesc items[],
 			   ArgList args, Cardinal arg)
 {
-    Widget panel = verify(XmCreateRowColumn(parent, name, args, arg));
+    Widget panel = verify(XmCreateRowColumn(parent, (char *)name, args, arg));
     MMaddItems(panel, items);
     XtManageChild(panel);
 
@@ -1226,8 +1227,8 @@ struct subresource_values {
 
 static XtResource subresources[] = {
     {
-	XtNpushMenuPopupTime,
-	XtCPushMenuPopupTime,
+	(char *)XtNpushMenuPopupTime,
+	(char *)XtCPushMenuPopupTime,
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(subresource_values, push_menu_popup_time), 

@@ -368,7 +368,7 @@ bool GDBAgent::is_ladebug() const
 }
 
 // Trace communication
-void GDBAgent::trace(char *prefix, void *call_data) const
+void GDBAgent::trace(const char *prefix, void *call_data) const
 {
     DataLength* dl    = (DataLength *) call_data;
     string s(dl->data, dl->length);
@@ -2900,7 +2900,7 @@ ProgramLanguage GDBAgent::program_language(string text)
 	text = text.before("\n");
 
     static struct {
-	char *name;
+	const char *name;
 	ProgramLanguage language;
     } language_table[] = {
 	{ "fortran", LANGUAGE_FORTRAN },
