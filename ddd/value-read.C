@@ -197,8 +197,9 @@ DispValueType determine_type (string value)
     int at_index = value.index('@');
     if (at_index >= 0)
     {
-	if (value.before(at_index).matches(rxidentifier) &&
-	    value.after(at_index).matches(rxaddress))
+	string id   = value.before(at_index);
+	string addr = value.from(at_index);
+	if (id.matches(rxidentifier) && addr.contains(rxaddress, 0))
 	    return Pointer;
     }
 
