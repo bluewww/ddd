@@ -4909,7 +4909,9 @@ Ddd*breakpoint_properties*commandsMenu.packing:		XmPACK_COLUMN
 Ddd*breakpoint_properties*commandsMenu.entryAlignment:	XmALIGNMENT_CENTER
 Ddd*breakpoint_properties*record.labelString:		\ \ Record\ \ 
 Ddd*breakpoint_properties*end.labelString:		End
-Ddd*breakpoint_properties*edit.labelString:		Edit...
+Ddd*breakpoint_properties*edit.labelString:		Edit @small>>
+
+Ddd*breakpoint_properties*text.columns:		        40
 
 Ddd*breakpoint_properties*helpString:		\
 @rm WIDGET(Breakpoint Properties)\n\
@@ -4927,6 +4929,7 @@ DESC(Commands, [record and edit @GDB@ command sequences.\n\
     SUBITEM Now interact with DDD.\n\
        The recorded @GDB@ commands are shown in the @GDB@ console.\n\
     SUBITEM Click on LBL(End) to stop the recording.])\n\
+    SUBITEM Use LBL(Edit @small>>) to edit the recorded commands.\n\
 \n\
 Click on LBL(Close) to close this window.\n\
 Click on LBL(Delete) to delete the breakpoint.

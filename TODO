@@ -370,8 +370,6 @@ Volunteers for these and other projects are welcome!
 249 `Rotate' should be enabled as soon as there is exactly one child
     that can be rotated.
 
-250*Edit breakpoint commands to be executed.
-
 252 Print via the X Printer extension (-lXp).
 
 254 If an XEmacs is running, use its frame for displaying the text.

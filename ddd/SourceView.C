@@ -130,29 +130,29 @@ extern "C" {
 #include <errno.h>
 
 // DDD stuff
-#include "PosBuffer.h"
-#include "string-fun.h"
-#include "ddd.h"
-#include "fortranize.h"
-#include "version.h"
-#include "mydialogs.h"
-#include "verify.h"
+#include "AppData.h"
 #include "Command.h"
+#include "MakeMenu.h"
+#include "PosBuffer.h"
+#include "charsets.h"
+#include "dbx-lookup.h"
+#include "ddd.h"
+#include "file.h"
+#include "fortranize.h"
+#include "index.h"
+#include "java.h"
+#include "mydialogs.h"
+#include "options.h"
 #include "post.h"
+#include "question.h"
+#include "regexps.h"
 #include "shell.h"
+#include "status.h"
+#include "string-fun.h"
+#include "verify.h"
+#include "version.h"
 #include "windows.h"
 #include "wm.h"
-#include "dbx-lookup.h"
-#include "java.h"
-#include "question.h"
-#include "status.h"
-#include "file.h"
-#include "AppData.h"
-#include "options.h"
-#include "charsets.h"
-#include "regexps.h"
-#include "index.h"
-#include "MakeMenu.h"
 
 
 
@@ -5045,7 +5045,7 @@ void SourceView::NewWatchpointCB(Widget, XtPointer, XtPointer)
 
 struct BreakpointPropertiesInfo {
     IntArray nrs;		// The affected breakpoints
-    Widget panel;		// The widgets of the properties panel
+    Widget dialog;		// The widgets of the properties panel
     Widget title;
     Widget enabled;
     Widget temp;
@@ -5055,6 +5055,7 @@ struct BreakpointPropertiesInfo {
     Widget record;
     Widget end;
     Widget edit;
+    Widget editor;
     XtIntervalId timer;
     bool spin_locked;
     BreakpointPropertiesInfo *next; // Next info in list
@@ -5063,8 +5064,8 @@ struct BreakpointPropertiesInfo {
 
     BreakpointPropertiesInfo()
 	: nrs(),
-	  panel(0), title(0), enabled(0), temp(0), lookup(0), 
-	  ignore(0), condition(0), record(0), edit(0), 
+	  dialog(0), title(0), enabled(0), temp(0), lookup(0), 
+	  ignore(0), condition(0), record(0), edit(0), editor(0),
 	  timer(0), spin_locked(false), next(all)
     {
 	all = this;
@@ -5088,7 +5089,8 @@ struct BreakpointPropertiesInfo {
 
 BreakpointPropertiesInfo *BreakpointPropertiesInfo::all = 0;
 
-void SourceView::DeleteInfoCB(Widget, XtPointer client_data, XtPointer)
+void SourceView::DeleteInfoCB(Widget w, XtPointer client_data, 
+			      XtPointer call_data)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
@@ -5097,6 +5099,12 @@ void SourceView::DeleteInfoCB(Widget, XtPointer client_data, XtPointer)
     {
 	gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
 	gdb_command("\003");	// Abort recording
+    }
+
+    if (XtIsManaged(XtParent(info->editor)))
+    {
+	// Finish entering commands
+	EditBreakpointCommandsCB(w, client_data, call_data);
     }
 
     delete info;
@@ -5148,7 +5156,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     if (info->nrs.size() == 0)
     {
 	// No breakpoint left -- destroy dialog shell
-	XtUnmanageChild(XtParent(info->panel));
+	XtUnmanageChild(info->dialog);
 	return;
     }
 
@@ -5203,12 +5211,22 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     set_label(info->title, label);
 
     MString title = string(DDD_NAME) + ": Properties: " + label;
-    XtVaSetValues(XtParent(info->panel), XmNdialogTitle, 
+    XtVaSetValues(info->dialog, XmNdialogTitle,
 		  title.xmstring(), NULL);
 
     // Set values
     XtVaSetValues(info->enabled, XmNset, bp->enabled(), NULL);
     XtVaSetValues(info->temp,    XmNset, bp->dispo() != BPKEEP, NULL);
+
+    string commands = "";
+    for (i = 0; i < bp->commands().size(); i++)
+    {
+	string cmd = bp->commands()[i];
+	strip_auto_command_prefix(cmd);
+	commands += cmd + "\n";
+    }
+
+    XmTextSetString(info->editor, commands);
 
     bool lock = info->spin_locked;
     info->spin_locked = true;
@@ -5235,9 +5253,12 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 		  gdb->type() == GDB && bp->dispo() == BPKEEP);
     set_sensitive(info->ignore,    gdb->has_ignore_command());
     set_sensitive(info->condition, true);
-    set_sensitive(info->record,    gdb->type() == GDB && !gdb->recording());
+
+    bool can_record = gdb->type() == GDB && !gdb->recording();
+    set_sensitive(info->record,    can_record);
     set_sensitive(info->end,       gdb->recording());
-    set_sensitive(info->edit,      gdb->type() == GDB && !gdb->recording());
+    set_sensitive(info->edit,      can_record);
+    set_sensitive(info->editor,    can_record);
 }
 
 // Edit breakpoint properties
@@ -5279,24 +5300,24 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     Arg args[10];
     int arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
-    Widget dialog = 
+    info->dialog = 
 	verify(XmCreatePromptDialog(source_text_w,
 				    "breakpoint_properties",
 				    args, arg));
-    XtVaSetValues(dialog, XmNdefaultButton, Widget(0), NULL);
+    XtVaSetValues(info->dialog, XmNdefaultButton, Widget(0), NULL);
 
 
     // Remove old prompt
-    Widget text = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
+    Widget text = XmSelectionBoxGetChild(info->dialog, XmDIALOG_TEXT);
     XtUnmanageChild(text);
     Widget old_label = 
-	XmSelectionBoxGetChild(dialog, XmDIALOG_SELECTION_LABEL);
+	XmSelectionBoxGetChild(info->dialog, XmDIALOG_SELECTION_LABEL);
     XtUnmanageChild(old_label);
 
-    Delay::register_shell(dialog);
+    Delay::register_shell(info->dialog);
 
     if (lesstif_version <= 79)
-	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON));
+	XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, XmDIALOG_APPLY_BUTTON));
 
     MMDesc commands_menu[] =
     {
@@ -5331,26 +5352,41 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
 	MMEnd
     };
 
-    info->panel = MMcreatePanel(dialog, "panel", panel_menu);
+    arg = 0;
+    XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
+    Widget form = XmCreateRowColumn(info->dialog, "form", args, arg);
+    XtManageChild(form);
 
-    XtVaSetValues(info->panel,
+    Widget panel = MMcreatePanel(form, "panel", panel_menu);
+
+    XtVaSetValues(panel,
 		  XmNmarginWidth,    0,
 		  XmNmarginHeight,   0,
 		  NULL);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
+    info->editor = XmCreateScrolledText(form, "text", args, arg);
+    XtUnmanageChild(XtParent(info->editor));
+    XtManageChild(info->editor);
 
     info->title = panel_menu[0].label;
     MMaddCallbacks(panel_menu, XtPointer(info));
 
     update_properties_panel(info);
 
-    XtAddCallback(dialog, XmNokCallback,      UnmanageThisCB, dialog);
-    XtAddCallback(dialog, XmNhelpCallback,    ImmediateHelpCB, NULL);
-    XtAddCallback(dialog, XmNunmapCallback,   DestroyThisCB, XtParent(dialog));
-    XtAddCallback(dialog, XmNdestroyCallback, DeleteInfoCB,  XtPointer(info));
-    XtAddCallback(dialog, XmNcancelCallback,  DeleteBreakpointCB, 
-		  XtPointer(info));
+    XtAddCallback(info->dialog, XmNokCallback,
+		  UnmanageThisCB, info->dialog);
+    XtAddCallback(info->dialog, XmNhelpCallback,    
+		  ImmediateHelpCB, NULL);
+    XtAddCallback(info->dialog, XmNunmapCallback,
+		  DestroyThisCB, XtParent(info->dialog));
+    XtAddCallback(info->dialog, XmNdestroyCallback,
+		  DeleteInfoCB,  XtPointer(info));
+    XtAddCallback(info->dialog, XmNcancelCallback,
+		  DeleteBreakpointCB, XtPointer(info));
 
-    manage_and_raise(dialog);
+    manage_and_raise(info->dialog);
     info->spin_locked = false;
 }
 
@@ -5503,20 +5539,76 @@ void SourceView::RecordingHP(Agent *, void *client_data, void *call_data)
 
     if (!recording)
     {
-	// Recording is over.  Don't get called again
+	// Recording is over.  Don't get called again.
 	gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
     }
 }
 
 // Edit breakpoint commands
-void SourceView::EditBreakpointCommandsCB(Widget, 
+void SourceView::EditBreakpointCommandsCB(Widget w,
 					  XtPointer client_data, 
 					  XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
-    (void)info;			// FIXME
+    if (XtIsManaged(XtParent(info->editor)))
+    {
+	XtUnmanageChild(XtParent(info->editor));
+	MString label = "Edit " + MString(">>", "small");
+	set_label(info->edit, label);
+
+	String _commands = XmTextGetString(info->editor);
+	string cmd = _commands;
+	XtFree(_commands);
+
+	// Check for first breakpoint
+	MapRef ref;
+	BreakPoint *bp = 0;
+	for (bp = bp_map.first(ref);
+	     bp != 0;
+	     bp = bp_map.next(ref))
+	{
+	    if (bp->number() == info->nrs[0])
+	    {
+		break;
+	    }
+	}
+	if (bp == 0)
+	    return;			// No such breakpoint
+
+	string old_cmd = "";
+	for (int i = 0; i < bp->commands().size(); i++)
+	{
+	    string cmd = bp->commands()[i];
+	    strip_auto_command_prefix(cmd);
+	    old_cmd += cmd + "\n";
+	}
+
+	if (cmd != old_cmd)
+	{
+	    gdb_command("commands " + itostring(info->nrs[0]), w);
+
+	    if (!cmd.contains("\n"))
+		cmd += "\n";
+
+	    while (cmd != "")
+	    {
+		string line = cmd.before('\n');
+		if (line != "")
+		    gdb_command(line, w);
+		cmd = cmd.after('\n');
+	    }
+
+	    gdb_command("end", w);
+	}
+    }
+    else
+    {
+	XtManageChild(XtParent(info->editor));
+	MString label = "Edit " + MString("<<", "small");
+	set_label(info->edit, label);
+    }
 }
 
 void SourceView::edit_breakpoint_properties(int bp_nr)
@@ -5672,6 +5764,7 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
 	}
 
 	selected[i] = select;
+	strip_auto_command_prefix(bp_info);
 	setup_where_line(bp_info);
     }
 
