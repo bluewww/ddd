@@ -40,10 +40,10 @@ DEFINE_TYPE_INFO_1(BoxEdgeAnnotation, EdgeAnnotation)
 void BoxEdgeAnnotation::_draw(Widget w, const BoxPoint& p,
 			      const BoxRegion& exposed, GC gc) const
 {
-    // Center box horizontally above P
+    // Center box horizontally 2 pixels above P
     BoxPoint origin(p);
     origin[X] -= _box->size()[X] / 2;
-    origin[Y] -= _box->size()[Y];
+    origin[Y] -= _box->size()[Y] + 2;
 
     BoxRegion r(origin, _box->size());
     _box->draw(w, r, exposed, gc);
