@@ -45,6 +45,10 @@ char PosBuffer_rcsid[] =
 #include "GDBAgent.h"
 #include "SourceView.h"
 
+// A regex for C addresses ("0xdead") and Modula-2 addresses ("0BEEFH");
+regex rxaddress(RXADDRESS);
+
+
 // Filter all lines from ANSWER beginning with LINE.  This is required
 // to suppress the line number output after a `stopping in' message.
 static void filter_line(string& answer, int line)
@@ -144,13 +148,13 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `$pc = ADDRESS'
-		    static regex rxpc("\\$pc  *=  *0x[a-fA-F0-9][a-fA-F0-9]*");
+		    static regex rxpc("\\$pc  *=  *" RXADDRESS);
 		    int pc_index = answer.index(rxpc);
 		    if (pc_index >= 0)
 		    {
 			pc_buffer = answer.from(pc_index);
-			pc_buffer = pc_buffer.from("0x");
-			pc_buffer = pc_buffer.through(rxalphanum);
+			pc_buffer = pc_buffer.from(rxaddress);
+			pc_buffer = pc_buffer.through(rxaddress);
 
 			// Strip this line from ANSWER
 			int end_line = answer.index('\n', pc_index);
@@ -171,13 +175,13 @@ void PosBuffer::filter (string& answer)
 		{
 		    // `Breakpoint N, ADDRESS in FUNCTION'
 		    static regex rxstopped("Breakpoint  *[1-9][0-9]*,  *"
-					   "0x[a-fA-F0-9][a-fA-F0-9]*");
+					   RXADDRESS);
 		    int pc_index = answer.index(rxstopped);
 		    if (pc_index >= 0)
 		    {
 			pc_buffer = answer.from(pc_index);
-			pc_buffer = pc_buffer.from("0x");
-			pc_buffer = pc_buffer.through(rxalphanum);
+			pc_buffer = pc_buffer.from(rxaddress);
+			pc_buffer = pc_buffer.through(rxaddress);
 		    }
 		}
 
@@ -185,15 +189,15 @@ void PosBuffer::filter (string& answer)
 		{
 		    // `#FRAME ADDRESS in FUNCTION'
 		    static regex 
-			rxframe("#[0-9][0-9]*  *0x[a-fA-F0-9][a-fA-F0-9]*");
+			rxframe("#[0-9][0-9]*  *" RXADDRESS);
 
 		    int pc_index = answer.index(rxframe);
 		    if (pc_index == 0
 			|| pc_index > 0 && answer[pc_index - 1] == '\n')
 		    {
 			pc_buffer = answer.from(pc_index);
-			pc_buffer = pc_buffer.from("0x");
-			pc_buffer = pc_buffer.through(rxalphanum);
+			pc_buffer = pc_buffer.from(rxaddress);
+			pc_buffer = pc_buffer.through(rxaddress);
 		    }
 		}
 
@@ -201,29 +205,27 @@ void PosBuffer::filter (string& answer)
 		{
 		    // `No line number available for 
 		    // address ADDRESS <FUNCTION>'
-		    static regex 
-			rxaddress("address  *0x[a-fA-F0-9][a-fA-F0-9]*");
+		    static regex rxaddr("address  *" RXADDRESS);
 
-		    int pc_index = answer.index(rxaddress);
+		    int pc_index = answer.index(rxaddr);
 		    if (pc_index >= 0)
 		    {
 			pc_buffer = answer.from(pc_index);
-			pc_buffer = pc_buffer.from("0x");
-			pc_buffer = pc_buffer.through(rxalphanum);
+			pc_buffer = pc_buffer.from(rxaddress);
+			pc_buffer = pc_buffer.through(rxaddress);
 		    }
 		}
 
 		if (pc_buffer == "")
 		{
 		    // `ADDRESS in FUNCTION'
-		    static regex rxsignal("0x[a-fA-F0-9][a-fA-F0-9]*");
-		    int pc_index = answer.index(rxsignal);
+		    int pc_index = answer.index(rxaddress);
 		    if (pc_index == 0 
 		        || pc_index > 0 && answer[pc_index - 1] == '\n')
 		    {
 			pc_buffer = answer.from(pc_index);
-			pc_buffer = pc_buffer.from("0x");
-			pc_buffer = pc_buffer.through(rxalphanum);
+			pc_buffer = pc_buffer.from(rxaddress);
+			pc_buffer = pc_buffer.through(rxaddress);
 		    }
 		}
 
@@ -278,9 +280,9 @@ void PosBuffer::filter (string& answer)
 		pos_buffer = answer.at (index1 + 2, index2 - (index1 + 2));
 		int last_colon = pos_buffer.index(':', -1);
 		pc_buffer = pos_buffer.after(last_colon);
-		if (!pc_buffer.contains("0x", 0))
+		if (!pc_buffer.contains(rxaddress, 0))
 		    pc_buffer = "0x" + pc_buffer;
-		pc_buffer = pc_buffer.through(rxalphanum);
+		pc_buffer = pc_buffer.through(rxaddress);
 		answer.at (index1, index2 - index1 + 1) = "";
 		already_read = PosComplete;
 	    }

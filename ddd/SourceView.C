@@ -293,7 +293,7 @@ bool SourceView::disassemble            = true;
 bool SourceView::all_registers          = false;
 
 int  SourceView::bp_indent_amount   = 0;
-int  SourceView::code_indent_amount = 8;
+int  SourceView::code_indent_amount = 4;
 int  SourceView::tab_width          = 8;
 
 SourceOrigin SourceView::current_origin = ORIGIN_NONE;
@@ -884,7 +884,7 @@ void SourceView::set_source_argCB(Widget text_w,
 		     && endPos - endIndex <= code_indent_amount)
 	    {
 		// Selection from address area
-		int index = text.index("0x", startPos);
+		int index = text.index(rxaddress, startPos);
 		if (index >= 0)
 		{
 		    string address = text.from(index);
@@ -1887,7 +1887,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 	    in_text = false;
 
 	    // Check if we have a breakpoint around here
-	    int index = current_code.index("0x", pos);
+	    int index = current_code.index(rxaddress, pos);
 	    if (index >= 0)
 	    {
 		address = current_code.from(index);
@@ -3923,7 +3923,7 @@ void SourceView::BreakpointCmdCB(Widget,
     if (gdb->type() == XDB)
     {
 	if (cmd == "delete")
-	    cmd = "db ";
+	    cmd = "db";
 	else if (cmd == "enable")
 	    cmd = "ab";
 	else if (cmd == "disable")
@@ -5037,12 +5037,12 @@ void SourceView::clear_code_cache()
 
 static string first_address(string s)
 {
-    int index = s.index("0x");
+    int index = s.index(rxaddress);
     if (index < 0)
 	return "";
 
     s = s.from(index);
-    return s.through(rxalphanum);
+    return s.through(rxaddress);
 }
 
 static string last_address(string s)
@@ -5122,12 +5122,11 @@ XmTextPosition SourceView::find_pc(const string& pc)
 	    j++;
 
 	if (j + 2 < int(current_code.length())
-	    && current_code[j] == '0'
-	    && current_code[j + 1] == 'x')
+	    && current_code.contains(rxaddress, j))
 	{
 	    string line = current_code.at(j, eol - j);
-	    string address = line.from("0x");
-	    address = line.through(rxalphanum);
+	    string address = line.from(rxaddress);
+	    address = line.through(rxaddress);
 	    if (compare_address(pc, address) == 0)
 	    {
 		pos = i;

@@ -43,13 +43,12 @@
 #include "strclass.h"
 
 class PosBuffer {
-    // Was stand in der bisherigen Antwort ?
-    //
+    // What was in the previous answer?
     enum ReadState {Null, PosPart, PosComplete};
     
     string pos_buffer;
     string func_buffer;
-    string answer_buffer;      // fuer Vielleicht-Positionsangaben-Teile
+    string answer_buffer;	// Possible parts of positions
     string pc_buffer;
     ReadState already_read;
 
@@ -68,36 +67,27 @@ public:
 	recompiled(false)
     {}
 
-    // Filtert Positionsangabe aus answer (ein Antwortteil) heraus und
-    // puffert sie;
-    // answer enthaelt anschliessend nur noch andere Ausgaben;
-    // ggf. werden Teile der Antwort 'auf Verdacht' zurueckgehalten.
-    //
+    // Filter positions from ANSWER and buffer them.  ANSWER contains
+    // any remaining parts.
     void filter (string& answer);
 
-    // Die Komplettierung der gdb-Ausgabe hiermit bekanntgeben!
-    // ggf. werden die 'auf Verdacht' zurueckgehaltenen Teile der Antwort
-    // zurueckgegeben.
-    //
+    // GDB output has ended.  Return any non-position parts.
     string answer_ended ();
 
-    // enthielt die letzte Ausgabe Positionsangaben?
-    //
+    // Did we find a position in the last output?
     bool pos_found () const { return already_read == PosComplete; }
     bool pc_found ()  const { return pc_buffer != ""; }
 
-    // Gibt die gepufferte Positionsangabe zurueck;
-    //
+    // Return the position found.
     const string& get_position () const { return pos_buffer; }
     const string& get_function () const { return func_buffer; }
     const string& get_pc ()       const { return pc_buffer; }
 
-    // Other properties
+    // Other properties.
     bool started_found()    const { return started; }
     bool recompiled_found() const { return recompiled; }
 
-    // Aufrufen bevor neue Antwort gefiltert wird!
-    //
+    // Call this before filtering any new output.
     void clear ()
     {
 	pos_buffer    = "";
@@ -109,5 +99,9 @@ public:
 	recompiled    = false;
     }
 };
+
+// A regex for C addresses ("0xdead") and Modula-2 addresses ("0BEEFH");
+#define RXADDRESS "0x[0-9a-fA-F]+|0[0-9a-fA-F][hH]"
+extern regex rxaddress;
 
 #endif
