@@ -399,6 +399,12 @@ bool is_make_cmd (const string& cmd)
     return cmd.matches(rxmake_cmd);
 }
 
+// True if CMD quits GDB
+bool is_quit_cmd (const string& cmd)
+{
+    return cmd == "quit" || cmd == "q";
+}
+
 // Fetch display expression from DISPLAY_CMD
 string get_display_expression (const string& display_cmd)
 {

@@ -118,6 +118,9 @@ bool is_use_cmd(const string& cmd);
 // True if CMD is a make command
 bool is_make_cmd(const string& cmd);
 
+// True if CMD is a quit command
+bool is_quit_cmd(const string& cmd);
+
 // True if CMD is an internal graph command.
 bool is_graph_cmd(const string& cmd);
 

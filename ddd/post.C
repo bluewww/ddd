@@ -177,8 +177,9 @@ Widget post_gdb_died(string reason, int gdb_status, Widget w)
     if (WIFEXITED(gdb_status))
 	exit_status = WEXITSTATUS(gdb_status);
 
-    if (gdb_initialized 
-	&& (exit_status == EXIT_SUCCESS || reason.contains("Exit 0")))
+    bool exited = (exit_status == EXIT_SUCCESS || reason.contains("Exit 0"));
+
+    if (gdb_initialized && gdb_is_exiting && exited)
     {
 	_DDDExitCB(find_shell(w), XtPointer(EXIT_SUCCESS), 0);
 	return 0;
@@ -199,15 +200,24 @@ Widget post_gdb_died(string reason, int gdb_status, Widget w)
 
     if (gdb_initialized)
     {
-	_gdb_out(reason + "\n");
+	String name;
+	MString msg;
+	if (exited)
+	{
+	    msg = rm(gdb->title() + " exited");
+	    name = "exited_dialog";
+	}
+	else
+	{
+	    _gdb_out(reason + "\n");
+	    msg = rm(gdb->title() + " terminated abnormally (" + reason + ")");
+	    name = "terminated_dialog";
+	}
 
 	arg = 0;
-	MString msg = rm(gdb->title() + " terminated abnormally"
-			 + " (" + reason + ")");
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
 	died_dialog = 
-	    verify(XmCreateErrorDialog (find_shell(w), 
-					"terminated_dialog", args, arg));
+	    verify(XmCreateErrorDialog (find_shell(w), name, args, arg));
 	XtAddCallback(died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
 	XtAddCallback(died_dialog, XmNokCallback,
 		      DDDExitCB, XtPointer(exit_status));

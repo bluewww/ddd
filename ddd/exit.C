@@ -121,6 +121,9 @@ static void ddd_signal(int sig...);
 static void ddd_fatal(int sig...);
 static bool ddd_dump_core(int sig...);
 
+// True if GDB is about to exit
+bool gdb_is_exiting = false;
+
 // True if DDD is about to exit
 bool ddd_is_exiting = false;
 
@@ -882,10 +885,18 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
+// `quit' has been canceled
+static void DDDQuitCanceledCB(const string&, void *)
+{
+    gdb_is_exiting = false;
+}
+
 // Exit/Restart after confirmation, depending on the setting of
 // DDD_IS_RESTARTING
 static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
+    gdb_is_exiting = true;
+
     if (gdb == 0 || !gdb->running())
     {
 	_DDDExitCB(w, client_data, call_data);
@@ -894,7 +905,9 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     if (gdb->isReadyWithPrompt())
     {
-	gdb_command("quit");
+	Command c("quit", w);	// This works for all inferior debuggers
+	c.callback = DDDQuitCanceledCB;
+	gdb_command(c);
 	return;
     }
 

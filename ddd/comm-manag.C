@@ -49,6 +49,7 @@ char comm_manager_rcsid[] =
 #include "Command.h"
 #include "ddd.h"
 #include "dbx-lookup.h"
+#include "exit.h"
 #include "disp-read.h"
 #include "DispBuffer.h"
 #include "PosBuffer.h"
@@ -544,6 +545,9 @@ void send_gdb_ctrl(string cmd, Widget origin)
     cmd_data->new_exec_pos = true;
     cmd_data->origin       = origin;
 
+    if (cmd == '\004')
+	gdb_is_exiting = true;
+
     bool send_ok = gdb->send_user_ctrl_cmd(cmd, cmd_data);
     if (!send_ok)
 	post_gdb_busy(origin);
@@ -852,6 +856,10 @@ void send_gdb_command(string cmd, Widget origin,
 	    plus_cmd_data->refresh_history_filename = true;
 	    plus_cmd_data->refresh_history_size     = true;
 	}
+    }
+    else if (is_quit_cmd(cmd))
+    {
+	gdb_is_exiting = true;
     }
 
     if (is_break_cmd(cmd))
@@ -1169,6 +1177,8 @@ static bool last_new_frame_pos;	// True if last command was new frame position
 
 void user_cmdOAC (void *data)
 {
+    gdb_is_exiting = false;
+
     CmdData *cmd_data = (CmdData *) data;
     PosBuffer *pos_buffer = cmd_data->pos_buffer;
     bool check   = cmd_data->user_check;

@@ -902,6 +902,7 @@ Ddd*run_again.foreground:	   DarkGreen
 ! Highlight special dialogs
 Ddd*fatal_dialog*foreground:	   red4
 Ddd*terminated_dialog*foreground:  red4
+Ddd*exited_dialog*foreground:      red4
 Ddd*no_debugger_dialog*foreground: red4
 
 ! Glyph colors
@@ -4686,6 +4687,20 @@ Ddd*terminated_dialog*okLabelString:	   Exit
 Ddd*terminated_dialog*cancelLabelString:   Restart
 Ddd*terminated_dialog*helpString:	\
 @rm @GDB@ terminated abnormally.  Without @GDB@, DDD cannot run.\n\
+\n\
+You may wish to examine the final @GDB@ output before exiting\n\
+or restarting DDD.\n\
+\n\
+Click on LBL(Exit) to exit DDD.\n\
+Click on LBL(Restart) to restart DDD (and @GDB@) from scratch.
+
+Ddd*exited_dialog_popup.title: DDD: Death on Arrival
+! Ddd*exited_dialog.messageString:   \
+! @rm @GDB@ exited.
+Ddd*exited_dialog*okLabelString:	   Exit
+Ddd*exited_dialog*cancelLabelString:   Restart
+Ddd*exited_dialog*helpString:	\
+@rm @GDB@ has exited.  Without @GDB@, DDD cannot run.\n\
 \n\
 You may wish to examine the final @GDB@ output before exiting\n\
 or restarting DDD.\n\

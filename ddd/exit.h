@@ -56,6 +56,9 @@ void DDDRestartCB (Widget, XtPointer, XtPointer); // Restart DDD
 void gdb_eofHP  (class Agent *, void *, void *);
 void gdb_diedHP (class Agent *, void *, void *);
 
+// True if GDB is about to exit
+extern bool gdb_is_exiting;
+
 // True if DDD is about to exit
 extern bool ddd_is_exiting;
 
