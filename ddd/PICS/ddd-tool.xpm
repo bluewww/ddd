@@ -1,9 +1,9 @@
 /* XPM */
-static char * image_name[] = {
+static char * ddd_tool_xpm@[] = {
 "78 194 7 1",
 " 	c #606060",
 ".	c #c0c0c0",
-"X	c #e7e7e7",
+"X	c white",
 "o	c #6f6f6f",
 "O	c dark green",
 "+	c red4",

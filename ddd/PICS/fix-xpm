@@ -1,0 +1,21 @@
+#!/bin/sh
+# convert XPM files to XPM3 format and increase contrast for PostScript usage
+
+files="$@";
+if [ $# = 0 ]; then
+  files="ddd-*.xpm"
+fi
+
+for file in $files; do
+  echo -n "$file: "
+  sed 's/ #e5e5e5/ white/
+  s/ #e7e7e7/ white/
+  s/ #f2f2f2/ white/' $file | sxpm -nod -o $file@
+  if cmp $file@ $file; then
+    echo unchanged.
+    rm $file@
+  else
+    mv $file $file~
+    mv $file@ $file
+  fi
+done
