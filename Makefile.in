@@ -187,6 +187,8 @@ snapshot:
 		-o -name "huffencode" -prune \
 		-o -name "ctest" -prune \
 		-o -name "cxxtest" -prune \
+		-o -name "etc" -prune \
+		-o -name "tests" -prune \
 		-o -name "stringify" -prune \
 		-o -name "sun" -prune \
 		-o -name "linux" -prune \
