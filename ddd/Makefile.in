@@ -1355,7 +1355,7 @@ $(ddd).syms: $(ddd)
 
 # By default, create symbol files in the background
 .PHONY: syms
-syms:
+syms:   $(ddd)
 	$(MAKE) $(ddd).syms > $(ddd).syms.log 2>&1 &
 
 
