@@ -1457,13 +1457,9 @@ if test "$GXX" = yes; then
   fi
 
   # Setup options
-  # In GCC 2.8.0, `-Wuninitialized' generates lots of warnings about
-  # variables possibly being clobbered by a longjmp()/vfork() call.
-  # These warnings seldom make sense and hide more serious warnings.
-  # Hence, we turn them off via `-Wno-uninitialized'.
   CXXOPT="-DNDEBUG"
   CXXDEBUG=
-  CXXWARNINGS="-W -Wall ${WARN_NO_UNINITIALIZED}"
+  CXXWARNINGS="-W -Wall"
   CXXSTATIC_BINDING="-Bstatic"
   CXXDYNAMIC_BINDING="-Bdynamic"
   CXXSTUFF="${MINIMAL_TOC}"
@@ -1538,7 +1534,7 @@ ICE_ELIDE_CONSTRUCTORS
 ICE_CONSERVE_SPACE
 ICE_TRIGRAPHS
 fi
-CXXSTUFF="$CXXSTUFF $EXTERNAL_TEMPLATES $ELIDE_CONSTRUCTORS $CONSERVE_SPACE $TRIGRAPHS"
+CXXSTUFF="$CXXSTUFF $EXTERNAL_TEMPLATES $TRIGRAPHS"
 AC_SUBST(CXXSTUFF)dnl
 ])dnl
 dnl
