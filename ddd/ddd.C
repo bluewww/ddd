@@ -1985,11 +1985,15 @@ static MString version_warnings;
 // DDD main program
 //-----------------------------------------------------------------------------
 
-int main(int argc, char *argv[])
+typedef enum {
+  DDD_EXIT_FAILURE, DDD_EXIT_SUCCESS, DDD_CONTINUE
+} ddd_exit_t;
+
+static
+ddd_exit_t pre_main_loop(int argc, char *argv[])
 {
-    // As this is a C++ program, execution does not begin here.  At
-    // this point, all global data objects already have been properly
-    // initialized.
+  // This function exists so that all destructors are called before
+  // entering the event loop.
 
 #ifdef LC_ALL
     // Let DDD locales be controlled by the locale-specific
@@ -2041,7 +2045,7 @@ int main(int argc, char *argv[])
 	argv[0] = CONST_CAST(char*,gdb_name.chars());
 	execvp(gdb_name.chars(), argv);
 	perror(gdb_name.chars());
-	return EXIT_FAILURE;
+	return DDD_EXIT_FAILURE;
     }
 
     // Initialize X toolkit
@@ -2280,7 +2284,7 @@ int main(int argc, char *argv[])
     // Define font macros
     setup_fonts(app_data, XtDatabase(XtDisplay(toplevel)));
     if (app_data.show_fonts)
-	return EXIT_SUCCESS;
+	return DDD_EXIT_SUCCESS;
 
     // Create a new auto_command_prefix if needed
     setup_auto_command_prefix();
@@ -2300,7 +2304,7 @@ int main(int argc, char *argv[])
 	{
 	    // Show VSL usage...
 	    std::cout << VSEFlags::explain(true);
-	    return EXIT_FAILURE;
+	    return DDD_EXIT_FAILURE;
 	}
 
 	argv = (char **)tmp_argv;
@@ -2322,9 +2326,9 @@ int main(int argc, char *argv[])
     if (app_data.check_configuration)
     {
 	if (check_x_configuration(toplevel, true))
-	    return EXIT_FAILURE;
+	    return DDD_EXIT_FAILURE;
 	else
-	    return EXIT_SUCCESS;
+	    return DDD_EXIT_SUCCESS;
     }
 
     // If needed, fix the X configuration silently
@@ -2391,7 +2395,7 @@ int main(int argc, char *argv[])
     if (gdb_host.empty() && string(app_data.debugger_host_login) != "")
     {
 	std::cerr << argv[0] << ": --login requires --rhost or --host\n";
-	return EXIT_FAILURE;
+	return DDD_EXIT_FAILURE;
     }
 
     // Check for `--play-log'
@@ -3102,6 +3106,24 @@ int main(int argc, char *argv[])
 	    set_status(line);
 	    msg = msg.after('\n');
 	}
+    }
+    return DDD_CONTINUE;
+}
+
+
+int main(int argc, char *argv[])
+{
+    // As this is a C++ program, execution does not begin here.  At
+    // this point, all global data objects already have been properly
+    // initialized.
+
+    switch(pre_main_loop(argc, argv)){
+    case DDD_EXIT_FAILURE:
+      return EXIT_FAILURE;
+    case DDD_EXIT_SUCCESS:
+      return EXIT_SUCCESS;
+    case DDD_CONTINUE:
+      break;
     }
 
     // Enter main event loop
