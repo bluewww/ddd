@@ -307,11 +307,31 @@ void TTYAgent::open_master()
 
 #if HAVE__GETPTY
     // _getpty() - an SGI/IRIX feature
-    line = _getpty(&master, O_RDWR, 0600, 0);
+    //
+    // Ferdinand Contreras <fcontre@clear.co.nz> reports: The pty man
+    // page says to set the O_NDELAY bit in the call to _getpty().
+    line = _getpty(&master, O_RDWR | O_NDELAY, 0600, 0);
     if (line != 0 && master >= 0)
     {
-	// Verify slave side is usable (Don't use TTY_OK() here - it
-	// seems this breaks SGI TTY setup).
+	// Verify slave side is usable
+
+	// We don't use TTY_OK() here - it seems this breaks SGI TTY setup.
+	// The error messages generated are as follows:
+	// 
+	// dbx: cannot open /dev/ttyq<n>: I/O error
+	// dbx: child communication setup failed
+	//
+	// Ferdinand Contreras <fcontre@clear.co.nz> says:
+	//
+	// I've traced the execution and it seems that the slave tty
+	// doesn't like to be opened twice.  That is, the tty_ok(line)
+	// function call opens the tty and closes it after
+	// successfully opening it.  However, the next time it is
+	// opened via open_tty() in the function open_slave(), it gets
+	// a return code of EIO (errno=5). I've decided to just skip
+	// the call to tty_ok() since the slave tty will eventually be
+	// opened by open_slave().  Any errors would still be caught
+	// at that point.
 	if (access(line, R_OK | W_OK) == 0)
 	{
 	    char *t = ttyname(master);
