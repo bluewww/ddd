@@ -85,6 +85,7 @@ AC_MSG_RESULT(${DDD} ${VERSION})
 else
 AC_MSG_RESULT(${DDD} ${VERSION} (expires ${EXPIRES}))
 fi
+AM_INIT_AUTOMAKE(${ddd}, ${VERSION})
 dnl
 dnl
 dnl
@@ -163,7 +164,7 @@ AC_MSG_CHECKING(for ${YACC} flags)
 YFLAGS=""
 AC_MSG_RESULT(${YFLAGS})
 AC_SUBST(YFLAGS)dnl
-AC_PROG_LEX
+AM_PROG_LEX
 AC_MSG_CHECKING(for ${LEX} flags)
 LFLAGS=""
 if test "$LEX" = "flex"; then

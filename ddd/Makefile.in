@@ -82,6 +82,9 @@ LEX = @LEX@
 LFLAGS = @LFLAGS@
 LEXLIB = @LEXLIB@
 
+# The lex output root (lex.yy)
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+
 # The yacc command (bison -y) and its flags ().
 YACC = @YACC@
 YFLAGS = @YFLAGS@
@@ -282,32 +285,35 @@ DDD_OPTIONS = @DEBUGGER_OPTION@
 ## The following definitions are needed for development only.
 ## Usually, you don't need any of these.
 
-# The autoconf program.
-AUTOCONF = autoconf
+# The autoconf program.  (autoconf)
+AUTOCONF = @AUTOCONF@
 
-# The autoheader program.
-AUTOHEADER = autoheader
+# The autoheader program.  (autoheader)
+AUTOHEADER = @AUTOHEADER@
+
+# The aclocal program.  (aclocal)
+ACLOCAL = @ACLOCAL@
 
 # The tar program.  (gtar)
 TAR = @TAR@
 
-# The groff program.
+# The groff program.  (groff)
 GROFF = groff
 
-# The nroff program.
+# The nroff program.  (groff -Tascii)
 # NROFF = nroff
 NROFF = $(GROFF) -Tascii
 
-# The makeinfo program.
-MAKEINFO = makeinfo
+# The makeinfo program.  (makeinfo)
+MAKEINFO = @MAKEINFO@
 
-# The texindex program.
+# The texindex program.  (texindex)
 TEXINDEX = texindex
 
-# The texi2html program.
+# The texi2html program.  (texi2html)
 TEXI2HTML = texi2html
 
-# The TeX program.
+# The TeX program.  (tex)
 TEX = tex
 
 # The ad2c program.
@@ -319,66 +325,56 @@ VSL2C = $(SED) -f $(srcdir)/vsl2c.sed
 # The dvips program.  (dvips)
 DVIPS = @DVIPS@
 
-# The co and ci programs.
-CO = co
-CI = ci
-
-# The rcsdiff program.
-RCSDIFF = rcsdiff
-
-# The ls program.
+# The ls program.  (ls)
 LS = ls
 
-# The head program.
+# The head program.  (head)
 HEAD = head
 
 # The make program, if not predefined.  ()
 @SET_MAKE@
 
-# The mv command.
+# The mv command.  (mv)
 MV = mv
 
-# The echo command.
+# The echo command.  (echo)
 ECHO = echo
 
 # The awk command.  (awk)
 AWK = @AWK@
 
-# The cat command.
+# The cat command.  (cat)
 CAT = cat
 
-# The cut command.
-CUT = cut
-
-# The cmp command.
+# The cmp command.  (cmp)
 CMP = cmp
 
-# The grep command.
+# The grep command.  (grep)
 GREP = grep
 
-# The sort command.
+# The sort command.  (sort)
 SORT = sort
 
 # The diff command.  (diff)
 DIFF = @DIFF@
 
-# The touch command.
+# The touch command.  (touch)
 TOUCH = touch
 
-# The date command.
+# The date command.  (date)
 DATE = date
 
-# The strip command.
+# The strip command.  (strip)
 STRIP = strip
 
-# The mkdir and rmdir commands.
+# The mkdir and rmdir commands.  (mkdir) (rmdir)
 MKDIR = mkdir
 RMDIR = rmdir
 
-# The sleep command.
+# The sleep command.  (sleep)
 SLEEP = sleep
 
-# The fig2dev command.
+# The fig2dev command.  (fig2dev)
 FIG2DEV = fig2dev
 FIG2PS = $(FIG2DEV) -L ps
 
@@ -392,7 +388,7 @@ PNMGAMMA   = pnmgamma
 PGMENHANCE = pgmenhance
 PNMDEPTH   = pnmdepth
 
-# The face-generating program from the `compface' package
+# The face-generating program from the `compface' package.  (xbm2xface.pl)
 XBM2XFACE  = xbm2xface.pl
 
 
@@ -523,18 +519,18 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 .L:
 	$(LEX.L) $<
 	$(LEXTOCXX)
-	$(LINK.cc) -o $@ lex.yy.C $(LDLIBS)
-	$(RM) lex.yy.C lex.yy.c
+	$(LINK.cc) -o $@ $(LEX_OUTPUT_ROOT).C $(LDLIBS)
+	$(RM) $(LEX_OUTPUT_ROOT).C $(LEX_OUTPUT_ROOT).c
 .L.C:
 	$(LEX.L) $<
 	$(LEXTOCXX)
-	$(MV) lex.yy.C $@
-	$(RM) lex.yy.c
+	$(MV) $(LEX_OUTPUT_ROOT).C $@
+	$(RM) $(LEX_OUTPUT_ROOT).c
 .L.o:
 	$(LEX.L) $<
 	$(LEXTOCXX)
-	$(COMPILE.cc) -o $@ lex.yy.C
-	$(RM) lex.yy.C lex.yy.c
+	$(COMPILE.cc) -o $@ $(LEX_OUTPUT_ROOT).C
+	$(RM) $(LEX_OUTPUT_ROOT).C $(LEX_OUTPUT_ROOT).c
 
 
 # Jacek M. Holeczek <holeczek@heracles.cto.us.edu.pl> says these `dummy'
@@ -1458,8 +1454,8 @@ it:	all cxxtest ctest stuff
 vsl-lex.C: $(srcdir)/vsl-lex.L
 	$(LEX.L) $(srcdir)/vsl-lex.L
 	$(LEXTOCXX) -prefix vsl
-	$(MV) lex.yy.C $@
-	$(RM) lex.yy.c
+	$(MV) $(LEX_OUTPUT_ROOT).C $@
+	$(RM) $(LEX_OUTPUT_ROOT).c
 
 vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y
 	$(YACC.Y) -d $(srcdir)/vsl-gramma.Y
@@ -1472,8 +1468,8 @@ vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y
 rxscan.C: $(srcdir)/rxscan.L
 	$(LEX.L) $(srcdir)/rxscan.L
 	$(LEXTOCXX) -prefix ddd
-	$(MV) lex.yy.C $@
-	$(RM) lex.yy.c
+	$(MV) $(LEX_OUTPUT_ROOT).C $@
+	$(RM) $(LEX_OUTPUT_ROOT).c
 
 # `make depend' fails to find these dependencies :-(
 VSLRead.o: vsl-lex.C vsl-gramma.h vsl-gramma.C
@@ -1717,9 +1713,6 @@ $(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
 
-
-
-
 ## Configuration stuff.
 
 Makefile: $(srcdir)/Makefile.in config.status
@@ -1735,6 +1728,9 @@ $(srcdir)/configure: $(srcdir)/configure.in $(srcdir)/aclocal.m4
 	-cd $(srcdir) && $(AUTOCONF)
 config.status: $(srcdir)/configure
 	-$(SHELL) ./config.status --recheck || $(SHELL) $(srcdir)/configure -v
+
+$(srcdir)/aclocal.m4: $(srcdir)/configure.in $(srcdir)/acinclude.m4
+	-cd $(srcdir) && $(ACLOCAL)
 
 .PRECIOUS: Makefile configure config.status config.h Ddd
 

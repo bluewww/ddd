@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // General configuration file.
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the ICE Library.
@@ -33,6 +33,9 @@
 // Descriptive text for C preprocessor macros that autoconf may define.
 // Leave the following blank line there!!  Autoheader needs it.
 
+
+/* The package name. */
+#undef PACKAGE
 
 /* Define if your C++ compiler has ANSI-compliant lifetime of temporaries. */
 #undef HAVE_ANSI_LIFETIME_OF_TEMPORARIES
