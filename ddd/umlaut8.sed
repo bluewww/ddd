@@ -2,6 +2,7 @@
 # Convert overstrike umlauts ("\"\ba" etc.) to 8-bit umlauts
 
 # Plain
+s/'e/é/g
 s/"a/ä/g
 s/"o/ö/g
 s/"u/ü/g
@@ -12,6 +13,7 @@ s/sss\([^]\)/ß\1/g
 s/sss$/ß/g
 
 # Underline
+s/'_e/_é/g
 s/"_a/_ä/g
 s/"_o/_ö/g
 s/"_u/_ü/g
@@ -22,6 +24,7 @@ s/_s_ss\([^]\)/_ß\1/g
 s/_s_ss$/_ß/g
 
 # Bold
+s/''e/éé/g
 s/""a/ää/g
 s/""o/öö/g
 s/""u/üü/g

@@ -1,6 +1,7 @@
 # $Id$
 # Convert 8-bit umlauts to 7-bit replacements (ae, oe, ue, ss)
 
+s/é/e/g
 s/ä/ae/g
 s/ö/oe/g
 s/ü/ue/g
