@@ -1497,30 +1497,30 @@ String SourceView::read_local(const string& file_name, long& length,
     int fd;
     if ((fd = open(file_name, O_RDONLY)) < 0)
     {
-	if (!silent)
-	    post_error (file_name + ": " + strerror(errno), 
-			"source_file_error", source_text_w);
 	delay.outcome = strerror(errno);
+	if (!silent)
+	    post_error (file_name + ": " + delay.outcome, 
+			"source_file_error", source_text_w);
         return 0;
     }
 
     struct stat statb;
     if (fstat(fd, &statb) < 0)
     {
-	if (!silent)
-	    post_error (file_name + ": " + strerror(errno), 
-			"source_file_error", source_text_w);
 	delay.outcome = strerror(errno);
+	if (!silent)
+	    post_error (file_name + ": " + delay.outcome, 
+			"source_file_error", source_text_w);
 	return 0;
     }
 
     // Avoid loading from directory, socket, device, or otherwise.
     if (!S_ISREG(statb.st_mode))
     {
+	delay.outcome = "not a regular file";
 	if (!silent)
-	    post_error (file_name + ": not a regular file", 
+	    post_error (file_name + ": " + delay.outcome, 
 			"source_file_error", source_text_w);
-	delay.outcome = "failed";
 	return 0;
     }
 
@@ -1530,10 +1530,10 @@ String SourceView::read_local(const string& file_name, long& length,
     char* text = XtMalloc(unsigned(statb.st_size + 1));
     if ((length = read(fd, text, statb.st_size)) != statb.st_size)
     {
+	delay.outcome = "truncated";
 	if (!silent)
-	    post_error (file_name + ": " + strerror(errno),
+	    post_error (file_name + ": " + delay.outcome,
 			"source_trunc_error", source_text_w);
-	delay.outcome = strerror(errno);
     }
     close(fd);
 
@@ -1541,10 +1541,10 @@ String SourceView::read_local(const string& file_name, long& length,
 
     if (statb.st_size == 0)
     {
+	delay.outcome = "empty file";
 	if (!silent)
-	    post_warning(file_name + ": empty file",
+	    post_warning(file_name + ": " + delay.outcome,
 			 "source_empty_warning", source_text_w);
-	delay.outcome = "failed";
     }
 
     return text;
@@ -1601,7 +1601,8 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     if (!gdb->isReadyWithPrompt())
 	return 0;
 
-    StatusDelay delay("Reading file " + quote(file_name));
+    StatusDelay delay("Reading file " + quote(file_name) + 
+		      " from " + gdb->title());
 
     string command;
     switch (gdb->type())
@@ -1685,6 +1686,10 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     }
 
     text[length] = '\0';  // be sure to null-terminate
+
+    if (length == 0)
+	delay.outcome = "failed";
+
     return text;
 }
 
@@ -1951,7 +1956,7 @@ void SourceView::reload()
     string line = file.after(':');
     file        = file.before(':');
 
-    StatusDelay delay("Reloading " + quote(file));
+    // StatusDelay delay("Reloading " + quote(file));
 
     read_file(file, atoi(line), true);
 }
