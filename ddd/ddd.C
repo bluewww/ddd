@@ -5835,6 +5835,13 @@ static int convert(string filename, BoxPrintGC& gc, bool selectedOnly)
     // Get the graph
     Graph *graph = graphEditGetGraph(data_disp->graph_edit);
 
+    if (graph->firstNode() == 0)
+    {
+	post_error("No displays to print.", "print_empty_graph_error", 
+		   data_disp->graph_edit);
+	return -1;
+    }
+
     // Get and set the GC
     GraphGC graphGC = graphEditGetGraphGC(data_disp->graph_edit);
     graphGC.printGC = &gc;
@@ -5845,7 +5852,7 @@ static int convert(string filename, BoxPrintGC& gc, bool selectedOnly)
     {
 	FILE *fp = fopen(filename, "w");
 	post_error("Cannot open " + quote(filename) + ": " + strerror(errno), 
-		   "convert_failed_error", data_disp->graph_edit);
+		   "print_failed_error", data_disp->graph_edit);
 	if (fp)
 	    fclose(fp);
 	return -1;

@@ -2131,14 +2131,22 @@ a directory where source files can be found.
 
 *no_completion_error_popup.title: @DDD@: No Completion
 *no_completion_error*contextHelpString:	\
-@rm Command and argument completion is not supported by your\n\
-debugger version.\n\
+@rm Command and argument completion is not supported by your debugger.\n\
 \n\
-Command completion relies on the GDB `@tt complete@rm' command,\
- which is present\n\
-in GDB 4.13 and later.
+Command completion relies on the GDB `@tt complete@rm' command,\n\
+which is present in GDB 4.13 and later.
 
-*tty_exec_error_popup.title: @DDD@: No Exec TTY
+*print_empty_graph_error.title: @DDD@: Nothing to Print
+*print_empty_graph_error*contextHelpString:	\
+@rm There is nothing to print.\n\
+The printing has been cancelled.
+
+*print_failed_error.title: @DDD@: Printing Failed
+*print_failed_error*contextHelpString:	\
+@rm The file holding the graph picture could not be written.\n\
+The printing has been cancelled.
+
+*tty_exec_error_popup.title: @DDD@: No Execution TTY
 *tty_exec_error*contextHelpString:	\
 @rm The terminal emulator for the execution window\n\
 could not be invoked.  The debugged process will execute in the\n\
