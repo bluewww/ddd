@@ -5915,13 +5915,15 @@ void SourceView::unmap_glyph(Widget w)
 
     if (change_glyphs)
     {
-	// If we unmapped the glyph during a drag operation, the drag
-	// would be broken.  Move it to an invisible position instead.
+	// Unmapping the glyph while dragging breaks the drag.
+	// Move the glyph to an invisible position instead.
 	XtVaSetValues(w,
 		      XmNleftOffset, -100,
 		      XmNtopOffset,  -100,
 		      XmNuserData, XtPointer(0),
 		      NULL);
+
+	// log_glyphs();
     }
 
     changed_glyphs += w;
@@ -5970,7 +5972,10 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
     if (x != old_x || y != old_y)
     {
 	if (change_glyphs)
+	{
 	    XtVaSetValues(w, XmNleftOffset, x, XmNtopOffset, y, NULL);
+	    // log_glyphs();
+	}
 	changed_glyphs += w;
     }
 
@@ -5991,6 +5996,7 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
 #endif
 
 	XtVaSetValues(w, XmNuserData, XtPointer(1), NULL);
+	// log_glyphs();
 	changed_glyphs += w;
     }
 }
@@ -6913,6 +6919,58 @@ void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 
     current_drag_origin     = 0;
     current_drag_breakpoint = 0;
+}
+
+// Report glyph state (for debugging)
+void SourceView::log_glyph(Widget w, int n)
+{
+    if (w == 0)
+	return;
+    
+    int old_x = 0;
+    int old_y = 0; 
+    XtPointer user_data;
+    XtVaGetValues(w,
+		  XmNuserData,           &user_data,
+		  XmNleftOffset,         &old_x,
+		  XmNtopOffset,          &old_y,
+		  NULL);
+
+    clog << XtName(w);
+    if (n >= 0)
+	clog << "s[" << n << "]";
+    clog << ": ";
+    if (user_data)
+	clog << "mapped";
+    else
+	clog << "unmapped";
+
+    clog << " at (" << old_x << ", " << old_y << ")\n";
+}
+
+void SourceView::log_glyphs()
+{
+    for (int k = 0; k < 2; k++)
+    {
+	if (k && !disassemble)
+	    continue;
+
+	if (k == 0)
+	    clog << "Source glyphs:\n";
+	else
+	    clog << "\nCode glyphs:\n";
+
+	int i;
+	for (i = 0; i < plain_stops[k].size() - 1; i++)
+	    log_glyph(plain_stops[k][i], i);
+	for (i = 0; i < grey_stops[k].size() - 1; i++)
+	    log_glyph(grey_stops[k][i], i);
+	log_glyph(plain_arrows[k]);
+	log_glyph(grey_arrows[k]);
+	log_glyph(signal_arrows[k]);
+	log_glyph(temp_arrows[k]);
+	log_glyph(temp_stops[k]);
+    }
 }
 
 

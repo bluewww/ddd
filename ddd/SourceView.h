@@ -420,6 +420,10 @@ class SourceView {
     // Unmap glyph W
     static void unmap_glyph(Widget w);
 
+    // Report glyph state (for debugging)
+    static void log_glyph(Widget w, int n = -1);
+    static void log_glyphs();
+
     // Return position during glyph drag and drop
     static XmTextPosition glyph_position(Widget w, XEvent *e, 
 					 bool normalize = true);
