@@ -98,7 +98,7 @@ struct MMDesc {
 
 
 // Procs
-typedef void (*MMItemProc)(MMDesc items[], XtPointer closure);
+typedef void (*MMItemProc)(const MMDesc items[], XtPointer closure);
 
 
 // Creators
@@ -123,16 +123,16 @@ Widget MMcreatePushMenu          (Widget parent, const _XtString name, MMDesc it
 
 
 // Align panel items along their labels
-void MMadjustPanel(MMDesc items[], Dimension space = 15);
+void MMadjustPanel(const MMDesc items[], Dimension space = 15);
 
 // Add callbacks
-void MMaddCallbacks(MMDesc items[],
+void MMaddCallbacks(const MMDesc items[],
 		    XtPointer default_closure = 0,
 		    int depth = -1);
-void MMaddHelpCallback(MMDesc items[], XtCallbackProc proc, int depth = -1);
+void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth = -1);
 
 // Apply PROC on all ITEMS
-void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure = 0,
+void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure = 0,
 	       int depth = -1);
 
 // Add ITEMS to SHELL.  If IGNORE_SEPS is set, all separators are ignored.

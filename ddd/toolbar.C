@@ -139,13 +139,13 @@ static void flatten_buttons(MMDesc items[])
     }
 }
 
-static Widget align_buttons(MMDesc *items1, MMDesc *items2)
+static Widget align_buttons(const MMDesc *items1, const MMDesc *items2)
 {
     Widget last_button  = 0;
 
     for (int j = 1; j >= 0; j--)
     {
-	MMDesc *items = (j == 0 ? items1 : items2);
+	const MMDesc *items = (j == 0 ? items1 : items2);
 	if (items == 0)
 	    continue;
 
@@ -204,9 +204,9 @@ static void ResetLabelEH(Widget w, XtPointer, XEvent *, Boolean *)
 			 ResetLabelEH, XtPointer(0));
 }
 
-static void center_buttons(MMDesc items[], Dimension offset)
+static void center_buttons(const MMDesc items[], Dimension offset)
 {
-    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
+    for (const MMDesc *item = items; item != 0 && item->name != 0; item++)
     {
 	Widget w = item->widget;
 	if (w == 0)

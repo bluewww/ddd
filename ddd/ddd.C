@@ -372,7 +372,7 @@ static void PopdownStatusHistoryEH(Widget, XtPointer, XEvent *, Boolean *);
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
 
 // Verify whether buttons are active
-static void verify_buttons(MMDesc *items);
+static void verify_buttons(const MMDesc *items);
 
 // Setup shortcut menu
 static void set_shortcut_menu(DataDisp *data_disp, const string& expressions);
@@ -3430,7 +3430,7 @@ static void install_button_tips()
     }
 }
 
-void register_menu_shell(MMDesc *items)
+void register_menu_shell(const MMDesc *items)
 {
     if (items == 0)
 	return;
@@ -3452,12 +3452,12 @@ void register_menu_shell(MMDesc *items)
 // Verify buttons
 //-----------------------------------------------------------------------------
 
-static void verify_button(MMDesc *item, XtPointer)
+static void verify_button(const MMDesc *item, XtPointer)
 {
     verify_button(item->widget);
 }
 
-static void verify_buttons(MMDesc *items)
+static void verify_buttons(const MMDesc *items)
 {
     MMonItems(items, verify_button);
 }

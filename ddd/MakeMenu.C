@@ -718,11 +718,11 @@ Widget MMcreatePanel(Widget parent, const _XtString name, MMDesc items[],
     return panel;
 }
 
-void MMadjustPanel(MMDesc items[], Dimension space)
+void MMadjustPanel(const MMDesc items[], Dimension space)
 {
     // Align panel labels
     Dimension max_label_width = 0;
-    MMDesc *item;
+    const MMDesc *item;
     for (item = items; item != 0 && item->name != 0; item++)
     {
 	if (item->label == 0)
@@ -783,12 +783,12 @@ Widget MMcreateButtonPanel(Widget parent, const _XtString name, MMDesc items[],
 }
 
 // Perform proc on items
-void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure, int depth)
+void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure, int depth)
 {
     if (depth == 0)
 	return;
 
-    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
+    for (const MMDesc *item = items; item != 0 && item->name != 0; item++)
     {
 	if (item->type & MMIgnore)
 	    continue;
@@ -806,7 +806,7 @@ void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure, int depth)
 //-----------------------------------------------------------------------
 
 // Add callbacks to items
-static void addCallback(MMDesc *item, XtPointer default_closure)
+static void addCallback(const MMDesc *item, XtPointer default_closure)
 {
     MMType flags            = item->type;
     MMType type             = flags & MMTypeMask;
@@ -977,14 +977,14 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     }
 }
 
-void MMaddCallbacks(MMDesc items[], XtPointer default_closure, int depth)
+void MMaddCallbacks(const MMDesc items[], XtPointer default_closure, int depth)
 {
     MMonItems(items, addCallback, default_closure, depth);
 }
 
 
 // Add help callback
-static void addHelpCallback(MMDesc *item, XtPointer closure)
+static void addHelpCallback(const MMDesc *item, XtPointer closure)
 {
     Widget widget       = item->widget;
     XtCallbackProc proc = XtCallbackProc(closure);
@@ -992,7 +992,7 @@ static void addHelpCallback(MMDesc *item, XtPointer closure)
     XtAddCallback(widget, XmNhelpCallback, proc, XtPointer(0));
 }
 
-void MMaddHelpCallback(MMDesc items[], XtCallbackProc proc, int depth)
+void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth)
 {
     MMonItems(items, addHelpCallback, XtPointer(proc), depth);
 }

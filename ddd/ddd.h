@@ -111,7 +111,7 @@ extern Boolean ddd_setup_done(XtPointer client_data);
 
 // Register shells of menu ITEMS.
 struct MMDesc;
-extern void register_menu_shell(MMDesc items[]);
+extern void register_menu_shell(const MMDesc items[]);
 
 // Process ^C key
 extern bool process_emergencies();

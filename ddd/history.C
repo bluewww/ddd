@@ -688,7 +688,7 @@ void get_recent(StringArray& arr)
 // Menus to be updated
 static VoidArray menus;
 
-static void update_recent_menu(MMDesc *items)
+static void update_recent_menu(const MMDesc *items)
 {
     StringArray recent_files;
     {
@@ -740,7 +740,7 @@ static void update_recent_menus()
 {
     for (int i = 0; i < menus.size(); i++)
     {
-	MMDesc *items = (MMDesc *)menus[i];
+	const MMDesc *items = (const MMDesc *)menus[i];
 	update_recent_menu(items);
     }
 }

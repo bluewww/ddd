@@ -2294,7 +2294,7 @@ AppDataInitializer::AppDataInitializer()
     // Copy resources to appropriate fields in APP_DATA
     for (int i = 0; i < int(ddd_resources_size); i++)
     {
-	XtResource& res = ddd_resources[i];
+	const XtResource& res = ddd_resources[i];
 	XtPointer src = res.default_addr;
 	XtPointer dest = ((char *)&app_data) + res.resource_offset;
 	Cardinal size = res.resource_size;
