@@ -1020,7 +1020,7 @@ Widget make_buttons(Widget parent, const string& name,
     Arg args[10];
     int arg = 0;
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
-    XtSetArg(args[arg], XmNuserData, XtPointer(""));   arg++;
+    XtSetArg(args[arg], XmNuserData, 0);   	       arg++;
     XtSetArg(args[arg], XmNmarginWidth, 0);            arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0);           arg++;
     XtSetArg(args[arg], XmNspacing, 0);                arg++;
@@ -1057,17 +1057,15 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 		  XtNnumChildren, &num_children,
 		  NULL);
 
-    if (user_data != 0)
+    string *sp = (string *)user_data;
+    if (sp != 0 && *sp == string(_button_list))
     {
-	String s = (String)user_data;
-	if (s == _button_list || string(s) == string(_button_list))
-	{
-	    // Unchanged value - only re-verify all buttons
-	    for (int i = 0; i < int(num_children); i++)
-		verify_button(children[i]);
-	    return;
-	}
+	// Unchanged value - only re-verify all buttons
+	for (int i = 0; i < int(num_children); i++)
+	    verify_button(children[i]);
+	return;
     }
+    delete sp;
 
     // Destroy all existing children (= buttons)
     int i;
@@ -1256,7 +1254,8 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	}
     }
 
-    XtVaSetValues(buttons, XmNuserData, XtPointer(_button_list), NULL);
+    sp = new string(_button_list);
+    XtVaSetValues(buttons, XmNuserData, XtPointer(sp), NULL);
 
     // Register default help command
     DefaultHelpText           = gdbDefaultHelpText;
