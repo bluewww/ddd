@@ -1,4 +1,4 @@
-# $Id$ -*- sh -*-
+# $Id$ -*- ksh -*-
 # Issue the X project root, using xmkmf(1).
 
 # Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
@@ -28,6 +28,11 @@
 
 # We do everything in `/tmp/xc$$'.  If we're interrupted, clean it up.
 tmp=${TMPDIR-/tmp}/xc$$
+
+# Avi Cohen Stuart <avi@baan.nl> says TMP must be exported to prevent
+# removing symlinks from / when running DDD as root on HP-UX10.20.
+export tmp
+
 mkdir $tmp
 trap "cd /; rm -fr $tmp; exit 2" 1 2 15
 cd $tmp
