@@ -8,10 +8,13 @@ DDD 2.1 [in development; scheduled for April, 1997]
     features, and several bug fixes.
 
     User-visible changes to DDD 2.0:
-    - Command displays.  You can now view the output of a debugger
+    - Local variable displays.  You can display all local variables
+      and arguments in the data display.  The display is automatically
+      updated to reflect the list of variables and their values.
+    - Status displays.  You can now view the output of a debugger
       command in the data window, using "graph display `COMMAND`".
-      For instance, "graph display `info locals`" creates a display
-      showing the local variables.  [work in progress]
+      For instance, local variable displays are realized via
+      "graph display `info locals`".
     - Button tips.  Moving the mouse pointer over a button causes a
       small hint window to raise.  This feature is also known as
       `toolbar tips' or `button help'.  (optional)
@@ -22,26 +25,31 @@ DDD 2.1 [in development; scheduled for April, 1997]
     - The register window can display floating-point registers.
     - The `Preferences' panel has been extended and reworked:
       + Button tips and Value tips can be enabled and disabled.
-      + Tab width and grid size can now be changed at run time.
+      + Tab width and graph grid size can now be changed at run time.
       + You can choose at run time whether command buttons should 
         be placed in the command tool (as in DDD 2.0) or in the 
         source window (as in DDD 1.x).
       + You can reset the DDD preferences to the least recently saved
 	settings.
-    - The `Break' button is now named `Interrupt' (as in DDD 1.x), to
-      avoid confusion with the `Break At' button.  The `Quit' menu
-      item is now named `Abort', to avoid confusion with the `Exit'
-      menu item (which issues a `quit' command).
+    - Some items have been renamed for clarity:
+      + The `Stack' menu is now named `Status', as it now hosts other
+        status-related items besides backtrace and registers.
+      + The `Break' button is now named `Interrupt' (as in DDD 1.x), to
+        avoid confusion with the `Break At' button. 
+      + The `Quit' menu item is now named `Abort', to avoid confusion
+        with the `Exit' menu item (which issues a `quit' command).
     - DBX settings can now be viewed and changed at run time, using
       the `Settings' panel.
-    - Reading the VSL library is now realized as a background job.
-      Much faster startup time.
+    - If you are using GDB, there is a panel for displaying various
+      things about the program being debugged.
+    - Reading the VSL library is now realized as a background job,
+      reducing startup time drastically.
     - In the data window, the middle mouse button now toggles 
       the display selection instead of simply extending it.
-    - No more display freezes.  If the debugged program is interrupted
-      while grabbing the pointer (while being in a popup menu or in a
-      modal dialog, for instance), DDD will automatically make the
-      program ungrab it.
+    - Ever suffered from a frozen display while debugging a modal
+      application?  DDD will now automatically make the debugged
+      program ungrab the pointer, if it is interrupted in some modal
+      state.
 
     Documentation:
     - The PostScript copy of the manual has been enriched with several

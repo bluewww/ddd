@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "09 February 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "19 February 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -795,7 +795,7 @@ where it stopped and how it got there.
 .PP
 \s-2@DDD@\s+2 provides a \fIbacktrace window\fR showing a summary of 
 how your program got where it is.  To enable the backtrace window,
-select `\fBBacktrace...\fR' from the `\fBStack\fR' menu.
+select `\fBBacktrace...\fR' from the `\fBStatus\fR' menu.
 .PP
 The `\fBUp\fR' button selects the function that called the current
 one.
@@ -1020,6 +1020,48 @@ can specify the number of array elements to be displayed.
 For more details on artificial arrays, see the \s-2GDB\s+2 documentation.
 .\"
 .\"
+.SS "Displaying Local Variables"
+.\"
+You can display all local variables at once by choosing `\fBDisplay
+Local Variables\fR' from the `\fBData\fR' menu.  When you using
+\s-2DBX\s+2 or \s-2XDB\s+2, this displays all local variables,
+including the arguments of the current function.  When you are using
+\s-2GDB\s+2, function arguments are contained in a separate display,
+activated by `\fBDisplay Arguments\fR'.
+.PP
+The display showing the local variables can be manipulated just like
+any other data display.  Individual variables can be selected and
+dereferenced.
+.\"
+.\"
+.SS "Displaying Program Status Information"
+.\"
+Besides local variables, you can create a display from the output of
+an arbitrary debugger command.  By entering
+.sp
+.br
+  \fBgraph display `\fIcommand\fB`\fR
+.sp
+.br
+the output of \fIcommand\FR is turned into a \fIstatus display\fR
+updated each time the program stops.  For instance, by entering
+.sp
+.br
+  \fBgraph display `where`\fR
+.sp
+.br
+a status display named `\fBWhere\fR' is created that shows the current
+backtrace.
+.PP
+If you are using \s-2GDB\s+2, \s-2@DDD@\s+2 provides a panel from
+which you can choose useful status displays.  In the `\fBStatus\fR'
+menu, select the `\fBOther...\fR' item and pick your choice from the
+list.
+.PP
+Note that status displays are quite time-consuming, so you
+should delete them as soon as you don't need them any more.
+.\"
+.\"
 .SS "Altering Variable Values"
 .\"
 Using the `\fBSet ()\fR' button or the `\fBSet Value\fR' menu item in
@@ -1120,6 +1162,8 @@ Typing
 .sp
 .br
 at the debugger prompt has the same effect.
+.\"
+.\"
 .\"
 .\" ---------------
 .SH "GRAPH EDITING"
@@ -1271,7 +1315,7 @@ subroutine calls are executed without stopping.
 .SS "Registers"
 \s-2@DDD@\s+2 provides a \fIregister window\fR showing the machine
 register values after each program stop.  To enable the register
-window, select `\fBRegisters...\fR' from the `\fBStack\fR' menu.
+window, select `\fBRegisters...\fR' from the `\fBStatus\fR' menu.
 .PP
 By selecting one of the registers, its name is copied to the argument
 field.  You can use it as value for `\fBDisplay()\fR', for instance,

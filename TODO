@@ -297,6 +297,9 @@ Volunteers for these and other projects are welcome!
      and have the DDD `Help' menu items invoke the appropriate
      sections.
 
-134* Have GUI support and documentation for command displays.
+135. Have node reference points be at the upper left instead of the
+     center.
+
+136* Have a LED-like display that blinks while DDD talks with GDB.
  
-135. (Insert your project idea here)
+137. (Insert your project idea here)
