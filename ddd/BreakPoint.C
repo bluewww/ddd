@@ -725,8 +725,13 @@ string BreakPoint::and_op()
 // True if COND is `false' or starts with `false and'
 bool BreakPoint::is_false(const string& cond)
 {
-    return cond == false_value() || 
-	downcase(cond).contains(downcase(false_value() + and_op()), 0);
+    if (cond == false_value())
+	return true;
+
+    string c = downcase(cond);
+    string prefix = downcase(false_value() + and_op());
+
+    return c.contains(prefix, 0);
 }
 
 // Make COND `false' or `false and COND'
@@ -760,7 +765,7 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
     }
 
     if (cond == char(-1))
-	cond = condition();
+	cond = real_condition();
 
     string num = "@" + itostring(nr) + "@";
 
