@@ -38,15 +38,26 @@
 #include "Box.h"
 #include "TypeInfo.h"
 
-
+// Where to attach edges
 enum EdgeAttachMode {
     Straight,	// attach edge on nearest edge point
     Circle,     // ...but assume nodes to be displayed as circles
     Centered    // attach edge on center of node edge
 };
 
+// Where to attach edges pointing at self
+enum SelfEdgePosition {
+    NorthEast,			// Upper right corner
+    SouthEast,			// Lower right corner
+    NorthWest,			// Upper left corner
+    SouthWest			// Lower left corner
+};
+
+// How to align edges pointing at self
+enum SelfEdgeDirection { Clockwise, Counterclockwise };
+
 struct GraphGC {
-    DECLARE_TYPE_INFO
+    DECLARE_TYPE_INFO;
 
     // Drawing stuff
     GC             nodeGC;           // X Graphics context for nodes
@@ -62,6 +73,10 @@ struct GraphGC {
     BoxCoordinate  hintSize;         // Hint size (in pixels)
     unsigned       arrowAngle;       // Arrow angle (in degrees)
     unsigned       arrowLength;      // Arrow length (in pixels)
+
+    BoxCoordinate     selfEdgeDiameter;  // Diameter of edge pointing at self
+    SelfEdgePosition  selfEdgePosition;  // Its position relative to the node
+    SelfEdgeDirection selfEdgeDirection; // Its direction
 
     // Printing stuff
     BoxPrintGC     *printGC;               // Graphics context for printing
@@ -83,6 +98,9 @@ struct GraphGC {
         hintSize(8),
         arrowAngle(30),
         arrowLength(10),
+	selfEdgeDiameter(32),
+	selfEdgePosition(NorthEast),
+	selfEdgeDirection(Counterclockwise),
 	printGC(&defaultPrintGC),
 	printSelectedNodesOnly(false)
     {}
@@ -101,9 +119,13 @@ struct GraphGC {
         hintSize(g.hintSize),
         arrowAngle(g.arrowAngle),
         arrowLength(g.arrowLength),
+	selfEdgeDiameter(g.selfEdgeDiameter),
+	selfEdgePosition(g.selfEdgePosition),
+	selfEdgeDirection(g.selfEdgeDirection),
 	printGC(g.printGC),
 	printSelectedNodesOnly(g.printSelectedNodesOnly)
     {}
 };
 
-#endif
+#endif // _DDD_GraphGC_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

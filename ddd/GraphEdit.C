@@ -119,6 +119,9 @@ static XtResource resources[] = {
 	offset(arrowAngle), XtRImmediate, XtPointer(30) },
     { XtNarrowLength, XtCArrowLength, XtRDimension, sizeof(Dimension),
 	offset(arrowLength), XtRImmediate, XtPointer(10) },
+    { XtNselfEdgeDiameter, XtCSelfEdgeDiameter, XtRDimension, 
+        sizeof(Dimension), offset(selfEdgeDiameter), 
+        XtRImmediate, XtPointer(32) },
 
     { XtNextraWidth, XtCExtraSize, XtRDimension, sizeof(Dimension),
 	offset(extraWidth), XtRImmediate, XtPointer(0) },
@@ -134,6 +137,12 @@ static XtResource resources[] = {
     { XtNlayoutMode, XtCLayoutMode, XtRLayoutMode,
 	sizeof(LayoutMode), offset(layoutMode), 
         XtRImmediate, XtPointer(RegularLayoutMode) },
+    { XtNselfEdgePosition, XtCSelfEdgePosition, XtRSelfEdgePosition,
+	sizeof(SelfEdgePosition), offset(selfEdgePosition), 
+        XtRImmediate, XtPointer(NorthEast) },
+    { XtNselfEdgeDirection, XtCSelfEdgeDirection, XtRSelfEdgeDirection,
+	sizeof(SelfEdgeDirection), offset(selfEdgeDirection), 
+        XtRImmediate, XtPointer(Counterclockwise) },
 
     { XtNdefaultCursor, XtCCursor, XtRCursor, sizeof(Cursor),
 	offset(defaultCursor), XtRImmediate, XtPointer(0)},
@@ -577,7 +586,7 @@ void graphEditRedrawNode(Widget w, GraphNode *node)
 
 
 
-// Convert String to EdgeAttachMode and vice-versa
+// Convert String to EdgeAttachMode and vice versa
 
 static Boolean CvtStringToEdgeAttachMode (Display *display, XrmValue *,
     Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
@@ -641,7 +650,7 @@ static Boolean CvtEdgeAttachModeToString (Display *display, XrmValue *,
 }
 
 
-// Convert String to LayoutMode
+// Convert String to LayoutMode and vice versa
 
 static Boolean CvtStringToLayoutMode (Display *display, XrmValue *,
     Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
@@ -699,6 +708,134 @@ static Boolean CvtLayoutModeToString (Display *display, XrmValue *,
 
     done(String, s);
 }
+
+
+// Convert String to SelfEdgePosition and vice versa
+
+static Boolean CvtStringToSelfEdgePosition (Display *display, XrmValue *,
+    Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
+    XtPointer *)
+{
+    if (*num_args != 0)
+	XtAppWarningMsg(XtDisplayToApplicationContext(display),
+	    "CvtStringToSelfEdgePosition", "wrongParameters",
+	    "XtToolkitError",
+	    "String to SelfEdgePosition conversion needs no extra arguments",
+	    (String *)NULL, (Cardinal *)NULL);
+    
+    string s = downcase((char *)fromVal->addr);
+
+    SelfEdgePosition pos = NorthWest;
+    if (s == "northwest")
+	pos = NorthWest;
+    else if (s == "northeast")
+	pos = NorthEast;
+    else if (s == "southwest")
+	pos = SouthWest;
+    else if (s == "southeast")
+	pos = SouthEast;
+    else
+	XtDisplayStringConversionWarning(display, (String)fromVal->addr,
+	    XtRSelfEdgePosition);
+
+    done(SelfEdgePosition, pos);
+}
+
+static Boolean CvtSelfEdgePositionToString (Display *display, XrmValue *,
+    Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
+    XtPointer *)
+{
+    if (*num_args != 0)
+	XtAppWarningMsg(XtDisplayToApplicationContext(display),
+	    "CvtSelfEdgePositionToString", "wrongParameters",
+	    "XtToolkitError",
+	    "SelfEdgePosition to String conversion needs no extra arguments",
+	    (String *)NULL, (Cardinal *)NULL);
+
+    SelfEdgePosition pos = *((SelfEdgePosition *)fromVal->addr);
+
+    String s = "unknown";
+    switch (pos)
+    {
+    case NorthWest:
+	s = "northwest";
+	break;
+    case NorthEast:
+	s = "northeast";
+	break;
+    case SouthWest:
+	s = "southwest";
+	break;
+    case SouthEast:
+	s = "southwest";
+	break;
+    default:
+	XtDisplayStringConversionWarning(display, s, XtRString);
+	break;
+    }
+
+    done(String, s);
+}
+
+
+// Convert String to SelfEdgeDirection and vice versa
+
+static Boolean CvtStringToSelfEdgeDirection (Display *display, XrmValue *,
+    Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
+    XtPointer *)
+{
+    if (*num_args != 0)
+	XtAppWarningMsg(XtDisplayToApplicationContext(display),
+	    "CvtStringToSelfEdgeDirection", "wrongParameters",
+	    "XtToolkitError",
+	    "String to SelfEdgeDirection conversion needs no extra arguments",
+	    (String *)NULL, (Cardinal *)NULL);
+    
+    string s = downcase((char *)fromVal->addr);
+
+    SelfEdgeDirection dir = Counterclockwise;
+    if (s == "counterclockwise")
+	dir = Counterclockwise;
+    else if (s == "clockwise")
+	dir = Clockwise;
+    else
+	XtDisplayStringConversionWarning(display, (String)fromVal->addr,
+	    XtRSelfEdgeDirection);
+
+    done(SelfEdgeDirection, dir);
+}
+
+static Boolean CvtSelfEdgeDirectionToString (Display *display, XrmValue *,
+    Cardinal *num_args, XrmValue *fromVal, XrmValue *toVal,
+    XtPointer *)
+{
+    if (*num_args != 0)
+	XtAppWarningMsg(XtDisplayToApplicationContext(display),
+	    "CvtSelfEdgeDirectionToString", "wrongParameters",
+	    "XtToolkitError",
+	    "SelfEdgeDirection to String conversion needs no extra arguments",
+	    (String *)NULL, (Cardinal *)NULL);
+
+    SelfEdgeDirection pos = *((SelfEdgeDirection *)fromVal->addr);
+
+    String s = "unknown";
+    switch (pos)
+    {
+    case Clockwise:
+	s = "clockwise";
+	break;
+    case Counterclockwise:
+	s = "counterclockwise";
+	break;
+    default:
+	XtDisplayStringConversionWarning(display, s, XtRString);
+	break;
+    }
+
+    done(String, s);
+}
+
+
 
 
 // Standard Converters
@@ -779,7 +916,7 @@ static Boolean CvtCardinalToString (Display *display, XrmValue *,
 // Initialize class
 static void ClassInitialize()
 {
-    // Register own converters
+    // Register own string -> type converters
     XtSetTypeConverter(XtRString, XtREdgeAttachMode, 
 		       CvtStringToEdgeAttachMode,
 		       XtConvertArgList(0), 0, 
@@ -788,6 +925,16 @@ static void ClassInitialize()
 		       CvtStringToLayoutMode,
 		       XtConvertArgList(0), 0, 
 		       XtCacheAll, XtDestructor(0));
+    XtSetTypeConverter(XtRString, XtRSelfEdgePosition, 
+		       CvtStringToSelfEdgePosition,
+		       XtConvertArgList(0), 0, 
+		       XtCacheAll, XtDestructor(0));
+    XtSetTypeConverter(XtRString, XtRSelfEdgeDirection, 
+		       CvtStringToSelfEdgeDirection,
+		       XtConvertArgList(0), 0, 
+		       XtCacheAll, XtDestructor(0));
+
+    // Register own type -> string converters
     XtSetTypeConverter(XtREdgeAttachMode, XtRString, 
 		       CvtEdgeAttachModeToString,
 		       XtConvertArgList(0), 0, 
@@ -796,8 +943,16 @@ static void ClassInitialize()
 		       CvtLayoutModeToString,
 		       XtConvertArgList(0), 0, 
 		       XtCacheAll, XtDestructor(0));
+    XtSetTypeConverter(XtRSelfEdgePosition, XtRString, 
+		       CvtSelfEdgePositionToString,
+		       XtConvertArgList(0), 0, 
+		       XtCacheAll, XtDestructor(0));
+    XtSetTypeConverter(XtRSelfEdgeDirection, XtRString, 
+		       CvtSelfEdgeDirectionToString,
+		       XtConvertArgList(0), 0, 
+		       XtCacheAll, XtDestructor(0));
 
-    // Register standard converters
+    // Register standard type -> string converters
     XtSetTypeConverter(XtRBoolean, XtRString, 
 		       CvtBooleanToString,
 		       XtConvertArgList(0), 0, 
@@ -811,6 +966,7 @@ static void ClassInitialize()
 		       XtConvertArgList(0), 0, 
 		       XtCacheAll, XtDestructor(0));
 }
+
 
 // Initialize widget
 
@@ -902,28 +1058,38 @@ static void setGraphGC(Widget w)
 {
     const GraphEditWidget _w        = GraphEditWidget(w);
 
-    // read-only
+    // Read only
     const Dimension arrowAngle      = _w->graphEdit.arrowAngle;
     const Dimension arrowLength     = _w->graphEdit.arrowLength;
     const Dimension hintSize        = _w->graphEdit.hintSize;
     const Boolean showHints         = _w->graphEdit.showHints;
-    const EdgeAttachMode edgeAttachMode = 
-	EdgeAttachMode(_w->graphEdit.edgeAttachMode);
     const GC nodeGC                 = _w->graphEdit.nodeGC;
     const GC edgeGC                 = _w->graphEdit.edgeGC;
     const GC invertGC               = _w->graphEdit.invertGC;
     const GC clearGC                = _w->graphEdit.clearGC;
 
-    // write-only
+    const Dimension selfEdgeDiameter = 
+	_w->graphEdit.selfEdgeDiameter;
+    const SelfEdgePosition selfEdgePosition = 
+	_w->graphEdit.selfEdgePosition;
+    const SelfEdgeDirection selfEdgeDirection = 
+	_w->graphEdit.selfEdgeDirection;
+    const EdgeAttachMode edgeAttachMode = 
+	EdgeAttachMode(_w->graphEdit.edgeAttachMode);
+
+    // Write only
     GraphGC& graphGC                = _w->graphEdit.graphGC;
 
-    // set graphGC
+    // Set graphGC
     graphGC = GraphGC(nodeGC, edgeGC, invertGC, clearGC);
-    graphGC.arrowAngle     = arrowAngle;
-    graphGC.arrowLength    = arrowLength;
-    graphGC.edgeAttachMode = EdgeAttachMode(edgeAttachMode);
-    graphGC.drawHints      = showHints;
-    graphGC.hintSize       = hintSize;
+    graphGC.arrowAngle        = arrowAngle;
+    graphGC.arrowLength       = arrowLength;
+    graphGC.edgeAttachMode    = EdgeAttachMode(edgeAttachMode);
+    graphGC.drawHints         = showHints;
+    graphGC.hintSize          = hintSize;
+    graphGC.selfEdgeDiameter  = selfEdgeDiameter;
+    graphGC.selfEdgePosition  = selfEdgePosition;
+    graphGC.selfEdgeDirection = selfEdgeDirection;
 }
 
 

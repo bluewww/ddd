@@ -80,39 +80,47 @@
 #define XtNoutlineColor             "outlineColor"
 #define XtNgridColor                "gridColor"
 #define XtNselectColor              "selectColor"
+#define XtNselfEdgeDiameter         "selfEdgeDiameter"
+#define XtNselfEdgePosition         "selfEdgePosition"
+#define XtNselfEdgeDirection        "selfEdgeDirection"
 
 
 
 // Class types
 
-#define XtCGraph     	   "Graph"
-#define XtCMoveDelta       "MoveDelta"
-#define XtCRubberEdges     "RubberEdges"
-#define XtCRubberArrows    "RubberArrows"
-#define XtCShowHints       "ShowHints"
-#define XtCHintSize        "HintSize"
-#define XtCOpaqueMove      "OpaqueMove"
-#define XtCAutoRaise       "AutoRaise"
-#define XtCGridSize        "GridSize"
-#define XtCExtraSize       "ExtraSize"
-#define XtCShowGrid        "ShowGrid"
-#define XtCSnapToGrid      "SnapToGrid"
-#define XtCEdgeWidth       "EdgeWidth"
-#define XtCEdgeAttachMode  "EdgeAttachMode"
-#define XtCLayoutMode      "LayoutMode"
-#define XtCArrowAngle	   "ArrowAngle"
-#define XtCArrowLength	   "ArrowLength"
-#define XtCRotation	   "Rotation"
-#define XtCAutoLayout	   "AutoLayout"
+#define XtCGraph     	     "Graph"
+#define XtCMoveDelta         "MoveDelta"
+#define XtCRubberEdges       "RubberEdges"
+#define XtCRubberArrows      "RubberArrows"
+#define XtCShowHints         "ShowHints"
+#define XtCHintSize          "HintSize"
+#define XtCOpaqueMove        "OpaqueMove"
+#define XtCAutoRaise         "AutoRaise"
+#define XtCGridSize          "GridSize"
+#define XtCExtraSize         "ExtraSize"
+#define XtCShowGrid          "ShowGrid"
+#define XtCSnapToGrid        "SnapToGrid"
+#define XtCEdgeWidth         "EdgeWidth"
+#define XtCEdgeAttachMode    "EdgeAttachMode"
+#define XtCLayoutMode        "LayoutMode"
+#define XtCArrowAngle	     "ArrowAngle"
+#define XtCArrowLength	     "ArrowLength"
+#define XtCRotation	     "Rotation"
+#define XtCAutoLayout	     "AutoLayout"
+#define XtCSelfEdgeDiameter  "SelfEdgeDiameter"
+#define XtCSelfEdgePosition  "SelfEdgePosition"
+#define XtCSelfEdgeDirection "SelfEdgeDirection"
 
 
 // Representation types
 
-#define XtREdgeAttachMode  "EdgeAttachMode"
-#define XtRLayoutMode      "LayoutMode"
+#define XtREdgeAttachMode    "EdgeAttachMode"
+#define XtRLayoutMode        "LayoutMode"
+#define XtRSelfEdgePosition  "SelfEdgePosition"
+#define XtRSelfEdgeDirection "SelfEdgeDirection"
 
 
-// declare specific GraphEdit class and instance datatypes
+// Declare specific GraphEdit class and instance datatypes
 typedef struct _GraphEditClassRec *GraphEditWidgetClass;
 typedef struct _GraphEditRec      *GraphEditWidget;
 
@@ -180,10 +188,10 @@ enum SelectionMode {
     ToggleSelection		// toggle the selection
 };
 
-// declare the class constant
+// Declare the class constant
 extern WidgetClass graphEditWidgetClass;
 
-// declare special access functions
+// Declare special access functions
 
 // Inform widget that its size has changed
 extern void graphEditSizeChanged(Widget w);

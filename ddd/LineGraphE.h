@@ -55,6 +55,18 @@ protected:
 		       const BoxRegion& exposed, 
 		       const GraphGC& gc) const;
 
+    // Draw self edge
+    virtual void drawSelf(Widget w,
+			  const BoxRegion& exposed,
+			  const GraphGC& gc) const;
+
+    // Draw arrow head at POS
+    virtual void drawArrowHead(Widget w,
+			       const BoxRegion& exposed,
+			       const GraphGC& gc,
+			       const BoxPoint& pos,
+			       double alpha) const;
+
     // Copy Constructor
     LineGraphEdge(const LineGraphEdge &edge):
 	GraphEdge(edge)

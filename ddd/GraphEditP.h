@@ -74,56 +74,59 @@ enum GraphEditState {
 // The GraphEdit instance record
 
 typedef struct _GraphEditPart {
-    // resources
+    // Resources
 
     // Graph stuff
-    Graph *graph;	       // Graph to be displayed
+    Graph *graph;		// Graph to be displayed
 
     // Movement stuff
-    Dimension moveDelta;       // Start move after movement greater than this
-    Boolean rubberEdges;       // Draw edges  when moving
-    Boolean rubberArrows;      // Draw arrows when moving
-    Boolean opaqueMove;	       // Draw nodes  when moving
+    Dimension moveDelta;	// Start move after movement greater than this
+    Boolean rubberEdges;	// Draw edges  when moving
+    Boolean rubberArrows;	// Draw arrows when moving
+    Boolean opaqueMove;		// Draw nodes  when moving
 
     // Selection stuff
-    Boolean autoRaise;	       // Raise selected nodes?
+    Boolean autoRaise;		// Raise selected nodes?
 
     // Hint stuff
-    Boolean showHints;         // Display hints?
+    Boolean showHints;		// Display hints?
 
     // Grid stuff
-    Boolean showGrid;          // Display grid?
-    Dimension gridWidth;       // grid width (> 0)
-    Dimension gridHeight;      // grid height (> 0)
-    Boolean snapToGrid;        // Make sure nodes are on grid?
+    Boolean showGrid;		// Display grid?
+    Dimension gridWidth;	// Grid width (> 0)
+    Dimension gridHeight;	// Grid height (> 0)
+    Boolean snapToGrid;		// Make sure nodes are on grid?
 
     // Layout stuff
-    Boolean autoLayout;        // Layout graph after each change?
+    Boolean autoLayout;		// Layout graph after each change?
 
     // Rotation stuff
-    Cardinal rotation;	       // Rotation in degrees (starting with zero)
+    Cardinal rotation;		// Rotation in degrees (starting with zero)
 
     // Sizes
-    Dimension hintSize;        // hint size (in pixels)
-    Dimension edgeWidth;       // edge width (in pixels)
-    Dimension arrowAngle;      // arrow angle (in degrees)
-    Dimension arrowLength;     // arrow length (in pixels)
+    Dimension hintSize;		// Hint size (in pixels)
+    Dimension edgeWidth;	// Edge width (in pixels)
+    Dimension arrowAngle;	// Arrow angle (in degrees)
+    Dimension arrowLength;	// Arrow length (in pixels)
+    Dimension selfEdgeDiameter; // Diameter of edge pointing at self
 
     // Extra size to be added to the graph size; for panner usage only
-    Dimension extraWidth;      // additional width (in pixels)
-    Dimension extraHeight;     // additional height (in pixels)
+    Dimension extraWidth;	// Additional width (in pixels)
+    Dimension extraHeight;	// Additional height (in pixels)
 
     // Pixmaps
-    Pixmap selectTile;         // Tile to apply when node is selected
+    Pixmap selectTile;		// Tile to apply when node is selected
 
     // Modes
-    EdgeAttachMode edgeAttachMode;      // how to attach edges on nodes
-    LayoutMode layoutMode;              // how to layout graphs
+    EdgeAttachMode edgeAttachMode;       // How to attach edges on nodes
+    LayoutMode layoutMode;	         // How to layout graphs
+    SelfEdgePosition  selfEdgePosition;  // Position of self-pointing edges
+    SelfEdgeDirection selfEdgeDirection; // Its direction
 
     // Cursors
-    Cursor defaultCursor;		// Standard cursor to use
-    Cursor moveCursor;			// Cursor to use when moving
-    Cursor selectCursor;	        // Cursors to use when selecting
+    Cursor defaultCursor;	         // Standard cursor to use
+    Cursor moveCursor;			 // Cursor to use when moving
+    Cursor selectCursor;	         // Cursors to use when selecting
     Cursor selectBottomLeftCursor;
     Cursor selectBottomRightCursor;
     Cursor selectTopLeftCursor;
@@ -146,19 +149,19 @@ typedef struct _GraphEditPart {
     // Private state
     GraphEditState state;	// Current state
 
-    BoxPoint startAction;	// starting point action
-    BoxPoint endAction;		// end point action
-    BoxPoint minimalOffset;	// minimal offset for moving
-    BoxPoint lastOffset;	// last offset for moving
+    BoxPoint startAction;	// Starting point action
+    BoxPoint endAction;		// End point action
+    BoxPoint minimalOffset;	// Minimal offset for moving
+    BoxPoint lastOffset;	// Last offset for moving
 
-    Time lastSelectTime;	// last selection time (for multi-clicks)
+    Time lastSelectTime;	// Last selection time (for multi-clicks)
 
-    GC nodeGC;			// graphic context for nodes
-    GC edgeGC;			// graphic context for edges
-    GC invertGC;		// graphic context for inverting
-    GC clearGC;		        // graphic context for clearing
-    GC frameGC;			// graphic context for frame
-    GC outlineGC;		// graphic context for outlines
+    GC nodeGC;			// Graphic context for nodes
+    GC edgeGC;			// Graphic context for edges
+    GC invertGC;		// Graphic context for inverting
+    GC clearGC;		        // Graphic context for clearing
+    GC frameGC;			// Graphic context for frame
+    GC outlineGC;		// Graphic context for outlines
 
     GraphGC graphGC;		// Graph graphic context
 

@@ -183,9 +183,15 @@ void LineGraphEdge::findLine(BoxPoint& c1, BoxPoint& c2,
 // Draw
 
 void LineGraphEdge::_draw(Widget w, 
-			  const BoxRegion&, 
+			  const BoxRegion& exposed, 
 			  const GraphGC& gc) const
 {
+    if (from() == to())
+    {
+	drawSelf(w, exposed, gc);
+	return;
+    }
+
     // Get node starting points
     BoxPoint pos1     = from()->pos();
     BoxRegion region1 = from()->region(gc);
@@ -218,33 +224,170 @@ void LineGraphEdge::_draw(Widget w,
     XDrawLine(XtDisplay(w), XtWindow(w), gc.edgeGC,
 	l1[X], l1[Y], l2[X], l2[Y]);
 
-    if (gc.drawArrowHeads && !to()->isHint())
-    {
-	// draw arrowhead at l2
+    // Get arrow angle
+    double alpha = atan2(l1[Y] - l2[Y], l1[X] - l2[X]);
 
-	const double offset = gc.arrowAngle * M_PI/180;	// angle
-	const int length    = gc.arrowLength;		// length
+    // Draw arrow head at L2
+    drawArrowHead(w, exposed, gc, l2, alpha);
+}
 
-        // get arrow angle
-	double alpha = atan2(l1[Y] - l2[Y], l1[X] - l2[X]);
 
-        // get coordinates
-	XPoint points[3];
-	points[0].x = l2[X];
-	points[0].y = l2[Y];
-	points[1].x = (short)(l2[X] + length * cos(alpha + offset / 2));
-	points[1].y = (short)(l2[Y] + length * sin(alpha + offset / 2));
-	points[2].x = (short)(l2[X] + length * cos(alpha - offset / 2));
-	points[2].y = (short)(l2[Y] + length * sin(alpha - offset / 2));
+// Draw arrow head at POS
+void LineGraphEdge::drawArrowHead(Widget w,
+				  const BoxRegion& /* exposed */,
+				  const GraphGC& gc,
+				  const BoxPoint& pos,
+				  double alpha) const
+{
+    if (!gc.drawArrowHeads || to()->isHint())
+	return;
+
+    const double offset = gc.arrowAngle * M_PI/180;	// Angle
+    const int length    = gc.arrowLength;		// Length
+
+    // Get coordinates
+    XPoint points[3];
+    points[0].x = pos[X];
+    points[0].y = pos[Y];
+    points[1].x = short(pos[X] + length * cos(alpha + offset / 2));
+    points[1].y = short(pos[Y] + length * sin(alpha + offset / 2));
+    points[2].x = short(pos[X] + length * cos(alpha - offset / 2));
+    points[2].y = short(pos[Y] + length * sin(alpha - offset / 2));
 
 #if 0
-        cout << "\nalpha = " << alpha / M_PI * 360 << "\n";
+	clog << "\nangle = " << (alpha / (M_PI * 2.0)) * 360.0  << "\n";
 	for (int i = 0; i < 3; i++)
-	    cout << "points[" << i << "] = "
-		<< BoxPoint(points[i].x, points[i].y) << "\n";
+	    clog << "points[" << i << "] = "
+		 << BoxPoint(points[i].x, points[i].y) << "\n";
 #endif
 
-	XFillPolygon(XtDisplay(w), XtWindow(w), gc.edgeGC, points, 
-		     XtNumber(points), Convex, CoordModeOrigin);
+    XFillPolygon(XtDisplay(w), XtWindow(w), gc.edgeGC, points,
+		 XtNumber(points), Convex, CoordModeOrigin);
+}
+
+// Draw self edge
+void LineGraphEdge::drawSelf(Widget w,
+			     const BoxRegion& exposed,
+			     const GraphGC& gc) const
+{
+    assert(from() == to());
+
+    // Get arc start
+    BoxRegion region = from()->region(gc);
+    if (from()->selected())
+	region.origin() += gc.offsetIfSelected;
+
+    // Draw arc
+
+    Dimension diameter = gc.selfEdgeDiameter;
+
+    // Make sure edge is still attached to node
+    diameter = min(diameter, region.space(X) + region.space(X) / 2);
+    diameter = min(diameter, region.space(Y) + region.space(Y) / 2);
+
+    // Be sure we don't make it too small
+    diameter = max(diameter, 4);
+    Dimension radius = (diameter + 1) / 2;
+    diameter = radius * 2;
+
+    BoxPoint position(region.origin());	// Upper left corner of the arc
+    int start;			        // Start of the arc (in degrees)
+    const int extend = 270;	        // Extend of the arc (in degrees)
+
+    switch (gc.selfEdgePosition)
+    {
+    case NorthEast:
+	position += BoxPoint(region.space(X) - radius, -radius);
+	start = 270;
+	break;
+
+    case SouthEast:
+	position += 
+	    BoxPoint(region.space(X) - radius, region.space(Y) - radius);
+	start = 180;
+	break;
+
+    case SouthWest:
+	position += BoxPoint(-radius, region.space(Y) - radius);
+	start = 90;
+	break;
+
+    case NorthWest:
+	position += BoxPoint(-radius, -radius);
+	start = 0;
+	break;
     }
+
+    XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC, position[X],
+	     position[Y], diameter, diameter,
+	     start * 64, extend * 64);
+
+    // Find arrow angle
+    int arrow_angle;
+    switch (gc.selfEdgeDirection)
+    {
+    case Clockwise:
+	arrow_angle = 360 - (start + extend + 180) % 360;
+	break;
+
+    case Counterclockwise:
+	arrow_angle = 360 - (start + 180) % 360;
+	break;
+    }
+    double alpha = 2 * M_PI * arrow_angle / 360.0;
+
+    // Incline arrow a little into the arc
+    double cosine = gc.arrowLength / (2.0 * radius);
+    double inclination = (M_PI / 2.0) - acos(cosine);
+
+    // Draw arrow
+    position = BoxPoint(region.origin());
+    switch (gc.selfEdgeDirection)
+    {
+    case Clockwise:
+	alpha -= inclination;
+	switch (gc.selfEdgePosition)
+	{
+	case NorthEast:
+	    position += BoxPoint(region.space(X), radius);
+	    break;
+
+	case SouthEast:
+	    position += BoxPoint(region.space(X) - radius, region.space(Y));
+	    break;
+
+	case SouthWest:
+	    position += BoxPoint(0, region.space(Y) - radius);
+	    break;
+
+	case NorthWest:
+	    position += BoxPoint(radius, 0);
+	    break;
+	}
+	break;
+
+    case Counterclockwise:
+	alpha += inclination;
+	switch (gc.selfEdgePosition)
+	{
+	case NorthEast:
+	    position += BoxPoint(region.space(X) - radius, 0);
+	    break;
+
+	case SouthEast:
+	    position += BoxPoint(region.space(X), region.space(Y) - radius);
+	    break;
+
+	case SouthWest:
+	    position += BoxPoint(radius, region.space(Y));
+	    break;
+
+	case NorthWest:
+	    position += BoxPoint(0, radius);
+	    break;
+	}
+	break;
+    }
+
+    drawArrowHead(w, exposed, gc, position, alpha);
 }
