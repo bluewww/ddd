@@ -173,16 +173,22 @@ LDFLAGS = @LDFLAGS@
 # functions, we reference libc explicitly (-lc).  Also, our local
 # librx library required by the regex classes redefines regcomp(),
 # regexec(), ... to GNU_regcomp(), GNU_regexec() and so on.
-
-# Bug reported and fixed by neal@ctd.comsat.com (Neal Becker).
+#
+# On other systems (notably Linux), DDD crashes if -lc is defined twice.
+#
+# Hence: if DDD crashes immediately after startup, change the setting
+# of `EXTRA_LIBC' from `-lc' to `' or vice versa.  Please report the
+# problem to `ddd-bugs@ips.cs.tu-bs.de' such that future DDD releases
+# will detect this problem automatically.
 
 LIBRX      = @LIBRX@
 LIBTERMCAP = @LIBTERMCAP@
 LIBIBERTY  = @LIBIBERTY@
 LIBM       = @LIBM@
 LIBC       = @LIBC@
+EXTRA_LIBC = @EXTRA_LIBC@
 NON_X_LIBS = @LIBS@
-LIBS = $(LIBC) $(LIBRX) $(LIBTERMCAP) $(LIBIBERTY) $(LIBM) $(LIBC)
+LIBS = $(EXTRA_LIBC) $(LIBRX) $(LIBTERMCAP) $(LIBIBERTY) $(LIBM) $(LIBC)
 
 
 ## X Libraries
