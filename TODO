@@ -333,4 +333,10 @@ Volunteers for these and other projects are welcome!
 382 Support GDB/MI - a machine oriented interface to GDB.  See
     `http://sourceware.cygnus.com/gdb/onlinedocs/gdbmi_toc.html'.
 
-384 (Insert new project ideas here)
+384 Finish themes support:
+    * Scan entire VSL include path for themes
+    * Cache computed VSL libraries (clear when changed)
+    * Make `Suppress' more easily accessible
+    * Allow for re-opening the `themes' menu (clear `entries' arrays)
+
+385 (Insert new project ideas here)
