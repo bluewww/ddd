@@ -286,13 +286,13 @@ void DispValue::init(string& value, DispValueType given_type)
 	    // same across all elements.
 	    string member_name;
 	    DispValueType member_type = UnknownType;
-	    int array_index = 0;
+	    int array_index = gdb->default_index_base();
 
 	    // The array has at least one element.  Otherwise, GDB
 	    // would treat it as a pointer.
 	    do {
 		string repeated_value = value;
-		member_name = "[" + itostring(array_index++) + "]";
+		member_name = gdb->index_expr("", array_index++);
 		DispValue *dv = 
 		    new DispValue(this, depth() + 1, value,
 				  base + member_name, member_name, 
@@ -304,7 +304,7 @@ void DispValue::init(string& value, DispValueType given_type)
 
 		while (--repeats > 0)
 		{
-		    member_name = "[" + itostring(array_index++) + "]";
+		    member_name = gdb->index_expr("", array_index++);
 		    string val = repeated_value;
 		    DispValue *repeated_dv = 
 			new DispValue(this, depth() + 1,
@@ -350,7 +350,8 @@ void DispValue::init(string& value, DispValueType given_type)
 	    {
 		member_prefix = "";
 	    }
-	    else if (member_prefix.contains('*', 0))
+	    else if (gdb->program_language() == LANGUAGE_C &&
+		     member_prefix.contains('*', 0))
 	    {
 		member_prefix.del("*");
 		member_prefix.prepend ("(");

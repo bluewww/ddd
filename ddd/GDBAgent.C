@@ -1816,9 +1816,9 @@ string GDBAgent::dereferenced_expr(string expr) const
 	return prepend_prefix("*", expr);
 
     case LANGUAGE_FORTRAN:
-	// The GDB source `f-lang.c' says `**' is the FORTRAN
-	// indirection operator.  Well, if GDB wants it so...
-	return prepend_prefix("**", expr);
+	// GDB prints dereferenced pointers as `**X', but accepts them
+	// as `*X'.
+	return prepend_prefix("*", expr);
 
     case LANGUAGE_CHILL:
 	return append_suffix(expr, "->");
@@ -1850,12 +1850,45 @@ string GDBAgent::address_expr(string expr) const
     case LANGUAGE_CHILL:	// FIXME: untested.
 	return prepend_prefix("->", expr);
 
-    case LANGUAGE_FORTRAN:	// FIXME
+    case LANGUAGE_FORTRAN:
+	return prepend_prefix("&", expr);
+
     case LANGUAGE_OTHER:
 	return "";		// All other languages
     }
 
     return "";			// All other languages
+}
+
+// Give the index of an expression.
+string GDBAgent::index_expr(string expr, int index) const
+{
+    switch (program_language())
+    {
+    case LANGUAGE_FORTRAN:
+	return expr + "(" + itostring(index) + ")";
+
+    default:
+	return expr + "[" + itostring(index) + "]";
+    }
+
+    return "";			// All other languages
+}
+
+// Return default index base
+int GDBAgent::default_index_base() const
+{
+    switch (program_language())
+    {
+    case LANGUAGE_FORTRAN:
+    case LANGUAGE_PASCAL:
+    case LANGUAGE_CHILL:
+	return 1;
+
+    case LANGUAGE_C:
+    case LANGUAGE_OTHER:
+	return 0;
+    }
 }
 
 // Return assignment command
@@ -1996,21 +2029,31 @@ ProgramLanguage GDBAgent::program_language(string text)
 
     if (text.contains("language"))
     {
-	if (text.contains("mod")
-	    || text.contains("pascal")
-	    || text.contains("ada")
-	    || text.contains("m2")
-	    || text.contains("m3"))
-	{
-	    program_language(LANGUAGE_PASCAL);
-	}
-	else if (text.contains("fortran"))
+	text = text.after("language");
+	text = text.before("\n");
+
+	if (text.contains("fortran"))
 	{
 	    program_language(LANGUAGE_FORTRAN);
 	}
 	else if (text.contains("chill"))
 	{
 	    program_language(LANGUAGE_CHILL);
+	}
+	else if (text.contains("pascal")
+	    || text.contains("ada"))
+	{
+	    program_language(LANGUAGE_PASCAL);
+	}
+	else if (text.contains("c++"))
+	{
+	    program_language(LANGUAGE_C);
+	}
+	else if (text.contains("mod")
+	    || text.contains("m2")
+	    || text.contains("m3"))
+	{
+	    program_language(LANGUAGE_PASCAL);
 	}
 	else if (text.contains("c"))
 	{
