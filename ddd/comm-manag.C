@@ -1212,6 +1212,19 @@ void send_gdb_command(string cmd, Widget origin,
 	extra_data->refresh_threads     = true;
     }
 
+    if (undo_buffer.showing_earlier_state() && !cmd_data->new_exec_pos)
+    {
+	// Showing earlier state.  Don't update anything related to
+	// program state.
+	extra_data->refresh_where     = false;
+	extra_data->refresh_frame     = false;
+	extra_data->refresh_data      = false;
+	extra_data->refresh_user      = false;
+	extra_data->refresh_threads   = false;
+	extra_data->refresh_registers = false;
+	extra_data->refresh_addr      = false;
+    }
+
     if (cmd_data->new_exec_pos
 	|| extra_data->refresh_frame 
 	|| extra_data->refresh_data)
