@@ -307,6 +307,9 @@ static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer);
 // User emergencies (Ctrl-C)
 bool process_emergencies();
 
+// Synchronize `():' fields
+static void sync_args(ArgField *a1, ArgField *a2);
+
 // Return true if user interaction events are pending
 static bool pending_interaction();
 
@@ -2009,6 +2012,7 @@ int main(int argc, char *argv[])
     XtAddCallback(source_arg->widget(), XmNactivateCallback, 
 		  ActivateCB, 
 		  XtPointer(arg_cmd_area[ArgItems::Lookup].widget));
+    sync_args(source_arg, data_disp->graph_arg);
 
     // Command tool bar (optional)
     command_toolbar_w = make_buttons(source_view_parent, "command_toolbar", 
@@ -4161,6 +4165,7 @@ void update_arg_buttons()
 static void source_argHP(void *, void *, void *)
 {
     update_arg_buttons();
+    data_disp->refresh_args();
 }
 
 // Language changed - re-label buttons
@@ -5264,6 +5269,29 @@ bool process_emergencies()
     }
 
     return false;
+}
+
+
+//----------------------------------------------------------------------------
+// Synchronize argument fields
+//----------------------------------------------------------------------------
+
+static void SyncArgHP(void *src, void *client_data, void *)
+{
+    ArgField *source = (ArgField *)src;
+    ArgField *target = (ArgField *)client_data;
+
+    target->removeHandler(Changed, SyncArgHP, (void *)source);
+    target->set_string(source->get_string());
+    target->addHandler(Changed, SyncArgHP, (void *)source);
+}
+
+static void sync_args(ArgField *source, ArgField *target)
+{
+    target->set_string(source->get_string());
+
+    source->addHandler(Changed, SyncArgHP, (void *)target);
+    target->addHandler(Changed, SyncArgHP, (void *)source);
 }
 
 //-----------------------------------------------------------------------------

@@ -166,7 +166,6 @@ class DataDisp {
     static void set_args(BoxPoint p = BoxPoint(),
 			 SelectionMode mode = SetSelection);
 
-    static void refresh_args();
     static void refresh_display_list(bool silent = false);
 
     static DispValue *selected_value();
@@ -336,6 +335,9 @@ public:
     // Return current shortcut menu items
     static void get_shortcut_menu(StringArray& exprs,
 				  StringArray& labels);
+
+    // Refresh argument buttons
+    static void refresh_args();
 
 private:
     // Call me back again

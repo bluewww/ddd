@@ -1688,7 +1688,6 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 {
     (void) timer_id;		// Use it
     assert(*timer_id == refresh_args_timer);
-    refresh_args_timer = 0;
 
     DataDispCount count(disp_graph);
 
@@ -1774,7 +1773,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  dereference_ok);
 
     // Dependent
-    set_sensitive(graph_cmd_area[CmdItms::New].widget, true);
+    set_sensitive(graph_cmd_area[CmdItms::New].widget, arg_ok);
     set_sensitive(display_area[DisplayItms::New].widget, true);
 
     // Rotate
@@ -1870,21 +1869,6 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	    arg = disp_node_arg->name();
 	    source_arg->set_string(arg);
 	}
-	else
-	{
-	    ostrstream arg_os;
-	    arg_os << "(" << count.selected << " displays)";
-	    arg = arg_os;
-	}
-
-	if (graph_arg)
-	    graph_arg->set_string(arg);
-    }
-    else
-    {
-	// No argument
-	if (graph_arg)
-	    graph_arg->set_string("");
     }
 
     // Set selection.
@@ -1914,6 +1898,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	XmTextSetSelection(graph_selection_w, 
 			   0, XmTextGetLastPosition(graph_selection_w), tm);
     }
+
+    refresh_args_timer = 0;
 }
 
 
@@ -4918,6 +4904,8 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
     // All is done - don't use default behavior.
     return false;
 }
+
+
 
 //----------------------------------------------------------------------------
 // Constructor
