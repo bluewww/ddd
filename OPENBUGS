@@ -173,7 +173,4 @@ detail.
     clicking button 1 on a variable does not copy it to the ():
     argument field.
 
-740 Benoit Rochefort <benoitr@adopt.qc.ca> reports that Perl-5.005_02
-    on HP-UX exits as soon as processing `open(STDIN, "</dev/tty")'.
-
 741 (Insert new bugs here)
