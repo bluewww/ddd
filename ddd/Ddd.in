@@ -2202,6 +2202,8 @@ Reload the source from file.
 ! Print Dialog
 !-----------------------------------------------------------------------------
 
+Ddd*print_popup.title: @DDD@: Print Graph
+
 Ddd*print*options.orientation:                XmVERTICAL
 Ddd*print*options.marginWidth:                0
 Ddd*print*options.marginHeight:               0
@@ -2823,12 +2825,12 @@ Ddd*no_completion_error*contextHelpString:	\
 Command completion relies on the GDB `@tt complete@rm' command,\n\
 which is present in GDB 4.13 and later.
 
-Ddd*print_empty_graph_error.title: @DDD@: Nothing to Print
+Ddd*print_empty_graph_error_popup.title: @DDD@: Nothing to Print
 Ddd*print_empty_graph_error*contextHelpString:	\
 @rm There is nothing to print.\n\
 The printing has been cancelled.
 
-Ddd*print_failed_error.title: @DDD@: Printing Failed
+Ddd*print_failed_error_popup.title: @DDD@: Printing Failed
 Ddd*print_failed_error*contextHelpString:	\
 @rm The file holding the graph picture could not be written.\n\
 The printing has been cancelled.
