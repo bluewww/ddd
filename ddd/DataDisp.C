@@ -2838,7 +2838,8 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     int nr = get_nr(nr_s);
     if (nr == 0 || display_name == "")
     {
-	post_gdb_message(answer, last_origin);
+	if (answer != "")
+	    post_gdb_message(answer, last_origin);
 	return 0;
     }
 
@@ -2873,7 +2874,8 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     if (is_disabling(value, gdb))
     {
 	string error_msg = get_disp_value_str(value, gdb);
-	post_gdb_message(error_msg, last_origin);
+	if (error_msg != "")
+	    post_gdb_message(error_msg, last_origin);
 	value = "";
 	disabling_occurred = true;
     }
@@ -3189,16 +3191,19 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
     int depend_nr = disp_graph->get_by_name(info->depends_on);
     for (int i = 0; i < count; i++)
     {
-	if (!contains_display(answers[i], gdb))
+	const string& answer = answers[i];
+
+	if (!contains_display(answer, gdb))
 	{
 	    // Looks like an error message
-	    post_gdb_message(answers[i], last_origin);
+	    if (answer != "")
+		post_gdb_message(answer, last_origin);
 	}
 	else
 	{
 	    // Create new display and remember disabling-message
 	    DispNode *dn = new_data_node(info->display_expressions[i],
-					 info->scope, answers[i]);
+					 info->scope, answer);
 	    if (dn == 0)
 		continue;
 
@@ -3504,7 +3509,13 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose,
     }
 
     if (disabled_data_displays > 0)
-	gdb_command(cmd, last_origin, disable_displayOQC, (void *)verbose);
+    {
+	static RefreshInfo info;
+	info.verbose = verbose;
+	info.prompt  = do_prompt;
+
+	gdb_command(cmd, last_origin, disable_displayOQC, (void *)&info);
+    }
 
     int disabled_user_displays = 0;
     for (i = 0; i < display_nrs.size(); i++)
@@ -3531,10 +3542,12 @@ void DataDisp::disable_displayOQC (const string& answer, void *data)
     if (answer == NO_GDB_ANSWER)
 	return;			// Command was canceled
 
-    bool verbose = bool(data);
+    RefreshInfo *info = (RefreshInfo *)data;
 
-    if (verbose)
+    if (info->verbose && answer != "")
 	post_gdb_message(answer);
+    if (info->prompt)
+	prompt();
 
     refresh_graph_edit();
 }
@@ -3572,7 +3585,13 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
     }
 
     if (enabled_data_displays > 0)
-	gdb_command(cmd, last_origin, enable_displayOQC, (void *)verbose);
+    {
+	static RefreshInfo info;
+	info.verbose = verbose;
+	info.prompt  = do_prompt;
+
+	gdb_command(cmd, last_origin, enable_displayOQC, (void *)&info);
+    }
 
     int enabled_user_displays = 0;
     for (i = 0; i < display_nrs.size(); i++)
@@ -3601,12 +3620,12 @@ void DataDisp::enable_displayOQC (const string& answer, void *data)
     if (answer == NO_GDB_ANSWER)
 	return;			// Command was canceled
 
-    bool verbose = bool(data);
+    RefreshInfo *info = (RefreshInfo *)data;
 
-    if (verbose)
+    if (info->verbose && answer != "")
 	post_gdb_message(answer);
 
-    refresh_displaySQ(0, false);
+    refresh_displaySQ(0, info->verbose, info->prompt);
 }
 
 
@@ -3647,7 +3666,13 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose,
     }
 
     if (deleted_data_displays > 0 && gdb->has_display_command())
-	gdb_command(cmd, last_origin, delete_displayOQC, (void *)verbose);
+    {
+	static RefreshInfo info;
+	info.verbose = verbose;
+	info.prompt  = do_prompt;
+	
+	gdb_command(cmd, last_origin, delete_displayOQC, (void *)&info);
+    }
 
     for (i = 0; i < display_nrs.size(); i++)
     {
@@ -3682,7 +3707,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
     if (answer == NO_GDB_ANSWER)
 	return;			// Command was canceled
 
-    bool verbose = bool(data);
+    RefreshInfo *info = (RefreshInfo *)data;
 
     string ans = answer;
 
@@ -3697,8 +3722,10 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
     }
 
     // Anything remaining is an error message
-    if (verbose)
+    if (info->verbose && ans != "")
 	post_gdb_message(ans);
+    if (info->prompt)
+	prompt();
 
     // Refresh editor
     refresh_graph_edit();
@@ -3964,7 +3991,8 @@ string DataDisp::process_displays(string& displays,
 	    if (disp_nr >= 0 && dn != 0)
 	    {
 		string error_msg = get_disp_value_str(next_display, gdb);
-		post_gdb_message(error_msg);
+		if (error_msg != "")
+		    post_gdb_message(error_msg);
 		dn->make_active();
 		dn->disable();
 	    }
