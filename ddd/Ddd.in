@@ -1167,50 +1167,11 @@ Ddd*editMenu.delete.mnemonic:		D
 Ddd*menubar.options.labelString:	Options
 Ddd*menubar.options.mnemonic:		O
 
+
 Ddd*menubar.options*contextHelpString:	\
 @rm This is the @sl Options @rm menu.\n\
 \n\
-@sl General Preferences:@rm\n\
-@tt \267 @rm If @bf Group Iconify @rm is set, all @DDD@ windows\n\
-    are iconified as a group.  Otherwise, windows are iconified separately.\n\
-@tt \267 @rm If @bf Global Tab Completion @rm is set, \
-the @key TAB @rm key completes\n\
-    arguments in all @DDD@ windows.  Otherwise, the  @key TAB @rm completes\n\
-    in the @DDD@ console window only.\n\
-@tt \267 @rm If @bf Suppress X Warnings @rm is set, \
-X warnings are silently ignored.\n\
-@tt \267 @rm If @bf Save History on Exit @rm is set, the command history is\n\
-    automatically saved when @DDD@ exits.\
-  Otherwise, history is discarded.\n\
-\n\
-@sl Source Preferences:@rm\n\
-@tt \267 @rm If @bf Display Glyphs @rm is set, \
-positions and breakpoints are shown as glyphs.\n\
-    Otherwise, positions and breakpoints are shown as text.\n\
-@tt \267 @rm If @bf Cache Sources @rm is set, \
-source texts are cached in memory.\n\
-    Otherwise, sources are re-read upon each source change.\n\
-@tt \267 @rm If @bf Cache Machine Code @rm is set, \
-disassembled code is cached in memory.\n\
-    Otherwise, code is re-disassembled upon each function change.\n\
-\n\
-@sl Data Preferences:@rm\n\
-@tt \267 @rm If @bf Show Grid @rm is set, the grid is displayed.\n\
-@tt \267 @rm If @bf Show Edge Hints @rm is set, edge hints are displayed.\n\
-@tt \267 @rm If @bf Snap to Grid @rm is set, display alignment is enforced.\n\
-@tt \267 @rm If @bf Compact Layout @rm is set, the graph is layouted\n\
-    in a more compact fashion; suitable for homogenous structures only.\n\
-    Otherwise, the standard layout algorithm is used.\n\
-@tt \267 @rm If @bf Automatic Layout @rm is set, the graph is layouted\n\
-    after each change.  Otherwise, layout can be invoked manually.\n\
-\n\
-@sl Startup Preferences:@rm\n\
-(Note: these options take effect only after saving options\n\
-and restarting @DDD@)\n\
-@tt \267 @bf Windows @rm sets the window layout.\n\
-@tt \267 @bf Keyboard focus @rm sets the keyboard focus policy.\n\
-@tt \267 @bf Data Scrolling @rm sets the data window scrolling mode.\n\
-@tt \267 @bf Debugger Type @rm sets the type of inferior debugger to use.\n\
+The @bf Preference @rm menus invoke panels for setting preferences.\n\
 \n\
 @tt \267 @rm If @bf Run in Execution Window @rm is set, \
 the program is run in a separate\n\
@@ -1225,7 +1186,6 @@ the current function is automatically disassembled.\n\
 \n\
 @bf Save Options @rm saves options and preferences for the next use of @DDD@.
 
-
 Ddd*optionsMenu.separateExecWindow.labelString: Run in Execution Window
 Ddd*optionsMenu.separateExecWindow.mnemonic:    E
 
@@ -1239,102 +1199,20 @@ Ddd*optionsMenu.disassemble.mnemonic:        M
 Ddd*optionsMenu*disassemble.accelerator:     Ctrl<Key>M
 Ddd*optionsMenu*disassemble.acceleratorText: Ctrl+M
 
-Ddd*optionsMenu.generalOptions.labelString:  General Preferences
-Ddd*optionsMenu.generalOptions.mnemonic:     G
+Ddd*optionsMenu.generalPreferences.labelString:  General Preferences...
+Ddd*optionsMenu.generalPreferences.mnemonic:     G
 
-Ddd*optionsMenu.sourceOptions.labelString:   Source Preferences
-Ddd*optionsMenu.sourceOptions.mnemonic:      S
+Ddd*optionsMenu.sourcePreferences.labelString:   Source Preferences...
+Ddd*optionsMenu.sourcePreferences.mnemonic:      S
 
-Ddd*optionsMenu.dataOptions.labelString:     Data Preferences
-Ddd*optionsMenu.dataOptions.mnemonic:        D
+Ddd*optionsMenu.dataPreferences.labelString:     Data Preferences...
+Ddd*optionsMenu.dataPreferences.mnemonic:        D
 
-Ddd*optionsMenu.startupOptions.labelString:  Startup Preferences
-Ddd*optionsMenu.startupOptions.mnemonic:     u
+Ddd*optionsMenu.startupPreferences.labelString:  Startup Preferences...
+Ddd*optionsMenu.startupPreferences.mnemonic:     u
 
 Ddd*optionsMenu.saveOptions.labelString:     Save Options
 Ddd*optionsMenu.saveOptions.mnemonic:        O
-
-Ddd*generalOptionsMenu.groupIconify.labelString:       Group Iconify
-Ddd*generalOptionsMenu.groupIconify.mnemonic:	       G
-
-Ddd*generalOptionsMenu.globalTabCompletion.labelString: Global Tab Completion
-Ddd*generalOptionsMenu.globalTabCompletion.mnemonic:    T
-Ddd*generalOptionsMenu*disassemble.accelerator:	        Ctrl<Key>Tab
-Ddd*generalOptionsMenu*disassemble.acceleratorText:     Ctrl+Tab
-
-Ddd*generalOptionsMenu.suppressWarnings.labelString:   Suppress X Warnings
-Ddd*generalOptionsMenu.suppressWarnings.mnemonic:      W
-
-Ddd*generalOptionsMenu.saveOptionsOnExit.labelString:  Save Options on Exit
-Ddd*generalOptionsMenu.saveOptionsOnExit.mnemonic:     O
-
-Ddd*generalOptionsMenu.saveHistoryOnExit.labelString:  Save History on Exit
-Ddd*generalOptionsMenu.saveHistoryOnExit.mnemonic:     H
-
-Ddd*sourceOptionsMenu.displayGlyphs.labelString:       Display Glyphs
-Ddd*sourceOptionsMenu.displayGlyphs.mnemonic:          G
-
-Ddd*sourceOptionsMenu.cacheSourceFiles.labelString:    Cache Source Files
-Ddd*sourceOptionsMenu.cacheSourceFiles.mnemonic:       S
-
-Ddd*sourceOptionsMenu.cacheMachineCode.labelString:    Cache Machine Code
-Ddd*sourceOptionsMenu.cacheMachineCode.mnemonic:       M
-
-Ddd*dataOptionsMenu*showGrid.labelString:	       Show Grid
-Ddd*dataOptionsMenu*showGrid.mnemonic:		       G
-
-Ddd*dataOptionsMenu*showHints.labelString:	       Show Edge Hints
-Ddd*dataOptionsMenu*showHints.mnemonic:		       E
-
-Ddd*dataOptionsMenu*snapToGrid.labelString:	       Snap to Grid
-Ddd*dataOptionsMenu*snapToGrid.mnemonic:	       S
-Ddd*dataOptionsMenu*snapToGrid.accelerator:	       Meta<Key>S
-Ddd*dataOptionsMenu*snapToGrid.acceleratorText:        Alt+S
-
-Ddd*dataOptionsMenu*compactLayout.labelString:	       Compact Layout
-Ddd*dataOptionsMenu*compactLayout.mnemonic:	       C
-
-Ddd*dataOptionsMenu*autoLayout.labelString:	       Automatic Layout
-Ddd*dataOptionsMenu*autoLayout.mnemonic:	       A
-
-Ddd*startupOptionsMenu*windows.labelString:            Windows
-Ddd*startupOptionsMenu*windows.mnemonic:               W
-
-Ddd*startupOptionsMenu*keyboardFocus.labelString:      Keyboard Focus
-Ddd*startupOptionsMenu*keyboardFocus.mnemonic:         K
-
-Ddd*startupOptionsMenu*dataScrolling.labelString:      Data Scrolling
-Ddd*startupOptionsMenu*dataScrolling.mnemonic:         S
-
-Ddd*startupOptionsMenu*debugger.labelString:           Debugger Type
-Ddd*startupOptionsMenu*debugger.mnemonic:              D
-
-Ddd*windowsMenu*separate.labelString:          	       Separate Windows
-Ddd*windowsMenu*separate.mnemonic:                     S
-
-Ddd*windowsMenu*attached.labelString:          	       One Single Window
-Ddd*windowsMenu*attached.mnemonic:                     O
-
-Ddd*keyboardFocusMenu*explicit.labelString:            Click To Type
-Ddd*keyboardFocusMenu*explicit.mnemonic:               C
-
-Ddd*keyboardFocusMenu*pointer.labelString:             Pointer Driven
-Ddd*keyboardFocusMenu*pointer.mnemonic:                P
-
-Ddd*dataScrollingMenu*panner.labelString:              Panner
-Ddd*dataScrollingMenu*panner.mnemonic:                 P
-
-Ddd*dataScrollingMenu*scrollbars.labelString:          Scrollbars
-Ddd*dataScrollingMenu*scrollbars.mnemonic:             S
-
-Ddd*debuggerMenu*gdb.labelString:       	       GDB
-Ddd*debuggerMenu*gdb.mnemonic:			       G
-
-Ddd*debuggerMenu*dbx.labelString:       	       DBX
-Ddd*debuggerMenu*dbx.mnemonic:			       D
-
-Ddd*debuggerMenu*xdb.labelString:       	       XDB
-Ddd*debuggerMenu*xdb.mnemonic:			       X
 
 
 Ddd*menubar.view.labelString:		Windows
@@ -1637,6 +1515,125 @@ Ddd*helpMenu.license.mnemonic:		L
 
 Ddd*helpMenu.www.labelString:		@DDD@ WWW Page...
 Ddd*helpMenu.www.mnemonic:		P
+
+
+
+!-----------------------------------------------------------------------------
+! Preferences
+!-----------------------------------------------------------------------------
+
+Ddd*general_preferences_popup*contextHelpString:	\
+@rm This is the @sl General Preferences @rm window.\n\
+\n\
+@tt \267 @rm If @bf Group Iconify @rm is set, all @DDD@ windows \
+are iconified as a group.\n\
+  Otherwise, windows are iconified separately.\n\
+@tt \267 @rm If @bf Global Tab Completion @rm is set, \
+the @key TAB @rm key completes\n\
+    arguments in all @DDD@ windows.\n\
+  Otherwise, the  @key TAB @rm key completes\n\
+    in the @DDD@ console window only.\n\
+@tt \267 @rm If @bf Suppress X Warnings @rm is set, \
+X warnings are silently ignored.\n\
+@tt \267 @rm If @bf Save History on Exit @rm is set, the command history is\n\
+    automatically saved when @DDD@ exits.\n\
+  Otherwise, history is discarded.
+Ddd*general_preferences_popup*okLabelString: Close
+
+Ddd*general_preferences*label.labelString: General Preferences
+Ddd*general_preferences_popup.title: @DDD@: General Preferences
+
+Ddd*general_preferences*groupIconify.labelString:        Group Iconify
+Ddd*general_preferences*globalTabCompletion.labelString: Global Tab Completion
+Ddd*general_preferences*suppressWarnings.labelString:    Suppress X Warnings
+Ddd*general_preferences*saveHistoryOnExit.labelString:   Save History on Exit
+
+
+Ddd*source_preferences_popup*contextHelpString:	\
+@rm This is the @sl Source Preferences @rm window.\n\
+\n\
+@tt \267 @rm If @bf Display Glyphs @rm is set, \
+positions and breakpoints are shown as glyphs.\n\
+    Otherwise, positions and breakpoints are shown as text.\n\
+@tt \267 @rm If @bf Cache Sources @rm is set, \
+source texts are cached in memory.\n\
+    Otherwise, sources are re-read upon each source change.\n\
+@tt \267 @rm If @bf Cache Machine Code @rm is set, \
+disassembled code is cached in memory.\n\
+    Otherwise, code is re-disassembled upon each function change.
+Ddd*source_preferences_popup*okLabelString: Close
+
+Ddd*source_preferences*label.labelString: Source Preferences
+Ddd*source_preferences_popup.title: @DDD@: Source Preferences
+
+Ddd*source_preferences*displayGlyphs.labelString:       Display Glyphs
+Ddd*source_preferences*cacheSourceFiles.labelString:    Cache Source Files
+Ddd*source_preferences*cacheMachineCode.labelString:    Cache Machine Code
+
+
+Ddd*data_preferences_popup*contextHelpString:	\
+@rm This is the @sl Data Preferences @rm window.\n\
+\n\
+@tt \267 @rm If @bf Show Grid @rm is set, the grid is displayed.\n\
+@tt \267 @rm If @bf Show Edge Hints @rm is set, edge hints are displayed.\n\
+@tt \267 @rm If @bf Snap to Grid @rm is set, display alignment is enforced.\n\
+@tt \267 @rm If @bf Compact Layout @rm is set, the graph is layouted\n\
+    in a more compact fashion; suitable for homogenous structures only.\n\
+    Otherwise, the standard layout algorithm is used.\n\
+@tt \267 @rm If @bf Automatic Layout @rm is set, the graph is layouted\n\
+    after each change.  Otherwise, layout can be invoked manually.
+Ddd*data_preferences_popup*okLabelString: Close
+
+Ddd*data_preferences*label.labelString: Data Preferences
+Ddd*data_preferences_popup.title: @DDD@: Data Preferences
+
+Ddd*data_preferences*showGrid.labelString:	       Show Grid
+Ddd*data_preferences*showHints.labelString:	       Show Edge Hints
+Ddd*data_preferences*snapToGrid.labelString:	       Snap to Grid
+Ddd*data_preferences*compactLayout.labelString:        Compact Layout
+Ddd*data_preferences*autoLayout.labelString:	       Automatic Layout
+
+
+Ddd*startup_preferences_popup*contextHelpString:   \
+@rm This is the @sl Startup Preferences @rm window.\n\
+\n\
+@tt \267 @bf Windows @rm sets the window layout.\n\
+@tt \267 @bf Keyboard focus @rm sets the keyboard focus policy.\n\
+@tt \267 @bf Data Scrolling @rm sets the data window scrolling mode.\n\
+@tt \267 @bf Debugger Type @rm sets the type of inferior debugger to use.\n\
+\n\
+Note: these preferences take effect only after saving options\n\
+and restarting @DDD@.
+Ddd*startup_preferences_popup*okLabelString: Close
+
+Ddd*startup_preferences*label.labelString: Startup Preferences
+Ddd*startup_preferences_popup.title: @DDD@: Startup Preferences
+Ddd*startup_preferences*adjustMargin:                   false
+
+Ddd*startup_preferences*windows.labelString:            Windows:
+Ddd*startup_preferences*windows.alignment:              XmALIGNMENT_END
+Ddd*startup_preferences*windows.width:                  100
+Ddd*windowsMenu*separate.labelString:			Separate Windows
+Ddd*windowsMenu*attached.labelString:			One Single Window
+
+Ddd*startup_preferences*keyboardFocus.labelString:	Keyboard Focus:
+Ddd*startup_preferences*keyboardFocus.alignment:      	XmALIGNMENT_END
+Ddd*startup_preferences*keyboardFocus.width:      	100
+Ddd*keyboardFocusMenu*explicit.labelString:		Click To Type
+Ddd*keyboardFocusMenu*pointer.labelString:		Pointer Driven
+
+Ddd*startup_preferences*dataScrolling.labelString:      Data Scrolling:
+Ddd*startup_preferences*dataScrolling.alignment:      	XmALIGNMENT_END
+Ddd*startup_preferences*dataScrolling.width:      	100
+Ddd*dataScrollingMenu*panner.labelString:		Panner
+Ddd*dataScrollingMenu*scrollbars.labelString:		Scrollbars
+
+Ddd*startup_preferences*debugger.labelString:           Debugger Type:
+Ddd*startup_preferences*debugger.alignment:           	XmALIGNMENT_END
+Ddd*startup_preferences*debugger.width:           	100
+Ddd*debuggerMenu*gdb.labelString:			GDB
+Ddd*debuggerMenu*dbx.labelString:			DBX
+Ddd*debuggerMenu*xdb.labelString:			XDB
 
 
 !-----------------------------------------------------------------------------

@@ -142,6 +142,7 @@ char ddd_rcsid[] =
 #include <Xm/MainW.h>
 #include <Xm/PanedW.h>
 #include <Xm/Label.h>
+#include <Xm/Frame.h>
 #include <Xm/Text.h>
 #include <Xm/MessageB.h>
 #include <Xm/RowColumn.h>	// XmCreateWorkArea()
@@ -242,6 +243,10 @@ void gdbClearSelectionCB  (Widget, XtPointer, XtPointer);
 void gdbDeleteSelectionCB (Widget, XtPointer, XtPointer);
 void gdbUpdateEditCB      (Widget, XtPointer, XtPointer);
 void gdbUpdateViewCB      (Widget, XtPointer, XtPointer);
+
+// Preferences
+static Widget make_panel (Widget parent, String name, MMDesc items[]);
+static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer);
 
 // User emergencies (Ctrl-C)
 static void check_emergencies();
@@ -559,9 +564,135 @@ static MMDesc source_menu[] =
 };
 
 
-// Option widgets
+// Preferences
 
 
+// General preferences
+static Widget general_preferences;
+static Widget group_iconify_w;
+static Widget global_tab_completion_w;
+static Widget suppress_warnings_w;
+static Widget save_history_on_exit_w;
+
+static MMDesc general_preferences_menu[] = 
+{
+    { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB }, 
+      NULL, &group_iconify_w },
+    { "globalTabCompletion", MMToggle, { dddToggleGlobalTabCompletionCB }, 
+      NULL, &global_tab_completion_w },
+    { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB }, 
+      NULL, &suppress_warnings_w },
+    { "saveHistoryOnExit",   MMToggle, { dddToggleSaveHistoryOnExitCB }, 
+      NULL, &save_history_on_exit_w },
+    MMEnd
+};
+
+
+// Source preferences
+static Widget source_preferences;
+static Widget display_glyphs_w;
+static Widget cache_source_files_w;
+static Widget cache_machine_code_w;
+
+static MMDesc source_preferences_menu[] = 
+{
+    { "displayGlyphs",    MMToggle, { sourceToggleDisplayGlyphsCB }, 
+      NULL, &display_glyphs_w },
+    { "cacheSourceFiles", MMToggle, { sourceToggleCacheSourceFilesCB }, 
+      NULL, &cache_source_files_w },
+    { "cacheMachineCode", MMToggle, { sourceToggleCacheMachineCodeCB }, 
+      NULL, &cache_machine_code_w },
+    MMEnd
+};
+
+
+// Data preferences
+static Widget data_preferences;
+static Widget graph_show_grid_w;
+static Widget graph_show_hints_w;
+static Widget graph_snap_to_grid_w;
+static Widget graph_compact_layout_w;
+static Widget graph_auto_layout_w;
+
+static MMDesc data_preferences_menu[] = 
+{
+    { "showGrid",   MMToggle,  { graphToggleShowGridCB }, 
+      NULL, &graph_show_grid_w },
+    { "showHints",  MMToggle,  { graphToggleShowHintsCB },
+      NULL, &graph_show_hints_w },
+    { "snapToGrid", MMToggle,  { graphToggleSnapToGridCB },
+      NULL, &graph_snap_to_grid_w },
+    { "compactLayout", MMToggle, { graphToggleCompactLayoutCB },
+      NULL, &graph_compact_layout_w },
+    { "autoLayout", MMToggle,  { graphToggleAutoLayoutCB },
+      NULL, &graph_auto_layout_w },
+    MMEnd
+};
+
+
+// Startup preferences
+static Widget startup_preferences;
+static Widget set_separate_windows_w;
+static Widget set_attached_windows_w;
+
+static MMDesc window_mode_menu [] = 
+{
+    { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(True) },
+      NULL, &set_separate_windows_w },
+    { "attached",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(False) },
+      NULL, &set_attached_windows_w },
+    MMEnd
+};
+
+static Widget set_focus_pointer_w;
+static Widget set_focus_explicit_w;
+static MMDesc keyboard_focus_menu [] = 
+{
+    { "pointer",  MMToggle, { dddSetKeyboardFocusPolicyCB, 
+			    XtPointer(XmPOINTER) },
+      NULL, &set_focus_pointer_w },
+    { "explicit", MMToggle, { dddSetKeyboardFocusPolicyCB, 
+			    XtPointer(XmEXPLICIT) },
+      NULL, &set_focus_explicit_w },
+    MMEnd
+};
+
+static Widget set_scrolling_panner_w;
+static Widget set_scrolling_scrollbars_w;
+static MMDesc data_scrolling_menu [] = 
+{
+    { "panner", MMToggle,     { dddSetPannerCB, XtPointer(True) },
+      NULL, &set_scrolling_panner_w },
+    { "scrollbars", MMToggle, { dddSetPannerCB, XtPointer(False) },
+      NULL, &set_scrolling_scrollbars_w },
+    MMEnd
+};
+
+static Widget set_debugger_gdb_w;
+static Widget set_debugger_dbx_w;
+static Widget set_debugger_xdb_w;
+static MMDesc debugger_menu [] = 
+{
+    { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
+      NULL, &set_debugger_gdb_w },
+    { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
+      NULL, &set_debugger_dbx_w },
+    { "xdb", MMToggle, { dddSetDebuggerCB, XtPointer(XDB) },
+      NULL, &set_debugger_xdb_w },
+    MMEnd
+};
+
+static MMDesc startup_preferences_menu [] =
+{
+    { "windows",         MMRadioPanel, MMNoCB, window_mode_menu },
+    { "keyboardFocus",   MMRadioPanel, MMNoCB, keyboard_focus_menu },
+    { "dataScrolling",   MMRadioPanel, MMNoCB, data_scrolling_menu },
+    { "debugger",        MMRadioPanel, MMNoCB, debugger_menu },
+    MMEnd
+};
+
+
+// Options
 // All these widgets come in four times:
 // w[0] holds the last created widget.
 // w[<DDDOption>] holds the widget for the menu in window <DDDOption>.
@@ -571,126 +702,21 @@ enum DDDOption { DummyOptions   = 0,
 		 SourceOptions  = 2,
 		 DataOptions    = 3 };
 
-static Widget group_iconify_w[4];
-static Widget global_tab_completion_w[4];
 static Widget separate_exec_window_w[4];
-static Widget save_history_on_exit_w[4];
-static Widget graph_show_grid_w[4];
-static Widget graph_show_hints_w[4];
-static Widget graph_snap_to_grid_w[4];
-static Widget graph_compact_layout_w[4];
-static Widget graph_auto_layout_w[4];
 static Widget find_words_only_w[4];
-static Widget cache_source_files_w[4];
-static Widget cache_machine_code_w[4];
-static Widget display_glyphs_w[4];
 static Widget disassemble_w[4];
-static Widget suppress_warnings_w[4];
-static Widget set_focus_pointer_w[4];
-static Widget set_focus_explicit_w[4];
-static Widget set_scrolling_panner_w[4];
-static Widget set_scrolling_scrollbars_w[4];
-static Widget set_debugger_gdb_w[4];
-static Widget set_debugger_dbx_w[4];
-static Widget set_debugger_xdb_w[4];
-static Widget set_separate_windows_w[4];
-static Widget set_attached_windows_w[4];
 static void set_option_widgets(DDDOption opt);
-
-static MMDesc ddd_options_menu[] = 
-{
-    { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB }, 
-      NULL, group_iconify_w },
-    { "globalTabCompletion", MMToggle, { dddToggleGlobalTabCompletionCB }, 
-      NULL, global_tab_completion_w },
-    { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB }, 
-      NULL, suppress_warnings_w },
-    { "saveHistoryOnExit",   MMToggle, { dddToggleSaveHistoryOnExitCB }, 
-      NULL, save_history_on_exit_w },
-    MMEnd
-};
-
-static MMDesc source_options_menu[] = 
-{
-    { "displayGlyphs",    MMToggle, { sourceToggleDisplayGlyphsCB }, 
-      NULL, display_glyphs_w },
-    { "cacheSourceFiles", MMToggle, { sourceToggleCacheSourceFilesCB }, 
-      NULL, cache_source_files_w },
-    { "cacheMachineCode", MMToggle, { sourceToggleCacheMachineCodeCB }, 
-      NULL, cache_machine_code_w },
-    MMEnd
-};
-
-static MMDesc data_options_menu[] = 
-{
-    { "showGrid",   MMToggle,  { graphToggleShowGridCB }, 
-      NULL, graph_show_grid_w },
-    { "showHints",  MMToggle,  { graphToggleShowHintsCB },
-      NULL, graph_show_hints_w },
-    { "snapToGrid", MMToggle,  { graphToggleSnapToGridCB },
-      NULL, graph_snap_to_grid_w },
-    { "compactLayout", MMToggle, { graphToggleCompactLayoutCB },
-      NULL, graph_compact_layout_w },
-    { "autoLayout", MMToggle,  { graphToggleAutoLayoutCB },
-      NULL, graph_auto_layout_w },
-    MMEnd
-};
-
-static MMDesc window_mode_menu [] = 
-{
-    { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(True) },
-      NULL, set_separate_windows_w },
-    { "attached", MMToggle, { dddSetSeparateWindowsCB, XtPointer(False) },
-      NULL, set_attached_windows_w },
-    MMEnd
-};
-
-static MMDesc keyboard_focus_menu [] = 
-{
-    { "pointer",  MMToggle, { dddSetKeyboardFocusPolicyCB, 
-			    XtPointer(XmPOINTER) },
-      NULL, set_focus_pointer_w },
-    { "explicit", MMToggle, { dddSetKeyboardFocusPolicyCB, 
-			    XtPointer(XmEXPLICIT) },
-      NULL, set_focus_explicit_w },
-    MMEnd
-};
-
-static MMDesc data_scrolling_menu [] = 
-{
-    { "panner", MMToggle,     { dddSetPannerCB, XtPointer(True) },
-      NULL, set_scrolling_panner_w },
-    { "scrollbars", MMToggle, { dddSetPannerCB, XtPointer(False) },
-      NULL, set_scrolling_scrollbars_w },
-    MMEnd
-};
-
-static MMDesc debugger_menu [] = 
-{
-    { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
-      NULL, set_debugger_gdb_w },
-    { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
-      NULL, set_debugger_dbx_w },
-    { "xdb", MMToggle, { dddSetDebuggerCB, XtPointer(XDB) },
-      NULL, set_debugger_xdb_w },
-    MMEnd
-};
-
-static MMDesc startup_options_menu [] =
-{
-    { "windows",         MMRadioMenu, MMNoCB, window_mode_menu },
-    { "keyboardFocus",   MMRadioMenu, MMNoCB, keyboard_focus_menu },
-    { "dataScrolling",   MMRadioMenu, MMNoCB, data_scrolling_menu },
-    { "debugger",        MMRadioMenu, MMNoCB, debugger_menu },
-    MMEnd
-};
 
 static MMDesc options_menu [] =
 {
-    { "generalOptions", MMMenu, MMNoCB, ddd_options_menu     },
-    { "sourceOptions",  MMMenu, MMNoCB, source_options_menu  },
-    { "dataOptions",    MMMenu, MMNoCB, data_options_menu    },
-    { "startupOptions", MMMenu, MMNoCB, startup_options_menu },
+    { "generalPreferences", MMPush, 
+      { dddPopupPreferencesCB, &general_preferences }},
+    { "sourcePreferences",  MMPush,
+      { dddPopupPreferencesCB, &source_preferences }},
+    { "dataPreferences",    MMPush,
+      { dddPopupPreferencesCB, &data_preferences }},
+    { "startupPreferences", MMPush,
+      { dddPopupPreferencesCB, &startup_preferences }},
     MMSep,
     { "separateExecWindow",  MMToggle, { dddToggleSeparateExecWindowCB }, 
       NULL, separate_exec_window_w },
@@ -703,6 +729,8 @@ static MMDesc options_menu [] =
     MMEnd
 };
 
+
+// Data
 static MMDesc data_menu[] = 
 {
     { "displays",   MMPush,    { DataDisp::EditDisplaysCB }},
@@ -716,6 +744,8 @@ static MMDesc data_menu[] =
     MMEnd
 };
 
+
+// Help
 static MMDesc help_menu[] = 
 {
     {"onContext",   MMPush, { HelpOnContextCB }},
@@ -1327,6 +1357,16 @@ int main(int argc, char *argv[])
 		   XmNworkWindow, paned_work_w,
 		   NULL);
 
+    // Create preference panels
+    general_preferences = make_panel(paned_work_w, "general_preferences", 
+				     general_preferences_menu);
+    source_preferences = make_panel(SourceView::source(), "source_preferences",
+				    source_preferences_menu);
+    data_preferences = make_panel(DataDisp::graph_edit, "data_preferences",
+				  data_preferences_menu);
+    startup_preferences = make_panel(gdb_w, "startup_preferences",
+				     startup_preferences_menu);
+
     // All widgets are created at this point.
     set_status("Welcome to " DDD_NAME " " DDD_VERSION "!");
 
@@ -1623,30 +1663,9 @@ inline void set_sensitive(Widget w, bool state)
 
 static void set_option_widgets(DDDOption opt)
 {
-    group_iconify_w[opt]            = group_iconify_w[0];
-    global_tab_completion_w[opt]    = global_tab_completion_w[0];
-    separate_exec_window_w[opt]     = separate_exec_window_w[0];
-    save_history_on_exit_w[opt]     = save_history_on_exit_w[0];
-    graph_show_grid_w[opt]          = graph_show_grid_w[0];
-    graph_show_hints_w[opt]         = graph_show_hints_w[0];
-    graph_snap_to_grid_w[opt]       = graph_snap_to_grid_w[0];
-    graph_compact_layout_w[opt]     = graph_compact_layout_w[0];
-    graph_auto_layout_w[opt]        = graph_auto_layout_w[0];
-    find_words_only_w[opt]          = find_words_only_w[0];
-    cache_source_files_w[opt]       = cache_source_files_w[0];
-    cache_machine_code_w[opt]       = cache_machine_code_w[0];
-    display_glyphs_w[opt]           = display_glyphs_w[0];
-    disassemble_w[opt]              = disassemble_w[0];
-    suppress_warnings_w[opt]        = suppress_warnings_w[0];
-    set_focus_pointer_w[opt]        = set_focus_pointer_w[0];
-    set_focus_explicit_w[opt]       = set_focus_explicit_w[0];
-    set_scrolling_panner_w[opt]     = set_scrolling_panner_w[0];
-    set_scrolling_scrollbars_w[opt] = set_scrolling_scrollbars_w[0];
-    set_debugger_gdb_w[opt]         = set_debugger_gdb_w[0];
-    set_debugger_dbx_w[opt]         = set_debugger_dbx_w[0];
-    set_debugger_xdb_w[opt]         = set_debugger_xdb_w[0];
-    set_separate_windows_w[opt]     = set_separate_windows_w[0];
-    set_attached_windows_w[opt]     = set_attached_windows_w[0];
+    separate_exec_window_w[opt] = separate_exec_window_w[0];
+    find_words_only_w[opt]      = find_words_only_w[0];
+    disassemble_w[opt]          = disassemble_w[0];
 }
 
 // Reflect state in option menus
@@ -1657,101 +1676,102 @@ void update_options()
 
     for (int i = 1; i < 4; i++)
     {
-	if (group_iconify_w[i] == 0)
-	    continue;
+	if (separate_exec_window_w[i] == 0)
+	    continue;		// Shell not realized
 
-	XtVaSetValues(group_iconify_w[i],
-		      XmNset, app_data.group_iconify, NULL);
-	XtVaSetValues(global_tab_completion_w[i],
-		      XmNset, app_data.global_tab_completion, NULL);
 	XtVaSetValues(separate_exec_window_w[i],
 		      XmNset, app_data.separate_exec_window, NULL);
-	XtVaSetValues(save_history_on_exit_w[i],
-		      XmNset, app_data.save_history_on_exit, NULL);
-
-	XtVaSetValues(find_words_only_w[i],
-		      XmNset, app_data.find_words_only, NULL);
-	XtVaSetValues(cache_source_files_w[i],
-		      XmNset, app_data.cache_source_files, NULL);
-	XtVaSetValues(cache_machine_code_w[i],
-		      XmNset, app_data.cache_machine_code, NULL);
-	XtVaSetValues(display_glyphs_w[i],
-		      XmNset, app_data.display_glyphs, NULL);
 	XtVaSetValues(disassemble_w[i],
 		      XmNset, app_data.disassemble, NULL);
-
-	XtVaSetValues(suppress_warnings_w[i],
-		      XmNset, app_data.suppress_warnings, NULL);
-
-	set_sensitive(disassemble_w[i],        gdb->type() == GDB);
-	set_sensitive(cache_machine_code_w[i], gdb->type() == GDB);
-
-	Boolean state;
-	arg = 0;
-	XtSetArg(args[arg], XtNshowGrid, &state); arg++;
-	XtGetValues(data_disp->graph_edit, args, arg);
-	arg = 0;
-	XtSetArg(args[arg], XmNset, state); arg++;
-	XtSetValues(graph_show_grid_w[i], args, arg);
-
-	arg = 0;
-	XtSetArg(args[arg], XtNsnapToGrid, &state); arg++;
-	XtGetValues(data_disp->graph_edit, args, arg);
-	arg = 0;
-	XtSetArg(args[arg], XmNset, state); arg++;
-	XtSetValues(graph_snap_to_grid_w[i], args, arg);
-
-	arg = 0;
-	XtSetArg(args[arg], XtNshowHints, &state); arg++;
-	XtGetValues(data_disp->graph_edit, args, arg);
-	arg = 0;
-	XtSetArg(args[arg], XmNset, state); arg++;
-	XtSetValues(graph_show_hints_w[i], args, arg);
-
-	LayoutMode mode;
-	arg = 0;
-	XtSetArg(args[arg], XtNlayoutMode, &mode); arg++;
-	XtGetValues(data_disp->graph_edit, args, arg);
-	arg = 0;
-	XtSetArg(args[arg], XmNset, mode == CompactLayoutMode); arg++;
-	XtSetValues(graph_compact_layout_w[i], args, arg);
-
-	arg = 0;
-	XtSetArg(args[arg], XtNautoLayout, &state); arg++;
-	XtGetValues(data_disp->graph_edit, args, arg);
-	arg = 0;
-	XtSetArg(args[arg], XmNset, state); arg++;
-	XtSetValues(graph_auto_layout_w[i], args, arg);
-
-	unsigned char policy = '\0';
-	XtVaGetValues(command_shell, 
-		      XmNkeyboardFocusPolicy, &policy,
-		      NULL);
-	XtVaSetValues(set_focus_pointer_w[i],
-		      XmNset, policy == XmPOINTER, NULL);
-	XtVaSetValues(set_focus_explicit_w[i],
-		      XmNset, policy == XmEXPLICIT, NULL);
-
-	XtVaSetValues(set_scrolling_panner_w[i],
-		      XmNset, app_data.panned_graph_editor, NULL);
-	XtVaSetValues(set_scrolling_scrollbars_w[i],
-		      XmNset, !app_data.panned_graph_editor, NULL);
-
-	Boolean separate = 
-	    app_data.separate_data_window || app_data.separate_source_window;
-	XtVaSetValues(set_separate_windows_w[i],
-		      XmNset, separate, NULL);
-	XtVaSetValues(set_attached_windows_w[i],
-		      XmNset, !separate, NULL);
-
-	DebuggerType type = debugger_type(app_data.debugger);
-	XtVaSetValues(set_debugger_gdb_w[i],
-		      XmNset, type == GDB, NULL);
-	XtVaSetValues(set_debugger_dbx_w[i],
-		      XmNset, type == DBX, NULL);
-	XtVaSetValues(set_debugger_xdb_w[i],
-		      XmNset, type == XDB, NULL);
+	XtVaSetValues(find_words_only_w[i],
+		      XmNset, app_data.find_words_only, NULL);
+	set_sensitive(disassemble_w[i], gdb->type() == GDB);
     }
+
+    XtVaSetValues(group_iconify_w,
+		  XmNset, app_data.group_iconify, NULL);
+    XtVaSetValues(global_tab_completion_w,
+		  XmNset, app_data.global_tab_completion, NULL);
+    XtVaSetValues(save_history_on_exit_w,
+		  XmNset, app_data.save_history_on_exit, NULL);
+
+    XtVaSetValues(cache_source_files_w,
+		  XmNset, app_data.cache_source_files, NULL);
+    XtVaSetValues(cache_machine_code_w,
+		  XmNset, app_data.cache_machine_code, NULL);
+    XtVaSetValues(display_glyphs_w,
+		  XmNset, app_data.display_glyphs, NULL);
+
+    XtVaSetValues(suppress_warnings_w,
+		  XmNset, app_data.suppress_warnings, NULL);
+
+    set_sensitive(cache_machine_code_w, gdb->type() == GDB);
+
+    Boolean state;
+    arg = 0;
+    XtSetArg(args[arg], XtNshowGrid, &state); arg++;
+    XtGetValues(data_disp->graph_edit, args, arg);
+    arg = 0;
+    XtSetArg(args[arg], XmNset, state); arg++;
+    XtSetValues(graph_show_grid_w, args, arg);
+
+    arg = 0;
+    XtSetArg(args[arg], XtNsnapToGrid, &state); arg++;
+    XtGetValues(data_disp->graph_edit, args, arg);
+    arg = 0;
+    XtSetArg(args[arg], XmNset, state); arg++;
+    XtSetValues(graph_snap_to_grid_w, args, arg);
+
+    arg = 0;
+    XtSetArg(args[arg], XtNshowHints, &state); arg++;
+    XtGetValues(data_disp->graph_edit, args, arg);
+    arg = 0;
+    XtSetArg(args[arg], XmNset, state); arg++;
+    XtSetValues(graph_show_hints_w, args, arg);
+
+    LayoutMode mode;
+    arg = 0;
+    XtSetArg(args[arg], XtNlayoutMode, &mode); arg++;
+    XtGetValues(data_disp->graph_edit, args, arg);
+    arg = 0;
+    XtSetArg(args[arg], XmNset, mode == CompactLayoutMode); arg++;
+    XtSetValues(graph_compact_layout_w, args, arg);
+
+    arg = 0;
+    XtSetArg(args[arg], XtNautoLayout, &state); arg++;
+    XtGetValues(data_disp->graph_edit, args, arg);
+    arg = 0;
+    XtSetArg(args[arg], XmNset, state); arg++;
+    XtSetValues(graph_auto_layout_w, args, arg);
+
+    unsigned char policy = '\0';
+    XtVaGetValues(command_shell, 
+		  XmNkeyboardFocusPolicy, &policy,
+		  NULL);
+    XtVaSetValues(set_focus_pointer_w,
+		  XmNset, policy == XmPOINTER, NULL);
+    XtVaSetValues(set_focus_explicit_w,
+		  XmNset, policy == XmEXPLICIT, NULL);
+
+    XtVaSetValues(set_scrolling_panner_w,
+		  XmNset, app_data.panned_graph_editor, NULL);
+    XtVaSetValues(set_scrolling_scrollbars_w,
+		  XmNset, !app_data.panned_graph_editor, NULL);
+
+    Boolean separate = 
+	app_data.separate_data_window || app_data.separate_source_window;
+    XtVaSetValues(set_separate_windows_w,
+		  XmNset, separate, NULL);
+    XtVaSetValues(set_attached_windows_w,
+		  XmNset, !separate, NULL);
+
+    DebuggerType type = debugger_type(app_data.debugger);
+    XtVaSetValues(set_debugger_gdb_w,
+		  XmNset, type == GDB, NULL);
+    XtVaSetValues(set_debugger_dbx_w,
+		  XmNset, type == DBX, NULL);
+    XtVaSetValues(set_debugger_xdb_w,
+		  XmNset, type == XDB, NULL);
 
     if (app_data.cache_source_files != source_view->cache_source_files)
     {
@@ -1769,6 +1789,63 @@ void update_options()
 
     source_view->set_display_glyphs(app_data.display_glyphs);
     source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
+}
+
+//-----------------------------------------------------------------------------
+// Preferences
+//-----------------------------------------------------------------------------
+
+// Create panel dialog from items
+static Widget make_panel(Widget parent, String name, MMDesc items[])
+{
+    Arg args[10];
+    int arg;
+
+    arg = 0;
+    Widget panel_dialog = 
+	verify(XmCreatePromptDialog(parent, name, args, arg));
+
+    // Remove old prompt and cancel button
+    Widget text = XmSelectionBoxGetChild(panel_dialog, XmDIALOG_TEXT);
+    XtUnmanageChild(text);
+    Widget old_label = 
+	XmSelectionBoxGetChild(panel_dialog, XmDIALOG_SELECTION_LABEL);
+    XtUnmanageChild(old_label);
+    Widget cancel = 
+	XmSelectionBoxGetChild(panel_dialog, XmDIALOG_CANCEL_BUTTON);
+    XtUnmanageChild(cancel);
+    XtAddCallback(panel_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+
+    // Add two rows
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    Widget form = XmCreateRowColumn(panel_dialog, "form", args, arg);
+    XtManageChild(form);
+
+    arg = 0;
+    Widget label = XmCreateLabel(form, "label", args, arg);
+    XtManageChild(label);
+
+    arg = 0;
+    Widget frame = XmCreateFrame(form, "frame", args, arg);
+    XtManageChild(frame);
+
+    // Add panel
+    Widget panel = MMcreatePanel(frame, name, items);
+    MMaddCallbacks(items);
+    XtManageChild(panel);
+
+    return panel_dialog;
+}
+
+// Popup Preference Panel
+static void dddPopupPreferencesCB (Widget, XtPointer client_data, XtPointer)
+{
+    Widget w = *((Widget *)client_data);
+    XtManageChild(w);
+    raise_shell(w);
 }
 
 

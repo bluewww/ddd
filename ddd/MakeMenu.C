@@ -41,6 +41,8 @@ char MakeMenu_rcsid[] =
 #include <Xm/CascadeB.h>
 #include <Xm/Separator.h>
 #include <Xm/Label.h>
+#include <Xm/SelectioB.h>
+#include <Xm/MessageB.h>
 
 #include "MakeMenu.h"
 #include "bool.h"
@@ -63,7 +65,9 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	MMDesc *subitems        = item->items;
 
 	char subMenuName[200];
-	Widget subMenu;
+	Widget subMenu  = 0;
+	char panelName[200];
+	Widget label    = 0;
 
 	switch(type & MMTypeMask) 
 	{
@@ -113,6 +117,50 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
 	    widget = verify(XmCreateCascadeButton(shell, name, args, arg));
+	    break;
+
+	case MMOptionMenu:
+	    // Create an option menu
+	    assert(subitems != 0);
+
+	    strcpy(subMenuName, string(name) + "Menu");
+	    subMenu = MMcreatePulldownMenu(shell, subMenuName, subitems);
+
+	    arg = 0;
+	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
+	    widget = verify(XmCreateOptionMenu(shell, name, args, arg));
+	    break;
+
+	case MMPanel:
+	case MMRadioPanel:
+	    // Create a label with an associated panel
+	    assert(subitems != 0);
+
+	    strcpy(panelName, string(name) + "Panel");
+
+	    arg = 0;
+	    XtSetArg(args[arg], XmNorientation,  XmHORIZONTAL); arg++;
+	    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+	    XtSetArg(args[arg], XmNentryBorder,  0); arg++;
+	    XtSetArg(args[arg], XmNspacing,      0); arg++;
+	    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+	    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+	    widget = verify(XmCreateRowColumn(shell, panelName, args, arg));
+
+	    arg = 0;
+	    label = verify(XmCreateLabel(widget, name, args, arg));
+	    XtManageChild(label);
+
+	    strcpy(subMenuName, string(name) + "Menu");
+	    if (type == MMPanel)
+		subMenu = MMcreatePanel(widget, subMenuName, subitems);
+	    else
+		subMenu = MMcreateRadioPanel(widget, subMenuName, subitems);
+		
+	    XtVaSetValues(subMenu,
+			  XmNorientation, XmHORIZONTAL,
+			  NULL);
+	    XtManageChild(subMenu);
 	    break;
 
 	case MMSeparator:
@@ -173,7 +221,7 @@ Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[])
     arg = 0;
     XtSetArg(args[arg], XmNisHomogeneous, True); arg++;
     XtSetArg(args[arg], XmNentryClass, xmToggleButtonWidgetClass); arg++;
-    XtSetArg(args[arg], XmNradioBehavior, True); arg++;	// 
+    XtSetArg(args[arg], XmNradioBehavior, True); arg++;
 
     Widget shell = verify(XmCreatePulldownMenu(parent, name, args, arg));
     addItems(parent, shell, items);
@@ -228,6 +276,36 @@ Widget MMcreateWorkArea(Widget parent, String name, MMDesc items[])
     return bar;
 }
 
+// Create panel from items
+Widget MMcreatePanel(Widget parent, String name, MMDesc items[])
+{
+    Arg args[10];
+    int arg;
+
+    arg = 0;
+    Widget panel = verify(XmCreateRowColumn(parent, name, args, arg));
+    addItems(parent, panel, items);
+    XtManageChild(panel);
+
+    return panel;
+}
+
+// Create radio panel from items
+Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[])
+{
+    Arg args[10];
+    int arg;
+
+    arg = 0;
+    XtSetArg(args[arg], XmNisHomogeneous, True); arg++;
+    XtSetArg(args[arg], XmNentryClass, xmToggleButtonWidgetClass); arg++;
+    XtSetArg(args[arg], XmNradioBehavior, True); arg++;
+    Widget panel = verify(XmCreateRowColumn(parent, name, args, arg));
+    addItems(parent, panel, items);
+    XtManageChild(panel);
+
+    return panel;
+}
 
 // Perform proc on items
 void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure)
@@ -279,6 +357,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 
     case MMMenu:
     case MMRadioMenu:
+    case MMOptionMenu:
 	Widget subMenu;
 	arg = 0;
 	XtSetArg(args[arg], XmNsubMenuId, &subMenu); arg++;
@@ -293,6 +372,8 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 
     case MMLabel:
     case MMSeparator:
+    case MMPanel:
+    case MMRadioPanel:
 	assert(callback.callback == 0);
 	break;
 
