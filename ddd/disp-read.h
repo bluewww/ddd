@@ -102,12 +102,15 @@ bool is_file_cmd(const string& cmd, DebuggerType type);
 // 
 bool is_break_cmd(const string& cmd);
 
-
 // ***************************************************************************
 // true, wenn cmd die aktuelle Position veraendert
 // 
 bool is_lookup_cmd(const string& cmd);
 
+// ***************************************************************************
+// true, wenn cmd das aktuelle Verzeichnis veraendert
+// 
+bool is_cd_cmd(const string& cmd);
 
 
 bool is_graph_cmd(const string& cmd);

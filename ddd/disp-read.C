@@ -244,6 +244,15 @@ bool is_lookup_cmd (const string& cmd)
 
 // ***************************************************************************
 // 
+bool is_cd_cmd (const string& cmd)
+{
+    static regex RXcd_cmd("[ \t]*cd([ \t]+.*)?");
+
+    return cmd.matches(RXcd_cmd);
+}
+
+// ***************************************************************************
+// 
 string get_display_expression (const string& display_cmd)
 {
     static regex RXdisplay_cmd("[ \t]*(disp|displ|displa|display)[ \t]+");
