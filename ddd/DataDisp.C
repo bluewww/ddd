@@ -82,6 +82,7 @@ char DataDisp_rcsid[] =
 #include "Command.h"
 #include "converters.h"
 #include "cook.h"
+#include "logo.h"
 #include "post.h"
 #include "question.h"
 #include "settings.h"
@@ -358,30 +359,6 @@ void DataDisp::set_last_origin(Widget w)
     }
 }
 
-
-//----------------------------------------------------------------------------
-// Sensitivity
-//-----------------------------------------------------------------------------
-
-inline void set_sensitive(Widget w, bool state)
-{
-    if (w != 0)
-	XtSetSensitive(w, state);
-}
-
-static void set_label(Widget w, const string& label)
-{
-    MString new_label(label);
-    XmString old_label;
-    XtVaGetValues(w, XmNlabelString, &old_label, NULL);
-    if (!XmStringCompare(new_label.xmstring(), old_label))
-    {
-	XtVaSetValues(w,
-		      XmNlabelString, new_label.xmstring(),
-		      NULL);
-    }
-    XmStringFree(old_label);
-}
 
 
 //----------------------------------------------------------------------------
@@ -1781,6 +1758,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	// Only expanded displays selected
 	set_label(node_popup[NodeItms::Detail].widget, "Hide All");
 	set_label(graph_cmd_area[CmdItms::Detail].widget, "Hide ()");
+	set_pixmap(graph_cmd_area[CmdItms::Detail].widget, HIDE_ICON);
 	set_sensitive(node_popup[NodeItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
     }
@@ -1789,6 +1767,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	// Some collapsed displays selected
 	set_label(node_popup[NodeItms::Detail].widget, "Show All");
 	set_label(graph_cmd_area[CmdItms::Detail].widget, "Show ()");
+	set_pixmap(graph_cmd_area[CmdItms::Detail].widget, SHOW_ICON);
 	set_sensitive(node_popup[NodeItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
     }

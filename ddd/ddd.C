@@ -375,9 +375,6 @@ static void setup_tty();
 static void setup_version_warnings();
 static void setup_core_limit();
 
-// Helpers
-static void set_label(Widget w, const MString& new_label);
-
 // Help hooks
 static void PreHelpOnContext(Widget w, XtPointer, XtPointer);
 static void PostHelpOnItem(Widget item);
@@ -1355,27 +1352,6 @@ static Atom WM_DELETE_WINDOW;
 // Logging stuff
 ofstream dddlog;
 
-
-//-----------------------------------------------------------------------------
-// Set sensitivity
-//-----------------------------------------------------------------------------
-
-inline void set_sensitive(Widget w, bool state)
-{
-    if (w != 0)
-	XtSetSensitive(w, state);
-}
-
-inline void manage_child(Widget w, bool state)
-{
-    if (w != 0)
-    {
-	if (state)
-	    XtManageChild(w);
-	else
-	    XtUnmanageChild(w);
-    }
-}
 
 //-----------------------------------------------------------------------------
 // Message handling
@@ -3287,14 +3263,17 @@ void update_options()
 
     // Set `find' label
     Widget find_label_ref = 0;
+    char *icon = 0;
     switch (current_find_direction())
     {
     case SourceView::forward:
 	find_label_ref = find_menu[FindItems::FindForward].widget;
+	icon = FIND_FORWARD_ICON;
 	break;
 	
     case SourceView::backward:
 	find_label_ref = find_menu[FindItems::FindBackward].widget;
+	icon = FIND_BACKWARD_ICON;
 	break;
     }
     XmString label;
@@ -3303,6 +3282,7 @@ void update_options()
     XmStringFree(label);
 
     set_label(arg_cmd_area[ArgItems::Find].widget, new_label);
+    set_pixmap(arg_cmd_area[ArgItems::Find].widget, icon);
 
     // Check for watchpoints
     set_sensitive(edit_watchpoints_w, gdb->has_watch_command());
@@ -4091,19 +4071,6 @@ static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer)
 // Helpers
 //-----------------------------------------------------------------------------
 
-static void set_label(Widget w, const MString& new_label)
-{
-    XmString old_label;
-    XtVaGetValues(w, XmNlabelString, &old_label, NULL);
-    if (!XmStringCompare(new_label.xmstring(), old_label))
-    {
-	XtVaSetValues(w,
-		      XmNlabelString, new_label.xmstring(),
-		      NULL);
-    }
-    XmStringFree(old_label);
-}
-
 void update_arg_buttons()
 {
     string arg = source_arg->get_string();
@@ -4130,9 +4097,15 @@ void update_arg_buttons()
 
     bool have_break = have_breakpoint_at_arg();
     if (have_break)
+    {
 	set_label(arg_cmd_area[ArgItems::Break].widget, "Clear at ()");
+	set_pixmap(arg_cmd_area[ArgItems::Break].widget, CLEAR_AT_ICON);
+    }
     else
+    {
 	set_label(arg_cmd_area[ArgItems::Break].widget, "Break at ()");
+	set_pixmap(arg_cmd_area[ArgItems::Break].widget, BREAK_AT_ICON);
+    }
 
     manage_child(break_menu[BreakItems::TempBreak].widget,   !have_break);
     manage_child(break_menu[BreakItems::Enable].widget,      have_break);
@@ -4161,9 +4134,15 @@ void update_arg_buttons()
 
     bool have_watch = have_watchpoint_at_arg();
     if (have_watch)
+    {
 	set_label(arg_cmd_area[ArgItems::Watch].widget, "Unwatch ()");
+	set_pixmap(arg_cmd_area[ArgItems::Watch].widget, UNWATCH_ICON);
+    }
     else
+    {
 	set_label(arg_cmd_area[ArgItems::Watch].widget, "Watch ()");
+	set_pixmap(arg_cmd_area[ArgItems::Watch].widget, WATCH_ICON);
+    }
 
     MString print_ref_label("Print " + gdb->dereferenced_expr("()"));
     XtVaSetValues(print_menu[PrintItems::PrintRef].widget,

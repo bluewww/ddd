@@ -86,6 +86,7 @@ char SourceView_rcsid[] =
 #include "tabs.h"
 #include "wm.h"
 #include "TimeOut.h"
+#include "logo.h"
 
 // Motif stuff
 #include <Xm/Xm.h>
@@ -5219,19 +5220,6 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     delete[] selected;
 }
 
-static void set_label(Widget w, const MString& new_label)
-{
-    XmString old_label;
-    XtVaGetValues(w, XmNlabelString, &old_label, NULL);
-    if (!XmStringCompare(new_label.xmstring(), old_label))
-    {
-	XtVaSetValues(w,
-		      XmNlabelString, new_label.xmstring(),
-		      NULL);
-    }
-    XmStringFree(old_label);
-}
-
 void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, 
 					   XtPointer call_data)
 {
@@ -5309,10 +5297,12 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
 	{
 	case BREAKPOINT:
 	    set_label(bp_area[BPButtons::Lookup].widget, "Lookup");
+	    set_pixmap(bp_area[BPButtons::Lookup].widget, LOOKUP_ICON);
 	    break;
 
 	case WATCHPOINT:
 	    set_label(bp_area[BPButtons::Lookup].widget, "Print");
+	    set_pixmap(bp_area[BPButtons::Lookup].widget, PRINT_ICON);
 	    break;
 	}
     }
