@@ -179,7 +179,7 @@ void show_invocation(DebuggerType type)
 			if (option == "")
 			    state = Done;
 			else
-			    options += string("  ") + option.after(rxwhite) + "\n";
+			    options += "  " + option.after(rxwhite) + "\n";
 			break;
 
 		    case Done:
@@ -296,7 +296,7 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer)
     string url = app_data.www_page;
     string cmd = app_data.www_command;
 
-    StatusDelay delay(string("Invoking WWW browser for ") + quote(url));
+    StatusDelay delay("Invoking WWW browser for " + quote(url));
 
     cmd.gsub("@URL@", url);
     cmd += " &";
@@ -332,7 +332,7 @@ void show_license()
 	char *env_pager = getenv("PAGER");
 	if (env_pager != 0)
 	    cmd = string(env_pager) + " || " + cmd;
-	cmd = string("( ") + cmd + " )";
+	cmd = "( " + cmd + " )";
 	pager = popen(cmd, "w");
     }
 

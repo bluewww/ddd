@@ -234,13 +234,12 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  //ohne \n
 
 	return true;
 
-
-    default: // BusyOnQuestion || BusyOnQuArray || BusyOnCmd:
-	return false;
-
+    case BusyOnQuestion:
+    case BusyOnQuArray:
+    case BusyOnCmd:
+	break;
     }
 
-    // Never reached
     return false;
 }
 
@@ -798,7 +797,7 @@ string GDBAgent::print_command(string expr) const
 	    switch (type())
 	    {
 	    case DBX:
-		cmd += string(" ") + quote(expr + " =") + ",";
+		cmd += " " + quote(expr + " =") + ",";
 		break;
 
 	    case GDB:
@@ -808,7 +807,7 @@ string GDBAgent::print_command(string expr) const
 	    }
 	}
 
-	cmd += string(" ") + expr;
+	cmd += " " + expr;
     }
 
     return cmd;
@@ -827,7 +826,7 @@ string GDBAgent::display_command(string expr) const
 	cmd = "display";
 
     if (expr != "")
-	cmd += string(" ") + expr;
+	cmd += " " + expr;
 
     return cmd;
 }
@@ -883,13 +882,13 @@ string GDBAgent::frame_command(string depth) const
 	if (depth == "")
 	    return "frame";
 	else
-	    return string("frame ") + depth;
+	    return "frame " + depth;
 
     case XDB:
 	if (depth == "")
 	    return print_command("$depth");
 	else
-	    return string("V ") + depth;
+	    return "V " + depth;
     }
 
     return "";			// Never reached
@@ -901,7 +900,7 @@ string GDBAgent::echo_command(string text) const
     switch (type())
     {
     case GDB:
-	return string("echo ") + cook(text);
+	return "echo " + cook(text);
 
     case DBX:
 	return print_command() + " " + quote(text);
@@ -919,16 +918,16 @@ string GDBAgent::whatis_command(string text) const
     switch (type())
     {
     case GDB:
-	return string("ptype ") + text;
+	return "ptype " + text;
 
     case DBX:
 	if (has_print_r_command())
-	    return string("whatis -r ") + text;
+	    return "whatis -r " + text;
 	else
-	    return string("whatis ") + text;
+	    return "whatis " + text;
 
     case XDB:
-	return string("p ") + text + "\\T";
+	return "p " + text + "\\T";
     }
 
     return "";			// Never reached
@@ -940,19 +939,19 @@ string GDBAgent::dereferenced_expr(string text) const
     switch (program_language())
     {
     case LANGUAGE_C:
-	return string("*(") + text + ")";
+	return "*(" + text + ")";
 
     case LANGUAGE_FORTRAN:
-	return string("*(") + text + ")"; // FIXME
+	return "*(" + text + ")"; // FIXME
 
     case LANGUAGE_PASCAL:
 	return text + "^";
 
     default:
-	return "";
+	break;
     }
 
-    return "";			// Never reached
+    return "";			// All other languages
 }
 
 

@@ -61,11 +61,11 @@ string dbx_lookup(const string& func_name)
     {
     case GDB:
     case DBX:
-	reply = gdb_question(string("list ") + func_name);
+	reply = gdb_question("list " + func_name);
 	break;
 
     case XDB:
-	reply = gdb_question(string("v ") + func_name);
+	reply = gdb_question("v " + func_name);
 	break;
     }
 

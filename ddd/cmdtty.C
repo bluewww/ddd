@@ -98,7 +98,7 @@ void tty_full_name(const string& pos)
 
     if (app_data.full_name_mode)
     {
-	_tty_out(string("\032\032") + pos + "\n");
+	_tty_out("\032\032" + pos + "\n");
     }
     else
     {

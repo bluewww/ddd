@@ -78,7 +78,7 @@ void show_manual()
 	char *env_pager = getenv("PAGER");
 	if (env_pager != 0)
 	    cmd = string(env_pager) + " || " + cmd;
-	cmd = string("( ") + cmd + " )";
+	cmd = "( " + cmd + " )";
 	pager = popen(cmd, "w");
     }
 

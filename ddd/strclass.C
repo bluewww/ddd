@@ -132,8 +132,11 @@ inline static int slen(const char* t) // inline  strlen
 
 // minimum & maximum representable rep size
 
-#define MAXstrRep_SIZE   ((1 << (sizeof(int) * CHAR_BIT - 1)) - 1)
-#define MINstrRep_SIZE   16
+#if 0
+const unsigned long MAX_STRREP_SIZE = (1 << (sizeof(int) * CHAR_BIT - 1)) - 1;
+#endif
+
+const unsigned long MIN_STRREP_SIZE = 16;
 
 #ifndef MALLOC_MIN_OVERHEAD
 #define MALLOC_MIN_OVERHEAD  4
@@ -150,14 +153,17 @@ inline static int slen(const char* t) // inline  strlen
 inline static strRep* string_Snew(int newsiz)
 {
     unsigned int siz = sizeof(strRep) + newsiz + MALLOC_MIN_OVERHEAD;
-    unsigned int allocsiz = MINstrRep_SIZE;
+    unsigned int allocsiz = MIN_STRREP_SIZE;
     while (allocsiz < siz) allocsiz <<= 1;
     allocsiz -= MALLOC_MIN_OVERHEAD;
-    if (allocsiz > MAXstrRep_SIZE - 1)
+
+#if 0
+    if ((unsigned long)allocsiz >= MAX_STRREP_SIZE)
     {
 	cerr << "string: requested length out of range\n";
 	abort();
     }
+#endif
 
 #ifdef HAVE_PLACEMENT_NEW
     strRep* rep = new (operator new (allocsiz)) strRep;

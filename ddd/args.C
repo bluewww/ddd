@@ -151,25 +151,25 @@ static void gdbRunDCB(Widget, XtPointer, XtPointer)
     XtFree(_args);
 
     if (args != "")
-	args = string(" ") + args;
+	args = " " + args;
 
     switch (gdb->type())
     {
     case GDB:
 	if (args == "")
 	    gdb_command("set args", run_dialog);
-	gdb_command(string("run") + args, run_dialog);
+	gdb_command("run" + args, run_dialog);
 	break;
 
     case DBX:
-	gdb_command(string("rerun") + args, run_dialog);
+	gdb_command("rerun" + args, run_dialog);
 	break;
 
     case XDB:
 	if (args == "")
 	    gdb_command("R", run_dialog);
 	else
-	    gdb_command(string("r") + args, run_dialog);
+	    gdb_command("r" + args, run_dialog);
 	break;
     }
 }

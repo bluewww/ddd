@@ -125,7 +125,7 @@ void post_gdb_died(string reason, Widget w)
     string gdb_path = app_data.debugger_command;
     if (gdb_path.contains(" "))
 	gdb_path = gdb_path.before(" ");
-    _gdb_out(string("\n") + gdb_path + ": " + reason + "\n");
+    _gdb_out("\n" + gdb_path + ": " + reason + "\n");
 
     static Widget died_dialog = 0;
     if (died_dialog)
@@ -156,7 +156,7 @@ void post_gdb_message(string text, Widget w)
 
     if (gdb->isReadyWithPrompt())
     {
-	gdb_out(string("\r") + text + "\n" + gdb->default_prompt());
+	gdb_out("\r" + text + "\n" + gdb->default_prompt());
 	return;
     }
 

@@ -202,7 +202,7 @@ void process_show(string command, string value, bool init)
 
     string set_command = command;
     if (!set_command.contains("set ", 0))
-	set_command = string("set ") + set_command.after(rxwhite);
+	set_command = "set " + set_command.after(rxwhite);
 
     Widget button = command_to_widget(settings_form, set_command);
     if (button == 0)
@@ -332,7 +332,7 @@ static void add_button(int& row, EntryType entry_filter, string line)
     string base         = set_command.after("set ");
     if (base == "")
 	base = set_command;
-    string show_command = string("show ") + base;
+    string show_command = "show " + base;
 
     if (base == "args")
 	return;			// Already handled in `Run...' editor
@@ -399,7 +399,7 @@ static void add_button(int& row, EntryType entry_filter, string line)
 	if (is_set)
 	    label = verify(XmCreateLabel(settings_form, base, args, arg));
 	else
-	    label = verify(XmCreateLabel(settings_form, string("the") + base, 
+	    label = verify(XmCreateLabel(settings_form, "the" + base, 
 					 args, arg));
 
 	XtManageChild(label);
@@ -446,7 +446,7 @@ static void add_button(int& row, EntryType entry_filter, string line)
 		verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
 
 	    // Possible options are contained in the help string
-	    string options = cached_gdb_question(string("help ") + set_command);
+	    string options = cached_gdb_question("help " + set_command);
 	    options = options.from('(');
 	    options = options.before(')');
 
@@ -489,7 +489,7 @@ static void add_button(int& row, EntryType entry_filter, string line)
 		verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
 
 	    // Possible options are listed upon `set language' without value
-	    string options = cached_gdb_question(string("set ") + base);
+	    string options = cached_gdb_question("set " + base);
 
 	    while (options != "")
 	    {
@@ -589,7 +589,7 @@ static void add_button(int& row, EntryType entry_filter, string line)
 // Add buttons
 static void add_settings(int& row, EntryType entry_filter, string command)
 {
-    string commands = cached_gdb_question(string("help ") + command);
+    string commands = cached_gdb_question("help " + command);
 
     while (commands != "")
     {
@@ -627,7 +627,7 @@ static void ResetSettingsCB (Widget, XtPointer, XtPointer)
 // Fetch help for specific COMMAND
 static string get_help_line(string command)
 {
-    string reply = cached_gdb_question(string("help ") + command);
+    string reply = cached_gdb_question("help " + command);
     reply = reply.before('\n');
     if (reply.contains('.'))
 	reply = reply.before('.');

@@ -89,8 +89,8 @@ GDBAgent *new_gdb(DebuggerType type,
 	// Set initial commands
 	if (remote_gdb())
 	{
-	    gdb_init_file = string("${TMPDIR=/tmp}/ddd") + itostring(getpid());
-	    string cmd = sh_command(string("cat > ") + gdb_init_file);
+	    gdb_init_file = "${TMPDIR=/tmp}/ddd" + itostring(getpid());
+	    string cmd = sh_command("cat > " + gdb_init_file);
 	    FILE *fp = popen(cmd, "w");
 	    if (fp == 0)
 	    {
@@ -124,7 +124,7 @@ GDBAgent *new_gdb(DebuggerType type,
     case GDB:
 	gdb_call += " -q -fullname";
 	if (gdb_init_file != "")
-	    gdb_call += string(" -x ") + gdb_init_file;
+	    gdb_call += " -x " + gdb_init_file;
 	break;
 
     case DBX:
@@ -134,35 +134,35 @@ GDBAgent *new_gdb(DebuggerType type,
 	    // files are overridden.  Specify them explicitly.
 	    gdb_call += " -s .dbxrc -s $HOME/.dbxrc";
 	    gdb_call += " -s .dbxinit -s $HOME/.dbxinit";
-	    gdb_call += string(" -s ") + gdb_init_file;
+	    gdb_call += " -s " + gdb_init_file;
 	}
 	break;
 
     case XDB:
 	gdb_call += " -L ";
 	if (gdb_init_file != "")
-	    gdb_call += string(" -p ") + gdb_init_file;
+	    gdb_call += " -p " + gdb_init_file;
 	break;
     }
 
     for (int i = 1; i < argc; i++) {
 	string arg = argv[i];
-	gdb_call += string(" ") + sh_quote(arg);
+	gdb_call += " " + sh_quote(arg);
     }
 
     GDBAgent *gdb;
     if (app_data.debugger_rhost == 0 || app_data.debugger_rhost[0] == '\0')
     {
 	// Use direct invocation
-	gdb_call = sh_command(string("exec ") + gdb_call);
+	gdb_call = sh_command("exec " + gdb_call);
 	gdb = new GDBAgent(app_context, gdb_call, type);
     }
     else
     {
 	// Use interactive rsh
 	gdb = new GDBAgent(app_context, sh_command(), type);
-	gdb_call = "exec " 
-	    + _sh_command(string("exec ") + gdb_call, true, true) + "\n";
+	gdb_call = 
+	    "exec " + _sh_command("exec " + gdb_call, true, true) + "\n";
 	gdb->addHandler(Input, InvokeGDBFromShellHP, (void *)&gdb_call);
     }
 
@@ -224,8 +224,8 @@ void remove_init_file()
     {
 	if (remote_gdb())
 	{
-	    string cmd = sh_command(
-		string("rm -f ") + gdb_init_file + " >/dev/null </dev/null 2>&1 &");
+	    string cmd = sh_command("rm -f " + gdb_init_file 
+				    + " >/dev/null </dev/null 2>&1 &");
 	    system(cmd);
 	}
 	else

@@ -214,7 +214,7 @@ void start_gdb()
 	plus_cmd_data->config_frame = true;
 	cmds += "dbxenv run_io";
 	plus_cmd_data->config_run_io = true;
-	cmds += string("print -r ") + print_r_cookie;
+	cmds += "print -r " + print_r_cookie;
 	plus_cmd_data->config_print_r = true;
 	cmds += "where -h";
 	plus_cmd_data->config_where_h = true;
@@ -312,7 +312,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	    char c = cmd[0];
 
 	    if (c < ' ')
-		gdb_out(string("^") + string('@' + int(c)));
+		gdb_out("^" + string('@' + int(c)));
 	    else
 		gdb_out("^?");	// DEL
 	}

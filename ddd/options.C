@@ -416,7 +416,7 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 	}
     }
 
-    string keyboardFocusPolicy = string("*") + string(XmNkeyboardFocusPolicy);
+    string keyboardFocusPolicy = "*" + string(XmNkeyboardFocusPolicy);
     XrmDatabase target = XtDatabase(XtDisplay(w));
     switch (policy)
     {
@@ -488,13 +488,13 @@ inline String bool_value(bool value)
 
 inline string bool_app_value(const string& name, bool value)
 {
-    return string(DDD_CLASS_NAME) + "*" + name + ": " + bool_value(value);
+    return DDD_CLASS_NAME "*" + name + ": " + bool_value(value);
 }
 
 #if 0
 inline string int_app_value(const string& name, int value)
 {
-    return string(DDD_CLASS_NAME) + "*" + name + ": " + itostring(value);
+    return DDD_CLASS_NAME "*" + name + ": " + itostring(value);
 }
 #endif
 
@@ -506,10 +506,10 @@ string string_app_value(const string& name, string value)
 	value.gsub("\\n", "\\n\\\n");
 	if (value.contains("\\\n", -1))
 	    value = value.before(int(value.length()) - 2);
-	value = string("\\\n") + value;
+	value = "\\\n" + value;
     }
 
-    return string(DDD_CLASS_NAME) + "*" + name + ": " + value;
+    return DDD_CLASS_NAME "*" + name + ": " + value;
 }
 
 string widget_value(Widget w, String name)
@@ -541,7 +541,7 @@ string options_file()
 
 void save_options(Widget origin)
 {
-    StatusDelay delay(string("Saving options in ") + quote(options_file()));
+    StatusDelay delay("Saving options in " + quote(options_file()));
     string file = options_file();
 
     const char delimiter[] = "! DO NOT ADD ANYTHING BELOW THIS LINE";
@@ -575,7 +575,7 @@ void save_options(Widget origin)
     ofstream os(file);
     if (os.bad())
     {
-	post_error(string("Cannot save options in ") + quote(file),
+	post_error("Cannot save options in " + quote(file),
 		   "options_save_error", origin);
 	return;
     }

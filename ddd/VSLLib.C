@@ -206,7 +206,7 @@ const Box *VSLLib::eval(const string& func_name, ListBox *a) const
 {
     VSLDefList *d = deflist(func_name);
     if (d == 0)
-	eval_error(string("'") + func_name + "(...)' undefined");
+	eval_error("'" + func_name + "(...)' undefined");
 
     return d ? d->eval(a) : 0;
 }

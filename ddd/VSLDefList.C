@@ -67,8 +67,7 @@ const Box *VSLDefList::eval(Box *arg) const
 	ostrstream s(buffer, sizeof buffer);
 	s << *arg << '\0';
 
-	VSLLib::eval_error(string("no suiting definition for ") + 
-	    f_name() + buffer);
+	VSLLib::eval_error("no suiting definition for " + f_name() + buffer);
     }
 
     return d ? d->eval(arg) : 0;
@@ -109,8 +108,7 @@ VSLDef* VSLDefList::add(bool &newFlag, VSLNode *pattern, VSLNode *expr,
 	    if (*expr != *(d->expr()))
 	    {
 		// Bereits (abweichend) definiert
-		VSLLib::parse_error(
-		    string("'") + d->f_name() + "\' already defined");
+		VSLLib::parse_error("'" + d->f_name() + "\' already defined");
 		VSLLib::eval_echo("(this is the previous definition)", d);
 		delete expr; return 0;
 	    }

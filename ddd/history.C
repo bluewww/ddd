@@ -253,11 +253,11 @@ void save_history(Widget origin)
 {
     if (gdb_history_file != "")
     {
-	StatusDelay delay(string("Saving history in ") + quote(gdb_history_file));
+	StatusDelay delay("Saving history in " + quote(gdb_history_file));
 	ofstream os(gdb_history_file);
 	if (os.bad())
 	{
-	    post_error(string("Cannot save history in ") + quote(gdb_history_file),
+	    post_error("Cannot save history in " + quote(gdb_history_file),
 		       "history_save_error", origin);
 	    return;
 	}

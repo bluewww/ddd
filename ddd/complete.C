@@ -249,7 +249,7 @@ static void complete(Widget w, XEvent *e, string input, string cmd)
     }
 
     // Go and ask GDB for completions.
-    string complete_cmd = string("complete ") + cmd;
+    string complete_cmd = "complete " + cmd;
 
     if (XmIsTextField(w))
 	XmTextFieldSetEditable(w, false);

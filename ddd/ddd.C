@@ -1623,7 +1623,8 @@ int main(int argc, char *argv[])
     // as DDD becomes idle again.
     XtAppAddWorkProc(app_context, ddd_setup_done, 0);
 
-    for (;;)
+    bool forever = true;
+    while (forever)
     {
 	// Check if GDB is still running
 	gdb->running();
@@ -2145,7 +2146,7 @@ void gdb_ctrl(char ctrl)
 	    // Issue control character
 	    string c;
 	    if (ctrl < ' ')
-		c = string("^") + string('@' + int(ctrl));
+		c = "^" + string('@' + int(ctrl));
 	    else
 		c = "^?";
 	    XmTextInsert(gdb_w, promptPosition, (String)c);

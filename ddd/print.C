@@ -71,7 +71,7 @@ char print_rcsid[] =
 // Convert according to given BoxPrintGC
 static int convert(string filename, BoxPrintGC& gc, bool selectedOnly)
 {
-    StatusDelay delay(string("Printing graph to ") + quote(filename));
+    StatusDelay delay("Printing graph to " + quote(filename));
 
     // Get the graph
     Graph *graph = graphEditGetGraph(data_disp->graph_edit);
@@ -142,7 +142,7 @@ static int print(string command, BoxPrintGC& gc, bool selectedOnly)
     if (ret)
 	return ret;
 
-    StatusDelay delay(string("Printing graph ") + quote(tempfile));
+    StatusDelay delay("Printing graph " + quote(tempfile));
 
     command = command + " " + tempfile;
 
@@ -246,7 +246,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 			   (void *)1);
 	    XtAddCallback (yn_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
-	    string question = string("Overwrite existing file ") + quote(f) + "?";
+	    string question = "Overwrite existing file " + quote(f) + "?";
 	    XmString xmtext = XmStringCreateLtoR (question, "rm");
 	    XtVaSetValues (yn_dialog, XmNmessageString, xmtext, NULL);
 	    XmStringFree (xmtext);

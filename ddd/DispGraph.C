@@ -527,15 +527,17 @@ DispNode* DispGraph::first (MapRef& ref, Displaying e) const
 	switch (e) {
 	case Both:
 	    return dn;
-	    break;
+
 	case Enabled:
 	    if (dn->enabled())
 		return dn;
 	    break;
+
 	case Disabled:
 	    if (!dn->enabled())
 		return dn;
 	    break;
+
 	default:
 	    // Falscher Fehler
 	    assert (0);
@@ -553,15 +555,17 @@ DispNode* DispGraph::next (MapRef& ref, Displaying e) const
 	switch (e) {
 	case Both:
 	    return dn;
-	    break;
+
 	case Enabled:
 	    if (dn->enabled())
 		return dn;
 	    break;
+
 	case Disabled:
 	    if (!dn->enabled())
 		return dn;
 	    break;
+
 	default:
 	    // Falscher Fehler
 	    assert (0);
@@ -580,15 +584,17 @@ int DispGraph::first_nr (MapRef& ref, Displaying e) const
 	switch (e) {
 	case Both:
 	    return k;
-	    break;
+
 	case Enabled:
 	    if (idMap.get (k)->enabled())
 		return k;
 	    break;
+
 	case Disabled:
 	    if (!idMap.get (k)->enabled())
 		return k;
 	    break;
+
 	default:
 	    // Falscher Fehler
 	    assert (0);
@@ -607,15 +613,17 @@ int DispGraph::next_nr (MapRef& ref, Displaying e) const
 	switch (e) {
 	case Both:
 	    return k;
-	    break;
+
 	case Enabled:
 	    if (idMap.get(k)->enabled())
 		return k;
 	    break;
+
 	case Disabled:
 	    if (!idMap.get(k)->enabled())
 		return k;
 	    break;
+
 	default:
 	    // Falscher Fehler
 	    assert (0);
@@ -650,8 +658,3 @@ void DispGraph::disp_node_disabledHP (void*,
 	    disp_graph->handlers.call(NoDisabled, disp_graph, (void*)true);
     }
 }
-
-
-
-
-

@@ -76,7 +76,7 @@ MString gdbDefaultHelp(Widget widget)
     name.gsub('_', ' ');
     strip_final_blanks(name);
 
-    string help = gdb_question(string("help ") + name);
+    string help = gdb_question("help " + name);
     if (help == NO_GDB_ANSWER)
     {
 	help = "No help available now.\n"

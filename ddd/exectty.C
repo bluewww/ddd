@@ -249,7 +249,7 @@ static int gdb_set_tty(string tty_name = "",
 	    if (app_data.use_tty_command && tty_name != gdb_tty)
 	    {
 		// Issue `tty' command to perform redirection
-		string tty_cmd = string("tty ") + tty_name;
+		string tty_cmd = "tty " + tty_name;
 		string reply = gdb_question(tty_cmd);
 
 		if (reply == NO_GDB_ANSWER)
@@ -270,7 +270,7 @@ static int gdb_set_tty(string tty_name = "",
 	    }
 
 	    // Set remote terminal type
-	    string env_cmd = string("set environment TERM ") + term_type;
+	    string env_cmd = "set environment TERM " + term_type;
 	    string reply = gdb_question(env_cmd);
 	    if (reply == NO_GDB_ANSWER)
 	    {
@@ -314,7 +314,7 @@ static int gdb_set_tty(string tty_name = "",
 		    }
 		    else
 		    {
-			command = string("dbxenv run_pty ") + tty_name;
+			command = "dbxenv run_pty " + tty_name;
 			reply = gdb_question(command);
 
 			if (reply == NO_GDB_ANSWER)
@@ -338,7 +338,7 @@ static int gdb_set_tty(string tty_name = "",
 	    }
 
 	    // Set remote terminal type
-	    string env_cmd = string("setenv TERM ") + term_type;
+	    string env_cmd = "setenv TERM " + term_type;
 	    string reply = gdb_question(env_cmd);
 	    if (reply == NO_GDB_ANSWER)
 	    {
@@ -384,7 +384,7 @@ static void redirect_process(string& command,
 
     gdb_redirection = "";
     if (!args.contains("<"))
-	gdb_redirection = string("< ") + tty_name;
+	gdb_redirection = "< " + tty_name;
 
     if (!args.contains(">"))
     {
@@ -417,22 +417,22 @@ static void redirect_process(string& command,
 		if (shell.contains("csh"))
 		{
 		    // csh, tcsh
-		    gdb_redirection += string(" >&! ") + tty_name;
+		    gdb_redirection += " >&! " + tty_name;
 		}
 		else if (shell.contains("rc"))
 		{
 		    // rc (from tim@pipex.net)
-		    gdb_redirection += string(" > ") + tty_name + " >[2=1]";
+		    gdb_redirection += " > " + tty_name + " >[2=1]";
 		}
 		else if (shell.contains("sh"))
 		{
 		    // sh, bsh, ksh, bash, zsh, sh5, ...
-		    gdb_redirection += string(" > ") + tty_name + " 2>&1";
+		    gdb_redirection += " > " + tty_name + " 2>&1";
 		}
 		else
 		{
 		    // Unknown shell - play it safe
-		    gdb_redirection += string(" > ") + tty_name;
+		    gdb_redirection += " > " + tty_name;
 		}
 	    }
 	    break;
@@ -446,18 +446,18 @@ static void redirect_process(string& command,
 
  		    // DBX interprets `COMMAND 2>&1' such that COMMAND
  		    // runs in the background.  Use this kludge instead.
- 		    gdb_redirection = string("2> ") + tty_name + " " 
+ 		    gdb_redirection = "2> " + tty_name + " " 
 			+ gdb_redirection + " > " + tty_name;
 		}
 		else if (gdb->has_err_redirection())
 		{
 		    // DEC DBX and AIX DBX use csh style redirection.
-		    gdb_redirection +=  string(" >& ") + tty_name;
+		    gdb_redirection +=  " >& " + tty_name;
 		}
 		else
 		{
 		    // SUN DBX 1.x does not allow to redirect stderr.
-		    gdb_redirection += string(" > ") + tty_name;
+		    gdb_redirection += " > " + tty_name;
 		}
 	    }
 	    break;
@@ -465,7 +465,7 @@ static void redirect_process(string& command,
 	case XDB:
 	    {
 		// XDB uses ksh style redirection.
-		gdb_redirection += string(" > ") + tty_name + " 2>&1";
+		gdb_redirection += " > " + tty_name + " 2>&1";
 	    }
 	    break;
 	}
@@ -499,7 +499,7 @@ static void unredirect_process(string& command,
 	    static string empty;
 	    args.gsub(gdb_redirection, empty);
 	    strip_final_blanks(args);
-	    string reply = gdb_question(string("set args ") + args);
+	    string reply = gdb_question("set args " + args);
 	    if (reply != "")
 		post_gdb_message(reply, origin);
 	}
@@ -541,7 +541,7 @@ static void initialize_tty(const string& tty_name, const string& tty_term)
 
     if (remote_gdb())
     {
-	string command = sh_command(string("cat > ") + tty_name);
+	string command = sh_command("cat > " + tty_name);
 	FILE *fp = popen(command, "w");
 	fwrite((char *)init, init.length(), sizeof(char), fp);
 	pclose(fp);
@@ -558,7 +558,7 @@ static void set_tty_title(string message, Window tty_window)
 {
     string init = "";
 
-    string title = string(DDD_NAME) + ": Execution Window";
+    string title = DDD_NAME ": Execution Window";
     string icon  = title;
 
     message = message.after(": ");
@@ -576,8 +576,8 @@ static void set_tty_title(string message, Window tty_window)
 	if (program_base.contains('/'))
 	    program_base = program_base.after('/', -1);
 
-	title = string(DDD_NAME) + ": " + message;
-	icon  = string(DDD_NAME) + ": " + program_base;
+	title = DDD_NAME ": " + message;
+	icon  = DDD_NAME ": " + program_base;
     }
 
     if (tty_window)

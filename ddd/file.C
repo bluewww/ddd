@@ -479,11 +479,11 @@ static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 	switch(gdb->type())
 	{
 	case GDB:
-	    gdb_command(string("file ") + filename);
+	    gdb_command("file " + filename);
 	    break;
 
 	case DBX:
-	    gdb_command(string("debug ") + filename);
+	    gdb_command("debug " + filename);
 	    break;
 
 	case XDB:
@@ -506,7 +506,7 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 	switch(gdb->type())
 	{
 	case GDB:
-	    gdb_command(string("core-file ") + corefile);
+	    gdb_command("core-file " + corefile);
 	    break;
 
 	case DBX:
@@ -518,7 +518,7 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 		{
 		    file = file.after(": ");
 		    strip_final_blanks(file);
-		    gdb_command(string("debug ") + file + " " + corefile);
+		    gdb_command("debug " + file + " " + corefile);
 		}
 		else
 		    post_gdb_message(file);

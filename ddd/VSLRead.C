@@ -163,7 +163,7 @@ void yyerror(char *s)
     string errmsg = s;
 
     if (errmsg == "syntax error" || errmsg == "parse error")
-	 errmsg += string(" near ") + quote((char *)yytext);
+	 errmsg += " near " + quote((char *)yytext);
 
     VSLLib::parse_error(errmsg);
 }
@@ -187,5 +187,5 @@ void VSLLib::parse_error(const string& errmsg)
 // Warnung beim Parsen
 void VSLLib::parse_warning(const string& errmsg)
 {
-    parse_echo(string("warning: ") + errmsg);
+    parse_echo("warning: " + errmsg);
 }

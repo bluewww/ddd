@@ -78,7 +78,7 @@ string _sh_command(string command, bool force_local,
 	display = string(fullhostname(host)) + display.from(":");
     }
 
-    string settings = string("DISPLAY='") + display + "'; export DISPLAY; ";
+    string settings = "DISPLAY='" + display + "'; export DISPLAY; ";
 
     if (force_local || !remote_gdb())
     {
@@ -86,18 +86,18 @@ string _sh_command(string command, bool force_local,
 	    return "";
 	if (force_display_settings)
 	    command = settings + command;
-	return string("/bin/sh -c ") + sh_quote(command);
+	return "/bin/sh -c " + sh_quote(command);
     }
 
     string rsh = app_data.rsh_command;
     string login = app_data.debugger_host_login;
     if (login != "")
-	rsh += string(" -l ") + login;
+	rsh += " -l " + login;
 
-    rsh += string(" ") + gdb_host;
+    rsh += " " + gdb_host;
 
     if (command != "")
-	rsh += string(" /bin/sh -c ") + sh_quote(sh_quote(settings + command));
+	rsh += " /bin/sh -c " + sh_quote(sh_quote(settings + command));
 
     return rsh;
 }
