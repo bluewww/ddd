@@ -338,10 +338,19 @@ void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 
     // Debugger is still running; request confirmation
+    Arg args[10];
+    int arg;
+
     if (yn_dialog)
 	DestroyWhenIdle(yn_dialog);
+
+    arg = 0;
+    MString msg(gdb->title() + " is still busy.  "
+		"Exit anyway (and kill it)?", 
+		"rm");
+    XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
-					      "quit_dialog", 0, 0));
+					      "quit_dialog", args, arg));
     Delay::register_shell(yn_dialog);
     XtAddCallback (yn_dialog, XmNokCallback,     _DDDExitCB, 0);
     XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
@@ -367,10 +376,19 @@ void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 
     // Debugger is still running; request confirmation
+    Arg args[10];
+    int arg;
+
     if (yn_dialog)
 	DestroyWhenIdle(yn_dialog);
+
+    arg = 0;
+    MString msg(gdb->title() + " is still busy.  "
+		"Restart anyway (and kill it)?", 
+		"rm");
+    XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
-					      "quit_dialog", 0, 0));
+					      "quit_dialog", args, arg));
     Delay::register_shell(yn_dialog);
     XtAddCallback (yn_dialog, XmNokCallback,     _DDDExitCB, 0);
     XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);

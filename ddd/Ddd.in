@@ -3991,13 +3991,13 @@ You may also interrupt the current debugging command by selecting\n\
 @bf Interrupt @rm from the @bf Program @rm menu.
 
 Ddd*quit_dialog_popup.title: @DDD@: Debugger Still Busy
-Ddd*quit_dialog.messageString:	 \
-@rm The debugger is still busy.  Exit anyway (and kill it)?
+! Ddd*quit_dialog.messageString:	 \
+! @rm The inferior debugger is still busy.  Exit anyway (and kill it)?
 Ddd*quit_dialog*okLabelString:	     Yes
 Ddd*quit_dialog*cancelLabelString:   No
 Ddd*quit_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*quit_dialog*helpString:	\
-@rm The inferior debugger (i.e. GDB, XDB, or DBX) is busy and does not react\n\
+@rm The inferior debugger is busy and does not react\n\
 to the ``quit'' command.\n\
 The debugged process is probably still running.\n\
 \n\
@@ -4005,17 +4005,17 @@ Before killing a running debugger, you should try to interrupt it\n\
 (by selecting @bf Interrupt @rm from the @bf Program @rm menu).
 
 Ddd*terminated_dialog_popup.title: @DDD@: Hasta la Vista
-Ddd*terminated_dialog.messageString:   \
-@rm The inferior debugger terminated abnormally.
+! Ddd*terminated_dialog.messageString:   \
+! @rm The inferior debugger terminated abnormally.
 Ddd*terminated_dialog*okLabelString:	   Restart
 Ddd*terminated_dialog*cancelLabelString:   Exit
 Ddd*terminated_dialog*helpString:	\
-@rm The inferior debugger (i.e. GDB, XDB, or DBX) terminated abnormally.\n\
+@rm The inferior debugger terminated abnormally.\n\
 You may wish to examine its final output before exiting or restarting @DDD@.
 
 Ddd*no_debugger_dialog_popup.title: @DDD@: Losing my Religion
-Ddd*no_debugger_dialog.messageString:   \
-@rm The inferior debugger could not be started.
+! Ddd*no_debugger_dialog.messageString:   \
+! @rm The inferior debugger could not be started.
 Ddd*no_debugger_dialog*okLabelString:	   Exit
 Ddd*no_debugger_dialog*helpString:	\
 @rm The inferior debugger (i.e. GDB, XDB, or DBX) could not be started.\n\

@@ -239,9 +239,6 @@ void source_argHP (void*, void*, void* call_data);
 // Setup
 static Boolean ddd_setup_done(XtPointer client_data);
 
-// Widgets
-static void setup_settings_title();
-
 // Warning proc
 static void ddd_xt_warning(String message);
 
@@ -1700,8 +1697,13 @@ int main(int argc, char *argv[])
 "see the " DDD_NAME " manual for details on reporting bugs.\n"
 "Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>.", "rm");
 
-    // Prepend debugger name to `settings' title.
-    setup_settings_title();
+    // Customize `settings' and `status displays' titles.
+    MString settings_title(gdb->title() + " Settings...");
+    XtVaSetValues(settings_w, XmNlabelString, settings_title.xmstring(), NULL);
+#if 0
+    MString infos_title(gdb->title() + " Status Displays...");
+    XtVaSetValues(infos_w, XmNlabelString, infos_title.xmstring(), NULL);
+#endif
 
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
@@ -1980,21 +1982,6 @@ static void install_button_tips()
 	if (shell)
 	    InstallButtonTips(shell, true);
     }
-}
-
-//-----------------------------------------------------------------------------
-// Prepend debugger name to `settings' title
-//-----------------------------------------------------------------------------
-
-static void setup_settings_title()
-{
-    XmString xmlabel;
-    XtVaGetValues(settings_w, XmNlabelString, &xmlabel, NULL);
-    MString label(xmlabel, true);
-    XmStringFree(xmlabel);
-
-    label.prepend(MString(gdb->title() + " "));
-    XtVaSetValues(settings_w, XmNlabelString, label.xmstring(), NULL);
 }
 
 //-----------------------------------------------------------------------------

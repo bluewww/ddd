@@ -127,24 +127,33 @@ void post_gdb_died(string reason, Widget w)
 	gdb_path = gdb_path.before(" ");
     _gdb_out("\n" + gdb_path + ": " + reason + "\n");
 
+    Arg args[10];
+    int arg;
+
     static Widget died_dialog = 0;
     if (died_dialog)
 	DestroyWhenIdle(died_dialog);
 
     if (gdb_initialized)
     {
+	arg = 0;
+	MString msg(gdb->title() + " terminated abnormally.", "rm");
+	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
 	died_dialog = 
 	    verify(XmCreateErrorDialog (find_shell(w), 
-					"terminated_dialog", NULL, 0));
+					"terminated_dialog", args, arg));
 	XtAddCallback(died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
 	XtAddCallback(died_dialog, XmNokCallback,     DDDRestartCB,    NULL);
 	XtAddCallback(died_dialog, XmNcancelCallback, DDDExitCB,       NULL);
     }
     else
     {
+	arg = 0;
+	MString msg(gdb->title() + " could not be started.", "rm");
+	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
 	died_dialog = 
 	    verify(XmCreateErrorDialog (find_shell(w), 
-					"no_debugger_dialog", NULL, 0));
+					"no_debugger_dialog", args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild
 			(died_dialog, XmDIALOG_CANCEL_BUTTON));
 	XtAddCallback(died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);

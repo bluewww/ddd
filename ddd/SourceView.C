@@ -1516,11 +1516,13 @@ void SourceView::read_file (string file_name,
 	break;
 
     case ORIGIN_REMOTE:
-	os << "File " << quote(file_name) << " (from " << gdb_host << ")";
+	os << "File " << quote(file_name) 
+	   << " (from " << gdb_host << ")";
 	break;
 
     case ORIGIN_GDB:
-	os << "Source " << quote(file_name) << " (from debugger)";
+	os << "Source " << quote(file_name) 
+	   << " (from " << gdb->title() << ")";
 	break;
 
     case ORIGIN_NONE:

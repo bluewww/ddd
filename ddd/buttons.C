@@ -216,7 +216,7 @@ static MString gdbDefaultHelpText(Widget widget)
     if (help == NO_GDB_ANSWER)
     {
 	help = "No help available now.\n"
-	    "Please try again when the debugger is ready.";
+	    "Please try again when " +  gdb->title() + " is ready.";
     }
 
     return MString(name, "bf") + MString("\n" + help, "rm");
