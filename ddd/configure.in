@@ -92,7 +92,7 @@ AC_CHECK_PROGS(LPR, lp lpr)
 if test "$LPR" = "lpr"; then
 PRINT_COMMAND="lpr"
 elif test "$LPR" = "lp"; then
-PRINT_COMMAND="lp"
+PRINT_COMMAND="lp -c"
 else
 PRINT_COMMAND="lp"
 fi
