@@ -273,18 +273,25 @@ void PosBuffer::filter (string& answer)
 
 	    case DBX:
 	    {
-		static regex RXdbxfunc("[^:]*: *[1-9][0-9]*  *.*");
+		static regex RXdbxfunc("[a-zA-Z_][^:]*: *[1-9][0-9]*  *.*");
 		if (answer.matches(RXdbxfunc))
 		{
+		    // DEC dbx issues `up', `down' and `func' output
+		    // in the format
+		    // "free_tree: 122  free_tree(tree->left);"
+
 		    string line = answer.after(":");
 		    line = line.through(rxint);
-		    lookup_buffer = line;
+		    pos_buffer = line;
+		    already_read = PosComplete;
+
+		    answer = answer.after("\n");
 		}
 
 		static regex RXdbxpos("[[][^]]*:[1-9][0-9]*[^]]*].*");
 		if (answer.contains(RXdbxpos))
 		{
-		    // DEC dbx issues lines in the format
+		    // DEC dbx issues breakpoint lines in the format
 		    // "[new_tree:113 ,0x400858] \ttree->right = NULL;"
 
 		    string line = answer.from(RXdbxpos);

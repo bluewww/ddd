@@ -680,10 +680,6 @@ void user_cmdOA (const string& answer, void* data)
 }
 
 
-
-// For DBXes that issue positions on `func' commands, save the line found.
-static int last_lookup_line = 0;
-
 // ***************************************************************************
 // Schreibt den prompt ins gdb_w, nachdem ggf. gebufferte Displays abgearbeitet
 // sind und evtl. Restantworten ausgegeben sind (ins gdb_w).
@@ -691,8 +687,6 @@ static int last_lookup_line = 0;
 
 void user_cmdOAC (void* data)
 {
-    last_lookup_line = 0;
-
     CmdData* cmd_data = (CmdData *) data;
 
     string answer = cmd_data->pos_buffer->answer_ended();
@@ -755,10 +749,6 @@ void user_cmdOAC (void* data)
 	    // Lookup command: do not change exec position
 	    source_view->show_position(pos);
 	}
-    }
-    else if (cmd_data->pos_buffer->lookup_found())
-    {
-	last_lookup_line = atoi(cmd_data->pos_buffer->get_lookup());
     }
     else
     {
@@ -1021,13 +1011,6 @@ void plusOQAC (string answers[],
 	file = answers[qu_count++];
 	if (file.contains('\n'))
 	    file = file.before('\n');
-
-	if (!plus_cmd_data->refresh_line)
-	{
-	    // Set the correct lookup position now.
-	    string pos = file + ":" + itostring(last_lookup_line);
-	    source_view->lookup(pos);
-	}
     }
 
     if (plus_cmd_data->refresh_line)

@@ -51,7 +51,6 @@ class PosBuffer {
     string func_buffer;
     string answer_buffer;      // fuer Vielleicht-Positionsangaben-Teile
     string pc_buffer;
-    string lookup_buffer;
     ReadState already_read;
 
     bool started;		// Program has started
@@ -64,7 +63,6 @@ public:
 	func_buffer(""),
 	answer_buffer(""),
 	pc_buffer(""),
-	lookup_buffer(""),
 	already_read(Null),
 	started(false),
 	recompiled(false)
@@ -87,14 +85,12 @@ public:
     //
     bool pos_found () const { return already_read == PosComplete; }
     bool pc_found ()  const { return pc_buffer != ""; }
-    bool lookup_found () const { return lookup_buffer != ""; }
 
     // Gibt die gepufferte Positionsangabe zurueck;
     //
     const string& get_position () const { return pos_buffer; }
     const string& get_function () const { return func_buffer; }
     const string& get_pc ()       const { return pc_buffer; }
-    const string& get_lookup ()   const { return lookup_buffer; }
 
     // Other properties
     bool started_found()    const { return started; }
@@ -108,7 +104,6 @@ public:
 	func_buffer   = "";
 	answer_buffer = "";
 	pc_buffer     = "";
-	lookup_buffer = "";
 	already_read  = Null;
 	started       = false;
 	recompiled    = false;
