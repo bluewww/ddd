@@ -2135,10 +2135,10 @@ DESC(Step Instruction, [step exactly one machine instruction])\n\
 DESC(Next, [step program, but proceed through subroutine calls])\n\
 DESC(Next Instruction, [step instruction, \
 but proceed through subroutine calls])\n\
+DESC(Until, [execute until program reaches a line after the current])\n\
 \n\
 DESC(Continue, [continue program after signal or breakpoint])\n\
 DESC(Finish, [execute until function returns])\n\
-DESC(Until, [execute until program reaches a line after the current])\n\
 DESC(Return, [make current function return to its caller])\n\
 \n\
 DESC(Kill, [kill execution of program being debugged])\n\
