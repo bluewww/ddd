@@ -1274,6 +1274,10 @@ void get_gdb_sources(StringArray& sources_list)
     static StringArray empty;
     sources_list = empty;
 
+    // Load all shared libraries first.  Otherwise, their sources
+    // won't show up in `info sources'.
+    gdb_question("sharedlibrary");
+
     string ans = gdb_question("info sources");
     if (ans != NO_GDB_ANSWER)
     {
