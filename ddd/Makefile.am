@@ -1175,9 +1175,15 @@ ICONS = \
 # DDD Manual.
 # -----------------------------------------------------------------------------
 
-info_TEXINFOS = ddd.texi
+info_TEXINFOS = ddd.texi ddd-themes.texi
 ddd_TEXINFOS = \
 	$(srcdir)/config.texi \
+	$(srcdir)/macros.texi \
+	$(srcdir)/gpl.texinfo \
+	$(srcdir)/gfdl.texinfo
+ddd_themes_TEXINFOS = \
+	$(srcdir)/config.texi \
+	$(srcdir)/macros.texi \
 	$(srcdir)/gpl.texinfo \
 	$(srcdir)/gfdl.texinfo
 texidir = $(srcdir)/../texinfo
@@ -1193,7 +1199,9 @@ $(srcdir)/gpl.texinfo: $(texidir)/gpl.texinfo
 $(srcdir)/gfdl.texinfo: $(texidir)/gfdl.texinfo
 	$(RM) $@; $(LN_S) $(texidir)/gfdl.texinfo $@
 
-ddd.dvi: $(PS_IMAGES)
+ddd.dvi: $(PS_IMAGES) $(ddd_TEXINFOS)
+
+ddd-themes.dvi: $(ddd_themes_TEXINFOS)
 
 
 # The DDD manual in PostScript format, including all pictures.
@@ -1201,16 +1209,25 @@ ddd.dvi: $(PS_IMAGES)
 $(docdir)/ddd.ps: ddd.dvi
 	$(DVIPS) ddd.dvi -o $@
 
+$(docdir)/ddd-themes.ps: ddd-themes.dvi
+	$(DVIPS) ddd-themes.dvi -o $@
+
 
 # The DDD manual in PDF format, including all pictures.
 
 .PHONY: pdf
-pdf: $(docdir)/ddd.pdf
+pdf: $(docdir)/ddd.pdf $(docdir)/ddd-themes.pdf
 
 $(docdir)/ddd.pdf: ddd.pdf
 	$(INSTALL_DATA) ddd.pdf $@
 
-ddd.pdf: $(PDF_IMAGES)
+$(docdir)/ddd-themes.pdf: ddd-themes.pdf
+	$(INSTALL_DATA) ddd-themes.pdf $@
+
+ddd.pdf: $(PDF_IMAGES) $(ddd_TEXINFOS)
+
+ddd-themes.pdf: $(ddd_themes_TEXINFOS)
+
 
 
 # The DDD manual in HTML format.

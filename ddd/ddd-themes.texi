@@ -1,0 +1,2573 @@
+\def\postscript{}\input texinfo @c -*- texinfo -*-
+@c $Id$
+@c Writing DDD Themes
+
+@c Copyright (C) 2000 Universitaet Passau, Germany.
+@c Written by Andreas Zeller <zeller@gnu.org>.
+@c 
+@c This file is part of DDD.
+@c 
+@c DDD is free software; you can redistribute it and/or modify it under
+@c the terms of the GNU General Public License as published by the Free
+@c Software Foundation; either version 2 of the License, or (at your
+@c option) any later version.
+@c
+@c This document is free documentation; you can redistribute it and/or 
+@c modify it under the terms of the GNU Free Documentation License 
+@c as published by the Free Software Foundation; either version 1.1 
+@c of the License, or (at your option) any later version.
+@c 
+@c DDD is distributed in the hope that it will be useful, but WITHOUT ANY
+@c WARRANTY; without even the implied warranty of MERCHANTABILITY or
+@c FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+@c for more details. 
+@c 
+@c You should have received a copy of the GNU General Public License
+@c along with DDD -- see the file COPYING.  If not, write to the Free
+@c Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+@c MA 02111-1307, USA.
+@c 
+@c DDD is the data display debugger.
+@c For details, see the DDD World-Wide-Web page, 
+@c `http://www.gnu.org/software/ddd/',
+@c or send a mail to the DDD developers <ddd@gnu.org>.
+
+@c Note: This file contains 8-bit characters (ISO-8859-1 encoding).
+@c Note: This file requires Texinfo 4.0 or later.
+
+@c %**start of header
+
+@setfilename ddd-themes.info
+@documentencoding ISO-8859-1
+
+
+@c Configuration
+@include config.texi
+
+@c Macros
+@include macros.texi
+
+@settitle Writing @value{DDD} Themes
+
+@c !!set DDD manual's edition---not the same as DDD version!
+@set EDITION First
+
+@c !!set DDD manual's revision date
+@set DATE 2000-12-18
+
+@c Files
+@defcodeindex fl
+
+@c Combine functions and concepts
+@syncodeindex fn cp
+
+@c Combine files and concepts
+@syncodeindex fl cp
+
+
+@c PDF settings
+@iftex
+@ifpdf
+@pdfcompresslevel=9
+@pdfinfo{
+    /Title (Writing DDD Themes)
+    /Author (Andreas Zeller)
+    /Subject (DDD - the Data Display Debugger)
+    /Keywords (Debugging Debugger DDD GNU GDB DBX XDB JDB Ladebug WDB Python Perl)
+}
+@fi
+@end iftex
+
+@c Formatting
+@setchapternewpage odd
+@finalout
+
+@c Info Dir settings
+@dircategory Miscellaneous
+@direntry
+* DDD-Themes: (ddd).              Writing DDD Themes.
+@end direntry
+@c %**end of header
+
+
+@ifinfo
+@c This section is prepended to every info file.
+
+@noindent
+
+@DDD{} is a graphical front-end for @GDB{} and other command-line
+debuggers.
+
+@noindent
+This is the @value{EDITION} Edition, @value{DATE}, of @cite{Writing
+@DDD{} themes} for @DDD{} Version @value{VERSION}.
+
+@noindent
+@group
+Copyright @copyright{} 2000 Universität Passau @*
+Lehrstuhl für Software-Systeme @*
+Innstraße 33 @*
+D-94032 Passau @*
+GERMANY
+
+@noindent
+Distributed by @*
+Free Software Foundation, Inc. @*
+59 Temple Place - Suite 330 @*
+Boston, MA 02111-1307 @*
+USA
+
+@noindent
+@DDD{} and this manual are available via
+@uref{http://www.gnu.org/software/ddd/, the @DDD{} @WWW{} page}.
+@end group
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License".
+
+Send questions, comments, suggestions, etc. to @email{ddd@@gnu.org}. @*
+Send bug reports to @email{bug-ddd@@gnu.org}. @*
+@end ifinfo
+
+
+@c The title page.
+@ifnothtml
+@titlepage
+@sp -7
+@ifnottex
+@title Writing @value{DDD} Themes
+@subtitle User's Guide and Reference Manual
+@subtitle @value{EDITION} Edition, for @value{DDD} Version @value{VERSION}
+@subtitle Last updated @value{DATE}
+@author Andreas Zeller
+@end ifnottex
+@tex
+\setfont\bigtitlesf\sfbshape{10}{\magstep4}
+\title \bigtitlesf{Writing \value{DDD} Themes}
+\subtitle \textsf{User's Guide and Reference Manual}
+\subtitle \textsf{\value{EDITION} Edition, for \value{DDD} Version \value{VERSION}}
+\subtitle \textsf{Last updated \value{DATE}}
+\sp 2
+\center \image{PICS/dddlogo, 15cm}
+\author \titlesf{Andreas Zeller}
+@end tex
+@page
+@tex
+{\parskip=0pt
+\hfill \textsf{Writing @value{DDD} Themes}\par
+\hfill \textsf{User's Guide and Reference Manual}\par
+}
+@end tex
+
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2000 Universität Passau @*
+Lehrstuhl für Software-Systeme @*
+Innstraße 33 @*
+D-94032 Passau @*
+GERMANY
+@sp 1
+
+Distributed by @*
+Free Software Foundation, Inc. @*
+59 Temple Place -- Suite 330 @*
+Boston, MA 02111-1307 @*
+USA
+@sp 1
+
+@DDD{} and this manual are available via @*
+@uref{http://www.gnu.org/software/ddd/, the @DDD{} @WWW{} page}.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''; @xref{Documentation License}, for details.
+
+Send questions, comments, suggestions, etc. to
+@email{ddd@@gnu.org}. @*
+Send bug reports to @email{bug-ddd@@gnu.org}. @*
+
+@end titlepage
+@end ifnothtml
+
+@ifnottex
+@c Main Info and HTML page.
+
+@node Top
+@top Writing @value{DDD} Themes
+
+@DDD{} is a graphical front-end for @GDB{} and other command-line
+debuggers.  This manual describes how to customize its data display.
+
+This is the @value{EDITION} Edition of @cite{Writing @DDD{} Themes},
+@value{DATE}, for @DDD{} Version @value{VERSION}.
+@end ifnottex
+
+@ifinfo
+The first part of this master menu lists the major nodes in this Info
+document, including the label and command indices.  The rest of the menu
+lists all the lower level nodes in the document.
+@end ifinfo
+
+@menu
+* Writing Themes::              
+* DDD VSL Functions::           
+* VSL Library::                 
+* VSL Reference::               
+* Documentation License::       
+* VSL Function Index::          
+@end menu
+
+@ifnothtml
+@shortcontents
+@end ifnothtml
+@contents
+
+@ifhtml
+@c This section comes below the summary in the HTML file.
+
+@noindent
+@group
+Copyright @copyright{} 2000 Universität Passau @*
+Lehrstuhl für Software-Systeme @*
+Innstraße 33 @*
+D-94032 Passau @*
+GERMANY
+
+@noindent
+Distributed by @*
+Free Software Foundation, Inc. @*
+59 Temple Place - Suite 330 @*
+Boston, MA 02111-1307 @*
+USA
+
+@noindent
+@DDD{} and this manual are available via
+@uref{http://www.gnu.org/software/ddd/, the @DDD{} @WWW{} page}.
+@end group
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''; @xref{Documentation License}, for details.
+
+Send questions, comments, suggestions, etc. to @email{ddd@@gnu.org}. @*
+Send bug reports to @email{bug-ddd@@gnu.org}. @*
+@end ifhtml
+
+
+@c The actual content starts here.
+
+@node Writing Themes
+@chapter Writing Themes
+
+...
+
+
+@node DDD VSL Functions
+@appendix DDD VSL Functions
+
+@cindex VSL Functions
+@cindex Functions, in VSL
+
+This appendix describes how @DDD{} invokes @VSL{} functions to create
+data displays.
+
+@flindex ddd.vsl
+The functions in this section are predefined in the library
+@file{ddd.vsl}.  They can be used and replaced by @DDD{} themes.
+
+@menu
+* Displaying Fonts::            
+* Displaying Colors::           
+* Displaying Shadows::          
+* Displaying Data Displays::    
+* Displaying Simple Values::    
+* Displaying Pointers::         
+* Displaying References::       
+* Displaying Arrays::           
+* Displaying Structs::          
+* Displaying Lists::            
+* Displaying Sequences::        
+* Displaying Multi-Line Texts::  
+* Displaying Extra Properties::  
+@end menu
+
+@node Displaying Fonts
+@section Displaying Fonts
+
+These are the function @DDD{} uses for rendering boxes in different fonts:
+
+@deffn {VSL Function} small_rm (box)
+@deffnx {VSL Function} small_bf (box)
+@deffnx {VSL Function} small_it (box)
+@deffnx {VSL Function} small_bi (box)
+Returns @var{box} in small roman / bold face / italic / bold italic font.
+@end deffn
+
+@deffn {VSL Function} small_size ()
+Default size for small fonts.@footnote{@DDD{} replaces this as set in
+the @DDD{} font preferences.  Use @samp{ddd --fonts} to see the actual
+definitions.}
+@end deffn
+
+@deffn {VSL Function} tiny_rm (box)
+@deffnx {VSL Function} tiny_bf (box)
+@deffnx {VSL Function} tiny_it (box)
+@deffnx {VSL Function} tiny_bi (box)
+Returns @var{box} in tiny roman / bold face / italic / bold italic font.
+@end deffn
+
+@deffn {VSL Function} tiny_size ()
+Default size for tiny fonts.@footnote{@DDD{} replaces this as set in
+the @DDD{} font preferences.  Use @samp{ddd --fonts} to see the actual
+definitions.}
+@end deffn
+
+
+@deffn {VSL Function} title_rm (box)
+@deffnx {VSL Function} title_bf (box)
+@deffnx {VSL Function} title_it (box)
+@deffnx {VSL Function} title_bi (box)
+Returns @var{box} (a display title) in roman / bold face / italic / bold
+italic font.
+@end deffn
+
+@deffn {VSL Function} value_rm (box)
+@deffnx {VSL Function} value_bf (box)
+@deffnx {VSL Function} value_it (box)
+@deffnx {VSL Function} value_bi (box)
+Returns @var{box} (a display value) in roman / bold face / italic / bold
+italic font.
+@end deffn
+
+
+
+@node Displaying Colors
+@section Displaying Colors
+
+@deffn {VSL Function} display_color (box)
+Returns @var{box} in the color used for displays.  Default definition is
+@example
+display_color(box) = color(box, "black", "white");
+@end example
+@end deffn
+
+@deffn {VSL Function} title_color (box)
+Returns @var{box} in the color used for display titles.  Default definition is
+@example
+title_color(box) = color(box, "black");
+@end example
+@end deffn
+
+@deffn {VSL Function} disabled_color (box)
+Returns @var{box} in the color used for disabled displays.  Default
+definition is
+@example
+disabled_color(box) = color(box, "white", "grey50");
+@end example
+@end deffn
+
+@deffn {VSL Function} simple_color (box)
+Returns @var{box} in the color used for simple values.  Default
+definition is
+@example
+simple_color(box) = color(box, "black");
+@end example
+@end deffn
+
+@deffn {VSL Function} text_color (box)
+Returns @var{box} in the color used for multi-line texts.  
+Default definition is
+@example
+text_color(box) = color(box, "black");
+@end example
+@end deffn
+
+@deffn {VSL Function} pointer_color (box)
+Returns @var{box} in the color used for pointers.  Default definition is
+@example
+pointer_color(box) = color(box, "blue4");
+@end example
+@end deffn
+
+@deffn {VSL Function} struct_color (box)
+Returns @var{box} in the color used for structs.  Default definition is
+@example
+struct_color(box) = color(box, "black");
+@end example
+@end deffn
+
+@deffn {VSL Function} list_color (box)
+Returns @var{box} in the color used for lists.  Default definition is
+@example
+list_color(box) = color(box, "black");
+@end example
+@end deffn
+
+@deffn {VSL Function} array_color (box)
+Returns @var{box} in the color used for arrays.  Default definition is
+@example
+array_color(box) = color(box, "blue4");
+@end example
+@end deffn
+
+@deffn {VSL Function} reference_color (box)
+Returns @var{box} in the color used for references.  Default definition is
+@example
+reference_color(box) = color(box, "blue4");
+@end example
+@end deffn
+
+@deffn {VSL Function} changed_color (box)
+Returns @var{box} in the color used for changed values.  Default definition is
+@example
+changed_color(box) = color(box, "black", "#ffffcc");
+@end example
+@end deffn
+
+@deffn {VSL Function} shadow_color (box)
+Returns @var{box} in the color used for display shadows.  Default definition is
+@example
+shadow_color(box) = color(box, "grey");
+@end example
+@end deffn
+
+
+@node Displaying Shadows
+@section Displaying Shadows
+
+@deffn {VSL Function} shadow (box)
+Return @var{box} with a shadow around it.
+@end deffn
+
+
+@node Displaying Data Displays
+@section Displaying Data Displays
+
+@DDD{} uses these functions to create data displays.
+
+@deffn {VSL Function} title (display_number, name)
+@deffnx {VSL Function} title (name)
+Returns a box for the display title.  If @var{display_number} (a string)
+is given, this is prepended to the title.
+@end deffn
+
+@deffn {VSL Function} annotation (name)
+Returns a box for an edge annotation.  This typically uses a tiny font.
+@end deffn
+
+@deffn {VSL Function} disabled ()
+Returns a box to be used as value for disabled displays.
+@end deffn
+
+@deffn {VSL Function} none ()
+Returns a box for ``no value'' (i.e. undefined values).  Default: an
+empty string.
+@end deffn
+
+@deffn {VSL Function} value_box (value)
+Returns @var{value} in a display box.  Default: leave unchanged.
+@end deffn
+
+@deffn {VSL Function} display_box (title, value)
+@deffnx {VSL Function} display_box (value)
+Returns the entire display box.  @var{title} comes from @code{title()},
+@var{value} from @code{value_box()}.
+@end deffn
+
+
+
+@node Displaying Simple Values
+@section Displaying Simple Values
+
+@DDD{} uses these functions to display simple values.
+
+@deffn {VSL Function} simple_value (value)
+Returns a box for a simple non-numeric value (characters, strings, constants,
+@dots{}).  This is typically aligned to the left.
+@end deffn
+
+@deffn {VSL Function} numeric_value (value)
+Returns a box for a simple numeric value.    This is typically aligned to the right.
+@end deffn
+
+@deffn {VSL Function} collapsed_simple_value ()
+Returns a box for a collapsed simple value.
+@end deffn
+
+
+@node Displaying Pointers
+@section Displaying Pointers
+
+@DDD{} uses these functions to display pointers.
+
+@deffn {VSL Function} pointer_value (value)
+Returns a box for a pointer value.
+@end deffn
+
+@deffn {VSL Function} dereferenced_pointer_value (value)
+Returns a box for a dereferenced pointer value.
+@end deffn
+
+@deffn {VSL Function} collapsed_pointer_value ()
+Returns a box for a collapsed pointer.
+@end deffn
+
+
+@node Displaying References
+@section Displaying References
+
+@DDD{} uses these functions to display references.
+
+@deffn {VSL Function} reference_value (value)
+Returns a box for a reference value.
+@end deffn
+
+@deffn {VSL Function} collapsed_reference_value ()
+Returns a box for a collapsed reference.
+@end deffn
+
+
+@node Displaying Arrays
+@section Displaying Arrays
+
+@DDD{} uses these functions to display arrays.
+
+@deffn {VSL Function} horizontal_array (values@dots{})
+Returns a box for a horizontal array containing @var{values}.
+@end deffn
+
+@deffn {VSL Function} vertical_array (values@dots{})
+Returns a box for a vertical array containing @var{values}.
+@end deffn
+
+@deffn {VSL Function} empty_array ()
+Returns a box for an empty array.
+@end deffn
+
+@deffn {VSL Function} collapsed_array ()
+Returns a box for a collapsed array.
+@end deffn
+
+@deffn {VSL Function} twodim_array (rows@dots{})
+Returns a box for a two-dimensional array.  Argument is a list of rows,
+suitable for use with @code{tab()} or @code{dtab()}.
+@end deffn
+
+@deffn {VSL Function} twodim_array_elem (value)
+Returns a box for an element in a two-dimensional array.
+@end deffn
+
+
+@node Displaying Structs
+@section Displaying Structs
+
+A struct is a set of (@var{name}, @var{value}) pairs, and is also called
+``record'' or ``object''.  @DDD{} uses these functions to display
+structs.
+
+@deffn {VSL Function} struct_value (members@dots{})
+Returns a box for a struct containing @var{members}.
+@end deffn
+
+@deffn {VSL Function} collapsed_struct_value ()
+Returns a box for a collapsed struct.
+@end deffn
+
+@deffn {VSL Function} empty_struct_value ()
+Returns a box for an empty struct.
+@end deffn
+
+@deffn {VSL Function} struct_member_name (name)
+Returns a box for a member name.
+@end deffn
+
+@deffn {VSL Function} struct_member (name, sep, value, name_width)
+Returns a box for a struct member.  @var{name} is the member name, typeset with
+@code{struct_member_name()}, @var{sep} is the separator (as determined
+by the current programming language), @var{value} is the typeset member
+value, and @var{name_width} is the maximum width of all member names.
+@end deffn
+
+@deffn {VSL Function} horizontal_unnamed_struct ()
+@deffnx {VSL Function} vertical_unnamed_struct ()
+Returns a box for a horizontal / vertical unnamed struct, where member names are
+suppressed.
+@end deffn
+
+@deffn {VSL Function} struct_member (value)
+Returns a box for a struct member in a struct where member names are suppressed.
+@end deffn
+
+
+@node Displaying Lists
+@section Displaying Lists
+
+A list is a set of (@var{name}, @var{value}) pairs not defined by the
+specific programming language.  @DDD{} uses this format to display
+variable lists.
+
+@deffn {VSL Function} list_value (members@dots{})
+Returns a box for a list containing @var{members}.
+@end deffn
+
+@deffn {VSL Function} collapsed_list_value ()
+Returns a box for a collapsed list.
+@end deffn
+
+@deffn {VSL Function} empty_list_value ()
+Returns a box for an empty list.
+@end deffn
+
+@deffn {VSL Function} list_member_name (name)
+Returns a box for a member name.
+@end deffn
+
+@deffn {VSL Function} list_member (name, sep, value, name_width)
+Returns a box for a list member.  @var{name} is the member name, typeset with
+@code{list_member_name()}, @var{sep} is the separator (as determined
+by the current programming language), @var{value} is the typeset member
+value, and @var{name_width} is the maximum width of all member names.
+@end deffn
+
+@deffn {VSL Function} horizontal_unnamed_list ()
+@deffnx {VSL Function} vertical_unnamed_list ()
+Returns a box for a horizontal / vertical unnamed list, where member names are
+suppressed.
+@end deffn
+
+@deffn {VSL Function} list_member (value)
+Returns a box for a list member in a list where member names are suppressed.
+@end deffn
+
+
+@node Displaying Sequences
+@section Displaying Sequences
+
+Sequences are lists of arbitrary, unstructured values.
+
+@deffn {VSL Function} sequence_value (values@dots{})
+Returns a box for a list of values.
+@end deffn
+
+@deffn {VSL Function} collapsed_sequence_value ()
+Returns a box for a collapsed sequence.
+@end deffn
+
+
+@node Displaying Multi-Line Texts
+@section Displaying Multi-Line Texts
+
+@DDD{} uses these functions to display multi-line texts, such as status
+displays.
+
+@deffn {VSL Function} text_value (lines@dots{})
+Returns a box for a list of lines (typically in a vertical alignment).
+@end deffn
+
+@deffn {VSL Function} collapsed_text_value ()
+Returns a box for a collapsed text.
+@end deffn
+
+
+@node Displaying Extra Properties
+@section Displaying Extra Properties
+
+@DDD{} uses these functions to display additional properties.
+
+@deffn {VSL Function} repeated_value (value, n)
+Returns a box for a @var{value} that is repeated @var{n} times.  Note:
+@var{n} is a number, not a string.
+@end deffn
+
+@deffn {VSL Function} changed_value (value)
+Returns a box for a @var{value} that has changed since the last display.
+Typically, this invokes @code{changed_color(@var{value})}.
+@end deffn
+
+
+@node VSL Library
+@appendix VSL Library
+
+@cindex VSL Functions
+@cindex Functions, in VSL
+@cindex VSL Library
+@cindex Library, VSL
+
+This appendix describes the @VSL{} functions available in the standard
+@VSL{} library.
+
+@flindex std.vsl
+Unless otherwise stated, all following functions are defined in
+@file{std.vsl}.
+
+@ifset DDD
+For @DDD{} themes, @file{std.vsl} need not be included explicitly.
+@end ifset
+
+@menu
+* Library Conventions::         
+* Space Functions::             
+* Composition Functions::       
+* Arithmetic Functions::        
+* Comparison Functions::        
+* Negation Functions::          
+* Frame Functions::             
+* Alignment Functions::         
+* Emphasis Functions::          
+* Indentation Functions::       
+* String Functions::            
+* List Functions::              
+* Table Functions::             
+* Font Functions::              
+* Color Functions::             
+* Arc Functions::               
+* Slope Functions::             
+@end menu
+
+@node Library Conventions
+@section Conventions
+
+Throughout this document, we write @var{a} = (@var{a1}, @var{a2}) to
+refer to individual box sizes.  @var{a1} stands for the horizontal size
+of @var{a}, and @var{a2} stands for the vertical size of @var{a}.
+
+
+@node Space Functions
+@section Space Functions
+
+@menu
+* Empty Space::                 
+* Black Lines::                 
+* White Space::                 
+* Controlling Stretch::         
+* Box Dimensions::              
+@end menu
+
+@node Empty Space
+@subsection Empty Space
+
+@deffn {VSL Function} fill ()
+Returns an empty box of width 0 and height 0 which stretches in both
+horizontal and vertical directions.
+@end deffn
+
+@deffn {VSL Function} hfill ()
+Returns a box of height 0 which stretches horizontally.
+@end deffn
+
+@deffn {VSL Function} vfill ()
+Returns a box of width 0 which stretches vertically.
+@end deffn
+
+
+@node Black Lines
+@subsection Black Lines
+
+@deffn {VSL Function} rule ()
+Returns a black box of width 0 and height 0 which stretches in both
+horizontal and vertical directions.
+@end deffn
+
+@deffn {VSL Function} hrule ([thickness])
+Returns a black box of width 0 and height @var{thickness} which
+stretches horizontally.  @var{thickness} defaults to
+@code{rulethickness()} (typically 1 pixel).
+@end deffn
+
+@deffn {VSL Function} vrule ([thickness])
+Returns a black box of width @var{thickness} and height 0 which
+stretches vertically.  @var{thickness} defaults to @code{rulethickness()}
+(typically 1 pixel).
+@end deffn
+
+@deffn {VSL Function} rulethickness ()
+Returns the default thickness for black rules (default: 1).
+@end deffn
+
+
+@node White Space
+@subsection White Space
+
+@deffn {VSL Function} hwhite ([thickness])
+Returns a black box of width 0 and height @var{thickness} which
+stretches horizontally.  @var{thickness} defaults to
+@code{whitethickness()} (typically 2 pixels).
+@end deffn
+
+@deffn {VSL Function} vwhite ([thickness])
+Returns a black box of width @var{thickness} and height 0 which
+stretches vertically.  @var{thickness} defaults to
+@code{whitethickness()} (typically 2 pixels).
+@end deffn
+
+@deffn {VSL Function} whitethickness ()
+Returns the default thickness for white rules (default: 2).
+@end deffn
+
+
+@node Controlling Stretch
+@subsection Controlling Stretch
+
+@deffn {VSL Function} hfix (@var{a})
+Returns a box containing @var{a}, but not stretchable horizontally.
+@end deffn
+
+@deffn {VSL Function} vfix (@var{a})
+Returns a box containing @var{a}, but not stretchable vertically.
+@end deffn
+
+@deffn {VSL Function} fix (@var{a})
+Returns a box containing @var{a}, but not stretchable in either direction.
+@end deffn
+
+
+@node Box Dimensions
+@subsection Box Dimensions
+
+@deffn {VSL Function} hspace (@var{a})
+If @var{a} = (@var{a1}, @var{a2}), create a square empty box with a size
+of (@var{a1}, @var{a1}).
+@end deffn
+
+@deffn {VSL Function} vspace (@var{a})
+If @var{a} = (@var{a1}, @var{a2}), create a square empty box with a size
+of (@var{a2}, @var{a2}).
+@end deffn
+
+@deffn {VSL Function} square (@var{a})
+If @var{a} = (@var{a1}, @var{a2}), create a square empty box with a size
+of max(@var{a1}, @var{a2}).
+@end deffn
+
+@deffn {VSL Function} box (@var{n}, @var{m})
+Returns a box of size (@var{n}, @var{m}).
+@end deffn
+
+
+
+
+@node Composition Functions
+@section Composition Functions
+
+@menu
+* Horizontal Composition::      
+* Vertical Composition::        
+* Textual Composition::         
+* Overlays::                    
+@end menu
+
+@node Horizontal Composition
+@subsection Horizontal Composition
+
+@deffn {VSL Function} (&) (a, b)
+@deffnx {VSL Function} (&) (boxes@dots{})
+@deffnx {VSL Function} halign (boxes@dots{})
+Returns a horizontal alignment of @var{a} and @var{b}; @var{a} is
+placed left of @var{b}.  Typically written in inline form @samp{@var{a}
+& @var{b}}.  
+
+The alternative forms (available in function-call form only) return a
+horizontal left-to-right alignment of their arguments.
+@end deffn
+
+@deffn {VSL Function} hralign (boxes@dots{})
+Returns a right-to-left alignment of its arguments.
+@end deffn
+
+
+@node Vertical Composition
+@subsection Vertical Composition
+
+@deffn {VSL Function} (|) (a, b)
+@deffnx {VSL Function} (|) (boxes@dots{})
+@deffnx {VSL Function} valign (boxes@dots{})
+Returns a vertical alignment of @var{a} and @var{b}; @var{a} is
+placed above @var{b}.  Typically written in inline form @samp{@var{a} |
+@var{b}}.
+
+The alternative forms (available in function-call form only) return a
+vertical top-to-bottom alignment of their arguments.
+@end deffn
+
+@deffn {VSL Function} vralign (boxes@dots{})
+Returns a bottom-to-top alignment of its arguments.
+@end deffn
+
+@deffn {VSL Function} vlist (sep, boxes@dots{})
+Returns a top-to-bottom alignment of @var{boxes}, where any two boxes
+are separated by @var{sep}.
+@end deffn
+
+
+
+@node Textual Composition
+@subsection Textual Composition
+
+@deffn {VSL Function} (~) (a, b)
+@deffnx {VSL Function} (~) (boxes@dots{})
+@deffnx {VSL Function} talign (boxes@dots{})
+Returns a textual concatenation of @var{a} and @var{b}.  @var{b} is
+placed in the lower right unused corner of @var{a}.  Typically written
+in inline form @samp{@var{a} ~ @var{b}}.
+
+The alternative forms (available in function-call form only) return a
+textual concatenation of their arguments.
+@end deffn
+
+@deffn {VSL Function} tralign (boxes@dots{})
+Returns a textual right-to-left concatenation of its arguments.
+@end deffn
+
+@deffn {VSL Function} tlist (sep, boxes@dots{})
+Returns a textual left-to-right alignment of @var{boxes}, where any two
+boxes are separated by @var{sep}.
+@end deffn
+
+@deffn {VSL Function} commalist (boxes@dots{})
+Shorthand for @samp{tlist(", ", @var{boxes}@dots{})}.
+@end deffn
+
+@deffn {VSL Function} semicolonlist (boxes@dots{})
+Shorthand for @samp{tlist("; ", @var{boxes}@dots{})}.
+@end deffn
+
+
+@node Overlays
+@subsection Overlays
+
+@deffn {VSL Function} (^) (a, b)
+@deffnx {VSL Function} (^) (boxes@dots{})
+Returns an overlay of @var{a} and @var{b}.  @var{a} and @var{b} are
+placed in the same rectangular area, which is the maximum size of
+@var{a} and @var{b}; first, @var{a} is drawn, then @var{b}.  Typically
+written in inline form @samp{@var{a} ^ @var{b}}.
+
+The second form (available in function-call form only) returns an
+overlay of its arguments.
+@end deffn
+
+
+
+@node Arithmetic Functions
+@section Arithmetic Functions
+
+@deffn {VSL Function} (+) (a, b)
+@deffnx {VSL Function} (+) (boxes@dots{})
+Returns the sum of @var{a} and @var{b}.  If @var{a} = (@var{a1},
+@var{a2}) and @var{b} = (@var{b1}, @var{b2}), then @var{a} + @var{b} =
+(@var{a1} + @var{a2}, @var{b1} + @var{b2}).  Typically written in inline
+form @samp{@var{a} + @var{b}}.
+
+The second form (available in function-call form only) returns the
+sum of its arguments.
+
+The special form @samp{+@var{a}} is equivalent to @samp{@var{a}}.
+@end deffn
+
+@deffn {VSL Function} (-) (a, b)
+Returns the difference of @var{a} and @var{b}.  If @var{a} = (@var{a1},
+@var{a2}) and @var{b} = (@var{b1}, @var{b2}), then @var{a} - @var{b} =
+(@var{a1} - @var{a2}, @var{b1} - @var{b2}).  Typically written in inline
+form @samp{@var{a} - @var{b}}.
+
+The special form @samp{-@var{a}} is equivalent to @samp{0-@var{a}}.
+@end deffn
+
+@deffn {VSL Function} (*) (a, b)
+@deffnx {VSL Function} (*) (boxes@dots{})
+Returns the product of @var{a} and @var{b}.  If @var{a} = (@var{a1},
+@var{a2}) and @var{b} = (@var{b1}, @var{b2}), then @var{a} * @var{b} =
+(@var{a1} * @var{a2}, @var{b1} * @var{b2}).  Typically written in inline
+form @samp{@var{a} * @var{b}}.
+
+The second form (available in function-call form only) returns the
+product of its arguments.
+@end deffn
+
+@deffn {VSL Function} (/) (a, b)
+Returns the quotient of @var{a} and @var{b}.  If @var{a} = (@var{a1},
+@var{a2}) and @var{b} = (@var{b1}, @var{b2}), then @var{a} / @var{b} =
+(@var{a1} / @var{a2}, @var{b1} / @var{b2}).  Typically written in inline
+form @samp{@var{a} / @var{b}}.
+@end deffn
+
+@deffn {VSL Function} (%) (a, b)
+Returns the remainder of @var{a} and @var{b}.  If @var{a} = (@var{a1},
+@var{a2}) and @var{b} = (@var{b1}, @var{b2}), then @var{a} % @var{b} =
+(@var{a1} % @var{a2}, @var{b1} % @var{b2}).  Typically written in inline
+form @samp{@var{a} % @var{b}}.
+@end deffn
+
+
+@node Comparison Functions
+@section Comparison Functions
+
+@deffn {VSL Function} (=) (a, b)
+Returns true (@samp{1}) if @var{a} = @var{b}, and false (@samp{0}),
+otherwise.  @var{a} = @var{b} holds if @var{a} and @var{b} have the same
+size, the same structure, and the same content.  Typically written in
+inline form @samp{@var{a} / @var{b}}.
+@end deffn
+
+@deffn {VSL Function} (<>) (a, b)
+Returns false (@samp{0}) if @var{a} = @var{b}, and true (@samp{1}),
+otherwise.  @var{a} = @var{b} holds if @var{a} and @var{b} have the same
+size, the same structure, and the same content.  Typically written in
+inline form @samp{@var{a} / @var{b}}.
+@end deffn
+
+@deffn {VSL Function} (<) (a, b)
+If @var{a} = (@var{a1}, @var{a2}) and @var{b} = (@var{b1}, @var{b2}),
+then this function returns true (@samp{1}) if @var{a1} < @var{b1} or
+@var{a2} < @var{b2} holds; false (@samp{0}), otherwise.  Typically
+written in inline form @samp{@var{a} < @var{b}}.
+@end deffn
+
+@deffn {VSL Function} (<=) (a, b)
+If @var{a} = (@var{a1}, @var{a2}) and @var{b} = (@var{b1}, @var{b2}),
+then this function returns true (@samp{1}) if @var{a1} <= @var{b1} or
+@var{a2} <= @var{b2} holds; false (@samp{0}), otherwise.  Typically
+written in inline form @samp{@var{a} <= @var{b}}.
+@end deffn
+
+@deffn {VSL Function} (>) (a, b)
+If @var{a} = (@var{a1}, @var{a2}) and @var{b} = (@var{b1}, @var{b2}),
+then this function returns true (@samp{1}) if @var{a1} > @var{b1} or
+@var{a2} > @var{b2} holds; false (@samp{0}), otherwise.  Typically
+written in inline form @samp{@var{a} > @var{b}}.
+@end deffn
+
+@deffn {VSL Function} (>=) (a, b)
+If @var{a} = (@var{a1}, @var{a2}) and @var{b} = (@var{b1}, @var{b2}),
+then this function returns true (@samp{1}) if @var{a1} >= @var{b1} or
+@var{a2} >= @var{b2} holds; false (@samp{0}), otherwise.  Typically
+written in inline form @samp{@var{a} >= @var{b}}.
+@end deffn
+
+
+@menu
+* Maximum and Minimum Functions::  
+@end menu
+
+@node Maximum and Minimum Functions
+@subsection Maximum and Minimum Functions
+
+@deffn {VSL Function} max (b1, b2, @dots{})
+Returns the maximum of its arguments; that is, the one box @var{b} in
+its arguments for which @var{b} > @var{b1}, @var{b} > @var{b2}, @dots{}
+holds.
+@end deffn
+
+@deffn {VSL Function} min (b1, b2, @dots{})
+Returns the maximum of its arguments; that is, the one box @var{b} in
+its arguments for which @var{b} < @var{b1}, @var{b} < @var{b2}, @dots{}
+holds.
+@end deffn
+
+
+@node Negation Functions
+@section Negation Functions
+
+@deffn {VSL Function} (not) (a)
+Returns true (@samp{1}) if @var{a} is false, and false (@samp{0}),
+otherwise.  Typically written in inline form @samp{not @var{a}}.
+@end deffn
+
+@xref{VSL Boolean Operators}, for @code{and} and @code{or}.
+
+
+
+
+@node Frame Functions
+@section Frame Functions
+
+@deffn {VSL Function} ruleframe (a[, thickness])
+Returns @var{a} within a black rectangular frame of thickness
+@var{thickness}.  @var{thickness} defaults to @code{rulethickness()}
+(typically 1 pixel).
+@end deffn
+
+@deffn {VSL Function} whiteframe (a[, thickness])
+Returns @var{a} within a white rectangular frame of thickness
+@var{thickness}.  @var{thickness} defaults to @code{whitethickness()}
+(typically 2 pixels).
+@end deffn
+
+@deffn {VSL Function} frame (a)
+Returns @var{a} within a rectangular frame.  Equivalent to
+@samp{ruleframe(whiteframe(@var{a})}.
+@end deffn
+
+@deffn {VSL Function} doubleframe (a)
+Shortcut for @samp{frame(frame(@var{a}))}.
+@end deffn
+
+@deffn {VSL Function} thickframe (a)
+Shortcut for @samp{ruleframe(frame(@var{a}))}.
+@end deffn
+
+
+
+@node Alignment Functions
+@section Alignment Functions
+
+@menu
+* Centering Functions::         
+* Flushing Functions::          
+@end menu
+
+@node Centering Functions
+@subsection Centering Functions
+
+@deffn {VSL Function} hcenter (a)
+Returns box @var{a} centered horizontally within a (vertical) alignment.
+
+Example: In @samp{@var{a} | hcenter(@var{b}) | @var{c}},
+@var{b} is centered relatively to @var{a} and @var{c}.
+@end deffn
+
+@deffn {VSL Function} vcenter (a)
+Returns box @var{a} centered vertically within a (horizontal) alignment.
+
+Example: In @samp{@var{a} & vcenter(@var{b}) & @var{c}},
+@var{b} is centered relatively to @var{a} and @var{c}.
+@end deffn
+
+@deffn {VSL Function} center (a)
+Returns box @var{a} centered vertically and horizontally within an alignment.
+
+Example: In @samp{100 ^ center(@var{b})},
+@var{b} is centered within a square of size 100.
+@end deffn
+
+
+@node Flushing Functions
+@subsection Flushing Functions
+
+@deffn {VSL Function} n_flush (box)
+@deffnx {VSL Function} s_flush (box)
+@deffnx {VSL Function} w_flush (box)
+@deffnx {VSL Function} e_flush (box)
+Within an alignment, Flushes box to the center of a side.
+
+Example: In @samp{100 ^ s_flush(@var{b})},
+@var{b} is centered on the bottom side of a square of size 100.
+@end deffn
+
+@deffn {VSL Function} nw_flush (box)
+@deffnx {VSL Function} sw_flush (box)
+@deffnx {VSL Function} ne_flush (box)
+@deffnx {VSL Function} se_flush (box)
+Within an alignment, Flushes box to a corner.
+
+Example: In @samp{100 ^ se_flush(@var{b})},
+@var{b} is placed in the lower right corner of a square of size 100.
+@end deffn
+
+
+
+@node Emphasis Functions
+@section Emphasis Functions
+
+@deffn {VSL Function} underline (a)
+Returns @var{a} with a line underneath.
+@end deffn
+
+@deffn {VSL Function} overline (a)
+Returns @var{a} with a line above it.
+@end deffn
+
+@deffn {VSL Function} crossline (a)
+Returns @var{a} with a horizontal line across it.
+@end deffn
+
+@deffn {VSL Function} doublestrike (a)
+Returns @var{a} in ``poor man's bold'': it is drawn two times, displaced
+horizontally by one pixel.
+@end deffn
+
+
+@node Indentation Functions
+@section Indentation Functions
+
+@deffn {VSL Function} indent (box)
+Return a box where white space of width @code{indentamount()} is placed
+left of @var{box}.
+@end deffn
+
+@deffn {VSL Function} indentamount ()
+Indent amount to be used in @code{indent()}; defaults to @samp{" "} (two
+spaces).
+@end deffn
+
+
+
+@node String Functions
+@section String Functions
+
+To retrieve the string from a composite box, use @code{string()}:
+@deffn {VSL Function} string (@var{box})
+Return the string (in left-to-right, top-to-bottom order) within @var{box}.
+@end deffn
+
+To convert numbers to strings, use @code{num()}:
+@deffn {VSL Function} num (a [, \var{base}])
+For a square box @var{a} = (@var{a1}, @var{a1}), returns a string
+containing a textual representation of @var{a1}.  @var{base} must be
+between 2 and 16; it defaults to @samp{10}.  Example: @code{num(25)
+@result{} "25")}
+@end deffn
+
+@deffn {VSL Function} dec (a)
+@deffnx {VSL Function} oct (a)
+@deffnx {VSL Function} bin (a)
+@deffnx {VSL Function} hex (a)
+Shortcut for 
+@samp{num(@var{a}, 10)},
+@samp{num(@var{a}, 8)},
+@samp{num(@var{a}, 2)},
+@samp{num(@var{a}, 16)}, respectively.
+@end deffn
+
+
+
+
+@node List Functions
+@section List Functions
+
+@flindex list.vsl
+The functions in this section require inclusion of the library
+@file{list.vsl}.
+
+@ifset DDD
+For themes, @file{list.vsl} need not be included explicitly.
+@end ifset
+
+@menu
+* Creating Lists::              
+* List Properties::             
+* Accessing List Elements::     
+* Manipulating Lists::          
+* Lists and Strings::           
+@end menu
+
+@node Creating Lists
+@subsection Creating Lists
+
+@deffn {VSL Function} (::) (list1, list2, @dots{})
+Return the concatenation of the given lists.  Typically written in
+inline form: @code{[1] :: [2] :: [3] @result{} [1, 2, 3]}.
+@end deffn
+
+@deffn {VSL Function} append (list, elem)
+Returns @var{list} with @var{elem} appended at the end: @code{append([1,
+2, 3], 4) @result{} [1, 2, 3, 4]}
+@end deffn
+
+
+@node List Properties
+@subsection List Properties
+
+@deffn {VSL Function} isatom (x)
+Returns True (1) if @var{x} is an atom; False (0) if @var{x} is a list.
+@end deffn
+
+@deffn {VSL Function} islist (x)
+Returns True (1) if @var{x} is a list; False (0) if @var{x} is an atom.
+@end deffn
+
+@deffn {VSL Function} member (x, list)
+Returns True (1) if @var{x} is an element of @var{list}; False (0) if
+not: @code{member(1, [1, 2, 3]) @result{} true}
+@end deffn
+
+@deffn {VSL Function} prefix (sublist, list)
+@deffnx {VSL Function} suffix (sublist, list)
+@deffnx {VSL Function} sublist (sublist, list)
+Returns True (1) if @var{sublist} is a prefix / suffix / sublist of
+@var{list}; False (0) if not: @code{prefix([1], [1, 2]) @result{} true},
+@code{suffix([3], [1, 2]) @result{} false}, @code{sublist([2, 2], [1, 2,
+2, 3]) @result{} true},
+@end deffn
+
+@deffn {VSL Functions} length (list)
+Returns the number of elements in @var{list}: @code{length([1, 2, 3])
+@result{} 3}
+@end deffn
+
+
+@node Accessing List Elements
+@subsection Accessing List Elements
+
+@deffn {VSL Function} car (list)
+@deffnx {VSL Function} head (list)
+Returns the first element of @var{list}:  @code{car([1, 2, 3]) @result{} 1}
+@end deffn
+
+@deffn {VSL Function} cdr (list)
+@deffnx {VSL Function} tail (list)
+Returns @var{list} without its first element:  @code{cdr([1, 2, 3])
+@result{} [2, 3]}
+@end deffn
+
+@deffn {VSL Function} elem (list, n)
+Returns the @var{n}-th element (starting with 0) of @var{list}: @code{elem([4,
+5, 6], 0) @result{} 4}
+@end deffn
+
+@deffn {VSL Function} pos (elem, list)
+Returns the position of @var{elem} in @var{list} (starting with 0): 
+@code{pos(4, [1, 2, 4]) @result{} 2}
+@end deffn
+
+@deffn {VSL Function} last (list)
+Returns the last element of @var{list}: @code{last([4, 5, 6]) @result{} 6}
+@end deffn
+
+
+
+@node Manipulating Lists
+@subsection Manipulating Lists
+
+@deffn {VSL Function} reverse (list)
+Returns a reversed @var{list}: @code{reverse([3, 4, 5]) @result{} [5, 4, 3]}
+@end deffn
+
+@deffn {VSL Function} delete (list, elem)
+Returns @var{list}, with all elements @var{elem} removed:
+@code{delete([4, 5, 5, 6], 5) @result{} [4, 6]}
+@end deffn
+
+@deffn {VSL Function} select (list, elem)
+Returns @var{list}, with the first element @var{elem} removed:
+@code{select([4, 5, 5, 6], 5) @result{} [4, 5, 6]}
+@end deffn
+
+@deffn {VSL Function} flat (list)
+Returns flattened @var{list}: 
+@code{flat([[3, 4], [[5], [6]]]) @result{} [3, 4, 5, 6]}
+@end deffn
+
+@deffn {VSL Function} sort (list)
+Returns sortened @var{list} (according to box size): 
+@code{sort([7, 4, 9]) @result{} [4, 7, 9]}
+@end deffn
+
+
+
+@node Lists and Strings
+@subsection Lists and Strings
+
+@deffn {VSL Function} chars (s)
+Returns a list of all characters in the box @var{s}: @code{chars("abc")
+@result{} ["a", "b", "c"]}
+@end deffn
+
+@deffn {VSL Function} list (list)
+Returns a string, pretty-printing the @var{list}: @code{list([4, 5, 6])
+@result{} "[4, 5, 6]"}
+@end deffn
+
+
+
+
+
+@node Table Functions
+@section Table Functions
+
+@flindex tab.vsl
+The functions in this section require inclusion of the library
+@file{tab.vsl}.
+
+@ifset DDD
+For themes, @file{tab.vsl} need not be included explicitly.
+@end ifset
+
+@deffn {VSL Function} tab (table)
+Return @var{table} (a list of lists) aligned in a table: 
+@code{tab([[1, 2, 3], [4, 5, 6], [7, 8]]) @result{}}
+@example
+1 2 3
+4 5 6
+7 8
+@end example
+@end deffn
+
+@deffn {VSL Function} dtab (table)
+Like @code{tab}, but place delimiters (horizontal and vertical rules)
+around table elements.
+@end deffn
+
+@deffn {VSL Function} tab_elem (@var{x})
+Returns padded table element @var{x}.  Its default definition is:
+@example
+tab_elem([]) = tab_elem(0);     // empty table 
+tab_elem(x)  = whiteframe(x);   // padding
+@end example
+@end deffn
+
+
+
+@node Font Functions
+@section Font Functions
+
+@flindex fonts.vsl
+The functions in this section require inclusion of the library
+@file{fonts.vsl}.
+
+@ifset DDD
+For themes, @file{fonts.vsl} need not be included explicitly.
+@end ifset
+
+
+@menu
+* Font Basics::                 
+* Font Name Selection::         
+* Font Defaults::               
+* Font Selection::              
+@end menu
+
+@node Font Basics
+@subsection Font Basics
+
+@deffn {VSL Function} font (@var{box}, @var{font})
+Returns @var{box}, with all strings set in @var{font} (a valid X11 font
+description)
+@end deffn
+
+
+@node Font Name Selection
+@subsection Font Name Selection
+
+@deffn {VSL Function} weight_bold ()
+@deffnx {VSL Function} weight_medium ()
+Font weight specifier in @code{fontname()} (see below).
+@end deffn
+
+@deffn {VSL Function} slant_unslanted ()
+@deffnx {VSL Function} slant_italic ()
+Font slant Specifier in @code{fontname()} (see below).
+@end deffn
+
+@deffn {VSL Function} family_times ()
+@deffnx {VSL Function} family_courier ()
+@deffnx {VSL Function} family_helvetica ()
+@deffnx {VSL Function} family_new_century ()
+@deffnx {VSL Function} family_typewriter ()
+Font family specifier in @code{fontname()} (see below).
+@end deffn
+
+@deffn {VSL Function} fontname ([weight, [slant, [family, [size]]]])
+Returns a fontname, suitable for use with @code{font()}.
+@itemize @bullet{}
+@item 
+@var{weight} defaults to @code{stdfontweight()} (see below).
+@item 
+@var{slant} defaults to @code{stdfontslant()} (see below).
+@item
+@var{family} defaults to @code{stdfontfamily()} (see below).
+@item 
+@var{size} is a pair (@var{pixels}, @var{points}) where @var{pixels}
+being zero means to use @var{points} instead and vice versa.
+defaults to @code{stdfontsize()} (see below).
+@end itemize
+@end deffn
+
+
+@node Font Defaults
+@subsection Font Defaults
+
+@deffn {VSL Function} stdfontweight ()
+Default font weight: @code{weight_medium()}.
+@end deffn
+
+@deffn {VSL Function} stdfontslant ()
+Default font slant: @code{slant_unslanted()}.
+@end deffn
+
+@deffn {VSL Function} stdfontfamily ()
+Default font family: @code{family_times()}.
+
+@ifset DDD
+@DDD{} replaces this as set in the @DDD{} font preferences.
+Use @samp{ddd --fonts} to see the actual definitions.
+@end ifset
+@end deffn
+
+@deffn {VSL Function} stdfontsize ()
+Default font size: @code{(stdfontpixels(),
+stdfontpoints())}.
+
+@ifset DDD
+@DDD{} replaces this as set in the @DDD{} font preferences.
+Use @samp{ddd --fonts} to see the actual definitions.
+@end ifset
+@end deffn
+
+@deffn {VSL Function} stdfontpixels ()
+Default font size (in pixels): 0, meaning to use @code{stdfontpoints()}
+instead.
+@end deffn
+
+@deffn {VSL Function} stdfontpoints ()
+Default font size (in 1/10 points): 120.
+@end deffn
+
+
+
+@node Font Selection
+@subsection Font Selection
+
+@deffn {VSL Function} rm (box [, family [, size]])
+@deffnx {VSL Function} bf (box [, family [, size]])
+@deffnx {VSL Function} it (box [, family [, size]])
+@deffnx {VSL Function} bi (box [, family [, size]])
+Returns @var{box} in roman / bold face / italic / bold italic.
+@var{family} specifies one of the font families; it defaults to
+@code{stdfontfamily()} (see above).  @var{size} specifies a font size;
+it defaults to @code{stdfontsize()} (see above).
+@end deffn
+
+
+
+@node Color Functions
+@section Color Functions
+
+@flindex colors.vsl
+The functions in this section require inclusion of the library
+@file{colors.vsl}.
+
+@ifset DDD
+For themes, @file{colors.vsl} need not be included explicitly.
+@end ifset
+
+@deffn {VSL Function} color (box, foreground [, background]])
+Returns @var{box}, where the foreground color will be drawn using the
+@var{foreground} color.  If @var{background} is specified as well, it
+will be used for drawing the background.  Both @var{foreground} and
+@var{background} are strings specifying a valid X11 color.
+@end deffn
+
+
+
+@node Arc Functions
+@section Arc Functions
+
+@flindex arcs.vsl
+The functions in this section require inclusion of the library
+@file{arcs.vsl}.
+
+@ifset DDD
+For themes, @file{arcs.vsl} @emph{must} be included explicitly, using
+a line
+@example
+#include <arcs.vsl>
+@end example
+at the beginning of the theme.
+@end ifset
+
+
+
+@menu
+* Arc Basics::                  
+* Custom Arc Functions::        
+@end menu
+
+@node Arc Basics
+@subsection Arc Basics
+
+@deffn {VSL Function} arc (start, length [, thickness])
+Returns a stretchable box with an arc of @var{length}, starting at angle
+@var{start}.  @var{start} and @var{length} must be multiples of 90
+(degrees).  The angle of @var{start} is specified clockwise relative to
+the 9 o'clock position.  @var{thickness} defaults to
+@code{arcthickness()} (see below).
+@end deffn
+
+@deffn {VSL Function} arcthickness ()
+Default width of arcs.  Defaults to @code{rulethickness()}.
+@end deffn
+
+
+@node Custom Arc Functions
+@subsection Custom Arc Functions
+
+@deffn {VSL Function} oval (box)
+Returns an oval containing @var{box}.  Example: @code{oval("33")}.
+@end deffn
+
+@deffn {VSL Function} ellipse (box)
+@deffnx {VSL Function} ellipse ()
+Returns an ellipse containing @var{box}.  Example:
+@code{ellipse("START")}.  If @var{box} is omitted, the ellipse is
+stretchable and expands to the available space.
+@end deffn
+
+@deffn {VSL Function} circle (box)
+Returns a circle containing @var{box}.  Example: @code{circle(10)}.
+@end deffn
+
+
+
+@node Slope Functions
+@section Slope Functions
+
+@flindex slopes.vsl
+The functions in this section require inclusion of the library
+@file{slopes.vsl}.
+
+@ifset DDD
+For themes, @file{slopes.vsl} @emph{must} be included explicitly, using
+a line
+@example
+#include <slopes.vsl>
+@end example
+at the beginning of the theme.
+@end ifset
+
+@menu
+* Slope Basics::                
+* Arrow Functions::             
+* Custom Slope Functions::      
+@end menu
+
+@node Slope Basics
+@subsection Slope Basics
+
+@deffn {VSL Function} rise ([thickness])
+Create a stretchable box with a line from the lower left to the upper
+right corner.
+@var{thickness} defaults to @code{slopethickness()} (see below).
+@end deffn
+
+@deffn {VSL Function} fall ([thickness])
+Create a stretchable box with a line from the upper left to the lower
+right corner.
+@var{thickness} defaults to @code{slopethickness()} (see below).
+@end deffn
+
+@deffn {VSL Function} slopethickness ()
+Default thickness of slopes.  Defaults to @code{rulethickness()}.
+@end deffn
+
+
+@node Arrow Functions
+@subsection Arrow Functions
+
+@deffn {VSL Function} n_arrow ()
+@deffnx {VSL Function} w_arrow ()
+@deffnx {VSL Function} s_arrow ()
+@deffnx {VSL Function} e_arrow ()
+Returns a box with an arrow pointing to the upper, left, lower, or right
+side, respectively.
+@end deffn
+
+@deffn {VSL Function} nw_arrow ()
+@deffnx {VSL Function} ne_arrow ()
+@deffnx {VSL Function} sw_arrow ()
+@deffnx {VSL Function} se_arrow ()
+Returns a box with an arrow pointing to the upper left, upper right,
+lower left, or lower right side, respectively.
+@end deffn
+
+
+@node Custom Slope Functions
+@subsection Custom Slope Functions
+
+@deffn {VSL Function} punchcard (box)
+Returns a punchcard containing @var{box}.
+@end deffn
+
+@deffn {VSL Function} rhomb (box)
+Returns a rhomb containing @var{box}.
+@end deffn
+
+@deffn {VSL Function} octogon (box)
+Returns an octogon containing @var{box}.
+@end deffn
+
+
+
+@node VSL Reference
+@appendix VSL Reference
+
+@cindex VSL
+
+This appendix describes the @VSL{} language.
+
+@menu
+* VSL Boxes::                   
+* VSL Lists::                   
+* VSL Expressions::             
+* VSL Function Calls::          
+* VSL Constant Definitions::    
+* VSL Function Definitions::    
+* VSL Includes::                
+* VSL Operators::               
+* VSL Syntax Summary::          
+@end menu
+
+@node VSL Boxes
+@section Boxes
+
+@VSL{} knows two data types.  The most common data type is the
+@emph{box}.  A box is a rectangular area with a @emph{content}, a
+@emph{size}, and a @emph{stretchability}.
+
+Boxes are either @emph{atomic} or @emph{composite}.  A composite box is
+built from two or more other boxes.  These boxes can be aligned
+horizontally, vertically, or otherwise.
+
+Boxes have a specific minimum @emph{size}, depending on their content.
+We say `minimum' size here, because some boxes are
+@emph{stretchable}---that is, they can fill up the available space.  
+
+If you have a vertical alignment of three boxes @var{A}, @var{B}, and
+@var{C}, like this:
+@example
+AAAAAA
+AAAAAA
+  B
+  B
+CCCCCC
+CCCCCC
+@end example
+and @var{B} is stretchable horizontally, then @var{B} will fill up the
+available horizontal space:
+@example
+AAAAAA
+AAAAAA
+BBBBBB
+BBBBBB
+CCCCCC
+CCCCCC
+@end example
+
+If two or more boxes compete for the same space, the space will be
+distributed in proportion to their stretchability.  
+
+An atomic stretchable box has a stretchability of 1.  An alignment of
+multiple boxes stretchable in the direction of the alignment boxes will
+have a stretchability which is the sum of all stretchabilities.
+
+If you have a vertical alignment of three boxes @var{A}, @var{B},
+@var{C}, @var{D}, and @var{E}, like this:
+@example
+AAAAAA
+AAAAAA
+BC   D
+BC   D
+EEEEEE
+EEEEEE
+@end example
+and @var{B}, @var{C}, and @var{D} are stretchable horizontally (with a
+stretchability of 1), then the horizontal alignment of @var{B} and
+@var{C} will have a stretchability of 2.  Thus, the alignment of @var{B}
+and @var{C} gets two thirds of the available space; @var{D} gets the
+remaining third.
+@example
+AAAAAA
+AAAAAA
+BBCCDD
+BBCCDD
+EEEEEE
+EEEEEE
+@end example
+
+
+
+@node VSL Lists
+@section Lists
+
+Besides boxes, @VSL{} knows @emph{lists}.  A list is not a box---it has
+no size or stretchability.  A list is a simple means to structure data.
+
+@VSL{} lists are very much like lists in functional languages like Lisp
+or Scheme.  They consist of a head (typically a list element) and a tail
+(which is either a list remainder or the empty list).
+
+
+
+@node VSL Expressions
+@section Expressions
+
+@menu
+* VSL String Literals::         
+* VSL Number Literals::         
+* VSL List Literals::           
+* VSL Conditionals::            
+* VSL Boolean Operators::       
+* VSL Local Variables::         
+* VSL Let Patterns::            
+@end menu
+
+@node VSL String Literals
+@subsection String Literals
+
+The expression @samp{"@var{text}"} returns a box containing @var{text}.
+@var{text} is parsed according to C syntax rules.
+
+Multiple string expressions may follow each other to form a larger
+constant, as in C++.  @samp{"@var{text1}" "@var{text2}"} is equivalent
+to @samp{"@var{text1}@var{text2}"}
+
+Strings are not stretchable.
+
+
+@node VSL Number Literals
+@subsection Number Literals
+
+Any constant integer @var{n} evaluates to a @emph{number}---that is, a
+non-stretchable empty square box with size (@var{n}, @var{n}).
+
+
+@node VSL List Literals
+@subsection List Literals
+
+The expression @samp{[@var{a}, @var{b}, @dots{}]} evaluates to a
+@emph{list} containing the element @var{a}, @var{b}, @dots{}.  @samp{[]}
+is the empty list.
+
+The expression @samp{[@var{head} : @var{tail}]} evaluates to a list
+whose first element is @var{head} and whose remainder (typically a list)
+is @var{tail}.
+
+In most contexts, round parentheses can be used as alternatives to
+square brackets.  Thus, @samp{(@var{a}, @var{b})} is a list with two
+elements, and @samp{()} is the empty list.  
+
+Within an expression, though, square parentheses must be used to create
+a list with one element.  In an expression, the form @samp{(@var{a})} is
+not a list, but an alternative notation for @var{a}.
+
+
+
+
+
+
+
+@node VSL Conditionals
+@subsection Conditionals
+
+A box @var{a} = (@var{a1}, @var{a2}) is called @emph{true} if @var{a1}
+or @var{a2} is non-zero.  It is called @emph{false} if both @var{a1} or
+@var{a2} are zero.
+
+@findex if
+@findex then
+@findex else
+@findex fi
+The special form
+@example
+if @var{a} then @var{b} else @var{c} fi
+@end example
+returns @var{b} if @var{a} is true, and @var{c} otherwise.  Only
+one of @var{b} or @var{c} is evaluated.
+
+@findex elsif
+The special form
+@example
+elsif @var{a2} then @var{b2} else @var{c} fi
+@end example
+is equivalent to
+@example
+else if @var{a2} then @var{b2} else @var{c} fi fi
+@end example
+
+
+
+@node VSL Boolean Operators
+@subsection Boolean Operators
+
+@findex and
+The special form
+@example
+@var{a} and @var{b}
+@end example
+is equivalent to
+@example
+if @var{a} then @var{b} else 0 fi
+@end example
+
+@findex or
+The special form
+@example
+@var{a} or @var{b}
+@end example
+is equivalent to
+@example
+if @var{a} then 1 else @var{b} fi
+@end example
+
+@findex not
+The special form
+@example
+not @var{a}
+@end example
+is equivalent to
+@example
+if @var{a} then 0 else 1 fi
+@end example
+
+Actually, @samp{not} is realized as a function; @xref{Negation
+Functions}, for details.
+
+
+@node VSL Local Variables
+@subsection Local Variables
+
+You can introduce local variables using @samp{let} and @samp{where}:
+
+@findex let
+@example
+let @var{v1} = @var{e1} in @var{e}
+@end example
+makes @var{v1} available as replacement for @var{e1} in the expression
+@var{e}.
+
+Example:
+@example
+let pi = 3.1415 in 2 * pi @result{} 6.2830
+@end example
+
+The special form
+@example
+let @var{v1} = @var{e1}, @var{v2} = @var{e2}, @dots{} in @var{e}
+@end example
+is equivalent to
+@example
+let @var{v1} = @var{e1} in let @var{v2} = @var{e2} in let @dots{} in @var{e}
+@end example
+
+As an alternative, you can also use the @code{where} form:
+
+@findex where
+@example
+@var{e} where @var{v1} = @var{e1}
+@end example
+is equivalent to
+@example
+let @var{v1} = @var{e1} in @var{e}
+@end example
+
+Example:
+@example
+("here lies" | name) where 
+    name = ("one whose name" | "was writ in water")
+@end example
+
+The special form
+@example
+@var{e} where @var{v1} = @var{e1}, @var{v2} = @var{e2}, @dots{}
+@end example
+is equivalent to 
+@example
+let @var{v1} = @var{e1}, @var{v2} = @var{e2}, @dots{} in @var{e}
+@end example
+
+
+@node VSL Let Patterns
+@subsection Let Patterns
+
+You can access the individual elements of a list or some composite box
+by giving an appropriate @emph{pattern}:
+
+@example
+let (left, right) = pair in @var{expr}
+@end example
+
+If @code{pair} has the value, say, @code{(3, 4)}, then @code{left} will
+be available as a replacement for @code{3}, and @code{right} will be
+available as a replacement for @code{4} in @var{expr}.
+
+A special pattern is available for accessing the head and the tail of a
+list:
+
+@example
+let [head : tail] = list in @var{expr}
+@end example
+
+If @code{expr} has the value, say, @code{[3, 4, 5]}, then @code{head}
+will be @code{3}, and @code{tail} will be @code{[4, 5]} in @var{expr}.
+
+
+@node VSL Function Calls
+@section Function Calls
+
+A function call takes the form
+
+@example
+@var{name} @var{list}
+@end example
+
+which invokes the (previously declared or defined) function with an
+argument of @var{list}.  Normally, @var{list} is a list literal
+(@pxref{VSL List Literals}) written with round brackets.
+
+
+
+@node VSL Constant Definitions
+@section Constant Definitions
+
+A @VSL{} file consists of a list of @emph{definitions}.
+
+A constant definition takes the form
+
+@example
+@var{name} = @var{expression};
+@end example
+
+Any later definitions can use @var{name} as a replacement for
+@var{expression}.
+
+Example:
+@example
+true = 1;
+false = 0;
+@end example
+
+
+
+@node VSL Function Definitions
+@section Function Definitions
+
+In VSL, all functions either map a @emph{list} to a @emph{box} or a
+@emph{list} to a @emph{list}.  A function definition takes the form
+
+@example
+@var{name} @var{list} = @var{expression};
+@end example
+
+where @var{list} is a list literal (@pxref{VSL List Literals}).  
+
+The list literal is typically written in round parentheses, making the
+above form look like this:
+
+@example
+@var{name}(@var{param1}, @var{param2}, @dots{}) = @var{expression};
+@end example
+
+
+@menu
+* VSL Function Parameters::     
+* VSL Function Patterns::       
+* VSL Declaring Functions::     
+* VSL Redefining Functions::    
+* VSL Replacing Functions::     
+* VSL Overriding Functions::    
+@end menu
+
+@node VSL Function Parameters
+@subsection Function Parameters
+
+The parameter list @var{list} may contain names of formal parameters.
+Upon a function call, these are bound to the actual arguments.
+
+If the function
+@example
+sum(a, b) = a + b;
+@end example
+is called as
+@example
+sum(2. 3)
+@end example
+then @code{a} will be bound to @code{2} and @code{b} will be bound to
+@code{3}, evaluating to @code{5}.
+
+
+@menu
+* VSL Unused Parameters::       
+@end menu
+
+@node VSL Unused Parameters
+@subsubsection VSL Unused Parameters
+
+Unused parameters cause a warning, as in this example:
+
+@example
+first_arg(a, dummy) = a;        // Warning
+@end example
+
+If a parameter has the name @samp{_}, it will not be bound to the actual
+argument (and can thus not be used).  Use @samp{_} as parameter name for
+unused arguments:
+
+@example
+first_arg(a, _) = a;            // No warning
+@end example
+
+@samp{_} can be used multiple times in a parameter list.
+
+
+
+
+@node VSL Function Patterns
+@subsection Function Patterns
+
+A VSL function may have multiple definitions, each with a specific
+@emph{pattern}.  The first definition whose pattern @emph{matches} the
+actual argument is used.
+
+What does `matching' mean?  Within a pattern,
+@itemize @bullet{}
+@item
+An ordinary formal parameter matches any single value
+@item
+A formal parameter whose name is @samp{@dots{}}
+or ends in @samp{@dots{}} matches a single value or a list or a list remainder
+@item
+A constant matches exactly the same value
+@item
+A composite box or list matches a composite box or list if
+@itemize @minus{}
+@item 
+the composites have the same type
+@item 
+the composites have the same number of elements
+@item 
+the elements match each other.
+@end itemize
+@end itemize
+
+Here are some examples.  The @code{num()} function (@pxref{String Functions})
+can take either one or two arguments.  The one-argument definition
+simply invokes the two-argument definition:
+
+@example
+num(a, base) = @dots{};
+num(a) = num(a, 10);
+@end example
+
+Here's another example: The @code{digit} function returns a string
+representation for a single number.  It has multiple definitions, all
+dependent on the actual argument:
+
+@example
+digit(0) = "0";
+digit(1) = "1";
+digit(2) = "2";
+digit(3) = "3";
+digit(4) = "4";
+digit(5) = "5";
+digit(6) = "6";
+digit(7) = "7";
+digit(8) = "8";
+digit(9) = "9";
+digit(10) = "a";
+digit(11) = "b";
+digit(12) = "c";
+digit(13) = "d";
+digit(14) = "e";
+digit(15) = "f";
+digit(_) = fail("invalid digit() argument");
+@end example
+
+Formal parameters ending in @samp{@dots{}} are useful for defining
+@emph{aliases} of functions.  The definition
+@example
+roman(@dots{}) = rm(@dots{});
+@end example
+makes @code{roman} an alias of @code{rm}---any parameters (regardless
+how many) passed to @code{roman} will be passed to @code{rm}.
+
+
+Here's an example of how formal parameters ending in @samp{@dots{}} can be
+used to realize @emph{variadic functions}, taking any number of
+arguments (@pxref{Maximum and Minimum Functions}):
+
+@example
+max(a) = a;
+max(a, b, @dots{}) = if a > b then max(a, @dots{}) else max(b, @dots{}) fi;
+min(a) = a;
+min(a, b, @dots{}) = if a < b then min(a, @dots{}) else min(b, @dots{}) fi;
+@end example
+
+
+@node VSL Declaring Functions
+@subsection Declaring Functions
+
+If you want to use a function before it has been defined, just write
+down its signature without specifying a body.  Here's an example:
+
+@example
+num(a, base);                   // declaration
+num(a) = num(a, 10);
+@end example
+
+Remember to give a definition later on, though.
+
+
+
+
+@node VSL Redefining Functions
+@subsection Redefining Functions
+
+You can redefine a @VSL{} function even @emph{after} its original
+definition.  You can
+@itemize
+@item 
+@emph{replace} the original definition, thus making all previous
+definitions refer to your new definition;
+@item
+@emph{override} the original definition, thus making only later
+definitions refer to your new definition.
+@end itemize
+
+@node VSL Replacing Functions
+@subsection Replacing Functions
+
+To remove an original definition, use
+
+@example
+#pragma replace @var{name}
+@end example
+
+This removes all previous definitions of @var{name}.  Be sure to provide
+your own definitions, though.
+
+@samp{#pragma replace} is typically used to change defaults:
+
+@example
+#include "fonts.vsl"            // defines stdfontsize()
+
+#pragma replace stdfontsize()   // replace def
+stdfontsize() = 20;
+@end example
+
+All existing function calls will now refer to the new definition.
+
+
+
+
+@node VSL Overriding Functions
+@subsection Overriding Functions
+
+To override an original definition, use
+
+@example
+#pragma override @var{name}
+@end example
+
+This makes all later definitions use your new definition of @var{name}.
+Earlier definitions, however, still refer to the old definition.
+
+@samp{#pragma override} is typically used if you want to redefine a
+function while still refering to the old definition:
+
+@example
+#include "fonts.vsl"            // defines stdfontsize()
+
+// Save old definition
+old_stdfontsize() = stdfontsize();
+
+#pragma override stdfontsize()
+
+// Refer to old definition
+stdfontsize() = old_stdfontsize() * 2;
+@end example
+
+Since we used @samp{#pragma override}, we can use
+@code{old_stdfontsize()} to refer to the original definition of
+@code{stdfontsize()}.
+
+
+
+@node VSL Includes
+@section Includes
+
+In a @VSL{} file, you can include at any part the contents of another
+@VSL{} file, using one of the special forms
+
+@example
+#include "@var{file}"
+#include <@var{file}>
+@end example
+
+The form @samp{<@var{file}>} looks for VSL files in a number of standard
+directories; the form @samp{"@var{file}"} first looks in the directory
+where the current file resides.
+
+Any included file is included only once.
+
+In @DDD{}, you can set these places using the @samp{vslPath} resource.
+@xref{Customizing Display Appearance,,, ddd, Debugging with DDD}, for details.
+
+
+
+@node VSL Operators
+@section Operators
+
+VSL comes with a number of @emph{inline operators,} which can be used to
+compose boxes.  With raising precedence, these are:
+
+@example
+or
+and
+= <>
+<= < >= >
+::
+|
+^
+~
+&
++ -
+* / %
+not
+@end example
+
+Except for @code{or} and @code{and}, these operators are mapped to
+function calls.  Each invocation of an operator @samp{@@} in the form
+@samp{@var{a} @@ @var{b}} gets translated to a call of the VSL function
+with the special name @samp{(@@)}.  This @VSL{} function can be defined
+just like any other @VSL{} function.
+
+For instance, the expression @code{@var{a} + @var{b}} gets translated to
+a function call @code{(+)(a, b)}; @code{@var{a} & @var{b}} invokes
+@code{(&)(a, b)}.
+
+@flindex builtin.vsl
+In the file @file{builtin.vsl}, you can actually find definitions of these
+functions:
+
+@example
+(&)(@dots{}) = __op_halign(@dots{});
+(+)(@dots{}) = __op_plus(@dots{});
+@end example
+
+The functions @code{__op_halign} and @code{__op_plus} are the names by
+which the @samp{(&)} and @samp{(+)} functions are implemented.  In this
+document, though, we will not look further at these internals.
+
+Here are the places where the operator functions are described:
+@itemize
+@item
+For @samp{=} and @samp{<>}, @xref{Comparison Functions}.
+
+@item
+For @samp{<=}, @samp{<}, @samp{>=}, and @samp{>},
+@xref{Comparison Functions}.
+
+@item
+For @samp{::}, @xref{List Functions}.
+
+@item
+For @samp{|}, @samp{^}, @samp{~}, and @samp{&}, @xref{Composition Functions}.
+
+@item
+For @samp{+}, @samp{-}, @samp{*}, @samp{/}, and @samp{%}, 
+@xref{Arithmetic Functions}.
+
+@item
+For @samp{not}, @xref{Negation Functions}.
+@end itemize
+
+
+
+@node VSL Syntax Summary
+@section Syntax Summary
+
+The following file summarizes the syntax of VSL files.
+
+@example
+/*** VSL file ***/
+
+file                    :       item_list
+
+item_list               :       /* empty */
+                        |       item_list item
+
+item                    :       function_declaration ';'
+                        |       function_definition ';'
+                        |       override_declaration
+                        |       replace_declaration
+                        |       include_declaration
+                        |       line_declaration
+                        |       ';'
+                        |       error ';'
+
+/*** functions ***/
+
+function_declaration    :       function_header
+
+function_header         :       function_identifier function_argument
+                        |       function_identifier
+
+function_identifier     :       identifier
+                        |       '(' '==' ')'
+                        |       '(' '<>' ')'
+                        |       '(' '>' ')'
+                        |       '(' '>=' ')'
+                        |       '(' '<' ')'
+                        |       '(' '<=' ')'
+                        |       '(' '&' ')'
+                        |       '(' '|' ')'
+                        |       '(' '^' ')'
+                        |       '(' '~' ')'
+                        |       '(' '+' ')'
+                        |       '(' '-' ')'
+                        |       '(' '*' ')'
+                        |       '(' '/' ')'
+                        |       '(' '%' ')'
+                        |       '(' '::' ')'
+                        |       '(' 'not' ')'
+
+identifier              :       IDENTIFIER
+
+function_definition     :       local_definition
+                        |       global_definition
+
+local_definition        :       local_header function_body
+
+local_header            :       function_header '='
+
+global_definition       :       global_header function_body
+
+global_header           :       function_header '->'
+
+function_body           :       box_expression_with_defs
+
+
+
+/*** expressions ***/
+
+/*** let, where ***/
+
+box_expression_with_defs:       box_expression_with_wheres
+                        |       'let' var_definition in_box_expression
+
+in_box_expression       :       'in' box_expression_with_defs
+                        |       ',' var_definition in_box_expression
+
+box_expression_with_wheres:     box_expression
+                        |       box_expression_with_where
+
+box_expression_with_where:      box_expression_with_wheres 
+                                'where' var_definition
+                        |       box_expression_with_where 
+                                ',' var_definition
+
+var_definition          :       box_expression '=' box_expression
+
+
+/*** basic expressions ***/
+
+box_expression          :       '(' box_expression_with_defs ')'
+                        |       list_expression
+                        |       const_expression
+                        |       binary_expression
+                        |       unary_expression
+                        |       cond_expression
+                        |       function_call
+                        |       argument_or_function
+
+list_expression         :       '[' ']'
+                        |       '[' box_expression_list ']'
+                        |       '(' ')'
+                        |       '(' multiple_box_expression_list ')'
+
+box_expression_list     :       box_expression_with_defs
+                        |       multiple_box_expression_list
+
+multiple_box_expression_list:   box_expression ':' box_expression
+                        |       box_expression ',' box_expression_list
+                        |       box_expression '@dots{}'
+                        |       '@dots{}'
+
+const_expression        :       string_constant
+                        |       numeric_constant
+
+string_constant         :       STRING
+                        |       string_constant STRING
+
+numeric_constant        :       INTEGER
+
+function_call           :       function_identifier function_argument
+
+unary_expression        :       'not' box_expression
+                        |       '+' box_expression
+                        |       '-' box_expression
+
+
+/*** operators ***/
+
+binary_expression       :       box_expression '=' box_expression
+                        |       box_expression '<>' box_expression
+                        |       box_expression '>' box_expression
+                        |       box_expression '>=' box_expression
+                        |       box_expression '<' box_expression
+                        |       box_expression '<=' box_expression
+                        |       box_expression '&' box_expression
+                        |       box_expression '|' box_expression
+                        |       box_expression '^' box_expression
+                        |       box_expression '~' box_expression
+                        |       box_expression '+' box_expression
+                        |       box_expression '-' box_expression
+                        |       box_expression '*' box_expression
+                        |       box_expression '/' box_expression
+                        |       box_expression '%' box_expression
+                        |       box_expression '::' box_expression
+                        |       box_expression 'or' box_expression
+                        |       box_expression 'and' box_expression
+
+cond_expression         :       'if' box_expression
+                                'then' box_expression_with_defs
+                                else_expression
+                                'fi'
+
+else_expression         :       'elsif' box_expression
+                                'then' box_expression_with_defs
+                                else_expression
+                        |       'else' box_expression_with_defs
+
+function_argument       :       list_expression
+                        |       '(' box_expression_with_defs ')'
+
+argument_or_function    :       identifier
+
+
+/*** directives ***/
+
+override_declaration    :       '#pragma' 'override' override_list
+
+override_list           :       override_identifier
+                        |       override_list ',' override_identifier
+
+override_identifier     :       function_identifier
+
+replace_declaration     :       '#pragma' 'replace' replace_list
+
+replace_list            :       replace_identifier
+                        |       replace_list ',' replace_identifier
+
+replace_identifier      :       function_identifier
+
+include_declaration     :       '#include' '"' SIMPLE_STRING '"'
+                        |       '#include' '<' SIMPLE_STRING '>'
+
+line_declaration        :       '#line' INTEGER
+                        |       '#line' INTEGER STRING
+@end example
+
+
+@node Documentation License
+@appendix GNU Free Documentation License
+
+@cindex License, Documentation
+@include gfdl.texinfo
+
+
+@node Index
+@unnumbered Index
+
+@printindex cp
+
+@bye
