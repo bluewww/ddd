@@ -21,8 +21,10 @@
 // If not, write to the Free Software Foundation, Inc.,
 // 675 Mass Ave, Cambridge, MA 02139, USA.
 // 
-// ICE is the incremental configuration engine.
-// Contact ice@ips.cs.tu-bs.de for details.
+// ICE is the incremental configuration environment.
+// For details, see the ICE World-Wide-Web page, 
+// `http://www.cs.tu-bs.de/softech/ice/',
+// or send a mail to the ICE developers at `ice@ips.cs.tu-bs.de'.
 
 #ifndef _ICE_TypeInfo_h
 #define _ICE_TypeInfo_h
@@ -34,6 +36,12 @@
 #include <iostream.h>
 #include <stdlib.h>
 
+#ifdef __GNUC__
+// Set this to 1 to enable TypeInfo table construction at link time
+// instead of run-time (GNU-C only)
+// #define IMMEDIATE_TYPE_INFO 1
+#endif
+
 // Use these macros to declare and define type information
 #define DECLARE_TYPE_INFO \
     static TypeInfo type_info; \
@@ -41,7 +49,7 @@
     static BaseList _type_info_all_bases; \
     static const TypeInfo *_type_info_direct_bases[];
 
-#ifdef __GNUG__
+#if IMMEDIATE_TYPE_INFO
 #define _DEFINE_TYPE_INFO(T) \
     TypeInfo T::type_info = \
         { #T, T::_type_info_direct_bases, &T::_type_info_all_bases }; \
@@ -156,7 +164,7 @@ protected:
     void makehash();
 
 public:
-#ifndef __GNUG__
+#if !IMMEDIATE_TYPE_INFO
     // Construction
     TypeInfo(char *name, BaseList direct_bases, BaseList *all_bases):
 	_name(name), _direct_bases(direct_bases), _all_bases(all_bases),

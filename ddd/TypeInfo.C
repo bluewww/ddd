@@ -21,8 +21,10 @@
 // If not, write to the Free Software Foundation, Inc.,
 // 675 Mass Ave, Cambridge, MA 02139, USA.
 // 
-// ICE is the incremental configuration engine.
-// Contact ice@ips.cs.tu-bs.de for details.
+// ICE is the incremental configuration environment.
+// For details, see the ICE World-Wide-Web page, 
+// `http://www.cs.tu-bs.de/softech/ice/',
+// or send a mail to the ICE developers at `ice@ips.cs.tu-bs.de'.
 
 char TypeInfo_rcsid[] =
     "$Id$";
