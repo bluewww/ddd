@@ -2281,7 +2281,7 @@ your \fB$HOME/.gdbinit\fR file, insert the lines
 .br
 .sp
   \fBdefine dispfoo
-    echo ddd: graph display foo
+    echo \fIprefix\fB graph display foo
   end\fR
 .sp
 .br
@@ -2290,27 +2290,10 @@ Entering \fBdispfoo\fR will now have the same effect as entering
 .PP
 Unfortunately, auto-commands also raise a security problem, since
 arbitrary commands can be executed.  Just imagine some malicuous
-program issuing a string like `\fBddd: shell rm -fr $HOME\fR' when
-being debugged!  Consequently, auto-commands are \fIdisabled\fR by
-default and must be enabled explicitly.
-.PP
-To enable auto-commands, write in your `\fB$HOME/.@ddd@/init\fR' file:
-.br
-.sp
-  \fB@Ddd@*autoCommands: on\fR
-.sp
-.br
-The default prefix of auto-commands is `\fBddd: \fR'.  You are
-encouraged to change this value in your `\fB.@ddd@/init\fR' file.  To use 
-a prefix of, say, `\fBmagic123: \fR', write:
-.br
-.sp
-  \fBDdd*autoCommandPrefix: magic123:\\ \fR
-.sp
-.br
-Leave a space after the final `\fB\\\fR'.  Be sure to enable
-auto-commands only if you have defined own commands; be sure to set up
-an individual auto-command prefix to avoid security problems.
+program issuing a string like `\fB\fIprefix\fR shell rm -fr $HOME\fR'
+when being debugged!  As a consequence, the \fIprefix\fR is created
+dynamically by \s-2@DDD@\s+2, unless defined explicitly as value of
+the `\fBautoCommandPrefix\fR resource.
 .\"
 .\"
 .\" ---------------
@@ -3168,14 +3151,18 @@ movements.
 The following resources determine the inferior debugger.
 .TP
 .B "autoCommands (\fPclass\fB AutoCommands)"
-If this is `\fBon\fR', each line output by the inferior debugger
-beginning with the value of the `\fBautoCommandPrefix\fR' resource
-(see below) will be taken as \s-2@DDD@\s+2 command and executed.
-Useful for user-defined commands; see `\fBUSER-DEFINED COMMANDS\fR',
-above.  By default, `\fBoff\fR'.
+If this is `\fBon\fR' (default), each line output by the inferior
+debugger beginning with the value of the `\fBautoCommandPrefix\fR'
+resource (see below) will be interpreted as \s-2@DDD@\s+2 command and
+executed.  Useful for user-defined commands; see `\fBUSER-DEFINED
+COMMANDS\fR', above.
 .TP
 .B "autoCommandPrefix (\fPclass\fB AutoCommandPrefix)"
-The prefix for auto-commands.  By default, `\fB@ddd@: \fR'.
+The prefix for auto-commands.  By default, an empty string, meaning to
+generate a new prefix for each \s-2@DDD@\s+2 session.  If this is set
+to `\fBddd: \fR', for example, each \s-2GDB\s+2 output in the form
+`\fBddd: \fIcommand\fR' will cause \s-2@DDD@\s+2 to execute
+\fIcommand\fR.
 .TP
 .B "blockTTYInput (\fPclass\fB BlockTTYInput)"
 Whether \s-2@DDD@\s+2 should block when reading data from the inferior

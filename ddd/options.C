@@ -1346,9 +1346,12 @@ inline string int_app_value(const string& name, int value)
     return app_value(name, itostring(value));
 }
 
-static string string_app_value(const string& name, string value)
+static string string_app_value(const string& name, String v)
 {
-    value = cook(value);
+    if (v == 0)
+	return "";
+
+    string value = cook(v);
 
     // Xt cannot read `\t', so leave it unchanged.
     value.gsub("\\t", '\t');
@@ -1370,9 +1373,6 @@ static string widget_value(Widget w, String name)
     XtVaGetValues(w, 
 		  XtVaTypedArg, name, XtRString, &value, sizeof(value),
 		  NULL);
-
-    if (value == 0)
-	value = "";
 
     return string_app_value(string(XtName(w)) + "." + name, value);
 }
@@ -1421,8 +1421,9 @@ static string widget_geometry(Widget w)
 
     ostrstream geometry;
     geometry << width << "x" << height << "+" << attr.x << "+" << attr.y;
+    string geo(geometry);
 
-    return string_app_value(string(XtName(w)) + ".geometry", geometry);
+    return string_app_value(string(XtName(w)) + ".geometry", geo);
 }
 
 bool saving_options_kills_program(unsigned long flags)
@@ -1911,8 +1912,10 @@ bool save_options(unsigned long flags)
 	    break;
 	}
 
-	os << string_app_value(XtNrestartCommands, 
-			       string(es) + string(rs)) << "\n";
+	string restart = string(es) + string(rs);
+	restart.gsub(app_data.auto_command_prefix, "@AUTO@");
+
+	os << string_app_value(XtNrestartCommands, restart) << "\n";
     }
 
     save_option_state();

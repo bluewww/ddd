@@ -313,13 +313,9 @@ static string print_cookie = "4711";
 
 //-----------------------------------------------------------------------------
 
-inline String str(String s)
-{
-    return s != 0 ? s : "";
-}
-
-// Replace all occurrences of `@N@' by N + the current breakpoint base.
-void fix_bp_numbers(string& cmd)
+// Replace all occurrences of `@N@' by N + the current breakpoint base;
+// Replace all occurrences of `@AUTO@' by the current command prefix.
+static void fix_symbols(string& cmd)
 {
 #if RUNTIME_REGEX
     static regex rxnum("@[0-9]+@");
@@ -331,6 +327,13 @@ void fix_bp_numbers(string& cmd)
 	int base = SourceView::next_breakpoint_number() - 1;
 	cmd.at(i, j - i + 1) = itostring(atoi(cmd.chars() + i + 1) + base);
     }
+
+    cmd.gsub("@AUTO@", app_data.auto_command_prefix);
+}
+
+inline String str(String s)
+{
+    return s != 0 ? s : "";
 }
 
 void start_gdb()
@@ -530,7 +533,7 @@ void init_session(const string& restart, const string& settings)
 	}
 
 	// Translate breakpoint numbers to the current base.
-	fix_bp_numbers(c.command);
+	fix_symbols(c.command);
 	gdb_command(c);
 
 	init_commands = init_commands.after('\n');
@@ -699,7 +702,7 @@ void send_gdb_command(string cmd, Widget origin,
 
 	if (is_graph_cmd(cmd))
 	{
-	    cmd_data->graph_cmd    = cmd;
+	    cmd_data->graph_cmd = cmd;
 	}
 	else if (gdb->type() == GDB && starts_recording(cmd))
 	{
@@ -882,12 +885,12 @@ void send_gdb_command(string cmd, Widget origin,
     {
 	gdb_is_exiting = true;
     }
-
-    if (is_break_cmd(cmd))
+    else if (is_break_cmd(cmd))
     {
 	plus_cmd_data->break_arg = get_break_expression(cmd);
 	plus_cmd_data->refresh_breakpoints = true;
     }
+
 
     if (cmd_data->new_exec_pos
 	|| plus_cmd_data->refresh_frame 
@@ -1262,10 +1265,19 @@ void user_cmdOAC(void *data)
 
     if (pos_buffer && pos_buffer->auto_cmd_found())
     {
-	// Program (or GDB) issued command to be executed by DDD
-	Command c(pos_buffer->get_auto_cmd(), cmd_data->origin, process_batch);
-	c.priority = COMMAND_PRIORITY_BATCH;
-	gdb_command(c);
+	// Program (or GDB) issued command(s) to be executed by DDD
+	string auto_commands = pos_buffer->get_auto_cmd();
+
+	while (auto_commands != "")
+	{
+	    string command = auto_commands.before('\n');
+
+	    Command c(command, cmd_data->origin, process_batch);
+	    c.priority = COMMAND_PRIORITY_BATCH;
+	    gdb_command(c);
+
+	    auto_commands = auto_commands.after('\n');
+	}
     }
 
     if (cmd_data->graph_cmd != "")

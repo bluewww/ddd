@@ -5043,6 +5043,7 @@ struct BreakpointPropertiesInfo {
     Widget ignore;
     Widget condition;
     Widget record;
+    Widget end;
     Widget edit;
     XtIntervalId timer;
     bool spin_locked;
@@ -5081,6 +5082,12 @@ void SourceView::DeleteInfoCB(Widget, XtPointer client_data, XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
+
+    if (gdb->recording())
+    {
+	gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
+	gdb_command("\003");	// Abort recording
+    }
 
     delete info;
 }
@@ -5218,8 +5225,9 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 		  gdb->type() == GDB && bp->dispo() == BPKEEP);
     set_sensitive(info->ignore,    gdb->has_ignore_command());
     set_sensitive(info->condition, true);
-    set_sensitive(info->record,    gdb->type() == GDB);
-    set_sensitive(info->edit,      gdb->type() == GDB);
+    set_sensitive(info->record,    gdb->type() == GDB && !gdb->recording());
+    set_sensitive(info->end,       gdb->recording());
+    set_sensitive(info->edit,      gdb->type() == GDB && !gdb->recording());
 }
 
 // Edit breakpoint properties
@@ -5284,6 +5292,8 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     {
 	{ "record", MMPush, \
 	  { RecordBreakpointCommandsCB, XtPointer(info) }, 0, &info->record },
+	{ "end",    MMPush | MMInsensitive, \
+	  { RecordBreakpointCommandsCB, XtPointer(info) }, 0, &info->end },
 	{ "edit",   MMPush | MMInsensitive, \
 	  { EditBreakpointCommandsCB, XtPointer(info) }, 0, &info->edit },
 	MMEnd
@@ -5457,8 +5467,35 @@ void SourceView::RecordBreakpointCommandsCB(Widget w,
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
+    bool record = (w == info->record);
 
-    gdb_command("commands " + itostring(info->nrs[0]), w);
+    if (record)
+    {
+	gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
+	gdb->addHandler(Recording, RecordingHP, XtPointer(info));
+	gdb_command("commands " + itostring(info->nrs[0]), w);
+    }
+    else			// end
+    {
+	gdb_command("end", w);
+    }
+}
+
+// Log recording state
+void SourceView::RecordingHP(Agent *, void *client_data, void *call_data)
+{
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
+    bool recording = bool(call_data);
+
+    // Refresh buttons
+    update_properties_panel(info);
+
+    if (!recording)
+    {
+	// Recording is over.  Don't get called again
+	gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
+    }
 }
 
 // Edit breakpoint commands

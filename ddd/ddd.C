@@ -269,6 +269,7 @@ char ddd_rcsid[] =
 // Callbacks
 static void gdb_readyHP        (Agent *, void *, void *);
 static void gdb_strangeHP      (Agent *, void *, void *);
+static void gdb_recordingHP    (Agent *, void *, void *);
 static void gdb_panicHP        (Agent *, void *, void *);
 static void gdb_echo_detectedHP(Agent *, void *, void *);
 static void language_changedHP (Agent *, void *, void *);
@@ -363,6 +364,7 @@ static void setup_options(int& argc, char *argv[],
 			  bool& no_windows);
 static void setup_tty();
 static void setup_version_warnings();
+static void setup_auto_command_prefix();
 static void setup_core_limit();
 
 // Help hooks
@@ -1641,6 +1643,9 @@ int main(int argc, char *argv[])
     // Create new session dir if needed
     create_session_dir(app_data.session, messages);
 
+    // Create a new auto_command_prefix if needed
+    setup_auto_command_prefix();
+
     // Forward messages found so far into cerr
     {
 	string msg(messages);
@@ -1825,6 +1830,7 @@ int main(int argc, char *argv[])
     gdb->addHandler(ReplyRequired,    gdb_selectHP);
     gdb->addHandler(Panic,            gdb_panicHP);
     gdb->addHandler(Strange,          gdb_strangeHP);
+    gdb->addHandler(Recording,        gdb_recordingHP);
     gdb->addHandler(EchoDetected,     gdb_echo_detectedHP);
 
     // Set default history file (never read, only overwritten)
@@ -2462,7 +2468,7 @@ void process_next_event()
     gdbUpdateAllMenus();
 
     // Restart blinker
-    blink(!gdb->isReadyWithPrompt());
+    blink(gdb->recording() || !gdb->isReadyWithPrompt());
 
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
 
@@ -3245,7 +3251,7 @@ void update_options()
 	set_sensitive(code_indent_w, gdb->type() == GDB);
     }
 
-    set_toggle(led_w,                    app_data.blink_while_busy);
+    set_toggle(led_w, app_data.blink_while_busy);
 
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
     set_sensitive(set_refer_base_w, gdb->type() != GDB);
@@ -4647,6 +4653,18 @@ static void gdb_echo_detectedHP(Agent *, void *, void *)
 		false, false, COMMAND_PRIORITY_AGAIN);
 }
 
+static void gdb_recordingHP(Agent *, void *, void *call_data)
+{
+    static StatusMsg *recording_msg = 0;
+    bool recording = bool(call_data);
+
+    delete recording_msg;
+    recording_msg = 0;
+
+    if (recording)
+	recording_msg = new StatusMsg("Recording commands");
+}
+
 
 
 //-----------------------------------------------------------------------------
@@ -5872,6 +5890,24 @@ static void setup_version_warnings()
 	    + rm("(this is " DDD_NAME " " DDD_VERSION ").  "
 		 "Please save options.");
     }
+}
+
+static void setup_auto_command_prefix()
+{
+    if (app_data.auto_command_prefix == 0)
+	app_data.auto_command_prefix = "";
+    static string prefix = app_data.auto_command_prefix;
+
+    if (prefix.length() < 3)
+    {
+	// No prefix or insufficient prefix -- generate a new one
+	ostrstream key;
+	key << ddd_NAME << "-" << getpid() << "-" 
+	    << (long)time((time_t *)0) << ": ";
+	prefix = key;
+    }
+
+    app_data.auto_command_prefix = prefix;
 }
 
 static void setup_core_limit()

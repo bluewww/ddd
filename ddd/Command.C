@@ -47,6 +47,8 @@ char Command_rcsid[] =
 #include "windows.h"
 #include "GDBAgent.h"
 #include "TimeOut.h"
+#include "AppData.h"
+#include "disp-read.h"
 
 #include <ctype.h>
 #include <string.h>
@@ -114,6 +116,13 @@ void translate_command(string& command)
     case GDB:
     case DBX:
 	break;
+    }
+
+    // When recording graph commands, realize them as auto commands instead
+    if (gdb->recording() && is_graph_cmd(command))
+    {
+	command = 
+	    gdb->echo_command(app_data.auto_command_prefix + command + "\n");
     }
 }
 
