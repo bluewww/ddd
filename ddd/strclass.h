@@ -387,8 +387,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //     s.consuming(true)
 // 
 // While in `consuming' mode, the (physical) location of S does not change;
-// the only assignment operations allowed are assignments of substrings
-// at the end of S, as in
+// the only assignment operations allowed are assignments of empty strings
+// as well as of substrings at the end of S, as in
 // 
 //     s = s.from(...); s = s.after(...)
 //
@@ -495,7 +495,7 @@ public:
 
     // Status
     unsigned int length() const;
-    int empty() const;
+    bool empty() const;
     const char* chars() const;
 
     bool OK() const; 
@@ -826,7 +826,7 @@ public:
 
     // Status
     unsigned int length() const;
-    int empty() const;
+    bool empty() const;
 
     // Preallocate some space for string
     void alloc(int newsize);
@@ -862,12 +862,12 @@ extern string _nilstring;
 // Status reports, needed before defining other things
 
 inline unsigned int string::length() const {  return rep->len; }
-inline int          string::empty() const { return rep->len == 0; }
+inline bool         string::empty() const { return rep->len == 0; }
 inline const char*  string::chars() const { return rep->s; }
 inline int          string::allocation() const { return rep->allocated; }
 
 inline unsigned int subString::length() const { return len; }
-inline int          subString::empty() const { return len == 0; }
+inline bool         subString::empty() const { return len == 0; }
 inline const char*  subString::chars() const { return S.rep->s + pos; }
 
 // Resources
@@ -966,13 +966,29 @@ inline subString::~subString() {}
 
 inline string& string::operator = (const string& y)
 {
-    assert(!consuming());
-    rep = string_Scopy(rep, y.rep); return *this;
+    if (y.empty())
+    {
+	// Assignment of empty string
+	rep->s += rep->len;
+	rep->len = 0;
+    }
+    else
+    {
+	assert(!consuming());
+	rep = string_Scopy(rep, y.rep);
+    }
+    return *this;
 }
 
 inline string& string::operator = (const char* t)
 {
-    if (t >= rep->s && t < rep->s + rep->len)
+    if (*t == '\0')
+    {
+	// Assignment of empty string
+	rep->s += rep->len;
+	rep->len = 0;
+    }
+    else if (t >= rep->s && t < rep->s + rep->len)
     {
 	// Assignment of self-substring
 	int len = t - rep->s;
@@ -1001,8 +1017,14 @@ inline string& string::operator = (char *t)
 
 inline string& string::operator = (const subString&  y)
 {
-    if (y.chars() >= &(rep->mem[0]) && 
-	y.chars() < &(rep->mem[0]) + rep->allocated)
+    if (y.empty())
+    {
+	// Assignment of empty substring
+	rep->s += rep->len;
+	rep->len = 0;
+    }
+    else if (y.chars() >= &(rep->mem[0]) && 
+	     y.chars() < &(rep->mem[0]) + rep->allocated)
     {
 	// Assignment of self-substring
 	rep->s   = (char *)y.chars();
