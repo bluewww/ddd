@@ -226,6 +226,8 @@ static void get_args(string command, string& base, string& args)
 	    }
 	}
     }
+
+    read_leading_blanks(args);
 }
 
 
@@ -381,6 +383,7 @@ static void redirect_process(string& command,
 
     static string empty;
     args.gsub(gdb_redirection, empty);
+    read_leading_blanks(args);
 
     gdb_redirection = "";
     if (!args.contains("<"))
