@@ -1,7 +1,7 @@
 // $Id$
 // GraphEdit Widget
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
 // This file is part of the DDD Library.
@@ -1166,7 +1166,7 @@ inline void myXDrawLine(Display *display,
     
 
 // Redraw line (f0/t1) at (f1/t1)
-static void redrawLine(Widget w, BoxDimension d,
+static void redrawLine(Widget w,
 		       const BoxPoint& f0, 
 		       const BoxPoint& t0, 
 		       const BoxPoint& f1, 
@@ -1176,20 +1176,13 @@ static void redrawLine(Widget w, BoxDimension d,
     const GC frameGC           = _w->graphEdit.frameGC;
 
     Display *display = XtDisplay(w);
-    Window window = XtWindow(w);
+    Window window    = XtWindow(w);
 
-    if (f0[d] != f1[d])
-    {
-	// New line is parallel -- redraw it entirely
-	myXDrawLine(display, window, frameGC, f0, t0);
-	myXDrawLine(display, window, frameGC, f1, t1);
-    }
-    else
-    {
-	// Draw differences to old line
-	myXDrawLine(display, window, frameGC, f0, f1);
-	myXDrawLine(display, window, frameGC, t0, t1);
-    }
+    // Clear old line (by redrawing it)
+    myXDrawLine(display, window, frameGC, f0, t0);
+
+    // Draw new line
+    myXDrawLine(display, window, frameGC, f1, t1);
 }
 
 static void drawSelectFrames(Widget w, 
@@ -1199,41 +1192,39 @@ static void drawSelectFrames(Widget w,
     // check four sides, one after the other
 
     // North
-    redrawLine(w, Y,
+    redrawLine(w,
 	r0.origin(),
 	r0.origin() + BoxPoint(r0.space(X), 0),
 	r1.origin(),
 	r1.origin() + BoxPoint(r1.space(X), 0));
 
     // South
-    redrawLine(w, Y,
+    redrawLine(w,
 	r0.origin() + BoxPoint(0, r0.space(Y)),
 	r0.origin() + r0.space(),
 	r1.origin() + BoxPoint(0, r1.space(Y)),
 	r1.origin() + r1.space());
 
-    // East and West are displaced by one pixel, don't ask why
-    // (it just happened to be working this way)
-
     // East
-    redrawLine(w, X,
-	r0.origin() + BoxPoint(0, 1),
+    redrawLine(w,
+	r0.origin(),
 	r0.origin() + BoxPoint(0, r0.space(Y)),
-	r1.origin() + BoxPoint(0, 1),
+	r1.origin(),
 	r1.origin() + BoxPoint(0, r1.space(Y)));
 
     // West
-    redrawLine(w, X,
+    redrawLine(w,
 	r0.origin() + BoxPoint(r0.space(X), 0),
-	r0.origin() + r0.space() + BoxPoint(0, 1),
+	r0.origin() + r0.space(),
 	r1.origin() + BoxPoint(r1.space(X), 0),
-	r1.origin() + r1.space() + BoxPoint(0, 1));
+	r1.origin() + r1.space());
 
     // Set appropriate cursor
     setRegionCursor(w);
 }
 
-// Draw the select frame
+
+// Draw the selection frame
 inline void drawSelectFrame(Widget w)
 {
     drawSelectFrames(w, frameRegion(w),
@@ -1241,7 +1232,7 @@ inline void drawSelectFrame(Widget w)
 }
 
 
-// Redraw Select Frame
+// Redraw selection frame
 static void redrawSelectFrame(Widget w, BoxPoint& p)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
