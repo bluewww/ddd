@@ -326,8 +326,6 @@ Volunteers for these and other projects are welcome!
 314*David Karr <dkarr@nmo.gtegsc.com> suggests a JDB `Open Class'
     dialog that actually lists class names, not just files.
 
-315*Save signal settings in the current session (also in `~/.ddd/init'?).
-
 316 Bill Bumgarner <bbum@codefab.com> suggests Objective-C
     improvements for use with Foundation from Apple:
 
