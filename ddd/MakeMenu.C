@@ -346,7 +346,12 @@ Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[])
     arg = 0;
     Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
     addItems(parent, menu, items);
-    stay_on_top(XtParent(menu));
+
+    // Don't auto-raise popup menus.
+    // 1. There are conflicts with nested popups.
+    // 2. During a popup, the pointer is grabbed such that we won't
+    //    have an auto-raised window anyway.
+    // stay_on_top(XtParent(menu));
 
     return menu;
 }
