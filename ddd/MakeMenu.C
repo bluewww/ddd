@@ -53,6 +53,7 @@ char MakeMenu_rcsid[] =
 #include "bool.h"
 #include "verify.h"
 #include "findParent.h"
+#include "windows.h"
 
 // Pushmenu callbacks
 static void ArmPushMenuCB(Widget, XtPointer, XtPointer);
@@ -79,7 +80,7 @@ static void StayOnTopEH(Widget w, XtPointer, XEvent *event, Boolean *)
     {
     case VisibilityFullyObscured:
     case VisibilityPartiallyObscured:
-	XRaiseWindow(XtDisplay(w), XtWindow(w));
+	XRaiseWindow(XtDisplay(w), frame(w));
 	break;
     }
 }
