@@ -59,6 +59,16 @@ DEFINE_TYPE_INFO_1(TTYAgent, LiterateAgent)
 
 extern "C" {
 
+// Nico van Waes <nico@yegal.njit.edu> says: under Solaris 2.6, one
+// must include <sys/types.h> before <termios.h>.
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+#if HAVE_SYS_INT_TYPES_H
+#include <sys/int_types.h>
+#endif
+
 #ifdef __osf__
 // DEC OSF has some special treatment in this file; I hope these
 // `#ifdef __osf__' flags will be deleted by an OSF expert some day. - AZ
@@ -74,14 +84,6 @@ extern "C" {
 #endif
 #endif // !HAVE_TCGETATTR || !HAVE_TCSETATTR
 #endif // !__osf__
-
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#if HAVE_SYS_INT_TYPES_H
-#include <sys/int_types.h>
-#endif
 
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
