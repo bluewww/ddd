@@ -2928,7 +2928,14 @@ Ddd*status_form*marginBottom:		0
 Ddd*status_form*spacing:		0
 Ddd*status_form*highlightThickness: 	0
 
+Ddd*status_form.arrow.tipString: \
+@rm Show recent messages
+Ddd*status_form.arrow.documentationString: \
+@rm Show most recent messages from the status line
+
 Ddd*status_form.status.alignment:	XmALIGNMENT_BEGINNING
+Ddd*status_form.status.leftOffset:	5
+Ddd*status_form.status.rightOffset:	5
 Ddd*status_form.status.labelString:	Ready.
 Ddd*status_form.status.shadowThickness: 0
 Ddd*status_form.status.fillOnArm:	false
@@ -2942,11 +2949,6 @@ Ddd*status_form.led.tipString:	\
 Ddd*status_form.led.documentationString: \
 @rm Debugger status: blinks while inferior debugger is busy \
 (click to disable or enable)
-
-Ddd*status_form.arrow.tipString: \
-@rm Show recent messages
-Ddd*status_form.arrow.documentationString: \
-@rm Show most recent messages from the status line
 
 Ddd*status_lines.marginWidth:		0
 Ddd*status_lines.marginHeight:		0
@@ -4030,6 +4032,17 @@ such that you can re-use them at a later time.\n\
 Select specific arguments to have them copied to the argument prompt.\n\
 Click on @bf OK @rm or @bf Apply @rm to start the debugged program\n\
 with the arguments at the argument prompt.
+
+
+
+!-----------------------------------------------------------------------------
+! GDB Status
+!-----------------------------------------------------------------------------
+
+Ddd*gdb_status_dialog_popup.title: @DDD@: Debugger State
+Ddd*gdb_status_dialog*helpString: \
+@rm This dialog shows the state and capabilities of the inferior debugger.
+
 
 
 

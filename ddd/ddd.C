@@ -276,6 +276,9 @@ static void ToggleBlinkCB(Widget, XtPointer client_data, XtPointer call_data);
 static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
 static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
 
+// GDB status
+static void ShowGDBStatusCB(Widget w, XtPointer, XtPointer);
+
 // Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
 
@@ -2657,10 +2660,10 @@ static void create_status(Widget parent)
     arg = 0;
     XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET); arg++;
-    XtSetArg(args[arg], XmNrightWidget,      led_w); arg++;
+    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNresizable,        True); arg++; 
     XtSetArg(args[arg], XmNarrowDirection, 
-	     (app_data.status_at_bottom ? XmARROW_UP : XmARROW_UP)); arg++;
+	     (app_data.status_at_bottom ? XmARROW_UP : XmARROW_DOWN)); arg++;
     Widget arrow_w = 
 	verify(XmCreateArrowButton(status_form, "arrow", args, arg));
     XtManageChild(arrow_w);
@@ -2675,9 +2678,10 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNlabelString,      long_msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_WIDGET); arg++;
+    XtSetArg(args[arg], XmNleftWidget,       arrow_w); arg++;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET); arg++;
-    XtSetArg(args[arg], XmNrightWidget,      arrow_w); arg++;
+    XtSetArg(args[arg], XmNrightWidget,      led_w); arg++;
     XtSetArg(args[arg], XmNresizable,        True); arg++;
     status_w = verify(XmCreatePushButton(status_form, "status", args, arg));
     XtManageChild(status_w);
@@ -2810,8 +2814,16 @@ static void ToggleBlinkCB(Widget, XtPointer, XtPointer call_data)
 
 const Dimension y_popup_offset = 5;
 
-static void PopupStatusHistoryCB(Widget w, XtPointer, XtPointer)
+static void PopupStatusHistoryCB(Widget w, XtPointer client_data, 
+				 XtPointer call_data)
 {
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs->event->xbutton.state & ShiftMask)
+    {
+	ShowGDBStatusCB(w, client_data, call_data);
+	return;
+    }
+
     Widget history = status_history(w);
 
     Position shell_x, shell_y;
@@ -2858,10 +2870,129 @@ static void PopdownStatusHistoryCB(Widget w, XtPointer, XtPointer)
 
 
 //-----------------------------------------------------------------------------
+// Show status of inferior debugger
+//-----------------------------------------------------------------------------
+
+static MString yn(bool b)
+{
+    return b ? rm("yes\n") : rm("no\n");
+}
+
+static MString has(const string& command, bool b)
+{
+    return tb(quote(command)) + bf(" command: ") + yn(b);
+}
+
+static MString cmd(const string& title, const string& cmd)
+{
+    MString s = bf(title + " command: ");
+    if (cmd == "")
+	return s + rm("-/-\n");
+    else
+	return s + tt(quote(cmd)) + rm("\n");
+}
+
+static MString expr(const string& title, const string& expr)
+{
+    return bf(title + " expression: ") + tt(quote(expr)) + rm("\n");
+}
+
+static MString option(const string& command, const string& opt, bool b)
+{
+    return bf("Use ") + tb(quote(opt)) + bf(" option in ") + has(command, b);
+}
+
+static MString cap(const MString& title, bool b)
+{
+    return title + bf(": ") + yn(b);
+}
+
+static void ShowGDBStatusCB(Widget w, XtPointer, XtPointer)
+{
+    static Widget info = 0;
+    if (info == 0)
+    {
+	info = verify(XmCreateInformationDialog(find_shell(w), 
+						"gdb_status_dialog",
+						NULL, 0));
+	Delay::register_shell(info);
+	XtUnmanageChild(XmMessageBoxGetChild(info, XmDIALOG_CANCEL_BUTTON));
+	XtAddCallback(info, XmNhelpCallback,   ImmediateHelpCB, NULL);
+    }
+
+    MString status;
+
+    status += sl("\nGENERAL DEBUGGER INFORMATION\n");
+    status += bf("Debugger type: ") + rm(gdb->title()) + rm("\n");
+
+    status += bf("Current state: ");
+    if (gdb->isReadyWithPrompt())
+	status += rm("ready\n");
+    else
+	status += rm("busy\n");
+
+    status += bf("Current language class: ");
+    switch (gdb->program_language())
+    {
+    case LANGUAGE_C:       status += rm("C"); break;
+    case LANGUAGE_PASCAL:  status += rm("Pascal"); break;
+    case LANGUAGE_CHILL:   status += rm("Chill"); break;
+    case LANGUAGE_FORTRAN: status += rm("FORTRAN"); break;
+    case LANGUAGE_OTHER:   status += rm("-/-"); break;
+    }
+    status += rm("\n");
+
+    status += sl("\nDEBUGGER CAPABILITIES\n");
+    status += has("clear",   gdb->has_clear_command());
+    status += has("display", gdb->has_display_command());
+    status += has("edit",    gdb->has_setenv_command());
+    status += has("frame",   gdb->has_frame_command());
+    status += has("output",  gdb->has_output_command());
+    status += has("pwd",     gdb->has_pwd_command());
+    status += has("run_io",  gdb->has_run_io_command());
+    status += has("setenv",  gdb->has_setenv_command());
+
+    status += sl("\nDEBUGGER COMMANDS\n");
+    status += cmd("Args",        gdb->info_args_command());
+    status += cmd("Assign",      gdb->assign_command("VAR", "EXPR"));
+    status += cmd("Disassemble", gdb->disassemble_command("deadbeef"));
+    status += cmd("Display",     gdb->display_command());
+    status += cmd("Echo",        gdb->echo_command("TEXT"));
+    status += cmd("Frame",       gdb->frame_command());
+    status += cmd("Locals",      gdb->info_locals_command());
+    status += cmd("Pwd",         gdb->pwd_command());
+    status += cmd("Whatis",      gdb->whatis_command("EXPR"));
+    status += cmd("Where",       gdb->where_command());
+
+    status += sl("\nEXPRESSIONS\n");
+    status += expr("Address",     gdb->address_expr("EXPR"));
+    status += expr("Dereference", gdb->dereferenced_expr("EXPR"));
+
+    status += sl("\nOPTIONS\n");
+    status += option("print", "-r", gdb->has_print_r_option());
+    status += option("where", "-h", gdb->has_where_h_option());
+
+    status += sl("\nSYNTAX\n");
+    status += cap(bf("Named values"), gdb->has_named_values());
+    status += cap(bf("Semicolon after ") + tb(quote("when")),
+		  gdb->has_when_semicolon());
+    status += cap(bf("Stderr redirection via ") + tb(quote(">&")),
+		  gdb->has_err_redirection());
+    status += cap(tb(quote("delete")) + bf("wants comma-separated args"), 
+		  gdb->has_delete_comma());
+
+    XtVaSetValues(info,
+		  XmNmessageString, status.xmstring(),
+		  NULL);
+
+    XtManageChild(info);
+}
+
+//-----------------------------------------------------------------------------
 // Helpers
 //-----------------------------------------------------------------------------
 
-void source_argHP (void *_arg_field, void *, void *)
+static void source_argHP (void *_arg_field, void *, void *)
 {
     ArgField *arg_field = (ArgField *)_arg_field;
     string arg = arg_field->get_string();
@@ -2882,7 +3013,7 @@ void source_argHP (void *_arg_field, void *, void *)
 // Handlers
 //-----------------------------------------------------------------------------
 
-void gdb_ready_for_questionHP (Agent *, void*, void* call_data)
+static void gdb_ready_for_questionHP (Agent *, void*, void* call_data)
 {
     bool gdb_ready = bool(call_data);
     if (gdb_ready)
@@ -2923,7 +3054,7 @@ void gdb_ready_for_questionHP (Agent *, void*, void* call_data)
     blink(!gdb_ready);
 }
 
-void gdb_ready_for_cmdHP (Agent *, void *, void *)
+static void gdb_ready_for_cmdHP (Agent *, void *, void *)
 {
     // Nothing yet...
 }

@@ -1197,6 +1197,9 @@ string GDBAgent::assign_command(string var, string expr) const
 // Return disassemble command
 string GDBAgent::disassemble_command(string pc) const
 {
+    if (gdb->type() != GDB)
+	return "";
+
     // In C, hexadecimal integers are specified by a leading "0x".
     // In Modula-2, hexadecimal integers are specified by a trailing "H".
     // In Chill, hexadecimal integers are specified by a leading "H'".
