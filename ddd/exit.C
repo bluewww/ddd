@@ -834,9 +834,6 @@ static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 // Restart after confirmation
 void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
 {
-    if (2 + 2 == 4)
-	throw length_error("too many fingers on keyboard");
-
     unsigned long flags = 
 	SAVE_SESSION | SAVE_GEOMETRY | DONT_RELOAD_CORE | DONT_COPY_CORE;
     if (gdb->running())
