@@ -81,9 +81,9 @@ fi
   
 script=$path/$this.$lexpar
 
-$sed -f $script lex.yy.c | $static | $prefix > lex.yy.C
+$sed -f $script lex.yy.c | $static | $prefix > lex.yy.cc
 
-diff -D__cplusplus lex.yy.c lex.yy.C > lex.tmp
+diff -D__cplusplus lex.yy.c lex.yy.cc > lex.tmp
 $sed -e 's!#else *__cplusplus$!#else!
 s!#endif *__cplusplus$!#endif /* __cplusplus */!' lex.tmp > lex.yy.c
 

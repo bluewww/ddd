@@ -819,15 +819,15 @@ LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 $(srcdir)/vsl-lex.C: $(srcdir)/vsl-lex.L
 	$(LEX) $(LFLAGS) $(srcdir)/vsl-lex.L
 	$(SHELL) $(LEXTOCXX) -prefix vsl
-	$(MV) $(LEX_OUTPUT_ROOT).C $@
+	$(MV) $(LEX_OUTPUT_ROOT).cc $@
 	$(RM) $(LEX_OUTPUT_ROOT).c
 
 $(srcdir)/vsl-gramma.h $(srcdir)/vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
 	$(YACCTOCXX) $(YACCTOCXX).bison $(YACCTOCXX).h $(YACCTOCXX).sun
 	$(YACC) $(YFLAGS) -d $(srcdir)/vsl-gramma.Y
 	$(SHELL) $(YACCTOCXX) -prefix vsl
-	$(MV) y.tab.H $(srcdir)/vsl-gramma.h
-	$(MV) y.tab.C $(srcdir)/vsl-gramma.C
+	$(MV) y.tab.hh $(srcdir)/vsl-gramma.h
+	$(MV) y.tab.cc $(srcdir)/vsl-gramma.C
 	$(RM) y.tab.c y.tab.h
 
 VSLRead.$(OBJEXT): \
@@ -839,7 +839,7 @@ VSLRead.$(OBJEXT): \
 rxscan.C: $(srcdir)/rxscan.L
 	$(LEX) $(LFLAGS) $(srcdir)/rxscan.L
 	$(SHELL) $(LEXTOCXX) -prefix "ddd"
-	$(MV) $(LEX_OUTPUT_ROOT).C $@
+	$(MV) $(LEX_OUTPUT_ROOT).cc $@
 	$(RM) $(LEX_OUTPUT_ROOT).c
 
 regexps.$(OBJEXT): rxscan.C

@@ -65,8 +65,8 @@ for file in y.tab.c y.tab.h; do
   fi
 
   case $file in
-    y.tab.c) target=y.tab.C;;
-    y.tab.h) target=y.tab.H;;
+    y.tab.c) target=y.tab.cc;;
+    y.tab.h) target=y.tab.hh;;
   esac
 
   head $file | grep "using $this" > /dev/null
