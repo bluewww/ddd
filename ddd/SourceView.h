@@ -209,11 +209,11 @@ class SourceView {
     }
 
     // Custom calls
-    inline static void enable_bps_cond(IntArray& nrs, Widget origin = 0)
+    inline static void enable_bps_cond(const IntArray& nrs, Widget origin = 0)
     {
 	set_bps_cond_enabled(nrs, true, origin);
     }
-    inline static void disable_bps_cond(IntArray& nrs, Widget origin = 0)
+    inline static void disable_bps_cond(const IntArray& nrs, Widget origin = 0)
     {
 	set_bps_cond_enabled(nrs, false, origin);
     }
@@ -777,9 +777,9 @@ public:
     static void temp_n_cont(const string& a, Widget origin = 0);
 
     // Enable/Disable/Delete/Edit breakpoints
-    static void enable_bps     (IntArray& nrs, Widget origin = 0);
-    static void disable_bps    (IntArray& nrs, Widget origin = 0);
-    static void delete_bps     (IntArray& nrs, Widget origin = 0);
+    static void enable_bps     (const IntArray& nrs, Widget origin = 0);
+    static void disable_bps    (const IntArray& nrs, Widget origin = 0);
+    static void delete_bps     (const IntArray& nrs, Widget origin = 0);
     static void edit_bps       (IntArray& nrs, Widget origin = 0);
 
     inline static void enable_bp(int nr, Widget origin = 0)

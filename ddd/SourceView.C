@@ -1152,7 +1152,7 @@ bool SourceView::all_bps(const IntArray& nrs)
     return true;
 }
 
-void SourceView::enable_bps(IntArray& nrs, Widget w)
+void SourceView::enable_bps(const IntArray& nrs, Widget w)
 {
     CommandGroup cg;
 
@@ -1167,7 +1167,7 @@ void SourceView::enable_bps(IntArray& nrs, Widget w)
     }
 }
 
-void SourceView::disable_bps(IntArray& nrs, Widget w)
+void SourceView::disable_bps(const IntArray& nrs, Widget w)
 {
     CommandGroup cg;
 
@@ -1182,7 +1182,7 @@ void SourceView::disable_bps(IntArray& nrs, Widget w)
     }
 }
 
-void SourceView::delete_bps(IntArray& nrs, Widget w)
+void SourceView::delete_bps(const IntArray& nrs, Widget w)
 {
     CommandGroup cg;
 
