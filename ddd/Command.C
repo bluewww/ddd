@@ -26,6 +26,12 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
+// Whenever I think of DDD, I'm reminded of that song by Trio that was 
+// featured in those Volkswagen commercials -- "Da Da Da".
+// 
+// Tom "Dee Dee Dee" Harrington <tph@rmi.net> -- rec.humor.oracle.d
+
+
 char Command_rcsid[] = 
     "$Id$";
 
