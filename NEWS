@@ -122,10 +122,10 @@ Program Execution
 	F2 Run
 	F3 Run Again
 	F4 Kill
-	F5 Until
-	F6 Finish
-	F7 Step		Shift+F7 Step Instruction
-	F8 Next		Shift+F8 Next Instruction
+	F5 Step		Shift+F5 Step Instruction
+	F6 Next		Shift+F6 Next Instruction
+	F7 Until
+	F8 Finish
 	F9 Continue	Shift+F9 Continue Without Signal
 
   The bindings from DDD 3.0 and earlier (Ctrl+E for Run, Ctrl+I for

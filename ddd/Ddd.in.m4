@@ -2222,38 +2222,38 @@ Ddd*menubar*programMenu.separateExecWindow.documentationString:\
 
 Ddd*menubar*programMenu.step.labelString:	   Step
 Ddd*menubar*programMenu.step.mnemonic:		   S
-Ddd*menubar*programMenu.step.accelerator:	   ~Shift<Key>F7
-Ddd*menubar*programMenu.step.acceleratorText:	   F7
+Ddd*menubar*programMenu.step.accelerator:	   ~Shift<Key>F5
+Ddd*menubar*programMenu.step.acceleratorText:	   F5
 Ddd*menubar*programMenu.step.documentationString:
 
 Ddd*menubar*programMenu.stepi.labelString:	   Step Instruction
 Ddd*menubar*programMenu.stepi.mnemonic:		   I
-Ddd*menubar*programMenu.stepi.accelerator:	   Shift<Key>F7
-Ddd*menubar*programMenu.stepi.acceleratorText:	   Shift+F7
+Ddd*menubar*programMenu.stepi.accelerator:	   Shift<Key>F5
+Ddd*menubar*programMenu.stepi.acceleratorText:	   Shift+F5
 Ddd*menubar*programMenu.stepi.documentationString:
 
 Ddd*menubar*programMenu.next.labelString:	   Next
 Ddd*menubar*programMenu.next.mnemonic:		   N
-Ddd*menubar*programMenu.next.accelerator:	   ~Shift<Key>F8
-Ddd*menubar*programMenu.next.acceleratorText:	   F8
+Ddd*menubar*programMenu.next.accelerator:	   ~Shift<Key>F6
+Ddd*menubar*programMenu.next.acceleratorText:	   F6
 Ddd*menubar*programMenu.next.documentationString:
 
 Ddd*menubar*programMenu.nexti.labelString:	   Next Instruction
 Ddd*menubar*programMenu.nexti.mnemonic:		   x
-Ddd*menubar*programMenu.nexti.accelerator:	   Shift<Key>F8
-Ddd*menubar*programMenu.nexti.acceleratorText:	   Shift+F8
+Ddd*menubar*programMenu.nexti.accelerator:	   Shift<Key>F6
+Ddd*menubar*programMenu.nexti.acceleratorText:	   Shift+F6
 Ddd*menubar*programMenu.nexti.documentationString:
 
 Ddd*menubar*programMenu.until.labelString:	   Until
 Ddd*menubar*programMenu.until.mnemonic:	   	   U
-Ddd*menubar*programMenu.until.accelerator:	   <Key>F5
-Ddd*menubar*programMenu.until.acceleratorText:	   F5
+Ddd*menubar*programMenu.until.accelerator:	   <Key>F7
+Ddd*menubar*programMenu.until.acceleratorText:	   F7
 Ddd*menubar*programMenu.until.documentationString:
 
 Ddd*menubar*programMenu.finish.labelString:	   Finish
 Ddd*menubar*programMenu.finish.mnemonic:	   F
-Ddd*menubar*programMenu.finish.accelerator:	   <Key>F6
-Ddd*menubar*programMenu.finish.acceleratorText:	   F6
+Ddd*menubar*programMenu.finish.accelerator:	   <Key>F8
+Ddd*menubar*programMenu.finish.acceleratorText:	   F8
 Ddd*menubar*programMenu.finish.documentationString:
 
 Ddd*menubar*programMenu.cont.labelString:	   Continue
