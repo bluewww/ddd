@@ -272,6 +272,9 @@ Bug fixes
 Maintenance
 -----------
 
+- When DDD crashes, all information required for maintenance (such as
+  a stack trace) is automatically included into the DDD log.
+
 - All remaining German comments in DDD source have been translated
   into English.
 
