@@ -31,7 +31,8 @@ contributed to the success of DDD.  Starring in historical order,
     KENT WILLIAMS made DDD run on SGI/IRIX machines.
 
     GRANT McDORMAN run purify on DDD, discovering many memory leaks
-        and bad memory references.
+        and bad memory references.  He also contributed significant
+        extensions for DBX 3.x.
 
     PAUL RAINES found out what made DDD crash on Linux and provided a
         DDD binary linked with fixed Motif libraries.
@@ -39,7 +40,7 @@ contributed to the success of DDD.  Starring in historical order,
     CARSTEN KRABIELL and PETRA FUNK were the most toughest beta
         testers ever found and made many substantial suggestions.
 
-    WALTER TUPPA made DDD run on DEC ALPHA machines.
+    WALTER TUPPA and PHIL BROOKS made DDD run on DEC ALPHA machines.
 
 Thanks to all others who are not mentioned here and helped in the
 success of DDD.
