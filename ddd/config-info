@@ -27,6 +27,7 @@
 # `http://www.cs.tu-bs.de/softech/ddd/',
 # or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
+userinfo=`cat ./USERINFO || echo "DDD development team <ddd@ips.cs.tu-bs.de>"`
 echo "// Generated automatically by \`config-info' from \`Makefile' and \`config.h'."
 echo "// Do not edit."
 echo
@@ -34,7 +35,7 @@ echo '#include "configinfo.h"'
 echo 
 echo "const char *config_info = "
 (
-    echo "Built by `cat ./USERINFO`"
+    echo "Built by $userinfo"
     echo "on `date`."
 
     echo

@@ -1109,7 +1109,7 @@ configinfo.C:   USERINFO $(srcdir)/config-info Makefile config.h
 configinfo.o:	configinfo.C configinfo.h
 
 USERINFO:	userinfo Makefile
-		(./userinfo || echo '(unknown)') > $@; $(CAT) $@
+		-(./userinfo || echo '(unknown)') > $@; $(CAT) $@
 
 
 ## Update the shared source tree.  For development only.
@@ -1118,9 +1118,7 @@ PUB_DEST=/ftp/ips/pub/misc/$(ddd)-$(VERSION)/ddd
 PUB_SRC=`ls /usr/local/share/CVS/ddd/ddd | sed 's/,v//'`
 
 .PHONY: pub
-pub:	$(PROG_STUFF) configure
-	echo 'DDD development team <ddd@ips.cs.tu-bs.de>' > USERINFO
-	cp -p USERINFO $(PUB_DEST)
+pub:	$(PROG_STUFF) configure $(PUB_DEST)/USERINFO
 	@for file in $(PROG_STUFF) configure Makedeps $(PUB_SRC); do \
 	    if gtest ./$$file -nt $(PUB_DEST)/$$file; then \
 		echo -n Updating $(PUB_DEST)/$$file...; \
@@ -1129,13 +1127,24 @@ pub:	$(PROG_STUFF) configure
 	    fi; \
 	done
 
+$(PUB_DEST)/USERINFO:
+	-echo 'DDD development team <ddd@ips.cs.tu-bs.de>' > $@
+
+
 ## Build on a variety of machines.  For development only.
 
 NICE=20
 TARGET=all
+MACHINES=ultrix solaris sunos aix hpux
 
-.PHONY: everywhere
-everywhere: ultrix solaris sunos aix hpux
+.PHONY: batch binaries
+batch binaries: pub
+	@for machine in $(MACHINES); do \
+	    echo -n "$$machine:    	"; \
+	    echo $(SHELL) -c \''MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
+  	 	make TARGET=$(TARGET) CXXFLAGS="$(CXXFLAGS)" '\'$$machine \
+		| at -m now + 1 minute; \
+	done
 
 .PHONY: ultrix
 ultrix:	
@@ -1143,6 +1152,7 @@ ultrix:
 	rsh -l zeller infbsps0.ips.cs.tu-bs.de $(SHELL) -c \
 		\''cd $$HOME/tmp/ddd-ultrix/ddd; \
 		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
+		$(SHELL) ./config.status; \
 		nice -$(NICE) gmake CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
 
 .PHONY:	solaris
@@ -1152,7 +1162,8 @@ solaris:
 		\''cd $$HOME/ddd/ddd; \
 		PATH=/usr/local/bin:/bin:/usr/bin:/usr/ccs/bin:/usr/openwin/bin:/opt/SUNWspro/bin:/usr/ucb; export PATH; \
 		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
-		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
+		$(SHELL) ./config.status; \
+		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" LIBXPM= $(TARGET)'\'
 
 .PHONY:	sunos
 sunos:
@@ -1160,6 +1171,7 @@ sunos:
 	rsh -l zeller infbspsk.ips.cs.tu-bs.de      $(SHELL) -c \
 		\''cd $$HOME/tmp/ddd-sunos/ddd; \
 		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
+		$(SHELL) ./config.status; \
 		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
 
 .PHONY: hpux
@@ -1169,6 +1181,7 @@ hpux:
 		\''PATH=/usr/local/gnu/hp400/bin:$$PATH; export PATH; \
 		cd $$HOME/ddd/ddd; \
 		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
+		$(SHELL) ./config.status; \
 		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
 
 .PHONY: aix
@@ -1177,6 +1190,7 @@ aix:
 	rsh -l pp969098 rzcipa01.rz.tu-bs.de   $(SHELL) -c \
 		\''cd $$HOME/ddd/ddd; \
 		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
+		$(SHELL) ./config.status; \
 		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
 
 
