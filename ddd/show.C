@@ -199,7 +199,11 @@ void show_configuration()
     cout << 
 	"Using X" stringize(X_PROTOCOL) "R" stringize(XlibSpecificationRelease)
 	 ", Xt" stringize(X_PROTOCOL) "R" stringize(XtSpecificationRelease)
-	 ", Motif " stringize(XmVERSION) "." stringize(XmREVISION) "\n";
+	 ", Motif " stringize(XmVERSION) "." stringize(XmREVISION)
+#ifdef XmVERSION_STRING
+	 " (\""  "\")"
+#endif
+	"\n";
     cout << config_info;
 }
 
