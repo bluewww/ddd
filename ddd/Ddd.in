@@ -525,9 +525,9 @@ Ddd*fontList: \
 ! Fixed-width fonts.  `lucidatypewriter' is the font the DDD developers
 ! prefer; another popular choice is `courier'.
 Ddd*XmTextField.FontList: \
--*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 Ddd*XmText.FontList:	  \
--*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 
 ! Command tool fonts.  Slightly smaller.
 Ddd*tool_buttons.run.fontList: \
@@ -569,6 +569,7 @@ Ddd*break.foreground:		   red4
 Ddd*run.foreground:		   dark green
 Ddd*run_again.foreground:	   dark green
 Ddd*arg_cmd_area*break.foreground: black
+Ddd*text_popup*break.foreground:   black
 ! Ddd*dereference.foreground:	   blue4
 
 ! Highlight special dialogs
@@ -2603,20 +2604,20 @@ Ddd*print*options*alignment:		      XmALIGNMENT_BEGINNING
 
 Ddd*print*print_to.labelString:		      Print To:
 Ddd*print*print_to.alignment:		      XmALIGNMENT_END
-Ddd*print*print_to.width:		      100
+Ddd*print*print_to.width:		      120
 Ddd*print*print_to.recomputeSize:	      false
 Ddd*print*print_to_field*printer.labelString: Printer
 Ddd*print*print_to_field*file.labelString:    File
 
 Ddd*print*print_command.labelString:	      Print Command:
 Ddd*print*print_command.alignment:	      XmALIGNMENT_END
-Ddd*print*print_command.width:		      100
+Ddd*print*print_command.width:		      120
 Ddd*print*print_command.recomputeSize:	      false
 Ddd*print*print_command_field.columns:	      48
 
 Ddd*print*file_name.labelString:	      File Name:
 Ddd*print*file_name.alignment:		      XmALIGNMENT_END
-Ddd*print*file_name.width:		      100
+Ddd*print*file_name.width:		      120
 Ddd*print*file_name.recomputeSize:	      false
 Ddd*print*file_name_field.columns:	      32
 Ddd*print*postscript.labelString:	      PostScript
@@ -2624,21 +2625,21 @@ Ddd*print*xfig.labelString:		      XFIG
 
 Ddd*print*print_what.labelString:	      Print:
 Ddd*print*print_what.alignment:		      XmALIGNMENT_END
-Ddd*print*print_what.width:		      100
+Ddd*print*print_what.width:		      120
 Ddd*print*print_what.recomputeSize:	      false
 Ddd*print*all.labelString:		      All Displays
 Ddd*print*selected.labelString:		      Selected Displays
 
 Ddd*print*print_orientation.labelString:      Orientation:
 Ddd*print*print_orientation.alignment:	      XmALIGNMENT_END
-Ddd*print*print_orientation.width:	      100
+Ddd*print*print_orientation.width:	      120
 Ddd*print*print_orientation.recomputeSize:    false
 Ddd*print*portrait.labelString:		      Portrait
 Ddd*print*landscape.labelString:	      Landscape
 
 Ddd*print*paper_size.labelString:	      Paper Size:
 Ddd*print*paper_size.alignment:		      XmALIGNMENT_END
-Ddd*print*paper_size.width:		      100
+Ddd*print*paper_size.width:		      120
 Ddd*print*paper_size.recomputeSize:	      false
 Ddd*print*paper_size_field.orientation:	      XmVERTICAL
 Ddd*print*paper_size_field.numColumns:	      3
