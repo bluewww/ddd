@@ -2132,6 +2132,11 @@ int main(int argc, char *argv[])
     start_gdb();
     gdb_tty = gdb->slave_tty();
 
+    // If GDB startup leaves us with pending graph commands, we should
+    // better initialize the VSL library right now.
+    if (!emptyCommandQueue())
+	DispBox::init_vsllib();
+
     // Main Loop
     main_loop_entered = false;
     int sig;
