@@ -387,8 +387,6 @@ void GDBAgent::do_start (OAProc  on_answer,
 			 OACProc on_answer_completion,
 			 void*   user_data)
 {
-    assert (state == BusyOnInitialCmds);
-
     _on_answer = on_answer;
     _on_answer_completion = on_answer_completion;
     _user_data = user_data;
@@ -408,6 +406,8 @@ void GDBAgent::start_plus (OAProc   on_answer,
 			   OQACProc on_qu_array_completion,
 			   void*    qa_data)
 {
+    state = BusyOnInitialCmds;
+
     if (qu_count > 0) {
 	questions_waiting = true;
 	init_qu_array(cmds, qu_datas, qu_count, 

@@ -46,7 +46,7 @@
 // Note: `Command.h' is the preferred way of interacting with GDB.
 
 // Call gdb->start() with required parameters
-void start_gdb ();
+void start_gdb(bool config = true);
 
 // Send user command CMD to GDB.  Invoke CALLBACK with DATA upon
 // completion of CMD; invoke EXTRA_CALLBACK with DATA when all extra

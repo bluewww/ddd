@@ -396,9 +396,10 @@ inline String str(String s)
     return s != 0 ? s : "";
 }
 
-void start_gdb()
+void start_gdb(bool config)
 {
     // Register asynchronous answer handler
+    gdb->removeHandler(AsyncAnswer, AsyncAnswerHP);
     gdb->addHandler(AsyncAnswer, AsyncAnswerHP);
 
     // Setup command data
@@ -496,50 +497,53 @@ void start_gdb()
     case DBX:
 	extra_data->refresh_initial_line = true;
 
-	cmds += "frame";
-	extra_data->config_frame = true;
-	cmds += "func";
-	extra_data->config_func = true;
-	cmds += "dbxenv run_io";
-	extra_data->config_run_io = true;
-	cmds += "print -r " + print_cookie;
-	extra_data->config_print_r = true;
-	cmds += "where -h";
-	extra_data->config_where_h = true;
-	cmds += "display";
-	extra_data->config_display = true;
-	cmds += "clear";
-	extra_data->config_clear = true;
-	cmds += "help handler";
-	extra_data->config_handler = true;
-	cmds += "pwd";
-	extra_data->config_pwd = true;
-	cmds += "help setenv";
-	extra_data->config_setenv = true;
-	cmds += "help edit";
-	extra_data->config_edit = true;
-	cmds += "help make";
-	extra_data->config_make = true;
-	cmds += "help regs";
-	extra_data->config_regs = true;
-	cmds += "print \"" DDD_NAME "\"";
-	extra_data->config_named_values = true;
-	cmds += "help when";
-	extra_data->config_when_semicolon = true;
-	cmds += "delete " + print_cookie + " " + print_cookie;
-	extra_data->config_delete_comma = true;
-	cmds += "help run";
-	extra_data->config_err_redirection = true;
-	cmds += "help givenfile";
-	extra_data->config_givenfile = true;
-	cmds += "help cont";
-	extra_data->config_cont_sig = true;
-	cmds += "help examine";
-	extra_data->config_examine = true;
-	cmds += "help rerun";
-	extra_data->config_rerun = true;
-	cmds += "language";
-	extra_data->config_program_language = true;
+	if (config)
+	{
+	    cmds += "frame";
+	    extra_data->config_frame = true;
+	    cmds += "func";
+	    extra_data->config_func = true;
+	    cmds += "dbxenv run_io";
+	    extra_data->config_run_io = true;
+	    cmds += "print -r " + print_cookie;
+	    extra_data->config_print_r = true;
+	    cmds += "where -h";
+	    extra_data->config_where_h = true;
+	    cmds += "display";
+	    extra_data->config_display = true;
+	    cmds += "clear";
+	    extra_data->config_clear = true;
+	    cmds += "help handler";
+	    extra_data->config_handler = true;
+	    cmds += "pwd";
+	    extra_data->config_pwd = true;
+	    cmds += "help setenv";
+	    extra_data->config_setenv = true;
+	    cmds += "help edit";
+	    extra_data->config_edit = true;
+	    cmds += "help make";
+	    extra_data->config_make = true;
+	    cmds += "help regs";
+	    extra_data->config_regs = true;
+	    cmds += "print \"" DDD_NAME "\"";
+	    extra_data->config_named_values = true;
+	    cmds += "help when";
+	    extra_data->config_when_semicolon = true;
+	    cmds += "delete " + print_cookie + " " + print_cookie;
+	    extra_data->config_delete_comma = true;
+	    cmds += "help run";
+	    extra_data->config_err_redirection = true;
+	    cmds += "help givenfile";
+	    extra_data->config_givenfile = true;
+	    cmds += "help cont";
+	    extra_data->config_cont_sig = true;
+	    cmds += "help examine";
+	    extra_data->config_examine = true;
+	    cmds += "help rerun";
+	    extra_data->config_rerun = true;
+	    cmds += "language";
+	    extra_data->config_program_language = true;
+	}
 
 	cmds += "sh pwd";
 	extra_data->refresh_pwd = true;
@@ -554,8 +558,12 @@ void start_gdb()
     case XDB:
 	cmds += "L";
 	extra_data->refresh_initial_line = true;
-	cmds += "tm";
-	extra_data->config_xdb = true;
+
+	if (config)
+	{
+	    cmds += "tm";
+	    extra_data->config_xdb = true;
+	}
 	cmds += "!pwd";
 	extra_data->refresh_pwd = true;
 	cmds += "lb";
@@ -601,7 +609,7 @@ void start_gdb()
 		     extra_completed,
 		     (void *)extra_data);
 
-    if (app_data.roulette || app_data.russian_roulette)
+    if (config && (app_data.roulette || app_data.russian_roulette))
     {
 	// Load random program
 	static string program;
@@ -754,7 +762,7 @@ void send_gdb_ctrl(string cmd, Widget origin)
     cmd_data->new_exec_pos = true;
     cmd_data->origin       = origin;
 
-    if (cmd == '\004')
+    if (cmd == '\004' && gdb_input_at_prompt)
 	gdb_is_exiting = true;
 
     bool send_ok = gdb->send_user_ctrl_cmd(cmd, cmd_data);
