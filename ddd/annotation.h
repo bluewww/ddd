@@ -34,9 +34,10 @@
 #endif
 
 #include "strclass.h"
+#include "GDBAgent.h"
 
 // Return an annotation for an edge from FROM to TO
-extern string annotation(const string& from, const string& to);
+extern string annotation(string from, string to);
 
 #endif // _DDD_annotation_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
