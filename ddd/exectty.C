@@ -404,11 +404,11 @@ static void redirect_process(string& command,
 
 		if (shell == "")
 		{
-		    // The shell is determined only once, as it cannot
-		    // change.
+		    // The shell is determined only once, as it cannot change.
 		    if (remote_gdb())
 		    {
-			string sh = gdb_question("shell echo $SHELL");
+			string sh = 
+			    gdb_question(gdb->shell_command("echo $SHELL"));
 			if (sh != NO_GDB_ANSWER)
 			    shell = sh.before('\n');
 		    }
