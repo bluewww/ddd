@@ -83,8 +83,8 @@ is to press BUTTON(3) on them.
 Double-clicking on any value in the data display 
 will toggle more details.
 
-If your program needs special terminal capabilities, 
-let it run in the separate execution window
+If your program needs special terminal capabilities such as readline
+or curses, let it run in the separate execution window 
 (LBL(Program, Run in Execution Window)).
 
 
