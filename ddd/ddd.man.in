@@ -2880,7 +2880,7 @@ and restore debugger settings.
 .\"
 The following resources can be used to create user-defined buttons.
 .TP
-.B "consoleButtons (\fPclass\fB ConsoleButtons)"
+.B "consoleButtons (\fPclass\fB Buttons)"
 A colon-separated list of buttons to be added under the debugger
 console.  Each button issues the command given by its name.
 .sp
@@ -2971,7 +2971,7 @@ See also the `\fBdataButtons\fR', `\fBsourceButtons\fR' and
 .RE
 .sp
 .TP
-.B "dataButtons (\fPclass\fB DataButtons)"
+.B "dataButtons (\fPclass\fB Buttons)"
 A colon-separated list of buttons to be added under the data display.
 Each button issues the command given by its name.  See the
 `\fBconsoleButtons\fR' resource, above, for details on button syntax.
@@ -2981,7 +2981,7 @@ The default resource value is empty\(em\&no source buttons are
 created.
 .RE
 .TP
-.B "sourceButtons (\fPclass\fB SourceButtons)"
+.B "sourceButtons (\fPclass\fB Buttons)"
 A colon-separated list of buttons to be added under the debugger
 console.  Each button issues the command given by its name.  See the
 `\fBconsoleButtons\fR' resource, above, for details on button syntax.
@@ -3029,7 +3029,7 @@ below) should be shown in a tool bar below the source window
 (\fBtrue\fR) or within the command tool (\fBfalse\fR, default).
 Enabling the tool bar disables the command tool and vice versa.
 .TP
-.B "toolButtons (\fPclass\fB ToolButtons)"
+.B "toolButtons (\fPclass\fB Buttons)"
 A colon-separated list of buttons to be included in the command tool
 or the tool bar (see the `\fBtoolBar\fR' resource, above).  Each
 button issues the command given by its name.  See the

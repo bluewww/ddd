@@ -24,7 +24,7 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 #ifndef _DDD_AppData_h
 #define _DDD_AppData_h
@@ -79,14 +79,13 @@
 #define XtCLineNumberWidth       "LineNumberWidth"
 #define XtNlineBufferedConsole   "lineBufferredConsole"
 #define XtCLineBuffered          "LineBuffered"
+#define XtNdisplayExpressions    "displayExpressions"
+#define XtCDisplayExpressions    "DisplayExpressions"
 #define XtNconsoleButtons        "consoleButtons"
-#define XtCConsoleButtons        "ConsoleButtons"
 #define XtNsourceButtons         "sourceButtons"
-#define XtCSourceButtons         "SourceButtons"
 #define XtNdataButtons           "dataButtons"
-#define XtCDataButtons           "DataButtons"
 #define XtNtoolButtons           "toolButtons"
-#define XtCToolButtons           "ToolButtons"
+#define XtCButtons               "Buttons"
 #define XtNtoolBar               "toolBar"
 #define XtCToolBar               "ToolBar"
 #define XtNseparateDataWindow    "separateDataWindow"
@@ -272,6 +271,7 @@ struct AppData {
     int     indent_code;
     int     line_number_width;
     Boolean line_buffered_console;
+    String  display_expressions;
     String  console_buttons;
     String  source_buttons;
     String  data_buttons;

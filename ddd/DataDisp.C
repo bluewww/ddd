@@ -83,6 +83,7 @@ char DataDisp_rcsid[] =
 #include <Xm/Text.h>
 #include <Xm/Label.h>
 #include <Xm/List.h>
+#include <Xm/ToggleB.h>
 #include <X11/StringDefs.h>
 
 // DDD includes
@@ -138,21 +139,80 @@ MMDesc DataDisp::graph_popup[] =
     MMEnd
 };
 
-struct ValueItms { enum Itms {Dereference, Detail, Rotate, Dependent,
-			      Dummy1, Set, Dummy2, Delete }; };
+const int custom_popup_base =  2;  // Index of first custom menu
+const int custom_items      = 20; // Number of custom items
+
+MMDesc DataDisp::custom_popup[] =
+{
+    {"new",      MMPush,   { DataDisp::dependentCB }},
+    MMSep,
+    {"custom1",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(1) }},
+    {"custom2",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(2) }},
+    {"custom3",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(3) }},
+    {"custom4",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(4) }},
+    {"custom5",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(5) }},
+    {"custom6",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(6) }},
+    {"custom7",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(7) }},
+    {"custom8",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(8) }},
+    {"custom9",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(9) }},
+    {"custom10", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(10) }},
+    {"custom11", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(11) }},
+    {"custom12", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(12) }},
+    {"custom13", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(13) }},
+    {"custom14", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(14) }},
+    {"custom15", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(15) }},
+    {"custom16", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(16) }},
+    {"custom17", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(17) }},
+    {"custom18", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(18) }},
+    {"custom19", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(19) }},
+    {"custom20", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(20) }},
+    MMEnd,
+};
+
+const int custom_menu_base = 0;  // Index of first custom item
+
+MMDesc DataDisp::custom_menu[] =
+{
+    {"custom1",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(1) }},
+    {"custom2",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(2) }},
+    {"custom3",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(3) }},
+    {"custom4",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(4) }},
+    {"custom5",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(5) }},
+    {"custom6",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(6) }},
+    {"custom7",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(7) }},
+    {"custom8",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(8) }},
+    {"custom9",  MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(9) }},
+    {"custom10", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(10) }},
+    {"custom11", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(11) }},
+    {"custom12", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(12) }},
+    {"custom13", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(13) }},
+    {"custom14", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(14) }},
+    {"custom15", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(15) }},
+    {"custom16", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(16) }},
+    {"custom17", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(17) }},
+    {"custom18", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(18) }},
+    {"custom19", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(19) }},
+    {"custom20", MMPush | MMUnmanaged, { DataDisp::customCB, XtPointer(20) }},
+    MMEnd,
+};
+
+struct PopupItms { enum Itms {Dereference, New, Sep1, Detail, Rotate, Set,
+			      Sep2, Delete }; };
 
 MMDesc DataDisp::node_popup[] =
 {
     {"dereference",   MMPush,   {DataDisp::dereferenceCB}},
+    {"new",           MMMenu,   MMNoCB, DataDisp::custom_popup },
+    MMSep,
     {"detail",        MMPush,   {DataDisp::toggleDetailCB, XtPointer(-1)}},
     {"rotate",        MMPush,   {DataDisp::toggleRotateCB}},
-    {"dependent",     MMPush,   {DataDisp::dependentCB}},
-    MMSep,
     {"set",           MMPush,   {DataDisp::setCB}},
     MMSep,
     {"delete",        MMPush,   {DataDisp::deleteCB}},
     MMEnd
 };
+
+struct CmdItms { enum Itms {Dereference, Detail, Rotate, New, Set, Delete }; };
 
 MMDesc DataDisp::graph_cmd_area[] =
 {
@@ -161,10 +221,9 @@ MMDesc DataDisp::graph_cmd_area[] =
 					       XtPointer(-1) }, 
                                                DataDisp::detail_menu },
     {"rotate",        MMPush | MMInsensitive, {DataDisp::toggleRotateCB}},
-    {"dependent",     MMPush, {DataDisp::dependentCB}},
-    MMSep,
+    {"new",           MMPush,                 {DataDisp::dependentCB},
+                                               DataDisp::custom_menu },
     {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
-    MMSep,
     {"delete",        MMPush | MMInsensitive, {DataDisp::deleteCB}},
     MMEnd
 };
@@ -182,12 +241,12 @@ MMDesc DataDisp::detail_menu[] =
     MMEnd
 };
 
-struct DisplayItms { enum Itms {Dependent, Dereference, 
+struct DisplayItms { enum Itms {New, Dereference, 
 				ShowDetail, HideDetail, Set, Delete}; };
 
 MMDesc DataDisp::display_area[] =
 {
-    {"dependent",    MMPush,   {DataDisp::dependentCB }},
+    {"new",          MMPush,   {DataDisp::dependentCB }},
     {"dereference",  MMPush,   {DataDisp::dereferenceCB }},
     {"show_detail",  MMPush,   {DataDisp::showDetailCB, XtPointer(-1) }},
     {"hide_detail",  MMPush,   {DataDisp::hideDetailCB, XtPointer(-1) }},
@@ -215,6 +274,9 @@ int DataDisp::next_display_number = 1;
 XtIntervalId DataDisp::refresh_args_timer       = 0;
 XtIntervalId DataDisp::refresh_addr_timer       = 0;
 XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
+
+// Array of custom expressions
+StringArray DataDisp::custom_exprs;
 
 
 //----------------------------------------------------------------------------
@@ -648,53 +710,6 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 }
 
 
-void DataDisp::dependentCB(Widget w, XtPointer client_data, 
-			   XtPointer call_data)
-{
-    set_last_origin(w);
-
-    DispNode *disp_node_arg   = selected_node();
-    DispValue *disp_value_arg = selected_value();
-    if (disp_node_arg == 0 
-	|| disp_value_arg == 0
-	|| disp_node_arg->nodeptr()->hidden())
-    {
-	newCB(w, client_data, call_data);
-	return;
-    }
-
-    static Widget dependent_display_dialog = 0;
-    if (dependent_display_dialog == 0)
-    {
-	dependent_display_dialog = 
-	    verify(XmCreatePromptDialog (find_shell(w),
-					 "dependent_display_dialog",
-					 NULL, 0));
-	Delay::register_shell(dependent_display_dialog);
-
-	if (lesstif_version < 1000)
-	    XtUnmanageChild(XmSelectionBoxGetChild(dependent_display_dialog,
-						   XmDIALOG_APPLY_BUTTON));
-
-	XtAddCallback (dependent_display_dialog, 
-		       XmNhelpCallback, 
-		       ImmediateHelpCB, 
-		       NULL);
-	XtAddCallback (dependent_display_dialog, 
-		       XmNokCallback, 
-		       dependent_displayDCB,
-		       XtPointer(disp_node_arg->disp_nr()));
-    }
-
-    MString label(disp_value_arg->full_name());
-
-    XtVaSetValues (dependent_display_dialog,
-		   XmNtextString, label.xmstring(),
-		   NULL);
-    manage_and_raise(dependent_display_dialog);
-}
-
-
 void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
 {
     refresh_display(w);
@@ -718,12 +733,6 @@ void DataDisp::unselectAllCB(Widget w, XtPointer, XtPointer)
     XtCallActionProc(graph_edit, 
 		     "unselect-all", (XEvent *)0, (String *)0, 0);
     refresh_graph_edit();
-}
-
-void DataDisp::newCB(Widget w, XtPointer, XtPointer)
-{
-    set_last_origin(w);
-    new_displayCD(w);
 }
 
 void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
@@ -766,6 +775,84 @@ void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
     disable_display(disp_nrs);
 }
 
+
+void DataDisp::customCB(Widget w, XtPointer client_data, XtPointer)
+{
+    int number = int(client_data) - 1;
+
+    assert (number >= 0);
+    assert (number < custom_exprs.size());
+
+    set_last_origin(w);
+
+    string expr = custom_exprs[number];
+    if (expr.contains('\t'))
+	expr = expr.before('\t');
+
+    string depends_on = "";
+
+    DispNode *disp_node_arg   = selected_node();
+    DispValue *disp_value_arg = selected_value();
+    if (disp_node_arg != 0 
+	&& disp_value_arg != 0
+	&& !disp_node_arg->nodeptr()->hidden())
+    {
+	depends_on = itostring(disp_node_arg->disp_nr());
+	string arg = source_arg->get_string();
+
+	// Avoid multiple /format specifications
+	if (arg.contains('/', 0) && expr.contains('/', 0))
+	    arg = arg.after(rxwhite);
+
+	expr.gsub("()", arg);
+    }
+
+    new_display(expr, 0, depends_on, w);
+}
+
+// Set custom menu to expressions EXPRS
+void DataDisp::set_custom_menu(const StringArray& exprs)
+{
+    for (int i = 0; i < custom_items; i++)
+    {
+	Widget popup_item = custom_popup[custom_popup_base + i].widget;
+	Widget menu_item  = custom_menu [custom_menu_base  + i].widget;
+
+	if (i < exprs.size())
+	{
+	    string expr = exprs[i];
+	    MString label("Display " + expr);
+	    if (expr.contains('\t'))
+	    {
+		label = MString(expr.after('\t'));
+	    }
+
+	    XtVaSetValues(popup_item, XmNlabelString, label.xmstring(), NULL);
+	    XtVaSetValues(menu_item,  XmNlabelString, label.xmstring(), NULL);
+
+	    XtManageChild(popup_item);
+	    XtManageChild(menu_item);
+	}
+	else
+	{
+	    // Unmanage widgets
+	    XtUnmanageChild(popup_item);
+	    XtUnmanageChild(menu_item);
+	}
+    }
+
+    custom_exprs = exprs;
+}
+
+// Add one expr to custom menus
+void DataDisp::add_custom_expr(const string& expr)
+{
+    custom_exprs += expr;
+    set_custom_menu(custom_exprs);
+    refresh_args();
+}
+
+
 //-----------------------------------------------------------------------------
 // Popup-Callbacks
 //-----------------------------------------------------------------------------
@@ -795,79 +882,70 @@ void DataDisp::popup_newCB (Widget    display_dialog,
 }
 
 
-// ***************************************************************************
-//
-void DataDisp::dependent_displayDCB (Widget    dialog, 
-				     XtPointer client_data, 
-				     XtPointer call_data)
-{
-    set_last_origin(dialog);
-
-    int disp_nr = int(client_data);
-    XmSelectionBoxCallbackStruct *cbs = 
-	(XmSelectionBoxCallbackStruct *)call_data;
-
-    char *input;
-    switch (cbs->reason) 
-    {
-    case XmCR_OK :
-	XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &input);
-	if (input != "")
-	    new_display(input, 0, itostring(disp_nr));
-	XtFree(input);
-	break;
-    default:
-	// Falscher Fehler
-	assert (0);
-	break;
-    }
-}
 
 
-// ***************************************************************************
-// Wertet Dialog Callback aus und ruft new_displaySQ() entsprechend auf.
-// 
+//-----------------------------------------------------------------------------
+// Entering new Data Displays
+//-----------------------------------------------------------------------------
+
+class NewDisplayInfo {
+public:
+    string display_expression;
+    string scope;
+    StringArray display_expressions;
+    BoxPoint point;
+    BoxPoint *point_ptr;
+    string depends_on;
+    Widget origin;
+    Widget custom;
+    bool verbose;
+
+    NewDisplayInfo()
+	: point_ptr(0), depends_on(""), origin(0), custom(0)
+    {}
+
+    ~NewDisplayInfo()
+    {}
+};
+
 void DataDisp::new_displayDCB (Widget    display_dialog,
 			       XtPointer client_data,
 			       XtPointer call_data)
 {
     set_last_origin(display_dialog);
-
-    BoxPoint* p = (BoxPoint *) client_data;
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
 
-    char *input;
-    switch (cbs->reason) {
-    case XmCR_OK :
-	XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &input);
-	if (string(input) != "")
-	    new_display(input, p);
-	XtFree(input);
-	break;
-    default:
-	// Falscher Fehler
-	assert (0);
-	break;
+    NewDisplayInfo *info = (NewDisplayInfo *)client_data;
+
+    char *inp;
+    XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &inp);
+    string expr(inp);
+    XtFree(inp);
+
+    if (expr != "")
+	new_display(expr, info->point_ptr, info->depends_on, info->origin);
+
+    if (info->custom != 0 && XmToggleButtonGetState(info->custom))
+    {
+	// Add expression to custom menu
+	expr.gsub("()", "( )");
+	expr.gsub(info->display_expression, string("()"));
+	add_custom_expr(expr);
     }
 }
 
-
-//-----------------------------------------------------------------------------
-// Dialog-Erzeugung
-//-----------------------------------------------------------------------------
-
-// ***************************************************************************
-// Erzeugt Dialog zur Eingabe einer neuen Display-Expression.
-// Wird ein Boxpoint uebergeben, so wird der neue Knoten dorthin gesetzt.
-// 
+// Enter a new Display at BOX_POINT
 void DataDisp::new_displayCD (Widget w, BoxPoint box_point)
 {
-    static BoxPoint* p;
+    static NewDisplayInfo info;
+    if (info.point_ptr == 0)
+	info.point_ptr = new BoxPoint;
+    info.origin = w;
+
     static Widget new_display_dialog = 0;
     if (!new_display_dialog)
     {
-	p = new BoxPoint(box_point);
 	new_display_dialog = 
 	    verify(XmCreatePromptDialog (find_shell(w),
 					 "new_display_dialog",
@@ -878,23 +956,86 @@ void DataDisp::new_displayCD (Widget w, BoxPoint box_point)
 	    XtUnmanageChild(XmSelectionBoxGetChild(new_display_dialog,
 						   XmDIALOG_APPLY_BUTTON));
 
-	XtAddCallback (new_display_dialog, 
+	XtAddCallback(new_display_dialog, XmNhelpCallback, 
+		      ImmediateHelpCB, NULL);
+	XtAddCallback(new_display_dialog, XmNokCallback, 
+		      new_displayDCB, XtPointer(&info));
+	info.custom = verify(XmCreateToggleButton(new_display_dialog,
+						  "custom", NULL, 0));
+	XtManageChild(info.custom);
+    }
+
+    XmToggleButtonSetState(info.custom, False, False);
+
+    *(info.point_ptr) = box_point;
+    info.display_expression = source_arg->get_string();
+    Widget text = XmSelectionBoxGetChild(new_display_dialog, XmDIALOG_TEXT);
+    XmTextSetString(text, info.display_expression);
+
+    manage_and_raise(new_display_dialog);
+}
+
+// Create a new display
+void DataDisp::newCB(Widget w, XtPointer, XtPointer)
+{
+    set_last_origin(w);
+    new_displayCD(w);
+}
+
+// Create a new dependent display
+void DataDisp::dependentCB(Widget w, XtPointer client_data, 
+			   XtPointer call_data)
+{
+    set_last_origin(w);
+
+    DispNode *disp_node_arg   = selected_node();
+    DispValue *disp_value_arg = selected_value();
+    if (disp_node_arg == 0 
+	|| disp_value_arg == 0
+	|| disp_node_arg->nodeptr()->hidden())
+    {
+	newCB(w, client_data, call_data);
+	return;
+    }
+
+    static NewDisplayInfo info;
+    info.depends_on = itostring(disp_node_arg->disp_nr());
+    info.origin = w;
+
+    static Widget dependent_display_dialog = 0;
+    if (dependent_display_dialog == 0)
+    {
+	dependent_display_dialog = 
+	    verify(XmCreatePromptDialog (find_shell(w),
+					 "dependent_display_dialog",
+					 NULL, 0));
+	Delay::register_shell(dependent_display_dialog);
+
+	if (lesstif_version < 1000)
+	    XtUnmanageChild(XmSelectionBoxGetChild(dependent_display_dialog,
+						   XmDIALOG_APPLY_BUTTON));
+
+	XtAddCallback (dependent_display_dialog, 
 		       XmNhelpCallback, 
 		       ImmediateHelpCB, 
 		       NULL);
-	XtAddCallback (new_display_dialog,
-		       XmNokCallback,
+	XtAddCallback (dependent_display_dialog, 
+		       XmNokCallback, 
 		       new_displayDCB,
-		       p);
-    }
-    else {
-	*p = box_point;
+		       XtPointer(&info));
+
+	info.custom = verify(XmCreateToggleButton(dependent_display_dialog,
+						  "custom", NULL, 0));
+	XtManageChild(info.custom);
     }
 
-    Widget text = XmSelectionBoxGetChild(new_display_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text, source_arg->get_string());
+    XmToggleButtonSetState(info.custom, False, False);
 
-    manage_and_raise(new_display_dialog);
+    info.display_expression = disp_value_arg->full_name();
+    Widget text = 
+	XmSelectionBoxGetChild(dependent_display_dialog, XmDIALOG_TEXT);
+    XmTextSetString(text, info.display_expression);
+    manage_and_raise(dependent_display_dialog);
 }
 
 
@@ -1356,45 +1497,45 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 
     // Dereference
-    set_sensitive(node_popup[ValueItms::Dereference].widget,
+    set_sensitive(node_popup[PopupItms::Dereference].widget,
 		  dereference_ok);
-    set_sensitive(graph_cmd_area[ValueItms::Dereference].widget,
+    set_sensitive(graph_cmd_area[CmdItms::Dereference].widget,
 		  dereference_ok);
     set_sensitive(display_area[DisplayItms::Dereference].widget,
 		  dereference_ok);
 
     // Dependent
-    set_sensitive(graph_cmd_area[ValueItms::Dependent].widget, true);
-    set_sensitive(display_area[DisplayItms::Dependent].widget, true);
+    set_sensitive(graph_cmd_area[CmdItms::New].widget, true);
+    set_sensitive(display_area[DisplayItms::New].widget, true);
 
     // Rotate
-    set_sensitive(node_popup[ValueItms::Rotate].widget,
+    set_sensitive(node_popup[PopupItms::Rotate].widget,
 		  rotate_ok);
-    set_sensitive(graph_cmd_area[ValueItms::Rotate].widget,
+    set_sensitive(graph_cmd_area[CmdItms::Rotate].widget,
 		  rotate_ok);
 
     // Show/Hide Detail
     if (count_selected_expanded > 0 && count_selected_collapsed == 0)
     {
 	// Only expanded displays selected
-	set_label(node_popup[ValueItms::Detail].widget, "Hide Detail");
-	set_label(graph_cmd_area[ValueItms::Detail].widget, "Hide ()");
-	set_sensitive(node_popup[ValueItms::Detail].widget, true);
-	set_sensitive(graph_cmd_area[ValueItms::Detail].widget, true);
+	set_label(node_popup[PopupItms::Detail].widget, "Hide Detail");
+	set_label(graph_cmd_area[CmdItms::Detail].widget, "Hide ()");
+	set_sensitive(node_popup[PopupItms::Detail].widget, true);
+	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
     }
     else if (count_selected_collapsed > 0)
     {
 	// Some collapsed displays selected
-	set_label(node_popup[ValueItms::Detail].widget, "Show Detail");
-	set_label(graph_cmd_area[ValueItms::Detail].widget, "Show ()");
-	set_sensitive(node_popup[ValueItms::Detail].widget, true);
-	set_sensitive(graph_cmd_area[ValueItms::Detail].widget, true);
+	set_label(node_popup[PopupItms::Detail].widget, "Show Detail");
+	set_label(graph_cmd_area[CmdItms::Detail].widget, "Show ()");
+	set_sensitive(node_popup[PopupItms::Detail].widget, true);
+	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
     }
     else
     {
 	// Expanded as well as collapsed displays selected
-	set_sensitive(node_popup[ValueItms::Detail].widget, false);
-	set_sensitive(graph_cmd_area[ValueItms::Detail].widget, false);
+	set_sensitive(node_popup[PopupItms::Detail].widget, false);
+	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, false);
     }
 
     set_sensitive(display_area[DisplayItms::ShowDetail].widget, 
@@ -1412,15 +1553,32 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  count_selected_expanded > 0);
 
     // Delete
-    set_sensitive(graph_cmd_area[ValueItms::Delete].widget, count_selected);
+    set_sensitive(graph_cmd_area[CmdItms::Delete].widget, count_selected);
     set_sensitive(display_area[DisplayItms::Delete].widget, count_selected);
 
     // Set
-    set_sensitive(graph_cmd_area[ValueItms::Set].widget, 
+    set_sensitive(graph_cmd_area[CmdItms::Set].widget, 
 		  count_selected == 1 && count_selected_data == 1);
     set_sensitive(display_area[DisplayItms::Set].widget, 
 		  count_selected == 1 && count_selected_data == 1);
 
+    // Custom menu
+    for (int i = 0; i < custom_items && i < custom_exprs.size(); i++)
+    {
+	const string& expr = custom_exprs[i];
+	bool sens = false;
+	if (!expr.contains("()"))
+	    sens = true;	// Argument not needed
+	else if (count_selected == 0)
+	    sens = false;	// Nothing selected
+	else if (disp_value_arg)
+	    sens = true;	// Exactly one value selected
+	else if (disp_node_arg)
+	    sens = true;	// Exactly one expression selected
+
+	set_sensitive(custom_popup[custom_popup_base + i].widget, sens);
+	set_sensitive(custom_menu [custom_menu_base  + i].widget, sens);
+    }
 
     // Argument field
     if (count_selected > 0)
@@ -1882,25 +2040,6 @@ static regex rxmore_than_one ("\\[-?[0-9]+\\.\\.-?[0-9]+\\]");
 // wird ein Boxpoint uebergeben, so wird der neue Knoten dorthin gesetzt
 // sonst an eine Default-Position.
 //
-
-class NewDisplayInfo {
-public:
-    string display_expression;
-    string scope;
-    StringArray display_expressions;
-    BoxPoint point;
-    BoxPoint *point_ptr;
-    string depends_on;
-    Widget origin;
-    bool verbose;
-
-    NewDisplayInfo()
-	: point_ptr(0), depends_on(""), origin(0)
-    {}
-
-    ~NewDisplayInfo()
-    {}
-};
 
 void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
 {
@@ -3504,8 +3643,8 @@ void DataDisp::language_changedHP(Agent *source, void *, void *)
     GDBAgent *gdb = ptr_cast(GDBAgent, source);
     assert(gdb != 0);
 
-    MString dereference_label("Display " + gdb->dereferenced_expr(""));
-    XtVaSetValues(node_popup[ValueItms::Dereference].widget,
+    MString dereference_label("Display " + gdb->dereferenced_expr("()"));
+    XtVaSetValues(node_popup[PopupItms::Dereference].widget,
 		  XmNlabelString, dereference_label.xmstring(),
 		  NULL);
 
@@ -3514,7 +3653,7 @@ void DataDisp::language_changedHP(Agent *source, void *, void *)
 		  NULL);
 
     MString dereference_arg_label("Display " + gdb->dereferenced_expr("()"));
-    XtVaSetValues(graph_cmd_area[ValueItms::Dereference].widget,
+    XtVaSetValues(graph_cmd_area[CmdItms::Dereference].widget,
 		  XmNlabelString, dereference_arg_label.xmstring(),
 		  NULL);
 }

@@ -267,8 +267,18 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNdisplayExpressions,
+	XtCDisplayExpressions,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, display_expressions),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
 	XtNconsoleButtons,
-	XtCConsoleButtons,
+	XtCButtons,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, console_buttons),
@@ -278,7 +288,7 @@ XtResource ddd_resources[] = {
 
     {
 	XtNsourceButtons,
-	XtCSourceButtons,
+	XtCButtons,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, source_buttons),
@@ -288,7 +298,7 @@ XtResource ddd_resources[] = {
 
     {
 	XtNdataButtons,
-	XtCDataButtons,
+	XtCButtons,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, data_buttons),
@@ -298,7 +308,7 @@ XtResource ddd_resources[] = {
 
     {
 	XtNtoolButtons,
-	XtCToolButtons,
+	XtCButtons,
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, tool_buttons),

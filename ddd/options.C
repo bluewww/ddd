@@ -901,6 +901,10 @@ inline string int_app_value(const string& name, int value)
 string string_app_value(const string& name, string value)
 {
     value = cook(value);
+
+    // Xt cannot read `\t', so leave it unchanged.
+    value.gsub("\\t", '\t');
+
     if (value.contains("\\n"))
     {
 	value.gsub("\\n", "\\n\\\n");
@@ -1211,8 +1215,23 @@ bool save_options(unsigned long flags)
 			    + XtNgridHeight, grid_height) << "\n";
     }
 
+    // Display expressions
+    os << "\n! Display expressions\n";
+    {
+	StringArray exprs;
+	data_disp->get_custom_menu(exprs);
+	string expr;
+	for (int i = 0; i < exprs.size(); i++)
+	{
+	    if (i > 0)
+		expr += '\n';
+	    expr += exprs[i];
+	}
+	os << string_app_value(XtNdisplayExpressions, expr) << "\n";
+    }
+
+    // Widget sizes.
     os << "\n! Window sizes\n";
-    // Some widget sizes.
 
     // We must enable all PanedWindow children in order to get the
     // correct sizes.  Ugly hack.
@@ -1251,9 +1270,9 @@ bool save_options(unsigned long flags)
 
     if (save_geometry)
     {
+	// Widget geometry
 	os << "\n! Last " << DDD_NAME << " geometry\n";
 
-	// Save current widget geometry
 	if (command_shell)
 	    os << widget_geometry(command_shell)     << "\n";
 	if (source_view_shell)
@@ -1265,9 +1284,9 @@ bool save_options(unsigned long flags)
     bool ok = true;
     if (save_session)
     {
+	// Restart commands
 	os << "\n! Last " << DDD_NAME << " session\n";
 
-	// Save restart commands
 	ostrstream rs;
 
 	// Get exec and core file

@@ -2716,6 +2716,10 @@ Ddd*node_popup.dereference.labelString:	Display *
 Ddd*node_popup.dereference.documentationString: \
 @rm Dereference the selected display
 
+Ddd*node_popup.new.labelString:		Display
+Ddd*node_popup.new.documentationString: \
+@rm Create a new display dependent on the selected display
+
 Ddd*node_popup.detail.labelString:	Show Detail
 Ddd*node_popup.detail.documentationString: \
 @rm Show/Hide details of the selected display
@@ -2724,10 +2728,6 @@ Ddd*node_popup.rotate.labelString:	Rotate
 Ddd*node_popup.rotate.documentationString: \
 @rm Rotate the selected display
 
-Ddd*node_popup.dependent.labelString:	New Display...
-Ddd*node_popup.dependent.documentationString: \
-@rm Create a new display dependent on the selected display
-
 Ddd*node_popup.set.labelString:		Set Value...
 Ddd*node_popup.set.documentationString: \
 @rm Change the selected display value
@@ -2735,6 +2735,10 @@ Ddd*node_popup.set.documentationString: \
 Ddd*node_popup.delete.labelString:	Delete Display
 Ddd*node_popup.delete.documentationString: \
 @rm Delete the selected display
+
+Ddd*newMenu.new.labelString:		New...
+Ddd*newMenu.new.documentationString: \
+@rm Modify the selected display expression to create a new display
 
 
 !-----------------------------------------------------------------------------
@@ -2766,7 +2770,7 @@ Ddd*graph_cmd_w.graph_cmd_area.packing:	  	XmPACK_TIGHT
 Ddd*graph_cmd_w.graph_cmd_area.entryAlignment:	XmALIGNMENT_CENTER
 Ddd*graph_cmd_w.graph_cmd_area.alignment:	XmALIGNMENT_CENTER
 
-Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	New Display
+Ddd*graph_cmd_w.graph_cmd_area*new.labelString:		New Display
 Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: Display *()
 Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:	Show ()
 Ddd*graph_cmd_w.graph_cmd_area*show_more.labelString:   Show More ()
@@ -2779,12 +2783,12 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
 ! Ddd*graph_cmd_w.graph_cmd_area*marginTop:	  1
 ! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:	  1
 
-Ddd*graph_cmd_w.graph_cmd_area*dependent.helpString:\
+Ddd*graph_cmd_w.graph_cmd_area*new.helpString:\
 LBL(New Display)\n\
 Create a new display dependent on the selected display part.
-Ddd*graph_cmd_w.graph_cmd_area*dependent.tipString:\
+Ddd*graph_cmd_w.graph_cmd_area*new.tipString:\
 @rm Create new display
-Ddd*graph_cmd_w.graph_cmd_area*dependent.documentationString:\
+Ddd*graph_cmd_w.graph_cmd_area*new.documentationString:\
 @rm Create a new display dependent on the selected display part
 
 Ddd*graph_cmd_w.graph_cmd_area*dereference.helpString:\
@@ -3773,8 +3777,7 @@ DESC(Ignore Count..., [set or modify a breakpoint ignore count])\n\
 DESC(Delete, [delete all selected breakpoints])
 
 Ddd*new_breakpoint_dialog_popup.title: DDD: New Breakpoint
-Ddd*new_breakpoint_dialog.selectionLabelString:	\
-@rm Enter new breakpoint:
+Ddd*new_breakpoint_dialog.selectionLabelString:	New Breakpoint
 
 Ddd*new_breakpoint_dialog*helpString:	\
 \
@@ -3794,8 +3797,7 @@ Multiple breakpoints at one place are permitted, and useful if conditional.
 
 
 Ddd*edit_breakpoint_condition_dialog_popup.title: DDD: Breakpoint Condition
-Ddd*edit_breakpoint_condition_dialog.selectionLabelString:	  \
-@rm Enter breakpoint condition:
+Ddd*edit_breakpoint_condition_dialog.selectionLabelString: Breakpoint Condition
 
 Ddd*edit_breakpoint_condition_dialog*helpString:	       \
 @rm Specify a condition VAR(cond) for the selected breakpoint(s).\n\
@@ -3804,8 +3806,8 @@ evaluates to a non-zero value.
 
 
 Ddd*edit_breakpoint_ignore_count_dialog_popup.title: DDD: Ignore Count
-Ddd*edit_breakpoint_ignore_count_dialog.selectionLabelString:	     \
-@rm Enter breakpoint ignore count:
+Ddd*edit_breakpoint_ignore_count_dialog.selectionLabelString: \
+Breakpoint Ignore Count
 
 Ddd*edit_breakpoint_ignore_count_dialog*helpString:	  \
 @rm Set the ignore count VAR(count) for the selected breakpoint(s).\n\
@@ -3985,8 +3987,10 @@ DESC(Set Value, [change a value in the selected display])\n\
 DESC(Delete, [delete all selected displays])
 
 Ddd*new_display_dialog_popup.title: DDD: New Display
-Ddd*new_display_dialog.selectionLabelString:	\
-@rm Enter new display expression:
+Ddd*new_display_dialog.selectionLabelString: Display Expression
+Ddd*new_display_dialog.custom.alignment: XmALIGNMENT_BEGINNING
+Ddd*new_display_dialog.custom.labelString:	\
+Include in Display Menu
 
 Ddd*new_display_dialog*helpString:	\
 \
@@ -3995,19 +3999,27 @@ The current value of the expression is shown each time the program stops.\n\
 \n\
 Variables accessible are those of the lexical environment of the current\n\
 stack frame, plus all those whose scope is global or an entire file.
+\n\
+If SAMP(Include in Display Menu) is set, the new display expression is\n\
+become a shortcut in the SAMP(Display) and SAMP(New Display) popup menus.
 
 Ddd*dependent_display_dialog_popup.title: DDD: Dependent Display
-Ddd*dependent_display_dialog.selectionLabelString:	\
-@rm Modify dependent display expression:
+Ddd*dependent_display_dialog.selectionLabelString: Display Expression
+Ddd*dependent_display_dialog.custom.alignment: XmALIGNMENT_BEGINNING
+Ddd*dependent_display_dialog.custom.labelString:	\
+Include in Display Menu
 
 Ddd*dependent_display_dialog*helpString:	\
 @rm Please modify the display expression displayed in the argument field.\n\
-The current value of the expression is shown each time the program stops.
+The current value of the expression is shown each time the program stops.\n\
+\n\
+If SAMP(Include in Display Menu) is set, the new display expression will\n\
+become a shortcut in the SAMP(Display) and SAMP(New Display) popup menus.
 
-Ddd*edit_displays_dialog*buttons*dependent.labelString:	    New...
-Ddd*edit_displays_dialog*buttons*dependent.tipString:  \
+Ddd*edit_displays_dialog*buttons*new.labelString:	    New...
+Ddd*edit_displays_dialog*buttons*new.tipString:  \
 @rm Create new display
-Ddd*edit_displays_dialog*buttons*dependent.documentationString:  \
+Ddd*edit_displays_dialog*buttons*new.documentationString:  \
 @rm Create new data display (possibly depending on the selected data display)
 
 Ddd*edit_displays_dialog*buttons*dereference.labelString:   Display *
