@@ -121,6 +121,7 @@ extern void dddSetToolBarCB                 (Widget, XtPointer, XtPointer);
 extern void dddSetKeyboardFocusPolicyCB     (Widget, XtPointer, XtPointer);
 extern void dddSetPannerCB                  (Widget, XtPointer, XtPointer);
 extern void dddSetDebuggerCB                (Widget, XtPointer, XtPointer);
+extern void dddToggleAutoDebuggerCB         (Widget, XtPointer, XtPointer);
 extern void dddSetBindingStyleCB            (Widget, XtPointer, XtPointer);
 
 extern void dddSetEditCommandCB             (Widget, XtPointer, XtPointer);

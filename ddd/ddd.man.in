@@ -2703,10 +2703,11 @@ See also the `\fB\-\-panned-graph-editor\fR' and
 `\fB\-\-scrolled-graph-editor\fR' options, below.
 .PP
 By default, \s-1@DDD@\s+1 determines the inferior debugger
-automatically.  To change this default, set the `\fBDebugger Type\fR'
-option to a specific debugger.  See also the `\fB\-\-gdb\fR',
-`\fB\-\-dbx\fR', `\fB\-\-xdb\fR', `\fB\-\-jdb\fR', `\fB\-\-pydb\fR',
-and `\fB\-\-perl\fR' options, below.
+automatically.  To change this default, unset `\fBDetermine
+Automatically\fR' and set the `\fBDebugger Type\fR' option to a
+specific debugger.  See also the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR',
+`\fB\-\-xdb\fR', `\fB\-\-jdb\fR', `\fB\-\-pydb\fR', and
+`\fB\-\-perl\fR' options, below.
 .PP
 If you want the \s-1@DDD@\s+1 splash screen shown upon startup, enable 
 `\fBDDD Splash Screen\fR'.
@@ -4050,6 +4051,13 @@ to `\fBddd: \fR', for example, each \s-1GDB\s+1 output in the form
 `\fBddd: \fIcommand\fR' will cause \s-1@DDD@\s+1 to execute
 \fIcommand\fR.
 .TP
+.B "autoDebugger (\fPclass\fB AutoDebugger)"
+If this is `\fBon\fR' (default), \s-1@DDD@\s+1 will attempt to
+determine the debugger type from its arguments, possibly overriding
+the `\fBdebugger\fR' resource (see below).  If this is `\fBoff\fR',
+\s-1@DDD@\s+1 will invoke the debugger specified by the
+`\fBdebugger\fR' resource regardless of \s-1@DDD@\s+1 arguments.
+.TP
 .B "blockTTYInput (\fPclass\fB BlockTTYInput)"
 Whether \s-1@DDD@\s+1 should block when reading data from the inferior
 debugger via the pseudo-tty interface.  Some systems \fIrequire\fR
@@ -4072,13 +4080,11 @@ This string contains a list of newline-separated commands that are
 also initially sent to \s-1DBX\s+1.  By default, it is empty.
 .TP
 .B "debugger (\fPclass\fB Debugger)"
-The type of the inferior debugger (`\fBgdb\fR', `\fBdbx\fR',
-`\fBxdb\fR', `\fBjdb\fR', `\fBpydb\fR', `\fBperl\fR', or
-`\fBauto\fR').  The special value `\fBauto\fR' makes \s-1@DDD@\s+1
-determine the appropriate inferior debugger automatically.  This
+The type of the inferior debugger to invoke (`\fBgdb\fR', `\fBdbx\fR',
+`\fBxdb\fR', `\fBjdb\fR', `\fBpydb\fR', or `\fBperl\fR').  This
 resource is usually set through the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR',
-`\fB\-\-xdb\fR', `\fB\-\-jdb\fR', `\fB\-\-pydb\fR', `\fB\-\-perl\fR',
-and `\fB\-\-automatic-debugger\fR' options; see below for details.
+`\fB\-\-xdb\fR', `\fB\-\-jdb\fR', `\fB\-\-pydb\fR', and
+`\fB\-\-perl\fR', options; see below for details.
 .TP
 .B "debuggerCommand (\fPclass\fB DebuggerCommand)"
 The name under which the inferior debugger is to be invoked.  If this

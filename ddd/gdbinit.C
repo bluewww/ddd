@@ -227,10 +227,13 @@ static bool have_cmd(const string& cmd)
 // Set SURE if debugger type could be deduced from args.
 DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 {
+    DebuggerType fallback = DebuggerType(-1);
+    get_debugger_type(app_data.debugger, fallback);
+
     sure = true;
 
-    static bool have_perl   = have_cmd("perl");
-    static bool have_python = have_cmd("python");
+    static bool have_perl   = (fallback == PERL || have_cmd("perl"));
+    static bool have_python = (fallback == PYDB || have_cmd("python"));
 
     // Check for Perl and Python scripts
     int i;
@@ -249,9 +252,9 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
     }
 
     // Check for executables.
-    static bool have_gdb = have_cmd("gdb");
-    static bool have_dbx = have_cmd("dbx");
-    static bool have_xdb = have_cmd("xdb");
+    static bool have_gdb = (fallback == GDB || have_cmd("gdb"));
+    static bool have_dbx = (fallback == DBX || have_cmd("dbx"));
+    static bool have_xdb = (fallback == XDB || have_cmd("xdb"));
 
     for (i = 1; i < argc; i++)
     {
@@ -262,6 +265,9 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 
 	if (is_exec_file(arg))
 	{
+	    if (fallback == GDB || fallback == DBX || fallback == XDB)
+		return fallback;
+
 	    if (have_gdb)
 		return GDB;
 
@@ -274,7 +280,7 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
     }
 
     // Search class path for Java classes.
-    static bool have_jdb = have_cmd("jdb");
+    static bool have_jdb = (fallback == JDB || have_cmd("jdb"));
     if (have_jdb)
     {
 	for (i = 1; i < argc; i++)
@@ -313,17 +319,11 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 
     sure = false;
 
-    // Return a default inferior debugger
-    if (have_gdb)
-	return GDB;
+    // Use fallback
+    if (fallback != DebuggerType(-1))
+	return fallback;
 
-    if (have_dbx)
-	return DBX;
-
-    if (have_xdb)
-	return XDB;
-
-    // Nothing found -- try GDB.
+    // All fails - use GDB
     return GDB;
 }
 

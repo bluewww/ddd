@@ -885,6 +885,27 @@ void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
     post_startup_warning(w);
 }
 
+static void report_debugger_type()
+{
+    DebuggerType type;
+    bool type_ok = get_debugger_type(app_data.debugger, type);
+
+    if (!type_ok || app_data.auto_debugger)
+    {
+	set_status("Next " DDD_NAME 
+		   " invocation will determine the debugger automatically.");
+    }
+    else
+    {
+	string title;
+	if (type == PERL)
+	    title = "Perl";
+	else
+	    title = upcase(app_data.debugger);
+	set_status(next_ddd_will_start_with + "a " + title + " debugger.");
+    }
+}
+
 void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -893,26 +914,24 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
     if (!info->set)
 	return;
 
-    int t = (int)(long)client_data;
+    DebuggerType type = DebuggerType((int)(long)client_data);
+    app_data.debugger = default_debugger(type);
+    app_data.auto_debugger = false;
 
-    if (t >= 0)
-    {
-	DebuggerType type = DebuggerType(t);
-	app_data.debugger = default_debugger(type);
+    report_debugger_type();
 
-	string title;
-	if (type == PERL)
-	    title = "Perl";
-	else
-	    title = upcase(app_data.debugger);
-	set_status(next_ddd_will_start_with + "a " + title + " debugger.");
-    }
-    else
-    {
-	app_data.debugger = "auto";
-	set_status("Next " DDD_NAME 
-		   " invocation will determine the debugger automatically.");
-    }
+    update_options();
+    post_startup_warning(w);
+}
+
+void dddToggleAutoDebuggerCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.auto_debugger = info->set;
+
+    report_debugger_type();
 
     update_options();
     post_startup_warning(w);
@@ -2209,6 +2228,7 @@ bool save_options(unsigned long flags)
     }
 
     os << "\n! Debugger settings.\n";
+    os << bool_app_value(XtNautoDebugger, app_data.auto_debugger) << '\n';
     os << string_app_value(XtNdebugger, app_data.debugger) << '\n';
     os << bool_app_value(XtNuseSourcePath, app_data.use_source_path) << '\n';
 

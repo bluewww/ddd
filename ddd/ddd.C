@@ -433,8 +433,8 @@ static XrmOptionDescRec options[] = {
 { "--debugger",             XtNdebuggerCommand,      XrmoptionSepArg, NULL },
 { "-debugger",              XtNdebuggerCommand,      XrmoptionSepArg, NULL },
 
-{ "--automatic-debugger",   XtNdebugger,             XrmoptionNoArg,  "auto" },
-{ "-automatic-debugger",    XtNdebugger,             XrmoptionNoArg,  "auto" },
+{ "--automatic-debugger",   XtNautoDebugger,         XrmoptionNoArg,  ON },
+{ "-automatic-debugger",    XtNautoDebugger,         XrmoptionNoArg,  ON },
 
 { "--gdb",                  XtNdebugger,             XrmoptionNoArg,  "gdb" },
 { "-gdb",                   XtNdebugger,             XrmoptionNoArg,  "gdb" },
@@ -1214,7 +1214,6 @@ static MMDesc data_scrolling_menu [] =
     MMEnd
 };
 
-static Widget set_debugger_auto_w;
 static Widget set_debugger_gdb_w;
 static Widget set_debugger_dbx_w;
 static Widget set_debugger_xdb_w;
@@ -1223,8 +1222,6 @@ static Widget set_debugger_pydb_w;
 static Widget set_debugger_perl_w;
 static MMDesc debugger_menu [] = 
 {
-    { "auto", MMToggle, { dddSetDebuggerCB, XtPointer(-1) },
-      NULL, &set_debugger_auto_w, 0, 0 },
     { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
       NULL, &set_debugger_gdb_w, 0, 0 },
     { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
@@ -1237,6 +1234,14 @@ static MMDesc debugger_menu [] =
       NULL, &set_debugger_pydb_w, 0, 0 },
     { "perl", MMToggle, { dddSetDebuggerCB, XtPointer(PERL) },
       NULL, &set_debugger_perl_w, 0, 0 },
+    MMEnd
+};
+
+static Widget auto_debugger_w;
+static MMDesc auto_debugger_menu [] =
+{
+    { "automatic", MMToggle, { dddToggleAutoDebuggerCB, 0 },
+      NULL, &auto_debugger_w, 0, 0 },
     MMEnd
 };
 
@@ -1272,7 +1277,10 @@ static MMDesc startup_preferences_menu [] =
                                         button_appearance_menu, 0, 0, 0 },
     { "keyboardFocus",   MMRadioPanel,  MMNoCB, keyboard_focus_menu, 0, 0, 0 },
     { "dataScrolling",   MMRadioPanel,  MMNoCB, data_scrolling_menu, 0, 0, 0 },
-    { "debugger",        MMRadioPanel,  MMNoCB, debugger_menu, 0, 0, 0 },
+    { "autoDebugger",    MMButtonPanel, MMNoCB,
+                                        auto_debugger_menu, 0, 0, 0 },
+    { "debugger",        MMRadioPanel,  MMNoCB,
+      					debugger_menu, 0, 0, 0 },
     { "startupWindows",  MMButtonPanel, MMNoCB, startup_menu, 0, 0, 0 },
     MMEnd
 };
@@ -1673,7 +1681,7 @@ int main(int argc, char *argv[])
     // `--PLAY' - logplayer mode (DDD)
     // and options that would otherwise be eaten by Xt
     StringArray saved_options;
-    string gdb_name = "gdb";
+    string gdb_name = "";
     setup_options(argc, argv, saved_options, gdb_name, no_windows);
 
     // If we don't want windows, just start GDB.
@@ -1934,32 +1942,42 @@ int main(int argc, char *argv[])
     ddd_original_xt_warning_handler =
 	XtAppSetWarningHandler(app_context, ddd_xt_warning);
 
-    // Set up debugger defaults
-    if (app_data.debugger[0] == '\0')
+    // Determine debugger type
+    DebuggerType debugger_type = DebuggerType(-1);
+
+    if (debugger_type == DebuggerType(-1) && gdb_name != "")
     {
-	// No debugger given - use debugger command instead
-	if (app_data.debugger_command[0] == '\0')
-	    app_data.debugger_command = gdb_name;
-	app_data.debugger = app_data.debugger_command;
+	// Use given debugger
+	get_debugger_type(gdb_name, debugger_type);
     }
 
-    // Determine debugger type
-    DebuggerType debugger_type;
-    bool type_ok = get_debugger_type(app_data.debugger, debugger_type);
-    if (!type_ok)
+    if (debugger_type == DebuggerType(-1) && !app_data.auto_debugger)
     {
-	if (string(app_data.debugger) != "auto")
-	{
-	    cerr << argv[0] << ": unknown debugger type " 
-		 << quote(app_data.debugger) << ", assuming \"auto\"\n";
-	}
+	// Use debugger from args or app_defaults
+	get_debugger_type(app_data.debugger, debugger_type);
+    }
 
-	// Invalid debugger type - guess from args
+    if (debugger_type == DebuggerType(-1))
+    {
+	// Guess debugger type from args
 	bool sure;
 	debugger_type = guess_debugger_type(argc, argv, sure);
+
+	if (!app_data.auto_debugger)
+	{
+	    cerr << "Unknown debugger type " << quote(app_data.debugger)
+		 << ", using " << quote(default_debugger(debugger_type))
+		 << "instead\n";
+	}
     }
+
     if (app_data.debugger_command[0] == '\0')
-	app_data.debugger_command = default_debugger(debugger_type);
+    {
+	if (gdb_name != "")
+	    app_data.debugger_command = gdb_name;
+	else
+	    app_data.debugger_command = default_debugger(debugger_type);
+    }
 
     // Set host specification
     if (app_data.debugger_rhost && app_data.debugger_rhost[0] != '\0')
@@ -3735,23 +3753,16 @@ void update_options()
     set_toggle(set_separate_windows_w, separate);
     set_toggle(set_attached_windows_w, !separate);
 
-    DebuggerType debugger_type;
-    bool type_ok = get_debugger_type(app_data.debugger, debugger_type);
-    set_toggle(set_debugger_gdb_w,  type_ok && debugger_type == GDB);
-    set_toggle(set_debugger_dbx_w,  type_ok && debugger_type == DBX);
-    set_toggle(set_debugger_xdb_w,  type_ok && debugger_type == XDB);
-    set_toggle(set_debugger_jdb_w,  type_ok && debugger_type == JDB);
-    set_toggle(set_debugger_pydb_w, type_ok && debugger_type == PYDB);
-    set_toggle(set_debugger_perl_w, type_ok && debugger_type == PERL);
-    set_toggle(set_debugger_auto_w, !type_ok);
+    DebuggerType debugger_type = DebuggerType(-1);
+    get_debugger_type(app_data.debugger, debugger_type);
 
-    set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
-    set_sensitive(set_debugger_dbx_w,  have_cmd("dbx"));
-    set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));
-    set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
-    set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
-    set_sensitive(set_debugger_perl_w, have_cmd("perl"));
-    set_sensitive(set_debugger_auto_w, true);
+    set_toggle(set_debugger_gdb_w,  debugger_type == GDB);
+    set_toggle(set_debugger_dbx_w,  debugger_type == DBX);
+    set_toggle(set_debugger_xdb_w,  debugger_type == XDB);
+    set_toggle(set_debugger_jdb_w,  debugger_type == JDB);
+    set_toggle(set_debugger_pydb_w, debugger_type == PYDB);
+    set_toggle(set_debugger_perl_w, debugger_type == PERL);
+    set_toggle(auto_debugger_w, app_data.auto_debugger);
 
     set_toggle(splash_screen_w, app_data.splash_screen);
     set_toggle(startup_tips_w,  app_data.startup_tips);
@@ -4280,7 +4291,8 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_debugger_jdb_w,  type_ok && debugger_type == JDB);
     notify_set_toggle(set_debugger_pydb_w, type_ok && debugger_type == PYDB);
     notify_set_toggle(set_debugger_perl_w, type_ok && debugger_type == PERL);
-    notify_set_toggle(set_debugger_auto_w, !type_ok);
+    notify_set_toggle(auto_debugger_w,
+		      !type_ok || initial_app_data.auto_debugger);
 
     BindingStyle style = initial_app_data.cut_copy_paste_bindings;
     notify_set_toggle(kde_binding_w, style == KDEBindings);
@@ -4342,6 +4354,9 @@ static bool startup_preferences_changed()
 	return true;
 
     if (app_data.panned_graph_editor != initial_app_data.panned_graph_editor)
+	return true;
+
+    if (app_data.auto_debugger != initial_app_data.auto_debugger)
 	return true;
 
     if (string(app_data.debugger) != string(initial_app_data.debugger))
@@ -6961,9 +6976,11 @@ static void setup_options(int& argc, char *argv[],
 	    if (gdb_option_pos >= 0)
 	    {
 		// Strip `--debugger NAME'/`--dbx'/`--gdb', etc.
-		for (int j = gdb_option_pos; j <= argc - gdb_option_offset; 
-					     j++)
+		for (int j = gdb_option_pos; 
+		     j <= argc - gdb_option_offset; j++)
+		{
 		    argv[j] = argv[j + gdb_option_offset];
+		}
 		argc -= gdb_option_offset;
 		i    -= gdb_option_offset;
 	    }
@@ -7186,6 +7203,13 @@ static void setup_options()
     set_sensitive(complete_w,  gdb->type() == GDB);
     set_sensitive(define_w,    gdb->type() == GDB);
     set_sensitive(signals_w,   gdb->type() == GDB);
+
+    set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
+    set_sensitive(set_debugger_dbx_w,  have_cmd("dbx"));
+    set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));
+    set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
+    set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
+    set_sensitive(set_debugger_perl_w, have_cmd("perl"));
 }
 
 static void setup_core_limit()

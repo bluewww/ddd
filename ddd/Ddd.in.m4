@@ -78,9 +78,11 @@ Ddd*appDefaultsVersion: @VERSION@
 ! User-settable resources
 !-----------------------------------------------------------------------------
 
-! The inferior debugger type. One of: gdb, dbx, xdb, jdb, pydb, perl, or auto.
-Ddd*debugger: auto
+! The inferior debugger type. One of: gdb, dbx, xdb, jdb, pydb, or perl.
+Ddd*debugger: gdb
 
+! If true, determine debugger automatically from args upon start-up.
+Ddd*autoDebugger: on
 
 ! The name under which the inferior debugger is to be invoked
 ! Default: debugger type.
@@ -129,7 +131,7 @@ Ddd*uniconifyWhenReady: on
 Ddd*globalTabCompletion: on
 
 
-! The key binding style to use for Cut/Copy/Paste:
+! The key bindings to use for Cut/Copy/Paste:
 !
 ! * `Motif' means Cut/Copy/Paste is on Shift+Del/Ctrl+Ins/Shift+Ins.
 !   This is conformant to the Motif style guide and the default
@@ -3294,6 +3296,9 @@ ITEM LBL(Window Layout) sets the window layout.\n\
         where source, data, and the @GDB@ console are stacked.\n\
     SUBITEM LBL(Separate Windows) means to use a separate top-level window\n\
         for each of source, data, and the @GDB@ console.\n\
+ITEM The LBL(Cut/Copy/Paste) functions can be bound to\n\
+    SUBITEM LBL(Ctrl+X/Ctrl+C/Ctrl+V) - the LBL(KDE) style, or\n\
+    SUBITEM LBL(Shift+Del/Ctrl+Ins/Shift+Ins) - the LBL(Motif) Style.\n\
 ITEM The LBL(Tool Bar) can appear as follows:\n\
     SUBITEM LBL(Images) shows a small symbol for each action, and/or\n\
     SUBITEM LBL(Captions) shows the action name below the image.\n\
@@ -3312,6 +3317,8 @@ ITEM LBL(Data Scrolling) sets the data window scrolling mode.\n\
         (not available in all DDD configurations).\n\
     SUBITEM LBL(Scrollbars) means to use two scrollbars.\n\
 ITEM LBL(Debugger Type) sets the type of the inferior debugger.\n\
+    If LBL(Determine Automatically...) is set, the inferior debugger is set\n\
+    dependent on the arguments given to DDD.\n\
 ITEM LBL(Show Splash Screen) sets whether DDD shows its splash screen.\n\
 ITEM LBL(Show Tip of the Day) sets whether DDD shows its tip of the day.\n\
 \n\
@@ -3324,9 +3331,9 @@ Ddd*preferences*windows.labelString:		Window Layout
 Ddd*windowsMenu*attached.labelString:		Stacked Windows
 Ddd*windowsMenu*separate.labelString:		Separate Windows
 
-Ddd*preferences*bindings.labelString:		Cut/Copy/Paste Bindings
-Ddd*bindingsMenu*kde.labelString:		KDE Style
-Ddd*bindingsMenu*motif.labelString:		Motif Style
+Ddd*preferences*bindings.labelString:		Cut/Copy/Paste
+Ddd*bindingsMenu*kde.labelString:		KDE Style Bindings
+Ddd*bindingsMenu*motif.labelString:		Motif Style Bindings
 
 Ddd*preferences*buttons.labelString:		Tool Bar Appearance
 Ddd*buttonsMenu*images.labelString:		Images
@@ -3344,15 +3351,18 @@ Ddd*preferences*dataScrolling.labelString:	Data Scrolling
 Ddd*dataScrollingMenu*panner.labelString:	Panner
 Ddd*dataScrollingMenu*scrollbars.labelString:	Scrollbars
 
-Ddd*preferences*debugger.labelString:		Debugger Type
-Ddd*preferences*debuggerMenu*auto.labelString:	Auto
+Ddd*preferences*autoDebugger.labelString:	Debugger Type
+Ddd*preferences*automatic.labelString:		\
+Determine Automatically from Arguments
+Ddd*preferences*debugger.labelString:		
 Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 Ddd*debuggerMenu*pydb.labelString:		PYDB
 Ddd*debuggerMenu*perl.labelString:		Perl
-Ddd*debuggerMenu.numColumns:	      	        2
+Ddd*debuggerMenu.numColumns:	      	        1
+Ddd*debuggerMenu.packing:	      	        XmPACK_TIGHT
 
 Ddd*preferences*startupWindows.labelString:     Startup Windows
 Ddd*preferences*splashScreen.labelString:	DDD Splash Screen

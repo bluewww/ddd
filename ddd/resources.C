@@ -88,6 +88,16 @@ XtResource ddd_resources[] = {
     },
 
     { 
+	XtNautoDebugger, 
+	XtCAutoDebugger, 
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, auto_debugger),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    { 
 	XtNopenSelection, 
 	XtCOpenSelection, 
 	XmRBoolean,

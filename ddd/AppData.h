@@ -52,6 +52,8 @@
 #define XtCDebugger              "Debugger"
 #define XtNdebuggerCommand       "debuggerCommand"
 #define XtCDebuggerCommand       "DebuggerCommand"
+#define XtNautoDebugger          "autoDebugger"
+#define XtCAutoDebugger          "AutoDebugger"
 #define XtNopenSelection         "openSelection"
 #define XtCOpenSelection         "OpenSelection"
 #define XtNtrace                 "trace"
@@ -378,6 +380,7 @@ struct AppData {
     String    initial_session;
     String    debugger;
     String    debugger_command;
+    Boolean   auto_debugger;
     Boolean   open_selection;
     Boolean   trace;
     String    play_log;
