@@ -4874,7 +4874,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    XtManageChild(text_popup[TextItms::Sep1].widget);
 	    XtManageChild(text_popup[TextItms::PrintRef].widget);
 	    XtManageChild(text_popup[TextItms::DispRef].widget);
-	    XtManageChild(text_popup[TextItms::WatchRef].widget);
+	    // XtManageChild(text_popup[TextItms::WatchRef].widget);
 	}
 	else
 	{
