@@ -9,6 +9,8 @@ DDD-3.3.9
 - Builds with readline support should be OK.
 - Builds without Motif/Lesstif available abort with an adequate message.
 - Several missing files in the distribution are now included.
+- The libiberty distributed with ddd has been upgraded to the one released
+  with gcc-3.3.2.
 
 (1) Thanks to Dmitri Dmitrienko and Rocky Bernstein.
 
