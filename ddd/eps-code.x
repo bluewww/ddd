@@ -33,12 +33,13 @@
 // call make(1).
 //
 
-const char prolog[] = 
+char eps_code_rcsid[] = 
+    "$Id$";
 
+static const char prolog[] = 
 ;
 
 
-const char trailer[] =
-
+static const char trailer[] =
 ;
 
