@@ -3,33 +3,39 @@ DDD descriptions for the Linux software map
 
 Begin3
 Title:          ddd
-Version:        1.2
-Entered-date:   May 24, 1995
-Description:    The Data Display Debugger (DDD) is a novel graphical user
-                interface to GDB, the popular UNIX debugger.  Besides
-                ``usual'' features such as viewing source texts and
-                breakpoints, DDD provides a *graphical data display*,
-                where data structures are displayed as graphs.  Complex
-                data structures can be explored incrementally and
-                interactively. Other features include: hypertext source
-                navigation and lookup; GDB command-line interface with
-                full editing, history, and completion capabilities;
-                breakpoint, backtrace, and history editors; optional
-                program execution in terminal emulator window; debugging
-                on remote host; on-line manual; interactive help on the
-                OSF/Motif user interface.
+Version:        1.3
+Entered-date:   December 3, 1995
+Description:    The Data Display Debugger (DDD) is a comforatble
+		graphical user interface to GDB and DBX, the popular
+		UNIX debuggers.  Besides ``usual'' features such as
+		viewing source texts and breakpoints, DDD provides a
+                *graphical data display*, where data structures are
+                displayed as graphs.  Complex data structures can be
+                explored incrementally and interactively.  Other DDD
+		features include: debugging of programs written in C,
+		C++, Pascal, or MODULA-2; hypertext source navigation
+		and lookup; GDB/DBX command-line interface with full
+		editing, history, and completion capabilities;
+		breakpoint, backtrace, and history editors; optional
+		program execution in terminal emulator window;
+		debugging on remote host; on-line manual; interactive
+		help on the OSF/Motif user interface.  DDD has been
+		designed to compete with well-known commercial
+		debuggers.
 Keywords:       ddd, GUI, debugger, visualization
 Author:         luetke@ips.cs.tu-bs.de (Dorothea Luetkehaus)
                 zeller@ips.cs.tu-bs.de (Andreas Zeller)
 Maintained-by:  ddd@ips.cs.tu-bs.de (DDD Maintainers)
 Primary-site:   sunsite.unc.edu /pub/Linux/devel/debuggers
-                900kB ddd-1.2.tar.gz                (Source)
-                715kB ddd-1.2-i486-unknown-linux.gz (Linux binary)
+                1117kB ddd-1.3e.tar.gz                            (Source)
+                803kB  ddd-1.3b-i586-unknown-linux-aout-static.gz (Binary)
+                1182kB ddd-1.3d-i486-unknown-linux-elf-static.gz  (Binary)
 Alternate-site: ftp.funet.fi /pub/OS/Linux/devel/debuggers
-                900kB ddd-1.2.tar.gz                (Source)
-                715kB ddd-1.2-i486-unknown-linux.gz (Linux binary)
+                1117kB ddd-1.3e.tar.gz                            (Source)
+                803kB  ddd-1.3b-i586-unknown-linux-aout-static.gz (Binary)
+                1182kB ddd-1.3d-i486-unknown-linux-elf-static.gz  (Binary)
 Original-site:  ftp.ips.cs.tu-bs.de /pub/local/softech/ddd/
-Platform:       Building DDD: C++ compiler (GCC 2.6.3 preferred),
+Platform:       Building DDD: C++ compiler (GCC 2.6.3 or later preferred),
                 OSF/Motif library.
                 Running DDD: GDB (4.13 or later preferred).
 Copying-policy: GPL

@@ -66,7 +66,7 @@ Changes to DDD 1.2:
   defaults.  Thanks to ksfdo0@ksepl.shell.nl (Fred Donck).
 - New GNU librx 0.07.2 library included (from libg++-2.7.0), should be
   faster and more reliable.
-- Configuration scripts reworked for GNU autoconf 2.6; various
+- Configuration scripts reworked for GNU autoconf 2.7; various
   configuration bugs have been fixed.
 
 Thanks to all who sent in bug reports and suggestions.  This DDD
@@ -78,12 +78,12 @@ OSF/1 and Linux (a.out and ELF format).
 Summary of DDD
 ==============
 
-The Data Display Debugger (DDD) is a novel graphical user interface to
-GDB and DBX, the popular UNIX debuggers.  Besides ``usual'' features
-such as viewing source texts and breakpoints, DDD provides a
-*graphical data display*, where data structures are displayed as
-graphs.  A simple mouse click dereferences pointers or reveals
-structure contents.  Complex data structures can be explored
+The Data Display Debugger (DDD) is a comfortable graphical user
+interface to GDB and DBX, the popular UNIX debuggers.  Besides
+``usual'' features such as viewing source texts and breakpoints, DDD
+provides a *graphical data display*, where data structures are
+displayed as graphs.  A simple mouse click dereferences pointers or
+reveals structure contents.  Complex data structures can be explored
 incrementally and interactively, using automatic layout if preferred.
 Each time the program stops, the data display reflects the current
 variable values.  Using DDD, you can reason about your application by
