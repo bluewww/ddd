@@ -117,7 +117,11 @@ if [ -f ddd-$date.tar.gz ]; then
     # Move dist file into FTP area
     rm -f $target/ddd-*.tar.gz
     mv ddd-$date.tar.gz $target
-    cp -p NEWS $CVSROOT/CVSROOT/ddd-log $target
+    commits=200
+    log=$CVSROOT/CVSROOT/ddd-log
+    line=`grep -n '^\*\*\*' $log | tail -$commits | head -1 | cut -d: -f1`
+    tail +$line $log > $target/ChangeLog.tail
+    cp -p NEWS BUGS TODO $target
     echo "Creating ddd-$date.tar.gz (expires $expires)...done."
 fi
 
