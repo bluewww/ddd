@@ -269,7 +269,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S047>{P}:{w}{w}{w}			return &rxgdb_begin_of_display_info;
 <S048>{P}		 		return &rxgdb_disp_nr;
 <S050>{_}graph{W}{C}			return &rxgraph_cmd;
-<S051>[A-Za-z_][A-Za-z0-9_]*		return &rxidentifier;
+<S051>[A-Za-z_$][A-Za-z0-9_$]*		return &rxidentifier;
 <S052>[[]-?{D}]{C}			return &rxindex;
 <S053>-?{D}		 		return &rxint;
 <S054>([a-zA-Z]+{W}[a-zA-Z]+{C}|{C}[a-zA-Z]+{W}[a-zA-Z]+(\.|>)?)\n?  return &rxinvalid_value;
