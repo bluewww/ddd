@@ -98,4 +98,8 @@ Volunteers for fixing these and other bugs are welcome!
      created in `TTYAgent.C', using the SGI _getpty() function; the
      master side is accessed in `LiterateA.C'.]
 
-025. (Insert your bug here)
+025. DBX on mips-dec-ultrix4 is only partially supported since it has
+     an entirely different output format than Sun's DBX.  [If someone
+     convinces me that he requires ULTRIX DBX support, I'll do it.]
+
+026. (Insert your bug here)
