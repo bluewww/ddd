@@ -47,6 +47,7 @@ char PosBuffer_rcsid[] =
 #include "string-fun.h"
 #include "ddd.h"
 #include "GDBAgent.h"
+#include "SourceView.h"
 
 // Filter all lines from ANSWER beginning with LINE
 // This is required to suppress the line number output
@@ -277,6 +278,22 @@ void PosBuffer::filter (string& answer)
 
 	    case DBX:
 	    {
+		string file;
+		string line;
+
+		if (answer.contains('(', 0) || answer.contains('[', 0))
+		{
+		    // Get breakpoint position
+		    string ans = answer;
+		    int num = read_positive_nr(ans);
+		    string pos = source_view->bp_pos(num);
+		    if (pos != "")
+		    {
+			file = pos.before(':');
+			line = pos.after(':');
+		    }
+		}
+
 		static regex RXdbxfunc("[a-zA-Z_][^:]*: *[1-9][0-9]*  *.*");
 		if (answer.matches(RXdbxfunc))
 		{
@@ -284,9 +301,8 @@ void PosBuffer::filter (string& answer)
 		    // in the format
 		    // "free_tree: 122  free_tree(tree->left);"
 
-		    string line = answer.after(":");
+		    line = answer.after(":");
 		    line = line.through(rxint);
-		    pos_buffer = line;
 		    already_read = PosComplete;
 
 		    answer = answer.after("\n");
@@ -298,11 +314,9 @@ void PosBuffer::filter (string& answer)
 		    // DEC dbx issues breakpoint lines in the format
 		    // "[new_tree:113 ,0x400858] \ttree->right = NULL;"
 
-		    string line = answer.from(RXdbxpos);
+		    line = answer.from(RXdbxpos);
 		    line = line.after(":");
 		    line = line.through(rxint);
-
-		    pos_buffer = line;
 		    already_read = PosComplete;
 
 		    if (!answer.contains('[', 0))
@@ -311,9 +325,6 @@ void PosBuffer::filter (string& answer)
 		else if (answer.contains("stopped in ")
 			 || answer.contains("stopped at "))
 		{
-		    string file;
-		    string line;
-
 		    // Stop reached
 		    if (answer.contains("in file "))
 		    {
@@ -326,7 +337,7 @@ void PosBuffer::filter (string& answer)
 		    else if (answer.contains("["))
 		    {
 			// DEC dbx and SGI dbx output format
-			string line = answer.after("[");
+			line = answer.after("[");
 			func_buffer = line.before(":");
 			line = line.after(":");
 			line = line.through(rxint);
@@ -339,7 +350,6 @@ void PosBuffer::filter (string& answer)
 			if (func.contains(" at "))
 			    func = func.before(" at ");
 			func_buffer = func;
-			file = "";
 		    }
 
 		    if (line == "")
@@ -350,11 +360,6 @@ void PosBuffer::filter (string& answer)
 			    line = "0";
 		    }
 
-		    if (file != "")
-			pos_buffer = file + ":" + line;
-		    else
-			pos_buffer = line;
-
 		    already_read = PosComplete;
 		    filter_line(answer, atoi(line));
 		}
@@ -364,7 +369,7 @@ void PosBuffer::filter (string& answer)
 		    string nr = answer.after("\n");
 		    if (nr != "")
 		    {
-			pos_buffer = itostring(atoi(nr));
+			line = itostring(atoi(nr));
 			already_read = PosComplete;
 
 			// Show current function only
@@ -379,6 +384,14 @@ void PosBuffer::filter (string& answer)
 			answer = "";
 			already_read = PosPart;
 		    }
+		}
+
+		if (already_read == PosComplete && line != "")
+		{
+		    if (file != "")
+			pos_buffer = file + ":" + line;
+		    else
+			pos_buffer = line;
 		}
 	    }
 	    break;
