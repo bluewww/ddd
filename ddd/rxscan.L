@@ -130,7 +130,7 @@ C	(.|\n)*
 020[(]{P}[)]{w}				return &rxdbx_begin_of_display_info;
 021[a-zA-Z_0-9]*`			return &rxdbx_scope;
 022[a-zA-Z_$][a-zA-Z_$0-9]*[(]{C}[)]{C}([[]{C}[]]|\,{w}line{w}{C})	return &rxdbxframe;
-023[a-zA-Z_][^:]*:{_}{P}{W}{C}	return &rxdbxfunc;
+023[a-zA-Z_][^:]*:{_}{P}{W}{C}		return &rxdbxfunc;
 024{C}line{W}{P}{W}in{W}\"[^\"]*\"\n{C}	return &rxdbxfunc2;
 025[[][^]]*:{P}[^]]*]{C}		return &rxdbxpos;
 026dbx:{W}warning:.option{W}only{W}recognized{W}for.*\n	return &rxdbxwarn1;
@@ -164,7 +164,7 @@ C	(.|\n)*
 054([a-zA-Z]+{W}[a-zA-Z]+{C}|{C}[a-zA-Z]+{W}[a-zA-Z]+(\.|>)?)\n?  return &rxinvalid_value;
 055{_}(func|v){W}{C}	 		return &rxlookup_cmd;
 056[a-z]+		 		return &rxlowercase;
-057\(\*{C}\*\){C}				return &rxm3comment;
+057\(\*{C}\*\){C}			return &rxm3comment;
 058{_}(sh{W}|!)?make({W}{C})?		return &rxmake_cmd;
 059members{w}of{w}.+:{w}?\n		return &rxmembers_of_nl;
 060\[-?{D}\.\.-?{D}\]			return &rxmore_than_one;
@@ -184,12 +184,12 @@ C	(.|\n)*
 074{_}(dir|directory|path)({W}{C})?	return &rxpath_cmd;
 075\$pc{_}={_}{A}			return &rxpc;
 076([(][^)]+[)]{W})?{A}{C}		return &rxpointer1_value;
-077[{][^{}]+[}]{W}{a}{C}			return &rxpointer2_value;
+077[{][^{}]+[}]{W}{a}{C}		return &rxpointer2_value;
 078Process{W}{D}:{_}			return &rxprocess1;
 079Process{W}{D}:			return &rxprocess2;
 080[(][^ )]*db[^ )]*[)]{w}		return &rxprompt;
 081{C}[(]END[)].*			return &rxq;
-082([(][^)]+[)]{W})?{_}@{W}{x}{W}:{C} 	return &rxreference;
+082@{W}{x}{W}:{C} 			return &rxreference;
 083{_}refresh({W}{C})?			return &rxrefresh_cmd;
 084{C}([(]press{W}RETURN[)]|Hit{W}RETURN{W}to{W}continue|Type{W}<return>{W}to{W}continue|More{W}[(]n{W}if{W}no[)][?]).* return &rxreturn;
 085{_}(r|rer|rerun|ru|run|R)({W}{C})? return &rxrun_cmd;
@@ -214,7 +214,7 @@ C	(.|\n)*
 104{_}(delete{W}|un)display({W}{C})?	return &rxundisplay;
 105{_}up({W}{C})?			return &rxup_cmd;
 106[A-Z]+				return &rxuppercase;
-107.*<[^\n>]*{W}v(irtual{W})?t(a)?bl(e)?>[^{},]*[{]{C}	return &rxvtable;
+107{A}{W}<[^ \n>]*{W}v(irtual{W})?t(a)?bl(e)?>[^{},]*[{]{C}	return &rxvtable;
 108[{]{D}{W}vtable{W}entries\,{C}	return &rxvtable_entries;
 109[ \n\t\r\v\f]+		 	return &rxwhite;
 110{C}Standard{W}input:{W}END{C} 	return &rxxdb;

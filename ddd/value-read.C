@@ -51,7 +51,8 @@ char value_read_rcsid[] =
 
 #if RUNTIME_REGEX
 static regex rxindex("[[]-?[0-9][0-9]*].*");
-static regex rxvtable("[^\n]*<[^\n>]* v(irtual )?t(a)?bl(e)?>[^{},]*[{].*");
+static regex rxvtable(
+    RXADDRESS " <[^ \n>]* v(irtual )?t(a)?bl(e)?>[^{},]*[{].*");
 #endif
 
 // Determine the type of VALUE.
@@ -67,9 +68,14 @@ DispValueType determine_type (string value)
     // References.
 #if RUNTIME_REGEX
     static regex rxreference(
-	"([(][^)]+[)] )? *@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
+	"@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
 #endif
-    if (value.matches(rxreference))
+    int ref_index = 0;
+    if (value.contains('(', 0))
+	ref_index = value.index(')') + 1;
+    while (value.contains(' ', ref_index))
+	ref_index++;
+    if (value.matches(rxreference, ref_index))
 	return Reference;
 
     // Vtables.
@@ -153,9 +159,13 @@ DispValueType determine_type (string value)
     // the pointer type contains `(...)' itself (such as in pointers
     // to functions), GDB uses '{...}' instead (as in `{int ()} 0x2908
     // <main>').
+
+#if 0
+
 #if RUNTIME_REGEX
     static regex rxpointer1_value("([(][^)]+[)] )?" RXADDRESS ".*");
 #endif
+
     if (value.matches(rxpointer1_value))
 	return Pointer;
 #if RUNTIME_REGEX
@@ -163,6 +173,25 @@ DispValueType determine_type (string value)
 #endif
     if (value.matches(rxpointer2_value))
 	return Pointer;
+
+#else
+    int pointer_index = 0;
+    if (value.contains('(', 0))
+	pointer_index = value.index(')') + 1;
+    while (value.contains(' ', pointer_index))
+	pointer_index++;
+    if (value.contains(rxaddress, pointer_index))
+	return Pointer;
+
+    if (value.contains('{', 0))
+    {
+	pointer_index = value.index('}') + 1;
+	while (value.contains(' ', pointer_index))
+	    pointer_index++;
+	if (value.contains(rxaddress_start, pointer_index))
+	    return Pointer;
+    }
+#endif
 
     // Arrays.
     if (value.contains('{', 0) /* && value.contains('}', -1) */)
