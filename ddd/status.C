@@ -45,11 +45,13 @@ char status_rcsid[] =
 #include "post.h"
 #include "string-fun.h"
 #include "verify.h"
+#include "DestroyCB.h"
 
 #include <ctype.h>
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/SelectioB.h>
+#include <Xm/MessageB.h>
 
 
 //-----------------------------------------------------------------------------
@@ -283,7 +285,9 @@ void set_status_from_gdb(const string& text)
     set_status(message);
 }
 
-void set_status(const string& message)
+// Show MESSAGE in status window.  If FORCE is true, ensure that
+// the entire message is visible.
+void set_status(const string& message, bool force)
 {
     if (status_w == 0)
 	return;
@@ -292,20 +296,58 @@ void set_status(const string& message)
     if (m != "" && !m.contains("=") && isascii(m[0]) && islower(m[0]))
 	m[0] = toupper(m[0]);
 
-    set_status_mstring(MString(m, "rm"));
+    set_status_mstring(MString(m, "rm"), force);
 }
 
-void set_status_mstring(const MString& message)
+// Same, but use an MString.
+void set_status_mstring(const MString& message, bool force)
 {
     if (status_w == 0)
 	return;
 
     current_status_text = message;
-    XtVaSetValues(status_w,
-		  XmNlabelString, message.xmstring(),
+
+    XmFontList status_font_list;
+    Dimension status_width;
+    Dimension status_height;
+    XtVaGetValues(status_w,
+		  XmNfontList, &status_font_list,
+		  XmNwidth,    &status_width,
+		  XmNheight,   &status_height,
 		  NULL);
-    XFlush(XtDisplay(status_w));
-    XmUpdateDisplay(status_w);
+
+    if ((force && message.width(status_font_list) >= status_width)
+	|| message.height(status_font_list) >= status_height)
+    {
+	// Message does not fit into status line - popup a dialog instead
+	Arg args[10];
+	int arg = 0;
+	XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
+	Widget info = verify(XmCreateInformationDialog(find_shell(status_w), 
+						       "status_dialog",
+						       args, arg));
+	Delay::register_shell(info);
+	XtUnmanageChild(XmMessageBoxGetChild(info, XmDIALOG_CANCEL_BUTTON));
+	XtUnmanageChild(XmMessageBoxGetChild(info, XmDIALOG_HELP_BUTTON));
+
+	XtAddCallback(info, XmNokCallback,     DestroyThisCB, XtPointer(info));
+	XtAddCallback(info, XmNcancelCallback, DestroyThisCB, XtPointer(info));
+	XtAddCallback(info, XmNhelpCallback,   ImmediateHelpCB, NULL);
+
+	XtVaSetValues (info,
+		       XmNmessageString, message.xmstring(),
+		       NULL);
+
+	XtManageChild (info);
+    }
+    else
+    {
+	XtVaSetValues(status_w,
+		      XmNlabelString, message.xmstring(),
+		      NULL);
+	XFlush(XtDisplay(status_w));
+	XmUpdateDisplay(status_w);
+    }
 }
 
 const MString& current_status()

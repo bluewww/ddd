@@ -39,11 +39,12 @@
 #include "MString.h"
 #include <X11/Intrinsic.h>
 
-// Show TEXT in status window
-void set_status(const string& text);
+// Show MESSAGE in status window.  If FORCE is true, ensure that
+// the entire message is visible.
+void set_status(const string& message, bool force = false);
 
-// Same, but use an MString
-void set_status_mstring(const MString& text);
+// Same, but use an MString.
+void set_status_mstring(const MString& text, bool force = false);
 
 // Return current contents of status line
 extern const MString& current_status();
