@@ -385,4 +385,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 204. Switching from glyphs to text loses the current PC.
 
-205. (Insert your bug here)
+205. Buttons created interactively don't get on-line help.
+
+206. (Insert your bug here)

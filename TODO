@@ -391,4 +391,10 @@ Volunteers for these and other projects are welcome!
      2. The command buttons come up off screen under fvwm (haven't
         checked other WM's).
 
-219. (Insert your project idea here)
+219. Annotated arrows. Christoph Koegl <koegl@informatik.uni-kl.de>
+     suggests that the data display window should be able to annotate
+     arrows with the name of the pointer variables whose value they
+     represent. This would come in handy if one (as I do at the
+     moment) displays heavily cross-pointered data structures.
+
+220. (Insert your project idea here)
