@@ -224,14 +224,15 @@ static bool have_cmd(const string& cmd)
     return cmd_file(cmd).contains('/', 0);
 }
 
+
 // Return an appropriate debugger type from ARGC/ARGV.
-// Set SURE if debugger type could be deduced from args.
-DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
+// Set ARG if debugger type could be deduced from an argument.
+DebuggerInfo::DebuggerInfo(int argc, char *argv[])
+    : type(DebuggerType(-1)),
+      arg("")
 {
     DebuggerType fallback = DebuggerType(-1);
     get_debugger_type(app_data.debugger, fallback);
-
-    sure = true;
 
     static bool have_perl   = (fallback == PERL || have_cmd("perl"));
     static bool have_python = (fallback == PYDB || have_cmd("python"));
@@ -241,16 +242,22 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
     int i;
     for (i = 1; i < argc; i++)
     {
-	string arg = argv[i];
+	arg = argv[i];
 
 	if (arg.contains('-', 0))
 	    continue;		// Option
 
 	if (have_perl && is_perl_file(arg))
-	    return PERL;
+	{
+	    type = PERL;
+	    return;
+	}
 
 	if (have_python && is_python_file(arg))
-	    return PYDB;
+	{
+	    type = PYDB;
+	    return;
+	}
     }
 
 
@@ -263,7 +270,7 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 
     for (i = 1; i < argc; i++)
     {
-	string arg = argv[i];
+	arg = argv[i];
 
 	if (arg.contains('-', 0))
 	    continue;		// Option
@@ -271,16 +278,28 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 	if (is_exec_file(arg))
 	{
 	    if (fallback == GDB || fallback == DBX || fallback == XDB)
-		return fallback;
+	    {
+		type = fallback;
+		return;
+	    }
 
 	    if (have_gdb)
-		return GDB;
+	    {
+		type = GDB;
+		return;
+	    }
 
 	    if (have_dbx)
-		return DBX;
+	    {
+		type = DBX;
+		return;
+	    }
 
 	    if (have_xdb)
-		return XDB;
+	    {
+		type = XDB;
+		return;
+	    }
 	}
     }
 
@@ -293,7 +312,7 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
     {
 	for (i = 1; i < argc; i++)
 	{
-	    string arg = argv[i];
+	    arg = argv[i];
 
 	    if (arg.contains('-', 0))
 		continue;		// Option
@@ -303,10 +322,16 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 	    arg.gsub('.', '/');
 
 	    if (is_regular_file(arg + ".java"))
-		return JDB;
+	    {
+		type = JDB;
+		return;
+	    }
 
 	    if (is_regular_file(arg + ".class"))
-		return JDB;
+	    {
+		type = JDB;
+		return;
+	    }
 	}
     }
 
@@ -315,7 +340,7 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 
     for (i = 1; i < argc; i++)
     {
-	string arg = argv[i];
+	arg = argv[i];
 
 	if (arg.contains('-', 0))
 	    continue;		// Option
@@ -342,16 +367,28 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 	    if (is_exec_file(dir + arg))
 	    {
 		if (fallback == GDB || fallback == DBX || fallback == XDB)
-		    return fallback;
+		{
+		    type = fallback;
+		    return;
+		}
 
 		if (have_gdb)
-		    return GDB;
+		{
+		    type = GDB;
+		    return;
+		}
 
 		if (have_dbx)
-		    return DBX;
+		{
+		    type = DBX;
+		    return;
+		}
 
 		if (have_xdb)
-		    return XDB;
+		{
+		    type = XDB;
+		    return;
+		}
 	    }
 	}
     }
@@ -363,7 +400,7 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
     {
 	for (i = 1; i < argc; i++)
 	{
-	    string arg = argv[i];
+	    arg = argv[i];
 
 	    if (arg.contains('-', 0))
 		continue;		// Option
@@ -389,13 +426,20 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 		if (!dir.contains('/', -1))
 		    dir += '/';
 
-		arg.gsub('.', '/');
+		string path = arg;
+		path.gsub('.', '/');
 
-		if (is_regular_file(dir + arg + ".java"))
-		    return JDB;
+		if (is_regular_file(dir + path + ".java"))
+		{
+		    type = JDB;
+		    return;
+		}
 
-		if (is_regular_file(dir + arg + ".class"))
-		    return JDB;
+		if (is_regular_file(dir + path + ".class"))
+		{
+		    type = JDB;
+		    return;
+		}
 	    }
 	}
     }
@@ -403,14 +447,17 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 
     // 6. Use fallback.
 
-    sure = false;
+    arg = "";
 
     if (fallback != DebuggerType(-1))
-	return fallback;
+    {
+	type = fallback;
+	return;
+    }
 
 
     // 7. All fails.  Use GDB.
-    return GDB;
+    type = GDB;
 }
 
 static struct table {

@@ -2086,8 +2086,8 @@ int main(int argc, char *argv[])
     if (debugger_type == DebuggerType(-1))
     {
 	// Guess debugger type from args
-	bool sure;
-	debugger_type = guess_debugger_type(argc, argv, sure);
+	DebuggerInfo info(argc, argv);
+	debugger_type = info.type;
 
 	if (!app_data.auto_debugger)
 	{
@@ -6938,9 +6938,8 @@ static void add_arg_from_selection(Widget toplevel, int& argc, char **&argv)
 	new_argv[1] = selection;
 	new_argv[2] = 0;
 
-	bool sure;
-	(void) guess_debugger_type(new_argc, new_argv, sure);
-	if (sure)
+	DebuggerInfo info(new_argc, new_argv);
+	if (info.arg != "")
 	{
 	    // Selection is valid for some debugger.  Go for it.
 	    argc = new_argc;
