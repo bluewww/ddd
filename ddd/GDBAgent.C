@@ -153,6 +153,7 @@ char GDBAgent_rcsid[] =
 #include "string-fun.h"
 #include "regexps.h"
 #include "index.h"
+#include "home.h"
 
 #include <stdlib.h>
 #include <iostream.h>
@@ -2271,11 +2272,6 @@ string GDBAgent::disassemble_command(string start, string end) const
 
 string GDBAgent::history_file() const
 {
-    char *_home = getenv("HOME");
-    if (_home == 0)
-	_home = ".";
-    string home(_home);
-
     switch (type())
     {
     case GDB:
@@ -2297,7 +2293,7 @@ string GDBAgent::history_file() const
 	if (g != 0)
 	    return g;
 	else
-	    return home + "/.xdbhist";
+	    return string(gethome()) + "/.xdbhist";
     }
     }
 

@@ -41,6 +41,7 @@ char VSEFlags_rcsid[] =
 #include "VSEFlags.h"
 #include "VSLLib.h"
 #include "config.h"
+#include "home.h"
 
 #ifndef VSL_INCLUDE_PATH
 #define VSL_INCLUDE_PATH "/usr/local/lib/vsl-include"
@@ -457,12 +458,9 @@ void VSEFlags::getDefaults(bool warn)
     FILE *fp = fopen(filename, "r");
     if (fp == NULL)
     {
-	char *home = getenv("HOME");
-	if (home != NULL)
-	{
-	    filename.prepend(string(home) + "/");
-	    fp = fopen(filename, "r");
-	}
+	string home = gethome();
+	filename.prepend(home + "/");
+	fp = fopen(filename, "r");
 
 	if (fp == NULL)
 	{

@@ -220,6 +220,7 @@ char ddd_rcsid[] =
 #include "getrlimit.h"
 #include "graph.h"
 #include "history.h"
+#include "home.h"
 #include "host.h"
 #include "logo.h"
 #include "longName.h"
@@ -5813,7 +5814,7 @@ static void setup_version_info()
 	+ rm("    GERMANY") + cr();
 
     string log = session_log_file();
-    log.gsub(home_dir(), string("~"));
+    log.gsub(gethome(), "~");
 
     helpOnVersionExtraText += cr()
 	+ rm("Send bug reports to <")

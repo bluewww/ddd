@@ -70,6 +70,7 @@ char session_rcsid[] =
 #include "filetype.h"
 #include "glob.h"
 #include "history.h"
+#include "home.h"
 #include "hostname.h"
 #include "mydialogs.h"
 #include "options.h"
@@ -124,27 +125,13 @@ const string NO_SESSION = "[none]";
 // Session files
 // ---------------------------------------------------------------------------
 
-string home_dir()
-{
-    char *home = getenv("HOME");
-    if (home == 0)
-    {
-	static int warned = 0;
-	if (warned++ == 0)
-	    cerr << "Warning: environment variable HOME undefined\n";
-	home = ".";
-    }
-
-    return home;
-}
-
 string session_state_dir()
 {
     char *ddd_state = getenv(DDD_NAME "_STATE");
     if (ddd_state != 0)
 	return ddd_state;
     else
-	return home_dir() + "/." ddd_NAME;
+	return string(gethome()) + "/." ddd_NAME;
 }
 
 static string session_base_dir()
@@ -254,9 +241,9 @@ static void create_session_state_dir(ostream& msg)
     {
 	// Check for DDD 2.1 `~/.dddinit' and `~/.ddd_history' files; 
 	// copy them to new location if needed
-	copy(home_dir() + "/.dddinit",
+	copy(string(gethome()) + "/.dddinit",
 	     session_state_file(DEFAULT_SESSION), msg);
-	copy(home_dir() + "/.ddd_history",
+	copy(string(gethome()) + "/.ddd_history",
 	     session_history_file(DEFAULT_SESSION), msg);
     }
 

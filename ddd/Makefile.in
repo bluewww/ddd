@@ -614,6 +614,7 @@ BASE_OBJECTS = \
 	cwd.o        \
 	glob.o       \
 	hash.o       \
+	home.o       \
 	rxclass.o    \
 	sigName.o    \
 	strclass.o   \

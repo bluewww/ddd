@@ -41,6 +41,7 @@ char converters_rcsid[] =
 #include <X11/CoreP.h>
 
 #include "bool.h"
+#include "home.h"
 #include "BindingS.h"
 #include "OnOff.h"
 #include "strclass.h"
@@ -358,40 +359,6 @@ static Boolean CvtStringToBitmap(Display *display,
     done(Pixmap, bitmap);
 }
 
-// return home directory
-static string getHome()
-{
-    static string home = "";
-
-    // try using $HOME
-    if (home == "")
-    {
-	char *h = getenv("HOME");
-	if (h != NULL)
-	    home = h;
-    }
-
-    // try using passwd entry
-    if (home == "")
-    {
-	struct passwd *pw = NULL;
-
-	char *user = getenv("USER");
-	if (user == NULL)
-	    user = getenv("LOGNAME");
-
-	if (user != NULL)
-	    pw = getpwnam(user);
-	else
-	    pw = getpwuid(getuid());
-
-	if (pw != NULL)
-	    home = pw->pw_dir;
-    }
-
-    return home;
-}
-
 // Note: <percent>B<percent> is expanded by SCCS -- thus inserting ""
 static string BASENAME = "%B""%S";
 static string DELIMITER = ":";
@@ -421,7 +388,7 @@ static string bitmapPath()
     if (xbmlangpath == NULL)
     {
 	char *xapplresdir = getenv("XAPPLRESDIR");
-	string home = getHome();
+	string home = gethome();
 
 	if (xapplresdir != NULL)
 	    addDefaultPaths(path, xapplresdir);
