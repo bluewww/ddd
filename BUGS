@@ -145,13 +145,14 @@ Volunteers for fixing these and other bugs are welcome!
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 322*Finish Plots:
-    - Draw scalars as (rotatable) lines
-    - Give a diagnostic when plot did not succeed
+    - Destroying plotter decorations is buggy; re-use them instead
+    - Show diagnostic if plot was not possible 
+      (`graph plot' command, but no numeric data)
+    - Show diagnostic if Gnuplot failed
     - Add menu for printing
     - Add menu for line styles
     - Add Gnuplot console
     - Make swallowing (decorating) optional
-    - Destroying plotter decorations is risky; better re-use them
     - Document it all
 
 330 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
