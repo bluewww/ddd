@@ -261,6 +261,8 @@ static String resolve_dirname(Display *display, String type, String name)
 
 static int check_xnlspath(Display *display, bool verbose)
 {
+    (void) resolve_dirname;	// Use it
+
 #if XlibSpecificationRelease == 5
     if (verbose)
     {
@@ -289,7 +291,6 @@ static int check_xnlspath(Display *display, bool verbose)
     if (xnlspath == 0)
 	xnlspath = XtResolvePathname(display, "nls", "", "", 
 				     NULL, NULL, 0, NULL);
-    (void) resolve_dirname;	// Use it
 #else
     // Check for `nls/C' or `nls/nls.dir'
     if (xnlspath == 0)
