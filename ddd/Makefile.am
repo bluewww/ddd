@@ -857,15 +857,14 @@ ddd.pdf: $(PDF_IMAGES)
 
 docdir = $(srcdir)/../doc
 htmldir = $(docdir)/html
-HTMLS = $(htmldir)/index.html $(docdir)/sample.c
 
 .PHONY: html
 html: $(htmldir)/index.html
 
 $(htmldir)/index.html: $(srcdir)/ddd.texi $(HTML_IMAGES) \
 	style.css $(srcdir)/fix-html.sed
-	@-test -d $(htmldir) || $(MKDIR) $(htmldir)
-	@-test -d $(htmldir)/PICS || $(MKDIR) $(htmldir)/PICS
+	@-test -d $(htmldir) || mkdir $(htmldir)
+	@-test -d $(htmldir)/PICS || mkdir $(htmldir)/PICS
 	@-test -d PICS || $(LN_S) $(picdir) .
 	$(RM) ddd*.html
 	$(MAKEINFO) --html -I $(srcdir) -I $(texidir) $(srcdir)/ddd.texi
