@@ -14,7 +14,7 @@ To build a complete DDD from sources, you need:
      C++ I/O runtime library (libstdc++ or libg++).
 
      Some other C++ compilers have been reported to compile DDD as
-     well; we recommend to use GCC GCC 2.95 or later.
+     well; we recommend to use GCC 2.95 or later.
 
    * A Motif Widget library.  Either
 
@@ -399,6 +399,16 @@ these packages:
   automatically, you can use the `configure' options
   `--with-xpm-includes=DIR' and `--with-xpm-libraries=DIR' to specify
   their locations.
+
+* If `configure' doesn't find the Readline include and library files
+  automatically, you can use the `configure' options
+  `--with-readline-includes=DIR' and `--with-readline-libraries=DIR'
+  to specify their locations.
+
+* If `configure' doesn't find the Ncurses include and library files
+  automatically, you can use the `configure' options
+  `--with-ncurses-includes=DIR' and `--with-ncurses-libraries=DIR'
+  to specify their locations.
 
 
 You can also configure DDD to *ignore* some external packages:

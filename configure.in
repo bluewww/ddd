@@ -83,11 +83,35 @@ dnl
 dnl By default, DDD needs no RX library.
 ddd_have_rx=true
 dnl
-dnl Check for -lreadline
-AC_CHECK_LIB(readline, rl_callback_read_char, ddd_have_readline=true)
-dnl
-dnl Check for -liberty.
-AC_CHECK_LIB(iberty, xstrerror, ddd_have_libiberty=true)
+dnl check for ncurses
+ncurses_includes=
+ncurses_libraries=
+AC_ARG_WITH(ncurses,
+[  --without-ncurses                do not use the Ncurses library],[
+  if test "$withval" = "no"; then
+    ncurses_includes=no
+    ncurses_libraries=no
+  fi
+])
+AC_ARG_WITH(ncurses-libraries,
+[  --with-ncurses-libraries=DIR     Ncurses libraries are in DIR],[
+  ncurses_libraries="$withval"
+  case "$ncurses_libraries" in
+  no) ;;
+  yes)
+    AC_CHECK_LIB(ncurses, tgetent, [LIBTERMCAP="-lncurses";
+      ddd_have_termcap=true])
+    ;;
+  *)
+    _ldflags="${LDFLAGS}"
+    LDFLAGS="${LDFLAGS} -L$ncurses_libraries"
+    AC_CHECK_LIB(ncurses, tgetent,
+      [LIBTERMCAP="-L$ncurses_libraries -lncurses";
+      ddd_have_termcap=true])
+    LDFLAGS="${_ldflags}"
+    ;;
+  esac
+])  
 dnl
 dnl Look for the tgetent() function - either in libtermcap, libcurses,
 dnl or use the GNU termcap library as shipped with DDD.
@@ -97,10 +121,50 @@ dnl Reported by Vincenzo Capuano <vcapuano@esoc.esa.de>
 dnl
 dnl On Linux ELF systems, `-lncurses' is preferred to `-ltermcap'.
 dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
-ddd_have_termcap=false
-for termlib in mytinfo ncurses curses termcap terminfo termlib; do
-   AC_CHECK_LIB(${termlib}, tgetent, [ddd_have_termcap=true; break])
-done
+dnl
+if test "x${ddd_have_termcap}" = "xfalse"; then
+  if test "x$ncurses_libraries" = "xno"; then
+    _termlib="mytinfo curses termcap terminfo termlib"
+  else
+    _termlib="mytinfo ncurses curses termcap terminfo termlib"
+  fi
+  for termlib in ${_termlib}; do
+     AC_CHECK_LIB(${termlib}, tgetent, [LIBTERMCAP="-l${termlib}";
+       ddd_have_termcap=true; break])
+  done
+fi
+AC_SUBST(LIBTERMCAP)
+dnl
+dnl Check for -lreadline (optional)
+readline_includes=
+readline_libraries=
+AC_ARG_WITH(readline,
+[  --without-readline               do not use the readline library],[
+  if test "$withval" = "no"; then
+    readline_includes=no
+    readline_libraries=no
+  fi
+])
+AC_ARG_WITH(readline-libraries,
+[  --with-readline-libraries=DIR    Readline libraries are in DIR],[
+  readline_libraries="$withval"
+  case "$readline_libraries" in
+  no) ;;
+  yes)
+    AC_CHECK_LIB(readline, readline, [ddd_have_readline=true], ,
+      $LIBTERMCAP)
+    ;;
+  *)
+    _ldflags="${LDFLAGS}"
+    LDFLAGS="-L$readline_libraries $LDFLAGS"
+    AC_CHECK_LIB(readline, readline, [ddd_have_readline=true], ,
+      $LIBTERMCAP)
+    LDFLAGS="${_ldflags}"
+    ;;
+  esac])
+dnl
+dnl Check for -liberty.
+AC_CHECK_LIB(iberty, xstrerror, ddd_have_libiberty=true)
 dnl
 dnl
 AC_MSG_CHECKING([for packages to be configured and built])
