@@ -841,7 +841,7 @@ dnl
 dnl
 AC_HEADER_STDC
 AC_CHECK_HEADERS(alloca.h fcntl.h locale.h malloc.h netdb.h pwd.h)
-AC_CHECK_HEADERS(libelf.h elf.h sys/elf.h stdlib.h)
+AC_CHECK_HEADERS(libelf.h stdlib.h)
 AC_CHECK_HEADERS(string.h strings.h stropts.h termio.h termios.h unistd.h)
 AC_CHECK_HEADERS(sys/ioctl.h sys/int_types.h sys/param.h sys/resource.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)
