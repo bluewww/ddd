@@ -1130,7 +1130,7 @@ $(ddd).syms: FORCE
 # By default, create symbol files in the background
 .PHONY: syms
 syms:
-	(sleep 10; $(MAKE) $(ddd).syms > $(ddd).syms.log 2>&1) &
+	$(MAKE) $(ddd).syms > $(ddd).syms.log 2>&1 &
 
 
 # A convient target for setting up a debugging environment.
@@ -1477,7 +1477,7 @@ $(PUB_DEST)/USERINFO:
 ## Make dependency stuff.
 
 .PHONY: depend
-depend: $(PROG_STUFF)
+depend: FORCE
 
 .PRECIOUS: Makedeps
 Makedeps depend:
