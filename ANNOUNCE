@@ -1,10 +1,10 @@
-DDD 2.0 is available
+DDD 2.1 is available
 ====================
 
-    Release 2.0 of the Data Display Debugger (DDD), a common graphical
+    Release 2.1 of the Data Display Debugger (DDD), a common graphical
     front-end for GDB, DBX, and XDB debuggers, is now available at
 
-        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-2.0.tar.gz
+        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-2.1.tar.gz
 
     Diffs from earlier versions are in
 
@@ -24,124 +24,104 @@ DDD 2.0 is available
 DDD News
 ========
 
-    DDD 2.0 brings XDB support, extended DBX support, an improved user
-    interface as well as several new features and bug fixes.
+    DDD 2.1 brings alias detection, status displays, a further
+    improved user interface, and several bug fixes.
 
-    User-visible changes to DDD 1.4:
-    - New command tool.  All command buttons that do not take
-      arguments are now located in the command tool, a small separate
-      window.  The command tool can be moved wherever appropriate,
-      leaving more space for window contents.
-    - User-defined buttons are now available.  These can also
-      be used to re-install the old command buttons.
-    - Colored displays.  You can specify individual colors for
-      pointers, arrays, structs, and so on.
-    - Variable values can now be altered interactively during program
-      execution.
-    - You can inquire the types of variables and functions (`whatis') 
-      through the source popup menu.
-    - Selecting a data display item now also sets the `()' argument field
-      in the source window, making it available for further commands.
-    - `New display' subsumes `Dependent display': if a display is
-      selected, the new display is made dependent on it.
-    - `Show Detail' expands the entire selected value, including all
-      contained sub-structures.
-    - Option editors.  New panels for DDD preferences and GDB
-      settings.  GDB settings can be saved across DDD sessions.
-    - Some items have been renamed for further clarity:
-      * The `command window' is now named `debugger console', to avoid
-        confusion with the command tool.
-      * The `Interrupt' button is now named `Break', to associate the
-	concept with `Breakpoints'.
-      * The `Break ()' and `Clear ()' buttons are now named `Break at ()'
-        and `Clear at ()', respectively.
-      * The `Dereference' button is now named `Display *'.
-    - DDD now supports GDB-like incremental search in the command history.
-      It is invoked through Ctrl+R and Ctrl+S in the debugger console.
-    - Incremental search required some changes in keyboard shortcuts.
-      `Run' is now Ctrl+Z, `Step' is Ctrl+I, and `Next' is Ctrl+J.
-    - The `Save Options on Exit' function has been removed, as it
-      also saved options given upon DDD invocation like `--dbx' or
-      `--exec-window'.  Options must now always be saved explicitly.
-    - You can press Ctrl+\ to interrupt programs using a QUIT signal.
-    - Ctrl+C and Ctrl+\ now have the highest priority of all events.
-    - Improved remote debugging.  In contrast to `--host', the new
-      `--rhost' option uses `rsh' without arguments (aka `rlogin') 
-      to access the remote debugger.  DEC and SGI DBX require this.
-    - The DDD License can now be viewed from within DDD.
-    - DDD resources and actions are now fully documented; the DDD manual
-      contains several customization examples (fonts, colors, buttons).
+    User-visible changes to DDD 2.0:
+    - Alias detection.  DDD now recognizes that multiple displays
+      reference the same object.  This allows the examination of
+      graph-like data structures (circular lists, DAGs, and so on).
+      Alias detection slows down DDD a bit, so it can be turned off.
+    - Local variable displays.  You can display all local variables
+      and arguments in the data display.  The display is automatically
+      updated to reflect the list of variables and their values.
+    - Status displays.  You can now view the output of a debugger
+      command in the data window, using "graph display `COMMAND`".
+      For instance, local variable displays are realized via
+      "graph display `info locals`".
+    - Button tips.  Moving the mouse pointer over a button causes a
+      small hint window to raise.  This feature is also known as
+      `toolbar tips' or `button help'.  (optional)
+    - Value tips.  Moving the mouse pointer over a variable causes a
+      small window to raise showing the current variable value.  (optional)
+    - The status line has been reworked and extended:
+      + It displays information about the selected item.
+      + It has moved to the bottom, such that menu entries can be
+        described.  (can be restored)
+      + It contains a debugger status indicator, blinking whenever
+	the inferior debugger is busy.  (can be turned off)
+      + You can re-display the most recent messages.
+    - The register window can display floating-point registers.
+    - Thread support.  You can inquire existing threads and switch
+      among them.  (requires GDB and operating system thread support)
+    - By default, DDD now comes in one single window.
+    - The `Preferences' panel has been extended and reworked:
+      + Button tips and value tips can be enabled and disabled.
+      + Tab width and graph grid size can now be changed at run time.
+      + You can choose at run time whether command buttons should 
+        be placed in the command tool (as in DDD 2.0) or in the 
+        source window (as in DDD 1.x).
+      + You can reset the DDD preferences to the least recently saved
+	settings.
+    - Some items have been renamed for clarity:
+      + The `Stack' menu is now named `Status', as it hosts other
+        status-related items besides backtrace and registers.
+      + The `Break' button is now named `Interrupt' (as in DDD 1.x), to
+        avoid confusion with the `Break At' button. 
+      + The `Quit' menu item is now named `Abort', to avoid confusion
+        with the `Exit' menu item (which issues a `quit' command).
+    - DBX settings can now be viewed and changed at run time, using
+      the `Settings' panel.
+    - In GDB, there is a panel for displaying various things about 
+      the program being debugged.
+    - Reading the VSL library is now realized as a background job,
+      reducing startup time drastically.
+    - In the data window, the middle mouse button now toggles 
+      the display selection instead of simply extending it.
+    - In the debugger console, the right mouse button invokes a small
+      popup menu which you can use to clear the line or the window.
+    - Ever suffered from a frozen display while debugging a modal
+      application?  If the debugged program is interrupted in some modal
+      state, DDD will automatically make it ungrab the pointer, 
+    - In the source argument field `()', pressing RETURN activates
+      the `Lookup ()' button.
+    - Unnecessary redisplays have been significantly reduced, causing
+      much less flickering.
+    - You can search for keywords in the online DDD manual.
 
-    Supported debuggers and languages:
-    - XDB support.  On popular request, DDD now also supports HP's XDB as
-      inferior debugger.
-    - Extended DBX support.  DDD determines DBX properties
-      at run-time and adapts automatically to a wide range of DBX
-      variants.
-    - Even more DBX support.  DDD now supports DBX on SUN, DEC, AIX,
-      and IRIX systems.
-    - Language support.  DDD uses Pascal-style dereferencing (X^ 
-      instead of *X) if the current frame was written in Pascal, Ada,
-      or Modula.  (GDB only)
-    - Modula-3 support.  DDD supports `m3gdb', a GDB extension for Modula-3.
-      Thanks to Peter Klein <pk@i3.informatik.rwth-aachen.de>.
+    Documentation:
+    - The PostScript copy of the manual has been enriched with more
+      than 30 color screen shots showing DDD usage.
 
     Changes in configuration and building:
-    - New top-level `configure' script.  DDD now uses an `autoconf'-
-      generated top-level `configure' script instead of Cygnus
-      `configure'.  Among other advantages, configuration options are
-      now properly passed down to subdirectory configuration.
-    - Regular expressions now use the POSIX.2 standard regcomp/regexec
-      interface.  The slower interface is compensated by smarter calls.
-    - DDD configuration now generally attempts to link with native system
-      libraries wherever possible.  GNU termcap and librx are used
-      only if the system does not provide them.  This results in
-      smaller and (hopefully) safer DDD executables.
-    - DDD configuration tests whether your C++ compiler can compile a
-      `hello, world' program.  It is amazing how many misconfigured
-      C++ compilers exist in the world.
-    - You can specify `--without-athena' to avoid searching for and
-      linking with Athena libraries.
-    - Patches for AIX xlC, Sun CC, GCC 2.8.0 and probably other 
-      C++ compilers included.  Thanks to Jacek Holeczek
-      <holeczek@clri6f.gsi.de> and Jason Merrill <jason@cygnus.com>.
-    - DDD now compiles and runs unchanged with LessTif, a free Motif
-      clone under construction.  As of LessTif 0.75a, DDD is already 
-      quite usable.  The few remaining problems will be fixed as 
-      LessTif evolves.
+    - DDD 2.1 uses improved configuration checks from Autoconf 2.12.
+    - DDD no longer installs in the `gcc' location by default, but in
+      an existing DDD location; otherwise, in `/usr/local/bin'.
+    - Improved means of determining builder's e-mail address.
+    - Beta releases and DDD snapshots expire after a few weeks.
 
     Bug fixes:
-    - Improved directory support.  Sources and executables can reside
-      in several different directories.  With DBX and XDB, DDD
-      optionally uses full file paths when referring to source positions.
-    - Several TTY problems fixed.  Switching between execution window 
-      and debugger console should work fine now; the execution window
-      can be opened, closed and re-opened without DDD crashing or
-      hanging.
-    - The terminal type (TERM environment variable) of the debugger
-      console and the execution window is now properly set.
-    - Editor problems fixed.  Invoking a source editor via `Edit'
-      should work fine now.
-    - The rubber band outline no more clutters the data display.
-      (This was a GCC optimization bug.)
-    - No more endless scrolling when glyphs are enabled.  Scrolling is
-      slightly faster, too.
-    - On HP-UX, the `@' character is no more discarded from GDB input.
-    - On Solaris 2.x, annoying DBX warnings like `dbx: -r option only
-      recognized for C++' are silently ignored.
-    - You can now specify the location of own VSL libraries via the
-      `vslPath' resource.
-    - Improved diagnostics (file names and line numbers) for VSL errors.
-    - The `--attach' and `--separate' options are no more overridden
-      by the settings in `~/.dddinit'.
-    - The `-synchronous' option (for X debugging) now works;
-      `--synchronous-debugger' has been renamed to `--sync-debugger'.
-    - The source window no more scrolls back to some previous position
-      when adding or removing breakpoints.
-    - Pagers (`more', `less', etc.) invoked by the inferior debugger
-      are properly handled.  (When seeing `--More--', DDD hits the
-      space key.)
-    - And, of course, hundreds of minor bug fixes and improvements.
+    - Using DBX, comments were stripped from source code under certain
+      circumstances.  Fixed.
+    - The sash to resize the assembler window is back again.
+    - With XDB, sources are found in alternate directories, too.
+    - With DBX, the current source line was omitted from the listing
+      under certain circumstances.  Fixed.
+    - `Help on Version' no longer includes the entire DDD configuration.
+    - Several single-letter options like `-d DIR' are now passed down to the
+      inferior debugger.
+    - Buttons ending in `...' insert their name, followed by a space.
+    - Line continuations (i.e. lines ending in `\') are properly handled.
+    - The `vsl' and `test-graph' programs can again be built.
+    - And, again, dozens of minor bug fixes and improvements.
+
+    Release policy:
+    - Due to the large amount of testing, we make new DDD releases
+      only every six months or so.  If you found a bug and fixed it
+      for us or just reported it to us so we could fix it, then this
+      release scheme may not be good enough for you.  Therefore, we
+      now also have a daily snapshot of our CVS repository.  See the
+      DDD WWW page `http://www.cs.tu-bs.de/softech/ddd/' for details.
 
 
 Summary of DDD
@@ -182,7 +162,6 @@ Summary of DDD
     Germany.
 
 
-
 Requirements
 ============
 
@@ -194,7 +173,7 @@ Requirements
          Some other C++ compilers have been reported to compile DDD as
          well, such as Sun CC 4.0, AIX xlC and SGI CC.  Cfront 3.0
          does not compile DDD.  Prefer GCC if you can - for example,
-         DDD does not run correctly when compiled with SGI CC.
+         DDD has been reported to fail when compiled with SGI CC.
 
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
@@ -205,8 +184,8 @@ Requirements
 
 	 DDD also compiles and runs with LessTif, a free Motif clone.
 	 As of LessTif 0.75a, the resulting DDD executable is already
-	 quite usable.  See the file `LESSTIF-BUGS' for a recent list
-	 of problems and fixes.
+	 quite usable.  See the file `PROBLEMS' for a recent list of
+	 problems and fixes.
 
        * Optionally, in addition to the OSF/Motif widget library, the
          Athena Widget library (release 5 or later).  Having the
@@ -269,7 +248,7 @@ More Information
 DDD source FTP sites
 ====================
 
-    The DDD source package `ddd-2.0.tar.gz' will soon be at these FTP
+    The DDD source package `ddd-2.1.tar.gz' will soon be at these FTP
     sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
     ftp.ips has a slow network connection.
 
@@ -343,7 +322,7 @@ Europe
     ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/
 
 
-Have a nice day!
+Have fun with DDD!
 --
 Andreas Zeller (ddd@ips.cs.tu-bs.de)
 Technische Universitaet Braunschweig, Germany

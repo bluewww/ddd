@@ -15,7 +15,7 @@ Requirements
          Some other C++ compilers have been reported to compile DDD as
          well, such as Sun CC 4.0, AIX xlC and SGI CC.  Cfront 3.0
          does not compile DDD.  Prefer GCC if you can - for example,
-         DDD does not run correctly when compiled with CC.
+         DDD has been reported to fail when compiled with SGI CC.
 
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
