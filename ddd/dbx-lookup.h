@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Lookup DBX cache
+// Lookup a DBX function
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -35,7 +35,7 @@
 
 #include "strclass.h"
 
-// Find location of FUNC using DBX
+// Find location of FUNC_NAME using DBX
 string dbx_lookup(const string& func_name, bool silent = true);
 void clear_dbx_lookup_cache();
 

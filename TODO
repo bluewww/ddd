@@ -250,7 +250,7 @@ Volunteers for these and other projects are welcome!
     arrays is easy to be confused about which value we are looking at. Would
     it be possible to show (together with the array value) the indexes 
     values (in another font, size, color, etc)?
-    
+
     2)  It will also be very handy the ability to plot one (or several)
     variable against another. Nothing fancy, the barest skeleton of a plot.
     This will allow to have a visual overview of the program behavior 
@@ -357,6 +357,9 @@ Volunteers for these and other projects are welcome!
 335 `Edit' and `Reload' buttons should be insensitive if we have no
     current source.
 
-336 Plot array data using gnuplot.
+336 Plot array data using gnuplot.  See also 273.
 
-337 (Insert new project ideas here)
+337 Hobi <hobelsbe@forwiss.uni-passau.de> wants that selecting text in 
+    the debugger console should be copied to `()'.
+
+338 (Insert new project ideas here)
