@@ -510,6 +510,9 @@ string& SourceView::current_text(Widget w)
 	return current_source;
 }
 
+
+static const int MAX_INDENT = 64;
+
 int SourceView::indent_amount(Widget w, int pos)
 {
     assert(is_source_widget(w) || is_code_widget(w));
@@ -530,6 +533,9 @@ int SourceView::indent_amount(Widget w, int pos)
 	if (gdb->requires_script_indent())
 	    indent = max(indent, script_indent_amount);
     }
+
+    // Make sure indentation stays within reasonable bounds
+    indent = min(max(indent, 0), MAX_INDENT);
 
     if (pos >= 0)
     {
@@ -2445,6 +2451,9 @@ void SourceView::reload()
 				at_lowest_frame, signal_received);
 }
 
+
+static const int MAX_TAB_WIDTH = 256;
+
 // Change tab width
 void SourceView::set_tab_width(int width)
 {
@@ -2453,7 +2462,8 @@ void SourceView::set_tab_width(int width)
 
     if (tab_width != width)
     {
-	tab_width = width;
+	// Make sure the tab width stays within reasonable ranges
+	tab_width = min(max(width, 1), MAX_TAB_WIDTH);
 
 	if (current_file_name != "")
 	{
@@ -2475,7 +2485,7 @@ void SourceView::set_indent(int source_indent, int code_indent)
 
     if (source_indent != source_indent_amount)
     {
-	source_indent_amount = source_indent;
+	source_indent_amount = min(max(source_indent, 0), MAX_INDENT);
 	if (current_file_name != "")
 	{
 	    StatusDelay delay("Reformatting");
@@ -2485,7 +2495,7 @@ void SourceView::set_indent(int source_indent, int code_indent)
 
     if (code_indent != code_indent_amount)
     {
-	code_indent_amount = code_indent;
+	code_indent_amount = min(max(code_indent, 0), MAX_INDENT);
 
 	clear_code_cache();
 	show_pc(last_shown_pc);
