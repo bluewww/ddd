@@ -350,10 +350,8 @@ Volunteers for these and other projects are welcome!
     [graph display `print *this` would help.  -AZ]
 
 328*Finish display clustering:
-    - Add unclustering and target clustering
+    * Add unclustering and target clustering
     - Improve change display in cluster (variable-specific? copy?)
-    - Propagate commands (delete, etc.) from cluster to item
-    - Allow deletion if `()' contains a display number or name
     - Improve efficiency
 
 329*Have a Display Editor shortcut from the data popup menu.

@@ -1125,7 +1125,7 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 	    else
 	    {
 		DispValue *dv = dn->selected_value();
-		if (dv == 0 || dv == dn->value())
+		if (dv == 0)
 		    selected_titles++;
 
 		if (!dn->is_user_command())
@@ -1472,14 +1472,11 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data,
 			   XtPointer call_data)
 {
     DataDispCount count(disp_graph);
-    bool delete_from_display_part = bool((int)(long)client_data);
 
-    if (count.selected_titles > 0 || 
-	(delete_from_display_part && count.selected > 0))
+    if (count.selected_titles > 0)
     {
 	// Delete selected displays
 	deleteCB(dialog, client_data, call_data);
-	return;
     }
     else
     {
@@ -2039,10 +2036,11 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  record_ok || count.selected_expanded > 0);
 
     // Delete
+    bool have_display_arg = (display_number(source_arg->get_string()) != 0);
     set_sensitive(graph_cmd_area[CmdItms::Delete].widget,
-		  record_ok || count.selected_titles > 0);
+		  have_display_arg || record_ok || count.selected_titles > 0);
     set_sensitive(display_area[DisplayItms::Delete].widget,
-		  count.selected_titles > 0);
+		  count.selected > 0);
 
     // Set
     bool can_set = gdb->has_assign_command() && arg_ok;
