@@ -138,7 +138,7 @@ static void show_isearch()
     switch (isearch_state)
     {
     case ISEARCH_NONE:
-	prompt = gdb->default_prompt();
+	prompt = gdb->prompt();
 	break;
 
     case ISEARCH_NEXT:

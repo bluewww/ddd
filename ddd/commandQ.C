@@ -78,7 +78,7 @@ void _gdb_command(string command, Widget origin)
 
 	if (command.length() == 0)
 	{
-	    _gdb_out(gdb->default_prompt());
+	    _gdb_out(gdb->prompt());
 	    return;
 	}
     }

@@ -330,7 +330,7 @@ static void complete_reply(const string& complete_answer, void *qu_data)
 		    insertion += "\n";
 		}
 		gdb_out(insertion);
-		gdb_out(gdb->default_prompt());
+		gdb_out(gdb->prompt());
 
 		XmTextSetInsertionPosition(gdb_w, 
 					   XmTextGetLastPosition(gdb_w));

@@ -193,7 +193,7 @@ void post_gdb_message(string text, Widget w)
 
     if (gdb->isReadyWithPrompt())
     {
-	gdb_out("\r" + text + "\n" + gdb->default_prompt());
+	gdb_out("\r" + text + "\n" + gdb->prompt());
 	return;
     }
 

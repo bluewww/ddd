@@ -110,9 +110,9 @@ void tty_full_name(const string& pos)
 
 void prompt()
 {
-    _gdb_out(gdb->default_prompt());
+    _gdb_out(gdb->prompt());
     if (tty_gdb_input)
-	_tty_out(gdb->default_prompt());
+	_tty_out(gdb->prompt());
 }
 
 void init_command_tty()
