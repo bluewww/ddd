@@ -439,7 +439,6 @@ DDD_SOURCES = \
 	annotation.h \
 	args.C       \
 	args.h       \
-	build.h      \
 	buttons.C    \
 	buttons.h    \
 	cmdtty.C     \
@@ -486,7 +485,6 @@ DDD_SOURCES = \
 	gdbinit.h    \
 	history.C    \
 	history.h    \
-	host.h       \
 	hostname.C   \
 	hostname.h   \
 	index.C      \
@@ -552,7 +550,6 @@ DDD_SOURCES = \
 	ungrab.h     \
 	value-read.C \
 	value-read.h \
-	version.h    \
 	vsldoc.C     \
 	vsldoc.h     \
 	windows.C    \
@@ -718,7 +715,7 @@ ddd_SOURCES = ddd.C \
 	$(GRAPH_SOURCES) \
 	$(DDD_SOURCES)
 
-stringify_SOURCES = cxxtest.C
+stringify_SOURCES = stringify.C
 userinfo_SOURCES = userinfo.C
 ctest_SOURCES   = ctest.c
 cxxtest_SOURCES = cxxtest.C
@@ -1798,6 +1795,7 @@ spec: ../$(ddd)-$(VERSION)-$(REL).spec
 	CONFIG_FILES=../ddd.spec CONFIG_HEADERS= $(SHELL) ./config.status
 	$(SED) 's/@REL@/$(REL)/g' ../ddd.spec > $@
 	$(RM) ../ddd.spec
+
 
 # Architecture-independent files required for building DDD.
 # In a distribution, these should be already built.
