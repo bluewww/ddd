@@ -69,15 +69,15 @@ bool gdb_keyboard_command = false;
 // True if the next line is to be displayed in the status line
 bool show_next_line_in_status = false;
 
+// True if GDB is asking `yes or no' right now
+bool gdb_asks_yn;
+
 // Current contents of status window
 static MString current_status_text;
 
 //-----------------------------------------------------------------------------
 // Prompt recognition
 //-----------------------------------------------------------------------------
-
-// True if asking `yes or no'
-bool gdb_asks_yn;
 
 void set_buttons_from_gdb(Widget buttons, string& text)
 {
@@ -154,7 +154,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	    Widget w = children[i];
 	    string name = XtName(w);
 
-	    if (gdb_asks_yn == (name == "Yes" || name == "No"))
+	    if (yn == (name == "Yes" || name == "No"))
 		XtManageChild(w);
 	    else
 		XtUnmanageChild(w);
