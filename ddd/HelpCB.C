@@ -742,13 +742,16 @@ static Widget tip_label               = 0;
 static bool tip_popped_up             = false;
 
 // The timer used for the delay until the tip is raised.
-static XtIntervalId pending_tip_timer = 0;
+static XtIntervalId raise_tip_timer   = 0;
+
+// The timer used for the delay until the tip is cleared.
+static XtIntervalId clear_tip_timer   = 0;
 
 // The timer used for the delay until the documentation is shown.
-static XtIntervalId pending_doc_timer = 0;
+static XtIntervalId raise_doc_timer   = 0;
 
 // The timer used for the delay until the documentation is cleared.
-static XtIntervalId pending_clr_timer = 0;
+static XtIntervalId clear_doc_timer   = 0;
 
 // Delay times (in ms)
 int help_button_tip_delay = 750;  // Delay before raising button tip
@@ -756,6 +759,7 @@ int help_value_tip_delay  = 750;  // Delay before raising value tip
 int help_button_doc_delay = 0;    // Delay before showing button doc
 int help_value_doc_delay  = 0;    // Delay before showing value doc
 int help_clear_doc_delay  = 1000; // Delay before clearing doc
+int help_clear_tip_delay  = 50;   // Delay before clearing tip
 
 
 // Helper: cancel the timer given in CLIENT_DATA
@@ -775,8 +779,8 @@ struct TipInfo {
 static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 {
     (void) timer;
-    assert(*timer == pending_tip_timer);
-    pending_tip_timer = 0;
+    assert(*timer == raise_tip_timer);
+    raise_tip_timer = 0;
 
     TipInfo *ti = (TipInfo *)client_data;
     Widget& w = ti->widget;
@@ -1070,8 +1074,8 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 static void ShowDocumentation(XtPointer client_data, XtIntervalId *timer)
 {
     (void) timer;
-    assert(*timer == pending_doc_timer);
-    pending_doc_timer = 0;
+    assert(*timer == raise_doc_timer);
+    raise_doc_timer = 0;
 
     TipInfo *ti = (TipInfo *)client_data;
     XtRemoveCallback(ti->widget, XmNdestroyCallback, 
@@ -1091,8 +1095,8 @@ static void ClearDocumentation(XtPointer* client_data,
 			       XtIntervalId *timer)
 {
     (void) timer;
-    assert(*timer == pending_clr_timer);
-    pending_clr_timer = 0;
+    assert(*timer == clear_doc_timer);
+    clear_doc_timer = 0;
 
     TipInfo *ti = (TipInfo *)client_data;
 
@@ -1108,12 +1112,10 @@ static void ClearDocumentation(XtPointer* client_data,
 // Clear tips and documentation
 static void ClearTip(Widget w, XEvent *event)
 {
-    (void) w;
-
-    if (pending_tip_timer)
+    if (raise_tip_timer)
     {
-	XtRemoveTimeOut(pending_tip_timer);
-	pending_tip_timer = 0;
+	XtRemoveTimeOut(raise_tip_timer);
+	raise_tip_timer = 0;
     }
 
     if (tip_popped_up)
@@ -1122,16 +1124,16 @@ static void ClearTip(Widget w, XEvent *event)
 	tip_popped_up = false;
     }
 
-    if (pending_doc_timer)
+    if (raise_doc_timer)
     {
-	XtRemoveTimeOut(pending_doc_timer);
-	pending_doc_timer = 0;
+	XtRemoveTimeOut(raise_doc_timer);
+	raise_doc_timer = 0;
     }
 
-    if (pending_clr_timer)
+    if (clear_doc_timer)
     {
-	XtRemoveTimeOut(pending_clr_timer);
-	pending_clr_timer = 0;
+	XtRemoveTimeOut(clear_doc_timer);
+	clear_doc_timer = 0;
     }
 
     if (DisplayDocumentation != 0 
@@ -1145,7 +1147,7 @@ static void ClearTip(Widget w, XEvent *event)
 	ti.event  = *event;
 	ti.widget = w;
 
-	pending_clr_timer =
+	clear_doc_timer =
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
 			    help_clear_doc_delay, 
 			    ClearDocumentation, XtPointer(&ti));
@@ -1159,10 +1161,10 @@ static void RaiseTip(Widget w, XEvent *event)
 	&& (XmIsText(w) ? text_docs_enabled : button_docs_enabled))
     {
 	// No need to clear the documentation
-	if (pending_clr_timer)
+	if (clear_doc_timer)
 	{
-	    XtRemoveTimeOut(pending_clr_timer);
-	    pending_clr_timer = 0;
+	    XtRemoveTimeOut(clear_doc_timer);
+	    clear_doc_timer = 0;
 	}
 
 	static TipInfo ti;
@@ -1172,14 +1174,14 @@ static void RaiseTip(Widget w, XEvent *event)
 	int doc_delay = 
 	    XmIsText(w) ? help_value_doc_delay : help_button_doc_delay;
 
-	pending_doc_timer =
+	raise_doc_timer =
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
 			    doc_delay,
 			    ShowDocumentation, XtPointer(&ti));
 
 	// Should W be destroyed beforehand, cancel timeout
 	XtAddCallback(w, XmNdestroyCallback, CancelTimeOut, 
-		      XtPointer(pending_doc_timer));
+		      XtPointer(raise_doc_timer));
     }
 
     if (XmIsText(w) ? text_tips_enabled : button_tips_enabled)
@@ -1191,26 +1193,27 @@ static void RaiseTip(Widget w, XEvent *event)
 	int tip_delay = 
 	    XmIsText(w) ? help_value_tip_delay : help_button_tip_delay;
 
-	pending_tip_timer = 
+	raise_tip_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
 			    tip_delay,
 			    PopupTip, XtPointer(&ti));
 
 	// Should W be destroyed beforehand, cancel timeout
 	XtAddCallback(w, XmNdestroyCallback, CancelTimeOut, 
-		      XtPointer(pending_tip_timer));
+		      XtPointer(raise_tip_timer));
     }
 }
 
-static int tips_ignore_leave = 0;
-
-// Ignore next N enter/leave events.  This is required for temporary
-// pointer grabs.
-void TipsIgnoreLeave(int n)
+static void DoClearTip(XtPointer client_data, XtIntervalId *timer)
 {
-    if (tip_popped_up || pending_tip_timer || pending_doc_timer)
-	tips_ignore_leave = n;
+    (void) timer;
+    assert(*timer == clear_tip_timer);
+    clear_tip_timer = 0;
+
+    TipInfo& ti = *((TipInfo *)client_data);
+    ClearTip(ti.widget, &ti.event);
 }
+
 
 // Widget W has been entered or left.  Handle event.
 static void HandleTipEvent(Widget w,
@@ -1218,9 +1221,35 @@ static void HandleTipEvent(Widget w,
 			   XEvent *event, 
 			   Boolean * /* continue_to_dispatch */)
 {
+    static Widget last_left_widget = 0;
+
     switch (event->type)
     {
     case EnterNotify:
+	if (clear_tip_timer != 0)
+	{
+	    XtRemoveTimeOut(clear_tip_timer);
+	    clear_tip_timer  = 0;
+
+	    if (w != last_left_widget)
+	    {
+		// Entered other widget within HELP_CLEAR_TIP_DELAY.
+		ClearTip(w, event);
+		last_left_widget = 0;
+	    }
+	    else
+	    {
+		// Re-entered same widget -- ignore.
+#if 0
+		clog << "Wow!  Left and entered " << XtName(w) << " within " 
+		     << help_clear_tip_delay << "ms!\n";
+#endif
+
+		last_left_widget = 0;
+		break;
+	    }
+	}
+
 	if (!XmIsText(w))
 	{
 	    ClearTip(w, event);
@@ -1229,13 +1258,27 @@ static void HandleTipEvent(Widget w,
 	break;
 
     case LeaveNotify:
-	if (tips_ignore_leave > 0)
+	last_left_widget = w;
+	if (clear_tip_timer != 0)
 	{
-	    tips_ignore_leave--;
-	    break;
+	    XtRemoveTimeOut(clear_tip_timer);
+	    clear_tip_timer = 0;
 	}
 
-	// FALL THROUGH
+	// We don't clear the tip immediately, because the DDD ungrab
+	// mechanism may cause the pointer to leave a button and
+	// re-enter it immediately.
+
+	static TipInfo ti;
+	ti.event  = *event;
+	ti.widget = w;
+
+	clear_tip_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
+			    help_clear_tip_delay, 
+			    DoClearTip, &ti);
+	break;
+
     case ButtonPress:
     case ButtonRelease:
 	ClearTip(w, event);

@@ -526,16 +526,19 @@ Ddd*valueDocs:			true
 
 
 ! Delays for showing tips and docs
-! Time (in ms) to spend before raising a button or value tip
+! Time (in ms) to spend before raising a button or value tip.
 Ddd*buttonTipDelay:		750
 Ddd*valueTipDelay:		750
 
-! Time (in ms) to spend before showing a button or value doc:
+! Time (in ms) to spend before showing a button or value doc.
 Ddd*buttonDocDelay:		100
 Ddd*valueDocDelay:		100
 
-! Time (in ms) to spend before clearing the value doc:
+! Time (in ms) to spend before clearing the value doc.
 Ddd*clearDocDelay:		1000
+
+! Time (in ms) to spend before clearing a button or value tip.
+Ddd*clearTipDelay:		50
 
 
 ! The maximum length of a data display title (in characters)

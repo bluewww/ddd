@@ -185,7 +185,8 @@
 #define XtNvalueDocDelay         "valueDocDelay"
 #define XtCDocDelay              "DocDelay"
 #define XtNclearDocDelay         "clearDocDelay"
-#define XtCClearDocDelay         "ClearDocDelay"
+#define XtNclearTipDelay         "clearTipDelay"
+#define XtCClearDelay            "ClearDelay"
 #define XtNungrabMousePointer    "ungrabMousePointer"
 #define XtCUngrabMousePointer    "UngrabMousePointer"
 #define XtNdddinitVersion        "dddinitVersion"
@@ -271,6 +272,7 @@ struct AppData {
     int     button_doc_delay;
     int     value_doc_delay;
     int     clear_doc_delay;
+    int     clear_tip_delay;
     Boolean ungrab_mouse_pointer;
     String  dddinit_version;
     String  app_defaults_version;

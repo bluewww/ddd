@@ -323,7 +323,4 @@ Volunteers for fixing these and other bugs are welcome!
 146* After `graph display `show warranty`', the display cannot be
      disabled.
 
-147. Ungrabbing the pointer causes button hints to re-raise (there
-     seems to be an EnterWindow event)
-
 148. (Insert your bug here)

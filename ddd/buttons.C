@@ -343,9 +343,9 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	    return MString(0, true);
 	if (tip.contains(help_name, 0))
 	    tip = tip.after(help_name);
-	if (tip.contains(" # "))
+	if (tip.contains(" # ") && tip.index(" # ") < tip.index('\n'))
 	    tip = tip.after(" # ");
-	if (tip.contains(" - "))
+	if (tip.contains(" - ") && tip.index(" - ") < tip.index('\n'))
 	    tip = tip.after(" - ");
 
 	tip = tip.from(rxalpha);

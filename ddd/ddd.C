@@ -1311,6 +1311,7 @@ int main(int argc, char *argv[])
     help_button_doc_delay = app_data.button_doc_delay;
     help_value_doc_delay  = app_data.value_doc_delay;
     help_clear_doc_delay  = app_data.clear_doc_delay;
+    help_clear_tip_delay  = app_data.clear_tip_delay;
 
 
     // Create command shell

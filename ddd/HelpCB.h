@@ -119,9 +119,6 @@ extern void EnableButtonDocs(bool enable = true);
 // Enable or disable all installed text docs.
 extern void EnableTextDocs(bool enable = true);
 
-// Ignore N leave events (for temporary pointer grabs)
-extern void TipsIgnoreLeave(int n = 1);
-
 
 // Data
 
@@ -153,6 +150,7 @@ extern int help_value_tip_delay;  // delay before raising value tip
 extern int help_button_doc_delay; // delay before showing button doc
 extern int help_value_doc_delay;  // delay before showing value doc
 extern int help_clear_doc_delay;  // delay before clearing doc
+extern int help_clear_tip_delay;  // delay before clearing tip
 
 #endif // _DDD_HelpCB_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

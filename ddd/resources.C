@@ -805,12 +805,22 @@ XtResource ddd_resources[] = {
 
     {
 	XtNclearDocDelay,
-	XtCClearDocDelay,
+	XtCClearDelay,
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, clear_doc_delay),
 	XmRImmediate,
 	XtPointer(1000)
+    },
+
+    {
+	XtNclearTipDelay,
+	XtCClearDelay,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, clear_tip_delay),
+	XmRImmediate,
+	XtPointer(50)
     },
 
     {
