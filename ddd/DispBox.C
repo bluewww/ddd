@@ -113,7 +113,7 @@ void DispBox::init_vsllib()
 	string defs = string(builtin_def)
 	    + "#line 1 \"" Ddd_NAME "*vslDefs\"\n"
 	    + vsllib_defs;
-	istrstream is(defs);
+	istrstream is(defs.chars());
 	vsllib_ptr = new VSLLib(is);
     }
 

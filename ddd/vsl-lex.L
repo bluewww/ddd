@@ -181,9 +181,9 @@ W			[ \f\t]*
 ^{W}#{W}line[ \f\t]{W}.* {		// #line LINE ["FILE"]
 			string buf((char *)yytext);
 			buf = buf.after("line");
-			char *s = buf;
+			char *s = (char *)buf.chars();
 			int line = strtol(s, &s, 10);
-			if (s == buf)
+			if (s == buf.chars())
 			    VSLLib::parse_error("illegal #line number");
 			else
 			    yylinenumber = line;

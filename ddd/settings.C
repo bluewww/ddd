@@ -44,6 +44,7 @@ const char settings_rcsid[] =
 #include <Xm/PushB.h>
 #include <Xm/TextF.h>
 #include <Xm/Form.h>
+#include <Xm/Label.h>
 #include <ctype.h>
 
 #include "Delay.h"
@@ -281,11 +282,16 @@ static void add_button(string line, int& row)
 			  set_command_s);
 	}
 
+	MString empty;
 	arg = 0;
 	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
 	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
 	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
 	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
+	XtSetArg(args[arg], XmNlabelString,      empty.xmstring());  arg++;
+	XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
+	XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
+	XtSetArg(args[arg], XmNspacing,          0);                 arg++;
 	XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
 	entry = 
 	    verify(XmCreateOptionMenu(settings_form, set_command, args, arg));
@@ -335,11 +341,16 @@ static void add_button(string line, int& row)
 	    }
 	}
 
+	MString empty;
 	arg = 0;
 	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
 	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
 	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
 	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
+	XtSetArg(args[arg], XmNlabelString,      empty.xmstring());  arg++;
+	XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
+	XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
+	XtSetArg(args[arg], XmNspacing,          0);                 arg++;
 	XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
 	entry = 
 	    verify(XmCreateOptionMenu(settings_form, set_command, args, arg));
@@ -396,7 +407,7 @@ static void add_button(string line, int& row)
 }
 
 // Add buttons
-static void add_settings(int& row, string command = "set")
+static void add_settings(int& row, string command)
 {
     string commands = gdb_question("help " + command);
 

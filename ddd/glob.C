@@ -24,7 +24,6 @@
 // C++ comments indicate changes to Stallman's original C code.
 
 #include "config.h"
-#include <sys/types.h>
 
 // From the `autoconf' documentation...
 
@@ -45,6 +44,8 @@ extern "C" char *alloca ();
 #  endif
 # endif
 #endif
+
+#include <sys/types.h>
 
 // Yep, `#pragma alloca' must come even before this simple stuff.  Sigh.
 char glob_rcsid[] = 

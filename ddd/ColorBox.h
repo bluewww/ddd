@@ -37,6 +37,7 @@
 #include "bool.h"
 #include "Box.h"
 #include "THatBox.h"
+#include "TypeInfo.h"
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -45,7 +46,7 @@
 // Associate a color with a box
 class ColorBox: public TransparentHatBox {
 public:
-    DECLARE_TYPE_INFO;
+    DECLARE_TYPE_INFO
 
     static bool use_color;	// Set to false to disable color
 
@@ -99,7 +100,7 @@ public:
 // Draw box using associated color as foreground
 class ForegroundColorBox: public ColorBox {
 public:
-    DECLARE_TYPE_INFO;
+    DECLARE_TYPE_INFO
 
 protected:
     // Draw
@@ -126,7 +127,7 @@ public:
 // Draw box using associated color as background
 class BackgroundColorBox: public ColorBox {
 public:
-    DECLARE_TYPE_INFO;
+    DECLARE_TYPE_INFO
 
 protected:
     // Draw

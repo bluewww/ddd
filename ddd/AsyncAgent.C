@@ -254,7 +254,7 @@ void AsyncAgent::killProcess(XtPointer client_data, XtIntervalId *)
     kill(pid, SIGKILL);
 }
 
-void AsyncAgent::terminate(bool onExit = false)
+void AsyncAgent::terminate(bool onExit)
 {
     Agent::terminate(onExit);
 

@@ -174,7 +174,7 @@ public:
     E& operator()()             { return rec->elem; }
 
     bool ok() const { return rec != 0; }
-    QueueIter<E> next() const { return QueueIter(rec->next); }
+    QueueIter<E> next() const { return QueueIter<E>(rec->next); }
 };
 
 #endif // _ICE_Queue_h

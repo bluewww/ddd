@@ -39,6 +39,7 @@ char regex_rcsid[] =
 #include "assert.h"
 #include "misc.h"
 
+#include <stdlib.h>
 #include <iostream.h>
 #include <ctype.h>
 #include <string.h>		// strncmp()
