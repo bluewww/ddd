@@ -4540,26 +4540,15 @@ string SourceView::current_source_name()
 
 		    if (source_name_cache[all_sources] == "")
 		    {
-			ans = gdb_question("info sources");
-			if (ans != NO_GDB_ANSWER)
+			StringArray sources;
+			get_gdb_sources(sources);
+
+			if (sources.size() > 0)
 			{
-			    // Create a newline-separated list of sources
-			    string new_ans;
-			    string line;
+			    ans = "";
+			    for (int i = 0; i < sources.size(); i++)
+				ans += sources[i] + '\n';
 
-			    while (ans != "")
-			    {
-				line = ans.before('\n');
-				ans = ans.after('\n');
-
-				if (line == "" || line.contains(':', -1))
-				    continue;
-
-				line.gsub(", ", "\n");
-				new_ans += line + '\n';
-			    }
-
-			    ans = new_ans;
 			    source_name_cache[all_sources] = ans;
 			}
 		    }
