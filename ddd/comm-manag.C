@@ -1,5 +1,5 @@
 // $Id$
-// GDB communication manager.
+// GDB communication manager
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
@@ -208,10 +208,10 @@ void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
 }
 
 
-// Additional data given to extra commands.
-class PlusCmdData {
+// Data given to extra commands.
+class ExtraData {
 public:
-    string      command;	       // The command issued
+    string   command;		       // The command issued
 
     int      n_init;	               // # of initialization commands
 
@@ -264,7 +264,10 @@ public:
     bool     config_output;            // try 'output'
     bool     config_program_language;  // try 'show language'
 
-    PlusCmdData ()
+    OACProc  user_callback;	       // callback
+    void     *user_data;	       // user data
+
+    ExtraData ()
 	: command(""),
 	  n_init(0),
 	  refresh_initial_line(false),
@@ -314,13 +317,16 @@ public:
 	  config_examine(false),
 	  config_xdb(false),
 	  config_output(false),
-	  config_program_language(false)
+	  config_program_language(false),
+
+	  user_callback(0),
+	  user_data(0)
     {}
 };
 
-static void user_cmdOA  (const string&, void *);
-static void user_cmdOAC (void *);
-static void plusOQAC (const StringArray&, const VoidArray&, void *);
+static void partial_answer_received(const string&, void *);
+static void command_completed(void *);
+static void extra_completed(const StringArray&, const VoidArray&, void *);
 
 // Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
 // to a `where 1' command; return true iff recognized
@@ -349,7 +355,7 @@ static string print_cookie = "4711";
 
 // Replace all occurrences of `@N@' by N + the current breakpoint base;
 // Replace all occurrences of `@AUTO@' by the current command prefix.
-static void fix_symbols(string& cmd)
+void fix_symbols(string& cmd)
 {
 #if RUNTIME_REGEX
     static regex rxnum("@[0-9]+@");
@@ -387,8 +393,8 @@ void start_gdb()
     cmd_data->pos_buffer  = new PosBuffer; // Find initial pos
     cmd_data->user_prompt = true;
 
-    PlusCmdData* plus_cmd_data = new PlusCmdData;
-    plus_cmd_data->command = "<init>";
+    ExtraData* extra_data = new ExtraData;
+    extra_data->command = "<init>";
     StringArray cmds;
     VoidArray dummy;
 
@@ -437,8 +443,8 @@ void start_gdb()
 	}
 	init = init.after('\n');
     }
-    plus_cmd_data->n_init = cmds.size();
-    plus_cmd_data->refresh_recent_files = true;
+    extra_data->n_init = cmds.size();
+    extra_data->refresh_recent_files = true;
 
     // Add some additional init commands with reply handling
     switch (gdb->type())
@@ -447,106 +453,106 @@ void start_gdb()
 	cmds += "info line";	// Fails if no symbol table is loaded.
 	cmds += "list";		// But works just fine after a `list'.
 	cmds += "info line";
-	plus_cmd_data->refresh_initial_line = true;
+	extra_data->refresh_initial_line = true;
 	cmds += "output " + print_cookie;
-	plus_cmd_data->config_output = true;
+	extra_data->config_output = true;
 	cmds += "show language";
-	plus_cmd_data->config_program_language = true;
+	extra_data->config_program_language = true;
 	cmds += "pwd";
-	plus_cmd_data->refresh_pwd = true;
+	extra_data->refresh_pwd = true;
 	cmds += "info breakpoints";
-	plus_cmd_data->refresh_breakpoints = true;
+	extra_data->refresh_breakpoints = true;
 	cmds += "show history filename";
-	plus_cmd_data->refresh_history_filename = true;
+	extra_data->refresh_history_filename = true;
 	cmds += "show history size";
-	plus_cmd_data->refresh_history_size = true;
+	extra_data->refresh_history_size = true;
 	break;
 
     case DBX:
-	plus_cmd_data->refresh_initial_line = true;
+	extra_data->refresh_initial_line = true;
 
 	cmds += "frame";
-	plus_cmd_data->config_frame = true;
+	extra_data->config_frame = true;
 	cmds += "func";
-	plus_cmd_data->config_func = true;
+	extra_data->config_func = true;
 	cmds += "dbxenv run_io";
-	plus_cmd_data->config_run_io = true;
+	extra_data->config_run_io = true;
 	cmds += "print -r " + print_cookie;
-	plus_cmd_data->config_print_r = true;
+	extra_data->config_print_r = true;
 	cmds += "where -h";
-	plus_cmd_data->config_where_h = true;
+	extra_data->config_where_h = true;
 	cmds += "display";
-	plus_cmd_data->config_display = true;
+	extra_data->config_display = true;
 	cmds += "clear";
-	plus_cmd_data->config_clear = true;
+	extra_data->config_clear = true;
 	cmds += "help handler";
-	plus_cmd_data->config_handler = true;
+	extra_data->config_handler = true;
 	cmds += "pwd";
-	plus_cmd_data->config_pwd = true;
+	extra_data->config_pwd = true;
 	cmds += "help setenv";
-	plus_cmd_data->config_setenv = true;
+	extra_data->config_setenv = true;
 	cmds += "help edit";
-	plus_cmd_data->config_edit = true;
+	extra_data->config_edit = true;
 	cmds += "help make";
-	plus_cmd_data->config_make = true;
+	extra_data->config_make = true;
 	cmds += "help regs";
-	plus_cmd_data->config_regs = true;
+	extra_data->config_regs = true;
 	cmds += "print \"" DDD_NAME "\"";
-	plus_cmd_data->config_named_values = true;
+	extra_data->config_named_values = true;
 	cmds += "help when";
-	plus_cmd_data->config_when_semicolon = true;
+	extra_data->config_when_semicolon = true;
 	cmds += "delete " + print_cookie + " " + print_cookie;
-	plus_cmd_data->config_delete_comma = true;
+	extra_data->config_delete_comma = true;
 	cmds += "help run";
-	plus_cmd_data->config_err_redirection = true;
+	extra_data->config_err_redirection = true;
 	cmds += "help givenfile";
-	plus_cmd_data->config_givenfile = true;
+	extra_data->config_givenfile = true;
 	cmds += "help cont";
-	plus_cmd_data->config_cont_sig = true;
+	extra_data->config_cont_sig = true;
 	cmds += "help examine";
-	plus_cmd_data->config_examine = true;
+	extra_data->config_examine = true;
 	cmds += "language";
-	plus_cmd_data->config_program_language = true;
+	extra_data->config_program_language = true;
 
 	cmds += "sh pwd";
-	plus_cmd_data->refresh_pwd = true;
+	extra_data->refresh_pwd = true;
 	cmds += "file";
-	plus_cmd_data->refresh_file = true;
+	extra_data->refresh_file = true;
 	cmds += "list";
-	plus_cmd_data->refresh_line = true;
+	extra_data->refresh_line = true;
 	cmds += "status";
-	plus_cmd_data->refresh_breakpoints = true;
+	extra_data->refresh_breakpoints = true;
 	break;
 
     case XDB:
 	cmds += "L";
-	plus_cmd_data->refresh_initial_line = true;
+	extra_data->refresh_initial_line = true;
 	cmds += "tm";
-	plus_cmd_data->config_xdb = true;
+	extra_data->config_xdb = true;
 	cmds += "!pwd";
-	plus_cmd_data->refresh_pwd = true;
+	extra_data->refresh_pwd = true;
 	cmds += "lb";
-	plus_cmd_data->refresh_breakpoints = true;
+	extra_data->refresh_breakpoints = true;
 	break;
 
     case JDB:
-	plus_cmd_data->refresh_initial_line = true;
+	extra_data->refresh_initial_line = true;
 	cmds += "use";
-	plus_cmd_data->refresh_class_path = true;
+	extra_data->refresh_class_path = true;
 	break;
     }
 
     while (dummy.size() < cmds.size())
 	dummy += (void *)0;
 
-    gdb->start_plus (user_cmdOA,
-		     user_cmdOAC,
+    gdb->start_plus (partial_answer_received,
+		     command_completed,
 		     cmd_data,
 		     cmds,
 		     dummy,
 		     cmds.size(),
-		     plusOQAC,
-		     (void*)plus_cmd_data);
+		     extra_completed,
+		     (void *)extra_data);
 
     if (app_data.roulette || app_data.russian_roulette)
     {
@@ -719,12 +725,13 @@ void send_gdb_ctrl(string cmd, Widget origin)
 static bool command_was_cancelled = false;
 
 // Send user command CMD to GDB.  Invoke CALLBACK with DATA upon
-// completion.  If ECHO and VERBOSE are set, issue command in GDB
-// console.  If VERBOSE is set, issue answer in GDB console.  If
-// PROMPT is set, issue prompt.  If CHECK is set, add appropriate GDB
-// commands to get GDB state.
+// completion of CMD; invoke EXTRA_CALLBACK with DATA when all extra
+// commands (see CHECK) are done.  If ECHO and VERBOSE are set, issue
+// command in GDB console.  If VERBOSE is set, issue answer in GDB
+// console.  If PROMPT is set, issue prompt.  If CHECK is set, add
+// extra GDB commands to get GDB state.
 void send_gdb_command(string cmd, Widget origin,
-		      OQCProc callback, void *data,
+		      OQCProc callback, OACProc extra_callback, void *data,
 		      bool echo, bool verbose, bool prompt, bool check)
 {
     string echoed_cmd = cmd;
@@ -787,33 +794,39 @@ void send_gdb_command(string cmd, Widget origin,
     cmd_data->pos_buffer    = new PosBuffer;
     cmd_data->user_callback = callback;
 
-    PlusCmdData* plus_cmd_data = new PlusCmdData;
-    plus_cmd_data->command = cmd;
+    ExtraData* extra_data = new ExtraData;
+    extra_data->command       = cmd;
+    extra_data->user_callback = extra_callback;
+    extra_data->user_data     = data;
+
 
     // Breakpoints may change any time
     if (gdb->has_volatile_breakpoints())
-	plus_cmd_data->refresh_breakpoints = true;
+	extra_data->refresh_breakpoints = true;
 
     // User command output may change any time
-    plus_cmd_data->refresh_user    = true;
+    extra_data->refresh_user    = true;
 
     // Addresses may change any time
-    plus_cmd_data->refresh_addr    = true;
+    extra_data->refresh_addr    = true;
+
+    // Any command may break the `undo' state
+    bool abort_undo = true;
 
     if (source_view->where_required())
     {
-	plus_cmd_data->refresh_where = true;
-	plus_cmd_data->refresh_frame = true;
+	extra_data->refresh_where = true;
+	extra_data->refresh_frame = true;
     }
 
     if (source_view->register_required())
     {
-	plus_cmd_data->refresh_registers = true;
+	extra_data->refresh_registers = true;
     }
 
     if (source_view->thread_required())
     {
-	plus_cmd_data->refresh_threads = true;
+	extra_data->refresh_threads = true;
     }
 
     if (data_disp->count_data_displays() == 0 || 
@@ -860,11 +873,13 @@ void send_gdb_command(string cmd, Widget origin,
 	    }
 	}
 
-	plus_cmd_data->refresh_breakpoints = false;
-	plus_cmd_data->refresh_where       = false;
-	plus_cmd_data->refresh_registers   = false;
-	plus_cmd_data->refresh_threads     = false;
-	plus_cmd_data->refresh_addr        = false;
+	extra_data->refresh_breakpoints = false;
+	extra_data->refresh_where       = false;
+	extra_data->refresh_registers   = false;
+	extra_data->refresh_threads     = false;
+	extra_data->refresh_addr        = false;
+
+	abort_undo = false;
     }
 
     if (!check || 
@@ -884,13 +899,13 @@ void send_gdb_command(string cmd, Widget origin,
 	if (is_define_cmd(cmd))
 	    set_need_save_defines(true);
 
-	plus_cmd_data->refresh_breakpoints = false;
-	plus_cmd_data->refresh_addr        = false;
-	plus_cmd_data->refresh_user        = false;
-	plus_cmd_data->refresh_where       = false;
-	plus_cmd_data->refresh_frame       = false;
-	plus_cmd_data->refresh_registers   = false;
-	plus_cmd_data->refresh_threads     = false;
+	extra_data->refresh_breakpoints = false;
+	extra_data->refresh_addr        = false;
+	extra_data->refresh_user        = false;
+	extra_data->refresh_where       = false;
+	extra_data->refresh_frame       = false;
+	extra_data->refresh_registers   = false;
+	extra_data->refresh_threads     = false;
 
 	if (is_graph_cmd(cmd))
 	{
@@ -903,26 +918,28 @@ void send_gdb_command(string cmd, Widget origin,
 
 	if (gdb->recording())
 	    echoed_cmd = cmd;
+
+	abort_undo = false;
     }
     else if (is_file_cmd(cmd, gdb))
     {
 	// File may change: display main() function and update displays
 	if (cmd != "# reset")
 	{
-	    plus_cmd_data->refresh_initial_line = true;
+	    extra_data->refresh_initial_line = true;
 	}
 
-	plus_cmd_data->refresh_data = true;
-	plus_cmd_data->refresh_recent_files = true;
+	extra_data->refresh_data = true;
+	extra_data->refresh_recent_files = true;
 
 	if (gdb->has_display_command())
-	    plus_cmd_data->refresh_disp_info = true;
+	    extra_data->refresh_disp_info = true;
 	
 	switch (gdb->type())
 	{
 	case DBX:
-	    plus_cmd_data->refresh_file = true;
-	    plus_cmd_data->refresh_line = true;
+	    extra_data->refresh_file = true;
+	    extra_data->refresh_line = true;
 	    break;
 
 	case GDB:
@@ -937,24 +954,24 @@ void send_gdb_command(string cmd, Widget origin,
 	cmd_data->filter_disp = NoFilter;
 
 	// Breakpoints, Frames, Code and Registers won't change
-	plus_cmd_data->refresh_breakpoints = false;
-	plus_cmd_data->refresh_where       = false;
-	plus_cmd_data->refresh_frame       = false;
-	plus_cmd_data->refresh_registers   = false;
-	plus_cmd_data->refresh_threads     = false;
-	plus_cmd_data->refresh_addr        = false;
+	extra_data->refresh_breakpoints = false;
+	extra_data->refresh_where       = false;
+	extra_data->refresh_frame       = false;
+	extra_data->refresh_registers   = false;
+	extra_data->refresh_threads     = false;
+	extra_data->refresh_addr        = false;
     }
     else if (is_data_cmd(cmd))
     {
-	plus_cmd_data->refresh_data      = true;
+	extra_data->refresh_data      = true;
 
 	// Breakpoints, Frames, Code and Registers won't change
-	plus_cmd_data->refresh_breakpoints = false;
-	plus_cmd_data->refresh_where       = false;
-	plus_cmd_data->refresh_frame       = false;
-	plus_cmd_data->refresh_registers   = false;
-	plus_cmd_data->refresh_threads     = false;
-	plus_cmd_data->refresh_addr        = false;
+	extra_data->refresh_breakpoints = false;
+	extra_data->refresh_where       = false;
+	extra_data->refresh_frame       = false;
+	extra_data->refresh_registers   = false;
+	extra_data->refresh_threads     = false;
+	extra_data->refresh_addr        = false;
     }
     else if (is_running_cmd(cmd, gdb) || is_pc_cmd(cmd))
     {
@@ -964,18 +981,18 @@ void send_gdb_command(string cmd, Widget origin,
 	cmd_data->new_exec_pos = true;
 	if (gdb->type() == DBX)
 	{
-	    plus_cmd_data->refresh_file  = true;
-	    // plus_cmd_data->refresh_line  = true;
+	    extra_data->refresh_file  = true;
+	    // extra_data->refresh_line  = true;
 	    if (gdb->has_frame_command())
-		plus_cmd_data->refresh_frame = true;
+		extra_data->refresh_frame = true;
 	}
 	if (is_pc_cmd(cmd))
 	{
-	    plus_cmd_data->refresh_frame = true;
-	    plus_cmd_data->refresh_pc    = true;
+	    extra_data->refresh_frame = true;
+	    extra_data->refresh_pc    = true;
 	}
 	if (!gdb->has_display_command())
-	    plus_cmd_data->refresh_data = true;
+	    extra_data->refresh_data = true;
     }
     else if (is_thread_cmd(cmd) || is_core_cmd(cmd))
     {
@@ -984,11 +1001,11 @@ void send_gdb_command(string cmd, Widget origin,
 	cmd_data->new_frame_pos = true;
 	cmd_data->new_exec_pos  = true;
 
-	plus_cmd_data->refresh_breakpoints = is_thread_cmd(cmd);
-	plus_cmd_data->refresh_where       = true;
-	plus_cmd_data->refresh_frame       = true;
-	plus_cmd_data->refresh_data        = true;
-	plus_cmd_data->refresh_threads     = true;
+	extra_data->refresh_breakpoints = is_thread_cmd(cmd);
+	extra_data->refresh_where       = true;
+	extra_data->refresh_frame       = true;
+	extra_data->refresh_data        = true;
+	extra_data->refresh_threads     = true;
     }
     else if (is_frame_cmd(cmd))
     {
@@ -996,31 +1013,33 @@ void send_gdb_command(string cmd, Widget origin,
 	cmd_data->filter_disp   = NoFilter;
 	cmd_data->new_frame_pos = true;
 
-	plus_cmd_data->refresh_breakpoints = false;
-	plus_cmd_data->refresh_where       = false;
-	plus_cmd_data->refresh_frame       = true;
-	plus_cmd_data->refresh_registers   = false;
-	plus_cmd_data->refresh_threads     = false;
-	plus_cmd_data->refresh_data        = true;
+	extra_data->refresh_breakpoints = false;
+	extra_data->refresh_where       = false;
+	extra_data->refresh_frame       = true;
+	extra_data->refresh_registers   = false;
+	extra_data->refresh_threads     = false;
+	extra_data->refresh_data        = true;
 
 	if (gdb->type() == DBX)
 	{
 	    // We need to get the current file as well...
-	    plus_cmd_data->refresh_file  = true;
+	    extra_data->refresh_file  = true;
 	}
 	if (gdb->type() == JDB)
 	{
 	    // Get the current frame via `where'
-	    plus_cmd_data->refresh_where = true;
+	    extra_data->refresh_where = true;
 	}
+
+	abort_undo = false;
     }
     else if (is_set_cmd(cmd, gdb))
     {
 	// Update displays
-	plus_cmd_data->refresh_data = true;
+	extra_data->refresh_data = true;
 
 	// Addresses won't change
-	plus_cmd_data->refresh_addr = false;
+	extra_data->refresh_addr = false;
     }
     else if (is_lookup_cmd(cmd))
     {
@@ -1028,63 +1047,71 @@ void send_gdb_command(string cmd, Widget origin,
 	{
 	    // In DBX, `func' changes the stack frame
 	    cmd_data->new_frame_pos      = true;
-	    plus_cmd_data->refresh_frame = true;
-	    plus_cmd_data->refresh_file  = true;
-	    plus_cmd_data->refresh_line  = true;
+	    extra_data->refresh_frame = true;
+	    extra_data->refresh_file  = true;
+	    extra_data->refresh_line  = true;
 	}
-	plus_cmd_data->refresh_breakpoints = false;
-	plus_cmd_data->refresh_where       = false;
-	plus_cmd_data->refresh_registers   = false;
-	plus_cmd_data->refresh_threads     = false;
-	plus_cmd_data->refresh_addr        = false;
+	extra_data->refresh_breakpoints = false;
+	extra_data->refresh_where       = false;
+	extra_data->refresh_registers   = false;
+	extra_data->refresh_threads     = false;
+	extra_data->refresh_addr        = false;
 
 	if (!gdb->has_display_command())
-	    plus_cmd_data->refresh_data = true;
+	    extra_data->refresh_data = true;
+
+	abort_undo = false;
     }
     else if (is_cd_cmd(cmd))
     {
-	plus_cmd_data->refresh_pwd         = true;
-	plus_cmd_data->refresh_breakpoints = false;
-	plus_cmd_data->refresh_where       = false;
-	plus_cmd_data->refresh_frame       = false;
-	plus_cmd_data->refresh_registers   = false;
-	plus_cmd_data->refresh_threads     = false;
-	plus_cmd_data->refresh_addr        = false;
+	extra_data->refresh_pwd         = true;
+	extra_data->refresh_breakpoints = false;
+	extra_data->refresh_where       = false;
+	extra_data->refresh_frame       = false;
+	extra_data->refresh_registers   = false;
+	extra_data->refresh_threads     = false;
+	extra_data->refresh_addr        = false;
+
+	abort_undo = false;
     }
     else if (gdb->type() == JDB && is_use_cmd(cmd))
     {
-	plus_cmd_data->refresh_class_path  = true;
-	plus_cmd_data->set_command         = cmd;
-	plus_cmd_data->refresh_breakpoints = false;
-	plus_cmd_data->refresh_where       = false;
-	plus_cmd_data->refresh_frame       = false;
-	plus_cmd_data->refresh_registers   = false;
-	plus_cmd_data->refresh_threads     = false;
-	plus_cmd_data->refresh_addr        = false;
+	extra_data->refresh_class_path  = true;
+	extra_data->set_command         = cmd;
+	extra_data->refresh_breakpoints = false;
+	extra_data->refresh_where       = false;
+	extra_data->refresh_frame       = false;
+	extra_data->refresh_registers   = false;
+	extra_data->refresh_threads     = false;
+	extra_data->refresh_addr        = false;
     }
     else if (is_setting_cmd(cmd))
     {
 	get_settings(gdb->type());
-	plus_cmd_data->refresh_setting     = true;
-	plus_cmd_data->set_command         = cmd;
-	plus_cmd_data->refresh_data        = false;
-	plus_cmd_data->refresh_addr        = false;
-	plus_cmd_data->refresh_breakpoints = false;
+	extra_data->refresh_setting     = true;
+	extra_data->set_command         = cmd;
+	extra_data->refresh_data        = false;
+	extra_data->refresh_addr        = false;
+	extra_data->refresh_breakpoints = false;
 
 	if (gdb->type() == GDB && cmd.contains("history"))
 	{
 	    // Refresh history settings, too
-	    plus_cmd_data->refresh_history_filename = true;
-	    plus_cmd_data->refresh_history_size     = true;
+	    extra_data->refresh_history_filename = true;
+	    extra_data->refresh_history_size     = true;
 	}
+
+	abort_undo = false;
     }
     else if (is_handle_cmd(cmd))
     {
 	(void) get_signals(gdb->type());
-	plus_cmd_data->refresh_handle      = true;
-	plus_cmd_data->refresh_data        = false;
-	plus_cmd_data->refresh_addr        = false;
-	plus_cmd_data->refresh_breakpoints = false;
+	extra_data->refresh_handle      = true;
+	extra_data->refresh_data        = false;
+	extra_data->refresh_addr        = false;
+	extra_data->refresh_breakpoints = false;
+
+	abort_undo = false;
     }
     else if (is_quit_cmd(cmd))
     {
@@ -1092,12 +1119,20 @@ void send_gdb_command(string cmd, Widget origin,
     }
     else if (is_break_cmd(cmd))
     {
-	plus_cmd_data->break_arg = get_break_expression(cmd);
-	plus_cmd_data->refresh_breakpoints = true;
+	extra_data->break_arg = get_break_expression(cmd);
+	extra_data->refresh_breakpoints = true;
+
+	abort_undo = false;
+    }
+    else if (is_print_cmd(cmd, gdb))
+    {
+	// A printing command - be sure to abort current undo
+	abort_undo = true;
     }
     else if (is_other_builtin_cmd(cmd, gdb))
     {
 	// Some other built-in command -- nothing special
+	abort_undo = false;
     }
     else if (is_defined_cmd(cmd))
     {
@@ -1108,23 +1143,23 @@ void send_gdb_command(string cmd, Widget origin,
 	cmd_data->new_frame_pos = true;
 	cmd_data->new_exec_pos  = true;
 
-	plus_cmd_data->refresh_breakpoints = true;
-	plus_cmd_data->refresh_where       = true;
-	plus_cmd_data->refresh_frame       = true;
-	plus_cmd_data->refresh_data        = true;
-	plus_cmd_data->refresh_threads     = true;
+	extra_data->refresh_breakpoints = true;
+	extra_data->refresh_where       = true;
+	extra_data->refresh_frame       = true;
+	extra_data->refresh_data        = true;
+	extra_data->refresh_threads     = true;
     }
 
     if (cmd_data->new_exec_pos
-	|| plus_cmd_data->refresh_frame 
-	|| plus_cmd_data->refresh_data)
+	|| extra_data->refresh_frame 
+	|| extra_data->refresh_data)
     {
 	// New program state: clear value cache
 	clear_value_cache();
 	DispValue::clear_type_cache();
     }
 
-    if (plus_cmd_data->refresh_frame && 
+    if (extra_data->refresh_frame && 
 	!gdb->has_frame_command() && 
 	gdb->type() != JDB)
     {
@@ -1168,17 +1203,17 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmd_data->set_frame_arg = 0;
 	}
 
-	plus_cmd_data->refresh_frame = false;
+	extra_data->refresh_frame = false;
 
 	if (!gdb->has_display_command())
-	    plus_cmd_data->refresh_data = true;
+	    extra_data->refresh_data = true;
     }
 
     if (gdb->type() != GDB)
-	plus_cmd_data->refresh_registers = false;
+	extra_data->refresh_registers = false;
 
     if (gdb->type() != GDB && gdb->type() != JDB)
-	plus_cmd_data->refresh_threads = false;
+	extra_data->refresh_threads = false;
 
     if (gdb->type() == GDB && cmd_data->pos_buffer != 0)
     {
@@ -1196,74 +1231,77 @@ void send_gdb_command(string cmd, Widget origin,
 	gdb_input_at_prompt = true;
     }
 
+    if (abort_undo)
+	undo_buffer.goto_current_exec_pos();
+
     StringArray cmds;
     VoidArray dummy;
 
-    assert(plus_cmd_data->n_init == 0);
-    assert(!plus_cmd_data->config_frame);
-    assert(!plus_cmd_data->config_func);
-    assert(!plus_cmd_data->config_run_io);
-    assert(!plus_cmd_data->config_print_r);
-    assert(!plus_cmd_data->config_where_h);
-    assert(!plus_cmd_data->config_display);
-    assert(!plus_cmd_data->config_clear);
-    assert(!plus_cmd_data->config_handler);
-    assert(!plus_cmd_data->config_pwd);
-    assert(!plus_cmd_data->config_setenv);
-    assert(!plus_cmd_data->config_edit);
-    assert(!plus_cmd_data->config_make);
-    assert(!plus_cmd_data->config_regs);
-    assert(!plus_cmd_data->config_named_values);
-    assert(!plus_cmd_data->config_when_semicolon);
-    assert(!plus_cmd_data->config_delete_comma);
-    assert(!plus_cmd_data->config_err_redirection);
-    assert(!plus_cmd_data->config_givenfile);
-    assert(!plus_cmd_data->config_cont_sig);
-    assert(!plus_cmd_data->config_examine);
-    assert(!plus_cmd_data->config_xdb);
-    assert(!plus_cmd_data->config_output);
-    assert(!plus_cmd_data->config_program_language);
+    assert(extra_data->n_init == 0);
+    assert(!extra_data->config_frame);
+    assert(!extra_data->config_func);
+    assert(!extra_data->config_run_io);
+    assert(!extra_data->config_print_r);
+    assert(!extra_data->config_where_h);
+    assert(!extra_data->config_display);
+    assert(!extra_data->config_clear);
+    assert(!extra_data->config_handler);
+    assert(!extra_data->config_pwd);
+    assert(!extra_data->config_setenv);
+    assert(!extra_data->config_edit);
+    assert(!extra_data->config_make);
+    assert(!extra_data->config_regs);
+    assert(!extra_data->config_named_values);
+    assert(!extra_data->config_when_semicolon);
+    assert(!extra_data->config_delete_comma);
+    assert(!extra_data->config_err_redirection);
+    assert(!extra_data->config_givenfile);
+    assert(!extra_data->config_cont_sig);
+    assert(!extra_data->config_examine);
+    assert(!extra_data->config_xdb);
+    assert(!extra_data->config_output);
+    assert(!extra_data->config_program_language);
     
     // Setup additional trailing commands
     switch (gdb->type())
     {
     case GDB:
-	if (plus_cmd_data->refresh_initial_line)
+	if (extra_data->refresh_initial_line)
 	{
 	    cmds += "info line";	// Fails if no symbol table is loaded.
 	    cmds += "list";		// But works just fine after a `list'.
 	    cmds += "info line";
 	}
-	if (plus_cmd_data->refresh_pwd)
+	if (extra_data->refresh_pwd)
 	    cmds += "pwd";
-	assert(!plus_cmd_data->refresh_class_path);
-	assert(!plus_cmd_data->refresh_file);
-	assert(!plus_cmd_data->refresh_line);
-	if (plus_cmd_data->refresh_breakpoints)
+	assert(!extra_data->refresh_class_path);
+	assert(!extra_data->refresh_file);
+	assert(!extra_data->refresh_line);
+	if (extra_data->refresh_breakpoints)
 	    cmds += "info breakpoints";
-	if (plus_cmd_data->refresh_where)
+	if (extra_data->refresh_where)
 	    cmds += "where";
-	if (plus_cmd_data->refresh_frame)
+	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
-	if (plus_cmd_data->refresh_registers)
+	if (extra_data->refresh_registers)
 	    cmds += source_view->refresh_registers_command();
-	if (plus_cmd_data->refresh_threads)
+	if (extra_data->refresh_threads)
 	    cmds += "info threads";
-	if (plus_cmd_data->refresh_data)
-	    plus_cmd_data->n_refresh_data = 
+	if (extra_data->refresh_data)
+	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
-	if (plus_cmd_data->refresh_user)
-	    plus_cmd_data->n_refresh_user = 
+	if (extra_data->refresh_user)
+	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
-	if (plus_cmd_data->refresh_disp_info)
+	if (extra_data->refresh_disp_info)
 	    cmds += gdb->info_display_command();
-	if (plus_cmd_data->refresh_history_filename)
+	if (extra_data->refresh_history_filename)
 	    cmds += "show history filename";
-	if (plus_cmd_data->refresh_history_size)
+	if (extra_data->refresh_history_size)
 	    cmds += "show history size";
-	if (plus_cmd_data->refresh_setting)
+	if (extra_data->refresh_setting)
 	    cmds += show_command(cmd, gdb->type());
-	if (plus_cmd_data->refresh_handle)
+	if (extra_data->refresh_handle)
 	{
 	    string sig = cmd.after(rxwhite);
 	    sig = sig.before(rxwhite);
@@ -1274,89 +1312,89 @@ void send_gdb_command(string cmd, Widget origin,
 	break;
 
     case DBX:
-	if (plus_cmd_data->refresh_pwd)
+	if (extra_data->refresh_pwd)
 	    cmds += "pwd";
-	assert(!plus_cmd_data->refresh_class_path);
-	if (plus_cmd_data->refresh_file)
+	assert(!extra_data->refresh_class_path);
+	if (extra_data->refresh_file)
 	    cmds += "file";
-	if (plus_cmd_data->refresh_line)
+	if (extra_data->refresh_line)
 	    cmds += "list";
-	if (plus_cmd_data->refresh_breakpoints)
+	if (extra_data->refresh_breakpoints)
 	    cmds += "status";
-	if (plus_cmd_data->refresh_where)
+	if (extra_data->refresh_where)
 	    cmds += "where";
-	if (plus_cmd_data->refresh_frame)
+	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
-	assert (!plus_cmd_data->refresh_registers);
-	assert (!plus_cmd_data->refresh_threads);
-	if (plus_cmd_data->refresh_data)
-	    plus_cmd_data->n_refresh_data = 
+	assert (!extra_data->refresh_registers);
+	assert (!extra_data->refresh_threads);
+	if (extra_data->refresh_data)
+	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
-	if (plus_cmd_data->refresh_user)
-	    plus_cmd_data->n_refresh_user = 
+	if (extra_data->refresh_user)
+	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
-	if (plus_cmd_data->refresh_disp_info)
+	if (extra_data->refresh_disp_info)
 	    cmds += gdb->info_display_command();
-	assert (!plus_cmd_data->refresh_history_filename);
-	assert (!plus_cmd_data->refresh_history_size);
-	if (plus_cmd_data->refresh_setting)
+	assert (!extra_data->refresh_history_filename);
+	assert (!extra_data->refresh_history_size);
+	if (extra_data->refresh_setting)
 	    cmds += show_command(cmd, gdb->type());
-	assert (!plus_cmd_data->refresh_handle);
+	assert (!extra_data->refresh_handle);
 	break;
 
     case XDB:
-	if (plus_cmd_data->refresh_initial_line)
+	if (extra_data->refresh_initial_line)
 	    cmds += "L";
-	if (plus_cmd_data->refresh_pwd)
+	if (extra_data->refresh_pwd)
 	    cmds += "!pwd";
-	assert(!plus_cmd_data->refresh_class_path);
-	assert(!plus_cmd_data->refresh_file);
-	assert(!plus_cmd_data->refresh_line);
-	if (plus_cmd_data->refresh_breakpoints)
+	assert(!extra_data->refresh_class_path);
+	assert(!extra_data->refresh_file);
+	assert(!extra_data->refresh_line);
+	if (extra_data->refresh_breakpoints)
 	    cmds += "lb";
-	if (plus_cmd_data->refresh_where)
+	if (extra_data->refresh_where)
 	    cmds += "t";
-	if (plus_cmd_data->refresh_frame)
+	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
-	assert (!plus_cmd_data->refresh_registers);
-	assert (!plus_cmd_data->refresh_threads);
-	if (plus_cmd_data->refresh_data)
-	    plus_cmd_data->n_refresh_data = 
+	assert (!extra_data->refresh_registers);
+	assert (!extra_data->refresh_threads);
+	if (extra_data->refresh_data)
+	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
-	if (plus_cmd_data->refresh_user)
-	    plus_cmd_data->n_refresh_user = 
+	if (extra_data->refresh_user)
+	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
-	if (plus_cmd_data->refresh_disp_info)
+	if (extra_data->refresh_disp_info)
 	    cmds += gdb->display_command();
-	assert (!plus_cmd_data->refresh_history_filename);
-	assert (!plus_cmd_data->refresh_history_size);
-	assert (!plus_cmd_data->refresh_setting);
-	assert (!plus_cmd_data->refresh_handle);
+	assert (!extra_data->refresh_history_filename);
+	assert (!extra_data->refresh_history_size);
+	assert (!extra_data->refresh_setting);
+	assert (!extra_data->refresh_handle);
 	break;
 
     case JDB:
-	assert (!plus_cmd_data->refresh_pwd);
-	if (plus_cmd_data->refresh_class_path)
+	assert (!extra_data->refresh_pwd);
+	if (extra_data->refresh_class_path)
 	    cmds += "use";
-	assert(!plus_cmd_data->refresh_file);
-	assert(!plus_cmd_data->refresh_line);
-	if (plus_cmd_data->refresh_breakpoints)
+	assert(!extra_data->refresh_file);
+	assert(!extra_data->refresh_line);
+	if (extra_data->refresh_breakpoints)
 	    cmds += "clear";
-	if (plus_cmd_data->refresh_where)
+	if (extra_data->refresh_where)
 	    cmds += "where";
-	assert (!plus_cmd_data->refresh_registers);
-	if (plus_cmd_data->refresh_threads)
+	assert (!extra_data->refresh_registers);
+	if (extra_data->refresh_threads)
 	    cmds += "threads";
-	if (plus_cmd_data->refresh_data)
-	    plus_cmd_data->n_refresh_data = 
+	if (extra_data->refresh_data)
+	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
-	if (plus_cmd_data->refresh_user)
-	    plus_cmd_data->n_refresh_user = 
+	if (extra_data->refresh_user)
+	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
-	assert (!plus_cmd_data->refresh_history_filename);
-	assert (!plus_cmd_data->refresh_history_size);
-	assert (!plus_cmd_data->refresh_setting);
-	assert (!plus_cmd_data->refresh_handle);
+	assert (!extra_data->refresh_history_filename);
+	assert (!extra_data->refresh_history_size);
+	assert (!extra_data->refresh_setting);
+	assert (!extra_data->refresh_handle);
 	break;
     }
 
@@ -1381,18 +1419,9 @@ void send_gdb_command(string cmd, Widget origin,
     cmd_data->user_check   = check;
 
     // Send commands
-    bool send_ok;
-    if (cmds.size() > 0)
-    {
-	send_ok = gdb->send_user_cmd_plus(cmds, dummy, cmds.size(),
-					  plusOQAC, (void*)plus_cmd_data,
-					  cmd, (void *)cmd_data);
-    }
-    else
-    {
-	send_ok = gdb->send_user_cmd(cmd, (void *)cmd_data);
-	delete plus_cmd_data;
-    }
+    bool send_ok = gdb->send_user_cmd_plus(cmds, dummy, cmds.size(),
+					   extra_completed, (void*)extra_data,
+					   cmd, (void *)cmd_data);
 
     if (!send_ok)
 	post_gdb_busy(origin);
@@ -1403,7 +1432,7 @@ void send_gdb_command(string cmd, Widget origin,
 // Part of the answer has been received
 //-----------------------------------------------------------------------------
 
-void user_cmdOA (const string& answer, void* data) 
+static void partial_answer_received(const string& answer, void* data) 
 {
     string ans = answer;
     CmdData *cmd_data = (CmdData *) data;
@@ -1447,7 +1476,7 @@ inline int jdb_frame()
 }
 
 // Command completed
-void user_cmdOAC(void *data)
+static void command_completed(void *data)
 {
     gdb_is_exiting = false;
 
@@ -1467,7 +1496,7 @@ void user_cmdOAC(void *data)
     if (pos_buffer && pos_buffer->started_found())
     {
 	// Program has been restarted - clear position history
-	undo_buffer.clear();
+	undo_buffer.clear_exec_pos();
     }
 
     if (pos_buffer && pos_buffer->terminated_found())
@@ -2062,24 +2091,24 @@ static void process_config_program_language(string& lang)
 // Handle GDB answers to DDD questions sent after GDB command
 //-----------------------------------------------------------------------------
 
-void plusOQAC (const StringArray& answers,
-	       const VoidArray& /* qu_datas */,
-	       void*  data)
+static void extra_completed (const StringArray& answers,
+			     const VoidArray& /* qu_datas */,
+			     void*  data)
 {
     int count = answers.size();
 
-    PlusCmdData* plus_cmd_data = (PlusCmdData *)data;
+    ExtraData* extra_data = (ExtraData *)data;
     int qu_count = 0;
     string file;
 
-    while (plus_cmd_data->n_init > 0)
+    while (extra_data->n_init > 0)
     {
 	// Handle output of initialization commands
 	process_init(answers[qu_count++]);
-	plus_cmd_data->n_init--;
+	extra_data->n_init--;
     }
 
-    if (plus_cmd_data->refresh_initial_line)
+    if (extra_data->refresh_initial_line)
     {
 	switch (gdb->type())
 	{
@@ -2121,86 +2150,86 @@ void plusOQAC (const StringArray& answers,
     }
 
     // Make sure XDB understands macros
-    if (plus_cmd_data->config_xdb)
+    if (extra_data->config_xdb)
 	process_config_tm(answers[qu_count++]);
 
-    if (plus_cmd_data->config_frame)
+    if (extra_data->config_frame)
 	process_config_frame(answers[qu_count++]);
 
-    if (plus_cmd_data->config_func)
+    if (extra_data->config_func)
 	process_config_func(answers[qu_count++]);
 
-    if (plus_cmd_data->config_run_io)
+    if (extra_data->config_run_io)
 	process_config_run_io(answers[qu_count++]);
 
-    if (plus_cmd_data->config_print_r)
+    if (extra_data->config_print_r)
 	process_config_print_r(answers[qu_count++]);
 
-    if (plus_cmd_data->config_where_h)
+    if (extra_data->config_where_h)
 	process_config_where_h(answers[qu_count++]);
 
-    if (plus_cmd_data->config_display)
+    if (extra_data->config_display)
 	process_config_display(answers[qu_count++]);
 
-    if (plus_cmd_data->config_clear)
+    if (extra_data->config_clear)
 	process_config_clear(answers[qu_count++]);
 
-    if (plus_cmd_data->config_handler)
+    if (extra_data->config_handler)
 	process_config_handler(answers[qu_count++]);
 
-    if (plus_cmd_data->config_pwd)
+    if (extra_data->config_pwd)
 	process_config_pwd(answers[qu_count++]);
 
-    if (plus_cmd_data->config_setenv)
+    if (extra_data->config_setenv)
 	process_config_setenv(answers[qu_count++]);
 
-    if (plus_cmd_data->config_edit)
+    if (extra_data->config_edit)
 	process_config_edit(answers[qu_count++]);
 
-    if (plus_cmd_data->config_make)
+    if (extra_data->config_make)
 	process_config_make(answers[qu_count++]);
 
-    if (plus_cmd_data->config_regs)
+    if (extra_data->config_regs)
 	process_config_regs(answers[qu_count++]);
 
-    if (plus_cmd_data->config_named_values)
+    if (extra_data->config_named_values)
 	process_config_named_values(answers[qu_count++]);
 
-    if (plus_cmd_data->config_when_semicolon)
+    if (extra_data->config_when_semicolon)
 	process_config_when_semicolon(answers[qu_count++]);
 
-    if (plus_cmd_data->config_delete_comma)
+    if (extra_data->config_delete_comma)
 	process_config_delete_comma(answers[qu_count++]);
 
-    if (plus_cmd_data->config_err_redirection)
+    if (extra_data->config_err_redirection)
 	process_config_err_redirection(answers[qu_count++]);
 
-    if (plus_cmd_data->config_givenfile)
+    if (extra_data->config_givenfile)
 	process_config_givenfile(answers[qu_count++]);
 
-    if (plus_cmd_data->config_cont_sig)
+    if (extra_data->config_cont_sig)
 	process_config_cont_sig(answers[qu_count++]);
 
-    if (plus_cmd_data->config_examine)
+    if (extra_data->config_examine)
 	process_config_examine(answers[qu_count++]);
 
-    if (plus_cmd_data->config_output)
+    if (extra_data->config_output)
 	process_config_output(answers[qu_count++]);
 
-    if (plus_cmd_data->config_program_language)
+    if (extra_data->config_program_language)
 	process_config_program_language(answers[qu_count++]);
 
-    if (plus_cmd_data->refresh_pwd)
+    if (extra_data->refresh_pwd)
 	source_view->process_pwd(answers[qu_count++]);
 
-    if (plus_cmd_data->refresh_class_path)
+    if (extra_data->refresh_class_path)
     {
 	string ans = answers[qu_count++];
 	source_view->process_use(ans);
-	process_show(plus_cmd_data->set_command, ans);
+	process_show(extra_data->set_command, ans);
     }
 
-    if (plus_cmd_data->refresh_file)
+    if (extra_data->refresh_file)
     {
 	assert (gdb->type() == DBX);
 
@@ -2213,7 +2242,7 @@ void plusOQAC (const StringArray& answers,
 	if (file.contains(' '))
 	    file = "";
 
-	if (file != "" && !plus_cmd_data->refresh_line)
+	if (file != "" && !extra_data->refresh_line)
 	{
 	    string current_file = source_view->file_of_cursor().before(':');
 	    if (current_file != file)
@@ -2239,14 +2268,14 @@ void plusOQAC (const StringArray& answers,
 	}
     }
 
-    if (plus_cmd_data->refresh_line)
+    if (extra_data->refresh_line)
     {
 	string listing = answers[qu_count++];
 
 	if (file != "")
 	{
 	    int line;
-	    if (plus_cmd_data->refresh_initial_line && atoi(listing) > 0)
+	    if (extra_data->refresh_initial_line && atoi(listing) > 0)
 		line = atoi(listing);
 	    else
 		line = line_of_listing(listing);
@@ -2264,14 +2293,14 @@ void plusOQAC (const StringArray& answers,
 	}
     }
 
-    if (plus_cmd_data->refresh_breakpoints)
+    if (extra_data->refresh_breakpoints)
     {
 	source_view->process_info_bp(answers[qu_count++], 
-				     plus_cmd_data->break_arg);
+				     extra_data->break_arg);
 	update_arg_buttons();
     }
 
-    if (plus_cmd_data->refresh_where)
+    if (extra_data->refresh_where)
     {
 	string& where_output = answers[qu_count++];
 
@@ -2291,7 +2320,7 @@ void plusOQAC (const StringArray& answers,
 	source_view->process_where(where_output);
     }
 
-    if (plus_cmd_data->refresh_frame)
+    if (extra_data->refresh_frame)
     {
 	if (gdb->type() == JDB)
 	{
@@ -2303,7 +2332,7 @@ void plusOQAC (const StringArray& answers,
 	{
 	    string& answer = answers[qu_count++];
 
-	    if (plus_cmd_data->refresh_pc)
+	    if (extra_data->refresh_pc)
 	    {
 		PosBuffer pb;
 		pb.filter(answer);
@@ -2318,19 +2347,19 @@ void plusOQAC (const StringArray& answers,
 	}
     }
 
-    if (plus_cmd_data->refresh_registers)
+    if (extra_data->refresh_registers)
 	source_view->process_registers(answers[qu_count++]);
 
-    if (plus_cmd_data->refresh_threads)
+    if (extra_data->refresh_threads)
 	source_view->process_threads(answers[qu_count++]);
 
-    if (plus_cmd_data->refresh_data)
+    if (extra_data->refresh_data)
     {
 	string ans = "";
-	for (int i = 0; i < plus_cmd_data->n_refresh_data; i++)
+	for (int i = 0; i < extra_data->n_refresh_data; i++)
 	    ans += answers[qu_count++];
 
-	if (plus_cmd_data->n_refresh_data > 0)
+	if (extra_data->n_refresh_data > 0)
 	{
 	    bool disabling_occurred = false;
 	    data_disp->process_displays(ans, disabling_occurred);
@@ -2339,42 +2368,42 @@ void plusOQAC (const StringArray& answers,
 	}
     }
 
-    if (plus_cmd_data->refresh_user)
+    if (extra_data->refresh_user)
     {
 	StringArray answers(((string *)answers) + qu_count,
-			    plus_cmd_data->n_refresh_user);
+			    extra_data->n_refresh_user);
 	data_disp->process_user(answers);
-	qu_count += plus_cmd_data->n_refresh_user;
+	qu_count += extra_data->n_refresh_user;
     }
 
-    if (plus_cmd_data->refresh_addr)
+    if (extra_data->refresh_addr)
 	data_disp->refresh_addr();
 
-    if (plus_cmd_data->refresh_disp_info)
+    if (extra_data->refresh_disp_info)
 	data_disp->process_info_display(answers[qu_count++]);
 
-    if (plus_cmd_data->refresh_history_filename)
+    if (extra_data->refresh_history_filename)
 	process_history_filename(answers[qu_count++]);
 
-    if (plus_cmd_data->refresh_history_size)
+    if (extra_data->refresh_history_size)
 	process_history_size(answers[qu_count++]);
 
-    if (plus_cmd_data->refresh_setting)
+    if (extra_data->refresh_setting)
     {
 	string ans = answers[qu_count++];
-	process_show(plus_cmd_data->set_command, ans);
+	process_show(extra_data->set_command, ans);
 
 	// Just in case we've changed the source language
 	PosBuffer pb;
 	pb.filter(ans);
     }
 
-    if (plus_cmd_data->refresh_handle)
+    if (extra_data->refresh_handle)
     {
 	process_handle(answers[qu_count++]);
     }
 
-    if (plus_cmd_data->refresh_recent_files)
+    if (extra_data->refresh_recent_files)
     {
 	// Get a current program info to update the `recent files' list
 	ProgramInfo info;
@@ -2387,7 +2416,10 @@ void plusOQAC (const StringArray& answers,
     if (qu_count != count)
 	abort();
 
-    delete plus_cmd_data;
+    if (extra_data->user_callback != 0)
+	(*extra_data->user_callback)(extra_data->user_data);
+
+    delete extra_data;
 }
 
 
