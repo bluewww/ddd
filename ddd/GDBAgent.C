@@ -649,9 +649,9 @@ bool GDBAgent::ends_with_prompt (const string& ans)
     {
 #if RUNTIME_REGEX
 	static regex rxjdbprompt        
-	    ("([a-zA-Z0-9 ]+[[][1-9][0-9]*[]]|>) ");
+	    ("(>|[a-zA-Z][a-zA-Z0-9 ]*[a-zA-Z0-9][[][1-9][0-9]*[]]) ");
 	static regex rxjdbprompt_reverse
-	    (" (>|[]][0-9]*[1-9][[][a-zA-Z0-9 ]+)");
+	    (" (>|[]][0-9]*[1-9][[][a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z])");
 #endif
 	// JDB prompts using "> " or "THREAD[DEPTH] ".  All these
 	// prompts may also occur asynchronously.

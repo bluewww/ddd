@@ -295,8 +295,8 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S073>Line{W}number{W}{D}{W}is{W}out{W}of{W}range{W}for{W} return &rxout_of_range;
 <S074>{_}(dir|directory|path)({W}{C})?	return &rxpath_cmd;
 <S075>\$pc{_}={_}{A}			return &rxpc;
-<S076>(>|[a-zA-Z0-9 ]+[[][1-9][0-9]*[]])[ ] return &rxjdbprompt;
-<S077>[ ](>|[]][0-9]*[1-9][[][a-zA-Z0-9 ]+) return &rxjdbprompt_reverse;
+<S076>(>|[a-zA-Z][a-zA-Z0-9 ]*[a-zA-Z0-9][[][1-9][0-9]*[]])[ ] return &rxjdbprompt;
+<S077>[ ](>|[]][0-9]*[1-9][[][a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z]) return &rxjdbprompt_reverse;
 <S078>Process{W}{D}:{_}			return &rxprocess1;
 <S079>Process{W}{D}:			return &rxprocess2;
 <S080>[(][^ )]*db[^ )]*[)]{w}		return &rxprompt;
