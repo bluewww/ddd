@@ -2775,38 +2775,26 @@ dnl
 dnl DDD_VERSION
 dnl -----------
 dnl
-dnl Define DDD version.
-dnl *This* is the place where name and version numbers are defined.
-AC_DEFUN(DDD_VERSION,
+dnl Define DDD names and expiration date
+dnl The version is set in AC_INIT.
+AC_DEFUN(DDD_NAMES,
 [AC_MSG_CHECKING([for product name])
 dnl
 dnl The product name, in various capitalizations.
 ddd=ddd
 Ddd=Ddd
 DDD=DDD
-PACKAGE=${ddd}
 dnl
-dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
-dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
-dnl snapshot of the current development tree.
-VERSION=3.3.9
-dnl
-dnl The version nickname.
-NICKNAME="Perky"
-dnl 
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update DDD.
 dnl An empty expiration date means no expiration.
 EXPIRES=
 dnl
 dnl
-AC_SUBST(PACKAGE)dnl
 AC_SUBST(ddd)dnl
 AC_SUBST(Ddd)dnl
 AC_SUBST(DDD)dnl
-AC_SUBST(VERSION)dnl
-AC_SUBST(NICKNAME)dnl
-AC_MSG_RESULT([${DDD} ${VERSION} "${NICKNAME}"])
+AC_MSG_RESULT([${PACKAGE_NAME} ${PACKAGE_VERSION} "${NICKNAME}"])
 dnl
 dnl
 AC_MSG_CHECKING([for expiration date])

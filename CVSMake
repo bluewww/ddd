@@ -18,7 +18,7 @@ aclocal
 autoheader -I ddd
 libtoolize
 autoconf
-automake --include-deps --foreign --add-missing --verbose
+automake --include-deps --add-missing --verbose
 (cd readline && autoconf)
 (cd termcap && autoconf)
 

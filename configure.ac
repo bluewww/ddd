@@ -34,7 +34,14 @@ dnl Zdenek Sekera <zs@cray.com> says that if CDPATH is set, it may break
 dnl this script.
 unset CDPATH
 dnl
-AC_INIT
+dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
+dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
+dnl snapshot of the current development tree.
+dnl
+AC_INIT([ddd],[3.3.9],[bug-ddd@gnu.org])
+NICKNAME="Perky"
+AC_SUBST(NICKNAME)
+DDD_NAMES
 dnl
 dnl Revision Control.
 dnl
@@ -47,11 +54,14 @@ AC_CONFIG_SRCDIR([NEWS])
 AM_CONFIG_HEADER([ddd/config.h])
 dnl
 dnl Some simple checks.
-dnl 
+dnl
 AC_CANONICAL_TARGET
 AC_ARG_PROGRAM
-DDD_VERSION
-AM_INIT_AUTOMAKE(${PACKAGE}, ${VERSION})
+# Sets up automake.
+#  1.x:  minimum required version
+#  foreign:  we don't follow the normal rules for GNU packages (no COPYING
+#            file in the top srcdir, etc, etc), so stop complaining.
+AM_INIT_AUTOMAKE([1.6 foreign])
 AC_PROG_MAKE_SET
 dnl
 dnl
