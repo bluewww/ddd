@@ -56,9 +56,9 @@ for file in "$@"; do
     fullname=`ypmatch $logname passwd | cut -d: -f5 | cut -d, -f1`
     mailname=$logname@`domainname | sed 's/[^\.]*\.//'`
   else
-    fullname=`echo "$written" | sed 's/.*Written by *\<[^(]*\> *(.*/\1/
+    fullname=`echo "$written" | sed 's/.*Written by *\([^<]*\) *<.*/\1/
 s/ $//g'`
-    mailname=`echo "$written" | sed 's/.*(\([^)]*\)).*/\1/
+    mailname=`echo "$written" | sed 's/.*<\([^>]*\)>.*/\1/
 s/ $//g'`
   fi
 
