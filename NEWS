@@ -65,16 +65,18 @@ DDD 3.3.3-3.3.5
 ===============
 
 - Major changes to get this to compile with modern auto-tools, Bison,
-  Flex, and C++ STL.
+  Flex, and C++ STL. (1)
 
-- Support for Bash debugging.
+- Support for Bash debugging. (2)
 
-- Several memory leaks have been fixed. Less temporaries are generated (1).
+- Several memory leaks have been fixed. Less temporaries are generated (3).
 
   This fork of the code put together by Daniel Schepler
   <schepler@math.berkeley.edu> and Rocky Bernstein <rocky@panix.com>
 
-(1) Thanks to Arnaud Desitter !
+(1) Thanks to Daniel Schepler !
+(2) Thanks to ARocky Bernstein !
+(3) Thanks to Arnaud Desitter !
 
 
 DDD 3.3.2
