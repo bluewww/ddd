@@ -293,6 +293,10 @@ private:
     static string last_execution_pc;
     static void _show_execution_position (string file, int line, bool silent);
 
+    // Last frame position
+    static int last_frame_pos;
+    static bool frame_pos_locked;
+
     // Read source text
     static String read_local(const string& file_name, long& length,
 			     bool silent);

@@ -328,6 +328,9 @@ string SourceView::last_execution_file = "";
 int    SourceView::last_execution_line = 0;
 string SourceView::last_execution_pc = "";
 
+int SourceView::last_frame_pos = 0;
+bool SourceView::frame_pos_locked = false;
+
 StringArray SourceView::history;
 int SourceView::history_position = 0;
 bool SourceView::code_history_locked = false;
@@ -3858,23 +3861,24 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	}
 	else
 	{
-	    // Some DBXes lack a `frame' command.  Use `func' instead.
-	    XmStringTable items;
+	    // Some DBXes lack a `frame' command.
+	    // Use `up N'/`down N' instead.
+	    int offset = cbs->item_position - last_frame_pos;
+	    if (offset == -1)
+		gdb_command("up");
+	    else if (offset < 0)
+		gdb_command("up " + itostring(-offset));
+	    else if (offset == 1)
+		gdb_command("down");
+	    else if (offset > 0)
+		gdb_command("down " + itostring(offset));
 
-	    XtVaGetValues(frame_list_w,
-			  XmNitems, &items,
-			  NULL);
-	    String _item;
-	    XmStringGetLtoR(items[cbs->item_position - 1], 
-			    LIST_CHARSET, &_item);
-	    string item(_item);
-	    XtFree(_item);
+	    // Call `set_frame_pos' now.
+	    frame_pos_locked = false;
+	    set_frame_pos(0, cbs->item_position);
 
-	    string func = item.from(rxalpha);
-	    if (func.contains('('))
-		func = func.before('(');
-
-	    gdb_command("func " + func);
+	    // Ignore the call after `up'/`down' command.
+	    frame_pos_locked = (offset != 0);
 	}
 	break;
     }
@@ -4062,6 +4066,12 @@ bool SourceView::set_frame_func(const string& func)
 // Set frame manually: ARG = 0: POS, ARG = +/- N: down/up N levels
 void SourceView::set_frame_pos(int arg, int pos)
 {
+    if (frame_pos_locked)
+    {
+	frame_pos_locked = false;
+	return;
+    }
+
     int count         = 0;
     int top_item      = 0;
     int visible_items = 0;
@@ -4096,6 +4106,8 @@ void SourceView::set_frame_pos(int arg, int pos)
 	XmListSetPos(frame_list_w, pos - 1);
     else if (pos + 1 >= top_item + visible_items)
 	XmListSetBottomPos(frame_list_w, pos + 1);
+
+    last_frame_pos = pos;
 
     XtSetSensitive(up_w,   pos > 1);
     XtSetSensitive(down_w, pos < count);
