@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "13 August 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "21 August 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -1092,9 +1092,15 @@ have saved options and restarted \s-2@DDD@\s+2.  See also the
 .SS "Saving Options"
 You can save the current option settings by selecting `\fBSave
 Options\fR' in the `\fBOptions\fR' menu.  Options are saved in a file
-named `\fB.dddinit\fR' in your home directory.  You can also add other
-personal \s-2@DDD@\s+2 resources in this file.
-.PP
+named `\fB.dddinit\fR' in your home directory.
+
+.SS "Other Customizations"
+Other personal \s-2@DDD@\s+2 resources can also be set in your
+`\fB.dddinit\fR' file.  To find out which resources are available, and
+how they are set by default, look at the `\fBDdd\fR' application
+defaults file, which is shipped with the \s-2@DDD\s+2 source.  For
+individual customization, copy the lines of resources you want to 
+change into your `\fB.dddinit\fR' file and modify them as you like.
 
 .\" ---------------
 .SH "EXTENDING @DDD@"

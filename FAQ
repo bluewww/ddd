@@ -108,6 +108,19 @@ DDD Frequently Asked Questions					-*- text -*-
     --check-configuration' to find out why DDD finds it necessary to
     determine the X project root.  The code for this hack can be found
     in `xconfig.C'.
+
+
+10. How can I change DDD resources (especially colors)?
+
+    Copy the appropriate resource lines from the `Ddd' file contained
+    in the DDD distribution (type `./configure -v; cd ddd; make Ddd'
+    to create it from scratch) in your `~/.dddinit' file.  For
+    instance, to make the background less bright, use:
+
+	Ddd*XmText.background:             light grey
+	Ddd*XmTextField.background:        light grey
+	Ddd*GraphEdit.background:          light grey
+	Ddd*XmList.background:             light grey
     
 
 $Id$
