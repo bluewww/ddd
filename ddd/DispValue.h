@@ -406,6 +406,9 @@ public:
 
     // Return a title for NAME
     static string make_title(const string& name);
+
+    // Invariant check
+    virtual bool OK() const;
 };
 
 #endif // _DDD_DispValue_h
