@@ -58,10 +58,12 @@ char DataDisp_rcsid[] =
 
 // Misc includes
 #include "AliasGE.h"
+#include "ComboBox.h"
 #include "CompositeB.h"
 #include "DestroyCB.h"
 #include "DispGraph.h"
 #include "GraphEdit.h"		// XtNgraph
+#include "HistoryD.h"
 #include "IntIntAA.h"
 #include "MString.h"
 #include "PannedGE.h"
@@ -82,13 +84,9 @@ char DataDisp_rcsid[] =
 #include "Command.h"
 #include "converters.h"
 #include "cook.h"
+#include "history.h"
 #include "logo.h"
 #include "post.h"
-#include "question.h"
-#include "settings.h"
-#include "shorten.h"
-#include "status.h"
-#include "version.h"
 
 // Motif includes
 #include <Xm/List.h>
@@ -1294,6 +1292,8 @@ Widget DataDisp::create_display_dialog(Widget parent, String name,
 
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON));
+    XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_SELECTION_LABEL));
 
     XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
     XtAddCallback(dialog, XmNokCallback, new_displayDCB, XtPointer(&info));
@@ -1313,18 +1313,16 @@ Widget DataDisp::create_display_dialog(Widget parent, String name,
     XtManageChild(label);
 
     arg = 0;
-    info.text = 
-	verify(XmCreateTextField(box, "text", args, arg));
+    info.text = verify(CreateComboBox(box, "text", args, arg));
     XtManageChild(info.text);
+
+    tie_combo_box_to_history(info.text, display_history_filter);
 
     arg = 0;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     info.shortcut = 
 	verify(XmCreateToggleButton(box, "shortcut", args, arg));
     XtManageChild(info.shortcut);
-
-    XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
-    XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_SELECTION_LABEL));
 
     return dialog;
 }

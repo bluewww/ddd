@@ -4886,7 +4886,8 @@ Ddd*edit_breakpoints_dialog*delete.documentationString:     \
 !-----------------------------------------------------------------------------
 
 Ddd*new_breakpoint_dialog_popup.title: DDD: New Breakpoint
-Ddd*new_breakpoint_dialog.selectionLabelString:	Set Breakpoint at
+Ddd*new_breakpoint_dialog*label.labelString: Set Breakpoint at
+Ddd*new_breakpoint_dialog.okLabelString: Set
 
 Ddd*new_breakpoint_dialog*helpString:	\
 \
@@ -4902,7 +4903,9 @@ If an EMPH(address) is specified, break at that exact address.\n\
 Without argument, use current execution address of selected stack frame.\n\
 This is useful for breaking on return to a stack frame.\n\
 \n\
-Multiple breakpoints at one place are permitted, and useful if conditional.
+Multiple breakpoints at one place are permitted, and useful if conditional.\n\
+\n\
+Click on LBL(Set) to set the specified breakpoint.
 
 
 Ddd*new_watchpoint_dialog_popup.title: DDD: New Watchpoint
@@ -4911,6 +4914,7 @@ Ddd*new_watchpoint_dialog*cwatch.labelString:	Watchpoint
 Ddd*new_watchpoint_dialog*rwatch.labelString:	Read Watchpoint
 Ddd*new_watchpoint_dialog*awatch.labelString:	Access Watchpoint
 Ddd*new_watchpoint_dialog*on.labelString:	on
+Ddd*new_breakpoint_dialog.okLabelString: Set
 
 Ddd*new_watchpoint_dialog*helpString:	\
 @rm Please enter a variable whose value you want to watch.\n\
@@ -4919,7 +4923,9 @@ Enter its name in the argument field.\n\
 DESC(Set Watchpoint, [stop whenever the variable value changes])\n\
 DESC(Set Read Watchpoint, [stop whenever the variable is read])\n\
 DESC(Set Access Watchpoint, \
-[stop whenever the variable is either read or written])
+[stop whenever the variable is either read or written])\n\
+\n\
+Click on LBL(Set) to set the specified watchpoint.
 
 
 

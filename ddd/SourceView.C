@@ -132,7 +132,9 @@ extern "C" {
 
 // DDD stuff
 #include "AppData.h"
+#include "ComboBox.h"
 #include "Command.h"
+#include "HistoryD.h"
 #include "MakeMenu.h"
 #include "PosBuffer.h"
 #include "charsets.h"
@@ -4913,20 +4915,12 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 // Breakpoint selection
 //----------------------------------------------------------------------------
 
-void SourceView::NewBreakpointDCB(Widget w, XtPointer, XtPointer call_data)
+void SourceView::NewBreakpointDCB(Widget w, XtPointer client_data, XtPointer)
 {
-    XmSelectionBoxCallbackStruct *cbs = 
-	(XmSelectionBoxCallbackStruct *)call_data;
-
-    String _input;
-    XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &_input);
+    Widget text = Widget(client_data);
+    String _input = XmTextFieldGetString(text);
     string input(_input);
     XtFree(_input);
-
-    int i = 0;
-    while (i < int(input.length()) && isspace(input[i]))
-	i++;
-    input = input.from(i);
     if (input == "")
 	return;
 
@@ -4935,29 +4929,40 @@ void SourceView::NewBreakpointDCB(Widget w, XtPointer, XtPointer call_data)
 
 void SourceView::NewBreakpointCB(Widget w, XtPointer, XtPointer)
 {
-    static Widget new_breakpoint_dialog = 0;
-    if (new_breakpoint_dialog == 0)
+    static Widget dialog = 0;
+    if (dialog == 0)
     {
-	new_breakpoint_dialog = 
-	    verify(XmCreatePromptDialog(find_shell(w),
-					"new_breakpoint_dialog",
-					NULL, 0));
-	Delay::register_shell(new_breakpoint_dialog);
+	Arg args[10];
+	Cardinal arg = 0;
+	dialog = verify(XmCreatePromptDialog(find_shell(w),
+					     "new_breakpoint_dialog",
+					     args, arg));
+	Delay::register_shell(dialog);
 
 	if (lesstif_version <= 79)
-	    XtUnmanageChild(XmSelectionBoxGetChild(new_breakpoint_dialog,
+	    XtUnmanageChild(XmSelectionBoxGetChild(dialog,
 						   XmDIALOG_APPLY_BUTTON));
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_SELECTION_LABEL));
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
 
-	XtAddCallback(new_breakpoint_dialog,
-		      XmNhelpCallback,
-		      ImmediateHelpCB,
-		      NULL);
-	XtAddCallback(new_breakpoint_dialog,
-		      XmNokCallback,
-		      NewBreakpointDCB,
-		      NULL);
+	arg = 0;
+	Widget box = XmCreateRowColumn(dialog, "box", args, arg);
+	XtManageChild(box);
+
+	Widget label = XmCreateLabel(box, "label", args, arg);
+	XtManageChild(label);
+
+	arg = 0;
+	Widget text = CreateComboBox(box, "text", args, arg);
+	tie_combo_box_to_history(text, break_history_filter);
+
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(dialog, XmNokCallback, NewBreakpointDCB, 
+		      XtPointer(text));
     }
-    manage_and_raise(new_breakpoint_dialog);
+
+    manage_and_raise(dialog);
 }
 
 WatchMode SourceView::selected_watch_mode = WATCH_CHANGE;
@@ -4972,20 +4977,14 @@ void SourceView::SetWatchModeCB(Widget, XtPointer client_data,
 	selected_watch_mode = WatchMode(client_data);
 }
 
-void SourceView::NewWatchpointDCB(Widget w, XtPointer, XtPointer call_data)
+void SourceView::NewWatchpointDCB(Widget w, XtPointer client_data, XtPointer)
 {
-    XmSelectionBoxCallbackStruct *cbs = 
-	(XmSelectionBoxCallbackStruct *)call_data;
-
-    String _input;
-    XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &_input);
+    Widget text = Widget(client_data);
+    String _input = XmTextFieldGetString(text);
     string input(_input);
     XtFree(_input);
 
-    int i = 0;
-    while (i < int(input.length()) && isspace(input[i]))
-	i++;
-    input = input.from(i);
+    strip_space(input);
     if (input == "")
 	return;
 
@@ -4994,8 +4993,8 @@ void SourceView::NewWatchpointDCB(Widget w, XtPointer, XtPointer call_data)
 
 void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 {
-    static Widget new_watchpoint_dialog = 0;
-    if (new_watchpoint_dialog == 0)
+    static Widget dialog = 0;
+    if (dialog == 0)
     {
 	static Widget cwatch_w, rwatch_w, awatch_w;
 
@@ -5018,37 +5017,33 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	    MMEnd
 	};
 
-	new_watchpoint_dialog = 
-	    verify(XmCreatePromptDialog(find_shell(w),
-					"new_watchpoint_dialog",
-					NULL, 0));
-	Delay::register_shell(new_watchpoint_dialog);
+	Arg args[10];
+	Cardinal arg = 0;
+	dialog = verify(XmCreatePromptDialog(find_shell(w),
+					     "new_watchpoint_dialog",
+					     args, arg));
+	Delay::register_shell(dialog);
 
 	if (lesstif_version <= 79)
-	    XtUnmanageChild(XmSelectionBoxGetChild(new_watchpoint_dialog,
+	    XtUnmanageChild(XmSelectionBoxGetChild(dialog,
 						   XmDIALOG_APPLY_BUTTON));
-	XtUnmanageChild(XmSelectionBoxGetChild(new_watchpoint_dialog,
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
 					       XmDIALOG_SELECTION_LABEL));
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
 
-	XtAddCallback(new_watchpoint_dialog,
-		      XmNhelpCallback,
-		      ImmediateHelpCB,
-		      NULL);
-	XtAddCallback(new_watchpoint_dialog,
-		      XmNokCallback,
-		      NewWatchpointDCB,
-		      NULL);
+	arg = 0;
+	Widget box = XmCreateRowColumn(dialog, "box", args, arg);
+	XtManageChild(box);
 
-	Widget panel = MMcreateButtonPanel(new_watchpoint_dialog, 
-					   "panel", wp_menu);
-	XtVaSetValues(panel, 
-		      XmNorientation, XmHORIZONTAL,
-		      XmNborderWidth,  0,
-		      XmNentryBorder,  0,
-		      XmNspacing,      0,
-		      XmNmarginWidth,  0,
-		      XmNmarginHeight, 0,
-		      NULL);
+	arg = 0;
+	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
+	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+	XtSetArg(args[arg], XmNentryBorder,  0); arg++;
+	XtSetArg(args[arg], XmNspacing,      0); arg++;
+	XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+	Widget panel = MMcreateButtonPanel(box, "panel", wp_menu, args, arg);
+	(void) panel;
 	MMaddCallbacks(wp_menu);
 	MMaddHelpCallback(wp_menu, ImmediateHelpCB);
 
@@ -5062,9 +5057,18 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	// Initialize: use CWATCH as default menu item
 	XtCallActionProc(cwatch_w, "ArmAndActivate", 
 			 (XEvent *)0, (String *)0, 0);
+
+	arg = 0;
+	Widget text = CreateComboBox(box, "text", args, arg);
+	tie_combo_box_to_history(text, watch_history_filter);
+
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(dialog, XmNokCallback, NewWatchpointDCB, 
+		      XtPointer(text));
+
     }
 
-    manage_and_raise(new_watchpoint_dialog);
+    manage_and_raise(dialog);
 }
 
 
