@@ -8,13 +8,14 @@ This DDD source distribution has been tested on a large variety of
 configurations, excluding yours.  If you encounter any repeatable
 problem while building or running DDD, please let us know - especially
 if the problem is not listed in the `BUGS' or `PROBLEM' file.  (We
-will either fix it or document it.)  Please send bug reports to
-`ddd-bugs@ips.cs.tu-bs.de'.
+will either fix it or document it.)  We also solicit experience
+reports about DDD in conjunction with HP-UX XDB, AIX DBX, and LessTif.
+Please send bug reports to `ddd-bugs@ips.cs.tu-bs.de'.
 
 Besides the usual bug reports, we would like to hear your comments and
-suggestions on the new DDD features (alias detection, status displays,
-thread support, button and value tips).  Please send suggestions to
-`ddd@ips.cs.tu-bs.de'.
+suggestions on the new DDD features (especially alias detection,
+status displays, thread support, button and value tips).  Please send
+suggestions to `ddd@ips.cs.tu-bs.de'.
 
 If all goes well, the `final' DDD 2.1 release will be made available
 in April, 1997.  Until then, have fun with this beta distribution.
