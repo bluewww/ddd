@@ -282,7 +282,7 @@ bool is_thread_cmd (const string& cmd)
 }
 
 // True if CMD changes variables
-bool is_set_cmd (const string& cmd, GDBAgent *gdb)
+bool is_assign_cmd(const string& cmd, GDBAgent *gdb)
 {
 #if RUNTIME_REGEX
     static regex rxset1_cmd("[ \t]*(set[ \t]+var[a-z]*|assign|pq)([ \t]+.*)?");
@@ -293,6 +293,27 @@ bool is_set_cmd (const string& cmd, GDBAgent *gdb)
     return cmd.matches(rxset1_cmd) || 
 	(gdb->type() == GDB && cmd.matches(rxset2_cmd)) ||
 	(gdb->type() == PYDB && cmd.matches(rxset3_cmd));
+}
+
+// Get assigned variable
+string get_assign_variable(const string& _cmd)
+{
+    string cmd = _cmd;
+    strip_space(cmd);
+
+    if (cmd.contains(":="))
+	cmd = cmd.before(":=");
+    else
+	cmd = cmd.before('=');	// Remove assignment and assigned value
+
+    if (cmd.contains("set var", 0))
+	cmd = cmd.after(' ');	// Special case `set variable': two-word cmd
+
+    if (cmd.contains(' '))
+	cmd = cmd.after(' ');	// Return argument
+
+    strip_space(cmd);
+    return cmd;
 }
 
 // True if CMD changes debugger settings

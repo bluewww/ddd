@@ -90,7 +90,7 @@ bool is_core_cmd(const string& cmd);
 bool is_thread_cmd(const string& cmd);
 
 // True if CMD changes variable values.
-bool is_set_cmd(const string& cmd, GDBAgent *gdb);
+bool is_assign_cmd(const string& cmd, GDBAgent *gdb);
 
 // True if CMD changes debugger settings.
 bool is_setting_cmd(const string& cmd);
@@ -142,6 +142,9 @@ string get_display_expression(const string& cmd);
 
 // Return the string after a `break' command
 string get_break_expression(const string& cmd);
+
+// Return the variable in an assignment command
+string get_assign_variable(const string& cmd);
 
 // True if ARG has the form `FILE:LINE'
 bool is_file_pos(const string& arg);

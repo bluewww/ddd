@@ -467,6 +467,47 @@ string gdbValue(const string& expr)
     return value;
 }
 
+string assignment_value(const string& expr)
+{
+    string value = expr;
+
+    // Replace whitespace
+#if RUNTIME_REGEX
+    static regex rxnl(" *\n *");
+#endif
+    value.gsub(rxnl, " ");
+    value.gsub("\n", " ");
+    value.gsub("\t", " ");
+    value.gsub("  ", " ");
+
+    // Strip member name from structs
+    int eq_index = -1;
+    while ((eq_index = value.index(" = ")) >= 0)
+    {
+	int member_name_index = eq_index;
+	while (member_name_index > 0 &&
+	       value[member_name_index - 1] != '{' &&
+	       value[member_name_index - 1] != '(' &&
+	       value[member_name_index - 1] != ',')
+	    member_name_index--;
+
+	if (member_name_index > 0 &&
+	    value[member_name_index - 1] == ',')
+	{
+	    // Keep the space after ','
+	    while (member_name_index < eq_index && 
+		   isspace(value[member_name_index]))
+		member_name_index++;
+	}
+
+	value = value.before(member_name_index) + value.from(eq_index + 3);
+    }
+
+    strip_space(value);
+
+    return value;
+}
+
 static void strip_through(string& s, string key)
 {
     int key_index = s.index(key);

@@ -93,6 +93,7 @@ enum Filtering {NoFilter, TryFilter, Filter};
 class CmdData {
 public:
     string      command;	  // The command issued
+    string      undo_command;	  // Undoing command, if any
     Widget      origin;		  // Origin of this command
     Filtering   filter_disp;      // NoFilter:  do not filter displays.
 				  // TryFilter: do filter if present.
@@ -138,6 +139,7 @@ public:
     // Constructor
     CmdData (Widget orig = 0, Filtering fd = TryFilter)
 	: command(""),
+	  undo_command(""),
 	  origin(orig),
 	  filter_disp(fd),
 	  disp_buffer(0),
@@ -173,6 +175,7 @@ public:
 private:
     CmdData(const CmdData&)
 	: command(""),
+	  undo_command(""),
 	  origin(0),
 	  filter_disp(TryFilter),
 	  disp_buffer(0),
@@ -1055,13 +1058,21 @@ void send_gdb_command(string cmd, Widget origin,
 
 	abort_undo = false;
     }
-    else if (is_set_cmd(cmd, gdb))
+    else if (is_assign_cmd(cmd, gdb))
     {
 	// Update displays
 	extra_data->refresh_data = true;
 
 	// Addresses won't change
 	extra_data->refresh_addr = false;
+
+	// Set up appropriate undoing command
+	string var = get_assign_variable(cmd);
+	if (var != "")
+	{
+	    string value = assignment_value(gdbValue(var));
+	    cmd_data->undo_command = gdb->assign_command(var, value);
+	}
     }
     else if (is_lookup_cmd(cmd))
     {
@@ -1530,6 +1541,9 @@ static void command_completed(void *data)
 	answer = pos_buffer->answer_ended();
 	cmd_data->user_answer += answer;
     }
+
+    if (cmd_data->undo_command != "" && !is_invalid(cmd_data->user_answer))
+	undo_buffer.add_command(cmd_data->undo_command, true);
 
     if (pos_buffer && pos_buffer->started_found())
     {

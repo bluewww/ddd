@@ -5308,41 +5308,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 	value = "";		// Variable cannot be accessed
     }
 
-    value = get_disp_value_str(value, gdb);
-
-    // Replace whitespace
-#if RUNTIME_REGEX
-    static regex rxnl(" *\n *");
-#endif
-    value.gsub(rxnl, " ");
-    value.gsub("\n", " ");
-    value.gsub("\t", " ");
-    value.gsub("  ", " ");
-
-    // Strip member name from structs
-    int eq_index = -1;
-    while ((eq_index = value.index(" = ")) >= 0)
-    {
-	int member_name_index = eq_index;
-	while (member_name_index > 0 &&
-	       value[member_name_index - 1] != '{' &&
-	       value[member_name_index - 1] != '(' &&
-	       value[member_name_index - 1] != ',')
-	    member_name_index--;
-
-	if (member_name_index > 0 &&
-	    value[member_name_index - 1] == ',')
-	{
-	    // Keep the space after ','
-	    while (member_name_index < eq_index && 
-		   isspace(value[member_name_index]))
-		member_name_index++;
-	}
-
-	value = value.before(member_name_index) + value.from(eq_index + 3);
-    }
-
-    strip_space(value);
+    value = assignment_value(get_disp_value_str(value, gdb));
 
     // Make sure the old value is saved in the history
     add_to_history(gdb->assign_command(name, value));

@@ -66,6 +66,9 @@ void refresh_button_editor();
 // Get a value from GDB
 string gdbValue(const string& expr);
 
+// Return changed EXPR that can be used as assignment value
+string assignment_value(const string& expr);
+
 // Create a flat PushButton named NAME
 Widget create_flat_button(Widget parent, const string& name);
 
