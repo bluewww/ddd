@@ -62,7 +62,7 @@ protected:
 
     // Open a tty.
     // Like open(TTY, FLAGS), but care for EAGAIN and EWOULDBLOCK conditions
-    virtual int open_tty(const char *tty, int flags = O_RDWR) const;
+    virtual int open_tty(const char *tty, int flags = O_RDWR);
     
 public:
     // Constructors

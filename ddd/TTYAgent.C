@@ -107,10 +107,13 @@ extern "C" {
 #endif
 
 #endif
+}
+
 
 #include <stdio.h>
+#include <errno.h>
 #include <signal.h>
-}
+
 
 extern "C" {
 #if HAVE_SETPGID && !HAVE_SETPGID_DECL && !defined(setpgid)
@@ -220,40 +223,31 @@ extern "C" {
 
 // Open a tty.
 // Like open(TTY, FLAGS), but care for EAGAIN and EWOULDBLOCK conditions
-int TTYAgent::open_tty(const char *tty, int flags = O_RDWR) const
+int TTYAgent::open_tty(const char *tty, int flags = O_RDWR)
 {
-    for (;;)
-    {
-	int fd = open(tty, flags);
-	if (fd >= 0)
-	    return fd;
+    int fd = open(tty, flags);
+    if (fd >= 0)
+	return fd;
 
-	if (false
+    if (false
 #ifdef EAGAIN
-	    || errno == EAGAIN
+	|| errno == EAGAIN
 #endif
 #ifdef EWOULDBLOCK
-	    || errno == EWOULDBLOCK
+	|| errno == EWOULDBLOCK
 #endif
-	    )
-	{
-	    // Resource temporarily unavailable: an operation that
-	    // would block was attempted on an object that has
-	    // non-blocking mode selected.  Trying the same operation
-	    // again will block until some external condition makes it
-	    // possible to read, write, or connect (whatever the
-	    // operation).  So, we just try again.
-	    continue;
-	}
-	else
-	{
-	    // Some other error condition
-	    return -1;
-	}
+	)
+    {
+	// Resource temporarily unavailable: an operation that would
+	// block was attempted on an object that has non-blocking mode
+	// selected.  Trying the same operation again will block until
+	// some external condition makes it possible to read, write,
+	// or connect (whatever the operation).  So, we just try again.
+	_raiseIOWarning(string(tty) + " is temporary unavailable (retrying)");
+	fd = open(tty, flags);
     }
 
-    // Never reached
-    return -1;
+    return fd;
 }
 
 
