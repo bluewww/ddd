@@ -230,7 +230,12 @@ dnl
 if test "$ddd_have_connect_in_libc" != yes; then
 dnl Solaris 2.6 wants an explicit `-lsocket' before `-lnsl'.
 dnl Reported by Emmanuel Engel <Emmanuel.Engel@lri.fr>
-AC_CHECK_LIB(socket, connect)
+dnl 
+dnl Andreas Buschmann <Andreas.Buschmann@ks.sel.alcatel.de> says that
+dnl libsocket may _not_ go into LIBS, because otherwise the X11
+dnl configuration on Solaris will not find -lsocket -lnsl anymore.
+AC_CHECK_LIB(socket, connect, LIBSOCKET="-lsocket")
+AC_SUBST(LIBSOCKET)
 fi
 dnl
 if test "$ddd_have_gethostbyname_in_libc" != yes; then

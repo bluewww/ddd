@@ -211,13 +211,16 @@ LIBY       = @LIBY@
 LIBM       = @LIBM@
 # C library (-lc)
 LIBC       = @LIBC@
+# Socket library (-lsocket)
+LIBSOCKET  = @LIBSOCKET@
 # NSL library (-lnsl)
 LIBNSL     = @LIBNSL@
 # Additional libraries required for non-X programs (-lsocket -lnsl)
 NON_X_LIBS = @LIBS@
 
 # All libraries shown above
-LIBS = $(CXXLIBS) $(LIBNSL) $(LIBRX) $(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM)
+LIBS = $(CXXLIBS) $(LIBSOCKET) $(LIBNSL) $(LIBRX) \
+       $(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM)
 
 
 ## X Libraries
@@ -1170,6 +1173,7 @@ install-man: ddd.1
 	test -d $$grandparent || $(MKDIR) $$grandparent; \
 	test -d $$parent || $(MKDIR) $$parent
 	-test -d $(man1dir) || $(MKDIR) $(man1dir)
+	test -f ddd.1 || cd $(srcdir); \
 	$(INSTALL_DATA) ddd.1 \
 		$(man1dir)/`$(ECHO) ddd$(man1ext) | $(SED) '$(transform)'`
 
