@@ -160,7 +160,7 @@ bool DispNode::update(string& value)
 
     if (changed || inited)
     {
-	mylast_change = ++change_tics;
+	// mylast_change = ++change_tics;
 #if 0
 	clog << "Display " << disp_nr() << " changed"
 	     << " (" << mylast_change << ")\n";
@@ -246,7 +246,7 @@ void DispNode::set_addr(const string& new_addr)
     if (myaddr != new_addr)
     {
 	myaddr = new_addr;
-	mylast_change = ++change_tics;
+	// mylast_change = ++change_tics;
 #if 0
 	clog << "Display " << disp_nr() << " changed"
 	     << " (" << mylast_change << ")\n";
