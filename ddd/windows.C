@@ -124,7 +124,7 @@ void initial_popup_shell(Widget w)
 	    recenter_tool_shell(source_view->source());
 	}
     }
-    else
+    else if (w != toplevel)
     {
 	XtPopup(w, XtGrabNone);
     }
