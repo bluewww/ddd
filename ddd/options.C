@@ -1798,7 +1798,7 @@ bool save_options(unsigned long flags)
 		post_error("Cannot rename " + quote(workfile)
 			   + " to " + quote(file) + ": " + strerror(errno),
 			   "options_save_error");
-	    ok = saved = false;
+	    ok = false;
 	    unlink(workfile);
 	}
 
