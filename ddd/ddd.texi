@@ -43,7 +43,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 1999-10-19
+@set DATE 1999-12-20
 
 
 @c Macros
@@ -126,7 +126,7 @@
     /Title (Debugging with DDD)
     /Author (Andreas Zeller)
     /Subject (DDD - the Data Display Debugger)
-    /Keywords (Debugging Debugger DDD GNU GDB DBX XDB JDB Python Perl)
+    /Keywords (Debugging Debugger DDD GNU GDB DBX XDB JDB Ladebug WDB Python Perl)
 }
 @fi
 @end iftex
