@@ -841,7 +841,7 @@ regexps.$(OBJEXT): rxscan.C
 # re-created after each configuration.
 $(srcdir)/ddd.info.txt: $(srcdir)/ddd.texi configure.in
 	$(MAKE) ddd.info
-	info --subnodes -o - -f ddd.info > $@~ && $(MV) $@~ $@
+	info --subnodes -o - -f $(srcdir)/ddd.info > $@~ && $(MV) $@~ $@
 
 $(srcdir)/ddd.info.txt.gz: $(srcdir)/ddd.info.txt
 	$(COMPRESS) $? > $@~ && $(MV) $@~ $@
