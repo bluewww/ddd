@@ -1817,10 +1817,11 @@ DIST_STUFF = ../$(ddd)-$(VERSION)-$(REL).spec \
              $(man_MANS) $(docdir)/ddd.ps $(docdir)/ddd.pdf \
 	     $(htmldir)/index.html $(ICONS)
 
-# Let automake know what we need
+# Let automake know what we need.
 EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
 
-all: $(PROG_STUFF)
+# Make sure all this is built before DDD.
+ddd.$(OBJEXT): $(PROG_STUFF)
 
 CLEANFILES = build.h ddd.?? ddd.??s ddd.ps ddd.pdf *.tmp
 DISTCLEANFILES = host.h
