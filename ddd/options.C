@@ -1045,8 +1045,9 @@ static bool _get_core(const string& session, unsigned long flags,
 	    // Get new core file from running process
 	    StatusDelay delay("Getting core dump via `gcore'");
 
-	    // 1. Stop the program being debugged, using a STOP signal.
-	    kill(info.pid, SIGSTOP);
+	    // 1. Stop the program being debugged, using a KILL signal.
+	    // (Other signals may be blocked, caught or ignored)
+	    kill(info.pid, SIGKILL);
 
 	    // 2. Detach GDB from the debuggee.  The debuggee is still stopped.
 	    detach();
