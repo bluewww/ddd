@@ -85,10 +85,10 @@ class Tree {
     const char *name;
 public:
     Date date;
-    Tree* left;
-    Tree* right;
+    Tree *left;
+    Tree *right;
 
-    Tree (int v, char* n):
+    Tree (int v, char *n):
 	value(v), name(n), left(0), right(0)
     {}
     ~Tree () 
@@ -102,7 +102,7 @@ public:
 //--------------------------------------------------------------------------
 void tree_test ()
 {
-    Tree* tree = 0;
+    Tree *tree = 0;
     tree =              new Tree (7, "Ada");      // Byron Lovelace
     tree->left =        new Tree (1, "Grace");    // Murray Hopper
     tree->left->left =  new Tree (5, "Judy");     // Clapp
@@ -127,21 +127,25 @@ void array_test ()
 {
     DayOfWeek days_of_week[7] = {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
 
-    char* twodim [2][3] = {{ "Pioneering", "women", "in"},
+    char *twodim [2][3] = {{ "Pioneering", "women", "in"},
 			   { "computer", "science", "!"}};
 
     (void) twodim;		// Use it
     (void) days_of_week;	// Use it
 
-    Date* date_ptrs[4];
+    Date *date_ptrs[4];
     date_ptrs[0] = new Date (Thu, 1, 9, 1994);
     date_ptrs[1] = new Date (Tue, 10, 5, 1994);
     date_ptrs[2] = new Date (Fri, 15, 7, 1994);
     date_ptrs[3] = new Date (Sat, 24, 12, 1994);
 
+    Date *date_ptr;
     Date dates[4];
     for (int i = 0; i < 4; i++)
-	reference_test(dates[i], date_ptrs[i]);
+    {
+	date_ptr = dates + i;
+	reference_test(*date_ptr, date_ptrs[i]);
+    }
 }
 //--------------------------------------------------------------------------
 
@@ -150,8 +154,8 @@ void type_test ()
     Holiday new_years_eve (Sat, 31, 12, 1994, 
 			   "May all acquaintance be forgot");
 
-    Date* date = new Date(Sat, 24, 12, 1994);
-    void* voidptr = date;
+    Date *date = new Date(Sat, 24, 12, 1994);
+    void *voidptr = date;
 
     (void) voidptr;		// Use it
 
