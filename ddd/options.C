@@ -2269,26 +2269,28 @@ bool save_options(unsigned long flags)
 
     // Read the file contents into memory ...
     string dddinit;
-    ifstream is(file);
-    if (is.bad())
     {
-	// File not found: create a new one
-	dddinit = 
-	    "! " DDD_NAME " initialization file\n"
-	    "! Enter your personal " DDD_NAME " resources here.\n"
-	    "\n";
-    }
-    else
-    {
-	char line[ARG_MAX + BUFSIZ];
-	while (is)
+	ifstream is(file);
+	if (is.bad())
 	{
-	    line[0] = '\0';
-	    is.getline(line, sizeof(line));
-	    if (string(line).contains(delimiter, 0))
-		break;
-	    dddinit += line;
-	    dddinit += '\n';
+	    // File not found: create a new one
+	    dddinit = 
+		"! " DDD_NAME " initialization file\n"
+		"! Enter your personal " DDD_NAME " resources here.\n"
+		"\n";
+	}
+	else
+	{
+	    char line[ARG_MAX + BUFSIZ];
+	    while (is)
+	    {
+		line[0] = '\0';
+		is.getline(line, sizeof(line));
+		if (string(line).contains(delimiter, 0))
+		    break;
+		dddinit += line;
+		dddinit += '\n';
+	    }
 	}
     }
 
