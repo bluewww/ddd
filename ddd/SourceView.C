@@ -5336,7 +5336,9 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
     set_sensitive(info->ignore,           gdb->has_ignore_command());
     set_sensitive(XtParent(info->ignore), gdb->has_ignore_command());
-    set_sensitive(info->condition, true);
+
+    set_sensitive(info->condition,           gdb->has_breakpoint_conditions());
+    set_sensitive(XtParent(info->condition), gdb->has_breakpoint_conditions());
 
     bool can_record = gdb->type() == GDB && !gdb->recording();
     set_sensitive(info->record,    can_record);
