@@ -3679,12 +3679,12 @@ You may add other commands here\(em\&for instance, to set the
 executable path or to invoke a suitable shell.
 .TP
 .B "sourceInitCommands (\fPclass\fB SourceInitCommands)"
-If `\fBon\fR', \s-1@DDD@\s-1 writes all \s-1GDB\s+1 initialization
-commands into a temporary file and makes \s-1GDB\s+1 read this file,
-rather than sending each initialization command separately.  Right
-now, this feature is experimental; it results in faster startup
-(especially if you have several user-defined commands), but gives poor
-diagnostics.  Default is `\fBoff\fR'.
+If `\fBon\fR' (default), \s-1@DDD@\s-1 writes all \s-1GDB\s+1
+initialization commands into a temporary file and makes \s-1GDB\s+1
+read this file, rather than sending each initialization command
+separately.  This results in faster startup (especially if you have
+several user-defined commands).  If `\fBoff\fR', \s-1DDD\s+1 makes
+\s-1GDB\s+1 process each command separately.
 .TP
 .B "synchronousDebugger (\fPclass\fB SynchronousDebugger)"
 If `\fBon\fR', X events are not processed while the debugger is

@@ -498,8 +498,9 @@ Ddd*jdbSettings:
 
 
 ! If on, let GDB source all initialization commands from a temporary file.
-! This is somewhat faster, but gives bad diagnostics.
-Ddd*sourceInitCommands: off
+! This is slightly faster than processing each command separately,
+! but gives bad diagnostics.
+Ddd*sourceInitCommands: on
 
 
 ! Auto-command defaults
