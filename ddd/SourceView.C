@@ -1032,7 +1032,8 @@ void SourceView::set_source_argCB(Widget text_w,
 	while (s.contains('\n'))
 	    s = s.after('\n');
 
-	source_arg->set_string(s);
+	if (s != "")
+	    source_arg->set_string(s);
     }
 }
 
@@ -1098,7 +1099,7 @@ void SourceView::SetInsertionPosition(Widget text_w,
 
     // Find current relative row
     short relative_row = 1;
-    for (XmTextPosition p = pos; p > current_top; p--)
+    for (XmTextPosition p = min(text.length() - 1, pos); p > current_top; p--)
 	if (text[p] == '\n')
 	    relative_row++;
 
@@ -2887,12 +2888,30 @@ void SourceView::lookup(string s, bool silent)
     {
 	// Empty argument given
 	if (last_execution_pc != "")
+	{
+	    // Show last PC
 	    show_pc(last_execution_pc, XmHIGHLIGHT_SELECTED);
+	}
+	else
+	{
+	    // Show cursor position
+	    SetInsertionPosition(code_text_w,
+				 XmTextGetInsertionPosition(code_text_w));
+	}
 
 	if (last_execution_file != "")
+	{
+	    // Show last execution position
 	    _show_execution_position(last_execution_file, 
 				     last_execution_line,
 				     silent);
+	}
+	else
+	{
+	    // Show cursor position
+	    SetInsertionPosition(source_text_w,
+				 XmTextGetInsertionPosition(source_text_w));
+	}
     }
     else if (s[0] != '0' && isdigit(s[0]))
     {
@@ -2910,7 +2929,8 @@ void SourceView::lookup(string s, bool silent)
 	else
 	{
 	    if (!silent)
-		post_error("No such line in current source.", 
+		post_error("No line " 
+			   + itostring(line) + " in current source.",
 			   "no_such_line_error", source_text_w);
 	}
     }
@@ -2943,7 +2963,7 @@ void SourceView::lookup(string s, bool silent)
 	    }
 
 	    if (bp == 0 && !silent)
-		post_error("No such breakpoint.", 
+		post_error("No breakpoint number " + itostring(nr) + ".", 
 			   "no_such_breakpoint_error", source_text_w);
 	}
     }
@@ -4969,8 +4989,8 @@ int SourceView::line_height(Widget text_w)
 // If false, don't change glyphs - just check if they would change
 bool SourceView::change_glyphs = true;
 
-// True if glyphs changed (or would change)
-bool SourceView::glyphs_changed = false;
+// All glyphs that have changed during update_glyphs_now()
+WidgetArray SourceView::changed_glyphs;
 
 // Unmap glyph W
 void SourceView::unmap_glyph(Widget w)
@@ -4991,7 +5011,7 @@ void SourceView::unmap_glyph(Widget w)
 	XtVaSetValues(w, XmNuserData, XtPointer(0), NULL);
     }
 
-    glyphs_changed = true;
+    changed_glyphs += w;
 }
 
 // Map glyph W in (X, Y)
@@ -5038,7 +5058,7 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
     {
 	if (change_glyphs)
 	    XtVaSetValues(w, XmNleftOffset, x, XmNtopOffset, y, NULL);
-	glyphs_changed = true;
+	changed_glyphs += w;
     }
 
     if (user_data != 0)
@@ -5048,8 +5068,8 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
     {
 	XtMapWidget(w);
 	XtVaSetValues(w, XmNuserData, XtPointer(1), NULL);
+	changed_glyphs += w;
     }
-    glyphs_changed = true;
 }
 
 
@@ -5085,9 +5105,7 @@ void SourceView::update_glyphs(Widget w)
 	// we added the UpdateGlyphsWorkProc() timeout.
 	time_t seconds_since_timer_call = 
 	    (time((time_t *)0) - update_glyph_called);
-	bool update_glyphs_should_have_been_called =
-	    seconds_since_timer_call >= 1;
-	if (update_glyphs_should_have_been_called)
+	if (seconds_since_timer_call >= 1)
 	{
 	    XtRemoveTimeOut(update_glyph_id);
 	    UpdateGlyphsWorkProc(XtPointer(&update_glyph_id), 
@@ -5106,13 +5124,29 @@ void SourceView::updateGlyphsAct(Widget, XEvent*, String *, Cardinal *)
 // Invoked whenever the text widget may be about to scroll
 void SourceView::CheckScrollCB(Widget, XtPointer, XtPointer)
 {
-    static XtIntervalId scroll_id = 0;
+    static XtIntervalId check_scroll_id = 0;
+    static time_t check_scroll_called = 0;
 
-    if (scroll_id == 0)
+    if (check_scroll_id == 0)
     {
-	scroll_id = 
+	check_scroll_id = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
-			    CheckScrollWorkProc, XtPointer(&scroll_id));
+			    CheckScrollWorkProc, XtPointer(&check_scroll_id));
+	check_scroll_called = time((time_t *)0);
+    }
+    else
+    {
+	// CheckScrollCB() occasionally hangs - that is,
+	// CHECK_SCROLL_ID != 0 holds, but CheckScrollWorkProc() is
+	// never called.  Hence, we check for the time elapsed since
+	// we added the CheckScrollWorkProc() timeout.
+	time_t seconds_since_timer_call = 
+	    (time((time_t *)0) - check_scroll_called);
+	if (seconds_since_timer_call >= 1)
+	{
+	    XtRemoveTimeOut(check_scroll_id);
+	    CheckScrollWorkProc(XtPointer(&check_scroll_id), &check_scroll_id);
+	}
     }
 }
     
@@ -5354,32 +5388,14 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
     if (XtAppPending(app_context) & (XtIMXEvent | XtIMAlternateInput))
     {
 	// Other events pending - check if we shall change something
+	const WidgetArray& glyphs = glyphs_to_be_updated();
 
-	glyphs_changed = false;
-	change_glyphs  = false;
-	update_glyphs_now();
-	change_glyphs  = true;
-
-	if (glyphs_changed)
+	if (glyphs.size() > 0)
 	{
-	    // Change is imminent - unmap all glyphs and try again in 10ms
-	    for (int k = 0; k < 2; k++)
-	    {
-		if (k == 0 && !update_source_glyphs)
-		    continue;
-		if (k == 1 && !update_code_glyphs)
-		    continue;
-
-		unmap_glyph(plain_arrows[k]);
-		unmap_glyph(grey_arrows[k]);
-		unmap_glyph(signal_arrows[k]);
-
-		for (int i = 0; i < MAX_GLYPHS; i++)
-		{
-		    unmap_glyph(plain_stops[k][i]);
-		    unmap_glyph(grey_stops[k][i]);
-		}
-	    }
+	    // Change is imminent - unmap all glyphs that will change
+	    // and try again in 10ms
+	    for (int i = 0; i < glyphs.size(); i++)
+		unmap_glyph(glyphs[i]);
 
 	    XtIntervalId new_id = 
 		XtAppAddTimeOut(app_context, 10,
@@ -5399,6 +5415,9 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 void SourceView::update_glyphs_now()
 {
     // clog << "Updating glyphs...";
+
+    WidgetArray empty;
+    changed_glyphs = empty;
 
     if (update_source_glyphs)
     {
@@ -5496,6 +5515,22 @@ void SourceView::update_glyphs_now()
     }
 
     // clog << "done.\n";
+}
+
+
+// Return all glyphs that would change
+const WidgetArray& SourceView::glyphs_to_be_updated()
+{
+    change_glyphs = false;
+    update_glyphs_now();
+    change_glyphs = true;
+
+    // clog << "Glyphs to be updated:";
+    // for (int i = 0; i < changed_glyphs.size(); i++)
+    //     clog << " " << XtName(changed_glyphs[i]);
+    // clog << "\n";
+
+    return changed_glyphs;
 }
 
 

@@ -396,15 +396,20 @@ private:
 
     // Update glyphs for widget W (0: all)
     static void update_glyphs(Widget w = 0);
-    static void update_glyphs_now();
+
+    // Helping background procedures
     static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
     static Boolean CreateGlyphsWorkProc(XtPointer);
 
-    // If false, don't change glyphs - just check if they would change
-    static bool change_glyphs;
+    // Update all glyphs now (without delay).
+    static void update_glyphs_now();
 
-    // True if glyphs changed (or would change)
-    static bool glyphs_changed;
+    // Return all glyphs that would change
+    static const WidgetArray& glyphs_to_be_updated();
+
+    // Helpers needed by glyphs_to_be_changed
+    static bool change_glyphs;
+    static WidgetArray changed_glyphs;
 
 public:
     // Constructor
@@ -607,6 +612,9 @@ public:
 
     // True iff we have some execution position
     static bool have_exec_pos() { return last_execution_file != ""; }
+
+    // True iff we have some program counter
+    static bool have_pc() { return last_execution_pc != ""; }
 
     // True iff we have some selection
     static bool have_selection();
