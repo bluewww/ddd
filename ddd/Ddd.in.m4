@@ -6673,7 +6673,7 @@ Ddd*fatal_dialog*helpString: \
 You should better restart DDD now; DDD may fail again soon.\n\
 \n\
 If you can reproduce this bug, please send a bug report\n\
-to EMAIL(bug-[ddd]@ gnu.org), giving a subject like\n\
+to EMAIL(@PACKAGE_BUGREPORT@), giving a subject like\n\
 \n\
     DDD @VERSION@ (@THEHOST@) gets @CAUSE@\n\
 \n\

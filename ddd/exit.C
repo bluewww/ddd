@@ -445,7 +445,7 @@ static void print_fatal_msg(const char *title, const char *cause,
 	    "Oops!  You have found a bug in " DDD_NAME ".\n"
 	    "\n"
 	    "If you can reproduce this bug, please send a bug report\n"
-	    "to <bug-ddd@gnu.org>, giving a subject like\n"
+	    "to <" PACKAGE_BUGREPORT ">, giving a subject like\n"
 	    "\n"
 	    "    " DDD_NAME " " DDD_VERSION 
 	    " (" DDD_HOST ") gets %s\n"

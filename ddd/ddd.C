@@ -7346,7 +7346,7 @@ static void setup_version_info()
 
     helpOnVersionExtraText += cr()
 	+ rm("Send bug reports to <")
-	+ tt("bug-ddd@gnu.org") + rm(">.") + cr()
+	+ tt(PACKAGE_BUGREPORT) + rm(">.") + cr()
 	+ rm("Always include the ") + tt(log) + rm(" file;")
 	+ rm(" see the " DDD_NAME " manual for details.") + cr()
 	+ rm("Send comments and suggestions to <")
