@@ -389,7 +389,7 @@ Boolean CvtStringToXmString(Display *display,
     const string font_esc = "@";
 
     static regex font_id("[_A-Za-z][-_A-Za-z0-9]*");
-    static regex blank("[ \t]*");
+    static regex blank("[ \t]?");
 
     // get string
     string source = (String)fromVal->addr;

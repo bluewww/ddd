@@ -1,7 +1,9 @@
 ! $Id$
 ! DDD Resource File.  DO NOT INSTALL THIS FILE!  See below for details.
-! @configure_input@
-Ddd*appDefaultsVersion: @VERSION@
+! Generated automatically from Ddd.m4.in by configure.
+dnl This file contains M4 macros!  Here is one:
+changequote(,)dnl
+Ddd*appDefaultsVersion: 2.1.90
 
 ! Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 ! Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -62,6 +64,90 @@ Ddd*appDefaultsVersion: @VERSION@
 ! In short, app-defaults files are bad.  Don't use them.  Use this file
 ! for informational purposes as suggested above.
 
+dnl --------------------------------------------------------------------------
+dnl M4 section.
+dnl---------------------------------------------------------------------------
+dnl
+dnl Undefine some disturbing macros.
+dnl This works for BSD M4, SYSV M4, and GNU M4.
+changequote([,])dnl
+undefine([eval])dnl
+undefine([include])dnl
+undefine([shift])dnl
+undefine([index])dnl
+undefine([format])dnl
+dnl
+dnl
+dnl Some stuff we frequently need
+dnl
+dnl ITEM issues a simple centered dot.
+define(ITEM,@tt \267 @rm)dnl
+dnl
+dnl SUBITEM issues a dash.
+define(SUBITEM,@tt - @rm)dnl
+dnl
+dnl DESC(ITEM, DESC) issues `* ITEM - DESC.', with ITEM in bold.
+define(DESC,@tt \267 LBL($1) - $2.)dnl
+dnl
+dnl LBL(foo) is used for describing labels
+define(LBL,@bf $1@rm )dnl
+dnl
+dnl TEXT(k) is used for describing visible text
+define(TEXT,`@tt $1@rm')dnl
+dnl
+dnl CODE(k) indicates code.
+define(CODE,@tt $1@rm )dnl
+dnl
+dnl KBD(k) is used for commands at the GDB prompt
+define(KBD,`@tt $1@rm')dnl
+dnl
+dnl KEY(k) is used for keyboard keys
+define(KEY,@key $1@rm )dnl
+dnl
+dnl BUTTON(k) is used for mouse buttons
+define(BUTTON,@sl $1@rm )dnl
+dnl
+dnl SAMP(k) shows a literal sequence of characters.
+define(SAMP,`@tt $1@rm')dnl
+dnl 
+dnl VAR(v) shows a metasyntactic variable.
+define(VAR,@sl $1@rm )dnl
+dnl
+dnl FILE(f) shows the name of a file
+define(FILE,`@tt $1@rm')dnl
+dnl
+dnl DFN(f) gives a definition
+define(DFN,@sl $1@rm )dnl
+dnl
+dnl CITE(c) refers to some external work
+define(CITE,@sl $1@rm )dnl
+dnl
+dnl URL(u) refers to an URL
+define(URL,@tt $1@rm )dnl
+dnl
+dnl EMAIL(e) refers to an e-mail address
+define(EMAIL,@tt<$1>@rm )dnl
+dnl
+dnl EMPH(t) emphasizes text
+define(EMPH,@sl $1@rm )dnl
+dnl
+dnl STRONG(t) places strong emphasis
+define(STRONG,@bf $1@rm )dnl
+dnl
+dnl
+dnl Constants
+dnl ---------
+dnl
+dnl LBL_FIND_PREV and LBL_FIND_NEXT are the labels used for the Find buttons
+define(LBL_FIND_PREV,Find@small<< @bf()@rm )dnl
+define(LBL_FIND_NEXT,Find@small>> @bf()@rm )dnl
+dnl
+dnl POSTSCRIPT includes a (TM) symbol
+define(POSTSCRIPT,PostScript@symbol \344 @rm )dnl
+dnl
+dnl KEY_RETURN is the symbol of the return key
+define(KEY_RETURN,`@symbol \277@rm')dnl
+
 !-----------------------------------------------------------------------------
 ! User-settable resources
 !-----------------------------------------------------------------------------
@@ -121,7 +207,7 @@ Ddd*saveOptionsOnExit: false
 Ddd*termCommand: xterm \
 -bg 'grey90' -fg 'black' -cr 'dark green' \
 -fn '-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*' \
--title '@DDD@: Execution Window' -e /bin/sh -c
+-title 'DDD: Execution Window' -e /bin/sh -c
 
 
 ! The terminal type provided by `termCommand' (that is, the value of
@@ -155,7 +241,7 @@ Ddd*useTTYCommand: false
 ! The `rsh' command to invoke tty-based commands on other hosts.
 ! On some systems, this is called `remsh'; on others, `on'.
 ! You may want to consult your system documentation for details.
-Ddd*rshCommand: @RSH@
+Ddd*rshCommand: /usr/ucb/rsh
 
 
 ! If `rsh' is used without commands, using the `--rhost' option,
@@ -178,7 +264,7 @@ Ddd*psCommand: ps -x 2> /dev/null || ps -ef 2> /dev/null || ps
 ! The `print' command to print a postscript file.
 ! On some systems, this is called `lp'; on others, `lpr'.
 ! You may want to consult your system documentation for details.
-Ddd*printCommand: @PRINT_COMMAND@
+Ddd*printCommand: lp -c
 
 
 ! Paper size, in format WIDTH x HEIGHT.  (Default: A4).
@@ -210,13 +296,13 @@ Ddd*listDirCommand:   \
 
 ! Command to uncompress the DDD manual.  Reads from standard input and
 ! writes to standard output.
-Ddd*uncompressCommand: @UNCOMPRESS@
+Ddd*uncompressCommand: gzip -d -c
 
 
 ! The DDD WWW page.
 Ddd*wwwPage: http://www.cs.tu-bs.de/softech/ddd/
 
-! Command to invoke the WWW page.  @URL@ stands for the URL to open.
+! [Command to invoke the WWW page.  @URL@ stands for the URL to open.
 ! Default is to try a running Netscape first, then to invoke a new 
 ! Netscape process, then to let a running Emacs do the job, then to
 ! invoke Mosaic, then to invoke Lynx.
@@ -228,7 +314,7 @@ Ddd*wwwCommand: \
 || gnudoit '(w3-fetch \042@URL@\042)' \
 || mosaic '@URL@' \
 || Mosaic '@URL@' \
-|| xterm -e lynx '@URL@'
+|| xterm -e lynx '@URL@']
 
 ! The time (in seconds) to wait for synchronous GDB questions to complete
 Ddd*questionTimeout: 10
@@ -475,7 +561,7 @@ Ddd*autoCommands: false
 
 ! The prefix of auto-commands (by default, `ddd: ').  You are encouraged
 ! to change this value in your `~/.dddinit' file.
-Ddd*autoCommandPrefix: @ddd@:\ 
+Ddd*autoCommandPrefix: ddd:\ 
 
 
 
@@ -659,7 +745,7 @@ Ddd*highlightThickness:		1
 ! are some fonts for usual highlighting.
 ! @Logo and @logo are used in the DDD logo.
 !
-! Note: these font names are also used in DDD.  See `ddd/charsets.h'.
+! Note: These font names are also used in DDD.  See `ddd/charsets.h'.
 !
 ! Note: LessTif 0.79 always wants `FONTLIST_DEFAULT_TAG_STRING' 
 ! instead of `charset' for TextField and Text widgets; this must also 
@@ -1255,25 +1341,25 @@ None<Btn3Down>:		graph-select() graph-popup-menu()\n
 !-----------------------------------------------------------------------------
 
 ! Generic title
-Ddd*title:				@DDD@ Window
+Ddd*title:				DDD Window
 
 ! Main Window
-Ddd.title:				@DDD@: The Data Display Debugger
-Ddd.iconName:				@DDD@
+Ddd.title:				DDD: The Data Display Debugger
+Ddd.iconName:				DDD
 
 ! Separate windows
-Ddd*command_shell.title:		@DDD@: Debugger Console
-Ddd*command_shell.iconName:		@DDD@: Debugger Console
+Ddd*command_shell.title:		DDD: Debugger Console
+Ddd*command_shell.iconName:		DDD: Debugger Console
 
-Ddd*source_view_shell.title:		@DDD@: Program Source
-Ddd*source_view_shell.iconName:		@DDD@: Program Source
+Ddd*source_view_shell.title:		DDD: Program Source
+Ddd*source_view_shell.iconName:		DDD: Program Source
 
-Ddd*data_disp_shell.title:		@DDD@: Program Data
-Ddd*data_disp_shell.iconName:		@DDD@: Program Data
+Ddd*data_disp_shell.title:		DDD: Program Data
+Ddd*data_disp_shell.iconName:		DDD: Program Data
 
 ! Command tool
-Ddd*tool_shell.title:			@DDD@
-Ddd*tool_shell.iconName:		@DDD@: Command Tool
+Ddd*tool_shell.title:			DDD
+Ddd*tool_shell.iconName:		DDD: Command Tool
 
 
 
@@ -1305,33 +1391,33 @@ Ddd*text_help_popup*okLabelString: Close
 Ddd*manual_help_popup*okLabelString: Close
 
 ! Titles
-Ddd*help_popup.title:           @DDD@ Help
-Ddd*manual_help_popup.title:    @DDD@ Manual
-Ddd*manual_help_popup.iconName: @DDD@ Manual
-Ddd*text_help_popup.title:      @DDD@ License
-Ddd*text_help_popup.iconName:   @DDD@ License
+Ddd*help_popup.title:           DDD Help
+Ddd*manual_help_popup.title:    DDD Manual
+Ddd*manual_help_popup.iconName: DDD Manual
+Ddd*text_help_popup.title:      DDD License
+Ddd*text_help_popup.iconName:   DDD License
 
 ! Help on help.
 Ddd*help_popup.help*helpString: \
-@rm This is the @sl Help Window.@rm\n\
+@rm This is the EMPH(Help Window)\n\
 \n\
-To find out something specific about an item, press @key F1 @rm and click\n\
+To find out something specific about an item, press KEY(F1) and click\n\
 on the item.  Its functionality will be explained here.\n\
 \n\
-To find out what you can do next, press @key Shift+F1@rm.  Depending on\n\
-the current @DDD@ state, you will be given some general advice.\n\
+To find out what you can do next, press KEY(Shift+F1).  Depending on\n\
+the current DDD state, you will be given some general advice.\n\
 \n\
-Click on @bf Close @rm to close the help window.
+Click on LBL(Close) to close the help window.
 
 
 ! The official announcement.
 ! Build information (from `USERINFO') is appended to this text.
 Ddd*helpOnVersionString:	\
-@Logo @DDD@@logo: \
+@Logo DDD@logo: \
 The @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
 @rm by Dorothea L\374tkehaus and Andreas Zeller.\n\
 \n\
-@DDD@ @VERSION@ (@host@),\n\
+DDD 2.1.90 (sparc-sun-sunos4.1.4),\n\
 Copyright \251 1997 Technische Universit\344t Braunschweig, Germany.\n
 
 ! The default Help Text.
@@ -1340,34 +1426,34 @@ Ddd*helpString:	\
 
 ! Some trival help
 Ddd*XmScrollBar.helpString: \
-@rm This is a @sl Scroll Bar.@rm\n\
+@rm This is a EMPH(Scroll Bar.)\n\
 \n\
-Click or hold the @bf left mouse button @rm on an arrow button\n\
+Click or hold the BUTTON(left mouse button) on an arrow button\n\
 to scroll the window in the arrow direction.\n\
 \n\
-Drag the slider with the @bf left mouse button @rm to select the\n\
+Drag the slider with the BUTTON(left mouse button) to select the\n\
 visible part of the window.
 ! Ddd*XmScrollBar.tipString: \
 ! @rm Scroll window
 
 Ddd*XmSash.helpString: \
-@rm This is a @sl Paned Window Sash.@rm\n\
+@rm This is a EMPH(Paned Window Sash.)\n\
 \n\
-Drag the sash with the @bf left mouse button @rm to resize window parts.
+Drag the sash with the BUTTON(left mouse button) to resize window parts.
 Ddd*XmSash.tipString: \
 @rm Resize window
 
 Ddd*arg_label.helpString: \
-@rm This is an @sl Argument Prompt.@rm\n\
+@rm This is an EMPH(Argument Prompt.)\n\
 \n\
-Enter the argument @bf () @rm on the right.\n\
-Click on @bf (): @rm to clear the argument @bf()@rm.
+Enter the argument LBL(()) on the right.\n\
+Click on LBL(():) to clear the argument LBL(()).
 
 Ddd*arg_label.tipString: \
-@rm Clear argument @bf()
+@rm Clear argument LBL(())
 
 Ddd*arg_label.documentationString: \
-@rm Click to clear the argument @bf()@rm.
+@rm Click to clear the argument LBL(()).
 
 
 !-----------------------------------------------------------------------------
@@ -1385,7 +1471,7 @@ Ddd*XmSash.traversalOn:			false
 
 Ddd*manual_help*form.borderWidth:	0
 
-Ddd*manual_help*title.labelString:	@DDD@ Manual
+Ddd*manual_help*title.labelString:	DDD Manual
 Ddd*manual_help*title.alignment:	XmALIGNMENT_BEGINNING
 
 Ddd*manual_help*area.borderWidth:	0
@@ -1417,28 +1503,26 @@ Ddd*manual_help*search*alignment:	XmALIGNMENT_CENTER
 Ddd*manual_help*arg_label.labelString:	():
 
 Ddd*manual_help*key.columns:		58
-Ddd*manual_help*findBackward.labelString: Find@small<< @bf()
+Ddd*manual_help*findBackward.labelString: LBL_FIND_PREV
 Ddd*manual_help*findBackward.tipString:	  \
-@rm Find previous @bf() @rm in manual
+@rm Find previous LBL(()) in manual
 Ddd*manual_help*findBackward.documentationString:	\
-@rm Search the previous occurrence of @bf () @rm in the manual
-Ddd*manual_help*findForward.labelString:  Find@small>> @bf()
+@rm Search the previous occurrence of LBL(()) in the manual
+Ddd*manual_help*findForward.labelString:  LBL_FIND_NEXT
 Ddd*manual_help*findForward.tipString:	  \
-@rm Find next @bf() @rm in manual
+@rm Find next LBL(()) in manual
 Ddd*manual_help*findForward.documentationString:	\
-@rm Search the next occurrence of @bf () @rm in the manual
+@rm Search the next occurrence of LBL(()) in the manual
 
 Ddd*manual_help*helpString: \
-@rm This is the @sl @DDD@ Manual Browser.@rm\n\
+@rm This is the EMPH(DDD Manual Browser.)\n\
 \n\
 To view a specific section, select its title from the index at the top.\n\
 \n\
-To find a string in the manual, enter it in the @bf() @rm argument field \
-and press @key RETURN@rm.\n\
-Click on @bf Find@small>> @bf() @rm to search the next occurrence of \
-@bf ()@rm.\n\
-Click on @bf Find@small<< @bf() @rm to search the previous occurrence of \
-@bf ()@rm.
+To find a string in the manual, enter it in the LBL(()) argument field \
+and press KEY_RETURN.\n\
+Click on LBL_FIND_PREV to search the next occurrence of LBL(()).\n\
+Click on LBL_FIND_NEXT to search the previous occurrence of LBL(()).
 
 
 !-----------------------------------------------------------------------------
@@ -1447,7 +1531,7 @@ Click on @bf Find@small<< @bf() @rm to search the previous occurrence of \
 
 Ddd*text_help*form.borderWidth:		0
 
-Ddd*text_help*title.labelString:      	@DDD@ License
+Ddd*text_help*title.labelString:      	DDD License
 Ddd*text_help*title.alignment:	        XmALIGNMENT_BEGINNING
 
 Ddd*text_help*text.columns:	        80
@@ -1460,14 +1544,13 @@ Ddd*text_help*textSW.width:		600
 Ddd*text_help*textSW.height:		320
 
 Ddd*text_help*helpString: \
-@rm This is the @sl @DDD@ License,@rm\n\
-a GNU General Public License.\n\
+@rm This is the EMPH(DDD License,) a GNU General Public License.\n\
 \n\
-It describes the terms and conditions\n\
-for copying, distributing and modifying @DDD@.\n\
+It describes the terms and conditions for copying, distributing\n\
+and modifying DDD.\n\
 \n\
-Please see section 11, @tt NO WARRANTY@rm, \n\
-for the various kind of warranty you do not have.
+Please see section 11, TEXT(NO WARRANTY), for the various kind of warranty\n\
+you do not have.
 
 
 !-----------------------------------------------------------------------------
@@ -1489,17 +1572,17 @@ Ddd*tipShell.borderWidth: 1
 !-----------------------------------------------------------------------------
 
 Ddd*menubar.helpString:		\
-@rm This is the @sl Menu Bar.@rm\n\
+@rm This is the EMPH(Menu Bar.)\n\
 \n\
-@tt \267 @bf File @rm - select files and exit @DDD@.\n\
-@tt \267 @bf Edit @rm - cut, copy, and paste text, and change @DDD@ options.\n\
-@tt \267 @bf View @rm - view @DDD@ windows.\n\
-@tt \267 @bf Program @rm - run the debugged program.\n\
-@tt \267 @bf Commands @rm - view command history.\n\
-@tt \267 @bf Stack @rm - view backtrace and select the current stack frame.\n\
-@tt \267 @bf Source @rm - edit breakpoints and lookup previous positions.\n\
-@tt \267 @bf Data @rm - edit displays.\n\
-@tt \267 @bf Help @rm - on-line help and version information.
+DESC(File, [select files and exit DDD])\n\
+DESC(Edit, [cut, copy, and paste text, and change DDD options])\n\
+DESC(View, [view DDD windows])\n\
+DESC(Program, [run the debugged program])\n\
+DESC(Commands, [view command history])\n\
+DESC(Stack, [view backtrace and select the current stack frame])\n\
+DESC(Source, [edit breakpoints and lookup previous positions])\n\
+DESC(Data, [edit displays])\n\
+DESC(Help, [on-line help and version information])
 
 Ddd*menubar.marginWidth:     0
 Ddd*menubar.marginHeight:    1
@@ -1507,29 +1590,29 @@ Ddd*menubar.marginHeight:    1
 
 ! File menu
 Ddd*menubar.file.labelString:		File
-Ddd*menubar.file*documentationString:	@rm Open program and source files
+Ddd*menubar.file*documentationString:	\
+@rm Open program and source files
 Ddd*menubar.file.mnemonic:		F
 Ddd*menubar.file*helpString:	\
 \
-@rm This is the @sl File Menu.@rm\n\
+@rm This is the EMPH(File Menu.)\n\
 \n\
-@tt \267 @bf Open Program... @rm - open the program to be debugged.\n\
-@tt \267 @bf Open Core Dump... @rm - open a core dump.\n\
-@tt \267 @bf Open Source... @rm - open a source file.\n\
+DESC(Open Program..., [open the program to be debugged])\n\
+DESC(Open Core Dump..., [open a core dump])\n\
+DESC(Open Source..., [open a source file])\n\
 \n\
-@tt \267 @bf Attach to Process... @rm - attach to a process \
-outside of @DDD@.\n\
-@tt \267 @bf Detach Process @rm - detach a process previously attached.\n\
+DESC(Attach to Process..., [attach to a process outside of DDD])\n\
+DESC(Detach Process, [detach a process previously attached])\n\
 \n\
-@tt \267 @bf Print Graph... @rm - print the data display graph.\n\
-@tt \267 @bf Print Again @rm - print using the previous settings.\n\
+DESC(Print Graph..., [print the data display graph])\n\
+DESC(Print Again, [print using the previous settings])\n\
 \n\
-@tt \267 @bf Make... @rm - run the `@tt make@rm' program.\n\
-@tt \267 @bf Make Again @rm - make using the previous settings.\n\
+DESC(Make..., [run the CODE(make) program])\n\
+DESC(Make Again, [make using the previous settings])\n\
 \n\
-@tt \267 @bf Close @rm - close this window.\n\
-@tt \267 @bf Restart @rm - restart @DDD@.\n\
-@tt \267 @bf Exit @rm - exit @DDD@.
+DESC(Close, [close this window])\n\
+DESC(Restart, [restart DDD])\n\
+DESC(Exit, [exit DDD])
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
 Ddd*menubar*fileMenu.open_file.mnemonic:    O
@@ -1553,7 +1636,7 @@ Ddd*menubar*fileMenu.attach.mnemonic:    A
 Ddd*menubar*fileMenu.attach.accelerator:      ~Shift Ctrl<Key>Z
 Ddd*menubar*fileMenu.attach.acceleratorText:  Ctrl+Z
 Ddd*menubar*fileMenu.attach.documentationString:   \
-@rm Attach to a process outside of @DDD@
+@rm Attach to a process outside of DDD
 
 Ddd*menubar*fileMenu.detach.labelString:       Detach Process
 Ddd*menubar*fileMenu.detach.mnemonic:	       t
@@ -1601,14 +1684,14 @@ Ddd*menubar*fileMenu.restart.mnemonic:	 R
 Ddd*menubar*fileMenu.restart.accelerator:      Shift Ctrl<Key>Q
 Ddd*menubar*fileMenu.restart.acceleratorText:  Ctrl+Shift+Q
 Ddd*menubar*fileMenu.restart.documentationString:   \
-@rm Close all windows and restart @DDD@ from scratch
+@rm Close all windows and restart DDD from scratch
 
 Ddd*menubar*fileMenu.exit.labelString:	 Exit
 Ddd*menubar*fileMenu.exit.mnemonic:	 x
 Ddd*menubar*fileMenu.exit.accelerator:	    ~Shift Ctrl<Key>Q
 Ddd*menubar*fileMenu.exit.acceleratorText:  Ctrl+Q
 Ddd*menubar*fileMenu.exit.documentationString:   \
-@rm Close all windows and exit @DDD@
+@rm Close all windows and exit DDD
 
 
 ! Edit menu
@@ -1618,21 +1701,20 @@ Ddd*menubar.edit*documentationString:	\
 @rm Cut, copy, paste from and to the clipboard
 Ddd*menubar.edit*helpString:	\
 \
-@rm This is the @sl Edit Menu.@rm\n\
+@rm This is the EMPH(Edit Menu.)\n\
 \n\
-@tt \267 @bf Cut @rm - remove the selected text to the clipboard.\n\
-@tt \267 @bf Copy @rm - copy the selected text to the clipboard\n\
-    without removing the original.\n\
-@tt \267 @bf Paste @rm - paste the clipboard contents into the text.\n\
-@tt \267 @bf Clear @rm - clear argument fields and @GDB@ command line.\n\
-@tt \267 @bf Delete @rm - delete the selected text.\n\
+DESC(Cut, [remove the selected text to the clipboard])\n\
+DESC(Copy, [copy the selected text to the clipboard\n\
+    without removing the original])\n\
+DESC(Paste, [paste the clipboard contents into the text])\n\
+DESC(Clear, [clear argument fields and @GDB@ command line])\n\
+DESC(Delete, [delete the selected text])\n\
 \n\
-@tt \267 @bf Preferences... @rm invokes a panel for \
-setting @DDD@ options.\n\
-@tt \267 @bf Settings... @rm invokes a panel for setting @GDB@ options.\n\
+DESC(Preferences..., [invokes a panel for setting DDD options])\n\
+DESC(Settings..., [invokes a panel for setting @GDB@ options])\n\
 \n\
-@tt \267 @bf Save Options @rm saves options, preferences, and @GDB@ settings\n\
-for the next @DDD@ invocation.
+DESC(Save Options, [saves options, preferences, and @GDB@ settings\n\
+    for the next DDD invocation.])
 
 Ddd*editMenu.cut.labelString:				Cut
 Ddd*editMenu.cut.mnemonic:				t
@@ -1682,7 +1764,7 @@ Ddd*editMenu.unselectAll.documentationString: \
 Ddd*editMenu.preferences.labelString:			Preferences...
 Ddd*editMenu.preferences.mnemonic:			r
 Ddd*editMenu.preferences.documentationString:\
-@rm Modify the @DDD@ configuration
+@rm Modify the DDD configuration
 
 ! Note: The debugger name will be prepended to this label:
 Ddd*editMenu.settings.labelString:			Settings...
@@ -1693,24 +1775,24 @@ Ddd*editMenu.settings.documentationString:\
 Ddd*editMenu.saveOptions.labelString:			Save Options
 Ddd*editMenu.saveOptions.mnemonic:			O
 Ddd*editMenu.saveOptions.documentationString:\
-@rm Save all options for the next @DDD@ invocation
+@rm Save all options for the next DDD invocation
 
 
 ! View menu (for multi-window DDD)
 Ddd*menubar.views.labelString:		View
 Ddd*menubar.views.mnemonic:		V
 Ddd*menubar.view*documentationString:	\
-@rm Open and close @DDD@ windows
+@rm Open and close DDD windows
 Ddd*menubar.views.helpString:	\
 \
-@rm This is the @sl View Menu.@rm\n\
+@rm This is the EMPH(View Menu.)\n\
 \n\
-@tt \267 @bf Command Tool... @rm - open and recenter the command tool.\n\
-@tt \267 @bf Execution Window... @rm - open the execution window.\n\
+DESC(Command Tool..., [open and recenter the command tool])\n\
+DESC(Execution Window..., [open the execution window])\n\
 \n\
-@tt \267 @bf Data Window @rm - toggle display of program data.\n\
-@tt \267 @bf Source Window @rm - toggle display of program source.\n\
-@tt \267 @bf @GDB@ Console @rm - toggle display of debugger console.
+DESC(Data Window, [toggle display of program data])\n\
+DESC(Source Window, [toggle display of program source])\n\
+DESC(@GDB@ Console, [toggle display of debugger console])
 
 Ddd*viewsMenu.tool.labelString:			Command Tool...
 Ddd*viewsMenu.tool.mnemonic:			T
@@ -1742,17 +1824,17 @@ Ddd*viewsMenu.console.documentationString: \
 Ddd*menubar.view.labelString:		View
 Ddd*menubar.view.mnemonic:		V
 Ddd*menubar.view*documentationString:	\
-@rm Open @DDD@ windows
+@rm Open DDD windows
 Ddd*menubar.view.helpString:	\
 \
-@rm This is the @sl View Menu.@rm\n\
+@rm This is the EMPH(View Menu.)\n\
 \n\
-@tt \267 @bf Command Tool... @rm - open and recenter the command tool.\n\
-@tt \267 @bf Execution Window... @rm - open the execution window.\n\
+DESC(Command Tool..., [open and recenter the command tool])\n\
+DESC(Execution Window..., [open the execution window])\n\
 \n\
-@tt \267 @bf Data Window... @rm - open the program data window.\n\
-@tt \267 @bf Source Window... @rm - open the program source window.\n\
-@tt \267 @bf @GDB@ Console... @rm - open the debugger console window.
+DESC(Data Window..., [open the program data window])\n\
+DESC(Source Window..., [open the program source window])\n\
+DESC(@GDB@ Console..., [open the debugger console window])
 
 Ddd*viewMenu.tool.labelString:			Command Tool...
 Ddd*viewMenu.tool.mnemonic:			T
@@ -1787,31 +1869,29 @@ Ddd*menubar.program*documentationString:	\
 @rm Control the execution of the debugged program
 Ddd*menubar.program*helpString:	\
 \
-@rm This is the @sl Program Menu.@rm\n\
+@rm This is the EMPH(Program Menu.)\n\
 \n\
-@tt \267 @bf Run... @rm - start the debugged program.\n\
-@tt \267 @bf Run Again @rm - run with current arguments.\n\
+DESC(Run..., [start the debugged program])\n\
+DESC(Run Again, [run with current arguments])\n\
 \n\
-@tt \267 @rm If @bf Run in Execution Window @rm is set, \
+ITEM If LBL(Run in Execution Window) is set, \
 the program is run in a separate\n\
     terminal window; useful for programs using terminal I/O.  Otherwise,\n\
     the program is run in the @GDB@ console window.\n\
     This change takes effect the next time the program is run.\n\
 \n\
-@tt \267 @bf Step @rm - step program until it reaches \
-a different source line.\n\
-@tt \267 @bf Step Instruction @rm - step exactly one machine instruction.\n\
-@tt \267 @bf Next @rm - step program, but proceed through subroutine calls.\n\
-@tt \267 @bf Next Instruction @rm - step instruction, \
-but proceed through subroutine calls.\n\
+DESC(Step, [step program until it reaches a different source line])\n\
+DESC(Step Instruction, [step exactly one machine instruction])\n\
+DESC(Next, [step program, but proceed through subroutine calls])\n\
+DESC(Next Instruction, [step instruction, \
+but proceed through subroutine calls])\n\
 \n\
-@tt \267 @bf Continue @rm - continue program after signal or breakpoint.\n\
-@tt \267 @bf Finish @rm - execute until function returns.\n\
+DESC(Continue, [continue program after signal or breakpoint])\n\
+DESC(Finish, [execute until function returns])\n\
 \n\
-@tt \267 @bf Kill @rm - Kill execution of program being debugged.\n\
-@tt \267 @bf Interrupt @rm - interrupt program \
-(or current @GDB@ command).\n\
-@tt \267 @bf Abort @rm - abort program (or current @GDB@ command).
+DESC(Kill, [Kill execution of program being debugged])\n\
+DESC(Interrupt, [interrupt program (or current @GDB@ command)])\n\
+DESC(Abort, [abort program (or current @GDB@ command)])
 
 Ddd*menubar*programMenu.run.labelString:	   Run...
 Ddd*menubar*programMenu.run.mnemonic:		   R
@@ -1898,22 +1978,22 @@ Ddd*menubar.commands*documentationString: \
 @rm Enter and modify @GDB@ commands
 Ddd*menubar.commands*helpString:	\
 \
-@rm This is the @sl Commands Menu.@rm\n\
+@rm This is the EMPH(Commands Menu.)\n\
 \n\
-@tt \267 @bf Command History... @rm - show all previous commands.\n\
+DESC(Command History..., [show all previous commands])\n\
 \n\
-@tt \267 @bf Previous @rm - show the previous command.\n\
-@tt \267 @bf Next @rm - show the next command.\n\
+DESC(Previous, [show the previous command])\n\
+DESC(Next, [show the next command])\n\
 \n\
-@tt \267 @bf Search Previous @rm - do incremental search forward.\n\
-@tt \267 @bf Search Next @rm - do incremental search backward.\n\
-@tt \267 @bf Quit Search @rm - quit incremental search.\n\
+DESC(Search Previous, [do incremental search forward])\n\
+DESC(Search Next, [do incremental search backward])\n\
+DESC(Quit Search, [quit incremental search])\n\
 \n\
-@tt \267 @bf Complete @rm - complete the current command.\n\
-@tt \267 @bf Apply @rm - execute the current command.\n\
+DESC(Complete, [complete the current command])\n\
+DESC(Apply, [execute the current command])\n\
 \n\
-@tt \267 @bf Clear Line @rm - clear @GDB@ command line.\n\
-@tt \267 @bf Clear Window @rm - clear all before last @GDB@ prompt.
+DESC(Clear Line, [clear @GDB@ command line])\n\
+DESC(Clear Window, [clear all before last @GDB@ prompt])
 
 Ddd*commandsMenu.history.labelString:	        Command History...
 Ddd*commandsMenu.history.mnemonic:	        H
@@ -1991,15 +2071,14 @@ Ddd*menubar.stack*documentationString:  \
 @rm Show the current program state
 Ddd*menubar.stack.helpString:	\
 \
-@rm This is the @sl Status Menu.@rm\n\
+@rm This is the EMPH(Status Menu.)\n\
 \n\
-@tt \267 @bf Backtrace... @rm - give a summary of how your program got \
-where it is.\n\
-@tt \267 @bf Registers... @rm - show current processor registers.\n\
-@tt \267 @bf Threads... @rm - show current program threads.\n\
+DESC(Backtrace..., [give a summary of how your program got where it is])\n\
+DESC(Registers..., [show current processor registers])\n\
+DESC(Threads..., [show current program threads])\n\
 \n\
-@tt \267 @bf Up @rm - show the function that called the current one.\n\
-@tt \267 @bf Down @rm - show the function that was called by the current one.
+DESC(Up, [show the function that called the current one])\n\
+DESC(Down, [show the function that was called by the current one])
 
 Ddd*stackMenu.stack.labelString:	Backtrace...
 Ddd*stackMenu.stack.mnemonic:		B
@@ -2039,21 +2118,21 @@ Ddd*menubar.source*documentationString: \
 @rm Set and edit breakpoints in source files
 Ddd*menubar.source.helpString:	\
 \
-@rm This is the @sl Source Menu.@rm\n\
+@rm This is the EMPH(Source Menu.)\n\
 \n\
-@tt \267 @bf Edit Breakpoints... @rm - set, view, and edit breakpoints.\n\
+DESC(Edit Breakpoints..., [set, view, and edit breakpoints])\n\
 \n\
-@tt \267 @rm If @bf Find Words Only @rm is set, \
+ITEM If LBL(Find Words Only) is set, \
 only complete words are found.\n\
     Otherwise, arbitrary occurrences are found.\n\
-@tt \267 @rm If @bf Display Machine Code @rm is set, \
+ITEM If LBL(Display Machine Code) is set, \
 the current function is automatically disassembled.\n\
 \n\
-@tt \267 @bf Edit Source... @rm - invoke text editor for current source.\n\
-@tt \267 @bf Reload Source  @rm - reload current source file.\n\
+DESC(Edit Source..., [invoke text editor for current source])\n\
+DESC(Reload Source , [reload current source file])\n\
 \n\
-@tt \267 @bf Back @rm - return to previous source position.\n\
-@tt \267 @bf Forward @rm - move forward to next source position.
+DESC(Back, [return to previous source position])\n\
+DESC(Forward, [move forward to next source position])
 
 Ddd*sourceMenu.breakpoints.labelString:	Edit Breakpoints...
 Ddd*sourceMenu.breakpoints.mnemonic:	d
@@ -2110,23 +2189,23 @@ Ddd*menubar.data*documentationString:   \
 @rm Create and modify data displays
 Ddd*menubar.data*helpString:	\
 \
-@rm This is the @sl Data Menu.@rm\n\
+@rm This is the EMPH(Data Menu.)\n\
 \n\
-@tt \267 @bf Edit Displays... @rm - select, enable and delete displays.\n\
+DESC(Edit Displays..., [select, enable and delete displays])\n\
 \n\
-@tt \267 @bf Detect Aliases @rm - toggle alias detection.\n\
+DESC(Detect Aliases, [toggle alias detection])\n\
 \n\
-@tt \267 @bf Display Local Variables @rm - show current local variables.\n\
-@tt \267 @bf Display Arguments @rm - show current argument variables.\n\
-@tt \267 @bf More Status Displays... @rm - show other things about\n\
-    the program being debugged.\n\
+DESC(Display Local Variables, [show current local variables])\n\
+DESC(Display Arguments, [show current argument variables])\n\
+DESC(More Status Displays..., [show other things about the \
+debugged program])\n\
 \n\
-@tt \267 @bf Align on Grid @rm - align all displays on the next grid point.\n\
-@tt \267 @bf Rotate Graph @rm - rotate the graph clockwise by 90 degrees.\n\
-@tt \267 @bf Layout Graph @rm - layout the graph.\n\
+DESC(Align on Grid, [align all displays on the next grid point])\n\
+DESC(Rotate Graph, [rotate the graph clockwise by 90 degrees])\n\
+DESC(Layout Graph, [layout the graph])\n\
 \n\
-@tt \267 @bf Select All @rm - select all displays.\n\
-@tt \267 @bf Refresh @rm - update all displays.
+DESC(Select All, [select all displays])\n\
+DESC(Refresh, [update all displays])
 
 Ddd*dataMenu.displays.labelString:	Edit Displays...
 Ddd*dataMenu.displays.mnemonic:		E
@@ -2220,21 +2299,21 @@ Ddd*menubar.help*documentationString:   \
 @rm Get more information
 Ddd*menubar.help*helpString: \
 \
-@rm This is the @sl Help Menu.@rm\n\
+@rm This is the EMPH(Help Menu.)\n\
 \n\
-@tt \267 @bf What Next...@rm - give help on what to do next.\n\
+DESC(What Next..., [give help on what to do next])\n\
 \n\
-@tt \267 @bf On Context... @rm - click on an item and get help on it.\n\
-@tt \267 @bf On Window... @rm - help on the application itself.\n\
-@tt \267 @bf On Help... @rm - help on how to use the help facility.\n\
+DESC(On Context..., [click on an item and get help on it])\n\
+DESC(On Window..., [help on the application itself])\n\
+DESC(On Help..., [help on how to use the help facility])\n\
 \n\
-@tt \267 @bf @DDD@ Manual... @rm - the @DDD@ on-line manual.\n\
-@tt \267 @bf @GDB@ Manual... @rm - the @GDB@ on-line manual.\n\
+DESC(DDD Manual..., [the DDD on-line manual])\n\
+DESC(@GDB@ Manual..., [the @GDB@ on-line manual])\n\
 \n\
-@tt \267 @bf @DDD@ License... @rm - the @DDD@ license.\n\
-@tt \267 @bf @DDD@ WWW Page... @rm - the @DDD@ WWW page.\n\
+DESC(DDD License..., [the DDD license])\n\
+DESC(DDD WWW Page..., [the DDD WWW page])\n\
 \n\
-@tt \267 @bf About @DDD@... @rm - some general information about @DDD@.
+DESC(About DDD..., [some general information about DDD])
 
 Ddd*helpMenu.whatNext.labelString:		What Next...
 Ddd*helpMenu.whatNext.mnemonic:			N
@@ -2261,32 +2340,32 @@ Ddd*helpMenu.onHelp.mnemonic:			H
 Ddd*helpMenu.onHelp.documentationString:	\
 @rm How to use the context-sensitive help
 
-Ddd*helpMenu.dddManual.labelString:		@DDD@ Manual...
+Ddd*helpMenu.dddManual.labelString:		DDD Manual...
 Ddd*helpMenu.dddManual.mnemonic:		D
 Ddd*helpMenu.dddManual.documentationString:	\
-@rm The @DDD@ reference manual
+@rm The DDD reference manual
 
 Ddd*helpMenu.gdbManual.labelString:		@GDB@ Manual...
 Ddd*helpMenu.gdbManual.mnemonic:		M
 Ddd*helpMenu.gdbManual.documentationString:	\
 @rm The @GDB@ reference manual
 
-Ddd*helpMenu.license.labelString:	@DDD@ License...
+Ddd*helpMenu.license.labelString:	DDD License...
 Ddd*helpMenu.license.mnemonic:		L
 Ddd*helpMenu.license.documentationString:	\
-@rm Terms and conditions for copying, distributing, and modifying @DDD@
+@rm Terms and conditions for copying, distributing, and modifying DDD
 
-Ddd*helpMenu.www.labelString:		@DDD@ WWW Page...
+Ddd*helpMenu.www.labelString:		DDD WWW Page...
 Ddd*helpMenu.www.mnemonic:		P
 Ddd*helpMenu.www.documentationString:	\
-@rm Invoke a WWW browser with up-to-date @DDD@ information
+@rm Invoke a WWW browser with up-to-date DDD information
 
-Ddd*helpMenu.onVersion.labelString:		About @DDD@...
+Ddd*helpMenu.onVersion.labelString:		About DDD...
 Ddd*helpMenu.onVersion.mnemonic:		A
 Ddd*helpMenu.onVersion.accelerator:		~Shift Ctrl<Key>F1
 Ddd*helpMenu.onVersion.acceleratorText:		Ctrl+F1
 Ddd*helpMenu.onVersion.documentationString:	\
-@rm General information about this @DDD@ version
+@rm General information about this DDD version
 
 
 
@@ -2296,7 +2375,7 @@ Ddd*helpMenu.onVersion.documentationString:	\
 
 Ddd*preferences_popup*okLabelString: 		Close
 Ddd*preferences_popup*cancelLabelString:	Reset
-Ddd*preferences_popup.title:			@DDD@: Preferences
+Ddd*preferences_popup.title:			DDD: Preferences
 
 Ddd*preferences*buttons.orientation: 		XmHORIZONTAL
 Ddd*preferences*buttons.borderWidth:  		0
@@ -2314,44 +2393,38 @@ Ddd*preferences*buttons*data.labelString:	Data Preferences
 Ddd*preferences*buttons*startup.labelString:	Startup Preferences
 
 Ddd*preferences*general*helpString:	\
-@rm These are the @sl General Preferences.@rm\n\
+@rm These are the EMPH(General Preferences.)\n\
 \n\
-@tt \267 @rm When you move the mouse pointer over a button, @DDD@ can \
-automatically\n\
+ITEM When you move the mouse pointer over a button, \
+DDD can automatically\n\
     give a hint on its usage.\n\
-    @tt - @rm Select @bf as popup tips @rm if you want the hint to be shown \
+    SUBITEM Select LBL(as popup tips) if you want the hint to be shown \
 in a popup window.\n\
-    @tt - @rm Select @bf in the status line @rm if you want it to be shown \
+    SUBITEM Select LBL(in the status line) if you want it to be shown \
 in the status line.\n\
     You can also select both options, or none at all.\n\
-@tt \267 @rm When you move the mouse pointer over a variable in the source \
-window,\n\
-    @DDD@ can automatically display the variable value.\n\
-    @tt - @rm Select @bf as popup tips @rm if you want the value to be shown \
+ITEM When you move the mouse pointer over a variable in the source window,\n\
+    DDD can automatically display the variable value.\n\
+    SUBITEM Select LBL(as popup tips) if you want the value to be shown \
 in a popup window.\n\
-    @tt - @rm Select @bf in the status line @rm if you want it to be shown \
+    SUBITEM Select LBL(in the status line) if you want it to be shown \
 in the status line.\n\
     You can also select both options, or none at all.\n\
-@tt \267 @rm If @bf Iconify all windows at once @rm is set, all @DDD@ windows \
-are iconified as a group.\n\
+ITEM If LBL(Iconify all windows at once) is set, all DDD windows are \
+iconified as a group.\n\
     Otherwise, windows are iconified separately.\n\
-@tt \267 @rm If @bf TAB key completes in all windows @rm is set, \
-the @key TAB @rm key completes\n\
-    arguments in all @DDD@ windows.\n\
-    Otherwise, the  @key TAB @rm key completes \
-in the @GDB@ console only.\n\
-@tt \267 @rm If @bf Suppress X warnings @rm is set, \
-X warnings are silently ignored.\n\
-@tt \267 @rm If @bf Ungrab mouse pointer @rm is set, @DDD@ will \
-automatically\n\
+ITEM If LBL(TAB key completes in all windows) is set, the KEY(TAB) key\n\
+    completes arguments in all DDD windows.\n\
+    Otherwise, the KEY(TAB) key completes in the @GDB@ console only.\n\
+ITEM If LBL(Suppress X warnings) is set, X warnings are silently ignored.\n\
+ITEM If LBL(Ungrab mouse pointer) is set, DDD will automatically\n\
     ungrab the mouse pointer when interrupting a modal X application.\n\
-@tt \267 @rm If @bf Save command history on exit @rm is set, \
-the command history is\n\
-    automatically saved when @DDD@ exits.\n\
+ITEM If LBL(Save command history on exit) is set, the command history is\n\
+    automatically saved when DDD exits.\n\
     Otherwise, the command history is discarded.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
-Click on @bf Reset @rm to restore the saved preferences.
+Click on LBL(Reset) to restore the saved preferences.
 
 
 Ddd*preferences*buttonHints.labelString:	 \
@@ -2390,28 +2463,27 @@ Save command history on exit
 
 
 Ddd*preferences*source*helpString:	\
-@rm These are the @sl Source Preferences.@rm\n\
+@rm These are the EMPH(Source Preferences.)\n\
 \n\
-@tt \267 @rm If @bf Refer to program sources by full path name @rm is set, \n\
-    source code locations are referred by full source file paths.\n\
-    Otherwise, only the base name is used.\n\
-@tt \267 @rm If @bf Show position and breakpoints as glyphs @rm \
-is set, \n\
+ITEM If LBL(Show position and breakpoints as glyphs) is set,\n\
     the current execution position and breakpoints are shown as glyphs.\n\
     Otherwise, they are shown as characters in the text.\n\
-@tt \267 @rm If @bf Display source line numbers @rm is set, \n\
+ITEM If LBL(Refer to program sources by full path name) is set, \n\
+    source code locations are referred by full source file paths.\n\
+    Otherwise, only the base name is used.\n\
+ITEM If LBL(Display source line numbers) is set, \n\
     each source line is prefixed by its number.\n\
-@tt \267 @rm If @bf Cache source files in memory @rm is set, \
+ITEM If LBL(Cache source files in memory) is set, \
 source texts are cached in memory.\n\
     Otherwise, sources are read from disk upon each source change.\n\
-@tt \267 @rm If @bf Cache machine code in memory @rm is set, \
+ITEM If LBL(Cache machine code in memory) is set, \
 disassembled code is cached in memory.\n\
     Otherwise, code is re-disassembled upon each function change.\n\
-@tt \267 @rm In @bf Tab width@rm, you can set the spacing of tab stops.\n\
+ITEM In LBL(Tab width), you can set the spacing of tab stops.\n\
     Setting the tab width to 8 sets a tab stop every 8 characters.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
-Click on @bf Reset @rm to restore the saved preferences.
+Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*showExecPos.labelString:	 \
 Show position and breakpoints
@@ -2445,28 +2517,27 @@ Ddd*preferences*tabWidth.titleString:		Tab width
 
 
 Ddd*preferences*data*helpString:	\
-@rm These are the @sl Data Preferences.@rm\n\
+@rm These are the EMPH(Data Preferences.)\n\
 \n\
-@tt \267 @rm If @bf Detect aliases @rm is set, @DDD@ detects displays\
- with the same\n\
+ITEM If LBL(Detect aliases) is set, DDD detects displays with the same\n\
     physical address and suppresses all aliases except the one that was\
  least recently changed.\n\
     This is useful for examining shared data structures.\n\
-@tt \267 @rm If @bf Show edge hints @rm is set, edge hints are displayed.\n\
-@tt \267 @rm If @bf Auto-align displays @rm is set, \n\
+ITEM If LBL(Show edge hints) is set, edge hints are displayed.\n\
+ITEM If LBL(Auto-align displays) is set,\n\
     each display is aligned on the nearest grid point.\n\
-@tt \267 @rm If @bf Use compact layout @rm is set, the graph is layouted\
- in a compact fashion.\n\
+ITEM If LBL(Use compact layout) is set, the graph is layouted \
+in a compact fashion.\n\
     This is suitable for homogeneous structures only.\n\
     Otherwise, the standard layout algorithm is used.\n\
-@tt \267 @rm If @bf Automatic layout @rm is set, the graph is layouted\
+ITEM If LBL(Automatic layout) is set, the graph is layouted
  after each change.\n\
     Otherwise, layout can be invoked manually.\n\
-@tt \267 @rm In @bf Grid size@rm, you can change the spacing of grid points.\n\
+ITEM In LBL(Grid size), you can change the spacing of grid points.\n\
     A spacing of 0 disables the grid.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
-Click on @bf Reset @rm to restore the saved preferences.
+Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*detectAliases.labelString:	\
 Detect aliases (shared data structures)
@@ -2486,46 +2557,45 @@ Ddd*preferences*gridSize.showValue:		true
 Ddd*preferences*gridSize.titleString:		Grid size
 
 Ddd*preferences*startup*helpString:   \
-@rm These are the @sl Startup Preferences.@rm\n\
+@rm These are the EMPH(Startup Preferences.)\n\
 \n\
-@tt \267 @bf Windows @rm sets the window layout.\n\
-    @bf separate windows @rm means to use one source window,\n\
-    one data window, and one @GDB@ console window.\n\
-    @bf one single window @rm means to use one single window\n\
-    for source, data, and the @GDB@ console. (*)\n\
+ITEM LBL(Windows) sets the window layout.\n\
+    SUBITEM LBL(separate windows) means to use one source window,\n\
+        one data window, and one @GDB@ console window.\n\
+    SUBITEM LBL(one single window) means to use one single window\n\
+        for source, data, and the @GDB@ console. (*)\n\
 \n\
-@tt \267 The @bf Status line @rm can be placed\n\
-    @bf at bottom of source@rm, in order to display menu descriptions, \
-or\n\
-    @bf at top of source@rm, as in @DDD@ 2.0 and earlier. (*)\n\
+ITEM The LBL(Status line) can be placed\n\
+    SUBITEM LBL(at bottom of source), in order to display \
+menu descriptions, or\n\
+    SUBITEM LBL(at top of source), as in DDD 2.0 and earlier. (*)\n\
 \n\
-@tt \267 The @bf Tool buttons @rm can be placed\n\
-    in the @bf command tool @rm which can be moved around @DDD@, \
-or\n\
-    in the @bf source window@rm, as in @DDD@ 1.4 and earlier.\n\
+ITEM The LBL(Tool buttons) can be placed\n\
+    SUBITEM in the LBL(command tool) which can be moved around DDD, or\n\
+    SUBITEM in the LBL(source window), as in DDD 1.4 and earlier.\n\
 \n\
-@tt \267 @bf Keyboard focus @rm sets the keyboard focus policy.\n\
-    @bf click-to-type @rm means that you must click on a window\n\
-    to direct the keyboard focus to it.\n\
-    @bf point-to-type @rm means that pointing to the window suffices.\n\
+ITEM LBL(Keyboard focus) sets the keyboard focus policy.\n\
+    SUBITEM LBL(click-to-type) means that you must click on a window\n\
+        to direct the keyboard focus to it.\n\
+    SUBITEM LBL(point-to-type) means that pointing to the window suffices.\n\
 \n\
-@tt \267 @bf Data Scrolling @rm sets the data window scrolling mode.\n\
-    @bf Panner @rm means to use a two-dimensional scrollbar\n\
-    (not available in all configurations).\n\
-    @bf Scrollbars @rm means to use two scrollbars. (*)\n\
+ITEM LBL(Data Scrolling) sets the data window scrolling mode.\n\
+    SUBITEM LBL(Panner) means to use a two-dimensional scrollbar\n\
+        (not available in all DDD configurations).\n\
+    SUBITEM LBL(Scrollbars) means to use two scrollbars. (*)\n\
 \n\
-@tt \267 @bf Debugger Type @rm sets the type of inferior debugger to use. \
+ITEM LBL(Debugger Type) sets the type of inferior debugger to use. \
 (*)\n\
 \n\
 (*) Note: these startup preferences take effect only after saving options\n\
-and restarting @DDD@.\n\
+and restarting DDD.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
-Click on @bf Reset @rm to restore the saved preferences.
+Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*startup*adjustMargin:		false
 
-Ddd*preferences*windows.labelString:		@DDD@ comes in
+Ddd*preferences*windows.labelString:		DDD comes in
 Ddd*preferences*windows.alignment:		XmALIGNMENT_END
 Ddd*preferences*windows.width:			200
 Ddd*preferences*windows.recomputeSize:		false
@@ -2575,7 +2645,7 @@ Ddd*debuggerMenu*xdb.labelString:		XDB
 
 Ddd*settings_popup*okLabelString: Close
 Ddd*settings_popup*cancelLabelString: Reset
-Ddd*settings_popup.title: @DDD@: Debugger Settings
+Ddd*settings_popup.title: DDD: Debugger Settings
 Ddd*settings_popup.autoUnmanage: false
 
 Ddd*settings*scroll.scrollingPolicy:		XmAUTOMATIC
@@ -2610,16 +2680,16 @@ Ddd*settings*scroll*helpString:
 
 ! The panel itself has a help button, too.
 Ddd*settings*helpString: \
-@rm These are the @sl @GDB@ Settings.@rm\n\
+@rm These are the EMPH(@GDB@ Settings)\n\
 \n\
 All settings (except source and object paths) can be saved\n\
-using @bf Edit @rm| @bf Save Options@rm.\n\
+using LBL(Edit) | LBL(Save Options).\n\
 \n\
-Click on @bf ? @rm near an item to get further information.\n\
-In a text field, press the @key RETURN @rm key to commit the changes.\n\
+Click on LBL(?) near an item to get further information.\n\
+In a text field, press the KEY_RETURN key to commit the changes.\n\
 \n\
-Click on @bf Reset @rm to restore the saved settings.\n\
-Click on @bf Close @rm to close this window.
+Click on LBL(Reset) to restore the saved settings.\n\
+Click on LBL(Close) to close this window.
 
 
 !-----------------------------------------------------------------------------
@@ -2628,7 +2698,7 @@ Click on @bf Close @rm to close this window.
 
 Ddd*infos_popup*okLabelString: Close
 Ddd*infos_popup*cancelLabelString: Reset
-Ddd*infos_popup.title: @DDD@: Status Displays
+Ddd*infos_popup.title: DDD: Status Displays
 Ddd*infos_popup.autoUnmanage: false
 
 Ddd*infos*scroll.scrollingPolicy:		XmAUTOMATIC
@@ -2649,15 +2719,15 @@ Ddd*infos*scroll*helpString:
 
 ! The panel itself has a help button, too.
 Ddd*infos*helpString: \
-@rm This is the list of @sl Status Displays.@rm\n\
+@rm This is the list of EMPH(Status Displays.)\n\
 \n\
-A @sl status display @rm shows things about the program being debugged\n\
+A EMPH(status display) shows things about the program being debugged\n\
 in the data window.  Please pick your choice from the list.\n\
 \n\
-Click on @bf ? @rm near an item to get further information.\n\
+Click on LBL(?) near an item to get further information.\n\
 \n\
-Click on @bf Reset @rm to delete all status displays.\n\
-Click on @bf Close @rm to close this window.
+Click on LBL(Reset) to delete all status displays.\n\
+Click on LBL(Close) to close this window.
 
 
 
@@ -2723,63 +2793,63 @@ Ddd*graph_edit.highlightOnEnter:	True
 Ddd*graph_edit.navigationType:		TAB_GROUP
 
 Ddd*graph_edit.helpString:	\
-@rm This is the @sl Data Window.@rm\n\
+@rm This is the EMPH(Data Window.)\n\
 It shows the data displays of the debugged program.\n\
 \n\
-@bf Selecting displays@rm\n\
-@tt \267 @rm Using the @sl left mouse button, @rm click on a display \
+STRONG(Selecting displays)\n\
+ITEM Using the BUTTON(left mouse button), click on a display \
 to select it.\n\
-@tt \267 @rm Double-click on a display to select all connected displays.\n\
-@tt \267 @rm Double-click on the background to select all displays.\n\
-@tt \267 @rm Drag on the background to select several displays.\n\
+ITEM Double-click on a display to select all connected displays.\n\
+ITEM Double-click on the background to select all displays.\n\
+ITEM Drag on the background to select several displays.\n\
 \n\
 Using the middle mouse button (or Shift + Left mouse button) instead\n\
-of the left mouse button @sl toggles @rm the selection \
+of the left mouse button EMPH(toggles) the selection \
 instead of setting it.\n\
 \n\
-@bf Moving displays@rm\n\
-@tt \267 @rm Using the @sl left mouse button, @rm drag on a display to move\n\
+STRONG(Moving displays)\n\
+ITEM Using the BUTTON(left mouse button), drag on a display to move\n\
     all selected displays.\n\
 \n\
-@bf Modifying displays@rm\n\
-@tt \267 @rm Using the @sl right mouse button, @rm click on some display \
+STRONG(Modifying displays)\n\
+ITEM Using the BUTTON(right mouse button), click on some display \
 to modify it.\n\
 \n\
-@bf Creating displays@rm\n\
-@tt \267 @rm Using the @sl right mouse button, @rm click on the background\n\
+STRONG(Creating displays)\n\
+ITEM Using the BUTTON(right mouse button), click on the background\n\
     to create new displays via a popup menu.
 
 Ddd*data_disp_shell.helpString:	\
-@rm This is the @sl Data Window.@rm\n\
+@rm This is the EMPH(Data Window.)\n\
 It shows the data displays of the debugged program.\n\
 \n\
-@bf Selecting displays@rm\n\
-@tt \267 @rm Using the @sl left mouse button, @rm click on a display \
+STRONG(Selecting displays)\n\
+ITEM Using the BUTTON(left mouse button), click on a display \
 to select it.\n\
-@tt \267 @rm Double-click on a display to select all connected displays.\n\
-@tt \267 @rm Double-click on the background to select all displays.\n\
-@tt \267 @rm Drag on the background to select several displays.\n\
+ITEM Double-click on a display to select all connected displays.\n\
+ITEM Double-click on the background to select all displays.\n\
+ITEM Drag on the background to select several displays.\n\
 \n\
 Using the middle mouse button (or Shift + Left mouse button) instead\n\
-of the left mouse button @sl toggles @rm the selection \
+of the left mouse button EMPH(toggles) the selection \
 instead of setting it.\n\
 \n\
-@bf Moving displays@rm\n\
-@tt \267 @rm Using the @sl left mouse button, @rm drag on a display to move\n\
+STRONG(Moving displays)\n\
+ITEM Using the BUTTON(left mouse button), drag on a display to move\n\
     all selected displays.\n\
 \n\
-@bf Modifying displays@rm\n\
-@tt \267 @rm Using the @sl right mouse button, @rm click on some display \
+STRONG(Modifying displays)\n\
+ITEM Using the BUTTON(right mouse button), click on some display \
 to modify it.\n\
 \n\
-@bf Creating displays@rm\n\
-@tt \267 @rm Using the @sl right mouse button, @rm click on the background\n\
+STRONG(Creating displays)\n\
+ITEM Using the BUTTON(right mouse button), click on the background\n\
     to create new displays via a popup menu.
 
 Ddd*graph_edit_panner.helpString:	\
-@rm This is a @sl panner@rm.\n\
+@rm This is a EMPH(panner).\n\
 \n\
-Drag the slider with the @bf left mouse button @rm to scroll the data window.
+Drag the slider with the BUTTON(left mouse button) to scroll the data window.
 Ddd*graph_edit_panner.tipString:	\
 @rm Scroll data window
 
@@ -2841,10 +2911,10 @@ Ddd*graph_cmd_w.arg_label.labelString:	():
 Ddd*graph_cmd_w.graph_arg.columns:		22
 Ddd*graph_cmd_w*graph_arg.editable:		false
 Ddd*graph_cmd_w*graph_arg.helpString:	\
-@rm This is the argument @bf () @rm for the command buttons on the right.\n\
+@rm This is the argument LBL(()) for the command buttons on the right.\n\
 \n\
-Set @bf () @rm by selecting data displays.\n\
-Clear @bf () @rm by clicking on the prompt @bf (): @rm.
+Set LBL(()) by selecting data displays.\n\
+Clear LBL(()) by clicking on the prompt LBL(():).
 
 Ddd*graph_cmd_w.orientation:			XmHORIZONTAL
 Ddd*graph_cmd_w.graph_cmd_area*orientation:	XmHORIZONTAL
@@ -2864,7 +2934,7 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
 ! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:	  1
 
 Ddd*graph_cmd_w.graph_cmd_area*dependent.helpString:\
-@bf New Display@rm\n\
+LBL(New Display)\n\
 Create a new display dependent on the selected display part.
 Ddd*graph_cmd_w.graph_cmd_area*dependent.tipString:\
 @rm Create new display
@@ -2872,7 +2942,7 @@ Ddd*graph_cmd_w.graph_cmd_area*dependent.documentationString:\
 @rm Create a new display dependent on the selected display part
 
 Ddd*graph_cmd_w.graph_cmd_area*dereference.helpString:\
-@bf Display *()@rm\n\
+LBL(Display *())\n\
 Dereference the selected display.
 Ddd*graph_cmd_w.graph_cmd_area*dereference.tipString:\
 @rm Dereference selected display
@@ -2880,7 +2950,7 @@ Ddd*graph_cmd_w.graph_cmd_area*dereference.documentationString:\
 @rm Dereference the selected display
 
 Ddd*graph_cmd_w.graph_cmd_area*detail.helpString:	\
-@bf Show ()@rm / @bf Hide ()@rm\n\
+LBL(Show ()) / LBL(Hide ())\n\
 Show/Hide details of the selected displays.
 Ddd*graph_cmd_w.graph_cmd_area*detail.tipString:	\
 @rm Show/Hide selected details
@@ -2888,7 +2958,7 @@ Ddd*graph_cmd_w.graph_cmd_area*detail.documentationString: \
 @rm Show/Hide details of the selected displays
 
 Ddd*graph_cmd_w.graph_cmd_area*rotate.helpString:	\
-@bf Rotate ()@rm\n\
+LBL(Rotate ())\n\
 Rotate the selected displays.
 Ddd*graph_cmd_w.graph_cmd_area*rotate.tipString:	\
 @rm Rotate selected displays
@@ -2896,7 +2966,7 @@ Ddd*graph_cmd_w.graph_cmd_area*rotate.documentationString: \
 @rm Rotate the selected displays
 
 Ddd*graph_cmd_w.graph_cmd_area*set.helpString:	\
-@bf Set ()@rm\n\
+LBL(Set ())\n\
 Change the selected display value.
 Ddd*graph_cmd_w.graph_cmd_area*set.tipString:	\
 @rm Set display value
@@ -2904,7 +2974,7 @@ Ddd*graph_cmd_w.graph_cmd_area*set.documentationString:	\
 @rm Change the selected display value
 
 Ddd*graph_cmd_w.graph_cmd_area*delete.helpString:	\
-@bf Delete ()@rm\n\
+LBL(Delete ())\n\
 Delete the selected displays.
 Ddd*graph_cmd_w.graph_cmd_area*delete.tipString:	\
 @rm Delete selected displays
@@ -2917,12 +2987,12 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.documentationString:	\
 !-----------------------------------------------------------------------------
 
 Ddd*status_form*helpString: \
-@rm This is the @sl Status Line.@rm\n\
+@rm This is the EMPH(Status Line.)\n\
 \n\
-It shows the last @GDB@ message as well as short @DDD@ messages.\n\
+It shows the last @GDB@ message as well as short DDD messages.\n\
 To view tthe most recent messages, just click on the status line.\n\
 \n\
-The @GDB@ status indicator on the right side blinks while @GDB is busy.\n\
+The @GDB@ status indicator on the right side blinks while @GDB@ is busy.\n\
 You can disable it by clicking on the indicator.
 
 Ddd*status_form*borderWidth:		0
@@ -3001,64 +3071,63 @@ Ddd*code_text_w.scrollHorizontal:	false
 Ddd*code_text_w.wordWrap:		true
 
 Ddd*source_text_w.helpString:	\
-@rm This is the @sl Source Text Window.@rm\n\
+@rm This is the EMPH(Source Text Window.)\n\
 It shows the source text of the debugged program.\n\
 \n\
-@bf Left side@rm\n\
-The @sl left side @rm shows line numbers and breakpoints:\n\
-@tt \267 @rm A plain stop sign or `@tt #@sl n@tt #@rm' indicates \
+STRONG(Left side)\n\
+The EMPH(left side) shows line numbers and breakpoints:\n\
+ITEM A plain stop sign or TEXT([#]VAR(n)[#]) indicates \
 an enabled breakpoint.\n\
-@tt \267 @rm A grey stop sign or `@tt _@sl n@tt _@rm' indicates \
+ITEM A grey stop sign or TEXT([_]VAR(n)[_])' indicates \
 a disabled breakpoint.\n\
-@tt \267 @rm The next executed line is indicated by an arrow or `@tt>@rm'.\n\
+ITEM The next executed line is indicated by an arrow or TEXT(>).\n\
 \n\
-Click the @sl left mouse button @rm to select positions.\n\
-Click the @sl right mouse button @rm to set and modify breakpoints.\n\
+Click the BUTTON(left mouse button) to select positions.\n\
+Click the BUTTON(right mouse button) to set and modify breakpoints.\n\
 \n\
-@bf Right side@rm\n\
-The @sl right side @rm contains the source code.\n\
+STRONG(Right side)\n\
+The EMPH(right side) contains the source code.\n\
 \n\
-Click the @sl left mouse button @rm to select words.\n\
-Drag with the @sl left mouse button @rm to extend your selection.\n\
-Click the @sl right mouse button @rm to show values and lookup places.\n\
+Click the BUTTON(left mouse button) to select words.\n\
+Drag with the BUTTON(left mouse button) to extend your selection.\n\
+Click the BUTTON(right mouse button) to show values and lookup places.\n\
 \n\
-To view a specific source, use the @bf Lookup () @rm button below.
+To view a specific source, use the LBL(Lookup ()) button below.
 
 Ddd*code_text_w.helpString:	\
-@rm This is the @sl Machine Code Window.@rm\n\
+@rm This is the EMPH(Machine Code Window.)\n\
 It shows the machine code of the debugged program.\n\
 \n\
-@bf Left side@rm\n\
-The @sl left side @rm shows addresses and breakpoints:\n\
-@tt \267 @rm A plain stop sign or `@tt #@sl n@tt #@rm' indicates \
+STRONG(Left side)\n\
+The EMPH(left side) shows addresses and breakpoints:\n\
+ITEM A plain stop sign or TEXT([#]VAR(n)[#]) indicates \
 an enabled breakpoint.\n\
-@tt \267 @rm A grey stop sign or `@tt _@sl n@tt _@rm' indicates \
+ITEM A grey stop sign or TEXT([_]VAR(n)[_])' indicates \
 a disabled breakpoint.\n\
-@tt \267 @rm The next executed location is indicated by an \
-arrow or `@tt>@rm'.\n\
+ITEM The next executed location is indicated by an arrow or TEXT(>).\n\
 \n\
-Click the @sl left mouse button @rm to select addresses.\n\
-Click the @sl right mouse button @rm to set and modify breakpoints.\n\
+Click the BUTTON(left mouse button) to select addresses.\n\
+Click the BUTTON(right mouse button) to set and modify breakpoints.\n\
 \n\
-@bf Right side@rm\n\
-The @sl right side @rm contains the source code.\n\
+STRONG(Right side)\n\
+The EMPH(right side) contains the source code.\n\
 \n\
-Click the @sl left mouse button @rm to select words.\n\
-Drag with the @sl left mouse button @rm to extend your selection.\n\
-Click the @sl right mouse button @rm to show values and lookup places.\n\
+Click the BUTTON(left mouse button) to select words.\n\
+Drag with the BUTTON(left mouse button) to extend your selection.\n\
+Click the BUTTON(right mouse button) to show values and lookup places.\n\
 \n\
 To disassemble a specific function or address,\n\
-use the @bf Lookup () @rm button below.
+use the LBL(Lookup ()) button below.
 
 Ddd*source_view_shell.helpString:	\
-@rm This is the @sl Source Window.@rm\n\
+@rm This is the EMPH(Source Window.)\n\
 The source window displays the source and machine code of the \
 debugged program.\n\
 \n\
 The upper area shows the source code.\n\
 The lower area shows the machine code.\n\
 \n\
-Use @bf Help @rm| @bf On Context @rm to get\n\
+Use LBL(Help) | LBL(On Context) to get\n\
 detailed help on each of these areas.
 
 
@@ -3132,11 +3201,6 @@ Ddd*text_popup.breakAt.documentationString: \
 ! Source Text Commands
 !-----------------------------------------------------------------------------
 
-! Ddd*arg_cmd_w*helpString: \
-! @rm Commands related to the source text.\n\
-! Enter arguments for @sl name @rm() commands\n\
-! in the @bf() @rm field.
-
 Ddd*arg_cmd_w.marginWidth:     0
 Ddd*arg_cmd_w.marginHeight:    0
 Ddd*arg_cmd_area.marginWidth:  0
@@ -3144,14 +3208,14 @@ Ddd*arg_cmd_area.marginWidth:  0
 Ddd*arg_cmd_w.arg_label.labelString:		():
 
 Ddd*arg_cmd_w.source_arg.helpString:	\
-@rm This is the argument @bf () @rm for the command buttons on the right.\n\
+@rm This is the argument LBL(()) for the command buttons on the right.\n\
 \n\
-Edit @bf () @rm using the usual editing functions.\n\
-Set @bf () @rm by selecting items from the source window or the data window.\n\
-Clear @bf () @rm by clicking on the prompt @bf (): @rm.
+Edit LBL(()) using the usual editing functions.\n\
+Set LBL(()) by selecting items from the source window or the data window.\n\
+Clear LBL(()) by clicking on the prompt LBL(():).
 
-Ddd*arg_cmd_w.source_arg.value:			 main
-Ddd*arg_cmd_w.source_arg.columns:		 22
+Ddd*arg_cmd_w.source_arg.value:			 	main
+Ddd*arg_cmd_w.source_arg.columns:		 	22
 
 Ddd*arg_cmd_w.orientation:				XmHORIZONTAL
 Ddd*arg_cmd_w.arg_cmd_area.orientation:			XmHORIZONTAL
@@ -3169,82 +3233,81 @@ Ddd*arg_cmd_w.arg_cmd_area*printRef.labelString:	Print *()
 Ddd*arg_cmd_w.arg_cmd_area*whatis.labelString:		Whatis ()
 Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display ()
 Ddd*arg_cmd_w.arg_cmd_area*dispRef.labelString:		Display *()
-Ddd*arg_cmd_w.arg_cmd_area*findBackward.labelString:	Find@small<< @bf()
-Ddd*arg_cmd_w.arg_cmd_area*findForward.labelString:	Find@small>> @bf()
+Ddd*arg_cmd_w.arg_cmd_area*findBackward.labelString:	LBL_FIND_PREV
+Ddd*arg_cmd_w.arg_cmd_area*findForward.labelString:	LBL_FIND_NEXT
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.helpString:	\
-@bf Lookup ()@rm\n\
+LBL(Lookup ())\n\
 Lookup a line, file, function, variable, or breakpoint in the source.\n\
-@tt \267 @rm If the argument @bf () @rm is empty, \
+ITEM If the argument LBL(()) is empty, \
 lookup the current execution position\n\
     (or cursor position, if there is no current execution position).\n\
-@tt \267 @rm If @bf () @rm contains a number, \
+ITEM If LBL(()) contains a number, \
 lookup that line number in the current source.\n\
-@tt \267 @rm If @bf () @rm contains @sl FILENAME@tt:@sl LINE@rm, lookup \
-line number @sl LINE @rm\n\
-    in the source file @sl FILENAME@rm.\n\
-@tt \267 @rm If @bf () @rm contains @tt #@sl NUMBER@rm, lookup breakpoint \
-@sl NUMBER@rm.\n\
-@tt \267 @rm If @bf () @rm contains an address, \
-lookup that address.\n\
-@tt \267 @rm If @bf () @rm contains a function or variable name, lookup \
+ITEM If LBL(()) contains SAMP(VAR(filename):VAR(line)), lookup \
+line number VAR(line)\n\
+    in the source file VAR(filename).\n\
+ITEM If LBL(()) contains SAMP([#]VAR(number)), lookup breakpoint \
+VAR(number).\n\
+ITEM If LBL(()) contains an address, lookup that address.\n\
+ITEM If LBL(()) contains a function or variable name, lookup \
 the definition\n\
     of that function or variable.
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.tipString:	\
-@rm Lookup @bf () @rm in the source
+@rm Lookup LBL(()) in the source
 Ddd*arg_cmd_w.arg_cmd_area*lookup.documentationString:	\
 @rm Lookup a line, file, function, variable or breakpoint in the source
 Ddd*arg_cmd_w.arg_cmd_area*lookupType.documentationString:	\
 @rm Lookup the type of a function or variable in the source
 
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.helpString:	\
-@bf Break at ()@rm / @bf Clear at ()@rm\n\
-Set or delete a breakpoint at the argument @bf ()@rm.
+LBL(Break at ()) / LBL(Clear at ())\n\
+Set or delete a breakpoint at the argument LBL(()).
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.tipString:	\
-@rm Set/Delete breakpoint at @bf ()
+@rm Set/Delete breakpoint at LBL(())
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.documentationString:	\
-@rm Set or delete a breakpoint at the argument @bf ()
+@rm Set or delete a breakpoint at the argument LBL(())
 
 Ddd*arg_cmd_w.arg_cmd_area*print.helpString:	\
-@bf Print ()@rm\n\
-Print the argument @bf () @rm in the @GDB@ console.
+LBL(Print ())\n\
+Print the argument LBL(()) in the @GDB@ console.
 Ddd*arg_cmd_w.arg_cmd_area*print.tipString:	\
-@rm Print @bf () @rm in the debugger console
+@rm Print LBL(()) in the debugger console
 Ddd*arg_cmd_w.arg_cmd_area*print.documentationString:	\
-@rm Print the argument @bf () @rm in the @GDB@ console
+@rm Print the argument LBL(()) in the @GDB@ console
 Ddd*arg_cmd_w.arg_cmd_area*printRef.documentationString:	\
-@rm Print the dereferenced argument @bf () @rm in the @GDB@ console
+@rm Print the dereferenced argument LBL(()) in the @GDB@ console
 Ddd*arg_cmd_w.arg_cmd_area*whatis.documentationString:	\
-@rm Print the type of the argument @bf () @rm in the @GDB@ console
+@rm Print the type of the argument LBL(()) in the @GDB@ console
 
 Ddd*arg_cmd_w.arg_cmd_area*display.helpString:	\
-@bf Display ()@rm\n\
-Display the argument @bf () @rm in the data window.
+LBL(Display ())\n\
+Display the argument LBL(()) in the data window.
 Ddd*arg_cmd_w.arg_cmd_area*display.tipString:	\
-@rm Display @bf () @rm in the data window
+@rm Display LBL(()) in the data window
 Ddd*arg_cmd_w.arg_cmd_area*display.documentationString:	\
-@rm Display the argument @bf () @rm in the data window
+@rm Display the argument LBL(()) in the data window
 Ddd*arg_cmd_w.arg_cmd_area*dispRef.documentationString:	\
-@rm Display the dereferenced argument @bf () @rm in the data window
+@rm Display the dereferenced argument LBL(()) in the data window
 
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.helpString:	\
-@bf Find@small<< @bf()@rm\n\
-Search the previous occurrence of @bf () @rm in the current source text.\n\
-If the option @bf Find Words Only @rm is set, only complete words are found.
+LBL_FIND_PREV\n\
+Search the previous occurrence of LBL(()) in the current source text.\n\
+If LBL(Source) | LBL(Find Words Only) is set, only complete words are found.
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.tipString:	\
-@rm Find previous @bf () @rm in source
+@rm Find previous LBL(()) in source
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.documentationString:	\
-@rm Search the previous occurrence of @bf () @rm in the current source
+@rm Search the previous occurrence of LBL(()) in the current source
 
 Ddd*arg_cmd_w.arg_cmd_area*findForward.helpString:	\
-@bf Find@small>> @bf()@rm\n\
-Search the next occurrence of @bf () @rm in the current source text.\n\
-If the option @bf Find Words Only @rm is set, only complete words are found.
+LBL_FIND_NEXT\n\
+Search the next occurrence of LBL(()) in the current source text.\n\
+If LBL(Source) | LBL(Find Words Only) is set, only complete words are found.
 Ddd*arg_cmd_w.arg_cmd_area*findForward.tipString:	\
-@rm Find next @bf () @rm in source
+@rm Find next LBL(()) in source
 Ddd*arg_cmd_w.arg_cmd_area*findForward.documentationString:	\
-@rm Search the next occurrence of @bf () @rm in the current source
+@rm Search the next occurrence of LBL(()) in the current source
 
 
 
@@ -3265,52 +3328,52 @@ Ddd*code_form_w.XmPushButton.marginWidth:	   0
 Ddd*code_form_w.XmPushButton.borderWidth:	   0
 
 Ddd*source_form_w.plain_arrow*helpString: \
-@bf Plain arrow\n\
-@rm shows the current execution position in the lowest frame.
+STRONG(Plain arrow)\n\
+shows the current execution position in the lowest frame.
 Ddd*source_form_w.plain_arrow*tipString: \
 @rm Current execution position
 
 Ddd*code_form_w.plain_arrow*helpString: \
-@bf Plain arrow\n\
+STRONG(Plain arrow)\n\
 @rm shows the current program counter in the lowest frame.
 Ddd*code_form_w.plain_arrow*tipString: \
 @rm Current program counter
 
 Ddd*code_form_w.grey_arrow*helpString: \
-@bf Grey arrow\n\
-@rm shows the last program counter in the selected frame.
+STRONG(Grey arrow)\n\
+shows the last program counter in the selected frame.
 Ddd*code_form_w.grey_arrow*tipString: \
 @rm Last program counter in selected frame
 
 Ddd*source_form_w.grey_arrow*helpString: \
-@bf Grey arrow\n\
-@rm shows the last execution position in the selected frame.
+STRONG(Grey arrow)\n\
+shows the last execution position in the selected frame.
 Ddd*source_form_w.grey_arrow*tipString: \
 @rm Last execution position in selected frame
 
 Ddd*source_form_w.signal_arrow*helpString: \
-@bf Lightning arrow\n\
-@rm shows the current execution position after being stopped by a signal.
+STRONG(Lightning arrow)\n\
+shows the current execution position after being stopped by a signal.
 Ddd*source_form_w.signal_arrow*tipString: \
 @rm Current execution position (stopped by signal)
 
 Ddd*code_form_w.signal_arrow*helpString: \
-@bf Lightning arrow\n\
-@rm shows the current program counter after being stopped by a signal.
+STRONG(Lightning arrow)\n\
+shows the current program counter after being stopped by a signal.
 Ddd*code_form_w.signal_arrow*tipString: \
 @rm Current program counter (stopped by signal)
 
 Ddd*plain_stop.helpString: \
-@bf Plain stop sign\n\
-@rm A breakpoint (enabled).\n\
-Press the @bf right mouse button @rm to change its properties.
+STRONG(Plain stop sign)\n\
+A breakpoint (enabled).\n\
+Press the BUTTON(right mouse button) to change its properties.
 Ddd*plain_stop.tipString: 
 Ddd*plain_stop.documentationString: 
 
 Ddd*grey_stop.helpString: \
-@bf Grey stop sign\n\
-@rm A breakpoint (disabled).\n\
-Press the @bf right mouse button @rm to change its properties.
+STRONG(Grey stop sign)\n\
+A breakpoint (disabled).\n\
+Press the BUTTON(right mouse button) to change its properties.
 Ddd*grey_stop.tipString: 
 Ddd*grey_stop.documentationString: 
 
@@ -3320,22 +3383,22 @@ Ddd*grey_stop.documentationString:
 !-----------------------------------------------------------------------------
 
 Ddd.helpString:				\
-@rm This is the @sl @DDD@ Main Window.@rm\n\
+@rm This is the EMPH(DDD Main Window.)\n\
 \n\
 From top to bottom, it shows the following areas:\n\
 \n\
-@tt \267 @rm At the top, the @sl Data Window @rm shows the data displays\n\
+ITEM At the top, the EMPH(Data Window) shows the data displays\n\
     of the debugged program.\n\
-@tt \267 @rm In the center, the @sl Source Text Window @rm shows the \
+ITEM In the center, the EMPH(Source Text Window) shows the \
 currently\n\
     executed source code.\n\
-@tt \267 @rm Optionally, there may be a @sl Machine Code Window @rm below\n\
+ITEM Optionally, there may be a EMPH(Machine Code Window) below\n\
     which shows the current machine code.\n\
-@tt \267 @rm At the bottom, the @sl @GDB@ Console @rm allows for \
+ITEM At the bottom, the EMPH(@GDB@ Console) allows for \
 interaction\n\
     with @GDB@ and the debugged program.\n\
 \n\
-Use @bf Help @rm| @bf On Context @rm to get detailed \
+Use LBL(Help) | LBL(On Context) to get detailed \
 help on any of these areas.
 
 
@@ -3345,7 +3408,7 @@ help on any of these areas.
 !-----------------------------------------------------------------------------
 
 Ddd*gdb_w.value: \
-@DDD@ @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
+DDD 2.1.90 (sparc-sun-sunos4.1.4), by Dorothea L\374tkehaus and Andreas Zeller.\n\
 Copyright \251 1997 Technische Universit\344t Braunschweig, Germany.\n
 
 Ddd*gdb_w.rows:			10
@@ -3370,26 +3433,26 @@ Ddd*gdb_w.autoShowCursorPosition:	true
 Ddd*gdb_w.cursorPositionVisible:	true
 
 Ddd*gdb_w.helpString:		\
-@rm This is the @sl @GDB@ Console.@rm\n\
+@rm This is the EMPH(@GDB@ Console).\n\
 \n\
 The @GDB@ console shows the @GDB@ input and output\n\
 as well as the input and output of the debugged program.\n\
 \n\
 You can enter @GDB@ commands here.\n\
 \n\
-To get a list of @GDB@ commands, enter `@tt help@rm' at the @GDB@ prompt.\n\
-See the @bf Commands @rm menu for the most important editing commands.
+To get a list of @GDB@ commands, enter KBD(help) at the @GDB@ prompt.\n\
+See the LBL(Commands) menu for the most important editing commands.
 
 Ddd*command_shell.helpString:		\
-@rm This is the @sl @GDB@ Console.@rm\n\
+@rm This is the EMPH(@GDB@ Console).\n\
 \n\
 The @GDB@ console shows the @GDB@ input and output\n\
 as well as the input and output of the debugged program.\n\
 \n\
 You can enter @GDB@ commands here.\n\
 \n\
-To get a list of @GDB@ commands, enter `@tt help@rm' at the @GDB@ prompt.\n\
-See the @bf Commands @rm menu for the most important editing commands.
+To get a list of @GDB@ commands, enter KBD(help) at the @GDB@ prompt.\n\
+See the LBL(Commands) menu for the most important editing commands.
 
 
 !-----------------------------------------------------------------------------
@@ -3414,14 +3477,14 @@ Ddd*gdb_popup.clear_window.documentationString:	\
 Ddd*tool_shell*saveUnder: true
 
 Ddd*tool_shell.helpString:		\
-@rm This is the @sl Command Tool.@rm\n\
+@rm This is the EMPH(Command Tool.)\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
 The context sensitive help for the buttons gives a short command description.
 
 Ddd*tool_buttons.helpString:\
-@rm This is the @sl Command Tool.@rm\n\
+@rm This is the EMPH(Command Tool.)\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
@@ -3432,21 +3495,21 @@ The context sensitive help for the buttons gives a short command description.
 !-----------------------------------------------------------------------------
 
 Ddd*source_buttons.helpString:\
-@rm This is a @sl command area.@rm\n\
+@rm This is a EMPH(command area.)\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
 The context sensitive help for the buttons gives a short command description.
 
 Ddd*command_buttons.helpString:\
-@rm This is a @sl command area.@rm\n\
+@rm This is a EMPH(command area.)\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
 The context sensitive help for the buttons gives a short command description.
 
 Ddd*data_buttons.helpString:\
-@rm This is a @sl command area.@rm\n\
+@rm This is a EMPH(command area.)\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
@@ -3491,9 +3554,9 @@ Ddd*data_buttons.marginHeight:      0
 ! Some buttons have a special meaning; 
 ! so we must provide help on ourselves.
 Ddd*?*break.helpString: \
-@bf Interrupt\n\
-@rm Interrupt the debugged process or current @GDB@ command.\n\
-(Equivalent to @key Ctrl+C@rm).
+LBL(Interrupt)\n\
+Interrupt the debugged process or current @GDB@ command.\n\
+(Equivalent to KEY(Ctrl+C)).
 Ddd*source_buttons*break.tipString: \
 @rm Interrupt debugged program
 Ddd*data_buttons*break.tipString: \
@@ -3508,63 +3571,63 @@ Ddd*?*break.documentationString: \
 @rm Interrupt the debugged process or current @GDB@ command
 
 Ddd*?*Yes.helpString:	\
-@bf Yes\n\
-@rm Confirm the @GDB@ question.
+LBL(Yes)\n\
+Confirm the @GDB@ question.
 Ddd*?*Yes.tipString: \
 @rm Just say yes
 
 Ddd*?*No.helpString:	\
-@bf No\n\
-@rm Do @sl not @rm confirm the @GDB@ question.
+LBL(No)\n\
+Do EMPH(not) confirm the @GDB@ question.
 Ddd*?*No.tipString: \
 @rm Just say no
 
 Ddd*?*Complete.helpString:	\
-@bf Complete@rm\n\
-Complete the current debugging command.  (Equivalent to @key TAB@rm).
+LBL(Complete)\n\
+Complete the current debugging command.  (Equivalent to KEY(TAB)).
 Ddd*?*Complete.tipString: \
 @rm Complete current command
 
 Ddd*?*Clear.helpString:	\
-@bf Clear@rm\n\
-Clear the current debugging command.  (Equivalent to @key Ctrl+U@rm).
+LBL(Clear)\n\
+Clear the current debugging command.  (Equivalent to KEY(Ctrl+U)).
 Ddd*?*Clear.tipString: \
 @rm Clear current command
 
 Ddd*?*Prev.helpString:	\
-@bf Prev@rm\n\
+LBL(Prev)\n\
 Get the previous debugging command \
-(Equivalent to @key Ctrl+P @rm or @key Up@rm).
+(Equivalent to KEY(Ctrl+P) or KEY(Up)).
 Ddd*?*Prev.tipString: \
 @rm Get previous command
 
 Ddd*?*Next.helpString:	\
-@bf Next@rm\n\
+LBL(Next)\n\
 Get the next debugging command \
-(Equivalent to @key Ctrl+N @rm or @key Down@rm).
+(Equivalent to KEY(Ctrl+N) or KEY(Down)).
 Ddd*?*Next.tipString: \
 @rm Get next command
 
 Ddd*?*Apply.helpString:	\
-@bf Apply@rm\n\
-Execute the current debugging command.  (Equivalent to @symbol \277@rm).
+LBL(Apply)\n\
+Execute the current debugging command.  (Equivalent to KEY_RETURN).
 Ddd*?*Apply.tipString: \
 @rm Execute current command
 
 Ddd*?*Back.helpString:	\
-@bf Back@rm\n\
+LBL(Back)\n\
 Return to the previous source position.
 Ddd*?*Back.tipString: \
 @rm Previous source position
 
 Ddd*?*Forward.helpString:	\
-@bf Forward@rm\n\
+LBL(Forward)\n\
 Move forward to the next source position.
 Ddd*?*Forward.tipString: \
 @rm Next source position
 
 Ddd*?*Edit.helpString:	\
-@bf Edit@rm\n\
+LBL(Edit)\n\
 Invoke an editor for the current source file.
 Ddd*?*Edit.tipString: \
 @rm Edit source file
@@ -3572,7 +3635,7 @@ Ddd*?*Edit.documentationString: \
 @rm Invoke text editor for the current source
 
 Ddd*?*Reload.helpString:	\
-@bf Reload@rm\n\
+LBL(Reload)\n\
 Reload the source from file.
 Ddd*?*Reload.tipString: \
 @rm Reload source file
@@ -3586,7 +3649,7 @@ Ddd*?*Reload.documentationString: \
 ! Print Dialog
 !-----------------------------------------------------------------------------
 
-Ddd*print_popup.title: @DDD@: Print Graph
+Ddd*print_popup.title: DDD: Print Graph
 
 Ddd*print*options.orientation:		      XmVERTICAL
 Ddd*print*options.marginWidth:		      0
@@ -3617,7 +3680,7 @@ Ddd*print*file_name.alignment:		      XmALIGNMENT_END
 Ddd*print*file_name.width:		      120
 Ddd*print*file_name.recomputeSize:	      false
 Ddd*print*file_name_field.columns:	      32
-Ddd*print*file_name_field.value:	      @ddd@graph.ps
+Ddd*print*file_name_field.value:	      dddgraph.ps
 Ddd*print*postscript.labelString:	      PostScript
 Ddd*print*xfig.labelString:		      FIG
 
@@ -3652,38 +3715,38 @@ Ddd*print.autoUnmanage:	 false
 Ddd*print*okLabelString: Print
 
 Ddd*print*helpString: \
-@rm You can print the graph on a PostScript@symbol \344 @rm printer \
+@rm You can print the graph on a POSTSCRIPT printer \
 or print the graph in a file.\n\
 Enter the print command or the file name in the appropriate fields.\n\
 \n\
 Files can be created in the following formats:\n\
-@tt \267 @bf PostScript @rm - PostScript@symbol \344 @rm format\n\
-@tt \267 @bf XFIG @rm - XFIG format (from the @tt xfig(1) @rm program)\n\
+DESC(PostScript, POSTSCRIPT format)\n\
+DESC(XFIG, [XFIG format (from the CODE(xfig) program)])\n\
 \n\
-If you wish to print all displays, select @bf All Displays@rm.\n\
+If you wish to print all displays, select LBL(All Displays).\n\
 If you wish to print selected displays only, select\
- @bf Selected Displays@rm.\n\
-For PostScript@symbol \344 @rm format only, you can also specify \
+ LBL(Selected Displays).\n\
+For POSTSCRIPT format only, you can also specify \
 orientation and paper size.\n\
 \n\
-To print, click on @bf Print@rm.
+To print, click on LBL(Print).
 
-Ddd*paper_size_dialog_popup.title:  @DDD@: Paper Size
+Ddd*paper_size_dialog_popup.title:  DDD: Paper Size
 Ddd*paper_size_dialog.autoUnmanage:  false
 Ddd*paper_size_dialog.selectionLabelString: \
-@rm Enter paper size (@sl WIDTH @tt x @sl HEIGHT@rm):
+@rm Enter paper size (KBD(VAR(WIDTH) x VAR(HEIGHT)):
 Ddd*paper_size_dialog*helpString: \
 @rm Please enter the paper size in the format \n\
 \n\
-       @sl WIDTH @tt x @sl HEIGHT    @rm.\n\
+       KBD(VAR(WIDTH) x VAR(HEIGHT)).\n\
 \n\
-Examples:@tt\n\
- 42cm x 59.4cm @rm (A2 paper)@tt\n\
-  7in x 10in   @rm (Executive paper)\n\
+Examples:\n\
+KBD(42cm x 59.4cm) - A2 paper\n\
+KBD(7in x 10in) - Executive paper\n\
 \n\
 Recognized units include:\n\
-@tt pt @rm (points), @tt in @rm (inches), \n\
-@tt mm @rm (millimeters), @tt cm @rm (centimeters).
+KBD(pt) (points), KBD(in) (inches), \n\
+KBD(mm) (millimeters), KBD(cm) (centimeters).
 
 
 
@@ -3691,7 +3754,7 @@ Recognized units include:\n\
 ! File Selection Dialogs
 !-----------------------------------------------------------------------------
 
-Ddd*exec_files_popup.title:		   @DDD@: Open Program
+Ddd*exec_files_popup.title:		   DDD: Open Program
 Ddd*exec_files_popup*okLabelString:	   Open
 Ddd*exec_files_popup*selectionLabelString: Program
 Ddd*exec_files_popup*helpString:	   \
@@ -3699,16 +3762,16 @@ Ddd*exec_files_popup*helpString:	   \
 \n\
 The program is read for its symbols, for getting the contents\
  of pure memory,\n\
-and it is the program executed when you use the `@tt run@rm' command.\n\
+and it is the program executed when you use the KBD(run) command.\n\
 If the program file cannot be found as specified,\
  your execution directory path\n\
-(@tt $PATH@rm) is searched for a command of that name.\n\
+(CODE($PATH)) is searched for a command of that name.\n\
 No argument means to have no executable file and no symbols.\n\
 \n\
-Click on @bf Open @rm to open the selected file.\n\
-Click on @bf Filter @rm to apply the given filter.
+Click on LBL(Open) to open the selected file.\n\
+Click on LBL(Filter) to apply the given filter.
 
-Ddd*processes_popup.title: @DDD@: Attach to Process
+Ddd*processes_popup.title: DDD: Attach to Process
 Ddd*processes.listLabelString:	Processes
 Ddd*processes*selectionPolicy:	XmSINGLE_SELECT
 
@@ -3718,26 +3781,26 @@ Ddd*processes*applyLabelString:	Update
 Ddd*processes*helpString:	\
 @rm Select a running process of the program to be debugged.\n\
 \n\
-An attached process is stopped by @DDD@. You can examine and modify an\n\
-attached process with all the @DDD@ commands that are ordinarily available\n\
-when you start processes with @bf Run@rm. You can insert breakpoints; you \n\
+An attached process is stopped by DDD. You can examine and modify an\n\
+attached process with all the DDD commands that are ordinarily available\n\
+when you start processes with LBL(Run). You can insert breakpoints; you \n\
 can step and continue; you can modify storage.  If you would rather the\n\
-process continue running, you may use the @bf Continue @rm command after\n\
-attaching @DDD@ to the process.\n\
+process continue running, you may use the LBL(Continue) command after\n\
+attaching DDD to the process.\n\
 \n\
 When you have finished debugging the attached process, you can use\n\
-@bf Detach Process @rm to release it from @DDD@ control.  Detaching \
+LBL(Detach Process) to release it from DDD control.  Detaching \
 the process\n\
 continues its execution.\n\
 \n\
-Before using @bf Attach@rm, you should use @bf File @rm| @bf Open Program @rm\n\
+Before using LBL(Attach), you should use LBL(File) | LBL(Open Program)\n\
 to specify the program running in the process, and to load its symbol table.\n\
 \n\
-Click on @bf Attach @rm to attach to the selected process.\n\
-Click on @bf Update @rm to update the list of processes.
+Click on LBL(Attach) to attach to the selected process.\n\
+Click on LBL(Update) to update the list of processes.
 
 
-Ddd*core_files_popup.title:		   @DDD@: Open Core Dump
+Ddd*core_files_popup.title:		   DDD: Open Core Dump
 Ddd*core_files_popup*okLabelString:	   Open
 Ddd*core_files_popup*selectionLabelString: Core Dump
 Ddd*core_files_popup*helpString:	   \
@@ -3746,13 +3809,13 @@ Ddd*core_files_popup*helpString:	   \
 The core dump is used for examining memory and registers.\n\
 No argument means to have no core file.\n\
 \n\
-Before using @bf Open Core@rm, you should use @bf File @rm| @bf Open Program @rm\n\
+Before using LBL(Open Core), you should use LBL(File) | LBL(Open Program)\n\
 to specify the program causing the core dump, and to load its symbol table.\n\
 \n\
-Click on @bf Open @rm to open the selected core dump.\n\
-Click on @bf Filter @rm to apply the given filter.
+Click on LBL(Open) to open the selected core dump.\n\
+Click on LBL(Filter) to apply the given filter.
 
-Ddd*source_files_popup.title:		   @DDD@: Open Source
+Ddd*source_files_popup.title:		   DDD: Open Source
 Ddd*source_files_popup*okLabelString:	   Open
 Ddd*source_files_popup*selectionLabelString: Source File
 Ddd*source_files_popup*helpString:    \
@@ -3761,12 +3824,12 @@ Ddd*source_files_popup*helpString:    \
 The source file is shown in the source window and may be used\n\
 for setting or clearing breakpoints.\n\
 \n\
-Before using @bf Open Core@rm, you should use @bf File @rm| \
-@bf Open Program @rm\n\
+Before using LBL(Open Core), you should use LBL(File) | \
+LBL(Open Program)\n\
 to specify the executable program, and to load its symbol table.\n\
 \n\
-Click on @bf Open @rm to open the selected source file.\n\
-Click on @bf Filter @rm to apply the given filter.
+Click on LBL(Open) to open the selected source file.\n\
+Click on LBL(Filter) to apply the given filter.
 
 
 
@@ -3774,7 +3837,7 @@ Click on @bf Filter @rm to apply the given filter.
 ! Breakpoint Editor
 !-----------------------------------------------------------------------------
 
-Ddd*edit_breakpoints_dialog_popup.title: @DDD@: Breakpoint Editor
+Ddd*edit_breakpoints_dialog_popup.title: DDD: Breakpoint Editor
 Ddd*edit_breakpoints_dialog*breakpoints.labelString: Breakpoints
 Ddd*edit_breakpoints_dialog*form1.orientation:	 XmVERTICAL
 Ddd*edit_breakpoints_dialog*form1.marginWidth:	 0
@@ -3788,19 +3851,19 @@ Ddd*edit_breakpoints_dialog*buttons.marginHeight:  0
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close
 
 Ddd*edit_breakpoints_dialog*helpString:	     \
-@rm This is the @sl Breakpoint Editor.@rm\n\
+@rm This is the EMPH(Breakpoint Editor.)\n\
 \n\
 Select breakpoints on the left; operations on the right.\n\
 \n\
-@tt \267 @bf New... @rm - create a new breakpoint.\n\
-@tt \267 @bf Lookup @rm - lookup selected breakpoint.\n\
-@tt \267 @bf Enable @rm - enable all selected breakpoints.\n\
-@tt \267 @bf Disable @rm - disable all selected breakpoints.\n\
-@tt \267 @bf Condition... @rm - set or modify a breakpoint condition.\n\
-@tt \267 @bf Ignore Count... @rm - set or modify a breakpoint ignore count.\n\
-@tt \267 @bf Delete @rm - delete all selected breakpoints.
+DESC(New..., [create a new breakpoint])\n\
+DESC(Lookup, [lookup selected breakpoint])\n\
+DESC(Enable, [enable all selected breakpoints])\n\
+DESC(Disable, [disable all selected breakpoints])\n\
+DESC(Condition..., [set or modify a breakpoint condition])\n\
+DESC(Ignore Count..., [set or modify a breakpoint ignore count])\n\
+DESC(Delete, [delete all selected breakpoints])
 
-Ddd*new_breakpoint_dialog_popup.title: @DDD@: New Breakpoint
+Ddd*new_breakpoint_dialog_popup.title: DDD: New Breakpoint
 Ddd*new_breakpoint_dialog.selectionLabelString:	\
 @rm Enter new breakpoint:
 
@@ -3809,35 +3872,35 @@ Ddd*new_breakpoint_dialog*helpString:	\
 @rm Please enter a breakpoint you want to set.\n\
 Enter its name in the argument field.\n\
 \n\
-The argument may be a @sl line number@rm, a @sl function name@rm,\
- or `@tt*@rm' and an address.\n\
-If a @sl line number @rm is specified, break at start of code for that line.\n\
-If a @sl function name @rm is specified, break at start of code\
+The argument may be a EMPH(line number), a EMPH(function name),\
+ or KBD(*) and an address.\n\
+If a EMPH(line number) is specified, break at start of code for that line.\n\
+If a EMPH(function name) is specified, break at start of code\
  for that function.\n\
-If an @sl address @rm is specified, break at that exact address.\n\
+If an EMPH(address) is specified, break at that exact address.\n\
 Without argument, use current execution address of selected stack frame.\n\
 This is useful for breaking on return to a stack frame.\n\
 \n\
 Multiple breakpoints at one place are permitted, and useful if conditional.
 
 
-Ddd*edit_breakpoint_condition_dialog_popup.title: @DDD@: Breakpoint Condition
+Ddd*edit_breakpoint_condition_dialog_popup.title: DDD: Breakpoint Condition
 Ddd*edit_breakpoint_condition_dialog.selectionLabelString:	  \
 @rm Enter breakpoint condition:
 
 Ddd*edit_breakpoint_condition_dialog*helpString:	       \
-@rm Specify a condition @sl COND @rm for the selected breakpoint(s).\n\
-The selected breakpoint(s) break only if @sl COND @rm\n\
+@rm Specify a condition VAR(cond) for the selected breakpoint(s).\n\
+The selected breakpoint(s) break only if VAR(cond)\n\
 evaluates to a non-zero value.
 
 
-Ddd*edit_breakpoint_ignore_count_dialog_popup.title: @DDD@: Ignore Count
+Ddd*edit_breakpoint_ignore_count_dialog_popup.title: DDD: Ignore Count
 Ddd*edit_breakpoint_ignore_count_dialog.selectionLabelString:	     \
 @rm Enter breakpoint ignore count:
 
 Ddd*edit_breakpoint_ignore_count_dialog*helpString:	  \
-@rm Set the ignore count @sl COUNT @rm for the selected breakpoint(s).\n\
-Next @sl COUNT @rm hits of the selected breakpoint(s) will be ignored.
+@rm Set the ignore count VAR(count) for the selected breakpoint(s).\n\
+Next VAR(count) hits of the selected breakpoint(s) will be ignored.
 
 
 Ddd*edit_breakpoints_dialog*buttons*new.labelString:	       New...
@@ -3887,7 +3950,7 @@ Ddd*edit_breakpoints_dialog*buttons*delete.documentationString:     \
 ! Show Backtrace
 !-----------------------------------------------------------------------------
 
-Ddd*stack_dialog_popup.title:		  @DDD@: Backtrace
+Ddd*stack_dialog_popup.title:		  DDD: Backtrace
 Ddd*stack_dialog.listLabelString:	  Backtrace
 Ddd*stack_dialog.okLabelString:		  Close
 Ddd*stack_dialog.applyLabelString:	  Up
@@ -3895,24 +3958,24 @@ Ddd*stack_dialog.cancelLabelString:	  Down
 Ddd*stack_dialog*visibleItemCount:	  10
 
 Ddd*stack_dialog*helpString:	  \
-@rm This window shows the current @sl Backtrace.@rm\n\
+@rm This window shows the current EMPH(Backtrace.)\n\
 \n\
 The backtrace is a summary of how your program got where it is.\n\
 It shows one line per stack frame, for many frames, starting with\n\
-the initial calling function (usually @tt main()@rm), the function\n\
-called by @tt main()@rm, the function called by this function and\n\
+the initial calling function (usually CODE(main())), the function\n\
+called by CODE(main()), the function called by this function and\n\
 so on down the stack, down to the currently executing frame.\n\
 \n\
 You can make a specific frame the current one by selecting it\n\
 in this window.  You can also move around by pressing \
-@bf Up @rm or @bf Down@rm.
+LBL(Up) or LBL(Down).
 
 
 !-----------------------------------------------------------------------------
 ! Registers
 !-----------------------------------------------------------------------------
 
-Ddd*register_dialog_popup.title:	     @DDD@: Registers
+Ddd*register_dialog_popup.title:	     DDD: Registers
 Ddd*register_dialog.listLabelString:	     Registers
 Ddd*register_dialog.okLabelString:	     Close
 Ddd*register_dialog.listVisibleItemCount:    12
@@ -3925,18 +3988,18 @@ Ddd*register_dialog*all_registers.labelString: All registers
 Ddd*register_dialog*int_registers.labelString: Integer registers
 
 Ddd*register_dialog*helpString:	     \
-@rm This window shows the @sl Machine Registers.@rm\n\
-Select any register to have its name copied to the argument @bf()@rm.\n\
+@rm This window shows the EMPH(Machine Registers.)\n\
+Select any register to have its name copied to the argument LBL(()).\n\
 \n\
-If @bf Integer registers @rm is set, integer registers are shown.\n\
-If @bf All registers @rm is set, all registers are shown.
+If LBL(Integer registers) is set, integer registers are shown.\n\
+If LBL(All registers) is set, all registers are shown.
 
 
 !-----------------------------------------------------------------------------
 ! Threads
 !-----------------------------------------------------------------------------
 
-Ddd*thread_dialog_popup.title:	     	     @DDD@: Threads
+Ddd*thread_dialog_popup.title:	     	     DDD: Threads
 Ddd*thread_dialog.listLabelString:	     Threads
 Ddd*thread_dialog.okLabelString:	     Close
 Ddd*thread_dialog.listVisibleItemCount:      10
@@ -3946,7 +4009,7 @@ Ddd*thread_dialog*box.marginHeight: 0
 Ddd*thread_dialog*box.marginWidth:  0
 
 Ddd*thread_dialog*helpString:	     \
-@rm This window shows the current @sl Execution Threads.@rm\n\
+@rm This window shows the current EMPH(Execution Threads.)\n\
 \n\
 The current thread is highlighted.\n\
 All debugging commands show information from the perspective\n\
@@ -3959,28 +4022,28 @@ Select any thread to make it the current thread.
 ! Command History
 !-----------------------------------------------------------------------------
 
-Ddd*history_dialog_popup.title:		    @DDD@: Command History
+Ddd*history_dialog_popup.title:		    DDD: Command History
 Ddd*history_dialog.listLabelString:	    Command History
 Ddd*history_dialog.okLabelString:	    Close
 Ddd*history_dialog.applyLabelString:	    Apply
 Ddd*history_dialog*visibleItemCount:	    10
 
 Ddd*history_dialog*helpString:	    \
-@rm This window shows the @sl Command History.@rm\n\
+@rm This window shows the EMPH(Command History.)\n\
 \n\
-@DDD@ keeps track of the commands you type during your debugging\n\
+DDD keeps track of the commands you type during your debugging\n\
 sessions, so that you can be certain of precisely what happened.\n\
-Use this window to manage the @DDD@ command history facility.\n\
+Use this window to manage the DDD command history facility.\n\
 \n\
 Select a specific command to have it copied at the @GDB@ prompt.\n\
-Click on @bf Apply @rm to execute the current command.
+Click on LBL(Apply) to execute the current command.
 
 
 !-----------------------------------------------------------------------------
 ! Display Editor
 !-----------------------------------------------------------------------------
 
-Ddd*edit_displays_dialog_popup.title: @DDD@: Display Editor
+Ddd*edit_displays_dialog_popup.title: DDD: Display Editor
 Ddd*edit_displays_dialog*displays.labelString: Displays
 Ddd*edit_displays_dialog*form1.orientation:   XmVERTICAL
 Ddd*edit_displays_dialog*form1.marginWidth:   0
@@ -3994,25 +4057,25 @@ Ddd*edit_displays_dialog*buttons.marginHeight:	0
 Ddd*edit_displays_dialog.okLabelString:	      Close
 
 Ddd*edit_displays_dialog*helpString:	  \
-@rm This is the @sl Display Editor.@rm\n\
+@rm This is the EMPH(Display Editor.)\n\
 \n\
 Select displays on the left, operations on the right.\n\
 \n\
 Columns:\n\
-@tt \267 @bf Num @rm - the display number.\n\
-@tt \267 @bf Expression @rm - the display expression.\n\
-@tt \267 @bf State @rm - the display state (enabled, disabled, or alias).\n\
-@tt \267 @bf Address @rm - the location of the display expression in memory.\n\
+DESC(Num, [the display number])\n\
+DESC(Expression, [the display expression])\n\
+DESC(State, [the display state (enabled, disabled, or alias)])\n\
+DESC(Address, [the location of the display expression in memory])\n\
 \n\
 Buttons:\n\
-@tt \267 @bf New Display @rm - create a new display.\n\
-@tt \267 @bf Display * @rm - dereference the selected display.\n\
-@tt \267 @bf Show Detail @rm - show the details of all selected displays.\n\
-@tt \267 @bf Hide Detail @rm - hide the details of all selected displays.\n\
-@tt \267 @bf Set Value @rm - change a value in the selected display.\n\
-@tt \267 @bf Delete @rm - delete all selected displays.
+DESC(New Display, [create a new display])\n\
+DESC(Display *, [dereference the selected display])\n\
+DESC(Show Detail, [show the details of all selected displays])\n\
+DESC(Hide Detail, [hide the details of all selected displays])\n\
+DESC(Set Value, [change a value in the selected display])\n\
+DESC(Delete, [delete all selected displays])
 
-Ddd*new_display_dialog_popup.title: @DDD@: New Display
+Ddd*new_display_dialog_popup.title: DDD: New Display
 Ddd*new_display_dialog.selectionLabelString:	\
 @rm Enter new display expression:
 
@@ -4024,37 +4087,38 @@ The current value of the expression is shown each time the program stops.\n\
 Variables accessible are those of the lexical environment of the selected\n\
 stack frame, plus all those whose scope is global or an entire file.\n\
 \n\
-@tt $@sl NUM @rm gets previous value number @sl NUM.  \
-@tt $ @rm and @tt $$ @rm are the last two values.\n\
-@tt $$@sl NUM @rm refers to @sl NUM@rm'th value back from the last one.\n\
-Names starting with @tt$ @rm refer to registers\
+CODE($)VAR(num) gets previous value number VAR(num).  \
+CODE($) and CODE($$) are the last two values.\n\
+CODE($$)VAR(num) refers to VAR(num)'th value back from the last one.\n\
+Names starting with CODE($) refer to registers\
  (with the values they would have\n\
 if the program were to return to the stack frame now selected, restoring\n\
 all registers saved by frames farther in) or else to @GDB@\n\
-``convenience'' variables (any such name not a known register).\n\
+`convenience' variables (any such name not a known register).\n\
 Use assignment expressions to give values to convenience variables.\n\
 \n\
-@tt{@sl TYPE@tt}@sl ADREXP @rm refers to a datum of data type\
- @sl TYPE@rm, located at address @sl ADREXP.@rm\n\
+CODE({)VAR(type)CODE(}) VAR(adrexp) refers to a datum of data type\
+ VAR(type), located at address VAR(adrexp).\n\
 \n\
-@tt @ \
- @rm is a binary operator for treating consecutive data objects\n\
-anywhere in memory as an array. @sl FOO@tt @ @sl NUM @rm\
+CODE(@ ) is a binary operator for treating consecutive data objects\n\
+anywhere in memory as an array. VAR(foo)CODE(@ )VAR(num)\
  gives an array whose first\n\
-element is @sl FOO@rm, whose second element is stored in the space following\n\
-where @sl FOO @rm is stored, etc. @sl FOO @rm must be an expression \
+element is VAR(foo), whose second element is stored in the space following\n\
+where VAR(foo) is stored, etc.  VAR(foo) must be an expression \
 whose value\n\
 resides in memory.\n\
 \n\
+changequote(,)dnl
 As a special extension, you can display ranges of array elements\n\
-by using the notation @tt[@sl FROM@tt ..@sl TO@tt]@rm,\n\
-where @sl FROM @rm and @sl TO @rm are the positions of the first\n\
+by using the notation CODE([)VAR(from)CODE(..)VAR(to)CODE(]),\n\
+where VAR(from) and VAR(to) are the positions of the first\n\
 and last array element to display.\n\
-Thus, @tt argv[0..9] @rm will create 10 new displays\
-  @tt argv[0]@rm, @tt argv[1]@rm ... @tt argv[9]@rm.
+Thus, CODE(argv[0..9]) will create 10 new displays\
+  CODE(argv[0]), CODE(argv[1]), ..., CODE(argv[9]).
+changequote([,])dnl
 
 
-Ddd*dependent_display_dialog_popup.title: @DDD@: Dependent Display
+Ddd*dependent_display_dialog_popup.title: DDD: Dependent Display
 Ddd*dependent_display_dialog.selectionLabelString:	\
 @rm Modify dependent display expression:
 
@@ -4099,7 +4163,7 @@ Ddd*edit_displays_dialog*buttons*delete.documentationString:  \
 @rm Delete the selected data display(s)
 
 
-Ddd*run_dialog_popup.title: @DDD@: Run Program
+Ddd*run_dialog_popup.title: DDD: Run Program
 Ddd*run_dialog.listLabelString:		Arguments
 Ddd*run_dialog.selectionLabelString:	Run with Arguments
 
@@ -4108,15 +4172,15 @@ Ddd*run_dialog*selectionPolicy:		XmSINGLE_SELECT
 Ddd*run_dialog*helpString:	\
 @rm You can enter program arguments now.\n\
 \n\
-@DDD@ keeps track of the arguments you gave to the debugged program,\n\
+DDD keeps track of the arguments you gave to the debugged program,\n\
 such that you can re-use them at a later time.\n\
 Select specific arguments to have them copied to the argument prompt.\n\
 \n\
-Click on @bf OK @rm or @bf Apply @rm to start the debugged program \
+Click on LBL(OK) or LBL(Apply) to start the debugged program \
 with the selected arguments.
 
 
-Ddd*make_dialog_popup.title: @DDD@: Make
+Ddd*make_dialog_popup.title: DDD: Make
 Ddd*make_dialog.listLabelString:	Targets
 Ddd*make_dialog.selectionLabelString:	Make Target
 
@@ -4125,11 +4189,11 @@ Ddd*make_dialog*selectionPolicy:	XmSINGLE_SELECT
 Ddd*make_dialog*helpString:	\
 @rm You can enter make arguments now.\n\
 \n\
-@DDD@ keeps track of the arguments you gave to the make program,\n\
+DDD keeps track of the arguments you gave to the make program,\n\
 such that you can re-use them at a later time.\n\
 Select specific arguments to have them copied to the argument prompt.\n\
 \n\
-Click on @bf OK @rm or @bf Apply @rm to start the make program \
+Click on LBL(OK) or LBL(Apply) to start the make program \
 with the selected arguments.
 
 
@@ -4138,20 +4202,20 @@ with the selected arguments.
 ! Debugger State
 !-----------------------------------------------------------------------------
 
-Ddd*gdb_status_dialog_popup.title: @DDD@: Debugger State
+Ddd*gdb_status_dialog_popup.title: DDD: Debugger State
 Ddd*gdb_status_dialog*okLabelString: Close
 Ddd*gdb_status_dialog*cancelLabelString: Update
 
 Ddd*gdb_status_dialog*helpString: \
 @rm This dialog shows the @GDB@ state and capabilities.\n\
-Click on @bf Update @rm to update its contents.
+Click on LBL(Update) to update its contents.
 
 
 !-----------------------------------------------------------------------------
 ! Other Dialogs
 !-----------------------------------------------------------------------------
 
-Ddd*busy_display_dialog_popup.title: @DDD@: Debugger Busy
+Ddd*busy_display_dialog_popup.title: DDD: Debugger Busy
 Ddd*busy_dialog.messageString:		\
 @rm @GDB@ is busy!
 Ddd*busy_dialog*helpString:	\
@@ -4159,117 +4223,117 @@ Ddd*busy_dialog*helpString:	\
 \n\
 You may wish to wait until the @GDB@ prompt appears,\n\
 or interrupt the current debugging command by selecting\n\
-@bf Program @rm| @bf Interrupt @rm (or typing @key Ctrl+C@rm).\n\
+LBL(Program) | LBL(Interrupt) (or typing KEY(Ctrl+C)).\n\
 \n\
 If @GDB@ is busy running your debugged program, interrupting\n\
 @GDB@ means to interrupt program execution, such that you can\n\
 examine the current program state.
 
-Ddd*quit_dialog_popup.title: @DDD@: Debugger Still Busy
+Ddd*quit_dialog_popup.title: DDD: Debugger Still Busy
 ! Ddd*quit_dialog.messageString:	 \
 ! @rm @GDB@ is still busy.  Exit anyway (and kill it)?
 Ddd*quit_dialog*okLabelString:	     Yes
 Ddd*quit_dialog*cancelLabelString:   No
 Ddd*quit_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*quit_dialog*helpString:	\
-@rm @GDB@ is busy and does not react to the `@tt quit@rm' command.\n\
+@rm @GDB@ is busy and does not react to the KBD(quit) command.\n\
 The debugged process is probably still running.\n\
 \n\
 Before killing a running @GDB@, you should try to interrupt it\n\
-(by selecting @bf Program @rm| @bf Interrupt @rm).
+(by selecting LBL(Program) | LBL(Interrupt)).
 
-Ddd*terminated_dialog_popup.title: @DDD@: Hasta la Vista
+Ddd*terminated_dialog_popup.title: DDD: Hasta la Vista
 ! Ddd*terminated_dialog.messageString:   \
 ! @rm @GDB@ terminated abnormally.
 Ddd*terminated_dialog*okLabelString:	   Exit
 Ddd*terminated_dialog*cancelLabelString:   Restart
 Ddd*terminated_dialog*helpString:	\
-@rm @GDB@ terminated abnormally.  Without @GDB@, @DDD@ cannot run.\n\
+@rm @GDB@ terminated abnormally.  Without @GDB@, DDD cannot run.\n\
 \n\
 You may wish to examine the final @GDB@ output before exiting\n\
-or restarting @DDD@.\n\
+or restarting DDD.\n\
 \n\
-Click on @bf Exit @rm to exit @DDD@.\n\
-Click on @bf Restart @rm to restart @DDD@ from scratch.
+Click on LBL(Exit) to exit DDD.\n\
+Click on LBL(Restart) to restart DDD from scratch.
 
-Ddd*no_debugger_dialog_popup.title: @DDD@: Losing my Religion
+Ddd*no_debugger_dialog_popup.title: DDD: Losing my Religion
 ! Ddd*no_debugger_dialog.messageString:   \
 ! @rm @GDB@ could not be started.
 Ddd*no_debugger_dialog*okLabelString:	   Exit
 Ddd*no_debugger_dialog*helpString:	\
-@rm @GDB@ could not be started.  @DDD@ needs some inferior debugger to run.\n\
-You may wish to examine the diagnostic messages before exiting @DDD@.\n\
+@rm @GDB@ could not be started.  DDD needs some inferior debugger to run.\n\
+You may wish to examine the diagnostic messages before exiting DDD.\n\
 \n\
 Here are some hints that may help you out:\n\
-@tt \267 @rm If DDD looked for the wrong inferior debugger, re-invoke @DDD@,\n\
-    but use one of the @tt --gdb@rm, @tt --dbx@rm, or @tt --xdb @rm options \
+ITEM If DDD looked for the wrong inferior debugger, re-invoke DDD,\n\
+    but use one of the SAMP(--gdb), SAMP(--dbx), or SAMP(--xdb) options \
 to specify\n\
     the inferior debugger.\n\
-@tt \267 @rm If @GDB@ is the correct inferior debugger, \
+ITEM If @GDB@ is the correct inferior debugger, \
 but could not be found,\n\
-    re-invoke @DDD@, but use the @tt --debugger @sl PATH @rm option to \
+    re-invoke DDD, but use the SAMP(--debugger VAR(path)) option to \
 specify\n\
-    the full @GDB@ path.\n\
-@tt \267 @rm If you started DDD without arguments, re-invoke @DDD@,\n\
+    the full @GDB@ path VAR(path).\n\
+ITEM If you started DDD without arguments, re-invoke DDD,\n\
     but give it an executable as argument.  XDB and some DBX versions\n\
     require being invoked with an executable.\n\
-@tt \267 @rm @DDD@ passes all unknown options to @GDB@.  If @GDB@ choked on\n\
-    some options intended for @DDD@, use the @DDD@ @tt --help @rm option to\n\
-    get a list of valid @DDD@ options.\n\
+ITEM DDD passes all unknown options to @GDB@.  If @GDB@ choked on\n\
+    some options intended for DDD, use the DDD SAMP(--help) option to\n\
+    get a list of valid DDD options.\n\
 \n\
-Click on @bf Exit @rm to exit @DDD@.
+Click on LBL(Exit) to exit DDD.
 
-Ddd*fatal_dialog.title: @DDD@: @TITLE@
+Ddd*fatal_dialog.title: DDD: @TITLE@
 Ddd*fatal_dialog.messageString:	  \
 @rm Internal error
 Ddd*fatal_dialog*okLabelString:	      Exit
 Ddd*fatal_dialog*cancelLabelString:   Ignore
 Ddd*fatal_dialog*helpString: \
-@rm Oops!  You have found a bug in @DDD@.\n\
-You should better save your work immediately; @DDD@ may fail again soon.\n\
+@rm Oops!  You have found a bug in DDD.\n\
+You should better save your work immediately; DDD may fail again soon.\n\
 \n\
 If you can reproduce this bug, please send a bug report\n\
-to @tt<ddd-bugs@ ips.cs.tu-bs.de>@rm, giving a subject like\n\
+to EMAIL(ddd-bugs@ ips.cs.tu-bs.de), giving a subject like\n\
 \n\
-    @DDD@ @VERSION@ (@host@) gets @CAUSE@\n\
+    DDD 2.1.90 (sparc-sun-sunos4.1.4) gets @CAUSE@\n\
 \n\
 To enable us to fix the bug, you should include the following information:\n\
-@tt \267 @rm What you were doing to get this message.  Report all the facts.\n\
-@tt \267 @rm The @DDD@ configuration.  \
-Run `@tt @ddd@ --configuration@rm' to get it.\n\
-@tt \267 @rm Invoke @DDD@ with the `@tt --trace@rm' option, and if you can\n\
+ITEM What you were doing to get this message.  Report all the facts.\n\
+ITEM The DDD configuration.  \
+Run KBD(ddd --configuration) to get it.\n\
+ITEM Invoke DDD with the SAMP(--trace) option, and if you can\n\
     reproduce the bug, include the trace output in your bug report.\n\
-Please read also the section ``Reporting Bugs'' in the @DDD@ manual.\n\
+Please read also the section ``Reporting Bugs'' in the DDD manual.\n\
 \n\
 We thank you for your support.\n\
 \n\
-Click on @bf Exit @rm to exit @DDD@.\n\
-Click on @bf Ignore @rm if you choose to ignore this message.
+Click on LBL(Exit) to exit DDD.\n\
+Click on LBL(Ignore) if you choose to ignore this message.
 
 
-Ddd*yn_dialog_popup.title: @DDD@: Debugger Question
+Ddd*yn_dialog_popup.title: DDD: Debugger Question
 Ddd*yn_dialog*okLabelString:	   Yes
 Ddd*yn_dialog*cancelLabelString:   No
 Ddd*yn_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*yn_dialog*helpString:	\
 @rm This is a @GDB@ question.\n\
-Click on @bf Yes @rm or @bf No@rm, or enter `@tt yes@rm' or `@tt no@rm' \
+Click on LBL(Yes) or LBL(No), or enter KBD(yes) or KBD(no) \
 in the @GDB@ console.\n\
 For more details, consult the @GDB@ documentation.
 
-Ddd*gdb_message_dialog_popup.title: @DDD@: Debugger Message
+Ddd*gdb_message_dialog_popup.title: DDD: Debugger Message
 Ddd*gdb_message_dialog*helpString:	\
 @rm This is a @GDB@ message.\n\
 For more details, consult the @GDB@ documentation.
 
-Ddd*gdb_selection_dialog_popup.title: @DDD@: Selection
+Ddd*gdb_selection_dialog_popup.title: DDD: Selection
 Ddd*gdb_selection_dialog*listLabelString:  Selection
 Ddd*gdb_selection_dialog*helpString:	\
 @rm This is a @GDB@ selection menu.\n\
-Please select an item from the list and click on @bf OK@rm.\n\
+Please select an item from the list and click on LBL(OK).\n\
 For more details, consult the @GDB@ documentation.
 
-Ddd*confirm_overwrite_dialog_popup.title: @DDD@: File Exists
+Ddd*confirm_overwrite_dialog_popup.title: DDD: File Exists
 Ddd*confirm_overwrite_dialog*messageString:	  \
 @rm Overwrite existing file?
 Ddd*confirm_overwrite_dialog*okLabelString:	  Yes
@@ -4277,97 +4341,97 @@ Ddd*confirm_overwrite_dialog*cancelLabelString:	  No
 Ddd*confirm_overwrite_dialog*defaultButtonType:	  XmDIALOG_CANCEL_BUTTON
 Ddd*confirm_overwrite_dialog*helpString:	\
 @rm The file already exists.\n\
-Click on @bf Yes @rm to overwrite the existing file.
+Click on LBL(Yes) to overwrite the existing file.
 
-Ddd*save_options_dialog_popup.title: @DDD@: Save Options
+Ddd*save_options_dialog_popup.title: DDD: Save Options
 Ddd*save_options_dialog.messageString:	 \
-@rm @DDD@ startup preferences were modified.\n\
-Save them for the next @DDD@ invocation?
+@rm DDD startup preferences were modified.\n\
+Save them for the next DDD invocation?
 Ddd*save_options_dialog*okLabelString:	     Yes
 Ddd*save_options_dialog*cancelLabelString:   No
 Ddd*save_options_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*save_options_dialog*helpString:	\
-@rm You have changed some @DDD@ startup preferences\n\
-(using @bf Edit @rm| @bf Preferences @rm).\n\
-To save them for the next @DDD@ invocation, click on @bf Yes@rm.\n\
-To discard the changes, click on @bf No@rm.
+@rm You have changed some DDD startup preferences\n\
+(using LBL(Edit) | LBL(Preferences)).\n\
+To save them for the next DDD invocation, click on LBL(Yes).\n\
+To discard the changes, click on LBL(No).
 
-Ddd*set_dialog_popup.title: @DDD@: Set Value
+Ddd*set_dialog_popup.title: DDD: Set Value
 Ddd*set_dialog*helpString:	\
 @rm You can now change a value in the selected display.\n\
-If you want to keep it unchanged, press @bf Cancel@rm.
+If you want to keep it unchanged, press LBL(Cancel).
 
 
 !-----------------------------------------------------------------------------
 ! Messages
 !-----------------------------------------------------------------------------
 
-Ddd*source_file_error_popup.title: @DDD@: No Source
+Ddd*source_file_error_popup.title: DDD: No Source
 Ddd*source_file_error*helpString:	\
 @rm The given source file could not be loaded.
 
-Ddd*remote_file_error_popup.title: @DDD@: No Remote Source
+Ddd*remote_file_error_popup.title: DDD: No Remote Source
 Ddd*remote_file_error*helpString:	\
 @rm The given source file could not be loaded from the remote host.\n\
 This message is also caused by attempting to load an empty source file.
 
-Ddd*source_file_from_gdb_warning_popup.title: @DDD@: Source From Debugger
+Ddd*source_file_from_gdb_warning_popup.title: DDD: Source From Debugger
 Ddd*source_file_from_gdb_warning*helpString:	\
 @rm The given source file could not be loaded directly.\n\
-Instead, the source was obtained from @GDB@ via the `@tt list@rm' command.
+Instead, the source was obtained from @GDB@ via the KBD(list) command.
 
-Ddd*source_trunc_error_popup.title: @DDD@: Source Truncated
+Ddd*source_trunc_error_popup.title: DDD: Source Truncated
 Ddd*source_trunc_error*helpString:	\
 @rm The given source file could not be loaded entirely.
 
-Ddd*source_empty_warning.title: @DDD@: Empty Source
+Ddd*source_empty_warning.title: DDD: Empty Source
 Ddd*source_empty_warning*helpString:	\
 @rm The given source file contains no data.\n\
 This is very unusual for source files.\n\
 Please verify your file name and try again.
 
-Ddd*source_binary_warning.title: @DDD@: Binary Source
+Ddd*source_binary_warning.title: DDD: Binary Source
 Ddd*source_binary_warning*helpString:	\
 @rm The given source file contains NULL characters. \n\
 This is very unusual for source files. \n\
 You probably gave the name of a binary file. \n\
 Please verify the file name and try again.
 
-Ddd*source_find_error_popup.title: @DDD@: Not Found
+Ddd*source_find_error_popup.title: DDD: Not Found
 Ddd*source_find_error*helpString:	\
-@rm The given argument @bf () @rm can not be found in the source text.\n\
+@rm The given argument LBL(()) can not be found in the source text.\n\
 \n\
-If you wish to search for @bf () @rm even within words,\n\
-consider disabling @bf Source @rm| @bf Find Words Only@rm.
+If you wish to search for LBL(()) even within words,\n\
+consider disabling LBL(Source) | LBL(Find Words Only).
 
-Ddd*manual_find_error_popup.title: @DDD@: Not Found
+Ddd*manual_find_error_popup.title: DDD: Not Found
 Ddd*manual_find_error*helpString:	\
-@rm The given argument @bf () @rm can not be found in the on-line manual.
+@rm The given argument LBL(()) can not be found in the on-line manual.
 
-Ddd*no_source_error_popup.title: @DDD@: No Source
+Ddd*no_source_error_popup.title: DDD: No Source
 Ddd*no_source_error*helpString:	\
 @rm There is no current source text in which to search.
 
-Ddd*no_source_edit_error_popup.title: @DDD@: No Source
+Ddd*no_source_edit_error_popup.title: DDD: No Source
 Ddd*no_source_edit_error*helpString:	\
 @rm There is no current source text to edit.
 
-Ddd*no_such_line_error_popup.title: @DDD@: No Such Line
+Ddd*no_such_line_error_popup.title: DDD: No Such Line
 Ddd*no_such_line_error*helpString:	\
 @rm There is no such line in the current source text.
 
-Ddd*no_such_breakpoint_error_popup.title: @DDD@: No Such Breakpoint
+Ddd*no_such_breakpoint_error_popup.title: DDD: No Such Breakpoint
 Ddd*no_such_breakpoint_error*helpString:	\
 @rm There is no such breakpoint in the current program.
 
-Ddd*no_completion_error_popup.title: @DDD@: No Completion
+Ddd*no_completion_error_popup.title: DDD: No Completion
 Ddd*no_completion_error*helpString:	\
 @rm @GDB@ does not support command and argument completion.\n\
 \n\
-Command completion requires the GDB `@tt complete@rm' command,\n\
+Command completion requires the GDB KBD(complete) command,\n\
 which is present in GDB 4.13 and later.
 
-Ddd*no_program_popup.title: @DDD@: No Program
+Ddd*no_program_popup.title: DDD: No Program
 Ddd*no_program*helpString: \
 @rm You have not opened any program yet.  @GDB@ needs a debuggee\n\
 to access core dumps, source files, or attaching to processes.\n\
@@ -4375,118 +4439,118 @@ to access core dumps, source files, or attaching to processes.\n\
 You can ignore this warning and proceed, but @GDB@ may be unable\n\
 to display symbolic values and determine locations.\n\
 \n\
-To open a program, use @bf File @rm| @bf Open Program@rm.
+To open a program, use LBL(File) | LBL(Open Program).
 
 
-Ddd*print_empty_graph_error_popup.title: @DDD@: Nothing to Print
+Ddd*print_empty_graph_error_popup.title: DDD: Nothing to Print
 Ddd*print_empty_graph_error*helpString:	\
 @rm There is nothing to print.\n\
 The printing has been cancelled.
 
-Ddd*print_failed_error_popup.title: @DDD@: Printing Failed
+Ddd*print_failed_error_popup.title: DDD: Printing Failed
 Ddd*print_failed_error*helpString:	\
 @rm The file holding the graph picture could not be written.\n\
 The printing has been cancelled.
 
-Ddd*tty_exec_error_popup.title: @DDD@: No Execution Window
+Ddd*tty_exec_error_popup.title: DDD: No Execution Window
 Ddd*tty_exec_error*helpString:	\
 @rm The terminal emulator for the execution window\n\
 could not be invoked.  The debugged process will execute in the\n\
 @GDB@ console instead.\n\
 \n\
-Please verify the contents of the @bf .termCommand @rm resource\n\
-in the @DDD@ application defaults file and in your @tt ~/.dddinit @rm file.
+Please verify the contents of the SAMP(.termCommand) resource\n\
+in the DDD application defaults file and in your FILE(~/.dddinit) file.
 
-Ddd*tty_command_error_popup.title: @DDD@: TTY Failed
+Ddd*tty_command_error_popup.title: DDD: TTY Failed
 Ddd*tty_command_error*helpString:	\
-@rm @DDD@ sent a `@tt tty@rm' command to @GDB@ in order to redirect\n\
+@rm DDD sent a KBD(tty) command to @GDB@ in order to redirect\n\
 input/output of the debugged process to the execution window.\n\
 This command failed.\n\
 \n\
-@DDD@ will now redirect the process I/O explicitly.  This means that\n\
+DDD will now redirect the process I/O explicitly.  This means that\n\
 the command window remains the controlling terminal.\n\
 \n\
-You can tell @DDD@ to not use the `@tt tty@rm' command, but to use explicit\n\
+You can tell DDD to not use the KBD(tty) command, but to use explicit\n\
 redirection instead, using shell redirection operators.\n\
 To do so, include a line\n\
 \n\
-@tt Ddd*useTTYCommand: false\n\
+CODE(Ddd*useTTYCommand: false)\n\
 \n\
-@rm in your @tt ~/.dddinit @rm file and restart @DDD@.
+in your FILE(~/.dddinit) file and restart DDD.
 
-Ddd*tty_type_error: @DDD@: Term Failed
+Ddd*tty_type_error: DDD: Term Failed
 Ddd*tty_type_error*helpString:	\
-@rm @DDD@ could not set the TERM environment variable\n\
+@rm DDD could not set the TERM environment variable\n\
 to the type of the execution window.  This means that\n\
 your program will execute with a terminal type\n\
-set to @tt dumb @rm instead of @tt xterm@rm.
+set to SAMP(dumb) instead of SAMP(xterm).
 
-Ddd*history_save_error_popup.title: @DDD@: Save History Failed
+Ddd*history_save_error_popup.title: DDD: Save History Failed
 Ddd*history_save_error*helpString:	\
 @rm The command history could not be saved.
 
-Ddd*options_save_error_popup.title: @DDD@: Save Options Failed
+Ddd*options_save_error_popup.title: DDD: Save Options Failed
 Ddd*options_save_error*helpString:	\
-@rm The @DDD@ options could not be saved.
+@rm The DDD options could not be saved.
 
-Ddd*no_license_error_popup.title: @DDD@: No License
+Ddd*no_license_error_popup.title: DDD: No License
 Ddd*no_license_error*helpString:	\
-@rm The @DDD@ license could not be uncompressed.\n\
+@rm The DDD license could not be uncompressed.\n\
 \n\
-Please verify the contents of the @bf .uncompressCommand @rm resource\n\
-in the @DDD@ application defaults file and make sure that the given\n\
+Please verify the contents of the SAMP(.uncompressCommand) resource\n\
+in the DDD application defaults file and make sure that the given\n\
 uncompressing program is within your executable path.
 
-Ddd*no_ddd_manual_error_popup.title: @DDD@: No Manual
+Ddd*no_ddd_manual_error_popup.title: DDD: No Manual
 Ddd*no_ddd_manual_error*helpString:	\
-@rm The @DDD@ manual could not be uncompressed.\n\
+@rm The DDD manual could not be uncompressed.\n\
 \n\
-Please verify the contents of the @bf .uncompressCommand @rm resource\n\
-in the @DDD@ application defaults file and make sure that the given\n\
+Please verify the contents of the SAMP(.uncompressCommand) resource\n\
+in the DDD application defaults file and make sure that the given\n\
 uncompressing program is within your executable path.
 
-Ddd*startup_warning.title: @DDD@: New Startup Required
+Ddd*startup_warning.title: DDD: New Startup Required
 Ddd*startup_warning*helpString: \
-@rm This setting cannot be changed while @DDD@ is running.\n\
-Please save options and restart @DDD@ to see the effects.
+@rm This setting cannot be changed while DDD is running.\n\
+Please save options and restart DDD to see the effects.
 
-Ddd*print_warning.title: @DDD@: Print Command Output
+Ddd*print_warning.title: DDD: Print Command Output
 Ddd*print_warning*helpString:	\
 @rm This is the output of your printing command.\n\
 For more details, consult your system documentation.
 
-Ddd*no_display_number_warning.title: @DDD@: No Display Number
+Ddd*no_display_number_warning.title: DDD: No Display Number
 Ddd*no_display_number*helpString: \
-@rm @DDD@ could not determine the number of the new display\n\
-as assigned by @GDB@.  @DDD@ will use a default number instead.
+@rm DDD could not determine the number of the new display\n\
+as assigned by @GDB@.  DDD will use a default number instead.
 
-Ddd*invalid_range_error.title: @DDD@: Invalid Range
+Ddd*invalid_range_error.title: DDD: Invalid Range
 Ddd*invalid_range_error*helpString: \
-@rm You entered an invalid range @sl X@rm..@sl Y@rm, with @sl X@rm > @slY@rm.
+@rm You entered an invalid range VAR(x)..VAR(y), with VAR(x) > VAR(y).
 
-Ddd*paper_size_value_error.title: @DDD@: Unrecognized Paper Size
+Ddd*paper_size_value_error.title: DDD: Unrecognized Paper Size
 Ddd*paper_size_value_error*helpString:	\
-@rm @DDD@ could not parse your paper size specification.\n\
+@rm DDD could not parse your paper size specification.\n\
 Please verify the paper size and try again.
 
-Ddd*paper_size_unit_error.title: @DDD@: Unrecognized Paper Size Unit
+Ddd*paper_size_unit_error.title: DDD: Unrecognized Paper Size Unit
 Ddd*paper_size_unit_error*helpString:	\
-@rm @DDD@ did not recognize your paper size unit.\n\
+@rm DDD did not recognize your paper size unit.\n\
 Recognized units include:\n\
-@tt pt @rm (points), @tt in @rm (inches), \n\
-@tt mm @rm (millimeters), @tt cm @rm (centimeters).\n\
+KBD(pt) (points), KBD(in) (inches), \n\
+KBD(mm) (millimeters), KBD(cm) (centimeters).
 Please verify the paper size unit and try again.
 
-Ddd*paper_size_x_error.title: @DDD@: Unrecognized Paper Size
+Ddd*paper_size_x_error.title: DDD: Unrecognized Paper Size
 Ddd*paper_size_x_error*helpString:	\
-@rm @DDD@ could not find an `x' in your paper size specification.\n\
+@rm DDD could not find an SAMP(x) in your paper size specification.\n\
 Please verify the paper size and try again.
 
-Ddd*expired_warning.title: @DDD@: @DDD@ Expired
+Ddd*expired_warning.title: DDD: DDD Expired
 Ddd*expired_warning*helpString: \
-@rm @DDD@ @VERSION@ has been superseded by a newer @DDD@ version.\n\
-@DDD@ @VERSION@ should no longer be used.\n\
-To get the most recent @DDD@ version, see the @DDD@ WWW page.
+@rm DDD 2.1.90 has been superseded by a newer DDD version.\n\
+DDD 2.1.90 should no longer be used.\n\
+To get the most recent DDD version, see the DDD WWW page.
 
 
 !-----------------------------------------------------------------------------
@@ -4497,21 +4561,20 @@ Ddd*no_program.helpString: \
 @rm You have not opened any program yet.  @GDB@ needs a debuggee\n\
 to access core dumps, source files, or attaching to processes.\n\
 \n\
-To open a program, use @bf File @rm| @bf Open Program@rm.
+To open a program, use LBL(File) | LBL(Open Program).
 
 Ddd*no_source.helpString: \
 @rm @GDB@ cannot find the source code of your program.\n\
 \n\
 Here are some hints that may help you out:\n\
-@tt \267 @rm In order to debug a program effectively, you need to generate\n\
+ITEM In order to debug a program effectively, you need to generate\n\
     debugging information when you compile it.  Without debugging \
 information,\n\
     @GDB@ will be unable to locate the source code.  To request debugging\n\
-    information, specify the `@tt -g@rm' option when you run the compiler.\n\
-@tt \267 @rm You may need to tell @GDB@ where the source code files are.\n\
-    Invoke @bf Edit @rm| @bf @GDB@ Settings @rm and look for appropriate \
-entries.\n\
-@tt \267 @rm If you don't have the source code of your program, @DDD@ is not\n\
+    information, specify the SAMP(-g) option when you run the compiler.\n\
+ITEM You may need to tell @GDB@ where the source code files are.\n\
+    Invoke LBL(Edit) | LBL(@GDB@ Settings) and look for appropriate entries.\n\
+ITEM If you don't have the source code of your program, DDD is not\n\
     the tool of choice for you.  Try using a machine-code oriented debugger\n\
     instead.
 
@@ -4519,140 +4582,130 @@ Ddd*program_not_running.helpString: \
 @rm Your program is not running.\n\
 \n\
 You may now choose between the following:\n\
-@tt \267 @rm Start the program, using @bf Program @rm| @bf Run@rm. \
+ITEM Start the program, using LBL(Program) | LBL(Run). \
 You may wish to \n\
-    set some breakpoints beforehand, using @bf Break at () @rm and \n\
-    @bf Source @rm| @bf Edit Breakpoints@rm.\n\
-    To find specific functions, use @bf Lookup ()@rm.\n\
-@tt \267 @rm If your program is already running outside of @DDD@, you can\n\
-    attach to its running process, using @bf File @rm| @bf \
-Attach to Process@rm.\n\
-@tt \267 @rm If some previous invocation of your program has failed, and\n\
-    you want to know why, use @bf File @rm| @bf Open Core Dump @rm to open\n\
+    set some breakpoints beforehand, using LBL(Break at ()) and \n\
+    LBL(Source) | LBL(Edit Breakpoints).\n\
+    To find specific functions, use LBL(Lookup ()).\n\
+ITEM If your program is already running outside of DDD, you can\n\
+    attach to its running process, using LBL(File) | LBL(Attach to Process).\n\
+ITEM If some previous invocation of your program has failed, and\n\
+    you want to know why, use LBL(File) | LBL(Open Core Dump) to open\n\
     its core dump.
 
 Ddd*item_selected.helpString: \
 @rm You have selected some item from the program source code.\n\
 \n\
-@tt \267 @rm To look up further occurences in the source code, use \
-@bf Find@small<< @bf() @rm\n\
-    and @bf Find@small>> @bf()@rm.  @bf Lookup () @rm leads you to the item's \
-definition.\n\
-@tt \267 @rm To display the value, use @bf Print () @rm (for simple \
-values)\n\
-    and @bf Display () @rm (for complex values and dynamic displays).
+ITEM To look up further occurences in the source code, use LBL_FIND_PREV\n\
+    and LBL_FIND_NEXT.  LBL(Lookup ()) leads you to the item's definition.\n\
+ITEM To display the value, use LBL(Print ()) (for simple values)\n\
+    and LBL(Display ()) (for complex values and dynamic displays).
 
 Ddd*display_selected.helpString: \
 @rm You have selected some data display.\n\
 \n\
-@tt \267 @rm To examine further members of this data structure, use \
-@bf New Display () @rm\n\
-    and @bf Display *()@rm.\n\
-@tt \267 @rm To modify the appearance of the selected display, use \
-@bf Hide () @rm and @bf Rotate ()@rm.\n\
-@tt \267 @rm To change the value of the selected display, use @bf Set ()@rm.\n\
-@tt \267 @rm To delete the selected displays, use @bf Delete ()@rm.\n\
-@tt \267 @rm Use @bf Data @rm| @bf Edit Displays @rm for further editing.
+ITEM To examine further members of this data structure, use \
+LBL(New Display ())\n\
+    and LBL(Display *()).\n\
+ITEM To modify the appearance of the selected display, use \
+LBL(Hide ()) and LBL(Rotate ()).\n\
+ITEM To change the value of the selected display, use LBL(Set ()).\n\
+ITEM To delete the selected displays, use LBL(Delete ()).\n\
+ITEM Use LBL(Data) | LBL(Edit Displays) for further editing.
 
 Ddd*command_entered.helpString: \
 @rm You have entered some command at the @GDB@ prompt.\n\
 \n\
-@tt \267 @rm To execute the current command, press @key RETURN @rm.\n\
-@tt \267 @rm To complete the current word, use @key TAB @rm.\n\
-@tt \267 @rm To move through the command history, \
-use @key Up @rm and @key Down@rm.\n\
-@tt \267 @rm To clear the current line, use @key Ctrl+U@rm.\n\
-@tt \267 @rm For further options, see the @bf Commands @rm menu.
+ITEM To execute the current command, press KEY_RETURN.\n\
+ITEM To complete the current word, use KEY(TAB).\n\
+ITEM To move through the command history, use KEY(Up) and KEY(Down).\n\
+ITEM To clear the current line, use KEY(Ctrl+U).\n\
+ITEM For further options, see the LBL(Commands) menu.
 
 Ddd*code_but_no_source.helpString: \
 @rm Your program @PROGRAM_STATE@,\n\
 and there is no source code for the current execution position.\n\
 \n\
 Here are some hints that may help you out:\n\
-@tt \267 @rm Use @bf Status @rm| @bf Up @rm to step out of libraries \
+ITEM Use LBL(Status) | LBL(Up) to step out of libraries \
 and to enter your own functions.\n\
-@tt \267 @rm In order to debug a program effectively, you need to generate\n\
+ITEM In order to debug a program effectively, you need to generate\n\
     debugging information when you compile it.  Without debugging \
 information,\n\
     @GDB@ will be unable to locate the source code.  To request debugging\n\
-    information, specify the `@tt -g@rm' option when you run the compiler.\n\
-@tt \267 @rm You may need to tell @GDB@ where the source code files are.\n\
-    Invoke @bf Edit @rm| @bf @GDB@ Settings @rm and look for appropriate \
-entries.\n\
-@tt \267 @rm Using GDB, you can continue at machine code level \
+    information, specify the SAMP(-g) option when you run the compiler.\n\
+ITEM You may need to tell @GDB@ where the source code files are.\n\
+    Invoke LBL(Edit) | LBL(@GDB@ Settings) and look for appropriate entries.\n\
+ITEM Using GDB, you can continue at machine code level \
 by enabling the\n\
-    Machine Code Window.  Use @bf Source @rm| @bf Display Machine Code@rm.
+    Machine Code Window.  Use LBL(Source) | LBL(Display Machine Code).
 
 Ddd*stopped_at_passed_signal.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
-@tt \267 @rm To find out how you got here, use @bf Status @rm| @bf \
-Backtrace@rm.\n\
-@tt \267 @rm To examine a variable value, select it first (click on an \
+ITEM To find out how you got here, use LBL(Status) | LBL(Backtrace).\n\
+ITEM To examine a variable value, select it first (click on an \
 occurrence).\n\
-    Then use @bf Print () @rm (for simple values) and @bf Display () @rm \
+    Then use LBL(Print ()) (for simple values) and LBL(Display ()) \
 (for complex\n\
-    values).  As a shortcut, you may also press the @sl right mouse\n\
-    button @rm to get a popup menu.\n\
-@tt \267 @rm You can display all local variables at once using \
-@bf Data @rm| @bf Display\n\
-    Local Variables@rm.\n\
-@tt \267 @rm To set and clear further breakpoints, use @bf Source @rm| @bf \
-Edit Breakpoints@rm.\n\
-    As a shortcut, you may also press the @sl right mouse button @rm on a\n\
+    values).  As a shortcut, you may also press the BUTTON(right mouse\n\
+    button) to get a popup menu.\n\
+ITEM You can display all local variables at once using \
+LBL(Data) | LBL(Display\n\
+    Local Variables).\n\
+ITEM To set and clear further breakpoints, use \
+LBL(Source) | LBL(Edit Breakpoints).\n\
+    As a shortcut, you may also press the BUTTON(right mouse button) on a\n\
     location or breakpoint to get a popup menu.\n\
 \n\
 When resuming execution, the @SIGNAL_DESCRIPTION@ signal \
 will be passed to the program.\n\
-@tt \267 @rm To continue execution without giving a @SIGNAL@ signal, \
-use the @GDB@ command `@tt signal 0@rm'.\n\
-@tt \267 @rm To see the current signal handling, \
-use the @GDB@ command `@tt info handle@rm'.
+ITEM To continue execution without giving a @SIGNAL@ signal, \
+use the @GDB@ command KBD(signal 0).\n\
+ITEM To see the current signal handling, \
+use the @GDB@ command KBD(info handle).
 
 Ddd*stopped_at_ignored_signal.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
-@tt \267 @rm To find out how you got here, use @bf Status @rm| @bf \
-Backtrace@rm.\n\
-@tt \267 @rm To examine a variable value, select it first (click on an \
+ITEM To find out how you got here, use LBL(Status) | LBL(Backtrace).\n\
+ITEM To examine a variable value, select it first (click on an \
 occurrence).\n\
-    Then use @bf Print () @rm (for simple values) and @bf Display () @rm \
+    Then use LBL(Print ()) (for simple values) and LBL(Display ()) \
 (for complex\n\
-    values).  As a shortcut, you may also press the @sl right mouse\n\
-    button @rm to get a popup menu.\n\
-@tt \267 @rm You can display all local variables at once using \
-@bf Data @rm| @bf Display\n\
-    Local Variables@rm.\n\
-@tt \267 @rm To set and clear further breakpoints, use @bf Source @rm| @bf \
-Edit Breakpoints@rm.\n\
-    As a shortcut, you may also press the @sl right mouse button @rm on a\n\
+    values).  As a shortcut, you may also press the BUTTON(right mouse\n\
+    button) to get a popup menu.\n\
+ITEM You can display all local variables at once using \
+LBL(Data) | LBL(Display\n\
+    Local Variables).\n\
+ITEM To set and clear further breakpoints, use \
+LBL(Source) | LBL(Edit Breakpoints).\n\
+    As a shortcut, you may also press the BUTTON(right mouse button) on a\n\
     location or breakpoint to get a popup menu.\n\
 \n\
 When resuming execution, the @SIGNAL_DESCRIPTION@ signal \
-will @sl not @rm be passed to the program.\n\
-@tt \267 @rm To pass this signal to the program, \
-use the @GDB@ command `@tt signal @SIGNAL@@rm'.\n\
-@tt \267 @rm To see the current signal handling, \
-use the @GDB@ command `@tt info handle@rm'.
+will EMPH(not) be passed to the program.\n\
+ITEM To pass this signal to the program, \
+use the @GDB@ command KBD(signal @SIGNAL@).\n\
+ITEM To see the current signal handling, \
+use the @GDB@ command KBD(info handle).
 
 Ddd*stopped.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
-@tt \267 @rm To find out how you got here, use @bf Status @rm| @bf \
-Backtrace@rm.\n\
-@tt \267 @rm To examine a variable value, select it first (click on an \
+ITEM To find out how you got here, use \LBL(Status) | LBL(Backtrace).\n\
+ITEM To examine a variable value, select it first (click on an \
 occurrence).\n\
-    Then use @bf Print () @rm (for simple values) and @bf Display () @rm \
+    Then use LBL(Print ()) (for simple values) and LBL(Display ()) \
 (for complex\n\
-    values).  As a shortcut, you may also press the @sl right mouse\n\
-    button @rm to get a popup menu.\n\
-@tt \267 @rm You can display all local variables at once using \
-@bf Data @rm| @bf Display\n\
-    Local Variables@rm.\n\
-@tt \267 @rm To set and clear further breakpoints, use @bf Source @rm| @bf \
-Edit Breakpoints@rm.\n\
-    As a shortcut, you may also press the @sl right mouse button @rm on a\n\
+    values).  As a shortcut, you may also press the BUTTON(right mouse\n\
+    button) to get a popup menu.\n\
+ITEM You can display all local variables at once using \
+LBL(Data) | LBL(Display\n\
+    Local Variables).\n\
+ITEM To set and clear further breakpoints, use \
+LBL(Source) | LBL(Edit Breakpoints).\n\
+    As a shortcut, you may also press the BUTTON(right mouse button) on a\n\
     location or breakpoint to get a popup menu.\n\
-@tt \267 @rm Use the functions of the @bf Program @rm menu to resume \
-execution\n\
+ITEM Use the functions of the LBL(Program) menu to resume execution\n\
     and step through your program.
