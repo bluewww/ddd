@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Simple interface to Motif composite strings
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -46,4 +46,69 @@ Boolean MString::OK() const
     (void) lineCount();
 
     return True;
+}
+
+// Return all characters in M
+string MString::str() const
+{
+    string s = "";
+
+    XmString m = xmstring();
+    XmStringContext c;
+    XmStringInitContext(&c, m);
+    XmStringComponentType t = XmSTRING_COMPONENT_UNKNOWN;
+
+    while (t != XmSTRING_COMPONENT_END)
+    {
+	char *s_text            = 0;
+	XmStringCharSet s_cs    = 0;
+	XmStringDirection d     = XmSTRING_DIRECTION_DEFAULT;
+	XmStringComponentType u = XmSTRING_COMPONENT_UNKNOWN;
+	unsigned short ul       = 0;
+	unsigned char *s_uv     = 0;
+	
+	t = XmStringGetNextComponent(c, &s_text, &s_cs, &d, &u, &ul, &s_uv);
+
+	// Upon EOF in LessTif 0.82, XmStringGetNextComponent()
+	// returns XmSTRING_COMPONENT_UNKNOWN instead of
+	// XmSTRING_COMPONENT_END.  Work around this.
+	if (t == XmSTRING_COMPONENT_UNKNOWN && s_uv == 0)
+	    t = XmSTRING_COMPONENT_END;
+
+	// Place string values in strings
+	string text(s_text == 0 ? "" : s_text);
+	string cs(s_cs == 0 ? "" : s_cs);
+	string uv;
+	if (s_uv != 0)
+	    uv = string((char *)s_uv, ul);
+
+	// Free unused memory
+	XtFree(s_text);
+	XtFree(s_cs);
+	XtFree((char *)s_uv);
+
+	switch (t)
+	{
+	case XmSTRING_COMPONENT_TEXT:
+#if XmVersion >= 1002
+	case XmSTRING_COMPONENT_LOCALE_TEXT:
+#endif
+#if XmVersion >= 2000
+	case XmSTRING_COMPONENT_WIDECHAR_TEXT:
+#endif
+	    s += text;
+	    break;
+
+	case XmSTRING_COMPONENT_SEPARATOR:
+	    s += "\n";
+	    break;
+
+	default:
+	    break;
+	}
+    }
+
+    XmStringFreeContext(c);
+
+    return s;
 }

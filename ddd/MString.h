@@ -73,7 +73,8 @@ public:
 	assert(OK());
     }
 
-    // In Motif 1.1, `XmString' is defined as `char *'; hence the DUMMY parameter
+    // In Motif 1.1, `XmString' is defined as `char *'; hence the
+    // DUMMY parameter
     MString(XmString text, bool /* dummy */):
 	_mstring(XmStringCopy(text))
     {
@@ -131,21 +132,11 @@ public:
 	return XmStringLength(_mstring);
     }
 
-    string str(XmStringCharSet charset = MSTRING_DEFAULT_CHARSET) const
-    {
-	char *text;
-	if (XmStringGetLtoR(_mstring, charset, &text))
-	{
-	    string s = text;
-	    XtFree(text);
-	    return s;
-	}
-
-	return "";
-    }
+    // Return all characters, regardless of charset
+    string str() const;
 
     // Assignment
-    MString& operator=(const MString& m)
+    MString& operator = (const MString& m)
     {
 	assert(OK());
 	assert(m.OK());
@@ -164,16 +155,23 @@ public:
 	assert(OK());
 	assert(m.OK());
 
+	if (isEmpty())
+	    return operator = (m);
+
 	XmString old = _mstring;
 	_mstring = XmStringConcat(_mstring, m._mstring);
 	XmStringFree(old);
 
 	return *this;
     }
+
     MString& prepend(const MString& m)
     {
 	assert(OK());
 	assert(m.OK());
+
+	if (isEmpty())
+	    return operator = (m);
 
 	XmString old = _mstring;
 	_mstring = XmStringConcat(m._mstring, _mstring);
@@ -225,6 +223,11 @@ inline MString operator + (const MString& m1, const MString& m2)
 {
     assert(m1.OK());
     assert(m2.OK());
+
+    if (m2.isEmpty())
+	return m1;
+    if (m1.isEmpty())
+	return m2;
 
     return MString(XmStringConcat(m1.xmstring(), m2.xmstring()), true);
 }
