@@ -448,7 +448,14 @@ void TTYAgent::open_slave()
 	if (ioctl(slave, I_PUSH, "ldterm"))
 	    _raiseIOWarning("ioctl ldterm " + slave_tty());
 	if (ioctl(slave, I_PUSH, "ttcompat"))
+	{
+	    // On HP-UX and other systems, this call always fails.
+	    // Fortunately, it seems we can live without as well.  Hence,
+	    // we suppress the warning message to avoid confusion.
+#if 0
 	    _raiseIOWarning("ioctl ttcompat " + slave_tty());
+#endif
+	}
     }
 #endif // I_PUSH
 
