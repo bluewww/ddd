@@ -63,10 +63,17 @@ struct TimerInfo {
     {}
 
 private:
-    TimerInfo(const TimerInfo& ti)
+    TimerInfo(const TimerInfo&)
 	: timer(0), tic(0), interval(0), proc(0), closure(0), file(), line(0),
 	  next(0)
-    {}
+    {
+	assert(0);
+    }
+
+    const TimerInfo& operator = (const TimerInfo&)
+    {
+	assert(0); return *this;
+    }
 };
 
 // List of pending timers
