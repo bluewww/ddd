@@ -3019,6 +3019,7 @@ void SourceView::process_pwd(string& pwd_output)
 // History
 // ***************************************************************************
 
+// Add position to history
 void SourceView::add_to_history(const string& file_name, int line)
 {
     if (source_history_locked)
@@ -3065,6 +3066,7 @@ void SourceView::add_to_history(const string& file_name, int line)
 #endif
 }
 
+// Add position to history
 void SourceView::add_to_history(const string& address)
 {
     if (code_history_locked)
@@ -3112,12 +3114,36 @@ void SourceView::add_to_history(const string& address)
 #endif
 }
 
+// Lookup entry from position history
 void SourceView::goto_entry(string entry)
 {
     string file_name = entry.before(':');
-    string line_str = entry.after(':');
-    int line = atoi(line_str);
-    string address = line_str.after(':');
+    string line_str  = entry.after(':');
+    int line         = atoi(line_str);
+    string address   = line_str.after(':');
+
+    // Show position in status line
+    string msg = "";
+    if (file_name != "")
+	msg = "File " + quote(file_name);
+    if (line != 0)
+    {
+	if (msg == "")
+	    msg = "Line ";
+	else
+	    msg += ", line ";
+	msg += itostring(line);
+    }
+    if (address != "")
+    {
+	if (msg == "")
+	    msg = "Address ";
+	else
+	    msg += ", address ";
+	msg += address;
+    }
+    set_status(msg);
+
 
     if (file_name != "")
     {
@@ -3188,12 +3214,16 @@ void SourceView::go_back()
 	--history_position;
     if (history_position > 0)
 	goto_entry(history[--history_position]);
+    else
+	set_status("No previous source position.");
 }
 
 void SourceView::go_forward()
 {
     if (history_position + 1 < history.size())
 	goto_entry(history[++history_position]);
+    else
+	set_status("No next source position.");
 }
 
 // Clear history
