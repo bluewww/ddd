@@ -55,18 +55,8 @@
 .RB "[\|" \-\-login
 .I username\c
 \&\|]\|]
-.RB "[\|" \-\-vsl-library
-.I library\c
-\&\|]
-.RB "[\|" \-\-vsl-path
-.I path\c
-\&\|]
-.RB "[\|" \-\-exec-window "\|]"
-.RB "[\|" \-\-no-exec-window "\|]"
 .RB "[\|" \-\-attach-windows "\|]"
 .RB "[\|" \-\-separate-windows "\|]"
-.RB "[\|" \-\-scrolled-graph-editor "\|]"
-.RB "[\|" \-\-panned-graph-editor "\|]"
 .RB "[\|" \-\-trace "\|]"
 .RB "[\|" \-\-nw "\|]"
 .RB "[\|" \-\-tty "\|]"
@@ -81,9 +71,6 @@
 \&\|]
 .RB "[\|"\c
 .I x-options\c
-\&\|]
-.RB "[\|"\c
-.I vsl-options\c
 \&\|]
 .RB "[\|" \c
 .I program
@@ -879,6 +866,8 @@ common occasion to use this feature is to back up\(em\&perhaps with
 more breakpoints set-over a portion of a program that has already
 executed, in order to examine its execution in more detail.
 .PP
+.PSPIC @srcdir@/PICS/ddd-drag.ps 15.3cm
+.PP
 Moving the execution position does not change the current stack frame,
 or the stack pointer, or the contents of any memory location or any
 register other than the program counter.  If the new execution
@@ -896,8 +885,8 @@ button to resume execution.
 Note: Dragging the execution position is not possible when glyphs are
 disabled.  Use `\fBSet Execution Position\fR' from the breakpoint
 popup menu instead to set the execution position to the current
-location.  This item is also accessible via the popup menu obtained by
-pressing and holding the `\fBBreak at ()\fR/\fBClear at ()\fR' button.
+location.  This item is also accessible by pressing and holding the
+`\fBBreak at ()\fR/\fBClear at ()\fR' button.
 .\"
 .\"
 .SS "Examining the Stack"
@@ -1166,12 +1155,8 @@ to the dependent display.
 To create a dependent display, select the originating display or
 display part and click on the `\fBNew Display\fR' button.  A prompt
 dialog appears where you can enter a new expression \fIexpr\fR in the
-argument field.  By clicking on `\fBOK\fR', the new display showing
-\fIexpr\fR is created.
-.PP
-As a faster alternative, you can also press the \fIright mouse
-button\fR on the originating display part and select the `\fBNew
-Display\fR' menu item.
+argument field.  By clicking on `\fBDisplay\fR', the new display
+showing \fIexpr\fR is created.
 .PP
 Using dependent displays, you can investigate the data structure of a
 \*(lqtree\*(rq for example and lay it out according to your intuitive
@@ -1183,11 +1168,71 @@ By default, \s-2@DDD@\s+2 does not recognize shared data structures
 examine such structures.
 .\"
 .\"
+.SS "Display Shortcuts"
+.\"
+Each time you enter a new display via the prompt dialog, you can
+insert it in the `\fBNew Display\fR' Menu by activating the
+`\fBInclude in `New Display' Menu\fR' toggle.  The `\fBNew Display\fR'
+menu allows you to repeat the most recent display actions over and
+over again.  It can be accessed in three ways:
+.br
+.IP \(bu 2
+by pressing and holding the `\fBNew Display\fR' button, or
+.br
+.IP \(bu 2
+by pressing the \fIright mouse button\fR on some display and selecting
+`\fBNew Display\fR', or
+.br
+.IP \(bu 2
+by pressing \fBShift\fR and the \fIright mouse button\fR on some
+display.
+.br
+.PP
+As an example, assume you have selected a display named `\fBfoo\fR'
+and used `\fBNew Display\fR' to cast the display `\fBfoo\fR' to a new
+display `\fB(char *)foo\fR'.  If the `\fBInclude in `\fBNew Display\fR'
+Menu\fR' toggle was activated, you can now simply choose the
+`\fBDisplay (char *)()\fR' operation from the `\fBNew Display\fR' menu to
+cast \fIany\fR selected display \fIdisplay\fR to `\fB(char
+*)\fIdisplay\fR'.  This shortcut can save you a lot of time when
+examinating complex data structures.
+.PP
+.PSPIC @srcdir@/PICS/ddd-shortcuts.ps 15.3cm
+.PP
+You can edit the contents of the `\fBNew Display\fR' menu by selecting its
+`\fBEdit Menu\fR' item.  This pops up the \fIShortcut Editor\fR
+containing all shortcut expressions, which you can edit at leisure.
+Each line contains the expression for exactly one menu item.  Clicking
+on `\fBApply\fR' re-creates the `\fBNew Display\fR' menu from the text.  If
+the text is empty, the `\fBNew Display\fR' menu will be empty, too.
+.PP
+.PSPIC @srcdir@/PICS/ddd-shortcut-editor.ps 15.3cm
+.PP
+\s-2@DDD@\s+2 also allows you to specify individual labels for
+user-defined buttons.  You can write such a label after the
+expression, separated by a \s-2TAB\s+2 character.  This feature is
+used in the default contents of the `\fBNew Display\fR' menu, where each of
+the base conversions has a label:
+.br
+.sp
+    \fB/d ()\s-2<TAB>\s+2Convert to Dec
+    /x ()\s-2<TAB>\s+2Convert to Hex
+    /o ()\s-2<TAB>\s+2Convert to Oct\fR
+.sp
+.br
+Feel free to add other conversions here.  \s-2@DDD@\s+2 supports up to 
+20 `\fBNew Display\fR' menu items.
+.PP
+The item `\fBOther\fR' in the `\fBNew Display\fR' menu is equivalent
+to pressing the `\fBNew Display\fR' button\(em\&that is, you can enter
+a new expression to be displayed.
+.\"
+.\"
 .SS "Dereferencing Pointers"
 .\"
-Since so many data structures are realized using pointers, there is a
-shortcut for creating dependent displays showing the value of a
-dereferenced pointer.
+There is a special shortcut for creating dependent displays showing
+the value of a dereferenced pointer.  This allows for rapid
+examination of pointer-based data structures.
 .PP
 To dereference a pointer, select the originating pointer value or name
 and click on the `\fBDisplay *()\fR' button.  A new display showing
@@ -1197,8 +1242,8 @@ As a faster alternative, you can also press the \fIright mouse
 button\fR on the originating pointer value or name and select the
 `\fBDisplay *\fR' menu item.
 .PP
-The `\fBDisplay *()\fR' function is also available via the menu
-obtained by pressing and holding the `\fBDisplay ()\fR' button.
+The `\fBDisplay *()\fR' function is also accessible by pressing and
+holding the `\fBDisplay ()\fR' button.
 .\"
 .\"
 .SS "Displaying Local Variables"
@@ -1305,9 +1350,9 @@ When a display is deleted, its immediate ancestors and descendants are
 automatically selected, so that you can easily delete entire graphs.
 .PP
 To delete several displays at once, select the `\fBDelete\fR' item in
-the Display Editor (invoked through the `\fBData | Edit
-Displays...\fR').  Select any number of display items in the usual way
-and delete them by pressing `\fBDelete\fR'.
+the Display Editor (invoked via `\fBData | Edit Displays\fR').  Select
+any number of display items in the usual way and delete them by
+pressing `\fBDelete\fR'.
 .PP
 As an alternative, you can also type
 .sp
@@ -2055,8 +2100,6 @@ preferences, which are dicussed here.
 .\"
 .SS "General Preferences"
 .PP
-.PSPIC @srcdir@/PICS/ddd-general-prefs.ps 15.3cm
-.PP
 By default, when you move the pointer over a button, \s-2@DDD@\s+2
 gives a hint on the button's meaning in a small window.  Experienced
 users may find these \fIbutton tips\fR disturbing; this is why you
@@ -2104,11 +2147,11 @@ pointer such that you can continue to use your display.
 If you want to save the command history for the next \s-2@DDD@\s+2
 invocation, set the `\fBSave command history on exit\fR' option.
 .PP
+.PSPIC @srcdir@/PICS/ddd-general-prefs.ps 15.3cm
+.PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Source Preferences"
-.PP
-.PSPIC @srcdir@/PICS/ddd-source-prefs.ps 15.3cm
 .PP
 In the source text, the current execution position and breakpoints are
 indicated by symbols (``glyphs'').  As an alternative, \s-2@DDD@\s+2
@@ -2139,11 +2182,11 @@ to sources by full path name\fR' option.
 If your source code uses a tab width different from 8 (the default),
 you can set an alternate width using the `\fBTab width\fR' slider.
 .PP
+.PSPIC @srcdir@/PICS/ddd-source-prefs.ps 15.3cm
+.PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Data Preferences"
-.PP
-.PSPIC @srcdir@/PICS/ddd-data-prefs.ps 15.3cm
 .PP
 If you want \s-2@DDD@\s+2 to detect aliases, set the `\fBDetect
 Aliases\fR' option.  Note that alias detection makes \s-2@DDD@\s+2 run
@@ -2165,6 +2208,8 @@ Layout\fR' option.  This realizes an alternate layout algorithm, where
 successors are placed next to their parents.  This algorithm is
 suitable for homogeneous data structures only.
 .PP
+.PSPIC @srcdir@/PICS/ddd-data-prefs.ps 15.3cm
+.PP
 To enforce layout, you can set the `\fBRe-layout graph
 automatically\fR' option.  If automatic layout is enabled, the graph
 is layouted after each change.
@@ -2175,8 +2220,6 @@ A spacing of 0 disables the grid.  Default is 16.
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Startup Preferences"
-.PP
-.PSPIC @srcdir@/PICS/ddd-startup-prefs.ps 15.3cm
 .PP
 By default, \s-2@DDD@\s+2 uses one single window for commands, source,
 and data.  To have separate windows for source, data, and debugger
@@ -2210,6 +2253,8 @@ This change takes only effect after you have saved options and
 restarted \s-2@DDD@\s+2.  See also the `\fB\-\-panned-graph-editor\fR' and
 `\fB\-\-scrolled-graph-editor\fR' options, below.
 .PP
+.PSPIC @srcdir@/PICS/ddd-startup-prefs.ps 15.3cm
+.PP
 By default, \s-2@DDD@\s+2 runs with \s-2GDB\s+2 as inferior debugger.
 To change this default, set the `\fBDebugger Type\fR' option to
 another debugger.  This change takes only effect after you have saved
@@ -2224,6 +2269,38 @@ some grey color cells, which are also used by \s-2@DDD@\s+2.  The
 `\fBnone\fR' disables the logo completely.
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
+.\"
+.\"
+.SS "Defining Buttons"
+.\"
+To facilitate interaction, you can add own command buttons to
+\s-2@DDD@\s+2.  These buttons can be added below the debugger console
+(`\fBConsole Buttons\fR'), the source window (`\fBSource Buttons\fR'),
+or the data window (`\fBData Buttons\fR').
+.PP
+To define individual buttons, use the \fIButton Editor\fR, invoked via
+`\fBCommands | Command Buttons\fR'.  The button editor displays a
+text, where each line contains the command for exactly one button.
+Clicking on `\fBApply\fR' creates the appropriate buttons from the
+text.  If the text is empty (the default), no button is created.
+.PP
+.PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
+.PP
+As a simple example, assume you want to create a `\fBprint i\fR'
+button.  Invoke `\fBCommands | Command Buttons\fR' and enter a line
+saying `\fBprint i\fR' in the button editor.  Then click on
+`\fBApply\fR'.  A button named `\fBPrint i\fR' will now appear below
+the debugger console\(em\&try it!  To remove the button, clear the
+`\fBprint i\fR' line and press `\fBApply\fR' again.
+.PP
+By default, \s-2@DDD@\s+2 disables buttons whose commands are not
+supported by the inferior debugger.  To enable such buttons, unset the
+`\fBEnable supported buttons only\fR' toggle in the button editor.
+.PP
+\s-2@DDD@\s+2 also allows you to specify control sequences and special
+labels for user-defined buttons.  See the examples in `\fBUser-defined
+Buttons\fR' in the `\fBRESOURCES\fR' section, below.
+.\"
 .\"
 .SS "Saving Options"
 .\"
@@ -2732,8 +2809,8 @@ debugger via the pseudo-tty interface.  Some systems \fIrequire\fR
 this, such as Linux with libc 5.4.33 and earlier; set it to
 `\fBtrue\fR'.  Some other systems \fIprohibit\fR this, such as Linux
 with GNU libc 6 and later; set it to `\fBfalse\fR'.  The value
-`\fBauto\fR' (default) will select the `best' choice (that is, the
-best choice known to the \s-2@DDD@\s+2 developers).
+`\fBauto\fR' (default) will always select the `best' choice (that is,
+the best choice known to the \s-2@DDD@\s+2 developers).
 .TP
 .B "dbxInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
@@ -2746,9 +2823,6 @@ your \s-2DBX\s+2 documentation for details.
 .B "dbxSettings (\fPclass\fB Settings)"
 This string contains a list of newline-separated commands that are
 also initially sent to \s-2DBX\s+2.  By default, it is empty.
-.br
-In future \s-2@DDD@\s+2 releases, this resource will be used to save
-and restore debugger settings.
 .TP
 .B "debugger (\fPclass\fB Debugger)"
 The type of the inferior debugger (`\fBgdb\fR', `\fBdbx\fR', or
@@ -2869,9 +2943,6 @@ documentation for details.
 .B "xdbSettings (\fPclass\fB Settings)"
 This string contains a list of newline-separated commands that are
 also initially sent to \s-2XDB\s+2.  By default, it is empty.
-.br
-In future \s-2@DDD@\s+2 releases, this resource will be used to save
-and restore debugger settings.
 .PP
 .\"
 .\"
@@ -3103,6 +3174,16 @@ checking is done: all commands are accepted `as is'.
 .SS "Data Display"
 .\"
 The following resources control the data display.
+.\"
+.TP
+.B "displayShortcuts (\fPclass\fB DisplayShortcuts)"
+A newline-separated list of display expressions to be included in the
+`\fBNew Display\fR' menu.  If a line contains a \s-2TAB\s+2 character,
+the string before the \s-2TAB\s+2 is used as \fIexpression\fR, and the
+string after the \s-2TAB\s+2 is used as label.  Otherwise, the label
+is `\fBDisplay \fIexpression\fR'.  Upon activation, the string
+`\fB()\fR' in \fIexpression\fR is replaced by the name of the
+currently selected display.
 .TP
 .B "pannedGraphEditor (\fPclass\fB PannedGraphEditor)"
 What shall \s-2@DDD@\s+2 use if the graph gets too large to be
@@ -3262,8 +3343,6 @@ of the debugger console.  If this is `\fBfalse\fR', all lines are
 output as a whole.  This is faster, but results in a random position
 of the last line.
 .PP
-.\"
-.\"
 .\"
 .\"
 .SS "Customizing Helper Programs"
