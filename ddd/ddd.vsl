@@ -84,6 +84,14 @@ struct_member (name, value, name_width) ->
   vcenter(rm(name) | hspace(name_width)) 
   & vcenter(rm(" = ")) & rm(value) & hfill();
 
+// Reference
+reference_value (ref, value) -> 
+  vcenter(rm(ref & ": ")) & value & hfill();
+
+// Collapsed Reference
+collapsed_reference_value (...) -> 
+  collapsed_simple_value (...);
+
 // The entire box
 display_box (title, value) -> 
   shadow(frame(title | hrule() | hwhite () | value));
