@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-05-15" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-05-20" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -1057,7 +1057,8 @@ The program stops as soon as a breakpoint is reached.  The current
 execution position is highlighted by an arrow.
 .PP
 You can interrupt a running program any time by clicking the
-`\fBInterrupt\fR' button or typing \fBCtrl+G\fR in a \s-2@DDD@\s+2 window.
+`\fBInterrupt\fR' button or typing \fBCtrl+G\fR in a \s-2@DDD@\s+2
+window.
 .\"
 .\"
 .SS "Resuming Execution"
@@ -2101,10 +2102,11 @@ It is safe to type the interrupt character at any time because the
 debugger does not allow it to take effect until a time when it is
 safe.
 .PP
-In case an ordinary interrupt does not succeed, you can also use an 
-abort (\fBCtrl+\\\fR or \fBAbort\fR), which sends a \s-2QUIT\s+2 signal
-to the inferior debugger.  Use this in emergencies only; the inferior
-debugger may be left inconsistent after a \s-2QUIT\s+2 signal.
+In case an ordinary interrupt does not succeed, you can also use an
+abort (\fBCtrl+\\\fR or \fBAbort\fR), which sends a \s-2QUIT\s+2
+signal to the inferior debugger.  Use this in emergencies only; the
+inferior debugger may be left inconsistent or even exit after a
+\s-2QUIT\s+2 signal.
 .PP
 As a last resort\(em\&if \s-2@DDD@\s+2 hangs, for example\(em\&, you
 may also interrupt \s-2@DDD@\s+2 itself using an interrupt signal
