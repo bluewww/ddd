@@ -961,6 +961,6 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 // Background processing
 //-----------------------------------------------------------------------------
 
-static bool nop(int ignore) { return false; }
+static bool nop(int) { return false; }
 
 bool (*DispValue::background)(int processed) = nop;
