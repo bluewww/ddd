@@ -111,6 +111,8 @@ DDD 3.1.7 fixes a number of minor bugs.
 - [DBX] The array syntax `graph display [A..B]' works again for DBX.
 - [DBX] Redirection to the execution window with Sun DBX 4.0 no 
   longer clutters program arguments.
+- [Perl] Selecting identifiers that represent large data structures no longer
+  blocks DDD.
 - [JDB] Thread names with dashes are handled correctly.
 - [HP-UX] Renaming the `~/.ddd/init' file during saving options works.
 - [Build] New `libiberty' and `configure' packages from GDB 4.18.

@@ -462,8 +462,11 @@ void clear_value_cache()
     value_cache = empty;
 }
 
-string gdbValue(const string& expr)
+string gdbValue(const string& expr, string print_command)
 {
+    if (print_command == "")
+	print_command = gdb->print_command(expr);
+
     if (undo_buffer.showing_earlier_state())
 	return NO_GDB_ANSWER;	// We don't know about earlier values
 
@@ -471,8 +474,8 @@ string gdbValue(const string& expr)
     if (value == NO_GDB_ANSWER)
     {
 	// Lookup cache
-	if (value_cache.has(expr))
-	    value = value_cache[expr];
+	if (value_cache.has(print_command))
+	    value = value_cache[print_command];
     }
 
     if (value == NO_GDB_ANSWER)
@@ -480,7 +483,7 @@ string gdbValue(const string& expr)
 	// Ask debugger for value.  In case of secondary prompts, use
 	// the default choice.
 	gdb->removeHandler(ReplyRequired, gdb_selectHP);
-	value = gdb_question(gdb->print_command(expr), help_timeout);
+	value = gdb_question(print_command, help_timeout);
 	if (value != NO_GDB_ANSWER)
 	    gdb->munch_value(value, expr);
 	gdb->addHandler(ReplyRequired, gdb_selectHP);
@@ -489,7 +492,7 @@ string gdbValue(const string& expr)
     }
 
     if (value != NO_GDB_ANSWER)
-	value_cache[expr] = value;
+	value_cache[print_command] = value;
 
     return value;
 }
