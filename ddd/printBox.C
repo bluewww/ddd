@@ -142,7 +142,7 @@ void Box::_printHeader(std::ostream& os,
 {
     if (gc.isPostScript())
     {
-	epsHeader(os, region, (PostScriptPrintGC &)gc);
+	epsHeader(os, region, (const PostScriptPrintGC &)gc);
 	os << prolog;
     }
     else if (gc.isFig())
