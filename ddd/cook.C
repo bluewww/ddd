@@ -61,8 +61,8 @@ string _cook(const string& raw, bool for_postscript)
 	    cooked << "\\b";
 	    break;
 
-#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
-	case '\e':
+#if 0				// This encoding is not ISO C
+	case '\033':
 	    cooked << "\\e";
 	    break;
 #endif
@@ -210,12 +210,10 @@ string uncook(const string& cooked)
 		i++;
 		break;
 
-#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
-	    case 'e':
-		uncooked << '\e';
+	    case 'e':		// GNU C extension
+		uncooked << '\033';
 		i++;
 		break;
-#endif
 
 	    case 'f':
 		uncooked << '\f';
