@@ -1490,6 +1490,12 @@ void user_cmdOAC(void *data)
 	cmd_data->user_callback(cmd_data->user_answer, cmd_data->user_data);
     }
 
+    if (gdb->type() == JDB)
+    {
+	// Get a current program info to update the `recent files' list
+	ProgramInfo info;
+    }
+
     delete cmd_data;
 
     if (do_prompt)

@@ -227,22 +227,23 @@ void load_history(const string& file)
 
 	while (is)
 	{
-	    char line[BUFSIZ];
-	    line[0] = '\0';
+	    char _line[BUFSIZ];
+	    _line[0] = '\0';
 
-	    is.getline(line, sizeof(line));
-	    if (line[0] != '\0')
+	    is.getline(_line, sizeof(_line));
+	    if (_line[0] != '\0')
 	    {
+		string line(_line);
+
 		bool added = false;
-		if (is_file_cmd(line, gdb) && line[0] != '#')
+		if (is_file_cmd(line, gdb) && line != "# reset")
 		{
 		    if (first_command)
 			first_is_file = true;
 
 		    if (get_files)
 		    {
-			string arg = line;
-			arg = arg.after(rxwhite);
+			string arg = line.after(rxwhite);
 			add_to_recent(arg);
 			added = first_is_file;
 		    }
@@ -255,7 +256,7 @@ void load_history(const string& file)
 			first_is_file = false;
 		}
 
-		if (!added)
+		if (!added && line[0] != '#')
 		{
 		    gdb_history += line;
 		    add_to_arguments(line);

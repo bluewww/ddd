@@ -694,6 +694,7 @@ ProgramInfo::ProgramInfo()
 	// Just use the current class
 	file = source_view->line_of_cursor();
 	file = file.before(":");
+	core = "";
 	break;
     }
 
