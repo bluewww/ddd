@@ -2199,7 +2199,8 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
     }
 
     // Untabify current source, using the current tab width
-    untabify(current_source, tab_width, indent_amount(source_text_w));
+    untabify_if_needed(current_source, tab_width, 
+		       indent_amount(source_text_w));
 
     // Setup global parameters
 
@@ -2919,8 +2920,7 @@ string SourceView::get_word_at_pos(Widget text_w,
 	&& startpos < endpos)
 	word = text.at(int(startpos), int(endpos - startpos));
 
-    read_leading_blanks(word);
-    strip_final_blanks(word);
+    strip_space(word);
 
     return word;
 }
@@ -3581,7 +3581,7 @@ void SourceView::process_info_bp (string& info_output,
 #endif
 		if (info_output.contains(rxprocess2, 0))
 		    info_output = info_output.after(':');
-		read_leading_blanks(info_output);
+		strip_leading_space(info_output);
 		    
 		if (!info_output.contains('(', 0)
 		    && !info_output.contains('[', 0))
@@ -3913,7 +3913,7 @@ void SourceView::lookup(string s, bool silent)
 
 void SourceView::process_pwd(string& pwd_output)
 {
-    strip_final_blanks(pwd_output);
+    strip_trailing_space(pwd_output);
 
     while (pwd_output != "")
     {
@@ -3960,8 +3960,7 @@ void SourceView::process_pwd(string& pwd_output)
 
 void SourceView::process_use(string& use_output)
 {
-    read_leading_blanks(use_output);
-    strip_final_blanks(use_output);
+    strip_space(use_output);
     current_class_path = use_output;
 
     clear_file_cache();
@@ -5472,7 +5471,7 @@ int SourceView::jdb_breakpoint(const string& bp_info)
 	return -1;		// no breakpoint
 
     string class_name = bp_info.before(colon);
-    read_leading_blanks(class_name);
+    strip_leading_space(class_name);
     int line = get_positive_nr(bp_info.after(colon));
     if (line <= 0 || class_name.contains(' '))
 	return -1;		// no breakpoint
@@ -5492,8 +5491,7 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     if (breakpoint_list_w == 0)
 	return;
 
-    read_leading_blanks(info_breakpoints_output);
-    strip_final_blanks(info_breakpoints_output);
+    strip_space(info_breakpoints_output);
     if (info_breakpoints_output == "")
     {
 	if (gdb->has_watch_command())
@@ -5997,7 +5995,7 @@ void SourceView::process_registers(string& register_output)
     for (int i = 0; i < count; i++)
     {
 	tabto(register_list[i], 26);
-	untabify(register_list[i]);
+	untabify_if_needed(register_list[i]);
 	selected[i] = false;
     }
 
@@ -6081,7 +6079,7 @@ void SourceView::process_threads(string& threads_output)
 	    selected[i] = thread_list[i].contains('*', 0);
 	    if (selected[i])
 		thread_list[i] = thread_list[i].after(0);
-	    read_leading_blanks(thread_list[i]);
+	    strip_leading_space(thread_list[i]);
 	    setup_where_line(thread_list[i]);
 	}
 	break;
@@ -6108,7 +6106,7 @@ void SourceView::process_threads(string& threads_output)
 		else
 		{
 		    current_threadgroup = item.after(" ");
-		    read_leading_blanks(current_threadgroup);
+		    strip_leading_space(current_threadgroup);
 		    current_threadgroup = current_threadgroup.before(":");
 		}
 	    }
@@ -6125,7 +6123,7 @@ void SourceView::process_threads(string& threads_output)
 		    // If is the current thread, select it
 		    string thread = item.after("(");
 		    thread = thread.after(" ");
-		    read_leading_blanks(thread);
+		    strip_leading_space(thread);
 
 		    if (thread.contains(current_thread + " ", 0))
 			selected[i] = true;
@@ -6259,7 +6257,7 @@ void SourceView::SelectThreadCB(Widget w, XtPointer, XtPointer)
 	    if (item.contains("Group ", 0))
 	    {
 		string threadgroup = item.after(" ");
-		read_leading_blanks(threadgroup);
+		strip_leading_space(threadgroup);
 		threadgroup = threadgroup.before(":");
 
 		if (threadgroup == current_threadgroup)
@@ -7369,8 +7367,7 @@ MString SourceView::help_on_bp(int bp_nr, bool detailed)
 	    info += rm(" (disabled");
 
 	string infos = bp->infos();
-	read_leading_blanks(infos);
-	strip_final_blanks(infos);
+	strip_space(infos);
 	infos.gsub("\n", "; ");
 
 	if (bp->infos() != "")
@@ -7797,7 +7794,7 @@ void SourceView::process_disassemble(const string& disassemble_output)
     for (int i = 0; i < count; i++)
     {
 	string& line = code_list[i];
-	untabify(line);
+	untabify_if_needed(line);
 	if (line.length() > 0 && line[0] == '0')
 	    line = replicate(' ', indent_amount(code_text_w)) + line;
 	indented_code += line + '\n';
