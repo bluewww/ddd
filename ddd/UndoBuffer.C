@@ -55,8 +55,11 @@ UndoBufferArray UndoBuffer::history;
 // Last position in history + 1
 int UndoBuffer::history_position = 0;
 
-// Number of commands we're currently undoing
+// Number of commands we still must undo
 int UndoBuffer::own_commands = 0;
+
+// Number of commands we have undone
+int UndoBuffer::own_processed = 0;
 
 // Direction we're currently working at
 int UndoBuffer::own_direction = 0;
@@ -158,7 +161,7 @@ void UndoBuffer::add_command(const string& command)
 
 	history_position++;
     }
-    else if (own_direction < 0)
+    else if (own_direction < 0 && own_processed == 0)
     {
 	// Called from undo => a `redo' command: add after current
 	//
@@ -190,8 +193,24 @@ void UndoBuffer::add_command(const string& command)
 	history = new_history;
 
 	history_position--;
+	own_processed++;
     }
-    else if (own_direction > 0)
+    else if (own_direction < 0 && own_processed > 0)
+    {
+	// Called from undo => another `redo' command; add to last
+	//
+	// BEFORE        AFTER
+	// -----------   -----------
+	//  entries...    entries...
+	// >state        >state
+	//  old_command   old_command + command
+	//  entries...    entries...
+
+	UndoBufferEntry& next_entry = history[history_position];
+	next_entry[UB_COMMAND] += '\n' + c;
+	own_processed++;
+    }
+    else if (own_direction > 0 && own_processed == 0)
     {
 	// Called from redo => an `undo' command: insert before current
 	//
@@ -223,6 +242,22 @@ void UndoBuffer::add_command(const string& command)
 	history = new_history;
 
 	history_position++;
+	own_processed++;
+    }
+    else if (own_direction > 0 && own_processed > 0)
+    {
+	// Called from redo => another `undo' command: add to previous
+	//
+	// BEFORE        AFTER
+	// -----------   -----------
+	//  entries...    entries...
+	//  old_command   old_command + command
+	// >state        >state
+	//  entries...    entries...
+
+	UndoBufferEntry& last_entry = history[history_position - 2];
+	last_entry[UB_COMMAND] += '\n' + c;
+	own_processed++;
     }
 
     log();
@@ -333,6 +368,19 @@ void UndoBuffer::CommandDone(const string &answer, void *)
 
 void UndoBuffer::ExtraDone(void *)
 {
+    if (own_processed == 0)
+    {
+	// Command had no effect on history.  Leave it unchanged.
+	if (own_direction < 0)
+	{
+	    add_command(history[history_position - 2][UB_COMMAND]);
+	}
+	else
+	{
+	    add_command(history[history_position][UB_COMMAND]);
+	}
+    }
+
     // Command is done, and all extra commands, too.
     own_commands--;
 }
@@ -341,6 +389,8 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
 {
     // Process command
     string cmd = entry[UB_COMMAND];
+
+    own_processed = 0;
 
     while (cmd != "")
     {

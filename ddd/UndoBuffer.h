@@ -53,9 +53,31 @@ class UndoBuffer {
 
 private:
     static UndoBufferArray history;
-
-    // Last position in history + 1
     static int history_position;
+
+    // General scheme:
+    //
+    // History
+    // -------
+    //
+    // `history' contains:
+    //
+    // 0                       \
+    // 1                        > entries (state or commands) to be undone
+    // ...                     /
+    // (history_position - 1)     current entry; always state
+    // ...                     \
+    // ...                      > entries (state or commands) to be redone
+    // (history.size() - 1)    /
+    //
+    //
+    // Entries
+    // -------
+    //
+    // An entry is either a STATE (command == false) or a COMMAND
+    // (otherwise).  A command is to be executed when reached; a state
+    // is to be restored when reached.  STATES are distinguished in
+    // execution states and non-execution states (lookups).
 
     // True if position history is to stay unchanged
     static bool locked;
@@ -66,7 +88,9 @@ private:
 
     // Count undoing commands
     static int own_commands;
+    static int own_processed;
     static int own_direction;
+
     static void CommandDone(const string &, void *);
     static void ExtraDone(void *);
 
