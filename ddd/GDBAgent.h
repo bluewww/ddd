@@ -151,6 +151,7 @@ private:
     bool _has_where_h_option;
     bool _has_display_command;
     bool _has_clear_command;
+    bool _has_handler_command;
     bool _has_pwd_command;
     bool _has_setenv_command;
     bool _has_edit_command;
@@ -284,6 +285,10 @@ public:
     bool has_clear_command() const     { return _has_clear_command; }
     bool has_clear_command(bool val)   { return _has_clear_command = val; }
 
+    // True if debugger has `handler' command
+    bool has_handler_command() const   { return _has_handler_command; }
+    bool has_handler_command(bool val) { return _has_handler_command = val; }
+
     // True if debugger has `pwd' command
     bool has_pwd_command() const       { return _has_pwd_command; }
     bool has_pwd_command(bool val)     { return _has_pwd_command = val; }
@@ -337,6 +342,28 @@ public:
     }
     ProgramLanguage program_language(string text);
 
+    // True if debugger can enable breakpoints
+    bool has_enable_command() const
+    { 
+	return type() == GDB || type() == XDB || has_handler_command();
+    }
+    bool has_disable_command() const
+    {
+	return has_enable_command();
+    }
+
+    // True if debugger can set ignore counts on breakpoints
+    bool has_ignore_command() const
+    {
+	return type() == GDB || type() == XDB || has_handler_command();
+    }
+
+    // True if debugger can set conditions on breakpoints
+    bool has_condition_command() const
+    {
+	return type() == GDB;
+    }
+
     // True if debugger dialog is traced on clog
     bool trace_dialog() const    { return _trace_dialog; }
     bool trace_dialog(bool val);
@@ -367,6 +394,16 @@ public:
     string make_command(string target) const;       // GDB: "make TARGET"
     string jump_command(string pc) const;           // GDB: "jump PC"
     string kill_command() const;                    // GDB: "kill"
+    string enable_command(string bp = "") const;    // GDB: "enable BP"
+    string disable_command(string bp = "") const;   // GDB: "disable BP"
+    string delete_command(string bp = "") const;    // GDB: "delete BP"
+    string ignore_command(string bp, int count) const; 
+                                                    // GDB: "ignore BP COUNT"
+    string condition_command(string bp, string expr) const; 
+				                    // GDB: "cond BP EXPR"
+    string shell_command(string cmd) const;	    // GDB: "shell CMD"
+
+    // Default history file
     string history_file() const;                    // GDB: "~/.gdb_history"
 
     // Send DATA to process

@@ -97,6 +97,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_where_h_option(false),
       _has_display_command(tp == GDB || tp == DBX),
       _has_clear_command(tp == GDB || tp == DBX),
+      _has_handler_command(false),
       _has_pwd_command(tp == GDB || tp == DBX),
       _has_setenv_command(tp == DBX),
       _has_edit_command(tp == DBX),
@@ -153,6 +154,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_where_h_option(gdb.has_where_h_option()),
       _has_display_command(gdb.has_display_command()),
       _has_clear_command(gdb.has_clear_command()),
+      _has_handler_command(gdb.has_handler_command()),
       _has_pwd_command(gdb.has_pwd_command()),
       _has_setenv_command(gdb.has_setenv_command()),
       _has_edit_command(gdb.has_edit_command()),
@@ -644,8 +646,28 @@ void GDBAgent::cut_off_prompt(string& answer)
 // Strip annoying DBX comments
 void GDBAgent::strip_dbx_comments(string& s)
 {
-    // These problems occur in Sun DBX 3.x only.
-    if (!has_print_r_option() || verbatim())
+    if (type() == DBX)
+    {
+	// Weed out annoying DBX warnings like
+	// `WARNING: terminal cannot clear to end of line'
+	for (;;)
+	{
+	    int warning = s.index("WARNING: terminal cannot ");
+	    if (warning < 0)
+		break;
+	    int eol = s.index('\n', warning) + 1;
+	    if (eol <= 0)
+		eol = s.length();
+	    s(warning, eol - warning) = "";
+	}
+    }
+
+    // If we're verbatim, leave output unchanged.
+    if (verbatim())
+	return;
+
+    // All remaining problems occur in Sun DBX 3.x only.
+    if (!has_print_r_option())
 	return;
 
     if (s.contains('/'))
@@ -970,6 +992,8 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	if (!gdb->ends_with_prompt(answer))
 	{
             // Received only part of the answer
+	    gdb->strip_control(answer);
+	    gdb->strip_dbx_comments(answer);
 	    if (gdb->_on_answer != 0)
 		gdb->_on_answer (answer, gdb->_user_data);
 	}
@@ -1444,6 +1468,127 @@ string GDBAgent::whatis_command(string text) const
 	return "p " + text + "\\T";
     }
 
+    return "";			// Never reached
+}
+
+// Enable breakpoint BP
+string GDBAgent::enable_command(string bp) const
+{
+    if (bp != "")
+	bp.prepend(' ');
+
+    switch (type())
+    {
+    case GDB:
+	return "enable" + bp;
+
+    case DBX:
+	if (has_handler_command())
+	    return "handler -enable" + bp;
+	else
+	    return "";
+
+    case XDB:
+	return "ab" + bp;
+    }
+
+    return "";			// Never reached
+}
+
+// Disable breakpoint BP
+string GDBAgent::disable_command(string bp) const
+{
+    if (bp != "")
+	bp.prepend(' ');
+
+    switch (type())
+    {
+    case GDB:
+	return "disable" + bp;
+
+    case DBX:
+	if (has_handler_command())
+	    return "handler -disable" + bp;
+	else
+	    return "";
+
+    case XDB:
+	return "sb" + bp;
+    }
+
+    return "";			// Never reached
+}
+
+// Delete breakpoint BP
+string GDBAgent::delete_command(string bp) const
+{
+    if (bp != "")
+	bp.prepend(' ');
+
+    switch (type())
+    {
+    case DBX:
+    case GDB:
+	return "delete" + bp;
+
+    case XDB:
+	return "db" + bp;
+    }
+
+    return "";			// Never reached
+}
+
+// Set ignore count of breakpoint BP to COUNT
+string GDBAgent::ignore_command(string bp, int count) const
+{
+    switch (type())
+    {
+    case GDB:
+	return "ignore " + bp + " " + itostring(count);
+
+    case DBX:
+	if (has_handler_command())
+	    return "handler -count " + bp + " " + itostring(count);
+	else
+	    return "";
+
+    case XDB:
+	return "bc " + bp + " " + itostring(count);
+    }
+
+    return "";			// Never reached
+}
+
+// Set condition of breakpoint BP to EXPR
+string GDBAgent::condition_command(string bp, string expr) const
+{
+    switch (type())
+    {
+    case GDB:
+	return "condition " + bp + " " + expr;
+
+    case DBX:
+    case XDB:
+	return "";		// FIXME
+    }
+
+    return "";			// Never reached
+}
+
+// Return shell escape command
+string GDBAgent::shell_command(string cmd) const
+{
+    switch (type())
+    {
+    case GDB:
+	return "shell " + cmd;
+
+    case DBX:
+	return "sh " + cmd;
+
+    case XDB:
+	return "!" + cmd;
+    }
     return "";			// Never reached
 }
 
