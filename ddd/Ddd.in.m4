@@ -6029,6 +6029,7 @@ ITEM click on LBL(Resume) to resume execution of the selected threads.
 Ddd*history_dialog_popup.title:		    DDD: Command History
 Ddd*history_dialog.listLabelString:	    Command History
 Ddd*history_dialog*visibleItemCount:	    10
+Ddd*history_dialog.cancelLabelString:	    Close
 
 Ddd*history_dialog*helpString:	    \
 WIDGET(Command History)\n\
