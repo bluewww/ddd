@@ -3,7 +3,7 @@
 # Create DDD release-of-the-day.  
 
 # Copyright (C) 1997-1999 Technische Universitaet Braunschweig, Germany.
-# Copyright (C) 2000 Universitaet Passau, Germany.
+# Copyright (C) 2000-2001 Universitaet Passau, Germany.
 # Written by Andreas Zeller <zeller@gnu.org>.
 # 
 # This file is part of DDD.
@@ -149,8 +149,7 @@ automake --gnu --add-missing --copy --verbose
 (cd termcap && autoconf)
 
 # Configure the package.
-sh ./configure -v \
---with-motif-includes=/public/include --with-motif-libraries=/public/lib
+sh ./configure -v
 
 # Build libraries.
 (cd libiberty && test -f Makefile && make)
