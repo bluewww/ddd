@@ -204,7 +204,7 @@ extern "C" {
 
 // Open master side of pty.
 // Depending on the host features, we try a large variety of possibilities.
-int TTYAgent::open_master()
+void TTYAgent::open_master()
 {
     char *line;
     struct stat sb;
@@ -224,7 +224,7 @@ int TTYAgent::open_master()
 	{
 	    _master_tty  = master_line;
 	    _slave_tty   = slave_line;
-	    return master;
+	    return;
 	}
 
 	close(master);
@@ -232,16 +232,21 @@ int TTYAgent::open_master()
 #endif
 
 #ifdef HAVE__GETPTY
-    // _getpty() - an SGI feature
-    line = _getpty(&master, O_RDWR, 0600, 0);
+    // _getpty() - an SGI/IRIX feature
+    line = _getpty(&master, O_RDWR | O_NDELAY, 0600, 0);
     if (line != 0 && master >= 0)
     {
 	// Verify slave side is usable
 	if (access(line, R_OK | W_OK) == 0)
 	{
-	    _master_tty  = ttyname(master);
+	    char *t = ttyname(master);
+	    if (t)
+		_master_tty = t;
 	    _slave_tty   = line;
-	    return master;
+
+	    // SGI/IRIX requires that the slave be opened in the child process
+	    open_slave();
+	    return;
 	}
 	close(master);
     }
@@ -267,7 +272,7 @@ int TTYAgent::open_master()
 		    sprintf(buffer, "/dev/ttyq%d", ptynum);
 		    _slave_tty = buffer;
 #endif
-		    return master;
+		    return;
 		}
 	    }
 	    close(master);
@@ -297,7 +302,7 @@ int TTYAgent::open_master()
 		ioctl(master, TIOCFLUSH, (char *)0);
 #endif
 		push = true;
-		return master;
+		return;
 	    }
 
 	    close(master);
@@ -334,7 +339,7 @@ int TTYAgent::open_master()
 
 		_master_tty = pty;
 		_slave_tty  = tty;
-		return master;
+		return;
 	    }
 	}
     }
@@ -363,7 +368,7 @@ int TTYAgent::open_master()
 
 		    _master_tty = pty;
 		    _slave_tty  = tty;
-		    return master;
+		    return;
 		}
 	    }
     }
@@ -387,25 +392,23 @@ int TTYAgent::open_master()
 
 		_master_tty = pty;
 		_slave_tty  = tty;
-		return master;
+		return;
 	    }
 	}
 
     _raiseIOMsg("cannot open master pty");
-    return -1;
+    return;
 }
 
 
 // Open slave side of the pty.  The slave pty name has been set
 // in slave_tty by open_master.
-int TTYAgent::open_slave()
+void TTYAgent::open_slave()
 {
-    int slave;
-
     if ((slave = open((char *)slave_tty(), O_RDWR)) < 0)
     {
 	_raiseIOMsg("cannot open " + slave_tty());
-	return -1;
+	return;
     }
 
 #ifdef I_PUSH
@@ -421,13 +424,13 @@ int TTYAgent::open_slave()
     }
 #endif // I_PUSH
 
-    return slave;
+    return;
 }
 
 
 int TTYAgent::setupCommunication()
 {
-    master = open_master();
+    open_master();
     if (master < 0)
 	return -1;
 
@@ -518,9 +521,12 @@ int TTYAgent::setupChildCommunication()
     if (result < 0)
 	_raiseIOMsg("cannot create new process group");
 
+    if (slave < 0)
+    {
+	// Open slave such that it becomes the controlling terminal.
+	open_slave();
+    }
 
-    // Open slave such that it becomes the controlling terminal.
-    int slave = open_slave();
     if (slave < 0)
 	return -1;
 

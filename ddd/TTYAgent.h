@@ -41,13 +41,14 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    string _master_tty;  // master side of terminal
-    string _slave_tty;   // slave side of terminal
-    int master;		 // master file descriptor
-    bool push;           // true if extra devices must be pushed
+    string _master_tty;   // master side of terminal
+    string _slave_tty;    // slave side of terminal
+    int master;		  // master file descriptor
+    int slave;		  // slave file descriptor
+    bool push;            // true if extra devices must be pushed
 
-    int open_master();   // find and open master tty
-    int open_slave();	 // open slave tty 
+    void open_master();   // find and open master tty
+    void open_slave();	  // open slave tty 
 
 protected:
     // hooks for alternative communication schemes
@@ -60,7 +61,7 @@ public:
     TTYAgent(XtAppContext app_context, char *pth,
 	     unsigned nTypes = TTYAgent_NTypes):
         LiterateAgent(app_context, pth, nTypes),
-	master(-1),
+	master(-1), slave(-1),
 	push(false)
     {}
 
@@ -68,14 +69,14 @@ public:
 	     FILE *out = stdout, FILE *err = 0, 
 	     unsigned nTypes = TTYAgent_NTypes):
         LiterateAgent(app_context, in, out, err, nTypes),
-	master(-1),
+	master(-1), slave(-1),
 	push(false)
     {}
 
     TTYAgent(XtAppContext app_context, bool dummy,
 	     unsigned nTypes = TTYAgent_NTypes):
         LiterateAgent(app_context, dummy, nTypes),
-	master(-1),
+	master(-1), slave(-1),
 	push(false)
     {}
 
