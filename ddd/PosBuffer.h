@@ -53,6 +53,9 @@ class PosBuffer {
     string pc_buffer;
     ReadState already_read;
 
+    bool started;		// Program has started
+    bool recompiled;		// Program has been recompiled
+
 public:
     // Constructor
     PosBuffer () :
@@ -60,7 +63,9 @@ public:
 	func_buffer(""),
 	answer_buffer(""),
 	pc_buffer(""),
-	already_read(Null)
+	already_read(Null),
+	started(false),
+	recompiled(false)
     {}
 
     // Filtert Positionsangabe aus answer (ein Antwortteil) heraus und
@@ -87,6 +92,10 @@ public:
     const string& get_function () const { return func_buffer; }
     const string& get_pc ()       const { return pc_buffer; }
 
+    // Other properties
+    bool started_found()    const { return started; }
+    bool recompiled_found() const { return recompiled; }
+
     // Aufrufen bevor neue Antwort gefiltert wird!
     //
     void clear ()
@@ -96,8 +105,9 @@ public:
 	answer_buffer = "";
 	pc_buffer     = "";
 	already_read  = Null;
+	started       = false;
+	recompiled    = false;
     }
-
 };
 
 #endif

@@ -66,10 +66,35 @@ static void filter_line(string& answer, int line)
 
 void PosBuffer::filter (string& answer)
 {
-    // If gdb prints a "Current function" line, it overrides whatever
-    // came before (e.g. "stopped in").
-    if (gdb->type() == GDB && answer.contains("Current function is "))
-	already_read = Null;
+    if (gdb->type() == GDB)
+    {
+	// If gdb prints a "Current function" line, it overrides whatever
+	// came before (e.g. "stopped in").
+
+	int index;
+	index = answer.index("Current function is ");
+	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	    already_read = Null;
+
+	index = answer.index("Starting program: ");
+	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	    started = true;
+
+	index = answer.index("has changed; re-reading symbols");
+	if (index > 0)
+	    recompiled = true;
+    }
+    else if (gdb->type() == DBX)
+    {
+	int index;
+	index = answer.index("Running: ");
+	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	    started = true;
+
+	index = answer.index("has been recompiled");
+	if (index > 0)
+	    recompiled = true;
+    }
 
     // Positionsangabe abfangen und puffern, Rest zurueckgeben
     switch (already_read) {
