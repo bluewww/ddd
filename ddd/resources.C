@@ -286,7 +286,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, vsl_path),
 	XtRString, 
-	XtPointer(".")
+	XtPointer("user_themes:ddd_themes:.")
     },
 
     { 
