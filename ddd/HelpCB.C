@@ -934,10 +934,18 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
 	    while (has_header(text, source))
 	    {
-		// Header line: strip line and surrounding blanks
+		// Header line: strip line and surrounding blanks.
+		// At least using GNU nroff, each header line
+		// has three blank lines before and two afterwards.
 		if (target > 0)
 		    target--;
-		while (target >= 0 && text[target] == '\n')
+		if (target >= 0 && text[target] == '\n')
+		    target--;
+		if (target >= 0 && text[target] == '\n')
+		    target--;
+		if (target >= 0 && text[target] == '\n')
+		    target--;
+		if (target >= 0 && text[target] == '\n')
 		    target--;
 		target++;
 		if (target > 0)
@@ -945,15 +953,19 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
 		while (text[source] != '\n')
 		    source++;
-		while (text[source] == '\n')
+		if (text[source] == '\n')
+		    source++;
+		if (text[source] == '\n')
+		    source++;
+		if (text[source] == '\n')
 		    source++;
 	    }
 	    if (text[source] == '\0')
 		break;
 
 	    text[target++] = text[source++];
-
 	}
+
 	text[target] = '\0';
 	len = target;
 	while (target < int(the_text.length()))
