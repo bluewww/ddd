@@ -2,6 +2,7 @@
 // Panned Graph Editor (private part)
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -54,7 +55,7 @@ typedef struct {
     XtPointer extension;
 } PannedGraphEditClassPart;
 
-typedef struct _GraphEditClassRec {
+typedef struct _PannedGraphEditClassRec {
     CoreClassPart              core_class;
     CompositeClassPart         composite_class;
     PortholeClassPart          porthole_class;
