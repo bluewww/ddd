@@ -64,5 +64,9 @@ inline MString sl(const string& text) { return MString(text, CHARSET_SL); }
 inline MString bf(const string& text) { return MString(text, CHARSET_BF); }
 inline MString bs(const string& text) { return MString(text, CHARSET_BS); }
 
+// Newline function
+inline MString cr() { return MString(XmStringSeparatorCreate(), true); }
+
+
 #endif // _DDD_charsets_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
