@@ -1,13 +1,13 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 1.3b
---------
+DDD 1.3b (NOT YET RELEASED)
+---------------------------
 
     Bug fix release.
 
     - More minor troubles with GCC 2.7.0 on certain architectures fixed.
-    - DDD can now be properly interrupted using the SIGINT signal.
+    - DDD can now be interrupted using the SIGINT signal.
 
 
 DDD 1.3a
