@@ -1,12 +1,12 @@
 /* XPM */
 static char * findbwd_xpm[] = {
 "29 25 6 1",
-" 	c none   m none   s Background",
-"#	c grey25 m black",
-"X	c black  m black",
-"_	c white  m white",
-"o	c grey50 m black",
-".	c grey75 m white",
+" 	c none   g none   m none   s Background",
+"#	c grey25 g grey25 m black",
+"X	c black  g black  m black",
+"_	c white  g white  m white",
+"o	c grey50 g grey50 m black",
+".	c grey75 g grey75 m white",
 "       XXXXXo    XXXXXo      ",
 "       X_.#Xo    X_.#Xo      ",
 "       XXXXXo    XXXXXo      ",

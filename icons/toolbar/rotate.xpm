@@ -1,13 +1,10 @@
 /* XPM */
 static char * rotate_xpm[] = {
-"29 25 7 1",
-" 	c none   m none   s Background",
-"#	c black  m black",
-"X	c black  m black",
-"_	c white  m white",
-"o	c grey50 m black",
-"O	c grey50 m white",
-".	c grey75 m white",
+"29 25 4 1",
+" 	c none   g none   m none   s Background",
+"#	c blue   g black  m black",
+"X	c black  g black  m black",
+"O	c grey50 g grey50 m white",
 "                             ",
 "                             ",
 "           OO###O            ",

@@ -1,11 +1,11 @@
 /* XPM */
 static char * hide_xpm[] = {
 "29 25 5 1",
-" 	c none   m none   s Background",
-"X	c black  m black",
-"_	c white  m white",
-"o	c grey50 m white",
-"O	c black  m black",
+" 	c none   g none   m none   s Background",
+"X	c black  g black  m black",
+"_	c white  g white  m white",
+"o	c grey50 g grey50 m white",
+"O	c blue   g black  m black",
 "         XXXXXX              ",
 "       XXX____XXX            ",
 "      XX________XX           ",
