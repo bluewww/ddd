@@ -140,7 +140,7 @@ extern "C" {
     int getpty(char *line, char *sline, int mode);
 #endif
 #if defined(HAVE__GETPTY) && !defined(HAVE__GETPTY_DECL) && !defined(_getpty)
-    char *_getpty(int *fd, int mode, int prot, int nofork);
+    char *_getpty(int *fildes, int oflag, mode_t mode, int nofork);
 #endif
 #if defined(HAVE_SETSID) && !defined(HAVE_SETSID_DECL) && !defined(setsid)
     pid_t setsid(void);
@@ -200,8 +200,6 @@ extern "C" {
 #define O_APPEND FAPPEND
 #endif
 
-
-
 // Open master side of pty.
 // Depending on the host features, we try a large variety of possibilities.
 void TTYAgent::open_master()
@@ -233,7 +231,7 @@ void TTYAgent::open_master()
 
 #ifdef HAVE__GETPTY
     // _getpty() - an SGI/IRIX feature
-    line = _getpty(&master, O_RDWR | O_NDELAY, 0600, 0);
+    line = _getpty(&master, O_RDWR, 0600, 0);
     if (line != 0 && master >= 0)
     {
 	// Verify slave side is usable
@@ -243,9 +241,6 @@ void TTYAgent::open_master()
 	    if (t)
 		_master_tty = t;
 	    _slave_tty   = line;
-
-	    // SGI/IRIX requires that the slave be opened in the child process
-	    open_slave();
 	    return;
 	}
 	close(master);
@@ -555,6 +550,9 @@ int TTYAgent::setupChildCommunication()
 #ifdef ISIG
 	settings.c_lflag |= ISIG;       // Enable signals
 #endif
+#ifdef OPOST
+	settings.c_oflag &= ~OPOST;     // Do not process output data
+#endif
 #ifdef ONLCR
 	settings.c_oflag &= ~ONLCR;     // Do not map NL to CR-NL on output
 #endif
@@ -594,6 +592,9 @@ int TTYAgent::setupChildCommunication()
 	settings.c_lflag &= ~ECHO;      // No echo
 #ifdef ISIG
 	settings.c_lflag |= ISIG;       // Enable signals
+#endif
+#ifdef OPOST
+	settings.c_oflag &= ~OPOST;     // Do not process output data
 #endif
 #ifdef ONLCR
 	settings.c_oflag &= ~ONLCR;	// Do not map NL to CR-NL on output
