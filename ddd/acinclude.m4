@@ -720,42 +720,44 @@ AC_DEFINE(HAVE_ANSI_LIFETIME_OF_TEMPORARIES)
 fi
 ])dnl
 dnl
-dnl ICE_OSTRSTREAM_PCOUNT_INCLUDES_NUL
-dnl ---------------------------------
+dnl ICE_OSTRSTREAM_PCOUNT_BROKEN
+dnl ----------------------------------
 dnl
-dnl If the C++ ostrstream::pcount() function includes the terminating
-dnl NUL character (as SGI CC does), define `OSTRSTREAM_PCOUNT_INCLUDES_NUL'.
+dnl If the C++ ostrstream::pcount() is increased by one after calling
+dnl ostrstream::str() (as in the SGI C++ I/O library), 
+dnl define `OSTRSTREAM_PCOUNT_BROKEN'.
 dnl
-AC_DEFUN(ICE_OSTRSTREAM_PCOUNT_INCLUDES_NUL,
+AC_DEFUN(ICE_OSTRSTREAM_PCOUNT_BROKEN,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ostrstream::pcount() includes the final NUL character)
-AC_CACHE_VAL(ice_cv_ostrstream_pcount_includes_nul,
+AC_MSG_CHECKING(whether ostrstream::pcount() is broken)
+AC_CACHE_VAL(ice_cv_ostrstream_pcount_broken,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 AC_TRY_RUN(
 [
-// This program returns 0 if ostrstream::pcount() does not include
-// the terminating NUL character, and 1 otherwise.
+// Returns 1 if ostrstream::pcount() is broken; 0, otherwise.
+#include <iostream.h>
 #include <strstream.h>
 
 int main() 
 {
     ostrstream os;
-    os << 'a';
+    os << 'a';           // os.pcount() == 1.
+    char *s = os.str();  // In the SGI C++ I/O library, os.pcount() is now 2!
     return os.pcount() - 1;
 }
 ], 
-ice_cv_ostrstream_pcount_includes_nul=no,
-ice_cv_ostrstream_pcount_includes_nul=yes,
-ice_cv_ostrstream_pcount_includes_nul=no
+ice_cv_ostrstream_pcount_broken=no,
+ice_cv_ostrstream_pcount_broken=yes,
+ice_cv_ostrstream_pcount_broken=no
 )
 AC_LANG_RESTORE
 ])
-AC_MSG_RESULT($ice_cv_ostrstream_pcount_includes_nul)
-if test "$ice_cv_ostrstream_pcount_includes_nul" = yes; then
-AC_DEFINE(OSTRSTREAM_PCOUNT_INCLUDES_NUL)
+AC_MSG_RESULT($ice_cv_ostrstream_pcount_broken)
+if test "$ice_cv_ostrstream_pcount_broken" = yes; then
+AC_DEFINE(OSTRSTREAM_PCOUNT_BROKEN)
 fi
 ])dnl
 dnl

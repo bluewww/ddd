@@ -1032,7 +1032,11 @@ inline string& string::operator = (ostrstream& os)
 #endif
 
     const char *str = os.str();
-#if OSTRSTREAM_PCOUNT_INCLUDES_NUL
+#if OSTRSTREAM_PCOUNT_BROKEN
+    // In the SGI C++ I/O library, accessing os.str() *increases*
+    // os.pcount() by 1.  We could compensate this in a
+    // machine-independent way by fetching pcount() before str(), but
+    // this will cause trouble when os is assigned the next time.
     rep = string_Salloc(rep, str, os.pcount() - 1, os.pcount() - 1);
 #else
     rep = string_Salloc(rep, str, os.pcount(), os.pcount());
