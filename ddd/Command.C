@@ -60,6 +60,7 @@ char Command_rcsid[] =
 #include "TimeOut.h"
 #include "AppData.h"
 #include "disp-read.h"
+#include "regexps.h"
 
 #include <ctype.h>
 #include <string.h>
@@ -647,6 +648,15 @@ static XtIntervalId process_timeout = 0;
 
 static void gdb_enqueue_command(const Command& c)
 {
+    if (c.verbose)
+    {
+	string title = c.command;
+	if (title.contains(rxwhite))
+	    title = title.before(rxwhite);
+	title.capitalize();
+	set_status(title + ": waiting until " + gdb->title() + " gets ready");
+    }
+
     // Enqueue before first command with lower priority.  This
     // ensures that user commands are placed at the end.
     CommandQueueIter i(commandQueue);
