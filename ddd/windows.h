@@ -96,5 +96,8 @@ extern void StructureNotifyEH(Widget, XtPointer, XEvent *, Boolean *);
 // Save current tool shell offset in APP_DATA.
 extern void get_tool_offset();
 
+// Manage child with minimum size
+extern void manage_paned_child(Widget w);
+
 #endif // _DDD_windows_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -51,6 +51,7 @@ char windows_rcsid[] =
 
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
+#include <Xm/PanedW.h>
 #if XmVersion >= 1002
 #include <Xm/VendorS.h>		// XmIsMotifWMRunning()
 #else
@@ -708,7 +709,7 @@ void gdbCloseCommandWindowCB(Widget w, XtPointer, XtPointer)
 
 void gdbOpenCommandWindowCB(Widget, XtPointer, XtPointer)
 {
-    XtManageChild(XtParent(gdb_w));
+    manage_paned_child(XtParent(gdb_w));
 
     if (app_data.separate_source_window)
 	popup_shell(command_shell);
@@ -761,10 +762,10 @@ void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
 
 void gdbOpenSourceWindowCB(Widget, XtPointer, XtPointer)
 {
-    XtManageChild(source_view->source_form());
+    manage_paned_child(source_view->source_form());
     if (app_data.disassemble)
-	XtManageChild(source_view->code_form());
-    XtManageChild(XtParent(source_arg->widget()));
+	manage_paned_child(source_view->code_form());
+    manage_paned_child(XtParent(source_arg->widget()));
 
     popup_shell(source_view_shell);
     update_options();
@@ -811,8 +812,8 @@ void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
 
 void gdbOpenDataWindowCB(Widget, XtPointer, XtPointer)
 {
-    XtManageChild(data_disp->graph_cmd_w);
-    XtManageChild(data_disp->graph_form());
+    manage_paned_child(data_disp->graph_cmd_w);
+    manage_paned_child(data_disp->graph_form());
 
     popup_shell(data_disp_shell);
     update_options();
@@ -1126,3 +1127,31 @@ void get_tool_offset()
     app_data.tool_top_offset   = last_top_offset;
     app_data.tool_right_offset = last_right_offset;
 }
+
+
+
+// Manage paned child with minimum size
+
+const Dimension MIN_PANED_SIZE = 64;
+
+void manage_paned_child(Widget w)
+{
+    if (XtIsSubclass(XtParent(w), xmPanedWindowWidgetClass))
+    {
+	Dimension minimum = 1;
+	Dimension maximum = 1000;
+	XtVaGetValues(w, XmNpaneMinimum, &minimum, 
+		      XmNpaneMaximum, &maximum, NULL);
+
+	if (MIN_PANED_SIZE >= minimum && MIN_PANED_SIZE <= maximum)
+	{
+	    XtVaSetValues(w, XmNpaneMinimum, MIN_PANED_SIZE, NULL);
+	    XtManageChild(w);
+	    XtVaSetValues(w, XmNpaneMinimum, minimum, NULL);
+	    return;
+	}
+    }
+
+    XtManageChild(w);
+}
+    

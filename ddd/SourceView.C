@@ -7790,7 +7790,8 @@ void SourceView::set_disassemble(bool set)
 	}
 	else
 	{
-	    XtManageChild(code_form_w);
+	    manage_paned_child(code_form_w);
+
 	    if (last_execution_pc != "")
 		show_pc(last_execution_pc, XmHIGHLIGHT_SELECTED);
 	    else if (last_shown_pc != "")
