@@ -292,8 +292,8 @@ AC_CHECK_LIB(Xt, XtToolkitInitialize, XT_LIBS="-lXt",,
 if test "$XT_LIBS" = ""; then
 dnl Not having Xt is fatal.  Let the user fix this.
 AC_MSG_ERROR([The X toolkit library '-lXt' could not be found.
-                  Please use the configure options '--with-x-includes=DIR'
-                  and '--with-x-libraries=DIR' to specify the X location.
+                  Please use the configure options '--x-includes=DIR'
+                  and '--x-libraries=DIR' to specify the X location.
                   See the file 'config.log' for further diagnostics.])
 fi
 AC_SUBST(XT_LIBS)
