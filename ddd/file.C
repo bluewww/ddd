@@ -817,23 +817,20 @@ static bool valid_ps_line(const string& line, const string& ps_command)
     if (pid == 0)
 	return false;		// No PID
 
-    if (remote_gdb())
-	return true;		// No way to check these
+    // You don't want to debug DDD, don't you?
+    if (!remote_gdb() && pid == getpid())
+	return false;
 
-    if (kill(pid, 0))
-	return false;		// Cannot send signal - and thus not debug
-
-    if (pid == getpid())
-	return false;		// You don't want to debug DDD, don't you?
-
+    // Neither should you debug GDB by itself.
     if (pid == gdb->pid())
-	return false;		// Neither should you debug GDB by itself.
+	return false;
 
-    string ps = ps_command;	// Don't issue lines containing `ps'...
-    if (ps.contains(' '))	// ... or whatever the first word in
-	ps = ps.before(' ');	// ps_command is.
+    // Don't issue lines containing `ps' (or whatever the first word
+    // in PS_COMMAND is).
+    string ps = ps_command;
+    if (ps.contains(' '))
+	ps = ps.before(' ');
     ps = basename(ps);
-
     int index = line.index(ps);
     if (index > 0
 	&& (line[index - 1] == '/' || is_separator(line[index - 1]))
@@ -841,6 +838,7 @@ static bool valid_ps_line(const string& line, const string& ps_command)
 	    || is_separator(line[index + ps.length()])))
 	return false;
 
+    // Okay, just leave it
     return true;
 }
 
@@ -858,7 +856,7 @@ static void update_processes(Widget processes, bool keep_selection)
 	return;
     }
 
-    StringArray process_list;
+    StringArray all_process_list;
     int c;
     string line = "";
     bool first_line = true;
@@ -868,7 +866,7 @@ static void update_processes(Widget processes, bool keep_selection)
 	if (c == '\n')
 	{
 	    if (first_line || valid_ps_line(line, app_data.ps_command))
-		process_list += line;
+		all_process_list += line;
 #if 0
 	    else
 		clog << "Excluded: " << line << "\n";
@@ -892,10 +890,50 @@ static void update_processes(Widget processes, bool keep_selection)
     }
 
     pclose(fp);
-    sort(process_list);
+    sort(all_process_list);
+    DynIntArray pids(all_process_list.size());
 
-    bool *selected = new bool[process_list.size()];
+    // If GDB cannot send a signal to the process, we cannot debug it.
+    // Try a `kill -0' (via GDB, as it may be setuid) and filter out
+    // all processes in the `kill' diagnostic -- that is, all
+    // processes that `kill' could not send a signal.
+    string kill = "kill -0";
     int i;
+    for (i = 0; i < all_process_list.size(); i++)
+    {
+	pids[i] = ps_pid(all_process_list[i]);
+	if (pids[i])
+	    kill += string(" ") + itostring(pids[i]);
+    }
+    string kill_result = gdb_question(gdb->shell_command(kill));
+    i = 0;
+    while (i >= 0)
+    {
+	i = kill_result.index(rxint, i);
+	if (i >= 0)
+	{
+	    int bad_pid = atoi((char *)kill_result + i);
+	    for (int k = 0; k < all_process_list.size(); k++)
+	    {
+		if (pids[k] != 0 && pids[k] == bad_pid)
+		{
+#if 0
+		    clog << "Excluded: " << all_process_list[k] << "\n";
+#endif
+		    all_process_list[k] = NO_GDB_ANSWER;
+		}
+	    }
+	    i++;
+	}
+    }
+
+    StringArray process_list;
+    for (i = 0; i < all_process_list.size(); i++)
+	if (all_process_list[i] != NO_GDB_ANSWER)
+	    process_list += all_process_list[i];
+
+    // Now set the selection.
+    bool *selected = new bool[process_list.size()];
     for (i = 0; i < process_list.size(); i++)
 	selected[i] = false;
 
