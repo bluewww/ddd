@@ -236,7 +236,7 @@ ICE_CXX_LONG_LONG
 ICE_CXX_PRETTY_FUNCTION
 ICE_CXX_ARRAY_OPERATOR_NEW
 ICE_CXX_PLACEMENT_NEW
-ICE_CXX_LIFETIME_OF_TEMPORARIES
+dnl ICE_CXX_LIFETIME_OF_TEMPORARIES
 ICE_CXX_ISYSTEM
 ICE_CXX_NEW_CASTS
 ICE_CXX_ATTRIBUTE_NORETURN
@@ -789,7 +789,7 @@ dnl
 dnl These checks may require `-lstdc++' to link and run properly
 ice_save_LIBS="$LIBS"
 LIBS="$CXXLIBS $LIBS"
-ICE_CHECK_CORE_MAGIC
+dnl ICE_CHECK_CORE_MAGIC
 ICE_CHECK_PTRACE_DUMPCORE
 dnl ICE_CHECK_FREEZE_OSTRSTREAMBUF
 dnl ICE_CHECK_FROZEN_OSTRSTREAMBUF
@@ -1074,28 +1074,19 @@ dnl
 dnl 
 dnl Give some warnings
 dnl
-if test "$silent" != yes; then
-dnl
 if $risky_cc; then
-echo
-echo "configure: This $CXX version may not generate safe $DDD code."
-echo "Use GCC instead or continue at own risk."
+AC_MSG_WARN([This $CXX version may not generate safe $DDD code.
+Use GCC instead or continue at own risk.])
 fi
 dnl
 if $risky_lesstif; then
-echo
-echo "configure: This $DDD release requires LessTif 0.87 or later."
-echo "Upgrade to a recent LessTif version or continue at own risk."
-fi
-dnl
+AC_MSG_WARN([This $DDD release requires LessTif 0.87 or later.
+Upgrade to a recent LessTif version or continue at own risk.])
 fi
 dnl
 dnl Give an indication of what to do next.
 dnl
-if test "$silent" != yes; then
-echo
-echo "configure: configuration is done.  Type \`make' to make $DDD."
-echo "In case of trouble, please check the settings in the files generated"
-echo "by \`configure' - that is, \`ddd/config.h' and \`ddd/Makefile'."
-echo
-fi
+AC_MSG_NOTICE([
+configuration is done.  Type \`make' to make $DDD.
+In case of trouble, please check the settings in the files generated
+by \`configure' - that is, \`ddd/config.h' and \`ddd/Makefile'.])
