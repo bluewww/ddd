@@ -52,7 +52,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2001-01-15
+@set DATE 2001-01-17
 
 @c Index stuff
 @c Labels
@@ -3362,6 +3362,13 @@ debuggee output and thus enables interaction.  @xref{Using the Execution
 Window}, for details.
 @end defvr
 
+@defvr Resource contInterruptDelay (class InterruptDelay)
+The time (in ms) to wait before automatically interrupting a @samp{cont}
+command.  @DDD{} cannot interrupt a @samp{cont} command immediately,
+because this may disturb the status change of the process.  Default is
+@code{200}.
+@end defvr
+
 @defvr Resource displayTimeout (class DisplayTimeout)
 The time (in ms) to wait for the inferior debugger to finish a partial
 display information.  Default is @code{2000}.
@@ -3377,13 +3384,20 @@ The time (in seconds) to wait for the inferior debugger to reply.
 Default is @code{10}.
 @end defvr
 
+@defvr Resource runInterruptDelay (class InterruptDelay)
+The time (in ms) to wait before automatically interrupting a @samp{run}
+command.  @DDD{} cannot interrupt a @samp{cont} command immediately,
+because this may disturb process creation.  Default is @code{2000}.
+@end defvr
+
 @defvr Resource stopAndContinue (class StopAndContinue)
 @cindex Interrupting execution, automatically
 @cindex Execution, interrupting automatically
 If @samp{on} (default), debugger commands interrupt program execution,
 resuming execution after the command has completed.  This only happens
-if the last debugger command was either a `run' or a `continue' command.
-If @samp{off}, debugger commands do not interrupt program execution.
+if the last debugger command was either a @samp{run} or a
+@samp{continue} command.  If @samp{off}, debugger commands do not
+interrupt program execution.
 @end defvr
 
 @defvr Resource synchronousDebugger (class SynchronousDebugger)

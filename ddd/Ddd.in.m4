@@ -233,9 +233,6 @@ Ddd*blockTTYInput: auto
 Ddd*bufferGDBOutput: auto
 
 
-! Whether to interrupt running programs for debugger commands.
-Ddd*stopAndContinue: on
-
 ! The time (in seconds) to wait for synchronous GDB questions to complete
 Ddd*questionTimeout: 10
 
@@ -244,6 +241,20 @@ Ddd*positionTimeout: 500
 
 ! The time (in ms) to wait for GDB to finish a partial display information
 Ddd*displayTimeout: 2000
+
+
+! Whether to interrupt running programs for debugger commands.
+Ddd*stopAndContinue: on
+
+! The time (in ms) to wait before interrupting a `run' command.
+! Rationale: interrupting a `run' command immediately may interrupt
+! process creation, rather than interrupting process execution.
+Ddd*runInterruptDelay: 2000
+
+! The time (in ms) to wait before interrupting a `cont' command
+! Rationale: interrupting a `cont' command immediately may interrupt
+! process restart, rather than interrupting process execution.
+Ddd*contInterruptDelay: 200
 
 
 ! The `rsh' command to invoke tty-based commands on other hosts.

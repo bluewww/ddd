@@ -877,6 +877,26 @@ XtResource ddd_resources[] = {
     },
 
     {
+	(char *)XtNrunInterruptDelay,
+	(char *)XtCInterruptDelay,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, run_interrupt_delay),
+	XtRImmediate,
+	XtPointer(2000)
+    },
+
+    {
+	(char *)XtNcontInterruptDelay,
+	(char *)XtCInterruptDelay,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, cont_interrupt_delay),
+	XtRImmediate,
+	XtPointer(200)
+    },
+
+    {
 	(char *)XtNpollChildStatus,
 	(char *)XtCPollChildStatus,
 	XtRBoolean,

@@ -430,9 +430,9 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	    // `run' needs significantly more time than `cont'
 	    int timeout;
 	    if (is_run_cmd(c.command) || c.command == "yes")
-		timeout = 2000;
+		timeout = app_data.run_interrupt_delay;
 	    else
-		timeout = 200;
+		timeout = app_data.cont_interrupt_delay;
 
 	    if (continuing)
 		XtRemoveTimeOut(continuing);

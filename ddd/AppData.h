@@ -179,6 +179,9 @@
 #define XtCTerminateOnEOF        "TerminateOnEOF"
 #define XtNstopAndContinue       "stopAndContinue"
 #define XtCStopAndContinue       "StopAndContinue"
+#define XtNrunInterruptDelay     "runInterruptDelay"
+#define XtNcontInterruptDelay    "contInterruptDelay"
+#define XtCInterruptDelay        "InterruptDelay"
 #define XtNpollChildStatus       "pollChildStatus"
 #define XtCPollChildStatus       "PollChildStatus"
 #define XtNdebuggerHost          "debuggerHost"
@@ -496,6 +499,8 @@ struct AppData {
     Boolean   synchronous_gdb;
     Boolean   terminate_on_eof;
     Boolean   stop_and_continue;
+    int       run_interrupt_delay;
+    int       cont_interrupt_delay;
     Boolean   poll_child_status;
     String    debugger_host;
     String    debugger_rhost;
