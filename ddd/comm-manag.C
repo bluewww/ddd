@@ -188,9 +188,10 @@ void start_gdb()
 
 void user_rawSUC (string cmd, Widget origin)
 {
-    CmdData* cmd_data     = new CmdData(NoFilter);
-    cmd_data->disp_buffer = new DispBuffer;
-    cmd_data->pos_buffer  = new PosBuffer;
+    CmdData* cmd_data      = new CmdData(NoFilter);
+    cmd_data->disp_buffer  = new DispBuffer;
+    cmd_data->pos_buffer   = new PosBuffer;
+    cmd_data->new_exec_pos = true;
 
     bool send_ok = gdb->send_user_ctrl_cmd(cmd, cmd_data);
     if (!send_ok)
@@ -571,8 +572,11 @@ void user_cmdOAC (void* data)
 
     if (cmd_data->pos_buffer->recompiled_found())
     {
-	// Program has been recompiled restarted - clear code cache
+	// Program has been recompiled - 
+	// clear code and source cache and reload current source.
 	source_view->clear_code_cache();
+	source_view->clear_file_cache();
+	source_view->reload();
     }
 
     // Set execution/frame position
@@ -609,7 +613,7 @@ void user_cmdOAC (void* data)
 
 	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
 	{
-	    source_view->show_execution_position(pos);
+	    source_view->show_execution_position(pos, cmd_data->new_exec_pos);
 
 	    // Up/Down succeeded: set frame position in backtrace window
 	    if (cmd_data->set_frame_pos)
@@ -623,8 +627,9 @@ void user_cmdOAC (void* data)
     }
     else
     {
+	// Delete old position
 	if (cmd_data->new_exec_pos)
-	    source_view->show_execution_position(); // alte Anzeige loeschen
+	    source_view->show_execution_position("", true); 
     }
 
     gdb_out(answer);
