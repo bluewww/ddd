@@ -71,7 +71,6 @@ char comm_manager_rcsid[] =
 #include "post.h"
 #include "question.h"
 #include "regexps.h"
-#include "roulette.h"
 #include "settings.h"
 #include "shell.h"
 #include "string-fun.h"
@@ -366,9 +365,6 @@ static void process_batch(const string& answer, void *data = 0);
 // Process asynchronous GDB answers
 static void AsyncAnswerHP(Agent *, void *, void *);
 
-// Run with `-fr $HOME'
-static void RussianRouletteHP(const string&, void *data);
-
 static string print_cookie = "4711";
 
 
@@ -617,24 +613,6 @@ void start_gdb(bool config)
 		     cmds.size(),
 		     extra_completed,
 		     (void *)extra_data);
-
-    if (config && (app_data.roulette || app_data.russian_roulette))
-    {
-	// Load random program
-	static string program;
-	program = random_program();
-	Command c(gdb->debug_command(program));
-	c.priority = COMMAND_PRIORITY_INIT;
-
-	if (app_data.russian_roulette)
-	{
-	    c.callback = RussianRouletteHP;
-	    c.data     = (void *)&program;
-	    c.prompt   = false;
-	}
-
-	gdb_command(c);
-    }
 
     // Enqueue restart and settings commands.  Since we're starting up
     // and don't care for detailed diagnostics, we allow the GDB
@@ -2798,33 +2776,4 @@ static void AsyncAnswerHP(Agent *source, void *, void *call_data)
     }
 
     _gdb_out(answer);
-}
-
-
-
-//-----------------------------------------------------------------------------
-// Russian Roulette
-//-----------------------------------------------------------------------------
-
-static void RussianRouletteDoneCB(XtPointer data, XtIntervalId *)
-{
-    string& program = *((string *)data);
-
-    _gdb_out(program + ": you did not expect this to work, did you?\n");
-    _gdb_out("\nProgram exited with code 01.\n");
-    prompt();
-}
-
-static void RussianRouletteHP(const string&, void *data)
-{
-    // Run with ` -fr $HOME'
-    string& program = *((string *)data);
-
-    prompt();
-    string args = string(" -fr ") + gethome();
-    _gdb_out("run" + args + "\n");
-    _gdb_out("Starting program: " + program + args + "\n");
-
-    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 2000, 
-		    RussianRouletteDoneCB, XtPointer(data));
 }

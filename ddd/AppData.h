@@ -210,9 +210,6 @@
 #define XtCShowNews              "ShowNews"
 #define XtNshowFonts             "showFonts"
 #define XtCShowFonts             "ShowFonts"
-#define XtNroulette              "roulette"
-#define XtNrussianRoulette       "russianRoulette"
-#define XtCRoulette              "Roulette"
 #define XtNcheckConfiguration    "checkConfiguration"
 #define XtCCheckConfiguration    "CheckConfiguration"
 #define XtNprintCommand          "printCommand"
@@ -489,8 +486,6 @@ struct AppData {
     Boolean   show_license;
     Boolean   show_news;
     Boolean   show_fonts;
-    Boolean   roulette;
-    Boolean   russian_roulette;
     Boolean   check_configuration;
     String    print_command;
     String    paper_size;

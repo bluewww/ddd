@@ -614,12 +614,6 @@ static XrmOptionDescRec options[] = {
 { "--fonts",                XtNshowFonts,            XrmoptionNoArg, ON },
 { "-fonts",                 XtNshowFonts,            XrmoptionNoArg, ON },
 
-{ "--roulette",             XtNroulette,             XrmoptionNoArg, ON },
-{ "-roulette",              XtNroulette,             XrmoptionNoArg, ON },
-
-{ "--russian-roulette",     XtNrussianRoulette,      XrmoptionNoArg, ON },
-{ "-russian-roulette",      XtNrussianRoulette,      XrmoptionNoArg, ON },
-
 { "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, ON },
 { "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, ON },
 

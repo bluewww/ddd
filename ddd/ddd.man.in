@@ -5138,14 +5138,6 @@ If `\fBon\fR', enables a top-level `\fBMaintenance\fR' menu with
 additional options.  See also the `\fB\-\-maintenance\fR' option,
 below.
 .TP
-.B "roulette (\fPclass\fB Roulette)"
-If `\fBon\fR', \s-1@DDD\+1 loads a random program from one of the
-directories in the user's \fBPATH\fR environment variable.
-.TP
-.B "russianRoulette (\fPclass\fB Roulette)"
-Like `\fBroulette\fR', but also run the program with the arguments
-`\fB\-fr $HOME\fR'.
-.TP
 .B "showConfiguration (\fPclass\fB ShowConfiguration)"
 If `\fBon\fR', show the \s-1@DDD@\s+1 configuration on standard
 output and exit.  See also the `\fB\-\-configuration\fR' option,
@@ -5396,14 +5388,6 @@ Run the inferior debugger interactively on the remote host
 \fIhostname\fR.  If \fIusername\fR is given and the `\fB\-\-login\fR'
 option is not used, use \fIusername\fR as remote user name.  See
 `\fBREMOTE DEBUGGING\fR', above.
-.TP
-.B \-\-roulette
-Load a random program from one of the directories in the user's
-\fBPATH\fR environment variable.
-.TP
-.B \-\-russian-roulette
-Like `\fB\-\-roulette\fR', but run the program with the arguments
-`\fB\-fr $HOME\fR'.
 .TP 
 .B \-\-separate-windows
 Separate the console, source and data windows.  See also the

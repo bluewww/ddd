@@ -1025,26 +1025,6 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNroulette,
-	XtCRoulette,
-	XtRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(AppData, roulette),
-	XtRImmediate,
-	XtPointer(False)
-    },
-
-    {
-        XtNrussianRoulette,
-	XtCRoulette,
-	XtRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(AppData, russian_roulette),
-	XtRImmediate,
-	XtPointer(False)
-    },
-
-    {
         XtNcheckConfiguration,
 	XtCCheckConfiguration,
 	XtRBoolean,
