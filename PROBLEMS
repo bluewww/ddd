@@ -264,9 +264,13 @@ LessTif
     `http://www.lesstif.org'; if needed, apply the patches found in
     the `patches/' subdirectory.
 
-    With LessTif 0.83, the following problems are currently known:
+    With LessTif 0.83 and the patches applied, the following problems
+    are currently known:
 
-    * button3 popup menus are insensitive the first time they pop up.
+    * Menu traversal by keyboard does not work correctly; use the
+      mouse instead.
+
+    * Tearing off menus may result in X errors.
  
 
 Linux

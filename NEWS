@@ -21,7 +21,7 @@ DDD 2.3 [in development]
       warnings.
 
     Changes in configuration and building:
-    - LessTif 0.83 is supported.
+    - LessTif 0.83 is supported.  See `patches/' for some useful patches.
 
 
 DDD 2.2.3
