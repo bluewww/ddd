@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD buttons
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -538,6 +538,14 @@ static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
     return startpos;
 }
 
+static bool is_invalid_value(const string& value)
+{
+    if (gdb->program_language() == LANGUAGE_PERL)
+	return false;		// Everything is valid in Perl
+
+    return is_invalid(value);
+}
+
 // Get tip string for text widget WIDGET.
 static MString gdbDefaultValueText(Widget widget, XEvent *event, 
 				   bool for_documentation)
@@ -548,6 +556,8 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     string expr = 
 	source_view->get_word_at_event(widget, event, startpos, endpos);
 
+    // clog << "Pointing at " << quote(expr) << "\n";
+
     // If we're at a breakpoint, return appropriate help
     MString bp_help = 
 	source_view->help_on_pos(widget, startpos, endpos, for_documentation);
@@ -556,7 +566,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	return MString(0, true); // Nothing pointed at
 
 #if RUNTIME_REGEX
-    static regex rxchain("[-a-zA-Z0-9_>.::]+");
+    static regex rxchain("[a-zA-Z0-9_](([.]|->|::)[a-zA-Z0-9_])*");
 #endif
 
     // Don't invoke the debugger if EXPR is not an identifier.
@@ -589,13 +599,24 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     if (bp_help.xmstring() != 0)
 	return bp_help;
 
+    if (gdb->program_language() == LANGUAGE_PERL)
+    {
+	// In Perl, all variables begin with `$', `@', or `%'.
+	if (expr != "")
+	{
+	    char c = expr[0];
+	    if (c != '$' && c != '@' && c != '%')
+		return clear;
+	}
+    }
+
     // Get value of ordinary variable
     string name = fortranize(expr);
     string tip = gdbValue(name);
     if (tip == NO_GDB_ANSWER)
 	return MString(0, true);
 
-    if (is_invalid(tip) && widget == source_view->code())
+    if (is_invalid_value(tip) && widget == source_view->code())
     {
 	// Get register value - look up `$pc' when pointing at `pc'
 	name = expr;
@@ -615,12 +636,14 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	}
     }
 
-    if (is_invalid(tip))
+    if (is_invalid_value(tip))
 	return clear;
 
     tip = get_disp_value_str(tip, gdb);
     if (tip == "void")
 	return clear;		// Empty variable
+    if (gdb->program_language() == LANGUAGE_PERL && tip == "")
+	tip = "(null)";
 
     if (for_documentation)
     {

@@ -206,8 +206,8 @@ C	(.|\n)*
 /* `virtual table', in all variants */
 V	v(irtual{W})?t(a)?bl(e)?
 
-/* A `standard' identifier */
-I       [A-Za-z_$][A-Za-z0-9_$]*
+/* A `standard' identifier.  Also includes Perl identifiers. */
+I       ([A-Za-z_$@%][A-Za-z0-9_$]*|[$@%]([^ \n\t\f]|[0-9]+))
 
 /* A Java class identifier */
 J       [A-Za-z_$][A-Za-z0-9_$.]*

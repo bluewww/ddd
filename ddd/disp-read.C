@@ -298,9 +298,11 @@ bool is_assign_cmd(const string& cmd, GDBAgent *gdb)
     static regex rxset3_cmd("[ \t]*[^=]+=[^=].*");
 #endif
 
+    DebuggerType type = gdb->type();
+
     return cmd.matches(rxset1_cmd) || 
-	(gdb->type() == GDB && cmd.matches(rxset2_cmd)) ||
-	(gdb->type() == PYDB && cmd.matches(rxset3_cmd));
+	(type == GDB && cmd.matches(rxset2_cmd)) ||
+	((type == PYDB || type == PERL) && cmd.matches(rxset3_cmd));
 }
 
 // Get assigned variable
