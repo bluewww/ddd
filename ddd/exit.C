@@ -275,19 +275,19 @@ static void post_fatal(string title, string cause, string cls)
 
 	XtAddCallback(fatal_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 	XtAddCallback(fatal_dialog, XmNokCallback, 
-		      DDDExitCB, XtPointer(EXIT_FAILURE));
+		      DDDRestartCB, XtPointer(EXIT_FAILURE));
 	XtAddCallback(fatal_dialog, XmNcancelCallback, 
 		      StopSOSCB, XtPointer(0));
 	XtAddCallback(fatal_dialog, XmNokCallback, 
 		      StopSOSCB, XtPointer(0));
 
 #if XmVersion >= 1002
-	Widget restart = 
-	    verify(XmCreatePushButton(fatal_dialog, "restart", 0, 0));
-	XtManageChild(restart);
-	XtAddCallback(restart, XmNactivateCallback,
-		      DDDRestartCB, XtPointer(EXIT_FAILURE));
-	XtAddCallback(restart, XmNactivateCallback, 
+	Widget exit = 
+	    verify(XmCreatePushButton(fatal_dialog, "exit", 0, 0));
+	XtManageChild(exit);
+	XtAddCallback(exit, XmNactivateCallback,
+		      DDDExitCB, XtPointer(EXIT_FAILURE));
+	XtAddCallback(exit, XmNactivateCallback,
 		      StopSOSCB, XtPointer(0));
 #endif
     }
