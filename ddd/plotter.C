@@ -336,28 +336,6 @@ static void configure_plot(PlotWindowInfo *plot)
     if (plot->plotter == 0)
 	return;
 
-    if (plot->settings == "")
-    {
-	// No settings yet
-	if (plot->settings_timer == 0)
-	{
-	    plot->settings_delay = 
-		new StatusDelay("Retrieving Plot Settings");
-
-	    // Save settings...
-	    plot->settings_file = tmpnam(0);
-	    string cmd = "save " + quote(plot->settings_file) + "\n";
-	    send(plot, cmd);
-
-	    // ...and try again in 250ms
-	    plot->settings_timer = 
-		XtAppAddTimeOut(XtWidgetToApplicationContext(plot->shell), 250,
-				GetPlotSettingsCB, XtPointer(plot));
-	}
-
-	return;
-    }
-
     int ndim = plot->plotter->dimensions();
 
     // Set up plot menu
@@ -399,43 +377,9 @@ static void configure_plot(PlotWindowInfo *plot)
     XtSetSensitive(base,    ndim >= 3);
     XtSetSensitive(surface, ndim >= 3);
 
-    configure_options(plot, view_menu,    plot->settings);
-    configure_options(plot, contour_menu, plot->settings);
-    configure_options(plot, scale_menu,   plot->settings);
-
-    // Get style
-    for (i = 0; plot_menu[i].name != 0; i++)
-    {
-	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
-	    continue;
-
-	string name = plot_menu[i].name;
-
-	Widget w = XtNameToWidget(plot->shell, "*" + name);
-
-	bool set = plot->settings.contains("\nset data style " + name + "\n");
-	XmToggleButtonSetState(w, set, False);
-    }
-
     // Set scrollbars
     manage_child(plot->hsb, ndim >= 3);
     manage_child(plot->vsb, ndim >= 3);
-
-    int rot_x = 60;
-    int rot_z = 30;
-
-    int view_index = plot->settings.index("set view ");
-    if (view_index >= 0)
-    {
-	// `set view <rot_x> {,{<rot_z>}{,{<scale>}{,<scale_z>}}}'
-	string view_setting = plot->settings.after("set view ");
-	rot_x = atoi(view_setting);
-	view_setting = view_setting.after(", ");
-	rot_z = atoi(view_setting);
-    }
-
-    XtVaSetValues(plot->vsb, XmNvalue, rot_x, NULL);
-    XtVaSetValues(plot->hsb, XmNvalue, rot_z, NULL);
 
     // Check if we can export something
     bool have_source = false;
@@ -454,6 +398,68 @@ static void configure_plot(PlotWindowInfo *plot)
 
     Widget export = XtNameToWidget(plot->shell, "*export");
     set_sensitive(export, have_source);
+
+    // The remainder requires settings
+    if (plot->settings == "")
+    {
+	// No settings yet
+	if (plot->settings_timer == 0)
+	{
+	    plot->settings_delay = 
+		new StatusDelay("Retrieving Plot Settings");
+
+	    // Save settings...
+	    plot->settings_file = tmpnam(0);
+	    string cmd = "save " + quote(plot->settings_file) + "\n";
+	    send(plot, cmd);
+
+	    // ...and try again in 250ms
+	    plot->settings_timer = 
+		XtAppAddTimeOut(XtWidgetToApplicationContext(plot->shell), 250,
+				GetPlotSettingsCB, XtPointer(plot));
+
+	    // Set initial scrollbar defaults
+	    XtVaSetValues(plot->vsb, XmNvalue, 60, NULL);
+	    XtVaSetValues(plot->hsb, XmNvalue, 30, NULL);
+	}
+
+	return;
+    }
+
+    configure_options(plot, view_menu,    plot->settings);
+    configure_options(plot, contour_menu, plot->settings);
+    configure_options(plot, scale_menu,   plot->settings);
+
+    // Get style
+    for (i = 0; plot_menu[i].name != 0; i++)
+    {
+	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
+	    continue;
+
+	string name = plot_menu[i].name;
+
+	Widget w = XtNameToWidget(plot->shell, "*" + name);
+
+	bool set = plot->settings.contains("\nset data style " + name + "\n");
+	XmToggleButtonSetState(w, set, False);
+    }
+
+    // Get position
+    int rot_x = 60;
+    int rot_z = 30;
+
+    int view_index = plot->settings.index("set view ");
+    if (view_index >= 0)
+    {
+	// `set view <rot_x> {,{<rot_z>}{,{<scale>}{,<scale_z>}}}'
+	string view_setting = plot->settings.after("set view ");
+	rot_x = atoi(view_setting);
+	view_setting = view_setting.after(", ");
+	rot_z = atoi(view_setting);
+    }
+
+    XtVaSetValues(plot->vsb, XmNvalue, rot_x, NULL);
+    XtVaSetValues(plot->hsb, XmNvalue, rot_z, NULL);
 }
 
 
