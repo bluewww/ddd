@@ -2708,23 +2708,19 @@ classes.  The following resources are specific to \s-2@DDD@\s+2.
 .TP
 .B "defaultFont (\fPclass\fR Font)"
 The default \s-2@DDD@\s+2 font to use for labels, menus, buttons, etc.
-Defaults to
-.br
- `\fB-*-helvetica-bold-r-*-*-*-90-*-*-*-*-iso8859-*\fR'.
+The font is specified either as an X font spec, or as a triple
+`\fIfamily\fB-\fIweight\fB-\fIslant\fR'.  Default value is
+`\fBhelvetica-bold-r\fR'.
 .sp
 .br
 To set the default \s-2@DDD@\s+2 font to, say,
 \fBhelvetica medium\fR, insert a line
 .sp
 .br
-  \fB@Ddd@*defaultFont: -*-helvetica-medium-r-*\fR
+  \fB@Ddd@*defaultFont: helvetica-medium-r\fR
 .br
 .sp
 in your `\fB$HOME/.@ddd@/init\fR' file.
-.sp
-.br
-Since \s-2@DDD@\s+2 derives other font variants from this
-specification, at least the font family \fImust\fR be specified.
 .TP
 .B "defaultFontSize  (\fPclass\fR FontSize)"
 The size of the default \s-2@DDD@\s+2 font, in 1/10 points.  This
@@ -2734,23 +2730,19 @@ ressource overrides any font size specification in the
 .TP
 .B "variableWidthFont (\fPclass\fR Font)"
 The variable width \s-2@DDD@\s+2 font to use for help texts and messages.
-Defaults to
-.br
- `\fB-*-helvetica-medium-r-*-*-*-90-*-*-*-*-iso8859-*\fR'.
+The font is specified either as an X font spec, or as a triple
+`\fIfamily\fB-\fIweight\fB-\fIslant\fR'.
+Defaults to `\fBhelvetica-medium-r\fR'.
 .sp
 .br
 To set the variable width \s-2@DDD@\s+2 font family to, say,
-\fBnew century schoolbook\fR, insert a line
+\fBtimes\fR, insert a line
 .sp
 .br
-  \fB@Ddd@*fixedWidthFont: -*-new century schoolbook-medium-r-*\fR
+  \fB@Ddd@*fixedWidthFont: times-medium-r\fR
 .br
 .sp
 in your `\fB$HOME/.@ddd@/init\fR' file.
-.sp
-.br
-Since \s-2@DDD@\s+2 derives other font variants from this
-specification, at least the font family \fImust\fR be specified.
 .TP
 .B "variableWidthFontSize  (\fPclass\fR FontSize)"
 The size of the variable width \s-2@DDD@\s+2 font, in 1/10 points.
@@ -2760,23 +2752,19 @@ This ressource overrides any font size specification in the
 .TP
 .B "fixedWidthFont (\fPclass\fR Font)"
 The fixed width \s-2@DDD@\s+2 font to use for source code, text fields
-and data displays.  Defaults to
-.br
-`\fB-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-iso8859-*\fR'.
+and data displays.  The font is specified either as an X font spec, or
+as a triple `\fIfamily\fB-\fIweight\fB-\fIslant\fR'.  Defaults to
+`\fBlucidatypewriter-medium-r\fR'.
 .sp
 .br
 To set the fixed width \s-2@DDD@\s+2 font family to, say,
 \fBcourier\fR, insert a line
 .sp
 .br
-  \fB@Ddd@*fixedWidthFont: -*-courier-medium-r-*\fR
+  \fB@Ddd@*fixedWidthFont: courier-medium-r\fR
 .br
 .sp
 in your `\fB$HOME/.@ddd@/init\fR' file.
-.br
-.sp
-Since \s-2@DDD@\s+2 derives other font variants from this
-specification, at least the font family \fImust\fR be specified.
 .TP
 .B "fixedWidthFontSize  (\fPclass\fR FontSize)"
 The size of the fixed width \s-2@DDD@\s+2 font, in 1/10 points.  This
