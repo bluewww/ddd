@@ -359,4 +359,7 @@ Volunteers for these and other projects are welcome!
 346 If a new display obscures an existing display, use spring-embedded
     layout to resolve conflicts.
 
-348 (Insert new project ideas here)
+348 Allow debugger interaction while the program is running.  Simply
+    interrupt the debuggee, do debugger action, and resume execution.
+
+349 (Insert new project ideas here)
