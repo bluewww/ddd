@@ -46,8 +46,10 @@ const char show_rcsid[] =
 #include "version.h"
 #include "strings.h"
 #include "filetype.h"
+#include "HelpCB.h"
 
 #include <iostream.h>
+#include <iomanip.h>
 #include <fstream.h>
 
 
@@ -58,7 +60,7 @@ const char show_rcsid[] =
 void show_version()
 {
     cout << DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
-	"Copyright (C) 1995 TU Braunschweig, Germany.\n";
+	"Copyright (C) 1995, 1996 TU Braunschweig, Germany.\n";
 }
 
 //-----------------------------------------------------------------------------
@@ -222,7 +224,7 @@ void show_resources(XrmDatabase db)
 
 void show_manual()
 {
-    FILE *fp = 0;
+    FILE *pager = 0;
     if (isatty(fileno(stdout)))
     {
 	// Try, in that order:
@@ -232,20 +234,26 @@ void show_manual()
 	// 4. cat  (I wonder if this can ever happen)
 	string cmd = "less || more || cat";
 
-	char *pager = getenv("PAGER");
-	if (pager != 0)
-	    cmd = string(pager) + " || " + cmd;
+	char *env_pager = getenv("PAGER");
+	if (env_pager != 0)
+	    cmd = string(env_pager) + " || " + cmd;
 	cmd = "( " + cmd + " )";
-	fp = popen(cmd, "w");
+	pager = popen(cmd, "w");
     }
-    if (fp == 0)
+
+    if (pager == 0)
     {
-	fputs(ddd_man_page, stdout);
+	ddd_man(cout);
+	cout << flush;
     }
     else
     {
-	fputs(ddd_man_page, fp);
-	pclose(fp);
+	ostrstream man;
+	ddd_man(man);
+	string s(man);
+
+	fputs((char *)s, pager);
+	pclose(pager);
     }
 }
 
@@ -266,4 +274,16 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer)
     system(cmd);
 }
 
+//-----------------------------------------------------------------------------
+// Manual
+//-----------------------------------------------------------------------------
 
+void DDDManualCB(Widget w, XtPointer, XtPointer call_data)
+{
+    StatusDelay delay("Formatting manual page");
+
+    ostrstream man;
+    ddd_man(man);
+    string s(man);
+    ManualStringHelpCB(w, (char *)s, call_data);
+}

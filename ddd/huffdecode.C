@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// Some DDD strings
+// Huffman-decode a text encoded with `huffencode'
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
 // This file is part of the DDD Library.
@@ -26,25 +26,62 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-char ddd_strings_rcsid[] = 
+const char huffdecode_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation
 #endif
 
-#include "strings.h"
+#include "strclass.h"
 
-String ddd_fallback_resources[] = {
-#include "Ddd.ad.h"
-0
-};
+struct HuffCode { char c; const HuffCode *left; const HuffCode *right; };
 
-#define HUFFTEXT "ddd.man.huff.C"
-#include "huffdecode.C"
+#ifdef HUFFTEXT
+#include HUFFTEXT
+#else
+#include "hufftext.C"
+#endif
 
-void ddd_man(ostream& os)
+static void huffdecode(ostream& os)
 {
-    huffdecode(os);
+    int p = 0;			  // Run across hufftext
+    int i = 7;			  // Run across bits
+    const HuffCode *h = huffcode; // Run around in the code
+
+    int n = 0;
+
+    while (n < hufflength)
+    {
+	if (h->left == 0)
+	{
+	    // Arrived at character
+	    os << h->c;
+	    n++;
+	    h = huffcode;
+	}
+
+	if (h->left != 0)
+	{
+	    // Find next position
+	    if (((unsigned char)(hufftext[p])) & (1 << i))
+		h = h->right;
+	    else
+		h = h->left;
+	}
+
+	if (--i < 0)
+	{
+	    // Find next bit
+	    p++;
+	    i = 7;
+	}
+    }
 }
-    
+
+#ifdef MAIN
+int main()
+{
+    huffdecode(cout);
+}
+#endif

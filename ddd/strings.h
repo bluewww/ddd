@@ -30,9 +30,10 @@
 #define _DDD_strings_h
 
 #include <X11/Intrinsic.h>
+#include <iostream.h>
 
-extern String ddd_man_page;
 extern String ddd_fallback_resources[];
+extern void ddd_man(ostream& os);
 
 #endif // _DDD_strings_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -663,6 +663,9 @@ DDD_OBJECTS = \
 # Objects required for userinfo
 USERINFO_OBJECTS =
 
+# Objects required for huffencode and huffdecode
+HUFFMAN_OBJECTS = strclass.o cook.o regex.o
+
 ## All objects.
 OBJECTS = $(NORA_OBJECTS) $(DDD_OBJECTS)
 
@@ -670,7 +673,8 @@ OBJECTS = $(NORA_OBJECTS) $(DDD_OBJECTS)
 PROGS = $(ddd)
 
 ## Extra demonstration files.
-DEMOS = userinfo cxxtest ctest test-file test-graph ttytest bug ptest m2test
+DEMOS = userinfo huffencode huffdecode cxxtest ctest test-file test-graph \
+        vsl ttytest bug ptest m2test
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
@@ -704,7 +708,7 @@ README_FILES =
 PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C \
 	 	   config.h.in acconfig.h acspecial.h stamp-h.in \
 		   ddd.vsl.h version.h host.h configinfo.C \
-		   Ddd.ad.h ddd.man.C xlibdir.C eps-code.h
+		   Ddd.ad.h ddd.man.huff.C xlibdir.C eps-code.h
 
 # Extra files to be built for the distribution
 DIST_STUFF	 = $(PROG_STUFF) $(MANS) depend TAGS \
@@ -889,17 +893,26 @@ $(ddd_canonical): ddd.o $(OBJECTS)
 userinfo: userinfo.o $(USERINFO_OBJECTS)
 	-$(LINK.cc) -o $@ userinfo.o $(USERINFO_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
+huffencode: huffencode.o $(HUFFMAN_OBJECTS)
+	$(LINK.cc) -o $@ huffencode.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
+
+huffdecode: huffdecode.o $(HUFFMAN_OBJECTS)
+	$(LINK.cc) -o $@ huffdecode.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
+
 test-file: test-file.o
 	$(LINK.cc) -o $@ test-file.o $(ALL_X_LIBS)
 
 test-graph: test-graph.o $(NORA_OBJECTS) 
 	$(LINK.cc) -o $@ test-graph.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
+vsl:	vsl.o DocSpace.o $(NORA_OBJECTS)
+	$(LINK.cc) -o $@ vsl.o DocSpace.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+
 ttytest: ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS)
 	$(LINK.cc) -o $@ ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS) \
 	$(ALL_X_LIBS) $(LIBS)
 
-bug:	bug.o
+bug:	bug.o  $(NORA_OBJECTS)
 	$(LINK.cc) -o $@ bug.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
 cxxtest: cxxtest.o
@@ -930,6 +943,10 @@ cxxtest.o: $(srcdir)/cxxtest.C
 	fi
 
 ctest.o: $(srcdir)/ctest.c
+
+huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
+	$(COMPILE.cc) -DMAIN -DHUFFTEXT='"$(srcdir)/ddd.man.huff.C"' \
+	-o $@ $(srcdir)/huffdecode.C
 
 
 ## For demonstration and debugging purposes
@@ -1010,10 +1027,14 @@ ddd.man.txt: ddd.man.in configure.in
 	$(MAKE) ddd.man
 	$(NROFF) -man ddd.man > $@
 
-ddd.man.C: ddd.man.txt
+# ddd.man.huff.C does NOT depend on huffencode since we don't want it
+# to get re-created after each configuration.
+ddd.man.huff.C: ddd.man.txt
+	$(MAKE) huffencode
+	./huffencode < ddd.man.txt > $@
 
 # `make depend' fails to find this dependency :-(
-strings.o: ddd.man.C
+strings.o: ddd.man.huff.C huffdecode.C
 
 
 ## The xlibdir script

@@ -277,4 +277,5 @@ void set_status(const string& message)
 		  XmNlabelString, msg.xmstring(),
 		  NULL);
     XFlush(XtDisplay(status_w));
+    XmUpdateDisplay(status_w);
 }

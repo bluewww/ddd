@@ -48,5 +48,8 @@ void show_manual();
 // WWW page
 void DDDWWWPageCB(Widget, XtPointer, XtPointer);
 
+// Manual
+void DDDManualCB(Widget, XtPointer, XtPointer);
+
 #endif // _DDD_show_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

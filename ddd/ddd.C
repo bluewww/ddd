@@ -708,7 +708,7 @@ static MMDesc help_menu[] =
     MMSep,
     {"www",         MMPush, { DDDWWWPageCB }},
     MMSep,
-    {"index",       MMPush, { ManualStringHelpCB, XtPointer(ddd_man_page) }},
+    {"index",       MMPush, { DDDManualCB }},
     MMEnd
 };
 
