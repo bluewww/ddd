@@ -2855,17 +2855,17 @@ string GDBAgent::assign_command(const string& var, const string& expr) const
 	break;
 
     case PERL:
-	if (var != "" || !is_perl_prefix(var[0]))
+	if (var != "" && !is_perl_prefix(var[0]))
 	    return "";		// Cannot set this
 
 	cmd = "";		// No command needed
 	break;
 
     case BASH:
-	if (var != "" || !is_bash_prefix(var[0]))
+	if (var != "" && !is_bash_prefix(var[0]))
 	    return "";		// Cannot set this
 
-	cmd = "eval ";		// No command needed
+	cmd = "eval ";
 	break;
 
     case JDB:
