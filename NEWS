@@ -1,12 +1,13 @@
 DDD News						-*- text -*-
 ********
 
-DDD 2.3 [in development]
+DDD 3.0 [in development]
 ------------------------
 
-    DDD 2.3 brings Java support, JDB support, and watchpoints.
+    DDD 3.0 brings a new tool bar, Java support, and JDB support.
 
     User-visible changes to DDD 2.2.3:
+    - A new toolbar integrates the old-style button rows.
     - JDB support.  DDD now also supports JDB as inferior debugger.
       All important JDB features are available via the GUI.
     - Java support.  Requires GDB 4.17 or later (or JDB, of course).
