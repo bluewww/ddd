@@ -4224,7 +4224,7 @@ void SourceView::ViewRegistersCB(Widget, XtPointer, XtPointer)
 {
     refresh_registers();
     XtManageChild(register_dialog_w);
-    raise_shell(stack_dialog_w);
+    raise_shell(register_dialog_w);
     
     register_dialog_popped_up = true;
 }
