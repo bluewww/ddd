@@ -168,6 +168,13 @@ extern "C" int yywrap()
 #undef ECHO
 #endif
 #define ECHO                 RETURN(0)
+
+#ifdef FLEX_SCANNER
+// #defining YY_BREAK to empty disables warnings about unreachable breaks.
+#define YY_BREAK DO_NOT_BREAK
+#define DO_NOT_BREAK
+#define BREAK break;
+#endif // FLEX_SCANNER
 %}
 
 /* Addresses -- in various formats */

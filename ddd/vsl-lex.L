@@ -112,6 +112,22 @@ extern "C" int yywrap()
 	return 1;
     return yystream->eof();
 }
+
+
+// Anything not in the list is a single character
+#ifdef ECHO
+#undef ECHO
+#endif
+#define ECHO                 return yytext[0]
+
+
+#ifdef FLEX_SCANNER
+// #defining YY_BREAK to empty disables warnings about unreachable breaks.
+#define YY_BREAK DO_NOT_BREAK
+#define DO_NOT_BREAK
+#define BREAK break;
+#endif // FLEX_SCANNER
+
 %}
 
 /* C-Bezeichner */
@@ -134,7 +150,7 @@ W			[ \f\t]*
 
 {S}		return STRING;			// string
 
-"//".*		;				// C++ comment
+"//".*		BREAK				// C++ comment
 "/*"		{				// C comment
 			// aus `man lex`
 			loop:
@@ -148,8 +164,9 @@ W			[ \f\t]*
 
 			// Avoid warnings about unused function
 			(void) yyunput;
+			BREAK
 		}
-^{W}#!.*		;			// Unix exec() tag
+^{W}#!.*		BREAK			// Unix exec() tag
 
 ^{W}#{W}include{W}{CS}.* {			// #include "..."
 			char buf[BUFSIZ];
@@ -162,6 +179,7 @@ W			[ \f\t]*
 				end++;
 			*end = '\0';
 			switchup(start, true);
+			BREAK
 		}
 ^{W}#{W}include{W}{CC}.* {			// #include <...>
 			char buf[BUFSIZ];
@@ -174,6 +192,7 @@ W			[ \f\t]*
 				end++;
 			*end = '\0';
 			switchup(start, false);
+			BREAK
 		}
 ^{W}#{W}line[ \f\t]{W}.* {		// #line LINE ["FILE"]
 			string buf((char *)yytext);
@@ -194,6 +213,7 @@ W			[ \f\t]*
 			    else
 				yyfilename = uncook(buf);
 			}
+			BREAK
 		}
 
 ^{W}#{W}override   return OVERRIDE;		// Andere Manipulatoren
@@ -234,8 +254,8 @@ where		return WHERE;
 
 {N}		return INTEGER;
 
-{W}		;				// Whitespace (ignorieren)
-"\n"		;				// dito
+{W}		BREAK				// Whitespace (ignorieren)
+"\n"		BREAK				// dito
 .		return yytext[0];		// Alle anderen Zeichen
 %%
 class yyNameSet {
