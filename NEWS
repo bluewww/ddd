@@ -73,6 +73,8 @@ DDD 3.0 [in beta test]
     - One-letter options like `-b BPS' or `-x FILE' work again.
     - Trailing CRs in debuggee output are properly handled.
     - The data window with Motif scrollbars no longer ignores resizes.
+    - The DDD splash screen (and all other XPM stuff, too) now also
+      accepts `close' colors.
 
     Changes in configuration and building:
     - LessTif 0.83 is supported (and a standard test environment of
