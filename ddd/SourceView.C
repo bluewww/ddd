@@ -1147,12 +1147,10 @@ string SourceView::full_path(string file)
 #if RUNTIME_REGEX
     static regex rxdotdot("/[^/]*[^/.]/\\.\\./");
 #endif
-    unsigned int file_length, prev_file_length;
 
-    if (file == "")
-        return current_pwd;
+    file += '/';
 
-    if (file[0] != '/')
+    if (!file.contains('/', 0))
         file = current_pwd + "/" + file;
 
     /* CvE, Jul 10, 1997
@@ -1161,15 +1159,15 @@ string SourceView::full_path(string file)
      * Note that a number of /../ patterns may follow each other, like
      * in "/dir1/dir1/dir3/../../../"
      */
-    file_length = file.length();
+    unsigned int file_length = file.length();
+    unsigned int prev_file_length;
     do {
         prev_file_length = file_length;
         file.gsub(rxdotdot, "/");
-        file_length=file.length();
+        file_length = file.length();
     } while (file_length != prev_file_length);
 
     /* CvE, Jul 10, 1997
-     *
      *
      * Repeatedly remove pattern /./ from the file name.
      * Note that a number of /./ patterns may follow each other.
@@ -1181,8 +1179,13 @@ string SourceView::full_path(string file)
     do {
         prev_file_length = file_length;
         file.gsub("/./", "/");
-        file_length=file.length();
+        file_length = file.length();
     } while (file_length != prev_file_length);
+
+    file.gsub("//", "/");
+
+    if (file.contains('/', -1))
+	file = file.before(int(file.length() - 1));
 
     return file;
 }
