@@ -249,7 +249,7 @@ Ddd*paperSize: 210mm x 297mm
 ! then $EDITOR, then VI.
 Ddd*editCommand: \
 ${XEDITOR-false} +@LINE@ @FILE@ \
-|| xterm -e ${EDITOR-vi} +@LINE@ @FILE@
+|| @XTERM@ -e ${EDITOR-vi} +@LINE@ @FILE@
 
 
 ! A command to get a core dump of a running process (typically, `gcore')
@@ -297,7 +297,7 @@ Ddd*wwwCommand: \
 || gnudoit '(w3-fetch \042@URL@\042)' \
 || mosaic '@URL@' \
 || Mosaic '@URL@' \
-|| xterm -e lynx '@URL@'
+|| @XTERM@ -e lynx '@URL@'
 
 
 ! Plotting stuff.
@@ -3391,7 +3391,7 @@ ITEM LBL(List Processes) is a command to get a list of processes.\n\
 ITEM LBL(Execution Window) is a command to start a terminal emulator.\n\
     To this command, DDD appends bourne shell commands to be executed\n\
     within the execution window.\n\
-    Example: SAMP(xterm -e /bin/sh -c)\n\
+    Example: SAMP(@XTERM@ -e /bin/sh -c)\n\
 ITEM LBL(Uncompress) is an uncompression command.\n\
     The command reads from standard input and writes to standard output.\n\
     Example: SAMP(gunzip -c)\n\
@@ -6511,7 +6511,7 @@ Ddd*tty_type_error*helpString:	\
 @rm DDD could not set the TERM environment variable\n\
 to the type of the execution window.  This means that\n\
 your program will execute with a terminal type\n\
-set to SAMP(dumb) instead of SAMP(xterm).
+set to SAMP(dumb) instead of SAMP(@XTERM@).
 
 Ddd*history_save_error_popup.title: DDD: Save History Failed
 Ddd*history_save_error*helpString:	\
