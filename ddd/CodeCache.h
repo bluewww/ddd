@@ -34,6 +34,7 @@
 #endif
 
 #include "strclass.h"
+#include "bool.h"
 #include "VarArray.h"
 #include <ctype.h>
 
