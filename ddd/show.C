@@ -201,7 +201,7 @@ void show_configuration()
 	 ", Xt" stringize(X_PROTOCOL) "R" stringize(XtSpecificationRelease)
 	 ", Motif " stringize(XmVERSION) "." stringize(XmREVISION)
 #ifdef XmVERSION_STRING
-	 " (\""  "\")"
+	 " (" XmVERSION_STRING ")"
 #endif
 	"\n";
     cout << config_info;
