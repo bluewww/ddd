@@ -260,7 +260,8 @@ void gdbWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
 #endif
 
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(gdb->watch_command(arg, WatchMode(client_data)), w);
+	gdb_command(gdb->watch_command(arg, 
+				       WatchMode((int)(long)client_data)), w);
 }
 
 void gdbWatchRefCB(Widget w, XtPointer, XtPointer)

@@ -462,7 +462,7 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	return;
     }
 
-    int depth = int(client_data);
+    int depth = (int)(long)client_data;
 
     set_last_origin(dialog);
 
@@ -548,14 +548,14 @@ void DataDisp::toggleDetailCB(Widget dialog,
 
 void DataDisp::showDetailCB (Widget dialog, XtPointer client_data, XtPointer)
 {
-    int depth = int(client_data);
+    int depth = (int)(long)client_data;
     show(dialog, depth, 0);
 }
 
 void DataDisp::showMoreDetailCB(Widget dialog, XtPointer client_data, 
 				XtPointer)
 {
-    int more = int(client_data);
+    int more = (int)(long)client_data;
     show(dialog, 0, more);
 }
 
@@ -807,7 +807,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer client_data, XtPointer)
     VarArray<GraphNode *> ancestors;
     VarArray<GraphNode *> descendants;
 
-    bool delete_from_display_part = bool(client_data);
+    bool delete_from_display_part = bool((int)(long)client_data);
 
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
@@ -932,7 +932,7 @@ void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 
 void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
 {
-    int number = int(client_data) - 1;
+    int number = ((int)(long)client_data) - 1;
 
     assert (number >= 0);
     assert (number < shortcut_exprs.size());
@@ -1419,7 +1419,7 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 void DataDisp::displayArgCB(Widget w, XtPointer client_data, 
 			    XtPointer call_data)
 {
-    bool check_pointer = bool(client_data);
+    bool check_pointer = bool((int)(long)client_data);
 
     if (check_pointer)
     {
@@ -1454,7 +1454,7 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data,
 			   XtPointer call_data)
 {
     DataDispCount count(disp_graph);
-    bool delete_from_display_part = bool(client_data);
+    bool delete_from_display_part = bool((int)(long)client_data);
 
     if (count.selected_titles > 0 || 
 	(delete_from_display_part && count.selected > 0))

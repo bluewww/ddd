@@ -1430,7 +1430,7 @@ void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
 
 void gdbOpenRecentCB(Widget, XtPointer client_data, XtPointer)
 {
-    int index = int(client_data) - 1;
+    int index = ((int)(long)client_data) - 1;
 
     StringArray recent_files;
     get_recent(recent_files);

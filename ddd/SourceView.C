@@ -702,7 +702,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 //
 void SourceView::clearBP(XtPointer client_data, XtIntervalId *)
 {
-    int bp_nr = int(client_data);
+    int bp_nr = (int)(long)client_data;
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp != 0)
 	delete_bp(bp_nr);
@@ -721,7 +721,7 @@ void SourceView::clearJumpBP(const string& msg, void *data)
 	show_execution_position(last_jump_address, true);
     }
 
-    int old_max_breakpoint_number_seen = int(data);
+    int old_max_breakpoint_number_seen = (int)(long)data;
 
     for (int i = old_max_breakpoint_number_seen + 1;
 	 i <= max_breakpoint_number_seen; i++)
@@ -1472,7 +1472,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	return;
 
     XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
-    if (bool(client_data))
+    if (bool((int)(long)client_data))
 	selection_click = false;
 
     XmTextPosition startPos, endPos;
@@ -3374,7 +3374,7 @@ void SourceView::create_shells()
 void SourceView::CheckModificationCB(Widget, XtPointer client_data, 
 				     XtPointer call_data)
 {
-    bool editable = bool(client_data);
+    bool editable = bool((int)(long)client_data);
     XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
     if (!editable && cbs != 0 && cbs->event != 0)
     {
@@ -5197,7 +5197,7 @@ void SourceView::SetWatchModeCB(Widget, XtPointer client_data,
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	selected_watch_mode = WatchMode(client_data);
+	selected_watch_mode = WatchMode((int)(long)client_data);
 }
 
 void SourceView::NewWatchpointDCB(Widget w, XtPointer client_data, XtPointer)

@@ -46,7 +46,7 @@ extern char **environ;
 // Leave program
 void ExitCB(Widget, XtPointer client_data, XtPointer)
 {
-    exit(int(client_data));
+    exit((int)(long)client_data);
 }
 
 static char **_saved_argv    = 0;

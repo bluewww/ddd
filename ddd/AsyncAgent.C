@@ -78,7 +78,7 @@ void AsyncAgent::statusChange()
 void AsyncAgent::childStatusChange(Agent *agent, void *, void *call_data)
 {
     AsyncAgent *a = (AsyncAgent *)agent;
-    a->new_status  = (int)call_data;
+    a->new_status  = (int)(long)call_data;
 
     // Process status change when back in event loop
 #if ASYNC_CHILD_STATUS_CHANGE
@@ -269,19 +269,19 @@ void AsyncAgent::closeChannel(FILE *fp)
 // Terminator
 void AsyncAgent::terminateProcess(XtPointer client_data, XtIntervalId *)
 {
-    pid_t pid = (pid_t)client_data;
+    pid_t pid = (pid_t)(long)client_data;
     kill(pid, SIGTERM);
 }
 
 void AsyncAgent::hangupProcess(XtPointer client_data, XtIntervalId *)
 { 
-    pid_t pid = (pid_t)client_data;
+    pid_t pid = (pid_t)(long)client_data;
     kill(pid, SIGHUP);
 }
 
 void AsyncAgent::killProcess(XtPointer client_data, XtIntervalId *)
 {
-    pid_t pid = (pid_t)client_data;
+    pid_t pid = (pid_t)(long)client_data;
     kill(pid, SIGKILL);
 }
 

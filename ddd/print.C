@@ -201,8 +201,8 @@ static Widget          custom_paper_size;
 // Go and print according to local state
 void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 {
-    const bool unmanage = (int(client_data) & 1);
-    const bool override = (int(client_data) & 2);
+    const bool unmanage = ((int)(long)client_data & 1);
+    const bool override = ((int)(long)client_data & 2);
 
     if (print_to_printer)
     {
@@ -268,7 +268,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	    Delay::register_shell(confirm_overwrite_dialog);
 	    XtAddCallback(confirm_overwrite_dialog, 
 			  XmNokCallback,   graphQuickPrintCB, 
-			  XtPointer(int(client_data) | 2));
+			  XtPointer((int)(long)client_data | 2));
 	    XtAddCallback(confirm_overwrite_dialog, 
 			  XmNhelpCallback, ImmediateHelpCB, 0);
 
@@ -301,7 +301,7 @@ static void SetPrintTypeCB(Widget w, XtPointer client_data, XtPointer)
 	return;
 
     string old_suffix = suffix(print_type);
-    print_type = PrintType(int(client_data));
+    print_type = PrintType((int)(long)client_data);
     string new_suffix = suffix(print_type);
 
     String file_name_s = XmTextFieldGetString(print_file_name_field);

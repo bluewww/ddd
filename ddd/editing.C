@@ -75,7 +75,7 @@ bool gdb_input_at_prompt = true;
 
 static void move_to_pos(XtPointer client_data, XtIntervalId *)
 {
-    XmTextPosition pos = XmTextPosition(client_data);
+    XmTextPosition pos = XmTextPosition((long)client_data);
 
     XmTextSetInsertionPosition(gdb_w, pos);
     XmTextShowPosition(gdb_w, pos);
@@ -138,7 +138,7 @@ static void clear_isearch_after_motion(XtPointer, XtIntervalId *)
 
 static void set_isearch_motion_ok(XtPointer client_data, XtIntervalId *)
 {
-    isearch_motion_ok = bool(client_data);
+    isearch_motion_ok = bool((long)client_data);
 }
 
 // Show prompt according to current mode
@@ -209,7 +209,7 @@ static void show_isearch()
 // When i-search is done, show history position given in client_data
 static void isearch_done(XtPointer client_data, XtIntervalId *)
 {
-    int history = int(client_data);
+    int history = (int)(long)client_data;
 
     if (history >= 0)
     {

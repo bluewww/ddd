@@ -194,7 +194,7 @@ void sourceToggleDisplayLineNumbersCB (Widget, XtPointer, XtPointer call_data)
 
 void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 {
-    Boolean state = int(client_data);
+    Boolean state = (int)(long)client_data;
 
     app_data.use_source_path = state;
     string referring_to_sources_using =
@@ -211,7 +211,7 @@ void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 
 void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
 {
-    Boolean state = int(client_data);
+    Boolean state = (int)(long)client_data;
 
     app_data.display_glyphs = state;
 
@@ -481,7 +481,7 @@ void dddToggleUniconifyWhenReadyCB (Widget, XtPointer, XtPointer call_data)
 
 void dddSetGlobalTabCompletionCB(Widget, XtPointer client_data, XtPointer)
 {
-    Boolean state = int(client_data);
+    Boolean state = (int)(long)client_data;
 
     app_data.global_tab_completion = state;
 
@@ -642,7 +642,7 @@ static string next_ddd_will_start_with =
 
 void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 {
-    int state = int(client_data);
+    int state = (int)(long)client_data;
     switch (state)
     {
     case 0:
@@ -677,7 +677,7 @@ void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = int(client_data);
+    Boolean state = (int)(long)client_data;
 
     app_data.status_at_bottom = state;
 
@@ -692,7 +692,7 @@ void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = int(client_data);
+    Boolean state = (int)(long)client_data;
 
     app_data.command_toolbar = state;
     string tool_buttons_are_located_in = "Tool buttons are located in ";
@@ -708,7 +708,7 @@ void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 {
-    unsigned char policy = (unsigned char)int(client_data);
+    unsigned char policy = (unsigned char)(int)(long)client_data;
 
     if (policy != XmEXPLICIT && policy != XmPOINTER)
 	return;
@@ -775,7 +775,7 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = int(client_data);
+    Boolean state = (int)(long)client_data;
     app_data.panned_graph_editor = state;
 
     if (state)
@@ -795,7 +795,7 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
     if (!info->set)
 	return;
 
-    DebuggerType type = DebuggerType(int(client_data));
+    DebuggerType type = DebuggerType((int)(long)client_data);
 
     switch (type)
     {
@@ -832,7 +832,7 @@ void dddSetBindingStyleCB (Widget, XtPointer client_data,
     if (!info->set)
 	return;
 
-    BindingStyle style = BindingStyle(int(client_data));
+    BindingStyle style = BindingStyle((int)(long)client_data);
     app_data.cut_copy_paste_bindings = style;
 
     switch (style)
