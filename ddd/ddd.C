@@ -4895,13 +4895,14 @@ static void gdb_ctrl(char ctrl)
 
 
 // Append TEXT to GDB output
-void _gdb_out(string text)
+void _gdb_out(const string& txt)
 {
-    if (text == "")
+    if (txt == "")
 	return;
     if (private_gdb_output)
 	return;
 
+    string text(txt);
     gdb_input_at_prompt = gdb->ends_with_prompt(text);
 
     if (promptPosition == 0)
@@ -4981,7 +4982,7 @@ void _gdb_out(string text)
 		// character.  If it's a NL, ignore the CR.
 		cr_pending = true;
 	    }
-	    else 
+	    else
 	    {
 		if (cr_pending)
 		{

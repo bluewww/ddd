@@ -51,7 +51,7 @@ extern Widget status_w;
 extern void gdb_out(const string& text);
 
 // Output TEXT in GDB window (unconditionally)
-extern void _gdb_out(string text);
+extern void _gdb_out(const string& text);
 
 // Update option menus
 extern void update_options();
