@@ -376,7 +376,7 @@ Volunteers for these and other projects are welcome!
     that can be rotated.
 
 250*Combine Breakpoint `Ignore Count' and `Condition' in a `Breakpoint
-    Properties' panel.
+    Properties' panel.  Also add a `commands' item.
 
 252 Print via the X Printer extension (-lXp).
 
@@ -393,12 +393,13 @@ Volunteers for these and other projects are welcome!
     `display FOOBAR now or when in FUNCTION'.
 
 259*Finish common toolbar:
-    - The data window should not be shown until data is actually
-      displayed.  (An `autoData' feature might be handy here.)
+    - In one-window mode, the data window should not be shown until
+      data is actually displayed.
     - Have a resource for toolbar placement: above or below window.
-      As an alternative, use XmNpositionIndex instead.
-    - If captions are off, strip 2 pixels on the left and right.
+      As an alternative, use XmNpositionIndex instead (changeable at
+      run-time?).
     - The `Display' button should not prompt for data if `()' is set.
     - The `Display *' and `Set' buttons should work if `()' is set.
+    - In tip strings, show labelStrings of pixmap displays
 
 260 (Insert your project idea here)
