@@ -16,6 +16,7 @@ config.cache
 config.log
 config.status
 configure
+ddd.spec
 i586-pc-linux-gnu
 lesstif
 linux
