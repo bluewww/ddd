@@ -147,7 +147,11 @@ DispValueType determine_type (string value)
 	{
 	    switch(value[i++])
 	    {
-	    case ':':		// Java
+	    case ':':
+		if (gdb->program_language() == LANGUAGE_JAVA)
+		    return StructOrClass;
+		break;
+
 	    case '=':
 		return StructOrClass;
 
@@ -355,13 +359,16 @@ static void read_token(const char *value, int& pos)
 	    while (isalnum(value[pos]))
 		pos++;
 
-	    string name(value + start, pos - start);
-	    if (name == "record")
-		read_up_to(value, pos, "end");
-	    else if (name == "RECORD")
-		read_up_to(value, pos, "END");
-	    else if (name == "OBJECT")
-		read_up_to(value, pos, "END");
+	    if (gdb->program_language() != LANGUAGE_JAVA)
+	    {
+		string name(value + start, pos - start);
+		if (name == "record")
+		    read_up_to(value, pos, "end");
+		else if (name == "RECORD")
+		    read_up_to(value, pos, "END");
+		else if (name == "OBJECT")
+		    read_up_to(value, pos, "END");
+	    }
 	}
 	else if (isspace(value[0]))
 	{
@@ -661,8 +668,8 @@ bool read_members_of_xy (string& value)
     static regex rxmembers_of_nl("members of [^\n]+: ?\n");
 #endif
 
-    read_leading_junk (value);
-    if (value.index (rxmembers_of_nl) == 0)
+    read_leading_junk(value);
+    if (value.index(rxmembers_of_nl) == 0)
     {
 	value = value.after('\n');
 	return true;
@@ -674,7 +681,7 @@ bool read_members_of_xy (string& value)
 // Read member name; return "" upon error
 string read_member_name (string& value)
 {
-    read_leading_junk (value);
+    read_leading_junk(value);
 
     if (value.contains(')', 0)
 	|| value.contains('}', 0)
@@ -693,23 +700,27 @@ string read_member_name (string& value)
 	return " ";
     }
 
+    string v = value;
+    if (v.contains('\n'))
+	v = v.before('\n');
+
     // GDB, DBX, and XDB separate member names and values by ` = '; 
     // GDB using the Java language uses `: ' instead.
     // JDB printing classes uses `:\n' for the interface list.
     string member_name;
-    if (value.contains(" = "))
+    if (v.contains(" = "))
     {
-	member_name = value.before (" = ");
+	member_name = v.before (" = ");
 	value = value.after (" = ");
     }
-    else if (value.contains(": "))
+    else if (gdb->program_language() == LANGUAGE_JAVA && v.contains(": "))
     {
-	member_name = value.before (": ");
+	member_name = v.before (": ");
 	value = value.after (": ");
     }
-    else if (value.contains(":\n"))
+    else if (gdb->program_language() == LANGUAGE_JAVA && v.contains(":\n"))
     {
-	member_name = value.before(":\n");
+	member_name = v.before(":\n");
 	value = value.after(":\n");
     }
     else
