@@ -103,6 +103,10 @@ static string isearch_line = "";
 static bool have_isearch_line = false;
 static bool isearch_motion_ok = false;
 
+static char isearch_prompt[]         = "(i-search)";
+static char reverse_isearch_prompt[] = "(reverse-i-search)";
+
+
 // Return current line
 string current_line()
 {
@@ -142,11 +146,11 @@ static void show_isearch()
 	break;
 
     case ISEARCH_NEXT:
-	prompt = "(i-search)";
+	prompt = isearch_prompt;
 	break;
 
     case ISEARCH_PREV:
-	prompt = "(reverse-i-search)";
+	prompt = reverse_isearch_prompt;
 	break;
     }
 
@@ -211,6 +215,9 @@ static void isearch_done(XtPointer client_data, XtIntervalId *)
 
 void isearch_again(ISearchState new_isearch_state, XEvent *event)
 {
+    if (!gdb->isReadyWithPrompt())
+	return;
+
     if (isearch_state == ISEARCH_NONE)
     	isearch_string = "";
 
@@ -251,6 +258,9 @@ void isearch_exitAct(Widget, XEvent *, String *, Cardinal *)
 // Exit i-search mode and return to normal mode
 void clear_isearch(bool reset, bool show)
 {
+    if (!gdb->isReadyWithPrompt())
+	return;
+
     if (isearch_state != ISEARCH_NONE)
     {
 	isearch_state = ISEARCH_NONE;
