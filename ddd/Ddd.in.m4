@@ -2286,10 +2286,11 @@ Ddd*preferences*buttons*shadowThickness:	2
 Ddd*preferences*buttons*alignment:		XmALIGNMENT_CENTER
 Ddd*preferences*panel*XmRowColumn.marginHeight: 0
 
-Ddd*preferences*buttons*general.labelString:	General Preferences
-Ddd*preferences*buttons*source.labelString:	Source Preferences
-Ddd*preferences*buttons*data.labelString:	Data Preferences
-Ddd*preferences*buttons*startup.labelString:	Startup Preferences
+Ddd*preferences*buttons*general.labelString:	\ \ \ \ \ \ General\ \ \ \ \ \ 
+Ddd*preferences*buttons*source.labelString:	Source
+Ddd*preferences*buttons*data.labelString:	Data
+Ddd*preferences*buttons*startup.labelString:	Startup
+Ddd*preferences*buttons*helpers.labelString:	Helpers
 
 Ddd*preferences*general*helpString:	\
 @rm These are the EMPH(General Preferences).\n\
@@ -2547,6 +2548,19 @@ Ddd*showStartupLogoMenu*grey.labelString:	in grey
 Ddd*showStartupLogoMenu*grey4.labelString:	in grey4
 Ddd*showStartupLogoMenu*mono.labelString:	in monochrome
 Ddd*showStartupLogoMenu*none.labelString:	not at all
+
+Ddd*preferences*helpers*helpString:
+
+Ddd*preferences*edit*labelString:		Edit Sources
+Ddd*preferences*get_core*labelString:		Get Core File
+Ddd*preferences*ps*labelString:			List Processes
+Ddd*preferences*term*labelString:		Execution Window
+Ddd*preferences*uncompress*labelString:		Uncompress
+Ddd*preferences*www*labelString:		Web Browser
+Ddd*preferences*helpers*label.width:		150
+Ddd*preferences*helpers*label.recomputeSize:	false
+Ddd*preferences*text.columns:			50
+
 
 
 !-----------------------------------------------------------------------------

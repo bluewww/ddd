@@ -684,6 +684,92 @@ void dddSetStartupLogoCB (Widget w, XtPointer client_data, XtPointer)
 
 
 
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+void dddSetEditCommandCB(Widget w, XtPointer, XtPointer)
+{
+    String s = XmTextFieldGetString(w);
+    static string command;
+    command = s;
+    XtFree(s);
+
+    app_data.edit_command = command;
+    set_status("Edit Sources command is " + quote(command));
+    update_options();
+}
+
+
+void dddSetGetCoreCommandCB(Widget w, XtPointer, XtPointer)
+{
+    String s = XmTextFieldGetString(w);
+    static string command;
+    command = s;
+    XtFree(s);
+
+    app_data.get_core_command = command;
+    set_status("Get Core command is " + quote(command));
+    update_options();
+}
+
+
+void dddSetPSCommandCB(Widget w, XtPointer, XtPointer)
+{
+    String s = XmTextFieldGetString(w);
+    static string command;
+    command = s;
+    XtFree(s);
+
+    app_data.ps_command = command;
+    set_status("List Processes command is " + quote(command));
+    update_options();
+}
+
+
+void dddSetTermCommandCB(Widget w, XtPointer, XtPointer)
+{
+    String s = XmTextFieldGetString(w);
+    static string command;
+    command = s;
+    XtFree(s);
+
+    app_data.term_command = command;
+    set_status("Execution Window command is " + quote(command));
+    update_options();
+}
+
+
+void dddSetUncompressCommandCB(Widget w, XtPointer, XtPointer)
+{
+    String s = XmTextFieldGetString(w);
+    static string command;
+    command = s;
+    XtFree(s);
+
+    app_data.uncompress_command = command;
+    set_status("Uncompress command is " + quote(command));
+    update_options();
+}
+
+
+void dddSetWWWCommandCB(Widget w, XtPointer, XtPointer)
+{
+    String s = XmTextFieldGetString(w);
+    static string command;
+    command = s;
+    XtFree(s);
+
+    app_data.www_command = command;
+    set_status("Web Browser is " + quote(command));
+    update_options();
+}
+
+
+
+
+
 // ---------------------------------------------------------------------------
 // Get core
 // ---------------------------------------------------------------------------
@@ -1162,8 +1248,6 @@ bool save_options(unsigned long flags)
 			 app_data.save_history_on_exit) << "\n";
     os << string_app_value(XtNdebugger,
 			   app_data.debugger) << "\n";
-    os << string_app_value(XtNprintCommand,
-			   app_data.print_command) << "\n";
     os << string_app_value(XtNpaperSize,
 			   app_data.paper_size) << "\n";
 
@@ -1216,15 +1300,32 @@ bool save_options(unsigned long flags)
 			    + XtNgridHeight, grid_height) << "\n";
     }
 
+    // Helpers
+    os << "\n! Helpers\n";
+    os << string_app_value(XtNeditCommand,       app_data.edit_command)
+       << '\n';
+    os << string_app_value(XtNgetCoreCommand,    app_data.get_core_command)
+       << '\n';
+    os << string_app_value(XtNpsCommand,         app_data.ps_command)
+       << '\n';
+    os << string_app_value(XtNtermCommand,       app_data.term_command)
+       << '\n';
+    os << string_app_value(XtNuncompressCommand, app_data.uncompress_command)
+       << '\n';
+    os << string_app_value(XtNwwwCommand,        app_data.www_command)
+       << '\n';
+    os << string_app_value(XtNprintCommand,      app_data.print_command) 
+       << "\n";
+
     // Buttons
     os << "\n! Buttons\n";
     os << string_app_value(XtNconsoleButtons, app_data.console_buttons) 
        << '\n';
-    os << string_app_value(XtNsourceButtons, app_data.source_buttons)
+    os << string_app_value(XtNsourceButtons,  app_data.source_buttons)
        << '\n';
-    os << string_app_value(XtNdataButtons, app_data.data_buttons)
+    os << string_app_value(XtNdataButtons,    app_data.data_buttons)
        << '\n';
-    os << bool_app_value(XtNverifyButtons, app_data.verify_buttons)
+    os << bool_app_value(XtNverifyButtons,    app_data.verify_buttons)
        << '\n';
 
     // Shortcut expressions

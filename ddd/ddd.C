@@ -988,6 +988,31 @@ static MMDesc startup_preferences_menu [] =
 };
 
 
+static Widget edit_command_w;
+static Widget get_core_command_w;
+static Widget ps_command_w;
+static Widget term_command_w;
+static Widget uncompress_command_w;
+static Widget www_command_w;
+
+static MMDesc helpers_preferences_menu [] =
+{
+    { "edit",       MMTextField, { dddSetEditCommandCB }, 
+      NULL, &edit_command_w},
+    { "get_core",   MMTextField, { dddSetGetCoreCommandCB }, 
+      NULL, &get_core_command_w},
+    { "ps",         MMTextField, { dddSetPSCommandCB },
+      NULL, &ps_command_w},
+    { "term",       MMTextField, { dddSetTermCommandCB },
+      NULL, &term_command_w},
+    { "uncompress", MMTextField, { dddSetUncompressCommandCB },
+      NULL, &uncompress_command_w},
+    { "www",        MMTextField, { dddSetWWWCommandCB },
+      NULL, &www_command_w},
+    MMEnd
+};
+
+
 // Data
 static Widget locals_w         = 0;
 static Widget args_w           = 0;
@@ -2893,6 +2918,14 @@ inline void notify_set_toggle(Widget w, Boolean new_state)
     set_toggle(w, new_state, true);
 }
 
+inline void set_string(Widget w, String value)
+{
+    XtVaSetValues(w, 
+		  XmNvalue, value,
+		  XmNcursorPosition, 0,
+		  NULL);
+}
+
 // Reflect state in option menus
 void update_options()
 {
@@ -3070,6 +3103,13 @@ void update_options()
 	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 1000, 
 				popdown_startup_logo, (void *)&timer);
     }
+
+    set_string(edit_command_w,       app_data.edit_command);
+    set_string(get_core_command_w,   app_data.get_core_command);
+    set_string(ps_command_w,         app_data.ps_command);
+    set_string(term_command_w,       app_data.term_command);
+    set_string(uncompress_command_w, app_data.uncompress_command);
+    set_string(www_command_w,        app_data.www_command);
 
     update_reset_preferences();
     fix_status_size();
@@ -3452,6 +3492,7 @@ static void make_preferences(Widget parent)
     preferences_dialog = 
 	verify(XmCreatePromptDialog(parent, "preferences", args, arg));
     Delay::register_shell(preferences_dialog);
+    XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), NULL);
 
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(preferences_dialog,
@@ -3505,6 +3546,8 @@ static void make_preferences(Widget parent)
     add_panel(change, buttons, "data",    data_preferences_menu,    
 	      max_width, max_height, false);
     add_panel(change, buttons, "startup", startup_preferences_menu, 
+	      max_width, max_height, false);
+    add_panel(change, buttons, "helpers", helpers_preferences_menu, 
 	      max_width, max_height, false);
 
     unsigned char unit_type;
