@@ -461,9 +461,14 @@ void start_gdb(bool config)
     string settings;
     switch (gdb->type())
     {
-    case GDB:
-	init     = str(app_data.gdb_init_commands);
-	settings = str(app_data.gdb_settings);
+    case BASH:
+	init     = str(app_data.bash_init_commands);
+	settings = str(app_data.bash_settings);
+	break;
+
+    case DBG:
+	init     = str(app_data.dbg_init_commands);
+	settings = str(app_data.dbg_settings);
 	break;
 
     case DBX:
@@ -471,9 +476,9 @@ void start_gdb(bool config)
 	settings = str(app_data.dbx_settings);
 	break;
 
-    case XDB:
-	init     = str(app_data.xdb_init_commands);
-	settings = str(app_data.xdb_settings);
+    case GDB:
+	init     = str(app_data.gdb_init_commands);
+	settings = str(app_data.gdb_settings);
 	break;
 
     case JDB:
@@ -481,19 +486,19 @@ void start_gdb(bool config)
 	settings = str(app_data.jdb_settings);
 	break;
 
-    case PYDB:
-	init     = str(app_data.pydb_init_commands);
-	settings = str(app_data.pydb_settings);
-	break;
-
     case PERL:
 	init     = str(app_data.perl_init_commands);
 	settings = str(app_data.perl_settings);
 	break;
 
-    case BASH:
-	init     = str(app_data.bash_init_commands);
-	settings = str(app_data.bash_settings);
+    case PYDB:
+	init     = str(app_data.pydb_init_commands);
+	settings = str(app_data.pydb_settings);
+	break;
+
+    case XDB:
+	init     = str(app_data.xdb_init_commands);
+	settings = str(app_data.xdb_settings);
 	break;
     }
     string restart = str(app_data.restart_commands);
@@ -644,6 +649,14 @@ void start_gdb(bool config)
 	cmds += gdb->pwd_command();
 	extra_data->refresh_pwd = true;
 	cmds += "L";
+	extra_data->refresh_breakpoints = true;
+	break;
+
+    case DBG:
+	extra_data->refresh_initial_line = true;
+	cmds += "pwd";
+	extra_data->refresh_pwd = true;
+	cmds += "info breakpoints";
 	extra_data->refresh_breakpoints = true;
 	break;
     }
@@ -1001,8 +1014,9 @@ void send_gdb_command(string cmd, Widget origin,
 		    cmd_data->lookup_arg = arg;
 		    break;
 
-		case PERL:
 		case BASH:
+		case DBG:
+		case PERL:
 		    // Perl/bash `l' command issues a position anyway.
 		    break;
 		}
@@ -1158,6 +1172,7 @@ void send_gdb_command(string cmd, Widget origin,
 	case GDB:
 	case XDB:
 	case PYDB:
+	case DBG:
 	    break;		// FIXME
 	}
     }
@@ -1742,6 +1757,27 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_setting)
 	    cmds += show_command(cmd, gdb->type());
 	break;
+
+    case DBG:
+	if (extra_data->refresh_pwd)
+	    cmds += gdb->pwd_command();
+	if (extra_data->refresh_breakpoints)
+	    cmds += "info breakpoints";
+	if (extra_data->refresh_where)
+	    cmds += gdb->where_command();
+	if (extra_data->refresh_frame)
+	    cmds += gdb->frame_command();
+	if (extra_data->refresh_data)
+	    extra_data->n_refresh_data = 
+		data_disp->add_refresh_data_commands(cmds);
+	if (extra_data->refresh_user)
+	    extra_data->n_refresh_user = 
+		data_disp->add_refresh_user_commands(cmds);
+	if (extra_data->refresh_disp_info)
+	    cmds += gdb->info_display_command();
+	if (extra_data->refresh_setting)
+	    cmds += show_command(cmd, gdb->type());
+	break;
     }
 
     while (dummy.size() < cmds.size())
@@ -2120,6 +2156,7 @@ static void command_completed(void *data)
 		// GDB always issues file names on positions...
 		break;
 
+	    case DBG:
 	    case JDB:
 	    case PYDB:
 	    case PERL:
@@ -2817,7 +2854,7 @@ static void extra_completed (const StringArray& answers,
     while (extra_data->n_init > 0)
     {
 	// Handle output of initialization commands
-	process_init(answers[qu_count++]);
+	process_init((qu_count<count)?(answers[qu_count++]):(""));
 	extra_data->n_init--;
     }
 
@@ -2837,9 +2874,9 @@ static void extra_completed (const StringArray& answers,
 	    string info_line;
 
 	    // Handle `info line' output
-	    string info_line1 = answers[qu_count++];
-	    string list       = answers[qu_count++];
-	    string info_line2 = answers[qu_count++];
+	    string info_line1 = (qu_count<count)?(answers[qu_count++]):("");
+	    string list       = (qu_count<count)?(answers[qu_count++]):("");
+	    string info_line2 = (qu_count<count)?(answers[qu_count++]):("");
 
 	    // Skip initial message lines like `Reading symbols...'
 	    while (!list.empty() && !has_nr(list))
@@ -2872,11 +2909,12 @@ static void extra_completed (const StringArray& answers,
 	    break;
 	}
 
+	case BASH:
+	case DBG:
 	case DBX:
 	case JDB:
-	case PYDB:
 	case PERL:
-	case BASH:
+	case PYDB:
 	{
 	    // Clear caches and such
 	    string dummy = "";

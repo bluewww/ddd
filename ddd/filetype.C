@@ -383,6 +383,19 @@ bool is_bash_file(const string& file_name)
     return false;
 }
 
+// A PHP file is a standard source file which ends in '.php' or `.php4'
+bool is_php_file(const string& file_name)
+{
+    if (!is_source_file(file_name))
+	return false;
+
+    if (file_name.contains(".php", -1) || 
+	file_name.contains(".php4", -1))
+	return true;
+
+    return false;
+}
+
 // True if FILE_NAME is a directory
 bool is_directory(const string& file_name)
 {

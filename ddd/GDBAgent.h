@@ -57,7 +57,7 @@
 // Debugger types
 //-----------------------------------------------------------------------------
 
-enum DebuggerType { GDB, DBX, XDB, JDB, PYDB, PERL, BASH };
+enum DebuggerType { BASH, DBG, DBX, GDB, JDB, PERL, PYDB, XDB };
 //-----------------------------------------------------------------------------
 // Program language
 //-----------------------------------------------------------------------------
@@ -67,15 +67,16 @@ enum DebuggerType { GDB, DBX, XDB, JDB, PYDB, PERL, BASH };
 #endif
 
 enum ProgramLanguage { 
-    LANGUAGE_C,			// C-like: C, C++
-    LANGUAGE_JAVA,		// Java, as supported by GDB.
-    LANGUAGE_PASCAL,		// Pascal-like: Pascal, Modula...
     LANGUAGE_ADA,		// Ada (GNAT), as supported by GDB
+    LANGUAGE_BASH,		// Bash, as supported by bashdb.
+    LANGUAGE_C,			// C-like: C, C++
     LANGUAGE_CHILL,		// Chill, as supported by GDB.
     LANGUAGE_FORTRAN,		// FORTRAN, as supported by GDB.
-    LANGUAGE_PYTHON,		// Python, as supported by PYDB.
+    LANGUAGE_JAVA,		// Java, as supported by GDB.
+    LANGUAGE_PASCAL,		// Pascal-like: Pascal, Modula...
     LANGUAGE_PERL,		// Perl, as supported by Perl.
-    LANGUAGE_BASH,		// Bash, as supported by bashdb.
+    LANGUAGE_PHP,		// PHP, as supported by DBG.
+    LANGUAGE_PYTHON,		// Python, as supported by PYDB.
     LANGUAGE_OTHER		// Others
 };
 
@@ -433,8 +434,8 @@ public:
     // True if debugger can enable breakpoints
     bool has_enable_command() const
     { 
-      return type() == GDB  || type() == XDB || type() == PYDB || 
-	type() == BASH || has_handler_command();
+      return type() == BASH || type() == DBG || type() == GDB  
+	|| type() == PYDB || type() == XDB || has_handler_command();
     }
     bool has_disable_command() const
     {
@@ -444,21 +445,22 @@ public:
     // True if debugger can set ignore counts on breakpoints
     bool has_ignore_command() const
     {
-	return type() == GDB || type() == XDB || type() == PYDB || 
-	       has_handler_command();
+	return type() == DBG || type() == GDB || type() == PYDB 
+	    || type() == XDB || has_handler_command();
     }
 
     // True if debugger can set conditions on breakpoints
     bool has_condition_command() const
     {
-      return type() == GDB || type() == PYDB || type() == BASH;
+      return type() == BASH || type() == DBG || type() == GDB 
+  	  || type() == PYDB ;
     }
 
     // True if debugger can delete breakpoints by number
     bool has_delete_command() const
     {
-      return type() == GDB || type() == XDB || type() == BASH ||
-	     type() == DBX || type() == PYDB;
+      return type() == BASH || type() == DBG || type() == DBX || type() == GDB 
+	  || type() == PYDB || type() == XDB ;
     }
 
     // True if debugger has volatile breakpoints (i.e. breakpoints may
@@ -466,7 +468,8 @@ public:
     bool has_volatile_breakpoints() const
     {
 	return type() == GDB || type() == XDB || 
-	       type() == DBX || type() == PYDB || type() == PERL;
+	       type() == DBX || type() == PYDB || type() == PERL || 
+	       type() == DBG;
     }
 
     // True if debugger supports I/O redirection
@@ -531,22 +534,24 @@ public:
     // True if debugger has numbered breakpoints
     bool has_numbered_breakpoints()
     {
-      return type() == GDB || type() == DBX || type() == XDB || type() == BASH
-	|| type() == PYDB;
+      return type() == BASH || type() == DBG || type() == DBX || type() == GDB
+	  || type() == PYDB || type() == XDB;
     }
 
     // True if debugger supports temporary breakpoints
     bool has_temporary_breakpoints() const
     {
-      return type() == GDB || type() == XDB || type() == PYDB || type() == BASH
-	|| has_when_command() || type() == PERL;
+      return type() == BASH || type() == DBG  || type() == GDB 
+	  || type() == PERL || type() == PYDB || type() == XDB 
+	  || has_when_command() ;
     }
 
     // True if debugger supports breakpoint conditions
     bool has_breakpoint_conditions() const
     {
-        return type() == GDB || type() == XDB || type() == BASH ||
-	       type() == DBX || type() == PYDB || type() == PERL;
+      return type() == BASH || type() == DBG  || type() == DBX 
+	  || type() == GDB  || type() == PERL || type() == PYDB 
+ 	  || type() == XDB;
     }
 
     // True if debugger supports breakpoint commands
@@ -589,7 +594,7 @@ public:
     // True if debugger can enable displays
     bool has_enable_display_command() const
     {
-	return type() == GDB || type() == PYDB;
+	return type() == GDB || type() == PYDB || type() == DBG;
     }
     bool has_disable_display_command() const
     {
@@ -599,7 +604,7 @@ public:
     // True if debugger has numbered displays
     bool has_numbered_displays()
     {
-	return type() == GDB || type() == PYDB;
+	return type() == GDB || type() == PYDB || type() == DBG;
     }
 
     // True if debugger wants displays separated by `,'

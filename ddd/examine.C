@@ -173,11 +173,12 @@ static string format(const string& format, const string& size)
 	// Ignore size in all other cases
 	return format;
 
-    case XDB:
+    case BASH:
+    case DBG:
     case JDB:
     case PYDB:
     case PERL:
-    case BASH:
+    case XDB:
 	// No way
 	break;
     }
@@ -209,11 +210,12 @@ static string examine_command()
 	// x /FMT ADDRESS
 	return "x " + fmt + " " + address;
 
-    case XDB:
+    case BASH:
+    case DBG:
     case JDB:
     case PYDB:
     case PERL:
-    case BASH:
+    case XDB:
 	break;			// No way
     }
 

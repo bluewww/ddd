@@ -602,6 +602,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	case GDB:
 	case BASH:
 	case PYDB:
+	case DBG:
 	    if (temp)
 		gdb_command("tbreak " + address, w);
 	    else
@@ -810,6 +811,8 @@ void SourceView::temp_n_cont(const string& a, Widget w)
 	break;
 #endif
     
+    case BASH: // Is this correct? 
+    case DBG:  // Is this correct? 
     case DBX:
     case JDB:
     case PYDB:
@@ -833,7 +836,6 @@ void SourceView::temp_n_cont(const string& a, Widget w)
 	gdb_command("c " + address, w);
 	break;
 
-    case BASH:
     case PERL:
 	if (is_file_pos(address))
 	    address = address.after(':');
@@ -903,10 +905,11 @@ bool SourceView::move_pc(const string& a, Widget w)
 	    create_temp_bp(address, w);
 	    break;
 
-	case JDB:
-	case PYDB:
-	case PERL:
 	case BASH:
+	case DBG:
+	case JDB:
+	case PERL:
+	case PYDB:
 	    break;		// Never reached
 	}
 
@@ -1118,7 +1121,7 @@ string SourceView::numbers(const IntArray& nrs)
 // Same, but use "" if we have GDB and all numbers are used
 string SourceView::all_numbers(const IntArray& nrs)
 {
-    if ((gdb->type() == GDB || gdb->type() == PYDB) && all_bps(nrs))
+    if ((gdb->type() == GDB || gdb->type() == PYDB || gdb->type() == DBG) && all_bps(nrs))
 	return "";		// In GDB, no arg means `all'
     else
 	return numbers(nrs);
@@ -1247,10 +1250,10 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
     {
 	switch (gdb->type())
 	{
+	case BASH:
 	case GDB:
 	case JDB:
 	case PYDB:
-	case BASH:
 	    return "clear " + pos;
 
 	case PERL:
@@ -1318,6 +1321,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 		return "clear " + line;
 	    break;
 
+	case DBG:
 	case XDB:
 	    break;
 	}
@@ -2130,6 +2134,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     string command;
     switch (gdb->type())
     {
+    case DBG: // Is this correct? DBG "list" sommand seems not to do anything
     case GDB:
 	command = "list " + file_name + ":1," HUGE_LINE_NUMBER;
 	break;
@@ -3983,6 +3988,7 @@ void SourceView::process_info_bp (string& info_output,
 	    check_remainder(info_output);
 	break;
 
+    case DBG:
     case DBX:
     case XDB:
     case JDB:
@@ -4010,6 +4016,7 @@ void SourceView::process_info_bp (string& info_output,
 	case BASH:
 	case GDB:
 	case PYDB:
+	case DBG:
 	    if (!has_nr(info_output))
 	    {
 		// Skip this line
@@ -4201,12 +4208,13 @@ void SourceView::process_info_line_main(string& info_output)
 
     switch (gdb->type())
     {
-    case GDB:
-    case XDB:
-    case JDB:
-    case PYDB:
-    case PERL:
     case BASH:
+    case DBG:
+    case GDB:
+    case JDB:
+    case PERL:
+    case PYDB:
+    case XDB:
     {
 	PosBuffer pos_buffer;
 	pos_buffer.filter(info_output);
@@ -4345,11 +4353,12 @@ void SourceView::lookup(string s, bool silent)
 		show_position(current_source_name() + ":" + itostring(line));
 		break;
 
+	    case BASH:
+	    case DBG: 
 	    case DBX:
+	    case PERL:
 	    case XDB:
 	    case PYDB:
-	    case BASH:
-	    case PERL:
 		show_position(full_path(current_file_name) 
 			      + ":" + itostring(line));
 		break;
@@ -4414,6 +4423,7 @@ void SourceView::lookup(string s, bool silent)
 	}
 
 	case BASH:
+	case DBG:
 	case PERL:
 	{
 	    Command c("l " + s);
@@ -4492,10 +4502,11 @@ void SourceView::add_position_to_history(const string& file_name, int line,
 	    source_name = source_name_cache[file_name];
 	break;
 
+    case BASH:
+    case DBG:
     case DBX:
     case XDB:
     case PERL:
-    case BASH:
 	break;
     }
 
@@ -4598,11 +4609,12 @@ void SourceView::process_pwd(string& pwd_output)
 	    }
 	    // FALL THROUGH
 
-	case XDB:
+	case BASH:
+	case DBG:
 	case DBX:		// 'PATH'
 	case JDB:
-	case BASH:
 	case PERL:
+	case XDB:
 	    if (pwd.contains('/', 0) && !pwd.contains(" "))
 	    {
 		current_pwd = pwd;
@@ -4898,11 +4910,12 @@ string SourceView::current_source_name()
 	source = source_name_cache[current_file_name];
 	break;
 
-    case DBX:
-    case XDB:
-    case PYDB:
     case BASH:
+    case DBG:
+    case DBX:
     case PERL:
+    case PYDB:
+    case XDB:
 	if (app_data.use_source_path)
 	{
 	    // These debuggers use full file names.
@@ -5976,6 +5989,7 @@ static string cond_filter(const string& cmd)
 
     case BASH:
     case PERL:
+    case DBG:
     {
 	// FIXME
 	break;
@@ -6807,6 +6821,7 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
 
     setLabelList(breakpoint_list_w, breakpoint_list, selected, count,
 		 (gdb->type() == GDB || 
+		  gdb->type() == DBG || 
 		  gdb->type() == PYDB) && count > 1, false);
 
     UpdateBreakpointButtonsCB(breakpoint_list_w, XtPointer(0), XtPointer(0));
@@ -6922,6 +6937,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     {
     case BASH:
     case GDB:
+    case DBG:
 	// GDB frame output is caught by our routines.
 	gdb_command(gdb->frame_command(count - cbs->item_position));
 	break;
@@ -7126,9 +7142,10 @@ void SourceView::process_frame(string& frame_output)
 
 	switch (gdb->type())
 	{
+	case BASH:
+ 	case DBG:
 	case GDB:
 	case PYDB:
-	case BASH:
 	    frame_nr = frame_output.after(0);
 	    break;
 
@@ -7212,6 +7229,7 @@ void SourceView::process_frame(int frame)
 	case PYDB:
 	case BASH:
 	case PERL:
+	case DBG:
 	    pos = count - frame;
 	    break;
 
@@ -7519,11 +7537,12 @@ void SourceView::process_threads(string& threads_output)
 	break;
     }
 
+    case BASH:
+    case DBG:
     case DBX:
     case XDB:
-    case PYDB:
-    case BASH:
     case PERL:
+    case PYDB:
     {
 	for (int i = 0; i < count; i++)
 	    selected[i] = false;
@@ -7563,11 +7582,12 @@ void SourceView::refresh_threads(bool all_threadgroups)
 	break;
     }
 
+    case BASH:
+    case DBG:
     case DBX:
     case XDB:
-    case PYDB:
     case PERL:
-    case BASH:
+    case PYDB:
 	// No threads.
 	break;
     }
@@ -9825,10 +9845,11 @@ bool SourceView::get_state(std::ostream& os)
 	os << "info line " << line_of_cursor() << '\n';
 	break;
 
+    case BASH:
+    case DBG:
     case DBX:
     case JDB:
     case PERL:
-    case BASH:
 	break;			// FIXME
 
     case XDB:

@@ -65,6 +65,7 @@ protected:
     void filter_xdb(string& answer);
     void filter_jdb(string& answer);
     void filter_pydb(string& answer);
+    void filter_dbg(string& answer);
     void filter_perl(string& answer);
     void filter_bash(string& answer);
 

@@ -419,11 +419,12 @@ static string gdbSettingsValue(const string& command)
 	}
 	break;
 
+    case DBG:
     case DBX:
-    case XDB:
     case JDB:
-    case PYDB:
     case PERL:
+    case PYDB:
+    case XDB:
 	return NO_GDB_ANSWER;		// FIXME
     }
 
@@ -1532,13 +1533,14 @@ static void create_buttons_dialog(Widget parent)
     const _XtString *str = 0;
     switch (gdb->type())
     {
-    case GDB:  str = &app_data.gdb_display_shortcuts;  break;
-    case DBX:  str = &app_data.dbx_display_shortcuts;  break;
-    case XDB:  str = &app_data.xdb_display_shortcuts;  break;
-    case JDB:  str = &app_data.jdb_display_shortcuts;  break;
-    case PYDB: str = &app_data.pydb_display_shortcuts; break;
-    case PERL: str = &app_data.perl_display_shortcuts; break;
     case BASH: str = &app_data.bash_display_shortcuts; break;
+    case DBG:  str = &app_data.dbg_display_shortcuts;  break;
+    case DBX:  str = &app_data.dbx_display_shortcuts;  break;
+    case GDB:  str = &app_data.gdb_display_shortcuts;  break;
+    case JDB:  str = &app_data.jdb_display_shortcuts;  break;
+    case PERL: str = &app_data.perl_display_shortcuts; break;
+    case PYDB: str = &app_data.pydb_display_shortcuts; break;
+    case XDB:  str = &app_data.xdb_display_shortcuts;  break;
     }
 
     shortcut_w = 
@@ -1610,13 +1612,14 @@ void refresh_button_editor()
     const _XtString *str = 0;
     switch (gdb->type())
     {
-    case GDB:  str = &app_data.gdb_display_shortcuts;  break;
-    case DBX:  str = &app_data.dbx_display_shortcuts;  break;
-    case XDB:  str = &app_data.xdb_display_shortcuts;  break;
-    case JDB:  str = &app_data.jdb_display_shortcuts;  break;
-    case PYDB: str = &app_data.pydb_display_shortcuts; break;
-    case PERL: str = &app_data.perl_display_shortcuts; break;
     case BASH: str = &app_data.bash_display_shortcuts; break;
+    case DBG:  str = &app_data.dbg_display_shortcuts;  break;
+    case DBX:  str = &app_data.dbx_display_shortcuts;  break;
+    case GDB:  str = &app_data.gdb_display_shortcuts;  break;
+    case JDB:  str = &app_data.jdb_display_shortcuts;  break;
+    case PERL: str = &app_data.perl_display_shortcuts; break;
+    case PYDB: str = &app_data.pydb_display_shortcuts; break;
+    case XDB:  str = &app_data.xdb_display_shortcuts;  break;
     }
 
     *str = STATIC_CAST(String,XtNewString(expr.chars()));

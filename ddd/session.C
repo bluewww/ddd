@@ -979,27 +979,31 @@ static void open_session(const string& session)
     const _XtString shortcuts = 0;
     switch (gdb->type())
     {
-    case GDB:  shortcuts = XtNgdbDisplayShortcuts;  break;
-    case DBX:  shortcuts = XtNdbxDisplayShortcuts;  break;
-    case XDB:  shortcuts = XtNxdbDisplayShortcuts;  break;
-    case JDB:  shortcuts = XtNjdbDisplayShortcuts;  break;
-    case PYDB: shortcuts = XtNpydbDisplayShortcuts; break;
-    case PERL: shortcuts = XtNperlDisplayShortcuts; break;
     case BASH: shortcuts = XtNbashDisplayShortcuts; break;
+    case DBG:  shortcuts = XtNdbgDisplayShortcuts;  break;
+    case DBX:  shortcuts = XtNdbxDisplayShortcuts;  break;
+    case GDB:  shortcuts = XtNgdbDisplayShortcuts;  break;
+    case JDB:  shortcuts = XtNjdbDisplayShortcuts;  break;
+    case PERL: shortcuts = XtNperlDisplayShortcuts; break;
+    case PYDB: shortcuts = XtNpydbDisplayShortcuts; break;
+    case XDB:  shortcuts = XtNxdbDisplayShortcuts;  break;
     }
 
     display_shortcuts = get_resource(db, shortcuts, XtCDisplayShortcuts);
 
     switch (gdb->type())
     {
-    case GDB:
-	app_data.gdb_display_shortcuts  = display_shortcuts.chars();
+    case BASH:
+	app_data.bash_display_shortcuts = display_shortcuts.chars();
+	break;
+    case DBG:  
+         app_data.dbg_display_shortcuts  = display_shortcuts.chars(); 
 	break;
     case DBX:
 	app_data.dbx_display_shortcuts  = display_shortcuts.chars();
 	break;
-    case XDB:
-	app_data.xdb_display_shortcuts  = display_shortcuts.chars();
+    case GDB:
+	app_data.gdb_display_shortcuts  = display_shortcuts.chars();
 	break;
     case JDB:
 	app_data.jdb_display_shortcuts  = display_shortcuts.chars();
@@ -1010,8 +1014,8 @@ static void open_session(const string& session)
     case PERL:
 	app_data.perl_display_shortcuts = display_shortcuts.chars();
 	break;
-    case BASH:
-	app_data.bash_display_shortcuts = display_shortcuts.chars();
+    case XDB:
+	app_data.xdb_display_shortcuts  = display_shortcuts.chars();
 	break;
     }
     update_user_buttons();
@@ -1029,12 +1033,20 @@ static void open_session(const string& session)
     string settings;
     switch (gdb->type())
     {
-    case GDB:
-	settings = get_resource(db, XtNgdbSettings, XtCSettings);
+    case BASH:
+	settings = get_resource(db, XtNbashSettings, XtCSettings);
+	break;
+
+    case DBG:
+	settings = get_resource(db, XtNdbgSettings, XtCSettings);
 	break;
 
     case DBX:
 	settings = get_resource(db, XtNdbxSettings, XtCSettings);
+	break;
+
+    case GDB:
+	settings = get_resource(db, XtNgdbSettings, XtCSettings);
 	break;
 
     case XDB:
@@ -1053,9 +1065,6 @@ static void open_session(const string& session)
 	settings = get_resource(db, XtNperlSettings, XtCSettings);
 	break;
 
-    case BASH:
-	settings = get_resource(db, XtNbashSettings, XtCSettings);
-	break;
     }
     init_session(restart, settings, app_data.source_init_commands);
 
@@ -1086,32 +1095,36 @@ void RestartDebuggerCB(Widget, XtPointer, XtPointer)
     settings = get_settings(gdb->type());
     switch (gdb->type())
     {
-    case GDB:
-	app_data.gdb_settings = settings.chars();
+    case BASH:
+	app_data.perl_settings = settings.chars();
+	break;
+
+    case DBG:
+	app_data.dbg_settings = settings.chars();
 	break;
 
     case DBX:
 	app_data.dbx_settings = settings.chars();
 	break;
 
-    case XDB:
-	app_data.xdb_settings = settings.chars();
+    case GDB:
+	app_data.gdb_settings = settings.chars();
 	break;
 
     case JDB:
 	app_data.jdb_settings = settings.chars();
 	break;
 
-    case PYDB:
-	app_data.pydb_settings = settings.chars();
-	break;
-
     case PERL:
 	app_data.perl_settings = settings.chars();
 	break;
 
-    case BASH:
-	app_data.perl_settings = settings.chars();
+    case PYDB:
+	app_data.pydb_settings = settings.chars();
+	break;
+
+    case XDB:
+	app_data.xdb_settings = settings.chars();
 	break;
     }
 

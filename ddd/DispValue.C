@@ -545,6 +545,12 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		member_prefix = normalize_base(member_prefix) + "{'";
 		member_suffix = "'}";
 	    }
+	    else if (gdb->program_language() == LANGUAGE_PHP)
+	    {
+		// In PHP, members of $A are accessed as $A['MEMBER_NAME']
+		member_prefix = normalize_base(member_prefix) + "['";
+		member_suffix = "']";
+	    }
 	    else if (gdb->program_language() == LANGUAGE_FORTRAN)
 	    {
 		// In Fortran, members of A are accessed as A%B

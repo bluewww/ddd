@@ -362,5 +362,7 @@ C7[[]-?{D}]{W}*={W}[[]-?{D}]{C}         RETURN(&rxdoubleindex);
 C8{_}(r|ru|run|rer|rerun|c|cont|contin|continu|continue|R|exec)({W}{C})? RETURN(&rxcont_cmd);
 C9bashdb<+[(]*[0-9]*[)]*>+{w}		RETURN(&rxbashprompt);
 D0[(][^:]*:{P}[)]:.*	                RETURN(&rxbashpos);
+D1[^ \t]*:{_}{P}{_}<.*>       		RETURN(&rxdbgpos);
+D2#{D}{_}<.*>{_}at{_}[^ \t]*:{_}{P}	RETURN(&rxdbgframepos);
 (.|\n)				        RETURN(0);  // Anything else
 %%

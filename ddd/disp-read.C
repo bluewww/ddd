@@ -70,12 +70,13 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
     case GDB:
 	return cmd.matches (rxsingle_display_cmd);
 
-    case DBX:
-    case XDB:
-    case JDB:
-    case PYDB:
-    case PERL:
     case BASH:
+    case DBG:
+    case DBX:
+    case JDB:
+    case PERL:
+    case PYDB:
+    case XDB:
 	return false;
     }
 
@@ -394,6 +395,7 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
     {
     case GDB:
     case PYDB:
+    case DBG:
     {
 #if RUNTIME_REGEX
 	static regex rxfile_cmd("[ \t]*(file|load)([ \t]+.*)?");
@@ -641,14 +643,15 @@ int display_index (const string& gdb_answer, GDBAgent *gdb)
     {
     case GDB: 
     case PYDB:
+    case DBG:
 	prx = &rxgdb_begin_of_display;
 	break;
 
+    case BASH:
     case DBX:
-    case XDB:
     case JDB:
     case PERL:
-    case BASH:
+    case XDB:
 	prx = &rxdbx_begin_of_display;
 	break;
     }
@@ -799,6 +802,7 @@ static int display_info_index (const string& gdb_answer, GDBAgent *gdb)
     {
     case GDB: 
     case PYDB:
+    case DBG:
 	prx = &rxgdb_begin_of_display_info;
 	break;
 
@@ -844,6 +848,7 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
     {
     case GDB:
     case PYDB:
+    case DBG:
     {
 	int startpos = gdb_answer.index (": ");
 	int i = startpos + 2;
@@ -907,6 +912,7 @@ string get_info_disp_str (const string& display_info, GDBAgent *gdb)
     {
     case GDB:
     case PYDB:
+    case DBG:
 	return display_info.after (":   ");
 
     case DBX:
@@ -931,13 +937,14 @@ bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb)
     case PYDB:
 	return info_disp_str.length() > 0 && info_disp_str[0] == 'n';
 
+    case DBG:
     case DBX:
 	return false;		// no display disabling in dbx
 
-    case XDB:
+    case BASH:
     case JDB:
     case PERL:
-    case BASH:
+    case XDB:
 	return false;		// FIXME
     }
 
@@ -957,6 +964,7 @@ string  read_disp_nr_str (string& display, GDBAgent *gdb)
     {
     case GDB:
     case PYDB:
+    case DBG:
     {
 #if RUNTIME_REGEX
 	static regex rxgdb_disp_nr("[1-9][0-9]*");

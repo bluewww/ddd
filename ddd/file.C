@@ -499,6 +499,10 @@ static void searchLocalExecFiles(Widget fs,
 	searchLocal(fs, cbs, is_perl_file);
 	break;
 
+    case DBG:
+	searchLocal(fs, cbs, is_php_file);
+	break;
+    
     case GDB:
 	searchLocal(fs, cbs, is_debuggee_file);
 	break;
@@ -637,11 +641,12 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 		post_error("No program.", "no_program", w);
 	    break;
 
-	case XDB:
-	case JDB:
-	case PYDB:
-	case PERL:
 	case BASH:
+	case DBG:
+	case JDB:
+	case PERL:
+	case PYDB:
+	case XDB:
 	    break;		// FIXME
 	}
     }
@@ -695,6 +700,7 @@ ProgramInfo::ProgramInfo()
     {
     case GDB:
     case PYDB:
+    case DBG:
     {
     	string ans;
 

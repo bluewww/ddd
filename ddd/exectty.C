@@ -480,10 +480,11 @@ static int gdb_set_tty(string tty_name = "",
     }
     break;
 
-    case XDB:
-    case JDB:
     case BASH:
+    case DBG:
+    case JDB:
     case PYDB:	// for now
+    case XDB:
 	// No way to set environment variables
 	break;
     }
@@ -649,6 +650,9 @@ static void redirect_process(string& command,
 	// XDB uses ksh-style redirection.
 	add_sh_redirection(gdb_redirection, tty_name, args);
 	break;
+
+    case DBG:
+	break;			// Don't know if it's there.
 
     case JDB:
 	break;			// No redirection in JDB

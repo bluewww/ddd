@@ -1818,33 +1818,38 @@ static void reload_options()
     string settings;
     switch (gdb->type())
     {
-    case GDB:
-	settings = str(app_data.gdb_settings);
+    case BASH:
+	settings = str(app_data.bash_settings);
+	break;
+
+    case DBG:
+	settings = str(app_data.dbg_settings);
 	break;
 
     case DBX:
 	settings = str(app_data.dbx_settings);
 	break;
 
-    case XDB:
-	settings = str(app_data.xdb_settings);
+    case GDB:
+	settings = str(app_data.gdb_settings);
 	break;
 
     case JDB:
 	settings = str(app_data.jdb_settings);
 	break;
 
-    case PYDB:
-	settings = str(app_data.pydb_settings);
-	break;
-
     case PERL:
 	settings = str(app_data.perl_settings);
 	break;
 
-    case BASH:
-	settings = str(app_data.bash_settings);
+    case PYDB:
+	settings = str(app_data.pydb_settings);
 	break;
+
+    case XDB:
+	settings = str(app_data.xdb_settings);
+	break;
+
     }
 
     init_session(restart, settings, app_data.source_init_commands);
@@ -2322,6 +2327,7 @@ bool get_restart_commands(string& restart, unsigned long flags)
 
 	case XDB:
 	case PYDB:
+	case DBG:
 	    // FIXME
 	    break;
 	}
@@ -2431,13 +2437,14 @@ bool save_options(unsigned long flags)
     os << string_app_value(XtNdebugger, app_data.debugger) << '\n';
     os << bool_app_value(XtNuseSourcePath, app_data.use_source_path) << '\n';
 
-    string gdb_settings  = app_data.gdb_settings;
+    string bash_settings = app_data.bash_settings;
+    string dbg_settings  = app_data.dbg_settings;
     string dbx_settings  = app_data.dbx_settings;
+    string gdb_settings  = app_data.gdb_settings;
     string xdb_settings  = app_data.xdb_settings;
     string jdb_settings  = app_data.jdb_settings;
-    string pydb_settings = app_data.pydb_settings;
     string perl_settings = app_data.perl_settings;
-    string bash_settings = app_data.bash_settings;
+    string pydb_settings = app_data.pydb_settings;
 
     if (need_settings() || need_save_defines())
     {
@@ -2450,12 +2457,20 @@ bool save_options(unsigned long flags)
 
 	switch (gdb->type())
 	{
-	case GDB:
-	    gdb_settings = settings;
+	case BASH:
+	    bash_settings = settings;
+	    break;
+
+	case DBG:
+	    dbg_settings = settings;
 	    break;
 
 	case DBX:
 	    dbx_settings = settings;
+	    break;
+
+	case GDB:
+	    gdb_settings = settings;
 	    break;
 
 	case XDB:
@@ -2474,19 +2489,17 @@ bool save_options(unsigned long flags)
 	    perl_settings = settings;
 	    break;
 
-	case BASH:
-	    bash_settings = settings;
-	    break;
 	}
     }
 
-    os << string_app_value(XtNgdbSettings,  gdb_settings.chars(), true)  << '\n';
-    os << string_app_value(XtNdbxSettings,  dbx_settings.chars(), true)  << '\n';
-    os << string_app_value(XtNxdbSettings,  xdb_settings.chars(), true)  << '\n';
-    os << string_app_value(XtNjdbSettings,  jdb_settings.chars(), true)  << '\n';
-    os << string_app_value(XtNpydbSettings, pydb_settings.chars(), true) << '\n';
-    os << string_app_value(XtNperlSettings, perl_settings.chars(), true) << '\n';
     os << string_app_value(XtNbashSettings, bash_settings.chars(), true) << '\n';
+    os << string_app_value(XtNdbgSettings,  dbg_settings.chars(), true)  << '\n';
+    os << string_app_value(XtNdbxSettings,  dbx_settings.chars(), true)  << '\n';
+    os << string_app_value(XtNgdbSettings,  gdb_settings.chars(), true)  << '\n';
+    os << string_app_value(XtNjdbSettings,  jdb_settings.chars(), true)  << '\n';
+    os << string_app_value(XtNperlSettings, perl_settings.chars(), true) << '\n';
+    os << string_app_value(XtNpydbSettings, pydb_settings.chars(), true) << '\n';
+    os << string_app_value(XtNxdbSettings,  xdb_settings.chars(), true)  << '\n';
 
     os << "\n! Source.\n";
     os << bool_app_value(XtNfindWordsOnly,
@@ -2730,39 +2743,43 @@ bool save_options(unsigned long flags)
 	    }
 	}
 
-	string gdb_display_shortcuts  = app_data.gdb_display_shortcuts;
+	string bash_display_shortcuts = app_data.bash_display_shortcuts;
+ 	string dbg_display_shortcuts  = app_data.dbg_display_shortcuts;
 	string dbx_display_shortcuts  = app_data.dbx_display_shortcuts;
-	string xdb_display_shortcuts  = app_data.xdb_display_shortcuts;
+	string gdb_display_shortcuts  = app_data.gdb_display_shortcuts;
 	string jdb_display_shortcuts  = app_data.jdb_display_shortcuts;
 	string pydb_display_shortcuts = app_data.pydb_display_shortcuts;
 	string perl_display_shortcuts = app_data.perl_display_shortcuts;
-	string bash_display_shortcuts = app_data.bash_display_shortcuts;
+	string xdb_display_shortcuts  = app_data.xdb_display_shortcuts;
 
 	switch (gdb->type())
 	{
-	case GDB:  gdb_display_shortcuts  = expr; break;
-	case DBX:  dbx_display_shortcuts  = expr; break;
-	case XDB:  xdb_display_shortcuts  = expr; break;
-	case JDB:  jdb_display_shortcuts  = expr; break;
-	case PYDB: pydb_display_shortcuts = expr; break;
-	case PERL: perl_display_shortcuts = expr; break;
 	case BASH: bash_display_shortcuts = expr; break;
+ 	case DBG:  dbg_display_shortcuts  = expr; break;
+	case DBX:  dbx_display_shortcuts  = expr; break;
+	case GDB:  gdb_display_shortcuts  = expr; break;
+	case JDB:  jdb_display_shortcuts  = expr; break;
+	case PERL: perl_display_shortcuts = expr; break;
+	case PYDB: pydb_display_shortcuts = expr; break;
+	case XDB:  xdb_display_shortcuts  = expr; break;
 	}
 
-	os << string_app_value(XtNgdbDisplayShortcuts, 
-			       gdb_display_shortcuts.chars(), true) << '\n';
-	os << string_app_value(XtNdbxDisplayShortcuts,
-			       dbx_display_shortcuts.chars(), true) << '\n';
-	os << string_app_value(XtNxdbDisplayShortcuts,
-			       xdb_display_shortcuts.chars(), true) << '\n';
-	os << string_app_value(XtNjdbDisplayShortcuts,
-			       jdb_display_shortcuts.chars(), true) << '\n';
-	os << string_app_value(XtNpydbDisplayShortcuts,
-			       pydb_display_shortcuts.chars(), true) << '\n';
-	os << string_app_value(XtNperlDisplayShortcuts,
-			       perl_display_shortcuts.chars(), true) << '\n';
 	os << string_app_value(XtNbashDisplayShortcuts,
 			       bash_display_shortcuts.chars(), true) << '\n';
+ 	os << string_app_value(XtNdbgDisplayShortcuts,
+ 			       dbg_display_shortcuts.chars(), true)  << '\n';
+	os << string_app_value(XtNdbxDisplayShortcuts,
+			       dbx_display_shortcuts.chars(), true) << '\n';
+	os << string_app_value(XtNgdbDisplayShortcuts, 
+			       gdb_display_shortcuts.chars(), true) << '\n';
+	os << string_app_value(XtNjdbDisplayShortcuts,
+			       jdb_display_shortcuts.chars(), true) << '\n';
+	os << string_app_value(XtNperlDisplayShortcuts,
+			       perl_display_shortcuts.chars(), true) << '\n';
+	os << string_app_value(XtNpydbDisplayShortcuts,
+			       pydb_display_shortcuts.chars(), true) << '\n';
+	os << string_app_value(XtNxdbDisplayShortcuts,
+			       xdb_display_shortcuts.chars(), true) << '\n';
     }
 
     // Fonts

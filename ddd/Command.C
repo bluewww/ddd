@@ -172,7 +172,6 @@ void translate_command(string& command)
 	break;
 
     case PERL:
-    case BASH:
 	// PERL only has one-letter commands
         // BASHDB doesn't but it accepts perl's one-letter commands
 	if (command == "run" || command == "R")
@@ -189,6 +188,8 @@ void translate_command(string& command)
 	    command = "r";
 	break;
 
+    case BASH: // I think this is right.
+    case DBG:  // I think this is right.
     case GDB:
 	break;
     }

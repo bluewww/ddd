@@ -251,4 +251,5 @@ const regex rxdoubleindex               (rx_matcher, (void *)"C7");
 const regex rxcont_cmd                  (rx_matcher, (void *)"C8");
 const regex rxbashprompt                (rx_matcher, (void *)"C9");
 const regex rxbashpos                   (rx_matcher, (void *)"D0");
-
+const regex rxdbgpos			(rx_matcher, (void *)"D1");
+const regex rxdbgframepos		(rx_matcher, (void *)"D2");

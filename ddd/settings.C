@@ -743,7 +743,7 @@ void process_show(const string& command, string value, bool init)
     if (!init)
 	set_status(value);
 
-    if (gdb->type() == GDB || gdb->type() == BASH )
+    if (gdb->type() == BASH || gdb->type() == DBG || gdb->type() == GDB)
     {
 	if (value.contains(" is "))
 	    value = value.after(" is ", -1);
@@ -1021,6 +1021,11 @@ static EntryType entry_type(DebuggerType type,
 	    || base.contains("follow_fork_mode"))
 	    return OtherOptionMenuEntry;
 	break;
+
+    case DBG:
+	if (base.contains("mode", 0))
+	    return OnOffToggleButtonEntry;
+    	break;
 
     case XDB:
     case JDB:
@@ -1464,6 +1469,7 @@ string show_command(const string& cmd, DebuggerType type)
     case GDB:
     case BASH:
     case PYDB:
+    case DBG:
 	show = "show ";
 	if (cmd.contains("set ", 0))
 	    show += cmd.after("set ");
@@ -1546,6 +1552,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	case BASH:
 	case GDB:
 	case PYDB:
+	case DBG:
 	{
 	    if (!line.contains(" -- ") && 
 		(entry_filter != SignalEntry || (!line.contains("SIG", 0) &&
@@ -1999,11 +2006,12 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    separator = '|';
 	    break;
 
-	case XDB:
-	case JDB:
-	case PYDB:
-	case PERL:
 	case BASH:
+	case DBG:
+	case JDB:
+	case PERL:
+	case PYDB:
+	case XDB:
 	    return;		// FIXME
 	}
 
@@ -2242,6 +2250,7 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
     case GDB:
     case BASH:
     case PYDB:
+    case DBG:
 	if (entry_filter == SignalEntry)
 	    commands = cached_gdb_question("info handle");
 	else
@@ -3299,6 +3308,7 @@ static void get_setting(std::ostream& os, DebuggerType type,
     case BASH:
     case XDB:
     case PYDB:
+    case DBG:
 	// Add setting
 	os << base << ' ' << value << '\n';
 	break;

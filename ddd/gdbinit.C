@@ -95,6 +95,10 @@ GDBAgent *new_gdb(DebuggerType type,
 	    gdb_call += " --debugger";
 	    break;
 
+	case DBG:
+	    // Nothing special?
+	    break;
+
 	case PYDB:
 	    // Nothing special.
 	    break;
@@ -264,9 +268,10 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
     DebuggerType fallback = DebuggerType(-1);
     get_debugger_type(app_data.debugger, fallback);
 
+    static bool have_bash   = (fallback == BASH || have_cmd("bash"));
+    static bool have_dbg    = (fallback == DBG  || have_cmd("dbg"));
     static bool have_perl   = (fallback == PERL || have_cmd("perl"));
     static bool have_python = (fallback == PYDB || have_cmd("python"));
-    static bool have_bash   = (fallback == BASH || have_cmd("bash"));
 
     // 1. Check for Perl and Python scripts as given.
 
@@ -293,6 +298,12 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
 	if (have_python && is_python_file(arg))
 	{
 	    type = PYDB;
+	    return;
+	}
+	
+	if (have_dbg && is_php_file(arg))
+	{
+	    type = DBG;
 	    return;
 	}
     }
@@ -502,15 +513,16 @@ static struct table {
     const char *cmd;
 } debuggers[] =
 {
+    { BASH, "bash" },
+    { DBG,  "dbg" },
     { GDB,  "gdb"  },
     { GDB,  "wdb"  },
     { DBX,  "dbx"  },
     { DBX,  "ladebug" },
-    { XDB,  "xdb"  },
     { JDB,  "jdb"  },
-    { PYDB, "pydb" },
     { PERL, "perl" },
-    { BASH, "bash" }
+    { PYDB, "pydb" },
+    { XDB,  "xdb"  }
 };
 
 // Determine debugger type from DEBUGGER_NAME

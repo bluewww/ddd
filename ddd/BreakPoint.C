@@ -130,6 +130,10 @@ BreakPoint::BreakPoint(string& info_output, const string& arg,
     case PERL:
 	process_perl(info_output);
 	break;
+
+    case DBG:
+	process_dbg(info_output);
+	break;
     }
 
     // If we found a file name, propagate it to next breakpoint
@@ -318,6 +322,12 @@ void BreakPoint::process_gdb(string& info_output)
 void BreakPoint::process_pydb(string& info_output)
 {
     // PYDB has the same output format as GDB.
+    process_gdb(info_output);
+}
+
+void BreakPoint::process_dbg(string& info_output)
+{
+    // DBG has the same output format as GDB.
     process_gdb(info_output);
 }
 
@@ -873,10 +883,11 @@ X(ADA_FALSE,"FALSE")
 
     switch (gdb->program_language())
     {
+    case LANGUAGE_BASH:
+    case LANGUAGE_PHP:
     case LANGUAGE_C:
     case LANGUAGE_PYTHON:
     case LANGUAGE_OTHER:
-    case LANGUAGE_BASH:
 	return Falses[C_FALSE];
 
     case LANGUAGE_PERL:
@@ -929,6 +940,7 @@ X(PYTHON_AND," and ")
     case LANGUAGE_PERL:
     case LANGUAGE_BASH:
     case LANGUAGE_JAVA:
+    case LANGUAGE_PHP:
     case LANGUAGE_OTHER:
 	return Ands[C_AND];
 
@@ -1022,6 +1034,7 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
     case BASH:
     case GDB:
     case PYDB:
+    case DBG:
     {
 	switch (type())
 	{

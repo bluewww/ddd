@@ -61,20 +61,22 @@
 #define XtCTrace                 "Trace"
 #define XtNplayLog               "playLog"
 #define XtCPlayLog               "PlayLog"
-#define XtNgdbInitCommands       "gdbInitCommands"
-#define XtNgdbSettings           "gdbSettings"
-#define XtNdbxInitCommands       "dbxInitCommands"
-#define XtNdbxSettings           "dbxSettings"
-#define XtNxdbInitCommands       "xdbInitCommands"
-#define XtNxdbSettings           "xdbSettings"
-#define XtNjdbInitCommands       "jdbInitCommands"
-#define XtNjdbSettings           "jdbSettings"
-#define XtNpydbInitCommands      "pydbInitCommands"
-#define XtNpydbSettings          "pydbSettings"
-#define XtNperlInitCommands      "perlInitCommands"
-#define XtNperlSettings          "perlSettings"
 #define XtNbashInitCommands      "bashInitCommands"
 #define XtNbashSettings          "bashSettings"
+#define XtNdbgInitCommands       "dbgInitCommands"
+#define XtNdbgSettings           "dbgSettings"
+#define XtNdbxInitCommands       "dbxInitCommands"
+#define XtNdbxSettings           "dbxSettings"
+#define XtNgdbInitCommands       "gdbInitCommands"
+#define XtNgdbSettings           "gdbSettings"
+#define XtNjdbInitCommands       "jdbInitCommands"
+#define XtNjdbSettings           "jdbSettings"
+#define XtNperlInitCommands      "perlInitCommands"
+#define XtNperlSettings          "perlSettings"
+#define XtNpydbInitCommands      "pydbInitCommands"
+#define XtNpydbSettings          "pydbSettings"
+#define XtNxdbInitCommands       "xdbInitCommands"
+#define XtNxdbSettings           "xdbSettings"
 #define XtNrestartCommands       "restartCommands"
 #define XtCInitCommands          "InitCommands"
 #define XtNsourceInitCommands    "sourceInitCommands"
@@ -121,13 +123,14 @@
 #define XtCLineBuffered          "LineBuffered"
 #define XtNconsoleHasFocus       "consoleHasFocus"
 #define XtCConsoleHasFocus       "ConsoleHasFocus"
-#define XtNgdbDisplayShortcuts   "gdbDisplayShortcuts"
-#define XtNdbxDisplayShortcuts   "dbxDisplayShortcuts"
-#define XtNxdbDisplayShortcuts   "xdbDisplayShortcuts"
-#define XtNjdbDisplayShortcuts   "jdbDisplayShortcuts"
-#define XtNpydbDisplayShortcuts  "pydbDisplayShortcuts"
-#define XtNperlDisplayShortcuts  "perlDisplayShortcuts"
 #define XtNbashDisplayShortcuts  "bashDisplayShortcuts"
+#define XtNdbgDisplayShortcuts   "dbgDisplayShortcuts"
+#define XtNdbxDisplayShortcuts   "dbxDisplayShortcuts"
+#define XtNgdbDisplayShortcuts   "gdbDisplayShortcuts"
+#define XtNjdbDisplayShortcuts   "jdbDisplayShortcuts"
+#define XtNperlDisplayShortcuts  "perlDisplayShortcuts"
+#define XtNpydbDisplayShortcuts  "pydbDisplayShortcuts"
+#define XtNxdbDisplayShortcuts   "xdbDisplayShortcuts"
 #define XtCDisplayShortcuts      "DisplayShortcuts"
 #define XtNconsoleButtons        "consoleButtons"
 #define XtNsourceButtons         "sourceButtons"
@@ -429,20 +432,22 @@ struct AppData {
     Boolean   open_selection;
     Boolean   trace;
     const _XtString    play_log;
-    const _XtString    gdb_init_commands;
-    const _XtString    gdb_settings;
-    const _XtString    dbx_init_commands;
-    const _XtString    dbx_settings;
-    const _XtString    xdb_init_commands;
-    const _XtString    xdb_settings;
-    const _XtString    jdb_init_commands;
-    const _XtString    jdb_settings;
-    const _XtString    pydb_init_commands;
-    const _XtString    pydb_settings;
-    const _XtString    perl_init_commands;
     const _XtString    bash_init_commands;
     const _XtString    bash_settings;
+    const _XtString    dbg_init_commands;
+    const _XtString    dbg_settings;
+    const _XtString    dbx_init_commands;
+    const _XtString    dbx_settings;
+    const _XtString    gdb_init_commands;
+    const _XtString    gdb_settings;
+    const _XtString    jdb_init_commands;
+    const _XtString    jdb_settings;
+    const _XtString    perl_init_commands;
     const _XtString    perl_settings;
+    const _XtString    pydb_init_commands;
+    const _XtString    pydb_settings;
+    const _XtString    xdb_init_commands;
+    const _XtString    xdb_settings;
     const _XtString    restart_commands;
     Boolean   source_init_commands;
     const _XtString    init_symbols;
@@ -469,13 +474,14 @@ struct AppData {
     Boolean   source_editing;
     Boolean   line_buffered_console;
     OnOff     console_has_focus;
-    const _XtString    gdb_display_shortcuts;
-    const _XtString    dbx_display_shortcuts;
-    const _XtString    xdb_display_shortcuts;
-    const _XtString    jdb_display_shortcuts;
-    const _XtString    pydb_display_shortcuts;
-    const _XtString    perl_display_shortcuts;
     const _XtString    bash_display_shortcuts;
+    const _XtString    dbg_display_shortcuts;
+    const _XtString    dbx_display_shortcuts;
+    const _XtString    gdb_display_shortcuts;
+    const _XtString    jdb_display_shortcuts;
+    const _XtString    perl_display_shortcuts;
+    const _XtString    pydb_display_shortcuts;
+    const _XtString    xdb_display_shortcuts;
     const _XtString    console_buttons;
     const _XtString    source_buttons;
     const _XtString    data_buttons;

@@ -930,7 +930,7 @@ string read_member_name (string& value, bool picky)
 	    member_name = m;
     }
 
-    if (gdb->type() == PERL)
+    if (gdb->type() == PERL || gdb->type() == DBG)
     {
         if (member_name.contains('\'', 0) && member_name.contains('\'', -1))
         {

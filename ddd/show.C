@@ -115,6 +115,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
 	"  --perl             Invoke Perl as inferior debugger.",
 	"  --bash             Invoke Bash as inferior debugger.",
 	"  --wdb              Invoke WDB as inferior debugger.",
+	"  --dbg              Invoke DBG as inferior debugger.",
 	"  --debugger CMD     Invoke inferior debugger as CMD.",
 	"  --host USER@HOST   Run inferior debugger on HOST.",
 	"  --rhost USER@HOST  Like --host, but use a rlogin connection.",
@@ -137,6 +138,31 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     // Set up debugger-specific options
     switch (type)
     {
+    case BASH:
+    {
+	title = "BASH";
+	base  = "the BASH debugger.";
+	options += "  [Berl options]     Pass option to Bash.";
+	args = "program-file [args]";
+    }
+    break;
+
+    case DBG:
+    {
+	title = "DBG";
+	base  = "DBG, the PHP debugger.";
+	options += "  [PHP options]      Pass option to DBG.";
+    }
+    break;
+
+    case DBX:
+    {
+	title = "DBX";
+	base  = "DBX, the UNIX debugger.";
+	options += "  [DBX options]      Pass option to DBX.";
+    }
+    break;
+
     case GDB:
     {
 	title = "GDB";
@@ -180,14 +206,6 @@ void show_invocation(const string& gdb_command, std::ostream& os)
 	break;
     }
 
-    case DBX:
-    {
-	title = "DBX";
-	base  = "DBX, the UNIX debugger.";
-	options += "  [DBX options]      Pass option to DBX.";
-    }
-    break;
-
     case JDB:
     {
 	title = "JDB";
@@ -211,15 +229,6 @@ void show_invocation(const string& gdb_command, std::ostream& os)
 	title = "Perl";
 	base  = "the Perl debugger.";
 	options += "  [Perl options]     Pass option to Perl.";
-	args = "program-file [args]";
-    }
-    break;
-
-    case BASH:
-    {
-	title = "BASH";
-	base  = "the BASH debugger.";
-	options += "  [Berl options]     Pass option to Bash.";
 	args = "program-file [args]";
     }
     break;

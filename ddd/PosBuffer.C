@@ -155,7 +155,7 @@ void PosBuffer::filter (string& answer)
 	// If GDB prints a "Current function" line, it overrides whatever
 	// came before (e.g. "stopped in").
 	if (has_prefix(answer, "Current function is "))
-	    already_read = Null;
+	    already_read= Null;
 
 	// Check program state
 	if (has_prefix(answer, "Starting program: "))
@@ -183,6 +183,14 @@ void PosBuffer::filter (string& answer)
 	    annotate("exited");
 	if (signaled)
 	    annotate("signalled");
+    }
+    break;
+
+    case DBG:
+    {
+ 	// Check program state
+ 	if (has_prefix(answer, "Starting program: "))
+ 	    started = true;
     }
     break;
 
@@ -321,6 +329,10 @@ void PosBuffer::filter (string& answer)
 
 	case BASH:
 	    filter_bash(answer);
+	    break;
+	
+	case DBG:
+	    filter_dbg(answer);
 	    break;
 	}
 
@@ -1148,6 +1160,81 @@ void PosBuffer::filter_pydb(string& answer)
     }
 }
 
+void PosBuffer::filter_dbg(string& answer)
+{
+    int idx1, idx2;
+    
+    if (already_read != PosComplete && !answer.contains('\n'))
+    {
+	// Position info is incomplete
+	answer_buffer = answer;
+	answer = "";
+	already_read = PosPart;
+	return;
+    }
+
+    idx1 = 0;
+    while (idx1 < (int)answer.length())
+    {
+        idx2 = answer.index('\n', idx1);
+	if (idx2 < 0) idx2 = answer.length();	
+	string line = answer.at(idx1, idx2 - idx1);
+	if (line.contains('\n'))
+	    line = line.before('\n');
+	strip_trailing_space(line);
+		
+	// DBG uses a format like `test.php:4 <main>\n echo $a."hello world."'
+#if RUNTIME_REGEX
+	static regex rxdbgpos("[^ \t]*:[ \t]*[1-9][0-9]*[ \t]*<.*>");
+	static regex rxdbgframepos("#[0-9]*[ \t]*<.*>[ \t]*at[ \t]*[^ \t]*:[ \t]*[1-9][0-9]*");
+#endif
+	if (line.matches(rxdbgpos)) 
+	{
+	    string file = line.before(':');
+	    line = line.after(':');
+		    
+	    string line_no = line;
+	    strip_leading_space(line_no);
+	    line_no = line_no.before(' ');
+	    
+	    line = line.after('<');
+	    func_buffer  = line.before('>');
+	    strip_leading_space(func_buffer);
+		    
+	    pos_buffer   = file + ":" + line_no;
+	    
+	    // Delete this line from output
+	    answer.at(idx1, idx2 - idx1 + 1) = "";
+	    already_read = PosComplete;
+	    break;
+
+	} else if (line.matches(rxdbgframepos)) 
+	{
+	    string addr = line.before(">");
+	    func_buffer = addr.after('<');
+	    strip_leading_space(func_buffer);
+	    
+	    string file = line.after(">");
+	    file = file.after("at");
+	    strip_leading_space(file);
+	    
+	    string line_no = file.after(':');
+	    strip_leading_space(line_no);
+	
+	    file = file.before(':');
+	    	    
+	    pos_buffer   = file + ":" + line_no;
+	    
+	    // Delete this line from output
+	    answer.at(idx1, idx2 - idx1 + 1) = "";
+	    already_read = PosComplete;
+	    break;
+	}
+	
+	idx1 = idx2+1;
+    }
+}
+	
 void PosBuffer::filter_perl(string& answer)
 {
     // Check for regular source info

@@ -531,11 +531,21 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNgdbDisplayShortcuts),
+	CONST_CAST(char *,XtNbashDisplayShortcuts),
 	CONST_CAST(char *,XtCDisplayShortcuts),
 	XtRString,
 	sizeof(String),
-	XtOffsetOf(AppData, gdb_display_shortcuts),
+	XtOffsetOf(AppData, bash_display_shortcuts),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
+	CONST_CAST(char *,XtNdbgDisplayShortcuts),
+	CONST_CAST(char *,XtCDisplayShortcuts),
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, dbg_display_shortcuts),
 	XtRString,
 	XtPointer("")
     },
@@ -551,11 +561,11 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNxdbDisplayShortcuts),
+	CONST_CAST(char *,XtNgdbDisplayShortcuts),
 	CONST_CAST(char *,XtCDisplayShortcuts),
 	XtRString,
 	sizeof(String),
-	XtOffsetOf(AppData, xdb_display_shortcuts),
+	XtOffsetOf(AppData, gdb_display_shortcuts),
 	XtRString,
 	XtPointer("")
     },
@@ -571,16 +581,6 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNpydbDisplayShortcuts),
-	CONST_CAST(char *,XtCDisplayShortcuts),
-	XtRString,
-	sizeof(String),
-	XtOffsetOf(AppData, pydb_display_shortcuts),
-	XtRString,
-	XtPointer("")
-    },
-
-    {
 	CONST_CAST(char *,XtNperlDisplayShortcuts),
 	CONST_CAST(char *,XtCDisplayShortcuts),
 	XtRString,
@@ -591,11 +591,21 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbashDisplayShortcuts),
+	CONST_CAST(char *,XtNpydbDisplayShortcuts),
 	CONST_CAST(char *,XtCDisplayShortcuts),
 	XtRString,
 	sizeof(String),
-	XtOffsetOf(AppData, bash_display_shortcuts),
+	XtOffsetOf(AppData, pydb_display_shortcuts),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
+	CONST_CAST(char *,XtNxdbDisplayShortcuts),
+	CONST_CAST(char *,XtCDisplayShortcuts),
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, xdb_display_shortcuts),
 	XtRString,
 	XtPointer("")
     },

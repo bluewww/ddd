@@ -656,6 +656,11 @@ Ddd*bashInitCommands: \
 ! The Bash Debugger settings.  Usually overridden in `~/.ddd/init'.
 Ddd*bashSettings:
 
+Ddd*dbgInitCommands:
+
+! The PHP DBG Debugger settings.  Usually overridden in `~/.ddd/init'.
+Ddd*dbgSettings:
+
 ! If on, let GDB source all initialization commands from a temporary file.
 ! This is slightly faster than processing each command separately,
 ! but gives bad diagnostics.
@@ -3607,13 +3612,14 @@ Ddd*preferences*autoDebugger.labelString:	Debugger Type
 Ddd*preferences*automatic.labelString:		\
 Determine Automatically from Arguments
 Ddd*preferences*debugger.labelString:		
-Ddd*debuggerMenu*gdb.labelString:		GDB
-Ddd*debuggerMenu*dbx.labelString:		DBX
-Ddd*debuggerMenu*xdb.labelString:		XDB
-Ddd*debuggerMenu*jdb.labelString:		JDB
-Ddd*debuggerMenu*pydb.labelString:		PYDB
-Ddd*debuggerMenu*perl.labelString:		Perl
 Ddd*debuggerMenu*bash.labelString:		Bash
+Ddd*debuggerMenu*dbg.labelString:		DBG
+Ddd*debuggerMenu*dbx.labelString:		DBX
+Ddd*debuggerMenu*gdb.labelString:		GDB
+Ddd*debuggerMenu*jdb.labelString:		JDB
+Ddd*debuggerMenu*perl.labelString:		Perl
+Ddd*debuggerMenu*pydb.labelString:		PYDB
+Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu.numColumns:	      	        1
 
 Ddd*preferences*startupWindows.labelString:     Startup Windows

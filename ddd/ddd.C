@@ -487,20 +487,45 @@ static XrmOptionDescRec options[] = {
 { CONST_CAST(char*,"-automatic-debugger"),    CONST_CAST(char *,XtNautoDebugger),         
                                         XrmoptionNoArg,  CONST_CAST(char*,ON) },
 
-{ CONST_CAST(char*,"--gdb"),                  CONST_CAST(char *,XtNdebugger),             
-                                        XrmoptionNoArg,  CONST_CAST(char*,"gdb") },
-{ CONST_CAST(char*,"-gdb"),                   CONST_CAST(char *,XtNdebugger),             
-                                        XrmoptionNoArg,  CONST_CAST(char*,"gdb") },
+{ CONST_CAST(char*,"--bash"),                 CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"bash") },
+{ CONST_CAST(char*,"-bash"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"bash") },
+
+{ CONST_CAST(char*,"--dbg"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"dbg") },
+{ CONST_CAST(char*,"-dbg"),                   CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"dbg") },
 
 { CONST_CAST(char*,"--dbx"),                  CONST_CAST(char *,XtNdebugger),             
                                         XrmoptionNoArg,  CONST_CAST(char*,"dbx") },
 { CONST_CAST(char*,"-dbx"),                   CONST_CAST(char *,XtNdebugger),             
                                         XrmoptionNoArg,  CONST_CAST(char*,"dbx") },
 
+{ CONST_CAST(char*,"--gdb"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"gdb") },
+{ CONST_CAST(char*,"-gdb"),                   CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"gdb") },
+
 { CONST_CAST(char*,"--ladebug"),              CONST_CAST(char *,XtNdebugger),            
                                         XrmoptionNoArg, CONST_CAST(char*,"ladebug") },
 { CONST_CAST(char*,"-ladebug"), 		    CONST_CAST(char *,XtNdebugger),            
                                         XrmoptionNoArg, CONST_CAST(char*,"ladebug") },
+
+{ CONST_CAST(char*,"--jdb"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"jdb") },
+{ CONST_CAST(char*,"-jdb"),                   CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"jdb") },
+
+{ CONST_CAST(char*,"--perl"),                 CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"perl") },
+{ CONST_CAST(char*,"-perl"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"perl") },
+
+{ CONST_CAST(char*,"--pydb"),                 CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"pydb") },
+{ CONST_CAST(char*,"-pydb"),                  CONST_CAST(char *,XtNdebugger),             
+                                        XrmoptionNoArg,  CONST_CAST(char*,"pydb") },
 
 { CONST_CAST(char*,"--wdb"),                  CONST_CAST(char *,XtNdebugger),            
                                         XrmoptionNoArg, CONST_CAST(char*,"wdb") },
@@ -511,26 +536,6 @@ static XrmOptionDescRec options[] = {
                                         XrmoptionNoArg,  CONST_CAST(char*,"xdb") },
 { CONST_CAST(char*,"-xdb"),                   CONST_CAST(char *,XtNdebugger),             
                                         XrmoptionNoArg,  CONST_CAST(char*,"xdb") },
-
-{ CONST_CAST(char*,"--jdb"),                  CONST_CAST(char *,XtNdebugger),             
-                                        XrmoptionNoArg,  CONST_CAST(char*,"jdb") },
-{ CONST_CAST(char*,"-jdb"),                   CONST_CAST(char *,XtNdebugger),             
-                                        XrmoptionNoArg,  CONST_CAST(char*,"jdb") },
-
-{ CONST_CAST(char*,"--pydb"),                 CONST_CAST(char *,XtNdebugger),             
-                                        XrmoptionNoArg,  CONST_CAST(char*,"pydb") },
-{ CONST_CAST(char*,"-pydb"),                  CONST_CAST(char *,XtNdebugger),             
-                                        XrmoptionNoArg,  CONST_CAST(char*,"pydb") },
-
-{ CONST_CAST(char*,"--perl"),                 CONST_CAST(char *,XtNdebugger),             
-                                        XrmoptionNoArg,  CONST_CAST(char*,"perl") },
-{ CONST_CAST(char*,"-perl"),                  CONST_CAST(char *,XtNdebugger),             
-                                        XrmoptionNoArg,  CONST_CAST(char*,"perl") },
-
-{ CONST_CAST(char*,"--bash"),                 CONST_CAST(char *,XtNdebugger),             
-                                        XrmoptionNoArg,  CONST_CAST(char*,"bash") },
-{ CONST_CAST(char*,"-bash"),                  CONST_CAST(char *,XtNdebugger),             
-                                        XrmoptionNoArg,  CONST_CAST(char*,"bash") },
 
 { CONST_CAST(char*,"--trace"),                CONST_CAST(char *,XtNtrace),                
                                         XrmoptionNoArg,  CONST_CAST(char*,ON) },
@@ -1495,29 +1500,32 @@ static MMDesc data_scrolling_menu [] =
     MMEnd
 };
 
-static Widget set_debugger_gdb_w;
-static Widget set_debugger_dbx_w;
-static Widget set_debugger_xdb_w;
-static Widget set_debugger_jdb_w;
-static Widget set_debugger_pydb_w;
-static Widget set_debugger_perl_w;
 static Widget set_debugger_bash_w;
+static Widget set_debugger_dbg_w;
+static Widget set_debugger_dbx_w;
+static Widget set_debugger_gdb_w;
+static Widget set_debugger_jdb_w;
+static Widget set_debugger_perl_w;
+static Widget set_debugger_pydb_w;
+static Widget set_debugger_xdb_w;
 static MMDesc debugger_menu [] = 
 {
-    { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
-      0, &set_debugger_gdb_w, 0, 0 },
-    { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
-      0, &set_debugger_dbx_w, 0, 0 },
-    { "xdb", MMToggle, { dddSetDebuggerCB, XtPointer(XDB) },
-      0, &set_debugger_xdb_w, 0, 0 },
-    { "jdb", MMToggle, { dddSetDebuggerCB, XtPointer(JDB) },
-      0, &set_debugger_jdb_w, 0, 0 },
-    { "pydb", MMToggle, { dddSetDebuggerCB, XtPointer(PYDB) },
-      0, &set_debugger_pydb_w, 0, 0 },
-    { "perl", MMToggle, { dddSetDebuggerCB, XtPointer(PERL) },
-      0, &set_debugger_perl_w, 0, 0 },
     { "bash", MMToggle, { dddSetDebuggerCB, XtPointer(BASH) },
       0, &set_debugger_bash_w, 0, 0 },
+    { "dbg", MMToggle, { dddSetDebuggerCB, XtPointer(DBG) },
+      0, &set_debugger_dbg_w, 0, 0 },
+    { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
+      0, &set_debugger_dbx_w, 0, 0 },
+    { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
+      0, &set_debugger_gdb_w, 0, 0 },
+    { "jdb", MMToggle, { dddSetDebuggerCB, XtPointer(JDB) },
+      0, &set_debugger_jdb_w, 0, 0 },
+    { "perl", MMToggle, { dddSetDebuggerCB, XtPointer(PERL) },
+      0, &set_debugger_perl_w, 0, 0 },
+    { "pydb", MMToggle, { dddSetDebuggerCB, XtPointer(PYDB) },
+      0, &set_debugger_pydb_w, 0, 0 },
+    { "xdb", MMToggle, { dddSetDebuggerCB, XtPointer(XDB) },
+      0, &set_debugger_xdb_w, 0, 0 },
     MMEnd
 };
 
@@ -3531,13 +3539,14 @@ static void set_shortcut_menu(DataDisp *data_disp)
     string display_shortcuts;
     switch (gdb->type())
     {
-    case GDB:  display_shortcuts = app_data.gdb_display_shortcuts;  break;
-    case DBX:  display_shortcuts = app_data.dbx_display_shortcuts;  break;
-    case XDB:  display_shortcuts = app_data.xdb_display_shortcuts;  break;
-    case JDB:  display_shortcuts = app_data.jdb_display_shortcuts;  break;
-    case PYDB: display_shortcuts = app_data.pydb_display_shortcuts; break;
-    case PERL: display_shortcuts = app_data.perl_display_shortcuts; break;
     case BASH: display_shortcuts = app_data.bash_display_shortcuts; break;
+    case DBG:  display_shortcuts = app_data.dbg_display_shortcuts;  break;
+    case DBX:  display_shortcuts = app_data.dbx_display_shortcuts;  break;
+    case GDB:  display_shortcuts = app_data.gdb_display_shortcuts;  break;
+    case JDB:  display_shortcuts = app_data.jdb_display_shortcuts;  break;
+    case PERL: display_shortcuts = app_data.perl_display_shortcuts; break;
+    case PYDB: display_shortcuts = app_data.pydb_display_shortcuts; break;
+    case XDB:  display_shortcuts = app_data.xdb_display_shortcuts;  break;
     }
     set_shortcut_menu(data_disp, display_shortcuts);
 }
@@ -4208,13 +4217,14 @@ void update_options()
     DebuggerType debugger_type = DebuggerType(-1);
     get_debugger_type(app_data.debugger, debugger_type);
 
-    set_toggle(set_debugger_gdb_w,  debugger_type == GDB);
-    set_toggle(set_debugger_dbx_w,  debugger_type == DBX);
-    set_toggle(set_debugger_xdb_w,  debugger_type == XDB);
-    set_toggle(set_debugger_jdb_w,  debugger_type == JDB);
-    set_toggle(set_debugger_pydb_w, debugger_type == PYDB);
-    set_toggle(set_debugger_perl_w, debugger_type == PERL);
     set_toggle(set_debugger_bash_w, debugger_type == BASH);
+    set_toggle(set_debugger_dbg_w,  debugger_type == DBG);
+    set_toggle(set_debugger_dbx_w,  debugger_type == DBX);
+    set_toggle(set_debugger_gdb_w,  debugger_type == GDB);
+    set_toggle(set_debugger_jdb_w,  debugger_type == JDB);
+    set_toggle(set_debugger_perl_w, debugger_type == PERL);
+    set_toggle(set_debugger_pydb_w, debugger_type == PYDB);
+    set_toggle(set_debugger_xdb_w,  debugger_type == XDB);
     set_toggle(auto_debugger_w, app_data.auto_debugger);
 
     set_toggle(splash_screen_w, app_data.splash_screen);
@@ -4793,13 +4803,14 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
 
     DebuggerType debugger_type;
     bool type_ok = get_debugger_type(initial_app_data.debugger, debugger_type);
-    notify_set_toggle(set_debugger_gdb_w,  type_ok && debugger_type == GDB);
+    notify_set_toggle(set_debugger_bash_w, type_ok && debugger_type == BASH);
+    notify_set_toggle(set_debugger_dbg_w,  type_ok && debugger_type == DBG);
     notify_set_toggle(set_debugger_dbx_w,  type_ok && debugger_type == DBX);
-    notify_set_toggle(set_debugger_xdb_w,  type_ok && debugger_type == XDB);
+    notify_set_toggle(set_debugger_gdb_w,  type_ok && debugger_type == GDB);
     notify_set_toggle(set_debugger_jdb_w,  type_ok && debugger_type == JDB);
     notify_set_toggle(set_debugger_pydb_w, type_ok && debugger_type == PYDB);
+    notify_set_toggle(set_debugger_xdb_w,  type_ok && debugger_type == XDB);
     notify_set_toggle(set_debugger_perl_w, type_ok && debugger_type == PERL);
-    notify_set_toggle(set_debugger_bash_w, type_ok && debugger_type == BASH);
     notify_set_toggle(auto_debugger_w,
 		      !type_ok || initial_app_data.auto_debugger);
 
@@ -5659,15 +5670,16 @@ static std::ostream& operator<< (std::ostream& os, ProgramLanguage lang)
 {
     switch (lang)
     {
-    case LANGUAGE_C:       os << "C/C++";         break;
-    case LANGUAGE_JAVA:    os << "Java";          break;
-    case LANGUAGE_PASCAL:  os << "Pascal/Modula"; break;
     case LANGUAGE_ADA:     os << "Ada";           break;
-    case LANGUAGE_PYTHON:  os << "Python";        break;
-    case LANGUAGE_PERL:    os << "Perl";          break;
     case LANGUAGE_BASH:    os << "Bash";          break;
+    case LANGUAGE_C:       os << "C/C++";         break;
     case LANGUAGE_CHILL:   os << "Chill";         break;
     case LANGUAGE_FORTRAN: os << "Fortran";       break;
+    case LANGUAGE_JAVA:    os << "Java";          break;
+    case LANGUAGE_PASCAL:  os << "Pascal/Modula"; break;
+    case LANGUAGE_PERL:    os << "Perl";          break;
+    case LANGUAGE_PHP:     os << "PHP";           break;
+    case LANGUAGE_PYTHON:  os << "Python";        break;
     case LANGUAGE_OTHER:   os << "(unknown)";     break;
     }
 
@@ -7439,10 +7451,11 @@ static void setup_environment()
     // Set the type of the execution tty.
     switch (gdb->type())
     {
-    case GDB:
-    case DBX:
-    case PERL:
     case BASH:
+    case DBG:
+    case DBX:
+    case GDB:
+    case PERL:
 	// The debugger console has few capabilities.
 	// When starting the execution TTY, we set the correct type.
 	put_environment("TERM", "dumb");
@@ -7520,7 +7533,8 @@ static void setup_options(int& argc, const char *argv[],
 	    || arg == "--xdb" || arg == "-xdb"
 	    || arg == "--jdb" || arg == "-jdb"
 	    || arg == "--pydb" || arg == "-pydb"
-	    || arg == "--perl" || arg == "-perl")
+	    || arg == "--perl" || arg == "-perl"
+	    || arg == "--dbg"  || arg == "-dbg")
 	{
 	    gdb_name = arg.after('-', -1);
 	    gdb_option_pos    = i;
@@ -7735,10 +7749,16 @@ static void setup_options()
     set_sensitive(print_examine_w,      gdb->has_examine_command());
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
 
-    set_sensitive(set_refer_base_w, gdb->type() != GDB);
-    set_sensitive(set_refer_path_w, gdb->type() != GDB);
-    set_sensitive(refer_sources_w,  gdb->type() != GDB);
+    if (gdb->type() == DBG) {
+	app_data.use_source_path = true;
+	set_toggle(set_refer_base_w, false);
+	set_toggle(set_refer_path_w, true);
+    };
 
+    set_sensitive(set_refer_base_w, gdb->type() != GDB && gdb->type() != DBG);
+    set_sensitive(set_refer_path_w, gdb->type() != GDB && gdb->type() != DBG);
+    set_sensitive(refer_sources_w,  gdb->type() != GDB && gdb->type() != DBG);
+    
     set_sensitive(edit_watchpoints_w, gdb->has_watch_command());
 
     set_sensitive(command_separate_exec_window_w, gdb->has_redirection());
@@ -7750,7 +7770,7 @@ static void setup_options()
     set_sensitive(source_file_menu[FileItems::OpenCore].widget,     have_core);
     set_sensitive(data_file_menu[FileItems::OpenCore].widget,       have_core);
 
-    bool have_exec = gdb->has_exec_files() || gdb->type() == PERL;
+    bool have_exec = gdb->has_exec_files() || gdb->type() == PERL || gdb->type() == DBG;
     manage_child(command_file_menu[FileItems::OpenFile].widget,     have_exec);
     manage_child(source_file_menu[FileItems::OpenFile].widget,      have_exec);
     manage_child(data_file_menu[FileItems::OpenFile].widget,        have_exec);
@@ -7793,13 +7813,14 @@ static void setup_options()
     set_sensitive(define_w,    gdb->type() == GDB);
     set_sensitive(signals_w,   gdb->type() == GDB);
 
-    set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
-    set_sensitive(set_debugger_dbx_w,  have_cmd("dbx") || have_cmd("ladebug"));
-    set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));
-    set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
-    set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
-    set_sensitive(set_debugger_perl_w, have_cmd("perl"));
     set_sensitive(set_debugger_bash_w, have_cmd("bash"));
+    set_sensitive(set_debugger_dbg_w,  have_cmd("dbg"));
+    set_sensitive(set_debugger_dbx_w,  have_cmd("dbx") || have_cmd("ladebug"));
+    set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
+    set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
+    set_sensitive(set_debugger_perl_w, have_cmd("perl"));
+    set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
+    set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));
 
     bool can_dump = (gdb->type() == JDB);
     // (gdb->print_command("", true) != gdb->print_command("", false));

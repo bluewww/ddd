@@ -71,8 +71,9 @@ string dbx_lookup(const string& func_name, bool silent)
     string reply;
     switch (gdb->type())
     {
-    case GDB:
+    case DBG:
     case DBX:
+    case GDB:
     case JDB:
     case PYDB:
 	reply = gdb_question("list " + func_name, 0, true);
@@ -120,9 +121,10 @@ string dbx_lookup(const string& func_name, bool silent)
 	}
 	break;
 
+    case BASH:
+    case DBG:
     case JDB:
     case PERL:
-    case BASH:
 	line = line_of_listing(reply, silent);
 	file = source_view->line_of_cursor();
 	file = file.before(':');
