@@ -447,7 +447,7 @@ static MMDesc program_menu[] =
     { "finish",      MMPush, { gdbCommandCB, "finish" }},
     MMSep,
     { "kill",        MMPush, { gdbCommandCB, "kill" }},
-    { "interrupt",   MMPush, { gdbCommandCB, "\003" }},
+    { "break",       MMPush, { gdbCommandCB, "\003" }},
     MMEnd
 };
 
