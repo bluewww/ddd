@@ -475,6 +475,13 @@ void PosBuffer::filter (string& answer)
 	    
 	    // Position info is complete
 	    pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
+
+	    if (pos_buffer.contains("source ", 0))
+	    {
+		// This happens with GDB in annotation level 2
+		pos_buffer = pos_buffer.after("source ");
+	    }
+
 	    int last_colon = pos_buffer.index(':', -1);
 	    pc_buffer = pos_buffer.after(last_colon);
 	    if (!pc_buffer.contains(rxaddress_start, 0))

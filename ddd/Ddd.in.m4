@@ -535,10 +535,14 @@ Ddd*linesBelowCursor:	3
 ! Users of GDB 4.12 and earlier may wish to add a line `display /x $pc',
 ! as these GDB versions do not issue the current PC location when source
 ! code is not available.
+!
+! Note: GDB 4.16 and earlier do not understand the `set annotate' command;
+! just ignore the warning message.
 Ddd*gdbInitCommands:	\
 set prompt (gdb) \n\
 set height 0\n\
 set width 0\n\
+set annotate 1\n\
  set verbose off\n
 
 ! The GDB settings.  Usually overridden in `~/.ddd/init'.

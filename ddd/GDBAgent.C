@@ -1027,6 +1027,48 @@ void GDBAgent::strip_control(string& answer) const
 	    }
 	    break;
 
+	case '\032':
+	    // In annotation level 2, GDB sends out `annotation'
+	    // sequences like `\n\032\032prompt\n'.  Future DDD
+	    // versions might want to look at these annotations; right
+	    // now, we simply weed them out.
+	    if (target_index > 0 &&
+		answer[target_index - 1] == '\n' &&
+		source_index + 1 < int(answer.length()) && 
+		answer[source_index + 1] == '\032')
+	    {
+		// Ignore everything up to and including the next '\n'.
+		int i = source_index;
+		while (i < int(answer.length()) &&
+		       answer[i] != '\n' && answer[i] != ':')
+		    i++;
+		if (i >= int(answer.length()))
+		{
+		    // The annotation is not finished yet -- copy it
+		    goto copy;
+		}
+		else if (answer[i] == ':')
+		{
+		    // This is a normal `fullname' annotation, handled by DDD
+		    goto copy;
+		}
+		else
+		{
+		    // Annotation found -- ignore it
+		    assert(answer[target_index - 1] == '\n');
+		    target_index--;
+
+		    assert(answer[i] == '\n');
+		    source_index = i;
+		}
+	    }
+	    else
+	    {
+		// Single or trailing `\032' -- keep it
+		goto copy;
+	    }
+	    break;
+
 	case '\033':
 	    // XDB `more' sends VT100 escape sequences like `\e[m',
 	    // `\e[22;1H', `\e[7m', `\e[K', regardless of TERM
