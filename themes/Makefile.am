@@ -42,4 +42,5 @@ themesrootdir = $(dddrootdir)/themes
 themesroot_DATA = \
 	smalltitles.vsl \
 	smallvalues.vsl \
-	suppress.vsl
+	suppress.vsl \
+	tinyvalues.vsl
