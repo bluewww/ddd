@@ -106,13 +106,10 @@ string build_gdb_call(DebuggerType debugger_type,
 		      int argc, char *argv[],
 		      string myArguments = "");
 
-// Busy handlers - called whenever GDB state changes
-const unsigned ReadyForQuestion = 0;
+// Handlers
+const unsigned ReadyForQuestion = TTYAgent_NTypes;
 const unsigned ReadyForCmd      = ReadyForQuestion + 1;
-const unsigned BusyNTypes       = ReadyForCmd + 1;
-
-// Other handlers
-const unsigned LanguageChanged  = TTYAgent_NTypes;
+const unsigned LanguageChanged  = ReadyForCmd + 1;
 const unsigned GDBAgent_NTypes  = LanguageChanged + 1;
 
 
@@ -137,7 +134,6 @@ protected:
 private:
     DebuggerType    _type;
     void*           _user_data;
-    HandlerList     busy_handlers;
 
     bool _has_frame_command;	
     bool _has_run_io_command;
@@ -227,16 +223,7 @@ public:
 					  || state == BusyOnInitialCmds; }
     bool isBusyOnQuestion()   const { return state == BusyOnQuestion
 					  || state == BusyOnQuArray; }
-
-    // Busy handlers
-    void addBusyHandler (unsigned    type,
-			 HandlerProc proc,
-			 void*       client_data = 0);
-    void removeBusyHandler (unsigned    type,
-			    HandlerProc proc,
-			    void        *client_data = 0);
-    void callBusyHandlers ();
-    string default_prompt() const;
+    string default_prompt()   const;
 
 
     // Debugger properties
@@ -303,7 +290,7 @@ public:
 	if (_program_language != val)
 	{
 	    _program_language = val;
-	    callHandlers(LanguageChanged, (void *)this);
+	    callHandlers(LanguageChanged, (void *)val);
 	}
 	return program_language();
     }

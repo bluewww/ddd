@@ -231,10 +231,9 @@ char ddd_rcsid[] =
 //-----------------------------------------------------------------------------
 
 // Callbacks
-void gdb_ready_for_questionHP (void *, void *, void *);
-void gdb_ready_for_cmdHP      (void *, void *, void *);
-void gdb_eofHP                (Agent *, void *, void *);
-void source_argHP (void*, void*, void* call_data);
+static void gdb_ready_for_questionHP (Agent *, void *, void *);
+static void gdb_ready_for_cmdHP      (Agent *, void *, void *);
+static void source_argHP             (void *, void *, void *call_data);
 
 // Setup
 static Boolean ddd_setup_done(XtPointer client_data);
@@ -1617,11 +1616,11 @@ int main(int argc, char *argv[])
     gdb->trace_dialog(app_data.trace_dialog);
 
     // Setup handlers
-    gdb->addBusyHandler(ReadyForQuestion, gdb_ready_for_questionHP);
-    gdb->addBusyHandler(ReadyForCmd,      gdb_ready_for_cmdHP);
-    gdb->addHandler    (InputEOF,         gdb_eofHP);
-    gdb->addHandler    (ErrorEOF,         gdb_eofHP);
-    gdb->addHandler    (LanguageChanged,  DataDisp::language_changedHP);
+    gdb->addHandler(ReadyForQuestion, gdb_ready_for_questionHP);
+    gdb->addHandler(ReadyForCmd,      gdb_ready_for_cmdHP);
+    gdb->addHandler(InputEOF,         gdb_eofHP);
+    gdb->addHandler(ErrorEOF,         gdb_eofHP);
+    gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
     DataDisp::set_handlers();
 
     source_arg->addHandler (Changed, source_argHP);
@@ -2712,7 +2711,7 @@ void source_argHP (void *_arg_field, void *, void *)
 // Handlers
 //-----------------------------------------------------------------------------
 
-void gdb_ready_for_questionHP (void*, void*, void* call_data)
+void gdb_ready_for_questionHP (Agent *, void*, void* call_data)
 {
     bool gdb_ready = bool(call_data);
     if (gdb_ready)
@@ -2753,7 +2752,7 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
     blink(!gdb_ready);
 }
 
-void gdb_ready_for_cmdHP (void *, void *, void *)
+void gdb_ready_for_cmdHP (Agent *, void *, void *)
 {
     // Nothing yet...
 }

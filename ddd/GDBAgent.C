@@ -88,7 +88,6 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       state(BusyOnInitialCmds),
       _type(tp),
       _user_data(0),
-      busy_handlers (BusyNTypes),
       _has_frame_command(tp == GDB || tp == XDB),
       _has_run_io_command(false),
       _has_print_r_option(false),
@@ -137,7 +136,6 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       state(gdb.state),
       _type(gdb.type()),
       _user_data(0),
-      busy_handlers(gdb.busy_handlers),
       _has_frame_command(gdb.has_frame_command()),
       _has_run_io_command(gdb.has_run_io_command()),
       _has_print_r_option(gdb.has_print_r_option()),
@@ -255,8 +253,8 @@ void GDBAgent::do_start (OAProc  on_answer,
     _on_answer_completion = on_answer_completion;
     _user_data = user_data;
     TTYAgent::start();
-    busy_handlers.call(ReadyForQuestion, 0, (void *)false);
-    busy_handlers.call(ReadyForCmd, 0, (void *)false);
+    callHandlers(ReadyForQuestion, (void *)false);
+    callHandlers(ReadyForCmd, (void *)false);
     callHandlers(LanguageChanged, (void *)this);
 }
 
@@ -303,7 +301,7 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without `\n'
 
 	// Process CMD
 	state = BusyOnCmd;
-	busy_handlers.call(ReadyForQuestion, 0, (void *)false);
+	callHandlers(ReadyForQuestion, (void *)false);
 	cmd += '\n';
 	write((const char *)cmd, cmd.length());
 	flush();
@@ -359,7 +357,7 @@ bool GDBAgent::send_user_cmd_plus (string   cmds[],
 
     // Process command
     state = BusyOnCmd;
-    busy_handlers.call(ReadyForQuestion, 0, (void*)false);
+    callHandlers(ReadyForQuestion, (void *)false);
     user_cmd += '\n';
     write((const char *)user_cmd, user_cmd.length());
     flush();
@@ -378,8 +376,8 @@ bool GDBAgent::send_question (string  cmd,
 	return false;
 
     state = BusyOnQuestion;
-    busy_handlers.call(ReadyForQuestion, this, (void *)false);
-    busy_handlers.call(ReadyForCmd, this, (void *)false);
+    callHandlers(ReadyForQuestion, (void *)false);
+    callHandlers(ReadyForCmd, (void *)false);
 
     _on_question_completion = on_question_completion;
     _qu_data = qu_data;
@@ -404,8 +402,8 @@ bool GDBAgent::send_qu_array (string   cmds [],
 	return false;
 
     state = BusyOnQuArray;
-    busy_handlers.call(ReadyForQuestion, this, (void *)false);
-    busy_handlers.call(ReadyForCmd, this, (void *)false);
+    callHandlers(ReadyForQuestion, (void *)false);
+    callHandlers(ReadyForCmd, (void *)false);
 
     init_qu_array (cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
     
@@ -415,38 +413,6 @@ bool GDBAgent::send_qu_array (string   cmds [],
 
     return true;
 }
-
-// ***************************************************************************
-// Add handler for GDB getting busy
-void GDBAgent::addBusyHandler (unsigned    type,
-			       HandlerProc proc,
-			       void*       client_data)
-{
-    busy_handlers.add(type, proc, client_data);
-}
-
-// ***************************************************************************
-// Remove handler for GDB getting busy
-void GDBAgent::removeBusyHandler (unsigned    type,
-				  HandlerProc proc,
-				  void        *client_data)
-{
-    busy_handlers.remove(type, proc, client_data);
-}
-
-// ***************************************************************************
-// Call handlers when GDB gets busy
-void GDBAgent::callBusyHandlers ()
-{
-    busy_handlers.call(ReadyForQuestion,
-		       this,
-		       (void*)(state == ReadyWithPrompt));
-
-    busy_handlers.call(ReadyForCmd,
-		       this,
-		       (void*)(state == ReadyWithPrompt	|| isBusyOnCmd()));
-}
-
 
 // ***************************************************************************
 // Add handlers for tracing GDB I/O
@@ -793,10 +759,8 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 		if (!gdb->questions_waiting) 
 		{
 		    gdb->state = ReadyWithPrompt;
-		    gdb->busy_handlers.call(ReadyForCmd, 0, 
-					    (void*)true);
-		    gdb->busy_handlers.call(ReadyForQuestion, 0, 
-					    (void*)true);
+		    gdb->callHandlers(ReadyForCmd, (void *)true);
+		    gdb->callHandlers(ReadyForQuestion, (void *)true);
 
 		    if (gdb->_on_answer_completion != 0)
 			gdb->_on_answer_completion (gdb->_user_data);
@@ -814,7 +778,7 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	    else if (!gdb->questions_waiting)
 	    {
 		gdb->state = ReadyWithPrompt;
-		gdb->busy_handlers.call(ReadyForQuestion, 0, (void*)true);
+		gdb->callHandlers(ReadyForQuestion, (void *)true);
 
 		if (gdb->_on_answer_completion != 0)
 		    gdb->_on_answer_completion (gdb->_user_data);
@@ -822,7 +786,7 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	    else
 	    {
 		gdb->state = BusyOnQuArray;
-		gdb->busy_handlers.call(ReadyForCmd, 0, (void*)false);
+		gdb->callHandlers(ReadyForCmd, (void *)false);
 
 		// Send first question
 		gdb->write((const char *)gdb->cmd_array[0],
@@ -846,8 +810,8 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 
             // Set new state
 	    gdb->state = ReadyWithPrompt;
-	    gdb->busy_handlers.call(ReadyForQuestion, 0, (void*)true);
-	    gdb->busy_handlers.call(ReadyForCmd, 0, (void*)true);
+	    gdb->callHandlers(ReadyForQuestion, (void *)true);
+	    gdb->callHandlers(ReadyForCmd, (void *)true);
 
 	    if (gdb->_on_question_completion != 0)
 		gdb->_on_question_completion (gdb->complete_answer, 
@@ -877,7 +841,7 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 
 		// Set new state
 		gdb->state = ReadyWithPrompt;
-		gdb->busy_handlers.call(ReadyForCmd, 0, (void*)true);
+		gdb->callHandlers(ReadyForCmd, (void *)true);
 
 		if (gdb->questions_waiting)
 		{
@@ -889,7 +853,7 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 		    gdb->questions_waiting = false;
 		}
 
-		gdb->busy_handlers.call(ReadyForQuestion, 0, (void*)true);
+		gdb->callHandlers(ReadyForQuestion, (void *)true);
 
 		if (gdb->_on_qu_array_completion != 0)
 		{

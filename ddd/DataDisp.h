@@ -141,7 +141,7 @@ class DataDisp {
     static void source_argHP (void*, void*, void*);
     static void graph_argHP (void*, void*, void*);
     static void graph_unselectHP (void*, void*, void*);
-    static void gdb_ready_for_questionHP (void*, void*, void*);
+    static void gdb_ready_for_questionHP (Agent *, void*, void*);
 
     static void set_args(BoxPoint p = BoxPoint(-1, -1),
 			 SelectionMode mode = SetSelection);

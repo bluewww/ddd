@@ -747,7 +747,7 @@ void DataDisp::set_handlers()
     source_arg->addHandler(Empty, source_argHP);
     graph_arg->addHandler(Empty, graph_argHP);
     graph_arg->addHandler(LosePrimary, graph_unselectHP);
-    gdb->addBusyHandler(ReadyForQuestion, gdb_ready_for_questionHP);
+    gdb->addHandler(ReadyForQuestion, gdb_ready_for_questionHP);
 }
 
 
@@ -841,7 +841,7 @@ void DataDisp::graph_unselectHP (void*, void*, void*)
     fill_labels();
 }
 
-void DataDisp::gdb_ready_for_questionHP (void*, void* , void*)
+void DataDisp::gdb_ready_for_questionHP (Agent *, void *, void *)
 {
     refresh_args();
 }
@@ -2952,9 +2952,10 @@ void DataDisp::delete_user_display(const string& name)
 // Language changed - re-label buttons
 //----------------------------------------------------------------------------
 
-void DataDisp::language_changedHP(Agent *, void *, void *call_data)
+void DataDisp::language_changedHP(Agent *source, void *, void *)
 {
-    GDBAgent *gdb = (GDBAgent *)call_data;
+    GDBAgent *gdb = ptr_cast(GDBAgent, source);
+    assert(gdb != 0);
 
     MString dereference_label("Display " + gdb->dereferenced_expr(""));
     XtVaSetValues(node_popup[ValueItms::Dereference].widget,
