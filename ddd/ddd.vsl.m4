@@ -1,7 +1,6 @@
 // $Id$ -*- c++ -*-
 // VSL functions for DDD graph display
-include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))dnl
-DDD_VSL_WARNING
+include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))DDD_VSL_WARNING
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
@@ -37,7 +36,15 @@ DDD_VSL_WARNING
 // Font settings
 #pragma replace stdfontfamily
 stdfontfamily() = family_typewriter();
-small(...) = rm(...);
+
+// Small fonts.
+// Note: small_rm, small_bf, small_it, small_bi will be overridden by DDD.
+// Use `ddd --fonts' to see the actual definitions.
+small_size()  = (0, 100);
+small_rm(box) = rm(box, stdfontfamily(), small_size());
+small_bf(box) = bf(box, stdfontfamily(), small_size());
+small_it(box) = it(box, stdfontfamily(), small_size());
+small_bi(box) = bi(box, stdfontfamily(), small_size());
 
 // Colors
 display_color(box)   = color(box, "FOREGROUND_COLOR", "DISPLAY_COLOR");
@@ -52,6 +59,19 @@ array_color(box)     = color(box, "DATA_COLOR");
 reference_color(box) = color(box, "DATA_COLOR");
 changed_color(box)   = color(box, "FOREGROUND_COLOR", "CHANGED_COLOR");
 shadow_color(box)    = color(box, "SHADOW_COLOR");
+
+// Fonts
+// Note: rm, bf, it, bi will be overridden by DDD.
+// Use `ddd --fonts' to see the actual definitions.
+title_rm(box) = rm(box);
+title_bf(box) = bf(box);
+title_it(box) = it(box);
+title_bi(box) = bi(box);
+
+value_rm(box) = rm(box);
+value_bf(box) = bf(box);
+value_it(box) = it(box);
+value_bi(box) = bi(box);
 
 // Shadow effects
 shadow(box, thickness) =
@@ -70,17 +90,17 @@ fixed_vlist(sep, head, ...) = vfix(head) | sep | fixed_vlist(sep, ...);
 
 // Titles.
 title (disp_nr, name) -> 
-  title_color(rm(disp_nr & ": ") & bf(name) & hfill());
+  title_color(title_rm(disp_nr & ": ") & title_bf(name) & hfill());
 title (name) -> 
-  title_color(bf(name) & hfill());
+  title_color(title_bf(name) & hfill());
 
 // Edge annotations.
 annotation (name) ->
-  small(name);
+  small_rm(name);
 
 // The "disabled" string
 disabled () -> 
-  disabled_color(vcenter(it("(Disabled)") & hfill()));
+  disabled_color(vcenter(value_it("(Disabled)") & hfill()));
 
 // No value
 none () -> "";
@@ -93,18 +113,18 @@ numeric_value (value) ->
 
 // Collapsed ordinary values
 collapsed_simple_value () -> 
-  simple_color(vcenter(rm("...") & hfill()));
+  simple_color(vcenter("..." & hfill()));
 
 // Info texts: single lines
 text_line (line) -> 
-  text_color(rm(line) & hfill());
+  text_color(line & hfill());
 
 // Multiple lines
 text_value (...) -> valign(...);
 
 // Collapsed ordinary values
 collapsed_text_value () -> 
-  text_color(rm("...") & hfill());
+  text_color("..." & hfill());
 
 // Ordinary pointers
 pointer_value (value) -> 
@@ -112,19 +132,19 @@ pointer_value (value) ->
 
 // Collapsed pointers
 collapsed_pointer_value () -> 
-  pointer_color(vcenter(rm("...") & hfill()));
+  pointer_color(vcenter("..." & hfill()));
 
 // Dereferenced pointers
 dereferenced_pointer_value (value) -> 
-  pointer_color(vcenter(bf(value)) & hfill());
+  pointer_color(vcenter(value_bf(value)) & hfill());
 
 // Collapsed array
 collapsed_array () -> 
-  array_color(vcenter(rm("\133...\135") & hfill()));
+  array_color(vcenter("\133...\135" & hfill()));
 
 // Empty array
 empty_array () -> 
-  array_color(vcenter(rm("\133\135") & hfill()));
+  array_color(vcenter("\133\135" & hfill()));
 
 // Vertical array
 vertical_array (...) -> 
@@ -138,8 +158,8 @@ horizontal_array (...) ->
 // Two-dimensional arrays
 twodim_array (...) -> 
   array_color(dtab(...));
-twodim_array_elem (...) -> 
-  rm(...);
+twodim_array_elem (value) -> 
+  value;
 
 // Struct value
 struct_value (...) -> 
@@ -147,11 +167,11 @@ struct_value (...) ->
 
 // Collapsed struct
 collapsed_struct_value () -> 
-  struct_color(vcenter(rm("{...}") & hfill()));
+  struct_color(vcenter("{...}" & hfill()));
 
 // Empty struct
 empty_struct_value () ->
-  struct_color(vcenter(rm("{}") & hfill()));
+  struct_color(vcenter("{}" & hfill()));
 
 // Unnamed struct
 horizontal_unnamed_struct (...) -> horizontal_array(...);
@@ -159,16 +179,16 @@ vertical_unnamed_struct   (...) -> horizontal_array(...);
 
 // Struct member name
 struct_member_name (name) -> 
-  struct_color(rm(name));
+  struct_color(name);
 
 // Struct member
 struct_member (name, sep, value, name_width) -> 
-  vcenter(rm(name) | hspace(name_width)) 
-  & vcenter(rm(sep)) & rm(value);
+  vcenter(name | hspace(name_width)) 
+  & vcenter(sep) & value;
 
 // Same, but with suppressed member name
 struct_member (value) -> 
-  rm(value);
+  value;
 
 // List value
 list_value (...) -> 
@@ -176,11 +196,11 @@ list_value (...) ->
 
 // Collapsed list
 collapsed_list_value () -> 
-  list_color(vcenter(rm("...") & hfill()));
+  list_color(vcenter("..." & hfill()));
 
 // Empty list
 empty_list_value () -> 
-  list_color(vcenter(rm("") & hfill()));
+  list_color(vcenter("" & hfill()));
 
 // Unnamed list
 horizontal_unnamed_list (...) -> horizontal_array(...);
@@ -188,16 +208,16 @@ vertical_unnamed_list  (...)  -> horizontal_array(...);
 
 // List member name
 list_member_name (name) -> 
-  list_color(rm(name));
+  list_color(name);
 
 // List member
 list_member (name, sep, value, name_width) -> 
-  vcenter(rm(name) | hspace(name_width)) 
-  & vcenter(rm(sep)) & rm(value) & hfill();
+  vcenter(name | hspace(name_width)) 
+  & vcenter(sep) & value & hfill();
 
 // Same, but with suppressed member name
 list_member (value) -> 
-  rm(value);
+  value;
 
 // Sequence
 sequence_value (...) -> 
@@ -209,11 +229,11 @@ collapsed_sequence_value () ->
 
 // Reference
 reference_value (ref, value) -> 
-  reference_color(vcenter(rm(ref & ": ")) & value & hfill());
+  reference_color(vcenter(ref & ": ") & value & hfill());
 
 // Collapsed reference
 collapsed_reference_value () -> 
-  reference_color(vcenter(rm("...") & hfill()));
+  reference_color(vcenter("..." & hfill()));
 
 // Changed value
 changed_value (value) -> 
@@ -221,7 +241,7 @@ changed_value (value) ->
 
 // A value that is repeated N times
 repeated_value (value, n) ->
-  value & vcenter(rm(" <" & dec(n) & "\327>"));
+  value & vcenter(" <" & dec(n) & "\327>");
 
 // The entire value
 value_box (value) -> 
@@ -229,12 +249,25 @@ value_box (value) ->
 
 // The entire box
 display_box (title, value) -> 
-  shadow(display_color(frame(title | hrule() | hwhite () | rm(value))));
+  fix(shadow(display_color(
+      frame(title | hrule() | hwhite () | value_rm(value)))));
 
 // The entire box, but without title
 display_box (value) -> 
-  shadow(display_color(frame(rm(value))));
+  fix(shadow(display_color(frame(value_rm(value)))));
 
 // For VSL
 main (_...) -> 
-  display_box(title("1", "a display"), simple_value("A value"));
+  display_box(title("1", "pi"), value_box(simple_value("3.1415")))
+| display_box(title("2", "p"), value_box(pointer_value("(Object *) 0x0")))
+| display_box(title("3", "p"), 
+	      value_box(dereferenced_pointer_value("(Object *) 0xdeadbeef")))
+| display_box(title("4", "s"), value_box(struct_value(
+    struct_member ("x", " = ", value_box("1"), "x"),
+    struct_member ("y", " = ", value_box("2"), "x"))))
+| display_box(title("5", "a"), 
+	      value_box(horizontal_array(
+		  value_box(simple_value("1")), 
+		  value_box(simple_value("2")), 
+		  value_box(simple_value("3")))));
+

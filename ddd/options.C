@@ -2733,8 +2733,11 @@ bool save_options(unsigned long flags)
 			   app_data.variable_width_font, true) << '\n';
     os << string_app_value(XtNfixedWidthFont,
 			   app_data.fixed_width_font, true) << '\n';
+    os << string_app_value(XtNdataFont,
+			   app_data.data_font, true) << '\n';
     if (app_data.default_font_size == app_data.variable_width_font_size &&
-	app_data.default_font_size == app_data.fixed_width_font_size)
+	app_data.default_font_size == app_data.fixed_width_font_size &&
+	app_data.default_font_size == app_data.data_font_size)
     {
 	os << int_app_value(XtCFontSize, app_data.default_font_size)
 	   << '\n';
@@ -2747,6 +2750,8 @@ bool save_options(unsigned long flags)
 			    app_data.variable_width_font_size) << '\n';
 	os << int_app_value(XtNfixedWidthFontSize, 
 			    app_data.fixed_width_font_size) << '\n';
+	os << int_app_value(XtNdataFontSize, 
+			    app_data.data_font_size) << '\n';
     }
 
     // Windows.

@@ -933,6 +933,9 @@ Ddd*variableWidthFont: helvetica-medium
 ! The font to use for fixed-width fields, such as the source code.
 Ddd*fixedWidthFont:    lucidatypewriter-medium
 
+! The font to use for data displays.
+Ddd*dataFont:          lucidatypewriter-medium
+
 ! The base font size; overrides the point settings as set above.
 Ddd*FontSize:          120
 
@@ -3557,6 +3560,7 @@ WIDGET([DDD] fonts)\n\
 ITEM LBL(Default Font) is the font used for DDD labels and buttons.\n\
 ITEM LBL(Variable Width) is the font used for messages (such as this one).\n\
 ITEM LBL(Fixed Width) is the font used for program code and text fields.\n\
+ITEM LBL(Data) is the font used for data displays.\n\
 \n\
 To change a font, enter its name and size (in 1/10 points).\n\
 A pair VAR(family)-VAR(weight) as font name is sufficient.\n\
@@ -3573,6 +3577,7 @@ Click on LBL(Reset) to restore the saved preferences.
 Ddd*preferences*fonts*default.labelString:	 Default Font
 Ddd*preferences*fonts*variableWidth.labelString: Variable Width
 Ddd*preferences*fonts*fixedWidth.labelString:	 Fixed Width
+Ddd*preferences*fonts*data.labelString:	         Data
 
 Ddd*preferences*fonts*name.text.columns:	 30
 Ddd*preferences*fonts*size.label.labelString:	 Size

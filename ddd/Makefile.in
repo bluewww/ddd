@@ -911,6 +911,7 @@ DDD_OBJECTS = \
 	toolbar.$(OBJEXT)    \
 	ungrab.$(OBJEXT)     \
 	value-read.$(OBJEXT) \
+	vsldoc.$(OBJEXT)     \
 	windows.$(OBJEXT)    \
 	wm.$(OBJEXT)         \
 	xconfig.$(OBJEXT)    \
@@ -1827,7 +1828,7 @@ check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT)
 	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. ./$(ddd)$(EXEEXT) $(DDD_OPTIONS) cxxtest$(EXEEXT)
 
 .PHONY: vsldemo
-vsldemo: ./vsl$(EXEEXT)
+vsldemo: ./vsl$(EXEEXT) $(srcdir)/ddd.vsl
 	./vsl$(EXEEXT) -I $(VSLDIR) $(srcdir)/ddd.vsl
 
 .PHONY: debug

@@ -1402,8 +1402,8 @@ static MMDesc startup_preferences_menu [] =
 };
 
 
-static Widget font_names[4];
-static Widget font_sizes[4];
+static Widget font_names[5];
+static Widget font_sizes[5];
 
 #define FONT_MENU(font) \
 { \
@@ -1420,12 +1420,14 @@ static Widget font_sizes[4];
 static MMDesc default_font_menu        [] = FONT_MENU(DefaultDDDFont);
 static MMDesc variable_width_font_menu [] = FONT_MENU(VariableWidthDDDFont);
 static MMDesc fixed_width_font_menu    [] = FONT_MENU(FixedWidthDDDFont);
+static MMDesc data_font_menu           [] = FONT_MENU(DataDDDFont);
 
 static MMDesc font_preferences_menu [] =
 {
     { "default",         MMPanel,  MMNoCB, default_font_menu, 0, 0, 0 },
     { "variableWidth",   MMPanel,  MMNoCB, variable_width_font_menu, 0, 0, 0 },
     { "fixedWidth",      MMPanel,  MMNoCB, fixed_width_font_menu, 0, 0, 0 },
+    { "data",            MMPanel,  MMNoCB, data_font_menu, 0, 0, 0 },
     MMEnd
 };
 
@@ -4029,6 +4031,7 @@ void update_options()
 	set_string(font_names[VariableWidthDDDFont], 
 		   app_data.variable_width_font);
 	set_string(font_names[FixedWidthDDDFont], app_data.fixed_width_font);
+	set_string(font_names[DataDDDFont], app_data.data_font);
 
 	set_string_int(font_sizes[DefaultDDDFont], 
 		       app_data.default_font_size);
@@ -4036,6 +4039,8 @@ void update_options()
 		       app_data.variable_width_font_size);
 	set_string_int(font_sizes[FixedWidthDDDFont], 
 		       app_data.fixed_width_font_size);
+	set_string_int(font_sizes[DataDDDFont], 
+		       app_data.data_font_size);
     }
 
     // Key Bindings
@@ -4588,6 +4593,7 @@ static void ResetFontPreferencesCB(Widget, XtPointer, XtPointer)
     set_font(DefaultDDDFont,       initial_app_data.default_font);
     set_font(VariableWidthDDDFont, initial_app_data.variable_width_font);
     set_font(FixedWidthDDDFont,    initial_app_data.fixed_width_font);
+    set_font(DataDDDFont,          initial_app_data.data_font);
 
     app_data.default_font_size = 
 	initial_app_data.default_font_size;
@@ -4595,6 +4601,8 @@ static void ResetFontPreferencesCB(Widget, XtPointer, XtPointer)
 	initial_app_data.variable_width_font_size;
     app_data.fixed_width_font_size = 
 	initial_app_data.fixed_width_font_size;
+    app_data.data_font_size = 
+	initial_app_data.data_font_size;
 
     update_options();
 }
@@ -4613,6 +4621,10 @@ static bool font_preferences_changed()
 	string(initial_app_data.fixed_width_font))
 	return true;
 
+    if (string(app_data.data_font) != 
+	string(initial_app_data.data_font))
+	return true;
+
     if (app_data.default_font_size != initial_app_data.default_font_size)
 	return true;
 
@@ -4622,6 +4634,10 @@ static bool font_preferences_changed()
 
     if (app_data.fixed_width_font_size != 
 	initial_app_data.fixed_width_font_size)
+	return true;
+
+    if (app_data.data_font_size != 
+	initial_app_data.data_font_size)
 	return true;
 
     return false;

@@ -90,12 +90,14 @@
 #define XtNdefaultFont           "defaultFont"
 #define XtNvariableWidthFont     "variableWidthFont"
 #define XtNfixedWidthFont        "fixedWidthFont"
+#define XtNdataFont              "dataFont"
 #ifndef XtCFont
 #define XtCFont                  "Font"
 #endif
 #define XtNdefaultFontSize       "defaultFontSize"
 #define XtNvariableWidthFontSize "variableWidthFontSize"
 #define XtNfixedWidthFontSize    "fixedWidthFontSize"
+#define XtNdataFontSize          "dataFontSize"
 #define XtCFontSize              "FontSize"
 #define XtNfontSelectCommand     "fontSelectCommand"
 #define XtCFontSelectCommand     "FontSelectCommand"
@@ -434,9 +436,11 @@ struct AppData {
     String    default_font;
     String    variable_width_font;
     String    fixed_width_font;
+    String    data_font;
     Cardinal  default_font_size;
     Cardinal  variable_width_font_size;
     Cardinal  fixed_width_font_size;
+    Cardinal  data_font_size;
     String    font_select_command;
     Cardinal  tab_width;
     Cardinal  lines_above_cursor;

@@ -43,7 +43,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2000-06-01
+@set DATE 2000-06-06
 
 
 @c Macros
@@ -5480,7 +5480,11 @@ Default is @samp{helvetica-medium}.
 
 @item Fixed Width
 The fixed width @DDD{} font to use for source code, the debugger
-console, text fields, data displays, and the execution window.  Default
+console, text fields, and the execution window.  Default
+is @samp{lucidatypewriter-medium}.
+
+@item Data
+The @DDD{} font to use for data displays.  Default
 is @samp{lucidatypewriter-medium}.
 @end table
 
@@ -5558,12 +5562,12 @@ resource overrides any font size specification in the
 
 @defvr Resource fixedWidthFont (class Font)
 The fixed width @DDD{} font to use for source code, the debugger
-console, text fields, data displays, and the execution window.  The font
+console, text fields, and the execution window.  The font
 is specified as an X font spec, where the initial @var{Foundry}
 specification may be omitted, as well as any specification after
 @var{Family}.
 
-Default value is to @samp{lucidatypewriter-medium}.
+Default value is @samp{lucidatypewriter-medium}.
 
 To set the fixed width @DDD{} font family to, say, @samp{courier},
 insert a line
@@ -5580,6 +5584,32 @@ in your @samp{~/.@value{ddd}/init} file.
 The size of the fixed width @DDD{} font, in 1/10 points.  This
 resource overrides any font size specification in the
 @samp{fixedWidthFont} resource (see above).  The default value is
+@code{120} for a 12.0 point font.
+@end defvr
+
+@defvr Resource dataFont (class Font)
+The fixed width @DDD{} font to use data displays.  The font
+is specified as an X font spec, where the initial @var{Foundry}
+specification may be omitted, as well as any specification after
+@var{Family}.
+
+Default value is @samp{lucidatypewriter-medium}.
+
+To set the @DDD{} data font family to, say, @samp{courier},
+insert a line
+
+@example
+@value{Ddd}*dataFont: courier-medium
+@end example
+
+@noindent
+in your @samp{~/.@value{ddd}/init} file.
+@end defvr
+
+@defvr Resource dataFontSize  (class FontSize)
+The size of the @DDD{} data font, in 1/10 points.  This
+resource overrides any font size specification in the
+@samp{dataFont} resource (see above).  The default value is
 @code{120} for a 12.0 point font.
 @end defvr
 

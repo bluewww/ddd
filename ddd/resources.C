@@ -328,6 +328,16 @@ XtResource ddd_resources[] = {
 	XtPointer("-*-courier-medium-r-*")
     },
 
+    { 
+	XtNdataFont, 
+	XtCFont,
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, data_font),
+	XtRString,
+	XtPointer("-*-courier-medium-r-*")
+    },
+
     {
 	XtNdefaultFontSize,
 	XtCFontSize,
@@ -354,6 +364,16 @@ XtResource ddd_resources[] = {
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, fixed_width_font_size),
+	XmRImmediate,
+	XtPointer(120)
+    },
+
+    {
+	XtNdataFontSize,
+	XtCFontSize,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, data_font_size),
 	XmRImmediate,
 	XtPointer(120)
     },

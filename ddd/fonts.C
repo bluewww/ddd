@@ -127,6 +127,8 @@ static string userfont(const AppData& ad, DDDFont font)
 	return ad.variable_width_font;
     case FixedWidthDDDFont:
 	return ad.fixed_width_font;
+    case DataDDDFont:
+	return ad.data_font;
     case SymbolDDDFont:
 	return "";
     }
@@ -146,6 +148,8 @@ static string font_type(DDDFont font)
  	return "variable width font";
     case FixedWidthDDDFont:
  	return "fixed width font";
+    case DataDDDFont:
+ 	return "data font";
     case SymbolDDDFont:
  	return "symbol font";
     }
@@ -164,6 +168,7 @@ static string fallbackfont(DDDFont font)
     case VariableWidthDDDFont:
  	return "-*-helvetica-medium-r-*-*-*-120-*-*-*-*-iso8859-*";
     case FixedWidthDDDFont:
+    case DataDDDFont:
  	return "-*-lucidatypewriter-medium-r-*-*-*-120-*-*-*-*-iso8859-*";
     case SymbolDDDFont:
  	return "-*-symbol-*-*-*-*-*-120-*-*-*-*-adobe-*";
@@ -192,6 +197,10 @@ static string component(const AppData& ad, DDDFont font, FontComponent n)
 
 	case FixedWidthDDDFont:
 	    sz = ad.fixed_width_font_size;
+	    break;
+
+	case DataDDDFont:
+	    sz = ad.data_font_size;
 	    break;
 	}
 
@@ -370,15 +379,21 @@ static void title(const AppData& ad, const string& s)
     title_seen = true;
 }
 
-static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
+static void get_derived_sizes(const AppData& ad,
+			      Dimension& small_size,
+			      Dimension& llogo_size)
 {
-    Dimension small_size = 
-	((ad.default_font_size * 8) / 90) * 10;
-    Dimension llogo_size =
-	((ad.default_font_size * 3) / 20) * 10;
+    small_size = ((ad.default_font_size * 8) / 90) * 10;
+    llogo_size = ((ad.default_font_size * 3) / 20) * 10;
 
     if (small_size < 80)
 	small_size = ad.default_font_size;
+}
+
+static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
+{
+    Dimension small_size, llogo_size;
+    get_derived_sizes(ad, small_size, llogo_size);
 
     string small_size_s = itostring(small_size);
     string llogo_size_s = itostring(llogo_size);
@@ -452,23 +467,47 @@ static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
 // Set VSL font resources
 //-----------------------------------------------------------------------------
 
-static void replace_vsl_def(string& s, const string& func, const string& val)
+static void replace_vsl_font(string& defs, const string& func, 
+			     AppData& ad, const string& override = "")
 {
-    s += "#pragma replace " + func + "\n" + 
-	func + "(box) = font(box, " + val + ");\n";
+    string font = quote(make_font(ad, DataDDDFont, override));
+    defs += "#pragma replace " + func + "\n" + 
+	func + "(box) = font(box, " + font + ");\n";
 }
 
 static void setup_vsl_fonts(AppData& ad)
 {
+    Dimension small_size, llogo_size;
+    get_derived_sizes(ad, small_size, llogo_size);
+
+    string small_size_s = itostring(small_size);
+
     static string defs;
+    defs = "";
 
     title(ad, "VSL defs");
 
-    replace_vsl_def(defs, "rm", quote(font_defs[CHARSET_TT]));
-    replace_vsl_def(defs, "bf", quote(font_defs[CHARSET_TB]));
-    replace_vsl_def(defs, "it", quote(font_defs[CHARSET_TS]));
-    replace_vsl_def(defs, "bi", quote(font_defs[CHARSET_TBS]));
-    replace_vsl_def(defs, "small", quote(font_defs[CHARSET_LIGHT]));
+    replace_vsl_font(defs, "rm", ad);
+    replace_vsl_font(defs, "bf", ad, 
+		     override(Weight, "bold"));
+    replace_vsl_font(defs, "it", ad, 
+		     override(Slant, "*"));
+    replace_vsl_font(defs, "bf", ad, 
+		     override(Weight, "bold",
+			      override(Slant, "*")));
+
+    replace_vsl_font(defs, "small_rm", ad, 
+		     override(PointSize, small_size_s));
+    replace_vsl_font(defs, "small_bf", ad, 
+		     override(Weight, "bold", 
+			      override(PointSize, small_size_s)));
+    replace_vsl_font(defs, "small_it", ad, 
+		     override(Slant, "*", 
+			      override(PointSize, small_size_s)));
+    replace_vsl_font(defs, "small_bf", ad, 
+		     override(Weight, "bold", 
+			      override(Slant, "*", 
+				       override(PointSize, small_size_s))));
 
     if (ad.show_fonts)
 	cout << defs;
@@ -553,6 +592,13 @@ void set_font(DDDFont font, const string& name)
 	app_data.fixed_width_font = s;
 	break;
     }
+    case DataDDDFont:
+    {
+	static string s;
+	s = name;
+	app_data.data_font = s;
+	break;
+    }
     default:
 	assert(0);
     }
@@ -571,6 +617,9 @@ void set_font_size(DDDFont font, int size)
 	break;
     case FixedWidthDDDFont:
 	app_data.fixed_width_font_size = size;
+	break;
+    case DataDDDFont:
+	app_data.data_font_size = size;
 	break;
     default:
 	assert(0);
