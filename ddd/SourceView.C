@@ -906,8 +906,9 @@ bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
     if (!ok)
 	return false;		// Command failed
 
+    int new_bp_nr = next_breakpoint_number();
     string commands(os);
-    commands.gsub("@0@", itostring(next_breakpoint_number()));
+    commands.gsub("@0@", itostring(new_bp_nr));
 
     while (commands != "")
     {
@@ -916,8 +917,16 @@ bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
 	commands = commands.after('\n');
     }
 
-    if (!copy)
+    if (copy)
     {
+	// Copy properties
+	copy_breakpoint_properties(bp_nr, new_bp_nr);
+    }
+    else
+    {
+	// Rename properties
+	move_breakpoint_properties(bp_nr, new_bp_nr);
+
 	// Delete old breakpoint
 	delete_bp(bp_nr);
     }
@@ -925,41 +934,65 @@ bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
     return true;
 }
 
-void SourceView::set_bp_cond(int bp_nr, string cond,
-			     bool make_false, Widget w)
+void SourceView::_set_bps_cond(IntArray& _nrs, string cond,
+			       int make_false, Widget w)
 {
-    if (make_false)
-	cond = BreakPoint::make_false(cond);
+    // _NRS might be changed via MOVE_BREAKPOINT_PROPERTIES, 
+    // so we make a copy
+    IntArray nrs(_nrs);
 
-    if (gdb->has_condition_command())
+    int count = 0;
+    for (int i = 0; i < nrs.size(); i++)
     {
-	gdb_command(gdb->condition_command(itostring(bp_nr), cond), w);
-	return;
+	int bp_nr = nrs[i];
+	BreakPoint *bp = bp_map.get(bp_nr);
+	if (bp == 0)
+	    continue;		// No such breakpoint
+
+	string c = cond;
+	if (c == char(-1))
+	    c = bp->condition();
+
+	int m = make_false;
+	if (m < 0)
+	    m = (!bp->enabled() && !gdb->has_enable_command());
+	if (m)
+	    c = BreakPoint::make_false(c);
+
+	if (gdb->has_condition_command())
+	{
+	    // Use the `cond' command to assign a condition
+	    gdb_command(gdb->condition_command(itostring(bp_nr), c), w);
+	}
+	else
+	{
+	    // Create a new breakpoint with a new condition COND, making it
+	    // inherit the current settings
+	    ostrstream os;
+	    bool ok = bp->get_state(os, 0, false, "", c);
+	    if (!ok)
+		continue;		// Command failed
+
+	    int new_bp_nr = next_breakpoint_number() + count;
+	    string commands(os);
+	    commands.gsub("@0@", itostring(new_bp_nr));
+
+	    while (commands != "")
+	    {
+		string command = commands.before('\n');
+		gdb_command(command, w);
+		commands = commands.after('\n');
+	    }
+
+	    move_breakpoint_properties(bp_nr, new_bp_nr);
+
+	    // Delete old breakpoint
+	    delete_bp(bp_nr);
+
+	    // Next breakpoint will get the next number
+	    count++;
+	}
     }
-
-    BreakPoint *bp = bp_map.get(bp_nr);
-    if (bp == 0)
-	return;			// No such breakpoint
-
-    // Create a new breakpoint with a new condition COND, making it
-    // inherit the current settings
-    ostrstream os;
-    bool ok = bp->get_state(os, 0, false, "", cond);
-    if (!ok)
-	return;			// Command failed
-
-    string commands(os);
-    commands.gsub("@0@", itostring(next_breakpoint_number()));
-
-    while (commands != "")
-    {
-	string command = commands.before('\n');
-	gdb_command(command, w);
-	commands = commands.after('\n');
-    }
-
-    // Delete old breakpoint
-    delete_bp(bp_nr);
 }
 
 
@@ -1046,15 +1079,8 @@ void SourceView::enable_bps(IntArray& nrs, Widget w)
     }
     else if (gdb->has_conditions())
     {
-	for (int i = 0; i < nrs.size(); i++)
-	{
-	    BreakPoint *bp = bp_map.get(nrs[i]);
-	    if (bp == 0)
-		continue;
-
-	    // Clear `false' breakpoint condition
-	    set_bp_cond(bp->number(), bp->condition(), false, w);
-	}
+	// Unset `false' breakpoint condition
+	enable_bps_cond(nrs, w);
     }
 }
 
@@ -1066,15 +1092,8 @@ void SourceView::disable_bps(IntArray& nrs, Widget w)
     }
     else if (gdb->has_conditions())
     {
-	for (int i = 0; i < nrs.size(); i++)
-	{
-	    BreakPoint *bp = bp_map.get(nrs[i]);
-	    if (bp == 0)
-		continue;
-
-	    // Set breakpoint condition to `false'
-	    set_bp_cond(bp->number(), bp->condition(), true, w);
-	}
+	// Set breakpoint condition to `false'
+	disable_bps_cond(nrs, w);
     }
 }
 
@@ -5363,12 +5382,71 @@ void SourceView::update_properties_panels()
     }
 }
 
+void SourceView::move_breakpoint_properties(int old_bp, int new_bp)
+{
+    // Update all panels
+    bool update = false;
+    BreakpointPropertiesInfo *info = BreakpointPropertiesInfo::all;
+    while (info != 0)
+    {
+	bool changed = false;
+	for (int i = 0; i < info->nrs.size(); i++)
+	{
+	    if (info->nrs[i] == old_bp)
+	    {
+		info->nrs[i] = new_bp;
+		update = changed = true;
+	    }
+	}
+
+	if (changed)
+	    sort(info->nrs);	// Sort again
+
+	info = info->next;
+    }
+
+    if (update)
+	update_properties_panels();
+}
+
+void SourceView::copy_breakpoint_properties(int old_bp, int new_bp)
+{
+    // Update all panels
+    bool update = false;
+    BreakpointPropertiesInfo *info = BreakpointPropertiesInfo::all;
+    while (info != 0)
+    {
+	for (int i = 0; i < info->nrs.size(); i++)
+	{
+	    if (info->nrs[i] == old_bp)
+	    {
+		info->nrs += new_bp;
+		update = true;
+		break;
+	    }
+	}
+
+	info = info->next;
+    }
+
+    if (update)
+	update_properties_panels();
+}
+
 void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 {
     // Remove breakpoints from list
+    bool future = false;
     int i;
     for (i = 0; i < info->nrs.size(); i++)
     {
+	if (info->nrs[i] >= next_breakpoint_number())
+	{
+	    // Panel for future (renamed) breakpoint
+	    future = true;
+	    continue;
+	}
+
 	BreakPoint *bp = bp_map.get(info->nrs[i]);
 	if (bp == 0)
 	{
@@ -5392,6 +5470,9 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 	XtUnmanageChild(info->dialog);
 	return;
     }
+
+    if (future)
+	return;			// We cannot update yet
 
     // Use first breakpoint for getting values
     BreakPoint *bp = bp_map.get(info->nrs[0]);
@@ -5766,17 +5847,7 @@ void SourceView::SetBreakpointConditionCB(Widget w,
 	(BreakpointPropertiesInfo *)client_data;
 
     String cond = XmTextFieldGetString(info->condition);
-
-    for (int i = 0; i < info->nrs.size(); i++)
-    {
-	BreakPoint *bp = bp_map.get(info->nrs[i]);
-	if (bp == 0)
-	    continue;
-
-	bool make_false = !bp->enabled() && !gdb->has_disable_command();
-	set_bp_cond(bp->number(), cond, make_false, w);
-    }
-
+    set_bps_cond(info->nrs, cond, w);
     XtFree(cond);
 }
 

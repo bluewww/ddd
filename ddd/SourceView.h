@@ -175,11 +175,39 @@ class SourceView {
 	return move_bp(nr, address, origin, true);
     }
 
-    // Set condition of breakpoint NR to COND.  If MAKE_FALSE is set,
-    // give COND a prefix such that it becomes `false'.  This is used
-    // in disabling breakpoints.
-    static void set_bp_cond(int nr, string cond, bool make_false = false,
-			    Widget origin = 0);
+    // Set condition of breakpoints NRS to COND.
+    // * If COND is char(-1), preserve old condition.
+    // * If MAKE_FALSE is >= 0, disable breakpoint by making 
+    //   the condition false.
+    // * If MAKE_FALSE is == 0, enable breakpoint by restoring
+    //   the original condition.
+    // * Otherwise, preserve the condition state.
+    static void _set_bps_cond(IntArray& nrs, string cond, 
+			      int make_false, Widget origin);
+
+    // Set condition of breakpoints NRS to COND.
+    inline static void set_bps_cond(IntArray& nrs, string cond,
+				    Widget origin = 0)
+    {
+	_set_bps_cond(nrs, cond, -1, origin);
+    }
+
+    // Enable and disable breakpoints via conditions.
+    inline static void set_bps_cond_enabled(IntArray& nrs, bool enabled,
+					    Widget origin = 0)
+    {
+	_set_bps_cond(nrs, char(-1), enabled ? 0 : 1, origin);
+    }
+
+    // Custom calls
+    inline static void enable_bps_cond(IntArray& nrs, Widget origin = 0)
+    {
+	set_bps_cond_enabled(nrs, true, origin);
+    }
+    inline static void disable_bps_cond(IntArray& nrs, Widget origin = 0)
+    {
+	set_bps_cond_enabled(nrs, false, origin);
+    }
 
     // Find the line number at POS.  LINE_NR becomes the line number
     // at POS.  IN_TEXT becomes true iff POS is in the source area.
@@ -436,6 +464,8 @@ class SourceView {
     // Breakpoint properties.
     static void update_properties_panel(BreakpointPropertiesInfo *info);
     static void update_properties_panels();
+    static void move_breakpoint_properties(int old_bp, int new_bp);
+    static void copy_breakpoint_properties(int old_bp, int new_bp);
 
     //-----------------------------------------------------------------------
     // Glyphs
