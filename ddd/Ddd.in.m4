@@ -6675,9 +6675,13 @@ Ddd*yn_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*yn_dialog*helpString:	\
 WIDGET(@GDB@ Question)\n\
 \n\
+@GDB@ requires confirmation for a potentially dangerous operation.\n\
+The @GDB@ documentation has details on why this is dangerous.\n\
 Click on LBL(Yes) or LBL(No), or enter KBD(yes) or KBD(no) \
 in the @GDB@ console.\n\
-For more details, consult the @GDB@ documentation.
+\n\
+To turn off these confirmations in GDB, unset\n\
+LBL(Edit, GDB Settings, Confirm potentially dangerous operations).
 
 Ddd*gdb_message_dialog.dialogTitle: DDD: Debugger Message
 Ddd*gdb_message_dialog*helpString:	\
