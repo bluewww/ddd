@@ -13,6 +13,7 @@ DDD 3.2.1 brings some minor bug fixes and major LessTif bug workarounds.
 - [Perl] In the data display, Perl hash keys are properly quoted.
 - DDD makes more attempts in locating the initial main function.
 - Minor bugs with clustered displays have been fixed.
+- A bad pointer error in string manipulation has been fixed.
 - DDD PostScript documentation can be printed on multiple pages per sheet.
 
 
