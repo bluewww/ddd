@@ -114,7 +114,7 @@ $(OTHER_TARGETS): FORCE
 ## DDD-only targets
 
 DDD_TARGETS = \
-	love check debug it depend strip dvi ps man html \
+	love check debug it depend strip dvi ps man html tags \
 	install install-prog install-lib install-man install-info \
 	install-c++-lib install-c++-includes \
 	uninstall uninstall-prog uninstall-lib uninstall-man uninstall-info \
