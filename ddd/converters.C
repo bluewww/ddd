@@ -457,6 +457,15 @@ static int font_id_len(const string& s)
     return s.length();
 }
 
+
+static void XmStringFreeCB(XtPointer client_data, XtIntervalId *id)
+{
+    (void) id;			// Use it
+
+    XmString xs = (XmString)client_data;
+    XmStringFree(xs);
+}
+
 // Convert String to XmString, using `@' for font specs: `@FONT TEXT'
 // makes TEXT be displayed in font FONT; a single space after FONT is
 // eaten.  `@ ' displays a single `@'.
@@ -557,6 +566,16 @@ static Boolean CvtStringToXmString(Display *display,
 	XtDisplayStringConversionWarning(display, fromVal->addr, XmRXmString);
 	return False;
     }
+
+#if 0
+    // TARGET is no longer being referenced after its use.  Be sure to
+    // free it at the next occasion.
+    XtAppAddTimeOut(XtDisplayToApplicationContext(display),
+		    0, XmStringFreeCB, (XtPointer)target);
+#else
+    // It seems this does this apply to all Motif implementations...
+    (void) XmStringFreeCB;	// Use it
+#endif
     
     done(XmString, target);
 }
