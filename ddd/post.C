@@ -49,6 +49,7 @@ char post_rcsid[] =
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
+#include <Xm/Protocols.h>
 
 #include <errno.h>
 #include <signal.h>
@@ -86,12 +87,24 @@ void post_gdb_yn(string question, Widget w)
 
     if (yn_dialog)
 	DestroyWhenIdle(yn_dialog);
+
+    Arg args[10];
+    int arg;
+
+    arg = 0;
+    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
-					      "yn_dialog", NULL, 0));
+					      "yn_dialog", args, arg));
     Delay::register_shell(yn_dialog);
     XtAddCallback (yn_dialog, XmNokCallback,     YnCB, (void *)"yes");
     XtAddCallback (yn_dialog, XmNcancelCallback, YnCB, (void *)"no");
     XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+
+    // If the dialog is closed, assume `no'.
+    Atom WM_DELETE_WINDOW =
+	XmInternAtom(XtDisplay(yn_dialog), "WM_DELETE_WINDOW", False);
+    XmAddWMProtocolCallback(XtParent(yn_dialog), WM_DELETE_WINDOW, 
+			    YnCB, (caddr_t)"no");
 
     MString mquestion = rm(question);
     XtVaSetValues (yn_dialog, XmNmessageString, mquestion.xmstring(), NULL);
