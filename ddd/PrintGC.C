@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-//
+// Printing context
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -36,5 +36,5 @@ char PrintGC_rcsid[] =
 #include "PrintGC.h"
 
 DEFINE_TYPE_INFO_0(PrintGC)
-DEFINE_TYPE_INFO_1(PostScriptGC, PrintGC)
-DEFINE_TYPE_INFO_1(FigGC, PrintGC)
+DEFINE_TYPE_INFO_1(PostScriptPrintGC, PrintGC)
+DEFINE_TYPE_INFO_1(FigPrintGC, PrintGC)
