@@ -32,8 +32,16 @@
 @include config.texi
 @settitle Debugging with @value{DDD}
 @setchapternewpage odd
+@c Labels
 @defindex lb
+@c Commands
 @defindex cm
+@c Authors
+@defindex au
+@c Files
+@defindex fl
+@c Environment variables
+@defindex en
 @c %**end of header
 
 @iftex
@@ -204,22 +212,20 @@ into another language, under the above conditions for modified versions.
 * Summary::                     
 * Invocation::                  
 * Basics::                      
+* Customizing::                 
 * Navigating::                  
 * Breakpoints and Watchpoints::  
 * Running the Program::         
 * Examining Data::              
 * Machine-Level Debugging::     
 * Changing the Program::        
-* Entering Commands::           
+* Commands::                    
 * Persistent Sessions::         
-* Customizing::                 
 * Special Set-Ups::             
 * License::                     
 * Reporting Bugs::              
 * Copyright::                   
 * Extending::                   
-* Environment Variables::       
-* Files::                       
 * Actions::                     
 * Images::                      
 * Limitations::                 
@@ -227,6 +233,7 @@ into another language, under the above conditions for modified versions.
 * Label Index::                 
 * Key Index::                   
 * Command Index::               
+* Resource Index::              
 * Concept Index::               
 @end menu
 
@@ -278,6 +285,8 @@ freedom to modify that copy (which means that they must get access to
 the source code), and the freedom to distribute further copies.  Typical
 software companies use copyrights to limit your freedoms; the Free
 Software Foundation uses the GPL to preserve these freedoms.
+@cindex License
+@cindex GPL
 
 Fundamentally, the General Public License is a license which says that
 you have these freedoms and that you cannot take these freedoms away
@@ -286,24 +295,99 @@ from anyone else.
 
 @node Contributors
 @unnumberedsec Contributors to DDD
+@cindex Contributors
 
 Dorothea L@"utkehaus and Andreas Zeller were the original authors of
 @value{DDD}.  Many others have contributed to its development.  The
 files @file{ChangeLog} and @file{THANKS} in the @value{DDD} distribution
 approximates a blow-by-blow account.
+@auindex Zeller, Andreas
+@auindex L@"utkehaus, Dorothea
 
 
 
 @node History
 @unnumberedsec History
+@cindex History
 
-...
+The history of @value{DDD} is a story of code recycling.  The oldest
+parts of @value{DDD} were written in 1990, when @emph{Andreas Zeller}
+designed VSL, a box-based visual structure language for visualizing data
+and program structures.  The VSL interpreter and the Box library became
+part of Andreas' Diploma Thesis, a graphical syntax editor based on the
+Programming System Generator PSG.
+@auindex Zeller, Andreas
+@cindex PSG
 
+In 1992, the VSL and Box libraries were recycled for the NORA project.
+For NORA, an experimental inference-based software development tool set,
+Andreas wrote a graph editor (based on VSL and the Box libraries) and
+facilities for inter-process knowledge exchange.  Based on these tools,
+@emph{Dorothea L@"tkehaus} (now @emph{Dorothea Krabiell}) realized
+@value{DDD} as her Diploma Thesis, 1994
+@auindex L@"utkehaus, Dorothea
+@cindex NORA
+@cindex Box library
+@cindex VSL
+
+The original @value{DDD} had no source window; this was added by
+Dorothea during the winter of 1994--1995.  In the first quarter of 1995,
+finally, Andreas completed @value{DDD} by adding command and execution
+windows, extensions for DBX and remote debugging as well as
+configuration support for several architectures.  Since then, Andreas
+has further maintained and extended @value{DDD}, based on the comments
+and suggestions of several @value{DDD} users around the world.  See the
+comments in the @value{DDD} source for details.
+
+Major @value{DDD} events:
+
+@table @asis
+@item April, 1995
+@value{DDD} 0.9: First @value{DDD} beta release.
+
+@item May, 1995
+@value{DDD} 1.0: First public @value{DDD} release.
+
+@item December, 1995
+@value{DDD} 1.4: Machine-level debugging, glyphs, EMACS integration.
+
+@item October, 1996
+@value{DDD} 2.0: Color displays, XDB support, generic DBX support,
+command tool.
+
+@item May, 1997
+@value{DDD} 2.1: Alias detection, button tips, status displays.
+
+@item November, 1997
+@value{DDD} 2.2: Persistent sessions, display shortcuts.
+
+@item June, 1998
+@value{DDD} 3.0: Icon tool bar, Java support, JDB support.
+
+@item December, 1998
+@value{DDD} 3.1: Data plotting, Perl support, Python support, Undo/Redo.
+@end table
 
 @node Support
 @unnumberedsec DDD Needs Your Support!
 
-...
+@value{DDD} needs your support!  If you have any success stories related
+to @value{DDD}, please write them down on a picture postcard and send
+them to us:
+
+
+@format
+Technische Universit@"at Braunschweig
+Institut f@"ur Software
+Abteilung Softwaretechnologie
+B@"ultenweg 88
+D-38092 Braunschweig
+GERMANY
+@end format
+
+You may also leave a message in the @emph{@value{DDD} Guestbook}. It is
+accessible via @uref{http://www.cs.tu-bs.de/softech/ddd/, the
+@value{DDD} WWW page}.
 
 
 @node Invocation
@@ -362,59 +446,390 @@ named @file{1234}; @value{DDD} does check for a core file first).
 
 
 @menu
-* Choosing an inferior debugger::  
+* Inferior debugger::           
 * DDD-Specific Options::        
 * X Options::                   
 * Debugger-Specific Options::   
 @end menu
 
-@node Choosing an inferior debugger
+@node Inferior debugger
 @subsection Choosing an inferior debugger
 
-By default, @value{DDD} determines the inferior debugger automatically.
-Use
+The most frequently required options are those to choose a specific
+inferior debugger.@footnote{By default, @value{DDD} determines the
+inferior debugger automatically, but only if arguments are given.}  Use
 
 @example
 @value{ddd} --gdb @var{program}
 @end example
+@cindex GDB, invoking @value{DDD} with
 
 @example
 @value{ddd} --dbx @var{program}
 @end example
+@cindex DBX, invoking @value{DDD} with
 
 @example
 @value{ddd} --xdb @var{program}
 @end example
+@cindex XDB, invoking @value{DDD} with
 
 @example
-@value{ddd} --jdb @var{program}
+@value{ddd} --jdb @var{class}
 @end example
+@cindex JDB, invoking @value{DDD} with
 
 @example
 @value{ddd} --pydb @var{program}
 @end example
+@cindex PYDB, invoking @value{DDD} with
 
 @example
 @value{ddd} --perl @var{program}
 @end example
+@cindex Perl, invoking @value{DDD} with
 
+@noindent
 to run GDB, DBX, XDB, JDB, PYDB or Perl as inferior debugger.
 
 
 @node DDD-Specific Options
 @subsection @value{DDD}-Specific Options
 
-...
+You can further control how @value{DDD} starts up using the following
+options.  All options may be abbreviated, as long as they are
+unambiguous; single dashes @samp{-} instead of double dashes @samp{--}
+may also be used.
+
+@value{DDD} also understands the usual X options such as @samp{-display}
+or @samp{-geometry}; @xref{X Options}, for details.
+
+All other arguments and options are passed to the inferior debugger;
+@xref{Debugger-Specific Options}, for a survey.  To pass an option to
+the inferior debugger that conflicts with an X option, or with a
+@value{DDD} option listed here, use the @samp{--debugger} option, below.
+
+@table @code
+@item --attach-windows
+Attach the source and data windows to the debugger console, creating
+one single big @value{DDD} window.  This is the default setting.
+
+@item --attach-source-window
+Attach only the source window to the debugger console.
+
+@item --attach-data-window
+Attach only the source window to the debugger console.
+
+@item --automatic-debugger
+Determine the inferior debugger automatically from the given arguments.
+
+@item --button-tips
+Enable button tips.
+
+@item --configuration
+Print the @value{DDD} configuration settings on standard output and exit.
+
+@item --check-configuration
+Check the @value{DDD} environment (in particular, the X configuration),
+report any possible problem causes and exit.
+
+@item --data-window
+Create the data window upon start-up.
+
+@item --dbx
+Run the DBX debugger as inferior debugger.
+
+@item --debugger @var{name}
+Invoke the inferior debugger @var{name}.  This is useful if you have
+several debugger versions around, or if the inferior debugger cannot be
+invoked under its usual name (i.e. @samp{gdb}, @samp{dbx}, @samp{xdb},
+@samp{jdb}, @samp{pydb}, or @samp{perl}).
+
+This option can also be used to pass options to the inferior debugger
+that would otherwise conflict with @value{DDD} options.  For instance,
+to pass the option @samp{-d @var{directory}} to XDB, use:
+
+@example
+@value{ddd} --debugger "xdb -d @var{directory}"
+@end example
+
+@noindent
+If you use the @samp{--debugger} option, be sure that the type of
+inferior debugger is specified as well.  That is, use one of the options
+@samp{--gdb}, @samp{--dbx}, @samp{--xdb}, @samp{--jdb}, @samp{--pydb},
+or @samp{--perl} (unless the default setting works fine).
+
+@item --debugger-console
+Create the debugger console upon start-up.
+
+@item --disassemble
+Disassemble the source code.  See also the @samp{--no-disassemble}
+option, below.
+
+@item --exec-window
+Run the debugged program in a specially created execution window.
+This is useful for programs that have special terminal requirements
+not provided by the debugger window, as raw keyboard processing or
+terminal control sequences.
+
+@item --fonts
+Show the font definitions used by @value{DDD} on standard output.
+
+@item --fontsize @var{size}
+Set the default font size to @var{size} (in 1/10 points).  To make
+@value{DDD} use 12-point fonts, say @samp{--fontsize 120}.
+
+@item --fullname
+@itemx -f
+Enable TTY interface, taking additional debugger commands from standard
+input and forwarding debugger output on standard output.  Current
+positions are issued in GDB @samp{-fullname} format suitable for
+debugger front-ends.  By default, both the debugger console and source
+window are disabled.
+
+@item --gdb
+Run the GDB debugger as inferior debugger.
+
+@item --glyphs
+Display the current execution position and breakpoints as glyphs.  See
+also the @samp{--no-glyphs} option, below.
+
+@item --help
+@itemx -h
+@itemx -?
+Give a list of frequently used options.  Show options of the inferior
+debugger as well.
+
+@item --host @var{hostname}
+@itemx --host @var{username}@@@var{hostname}
+Invoke the inferior debugger directly on the remote host @var{hostname}.
+If @var{username} is given and the @samp{--login} option is not used,
+use @var{username} as remote user name.  @xref{Remote Debugger}, for
+details.
+
+@item --jdb
+Run JDB as inferior debugger.
+
+@item --lesstif-hacks
+Equivalent to @samp{--lesstif-version 999}.  Deprecated.
+
+@item --lesstif-version @var{version}
+Enable some hacks to make @value{DDD} run properly with LessTif.
+@xref{LessTif}, for a discussion.
+
+@item --license
+Print the @value{DDD} license on standard output and exit.
+@cindex License, showing on standard output
+
+@item --login @var{username}
+@itemx -l @var{username}
+Use @var{username} as remote user name.  @xref{Remote Debugger}, for details.
+
+@item --maintenance
+Enable the top-level @samp{Maintenance} menu with options for
+debugging @value{DDD}.
+
+@item --manual
+Print the @value{DDD} manual page on standard output and exit.
+@cindex Manual, showing on standard output
+
+@item --news
+Print the @value{DDD} news on standard output and exit.
+@cindex News, showing on standard output
+
+@item --no-button-tips
+Disable button tips.
+
+@item --no-data-window
+Do not create the data window upon start-up.
+
+@item --no-debugger-console
+Do not create the debugger console upon start-up.
+
+@item --no-disassemble
+Do not disassemble the source code.
+
+@item --no-exec-window
+Do not run the debugged program in a specially created execution window;
+use the debugger console instead.  Useful for programs that have little
+terminal input/output, or for remote debugging.
+
+@item --no-glyphs
+Display the current execution position and breakpoints as text
+characters.  Do not use glyphs.
+
+@item --no-lesstif-hacks
+Equivalent to @samp{--lesstif-version 1000}.  Deprecated.
+
+@item --no-maintenance
+Do not enable the top-level @samp{Maintenance} menu with options for
+debugging @value{DDD}.
+
+@item --no-source-window
+Do not create the source window upon start-up.
+
+@item --no-value-tips
+Disable value tips.
+
+@item --nw
+Do not use the X window interface.  Start the inferior debugger on
+the local host.
+
+@item --perl
+Run Perl as inferior debugger.
+
+@item --pydb
+Run PYDB as inferior debugger.
+
+@item --panned-graph-editor
+Use an Athena panner to scroll the data window.  Most people prefer
+panners on scroll bars, since panners allow two-dimensional scrolling.
+However, the panner is off by default, since some Motif
+implementations do not work well with Athena widgets.  See also
+@strong{--scrolled-graph-editor}, below.
+
+@item --play @var{log-file}
+Recapitulate a previous @value{DDD} session.
+
+@example
+@value{ddd} --PLAY @var{log-file}
+@end example
+
+@noindent
+invokes @value{DDD} as inferior debugger, simulating the inferior
+debugger given in @var{log-file} (see below).  This is useful for
+debugging @value{DDD}.
+
+@item --PLAY @var{log-file}
+Simulate an inferior debugger.  @var{log-file} is a
+@samp{$HOME/.@value{ddd}/log} file as generated by some previous
+@value{DDD} session.  When a command is entered, scan @var{log-file} for
+this command and re-issue the logged reply; if the command is not found,
+do nothing.  This is used by the @samp{--play} option.
+@flindex log
+
+@item --rhost @var{hostname}
+@itemx --rhost @var{username}@@@var{hostname}
+Run the inferior debugger interactively on the remote host
+@var{hostname}.  If @var{username} is given and the @samp{--login}
+option is not used, use @var{username} as remote user name.
+@xref{Remote Debugger}, for details.
+
+@item --scrolled-graph-editor
+Use Motif scroll bars to scroll the data window.  This is the default in
+most @value{DDD} configurations.  See also
+@strong{--panned-graph-editor}, above.
+ 
+@item --separate-windows
+Separate the console, source and data windows.  See also the
+@samp{--attach} options, above.
+
+@item --session @var{session}
+Load @var{session} upon start-up.
+@cindex Session, setting when invoking @value{DDD}
+
+@item --source-window
+Open the source window upon start-up.
+
+@item --status-at-bottom
+Place the status line at the bottom of the source window.
+
+@item --status-at-top
+Place the status line at the top of the source window.
+
+@item --sync-debugger
+Do not process X events while the debugger is busy.  This may result
+in slightly better performance on single-processor systems.
+
+@item --toolbars-at-bottom
+Place the toolbars the bottom of the window.
+
+@item --toolbars-at-top
+Place the toolbars at the top of the window.
+
+@item --trace
+Show the interaction between @value{DDD} and the inferior debugger on
+standard error.  This is useful for debugging @value{DDD}.  If
+@samp{--trace} is not specified, this information is written into
+@file{~/.@value{ddd}/log} (@samp{~} stands for your home directory),
+such that you can also do a post-mortem debugging.
+@flindex log
+@flindex ~
+
+@item --tty
+@itemx -t
+Enable TTY interface, taking additional debugger commands from
+standard input and forwarding debugger output on standard output.
+Current positions are issued in a format readable for humans.  By
+default, the debugger console is disabled.
+@cindex TTY mode, setting when invoking @value{DDD}
+
+@item --value-tips
+Enable value tips.
+
+@item --version
+@itemx -v
+Print the @value{DDD} version on standard output and exit.
+
+@item --vsl-library @var{library}
+Load the VSL library @var{library} instead of using the
+@value{DDD} built-in library.  This is useful for customizing
+display shapes and fonts.
+
+@item --vsl-path @var{path}
+Search VSL libraries in @var{path} (a colon-separated directory list).
+
+@item --vsl-help
+Show a list of further options controlling the VSL
+interpreter.  These options are intended for debugging purposes and
+are subject to change without further notice.
+
+@item --xdb
+Run XDB as inferior debugger.
+@end table
 
 
 @node X Options
 @subsection X Options
 
-...
+@value{DDD} also understands the following X options.  Note that these
+options only take a single dash @samp{-}.
+
+@table @code
+@item -display @var{display}
+Use the X server @var{display}.  By default, @var{display} is taken from 
+the @samp{DISPLAY} environment variable.
+@cindex Display, setting when invoking @value{DDD}
+@enindex DISPLAY
+
+@item -geometry @var{geometry}
+Specify the initial size and location of the debugger console.
+
+@item -iconic
+Start @value{DDD} iconified.
+@cindex Icon, invoking @value{DDD} as
+
+@item -name @var{name}
+Give @value{DDD} the name @var{name}.
+
+@item -selectionTimeout @var{timeout}
+Specify the timeout in milliseconds within which two communicating
+applications must respond to one another for a selection request.
+
+@item -title @var{name}
+Give the @value{DDD} window the title @var{name}.
+
+@item -xrm @var{resourcestring}
+Specify a resource name and value to override any defaults.
+@cindex Resource, setting when invoking @value{DDD}
+@end table
 
 
 @node Debugger-Specific Options
 @subsection Debugger-Specific Options
+
+All options @value{DDD} does not recognize are passed to the inferior
+debugger.  This section lists the most useful options.
 
 @menu
 * GDB Options::                 
@@ -428,38 +843,228 @@ to run GDB, DBX, XDB, JDB, PYDB or Perl as inferior debugger.
 @node GDB Options
 @subsubsection GDB Options
 
-...
+These GDB options are useful when using @value{DDD} with GDB as inferior
+debugger.  Single dashes @samp{-} instead of double dashes @samp{--} may
+also be used.
+
+@table @code
+@item -b @var{baudrate}
+Set serial port baud rate used for remote debugging.
+
+@item --cd @var{dir}
+Change current directory to @var{dir}.
+
+@item --command @var{file}
+Execute GDB commands from @var{file}.
+
+@item --core @var{corefile}
+Analyze the core dump @var{corefile}.
+
+@item --directory @var{dir}
+@itemx -d @var{dir}
+Add @var{directory} to the path to search for source files.
+
+@item --exec @var{execfile}
+Use @var{execfile} as the executable.
+
+@item --mapped
+Use mapped symbol files if supported on this system.
+
+@item --nx
+@item -n
+Do not read @file{.gdbinit} file.
+@flindex .gdbinit
+
+@item --readnow
+Fully read symbol files on first access.
+
+@item --se @var{file}
+Use @var{file} as symbol file and executable file.
+
+@item --symbols @var{symfile}
+Read symbols from @var{symfile}.
+@end table
+
+@xref{Invoking GDB, Invoking GDB, Invoking GDB, gdb, Debugging with
+GDB}, for further options that can be used with GDB.
+
 
 @node DBX Options
 @subsubsection DBX Options
 
-...
+DBX variants differ widely in their options, so we cannot give a list
+here.  Check out the @cite{dbx(1)} manual page.
+
 
 @node XDB Options
 @subsubsection XDB Options
 
-...
+These XDB options are useful when using @value{DDD} with XDB as inferior
+debugger.
+
+@table @code
+@item -d @var{dir}
+Specify @var{dir} as an alternate directory where source files are
+located.
+
+@item -P @var{process-id}
+Specify the process ID of an existing process the user wants to debug.
+
+@item -l @var{library}
+Pre-load information about the shared library @var{library}.  @samp{-l
+ALL} means always pre-load shared library information.
+
+@item -S @var{num}
+Set the size of the string cache to @var{num} bytes (default is 1024,
+which is also the minimum).
+
+@item -s
+Enable debugging of shared libraries.
+@end table
+
+Further options can be found in the @cite{xdb(1)} manual page.
+
+
 
 @node JDB Options
 @subsubsection JDB Options
 
-...
+The following JDB options are useful when using @value{DDD} with JDB as
+inferior debugger.
+
+@table @code
+@item -host @var{hostname}
+host machine of interpreter to attach to
+
+@item -password @var{psswd}
+password of interpreter to attach to (from @samp{-debug})
+@end table
+
+These JDB options are forwarded to debuggee process:
+
+@table @code
+@item -verbose
+@itemx -v
+Turn on verbose mode.
+
+@item -debug
+Enable remote Java debugging,
+
+@item -noasyncgc
+Don't allow asynchronous garbage collection.
+
+@item -verbosegc
+Print a message when garbage collection occurs.
+
+@item -noclassgc
+Disable class garbage collection.
+
+@item -checksource
+@itemx -cs
+Check if source is newer when loading classes.
+
+@item -ss @var{number}
+Set the maximum native stack size for any thread.
+
+@item -oss @var{number}
+Set the maximum Java stack size for any thread.
+
+@item -ms @var{number}
+Set the initial Java heap size.
+
+@item -mx @var{number}
+Set the maximum Java heap size.
+
+@item -D@var{name}=@var{value}
+Set the system property @var{name} to @var{value}.
+
+@item -classpath @var{path}
+List directories in which to look for classes.  @var{path} is a list of 
+directories separated by colons.
+
+@item -prof
+@itemx -prof:@var{file}
+Output profiling data to @file{./java.prof}.  If @var{file} is given,
+write the data to @file{./@var{file}}.
+@flindex java.prof
+
+@item -verify
+Verify all classes when read in.
+
+@item -verifyremote
+Verify classes read in over the network (default).
+
+@item -noverify
+Do not verify any class.
+
+@item -dbgtrace
+Print info for debugging JDB.
+@end table
+
+Further options can be found in the JDB documentation.
+
 
 @node PYDB Options
 @subsubsection PYDB Options
 
-...
+For a list of useful PYDB options, check out the PYDB documentation.
+
 
 @node Perl Options
 @subsubsection Perl Options
 
-...
+The most important Perl option to use with @value{DDD} is @samp{-w}; it
+enables several important warnings.  For further options, see the
+@cite{perlrun(1)} manual page.
 
 
 @node Quitting
 @section Quitting @value{DDD}
 
-...
+To exit @value{DDD}, select @samp{File @result{} Exit}.  You may also
+type the @samp{quit} command at the debugger prompt or press
+@key{Ctrl+Q}.  GDB and XDB also accept the @samp{q} command or an
+end-of-file character (usually @key{Ctrl+D}).  Closing the last
+@value{DDD} window will also exit @value{DDD}.
+@kindex Ctrl+D
+@kindex Ctrl+Q
+@lbindex Exit
+@cindex Exiting
+@cindex Quitting
+@cmindex quit
+
+An interrupt (@key{ESC} or @strong{Interrupt}) does not exit from
+@value{DDD}, but rather terminates the action of any debugger command
+that is in progress and returns to the debugger command level.  It is
+safe to type the interrupt character at any time because the debugger
+does not allow it to take effect until a time when it is safe.
+@kindex ESC
+@cindex Interrupting execution
+@cindex Execution, interrupting
+
+In case an ordinary interrupt does not succeed, you can also use an
+abort (@strong{Ctrl+\} or @strong{Abort}), which sends a QUIT signal to
+the inferior debugger.  Use this in emergencies only; the inferior
+debugger may be left inconsistent or even exit after a QUIT signal.
+@kindex Ctrl+\
+@lbindex Abort
+@cindex Aborting execution
+@cindex Execution, aborting
+
+As a last resort (if @value{DDD} hangs, for example), you may also
+interrupt @value{DDD} itself using an interrupt signal (@code{SIGINT}).
+This can be done by typing the interrupt character (usually
+@key{Ctrl+C}) in the shell @value{DDD} was started from, or by using the
+UNIX @samp{kill} command.  An interrupt signal interrupts any
+@value{DDD} action; the inferior debugger is interrupted as well.  Since
+this interrupt signal can result in internal inconsistencies, use this
+as a last resort in emergencies only; save your work as soon as possible
+and restart @value{DDD}.
+@kindex Ctrl+C
+@cindex Interrupting @value{DDD}
+@cindex Signal, sending to @value{DDD}
+@cindex Killing @value{DDD}
+
 
 
 @node Basics
@@ -467,6 +1072,7 @@ to run GDB, DBX, XDB, JDB, PYDB or Perl as inferior debugger.
 
 @menu
 * Windows::                     
+* Pulldown Menu::               
 * Command Tool::                
 * Tool Bar::                    
 * Getting Help::                
@@ -494,16 +1100,6 @@ messages.
 @sp 1
 @end ifnotinfo
 
-By default, @value{DDD} places these main windows stacked into one
-single top-level window, but @value{DDD} can also be configured to
-treat each one separately.
-
-@ifnotinfo
-@sp 1
-@center @image{PICS/ddd-separate, 15cm}
-@sp 1
-@end ifnotinfo
-
 Besides these main windows, there are some other optional windows:
 
 @itemize @bullet
@@ -527,6 +1123,12 @@ entering additional information.
 * Tool Bar::                    
 @end menu
 
+@node Pulldown Menu
+@section The Pulldown Menu
+
+...
+
+
 @node Command Tool
 @section The Command Tool
 
@@ -549,14 +1151,6 @@ Whenever you save @value{DDD} state, @value{DDD} also saves the distance
 between command tool and source window, such that you can select your
 own individual command tool placement.  To move the command tool to its
 saved position, use @samp{View @result{} Command Tool}.
-
-
-@menu
-* Command Tool Buttons::        
-@end menu
-
-@node Command Tool Buttons
-@subsection The Command Tool Buttons
 
 @ifnotinfo
 @sp 1
@@ -690,14 +1284,6 @@ with further operations.
 @sp 1
 @end ifnotinfo
 
-
-@menu
-* Tool Bar Buttons::            
-@end menu
-
-@node Tool Bar Buttons
-@subsection The Tool Bar Buttons
-
 These are the buttons of the tool bar.  Note that not all buttons may be
 inactive, depending on the current state and the capabilities of the
 inferior debugger.
@@ -795,7 +1381,7 @@ Plot @samp{()} in a plot window.  @xref{Plotting Values}, for details.
 @cindex Detail toggling with @samp{Show/Hide}
 
 Toggle details of the selected display(s).  @xref{Showing and Hiding
-Values}, for details.
+Details}, for a discussion.
 
 
 @item Rotate
@@ -812,8 +1398,8 @@ Rotate the selected display(s).  @xref{Rotating Arrays}, for details.
 @cindex Setting values with @samp{Set}
 @cindex Values, setting with @samp{Set}
 
-Set (change) the value of @samp{()}.  @xref{Changing Variable Values},
-for details.
+Set (change) the value of @samp{()}.  @xref{Changing Values}, for
+details.
 
 
 @item Undisp
@@ -834,81 +1420,61 @@ for details.
 @value{DDD} has an extensive on-line help system.  Here's how to get
 help while working with @value{DDD}.
 
-@menu
-* Button Tips::                 
-* The Status Line::             
-* Context-Sensitive Help::      
-* Help on Debugger Commands::   
-* Are You Stuck?::              
-* Undoing Commands::            
-@end menu
-
-@node Button Tips
-@subsection Button Tips
-
-@cindex Button tip
-@cindex Help, on buttons
-@cindex Tip, on buttons
-
+@itemize @bullet
+@item
 You can get a short help text on most @value{DDD} buttons by simply
 moving the mouse pointer on it and leave it there.  After a second, a
 small window (called @emph{button tip}) pops up, giving a hint on the
 button's meaning.  The button tip disappears as soon as you move the
 mouse pointer to another item.
+@cindex Button tip
+@cindex Help, on buttons
+@cindex Tip, on buttons
 
-
-@node The Status Line
-@subsection The Status Line
+@item
+The @emph{status line} also displays information about the currently selected
+item.  By clicking on the status line, you can redisplay the most
+recent messages.
 @cindex Help, in the status line
 @cindex Status line
 
-The status line also displays information about the currently selected
-item.  By clicking on the status line, you can redisplay the most
-recent messages.
-
-
-@cindex Status line
-
-@node Context-Sensitive Help
-@subsection Context-Sensitive Help
-
-@cindex Help, on items
-@cindex Context-sensitive help
-
+@item
 You can get detailed help on any visible @value{DDD} item.  Just
 point on the item you want help and press the @samp{F1} key.  This
 pops up a detailed help text.
+@cindex Help, on items
+@cindex Context-sensitive help
 @kindex F1
 
+@item
 The @value{DDD} dialogs all contain @samp{Help} buttons that give
 detailed information about the dialog.
 @lbindex Help
 
-
-@node Help on Debugger Commands
-@subsection Help on Debugger Commands
-
+@item
+You can get help on debugger commands by entering @samp{help} at the
+debugger prompt.  @xref{Entering Commands}, for details on entering
+commands.
 @cindex Help, on commands
 @cmindex help
 
-You can get help on debugger commands by entering @samp{help} at the
-debugger prompt.
-
-@xref{Entering Commands}, below, for details on entering commands.
-
-
-@node Are You Stuck?
-@subsection Are You Stuck?
-
+@item
+And if you are totally stuck, try @samp{Help @result{} What Now?} (the
+@samp{What Now} item in the @samp{Help} menu) or press @key{Ctrl+F1}.
+Depending on the current state, @value{DDD} will give you some hints on
+what you can do next.
 @lbindex What Now?
 @kindex Ctrl+F1
 @cindex Help, when stuck
+@end itemize
 
-If you are stuck, try @samp{Help @result{} What Now?} (the @samp{What
-Now} item in the @samp{Help} menu) or press @key{Ctrl+F1}.  Depending on
-the current state, @value{DDD} will give you some hints on what you can
-do next.
+If, after all, you made a mistake, don't worry: Almost every @value{DDD}
+command can be undone.  @xref{Undoing Commands}, for details.
 
+
+@menu
+* Undoing Commands::            
+@end menu
 
 @node Undoing Commands
 @subsection Undoing Commands
@@ -920,24 +1486,156 @@ do next.
 @cindex Undoing commands
 @cindex Redoing commands
 
-And if, after all, you made a mistake, don't worry.  Almost every
-@value{DDD} command can be undone, using @samp{Edit @result{} Undo} or
-the @samp{Undo} button on the command tool.  
+Almost every @value{DDD} command can be undone, using @samp{Edit
+@result{} Undo} or the @samp{Undo} button on the command tool.
 
 Likewise, @samp{Edit @result{} Redo} repeats the command most recently
 undone.
 
 
+@node Customizing
+@chapter Customizing @value{DDD}
+
+...
+
+@menu
+* Customizing Basics::          
+* Customizing Windows::         
+* Customizing Help::            
+* Debugger Settings::           
+* Saving Options::              
+* Other Customizations::        
+@end menu
+
+@node Customizing Basics
+@section Customizing Basics
+
+...
+
+@menu
+* Specifying Resources::        
+@end menu
+
+@node Specifying Resources
+@subsection Specifying @value{DDD} Resources
+@cindex Resources
+
+@value{DDD} is controlled by several @emph{resource}---user-defined
+variables that take specific values in order to control and customize
+@value{DDD} behavior.  Just like any X program, @value{DDD} has a number
+of places to get resource values from.  For @value{DDD}, the most
+important places to specify resources are:
+
+@itemize @bullet
+@item
+The @file{~/.@value{ddd}/init} file (@samp{~} stands for your home
+directory).  This file is read in by @value{DDD} upon start-up; the
+resources specified herein override all other sources (except for
+resources given implicitly by command-line options).
+@flindex init
+@flindex ~
+
+@item
+The @file{@value{Ddd}} application-defaults file.  This file is
+typically compiled into the @value{DDD} executable.  If it exists, its
+resource values override the values compiled into @value{DDD}.  If the
+versions of the @file{@value{Ddd}} application-defaults file and the
+@value{DDD} executable do not match, @value{DDD} may not function
+properly; @value{DDD} will give you a warning in this case.@footnote{If
+you use a @file{@value{Ddd}} application-defaults file, you will not be
+able to maintain multiple @value{DDD} versions at the same time.  This
+is why the suiting @file{@value{Ddd}} is normally compiled into the
+@value{DDD} executable.}
+@flindex @value{Ddd}
+
+@item
+The command-line options.  These options override all other resource
+settings.
+@end itemize
+
+Not every resource has a matching command-line option.  Each resource
+(whether in @file{~/.@value{ddd}/init} or @file{@value{Ddd}}) is
+specified using a line
+
+@example
+@value{Ddd}*@var{resource}: @var{value}
+@end example
+
+For instance, to set the @samp{pollChildStatus} resource to @samp{off},
+you would specify in @file{~/.@value{ddd}/init}:
+
+@example
+@value{Ddd}*pollChildStatus: off
+@end example
+
+@xref{Resource Index}, for a full list of @value{DDD} resources.  For
+more details on resource specifications, see the section
+@cite{RESOURCES} in the @cite{X(1)} manual page.
+
+
+
+@node Customizing Windows
+@section Customizing the @value{DDD} Windows
+
+...
+
+By default, @value{DDD} places these main windows stacked into one
+single top-level window, but @value{DDD} can also be configured to
+treat each one separately.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-separate, 15cm}
+@sp 1
+@end ifnotinfo
+
+...
+
+
+@menu
+* Defining Buttons::            
+@end menu
+
+@node Defining Buttons
+@subsection Defining Buttons
+
+...
+
+
+@node Customizing Help
+@section Customizing the @value{DDD} Help
+
+...
+
+
+@node Debugger Settings
+@section Debugger Settings
+
+...
+
+
+@node Saving Options
+@section Saving Options
+
+...
+
+
+@node Other Customizations
+@section Other Customizations
+
+...
+
 
 @node Navigating
 @chapter Navigating through the Code
 
-This chapter discusses how to access resources from within @value{DDD}.
+This chapter discusses how to access code from within @value{DDD}.
 
 @menu
 * Compiling for Debugging::     
 * Opening Files::               
 * Looking up Items::            
+* Customizing Source::          
 @end menu
 
 @node Compiling for Debugging
@@ -1134,6 +1832,13 @@ location you looked for.
 @end ifnotinfo
 
 
+@node Customizing Source
+@section Customizing the Source Window
+
+...
+
+
+
 @node Breakpoints and Watchpoints
 @chapter Breakpoints and Watchpoints
 
@@ -1159,6 +1864,7 @@ the value of an expression changes.
 @menu
 * Breakpoints::                 
 * Watchpoints::                 
+* Customizing Breakpoints::     
 @end menu
 
 @node Breakpoints
@@ -1510,7 +2216,7 @@ You can edit the breakpoint commands just recorded using @samp{Edit >>}.
 
 To move a breakpoint to a different location, press @emph{mouse button
 1} on the stop sign and drag it to the desired location.@footnote{When
-glyphs are disabled (@pxref{Source Preferences}), breakpoints cannot be
+glyphs are disabled (@pxref{Customizing Source}), breakpoints cannot be
 dragged.  Delete and set breakpoints instead.}  This is equivalent to
 deleting the breakpoint at the old location and setting a breakpoint at
 the new location.  The new breakpoint inherits all properties of the old
@@ -1665,6 +2371,12 @@ To delete a watchpoint, enter the name of the watched variable in the
 argument field and click the @samp{Unwatch} button.
 
 
+@node Customizing Breakpoints
+@section Customizing Breakpoints
+
+...
+
+
 @node Running the Program
 @chapter Running the Program
 @cindex Running the debugged program
@@ -1685,6 +2397,7 @@ output, debug an already running process, or kill a child process.
 * Examining Threads::           
 * Handling Signals::            
 * Killing the Program::         
+* Customizing Execution::       
 @end menu
 
 @node Starting Program Execution
@@ -1744,6 +2457,7 @@ characters and performs redirection of I/O, and thence to your program.
 Your @samp{SHELL} environment variable (if it exists) specifies what
 shell GDB uses.  If you do not define @samp{SHELL}, GDB uses
 @samp{/bin/sh}.
+@enindex SHELL
 
 If you use another inferior debugger, the exact semantics on how the
 arguments are interpreted depend on the inferior debugger you are using.
@@ -1797,6 +2511,7 @@ example,
 run > @var{outfile}
 @end example
 
+@noindent
 starts your program, diverting its output to the file @var{outfile}.
 
 @emph{Warning:} While input and output redirection work, you cannot use
@@ -2042,7 +2757,7 @@ execution position.}
 
 As a quicker alternative, you can also press @emph{mouse button 1} on
 the arrow and drag it to a different location.@footnote{When glyphs are
-disabled (@pxref{Source Preferences}), dragging the execution position
+disabled (@pxref{Customizing Source}), dragging the execution position
 is not possible.  Set the execution position explicitly instead.}
 @cindex Execution position, dragging
 
@@ -2446,138 +3161,866 @@ reads the symbol table again (while trying to preserve your current
 debugger state).
 
 
+@node Customizing Execution
+@section Customizing Execution
+
+...
+
+
 
 @node Examining Data
 @chapter Examining Data
 
+@value{DDD} provides several means to examine data.
+
+@itemize @bullet
+@item 
+The quickest way to examine variables is to move the pointer on an
+occurrence in the source text.  The value is displayed in the source
+line; after a second, a popup window (called @dfn{value tip}) shows the
+variable value.  This is useful for quick examination of several simple
+values.
+@cindex Value tip
+@cindex Tip, value
+
+@item
+If you want to refer to variable values at a later time, you can
+@dfn{print} the value in the debugger console.  This allows for
+displaying and examining larger data structures.
+@cindex Printing values
+@cindex Value, printing
+
+@item
+If you want to examine complex data structures, you can @dfn{display}
+them graphically in the data window.  Displays remain effective until
+you delete them; they are updated each time the program stops.  This is
+useful for large dynamic structures.
+@cindex Displaying values
+@cindex Value, displaying
+
+@item
+If you want to examine arrays of numeric values, you can @dfn{plot} them
+graphically in a separate plot window.  The plot is updated each time
+the program stops.  This is useful for large numeric arrays.
+@cindex Plotting values
+@cindex Value, plotting
+
+@item
+Using GDB or DBX, you can also @dfn{examine memory contents} in any of
+several formats, independently of your program's data types.
+@cindex Dumping values
+@cindex Value, dumping
+@cindex Memory, dumping contents
+@end itemize
+
 @menu
-* Value Hints::                 
+* Value Tips::                  
 * Printing Values::             
 * Displaying Values::           
 * Plotting Values::             
+* Examining Memory::            
 @end menu
 
-@node Value Hints
-@section Showing Simple Values using Value Hints
+@node Value Tips
+@section Showing Simple Values using Value Tips
+
+To display the value of a simple variable, move the mouse pointer on its
+name.  After a second, a small window (called @dfn{value tip}) pops up
+showing the value of the variable pointed at.  The window disappears as
+soon as you move the mouse pointer away from the variable.  The value is
+also shown in the status line.
+@cindex Value tip
+@cindex Tip, value
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-value-tip, 15cm}
+@sp 1
+@end ifnotinfo
+
 
 @node Printing Values
 @section Printing Simple Values in the Debugger Console
 
+The variable value can also be printed in the debugger console, making
+it available for future operations.  To print a variable value, select
+the desired variable by clicking @emph{mouse button 1} on its name.  The
+variable name is copied to the argument field.  By clicking the
+@samp{Print} button, the value is printed in the debugger console.  The
+printed value is also shown in the status line.
+@cindex Printing values
+@cindex Value, printing
+@lbindex Print
+
+As a shorter alternative, you can simply press @emph{mouse button 3} on
+the variable name and select the @samp{Print} item from the popup menu.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-print-popup, 15cm}
+@sp 1
+@end ifnotinfo
+
+In GDB, the @samp{Print} button generates a @samp{print} command, which
+has several more options.  @xref{Data, Examining Data, Examining Data,
+gdb, Debugging with GDB}, for GDB-specific expressions, variables, and
+output formats.
+@cmindex print
+@cindex Print, output formats
+
+
+
 @node Displaying Values
 @section Displaying Complex Values in the Data Window
 
+To explore complex data structures, you can @dfn{display} them
+permanently in the @emph{data window}.  The data window displays
+selected data of your program, showing complex data structures
+graphically.  It is updated each time the program stops.
+@cindex Data Window
+@cindex Value, displaying
+@cindex Display
+
 @menu
-* Selecting Displays::          
-* Selecting Multiple Displays::  
-* Showing and Hiding Values::   
-* Rotating Arrays::             
-* Displaying Dependent Values::  
-* Display Shortcuts::           
-* Dereferencing Pointers::      
-* Displaying Local Variables::  
-* Displaying Program Status::   
-* Displaying Multiple Array Values::  
-* Repeated Array Values::       
-* Changing Variable Values::    
-* Refreshing the Data Window::  
-* Deleting Displays::           
-* Examining Shared Data Structures::  
-* Clustering Displays::         
-* Moving Displays Around::      
-* Aligning Displays::           
-* Layouting the Display Graph::  
-* Rotating the Display Graph::  
-* Printing the Display Graph::  
+* Display Basics::              
+* Displaying Arrays::           
+* Changing Values::             
+* Examining Structures::        
+* Layouting the Graph::         
+* Printing the Graph::          
+* Customizing Displays::        
 @end menu
 
+@node Display Basics
+@subsection Display Basics
+
+This section discusses how to create, manipulate, and delete displays.
+The essentials are:
+
+@itemize @bullet
+@item
+Click on @samp{Display} to display the variable in @samp{()}.
+@lbindex Display
+
+@item
+Click on a display to select it.
+
+@item
+Click on @samp{Undisplay} to delete the selected display.
+@lbindex Undisplay
+@end itemize
+
+
+@menu
+* Creating Single Displays::    
+* Selecting Displays::          
+* Showing and Hiding Details::  
+* Displaying Local Variables::  
+* Displaying Program Status::   
+* Creating Multiple Displays::  
+* Refreshing the Data Window::  
+* Clustering Displays::         
+* Deleting Displays::           
+@end menu
+
+@node Creating Single Displays
+@subsubsection Creating Single Displays
+
+To create a new display showing a specific variable, select the variable
+by clicking @emph{mouse button 1} on its name.  The variable name is
+copied to the argument field.  By clicking the @samp{Display} button, a
+new display is created in the data window.  The data window opens
+automatically as soon as you create a display.
+@cindex Display, creating
+@lbindex Display
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-display, 15cm}
+@sp 1
+@end ifnotinfo
+
+As a shorter alternative, you can simply press @emph{mouse button 3} on
+the variable name and select @samp{Display} from the popup menu.
+@lbindex Display
+
+As an even faster alternative, you can also double-click on the variable
+name.
+
+As another alternative, you may also enter the expression to be
+displayed in the argument field and press the @samp{Display} button.
+
+Finally, you may also type in a command at the debugger prompt:
+
+@example
+graph display @var{expr} [clustered] [at (@var{x}, @var{y})] 
+    [dependent on @var{display}] [[now or] when in @var{scope}]
+@end example
+@cmindex graph display
+
+This command creates a new display showing the value of the expression
+@var{expr}.  The optional parts have the following meaning:
+
+@table @code
+@item clustered
+If given, the new display is created in a cluster.  @xref{Clustering
+Displays}, for a discussion.
+@cindex Display, clustered
+@cindex Cluster command
+
+@item at (@var{x}, @var{y})
+If given, the new display is created at the position (@var{x}, @var{y}).
+Otherwise, a default position is assigned.
+@cindex Display position
+@cindex Position, of display
+
+@item dependent on @var{display}
+If given, an edge from the display numbered or named @emph{display} to
+the new display is created.  Otherwise, no edge is created.
+@xref{Dependent Values}, for details.
+@cindex Dependent display
+@cindex Display, dependent
+
+@item when in @var{scope}
+@itemx now or when in @var{scope}
+
+If @samp{when in} is given, the display creation is @dfn{deferred} until
+execution reaches the given @var{scope} (a function name, as in the
+backtrace output).
+@cindex Deferred display
+@cindex Display, deferred
+
+If @samp{now or when in} is given, @value{DDD} first attempts to create
+the display immediately.  The display is deferred only if display
+creation fails.
+
+If neither @samp{when in} suffix nor @samp{now or when in} suffix is
+given, the display is created immediately.
+@end table
+
+
+
 @node Selecting Displays
-@subsection Selecting Displays
+@subsubsection Selecting Displays
 
-@node Selecting Multiple Displays
-@subsection Selecting Multiple Displays
+Each display in the data window has a @emph{title bar} containing the
+@emph{display number} and the displayed expression (the @emph{display
+name}).  Below the title, the @emph{display value} is shown.
+@cindex Display title
+@cindex Title, display
+@cindex Display name
+@cindex Name, display
+@cindex Display value
+@cindex Value, display
 
-@node Showing and Hiding Values
-@subsection Showing and Hiding Values
+You can select single displays by clicking on them with @emph{mouse
+button 1}.
+@cindex Display, selecting
+@cindex Selecting single displays
 
-@node Rotating Arrays
-@subsection Rotating Arrays
+You can @emph{extend} an existing selection by pressing the
+@strong{Shift} key while selecting.  You can also @emph{toggle} an
+existing selection by pressing the @strong{Shift} key while selecting
+already selected displays.
+@cindex Extending display selection
+@cindex Display selection
 
-@node Displaying Dependent Values
-@subsection Displaying Dependent Values
+Single displays may also be selected by using the arrow keys @key{Up},
+@key{Down}, @key{Left}, and @key{Right}.
+@kindex Up
+@kindex Down
+@kindex Left
+@kindex Right
 
-@node Display Shortcuts
-@subsection Display Shortcuts
+@emph{Multiple displays} are selected by pressing and holding
+@emph{mouse button 1} somewhere on the window background.  By moving the
+pointer while holding the button, a selection rectangle is shown; all
+displays fitting in the rectangle are selected when mouse button 1 is
+released.
+@cindex Selecting multiple displays
 
-@node Dereferencing Pointers
-@subsection Dereferencing Pointers
+If the @strong{Shift} key is pressed while selecting, the existing
+selection is @emph{extended}.
+
+By double-clicking on a display title, the display itself and all
+connected displays are automatically selected.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-select-display, 15cm}
+@sp 1
+@end ifnotinfo
+
+
+
+@node Showing and Hiding Details
+@subsubsection Showing and Hiding Details
+
+Aggregate values (i.e. records, structs, classes, and arrays) can be
+shown @emph{expanded}, that is, displaying all details, or
+@emph{hidden}, that is, displayed as @samp{@{@dots{}@}}.
+
+To show details about an aggregate, select the aggregate by clicking
+@emph{mouse button 1} on its name or value and click on the @samp{Show}
+button.  Details are shown for the aggregate itself as well as for all
+contained sub-aggregates.
+@lbindex Show
+@cindex Display, showing details
+@cindex Detail, showing
+@cindex Showing display details
+
+To hide details about an aggregate, select the aggregate by clicking
+@emph{mouse button 1} on its name or value and click on the @samp{Hide}
+button.
+@lbindex Hide
+@cindex Display, hiding details
+@cindex Detail, hiding
+@cindex Hiding display details
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-hide-display, 15cm}
+@sp 1
+@end ifnotinfo
+
+When pressing and holding @emph{mouse button 1} on the @samp{Show/Hide}
+button, a menu pops up with even more alternatives:
+
+@table @samp
+@item Show More ()
+Shows details of all aggregates currently hidden, but not of their
+sub-aggregates.  You can invoke this item several times in a row to
+reveal more and more details of the selected aggregate.
+@lbindex Show More
+
+@item Show Just ()
+Shows details of the selected aggregate, but hides all sub-aggregates.
+@lbindex Show Just
+
+@item Show All ()
+Shows all details of the selected aggregate and of its sub-aggregates.
+This item is equivalent to the @samp{Show} button.
+@lbindex Show All
+
+@item Hide ()
+Hide all details of the selected aggregate.  This item is equivalent
+to the @samp{Hide} button.
+@lbindex Hide
+@end table
+
+As a faster alternative, you can also press @emph{mouse button 3} on the
+aggregate and select the appropriate menu item.
+
+As an even faster alternative, you can also double-click @emph{mouse
+button 1} on a value.  If some part of the value is hidden, more details
+will be shown; if the entire value is shown, double-clicking will
+@emph{hide} the value instead.  This way, you can double-click on a
+value until you get the right amount of details.
+
+If @emph{all} details of a display are hidden, the display is called
+@emph{disabled}; this is indicated by the string `@emph{(Disabled)}.
+@cindex Disabled displays
+@cindex Displays, disabled
+
+Displays can also be disabled or enabled via a @value{DDD} command,
+which you enter at the debugger prompt:
+
+@example
+graph disable display @var{displays@dots{}}
+@end example
+@cmindex graph disable display
+
+@noindent
+disables the given displays.
+
+@example
+graph enable display @var{displays@dots{}}
+@end example
+@cmindex graph enable display
+
+@noindent
+re-enables the given displays.
+
+In both commands, @var{displays@dots{}} is either
+@itemize @bullet
+@item
+a space-separated list of display numbers to disable or enable, or
+
+@item
+a single display name.  If you specify a display by name, all displays 
+with this name will be affected.
+@end itemize
+
+Use @samp{Edit @result{} Undo} to undo disabling or enabling displays.
+@lbindex Undo
+@cindex Undo disabling displays
+@cindex Disabling displays, undoing
+
 
 @node Displaying Local Variables
-@subsection Displaying Local Variables
+@subsubsection Displaying Local Variables
+
+You can display all local variables at once by choosing @samp{Data
+@result{} Display Local Variables}.  When using DBX, XDB, JDB, or Perl,
+this displays all local variables, including the arguments of the
+current function.  When using GDB or PYDB, function arguments are
+contained in a separate display, activated by @samp{Data @result{}
+Display Arguments}.
+@lbindex Display Local Variables
+@lbindex Display Arguments
+@cindex Local variables, displaying
+@cindex Arguments, displaying
+
+The display showing the local variables can be manipulated just like any
+other data display.  Individual variables can be selected and
+dereferenced.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-locals, 15cm}
+@sp 1
+@end ifnotinfo
+
 
 @node Displaying Program Status
-@subsection Displaying Program Status
+@subsubsection Displaying Program Status
 
-@node Displaying Multiple Array Values
-@subsection Displaying Multiple Array Values
+You can create a display from the output of an arbitrary debugger
+command.  By entering
 
-@node Repeated Array Values
-@subsection Repeated Array Values
+@example
+graph display `@var{command}`
+@end example
+@cmindex graph display
 
-@node Changing Variable Values
-@subsection Changing Variable Values
+@noindent
+the output of @emph{command} is turned into a @emph{status display}
+updated each time the program stops.
+@cindex Status display
+
+For instance, the command
+
+@example
+graph display `where`
+@end example
+
+@noindent
+creates a status display named @samp{Where} that shows the current
+backtrace.
+
+If you are using GDB, @value{DDD} provides a panel from which you can
+choose useful status displays.  Select @samp{Data @result{} More Status
+Displays} and pick your choice from the list.
+@lbindex More Status Displays
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-status-displays, 15cm}
+@sp 1
+@end ifnotinfo
+
+Refreshing status displays at each stop takes time; you should delete
+status displays as soon as you don't need them any more.
+
+
+@node Creating Multiple Displays
+@subsubsection Creating Multiple Displays
+
+To display several successive objects of the same type (a section of an
+array, or an array of dynamically determined size), you can use the
+notation @samp{@var{from}..@var{to}} in display expressions.
+
+@var{from} and @var{to} denote the first and last expression to display.
+Thus,
+
+@example
+graph display argv[0..9]
+@end example
+
+@noindent
+creates 10 new displays for @samp{argv[0]}, @samp{argv[1]}, @dots{},
+@samp{argv[9]}.
+
+If you want to display only a part of an array, @emph{array slices} are
+a better way.  @xref{Array Slices}, for a discussion.
+
 
 @node Refreshing the Data Window
-@subsection Refreshing the Data Window
+@subsubsection Refreshing the Data Window
 
-@node Deleting Displays
-@subsection Deleting Displays
+The data window is automatically updated or @dfn{refreshed} each time
+the program stops.  Values that have changed since the last refresh are
+highlighted.
 
-@node Examining Shared Data Structures
-@subsection Examining Shared Data Structures
+However, there may be situations where you should refresh the data
+window explicitly.  This is especially the case whenever you changed
+debugger settings that could affect the data format, and want the data
+window to reflect these settings.
+@cindex Displays, refreshing
+@cindex Displays, updating
+@cindex Refreshing displayed values
+@cindex Updating displayed values
+
+You can refresh the data window by selecting @samp{Data @result{}
+Refresh Displays}.
+@lbindex Refresh Displays
+
+As an alternative, you can press @emph{mouse button 3} on the background
+of the data window and select the @samp{Refresh Displays} item.
+@lbindex Refresh Displays
+
+Typing
+
+@example
+graph refresh
+@end example
+@cmindex graph refresh
+
+@noindent
+at the debugger prompt has the same effect.
+
 
 @node Clustering Displays
-@subsection Clustering Displays
+@subsubsection Clustering Displays
 
-@node Moving Displays Around
-@subsection Moving Displays Around
+If you examine several variables at once, having a separate display for
+each of them uses a lot of screen space.  This is why @value{DDD}
+supports @dfn{clusters}.  A cluster merges several logical data displays
+into one physical display, saving screen space.
+@cindex Cluster
+@cindex Display, clustering
+
+There are two ways to create clusters:
+@itemize @bullet
+@item
+You can create clusters @emph{manually}.  This is done by selecting the
+displays to be clustered and choosing @samp{Undisp @result{} Cluster
+()}.  This creates a new cluster from all selected displays.  If an
+already existing cluster is selected, too, the selected displays will be
+clustered into the selected cluster.
+@lbindex Cluster
+
+@item
+You can create a cluster @emph{automatically} for all independent data
+displays, such that all new data displays will automatically be
+clustered, too.  This is achieved by enabling @samp{Edit @result{}
+Preferences @result{} Data @result{} Cluster Data Displays}.
+@lbindex Cluster Data Displays
+@end itemize
+
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-clusters, 15cm}
+@sp 1
+@end ifnotinfo
+
+Displays in a cluster can be selected and manipulated like parts of an
+ordinary display; in particular, you can show and hide details, or
+dereference pointers.  However, edges leading to clustered displays can
+not be shown, and you must either select one or all clustered displays.
+
+Disabling a cluster is called @emph{unclustering}, and again, there
+are two ways of doing it:
+
+@itemize @bullet
+@item
+You can uncluster displays @emph{manually}, by selecting the cluster
+and choosing @samp{Undisp @result{} Uncluster ()}.
+@lbindex Uncluster
+
+@item
+You can uncluster all current and future displays by disabling
+@samp{Edit @result{} Preferences @result{} Data @result{} Cluster Data
+Displays}.
+@lbindex Cluster Data Displays
+@end itemize
+
+
+@node Deleting Displays
+@subsubsection Deleting Displays
+
+To delete a single display, select it and click on the @samp{Undisp}
+button.  As an alternative, you can also press @emph{mouse button 3} on
+the display and select the @samp{Undisplay} item.
+@cindex Display, deleting
+@cindex Deleting displays
+@lbindex Undisp
+
+When a display is deleted, its immediate ancestors and descendants are
+automatically selected, so that you can easily delete entire graphs.
+
+To delete several displays at once, use the @samp{Undisp} button in the
+Display Editor (invoked via @samp{Data @result{} Edit Displays}).
+Select any number of display items in the usual way and delete them by
+pressing @samp{Undisp}.
+@lbindex Undisp
+
+As an alternative, you can also use a @value{DDD} command:
+
+@example
+graph undisplay @var{displays@dots{}}
+@end example
+
+Here, @var{displays@dots{}} is either
+@itemize @bullet
+@item
+a space-separated list of display numbers to disable or enable, or
+
+@item
+a single display name.  If you specify a display by name, all displays 
+with this name will be affected.
+@end itemize
+
+If you are using stacked windows, deleting the last display from the
+data window also automatically closes the data window.  (You can change
+this via @samp{Edit @result{} Preferences @result{} Data @result{} Close
+data window when deleting last display}.)
+@lbindex Close data window when deleting last display
+
+If you deleted a display by mistake, use @samp{Edit @result{} Undo} to
+re-create it.
+@lbindex Undo
+@cindex Undo deleting displays
+@cindex Deleting displays, undoing
+
+Finally, you can also cut, copy, and paste displays using the
+@samp{Cut}, @samp{Copy}, and @samp{Paste} items from the @samp{Edit}
+menu.  The clipboard holds the @emph{commands} used to create the
+displays; @samp{Paste} inserts the display commands in the debugger
+console.  This allows you to save displays for later usage or to copy
+displays across multiple @value{DDD} instances.
+@cindex Cutting displays
+@cindex Display, cutting
+@cindex Copying displays
+@cindex Display, copying
+@cindex Pasting displays
+@cindex Display, pasting
+@cindex Clipboard, putting displays
+@lbindex Cut
+@lbindex Copy
+@lbindex Paste
+
+
+@node Displaying Arrays
+@subsection Displaying Arrays
+
+@value{DDD} has some special features that facilitate handling of
+arrays.
+
+@menu
+* Rotating Arrays::             
+* Array Slices::                
+* Repeated Values::             
+@end menu
+
+@node Rotating Arrays
+@subsubsection Rotating Arrays
+
+Arrays can be aligned horizontally or vertically.  To change the
+alignment of an array, select it and then click on the @samp{Rotate}
+button.
+
+As a faster alternative, you can also press @emph{mouse button 3} on the
+array and select @samp{Rotate} from the popup menu.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-rotate-display, 15cm}
+@sp 1
+@end ifnotinfo
+
+
+@node Array Slices
+@subsubsection Array Slices
+
+@cindex Array slices
+@cindex Array, artificial
+@cindex Artificial arrays
+
+It is often useful to print out several successive objects of the same
+type in memory; a @dfn{slice} (section) of an array, or an array of
+dynamically determined size for which only a pointer exists in the
+program.
+
+Using GDB, you can do this by referring to a contiguous span of memory
+as an @dfn{artificial array}, using the binary operator @samp{@@}.  The
+left operand of @samp{@@} should be the first element of the desired
+array and be an individual object.  The right operand should be the
+desired length of the array.  The result is an array value whose
+elements are all of the type of the left argument.  The first element is
+actually the left argument; the second element comes from bytes of
+memory immediately following those that hold the first element, and so
+on.  Here is an example.  If a program says
+
+@example
+int *array = (int *) malloc (len * sizeof (int));
+@end example
+
+@noindent
+you can print the contents of @code{array} with
+
+@example
+print array[0]@@len
+@end example
+
+@noindent
+and display the contents with
+
+@example
+graph display array[0]@@len
+@end example
+
+The general form of displaying an array slice is thus
+
+@example
+graph display @var{array}[@var{first}]@@@var{nelems}
+@end example
+
+@noindent
+where @var{array} is the name of the array to display, @var{first} is
+the index of the first element, and @var{nelems} is the number of
+elements to display.
+
+The left operand of @samp{@@} must reside in memory.  Array values made
+with @samp{@@} in this way behave just like other arrays in terms of
+subscripting, and are coerced to pointers when used in expressions.
+
+
+@node Repeated Values
+@subsubsection Repeated Values
+
+Using GDB, an array value that is repeated 10 or more times is displayed
+only once.  The value is shown with a @samp{<@var{n}x>} postfix added,
+where @var{n} is the number of times the value is repeated.  Thus, the
+display @samp{0x0 <30x>} stands for 30 array elements, each with the
+value @strong{0x0}.  This saves a lot of display space, especially with
+homogeneous arrays.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-repeats, 15cm}
+@sp 1
+@end ifnotinfo
+
+The default GDB threshold for repeated array values is 10.  You can
+change it via @samp{Edit @result{} GDB Settings @result{} Threshold for
+repeated print elements}.  Setting the threshold to @strong{0} will
+cause GDB (and @value{DDD}) to display each array element individually.
+Be sure to refresh the data window via @samp{Data @result{} Refresh
+Displays} after a change in GDB settings.
+@lbindex Threshold for repeated print elements
+@lbindex Refresh Displays
+
+You can also configure @value{DDD} to display each array element
+individually, regardless of GDB settings, using the
+@samp{expandRepeatedValues} resource.
+
+@defvr Resource expandRepeatedValues (class ExpandRepeatedValues)
+GDB can print repeated array elements as @samp{@var{value} <repeated
+@var{n} times>}.  If @samp{expandRepeatedValues} is @samp{on},
+@value{DDD} will display @var{n} instances of @var{value} instead.  If
+@samp{expandRepeatedValues} is @samp{off} (default), @value{DDD} will
+display @emph{VALUE} with @samp{<@var{n}x>} appended to indicate the
+repetition.
+@end defvr
+
+
+@node Changing Values
+@subsection Changing Values
+
+...
+
+
+@node Examining Structures
+@subsection Examining Structures
+
+...
+
+@menu
+* Dependent Values::            
+* Dereferencing Pointers::      
+* Display Shortcuts::           
+* Shared Structures::           
+@end menu
+
+@node Dependent Values
+@subsubsection Displaying Dependent Values
+
+@node Dereferencing Pointers
+@subsubsection Dereferencing Pointers
+
+@node Display Shortcuts
+@subsubsection Display Shortcuts
+
+@node Shared Structures
+@subsubsection Shared Structures
+
+
+@node Layouting the Graph
+@subsection Layouting the Graph
+
+...
+
+@menu
+* Moving Displays::             
+* Aligning Displays::           
+* Automatic Layout::            
+* Rotating the Graph::          
+@end menu
+
+@node Moving Displays
+@subsubsection Moving Displays
 
 @node Aligning Displays
-@subsection Aligning Displays
+@subsubsection Aligning Displays
 
-@node Layouting the Display Graph
-@subsection Layouting the Display Graph
+@node Automatic Layout
+@subsubsection Automatic Layout
 
-@node Rotating the Display Graph
-@subsection Rotating the Display Graph
+@node Rotating the Graph
+@subsubsection Rotating the Graph
 
-@node Printing the Display Graph
-@subsection Printing the Display Graph
+
+@node Printing the Graph
+@subsection Printing the Graph
+
+
+@node Customizing Displays
+@subsection Customizing Displays
+
+...
+
+
 
 
 @node Plotting Values
 @section Plotting Values
 
+...
+
 @menu
 * Plotting Arrays::             
-* Changing the Plot Appearance::  
-* Plotting Scalars and Composites::  
-* Plotting Display Histories::  
+* Plot Appearance::             
+* Scalars and Composites::      
+* Plotting Histories::          
 * Printing Plots::              
 * Entering Plotting Commands::  
 * Exporting Plot Data::         
 * Animating Plots::             
+* Customizing Plots::           
 @end menu
 
 @node Plotting Arrays
 @subsection Plotting Arrays
 
-@node Changing the Plot Appearance
+@node Plot Appearance
 @subsection Changing the Plot Appearance
 
-@node Plotting Scalars and Composites
+@node Scalars and Composites
 @subsection Plotting Scalars and Composites
 
-@node Plotting Display Histories
+@node Plotting Histories
 @subsection Plotting Display Histories
 
 @node Printing Plots
@@ -2592,15 +4035,28 @@ debugger state).
 @node Animating Plots
 @subsection Animating Plots
 
+@node Customizing Plots
+@subsection Customizing Plots
+
+...
+
+
+
+@node Examining Memory
+@section Examining Memory
+
+...
+
 
 @node Machine-Level Debugging
 @chapter Machine-Level Debugging
+
+...
 
 @menu
 * Examining Machine Code::      
 * Machine Code Execution::      
 * Examining Registers::         
-* Examining Memory::            
 @end menu
 
 @node Examining Machine Code
@@ -2612,12 +4068,20 @@ debugger state).
 @node Examining Registers
 @section Examining Registers
 
-@node Examining Memory
-@section Examining Memory
+@menu
+* Customizing Machine Code::    
+@end menu
+
+@node Customizing Machine Code
+@subsection Customizing Machine Code
+
+...
 
 
 @node Changing the Program
 @chapter Changing the Program
+
+...
 
 @menu
 * Editing Source Code::         
@@ -2634,117 +4098,49 @@ debugger state).
 @node Patching
 @section Patching
 
+@menu
+* Customizing Editing::         
+@end menu
+
+@node Customizing Editing
+@subsection Customizing Editing
+
+...
 
 
-@node Entering Commands
+
+@node Commands
 @chapter The Command-Line Interface
 
-
-@node Persistent Sessions
-@chapter Persistent Sessions
+...
 
 @menu
-* Saving Sessions::             
-* Opening Sessions::            
-* Deleting Sessions::           
-* Starting DDD with a Session::  
+* Entering Commands::           
+* Command History::             
+* User-Defined Commands::       
+* Customizing the Command-Line Interface::  
 @end menu
 
-@node Saving Sessions
-@section Saving Sessions
-
-@node Opening Sessions
-@section Opening Sessions
-
-@node Deleting Sessions
-@section Deleting Sessions
-
-@node Starting DDD with a Session
-@section Starting @value{DDD} with a Session
-
-
-@node Customizing
-@chapter Customizing @value{DDD}
+@node Entering Commands
+@section Entering Commands
 
 @menu
-* Frequently Used Preferences::  
-* General Preferences::         
-* Source Preferences::          
-* Data Preferences::            
-* Startup Preferences::         
-* Fonts::                       
-* Helpers::                     
-* Debugger Settings::           
-* User-Defined Actions::        
-* Saving Options::              
-* Other Customizations::        
-@end menu
-
-@node Frequently Used Preferences
-@section Frequently Used Preferences
-
-@node General Preferences
-@section General Preferences
-
-@node Source Preferences
-@section Source Preferences
-
-@node Data Preferences
-@section Data Preferences
-
-@node Startup Preferences
-@section Startup Preferences
-
-@node Fonts
-@section Fonts
-
-@node Helpers
-@section Helpers
-
-@node Debugger Settings
-@section Debugger Settings
-
-@node User-Defined Actions
-@section User-Defined Actions
-
-@menu
-* Defining Buttons::            
-* Defining Simple Commands using GDB::  
-* Defining Argument Commands using GDB::  
-* Defining Commands using Other Debuggers::  
-@end menu
-
-@node Defining Buttons
-@subsection Defining Buttons
-
-@node Defining Simple Commands using GDB
-@subsection Defining Simple Commands using GDB
-
-@node Defining Argument Commands using GDB
-@subsection Defining Argument Commands using GDB
-
-@node Defining Commands using Other Debuggers
-@subsection Defining Commands using Other Debuggers
-
-@node Saving Options
-@section Saving Options
-
-@node Other Customizations
-@section Other Customizations
-
-
-@node Special Set-Ups
-@chapter Special Set-Ups
-
-@menu
+* Debugger Console::            
+* TTY mode::                    
 * Integrating DDD::             
-* Using DDD with a Remote Debugger::  
-* Using DDD with a Remote Program::  
-* Debugging as Root::           
+* Using DDD with GNU Emacs::    
+* Using DDD with XEmacs::       
+* Using DDD with XXGDB::        
 @end menu
+
+@node Debugger Console
+@subsection The Debugger Console
+
+@node TTY mode
+@subsection Entering Commands at the TTY
 
 @node Integrating DDD
-@section Integrating @value{DDD}
+@subsection Integrating @value{DDD}
 
 @menu
 * Using DDD with GNU Emacs::    
@@ -2761,10 +4157,83 @@ debugger state).
 @node Using DDD with XXGDB
 @subsection Using @value{DDD} with XXGDB
 
-@node Using DDD with a Remote Debugger
+
+@node Command History
+@section The Command History
+
+
+@node User-Defined Commands
+@section User-Defined Commands
+
+@menu
+* GDB Simple Commands::         
+* GDB Argument Commands::       
+* Commands with Other Debuggers::  
+@end menu
+
+@node GDB Simple Commands
+@subsection Defining Simple Commands using GDB
+
+@node GDB Argument Commands
+@subsection Defining Argument Commands using GDB
+
+@node Commands with Other Debuggers
+@subsection Defining Commands using Other Debuggers
+
+
+@node Customizing the Command-Line Interface
+@section Customizing the Command-Line Interface
+
+...
+
+
+@node Persistent Sessions
+@chapter Persistent Sessions
+
+...
+
+@menu
+* Saving Sessions::             
+* Opening Sessions::            
+* Deleting Sessions::           
+* Starting DDD with a Session::  
+* Customizing Sessions::        
+@end menu
+
+@node Saving Sessions
+@section Saving Sessions
+
+Also: X sessions
+
+@node Opening Sessions
+@section Opening Sessions
+
+@node Deleting Sessions
+@section Deleting Sessions
+
+@node Starting DDD with a Session
+@section Starting @value{DDD} with a Session
+
+@node Customizing Sessions
+@section Customizing Sessions
+
+...
+
+
+
+@node Special Set-Ups
+@chapter Special Set-Ups
+
+@menu
+* Remote Debugger::             
+* Remote Program::              
+* Debugging as Root::           
+@end menu
+
+@node Remote Debugger
 @section Using @value{DDD} with a Remote Debugger
 
-@node Using DDD with a Remote Program
+@node Remote Program
 @section Using @value{DDD} with a Remote Program
 
 @node Debugging as Root
@@ -2809,19 +4278,9 @@ debugger state).
 @section @value{DDD}
 @section @value{DDD} Manual
 
-@c D
 @node Extending
 @appendix Extending DDD
 
-@c E
-@node Environment Variables
-@appendix Environment Variables used by @value{DDD}
-
-@c F
-@node Files
-@appendix Files used by @value{DDD}
-
-@c G
 @node Actions
 @appendix Actions used by @value{DDD}
 
@@ -2844,11 +4303,9 @@ debugger state).
 @node Source Window Actions
 @section Source Window Actions
 
-@c H
 @node Images
 @appendix Images used by @value{DDD}
 
-@c I
 @node Limitations
 @appendix Limitations
 
@@ -2883,7 +4340,6 @@ debugger state).
 @node LessTif
 @section Using @value{DDD} with LessTif
 
-@c J
 @node Printing this Manual
 @appendix Printing this Manual
 
@@ -2899,6 +4355,10 @@ debugger state).
 @node Command Index
 @unnumbered Command Index
 @printindex cm
+
+@node Resource Index
+@unnumbered Resource Index
+@printindex vr
 
 @node Concept Index
 @unnumbered Concept Index
