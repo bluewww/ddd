@@ -2,6 +2,7 @@
 // The VSL Library
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -280,6 +281,54 @@ VSLLib::~VSLLib()
     for (int i = 0; i < hashSize; i++)
 	if (defs[i] != 0)
 	    delete defs[i];
+}
+
+
+// Duplication
+VSLLib::VSLLib(const VSLLib& lib)
+    : _lib_name(lib._lib_name),
+      _first(0),
+      _last(0)
+{
+    for (int i = 0; i < hashSize; i++)
+    {
+	defs[i] = 0;
+	VSLDefList *prev_dl = 0;
+
+	for (VSLDefList *dl = lib.defs[i]; dl != 0; dl = dl->next())
+	{
+	    VSLDefList *new_dl = dl->dup();
+	    new_dl->lib = this;
+
+	    if (dl == lib.defs[i])
+		defs[i] = new_dl;
+	    if (prev_dl != 0)
+		prev_dl->next() = new_dl;
+	}
+    }
+
+    VSLDef *d;
+    for (d = lib._first; d != 0; d = d->libnext())
+    {
+	VSLDef *new_d = d->duplicated_into;
+	assert (new_d != 0);
+
+	if (d->libprev() != 0)
+	    new_d->libprev() = d->libprev()->duplicated_into;
+	if (d->libnext() != 0)
+	    new_d->libnext() = d->libnext()->duplicated_into;
+    }
+
+    _first = lib._first->duplicated_into;
+    _last  = lib._last->duplicated_into;
+
+    for (d = lib._first; d != 0; d = d->libnext())
+	d->duplicated_into = 0;
+}
+
+VSLLib *VSLLib::dup() const
+{
+    return new VSLLib(*this);
 }
 
 
@@ -790,8 +839,14 @@ bool VSLLib::OK() const
 	}
 
     // Loop #2: over internal list
+    VSLDef *last_d = 0;
     for (VSLDef *d = _first; d != 0; d = d->libnext())
+    {
+	last_d = d;
 	assert (d->OK());
+    }
+
+    assert (_last == last_d);
 
     return true;
 }

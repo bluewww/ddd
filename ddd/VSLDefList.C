@@ -2,6 +2,7 @@
 // List of VSLDefs
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -173,6 +174,41 @@ void VSLDefList::replace()
     _ndefs = 0;
 }
 
+// Duplicate
+VSLDefList::VSLDefList(const VSLDefList& dl)
+    : _func_name(dl._func_name),
+      _first(0),
+      _last(0),
+      _ndefs(dl._ndefs),
+      _next(0),
+      _global(dl._global),
+      lib(0),
+      hashcode(dl.hashcode),
+      references(dl.references),
+      self_references(dl.self_references)
+{
+    VSLDef *prev_d = 0;
+    for (VSLDef *d = dl._first; d != 0; d = d->listnext())
+    {
+	_last = d;
+	VSLDef *new_d = d->dup();
+	new_d->deflist = this;
+
+	if (d == dl._first)
+	    _first = new_d;
+	
+	new_d->listnext() = 0;
+	if (prev_d != 0)
+	    prev_d->listnext() = d;
+	prev_d = d;
+    }
+}
+
+// Duplicate
+VSLDefList *VSLDefList::dup() const
+{
+    return new VSLDefList(*this);
+}
 
 // Destroy definition *and all successors*
 VSLDefList::~VSLDefList()
@@ -191,12 +227,15 @@ bool VSLDefList::OK() const
     unsigned count = 0;
 
     // Check whether _ndefs and _last are ok
+    VSLDef *last_d = 0;
     while (d != 0)
     {
+	last_d = d;
 	d = d->listnext();
 	count++;
     }
     assert (count == _ndefs);
+    assert (last_d == _last);
 
     // Check whether Pointer to DefList is ok
     d = _first;

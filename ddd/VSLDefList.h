@@ -2,6 +2,7 @@
 // List of VSLDefs
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -59,7 +60,7 @@ private:
 
 public:
     VSLLib *lib;            // Library of this node
-    unsigned hashcode;      // Index into has table of library
+    unsigned hashcode;      // Index into hash table of library
 
     int references;         // #occurrences in VSLNode's
     int self_references;    // #occurrences in own defs (-1: unknown)
@@ -74,13 +75,7 @@ public:
 
 
 private:
-    VSLDefList(const VSLDefList&)
-	: _func_name(), _first(0), _last(0), _ndefs(0),
-	_next(0), _global(false), lib(0), hashcode(0), 
-	references(0), self_references(0)
-    {
-	assert(0);
-    }
+    VSLDefList(const VSLDefList&);
 
     VSLDefList& operator = (const VSLDefList&) 
     { 
@@ -96,6 +91,9 @@ public:
     // Get a function def
     VSLDef *def(Box *arglist) const;
     VSLDef *firstdef() const { assert (_ndefs == 1); return _first; }
+
+    // Duplicate
+    VSLDefList *dup() const;
 
     // Resources
     string func_name() const { return _func_name; }

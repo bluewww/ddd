@@ -2,6 +2,7 @@
 // VSL definition
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -70,13 +71,14 @@ private:
 
 public:
     VSLDefList *deflist;        // Parent
+    VSLDef *duplicated_into;	// After duplicating, leave pointer here
 
     // Constructor
     VSLDef(VSLDefList* l, VSLNode *pattern, VSLNode *e = 0,
 	   string filename = "builtin", int lineno = 0);
 
 private:
-    // `Dummy' copy constructor
+    // Copy constructor
     VSLDef(const VSLDef&);
 
     // `Dummy' assignment
@@ -100,7 +102,10 @@ public:
 
     string func_name() const;     // internal name (including args)
     string f_name() const;        // external name (including args)
-    string longname() const;      // externak name (including args and loc)
+    string longname() const;      // external name (including args and loc)
+
+    // Duplicate
+    VSLDef *dup() const;
 
     // Evaluate
     const Box *eval(Box *arg) const;
