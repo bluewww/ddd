@@ -298,7 +298,7 @@ void VSLLib::clear()
     for (int i = 0; i < hashSize; i++)
 	if (defs[i] != 0)
 	{
-	    delete defs[i];
+	    defs[i]->destroy();
 	    defs[i] = 0;
 	}
 
@@ -580,8 +580,8 @@ int VSLLib::cleanup()
 
 	VSLDefList *dflist = d->deflist;
 	if (!dflist->global() && 
-	    (dflist->references == 0 || 
-	     dflist->references == dflist->self_references))
+	    (dflist->references() == 0 || 
+	     dflist->references() == dflist->self_references))
 	{   
 	    // Function is unused except its def: delete it
 
@@ -613,7 +613,7 @@ int VSLLib::cleanup()
 	    dflist->replace();
 
 	    // Delete VSLDeflist
-	    dflist->next() = 0; delete dflist;
+	    dflist->next() = 0; dflist->destroy();
 	    changes++;
 	}
 	else
@@ -754,10 +754,10 @@ std::ostream& operator << (std::ostream& s, const VSLLib& lib)
 	s << "// " << d->longname() << " (hashcode: "
 	    << d->deflist->hashcode << ") ";
 	    
-	if (d->deflist->references == 0)
+	if (d->deflist->references() == 0)
 	    s << "(unused) ";
 	else
-	    s << "(used " << d->deflist->references << " times) ";
+	    s << "(used " << d->deflist->references() << " times) ";
 
 	if (d->straight())
 	    s << "(straight)\n";
@@ -808,10 +808,10 @@ void VSLLib::dumpTree(std::ostream& s) const
 	s << "// " << d->longname() << " (hashcode: "
 	    << d->deflist->hashcode << ") ";
 	    
-	if (d->deflist->references == 0)
+	if (d->deflist->references() == 0)
 	    s << "(unused) ";
 	else
-	    s << "(used " << d->deflist->references << " times) ";
+	    s << "(used " << d->deflist->references() << " times) ";
 
 	if (d->straight())
 	    s << "(straight)\n";

@@ -56,21 +56,24 @@ private:
     VSLDef *_last;          // last definition for this name
     unsigned _ndefs;        // Number of definitions
     VSLDefList *_next;      // Next function name
-    bool _global;	    // True iff global
+    bool _global;	    // True if global
+    bool _destroyed;        // True if destroy() has been called.
 
 public:
     VSLLib *lib;            // Library of this node
     unsigned hashcode;      // Index into hash table of library
 
-    int references;         // #occurrences in VSLNode's
+private:
+    int _references;        // #occurrences in VSLNode's
+public:
     int self_references;    // #occurrences in own defs (-1: unknown)
 
     // Constructor
     VSLDefList(VSLLib* l, unsigned hash, 
 	const string& func_nm, bool g = false)
 	: _func_name(func_nm), _first(0), _last(0), _ndefs(0),
-	_next(0), _global(g), lib(l), hashcode(hash), 
-	references(0), self_references(-1)
+	_next(0), _global(g), _destroyed(false), lib(l), hashcode(hash), 
+	_references(0), self_references(-1)
     {}
 
 
@@ -79,6 +82,8 @@ private:
 
     VSLDefList& operator = (const VSLDefList&);
 
+protected:
+    virtual ~VSLDefList();
 public:
     // Add new function
     VSLDef *add(bool& newFlag,
@@ -96,21 +101,24 @@ public:
     const string& func_name() const { return _func_name; }
     bool &global()        { return _global; }
     bool global() const   { return _global; }
+    bool destroyed() const { return _destroyed; }
+
+    // Reference counting
+    int references() const { return _references; }
+    void inc() { ++_references; }
+    void dec();
 
     string f_name() const
     {
-	if (_func_name[0] == '#')
-	{
-	    string tmp = _func_name;
-	    return tmp.from(1);
-	}
-	else
-	    return _func_name; 
+        return
+	  (_func_name[0] == '#') ?
+	  _func_name.from(1):
+	  _func_name;
     }
 
     VSLDef* first()     { return _first; }
     VSLDefList*& next() { return _next; }
-    unsigned ndefs()    { return _ndefs; }
+    unsigned ndefs() const { return _ndefs; }
 
     // Evaluate
     const Box *eval(Box *arg) const;
@@ -122,7 +130,7 @@ public:
     void replace();
 
     // Destroy
-    virtual ~VSLDefList();
+    void destroy();
 
     // Representation invariant
     virtual bool OK() const;

@@ -182,12 +182,47 @@ void VSLDefList::override()
 }
 
 // Destroy definition *and all successors*
+void VSLDefList::destroy()
+{
+    if (destroyed()) {
+      // Self has already been destroyed. The call comes from
+      // the last object referring to it. Commit suicide.
+      delete this;
+    } else {
+      // First destroy content.
+      assert(_next != this);
+      if (_next) {
+	_next->destroy();
+	_next = 0;
+      }
+      if (_first) {
+	delete _first;
+	_first = 0;
+      }
+      _destroyed = true;
+      // If there is no object pointing to self, commit suicide
+      if (references() == 0)
+	delete this;
+    }
+}
+
 VSLDefList::~VSLDefList()
 {
-    if (_next)
-	delete _next;
-    if (_first)
-	delete _first;
+    assert(destroyed());        // call comes from destroy()
+    if (!destroyed()) ::abort();
+    assert(references() == 0);    // no object referenced self.
+    if (references() != 0) ::abort();
+}
+
+// Decrement reference count
+void VSLDefList::dec()
+{
+    --_references;
+    // If self has already been destroyed and nothing points
+    // to it, commit suicide.
+    if (references() == 0 && destroyed()) {
+      destroy();
+    }
 }
 
 

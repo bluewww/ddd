@@ -59,28 +59,28 @@ DEFINE_TYPE_INFO_1(DefCallNode, CallNode)
 DefCallNode::DefCallNode(VSLDef *def, VSLNode *a, const char *type):
     CallNode(a, type), _def(def), _deflist(def->deflist)
 {
-    _deflist->references++;
+    _deflist->inc();
 }
 
 // Constructor
 DefCallNode::DefCallNode(VSLDefList *deflist, VSLNode *a, const char *type):
     CallNode(a, type), _def(0), _deflist(deflist)
 {
-    _deflist->references++;
+    _deflist->inc();
 }
 
 // Copy
 DefCallNode::DefCallNode(const DefCallNode& node):
     CallNode(node), _def(node._def), _deflist(node._deflist)
 {
-    _deflist->references++;
+    _deflist->inc();
 }
 
 // Destructor
 DefCallNode::~DefCallNode()
 {
-    assert(_deflist->references >= 0);
-    _deflist->references--;
+    assert(_deflist->references() >= 0);
+    _deflist->dec();
 }
 
 // Call user-defined function
@@ -223,8 +223,8 @@ int DefCallNode::resolveSynonyms(VSLDef *cdef, VSLNode **node)
 	// Replace DefCallNode by other DefCallNode;
 	// (simply change the deflist pointers)
 
-	defcall_syn->_deflist->references++;
-	_deflist->references--;
+	defcall_syn->_deflist->inc();
+	_deflist->dec();
 
 	_def = defcall_syn->_def;
 	_deflist = defcall_syn->_deflist;
@@ -392,15 +392,15 @@ void DefCallNode::rebind(const class VSLLib *lib)
 	// clog << "Rebinding: call to " << _deflist->func_name() << "\n";
 
 	// Remove reference to old library
-	assert(_deflist->references >= 0);
-	_deflist->references--;
+	assert(_deflist->references() >= 0);
+	_deflist->dec();
 	_def = 0;
 
 	// Reference deflist in new library
 	string func_name = _deflist->func_name();
 	_deflist = lib->deflist(func_name);
 	assert(_deflist != 0);
-	_deflist->references++;
+	_deflist->inc();
     }
 }
 
