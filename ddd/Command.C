@@ -41,7 +41,6 @@ char Command_rcsid[] =
 #include "cmdtty.h"
 #include "findParent.h"
 #include "history.h"
-#include "args.h"
 #include "ddd.h"
 #include "cook.h"
 #include "Queue.h"
@@ -101,7 +100,6 @@ void _gdb_command(const Command& c)
 	}
 
 	handle_running_commands(cmd, c.origin);
-	add_running_arguments(cmd);
 
 	if (cmd.length() == 0)
 	{

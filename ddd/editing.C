@@ -41,6 +41,7 @@ char editing_rcsid[] =
 #include "status.h"
 #include "Command.h"
 #include "complete.h"
+#include "args.h"
 #include "ctrl.h"
 #include "ddd.h"
 #include "cmdtty.h"
@@ -723,6 +724,7 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     string command = (String)client_data;
+
     if (command.contains("..."))
     {
 	command = command.before("...") + " ";
@@ -734,6 +736,7 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
     else
     {
 	command.gsub("()", source_arg->get_string());
+	add_running_arguments(command);
 	gdb_command(command, w);
     }
 }
