@@ -105,6 +105,7 @@ static WidgetArray       settings_entries;
 static EntryTypeArray    settings_entry_types;
 static WidgetStringAssoc settings_values;
 static WidgetStringAssoc settings_initial_values;
+static bool              need_reload_settings = false;
 
 static Widget      infos_panel        = 0;
 static Widget      reset_infos_button = 0;
@@ -122,23 +123,6 @@ static WidgetStringAssoc signals_initial_values;
 //-----------------------------------------------------------------------
 // Functions
 //-----------------------------------------------------------------------
-
-// Reset it all
-void reset_settings()
-{
-    if (settings_panel != 0)
-	DestroyWhenIdle (settings_panel);
-
-    settings_panel          = 0;
-    settings_form           = 0;
-    reset_settings_button   = 0;
-    
-    settings_entries        = WidgetArray();
-    settings_entry_types    = EntryTypeArray();
-    settings_values         = WidgetStringAssoc();
-    settings_initial_values = WidgetStringAssoc();
-}
-
 
 // Find widget for command COMMAND
 static Widget command_to_widget(Widget ref, string command)
@@ -1142,6 +1126,44 @@ static Widget create_signal_button(Widget label,
     return w;
 }
 
+// Get `show' command for settings command CMD
+string show_command(const string& cmd, DebuggerType type)
+{
+    string show = "";
+    switch (type)
+    {
+    case GDB:
+	show = "show ";
+	if (cmd.contains("set ", 0))
+	    show += cmd.after("set ");
+	else if (cmd.contains("directory ", 0))
+	    show += "directories";
+	else if (cmd.contains("path ", 0))
+	    show += "paths";
+	else
+	    show += cmd;
+
+	if (show.freq(' ') >= 2)
+	{
+	    // Strip last argument from `show' command
+	    int index = show.index(' ', -1);
+	    show = show.before(index);
+	}
+	break;
+
+    case DBX:
+	show = cmd.before(rxwhite);
+	break;
+
+    case JDB:
+    case XDB:
+	break;
+    }
+
+    return show;
+}
+
+
 // Add single button
 static void add_button(Widget form, int& row, Dimension& max_width,
 		       DebuggerType type, EntryType entry_filter,
@@ -1779,6 +1801,19 @@ static void add_separator(Widget form, int& row)
     row++;
 }
 
+// Reload all settings
+static void reload_all_settings()
+{
+    for (int i = 0; i < settings_entries.size(); i++)
+    {
+	Widget entry = settings_entries[i];
+	string cmd = string(XtName(entry)) + " dummy";
+	string show = show_command(cmd, gdb->type());
+	string value = gdb_question(show);
+	if (value != NO_GDB_ANSWER)
+	    process_show(show, value, true);
+    }
+}
 
 // Reset settings
 static void ResetSettingsCB (Widget, XtPointer, XtPointer)
@@ -2079,6 +2114,12 @@ static Widget create_settings(DebuggerType type)
 	settings_panel = create_panel(type, SETTINGS);
 	get_defines(type);
     }
+    else if (settings_panel != 0 && need_reload_settings)
+    {
+	reload_all_settings();
+	need_reload_settings = false;
+    }
+
     return settings_panel;
 }
 
@@ -2132,6 +2173,16 @@ void dddPopupSignalsCB (Widget, XtPointer, XtPointer)
 bool need_settings()
 {
     return settings_panel != 0;
+}
+
+// Reset it all
+void reset_settings()
+{
+    if (settings_panel != 0)
+    {
+	XtUnmanageChild(settings_panel);
+	need_reload_settings = true;
+    }
 }
 
 // Fetch GDB settings string
