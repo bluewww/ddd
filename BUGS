@@ -134,4 +134,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 360 Plot tear-offs remain active when the main window has been closed.
 
-361 (Insert new bugs here)
+363 (LessTif 0.87) Selecting something outside the source window does
+    not clear the selection in the data window.
+
+364 (Insert new bugs here)
