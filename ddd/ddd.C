@@ -2701,7 +2701,7 @@ void process_pending_events()
 	return;
 
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
-    while (XtAppPending(app_context))
+    while (XtAppPending(app_context) & XtIMXEvent)
 	process_next_event();
 }
 
