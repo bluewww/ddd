@@ -59,16 +59,10 @@ string sh_quote(string s)
     return string('\'') + s + '\'';
 }
 
-static string _sh_command(string command, bool force_local)
+string _sh_command(string command, bool force_local, 
+		   bool force_display_settings)
 {
-    if (force_local || !remote_gdb())
-	return "/bin/sh -c " + sh_quote(command);
-
-    string rsh = app_data.rsh_command;
-    string login = app_data.debugger_host_login;
-    if (login != "")
-	rsh += " -l " + login;
-
+    // Fetch display settings
     string display = getenv("DISPLAY");
 
     // Make sure display contains host name
@@ -85,9 +79,25 @@ static string _sh_command(string command, bool force_local)
     }
 
     string settings = "DISPLAY='" + display + "'; export DISPLAY; ";
-    command = settings + command;
 
-    rsh += " " + gdb_host + " /bin/sh -c " + sh_quote(sh_quote(command));
+    if (force_local || !remote_gdb())
+    {
+	if (command == "")
+	    return "";
+	if (force_display_settings)
+	    command = settings + command;
+	return "/bin/sh -c " + sh_quote(command);
+    }
+
+    string rsh = app_data.rsh_command;
+    string login = app_data.debugger_host_login;
+    if (login != "")
+	rsh += " -l " + login;
+
+    rsh += " " + gdb_host;
+
+    if (command != "")
+	rsh += " /bin/sh -c " + sh_quote(sh_quote(settings + command));
 
     return rsh;
 }

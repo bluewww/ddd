@@ -88,8 +88,12 @@
 #define XtCSynchronousDebugger   "SynchronousDebugger"
 #define XtNdebuggerHost          "debuggerHost"
 #define XtCDebuggerHost          "DebuggerHost"
+#define XtNdebuggerRHost         "debuggerRHost"
+#define XtCDebuggerRHost         "DebuggerRHost"
 #define XtNdebuggerHostLogin     "debuggerHostLogin"
 #define XtCDebuggerHostLogin     "DebuggerHostLogin"
+#define XtNrHostInitCommands     "rHostInitCommands"
+#define XtCRHostInitCommands     "RHostInitCommands"
 #define XtNrshCommand            "rshCommand"
 #define XtCRshCommand            "RshCommand"
 #define XtNlistExecCommand       "listExecCommand"
@@ -177,7 +181,9 @@ struct AppData {
     int     question_timeout;
     Boolean synchronous_gdb;
     String  debugger_host;
+    String  debugger_rhost;
     String  debugger_host_login;
+    String  rhost_init_commands;
     String  rsh_command;
     String  list_exec_command;
     String  list_source_command;

@@ -152,6 +152,14 @@ Ddd*useTTYCommand: false
 Ddd*rshCommand: @RSH@
 
 
+! If `rsh' is used without commands, using the `--rhost' option,
+! the remote terminal must be set up for DDD.  Especially, echoing
+! must be disabled; mapping of NL to CR/NL is harmful as well.
+! The following commands are always issued first in the remote
+! interactive shell.
+Ddd*rHostInitCommands: stty -echo -onlcr
+
+
 ! The `print' command to print a postscript file.
 ! On some systems, this is called `lp'; on others, `lpr'.
 ! You may want to consult your system documentation for details.
@@ -2159,7 +2167,7 @@ Ddd*graph_cmd_w.orientation:			XmHORIZONTAL
 Ddd*graph_cmd_w.graph_cmd_area*orientation:	XmHORIZONTAL
 Ddd*graph_cmd_w.graph_cmd_area*spacing:		0
 Ddd*graph_cmd_w*spacing:			0
-! Ddd*graph_cmd_w.graph_cmd_area*packing:	  XmPACK_COLUMN
+Ddd*graph_cmd_w.graph_cmd_area*packing:	  	XmPACK_TIGHT
 Ddd*graph_cmd_w.graph_cmd_area*entryAlignment:	XmALIGNMENT_CENTER
 Ddd*graph_cmd_w.graph_cmd_area*alignment:	XmALIGNMENT_CENTER
 
@@ -2334,7 +2342,7 @@ Ddd*arg_cmd_w.orientation:				XmHORIZONTAL
 Ddd*arg_cmd_w.arg_cmd_area.orientation:			XmHORIZONTAL
 Ddd*arg_cmd_w.arg_cmd_area.spacing:			0
 Ddd*arg_cmd_w*spacing:					0
-! Ddd*arg_cmd_w.arg_cmd_area.packing:			XmPACK_COLUMN
+Ddd*arg_cmd_w.arg_cmd_area.packing:			XmPACK_TIGHT
 Ddd*arg_cmd_w.arg_cmd_area.entryAlignment:		XmALIGNMENT_CENTER
 Ddd*arg_cmd_w.arg_cmd_area*alignment:			XmALIGNMENT_CENTER
 
@@ -2512,7 +2520,6 @@ gives a short command description.\n
 ! Debugger Buttons
 !-----------------------------------------------------------------------------
 
-Ddd*source_buttons.orientation:	XmHORIZONTAL
 Ddd*source_buttons.contextHelpString:\
 @rm This is a @sl command area @rm.\n\
 \n\
@@ -2521,7 +2528,6 @@ the corresponding command is sent to the inferior debugger.\n\
 The context sensitive help for the buttons\n\
 gives a short command description.\n
 
-Ddd*command_buttons.orientation:	XmHORIZONTAL
 Ddd*command_buttons.contextHelpString:\
 @rm This is a @sl command area @rm.\n\
 \n\

@@ -269,6 +269,24 @@ XtResource ddd_resources[] = {
 	XtPointer("")
     },
     {
+        XtNrHostInitCommands,
+	XtCRHostInitCommands,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, rhost_init_commands),
+	XtRString,
+	XtPointer("stty -echo -onlcr")
+    },
+    {
+        XtNdebuggerRHost,
+	XtCDebuggerRHost,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, debugger_rhost),
+	XtRString,
+	XtPointer("")
+    },
+    {
         XtNrshCommand,
 	XtCRshCommand,
 	XtRString,

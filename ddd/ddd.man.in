@@ -1208,6 +1208,13 @@ remote core files.  Also, be sure to specify a remote process id when
 debugging a running program.
 .br
 .IP \(bu 2
+The remote debugger is started non-interactively.  Some \s-2DBX\s+2
+versions have trouble with this.  If you don't get a prompt from the
+remote debugger, use the `\fB\-\-rhost\fR' option instead of
+`\fB\-\-host\fR'.  This will invoke the remote debugger via an
+interactive shell on the remote host, which may lead to better results.
+.br
+.IP \(bu 2
 To run the remote program, \s-2@DDD@\s+2 invokes an `\fBxterm\fR' terminal
 emulator on the remote host, giving your current `\fBDISPLAY\fR'
 environment variable as address.  If the remote host cannot invoke
@@ -1742,12 +1749,20 @@ option; see below for details.
 .B "debuggerHost (\fPclass\fB DebuggerHost)"
 The host where the inferior debugger is to be executed; an empty
 string (default) means the local host.  See the `\fB\-\-host\fR'
-option, below, and `\fBREMOTE MODE\fR', above.
+option, below, and `\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B "debuggerHostLogin (\fPclass\fB DebuggerHostLogin)"
 The login user name on the remote host; an empty string (default)
 means using the local user name.  See the `\fB\-\-login\fR'
-option, below, and `\fBREMOTE MODE\fR', above.
+option, below, and `\fBREMOTE DEBUGGING\fR', above.
+.TP
+.B "debuggerRHost (\fPclass\fB DebuggerRHost)"
+The host where the inferior debugger is to be executed; an empty
+string (default) means to use the `\fBdebuggerHost\fR' resource.  In
+contrast to `\fBdebuggerHost\fR', using this resource causes
+\s-2@DDD@\s+2 to login interactively to the remote host and invoke the
+inferior debugger from the remote shell.  See also the
+`\fB\-\-rhost\fR' option, below, and `\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B "fullNameMode (\fPclass\fB TTYMode)"
 If this is `\fBtrue\fR', \s-2@DDD@\s+2 reports the current source
@@ -1776,6 +1791,18 @@ documentation for details.
 .B "questionTimeout (\fPclass\fB QuestionTimeout)"
 The time (in seconds) to wait for the inferior debugger to reply.
 Default is \fB10\fR.
+.TP
+.B "rHostInitCommands (\fPclass\fB RHostInitCommands)"
+These commands are initially executed in a remote interactive
+session, using the `\fB\-\-rhost\fR' option.  By default, it sets up
+the remote terminal such that it suits \s-2@DDD@\s+2:
+.sp
+.br
+  \fB@Ddd@*rHostInitCommands: stty -echo -onlcr
+.br
+.sp
+You may add other commands here\(em\&for instance, to set the
+executable path or to invoke a suitable shell.
 .TP
 .B "synchronousDebugger (\fPclass\fB SynchronousDebugger)"
 If `\fBtrue\fR', X events are not processed while the debugger is
@@ -2417,14 +2444,14 @@ Give a list of frequently used options.  Show options of the
 inferior debugger as well.
 .TP
 .B \-\-host \fIhostname\fR
-Run the inferior debugger on the remote host \fIhostname\fR.  See
-`\fBREMOTE MODE\fR', above.
+Invoke the inferior debugger directly on the remote host \fIhostname\fR.  See
+`\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B \-\-license
 Show the \s-2@DDD@\s+2 license and exit.
 .TP
 .B \-\-login \fIusername\fR
-Use \fIusername\fR as remote user name.  See `\fBREMOTE MODE\fR', above.
+Use \fIusername\fR as remote user name.  See `\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B \-\-manual
 Show this manual page and exit.
@@ -2444,6 +2471,10 @@ panners on scroll bars, since panners allow two-dimensional scrolling.
 However, the panner is off by default, since some Motif
 implementations do not work well with Athena widgets.  See also
 \fB\-\-scrolled\-graph\fR, below.
+.TP
+.B \-\-rhost \fIhostname\fR
+Run the inferior debugger interactively on the remote host \fIhostname\fR.
+See `\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B \-\-separate\-windows
 Separate the console, source and data windows.  This is the default.

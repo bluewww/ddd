@@ -38,7 +38,10 @@
 
 // Command management
 extern bool remote_gdb();
-extern string sh_command(string command, bool force_local = false);
+extern string _sh_command(string command = "", 
+			  bool force_local = false,
+			  bool force_display_settings = false);
+extern string sh_command(string command = "", bool force_local = false);
 extern string sh_quote(string s);
 
 // Host management

@@ -346,6 +346,9 @@ static XrmOptionDescRec options[] = {
 { "--host",                 XtNdebuggerHost,         XrmoptionSepArg, NULL },
 { "-host",                  XtNdebuggerHost,         XrmoptionSepArg, NULL },
 
+{ "--rhost",                XtNdebuggerRHost,        XrmoptionSepArg, NULL },
+{ "-rhost",                 XtNdebuggerRHost,        XrmoptionSepArg, NULL },
+
 { "--login",                XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
 { "-login",                 XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
 { "-l",                     XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
@@ -1063,7 +1066,12 @@ int main(int argc, char *argv[])
 	app_data.debugger_command = app_data.debugger;
 
     // Set host specification
-    gdb_host = (app_data.debugger_host ? app_data.debugger_host : "");
+    if (app_data.debugger_rhost && app_data.debugger_rhost[0] != '\0')
+	gdb_host = app_data.debugger_rhost;
+    else if (app_data.debugger_host && app_data.debugger_host[0] != '\0')
+	gdb_host = app_data.debugger_host;
+    else
+	gdb_host = "";
 
     // Check for --version, --help, etc.
     if (app_data.show_version)
@@ -1357,8 +1365,10 @@ int main(int argc, char *argv[])
 		   NULL);
     XtManageChild (gdb_w);
 
+#if 0
     // Don't edit the text until the first prompt appears.
     XmTextSetEditable(gdb_w, false);
+#endif
 
     // source_area (Befehle mit PushButton an gdb) ----------------------------
     console_buttons_w = make_buttons(paned_work_w, "console_buttons", 

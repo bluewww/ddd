@@ -33,16 +33,20 @@ const char gdbinit_rcsid[] =
 #pragma implementation
 #endif
 
+#include <X11/Intrinsic.h>
+#include <iostream.h>
+#include <fstream.h>
+
 #include "gdbinit.h"
 #include "shell.h"
 #include "string-fun.h"
-
-#include <iostream.h>
-#include <fstream.h>
+#include "ddd.h"
 
 // GDB initialization file (may be remote)
 static string gdb_init_file;
 
+static void InvokeGDBFromShellHP(Agent *source, void *client_data, 
+				 void *call_data);
 
 //-----------------------------------------------------------------------------
 // Create new GDB interface
@@ -96,7 +100,7 @@ GDBAgent *new_gdb(DebuggerType type,
     }
 
     // Build call
-    string gdb_call = app_data.debugger_command;
+    static string gdb_call = app_data.debugger_command;
 
     switch(type)
     {
@@ -129,10 +133,72 @@ GDBAgent *new_gdb(DebuggerType type,
 	gdb_call += " " + sh_quote(arg);
     }
 
-    gdb_call = sh_command("exec " + gdb_call);
+    GDBAgent *gdb;
+    if (app_data.debugger_rhost == 0 || app_data.debugger_rhost[0] == '\0')
+    {
+	// Use direct invocation
+	gdb_call = sh_command("exec " + gdb_call);
+	gdb = new GDBAgent(app_context, gdb_call, type);
+    }
+    else
+    {
+	// Use interactive rsh
+	gdb = new GDBAgent(app_context, sh_command(), type);
+	gdb_call = "exec " 
+	    + _sh_command("exec " + gdb_call, true, true) + "\n";
+	gdb->addHandler(Input, InvokeGDBFromShellHP, (void *)&gdb_call);
+    }
 
-    return new GDBAgent(app_context, gdb_call, type);
+    return gdb;
 }
+
+// Show call in output window
+static void EchoTextCB(XtPointer client_data, XtIntervalId *)
+{
+    const string& gdb_call = *((string *)client_data);
+    _gdb_out(gdb_call);
+}
+
+// Invoke GDB upon rlogin
+static void InvokeGDBFromShellHP(Agent *source, void *client_data, 
+				 void *call_data)
+{
+    GDBAgent *gdb = ptr_cast(GDBAgent, source);
+    DataLength *d = (DataLength *)call_data;
+
+    if (d->length > 1 && d->data[d->length - 1] == ' ')
+    {
+	// We got input ending in ' '; probably a prompt.
+	static bool init_sent = false;
+
+	if (!init_sent)
+	{
+	    // Send the initialization string.
+	    if (app_data.rhost_init_commands != 0 
+		&& app_data.rhost_init_commands[0] != '\0')
+	    {
+		string init = string(app_data.rhost_init_commands) + "\n";
+		gdb->write(init, init.length());
+	    }
+
+	    init_sent = true;
+	}
+	else
+	{
+	    // Invoke GDB...
+	    const string& gdb_call = *((string *)client_data);
+	    gdb->write(gdb_call, gdb_call.length());
+
+	    // Echoing should be disabled by now.  Echo call manually...
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
+			    0, EchoTextCB, (XtPointer)client_data);
+
+	    // ... and don't get called again.
+	    gdb->removeHandler(Input, InvokeGDBFromShellHP, client_data);
+	}
+    }
+}
+
 
 // Cleanup
 void remove_init_file()
