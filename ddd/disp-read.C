@@ -570,17 +570,18 @@ string get_disp_value_str (/*const*/ string& display, GDBAgent *)
 // fuer das Erkennen der Ausdruecke bei info display
 //----------------------------------------------------------------------------
 
+#if RUNTIME_REGEX
+static regex rxgdb_begin_of_display_info("[1-9][0-9]*:   ");
+static regex rxdbx_begin_of_display_info("[(][1-9][0-9]*[)] ");
+#endif
+
 // ***************************************************************************
 // -1, wenn gdb_answer kein display enthaelt, 
 // sonst den index des ersten displays.
 // 
+
 int display_info_index (const string& gdb_answer, GDBAgent *gdb)
 {
-#if RUNTIME_REGEX
-    static regex rxgdb_begin_of_display_info("[1-9][0-9]*:   ");
-    static regex rxdbx_begin_of_display_info("[(][1-9][0-9]*[)] ");
-#endif
-
     const regex *prx = 0;
 
     switch (gdb->type())
@@ -635,22 +636,32 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
     {
     case GDB:
     {
-#if RUNTIME_REGEX
-	static regex rxgdb_next_display_info("\n[1-9][0-9]*:   ");
-#endif
-
-	string next_disp_info;
 	int startpos = gdb_answer.index (": ");
-	int i = gdb_answer.index (rxgdb_next_display_info, startpos + 2);
-	if (i > 0) {
-	    next_disp_info = gdb_answer.before (i);
-	    gdb_answer = gdb_answer.from (i);
+	int i = startpos + 2;
+
+	for (;;)
+	{
+	    while (i < int(gdb_answer.length()) && gdb_answer[i] != '\n')
+		i++;
+	    if (i >= int(gdb_answer.length()))
+	    {
+		// Take entire remaining output as display
+		string next_disp_info = gdb_answer;
+		gdb_answer = "";
+		return next_disp_info;
+	    }
+
+	    assert(gdb_answer[i] == '\n');
+	    if (gdb_answer.contains(rxgdb_begin_of_display_info, i + 1))
+	    {
+		// Use output up to `\n[0-9]' as display
+		string next_disp_info = gdb_answer.before(i);
+		gdb_answer = gdb_answer.after(i);
+		return next_disp_info;
+	    }
+
+	    i++;
 	}
-	else {
-	    next_disp_info = gdb_answer;
-	    gdb_answer = "";
-	}
-	return next_disp_info;
     }
 
     case DBX:
