@@ -587,8 +587,8 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
     int new_bps = max_breakpoint_number_seen + 1;
     string address = a;
 
-    if (address != "" && address[0] == '0')
-	address = "*" + address; // Address given
+    if (address.contains('0', 0) && !address.contains(":"))
+	address.prepend("*");	// Machine code address given
 
     if (!set)
     {
