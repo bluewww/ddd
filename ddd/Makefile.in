@@ -1,0 +1,1136 @@
+# $Id$
+# DDD Makefile.
+
+# Copyright (C) 1994 Technische Universitaet Braunschweig, Germany.
+# Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+# 
+# This file is part of DDD.
+# 
+# DDD is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+# 
+# DDD is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with DDD -- see the file COPYING.  If not, write to the Free
+# Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# 
+# DDD is the GDB-based data display debugger.
+# Contact ddd@ips.cs.tu-bs.de for details.
+
+# $Log$
+# Revision 1.1  1995/05/01 15:47:11  zeller
+# Initial revision
+#
+# Revision 1.46  1995/04/28  10:56:46  zeller
+# New: targets programs, demos
+#
+# Revision 1.45  1995/04/27  23:41:01  zeller
+# *** empty log message ***
+#
+# Revision 1.44  1995/04/27  23:11:05  zeller
+# New: pascal and modula-2 demos
+#
+# Revision 1.43  1995/04/25  19:33:18  zeller
+# New: cxxtest, ctest
+#
+# Revision 1.42  1995/04/22  20:01:55  zeller
+# Fix: clean '#*#' and *.private files
+#
+# Revision 1.41  1995/04/22  16:22:10  zeller
+# Fix: reference -lc explicitly
+# New: make sure `testprgm' is compiled without -O
+# New: make check
+#
+# Revision 1.40  1995/04/19  20:09:55  zeller
+# New: remove .flc (xemacs font-lock cache) files from dist
+#
+# Revision 1.39  1995/04/18  08:24:04  zeller
+# New: have own glob module (a tribute to portability)
+#
+# Revision 1.38  1995/04/17  09:37:10  zeller
+# Fix: `ddd.vsl.h' wasn't generated from separate src dir
+#
+# Revision 1.37  1995/04/15  16:43:53  zeller
+# Fix: header was bad
+# Fix: build Ddd.ad.h before anything else
+#
+# Revision 1.36  1995/04/14  16:29:47  zeller
+# New: IntArray, VoidArray are NORA objects
+# New: strings
+#
+# Revision 1.35  1995/04/14  10:47:24  zeller
+# Fix: GNU m4 requires M4PATH, not MPATH
+# Fix: acspecial.h, acconfig.h, stamp.h.in reside in $(srcdir)
+#
+# Revision 1.34  1995/04/14  10:10:22  zeller
+# Fix: Motif 2.0 requires -lXext
+#
+# Revision 1.33  1995/04/13  21:47:21  zeller
+# New: xconfig
+#
+# Revision 1.32  1995/04/13  18:31:37  zeller
+# New: glob library
+# New: database
+# Fix: expand ^H in texts to \b
+#
+# Revision 1.31  1995/04/12  11:49:28  zeller
+# New: built-in preformatted manual page
+# Fix: bindir must include /bin subdir
+#
+# Revision 1.30  1995/04/10  16:58:34  zeller
+# Fix: `make ultraclean' must remove stamp-h.in
+#
+# Revision 1.29  1995/04/10  16:52:49  zeller
+# Fix: create host.h and configinfo.C before anything else
+#
+# Revision 1.28  1995/04/10  16:52:05  zeller
+# Fix: remove configinfo.C in distribution
+#
+# Revision 1.27  1995/04/06  17:46:49  zeller
+# New: testprgm uses local string class
+#
+# Revision 1.26  1995/04/05  17:08:47  zeller
+# New: configinfo
+#
+# Revision 1.25  1995/03/31  20:13:58  zeller
+# New: create ddd.man.ps
+#
+# Revision 1.24  1995/03/31  08:59:41  zeller
+# Fix: generate Ddd.ad.h and version.h locally
+# Fix: testprgm doesn't require GNU libraries
+#
+# Revision 1.23  1995/03/31  07:33:14  zeller
+# Fix: create ddd.vsl.h in distribution
+#
+# Revision 1.22  1995/03/30  18:35:01  zeller
+# Fix: `VSLLib' directory renamed to `vsllib'
+# Fix: create Ddd.ad.h and version.h for distribution
+#
+
+
+### CUSTOMIZATION SECTION --- Please check the settings below.
+
+## Directories.
+
+# Common prefix for installation directories.
+# NOTE: This directory must exist when you start the install.
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+# Where to fetch the source from.
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+# Where to put the binary.
+bindir = $(exec_prefix)/bin
+
+# Where to put the info file.
+infodir = @infodir@
+
+# Where to put the manual page.
+mandir  = $(prefix)/man
+man1dir = $(mandir)/man1
+man1ext = .1
+
+
+## Architecture (usually overridden by the top-level Makefile).
+
+# The host we were compiled on.
+host_canonical = @host@
+
+# The target we were compiled for.
+target_canonical = @host@
+
+
+## Special commands.
+
+# The sed command.
+SED = @SED@
+
+# The rm command.
+RM = rm -f
+
+# The ln -s command for making symbolic links (plain ln should work too).
+LN_S = @LN_S@
+
+# The m4 command (preferably GNU m4)
+M4 = M4PATH=$(srcdir) @M4@
+
+# The lex command, its flags, and its library.
+LEX = @LEX@
+LFLAGS = @LFLAGS@
+LEXLIB = @LEXLIB@
+
+# The yacc command and its flags.
+YACC = @YACC@
+YFLAGS = @YFLAGS@
+
+# The shell for executing commands in the Makefile.
+SHELL = @SH@
+
+# The ar command.
+AR = ar
+
+# ar flags for creating a new archive.
+AR_FLAGS = q
+
+# ar flags for extracting files from an archive.
+AR_X_FLAGS = x
+
+# The ranlib command.
+RANLIB = @RANLIB@
+
+
+
+## The C++ compiler.
+
+# What we use to compile C++ files.
+CXX = @CXX@
+
+# The flags we use to compile C++ files (lots!)
+CXXOPT = @CXXOPT@
+CXXDEBUG = @CXXDEBUG@
+CXXWARNINGS = @CXXWARNINGS@
+CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS)
+CXXSTUFF = @CXXSTUFF@
+
+# Possible extra libraries required for all C++ programs.
+CXXLIBS = @CXXLIBS@
+
+
+## The C compiler (for demos only)
+
+# What we use to compile C files.
+# CC = @CC@
+CC = cc
+
+# The flags we use to compile C files.
+# CFLAGS = @CFLAGS@
+CFLAGS = -g
+
+
+## The Pascal compiler (for demos only)
+
+# What we use to compile Pascal files.
+PC = pc
+
+# The flags we use to compile Pascal files.
+PFLAGS = -g
+
+
+## The Modula-2 compiler (for demos only)
+
+# What we use to compile Modula-2 files.
+M2C = m2c
+
+# The flags we use to compile Modula-2 files.
+M2FLAGS = -g
+
+
+## The C preprocessor.
+
+# What we use for preprocessing.
+CPP = @CPP_TRADITIONAL@
+
+# Flags passed to the C preprocessor.
+CPPFLAGS = @CPPFLAGS@
+
+# Definitions to be passed to the C preprocessor.
+DEFS = @DEFS@
+
+
+## The Linker.
+
+# Flags passed to the linker.
+LDFLAGS = @LDFLAGS@
+
+
+## Local libraries
+
+# Note: on HP-UX (and other systems?), the Motif references the
+# regcomp() function from libc, the standard C library.  A GNU version
+# of regcomp() is provided by libg++, but it is incompatible with the
+# HP-UX regcomp() that Motif expects.  To make sure we get the correct
+# functions, we reference libc explicitly (-lc).  Also, our local
+# librx library required by the regex classes redefines regcomp(),
+# regexec(), ... to GNU_regcomp(), GNU_regexec() and so on.
+
+# Bug reported and fixed by neal@ctd.comsat.com (Neal Becker).
+
+LIBRX      = ../librx/librx.a
+LIBTERMCAP = ../termcap/libtermcap.a
+LIBIBERTY  = ../libiberty/libiberty.a
+LIBM       = -lm
+LIBC       = -lc
+LIBS = $(LIBRX) $(LIBTERMCAP) $(LIBIBERTY) $(LIBM) $(LIBC)
+
+
+## X Libraries
+
+# Special flags for linking with X
+LIBX = @X_PRE_LIBS@ @X_LIBS@
+
+# Motif library (-lXm)
+LIBXM = @XM_LIBS@
+
+# Athena libraries (-lXaw -lXmu)
+LIBXAW = @XAW_LIBS@
+
+# X extension library (-lXext); needed for Athena and Motif 2.0
+LIBXEXT = @XEXT_LIBS@
+
+# X toolkit library (-lXt)
+LIBXT = @XT_LIBS@
+
+# X library (-lX11)
+LIBX11 = @X11_LIBS@ @X_EXTRA_LIBS@
+
+# All libraries shown above
+ALL_X_LIBS = $(LIBX) $(LIBXM) $(LIBXAW) $(LIBXEXT) $(LIBXT) $(LIBX11)
+
+
+## Installation commands.
+
+# General install program.
+INSTALL = @INSTALL@
+
+# Command for installing programs.
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+
+# Command for installing data.
+INSTALL_DATA = @INSTALL_DATA@
+
+# Transformed name of installed programs.
+transform=@program_transform_name@
+
+
+## The following definitions are needed for development only.
+## Usually, you don't need any of these.
+
+# The autoconf program.
+AUTOCONF = autoconf
+
+# The autoheader program.
+AUTOHEADER = autoheader
+
+# The tar program.
+TAR = @TAR@
+
+# The gzip program.
+GZIP = @GZIP@
+
+# The groff program.
+GROFF = groff
+
+# The nroff program.
+# NROFF = nroff
+NROFF = $(GROFF) -Tascii
+
+# The makeinfo program.
+MAKEINFO = makeinfo
+
+# The texindex program.
+TEXINDEX = texindex
+
+# The texi2html program.
+TEXI2HTML = texi2html
+
+# The TeX program.
+TEX = tex
+
+# The ad2c program.
+AD2C = $(SED) -n -f $(srcdir)/ad2c.sed
+
+# The vsl2c program.
+VSL2C = $(SED) -f $(srcdir)/vsl2c.sed
+
+# The dvips program.
+DVIPS = @DVIPS@
+
+# The co and ci programs.
+CO = co
+CI = ci
+
+# The rcsdiff program.
+RCSDIFF = rcsdiff
+
+# The ls program.
+LS = ls
+
+# The head program.
+HEAD = head
+
+# The make program, if not predefined.
+@SET_MAKE@
+
+# The mv command.
+MV = mv
+
+# The echo command.
+ECHO = echo
+
+# The awk command.
+AWK = @AWK@
+
+# The cat command.
+CAT = cat
+
+# The cut command.
+CUT = cut
+
+# The cmp command.
+CMP = cmp
+
+# The grep command.
+GREP = grep
+
+# The sort command.
+SORT = sort
+
+# The diff command.
+DIFF = @DIFF@
+
+# The touch command.
+TOUCH = touch
+
+# The date command.
+DATE = date
+
+# The strip command.
+STRIP = strip
+
+# The mkdir and rmdir commands.
+MKDIR = mkdir
+RMDIR = rmdir
+
+# The GNU Debugger.
+GDB = gdb
+
+### END OF CUSTOMIZATION SECTION ---
+### You shouldn't need to change anything below this line.
+
+
+## The names.
+# Program and distribution base name.
+ddd = @ddd@
+
+# Product name.
+DDD = @DDD@
+
+# The version number.
+VERSION = @VERSION@
+
+# Index file fix
+FIX_INDEX = $(SED) -f $(srcdir)/fixindex.sed
+
+# Newhelp command
+NEWHELP = sed="$(SED)" $(SHELL) $(srcdir)/newhelp
+
+# Makeman command
+MAKEMAN = srcdir="$(srcdir)" cpp="$(CPP)" $(SHELL) $(srcdir)/makeman \
+-D__MAN_VERSION__="\"$(DDD) $(VERSION)\"" -D__MAN_TITLE__="\"$(DDD) Tools\""
+
+# Get-node command
+GET_NODE = $(SHELL) $(srcdir)/get-node
+
+## More compilation settings.
+# C++ binding flags. For binary distribution only.
+CXXSTATIC_BINDING = @CXXSTATIC_BINDING@
+CXXDYNAMIC_BINDING = @CXXDYNAMIC_BINDING@
+CXXBINDING = 
+
+## C++ compile commands.
+COMPILE.cc = $(CXX) $(CPPFLAGS) $(DEFS) $(CXXFLAGS) $(CXXSTUFF) -c
+LINK.cc = $(CXX) $(CXXBINDING) $(LDFLAGS)
+
+## C compile commands.
+COMPILE.c = $(CC) $(CPPFLAGS) $(DEFS) $(CFLAGS) -c
+LINK.c = $(CC) $(LDFLAGS)
+
+## Pascal compile commands.
+COMPILE.p = $(PC) $(CPPFLAGS) $(DEFS) $(PFLAGS) -c
+LINK.p = $(PC)
+
+## Modula-2 compile commands.
+COMPILE.m2 = $(M2C) $(M2FLAGS)
+LINK.m2 = $(M2C)
+
+## YACC commands.
+YY = yy
+YACCTOCPLUS = $(SHELL) $(srcdir)/yacctoC -prefix $(YY) \
+	&& $(RM) y.tab.c y.tab.h
+YACC.Y = $(YACC) $(YFLAGS)
+
+## LEX commands.
+LEXTOCPLUS = $(SHELL) $(srcdir)/lextoC -prefix $(YY) && $(RM) lex.yy.c
+LEX.L = $(LEX) $(LFLAGS)
+
+## Where to look for X include files.
+X_INCLUDE = @X_CFLAGS@
+
+## Where to look for include files.
+INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include $(X_INCLUDE)
+
+## Implicit rules.
+.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .ddd .txt
+.C.o:
+	$(COMPILE.cc) $(INCLUDE) -o $@ $<
+.cc.o:
+	$(COMPILE.cc) $(INCLUDE) -o $@ $<
+.c.o:
+	$(COMPILE.c) $(INCLUDE) -o $@ $<
+.p.o:
+	$(COMPILE.p) -o $@ $<
+.Y:
+	$(YACC.Y) $<
+	$(YACCTOCPLUS)
+	$(LINK.C) -o $@ y.tab.C $(LDLIBS)
+	$(RM) y.tab.C y.tab.H
+.Y.C:
+	$(YACC) $(YFLAGS) $<
+	$(YACCTOCPLUS)
+	$(MV) y.tab.C $@
+	$(RM) y.tab.H
+.Y.h:
+	$(YACC) -d $(YFLAGS) $<
+	$(YACCTOCPLUS)
+	$(MV) y.tab.H $@
+	$(RM) y.tab.C
+.Y.o:
+	$(YACC) $(YFLAGS) $<
+	$(YACCTOCPLUS)
+	$(COMPILE.C) y.tab.C
+	$(RM) y.tab.C y.tab.H
+.Y.YY:
+	$(YACC) -v $(YFLAGS) $<
+	$(MV) y.output $@
+	$(RM) y.tab.c
+.L:
+	$(LEX.L) $<
+	$(LEXTOCPLUS)
+	$(LINK.C) -o $@ lex.yy.C $(LDLIBS)
+	$(RM) lex.yy.C
+.L.C:
+	$(LEX.L) $<
+	$(LEXTOCPLUS)
+	$(MV) lex.yy.C $@
+.L.o:
+	$(LEX.L) $<
+	$(LEXTOCPLUS)
+	$(COMPILE.C) -o $@ lex.yy.C
+	$(RM) lex.yy.C
+
+## Script rules
+.txt.C:
+	( \
+	$(ECHO) '// $@ -- generated automatically from `$<'"'."; \
+	$(SED) '/^ *#/d' $< | \
+	$(SED) 's/^ *include \([^"][^.]*\)\..*$$/#include "\1.C"/' | \
+	$(SED) 's/^ *include "\([^"][^.]*\)[^"]*"/#include "\1.C"/' | \
+	$(SED) '/^[^#]/s/\(["'"'"'\\]\)/\\\1/g' | \
+	$(SED) '/^[^#]/s/.*/"&\\n"/' | \
+	$(SED) 's//\\b/' | \
+	$(SED) 's/^$$/"\\n"/' \
+	) > tmp.C; \
+	$(CPP) -C -P -undef $(CPPFLAGS) $(DEFS) $(INCLUDE) tmp.C > $@; \
+	$(RM) tmp.C
+
+
+
+## Libraries and object files
+# A subset of the NORA library -- utilities
+NORA_OBJECTS = \
+	compare.o \
+	converters.o \
+	cook.o \
+	database.o \
+	events.o \
+	fileSBF.o \
+	findParent.o \
+	hash.o \
+	layout.o \
+	longName.o \
+	printBox.o \
+	regex.o \
+	sigName.o \
+	strclass.o \
+	Agent.o \
+	AgentM.o \
+	AlignBox.o \
+	ArcBox.o \
+	ArgNode.o \
+	AsyncAgent.o \
+	BinBox.o \
+	Box.o \
+	BoxD.o \
+	BoxExtend.o \
+	BoxGraphN.o \
+	BoxPoint.o \
+	BoxRegion.o \
+	BoxSize.o \
+	BuiltinCN.o \
+	CallNode.o \
+	ChunkQueue.o \
+	CompositeB.o \
+	ConstNode.o \
+	DataLength.o \
+	DefCallN.o \
+	Delay.o \
+	DestroyCB.o \
+	DiagBox.o \
+	DummyBox.o \
+	DummyNode.o \
+	ExitCB.o \
+	FixBox.o \
+	FontFixBox.o \
+	FontTable.o \
+	Graph.o \
+	GraphEdge.o \
+	GraphEdit.o \
+	GraphGC.o \
+	GraphNode.o \
+	HandlerL.o \
+	HatBox.o \
+	HelpCB.o \
+	HintGraphN.o \
+	IntArray.o   \
+	LetNode.o \
+	LineBox.o \
+	LineGraphE.o \
+	ListBox.o \
+	ListNode.o \
+	LiterateA.o \
+	MString.o \
+	MakeMenu.o \
+	MarkBox.o \
+	MatchBox.o \
+	MemCheck.o \
+	NameNode.o \
+	PannedGE.o \
+	PosGraphN.o \
+	PrimitiveB.o \
+	Range.o \
+	RegionGN.o \
+	ScrolledGE.o \
+	SignalB.o \
+	SignalC.o \
+	SlopeBox.o \
+	StringA.o \
+	StringBox.o \
+	THatBox.o \
+	TTYAgent.o \
+	TagBox.o \
+	TestNode.o \
+	TrueBox.o \
+	TrueNode.o \
+	TypeInfo.o \
+	UniqueId.o \
+	VSEFlags.o \
+	VSLBuiltin.o \
+	VSLDef.o \
+	VSLDefList.o \
+        VSLErr.o \
+	VSLLib.o \
+	VSLNode.o \
+        VSLRead.o \
+	VoidArray.o
+
+DDD_OBJECTS = \
+	configinfo.o \
+	comm-manag.o \
+	disp-read.o  \
+	filetype.o   \
+	glob.o       \
+	hostname.o   \
+	mydialogs.o  \
+	string-fun.o \
+	strings.o    \
+	value-read.o \
+	xconfig.o    \
+	ArgField.o   \
+	BreakPoint.o \
+	DataDisp.o   \
+	DispBox.o    \
+	DispBuffer.o \
+	DispGraph.o  \
+	DispNode.o   \
+	DispValue.o  \
+	GDBAgent.o   \
+	PosBuffer.o  \
+	SourceView.o
+
+## All objects.
+OBJECTS = $(NORA_OBJECTS) $(DDD_OBJECTS)
+
+## The program files.
+PROGS = ddd
+
+## Extra demonstration files.
+DEMOS = cxxtest ctest test-graph bug ptest m2test
+
+
+## Where to find texinfo files and so
+MAKEINFO_FLAGS = \
+	-I. -I$(srcdir) -I$(srcdir)/../readline/doc -I$(srcdir)/../texinfo
+
+## The index files
+IDXS = *.cp *.fn *.ky *.pg *.tp *.vr
+
+## The dvi files.
+# DVIS = $(srcdir)/ddd.dvi $(srcdir)/dddint.dvi
+DVIS =
+
+## The postscript files.
+# PSS = $(srcdir)/ddd.ps $(srcdir)/dddint.ps
+PSS =
+
+## The HTML files.
+# HTML_BASES = ddd_toc.html dddint_toc.html
+# HTML_PATTERNS = $(srcdir)/ddd_*.html $(srcdir)/dddint_*.html
+# HTMLS = $(HTML_BASES) $(HTML_PATTERNS)
+HRTMLS = 
+
+## The manual page.
+MANS = $(srcdir)/ddd.man
+
+## Readme files built from ddd.texinfo
+README_FILES = 
+
+
+## Intermediate files
+
+# Files required for building DDD
+PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C \
+	 	   config.h.in acconfig.h acspecial.h stamp-h.in \
+		   ddd.vsl.h version.h host.h configinfo.C \
+		   Ddd.ad.h ddd.man.C xlibdir.C
+
+# Extra files to be built for the distribution
+DIST_STUFF	 = $(PROG_STUFF) $(MANS) depend TAGS \
+		   $(srcdir)/../doc/ddd.man.ps
+
+# Temporary Files to be cleaned, keeping configuration intact
+CLEAN_STUFF	 = $(PROGS) $(DEMOS) core *.o *.a *.s *.i \
+		   tmp* *.tmp .*hist* LOG *.syms \
+		   *.aux *.cp *.cps *.fn *.fns *.flc \
+		   *.ky *.kys *.log *.pg *.pgs *.toc *.tp *.tps *.vr *.vrs \
+		   *.tar *.tar.gz *~ lex.* y.tab.* site.* *.sum \
+		   *.diff rcssync *.private ./#*#
+
+# Files to be deleted from distribution
+DISTCLEAN_STUFF	 = $(CLEAN_STUFF) ddd.man.ps \
+		   config.status config.h host.h paths.h \
+		   Makefile MakeOut LOG \
+		   config.log config.cache configinfo.C stamp-h
+
+# Any files that can be reconstructed, except configure script
+REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF)
+
+# All files that can be reconstructed (but may require special programs)
+ULTRACLEAN_STUFF = $(REALCLEAN_STUFF) \
+		   config.h.in stamp-h.in configure Makedeps \
+		   $(MANS) $(README_FILES) $(HTMLS)
+
+
+## Targets as specified in GNU standards.
+.PHONY: all
+all:	$(PROG_STUFF) $(PROGS)
+
+.PHONY: install
+install: install-prog install-man
+
+.PHONY: uninstall
+uninstall: uninstall-prog uninstall-man
+
+# install-prog does not depend on $(PROGS) 
+# since we may have precompiled packages
+.PHONY: install-prog
+install-prog:
+	for p in $(PROGS); do \
+	    $(INSTALL_PROGRAM) \
+		$$p $(bindir)/`$(ECHO) $$p | $(SED) '$(transform)'`; \
+	done
+
+.PHONY: uninstall-prog
+uninstall-prog:
+	for p in $(PROGS); do \
+	    $(RM) $(bindir)/`$(ECHO) $$p | $(SED) '$(transform)'`; \
+	done
+
+.PHONY: install-info
+install-info: $(INFO_BASES)
+	-parent=`$(ECHO) $(infodir) | $(SED) -e 's@/[^/]*$$@@'`; \
+	test -d $$parent || $(MKDIR) $$parent
+	-test -d $(infodir) || $(MKDIR) $(infodir)
+	for i in $(INFOS); do \
+	    test -f $$i && $(INSTALL_DATA) $$i $(infodir); \
+	done
+
+.PHONY: uninstall-info
+uninstall-info:
+	cd $(infodir); $(RM) $(INFOS)
+
+.PHONY: install-man
+install-man: ddd.man
+	-parent=`$(ECHO) $(man1dir) | $(SED) -e 's@/[^/]*$$@@'`; \
+	test -d $$parent || $(MKDIR) $$parent
+	-test -d $(man1dir) || $(MKDIR) $(man1dir)
+	$(INSTALL_DATA) $? \
+		$(man1dir)/`$(ECHO) ddd$(man1ext) | $(SED) '$(transform)'`
+
+.PHONY: uninstall-man
+uninstall-man:
+	$(RM) $(man1dir)/`$(ECHO) ddd$(man1ext) | $(SED) '$(transform)'`
+
+.PHONY: clean
+clean:
+	$(RM) $(CLEAN_STUFF)
+
+.PHONY: distclean
+distclean:
+	$(RM) $(DISTCLEAN_STUFF)
+
+.PHONY: mostlyclean
+mostlyclean: clean
+
+.PHONY: realclean
+realclean:
+	$(RM) $(REALCLEAN_STUFF)
+
+.PHONY: ultraclean
+ultraclean:
+	$(RM) $(ULTRACLEAN_STUFF)
+
+.PHONY: TAGS
+TAGS:
+
+.PHONY: info
+info:	$(INFO_BASES)
+
+.PHONY: dvi
+dvi:	$(DVIS)
+
+.PHONY: ps
+ps:	$(PSS)
+
+.PHONY: man
+man:	$(MANS)
+
+.PHONY: postscript
+postscript: $(PSS)
+
+.PHONY: html
+html:	$(HTML_BASES)
+
+.PHONY: lib
+lib:	$(LIB)
+
+.PHONY: readme
+readme:	$(README_FILES)
+
+.PHONY: diststuff
+diststuff: $(DIST_STUFF)
+
+.PHONY: dist
+dist:	
+	@$(ECHO) see the top-level directory for making dist files.
+	@false
+
+.PHONY: strip
+strip:	$(PROGS)
+	$(STRIP) $(PROGS)
+
+.PHONY: progs programs
+progs:	$(PROGS)
+programs: $(PROGS)
+
+.PHONY: demos
+demos:	$(DEMOS)
+
+## The resource header files.
+
+Ddd.ad.h: Ddd
+	$(AD2C) $? > Ddd.ad.h
+
+# `make depend' fails to find this dependency :-(
+strings.o: Ddd.ad.h
+
+
+## The VSL header files.
+
+VSL_CPP = $(CPP) -P -I$(srcdir)/../vsllib -I$(prefix)/lib/vsl-include
+ddd.vsl.h: ddd.vsl
+	$(CAT) $(srcdir)/ddd.vsl > tmp.c
+	$(VSL_CPP) tmp.c | $(VSL2C) > ddd.vsl.h
+	$(RM) tmp.c
+
+# `make depend' fails to find this dependency :-(
+DataDisp.o: ddd.vsl.h
+
+## The programs.
+
+ddd:	ddd.o $(OBJECTS)
+	$(LINK.cc) -o $@ ddd.o $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
+
+
+## The demonstration programs.
+
+test-graph: test-graph.o $(NORA_OBJECTS) 
+	$(LINK.cc) -o $@ test-graph.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+
+bug:	bug.o
+	$(LINK.cc) -o $@ bug.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+
+cxxtest: cxxtest.o
+	$(LINK.cc) -o $@ cxxtest.o
+
+ctest:  ctest.o
+	$(LINK.c) -o $@ ctest.o
+
+ptest:  ptest.o
+	$(LINK.p) -o $@ ptest.o
+
+m2test: m2test.mod
+	$(COMPILE.m2) -o $@ -e $@ m2test.mod
+
+# We don't want no optimizing in our test files
+bug.o:	$(srcdir)/bug.C
+	@if test -n "$(CXXOPT)"; then \
+	$(MAKE) CXXOPT= $@; \
+	else \
+	set -x; $(COMPILE.cc) $(INCLUDE) -o $@ $(srcdir)/bug.C; \
+	fi
+
+cxxtest.o: $(srcdir)/cxxtest.C
+	@if test -n "$(CXXOPT)"; then \
+	$(MAKE) CXXOPT= $@; \
+	else \
+	set -x; $(COMPILE.cc) $(INCLUDE) -o $@ $(srcdir)/cxxtest.C; \
+	fi
+
+ctest.o: $(srcdir)/ctest.c
+
+
+## For demonstration and debugging purposes
+check:	Ddd ddd cxxtest
+	XAPPLRESDIR=. ./ddd cxxtest
+	
+
+
+## Lex and Yacc stuff.
+
+# VSL parsers
+vsl-lex.C: vsl-lex.L
+vsl-gramma.h: vsl-lex.L
+vsl-gramma.C: vsl-gramma.Y
+
+# `make depend' fails to find this dependency :-(
+VSLRead.o: vsl-lex.C vsl-gramma.h vsl-gramma.C
+
+
+## The manual page
+$(srcdir)/../doc/ddd.man.ps: $(srcdir)/ddd.man
+	$(GROFF) -man $(srcdir)/ddd.man > $@
+
+
+## RCS stuff
+# Check if all sources are correctly checked in (or otherwise non-writable)
+
+.PHONY: pending pending-files
+pending pending-files:
+	@$(ECHO) "Pending source files:"
+	@$(LS) -alR > tmp-all
+	@$(LS) -alR `ls $(ULTRACLEAN_STUFF) 2>/dev/null | \
+		$(SED) 's,^./,,' | $(SORT)` > tmp-gen
+	@-$(DIFF) tmp-gen tmp-all | $(GREP) '^> -.w'  | $(GREP) -v 'tmp-'
+	@$(RM) tmp-gen tmp-all
+
+
+# Check for files added to the current directory
+.PHONY: new-files
+new-files:
+	@$(ECHO) "New source files not listed in FILES:"
+	@$(LS) -al | $(GREP) '^-r-' | $(AWK) '{ print $$8 }' > tmp-FILES
+	@-$(DIFF) FILES tmp-FILES | $(GREP) '^> ' | $(CUT) -c3-
+	@$(RM) tmp-FILES
+
+# Check for obsolete files in the current directory
+.PHONY: old-files
+old-files:
+	@$(ECHO) "Obsolete source files listed in FILES:"
+	@$(LS) -al | $(GREP) '^-' | $(AWK) '{ print $$8 }' > tmp-FILES
+	@-$(DIFF) FILES tmp-FILES | $(GREP) '^< ' | $(CUT) -c3-
+	@$(RM) tmp-FILES
+
+
+# Merge in all changes made by others.
+.PHONY: sync sync-files
+sync sync-files: files rcssync
+	@$(ECHO) "Checking out recently changed RCS files."
+	@files=`$(CAT) FILES`; checkout=`./rcssync $$files`; \
+	test "$$checkout" != "" && $(CO) $$checkout; true
+
+rcssync: rcssync.o
+	$(LINK.cc) -o $@ rcssync.o
+	
+
+# Update set of files.
+.PHONY: files
+files:	RCS/FILES,v
+	-@if [ -f FILES ]; then \
+	    $(RCSDIFF) FILES > tmp-diffs 2> /dev/null; \
+	    if [ -s tmp-diffs ]; then \
+		for file in `$(GREP) '^< ' tmp-diffs | $(CUT) -c3-`; do \
+		    $(RM) $$file; \
+		done; \
+		for file in `$(GREP) '^> ' tmp-diffs | $(CUT) -c3-`; do \
+		    $(CO) $$file; \
+		done; \
+	    fi; \
+	    $(RM) tmp-diffs; \
+	    $(CO) FILES; \
+	else \
+	    $(CO) FILES; \
+	    $(CO) `$(CAT) FILES`; \
+	fi
+
+## Configuration stuff.
+
+Makefile: Makefile.in config.status
+	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+Ddd: Ddd.in config.status
+	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+$(srcdir)/configure: $(srcdir)/configure.in $(srcdir)/aclocal.m4
+	cd $(srcdir) && $(AUTOCONF)
+config.status: ./configure
+	-$(SHELL) ./config.status --recheck || $(SHELL) ./configure -v
+
+.PRECIOUS: Makefile configure config.status config.h Ddd
+
+# autoheader might not change config.h.in
+$(srcdir)/config.h.in: stamp-h.in
+$(srcdir)/stamp-h.in: \
+	$(srcdir)/configure.in \
+	$(srcdir)/aclocal.m4 \
+	$(srcdir)/acconfig.h
+	cd $(srcdir) && $(AUTOHEADER)
+	$(DATE) > $@
+
+$(srcdir)/acconfig.h: $(srcdir)/acconfig.h.in $(srcdir)/acspecial.h
+	$(M4) $(srcdir)/acconfig.h.in > $@
+
+$(srcdir)/acspecial.h: $(srcdir)/configure.in
+	$(GREP) '^ICE_[a-zA-Z0-9_]* *(' $(srcdir)/configure.in > $@
+	
+
+# config.status might not change config.h
+config.h: stamp-h
+stamp-h: config.h.in config.status
+	CONFIG_FILES= CONFIG_HEADERS=config.h ./config.status
+	$(DATE) > $@
+
+
+# We use configure to create `version.h'.
+# To make sure these are not touched upon every invocation,
+# we create temporary vr.* files instead and touch the version.* files
+# only if the vr.* files changed.
+version.h: vr.h
+	@$(CMP) vr.h version.h || $(CAT) vr.h > version.h
+vr.h: vr.h.in config.status
+	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+## The manual page
+ddd.man: ddd.man.in config.status
+	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+# ddd.man.txt does NOT depend on ddd.man since we don't want it to get
+# re-created after each configuration.
+ddd.man.txt: ddd.man.in configure.in
+	$(MAKE) ddd.man
+	$(NROFF) -man ddd.man > $@
+
+ddd.man.C: ddd.man.txt
+
+# `make depend' fails to find this dependency :-(
+strings.o: ddd.man.C
+
+
+## The xlibdir script
+xlibdir.C: xlibdir.txt
+
+# `make depend' fails to find this dependency :-(
+xconfig.o: xlibdir.C
+
+
+## The host type
+host.h: $(srcdir)/host.h.in config.status
+	$(CAT) $(srcdir)/host.h.in | \
+	$(SED) "s%@HOST_CANONICAL@%$(host_canonical)%" | \
+	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" > $@
+
+## Statistics.
+# Count lines of C++/lex/yacc source code.
+# Lines containing only comments or documentation and empty lines are ignored.
+
+.PHONY: loc stats
+loc stats:
+	cd $(srcdir); \
+	for list in '$(NORA_OBJECTS)' '$(DDD_OBJECTS)' '$(OBJECTS)'; do \
+	pattern=`$(ECHO) $$list | $(SED) 's/\([a-zA-Z0-9_]*\)\.o/\1\\.*/g'`; \
+	$(ECHO) "Lines of code for $$pattern"; \
+	$(CAT) `$(LS) $$pattern | fgrep -f FILES` | \
+		$(GREP) -v '^[ 	]*//' | \
+		$(GREP) -v '^"' | \
+		$(GREP) -v '^[ 	]*$$' | wc -l; \
+	done
+
+
+## EPS code stuff.
+
+header.str:     header.ps
+		sed 's/^.*$$/"&\\n"/' header.ps > header.str
+
+trailer.str:    trailer.ps
+		sed 's/^.*$$/"&\\n"/' trailer.ps > trailer.str
+
+eps-code.h:     header.str trailer.str eps-code.x
+		sed -e '/prolog/r header.str' \
+		    -e '/trailer/r trailer.str' \
+		    eps-code.x > eps-code.h
+
+## Configuration info stuff
+configinfo.C:   config-info Makefile config.h
+		$(SHELL) $(srcdir)/config-info > $@
+
+configinfo.o:	configinfo.C configinfo.h
+
+
+## Make dependency stuff.
+
+.PHONY: depend
+depend: $(PROG_STUFF)
+
+.PRECIOUS: Makedeps
+Makedeps depend:
+	cd $(srcdir); \
+	( \
+	$(ECHO) \#' DO NOT EDIT -- generated automagically by make depend'; \
+	$(ECHO) \#' Source: $$Id$$'; \
+	$(ECHO) ; \
+	$(CXX) -M $(CPPFLAGS) $(DEFS) $(INCLUDE) `$(GREP) '\.C$$' FILES` | \
+	$(SED) 's%[^-/+_.a-zA-Z0-9]\.*/[-/+_.a-zA-Z0-9]*%%g' | \
+	$(GREP) -v '^ *\\$$' | \
+	$(SED) 's%^ *$$%& config.h%g' ) > Makedeps~
+	$(MV) Makedeps~ Makedeps
+
+## If your `make' cannot handle the following line,
+## just replace it by the contents of `@srcdir@/Makedeps'.
+include @srcdir@/Makedeps
