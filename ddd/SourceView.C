@@ -3666,7 +3666,7 @@ void SourceView::clear_execution_position()
 
 
 void SourceView::_show_execution_position(string file, int line, 
-					  bool silent, bool /* stopped */)
+					  bool silent, bool stopped)
 {
     last_execution_file = file;
     last_execution_line = line;
@@ -3677,7 +3677,7 @@ void SourceView::_show_execution_position(string file, int line,
     if (!is_current_file(file) || line < 1 || line > line_count)
 	return;
 
-    add_position_to_history(file, line, true);
+    add_position_to_history(file, line, stopped);
 
     XmTextPosition pos = pos_of_line(line);
     int indent = indent_amount(source_text_w);
@@ -4293,7 +4293,7 @@ void SourceView::add_current_to_history()
 
 // Add position to history
 void SourceView::add_position_to_history(const string& file_name, int line, 
-					 bool exec_pos)
+					 bool stopped)
 {
     string source_name = file_name;
     switch (gdb->type())
@@ -4312,7 +4312,7 @@ void SourceView::add_position_to_history(const string& file_name, int line,
 	break;
     }
 
-    undo_buffer.add_position(source_name, line, exec_pos);
+    undo_buffer.add_position(source_name, line, stopped);
     undo_buffer.add_state();
 }
 
@@ -6787,20 +6787,16 @@ void SourceView::process_frame(int frame)
 	    current_frame = 0;
 	}
 
-	int offset = (frame - current_frame);
-	if (offset != 0)
-	{
-	    // Save undoing command
-	    string c;
-	    if (gdb->has_frame_command())
-		c = gdb->frame_command(current_frame);
-	    else
-		c = gdb->relative_frame_command(-offset);
-	    undo_buffer.add_command(c, true);
+	// Save undoing command
+	string c;
+	if (gdb->has_frame_command())
+	    c = gdb->frame_command(current_frame);
+	else
+	    c = gdb->relative_frame_command(current_frame - frame);
+	undo_buffer.add_command(c, true);
 
-	    // Save state
-	    undo_buffer.add_frame(itostring(frame));
-	}
+	// Save state
+	undo_buffer.add_frame(itostring(frame));
 
 	int count         = 0;
 	int top_item      = 0;

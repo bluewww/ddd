@@ -71,6 +71,7 @@ private:
     // Helpers
     static bool process_command(UndoBufferEntry& entry);
     static bool process_state(UndoBufferEntry& entry);
+    static bool process_frame(UndoBufferEntry& entry);
     static bool process_pos(UndoBufferEntry& entry);
 
     // True if we're undoing
@@ -100,6 +101,7 @@ protected:
     // Process entry
     static bool process_command(int entry);
     static bool process_state(int entry);
+    static bool process_frame(int entry);
     static bool process_pos(int entry);
 
     // Log current position

@@ -180,8 +180,8 @@ class SourceView {
 
     // Position history
     static void add_current_to_history();
-    static void add_position_to_history(const string& file_name, int line,
-					bool exec_pos);
+    static void add_position_to_history(const string& file_name, 
+					int line, bool stopped);
 
     // Set condition of breakpoints NRS to COND.
     // * If COND is char(-1), preserve old condition.
