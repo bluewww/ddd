@@ -113,11 +113,13 @@ void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
     Boolean state = Boolean(client_data != 0);
 
     app_data.use_source_path = state;
+    string referring_to_sources_using =
+	"Referring to sources using ";
 
     if (state)
-	set_status("Referring to sources using full source file paths.");
+	set_status(referring_to_sources_using + "full source file paths.");
     else
-	set_status("Referring to sources using source file base names only.");
+	set_status(referring_to_sources_using + "source file base names.");
 
     source_arg->set_string(source_view->line_of_cursor());
     update_options();
@@ -128,11 +130,13 @@ void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
     Boolean state = Boolean(client_data != 0);
 
     app_data.display_glyphs = state;
+    string displaying_breakpoints_and_positions =
+	"Displaying breakpoints and positions ";
 
     if (state)
-	set_status("Displaying breakpoints and positions as glyphs.");
+	set_status(displaying_breakpoints_and_positions + " as glyphs.");
     else
-	set_status("Displaying breakpoints and positions in the text.");
+	set_status(displaying_breakpoints_and_positions + " in the text.");
 
     update_options();
 }
@@ -268,9 +272,9 @@ void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
-	set_status("Automatic Layout on.");
+	set_status("Automatic layout on.");
     else
-	set_status("Automatic Layout off.");
+	set_status("Automatic layout off.");
 
     update_options();
 }
@@ -310,11 +314,13 @@ void dddToggleGroupIconifyCB (Widget, XtPointer, XtPointer call_data)
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.group_iconify = info->set;
+    string ddd_windows_are_iconified = 
+	DDD_NAME " windows are iconified ";
 
     if (info->set)
-	set_status(DDD_NAME " windows are iconified as a group.");
+	set_status(ddd_windows_are_iconified + "as a group.");
     else
-	set_status(DDD_NAME " windows are iconified separately.");
+	set_status(ddd_windows_are_iconified + "separately.");
 
     update_options();
 }
@@ -339,13 +345,15 @@ void dddToggleSeparateExecWindowCB (Widget, XtPointer, XtPointer call_data)
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.separate_exec_window = info->set;
+    string debugged_program_will_be_executed_in =
+	"Debugged program will be executed in ";
 
     if (info->set)
-	set_status("Debugged program will be executed in a "
-		   "separate execution window.");
+	set_status(debugged_program_will_be_executed_in 
+		   + "a separate execution window.");
     else
-	set_status("Debugged program will be executed in the " 
-		   DDD_NAME " debugger console.");
+	set_status(debugged_program_will_be_executed_in 
+		   + "the " DDD_NAME " debugger console.");
 
     update_options();
 }
@@ -356,11 +364,13 @@ void dddToggleUngrabMousePointerCB (Widget, XtPointer, XtPointer call_data)
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.ungrab_mouse_pointer = info->set;
+    string automatic_ungrabbing_of_mouse_pointer =
+	"Automatic ungrabbing of mouse pointer";
 
     if (info->set)
-	set_status("Automatic ungrabbing of mouse pointer enabled.");
+	set_status(automatic_ungrabbing_of_mouse_pointer + "enabled.");
     else
-	set_status("Automatic ungrabbing of mouse pointer disabled.");
+	set_status(automatic_ungrabbing_of_mouse_pointer + "disabled.");
 
     update_options();
 }
@@ -509,11 +519,12 @@ void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
     Boolean state = Boolean(client_data != 0);
 
     app_data.tool_bar = state;
+    string tool_buttons_are_located_in = "Tool buttons are located in ";
 
     if (state)
-	set_status("Enabling Tool Bar.");
+	set_status(tool_buttons_are_located_in + "source window.");
     else
-	set_status("Enabling Command Tool.");
+	set_status(tool_buttons_are_located_in + "command tool.");
 
     update_options();
     post_startup_warning(w);
@@ -654,7 +665,7 @@ string options_file()
 	static int warned = 0;
 	if (warned++ == 0)
 	    cerr << "Warning: environment variable HOME undefined\n";
-	return ".dddinit";
+	home = ".";
     }
 
     return string(home) + "/.dddinit";
@@ -701,9 +712,7 @@ void save_options(Widget origin)
 	return;
     }
 
-    os << dddinit
-       << delimiter
-       << " -- " DDD_NAME " WILL OVERWRITE IT\n";
+    os << dddinit << delimiter << " -- " DDD_NAME " WILL OVERWRITE IT\n";
 
     // The version
     os << string_app_value(XtNdddinitVersion,
@@ -812,6 +821,7 @@ void save_options(Widget origin)
     }
 
     os << bool_app_value(XtNdetectAliases, app_data.detect_aliases) << "\n";
+    os << bool_app_value(XtNblinkWhileBusy, app_data.blink_while_busy) << "\n";
 
     // Some settable graph editor defaults
     os << widget_value(data_disp->graph_edit, XtNshowGrid)   << "\n";
