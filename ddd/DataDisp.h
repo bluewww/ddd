@@ -172,6 +172,9 @@ class DataDisp {
 
     static void show(Widget dialog, int depth, int more);
 
+    static Widget create_display_dialog(Widget parent, String name,
+				      class NewDisplayInfo& info);
+
 
     //-----------------------------------------------------------------------
     // Actions
@@ -202,6 +205,11 @@ class DataDisp {
     static MMDesc display_area[];
     static MMDesc detail_menu[];
     static MMDesc shortcut_menu[];
+
+    static const int DataDisp::shortcut_items;
+    static const int DataDisp::shortcut_menu_base;
+    static const int DataDisp::shortcut_popup_base;
+
 
     // Array of shortcut expressions
     static StringArray shortcut_exprs;

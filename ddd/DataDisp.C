@@ -139,13 +139,11 @@ MMDesc DataDisp::graph_popup[] =
     MMEnd
 };
 
-const int shortcut_popup_base =  2;  // Index of first shortcut menu
-const int shortcut_items      = 20; // Number of shortcut items
+// Index of first shortcut item
+const int DataDisp::shortcut_menu_base = 0;
 
-MMDesc DataDisp::shortcut_popup[] =
+MMDesc DataDisp::shortcut_menu[] =
 {
-    {"new",      MMPush,   { DataDisp::dependentCB }},
-    MMSep,
     {"1",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(1)  }},
     {"2",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(2)  }},
     {"3",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(3)  }},
@@ -169,10 +167,17 @@ MMDesc DataDisp::shortcut_popup[] =
     MMEnd,
 };
 
-const int shortcut_menu_base = 0;  // Index of first shortcut item
+// Number of shortcut items
+const int DataDisp::shortcut_items = 
+    (XtNumber(DataDisp::shortcut_menu) - 1) - shortcut_menu_base;
 
-MMDesc DataDisp::shortcut_menu[] =
+// Index of first shortcut menu
+const int DataDisp::shortcut_popup_base = 2;
+
+MMDesc DataDisp::shortcut_popup[] =
 {
+    {"new",      MMPush,   { DataDisp::dependentCB }},
+    MMSep,
     {"1",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(1)  }},
     {"2",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(2)  }},
     {"3",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(3)  }},
@@ -898,28 +903,24 @@ public:
     string depends_on;
     Widget origin;
     Widget shortcut;
+    Widget text;
     bool verbose;
 
     NewDisplayInfo()
-	: point_ptr(0), depends_on(""), origin(0), shortcut(0)
+	: point_ptr(0), depends_on(""), origin(0), shortcut(0), text(0)
     {}
 
     ~NewDisplayInfo()
     {}
 };
 
-void DataDisp::new_displayDCB (Widget    display_dialog,
-			       XtPointer client_data,
-			       XtPointer call_data)
+void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
 {
-    set_last_origin(display_dialog);
-    XmSelectionBoxCallbackStruct *cbs = 
-	(XmSelectionBoxCallbackStruct *)call_data;
+    set_last_origin(dialog);
 
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
 
-    char *inp;
-    XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &inp);
+    char *inp = XmTextFieldGetString(info->text);
     string expr(inp);
     XtFree(inp);
 
@@ -935,6 +936,53 @@ void DataDisp::new_displayDCB (Widget    display_dialog,
     }
 }
 
+Widget DataDisp::create_display_dialog(Widget parent, String name,
+				       NewDisplayInfo& info)
+{
+    Arg args[10];
+    int arg = 0;
+
+    Widget dialog = verify(XmCreatePromptDialog(find_shell(parent),
+						name, args, arg));
+    Delay::register_shell(dialog);
+
+    if (lesstif_version < 1000)
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON));
+
+    XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+    XtAddCallback(dialog, XmNokCallback, new_displayDCB, XtPointer(&info));
+
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    XtSetArg(args[arg], XmNadjustMargin, False); arg++;
+    Widget box = 
+	verify(XmCreateRowColumn(dialog, "box", args, arg));
+    XtManageChild(box);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
+    Widget label = verify(XmCreateLabel(box, "label", args, arg));
+    XtManageChild(label);
+
+    arg = 0;
+    info.text = 
+	verify(XmCreateTextField(box, "text", args, arg));
+    XtManageChild(info.text);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
+    info.shortcut = 
+	verify(XmCreateToggleButton(box, "shortcut", args, arg));
+    XtManageChild(info.shortcut);
+
+    XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_SELECTION_LABEL));
+
+    return dialog;
+}
+
 // Enter a new Display at BOX_POINT
 void DataDisp::new_displayCD (Widget w, BoxPoint box_point)
 {
@@ -943,34 +991,14 @@ void DataDisp::new_displayCD (Widget w, BoxPoint box_point)
 	info.point_ptr = new BoxPoint;
     info.origin = w;
 
-    static Widget new_display_dialog = 0;
-    if (!new_display_dialog)
-    {
-	new_display_dialog = 
-	    verify(XmCreatePromptDialog (find_shell(w),
-					 "new_display_dialog",
-					 NULL, 0));
-	Delay::register_shell(new_display_dialog);
-
-	if (lesstif_version < 1000)
-	    XtUnmanageChild(XmSelectionBoxGetChild(new_display_dialog,
-						   XmDIALOG_APPLY_BUTTON));
-
-	XtAddCallback(new_display_dialog, XmNhelpCallback, 
-		      ImmediateHelpCB, NULL);
-	XtAddCallback(new_display_dialog, XmNokCallback, 
-		      new_displayDCB, XtPointer(&info));
-	info.shortcut = verify(XmCreateToggleButton(new_display_dialog,
-						    "shortcut", NULL, 0));
-	XtManageChild(info.shortcut);
-    }
+    static Widget new_display_dialog = 
+	create_display_dialog(w, "new_display_dialog", info);
 
     XmToggleButtonSetState(info.shortcut, False, False);
 
     *(info.point_ptr) = box_point;
     info.display_expression = source_arg->get_string();
-    Widget text = XmSelectionBoxGetChild(new_display_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text, info.display_expression);
+    XmTextSetString(info.text, info.display_expression);
 
     manage_and_raise(new_display_dialog);
 }
@@ -1002,39 +1030,13 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     info.depends_on = itostring(disp_node_arg->disp_nr());
     info.origin = w;
 
-    static Widget dependent_display_dialog = 0;
-    if (dependent_display_dialog == 0)
-    {
-	dependent_display_dialog = 
-	    verify(XmCreatePromptDialog (find_shell(w),
-					 "dependent_display_dialog",
-					 NULL, 0));
-	Delay::register_shell(dependent_display_dialog);
-
-	if (lesstif_version < 1000)
-	    XtUnmanageChild(XmSelectionBoxGetChild(dependent_display_dialog,
-						   XmDIALOG_APPLY_BUTTON));
-
-	XtAddCallback (dependent_display_dialog, 
-		       XmNhelpCallback, 
-		       ImmediateHelpCB, 
-		       NULL);
-	XtAddCallback (dependent_display_dialog, 
-		       XmNokCallback, 
-		       new_displayDCB,
-		       XtPointer(&info));
-
-	info.shortcut = verify(XmCreateToggleButton(dependent_display_dialog,
-						    "shortcut", NULL, 0));
-	XtManageChild(info.shortcut);
-    }
+    static Widget dependent_display_dialog = 
+	create_display_dialog(w, "dependent_display_dialog", info);
 
     XmToggleButtonSetState(info.shortcut, False, False);
 
     info.display_expression = disp_value_arg->full_name();
-    Widget text = 
-	XmSelectionBoxGetChild(dependent_display_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text, info.display_expression);
+    XmTextSetString(info.text, info.display_expression);
     manage_and_raise(dependent_display_dialog);
 }
 

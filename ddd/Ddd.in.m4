@@ -3986,35 +3986,29 @@ DESC(Hide Detail, [hide the details of all selected displays])\n\
 DESC(Set Value, [change a value in the selected display])\n\
 DESC(Delete, [delete all selected displays])
 
-Ddd*new_display_dialog_popup.title: DDD: New Display
-Ddd*new_display_dialog.selectionLabelString: Display Expression
-Ddd*new_display_dialog.shortcut.alignment: XmALIGNMENT_BEGINNING
-Ddd*new_display_dialog.shortcut.labelString:	\
-Include in Shortcut Menu
-
-Ddd*new_display_dialog*helpString:	\
-\
-@rm Please enter a display expression in the argument field.\n\
-The current value of the expression is shown each time the program stops.\n\
+define(NEW_DISPLAY_HELP,
+[@rm Please enter an expression in the argument field.\n\
+The value of the expression is displayed each time the program stops.\n\
 \n\
 Variables accessible are those of the lexical environment of the current\n\
-stack frame, plus all those whose scope is global or an entire file.
+stack frame, plus all those whose scope is global or an entire file.\n\
 \n\
-If SAMP(Include in Display Menu) is set, the new display expression is\n\
-become a shortcut in the SAMP(Display) and SAMP(New Display) popup menus.
+If LBL(Include in Shortcut Menu) is set, the new display expression\n\
+becomes a shortcut in the LBL(Display) and LBL(New Display) popup menus.])dnl
 
-Ddd*dependent_display_dialog_popup.title: DDD: Dependent Display
-Ddd*dependent_display_dialog.selectionLabelString: Display Expression
-Ddd*dependent_display_dialog.shortcut.alignment: XmALIGNMENT_BEGINNING
-Ddd*dependent_display_dialog.shortcut.labelString:	\
-Include in Shortcut Menu
+Ddd*new_display_dialog_popup.title:          	   DDD: New Display
+Ddd*new_display_dialog.okLabelString:              Display
+Ddd*new_display_dialog*label.labelString:    	   Display Expression
+Ddd*new_display_dialog*shortcut.labelString:       Include in Shortcut Menu
+Ddd*new_display_dialog*helpString:	           NEW_DISPLAY_HELP
 
-Ddd*dependent_display_dialog*helpString:	\
-@rm Please modify the display expression displayed in the argument field.\n\
-The current value of the expression is shown each time the program stops.\n\
+Ddd*dependent_display_dialog_popup.title:          DDD: Dependent Display
+Ddd*dependent_display_dialog.okLabelString:        Display
+Ddd*dependent_display_dialog*label.labelString:    Display Expression
+Ddd*dependent_display_dialog*shortcut.labelString: Include in Shortcut Menu
+Ddd*dependent_display_dialog*helpString: 	   NEW_DISPLAY_HELP\n\
 \n\
-If SAMP(Include in Display Menu) is set, the new display expression will\n\
-become a shortcut in the SAMP(Display) and SAMP(New Display) popup menus.
+The new display will be made dependent on the currently selected display.
 
 Ddd*edit_displays_dialog*buttons*new.labelString:	    New...
 Ddd*edit_displays_dialog*buttons*new.tipString:  \
