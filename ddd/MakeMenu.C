@@ -322,14 +322,13 @@ static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data,
 
 static void add_to_value(Widget text, int offset)
 {
-    String value = 0;
-    XtVaGetValues(text, XmNvalue, &value, NULL);
+    String value = XmTextFieldGetString(text);
     int v = atoi(value) + offset;
 
     if (v >= 0)
     {
 	string s = itostring(v);
-	XtVaSetValues(text, XmNvalue, (String)s, NULL);
+	XmTextFieldSetString(text, (String)s);
     }
     XtFree(value);
 }
@@ -450,7 +449,7 @@ static void RefreshComboTextCB(Widget w, XtPointer client_data,
     XmString item = cbs->item;
     String item_s;
     XmStringGetLtoR(item, CHARSET_TT, &item_s);
-    XtVaSetValues(info->text, XmNvalue, item_s, NULL);
+    XmTextFieldSetString(info->text, item_s);
     XtFree(item_s);
 
     if (info->shell != 0)

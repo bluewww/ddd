@@ -5242,11 +5242,16 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     else
 #endif
     {
-	string ignore = itostring(bp->ignore_count());
-	if (ignore == "0")
-	    ignore = "";
+	String old_ignore = XmTextFieldGetString(info->ignore);
+	if (atoi(old_ignore) != bp->ignore_count())
+	{
+	    string ignore = itostring(bp->ignore_count());
+	    if (ignore == "0")
+		ignore = "";
 
-	XmTextFieldSetString(info->ignore, (String)ignore);
+	    XmTextFieldSetString(info->ignore, (String)ignore);
+	}
+	XtFree(old_ignore);
     }
     info->spin_locked = lock;
 
@@ -5478,12 +5483,6 @@ void SourceView::SetBreakpointIgnoreCountCB(Widget w,
     int delay = 500;		// Wait until the SpinBox stops spinning
     if (cbs->reason == XmCR_ACTIVATE)
 	delay = 0;
-
-#if XmVersion < 2000
-    // Don't care about changing values in non-SpinBoxes
-    if (cbs->reason == XmCR_VALUE_CHANGED)
-	return;
-#endif
 
     if (info->timer != 0)
     {
@@ -6745,7 +6744,7 @@ Pixmap SourceView::pixmap(Widget w, unsigned char *bits, int width, int height)
 }
 
 
-#if XmVERSION >= 2
+#if XmVersion >= 2000
 const int motif_offset = 1;  // Motif 2.0 adds a 1 pixel border around glyphs
 #else
 const int motif_offset = 0;  // Motif 1.x does not
