@@ -436,8 +436,12 @@ void SourceView::line_popup_set_tempCB (Widget w,
     case DBX:
 	gdb_command("file " + full_path(current_file_name), w);
 	gdb_command("stop at " + itostring(line_nr), w);
+
+	// Make sure we get the number of the temporary breakpoint
+	syncCommandQueue();
 	gdb_command("when at " + itostring(line_nr) 
-		    + " { clear " + itostring(line_nr) + "; }", w);
+		    + " { " + clear_command(itostring(line_nr)) 
+		    + "; }", w);
 	break;
     }
 }
@@ -455,7 +459,13 @@ void SourceView::address_popup_set_tempCB (Widget w,
 
     case DBX:
 	gdb_command("stopi at " + address, w);
-	// How do I set a condition at an address in DBX???
+
+	// Make sure we get the number of the temporary breakpoint
+	syncCommandQueue();
+
+	gdb_command("when at " + itostring(line_nr) 
+		    + " { " + clear_command(itostring(line_nr)) 
+		    + "; }", w);
 	break;
     }
 }
@@ -566,7 +576,7 @@ void SourceView::text_popup_clearCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("clear " + *word_ptr, w);
+	gdb_command(clear_command(*word_ptr), w);
 	break;
 
     case DBX:
@@ -574,7 +584,7 @@ void SourceView::text_popup_clearCB (Widget w,
 	if (pos != "")
 	{
 	    gdb_command("file " + pos.before(':'), w);
-	    gdb_command("clear " + pos.after(':'), w);
+	    gdb_command(clear_command(pos.after(':')), w);
 	}
 	break;
     }
@@ -4804,5 +4814,44 @@ void SourceView::set_disassemble(bool set)
 		lookup(line_of_cursor());
 	}
     }
+}
+
+// Some DBXes lack a `clear' command.  Use `delete' instead.
+string SourceView::clear_command(string pos)
+{
+    if (gdb->has_clear_command())
+	return "clear " + pos;
+
+    string file = current_file_name;
+    string line = pos;
+
+    if (pos.contains(':'))
+    {
+	file = pos.before(':');
+	line = pos.after(':');
+    }
+
+    int line_no = atoi(line);
+
+    string bps = "";
+    MapRef ref;
+    for (BreakPoint* bp = bp_map.first(ref);
+	 bp != 0;
+	 bp = bp_map.next(ref))
+    {
+	if (bp->line_nr() == line_no
+	    && (bp->file_name() == "" 
+		|| file_matches(bp->file_name(), file)))
+	    {
+		if (bps != "")
+		    bps += " ";
+		bps += itostring(bp->number());
+	    }
+    }
+
+    if (bps != "")
+	return string("delete ") + bps;
+    else
+	return "";
 }
 

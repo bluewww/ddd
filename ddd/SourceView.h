@@ -415,6 +415,9 @@ public:
     // Set whether machine code is to be displayed
     static void set_disassemble(bool value);
 
+    // Return `clear ARG' command
+    static string clear_command(string arg);
+
     // Clear caches
     static void clear_file_cache();
     static void clear_code_cache();
