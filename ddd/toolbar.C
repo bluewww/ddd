@@ -72,27 +72,7 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
 	Widget w = item->widget;
 	if (w != 0 && XmIsLabel(w))
 	{
-#if 0				// Doesn't work -AZ
-	    if (label_type == XmPIXMAP)
-	    {
-		// If this is a pixmap, set a small font.  This might
-		// help in Motif 2.0 to minimize flickering.
-		const string fontList = 
-		    string("fixed=") + MSTRING_DEFAULT_CHARSET;
-		XtVaSetValues(w,
-			      XmNlabelType, label_type,
-			      XtVaTypedArg, 
-			      XmNfontList, XtRString, 
-			      fontList.chars(), fontList.length() + 1,
-			      NULL);
-	    }
-	    else
-	    {
-		XtVaSetValues(w, XmNlabelType, label_type, NULL);
-	    }
-#else
 	    XtVaSetValues(w, XmNlabelType, label_type, NULL);
-#endif
 	}
     }
 }
@@ -107,22 +87,73 @@ static void flatten_buttons(MMDesc items[])
     }
 }
 
+static Widget align_buttons(MMDesc *items1, MMDesc *items2)
+{
+    Widget last_button  = 0;
+
+    for (int j = 1; j >= 0; j--)
+    {
+	MMDesc *items = (j == 0 ? items1 : items2);
+	if (items == 0)
+	    continue;
+
+	int i = -1;
+	while (items[i + 1].widget != 0)
+	    i++;
+	for (; i >= 0; i--)
+	{
+	    Widget w = items[i].widget;
+
+	    if (!XtIsManaged(w))
+		continue;
+
+	    Arg args[10];
+	    Cardinal arg = 0;
+
+	    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
+	    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
+
+	    if (last_button == 0)
+	    {
+		XtSetArg(args[arg], XmNrightAttachment, XmATTACH_FORM); arg++;
+	    }
+	    else
+	    {
+		XtSetArg(args[arg],
+			 XmNrightAttachment, XmATTACH_WIDGET); arg++;
+		XtSetArg(args[arg],
+			 XmNrightWidget,     last_button); arg++;
+	    }
+
+	    XtSetValues(w, args, arg);
+
+	    last_button = w;
+	}
+    }
+
+    return last_button;
+}
+
+
+
 //-----------------------------------------------------------------------
 // Toolbar creation
 //-----------------------------------------------------------------------
 
-// Create a toolbar as child of parent, named `NAME', having
+// Create a toolbar as child of parent, named `toolbar', having
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
-Widget create_toolbar(Widget parent, string name, 
+Widget create_toolbar(Widget parent, string /* name */,
 		      MMDesc *items1, MMDesc *items2,
 		      Widget& label, ArgField*& argfield,
 		      unsigned char label_type)
 {
+    assert(label_type == XmPIXMAP || label_type == XmSTRING);
+
     Arg args[10];
     Cardinal arg = 0;
 
     // Create toolbar
-    string toolbar_name = name;
+    string toolbar_name = "toolbar";
 
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth, 0);        arg++;
@@ -148,32 +179,20 @@ Widget create_toolbar(Widget parent, string name,
     }
 
     // Create buttons
-    string buttons_name = "toolbar";
-    Widget buttons = MMcreateWorkArea(toolbar, buttons_name, items1);
+    MMaddItems(toolbar, items1);
     MMaddCallbacks(items1);
     MMaddHelpCallback(items1, ImmediateHelpCB);
-
-    if (label_type != (unsigned char)-1)
-	set_label_type(items1, label_type);
+    set_label_type(items1, label_type);
 
     if (items2 != 0)
     {
-	MMaddItems(buttons, items2);
+	MMaddItems(toolbar, items2);
 	MMaddCallbacks(items2);
 	MMaddHelpCallback(items2, ImmediateHelpCB);
-	if (label_type != (unsigned char)-1)
-	    set_label_type(items2, label_type);
+	set_label_type(items2, label_type);
     }
 
-    XtVaSetValues(buttons,
-		  XmNmarginWidth,    0,
-		  XmNmarginHeight,   0,
-		  XmNorientation,    XmHORIZONTAL,
-		  XmNspacing,        0,
-		  XmNpacking,        XmPACK_TIGHT,
-		  XmNentryAlignment, XmALIGNMENT_CENTER,
-		  XmNalignment,      XmALIGNMENT_CENTER,
-		  NULL);
+    Widget first_button = align_buttons(items1, items2);
 
     // Set form constraints
     XtVaSetValues(label,
@@ -185,13 +204,8 @@ Widget create_toolbar(Widget parent, string name,
 		  XmNleftAttachment,   XmATTACH_WIDGET,
 		  XmNleftWidget,       label,
 		  XmNrightAttachment,  XmATTACH_WIDGET,
-		  XmNrightWidget,      buttons,
+		  XmNrightWidget,      first_button,
 		  XmNtopAttachment,    XmATTACH_FORM,
-		  NULL);
-    XtVaSetValues(buttons,
-		  XmNrightAttachment,  XmATTACH_FORM,
-		  XmNtopAttachment,    XmATTACH_FORM,
-		  XmNbottomAttachment, XmATTACH_FORM,
 		  NULL);
 
     XtManageChild(toolbar);
@@ -213,23 +227,6 @@ Widget create_toolbar(Widget parent, string name,
 		      XmNpaneMaximum, toolbar_height,
 		      XmNpaneMinimum, toolbar_height,
 		      NULL);
-    }
-
-    if (button_height > arg_height)
-    {
-	// Buttons are larger than the argument field
-
-	// Center the argument field near the buttons
-	int offset = (button_height - arg_height) / 2;
-	XtVaSetValues(argfield->widget(), XmNtopOffset, offset, NULL);
-    }
-    else if (button_height < arg_height)
-    {
-	// Argument field is higher than buttons
-
-	// Center buttons around argument field
-	int offset = (arg_height - button_height) / 2;
-	XtVaSetValues(buttons, XmNmarginHeight, offset, NULL);
     }
 
     return toolbar;
