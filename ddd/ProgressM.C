@@ -113,6 +113,9 @@ void ProgressMeter::CancelCB(Widget, XtPointer client_data, XtPointer)
 
 bool ProgressMeter::_process(int remaining_length)
 {
+    if (active == 0)
+	return true;		// Treat inconsistency like abort
+
     return active->process(remaining_length);
 }
 
