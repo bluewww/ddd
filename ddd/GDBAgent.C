@@ -163,6 +163,7 @@ char GDBAgent_rcsid[] =
 #include <iostream>
 #include <fstream>
 #include <ctype.h>
+#include <time.h>
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -431,7 +432,22 @@ void GDBAgent::trace(const char *prefix, void *call_data) const
 	s = s.before(int(s.length() - 1)) + "\\n" + 
 	    s.from(int(s.length() - 1));
 
-    dddlog << prefix << s << '\n';
+
+#if HAVE_STRFTIME
+    char ltime[24];
+
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    size_t r = strftime(ltime, sizeof(ltime), "%Y.%m.%d %H:%M:%S", &tm);
+    ltime[r] = '\0';
+#elif HAVE_ASCTIME
+    time_t t = time(NULL);
+    const char* ltime = asctime(localtime(&t));
+#else
+    const char* ltime = "";
+#endif
+
+    dddlog << ltime << (strlen(ltime)!=0 ?"\n":"") << prefix << s << '\n';
     dddlog.flush();
 }
     
