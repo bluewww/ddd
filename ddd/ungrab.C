@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Ungrab frozen mouse pointer
 
-// Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1997-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -118,6 +118,9 @@ static string gdb_value(const string& expr)
 // Attempt to make debugged program ungrab pointer.
 void ungrab_mouse_pointer()
 {
+    if (!gdb->has_system_calls())
+	return;			// No way to ungrab pointer
+
     if (!mouse_pointer_grabbed())
 	return;			// No grab
 

@@ -326,6 +326,9 @@ void gdbMakeAgainCB(Widget, XtPointer, XtPointer)
 // Create `Make' dialog
 void gdbMakeCB(Widget w, XtPointer, XtPointer)
 {
+    if (!gdb->has_make_command())
+	return;
+
     if (make_dialog == 0)
     {
 	Arg args[10];

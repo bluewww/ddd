@@ -420,6 +420,37 @@ public:
 	return type() == GDB || type() == XDB || type() == DBX;
     }
 
+    // True if debugger supports calling system functions
+    bool has_system_calls() const
+    {
+	return type() == GDB || type() == XDB || type() == DBX;
+    }
+
+    // True if debugger supports loading and examining core files
+    bool has_core_files() const
+    {
+	return type() == GDB || type() == XDB || type() == DBX;
+    }
+
+    // True if debugger supports separate processes (attach, detach)
+    bool has_processes() const
+    {
+	return type() == GDB || type() == XDB || type() == DBX;
+    }
+
+    // True if debugger supports `cd'
+    bool has_cd_command() const
+    {
+	return type() == GDB || type() == XDB || type() == DBX;
+    }
+
+    // True if debugger supports `shell'
+    bool has_shell_command() const
+    {
+	return type() == GDB || type() == XDB || type() == DBX;
+    }
+
+
     // True if debugger dialog is traced on clog
     bool trace_dialog() const    { return _trace_dialog; }
     bool trace_dialog(bool val);

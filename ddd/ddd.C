@@ -4222,9 +4222,10 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(source_file_menu[FileItems::OpenFile].widget,        ready);
     set_sensitive(data_file_menu[FileItems::OpenFile].widget,          ready);
 
-    set_sensitive(command_file_menu[FileItems::OpenCore].widget,       ready);
-    set_sensitive(source_file_menu[FileItems::OpenCore].widget,        ready);
-    set_sensitive(data_file_menu[FileItems::OpenCore].widget,          ready);
+    bool have_core = ready && gdb->has_core_files();
+    set_sensitive(command_file_menu[FileItems::OpenCore].widget,   have_core);
+    set_sensitive(source_file_menu[FileItems::OpenCore].widget,    have_core);
+    set_sensitive(data_file_menu[FileItems::OpenCore].widget,      have_core);
 
     set_sensitive(command_edit_menu[FileItems::OpenSession].widget,    ready);
     set_sensitive(source_edit_menu[FileItems::OpenSession].widget,     ready);
@@ -4234,32 +4235,35 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(source_edit_menu[FileItems::SaveSession].widget,     ready);
     set_sensitive(data_edit_menu[FileItems::SaveSession].widget,       ready);
 
-    set_sensitive(command_file_menu[FileItems::Attach].widget,         ready);
-    set_sensitive(source_file_menu[FileItems::Attach].widget,          ready);
-    set_sensitive(data_file_menu[FileItems::Attach].widget,            ready);
+    bool have_attach = ready && gdb->has_processes();
+    set_sensitive(command_file_menu[FileItems::Attach].widget,   have_attach);
+    set_sensitive(source_file_menu[FileItems::Attach].widget,    have_attach);
+    set_sensitive(data_file_menu[FileItems::Attach].widget,      have_attach);
 
-    set_sensitive(command_file_menu[FileItems::Detach].widget,         ready);
-    set_sensitive(source_file_menu[FileItems::Detach].widget,          ready);
-    set_sensitive(data_file_menu[FileItems::Detach].widget,            ready);
+    bool have_detach = ready && gdb->has_processes();
+    set_sensitive(command_file_menu[FileItems::Detach].widget,   have_detach);
+    set_sensitive(source_file_menu[FileItems::Detach].widget,    have_detach);
+    set_sensitive(data_file_menu[FileItems::Detach].widget,      have_detach);
 
-    set_sensitive(command_file_menu[FileItems::Make].widget,           ready);
-    set_sensitive(source_file_menu[FileItems::Make].widget,            ready);
-    set_sensitive(data_file_menu[FileItems::Make].widget,              ready);
+    bool have_make = ready && 
+	(gdb->has_make_command() || gdb->has_shell_command());
+    set_sensitive(command_file_menu[FileItems::Make].widget,       have_make);
+    set_sensitive(source_file_menu[FileItems::Make].widget,        have_make);
+    set_sensitive(data_file_menu[FileItems::Make].widget,          have_make);
 
-    set_sensitive(command_file_menu[FileItems::MakeAgain].widget,      ready);
-    set_sensitive(source_file_menu[FileItems::MakeAgain].widget,       ready);
-    set_sensitive(data_file_menu[FileItems::MakeAgain].widget,         ready);
+    set_sensitive(command_file_menu[FileItems::MakeAgain].widget,  have_make);
+    set_sensitive(source_file_menu[FileItems::MakeAgain].widget,   have_make);
+    set_sensitive(data_file_menu[FileItems::MakeAgain].widget,     have_make);
 
-    set_sensitive(command_file_menu[FileItems::CD].widget,             ready);
-    set_sensitive(source_file_menu[FileItems::CD].widget,              ready);
-    set_sensitive(data_file_menu[FileItems::CD].widget,                ready);
+    bool have_cd = ready && gdb->has_cd_command();
+    set_sensitive(command_file_menu[FileItems::CD].widget,           have_cd);
+    set_sensitive(source_file_menu[FileItems::CD].widget,            have_cd);
+    set_sensitive(data_file_menu[FileItems::CD].widget,              have_cd);
 
-    set_sensitive(command_edit_menu[EditItems::Settings].widget,
-		  ready && (gdb->type() == GDB || gdb->type() == DBX));
-    set_sensitive(source_edit_menu[EditItems::Settings].widget,
-		  ready && (gdb->type() == GDB || gdb->type() == DBX));
-    set_sensitive(data_edit_menu[EditItems::Settings].widget,
-		  ready && (gdb->type() == GDB || gdb->type() == DBX));
+    bool have_settings = ready && (gdb->type() == GDB || gdb->type() == DBX);
+    set_sensitive(command_edit_menu[EditItems::Settings].widget,have_settings);
+    set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
+    set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
 
     set_sensitive(command_program_menu[ProgramItems::Run].widget,      ready);
     set_sensitive(source_program_menu[ProgramItems::Run].widget,       ready);

@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Save and edit DDD options
 
-// Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -923,6 +923,9 @@ static bool _get_core(const string& session, unsigned long flags,
     const bool dont_save        = (flags & DONT_SAVE);
     const bool dont_reload_core = (flags & DONT_RELOAD_CORE);
 
+    if (!gdb->has_core_files())
+	return true;		// No need to get core files
+
     create_session_dir(session);
     target = session_core_file(session);
 
@@ -1134,13 +1137,16 @@ static bool _get_core(const string& session, unsigned long flags,
 	    }
 	}
 
-	// Kill the process, hopefully leaving a core file.
-	// Since g77 catches SIGABRT, we disable its handler first.
-	string enable_signal_cmd = 
-	    "signal(" + itostring(SIGABRT) + ", " + 
-	    itostring(int(SIG_DFL)) + ")";
-	gdb_question(gdb->print_command(enable_signal_cmd));
-	gdb_question(gdb->signal_command(SIGABRT));
+	if (gdb->has_system_calls())
+	{
+	    // Kill the process, hopefully leaving a core file.
+	    // Since g77 catches SIGABRT, we disable its handler first.
+	    string enable_signal_cmd = 
+		"signal(" + itostring(SIGABRT) + ", " + 
+		itostring(int(SIG_DFL)) + ")";
+	    gdb_question(gdb->print_command(enable_signal_cmd));
+	    gdb_question(gdb->signal_command(SIGABRT));
+	}
 
 	if (is_core_file(core))
 	{
