@@ -1061,7 +1061,7 @@ void SourceView::bp_popup_deleteCB (Widget w,
 				    XtPointer client_data,
 				    XtPointer)
 {
-    int bp_nr = int(client_data);
+    int bp_nr = *((int *)client_data);
     gdb_command(delete_command(bp_nr), w);
 }
 
@@ -1088,7 +1088,7 @@ void SourceView::bp_popup_disableCB (Widget w,
 				     XtPointer client_data,
 				     XtPointer)
 {
-    int bp_nr = int(client_data);
+    int bp_nr = *((int *)client_data);
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp != 0)
     {
@@ -1117,7 +1117,7 @@ void SourceView::disable_bp(int nr, Widget w)
 void SourceView::bp_popup_set_pcCB(Widget w, XtPointer client_data, 
 				   XtPointer call_data)
 {
-    int bp_nr = int(client_data);
+    int bp_nr = *((int *)client_data);
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp != 0 && bp->address() != "")
     {
@@ -4550,7 +4550,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	{
 	    bp_popup_parent = w;
 	    bp_popup_w = MMcreatePopupMenu(w, "bp_popup", bp_popup);
-	    MMaddCallbacks (bp_popup, XtPointer(bp_nr));
+	    MMaddCallbacks (bp_popup, XtPointer(&bp_nr));
 	    InstallButtonTips(bp_popup_w);
 	}
 
@@ -4837,7 +4837,7 @@ void SourceView::EditBreakpointConditionDCB(Widget,
     }
     else
     {
-	int bp_nr = int(client_data);
+	int bp_nr = *((int *)client_data);
 	set_bp_cond(bp_nr, input);
     }
 
@@ -4880,12 +4880,16 @@ void SourceView::EditBreakpointConditionCB(Widget,
 		  EditBreakpointConditionDCB,
 		  client_data);
 
-    int bp_nr = (int)client_data;
+    int bp_nr;
     if (client_data == 0)
     {
 	IntArray breakpoint_nrs;
 	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
 	bp_nr = breakpoint_nrs[0];
+    }
+    else
+    {
+	bp_nr = *((int *)client_data);
     }
 
     if (bp_nr > 0)
@@ -4946,7 +4950,7 @@ void SourceView::EditBreakpointIgnoreCountDCB(Widget,
     }
     else
     {
-	int bp_nr = int(client_data);
+	int bp_nr = *((int *)client_data);
 	gdb_command(gdb->ignore_command(itostring(bp_nr), count));
     }
 }
@@ -4994,7 +4998,7 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
     }
     else
     {
-	bp_nr = int(client_data);
+	bp_nr = *((int *)client_data);
     }
 
     string ignore = "";
@@ -5028,12 +5032,16 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
 
 void SourceView::edit_breakpoint_ignore_count(int bp_nr)
 {
-    EditBreakpointIgnoreCountCB(source_text_w, XtPointer(bp_nr), 0);
+    static int n;
+    n = bp_nr;
+    EditBreakpointIgnoreCountCB(source_text_w, XtPointer(&n), 0);
 }
 
 void SourceView::edit_breakpoint_condition(int bp_nr)
 {
-    EditBreakpointConditionCB(source_text_w, XtPointer(bp_nr), 0);
+    static int n;
+    n = bp_nr;
+    EditBreakpointConditionCB(source_text_w, XtPointer(&n), 0);
 }
 
 void SourceView::BreakpointCmdCB(Widget,
@@ -6828,6 +6836,18 @@ MString SourceView::help_on_bp(int bp_nr, bool detailed)
 
 	if (bp->infos() != "")
 	    info += rm("; " + infos);
+
+	switch (bp->dispo())
+	{
+	case BPKEEP:
+	    break;
+	case BPDEL:
+	    info += rm("; delete when reached");
+	    break;
+	case BPDIS:
+	    info += rm("; disable when reached");
+	    break;
+	}
 	info += rm(")");
     }
 
