@@ -789,6 +789,7 @@ static MMDesc stack_menu[] =
     MMEnd
 };
 
+static Widget lookup_w;
 static Widget find_forward_w;
 static Widget find_backward_w;
 static Widget find_words_only_w;
@@ -799,10 +800,13 @@ static MMDesc source_menu[] =
 {
     { "breakpoints", MMPush, { SourceView::EditBreakpointsCB }},
     MMSep,
+    {"lookup",        MMPush, { gdbLookupCB       },
+      NULL, &lookup_w },
     { "findForward",  MMPush, { gdbFindCB, XtPointer(SourceView::forward) },
       NULL, &find_forward_w },
     { "findBackward", MMPush, { gdbFindCB, XtPointer(SourceView::backward) },
       NULL, &find_backward_w },
+    MMSep,
     { "findWordsOnly",       MMToggle, { sourceToggleFindWordsOnlyCB }, 
       NULL, &find_words_only_w },
     { "findCaseSensitive",   MMToggle, { sourceToggleFindCaseSensitiveCB }, 

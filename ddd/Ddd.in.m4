@@ -2364,6 +2364,7 @@ WIDGET(Source Menu)\n\
 \n\
 DESC(Edit Breakpoints..., [set, view, and edit breakpoints])\n\
 \n\
+DESC(Lookup (), [lookup LBL(()) in the source])\n\
 DESC(LBL_FIND_FORWARD, [find next occurrence of LBL(())])\n\
 DESC(LBL_FIND_BACKWARD, [find previous occurrence of LBL(())])\n\
 ITEM If LBL(Find Words Only) is set, \
@@ -2390,6 +2391,13 @@ Ddd*sourceMenu.breakpoints.labelString:		Edit Breakpoints...
 Ddd*sourceMenu.breakpoints.mnemonic:		d
 Ddd*sourceMenu.breakpoints.documentationString: \
 @rm Set, view, and edit breakpoints
+
+Ddd*sourceMenu.lookup.labelString:	        Lookup ()
+Ddd*sourceMenu.lookup.mnemonic:			L
+Ddd*sourceMenu.lookup.accelerator:		Ctrl<Key>slash
+Ddd*sourceMenu.lookup.acceleratorText:	Ctrl+/
+Ddd*sourceMenu.lookup.documentationString:\
+@rm Lookup LBL(()) in the source
 
 Ddd*sourceMenu.findForward.labelString:	        LBL_FIND_FORWARD
 ! Ddd*sourceMenu.findForward.mnemonic:		>
