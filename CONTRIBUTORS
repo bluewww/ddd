@@ -30,5 +30,11 @@ contributed to the success of DDD.  Starring in historical order,
 
     KENT WILLIAMS made DDD run on SGI/IRIX machines.
 
+    GRANT McDORMAN run purify on DDD, discovering many memory leaks
+        and bad memory references.
+
+    PAUL RAINES found out what made DDD crash on Linux and provided a
+        DDD binary linked with fixed Motif libraries.
+
 Thanks to all others who are not mentioned here and helped in the
 success of DDD.

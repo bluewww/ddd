@@ -123,10 +123,8 @@ Volunteers for these and other projects are welcome!
 042. Suggestions from jcrupi@mystech.com (John Crupi):
      1. Is there a way to edit the source in the source window ?
      2. Can I dereference a multi-length array graphically via the mouse ?
-     3. Does ddd sit on top of gdb, or is it integrated with gdb source ?
-     4. If it sits on top, how can gdb upgrades be incorporated ?
-     5. Can I change the 'break point' symbol ?
-     6. When I hit a break point, can the break line
+     3. Can I change the 'break point' symbol ?
+     4. When I hit a break point, can the break line
         be brought to the center of the source window ?
 
 043. An `Edit' button launching emacs or vi on the current file and line.
@@ -134,4 +132,10 @@ Volunteers for these and other projects are welcome!
 044. Disable pointer grabs from the debugged application as soon as
      the Debugger prompt reappears.
 
-045. (Insert your project idea here)
+045. Collect output of printing command and show it in a dialog box.
+
+046. Apply GNU Library Public license to all of DDD?
+
+047. Have a `Reload' button to reload the current source file.
+
+048. (Insert your project idea here)

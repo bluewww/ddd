@@ -1304,8 +1304,6 @@ These settings with their correct values are:
 .br
   \fBset print pretty\fR
 .br
-  \fBset print array\fR
-.br
   \fBset print repeats 0\fR
 .br
   \fBset verbose off\fR
@@ -1318,10 +1316,10 @@ These settings with their correct values are:
 If these values are changed, there may be some malfunctions,
 especially in the data display.  If you want to display C strings
 (i.e., `\fBchar *\fR'-fields), it might be useful to change the
-settings of `\fBprint repeats\fR' and `\fBprint array\fR'.  But to
+settings of `\fBprint repeats\fR' and `\fBprint elements\fR'.  But to
 recognize array structures correctly, you should have `\fBprint
 repeats\fR' set to 0.  Also, do not change the setting of `\fBprint
-array\fR' while there are array structures in the data display.
+elements\fR' while there are array structures in the data display.
 
 .SS "Limitations using DBX"
 When used for debugging \s-2MODULA-2\s+2 or \s-2PASCAL\s+2 programs,

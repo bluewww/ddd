@@ -194,7 +194,48 @@ Volunteers for fixing these and other bugs are welcome!
 
 045. The distributed DDD binary for Linux crashes on some machines as
      soon as `Open Source' is selected.  This has also been reported
-     from freebsd2.0 users.  As a simple workaround, use the GDB
-     `file' and `core' commands.
+     from freebsd2.0 users.  [According to dernst@pppl.gov (Darin
+     Ernst), this is a bug in the Motif libraries, not in DDD: ``any
+     call to OpenFileSelectionDialog() will give a seg fault when
+     using motif 2.0 and gcc 2.6.3, regardless of kernel version'';
+     raines@slac.stanford.edu (Paul Raines) states that ``from what I
+     recall of the motif newsgroup discussion, it is totally Motif's
+     fault''].  We now have a Linux DDD binary linked with a fixed
+     SWiM Motif 2.0 library available.  As a workaround, use the GDB
+     `file' and `core' commands; to open a specific source, use the
+     GDB `info file FUNCTION' command, where FUNCTION is a function
+     defined in that source file.
 
-046. (Insert your bug here)
+046. Line continuations (i.e. GDB commands ended by `\' and continued
+     on the next line) are not handled.
+
+047. After a pop-up confirmation dialog, subsequent ones are echoed as
+     text in the command window.
+
+048. Check if options still work with DDD 1.3.
+
+049. The bounding box is computed for all boxes, even if only selected
+     boxes are to be printed.
+
+050. jcrupi@mystech.com (John Crupi) states: 
+     When trying to dereference (using the mouse) a very large
+     structure, ddd locks up.  It usually happens if I quickly select
+     'dereferene' after I display the pointer.  The structure contains
+     unions.  Machine is sparc-sun-solaris2.4.
+
+051. grant@isgtec.com (Grant McDorman) has run purify on DDD and
+     reported some memory leaks as well as bad memory accesses.
+
+052. DDD crashes if the `lucidatypewriter' font is not found.
+
+053. emeijer@us.oracle.com (Edwin Meijer) states:
+     I tried the following scenario: 
+     > exec program [arg,....] 
+     and while my program was in a sleep I did:  
+     > ddd --dbx program process-id 
+     ddd seemed to start up fine, but after loading it core-dumped. 
+
+054. tbe@glenlivet.fokus.gmd.de (Thomas Berndes) says that DDD crashes
+     after failing to allocate the `grey' colormap.
+
+055. (Insert your bug here)
