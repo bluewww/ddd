@@ -239,57 +239,56 @@ void UndoBuffer::add_command(const string& command, bool exec)
     {
 	// Regular command
 	add_status(command_key, c);
+	return;
+    }
+
+    // We're called from undo or redo
+
+#if LOG_UNDO_BUFFER
+    clog << "Adding\t" << command_key << " = " << quote(command) << "\n";
+#endif
+
+    assert (history.size() > 0);
+    assert (current_entry >= 0 && current_entry < history.size());
+
+    UndoBufferEntry& entry = history[current_entry];
+
+    if (own_direction < 0 && own_processed == 0)
+    {
+	// Called from undo => a `redo' command: replace current
+
+	entry.remove(UB_COMMAND);
+	entry.remove(UB_EXEC_COMMAND);
+	entry[command_key] = c;
+	own_processed++;
+    }
+    else if (own_direction < 0 && own_processed > 0)
+    {
+	// Called from undo => another `redo' command; prepend before last
+
+	entry[command_key].prepend(c + '\n');
+	own_processed++;
+    }
+    else if (own_direction > 0 && own_processed == 0)
+    {
+	// Called from redo => an `undo' command: replace current
+
+	entry.remove(UB_COMMAND);
+	entry.remove(UB_EXEC_COMMAND);
+	entry[command_key] = c;
+	own_processed++;
+    }
+    else if (own_direction > 0 && own_processed > 0)
+    {
+	// Called from redo => another `undo' command: prepend to previous
+
+	entry[command_key].prepend(c + '\n');
+	own_processed++;
     }
     else
     {
-	// We're called from undo or redo
-
-#if LOG_UNDO_BUFFER
-	clog << "Adding\t" << command_key << " = " << quote(command) << "\n";
-#endif
-
-	assert (history.size() > 0);
-	assert (current_entry >= 0 && current_entry < history.size());
-
-	UndoBufferEntry& entry = history[current_entry];
-
-	if (own_direction < 0 && own_processed == 0)
-	{
-	    // Called from undo => a `redo' command: replace current
-
-	    entry.remove(UB_COMMAND);
-	    entry.remove(UB_EXEC_COMMAND);
-	    entry[command_key] = c;
-	    own_processed++;
-	}
-	else if (own_direction < 0 && own_processed > 0)
-	{
-	    // Called from undo => another `redo' command; prepend before last
-
-	    entry[command_key].prepend(c + '\n');
-	    own_processed++;
-	}
-	else if (own_direction > 0 && own_processed == 0)
-	{
-	    // Called from redo => an `undo' command: replace current
-
-	    entry.remove(UB_COMMAND);
-	    entry.remove(UB_EXEC_COMMAND);
-	    entry[command_key] = c;
-	    own_processed++;
-	}
-	else if (own_direction > 0 && own_processed > 0)
-	{
-	    // Called from redo => another `undo' command: prepend to previous
-
-	    entry[command_key].prepend(c + '\n');
-	    own_processed++;
-	}
-	else
-	{
-	    // This can't happen.
-	    assert(0);
-	}
+	// This can't happen.
+	assert(0);
     }
 
     done();
