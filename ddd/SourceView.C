@@ -1153,6 +1153,31 @@ void SourceView::read_file (string file_name,
     if (file_name == "")
 	return;
 
+    /*
+      Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
+
+      Paths to filename are not `normalized' before being passed to
+      emacslient (or gnuclient). I mean that if one of your source
+      files was compiled as
+
+                /some/path//there/file.C
+
+      (which happens fairly often due to empty paths components in
+      Makefiles, for example), the file will not appear in Emacs
+      because the Emacs visit-file function and friends do consider
+      that when there is a // or a /~ in a path then everything
+      before the first / is garbage. The file that will be looked
+      for in the example is
+
+                /there/file.C
+
+      (the GUD Emacs mode exhibits the same bug ;-)). Thus // in
+      file pathes must be changed to / (or Emacs changed so that
+      only interactively-called versions of visit-file and friends
+      do that, but I don't think this will be done...).
+    */
+    file_name.gsub("//", "/");
+
     // Read in current_source
     int error = read_current(file_name, force_reload);
     if (error)
