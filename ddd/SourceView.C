@@ -33,12 +33,12 @@ char SourceView_rcsid[] =
     "$Id$";
 
 //-----------------------------------------------------------------------------
+#include "Delay.h"		// must be included first for GCC 2.5.8
 #include "SourceView.h"
 #include "IntArray.h"
 
 // includes von Nora-Zeugs
 #include "assert.h"
-#include "Delay.h"
 #include "HelpCB.h"
 #include "DestroyCB.h"
 #include "MString.h"
@@ -152,7 +152,7 @@ MMDesc SourceView::bp_area[] =
 
 
 struct TextItms { enum Itms {Print, Disp, Dummy, Lookup, Break, Clear}; };
-static string text_cmd_labels[] =
+static String text_cmd_labels[] =
 {"print ", "display ", "", "lookup " , "break ", "clear "};
 MMDesc SourceView::text_popup[] =
 {
@@ -439,8 +439,8 @@ void SourceView::set_source_argCB (Widget,
 
 	if (selection_click
 	    && startIndex == endIndex
-	    && startPos < current_text.length()
-	    && endPos < current_text.length()
+	    && startPos < XmTextPosition(current_text.length())
+	    && endPos < XmTextPosition(current_text.length())
 	    && current_text[startPos] != '\n'
 	    && current_text[endPos] != '\n'
 	    && startPos - startIndex <= bp_indent_amount
@@ -472,11 +472,15 @@ void SourceView::set_source_argCB (Widget,
 	{
 	    // Selection from source
 	    string s;
-	    if (startPos < current_text.length() 
-		&& endPos < current_text.length())
+	    if (startPos < XmTextPosition(current_text.length())
+		&& endPos < XmTextPosition(current_text.length()))
+	    {
 		s = current_text(startPos, endPos - startPos);
+	    }
+
 	    while (s.contains('\n'))
 		s = s.after('\n');
+
 	    source_arg->set_string(s);
 	}
     }
@@ -593,28 +597,28 @@ String SourceView::read_from_gdb(const string& file_name)
 
     int i = 0;
     int j = 0;
-    while (i < listing.length())
+    while (i < int(listing.length()))
     {
-	while (i < listing.length() && isspace(listing[i]))
+	while (i < int(listing.length()) && isspace(listing[i]))
 	    i++;
 
 	if (isdigit(listing[i]))
 	{
 	    // Skip line number
 	    int count = 0;
-	    while (i < listing.length() && isdigit(listing[i]))
+	    while (i < int(listing.length()) && isdigit(listing[i]))
 		i++, count++;
 
 	    // Break at first non-blank character or after 8 characters
-	    while (count < 8 && i < listing.length() && listing[i] == ' ')
+	    while (count < 8 && i < int(listing.length()) && listing[i] == ' ')
 		i++, count++;
 
 	    // Skip tab character
-	    if (count < 8 && i < listing.length() && listing[i] == '\t')
+	    if (count < 8 && i < int(listing.length()) && listing[i] == '\t')
 		i++;
 
 	    // Copy line
-	    while (i < listing.length() && listing[i] != '\n')
+	    while (i < int(listing.length()) && listing[i] != '\n')
 		text[j++] = listing[i++];
 
 	    // Copy newline character
@@ -626,9 +630,9 @@ String SourceView::read_from_gdb(const string& file_name)
 	    int start = i;
 
 	    // Some other line -- the prompt, maybe?
-	    while (i < listing.length() && listing[i] != '\n')
+	    while (i < int(listing.length()) && listing[i] != '\n')
 		i++;
-	    if (i < listing.length())
+	    if (i < int(listing.length()))
 		i++;
 
 	    string msg = listing.from(start);
@@ -776,7 +780,7 @@ int SourceView::read_current(string& file_name)
     pos_of_line[1] = XmTextPosition(0);
 
     int l = 2;
-    for (int i = 0; i < current_text.length() - 1; i++)
+    for (int i = 0; i < int(current_text.length()) - 1; i++)
 	if (current_text[i] == '\n')
 	    pos_of_line[l++] = XmTextPosition(i + 1);
 
@@ -972,7 +976,7 @@ void SourceView::refresh_bp_disp ()
 	    insert_string += bp->number_str();
 	    insert_string += bp->enabled() ? '#' : '_';
 	}
-	if (insert_string.length() >= bp_indent_amount - 1) {
+	if (int(insert_string.length()) >= bp_indent_amount - 1) {
 	    insert_string =
 		insert_string.before(bp_indent_amount - 1);
 	}
@@ -1082,11 +1086,12 @@ void SourceView::find_word_bounds (const XmTextPosition pos,
 {
     startpos = endpos = pos;
 
-    while (startpos > 0 && startpos < current_text.length()
+    while (startpos > 0 && startpos < XmTextPosition(current_text.length())
 	   && isid(current_text[startpos - 1]))
 	startpos--;
 
-    while (endpos < current_text.length() && isid(current_text[endpos]))
+    while (endpos < XmTextPosition(current_text.length())
+	   && isid(current_text[endpos]))
 	endpos++;
 }
 
@@ -1784,7 +1789,8 @@ void SourceView::find(const string& s,
 	switch (direction)
 	{
 	case forward:
-	    if (cursor == startpos && cursor < current_text.length())
+	    if (cursor == startpos
+		&& cursor < XmTextPosition(current_text.length()))
 		cursor++;
 	    break;
 	case backward:
@@ -1835,13 +1841,13 @@ void SourceView::find(const string& s,
 	if (words_only)
 	{
 	    // Make sure the found string is not part of a larger word
-	    if (pos > 0 && pos < current_text.length())
+	    if (pos > 0 && pos < int(current_text.length()))
 	    {
 		if (isid(current_text[pos]) && isid(current_text[pos - 1]))
 		    continue;
 	    }
 
-	    if (pos + matchlen < current_text.length())
+	    if (pos + matchlen < int(current_text.length()))
 	    {
 		if (isid(current_text[pos + matchlen - 1]) && 
 		    isid(current_text[pos + matchlen]))
@@ -2035,7 +2041,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
 
 	find_word_bounds(pos, startpos, endpos);
 	word = "";
-	if (startpos < current_text.length() && startpos < endpos)
+	if (startpos < XmTextPosition(current_text.length())
+	    && startpos < endpos)
 	    word = current_text(int(startpos), int(endpos - startpos));
 	
 	Widget text_popup_w = MMcreatePopupMenu(w, "text_popup", text_popup);
@@ -2106,7 +2113,7 @@ void SourceView::NewBreakpointDCB(Widget w,
     XtFree(_input);
 
     int i = 0;
-    while (i < input.length() && isspace(input[i]))
+    while (i < int(input.length()) && isspace(input[i]))
 	i++;
     input = input.from(i);
     if (input == "")
@@ -2623,7 +2630,7 @@ void SourceView::process_where (string& where_output)
     for (i = 0; i < count; i++)
     {
 	selected[i] = false;
-	if (frame_list[i].length() < min_width)
+	if (int(frame_list[i].length()) < min_width)
 	{
 	    frame_list[i] += 
 		replicate(' ', min_width - frame_list[i].length());

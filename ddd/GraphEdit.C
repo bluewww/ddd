@@ -186,7 +186,7 @@ static void SnapToGrid  (Widget, XEvent *, String *, Cardinal *);
 static void _SnapToGrid (Widget, XEvent *, String *, Cardinal *);
 static void Rotate      (Widget, XEvent *, String *, Cardinal *);
 static void _Rotate     (Widget, XEvent *, String *, Cardinal *);
-static void Layout      (Widget, XEvent *, String *, Cardinal *);
+static void DoLayout    (Widget, XEvent *, String *, Cardinal *);
 static void _Layout     (Widget, XEvent *, String *, Cardinal *);
 static void Normalize   (Widget, XEvent *, String *, Cardinal *);
 static void _Normalize  (Widget, XEvent *, String *, Cardinal *);
@@ -213,7 +213,7 @@ static XtActionsRec actions[] = {
     { "_snap-to-grid",	_SnapToGrid },
     { "rotate",		Rotate },        // rotate([[+|-]DEGREES])
     { "_rotate",	_Rotate },
-    { "layout",		Layout },        // layout([regular|compact],
+    { "layout",		DoLayout },      // layout([regular|compact],
     { "_layout",	_Layout },       //         [[+|-]DEGREES]])
     { "normalize",	Normalize },     // normalize()
     { "_normalize",	_Normalize },
@@ -1489,7 +1489,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 
     Time t = time(event);
     bool double_click = 
-	(t - lastSelectTime <= XtGetMultiClickTime(XtDisplay(w)));
+	(Time(t - lastSelectTime) <= XtGetMultiClickTime(XtDisplay(w)));
     lastSelectTime = t;
 
     GraphNode *node = graphEditGetNodeAtPoint(w, p);
@@ -2269,7 +2269,9 @@ static void _Layout(Widget w, XEvent *event, String *params,
     _Rotate(w, event, rotate_params, &rotate_num_params);
 }
 
-static void Layout(Widget w, XEvent *event, String *params,
+// DoLayout() should be named Layout(), but this conflicts with the
+// `Layout' class on some pre-ARM C++ compilers :-(
+static void DoLayout(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     _Layout(w, event, params, num_params);
