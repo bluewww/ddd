@@ -446,7 +446,9 @@ bool have_visible_command_window()
 {
     return have_command_window() 
 	&& command_shell_state == PoppedUp
-	&& command_shell_visibility == VisibilityUnobscured;
+	&& (!app_data.separate_data_window
+	    || !app_data.separate_source_window
+	    || command_shell_visibility == VisibilityUnobscured);
 }
 
 
