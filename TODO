@@ -380,4 +380,19 @@ Volunteers for these and other projects are welcome!
 
 252 Print via the X Printer extension (-lXp).
 
-253 (Insert your project idea here)
+253 According to the CDE style guide, 
+    - F1 should give help on the element that has the focus; 
+      Shift+F1 should give context help.
+    - Use `Over_v_iew' instead of `Main Window'; make this the 1st
+      choice; separate it.
+    - Use `_R_eference' instead of `Manual'.
+    - Use `_O_n item...'; separate it both sides.
+    - Use Ctrl+X, Ctrl+C, Ctrl-V accelerators for Cut, Copy, Paste?
+
+254 If an XEmacs is running, use its frame for displaying the text.
+
+255 Associate a `scope SCOPE' option with the `graph display'
+    command, such that the display is activated as soon as we stop in
+    SCOPE.  This would make saving and restoring displays very handy.
+
+256 (Insert your project idea here)
