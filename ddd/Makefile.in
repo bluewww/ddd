@@ -1106,7 +1106,7 @@ CLEAN_STUFF	 = $(ddd)-$(VERSION)-* $(PROGS) $(DEMOS) \
 		   *.aux *.cp *.cps *.fn *.fns *.flc \
 		   *.ky *.kys *.log *.pg *.pgs *.toc *.tp *.tps *.vr *.vrs \
 		   *.tar *.tar.gz *~ lex.* y.tab.* site.* *.sum \
-		   *.diff rcssync *.private USERINFO *.huff.C \
+		   *.diff *.private USERINFO *.huff.C \
 		   *.txt.gz COPYING.gz NEWS.gz *.gz.C
 
 # Architecture-dependent files to be deleted from distribution
