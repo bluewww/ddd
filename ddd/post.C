@@ -49,6 +49,17 @@ char post_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 
+#include <errno.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+extern "C" {
+#include <sys/types.h>
+#include <sys/wait.h>
+}
+
+
 
 //-----------------------------------------------------------------------------
 // Dialogs
@@ -106,13 +117,17 @@ void post_gdb_busy(Widget w)
     XtManageChild(busy_dialog);
 }
 
-void post_gdb_died(string reason, Widget w)
+void post_gdb_died(string reason, int gdb_status, Widget w)
 {
     strip_final_blanks(reason);
 
-    if (gdb_initialized && reason.contains("Exit 0"))
+    int exit_status = EXIT_FAILURE;
+    if (WIFEXITED(gdb_status))
+	exit_status = WEXITSTATUS(gdb_status);
+
+    if (gdb_initialized && exit_status == 0)
     {
-	_DDDExitCB(find_shell(w), 0, 0);
+	_DDDExitCB(find_shell(w), XtPointer(exit_status), 0);
 	return;
     }
 
@@ -143,8 +158,10 @@ void post_gdb_died(string reason, Widget w)
 	    verify(XmCreateErrorDialog (find_shell(w), 
 					"terminated_dialog", args, arg));
 	XtAddCallback(died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
-	XtAddCallback(died_dialog, XmNokCallback,     DDDRestartCB,    NULL);
-	XtAddCallback(died_dialog, XmNcancelCallback, DDDExitCB,       NULL);
+	XtAddCallback(died_dialog, XmNokCallback,
+		      DDDRestartCB, XtPointer(exit_status));
+	XtAddCallback(died_dialog, XmNcancelCallback,
+		      DDDExitCB, XtPointer(exit_status));
     }
     else
     {
@@ -157,7 +174,8 @@ void post_gdb_died(string reason, Widget w)
 	XtUnmanageChild(XmMessageBoxGetChild
 			(died_dialog, XmDIALOG_CANCEL_BUTTON));
 	XtAddCallback(died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
-	XtAddCallback(died_dialog, XmNokCallback,     DDDExitCB,       NULL);
+	XtAddCallback(died_dialog, XmNokCallback,
+		      DDDExitCB, XtPointer(exit_status));
     }
 
     Delay::register_shell(died_dialog);

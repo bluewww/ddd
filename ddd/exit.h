@@ -35,6 +35,7 @@
 
 #include <X11/Intrinsic.h>
 #include "bool.h"
+#include "ExitCB.h"
 
 // Cleanup
 extern void ddd_cleanup();
@@ -48,7 +49,8 @@ void DDDExitCB    (Widget, XtPointer, XtPointer); // Exit DDD
 void DDDRestartCB (Widget, XtPointer, XtPointer); // Restart DDD
 
 // Helpers
-void gdb_eofHP (class Agent *, void *, void *);
+void gdb_eofHP  (class Agent *, void *, void *);
+void gdb_diedHP (class Agent *, void *, void *);
 
 // True if DDD is about to exit
 extern bool ddd_is_exiting;

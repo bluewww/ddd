@@ -40,7 +40,6 @@ char GDBAgent_rcsid[] =
 #include "GDBAgent.h"
 #include "cook.h"
 #include "ddd.h"
-#include "post.h"
 
 #include <stdlib.h> // exit
 #include <string.h> // strdup
@@ -119,15 +118,12 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _on_qu_array_completion(0),
       complete_answer("")
 {
-    removeAllHandlers(Died);
-    addHandler(Input, InputHP, this); // GDB-Ausgaben
-    addHandler(Died,  DiedHP, this);  // GDB beendet
-
     // unerwuenschte Fehlermeldungen unterdruecken
     removeAllHandlers(Panic);
     removeAllHandlers(Strange);
-    addHandler(Panic, PanicHP, this);
+    addHandler(Panic,   PanicHP, this);
     addHandler(Strange, PanicHP, this);
+    addHandler(Input,   InputHP, this); // GDB-Ausgaben
 }
 
 // Copy constructor
@@ -1291,15 +1287,6 @@ ProgramLanguage GDBAgent::program_language(string text)
 }
 
 // ***************************************************************************
-
-void GDBAgent::DiedHP (Agent *, void *, void* call_data)
-{
-    char *reason = (char *)call_data;
-    post_gdb_died(reason);
-}
-
-
-// ***************************************************************************
 // Handle error messages
 //
 void GDBAgent::PanicHP (Agent *source, void *, void *call_data)
@@ -1312,8 +1299,6 @@ void GDBAgent::PanicHP (Agent *source, void *, void *call_data)
     else
 	cerr << source->path() << ": " << msg << "\n";
 }
-
-
 
 // ***************************************************************************
 

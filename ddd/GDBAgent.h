@@ -366,7 +366,6 @@ protected:
     string complete_answer;
 
     static void InputHP (Agent*, void*, void*);
-    static void DiedHP  (Agent*, void*, void*);
     static void PanicHP (Agent*, void*, void*);
 
     static void traceInputHP (Agent*, void*, void*);

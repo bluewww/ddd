@@ -29,6 +29,16 @@
 #ifndef _DDD_ExitCB_h
 #define _DDD_ExitCB_h
 
+#include <stdlib.h>
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
+
 // Exit program
 extern void ExitCB(Widget, XtPointer, XtPointer);
 
@@ -38,4 +48,6 @@ extern void RestartCB(Widget, XtPointer, XtPointer);
 // Save environment
 extern void register_restart(char *argv[]);
 
-#endif
+#endif // _DDD_ExitCB_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
+

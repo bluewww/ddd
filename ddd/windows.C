@@ -372,11 +372,11 @@ static int running_shells()
 }
 
 // Generic close callback
-void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
+void DDDCloseCB(Widget w, XtPointer, XtPointer)
 {
     if (running_shells() == 1)
     {
-	DDDExitCB(w, client_data, call_data);
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
     }
 
@@ -385,45 +385,41 @@ void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 // Specific close callbacks
-void gdbCloseCommandWindowCB(Widget w, 
-			    XtPointer client_data, XtPointer call_data)
+void gdbCloseCommandWindowCB(Widget w, XtPointer, XtPointer)
 {
     if (running_shells() == 1)
     {
-	DDDExitCB(w, client_data, call_data);
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
     }
     popdown_shell(command_shell);
 }
 
-void gdbCloseSourceWindowCB(Widget w, 
-			   XtPointer client_data, XtPointer call_data)
+void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
 {
     if (running_shells() == 1)
     {
-	DDDExitCB(w, client_data, call_data);
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
     }
     popdown_shell(source_view_shell);
 }
 
-void gdbCloseDataWindowCB(Widget w,
-			 XtPointer client_data, XtPointer call_data)
+void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
 {
     if (running_shells() == 1)
     {
-	DDDExitCB(w, client_data, call_data);
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
     }
     popdown_shell(data_disp_shell);
 }
 
-void gdbCloseExecWindowCB(Widget w,
-			 XtPointer client_data, XtPointer call_data)
+void gdbCloseExecWindowCB(Widget w, XtPointer, XtPointer)
 {
     if (running_shells() == 1)
     {
-	DDDExitCB(w, client_data, call_data);
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
     }
     kill_exec_tty();

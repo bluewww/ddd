@@ -40,26 +40,18 @@ char ExitCB_rcsid[] =
 
 extern char **environ;
 
-#ifndef EXIT_SUCCESS
-#define EXIT_SUCCESS 0
-#endif
+// Callbacks
 
-#ifndef EXIT_FAILURE
-#define EXIT_FAILURE 0
-#endif
-
-// callbacks
-
-// leave program
-void ExitCB(Widget, XtPointer, XtPointer)
+// Leave program
+void ExitCB(Widget, XtPointer client_data, XtPointer)
 {
-    exit(EXIT_SUCCESS);
+    exit(int(client_data));
 }
 
 static char **saved_argv    = 0;
 static char **saved_environ = 0;
 
-// restart program
+// Restart program
 void RestartCB(Widget, XtPointer, XtPointer)
 {
     environ = saved_environ;

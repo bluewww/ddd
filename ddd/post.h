@@ -45,7 +45,7 @@
 extern void post_gdb_busy(Widget origin = 0);
 extern void post_gdb_message(string text, Widget origin = 0);
 extern void post_gdb_yn(string text, Widget origin = 0);
-extern void post_gdb_died(string reason, Widget origin = 0);
+extern void post_gdb_died(string reason, int gdb_status, Widget origin = 0);
 extern void post_error(string text, String name = 0, Widget origin = 0);
 extern void post_warning(string text, String name = 0, Widget origin = 0);
 

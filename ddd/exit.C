@@ -43,6 +43,7 @@ char exit_rcsid[] =
 #include "HelpCB.h"
 #include "charsets.h"
 #include "commandQ.h"
+#include "converters.h"
 #include "ddd.h"
 #include "exectty.h"
 #include "findParent.h"
@@ -165,14 +166,18 @@ void ddd_show_signal(int sig)
 	static Widget fatal_dialog = 0;
 	if (fatal_dialog)
 	    DestroyWhenIdle(fatal_dialog);
+
+	defineConversionMacro("SIGNAL", sigName(sig));
+
 	fatal_dialog = 
 	    verify(XmCreateErrorDialog (find_shell(),
 					"fatal_dialog", 0, 0));
 	Delay::register_shell(fatal_dialog);
 
-	XtAddCallback (fatal_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
-	XtAddCallback (fatal_dialog, XmNokCallback,     DDDRestartCB,    0);
-	XtAddCallback (fatal_dialog, XmNcancelCallback, DDDExitCB,       0);
+	XtAddCallback(fatal_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+	XtAddCallback(fatal_dialog, XmNokCallback,     DDDRestartCB,    0);
+	XtAddCallback(fatal_dialog, XmNcancelCallback,
+		      DDDExitCB, XtPointer(EXIT_FAILURE));
 
 	string msg = string("Internal error (") + sigName(sig) + ")";
 	MString mtext = rm(msg);
@@ -309,9 +314,12 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 	    verify(XmCreateQuestionDialog(find_shell(w), 
 					  "save_options_dialog", 0, 0));
 	Delay::register_shell(yn_dialog);
-	XtAddCallback (yn_dialog, XmNokCallback,     SaveOptionsAndExitCB, 0);
-	XtAddCallback (yn_dialog, XmNcancelCallback, closure, 0);
-	XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+	XtAddCallback(yn_dialog, XmNokCallback,
+		      SaveOptionsAndExitCB, client_data);
+	XtAddCallback(yn_dialog, XmNcancelCallback,
+		      closure, client_data);
+	XtAddCallback(yn_dialog, XmNhelpCallback,
+		      ImmediateHelpCB, 0);
 	XtManageChild(yn_dialog);
     }
     else
@@ -351,8 +359,8 @@ void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 					      "quit_dialog", args, arg));
     Delay::register_shell(yn_dialog);
-    XtAddCallback (yn_dialog, XmNokCallback,     _DDDExitCB, 0);
-    XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+    XtAddCallback(yn_dialog, XmNokCallback,   _DDDExitCB, client_data);
+    XtAddCallback(yn_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
     XtManageChild(yn_dialog);
 }
@@ -388,7 +396,7 @@ void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 					      "quit_dialog", args, arg));
     Delay::register_shell(yn_dialog);
-    XtAddCallback (yn_dialog, XmNokCallback,     _DDDExitCB, 0);
+    XtAddCallback (yn_dialog, XmNokCallback,     _DDDExitCB, client_data);
     XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
     XtManageChild(yn_dialog);
@@ -400,4 +408,12 @@ void gdb_eofHP(Agent *, void *, void *)
 {
     // Kill and exit
     gdb->terminate();
+}
+
+
+// GDB died
+void gdb_diedHP(Agent *gdb, void *, void *call_data)
+{
+    char *reason = (char *)call_data;
+    post_gdb_died(reason, gdb->lastStatus());
 }

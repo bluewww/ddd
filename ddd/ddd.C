@@ -232,14 +232,6 @@ char ddd_rcsid[] =
 #include <setjmp.h>
 #include <time.h>
 
-#ifndef EXIT_SUCCESS
-#define EXIT_SUCCESS 0
-#endif
-
-#ifndef EXIT_FAILURE
-#define EXIT_FAILURE 1
-#endif
-
 //-----------------------------------------------------------------------------
 // Forward function decls
 //-----------------------------------------------------------------------------
@@ -490,7 +482,7 @@ static MMDesc file_menu[] =
     MMSep,
     { "close",       MMPush, { DDDCloseCB }},
     { "restart",     MMPush, { DDDRestartCB }},
-    { "exit",        MMPush, { DDDExitCB }},
+    { "exit",        MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }},
     MMEnd
 };
 
@@ -1709,12 +1701,15 @@ int main(int argc, char *argv[])
     // Create GDB interface
     gdb = new_gdb(type, app_data, app_context, argc, argv);
     gdb->trace_dialog(app_data.trace_dialog);
+    defineConversionMacro("GDB", gdb->title());
 
     // Setup handlers
+    gdb->removeAllHandlers(Died);
     gdb->addHandler(ReadyForQuestion, gdb_ready_for_questionHP);
     gdb->addHandler(ReadyForCmd,      gdb_ready_for_cmdHP);
     gdb->addHandler(InputEOF,         gdb_eofHP);
     gdb->addHandler(ErrorEOF,         gdb_eofHP);
+    gdb->addHandler(Died,             gdb_diedHP);
     gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
     DataDisp::set_handlers();
 
