@@ -31,91 +31,21 @@
 # or send a mail to the DDD developers <ddd@gnu.org>.
 
 # -----------------------------------------------------------------------------
-# Settings.
+# General Settings.
 # -----------------------------------------------------------------------------
 
-# The build number.  (This must be set from outside)
-REL = 1
-
 # Various utilities.
-CAT = cat
-MV = mv
+CAT  = cat
+MV   = mv
 ECHO = echo
 GREP = grep
 DATE = date
-CMP = cmp
+CMP  = cmp
 
-# The fig2dev command.  (fig2dev)
-FIG2DEV = fig2dev
-FIG2PS = $(FIG2DEV) -L ps
-
-# Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
-PBMTOXBM   = pbmtoxbm
-PGMENHANCE = pgmenhance
-PGMTOPBM   = pgmtopbm
-PNMARITH   = pnmarith
-PNMCUT     = pnmcut
-PNMDEPTH   = pnmdepth
-PNMGAMMA   = pnmgamma
-PNMINVERT  = pnminvert
-PNMMARGIN  = pnmmargin
-PNMPASTE   = pnmpaste
-PNMTOPS    = pnmtops
-PPMTOPGM   = ppmtopgm
-PPMTOXPM   = ppmtoxpm
-XBMTOPBM   = xbmtopbm
-XPMTOPPM   = xpmtoppm
-
-# The ImageMagick `convert' program (convert)
-CONVERT    = convert
-
-# The image extension (.jpg, .png, or .gif)
-IMGEXT     = .jpg
-
-# The face-generating program from the `compface' package.  (xbm2xface.pl)
-XBM2XFACE  = xbm2xface.pl
-
-# The texi2pdf program.  (texi2pdf)
-TEXI2PDF = texi2dvi --pdf
-
-# The epstopdf program.  (epstopdf)
-# Available from http://www.tug.org/applications/pdftex/epstopdf
-EPSTOPDF = epstopdf
-
-# A compress command, reading from stdin and writing to stdout.  (gzip -c)
-COMPRESS = @COMPRESS@
-
-# An uncompress command, reading from stdin and writing to stdout.  (gunzip -c)
-UNCOMPRESS = @UNCOMPRESS@
-
-# The etags command.  (etags)
-ETAGS = etags --c++
-
-# The texi2html program.  (texi2html)
-TEXI2HTML = $(MAKEINFO) --html
-
-# Our suffixes
+# Suffixes used in this file.
 SUFFIXES = .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xbmxx .xpm .xpmxx \
 	   .xface .C~ .c~ .f .f~ .sh .sh~ .fig .eps .jpg .png .gif .pdf \
 	   $(IMGEXT)
-
-# Architecture (usually overridden by the top-level Makefile).
-
-# The host we were compiled on.  (CPU-COMPANY-SYSTEM)
-host_canonical = @host@
-
-# The target we were compiled for.  (CPU-COMPANY-SYSTEM)
-target_canonical = @host@
-
-# The flags we use to compile C++ files.
-# CXXOPT = -DNDEBUG -O2
-CXXOPT = @CXXOPT@
-# CXXDEBUG = -g
-CXXDEBUG = @CXXDEBUG@
-# CXXWARNINGS = -W -Wall
-CXXWARNINGS = @CXXWARNINGS@
-CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS)
-
 
 
 # -----------------------------------------------------------------------------
@@ -394,7 +324,7 @@ VSL_SOURCES = \
 
 # Graph structure, graph layout and graph editor widget
 # Top-level classes are `Graph', declared in `Graph.h'
-# and the `GraphEdit' widget, deckared in `GraphEdit.h'.
+# and the `GraphEdit' widget, declared in `GraphEdit.h'.
 GRAPH_SOURCES = \
 	ArcGraphE.C  \
 	ArcGraphE.h  \
@@ -641,10 +571,8 @@ DDD_SOURCES = \
 
 
 # -----------------------------------------------------------------------------
-# DDD Libraries.
+# Local Libraries.
 # -----------------------------------------------------------------------------
-
-# Local libraries.
 
 # POSIX regex routines (from system or ../librx/librx.a)
 # LIBRX      = @LIBRX@
@@ -671,7 +599,7 @@ LIBNSL     = @LIBNSL@
 NON_X_LIBS = @LIBS@
 
 # All libraries shown above
-DDD_LIBS = $(CXXLIBS) $(LIBREADLINE) $(LIBSOCKET) $(LIBNSL) $(LIBRX) \
+ALL_LIBS = $(CXXLIBS) $(LIBREADLINE) $(LIBSOCKET) $(LIBNSL) $(LIBRX) \
 	$(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM) $(LIBELF)
 
 
@@ -720,8 +648,17 @@ ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXP) $(LIBXPM) $(LIBXAW) $(LIBXEXT) \
 # Building DDD (and others).
 # -----------------------------------------------------------------------------
 
+# The flags we use to compile C++ files.
+# CXXOPT = -DNDEBUG -O2
+CXXOPT = @CXXOPT@
+# CXXDEBUG = -g
+CXXDEBUG = @CXXDEBUG@
+# CXXWARNINGS = -W -Wall
+CXXWARNINGS = @CXXWARNINGS@
+CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS)
+
 bin_PROGRAMS = ddd
-noinst_PROGRAMS = stringify userinfo ctest cxxtest
+noinst_PROGRAMS = stringify userinfo ctest cxxtest vsl
 ddd_SOURCES = ddd.C \
 	$(BASE_SOURCES) \
 	$(TEMPLATE_SOURCES) \
@@ -734,17 +671,28 @@ ddd_SOURCES = ddd.C \
 	$(DDD_SOURCES)
 
 stringify_SOURCES = stringify.C
-userinfo_SOURCES = userinfo.C
-ctest_SOURCES   = ctest.c
-cxxtest_SOURCES = cxxtest.C
+userinfo_SOURCES  = userinfo.C
+ctest_SOURCES     = ctest.c
+cxxtest_SOURCES   = cxxtest.C
+vsl_SOURCES       = vsl.C \
+	DocSpace.c \
+	DocSpace.h \
+	$(BASE_SOURCES) \
+	$(TEMPLATE_SOURCES) \
+	$(AGENT_SOURCES) \
+	$(XSTUFF_SOURCES) \
+	$(MSTUFF_SOURCES) \
+	$(BOX_SOURCES) \
+	$(VSL_SOURCES)
 
-ddd_LDADD = $(ALL_X_LIBS) $(DDD_LIBS) 
+ddd_LDADD = $(ALL_X_LIBS) $(ALL_LIBS) 
+vsl_LDADD = $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
 INCLUDES = -I$(srcdir)/.. $(X_INCLUDE)
 
 
 # -----------------------------------------------------------------------------
-# DDD App-Defaults.
+# DDD Applocation Defaults.
 # -----------------------------------------------------------------------------
 
 # The resource header and app-default files.
@@ -1278,8 +1226,46 @@ ddd.1:   ddd.man $(srcdir)/unumlaut.sed
 # DDD Manual Pictures.
 # -----------------------------------------------------------------------------
 
+# The image extension (.jpg, .png, or .gif)
+IMGEXT     = .jpg
+
 # Width of image in HTML manual (pixels)
 IMAGE_WIDTH = 600
+
+# Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
+PBMTOXBM   = pbmtoxbm
+PGMENHANCE = pgmenhance
+PGMTOPBM   = pgmtopbm
+PNMARITH   = pnmarith
+PNMCUT     = pnmcut
+PNMDEPTH   = pnmdepth
+PNMGAMMA   = pnmgamma
+PNMINVERT  = pnminvert
+PNMMARGIN  = pnmmargin
+PNMPASTE   = pnmpaste
+PNMTOPS    = pnmtops
+PPMTOPGM   = ppmtopgm
+PPMTOXPM   = ppmtoxpm
+XBMTOPBM   = xbmtopbm
+XPMTOPPM   = xpmtoppm
+
+# The ImageMagick `convert' program (convert)
+CONVERT    = convert
+
+# The face-generating program from the `compface' package.  (xbm2xface.pl)
+XBM2XFACE  = xbm2xface.pl
+
+# The epstopdf program.  (epstopdf)
+# Available from http://www.tug.org/applications/pdftex/epstopdf
+EPSTOPDF = epstopdf
+
+# The texi2pdf program.  (texi2pdf)
+TEXI2PDF = texi2dvi --pdf
+
+# The fig2dev command.  (fig2dev)
+FIG2DEV = fig2dev
+FIG2PS = $(FIG2DEV) -L ps
+
 
 # We use giftoppm/ppmtogif to get optimal GIF compression.
 .eps.gif:
@@ -1808,6 +1794,15 @@ $(picdir)/dddback.png: $(icondir)/dddback.xpm
 # Configuration.
 # -----------------------------------------------------------------------------
 
+# Architecture (usually overridden by the top-level Makefile).
+
+# The host we were compiled on.  (CPU-COMPANY-SYSTEM)
+host_canonical = @host@
+
+# The target we were compiled for.  (CPU-COMPANY-SYSTEM)
+target_canonical = @host@
+
+
 # Special rules for configuration.
 # autoheader might not change config.h.in
 stamp-h: config.h.in config.status
@@ -1845,6 +1840,9 @@ host.h: $(srcdir)/host.h.in config.status
 # -----------------------------------------------------------------------------
 # Distribution.
 # -----------------------------------------------------------------------------
+
+# The build number.  (This must be set from outside)
+REL = 1
 
 # RPM spec
 .PHONY:	spec
