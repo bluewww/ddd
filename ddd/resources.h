@@ -35,8 +35,11 @@
 
 #include <X11/Intrinsic.h>
 
+// DDD resource definitions
 extern XtResource ddd_resources[];
 extern const int ddd_resources_size;
+
+// Resources to use if `Ddd' app-defaults are not found
 extern String ddd_fallback_resources[];
 
 #endif // _DDD_resources_h

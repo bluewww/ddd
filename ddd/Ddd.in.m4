@@ -2800,16 +2800,10 @@ Ddd*XmPanedWindow.spacing:		4
 ! Motif 1.x, using ScrolledWindow
 Ddd*graph_edit_swindow.width:		622
 Ddd*graph_edit_swindow.height:		200
-Ddd*graph_edit_swindow.spacing:		0
-Ddd*graph_edit_swindow.borderWidth:	0
-Ddd*graph_edit_swindow.shadowThickness:	0
 
 ! Motif 2.0, using ScrolledWindow
 Ddd*graph_editSW.width:			622
 Ddd*graph_editSW.height:		200
-Ddd*graph_editSW.spacing:		0
-Ddd*graph_editSW.borderWidth:		0
-Ddd*graph_editSW.shadowThickness:	0
 
 ! Motif 1.x, using Porthole
 Ddd*graph_edit_porthole.width:		622
@@ -2818,6 +2812,14 @@ Ddd*graph_edit_porthole.height:		200
 ! Motif 2.0, using Porthole
 Ddd*graph_edit_form.width:		622
 Ddd*graph_edit_form.height:		200
+
+Ddd*graph_edit_swindow.spacing:		0
+Ddd*graph_edit_swindow.borderWidth:	0
+Ddd*graph_edit_swindow.shadowThickness:	0
+Ddd*graph_editSW.spacing:		0
+Ddd*graph_editSW.borderWidth:		0
+Ddd*graph_editSW.shadowThickness:	0
+
 
 Ddd*graph_edit_panner.backgroundPixmap:	25_foreground
 Ddd*graph_edit_panner.defaultScale:	10
@@ -4496,20 +4498,25 @@ To save the entire state without a core dump, click on LBL(Yes).
 ! Messages
 !-----------------------------------------------------------------------------
 
-! If we have an old app-defaults file installed, we probably 
-! won't see this warning.
+! If we have an old app-defaults file installed, we may see an old
+! version of this warning.  Gee, app-defaults files are plain just stupid.
 Ddd*bad_version_warning_popup.title: DDD: Version Mismatch
 Ddd*bad_version_warning*helpString:	\
 @rm This DDD version does not match the version of the\n\
 app-defaults file FILE([Ddd]) or your FILE(~/.[ddd]/init) file.\n\
 \n\
-Please install a recent app-defaults file, or better yet, remove it.\n\
-DDD works perfectly without app-defaults file.  Instead, use a personal\n\
-FILE(~/.[ddd]/init) file to customize DDD.\n\
+ITEM If the app-defaults file FILE([Ddd]) is out of date, DDD may not work as \
+expected.\n\
+    For instance, this message (being specified in an app-defaults file) may \
+be\n\
+    out of date.  Please install a recent app-defaults file, or better yet,\n\
+    remove it: DDD works perfectly without app-defaults file.  Instead, use \
+a\n\
+    personal FILE(~/.[ddd]/init) file to customize DDD.\n\
 \n\
-Saving the current state will update FILE(init) files.\n\
-To update your FILE(~/.[ddd]/init) file, use LBL(Edit) | LBL(Save Options).\n\
-To update a session FILE(init) file, use LBL(File) | LBL(Save Session).
+ITEM If your personal FILE(~/.[ddd]/init) file or some session \
+FILE(init) file is out of date,\n\
+    use LBL(Edit) | LBL(Save Options) to update it.
 
 Ddd*source_file_error_popup.title: DDD: No Source
 Ddd*source_file_error*helpString:	\

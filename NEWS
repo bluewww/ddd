@@ -16,6 +16,7 @@ DDD 2.2 [in beta test]
       * X11R6 sessions are supported, too.  When used with a
         session manager, DDD saves and restores its entire state.
     - Improved user interface.
+      * DDD now requires less width and height.
       * Source line numbers have been turned off (can be restored);
         the breakpoint area extends to the first non-blank character.
       * The `Disable ()' button for disabling displays has gone;
@@ -30,9 +31,6 @@ DDD 2.2 [in beta test]
         better clipboard operations.  For instance, you can now copy
         selected displays to the clipboard and paste them later.
       * Several buttons provide new pulldown menus with useful functions.
-      Due to the new layout, DDD now requires less width and height.
-      If you already have a `~/.dddinit' file, resize DDD manually and
-      save options.
     - Improved command tool.
       * The command tool is always auto-raised, i.e. placed on top of
         the DDD windows.
@@ -47,6 +45,9 @@ DDD 2.2 [in beta test]
       changed, and deleted at run-time.
     - Support for debugging processes running outside of DDD.  You can
       attach to a running process, examine it, and resume execution.
+    - Helper customization.  You can now interactively select and
+      customize the applications to be used for the execution window,
+      for editing source code, for browsing the DDD WWW page, etc.
     - Improved online manuals.
       * Multiple manual browsers are supported.
       * Manual browsers are realized as top-level windows.
@@ -91,9 +92,9 @@ DDD 2.2 [in beta test]
       (requires XPM; can be disabled)
     - During start-up, DDD shows a multi-color logo in a transient
       window. (requires XPM; can be disabled)
-    - Significant memory savings.  DDD regular expressions are now
-      compiled during DDD construction (instead of being compiled
-      during DDD execution).  DDD now typically requires 35% less memory.
+    - DDD now typically requires 35% less memory.  This was achieved
+      by compiling and optimizing DDD regular expressions at compile
+      time, rather than generating them at run time.
 
     Bug fixes:
     - DDD now runs on Linux with GNU libc 5.4.38 and later.
@@ -102,8 +103,8 @@ DDD 2.2 [in beta test]
     - DDD no longer hangs while receiving large chunks of data.
     - Significant speed-ups in processing debugger and program output.
     - Several memory leaks and X resource leaks have been tightened.
-    - DDD no longer requires the librx library.  Hence, librx errors
-      can no more cause DDD to crash.
+    - DDD no longer requires the librx library.  Consequently, librx
+      errors can no more cause DDD to crash.
     - A serious bug that caused timers to be inadvertently removed has
       been fixed.  Bug effects included loss of console cursor, loss
       of data display contents, and loss of scrolling capabilities.
