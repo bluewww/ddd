@@ -36,11 +36,13 @@ char fonts_rcsid[] =
 #include "fonts.h"
 
 #include "AppData.h"
+#include "DestroyCB.h"
 #include "LiterateA.h"
 #include "assert.h"
 #include "converters.h"
 #include "cook.h"
 #include "ddd.h"
+#include "events.h"
 #include "shell.h"
 #include "status.h"
 #include "strclass.h"
@@ -49,6 +51,8 @@ char fonts_rcsid[] =
 
 #include <ctype.h>
 #include <Xm/TextF.h>
+#include <Xm/Text.h>
+#include <Xm/PushB.h>
 
 
 //-----------------------------------------------------------------------------
@@ -451,6 +455,11 @@ void SetFontSizeCB(Widget w, XtPointer client_data, XtPointer)
 // Font browser
 //-----------------------------------------------------------------------------
 
+struct FontSelectInfo {
+    DDDFont font;
+    Widget text;
+};
+
 static void gdbDeleteFontSelectAgent(XtPointer client_data, XtIntervalId *)
 {
     // Delete agent after use
@@ -458,12 +467,17 @@ static void gdbDeleteFontSelectAgent(XtPointer client_data, XtIntervalId *)
     delete font_select_agent;
 }
 
-static void DeleteAgentHP(Agent *agent, void *, void *)
+static void DeleteAgentHP(Agent *agent, void *client_data, void *)
 {
+    FontSelectInfo *info = (FontSelectInfo *)client_data;
+
     // Agent has died -- delete it
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
 		    gdbDeleteFontSelectAgent, 
 		    XtPointer(agent));
+
+    // Destroy the text
+    DestroyWhenIdle(info->text);
 }
 
 static void FontSelectionErrorHP(Agent *, void *, void *call_data)
@@ -473,10 +487,24 @@ static void FontSelectionErrorHP(Agent *, void *, void *call_data)
     post_warning(string(input->data, input->length), "font_selector_warning");
 }
 
+
+static void process_font(DDDFont font, string fontspec)
+{
+    string sz = component(fontspec, PointSize);
+    if (sz != "*")
+	set_font_size(font, atoi(sz));
+
+    fontspec.gsub('*', ' ');
+    set_font(font, simplify_font(font, make_font(font, fontspec)));
+
+    update_options();
+}
+
+// Handle `Quit' button in xfontsel
 static void FontSelectionDoneHP(Agent *agent, void *client_data, 
 				void *call_data)
 {
-    DDDFont font = (DDDFont)client_data;
+    FontSelectInfo *info = (FontSelectInfo *)client_data;
 
     // Fetch string from font selector
     DataLength *d = (DataLength *)call_data;
@@ -490,19 +518,71 @@ static void FontSelectionDoneHP(Agent *agent, void *client_data,
 	return;
     }
 
-    string sz = component(fontspec, PointSize);
-    if (sz != "*")
-	set_font_size(font, atoi(sz));
-
-    fontspec.gsub('*', ' ');
-    set_font(font, simplify_font(font, make_font(font, fontspec)));
-
-    update_options();
+    process_font(info->font, fontspec);
 }
 
-// Browse fonts
-void BrowseFontCB(Widget w, XtPointer client_data, XtPointer)
+
+static void GotSelectionCB(Widget w, XtPointer client_data,
+			   Atom *, Atom *type, XtPointer value,
+			   unsigned long *length, int *format)
 {
+    FontSelectInfo *info = (FontSelectInfo *)client_data;
+
+    if (*type == None)
+	return;			// Could not fetch selection
+
+    if (*type != XA_STRING)
+    {
+	XtFree((char *)value);
+	return;			// Not a string
+    }
+
+    if (*format != 8)
+    {
+	XtFree((char *)value);
+	return;			// No 8-bit-string
+    }
+
+    string s((String)value, *length);
+    if (s.contains('\0'))
+	s = s.before('\0');
+    XtFree((char *)value);
+
+    if (s.contains("-", 0) && !s.contains('\n') && 
+	s.freq('-') == AllComponents)
+    {
+	process_font(info->font, s);
+    }
+
+    XmTextSetString(w, (String)s);
+
+    // Get the selection again.
+    // This will fail if we have multiple font selectors (FIXME).
+    XmTextSetSelection(w, 0, s.length(), 
+		       XtLastTimestampProcessed(XtDisplay(w)));
+}
+
+// Handle `Select' button in xfontsel
+static void SelectionLostCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
+{
+    FontSelectInfo *info = (FontSelectInfo *)client_data;
+    assert(info->text == w);
+
+    XtGetSelectionValue(w, XA_PRIMARY, XA_STRING, GotSelectionCB,
+			XtPointer(info), 
+			XtLastTimestampProcessed(XtDisplay(w)));
+}
+
+
+// Browse fonts
+void BrowseFontCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    Time tm = CurrentTime;
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs && cbs->event)
+	tm = time(cbs->event);
+
     DDDFont font = (DDDFont)client_data;
 
     StatusDelay delay("Invoking " + font_type(font) + " selector");
@@ -514,16 +594,28 @@ void BrowseFontCB(Widget w, XtPointer client_data, XtPointer)
     cmd.gsub("@TYPE@", type);
     cmd = sh_command(cmd, true);
 
+    // Create a TextField to fetch the selection
+    FontSelectInfo *info = new FontSelectInfo;
+    info->text = XmCreateText(XtParent(w), "text", 0, 0);
+    info->font = font;
+
+    XtRealizeWidget(info->text);
+
+    string text = "dummy";
+    XmTextSetString(info->text, (String)text);
+    XmTextSetSelection(info->text, 0, text.length(), tm);
+    XtAddCallback(info->text, XmNlosePrimaryCallback, 
+		  SelectionLostCB, XtPointer(info));
+
     // Invoke a font selector
     LiterateAgent *font_select_agent = 
 	new LiterateAgent(XtWidgetToApplicationContext(w), cmd);
     font_select_agent->removeAllHandlers(Died);
-    font_select_agent->addHandler(Died, DeleteAgentHP);
+    font_select_agent->addHandler(Died,
+				  DeleteAgentHP, (void *)info);
     font_select_agent->addHandler(Input,
-				  FontSelectionDoneHP, 
-				  (void *)font);
+				  FontSelectionDoneHP, (void *)info);
     font_select_agent->addHandler(Error,
-				  FontSelectionErrorHP, 
-				  (void *)font);
+				  FontSelectionErrorHP, (void *)info);
     font_select_agent->start();
 }
