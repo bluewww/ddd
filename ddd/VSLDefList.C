@@ -187,6 +187,7 @@ VSLDefList::~VSLDefList()
 // Representation invariant
 bool VSLDefList::OK() const
 {
+#if !NDEBUG
     VSLDef *d = _first;
     unsigned count = 0;
 
@@ -202,7 +203,7 @@ bool VSLDefList::OK() const
     assert (count == _ndefs);
     assert (last_d == _last);
 
-    // Check whether Pointer to DefList is ok
+    // Check whether pointer to DefList is ok
     d = _first;
     while (d != 0)
     {
@@ -213,6 +214,8 @@ bool VSLDefList::OK() const
     // Check whether defs are ok
     for (d = _first; d != 0; d = d->listnext())
 	assert (d->OK());
+
+#endif
 
     return true;
 }

@@ -3,6 +3,7 @@
 
 /*
  * Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+ * Copyright (C) 2000 Universitaet Passau, Germany.
  * Written by Andreas Zeller <zeller@gnu.org>.
  * 
  * This file is part of DDD.
@@ -190,6 +191,7 @@ void array_test ()
     static char* twodim [2][3] = {{ "Pioneering", "women", "in"},
 				  { "computer", "science", "!"}};
 
+
     Date dates[4];
     Date* date_ptrs[4];
     date_ptrs[0] = new_date (Thu, 1, 9, 1994);
@@ -202,6 +204,10 @@ void array_test ()
 	dates[i] = *date_ptrs[i];
 	free_date(date_ptrs[i]);
     }
+
+    (void) twodim;		/* Display this */
+    (void) days_of_week;	/* Display this */
+    (void) dates;		/* Display this */
 }
 
 /*--------------------------------------------------------------------------*/
@@ -209,8 +215,8 @@ void array_test ()
 void type_test ()
 {
     Holiday holiday;
-    Date* date = new_date(Sat, 24, 12, 1994);
-    void* voidptr = date;
+    Date *date = new_date(Sat, 24, 12, 1994);
+    void *voidptr = date;
 
     struct Uni {
 	int ii;
@@ -223,6 +229,12 @@ void type_test ()
     float f  = 0.0;
     double d = 0.0;
     char sc  = 'a';
+
+    (void) voidptr;		/* Dereference this */
+    (void) uni;			/* Display this */
+    (void) f;
+    (void) d;
+    (void) sc;
 
     set_holiday(&holiday, Sat, 31, 12, 1994, "May all acquaintance be forgot");
 

@@ -1045,8 +1045,11 @@ static XEvent last_push_menu_event; // Just save it
 static void CancelPopupPushMenuCB(Widget w, XtPointer client_data, 
 				  XtPointer call_data)
 {
+    (void) call_data;		// Use it
+
+#if LOG_PUSH_MENUS
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
-    (void) cbs;			// Use it
+#endif
 
     PushMenuInfo *info = (PushMenuInfo *)client_data;
 

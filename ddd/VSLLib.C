@@ -867,6 +867,7 @@ void VSLLib::dumpTree(ostream& s) const
 // Representation invariant
 bool VSLLib::OK() const
 {
+#if !NDEBUG
     // Loop #1: over hash table
     for (int i = 0; i < hashSize; i++)
 	for (VSLDefList *dl = defs[i]; dl != 0; dl = dl->next())
@@ -888,6 +889,7 @@ bool VSLLib::OK() const
     }
 
     assert (_last == last_d);
+#endif
 
     return true;
 }

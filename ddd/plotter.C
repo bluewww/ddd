@@ -726,9 +726,10 @@ static void GetPlotHP(Agent *, void *client_data, void *call_data)
 
 static void PlotterNotFoundHP(Agent *plotter, void *client_data, void *)
 {
+#if !NDEBUG
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
-    (void) plot;		// Use it
     assert(plot->plotter == 0 || plot->plotter == plotter);
+#endif
 
     plotter->removeHandler(Died, PlotterNotFoundHP, client_data);
 
