@@ -201,6 +201,15 @@ void array_test()
 	reference_test(*date_ptr, date_ptrs[k]);
 	a_global = k;
     }
+
+    // A `repeat' test.
+    static int *ar[100];
+    static int 	ir[100];
+
+    ar[1]  = &ir[1];	ir[1]  = 1;
+    ar[50] = &ir[50];	ir[50] = 50;
+    ar[51] = &ir[51];	ir[51] = 51;
+    ar[99] = &ir[99];	ir[99] = 99;
 }
 
 //--------------------------------------------------------------------------
