@@ -612,12 +612,9 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	tip = gdbTip(help_name);
     if (tip == NO_GDB_ANSWER)
 	tip = gdbHelp(help_name);
+
     if (tip == NO_GDB_ANSWER)
 	return MString(0, true);
-
-    // Sun DBX 3.2 sometimes forgets the newline after the 80th character
-    if (tip.length() > 80)
-	tip = tip.before(80);
 
     strip_leading_space(tip);
     if (tip.contains(help_name, 0))
@@ -641,6 +638,37 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     }
 
     tip = tip.from(rxalpha);
+
+    // Avoid giving help like `step <count>' on `step'.  This happens
+    // with AIX DBX, where the help looks like
+    // "run [<arguments>] [< <filename>] [> <filename>] \n"
+    // "                    [>> <filename>] [>! <filename>] \n"
+    // "                    [2> <filename>] [2>> <filename>] \n"
+    // "                    [>& <filename>] [>>& <filename>] \n"
+    // "\tStart executing the object file, passing arguments as\n"
+    // "\tcommand line arguments [...]"
+
+    if (tip.contains(help_name, 0) || tip.contains('<') || tip.contains('>'))
+    {
+	string new_tip = tip.from(rxuppercase);
+	new_tip.gsub('\n', ' ');
+	new_tip.gsub('\t', ' ');
+	new_tip.gsub("  ", " ");
+
+	if (new_tip.contains('.'))
+	    new_tip = new_tip.before('.');
+	if (new_tip.contains(';'))
+	    new_tip = new_tip.before(';');
+
+	// Trim AIX `down' help
+	new_tip.gsub(", which is used for resolving names,", "");
+
+	if (new_tip.length() > 0)
+	    tip = new_tip;
+    }
+
+    strip_space(tip);
+
     if (tip.length() > 0)
 	tip = toupper(tip[0]) + tip.after(0);
 
@@ -648,6 +676,12 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	tip = tip.before('\n');
     if (tip.contains('.'))
 	tip = tip.before('.');
+    if (tip.contains(';'))
+	tip = tip.before(';');
+
+    // Sun DBX 3.2 sometimes forgets the newline after the 80th character
+    if (tip.length() > 80)
+	tip = tip.before(80);
 
     return rm(tip);
 }
