@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Interpret GDB output
+// Show messages in status line
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -274,6 +274,111 @@ Widget status_history(Widget parent)
     return history_shell;
 }
 
+static bool is_prefix(char *s1, char *s2)
+{
+    while (*s1 != '\0' && *s1 == *s2)
+	s1++, s2++;
+    return *s1 == '\0';
+}
+
+
+// Return true iff S1 is a prefix of S2
+static bool is_prefix(const MString& m1, const MString& m2)
+{
+    XmString s1 = m1.xmstring();
+    XmString s2 = m2.xmstring();
+
+    XmStringContext c1;
+    XmStringContext c2;
+
+    XmStringInitContext(&c1, s1);
+    XmStringInitContext(&c2, s2);
+
+    XmStringComponentType t1 = XmSTRING_COMPONENT_UNKNOWN;
+    XmStringComponentType t2 = XmSTRING_COMPONENT_UNKNOWN;
+
+    while (t1 != XmSTRING_COMPONENT_END && t2 != XmSTRING_COMPONENT_END)
+    {
+	char *text1              = 0;
+	XmStringCharSet cs1      = 0;
+	XmStringDirection d1     = XmSTRING_DIRECTION_DEFAULT;
+	XmStringComponentType u1 = XmSTRING_COMPONENT_UNKNOWN;
+	unsigned short ul1       = 0;
+	unsigned char *uv1       = 0;
+	
+	t1 = XmStringGetNextComponent(c1, &text1, &cs1, &d1, &u1, &ul1, &uv1);
+
+	char *text2              = 0;
+	XmStringCharSet cs2      = 0;
+	XmStringDirection d2     = XmSTRING_DIRECTION_DEFAULT;
+	XmStringComponentType u2 = XmSTRING_COMPONENT_UNKNOWN;
+	unsigned short ul2       = 0;
+	unsigned char *uv2       = 0;
+
+	t2 = XmStringGetNextComponent(c2, &text2, &cs2, &d2, &u2, &ul2, &uv2);
+
+	if (t1 != t2)
+	    break;
+
+	switch (t1)
+	{
+	case XmSTRING_COMPONENT_CHARSET:
+	{
+	    int diff = strcmp(cs1, cs2);
+	    XtFree(cs1);
+	    XtFree(cs2);
+	    if (diff)
+		goto done;	// Differing character sets
+	    break;
+	}
+
+	case XmSTRING_COMPONENT_TEXT:
+#if XmVersion >= 1002
+	case XmSTRING_COMPONENT_LOCALE_TEXT:
+#endif
+#if XmVersion >= 2000
+	case XmSTRING_COMPONENT_WIDECHAR_TEXT:
+#endif
+	{
+	    bool is_pfx = is_prefix(text1, text2);
+	    XtFree(text1);
+	    XtFree(text2);
+	    if (!is_pfx)
+		goto done;
+	    XmStringComponentType next2 = XmStringPeekNextComponent(c2);
+	    if (next2 != XmSTRING_COMPONENT_END)
+		goto done;
+	    break;
+	}
+
+	case XmSTRING_COMPONENT_DIRECTION:
+	{
+	    if (d1 != d2)
+		goto done;
+	    break;
+	}
+
+	case XmSTRING_COMPONENT_SEPARATOR:
+	case XmSTRING_COMPONENT_END:
+	{
+	    // These are the same by definition
+	    break;
+	}
+
+	default:
+	{
+	    break;		// Skip everything else
+	}
+	}
+    }
+ done:
+
+    XmStringFreeContext(c2);
+    XmStringFreeContext(c1);
+
+    return t1 == XmSTRING_COMPONENT_END;
+}
+
 static void add_to_status_history(const MString& message)
 {
     static MString empty = rm(" ");
@@ -286,8 +391,12 @@ static void add_to_status_history(const MString& message)
 
     if (message.isNull() || message.isEmpty() || message == empty)
 	return;
-    if (message == history[last_history])
+
+    if (is_prefix(history[last_history], message))
+    {
+	history[last_history] = message;
 	return;
+    }
 
     history[current_history] = message;
     current_history = (current_history + 1) % status_history_size;
