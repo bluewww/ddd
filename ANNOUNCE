@@ -106,9 +106,9 @@ DDD News
       C++ compilers included.  Thanks to Jacek Holeczek
       <holeczek@clri6f.gsi.de> and Jason Merrill <jason@cygnus.com>.
     - DDD now compiles and runs unchanged with LessTif, a free Motif
-      clone under construction.  Note that `runs' is relative: As of
-      LessTif 0.50, DDD is still far from being usable.  This will
-      change as LessTif evolves.
+      clone under construction.  As of LessTif 0.75a, DDD is already 
+      quite usable.  The few remaining problems will be fixed as 
+      LessTif evolves.
 
     Bug fixes:
     - Improved directory support.  Sources and executables can reside
@@ -203,9 +203,10 @@ Requirements
          results are achieved using Motif 2.0 in conjunction with the
          Athena Widget library.
 
-	 DDD also compiles with LessTif, a free Motif clone.  But as
-	 of LessTif 0.50, the resulting DDD executable is far from
-	 being usable.  This will change as LessTif evolves.
+	 DDD also compiles and runs with LessTif, a free Motif clone.
+	 As of LessTif 0.75a, the resulting DDD executable is already
+	 quite usable.  See the file `LESSTIF-BUGS' for a recent list
+	 of problems and fixes.
 
        * Optionally, in addition to the OSF/Motif widget library, the
          Athena Widget library (release 5 or later).  Having the
