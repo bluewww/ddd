@@ -13,32 +13,44 @@ To build a complete DDD from sources, you need:
    * The GNU C++ compiler (2.7.2 or later), including a matching
      C++ I/O runtime library (libstdc++ or libg++).
 
-     Some other C++ compilers have been reported to compile DDD as
-     well.  Good results have been reported with Sun CC 4.0.  SGI CC
-     and AIX xlC are not recommended - they compile DDD, but introduce
-     some subtle errors.  Cfront 3.0 does not compile DDD.
-     In doubt, GCC is preferred.
+     Some other C++ compilers have been reported to compile DDD as well:
 
-   * A Motif Widget library, either LessTif (0.86 or later) or
-     OSF/Motif (1.2 or later).  See the DDD WWW site and the
-     `patches/' directory for useful LessTif patches.  The most recent
-     LessTif release is available at `http://www.lesstif.org/'.
+     - Sun CC: safe.
+     - SGI CC: safe if full ISO C++ is supported (including `bool').
+               Earlier versions are unsafe: DDD may compile, but
+               crashes after a few interactions.
+     - AIX xlC: unsafe. Introduces some minor errors.
+     - Cfront 3.0: unsafe. Does not compile DDD.
+
+     To avoid any risks, we strongly recommend to use the GNU C++ compiler.
+
+   * A Motif Widget library.  Either
+
+     - LessTif, 0.86 or later, or
+     - OSF/Motif (1.2 or later).
+
+     Best results are obtained with OSF/Motif 2.0 and later.  We
+     recommend to use OSF/Motif or the most recent LessTif release,
+     available from `http://www.lesstif.org/'.
 
    * The X window library (Xlib) and X toolkit library (Xt), X11R4 or
      later.  Best results are obtained with X11R6.3 and later.
 
-   * A `make' program.  GNU make is recommended.
+   * A `make' program.  We recommend GNU make.
+
+   * On Windows, you'll need a compatibility library.  We recommend
+     the CYGWIN library from `http://sourceware.cygnus.com/cygwin/'.
 
 
-The following packages are recommended, but not required:
+We also recommend the following (optional) packages:
 
    * The XPM library (3.2 or later).  The XPM library brings support
      for multi-color icons and logos.  Without XPM, DDD will use
      monochrome icons.
 
    * The Athena Widget library (from X11R5 or later).  Having the
-     Athena Widget library is convenient for supporting panners -
-     a kind of two-dimensional scrollbar.
+     Athena Widget library is convenient for supporting panners - a
+     kind of two-dimensional scrollbar.
 
 
 
@@ -49,36 +61,41 @@ To run DDD, you need:
 
    * An X server.  Without X, DDD does not run.
 
-   * An inferior command-line debugger.
+     If you are running a UNIX system, you certainly have X.  For
+     Windows systems, free X servers are available.  See the DDD FAQ
+     under `http://www.cs.tu-bs.de/softech/ddd/' for useful links.
 
-     To debug binary executables, best results are achieved with GDB,
-     the GNU debugger.  (GDB 4.x is required; GDB 4.17 or later is
-     recommended.)  Using GDB, you can debug programs written in C,
-     C++, GNU Java (`guavac'), GNU Ada (`gnat'), GNU Fortran (`g77')
-     and GNU Modula-2.
+   * A command-line debugger (the so-called `inferior' debugger).
 
-     As an alternative to GDB, DDD also supports the DBX debugger as
-     found on SUN, DEC, AIX, and IRIX systems.  Using DBX, you can
-     debug programs written in C, C++, Pascal, Fortran, and Modula-2.
-     DDD adapts automatically to a wide range of other DBX variants.
+     - To debug binary executables, best results are achieved with
+       GDB, the GNU debugger.  (GDB 4.x is required; we recommend GDB
+       4.17 or later.)  Using GDB, you can debug programs written in
+       C, C++, GNU Java (`guavac'), GNU Ada (`gnat'), GNU Fortran
+       (`g77') and GNU Modula-2.
 
-     As another alternative, DDD also supports the XDB debugger as
-     found on HP-UX systems.  XDB usage has been tested for C programs
-     only, but may work for other languages as well. (*)
+     - As an alternative to GDB, DDD also supports the DBX debugger as
+       found on SUN, DEC, AIX, and IRIX systems.  Using DBX, you can
+       debug programs written in C, C++, Pascal, Fortran, and
+       Modula-2.  DDD adapts automatically to a wide range of other
+       DBX variants.
 
-     To debug Java bytecode programs, DDD supports JDB, the Java
-     Debugger, as of JDK 1.1 and later.
+     - As another alternative, DDD also supports the XDB debugger as
+       found on HP-UX systems.  XDB usage has been tested for C
+       programs only, but may work for other languages as well.
 
-     To debug Python programs, DDD supports PYDB, a PDB extension.
-     PYDB is included in the DDD distribution.
+       XDB will no longer be supported in future DDD releases.  You
+       can use HP's Wildebeest (WDB) instead, a free GDB port to HP-UX
+       (`http://www.hp.com/lang/tools/Debuggers/WDB/').  Please let us
+       know your experiences with DDD and WDB.
 
-     To debug Perl programs, DDD supports the Perl debugger as of Perl
-     5.003 and later.
+     - To debug Java bytecode programs, DDD supports JDB, the Java
+       Debugger, as of JDK 1.1 and later.
 
-     (*) XDB will no longer be supported in future DDD releases.
-         You can use HP's Wildebeest (WDB) instead, a free GDB port to
-         HP-UX (`http://www.hp.com/lang/tools/Debuggers/WDB/').
-         Please let us know your experiences with DDD and WDB.
+     - To debug Python programs, DDD supports PYDB, a PDB extension.
+       PYDB is included in the DDD distribution.
+
+     - To debug Perl programs, DDD supports the Perl debugger as of Perl
+       5.003 and later.
 
 
 The following recommended helper applications should be in the user path:

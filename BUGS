@@ -129,7 +129,7 @@ Volunteers for fixing these and other bugs are welcome!
 311 After `next 4' on Solaris DBX, the current position is not
     highlighted.
 
-316*Alias hints of clustered displays remain in place.
+316 Alias hints of clustered displays remain in place.
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 342 (Gnuplot/xlib) Using the builtin plot window, the plot points of
@@ -138,4 +138,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 352 Avoid multiple debug windows (for debugging DDD).
 
-353 (Insert new bugs here)
+353 (Automake) The `configure' script checks for `__CYGWIN32__', but
+    as of Beta 20, this should be `__CYGWIN__'.
+
+354 (Insert new bugs here)
