@@ -44,23 +44,29 @@ public:
     DECLARE_TYPE_INFO;
 
 protected:
-    // Find line between b1 and b2 in p1/p2
-    static void findLine(BoxPoint& c1, BoxPoint& c2, 
-			 BoxRegion& b1, BoxRegion& b2,
+    // Find line from region B1 centered around C1 to region B2 centered
+    // around C2.  Resulting line shall be drawn from P1 to P2.
+    static void findLine(const BoxPoint& c1, const BoxPoint& c2, 
+			 const BoxRegion& b1, const BoxRegion& b2,
 			 BoxPoint& p1, BoxPoint& p2, 
 			 const GraphGC& gc);
 
-    // Draw
+    // Draw.
     virtual void _draw(Widget w, 
 		       const BoxRegion& exposed, 
 		       const GraphGC& gc) const;
 
-    // Draw self edge
+    // Draw line.
+    virtual void drawLine(Widget w,
+			  const BoxRegion& exposed,
+			  const GraphGC& gc) const;
+
+    // Draw self edge.
     virtual void drawSelf(Widget w,
 			  const BoxRegion& exposed,
 			  const GraphGC& gc) const;
 
-    // Draw arrow head at POS
+    // Draw arrow head at POS.
     virtual void drawArrowHead(Widget w,
 			       const BoxRegion& exposed,
 			       const GraphGC& gc,
@@ -73,15 +79,18 @@ protected:
     {}
 
 private:
-    // Clip point P to side SIDE of region B
-    static void moveToSide  (BoxRegion& b, int side, BoxPoint& p, BoxPoint& c);
+    // Clip point P to side SIDE of region B.
+    static void moveToSide  (const BoxRegion& b, int side,
+			     BoxPoint& p, const BoxPoint& c);
 
-    // Clip point P to side SIDE of region B centered around C
-    static void clipToSide  (BoxRegion& b, int side, BoxPoint& p, BoxPoint& c);
+    // Clip point P to side SIDE of region B centered around C.
+    static void clipToSide  (const BoxRegion& b, int side,
+			     BoxPoint& p, const BoxPoint& c);
 
-    // Clip point P to side SIDE of region B centered around C;
-    // Assume that B contains a circle
-    static void clipToCircle(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c);
+    // Clip point P to side SIDE of region B centered around C.  Assume
+    // that B contains a circle.
+    static void clipToCircle(const BoxRegion& b, int side, 
+			     BoxPoint& p, const BoxPoint& c);
 
 public:
     // Constructor

@@ -50,10 +50,11 @@ char LineGraphEdge_rcsid[] =
 
 DEFINE_TYPE_INFO_1(LineGraphEdge, GraphEdge)
 
-// find the points to draw line at
+// Find the points to draw line at
 
-// Clip point <p> to side <side> of region <b>
-void LineGraphEdge::moveToSide(BoxRegion& b, int side, BoxPoint& p, BoxPoint&)
+// Clip point P to side SIDE of region B.
+void LineGraphEdge::moveToSide(const BoxRegion& b, int side, 
+			       BoxPoint& p, const BoxPoint&)
 {
     assert(side == North || side == South || side == East || side == West);
 
@@ -76,9 +77,9 @@ void LineGraphEdge::moveToSide(BoxRegion& b, int side, BoxPoint& p, BoxPoint&)
 }
 
 
-// Clip point <p> to side <side> of region <b> centered around <c>
-void LineGraphEdge::clipToSide(BoxRegion& b, int side, 
-			       BoxPoint& p, BoxPoint& c)
+// Clip point P to side SIDE of region B centered around C.
+void LineGraphEdge::clipToSide(const BoxRegion& b, int side, 
+			       BoxPoint& p, const BoxPoint& c)
 {
     assert(side == North || side == South || side == East || side == West);
 
@@ -102,10 +103,10 @@ void LineGraphEdge::clipToSide(BoxRegion& b, int side,
 }
 
 
-// Clip point <p> to side <side> of region <b> centered around <c>
-// Assume that b contains a circle
-void LineGraphEdge::clipToCircle(BoxRegion& b, int /* side */, 
-				 BoxPoint& p, BoxPoint& c)
+// Clip point P to side SIDE of region B centered around C.  Assume
+// that B contains a circle.
+void LineGraphEdge::clipToCircle(const BoxRegion& b, int /* side */, 
+				 BoxPoint& p, const BoxPoint& c)
 {
     // assert(side == North || side == South || side == East || side == West);
 
@@ -119,11 +120,10 @@ void LineGraphEdge::clipToCircle(BoxRegion& b, int /* side */,
     }
 }
 
-// Find line from region <b1> centered around <c1>
-// to region <b2> centered around <c2>
-// Resulting line shall be drawn from <p1> to <p2>
-void LineGraphEdge::findLine(BoxPoint& c1, BoxPoint& c2,
-			     BoxRegion& b1, BoxRegion& b2, 
+// Find line from region B1 centered around C1 to region B2 centered
+// around C2.  Resulting line shall be drawn from P1 to P2
+void LineGraphEdge::findLine(const BoxPoint& c1, const BoxPoint& c2,
+			     const BoxRegion& b1, const BoxRegion& b2, 
 			     BoxPoint& p1, BoxPoint& p2, 
 			     const GraphGC& gc)
 {
@@ -152,7 +152,8 @@ void LineGraphEdge::findLine(BoxPoint& c1, BoxPoint& c2,
     p2 = c2;
 
     // Select appropriate clipping procedure
-    typedef void (*ClipProc)(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c);
+    typedef void (*ClipProc)(const BoxRegion& b, int side,
+			     BoxPoint& p, const BoxPoint& c);
 
     struct ClipMapRec {
 	EdgeAttachMode mode;
@@ -187,11 +188,15 @@ void LineGraphEdge::_draw(Widget w,
 			  const GraphGC& gc) const
 {
     if (from() == to())
-    {
 	drawSelf(w, exposed, gc);
-	return;
-    }
+    else
+	drawLine(w, exposed, gc);
+}
 
+void LineGraphEdge::drawLine(Widget w, 
+			     const BoxRegion& exposed, 
+			     const GraphGC& gc) const
+{
     // Get node starting points
     BoxPoint pos1     = from()->pos();
     BoxRegion region1 = from()->region(gc);
@@ -278,7 +283,6 @@ void LineGraphEdge::drawSelf(Widget w,
 	region.origin() += gc.offsetIfSelected;
 
     // Draw arc
-
     Dimension diameter = gc.selfEdgeDiameter;
 
     // Make sure edge is still attached to node
