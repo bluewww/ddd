@@ -445,6 +445,11 @@ int compare(const string& x, const char* b)
     return scmp(x.chars(), b);
 }
 
+int compare(const char *x, const string& y)
+{
+    return scmp(x, y.chars());
+}
+
 int compare(const string& x, const string& y)
 {
     return scmp(x.chars(), y.chars());
@@ -465,19 +470,34 @@ int compare(const subString& x, const subString& y)
     return ncmp(x.chars(), x.length(), y.chars(), y.length());
 }
 
-int compare(const subString& x, const char* b)
+int compare(const subString& x, const char* y)
 {
-    if (b == 0)
+    if (y == 0)
 	return x.length();
     else
     {
 	const char* a = x.chars();
 	int n = x.length();
 	signed char diff;
-	while (n-- > 0) if ((diff = *a++ - *b++) != 0) return diff;
-	return (*b == 0) ? 0 : -1;
+	while (n-- > 0) if ((diff = *a++ - *y++) != 0) return diff;
+	return (*y == 0) ? 0 : -1;
     }
 }
+
+int compare(const char *x, const subString& y)
+{
+    if (x == 0)
+	return y.length();
+    else
+    {
+	const char* a = y.chars();
+	int n = y.length();
+	signed char diff;
+	while (n-- > 0) if ((diff = *x++ - *a++) != 0) return diff;
+	return (*x == 0) ? 0 : -1;
+    }
+}
+
 
 /*
  index fcts

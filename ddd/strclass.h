@@ -766,12 +766,15 @@ typedef string strTmp; // for backward compatibility
 
 // other externs
 
-int compare(const string& x, const string& y);
-int compare(const string& x, const subString& y);
-int compare(const string& x, const char* y);
+int compare(const string& x,    const string& y);
+int compare(const string& x,    const subString& y);
+int compare(const string& x,    const char* y);
 int compare(const subString& x, const string& y);
 int compare(const subString& x, const subString& y);
 int compare(const subString& x, const char* y);
+int compare(const char *x,      const string& y);
+int compare(const char *x,      const subString& y);
+
 int fcompare(const string& x, const string& y); // ignore case
 
 extern strRep  _nilstrRep;
@@ -1607,14 +1610,24 @@ inline subString string::through(char* t, int startpos)
     return through((const char *)t, startpos);
 }
 
-inline int compare(const subString& x, char* b)
+inline int compare(const subString& x, char* y)
 {
-    return compare(x, (const char*)b);
+    return compare(x, (const char*)y);
 }
 
-inline int compare(const string& x, char* b)
+inline int compare(const string& x, char* y)
 {
-    return compare(x, (const char*)b);
+    return compare(x, (const char*)y);
+}
+
+inline int compare(char *x, const subString& y)
+{
+    return compare((const char*)x, y);
+}
+
+inline int compare(char *x, const string& y)
+{
+    return compare((const char*)x, y);
 }
 
 
@@ -1630,251 +1643,42 @@ inline ostream& operator<<(ostream& s, const subString& x)
     s.write(x.chars(), x.length()); return s;
 }
 
-// a zillion comparison operators
+// A zillion comparison operators - for every combination of char *,
+// const char *, string, and subString.
+#define string_COMPARE(op, t1, t2) \
+inline int operator op(t1 x, t2 y) \
+{ \
+    return compare(x, y) op 0; \
+};
 
-inline int operator==(const string& x, const string& y) 
-{
-    return compare(x, y) == 0; 
-}
+#define string_COMPARE_ALL(t1, t2) \
+string_COMPARE(==, t1, t2) \
+string_COMPARE(!=, t1, t2) \
+string_COMPARE(<,  t1, t2) \
+string_COMPARE(>,  t1, t2) \
+string_COMPARE(<=, t1, t2) \
+string_COMPARE(>=, t1, t2)
 
-inline int operator!=(const string& x, const string& y)
-{
-    return compare(x, y) != 0; 
-}
+string_COMPARE_ALL(const string&, const string&)
+string_COMPARE_ALL(const string&, const subString&)
+string_COMPARE_ALL(const string&, const char *)
+string_COMPARE_ALL(const string&, char *)
 
-inline int operator>(const string& x, const string& y)
-{
-    return compare(x, y) > 0; 
-}
+string_COMPARE_ALL(const subString&, const string&)
+string_COMPARE_ALL(const subString&, const subString&)
+string_COMPARE_ALL(const subString&, const char *)
+string_COMPARE_ALL(const subString&, char *)
 
-inline int operator>=(const string& x, const string& y)
-{
-    return compare(x, y) >= 0; 
-}
+string_COMPARE_ALL(const char *, const string&)
+string_COMPARE_ALL(const char *, const subString&)
 
-inline int operator<(const string& x, const string& y)
-{
-    return compare(x, y) < 0; 
-}
+string_COMPARE_ALL(char *, const string&)
+string_COMPARE_ALL(char *, const subString&)
 
-inline int operator<=(const string& x, const string& y)
-{
-    return compare(x, y) <= 0; 
-}
+#undef string_COMPARE
+#undef string_COMPARE_ALL
 
-inline int operator==(const string& x, const subString&  y) 
-{
-    return compare(x, y) == 0; 
-}
-
-inline int operator!=(const string& x, const subString&  y)
-{
-    return compare(x, y) != 0; 
-}
-
-inline int operator>(const string& x, const subString&  y)      
-{
-    return compare(x, y) > 0; 
-}
-
-inline int operator>=(const string& x, const subString&  y)
-{
-    return compare(x, y) >= 0; 
-}
-
-inline int operator<(const string& x, const subString&  y) 
-{
-    return compare(x, y) < 0; 
-}
-
-inline int operator<=(const string& x, const subString&  y)
-{
-    return compare(x, y) <= 0; 
-}
-
-inline int operator==(const string& x, const char* t) 
-{
-    return compare(x, t) == 0; 
-}
-
-inline int operator!=(const string& x, const char* t) 
-{
-    return compare(x, t) != 0; 
-}
-
-inline int operator>(const string& x, const char* t)  
-{
-    return compare(x, t) > 0; 
-}
-
-inline int operator>=(const string& x, const char* t) 
-{
-    return compare(x, t) >= 0; 
-}
-
-inline int operator<(const string& x, const char* t)  
-{
-    return compare(x, t) < 0; 
-}
-
-inline int operator<=(const string& x, const char* t) 
-{
-    return compare(x, t) <= 0; 
-}
-
-inline int operator==(const string& x, char* t) 
-{
-    return compare(x, t) == 0; 
-}
-
-inline int operator!=(const string& x, char* t) 
-{
-    return compare(x, t) != 0; 
-}
-
-inline int operator>(const string& x, char* t)  
-{
-    return compare(x, t) > 0; 
-}
-
-inline int operator>=(const string& x, char* t) 
-{
-    return compare(x, t) >= 0; 
-}
-
-inline int operator<(const string& x, char* t)  
-{
-    return compare(x, t) < 0; 
-}
-
-inline int operator<=(const string& x, char* t) 
-{
-    return compare(x, t) <= 0; 
-}
-
-inline int operator==(const subString& x, const string& y) 
-{
-    return compare(y, x) == 0; 
-}
-
-inline int operator!=(const subString& x, const string& y)
-{
-    return compare(y, x) != 0;
-}
-
-inline int operator>(const subString& x, const string& y)      
-{
-    return compare(y, x) < 0;
-}
-
-inline int operator>=(const subString& x, const string& y)     
-{
-    return compare(y, x) <= 0;
-}
-
-inline int operator<(const subString& x, const string& y)      
-{
-    return compare(y, x) > 0;
-}
-
-inline int operator<=(const subString& x, const string& y)     
-{
-    return compare(y, x) >= 0;
-}
-
-inline int operator==(const subString& x, const subString&  y) 
-{
-    return compare(x, y) == 0; 
-}
-
-inline int operator!=(const subString& x, const subString&  y)
-{
-    return compare(x, y) != 0;
-}
-
-inline int operator>(const subString& x, const subString&  y)      
-{
-    return compare(x, y) > 0;
-}
-
-inline int operator>=(const subString& x, const subString&  y)
-{
-    return compare(x, y) >= 0;
-}
-
-inline int operator<(const subString& x, const subString&  y) 
-{
-    return compare(x, y) < 0;
-}
-
-inline int operator<=(const subString& x, const subString&  y)
-{
-    return compare(x, y) <= 0;
-}
-
-inline int operator==(const subString& x, const char* t) 
-{
-    return compare(x, t) == 0; 
-}
-
-inline int operator!=(const subString& x, const char* t) 
-{
-    return compare(x, t) != 0;
-}
-
-inline int operator>(const subString& x, const char* t)  
-{
-    return compare(x, t) > 0; 
-}
-
-inline int operator>=(const subString& x, const char* t) 
-{
-    return compare(x, t) >= 0; 
-}
-
-inline int operator<(const subString& x, const char* t)  
-{
-    return compare(x, t) < 0; 
-}
-
-inline int operator<=(const subString& x, const char* t) 
-{
-    return compare(x, t) <= 0; 
-}
-
-inline int operator==(const subString& x, char* t) 
-{
-    return compare(x, t) == 0; 
-}
-
-inline int operator!=(const subString& x, char* t) 
-{
-    return compare(x, t) != 0;
-}
-
-inline int operator>(const subString& x, char* t)  
-{
-    return compare(x, t) > 0; 
-}
-
-inline int operator>=(const subString& x, char* t) 
-{
-    return compare(x, t) >= 0; 
-}
-
-inline int operator<(const subString& x, char* t)  
-{
-    return compare(x, t) < 0; 
-}
-
-inline int operator<=(const subString& x, char* t) 
-{
-    return compare(x, t) <= 0; 
-}
-
-
-// a helper needed by at, before, etc.
-
+// A helper needed by at, before, etc.
 inline subString string::_substr(int first, int l)
 {
     if (first < 0 || (unsigned)(first + l) > length() )
