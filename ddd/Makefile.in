@@ -76,7 +76,9 @@ RM = rm -f
 LN_S = @LN_S@
 
 # The m4 command, preferably GNU m4.   (m4)
-M4 = @M4@
+# The `-B20000' works around M4 limitations on System V; GNU M4 ignores it.
+# (Reported by Justin Mayfield <mayfield@hpbs1824.boi.hp.com>.)
+M4 = @M4@ -B20000
 
 # The lex command (flex), its flags (-8), and its library (-lfl).
 LEX = @LEX@
