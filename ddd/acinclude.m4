@@ -64,6 +64,7 @@ fi
 dnl
 AC_DEFUN(ICE_PROG_CXX,
 [
+AC_REQUIRE([AC_ISC_POSIX])
 AC_REQUIRE([AC_PROG_CXX])
 dnl
 if test "$CXX" = gcc; then
