@@ -154,7 +154,6 @@ Volunteers for these and other projects are welcome!
 
 051. [done]
 
-052. Make keyboard interrupt signal return DDD to main event loop
-     instead of interrupting it.
+052. [done]
 
 053. (Insert your project idea here)

@@ -8,6 +8,9 @@ DDD 1.3b (NOT YET RELEASED)
 
     - More minor troubles with GCC 2.7.0 on certain architectures fixed.
     - DDD can now be interrupted using the SIGINT signal.
+    - In the breakpoint editor, you can now set multiple breakpoint
+      conditions and ignore counts at a time.
+    - The DDD WWW page has moved to `http://www.cs.tu-bs.de/softech/ddd/'.
 
 
 DDD 1.3a
