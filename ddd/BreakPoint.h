@@ -49,29 +49,32 @@ class BreakPoint {
     int     mynumber;
     BPType  mytype;
     BPDispo mydispo;
-    bool myenabled;
+    bool    myenabled;
     string  myfile_name;
     int     myline_nr;
+    string  myaddress;
     string  myinfos;
-    bool myenabled_changed;
-    bool myfile_changed;
-    bool myposition_changed;
-    bool myselected;
+    bool    myenabled_changed;
+    bool    myfile_changed;
+    bool    myposition_changed;
+    bool    myaddress_changed;
+    bool    myselected;
 
 public:
     // Entfernt eigene info aus info_output.
     //
     BreakPoint (string& info_output);
 
-    string  number_str() const { return mynumber_str; }
-    int     number    () const { return mynumber; }
-    BPType  type      () const { return mytype; }
-    BPDispo dispo     () const { return mydispo; }
-    bool enabled   () const { return myenabled; }
-    string  file_name () const { return myfile_name; }
-    int     line_nr   () const { return myline_nr; }
-    string  infos     () const { return myinfos; }
-    bool& selected    ()       { return myselected; }
+    const string& number_str() const { return mynumber_str; }
+    int           number    () const { return mynumber; }
+    BPType        type      () const { return mytype; }
+    BPDispo       dispo     () const { return mydispo; }
+    bool          enabled   () const { return myenabled; }
+    const string& file_name () const { return myfile_name; }
+    int           line_nr   () const { return myline_nr; }
+    const string& address   () const { return myaddress; }
+    const string& infos     () const { return myinfos; }
+    bool&         selected  ()       { return myselected; }
 
     // true wenn sich beim letzten update enabled geaendert hat.
     //
@@ -84,6 +87,10 @@ public:
     // true wenn sich beim letzten update line_nr oder file_name geaendert hat.
     //
     bool position_changed () const { return myposition_changed; }
+
+    // true wenn sich beim letzten update address geaendert hat.
+    //
+    bool address_changed () const { return myaddress_changed; }
 
     // liefert true, wenn sich irgendetwas geandert hat.
     // entfernt eigene info aus info_output.

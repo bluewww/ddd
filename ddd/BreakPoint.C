@@ -58,9 +58,11 @@ BreakPoint::BreakPoint (string& info_output)
       myenabled(true),
       myfile_name(""),
       myline_nr(0),
+      myaddress(""),
       myinfos(""),
       myfile_changed(true),
       myposition_changed(true),
+      myaddress_changed(true),
       myselected(false)
 {
     mynumber_str = read_nr_str (info_output);
@@ -96,7 +98,11 @@ BreakPoint::BreakPoint (string& info_output)
 	}
 	info_output = info_output.after(RXblanks_or_tabs);
 
-	if (mytype == BREAKPOINT) {
+	if (mytype == BREAKPOINT)
+	{
+	    myaddress   = info_output.through(RXname_colon_int_nl);
+	    myaddress   = myaddress.through(rxalphanum);
+
 	    info_output = info_output.from (RXname_colon_int_nl);
 	    myfile_name = info_output.before(":");
 	    info_output = info_output.after (":");
@@ -187,6 +193,7 @@ bool BreakPoint::update (string& info_output)
     myenabled_changed  = false;
     myposition_changed = false;
     myfile_changed     = false;
+    myaddress_changed  = false;
 
     int ret = read_positive_nr (info_output);
     if (ret < 0)
@@ -243,6 +250,14 @@ bool BreakPoint::update (string& info_output)
 
 	string new_info = "";
 	if (mytype == BREAKPOINT) {
+	    string new_address = info_output.through(RXname_colon_int_nl);
+	    new_address        = new_address.through(rxalphanum);
+
+	    if (myaddress != new_address)
+	    {
+		changed = myaddress_changed = true;
+		myaddress = new_address;
+	    }
 
 	    info_output = info_output.from (RXname_colon_int_nl);
 	    if (myfile_name != info_output.before(":")) {
@@ -294,7 +309,7 @@ bool BreakPoint::update (string& info_output)
 
     case DBX:
     {
-	// One may wonder why a DBX breakpoint should change... :-)
+	// One may ask why a DBX breakpoint should change... :-)
 	read_leading_blanks (info_output);
 	if (info_output.contains ("stop ", 0)
 	    || info_output.contains ("stopped ", 0))
