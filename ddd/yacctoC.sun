@@ -1,0 +1,83 @@
+# $Id$
+# Adapt YACC output for C++ usage
+# (Happens to be working on my Sun using SunOS 4.1.1)
+
+# Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+# Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+# 
+# This file is part of the ICE Library.
+# 
+# The ICE Library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+# 
+# The ICE Library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU Library General Public License for more details.
+# 
+# You should have received a copy of the GNU Library General Public
+# License along with the ICE Library -- see the file COPYING.LIB.
+# If not, write to the Free Software Foundation, Inc.,
+# 675 Mass Ave, Cambridge, MA 02139, USA.
+# 
+# ICE is the incremental configuration engine.
+# Contact ice@ips.cs.tu-bs.de for details.
+
+# $Log$
+# Revision 1.1  1995/05/01 15:47:25  zeller
+# Initial revision
+#
+# Revision 1.1.1.1  1995/02/09  09:12:09  zeller
+# ICE 0.5 distribution
+#
+# Revision 1.17  1995/01/14  14:48:27  zeller
+# New license for ICE 0.5
+#
+
+# Declare functions
+1i\
+// This file was modified for -*- C++ -*-\
+// using $RCSfile$ $Revision$\
+extern void yyerror(char *s);\
+extern int yylex();\
+
+# Undeclare malloc and realloc (not needed in C++ version)
+s!extern char \*malloc(), \*realloc();!// &!
+
+# Adapt yytoks[] to disable warnings
+\!^yytoktype!,\!^}!s![^,]*,[^,]*!{&}!
+
+# Make YYSTYPE a struct such that we can store class objects
+# (use anonymous unions to save space!)
+s!^typedef union\(.*\)$!typedef struct _YYSTYPE \1!
+
+# Make sure we use new/delete instead of malloc/free
+# (a MUST if we use class objects)
+
+# (y*)malloc(x*sizeof(y)) -> new x[y]
+s!([^\*]*\* *) *malloc *(\([^\*]*\)\* *sizeof *(\([^)]*\)) *)!new \2[\1]!g
+
+# free(x) -> delete[] x
+s!free *(\([^)]*\))!delete[] \1!g
+
+# realloc -> own code
+\!.*yymaxdepth += YYMAXDEPTH!,\!}!c\
+			int new_yymaxdepth = yymaxdepth + YYMAXDEPTH;\
+			YYSTYPE *new_yyv = new YYSTYPE [new_yymaxdepth];\
+			int *new_yys = new int [new_yymaxdepth];\
+			if (new_yyv == 0 || new_yys == 0)\
+			{\
+				yyerror( "yacc stack overflow" );\
+				return(1);\
+			}\
+			for (unsigned yycopy = 0; yycopy < yymaxdepth; \
+			     yycopy++)\
+			{\
+				new_yyv[yycopy] = yyv[yycopy];\
+				new_yys[yycopy] = yys[yycopy];\
+			}\
+			yymaxdepth = new_yymaxdepth;\
+			delete[] yyv; yyv = new_yyv;\
+			delete[] yys; yys = new_yys;
