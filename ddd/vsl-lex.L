@@ -109,6 +109,7 @@ static int do_input()
 #endif
 
 #undef yywrap
+#define YY_SKIP_YYWRAP
 extern "C" int yywrap() 
 { 
     if (switchdown())
