@@ -399,8 +399,8 @@ static void configure_plot(PlotWindowInfo *plot)
 	}
     }
 
-    Widget export = XtNameToWidget(plot->shell, "*export");
-    set_sensitive(export, can_export);
+    Widget export_w = XtNameToWidget(plot->shell, "*export");
+    set_sensitive(export_w, can_export);
 
     // The remainder requires settings
     if (plot->settings == "")

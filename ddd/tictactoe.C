@@ -129,7 +129,8 @@ static bool moveDiagonal(int current_player)
 
     int sum = 0;
 
-    for (int i = 0; i < 3; i++)
+    int i;
+    for (i = 0; i < 3; i++)
 	sum += board[p1[i]];
     if (sum == (current_player*2))
 	for (int i = 0; i < 3; i++)
@@ -140,7 +141,7 @@ static bool moveDiagonal(int current_player)
 	    }
 
     sum = 0;
-    for (int i = 0; i < 3; i++)
+    for (i = 0; i < 3; i++)
 	sum += board[p2[i]];
     if (sum == (current_player * 2))
 	for (int i = 0; i < 3; i++)
@@ -325,7 +326,7 @@ static int winner()
 
 static void initBoard() 
 {
-    for (int i= 1; i < 10; i++)
+    for (int i = 1; i < 10; i++)
 	board[i] = NO_ONE;
 }
 
