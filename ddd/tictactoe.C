@@ -176,7 +176,7 @@ static void autoMove()
     if (moveDiagonal(PLAYER1)) 
 	return;
 
-    // Most stategic move
+    // Most strategic move
     if (board[5] == NO_ONE)
     {
 	board[5] = PLAYER2;
@@ -209,36 +209,52 @@ static void autoMove()
     int *r = 0;
     if ((board[5] == PLAYER2) && 
 	(((board[1] == PLAYER1) && (board[9] == PLAYER1)) ||
-	 ((board[3] == PLAYER1) && (board[7] == PLAYER1)))) {
-	static int rtmp1[9] = {5, 2, 4, 6, 8, 1, 3, 7, 9};
-	r = rtmp1;
+	 ((board[3] == PLAYER1) && (board[7] == PLAYER1))))
+    {
+	static int rtmp[9] = {5, 2, 4, 6, 8, 1, 3, 7, 9};
+	r = rtmp;
     }
     else if ((board[5] == PLAYER2) &&
-	     (board[2] == PLAYER1) && (board[4] == PLAYER1)) {
-	static int rtmp2[] = {5, 1, 4, 6, 8, 2, 3, 7, 9};
-	r = rtmp2;
+	     (board[2] == PLAYER1) && (board[4] == PLAYER1))
+    {
+	static int rtmp[9] = {5, 1, 4, 6, 8, 2, 3, 7, 9};
+	r = rtmp;
     }
     else if ((board[5] == PLAYER2) &&
-	     (board[2] == PLAYER1) && (board[6] == PLAYER1)) {
-	static int rtmp3[] = {5, 3, 4, 6, 8, 1, 2, 7, 9};
-	r = rtmp3;
+	     (board[2] == PLAYER1) && (board[6] == PLAYER1))
+    {
+	static int rtmp[9] = {5, 3, 4, 6, 8, 1, 2, 7, 9};
+	r = rtmp;
     } 
     else if ((board[5] == PLAYER2) &&
-	     (board[8] == PLAYER1) && (board[4] == PLAYER1)) {
-	static int rtmp4[] = {5, 7, 4, 6, 8, 1, 3, 2, 9};
-	r = rtmp4;
+	     (board[8] == PLAYER1) && (board[4] == PLAYER1))
+    {
+	static int rtmp[9] = {5, 7, 4, 6, 8, 1, 3, 2, 9};
+	r = rtmp;
     }
     else if ((board[5] == PLAYER2) &&
-	     (board[8] == PLAYER1) && (board[6] == PLAYER1)) {
-	static int rtmp5[] = {5, 9, 4, 6, 8, 1, 3, 7, 2};
-	r = rtmp5;
+	     (board[8] == PLAYER1) && (board[6] == PLAYER1))
+    {
+	static int rtmp[9] = {5, 9, 4, 6, 8, 1, 3, 7, 2};
+	r = rtmp;
     }
-    else {  
-	static int rtmp6[] = {5, 1, 3, 7, 9, 2, 4, 6, 8};
-	r = rtmp6;
+    else 
+    {
+	static int tics = 0;
+	if (++tics % 10 == 0)
+	{
+	    // In one out of 10 cases, give the user a chance.
+	    static int rtmp[9] = {5, 2, 4, 6, 8, 1, 3, 7, 9};
+	    r = rtmp;
+	}
+	else
+	{
+	    static int rtmp[9] = {5, 1, 3, 7, 9, 2, 4, 6, 8};
+	    r = rtmp;
+	}
     }
 
-    for (int i = 1; i < 9; i++)
+    for (int i = 0; i < 9; i++)
 	if (board[r[i]] == NO_ONE) {
 	    board[r[i]] = PLAYER2;
 	    return;
