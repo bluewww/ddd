@@ -22,8 +22,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // Differences to GNU String class:
 // - class name is `string' instead of `String'
 // - string length is `unsigned int' instead of `short'
-// - extra constructor string::string(ostrstream&)
-// - extra assignment string::operator=(ostrstream&)
+// - extra constructor string::string(std::ostringstream&)
+// - extra assignment string::operator=(std::ostringstream&)
 // - output to stream issues *all* characters, including '\0'
 // - extra functions for `char *' provided (besides `const char *')
 // - `cat' with 4 arguments is not supported
@@ -1152,14 +1152,30 @@ inline string& string::operator = (std::ostringstream& os)
 {
     assert(!consuming());
 
+    const std::string str( os.str() );
+    rep = string_Salloc(rep, str.c_str(), str.length(), str.length());
+
+    return *this;
+}
+
+#if 0
+// Phased out
+#include <strstream>
+
+inline string& string::operator = (std::ostrstream& os)
+{
+    assert(!consuming());
+
     // No need to freeze the stream, since the string is copied right away
 #if HAVE_FROZEN_OSTRSTREAMBUF
     const int frozen = os.rdbuf()->frozen();
 #elif HAVE_FROZEN_OSTRSTREAM
     const int frozen = os.frozen();
+#else
+    const int frozen = 0; // Pretty optimistic ...
 #endif
 
-    const char *str = os.str().c_str();
+    const char *str = os.str();
 
 #if OSTRSTREAM_PCOUNT_BROKEN
     // In the SGI C++ I/O library, accessing os.str() *increases*
@@ -1168,7 +1184,7 @@ inline string& string::operator = (std::ostringstream& os)
     // this will cause trouble when os is assigned the next time.
     rep = string_Salloc(rep, str, os.pcount() - 1, os.pcount() - 1);
 #else
-    rep = string_Salloc(rep, str, os.str().length(), os.str().length());
+    rep = string_Salloc(rep, str, os.pcount(), os.pcount());
 #endif
 
 #if HAVE_FREEZE_OSTRSTREAMBUF
@@ -1179,6 +1195,7 @@ inline string& string::operator = (std::ostringstream& os)
     
     return *this;
 }
+#endif
 
 inline string::string(std::ostringstream& os)
     : rep(&_nilstrRep)
