@@ -57,14 +57,18 @@ char MakeMenu_rcsid[] =
 
 // Pushmenu callbacks
 static void ArmPushMenuCB(Widget, XtPointer, XtPointer);
+static void RedrawPushMenuCB(Widget, XtPointer, XtPointer);
 static void PopupPushMenuAct(Widget w, XEvent* e, String *, Cardinal *);
+static void DecoratePushMenuAct(Widget w, XEvent* e, String *, Cardinal *);
 
 static XtActionsRec actions [] = {
     {"popup-push-menu",            PopupPushMenuAct },
+    {"decorate-push-menu",         DecoratePushMenuAct },
 };
 
-static char extraTranslations[] = 
+static char pushMenuTranslations[] = 
     "None<Btn3Down>:	popup-push-menu()\n"
+    "<Expose>:          decorate-push-menu()\n"
 ;
 
 
@@ -122,29 +126,17 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	string panelName   = string(name) + "Panel";
 	Widget subMenu  = 0;
 	Widget label    = 0;
-	widget = 0;
 
 	switch(type & MMTypeMask) 
 	{
 	case MMPush:
 	    // Create a PushButton
-	    arg = 0;
-	    widget = verify(XmCreatePushButton(shell, name, args, arg));
-
 	    if (subitems != 0)
-	    {
-		// Add a menu to this PushButton
-		arg = 0;
-		subMenu = 
-		    verify(XmCreatePopupMenu(widget, subMenuName, args, arg));
-		arg = 0;
-		Widget clone = 
-		    verify(XmCreatePushButton(subMenu, name, args, arg));
-		XtManageChild(clone);
-		addItems(shell, subMenu, subitems);
-	    }
+		subMenu = MMcreatePopupMenu(shell, subMenuName, subitems);
 
-	    XtVaSetValues(widget, XmNuserData, subMenu, XtPointer(0));
+	    arg = 0;
+	    XtSetArg(args[arg], XmNuserData, subMenu); arg++;
+	    widget = verify(XmCreatePushButton(shell, name, args, arg));
 	    break;
 
 	case MMToggle:
@@ -471,10 +463,12 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 	{
 	    // A 'push menu' is a menu associated with a push button.
 	    // It pops up after pressing the button a certain time.
-	    XtAddCallback(widget, XmNarmCallback, ArmPushMenuCB, 
-			  subMenu);
+	    XtAddCallback(widget, XmNarmCallback,    ArmPushMenuCB, subMenu);
+	    XtAddCallback(widget, XmNarmCallback,    RedrawPushMenuCB, 0);
+	    XtAddCallback(widget, XmNdisarmCallback, RedrawPushMenuCB, 0);
+	    
 	    static XtTranslations translations = 
-		XtParseTranslationTable(extraTranslations);
+		XtParseTranslationTable(pushMenuTranslations);
 	    XtAugmentTranslations(widget, translations);
 	}
 
@@ -587,39 +581,73 @@ void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
     XtVaGetValues(w, XmNuserData, &subMenu, XtPointer(0));
     if (subMenu == 0)
 	return;
+
     Widget shell = XtParent(subMenu);
 
-    // Update label and callbacks of clone entry
-    Widget clone = XtNameToWidget(subMenu, XtName(w));
-    if (clone != 0)
-    {
-	XmString label;
-	XtCallbackList activate_callback;
-	XtVaGetValues(w, 
-		      XmNlabelString, &label,
-		      XmNactivateCallback, &activate_callback,
-		      XtPointer(0));
-	XtVaSetValues(clone,
-		      XmNlabelString, label,
-		      XmNactivateCallback, activate_callback,
-		      XtPointer(0));
-	XmStringFree(label);
-    }
-
-    // Attempt to place menu in place of button
+    // Attempt to place menu below button
     Position button_x, button_y;
     XtTranslateCoords(w, 0, 0, &button_x, &button_y);
 
-    event->xbutton.x_root = button_x;
-    event->xbutton.y_root = button_y;
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight;
+    unsigned char unit_type;
+
+    XtQueryGeometry(w, NULL, &size);
+    XtVaGetValues(w, XmNunitType, &unit_type, NULL);
+    Dimension button_height = XmConvertUnits(w, XmVERTICAL, XmPIXELS,
+					     size.height, unit_type);
+    Position x = button_x;
+    Position y = button_y + button_height;
+
+    event->xbutton.x_root = x;
+    event->xbutton.y_root = y;
     XmMenuPosition(subMenu, &event->xbutton);
 
     XtManageChild(subMenu);
     XtPopup(shell, XtGrabNone);
-
-    if (clone != 0)
-	XtCallActionProc(clone, "BtnDown", event, 0, 0);
 }
+
+void DecoratePushMenuAct(Widget w, XEvent */* event */, String *, Cardinal *)
+{
+    if (!XmIsPushButton(w))
+	return;
+
+    clog << "Redraw " << XtName(w) << "\n";
+        
+    XPoint points[4] = {
+	{-6, 1}, {5, 0}, {-3, 3}, {-2, -3}
+    };
+
+    Dimension width;
+    Dimension highlightThickness;
+    Dimension shadowThickness;
+    Pixel foreground;
+    Pixel background;
+    Colormap colormap;
+    XtVaGetValues(w,
+		  XmNwidth, &width,
+		  XmNhighlightThickness, &highlightThickness, 
+		  XmNshadowThickness, &shadowThickness,
+		  XmNforeground, &foreground,
+		  XmNbackground, &background,
+		  XmNcolormap, &colormap,
+		  NULL);
+
+    points[0].x += width - highlightThickness - shadowThickness;
+    points[0].y += highlightThickness + shadowThickness;
+
+    Pixel color;
+    XmGetColors(XtScreen(w), colormap, background, 0, 0, &color, 0);
+
+    XGCValues xgc;
+    xgc.foreground = color;
+    xgc.background = background;
+    GC gc = XtGetGC(w, GCForeground | GCBackground, &xgc);
+
+    XFillPolygon(XtDisplay(w), XtWindow(w), gc, points, XtNumber(points), 
+		 Convex, CoordModePrevious);
+}
+
 
 
 // Popup menu after some delay
@@ -654,4 +682,9 @@ static void ArmPushMenuCB(Widget w, XtPointer, XtPointer call_data)
 				      values.push_menu_popup_time, 
 				      PopupPushMenuCB, w);
     XtAddCallback(w, XmNdisarmCallback, RemoveTimeOutCB, XtPointer(id));
+}
+
+static void RedrawPushMenuCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XtCallActionProc(w, "decorate-push-menu", 0, 0, 0);
 }
