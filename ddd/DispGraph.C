@@ -813,8 +813,8 @@ bool DispGraph::same_angle(const BoxPoint& r,
     if (p1 == r || p2 == r)
 	return false;		// No angle to determine
 
-    double angle1 = atan2(r[Y] - p1[Y], r[X] - p1[X]);
-    double angle2 = atan2(r[Y] - p2[Y], r[X] - p2[X]);
+    double angle1 = atan2(double(r[Y] - p1[Y]), double(r[X] - p1[X]));
+    double angle2 = atan2(double(r[Y] - p2[Y]), double(r[X] - p2[X]));
 
     const double epsilon = 0.1;
     return fabs(angle1 - angle2) < epsilon;
@@ -890,7 +890,7 @@ BoxPoint DispGraph::rotate_offset(const BoxPoint& p, int angle)
 	return p;
 
     double length = hypot(p[X], p[Y]);
-    double alpha  = atan2(p[X], p[Y]);
+    double alpha  = atan2(double(p[X]), double(p[Y]));
 
     alpha += (2.0 * PI * angle / 360.0);
 
@@ -959,7 +959,7 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
 
     BoxPoint dist   = to->pos() - from->pos();
     BoxPoint center = from->pos() + dist / 2;
-    double angle    = atan2(dist[X], dist[Y]);
+    double angle    = atan2(double(dist[X]), double(dist[Y]));
     BoxPoint grid_offset(BoxCoordinate(grid_width  * cos(angle)),
 			 BoxCoordinate(grid_height * sin(angle)));
 

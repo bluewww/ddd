@@ -233,7 +233,7 @@ void LineGraphEdge::drawLine(Widget w,
 	l1[X], l1[Y], l2[X], l2[Y]);
 
     // Get arrow angle
-    double alpha = atan2(l1[Y] - l2[Y], l1[X] - l2[X]);
+    double alpha = atan2(double(l1[Y] - l2[Y]), double(l1[X] - l2[X]));
 
     // Draw arrow head at L2
     drawArrowHead(w, exposed, gc, l2, alpha);

@@ -192,9 +192,12 @@ void ArcGraphEdge::drawLine(Widget w,
     double radius = hypot(c - pos_to);
 
     // Determine start and path of arc
-    double alpha_from = -atan2(pos_from[Y] - c[Y], pos_from[X] - c[X]);
-    double alpha_hint = -atan2(pos_hint[Y] - c[Y], pos_hint[X] - c[X]);
-    double alpha_to   = -atan2(pos_to[Y] - c[Y],   pos_to[X] - c[X]);
+    double alpha_from = -atan2(double(pos_from[Y] - c[Y]), 
+			       double(pos_from[X] - c[X]));
+    double alpha_hint = -atan2(double(pos_hint[Y] - c[Y]),
+			       double(pos_hint[X] - c[X]));
+    double alpha_to   = -atan2(double(pos_to[Y] - c[Y]),
+			       double(pos_to[X] - c[X]));
 
     const int base = 360 * 64;
 
@@ -236,7 +239,8 @@ void ArcGraphEdge::drawLine(Widget w,
     if (from()->isHint())
     {
 	// Draw arrow head at POS_TO
-	double alpha = atan2(pos_to[Y] - c[Y], pos_to[X] - c[X]);
+	double alpha = atan2(double(pos_to[Y] - c[Y]),
+			     double(pos_to[X] - c[X]));
 	if (path > 0)
 	    alpha += PI / 2.0;
 	else
