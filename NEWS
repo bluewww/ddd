@@ -4,8 +4,8 @@ Changes in DDD						-*- text -*-
 DDD 1.4
 -------
 
-    This release realizes the top ten suggestions of DDD users.  It
-    brings the long awaited machine code support, new breakpoint and
+    DDD 1.4 realizes the top ten suggestions of DDD users.  It brings
+    the long awaited machine code support, new breakpoint and
     execution symbols, improved DBX support, enhanced integration
     facilities and many small features and improvements.
 
@@ -232,7 +232,7 @@ DDD 1.0
     This DDD release should configure, compile and run out-of-the-box
     on the following systems:
     
-        hppa1.1-hp-hpux9.05 
+        hppa1.1-hp-hpux9.05
         linux-i386-unknown
         linux-i486-unknown
         mips-dec-ultrix4
