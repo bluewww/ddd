@@ -358,4 +358,7 @@ Volunteers for these and other projects are welcome!
 191. When selecting displays, have the selection text contain ddd
      `graph' commands to re-generate them.
 
-192. (Insert your project idea here)
+192. Use the generating expression as display base, not the expression 
+     sent by GDB.  (i.e., use `f', not `f(int)').
+
+193. (Insert your project idea here)

@@ -396,4 +396,7 @@ Volunteers for fixing these and other bugs are welcome!
 184* When the PC changes, but no line number is received, clear
      execution arrow.
 
-185. (Insert your bug here)
+185. When pasting a multi-line text with `graph' commands, some
+     commands are ignored.
+
+186. (Insert your bug here)
