@@ -1624,6 +1624,29 @@ static void ShowDocumentation(XtPointer client_data, XtIntervalId *timer)
 }
 
 // Clear the documentation
+static void ClearDocumentationNow(Widget w);
+
+static void CancelClearDocumentation(Widget w, XtPointer, XtPointer)
+{
+    if (clear_doc_timer == 0)
+	return;
+
+    XtRemoveTimeOut(clear_doc_timer);
+    clear_doc_timer = 0;
+    ClearDocumentationNow(w);
+}
+
+static void ClearDocumentationNow(Widget w)
+{
+    if (DisplayDocumentation != 0 
+	&& (XmIsText(w) ? text_docs_enabled : button_docs_enabled))
+    {
+	// Clear documentation
+	static MString empty(0, true);
+	DisplayDocumentation(empty);
+    }
+}
+
 static void ClearDocumentation(XtPointer client_data, XtIntervalId *timer)
 {
     (void) timer;
@@ -1632,13 +1655,9 @@ static void ClearDocumentation(XtPointer client_data, XtIntervalId *timer)
 
     TipInfo *ti = (TipInfo *)client_data;
 
-    if (DisplayDocumentation != 0 
-	&& (XmIsText(ti->widget) ? text_docs_enabled : button_docs_enabled))
-    {
-	// Clear documentation
-	static MString empty(0, true);
-	DisplayDocumentation(empty);
-    }
+    XtRemoveCallback(ti->widget, XmNdestroyCallback, 
+		     CancelClearDocumentation, 0);
+    ClearDocumentationNow(ti->widget);
 }
 
 // Clear tips and documentation
@@ -1664,7 +1683,7 @@ static void ClearTip(Widget w, XEvent *event)
     {
 	// We don't clear the documentation immediately, since the
 	// user might be moving over to another button, and we don't
-	// want some flashing documentation string.
+	// want flashing documentation strings.
 
 	static TipInfo ti;
 	ti.event  = *event;
@@ -1674,6 +1693,10 @@ static void ClearTip(Widget w, XEvent *event)
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
 			    help_clear_doc_delay, 
 			    ClearDocumentation, XtPointer(&ti));
+
+	// Should the button be destroyed beforehand, cancel timeout
+	XtRemoveCallback(w, XmNdestroyCallback, CancelClearDocumentation, 0);
+	XtAddCallback   (w, XmNdestroyCallback, CancelClearDocumentation, 0);
     }
 }
 
