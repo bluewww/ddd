@@ -100,8 +100,8 @@ Check out LBL(Edit, Preferences, Startup, Data Scrolling).
 To limit the number of array elements in a data display, set
 LBL(Edit, GDB Settings, Limit on array elements to print).
 
-If DDD cannot find a source, don't use LBL(File, Open Source).
-Instead, set the @GDB@ source path via LBL(Edit, @GDB@ Settings).
+If DDD cannot find a source, set the @GDB@ source path
+via LBL(Edit, @GDB@ Settings).
 
 You can quickly set and edit breakpoints 
 by double-clicking in the breakpoint area.
@@ -169,6 +169,9 @@ using LBL(File, Attach to Process).
 Using GDB, you can define your own canned sequences of commands.
 Try `LBL(Commands, Define Command)'.
 
+To use GDB with Sun CC, compile with SAMP(-xs).
+GDB wants debugging info in the executable.
+
 You can assign user-defined buttons to frequently used commands.
 Try `LBL(Commands, Edit Buttons)'.
 
@@ -188,6 +191,10 @@ In the LBL(Breakpoint Properties) panel, try LBL(Record) and LBL(End).
 
 You can easily resume a saved DDD VAR(session)
 by invoking DDD as KBD([ddd] =VAR(session)).
+
+For further DDD customization (e.g. colors), see the FILE(Ddd)
+app-defaults file from the DDD WWW Site or the DDD source
+distribution.  Copy resources to FILE(~/.ddd/init) and edit as desired.
 
 
 ! Professional tips.
