@@ -1645,7 +1645,7 @@ AC_TRY_COMPILE(
 [
 #include <sys/types.h>
 #include <signal.h>
-void handler(int sg);],
+extern "C" void handler(int sg);],
 [signal(1, handler);], ice_cv_type_signal=void, ice_cv_type_signal=int)])dnl
 AC_LANG_POP(C++)
 AC_DEFINE_UNQUOTED(RETSIGTYPE, $ice_cv_type_signal,
@@ -1678,9 +1678,12 @@ AC_TRY_COMPILE(
 [
 #include <sys/types.h>
 #include <signal.h>
-RETSIGTYPE handler(...);],
-[signal(1, handler);], 
-ice_cv_type_sig_handler_args="...")
+#ifdef signal
+# undef signal
+#endif
+extern "C" RETSIGTYPE (*signal (int, RETSIGTYPE (*)(...)))(...);],
+[int i;],
+[ice_cv_type_sig_handler_args="..."])
 fi
 # Try "int"
 if test "$ice_cv_type_sig_handler_args" = ""; then
@@ -1688,9 +1691,12 @@ AC_TRY_COMPILE(
 [
 #include <sys/types.h>
 #include <signal.h>
-RETSIGTYPE handler(int);],
-[signal(1, handler);], 
-ice_cv_type_sig_handler_args="int")
+#ifdef signal
+# undef signal
+#endif
+extern "C" RETSIGTYPE (*signal (int, RETSIGTYPE (*)(int)))(int);],
+[int i;],
+[ice_cv_type_sig_handler_args="int"])
 fi
 # Try "int, ..."
 if test "$ice_cv_type_sig_handler_args" = ""; then
@@ -1698,9 +1704,12 @@ AC_TRY_COMPILE(
 [
 #include <sys/types.h>
 #include <signal.h>
-RETSIGTYPE handler(int ...);],
-[signal(1, handler);], 
-ice_cv_type_sig_handler_args="int ...")
+#ifdef signal
+# undef signal
+#endif
+extern "C" RETSIGTYPE (*signal (int, RETSIGTYPE (*)(int,...)))(int,...);],
+[int i;],
+[ice_cv_type_sig_handler_args="int,..."])
 fi
 AC_LANG_POP(C++)
 ])
@@ -1710,7 +1719,7 @@ fi
 AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args,
 [Define to the signal handler type accepted by signal().
 See the `signal' man page and the decl in <signal.h> for the exact type.
-Typically values are `int', `...', and `int ...'.])
+Typically values are `int', `...', and `int,...'.])
 ])dnl
 ##!dnl
 ##!dnl
