@@ -1900,11 +1900,11 @@ AppDataInitializer::AppDataInitializer()
 	    if (size == sizeof(long))
 		u.longval = (long)src;
 	    else if (size == sizeof(int))
-		u.intval = (int)src;
+		u.intval = (int)(long)src;
 	    else if (size == sizeof(short))
-		u.shortval = (short)src;
+		u.shortval = (short)(long)src;
 	    else if (size == sizeof(char))
-		u.charval = (char)src;
+		u.charval = (char)(long)src;
 	    else if (size == sizeof(XtPointer))
 		u.ptr = (XtPointer)src;
 	    else if (size == sizeof(char*))
