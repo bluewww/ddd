@@ -228,6 +228,7 @@ extern "C" {
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <setjmp.h>
 
 // GNU stuff
 extern "C" {
@@ -1475,6 +1476,9 @@ static bool ddd_is_exiting = false;
 // The Xt Warning handler
 static XtErrorHandler ddd_original_xt_warning_handler;
 
+// Resume after fatal errors
+static bool main_loop_entered = false;
+static jmp_buf main_loop_env;
 
 //-----------------------------------------------------------------------------
 // Remote commands
@@ -2162,6 +2166,9 @@ int main(int argc, char *argv[])
     gdb_tty = gdb->slave_tty();
 
     // Main Loop
+    main_loop_entered = true;
+    setjmp(main_loop_env);
+
     for (;;)
     {
 	// Check if GDB is still running
@@ -4674,8 +4681,7 @@ void gdbEditSourceCB  (Widget, XtPointer, XtPointer)
     cmd = sh_command(cmd);
 
     // Invoke an editor in the background
-    LiterateAgent *edit_agent = 
-	new LiterateAgent(app_context, cmd);
+    LiterateAgent *edit_agent = new LiterateAgent(app_context, cmd);
     edit_agent->removeAllHandlers(Died);
     edit_agent->addHandler(InputEOF, gdbEditDoneHP, (void *)new string(file));
     edit_agent->start();
@@ -6145,40 +6151,55 @@ static void ddd_fatal(int sig)
     // This disables installation of the `ddd_fatal' signal handler
     // and makes it possible for you to determine the problem cause.
 
-    static const char msg[] =
-	"\nInternal error (%s).\n"
-	"\n"
-	"Congratulations!  You have found a bug in " DDD_NAME ".\n"
-	"\n"
-	"Please send a bug report to `ddd-bugs@ips.cs.tu-bs.de', "
-	"giving a subject like\n"
-	"\n"
-	"    " DDD_NAME " " DDD_VERSION " (" DDD_HOST ") gets `%s' signal\n"
-	"\n"
-	"To enable us to fix the bug, you should include "
-	"the following information:\n"
-	"  * What you were doing to get this message.  "
-	"Report all the facts.\n"
-	"  * The " DDD_NAME " configuration.  "
-	"Run %s --configuration' to get it.\n"
-	"  * Possible problems in your system configuration.  Run\n"
-	"    `%s --check-configuration' to get a report.\n"
-	"  * The debugger you were using (e.g. `gdb' or `dbx'), "
-	"and its version.\n"
-	"  * If a core file was generated in your directory, please run\n"
-	"    `gdb %s core', and type `where' at the `(gdb)' prompt.\n"
-	"See also the section \"Reporting Bugs\" "
-	"in the " DDD_NAME " manual page.\n"
-	"\n"
-	"We thank you for your support.\n\n";
+    static int fatal_entered = 0;
 
-    fprintf(stderr, msg, sigName(sig), sigName(sig),
-	    ddd_invoke_name, ddd_invoke_name, 
-	    ddd_invoke_name);
+    if (fatal_entered++ || !main_loop_entered)
+    {
+	static const char msg[] =
+	    "\nInternal error (%s).\n"
+	    "\n"
+	    "Congratulations!  You have found a bug in " DDD_NAME ".\n"
+	    "\n"
+	    "Please send a bug report to `ddd-bugs@ips.cs.tu-bs.de', "
+	    "giving a subject like\n"
+	    "\n"
+	    "    " DDD_NAME " " DDD_VERSION 
+	    " (" DDD_HOST ") gets `%s' signal\n"
+	    "\n"
+	    "To enable us to fix the bug, you should include "
+	    "the following information:\n"
+	    "  * What you were doing to get this message.  "
+	    "Report all the facts.\n"
+	    "  * Your " DDD_NAME " configuration.  "
+	    "Run %s --configuration' to get it.\n"
+	    "  * If a core file was generated in your directory, please run\n"
+	    "    `gdb %s core', and type `where' at the `(gdb)' prompt.\n"
+	    "See also the section \"Reporting Bugs\" "
+	    "in the " DDD_NAME " manual page.\n"
+	    "\n"
+	    "We thank you for your support.\n\n";
 
-    // Re-raise signal.  This should kill us as we return.
-    signal(sig, (void (*)(int))SIG_DFL);
-    kill(getpid(), sig);
+	fprintf(stderr, msg, sigName(sig), sigName(sig),
+		ddd_invoke_name, ddd_invoke_name);
+
+	// Re-raise signal.  This should kill us as we return.
+	signal(sig, (void (*)(int))SIG_DFL);
+	kill(getpid(), sig);
+    }
+    else
+    {
+	// Show the message in an error dialog,
+	// allowing the user to clean up manually.
+	string msg = string("Internal error (") + sigName(sig) + ")";
+	post_error(msg, "internal_error", gdb_w);
+    }
+
+    // Reinstall fatal error handlers
+    ddd_install_fatal();
+
+    // Return to main event loop
+    fatal_entered--;
+    longjmp(main_loop_env, 1);
 }
 
 // Xt Warning handler
@@ -6317,6 +6338,36 @@ static int convert(string filename, BoxPrintGC& gc, bool selectedOnly)
     return 0;
 }
 
+static void deletePrintAgent(XtPointer client_data, XtIntervalId *)
+{
+    // Delete agent after use
+    Agent *edit_agent = (Agent *)client_data;
+    delete edit_agent;
+}
+
+static void unlinkPrintFile(XtPointer client_data, XtIntervalId *)
+{
+    // Delete temp file after use
+    string *tempfile = (string *)client_data;
+    unlink(*tempfile);
+    delete tempfile;
+}
+
+static void printDoneHP(Agent *print_agent, void *client_data, void *)
+{
+    // Printing is done: remove temporary file
+    XtAppAddTimeOut(app_context, 0, deletePrintAgent, 
+		    XtPointer(print_agent));
+    XtAppAddTimeOut(app_context, 0, unlinkPrintFile, 
+		    XtPointer(client_data));
+}
+
+static void printOutputHP(Agent *, void *, void *call_data)
+{
+    DataLength *input = (DataLength *)call_data;
+    post_warning(string(input->data, input->length), "print_warning");
+}
+
 // Print according to given BoxPrintGC
 static int print(string command, BoxPrintGC& gc, bool selectedOnly)
 {
@@ -6327,11 +6378,16 @@ static int print(string command, BoxPrintGC& gc, bool selectedOnly)
 
     StatusDelay delay("Printing graph " + quote(tempfile));
 
-    command += " " + tempfile;
+    command = command + " " + tempfile;
 
-    system(command);
+    LiterateAgent *print_agent = new LiterateAgent(app_context, command);
+    print_agent->removeAllHandlers(Died);
+    print_agent->addHandler(InputEOF, printDoneHP, 
+			   (void *)new string(tempfile));
+    print_agent->addHandler(Input, printOutputHP);
+    print_agent->addHandler(Error, printOutputHP);
+    print_agent->start();
 
-    unlink(tempfile);
     return 0;
 }
 

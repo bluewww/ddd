@@ -645,11 +645,11 @@ None<Btn3Down>:		graph-select() graph-popup-menu()\n
 
 Ddd*title: @DDD@ Window
 
-Ddd*command_shell.title: 			@DDD@: Command Window
+Ddd*command_shell.title: 		@DDD@: Command Window
 Ddd*command_shell.iconName: 		@DDD@: Command Window
 
 Ddd*source_view_shell.title: 		@DDD@: Source Window
-Ddd*source_view_shell.iconName: 		@DDD@: Source Window
+Ddd*source_view_shell.iconName: 	@DDD@: Source Window
 
 Ddd*data_disp_shell.title: 		@DDD@: Data Window
 Ddd*data_disp_shell.iconName: 		@DDD@: Data Window
@@ -2224,9 +2224,31 @@ Ddd*options_save_error*contextHelpString:	\
 @rm The @DDD@ options could not be saved.
 
 Ddd*startup_warning.title: @DDD@: New Startup Required
-Ddd*startup_warning_title*contextHelpString:	\
+Ddd*startup_warning*contextHelpString: \
 @rm This setting cannot be changed while @DDD@ is running.\n\
 Please save options and restart @DDD@ to see the effects.
+
+Ddd*print_warning.title: @DDD@: Print Command Output
+Ddd*print_warning*contextHelpString:	\
+@rm This is the output of your printing command.\n\
+For more details, consult your system documentation.
+
+Ddd*internal_error.title: @DDD@: Internal Error
+Ddd*internal_error*contextHelpString: \
+@rm Congratulations!  You have found a bug in @DDD@.\n\
+Please save your work immediately; @DDD@ may fail again soon.\n\
+\n\
+Please send a bug report to @tt ddd-bugs@ ips.cs.tu-bs.de@rm,\n\
+giving a subject like\n\
+\n\
+    @DDD@ @VERSION@ (@host@) gets fatal signal\n\
+\n\
+To enable us to fix the bug, you should include the following information:\n\
+@tt \267 @rm What you were doing to get this message.  Report all the facts.\n\
+@tt \267 @rm The @DDD@ configuration.  Run `ddd --configuration' to get it.\n\
+See also the section ``Reporting Bugs'' in the @DDD@ manual page.\n\
+\n\
+We thank you for your support.
 
 Ddd*debugging_poem.title: @DDD@: Fixing Some Bugs on a Sunday Evening
 Ddd*debugging_poem.okLabelString: Close
