@@ -56,7 +56,8 @@ DispNode::DispNode (int disp_nr,
       myaddr(""),
       myscope(scope),
       myenabled(true),
-      myshown(true),
+      myhidden(false),
+      saved_node_hidden(false),
       mynodeptr(0),
       disp_value(0),
       myselected_value(0),
@@ -242,23 +243,23 @@ void DispNode::enable()
     }
 }
 
-// Show display
-void DispNode::show()
-{
-    if (hidden())
-    {
-	myshown = true;
-	mynodeptr->hidden() = false;
-    }
-}
-
 // Hide display
 void DispNode::hide()
 {
     if (shown())
     {
-	myshown = false;
-	mynodeptr->hidden() = true;
+	saved_node_hidden = mynodeptr->hidden();
+	myhidden = mynodeptr->hidden() = true;
+    }
+}
+
+// Show display
+void DispNode::show()
+{
+    if (hidden())
+    {
+	myhidden = false;
+	mynodeptr->hidden() = saved_node_hidden;
     }
 }
 
