@@ -125,7 +125,11 @@ extern "C" {
 #endif
 #if !defined(HAVE_SETPGID) && defined(HAVE_SETPGRP) && !defined(setpgid)
 #if !defined(HAVE_SETPGRP_DECL) && !defined(setpgrp)
+#if defined(HAVE_SETPRGP_VOID)
+    int setpgrp();
+#else
     int setpgrp(pid_t pid, pid_t pgrp);
+#endif // defined(HAVE_SETPRGP_VOID)
 #define setpgid setpgrp
 #define HAVE_SETPGID
 #endif
@@ -161,8 +165,7 @@ extern "C" {
 #if defined(HAVE_SETSID) && !defined(HAVE_SETSID_DECL) && !defined(setsid)
     pid_t setsid(void);
 #endif
-#if !defined(HAVE_SETSID) && defined(HAVE_SETPGRP) && defined(GETPGRP_VOID)
-// If we have getpgrp(void), we probably also have setpgrp(void).
+#if !defined(HAVE_SETSID) && defined(HAVE_SETPGRP) && defined(SETPGRP_VOID)
 #define setsid() setpgrp()
 #define HAVE_SETSID
 #endif

@@ -1,7 +1,7 @@
-dnl $Id$
 dnl Process this file with autoconf to produce a configure script.
+dnl $Id$
 dnl 
-dnl Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+dnl Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
 dnl Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 dnl 
 dnl This file is part of the DDD Library.
@@ -32,8 +32,8 @@ dnl
 dnl
 dnl Revision Control
 dnl
-AC_PREREQ(2.6)
-AC_REVISION([$Id$])
+AC_PREREQ(2.11)dnl
+AC_REVISION($Revision$)
 dnl
 dnl
 dnl Initialization - setup names and paths
@@ -381,7 +381,10 @@ dnl
 dnl Find libraries and functions
 dnl 
 AC_FUNC_VFORK
+AC_CHECK_FUNC(getpgrp)
+AC_CHECK_FUNC(setpgrp)
 AC_FUNC_GETPGRP
+AC_FUNC_SETPGRP
 AC_FUNC_ALLOCA
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
