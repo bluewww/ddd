@@ -6423,8 +6423,7 @@ static void ddd_fatal(int sig)
 	}
 
 	// Re-raise signal.  This should kill us as we return.
-	signal(sig, (void (*)(int))SIG_DFL);
-	kill(getpid(), sig);
+	ddd_signal(sig);
 	return;
     }
 
