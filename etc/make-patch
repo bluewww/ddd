@@ -97,17 +97,33 @@ rm -fr ddd-*/etc ddd-*/tests ddd-*/.RELEASE
 
 # Create diffs
 (
-echo "This patch will bring a DDD $yesterday release up to DDD $today."
+echo "# $diff"
+echo "# Bring a DDD $yesterday source package up to DDD $today"
 echo 
-echo "This patch only affects source files.  Derived files as contained"
-echo "in the DDD source package must be reconstructed using \`make'."
+echo "About this patch"
+echo "----------------"
+echo 
+echo "* This patch must only be applied on DDD $yesterday source packages."
+echo 
+echo "* This patch only affects true source files - that is, files"
+echo "  generated manually."
 echo
-echo "To apply this patch, do the following:"
+echo "* Derived files as contained in the DDD source package are not"
+echo "  affected by this patch and must be reconstructed using \`make'."
+echo
+echo
+echo "Applying this patch"
+echo "-------------------"
 echo
 echo "1. See the INSTALL file for additional packages required"
 echo "   to rebuild DDD after making changes to the source code."
-echo "   Typically, you will need \`automake', \`autoconf',
-echo "   \`bison' and \`flex' as well as \`makeinfo' 4.0 or later.
+echo "   Typically, you will need at least:"
+echo "   - GNU \`autoconf' 2.13 or later"
+echo "   - GNU \`automake' 1.4 or later"
+echo "   - GNU \`bison'"
+echo "   - GNU \`flex'"
+echo "   - GNU \`makeinfo' 4.0 or later."
+echo "   We also recommend GNU make for rebuilding DDD."
 echo
 echo "2. Change to the directory containing the ddd-$yesterday"
 echo "   top-level directory, such that \`./ddd-$yesterday/ANNOUNCE'"
@@ -115,7 +131,7 @@ echo "   contains the DDD $yesterday announcement."
 echo
 echo "3. Apply this patch on DDD $yesterday, using \`patch':"
 echo
-echo "   % patch -p0 -l < $diff"
+echo "   % patch -p0 < $diff"
 echo
 echo "4. Rename the \`ddd-$yesterday' directory to \`ddd-$today':"
 echo
