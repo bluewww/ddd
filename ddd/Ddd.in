@@ -2166,12 +2166,13 @@ Ddd*menubar.help*helpString: \
 @tt \267 @bf On Window... @rm - help on the application itself.\n\
 @tt \267 @bf On Help... @rm - help on how to use the help facility.\n\
 \n\
-@tt \267 @bf About @DDD@... @rm - some general information about @DDD@.\n\
 @tt \267 @bf @DDD@ Manual... @rm - the @DDD@ on-line manual.\n\
 @tt \267 @bf @GDB@ Manual... @rm - the @GDB@ on-line manual.\n\
 \n\
 @tt \267 @bf @DDD@ License... @rm - the @DDD@ license.\n\
-@tt \267 @bf @DDD@ WWW Page... @rm - the @DDD@ WWW page.
+@tt \267 @bf @DDD@ WWW Page... @rm - the @DDD@ WWW page.\n\
+\n\
+@tt \267 @bf About @DDD@... @rm - some general information about @DDD@.
 
 Ddd*helpMenu.whatNext.labelString:		What Next...
 Ddd*helpMenu.whatNext.mnemonic:			N
@@ -2198,13 +2199,6 @@ Ddd*helpMenu.onHelp.mnemonic:			H
 Ddd*helpMenu.onHelp.documentationString:	\
 @rm How to use the context-sensitive help
 
-Ddd*helpMenu.onVersion.labelString:		About @DDD@...
-Ddd*helpMenu.onVersion.mnemonic:		A
-Ddd*helpMenu.onVersion.accelerator:		~Shift Ctrl<Key>F1
-Ddd*helpMenu.onVersion.acceleratorText:		Ctrl+F1
-Ddd*helpMenu.onVersion.documentationString:	\
-@rm General information about this @DDD@ version
-
 Ddd*helpMenu.dddManual.labelString:		@DDD@ Manual...
 Ddd*helpMenu.dddManual.mnemonic:		D
 Ddd*helpMenu.dddManual.documentationString:	\
@@ -2224,6 +2218,13 @@ Ddd*helpMenu.www.labelString:		@DDD@ WWW Page...
 Ddd*helpMenu.www.mnemonic:		P
 Ddd*helpMenu.www.documentationString:	\
 @rm Invoke a WWW browser with up-to-date @DDD@ information
+
+Ddd*helpMenu.onVersion.labelString:		About @DDD@...
+Ddd*helpMenu.onVersion.mnemonic:		A
+Ddd*helpMenu.onVersion.accelerator:		~Shift Ctrl<Key>F1
+Ddd*helpMenu.onVersion.acceleratorText:		Ctrl+F1
+Ddd*helpMenu.onVersion.documentationString:	\
+@rm General information about this @DDD@ version
 
 
 
@@ -2597,6 +2598,21 @@ Click on @bf Reset @rm to delete all status displays.\n\
 Click on @bf Close @rm to close this window.
 
 
+
+!-----------------------------------------------------------------------------
+! Scrolled and paned windows
+!-----------------------------------------------------------------------------
+
+Ddd*XmPanedWindow.marginWidth:		2
+Ddd*XmPanedWindow.marginHeight:		2
+Ddd*XmPanedWindow.shadowThickness:	0
+Ddd*XmPanedWindow.spacing:		4
+! Ddd*XmText.marginWidth:		0
+! Ddd*XmText.marginHeight:		0
+! Ddd*XmText.shadowThickness:		1
+
+
+
 !-----------------------------------------------------------------------------
 ! Graph Editor
 !-----------------------------------------------------------------------------
@@ -2895,6 +2911,20 @@ Ddd*source_form_w.height:		320
 
 Ddd*code_form_w.width:			622
 Ddd*code_form_w.height:			50
+
+Ddd*source_text_w_swindow.spacing:		0
+Ddd*source_text_w_swindow.borderWidth:		0
+Ddd*source_text_w_swindow.shadowThickness:	0
+Ddd*source_text_wSW.spacing:			0
+Ddd*source_text_wSW.borderWidth:		0
+Ddd*source_text_wSW.shadowThickness:		0
+
+Ddd*code_text_w_swindow.spacing:		0
+Ddd*code_text_w_swindow.borderWidth:		0
+Ddd*code_text_w_swindow.shadowThickness:	0
+Ddd*code_text_wSW.spacing:			0
+Ddd*code_text_wSW.borderWidth:			0
+Ddd*code_text_wSW.shadowThickness:		0
 
 Ddd*source_text_w.scrollHorizontal:	false
 Ddd*source_text_w.wordWrap:		true
@@ -3242,6 +3272,13 @@ Ddd*gdb_w.columns:		80
 
 Ddd*gdb_wSW.width:		622
 Ddd*gdb_wSW.height:		124
+
+Ddd*gdb_w_swindow.spacing:		0
+Ddd*gdb_w_swindow.borderWidth:		0
+Ddd*gdb_w_swindow.shadowThickness:	0
+Ddd*gdb_wSW.spacing:			0
+Ddd*gdb_wSW.borderWidth:		0
+Ddd*gdb_wSW.shadowThickness:		0
 
 Ddd*gdb_w.editable:		true
 Ddd*gdb_w.allowResize:		true

@@ -979,12 +979,13 @@ static MMDesc help_menu[] =
     {"onWindow",    MMPush, { HelpOnWindowCB }},
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     MMSep,
-    {"onVersion",   MMPush, { HelpOnVersionCB }},
     {"dddManual",   MMPush, { DDDManualCB }},
     {"gdbManual",   MMPush, { GDBManualCB }},
     MMSep,
     {"license",     MMPush, { DDDLicenseCB }},
     {"www",         MMPush, { DDDWWWPageCB }},
+    MMSep,
+    {"onVersion",   MMPush, { HelpOnVersionCB }},
     MMEnd
 };
 
