@@ -362,7 +362,7 @@ static void lock_ddd(Widget parent);
 // Various setups
 static void setup_version_info();
 static void setup_environment();
-static void setup_command_tool(bool iconic);
+static void setup_command_tool();
 static void setup_options(int& argc, char *argv[],
 			  StringArray& saved_options, string& gdb_name,
 			  bool& no_windows);
@@ -1944,6 +1944,7 @@ int main(int argc, char *argv[])
     // Create Paned Window
     arg = 0;
     XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+    XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
     Widget paned_work_w = verify(XmCreatePanedWindow(main_window,
 						     "paned_work_w",
@@ -2015,6 +2016,7 @@ int main(int argc, char *argv[])
 
 	arg = 0;
 	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+	XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
 	XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 	data_disp_parent = verify(XmCreatePanedWindow(data_main_window_w,
 						      "data_paned_work_w",
@@ -2074,6 +2076,7 @@ int main(int argc, char *argv[])
 	// Add source window
 	arg = 0;
 	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+	XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
 	XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 	source_view_parent = 
 	    verify(XmCreatePanedWindow(source_main_window_w, 
@@ -2428,9 +2431,7 @@ int main(int argc, char *argv[])
 
     // Create command tool
     if (app_data.tool_buttons && strlen(app_data.tool_buttons) > 0)
-    {
-	setup_command_tool(iconic);
-    }
+	setup_command_tool();
 
     // Make sure we see all messages accumulated so far
     {
@@ -5760,29 +5761,8 @@ static void setup_environment()
     put_environment(DDD_NAME, ddd_NAME "-" DDD_VERSION "-" DDD_HOST);
 }
 
-static void setup_command_tool(bool iconic)
+static void setup_command_tool()
 {
-    Widget tool_shell_parent = 
-	source_view_shell ? source_view_shell : command_shell;
-
-    Position pos_x, pos_y;
-    get_transient_pos(XtScreen(tool_shell_parent), pos_x, pos_y);
-
-    ostrstream os;
-    os << "+" << pos_x << "+" << pos_y;
-    string geometry(os);
-
-    Arg args[10];
-    int arg = 0;
-
-    XtSetArg(args[arg], XmNgeometry, geometry.chars());   arg++;
-    XtSetArg(args[arg], XmNx, pos_x);                     arg++;
-    XtSetArg(args[arg], XmNy, pos_y);                     arg++;
-    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
-    XtSetArg(args[arg], XmNallowShellResize, False);      arg++;
-    XtSetArg(args[arg], XmNmwmDecorations,
-	     MWM_DECOR_BORDER | MWM_DECOR_TITLE | MWM_DECOR_MENU); arg++;
-
     // It is preferable to realize the command tool as a DialogShell,
     // since this will cause it to stay on top of other DDD windows.
     // Unfortunately, some window managers do not decorate transient
@@ -5805,6 +5785,19 @@ static void setup_command_tool(bool iconic)
 	use_transient_tool_shell = have_decorated_transients();
 	break;
     }
+
+    Widget tool_shell_parent = 
+	source_view_shell ? source_view_shell : command_shell;
+
+    Arg args[10];
+    int arg = 0;
+
+    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+    XtSetArg(args[arg], XmNallowShellResize, False);      arg++;
+    XtSetArg(args[arg], XmNmwmDecorations,
+	     MWM_DECOR_BORDER | MWM_DECOR_TITLE | MWM_DECOR_MENU); arg++;
+    XtSetArg(args[arg], XmNmwmFunctions, 
+	     MWM_FUNC_MOVE | MWM_FUNC_CLOSE); arg++;
 
     if (use_transient_tool_shell)
     {
@@ -5831,27 +5824,27 @@ static void setup_command_tool(bool iconic)
     XtAddEventHandler(tool_shell, STRUCTURE_MASK, False,
 		      StructureNotifyEH, XtPointer(0));
 
-#if 0
-    if (app_data.command_toolbar)
-    {
-	// The command tool is not needed, as we have a command toolbar.
-    }
-    else if (!app_data.source_window)
-    {
-	// We have no source window, and thus no command tool.
-    }
-    else if (source_view_shell || iconic)
-    {
-	// We don't need the command tool right now - wait for source
-	// window to map
-    }
-    else
-    {
-	// OK, raise the command tool
-	initial_popup_shell(tool_shell);
-    }
-#endif
-    (void) iconic;		// Use it
+    // Determine `best' size for tool shell
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight | CWWidth;
+    XtQueryGeometry(tool_buttons_w, NULL, &size);
+
+    // Set shell geometry
+    Position pos_x, pos_y;
+    get_transient_pos(XtScreen(tool_shell_parent), pos_x, pos_y);
+
+    ostrstream os;
+    os << size.width << "x" << size.height << "+" << pos_x << "+" << pos_y;
+    string geometry(os);
+
+    XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
+    XtSetArg(args[arg], XmNx, pos_x);                   arg++;
+    XtSetArg(args[arg], XmNy, pos_y);                   arg++;
+    XtSetArg(args[arg], XmNmaxWidth,  size.width);      arg++;
+    XtSetArg(args[arg], XmNmaxHeight, size.height);     arg++;
+    XtSetArg(args[arg], XmNminWidth,  size.width);      arg++;
+    XtSetArg(args[arg], XmNminHeight, size.height);     arg++;
+    XtSetValues(tool_shell, args, arg);
 }
 
 static void setup_options(int& argc, char *argv[],
