@@ -3953,8 +3953,8 @@ In 1992, the \s-2VSL\s+2 and Box libraries were recycled for the
 inference-based software development tool set, Andreas wrote a graph
 editor (based on \s-2VSL\s+2 and the \s-2BOX\s+2 libraries) and
 facilities for inter-process knowledge exchange.  Based on these
-tools, \fIDorothea Lütkehaus\fR realized \s-2@DDD@\s+2 as her Diploma
-Thesis, 1994.
+tools, \fIDorothea Lütkehaus\fR (now \fIDorothea Krabiell\fR) realized
+\s-2@DDD@\s+2 as her Diploma Thesis, 1994.
 .PP
 The original \s-2@DDD@\s+2 had no source window; this was added by
 Dorothea during the winter of 1994/1995.  In the first quarter of
@@ -3982,7 +3982,10 @@ October, 1996
 \s-2DBX\s+2 support, command tool.
 .TP
 May, 1997
-\s-2@DDD@\s+2 2.1: Alias detection, button tips, status displays.
+\s-2@DDD@\s+2 2.1: Alias detection, button tips, status displays
+.TP
+December, 1997
+\s-2@DDD@\s+2 2.2: Persistent sessions.
 .PD
 .\"
 .\"
