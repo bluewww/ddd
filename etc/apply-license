@@ -72,7 +72,7 @@ s/ $//g'`
   esac
 
   case $fullfile in
-    */ddd*)   project=DDD;;
+    */ddd*)   project=DDD; library=true;;
     */ice/*)  project=ICE; library=true;;
     */ice)    project=ICE; library=true;;
     */nora/*) project=NORA;;
