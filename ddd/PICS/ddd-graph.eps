@@ -1,63 +1,56 @@
 %!PS-Adobe-2.0 EPSF-2.0
 %%Creator: Box::print() by Christian Lindig
-%%BoundingBox: 42 35 551 447
+%%BoundingBox: 42 35 552 126
 %%Pages: 1
 %%EndComments
 
 gsave
-34 458 translate
-0.829268 -0.829268 scale
+20 131 translate
+0.73913 -0.73913 scale
 % $Id$
 % Header for DDD PostScript Box output
 
-% Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+% Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 % Written by Christian Lindig <lindig@ips.cs.tu-bs.de>.
 % 
-% This file is part of the DDD Library.
+% This file is part of DDD.
 % 
-% The DDD Library is free software; you can redistribute it and/or
-% modify it under the terms of the GNU Library General Public
+% DDD is free software; you can redistribute it and/or
+% modify it under the terms of the GNU General Public
 % License as published by the Free Software Foundation; either
 % version 2 of the License, or (at your option) any later version.
 % 
-% The DDD Library is distributed in the hope that it will be useful,
+% DDD is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-% See the GNU Library General Public License for more details.
+% See the GNU General Public License for more details.
 % 
-% You should have received a copy of the GNU Library General Public
-% License along with the DDD Library -- see the file COPYING.LIB.
+% You should have received a copy of the GNU General Public
+% License along with DDD -- see the file COPYING.
 % If not, write to the Free Software Foundation, Inc.,
 % 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 % 
 % DDD is the data display debugger.
 % For details, see the DDD World-Wide-Web page, 
 % `http://www.cs.tu-bs.de/softech/ddd/',
-% or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+% or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-%
-% make all definitions local to the ddddict dictionary
-%
-
+% Make all definitions local to the ddddict dictionary
 /ddddict 25 dict def 
 
 ddddict begin		% make dict active 
 
-%
-% global variables
-%
 
+% Global variables
 /fontSize+ 12 def
 /font+ /Courier def  
 
-%
-% some small utilities
-%
 
+% Some small utilities
 /cm { 28.34646 mul } bind def
 
-% isolatin1*
-% reencode a font to ISO Latin 1 encoding
+
+% ISOLATIN1* - reencode a font to ISO Latin 1 encoding
 %
 % newfont table oldfont isolatin1*
 
@@ -72,9 +65,8 @@ ddddict begin		% make dict active
 	currentdict end definefont pop
 } bind def
 
-%
-% define the ISO Latin 1 encoding of a font ..
-%
+
+% Define the ISO Latin 1 encoding of a font
  
 /isotable[
 /.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
@@ -103,13 +95,13 @@ ddddict begin		% make dict active
 /divide/oslash/ugrave/uacute/ucircumflex/udieresis/yacute/thorn/ydieresis
 ] def
 
+
+% YCORRECT*
+% The reference point of a string ist NOT its lower left corner but 
+% its baseline.  Therefore, the y coordinate must be corrected.  
+% Returns the correction for the current font.
 %
-% ycorrect*
-% the reference point of a string ist NOT its lower left corner but 
-% its baseline. Therefor the y coordinate must be corrected. The
-% correction for the current font is returned.
 % ycorrect* y
-% 
 
 /ycorrect* {
 	currentfont /FontBBox get
@@ -118,8 +110,8 @@ ddddict begin		% make dict active
 	exch pop
 } def 
 
-%
-% text*
+
+% TEXT*
 % print out a string and make sure not to require more space than
 % specified.
 % font xsize ysize xorigin yorigin (string) text*
@@ -132,8 +124,8 @@ ddddict begin		% make dict active
 	/xsize+ exch def
 	/thefont+ exch def
 
-	% right font allready selected ?
-	
+	% is the right font already selected ?
+
 	thefont+ font+ ne 
 	ysize+ fontSize+ ne
 	or {	
@@ -159,21 +151,18 @@ ddddict begin		% make dict active
 
 	0 ycorrect* neg rmoveto
 
-	% string too long ? scale it down ...
-	% the actual font is scaled. There is a good chance,
+	% string too long?  Scale it down ...
+	% The actual font is scaled. There is a good chance,
 	% that this will not happen too often when the font is not
 	% changed during the calls of text*
 
 	xsize+ string+ stringwidth pop div dup dup
 	1 lt {
-		
 		0 0 1 0 0 6 array astore currentfont exch 
 		makefont setfont
 		pop
 	}{ 
-		%
-		% string too short ... scale it up
-		%
+		% string is too short ... scale it up
 
 		1.05 gt {
 			0 0 1 0 0 6 array astore currentfont exch 
@@ -188,16 +177,13 @@ ddddict begin		% make dict active
 
 } bind def
 
-
 	
-% 
-% arrowline*
-% draw a line of given width with an arrow at its end
+% ARROWLINE*
+% Draw a line of given width with an arrow at its end
 % len gives the height of the triangle forming the head of the arrow
 % and angle the angle at its top
 %	
 % angle len  x1 y1 x2 y2 linewidth arrowline*
-%
 
 /arrowline* {
 	setlinewidth			% angle len x1 y1 x2 y2
@@ -246,11 +232,48 @@ ddddict begin		% make dict active
 	grestore
 } bind def
 
-% 
-% line*
-% draw a line of given width from (x1,y1) to (x2,y2)
-% x1 y1 x2 y2 width line*
+% ARROWHEAD*
+% draw an arrow head inclined by alpha at (x,y)
 %
+% angle len alpha x y
+
+/arrowhead* {
+	/y exch def
+	/x exch def
+	/alpha+ exch def
+	/len+ exch def			% height of triangle
+
+	/base+				% define half of baseline
+		exch 
+		2 div dup		% angle angle
+		sin exch cos 	 	% sin(angle) cos(angle)
+		div			% tan(angle)
+		len+
+		mul			% half of baseline
+	def
+
+	gsave				% set the origin to the head of
+	0 setlinewidth			% the arrow and rotate the system
+	x y 
+	translate			% origin now at x y
+
+	alpha+ 90 sub rotate 		% rotate the system
+
+	newpath				% draw a triangle
+	0 0 moveto
+	base+ len+ neg rlineto
+	base+ 2 mul neg 0 rlineto
+	closepath
+	fill
+	
+	grestore
+} bind def
+
+
+% LINE*
+% draw a line of given width from (x1,y1) to (x2,y2)
+%
+% x1 y1 x2 y2 width line*
 
 /line* {
 	setlinewidth	% x1 y1 x2 y2
@@ -261,11 +284,11 @@ ddddict begin		% make dict active
 	stroke
 } bind def
 
+
+% CLEAN*
 %
-% clean*
 % fill a box given by four points with white colour ..
 % x1 y1 x2 y2 x3 y3 x4 y4 clean*
-%
 
 /clean* {
 	gsave
@@ -278,11 +301,11 @@ ddddict begin		% make dict active
 	grestore
 } bind def
 
-%
-% box*
+
+% BOX*
 % fill a box given by four points
-% x1 y1 x2 y2 x3 y3 x4 y4 box*
 %
+% x1 y1 x2 y2 x3 y3 x4 y4 box*
 
 /box* {
 	0 setlinewidth
@@ -292,12 +315,12 @@ ddddict begin		% make dict active
 	fill
 } bind def
 
-%
-% arc*
-% draw an ellipse with center (cx,cy), diameter dx dy, starting at start
+
+% ARC*
+% draw an ellipse with center (cx,cy), radius dx dy, starting at start
 % and ending at end.
-% start end dx dy cx cy width ARC*
 %
+% start end dx dy cx cy width ARC*
 
 /arc* {
 	gsave
@@ -321,9 +344,7 @@ ddddict begin		% make dict active
 } bind def
 
 
-%
-% set up the right font to the right size
-%
+% Set up the right font to the right size
 
 /isofont+ isotable font+ isolatin1* 	% reencode font+
 					% and make it the current font
@@ -332,173 +353,98 @@ ddddict begin		% make dict active
 setfont
 
 %%EndProlog
-30 10 368 50 368 97 1 arrowline*
-30 10 316 191 260 241 1 arrowline*
-30 10 420 191 476 241 1 arrowline*
-30 10 179 335 125 417 1 arrowline*
-30 10 233 335 279 417 1 arrowline*
-312 14 424 14 424 50 312 50 clean*
-312 14 423 14 423 15 312 15 box* %(312,14)(111,1)
-312 15 313 15 313 48 312 48 box* %(312,15)(1,33)
-/Courier 7 13 315 30 (1) text*
-/Courier 14 13 322 30 (: ) text*
-/Courier-Bold 28 13 336 30 (tree) text*
-315 30 420 30 420 31 315 31 box* %(315,30)(105,1)
-/Courier-Bold 105 13 315 46 (\(Tree *\) 0xfb88) text*
-422 15 423 15 423 48 422 48 box* %(422,15)(1,33)
-312 48 423 48 423 49 312 49 box* %(312,48)(111,1)
-423 15 424 15 424 49 423 49 box* %(423,15)(1,34)
-313 49 424 49 424 50 313 50 box* %(313,49)(111,1)
-286 97 451 97 451 191 286 191 clean*
-286 97 450 97 450 98 286 98 box* %(286,97)(164,1)
-286 98 287 98 287 189 286 189 box* %(286,98)(1,91)
-/Courier 7 13 289 113 (2) text*
-/Courier 14 13 296 113 (: ) text*
-/Courier-Bold 35 13 310 113 (*tree) text*
-289 113 447 113 447 114 289 114 box* %(289,113)(158,1)
-289 116 447 116 447 117 289 117 box* %(289,116)(158,1)
-289 117 290 117 290 186 289 186 box* %(289,117)(1,69)
-/Courier 35 13 304 132 (value) text*
-/Courier 21 13 340 132 ( = ) text*
-/Courier 7 13 361 132 (7) text*
-/Courier 28 13 304 145 (name) text*
-/Courier 21 13 339 145 ( = ) text*
-/Courier 84 13 360 145 (0x2290 \"Ada\") text*
-/Courier 28 13 304 158 (date) text*
-/Courier 21 13 340 158 ( = ) text*
-/Courier 35 13 361 158 ({...}) text*
-/Courier 28 13 304 171 (left) text*
-/Courier 21 13 339 171 ( = ) text*
-/Courier-Bold 42 13 360 171 (0xfbb8) text*
-/Courier 35 13 304 184 (right) text*
-/Courier 21 13 339 184 ( = ) text*
-/Courier-Bold 42 13 360 184 (0xfc48) text*
-446 117 447 117 447 186 446 186 box* %(446,117)(1,69)
-289 186 447 186 447 187 289 187 box* %(289,186)(158,1)
-449 98 450 98 450 189 449 189 box* %(449,98)(1,91)
-286 189 450 189 450 190 286 190 box* %(286,189)(164,1)
-450 98 451 98 451 190 450 190 box* %(450,98)(1,92)
-287 190 451 190 451 191 287 191 box* %(287,190)(164,1)
-119 241 298 241 298 335 119 335 clean*
-119 241 297 241 297 242 119 242 box* %(119,241)(178,1)
-119 242 120 242 120 333 119 333 box* %(119,242)(1,91)
-/Courier 7 13 122 257 (3) text*
-/Courier 14 13 129 257 (: ) text*
-/Courier-Bold 77 13 143 257 (*tree->left) text*
-122 257 294 257 294 258 122 258 box* %(122,257)(172,1)
-122 260 294 260 294 261 122 261 box* %(122,260)(172,1)
-122 261 123 261 123 330 122 330 box* %(122,261)(1,69)
-/Courier 35 13 137 276 (value) text*
-/Courier 21 13 173 276 ( = ) text*
-/Courier 7 13 194 276 (1) text*
-/Courier 28 13 137 289 (name) text*
-/Courier 21 13 172 289 ( = ) text*
-/Courier 98 13 193 289 (0x2298 \"Grace\") text*
-/Courier 28 13 137 302 (date) text*
-/Courier 21 13 173 302 ( = ) text*
-/Courier 35 13 194 302 ({...}) text*
-/Courier 28 13 137 315 (left) text*
-/Courier 21 13 172 315 ( = ) text*
-/Courier-Bold 42 13 193 315 (0xfbe8) text*
-/Courier 35 13 137 328 (right) text*
-/Courier 21 13 172 328 ( = ) text*
-/Courier-Bold 42 13 193 328 (0xfc18) text*
-293 261 294 261 294 330 293 330 box* %(293,261)(1,69)
-122 330 294 330 294 331 122 331 box* %(122,330)(172,1)
-296 242 297 242 297 333 296 333 box* %(296,242)(1,91)
-119 333 297 333 297 334 119 334 box* %(119,333)(178,1)
-297 242 298 242 298 334 297 334 box* %(297,242)(1,92)
-120 334 298 334 298 335 120 335 box* %(120,334)(178,1)
-432 241 625 241 625 335 432 335 clean*
-432 241 624 241 624 242 432 242 box* %(432,241)(192,1)
-432 242 433 242 433 333 432 333 box* %(432,242)(1,91)
-/Courier 7 13 435 257 (4) text*
-/Courier 14 13 442 257 (: ) text*
-/Courier-Bold 84 13 456 257 (*tree->right) text*
-435 257 621 257 621 258 435 258 box* %(435,257)(186,1)
-435 260 621 260 621 261 435 261 box* %(435,260)(186,1)
-435 261 436 261 436 330 435 330 box* %(435,261)(1,69)
-/Courier 35 13 450 276 (value) text*
-/Courier 21 13 486 276 ( = ) text*
-/Courier 7 13 507 276 (9) text*
-/Courier 28 13 450 289 (name) text*
-/Courier 21 13 485 289 ( = ) text*
-/Courier 112 13 506 289 (0x22b8 \"Mildred\") text*
-/Courier 28 13 450 302 (date) text*
-/Courier 21 13 486 302 ( = ) text*
-/Courier 35 13 507 302 ({...}) text*
-/Courier 28 13 450 315 (left) text*
-/Courier 21 13 486 315 ( = ) text*
-/Courier 21 13 507 315 (0x0) text*
-/Courier 35 13 450 328 (right) text*
-/Courier 21 13 486 328 ( = ) text*
-/Courier 21 13 507 328 (0x0) text*
-620 261 621 261 621 330 620 330 box* %(620,261)(1,69)
-435 330 621 330 621 331 435 331 box* %(435,330)(186,1)
-623 242 624 242 624 333 623 333 box* %(623,242)(1,91)
-432 333 624 333 624 334 432 334 box* %(432,333)(192,1)
-624 242 625 242 625 334 624 334 box* %(624,242)(1,92)
-433 334 625 334 625 335 433 335 box* %(433,334)(192,1)
-10 417 182 417 182 511 10 511 clean*
-10 417 181 417 181 418 10 418 box* %(10,417)(171,1)
-10 418 11 418 11 509 10 509 box* %(10,418)(1,91)
-/Courier 7 13 13 433 (5) text*
-/Courier 14 13 20 433 (: ) text*
-/Courier-Bold 119 13 34 433 (*tree->left->left) text*
-13 433 178 433 178 434 13 434 box* %(13,433)(165,1)
-13 436 178 436 178 437 13 437 box* %(13,436)(165,1)
-13 437 14 437 14 506 13 506 box* %(13,437)(1,69)
-/Courier 35 13 28 452 (value) text*
-/Courier 21 13 63 452 ( = ) text*
-/Courier 7 13 84 452 (5) text*
-/Courier 28 13 28 465 (name) text*
-/Courier 21 13 63 465 ( = ) text*
-/Courier 91 13 84 465 (0x22a0 \"Judy\") text*
-/Courier 28 13 28 478 (date) text*
-/Courier 21 13 63 478 ( = ) text*
-/Courier 35 13 84 478 ({...}) text*
-/Courier 28 13 28 491 (left) text*
-/Courier 21 13 63 491 ( = ) text*
-/Courier 21 13 84 491 (0x0) text*
-/Courier 35 13 28 504 (right) text*
-/Courier 21 13 63 504 ( = ) text*
-/Courier 21 13 84 504 (0x0) text*
-177 437 178 437 178 506 177 506 box* %(177,437)(1,69)
-13 506 178 506 178 507 13 507 box* %(13,506)(165,1)
-180 418 181 418 181 509 180 509 box* %(180,418)(1,91)
-10 509 181 509 181 510 10 510 box* %(10,509)(171,1)
-181 418 182 418 182 510 181 510 box* %(181,418)(1,92)
-11 510 182 510 182 511 11 511 box* %(11,510)(171,1)
-204 417 404 417 404 511 204 511 clean*
-204 417 403 417 403 418 204 418 box* %(204,417)(199,1)
-204 418 205 418 205 509 204 509 box* %(204,418)(1,91)
-/Courier 7 13 207 433 (6) text*
-/Courier 14 13 214 433 (: ) text*
-/Courier-Bold 126 13 228 433 (*tree->left->right) text*
-207 433 400 433 400 434 207 434 box* %(207,433)(193,1)
-207 436 400 436 400 437 207 437 box* %(207,436)(193,1)
-207 437 208 437 208 506 207 506 box* %(207,437)(1,69)
-/Courier 35 13 222 452 (value) text*
-/Courier 21 13 257 452 ( = ) text*
-/Courier 7 13 278 452 (6) text*
-/Courier 28 13 222 465 (name) text*
-/Courier 21 13 257 465 ( = ) text*
-/Courier 119 13 278 465 (0x22a8 \"Kathleen\") text*
-/Courier 28 13 222 478 (date) text*
-/Courier 21 13 257 478 ( = ) text*
-/Courier 35 13 278 478 ({...}) text*
-/Courier 28 13 222 491 (left) text*
-/Courier 21 13 257 491 ( = ) text*
-/Courier 21 13 278 491 (0x0) text*
-/Courier 35 13 222 504 (right) text*
-/Courier 21 13 257 504 ( = ) text*
-/Courier 21 13 278 504 (0x0) text*
-399 437 400 437 400 506 399 506 box* %(399,437)(1,69)
-207 506 400 506 400 507 207 507 box* %(207,506)(193,1)
-402 418 403 418 403 509 402 509 box* %(402,418)(1,91)
-204 509 403 509 403 510 204 510 box* %(204,509)(199,1)
-403 418 404 418 404 510 403 510 box* %(403,418)(1,92)
-205 510 404 510 404 511 205 511 box* %(205,510)(199,1)
+30 10 162 64 200 64 1 arrowline*
+/Helvetica-Narrow 12 13 175 62 (*\(\)) text*
+30 10 344 64 376 64 1 arrowline*
+/Helvetica-Narrow 21 13 350 62 (next) text*
+30 10 520 64 552 64 1 arrowline*
+/Helvetica-Narrow 21 13 526 62 (next) text*
+51 90 164 164 448 -36 1 arc*
+/Helvetica-Narrow 21 13 438 126 (next) text*
+90 129 164 164 448 -36 1 arc*
+30 10 219 343 90 arrowhead*
+180 90 16 16 344 38 1 arc*
+30 10 108 328 38 arrowhead*
+/Helvetica-Narrow 16 13 352 20 (self) text*
+180 90 16 16 520 38 1 arc*
+30 10 108 504 38 arrowhead*
+/Helvetica-Narrow 16 13 528 20 (self) text*
+180 90 16 16 696 38 1 arc*
+30 10 108 680 38 arrowhead*
+/Helvetica-Narrow 16 13 704 20 (self) text*
+30 46 163 46 163 82 30 82 clean*
+30 46 162 46 162 47 30 47 box* %(30, 46)(132, 1)
+30 47 31 47 31 80 30 80 box* %(30, 47)(1, 33)
+/Courier 7 13 33 62 (5) text*
+/Courier 14 13 40 62 (: ) text*
+/Courier-Bold 28 13 54 62 (list) text*
+33 62 159 62 159 63 33 63 box* %(33, 62)(126, 1)
+/Courier-Bold 126 13 33 78 (\(List *\) 0x804af30) text*
+161 47 162 47 162 80 161 80 box* %(161, 47)(1, 33)
+30 80 162 80 162 81 30 81 box* %(30, 80)(132, 1)
+162 47 163 47 163 81 162 81 box* %(162, 47)(1, 34)
+31 81 163 81 163 82 31 82 box* %(31, 81)(132, 1)
+448 128 448 128 448 128 448 128 clean*
+376 38 520 38 520 90 376 90 clean*
+376 38 519 38 519 39 376 39 box* %(376, 38)(143, 1)
+376 39 377 39 377 88 376 88 box* %(376, 39)(1, 49)
+379 41 516 41 516 42 379 42 box* %(379, 41)(137, 1)
+379 42 380 42 380 85 379 85 box* %(379, 42)(1, 43)
+/Courier 35 13 394 57 (value) text*
+/Courier 21 13 429 57 ( = ) text*
+/Courier 14 13 450 57 (86) text*
+/Courier 28 13 394 70 (self) text*
+/Courier 21 13 429 70 ( = ) text*
+/Courier-Bold 63 13 450 70 (0x804af40) text*
+/Courier 28 13 394 83 (next) text*
+/Courier 21 13 429 83 ( = ) text*
+/Courier-Bold 63 13 450 83 (0x804af50) text*
+515 42 516 42 516 85 515 85 box* %(515, 42)(1, 43)
+379 85 516 85 516 86 379 86 box* %(379, 85)(137, 1)
+518 39 519 39 519 88 518 88 box* %(518, 39)(1, 49)
+376 88 519 88 519 89 376 89 box* %(376, 88)(143, 1)
+519 39 520 39 520 89 519 89 box* %(519, 39)(1, 50)
+377 89 520 89 520 90 377 90 box* %(377, 89)(143, 1)
+552 38 696 38 696 90 552 90 clean*
+552 38 695 38 695 39 552 39 box* %(552, 38)(143, 1)
+552 39 553 39 553 88 552 88 box* %(552, 39)(1, 49)
+555 41 692 41 692 42 555 42 box* %(555, 41)(137, 1)
+555 42 556 42 556 85 555 85 box* %(555, 42)(1, 43)
+/Courier 35 13 570 57 (value) text*
+/Courier 21 13 605 57 ( = ) text*
+/Courier 14 13 626 57 (87) text*
+/Courier 28 13 570 70 (self) text*
+/Courier 21 13 605 70 ( = ) text*
+/Courier-Bold 63 13 626 70 (0x804af50) text*
+/Courier 28 13 570 83 (next) text*
+/Courier 21 13 605 83 ( = ) text*
+/Courier-Bold 63 13 626 83 (0x804af30) text*
+691 42 692 42 692 85 691 85 box* %(691, 42)(1, 43)
+555 85 692 85 692 86 555 86 box* %(555, 85)(137, 1)
+694 39 695 39 695 88 694 88 box* %(694, 39)(1, 49)
+552 88 695 88 695 89 552 89 box* %(552, 88)(143, 1)
+695 39 696 39 696 89 695 89 box* %(695, 39)(1, 50)
+553 89 696 89 696 90 553 90 box* %(553, 89)(143, 1)
+200 38 344 38 344 90 200 90 clean*
+200 38 343 38 343 39 200 39 box* %(200, 38)(143, 1)
+200 39 201 39 201 88 200 88 box* %(200, 39)(1, 49)
+203 41 340 41 340 42 203 42 box* %(203, 41)(137, 1)
+203 42 204 42 204 85 203 85 box* %(203, 42)(1, 43)
+/Courier 35 13 218 57 (value) text*
+/Courier 21 13 253 57 ( = ) text*
+/Courier 14 13 274 57 (85) text*
+/Courier 28 13 218 70 (self) text*
+/Courier 21 13 253 70 ( = ) text*
+/Courier-Bold 63 13 274 70 (0x804af30) text*
+/Courier 28 13 218 83 (next) text*
+/Courier 21 13 253 83 ( = ) text*
+/Courier-Bold 63 13 274 83 (0x804af40) text*
+339 42 340 42 340 85 339 85 box* %(339, 42)(1, 43)
+203 85 340 85 340 86 203 86 box* %(203, 85)(137, 1)
+342 39 343 39 343 88 342 88 box* %(342, 39)(1, 49)
+200 88 343 88 343 89 200 89 box* %(200, 88)(143, 1)
+343 39 344 39 344 89 343 89 box* %(343, 39)(1, 50)
+201 89 344 89 344 90 201 90 box* %(201, 89)(143, 1)
 %%Trailer
 
 % $Id$
