@@ -242,35 +242,67 @@ static int current_history = 0;
 
 static Widget history_label = 0;
 
-Widget status_history(Widget parent)
+static Widget create_status_history(Widget parent)
 {
-    static Widget history = 0;
+    static Widget history_shell = 0;
 
-    if (history != 0)
-	return history;
+    if (history_shell != 0)
+	return history_shell;
 
     Arg args[10];
     int arg;
 
     arg = 0;
     XtSetArg(args[arg], XmNallowShellResize, True); arg++;
-    history = verify(XtCreateWidget("status_history_shell",
-				    overrideShellWidgetClass, 
-				    parent, args, arg));
+    history_shell = verify(XtCreateWidget("status_history_shell",
+					  overrideShellWidgetClass, 
+					  parent, args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNresizable, True); arg++;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
-    history_label = verify(XmCreateLabel(history, "history_label", args, arg));
+    history_label = verify(XmCreateLabel(history_shell, "label", args, arg));
     XtManageChild(history_label);
 					   
-    return history;
+    return history_shell;
+}
+
+Widget status_history(Widget parent)
+{
+    Widget history_shell = create_status_history(parent);
+
+    MString history_msg;
+
+    if (history == 0 || status_history_size == 0)
+    {
+	history_msg = rm("No history.");
+    }
+    else
+    {
+	history_msg = bf("Recent messages");
+	history_msg += rm(" (oldest first)");
+	history_msg += cr();
+
+	int i = current_history;
+	do {
+	    if (!history[i].isEmpty())
+	    {
+		if (!history_msg.isEmpty())
+		    history_msg += cr();
+		history_msg += history[i];
+	    }
+	    i = (i + 1) % status_history_size;
+	} while (i != current_history);
+    }
+
+    XtVaSetValues(history_label, XmNlabelString, history_msg.xmstring(), 
+		  XtPointer(0));
+
+    return history_shell;
 }
 
 static void add_to_status_history(const MString& message)
 {
-    (void) status_history(status_w);
-
     if (history == 0)
 	history = new MString[status_history_size];
 
@@ -284,21 +316,6 @@ static void add_to_status_history(const MString& message)
 
     history[current_history] = message;
     current_history = (current_history + 1) % status_history_size;
-
-    MString history_msg;
-    int i = current_history;
-    do {
-	if (!history[i].isEmpty())
-	{
-	    if (!history_msg.isEmpty())
-		history_msg += cr();
-	    history_msg += history[i];
-	}
-	i = (i + 1) % status_history_size;
-    } while (i != current_history);
-
-    XtVaSetValues(history_label, XmNlabelString, history_msg.xmstring(), 
-		  XtPointer(0));
 }
 
 //-----------------------------------------------------------------------------

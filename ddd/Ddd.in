@@ -2971,8 +2971,6 @@ Ddd*status_lines.marginWidth:		0
 Ddd*status_lines.marginHeight:		0
 Ddd*status_lines.borderWidth:		0
 Ddd*status_lines.spacing:		0
-Ddd*history_label.labelString:		\
-@rm No status history.
 
 
 !-----------------------------------------------------------------------------
