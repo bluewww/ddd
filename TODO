@@ -192,9 +192,6 @@ Volunteers for these and other projects are welcome!
      top-level documentation in the DDD manual (including news,
      problems, etc.) and generate it from this single source.
 
-081. Pre-scan the X event queue for ^C events.  When ^C is found,
-     discard all other user input, and process ^C.
-
 082. For remote debugging, use an on-line `rlogin' connection,
      invoking the inferior debugger from the remote shell.
 
@@ -262,4 +259,4 @@ Volunteers for these and other projects are welcome!
 089. Have an `info source' popup menu that pops up when pointing at
      blank space.  (Info/Reload/Edit)
 
-089. (Insert your project idea here)
+090. (Insert your project idea here)

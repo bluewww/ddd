@@ -158,12 +158,12 @@ Volunteers for fixing these and other bugs are welcome!
         not the one in the source language window.
 
      5. When one sets a breakpoint or do something that issues a command
-        to the underlying debugger, the source window is scrolled back to
-        the the current line. This makes it difficult to see what you've
-        actually done, since for example the breakpoint you just set is
-        usually not visible.
-          Maybe it would be nice not to scroll and have a button that lets
-        one go to the current line in a single mouse click?
+        to the underlying debugger, the source window is scrolled back
+        to the current line. This makes it difficult to see what
+        you've actually done, since for example the breakpoint you
+        just set is usually not visible.  Maybe it would be nice not
+        to scroll and have a button that lets one go to the current
+        line in a single mouse click?
 
      6. If one has automatic save of options and also use one of
         --exec-window or --noexec-window (to change the expected ddd
@@ -198,9 +198,6 @@ Volunteers for fixing these and other bugs are welcome!
 
      [Pre-compiled DDD as in 071.  Does this also happen on 
       other configurations?  -AZ] 
-
-073. Debugging `icicle' causes trouble with job control.  Reported by
-     Andreas Zeller <zeller@acm.org>.
 
 075. On Linux boxes, attempting to drag & drop a breakpoint symbol
      causes a core dump.  [Motif/Linux bug?]
