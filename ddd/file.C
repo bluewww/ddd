@@ -585,14 +585,16 @@ ProgramInfo::ProgramInfo()
 
     case DBX:
     {
-	string ans = gdb_question("debug");
-	if (ans == NO_GDB_ANSWER)
-	    break;
-
-	if (ans.contains("Debugging: ", 0))
+	string ans = gdb_question(gdb->debug_command());
+	if (ans != NO_GDB_ANSWER)
 	{
-	    file = ans.after(": ");
-	    strip_final_blanks(file);
+	    if (ans.contains("Debugging: ", 0))
+		ans = ans.after(": ");
+
+	    read_leading_blanks(ans);
+	    strip_final_blanks(ans);
+	    if (!ans.contains(' ')) // Sanity check
+		file = ans;
 	}
 	break;
     }

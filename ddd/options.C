@@ -1734,19 +1734,23 @@ bool save_options(unsigned long flags)
 	{
 	case GDB:
 	    es << "set confirm off\n";
-	    if (info.file != "")
+	    if (info.file != "" && info.file != NO_GDB_ANSWER)
 		es << "file " << info.file << "\n";
 	    if (core_ok)
 		es << "core " << core << "\n";
 	    break;
 
 	case DBX:
-	    if (info.file != "")
+	    if (info.file != "" && info.file != NO_GDB_ANSWER)
 	    {
-		es << "debug " << info.file;
-		if (core_ok)
-		    es << " " << core;
-		es << "\n";
+		string cmd = gdb->debug_command(info.file);
+		if (cmd != "")
+		{
+		    es << cmd;
+		    if (core_ok)
+			es << " " << core;
+		    es << "\n";
+		}
 	    }
 	    break;
 
