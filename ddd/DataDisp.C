@@ -3363,7 +3363,6 @@ string DataDisp::process_displays(string& displays,
 				  bool& disabling_occurred)
 {
     string not_my_displays;
-    static string disabling_error_msgs;
     disabling_occurred = false;
 
     if (displays.length() == 0)
@@ -3375,7 +3374,7 @@ string DataDisp::process_displays(string& displays,
 	     k = disp_graph->next_nr(ref))
 	{
 	    DispNode* dn = disp_graph->get(k);
-	    if (!dn->is_user_command())
+	    if (!dn->is_user_command() && dn->active())
 	    {
 		have_displays = true;
 		break;
@@ -3440,16 +3439,18 @@ string DataDisp::process_displays(string& displays,
 
 	if (is_disabling (next_display, gdb))
 	{
-	    // Some displays were disabled: store them and try again
+	    // A display was disabled: record this and try again
 	    disabling_occurred = true;
-	    if (disp_nr >= 0 && disp_graph->contains(disp_nr))
+	    DispNode *dn = disp_graph->get(disp_nr);
+	    if (disp_nr >= 0 && dn != 0)
 	    {
-		disabling_error_msgs += 
-		    get_disp_value_str(next_display, gdb);
+		string error_msg = get_disp_value_str(next_display, gdb);
+		post_gdb_message(error_msg);
+		dn->disable();
 	    }
 	    else
 	    {
-		not_my_displays = next_display; // memorize this one only
+		not_my_displays = next_display; // Memorize this one only
 	    }
 
 	    // Clear DISP_STRING_MAP and try again
@@ -3474,13 +3475,6 @@ string DataDisp::process_displays(string& displays,
 	}
 
 	next_display = read_next_display (displays, gdb);
-    }
-
-    // Show collected error messages
-    if (!disabling_occurred && disabling_error_msgs != "")
-    {
-	post_gdb_message(disabling_error_msgs, last_origin);
-	disabling_error_msgs = "";
     }
 
     // Process own displays
