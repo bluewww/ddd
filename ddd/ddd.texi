@@ -36,7 +36,6 @@
 @c @documentlanguage en
 @documentencoding ISO-8859-1
 @setshortcontentsaftertitlepage
-@setcontentsaftertitlepage
 
 @include config.texi
 
@@ -156,7 +155,7 @@ with @DDD{}} for @DDD{} Version @value{VERSION}.
 
 @noindent
 @group
-Copyright @copyright{} 1999 Universität Passau, Germany @*
+Copyright @copyright{} 1999 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*
@@ -231,18 +230,18 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 @end tex
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1999 Universität Passau, Germany @*
+Copyright @copyright{} 1999 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*
-@sc{germany}
+GERMANY
 @sp 1
 
 Distributed by @*
 Free Software Foundation, Inc. @*
 59 Temple Place -- Suite 330 @*
 Boston, MA 02111-1307 @*
-@acronym{USA}
+USA
 @sp 1
 
 @DDD{} and this manual are available via @*
@@ -269,9 +268,6 @@ Send questions, comments, suggestions, etc. to
 Send bug reports to @email{bug-ddd@@gnu.org}. @*
 
 @end titlepage
-
-@summarycontents
-@contents
 
 @ifnottex
 @c Main Info and HTML page.
@@ -733,7 +729,7 @@ Configuration Notes
 
 @noindent
 @group
-Copyright @copyright{} 1999 Universität Passau, Germany @*
+Copyright @copyright{} 1999 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*
@@ -12358,5 +12354,8 @@ page} for recent announcements and other news related to @DDD{}.
 @node Concept Index
 @unnumbered Concept Index
 @printindex cp
+
+@summarycontents
+@contents
 
 @bye
