@@ -115,23 +115,23 @@ private:
 
 protected:
     // Evaluation functions
-    static Box *dup(const string& func_name, const Box *box);
+    static Box *check(const string& func_name, const Box *box);
 
 public:
     static Box *eval(const string& func_name, ListBox *arg)
     {
-	return dup(func_name, vsllib()->eval(func_name, arg));
+	return check(func_name, vsllib()->eval(func_name, arg));
     }
     static Box *eval(const string& func_name, VSLArg args[])
     {
-	return dup(func_name, vsllib()->eval(func_name, args));
+	return check(func_name, vsllib()->eval(func_name, args));
     }
     static Box *eval(const string& func_name, 
 		     VSLArg arg1 = (Box *)0,
 		     VSLArg arg2 = (Box *)0,
 		     VSLArg arg3 = (Box *)0)
     {
-	return dup(func_name, vsllib()->eval(func_name, arg1, arg2, arg3));
+	return check(func_name, vsllib()->eval(func_name, arg1, arg2, arg3));
     }
 };
 

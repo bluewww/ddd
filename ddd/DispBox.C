@@ -57,6 +57,7 @@ char DispBox_rcsid[] =
 
 #include <ctype.h>
 
+#define CACHE_BOXES 0
 
 
 //-----------------------------------------------------------------------------
@@ -133,8 +134,12 @@ void DispBox::init_vsllib(void (*background)())
 //
 DispBox::~DispBox ()
 {
+    // assert(mybox == 0 || mybox->OK());
+
     if (mybox != 0)
 	mybox->unlink();
+
+    // assert(title_box == 0 || title_box->OK());
 
     if (title_box != 0)
 	title_box->unlink();
@@ -154,10 +159,12 @@ void DispBox::set_value (const DispValue* dv, const DispValue *parent)
     int arg = 0;
 
     if (title_box != 0)
-	args[arg++] = title_box;
+	args[arg++] = title_box->link();
 
     args[arg++] = create_value_box(dv, parent);
     mybox = eval("display_box", args);
+
+    // assert(mybox->OK());
 }
 
 void DispBox::set_title(int disp_nr, const string& t)
@@ -217,6 +224,8 @@ void DispBox::set_title(int disp_nr, const string& t)
 	}
 
 	title_box = eval("title", args);
+
+	// assert(title_box->OK());
     }
 }
 
@@ -242,7 +251,11 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
     Box *vbox = 0;
 
     if (dv->cached_box() != 0)
-	return dv->cached_box()->link();
+    {
+	vbox = dv->cached_box()->link();
+	// assert(vbox->OK());
+	return vbox;
+    }
 
     switch (dv->type())
     {
@@ -541,7 +554,11 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 	vbox = eval("changed_value", vbox->link());
     }
 
+    // assert(vbox->OK());
+
+#if CACHE_BOXES
     ((DispValue *)dv)->set_cached_box(vbox);
+#endif
 
     return vbox;
 }
@@ -603,17 +620,18 @@ Box *DispBox::create_value_box (const DispValue *dv,
 	vbox = vbox->tag(data);
     }
 
+    // assert(vbox->OK());
+
     return vbox;
 }
 
-// ***************************************************************************
-// Duplication with special handling of undefined boxes
-Box *DispBox::dup(const string& func_name, const Box *box)
+// Check evaluation result
+Box *DispBox::check(const string& func_name, const Box *box)
 {
     if (box != 0)
-	return ((Box *)box)->link();
+	return ((Box *)box);
 
     // Box not found
-    return (new ForegroundColorBox(
-	new StringBox("<?" + func_name + ">"), "red"))->link();
+    string bad_func_name = "<?" + func_name + ">";
+    return new ForegroundColorBox(new StringBox(bad_func_name), "red");
 }
