@@ -640,7 +640,12 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	{
 	    string cond_suffix = "";
 	    if (cond != "")
-		cond_suffix = " if " + cond;
+	    {
+		if (gdb->has_handler_command())
+		    cond_suffix = " -if " + cond;
+		else
+		    cond_suffix = " if " + cond;
+	    }
 
 	    if (address.contains('*', 0))
 	    {
