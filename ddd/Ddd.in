@@ -2426,8 +2426,8 @@ Ddd*preferences*data*helpString:	\
 @rm These are the @sl Data Preferences@rm.\n\
 \n\
 @tt \267 @rm If @bf Detect aliases @rm is set, @DDD@ merges displays\
- with the same physical address.\n\
-    This is useful for examining shared data structures.\n\
+ with the same\n\
+    physical address.  This is useful for examining shared data structures.\n\
 @tt \267 @rm If @bf Show edge hints @rm is set, edge hints are displayed.\n\
 @tt \267 @rm If @bf Auto-align displays @rm is set, \n\
     each display is aligned on the nearest grid point.\n\
