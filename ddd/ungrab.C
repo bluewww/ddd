@@ -249,8 +249,7 @@ static void CheckGrabCB(XtPointer client_data, XtIntervalId *)
     // Don't delay further checks
     GrabCheckLocker lock;
 
-    StatusDelay delay("Checking for grabbed mouse pointer");
-    delay.outcome = "no";
+    Delay delay;
 
     if (!mouse_pointer_grabbed())
 	return;
@@ -258,7 +257,6 @@ static void CheckGrabCB(XtPointer client_data, XtIntervalId *)
     if (!running_x_program())
 	return;			// The pointer is not grabbed by our debuggee
 
-    delay.outcome = "yes";
     static int count;
     count = app_data.grab_action_delay / 1000;
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0,
