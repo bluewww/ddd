@@ -440,14 +440,12 @@ int display_index (const string& gdb_answer, GDBAgent *gdb)
     case GDB: 
 	prx = &rxgdb_begin_of_display;
 	break;
+
     case DBX:
-	prx = &rxdbx_begin_of_display;
-	break;
     case XDB:
+    case JDB:
 	prx = &rxdbx_begin_of_display;
 	break;
-    case JDB:
-	return -1;		// FIXME
 
     default:
 	assert(0);
