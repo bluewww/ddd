@@ -353,7 +353,7 @@ public:
     {}
 
 private:
-    ExtraData (ExtraData&);
+    ExtraData (const ExtraData&);
     ExtraData& operator = (const ExtraData&);
 };
 

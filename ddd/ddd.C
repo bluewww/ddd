@@ -5809,7 +5809,7 @@ struct WhenReadyInfo {
     }
 
 private:
-    WhenReadyInfo(WhenReadyInfo&);
+    WhenReadyInfo(const WhenReadyInfo&);
     WhenReadyInfo& operator= (const WhenReadyInfo&);
 };
 
