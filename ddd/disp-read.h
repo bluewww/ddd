@@ -73,6 +73,9 @@ bool is_frame_cmd(const string& cmd);
 bool is_up_cmd(const string& cmd);   // ... towards caller
 bool is_down_cmd(const string& cmd); // ... towards called
 
+// True if CMD changes the current thread
+bool is_thread_cmd(const string& cmd);
+
 // True if CMD changes variable values.
 bool is_set_cmd(const string& cmd);
 

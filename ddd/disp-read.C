@@ -178,6 +178,15 @@ bool is_down_cmd (const string& cmd)
 
 // ***************************************************************************
 // 
+bool is_thread_cmd (const string& cmd)
+{
+    static regex RXthread_cmd("[ \t]*thread([ \t]+.*)?");
+
+    return cmd.matches (RXthread_cmd);
+}
+
+// ***************************************************************************
+// 
 bool is_set_cmd (const string& cmd)
 {
     static regex RXset_cmd("[ \t]*(set[ \t]+var[a-z]*|assign|pq)([ \t]+.*)?");
