@@ -1250,6 +1250,26 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     }
 
     case MMComboBox:
+    {
+	if (callback.callback != 0)
+	{
+	    XtPointer userData;
+	    XtVaGetValues(widget, XmNuserData, &userData, NULL);
+	    ComboBoxInfo *info = (ComboBoxInfo *)userData;
+
+	    XtAddCallback(info->list, XmNbrowseSelectionCallback,
+			  callback.callback, callback.closure);
+	    XtAddCallback(info->list, XmNsingleSelectionCallback,
+			  callback.callback, callback.closure);
+	    XtAddCallback(info->list, XmNmultipleSelectionCallback,
+			  callback.callback, callback.closure);
+	    XtAddCallback(info->list, XmNextendedSelectionCallback,
+			  callback.callback, callback.closure);
+	}
+
+	// FALL THROUGH
+    }
+
     case MMTextField:
     case MMSpinField:
     {
