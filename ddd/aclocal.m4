@@ -1,7 +1,7 @@
 dnl $Id$
-dnl Local autoconf macros
+dnl ICE and DDD autoconf macros
 dnl 
-dnl Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
+dnl Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 dnl Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 dnl 
 dnl This file is part of the ICE Library.
@@ -21,10 +21,20 @@ dnl License along with the ICE Library -- see the file COPYING.LIB.
 dnl If not, write to the Free Software Foundation, Inc.,
 dnl 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 dnl 
-dnl ICE is the incremental configuration engine.
-dnl Contact ice@ips.cs.tu-bs.de for details.
+dnl ICE is the incremental configuration environment.
+dnl For details, see the ICE World-Wide-Web page, 
+dnl `http://www.cs.tu-bs.de/softech/ice/',
+dnl or send a mail to the ICE developers at `ice@ips.cs.tu-bs.de'.
+dnl
+dnl DDD is the data display debugger.
+dnl For details, see the DDD World-Wide-Web page, 
+dnl `http://www.cs.tu-bs.de/softech/ddd/',
+dnl or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 dnl
 dnl
+dnl ICE_PROG_CC and ICE_PROG_CXX
+dnl ----------------------------
+dnl 
 dnl Extended compiler checks.  Check not only for a compiler,
 dnl but also determine whether it compiles a simple "hello, world" 
 dnl program.
@@ -122,6 +132,10 @@ AC_SUBST(CXXLIBS)dnl
 LIBS="$ice_save_LIBS"
 ])dnl
 dnl
+dnl
+dnl ICE_EXTERNAL_TEMPLATES
+dnl ----------------------
+dnl
 dnl If the C++ compiler accepts the `-fexternal-templates' flag,
 dnl set output variable `EXTERNAL_TEMPLATES' to `-fexternal-templates',
 dnl empty otherwise.
@@ -148,6 +162,10 @@ fi
 AC_SUBST(EXTERNAL_TEMPLATES)
 ])dnl
 dnl
+dnl
+dnl
+dnl ICE_NO_IMPLICIT_TEMPLATES
+dnl -------------------------
 dnl
 dnl If the C++ compiler accepts the `-fno-implicit-templates' flag,
 dnl set output variable `NO_IMPLICIT_TEMPLATES' to `-fno-implicit-templates',
@@ -176,6 +194,9 @@ AC_SUBST(NO_IMPLICIT_TEMPLATES)
 ])dnl
 dnl
 dnl
+dnl ICE_ELIDE_CONSTRUCTORS
+dnl ----------------------
+dnl
 dnl If the C++ compiler accepts the `-felide-constructors' flag,
 dnl set output variable `ELIDE_CONSTRUCTORS' to `-felide-constructors',
 dnl empty otherwise.
@@ -202,6 +223,8 @@ fi
 AC_SUBST(ELIDE_CONSTRUCTORS)
 ])dnl
 dnl
+dnl ICE_CONSERVE_SPACE
+dnl ------------------
 dnl
 dnl If the C++ compiler accepts the `-fconserve-space' flag,
 dnl set output variable `CONSERVE_SPACE' to `-fconserve-space',
@@ -229,6 +252,10 @@ fi
 AC_SUBST(CONSERVE_SPACE)
 ])dnl
 dnl
+dnl
+dnl
+dnl ICE_CXX_PROBLEMATIC_VERSION
+dnl ---------------------------
 dnl
 dnl If this is GNU C++ earlier than 2.5, issue a warning.
 dnl
@@ -262,6 +289,10 @@ fi
 ])dnl
 dnl
 dnl
+dnl
+dnl ICE_CXX_BOOL
+dnl ------------
+dnl
 dnl If the C++ compiler accepts the `bool' keyword, define `HAVE_BOOL'.
 dnl
 AC_DEFUN(ICE_CXX_BOOL,
@@ -283,6 +314,10 @@ AC_DEFINE(HAVE_BOOL)
 fi
 ])dnl
 dnl
+dnl
+dnl
+dnl ICE_CXX_NAMED_RETURN_VALUES
+dnl ---------------------------
 dnl
 dnl If the C++ compiler supports named return values, 
 dnl define `HAVE_NAMED_RETURN_VALUES'.
@@ -316,6 +351,9 @@ fi
 ])dnl
 dnl
 dnl
+dnl ICE_CXX_EXPLICIT_TEMPLATE_INSTANTIATION
+dnl ---------------------------------------
+dnl
 dnl If the C++ compiler supports explicit template instantiation, 
 dnl define `HAVE_EXPLICIT_TEMPLATE_INSTANTIATION'.
 dnl
@@ -342,6 +380,9 @@ fi
 ])dnl
 dnl
 dnl
+dnl ICE_CXX_PRETTY_FUNCTION
+dnl -----------------------
+dnl
 dnl If the C++ compiler supports the __PRETTY_FUNCTION__ macro,
 dnl define `HAVE_PRETTY_FUNCTION'.
 dnl
@@ -367,6 +408,9 @@ AC_DEFINE(HAVE_PRETTY_FUNCTION)
 fi
 ])dnl
 dnl
+dnl
+dnl ICE_CXX_ARRAY_OPERATOR_NEW
+dnl --------------------------
 dnl
 dnl If the C++ compiler supports overloading operator new[],
 dnl define `HAVE_ARRAY_OPERATOR_NEW'.
@@ -395,6 +439,10 @@ fi
 ])dnl
 dnl
 dnl
+dnl
+dnl ICE_CXX_PLACEMENT_NEW
+dnl ---------------------
+dnl
 dnl If the C++ compiler supports placement new,
 dnl define `HAVE_PLACEMENT_NEW'.
 dnl
@@ -420,6 +468,9 @@ AC_DEFINE(HAVE_PLACEMENT_NEW)
 fi
 ])dnl
 dnl
+dnl
+dnl ICE_CXX_LIFETIME_OF_TEMPORARIES
+dnl -------------------------------
 dnl
 dnl If the C++ compiler realizes ANSI C++ working paper conformant
 dnl lifetime of temporaries, define `HAVE_ANSI_LIFETIME_OF_TEMPORARIES'.
@@ -483,6 +534,8 @@ fi
 ])dnl
 dnl
 dnl
+dnl ICE_CXX_LONG_LONG
+dnl -----------------
 dnl
 dnl If the C++ compiler supports `long long' types,  define `HAVE_LONG_LONG'.
 dnl
@@ -505,6 +558,9 @@ AC_DEFINE(HAVE_LONG_LONG)
 fi
 ])dnl
 dnl
+dnl
+dnl ICE_PROG_CPP_TRADITIONAL
+dnl ------------------------
 dnl
 dnl Set output variable `CPP_TRADITIONAL' to a command that runs a 
 dnl "traditional" C preprocessor (that is, pre-ANSI-C).
@@ -548,6 +604,9 @@ AC_SUBST(CPP_TRADITIONAL)
 ])dnl
 dnl
 dnl
+dnl ICE_CHECK_PATH_MAX
+dnl ------------------
+dnl
 dnl Define `HAVE_PATH_MAX' if PATH_MAX is defined in <limits.h>
 dnl
 AC_DEFUN(ICE_CHECK_PATH_MAX,
@@ -565,6 +624,9 @@ AC_DEFINE(HAVE_PATH_MAX)
 fi
 ])dnl
 dnl
+dnl
+dnl ICE_CHECK_POSIX_PATH_MAX
+dnl ------------------------
 dnl
 dnl Define `HAVE_POSIX_PATH_MAX' if _POSIX_PATH_MAX is defined in <limits.h>
 dnl
@@ -584,6 +646,8 @@ fi
 ])dnl
 dnl
 dnl
+dnl ICE_CHECK_MAXPATHLEN
+dnl --------------------
 dnl
 dnl Define `HAVE_MAXPATHLEN' if MAXPATHLEN is defined in <limits.h>
 dnl
@@ -604,6 +668,8 @@ fi
 dnl
 dnl
 dnl ICE_CHECK_DECL (FUNCTION, HEADER-FILE...)
+dnl -----------------------------------------
+dnl
 dnl If FUNCTION is available, define `HAVE_FUNCTION'.  If it is declared
 dnl in one of the headers named in the whitespace-separated list 
 dnl HEADER_FILE, define `HAVE_FUNCTION_DECL` (in all capitals).
@@ -649,7 +715,10 @@ fi
 ])dnl
 dnl
 dnl
-dnl Check if we have LessTif
+dnl ICE_CHECK_LESSTIF
+dnl -----------------
+dnl
+dnl Define `HAVE_LESSTIF' if the Motif library is actually a LessTif library
 dnl
 AC_DEFUN(ICE_CHECK_LESSTIF,
 [
@@ -668,7 +737,10 @@ fi
 ])dnl
 dnl
 dnl
-dnl Check if CORE_MAGIC is defined in <sys/core.h>.
+dnl ICE_CHECK_CORE_MAGIC
+dnl --------------------
+dnl
+dnl Set `HAVE_CORE_MAGIC' if CORE_MAGIC is defined in <sys/core.h>.
 dnl
 AC_DEFUN(ICE_CHECK_CORE_MAGIC,
 [
@@ -688,6 +760,8 @@ fi
 dnl
 dnl
 dnl
+dnl ICE_CXX_INCLUDE_DIR
+dnl -------------------
 dnl
 dnl Set output variable CXX_INCLUDE_DIR to the name of a directory
 dnl where the C++ compiler looks for C++ include files.
@@ -730,6 +804,8 @@ AC_SUBST(CXX_INCLUDE_DIR)
 ])dnl
 dnl
 dnl
+dnl ICE_CXX_LIB_DIR
+dnl ---------------
 dnl
 dnl Set output variable CXX_LIB_DIR to the name of a directory
 dnl where the C++ compiler looks for C++ libraries.
@@ -758,7 +834,10 @@ AC_SUBST(CXX_LIB_DIR)
 ])dnl
 dnl
 dnl
-dnl Setup C++ compile options.  Specific to this package.
+dnl ICE_CXX_OPTIONS
+dnl ---------------
+dnl
+dnl Setup C++ compile options.  Specific to DDD and ICE.
 dnl
 AC_DEFUN(ICE_CXX_OPTIONS,
 [
@@ -824,7 +903,10 @@ AC_SUBST(CXXSTUFF)dnl
 dnl
 dnl
 dnl
-dnl Look for emacs; put it in output variable `EMACS'.
+dnl ICE_PROG_EMACS
+dnl --------------
+dnl
+dnl Look for emacs; put its name in output variable `EMACS'.
 dnl
 dnl
 AC_DEFUN(ICE_PROG_EMACS, 
@@ -832,6 +914,9 @@ AC_DEFUN(ICE_PROG_EMACS,
 AC_CHECK_PROGS(EMACS, emacs temacs xemacs lemacs)
 ])dnl
 dnl
+dnl
+dnl ICE_PATH_INFO
+dnl --------------
 dnl
 dnl Look for info path; put it in output variable `infodir'.
 dnl
@@ -881,6 +966,9 @@ AC_SUBST(infodir)
 ])dnl
 dnl
 dnl
+dnl ICE_TYPE_SIGNAL
+dnl ---------------
+dnl
 dnl ICE_TYPE_SIGNAL: like AC_TYPE_SIGNAL, but use C++ for checks.
 dnl
 AC_DEFUN(ICE_TYPE_SIGNAL,
@@ -904,7 +992,15 @@ AC_DEFINE_UNQUOTED(RETSIGTYPE, $ice_cv_type_signal)
 dnl
 dnl
 dnl
-dnl ICE_TYPE_SIGNALPROC: check params of signal handler
+dnl ICE_TYPE_SIGNALPROC
+dnl -------------------
+dnl
+dnl ICE_TYPE_SIGNALPROC: check params of signal handler.  Use as:
+dnl
+dnl #include "config.h"
+dnl
+dnl typedef void (*SignalProc)(SIGHANDLERARGS);
+dnl
 dnl
 AC_DEFUN(ICE_TYPE_SIG_HANDLER_ARGS,
 [
@@ -955,6 +1051,11 @@ fi
 AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args)
 ])dnl
 dnl
+dnl
+dnl
+dnl ICE_CHECK_FROZEN_OSTRSTREAM
+dnl ---------------------------
+dnl
 dnl If the C++ library has a ostrstream::frozen() function,
 dnl define HAVE_FROZEN_OSTRSTREAM.
 dnl
@@ -977,6 +1078,9 @@ AC_DEFINE(HAVE_FROZEN_OSTRSTREAM)
 fi
 ])dnl
 dnl
+dnl
+dnl ICE_TYPE_REGEX_T
+dnl ----------------
 dnl
 dnl ICE_TYPE_REGEX_T: find members of POSIX.2 `regex_t' type
 dnl - HAVE_REGEX_T_RE_NSUB:   `regex_t' has a `re_nsub' member
@@ -1089,8 +1193,12 @@ CPPFLAGS="$ice_save_cppflags"
 ])dnl
 dnl
 dnl
-dnl ICE_REGCOMP_BROKEN: On Solaris 2.4, regcomp() always returns -1.
-dnl Check for that.
+dnl
+dnl ICE_REGCOMP_BROKEN
+dnl ------------------
+dnl
+dnl #define REGCOMP_BROKEN if regcomp() always returns -1.
+dnl This happens on Solaris 2.4.
 dnl
 AC_DEFUN(ICE_REGCOMP_BROKEN,
 [
@@ -1166,10 +1274,13 @@ CPPFLAGS="$ice_save_cppflags"
 fi)dnl
 dnl
 dnl
-dnl ICE_FIND_MOTIF: find Motif libraries and headers
-dnl put Motif include directory in motif_includes
-dnl put Motif library directory in motif_libraries
-dnl and add appropriate flags to X_CFLAGS and X_LIBS
+dnl ICE_FIND_MOTIF
+dnl --------------
+dnl
+dnl Find Motif libraries and headers
+dnl Put Motif include directory in motif_includes,
+dnl put Motif library directory in motif_libraries,
+dnl and add appropriate flags to X_CFLAGS and X_LIBS.
 dnl
 dnl
 AC_DEFUN(ICE_FIND_MOTIF,
@@ -1331,10 +1442,13 @@ AC_MSG_RESULT(
 ])dnl
 dnl
 dnl
-dnl ICE_FIND_ATHENA: find Athena libraries and headers
-dnl put Athena include directory in athena_includes
-dnl put Athena library directory in athena_libraries
-dnl and add appropriate flags to X_CFLAGS and X_LIBS
+dnl ICE_FIND_ATHENA
+dnl ---------------
+dnl
+dnl Find Athena libraries and headers.
+dnl Put Athena include directory in athena_includes,
+dnl put Athena library directory in athena_libraries,
+dnl and add appropriate flags to X_CFLAGS and X_LIBS.
 dnl
 dnl
 AC_DEFUN(ICE_FIND_ATHENA,
