@@ -9,6 +9,9 @@ clearat-xx.xpm
 clearat.xbm
 clearat.xbmxx
 clearat.xpmxx
+cluster.xbm
+cluster.xbmxx
+cluster.xpmxx
 delete-xx.xbm
 delete-xx.xpm
 delete.xbm
@@ -102,6 +105,9 @@ show-xx.xpm
 show.xbm
 show.xbmxx
 show.xpmxx
+uncluster.xbm
+uncluster.xbmxx
+uncluster.xpmxx
 undisplay-xx.xbm
 undisplay-xx.xpm
 undisplay.xbm
