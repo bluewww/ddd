@@ -351,4 +351,12 @@ Volunteers for these and other projects are welcome!
 
 329*Have a Display Editor shortcut from the data popup menu.
 
-334 (Insert new project ideas here)
+334 When looking at a C++ identifier X, try `this->X' if `X' is not
+    found.  Better yet, try `CLASS::X' if we're in a CLASS member.
+
+335 `Edit' and `Reload' buttons should be insensitive if we have no
+    current source.
+
+336 Plot array data using gnuplot.
+
+337 (Insert new project ideas here)
