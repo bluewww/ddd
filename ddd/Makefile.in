@@ -900,6 +900,7 @@ ICONS = \
 	$(toolbardir)/enable-xx.xpm \
 	$(toolbardir)/hide-xx.xpm \
 	$(toolbardir)/lookup-xx.xpm \
+	$(toolbardir)/maketemp-xx.xpm \
 	$(toolbardir)/newbreak-xx.xpm \
 	$(toolbardir)/newdisplay-xx.xpm \
 	$(toolbardir)/newwatch-xx.xpm \
@@ -922,6 +923,7 @@ ICONS = \
 	$(toolbardir)/enable.xbm \
 	$(toolbardir)/hide.xbm \
 	$(toolbardir)/lookup.xbm \
+	$(toolbardir)/maketemp.xbm \
 	$(toolbardir)/newbreak.xbm \
 	$(toolbardir)/newdisplay.xbm \
 	$(toolbardir)/newwatch.xbm \
@@ -944,6 +946,7 @@ ICONS = \
 	$(toolbardir)/enable-xx.xbm \
 	$(toolbardir)/hide-xx.xbm \
 	$(toolbardir)/lookup-xx.xbm \
+	$(toolbardir)/maketemp-xx.xbm \
 	$(toolbardir)/newbreak-xx.xbm \
 	$(toolbardir)/newdisplay-xx.xbm \
 	$(toolbardir)/newwatch-xx.xbm \
