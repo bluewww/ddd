@@ -101,7 +101,7 @@
 #include <string.h>
 
 #if !HAVE_STRERROR_DECL
-extern "C" char *strerror(int errno);
+extern "C" char *strerror(int);
 #endif
 
 #include "casts.h"

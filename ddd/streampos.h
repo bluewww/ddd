@@ -40,14 +40,14 @@
 #include "config.h"
 #include <iostream.h>
 
-#if !HAVE_STREAMPOS
-#if HAVE_STD_STREAMPOS
+#if HAVE_STREAMPOS
+#define STREAMPOS streampos
+#elif HAVE_STD_STREAMPOS
 // `streampos' is not visible, but `std::streampos' is.
-using namespace std;
+#define STREAMPOS std::streampos
 #else
 // Use a simple `long' as replacement.
-typedef long streampos;
-#endif
+#define STREAMPOS long
 #endif
 
 #endif // _DDD_streampos_h

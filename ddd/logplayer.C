@@ -40,6 +40,7 @@ char logplayer_rcsid[] =
 #include "strclass.h"
 #include "cook.h"
 #include "config.h"
+#include "streampos.h"
 
 #include <iostream.h>
 #include <fstream.h>
@@ -47,12 +48,8 @@ char logplayer_rcsid[] =
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
-
-#include "streampos.h"
-
 #include <setjmp.h>
 #include <signal.h>
-#include <string.h>		// strerror()
 
 // Nico van Waes <nico@yegal.njit.edu> says: under Solaris 2.6, one
 // must include <sys/types.h> and <sys/int_types.h> before
@@ -108,12 +105,12 @@ static const char *usage =
 "`/'  search again          `:'  list all commands  `!' issue expected command"
 "\n";
 
-static string last_out;
+static string last_output;
 
 static void put(const string& s)
 {
     write(STDOUT_FILENO, s.chars(), s.length());
-    last_out += s;
+    last_output += s;
 
 #if HAVE_TCDRAIN || defined(tcdrain)
     if (isatty(STDOUT_FILENO))
@@ -148,7 +145,7 @@ void logplayer(const string& logname)
     static bool out_seen = false;
     static bool wrapped = false;
     static bool echoing = false;
-    static streampos scan_start, last_input;
+    static STREAMPOS scan_start, last_input;
     static string expecting;
     static int command_no = 0;
     static int command_no_start = 0;
@@ -171,7 +168,7 @@ void logplayer(const string& logname)
 
     for (;;)
     {
-	streampos current = log.tellg();
+	STREAMPOS current = log.tellg();
 	if (!scanning)
 	{
 	    scan_start = current;
@@ -253,9 +250,9 @@ void logplayer(const string& logname)
 		    initializing = false;
 
 		    // Read command from DDD
-		    if (last_out.contains('\n'))
+		    if (last_output.contains('\n'))
 		    {
-			string prompt = last_out.after('\n', -1);
+			string prompt = last_output.after('\n', -1);
 			if (prompt != "" && !prompt.contains('\\', 0))
 			{
 			    if (prompt.contains('('))
@@ -265,10 +262,10 @@ void logplayer(const string& logname)
 			}
 		    }
 
-		    if (!last_out.contains(last_prompt, -1))
+		    if (!last_output.contains(last_prompt, -1))
 			put(last_prompt);
 
-		    last_out = "";
+		    last_output = "";
 
 		    char *s = fgets(buffer, sizeof buffer, stdin);
 		    if (ignore_next_input)
