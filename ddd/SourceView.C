@@ -2725,11 +2725,11 @@ void SourceView::refresh_source_bp_disp()
     }
 
     // Show breakpoints in text
-    for (IntIntArrayAssocIter b_i_l_iter(bps_in_line);
-	 b_i_l_iter.ok();
-	 b_i_l_iter++)
+    for (IntIntArrayAssocIter b_i_l_iter2(bps_in_line);
+	 b_i_l_iter2.ok();
+	 b_i_l_iter2++)
     {
-	int line_nr = b_i_l_iter.key();
+	int line_nr = b_i_l_iter2.key();
 	if (line_nr < 0 || line_nr > line_count)
 	    continue;
 

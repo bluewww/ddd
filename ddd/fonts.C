@@ -220,7 +220,7 @@ static string override(FontComponent new_n,
     return new_font;
 }
 
-string make_font(DDDFont base, const string& override = "")
+string make_font(DDDFont base, const string& override)
 {
     string font = "";
     for (FontComponent n = Foundry; n <= AllComponents; n++)

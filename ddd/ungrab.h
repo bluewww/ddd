@@ -33,6 +33,8 @@
 #pragma interface
 #endif
 
+#include "bool.h"
+
 // If START is true, initiate grab check.  If START is false, stop it.
 void check_grabs(bool start);
 

@@ -770,7 +770,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer client_data, XtPointer)
     VarArray<GraphNode *> ancestors;
     VarArray<GraphNode *> descendants;
 
-    Boolean delete_from_display_part = Boolean(client_data);
+    bool delete_from_display_part = bool(client_data);
 
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
@@ -1401,7 +1401,7 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data,
 			   XtPointer call_data)
 {
     DataDispCount count(disp_graph);
-    Boolean delete_from_display_part = Boolean(client_data);
+    bool delete_from_display_part = bool(client_data);
 
     if (count.selected_titles > 0 || 
 	(delete_from_display_part && count.selected > 0))

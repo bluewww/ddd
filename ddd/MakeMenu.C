@@ -266,7 +266,7 @@ static void FlattenEH(Widget w,
 
 static void FlattenCB(Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean set = Boolean(client_data);
+    bool set = bool(client_data);
     if (set)
     {
 	flatten_button(w);
@@ -297,7 +297,7 @@ static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data,
 //-----------------------------------------------------------------------
 
 // Add items to shell.  If IGNORE_SEPS is set, all separators are ignored.
-void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
+void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 {
     static bool actions_added = false;
 		
