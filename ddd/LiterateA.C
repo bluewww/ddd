@@ -80,68 +80,25 @@ bool LiterateAgent::default_block_tty_input()
 #if defined(BLOCK_TTY_INPUT)
     return BLOCK_TTY_INPUT;
 
-#elif defined(linux) && __GLIBC__ >= 2
-    // According to Ray Dassen <jdassen@wi.LeidenUniv.nl>, Linux with
-    // GNU libc 6 (that is, glibc 2.x or later) wants BLOCK_TTY_INPUT
-    // to be unset.
+#elif defined(linux)
+    // All Linux variants want BLOCK_TTY_INPUT to be unset:
+
+    // * Andi <ak@muc.de> states that Linux with GNU libc 5.3.12 wants
+    //   BLOCK_TTY_INPUT to be unset.
+    // * Ronald Wahl <rwahl@gmx.net>, Phil Romig <romig@bierstadt.unl.edu> 
+    //   and Michael Marxmeier <mike@msede.com> report the same for GNU 
+    //   libc 5.4.33.
+    // * Terence Spielman <terence@globeset.com> says that Linux
+    //   with GNU libc 5.4.35 also doesn't want BLOCK_TTY_INPUT.  
+    // * Anders Wegge Jakobsen <wegge@wegge.dk> reports the same for
+    //   GNU libc 5.4.38.
+    // * Ray Dassen <jdassen@wi.LeidenUniv.nl> reports that Linux with
+    //   GNU libc 6 (that is, glibc 2.x or later) wants BLOCK_TTY_INPUT
+    //   to be unset.
+
+    // There are no reports for earlier Linux variants, so let's keep
+    // it this way.
     return false;
-
-#elif defined(_LINUX_C_LIB_VERSION_MAJOR)
-    // On Linux with Linux libc, the correct setting depends on the
-    // libc version.
-
-    // We get the version number from the library, rather than from
-    // the include file, since the (dynamic) library may have changed
-    // since compilation.
-    extern char *__linux_C_lib_version;
-
-    // If this doesn't link or compile, replace __linux_C_lib_version by "".
-    char *s = __linux_C_lib_version;
-
-    // Find start of version number
-    while (*s && !isdigit(*s))
-	s++;
-    if (atoi(s) == 0)
-    {
-	// No library version - try the included one
-	s = _LINUX_C_LIB_VERSION;
-    }
-
-    int version_major = atoi(s);
-    while (*s && *s != '.')
-	s++;
-    if (*s == '.')
-	s++;
-    int version_minor = atoi(s);
-    while (*s && *s != '.')
-	s++;
-    if (*s == '.')
-	s++;
-    int version_subminor = atoi(s);
-
-    // According to Ray Dassen <jdassen@wi.LeidenUniv.nl>, Linux with GNU
-    // libc 6 wants BLOCK_TTY_INPUT to be unset.
-    if (version_major > 5)
-	return false;
-
-    // According to Andi <ak@muc.de>, Linux with GNU libc 5.3.12 wants
-    // BLOCK_TTY_INPUT to be unset.
-    if (version_major == 5 && version_minor <= 3)
-	return false;
-
-    // According to Terence Spielman <terence@globeset.com>, Linux
-    // with GNU libc 5.4.35 also doesn't want BLOCK_TTY_INPUT.  Anders
-    // Wegge Jakobsen <wegge@wegge.dk> reports the same for GNU libc
-    // 5.4.38.  Ronald Wahl <rwahl@gmx.net> and Phil Romig
-    // <romig@bierstadt.unl.edu> reports the same for GNU libc 5.4.33.
-    if (version_major == 5 && version_minor > 4)
-	return false;
-    if (version_major == 5 && version_minor == 4 && version_subminor >= 33)
-	return false;
-
-    // There are no reports about DDD with GNU libc < 5.4.33, but
-    // earlier DDD versions worked with BLOCK_TTY_INPUT set.
-    return true;
 
 #else  // !LINUX && !BLOCK_TTY_INPUT
     // For all other systems, the default is BLOCK_TTY_INPUT set.  (I
