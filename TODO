@@ -355,4 +355,10 @@ Volunteers for these and other projects are welcome!
 187* Have a `commands' menu listing up all debugger commands.  Should
      be organized according to `help' classes.
 
-193. (Insert your project idea here)
+193* Have a way to unfold trees and graphs.  For instance, `Display
+     *()' applied to a struct could dereference all contained pointers
+     (unless already dereferenced).
+
+195. Catch fatal X errors.
+
+196. (Insert your project idea here)
