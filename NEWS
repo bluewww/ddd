@@ -45,6 +45,7 @@ DDD 3.0 [in beta test]
     - DDD no longer indents the source code, leaving more horizontal
       space.  To change this, see `Edit | Preferences | Source |
       Source indentation'.
+    - Saving options is much, much faster.
     - DBX settings now also work with SGI DBX.
 
     Bug fixes:
@@ -59,6 +60,7 @@ DDD 3.0 [in beta test]
     - The new grab detection mechanism no longer interferes with grabs
       on Motif popup and pulldown menus.
     - One-letter options like `-b BPS' or `-x FILE' work again.
+    - Trailing CRs in debuggee output are now properly handled.
 
     Changes in configuration and building:
     - LessTif 0.83 is supported (and a standard test environment of
