@@ -1,7 +1,7 @@
-dnl $Id$ -*- m4 -*-
+dnl $Id$ -*- autoconf -*-
 dnl ICE and DDD autoconf macros
 dnl 
-dnl Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+dnl Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 dnl Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 dnl 
 dnl This file is part of the ICE Library.
@@ -254,33 +254,70 @@ AC_SUBST(CONSERVE_SPACE)
 dnl
 dnl
 dnl
-dnl ICE_EFFECTIVE_CXX
-dnl -----------------
+dnl ICE_WARN_EFFECTIVE_CXX
+dnl ----------------------
 dnl
 dnl If the C++ compiler accepts the `-Weffc++' flag,
-dnl set output variable `EFFECTIVE_CXX' to `-Weffc++',
-dnl empty otherwise.
+dnl set output variable `WARN_EFFECTIVE_CXX' to `-Weffc++' and
+dnl `WARN_NO_EFFECTIVE_CXX' to `-Wno-effc++'.  Otherwise,
+dnl leave both empty.
 dnl
-AC_DEFUN(ICE_EFFECTIVE_CXX,
+AC_DEFUN(ICE_WARN_EFFECTIVE_CXX,
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -Weffc++)
-AC_CACHE_VAL(ice_cv_effective_cxx,
+AC_CACHE_VAL(ice_cv_warn_effective_cxx,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS=-Weffc++
 AC_TRY_COMPILE(,[int a;],
-ice_cv_effective_cxx=yes, ice_cv_effective_cxx=no)
+ice_cv_warn_effective_cxx=yes, ice_cv_warn_effective_cxx=no)
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_RESTORE
 ])
-AC_MSG_RESULT($ice_cv_effective_cxx)
-if test "$ice_cv_effective_cxx" = yes; then
-EFFECTIVE_CXX=-Weffc++
+AC_MSG_RESULT($ice_cv_warn_effective_cxx)
+if test "$ice_cv_warn_effective_cxx" = yes; then
+WARN_EFFECTIVE_CXX=-Weffc++
+WARN_NO_EFFECTIVE_CXX=-Wno-effc++
 fi
-AC_SUBST(EFFECTIVE_CXX)
+AC_SUBST(WARN_EFFECTIVE_CXX)
+AC_SUBST(WARN_NO_EFFECTIVE_CXX)
+])dnl
+dnl
+dnl
+dnl
+dnl ICE_WARN_UNINITIALIZED
+dnl ----------------------
+dnl
+dnl If the C++ compiler accepts the `-Wuninitialized' flag,
+dnl set output variable `WARN_UNINITIALIZED' to `-Wuninitialized'
+dnl and `WARN_NO_UNINITIALIZED' to `-Wno-uninitialized'.  Otherwise,
+dnl leave both empty.
+dnl
+AC_DEFUN(ICE_WARN_UNINITIALIZED,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -Wuninitialized)
+AC_CACHE_VAL(ice_cv_warn_uninitialized,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS=-Wuninitialized
+AC_TRY_COMPILE(,[int a;],
+ice_cv_warn_uninitialized=yes, ice_cv_warn_uninitialized=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_warn_uninitialized)
+if test "$ice_cv_warn_uninitialized" = yes; then
+WARN_UNINITIALIZED=-Wuninitialized
+WARN_NO_UNINITIALIZED=-Wno-uninitialized
+fi
+AC_SUBST(WARN_UNINITIALIZED)
+AC_SUBST(WARN_NO_UNINITIALIZED)
 ])dnl
 dnl
 dnl
@@ -947,11 +984,15 @@ dnl
 AC_DEFUN(ICE_CXX_OPTIONS,
 [
 if test "$GXX" = yes; then
-  ICE_EFFECTIVE_CXX
+  ICE_WARN_EFFECTIVE_CXX
+  ICE_WARN_UNINITIALIZED
   CXXOPT="-DNDEBUG"
   CXXDEBUG=
-  # As of GCC 2.8.0, -Wall no longer implies -W
-  CXXWARNINGS="-W -Wall"
+  # In GCC 2.8.0, `-Wuninitialized' generates lots of warnings about
+  # variables possibly being clobbered by a longjmp()/vfork() call.
+  # These warnings seldom make sense and hide more serious warnings.
+  # Hence, we turn them off via `-Wno-uninitialized'.
+  CXXWARNINGS="-W -Wall ${WARN_NO_UNINITIALIZED}"
   CXXSTATIC_BINDING="-Bstatic"
   CXXDYNAMIC_BINDING="-Bdynamic"
   CXXSTUFF=
