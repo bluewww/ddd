@@ -5837,7 +5837,7 @@ static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
     if (cbs == 0)
 	return;	    // This happens with old LessTif versions
 
-    XtCallbackProc proc = STATIC_CAST(const WhenReadyProc_t*,client_data)->proc;
+    XtCallbackProc proc = STATIC_CAST(WhenReadyProc_t*,client_data)->proc;
     XtPointer user_client_data = 0; // No way to pass extra values here
 
     if (can_do_gdb_command())
