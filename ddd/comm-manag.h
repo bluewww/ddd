@@ -49,11 +49,13 @@
 void start_gdb ();
 
 // Send user command CMD to GDB.  Invoke CALLBACK with DATA upon
-// completion.  If VERBOSE is set, issue command in GDB console.
-// If CHECK is set, add appropriate GDB commands to get GDB state.
+// completion.  If ECHO and VERBOSE are set, issue command in GDB
+// console.  If VERBOSE is set, issue answer in GDB console.  If
+// PROMPT is set, issue prompt.  If CHECK is set, add appropriate GDB
+// commands to get GDB state.
 void send_gdb_command(string cmd, Widget origin,
 		      OQCProc callback, void *data,
-		      bool verbose, bool check);
+		      bool echo, bool verbose, bool prompt, bool check);
 
 // Send user input CMD to GDB (unchanged).
 void send_gdb_ctrl(string cmd, Widget origin = 0);

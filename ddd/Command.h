@@ -51,7 +51,9 @@ struct Command
     OQCProc callback;		// Associated callback; will be called after
 				// completion
     void *data;			// Data for callback
-    bool verbose;		// Flag: issue command in GDB console?
+    bool echo;			// Flag: issue command in GDB console?
+    bool verbose;		// Flag: issue answer in GDB console?
+    bool prompt;		// Flag: issue prompt in GDB console?
     bool check;			// Flag: add commands to get GDB state?
     int priority;		// Priority (highest get executed first)
 
@@ -65,20 +67,21 @@ public:
     Command(const string& cmd, Widget w, OQCProc cb, void *d = 0, 
 	    bool v = false, bool c = false, int p = COMMAND_PRIORITY_SYSTEM)
 	: command(cmd), origin(w), callback(cb), data(d), 
-	  verbose(v), check(c), priority(p)
+	  echo(v), verbose(v), prompt(v), check(c), priority(p)
     {
 	add_destroy_callback();
     }
     Command(const string& cmd, Widget w = 0)
 	: command(cmd), origin(w), callback(0), data(0), 
-	  verbose(true), check(true), priority(COMMAND_PRIORITY_USER)
+	  echo(true), verbose(true), prompt(true), check(true), 
+	  priority(COMMAND_PRIORITY_USER)
     {
 	add_destroy_callback();
     }
     Command(const Command& c)
 	: command(c.command), origin(c.origin), callback(c.callback), 
-	  data(c.data), verbose(c.verbose), check(c.check), 
-	  priority(c.priority)
+	  data(c.data), echo(c.echo), verbose(c.verbose), prompt(c.prompt),
+	  check(c.check), priority(c.priority)
     {
 	add_destroy_callback();
     }
@@ -96,7 +99,9 @@ public:
 	    origin   = c.origin;
 	    callback = c.callback;
 	    data     = c.data;
+	    echo     = c.echo;
 	    verbose  = c.verbose;
+	    prompt   = c.prompt;
 	    check    = c.check;
 	    priority = c.priority;
 
@@ -111,7 +116,9 @@ public:
 	    && origin == c.origin 
 	    && callback == c.callback 
 	    && data == c.data
+	    && echo == c.echo
 	    && verbose == c.verbose
+	    && prompt == c.prompt
 	    && check == c.check
 	    && priority == c.priority;
     }

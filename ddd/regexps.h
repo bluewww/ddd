@@ -67,6 +67,7 @@ extern const regex rxdbxpos;
 extern const regex rxdbxwarn1;
 extern const regex rxdbxwarn2;
 extern const regex rxdebug_cmd;
+extern const regex rxdefine_cmd;
 extern const regex rxdep;
 extern const regex rxdisable;
 extern const regex rxdisplay;

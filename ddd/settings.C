@@ -49,29 +49,29 @@ char settings_rcsid[] =
 #include <ctype.h>
 #include <string.h>
 
-#include "Assoc.h"
 #include "AppData.h"
+#include "Assoc.h"
+#include "Command.h"
+#include "DataDisp.h"
 #include "Delay.h"
 #include "DestroyCB.h"
 #include "EntryType.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
-#include "Command.h"
+#include "LessTifH.h"
+#include "SourceView.h"
+#include "StringSA.h"
+#include "VarArray.h"
+#include "WidgetSA.h"
 #include "cook.h"
 #include "ddd.h"
 #include "question.h"
+#include "regexps.h"
 #include "status.h"
+#include "string-fun.h"
 #include "verify.h"
 #include "version.h"
 #include "wm.h"
-#include "VarArray.h"
-#include "StringSA.h"
-#include "WidgetSA.h"
-#include "SourceView.h"
-#include "regexps.h"
-#include "string-fun.h"
-#include "DataDisp.h"
-#include "LessTifH.h"
 
 
 //-----------------------------------------------------------------------
@@ -313,6 +313,7 @@ void save_settings_state()
     }
 
     update_reset_settings_button();
+    set_need_defines(false);
 }
     
 
@@ -1696,7 +1697,10 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 static Widget create_settings(DebuggerType type)
 {
     if (settings_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
+    {
 	settings_panel = create_panel(type, true);
+	get_defines(type);
+    }
     return settings_panel;
 }
 
@@ -1826,3 +1830,115 @@ string get_settings(DebuggerType type)
 
     return command;
 }
+
+
+
+//-----------------------------------------------------------------------
+// Command Definitions
+//-----------------------------------------------------------------------
+
+static bool update_define_needed = false;
+
+static StringStringAssoc defs;
+
+// Call this function if command definitions have changed
+void set_need_defines(bool val)
+{
+    update_define_needed = val;
+}
+
+bool need_defines()
+{
+    return update_define_needed;
+}
+
+static bool update_define(const string& command)
+{
+    string text = gdb_question("show user " + command);
+    if (text == NO_GDB_ANSWER)
+	return false;
+
+    if (text.contains("Undefined", 0))
+    {
+	defs.remove(command);
+	return true;
+    }
+
+    string def  = "";
+
+    while (text != "")
+    {
+	string line = text.before('\n');
+	text        = text.after('\n');
+
+	if (line.length() > 0 && isspace(line[0]))
+	{
+	    def += line.after(rxwhite) + "\n";
+	}
+    }
+
+    defs[command] = def;
+    return true;
+}
+
+static void update_defines()
+{
+    if (!need_defines())
+	return;
+
+    StatusDelay delay("Retrieving User Commands");
+
+    string commands = gdb_question("help user");
+    if (commands == NO_GDB_ANSWER)
+	return;
+
+    while (commands != "")
+    {
+	string line = commands.before('\n');
+	commands    = commands.after('\n');
+
+	if (!line.contains(" -- "))
+	    continue;			// No help line
+
+	string command = line.before(" -- ");
+	bool ok = update_define(command);
+	if (!ok)
+	    return;
+    }
+
+    set_need_defines(false);
+}
+
+// Get current definitions
+string get_defines(DebuggerType type)
+{
+    if (type != GDB)
+	return "";		// Not supported yet
+
+    update_defines();
+    create_settings(type);
+
+    string defines = "";
+
+    // We have to turn off confirmation during command (re-)definition
+    string confirm_value = "on";
+    if (settings_form != 0)
+    {
+	Widget confirm_w = command_to_widget(settings_form, "set confirm");
+	if (confirm_w != 0)
+	    confirm_value = settings_values[confirm_w];
+    }
+    if (confirm_value == "on")
+	defines += "set confirm off\n";
+
+    for (AssocIter<string, string> iter(defs); iter.ok(); iter++)
+    {
+	defines += "define " + iter.key() + "\n" + iter.value() + "end\n";
+    }
+
+    if (confirm_value == "on")
+	defines += "set confirm on\n";
+
+    return defines;
+}
+

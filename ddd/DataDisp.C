@@ -1210,6 +1210,7 @@ public:
     Widget shortcut;
     Widget text;
     bool verbose;
+    bool prompt;
     DeferMode deferred;
 
     NewDisplayInfo()
@@ -1223,6 +1224,7 @@ public:
 	  shortcut(0),
 	  text(0),
 	  verbose(false),
+	  prompt(false),
 	  deferred(DeferNever)
     {}
 
@@ -1241,6 +1243,7 @@ private:
 	  shortcut(0),
 	  text(0),
 	  verbose(false),
+	  prompt(false),
 	  deferred(DeferNever)
     {
 	assert(0);
@@ -2319,6 +2322,7 @@ void DataDisp::reset()
     {
 	Command c("graph undisplay " + numbers(display_nrs));
 	c.verbose  = false;
+	c.prompt   = false;
 	c.check    = true;
 	c.priority = COMMAND_PRIORITY_INIT;
 	c.callback = reset_done;
@@ -2518,7 +2522,7 @@ void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
     new_displaySQ(info->display_expression, info->scope, info->point_ptr, 
 		  info->depends_on, info->deferred, info->origin, 
-		  info->verbose);
+		  info->verbose, info->prompt);
     delete info;
 }
 
@@ -2547,7 +2551,7 @@ int DataDisp::display_number(const string& name, bool verbose)
 void DataDisp::new_displaySQ (string display_expression,
 			      string scope, BoxPoint *p,
 			      string depends_on, DeferMode deferred,
-			      Widget origin, bool verbose)
+			      Widget origin, bool verbose, bool do_prompt)
 {
     // Check arguments
     if (deferred != DeferAlways && depends_on != "")
@@ -2561,6 +2565,7 @@ void DataDisp::new_displaySQ (string display_expression,
     info->display_expression = display_expression;
     info->scope              = scope;
     info->verbose            = verbose;
+    info->prompt             = do_prompt;
     info->deferred           = deferred;
     if (p != 0)
     {
@@ -2611,7 +2616,7 @@ void DataDisp::new_displaySQ (string display_expression,
 	// Insert deferred node into graph
 	disp_graph->insert(dn->disp_nr(), dn);
 
-	if (verbose)
+	if (do_prompt)
 	    prompt();
 
 	delete info;
@@ -2971,7 +2976,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	    // Insert deferred node into graph
 	    disp_graph->insert(dn->disp_nr(), dn);
 	    
-	    if (info->verbose)
+	    if (info->prompt)
 		prompt();
 
 	    refresh_display_list();
@@ -3008,7 +3013,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	    // Insert deferred node into graph
 	    disp_graph->insert(dn->disp_nr(), dn);
 	    
-	    if (info->verbose)
+	    if (info->prompt)
 		prompt();
 
 	    refresh_display_list();
@@ -3032,7 +3037,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     refresh_addr(dn);
     refresh_graph_edit();
 
-    if (info->verbose)
+    if (info->prompt)
 	prompt();
 
     delete info;
@@ -3077,7 +3082,7 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
 	update_infos();
     }
 
-    if (info->verbose)
+    if (info->prompt)
 	prompt();
 
     delete info;
@@ -3213,7 +3218,7 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
     refresh_addr();
     refresh_graph_edit();
 
-    if (info->verbose)
+    if (info->prompt)
 	prompt();
 
     delete info;
@@ -3227,9 +3232,10 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 class RefreshInfo {
 public:
     bool verbose;
+    bool prompt;
 
     RefreshInfo()
-	: verbose(false)
+	: verbose(false), prompt(false)
     {}
 
     ~RefreshInfo()
@@ -3237,7 +3243,7 @@ public:
 
 private:
     RefreshInfo(const RefreshInfo&)
-	: verbose(false)
+	: verbose(false), prompt(false)
     {
 	assert(0);
     }
@@ -3294,7 +3300,7 @@ string DataDisp::refresh_display_cmd()
 #define PROCESS_USER         2
 #define PROCESS_ADDR         3
 
-void DataDisp::refresh_displaySQ(Widget origin, bool verbose)
+void DataDisp::refresh_displaySQ(Widget origin, bool verbose, bool do_prompt)
 {
     if (origin)
 	set_last_origin(origin);
@@ -3322,6 +3328,7 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose)
 
     static RefreshInfo info;
     info.verbose = verbose;
+    info.prompt  = do_prompt;
 
     bool ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
 				 refresh_displayOQAC, (void *)&info);
@@ -3330,7 +3337,7 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose)
     {
 	// Simply redraw display
 	refresh_graph_edit();
-	if (verbose)
+	if (do_prompt)
 	    prompt();
     }
 }
@@ -3385,8 +3392,8 @@ void DataDisp::refresh_displayOQAC (const StringArray& answers,
 	// If we had a `disabling' message, refresh displays once more
 	if (disabling_occurred)
 	{
-	    refresh_displaySQ(0, info->verbose);
-	    info->verbose = false;	// No more prompts
+	    refresh_displaySQ(0, info->verbose, info->prompt);
+	    info->prompt = false;	// No more prompts
 	}
     }
 
@@ -3399,7 +3406,7 @@ void DataDisp::refresh_displayOQAC (const StringArray& answers,
 	process_addr(addr_answers);
     }
 
-    if (info->verbose)
+    if (info->prompt)
 	prompt();
 }
 
@@ -3479,7 +3486,8 @@ string DataDisp::disable_display_cmd(IntArray& display_nrs)
 	return "";
 }
 
-void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose)
+void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose, 
+				 bool do_prompt)
 {
     sort_and_check(display_nrs);
 
@@ -3513,7 +3521,7 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose)
     {
 	if (disabled_user_displays > 0)
 	    refresh_graph_edit();
-	if (verbose)
+	if (do_prompt)
 	    prompt();
     }
 }
@@ -3546,7 +3554,8 @@ string DataDisp::enable_display_cmd(IntArray& display_nrs)
 	return "";
 }
 
-void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose)
+void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose, 
+ 				bool do_prompt)
 {
     sort_and_check(display_nrs);
 
@@ -3582,7 +3591,7 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose)
     {
 	if (enabled_user_displays > 0)
 	    refresh_graph_edit();
-	if (verbose)
+	if (do_prompt)
 	    prompt();
     }
 }
@@ -3618,7 +3627,8 @@ string DataDisp::delete_display_cmd(const string& name)
     return "graph undisplay " + name;
 }
 
-void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose)
+void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose, 
+				bool do_prompt)
 {
     sort_and_check(display_nrs);
 
@@ -3660,7 +3670,7 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose)
 	// Refresh addresses now
 	force_check_aliases = true;
 	refresh_addr();
-	if (verbose)
+	if (do_prompt)
 	    prompt();
     }
 
@@ -4190,6 +4200,7 @@ void DataDisp::process_scope(const string& scope)
 	    BoxPoint pos = dn->nodeptr()->pos();
 	    Command c(new_display_cmd(dn->name(), &pos, dn->depends_on()));
 	    c.verbose = false;
+	    c.prompt  = false;
 	    gdb_command(c);
 	}
 
@@ -4750,6 +4761,7 @@ void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
 
 	    static RefreshInfo info;
 	    info.verbose = false;
+	    info.prompt  = false;
 	    ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
 				    refresh_displayOQAC, (void *)&info);
 

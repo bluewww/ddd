@@ -1428,6 +1428,8 @@ static string string_app_value(const string& name, String v)
     if (value.contains("\\n"))
     {
 	value.gsub("\\n", "\\n\\\n");
+	value.gsub("\\\\n\\\n\\n", "\\\\n\\n");
+
 	if (value.contains("\\\n", -1))
 	    value = value.before(int(value.length()) - 2);
 	value = "\\\n" + value;
@@ -1633,24 +1635,27 @@ bool save_options(unsigned long flags)
     string xdb_settings = app_data.xdb_settings;
     string jdb_settings = app_data.jdb_settings;
 
-    if (need_settings())
+    if (need_settings() || need_defines())
     {
+	string settings = get_settings(gdb->type()) + get_defines(gdb->type());
+	settings.gsub(app_data.auto_command_prefix, "@AUTO@");
+
 	switch (gdb->type())
 	{
 	case GDB:
-	    gdb_settings = get_settings(GDB);
+	    gdb_settings = settings;
 	    break;
 
 	case DBX:
-	    dbx_settings = get_settings(DBX);
+	    dbx_settings = settings;
 	    break;
 
 	case XDB:
-	    xdb_settings = get_settings(XDB);
+	    xdb_settings = settings;
 	    break;
 
 	case JDB:
-	    jdb_settings = get_settings(JDB);
+	    jdb_settings = settings;
 	    break;
 	}
     }

@@ -294,6 +294,16 @@ bool is_setting_cmd (const string& cmd)
     return cmd.matches (rxsetting_cmd) || cmd.matches(rxpath_cmd);
 }
 
+// True if CMD changes debugger settings
+bool is_define_cmd (const string& cmd)
+{
+#if RUNTIME_REGEX
+    static regex rxdefine_cmd("[ \t]*(define|document)[ \t]+.*");
+#endif
+
+    return cmd.matches(rxdefine_cmd);
+}
+
 // True if CMD changes debuggee
 bool is_file_cmd (const string& cmd, GDBAgent *gdb)
 {

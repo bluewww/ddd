@@ -262,19 +262,28 @@ public:
 			      string depends_on = "",
 			      DeferMode deferred = DeferAlways,
 			      Widget origin = 0,
-			      bool verbose = true);
+			      bool verbose = true,
+			      bool prompt = true);
 
     // Refresh displays.  Sends `info display' and `display' to GDB.
-    static void refresh_displaySQ(Widget origin = 0, bool verbose = true);
+    static void refresh_displaySQ(Widget origin = 0, 
+				  bool verbose = true,
+				  bool prompt = true);
 
     // Disable displays given in DISPLAY_NRS.  Sends `disable display' to GDB.
-    static void disable_displaySQ(IntArray& display_nrs, bool verbose = true);
+    static void disable_displaySQ(IntArray& display_nrs,
+				  bool verbose = true,
+				  bool prompt = true);
 
     // Enable displays given in DISPLAY_NRS.  Sends `enable display' to GDB.
-    static void enable_displaySQ(IntArray& display_nrs, bool verbose = true);
+    static void enable_displaySQ(IntArray& display_nrs,
+				 bool verbose = true,
+				 bool prompt = true);
 
     // Delete displays given in DISPLAY_NRS.  Sends `delete display' to GDB.
-    static void delete_displaySQ(IntArray& display_nrs, bool verbose = true);
+    static void delete_displaySQ(IntArray& display_nrs,
+				 bool verbose = true,
+				 bool prompt = true);
 
     // Same, but return the appropriate command
     static string new_display_cmd(string display_expression,

@@ -100,6 +100,7 @@ public:
     OQCProc     user_callback;	  // User callback
     void *      user_data;	  // User data
     bool        user_verbose;	  // Flag as given to send_gdb_command()
+    bool        user_prompt;	  // Flag as given to send_gdb_command()
     bool        user_check;	  // Flag as given to send_gdb_command()
 
 private:
@@ -124,21 +125,22 @@ public:
     // Constructor
     CmdData (Widget orig = 0, Filtering fd = TryFilter)
 	: origin(orig),
-	filter_disp(fd),
-	disp_buffer(0),
-	pos_buffer(0),
-	new_exec_pos(false),
-	new_frame_pos(false),
-	set_frame_pos(false),
-	set_frame_arg(0),
-	set_frame_func(""),
-	graph_cmd(""),
+	  filter_disp(fd),
+	  disp_buffer(0),
+	  pos_buffer(0),
+	  new_exec_pos(false),
+	  new_frame_pos(false),
+	  set_frame_pos(false),
+	  set_frame_arg(0),
+	  set_frame_func(""),
+	  graph_cmd(""),
 
-	user_answer(""),
-	user_callback(0),
-	user_data(0),
-	user_verbose(true),
-	user_check(true)
+	  user_answer(""),
+	  user_callback(0),
+	  user_data(0),
+	  user_verbose(true),
+	  user_prompt(true),
+	  user_check(true)
     {
 	add_destroy_callback();
     }
@@ -168,6 +170,7 @@ private:
 	  user_callback(0),
 	  user_data(0),
 	  user_verbose(true),
+	  user_prompt(true),
 	  user_check(true)
     {
 	assert(0);
@@ -298,13 +301,14 @@ static void plusOQAC (const StringArray&, const VoidArray&, void *);
 // Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
 // to a `where 1' command; return true iff recognized
 static bool handle_graph_cmd(string& cmd, const string& where_answer,
-			     Widget origin = 0, bool verbose = true);
+			     Widget origin, bool verbose, bool prompt);
 
 // Handle output of initialization commands
 static void process_init(const string& answer, void *data = 0);
 
 // Handle output of batch commands
 static void process_batch(const string& answer, void *data = 0);
+
 
 // Process asynchronous GDB answers
 static void AsyncAnswerHP(Agent *, void *, void *);
@@ -345,6 +349,7 @@ void start_gdb()
     CmdData* cmd_data     = new CmdData;
     cmd_data->filter_disp = NoFilter;      // No `display' output
     cmd_data->pos_buffer  = new PosBuffer; // Find initial pos
+    cmd_data->user_prompt = false;
 
     PlusCmdData* plus_cmd_data = new PlusCmdData;
     StringArray cmds;
@@ -503,10 +508,12 @@ void start_gdb()
     // Enqueue restart and settings commands
     init_session(restart, settings);
 
-    // One last command to clear the delay and set up breakpoints
+    // One last command to clear the delay, set up breakpoints and
+    // issue prompt
     Command c("# reset");
     c.priority = COMMAND_PRIORITY_INIT;
     c.verbose  = false;
+    c.prompt   = true;
     c.check    = true;
     gdb_command(c);
 }
@@ -525,7 +532,7 @@ void init_session(const string& restart, const string& settings)
 	{
 	    // Give feedback on the files used and their state
 	    c.verbose = true;
-	    c.check = true;
+	    c.check   = true;
 	}
 	else if (gdb->type() == JDB && is_use_cmd(c.command))
 	{
@@ -566,17 +573,20 @@ void send_gdb_ctrl(string cmd, Widget origin)
 
 
 //-----------------------------------------------------------------------------
-// Send user command CMD to GDB.  Invoke CALLBACK with DATA upon
-// completion.  If VERBOSE is set, issue command in GDB console.
-// If CHECK is set, add appropriate GDB commands to get GDB state.
+// Send user command to GDB
 //-----------------------------------------------------------------------------
 
 // True iff last command was cancelled
 static bool command_was_cancelled = false;
 
+// Send user command CMD to GDB.  Invoke CALLBACK with DATA upon
+// completion.  If ECHO and VERBOSE are set, issue command in GDB
+// console.  If VERBOSE is set, issue answer in GDB console.  If
+// PROMPT is set, issue prompt.  If CHECK is set, add appropriate GDB
+// commands to get GDB state.
 void send_gdb_command(string cmd, Widget origin,
 		      OQCProc callback, void *data,
-		      bool verbose, bool check)
+		      bool echo, bool verbose, bool prompt, bool check)
 {
     // Pass control commands unprocessed to GDB.
     if (cmd.length() == 1 && iscntrl(cmd[0]))
@@ -636,6 +646,7 @@ void send_gdb_command(string cmd, Widget origin,
     cmd_data->user_callback = callback;
     cmd_data->user_data     = data;
     cmd_data->user_verbose  = verbose;
+    cmd_data->user_prompt   = prompt;
     cmd_data->user_check    = check;
 
     PlusCmdData* plus_cmd_data = new PlusCmdData;
@@ -691,6 +702,9 @@ void send_gdb_command(string cmd, Widget origin,
 	    delete cmd_data->pos_buffer;
 	    cmd_data->pos_buffer = 0;
 	}
+
+	if (is_define_cmd(cmd))
+	    set_need_defines(true);
 
 	plus_cmd_data->refresh_breakpoints = false;
 	plus_cmd_data->refresh_addr        = false;
@@ -966,7 +980,7 @@ void send_gdb_command(string cmd, Widget origin,
 	cmd_data->pos_buffer->check_func = data_disp->need_scope();
     }
 
-    if (verbose)
+    if (echo && verbose)
     {
 	string c = cmd;
 	strip_auto_command_prefix(c);
@@ -1227,8 +1241,9 @@ void user_cmdOAC(void *data)
 
     CmdData *cmd_data = (CmdData *) data;
     PosBuffer *pos_buffer = cmd_data->pos_buffer;
-    bool check   = cmd_data->user_check;
-    bool verbose = cmd_data->user_verbose;
+    bool check     = cmd_data->user_check;
+    bool verbose   = cmd_data->user_verbose;
+    bool do_prompt = cmd_data->user_prompt;
 
     string answer = "";
     if (pos_buffer)
@@ -1267,19 +1282,24 @@ void user_cmdOAC(void *data)
 
     if (pos_buffer && pos_buffer->auto_cmd_found())
     {
-	// Program (or GDB) issued command(s) to be executed by DDD
+	// Program (or GDB) issued auto command(s) to be executed by DDD
 	string auto_commands = pos_buffer->get_auto_cmd();
 
 	while (auto_commands != "")
 	{
 	    string command = auto_commands.before('\n');
-
-	    Command c(command, cmd_data->origin, process_batch);
-	    c.priority = COMMAND_PRIORITY_BATCH;
-	    gdb_command(c);
-
 	    auto_commands = auto_commands.after('\n');
+
+	    Command c(command, cmd_data->origin);
+	    c.priority = COMMAND_PRIORITY_BATCH;
+	    c.echo    = false;
+	    c.prompt  = (auto_commands == "");
+	    c.verbose = true;
+	    gdb_command(c);
 	}
+
+	// Don't issue prompt now; let the auto command do this
+	do_prompt = false;
     }
 
     if (cmd_data->graph_cmd != "")
@@ -1287,7 +1307,9 @@ void user_cmdOAC(void *data)
 	// Process graph command
 	string cmd = cmd_data->graph_cmd;
 	bool ok = handle_graph_cmd(cmd, cmd_data->user_answer, 
-				   cmd_data->origin, cmd_data->user_verbose);
+				   cmd_data->origin,
+				   cmd_data->user_verbose,
+				   cmd_data->user_prompt);
 	if (!ok)
 	{
 	    // Unknown command -- try again with base command
@@ -1297,8 +1319,14 @@ void user_cmdOAC(void *data)
 	    return;
 	}
 
-	check     = false;
-	verbose   = false;
+	// No need for further checks
+	check        = false;
+
+	// Ignore the answer
+	verbose      = false;
+
+	// Don't issue any further prompt
+	do_prompt = false;
     }
 
     // Set execution position
@@ -1422,7 +1450,7 @@ void user_cmdOAC(void *data)
 	    if (disabling_occurred)
 	    {
 		cmd_data->filter_disp = Filter;
-		cmd_data->user_verbose = false;	// No more prompts
+		cmd_data->user_prompt = false;	// No more prompts
 		gdb->send_user_cmd(gdb->display_command());
 		return;
 	    }
@@ -1437,7 +1465,7 @@ void user_cmdOAC(void *data)
 
     delete cmd_data;
 
-    if (verbose)
+    if (do_prompt)
 	prompt();
 }
 
@@ -1467,7 +1495,7 @@ static bool read_displays(string command, IntArray& numbers, bool verbose)
 // Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
 // to a `where 1' command; return true iff recognized
 static bool handle_graph_cmd(string& cmd, const string& where_answer, 
-			     Widget origin, bool verbose)
+			     Widget origin, bool verbose, bool prompt)
 {
     string scope;
     if (gdb->has_func_command())
@@ -1553,17 +1581,19 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	if (when_in != "" && when_in != scope)
 	{
 	    data_disp->new_displaySQ(display_expression, when_in, pos,
-				     depends_on, deferred, origin, verbose);
+				     depends_on, deferred, origin, 
+				     verbose, prompt);
 	}
 	else
 	{
 	    data_disp->new_displaySQ(display_expression, scope, pos,
-				     depends_on, deferred, origin, verbose);
+				     depends_on, deferred, origin,
+				     verbose, prompt);
 	}
     }
     else if (is_refresh_cmd(cmd))
     {
-	data_disp->refresh_displaySQ(origin, verbose);
+	data_disp->refresh_displaySQ(origin, verbose, prompt);
     }
     else if (is_data_cmd(cmd))
     {
@@ -1573,15 +1603,15 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	{
 	    if (is_delete_display_cmd(cmd))
 	    {
-		data_disp->delete_displaySQ(numbers, verbose);
+		data_disp->delete_displaySQ(numbers, verbose, prompt);
 	    }
 	    else if (is_disable_display_cmd(cmd))
 	    {
-		data_disp->disable_displaySQ(numbers, verbose);
+		data_disp->disable_displaySQ(numbers, verbose, prompt);
 	    }
 	    else if (is_enable_display_cmd(cmd))
 	    {
-		data_disp->enable_displaySQ(numbers, verbose);
+		data_disp->enable_displaySQ(numbers, verbose, prompt);
 	    }
 	}
     }
@@ -1631,13 +1661,17 @@ bool is_known_command(const string& answer)
 
 static void process_init(const string& answer, void *)
 {
-    (void) answer;
+    if (answer == NO_GDB_ANSWER)
+	return;			// Command was canceled
+
     // cerr << answer;
 }
 
 static void process_batch(const string& answer, void *)
 {
-    (void) answer;
+    if (answer == NO_GDB_ANSWER)
+	return;			// Command was canceled
+
     // cerr << answer;
 }
 

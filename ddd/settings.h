@@ -34,40 +34,56 @@
 #endif
 
 #include <X11/Intrinsic.h>
+#include "bool.h"
 #include "strclass.h"
 #include "GDBAgent.h"
 
+// Debugger settings
+
 // Popup editor for debugger settings
-void dddPopupSettingsCB(Widget, XtPointer, XtPointer);
+extern void dddPopupSettingsCB(Widget, XtPointer, XtPointer);
 
 // Process `show' output
-void process_show(string command, string value, bool init = false);
+extern void process_show(string command, string value, bool init = false);
 
 // True if settings might have changed
-bool need_settings();
+extern bool need_settings();
 
 // Get settings string
-string get_settings(DebuggerType type);
+extern string get_settings(DebuggerType type);
 
 // Get help on `DBXENV BASE'
-string get_dbx_help(string dbxenv, string base);
+extern string get_dbx_help(string dbxenv, string base);
 		    
 // Mark settings as `saved'
-void save_settings_state();
+extern void save_settings_state();
 
 // Mark settings as `invalid'
-void reset_settings();
+extern void reset_settings();
 
 
+// User Status Displays
 
 // Popup editor for debugger infos
-void dddPopupInfosCB(Widget, XtPointer, XtPointer);
+extern void dddPopupInfosCB(Widget, XtPointer, XtPointer);
 
 // Update debugger infos
-void update_infos();
+extern void update_infos();
 
 // Register additional info button
-void register_info_button(Widget w);
+extern void register_info_button(Widget w);
+
+
+// Definitions
+
+// True if definitions might have changed
+extern bool need_defines();
+
+// Call this function if command definitions have changed
+extern void set_need_defines(bool val = true);
+
+// Get current definitions
+extern string get_defines(DebuggerType type);
 
 #endif // _DDD_settings_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

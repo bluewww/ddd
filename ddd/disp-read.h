@@ -100,6 +100,9 @@ bool is_set_cmd(const string& cmd, GDBAgent *gdb);
 // True if CMD changes debugger settings.
 bool is_setting_cmd(const string& cmd);
 
+// True if CMD changes debugger command definitions.
+bool is_define_cmd(const string& cmd);
+
 // True if CMD changes the current file.
 bool is_file_cmd(const string& cmd, GDBAgent *gdb);
 
