@@ -3,7 +3,7 @@ static char * ddd_status_displays_xpm@[] = {
 /* width height num_colors chars_per_pixel */
 "828 484 11 1",
 /* colors */
-" 	c white",
+" 	c #ffffff",
 ".	c #bfbfbf",
 "X	c #000000",
 "o	c #737373",
