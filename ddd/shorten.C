@@ -49,7 +49,7 @@ void shorten(string& expr, unsigned max_length)
     int target = 0;
     bool at_space = true;
 
-    while (source < expr.length())
+    while (source < int(expr.length()))
     {
 	if (isspace(expr[source]))
 	{
@@ -65,8 +65,11 @@ void shorten(string& expr, unsigned max_length)
 	    at_space = false;
 	}
     }
-    while (target > 0 && target <= expr.length() && expr[target - 1] == ' ')
+    while (target > 0 && target <= int(expr.length()) && 
+	   expr[target - 1] == ' ')
+    {
 	target--;
+    }
     expr.from(target) = "";
 
     // Remove text from the middle
