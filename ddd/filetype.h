@@ -24,17 +24,6 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:32  zeller
-// Initial revision
-//
-// Revision 1.2  1995/04/21  16:35:50  zeller
-// New: check for picture files
-//
-// Revision 1.1  1995/03/22  19:26:18  zeller
-// Initial revision
-//
-
 #ifndef _DDD_filetype_h
 #define _DDD_filetype_h
 

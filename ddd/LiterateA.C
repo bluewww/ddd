@@ -24,21 +24,7 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:52  zeller
-// Initial revision
-//
-// Revision 1.32  1995/04/29  13:42:27  zeller
-// New: try multiple write and flush attempts
-// New: issue error messages only if errno was actually set to a non-zero
-// value
-//
-// Revision 1.31  1995/03/30  18:34:02  zeller
-// New: improved fcntl() decl check
-// Fix: don't panic when no input is available from tty
-//
-
-static const char rcsid[] = 
+char LiterateAgent_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

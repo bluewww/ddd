@@ -24,33 +24,7 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:50  zeller
-// Initial revision
-//
-// Revision 1.7  1995/04/14  14:08:42  zeller
-// Fix: reference exact widget class
-//
-// Revision 1.6  1995/03/30  16:54:21  zeller
-// New: use standard Motif scrolled window in Motif 2.0 or later
-//
-// Revision 1.5  1995/03/30  16:39:05  zeller
-// New: use standard Motif scrolled window in later Motif versions
-//
-// Revision 1.4  1993/05/22  20:11:42  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.3  1993/04/22  11:00:13  zeller
-// Lizenz verbessert
-// 
-// Revision 1.2  1993/04/16  11:38:46  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.1  1992/11/11  13:33:27  zeller
-// Initial revision
-// 
-
-static const char rcsid[] = 
+char ScrolledGraphEdit_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

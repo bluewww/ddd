@@ -24,23 +24,12 @@
 // ICE is the incremental configuration engine.
 // Contact ice@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:22  zeller
-// Initial revision
-//
-// Revision 1.1.1.1  1995/02/09  09:11:33  zeller
-// ICE 0.5 distribution
-//
-// Revision 1.6  1995/01/14  14:48:27  zeller
-// New license for ICE 0.5
-//
-
 // Usage:
 // Include this file in your main module (or in a single module which is
 // linked with your program). All allocation and deallocation
 // will then go through the MemCheck class functions.
 
-static char MemCheckDef_rcsid[] = 
+char MemCheckDef_rcsid[] = 
     "$Id$";
 
 #include "MemCheck.h"

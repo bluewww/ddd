@@ -24,14 +24,6 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:01  zeller
-// Initial revision
-//
-// Revision 1.1  1995/03/24  00:14:28  zeller
-// Initial revision
-//
-
 #ifndef _DDD_hostname_h
 #define _DDD_hostname_h
 

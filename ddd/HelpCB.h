@@ -24,27 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:29  zeller
-// Initial revision
-//
-// Revision 1.16  1995/04/12  11:47:55  zeller
-// New: ManualStringHelpCB() for built-in preformatted manual pages
-//
-// Revision 1.15  1995/04/12  00:28:43  zeller
-// New: built-in manual page browser
-//
-// Revision 1.14  1995/04/09  00:01:21  zeller
-// New: get version pixmap via widget-dependent procedure
-//
-// Revision 1.13  1995/04/08  19:31:52  zeller
-// New: provide individual pixmap for HelpOnVersion
-//
-// Revision 1.12  1995/04/05  11:21:42  zeller
-// New: HelpOnVersionCB
-// New: CommandHelpCB
-//
-
 #ifndef _Nora_HelpCB_h
 #define _Nora_HelpCB_h
 

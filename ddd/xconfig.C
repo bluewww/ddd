@@ -24,31 +24,7 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:09  zeller
-// Initial revision
-//
-// Revision 1.6  1995/04/30  12:28:04  zeller
-// New: improved diagnostics and auto-fix mechanisms
-//
-// Revision 1.5  1995/04/30  11:36:28  zeller
-// New: verbose mode
-// New: auto-fixing re-enabled
-//
-// Revision 1.4  1995/04/29  13:39:28  zeller
-// New: verbose explicit checks
-//
-// Revision 1.3  1995/04/25  19:25:11  zeller
-// New: check whether X keysyms are really installed. (won't work yet)
-//
-// Revision 1.2  1995/04/18  10:27:14  zeller
-// Fix: use Agents instead of popen(), pclose()
-//
-// Revision 1.1  1995/04/13  21:45:15  zeller
-// Initial revision
-//
-
-static const char rcsid[] = 
+char xconfig_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

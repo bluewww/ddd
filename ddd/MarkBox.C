@@ -24,39 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:47  zeller
-// Initial revision
-//
-// Revision 1.9  1995/03/17  07:44:12  zeller
-// New: renamed `boolean' to `bool'
-//
-// Revision 1.8  1994/07/19  22:08:13  zeller
-// Fix: save region besides draw() being const
-//
-// Revision 1.7  1994/07/19  21:48:13  zeller
-// New: draw() now const correct
-//
-// Revision 1.6  1993/08/27  14:25:55  zeller
-// Neu: TypeInfo
-//
-// Revision 1.5  1993/05/22  20:15:09  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.4  1993/04/22  10:51:52  zeller
-// Lizenz verbessert
-// 
-// Revision 1.3  1993/04/21  00:11:05  zeller
-// Umbenennung der Header-Dateien
-// 
-// Revision 1.2  1993/04/16  11:31:46  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.1  1992/11/05  16:38:04  zeller
-// Initial revision
-// 
-
-char MarkBox_rcsid[] = "$Id$";
+char MarkBox_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation

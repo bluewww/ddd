@@ -24,14 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:53  zeller
-// Initial revision
-//
-// Revision 10.11  1995/03/17  09:54:48  zeller
-// License and RCS IDs added
-//
-
 #ifndef _Nora_TrueNode_h
 #define _Nora_TrueNode_h
 

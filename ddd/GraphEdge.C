@@ -24,55 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:41  zeller
-// Initial revision
-//
-// Revision 1.14  1995/04/08  09:20:16  zeller
-// Fix: don't fetch the line width via X internal GC structure
-//
-// Revision 1.13  1995/03/17  07:44:12  zeller
-// New: renamed `boolean' to `bool'
-//
-// Revision 1.12  1993/12/15  12:02:05  zeller
-// Fix: Kanten ohne Pfeilspitzen korrekt drucken
-//
-// Revision 1.11  1993/10/18  12:51:28  zeller
-// Fix: Versteckte Kanten nicht ausdrucken
-//
-// Revision 1.10  1993/08/27  15:46:05  zeller
-// Neu: TypeInfo
-//
-// Revision 1.9  1993/05/22  20:10:50  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.8  1993/04/22  11:00:31  zeller
-// Lizenz verbessert
-// 
-// Revision 1.7  1993/04/16  11:38:31  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.6  1993/03/01  11:32:43  zeller
-// Fix: EDGEHEAD statt LINEHEAD verwendet;
-// EDGEHEAD hat andere Tiefe
-// 
-// Revision 1.5  1993/02/25  14:11:05  zeller
-// Fix: Fall "Liniendicke == 0" korrekt behandelt
-// 
-// Revision 1.4  1993/02/23  17:31:21  zeller
-// Neu: Drucken -- in EPS oder FIG-Format
-// 
-// Revision 1.3  1992/11/13  15:52:14  zeller
-// Neu: Loeschen von Knoten und Kanten moeglich
-// 
-// Revision 1.2  1992/06/01  17:02:36  zeller
-// Neu: #pragma implementation
-// 
-// Revision 1.1  1992/03/03  14:58:52  zeller
-// Initial revision
-// 
-
-char GraphEdge_rcsid[] = "$Id$";
+char GraphEdge_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation

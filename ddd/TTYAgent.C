@@ -24,68 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:06  zeller
-// Initial revision
-//
-// Revision 1.21  1995/04/21  16:36:28  zeller
-// New: check for setpgrp2 and setpgrp(void)
-//
-// Revision 1.20  1995/04/15  16:44:32  zeller
-// Fix: make sure slave tty is open
-// New: store master tty name in master_tty
-//
-// Revision 1.19  1995/04/10  23:01:49  zeller
-// New: `slave' member is obsolete
-//
-// Revision 1.18  1995/04/10  22:55:46  zeller
-// New: check for decls of ptsname, unlockpt, grantpt
-// New: provide diafnostics for failing ptsname, unlockpt, grantpt
-// New: open slave tty only once in child process
-//
-// Revision 1.17  1995/04/10  20:08:24  zeller
-// Fix: declare setpgrp() only if we don't have setpgid
-//
-// Revision 1.16  1995/04/10  09:39:44  zeller
-// Fix: improved ioctl() decl
-//
-// Revision 1.15  1995/04/08  16:47:22  zeller
-// Fix: HAVE_SETPGRP_DECL and !defined(setpgid) were mis-spelled
-//
-// Revision 1.14  1995/04/04  16:20:32  zeller
-// New: set interrupt character explicitly to ^C
-//
-// Revision 1.13  1995/04/03  14:52:18  zeller
-// Fix: SVR4 requires "ldterm", not "ldtem"
-// Fix: use O_APPEND instead of FAPPEND
-//
-// Revision 1.12  1995/03/30  18:32:58  zeller
-// Fix: tcsetattr() may actually be a macro
-// Fix: use O_NONBLOCK instead of O_NDELAY
-// New: use non-blocking mode for reading
-//
-// Revision 1.11  1995/03/23  19:14:39  zeller
-// Fix: ONLCR is not defined on all systems
-//
-// Revision 1.10  1995/03/21  22:20:44  zeller
-// Fix: care for setsid() and tcsetpgrp() decls
-//
-// Revision 1.9  1995/03/21  16:39:02  zeller
-// Fix: reset controlling tty in slave only
-//
-// Revision 1.8  1995/03/21  14:07:17  zeller
-// New: try pseudo ttys pty[P-T] as well
-//
-// Revision 1.7  1995/03/21  09:12:31  zeller
-// New: added (untested) routines for AIX, SGI, UNICOS, HP-UX
-//
-// Revision 1.6  1995/03/16  10:15:09  zeller
-// Fix: check for ioctl() before tcsetprgp()
-//
-// Revision 1.5  1995/03/16  10:00:16  zeller
-// New: TTYAgent is now configured via autoconf
-//
-
 // Most of this code is based on `calldbx.c' from `xxgdb', by Pierre
 // Willard which in turn is based on `calldbx.c' from `xdbx', by Po
 // Cheung.  The open_master() and open_slave() routines are based
@@ -97,7 +35,7 @@
 //
 //                                                 (Andreas Zeller)
 
-static const char rcsid[] = 
+char TTYAgent_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

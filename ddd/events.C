@@ -24,40 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:54  zeller
-// Initial revision
-//
-// Revision 9.7  1994/02/07  10:19:20  zeller
-// Fix: Fehlermeldungen nach cerr statt cout
-//
-// Revision 9.6  1993/05/22  20:10:03  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 9.5  1993/04/22  11:04:04  zeller
-// Lizenz verbessert
-// 
-// Revision 9.4  1993/04/16  11:41:56  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 9.3  1992/02/26  10:12:18  zeller
-// Neue Bezeichner, neue Tabstops
-// 
-// Revision 9.2  1991/07/10  13:44:55  zeller
-// SCCSID angepasst
-// 
-// Revision 9.1  1991/07/08  05:52:44  zeller
-// Installierte Version
-// 
-// Revision 8.1  1991/07/06  15:00:46  zeller
-// Installierte Version
-// 
-// Revision 1.1  1991/06/24  20:26:21  zeller
-// Initial revision
-// 
-
 char events_rcsid[] =
-"$Id$";
+    "$Id$";
 
 #include "events.h"
 

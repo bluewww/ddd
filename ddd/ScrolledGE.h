@@ -24,29 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:50  zeller
-// Initial revision
-//
-// Revision 1.6  1995/03/29  12:09:19  zeller
-// Fix: include GraphEdit defs
-//
-// Revision 1.5  1993/05/22  20:11:45  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.4  1993/04/22  11:00:14  zeller
-// Lizenz verbessert
-// 
-// Revision 1.3  1993/04/20  23:01:05  zeller
-// Neuer Name gegen mehrfaches #include
-// 
-// Revision 1.2  1993/04/16  11:38:47  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.1  1992/11/11  13:33:28  zeller
-// Initial revision
-// 
-
 #ifndef _Nora_ScrolledGraphEdit_h
 #define _Nora_ScrolledGraphEdit_h
 

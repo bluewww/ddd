@@ -288,6 +288,9 @@ public:
     // Check whether `where' command is required
     static bool where_required();
 
+    // Check whether source files are to be cached
+    static bool cache_source_files;
+
     // Clear file cache
     static void clear_file_cache();
 };

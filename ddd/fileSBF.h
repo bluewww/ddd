@@ -24,14 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:04  zeller
-// Initial revision
-//
-// Revision 1.6  1995/03/27  16:03:59  zeller
-// Fix: don't include <Nora/...>
-//
-
 #ifndef _Nora_fileSelectionBoxFilename_h
 #define _Nora_fileSelectionBoxFilename_h
 

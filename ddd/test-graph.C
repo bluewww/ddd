@@ -24,16 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:06  zeller
-// Initial revision
-//
-// Revision 1.30  1995/04/16  09:49:33  zeller
-// New: more nodes (for layout testing)
-//
-// Revision 1.29  1995/03/29  12:08:34  zeller
-// New: Panned Graph Editor support
-//
+char test_graph_rcsid[] = 
+    "$Id$";
 
 #include "assert.h"
 #include <iostream.h>

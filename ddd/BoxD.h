@@ -20,23 +20,6 @@
 // License along with this library; if not, write to the Free
 // Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:32  zeller
-// Initial revision
-//
-// Revision 1.4  1993/07/02  11:27:48  zeller
-// Fix: #pragma interface entfernt
-//
-// Revision 1.3  1993/06/29  10:41:24  zeller
-// Neudefinition: ANSI C++ forbids incrementing an enum
-//
-// Revision 1.2  1993/05/22  20:13:21  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.1  1993/04/20  23:38:13  zeller
-// Initial revision
-// 
-
 #ifndef _Nora_BoxDimension_h
 #define _Nora_BoxDimension_h
 

@@ -1,6 +1,6 @@
 dnl $Id$
 dnl Local autoconf macros
-
+dnl 
 dnl Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 dnl Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 dnl 
@@ -23,57 +23,9 @@ dnl 675 Mass Ave, Cambridge, MA 02139, USA.
 dnl 
 dnl ICE is the incremental configuration engine.
 dnl Contact ice@ips.cs.tu-bs.de for details.
-
-dnl $Log$
-dnl Revision 1.1  1995/05/01 15:47:19  zeller
-dnl Initial revision
 dnl
-dnl Revision 1.1.1.13  1995/04/21  16:37:06  zeller
-dnl Fix: variable quoting trouble
 dnl
-dnl Revision 1.1.1.12  1995/04/20  19:08:09  zeller
-dnl New: look for Motif in even more places
-dnl Fix: setting motif-includes etc. from argument list didn't work
 dnl
-dnl Revision 1.1.1.11  1995/04/11  11:13:07  zeller
-dnl New: search for include and lib in even more places
-dnl
-dnl Revision 1.1.1.10  1995/04/11  09:53:27  zeller
-dnl Fix: ICE_CHECK_DECL: set quotes correctly
-dnl
-dnl Revision 1.1.1.9  1995/04/10  20:41:39  zeller
-dnl New: set SVR4 -R flag if used for X library locations
-dnl
-dnl Revision 1.1.1.8  1995/04/10  19:07:52  zeller
-dnl Fix: improved default location checks for Athena and Motif widgets
-dnl
-dnl Revision 1.1.1.7  1995/04/10  18:54:42  zeller
-dnl Fix: use X_LIBS instead of X_LDFLAGS
-dnl
-dnl Revision 1.1.1.6  1995/04/10  17:38:23  zeller
-dnl Fix: FIND_MOTIF, FIND_ATHENA: try ordinary compilation first
-dnl New: Try different directories
-dnl
-dnl Revision 1.1.1.5  1995/04/10  09:40:44  zeller
-dnl Fix: ICE_CHECK_DECL: check for _PARAMS was bad
-dnl
-dnl Revision 1.1.1.4  1995/04/08  16:46:40  zeller
-dnl New: check in /opt/SUNWmotif as well
-dnl
-dnl Revision 1.1.1.3  1995/04/06  15:44:53  zeller
-dnl New: check for Motif in /usr/dt and /opt as well
-dnl
-dnl Revision 1.1.1.2  1995/04/05  16:24:38  zeller
-dnl New: check for Motif and Athena library locations
-dnl
-dnl Revision 1.1.1.1  1995/02/09  09:12:23  zeller
-dnl ICE 0.5 distribution
-dnl
-dnl Revision 1.5  1995/02/08  16:49:07  zeller
-dnl New: no more -Wno-unused flags
-dnl
-dnl Revision 1.4  1995/01/14  14:48:27  zeller
-dnl New license for ICE 0.5
 dnl
 dnl If the C++ compiler accepts the `-fexternal-templates' flag,
 dnl set output variable `EXTERNAL_TEMPLATES' to `-fexternal-templates',
@@ -729,7 +681,15 @@ ice_cv_motif_includes=
 # Xm/Xm.h is not in the standard search path.
 # Locate it and put its directory in `motif_includes'
 #
+# /usr/include/Motif* are used on HP-UX (Motif).
+# /usr/include/X11* are used on HP-UX (X and Athena).
+# /usr/dt is used on Solaris (Motif).
+# /usr/openwin is used on Solaris (X and Athena).
+# Other directories are just guesses.
 for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
+           /usr/include/Motif2.0 /usr/include/Motif1.2 /usr/include/Motif1.1 \
+           /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
+           /usr/dt/include /usr/openwin/include \
            /usr/dt/*/include /opt/*/include /usr/include/Motif* \
 	   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
 	   "${prefix}"/include/* /usr/include/* /usr/local/include/*; do
@@ -773,8 +733,16 @@ ice_cv_motif_libraries=
 # libXm.a is not in the standard search path.
 # Locate it and put its directory in `motif_libraries'
 #
+# /usr/lib/Motif* are used on HP-UX (Motif).
+# /usr/lib/X11* are used on HP-UX (X and Athena).
+# /usr/dt is used on Solaris (Motif).
+# /usr/openwin is used on Solaris (X and Athena).
+# Other directories are just guesses.
 for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
-           /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
+	   /usr/lib/Motif2.0 /usr/lib/Motif1.2 /usr/lib/Motif1.1 \
+	   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
+           /usr/dt/lib /usr/openwin/lib \
+	   /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
 	   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
 	   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
 if test -d "$dir" && test "`ls $dir/libXm.* 2> /dev/null`" != ""; then
@@ -863,8 +831,16 @@ ice_cv_athena_includes=
 # X11/Xaw/Text.h is not in the standard search path.
 # Locate it and put its directory in `athena_includes'
 #
+# /usr/include/Motif* are used on HP-UX (Motif).
+# /usr/include/X11* are used on HP-UX (X and Athena).
+# /usr/dt is used on Solaris (Motif).
+# /usr/openwin is used on Solaris (X and Athena).
+# Other directories are just guesses.
 for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
-           /usr/dt/*/include /opt/*/include \
+           /usr/include/Motif2.0 /usr/include/Motif1.2 /usr/include/Motif1.1 \
+           /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
+           /usr/dt/include /usr/openwin/include \
+           /usr/dt/*/include /opt/*/include /usr/include/Motif* \
 	   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
 	   "${prefix}"/include/* /usr/include/* /usr/local/include/*; do
 if test -f "$dir/X11/Xaw/Text.h"; then
@@ -910,8 +886,17 @@ ice_cv_athena_libraries=
 # libXaw.a is not in the standard search path.
 # Locate it and put its directory in `athena_libraries'
 #
+#
+# /usr/lib/Motif* are used on HP-UX (Motif).
+# /usr/lib/X11* are used on HP-UX (X and Athena).
+# /usr/dt is used on Solaris (Motif).
+# /usr/openwin is used on Solaris (X and Athena).
+# Other directories are just guesses.
 for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
-           /usr/dt/*/lib /opt/*/lib \
+	   /usr/lib/Motif2.0 /usr/lib/Motif1.2 /usr/lib/Motif1.1 \
+	   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
+           /usr/dt/lib /usr/openwin/lib \
+	   /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
 	   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
 	   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
 if test -d "$dir" && test "`ls $dir/libXaw.* 2> /dev/null`" != ""; then

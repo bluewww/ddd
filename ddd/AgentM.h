@@ -24,53 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:08  zeller
-// Initial revision
-//
-// Revision 1.14  1995/04/18  10:29:00  zeller
-// New: childStatusChange() returns whether signal could be handled
-//
-// Revision 1.13  1995/03/30  12:35:03  zeller
-// Fix: DECs require explicit signal argument casts
-//
-// Revision 1.12  1995/03/21  16:41:38  zeller
-// New: handle child status change in AgentManager
-//
-// Revision 1.11  1993/12/14  12:52:00  zeller
-// Neu: Funktions-Aufrufe (*p)() durch vereinfachte Syntax p() ersetzt
-//
-// Revision 1.10  1993/08/27  15:48:07  zeller
-// Neu: TypeInfo
-//
-// Revision 1.9  1993/05/22  20:18:50  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.8  1993/04/22  10:49:20  zeller
-// Lizenz verbessert
-// 
-// Revision 1.7  1993/04/22  10:36:49  zeller
-// Lizenz verbessert
-// 
-// Revision 1.6  1993/04/20  22:55:58  zeller
-// Neuer Name gegen mehrfaches #include
-// 
-// Revision 1.5  1993/04/16  11:28:12  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.4  1992/10/29  13:15:56  zeller
-// Neu: commit()
-// 
-// Revision 1.3  1992/06/02  02:08:28  zeller
-// #pragma interface eingefuehrt
-// 
-// Revision 1.2  1992/06/02  02:06:39  zeller
-// #pragma once entfernt
-// 
-// Revision 1.1  1992/05/12  16:56:12  zeller
-// Initial revision
-// 
-
 // This class is used to perform process-wide actions;
 // especially terminating child agents upon exiting
 // and searching an agent with given pid

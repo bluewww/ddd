@@ -24,42 +24,7 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:43  zeller
-// Initial revision
-//
-// Revision 1.10  1995/04/17  13:49:48  zeller
-// RCSID fixed
-//
-// Revision 1.9  1995/03/17  07:44:12  zeller
-// New: renamed `boolean' to `bool'
-//
-// Revision 1.8  1993/12/07  08:33:11  zeller
-// Fix: #pragma implementation "GraphNodeI.h" nachgereicht
-//
-// Revision 1.7  1993/08/27  15:46:05  zeller
-// Neu: TypeInfo
-//
-// Revision 1.6  1993/05/22  20:11:10  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.5  1993/04/22  11:00:27  zeller
-// Lizenz verbessert
-// 
-// Revision 1.4  1993/04/16  11:38:36  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.3  1992/11/12  23:48:12  zeller
-// 'const' eingefuehrt
-// 
-// Revision 1.2  1992/06/01  17:02:39  zeller
-// Neu: #pragma implementation
-// 
-// Revision 1.1  1992/03/03  14:58:52  zeller
-// Initial revision
-// 
-
-static const char rcsid[] = 
+char GraphNode_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

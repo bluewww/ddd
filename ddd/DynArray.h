@@ -24,20 +24,6 @@
 // ICE is the incremental configuration engine.
 // Contact ice@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:39  zeller
-// Initial revision
-//
-// Revision 1.1.1.1  1995/02/09  09:11:51  zeller
-// ICE 0.5 distribution
-//
-// Revision 1.17  1995/02/08  15:08:21  zeller
-// Removed unused variable `dummy'
-//
-// Revision 1.16  1995/01/14  14:48:27  zeller
-// New license for ICE 0.5
-//
-
 #ifndef _ICE_DynArray_h
 #define _ICE_DynArray_h
 

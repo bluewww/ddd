@@ -24,23 +24,6 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:08  zeller
-// Initial revision
-//
-// Revision 1.4  1995/04/30  11:36:10  zeller
-// New: verbose mode
-//
-// Revision 1.3  1995/04/29  13:43:52  zeller
-// New: verbose explicit checks
-//
-// Revision 1.2  1995/04/25  19:27:28  zeller
-// New: auto_configure_X() takes the top-level widget as parameter
-//
-// Revision 1.1  1995/04/13  21:45:17  zeller
-// Initial revision
-//
-
 #ifndef _DDD_xconfig_h
 #define _DDD_xconfig_h
 

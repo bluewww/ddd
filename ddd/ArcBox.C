@@ -19,16 +19,8 @@
 // You should have received a copy of the GNU Library General Public
 // License along with this library; if not, write to the Free
 // Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-	
-// $Log$
-// Revision 1.1  1995/05/01 15:47:10  zeller
-// Initial revision
-//
-// Revision 10.14  1995/03/30  13:00:16  zeller
-// Fix: defined `rad' and `pi' explicitly
-//
 
-static const char rcsid[] = 
+char ArcBox_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

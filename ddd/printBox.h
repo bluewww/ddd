@@ -25,42 +25,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:59  zeller
-// Initial revision
-//
-// Revision 1.10  1995/03/17  07:44:12  zeller
-// New: renamed `boolean' to `bool'
-//
-// Revision 1.9  1993/12/23  12:29:48  zeller
-// Fix: FIG-Format: Hoehe und Breite von Texten angegeben
-//
-// Revision 1.8  1993/05/22  20:16:23  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.7  1993/04/22  11:32:50  zeller
-// Lizenz verbessert
-// 
-// Revision 1.6  1993/04/20  22:58:02  zeller
-// Neuer Name gegen mehrfaches #include
-// 
-// Revision 1.5  1993/04/16  11:32:06  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.4  1993/03/01  11:31:18  zeller
-// Neu: Kommentare aus xfig-spec-2.1
-// Fix: Tiefen-Angaben (depth) verbessert
-// 
-// Revision 1.3  1993/03/01  09:58:56  zeller
-// XFIG: Fonts verkleinert
-// 
-// Revision 1.2  1993/02/23  17:30:26  zeller
-// Header angepasst
-// 
-// Revision 1.1  1993/02/23  16:20:59  zeller
-// Initial revision
-// 
-
 #ifndef _Nora_printBox_h
 #define _Nora_printBox_h
 

@@ -24,15 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:31  zeller
-// Initial revision
-//
-// Revision 1.1  1993/07/02  11:27:07  zeller
-// Initial revision
-//
-
-char BoxDimension_rcsid[] = "$Id$";
+char BoxDimension_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation

@@ -24,36 +24,7 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:07  zeller
-// Initial revision
-//
-// Revision 1.7  1995/04/20  23:58:26  zeller
-// Fix: set extra width and height each time the panner is resized
-//
-// Revision 1.6  1995/04/17  15:56:09  zeller
-// Fix: consider extra size when deciding whether panner is needed
-// New: have some more extra space
-//
-// Revision 1.5  1995/04/15  16:45:42  zeller
-// Placement further improved
-//
-// Revision 1.4  1995/04/14  16:28:35  zeller
-// New: have panner in lower right corner
-// New: make sure graph can always be scrolled out of panner area
-//
-// Revision 1.3  1995/04/14  15:25:58  zeller
-// New: have minimum/maximum size values for panner
-//
-// Revision 1.2  1995/04/14  14:08:19  zeller
-// New: notify graphedit widget of size changes
-// New: own PannedGraphEdit widget class
-//
-// Revision 1.1  1995/03/29  12:04:50  zeller
-// Initial revision
-//
-
-static const char rcsid[] = 
+char PannedGraphEdit_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

@@ -24,72 +24,16 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:32  zeller
-// Initial revision
-//
-// Revision 1.18  1995/03/17  09:54:48  zeller
-// License and RCS IDs added
-//
-// Revision 1.17  1994/07/19  21:30:07  zeller
-// Changes for gcc-2.6.0 (and ANSI C++)
-//
-// Revision 1.16  1993/08/27  15:46:05  zeller
-// Neu: TypeInfo
-//
-// Revision 1.15  1993/05/26  09:13:22  zeller
-// Fix: const-Warnung unterdrueckt
-//
-// Revision 1.14  1993/05/22  20:10:31  zeller
-// %Q% added by apply-q-flag.sh 1.5
-// 
-// Revision 1.13  1993/04/22  11:00:34  zeller
-// Lizenz verbessert
-// 
-// Revision 1.12  1993/04/16  11:38:26  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.11  1993/03/01  10:00:17  zeller
-// Neu: XFIG: Knoten als Compound ausgegeben
-// 
-// Revision 1.10  1993/02/24  12:16:24  zeller
-// Neu: Knoten vor Zeichnen loeschen (vorerst nur in PostScript)
-// 
-// Revision 1.9  1993/02/23  17:31:18  zeller
-// Neu: Drucken -- in EPS oder FIG-Format
-// 
-// Revision 1.8  1992/11/13  19:07:40  zeller
-// forceDraw: const eingefuehrt; region() angepasst
-// 
-// Revision 1.7  1992/11/12  23:46:48  zeller
-// 'const' eingefuehrt
-// 
-// Revision 1.6  1992/11/05  19:02:57  zeller
-// Neue Graphik-Kontexte -- vermeiden allzuhaeufiges Umschalten
-// 
-// Revision 1.5  1992/06/01  17:02:34  zeller
-// Neu: #pragma implementation
-// 
-// Revision 1.4  1992/05/20  15:45:51  zeller
-// Dateinamen verkuerzt
-// 
-// Revision 1.3  1992/02/27  23:02:01  zeller
-// Neu: GraphGC
-// 
-// Revision 1.2  1992/02/27  19:13:33  zeller
-// Box jetzt stets als Ganzes anzeigen
-// 
-// Revision 1.1  1992/02/26  11:52:34  zeller
-// Initial revision
-// 
+char BoxGraphNode_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation
 #endif
 
-
 #include "BoxGraphN.h"
 #include "printBox.h"
+
 
 DEFINE_TYPE_INFO_1(BoxGraphNode, RegionGraphNode)
 

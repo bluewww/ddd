@@ -24,16 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:03  zeller
-// Initial revision
-//
-// Revision 1.5  1995/03/27  16:03:45  zeller
-// New: don't use XmSTRING_DEFAULT_CHARSET
-//
-
-static const char rcsid[] = 
-"$Id$";
+char fileSelectionBoxFilename_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation

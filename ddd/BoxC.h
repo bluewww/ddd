@@ -20,17 +20,6 @@
 // License along with this library; if not, write to the Free
 // Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:31  zeller
-// Initial revision
-//
-// Revision 1.2  1993/05/22  19:58:59  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.1  1993/04/21  00:16:40  zeller
-// Initial revision
-// 
-
 #ifndef _Nora_BoxCoordinate_h
 #define _Nora_BoxCoordinate_h
 

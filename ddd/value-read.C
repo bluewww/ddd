@@ -25,7 +25,7 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-static const char rcsid[] =
+char value_read_rcsid[] =
     "$Id$";
 
 #ifdef __GNUG__
@@ -64,7 +64,8 @@ DispValueType determine_type (string value)
     }
 
     // We use [^\001]* for matching everything, including '\n'
-    static regex RXstr_or_cl_begin("\\({\n\\|record\n\\)[^\001]*", true);
+    static regex 
+	RXstr_or_cl_begin("\\({\n\\|record\n\\|RECORD\n\\)[^\001]*", true);
 
     if (value.matches(RXstr_or_cl_begin))
 	return StructOrClass;
@@ -94,6 +95,7 @@ DispValueType determine_type (string value)
 
 static void read_token(const char *value, int& pos);
 
+// Read tokens up to character DELIM
 static void read_up_to(const char *value, int& pos, char delim)
 {
     if (value[pos] == '\0')
@@ -111,6 +113,27 @@ static void read_up_to(const char *value, int& pos, char delim)
 
     // Add closing delimiter
     pos++;
+
+    return;
+}
+
+// Read tokens up to word DELIM
+static void read_up_to(const char *value, int& pos, char* delim)
+{
+    if (value[pos] == '\0')
+	return;
+
+    int len = strlen(delim);
+
+    // Read up to closing delimiter
+    while (value[pos] && strncmp(value + pos, delim, len))
+	read_token(value, pos);
+
+    if (value[pos] == '\0')
+	return;
+
+    // Add closing delimiter
+    pos += len;
 
     return;
 }
@@ -187,9 +210,16 @@ static void read_token(const char *value, int& pos)
 	if (isalnum(value[pos]))
 	{
 	    // Name or number
+	    int start = pos;
 	    pos++;
 	    while (isalnum(value[pos]))
 		pos++;
+
+	    string name(value + start, pos - start);
+	    if (name == "record")
+		read_up_to(value, pos, "end");
+	    else if (name == "RECORD")
+		read_up_to(value, pos, "END");
 	}
 	else if (isspace(value[0]))
 	{
@@ -263,6 +293,8 @@ bool read_array_begin (string& value)
 	value = value.after(0);
     else if (value.contains("record", 0))
 	value = value.after("record");
+    else if (value.contains("RECORD", 0))
+	value = value.after("RECORD");
     else
 	return false;
 
@@ -288,7 +320,8 @@ bool read_array_next (string& value)
     if (value.contains('{', 0)
 	|| value.contains('(', 0)
 	|| value.contains('[', 0)
-	|| value.contains("record\n", 0))
+	|| value.contains("record\n", 0)
+	|| value.contains("RECORD\n", 0))
     {
 	// DBX on Solaris issues arrays of structs without special delimiter
 	return true;
@@ -297,7 +330,8 @@ bool read_array_next (string& value)
     if (value.contains('}', 0)
 	|| value.contains(')', 0)
         || value.contains(']', 0)
-	|| value.contains("end\n", 0))
+	|| value.contains("end\n", 0)
+	|| value.contains("END\n", 0))
     {
 	return false;		// Array is done.
     }
@@ -313,6 +347,11 @@ bool read_array_end (string& value)
     if (value.contains("end\n", 0))
     {
 	value = value.after("end");
+	return false;		// Array is done.
+    }
+    if (value.contains("END\n", 0))
+    {
+	value = value.after("END");
 	return false;		// Array is done.
     }
 

@@ -35,7 +35,7 @@
 // and more...
 // (Some day, this file shall be split into several modules. - AZ)
 
-static const char rcsid[] =
+char ddd_rcsid[] =
     "$Id$";
 
 //-----------------------------------------------------------------------------
@@ -218,7 +218,8 @@ void graphRotateCB           (Widget, XtPointer, XtPointer);
 void graphLayoutCB           (Widget, XtPointer, XtPointer);
 void graphRefreshCB          (Widget, XtPointer, XtPointer);
 
-void sourceToggleFindWordsOnlyCB (Widget, XtPointer, XtPointer);
+void sourceToggleFindWordsOnlyCB    (Widget, XtPointer, XtPointer);
+void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer);
 
 void dddToggleGroupIconifyCB       (Widget, XtPointer, XtPointer);
 void dddToggleGlobalTabCompletionCB(Widget, XtPointer, XtPointer);
@@ -703,6 +704,15 @@ static XtResource resources[] = {
 	XtPointer(True)
     },
     {
+	XtNcacheSourceFiles,
+	XtCCacheSourceFiles,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, cache_source_files),
+	XtRImmediate,
+	XtPointer(True)
+    },
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,
@@ -989,6 +999,7 @@ static Widget graph_snap_to_grid_w[4];
 static Widget graph_compact_layout_w[4];
 static Widget graph_auto_layout_w[4];
 static Widget find_words_only_w[4];
+static Widget cache_source_files_w[4];
 static Widget set_focus_pointer_w[4];
 static Widget set_focus_explicit_w[4];
 static Widget set_scrolling_panner_w[4];
@@ -1017,6 +1028,8 @@ static MMDesc source_options_menu[] =
 {
     { "findWordsOnly", MMToggle, { sourceToggleFindWordsOnlyCB }, 
       NULL, find_words_only_w },
+    { "cacheSourceFiles", MMToggle, { sourceToggleCacheSourceFilesCB }, 
+      NULL, cache_source_files_w },
     MMEnd
 };
 
@@ -1595,6 +1608,7 @@ int main (int argc, char *argv[])
     graph_compact_layout_w[CommandOptions]     = graph_compact_layout_w[0];
     graph_auto_layout_w[CommandOptions]        = graph_auto_layout_w[0];
     find_words_only_w[CommandOptions]          = find_words_only_w[0];
+    cache_source_files_w[CommandOptions]       = cache_source_files_w[0];
     set_focus_pointer_w[CommandOptions]        = set_focus_pointer_w[0];
     set_focus_explicit_w[CommandOptions]       = set_focus_explicit_w[0];
     set_scrolling_panner_w[CommandOptions]     = set_scrolling_panner_w[0];
@@ -1667,6 +1681,7 @@ int main (int argc, char *argv[])
 	graph_compact_layout_w[DataOptions]     = graph_compact_layout_w[0];
 	graph_auto_layout_w[DataOptions]        = graph_auto_layout_w[0];
 	find_words_only_w[DataOptions]          = find_words_only_w[0];
+        cache_source_files_w[DataOptions]       = cache_source_files_w[0];
 	set_focus_pointer_w[DataOptions]        = set_focus_pointer_w[0];
 	set_focus_explicit_w[DataOptions]       = set_focus_explicit_w[0];
 	set_scrolling_panner_w[DataOptions]     = set_scrolling_panner_w[0];
@@ -1742,6 +1757,7 @@ int main (int argc, char *argv[])
 	graph_compact_layout_w[SourceOptions]     = graph_compact_layout_w[0];
 	graph_auto_layout_w[SourceOptions]        = graph_auto_layout_w[0];
 	find_words_only_w[SourceOptions]          = find_words_only_w[0];
+	cache_source_files_w[SourceOptions]       = cache_source_files_w[0];
 	set_focus_pointer_w[SourceOptions]        = set_focus_pointer_w[0];
 	set_focus_explicit_w[SourceOptions]       = set_focus_explicit_w[0];
 	set_scrolling_panner_w[SourceOptions]     = set_scrolling_panner_w[0];
@@ -2103,6 +2119,8 @@ void update_options()
 
 	XtVaSetValues(find_words_only_w[i],
 		      XmNset, app_data.find_words_only, NULL);
+	XtVaSetValues(cache_source_files_w[i],
+		      XmNset, app_data.cache_source_files, NULL);
 
 	Boolean state;
 	arg = 0;
@@ -2167,6 +2185,16 @@ void update_options()
 		      XmNset, type == GDB, NULL);
 	XtVaSetValues(set_debugger_dbx_w[i],
 		      XmNset, type == DBX, NULL);
+    }
+
+    if (app_data.cache_source_files)
+    {
+	source_view->cache_source_files = true;
+    }
+    else
+    {
+	source_view->cache_source_files = false;
+	source_view->clear_file_cache();
     }
 }
 
@@ -6422,6 +6450,22 @@ void sourceToggleFindWordsOnlyCB (Widget, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
+void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.cache_source_files = info->set;
+
+    if (info->set)
+	set_status("Caching source texts.");
+    else
+	set_status("Not caching source texts.");
+
+    update_options();
+    options_changed = true;
+}
+
 //-----------------------------------------------------------------------------
 // General Options
 //-----------------------------------------------------------------------------
@@ -6722,6 +6766,8 @@ static void save_options(Widget origin)
     // Some settable top-level defaults
     os << bool_app_value(XtNfindWordsOnly,
 			 app_data.find_words_only) << "\n";
+    os << bool_app_value(XtNcacheSourceFiles,
+			 app_data.cache_source_files) << "\n";
     os << bool_app_value(XtNgroupIconify,
 			 app_data.group_iconify)   << "\n";
     os << bool_app_value(XtNseparateExecWindow,

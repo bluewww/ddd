@@ -19,23 +19,6 @@ License along with this library; if not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:00  zeller
-// Initial revision
-//
-// Revision 1.1.1.2  1995/03/17  08:47:35  zeller
-// `#pragma interface' moved
-//
-// Revision 1.1.1.1  1995/02/09  09:12:30  zeller
-// ICE 0.5 distribution
-//
-// Revision 1.29  1995/01/14  16:15:39  zeller
-// Fix: gcc-2.5.8 has trouble with temporaries in strstream constructors
-//
-// Revision 1.28  1995/01/14  14:48:27  zeller
-// New license for ICE 0.5
-//
-
 // Differences to GNU String class:
 // - class name is `string' instead of `String'
 // - string length is `unsigned int' instead of `short'

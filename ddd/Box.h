@@ -19,14 +19,6 @@
 // You should have received a copy of the GNU Library General Public
 // License along with this library; if not, write to the Free
 // Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-	
-// $Log$
-// Revision 1.1  1995/05/01 15:47:31  zeller
-// Initial revision
-//
-// Revision 10.24  1995/03/17  08:46:06  zeller
-// Log stripped
-//
 
 #ifndef _Nora_Box_h
 #define _Nora_Box_h

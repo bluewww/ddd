@@ -33,7 +33,8 @@
 
 program ptest(input, output);
 
-const rcsid = '$Id$';
+const rcsid =
+    '$Id$';
 
 type DayOfWeek = (Sun, Mon, Tue, Wed, Thu, Fri, Sat);
    Date	       = record

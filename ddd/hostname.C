@@ -24,30 +24,7 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:04  zeller
-// Initial revision
-//
-// Revision 1.6  1995/04/11  11:08:36  zeller
-// Fix: `utsname' is a global variable in solaris
-//
-// Revision 1.5  1995/04/11  08:35:47  zeller
-// New: use Agents instead of popen()/pclose() to avoid wait() problems
-//
-// Revision 1.4  1995/04/10  23:52:54  zeller
-// New: use uname() interface for detecting hostname
-//
-// Revision 1.3  1995/04/10  20:53:34  zeller
-// New: prefer uname -n on hostname
-//
-// Revision 1.2  1995/04/03  14:59:29  zeller
-// Fix: get hostname via popen()
-//
-// Revision 1.1  1995/03/24  00:14:27  zeller
-// Initial revision
-//
-
-static const char rcsid[] = 
+char hostname_rcsid[] = 
     "$Id$";
 
 #include "hostname.h"

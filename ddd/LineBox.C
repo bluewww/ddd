@@ -24,64 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:36  zeller
-// Initial revision
-//
-// Revision 10.11  1995/03/17  07:44:12  zeller
-// New: renamed `boolean' to `bool'
-//
-// Revision 10.10  1994/07/19  21:48:13  zeller
-// New: draw() now const correct
-//
-// Revision 10.9  1993/08/27  14:25:55  zeller
-// Neu: TypeInfo
-//
-// Revision 10.8  1993/05/22  20:14:56  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 10.7  1993/04/22  10:52:06  zeller
-// Lizenz verbessert
-// 
-// Revision 10.6  1993/04/16  11:31:43  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 10.5  1992/06/02  03:04:15  zeller
-// #pragma besser formatiert
-// 
-// Revision 10.4  1992/06/01  16:34:15  zeller
-// Neu: #pragma definition/#pragma implementation
-// 
-// Revision 10.3  1992/06/01  14:13:47  zeller
-// Anpassung an gcc 2.0
-// 
-// Revision 10.2  1992/02/18  10:57:32  zeller
-// Konfliktfreie Typbezeichner eingefuehrt
-// 
-// Revision 10.1  1992/02/17  12:51:05  zeller
-// Tabstops von 4 auf 8 gesetzt
-// 
-// Revision 9.1  1991/07/08  05:46:33  zeller
-// Installierte Version
-// 
-// Revision 8.1  1991/07/06  14:58:38  zeller
-// Installierte Version
-// 
-// Revision 1.4  1991/06/09  17:38:12  zeller
-// 'selected' in 'context_selected' umbenannt,
-// um Compiler-Warnungen zu vermeiden
-// 
-// Revision 1.3  1991/06/08  13:13:04  zeller
-// CapStyle zusaetzlich auf CapProjecting setzen
-// 
-// Revision 1.2  1991/06/07  19:49:42  zeller
-// Neu: Um Region Rahmen von halber Liniendicke freilassen
-// 
-// Revision 1.1  1991/06/07  19:18:32  zeller
-// Initial revision
-// 
-
-char LineBox_rcsid[] = "$Id$";
+char LineBox_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation

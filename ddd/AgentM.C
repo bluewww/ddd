@@ -24,32 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:08  zeller
-// Initial revision
-//
-// Revision 1.19  1995/04/18  10:29:08  zeller
-// New: childStatusChange() returns whether signal could be handled
-//
-// Revision 1.18  1995/04/11  17:51:54  zeller
-// Fix: don't fetch status from unknown children; their parents may wait
-// forever
-//
-// Revision 1.17  1995/04/11  08:36:16  zeller
-// Fix: process status change of child causing the signal
-//
-// Revision 1.16  1995/03/21  16:39:21  zeller
-// New: handle child status change in AgentManager
-//
-// Revision 1.15  1995/03/17  09:54:48  zeller
-// License and RCS IDs added
-//
-// Revision 1.14  1995/03/16  14:32:39  zeller
-// New: no more error-prone cleanup on signals
-//
-
-static const char rcsid[] = 
-"$Id$";
+char AgentM_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation

@@ -37,7 +37,8 @@ FROM Storage IMPORT ALLOCATE, DEALLOCATE;
 FROM String IMPORT Assign;
 FROM InOut IMPORT WriteString, ReadString, WriteLn;
 
-CONST rcsid = '$Id$';
+CONST rcsid = 
+    '$Id$';
 
 TYPE DayOfWeek = (Sun, Mon, Tue, Wed, Thu, Fri, Sat);
    Date	       = RECORD

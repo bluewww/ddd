@@ -24,84 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:41  zeller
-// Initial revision
-//
-// Revision 1.24  1995/03/17  07:44:12  zeller
-// New: renamed `boolean' to `bool'
-//
-// Revision 1.23  1994/07/21  09:29:51  zeller
-// Fix: OK() must be const
-//
-// Revision 1.22  1994/07/19  21:30:07  zeller
-// Changes for gcc-2.6.0 (and ANSI C++)
-//
-// Revision 1.21  1993/10/18  12:56:16  zeller
-// Fix: Hints nicht ausdrucken
-//
-// Revision 1.20  1993/08/27  15:46:05  zeller
-// Neu: TypeInfo
-//
-// Revision 1.19  1993/05/26  09:11:57  zeller
-// Fix: const-Warnung unterdrueckt
-//
-// Revision 1.18  1993/05/22  20:10:45  zeller
-// %Q% added by apply-q-flag.sh 1.5
-// 
-// Revision 1.17  1993/04/22  11:00:33  zeller
-// Lizenz verbessert
-// 
-// Revision 1.16  1993/04/16  11:38:29  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.15  1993/02/24  15:29:55  zeller
-// Neu: printSelectedNodesOnly
-// 
-// Revision 1.14  1993/02/23  17:31:19  zeller
-// Neu: Drucken -- in EPS oder FIG-Format
-// 
-// Revision 1.13  1992/11/13  19:07:52  zeller
-// forceDraw: const eingefuehrt; region() angepasst
-// 
-// Revision 1.12  1992/11/13  15:51:53  zeller
-// Neu: Loeschen von Knoten und Kanten moeglich
-// 
-// Revision 1.11  1992/11/05  19:03:04  zeller
-// Neue Graphik-Kontexte -- vermeiden allzuhaeufiges Umschalten
-// 
-// Revision 1.10  1992/11/04  12:02:45  zeller
-// "assert.h" statt <assert.h>
-// 
-// Revision 1.9  1992/06/02  00:55:04  zeller
-// draw() vereinfacht
-// 
-// Revision 1.8  1992/06/01  17:02:35  zeller
-// Neu: #pragma implementation
-// 
-// Revision 1.7  1992/03/03  17:42:35  zeller
-// Neu: Echo
-// 
-// Revision 1.6  1992/03/03  14:56:45  zeller
-// Neu: OK()
-// 
-// Revision 1.5  1992/02/27  23:00:50  zeller
-// Neu: GraphGC
-// 
-// Revision 1.4  1992/02/27  14:19:34  zeller
-// Neu: region()
-// 
-// Revision 1.3  1992/02/27  11:23:10  zeller
-// Member-Funktionen als 'const' deklariert
-// 
-// Revision 1.2  1992/02/25  17:14:39  zeller
-// Neu: draw()
-// 
-// Revision 1.1  1992/02/25  09:39:37  zeller
-// Initial revision
-// 
-
-char Graph_rcsid[] = "$Id$";
+char Graph_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation

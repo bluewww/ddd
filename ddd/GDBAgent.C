@@ -24,7 +24,7 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-static const char rcsid[] =
+char GDBAgent_rcsid[] =
     "$Id$";
 
 #ifdef __GNUG__
@@ -574,7 +574,7 @@ void GDBAgent::PanicHP (Agent *source, void *client_data, void *call_data)
     {
 	GDBAgent *gdb = ptr_cast(GDBAgent, source);
 	if (gdb != 0)
-	    cerr << gdb->default_prompt() << " " << msg << "\n";
+	    cerr << gdb->default_prompt() << msg << "\n";
 	else
 	    cerr << source->path() << ": " << msg << "\n";
     }

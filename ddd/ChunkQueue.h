@@ -24,57 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:35  zeller
-// Initial revision
-//
-// Revision 1.15  1995/03/20  10:09:58  zeller
-// Fix: discard(_length) seems to fail sometimes
-// New: discard()
-//
-// Revision 1.14  1994/11/14  18:38:11  zeller
-// Fixes for gcc 2.6.1
-//
-// Revision 1.13  1993/12/07  16:56:43  zeller
-// Fix: Reihenfolge Deklaration angepasst
-//
-// Revision 1.12  1993/08/27  15:48:07  zeller
-// Neu: TypeInfo
-//
-// Revision 1.11  1993/07/28  12:46:07  zeller
-// Fix: delete[] statt delete
-//
-// Revision 1.10  1993/05/22  20:19:38  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.9  1993/04/22  10:49:28  zeller
-// Lizenz verbessert
-// 
-// Revision 1.8  1993/04/22  10:36:57  zeller
-// Lizenz verbessert
-// 
-// Revision 1.7  1993/04/20  22:56:03  zeller
-// Neuer Name gegen mehrfaches #include
-// 
-// Revision 1.6  1993/04/16  11:28:22  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.5  1992/10/16  04:26:49  zeller
-// Eigene Header-Dateien eingebunden
-// 
-// Revision 1.4  1992/06/02  02:08:31  zeller
-// #pragma interface eingefuehrt
-// 
-// Revision 1.3  1992/06/02  02:06:43  zeller
-// #pragma once entfernt
-// 
-// Revision 1.2  1992/05/14  19:47:56  zeller
-// Dafuer gesorgt, dass Queue stets mit '\0' endet
-// 
-// Revision 1.1  1992/05/14  18:19:45  zeller
-// Initial revision
-// 
-
 #ifndef _Nora_ChunkQueue_h
 #define _Nora_ChunkQueue_h
 

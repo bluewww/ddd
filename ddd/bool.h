@@ -24,17 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:42  zeller
-// Initial revision
-//
-// Revision 1.2  1994/11/29  14:27:18  zeller
-// `enum bool' causes lots of warnings, so typedef it
-//
-// Revision 1.1  1994/11/29  11:44:18  zeller
-// Initial revision
-//
-
 #ifndef _Nora_bool_h
 #define _Nora_bool_h
 

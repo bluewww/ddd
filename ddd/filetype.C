@@ -24,21 +24,7 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:22  zeller
-// Initial revision
-//
-// Revision 1.3  1995/04/29  12:14:15  zeller
-// Fix: AIX requires <sys/user.h> before <sys/core.h>
-//
-// Revision 1.2  1995/04/21  16:35:44  zeller
-// New: check for picture files
-//
-// Revision 1.1  1995/03/22  19:26:17  zeller
-// Initial revision
-//
-
-static const char rcsid[] = 
+char filetype_rcsid[] = 
     "$Id$";
 
 #include "filetype.h"
@@ -54,6 +40,13 @@ static const char rcsid[] =
 #endif
 
 #include <fcntl.h>
+
+#ifdef HAVE_SYS_PARAM_H
+// HP-UX requires this before including <sys/user.h> (see below).
+// If this doesn't work, include neither <sys/param.h> nor <sys/user.h>.
+// Reported by neal@ctd.comsat.com (Neal Becker).
+#include <sys/param.h>
+#endif
 
 #ifdef HAVE_SYS_USER_H
 // AIX requires this before including <sys/core.h>.

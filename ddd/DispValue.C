@@ -24,7 +24,7 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-static const char rcsid[] =
+char DispValue_rcsid[] =
     "$Id$";
 
 #ifdef __GNUG__
@@ -32,8 +32,8 @@ static const char rcsid[] =
 #pragma implementation "DynArray.h"
 #endif
 
-#define LOG_CREATE_VALUES 0
-#define LOG_UPDATE_VALUES 0
+#define LOG_CREATE_VALUES 1
+#define LOG_UPDATE_VALUES 1
 
 //-----------------------------------------------------------------------------
 // DispValue liest und speichert Typ und Wert eines Display-Ausdrucks

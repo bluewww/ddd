@@ -24,56 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:44  zeller
-// Initial revision
-//
-// Revision 1.15  1994/01/21  15:27:29  zeller
-// Neu: Jetzt auch Loeschen von laufenden Handlern moeglich
-//
-// Revision 1.14  1993/07/28  12:52:44  zeller
-// Fix: delete[] statt delete
-//
-// Revision 1.13  1993/07/22  10:43:57  zeller
-// Neu: Vergleiche und Ordnung
-//
-// Revision 1.12  1993/06/04  08:37:58  zeller
-// Fix: has() prueft, ob Typ existiert
-//
-// Revision 1.11  1993/05/22  20:12:05  zeller
-// %Q% added by apply-q-flag.sh 1.5
-// 
-// Revision 1.10  1993/04/22  11:02:26  zeller
-// Lizenz verbessert
-// 
-// Revision 1.9  1993/04/20  23:01:40  zeller
-// Neuer Name gegen mehrfaches #include
-// 
-// Revision 1.8  1993/04/16  11:40:03  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.7  1992/12/08  16:28:10  zeller
-// nTypes() nach vorne gesetzt (zum besseren Uebersetzen)
-// 
-// Revision 1.6  1992/10/23  13:54:32  zeller
-// call() hat jetzt konstante Argumente
-// 
-// Revision 1.5  1992/10/23  13:46:01  zeller
-// Neu: callHandlers() ist const, has() ist const
-// 
-// Revision 1.4  1992/07/28  14:42:59  zeller
-// Neu: add(const HandlerList& l) zum Mergen von Handler-Listen
-// 
-// Revision 1.3  1992/06/02  03:01:17  zeller
-// Neu: #pragma interface
-// 
-// Revision 1.2  1992/06/01  11:57:09  zeller
-// #pragma once entfernt
-// 
-// Revision 1.1  1992/05/12  16:56:14  zeller
-// Initial revision
-// 
-
 #ifndef _Nora_HandlerList_h
 #define _Nora_HandlerList_h
 

@@ -24,70 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:41  zeller
-// Initial revision
-//
-// Revision 1.71  1995/04/22  16:20:05  zeller
-// Fix: selecting via frames didn't work
-// New: selectCursor
-//
-// Revision 1.70  1995/04/20  23:35:49  zeller
-// New; quick hack for Sun Home key
-//
-// Revision 1.69  1995/04/20  21:52:43  zeller
-// New: Full keyboard support
-//
-// Revision 1.68  1995/04/16  09:47:49  zeller
-// New: compact layout
-// New: Resource -> String converters
-//
-// Revision 1.67  1995/04/15  16:42:51  zeller
-// New: reduce layout flickering
-// New: Normalize ensures that graph is displaced by at least one grid
-// unit
-//
-// Revision 1.66  1995/04/14  16:28:59  zeller
-// New: extraWidth, extraHeight (for panner)
-//
-// Revision 1.65  1995/04/10  08:26:44  zeller
-// New: optional compare function
-//
-// Revision 1.64  1995/04/09  00:00:00  zeller
-// New: color resources
-//
-// Revision 1.63  1995/04/08  21:57:26  zeller
-// Fix: highlight by swapping foreground and background colors
-//
-// Revision 1.62  1995/04/06  15:58:48  zeller
-// Fix: Bad `planes' argument to XCreatePixmapFromBitmapData()
-//
-// Revision 1.61  1995/04/04  16:08:31  zeller
-// Fix: don't set frame cursor on select() and extend()
-//
-// Revision 1.60  1995/04/04  13:27:54  zeller
-// New: selectionChanged callback
-//
-// Revision 1.59  1995/03/29  08:24:22  zeller
-// New: automatic layout
-// New: layout() and rotate() accept relative and absolute rotation specs
-//
-// Revision 1.58  1995/03/28  16:36:46  zeller
-// New: rotate graph
-// New: layout graph
-//
-// Revision 1.57  1995/03/28  09:58:41  zeller
-// Fix: snapToGrid move now cares for offsets, not final positions
-// New: setting snapToGrid mode forces all nodes to be positioned on grid
-// New: redisplay of entire graph clears entire window
-// New actions: Rotate(), Normalize(), Layout() [Layout is not ready yet]
-//
-// Revision 1.56  1995/03/21  22:13:33  zeller
-// New: redrawing of single nodes (better than redrawing regions)
-//
-// Revision 1.55  1995/03/21  21:05:43  zeller
-// New: public redraw functions
-//
+char GraphEdit_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation

@@ -25,17 +25,7 @@
 // License along with this library; if not, write to the Free
 // Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-/*
- * $Log$
- * Revision 1.1  1995/05/01 15:47:19  zeller
- * Initial revision
- *
- * Revision 10.16  1995/03/17  09:00:19  zeller
- * Log stripped
- *
-*/
-
-// some declarations and utilities
+// Some declarations and utilities
 
 char VSL_yacc_rcsid[] = 
     "$Id$";

@@ -296,7 +296,12 @@ set prompt (gdb) \n
 ! Do we wish to find complete words only?
 *findWordsOnly: 	true
 
-! Focus policy: POINTER means point-and-type, EXPLICIT means click-and-type.
+! Do we wish to cache source files in memory?
+*cacheSourceFiles:	true
+
+
+! Focus policy
+! POINTER means point-and-type, EXPLICIT means click-and-type.
 ! Rather than accepting the user's default, we use POINTER here because:
 ! 1. Using EXPLICIT focus policy works bad with a panned graph editor,
 !    since Motif has trouble with assigning focus to Athena Widgets.
@@ -341,6 +346,7 @@ set prompt (gdb) \n
 ! Colors
 !-----------------------------------------------------------------------------
 
+*foreground:                    black
 *background:                    grey
 *XmText.background:             light grey
 *XmTextField.background:        light grey
@@ -1010,6 +1016,8 @@ where it is.\n\
 @sl Source Options:@rm\n\
 * If @bf Find Words Only @rm is set, only complete words are found.\n\
   Otherwise, arbitrary occurrences are found.\n\
+* If @bf Cache Sources @rm is set, source texts are cached in memory.\n\
+  Otherwise, sources are re-read upon each source change.\n\
 \n\
 @sl Data Options:@rm\n\
 * If @bf Show Grid @rm is set, the grid is displayed.\n\
@@ -1063,6 +1071,9 @@ and restarting @DDD@)\n\
 
 *sourceOptionsMenu.findWordsOnly.labelString:	Find Words Only
 *sourceOptionsMenu.findWordsOnly.mnemonic:	W
+
+*sourceOptionsMenu.cacheSourceFiles.labelString: Cache Sources
+*sourceOptionsMenu.cacheSourceFiles.mnemonic:	C
 
 *dataOptionsMenu*showGrid.labelString:		Show Grid
 *dataOptionsMenu*showGrid.mnemonic:		G

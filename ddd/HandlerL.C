@@ -24,54 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:44  zeller
-// Initial revision
-//
-// Revision 1.14  1994/07/20  00:19:15  zeller
-// Fix: #pragma implementation was missing
-//
-// Revision 1.13  1994/07/19  17:26:22  zeller
-// Changes for gcc-2.6.0 (and ANSI C++)
-//
-// Revision 1.12  1994/01/21  15:27:36  zeller
-// Neu: Jetzt auch Loeschen von laufenden Handlern moeglich
-//
-// Revision 1.11  1993/07/22  10:44:05  zeller
-// Neu: Vergleiche und Ordnung
-//
-// Revision 1.10  1993/06/04  08:37:25  zeller
-// Neu: Mehr assertions
-//
-// Revision 1.9  1993/05/22  20:12:02  zeller
-// %Q% added by apply-q-flag.sh 1.5
-// 
-// Revision 1.8  1993/04/22  11:02:19  zeller
-// Lizenz verbessert
-// 
-// Revision 1.7  1993/04/16  11:40:02  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.6  1993/02/04  10:44:44  zeller
-// NORA-Kram eingebunden
-// 
-// Revision 1.5  1992/10/23  13:54:25  zeller
-// call() hat jetzt konstante Argumente
-// 
-// Revision 1.4  1992/10/23  13:45:54  zeller
-// Neu: callHandlers() ist const
-// 
-// Revision 1.3  1992/06/02  02:46:25  zeller
-// Neu: #pragma interface
-// 
-// Revision 1.2  1992/05/20  15:29:44  zeller
-// Dateinamen verkuerzt
-// 
-// Revision 1.1  1992/05/12  16:56:13  zeller
-// Initial revision
-// 
-
-char Handler_rcsid[] = "$Id$";
+char HandlerList_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation

@@ -1,6 +1,9 @@
 // $Id$
 // An adaptation of the NCD `meltdown' program.
 
+char database_rcsid[] = 
+    "$Id$";
+
 /*
  * Copyright 1990 David Lemke and Network Computing Devices
  *

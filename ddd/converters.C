@@ -24,27 +24,7 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:25  zeller
-// Initial revision
-//
-// Revision 1.29  1995/04/08  23:58:35  zeller
-// New: convert bitmap to pixmap: use standard Motif color conversions
-//
-// Revision 1.28  1995/03/30  18:31:55  zeller
-// New: improved rules for @-font-commands
-//
-// Revision 1.27  1995/03/30  14:23:17  zeller
-// Fix: newer Motif versions don't have an <Xm/bitmaps.h> header
-//
-// Revision 1.26  1995/03/22  19:25:37  zeller
-// New: convert `@ ' to single `@'
-//
-// Revision 1.25  1995/03/20  13:51:57  zeller
-// New: don't use XmSTRING_DEFAULT_CHARSET; it's obsolete in Motif 1.2
-//
-
-static const char rcsid[] = 
+char converters_rcsid[] = 
     "$Id$";
 
 #include <X11/Xlib.h>

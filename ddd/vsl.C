@@ -24,15 +24,7 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:03  zeller
-// Initial revision
-//
-// Revision 10.13  1995/03/17  09:54:48  zeller
-// License and RCS IDs added
-//
-
-static const char rcsid[] = 
+char vsl_rcsid[] = 
     "$Id$";
 
 #include "assert.h"

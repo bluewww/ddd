@@ -24,14 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:47  zeller
-// Initial revision
-//
-// Revision 1.13  1995/03/20  13:52:11  zeller
-// New: don't use XmSTRING_DEFAULT_CHARSET; it's obsolete in Motif 1.2
-//
-
 #ifndef _Nora_MString_h
 #define _Nora_MString_h
 

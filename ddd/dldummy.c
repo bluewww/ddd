@@ -26,22 +26,6 @@
     Contact ice@ips.cs.tu-bs.de for details.
 */
 
-/*
- * $Log$
- * Revision 1.1  1995/05/01 15:47:12  zeller
- * Initial revision
- *
- * Revision 1.1  1995/03/30  11:52:59  zeller
- * Initial revision
- *
- * Revision 1.1.1.1  1995/02/09  09:12:05  zeller
- * ICE 0.5 distribution
- *
- * Revision 1.7  1995/01/14  14:48:27  zeller
- * New license for ICE 0.5
- *
-*/
-
 void *dlopen(path, mode)
     char *path;
     int mode;

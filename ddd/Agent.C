@@ -24,36 +24,7 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:09  zeller
-// Initial revision
-//
-// Revision 1.51  1995/04/19  13:48:20  zeller
-// New: upon EOF, check if we're still running
-//
-// Revision 1.50  1995/04/18  15:49:11  zeller
-// New: issue status changes only upon abnormal exit
-//
-// Revision 1.49  1995/04/18  13:11:08  zeller
-// Fix: disable warning `Agent started twice' -- just don't care
-//
-// Revision 1.48  1995/04/18  10:28:35  zeller
-// Fix: reinstall signal handler only if signal was processed
-//
-// Revision 1.47  1995/04/11  17:52:09  zeller
-// New: wait()
-//
-// Revision 1.46  1995/04/11  08:36:45  zeller
-// Fix: childStatusChange simplified
-//
-// Revision 1.45  1995/04/11  01:03:55  zeller
-// childStatusChange: put in some support for SVR4 systems
-//
-// Revision 1.44  1995/03/30  13:02:33  zeller
-// Fix: DECs require explicit signal argument casts
-//
-
-static const char rcsid[] = 
+char Agent_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

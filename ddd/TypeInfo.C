@@ -24,21 +24,7 @@
 // ICE is the incremental configuration engine.
 // Contact ice@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:53  zeller
-// Initial revision
-//
-// Revision 1.1.1.1  1995/02/09  09:11:47  zeller
-// ICE 0.5 distribution
-//
-// Revision 1.14  1995/02/08  16:01:17  zeller
-// New: Compiler no more complains on unused RCS ID
-//
-// Revision 1.13  1995/01/14  14:48:27  zeller
-// New license for ICE 0.5
-//
-
-static const char rcsid[] =
+char TypeInfo_rcsid[] =
     "$Id$";
 
 #ifdef __GNUG__

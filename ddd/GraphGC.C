@@ -24,21 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:43  zeller
-// Initial revision
-//
-// Revision 1.3  1993/08/27  15:46:05  zeller
-// Neu: TypeInfo
-//
-// Revision 1.2  1993/05/22  20:11:05  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.1  1993/05/22  01:23:57  zeller
-// Initial revision
-// 
-
-char GraphGC_rcsid[] = "$Id$";
+char GraphGC_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation

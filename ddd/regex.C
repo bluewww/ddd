@@ -18,33 +18,7 @@ License along with this library; if not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:55  zeller
-// Initial revision
-//
-// Revision 1.1.1.5  1995/04/20  19:22:01  zeller
-// Fix: memset() may be declared in <string.h>
-//
-// Revision 1.1.1.4  1995/04/20  18:00:36  zeller
-// Fix: provided appropriate back-up for systems without memset()
-//
-// Revision 1.1.1.3  1995/04/10  20:05:20  zeller
-// Fix: POSIX-like memset decl returns void *
-//
-// Revision 1.1.1.2  1995/04/03  14:59:03  zeller
-// Fix: provide POSIX-like memset() decl
-//
-// Revision 1.1.1.1  1995/02/09  09:12:04  zeller
-// ICE 0.5 distribution
-//
-// Revision 1.3  1995/02/08  16:01:17  zeller
-// New: Compiler no more complains on unused RCS ID
-//
-// Revision 1.2  1995/01/14  14:48:27  zeller
-// New license for ICE 0.5
-//
-
-static const char rcsid[] = 
+char regex_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

@@ -24,17 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:10  zeller
-// Initial revision
-//
-// Revision 1.2  1995/04/14  15:26:08  zeller
-// New: have minimum/maximum size values for panner
-//
-// Revision 1.1  1995/04/14  14:07:49  zeller
-// Initial revision
-//
-
 #ifndef __PannedGraphEditPrivate_h__
 #define __PannedGraphEditPrivate_h__
 

@@ -24,29 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:29  zeller
-// Initial revision
-//
-// Revision 1.6  1995/04/15  16:44:55  zeller
-// New: fetch master and slave tty names
-//
-// Revision 1.5  1995/04/10  23:01:42  zeller
-// New: `slave' member is obsolete
-//
-// Revision 1.4  1995/03/21  16:41:11  zeller
-// New: open_slave() isn't passed master tty fd
-//
-// Revision 1.3  1995/03/21  09:12:44  zeller
-// New: added (untested) routines for AIX, SGI, UNICOS, HP-UX
-//
-// Revision 1.2  1995/03/17  07:44:12  zeller
-// New: renamed `boolean' to `bool'
-//
-// Revision 1.1  1994/01/08  17:12:29  zeller
-// Initial revision
-//
-
 #ifndef _Nora_TTYAgent_h
 #define _Nora_TTYAgent_h
 

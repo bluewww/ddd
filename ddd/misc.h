@@ -24,17 +24,6 @@
 // ICE is the incremental configuration engine.
 // Contact ice@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:58  zeller
-// Initial revision
-//
-// Revision 1.1.1.1  1995/02/09  09:12:00  zeller
-// ICE 0.5 distribution
-//
-// Revision 10.10  1995/01/14  14:48:27  zeller
-// New license for ICE 0.5
-//
-
 #ifndef _ICE_misc_h
 #define _ICE_misc_h
 

@@ -24,20 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:50  zeller
-// Initial revision
-//
-// Revision 1.3  1993/10/15  12:04:49  zeller
-// Neu: SignalBlocker fuer ALLE Signale
-//
-// Revision 1.2  1993/08/03  14:09:43  zeller
-// Neu: POSIX-Version mit sigprocmask() und sigset_t
-//
-// Revision 1.1  1993/08/03  13:45:56  zeller
-// Initial revision
-//
-
 #ifndef _Nora_SignalBlocker_h
 #define _Nora_SignalBlocker_h
 

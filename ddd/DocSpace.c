@@ -22,61 +22,8 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/*
- * $Log$
- * Revision 1.1  1995/05/01 15:47:15  zeller
- * Initial revision
- *
- * Revision 10.6  1993/06/29  10:31:25  zeller
- * Log fixed
- *
- * Revision 10.5  1993/05/22  20:14:16  zeller
- * %Q% added by apply-q-flag.sh 1.5
- *
- * Revision 10.4  1993/04/16  11:31:33  zeller
- * Neu: GNU Library General Public License eingefuegt
- * 
- * Revision 10.3  1993/03/25  09:43:55  zeller
- * Fix: Compiler-Warnungen beruecksichtigt
- * 
- * Revision 10.2  1992/10/28  16:23:25  zeller
- * Anpassung an X11R5: Kein <X11/copyright.h> mehr
- * 
- * Revision 10.1  1992/02/17  12:50:12  zeller
- * Tabstops von 4 auf 8 gesetzt
- * 
- * Revision 9.1  1991/07/08  05:44:39  zeller
- * Installierte Version
- * 
- * Revision 8.1  1991/07/06  14:58:05  zeller
- * Installierte Version
- * 
- * Revision 1.6  1990/08/28  14:24:38  zeller
- * Neu: Bei exposeCallback wird jetzt das event uebergeben
- * (frueher die exponierte Region)
- * 
- * Revision 1.5  1990/07/25  18:54:27  zeller
- * _sccsid durch _sccsid[] ersetzt
- * 
- * Revision 1.4  1990/07/25  18:44:57  zeller
- * _sccsid[] eingefuehrt
- * 
- * Revision 1.3  1990/07/25  13:58:48  zeller
- * Quit-Callback eingefuehrt
- * 
- * Revision 1.2  1990/07/25  12:18:08  zeller
- * ID korrigiert
- * 
- * Revision 1.1  1990/07/25  12:01:25  zeller
- * Initial revision
- * 
-*/
-
-
-char DocSpace_rcsid[] = "$Id$";
-
-/* $XConsortium: DocSpace.c,v 1.2 88/10/25 17:40:25 swick Exp $ */
-/* Copyright    Massachusetts Institute of Technology   1987, 1988 */
+char DocSpace_rcsid[] = 
+    "$Id$";
 
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>

@@ -19,87 +19,13 @@
 // You should have received a copy of the GNU Library General Public
 // License along with this library; if not, write to the Free
 // Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-	
-// $Log$
-// Revision 1.1  1995/05/01 15:47:29  zeller
-// Initial revision
-//
-// Revision 10.12  1995/03/17  07:44:12  zeller
-// New: renamed `boolean' to `bool'
-//
-// Revision 10.11  1994/07/19  21:59:42  zeller
-// New: draw() const-corrected
-//
-// Revision 10.10  1994/07/19  21:48:13  zeller
-// New: draw() now const correct
-//
-// Revision 10.9  1994/07/19  21:04:38  zeller
-// Changes for gcc-2.6.0 (and ANSI C++)
-//
-// Revision 10.8  1993/08/27  14:25:55  zeller
-// Neu: TypeInfo
-//
-// Revision 10.7  1993/05/22  19:53:27  zeller
-// %Q% added
-//
-// Revision 10.6  1993/04/21  00:10:47  zeller
-// Umbenennung der Header-Dateien
-// 
-// Revision 10.5  1993/04/16  11:31:19  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 10.4  1993/02/23  16:17:38  zeller
-// Neu: Box::print() -- Box in EPS oder FIG-Format ausgeben
-// 
-// Revision 10.3  1992/06/01  16:33:16  zeller
-// Neu: #pragma definition/#pragma implementation
-// 
-// Revision 10.2  1992/02/18  10:57:26  zeller
-// Konfliktfreie Typbezeichner eingefuehrt
-// 
-// Revision 10.1  1992/02/17  12:51:00  zeller
-// Tabstops von 4 auf 8 gesetzt
-// 
-// Revision 9.1  1991/07/08  05:41:48  zeller
-// Installierte Version
-// 
-// Revision 8.1  1991/07/06  14:57:18  zeller
-// Installierte Version
-// 
-// Revision 1.9  1991/06/09  17:38:03  zeller
-// 'selected' in 'context_selected' umbenannt,
-// um Compiler-Warnungen zu vermeiden
-// 
-// Revision 1.8  1991/05/21  15:21:35  zeller
-// Fall ">>" ~ ("BEGIN" | "END") korrekt behandelt
-// 
-// Revision 1.7  1991/05/09  15:07:35  zeller
-// Warnungen vermieden
-// 
-// Revision 1.6  1991/04/30  16:00:20  zeller
-// corner(), TAlignBox wieder eingefuehrt
-// 
-// Revision 1.5  1991/02/24  15:10:30  zeller
-// corner, TAlignBox entfernt
-// 
-// Revision 1.4  1991/02/08  16:31:37  zeller
-// dump() neu definiert
-// 
-// Revision 1.3  1991/02/05  13:23:02  zeller
-// Platzreduzierung bei nicht erweiterbaren Boxen abgeschaltet
-// 
-// Revision 1.2  1991/02/01  15:45:06  zeller
-// Fehler bei Behandlung pixel_stuff korrigiert
-// 
-// Revision 1.1  1991/02/01  14:56:37  zeller
-// Initial revision
-// 
 
 #ifdef __GNUG__
 #pragma implementation
 #endif
 
-char AlignBox_rcsid[] = "$Id$";
+char AlignBox_rcsid[] = 
+    "$Id$";
 
 #include "assert.h"
 #include "misc.h"

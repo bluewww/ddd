@@ -24,47 +24,7 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:37  zeller
-// Initial revision
-//
-// Revision 1.11  1995/04/30  11:12:20  zeller
-// Fix: re-use previous delay slots
-// Fix: make sure obsolete delay slots are properly cleared when widget
-// is destroyed
-//
-// Revision 1.10  1995/04/24  11:35:46  zeller
-// New: setup and change startup options at run-time
-//
-// Revision 1.9  1995/04/17  08:20:05  zeller
-// New: use small hourglass
-//
-// Revision 1.8  1995/04/16  09:48:51  zeller
-// New: use smaller cursors by default
-//
-// Revision 1.7  1995/04/12  15:25:21  zeller
-// New: renamed .bm to .xbm
-//
-// Revision 1.6  1995/04/06  15:35:19  zeller
-// New: place delay cursors on registered shells
-//
-// Revision 1.5  1993/10/15  19:56:03  zeller
-// Neu: TypeInfo
-//
-// Revision 1.4  1993/05/22  20:09:25  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.3  1993/04/22  11:04:00  zeller
-// Lizenz verbessert
-// 
-// Revision 1.2  1993/04/16  11:41:46  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.1  1992/11/05  11:52:58  zeller
-// Initial revision
-// 
-
-static const char rcsid[] = 
+char Delay_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

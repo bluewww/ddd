@@ -24,42 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:42  zeller
-// Initial revision
-//
-// Revision 1.37  1995/04/22  16:20:22  zeller
-// New: selectCursor
-//
-// Revision 1.36  1995/04/16  09:48:19  zeller
-// New: compact layout
-//
-// Revision 1.35  1995/04/14  16:29:13  zeller
-// New: extraWidth, extraHeight (for panner)
-//
-// Revision 1.34  1995/04/10  08:26:25  zeller
-// New: optional compare function
-//
-// Revision 1.33  1995/04/09  00:00:32  zeller
-// New: color resources
-//
-// Revision 1.32  1995/04/04  13:27:45  zeller
-// New: selectionChanged callback
-//
-// Revision 1.31  1995/03/29  08:25:53  zeller
-// New: automatic layout
-// New: layout() and rotate() accept relative and absolute rotation specs
-//
-// Revision 1.30  1995/03/28  16:36:08  zeller
-// New: rotate graph
-//
-// Revision 1.29  1995/03/21  22:13:19  zeller
-// New: redrawing of single nodes (better than redrawing regions)
-//
-// Revision 1.28  1995/03/21  21:05:29  zeller
-// New: public redraw functions
-//
-
 #ifndef _Nora_GraphEdit_h
 #define _Nora_GraphEdit_h
 

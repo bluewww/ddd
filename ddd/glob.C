@@ -25,6 +25,9 @@
 
 #include "config.h"
 
+char glob_rcsid[] = 
+    "$Id$";
+
 // From the `autoconf' documentation...
 
 // Check for alloca

@@ -24,73 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:10  zeller
-// Initial revision
-//
-// Revision 1.20  1995/04/24  11:37:27  zeller
-// New: radio menus
-//
-// Revision 1.19  1995/03/22  15:02:29  zeller
-// New: MMInsensitive, MMUnmanages
-//
-// Revision 1.18  1995/03/22  02:01:17  zeller
-// New: ignore separators in work areas
-//
-// Revision 1.17  1995/02/22  21:11:42  luetke
-// Neu: MMcreateWorkArea.
-//
-// Revision 1.16  1994/07/19  22:08:46  zeller
-// Changes for gcc-2.6.0 (and ANSI C++)
-//
-// Revision 1.15  1993/10/14  11:28:33  zeller
-// Neu: Widgets statt Gadgets (soll angeblich schneller sein)
-// Einrueckung ueberarbeitet
-//
-// Revision 1.14  1993/10/14  11:22:49  zeller
-// Neu: Labels
-//
-// Revision 1.13  1993/10/14  08:53:29  zeller
-// Neu: MMcreatePopupMenu()
-//
-// Revision 1.12  1993/05/22  20:09:47  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.11  1993/04/22  11:04:17  zeller
-// Lizenz verbessert
-// 
-// Revision 1.10  1993/04/16  11:41:53  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.9  1992/12/08  12:42:06  zeller
-// stdlib.h (fuer abort()) eingebunden
-// 
-// Revision 1.8  1992/11/20  15:25:18  zeller
-// Neu: MMaddHelpCallback()
-// 
-// Revision 1.7  1992/11/11  16:51:24  zeller
-// Fix: subMenuName korrekt aufgebaut
-// 
-// Revision 1.6  1992/11/11  15:56:12  zeller
-// Neu: widgetptr erlaubt Ablage der Widget-ID an anderer Stelle
-// 
-// Revision 1.5  1992/11/04  11:53:40  zeller
-// strclass statt "String.h"; callback entfernt
-// 
-// Revision 1.4  1992/03/02  16:42:53  zeller
-// Neu: Callbacks separat setzen
-// 
-// Revision 1.3  1992/03/02  16:11:47  zeller
-// Neu: default_closure
-// 
-// Revision 1.2  1992/02/19  13:37:43  zeller
-// Alles auf MMaddItems() zurueckgefuehrt;
-// Callbacks fuer CascadeButtons eingefuehrt;
-// Sensitivity auf 0 gesetzt, wenn keine Callbacks definiert
-// 
-// Revision 1.1  1992/02/19  12:51:07  zeller
-// Initial revision
-// 
+char MakeMenu_rcsid[] = 
+    "$Id$";
 
 #include "assert.h"
 #include "strclass.h"
@@ -107,7 +42,6 @@
 #include <Xm/Label.h>
 
 #include "MakeMenu.h"
-
 
 // Add items to shell
 static void addItems(Widget parent, Widget shell, MMDesc items[], 

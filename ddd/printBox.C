@@ -24,30 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:58  zeller
-// Initial revision
-//
-// Revision 1.6  1994/07/19  20:53:30  zeller
-// New: printing functions const-corrected
-//
-// Revision 1.5  1993/05/22  20:16:20  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.4  1993/04/22  11:32:46  zeller
-// Lizenz verbessert
-// 
-// Revision 1.3  1993/04/16  11:32:05  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.2  1993/02/23  16:36:08  zeller
-// Neu: Konstanten nach BoxPrintGC gepackt
-// 
-// Revision 1.1  1993/02/23  16:20:50  zeller
-// Initial revision
-// 
-
-char printBox_rcsid[] = "$Id$";
+char printBox_rcsid[] = 
+    "$Id$";
 
 
 #include "Box.h"

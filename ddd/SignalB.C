@@ -24,15 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:50  zeller
-// Initial revision
-//
-// Revision 1.1  1993/08/03  13:45:53  zeller
-// Initial revision
-//
-
-char SignalBlocker_rcsid[] = "$Id$";
+char SignalBlocker_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation

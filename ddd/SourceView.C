@@ -29,7 +29,7 @@
 #pragma implementation "Assoc.h"
 #endif
 
-static const char rcsid[] =
+char SourceView_rcsid[] =
     "$Id$";
 
 //-----------------------------------------------------------------------------
@@ -178,6 +178,7 @@ Widget SourceView::up_w                      = 0;
 Widget SourceView::down_w                    = 0;
 
 bool SourceView::stack_dialog_popped_up = false;
+bool SourceView::cache_source_files     = true;
 
 int  SourceView::bp_indent_amount = 0;
 
@@ -736,7 +737,7 @@ String SourceView::read_indented(string& file_name)
 // Read file FILE_NAME into current_text; get it from the cache if possible
 int SourceView::read_current(string& file_name)
 {
-    if (file_cache.has(file_name))
+    if (cache_source_files && file_cache.has(file_name))
     {
 	current_text = file_cache[file_name];
     }

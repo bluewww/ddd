@@ -24,25 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:13  zeller
-// Initial revision
-//
-// Revision 1.48  1995/04/15  16:40:45  zeller
-// Fix: inputfp(), outputfp(), errorfp() must be const
-//
-// Revision 1.47  1995/04/11  17:52:16  zeller
-// New: wait()
-//
-// Revision 1.46  1995/04/11  08:01:26  zeller
-// New: have inputfp(), outputfp(), errorfp() public
-//
-// Revision 1.45  1995/03/21  16:40:13  zeller
-// New: handle child status change in AgentManager
-// New: use `strerror' instead of sys_error_list
-// New: pid() has type pid_t
-//
-
 #ifndef _Nora_Agent_h
 #define _Nora_Agent_h
 

@@ -24,52 +24,7 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:40  zeller
-// Initial revision
-//
-// Revision 1.12  1995/03/30  14:18:58  zeller
-// Fix: DECs require explicit signal argument casts
-//
-// Revision 1.11  1993/05/22  20:12:14  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.10  1993/04/22  11:02:11  zeller
-// Lizenz verbessert
-// 
-// Revision 1.9  1993/04/16  11:40:05  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.8  1992/06/02  02:32:32  zeller
-// Anpassung an gcc 2.1
-// 
-// Revision 1.7  1992/05/20  15:29:42  zeller
-// Dateinamen verkuerzt
-// 
-// Revision 1.6  1992/05/14  14:57:08  zeller
-// Neu: selbst-kill() abgeschaltet (macht keinen Sinn,
-// wenn beim Aufraeumen alles verloren geht); stattdessen Meldung ausgegeben
-// 
-// Revision 1.5  1992/05/13  19:56:22  zeller
-// Aufruf _exit() unterlassen (kill() wirkt erst nach Rueckkehr);
-// Ausgabe Signalname ebenfalls unterlassen.
-// 
-// Revision 1.4  1992/05/13  19:52:11  zeller
-// Meldung bei Interrupt ausgeben;
-// 2x kill() aufrufen (haelt besser);
-// Signal-Namen nur verwenden, wenn auch definiert.
-// 
-// Revision 1.3  1992/05/13  19:29:25  zeller
-// Neu: _cleanup() aufgerufen, um Dateien zu schliessen
-// 
-// Revision 1.2  1992/05/13  19:14:13  zeller
-// __do_global_cleanup() ist in C geschrieben
-// 
-// Revision 1.1  1992/05/13  19:09:20  zeller
-// Initial revision
-// 
-
-static const char rcsid[] = 
+char SignalCatcher_rcsid[] = 
     "$Id$";
 
 #include <stdio.h>

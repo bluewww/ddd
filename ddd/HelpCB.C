@@ -24,57 +24,7 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:28  zeller
-// Initial revision
-//
-// Revision 1.32  1995/04/13  18:24:23  zeller
-// New: prepared for doublestriking highlighting
-// New: assumes groff format
-//
-// Revision 1.31  1995/04/12  11:47:45  zeller
-// New: ManualStringHelpCB() for built-in preformatted manual pages
-//
-// Revision 1.30  1995/04/12  00:26:27  zeller
-// New: built-in manual page browser
-//
-// Revision 1.29  1995/04/11  21:32:08  zeller
-// Fix: HelpCB didn't work
-//
-// Revision 1.28  1995/04/11  17:54:34  zeller
-// New: use agents instead of system()
-//
-// Revision 1.27  1995/04/10  15:32:29  zeller
-// New: FileHelpCB: selection sped up
-//
-// Revision 1.26  1995/04/09  00:01:09  zeller
-// New: get version pixmap via widget-dependent procedure
-//
-// Revision 1.25  1995/04/08  19:31:58  zeller
-// New: provide individual pixmap for HelpOnVersion
-//
-// Revision 1.24  1995/04/06  15:34:54  zeller
-// New: use Delays when accessing files
-//
-// Revision 1.23  1995/04/06  08:45:35  zeller
-// Fix: disable help button on recursive calls
-//
-// Revision 1.22  1995/04/05  11:22:22  zeller
-// New: HelpOnVersionCB
-// New: CommandHelpCB
-// New: FileHelpCB handles `\b' characters in text (useful for man pages)
-// New: dialog placement improved
-//
-// Revision 1.21  1995/03/22  01:59:06  zeller
-// Fix: use XtLastTimestampProcessed() instead of CurrentTime
-//
-// Revision 1.20  1995/03/20  07:38:09  zeller
-// Fix: ungrab keyboard to circumvent Motif bug
-//
-// Revision 1.19  1995/03/19  12:37:13  zeller
-// New: center help info on current shell
-
-static const char rcsid[] =
+char HelpCB_rcsid[] =
     "$Id$";
 
 #include "config.h"

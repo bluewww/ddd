@@ -24,48 +24,7 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:56  zeller
-// Initial revision
-//
-// Revision 1.6  1995/04/10  08:26:09  zeller
-// New: optional compare function
-//
-// Revision 1.5  1995/03/30  12:43:46  zeller
-// Fix: initialized a few variables to make gcc happy
-//
-// Revision 1.4  1995/03/28  16:38:43  zeller
-// Minor stylistic changes
-//
-// Revision 1.3  1994/09/06  07:21:57  zeller
-// Fixes for gcc-2.6.0
-//
-// Revision 1.2  1994/07/20  00:35:15  zeller
-// Changes for gcc-2.6.0 (and ANSI C++)
-//
-// Revision 1.1  1994/01/19  12:46:10  zeller
-// Initial revision
-//
-// Revision 1.6  1993/11/11  14:34:22  zeller
-// Fix fuer gcc-2.5.2: commit durch ::commit ersetzt
-//
-// Revision 1.5  1993/10/15  19:57:09  zeller
-// Neu: TypeInfo
-//
-// Revision 1.4  1993/07/29  18:43:03  zeller
-// XtActionList statt XtActionsRec *
-//
-// Revision 1.3  1993/07/29  10:25:21  zeller
-// Umbenennung: LayouterCP -> LayouterEP
-//
-// Revision 1.2  1993/07/29  07:58:39  zeller
-// Neu: Umbenennung Client -> Expert
-//
-// Revision 1.1  1993/07/28  05:18:34  zeller
-// Initial revision
-//
-
-static const char rcsid[] = 
+char layout_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

@@ -24,66 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:47  zeller
-// Initial revision
-//
-// Revision 1.18  1995/03/17  07:44:12  zeller
-// New: renamed `boolean' to `bool'
-//
-// Revision 1.17  1994/07/21  08:24:29  zeller
-// New: dup() declared `const'
-//
-// Revision 1.16  1994/07/19  22:11:07  zeller
-// New: draw() now const correct
-//
-// Revision 1.15  1994/07/19  18:42:24  zeller
-// Changes for gcc-2.6.0 (and ANSI C++)
-//
-// Revision 1.14  1994/02/23  15:08:02  zeller
-// Neu: link = dup wird jetzt erst in TagBox erledigt
-//
-// Revision 1.13  1994/02/23  13:48:58  zeller
-// Fix: Copy Constructor repariert
-//
-// Revision 1.12  1994/02/21  08:57:36  zeller
-// Fix: dup() nachgereicht
-//
-// Revision 1.11  1994/02/19  20:52:52  zeller
-// Fix: dup()/link()-Problem korrigiert
-// Kommentare jetzt englisch
-//
-// Revision 1.10  1993/11/11  12:44:38  zeller
-// Fix: Zeichen-Funktion jetzt protected
-//
-// Revision 1.9  1993/08/27  14:25:55  zeller
-// Neu: TypeInfo
-//
-// Revision 1.8  1993/05/22  20:15:12  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.7  1993/04/22  10:51:53  zeller
-// Lizenz verbessert
-// 
-// Revision 1.6  1993/04/21  00:11:05  zeller
-// Umbenennung der Header-Dateien
-// 
-// Revision 1.5  1993/04/20  22:57:52  zeller
-// Neuer Name gegen mehrfaches #include
-// 
-// Revision 1.4  1993/04/16  11:31:47  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.3  1992/11/12  22:40:40  zeller
-// __region() effizienter gemacht
-// 
-// Revision 1.2  1992/11/05  17:16:48  zeller
-// Duplizieren unterdrueckt
-// 
-// Revision 1.1  1992/11/05  16:38:04  zeller
-// Initial revision
-// 
-
 #ifndef _Nora_MarkBox_h
 #define _Nora_MarkBox_h
 

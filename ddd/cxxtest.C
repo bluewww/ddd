@@ -29,7 +29,7 @@
 // examined using DDD.
 //--------------------------------------------------------------------------
 
-static const char rcsid[] =
+char cxxtest_rcsid[] =
     "$Id$";
 
 #include <iostream.h>

@@ -18,21 +18,7 @@ License along with this library; if not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:19  zeller
-// Initial revision
-//
-// Revision 1.1.1.1  1995/02/09  09:11:55  zeller
-// ICE 0.5 distribution
-//
-// Revision 1.3  1995/02/08  16:01:17  zeller
-// New: Compiler no more complains on unused RCS ID
-//
-// Revision 1.2  1995/01/14  14:48:27  zeller
-// New license for ICE 0.5
-//
-
-static const char rcsid[] = 
+char hash_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

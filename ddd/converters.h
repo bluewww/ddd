@@ -24,44 +24,6 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:57  zeller
-// Initial revision
-//
-// Revision 1.11  1993/07/06  09:24:44  zeller
-// Neu: CvtStringToAlignment, CvtStringToOrientation, CvtStringToPacking
-//
-// Revision 1.10  1993/05/22  20:10:00  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.9  1993/04/22  11:04:12  zeller
-// Lizenz verbessert
-// 
-// Revision 1.8  1993/04/20  23:02:18  zeller
-// Neuer Name gegen mehrfaches #include
-// 
-// Revision 1.7  1993/04/16  11:41:55  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.6  1993/03/26  11:19:54  zeller
-// Neu: CvtStringToBitmap -- laesst Einsen und Nullen unveraendert
-// 
-// Revision 1.5  1992/11/23  17:32:16  zeller
-// Neu: Eigener Konverter String -> XmString,\
-// 
-// Revision 1.4  1992/11/05  19:43:12  zeller
-// Neuer String -> Pixmap/Bitmap-Konverter
-// 
-// Revision 1.3  1992/06/01  17:04:47  zeller
-// #pragma once entfernt
-// 
-// Revision 1.2  1992/03/17  08:21:42  zeller
-// CvtStringToWindow durch CvtStringToWidget ersetzt
-// 
-// Revision 1.1  1992/03/17  08:16:47  zeller
-// Initial revision
-// 
-
 #ifndef _Nora_converters_h
 #define _Nora_converters_h
 

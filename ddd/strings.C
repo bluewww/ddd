@@ -24,15 +24,7 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:14  zeller
-// Initial revision
-//
-// Revision 1.1  1995/04/18  16:18:06  zeller
-// Initial revision
-//
-
-static const char rcsid[] = 
+char ddd_strings_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

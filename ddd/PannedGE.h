@@ -24,20 +24,6 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:48:05  zeller
-// Initial revision
-//
-// Revision 1.3  1995/04/14  15:26:20  zeller
-// New: have minimum/maximum size values for panner
-//
-// Revision 1.2  1995/04/14  14:09:39  zeller
-// New: own PannedGraphEdit widget class
-//
-// Revision 1.1  1995/03/29  12:04:51  zeller
-// Initial revision
-//
-
 #ifndef _DDD_PannedGraphEdit_h
 #define _DDD_PannedGraphEdit_h
 

@@ -24,30 +24,8 @@
 // NORA is an experimental inference-based software development
 // environment. Contact nora@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/05/01 15:47:36  zeller
-// Initial revision
-//
-// Revision 1.6  1993/08/27  15:48:07  zeller
-// Neu: TypeInfo
-//
-// Revision 1.5  1993/05/22  20:19:41  zeller
-// %Q% added by apply-q-flag.sh 1.5
-//
-// Revision 1.4  1993/04/22  10:49:27  zeller
-// Lizenz verbessert
-// 
-// Revision 1.3  1993/04/22  10:36:55  zeller
-// Lizenz verbessert
-// 
-// Revision 1.2  1993/04/16  11:28:23  zeller
-// Neu: GNU Library General Public License eingefuegt
-// 
-// Revision 1.1  1992/07/22  09:45:18  zeller
-// Initial revision
-// 
-
-char DataLength_rcsid[] = "$Id$";
+char DataLength_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation
