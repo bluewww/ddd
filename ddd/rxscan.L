@@ -333,7 +333,7 @@ A9[ \n\t\r\v\f]+		 	RETURN(&rxwhite);
 B0{C}Standard{W}input:{W}END{C} 	RETURN(&rxxdb);
 B1[^ \t]*:.*:{w}{P}[: ]{C} 	        RETURN(&rxxdbpos);
 B2[<]repeats{W}{P}{W}times[>]       	RETURN(&rxrepeats);
-B3({I}|`)(([.]|->|::|`){I})*		RETURN(&rxchain);
+B3(::|`)?{I}(([.]|->|::|`){I})*		RETURN(&rxchain);
 B4{W}ni{W}nehw{W}(ro{W}won{W})?     	RETURN(&rxwhen);
 B5Breakpoint{W}{P}\,{W}			RETURN(&rxstopped_func);
 B6#{D}{W}{I}[^ \f\t\n]*{W}[(]		RETURN(&rxframe_func);
