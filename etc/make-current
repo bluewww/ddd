@@ -202,8 +202,12 @@ if [ -f ddd-$date.tar.gz ]; then
   echo "make-current[$$]: done at `date`"
 else
   echo "make-current[$$]: failed at `date`"
-  Mail -s "make-current failed at `date`" ddd@ips.cs.tu-bs.de \
-    < $target/.current.log
+  if $local; then
+    :
+  else
+    Mail -s "make-current failed at `date`" ddd@ips.cs.tu-bs.de \
+     < $target/.current.log
+  fi
 fi
 
 # That's all, folks!
