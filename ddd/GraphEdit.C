@@ -2242,6 +2242,7 @@ static void select_single_node(Widget w, GraphNode *selectNode)
 	{
 	    node->selected() = False;
 	    changed = True;
+	    graphEditRedrawNode(w, node);
 	}
     }
 
@@ -2250,13 +2251,11 @@ static void select_single_node(Widget w, GraphNode *selectNode)
 	selectNode->selected() = True;
 	changed = True;
 	raise_node(w, selectNode);
+	graphEditRedrawNode(w, selectNode);
     }
 
     if (changed)
-    {
 	selectionChanged(w);
-	graphEditRedraw(w);
-    }
 }
 
 // Select first node
