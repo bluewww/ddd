@@ -407,8 +407,14 @@ Volunteers for these and other projects are welcome!
 298*If an item (a word) is selected in the reference browser, have it
     copied to `():'.
 
-303*Shorten the `Open Recent' menu items.  It should suffice to
-    show the base names; the full names can still be shown in the
-    status line.
+303*Shorten the `Open Recent' menu items:
+    * It should suffice to show the base names; the full names can
+      still be shown in the status line.
+    * Files that can no more be opened should no more be shown.
+    * Duplicates should be removed by comparing their inode and device 
+      number, not by their file name.
 
-304 (Insert new project ideas here)
+304 If the source window size has changed (via panes?), recenter the
+    command tool.
+
+305 (Insert new project ideas here)
