@@ -1,8 +1,8 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 2.0 (in development)
-------------------------
+DDD 2.0 (in beta test)
+----------------------
 
     DDD 2.0 brings XDB support, extended DBX support, an improved user
     interface and many bug fixes.
@@ -36,7 +36,10 @@ DDD 2.0 (in development)
       `--exec-window'.  Options must now always be saved explicitly.
     - Ctrl+C has now the highest priority of all processed events.
     - The DDD License can now be viewed from within DDD.
-    - Fonts are now resolution-independent.
+    - Fonts are now resolution-independent, and slightly larger than
+      before.
+    - The DDD resources are now fully documented; the DDD manual
+      contains several customiztion examples.
 
     Supported debuggers and languages:
     - XDB support.  On popular request, DDD now supports HP's XDB as
@@ -63,9 +66,9 @@ DDD 2.0 (in development)
       C++ compilers exist in the world.
     - You can specify `--without-athena' to avoid searching for and
       linking with Athena libraries.
-    - Patches for AIX xlC, GCC 2.8.0 and probably other C++ compilers
-      included.  Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de> and
-      Jason Merrill <jason@cygnus.com>.
+    - Patches for AIX xlC, Sun CC, GCC 2.8.0 and probably other 
+      C++ compilers included.  Thanks to Jacek Holeczek
+      <holeczek@clri6f.gsi.de> and Jason Merrill <jason@cygnus.com>.
     - DDD now compiles and runs unchanged with LessTif, a free Motif
       clone under construction.  Note that `runs' is relative: As of
       LessTif 0.50, DDD is still far from being usable.  This will
