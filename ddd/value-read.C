@@ -148,6 +148,7 @@ DispValueType determine_type (string value)
 	{
 	    switch(value[i++])
 	    {
+	    case ':':		// Java
 	    case '=':
 		return StructOrClass;
 
@@ -198,6 +199,15 @@ DispValueType determine_type (string value)
     }
     if (value.contains(rxaddress, pointer_index))
 	return Pointer;
+
+    // In GDB, Java pointers are printed as `[TYPE]@ADDR'
+    int at_index = value.index('@');
+    if (at_index >= 0)
+    {
+	if (value.before(at_index).matches(rxidentifier) &&
+	    value.from(at_index).matches(rxaddress))
+	    return Pointer;
+    }
 #endif
 
     // Arrays.
@@ -658,14 +668,24 @@ string read_member_name (string& value)
 	return " ";
     }
 
-    if (!value.contains(" = "))
+    // GDB, DBX, and XDB separate member names and values by ` = '; 
+    // GDB using the Java language uses `: ' instead.
+    string member_name;
+    if (value.contains(" = "))
+    {
+	member_name = value.before (" = ");
+	value = value.after (" = ");
+    }
+    else if (value.contains(": "))
+    {
+	member_name = value.before (": ");
+	value = value.after (": ");
+    }
+    else
     {
 	// No value
 	return "";
     }
-
-    string member_name = value.before (" = ");
-    value = value.after (" = ");
 
     if (!is_BaseClass_name(member_name))
     {

@@ -71,7 +71,8 @@ enum DebuggerType { GDB, DBX, XDB };
 
 enum ProgramLanguage { 
     LANGUAGE_C,			// C-like: C, C++
-    LANGUAGE_PASCAL,		// Pascal-like: Pascal, Modula, Ada
+    LANGUAGE_JAVA,		// Java, as supported by GDB.
+    LANGUAGE_PASCAL,		// Pascal-like: Pascal, Modula, Ada...
     LANGUAGE_CHILL,		// Chill, as supported by GDB.
     LANGUAGE_FORTRAN,		// FORTRAN, as supported by GDB.
     LANGUAGE_OTHER		// Others

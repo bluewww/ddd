@@ -418,16 +418,28 @@ void DispValue::init(string& value, DispValueType given_type)
 	    {
 		member_prefix = "";
 	    }
-	    else if (gdb->program_language() == LANGUAGE_C &&
-		     member_prefix.contains('*', 0))
-	    {
-		member_prefix.del("*");
-		member_prefix.prepend ("(");
-		member_prefix += ")->";
-	    }
 	    else
 	    {
-		member_prefix += ".";
+		// In C and Java, `*' binds tighter than `.'
+		if (member_prefix.contains('*', 0))
+		{
+		    if (gdb->program_language() == LANGUAGE_C)
+		    {
+			// Use the C `->' operator instead
+			member_prefix.del("*");
+			member_prefix.prepend("(");
+			member_prefix += ")->";
+		    }
+		    else
+		    {
+			member_prefix.prepend("(");
+			member_prefix += ").";
+		    }
+		}
+		else
+		{
+		    member_prefix += ".";
+		}
 	    }
 
 	    read_str_or_cl_begin (value);

@@ -4067,6 +4067,7 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
     switch (gdb->program_language())
     {
     case LANGUAGE_C:       status += rm("C"); break;
+    case LANGUAGE_JAVA:    status += rm("Java"); break;
     case LANGUAGE_PASCAL:  status += rm("Pascal"); break;
     case LANGUAGE_CHILL:   status += rm("Chill"); break;
     case LANGUAGE_FORTRAN: status += rm("FORTRAN"); break;

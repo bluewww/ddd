@@ -1793,6 +1793,10 @@ string GDBAgent::dereferenced_expr(string expr) const
 	// as `*X'.
 	return prepend_prefix("*", expr);
 
+    case LANGUAGE_JAVA:
+	// GDB dereferences JAVA references by prepending `*'
+	return prepend_prefix("*", expr);
+
     case LANGUAGE_CHILL:
 	return append_suffix(expr, "->");
 
@@ -1825,6 +1829,9 @@ string GDBAgent::address_expr(string expr) const
 
     case LANGUAGE_FORTRAN:
 	return prepend_prefix("&", expr);
+
+    case LANGUAGE_JAVA:
+	return "";		// Not supported in GDB
 
     case LANGUAGE_OTHER:
 	return "";		// All other languages
@@ -1859,6 +1866,7 @@ int GDBAgent::default_index_base() const
 	return 1;
 
     case LANGUAGE_C:
+    case LANGUAGE_JAVA:
     case LANGUAGE_OTHER:
 	return 0;
     }
@@ -1891,6 +1899,7 @@ string GDBAgent::assign_command(string var, string expr) const
     switch (program_language())
     {
     case LANGUAGE_C:
+    case LANGUAGE_JAVA:
     case LANGUAGE_FORTRAN:
     case LANGUAGE_OTHER:
 	cmd += "=";
@@ -1926,6 +1935,7 @@ void GDBAgent::normalize_address(string& addr) const
 	switch (program_language())
 	{
 	case LANGUAGE_C:
+	case LANGUAGE_JAVA:
 	case LANGUAGE_FORTRAN:
 	case LANGUAGE_OTHER:
 	    addr.prepend("0x");
@@ -2009,6 +2019,10 @@ ProgramLanguage GDBAgent::program_language(string text)
 	if (text.contains("fortran"))
 	{
 	    program_language(LANGUAGE_FORTRAN);
+	}
+	else if (text.contains("java"))
+	{
+	    program_language(LANGUAGE_JAVA);
 	}
 	else if (text.contains("chill"))
 	{

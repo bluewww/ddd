@@ -61,11 +61,11 @@ extern "C" int yywrap()
 #define YY_DECL static const regex *yylex YY_PROTO(( void ))
 %}
 
-/* Address */
-A	(0x[0-9a-fA-F]+|0[0-9a-fA-F]+[hH]|H'[0-9a-fA-F]+|00+|[(]nil[)]|NIL|16_[0-9a-f]+)
+/* Addresses -- in various formats */
+A	(0x[0-9a-fA-F]+|0[0-9a-fA-F]+[hH]|H'[0-9a-fA-F]+|00+|[(]nil[)]|NIL|null|@[0-9a-fA-F]+|16_[0-9a-f]+)
 
 /* Simple prefix of address */
-a	[0H]
+a	[0H@]
 
 /* Whitespace */
 w	[ \f\t]
@@ -86,7 +86,7 @@ D	[0-9]+
 P	[1-9][0-9]*
 
 /* Hex address */
-x	(0(0|x)[0-9a-f]+|[(]nil[)])
+x	(0(0|x)[0-9a-f]+|[(]nil[)]|NIL|null)
 
 /* An arbitrary character */
 c	(.|\n)

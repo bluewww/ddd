@@ -116,17 +116,18 @@ public:
 };
 
 // A regex for C addresses ("0xdead"), Modula-2 addresses ("0BEEFH"),
-// and Chill addresses ("H'AFFE").  XDB uses the pattern `00000000' for
-// nil pointers; XBD uses `nil' and `NIL'.  The origin of the last
-// format "16_FFFF" is lost in the mist of time.
+// and Chill addresses ("H'AFFE").  XDB uses the pattern `00000000'
+// for nil pointers; XDB uses `nil' and `NIL'.  `null' is the Java
+// expression for NULL pointers; GDB uses `@2b2b' for Java pointers.
+// The origin of the last format "16_FFFF" is lost in the mist of time.
 #define RXADDRESS "(0x[0-9a-fA-F]+|0[0-9a-fA-F]+[hH]|H'[0-9a-fA-F]+" \
-                  "|00+|[(]nil[)]|NIL|16_[0-9a-f]+)"
+                  "|00+|[(]nil[)]|NIL|null|@[0-9a-fA-F]+|16_[0-9a-f]+)"
 #if RUNTIME_REGEX
 extern const regex rxaddress;
 #endif
 
 // Possible start of address - simple prefix of RXADDRESS
-#define RXADDRESS_START "[0H]"
+#define RXADDRESS_START "[0H@]"
 
 #if RUNTIME_REGEX
 extern const regex rxaddress_start;
