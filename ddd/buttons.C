@@ -100,8 +100,6 @@ Widget make_buttons(Widget parent, const string& name,
 
     add_buttons(buttons, button_list);
 
-    DefaultHelpText = gdbDefaultHelp;
-
     XtManageChild(buttons);
 
     XtWidgetGeometry size;
@@ -183,4 +181,7 @@ void add_buttons(Widget buttons, const string& button_list)
 		      (XtPointer)XtNewString((String)command));
     }
     delete[] commands;
+
+    // Register default help command
+    DefaultHelpText = gdbDefaultHelp;
 }

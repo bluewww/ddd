@@ -96,6 +96,7 @@ class DataDisp {
     static void showDetailCB            (Widget, XtPointer, XtPointer);
     static void hideDetailCB            (Widget, XtPointer, XtPointer);
     static void dependentCB             (Widget, XtPointer, XtPointer);
+    static void setCB                   (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
     // Callbacks der Popup-Menues
@@ -104,6 +105,7 @@ class DataDisp {
     static void popup_newCB             (Widget, XtPointer, XtPointer);
     static void dependent_displayDCB    (Widget, XtPointer, XtPointer);
     static void new_displayDCB          (Widget, XtPointer, XtPointer);
+    static void setDCB                  (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
     // Callbacks of the display editor
@@ -260,7 +262,6 @@ private:
 				       void*  data);
 
 
-
     //-----------------------------------------------------------------------
     // Daten
     //-----------------------------------------------------------------------
@@ -293,6 +294,9 @@ public:
 
     inline int count_all() { return disp_graph->count_all(); }
     static void refresh_graph_edit ();
+
+    // Command to re-print all displays
+    static string refresh_display_command();
 
     // Callbacks for menu bar
     static void EditDisplaysCB(Widget, XtPointer, XtPointer);

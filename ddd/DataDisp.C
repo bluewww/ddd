@@ -60,6 +60,7 @@ char DataDisp_rcsid[] =
 #include "cook.h"
 #include "post.h"
 #include "question.h"
+#include "commandQ.h"
 
 // includes von Motif-Zeugs
 #include <Xm/MessageB.h>
@@ -116,7 +117,7 @@ MMDesc DataDisp::graph_popup[] =
 };
 
 struct ValueItms { enum Itms {Dereference, Detail, Rotate, Dependent,
-			      Dummy, Disable, Delete }; };
+			      Dummy1, Set, Dummy2, Disable, Delete }; };
 
 MMDesc DataDisp::node_popup[] =
 {
@@ -124,6 +125,8 @@ MMDesc DataDisp::node_popup[] =
     {"detail",        MMPush,   {DataDisp::toggleDetailCB}},
     {"rotate",        MMPush,   {DataDisp::toggleRotateCB}},
     {"dependent",     MMPush,   {DataDisp::dependentCB}},
+    MMSep,
+    {"set",           MMPush,   {DataDisp::setCB}},
     MMSep,
     {"disable",       MMPush,   {DataDisp::toggleDisableCB}},
     {"delete",        MMPush,   {DataDisp::deleteCB}},
@@ -137,13 +140,15 @@ MMDesc DataDisp::graph_cmd_area[] =
     {"rotate",        MMPush, {DataDisp::toggleRotateCB}},
     {"dependent",     MMPush, {DataDisp::dependentCB}},
     MMSep,
+    {"set",           MMPush, {DataDisp::setCB}},
+    MMSep,
     {"disable",       MMPush, {DataDisp::toggleDisableCB}},
     {"delete",        MMPush, {DataDisp::deleteCB}},
     MMEnd
 };
 
 struct DisplayItms { enum Itms {Dependent, Dereference, 
-				ShowDetail, HideDetail,
+				ShowDetail, HideDetail, Set,
 				Enable, Disable, Delete}; };
 
 MMDesc DataDisp::display_area[] =
@@ -152,6 +157,7 @@ MMDesc DataDisp::display_area[] =
     {"dereference",  MMPush,   {DataDisp::dereferenceCB }},
     {"show_detail",  MMPush,   {DataDisp::showDetailCB}},
     {"hide_detail",  MMPush,   {DataDisp::hideDetailCB}},
+    {"set",          MMPush,   {DataDisp::setCB}},
     {"enable",       MMPush,   {DataDisp::enableCB }},
     {"disable",      MMPush,   {DataDisp::disableCB }},
     {"delete",       MMPush,   {DataDisp::deleteCB }},
@@ -1200,10 +1206,12 @@ void DataDisp::refresh_args()
 
 
     // Delete
-    set_sensitive(graph_cmd_area[ValueItms::Delete].widget,
-		  count_selected);
-    set_sensitive(display_area[DisplayItms::Delete].widget, 
-		  count_selected);
+    set_sensitive(graph_cmd_area[ValueItms::Delete].widget, count_selected);
+    set_sensitive(display_area[DisplayItms::Delete].widget, count_selected);
+
+    // Set
+    set_sensitive(graph_cmd_area[ValueItms::Set].widget, count_selected == 1);
+    set_sensitive(display_area[DisplayItms::Set].widget, count_selected == 1);
 
     // Argument field
     if (count_selected > 0)
@@ -1662,27 +1670,45 @@ void DataDisp::new_displaysOQAC (string answers[],
 // Den disp-graph auf aktuellen Stand bringen.
 //-----------------------------------------------------------------------------
 
+string DataDisp::refresh_display_command()
+{
+    string command;
+
+    switch (gdb->type())
+    {
+    case DBX:
+	{
+	    command = gdb->print_command() + " ";
+	    int i = 0;
+	    MapRef ref;
+	    for (DispNode* dn = disp_graph->first(ref); 
+		 dn != 0;
+		 dn = disp_graph->next(ref))
+	    {
+		if (i++)
+		    command += ", ";
+		command += dn->name();
+	    }
+	}
+	break;
+
+    case GDB:
+	command = gdb->display_command();
+	break;
+    }
+
+    return command;
+}
+
+
 // ***************************************************************************
 // sendet den Befehl "display" an den gdb,
 // um Displays zu aktualisieren. (kein Loeschen von Displays)
 //
 void DataDisp::refresh_displaySQ () 
 {
-    bool ok = false;
-
-    switch (gdb->type())
-    {
-    case GDB:
-	ok = gdb->send_question(gdb->display_command(), refresh_displayOQC, 0);
-	break;
-
-    case DBX:
-	// No way to do this in DBX.
-	// (We may issue a `print' command for every display shown.  FIXME)
-	ok = false;
-	break;
-    }
-
+    bool ok = gdb->send_question(refresh_display_command(), 
+				 refresh_displayOQC, 0);
     if (!ok)
     {
 	// Don't complain; simply redraw display.
@@ -2498,6 +2524,84 @@ void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
 {
     XtManageChild(edit_displays_dialog_w);
 }
+//----------------------------------------------------------------------------
+// Value Editor
+//----------------------------------------------------------------------------
+
+void DataDisp::setCB(Widget w, XtPointer, XtPointer)
+{
+    DispValue *disp_value = selected_value();
+    if (disp_value == 0)
+	return;
+
+    const string& name = disp_value->full_name();
+    string value = gdb_question("print " + name);
+    if (value == string(-1))
+    {
+	post_gdb_busy();
+	return;
+    }
+    if (!value.contains(" = "))
+    {
+	post_gdb_message(value);
+	return;
+    }
+    value = value.after(" = ");
+    static regex RXnl(" *\n *");
+    value.gsub(RXnl, " ");
+    strip_final_blanks(value);
+
+    MString prompt("Enter new value for ", "rm");
+    prompt += MString(name, "tt");
+    prompt += MString(":", "rm");
+
+    Arg args[10];
+    int arg = 0;
+
+    XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
+    XtSetArg(args[arg], XmNselectionLabelString, prompt.xmstring()); arg++;
+    Widget set_dialog = 
+	verify(XmCreatePromptDialog(w, "set_dialog", args, arg));
+
+    Delay::register_shell(set_dialog);
+    XtAddCallback(set_dialog, XmNokCallback,     setDCB, disp_value);
+    XtAddCallback(set_dialog, XmNapplyCallback,  setDCB, disp_value);
+    XtAddCallback(set_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+    XtAddCallback(set_dialog, XmNcancelCallback, DestroyThisCB,
+		  (XtPointer)set_dialog);
+
+    Widget apply = XmSelectionBoxGetChild(set_dialog, XmDIALOG_APPLY_BUTTON);
+    XtManageChild(apply);
+    XtManageChild(set_dialog);
+
+    Widget text = XmSelectionBoxGetChild(set_dialog, XmDIALOG_TEXT);
+    set_string(text, value);
+}
+
+void DataDisp::setDCB(Widget set_dialog, XtPointer client_data, XtPointer)
+{
+    DispValue *disp_value = (DispValue *)client_data;
+    Widget text = XmSelectionBoxGetChild(set_dialog, XmDIALOG_TEXT);
+    String value_s = XmTextGetString(text);
+    string value(value_s);
+    XtFree(value_s);
+
+    string cmd;
+    switch (gdb->type())
+    {
+    case GDB:
+	cmd = "set variable " + disp_value->full_name() + " = " + value;
+	break;
+
+    case DBX:
+	cmd = "assign " + disp_value->full_name() + " = " + value;
+	break;
+    }
+
+    gdb_command(cmd);
+}
+
+
 
 
 //----------------------------------------------------------------------------

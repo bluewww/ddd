@@ -77,8 +77,8 @@ public:
     DispValueType type()       const { return mytype; }
     DispValue*    parent()     const { return myparent; }
     int           depth()      const { return mydepth; }
-    string        full_name()  const { return myfull_name; }
-    string        name()       const { return print_name; }
+    const string& full_name()  const { return myfull_name; }
+    const string& name()       const { return print_name; }
     bool          is_changed() const { return changed; }
     bool          expanded()   const { return myexpanded; }
     bool          collapsed()  const { return !expanded(); }

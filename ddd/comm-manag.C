@@ -300,16 +300,15 @@ void user_cmdSUC (string cmd, Widget origin)
 	// File may change: display main() function and update displays
 	plus_cmd_data->refresh_disp_info = true;
 	plus_cmd_data->refresh_main      = true;
-
+	plus_cmd_data->refresh_disp      = true;
+	
 	switch (gdb->type())
 	{
 	case DBX:
 	    plus_cmd_data->refresh_file      = true;
 	    plus_cmd_data->refresh_line      = true;
 	    break;
-
 	case GDB:
-	    plus_cmd_data->refresh_disp      = true;
 	    break;
 	}
     }
@@ -348,12 +347,11 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_where    = false;
 	plus_cmd_data->refresh_frame    = true;
 	plus_cmd_data->refresh_register = false;
+	plus_cmd_data->refresh_disp     = true;
 
 	switch (gdb->type())
 	{
 	case GDB:
-	    // Update displays
-	    plus_cmd_data->refresh_disp    = true;
 	    break;
 
 	case DBX:
@@ -366,11 +364,8 @@ void user_cmdSUC (string cmd, Widget origin)
     }
     else if (is_set_cmd(cmd))
     {
-	if (gdb->type() == GDB)
-	{
-	    // Update displays
-	    plus_cmd_data->refresh_disp    = true;
-	}
+	// Update displays
+	plus_cmd_data->refresh_disp = true;
     }
     else if (is_lookup_cmd(cmd))
     {
@@ -523,7 +518,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_register)
 	    assert(0);
 	if (plus_cmd_data->refresh_disp)
-	    assert(0);
+	    cmds[qu_count++] = data_disp->refresh_display_command();
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds[qu_count++] = gdb->display_command();
 	if (plus_cmd_data->refresh_history_filename)

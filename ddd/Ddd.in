@@ -845,6 +845,27 @@ None<Key>Escape:	gdb-complete-arg(shell)     \n\
 None<Key>Home:		beginning-of-line()         \n\
 None<Key>End:		end-of-line()               \n
 
+Ddd*set_dialog*XmText.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(print)     \n\
+None<Key>Escape:	gdb-complete-arg(print)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
 ! The source window is especially tuned for word selection.
 Ddd*source_text_w.translations: #override \
 None<Btn3Down>:		source-popup-menu()         \n\
@@ -1684,6 +1705,7 @@ Ddd*node_popup.dereference.labelString:	Display *
 Ddd*node_popup.detail.labelString:	Show Detail
 Ddd*node_popup.rotate.labelString: 	Rotate
 Ddd*node_popup.dependent.labelString:	New Display...
+Ddd*node_popup.set.labelString: 	Set Value...
 Ddd*node_popup.delete.labelString:	Delete Display
 Ddd*node_popup.disable.labelString:	Disable Display
 
@@ -1719,6 +1741,7 @@ Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	New Display
 Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: Display *()
 Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:	Show ()
 Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate ()
+Ddd*graph_cmd_w.graph_cmd_area*set.labelString:		Set ()
 Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
 Ddd*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable ()
 ! Ddd*graph_cmd_w.graph_cmd_area*marginTop:       1
@@ -1739,6 +1762,10 @@ Show/Hide details of the selected displays.
 Ddd*graph_cmd_w.graph_cmd_area*rotate.contextHelpString:	\
 @bf Rotate ()@rm\n\
 Rotate the selected displays.
+
+Ddd*graph_cmd_w.graph_cmd_area*set.contextHelpString:	\
+@bf Set ()@rm\n\
+Change the selected display value.
 
 Ddd*graph_cmd_w.graph_cmd_area*disable.contextHelpString:	\
 @bf Disable ()@rm / @bf Enable ()@rm\n\
@@ -2049,10 +2076,19 @@ the corresponding command is sent to the inferior debugger.\n\
 The context sensitive help for the buttons\n\
 gives a short command description.\n
 
+Ddd*tool_buttons.contextHelpString:\
+@rm This is the @sl command tool @rm.\n\
+\n\
+By clicking on one of the buttons,\n\
+the corresponding command is sent to the inferior debugger.\n\
+The context sensitive help for the buttons\n\
+gives a short command description.\n
+
 ! An empty help string means that the help text for this button
 ! is to be requested from GDB (via the GDB `help' command).
 Ddd*source_buttons*contextHelpString:
 Ddd*command_buttons*contextHelpString:
+Ddd*tool_buttons*contextHelpString:
 
 ! Special spacing
 Ddd*source_buttons.spacing:         0
@@ -2666,6 +2702,11 @@ Ddd*save_options_dialog*contextHelpString:	\
 (using the @bf Options @rm menu).\n\
 To save them for the next @DDD@ invocation, click on @bf Yes@rm.\n\
 To discard the changes, click on @bf No@rm.
+
+Ddd*set_dialog_popup.title: @DDD@: Set Value
+Ddd*graph_cmd_w*set_dialog*contextHelpString:	\
+@rm You can now change the value of the selected variable.\n\
+If you want to keep it unchanged, press @bf Cancel @rm.
 
 
 !-----------------------------------------------------------------------------
