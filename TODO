@@ -229,11 +229,6 @@ Volunteers for these and other projects are welcome!
      implemented as follows: use the `ptype' output to display types
      graphically; dereference type names as required.  -AZ]
 
-114* Have a link to GDB info---for instance, using
-     `xterm -e info --file gdb Index COMMAND'.  Better yet:
-     Have an entry for showing the GDB/DBX/XDB manual, using
-     `info --subnodes -o - -f gdb' and subsequent formatting.
-
 115. Have a link from help texts to appropriate sections of the DDD manual.
 
 117. Paul Courbis <plc@lexem.fr> says: upon dereferencing a pointer, 

@@ -348,7 +348,7 @@ Volunteers for fixing these and other bugs are welcome!
      collapses into just the title.  Doing a refresh command restores
      the display.
      [This is due to using AIX xlC instead of GCC.  Further
-     investigation required.  -AZ]
+     investigation is required.  -AZ]
 
 165. The data display `list_test @ 10' is not correctly parsed.
 
@@ -359,4 +359,7 @@ Volunteers for fixing these and other bugs are welcome!
      complains that using DBX, the `file' command does not change the
      source file.
 
-169. (Insert your bug here)
+169. The Manual Browser does not recognize manual (sub-)titles for
+     ULTRIX and HP-UX `man' formats.
+
+170. (Insert your bug here)
