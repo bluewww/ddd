@@ -318,7 +318,6 @@ void graphToggleAutoLayoutCB    (Widget, XtPointer, XtPointer);
 void graphAlignCB            (Widget, XtPointer, XtPointer);
 void graphRotateCB           (Widget, XtPointer, XtPointer);
 void graphLayoutCB           (Widget, XtPointer, XtPointer);
-void graphRefreshCB          (Widget, XtPointer, XtPointer);
 
 void sourceToggleFindWordsOnlyCB    (Widget, XtPointer, XtPointer);
 void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer);
@@ -7645,34 +7644,27 @@ void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
 }
 
 
-void graphAlignCB(Widget w, XtPointer client_data, XtPointer call_data)
+void graphAlignCB(Widget, XtPointer, XtPointer)
 {
     XtCallActionProc(data_disp->graph_edit, 
 		     "snap-to-grid", (XEvent *)0, (String *)0, 0);
-    graphRefreshCB(w, client_data, call_data);
 }
 
-void graphRotateCB(Widget w, XtPointer client_data, XtPointer call_data)
+void graphRotateCB(Widget, XtPointer, XtPointer)
 {
     String params[1];
     params[0] = "+90";
 
-    XtCallActionProc(data_disp->graph_edit, 
+    XtCallActionProc(data_disp->graph_edit,
 		     "rotate", (XEvent *)0, params, 1);
-    graphRefreshCB(w, client_data, call_data);
 }
 
-void graphLayoutCB(Widget w, XtPointer client_data, XtPointer call_data)
+void graphLayoutCB(Widget, XtPointer, XtPointer)
 {
     XtCallActionProc(data_disp->graph_edit, 
-		     "layout", (XEvent *)0, 0, 0);
-    graphRefreshCB(w, client_data, call_data);
+		     "layout", (XEvent *)0, (String *)0, 0);
 }
 
-void graphRefreshCB(Widget, XtPointer, XtPointer)
-{
-    data_disp->refresh_graph_edit();
-}
 
 //-----------------------------------------------------------------------------
 // Source Options
