@@ -261,10 +261,6 @@ char ddd_rcsid[] =
 #undef string
 #endif // HAVE_STD_EXCEPTIONS
 
-#if !HAVE_XMUSEVERSION
-int xmUseVersion = XmVERSION;
-#endif
-
 
 //-----------------------------------------------------------------------------
 // Forward function decls
@@ -1771,11 +1767,6 @@ int main(int argc, char *argv[])
     }
 #else
     (void) CheckDragCB;		// Use it
-#endif
-
-#if XmVersion >= 2000
-    // Fetch Motif version
-    XtVaGetValues(display_w, XmNmotifVersion, &xmUseVersion, NULL);
 #endif
 
     // Show splash screen
