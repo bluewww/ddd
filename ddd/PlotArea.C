@@ -54,6 +54,7 @@ char PlotArea_rcsid[] =
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include <X11/StringDefs.h>
 #include <X11/Xlib.h>
@@ -129,7 +130,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
     : area(w), dpy(XtDisplay(w)), win(XtWindow(w)),
       cx(0), cy(0), px(1), py(1), xscale(0.0), yscale(0.0),
       gc(0), font(0), vchar(0), jmode(0), line_type(0), width(0),
-      type(LineSolid), pointsize(1), last_commands()
+      type(LineSolid), pointsize(1), pending_plots(0), last_commands()
 {
     plot_resource_values values;
     XtGetApplicationResources(area, &values,
@@ -236,7 +237,6 @@ PlotArea::PlotArea(Widget w, const string& fontname)
 #define X(x) (int) (x * xscale)
 #define Y(y) (int) ((4095-y) * yscale)
 
-
 void PlotArea::plot_nop(const char *)
 {
     // Ignore command
@@ -245,20 +245,23 @@ void PlotArea::plot_nop(const char *)
 void PlotArea::plot_vector(const char *buf)
 {
     int x, y;
-    sscanf((char *)buf, "V%4d%4d", &x, &y);  
+    int ret = sscanf((char *)buf, "V%4d%4d", &x, &y);
+    assert(ret == 2);
     XDrawLine(dpy, win, gc, X(cx), Y(cy), X(x), Y(y));
     cx = x; cy = y;
 }
 
 void PlotArea::plot_move(const char *buf)
 {
-    sscanf((char *)buf, "M%4d%4d", &cx, &cy);
+    int ret = sscanf((char *)buf, "M%4d%4d", &cx, &cy);
+    assert(ret == 2);
 }
 
 void PlotArea::plot_text(const char *buf)
 {
     int x, y;
-    sscanf((char *)buf, "T%4d%4d", &x, &y);  
+    int ret = sscanf((char *)buf, "T%4d%4d", &x, &y);  
+    assert(ret == 2);
 
     const char *str = buf + 9;
     int sl = 0;
@@ -280,12 +283,15 @@ void PlotArea::plot_text(const char *buf)
 
 void PlotArea::plot_justify(const char *buf)
 {
-    sscanf((char *)buf, "J%4d", &jmode);
+    int ret = sscanf((char *)buf, "J%4d", &jmode);
+    assert(ret == 1);
 }
 
 void PlotArea::plot_linetype(const char *buf)
 {
-    sscanf((char *)buf, "L%4d", &line_type);
+    int ret = sscanf((char *)buf, "L%4d", &line_type);
+    assert(ret == 1);
+
     line_type = (line_type % 8) + 2;
     width = widths[line_type];
     if (dashes[line_type][0])
@@ -304,7 +310,9 @@ void PlotArea::plot_linetype(const char *buf)
 void PlotArea::plot_point(const char *buf)
 {
     int point, x, y;
-    sscanf((char *)buf, "P%1d%4d%4d", &point, &x, &y);  
+    int ret = sscanf((char *)buf, "P%1d%4d%4d", &point, &x, &y);  
+    assert(ret == 3);
+
     if (point == 7) 
     {
 	// Set point size
@@ -438,6 +446,34 @@ void PlotArea::plot_unknown(const char *command)
 
 void PlotArea::plot(const char *commands, int length, bool clear)
 {
+    if (last_commands.length() > 0 && 
+	last_commands.data()[last_commands.length() - 1] != '\n')
+    {
+	// Last command was incomplete - complete it
+	char *s = last_commands.data();
+	int line = last_commands.length() - 1;
+	while (line > 0 && s[line - 1] != '\n')
+	    line--;
+	assert(line == 0 || s[line - 1] == '\n');
+
+	const char *tail = commands;
+	while (length > 0 && *commands != '\n')
+	    commands++, length--;
+
+	if (length > 0 && *commands == '\n')
+	{
+	    commands++, length--;
+	    string command = string(s + line) + string(tail, commands - tail);
+
+	    assert(isalpha(command[0]));
+	    assert(command.contains('\n', -1));
+
+	    do_plot(command, clear);
+
+	    last_commands.append((char *)tail, commands - tail);
+	}
+    }
+
     int discard = do_plot(commands, clear);
 
     if (discard >= 0)
@@ -471,7 +507,12 @@ int PlotArea::do_plot(const char *commands, bool clear)
     while (*cmds != '\0')
     {
 	if (cmds[0] == 'G' && cmds[1] == '\n')
+	{
+	    if (pending_plots > 0)
+		pending_plots--;
+
 	    discard = (cmds - commands);
+	}
 
 	while (*cmds != '\n' && *cmds != '\0')
 	    cmds++;
@@ -482,7 +523,16 @@ int PlotArea::do_plot(const char *commands, bool clear)
     // Process commands
     cmds = commands;
     if (discard >= 0)
+    {
 	cmds += discard;
+	assert(cmds[0] == 'G');
+	assert(cmds[1] == '\n');
+    }
+
+#if 0				// FIXME: Not thoroughly tested yet  -AZ
+    if (discard < 0 && pending_plots > 0)
+	return discard;
+#endif
 
     while (cmds[0] != '\0')
     {
@@ -491,8 +541,9 @@ int PlotArea::do_plot(const char *commands, bool clear)
 	// Move CMDS to the next line
 	while (*cmds != '\0' && *cmds != '\n')
 	    cmds++;
-	if (*cmds != '\0')
-	    cmds++;
+	if (*cmds == '\0')
+	    break;		// Command is incomplete - don't do it
+	cmds++;
 
 	// Make current command NUL-terminated.  Otherwise, sscanf()
 	// takes far too much time.
