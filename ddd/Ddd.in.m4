@@ -626,7 +626,7 @@ Ddd*disassemble: false
 
 ! How many bytes of the current function should we disassemble? (0
 ! means disassemble entire function; default in DDD 2.2 and earlier)
-Ddd*maxDisassemble: 1024
+Ddd*maxDisassemble: 256
 
 ! Do we wish to display glyphs? (Makes DDD run somewhat slower)
 Ddd*displayGlyphs: true

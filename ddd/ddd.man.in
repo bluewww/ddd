@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-04-07" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-04-13" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -1795,9 +1795,9 @@ Just click on the location in one window and press `\fBLookup ()\fR'
 to see the corresponding code in the other window.
 .PP
 The `\fBmaxDisassemble\fR' resource controls how much is to be
-disassembled.  If `\fBmaxDisassemble\fR' is set to 1024 (default) and
-the current function is larger than 1024 bytes, \s-2@DDD@\s+2 only
-disassembles the first 1024 bytes below the current location.  You can
+disassembled.  If `\fBmaxDisassemble\fR' is set to 256 (default) and
+the current function is larger than 256 bytes, \s-2@DDD@\s+2 only
+disassembles the first 256 bytes below the current location.  You can
 set the `\fBmaxDisassemble\fR' resource to a larger value if you
 prefer to have a larger machine code view.
 .PP
@@ -3006,7 +3006,7 @@ The minimum number of lines to show after the current location.
 Default is \fB3\fR.
 .TP
 .B "maxDisassemble (\fPclass\fB MaxDisassemble)"
-Maximum number of bytes to disassemble (default: 1024).  If this is
+Maximum number of bytes to disassemble (default: 256).  If this is
 zero, the entire current function is disassembled.
 .TP
 .B "maxGlyphs (\fPclass\fB MaxGlyphs)"

@@ -7593,14 +7593,16 @@ void SourceView::get_func_at(const string& address, string& func, int& offset)
     // GDB issues /i lines in the format
     // `ADDR <FUNC[+OFFSET]> INSTRUCTIONS', as in
     // `0xef7be49c <_IO_file_underflow+128>:\torcc  %o0, %g0, %o2\n'
+    offset = 0;
     func = gdb_question("x /i " + address);
+    if (func == NO_GDB_ANSWER)
+	return;
 
     // Find func
     func = func.after("<");
     func = func.before(">");
 
     // Find offset
-    offset = 0;
     int plus = func.index('+');
     if (plus >= 0)
     {
@@ -7620,6 +7622,8 @@ bool SourceView::function_is_larger_than(string pc, int max_size)
     string pc_func;
     int pc_offset;
     get_func_at(pc, pc_func, pc_offset);
+    if (pc_func == NO_GDB_ANSWER)
+	return true;		// In doubt, treat function as `too large'.
 
     if (pc_offset > max_size)
     {
@@ -7637,6 +7641,9 @@ bool SourceView::function_is_larger_than(string pc, int max_size)
     string next_func;
     int next_offset;
     get_func_at(next, next_func, next_offset);
+
+    if (next_func == NO_GDB_ANSWER)
+	return true;		// In doubt, treat function as `too large'.
 
     if (pc_func == next_func)
     {
