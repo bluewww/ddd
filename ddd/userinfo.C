@@ -233,7 +233,7 @@ int userinfo(char *arg = 0)
 
     // Issue real name
     char *s = pwd->pw_gecos;
-    while (is_letter(*s))
+    while (is_letter(*s) || isdigit(*s))
 	putchar(*s++);
 
     if (s == pwd->pw_gecos)
