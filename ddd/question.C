@@ -46,7 +46,7 @@ char question_rcsid[] =
 // Synchronized questions
 //-----------------------------------------------------------------------------
 
-bool gdb_question_running; // Is gdb_question() running?
+bool gdb_question_running = false; // Flag: is gdb_question() running?
 
 struct GDBReply {
     string answer;    // The answer text (NO_GDB_ANSWER if timeout)
@@ -82,6 +82,7 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 
     Delay delay;
 
+    // Block against reentrant calls
     gdb_question_running = true;
 
     static GDBReply reply;
@@ -120,12 +121,13 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 	    if (timer && timeout > 0)
 		XtRemoveTimeOut(timer);
 	}
-
-	gdb_question_running = false;
     }
 
     // Restore old verbatim mode
     gdb->verbatim(old_verbatim);
+
+    // Unblock against reentrant calls
+    gdb_question_running = false;
 
     // Return answer
     return reply.answer;
