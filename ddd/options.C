@@ -721,25 +721,42 @@ void dddToggleValueDocsCB (Widget, XtPointer, XtPointer call_data)
 // Maintenance
 //-----------------------------------------------------------------------------
 
-void dddToggleDumpCoreCB(Widget, XtPointer, XtPointer call_data)
+void dddSetCrashCB(Widget, XtPointer client_data, XtPointer)
 {
-    XmToggleButtonCallbackStruct *info = 
-	(XmToggleButtonCallbackStruct *)call_data;
+    int state = (int)(long)client_data;
+    string msg = "When " DDD_NAME " crashes, ";
 
-    app_data.dump_core = info->set;
+    switch (state)
+    {
+    case 0:
+	app_data.dump_core        = False;
+	app_data.debug_core_dumps = False;
+	msg += "do nothing.";
+	break;
 
+    case 1:
+	app_data.dump_core        = True;
+	app_data.debug_core_dumps = False;
+	msg += "dump core.";
+	break;
+
+    case 2:
+	app_data.dump_core        = True;
+	app_data.debug_core_dumps = True;
+	msg += "dump core and invoke a debugger.";
+	break;
+    }
+
+    set_status(msg);
     update_options();
 }
 
-void dddToggleDebugCoreDumpCB(Widget, XtPointer, XtPointer call_data)
+void dddClearMaintenanceCB(Widget, XtPointer, XtPointer)
 {
-    XmToggleButtonCallbackStruct *info = 
-	(XmToggleButtonCallbackStruct *)call_data;
-
-    app_data.debug_core_dumps = info->set;
-
+    app_data.maintenance = False;
     update_options();
 }
+
 
 //-----------------------------------------------------------------------------
 // Startup Options
@@ -2679,6 +2696,7 @@ bool save_options(unsigned long flags)
 
     // Maintenance
     os << "\n! Maintenance.\n";
+    os << bool_app_value(XtNmaintenance,    app_data.maintenance) << '\n';
     os << bool_app_value(XtNdumpCore,       app_data.dump_core) << '\n';
     os << bool_app_value(XtNdebugCoreDumps, app_data.debug_core_dumps) << '\n';
 

@@ -77,6 +77,7 @@ char exit_rcsid[] =
 #include "HelpCB.h"
 #include "TimeOut.h"
 #include "charsets.h"
+#include "debugged.h"
 #include "Command.h"
 #include "cmdtty.h"
 #include "converters.h"
@@ -482,7 +483,7 @@ static void ddd_fatal(int sig...)
     ddd_install_fatal();
 
     bool have_core_file = false;
-    if (sig != SIGINT && app_data.dump_core)
+    if (sig != SIGINT && app_data.dump_core && !being_debugged())
     {
 	// Create core file (without interrupting DDD)
 	if (ddd_dump_core(sig))

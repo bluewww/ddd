@@ -1021,6 +1021,7 @@ Ddd*run_again.foreground:	   RUN_COLOR
 ! Ddd*dereference.foreground:	   DATA_COLOR
 
 ! Highlight special dialogs
+Ddd*maintenance.foreground:	   STOP_COLOR
 Ddd*fatal_dialog*foreground:	   STOP_COLOR
 Ddd*terminated_dialog*foreground:  STOP_COLOR
 Ddd*exited_dialog*foreground:      STOP_COLOR
@@ -2876,11 +2877,11 @@ WIDGET(Maintenance Menu)\n\
 \n\
 DESC(Debug [[[[DDD]]]]..., [invoke a debugger on this DDD instance])\n\
 DESC(Dump Core, [dump core now])\n\
+DESC(Tic Tac Toe..., [play Tic Tac Toe against DDD])\n\
 \n\
-DESC(Core Dumps, [enable core dumps when DDD crashes])\n\
-DESC(Debug Window, [invoke debugger on DDD when it crashes])\n\
+DESC(When [[[[DDD]]]] Crashes, [what to do when DDD crashes])
 \n\
-DESC(Tic Tac Toe, [play Tic Tac Toe against DDD])
+DESC(Remove Menu, [remove this menu])
 ])dnl
 
 Ddd*menubar.maintenance*helpString: MAINTENANCE_HELP
@@ -2894,25 +2895,54 @@ Ddd*maintenanceMenu.debug.acceleratorText:	F12
 Ddd*maintenanceMenu.debug.documentationString:	\
 @rm Invoke a debugger on this DDD instance
 
-Ddd*maintenanceMenu.dumpCore.labelString:	Dump Core
-Ddd*maintenanceMenu.dumpCore.mnemonic:		D
+Ddd*maintenanceMenu.dumpCore.labelString:	Dump Core Now
+Ddd*maintenanceMenu.dumpCore.mnemonic:		C
 Ddd*maintenanceMenu.dumpCore.documentationString:	\
-@rm Dump core now
+@rm Make DDD dump core now
 
-Ddd*maintenanceMenu.coreDumps.labelString:	Core Dumps
-Ddd*maintenanceMenu.coreDumps.mnemonic:		C
-Ddd*maintenanceMenu.coreDumps.documentationString:	\
-@rm Enable or disable core dumps
-
-Ddd*maintenanceMenu.debugCoreDump.labelString:	Debug Window
-Ddd*maintenanceMenu.debugCoreDump.mnemonic:	W
-Ddd*maintenanceMenu.debugCoreDump.documentationString:	\
-@rm Invoke debugger on DDD when it crashes
-
-Ddd*maintenanceMenu.tictactoe.labelString:	Tic Tac Toe
+Ddd*maintenanceMenu.tictactoe.labelString:	Tic Tac Toe...
 Ddd*maintenanceMenu.tictactoe.mnemonic:		T
 Ddd*maintenanceMenu.tictactoe.documentationString:	\
 @rm Play Tic Tac Toe against DDD
+
+Ddd*maintenanceMenu.crash.labelString:		When DDD Crashes
+Ddd*maintenanceMenu.crash.mnemonic:		W
+Ddd*maintenanceMenu.crash.documentationString:	\
+@rm What to do when DDD crashes
+
+Ddd*maintenanceMenu.remove.labelString:         Remove Menu
+Ddd*maintenanceMenu.remove.mnemonic:		R
+Ddd*maintenanceMenu.remove.documentationString:	\
+@rm Remove this menu
+
+
+define(CRASH_HELP, [\
+\
+WIDGET(Crash Menu)\n\
+\n\
+When DDD crashes...\n\
+DESC(Debug [[[[DDD]]]], [invoke a debugger])\n\
+DESC(Dump Core, [dump core])\n\
+DESC(Do Nothing, [neither invoke a debugger nor debug DDD])
+])dnl
+
+Ddd*crashMenu*helpString:     			CRASH_HELP
+Ddd*crashMenu*tearOffTitle:   			When DDD Crashes
+
+Ddd*crashMenu.debug.labelString:		Debug DDD
+Ddd*crashMenu.debug.mnemonic:			D
+Ddd*crashMenu.debug.documentationString:	\
+@rm Invoke debugger on DDD when it crashes
+
+Ddd*crashMenu.dumpCore.labelString:		Dump Core
+Ddd*crashMenu.dumpCore.mnemonic:		C
+Ddd*crashMenu.dumpCore.documentationString:	\
+@rm Dump core when DDD crashes
+
+Ddd*crashMenu.nothing.labelString:		Do Nothing
+Ddd*crashMenu.nothing.mnemonic:			N
+Ddd*crashMenu.nothing.documentationString:	\
+@rm Neither invoke a debugger nor dump core
 
 
 ! Help menu

@@ -209,6 +209,7 @@ char ddd_rcsid[] =
 #include "charsets.h"
 #include "cmdtty.h"
 #include "comm-manag.h"
+#include "debugged.h"
 #include "Command.h"
 #include "complete.h"
 #include "converters.h"
@@ -1435,20 +1436,33 @@ static MMDesc data_menu[] =
 
 
 // Maintenance
+static Widget crash_debug_w     = 0;
+static Widget crash_dump_core_w = 0;
+static Widget crash_nothing_w   = 0;
+
+static MMDesc crash_menu[] = 
+{
+    { "debug",         MMToggle, { dddSetCrashCB, XtPointer(2) }, 0,
+      &crash_debug_w, 0, 0 },
+    { "dumpCore",      MMToggle, { dddSetCrashCB, XtPointer(1) }, 0,
+      &crash_dump_core_w, 0, 0 },
+    { "nothing",       MMToggle, { dddSetCrashCB, XtPointer(0) }, 0,
+      &crash_nothing_w, 0, 0 },
+    MMEnd
+};
+
+static Widget debug_ddd_w       = 0;
 static Widget dump_core_w       = 0;
-static Widget debug_core_dump_w = 0;
 
 static MMDesc maintenance_menu[] = 
 {
-    { "debug",         MMPush, { DDDDebugCB, 0 }, 0, 0, 0, 0 },
-    { "dumpCore",      MMPush, { DDDDumpCoreCB, 0 }, 0, 0, 0, 0 },
+    { "debug",         MMPush, { DDDDebugCB, 0 }, 0, &debug_ddd_w, 0, 0 },
+    { "dumpCore",      MMPush, { DDDDumpCoreCB, 0 }, 0, &dump_core_w, 0, 0 },
+    { "tictactoe",     MMPush, { TicTacToeCB, 0 }, 0, 0, 0, 0 },
     MMSep,
-    { "coreDumps",     MMToggle, { dddToggleDumpCoreCB, 0 }, 0,
-      &dump_core_w, 0, 0 },
-    { "debugCoreDump", MMToggle, { dddToggleDebugCoreDumpCB, 0 }, 0,
-      &debug_core_dump_w, 0, 0 },
+    { "crash",         MMRadioMenu, MMNoCB, crash_menu, 0, 0, 0 },
     MMSep,
-    { "tictactoe", MMPush, { TicTacToeCB, 0 }, 0, 0, 0, 0 },
+    { "remove",        MMPush, { dddClearMaintenanceCB, 0 }, 0, 0, 0, 0 },
     MMEnd
 };
 
@@ -1945,6 +1959,10 @@ int main(int argc, char *argv[])
 	signal(SIGCHLD, SignalProc(SIG_DFL));
     }
 #endif
+
+    // Enable maintenance menu
+    if (being_debugged())
+	app_data.maintenance = true;
 
     // Setup label hack
     arg = 0;
@@ -4000,9 +4018,13 @@ void update_options()
     set_select_all_bindings(data_edit_menu,    select_all_style);
 
     // Maintenance
-    manage_child(maintenance_w,   app_data.maintenance);
-    set_toggle(dump_core_w,       app_data.dump_core);
-    set_toggle(debug_core_dump_w, app_data.debug_core_dumps);
+    manage_child(maintenance_w, app_data.maintenance);
+
+    set_toggle(crash_debug_w,
+	       app_data.dump_core && app_data.debug_core_dumps);
+    set_toggle(crash_dump_core_w, 
+	       app_data.dump_core && !app_data.debug_core_dumps);
+    set_toggle(crash_nothing_w, !app_data.dump_core);
 
     // Check for source toolbar
     Widget arg_cmd_w = XtParent(source_arg->top());
@@ -7448,6 +7470,9 @@ static void setup_options()
     set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
     set_sensitive(set_debugger_perl_w, have_cmd("perl"));
+
+    set_sensitive(debug_ddd_w, !being_debugged());
+    set_sensitive(dump_core_w, !being_debugged());
 }
 
 static void setup_core_limit()

@@ -114,8 +114,8 @@ extern void dddToggleFlatButtonsCB          (Widget, XtPointer, XtPointer);
 extern void dddToggleColorButtonsCB         (Widget, XtPointer, XtPointer);
 extern void dddToggleToolbarsAtBottomCB     (Widget, XtPointer, XtPointer);
 
-extern void dddToggleDumpCoreCB             (Widget, XtPointer, XtPointer);
-extern void dddToggleDebugCoreDumpCB        (Widget, XtPointer, XtPointer);
+extern void dddSetCrashCB                   (Widget, XtPointer, XtPointer);
+extern void dddClearMaintenanceCB           (Widget, XtPointer, XtPointer);
 
 extern void dddSetGlobalTabCompletionCB     (Widget, XtPointer, XtPointer);
 extern void dddSetSeparateWindowsCB         (Widget, XtPointer, XtPointer);
