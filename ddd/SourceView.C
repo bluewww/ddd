@@ -220,14 +220,16 @@ bool SourceView::cache_source_files     = true;
 bool SourceView::cache_machine_code     = true;
 bool SourceView::display_glyphs         = true;
 
-int  SourceView::bp_indent_amount = 0;
+int  SourceView::bp_indent_amount   = 0;
+int  SourceView::code_indent_amount = 4;
 
 Map<int, BreakPoint> SourceView::bp_map;
 
 string SourceView::current_file_name = "";
 int    SourceView::line_count = 0;
-Assoc<int, VarArray<int> >* SourceView::bps_in_line = 0;
+Assoc<int, VarArray<int> > SourceView::bps_in_line;
 XmTextPosition*             SourceView::pos_of_line = 0;
+StringArray SourceView::bp_addresses;
 Assoc<string, string> SourceView::file_cache;
 CodeCache SourceView::code_cache;
 
@@ -1019,12 +1021,10 @@ void SourceView::read_file (string file_name,
     }
 
     // Breakpoint-Anzeige aktualisieren
-    if (bps_in_line)
-    {
-	// ist jetzt ungueltig
-	delete bps_in_line;
-	bps_in_line = 0;
-    }
+    static Assoc<int, VarArray<int> > empty_bps;
+    bps_in_line = empty_bps;
+    static StringArray empty_addresses;
+    bp_addresses = empty_addresses;
 
     refresh_bp_disp();
 
@@ -1090,43 +1090,33 @@ void SourceView::update_title()
 // Update breakpoint locations
 void SourceView::refresh_bp_disp()
 {
-    refresh_bp_disp(source_text_w);
-    refresh_bp_disp(code_text_w);
+    refresh_source_bp_disp();
+    refresh_code_bp_disp();
+    update_glyphs();
 }
 
-void SourceView::refresh_bp_disp(Widget text_w)
+void SourceView::refresh_source_bp_disp()
 {
-    string& text = current_text(text_w);
-    if (text == "")
-	return;
-    if (text_w != source_text_w)
-	return;
-
     // Alte Breakpoint-Darstellungen ueberschreiben - - - - - - - - - - - - -
-    if (bps_in_line != 0)
+    for (AssocIter<int, VarArray<int> > b_i_l_iter(bps_in_line);
+	 b_i_l_iter.ok(); 
+	 b_i_l_iter++)
     {
-	for (AssocIter<int, VarArray<int> > b_i_l_iter = *(bps_in_line);
-	     b_i_l_iter.ok(); 
-	     b_i_l_iter++)
-	{
-	    int line_nr = b_i_l_iter.key();
-	    if (line_nr < 0 || line_nr > line_count)
-		continue;
+	int line_nr = b_i_l_iter.key();
+	if (line_nr < 0 || line_nr > line_count)
+	    continue;
 
-	    string s(text.at(int(pos_of_line[line_nr]), 
-			     bp_indent_amount - 1));
+	string s(current_source.at(int(pos_of_line[line_nr]), 
+				   bp_indent_amount - 1));
 
-	    XmTextReplace (text_w,
-			   pos_of_line[line_nr],
-			   pos_of_line[line_nr] + bp_indent_amount - 1,
-			   (String)s);
-	}
-
-	delete bps_in_line;
-	bps_in_line = 0;
+	XmTextReplace (source_text_w,
+		       pos_of_line[line_nr],
+		       pos_of_line[line_nr] + bp_indent_amount - 1,
+		       (String)s);
     }
 
-    bps_in_line = new Assoc<int, VarArray<int> >;
+    static Assoc<int, VarArray<int> > empty_bps;
+    bps_in_line = empty_bps;
 
     // Find all breakpoints referring to this file
     MapRef ref;
@@ -1138,14 +1128,14 @@ void SourceView::refresh_bp_disp(Widget text_w)
 	    (bp->file_name() == "" || 
 	     basename(bp->file_name()) == basename(current_file_name)))
 	{
-	    (*bps_in_line)[bp->line_nr()] += bp->number();
+	    bps_in_line[bp->line_nr()] += bp->number();
 	}
     }
 
     if (!display_glyphs)
     {
 	// Show breakpoints in text
-	for (AssocIter<int, VarArray<int> > b_i_l_iter = *(bps_in_line);
+	for (AssocIter<int, VarArray<int> > b_i_l_iter(bps_in_line);
 	     b_i_l_iter.ok();
 	     b_i_l_iter++)
 	{
@@ -1158,10 +1148,12 @@ void SourceView::refresh_bp_disp(Widget text_w)
 	    string insert_string = "";
 
 	    // Darstellung fuer alle Breakpoints der Zeile
+	    VarArray<int>& bps = bps_in_line[line_nr];
+
 	    int i;
-	    for (i = 0; i < (*bps_in_line)[line_nr].size(); i++) {
-		BreakPoint* bp =
-		    bp_map.get((*bps_in_line)[line_nr][i]);
+	    for (i = 0; i < bps.size(); i++)
+	    {
+		BreakPoint* bp = bp_map.get(bps[i]);
 		assert (bp);
 		insert_string += bp->enabled() ? '#' : '_';
 		insert_string += bp->number_str();
@@ -1176,19 +1168,83 @@ void SourceView::refresh_bp_disp(Widget text_w)
 		for (i = insert_string.length(); 
 		     i < int(bp_indent_amount) - 1; i++)
 		{
-		    insert_string += text[pos + i];
+		    insert_string += current_source[pos + i];
 		}
 	    }
 	    assert(insert_string.length() == unsigned(bp_indent_amount - 1));
 
-	    XmTextReplace (text_w, pos, pos + bp_indent_amount - 1,
+	    XmTextReplace (source_text_w, pos, pos + bp_indent_amount - 1,
+			   (String)insert_string);
+	}
+    }
+}
+
+void SourceView::refresh_code_bp_disp()
+{
+    // Clear all addresses
+    int i;
+    for (i = 0; i < bp_addresses.size(); i++)
+    {
+	const string& address = bp_addresses[i];
+	XmTextPosition pos = find_pc(address);
+	if (pos == XmTextPosition(-1))
+	    continue;
+
+	// Process all breakpoints at ADDRESS
+	string insert_string = replicate(' ', code_indent_amount);
+
+	XmTextReplace (code_text_w, pos, pos + code_indent_amount,
+		       (String)insert_string);
+    }
+
+    static StringArray empty;
+    bp_addresses = empty;
+
+    if (!display_glyphs)
+    {
+	// Collect all addresses
+	MapRef ref;
+	for (BreakPoint *bp = bp_map.first(ref);
+	     bp != 0;
+	     bp = bp_map.next(ref))
+	{
+	    if (bp->type() != BREAKPOINT)
+		continue;
+
+	    bp_addresses += bp->address();
+	}
+
+	// Process all bp_addresses
+	for (i = 0; i < bp_addresses.size(); i++)
+	{
+	    const string& address = bp_addresses[i];
+	    XmTextPosition pos = find_pc(address);
+	    if (pos == XmTextPosition(-1))
+		continue;
+
+	    // Process all breakpoints at ADDRESS
+	    string insert_string = "";
+	    for (BreakPoint *bp = bp_map.first(ref);
+		 bp != 0;
+		 bp = bp_map.next(ref))
+	    {
+		if (bp->address() == address)
+		{
+		    insert_string += bp->enabled() ? '#' : '_';
+		    insert_string += bp->number_str();
+		    insert_string += bp->enabled() ? '#' : '_';
+		}
+	    }
+	    insert_string += replicate(' ', code_indent_amount);
+	    insert_string = insert_string.before(code_indent_amount);
+
+	    XmTextReplace (code_text_w, pos, pos + code_indent_amount,
 			   (String)insert_string);
 	}
     }
 
     update_glyphs();
 }
-
 
 
 
@@ -1200,78 +1256,74 @@ void SourceView::refresh_bp_disp(Widget text_w)
 //
 bool SourceView::get_line_of_pos (Widget   text_w,
 				  XmTextPosition pos,
-				  int*     line_nr_ptr,
-				  bool*    in_text,
-				  int*     bp_nr_ptr)
+				  int&     line_nr,
+				  bool&    in_text,
+				  int&     bp_nr)
 {
     bool found = false;
     XmTextPosition line_pos = 0;
     XmTextPosition next_line_pos = 0;
-    *line_nr_ptr = 1;
+    line_nr = 1;
 
-    while (!found && line_count >= *line_nr_ptr)
+    while (!found && line_count >= line_nr)
     {
-	next_line_pos =(line_count >= (*line_nr_ptr + 1)) ?
-	    pos_of_line[*line_nr_ptr + 1] :
+	next_line_pos = (line_count >= line_nr + 1) ?
+	    pos_of_line[line_nr + 1] :
 	    XmTextGetLastPosition (text_w) + 1;
 
 	if (pos < (line_pos + bp_indent_amount - 1))
 	{
 	    // Position in breakpoint area
 	    found = true;
-	    if (in_text)
-		*in_text = false;
-	    if (bp_nr_ptr)
+	    in_text = false;
+
+	    // Check for breakpoints...
+	    VarArray<int>& bps = bps_in_line[line_nr];
+	    if (bps.size() == 1)
 	    {
-		// Check for breakpoints...
-		if ((*bps_in_line)[*line_nr_ptr].size() == 1)
+		// Return single breakpoint in this line
+		bp_nr = bps[0];
+	    }
+	    else if (bps.size() > 1)
+	    {
+		// Find which breakpoint was selected
+		bp_nr = 0;
+		int i;
+		XmTextPosition bp_disp_pos = line_pos;
+		for (i = 0; i < bps.size(); i++)
 		{
-		    // Return single breakpoint in this line
-		    *bp_nr_ptr = (*bps_in_line)[*line_nr_ptr][0];
-		}
-		else if ((*bps_in_line)[*line_nr_ptr].size() > 1)
-		{
-		    // Find which breakpoint was selected
-		    *bp_nr_ptr = 0;
-		    int i;
-		    XmTextPosition bp_disp_pos = line_pos;
-		    for (i = 0;
-			 i < (*bps_in_line)[*line_nr_ptr].size();
-			 i++) {
-			BreakPoint* bp = bp_map.get(
-				(*bps_in_line)[*line_nr_ptr][i]);
-			assert (bp);
-			bp_disp_pos += 2; // respect '#' and '_';
-			bp_disp_pos += bp->number_str().length();
-			if (pos < bp_disp_pos) {
-			    *bp_nr_ptr =
-				 (*bps_in_line)[*line_nr_ptr][i];
-			    break; // for-Schleife fertig
-			}
+		    BreakPoint* bp = bp_map.get(bps[i]);
+		    assert (bp);
+		    bp_disp_pos += 2; // respect '#' and '_';
+		    bp_disp_pos += bp->number_str().length();
+		    if (pos < bp_disp_pos)
+		    {
+			bp_nr = bps[i];
+			break; // for-Schleife fertig
 		    }
-		} else 
-		{
-		    // No breakpoint in this line
-		    *bp_nr_ptr = 0;
 		}
+	    }
+	    else 
+	    {
+		// No breakpoint in this line
+		bp_nr = 0;
 	    }
 	}
 	else if (pos < next_line_pos)
 	{
 	    // Position is in text
-	    found = true;
-	    if (in_text)
-		*in_text = true;
-	    if (bp_nr_ptr)
-		*bp_nr_ptr = 0;
+	    found   = true;
+	    in_text = true;
+	    bp_nr   = 0;
 	}
 	else
 	{
-	    // Position in the following line
+	    // Position is in the following line
 	    line_pos = next_line_pos;
-	    (*line_nr_ptr)++;
+	    line_nr++;
 	}
     }
+
     return found;
 }
 
@@ -2243,7 +2295,7 @@ string SourceView::line_of_cursor(bool basename)
     int bp_nr;
 
     if (get_line_of_pos(source_text_w,
-			pos, &line_nr, &in_text, &bp_nr) == false)
+			pos, line_nr, in_text, bp_nr) == false)
 	return "";
 
     string file_name = current_file_name;
@@ -2371,8 +2423,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     static int line_nr;
     bool in_text;
     static int bp_nr;
-    bool pos_found =
-	get_line_of_pos (text_w, pos, &line_nr, &in_text, &bp_nr);
+    bool pos_found = get_line_of_pos (text_w, pos, line_nr, in_text, bp_nr);
 
     if (!pos_found) // Wahrsch. noch ein Text-File geladen
 	return; 
@@ -3683,19 +3734,20 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
     }
 
 
-    int _p[2]; _p[0] = 0; _p[1] = 0;
-    int _g[2]; _g[0] = 0; _g[1] = 0;
+    int plain[2]; plain[0] = 0; plain[1] = 0;
+    int grey[2];   grey[0] = 0;  grey[1] = 0;
 
-    // Show source breakpoints
     if (display_glyphs)
     {
+	// Show source breakpoints
+
 	Widget *source_plain_stops_w = _plain_stops_w[0];
 	Widget *source_grey_stops_w  = _grey_stops_w[0];
-	int& source_p                = _p[0];
-	int& source_g                = _g[0];
+	int& source_p                = plain[0];
+	int& source_g                = grey[0];
 
 	// Map breakpoint glyphs
-	// clog << "Breakpoints:\n";
+	// clog << "Source breakpoints:\n";
 	MapRef ref;
 	for (BreakPoint* bp = bp_map.first(ref);
 	     bp != 0;
@@ -3727,15 +3779,52 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 		}
 	    }
 	}
+
+
+
+	// Show code breakpoints
+
+	Widget *code_plain_stops_w = _plain_stops_w[1];
+	Widget *code_grey_stops_w  = _grey_stops_w[1];
+	int& code_p                = plain[1];
+	int& code_g                = grey[1];
+
+	// Map breakpoint glyphs
+	// clog << "Code breakpoints:\n";
+	MapRef ref2;
+	for (BreakPoint* bp = bp_map.first(ref2);
+	     bp != 0;
+	     bp = bp_map.next(ref2))
+	{
+	    if (bp->type() != BREAKPOINT)
+		continue;
+
+	    pos = find_pc(bp->address());
+	    pos_displayed = 
+		XmTextPosToXY(code_text_w, pos, &x, &y);
+	    if (pos_displayed)
+	    {
+		Widget glyph = 0;
+		if (bp->enabled())
+		    glyph = code_plain_stops_w[code_p] ? 
+			code_plain_stops_w[code_p++] : 0;
+		else
+		    glyph = code_grey_stops_w[code_g] ? 
+			code_grey_stops_w[code_g++] : 0;
+
+		if (glyph != 0)
+		    map_glyph(glyph, x + break_x_offset, y);
+	    }
+	}
     }
 
     for (int k = 0; k < 2; k++)
     {
 	// Unmap remaining glyphs
 	Widget w;
-	while ((w = _plain_stops_w[k][_p[k]++]))
+	while ((w = _plain_stops_w[k][plain[k]++]))
 	    XtUnmapWidget(w);
-	while ((w = _grey_stops_w[k][_g[k]++]))
+	while ((w = _grey_stops_w[k][grey[k]++]))
 	    XtUnmapWidget(w);
     }
 
@@ -3779,8 +3868,6 @@ void SourceView::clear_code_cache()
     code_cache = empty;
     process_disassemble("No code.");
 }
-
-const int code_indent_amount = 4;
 
 static string first_address(string s)
 {

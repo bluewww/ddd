@@ -127,18 +127,19 @@ class SourceView {
     static int line_height (Widget text_w);
 
     static void refresh_bp_disp ();
-    static void refresh_bp_disp (Widget text_w);
+    static void refresh_source_bp_disp ();
+    static void refresh_code_bp_disp ();
 
     // Findet zu pos die passende Zeilennummer.
-    // ist in_text!=0, so ist *in_text==true wenn pos im Quelltext-Bereich ist.
-    // ist bp_nr!=0, so ist *bp_nr die Nr des Brekpoints, der an Position pos
-    // dargestellt wird, 0 sonst.
+    // in_text==true wenn pos im Quelltext-Bereich ist.
+    // bp_nr ist die Nr des Brekpoints, 
+    // der an Position pos dargestellt wird, 0 sonst.
     //
     static bool get_line_of_pos (Widget w,
 				 XmTextPosition pos,
-				 int*     line_nr_ptr,
-				 bool* in_text_ptr = 0,
-				 int*     bp_nr_ptr = 0);
+				 int& line_nr,
+				 bool& in_text,
+				 int& bp_nr);
 
     // Findet von pos ausgehend die Anfangs- und Endposition eines C-Strings.
     // (text[startpos] ist dann der erste und text[endpos] der letzte Buchstabe
@@ -220,8 +221,9 @@ private:
 
     static bool at_lowest_frame;              // True if at lowest frame
 
-    // The indenting amount
-    static int  bp_indent_amount;
+    // The indenting amounts
+    static int  bp_indent_amount;   // Source
+    static int  code_indent_amount; // Machine code
 
     // The breakpoint map
     static Map<int, BreakPoint> bp_map;
@@ -229,8 +231,9 @@ private:
     // File attributes
     static string current_file_name;
     static int    line_count;
-    static Assoc<int, VarArray<int> >* bps_in_line;
-    static XmTextPosition*             pos_of_line;
+    static Assoc<int, VarArray<int> > bps_in_line;
+    static XmTextPosition*            pos_of_line;
+    static StringArray bp_addresses;
 
     static Assoc<string, string> file_cache;
     static CodeCache code_cache;
