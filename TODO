@@ -367,4 +367,8 @@ Volunteers for these and other projects are welcome!
 317 When setting a `struct' variable value, eliminate all `member = '
     prefixes.
 
-318 (Insert new project ideas here)
+318 To manipulate bitwise structures, Fritjof Flechsig
+    <flechsig@itp.uni-hannover.de> suggests a pop-up with some
+    check-boxes where each box is one bit.
+
+319 (Insert new project ideas here)
