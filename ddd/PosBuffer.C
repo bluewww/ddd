@@ -1,7 +1,7 @@
 // $Id$
 // Filter position information from GDB output.
 
-// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
@@ -717,7 +717,21 @@ void PosBuffer::filter_dbx(string& answer)
 		func = func.before(" at ");
 	    func_buffer = func;
 	}
-		
+
+	if (func_buffer != "")
+	{
+	    // With DEC's `ladebug', the function name is fully qualified,
+	    // as in `stopped at [void tree_test(void):277 0x120003f44]'
+	    // We use only the base name (`tree_test' in this case).
+
+	    // (We could avoid this if `ladebug' offered a way to look
+	    // up fully qualified names.  Does it? - AZ)
+	    if (func_buffer.contains('('))
+		func_buffer = func_buffer.before('(');
+	    while (func_buffer.contains(' '))
+		func_buffer = func_buffer.after(' ');
+	}
+
 	if (line == "")
 	{
 	    line = answer.after("at line ", stopped_index);

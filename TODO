@@ -91,9 +91,6 @@ Volunteers for these and other projects are welcome!
     backtrace window at X, Y; open-backtrace() would open it in some
     default position).  See also #154, above.
 
-160 Support DEC `decladebug'.  Jens Albrecht
-    <Jens.Albrecht@informatik.uni-erlangen.de> has a trace.
-
 161 Daniel Lyddy <sprocket27@earthlink.net> suggests: Would it be
     feasible to allow the user to select multiple commands in the
     "Command History" window?  One could hold down the "Shift" key
