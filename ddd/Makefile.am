@@ -5,7 +5,7 @@
 # $Id$
 # DDD Makefile.
 
-# Copyright (C) 2000 Universitaet Passau, Germany.
+# Copyright (C) 2000-2001 Universitaet Passau, Germany.
 # Written by Andreas Zeller <zeller@gnu.org>.
 # 
 # This file is part of DDD.
@@ -711,7 +711,8 @@ INCLUDES = -I$(srcdir)/.. $(X_INCLUDE)
 # The resource header and app-default files.
 
 Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
-	$(SED) -n -f $(srcdir)/ad2c.sed Ddd > $@~ && $(MV) $@~ $@
+	$(CAT) Ddd | $(DELETE_CR) | \
+	$(SED) -n -f $(srcdir)/ad2c.sed > $@~ && $(MV) $@~ $@
 
 $(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 \
 	$(srcdir)/macros.m4 $(srcdir)/colors.m4 
@@ -724,10 +725,11 @@ $(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 \
 		echo "define(srcdir, \`$(srcdir)')dnl"; \
 		echo "include(srcdir()/tips.m4)dnl" \
 	) | $(M4); \
-	) > $@~ && $(MV) $@~ $@
+	) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 $(srcdir)/tips.m4: $(srcdir)/../TIPS $(srcdir)/tips2m4.awk
-	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../TIPS > $@~ && $(MV) $@~ $@
+	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../TIPS | $(DELETE_CR) \
+	    > $@~ && $(MV) $@~ $@
 
 $(srcdir)/tips.html: $(srcdir)/../TIPS
 	( \
@@ -737,7 +739,7 @@ $(srcdir)/tips.html: $(srcdir)/../TIPS
 	) | $(M4) | $(AWK) -f $(srcdir)/tips2html.awk | \
 	$(SED) 's/\\133/\[/g' | $(SED) 's/\\135/\]/g' | \
 	$(SED) 's/@\([A-Z][A-Z]*\)@/\1/g' | $(SED) 's/@ /@/g' \
-	> $@~ && $(MV) $@~ $@
+	| $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 
 
@@ -755,7 +757,7 @@ $(vsldir)/ddd.vsl: $(srcdir)/ddd.vsl.m4 $(srcdir)/colors.m4
 	( \
 		echo "define(srcdir, \`$(srcdir)')dnl"; \
 		echo "include(srcdir()/ddd.vsl.m4)dnl" \
-	) | $(M4) > $@~ && $(MV) $@~ $@
+	) | $(M4) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 VSLSOURCES = \
 	$(vsldir)/std.vsl \
@@ -767,7 +769,7 @@ VSLSOURCES = \
 
 $(srcdir)/ddd.vsl.h: $(vsldir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSOURCES)
 	$(CAT) $(vsldir)/ddd.vsl > tmp.c
-	$(VSL_CPP) tmp.c | $(SED) -f $(srcdir)/vsl2c.sed > $@
+	$(VSL_CPP) tmp.c | $(SED) -f $(srcdir)/vsl2c.sed | $(DELETE_CR) > $@
 	$(RM) tmp.c
 
 .PHONY: vsllib
@@ -836,7 +838,8 @@ regexps.$(OBJEXT): rxscan.C
 	$(SED) 's//\\b/g' | \
 	$(SED) 's/^$$/"\\n"/' \
 	) > tmp.C; \
-	$(CPP) -C -P -undef $(CPPFLAGS) $(DEFS) $(INCLUDE) tmp.C > $@; \
+	$(CPP) -C -P -undef $(CPPFLAGS) $(DEFS) $(INCLUDE) tmp.C | \
+	    $(DELETE_CR) > $@; \
 	$(RM) tmp.C
 
 # Reference.
@@ -844,7 +847,8 @@ regexps.$(OBJEXT): rxscan.C
 # re-created after each configuration.
 $(srcdir)/ddd.info.txt: $(srcdir)/ddd.texi configure.in
 	$(MAKE) ddd.info
-	info --subnodes -o - -f $(srcdir)/ddd.info > $@~ && $(MV) $@~ $@
+	info --subnodes -o - -f $(srcdir)/ddd.info | $(DELETE_CR) > $@~ \
+	    && $(MV) $@~ $@
 
 $(srcdir)/ddd.info.txt.gz: $(srcdir)/ddd.info.txt
 	$(COMPRESS) $? > $@~ && $(MV) $@~ $@
@@ -894,16 +898,18 @@ USERINFO: userinfo$(EXEEXT)
 
 # EPS code stuff.
 $(srcdir)/header.str: $(srcdir)/header.ps
-	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/header.ps > $@~ && $(MV) $@~ $@
+	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/header.ps | $(DELETE_CR) \
+	    > $@~ && $(MV) $@~ $@
 
 $(srcdir)/trailer.str: $(srcdir)/trailer.ps
-	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/trailer.ps > $@~ && $(MV) $@~ $@
+	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/trailer.ps | $(DELETE_CR) \
+	    > $@~ && $(MV) $@~ $@
 
 $(srcdir)/eps-code.h: \
 	$(srcdir)/header.str $(srcdir)/trailer.str $(srcdir)/eps-code.x
 	$(SED) -e '/prolog/r $(srcdir)/header.str' \
 	       -e '/trailer/r $(srcdir)/trailer.str' $(srcdir)/eps-code.x \
-	> $@~ && $(MV) $@~ $@
+	    | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 
 # -----------------------------------------------------------------------------
@@ -991,12 +997,12 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 	$(SED) 's/[nN]one/white/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
 	$(PBMTOXBM) | $(SED) "s/noname/$${base}/g" | \
-	$(SED) "s/static char/static unsigned char/g" > $@~
+	$(SED) "s/static char/static unsigned char/g" | $(DELETE_CR) > $@~
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 .xbm.xface:
 	@$(ECHO) "Creating $@"
-	@$(ECHO) "X-Face:`$(XBM2XFACE) $<`" > $@~
+	@$(ECHO) "X-Face:`$(XBM2XFACE) $<`" | $(DELETE_CR) > $@~
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 
@@ -1021,7 +1027,7 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 	$(SED) 's/c #BE[BE]*/c none   g none   m none  s Background/' | \
 	$(SED) 's/c #7F[7F]*/c grey50 g grey50 m black/' | \
 	$(SED) 's/c #FF*/c white  g white  m white/' | \
-	$(SED) "s/noname/$${base}_xx_xpm/" > $@~; \
+	$(SED) "s/noname/$${base}_xx_xpm/" | $(DELETE_CR) > $@~; \
 	$(RM) $${base}-object.pbm $${base}-mask.pbm $${base}-button.ppm
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
@@ -1035,7 +1041,7 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 	$(SED) 's/[nN]one/white/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
 	$(PBMTOXBM) | $(SED) "s/noname/$${base}_xx/" | \
-	$(SED) "s/static char/static unsigned char/g" > $@~
+	$(SED) "s/static char/static unsigned char/g" | $(DELETE_CR) > $@~
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 # Icons and logos.
@@ -1047,7 +1053,7 @@ icons:	$(ICONS)
 # All X bitmaps are derived from the XPM sources.
 
 $(icondir)/dddmask.xpm: $(icondir)/ddd.xpm
-	$(SED) 's/[wW]hite/black/g' $(icondir)/ddd.xpm > $@
+	$(SED) 's/[wW]hite/black/g' $(icondir)/ddd.xpm | $(DELETE_CR) > $@
 
 $(icondir)/ddd.xbm: $(icondir)/ddd.xpm
 
@@ -1065,7 +1071,7 @@ $(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PNMGAMMA) 0.4 | $(PPMTOPGM) | \
 	$(PGMENHANCE) -7 | \
 	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddsplash/g' | \
-	$(SED) "s/static char/static unsigned char/g" > $@~
+	$(SED) "s/static char/static unsigned char/g" | $(DELETE_CR) > $@~
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 $(icondir)/dddlogo.xpm: $(icondir)/dddsplash.xpm
@@ -1275,7 +1281,8 @@ man_MANS = ddd.1
 
 # `ddd.man' has 8-bit format, `ddd.1' has 7-bit format
 ddd.1:   ddd.man $(srcdir)/unumlaut.sed
-	-$(SED) -f $(srcdir)/unumlaut.sed ddd.man > $@~ && $(MV) $@~ $@
+	-$(SED) -f $(srcdir)/unumlaut.sed ddd.man | $(DELETE_CR) > $@~ \
+	    && $(MV) $@~ $@
 
 
 
@@ -1902,18 +1909,18 @@ target_canonical = @host@
 # autoheader might not change config.h.in
 stamp-h: config.h.in config.status
 	CONFIG_FILES= CONFIG_HEADERS=config.h ./config.status
-	$(DATE) > $@~ && $(MV) $@~ $@
+	$(DATE) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 $(srcdir)/config.h.in: stamp-h.in
 $(srcdir)/stamp-h.in: $(srcdir)/acconfig.h
 	cd $(srcdir) && $(AUTOHEADER)
-	$(DATE) > $@~ && $(MV) $@~ $@
+	$(DATE) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 $(srcdir)/acconfig.h: $(srcdir)/acconfig.h.in $(srcdir)/acspecial.h
 	( \
 		echo "define(srcdir, \`$(srcdir)')dnl"; \
 		echo "include(srcdir()/acconfig.h.in)dnl" \
-	) | $(M4) > $@~ && $(MV) $@~ $@
+	) | $(M4) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 $(srcdir)/acspecial.h: $(srcdir)/configure.in
 	$(GREP) '^ICE_[a-zA-Z0-9_]* *(' $(srcdir)/configure.in > $@~ && \
@@ -1923,19 +1930,21 @@ $(srcdir)/acspecial.h: $(srcdir)/configure.in
 # Note: we use `build.h' instead of `./build.h', because `./build.h'
 # breaks SGI make.
 version.h: vr.h
-	@$(CMP) vr.h $@ 2> /dev/null || ( $(CAT) vr.h > $@~ && $(MV) $@~ $@ )
+	@$(CMP) vr.h $@ 2> /dev/null || \
+	    ( $(CAT) vr.h | $(DELETE_CR) > $@~ && $(MV) $@~ $@ )
 build.h: bld.h
-	@$(CMP) bld.h $@ 2> /dev/null || ( $(CAT) bld.h > $@~ && $(MV) $@~ $@ )
+	@$(CMP) bld.h $@ 2> /dev/null || \
+	    ( $(CAT) bld.h | $(DELETE_CR) > $@~ && $(MV) $@~ $@ )
 host.h: $(srcdir)/host.h.in config.status
 	$(CAT) $(srcdir)/host.h.in | \
 	$(SED) "s%@HOST_CANONICAL@%$(host_canonical)%" | \
-	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" > $@~ && \
-	$(MV) $@~ $@
+	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" | \
+	    $(DELETE_CR) > $@~ && $(MV) $@~ $@
 root.h: $(srcdir)/root.h.in config.status
 	$(CAT) $(srcdir)/root.h.in | \
 	$(SED) "s%@ROOT@%$(dddrootdir)%" | \
-	$(SED) "s%@ALT_ROOT@%$(pkgdatadir)%" > $@~ && \
-	$(MV) $@~ $@
+	$(SED) "s%@ALT_ROOT@%$(pkgdatadir)%" | \
+	    $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
 
 # -----------------------------------------------------------------------------

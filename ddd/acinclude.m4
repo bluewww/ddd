@@ -2047,6 +2047,29 @@ CPPFLAGS="$ice_save_cppflags"
 fi)dnl
 dnl
 dnl
+dnl ICE_DELETE_CR
+dnl -------------
+dnl
+dnl If running on CYGWIN, set output variable DELETE_CR to 
+dnl `tr -d '\r' | gzip | gunzip' (relying on gunzip to set its 
+dnl output to binary mode) and to `cat' otherwise.
+dnl 
+dnl
+AC_DEFUN(ICE_DELETE_CR,
+[
+AC_REQUIRE([AC_CYGWIN])
+AC_REQUIRE([ICE_WERROR])
+if test "$CYGWIN" = yes; then
+    DELETE_CR="tr -d '\r' | gzip | gunzip"
+else
+    DELETE_CR="cat"
+fi
+AC_SUBST(DELETE_CR)
+])dnl
+dnl
+dnl
+dnl
+dnl
 dnl ICE_FIND_MOTIF
 dnl --------------
 dnl
