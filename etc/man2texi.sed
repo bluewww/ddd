@@ -79,13 +79,13 @@ s/^\.B//
 s/^\.I//
 
 # Pictures
-\!^\.PSPIC @srcdir@/PICS/\([^.]*\)\..*!i\
+\!^\.PSPIC @@srcdir@@/PICS/\([^.]*\)\..*!i\
 @ifnotinfo\
 @sp 1
-\!^\.PSPIC @srcdir@/PICS/\([^.]*\)\..*!a\
+\!^\.PSPIC @@srcdir@@/PICS/\([^.]*\)\..*!a\
 @sp 1\
 @end ifnotinfo
-s!^\.PSPIC @srcdir@/PICS/\([^.]*\)\..*!@center @image{PICS/\1, 16cm}!
+s!^\.PSPIC @@srcdir@@/PICS/\([^.]*\)\..*!@center @image{PICS/\1, 16cm}!
 
 # Font
 # s/^\.B \(.*\)/@strong{\1}/
