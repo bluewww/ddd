@@ -202,6 +202,7 @@ char ddd_rcsid[] =
 #include "TimeOut.h"
 #include "UndoBuffer.h"
 #include "VSEFlags.h"
+#include "VSLLib.h"
 #include "XErrorB.h"
 #include "args.h"
 #include "assert.h"
@@ -427,6 +428,7 @@ static void add_arg_from_selection(Widget toplevel, int& argc, char **&argv);
 static void toggleOverstrikeAct (Widget, XEvent*, String*, Cardinal*) {}
 #endif
 
+static void vsl_echo(const string& msg);
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -2227,6 +2229,9 @@ int main(int argc, char *argv[])
 
     // Global variables: Setup theme manager
     DispBox::theme_manager = ThemeManager(app_data.themes);
+
+    // Global variables: Setup VSL message handler
+    VSLLib::echo = vsl_echo;
 
     // Global variables: Setup data display
     DataDisp::bump_displays           = app_data.bump_displays;
@@ -6726,6 +6731,46 @@ static void ReportDeathHP(Agent *agent, void *, void *call_data)
     }
 }
 
+static void ClearDialogCB(Widget, XtPointer client_data, XtPointer)
+{
+    Widget *dialog = (Widget *)client_data;
+    *dialog = 0;
+}
+
+static void vsl_echo(const string& msg)
+{
+    static Widget dialog = 0;
+
+    if (dialog == 0)
+    {
+	Arg args[10];
+	Cardinal arg = 0;
+
+	// We report only the first message.  
+	// Everything else only goes into the status line.
+	MString message = rm("The VSL interpreter failed:") + cr() + tt(msg);
+
+	XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY);          arg++;
+	XtSetArg(args[arg], XmNautoUnmanage,   False);              arg++;
+	XtSetArg(args[arg], XmNmessageString,  message.xmstring()); arg++;
+	dialog = verify(XmCreateWarningDialog(find_shell(gdb_w), 
+					      "vsl_message", args, arg));
+
+	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
+					     XmDIALOG_CANCEL_BUTTON));
+
+	Delay::register_shell(dialog);
+	XtAddCallback(dialog, XmNokCallback,      DestroyShellCB, 0);
+	XtAddCallback(dialog, XmNcancelCallback,  DestroyShellCB, 0);
+	XtAddCallback(dialog, XmNhelpCallback,    ImmediateHelpCB, 0);
+	XtAddCallback(dialog, XmNdestroyCallback, ClearDialogCB, &dialog);
+    }
+
+    manage_and_raise(dialog);
+
+    set_status_mstring(rm("VSL: ") + tt(msg));
+}
+
 
 //-----------------------------------------------------------------------------
 // Emergency
@@ -7287,10 +7332,13 @@ static void setup_ddd_version_warnings()
     {
 	cerr << "Error: No `" DDD_CLASS_NAME "' application defaults file\n"
 	    "To resolve this problem, you can:\n"
+	    "* set the XAPPLRESDIR environment variable "
+	    "to the location of the file `" DDD_CLASS_NAME "', or\n"
+	    "* set the " DDD_NAME "_HOME environment variable "
+	    "to the location of `" ddd_NAME "/" DDD_CLASS_NAME 
+	    "', or\n"
 	    "* install the `" DDD_CLASS_NAME "' file in the X "
 	    "application defaults directory, or\n"
-	    "* set the `" DDD_CLASS_NAME "' location "
-	    "in the XAPPLRESDIR environment variable, or\n"
 	    "* recompile " DDD_NAME " with builtin app-defaults file;\n"
 	    "  see the `--enable-builtin-app-defaults' option for details.\n";
 

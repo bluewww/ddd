@@ -74,6 +74,8 @@ do { \
 } while (false)
 
 
+void (*VSLLib::echo)(const string& s) = VSLLib::default_echo;
+
 // Initialization
 
 // Init hash table

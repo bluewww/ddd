@@ -259,6 +259,8 @@ protected:
     VSLLib(const VSLLib& lib);
     VSLLib& operator = (const VSLLib& lib);
 
+    static void default_echo(const string& s);
+
 public:
     // Build
     VSLLib();
@@ -306,7 +308,7 @@ public:
     virtual ~VSLLib();
 
     // Message handling
-    static void echo(const string& s);
+    static void (*echo)(const string& s);
 
     // Parsing messages
     static void parse_echo(const string& s);

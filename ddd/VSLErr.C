@@ -41,7 +41,7 @@ char VSLErr_rcsid[] =
 // General error interface
 
 // Error handling
-void VSLLib::echo(const string& msg)
+void VSLLib::default_echo(const string& msg)
 {
     cerr << msg << '\n';
 }

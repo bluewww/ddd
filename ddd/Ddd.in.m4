@@ -7157,6 +7157,15 @@ ITEM installing the file FILE(vsllib/[ddd].vsl)\n\
 ITEM have the environment variable VAR(DDD_HOME) point at the place\n\
     where the FILE(vsllib) directory resides.
 
+Ddd*vsl_message.dialogTitle: DDD: VSL Messages
+Ddd*vsl_message*helpString:	\
+The VSL interpreter issued a message while parsing and/or evaluating\n\
+VSL expressions.  Your data displays may not be rendered successfully.\n\
+\n\
+For further diagnostics, see the status line (and the FILE(~/.[ddd]/log) file).
+
+
+
 
 !-----------------------------------------------------------------------------
 ! Hints on specific DDD states (`What now')
