@@ -674,6 +674,7 @@ static MString gdbDefaultDocumentationText(Widget widget, XEvent *event)
 // Buttons to be verified
 static WidgetArray buttons_to_be_verified;
 
+
 static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
@@ -708,15 +709,22 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 		int next_invocation = 0;
 		XtAppContext app_context = 
 		    XtWidgetToApplicationContext(button);
+		
+		string answer;
+		if (!emptyCommandQueue())
+		{
+		    // Still commands in queue - try later
+		    answer = NO_GDB_ANSWER;
+		}
+		else
+		{
+		    answer = gdbHelp(cmd);
+		}
 
-		string answer = gdbHelp(cmd);
 		if (answer == NO_GDB_ANSWER)
 		{
 		    // No answer -- try again later
-		    if (gdb->recording())
-			next_invocation = 500;
-		    else
-			next_invocation = 250;
+		    next_invocation = 250;
 		}
 		else
 		{
