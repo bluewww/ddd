@@ -1,4 +1,4 @@
-dnl $Id$
+dnl $Id$ -*- m4 -*-
 dnl ICE and DDD autoconf macros
 dnl 
 dnl Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
