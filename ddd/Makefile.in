@@ -1492,6 +1492,10 @@ ftest$(EXEEXT):	ftest.o
 jtest: 	
 	cd $(srcdir)/jtest; $(MAKE) jtest
 
+swallow$(EXEEXT): swallow.o findWindow.o Swallower.o
+	$(LINK.cc) -o $@ swallow.o findWindow.o Swallower.o \
+	$(ALL_X_LIBS) $(LIBS)
+
 # We don't want no optimizing, but debugging info in our test files
 bug.o:	$(srcdir)/bug.C
 	$(CXX) $(INCLUDE) -g -c -o $@ $(srcdir)/bug.C
