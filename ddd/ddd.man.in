@@ -1054,15 +1054,21 @@ If you have any contributions to be incorporated into \s-2@DDD@\s+2,
 please send them to `\fBddd@ips.cs.tu-bs.de\fR'.  For suggestions on
 what might be done, see the file `\fBPROJECTS\fR' in the \s-2@DDD@\s+2
 distribution.
+
 .PP
 If you wish something done in \s-2@DDD@\s+2, but cannot do it
-yourself, you can finance specific \s-2@DDD@\s+2 extensions.  For
-details, contact `\fBddd@ips.cs.tu-bs.de\fR'; direct mail is also
+yourself, you can \fIfinance\fR specific \s-2@DDD@\s+2 extensions.
+For details, contact `\fBddd@ips.cs.tu-bs.de\fR'; direct mail is also
 welcome.
 
+.PP
+Some of the people offering \s-2@DDD@\s+2 support may also accept
+offers to extend \s-2@DDD@\s+2.  For a list of people offering
+\s-2@DDD@\s+2 support, see the file `\fBSERVICE\fR' in the
+\s-2@DDD@\s+2 distribution.
 
 .\" ---------------
-.SH "A NOTE FROM THE @DDD@ DEVELOPERS"
+.SH "SENDING PICTURE POSTCARDS"
 .\" ---------------
 
 If you appreciate this software, please send a picture postcard to:
