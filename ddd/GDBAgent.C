@@ -1,8 +1,9 @@
 // $Id$
 // Communicate with separate GDB process
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
+// and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
 // 
@@ -2023,13 +2024,4 @@ void GDBAgent::StrangeHP(Agent *source, void *client_data, void *call_data)
     string msg = (char *)call_data;
     msg.prepend("warning: ");
     PanicHP(source, client_data, (char *)msg);
-}
-
-// ***************************************************************************
-
-// Make sure the GDB child does not inherit the current terminal settings.
-int GDBAgent::setupChildCommunication()
-{
-    // Nothing special...
-    return TTYAgent::setupChildCommunication();
 }
