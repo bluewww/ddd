@@ -380,6 +380,10 @@ void graphEditSizeChanged(Widget w)
     const Dimension extraWidth          = _w->graphEdit.extraWidth;
     const Dimension extraHeight         = _w->graphEdit.extraHeight;
 
+    // Could it be this is invoked without any graph yet?
+    if (graph == 0)
+	return;
+
     sizeChanged = false;
 
     BoxRegion r = graph->region(graphGC);
@@ -447,7 +451,6 @@ static void setGrid(Widget w, Boolean reset = false)
     const Dimension gridHeight = _w->graphEdit.gridHeight;
     const Dimension gridWidth  = _w->graphEdit.gridWidth;
     Pixmap& gridPixmap         = _w->graphEdit.gridPixmap;
-
     
     if (reset && gridPixmap != None)
     {
@@ -502,7 +505,9 @@ void graphEditRedraw(Widget w)
 	       _w->core.width  - highlight_thickness * 2, 
 	       _w->core.height - highlight_thickness * 2,
 	       false);
-    graph->draw(w, EVERYWHERE, graphGC);
+
+    if (graph)
+	graph->draw(w, EVERYWHERE, graphGC);
 }
 
 
@@ -515,11 +520,15 @@ void graphEditRedrawNode(Widget w, GraphNode *node)
 
     setGrid(w);
 
+    if (node == 0)
+	return;
+
     BoxRegion r = node->region(graphGC);
     XClearArea(XtDisplay(w), XtWindow(w), r.origin(X), r.origin(Y),
 	       r.space(X), r.space(Y), false);
 
-    graph->draw(w, r, graphGC);
+    if (graph)
+	graph->draw(w, r, graphGC);
 }
 
 
@@ -1072,6 +1081,10 @@ GraphNode *graphEditGetNodeAtPoint(Widget w, BoxPoint p)
     const Graph* graph        = _w->graphEdit.graph;
     GraphGC& graphGC          = _w->graphEdit.graphGC;
     GraphNode *found = 0;
+
+    // Could it be this is invoked without any graph yet?
+    if (graph == 0)
+	return 0;
 
     // note that we return the last matching node in the list;
     // thus on overlapping nodes we select the top one
