@@ -367,35 +367,39 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 
 	if (for_documentation)
 	{
-	    // The status line shows the name we're pointing at
-	    tip.prepend(expr + " = ");
+	    shorten(tip, max_value_doc_length - expr.length());
+
+	    // The status line also shows the name we're pointing at
+	    MString mtip = tt(tip);
+	    mtip.prepend(rm(expr + " = "));
+	    return mtip;
 	}
-
-	int max_length = 
-	    for_documentation ? max_value_doc_length : max_value_tip_length;
-	shorten(tip, max_length);
+	else
+	{
+	    // The value tip just shows the value
+	    shorten(tip, max_value_tip_length);
+	    return tt(tip);
+	}
     }
-    else
-    {
-	// Button tip
-	string help_name = gdbHelpName(widget);
-	tip = gdbHelp(help_name);
-	if (tip == NO_GDB_ANSWER)
-	    return MString(0, true);
-	if (tip.contains(help_name, 0))
-	    tip = tip.after(help_name);
-	strip_through(tip, " # ");
-	strip_through(tip, " - ");
 
-	tip = tip.from(rxalpha);
-	if (tip.length() > 0)
-	    tip = toupper(tip[0]) + tip.after(0);
+    // Button tip
+    string help_name = gdbHelpName(widget);
+    tip = gdbHelp(help_name);
+    if (tip == NO_GDB_ANSWER)
+	return MString(0, true);
+    if (tip.contains(help_name, 0))
+	tip = tip.after(help_name);
+    strip_through(tip, " # ");
+    strip_through(tip, " - ");
 
-	if (tip.contains('\n'))
-	    tip = tip.before('\n');
-	if (tip.contains('.'))
-	    tip = tip.before('.');
-    }
+    tip = tip.from(rxalpha);
+    if (tip.length() > 0)
+	tip = toupper(tip[0]) + tip.after(0);
+
+    if (tip.contains('\n'))
+	tip = tip.before('\n');
+    if (tip.contains('.'))
+	tip = tip.before('.');
 
     return rm(tip);
 }
