@@ -4654,11 +4654,11 @@ define(PLOT_VIEW_HELP, [\
 WIDGET(View Menu)\n\
 \n\
 DESC(Border, [display border])\n\
-DESC(Grid, [display grid])\n\
 DESC(Time, [display time of plot])\n\
 \n\
-DESC(X Axis, [display X zero axis])\n\
-DESC(Y Axis, [display Y zero axis])
+DESC(Grid, [display grid])\n\
+DESC(X Zero Axis, [display X zero axis])\n\
+DESC(Y Zero Axis, [display Y zero axis])
 ])dnl
 
 Ddd*menubar.plotView.helpString: PLOT_VIEW_HELP
@@ -4769,18 +4769,18 @@ Ddd*menubar.scale.documentationString:   \
 define(SCALE_HELP, [\
 WIDGET(Scale Menu)\n\
 \n\
-DESC(Log Scale, [toggle logarithmic scaling])\n\
+DESC(Logarithmic, [toggle logarithmic scaling])\n\
 \n\
-DESC(X Tics, [display tics on X axis])\n\
-DESC(Y Tics, [display tics on Y axis])\n\
-DESC(Z Tics, [display tics on Z axis])
+DESC(X Tics, [display tics on X scale])\n\
+DESC(Y Tics, [display tics on Y scale])\n\
+DESC(Z Tics, [display tics on Z scale])
 ])dnl
 
 Ddd*menubar.scale.helpString: SCALE_HELP
 Ddd*scaleMenu*helpString:     SCALE_HELP
 Ddd*scaleMenu*tearOffTitle:   Scale
 
-Ddd*scaleMenu.logscale.labelString:	Log Scale
+Ddd*scaleMenu.logscale.labelString:	Logarithmic
 Ddd*scaleMenu.logscale.mnemonic:	L
 Ddd*scaleMenu.logscale.documentationString:	\
 @rm Toggle logarithmic scaling
@@ -4788,17 +4788,17 @@ Ddd*scaleMenu.logscale.documentationString:	\
 Ddd*scaleMenu.xtics.labelString:	X Tics
 Ddd*scaleMenu.xtics.mnemonic:		X
 Ddd*scaleMenu.xtics.documentationString:	\
-@rm Toggle tics on X axis
+@rm Toggle tics on X scale
 
 Ddd*scaleMenu.ytics.labelString:	Y Tics
 Ddd*scaleMenu.ytics.mnemonic:		Y
 Ddd*scaleMenu.ytics.documentationString:	\
-@rm Toggle tics on Y axis
+@rm Toggle tics on Y scale
 
 Ddd*scaleMenu.ztics.labelString:	Z Tics
 Ddd*scaleMenu.ztics.mnemonic:		Z
 Ddd*scaleMenu.ztics.documentationString:	\
-@rm Toggle tics on Z axis
+@rm Toggle tics on Z scale
 
 
 Ddd*menubar.contour.labelString:  	Contour

@@ -124,9 +124,9 @@ static MMDesc file_menu[] =
 static MMDesc view_menu[] = 
 {
     { "border",    MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
-    { "grid",      MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
     { "time",      MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
     MMSep,
+    { "grid",      MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
     { "xzeroaxis", MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
     { "yzeroaxis", MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
     MMEnd
@@ -359,6 +359,9 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
     if (window != None)
     {
 	// We have the window
+	XtRemoveCallback(swallower, XtNwindowCreatedCallback, 
+			 SwallowCB, client_data);
+
 	if (plot->dialog != 0)
 	{
 	    XtUnmanageChild(plot->dialog);
@@ -374,9 +377,6 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
 	    XtPopup(plot->shell, XtGrabNone);
 	    plot->active = true;
 	}
-
-	XtRemoveCallback(swallower, XtNwindowCreatedCallback, 
-			 SwallowCB, client_data);
     }
 }
 
