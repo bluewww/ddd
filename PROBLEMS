@@ -293,9 +293,11 @@ LessTif
 
     With LessTif 0.87, the following problems are currently known:
 
-    * Menu traversal by keyboard does not work (yet); use the mouse instead.
-
     * The `Preferences' dialog may need manual resize.
+
+    * Resizing the plot window does not work properly.
+
+    * Accelerators like Ctrl+L do not work in the plot window.
 
     See the DDD WWW page for further issues and patches.
 
