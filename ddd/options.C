@@ -2696,7 +2696,6 @@ bool save_options(unsigned long flags)
 
     // Maintenance
     os << "\n! Maintenance.\n";
-    os << bool_app_value(XtNmaintenance,    app_data.maintenance) << '\n';
     os << bool_app_value(XtNdumpCore,       app_data.dump_core) << '\n';
     os << bool_app_value(XtNdebugCoreDumps, app_data.debug_core_dumps) << '\n';
 
