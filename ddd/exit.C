@@ -756,7 +756,9 @@ void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 // Restart unconditionally
 static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
-    app_data.initial_session = app_data.session;
+    static string initial_session;
+    initial_session = app_data.session;
+    app_data.initial_session = initial_session;
 
     set_session(RESTART_SESSION);
 
