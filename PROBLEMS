@@ -39,6 +39,18 @@ Reported by: Rick Flower <Rick.Flower@trw.com>
 AIX
 ===
 
+Reported by: Andreas Zeller <ddd@ips.cs.tu-bs.de>
+
+    Some EGCS versions on AIX have trouble compiling DDD.  If you get
+    internal compiler errors, try compiling the affected modules
+    without optimization.  Here are the commands:
+
+	$ cd TOPLEVEL        # Top of DDD distribution
+	$ make -k            # Build all with optimization
+	$ cd ddd
+	$ make -k CXXOPT=    # Build remainder of DDD without optimization
+
+
 Reported by: Brian Cameron <bcameron@tuc.com>
 
     When compiling DDD using EGCS, you may get a conflict between
@@ -56,9 +68,9 @@ Reported by: Andreas Zeller <ddd@ips.cs.tu-bs.de>
     with the message "TOC overflow".  The AIX Table of Contents (TOC)
     by default has only 16,384 entries; DDD has far more symbols.
 
-    If you use GCC 2.8.0 or later, `configure' should already have
-    fixed this for you.  In other configurations, there are three ways
-    to fix this problem:
+    If you use EGCS 1.1 or GCC 2.8.0 or later, `configure' should
+    already have fixed this for you.  In other configurations, there
+    are three ways to fix this problem:
 
     1. Add the flag `-Wl,-bbigtoc' to the `LDFLAGS' definition in
        `ddd/Makefile' and retype `make'.  This makes the AIX linker

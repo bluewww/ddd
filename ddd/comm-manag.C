@@ -908,6 +908,7 @@ void send_gdb_command(string cmd, Widget origin,
     }
 
     command_was_cancelled = false;
+    bool next_input_goes_to_debuggee = false;
 
     // Setup extra command information
     CmdData* cmd_data       = new CmdData(origin);
@@ -1151,7 +1152,7 @@ void send_gdb_command(string cmd, Widget origin,
 #endif
 
 	// Any later input is user interaction.
-	gdb_input_at_prompt = false;
+	next_input_goes_to_debuggee = true;
 
 	// Debuggee should now be running
 	debuggee_running = true;
@@ -1328,14 +1329,14 @@ void send_gdb_command(string cmd, Widget origin,
 	extra_data->refresh_threads     = true;
 
 	// Any later input is user interaction.
-	gdb_input_at_prompt = false;
+	next_input_goes_to_debuggee = true;
     }
 
     if (calls_function(cmd))
     {
 	// Function call - later input may be user interaction
-	gdb_input_at_prompt = false;
-	debuggee_running    = true;
+	next_input_goes_to_debuggee  = true;
+	debuggee_running = true;
     }
 
     if (undo_buffer.showing_earlier_state() && !cmd_data->new_exec_pos)
@@ -1442,6 +1443,9 @@ void send_gdb_command(string cmd, Widget origin,
     {
 	strip_auto_command_prefix(echoed_cmd);
 	gdb_out(echoed_cmd + "\n");
+
+	if (next_input_goes_to_debuggee)
+	    gdb_input_at_prompt = false;
     }
 
     if (abort_undo)

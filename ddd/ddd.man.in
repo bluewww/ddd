@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-12\-16" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-12\-18" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -700,6 +700,17 @@ You can edit the breakpoint commands just recorded using `\fBEdit
 .PP
 Note: \s-1JDB\s+1, \s-1PYDB\s+1, and some \s-1DBX\s+1 variants do not
 support breakpoint commands.
+.\" .PP
+.\" Technical note: If you use \s-1@DDD@\s+1 commands within breakpoint
+.\" command definitions, or if you include debugger commands that resume
+.\" execution, these commands will be realized transparently as
+.\" \fIauto-commands\fR\(em\&that is, they won't be executed directly by
+.\" the inferior debugger, but result in a command string being sent to
+.\" \s-1@DDD@\s+1.  This command string is then interpreted by
+.\" \s-1@DDD@\s+1 and sent back to the inferior debugger, possibly
+.\" prefixed by some other commands such that \s-1@DDD@\s+1 can update its
+.\" state.  See \fBDefining Commands using Other Debuggers\fR, below, for
+.\" a discussion.
 .\"
 .\"
 .SS "Moving and Copying Breakpoints"
@@ -2992,9 +3003,16 @@ doing omit the messages when used in a user-defined command.
 .PP
 To save all command definitions, use `\fBEdit\(->Save Options\fR'.
 .\" .PP
-.\" \s-1@DDD@\s+1 commands that are part of \s-1GDB\s+1 command
-.\" definitions are realized transparently as \fIauto-commands\fR; see 
-.\" \fBDefining Commands using Other Debuggers\fR, below, for a discussion.
+.\" Technical note: If you use \s-1@DDD@\s+1 commands within command
+.\" definitions, or if you include debugger commands that resume
+.\" execution, these commands will be realized transparently as
+.\" \fIauto-commands\fR\(em\&that is, they won't be executed directly by
+.\" the inferior debugger, but result in a command string being sent to
+.\" \s-1@DDD@\s+1.  This command string is then interpreted by
+.\" \s-1@DDD@\s+1 and sent back to the inferior debugger, possibly
+.\" prefixed by some other commands such that \s-1@DDD@\s+1 can update its
+.\" state.  See \fBDefining Commands using Other Debuggers\fR, below, for
+.\" a discussion.
 .\"
 .\"
 .SS "Defining Argument Commands using GDB"

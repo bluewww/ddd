@@ -216,6 +216,11 @@ void PosBuffer::filter (string& answer)
     // Check for auto command
     if (app_data.auto_commands)
     {
+	answer.prepend(auto_cmd_part);
+	auto_cmd_part = "";
+
+	string pfx = app_data.auto_command_prefix;
+
 	if (auto_cmd_buffer != "" && !auto_cmd_buffer.contains('\n', -1))
 	{
 	    // Complete pending auto command
@@ -231,16 +236,22 @@ void PosBuffer::filter (string& answer)
 	    }
 	}
 
-	while (has_prefix(answer, app_data.auto_command_prefix))
+	while (answer.contains(pfx, 0))
 	{
-	    int index = answer.index(app_data.auto_command_prefix);
+	    int index = answer.index(pfx);
 	    string cmd = answer.from(index);
 	    if (cmd.contains('\n'))
 		cmd = cmd.through('\n');
 	    answer = 
 		answer.before(index) + answer.from(int(index + cmd.length()));
-	    cmd = cmd.after(app_data.auto_command_prefix);
+	    cmd = cmd.after(pfx);
 	    auto_cmd_buffer += cmd;
+	}
+
+	if (pfx.contains(answer, 0))
+	{
+	    auto_cmd_part = answer;
+	    answer = "";
 	}
     }
 
@@ -1120,24 +1131,24 @@ string PosBuffer::answer_ended ()
 {
     switch (already_read) 
     {
+    case Null:
+    {
+	assert (pos_buffer == "");
+	return auto_cmd_part;
+    }
+
     case PosPart:
     {
 	assert (pos_buffer == "");
 	string ans = answer_buffer;
 	answer_buffer = "";
-	return ans;
-    }
-
-    case Null:
-    {
-	assert (pos_buffer == "");
-	return "";
+	return auto_cmd_part + ans;
     }
 
     case PosComplete:
     {
 	assert (pos_buffer != "");
-	return "";
+	return auto_cmd_part;
     }
 
     default:

@@ -20,10 +20,13 @@ below for details.
 DDD 3.1.2
 =========
 
-DDD 3.1.2 fixes more minor bugs in DDD 3.1, most of them related to Perl.
+DDD 3.1.2 fixes more minor bugs in DDD 3.1, most of them related to Perl:
 
 - Show/Hide works properly with deeply nested substructures.
 - Struct members whose name starts with 'END' are properly handled.
+- Starting DDD with `no command tool' set in ~/.ddd/init works.
+- Console input after `print FUNCTION()' is passed to FUNCTION.
+- Auto-commands broken into several parts are processed correctly.
 - [Perl] Arguments of `Program->Run' are processed correctly.
 - [Perl] You can redirect I/O in arguments of `Program->Run'.
 - [Perl] The separate execution window can now be used with Perl.
@@ -31,6 +34,7 @@ DDD 3.1.2 fixes more minor bugs in DDD 3.1, most of them related to Perl.
 - [Perl] The backtrace window is updated after each command.
 - [Perl] The `Convert to Hex' and `Convert to Oct' conversions work.
 - [Perl] Refreshing the graph via `Data->Refresh Graph' works.
+- [Perl] Changing, saving and restoring various Perl settings works.
 - [Java] DDD uses $CLASSPATH to lookup Java classes on start-up.
 - [DBX] DDD supports execution positions as reported by DBX on AIX.
 - [DBX] The registers window is updated after each command.

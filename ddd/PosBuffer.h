@@ -57,6 +57,7 @@ class PosBuffer {
     bool recompiled;		// Program has been recompiled
 
     string auto_cmd_buffer;	// AutoCommand found
+    string auto_cmd_part;	// Prefix of AutoCommand found
 
 protected:
     void filter_gdb(string& answer);
@@ -83,6 +84,7 @@ public:
 	signaled        = false;
 	recompiled      = false;
 	auto_cmd_buffer = "";
+	auto_cmd_part   = "";
 	check_pc        = true;
 	check_func      = true;
     }
@@ -99,6 +101,7 @@ public:
 	  signaled(false),
 	  recompiled(false),
 	  auto_cmd_buffer(""),
+	  auto_cmd_part(""),
 	  check_pc(true),
           check_func(true)
     {
