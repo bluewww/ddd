@@ -23,7 +23,9 @@
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # 
 # DDD is the data display debugger.
-# Contact ddd@ips.cs.tu-bs.de for details.
+# For details, see the DDD World-Wide-Web page, 
+# `http://www.cs.tu-bs.de/softech/ddd/',
+# or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
 # This script checks out the current DDD development tree, as
 # stored in CVS, and creates a DDD release-of-the-day (`ROTD').
@@ -104,7 +106,7 @@ autoconf
 (cd ddd && autoconf)
 (cd librx && autoconf)
 (cd termcap && autoconf)
-sh ./configure -v
+sh ./configure --x-libraries=/usr/X11R5/lib --x-includes=/usr/X11R5/include -v
 
 # Create distribution stuff.
 touch ddd/Makedeps
