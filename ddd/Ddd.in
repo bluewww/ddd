@@ -1,7 +1,7 @@
 ! $Id$
 ! DDD Resource File.  DO NOT INSTALL THIS FILE!  See below for details.
 ! @configure_input@
-Ddd*appDefaultsVersion:	 @VERSION@
+Ddd*appDefaultsVersion: @VERSION@
 
 ! Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 ! Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
@@ -46,7 +46,7 @@ Ddd*appDefaultsVersion:	 @VERSION@
 ! Site administrators **may** want to make changes here and install this
 ! file as the global app-defaults file for the site.  To do this, one
 ! would copy this file to `/usr/lib/X11/app-defaults/Ddd', or on SunOS,
-! `/usr/openwin/lib/app-defaults/Ddd'.	(Actually this directory could
+! `/usr/openwin/lib/app-defaults/Ddd'.  (Actually this directory could
 ! be anywhere; only the person who installed X knows for sure.)
 ! 
 ! It is **STRONGLY RECOMMENDED** that you not install this file in the
@@ -59,7 +59,7 @@ Ddd*appDefaultsVersion:	 @VERSION@
 ! since it will pick up the resources for the previous version, and will
 ! quite likely malfunction.
 ! 
-! In short, app-defaults files are bad.	 Don't use them.  Use this file
+! In short, app-defaults files are bad.  Don't use them.  Use this file
 ! for informational purposes as suggested above.
 
 !-----------------------------------------------------------------------------
@@ -141,7 +141,7 @@ Ddd*termType: xterm
 !   Set `useTTYCommand' to `false' to enable this behaviour.
 !   
 ! The default setting is `false', since explicit redirection is easier
-! to handle (and to debug :-).	Maybe one day GDB will provide a way
+! to handle (and to debug :-).  Maybe one day GDB will provide a way
 ! to undo redirection.
 Ddd*useTTYCommand: false
 
@@ -166,7 +166,7 @@ Ddd*rHostInitCommands: stty -echo -onlcr
 Ddd*printCommand: @PRINT_COMMAND@
 
 
-! Paper size, in format WIDTH x HEIGHT.	 (Default: A4).
+! Paper size, in format WIDTH x HEIGHT.  (Default: A4).
 Ddd*paperSize: 210mm x 297mm
 
 
@@ -670,7 +670,6 @@ Ddd*tool_buttons*fontList:  \
 ! 	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
 ! Ddd*tool_buttons*fontList:  \
 ! 	-*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
-	
 
 ! For fonts in the execution window, see the `termCommand' resource, above.
 ! For fonts in the data display, see the `vslDefs' resource, below.
@@ -3533,7 +3532,7 @@ Ddd*?*No.tipString: \
 
 Ddd*?*Complete.helpString:	\
 @bf Complete@rm\n\
-Complete the current debugging command.	 (Equivalent to @key TAB@rm).
+Complete the current debugging command.  (Equivalent to @key TAB@rm).
 Ddd*?*Complete.tipString: \
 @rm Complete current command
 
@@ -3559,7 +3558,7 @@ Ddd*?*Next.tipString: \
 
 Ddd*?*Apply.helpString:	\
 @bf Apply@rm\n\
-Execute the current debugging command.	(Equivalent to @symbol \277@rm).
+Execute the current debugging command.  (Equivalent to @symbol \277@rm).
 Ddd*?*Apply.tipString: \
 @rm Execute current command
 
@@ -3689,9 +3688,9 @@ Ddd*paper_size_dialog*helpString: \
 \n\
        @sl WIDTH @tt x @sl HEIGHT    @rm.\n\
 \n\
-Examples:\n\
-@tt 42cm x 59.4cm @rm (A2 paper)\n\
-@tt  7in x 10in	  @rm (Executive paper)\n\
+Examples:@tt\n\
+ 42cm x 59.4cm @rm (A2 paper)@tt\n\
+  7in x 10in   @rm (Executive paper)\n\
 \n\
 Recognized units include:\n\
 @tt pt @rm (points), @tt in @rm (inches), \n\
@@ -3874,7 +3873,7 @@ called by @tt main()@rm, the function called by this function and\n\
 so on down the stack, down to the currently executing frame.\n\
 \n\
 You can make a specific frame the current one by selecting it\n\
-in this window.	 You can also move around by pressing \
+in this window.  You can also move around by pressing \
 @bf Up @rm or @bf Down@rm.
 
 
@@ -4392,6 +4391,9 @@ Please verify the paper size and try again.
 Ddd*paper_size_unit_error.title: @DDD@: Unrecognized Paper Size Unit
 Ddd*paper_size_unit_error*helpString:	\
 @rm @DDD@ did not recognize your paper size unit.\n\
+Recognized units include:\n\
+@tt pt @rm (points), @tt in @rm (inches), \n\
+@tt mm @rm (millimeters), @tt cm @rm (centimeters).\n\
 Please verify the paper size unit and try again.
 
 Ddd*paper_size_x_error.title: @DDD@: Unrecognized Paper Size
@@ -4402,7 +4404,7 @@ Please verify the paper size and try again.
 Ddd*expired_warning.title: @DDD@: @DDD@ Expired
 Ddd*expired_warning*helpString: \
 @rm @DDD@ @VERSION@ has been superseded by a newer @DDD@ version.\n\
-It should no longer be used.\n\
+@DDD@ @VERSION@ should no longer be used.\n\
 To get a recent @DDD@ version, see the @DDD@ WWW page.
 
 Ddd*invalid_range_error.title: @DDD@: Invalid Range
