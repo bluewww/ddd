@@ -372,4 +372,20 @@ Volunteers for fixing these and other bugs are welcome!
      (in the top right corner). 2.0 doesn't give this behaviour: the
      command pad pops up in the screen on which I start it.
 
-175. (Insert your bug here)
+175. Harry Mangalam <mangalam@uci.edu> reports: As soon as I click on
+     a variable to try to highlight a structure name, DDD 2.1 goes
+     into an unresponsive state for several seconds (seems like up to
+     a minute on a 486) in which the ddd process hogs the cpu.  It
+     then returns to a usable state until the next time I try to
+     highlight a variable name.  It seems that if I click on a simple
+     variable name, it responds appopriately, but if I try to
+     drag-hilite the name, ddd goes berserk with the cpu.
+
+176. Les Schaffer <godzilla@futuris.net> states: I use DDD 2.1.1 on a
+     Linux Machine, using LessTif 0.79.  The program starts fine, and
+     it runs code fine. But when i step in such a way that source
+     lines are in a different file than the main file, that source is
+     NOT displayed: instead the main file is displayed at some
+     arbitrary line number.
+
+177. (Insert your bug here)

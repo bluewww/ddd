@@ -305,8 +305,6 @@ Volunteers for these and other projects are welcome!
      while selecting a contiguous block of commands and the "Control"
      key to select non-contiguous commands, a la Windoze File Manager.
 
-163. Install `sample.dddinit' and `ddd.man' on the FTP server.
-
 164. Matthias Kurz <mk@baerlap.north.de> suggests:
      - Recognize 'complete' variables; example "ptr->struct.field": if
        one points inside this string always show the value of
@@ -354,4 +352,9 @@ Volunteers for these and other projects are welcome!
 169. When a program has crashed, show the program counters as little
      bombs ;-)
 
-170. (Insert your project idea here)
+170. In the `File' menu, keep a history of files most recently opened
+     (executables? sources?)
+
+171. Use double-buffering to display the graph.  Even less flickering.
+
+172. (Insert your project idea here)
