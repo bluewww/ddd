@@ -343,5 +343,12 @@ Volunteers for these and other projects are welcome!
      the last one, of course).  Commands with external side-effects
      (such as running or making the program as well as shell commands)
      should be ignored.
- 
-167. (Insert your project idea here)
+
+167. The `Show/Hide' operation could revert to `Enable/Disable' if the
+     entire display is selected.  The `Enable' button would no more be
+     needed.
+
+168. Rename `Lookup' to `List' and recognize the `list' command.  See
+     also #108.
+
+169. (Insert your project idea here)
