@@ -35,6 +35,8 @@ Examining Data
 
 - Ladebug array output is better supported.  (7)
 
+- Multiple C++ base classes are better supported.
+
 - Several memory leaks have been plugged. (1)
 
 

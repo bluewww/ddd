@@ -555,6 +555,12 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    read_multiple_values = found_struct_begin;
 	}
 
+	// Prepend base class in case of multiple inheritance
+	// FIXME: This should be passed as an argument
+	static string baseclass_prefix;
+	member_prefix += baseclass_prefix;
+	int base_classes = 0;
+
 	bool more_values = true;
 	while (more_values)
 	{
@@ -591,9 +597,48 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    else if (is_BaseClass_name(member_name))
 	    {
 		// Base class member
+		string saved_baseclass_prefix = baseclass_prefix;
+		base_classes++;
+
+		if (base_classes > 1)
+		{
+		    // Multiple inheritance.  Be sure to
+		    // reference further members unambiguously.
+		    //
+		    // Note: we don't do that for the first base class,
+		    // because this might turn ambiguous again.
+		    //
+		    // Example:
+		    //
+		    //    Base
+		    //    |   |
+		    //    I1 I2
+		    //     \ /
+		    //      C
+		    //
+		    // Members of I1::Base are not prefixed, members
+		    // of I2::Base get `I2::' as base class prefix.
+		    // If we did this already for the first base class,
+		    // members of both I1 and I2 would get `Base::' as
+		    // base class prefix.
+
+		    switch (gdb->program_language())
+		    {
+		    case LANGUAGE_C: // C++
+			baseclass_prefix = unquote(member_name) + "::";
+			break;
+
+		    default:
+			// Do nothing (yet)
+			break;
+		    }
+		}
+
 		DispValue *dv = 
 		    parse_child(depth, value, myfull_name, member_name);
 		_children += dv;
+
+		baseclass_prefix = saved_baseclass_prefix;
 
 		more_values = read_multiple_values && read_struct_next(value);
 

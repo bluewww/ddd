@@ -311,6 +311,45 @@ void namespace_test() {}
 
 
 //--------------------------------------------------------------------------
+// Inheritance.
+
+
+class Base {
+public:
+  int value;
+  int *ptr;
+  Base(int i) : value(i) {
+    ptr = &value;
+  }
+  virtual ~Base() {} // make class virtual
+};
+
+class Intermediate1 : public Base
+{
+public:
+  Intermediate1() : Base(1) {}
+};
+
+class Intermediate2 : public Base {
+public:
+  Intermediate2() : Base(2) {}
+};
+
+class Derived: public Intermediate1, public Intermediate2 {
+public:
+  Derived() {}
+};
+ 
+void inheritance_test()
+{
+  Derived *the_object=new Derived;
+  return; //<=== BREAK HERE and display *the_object
+          // and dereference the pointer ptr of Intermediate1 and Intermediate2
+          // the values of both pointers have to be displayed differently
+          // ('1' and '2', respectively), but they don't 
+}
+
+//--------------------------------------------------------------------------
 // Simple threaded tree
 
 static void tree_test()
@@ -661,6 +700,8 @@ int main(int /* argc */, char ** /* argv */)
     type_test();
     i++;
     namespace_test();
+    i++;
+    inheritance_test();
     --i;
     cin_cout_test();
     return 0;
