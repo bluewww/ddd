@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-06\-25" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-07\-09" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -5380,10 +5380,6 @@ As a last resort, send bug reports on paper to:
 .DS
   Technische Universität Braunschweig 
 .br
-  Institut für Programmiersprachen
-.br
-  und Informationssysteme 
-.br
   Abteilung Softwaretechnologie 
 .br
   \s-1@DDD@\s+1-Bugs 
@@ -5575,10 +5571,6 @@ distribution.
 .PP
 .DS
   Technische Universität Braunschweig 
-.br
-  Institut für Programmiersprachen
-.br
-  und Informationssysteme 
 .br
   Abteilung Softwaretechnologie 
 .br
