@@ -103,7 +103,7 @@ int LiterateAgent::write(const char *data, int length)
     while (length > 0)
     {
 	errno = 0;
-	int nitems = fwrite(data, sizeof(char), length, outputfp());
+	int nitems = ::write(fileno(outputfp()), data, length);
 
 	if (nitems == 0)
 	{
@@ -142,40 +142,7 @@ int LiterateAgent::write(const char *data, int length)
 // flush output buffers
 int LiterateAgent::flush()
 {
-    if (outputfp() == 0 || !activeIO)
-	return -1;
-
-    int failures = 0;
-
-    for (;;)
-    {
-	errno = 0;
-	fflush(outputfp());
-	if (errno)
-	{
-	    if (++failures <= 3)
-	    {
-		ostrstream os;
-		os << "flush failed (attempt #" 
-		   << failures << ", still trying)";
-		string s(os);
-		raiseIOMsg(s);
-		sleep(1);
-		continue;
-	    }
-	    else
-	    {
-		raiseIOMsg("flush failed");
-		return -1;
-	    }
-	}
-	else
-	    break;
-    }
-
-    if (failures)
-	raiseMsg("flush ok");
-
+    // Not needed, since we use immediate write()
     return 0;
 }
 
