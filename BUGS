@@ -321,4 +321,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 093* `Up' and `Down' in XDB mode won't work.
 
-094. (Insert your bug here)
+094* <regex.h> conflicts with libg++ <regex.h>.  `configure' should
+     link `/usr/include/regex.h' into the local directory.
+
+095. (Insert your bug here)
