@@ -29,7 +29,11 @@
 #ifndef _DDD_pi_h
 #define _DDD_pi_h
 
-const double PI = 3.14159265358979323846264338327;
+#include <math.h>
+
+#ifndef PI
+#define PI 3.14159265358979323846264338327
+#endif
 
 #endif // _DDD_pi_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
