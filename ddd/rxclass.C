@@ -45,7 +45,7 @@ char regex_rcsid[] =
 #include <ctype.h>
 #include <string.h>		// strncmp()
 
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
 // Get a prefix character from T; let T point at the next prefix character.
 char regex::get_prefix(const char *& t, int flags)
 {
@@ -135,26 +135,26 @@ regex::regex(const char* t, int flags)
 	;
     prefix[i] = '\0';
 }
-#endif // WITH_FULL_RX
+#endif // WITH_RUNTIME_REGEX
 
 regex::regex(rxmatchproc p, void *d)
     : matcher(p), data(d)
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
     , exprs(0)
 #endif
 {
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
     prefix[0] = '\0';
 #endif
 }
 
 regex::~regex()
 {
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
     if (matcher == 0)
 	regfree(&compiled);
     delete[] exprs;
-#endif // WITH_FULL_RX
+#endif // WITH_RUNTIME_REGEX
 }
 
 // Search T in S; return position of first occurrence.
@@ -183,7 +183,7 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
     }
     assert(s[len] == '\0');
 
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
     int errcode = 0;
     int prefix_len = strlen(prefix);
 #endif
@@ -196,7 +196,7 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
 	    if (matchlen >= 0)
 		break;
 	}
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
 	else
 	{ 
 	    char *t = (char *)s + startpos;
@@ -207,7 +207,7 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
 		    break;
 	    }
 	}
-#endif // WITH_FULL_RX
+#endif // WITH_RUNTIME_REGEX
     }
 
     if (startpos < 0 || startpos >= len)
@@ -215,7 +215,7 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
 
     int matchpos = startpos;
 
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
     if (exprs[0].rm_so >= 0)
     {
 	matchpos = exprs[0].rm_so + startpos;
@@ -226,7 +226,7 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
 	matchpos = -1;
 	matchlen = 0;
     }
-#endif // WITH_FULL_RX
+#endif // WITH_RUNTIME_REGEX
 
     return matchpos;
 }
@@ -238,7 +238,7 @@ int regex::match(const char *s, int len, int pos) const
     if (matcher != 0)
 	return matcher(data, s, len, pos);
 
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
     string substr;
     if (pos < 0)
 	pos += len;
@@ -262,7 +262,7 @@ int regex::match(const char *s, int len, int pos) const
     return -1;
 }
 
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
 bool regex::match_info(int& start, int& length, int nth) const
 {
     if ((unsigned)(nth) >= nexprs())
@@ -278,14 +278,14 @@ bool regex::match_info(int& start, int& length, int nth) const
 
 bool regex::OK() const
 {
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
     assert(exprs != 0);
 #endif
     return true;
 }
 
 
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX && RUNTIME_REGEX
 // Built-in regular expressions
 
 const regex rxwhite("[ \n\t\r\v\f]+");
@@ -297,4 +297,4 @@ const regex rxlowercase("[a-z]+");
 const regex rxuppercase("[A-Z]+");
 const regex rxalphanum("[0-9A-Za-z]+");
 const regex rxidentifier("[A-Za-z_][A-Za-z0-9_]*");
-#endif // WITH_FULL_RX
+#endif // WITH_RUNTIME_REGEX

@@ -464,7 +464,7 @@ static EntryType entry_type(DebuggerType type,
 			    const string& doc,
 			    const string& value)
 {
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxnonzero1("non-?(0|zero|null)");
     static regex rxnonzero2("!= *(0|zero|null)");
 #endif
@@ -924,7 +924,7 @@ static void add_button(Widget form, int& row, DebuggerType type,
 	    doc = get_dbx_doc(dbxenv, base);
 	    e_type = entry_type(type, base, get_dbx_help(dbxenv, base), value);
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	    static regex rxdont("Do ?n['o]t");
 #endif
 	    if (doc.contains(rxdont, 0) && e_type == NumToggleButtonEntry)

@@ -661,7 +661,7 @@ void add_buttons(Widget buttons, const string& button_list)
 	if (label_s != "")
 	    label_s[0] = toupper(label_s[0]);
 	MString label(label_s);
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	static regex rxsep("[^-_a-zA-Z0-9]");
 #endif
 	name.gsub(rxsep, '_');

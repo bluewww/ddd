@@ -185,7 +185,7 @@ bool is_core_file(const string& file_name)
 	pclose(fp);
 
 	string out(line);
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	static regex rxcore(".*:.*core.*");
 #endif
 	return out.matches(rxcore);

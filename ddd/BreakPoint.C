@@ -55,7 +55,7 @@ char BreakPoint_rcsid[] =
 #include "regexps.h"
 #include "index.h"
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 static regex rxnl_int ("\n[1-9]");
 static regex rxname_colon_int_nl ("[^ ]+:[0-9]+\n");
 #endif

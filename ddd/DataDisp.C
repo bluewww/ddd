@@ -1873,7 +1873,7 @@ void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
 // Erzeugung von neuen (unabhaengigen) Displays
 //-----------------------------------------------------------------------------
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 static regex rxmore_than_one ("\\[-?[0-9]+\\.\\.-?[0-9]+\\]");
 #endif
 
@@ -2107,7 +2107,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     // Upon some occasions, GDB gives names like 
     // `{<text variable, no debug info>} 0x2270 <main>'.  In such cases,
     // also use the user-given name instead.
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxfunction_call("[a-zA-Z0-9_$][(]");
 #endif
     string title = display_name;
@@ -3393,7 +3393,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     }
 
     value = get_disp_value_str(value, gdb);
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxnl(" *\n *");
 #endif
     value.gsub(rxnl, " ");

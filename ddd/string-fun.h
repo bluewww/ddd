@@ -42,7 +42,7 @@
 
 //-----------------------------------------------------------------------------
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 extern const regex rxblanks;
 extern const regex rxblanks_or_tabs;
 #endif

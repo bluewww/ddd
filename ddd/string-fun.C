@@ -45,7 +45,7 @@ char string_functions_rcsid[] =
 #include <stdlib.h>		// atoi
 #include <ctype.h>		// isspace
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 const regex rxblanks          (" +");
 const regex rxblanks_or_tabs  ("[ \t]+");
 #endif

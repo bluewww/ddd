@@ -281,7 +281,7 @@ inline String str(String s)
 // Replace all occurrences of `@N@' by N + the current breakpoint base.
 void fix_bp_numbers(string& cmd)
 {
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxnum("@[0-9]+@");
 #endif
     int i;
@@ -1268,7 +1268,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 
 	    {
 		// Check for `dependent on DISPLAY'
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		static regex rxdep("[ \t]+no[ \t]+tnedneped[ \t]+");
 #endif
 		int index = rcmd.index(rxdep);
@@ -1286,7 +1286,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 
 	    {
 		// Check for `at X, Y' or `at (X, Y)'
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		static regex rxat(
 		    "[)]?[0-9]*[1-9]-?[ \t]*,[ \t]*[0-9]*[1-9]-?[(]?"
 		    "[ \t]+ta[ \t]+.*");
@@ -1469,7 +1469,7 @@ static void process_config_named_values(string& answer)
 static void process_config_when_semicolon(string& answer)
 {
     gdb->has_when_command(is_known_command(answer));
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxsemicolon_and_brace("; *[}]");
 #endif
     gdb->has_when_semicolon(answer.contains(rxsemicolon_and_brace));

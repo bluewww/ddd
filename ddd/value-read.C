@@ -49,7 +49,7 @@ char value_read_rcsid[] =
 #include "GDBAgent.h"
 #include "PosBuffer.h"
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 static regex rxindex("[[]-?[0-9][0-9]*].*");
 static regex rxvtable("[^\n]*<[^\n>]* v(irtual )?t(a)?bl(e)?>[^{},]*[{].*");
 #endif
@@ -65,7 +65,7 @@ DispValueType determine_type (string value)
 	value = value.after(']');
 
     // References.
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxreference(
 	"([(][^)]+[)] )? *@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
 #endif
@@ -91,7 +91,7 @@ DispValueType determine_type (string value)
 
     // Structs.
     // XDB issues the struct address before each struct.
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxstr_or_cl_begin(
 	"(0(0|x)[0-9a-f]+|[(]nil[)])? *"
 	"([(]|[{]|record\n|RECORD\n|RECORD |OBJECT "
@@ -108,7 +108,7 @@ DispValueType determine_type (string value)
 	    return Simple;
 
 	// Check for leading keywords.
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	static regex rxstruct_keyword_begin(
 	    "(0(0|x)[0-9a-f]+|[(]nil[)])? *"
 	    "(record\n|RECORD\n|RECORD |OBJECT "
@@ -153,12 +153,12 @@ DispValueType determine_type (string value)
     // the pointer type contains `(...)' itself (such as in pointers
     // to functions), GDB uses '{...}' instead (as in `{int ()} 0x2908
     // <main>').
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxpointer1_value("([(][^)]+[)] )?" RXADDRESS ".*");
 #endif
     if (value.matches(rxpointer1_value))
 	return Pointer;
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxpointer2_value("[{][^{}]+[}] " RXADDRESS_START ".*");
 #endif
     if (value.matches(rxpointer2_value))
@@ -544,7 +544,7 @@ void munch_dump_line (string& value)
 	string initial_line = value.before('\n');
 	strip_final_blanks(initial_line);
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	static regex rxdbxframe("[a-zA-Z_$][a-zA-Z_$0-9]*[(].*[)].*"
 				"([[].*[]]|, line .*)");
 #endif
@@ -566,7 +566,7 @@ void munch_dump_line (string& value)
 // Skip `members of SUBCLASS:' in VALUE.  Return false iff failure.
 bool read_members_of_xy (string& value)
 {
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxmembers_of_nl("members of [^\n]+: ?\n");
 #endif
 
@@ -635,7 +635,7 @@ string read_member_name (string& value)
 // Read vtable entries.  Return "" upon error.
 string read_vtable_entries (string& value)
 {
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxvtable_entries("[{][0-9][0-9]* vtable entries,.*");
 #endif
 
@@ -674,7 +674,7 @@ void cut_BaseClass_name (string& full_name)
 // Skip blanks, M3 comments, and GDB warnings
 static void read_leading_junk (string& value)
 {
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxm3comment("\\(\\*.*\\*\\).*");
 #endif
   

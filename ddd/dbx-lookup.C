@@ -98,7 +98,7 @@ string dbx_lookup(const string& func_name)
 
     case XDB:
 	{
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	    static regex rxcolons("[^:]*:[^:]*: *[0-9][0-9]*.*");
 #endif
 	    if (reply.matches(rxcolons))
@@ -178,7 +178,7 @@ int line_of_listing(string& listing)
     {
 	// SGI DBX issues `*' in column 2 before the `list'ed line.
 	// Quite useful.
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	static regex rxnlstar("\n.[*]");
 #endif
 	int idx = index(listing, rxnlstar, "\n");

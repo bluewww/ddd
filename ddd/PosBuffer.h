@@ -111,14 +111,14 @@ public:
 // format "16_FFFF" is lost in the mist of time.
 #define RXADDRESS "(0x[0-9a-fA-F]+|0[0-9a-fA-F]+[hH]|H'[0-9a-fA-F]+" \
                   "|00+|[(]nil[)]|NIL|16_[0-9a-f]+)"
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 extern const regex rxaddress;
 #endif
 
 // Possible start of address - simple prefix of RXADDRESS
 #define RXADDRESS_START "[0H]"
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 extern const regex rxaddress_start;
 #endif
 

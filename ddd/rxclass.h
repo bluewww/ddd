@@ -36,11 +36,11 @@
 #include "config.h"
 #include "bool.h"
 
-#ifndef WITH_FULL_RX
-#define WITH_FULL_RX 1
+#ifndef WITH_RUNTIME_REGEX
+#define WITH_RUNTIME_REGEX 1
 #endif
 
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
 extern "C" {
 #include <sys/types.h>
 
@@ -89,7 +89,7 @@ extern "C" {
 #undef RE_DUP_MAX		// Avoid trouble with later redefinitions
 #endif
 }
-#endif // WITH_FULL_RX
+#endif // WITH_RUNTIME_REGEX
 
 // Iff S is matched at POS, return length of matched string; 
 // -1, otherwise.  LEN is the length of S.
@@ -105,7 +105,7 @@ private:
     void operator = (const regex&) {} // no assignment
 
 protected:
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
     regex_t compiled;		// "^" + regexp
     char prefix[32];		// constant prefix (for faster search)
 
@@ -124,7 +124,7 @@ protected:
     void *data;
 
 public:
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
     // Create and compile an (extended) regular expression in T.
     regex(const char* t, int flags = REG_EXTENDED);
 #endif
@@ -149,7 +149,7 @@ public:
     int search(const char* s, int len, 
 	       int& matchlen, int startpos = 0) const;
 
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
     // Return matching info for NTH expression in START and LENGTH
     // Expression 0 is the entire regexp T; expression 1 and later are
     // the subexpressions of T.  Returns true iff successful.
@@ -159,7 +159,7 @@ public:
     bool OK() const;  // representation invariant
 };
 
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
 // Return number of expressions
 inline size_t regex::nexprs() const
 {
@@ -173,9 +173,8 @@ inline size_t regex::nexprs() const
 }
 #endif
 
-#if WITH_FULL_RX
+#if WITH_RUNTIME_REGEX
 // Some built-in regular expressions
-
 extern const regex rxwhite;          // = "[ \n\t\r\v\f]+"
 extern const regex rxint;            // = "-?[0-9]+"
 extern const regex rxdouble;         // = "-?(([0-9]+.[0-9]*)|

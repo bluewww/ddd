@@ -36,7 +36,7 @@
 #include "config.h"
 #include "rxclass.h"
 
-#if WITH_FAST_RX
+#if !RUNTIME_REGEX
 
 extern const regex rxaddr;
 extern const regex rxaddress;
@@ -150,7 +150,7 @@ extern const regex rxwhite;
 extern const regex rxxdb;
 extern const regex rxxdbpos;
 
-#endif // WITH_FAST_RX
+#endif // !RUNTIME_REGEX
 
 #endif // _DDD_regexps_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

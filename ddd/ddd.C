@@ -1378,7 +1378,7 @@ int main(int argc, char *argv[])
 	    // -?       - Help
 	    // -t       - Use TTY mode
 	    // -f       - Use fullname mode
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	    static regex rxoptions("-[bcdeiIopPrRsx]");
 #endif
 	    if (i < argc - 1 && arg.matches(rxoptions))
@@ -4246,7 +4246,7 @@ void _gdb_out(string text)
     private_gdb_output = true;
 
     // Don't care for CR if followed by NL
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxcrlf("\r\r*\n");
 #endif
     text.gsub(rxcrlf, "\n");

@@ -89,7 +89,7 @@ const regex rxaddress			(rx_matcher, "002");
 const regex rxaddress_in		(rx_matcher, "003");
 const regex rxaddress_start		(rx_matcher, "004");
 
-#if !WITH_FULL_RX
+#if !WITH_RUNTIME_REGEX
 const regex rxalpha			(rx_matcher, "005");
 const regex rxalphanum			(rx_matcher, "006");
 #endif
@@ -124,7 +124,7 @@ const regex rxdisplay_cmd_and_args	(rx_matcher, "033");
 const regex rxdont			(rx_matcher, "034");
 const regex rxdotdot			(rx_matcher, "035");
 
-#if !WITH_FULL_RX
+#if !WITH_RUNTIME_REGEX
 const regex rxdouble			(rx_matcher, "036");
 #endif
 
@@ -145,14 +145,14 @@ const regex rxgraph_cmd			(rx_matcher, "050");
 const regex rxidentifier		(rx_matcher, "051");
 const regex rxindex			(rx_matcher, "052");
 
-#if !WITH_FULL_RX
+#if !WITH_RUNTIME_REGEX
 const regex rxint			(rx_matcher, "053");
 #endif
 
 const regex rxinvalid_value		(rx_matcher, "054");
 const regex rxlookup_cmd		(rx_matcher, "055");
 
-#if !WITH_FULL_RX
+#if !WITH_RUNTIME_REGEX
 const regex rxlowercase			(rx_matcher, "056");
 #endif
 
@@ -206,14 +206,14 @@ const regex rxthread_cmd		(rx_matcher, "103");
 const regex rxundisplay			(rx_matcher, "104");
 const regex rxup_cmd			(rx_matcher, "105");
 
-#if !WITH_FULL_RX
+#if !WITH_RUNTIME_REGEX
 const regex rxuppercase			(rx_matcher, "106");
 #endif
 
 const regex rxvtable			(rx_matcher, "107");
 const regex rxvtable_entries		(rx_matcher, "108");
 
-#if !WITH_FULL_RX
+#if !WITH_RUNTIME_REGEX
 const regex rxwhite			(rx_matcher, "109");
 #endif
 

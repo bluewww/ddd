@@ -520,8 +520,8 @@ dnl
 dnl Anyway: As of DDD 2.2, we don't need all this RX stuff, but use
 dnl a LEX-generated scanner for regexps.
 dnl
-AC_DEFINE(WITH_FULL_RX, 0)
-AC_DEFINE(WITH_FAST_RX)
+AC_DEFINE(WITH_RUNTIME_REGEX, 0)
+AC_DEFINE(RUNTIME_REGEX, 0)
 dnl
 dnl
 dnl That's all, folks!

@@ -390,7 +390,7 @@ Boolean CvtStringToXmString(Display *display,
 {
     const string font_esc = "@";
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxfont_id("[_A-Za-z][-_A-Za-z0-9]*");
     static regex rxblank("[ \t]?");
 #endif

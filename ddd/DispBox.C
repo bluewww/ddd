@@ -75,7 +75,7 @@ DispBox::DispBox (int disp_nr, const string& t, const DispValue *dv)
     if (!is_user_command(title))
     {
 	// Strip DBX scope information from title
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	static regex rxdbx_scope("[a-zA-Z_0-9]*`");
 #endif
 	while (int(title.length()) > max_display_title_length 

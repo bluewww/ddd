@@ -48,7 +48,7 @@ char PosBuffer_rcsid[] =
 #include "regexps.h"
 #include "index.h"
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 // A regex for C addresses ("0xdead") and Modula-2 addresses ("0BEEFH");
 regex rxaddress(RXADDRESS);
 regex rxaddress_start(RXADDRESS_START);
@@ -161,7 +161,7 @@ void PosBuffer::filter (string& answer)
 	while (j > 0 && answer[j - 1] != '\n')
 	    j--;
 	
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	static regex rxterminated("([Tt]he )?[Pp]rogram "
 				  "(exited|terminated"
 				  "|is not being run|no longer exists).*");
@@ -236,7 +236,7 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `$pc = ADDRESS'
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		    static regex rxpc("\\$pc  *=  *" RXADDRESS);
 #endif
 		    int pc_index = index(answer, rxpc, "$pc ");
@@ -263,7 +263,7 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `Breakpoint N, ADDRESS in FUNCTION'
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		    static regex rxstopped("Breakpoint  *[1-9][0-9]*,  *"
 					   RXADDRESS);
 #endif
@@ -278,7 +278,7 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `#FRAME ADDRESS in FUNCTION'
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		    static regex rxframe("#[0-9][0-9]*  *" RXADDRESS);
 #endif
 
@@ -295,7 +295,7 @@ void PosBuffer::filter (string& answer)
 		{
 		    // `No line number available for 
 		    // address ADDRESS <FUNCTION>'
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		    static regex rxaddr("address  *" RXADDRESS);
 #endif
 
@@ -310,7 +310,7 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "" && answer != "")
 		{
 		    // `ADDRESS in FUNCTION'
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		    static regex rxaddress_in(RXADDRESS " in ");
 #endif
 		    int pc_index = -1;
@@ -321,7 +321,7 @@ void PosBuffer::filter (string& answer)
 		    }
 		    else
 		    {
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 			static regex rxnladdress_in("\n" RXADDRESS " in ");
 #endif
 			pc_index = index(answer, rxnladdress_in, "\n");
@@ -352,7 +352,7 @@ void PosBuffer::filter (string& answer)
 		    // Handle erroneous `info line' output like
 		    // `Line number 10 is out of range for "t1.f".'
 		    // At least get the file name.
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		    static regex rxout_of_range(
 	                "Line number [0-9]+ is out of range for ");
 #endif
@@ -414,7 +414,7 @@ void PosBuffer::filter (string& answer)
 		    }
 		}
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		static regex rxdbxfunc("[a-zA-Z_][^:]*: *[1-9][0-9]*  *.*");
 #endif
 		if (answer.matches(rxdbxfunc))
@@ -429,7 +429,7 @@ void PosBuffer::filter (string& answer)
 		    answer = answer.after("\n");
 		}
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		static regex rxdbxfunc2(
 		    ".*line  *[1-9][0-9]*  *in  *\"[^\"]*\"\n.*");
 #endif
@@ -450,7 +450,7 @@ void PosBuffer::filter (string& answer)
 		    // answer = answer.after("\n");
 		}
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		static regex rxdbxpos("[[][^]]*:[1-9][0-9]*[^]]*].*");
 #endif
 		if (answer.contains(rxdbxpos))
@@ -551,7 +551,7 @@ void PosBuffer::filter (string& answer)
 			    line = line.before('\n');
 			strip_final_blanks(line);
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 			static regex rxxdbpos(
 			    "[^: \t]*:[^:]*: [1-9][0-9]*[: ].*");
 #endif

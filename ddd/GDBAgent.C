@@ -486,7 +486,7 @@ bool GDBAgent::ends_with_prompt (const string& answer)
 		return false;
 
 	    string possible_prompt = ((string &) answer).from(i);
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	    static regex rxprompt("[(][^ )]*db[^ )]*[)] ");
 #endif
 	    if (possible_prompt.matches(rxprompt))
@@ -527,7 +527,7 @@ bool GDBAgent::ends_with_secondary_prompt (const string& answer)
 	{
 	    // AIX DBX issues `Select one of [FROM - TO]: ' in the last line
 	    // Reported by Jonathan Edwards <edwards@intranet.com>
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	    static regex rxselect("Select one of \\[[0-9]+ - [0-9]+\\]: ");
 #endif
 	    int idx = index(answer, rxselect, "Select one of ", -1);
@@ -565,19 +565,19 @@ string GDBAgent::requires_reply (const string& answer)
 	return "";
     int last_line_index = answer.index('\n', -1) + 1;
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxq(".*[(]END[)][^\n]*");
 #endif
     if (answer.matches(rxq, last_line_index))
 	return "q";		// Stop this
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxspace(".*(--More--|line [0-9])[^\n]*");
 #endif
     if (answer.matches(rxspace, last_line_index))
 	return " ";		// Keep on scrolling
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxreturn(".*([(]press RETURN[)]"
 			  "|Hit RETURN to continue"
 			  "|Type <return> to continue"
@@ -591,7 +591,7 @@ string GDBAgent::requires_reply (const string& answer)
 	// Added regular expression for "Standard input: END" to
         // GDBAgent::requires_reply 
 	// -- wiegand@kong.gsfc.nasa.gov (Robert Wiegand)
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	static regex rxxdb(".*Standard input: END.*");
 #endif
 	if (answer.matches(rxxdb, last_line_index))
@@ -706,7 +706,7 @@ void GDBAgent::strip_dbx_comments(string& s)
 	// `dbx: warning: -r option only recognized for C++' and
 	// `dbx: warning: unknown language, 'c' assumed'
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	static regex rxdbxwarn1("dbx: warning:[^\n]*"
 				"option only recognized for[^\n]*\n");
 	static regex rxdbxwarn2("dbx: warning:[^\n]*"

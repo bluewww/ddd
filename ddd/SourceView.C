@@ -1062,7 +1062,7 @@ string SourceView::full_path(string file)
      * in a dot: too bad, you can't win them all.
      */
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxdotdot("/[^/]*[^/.]/\\.\\./");
 #endif
     unsigned int file_length, prev_file_length;
@@ -2960,7 +2960,7 @@ void SourceView::process_info_bp (string& info_output,
     info_output.gsub("\n\n", "\n");
 
     // SGI dbx issues `Process PID' before numbers
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxprocess1("Process[ \t]+[0-9]+:[ \t]*");
 #endif
     info_output.gsub(rxprocess1, "");
@@ -3007,7 +3007,7 @@ void SourceView::process_info_bp (string& info_output,
 	    {
 		// SGI IRIX DBX issues `Process PID: ' 
 		// before status lines.
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 		static regex rxprocess2("Process[ \t]+[0-9]+:");
 #endif
 		if (info_output.contains(rxprocess2, 0))
@@ -4684,13 +4684,13 @@ void SourceView::setup_where_line(string& line)
 
     // Remove file paths (otherwise line can be too long for DBX)
     //   ... n.b. with templates, line can still be rather long
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxfilepath("[^ /]*/");
 #endif
     line.gsub(rxfilepath, "");
 
     // Shorten argument lists `(a = 1, b = 2, ...)' to `()'
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
     static regex rxarglist("[(][^0-9][^)]*[)]");
 #endif
     int start = index(line, rxarglist, "(");
@@ -6162,7 +6162,7 @@ void SourceView::clear_code_cache()
     process_disassemble("No code.");
 }
 
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 static regex rxnladdress("\n *" RXADDRESS);
 #endif
 

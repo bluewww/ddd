@@ -167,7 +167,7 @@ void DispValue::init(string& value)
 
     case Array:
 	{
-#if !WITH_FAST_RX
+#if RUNTIME_REGEX
 	    static regex rxsimple("([][a-zA-Z0-9_().]|->)*");
 #endif
 
