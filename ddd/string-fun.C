@@ -54,12 +54,21 @@ string itostring (int nr)
     return string(buffer);
 }
 
+static void read_leading_parentheses(string& s)
+{
+    while (s.length() > 0 && (isspace(s[0]) || s[0] == '(' || s[0] == '['))
+	s = s.after(0);
+}
+    
+
 // ***************************************************************************
 // gibt den Integer zurueck, der am Anfang des String steht
 // 
 int get_nr (/*const*/ string& s)
 {
-    string int_string = s.through(rxint);
+    string int_string(s);
+    read_leading_parentheses(int_string);
+    int_string = int_string.through(rxint);
     return atoi((const char *)int_string);
 }
 
@@ -76,12 +85,7 @@ int get_positive_nr (const char* s)
 int get_positive_nr (/*const*/ string& s)
 {
     string int_string(s);
-    while (int_string != ""
-	   && (isspace(int_string[0])
-	       || int_string[0] == '('
-	       || int_string[0] == '['))
-	int_string = int_string.after(0);
-
+    read_leading_parentheses(int_string);
     int_string = int_string.through(rxint);
     if (int_string == "")
 	return -1;
@@ -103,9 +107,7 @@ void read_leading_blanks (string& s)
 // ***************************************************************************
 string read_nr_str (string& s)
 {
-    while (s.length() > 0 && (s[0] == '(' || s[0] == '['))
-	s = s.after(0);
-
+    read_leading_parentheses(s);
     if (s == "" || !isdigit(s[0]))
 	return "";
 
@@ -117,9 +119,7 @@ string read_nr_str (string& s)
 // ***************************************************************************
 int read_positive_nr (string& s)
 {
-    while (s.length() > 0 && (s[0] == '(' || s[0] == '['))
-	s = s.after(0);
-
+    read_leading_parentheses(s);
     if (s == "" || !isdigit(s[0]))
 	return -1;
 
