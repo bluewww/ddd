@@ -24,15 +24,13 @@ DDD 3.0 is available					-*- text -*-
 What's new in DDD?
 ==================
 
-    DDD 3.0 brings a new window layout, Java support, and JDB support.
+    DDD 3.0 brings a new look, Java support, and JDB support.
 
     User-visible changes to DDD 2.2.3:
-    - New look.  The DDD 2.x button rows are replaced by an icon
-      toolbar at the top, saving vertical and horizontal space.
-    - Configurable fonts.  You can easily customize font families and
-      font sizes using just a few resources;, `ddd --fontsize 120'
-      starts DDD with 12-point fonts.  See `Setting DDD fonts' in the
-      DDD manual for details.
+    - New, `clean' look.  The DDD 2.x button rows are replaced by an
+      icon toolbar at the top, saving vertical and horizontal space.
+    - Configurable fonts.  You can now easily customize DDD font
+      families and font sizes. Try `Edit | Preferences | Fonts'.
     - JDB support.  DDD now also supports JDB as inferior debugger.
       All important JDB features are available via the GUI.
     - Java support.  Requires GDB 4.17 or later (or JDB, of course).
@@ -48,9 +46,10 @@ What's new in DDD?
       change all properties for a breakpoint at once.
     - Breakpoint commands.  You can record and edit commands to be
       executed when a breakpoint is reached.
-    - On popular demand, the command tool now has `until' and `make' buttons.
-    - Conditional breakpoints and breakpoints with ignore counts are now
-      indicated by special breakpoint symbols.
+    - On popular demand, the command tool now has `until' and `make'
+      buttons.
+    - Conditional breakpoints, temporary breakpoints, and breakpoints
+      with ignore counts now have their special symbols on their own.
     - When detecting a grabbed (frozen) mouse pointer after reaching a
       breakpoint, DDD now automatically continues execution, rather
       than attempting to ungrab the pointer.
@@ -60,11 +59,15 @@ What's new in DDD?
     - Tips of the day.  Upon startup, DDD shows a useful hint for DDD usage.
     - Value tips and selections now work for struct members, too: you
       can point at `A.B' or `A->B' and get the current value.
+    - You can have the most important dialogs be realized as
+      non-transient windows, allowing the DDD main window ro obscure
+      them.  See the `transientDialogs' resource for details.
     - The maximum number of glyphs is now configurable at startup time.
       See the `maxGlyphs' resource for details.
     - DDD no longer indents the source code, leaving more horizontal
       space.  To change this, see `Edit | Preferences | Source |
       Source indentation'.
+    - Saving options is much, much faster.
     - DBX settings now also work with SGI DBX.
 
     Bug fixes:
@@ -79,6 +82,7 @@ What's new in DDD?
     - The new grab detection mechanism no longer interferes with grabs
       on Motif popup and pulldown menus.
     - One-letter options like `-b BPS' or `-x FILE' work again.
+    - Trailing CRs in debuggee output are now properly handled.
 
     Changes in configuration and building:
     - LessTif 0.83 is supported (and a standard test environment of

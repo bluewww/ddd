@@ -79,9 +79,12 @@ will toggle more details.
 
 ! Intermediate tips.
 
+If you want to customize the DDD fonts, see
+LBL(Edit) | LBL(Preferences) | LBL(Fonts).
+
 When using GDB, all text fields have command and argument completion
-with KEY(Tab), just like the shell.  In a file selection box, type part of a filename,
-hit KEY(Tab), and voila!  It's completed.
+with KEY(Tab), just like the shell.  In a file selection box, type part of
+a filename, hit KEY(Tab), and voila!  It's completed.
 
 To display a variable-length array in GDB, enter 
 KBD(graph display VAR(ptr)\1330\135@ VAR(n)) at the GDB prompt.

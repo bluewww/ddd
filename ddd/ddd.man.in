@@ -3851,6 +3851,19 @@ This `\fB.@ddd@/init\fR' setting invokes an editing session for an
 .br
 .sp
 .TP
+.B "fontSelectCommand (\fPclass\fB FontSelectCommand)"
+A command to select from a list of fonts.  The string `\fB@FONT@\fR'
+is replaced by the current \s-2@DDD@\s+2 default font; the string
+`\fB@TYPE@\fR' is replaced by a symbolic name of the \s-2@DDD@\s+2
+font to edit.  The program must either place the name of the selected
+font in the \s-2PRIMARY\s+2 selection or print the selected font on
+standard output.  A typical value is:
+.sp
+.br
+  \fB@Ddd@*fontSelectCommand: xfontsel -print\fR
+.br
+.sp
+.TP
 .B "getCoreCommand (\fPclass\fB GetCoreCommand)"
 A command to get a core dump of a running process (typically,
 `\fBgcore\fR') `\fB@FILE@\fR' is replaced by the base name of the file
