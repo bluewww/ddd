@@ -2356,9 +2356,7 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
     // lose debugger output.  This also decreases system load on
     // single-processor machines since DDD is idle when the debugger
     // starts.
-    XSync(XtDisplay(command_shell), False);
     wait_until_mapped(command_shell);
-    XmUpdateDisplay(command_shell);
 
     // Setup TTY interface
     if (app_data.tty_mode)
@@ -6938,7 +6936,11 @@ static void ddd_fatal(int sig)
 		       XmNmessageString, mtext.xmstring(),
 		       NULL);
 
-	XtManageChild (fatal_dialog);
+	XtManageChild(fatal_dialog);
+
+	// Wait until dialog is mapped, such that DDD will exit
+	// if we get another signal during that time.
+	wait_until_mapped(fatal_dialog);
     }
 
     // Reinstall fatal error handlers
@@ -8130,6 +8132,9 @@ void DDDSaveOptionsCB (Widget w, XtPointer, XtPointer)
 // Wait until W is mapped
 static void wait_until_mapped(Widget w)
 {
+    XSync(XtDisplay(w), false);
+    XmUpdateDisplay(w);
+
     Widget shell = find_shell(w);
 
     if (XtIsRealized(w) && XtIsRealized(shell))
@@ -8149,8 +8154,8 @@ static void wait_until_mapped(Widget w)
 	}
     }
 
-    XmUpdateDisplay(w);
     XSync(XtDisplay(w), false);
+    XmUpdateDisplay(w);
 }
 
 static bool dungeon_collapsed = false;
