@@ -2261,21 +2261,22 @@ String SourceView::read_indented(string& file_name, long& length,
     }
 
     // Make room for line numbers
-    indented_text_length += indent_amount(source_text_w) * lines;
+    int indent = indent_amount(source_text_w);
+    indented_text_length += (indent + script_indent_amount) * lines;
 
     String indented_text = XtMalloc(indented_text_length + 1);
 
-    char *line_no_s = new char[indent_amount(source_text_w)];
-    for (int i = 0; i < indent_amount(source_text_w); i++)
-	line_no_s[i] = ' ';
+    string line_no_s = replicate(' ', indent);
 
     t = 0;
     char *pos_ptr = indented_text; // Writing position in indented_text
     while (t < length)
     {
+	assert (pos_ptr - indented_text <= indented_text_length);
+
 	// Increase line number
 	int i;
-	for (i = indent_amount(source_text_w) - 2; i >= 0; i--)
+	for (i = indent - 2; i >= 0; i--)
 	{
 	    char& c = line_no_s[i];
 	    if (c == ' ')
@@ -2293,10 +2294,29 @@ String SourceView::read_indented(string& file_name, long& length,
 	}
 
 	// Copy line number
-	for (i = 0; i < indent_amount(source_text_w); i++)
+	for (i = 0; i < indent; i++)
 	    *pos_ptr++ = display_line_numbers ? line_no_s[i] : ' ';
 
-	// Copy line
+	if (indent < script_indent_amount)
+	{
+	    // Check for empty line
+	    int blanks = 0;
+	    while (blanks < script_indent_amount && t < length && 
+		   isspace(text[t + blanks]) && text[t + blanks] != '\n')
+		blanks++;
+
+	    if (text[t + blanks] == '\n')
+	    {
+		// Replace empty line by some spaces, such that we can
+		// display text character breakpoints
+		for (int i = 0; i < script_indent_amount; i++)
+		    *pos_ptr++ = ' ';
+
+		t += blanks;
+	    }
+	}
+
+	// Ordinary line: just copy it
 	while (t < length && text[t] != '\n')
 	    *pos_ptr++ = text[t++];
 
@@ -2311,15 +2331,11 @@ String SourceView::read_indented(string& file_name, long& length,
 	    *pos_ptr++ = text[t++];
 	}
     }
-
-    delete[] line_no_s;
-
-    assert (pos_ptr - indented_text == indented_text_length);
     *pos_ptr = '\0';
 
     XtFree(text);
 
-    length = indented_text_length;
+    length = pos_ptr - indented_text;
     return indented_text;
 }
 
