@@ -378,10 +378,6 @@ Volunteers for these and other projects are welcome!
 257 Show whether a conditional jump (breakpoint?) will be taken or
     not.
 
-265*Make all toolbar actions accessible via alternate ways:
-    - Add `Rotate' to the Display Editor.
-    - Add `Print ()' and `Display ()' to the `Data' menu (with accelerators?)
-
 266 Include TAGS support.
 
 273 JORGE HERNANDO <hernando@cnea.edu.ar> wants

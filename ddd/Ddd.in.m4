@@ -2201,7 +2201,7 @@ Ddd*menubar*programMenu.until.acceleratorText:	   Ctrl+\133
 Ddd*menubar*programMenu.until.documentationString:
 
 Ddd*menubar*programMenu.return.labelString:	   Return
-Ddd*menubar*programMenu.return.mnemonic:	   U
+Ddd*menubar*programMenu.return.mnemonic:	   t
 Ddd*menubar*programMenu.return.accelerator:	   Ctrl<Key>Return
 Ddd*menubar*programMenu.return.acceleratorText:	   Ctrl+Return
 Ddd*menubar*programMenu.return.documentationString:
@@ -2401,6 +2401,7 @@ DESC(Edit Breakpoints..., [set, view, and edit breakpoints])\n\
 DESC(Lookup (), [lookup LBL(()) in the source])\n\
 DESC(LBL_FIND_FORWARD, [find next occurrence of LBL(())])\n\
 DESC(LBL_FIND_BACKWARD, [find previous occurrence of LBL(())])\n\
+\n\
 ITEM If LBL(Find Words Only) is set, \
 only complete words are found.\n\
     Otherwise, arbitrary occurrences are found.\n\
@@ -2510,6 +2511,9 @@ WIDGET(Data Menu)\n\
 DESC(Edit Displays..., [select, enable and delete displays])\n\
 DESC(Edit Watchpoints..., [set, view, and edit watchpoints])\n\
 \n\
+DESC(Print (),   [print LBL(()) in @GDB@ console])\n\
+DESC(Display (), [display LBL(()) in data window])\n\
+\n\
 DESC(Detect Aliases, [toggle alias detection])\n\
 \n\
 DESC(Display Local Variables, [show current local variables])\n\
@@ -2530,7 +2534,7 @@ Ddd*dataMenu*helpString:	DATA_HELP
 Ddd*dataMenu*tearOffTitle:      Data
 
 Ddd*dataMenu.displays.labelString:	Edit Displays...
-Ddd*dataMenu.displays.mnemonic:		D
+Ddd*dataMenu.displays.mnemonic:		E
 Ddd*dataMenu.displays.documentationString: \
 @rm Select, enable and delete displays
 
@@ -2538,6 +2542,20 @@ Ddd*dataMenu.watchpoints.labelString:	Edit Watchpoints...
 Ddd*dataMenu.watchpoints.mnemonic:	W
 Ddd*dataMenu.watchpoints.documentationString: \
 @rm Set, view, and edit watchpoints
+
+Ddd*dataMenu.print.labelString:		Print ()
+Ddd*dataMenu.print.mnemonic:		P
+Ddd*dataMenu.print.accelerator:		Ctrl<Key>equal
+Ddd*dataMenu.print.acceleratorText:	Ctrl+=
+Ddd*dataMenu.print.documentationString: \
+@rm Print the argument LBL(()) in the @GDB@ console
+
+Ddd*dataMenu.display.labelString:	Display ()
+Ddd*dataMenu.display.mnemonic:		D
+Ddd*dataMenu.display.accelerator:	Ctrl<Key>minus
+Ddd*dataMenu.display.acceleratorText:	Ctrl+-
+Ddd*dataMenu.display.documentationString: \
+@rm Display the argument LBL(()) in the data window
 
 Ddd*dataMenu.detectAliases.labelString:	Detect Aliases
 Ddd*dataMenu.detectAliases.mnemonic:	A
@@ -2552,7 +2570,7 @@ Ddd*dataMenu.info locals.mnemonic:	L
 Ddd*dataMenu.info locals.accelerator:	Meta<Key>L
 Ddd*dataMenu.info locals.acceleratorText: Alt+L
 Ddd*dataMenu.info locals.documentationString: \
-@rm Display the local variables of the current stack frame.
+@rm Display the local variables of the current stack frame
 
 ! This item is visible in GDB only.
 Ddd*dataMenu.info args.labelString:	Display Arguments
@@ -2560,7 +2578,7 @@ Ddd*dataMenu.info args.mnemonic:	u
 Ddd*dataMenu.info args.accelerator:	Meta<Key>U
 Ddd*dataMenu.info args.acceleratorText: Alt+U
 Ddd*dataMenu.info args.documentationString: \
-@rm Display the argument variables of the current stack frame.
+@rm Display the argument variables of the current stack frame
 
 ! This item is visible in DBX only.
 Ddd*dataMenu.dump.labelString:		Display Local Variables
@@ -2568,7 +2586,7 @@ Ddd*dataMenu.dump.mnemonic:		L
 Ddd*dataMenu.dump.accelerator:		Meta<Key>L
 Ddd*dataMenu.dump.acceleratorText:	Alt+L
 Ddd*dataMenu.dump.documentationString: \
-@rm Display all local variables of the current stack frame.
+@rm Display all local variables of the current stack frame
 
 ! This item is visible in XDB only.
 Ddd*dataMenu.l.labelString:		Display Local Variables
@@ -2576,7 +2594,7 @@ Ddd*dataMenu.l.mnemonic:		L
 Ddd*dataMenu.l.accelerator:		Meta<Key>L
 Ddd*dataMenu.l.acceleratorText:		Alt+L
 Ddd*dataMenu.l.documentationString: \
-@rm Display all local variables of the current stack frame.
+@rm Display all local variables of the current stack frame
 
 ! This item is visible in JDB only.
 Ddd*dataMenu.locals.labelString:	Display Local Variables
@@ -2584,7 +2602,7 @@ Ddd*dataMenu.locals.mnemonic:		L
 Ddd*dataMenu.locals.accelerator:	Meta<Key>L
 Ddd*dataMenu.locals.acceleratorText:	Alt+L
 Ddd*dataMenu.locals.documentationString: \
-@rm Display all local variables of the current stack frame.
+@rm Display all local variables of the current stack frame
 
 Ddd*dataMenu.infos.labelString:		More Status Displays...
 Ddd*dataMenu.infos.mnemonic:		M

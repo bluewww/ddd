@@ -1106,6 +1106,8 @@ static MMDesc helpers_preferences_menu [] =
 
 
 // Data
+static Widget print_w            = 0;
+static Widget display_w          = 0;
 static Widget locals_w           = 0;
 static Widget args_w             = 0;
 static Widget detect_aliases_w   = 0;
@@ -1118,6 +1120,9 @@ static MMDesc data_menu[] =
     { "displays",   MMPush,    { DataDisp::EditDisplaysCB }},
     { "watchpoints", MMPush,   { SourceView::EditBreakpointsCB }, 
                                  NULL, &edit_watchpoints_w },
+    MMSep,
+    {"print",         MMPush,  { gdbPrintCB   }, NULL, &print_w },
+    {"display",       MMPush,  { gdbDisplayCB }, NULL, &display_w},
     MMSep,
     { "detectAliases", MMToggle, { graphToggleDetectAliasesCB },
       NULL, &detect_aliases_w },
@@ -4287,6 +4292,8 @@ void update_arg_buttons()
     bool can_print = (arg != "") && (arg.contains("::") || !arg.contains(":"));
     set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
+    set_sensitive(print_w,   can_print);
+    set_sensitive(display_w, can_print);
 
     bool can_watch = can_print && gdb->has_watch_command();
     set_sensitive(arg_cmd_area[ArgItems::Watch].widget, can_watch);
