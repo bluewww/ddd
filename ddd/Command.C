@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// DDD command queue
+// DDD interface to GDB commands
 
 // Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -24,9 +24,9 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-char commandQueue_rcsid[] = 
+char Command_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -34,7 +34,7 @@ char commandQueue_rcsid[] =
 #pragma implementation "Queue.h"
 #endif
 
-#include "commandQ.h"
+#include "Command.h"
 #include "comm-manag.h"
 #include "status.h"
 #include "exectty.h"

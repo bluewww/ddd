@@ -77,7 +77,7 @@ char exit_rcsid[] =
 #include "HelpCB.h"
 #include "TimeOut.h"
 #include "charsets.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "converters.h"
 #include "ddd.h"
 #include "exectty.h"

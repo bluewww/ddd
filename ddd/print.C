@@ -41,7 +41,7 @@ char print_rcsid[] =
 #include "GraphEdit.h"
 #include "LiterateA.h"
 #include "TimeOut.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "cook.h"
 #include "filetype.h"
 #include "post.h"

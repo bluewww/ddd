@@ -35,7 +35,7 @@ char WhatNextCB_rcsid[] =
 
 #include "WhatNextCB.h"
 
-#include "commandQ.h"
+#include "Command.h"
 #include "converters.h"
 #include "ddd.h"
 #include "editing.h"

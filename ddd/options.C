@@ -44,7 +44,7 @@ char options_rcsid[] =
 #include "GraphEdit.h"
 #include "SourceView.h"
 #include "cook.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "ddd.h"
 #include "file.h"
 #include "filetype.h"

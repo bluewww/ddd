@@ -38,7 +38,7 @@ char args_rcsid[] =
 #include "Delay.h"
 #include "HelpCB.h"
 #include "StringA.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "ddd.h"
 #include "disp-read.h"
 #include "mydialogs.h"

@@ -46,7 +46,7 @@ char file_rcsid[] =
 #include "HelpCB.h"
 #include "SourceView.h"
 #include "VarArray.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "cook.h"
 #include "ddd.h"
 #include "filetype.h"

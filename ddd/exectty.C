@@ -49,7 +49,7 @@ char exectty_rcsid[] =
 #include "string-fun.h"
 #include "windows.h"
 #include "wm.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "cook.h"
 
 #include <fstream.h>

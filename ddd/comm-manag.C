@@ -47,7 +47,7 @@ char comm_manager_rcsid[] =
 #include "comm-manag.h"
 
 #include "bool.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "ddd.h"
 #include "dbx-lookup.h"
 #include "disp-read.h"

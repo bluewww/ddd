@@ -66,7 +66,7 @@ char DataDisp_rcsid[] =
 #include "buttons.h"
 #include "charsets.h"
 #include "cmdtty.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "converters.h"
 #include "cook.h"
 #include "post.h"

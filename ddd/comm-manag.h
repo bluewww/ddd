@@ -44,7 +44,7 @@
 
 #include "GDBAgent.h"
 
-// Note: `commandQ.h' is the preferred way of interacting with GDB.
+// Note: `Command.h' is the preferred way of interacting with GDB.
 
 // Call gdb->start() with required parameters
 void start_gdb ();

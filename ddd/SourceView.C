@@ -126,7 +126,7 @@ extern "C" {
 #include "version.h"
 #include "mydialogs.h"
 #include "verify.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "post.h"
 #include "shell.h"
 #include "windows.h"

@@ -51,7 +51,7 @@ char buttons_rcsid[] =
 #include "ddd.h"
 #include "disp-read.h"
 #include "editing.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "question.h"
 #include "regexps.h"
 #include "select.h"

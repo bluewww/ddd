@@ -198,7 +198,7 @@ extern "C" {
 #include "charsets.h"
 #include "cmdtty.h"
 #include "comm-manag.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "complete.h"
 #include "configinfo.h"
 #include "converters.h"

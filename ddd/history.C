@@ -43,7 +43,7 @@ char history_rcsid[] =
 #include "StringA.h"
 #include "args.h"
 #include "cook.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "ddd.h"
 #include "editing.h"
 #include "mydialogs.h"

@@ -40,7 +40,7 @@ char source_rcsid[] =
 #include "GDBAgent.h"
 #include "SourceView.h"
 #include "TimeOut.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "cook.h"
 #include "ctrl.h"
 #include "dbx-lookup.h"

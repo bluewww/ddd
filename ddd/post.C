@@ -42,7 +42,7 @@ char post_rcsid[] =
 #include "HelpCB.h"
 #include "TimeOut.h"
 #include "charsets.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "ddd.h"
 #include "exit.h"
 #include "string-fun.h"

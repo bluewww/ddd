@@ -55,7 +55,7 @@ char session_rcsid[] =
 #include "HelpCB.h"
 #include "SourceView.h"
 #include "charsets.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "comm-manag.h"
 #include "disp-read.h"
 #include "ddd.h"

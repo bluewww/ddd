@@ -39,7 +39,7 @@ char editing_rcsid[] =
 #include "DataDisp.h"
 #include "TimeOut.h"
 #include "status.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "complete.h"
 #include "ctrl.h"
 #include "ddd.h"

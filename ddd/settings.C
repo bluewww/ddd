@@ -56,7 +56,7 @@ char settings_rcsid[] =
 #include "EntryType.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "cook.h"
 #include "ddd.h"
 #include "question.h"

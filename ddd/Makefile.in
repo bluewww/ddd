@@ -659,7 +659,6 @@ DDD_OBJECTS = \
 	cmdtty.o     \
 	configinfo.o \
 	comm-manag.o \
-	commandQ.o   \
 	complete.o   \
 	ctrl.o       \
 	dbx-lookup.o \
@@ -704,6 +703,7 @@ DDD_OBJECTS = \
 	BreakPoint.o \
 	BreakPM.o    \
 	CodeCache.o  \
+	Command.o    \
 	DataDisp.o   \
 	DispBox.o    \
 	DispBuffer.o \

@@ -39,7 +39,7 @@ char status_rcsid[] =
 #include "GDBAgent.h"
 #include "HelpCB.h"
 #include "charsets.h"
-#include "commandQ.h"
+#include "Command.h"
 #include "ddd.h"
 #include "mydialogs.h"
 #include "post.h"

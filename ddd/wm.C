@@ -35,7 +35,7 @@ char wm_rcsid[] =
 
 #include "wm.h"
 
-#include "commandQ.h"
+#include "Command.h"
 #include "ddd.h"
 #include "string-fun.h"
 #include "findParent.h"
