@@ -78,9 +78,39 @@ static void ClearOriginCB(Widget w, XtPointer, XtPointer)
 	gdb_last_origin = 0;
 }
 
+// Translate frequently used commands
+void translate_command(string& command)
+{
+    switch(gdb->type())
+    {
+    case XDB:
+	// XDB is too dumb to find out aliases
+	if (command == "run")
+	    command = "r";
+	else if (command == "cont")
+	    command = "c";
+	else if (command == "next")
+	    command = "S";
+	else if (command == "step")
+	    command = "s";
+	else if (command == "quit")
+	    command = "q";
+	break;
+
+    case JDB:
+	// JDB uses `step up' instead of `finish'
+	if (command == "finish")
+	    command = "step up";
+	break;
+    }
+}
+
+// Process command C; do it right now.
 void _gdb_command(const Command& c)
 {
     string cmd = c.command;
+    translate_command(cmd);
+
     if (gdb->isReadyWithPrompt())
     {
 	if (c.verbose)
@@ -93,8 +123,7 @@ void _gdb_command(const Command& c)
 	{
 	    promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
 	}
-	else if (c.command.length() > 0 && c.verbose 
-		 /* && c.priority == COMMAND_PRIORITY_USER */)
+	else if (c.command.length() > 0 && c.verbose)
 	{
 	    add_to_history(cmd);
 	}

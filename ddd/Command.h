@@ -189,5 +189,8 @@ extern void processCommandQueue(XtPointer = 0, XtIntervalId *id = 0);
 // True if GDB processed any user command (= we had user interaction)
 extern bool userInteractionSeen();
 
+// Translate frequently used commands
+extern void translate_command(string& command);
+
 #endif // _DDD_Command_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -218,26 +218,12 @@ static string gdbHelpName(Widget widget)
 
 static string gdbHelp(string command)
 {
-    if (gdb->type() == XDB)
-    {
-	// XDB is too dumb to find out aliases
-	if (command == "run")
-	    command = "r";
-	else if (command == "cont")
-	    command = "c";
-	else if (command == "next")
-	    command = "S";
-	else if (command == "step")
-	    command = "s";
-	else if (command == "quit")
-	    command = "q";
-    }
+    translate_command(command);
 
-    if (gdb->type() == JDB)
+    if (gdb->type() == JDB && command == "next")
     {
 	// JDB 1.1 has an undocumented `next' command.  Treat it like `step'.
-	if (command == "next")
-	    command = "step";
+	command = "step";
     }
 
     string help = NO_GDB_ANSWER;
