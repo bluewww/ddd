@@ -24,7 +24,7 @@ DDD 2.2.1 is available					-*- text -*-
 What's new in DDD?
 ==================
 
-    DDD 2.2.1 fixes some minor bugs introduced in DDD 2.2:
+    DDD 2.2.1 fixes some minor bugs introduced in DDD 2.2.
 
     User-visible changes to DDD 2.2:
     - When saving a session, you can now select the method for getting
@@ -37,16 +37,16 @@ What's new in DDD?
     - By default, DDD stops disassembling after 1024 bytes.  This is
       useful when working with the machine code of huge functions.
       See the `maxDisassemble' resource for more info.
-    - Several status messages have been reworked; they now show the
-      outcome of a command.
+    - Several status and diagnostic messages have been reworked; they
+      now show the outcome of a command.
     - DDD now works around a bug present in Linux libc 5.4.38 to
       5.4.40 that prevented DDD <-> GDB communication.
     - The `gcore' method for getting core files is now fully supported.
     - Various glitches in command queue management have been fixed:
       * Interacting with the debuggee (or interrupting it) now
         properly discards pending debugger commands.
-      * In `--tty' mode, DDD can now properly handle long command
-        sequences.  This is useful when running DDD from Emacs.
+      * In `--tty' mode, DDD can now handle long command sequences.
+        This is useful when running DDD from Emacs.
       * In `--tty' mode, you can now send EOF (^D) characters to the
         debugged program without having DDD terminate GDB.
     - Trying to open non-existent source files no longer confuses GDB.
@@ -57,12 +57,11 @@ What's new in DDD?
       with all X window managers.
 
     Changes in configuration and building:
-    - libiberty has been updated to the state found in EGCS 1.0.
-    - configure scripts have been updated to the state found in EGCS 1.0.
-    - The EGCS 1.0 compiler is supported (see http://www.cygnus.com/egcs/)
+    - GNU libiberty and the GNU configure scripts are now up-to-date.
+    - The EGCS C++ compiler is supported (see `http://www.cygnus.com/egcs/').
 
     There are also some more minor improvements and bug fixes.  See
-    the ChangeLog for details.
+    the `ChangeLog' file for details.
 
 
 What is DDD, anyway?
