@@ -43,6 +43,8 @@ Debuggers and Languages
 
 - Parsing of JDB data has been improved.
 
+- DBX prompts for object file names are recognized.
+
 
 User Interface
 --------------
@@ -100,7 +102,6 @@ Data exploration
   touches a display (rather than enclosing it entirely).
 
 - The Display Editor has buttons for clustering and unclustering displays.
-
 
 
 Running the Program
