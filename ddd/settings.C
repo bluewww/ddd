@@ -808,81 +808,60 @@ string get_dbx_help(string dbxenv, string base)
     return get_dbx_help(dbxenv, base, 60);
 }
 
+struct DBXTranslation {
+    String base;
+    String doc;
+};
+
+static DBXTranslation dbx_translations[] = 
+{
+    {"$addrfmt64", "C format for address printing (64bit)"},
+    {"$assignverify", "Verify assignments"},
+    {"$byteaccess", "Access memory items less than 4 bytes"},
+    {"$ctypenames", "Support C type names"},
+    {"$dispix", "Display pixie instructions"},
+    {"$fp_precise", "Floating point precise mode"},
+    {"$fp_precise", "Floating point precise mode"},
+    {"$framereg", "Registers are with respect to the current frame"},
+    {"$groupforktoo", "Group fork too"},
+    {"$hexdoubles", "Display float values as float and hex"},
+    {"$newevent", "Last new event number"},
+    {"$newpgrpevent", "Last new pgrp event number"},
+    {"$newrecord", "Last record number"},
+    {"$nonstop", "Stop the debugged process"},
+    {"$pager", "Pager"},
+    {"$pendingtraps", "Pending traps"},
+    {"$piaddtohist", "Add playback commands to history"},
+    {"$print_exception_frame", "Print exception frames"},
+    {"$shellparameters", "Shell parameters"},
+    {"$showbreakaddrs", "Show the address of placed breakpoints"},
+    {"$showfilename", "Show file name when stopping"},
+    {"$sourcepathrule", "Rule for accessing source paths"},
+    {"$stacktracelimit", "Stack trace limit"},
+    {"$stacktracelimit", "Stack trace limit"},
+    {"$stdc", "Support Standard C"},
+    {"$stepintoall", "Step into all procedures"},
+    {"$stopformat", "Stop format"},
+    {"$whereisdsolimit", "Whereis limit"},
+    {"disassembler_version", "Disassembler version"},
+    {"follow_fork_inherit", "When following child, inherit events"},
+    {"follow_fork_mode", "When process forks"},
+    {"output_list_size", "Lines to print in the `list' command"},
+    {"rtc_biu_at_exit", "Produce memory report at exit"},
+    {"rtc_biu_at_exit", "Produce memory report at exit"},
+    {"run_autostart", "Let `step' and `next' implicitly start the program"},
+    {"run_io", "Redirect I/O to"},
+    {"suppress_startup_message", "Suppress startup message below release"},
+};
+
 static string get_dbx_doc(string dbxenv, string base)
 {
     // Some specials
-    if (base == "rtc_biu_at_exit")
-	return "Produce memory report at exit";
-    if (base == "run_autostart")
-	return "Let `step' and `next' implicitly start the program";
-    if (base == "follow_fork_inherit")
-	return "When following child, inherit events";
-    if (base == "follow_fork_mode")
-	return "When process forks";
-    if (base == "run_io")
-	return "Redirect I/O to";
-    if (base == "output_list_size")
-	return "Lines to print in the `list' command";
-    if (base == "suppress_startup_message")
-	return "Suppress startup message below release";
-    if (base == "disassembler_version")
-	return "Disassembler version";
-    if (base == "$byteaccess")
-	return "Access memory items less than 4 bytes";
-    if (base == "$dispix")
-	return "Display pixie instructions";
-    if (base == "$hexdoubles")
-	return "Display float values as float and hex";
-    if (base == "$pendingtraps")
-	return "Pending traps";
-    if (base == "$print_exception_frame")
-	return "Print exception frames";
-    if (base == "$showbreakaddrs")
-	return "Show the address of placed breakpoints";
-    if (base == "$stdc")
-	return "Support Standard C";
-    if (base == "$addrfmt64")
-	return "C format for address printing (64bit)";
-    if (base == "$ctypenames")
-	return "Support C type names";
-    if (base == "$fp_precise")
-	return "Floating point precise mode";
-    if (base == "$fp_precise")
-	return "Floating point precise mode";
-    if (base == "$framereg")
-	return "Registers are with respect to the current frame";
-    if (base == "$groupforktoo")
-	return "Group fork too";
-    if (base == "$newevent")
-	return "Last new event number";
-    if (base == "$newpgrpevent")
-	return "Last new pgrp event number";
-    if (base == "$newrecord")
-	return "Last record number";
-    if (base == "$nonstop")
-	return "Stop the debugged process";
-    if (base == "$pager")
-	return "Pager";
-    if (base == "$piaddtohist")
-	return "Add playback commands to history";
-    if (base == "$stacktracelimit")
-	return "Stack trace limit";
-    if (base == "$stacktracelimit")
-	return "Stack trace limit";
-    if (base == "$stepintoall")
-	return "Step into all procedures";
-    if (base == "$stopformat")
-	return "Stop format";
-    if (base == "$whereisdsolimit")
-	return "Whereis limit";
-    if (base == "$assignverify")
-	return "Verify assignments";
-    if (base == "$shellparameters")
-	return "Shell parameters";
-    if (base == "$showfilename")
-	return "Show file name when stopping";
-    if (base == "$sourcepathrule")
-	return "Rule for accessing source paths";
+    for (int i = 0; i < int(XtNumber(dbx_translations)); i++)
+    {
+	if (base == dbx_translations[i].base)
+	    return dbx_translations[i].doc;
+    }
     
     // Generic help
     string dbx_doc = get_dbx_help(dbxenv, base, -1);
