@@ -2,6 +2,7 @@
 // Store information about all displayed display expressions
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>
 // 
@@ -118,7 +119,6 @@ int DispGraph::count_all (Displaying e) const
 		count++;
 	    break;
 	default:
-	    // Falscher Fehler
 	    assert (0);
 	    break;
 	}
@@ -289,7 +289,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
     BoxPoint grid(max(grid_height, 1), max(grid_width, 1));
     BoxPoint delta(grid[X] * 3, grid[Y] * 2);
 
-    bool horizontal = rotation % 90;
+    bool horizontal = rotation % 180;
 
     BoxPoint pos;
     BoxPoint offset;
