@@ -139,23 +139,26 @@ void wait_until_mapped(Widget w, Widget shell)
 
 void raise_shell(Widget w)
 {
-    if (w == 0)
+    if (w == 0 || !XtIsRealized(w))
 	return;
 
     // Place current shell on top
     Widget shell = findShellParent(w);
-    XRaiseWindow(XtDisplay(w), XtWindow(shell));
+    if (shell != 0 && XtIsRealized(shell))
+    {
+	XRaiseWindow(XtDisplay(w), XtWindow(shell));
 
 #if 0
-    wait_until_mapped(w);
+	wait_until_mapped(w);
 
-    // Get focus
-    XSetInputFocus(XtDisplay(w), XtWindow(w), RevertToParent, 
-		   XtLastTimestampProcessed(XtDisplay(w)));
+	// Get focus
+	XSetInputFocus(XtDisplay(w), XtWindow(w), RevertToParent, 
+		       XtLastTimestampProcessed(XtDisplay(w)));
 #endif
 
-    // Try this one
-    XmProcessTraversal(w, XmTRAVERSE_CURRENT);
+	// Try this one
+	XmProcessTraversal(w, XmTRAVERSE_CURRENT);
+    }
 }
 
 void manage_and_raise(Widget w)
