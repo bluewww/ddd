@@ -1,4 +1,4 @@
-! $Id$ -*- m4 -*-
+! $Id$
 ! DDD Resource File.  DO NOT INSTALL THIS FILE!  See below for details.
 ! @configure_input@
 include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
@@ -2847,7 +2847,7 @@ Ddd*edit_buttons*helpString: \
 \n\
 Each line specifies a user-defined button, in the format\n\
 \n\
-    VAR(command)   CODE(//) VAR(label)\n\
+    VAR(command)\ \ \ \ CODE(//) VAR(label)\n\
 \n\
 If SAMP(// VAR(label)) is omitted, VAR(command) is used as label.\n\
 \n\

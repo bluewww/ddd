@@ -380,17 +380,4 @@ Volunteers for these and other projects are welcome!
 
 226. Check if two DDD's are using the same ~/.ddd/ file.
 
-227. Christoph Koegl <koegl@informatik.uni-kl.de> says:
-     If I first unfold a pointer via "Display *" in the context menu
-     (thus creating either an arrow as well as a a new display of
-     whatever the pointer points to or [with alias detection turned
-     on] only an arrow, pointing to some already existing display) the
-     newly drawn arrow is selected (if this arrow is not a straight
-     line). If I now display some other variable (crea- ting a new
-     display) its display is selected *as well*. Thus, if I now move
-     the new display the arrow is also "moved" (i.e. bent) which is
-     quite inconvenient. Solution: highlight only new display but not
-     new arrows.
-     [Just don't select aliases automatically?  -AZ]
-
 228. (Insert your project idea here)

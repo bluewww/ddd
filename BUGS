@@ -390,9 +390,6 @@ Volunteers for fixing these and other bugs are welcome!
 211. Graham Hudspith <ghudspit@mltsa.uk.lucent.com> reports that the
      HP-UX version of DDD 2.1.95 crashes at start-up.
 
-212. Make sure "assert.h" is not loaded upon configuration (even if
-     `.' is in the <...> include path)
-
 213* Fred Damen <damenf@cig.mot.com> says: I have been using the new
      ddd with sun's dbx 4.0 and have noticed somethings that could be
      better.
