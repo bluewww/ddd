@@ -38,7 +38,7 @@ dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
 dnl
-AC_INIT([ddd],[3.3.9-test1],[ddd@gnu.org])
+AC_INIT([ddd],[3.3.9-test2],[ddd@gnu.org])
 NICKNAME="Perky"
 AC_SUBST(NICKNAME)
 DDD_NAMES
@@ -761,7 +761,7 @@ dnl (I haven't tried other HPUX versions, so I'd be glad for any feedback.)
 case "$host_os" in
 hpux10.20|hpux11.00|hpux11.11)
    AC_MSG_WARN([Forcing static link of Motif as HP-UX linker bug workaround.])
-   XM_LIBS="/usr/lib/libXm.a"
+   XM_LIBS="/usr/lib/Motif1.2_R6/libXm.a"
    ;;
 esac
 AC_SUBST(XP_LIBS)
