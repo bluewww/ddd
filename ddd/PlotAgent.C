@@ -246,20 +246,12 @@ void PlotAgent::abort()
 
 inline double min(double a, double b)
 {
-#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
-    return a <? b;
-#else
     return a < b ? a : b;
-#endif
 }
 
 inline double max(double a, double b)
 {
-#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
-    return a >? b;
-#else
     return a > b ? a : b;
-#endif
 }
 
 // Check value

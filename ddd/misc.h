@@ -33,20 +33,12 @@
 
 inline int min(int a, int b)
 {
-#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
-    return a <? b;
-#else
     return a < b ? a : b;
-#endif
 }
 
 inline int max(int a, int b)
 {
-#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
-    return a >? b;
-#else
     return a > b ? a : b;
-#endif
 }
 
 inline int sgn(int a)
