@@ -32,14 +32,12 @@ char vsl_rcsid[] =
 #include "strclass.h"
 #include <stdlib.h>
 
-extern "C" {
 #include <X11/Intrinsic.h>      // X Toolkit
 #include <X11/Xlib.h>           // X Library
-#include "DocSpace.h"           // DocSpace Widget
 #include <X11/Xaw/Viewport.h>   // Viewport Widget
 #include <X11/StringDefs.h>     // String Definitions
 #include <X11/Xaw/Cardinals.h>  // Definition ZERO
-}
+#include "DocSpace.h"           // DocSpace Widget
 
 #include "bool.h"
 #include "VSLLib.h"

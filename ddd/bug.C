@@ -28,9 +28,7 @@ char bug_rcsid[] =
     "$Id$";
 
 // includes von Motif-Zeugs
-extern "C" {
 #include <Xm/Xm.h>
-}
 
 // includes von Nora-Zeugs
 #include "strclass.h"
@@ -41,9 +39,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h> // fuer atoi
-extern "C" {
 #include <string.h> // fuer strdup, strchr
-}
 
 const int BPIndent = 5;
 const char *BPIndentText = "-----";

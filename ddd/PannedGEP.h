@@ -34,7 +34,6 @@
 #include <Xm/Xm.h>
 
 // Superclasses
-extern "C" {
 #define new new_w
 #define class class_w
 #include <X11/IntrinsicP.h>
@@ -42,7 +41,6 @@ extern "C" {
 #include <X11/Xaw/PortholeP.h>
 #undef new
 #undef class
-}
 
 // This class
 #include "PannedGE.h"

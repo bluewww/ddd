@@ -38,9 +38,7 @@
 //-----------------------------------------------------------------------------
 
 // includes von Motif-Zeugs
-extern "C" {
 #include <Xm/TextF.h>
-}
 
 // includes von Nora-Zeugs
 #include "HandlerL.h"

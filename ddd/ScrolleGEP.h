@@ -34,7 +34,6 @@
 #include <Xm/Xm.h>
 
 // Superclasses
-extern "C" {
 #define new new_w
 #define class class_w
 #include <Xm/XmP.h>
@@ -42,7 +41,6 @@ extern "C" {
 #include <Xm/ScrolledWP.h>
 #undef new
 #undef class
-}
 
 // This class
 #include "ScrolledGE.h"

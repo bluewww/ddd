@@ -36,9 +36,7 @@
 #endif
 
 // includes von Motif-Zeugs
-extern "C" {
 #include <Xm/Xm.h>
-}
 
 // includes von Nora-Zeugs
 #include "strclass.h"

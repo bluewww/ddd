@@ -56,21 +56,6 @@ char SourceView_rcsid[] =
 #include <Xm/SelectioB.h>
 #include <Xm/List.h>
 
-#if XmVersion < 1002
-// _XmTextEnableRedisplay(), _XmTextDisableRedisplay()
-extern "C" {
-#define new new_w
-#define class class_w
-#define Input _motif_Input
-#define Output _motif_Output
-#include <Xm/TextP.h>
-#undef Output
-#undef Input
-#undef class
-#undef new
-}; 
-#endif
-
 // sonstige includes
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -849,11 +834,6 @@ void SourceView::read_file (string file_name,
     Delay delay;
 
     // Set string and initial line
-#if XmVersion >= 1002
-    XmTextDisableRedisplay(source_text_w);
-#elif !defined(LESSTIF_VERSION)
-    _XmTextDisableRedisplay(XmTextWidget(source_text_w), FALSE);
-#endif
     XtVaSetValues(source_text_w,
 		  XmNvalue, String(current_text),
 		  NULL);
@@ -863,11 +843,6 @@ void SourceView::read_file (string file_name,
 	initial_pos = pos_of_line[initial_line] + bp_indent_amount;
 
     SetInsertionPosition(initial_pos, true);
-#if XmVersion >= 1002
-    XmTextEnableRedisplay(source_text_w);
-#elif !defined(LESSTIF_VERSION)
-    _XmTextEnableRedisplay(XmTextWidget(source_text_w));
-#endif
 
     if (file_name != current_file_name) {
 	current_file_name = file_name;
