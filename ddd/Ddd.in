@@ -1492,7 +1492,7 @@ Click the @bf right mouse button @rm to get a popup menu:\n\
 
 Ddd*line_popup.set.labelString:		Set Breakpoint
 Ddd*line_popup.set_temp.labelString:	Set Temporary Breakpoint
-Ddd*line_popup.temp_n_cont.labelString:	Set Temporary and Continue
+Ddd*line_popup.temp_n_cont.labelString:	Continue Until Here
 
 Ddd*bp_popup.disable.labelString:	Disable Breakpoint
 Ddd*bp_popup.condition.labelString:	Set Condition
@@ -2191,6 +2191,19 @@ Instead, the source was obtained from the debugger, via the ``list'' command.
 Ddd*source_trunc_error_popup.title: @DDD@: Source Truncated
 Ddd*source_trunc_error*contextHelpString:	\
 @rm The current source file was not be loaded entirely.
+
+Ddd*source_empty_warning.title: @DDD@: Source Empty
+Ddd*source_empty_warning*contextHelpString:	\
+@rm The current source file is empty. \n\
+This is very unusual for source files. \n\
+Please verify your file name and try again.
+
+Ddd*source_binary_warning.title: @DDD@: Source Binary
+Ddd*source_binary_warning*contextHelpString:	\
+@rm The current source file contains NULL characters. \n\
+This is very unusual for source files. \n\
+You probably gave the name of a binary file. \n\
+Please verify the file name and try again.
 
 Ddd*source_position_error_popup.title: @DDD@: No Current Position
 Ddd*source_position_error*contextHelpString:	\

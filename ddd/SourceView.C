@@ -308,8 +308,19 @@ void SourceView::line_popup_temp_n_contCB (Widget w,
 					   XtPointer client_data,
 					   XtPointer call_data)
 {
-    line_popup_set_tempCB(w, client_data, call_data);
-    gdb_command("cont");
+    int line_nr = *((int *)client_data);
+    switch (gdb->type())
+    {
+    case GDB:
+	gdb_command("until " + basename(current_file_name) + ":" + 
+		    itostring(line_nr), source_view_w);
+	break;
+    
+    case DBX:
+	line_popup_set_tempCB(w, client_data, call_data);
+	gdb_command("cont", source_view_w);
+	break;
+    }
 }
 
 // ***************************************************************************
@@ -567,9 +578,10 @@ void SourceView::SetInsertionPosition(XmTextPosition pos, bool fromTop)
 // ***************************************************************************
 
 // Read local file from FILE_NAME
-String SourceView::read_local(const string& file_name)
+String SourceView::read_local(const string& file_name, long& length)
 {
     StatusDelay delay("Reading file " + quote(file_name));
+    length = 0;
 
     // Make sure the file is a regular text file and open it
     int fd;
@@ -600,7 +612,7 @@ String SourceView::read_local(const string& file_name)
     // enough space for the entire file and reading the file into the
     // allocated space.
     char* text = XtMalloc(unsigned(statb.st_size + 1));
-    if (read(fd, text, statb.st_size) != statb.st_size)
+    if ((length = read(fd, text, statb.st_size)) != statb.st_size)
 	post_error (file_name + ": " + strerror(errno),
 		    "source_trunc_error", source_view_w);
     close(fd);
@@ -615,10 +627,11 @@ String SourceView::read_local(const string& file_name)
 
 
 // Read (possibly remote) file FILE_NAME; a little slower
-String SourceView::read_remote(const string& file_name)
+String SourceView::read_remote(const string& file_name, long& length)
 {
     StatusDelay delay("Reading file " + 
 		      quote(file_name) + " from remote host");
+    length = 0;
 
     string cat_command = sh_command(string("cat") + " " + file_name);
 
@@ -629,17 +642,16 @@ String SourceView::read_remote(const string& file_name)
     if (fp == 0)
 	return 0;
 
-    int n = 0;
     String text = XtMalloc(1);
 
     do {
-	text = XtRealloc(text, n + BUFSIZ + 1);
-	n += fread(text + n, sizeof(char), BUFSIZ, fp);
+	text = XtRealloc(text, length + BUFSIZ + 1);
+	length += fread(text + length, sizeof(char), BUFSIZ, fp);
     } while (!feof(fp));
 
-    text[n] = '\0';  // be sure to null-terminate
+    text[length] = '\0';  // be sure to null-terminate
 
-    if (n == 0)
+    if (length == 0)
 	post_error("Cannot access remote file " + quote(file_name), 
 		   "remote_file_error");
     return text;
@@ -648,8 +660,9 @@ String SourceView::read_remote(const string& file_name)
 
 // Read file FILE_NAME via the GDB `list' function
 // Really slow, is guaranteed to work for source files.
-String SourceView::read_from_gdb(const string& file_name)
+String SourceView::read_from_gdb(const string& file_name, long& length)
 {
+    length = 0;
     if (!gdb->isReadyWithPrompt())
 	return 0;
 
@@ -674,7 +687,7 @@ String SourceView::read_from_gdb(const string& file_name)
     String text = XtMalloc(listing.length());
 
     int i = 0;
-    int j = 0;
+    length = 0;
     while (i < int(listing.length()))
     {
 	while (i < int(listing.length()) && isspace(listing[i]))
@@ -697,10 +710,10 @@ String SourceView::read_from_gdb(const string& file_name)
 
 	    // Copy line
 	    while (i < int(listing.length()) && listing[i] != '\n')
-		text[j++] = listing[i++];
+		text[length++] = listing[i++];
 
 	    // Copy newline character
-	    text[j++] = '\n';
+	    text[length++] = '\n';
 	    i++;
 	}
 	else
@@ -718,26 +731,27 @@ String SourceView::read_from_gdb(const string& file_name)
 	}
     }
 
-    text[j] = '\0';  // be sure to null-terminate
+    text[length] = '\0';  // be sure to null-terminate
     return text;
 }
 
 
 // Read file FILE_NAME and format it
-String SourceView::read_indented(string& file_name)
+String SourceView::read_indented(string& file_name, long& length)
 {
+    length = 0;
     Delay delay;
 
     String text;
     if (!remote_gdb())
-	text = read_local(file_name);
+	text = read_local(file_name, length);
     else
-	text = read_remote(file_name);
+	text = read_remote(file_name, length);
 
-    if (text == 0 || text[0] == '\0')
+    if (text == 0 || length == 0)
     {
 	string source_name = basename(file_name);
-	text = read_from_gdb(source_name);
+	text = read_from_gdb(source_name, length);
 
 	if (text != 0 && text[0] != '\0')
 	{
@@ -749,22 +763,28 @@ String SourceView::read_indented(string& file_name)
 	}
     }
 
-    if (text == 0 || text[0] == '\0')
+    if (text == 0 || length == 0)
 	return 0;
 
-    // Im Text Platz fuer bpoint-Informationen schaffen.
+    // Determine text length and number of lines
     int lines = 0;
-    char* text_ptr = text; // durchlaeuft text
-    while (*text_ptr != '\0')
-	if (*text_ptr++ == '\n')
+    for (long t = 0; t < length; t++)
+	if (text[t] == '\n')
 	    lines++;
 
-    int indented_text_length = text_ptr - text + bp_indent_amount * lines;
-    if (text_ptr > text && text_ptr[-1] != '\n')
+    int indented_text_length = length;
+    if (length > 0 && text[length - 1] != '\n')
     {
-	// ein Zeichen mehr fuer '\n' am Ende
+	// Text does not end in '\n':
+	// Make room for final '\n'
 	indented_text_length += 1;
+
+	// Make room for final line
+	lines++;
     }
+
+    // Make room for line numbers
+    indented_text_length += bp_indent_amount * lines;
 
     String indented_text = XtMalloc(indented_text_length + 1);
 
@@ -772,9 +792,9 @@ String SourceView::read_indented(string& file_name)
     for (int i = 0; i < bp_indent_amount; i++)
 	line_no_s[i] = ' ';
 
-    text_ptr = text;
+    t = 0;
     char *pos_ptr = indented_text; // Schreibposition in indented_text
-    while (*text_ptr != '\0')
+    while (t < length)
     {
 	// Increase line number
 	int i;
@@ -800,18 +820,18 @@ String SourceView::read_indented(string& file_name)
 	    *pos_ptr++ = line_no_s[i];
 
 	// Copy line
-	while (*text_ptr != '\0' && *text_ptr != '\n')
-	    *pos_ptr++ = *text_ptr++;
+	while (t < length && text[t] != '\n')
+	    *pos_ptr++ = text[t++];
 
-	// '\n' bzw. '\0' kopieren
-	if (*text_ptr == '\0')
+	// Copy '\n' or '\0'
+	if (t == length)
 	{
-	    // text doesn't end in '\n'
+	    // Text doesn't end in '\n'
 	    *pos_ptr++ = '\n';
 	}
 	else
 	{
-	    *pos_ptr++ = *text_ptr++;
+	    *pos_ptr++ = text[t++];
 	}
     }
 
@@ -822,6 +842,7 @@ String SourceView::read_indented(string& file_name)
 
     XtFree(text);
 
+    length = indented_text_length;
     return indented_text;
 }
 
@@ -835,14 +856,20 @@ int SourceView::read_current(string& file_name, bool force_reload)
     }
     else
     {
-	String indented_text = read_indented(file_name);
-	if (indented_text == 0)
+	long length = 0;
+	String indented_text = read_indented(file_name, length);
+	if (indented_text == 0 || length == 0)
 	    return -1;
 
-	current_text = indented_text;
+	current_text = string(indented_text, length);
 	XtFree(indented_text);
 
 	file_cache[file_name] = current_text;
+
+	int null_count = current_text.freq('\0');
+	if (null_count > 0)
+	    post_warning("File " + quote(file_name) + " is a binary file.", 
+			 "source_binary_warning");
     }
 
     // Setup global parameters
@@ -921,9 +948,15 @@ void SourceView::read_file (string file_name,
     XtManageChild(arg_cmd_w);
 
     ostrstream os;
-    os << "File " << quote(file_name) << " " 
-       << line_count << " lines, "
-       << current_text.length() << " characters";
+    os << "File " << quote(file_name) << " ";
+    if (line_count == 1)
+	os << "1 line, ";
+    else
+	os << line_count << " lines, ";
+    if (current_text.length() == 1)
+	os << "1 character";
+    else
+	os << current_text.length() << " characters";
 
     string status(os);
     set_status(status);
@@ -2107,6 +2140,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     else {
 	// 'Umgebenden' C-String ermitteln, und Popup dafuer oeffnen
 	static string word;
+	static string ref_word;
 
 	XmTextPosition startpos;
 	XmTextPosition endpos;
@@ -2116,6 +2150,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	if (startpos < XmTextPosition(current_text.length())
 	    && startpos < endpos)
 	    word = current_text(int(startpos), int(endpos - startpos));
+	ref_word = "*" + word;
 	
 	Widget text_popup_w = MMcreatePopupMenu(w, "text_popup", text_popup);
 	MMaddCallbacks (text_popup, XtPointer(&word));
@@ -2125,7 +2160,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	XtAddCallback(shell, XtNpopdownCallback, DestroyThisCB, shell);
 
 	MString current_arg(word, "tt");
-	MString current_ref_arg("*" + word, "tt");
+	MString current_ref_arg(ref_word, "tt");
 
 	Arg args[5];
 	int arg = 0;

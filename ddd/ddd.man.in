@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "21 November 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "23 November 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -396,8 +396,6 @@ Finally, you can use the \s-2GDB\s+2 `\fBdisable\fR' command.  Type
 .\"
 .SS "Temporary Breakpoints"
 .\"
-Note: \s-2DBX\s+2 does not support temporary breakpoints.
-.PP
 A \fItemporary breakpoint\fR is immediately deleted as soon as it is
 reached.  To set a temporary breakpoint,  press the \fIright mouse
 button\fR on the source line number and select the `\fBSet Temporary
@@ -405,9 +403,14 @@ Breakpoint\fR' item from the popup menu.
 .PP
 Temporary breakpoints are convenient to make the program continue up
 to a specific location: just set the temporary breakpoint at this
-location and continue execution.   The `\fBSet Temporary and
-Continue\fR' item from the popup menu sets a temporary breakpoint on
-the source line number and immediately continues execution.
+location and continue execution.
+.PP
+The `\fBContinue Until Here\fR' item from the popup menu sets
+a temporary breakpoint on the source line number and immediately
+continues execution.  In \s-2GDB\s+2, execution stops when a source
+line greater than the source line is reached, or when the current
+stack frame is exited.  In \s-2DBX\s+2, execution stops when the
+temporary breakpoint is reached.
 .\"
 .\"
 .SS "Deleting Breakpoints"

@@ -220,11 +220,11 @@ private:
     static int    last_execution_line;
     static void _show_execution_position (string file, int line);
 
-    static String read_local(const string& file_name);
-    static String read_remote(const string& file_name);
-    static String read_from_gdb(const string& file_name);
+    static String read_local(const string& file_name, long& length);
+    static String read_remote(const string& file_name, long& length);
+    static String read_from_gdb(const string& file_name, long& length);
 
-    static String read_indented(string& file_name);
+    static String read_indented(string& file_name, long& length);
     static int read_current(string& file_name, bool force_reload = false);
 
     static void SetInsertionPosition(XmTextPosition pos, 
