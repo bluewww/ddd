@@ -544,6 +544,14 @@ Ddd*expandRepeatedValues:       off
 ! Shall we hide displays that are out of scope?
 Ddd*hideInactiveDisplays:	on
 
+! Shall we show titles on base displays? (recommended)
+Ddd*showBaseDisplayTitles:      on
+
+! Shall we show titles on base displays?
+! (Useful when annotations are off, as in DDD 3.0 and earlier.)
+Ddd*showDependentDisplayTitles: off
+
+
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
 ! library compiled into DDD, named `ddd.vsl'.  If you wish to use
 ! another VSL library, put its name here and set `vslPath' to a
