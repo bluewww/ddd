@@ -51,7 +51,17 @@ XtResource ddd_resources[] = {
 	XtRString, 
 	XtPointer(NULL)
     },
-	
+
+    {
+	XtNinitialSession,
+	XtCSessionID,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, initial_session),
+	XtRString, 
+	XtPointer(NULL)
+    },
+
     { 
 	XtNdebugger,
 	XtCDebugger,
