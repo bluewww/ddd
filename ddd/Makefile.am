@@ -183,6 +183,8 @@ XSTUFF_SOURCES = \
 	AutoRaise.h  \
 	Delay.C      \
 	Delay.h      \
+	DeleteWCB.C  \
+	DeleteWCB.h  \
 	DestroyCB.C  \
 	DestroyCB.h  \
 	ExitCB.C     \
