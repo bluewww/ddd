@@ -39,6 +39,17 @@ Reported by: Rick Flower <Rick.Flower@trw.com>
 AIX
 ===
 
+Reported by: Brian Cameron <bcameron@tuc.com>
+
+    When compiling DDD using EGCS, you may get a conflict between
+    <math.h> and the <exception> header.  As a workaround, create a
+    local `math.h' file that contains:
+
+	#define exception math_exception
+	#include_next <math.h>
+	#undef math_exception
+
+
 Reported by: Jason A. Smith <smithj4@rpi.edu>
 
     I had problems building ddd-2.99.9 on AIX-4.1.5.0.  The errors
