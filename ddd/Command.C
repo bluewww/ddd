@@ -153,9 +153,21 @@ void translate_command(string& command)
 	break;
     }
 
-    // When recording graph commands, realize them as auto commands instead
-    if (gdb->recording() && is_graph_cmd(command))
-	add_auto_command_prefix(command);
+    // When recording, realize certain commands as auto commands.
+    if (gdb->recording())
+    {
+	if (is_graph_cmd(command))
+	{
+	    // Graph commands are handled by DDD.
+	    add_auto_command_prefix(command);
+	}
+	else if (is_running_cmd(command, gdb))
+	{
+	    // Running commands (typically, `continue') may issue
+	    // display output or positions that must be interpreted by DDD.
+	    add_auto_command_prefix(command);
+	}
+    }
 }
 
 // Process command C; do it right now.
