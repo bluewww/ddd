@@ -909,12 +909,14 @@ static MMDesc data_menu[] =
 
 
 // Help
+static Widget help_on_window_w = 0;
+
 static MMDesc help_menu[] = 
 {
     {"onVersion",   MMPush, { HelpOnVersionCB }},
     MMSep,
     {"onContext",   MMPush, { HelpOnContextCB }},
-    {"onWindow",    MMPush, { HelpOnWindowCB }},
+    {"onWindow",    MMPush, { HelpOnWindowCB }, NULL, &help_on_window_w },
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     MMSep,
     {"index",       MMPush, { DDDManualCB }},
@@ -1600,6 +1602,13 @@ int main(int argc, char *argv[])
     // Status line
     if (app_data.status_at_bottom && !app_data.separate_source_window)
 	create_status(source_view_parent);
+
+    // `Help on Window' item
+    if (!app_data.separate_source_window && !app_data.separate_data_window)
+    {
+	// Whole DDD in one window - `Help on Window' makes no sense
+	XtUnmanageChild(help_on_window_w);
+    }
 
     // Paned Window is done
     XtManageChild (paned_work_w);
