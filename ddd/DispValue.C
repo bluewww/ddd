@@ -1173,7 +1173,7 @@ DispValue *DispValue::update(DispValue *source,
 		simple->value = source->simple->value;
 		changed = was_changed = true;
 	    }
-	    delete source;
+	    source->unlink();
 	    return this;
 
 	case Pointer:
@@ -1182,7 +1182,7 @@ DispValue *DispValue::update(DispValue *source,
 		pointer->value = source->pointer->value;
 		changed = was_changed = true;
 	    }
-	    delete source;
+	    source->unlink();
 	    return this;
 		
 	case Array:
@@ -1199,7 +1199,7 @@ DispValue *DispValue::update(DispValue *source,
 						  was_initialized);
 		}
 		source->array->member_count = 0;
-		delete source;
+		source->unlink();
 		return this;
 	    }
 	    break;
@@ -1218,7 +1218,7 @@ DispValue *DispValue::update(DispValue *source,
 						was_initialized);
 		}
 		source->str->member_count = 0;
-		delete source;
+		source->unlink();
 		return this;
 	    }
 	    break;
