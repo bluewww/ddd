@@ -236,7 +236,7 @@ static MString get_help_on_version_string(Widget widget)
     return text;
 }
 
-static MString get_tip_string(Widget widget, XEvent *event)
+static MString _get_tip_string(Widget widget, XEvent *event)
 {
     if (XmIsText(widget))
     {
@@ -265,7 +265,39 @@ static MString get_tip_string(Widget widget, XEvent *event)
     return text;
 }
 
-static MString get_documentation_string(Widget widget, XEvent *event)
+static MString prepend_label_name(Widget widget, XEvent *event, 
+				  MString (*get_string)(Widget, XEvent *))
+{
+    MString text = get_string(widget, event);
+
+#if 0				// Experimental
+    if (XtIsSubclass(widget, xmLabelWidgetClass))
+    {
+	unsigned char label_type = XmSTRING;
+	XtVaGetValues(widget, XmNlabelType, &label_type, NULL);
+	if (label_type == XmPIXMAP)
+	{
+	    XmString label = 0;
+	    XtVaGetValues(widget, XmNlabelString, &label, NULL);
+	    if (label != 0)
+	    {
+		text = MString(label, true) + rm(": ") + text;
+		XmStringFree(label);
+	    }
+	}
+    }
+#endif
+
+    return text;
+}
+
+inline MString get_tip_string(Widget widget, XEvent *event)
+{
+    return prepend_label_name(widget, event, _get_tip_string);
+}
+
+
+static MString _get_documentation_string(Widget widget, XEvent *event)
 {
     if (XmIsText(widget))
     {
@@ -296,6 +328,12 @@ static MString get_documentation_string(Widget widget, XEvent *event)
 
     return text;
 }
+
+inline MString get_documentation_string(Widget widget, XEvent *event)
+{
+    return prepend_label_name(widget, event, _get_documentation_string);
+}
+
 
 static bool call_tracking_help(XtPointer call_data, bool key_only = false)
 {
