@@ -137,6 +137,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	    pos = messagePosition;
 
 	XmTextReplace(gdb_w, pos, XmTextGetLastPosition(gdb_w), "");
+	promptPosition = pos;
 
 	prompt = prompt.from(pos);
 	if (text.contains('('))
