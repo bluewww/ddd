@@ -580,6 +580,38 @@ AC_SUBST(XS_DEBUG_INFO)
 dnl
 dnl
 dnl
+dnl ICE_CXX_ISYSTEM
+dnl ---------------
+dnl
+dnl If the C++ compiler accepts the `-isystem PATH' flag,
+dnl set output variable `ISYSTEM' to `-isystem ', `-I' otherwise.
+dnl
+AC_DEFUN(ICE_CXX_ISYSTEM,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -isystem)
+AC_CACHE_VAL(ice_cv_cxx_isystem,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS="$WERROR -isystem ."
+AC_TRY_COMPILE(,[int a;],
+ice_cv_cxx_isystem=yes, ice_cv_cxx_isystem=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_cxx_isystem)
+if test "$ice_cv_cxx_isystem" = yes; then
+ISYSTEM="-isystem "
+else
+ISYSTEM="-I"
+fi
+AC_SUBST(ISYSTEM)
+])dnl
+dnl
+dnl
 dnl
 dnl
 dnl ICE_CXX_PROBLEMATIC_VERSION
@@ -1895,6 +1927,7 @@ dnl
 AC_DEFUN(ICE_FIND_MOTIF,
 [
 AC_REQUIRE([AC_PATH_XTRA])
+AC_REQUIRE([ICE_CXX_ISYSTEM])
 motif_includes=
 motif_libraries=
 AC_ARG_WITH(motif,
@@ -2035,7 +2068,7 @@ fi
 #
 if test "$motif_includes" != "" && test "$motif_includes" != "$x_includes" && test "$motif_includes" != "no"
 then
-X_CFLAGS="-I$motif_includes $X_CFLAGS"
+X_CFLAGS="$ISYSTEM$motif_includes $X_CFLAGS"
 fi
 if test "$motif_libraries" != "" && test "$motif_libraries" != "$x_libraries" && test "$motif_libraries" != "no"
 then
@@ -2074,6 +2107,7 @@ dnl
 AC_DEFUN(ICE_FIND_ATHENA,
 [
 AC_REQUIRE([AC_PATH_XTRA])
+AC_REQUIRE([ICE_CXX_ISYSTEM])
 athena_includes=
 athena_libraries=
 AC_ARG_WITH(athena,
@@ -2213,7 +2247,7 @@ fi
 #
 if test "$athena_includes" != "" && test "$athena_includes" != "$x_includes" && test "$athena_includes" != "no"
 then
-X_CFLAGS="-I$athena_includes $X_CFLAGS"
+X_CFLAGS="$ISYSTEM$athena_includes $X_CFLAGS"
 fi
 if test "$athena_libraries" != "" && test "$athena_libraries" != "$x_libraries" && test "$athena_libraries" != "no"
 then
@@ -2252,6 +2286,7 @@ dnl
 AC_DEFUN(ICE_FIND_XPM,
 [
 AC_REQUIRE([AC_PATH_XTRA])
+AC_REQUIRE([ICE_CXX_ISYSTEM])
 xpm_includes=
 xpm_libraries=
 AC_ARG_WITH(xpm,
@@ -2393,7 +2428,7 @@ fi
 #
 if test "$xpm_includes" != "" && test "$xpm_includes" != "$x_includes" && test "$xpm_includes" != "no"
 then
-X_CFLAGS="-I$xpm_includes $X_CFLAGS"
+X_CFLAGS="$ISYSTEM$xpm_includes $X_CFLAGS"
 fi
 if test "$xpm_libraries" != "" && test "$xpm_libraries" != "$x_libraries" && test "$xpm_libraries" != "no"
 then
