@@ -291,12 +291,17 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 18. How do I set up font sizes in the data display?
 
-    First set up your own VSL library (see question #17, above).
-    Then, in the file `fonts.vsl', change the line
+    a) WITH recompiling:
+       In the file `fonts.vsl', change the line
 
-        stdfontsize() = 12;
+          stdfontsize() = 12;
 
-    to the appropriate value.
+       to the appropriate font size (in pixels), remove the file
+       `ddd.vsl.h' and re-make DDD.
+
+    b) WITHOUT recompiling:
+       Set up your own VSL library (see question #17, above).
+       Then, change the file `fonts.vsl' as described in a).
 
 
 $Id$

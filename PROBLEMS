@@ -85,6 +85,23 @@ Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
      source file.
 
 
+SGI
+===
+
+Reported by:  Pavol Federl <federl@cpsc.ucalgary.ca>
+
+    I tried to compile ddd on an SGI Indy (Irix5.3), and after using
+    the 'configure' script, I typed 'make', and I got an error
+    message:
+
+        target=all: Command not found.
+        *** Error code 1 (bu21)
+
+    So I added 'SHELL = /bin/sh' to the top of the Makefile (since
+    SHELL wasn't declared), and that fixed the problem.  Otherwise, it
+    compiled ok, except some warnings.
+
+
 Solaris 2.x
 ===========
 

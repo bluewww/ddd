@@ -244,4 +244,11 @@ Volunteers for fixing these and other bugs are welcome!
      sync that with `list directories'; how to sync with DBX?).  See
      also the mail of Tom Weis <tom_weis@mathworks.com>.
 
-082. (Insert your bug here)
+082. jfarrell@jarrah.com.au says: When I am debugging C programs, dbx
+     bitches that "print -r" is only useful with C++, then the error
+     message gets stuck in the title of all my data displays and
+     pretty much all the data display stops working. I got around this
+     by compiling a version of the code that has the "-r"s taken out,
+     but I suspect that is not the best way.
+
+083. (Insert your bug here)
