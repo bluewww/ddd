@@ -1,6 +1,12 @@
 DDD News						-*- text -*-
 ********
 
+DDD-3.3.8
+========
+
+- A memory corruption has been fixed in strclass.h.
+- Speed improvements, partly by avoiding the creation of temporary objects.
+
 DDD-3.3.7
 ========
 
@@ -24,8 +30,13 @@ DDD 3.3.3-3.3.5
 
 - Support for Bash debugging.
 
+- Several memory leaks have been fixed. Less temporaries are generated (1).
+
   This fork of the code put together by Daniel Schepler
   <schepler@math.berkeley.edu> and Rocky Bernstein <rocky@panix.com>
+
+(1) Thanks to Arnaud Desitter !
+
 
 DDD 3.3.2
 =========

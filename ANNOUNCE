@@ -22,6 +22,12 @@ More information is available at the GNU DDD homepage at
 What's new in DDD?
 ==================
 
+DDD-3.3.8
+========
+
+- Speed improvements, partly by avoiding the creation of temporary objects.
+- Several bugs were squashed.
+
 DDD-3.3.7
 ========
 
