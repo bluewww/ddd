@@ -10,13 +10,13 @@
 /^!/d
 # remove blanks
 /^$/d
-# escape quotes
-s/"/\\"/g
-s/'/\\'/g
 # escape backslash
 s/\\/\\\\/g
 # except the line continuation ones
 s/\\$//g
+# escape quotes
+s/"/\\"/g
+s/'/\\'/g
 # add leading quote
 s/^/"/
 #
@@ -33,7 +33,6 @@ n
 # just like "read" only does not add leading quote
 /^!/d
 /^$/d
-s/"/\\"/g
 # s/\\\\/\\/g
 s/\\n/\\\\n/g
 s/\\t/\\\\t/g
