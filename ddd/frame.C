@@ -33,6 +33,7 @@ char frame_rcsid[] =
 #pragma implementation
 #endif
 
+#include "bool.h"
 #include "frame.h"
 
 // Find the WM frame surrounding WINDOW.
