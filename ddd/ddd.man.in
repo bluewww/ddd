@@ -31,7 +31,7 @@
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
-.PSPIC @srcdir@/PICS/dddsplash.ps 10cm
+.PSPIC @srcdir@/PICS/dddlogo.eps 10cm
 .\"
 .\" ---------------
 .SH "SYNOPSIS"
@@ -202,7 +202,7 @@ section, below.
 .\"
 .SS "The @DDD@ Main Windows"
 .\"
-.PSPIC @srcdir@/PICS/ddd-all.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-all.eps 15.3cm
 \s-1@DDD@\s+1 is composed of three main windows:
 .br
 .IP \(bu 2
@@ -220,7 +220,7 @@ By default, \s-1@DDD@\s+1 places these main windows stacked into one
 single top-level window, but \s-1@DDD@\s+1 can also be configured to
 treat each one separately.
 .PP
-.PSPIC @srcdir@/PICS/ddd-separate.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-separate.eps 15.3cm
 .PP
 Besides these main windows, there are some other optional windows:
 .br
@@ -261,7 +261,7 @@ The command tool can be configured to appear as a command tool bar
 above the source window; see `\fBEdit\(->Preferences\(->Source\(->Tool
 Buttons Location\fR' for details.
 .PP
-.PSPIC @srcdir@/PICS/ddd-tool.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-tool.eps 15.3cm
 .\"
 .\"
 .SS "Using the Tool Bar"
@@ -293,7 +293,7 @@ them; this is indicated by a small arrow in the upper right corner.
 Pressing and holding \fImouse button 1\fR on such a button will pop up
 a menu with further operations.
 .PP
-.PSPIC @srcdir@/PICS/ddd-toolbar.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-toolbar.eps 15.3cm
 .\"
 .\"
 .\" ---------------
@@ -363,7 +363,7 @@ If you did not invoke \s-1@DDD@\s+1 specifying a program to be debugged,
 you can use the `\fBFile\fR' menu to open programs, core dumps and
 sources.
 .PP
-.PSPIC @srcdir@/PICS/ddd-open.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-open.eps 15.3cm
 .PP
 To open a program to be debugged, select `\fBFile\(->Open Program\fR'.
 .PP
@@ -415,7 +415,7 @@ the function or variable name.  The name is copied to the argument
 field.  Alter the name if desired and click on the `\fBLookup ()\fR'
 button to find its definition.
 .PP
-.PSPIC @srcdir@/PICS/ddd-source-popup.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-source-popup.eps 15.3cm
 .PP
 As a faster alternative, you can simply press \fImouse button 3\fR on the
 function name and select the `\fBLookup\fR' item from the source popup
@@ -449,7 +449,7 @@ After looking up a location, use `\fBEdit\(->Undo\fR' (or the
 locations.  `\fBEdit\(->Redo\fR' brings you back again to the location
 you looked for.
 .PP
-.PSPIC @srcdir@/PICS/ddd-source.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-source.eps 15.3cm
 .\"
 .\"
 .\"
@@ -472,7 +472,7 @@ As a faster alternative, you can simply press \fImouse button 3\fR on
 the left of the source line and select the `\fBSet Breakpoint\fR' item
 from the line popup menu.
 .PP
-.PSPIC @srcdir@/PICS/ddd-line-popup.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-line-popup.eps 15.3cm
 .PP
 As an even faster alternative, you can simply double-click on the left
 of the source line to set a breakpoint.
@@ -556,7 +556,7 @@ breakpoint symbol and select the `\fBDisable Breakpoint\fR' item from
 the breakpoint popup menu.  To enable it again, select `\fBEnable
 Breakpoint\fR'.
 .PP
-.PSPIC @srcdir@/PICS/ddd-bp-popup.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-bp-popup.eps 15.3cm
 .PP
 As an alternative, you can select the breakpoint and click on
 `\fBDisable\fR' or `\fBEnable\fR' in the Breakpoint editor (invoked
@@ -631,7 +631,7 @@ current properties of the selected breakpoint.
 As an even faster alternative, you can simply double-click on the
 breakpoint.
 .PP
-.PSPIC @srcdir@/PICS/ddd-bp-properties.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-bp-properties.eps 15.3cm
 .PP
 .IP \(bu 2
 Click on `\fBLookup\fR' to move the cursor to the breakpoint's
@@ -746,7 +746,7 @@ To view and edit all breakpoints at once, select `\fBSource\(->Edit
 Breakpoints\fR'.  This will popup the \fIBreakpoint Editor\fR which
 displays the state of all breakpoints.
 .PP
-.PSPIC @srcdir@/PICS/ddd-edit-breakpoints.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-edit-breakpoints.eps 15.3cm
 .PP
 In the breakpoint editor, you can select individual breakpoints by
 clicking on them.  Pressing \fBCtrl\fR while clicking toggles the
@@ -861,7 +861,7 @@ To run your program again, with the same arguments, select
 command tool.  You may also enter `\fBrun\fR', followed by arguments
 at the debugger prompt instead.
 .PP
-.PSPIC @srcdir@/PICS/ddd-arguments.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-arguments.eps 15.3cm
 .\"
 .\"
 .SS "Using the Execution Window"
@@ -917,7 +917,7 @@ control.  Detaching the process continues its execution.  After
 completely independent once more, and you are ready to attach another
 process or start one with `\fBRun\fR'.
 .PP
-.PSPIC @srcdir@/PICS/ddd-attach.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-attach.eps 15.3cm
 .PP
 You can customize the list of processes shown by defining an alternate
 command to list processes.  See
@@ -988,7 +988,7 @@ the specified line is not in the function currently executing.
 After moving the execution position, click on the `\fBContinue\fR'
 button to resume execution.
 .PP
-.PSPIC @srcdir@/PICS/ddd-drag.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-drag.eps 15.3cm
 .PP
 Note: Dragging the execution position is not possible when glyphs are
 disabled.  Use `\fBSet Execution Position\fR' from the breakpoint
@@ -1008,7 +1008,7 @@ where it stopped and how it got there.
 how your program got where it is.  To enable the backtrace window,
 select `\fBStatus\(->Backtrace\fR'.
 .PP
-.PSPIC @srcdir@/PICS/ddd-backtrace.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-backtrace.eps 15.3cm
 .PP
 The `\fBUp\fR' button selects the function that called the current
 one.
@@ -1112,7 +1112,7 @@ threads currently active in your program and lets you select the
 \s-1@DDD@\s+1 shows all program information from the perspective of
 the current thread.
 .PP
-.PSPIC @srcdir@/PICS/ddd-threads.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-threads.eps 15.3cm
 .PP
 To view all currently active threads in your program, select
 `\fBStatus\(->Threads\fR'.  The current thread is highlighted.  Select
@@ -1187,7 +1187,7 @@ is fatal and not handled.
 If unset, \s-1GDB\s+1 should not allow your program to see this
 signal.
 .PP
-.PSPIC @srcdir@/PICS/ddd-signals.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-signals.eps 15.3cm
 .PP
 The entry `\fBAll Signals\fR' is special.  Changing a setting here
 affects \fIall signals at once\fR\(em\&except those used by the
@@ -1266,7 +1266,7 @@ pops up showing the value of the variable pointed at.  The window
 disappears as soon as you move the mouse pointer away from the
 variable.  The value is also shown in the status line.
 .PP
-.PSPIC @srcdir@/PICS/ddd-value-tip.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-value-tip.eps 15.3cm
 .\"
 .\"
 .SS "Printing Simple Values in the Debugger Console"
@@ -1282,7 +1282,7 @@ As a shorter alternative, you can simply press \fImouse button 3\fR on
 the variable name and select the `\fBPrint\fR' item from the popup
 menu.
 .PP
-.PSPIC @srcdir@/PICS/ddd-print-popup.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-print-popup.eps 15.3cm
 .\"
 .\"
 .SS "Displaying Complex Values in the Data Window"
@@ -1298,7 +1298,7 @@ argument field.  By clicking the `\fBDisplay ()\fR' button, a new
 display is created in the data window.  The data window opens
 automatically as soon as you create a display.
 .PP
-.PSPIC @srcdir@/PICS/ddd-display.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-display.eps 15.3cm
 .PP
 As a shorter alternative, you can simply press \fImouse button 3\fR on the
 variable name and select the `\fBDisplay\fR' item from the popup menu.
@@ -1386,7 +1386,7 @@ selection is \fIextended\fR.
 By double-clicking on a display title, the display itself and all
 connected displays are automatically selected.
 .PP
-.PSPIC @srcdir@/PICS/ddd-select-display.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-select-display.eps 15.3cm
 .\"
 .\"
 .SS "Showing and Hiding Values"
@@ -1404,7 +1404,7 @@ To hide details about an aggregate, select the aggregate by clicking
 \fImouse button 1\fR on its name or value and click on the `\fBHide ()\fR'
 button.
 .PP
-.PSPIC @srcdir@/PICS/ddd-hide-display.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-hide-display.eps 15.3cm
 .PP
 When pressing and holding \fImouse button 1\fR on the `\fBShow
 ()\fR/\fBHide ()\fR' button, a menu pops up with even more
@@ -1472,7 +1472,7 @@ alignment of an array, select it and then click on the `\fBRotate
 As a faster alternative, you can also press \fImouse button 3\fR on the array
 and select the `\fBRotate\fR' menu item.
 .PP
-.PSPIC @srcdir@/PICS/ddd-rotate-display.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-rotate-display.eps 15.3cm
 .PP
 .\"
 .\"
@@ -1527,7 +1527,7 @@ activated, the shortcut menu will then contain a new entry `\fBDisplay
 to `\fB(char *)\fIdisplay\fR'.  Such shortcuts can save you a lot of
 time when examining complex data structures.
 .PP
-.PSPIC @srcdir@/PICS/ddd-shortcuts.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-shortcuts.eps 15.3cm
 .PP
 You can edit the contents of the `\fBNew Display\fR' menu by selecting its
 `\fBEdit Menu\fR' item.  This pops up the \fIShortcut Editor\fR
@@ -1536,7 +1536,7 @@ Each line contains the expression for exactly one menu item.  Clicking
 on `\fBApply\fR' re-creates the `\fBNew Display\fR' menu from the text.  If
 the text is empty, the `\fBNew Display\fR' menu will be empty, too.
 .PP
-.PSPIC @srcdir@/PICS/ddd-shortcut-editor.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-shortcut-editor.eps 15.3cm
 .PP
 \s-1@DDD@\s+1 also allows you to specify individual labels for
 user-defined buttons.  You can write such a label after the
@@ -1592,7 +1592,7 @@ The display showing the local variables can be manipulated just like
 any other data display.  Individual variables can be selected and
 dereferenced.
 .PP
-.PSPIC @srcdir@/PICS/ddd-locals.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-locals.eps 15.3cm
 .PP
 .\"
 .\"
@@ -1619,7 +1619,7 @@ If you are using \s-1GDB\s+1, \s-1@DDD@\s+1 provides a panel from
 which you can choose useful status displays.  Select
 `\fBData\(->More Status Displays\fR' and pick your choice from the list.
 .PP
-.PSPIC @srcdir@/PICS/ddd-status-displays.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-status-displays.eps 15.3cm
 .PP
 Status displays consume time; you should delete them as soon as you
 don't need them any more.
@@ -1667,7 +1667,7 @@ repeated.  Thus, the display `\fB0x0 <30\(mu>\fR' stands for 30 array
 elements, each with the value \fB0x0\fR.  This saves a lot of display
 space, especially with homogeneous arrays.
 .PP
-.PSPIC @srcdir@/PICS/ddd-repeats.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-repeats.eps 15.3cm
 .PP
 The default \s-1GDB\s+1 threshold for repeated array values is 10.
 You can change it via `\fBEdit\(->GDB Settings\(->Threshold for
@@ -1690,7 +1690,7 @@ to resume execution with the changed value.  In a dialog, you can
 modify the variable value at will; clicking the `\fBOK\fR' or
 `\fBApply\fR' button commits your change.
 .PP
-.PSPIC @srcdir@/PICS/ddd-set.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-set.eps 15.3cm
 .PP
 If you made a mistake, you can use `\fBEdit\(->Undo\fR' to re-set the
 variable to its previous value.
@@ -1795,7 +1795,7 @@ edge hint is equivalent to selecting the alias.  This way, you can
 easily delete display aliases by simply selecting the edge hint and
 clicking on `\fBUndisplay ()\fR'.
 .PP
-.PSPIC @srcdir@/PICS/ddd-aliases.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-aliases.eps 15.3cm
 .PP
 To access suppressed display aliases, you can also use the Display
 Editor.  Suppressed displays are listed in the Display Editor as
@@ -1837,7 +1837,7 @@ structure\(em\&and disable it while examining control flow (i.e.,
 stepping through your program).  \s-1@DDD@\s+1 will automatically
 restore edges and data displays when switching modes.
 .PP
-.PSPIC @srcdir@/PICS/ddd-edit-displays.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-edit-displays.eps 15.3cm
 .\"
 .\"
 .SS "Clustering Displays"
@@ -1863,7 +1863,7 @@ clustered, too.  This is achieved by enabling
 `\fBEdit\(->Preferences\(->Data\(->Cluster Data Displays\fR'.
 .br
 .PP
-.PSPIC @srcdir@/PICS/ddd-clusters.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-clusters.eps 15.3cm
 .PP
 Displays in a cluster can be selected and manipulated like parts of an
 ordinary display; in particular, you can show and hide details, or
@@ -1941,7 +1941,7 @@ You can enforce layout by setting `\fBEdit\(->Preferences\(->Data\(->
 Automatic Layout\fR'.  If automatic layout is enabled, the graph is
 layouted after each change.
 .PP
-.PSPIC @srcdir@/PICS/ddd-layout.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-layout.eps 15.3cm
 .\"
 .\"
 .SS "Rotating the Display Graph"
@@ -1958,7 +1958,7 @@ Subsequent layouts will respect the direction of the last rotation.
 \s-1@DDD@\s+1 allows for printing the graph picture on PostScript
 printers or into files.  This is useful for documenting program states.
 .PP
-.PSPIC @srcdir@/PICS/ddd-print-graph.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-print-graph.eps 15.3cm
 .PP
 To print the graph on a PostScript printer, select `\fBFile\(->Print
 Graph\fR'.  Enter the printing command in the `\fBPrint Command\fR'
@@ -1980,7 +1980,7 @@ When the graph is printed in a file, two formats are available:
 (among others \s-1IBMGL\s+1, \s-1L\s-1A\s+1T\dE\uX\s+1, \s-1PIC\s+1),
 using the \s-1TRANSFIG\s+1 or \s-1FIG2DEV\s+1 package.
 .PP
-.PSPIC @srcdir@/PICS/ddd-print-output.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-print-output.eps 15.3cm
 .PP
 Please note the following \fIcaveats\fR related to printing graphs:
 .IP \(bu 2
@@ -2053,7 +2053,7 @@ position.  The horizontal scroll bar rotates the plot around the
 \fIZ\fR axis, that is, to the left and right.  The vertical scroll bar
 rotates the plot around the \fIY\fR axis, that is, up and down.
 .PP
-.PSPIC @srcdir@/PICS/ddd-plots.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-plots.eps 15.3cm
 .\"
 .\"
 .SS "Plotting Scalars and Composites"
@@ -2237,7 +2237,7 @@ function.  By moving the sash at the right of the separating line
 between source and machine code, you can resize the source and machine
 code windows.
 .PP
-.PSPIC @srcdir@/PICS/ddd-code.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-code.eps 15.3cm
 .PP
 The machine code window works very much like the source window.  You
 can set, clear, and change breakpoints by selecting the address and
@@ -2285,7 +2285,7 @@ By selecting one of the registers, its name is copied to the argument
 field.  You can use it as value for `\fBDisplay ()\fR', for instance,
 to have its value displayed in the data window.
 .PP
-.PSPIC @srcdir@/PICS/ddd-registers.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-registers.eps 15.3cm
 .\"
 .\"
 .SS "Examining Memory"
@@ -2369,7 +2369,7 @@ You can also display the memory dump in the data window (using
 `\fBDisplay\fR').  If you choose to display the values, the values
 will be updated automatically each time the program stop.
 .PP
-.PSPIC @srcdir@/PICS/ddd-examine.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-examine.eps 15.3cm
 .PP
 .\"
 .\"
@@ -2409,14 +2409,14 @@ for \s-1DBX\s+1, `\fB>\fR' for \s-1XDB\s+1, `\fB>\fR' and
 \s-1PYDB\s+1, or `\fBDB<>\fR' for Perl.  You can use arbitrary
 debugger commands; use the \s-1\fBRETURN\fR\s+1 key to enter them.
 .PP
-.PSPIC @srcdir@/PICS/ddd-console.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-console.eps 15.3cm
 .PP
 You can \fIrepeat\fR previous and next commands by pressing the
 `\fBUp\fR' and `\fBDown\fR' arrow keys, respectively.  If you enter an
 empty line, the last command is repeated as well.
 `\fBCommands\(->Command History\fR' shows the command history.
 .PP
-.PSPIC @srcdir@/PICS/ddd-history.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-history.eps 15.3cm
 .PP
 You can \fIsearch\fR for previous commands by pressing \fBCtrl+B\fR.
 This invokes \fIincremental search mode,\fR where you can enter a
@@ -2475,7 +2475,7 @@ is known as \fIbutton tips\fR (also known as \fItool tips\fR or
 disturbing; this is why you can disable them by unsetting the
 `\fBAutomatic display of button hints as popup tips\fR' option.
 .PP
-.PSPIC @srcdir@/PICS/ddd-general-prefs.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-general-prefs.eps 15.3cm
 .PP
 The button hints are also displayed in the status line.  Disabling
 hints in status line (by unsetting the `\fBAutomatic display of button
@@ -2544,7 +2544,7 @@ If you wish to disable glyphs, set the `\fBAs Text Characters\fR'
 option.  This also makes \s-1@DDD@\s+1 run slightly faster, especially
 when scrolling.
 .PP
-.PSPIC @srcdir@/PICS/ddd-source-prefs.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-source-prefs.eps 15.3cm
 .PP
 \s-1@DDD@\s+1 can locate the tool buttons in the command tool
 (`\fBCommand Tool\fR') or in a \fIcommand tool bar\fR above the
@@ -2602,7 +2602,7 @@ the name can be deduced from edge annotations.  If you want all
 dependent displays to have a title, set `\fBShow Titles of Dependent
 Displays\fR'.
 .PP
-.PSPIC @srcdir@/PICS/ddd-data-prefs.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-data-prefs.eps 15.3cm
 .PP
 To enable a more compact layout, you can set the `\fBCompact
 Layout\fR' option.  This realizes an alternate layout algorithm, where
@@ -2653,7 +2653,7 @@ automatically offer you to restart itself, such that you can see the
 changes taking effect.  Note that even after restarting, you still
 must save options to make the changes permanent.
 .PP
-.PSPIC @srcdir@/PICS/ddd-startup-prefs.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-startup-prefs.eps 15.3cm
 .PP
 By default, \s-1@DDD@\s+1 stacks commands, source, and data in one
 single top-level window.  To have separate top-level windows for
@@ -2698,7 +2698,7 @@ This shows the action name below the image.
 The default is to have images as well as captions, but you can choose
 to have only images (saving space) or only captions.
 .PP
-.PSPIC @srcdir@/PICS/ddd-toolbars.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-toolbars.eps 15.3cm
 .PP
 If you choose to have neither images nor captions, tool bar buttons
 are labeled like other buttons, as in \s-1@DDD@\s+1 2.x.  Note that
@@ -2770,7 +2770,7 @@ can select fonts and attributes interactively.  Clicking `\fBquit\fR'
 or `\fBselect\fR' in the font selector causes all non-default values
 to be transferred to the \s-1@DDD@\s+1 font preferences panel.
 .PP
-.PSPIC @srcdir@/PICS/ddd-font-prefs.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-font-prefs.eps 15.3cm
 .PP
 The following fonts can be set using the preferences panel:
 .TP
@@ -2828,7 +2828,7 @@ kill the debuggee in order to get a core file.  See also the
 `\fBFile\(->Attach to Process\fR' dialog.  See also the
 `\fBpsCommand\fR' resource, below.
 .PP
-.PSPIC @srcdir@/PICS/ddd-helpers.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-helpers.eps 15.3cm
 .PP
 In `\fBExecution Window\fR', you can enter a command to start a 
 terminal emulator.  To this command, \s-1@DDD@\s+1 appends Bourne
@@ -2891,7 +2891,7 @@ For most inferior debuggers, you can change its settings using
 determine whether C++ names are to be demangled, how many array
 elements are to print, and so on.
 .PP
-.PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-settings.eps 15.3cm
 .PP
 The capabilities of the settings editor depend on the capabilities of
 your inferior debugger.  Clicking on `\fB?\fR' gives an an explanation
@@ -2944,7 +2944,7 @@ By default, \s-1@DDD@\s+1 disables buttons whose commands are not
 supported by the inferior debugger.  To enable such buttons, unset the
 `\fBEnable supported buttons only\fR' toggle in the button editor.
 .PP
-.PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-button-editor.eps 15.3cm
 .PP
 \s-1@DDD@\s+1 also allows you to specify control sequences and special
 labels for user-defined buttons.  See the examples in `\fBUser-defined
@@ -2990,7 +2990,7 @@ the given command to the specified location.  If you want to edit the
 button, select `\fBCommands\(->Edit Buttons\fR'; see also `\fBDefining
 Buttons\fR', above.
 .PP
-.PSPIC @srcdir@/PICS/ddd-define-command.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-define-command.eps 15.3cm
 .PP
 When user-defined \s-1GDB\s+1 commands are executed, the commands of
 the definition are not printed.  An error in any command stops
@@ -3223,7 +3223,7 @@ you cannot resume program execution after saving a session.  Depending
 on your architecture, other options for getting a core file may also
 be available.
 .PP
-.PSPIC @srcdir@/PICS/ddd-save-session.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-save-session.eps 15.3cm
 .PP
 If a core file is \fInot\fR to be included in the session, \s-1DDD\s+1
 data displays are saved as \fIdeferred\fR; that is, they will be
@@ -3243,7 +3243,7 @@ active when starting \s-1@DDD@\s+1.  To save options for default
 sessions, open the default session and save options; see `\fBSaving
 Options\fR' below for details.
 .PP
-.PSPIC @srcdir@/PICS/ddd-open-session.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-open-session.eps 15.3cm
 .PP
 If a the restored session includes a core dump, the program being
 debugged will be in the same state at the time the session was saved;

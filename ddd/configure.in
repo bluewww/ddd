@@ -71,10 +71,10 @@ dnl
 dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
-VERSION=3.1.2
+VERSION=3.1.3
 dnl
 dnl The version nickname.
-NICKNAME="Birdland"
+NICKNAME="Miles Ahead"
 dnl 
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update the product.
@@ -732,7 +732,7 @@ dnl
 dnl
 dnl That's all, folks!
 dnl
-AC_OUTPUT(Makefile vr.h bld.h Ddd ddd.man .gdbinit, date > stamp-h)
+AC_OUTPUT(Makefile vr.h bld.h Ddd ddd.man cfg.texi .gdbinit, date > stamp-h)
 dnl
 dnl 
 dnl Give some warnings

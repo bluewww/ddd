@@ -1,0 +1,1500 @@
+\input texinfo @c -*- texinfo -*-
+@c $Id$
+@c DDD Manual
+
+@c Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+@c Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+@c 
+@c This file is part of DDD.
+@c 
+@c DDD is free software; you can redistribute it and/or modify it under
+@c the terms of the GNU General Public License as published by the Free
+@c Software Foundation; either version 2 of the License, or (at your
+@c option) any later version.
+@c 
+@c DDD is distributed in the hope that it will be useful, but WITHOUT ANY
+@c WARRANTY; without even the implied warranty of MERCHANTABILITY or
+@c FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+@c for more details. 
+@c 
+@c You should have received a copy of the GNU General Public License
+@c along with DDD -- see the file COPYING.  If not, write to the Free
+@c Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+@c MA 02111-1307, USA.
+@c 
+@c DDD is the data display debugger.
+@c For details, see the DDD World-Wide-Web page, 
+@c `http://www.cs.tu-bs.de/softech/ddd/',
+@c or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+
+@c %**start of header
+@setfilename ddd.info
+@include config.texi
+@settitle Debugging with @value{DDD}
+@setchapternewpage odd
+@defindex lb
+@defindex cm
+@c %**end of header
+
+@iftex
+@c @smallbook
+@c @cropmarks
+@end iftex
+
+@finalout
+
+@c !!set DDD manual's edition---not the same as DDD version!
+@set EDITION First
+
+@c !!set DDD manual's revision date
+@set DATE 1999-01-01
+
+@ifinfo
+@c This is a dir.info fragment to support semi-automated addition of
+@c manuals to an info tree.  zoo@cygnus.com is developing this facility.
+@format
+START-INFO-DIR-ENTRY
+* DDD: (ddd).                     The Data Display Debugger.
+END-INFO-DIR-ENTRY
+@end format
+@end ifinfo
+@c
+@c
+@ifinfo
+This file documents @value{DDD}, the Data Display Debugger.
+
+This is the @value{EDITION} Edition, @value{DATE}, of @cite{Debugging
+with @value{DDD}} for @value{DDD} Version @value{VERSION}.
+
+@format
+Copyright (C) 1999 Technische Universit@"at Braunschweig, Germany.
+Institut f@"ur Software
+Abteilung Softwaretechnologie
+B@"ultenweg 88
+D-38092 Braunschweig
+@sc{germany}
+
+Phone: +49 531 391-7580
+Fax: +49 531 391-8940
+E-mail: @email{@value{ddd}@@ips.cs.tu-bs.de}
+
+@value{DDD} and this manual are available via @*
+@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} @sc{www} page}.
+@end format
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through TeX and print the
+results, provided the printed document carries copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+@end ifinfo
+
+@titlepage
+@sp -7
+@title Debugging with @value{DDD}
+@subtitle User's Guide and Reference Manual
+@subtitle @value{EDITION} Edition, for @value{DDD} Version @value{VERSION}
+@subtitle Last updated @value{DATE}
+@sp 2
+@center @image{PICS/dddlogo, 15cm}
+@author Andreas Zeller
+@page
+@tex
+{\parskip=0pt
+\hfill (Send bugs and comments on @value{DDD} to ddd\@ips.cs.tu-bs.de.)\par
+\hfill {\it Debugging with @value{DDD}}\par
+\hfill \TeX{}info \texinfoversion\par
+}
+@end tex
+
+@vskip 0pt plus 1filll
+Copyright @copyright{} 1999 Technische Universit@"at Braunschweig, Germany
+@sp 2
+Published by @*
+Technische Universit@"at Braunschweig @*
+Abteilung Softwaretechnologie @*
+B@"ultenweg 88 @*
+D-38092 Braunschweig @*
+@sc{germany} @*
+
+Phone: +49 531 391-7580 @*
+Fax: +49 531 391-8940 @*
+E-mail: @email{@value{ddd}@@ips.cs.tu-bs.de} @*
+
+@value{DDD} and this manual are available via 
+@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} @sc{www} page}.
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+@end titlepage
+@page
+
+
+@ifinfo
+
+@node Top
+@top Debugging with @value{DDD}
+
+@end ifinfo
+
+
+@ifinfo
+This is the @value{EDITION} Edition of @cite{Debugging with
+@value{DDD}}, @value{DATE}, for @value{DDD} Version @value{VERSION}.
+
+Copyright @copyright{} 1999 Technische Universit@"at Braunschweig @*
+Institut f@"ur Software @*
+Abteilung Softwaretechnologie @*
+B@"ultenweg 88 @*
+D-38092 Braunschweig @*
+@sc{germany} @*
+
+Phone: +49 531 391-7580 @*
+Fax: +49 531 391-8940 @*
+E-mail: @email{@value{ddd}@@ips.cs.tu-bs.de}
+
+@value{DDD} and this manual are available via the
+@uref{http://www.cs.tu-bs.de/softech/ddd/, @value{DDD} WWW page}.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+sections entitled ``Copying'' and ``GNU General Public License'' are
+included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+
+@end ifinfo
+
+@menu
+* Summary::                     
+* Invocation::                  
+* Windows::                     
+* Getting Help::                
+* Opening Files::               
+* Looking up Items::            
+* Breakpoints::                 
+* Watchpoints::                 
+* Running the Program::         
+* Examining Data::              
+* Plotting Data::               
+* Machine-Level Debugging::     
+* Editing and Recompiling::     
+* Entering Commands::           
+* Customizing DDD::             
+* Debugger Settings::           
+* User-Defined Actions::        
+* Quitting DDD::                
+* Persistent Sessions::         
+* Integrating DDD::             
+* Using DDD with LessTif::      
+* Remote Debugging::            
+* Root Debugging::              
+* Resources::                   
+* Options::                     
+* Actions::                     
+* Images::                      
+* Environment::                 
+* Files::                       
+* References::                  
+* Limitations::                 
+* Reporting Bugs::              
+* History::                     
+* Extending::                   
+* Support::                     
+* License::                     
+* Printing this Manual::        
+* Copyright::                   
+* Label Index::                 
+* Key Index::                   
+* Command Index::               
+* Concept Index::               
+@end menu
+
+@node Summary
+@unnumbered Summary of @value{DDD}
+
+The purpose of a debugger such as @value{DDD} is to allow you to see
+what is going on ``inside'' another program while it executes---or what
+another program was doing at the moment it crashed.
+
+@value{DDD} can do four main kinds of things (plus other things in
+support of these) to help you catch bugs in the act:
+@itemize @bullet
+@item
+Start your program, specifying anything that might affect its behavior.
+@item
+Make your program stop on specified conditions.
+@item
+Examine what has happened, when your program has stopped.
+@item
+Change things in your program, so you can experiment with correcting the
+effects of one bug and go on to learn about another.
+@end itemize
+
+``Classical'' @sc{unix} debuggers such as the @sc{gnu} debugger
+(@sc{gdb}) provide a command-line interface and a multitude of commands
+for these and other debugging purposes.  @value{DDD} is a comfortable
+@emph{graphical user interface} around an inferior command-line
+debugger, such as @sc{gdb}, @sc{dbx}, @sc{xdb}, @sc{jdb}, the Python
+debugger, or the Perl debugger.
+@cindex Inferior debugger
+@cindex Command-line debugger
+
+
+@menu
+* Free Software::               
+* Contributors::                
+@end menu
+
+@node Free Software
+@unnumberedsec Free software
+
+@value{DDD} is @dfn{free software}, protected by the @sc{gnu} General
+Public License (GPL).  The GPL gives you the freedom to copy or adapt a
+licensed program---but every person getting a copy also gets with it the
+freedom to modify that copy (which means that they must get access to
+the source code), and the freedom to distribute further copies.  Typical
+software companies use copyrights to limit your freedoms; the Free
+Software Foundation uses the GPL to preserve these freedoms.
+
+Fundamentally, the General Public License is a license which says that
+you have these freedoms and that you cannot take these freedoms away
+from anyone else.
+
+
+@node Contributors
+@unnumberedsec Contributors to GDB
+
+Dorothea L@"utkehaus and Andreas Zeller were the original authors of
+@value{DDD}.  Many others have contributed to its development.  The
+files @file{ChangeLog} and @file{THANKS} in the @value{DDD} distribution
+approximates a blow-by-blow account.
+
+
+@node Invocation
+@chapter Getting In and Out of @value{DDD}
+
+This chapter discusses how to start @value{DDD}, and how to get out of it.
+The essentials are: 
+@itemize @bullet
+@item 
+type @samp{@value{ddd}} to start DDD.
+@item 
+Use @samp{File @result{} Exit} or @kbd{Ctrl+Q} to exit.
+@kindex Ctrl+Q
+@end itemize
+
+@menu
+* Invoking DDD::                
+@end menu
+
+@node Invoking DDD
+@section Invoking @value{DDD}
+
+Normally, you can run @value{DDD} by invoking the program
+@code{@value{ddd}}.
+
+You can also run @code{@value{DDD}} with a variety of arguments and
+options, to specify more of your debugging environment at the outset.
+
+The most usual way to start @value{DDD} is with one argument, specifying
+an executable program:
+
+@example
+@value{ddd} @var{program}
+@end example
+
+@noindent
+If you use @sc{gdb}, @sc{dbx}, or @sc{xdb} as inferior debuggers, you
+can also start with both an executable program and a core file
+specified:
+
+@example
+@value{ddd} @var{program} @var{core}
+@end example
+
+You can, instead, specify a process ID as a second argument, if you want
+to debug a running process:
+
+@example
+@value{ddd} @var{program} 1234
+@end example
+
+@noindent
+would attach @value{DDD} to process @code{1234} (unless you also have a file
+named @file{1234}; @value{DDD} does check for a core file first).
+
+
+@menu
+* Choosing an inferior debugger::  
+* Debugger-Specific Options::   
+* X Options::                   
+@end menu
+
+@node Choosing an inferior debugger
+@subsection Choosing an inferior debugger
+
+By default, @value{DDD} determines the inferior debugger automatically.
+Use
+
+@example
+@value{ddd} --gdb @var{program}
+@end example
+
+@example
+@value{ddd} --dbx @var{program}
+@end example
+
+@example
+@value{ddd} --xdb @var{program}
+@end example
+
+@example
+@value{ddd} --jdb @var{program}
+@end example
+
+@example
+@value{ddd} --pydb @var{program}
+@end example
+
+@example
+@value{ddd} --perl @var{program}
+@end example
+
+to run @sc{gdb}, @sc{dbx}, @sc{xdb}, @sc{jdb}, @sc{pydb} or Perl as
+inferior debugger.
+
+
+@node Debugger-Specific Options
+@subsection Debugger-Specific Options
+
+@menu
+* GDB Options::                 
+* DBX Options::                 
+* XDB Options::                 
+* JDB Options::                 
+* PYDB Options::                
+* Perl Options::                
+@end menu
+
+@node GDB Options
+@subsubsection GDB Options
+
+@node DBX Options
+@subsubsection DBX Options
+
+@node XDB Options
+@subsubsection XDB Options
+
+@node JDB Options
+@subsubsection JDB Options
+
+@node PYDB Options
+@subsubsection PYDB Options
+
+@node Perl Options
+@subsubsection Perl Options
+
+
+@node X Options
+@subsection X Options
+
+
+
+@node Windows
+@chapter The @value{DDD} Windows
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-all, 15cm}
+@sp 1
+@end ifnotinfo
+
+@value{DDD} is composed of three main windows:
+
+@itemize @bullet
+@item
+The @emph{Data Window} shows the current data of the debugged program.
+@item
+The @emph{Source Window} shows the current source code of the debugged
+program.
+@item
+The @emph{Debugger Console} accepts debugger commands and shows debugger
+messages.
+@end itemize
+
+By default, @value{DDD} places these main windows stacked into one
+single top-level window, but @value{DDD} can also be configured to
+treat each one separately.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-separate, 15cm}
+@sp 1
+@end ifnotinfo
+
+Besides these main windows, there are some other optional windows:
+@itemize @bullet
+@item
+The @emph{Command Tool} offers buttons for frequently used commands.
+It is usually placed on the source window.
+@item
+The @emph{Machine Code Window} shows the current machine code.  It is
+usually placed beneath the current source.
+@item
+The @emph{Execution Window} shows the input and output of the debugged
+program.
+@end itemize
+
+@value{DDD} also has several temporary @emph{dialogs} for showing and
+entering additional information.
+
+
+@menu
+* Command Tool::                
+* Tool Bar::                    
+@end menu
+
+@node Command Tool
+@section Using the Command Tool
+
+The command tool is a small window containing frequently used
+@value{DDD} commands.  It can be moved around on top of the @value{DDD}
+windows, but it can also be placed besides them.  
+
+By default, the command tool @emph{sticks} to the @value{DDD} source
+window: Whenever you move the @value{DDD} source window, the command
+tool follows such that the distance between source window and command
+tool remains the same.  By default, the command tool is also
+@emph{auto-raised}, such that it stays on top of other @value{DDD}
+windows.
+
+The command tool can be configured to appear as a command tool bar above
+the source window; see @samp{Edit @result{} Preferences @result{} Source
+@result{} Tool Buttons Location} for details.
+
+Whenever you save @value{DDD} state, @value{DDD} also saves the distance
+between command tool and source window, such that you can select your
+own individual command tool placement.  To move the command tool to its
+saved position, use @samp{View @result{} Command Tool}.
+
+
+@menu
+* Command Tool Buttons::        
+@end menu
+
+@node Command Tool Buttons
+@subsection The Command Tool Buttons
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-tool, 15cm}
+@sp 1
+@end ifnotinfo
+
+These are the buttons of the command tool.  Note that not all buttons
+may be available, depending on the capabilities of the inferior
+debugger.
+
+@table @samp
+@item Run
+@lbindex Run
+Start program execution.  When you click this button, your program will
+begin to execute immediately.  @xref{Starting Program Execution}, for
+details.
+
+@item Interrupt
+@lbindex Interrupt
+Interrupt program execution.  This is equivalent to sending an interrupt
+signal to the process.  @xref{Stopping the Program}, for details.
+
+@item Step
+@lbindex Step
+Continue running your program until control reaches a different source
+line, then stop it and return control to @value{DDD}.  @xref{Resuming
+Execution}, for details.
+
+@item Stepi
+@lbindex Stepi
+Execute one machine instruction, then stop and return to @value{DDD}.
+@xref{Machine Code Execution}, for details.
+
+@item Next
+@lbindex Next
+Continue to the next source line in the current (innermost) stack
+frame.  This is similar to @samp{Step}, but function calls that appear
+within the line of code are executed without stopping.
+@xref{Resuming Execution}, for details.
+
+@item Nexti
+@lbindex Nexti
+Execute one machine instruction, but if it is a function call,
+proceed until the function returns.
+@xref{Machine Code Execution}, for details.
+
+@item Until
+@lbindex Until
+Continue running until a source line past the current line, in the
+current stack frame, is reached.  @xref{Resuming Execution}, for details.
+
+@item Finish
+@lbindex Finish
+Continue running until just after function in the selected stack frame
+returns.  Print the returned value (if any).  @xref{Resuming Execution},
+for details.
+
+@item Up
+@lbindex Up
+Select the stack frame (i.e. the function) that called this one.  This
+advances toward the outermost frame, to higher frame numbers, to frames
+that have existed longer.  @xref{Examining the Stack}, for details.
+
+@item Down
+@lbindex Down
+Select the stack frame (i.e. the function) that was called by this one.
+This advances toward the innermost frame, to lower frame numbers, to
+frames that were created more recently.  @xref{Examining the Stack}, for 
+details.
+
+@item Undo
+@lbindex Undo
+Undo the most recent action.  Almost all commands can be undone this
+way.  @xref{Undoing Commands}, for details.
+
+@item Redo
+@lbindex Redo
+Redo the action most recently undone.  Every command undone can be
+redone this way.  @xref{Undoing Commands}, for details.
+
+@item Edit
+@lbindex Edit
+Invoke an editor for the current source file.  @xref{Editing Source
+Code}, for details.
+
+@item Make
+@lbindex Make
+Run the @code{make} program with the most recently given arguments.
+@xref{Recompiling}, for details.
+@end table
+
+
+@node Tool Bar
+@section Using the Tool Bar
+
+Some @value{DDD} commands require an @emph{argument}.  This argument
+is specified in the @emph{argument field}, labeled @samp{():}.
+Basically, there are four ways to set arguments:
+@itemize @bullet
+@item
+You can @emph{key in} the argument manually.
+@item
+You can @emph{paste} the current selection into the argument field
+(typically using @kbd{mouse button 2}).  To clear old contents
+beforehand, click on the @samp{():} label.
+@item
+You can @emph{select an item} from the source and data windows.  This
+will automatically copy the item to the argument field.
+@item
+You can select a @emph{previously used argument} from the drop-down
+menu at the right of the argument field.
+@end itemize
+
+Using @sc{gdb} and Perl, the argument field provides a completion
+mechanism.  You can enter the first few characters of an item an press
+the @key{TAB} key to complete it.  Pressing @key{TAB} again shows
+alternative completions.
+@kindex TAB
+
+After having entered an argument, you can select one of the buttons on
+the right.  Most of these buttons also have menus associated with them;
+this is indicated by a small arrow in the upper right corner.  Pressing
+and holding @emph{mouse button 1} on such a button will pop up a menu
+with further operations.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-toolbar, 15cm}
+@sp 1
+@end ifnotinfo
+
+@node Getting Help
+@chapter Getting Help
+
+@value{DDD} has an extensive on-line help system.  Here's how to get
+help while working with @value{DDD}.
+
+@menu
+* Button Tips::                 
+* The Status Line::             
+* Context-Sensitive Help::      
+* Help on Debugger Commands::   
+* Are You Stuck?::              
+* Undoing Commands::            
+@end menu
+
+@node Button Tips
+@section Button Tips
+
+@cindex Button tip
+@cindex Help on buttons
+
+You can get a short help text on most @value{DDD} buttons by simply
+moving the mouse pointer on it and leave it there.  After a second, a
+small window (called @emph{button tip}) pops up, giving a hint on the
+button's meaning.  The button tip disappears as soon as you move the
+mouse pointer to another item.
+
+
+@node The Status Line
+@section The Status Line
+
+The status line also displays information about the currently selected
+item.  By clicking on the status line, you can redisplay the most
+recent messages.
+
+
+@cindex Status line
+
+@node Context-Sensitive Help
+@section Context-Sensitive Help
+
+@cindex Help on items
+@cindex Context-sensitive help
+
+You can get detailed help on any visible @value{DDD} item.  Just
+point on the item you want help and press the @samp{F1} key.  This
+pops up a detailed help text.
+@kindex F1
+
+The @value{DDD} dialogs all contain @samp{Help} buttons that give
+detailed information about the dialog.
+@lbindex Help
+
+
+@node Help on Debugger Commands
+@section Help on Debugger Commands
+
+@cindex Help on commands
+@cmindex help
+
+You can get help on debugger commands by entering @samp{help} at the
+debugger prompt.
+
+@xref{Entering Commands}, below, for details on entering commands.
+
+
+@node Are You Stuck?
+@section Are You Stuck?
+
+@lbindex What Now?
+@kindex Ctrl+F1
+
+If you are stuck, try @samp{Help @result{} What Now?} (the @samp{What
+Now} item in the @samp{Help} menu) or press @key{Ctrl+F1}.  Depending on
+the current state, @value{DDD} will give you some hints on what you can
+do next.
+
+
+@node Undoing Commands
+@section Undoing Commands
+
+@lbindex Undo
+@lbindex Redo
+@kindex Ctrl+Z
+@kindex Ctrl+Y
+
+And if, after all, you made a mistake, don't worry.  Almost every
+@value{DDD} command can be undone, using @samp{Edit @result{} Undo} or
+the @samp{Undo} button on the command tool.  
+
+Likewise, @samp{Edit @result{} Redo} repeats the command most recently
+undone.
+
+
+
+@node Opening Files
+@chapter Opening Files
+
+@cindex Files, opening
+
+If you did not invoke @value{DDD} specifying a program to be debugged,
+you can use the @samp{File} menu to open programs, core dumps and
+sources.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-open, 15cm}
+@sp 1
+@end ifnotinfo
+
+
+@menu
+* Opening Programs::            
+* Opening Core Dumps::          
+* Opening Source Files::        
+@end menu
+
+@node Opening Programs
+@section Opening Programs
+
+@cindex Program, opening
+@cindex Class, opening
+
+To open a program to be debugged, select @samp{File @result{} Open
+Program}.
+
+In @sc{jdb}, select @samp{File @result{} Open Class} instead.  This gives
+you a list of available classes to choose from.
+
+To re-open a recently debugged program or class, select @samp{File
+@result{} Open Recent} and choose a program or class from the list.
+
+Note: With @sc{xdb} and some @sc{dbx} versions, the debugged program
+must be specified upon invocation and cannot be changed at run time.
+
+
+@node Opening Core Dumps
+@section Opening Core Dumps
+
+@cindex Core dump, opening
+
+To open a core dump for the program, select @samp{File @result{} Open
+Core Dump}.  Before @samp{Open Core Dump}, you should first use
+@samp{File @result{} Open Program} to specify the program that generated
+the core dump and to load its symbol table.
+
+Note: @sc{jdb}, @sc{pydb}, and @sc{perl} do not support core dumps.
+
+
+@node Opening Source Files
+@section Opening Source Files
+
+@cindex Source file, opening
+
+To open a source file of the debugged program, select @samp{File
+@result{} Open Source}.
+
+@itemize @bullet{}
+@item
+Using @sc{gdb}, this gives you a list of the sources used for
+compiling your program.
+@item
+Using other inferior debuggers, this gives you a list of accessible
+source files, which may or may not be related to your program.
+@end itemize
+
+
+
+@node Looking up Items
+@chapter Looking up Items
+
+@menu
+* Looking up Definitions::      
+* Textual Search::              
+* Looking up Previous Locations::  
+@end menu
+
+@node Looking up Definitions
+@section Looking up Definitions
+
+@node Textual Search
+@section Textual Search
+
+@node Looking up Previous Locations
+@section Looking up Previous Locations
+
+
+@node Breakpoints
+@chapter Breakpoints
+
+@menu
+* Setting Breakpoints by Location::  
+* Setting Breakpoints by Name::  
+* Setting Regexp Breakpoints::  
+* Disabling Breakpoints::       
+* Temporary Breakpoints::       
+* Deleting Breakpoints::        
+* Editing Breakpoint Properties::  
+* Breakpoint Conditions::       
+* Breakpoint Ignore Counts::    
+* Editing Breakpoint Commands::  
+* Moving and Copying Breakpoints::  
+* Looking up Breakpoints::      
+* Editing all Breakpoints::     
+* More Breakpoint Features::    
+@end menu
+
+@node Setting Breakpoints by Location
+@section Setting Breakpoints by Location
+
+@node Setting Breakpoints by Name
+@section Setting Breakpoints by Name
+
+@node Setting Regexp Breakpoints
+@section Setting Regexp Breakpoints
+
+@node Disabling Breakpoints
+@section Disabling Breakpoints
+
+@node Temporary Breakpoints
+@section Temporary Breakpoints
+
+@node Deleting Breakpoints
+@section Deleting Breakpoints
+
+@node Editing Breakpoint Properties
+@section Editing Breakpoint Properties
+
+@node Breakpoint Conditions
+@section Breakpoint Conditions
+
+@node Breakpoint Ignore Counts
+@section Breakpoint Ignore Counts
+
+@node Editing Breakpoint Commands
+@section Editing Breakpoint Commands
+
+@node Moving and Copying Breakpoints
+@section Moving and Copying Breakpoints
+
+@node Looking up Breakpoints
+@section Looking up Breakpoints
+
+@node Editing all Breakpoints
+@section Editing all Breakpoints
+
+@node More Breakpoint Features
+@section More Breakpoint Features
+
+
+@node Watchpoints
+@chapter Watchpoints
+
+@menu
+* Setting Watchpoints::         
+* Editing Watchpoint Properties::  
+* Editing all Watchpoints::     
+* Deleting Watchpoints::        
+@end menu
+
+@node Setting Watchpoints
+@section Setting Watchpoints
+
+@node Editing Watchpoint Properties
+@section Editing Watchpoint Properties
+
+@node Editing all Watchpoints
+@section Editing all Watchpoints
+
+@node Deleting Watchpoints
+@section Deleting Watchpoints
+
+
+@node Running the Program
+@chapter Running the Program
+
+@menu
+* Starting Program Execution::  
+* Using the Execution Window::  
+* Attaching to a Running Process::  
+* Stopping the Program::        
+* Resuming Execution::          
+* Altering the Execution Position::  
+* Examining the Stack::         
+* Undoing Program Execution::   
+* Examining Threads::           
+* Handling Signals::            
+@end menu
+
+@node Starting Program Execution
+@section Starting Program Execution
+
+@node Using the Execution Window
+@section Using the Execution Window
+
+@node Attaching to a Running Process
+@section Attaching to a Running Process
+
+@node Stopping the Program
+@section Stopping the Program
+
+@node Resuming Execution
+@section Resuming Execution
+
+@node Altering the Execution Position
+@section Altering the Execution Position
+
+@node Examining the Stack
+@section Examining the Stack
+
+@node Undoing Program Execution
+@section ``Undoing'' Program Execution
+
+@node Examining Threads
+@section Examining Threads
+
+@node Handling Signals
+@section Handling Signals
+
+
+@node Examining Data
+@chapter Examining Data
+
+@menu
+* Showing Simple Values using Value Hints::  
+* Printing Simple Values in the Debugger Console::  
+* Displaying Complex Values in the Data Window::  
+* Selecting Displays::          
+* Selecting Multiple Displays::  
+* Showing and Hiding Values::   
+* Rotating Arrays::             
+* Displaying Dependent Values::  
+* Display Shortcuts::           
+* Dereferencing Pointers::      
+* Displaying Local Variables::  
+* Displaying Program Status::   
+* Displaying Multiple Array Values::  
+* Repeated Array Values::       
+* Altering Variable Values::    
+* Refreshing the Data Window::  
+* Deleting Displays::           
+* Examining Shared Data Structures::  
+* Clustering Displays::         
+* Moving Displays Around::      
+* Aligning Displays::           
+* Layouting the Display Graph::  
+* Rotating the Display Graph::  
+* Printing the Display Graph::  
+@end menu
+
+@node Showing Simple Values using Value Hints
+@section Showing Simple Values using Value Hints
+
+@node Printing Simple Values in the Debugger Console
+@section Printing Simple Values in the Debugger Console
+
+@node Displaying Complex Values in the Data Window
+@section Displaying Complex Values in the Data Window
+
+@node Selecting Displays
+@section Selecting Displays
+
+@node Selecting Multiple Displays
+@section Selecting Multiple Displays
+
+@node Showing and Hiding Values
+@section Showing and Hiding Values
+
+@node Rotating Arrays
+@section Rotating Arrays
+
+@node Displaying Dependent Values
+@section Displaying Dependent Values
+
+@node Display Shortcuts
+@section Display Shortcuts
+
+@node Dereferencing Pointers
+@section Dereferencing Pointers
+
+@node Displaying Local Variables
+@section Displaying Local Variables
+
+@node Displaying Program Status
+@section Displaying Program Status
+
+@node Displaying Multiple Array Values
+@section Displaying Multiple Array Values
+
+@node Repeated Array Values
+@section Repeated Array Values
+
+@node Altering Variable Values
+@section Altering Variable Values
+
+@node Refreshing the Data Window
+@section Refreshing the Data Window
+
+@node Deleting Displays
+@section Deleting Displays
+
+@node Examining Shared Data Structures
+@section Examining Shared Data Structures
+
+@node Clustering Displays
+@section Clustering Displays
+
+@node Moving Displays Around
+@section Moving Displays Around
+
+@node Aligning Displays
+@section Aligning Displays
+
+@node Layouting the Display Graph
+@section Layouting the Display Graph
+
+@node Rotating the Display Graph
+@section Rotating the Display Graph
+
+@node Printing the Display Graph
+@section Printing the Display Graph
+
+
+@node Plotting Data
+@chapter Plotting Data
+
+@menu
+* Plotting Arrays::             
+* Changing the Plot Appearance::  
+* Plotting Scalars and Composites::  
+* Plotting Display Histories::  
+* Printing Plots::              
+* Entering Plotting Commands::  
+* Exporting Plot Data::         
+* Animating Plots::             
+@end menu
+
+@node Plotting Arrays
+@section Plotting Arrays
+
+@node Changing the Plot Appearance
+@section Changing the Plot Appearance
+
+@node Plotting Scalars and Composites
+@section Plotting Scalars and Composites
+
+@node Plotting Display Histories
+@section Plotting Display Histories
+
+@node Printing Plots
+@section Printing Plots
+
+@node Entering Plotting Commands
+@section Entering Plotting Commands
+
+@node Exporting Plot Data
+@section Exporting Plot Data
+
+@node Animating Plots
+@section Animating Plots
+
+
+@node Machine-Level Debugging
+@chapter Machine-Level Debugging
+
+@menu
+* Examining Machine Code::      
+* Machine Code Execution::      
+* Examining Registers::         
+* Examining Memory::            
+@end menu
+
+@node Examining Machine Code
+@section Examining Machine Code
+
+@node Machine Code Execution
+@section Machine Code Execution
+
+@node Examining Registers
+@section Examining Registers
+
+@node Examining Memory
+@section Examining Memory
+
+
+@node Editing and Recompiling
+@chapter Editing and Recompiling
+
+@menu
+* Editing Source Code::         
+* Recompiling::                 
+@end menu
+
+@node Editing Source Code
+@section Editing Source Code
+
+@node Recompiling
+@section Recompiling
+
+
+
+@node Entering Commands
+@chapter Entering Commands
+
+
+@node Customizing DDD
+@chapter Customizing @value{DDD}
+
+@menu
+* Frequently Used Preferences::  
+* General Preferences::         
+* Source Preferences::          
+* Data Preferences::            
+* Startup Preferences::         
+* Fonts::                       
+* Helpers::                     
+* Saving Options::              
+* Other Customizations::        
+@end menu
+
+@node Frequently Used Preferences
+@section Frequently Used Preferences
+
+@node General Preferences
+@section General Preferences
+
+@node Source Preferences
+@section Source Preferences
+
+@node Data Preferences
+@section Data Preferences
+
+@node Startup Preferences
+@section Startup Preferences
+
+@node Fonts
+@section Fonts
+
+@node Helpers
+@section Helpers
+
+@node Saving Options
+@section Saving Options
+
+@node Other Customizations
+@section Other Customizations
+
+
+@node Debugger Settings
+@chapter Debugger Settings
+
+
+@node User-Defined Actions
+@chapter User-Defined Actions
+
+@menu
+* Defining Buttons::            
+* Defining Simple Commands using GDB::  
+* Defining Argument Commands using GDB::  
+* Defining Commands using Other Debuggers::  
+@end menu
+
+@node Defining Buttons
+@section Defining Buttons
+
+@node Defining Simple Commands using GDB
+@section Defining Simple Commands using GDB
+
+@node Defining Argument Commands using GDB
+@section Defining Argument Commands using GDB
+
+@node Defining Commands using Other Debuggers
+@section Defining Commands using Other Debuggers
+
+
+@node Quitting DDD
+@chapter Quitting @value{DDD}
+
+
+@node Persistent Sessions
+@chapter Persistent Sessions
+
+@menu
+* Saving Sessions::             
+* Opening Sessions::            
+* Deleting Sessions::           
+* Starting DDD with a Session::  
+@end menu
+
+@node Saving Sessions
+@section Saving Sessions
+
+@node Opening Sessions
+@section Opening Sessions
+
+@node Deleting Sessions
+@section Deleting Sessions
+
+@node Starting DDD with a Session
+@section Starting @value{DDD} with a Session
+
+
+@node Integrating DDD
+@chapter Integrating @value{DDD}
+
+@menu
+* Using DDD with GNU Emacs::    
+* Using DDD with XEmacs::       
+* Using DDD with XXGDB::        
+@end menu
+
+@node Using DDD with GNU Emacs
+@section Using @value{DDD} with GNU Emacs
+
+@node Using DDD with XEmacs
+@section Using @value{DDD} with XEmacs
+
+@node Using DDD with XXGDB
+@section Using @value{DDD} with XXGDB
+
+@node Using DDD with LessTif
+@chapter Using @value{DDD} with LessTif
+
+
+@node Remote Debugging
+@chapter Remote Debugging
+
+@menu
+* Using DDD with a Remote Debugger::  
+* Using DDD with a Remote Program::  
+@end menu
+
+@node Using DDD with a Remote Debugger
+@section Using @value{DDD} with a Remote Debugger
+
+@node Using DDD with a Remote Program
+@section Using @value{DDD} with a Remote Program
+
+
+@node Root Debugging
+@chapter Root Debugging
+
+
+@node Resources
+@chapter Resources
+
+@menu
+* Setting DDD Fonts::           
+* Setting DDD Colors::          
+* General Preferences Resources::  
+* Source Window::               
+* Window Creation and Layout::  
+* Debugger Settings Resources::  
+* User-defined Buttons::        
+* User-Defined New Display Menu::  
+* Data Display::                
+* Plot Window::                 
+* Debugger Console::            
+* Value Histories::             
+* Customizing Helpers::         
+* Obtaining Diagnostics::       
+* More Resources::              
+@end menu
+
+@node Setting DDD Fonts
+@section Setting @value{DDD} Fonts
+
+@node Setting DDD Colors
+@section Setting @value{DDD} Colors
+
+@node General Preferences Resources
+@section General Preferences
+
+@node Source Window
+@section Source Window
+
+@node Window Creation and Layout
+@section Window Creation and Layout
+
+@node Debugger Settings Resources
+@section Debugger Settings
+
+@node User-defined Buttons
+@section User-defined Buttons
+
+@node User-Defined New Display Menu
+@section User-Defined New Display Menu
+
+@node Data Display
+@section Data Display
+
+@node Plot Window
+@section Plot Window
+
+@node Debugger Console
+@section Debugger Console
+
+@node Value Histories
+@section Value Histories
+
+@node Customizing Helpers
+@section Customizing Helpers
+
+@node Obtaining Diagnostics
+@section Obtaining Diagnostics
+
+@node More Resources
+@section More Resources
+
+
+@node Options
+@chapter Options
+
+
+@node Actions
+@chapter Actions
+
+@menu
+* General Actions::             
+* Data Display Actions::        
+* Debugger Console Actions::    
+* Source Window Actions::       
+@end menu
+
+@node General Actions
+@section General Actions
+
+@node Data Display Actions
+@section Data Display Actions
+
+@node Debugger Console Actions
+@section Debugger Console Actions
+
+@node Source Window Actions
+@section Source Window Actions
+
+
+@node Images
+@chapter Images
+
+
+@node Environment
+@chapter Environment
+
+
+@node Files
+@chapter Files
+
+
+@node References
+@chapter References
+
+
+@node Limitations
+@chapter Limitations
+
+@menu
+* General Limitations::         
+* Limitations using GDB::       
+* Limitations using DBX::       
+* Limitations using XDB::       
+* Limitations using JDB::       
+* Limitations using Perl::      
+@end menu
+
+@node General Limitations
+@section General Limitations
+
+@node Limitations using GDB
+@section Limitations using GDB
+
+@node Limitations using DBX
+@section Limitations using DBX
+
+@node Limitations using XDB
+@section Limitations using XDB
+
+@node Limitations using JDB
+@section Limitations using JDB
+
+@node Limitations using Perl
+@section Limitations using Perl
+
+
+@node Reporting Bugs
+@chapter Reporting Bugs
+
+@menu
+* Where to Send Bug Reports::   
+* Is it a DDD Bug?::            
+* How to Report Bugs::          
+* What to Include in a Bug Report::  
+@end menu
+
+@node Where to Send Bug Reports
+@section Where to Send Bug Reports
+
+@node Is it a DDD Bug?
+@section Is it a @value{DDD} Bug?
+
+@node How to Report Bugs
+@section How to Report Bugs
+
+@node What to Include in a Bug Report
+@section What to Include in a Bug Report
+
+
+@node History
+@chapter History
+
+
+@node Extending
+@chapter Extending DDD
+
+
+@node Support
+@chapter DDD Needs Your Support!
+
+
+@node License
+@appendix GNU GENERAL PUBLIC LICENSE
+
+
+@cindex License
+@include gpl.texinfo
+
+@node Printing this Manual
+@appendix Printing this Manual
+
+
+@node Copyright
+@appendix Copyright
+
+@section @value{DDD}
+@section @value{DDD} Manual
+
+
+@node Label Index
+@unnumbered Label Index
+@printindex lb
+
+@node Key Index
+@unnumbered Key Index
+@printindex ky
+
+@node Command Index
+@unnumbered Command Index
+@printindex cm
+
+@node Concept Index
+@unnumbered Concept Index
+@printindex cp
+
+@shortcontents
+@contents
+@bye

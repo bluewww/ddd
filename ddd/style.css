@@ -1,0 +1,15 @@
+DT { margin-bottom: 1ex }
+H1 { font-family: helvetica, arial, futura; color: #00008b; font-size: 18pt }
+H2 { font-family: helvetica, arial, futura; color: #00008b; font-size: 14pt }
+H3 { font-family: helvetica, arial, futura; color: #00008b; font-size: 12pt }
+H4 { font-family: helvetica, arial, futura; foreground: #00008b }
+.header   { font-family: helvetica, arial, futura; font-size: 9pt }
+.menu     { font-family: helvetica, arial, futura; font-size: 8pt }
+.footer   { font-family: helvetica, arial, futura; font-size: 9pt }
+.caption  { font-family: helvetica, arial, futura; font-size: 8pt }
+.title    { font-family: helvetica, arial, futura; font-size: 18pt }
+.subtitle { font-family: helvetica, arial, futura; font-size: 9pt }
+.h2       { font-family: helvetica, arial, futura; 
+            font-size: 14pt; color: #00008b }
+.item     { color: #00008b }
+.quote    { font-family: comic sans ms, times } 
