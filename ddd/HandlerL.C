@@ -147,7 +147,10 @@ void HandlerList::call(unsigned type,
     active[type]++;
 
     for (HandlerRec *h = handlers[type]; h != 0; h = h->next)
-	h->proc(source, h->client_data, call_data);
+    {
+	if (!h->remove_me)
+	    h->proc(source, h->client_data, call_data);
+    }
 
     // Removing handlers takes effect only the next time the list is processed
     if (--active[type] == 0)
