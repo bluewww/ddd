@@ -35,16 +35,19 @@ char plotter_rcsid[] =
 
 #include "plotter.h"
 
+#include "assert.h"
 #include "charsets.h"
 #include "cook.h"
 #include "ddd.h"
 #include "exit.h"
 #include "findParent.h"
 #include "findWindow.h"
+#include "filetype.h"
 #include "fonts.h"
 #include "print.h"
 #include "simpleMenu.h"
 #include "verify.h"
+#include "status.h"
 #include "strclass.h"
 #include "version.h"
 #include "wm.h"
@@ -56,11 +59,15 @@ char plotter_rcsid[] =
 #include "PlotArea.h"
 #include "Swallower.h"
 
+#include <stdio.h>
+#include <fstream.h>
+
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
 #include <Xm/AtomMgr.h>
 #include <Xm/Protocols.h>
 #include <Xm/DrawingA.h>
+#include <Xm/ToggleB.h>
 
 #define PLOT_CLASS_NAME "Gnuplot"
 
@@ -72,10 +79,25 @@ static void CancelPlotCB(Widget, XtPointer, XtPointer);
 static void ExposePlotAreaCB(Widget, XtPointer, XtPointer);
 static void ResizePlotAreaCB(Widget, XtPointer, XtPointer);
 
+static void ToggleOptionCB(Widget, XtPointer, XtPointer);
+static void ToggleLogscaleCB(Widget, XtPointer, XtPointer);
+static void SetStyleCB(Widget, XtPointer, XtPointer);
+static void SetContourCB(Widget, XtPointer, XtPointer);
 
-// ------------------------------------------------------------------------
-// Decoration stuff
-// ------------------------------------------------------------------------
+
+struct PlotWindowInfo {
+    Widget shell;
+    Widget dialog;
+    PlotAgent *plotter;
+    PlotArea *area;
+    Widget swallower;
+    bool active;
+};
+
+
+//-------------------------------------------------------------------------
+// Menus
+//-------------------------------------------------------------------------
 
 static MMDesc file_menu[] = 
 {
@@ -86,21 +108,190 @@ static MMDesc file_menu[] =
     MMEnd
 };
 
-static MMDesc menubar[] = 
+static MMDesc view_menu[] = 
 {
-    { "file",     MMMenu, MMNoCB, file_menu, 0, 0, 0 },
-    { "edit",     MMMenu, MMNoCB, simple_edit_menu, 0, 0, 0 },
-    { "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0 },
+    { "border",    MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    { "grid",      MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    { "time",      MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    MMSep,
+    { "xzeroaxis", MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    { "yzeroaxis", MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    MMSep,
+    { "xtics",     MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    { "ytics",     MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    { "ztics",     MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    MMSep,
+    { "base",      MMToggle, { SetContourCB, 0 }, 0, 0, 0, 0 },
+    { "surface",   MMToggle, { SetContourCB, 0 }, 0, 0, 0, 0 },
+    MMSep,
+    { "logscale",  MMToggle, { ToggleLogscaleCB, 0 }, 0, 0, 0, 0 },
     MMEnd
 };
 
-struct PlotWindowInfo {
-    Widget shell;
-    Widget dialog;
-    PlotAgent *plotter;
-    PlotArea *area;
-    Widget swallower;
+static MMDesc plot_menu[] = 
+{
+    { "points",         MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
+    { "lines",          MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
+    { "lines3d",        MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
+    { "linespoints",    MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
+    { "linespoints3d",  MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
+    { "impulses",       MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
+    { "dots",           MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
+    { "steps2d",        MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
+    { "boxes2d",        MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
+    MMEnd
 };
+
+static MMDesc menubar[] = 
+{
+    { "file",    MMMenu, MMNoCB, file_menu, 0, 0, 0 },
+    { "edit",    MMMenu, MMNoCB, simple_edit_menu, 0, 0, 0 },
+    { "plotView", MMMenu, MMNoCB, view_menu, 0, 0, 0 },
+    { "plot",    MMRadioMenu, MMNoCB, plot_menu, 0, 0, 0 },
+    { "help",    MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0 },
+    MMEnd
+};
+
+
+
+//-------------------------------------------------------------------------
+// Set up menu
+//-------------------------------------------------------------------------
+
+static string slurp_file(const string& filename)
+{
+    string s;
+
+    ifstream is(filename);
+    if (is.bad())
+	return "";
+
+    int c;
+    while ((c = is.get()) != EOF)
+	s += (unsigned char)c;
+
+    return s;
+}
+
+static string plot_settings(PlotWindowInfo *plot)
+{
+    string settings_file = tmpnam(0);
+    string cmd = "save " + quote(settings_file) + "\n";
+    plot->plotter->write(cmd.chars(), cmd.length());
+
+    // Wait for settings file to be created
+    StatusDelay delay("Getting Plot Settings");
+
+    string settings;
+    do {
+	sleep(1);
+	settings = slurp_file(settings_file);
+    } while (!settings.contains("set zero"));
+
+    unlink(settings_file);
+
+    return settings;
+}
+
+static void setup_menu(PlotWindowInfo *plot)
+{
+    int ndim = plot->plotter->dimensions();
+
+    // Set up plot menu
+    int i;
+    for (i = 0; plot_menu[i].name != 0; i++)
+    {
+	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
+	    continue;
+
+	string name = plot_menu[i].name;
+
+	Widget w = XtNameToWidget(plot->shell, "*" + name);
+
+	if (name.contains("2d", -1))
+	    XtSetSensitive(w, ndim == 2);
+	else if (name.contains("3d", -1))
+	    XtSetSensitive(w, ndim >= 3);
+	else
+	    XtSetSensitive(w, ndim >= 2);
+    }
+
+    // Log scale is available only iff all values are non-negative
+    Widget logscale = XtNameToWidget(plot->shell, "*logscale");
+    XtSetSensitive(logscale, plot->plotter->min_v() >= 0.0);
+
+    // Axes can be toggled in 2d mode only
+    Widget xzeroaxis = XtNameToWidget(plot->shell, "*xzeroaxis");
+    Widget yzeroaxis = XtNameToWidget(plot->shell, "*yzeroaxis");
+    XtSetSensitive(xzeroaxis, ndim <= 2);
+    XtSetSensitive(yzeroaxis, ndim <= 2);
+
+    // Z Tics are available in 3d mode only
+    Widget ztics = XtNameToWidget(plot->shell, "*ztics");
+    XtSetSensitive(ztics, ndim >= 3);
+
+    // Contour drawing is available in 3d mode only
+    Widget base    = XtNameToWidget(plot->shell, "*base");
+    Widget surface = XtNameToWidget(plot->shell, "*surface");
+    XtSetSensitive(base,    ndim >= 3);
+    XtSetSensitive(surface, ndim >= 3);
+
+    // Get settings
+    string settings = plot_settings(plot);
+
+    for (i = 0; view_menu[i].name != 0; i++)
+    {
+	if ((view_menu[i].type & MMTypeMask) != MMToggle)
+	    continue;
+
+	string name = view_menu[i].name;
+
+	Widget w = XtNameToWidget(plot->shell, "*" + name);
+	XtCallbackProc callback = view_menu[i].callback.callback;
+
+	bool set = false;
+	if (callback == ToggleOptionCB)
+	{
+	    set = settings.contains("\nset " + name + "\n");
+	}
+	else if (callback == SetContourCB)
+	{
+	    if (name == "base")
+		set = settings.contains("\nset contour base\n") ||
+		    settings.contains("\nset contour both\n");
+	    else if (name == "surface")
+		set = settings.contains("\nset contour surface\n") ||
+		    settings.contains("\nset contour both\n");
+	}
+	else if (callback == ToggleLogscaleCB)
+	{
+	    set = settings.contains("\nset logscale ");
+	}
+
+	XmToggleButtonSetState(w, set, False);
+    }
+
+    // Get style
+    for (i = 0; plot_menu[i].name != 0; i++)
+    {
+	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
+	    continue;
+
+	string name = plot_menu[i].name;
+
+	Widget w = XtNameToWidget(plot->shell, "*" + name);
+
+	bool set = settings.contains("\nset data style " + name + "\n");
+	XmToggleButtonSetState(w, set, False);
+    }
+}
+
+
+
+
+//-------------------------------------------------------------------------
+// Decoration stuff
+//-------------------------------------------------------------------------
 
 // Swallow new GNUPLOT window
 static void SwallowCB(Widget swallower, XtPointer client_data, 
@@ -122,8 +313,13 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
 
 	XtVaSetValues(swallower, XtNwindow, window, NULL);
 
-	if (plot->shell != 0)
+	if (!plot->active)
+	{
 	    XtPopup(plot->shell, XtGrabNone);
+	    plot->active = true;
+
+	    setup_menu(plot);
+	}
 
 	XtRemoveCallback(swallower, XtNwindowCreatedCallback, 
 			 SwallowCB, client_data);
@@ -151,10 +347,7 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 
     // Pop down shell
     XtPopdown(plot->shell);
-
-    // Mark shell as `unused'
-    XtVaSetValues(plot->shell, XmNuserData, XtPointer(False), NULL);
-    plot->shell = 0;
+    plot->active = false;
 
     entered = false;
 }
@@ -205,7 +398,15 @@ static void GetPlotHP(Agent *, void *client_data, void *call_data)
     // We got the plot commands
     XtUnmanageChild(plot->dialog);
     XtPopdown(XtParent(plot->dialog));
-    XtPopup(plot->shell, XtGrabNone);
+
+    if (!plot->active)
+    {
+	XtPopup(plot->shell, XtGrabNone);
+	plot->active = true;
+
+	// Setup menu
+	setup_menu(plot);
+    }
 
     // Pass the received commands to the plot area
     DataLength *dl = (DataLength *)call_data;
@@ -312,6 +513,8 @@ static PlotWindowInfo *new_decoration(const string& name)
 		      SwallowAgainCB, XtPointer(plot));
     }
 
+    plot->active = false;
+
     return plot;
 }
 
@@ -391,9 +594,9 @@ PlotAgent *new_plotter(string name)
 }
 
 
-// ------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Drawing stuff
-// ------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
 static void ExposePlotAreaCB(Widget, XtPointer client_data, XtPointer)
 {
@@ -408,9 +611,110 @@ static void ResizePlotAreaCB(Widget, XtPointer client_data, XtPointer)
 }
 
 
-// ------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+// Settings
+//-------------------------------------------------------------------------
+
+static void ToggleOptionCB(Widget w, XtPointer client_data, 
+			   XtPointer call_data)
+{
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    string cmd;
+    if (cbs->set)
+	cmd = string("set ") + XtName(w) + "\n";
+    else
+	cmd = string("set no") + XtName(w) + "\n";
+    cmd += "replot\n";
+
+    plot->plotter->write(cmd.chars(), cmd.length());
+}
+
+static void ToggleLogscaleCB(Widget, XtPointer client_data, 
+			     XtPointer call_data)
+{
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    string cmd;
+    if (cbs->set)
+	cmd = "set logscale ";
+    else
+	cmd = "set nologscale ";
+
+    if (plot->plotter->dimensions() >= 3)
+	cmd += "z\n";
+    else
+	cmd += "y\n";
+
+    plot->plotter->write(cmd.chars(), cmd.length());
+
+    cmd = "replot\n";
+    plot->plotter->write(cmd.chars(), cmd.length());
+}
+
+static void SetStyleCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (cbs->set)
+    {
+	string style = XtName(w);
+	string cmd;
+	if (style.contains("3d", -1))
+	{
+	    cmd = "set hidden3d\n";
+	    style = style.before("3d");
+	}
+	else
+	{
+	    cmd = "set nohidden3d\n";
+	}
+	if (style.contains("2d", -1))
+	    style = style.before("2d");
+	
+	cmd += "set data style " + style + "\n";
+	cmd += "replot\n";
+
+	plot->plotter->write(cmd.chars(), cmd.length());
+    }
+}
+
+static void SetContourCB(Widget w, XtPointer client_data, XtPointer)
+{
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+
+    Widget base    = XtNameToWidget(XtParent(w), "base");
+    Widget surface = XtNameToWidget(XtParent(w), "surface");
+
+    assert (base != 0 && surface != 0);
+
+    bool base_set    = XmToggleButtonGetState(base);
+    bool surface_set = XmToggleButtonGetState(surface);
+
+    string cmd;
+    if (base_set && surface_set)
+	cmd = "set contour both\n";
+    else if (base_set && !surface_set)
+	cmd = "set contour base\n";
+    else if (!base_set && surface_set)
+	cmd = "set contour surface\n";
+    else
+	cmd = "set nocontour\n";
+    cmd += "replot\n";
+
+    plot->plotter->write(cmd.chars(), cmd.length());
+}
+
+
+//-------------------------------------------------------------------------
 // Trace communication
-// ------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
 static void trace(char *prefix, void *call_data)
 {

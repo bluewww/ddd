@@ -4602,12 +4602,113 @@ WIDGET(Plot Window)\n\
 Use LBL(File, Close) to close this window.
 
 Ddd*plot*print.labelString: Print Plot...
-Ddd*plot*fileMenu.print.documentationString:   \
+Ddd*plot*plotFileMenu.print.documentationString:   \
 @rm Print the current plot
 
 Ddd*plot*area.width:        640
 Ddd*plot*area.height:       450
 Ddd*plot*area.background:   TEXT_BACKGROUND_COLOR
+
+Ddd*menubar.plotView.labelString:  	View
+Ddd*menubar.plotView.mnemonic:     	V
+
+Ddd*plotViewMenu*helpString:  \
+WIDGET(View Menu)\n\
+\n\
+DESC(Border, [display border])\n\
+DESC(Grid, [display grid])\n\
+DESC(Time, [display time of plot])\n\
+\n\
+DESC(X Axis, [display x zero axis])\n\
+DESC(Y Axis, [display y zero axis])\n\
+\n\
+DESC(X Tics, [display x tics])\n\
+DESC(Y Tics, [display y tics])\n\
+DESC(Z Tics, [display z tics])\n\
+\n\
+DESC(Base Contour, [draw contour on base])\n\
+DESC(Surface Contour, [draw contour on surface])\n\
+\n\
+DESC(Log Scale, [toggle logarithmic scaling])
+
+Ddd*plotViewMenu.border.labelString:	Border
+Ddd*plotViewMenu.border.mnemonic:	B
+
+Ddd*plotViewMenu.grid.labelString:	Grid
+Ddd*plotViewMenu.grid.mnemonic:		G
+
+Ddd*plotViewMenu.time.labelString:	Time
+Ddd*plotViewMenu.time.mnemonic:      	T
+
+Ddd*plotViewMenu.xzeroaxis.labelString:	X Axis
+Ddd*plotViewMenu.xzeroaxis.mnemonic:	A
+
+Ddd*plotViewMenu.yzeroaxis.labelString:	Y Axis
+Ddd*plotViewMenu.yzeroaxis.mnemonic:	i
+
+Ddd*plotViewMenu.xtics.labelString:	X Tics
+Ddd*plotViewMenu.xtics.mnemonic:	X
+
+Ddd*plotViewMenu.ytics.labelString:	Y Tics
+Ddd*plotViewMenu.ytics.mnemonic:	Y
+
+Ddd*plotViewMenu.ztics.labelString:	Z Tics
+Ddd*plotViewMenu.ztics.mnemonic:	Z
+
+Ddd*plotViewMenu.base.labelString:	Base Contour
+Ddd*plotViewMenu.base.mnemonic:		C
+
+Ddd*plotViewMenu.surface.labelString:   Surface Contour
+Ddd*plotViewMenu.surface.mnemonic:	S
+
+Ddd*plotViewMenu.logscale.labelString:	Log Scale
+Ddd*plotViewMenu.logscale.mnemonic:	L
+
+
+Ddd*menubar.plot.labelString:  		Plot
+Ddd*menubar.plot.mnemonic:     		P
+
+Ddd*plotMenu*helpString:  \
+WIDGET(Plot Menu)\n\
+\n\
+DESC(Points, [display a small symbol at each point])\n\
+DESC(Lines, [connect adjacent points with lines])\n\
+DESC(3D-Lines, [like Lines, but remove hidden lines])\n\
+DESC(Points and Lines, [do both Points and Lines])\n\
+DESC(Points and 3D-Lines, [do both Points and 3D-Lines])\n\
+DESC(Impulses, [draw a vertical line from the base to each point])\n\
+DESC(Dots, [plot a tiny dot at each point])\n\
+DESC(Steps, [connect adjacent points with two line segments])\n\
+DESC(Boxes, [draw a vertical box from the x axis to each point])
+
+Ddd*plotMenu.points.labelString:	Points
+Ddd*plotMenu.points.mnemonic:		P
+
+Ddd*plotMenu.lines.labelString:	  	Lines
+Ddd*plotMenu.lines.mnemonic:		L
+
+Ddd*plotMenu.lines3d.labelString:	3D-Lines
+Ddd*plotMenu.lines3d.mnemonic:		3
+
+Ddd*plotMenu.linespoints.labelString:	Points and Lines
+Ddd*plotMenu.linespoints.mnemonic:	o
+
+Ddd*plotMenu.linespoints3d.labelString:	Points and 3D-Lines
+Ddd*plotMenu.linespoints3d.mnemonic:	t
+
+Ddd*plotMenu.impulses.labelString:	Impulses
+Ddd*plotMenu.impulses.mnemonic:		I
+
+Ddd*plotMenu.dots.labelString:		Dots
+Ddd*plotMenu.dots.mnemonic:		D
+
+Ddd*plotMenu.steps2d.labelString:	Steps
+Ddd*plotMenu.steps2d.mnemonic:		S
+
+Ddd*plotMenu.boxes2d.labelString:	Boxes
+Ddd*plotMenu.boxes2d.mnemonic:		B
+
+
 
 
 !-----------------------------------------------------------------------------

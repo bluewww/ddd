@@ -63,11 +63,16 @@ void PlotAgent::reset()
     // Clear range
     x_min = y_min = v_min = +DBL_MAX;
     x_max = y_max = v_max = -DBL_MAX;
+
+    need_reset = false;
 }
 
 // Start a new plot
 void PlotAgent::start_plot(const string& title, int n)
 {
+    if (need_reset)
+	reset();
+
     titles += title;
     values += "";
     dims   += 0;
@@ -208,7 +213,7 @@ int PlotAgent::flush()
 	write(c.chars(), c.length());
     }
 
-    reset();
+    need_reset = true;
 
     return LiterateAgent::flush();
 }
