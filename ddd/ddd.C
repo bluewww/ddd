@@ -5365,7 +5365,7 @@ static Bool is_emergency(Display *, XEvent *event, char *)
 	    char buffer[1024];
 	    KeySym keysym;
 
-	    int len = XLookupString((XKeyEvent *)event, buffer, sizeof buffer,
+	    int len = XLookupString(&event->xkey, buffer, sizeof buffer,
 				    &keysym, NULL);
 	    if (len == 1 && (buffer[0] == '\003' || buffer[0] == '\034'))
 	    {
