@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1999\--03\-04" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1999\-05\-15" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -3324,8 +3324,10 @@ In case your debugger front-end uses the \s-1GDB\s+1
 `\fB\-fullname\fR' option to have \s-1GDB\s+1 report source code
 positions, the `\fB\-\-tty\fR' option is not required.  \s-1@DDD@\s+1
 recognizes the `\fB\-fullname\fR' option, finds that it has been
-invoked from a debugger front-end and automatically enables
-the \s-1TTY\s+1 interface.
+invoked from a debugger front-end and automatically enables the
+\s-1TTY\s+1 interface.  Likewise, \s-1@DDD@\s+1 supports the
+\s-1GDB\s+1 `\fB\-annotate\fR' option for even more detailed
+interaction.
 .PP
 You may also invoke `\fB@ddd@ \-\-tty\fR' directly, entering
 \s-1@DDD@\s+1 commands from your \s-1TTY\s+1, or use \s-1@DDD@\s+1 as
@@ -3341,9 +3343,10 @@ If \s-1@DDD@\s+1 is invoked with the `\fB\-\-tty\fR' option, the
 debugger console is initially disabled, as its facilities are supposed
 to be provided by the integrating front-end.
 .IP \(bu 2
-If \s-1@DDD@\s+1 is invoked with the `\fB\-fullname\fR' option, the
-debugger console and the source window are initially disabled, as their
-facilities are supposed to be provided by the integrating front-end.
+If \s-1@DDD@\s+1 is invoked with the `\fB\-fullname\fR' or with the
+`\fB\-annotate\fR' option, the debugger console and the source window
+are initially disabled, as their facilities are supposed to be
+provided by the integrating front-end.
 .PP
 In case of need, you can use the `\fBView\fR' menu to re-enable these
 windows.
@@ -3359,17 +3362,27 @@ and the name of the program to be debugged.  Proceed as usual.
 .\"
 .SS "Using @DDD@ with XEmacs"
 .\"
-Set the variable \fBgdb-command-name\fR to \fB"ddd"\fR, by inserting
-the following line in your \fB$HOME/.emacs\fR file or evaluating it by
-pressing \s-1\fBESC\fR\s+1 \s-1\fB:\fR\s+1\fR (\s-1\fBESC\fR\s+1
-\s-1\fBESC\fR\s+1 for XEmacs 19.13 and earlier):
+In XEmacs 21 and later, select `\fBTools\(->Debug (GDB)\fR'.  At the
+prompt, enter `\fB@ddd@\fR' and the name of the program to be
+debugged.  Proceed as usual.
+.PP
+To debug with \s-1DBX\s+1 in XEmacs 21 and later, select
+`\fBTools\(->Debug (DBX)\fR'.  At the prompt, enter `\fB@ddd@ \-\-dbx
+\-\-tty\fR' and the name of the program to be debugged.  Proceed as
+usual.
+.PP
+In XEmacs 20 and earlier, set the variable \fBgdb-command-name\fR to
+\fB"ddd"\fR, by inserting the following line in your
+\fB$HOME/.emacs\fR file or evaluating it by pressing \s-1\fBESC\fR\s+1
+\s-1\fB:\fR\s+1\fR (\s-1\fBESC\fR\s+1 \s-1\fBESC\fR\s+1 for XEmacs
+19.13 and earlier):
 .br
 .sp
   \fB(setq gdb-command-name "@ddd@")\fR
 .sp
 .br
-Use `\fBM-x gdb\fR' or `\fBM-x gdbsrc\fR' 
-to start a debugging session.  Proceed as usual.
+Use `\fBM-x gdb\fR' or `\fBM-x gdbsrc\fR' or `\fBM-x dbx\fR' to start
+a debugging session.  Proceed as usual.
 .\"
 .SS "Using @DDD@ with XXGDB"
 .\"
@@ -4113,6 +4126,12 @@ obscured by the \s-1@DDD@\s+1 main windows.
 .\"
 The following resources determine the inferior debugger.
 .TP
+.B "annotate (\fPclass\fB Annotate)"
+If this is \fB1\fR or more, \s-1@DDD@\s+1 reports the current source
+position on standard output in \s-1GDB\s+1 `\fB\-fullname\fR' format.
+As a side effect, the source window is disabled by default.  Default
+value is \fB0\fR.  See also the `\fB\-\-fullname\fR' option, below.
+.TP
 .B "autoCommands (\fPclass\fB AutoCommands)"
 If this is `\fBon\fR' (default), each line output by the inferior
 debugger beginning with the value of the `\fBautoCommandPrefix\fR'
@@ -4190,12 +4209,6 @@ inferior debugger from the remote shell.  See also the
 .B "displayTimeout (\fPclass\fB DisplayTimeout)"
 The time (in ms) to wait for the inferior debugger to finish a partial
 display information.  Default is \fB2000\fR.
-.TP
-.B "fullNameMode (\fPclass\fB TTYMode)"
-If this is `\fBon\fR', \s-1@DDD@\s+1 reports the current source
-position on standard output in \s-1GDB\s+1 `\fB\-fullname\fR'
-format.  As a side effect, the source window is disabled by default.
-See also the `\fB\-\-fullname\fR' option, below.
 .TP
 .B "gdbInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
@@ -5250,6 +5263,17 @@ option, or with a \s-1@DDD@\s+1 option listed here, use the
 .PP
 .\"
 .TP
+.B \-\-annotate \fIlevel\fR
+If \fIlevel\fR is 1 or more, enable \s-1TTY\s+1 interface, taking
+additional debugger commands from standard input and forwarding
+debugger output on standard output.  Current positions are issued in
+\s-1GDB\s+1 `\fB\-fullname\fR' format suitable for debugger
+front-ends.  By default, both the debugger console and source window
+are disabled.  If \fIlevel\fR is 2 or more, \s-1@DDD@\s+1 also issues
+annotations about its current state, like the \s-1GDB\s+1
+`\fB\-annotate=2\fR' format.  These annotations should suffice for
+XEmacs integration.  If \fIlevel\fR is 0, no annotations are made.
+.TP
 .B \-\-attach-windows
 Attach the source and data windows to the debugger console, creating
 one single big \s-1@DDD@\s+1 window.  This is the default setting.
@@ -5321,11 +5345,7 @@ Set the default font size to \fIsize\fR 1\(f/10 points.  To use
 12-point fonts, say `\fB\-\-fontsize 120\fR'.
 .TP
 .B \-\-fullname
-Enable \s-1TTY\s+1 interface, taking additional debugger commands
-from standard input and forwarding debugger output on standard output.
-Current positions are issued in \s-1GDB\s+1 `\fB\-fullname\fR' format
-suitable for debugger front-ends.  By default, both the debugger
-console and source window are disabled.
+Same as `\fB\-\-annotate 1\fR', above.
 .TP
 .B \-\-gdb
 Run the \s-1GDB\s+1 debugger as inferior debugger.

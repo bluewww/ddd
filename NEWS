@@ -25,6 +25,34 @@ DDD 3.2 brings not much yet.
 DDD 3.2 also incorporates all changes listed below.
 
 
+DDD 3.1.6
+=========
+
+DDD 3.1.6 fixes more minor problems in DDD 3.1.
+
+- DDD passes all options after `--' to the inferior debugger.
+- [Build] If available, use the GNU ld `-rpath' option instead of `-L'
+  to specify library locations.
+- [Build] Minor code fixes for recent EGCS versions.
+
+There are no new features in DDD 3.1.6.  You don't need to upgrade
+unless you suffer from one of these problems.
+
+
+DDD 3.1.5
+=========
+
+DDD 3.1.5 brings support for recent tools and components.
+
+- [Linux] DDD supports TTYs on Linux with GNU libc 2.1.
+- [Solaris] DDD supports Motif 2.1 on Sun Solaris 7.
+- [XEmacs] DDD supports gud-mode in XEmacs 21.0.
+- [Build] DDD supports Bison 1.27 and Automake 1.4a.
+
+There are no new features in DDD 3.1.5.  You don't need to upgrade
+unless you use one of the listed tools and/or components.
+
+
 DDD 3.1.4
 =========
 

@@ -239,11 +239,11 @@ MMDesc SourceView::bp_area[] =
     {"print",        MMPush,   
      {SourceView::PrintWatchpointCB, XtPointer(0) }, 0, 0, 0, 0},
     {"enable",       MMPush,   
-     {SourceView::BreakpointCmdCB, "enable"  }, 0, 0, 0, 0},
+     {SourceView::BreakpointCmdCB, XtPointer("enable") }, 0, 0, 0, 0},
     {"disable",      MMPush,   
-     {SourceView::BreakpointCmdCB, "disable" }, 0, 0, 0, 0},
+     {SourceView::BreakpointCmdCB, XtPointer("disable") }, 0, 0, 0, 0},
     {"delete",       MMPush | MMHelp,   
-     {SourceView::BreakpointCmdCB, "delete" }, 0, 0, 0, 0},
+     {SourceView::BreakpointCmdCB, XtPointer("delete") }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -3459,9 +3459,9 @@ void SourceView::create_shells()
 		  XmNbrowseSelectionCallback, SelectFrameCB, 0);
 
     XtAddCallback(stack_dialog_w,
-		  XmNokCallback, gdbCommandCB, "up");
+		  XmNokCallback, gdbCommandCB, XtPointer("up"));
     XtAddCallback(stack_dialog_w,
-		  XmNapplyCallback, gdbCommandCB, "down");
+		  XmNapplyCallback, gdbCommandCB, XtPointer("down"));
     XtAddCallback(stack_dialog_w,
 		  XmNcancelCallback, UnmanageThisCB, stack_dialog_w);
     XtAddCallback(stack_dialog_w,
@@ -3574,9 +3574,9 @@ void SourceView::create_shells()
     XtAddCallback(thread_dialog_w,
 		  XmNcancelCallback, ThreadDialogPoppedDownCB, 0);
     XtAddCallback(thread_dialog_w,
-		  XmNokCallback,     ThreadCommandCB, "suspend");
+		  XmNokCallback,     ThreadCommandCB, XtPointer("suspend"));
     XtAddCallback(thread_dialog_w,
-		  XmNapplyCallback,  ThreadCommandCB, "resume");
+		  XmNapplyCallback,  ThreadCommandCB, XtPointer("resume"));
     XtAddCallback(thread_dialog_w,
 		  XmNhelpCallback, ImmediateHelpCB, 0);
 

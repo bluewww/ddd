@@ -484,17 +484,17 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
     case Struct:
     {
 	String collapsed_value = (dv->type() == List ? 
-				  "collapsed_list_value" :
-				  "collapsed_struct_value");
+				  (String)"collapsed_list_value" :
+				  (String)"collapsed_struct_value");
 	String empty_value     = (dv->type() == List ? 
-				  "empty_list_value" :
-				  "empty_struct_value");
+				  (String)"empty_list_value" :
+				  (String)"empty_struct_value");
 	String member_name     = (dv->type() == List ? 
-				  "list_member_name" :
-				  "struct_member_name");
+				  (String)"list_member_name" :
+				  (String)"struct_member_name");
 	String value           = (dv->type() == List ? 
-				  "list_value" :
-				  "struct_value");
+				  (String)"list_value" :
+				  (String)"struct_value");
 
 	if (dv->collapsed())
 	    vbox = eval(collapsed_value);

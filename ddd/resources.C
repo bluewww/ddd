@@ -1245,13 +1245,13 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNfullNameMode,
-	XtCTTYMode,
-	XtRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(AppData, full_name_mode),
+	XtNannotate,
+	XtCAnnotate,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, annotate),
 	XtRImmediate,
-	XtPointer(False)
+	XtPointer(0)
     },
 
     {

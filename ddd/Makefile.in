@@ -390,6 +390,7 @@ SLEEP = sleep
 
 # The fig2dev command.  (fig2dev)
 FIG2DEV = fig2dev
+# FIG2DEV = /public/source/graphic2/transfig.3.2.1/fig2dev/fig2dev
 FIG2PS = $(FIG2DEV) -L ps
 
 # Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
@@ -1615,8 +1616,10 @@ vsl$(EXEEXT):	vsl.$(OBJEXT) DocSpace.$(OBJEXT) $(LIB_OBJECTS)
 	$(LINK.cc) -o $@ vsl.$(OBJEXT) DocSpace.$(OBJEXT) \
 		$(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
-ttytest$(EXEEXT): ttytest.$(OBJEXT) $(BASE_OBJECTS) $(AGENT_OBJECTS)
-	$(LINK.cc) -o $@ ttytest.$(OBJEXT) $(BASE_OBJECTS) $(AGENT_OBJECTS) \
+ttytest$(EXEEXT): ttytest.$(OBJEXT) \
+	$(BASE_OBJECTS) $(AGENT_OBJECTS) $(TEMPLATE_OBJECTS)
+	$(LINK.cc) -o $@ ttytest.$(OBJEXT) \
+	$(BASE_OBJECTS) $(AGENT_OBJECTS) $(TEMPLATE_OBJECTS) \
 	$(ALL_X_LIBS) $(LIBS)
 
 bug$(EXEEXT):	bug.$(OBJEXT)
@@ -2084,6 +2087,7 @@ $(icondir)/dddmask.xbm: $(icondir)/dddmask.xpm
 
 # Original filter for dddsplash to extract g4 info
 # $(SED) 's/[	 ][cmg][ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' | \
+#
 
 $(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 	@$(ECHO) "Creating $@"

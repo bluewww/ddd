@@ -42,6 +42,7 @@ char status_rcsid[] =
 #include "HelpCB.h"
 #include "MakeMenu.h"
 #include "charsets.h"
+#include "cmdtty.h"		// annotate()
 #include "ddd.h"
 #include "findParent.h"
 #include "mydialogs.h"
@@ -105,10 +106,16 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
     if (yn)
     {
+	if (!gdb_asks_yn)
+	    annotate("query");
+
 	gdb_asks_yn = true;
     }
     else if (gdb->isReadyWithPrompt())
     {
+	if (gdb_asks_yn)
+	    annotate("post-query");
+
 	gdb_asks_yn = false;
 	unpost_gdb_yn();
     }

@@ -143,4 +143,15 @@ Volunteers for fixing these and other bugs are welcome!
 373 In `Define Command', changing the `()' toggle does not change
     defined buttons.
 
-374 (Insert new bugs here)
+374 Have an improved Motif 2.1 ComboBox layout.
+
+375 Improve Python support (in DDD 3.2)
+
+376 Improve the command tool movement in KDE.
+
+377 The Breakpoint dialog has a generic title.
+
+378 Using Motif 2.1, `Ignore Count' in Breakpoint Properties
+    has a bad orientation.
+
+379 (Insert new bugs here)

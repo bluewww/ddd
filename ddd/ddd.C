@@ -592,9 +592,21 @@ static XrmOptionDescRec options[] = {
 { "-tty",                   XtNttyMode,              XrmoptionNoArg, ON },
 { "-t",                     XtNttyMode,              XrmoptionNoArg, ON },
 
-{ "--fullname",             XtCTTYMode,              XrmoptionNoArg, ON },
-{ "-fullname",              XtCTTYMode,              XrmoptionNoArg, ON },
-{ "-f",                     XtCTTYMode,              XrmoptionNoArg, ON },
+{ "--fullname",             XtNannotate,             XrmoptionNoArg, "1" },
+{ "-fullname",              XtNannotate,             XrmoptionNoArg, "1" },
+{ "-f",                     XtNannotate,             XrmoptionNoArg, "1" },
+
+{ "--annotate",             XtNannotate,             XrmoptionSepArg, NULL },
+{ "-annotate",              XtNannotate,             XrmoptionSepArg, NULL },
+
+{ "--annotate=0",           XtNannotate,             XrmoptionNoArg, "0" },
+{ "-annotate=0",            XtNannotate,             XrmoptionNoArg, "0" },
+
+{ "--annotate=1",           XtNannotate,             XrmoptionNoArg, "1" },
+{ "-annotate=1",            XtNannotate,             XrmoptionNoArg, "1" },
+
+{ "--annotate=2",           XtNannotate,             XrmoptionNoArg, "2" },
+{ "-annotate=2",            XtNannotate,             XrmoptionNoArg, "2" },
 
 { "--version",              XtNshowVersion,          XrmoptionNoArg, ON },
 { "-version",               XtNshowVersion,          XrmoptionNoArg, ON },
@@ -732,7 +744,7 @@ struct FileItems {
     { "attach",        MMPush, \
         { WhenReady, XtPointer(gdbOpenProcessCB) }, 0, 0, 0, 0 }, \
     { "detach",        MMPush, \
-        { gdbCommandCB, "detach" }, 0, 0, 0, 0 }, \
+        { gdbCommandCB, XtPointer("detach") }, 0, 0, 0, 0 }, \
     MMSep, \
     { "print",         MMPush, { PrintGraphCB, XtPointer(0) }, 0, 0, 0, 0 }, \
     { "printAgain",    MMPush | MMUnmanaged, \
@@ -769,25 +781,26 @@ struct ProgramItems {
 
 #define PROGRAM_MENU(w) \
 { \
-    { "run",         MMPush, { gdbRunCB, 0 }, 0, 0, 0, 0 }, \
-    { "run_again",   MMPush, { gdbCommandCB, "run" }, 0, 0, 0, 0 }, \
+    { "run",       MMPush, { gdbRunCB, 0 }, 0, 0, 0, 0 }, \
+    { "run_again", MMPush, { gdbCommandCB, XtPointer("run") }, 0, 0, 0, 0 }, \
     MMSep, \
     { "separateExecWindow",  MMToggle, \
 	{ dddToggleSeparateExecWindowCB, 0 }, 0, &(w), 0, 0 }, \
     MMSep, \
-    { "step",        MMPush, { gdbCommandCB, "step" }, 0, 0, 0, 0 }, \
-    { "stepi",       MMPush, { gdbCommandCB, "stepi" }, 0, 0, 0, 0 }, \
-    { "next",        MMPush, { gdbCommandCB, "next" }, 0, 0, 0, 0 }, \
-    { "nexti",       MMPush, { gdbCommandCB, "nexti" }, 0, 0, 0, 0}, \
-    { "until",       MMPush, { gdbCommandCB, "until" }, 0, 0, 0, 0}, \
-    { "finish",      MMPush, { gdbCommandCB, "finish" }, 0, 0, 0, 0}, \
+    { "step",     MMPush, { gdbCommandCB, XtPointer("step") }, 0, 0, 0, 0 }, \
+    { "stepi",    MMPush, { gdbCommandCB, XtPointer("stepi") }, 0, 0, 0, 0 }, \
+    { "next",     MMPush, { gdbCommandCB, XtPointer("next") }, 0, 0, 0, 0 }, \
+    { "nexti",    MMPush, { gdbCommandCB, XtPointer("nexti") }, 0, 0, 0, 0}, \
+    { "until",    MMPush, { gdbCommandCB, XtPointer("until") }, 0, 0, 0, 0}, \
+    { "finish",   MMPush, { gdbCommandCB, XtPointer("finish") }, 0, 0, 0, 0}, \
     MMSep, \
-    { "cont",        MMPush, { gdbCommandCB, "cont" }, 0, 0, 0, 0}, \
-    { "signal0",     MMPush, { gdbCommandCB, "signal 0" }, 0, 0, 0, 0}, \
+    { "cont",     MMPush, { gdbCommandCB, XtPointer("cont") }, 0, 0, 0, 0}, \
+    { "signal0",  MMPush, \
+                      { gdbCommandCB, XtPointer("signal 0") }, 0, 0, 0, 0}, \
     MMSep, \
-    { "kill",        MMPush, { gdbCommandCB, "kill" }, 0, 0, 0, 0}, \
-    { "break",       MMPush, { gdbCommandCB, "\003" }, 0, 0, 0, 0}, \
-    { "quit",        MMPush, { gdbCommandCB, "\034" }, 0, 0, 0, 0}, \
+    { "kill",     MMPush, { gdbCommandCB, XtPointer("kill") }, 0, 0, 0, 0}, \
+    { "break",    MMPush, { gdbCommandCB, XtPointer("\003") }, 0, 0, 0, 0}, \
+    { "quit",     MMPush, { gdbCommandCB, XtPointer("\034") }, 0, 0, 0, 0}, \
     MMEnd \
 }
 
@@ -930,8 +943,8 @@ static MMDesc stack_menu[] =
 			       XtPointer(dddPopupSignalsCB) },
       NULL, &signals_w, 0, 0 },
     MMSep,
-    { "up",         MMPush,  { gdbCommandCB, "up" }, 0, 0, 0, 0},
-    { "down",       MMPush,  { gdbCommandCB, "down" }, 0, 0, 0, 0},
+    { "up",         MMPush,  { gdbCommandCB, XtPointer("up") }, 0, 0, 0, 0},
+    { "down",       MMPush,  { gdbCommandCB, XtPointer("down") }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -2590,16 +2603,20 @@ int main(int argc, char *argv[])
     set_settings_title(source_edit_menu[EditItems::Settings].widget);
     set_settings_title(data_edit_menu[EditItems::Settings].widget);
 
+    // If we use annotations, we also want tty mode.
+    if (app_data.annotate)
+	app_data.tty_mode = True;
+
     // Close windows explicitly requested
     if (!app_data.separate_data_window && 
-	!app_data.data_window && !app_data.full_name_mode)
+	!app_data.data_window && !app_data.annotate)
     {
 	// We don't want the data window.
 	gdbCloseDataWindowCB(gdb_w, 0, 0);
     }
 
     if (!app_data.separate_source_window && 
-	(!app_data.source_window || app_data.full_name_mode))
+	(!app_data.source_window || app_data.annotate))
     {
 	// We don't need the source window, since we're invoked by Emacs.
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
@@ -2864,7 +2881,7 @@ void process_next_event()
     }
 #if HAVE_EXCEPTION && HAVE_STD_EXCEPTIONS && HAVE_TYPEINFO
     // Standard library exception: get its type and diagnostics.
-    catch (const exception& err)
+    catch (const std::exception& err)
     {
 	ddd_show_exception(typeid(err).name(), err.what());
     }
@@ -6970,13 +6987,39 @@ static void setup_options(int& argc, char *argv[],
     int gdb_option_pos = -1;
     int gdb_option_offset = 2;
     int i;
+    bool save = false;
+
     for (i = 1; i < argc; i++)
     {
 	string arg = string(argv[i]);
 
 	if (arg == "--")
-	    break;		// End of options
+	{
+	    // Anything after `--' is a debugger option.  Skip `--'
+	    // and store all remaining options in SAVED_OPTIONS.
+	    for (int j = i; j <= argc - 1; j++)
+		argv[j] = argv[j + 1];
+	    argc--;
+	    i--;
 
+	    save = true;
+	    continue;
+	}
+
+	if (save)
+	{
+	    // Found `--' - save all remaining options
+	    saved_options += arg;
+
+	    for (int j = i; j <= argc - 1; j++)
+		argv[j] = argv[j + 1];
+	    argc--;
+	    i--;
+
+	    continue;
+	}
+
+	// Ordinary DDD options
 	if ((arg == "--debugger" || arg == "-debugger") && i < argc - 1)
 	{
 	    gdb_name = argv[i + 1];

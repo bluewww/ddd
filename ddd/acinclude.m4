@@ -378,6 +378,31 @@ AC_SUBST(MINIMAL_TOC)
 ])dnl
 dnl
 dnl
+dnl ICE_RPATH
+dnl ---------
+dnl
+dnl If the C++ compiler supports `-Wl,-rpath,PATH', set ice_rpath to `yes'.
+dnl
+AC_DEFUN(ICE_RPATH,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts [-Wl,-rpath,PATH])
+AC_CACHE_VAL(ice_cv_rpath,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_ldflags="$LDFLAGS"
+LDFLAGS="-Wl,-rpath,/usr/lib"
+AC_TRY_LINK(,[int a;],
+ice_cv_rpath=yes, ice_cv_rpath=no)
+LDFLAGS="$ice_save_ldflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_rpath)
+ice_rpath="$ice_cv_rpath"
+])dnl
+dnl
+dnl
 dnl ICE_WARN_UNINITIALIZED
 dnl ----------------------
 dnl
@@ -577,7 +602,7 @@ namespace one {
     extern int f(); 
 };
 
-int one::f() {};
+int one::f() { return 1; };
 
 using namespace one;
 ],[f()],
@@ -890,7 +915,7 @@ AC_CACHE_VAL(ice_cv_have_exceptions,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(,[try { throw 1; } catch(...) { }],
+AC_TRY_COMPILE(,[try { throw 1; } catch(int) { }],
 ice_cv_have_exceptions=yes,
 ice_cv_have_exceptions=no)
 AC_LANG_RESTORE
@@ -923,7 +948,7 @@ AC_TRY_COMPILE([
 #include <math.h>
 ],
 [try { throw runtime_error("too many fingers on keyboard"); }
- catch(const exception& e) { const char *s = e.what(); }],
+ catch(const std::exception& e) { const char *s = e.what(); }],
 ice_cv_have_std_exceptions=yes,
 ice_cv_have_std_exceptions=no)
 AC_LANG_RESTORE
@@ -2300,4 +2325,23 @@ ice_cv_translations=translations)
 AC_MSG_RESULT($ice_cv_translations)
 TRANSLATIONS=$ice_cv_translations
 AC_SUBST(TRANSLATIONS)
+])dnl
+dnl
+dnl
+dnl ICE_SETUP_RPATH
+dnl ---------------
+dnl
+dnl For each `-L PATH' option in LDFLAGS, add a `-Wl,-rpath,PATH' option
+dnl if the linker supports it.  This is important on Linux, because
+dnl the path set by `-L PATH' is ignored at run-time.
+dnl
+AC_DEFUN(ICE_SETUP_RPATH,
+[
+AC_REQUIRE([ICE_RPATH])
+if test "$ice_rpath" = yes; then
+changequote(,)dnl
+LDFLAGS=`echo $LDFLAGS | sed 's/-L *\([^ ][^ ]*\)/& -Wl,-rpath,\1/g'`
+ X_LIBS=`echo $X_LIBS  | sed 's/-L *\([^ ][^ ]*\)/& -Wl,-rpath,\1/g'`
+changequote([,])dnl
+fi
 ])dnl

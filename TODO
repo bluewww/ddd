@@ -321,4 +321,9 @@ Volunteers for these and other projects are welcome!
 378 Allow disassembling always N bytes, regardless of function
     borders. (Useful for functions with ASM labels).
 
-379 (Insert new project ideas here)
+379 If `main' has no source, show the first source found with
+    `File -> Open Source'.
+
+380 Add special Mocka hacks to access global data.
+
+381 (Insert new project ideas here)

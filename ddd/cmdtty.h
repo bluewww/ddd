@@ -45,6 +45,9 @@ extern void kill_command_tty();
 // Check if command tty is still running
 extern bool tty_running();
 
+// Output annotation TEXT when in annotation mode
+extern void annotate(char * text);
+
 // Output TEXT on controlling TTY, unless we've just composed a command
 extern void tty_out(const string& text);
 

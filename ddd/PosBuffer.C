@@ -48,6 +48,7 @@ char PosBuffer_rcsid[] =
 #include "SourceView.h"
 #include "regexps.h"
 #include "index.h"
+#include "cmdtty.h"
 
 #if RUNTIME_REGEX
 // A regex for C addresses ("0xdead") and Modula-2 addresses ("0BEEFH");
@@ -168,6 +169,11 @@ void PosBuffer::filter (string& answer)
 
 	if (has_prefix(answer, "The current source language is "))
 	    gdb->program_language(answer);
+
+	if (terminated)
+	    annotate("exited");
+	if (signaled)
+	    annotate("signalled");
     }
     break;
 
@@ -367,6 +373,7 @@ void PosBuffer::filter_gdb(string& answer)
 	int pc_index = index(answer, rxstopped_addr, "Breakpoint");
 	if (pc_index >= 0)
 	{
+	    annotate("stopped");
 	    pc_index = answer.index(',');
 	    fetch_address(answer, pc_index, pc_buffer);
 	    fetch_in_function(answer, pc_index, func_buffer);
