@@ -6443,6 +6443,20 @@ STOPPED_HELP\n\
 ITEM Use the functions of the LBL(Program) menu to resume execution\n\
     and step through your program.
 
+Ddd*showing_earlier_state.helpString: \
+@rm DDD is showing an earlier state of your program.\n\
+\n\
+This happens when you undo a command affecting the program state.\n\
+DDD cannot restore the earlier program state.  Instead, DDD goes into\n\
+EMPH(historic mode) showing you all it remembers about this state.\n\
+\n\
+Most normal DDD commands that would query further information\n\
+are disabled in historic mode.  However, you can examine\n\
+the current execution position, or the active displays.\n\
+\n\
+ITEM To revert to the current program state, use LBL(Edit, Redo).\n\
+ITEM To view even earlier states of your program, use LBL(Edit, Undo).
+
 
 !-----------------------------------------------------------------------------
 ! Startup tips

@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// DDD `What next?' help
+// DDD `What Now?' help
 
-// Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1997-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -53,6 +53,7 @@ char WhatNextCB_rcsid[] =
 #include "DestroyCB.h"
 #include "HelpCB.h"
 #include "SourceView.h"
+#include "UndoBuffer.h"
 
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
@@ -168,6 +169,12 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
     if (!gdb->isReadyWithPrompt())
     {
 	hint_on("busy_dialog");
+	return;
+    }
+
+    if (undo_buffer.showing_earlier_state())
+    {
+	hint_on("showing_earlier_state");
 	return;
     }
 
