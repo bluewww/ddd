@@ -4503,8 +4503,15 @@ struct WhenReadyInfo {
 	  cbs(c)
     {
 	// Copy event
-	memcpy(cbs.event, c.event, sizeof(cbs.event));
-	cbs.event = &event;
+	if (c.event == 0)
+	{
+	    // This happens with old LessTif versions
+	}
+	else
+	{
+	    memcpy(cbs.event, c.event, sizeof(cbs.event));
+	    cbs.event = &event;
+	}
     }
 };
 
@@ -4520,16 +4527,21 @@ static void DoneCB(const string& /* answer */, void *qu_data)
 // Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
 static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
 {
-    XtCallbackProc proc = (XtCallbackProc)client_data;
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs == 0)
+	return;	    // This happens with old LessTif versions
+
+    XtCallbackProc proc = (XtCallbackProc)client_data;
     XtPointer user_client_data = 0; // No way to pass extra values here
 
     if (gdb->isReadyWithPrompt())
     {
+	// GDB is ready: do command now
 	proc(w, user_client_data, call_data);
 	return;
     }
 
+    // Execute command as soon as GDB gets ready
     XmString label = 0;
     XtVaGetValues(w, XmNlabelString, &label, NULL);
     MString _action(label, true);
