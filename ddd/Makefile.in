@@ -720,8 +720,8 @@ OBJECTS = $(LIB_OBJECTS) $(DDD_OBJECTS)
 PROGS = $(ddd)
 
 ## Extra demonstration files.
-DEMOS = userinfo huffencode huffdecode cxxtest ctest test-file test-graph \
-        vsl ttytest bug ptest m2test tString mmtest
+DEMOS = userinfo stringify huffencode huffdecode cxxtest ctest test-file \
+	test-graph vsl ttytest bug ptest m2test tString mmtest
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
