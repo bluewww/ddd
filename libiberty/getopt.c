@@ -6,8 +6,8 @@
    Copyright (C) 1987, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98
    	Free Software Foundation, Inc.
 
-   NOTE: The canonical source of this file is maintained with the GNU C Library.
-   Bugs can be reported to bug-glibc@gnu.org.
+   NOTE: This source is derived from an old version taken from the GNU C
+   Library (glibc).
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -82,7 +82,7 @@
 #ifndef _
 /* This is for other GNU distributions with internationalized messages.
    When compiling libc, the _ macro is predefined.  */
-# ifdef HAVE_LIBINTL_H
+# if (HAVE_LIBINTL_H && ENABLE_NLS) || defined _LIBC
 #  include <libintl.h>
 #  define _(msgid)	gettext (msgid)
 # else
@@ -333,8 +333,8 @@ exchange (argv)
 	nonoption_flags_len = nonoption_flags_max_len = 0;
       else
 	{
-	  memset (__mempcpy (new_str, __getopt_nonoption_flags,
-			     nonoption_flags_max_len),
+	  memset (mempcpy (new_str, __getopt_nonoption_flags,
+			   nonoption_flags_max_len),
 		  '\0', top + 1 - nonoption_flags_max_len);
 	  nonoption_flags_max_len = top + 1;
 	  __getopt_nonoption_flags = new_str;
@@ -444,7 +444,7 @@ _getopt_initialize (argc, argv, optstring)
 	      if (__getopt_nonoption_flags == NULL)
 		nonoption_flags_max_len = -1;
 	      else
-		memset (__mempcpy (__getopt_nonoption_flags, orig_str, len),
+		memset (mempcpy (__getopt_nonoption_flags, orig_str, len),
 			'\0', nonoption_flags_max_len - len);
 	    }
 	}

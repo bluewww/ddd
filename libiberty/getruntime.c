@@ -1,5 +1,5 @@
 /* Return time used so far, in microseconds.
-   Copyright (C) 1994, 1999 Free Software Foundation, Inc.
+   Copyright (C) 1994, 1999, 2002 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
@@ -22,14 +22,28 @@ Boston, MA 02111-1307, USA.  */
 #include "ansidecl.h"
 #include "libiberty.h"
 
+/* On some systems (such as WindISS), you must include <sys/types.h>
+   to get the definition of "time_t" before you include <time.h>.  */
+#include <sys/types.h>
+
 /* There are several ways to get elapsed execution time; unfortunately no
    single way is available for all host systems, nor are there reliable
    ways to find out which way is correct for a given host. */
 
-#include <time.h>
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  ifdef HAVE_TIME_H
+#   include <time.h>
+#  endif
+# endif
+#endif
 
 #if defined (HAVE_GETRUSAGE) && defined (HAVE_SYS_RESOURCE_H)
-#include <sys/time.h>
 #include <sys/resource.h>
 #endif
 
@@ -62,6 +76,18 @@ Boston, MA 02111-1307, USA.  */
 #endif
 #endif
 #endif
+
+/*
+
+@deftypefn Replacement long get_run_time (void)
+
+Returns the time used so far, in microseconds.  If possible, this is
+the time used by this process, else it is the elapsed time since the
+process started.
+
+@end deftypefn
+
+*/
 
 long
 get_run_time ()

@@ -1,4 +1,4 @@
-/* Copyright (C) 1992, 1995, 1996, 1997 Free Software Foundation, Inc.
+/* Copyright (C) 1992, 1995, 1996, 1997, 2002 Free Software Foundation, Inc.
    This file based on setenv.c in the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,9 +16,28 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+
+/*
+
+@deftypefn Supplemental int setenv (const char *@var{name}, const char *@var{value}, int @var{overwrite})
+@deftypefnx Supplemental void unsetenv (const char *@var{name})
+
+@code{setenv} adds @var{name} to the environment with value
+@var{value}.  If the name was already present in the environment,
+the new value will be stored only if @var{overwrite} is nonzero.
+The companion @code{unsetenv} function removes @var{name} from the
+environment.  This implementation is not safe for multithreaded code.
+
+@end deftypefn
+
+*/
+
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
+
+#define setenv libiberty_setenv
+#define unsetenv libiberty_unsetenv
 
 #include "ansidecl.h"
 #include <sys/types.h> /* For `size_t' */
@@ -45,6 +64,9 @@ extern int errno;
 extern char **environ;
 #endif
 
+#undef setenv
+#undef unsetenv
+
 /* LOCK and UNLOCK are defined as no-ops.  This makes the libiberty
  * implementation MT-Unsafe. */
 #define LOCK
@@ -63,7 +85,7 @@ setenv (name, value, replace)
      const char *value;
      int replace;
 {
-  register char **ep;
+  register char **ep = 0;
   register size_t size;
   const size_t namelen = strlen (name);
   const size_t vallen = strlen (value) + 1;
@@ -72,11 +94,13 @@ setenv (name, value, replace)
 
   size = 0;
   if (__environ != NULL)
-    for (ep = __environ; *ep != NULL; ++ep)
-      if (!strncmp (*ep, name, namelen) && (*ep)[namelen] == '=')
-	break;
-      else
-	++size;
+    {
+      for (ep = __environ; *ep != NULL; ++ep)
+	if (!strncmp (*ep, name, namelen) && (*ep)[namelen] == '=')
+	  break;
+	else
+	  ++size;
+    }
 
   if (__environ == NULL || *ep == NULL)
     {
