@@ -151,6 +151,8 @@ VSLNode *VSLLib::call(const string& name,
 	struct {
 	    string *id;
 	    VSLNode *pattern;
+	    string *file;
+	    int line;
 	} header;
 	struct {
 	    VSLNode *pattern;
@@ -196,20 +198,25 @@ function_declaration	:	function_header
 				  {
 				    vsllib->add(*$1.id,
 				      $1.pattern, 0, False,
-				      yyfilename, yylinenumber);
+				      *$1.file, $1.line);
 				  }
 				  delete $1.id;
+				  delete $1.file;
 				}
 
 function_header		:	function_identifier function_argument
 				{
-				  $$.id = $1;
+				  $$.id      = $1;
 				  $$.pattern = $2;
+				  $$.file    = new string(yyfilename);
+				  $$.line    = yylinenumber;
 				}
 			|	function_identifier
 				{
-				  $$.id = new string("#" + *$1);
+				  $$.id      = new string("#" + *$1);
 				  $$.pattern = new EmptyListNode;
+				  $$.file    = new string(yyfilename);
+				  $$.line    = yylinenumber;
 
 				  delete $1;
 				}
@@ -264,9 +271,10 @@ local_definition	: 	local_header function_body
 				    // Funktion definieren
 				    vsllib->add(*$1.id,
 				      $1.pattern, $2, False,
-				      yyfilename, yylinenumber);
+				      *$1.file, $1.line);
 				  }
 				  delete $1.id;
+				  delete $1.file;
 				}
 
 local_header		:	function_header EQ
@@ -289,9 +297,10 @@ global_definition	:	global_header function_body
 				    // Funktion definieren
 				    vsllib->add(*$1.id, 
 				      $1.pattern, $2, True,
-				      yyfilename, yylinenumber);
+				      *$1.file, $1.line);
 				  }
 				  delete $1.id;
+				  delete $1.file;
 				}
 
 global_header		:	function_header ARROW
@@ -605,6 +614,5 @@ replace_identifier	:	function_identifier
 				    VSLLib::parse_error("'" + func_name + 
 				      "(...)' undefined");
 				}
-
 
 %% /* DO NOT REMOVE THIS COMMENT -- MUNCH-YACC DEPENDS ON IT */

@@ -882,7 +882,7 @@ love:
 
 ## The resource header files.
 
-Ddd.ad.h: Ddd
+Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
 	$(AD2C) $? > Ddd.ad.h
 
 # `make depend' fails to find this dependency :-(
@@ -891,8 +891,8 @@ ddd.o: Ddd.ad.h
 
 ## The VSL header files.
 
-VSL_CPP = $(CPP) -P -I$(srcdir)/../vsllib -I$(prefix)/lib/vsl-include
-ddd.vsl.h: ddd.vsl
+VSL_CPP = $(CPP) -I$(srcdir)/../vsllib -I$(prefix)/lib/vsl-include
+ddd.vsl.h: ddd.vsl $(srcdir)/vsl2c.sed
 	$(CAT) $(srcdir)/ddd.vsl > tmp.c
 	$(VSL_CPP) tmp.c | $(VSL2C) > ddd.vsl.h
 	$(RM) tmp.c

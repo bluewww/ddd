@@ -44,6 +44,7 @@ char DispBox_rcsid[] =
 #include "cook.h"
 #include "ddd.h"
 #include "status.h"
+#include "version.h"
 
 
 //-----------------------------------------------------------------------------
@@ -109,7 +110,9 @@ void DispBox::init_vsllib()
     if (vsllib_ptr == 0)
     {
 	StatusDelay delay("Reading builtin VSL library");
-	string defs = builtin_def + vsllib_defs;
+	string defs = string(builtin_def)
+	    + "#line 1 \"" Ddd_NAME "*vslDefs\"\n"
+	    + vsllib_defs;
 	istrstream is(defs);
 	vsllib_ptr = new VSLLib(is);
     }

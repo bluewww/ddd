@@ -31,21 +31,25 @@
 s,//[^"]*$,,
 s,[^"]*//.*$,,
 
+# Add real line info
+s/^# *\([1-9][0-9]*\)[^"]*\("[^"]*\)tmp.c".*/#line \1 \2ddd.vsl"/
+s/^# *\([1-9][0-9]*\)[^"]*\("[^"]*"\).*/#line \1 \2/
+s/^# *\([1-9][0-9]*\)[^"]*$/#line \1/
+
 # Remove leading and trailing whitespace
 s/^\([^" 	]*\)[ 	]*/\1 /g
 s/^[ 	]*//
 s/[ 	]*$//
 
 # Delete empty lines
-/^[ 	]*$/d
+# /^[ 	]*$/d
 
 # Quote strings
 s/\\/\\&/g
 s/"/\\"/g
 
 # Add newlines
-s/[^;=>]$/&\\n/
-s/^#/\\n&/
+s/$/&\\n/
 
 # Enclose in double quotes
 s/.*/"&"/

@@ -39,10 +39,10 @@ char VSL_lex_rcsid[] =
 
 static const int max_include_nesting = 40;    // max. Verschachtelungstiefe
 
-static istream 	*streamstack[max_include_nesting]; // Dateideskriptoren
-static string   namestack[max_include_nesting];	   // Dateinamen
-static int   	linestack[max_include_nesting];    // Dateizeilen
-static int   	topstack = 0;                      // Naechste freie Position
+static istream	*streamstack[max_include_nesting]; // Dateideskriptoren
+static string	namestack[max_include_nesting];	   // Dateinamen
+static int	linestack[max_include_nesting];	   // Dateizeilen
+static int	topstack = 0;			   // Naechste freie Position
 
 #ifdef FLEX_SCANNER
 static YY_BUFFER_STATE bufstack[max_include_nesting]; // Buffer states
@@ -62,8 +62,8 @@ inline int do_unput(char c)
 {
     if (c != 0)
     {
-        pushback = c;
-        has_pushback = 1;
+	pushback = c;
+	has_pushback = 1;
     }
     return c;
 }
@@ -135,9 +135,9 @@ W			[ \f\t]*
 
 %%
 
-{S}	 	return STRING;			// string
+{S}		return STRING;			// string
 
-"//".*		; 				// C++ comment
+"//".*		;				// C++ comment
 "/*"		{				// C comment
 			// aus `man lex`
 			loop:
@@ -152,21 +152,21 @@ W			[ \f\t]*
 			// Avoid warnings about unused function
 			(void) yyunput;
 		}
-^{W}#!.* 		; 			// Unix exec() tag
+^{W}#!.*		;			// Unix exec() tag
 
-^{W}#{W}include{W}{CS}.* { 			// #include "..."
+^{W}#{W}include{W}{CS}.* {			// #include "..."
 			char buf[BUFSIZ];
 			strcpy(buf, (char *)yytext);
 			char *start = buf;
-		 	while (*start != '\"') 
+			while (*start != '\"') 
 				start++;
-		 	char *end = ++start;
-		 	while (*end != '\"') 
+			char *end = ++start;
+			while (*end != '\"') 
 				end++;
-		 	*end = '\0';
-		 	switchup(start, true);
+			*end = '\0';
+			switchup(start, true);
 		}
-^{W}#{W}include{W}{CC}.* { 			// #include <...>
+^{W}#{W}include{W}{CC}.* {			// #include <...>
 			char buf[BUFSIZ];
 			strcpy(buf, (char *)yytext);
 			char *start = buf;
@@ -178,10 +178,30 @@ W			[ \f\t]*
 			*end = '\0';
 			switchup(start, false);
 		}
+^{W}#{W}line[ \f\t]{W}.* {		// #line LINE ["FILE"]
+			string buf((char *)yytext);
+			buf = buf.after("line");
+			char *s = buf;
+			int line = strtol(s, &s, 10);
+			if (s == buf)
+			    VSLLib::parse_error("illegal #line number");
+			else
+			    yylinenumber = line;
+
+			buf = buf.after('"');
+			if (buf != "")
+			{
+			    buf = buf.before('"');
+			    if (buf == "")
+				VSLLib::parse_error("illegal #line file");
+			    else
+				yyfilename = uncook(buf);
+			}
+		}
 
 ^{W}#{W}override   return OVERRIDE;		// Andere Manipulatoren
-^{W}#{W}undef      return OVERRIDE;
-^{W}#{W}replace    return REPLACE;
+^{W}#{W}undef	   return OVERRIDE;
+^{W}#{W}replace	   return REPLACE;
 
 if		return IF;			// Tokens
 then		return THEN;
@@ -194,7 +214,7 @@ not		return NOT;
 let		return LET;
 in		return IN;
 where		return WHERE;
-{I} 		return IDENTIFIER;
+{I}		return IDENTIFIER;
 
 "->"		return ARROW;
 "::"		return CONS;
@@ -224,7 +244,7 @@ private:
     yyNameSet *_next;
 public:
     yyNameSet(string name) { _name = name; _next = 0; }
-    ~yyNameSet() 	   { reset(); }
+    ~yyNameSet()	   { reset(); }
     void reset();
     int add(string name);
 } yynameSet("xyzzy");
@@ -275,8 +295,8 @@ static int switchdown()
     }
 
     topstack--;
-    yystream     = streamstack[topstack];
-    yyfilename   = namestack[topstack];
+    yystream	 = streamstack[topstack];
+    yyfilename	 = namestack[topstack];
     yylinenumber = linestack[topstack];
 
 #ifdef FLEX_SCANNER
@@ -359,12 +379,12 @@ static int switchup(char *filename, bool thisdir)
 
     if (string(filename) != "")
     {
-        // Dateinamen um Pfad erweitern
-        filename = searchpath(filename, thisdir);
+	// Dateinamen um Pfad erweitern
+	filename = searchpath(filename, thisdir);
 
 	// Namen zur Namenmenge hinzufuegen;
-        // wenn bereits enthalten, kein Wechsel
-        if (yynameSet.add(filename))
+	// wenn bereits enthalten, kein Wechsel
+	if (yynameSet.add(filename))
 	    return 0;
     }
 
@@ -380,12 +400,12 @@ static int switchup(char *filename, bool thisdir)
 	yy_load_buffer_state();
     }
 
-    bufstack[topstack]    = YY_CURRENT_BUFFER;
+    bufstack[topstack]	  = YY_CURRENT_BUFFER;
 #endif
 
     streamstack[topstack] = yystream;
-    namestack[topstack]   = yyfilename;
-    linestack[topstack]   = yylinenumber;
+    namestack[topstack]	  = yyfilename;
+    linestack[topstack]	  = yylinenumber;
     topstack++;
 
     yylinenumber = 1;
@@ -412,7 +432,7 @@ static int switchup(char *filename, bool thisdir)
     if (!yystream->readable()) 
     {
 #endif
-        switchdown();
+	switchdown();
 	VSLLib::parse_error(string(filename) + ": " + sys_errlist[errno]);
 	return -1;
     }
