@@ -3431,7 +3431,11 @@ static Boolean session_setup_done(XtPointer)
 	// Delete initialization delay, if any
 	delete init_delay;
 	init_delay = 0;
-	set_status_mstring(rm("Welcome to " DDD_NAME " " DDD_VERSION "!"));
+
+	// Say hello
+	set_status_mstring(rm("Welcome to " DDD_NAME " " DDD_VERSION 
+			      " \"" DDD_NICKNAME "\""
+			      " (" DDD_HOST ")"));
 
 	if (app_data.initial_session != 0)
 	{

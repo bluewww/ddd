@@ -33,11 +33,23 @@
 // NOTE: This is not the place where names and version numbers are stored!
 // To change the name or the version number, see `configure.in'.
 
-#define ddd_NAME    "@ddd@"
-#define Ddd_NAME    "@Ddd@"
-#define DDD_NAME    "@DDD@"
-#define DDD_VERSION "@VERSION@"
-#define DDD_EXPIRES "@EXPIRES@"
+// The product name.
+#define ddd_NAME     "@ddd@"
+#define Ddd_NAME     "@Ddd@"
+#define DDD_NAME     "@DDD@"
+
+// The product version, as `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'.
+// A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
+// snapshot of the current development tree.
+#define DDD_VERSION  "@VERSION@"
+
+// The product expiration date, in ISO 8601 YYYY-MM-DD format.  After
+// this date, users are requested to update the product.  An empty
+// expiration date means no expiration.
+#define DDD_EXPIRES  "@EXPIRES@"
+
+// The nickname of this version.
+#define DDD_NICKNAME "@NICKNAME@"
 
 #endif // _DDD_version_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
