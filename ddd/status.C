@@ -242,7 +242,7 @@ Widget status_history(Widget parent)
     }
     else
     {
-	history_msg = bf("Recent messages");
+	history_msg = MString("Recent messages");
 	history_msg += rm(" (oldest first)");
 	history_msg += cr();
 

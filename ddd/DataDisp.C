@@ -5537,7 +5537,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     XtManageChild(box);
 
     arg = 0;
-    MString prompt = bf("Set value of ") + tt(name);
+    MString prompt = MString("Set value of ") + tt(name);
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     XtSetArg(args[arg], XmNlabelString, prompt.xmstring());   arg++;
     Widget label = verify(XmCreateLabel(box, "label", args, arg));
