@@ -1520,6 +1520,12 @@ static void HandleTipEvent(Widget w,
     {
     case EnterNotify:
 	{
+	    if (event->xcrossing.mode != NotifyNormal)
+	    {
+		// Ignore grab/ungrab event
+		break;
+	    }
+
 	    if (clear_tip_timer != 0)
 	    {
 		XtRemoveTimeOut(clear_tip_timer);
@@ -1544,8 +1550,16 @@ static void HandleTipEvent(Widget w,
 		}
 	    }
 
-	    if (!XmIsText(w))
+	    const int any_button_mask = Button1Mask | Button2Mask 
+	        | Button3Mask | Button4Mask | Button5Mask;
+	    if (event->xcrossing.state & any_button_mask)
 	    {
+		// Some button is pressed - clear tip
+		ClearTip(w, event);
+	    }
+	    else if (!XmIsText(w))
+	    {
+		// Clear and re-raise tip
 		ClearTip(w, event);
 		RaiseTip(w, event);
 	    }
@@ -1554,6 +1568,12 @@ static void HandleTipEvent(Widget w,
 
     case LeaveNotify:
 	{
+	    if (event->xcrossing.mode != NotifyNormal)
+	    {
+		// Ignore grab/ungrab event
+		break;
+	    }
+
 	    last_left_widget = w;
 	    if (clear_tip_timer != 0)
 	    {
