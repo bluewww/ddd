@@ -15,14 +15,17 @@ DDD 2.2.2
     - The data display is now scope-sensitive: displays are
       automatically hidden as they become inactive (out of scope) and
       redisplayed as they become active again.  This is handy when
-      maintaining a multitude of displays in different scopes.
+      maintaining a multitude of displays in different scopes.  For
+      details, see the `hideInactiveDisplays' resource.
     - Faster data exploration.  Double-clicking...
       * ...on a pointer value: dereferences it.
       * ...on a partially hidden value: shows more detail.
       * ...on a fully shown value: hides it again.
     - A display resize (due to value changes) now automatically
-      `bumps' adjacent displays such that they are not obscured.
-    - Case-insensitive search in the source text is now supported.
+      `bumps' adjacent displays such that they are not obscured;
+      see the `bumpDisplays' resource for details.
+    - Case-insensitive search in the source text is now supported;
+      see the `findCaseSensitive' resource for details.
 
     Bug fixes:
     - Getting and identifying core dumps now works on Solaris, AIX and
