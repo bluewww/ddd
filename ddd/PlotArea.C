@@ -327,6 +327,7 @@ void PlotArea::plot_point(const string& buf)
     case 0: // Dot
 	XDrawLine(dpy,win,gc, X(x), Y(y), X(x), Y(y));
 	break;
+
     case 1: // Diamond
 	XDrawLine(dpy,win,gc, X(x)-px, Y(y), X(x), Y(y)-py);
 	XDrawLine(dpy,win,gc, X(x), Y(y)-py, X(x)+px, Y(y));
@@ -334,10 +335,12 @@ void PlotArea::plot_point(const string& buf)
 	XDrawLine(dpy,win,gc, X(x), Y(y)+py, X(x)-px, Y(y));
 	XDrawLine(dpy,win,gc, X(x), Y(y), X(x), Y(y));
 	break;
+
     case 2: // Plus
 	XDrawLine(dpy,win,gc, X(x)-px, Y(y), X(x)+px, Y(y));
 	XDrawLine(dpy,win,gc, X(x), Y(y)-py, X(x), Y(y)+py);
 	break;
+
     case 3: // Box
 	XDrawLine(dpy,win,gc, X(x)-px, Y(y)-py, X(x)+px, Y(y)-py);
 	XDrawLine(dpy,win,gc, X(x)+px, Y(y)-py, X(x)+px, Y(y)+py);
@@ -345,10 +348,12 @@ void PlotArea::plot_point(const string& buf)
 	XDrawLine(dpy,win,gc, X(x)-px, Y(y)+py, X(x)-px, Y(y)-py);
 	XDrawLine(dpy,win,gc, X(x), Y(y), X(x), Y(y));
 	break;
+
     case 4: // X
 	XDrawLine(dpy,win,gc, X(x)-px, Y(y)-py, X(x)+px, Y(y)+py);
 	XDrawLine(dpy,win,gc, X(x)-px, Y(y)+py, X(x)+px, Y(y)-py);
 	break;
+
     case 5: // Triangle
 	XDrawLine(dpy,win,gc, X(x), Y(y)-(4*px/3), 
 		  X(x)-(4*px/3), Y(y)+(2*py/3));
@@ -358,6 +363,7 @@ void PlotArea::plot_point(const string& buf)
 		  X(x)+(4*px/3), Y(y)+(2*py/3));
 	XDrawLine(dpy,win,gc, X(x), Y(y), X(x), Y(y));
 	break;
+
     case 6: // Star
 	XDrawLine(dpy,win,gc, X(x)-px, Y(y), X(x)+px, Y(y));
 	XDrawLine(dpy,win,gc, X(x), Y(y)-py, X(x), Y(y)+py);
@@ -376,6 +382,9 @@ void PlotArea::plot_point(const string& buf)
 void PlotArea::plot(const string& cmds, bool clear)
 {
     commands = cmds;
+
+    if (!XtIsRealized(area))
+	return;
 
     // Initialize
     Dimension width, height;
