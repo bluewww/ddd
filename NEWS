@@ -13,6 +13,9 @@ Documentation
 - There is a new DDD manual, generated from Texinfo source, and coming
   in HTML, PDF, PostScript, Info, as well as plain text format.
 
+- The DDD manual page is no longer supported, but still included in this
+  distribution.
+
 
 Debuggers and Languages
 -----------------------
@@ -851,7 +854,7 @@ Future directions
   style: Ctrl+X/Ctrl+C/Ctrl+V.
 
 - For further ideas and possible extensions, see the file `TODO';
-  send your suggestions to `help-ddd@gnu.org'.
+  send your suggestions to `ddd@gnu.org'.
 
 
 For older news, see the file `NEWS-OLD' in the DDD distribution.
