@@ -277,28 +277,45 @@ Volunteers for fixing these and other bugs are welcome!
      bar. Thus we cannot properly see the list of files available.
      (This problem is not unique to DDD.)
 
-219. Markus Kossmann <mk@emil.inka.de> reports:
+222. Bob Vickers <bobv@dcs.rhbnc.ac.uk> reports that the command tool
+     sometimes is really big and occupies most of the screen, thus
+     obliterating most of the other windows.  This happens with
+     OSF/Motif Version 1.2.4 on alpha-dec-osf4.0.
 
-     ddd-1997-11-10 compiled on linux-2.0.31, libc-5.4.38,
-     libg++-2.7.2.8, gcc-2.7.2.1 works.  Upgrading this system to libc
-     5.4.39 or 5.4.40 breaks ddd. It fails now on startup with :
+223. Christopher Vickery <vickery@babbage.cs.qc.edu> says: On SunOS 5.5,
+     If I run ddd in the background (using the tcsh shell), ddd cannot
+     complete initialization of the execution window because it tries
+     to write to stdout, which causes it to block until the job is
+     returned to the foreground.  Nothing actually appears in the
+     terminal window when the ddd job is put in the foreground, but
+     the execution window finishes initializing OK.
 
-     gdb: cannot open /dev/ttyp6: I/O error
-     gdb: child communication setup failed
+224. Robert A Kerr <Robert_Kerr@byu.edu> says: On HP-UX 10.10,
+     the debugger LED on the bottom right never stops flashing.  If I
+     try to do anything it gives me the "The debugger is busy error"
+     and keeps flashing away.  I've let it sit for up to an hour
+     before and it never stops.
 
-     The libc Changelog says :
-     [...]
-     Thu Sep 11 08:04:03 1997  H.J. Lu (hjl@gnu.ai.mit.edu)
+225. Roy Dragseth <royd@math.uit.no> says: If you type in commands
+     really fast in ddd it gets problems to cope. I run ddd
+     exclusively from within xemacs and when I try to create some lisp
+     macros to display variables and jumping around in the source ddd
+     seems to try to put up a window saying that the debugger is busy
+     (only a guess, it comes up blank and wont go away again) and the
+     last command(s) in the sequence get lost. Example:
      
-            * libio/fileops.c (_IO_file_underflow): treat EAGAIN and
-            EWOULDBLOCK as EOF.
-     [...]
-     It seems that this change is the culprit. Backing it out removes
-     the error.
+     I use a macro for "continue until here"
+     (gdbsrc-set-tbreak-continue) in gdbsrc mode bound to the key
+     "h". ddd set tbreak ok, but the continue command get lost:
+     
+     (gdb) tbreak transform.cc:61
+     c
+     Breakpoint 2 at 0x77f4: file transform.cc, line 61.
+     (gdb) 
+     
+     And the little blank window pops up and won't go away, ddd
+     continues to work but one have to destroy the window (close won't
+     do) to get rid of it, that makes ddd exit in a very abrupt
+     manner. (This happens on HP-UX 10.20.)
 
-     I´m not sure, if the new behaviour of libc can be considered as
-     bug or if ddd should be adapted to support that.
-
-     [Should be fixed in DDD 2.2  -AZ]
-
-222. (Insert your bug here)
+226. (Insert your bug here)
