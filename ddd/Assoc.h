@@ -314,19 +314,19 @@ public:
 
     // Constructor
     Assoc()
-	: _Assoc() 
+	: _Assoc<K, V>() 
     {}
 
     // Destructor
     ~Assoc() {}
 
     // Copy
-    Assoc(const Assoc<K,V>& m)
-	: _Assoc(m)
+    Assoc(const Assoc<K, V>& m)
+	: _Assoc<K, V>(m)
     {}
 
     // Assignment
-    Assoc<K, V>& operator = (const Assoc<K,V>& m)
+    Assoc<K, V>& operator = (const Assoc<K, V>& m)
     {
 	_Assoc<K, V>::operator =(m);
 	return *this;
