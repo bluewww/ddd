@@ -2430,7 +2430,10 @@ string GDBAgent::assign_command(string var, string expr) const
 	break;
 
     case PERL:
-	cmd = " ";		// Avoid interpretation as cmd
+	if (var != "" || !is_perl_prefix(var[0]))
+	    return "";		// Cannot set this
+
+	cmd = "";		// No command needed
 	break;
 
     case JDB:
@@ -2721,8 +2724,9 @@ void GDBAgent::munch_value(string& value, const string& var) const
 {
     while (value.contains(var + " = ", 0))
 	value = value.after(" = ");
+    strip_leading_space(value);
 
-    if (gdb->type() != PERL)
+    if (gdb->type() != PERL || !value.contains(rxint, 0))
 	return;
 
     // Special treatment
