@@ -3907,6 +3907,11 @@ Ddd*expired_warning*helpString: \
 It should no longer be used.\n\
 To get a recent @DDD@ version, see the @DDD@ WWW page.
 
+Ddd*invalid_range_error.title: @DDD@: Invalid Range
+Ddd*invalid_range_error*helpString: \
+@rm You entered an invalid range X..Y, with X > Y.
+
+
 
 !-----------------------------------------------------------------------------
 ! Easter Eggs

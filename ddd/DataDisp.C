@@ -1416,7 +1416,7 @@ void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
 // Erzeugung von neuen (unabhaengigen) Displays
 //-----------------------------------------------------------------------------
 
-regex RXmore_than_one ("\\[[0-9]+\\.\\.[0-9]+\\]");
+regex RXmore_than_one ("\\[-?[0-9]+\\.\\.-?[0-9]+\\]");
 
 // ***************************************************************************
 // sendet den Display-Befehl an den gdb
@@ -1580,14 +1580,21 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
 
     // einzelne display-Ausdruecke erzeugen und display-Befehle im array 
     // abschicken...
-    string prefix = display_expression.before(RXmore_than_one);
+    string prefix  = display_expression.before(RXmore_than_one);
     string postfix = display_expression.after(RXmore_than_one);
-    string range = display_expression.from (RXmore_than_one);
+    string range   = display_expression.from (RXmore_than_one);
     range.del("[");
     int start = ::get_nr(range);
-    assert(start >= 0);
     range = range.after("..");
     int stop = ::get_nr(range);
+
+    if (start > stop)
+    {
+	post_error("Invalid range in " + quote(display_expression), 
+		   "invalid_range_error");
+	return;
+    }
+
     assert (stop >= start);
     int count = stop + 1 - start;
 
@@ -2077,14 +2084,21 @@ void DataDisp::dependent_displaysSQA (string display_expression,
 
     // einzelne display-Ausdruecke erzeugen und display-Befehle im array 
     // abschicken...
-    string prefix = display_expression.before(RXmore_than_one);
+    string prefix  = display_expression.before(RXmore_than_one);
     string postfix = display_expression.after(RXmore_than_one);
-    string range = display_expression.from (RXmore_than_one);
+    string range   = display_expression.from (RXmore_than_one);
     range.del("[");
     int start = ::get_nr(range);
-    assert(start >= 0);
     range = range.after("..");
     int stop = ::get_nr(range);
+
+    if (start > stop)
+    {
+	post_error("Invalid range in " + quote(display_expression), 
+		   "invalid_range_error");
+	return;
+    }
+
     assert (stop >= start);
     int count = stop + 1 - start;
 
@@ -2448,6 +2462,7 @@ string DataDisp::process_displays (string& displays,
 	    disp_string_map.del (k);
 	}
     }
+
     assert (disp_string_map.length() == 0);
     if (changed) 
 	refresh_graph_edit();
