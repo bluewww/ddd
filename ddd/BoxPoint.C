@@ -40,5 +40,5 @@ ostream& operator << (ostream& stream, const BoxPoint& p)
     if (p.isValid())
 	return stream << '(' << p[X] << ", " << p[Y] << ')';
     else
-	return stream << "NoPoint";
+	return stream << "<invalid BoxPoint>";
 }

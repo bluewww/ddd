@@ -212,7 +212,5 @@ inline bool operator <= (const BoxPoint& p1, const BoxPoint& p2)
 	return false;
 }
 
-#define NoPoint Point()
-
 #endif // _DDD_BoxPoint_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

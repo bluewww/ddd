@@ -63,7 +63,7 @@ protected:
 public:
     // Constructor
     RegionGraphNode(const BoxPoint& initialPos = BoxPoint(),
-	const BoxSize& initialSize = NoSize):
+	const BoxSize& initialSize = BoxSize()):
 	PosGraphNode(initialPos),
 	_region(initialPos, initialSize)
     {

@@ -120,7 +120,5 @@ inline ostream& operator << (ostream& stream, const BoxSize& size)
     return operator << (stream, p);
 }
 
-#define NoSize BoxSize()
-
 #endif // _DDD_BoxSize_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

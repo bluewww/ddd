@@ -132,7 +132,5 @@ inline ostream& operator << (ostream& stream, const BoxExtend& extend)
     return operator << (stream, p);
 }
 
-#define NoExtend BoxExtend()
-
 #endif // _DDD_BoxExtend_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

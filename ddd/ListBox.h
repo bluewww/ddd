@@ -109,8 +109,8 @@ public:
     ListBox(Box *hd, ListBox *tl, char *t = "ListBox"):
 	CompositeBox(2, t), _last(tl->_last)
     {
-	thesize() = NoSize;
-	theextend() = NoExtend;
+	thesize()   = BoxSize();
+	theextend() = BoxExtend();
 
 	addChild(hd);
 	addChild(tl);
@@ -120,8 +120,8 @@ public:
     ListBox(char *t = "ListBox"):
 	CompositeBox(2, t), _last(this)
     {
-	thesize() = NoSize;
-	theextend() = NoExtend;
+	thesize()   = BoxSize();
+	theextend() = BoxExtend();
     }
 
     Box *dup() const { return new ListBox(*this); }
