@@ -2,7 +2,7 @@
 // Printing dialog
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2000-2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -53,6 +53,7 @@ char print_rcsid[] =
 #include "regexps.h"
 #include "status.h"
 #include "string-fun.h"
+#include "tempfile.h"
 #include "verify.h"
 #include "wm.h"
 #include "charsets.h"
@@ -212,21 +213,21 @@ static void printOutputHP(Agent *, void *, void *call_data)
 static int print_to_printer(string command, PrintGC& gc, 
 			    bool selectedOnly, bool displays)
 {
-    string tempfile = tmpnam(0);
-    int ret = print_to_file(tempfile, gc, selectedOnly, displays);
+    string tmpfile = tempfile();
+    int ret = print_to_file(tmpfile, gc, selectedOnly, displays);
     if (ret)
 	return ret;
 
-    StatusDelay delay(msg(tempfile, displays, false));
+    StatusDelay delay(msg(tmpfile, displays, false));
 
-    command = command + " " + tempfile;
+    command = command + " " + tmpfile;
 
     LiterateAgent *print_agent = 
 	new LiterateAgent(XtWidgetToApplicationContext(gdb_w), command);
 
     output_buffer = "";
 
-    string *sp = new string(tempfile);
+    string *sp = new string(tmpfile);
 
     print_agent->removeAllHandlers(Died);
     print_agent->addHandler(InputEOF, printDoneHP, (void *)sp);

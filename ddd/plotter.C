@@ -52,6 +52,7 @@ char plotter_rcsid[] =
 #include "status.h"
 #include "strclass.h"
 #include "string-fun.h"
+#include "tempfile.h"
 #include "verify.h"
 #include "version.h"
 #include "wm.h"
@@ -429,7 +430,7 @@ static void configure_plot(PlotWindowInfo *plot)
 		new StatusDelay("Retrieving Plot Settings");
 
 	    // Save settings...
-	    plot->settings_file = tmpnam(0);
+	    plot->settings_file = tempfile();
 	    string cmd = "save " + quote(plot->settings_file) + "\n";
 	    send(plot, cmd);
 

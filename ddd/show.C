@@ -51,6 +51,7 @@ char show_rcsid[] =
 #include "shell.h"
 #include "status.h"
 #include "string-fun.h"
+#include "tempfile.h"
 #include "version.h"
 #include "filetype.h"
 
@@ -403,11 +404,11 @@ void show_configuration(ostream& os)
 
 static int uncompress(ostream& os, const char *text, int size)
 {
-    string tempfile = tmpnam(0);
-    FILE *fp = fopen(tempfile, "w");
+    string tmpfile = tempfile();
+    FILE *fp = fopen(tmpfile, "w");
     if (fp == 0)
     {
-	os << tempfile << ": " << strerror(errno);
+	os << tmpfile << ": " << strerror(errno);
 	return -1;
     }
 
@@ -420,7 +421,7 @@ static int uncompress(ostream& os, const char *text, int size)
     }
     fclose(fp);
 
-    string cmd = string(app_data.uncompress_command) + " < " + tempfile;
+    string cmd = string(app_data.uncompress_command) + " < " + tmpfile;
 
     fp = popen(sh_command(cmd, true) + " 2>&1", "r");
     if (fp == 0)
@@ -440,7 +441,7 @@ static int uncompress(ostream& os, const char *text, int size)
     }
     pclose(fp);
 
-    unlink(tempfile);
+    unlink(tmpfile);
     return 0;
 }
 

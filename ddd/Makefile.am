@@ -487,6 +487,8 @@ DDD_SOURCES = \
 	string-fun.C \
 	string-fun.h \
 	stty.h       \
+	tempfile.h   \
+	tempfile.C   \
 	tictactoe.C  \
 	tictactoe.h  \
 	tips.C       \

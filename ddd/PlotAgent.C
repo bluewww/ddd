@@ -2,6 +2,7 @@
 // Gnuplot interface
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -36,6 +37,7 @@ char PlotAgent_rcsid[] =
 #include "PlotAgent.h"
 #include "cook.h"
 #include "version.h"
+#include "tempfile.h"
 
 #include <float.h>
 #include <stdlib.h>		// atof()
@@ -84,7 +86,7 @@ void PlotAgent::start_plot(const string& title, int n)
     while (files.size() < titles.size())
     {
 	// Open a new temporary file
-	files += tmpnam(0);
+	files += tempfile();
     }
 
     // Open plot stream

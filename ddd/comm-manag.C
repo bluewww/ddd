@@ -80,6 +80,7 @@ char comm_manager_rcsid[] =
 #include "settings.h"
 #include "shell.h"
 #include "string-fun.h"
+#include "tempfile.h"
 #include "version.h"
 #include "windows.h"
 
@@ -800,7 +801,7 @@ void init_session(const string& restart, const string& settings,
 	info = new InitSessionInfo;
 	info->restart  = restart;
 	info->settings = settings;
-	info->tempfile = tmpnam(0);
+	info->tempfile = tempfile();
 
 	string file_commands = "set confirm off\n";
 	bool recording_defines = false;

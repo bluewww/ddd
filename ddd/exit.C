@@ -2,6 +2,7 @@
 // Exit DDD (including fatal exits)
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -98,6 +99,7 @@ char exit_rcsid[] =
 #include "sigName.h"
 #include "status.h"
 #include "string-fun.h"
+#include "tempfile.h"
 #include "verify.h"
 #include "version.h"
 #include "windows.h"
@@ -1149,8 +1151,8 @@ void report_core(ostream& log)
     if (!is_core_file("core"))
 	return;
 
-    string tempfile = tmpnam(0);
-    ofstream os(tempfile);
+    string tmpfile = tempfile();
+    ofstream os(tmpfile);
     os << 
 	"set verbose off\n"
 	"set height 0\n"
@@ -1159,7 +1161,7 @@ void report_core(ostream& log)
     os.close();
 
     string gdb_command = 
-	sh_command("gdb -x " + tempfile + " " + saved_argv()[0] + " core", 
+	sh_command("gdb -x " + tmpfile + " " + saved_argv()[0] + " core", 
 		   true);
 
     FILE *fp = popen(gdb_command, "r");
@@ -1170,7 +1172,7 @@ void report_core(ostream& log)
 
     pclose(fp);
 
-    unlink(tempfile);
+    unlink(tmpfile);
 }
 
 // Debug DDD

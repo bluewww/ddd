@@ -10,6 +10,7 @@ Minor bug fixes:
 * Fortran struct members are accessed as `A%B' instead of `A.B'.
 * Minor compilation problems with GCC 2.7.2 and Sun CC are fixed.
 * `config.guess' and `config.sub' scripts have been updated.
+* Temporary files are now created in TMPDIR, if set.
 
 
 

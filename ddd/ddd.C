@@ -261,6 +261,7 @@ char ddd_rcsid[] =
 #include "status.h"
 #include "strclass.h"
 #include "string-fun.h"
+#include "tempfile.h"
 #include "tictactoe.h"
 #include "tips.h"
 #include "toolbar.h"
@@ -3098,30 +3099,19 @@ static void ddd_check_version()
 	TipOfTheDayCB(gdb_w);
 }
 
-#if HAVE_MKSTEMP && !HAVE_MKSTEMP_DECL
-extern "C" int mkstemp(char *templ);
-#endif
-
 // Read in database from FILENAME.  Upon version mismatch, ignore some
 // resources such as window sizes.
 XrmDatabase GetFileDatabase(char *filename)
 {
     string version_found = "";
 
-#if HAVE_MKSTEMP
-    char templ[100];
-    strcpy(templ, "/usr/tmp/dddXXXXXX");
-    int tempfd = mkstemp(templ);
-    string tempfile = templ;
-#else
-    string tempfile = tmpnam(0);
-#endif
+    string tmpfile = tempfile();
 
-    ofstream os(tempfile);
+    ofstream os(tmpfile);
     ifstream is(filename);
 
 #if 0
-    clog << "Copying " << filename << " to " << tempfile << "\n";
+    clog << "Copying " << filename << " to " << tmpfile << "\n";
 #endif
 
     // Resources to ignore upon copying
@@ -3190,7 +3180,7 @@ XrmDatabase GetFileDatabase(char *filename)
     if (version_mismatch)
     {
 	// Read database from filtered file
-	db = XrmGetFileDatabase(tempfile);
+	db = XrmGetFileDatabase(tmpfile);
     }
     else
     {
@@ -3198,11 +3188,7 @@ XrmDatabase GetFileDatabase(char *filename)
 	db = XrmGetFileDatabase(filename);
     }
 
-#if HAVE_MKSTEMP
-    close(tempfd);
-#endif
-
-    unlink(tempfile);
+    unlink(tmpfile);
     return db;
 }
 
