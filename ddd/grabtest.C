@@ -29,6 +29,7 @@
 
 #include <X11/Xlib.h>
 #include <unistd.h>		// sleep()
+#include <stdlib.h>		// atoi()
 #include <sys/types.h>
 #include <iostream.h>
 #include <signal.h>
