@@ -589,6 +589,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNplotWindow,
+	XtCPlotWindow,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, plot_window),
+	XtRString,
+	XtPointer("Gnuplot")
+    },
+
+    {
 	XtNplotInitCommands,
 	XtCPlotInitCommands,
 	XtRString,
@@ -618,7 +628,7 @@ XtResource ddd_resources[] = {
 	XtPointer("")
     },
 
-   {
+    {
 	XtNdecoratePlot,
 	XtCDecorate,
 	XtRBoolean,
@@ -628,12 +638,12 @@ XtResource ddd_resources[] = {
 	XtPointer(True)
     },
 
-   {
-	XtNbuiltinPlot,
-	XtCBuiltinPlot,
+    {
+	XtNbuiltinPlotWindow,
+	XtCBuiltinPlotWindow,
 	XtRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, builtin_plot),
+	XtOffsetOf(AppData, builtin_plot_window),
 	XtRImmediate,
 	XtPointer(False)
     },

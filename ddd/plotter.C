@@ -83,8 +83,6 @@ char plotter_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/ToggleB.h>
 
-#define PLOT_CLASS_NAME "Gnuplot"
-
 static void TraceInputHP (Agent *source, void *, void *call_data);
 static void TraceOutputHP(Agent *source, void *, void *call_data);
 static void TraceErrorHP (Agent *source, void *, void *call_data);
@@ -452,7 +450,7 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
     SwallowerInfo *info = (SwallowerInfo *)call_data;
     Window window = 
-	findWindow(XtDisplay(swallower), info->window, PLOT_CLASS_NAME);
+	findWindow(XtDisplay(swallower), info->window, app_data.plot_window);
 
     if (window != None)
     {
@@ -642,7 +640,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 
 	// Create work window
 	Widget work;
-	if (app_data.builtin_plot)
+	if (app_data.builtin_plot_window)
 	{
 	    arg = 0;
 	    work = XmCreateDrawingArea(scroll, PLOT_AREA_NAME, args, arg);
@@ -701,7 +699,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 		  XmNiconName, title.chars(),
 		  NULL);
 
-    if (app_data.builtin_plot)
+    if (app_data.builtin_plot_window)
     {
 	// Nothing to do
     }

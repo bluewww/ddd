@@ -302,6 +302,9 @@ Ddd*wwwCommand: \
 Ddd*plotCommand: \
 gnuplot -font '@FONT@' -geometry +5000+5000 -bw 0 -bg 'TEXT_BACKGROUND_COLOR'
 
+! The Gnuplot window class.
+Ddd*plotWindow: Gnuplot
+
 ! Gnuplot initialization commands.  Issued at the start of each Gnuplot
 Ddd*plotInitCommands: \
 set parametric\n\
@@ -325,7 +328,7 @@ Ddd*plot3dSettings:   set border
 !      - swallowing may interfere with window manager
 !
 ! Default is `off' since no problems with swallowing are yet known.
-Ddd*builtinPlot: off
+Ddd*builtinPlotWindow: off
 
 
 ! The time (in seconds) to wait for synchronous GDB questions to complete

@@ -136,8 +136,10 @@
 #define XtCPlotSettings          "PlotSettings"
 #define XtNdecoratePlot          "decoratePlot"
 #define XtCDecorate              "Decorate"
-#define XtNbuiltinPlot           "builtinPlot"
-#define XtCBuiltinPlot           "BuiltinPlot"
+#define XtNbuiltinPlotWindow     "builtinPlotWindow"
+#define XtCBuiltinPlotWindow     "BuiltinPlotWindow"
+#define XtNplotWindow            "plotWindow"
+#define XtCPlotWindow            "PlotWindow"
 #define XtNtermCommand           "termCommand"
 #define XtCTermCommand           "TermCommand"
 #define XtNtermType              "termType"
@@ -412,11 +414,12 @@ struct AppData {
     Boolean   debugger_console;
     Boolean   auto_close_data_window;
     String    plot_command;
+    String    plot_window;
     String    plot_init_commands;
     String    plot_2d_settings;
     String    plot_3d_settings;
     Boolean   decorate_plot;
-    Boolean   builtin_plot;
+    Boolean   builtin_plot_window;
     String    term_command;
     String    term_type;
     Boolean   use_tty_command;
