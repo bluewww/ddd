@@ -206,7 +206,7 @@ bool BreakPoint::update (string& info_output)
 		info_output = info_output.after (":");
 		if (info_output != "" && isdigit(info_output[0]))
 		{
-		    int new_line_nr = read_positive_nr (info_output);
+		    int new_line_nr = get_positive_nr(info_output);
 		    if (new_line_nr < 0)
 			return false;
 
@@ -225,8 +225,10 @@ bool BreakPoint::update (string& info_output)
 		    changed = true;
 		    myexpr = new_expr;
 		}
-		info_output = info_output.after('\n');
 	    }
+
+	    // That's all in this line
+	    info_output = info_output.after('\n');
 
 	    int ignore_count = 0;
 	    string cond      = "";
@@ -254,8 +256,10 @@ bool BreakPoint::update (string& info_output)
 
 		for (int i = 0; i < n; i++)
 		{
-		    string line = lines[i];
 		    bool save_info = true;
+
+		    string line = lines[i];
+		    bool starts_with_space = (line != "" && isspace(line[0]));
 		    strip_leading_space(line);
 
 		    if (line.contains("ignore next ", 0))
@@ -273,15 +277,15 @@ bool BreakPoint::update (string& info_output)
 		    }
 		    else if (line.contains("stop ", 0))
 		    {
-			// Any info
+			// Any info (no GDB command starts with `stop')
 		    }
 		    else if (line.contains("breakpoint ", 0))
 		    {
-			// Any info
+			// Any info (no GDB command starts with `breakpoint')
 		    }
-		    else if (line != "" && isspace(lines[i][0]))
+		    else if (starts_with_space)
 		    {
-			// A command
+			// A command (GDB indents all commands)
 			commands += line;
 			save_info = false;
 		    }
