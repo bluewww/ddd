@@ -13,11 +13,13 @@ Volunteers for these and other projects are welcome!
 
 001. Have DDD ported to a free widget set -- Athena or lwlib, for
      example.  DDD could then be included in the GNU distribution.
+     [Discarded; wait for LessTif people to finish.  -AZ]
 
 003. Support full annotation mode (`gdb --annotate=2').  This would
      make prompt recognition easier and allow full trace of the current
      GDB status.  Disadvantage: won't work with earlier GDBs and requires
      a major redesign.
+     [Discarded; won't work with DBX and XDB.  -AZ]
 
 004. Have interactive help -- a wrapper to the GDB `help' command.
 
@@ -183,7 +185,7 @@ Volunteers for these and other projects are welcome!
 078. Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
      mirrors?
 
-080. Include the FAQ in the DDD manual.  Better yet, include all
+080* Include the FAQ in the DDD manual.  Better yet, include all
      top-level documentation in the DDD manual (including news,
      problems, etc.) and generate it from this single source.
 
@@ -254,7 +256,7 @@ Volunteers for these and other projects are welcome!
 104* Use DDD to do debugging where gdb and the program under test
      would be remote, but the source would be local.  As an
      alternative, try the local file if the remote source cannot be
-     found.  (An `Source info' window would be helpful here, stating
+     found.  (A `Source info' window would be helpful here, stating
      which source was loaded and how)
 
 105* Thread support. Siddharth Ram <srram@qualcomm.com> and James
@@ -268,4 +270,21 @@ Volunteers for these and other projects are welcome!
 
 107. Have toolbar tips, as in NetScape 3.0 or WinWord.
 
-108. (Insert your project idea here)
+108. David M. Karr <dkarr@nmo.gtegsc.com> suggests:
+     In the SparcWorks debugger, if I use the "list" command at the
+     internal dbx prompt, it lists the object or lines I specify in the
+     source window.  I believe that "ddd" should work this way.  Is there a
+     way to get this behavior, or is it simply not designed for this?
+
+109. N. Dan Zou <zou@hooked.net> wrote: there's no way to toggle the 
+     selection state of a box without disturbing the other selected
+     boxes.  [Place this on Button2 or Shift+Button1?  -AZ]
+
+110. N. Dan Zou <zou@hooked.net> suggests a way to display the class
+     structure of an existing program graphically.  [Use the `ptype'
+     output to display types graphically; dereference type names as
+     required.  -AZ]
+
+111. Include `Settings' support for DBX.
+
+112. (Insert your project idea here)

@@ -235,7 +235,7 @@ Volunteers for fixing these and other bugs are welcome!
 112* toader ovidiu nicolae <ovi@phys.ksu.edu> says:
      ddd-2.0 has a square but on the bottom edge of the assembler window
      and I could resize the assembler window in a strange way but only for 
-     increasing it.
+     increasing it.  (see also 116, below)
 
 113. Matthias Kurz <mk@baerlap.north.de> states:
      If I resize the data display the background doesn't get refreshed.
@@ -247,11 +247,12 @@ Volunteers for fixing these and other bugs are welcome!
      be fixed? N.B. for Motif1.2 there exists something like
      XmText{Disable|Enable}Display (or something like this...) that
      allows to do updates without immediate redisplay."
-     [You won't believe it, but the DDD developers still use Motif 1.1  -AZ]
+     [You won't believe it, but the DDD developers still use Motif 1.1.  -AZ]
 
-115* When getting the source code via `list', DEC DBX prefixes lines
+115* When getting the source code via `list', DEC and SGI DBX prefixes lines
      with `>' and `*', which results in these lines being treated as
-     error messages.
+     error messages.  [Fixed for DDD 2.1 - patch `xdb-list' in
+     `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/patches/ddd-2.0/']
 
 116* With Motif 1.2 and later, there is no sash between assembler and
      source windows in a separate source window.  (see also 112, above)
@@ -268,6 +269,8 @@ Volunteers for fixing these and other bugs are welcome!
      useless `info line :0' commands.
 
 121. Using DBX 3.0 under Solaris, comments don't show up in the source window.
+     [Fixed for DDD 2.1 - patch `dbx-comments-stripped' in
+     `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/patches/ddd-2.0/']
 
 122. Torsten Metzner <tom@plato.uni-paderborn.de> says: On
      my sparc-sun-solaris2.5.1, have DDD run with `--exec-window' in
@@ -368,7 +371,11 @@ Volunteers for fixing these and other bugs are welcome!
      source code location relative to the value of its -d option.  DDD
      does not know about this, tries to access `debug/f1.c', and
      fails.  However, DDD should ask XDB to list `f1.c'.
-     [Fixed for DDD 2.1  -AZ]
+     [Fixed for DDD 2.1 - patch `dbx-comments-stripped' in
+     `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/patches/ddd-2.0/']
+
+129. Displaying `*tree' in `cxxtest.C' with `set print vtbl on' gives
+     a bad display.
 
 129. (Insert your bug here)
 
