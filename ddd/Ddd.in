@@ -2091,7 +2091,7 @@ Save them for the next @DDD@ invocation?
 *save_options_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 *save_options_dialog*contextHelpString:	\
 @rm You have changed some @DDD@ startup options\n\
- (using the @bf Options@rm menu).\n\
+(using the @bf Options @rm menu).\n\
 To save them for the next @DDD@ invocation, click on @bf Yes@rm.\n\
 To discard the changes, click on @bf No@rm.
 
