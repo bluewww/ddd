@@ -3,7 +3,10 @@
 ! @configure_input@
 *appDefaultsVersion:  @VERSION@
 
+! =======================================================================
 ! WARNING: This file contains 8-bit characters.  Be careful when editing.
+! =======================================================================
+! 
 ! Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 ! Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 ! 
@@ -27,11 +30,13 @@
 ! DDD is the GDB-based data display debugger.
 ! Contact ddd@ips.cs.tu-bs.de for details.
 
-
-!=============================================================================
-! Warning
-!=============================================================================
-
+! =================================================================
+! NOTE: If you're looking here for things to customize, look
+! under the DDD `Options' menu first.  Many things are customizable
+! from there.  Things which are settable via the Options dialog
+! are stored in the ~/.dddinit file.
+! =================================================================
+!
 ! This file lists the default resources built into DDD.  You can use the
 ! stuff in this file for examples of how to customize DDD for your
 ! environment; normally you will do this by copying the few lines you
