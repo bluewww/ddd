@@ -794,7 +794,7 @@ string GDBAgent::print_command(string expr) const
 	    switch (type())
 	    {
 	    case DBX:
-		cmd += quote(expr + " =") + ",";
+		cmd += " " + quote(expr + " =") + ",";
 		break;
 
 	    case GDB:
@@ -965,6 +965,8 @@ ProgramLanguage GDBAgent::program_language(string text)
 	else
 	    program_language(LANGUAGE_C);
     }
+
+    return program_language();
 }
 
 // ***************************************************************************
