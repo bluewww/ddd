@@ -6574,7 +6574,7 @@ void SourceView::setup_where_line(string& line)
 	// Remove file paths (otherwise line can be too long for DBX)
 	//   ... n.b. with templates, line can still be rather long
 #if RUNTIME_REGEX
-	static regex rxfilepath("[^\"\' /]*/");
+	static regex rxfilepath("[^\"\'` /]*/");
 #endif
 	line.gsub(rxfilepath, "");
     }
@@ -6889,12 +6889,12 @@ bool SourceView::thread_required()   { return thread_dialog_popped_up; }
 
 bool SourceView::can_go_up()
 {
-    return !where_required() || XtIsSensitive(up_w);
+    return gdb->type() != PERL && (!where_required() || XtIsSensitive(up_w));
 }
 
 bool SourceView::can_go_down()
 {
-    return !where_required() || XtIsSensitive(down_w);
+    return gdb->type() != PERL && (!where_required() || XtIsSensitive(down_w));
 }
 
 
