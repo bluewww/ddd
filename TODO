@@ -366,9 +366,6 @@ Volunteers for these and other projects are welcome!
 
 242 Make programs dump core by forking and killing them.
 
-245*In JDB:
-    - Add a `use' path editor to `Open Classes...'.
-
 246 Martin Fick <fick@fgm.com> suggests that breakpoints should be
     toggled by double-clicking on the beginning of a line of code.
 
