@@ -1045,9 +1045,9 @@ static bool _get_core(const string& session, unsigned long flags,
 	    // Get new core file from running process
 	    StatusDelay delay("Getting core dump via `gcore'");
 
-	    // 1. Stop the program being debugged, using a KILL signal.
+	    // 1. Stop the program being debugged, using a STOP signal.
 	    // (Other signals may be blocked, caught or ignored)
-	    kill(info.pid, SIGKILL);
+	    kill(info.pid, SIGSTOP);
 
 	    // 2. Detach GDB from the debuggee.  The debuggee is still stopped.
 	    detach();
@@ -1130,7 +1130,12 @@ static bool _get_core(const string& session, unsigned long flags,
 	    }
 	}
 
-	// Kill the process, hopefully leaving a core file
+	// Kill the process, hopefully leaving a core file.
+	// Since g77 catches SIGABRT, we disable its handler first.
+	string enable_signal_cmd = 
+	    "signal(" + itostring(SIGABRT) + ", " + 
+	    itostring(int(SIG_DFL)) + ")";
+	gdb_question(gdb->print_command(enable_signal_cmd));
 	gdb_question(gdb->signal_command(SIGABRT));
 
 	if (is_core_file(core))
