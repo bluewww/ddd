@@ -2497,7 +2497,7 @@ void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
 //----------------------------------------------------------------------------
 DataDisp::DataDisp (XtAppContext app_context,
 		    Widget parent,
-		    String /* vslpath */,
+		    String vslPath,
 		    String vslLibrary,
 		    int    max_name_length,
 		    bool   panned)
@@ -2506,6 +2506,7 @@ DataDisp::DataDisp (XtAppContext app_context,
 
     StringBox::fontTable     = new FontTable (XtDisplay(parent));
     DispBox::vsllib_name     = vslLibrary;
+    DispBox::vsllib_path     = vslPath;
     DispBox::max_name_length = max_name_length;
 
     disp_graph = new DispGraph();

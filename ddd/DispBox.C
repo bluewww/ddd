@@ -58,6 +58,7 @@ static regex RXscope("[a-zA-Z_0-9]*`", true);
 VSLLib* DispBox::vsllib_ptr      = 0;
 int     DispBox::max_name_length = 20;
 string  DispBox::vsllib_name     = "builtin";
+string  DispBox::vsllib_path     = ".";
 
 // ***************************************************************************
 //
@@ -93,7 +94,11 @@ void DispBox::init_vsllib()
 #include "ddd.vsl.h"
 	;
 
+    // Set include search path
+    VSEFlags::include_search_path = 
+	strcpy(new char[vsllib_path.length()], vsllib_path);
 
+    // Load library
     if (string(vsllib_name) != "builtin")
     {
 	StatusDelay delay("Reading VSL library " + quote(vsllib_name));
