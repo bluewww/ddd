@@ -614,6 +614,31 @@ fi
 ])dnl
 dnl
 dnl
+dnl ICE_CXX_BUILTIN_EXPECT
+dnl --------------------------
+dnl
+dnl If the C++ compiler accepts __builtin_expect(expr, (0|1))
+dnl
+AC_DEFUN([ICE_CXX_BUILTIN_EXPECT],
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_CACHE_CHECK([whether the C++ compiler ($CXX) supports __builtin_expect],
+[ice_cv_have_builtin_expect],
+[
+AC_LANG_PUSH(C++)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],
+[[int a = 1; if (__builtin_expect(a!=0,1)) a = 2;]])],
+[ice_cv_have_builtin_expect=yes],
+[ice_cv_have_builtin_expect=no])
+AC_LANG_POP(C++)
+])
+if test "$ice_cv_have_attribute_noreturn" = yes; then
+AC_DEFINE(HAVE_BUILTIN_EXPECT,1,
+[Define if your C++ compiler supports __builtin_expect.])
+fi
+])dnl
+dnl
+dnl
 dnl
 dnl
 dnl ICE_CXX_PROBLEMATIC_VERSION

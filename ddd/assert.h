@@ -65,7 +65,7 @@ void ddd_assert_fail (const char *assertion, const char *file,
 #endif // !HAVE_PRETTY_FUNCTION
 
 #define assert(ex) \
-_ASSERT_VOID_CAST((ex) ? \
+_ASSERT_VOID_CAST(unlikely(ex) ? \
   0 : \
   (ddd_assert_fail (#ex, __FILE__, __LINE__, _assert_fn), 0) \
   )
