@@ -3231,6 +3231,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 				  bool plotted)
 {
     string value = answer;
+
     string nr_s;
     string display_name;
     read_number_and_name(value, nr_s, display_name);
@@ -3241,6 +3242,8 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 	post_gdb_message(answer, true, last_origin);
 	return 0;
     }
+
+    strip_space(value);
 
     // Naming a data display after the GDB display name causes trouble
     // when displaying functions: `display tree_test' creates a
