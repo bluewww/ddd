@@ -28,15 +28,16 @@
 
 
 ### CUSTOMIZATION SECTION --- Please check the settings below.
+# Typical values are enclosed in ().
 
 ## Directories.
 
-# Common prefix for installation directories.
+# Common prefix for installation directories.  (/usr/local)
 # NOTE: This directory must exist when you start the install.
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 
-# Where to fetch the source from.
+# Where to fetch the source from.  (.)
 srcdir = @srcdir@
 VPATH = @srcdir@
 
@@ -54,37 +55,38 @@ man1ext = .1
 
 ## Architecture (usually overridden by the top-level Makefile).
 
-# The host we were compiled on.
+# The host we were compiled on.  (CPU-COMPANY-SYSTEM)
 host_canonical = @host@
 
-# The target we were compiled for.
+# The target we were compiled for.  (CPU-COMPANY-SYSTEM)
 target_canonical = @host@
 
 
 ## Special commands.
 
-# The sed command.
+# The sed command.  (sed)
 SED = @SED@
 
 # The rm command.
 RM = rm -f
 
-# The ln -s command for making symbolic links (plain ln should work too).
+# The ln -s command for making symbolic links; plain ln should work
+# too.  (ln -s)
 LN_S = @LN_S@
 
-# The m4 command (preferably GNU m4)
+# The m4 command, preferably GNU m4.   (m4)
 M4 = M4PATH=$(srcdir) @M4@
 
-# The lex command, its flags, and its library.
+# The lex command (flex), its flags (-8), and its library (-lfl).
 LEX = @LEX@
 LFLAGS = @LFLAGS@
 LEXLIB = @LEXLIB@
 
-# The yacc command and its flags.
+# The yacc command (bison -y) and its flags ().
 YACC = @YACC@
 YFLAGS = @YFLAGS@
 
-# The shell for executing commands in the Makefile.
+# The shell for executing commands in the Makefile.  (/bin/sh)
 SHELL = @SH@
 
 # The ar command.
@@ -96,28 +98,33 @@ AR_FLAGS = q
 # ar flags for extracting files from an archive.
 AR_X_FLAGS = x
 
-# The ranlib command.
+# The ranlib command.  (ranlib)
 RANLIB = @RANLIB@
 
 
 
 ## The C++ compiler.
 
-# What we use to compile C++ files.
+# What we use to compile C++ files.  (c++)
 CXX = @CXX@
 
-# The flags we use to compile C++ files (lots!)
+# The flags we use to compile C++ files.
+# CXXOPT = -DNDEBUG -O2
 CXXOPT = @CXXOPT@
+# CXXDEBUG = -g
 CXXDEBUG = @CXXDEBUG@
+# CXXWARNINGS = -Wall
 CXXWARNINGS = @CXXWARNINGS@
 CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS)
+
+# Extra C++-specific flags.  (-fexternal-templates -felide-constructors)
 CXXSTUFF = @CXXSTUFF@
 
-# Possible extra libraries required for all C++ programs.
+# Possible extra libraries required for all C++ programs.  ()
 CXXLIBS = @CXXLIBS@
 
 
-## The C compiler (for demos only)
+## The C compiler; for demos only
 
 # What we use to compile C files.
 # CC = cc
@@ -148,19 +155,19 @@ M2FLAGS = -g
 
 ## The C preprocessor.
 
-# What we use for preprocessing.
+# What we use for preprocessing.  (gcc -E -traditional-cpp)
 CPP = @CPP_TRADITIONAL@
 
-# Flags passed to the C preprocessor.
+# Flags passed to the C preprocessor.  ()
 CPPFLAGS = @CPPFLAGS@
 
-# Definitions to be passed to the C preprocessor.
+# Definitions to be passed to the C preprocessor.  (-DHAVE_CONFIG_H)
 DEFS = @DEFS@
 
 
 ## The Linker.
 
-# Flags passed to the linker.
+# Flags passed to the linker.  (-g -O)
 LDFLAGS = @LDFLAGS@
 
 
@@ -181,40 +188,47 @@ LDFLAGS = @LDFLAGS@
 # problem to `ddd-bugs@ips.cs.tu-bs.de' such that future DDD releases
 # will detect this problem automatically.
 
+# LIBRX      = ../librx/librx.a
 LIBRX      = @LIBRX@
+# LIBTERMCAP = ../termcap/libtermcap.a
 LIBTERMCAP = @LIBTERMCAP@
+# LIBIBERTY  = ../libiberty/libiberty.a
 LIBIBERTY  = @LIBIBERTY@
+# LIBM = -lm
 LIBM       = @LIBM@
+# LIBC = -lc
 LIBC       = @LIBC@
+# EXTRA_LIBC = -lc
 EXTRA_LIBC = @EXTRA_LIBC@
+# NON_X_LIBS = -ly -lnsl -lg++
 NON_X_LIBS = @LIBS@
 LIBS = $(EXTRA_LIBC) $(LIBRX) $(LIBTERMCAP) $(LIBIBERTY) $(LIBM) $(LIBC)
 
 
 ## X Libraries
 
-# Special flags for linking with X
+# Special flags for linking with X.  (-L/usr/X11R5/lib)
 LIBX = @X_PRE_LIBS@ @X_LIBS@
 
-# Motif library (-lXm)
+# Motif library.  (-lXm)
 LIBXM = @XM_LIBS@
 
-# Athena libraries (-lXaw -lXmu)
+# Athena libraries.  (-lXaw -lXmu)
 LIBXAW = @XAW_LIBS@
 
-# X extension library (-lXext); needed for Athena and Motif 2.0
+# X extension library; needed for Athena and Motif 2.0.  (-lXext)
 LIBXEXT = @XEXT_LIBS@
 
-# Xpm library (-lXpm); needed for Motif 2.0
+# Xpm library; needed for Motif 2.0.  (-lXpm)
 LIBXPM = @XPM_LIBS@
 
-# gen library (-lgen); needed for Motif 2.0
+# gen library; needed for Motif 2.0.  (-lgen)
 LIBGEN = @LIBGEN@
 
-# X toolkit library (-lXt)
+# X toolkit library.  (-lXt)
 LIBXT = @XT_LIBS@
 
-# X library (-lX11)
+# X library.  (-lX11 -lnsl)
 LIBX11 = @X11_LIBS@ @X_EXTRA_LIBS@
 
 # All libraries shown above
@@ -224,16 +238,16 @@ $(LIBXM) $(LIBXPM) $(LIBXAW) $(LIBXEXT) $(LIBXT) $(LIBX) $(LIBX11) $(LIBGEN)
 
 ## Installation commands.
 
-# General install program.
+# General install program.  (install -c)
 INSTALL = @INSTALL@
 
-# Command for installing programs.
+# Command for installing programs.  (install -c)
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 
-# Command for installing data.
+# Command for installing data.  (install -c -m 644)
 INSTALL_DATA = @INSTALL_DATA@
 
-# Transformed name of installed programs.
+# Transformed name of installed programs.  (s,x,x,)
 transform=@program_transform_name@
 
 
@@ -246,10 +260,10 @@ AUTOCONF = autoconf
 # The autoheader program.
 AUTOHEADER = autoheader
 
-# The tar program.
+# The tar program.  (gtar)
 TAR = @TAR@
 
-# The gzip program.
+# The gzip program.  (gzip)
 GZIP = @GZIP@
 
 # The groff program.
@@ -277,7 +291,7 @@ AD2C = $(SED) -n -f $(srcdir)/ad2c.sed
 # The vsl2c program.
 VSL2C = $(SED) -f $(srcdir)/vsl2c.sed
 
-# The dvips program.
+# The dvips program.  (dvips)
 DVIPS = @DVIPS@
 
 # The co and ci programs.
@@ -293,7 +307,7 @@ LS = ls
 # The head program.
 HEAD = head
 
-# The make program, if not predefined.
+# The make program, if not predefined.  ()
 @SET_MAKE@
 
 # The mv command.
@@ -302,7 +316,7 @@ MV = mv
 # The echo command.
 ECHO = echo
 
-# The awk command.
+# The awk command.  (awk)
 AWK = @AWK@
 
 # The cat command.
@@ -344,34 +358,36 @@ GDB = gdb
 
 
 ## The names.
-# Program and distribution base name.
+# Program and distribution base name.  (ddd)
 ddd = @ddd@
 
-# Product name.
+# Product name.  (DDD)
 DDD = @DDD@
 
-# The version number.
+# The version number.  (1.4c)
 VERSION = @VERSION@
 
 # Canonical program and distribution base name.
 ddd_canonical = $(ddd)-$(VERSION)-$(target_canonical)
 
-# Index file fix
+# Index file fix.
 FIX_INDEX = $(SED) -f $(srcdir)/fixindex.sed
 
-# Newhelp command
+# Newhelp command.
 NEWHELP = sed="$(SED)" $(SHELL) $(srcdir)/newhelp
 
-# Makeman command
+# Makeman command.
 MAKEMAN = srcdir="$(srcdir)" cpp="$(CPP)" $(SHELL) $(srcdir)/makeman \
 -D__MAN_VERSION__="\"$(DDD) $(VERSION)\"" -D__MAN_TITLE__="\"$(DDD) Tools\""
 
-# Get-node command
+# Get-node command.
 GET_NODE = $(SHELL) $(srcdir)/get-node
 
 ## More compilation settings.
 # C++ binding flags. For binary distribution only.
+# CXXSTATIC_BINDING = -Bstatic
 CXXSTATIC_BINDING = @CXXSTATIC_BINDING@
+# CXXDYNAMIC_BINDING = -Bdynamic
 CXXDYNAMIC_BINDING = @CXXDYNAMIC_BINDING@
 CXXBINDING = 
 
@@ -401,7 +417,7 @@ YACC.Y = $(YACC) $(YFLAGS)
 LEXTOCPLUS = $(SHELL) $(srcdir)/lextoC -prefix $(YY) && $(RM) lex.yy.c
 LEX.L = $(LEX) $(LFLAGS)
 
-## Where to look for X include files.
+## Where to look for X include files.  (-I/usr/X11R5/include)
 X_INCLUDE = @X_CFLAGS@
 
 ## Where to look for include files.
