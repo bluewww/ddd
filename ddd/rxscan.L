@@ -284,7 +284,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S064>\n{_}{A}	 			return &rxnladdress;
 <S065>\n{_}{A}{w}in{w} 			return &rxnladdress_in;
 <S066>\n{c}[*]		 		return &rxnlstar;
-<S067>non-?(0|zero|null)		return &rxnonzero1;
+<S067>no[nt][ -]?(0|zero|null)		return &rxnonzero1;
 <S068>!={_}(0|zero|null)		return &rxnonzero2;
 <S069>{_}(echo|help|show|info|where|shell|sh)({W}{C})?	return &rxnop_cmd;
 <S070>@{D}@				return &rxnum;

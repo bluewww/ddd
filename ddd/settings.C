@@ -468,7 +468,7 @@ static EntryType entry_type(DebuggerType type,
 			    const string& value)
 {
 #if RUNTIME_REGEX
-    static regex rxnonzero1("non-?(0|zero|null)");
+    static regex rxnonzero1("no[nt][ -]?(0|zero|null)");
     static regex rxnonzero2("!= *(0|zero|null)");
 #endif
 
@@ -477,32 +477,38 @@ static EntryType entry_type(DebuggerType type,
     case GDB:
 	if (base.contains("check", 0))
 	    return CheckOptionMenuEntry;
-	else if (base.contains("endian", 0) ||
-		 base.contains("architecture", 0))
+	if (base.contains("endian", 0) ||
+	    base.contains("architecture", 0))
 	    return TargetOptionMenuEntry;
-	else if (base.contains("language", 0) || 
-		 base.contains("demangle", 0))
+	if (base.contains("language", 0) || 
+	    base.contains("demangle", 0))
 	    return OtherOptionMenuEntry;
-	else if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
+	if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
 	    return OnOffToggleButtonEntry;
-	else if ((value.contains("0.\n", -1) || value.contains("1.\n", -1))
-		 && (is_verb(doc)))
+	if ((value.contains("0.\n", -1) || value.contains("1.\n", -1))
+	    && (is_verb(doc)))
 	    return NumToggleButtonEntry;
 	break;
 
     case DBX:
-	if (doc.contains(rxnonzero1) || doc.contains(rxnonzero2))
-	    return NumToggleButtonEntry;
-	else if (value.contains("on", 0) || value.contains("off", 0))
+	if ((value == "0" || value == "1") &&
+	    !doc.contains("number") && !doc.contains(" > 1"))
+	{
+	    if (doc.contains(" 1") && !doc.contains(" 2"))
+		return NumToggleButtonEntry;
+	    if (doc.contains(rxnonzero1) || doc.contains(rxnonzero2))
+		return NumToggleButtonEntry;
+	}
+	if (value.contains("on", 0) || value.contains("off", 0))
 	    return OnOffToggleButtonEntry;
-	else if (value.contains("true", 0) || value.contains("false", 0))
+	if (value.contains("true", 0) || value.contains("false", 0))
 	    return TrueFalseToggleButtonEntry;
-	else if (value.contains("sensitive", 0) 
-		 || value.contains("insensitive", 0))
+	if (value.contains("sensitive", 0) 
+	    || value.contains("insensitive", 0))
 	    return SensitiveToggleButtonEntry;
-	else if (has_nr(value))
+	if (has_nr(value))
 	    return TextFieldEntry;
-	else if (base.contains("version")
+	if (base.contains("version")
 	    || base.contains("run_io")
 	    || base.contains("follow_fork_mode"))
 	    return OtherOptionMenuEntry;
@@ -538,12 +544,14 @@ static void strip_leading(string& doc, const string& key)
 {
     if (doc.contains(key, 0))
 	doc = doc.after(key);
+    read_leading_blanks(doc);
 }
 
 static void strip_from(string& doc, const string& key)
 {
     if (doc.contains(key))
 	doc = doc.before(key);
+    read_leading_blanks(doc);
 }
 
 static void munch_doc(string& doc)
@@ -551,11 +559,11 @@ static void munch_doc(string& doc)
     read_leading_blanks(doc);
 
     // Sun DBX 3.0
-    strip_leading(doc, "# ");
-    strip_leading(doc, "If on, ");
-    strip_leading(doc, "If true, ");
-    strip_leading(doc, "When on, ");
-    strip_leading(doc, "When `on', ");
+    strip_leading(doc, "#");
+    strip_leading(doc, "If on,");
+    strip_leading(doc, "If true,");
+    strip_leading(doc, "When on,");
+    strip_leading(doc, "When `on',");
     strip_leading(doc, "Set ");
     strip_leading(doc, "Sets ");
     strip_leading(doc, "Governs ");
@@ -566,26 +574,42 @@ static void munch_doc(string& doc)
     strip_leading(doc, "debugger will ");
     strip_leading(doc, "Automatically ");
     strip_leading(doc, "Name of ");
-    
-    // DEC DBX
+
+    // SGI DBX
+    strip_leading(doc, "-");
+
+    if (doc.contains("0 =>"))
+	doc = "Don't" + doc.after("0 =>");
+
+    // DEC and SGI DBX
     strip_leading(doc, "$");
-    strip_leading(doc, "non-0 => ");
-    strip_leading(doc, "non-0 implies ");
-    strip_leading(doc, "if non-0 ");
-    strip_leading(doc, "if set, ");
+    strip_leading(doc, "if");
+    strip_leading(doc, "If");
+    strip_leading(doc, "when");
+    strip_leading(doc, "When");
     strip_leading(doc, "this ");
     strip_leading(doc, "is ");
+    strip_leading(doc, "==");
+    strip_leading(doc, "!=");
+    strip_leading(doc, "0");
+    strip_leading(doc, "1");
+    strip_leading(doc, "set");
+    strip_leading(doc, "zero");
+    strip_leading(doc, "non-zero");
+    strip_leading(doc, "non-0");
+    strip_leading(doc, "(default)");
+    strip_leading(doc, "(the default)");
+    strip_leading(doc, ",");
+    strip_leading(doc, "=>");
+    strip_leading(doc, "implies ");
+    strip_leading(doc, "then ");
     strip_leading(doc, "contains ");
     strip_leading(doc, "the ");
     strip_leading(doc, "name of ");
     strip_leading(doc, "specify ");
     strip_leading(doc, "which ");
-
-    // SGI DBX
-    strip_leading(doc, "if != 0, ");
-    strip_leading(doc, "if != 0 ");
-    strip_leading(doc, "if 1 ");
-    strip_leading(doc, "then ");
+    strip_leading(doc, "after ");
+    strip_leading(doc, "String with ");
 
     // GDB
     strip_leading(doc, "whether to ");
@@ -594,7 +618,6 @@ static void munch_doc(string& doc)
     // More DEC DBX
     strip_from(doc, "we're looking at");
     strip_from(doc, "we're debugging");
-    strip_from(doc, "if this is non-0");
     strip_from(doc, "Default:");
     strip_from(doc, ", default");
     strip_from(doc, " to $DBX");
@@ -610,9 +633,13 @@ static void munch_doc(string& doc)
     strip_from(doc, " if none");
     strip_from(doc, " (init");
     strip_from(doc, " (default");
-
-    if (doc.contains("0 =>"))
-	doc = "Don't" + doc.after("0 =>");
+    strip_from(doc, " ($");
+    strip_from(doc, " ( $");
+    strip_from(doc, " (with");
+    strip_from(doc, " However ");
+    strip_from(doc, " This ");
+    strip_from(doc, " Defaults ");
+    strip_from(doc, " $");
 
     doc.gsub(" " + downcase(gdb->title()), " " + gdb->title());
     if (doc.contains(downcase(gdb->title()), 0))
@@ -623,6 +650,9 @@ static void munch_doc(string& doc)
 
     if (gdb->type() == GDB)
 	doc.gsub('_', ' ');
+
+    if (doc.length() > 60)
+	doc = doc.before(57) + "...";
 }
 
 
@@ -780,6 +810,58 @@ static string get_dbx_doc(string dbxenv, string base)
 	return "Access memory items less than 4 bytes";
     if (base == "$dispix")
 	return "Display pixie instructions";
+    if (base == "$hexdoubles")
+	return "Display float values as float and hex";
+    if (base == "$pendingtraps")
+	return "Pending traps";
+    if (base == "$print_exception_frame")
+	return "Print exception frames";
+    if (base == "$showbreakaddrs")
+	return "Show the address of placed breakpoints";
+    if (base == "$stdc")
+	return "Support Standard C";
+    if (base == "$addrfmt64")
+	return "C format for address printing (64bit)";
+    if (base == "$ctypenames")
+	return "Support C type names";
+    if (base == "$fp_precise")
+	return "Floating point precise mode";
+    if (base == "$fp_precise")
+	return "Floating point precise mode";
+    if (base == "$framereg")
+	return "Registers are with respect to the current frame";
+    if (base == "$groupforktoo")
+	return "Group fork too";
+    if (base == "$newevent")
+	return "Last new event number";
+    if (base == "$newpgrpevent")
+	return "Last new pgrp event number";
+    if (base == "$newrecord")
+	return "Last record number";
+    if (base == "$nonstop")
+	return "Stop the debugged process";
+    if (base == "$pager")
+	return "Pager";
+    if (base == "$piaddtohist")
+	return "Add playback commands to history";
+    if (base == "$stacktracelimit")
+	return "Stack trace limit";
+    if (base == "$stacktracelimit")
+	return "Stack trace limit";
+    if (base == "$stepintoall")
+	return "Step into all procedures";
+    if (base == "$stopformat")
+	return "Stop format";
+    if (base == "$whereisdsolimit")
+	return "Whereis limit";
+    if (base == "$assignverify")
+	return "Verify assignments";
+    if (base == "$shellparameters")
+	return "Shell parameters";
+    if (base == "$showfilename")
+	return "Show file name when stopping";
+    if (base == "$sourcepathrule")
+	return "Rule for accessing source paths";
     
     // Generic help
     string dbx_doc = get_dbx_help(dbxenv, base, -1);
@@ -872,6 +954,8 @@ static void add_button(Widget form, int& row, DebuggerType type,
 		    return;
 
 		e_type = entry_type(type, base, doc, value);
+		if (e_type != entry_filter)
+		    return;
 
 		if (is_set)
 		    doc = doc.after("Set ");
@@ -905,6 +989,9 @@ static void add_button(Widget form, int& row, DebuggerType type,
 		    return;
 
 		e_type = DisplayToggleButtonEntry;
+		if (e_type != entry_filter)
+		    return;
+
 		strip_leading(doc, "Show ");
 		strip_leading(doc, "Print ");
 		strip_leading(doc, "out ");
@@ -923,6 +1010,8 @@ static void add_button(Widget form, int& row, DebuggerType type,
 	    base = line.before(rxwhite);
 	    if (base == "")
 		return;
+	    if (base == "run_savetty")
+		return; // Makes no sense under a GUI
 
 	    value = line.after(rxwhite);
 
@@ -932,13 +1021,13 @@ static void add_button(Widget form, int& row, DebuggerType type,
 	    else
 		dbxenv = "dbxenv";
 
-	    set_command = dbxenv + " " + base;
-	    if (base == "run_savetty")
-		return; // Makes no sense under a GUI
+	    e_type = entry_type(type, base, get_dbx_help(dbxenv, base), value);
+	    if (e_type != entry_filter)
+		return;
 
+	    set_command = dbxenv + " " + base;
 	    show_command = set_command + " " + value;
 	    doc = get_dbx_doc(dbxenv, base);
-	    e_type = entry_type(type, base, get_dbx_help(dbxenv, base), value);
 
 #if RUNTIME_REGEX
 	    static regex rxdont("Do ?n['o]t");
@@ -1569,9 +1658,9 @@ string get_settings(DebuggerType type)
 	{
 	case GDB:
 	case DBX:
-	    if (base == "dbxenv disassembler_version" 
-		|| base == "dbxenv rtc_error_log_file_name"
-		|| base == "dbxenv output_log_file_name")
+	    if (base == "dbxenv disassembler_version" ||
+		base == "dbxenv rtc_error_log_file_name" ||
+		base == "dbxenv output_log_file_name")
 	    {
 		// Do nothing (DBX) - dependent on the current machine etc.
 	    }
@@ -1583,9 +1672,17 @@ string get_settings(DebuggerType type)
 	    {
 		// This is the default setting - do nothing (GDB)
 	    }
-	    else if (base.contains("set $cur", 0))
+	    else if (base.contains("set $cur", 0) ||
+		     base.contains("set $new", 0) ||
+		     base.contains("set $pid", 0))
 	    {
-		// Do nothing - dependent on the current file (DBX)
+		// Do nothing - dependent on the current file (DEC DBX)
+	    }
+	    else if (base == "set $defaultin" ||
+		     base == "set $defaultout" ||
+		     base == "set $historyevent")
+	    {
+		// Do nothing - dependent on the current state (SGI DBX)
 	    }
 	    else if (base.contains("set $", 0))
 	    {
