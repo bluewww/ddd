@@ -7162,6 +7162,7 @@ Ddd*vsl_message*helpString:	\
 The VSL interpreter issued a message while parsing and/or evaluating\n\
 VSL expressions.  Your data displays may not be rendered successfully.\n\
 \n\
+Please note: This dialog only lists the first problem encountered.\n\
 For further diagnostics, see the status line (and the FILE(~/.[ddd]/log) file).
 
 
