@@ -364,7 +364,7 @@ void TTYAgent::open_master()
     }
 
     const string p1 = "pqrstuvwxyzPQRST";
-    const string p2 = "0123456789abcdef";
+    const string p2 = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     if (stat("/dev/ptym", &sb) == 0 && S_ISDIR(sb.st_mode))
     {
