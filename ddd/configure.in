@@ -562,6 +562,9 @@ AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT
 AC_STAT_MACROS_BROKEN
 dnl
+dnl These checks may require `-lstdc++' to link and run properly
+ice_save_LIBS="$LIBS"
+LIBS="$CXXLIBS $LIBS"
 ICE_CHECK_CORE_MAGIC
 ICE_CHECK_PTRACE_DUMPCORE
 ICE_CHECK_FROZEN_OSTRSTREAM
@@ -574,6 +577,7 @@ AC_LANG_C
 ICE_REGCOMP_BROKEN
 AC_LANG_RESTORE
 dnl
+LIBS="$ice_save_LIBS"
 dnl
 ICE_CHECK_DECL(_getpty, unistd.h)
 ICE_CHECK_DECL(alloca, alloca.h stdlib.h)
@@ -643,9 +647,13 @@ ICE_CHECK_DECL(unlink, unistd.h)
 ICE_CHECK_DECL(unlockpt, stdlib.h)
 ICE_CHECK_DECL(waitpid, sys/wait.h)
 dnl
+dnl These checks may require -lstdc++ to link and tun properly
+ice_save_LIBS="$LIBS"
+LIBS="$CXXLIBS $LIBS"
 ICE_CHECK_PATH_MAX
 ICE_CHECK_POSIX_PATH_MAX
 ICE_CHECK_MAXPATHLEN
+LIBS="$ice_save_LIBS"
 dnl
 dnl
 dnl Check for a POSIX.2 regcomp()/regexec() library

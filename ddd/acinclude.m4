@@ -779,7 +779,7 @@ fi
 ])dnl
 dnl
 dnl ICE_OSTRSTREAM_PCOUNT_BROKEN
-dnl ----------------------------------
+dnl ----------------------------
 dnl
 dnl If the C++ ostrstream::pcount() is increased by one after calling
 dnl ostrstream::str() (as in the SGI C++ I/O library), 
@@ -795,7 +795,7 @@ AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 AC_TRY_RUN(
 [
-// Returns 1 if ostrstream::pcount() is broken; 0, otherwise.
+// Returns 0 if ostrstream::pcount() is broken; 1, otherwise.
 #include <iostream.h>
 #include <strstream.h>
 
@@ -804,11 +804,11 @@ int main()
     ostrstream os;
     os << 'a';           // os.pcount() == 1.
     char *s = os.str();  // In the SGI C++ I/O library, os.pcount() is now 2!
-    return os.pcount() - 1;
+    return (os.pcount() == 2) ? 0 : 1;
 }
 ], 
-ice_cv_ostrstream_pcount_broken=no,
 ice_cv_ostrstream_pcount_broken=yes,
+ice_cv_ostrstream_pcount_broken=no,
 ice_cv_ostrstream_pcount_broken=no
 )
 AC_LANG_RESTORE
