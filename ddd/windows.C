@@ -319,8 +319,8 @@ void popdown_shell(Widget w)
 
     if (w == tool_shell)
 	XtUnmanageChild(tool_buttons_w);
-    if (w != command_shell)
-	XtPopdown(w);
+
+    XtPopdown(w);
 }
 
 void iconify_shell(Widget w)
