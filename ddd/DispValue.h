@@ -51,12 +51,12 @@ class DispValue {
     bool          changed;
 
     union {
-	class SimpleDispValue*        simple;   // fuer mytype == Simple
-	class PointerDispValue*       pointer;  // fuer mytype == Pointer
-	class ArrayDispValue*         array;    // fuer mytype == Array
-	class StructOrClassDispValue* str_or_cl;// fuer mytype == 
-			                        //            StructOrClass
-				                // oder mytype == BaseClass
+	class SimpleDispValue*        simple;    // mytype == Simple
+	class PointerDispValue*       pointer;   // mytype == Pointer
+	class ArrayDispValue*         array;     // mytype == Array
+	class StructOrClassDispValue* str_or_cl; // mytype == StructOrClass
+				                 // or mytype == BaseClass
+				                 // or mytype == Reference
     } v;
 
     void init(string& value);

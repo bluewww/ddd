@@ -143,21 +143,27 @@ void DispValue::init(string& value)
 	clog << "Array: " << "\n";
 #endif
 
-	string member_name;
-	int i = 0;
-
 	read_array_begin (value);
 	// array hat mind. ein element (wird sonst vom gdb nicht als solches,
 	// sondern als pointer angezeigt)
+
+	string vtable_entries = read_vtable_entries(value);
+	if (vtable_entries != "")
+	{
+	    v.array->members[v.array->member_count++] = 
+		new DispValue (this, mydepth + 1,
+			       vtable_entries, 
+			       myfull_name, myfull_name);
+	}
+
+	string member_name;
+	int i = 0;
 	do {
-	    v.array->member_count++;
- 	    member_name = "[" + itostring (i) + "]";
- 	    v.array->members[i] = new DispValue (this,
-						 mydepth + 1,
-						 value,
-						 myfull_name + member_name,
-						 member_name);
-	    i++;
+ 	    member_name = "[" + itostring (i++) + "]";
+ 	    v.array->members[v.array->member_count++] = 
+		new DispValue (this, mydepth + 1,
+			       value, 
+			       myfull_name + member_name, member_name);
 	} while (read_array_next (value) != 0);
 	read_array_end (value);
 
@@ -228,8 +234,22 @@ void DispValue::init(string& value)
 
 	break;
     }
-    default:
+    case Reference: {
+	v.str_or_cl = new StructOrClassDispValue;
+	myexpanded = true;
+	v.str_or_cl->member_count = 2;
+
+	string ref = value.before(':');
+	value = value.after(':');
+
+	v.str_or_cl->members[0] = 
+	    new DispValue(this, mydepth + 1, ref, 
+			  "&" + myfull_name, myfull_name);
+	v.str_or_cl->members[1] = 
+	    new DispValue(this, mydepth + 1, value,
+			  myfull_name, myfull_name);
 	break;
+    }
     }
 }
 
@@ -258,6 +278,7 @@ void DispValue::clear()
 	break;
     case StructOrClass:
     case BaseClass:
+    case Reference:
 	for (i = 0; i < v.str_or_cl->member_count; i++) {
 	    delete v.str_or_cl->members[i];
 	}
@@ -326,6 +347,7 @@ int DispValue::number_of_childs() const
 	return v.array->member_count;
     case StructOrClass:
     case BaseClass:
+    case Reference:
 	return v.str_or_cl->member_count;
     default:
 	break;
@@ -345,6 +367,7 @@ DispValue* DispValue::get_child (int i) const
 	return v.array->members[i];
     case StructOrClass:
     case BaseClass:
+    case Reference:
 	assert (i >= 0);
 	assert (i < v.str_or_cl->member_count);
 	return v.str_or_cl->members[i];
@@ -477,13 +500,28 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 	break;
 
     case Array:
+    {
 	read_array_begin (value);
-	for (i = 0; more_values && i < v.array->member_count; i++) {
-	    v.array->members[i]->update(value, changed, inited);
+
+	i = 0;
+	string vtable_entries = read_vtable_entries(value);
+	if (vtable_entries != "")
+	{
+	    v.array->members[i++]->update(vtable_entries, changed, inited);
 	    if (inited)
 		break;
-	    more_values = read_array_next (value);
 	}
+
+	if (!inited)
+	{
+	    for (; more_values && i < v.array->member_count; i++) {
+		v.array->members[i]->update(value, changed, inited);
+		if (inited)
+		    break;
+		more_values = read_array_next (value);
+	    }
+	}
+
 	if (inited || i != v.array->member_count)
 	{
 #if LOG_UPDATE_VALUES
@@ -500,6 +538,7 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 	}
 	read_array_end (value);
 	break;
+    }
 
     case StructOrClass:
     case BaseClass:
@@ -543,8 +582,23 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 	read_str_or_cl_end (value);
 	break;
 
-    default:
+    case Reference: {
+	string ref = value.before(':');
+	value = value.after(':');
+
+	v.str_or_cl->members[0]->update(ref, changed, inited);
+	if (!inited)
+	    v.str_or_cl->members[1]->update(value, changed, inited);
+	if (inited)
+	{
+	    value = init_value;
+	    clear();
+	    init(value);
+	    inited = changed = true;
+	    return;
+	}
 	break;
+    }
     }
 
 #if LOG_UPDATE_VALUES

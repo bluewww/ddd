@@ -202,6 +202,20 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	}
 	break;
 
+    case Reference:
+	if (dv->collapsed())
+	    vbox = eval("collapsed_reference_value");
+	else
+	{
+	    ListBox* args = new ListBox;
+	    for (int i = 0; i < 2; i++)
+		*args += create_value_box (dv->get_child(i));
+
+	    vbox = eval("reference_value", args);
+	    args->unlink();
+	}
+	break;
+
     default:
 	// Illegal type
 	assert (0);
@@ -209,7 +223,9 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
     }
 
     // Add member name
-    if (dv->depth() > 0 && dv->parent()->type() != Array)
+    if (dv->depth() > 0 && 
+	(dv->parent()->type() == StructOrClass || 
+	 dv->parent()->type() == BaseClass))
     {
 	vbox = eval("struct_member", dv->name(), vbox->link(), 
 		    member_name_width);

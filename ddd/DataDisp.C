@@ -1074,6 +1074,7 @@ void DataDisp::refresh_args()
 	switch (disp_value_arg->type())
 	{
 	case Simple:
+	case Reference:
 	    break;
 
 	case Pointer: 

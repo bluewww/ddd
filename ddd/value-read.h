@@ -39,7 +39,14 @@
 #include "bool.h"
 
 // ***************************************************************************
-enum DispValueType {Simple, Pointer, Array, StructOrClass, BaseClass};
+enum DispValueType {
+    Simple,			// Ordinary or other value
+    Pointer,			// Pointer value
+    Array,			// Array
+    StructOrClass,		// `struct' or `class'
+    BaseClass,			// C++ Base class member
+    Reference			// C++ Reference
+};
 
 DispValueType determine_type (string value);
 
@@ -60,6 +67,7 @@ bool read_str_or_cl_end (string& value);
 bool read_members_of_xy (string& value);
 
 // Bei Misserfolg ""
+string read_vtable_entries (string& value);
 string read_member_name (string& value);
 
 // ***************************************************************************

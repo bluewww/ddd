@@ -52,6 +52,12 @@ DispValueType determine_type (string value)
     read_leading_blanks (value);
     strip_final_blanks (value);
 
+    static regex 
+	RXreference("\\((.*) \\)? *@ *\\(0x[0-9a-f]+\\|(nil)\\) *:[^\001]*",
+		    true);
+    if (value.matches(RXreference))
+	return Reference;
+
     switch(gdb->type())
     {
     case GDB:
@@ -422,6 +428,23 @@ string read_member_name (string& value)
     if (member_name == "")
 	member_name = " ";
     return member_name;
+}
+
+// Bei Misserfolg ""
+string read_vtable_entries (string& value)
+{
+    // We use [^\001]* for matching everything, including '\n'
+    static regex RXvtable_entries(".*[0-9][0-9]* vtable entries,[^\001]*", 
+				  true);
+
+    read_leading_blanks (value);
+    if (!value.matches(RXvtable_entries))
+	return "";
+
+    string vtable_entries = value.through("entries");
+    value = value.after(',');
+
+    return vtable_entries;
 }
 
 
