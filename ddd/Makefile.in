@@ -795,7 +795,7 @@ HUFFMAN_OBJECTS = strclass.o cook.o rxclass.o
 OBJECTS = $(LIB_OBJECTS) $(DDD_OBJECTS)
 
 ## The program files.
-PROGS = $(ddd)
+PROGS = $(ddd_canonical) $(ddd)
 
 ## Extra demonstration files.
 DEMOS = userinfo stringify huffencode huffdecode \
@@ -1345,16 +1345,14 @@ check: Ddd ddd cxxtest
 	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
 
 .PHONY: debug
-debug: Ddd $(ddd) cxxtest .gdbinit syms
+debug: Ddd $(ddd) cxxtest .gdbinit $(ddd).syms
 	$(GDB) ./$(ddd)
 
-$(ddd).syms: $(ddd)
-	@echo 'Creating $@...'
-	@test "`ls -t $(ddd_canonical) $@ 2> /dev/null | head -1`" \
-	= $(ddd_canonical) && (set -x; \
-	nice $(GDB) -batch -nx -mapped -readnow $(ddd_canonical) \
-	&& $(MV) $(ddd_canonical).syms $@); true
-	@echo 'Creating $@...done'
+$(ddd).syms: $(ddd_canonical).syms
+	$(RM) $@; $(LN_S) $(ddd_canonical).syms $@
+
+$(ddd_canonical).syms: $(ddd_canonical)
+	nice $(GDB) -batch -nx -mapped -readnow $(ddd_canonical)
 
 .PHONY: syms
 syms:   $(ddd).syms
@@ -1364,8 +1362,8 @@ syms:   $(ddd).syms
 
 # Create useful stuff in background
 .PHONY: stuff
-stuff:  ddd
-	$(MAKE) syms > make.log 2>&1 &
+stuff:  $(ddd_canonical)
+	$(MAKE) $(ddd_canonical).syms > make.log 2>&1 &
 	@:
 
 # A convient target for setting up a debugging environment.
