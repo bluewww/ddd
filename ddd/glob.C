@@ -49,6 +49,7 @@ extern "C" char *alloca ();
 # endif
 #endif
 
+extern "C" {
 // Check for dirent
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
@@ -75,6 +76,7 @@ extern "C" char *alloca ();
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+}
 
 #if defined(HAVE_MEMCPY) && !defined(HAVE_MEMCPY_DECL)
 extern "C" void *memcpy(void *to, const void *from, size_t size);

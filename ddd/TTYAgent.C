@@ -50,6 +50,8 @@ char TTYAgent_rcsid[] =
 
 DEFINE_TYPE_INFO_1(TTYAgent, LiterateAgent)
 
+extern "C" {
+
 #ifdef __osf__
 // DEC OSF has some special treatment in this file; I guess these `#ifdef
 // __osf__' flags should be deleted by an OSF expert some day.   - AZ
@@ -108,6 +110,7 @@ DEFINE_TYPE_INFO_1(TTYAgent, LiterateAgent)
 
 #include <stdio.h>
 #include <signal.h>
+}
 
 extern "C" {
 #if defined(HAVE_SETPGID) && !defined(HAVE_SETPGID_DECL) && !defined(setpgid)

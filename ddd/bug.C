@@ -37,11 +37,13 @@ char bug_rcsid[] =
 #include "assert.h"
 
 // sonstige includes
+extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h> // fuer atoi
 #include <string.h> // fuer strdup, strchr
+}
 
 const int BPIndent = 5;
 const char *BPIndentText = "-----";

@@ -33,6 +33,7 @@ char filetype_rcsid[] =
 
 #include "config.h"
 
+extern "C" {
 #include <sys/types.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -61,6 +62,7 @@ char filetype_rcsid[] =
 #ifdef HAVE_SYS_CORE_H
 #include <sys/core.h>		// CORE_MAGIC
 #endif
+}
 
 // Test for regular file - see stat(3)
 #ifndef S_ISREG

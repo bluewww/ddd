@@ -35,6 +35,8 @@ char Agent_rcsid[] =
 
 #include "assert.h"
 #include "config.h"
+
+extern "C" {
 #include <errno.h>
 #include <signal.h>
 #include <iostream.h>
@@ -42,6 +44,7 @@ char Agent_rcsid[] =
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+}
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0

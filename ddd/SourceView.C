@@ -97,8 +97,10 @@ char SourceView_rcsid[] =
 #include <X11/StringDefs.h>
 
 // System stuff
+extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
+}
 #include <stdio.h>
 #include <fcntl.h>
 #include <iomanip.h>

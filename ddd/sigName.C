@@ -31,10 +31,13 @@ char sigName_rcsid[] =
 
 #include "config.h"
 
+#include <strstream.h>
+
+extern "C" {
 #include <stddef.h>
 #include <signal.h>
 #include <sys/wait.h>
-#include <strstream.h>
+}
 
 #include "strclass.h"
 #include "sigName.h"
@@ -53,7 +56,7 @@ char *statusName(int status)
 {
     static string s;
 
-    s = "Unknown State Change";
+    s = "Unknown state change";
 
     if (WIFEXITED(status))
     {

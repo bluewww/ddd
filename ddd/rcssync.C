@@ -27,12 +27,14 @@
 char rcssync_rcsid[] =
     "$Id$";
 
+extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+}
 
 // For all files in args, check if the corresponding RCS file is newer.
 // If so, print the name of the RCS file on standard output.

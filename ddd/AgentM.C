@@ -39,9 +39,11 @@ char AgentM_rcsid[] =
 #include "SignalB.h"
 #include "config.h"
 
+extern "C" {
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+}
 
 DEFINE_TYPE_INFO_0(AgentManager)
 
