@@ -532,14 +532,15 @@ string GDBAgent::requires_reply (const string& answer)
 	return "q";		// Stop this
 
     static regex RXspace(
-	 ".*(--More--|line [0-9]|More [(]n if no[)][?])[^\n]*");
+	 ".*(--More--|line [0-9])[^\n]*");
     if (answer.matches(RXspace))
 	return " ";		// Keep on scrolling
 
     static regex 
 	RXreturn(".*([(]press RETURN[)]"
 		 "|Hit RETURN to continue"
-		 "|Type <return> to continue)[^\n]*");
+		 "|Type <return> to continue"
+		 "|More [(]n if no[)][?])[^\n]*");
     if (answer.matches(RXreturn))
 	return "\n";		// Keep on scrolling
 
