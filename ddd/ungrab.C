@@ -38,6 +38,7 @@ const char ungrab_rcsid[] =
 #include <X11/Xlib.h>
 #include <stdlib.h>
 
+#include "AppData.h"
 #include "ddd.h"
 #include "disp-read.h"
 #include "string-fun.h"
@@ -57,22 +58,44 @@ const char ungrab_rcsid[] =
 // pointer, disaster will occur, as the pointer will remain grabbed
 // and users won't be able to to use their display.
 
+// We use a second connection for grabbing and ungrabbing, such that
+// we do not disturb the grab state of DDD.
+static Display *grab_display = 0;
+
 // Return True if pointer is grabbed.
 static bool mouse_pointer_grabbed()
 {
+    if (!app_data.ungrab_mouse_pointer)
+    {
+	if (grab_display != 0 && grab_display != XtDisplay(command_shell))
+	{
+	    XCloseDisplay(grab_display);
+	    grab_display = 0;
+	}
+	return false;
+    }
+
+    if (grab_display == 0)
+	grab_display = XOpenDisplay(XDisplayString(XtDisplay(command_shell)));
+    if (grab_display == 0)
+	grab_display = XtDisplay(command_shell);
+
     // We check whether the pointer is grabbed by attempting to grab
-    // it for ourselves.  If it's already grabbed, this is probably by
-    // our debuggee.
+    // it for ourselves.  If it's already grabbed, this may be by our
+    // debuggee.
 
     // Warning! Debugging this function may cause your pointer to freeze!
-    int grab_result = XGrabPointer(XtDisplay(command_shell), 
-				   RootWindowOfScreen(XtScreen(command_shell)),
+    int grab_result = XGrabPointer(grab_display,
+				   DefaultRootWindow(grab_display),
 				   True, 0, GrabModeAsync, GrabModeAsync,
 				   None, None, CurrentTime);
-    XUngrabPointer(XtDisplay(command_shell), CurrentTime);
-    XFlush(XtDisplay(command_shell));
 
-    return grab_result == AlreadyGrabbed || grab_result == GrabFrozen;
+    if (grab_result == AlreadyGrabbed || grab_result == GrabFrozen)
+	return true;
+
+    XUngrabPointer(grab_display, CurrentTime);
+    XFlush(grab_display);
+    return false;
 }
 
 // Return the GDB value of EXPR.

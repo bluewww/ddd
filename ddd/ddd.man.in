@@ -1342,7 +1342,7 @@ abort (\fBCtrl+\\\fR or \fBAbort\fR), which sends a \s-2QUIT\s+2 signal
 to the inferior debugger.  Use this in emergencies only; the inferior
 debugger may be left inconsistent after a \s-2QUIT\s+2 signal.
 .PP
-As a last resort\(em\&if \s-2DDD\s+2 hangs, for example\(em\&, you may
+As a last resort\(em\&if \s-2@DDD@\s+2 hangs, for example\(em\&, you may
 also interrupt \s-2@DDD@\s+2 itself using an interrupt signal
 (\s-2SIGINT\s+2).  This can be done by pressing \fBCtrl+C\fR in the
 shell \s-2@DDD@\s+2 was started from, or by using the \s-2UNIX\s+2
@@ -1350,7 +1350,7 @@ shell \s-2@DDD@\s+2 was started from, or by using the \s-2UNIX\s+2
 \s-2@DDD@\s+2 action; the inferior debugger is interrupted as well.
 Since this interrupt signal can result in internal inconsistencies,
 use this as a last resort in emergencies only; save your work as soon
-as possible and restart \s-2DDD\s+2.
+as possible and restart \s-2@DDD@\s+2.
 .\"
 .\"
 .\" ---------------
@@ -1959,10 +1959,18 @@ different X or Motif configuration.  By default, this is
 .B "tabWidth (\fPclass\fB TabWidth)"
 The tab width used in the source window (default: \fB8\fR)
 .TP
+.B "ungrabMousePointer (\fPclass\fB UngrabMousePointer)"
+When debugging an X program, \s-2@DDD@\s+2 may interrupt it while it
+has grabbed the pointer, making further interaction impossible.  If
+this is `\fBtrue\fR' (default), \s-2@DDD@\s+2 will check after each
+interaction whether the pointer is grabbed.  If this is so,
+\s-2@DDD@\s+2 will instruct the debugged program to ungrab the mouse
+pointer.
+.TP
 .B "useSourcePath (\fPclass\fB UseSourcePath)"
 If this is `\fBfalse\fR' (default), the inferior debugger refers to
 source code locations only by their base names.  If this is
-`\fBtrue\fR' (default), \s-2DDD\s+2 uses the full source code paths.
+`\fBtrue\fR' (default), \s-2@DDD@\s+2 uses the full source code paths.
 .TP
 .B "valueTips (\fPclass\fB Tips)"
 Whether value tips are enabled (`\fBtrue\fR', default) or not
@@ -2993,10 +3001,10 @@ Run \s-2XDB\s+2 as inferior debugger.
 .PD 0
 .TP 20
 .B $HOME/.dddinit
-Individual \s-2DDD\s+2 resource file.  \s-2DDD\s+2 options are saved here.
+Individual \s-2@DDD@\s+2 resource file.  \s-2@DDD@\s+2 options are saved here.
 .TP
 .B $HOME/.ddd_history
-Default \s-2DDD\s+2 command history file.
+Default \s-2@DDD@\s+2 command history file.
 .TP
 .B $HOME/.gdbinit
 \s-2GDB\s+2 initialization file.
@@ -3106,7 +3114,7 @@ to the most recent \s-2GDB\s+2 version.
 .PP
 .\"
 .SS "Limitations using DBX"
-When used for debugging Modula-2 or Pascal programs, \s-2DDD\s+2
+When used for debugging Modula-2 or Pascal programs, \s-2@DDD@\s+2
 always numerates array elements starting with zero, instead of using
 correct array subscripts.
 .PP
@@ -3175,7 +3183,7 @@ As a last resort, send bug reports on paper to:
 .br
   Abteilung Softwaretechnologie 
 .br
-  \s-2DDD\s+2-Bugs 
+  \s-2@DDD@\s+2-Bugs 
 .br
   Bueltenweg 88
 .br
@@ -3266,8 +3274,8 @@ The compiler you used to compile \s-2@DDD@\s+2 and its version (e.g.,
 .br
 .IP \(bu 2
 A description of what behavior you observe that you believe is
-incorrect.  For example, \*(lq\s-2DDD\s+2 gets a fatal signal\*(rq or
-\*(lq\s-2DDD\s+2 exits immediately after attempting to create the data
+incorrect.  For example, \*(lq\s-2@DDD@\s+2 gets a fatal signal\*(rq or
+\*(lq\s-2@DDD@\s+2 exits immediately after attempting to create the data
 window\*(lq.
 .br
 .IP \(bu 2
