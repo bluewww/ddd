@@ -536,6 +536,12 @@ static XrmOptionDescRec options[] = {
 { "--status-at-top",        XtNstatusAtBottom,       XrmoptionNoArg, OFF },
 { "-status-at-top",         XtNstatusAtBottom,       XrmoptionNoArg, OFF },
 
+{ "--toolbars-at-bottom",   XtNtoolbarsAtBottom,     XrmoptionNoArg, ON },
+{ "-toolbars-at-bottom",    XtNtoolbarsAtBottom,     XrmoptionNoArg, ON },
+
+{ "--toolbars-at-top",      XtNtoolbarsAtBottom,     XrmoptionNoArg, OFF },
+{ "-toolbars-at-top",       XtNtoolbarsAtBottom,     XrmoptionNoArg, OFF },
+
 { "--panned-graph-editor",  XtNpannedGraphEditor,    XrmoptionNoArg, ON },
 { "-panned-graph-editor",   XtNpannedGraphEditor,    XrmoptionNoArg, ON },
 
@@ -1167,6 +1173,7 @@ static Widget set_button_images_w;
 static Widget set_button_captions_w;
 static Widget set_flat_buttons_w;
 static Widget set_color_buttons_w;
+static Widget set_toolbars_at_bottom_w;
 static MMDesc button_appearance_menu [] = 
 {
     { "images",   MMToggle, { dddToggleButtonImagesCB, 0 },
@@ -1177,6 +1184,8 @@ static MMDesc button_appearance_menu [] =
       NULL, &set_flat_buttons_w, 0, 0 },
     { "color", MMToggle, { dddToggleColorButtonsCB, 0 },
       NULL, &set_color_buttons_w, 0, 0 },
+    { "bottom", MMToggle, { dddToggleToolbarsAtBottomCB, 0 },
+      NULL, &set_toolbars_at_bottom_w, 0, 0 },
     MMEnd
 };
 
@@ -3694,7 +3703,10 @@ void update_options()
 
     set_toggle(set_button_images_w,        app_data.button_images);
     set_toggle(set_button_captions_w,      app_data.button_captions);
+
     set_toggle(set_flat_buttons_w,         app_data.flat_toolbar_buttons);
+    set_sensitive(set_flat_buttons_w,
+		  app_data.button_images || app_data.button_captions);
 
     string button_color_key        = app_data.button_color_key;
     string active_button_color_key = app_data.active_button_color_key;
@@ -3708,12 +3720,18 @@ void update_options()
     else
 	set_toggle(set_color_buttons_w, XmINDETERMINATE);
 #endif
+    set_sensitive(set_color_buttons_w, app_data.button_images);
+
+    Boolean separate = 
+	app_data.separate_data_window || app_data.separate_source_window;
+
+    set_toggle(set_toolbars_at_bottom_w, app_data.toolbars_at_bottom);
+    set_sensitive(set_toolbars_at_bottom_w, separate ||
+		  !app_data.button_images && !app_data.button_captions);
 
     set_toggle(set_tool_buttons_in_toolbar_w,      app_data.command_toolbar);
     set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_toolbar);
 
-    Boolean separate = 
-	app_data.separate_data_window || app_data.separate_source_window;
     set_toggle(set_separate_windows_w, separate);
     set_toggle(set_attached_windows_w, !separate);
 
@@ -4241,6 +4259,8 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     else
 	notify_set_toggle(set_color_buttons_w, XmINDETERMINATE);
 #endif
+    notify_set_toggle(set_toolbars_at_bottom_w, 
+		      initial_app_data.toolbars_at_bottom);
 
     notify_set_toggle(set_focus_pointer_w, 
 		      initial_focus_policy == XmPOINTER);
@@ -4303,6 +4323,9 @@ static bool startup_preferences_changed()
 	return true;
 
     if (app_data.flat_toolbar_buttons != initial_app_data.flat_toolbar_buttons)
+	return true;
+
+    if (app_data.toolbars_at_bottom != initial_app_data.toolbars_at_bottom)
 	return true;
 
     if (string(app_data.button_color_key) !=

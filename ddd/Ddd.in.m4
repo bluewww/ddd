@@ -340,17 +340,17 @@ Ddd*builtinPlotWindow: off
 Ddd*questionTimeout: 10
 
 
-! Toolbar appearance.
-! Whether to have one common toolbar for one-window configurations.
+! Tool Bar appearance.
+! Whether to have one common tool bar for one-window configurations.
 Ddd*commonToolBar: on
 
-! Whether toolbars should be placed at the bottom (Default in DDD 2.x 
+! Whether tool bars should be placed at the bottom (Default in DDD 2.x 
 ! and earlier)
 Ddd*toolbarsAtBottom: off
 
 ! Whether to display images and/or captions.  Turing both off causes
-! toolbars to display strings (as in DDD 2.x and earlier).  The common
-! toolbar, however, never displays strings - there is not enough place.
+! tool bars to display strings (as in DDD 2.x and earlier).  The common
+! tool bar, however, never displays strings - there is not enough place.
 Ddd*buttonImages:   on
 Ddd*buttonCaptions: on
 
@@ -3285,13 +3285,15 @@ ITEM LBL(Window Layout) sets the window layout.\n\
         where source, data, and the @GDB@ console are stacked.\n\
     SUBITEM LBL(Separate Windows) means to use a separate top-level window\n\
         for each of source, data, and the @GDB@ console.\n\
-ITEM The LBL(Toolbar) can appear as\n\
-    SUBITEM LBL(Images), showing a small symbol for each action, and/or\n\
-    SUBITEM LBL(Captions), showing the action name below the image.\n\
-    SUBITEM LBL(Flat), enabling the button border only when entered.\n\
-    SUBITEM LBL(Color), enabling colored button images.\n\
+ITEM The LBL(Tool Bar) can appear as follows:\n\
+    SUBITEM LBL(Images) shows a small symbol for each action, and/or\n\
+    SUBITEM LBL(Captions) shows the action name below the image.\n\
     If neither LBL(Images) nor LBL(Captions) is set, \
 buttons have ordinary labels.\n\
+    SUBITEM LBL(Flat) enables the button border only when entered.\n\
+    SUBITEM LBL(Color) enables colored button images.\n\
+    SUBITEM LBL(Bottom) places the tool bar at the bottom of the window.\n\
+    This can only be done with separate windows or ordinary labels.\n\
 ITEM LBL(Keyboard Focus) sets the keyboard focus policy.\n\
     SUBITEM LBL(Click to Type) means that you must click on a window\n\
         to direct the keyboard focus to it.\n\
@@ -3317,12 +3319,13 @@ Ddd*preferences*bindings.labelString:		Cut/Copy/Paste Bindings
 Ddd*bindingsMenu*kde.labelString:		KDE Style
 Ddd*bindingsMenu*motif.labelString:		Motif Style
 
-Ddd*preferences*buttons.labelString:		Toolbar Appearance
+Ddd*preferences*buttons.labelString:		Tool Bar Appearance
 Ddd*buttonsMenu*images.labelString:		Images
 Ddd*buttonsMenu*captions.labelString:		Captions
 Ddd*buttonsMenu*flat.labelString:		Flat
 Ddd*buttonsMenu*color.labelString:		Color
 Ddd*buttonsMenu*color.toggleMode:		XmTOGGLE_INDETERMINATE
+Ddd*buttonsMenu*bottom.labelString:		Bottom
 
 Ddd*preferences*keyboardFocus.labelString:	Keyboard Focus
 Ddd*keyboardFocusMenu*explicit.labelString:	Click to Type
@@ -3776,7 +3779,7 @@ Ddd*shortcut_popup*documentationString:
 
 
 !-----------------------------------------------------------------------------
-! Toolbar argument
+! Tool Bar argument
 !-----------------------------------------------------------------------------
 
 Ddd*arg_label.labelString:	():
@@ -3796,11 +3799,11 @@ Clear LBL(()) by clicking on the prompt LBL(():).
 
 
 !-----------------------------------------------------------------------------
-! Common Toolbar
+! Common Tool Bar
 !-----------------------------------------------------------------------------
 
 Ddd*toolbar*helpString: \
-WIDGET(Toolbar)\n\
+WIDGET(Tool Bar)\n\
 \n\
 Set the argument LBL(()) for the command buttons on the right.\n\
 \n\
@@ -3808,11 +3811,11 @@ To get help on a command button, just point on it and press KEY_HELP.\n\
 The item's functionality will be explained here.
 
 
-! All other values from the graph and source toolbar, below, apply here, too.
+! All other values from the graph and source tool bar, below, apply here, too.
 
 
 !-----------------------------------------------------------------------------
-! Graph Toolbar
+! Graph Tool Bar
 !-----------------------------------------------------------------------------
 
 ! Ddd*graph_toolbar*helpString: \
@@ -3999,7 +4002,7 @@ Ddd*toolbar*delete.documentationString:	\
 
 
 !-----------------------------------------------------------------------------
-! Source Toolbar
+! Source Tool Bar
 !-----------------------------------------------------------------------------
 
 Ddd*toolbar*lookup.labelString:		Lookup ()

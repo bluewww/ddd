@@ -1030,7 +1030,21 @@ void dddToggleColorButtonsCB(Widget w, XtPointer, XtPointer call_data)
     post_startup_warning(w);
 }
 
+void dddToggleToolbarsAtBottomCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
 
+    app_data.toolbars_at_bottom = info->set;
+
+    if (info->set)
+	set_status(next_ddd_will_start_with + "toolbars at bottom.");
+    else
+	set_status(next_ddd_will_start_with + "toolbars at top.");
+
+    update_options();
+    post_startup_warning(w);
+}
 
 
 // ---------------------------------------------------------------------------
@@ -2371,14 +2385,14 @@ bool save_options(unsigned long flags)
 
     // Toolbar
     os << "\n! Tool Bars.\n";
-#if 0
-    // We cannot change these interactively, so there's no point in
-    // saving them.
+
+#if 0  // We cannot change this interactively.  Don't save.
     os << bool_app_value(XtNcommonToolBar,
 			 app_data.common_toolbar)  << '\n';
+#endif
+
     os << bool_app_value(XtNtoolbarsAtBottom, 
 			 app_data.toolbars_at_bottom) << '\n';
-#endif
     os << bool_app_value(XtNbuttonImages,
 			 app_data.button_images)   << '\n';
     os << bool_app_value(XtNbuttonCaptions,
