@@ -3513,8 +3513,10 @@ void SourceView::create_shells()
 	XmCreateToggleButton(box, (char *)"all_registers", args, arg);
     XtManageChild(all_registers_w);
 
+    XtAddCallback(int_registers_w, XmNvalueChangedCallback, 
+		  sourceSetIntRegistersCB, XtPointer(0));
     XtAddCallback(all_registers_w, XmNvalueChangedCallback, 
-		  sourceToggleAllRegistersCB, XtPointer(0));
+		  sourceSetAllRegistersCB, XtPointer(0));
 
     arg = 0;
     register_list_w = XmSelectionBoxGetChild(register_dialog_w, XmDIALOG_LIST);

@@ -246,17 +246,30 @@ void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
 	set_status(displaying + "as text characters.");
 }
 
-void sourceToggleAllRegistersCB (Widget, XtPointer, XtPointer call_data)
+void sourceSetAllRegistersCB (Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    app_data.all_registers = info->set;
+    if (info->set)
+    {
+	set_status("Showing all registers.");
+	app_data.all_registers = true;
+    }
+
+    update_options();
+}
+
+void sourceSetIntRegistersCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	set_status("Showing all registers.");
-    else
+    {
 	set_status("Showing integer registers only.");
+	app_data.all_registers = false;
+    }
 
     update_options();
 }
