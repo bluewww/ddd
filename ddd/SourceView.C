@@ -3117,8 +3117,10 @@ void SourceView::find(const string& s,
     if (pos > 0)
     {
 	XmTextSetSelection(source_text_w, pos, pos + matchlen, time);
+#if 0
 	XmTextSetHighlight(source_text_w, pos, pos + matchlen,
 			   XmHIGHLIGHT_SECONDARY_SELECTED);
+#endif
 	SetInsertionPosition(source_text_w, cursor, false);
     }
     else
