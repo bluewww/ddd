@@ -156,6 +156,13 @@ void ArcGraphEdge::drawLine(Widget w,
 	region_hint.origin() += gc.offsetIfSelected;
     }
 
+    if (pos_hint <= region_from || pos_hint <= region_to)
+    {
+	// Hint within region
+	LineGraphEdge::drawLine(w, exposed, gc);
+	return;
+    }
+
     BoxPoint new_pos_from, new_pos_to, dummy;
     findLine(pos_from, pos_hint, region_from, region_hint,
 	     new_pos_from, dummy, gc);
