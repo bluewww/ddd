@@ -100,18 +100,18 @@ static int tool_shell_visibility        = VisibilityFullyObscured;
 bool popups_disabled = false;
 
 // Place command tool in upper right edge of REF
-static void recenter_tool_shell(Widget ref);
+static void recenter_tool_shell(Widget ref = 0);
 
 // Place command tool in upper right edge of REF, with a distance of
 // TOP_OFFSET and RIGHT_OFFSET
 static void recenter_tool_shell(Widget ref, int top_offset, int right_offset);
 
 // Have command tool follow REF
-static void follow_tool_shell(Widget ref);
+static void follow_tool_shell(Widget ref = 0);
 
 // Get current offset of command tool in TOP_OFFSET and RIGHT_OFFSET;
 // return true iff successful.
-static bool get_tool_offset(int& top_offset, int& right_offset);
+static bool get_tool_offset(Widget ref, int& top_offset, int& right_offset);
 
 // Last offsets as actually used
 static int last_top_offset;
@@ -207,7 +207,7 @@ static void RecenterToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 
     if (have_visible_tool_shell)
     {
-	recenter_tool_shell(source_view->source());
+	recenter_tool_shell();
     }
     else
     {
@@ -465,7 +465,7 @@ static void follow_tool_shell(Widget ref)
     initialize_offsets();
 
     recenter_tool_shell(ref, last_top_offset, last_right_offset);
-    get_tool_offset(last_top_offset, last_right_offset);
+    get_tool_offset(ref, last_top_offset, last_right_offset);
 }
 
 void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
@@ -665,7 +665,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 		// clog << "Tool has been moved to " << point(event) << "\n";
 
 		// Record offset
-		get_tool_offset(last_top_offset, last_right_offset);
+		get_tool_offset(0, last_top_offset, last_right_offset);
 	    }
 
 	    if (w == source_view_shell || 
@@ -674,7 +674,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 		// Source shell has been moved -- let command tool follow
 		// clog << "Shell has been moved to " << point(event) << "\n";
 
-		follow_tool_shell(source_view->source());
+		follow_tool_shell();
 	    }
 	}
 	break;
@@ -727,7 +727,7 @@ void DDDCloseCB(Widget w, XtPointer, XtPointer)
 // Debugger console
 void gdbCloseCommandWindowCB(Widget w, XtPointer, XtPointer)
 {
-    if (!have_data_window() && !have_source_window())
+    if (!have_data_window() && !have_source_window() && !have_code_window())
     {
 	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
@@ -770,9 +770,10 @@ bool have_visible_command_window()
 
 
 // Source window
-void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
+void gdbCloseSourceWindowCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 {
-    if (!have_command_window() && !have_data_window())
+    if (!have_command_window() && !have_data_window() && !have_code_window())
     {
 	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
@@ -780,36 +781,69 @@ void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
 
     // Unmanage source
     unmanage_paned_child(source_view->source_form());
-    unmanage_paned_child(source_view->code_form());
 
-    Widget arg_cmd_w = XtParent(source_arg->widget());
-    if (data_disp->graph_cmd_w == arg_cmd_w)
-    {
-	// Don't close the common toolbar
-    }
-    else
-    {
-	unmanage_paned_child(arg_cmd_w);
-    }
+    if (source_view_shell != 0)
+	unmanage_paned_child(source_view->code_form());
+
+    if (!XtIsManaged(source_view->code_form()))
+	gdbCloseToolWindowCB(w, client_data, call_data);
 
     popdown_shell(source_view_shell);
     update_options();
 }
 
-void gdbOpenSourceWindowCB(Widget, XtPointer, XtPointer)
+void gdbCloseCodeWindowCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
+{
+    if (!have_command_window() && !have_data_window() && !have_source_window())
+    {
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
+	return;
+    }
+
+    // Unmanage code
+    unmanage_paned_child(source_view->code_form());
+
+    if (!XtIsManaged(source_view->source_form()))
+	gdbCloseToolWindowCB(w, client_data, call_data);
+
+    update_options();
+}
+
+void gdbOpenSourceWindowCB(Widget w, XtPointer client_data,
+			   XtPointer call_data)
 {
     manage_paned_child(source_view->source_form());
-    if (app_data.disassemble)
+    if (source_view_shell != 0 && app_data.disassemble)
 	manage_paned_child(source_view->code_form());
-    manage_paned_child(XtParent(source_arg->widget()));
 
     popup_shell(source_view_shell);
+
+    gdbOpenToolWindowCB(w, client_data, call_data);
+
+    update_options();
+}
+
+void gdbOpenCodeWindowCB(Widget w, XtPointer client_data,
+			 XtPointer call_data)
+{
+    manage_paned_child(source_view->code_form());
+
+    popup_shell(source_view_shell);
+
+    gdbOpenToolWindowCB(w, client_data, call_data);
+
     update_options();
 }
 
 bool have_source_window()
 {
     return XtIsManaged(source_view->source_form());
+}
+
+bool have_code_window()
+{
+    return XtIsManaged(source_view->code_form());
 }
 
 bool have_visible_source_window()
@@ -824,7 +858,7 @@ bool have_visible_source_window()
 // Data window
 void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
 {
-    if (!have_source_window() && !have_command_window())
+    if (!have_source_window() && !have_command_window() && !have_code_window())
     {
 	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
@@ -963,15 +997,25 @@ void gdbToggleSourceWindowCB(Widget w, XtPointer client_data,
     app_data.source_window = info->set;
 
     if (info->set)
-    {
 	gdbOpenSourceWindowCB(w, client_data, call_data);
-	gdbOpenToolWindowCB(w, client_data, call_data);
-    }
     else
-    {
 	gdbCloseSourceWindowCB(w, client_data, call_data);
-	gdbCloseToolWindowCB(w, client_data, call_data);
-    }
+}
+
+void gdbToggleCodeWindowCB(Widget w, XtPointer client_data,
+			   XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.disassemble = info->set;
+
+    if (info->set)
+	gdbOpenCodeWindowCB(w, client_data, call_data);
+    else
+	gdbCloseCodeWindowCB(w, client_data, call_data);
+
+    update_options();
 }
 
 void gdbToggleDataWindowCB(Widget w, XtPointer client_data,
@@ -1028,6 +1072,11 @@ static void recenter_tool_shell(Widget ref)
 // TOP_OFFSET and RIGHT_OFFSET
 static void recenter_tool_shell(Widget ref, int top_offset, int right_offset)
 {
+    if (ref == 0)
+	ref = source_view->source();
+    if (ref == 0 || !XtIsManaged(ref))
+	ref = source_view->code();
+
     if (ref == 0 || tool_shell == 0 || 
 	!XtIsRealized(ref) || !XtIsRealized(tool_shell))
 	return;
@@ -1078,9 +1127,12 @@ static void recenter_tool_shell(Widget ref, int top_offset, int right_offset)
 
 // Get current offset of command tool in TOP_OFFSET and RIGHT_OFFSET;
 // return true iff successful.
-static bool get_tool_offset(int& top_offset, int& right_offset)
+static bool get_tool_offset(Widget ref, int& top_offset, int& right_offset)
 {
-    Widget ref = source_view->source();
+    if (ref == 0)
+	ref = source_view->source();
+    if (ref == 0 || !XtIsManaged(ref))
+	ref = source_view->code();
 
     if (ref == 0 || tool_shell == 0 || 
 	!XtIsRealized(ref) || !XtIsRealized(tool_shell))
@@ -1154,7 +1206,7 @@ static bool get_tool_offset(int& top_offset, int& right_offset)
 void get_tool_offset()
 {
     initialize_offsets();
-    get_tool_offset(last_top_offset, last_right_offset);
+    get_tool_offset(0, last_top_offset, last_right_offset);
     app_data.tool_top_offset   = last_top_offset;
     app_data.tool_right_offset = last_right_offset;
 }

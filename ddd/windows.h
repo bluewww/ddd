@@ -58,24 +58,28 @@ extern int running_shells();
 
 extern void gdbOpenCommandWindowCB  (Widget, XtPointer, XtPointer);
 extern void gdbOpenSourceWindowCB   (Widget, XtPointer, XtPointer);
+extern void gdbOpenCodeWindowCB     (Widget, XtPointer, XtPointer);
 extern void gdbOpenDataWindowCB     (Widget, XtPointer, XtPointer);
 extern void gdbOpenExecWindowCB     (Widget, XtPointer, XtPointer);
 extern void gdbOpenToolWindowCB     (Widget, XtPointer, XtPointer);
 
 extern void gdbCloseCommandWindowCB (Widget, XtPointer, XtPointer);
 extern void gdbCloseSourceWindowCB  (Widget, XtPointer, XtPointer);
+extern void gdbCloseCodeWindowCB    (Widget, XtPointer, XtPointer);
 extern void gdbCloseDataWindowCB    (Widget, XtPointer, XtPointer);
 extern void gdbCloseExecWindowCB    (Widget, XtPointer, XtPointer);
 extern void gdbCloseToolWindowCB    (Widget, XtPointer, XtPointer);
 
 extern void gdbToggleCommandWindowCB(Widget, XtPointer, XtPointer);
 extern void gdbToggleSourceWindowCB (Widget, XtPointer, XtPointer);
+extern void gdbToggleCodeWindowCB   (Widget, XtPointer, XtPointer);
 extern void gdbToggleDataWindowCB   (Widget, XtPointer, XtPointer);
 extern void gdbToggleExecWindowCB   (Widget, XtPointer, XtPointer);
 extern void gdbToggleToolWindowCB   (Widget, XtPointer, XtPointer);
 
 extern bool have_command_window();
 extern bool have_source_window();
+extern bool have_code_window();
 extern bool have_data_window();
 extern bool have_exec_window();
 extern bool have_tool_window();
