@@ -925,7 +925,7 @@ ptest:  ptest.o
 	$(LINK.p) -o $@ ptest.o
 
 m2test: m2test.mod
-	$(COMPILE.m2) -o $@ -e $@ m2test.mod
+	$(COMPILE.m2) -o $@ -e $@ m2test.mod -lmodula2 -ltermcap
 
 # We don't want no optimizing in our test files
 bug.o:	$(srcdir)/bug.C
