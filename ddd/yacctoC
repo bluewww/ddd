@@ -81,19 +81,14 @@ for file in y.tab.c y.tab.h; do
       yaccpar=sun
     fi
 
-    grep '@(#).*com/cmd/lang/yacc/yaccpar' $file > /dev/null     
-    if [ $? = 0 ]; then
-      yaccpar=bison
-    fi
-
     grep 'Bison parser' $file > /dev/null
     if [ $? = 0 ]; then
       yaccpar=bison
     fi
   
     if [ "$yaccpar" = "" ]; then
-      echo "$this: cannot determine yaccpar type -- fix y.tab.c manually" >&2
-      exit 1
+      echo "$this: cannot determine yaccpar type -- reverting to bison" >&2
+      yaccpar=bison
     fi
     
     script=$path/$this.$yaccpar

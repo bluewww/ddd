@@ -64,11 +64,6 @@ if [ $? = 0 ]; then
   exit 1
 fi
 
-grep '@(#).*com/lib/l/ncform' lex.yy.c > /dev/null 
-if [ $? = 0 ]; then
-  lexpar=flex
-fi
-
 grep '@(#)ncform.*SMI' lex.yy.c > /dev/null
 if [ $? = 0 ]; then
   lexpar=sun
@@ -80,8 +75,8 @@ if [ $? = 0 ]; then
 fi
 
 if [ "$lexpar" = "" ]; then
-  echo "$this: cannot determine lex type -- fix lex.yy.c manually" >&2
-  exit 1
+  echo "$this: cannot determine lex type -- reverting to flex" >&2
+  lexpar=flex
 fi
   
 script=$path/$this.$lexpar
