@@ -439,7 +439,7 @@ GDBAgent::~GDBAgent ()
 //-----------------------------------------------------------------------------
 
 // Send CMD to GDB, associated with USER_DATA.  Return false iff busy.
-bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without `\n'
+bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without '\n'
 {
     if (user_data)
 	_user_data = user_data;
@@ -988,26 +988,43 @@ void GDBAgent::strip_control(string& answer) const
 
     for (source_index = 0; source_index < int(answer.length()); source_index++)
     {
-	switch (answer[source_index])
+	char c = answer[source_index];
+	switch (c)
 	{
 	case '\b':
 	    // Delete last character
 	    if (target_index > 0 && answer[target_index - 1] != '\n')
 		target_index--;
+	    else
+	    {
+		// Nothing to erase -- keep the '\b'.
+		goto copy;
+	    }
 	    break;
 
 	case '\r':
-	    if (source_index + 1 < int(answer.length())
-		&& (answer[source_index + 1] == '\n'
-		    || answer[source_index + 1] == '\r'))
+	    if (source_index + 1 < int(answer.length()))
 	    {
-		// Followed by '\n' or '\r' -- ignore
-		break;
+		if (answer[source_index + 1] == '\n' ||
+		    answer[source_index + 1] == '\r')
+		{
+		    // '\r' followed by '\n' or '\r' -- don't copy
+		    break;
+		}
+	        else
+		{
+		    // '\r' followed by something else: 
+		    // Return to beginning of line
+		    while (target_index > 0 && 
+			   answer[target_index - 1] != '\n')
+			target_index--;
+		}
 	    }
-
-	    // Return to beginning of line
-	    while (target_index > 0 && answer[target_index - 1] != '\n')
-		target_index--;
+	    else
+	    {
+		// Trailing '\r' -- keep it
+		goto copy;
+	    }
 	    break;
 
 	case '\033':
@@ -1015,10 +1032,18 @@ void GDBAgent::strip_control(string& answer) const
 	    // `\e[22;1H', `\e[7m', `\e[K', regardless of TERM
 	    // settings.  We simply weed out everything up to and
 	    // including to the next letter.
-	    while (!isalpha(answer[source_index]))
+	    while (source_index < int(answer.length()) && 
+		   !isalpha(answer[source_index]))
 		source_index++;
+
+	    if (source_index >= int(answer.length()))
+	    {
+		// The escape sequence is not finished yet - keep the '\e'.
+		answer[target_index++] = c;
+	    }
 	    break;
 
+	copy:
 	default:
 	    // Leave character unchanged
 	    answer[target_index++] = answer[source_index];
@@ -1067,7 +1092,7 @@ void GDBAgent::handle_echo(string& answer)
 	{
 	    if (answer[i] == '\r')
 	    {
-		// Ignore `\r' in comparisons
+		// Ignore '\r' in comparisons
 		i++;
 	    }
 	    else if (answer[i] == last_written[e])
