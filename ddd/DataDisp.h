@@ -88,6 +88,7 @@ class DispNode;
 class DispBox;
 class DispValue;
 class RegionGraphNode;
+class ThemeManager;
 
 //-----------------------------------------------------------------------------
 class DataDisp {
@@ -406,6 +407,9 @@ public:
 
     // Refresh argument buttons
     static void refresh_args(bool update_arg = false);
+
+    // Set theme manager and refresh display
+    static void set_theme_manager(const ThemeManager& t);
 
 private:
     // Call me back again

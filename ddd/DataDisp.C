@@ -6471,6 +6471,25 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
     return false;
 }
 
+//----------------------------------------------------------------------------
+// Themes
+//-----------------------------------------------------------------------------
+
+void DataDisp::set_theme_manager(const ThemeManager& t)
+{
+    DispBox::theme_manager = t;
+
+    // Recompute all
+    MapRef ref;
+    for (DispNode *dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	dn->refresh();
+	graphEditRedrawNode(graph_edit, dn);
+    }
+}
+
 
 
 //----------------------------------------------------------------------------
