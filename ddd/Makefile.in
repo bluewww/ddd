@@ -134,7 +134,7 @@ CXXSTUFF = @CXXSTUFF@
 # Possible extra libraries required for all C++ programs.  ()
 CXXLIBS = @CXXLIBS@
 
-# The `.exe' extension on Windows (Cygwin32)
+# The `.exe' extension on Windows (Cygwin)
 EXEEXT = @EXEEXT@
 
 

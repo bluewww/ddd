@@ -1,19 +1,8 @@
 DDD News						-*- text -*-
 ********
 
-DDD Splash Screen Contest
-=========================
-
-We are running a contest for a new DDD splash screen, to be included
-in the final DDD 3.1 release.  See the DDD WWW Page
-
-	http://www.cs.tu-bs.de/softech/ddd/contest/
-
-for submissions and further information.
-
-
-DDD 3.1 [in beta test]
-======================
+DDD 3.1
+=======
 
 DDD 3.1 brings Perl support, Python support, data plotting, Undo/Redo,
 and advanced data exploration.
@@ -27,12 +16,12 @@ Debuggers and Languages
 
 - Python support.  DDD supports debugging Python programs, using the
   PYDB command-line debugger.  See the `pydb' sub-directory for PYDB
-  source and details.  Python support was contributed by Richard Wolff
-  <rwolff@noao.edu>.
+  source and details.  
+  Python support was contributed by Richard Wolff <rwolff@noao.edu>.
 
-- The new debugger type `auto' will automatically select the most
-  appropriate debugger for the given arguments (i.e. Perl for perl
-  files, JDB for Java classes, etc.).
+- By default, DDD will automatically select the most appropriate
+  debugger for the given arguments (i.e. Perl for perl files, JDB for
+  Java classes, etc.).
 
 - Improved JDB class search.  Using JDB, `File->Open Class' no longer
   searches the class path for .java source files; instead, it searches
@@ -92,7 +81,7 @@ Data exploration
   * Trailing data is no longer ignored.
   * C++ base classes as reported by AIX DBX are interpreted correctly.
   * Value changes in status displays are flagged more precisely.
-  * Creating and updating data displays uses a common code base.
+  * Creating and updating displays uses a common code base.
 
 - `Set ()' dialog improvements:
   * You can now set structs as a whole.
@@ -116,12 +105,6 @@ Data exploration
 
 - `Examine Memory' also works for Solaris DBX.
 
-- Arc edges can now be printed.
-
-- Graphs can be printed in color.
-
-- You can select a file to print to via a file selection browser.
-
 
 Source exploration
 ------------------
@@ -136,6 +119,15 @@ Source exploration
 
 - Dragging breakpoints works much better with scrolling.
 
+
+Printing
+--------
+
+- Arc edges are printed as such.
+
+- Graphs can be printed in color.
+
+- You can select a file to print to via a file selection browser.
 
 
 File Access
@@ -156,7 +148,7 @@ User Interface
 - Toolbar buttons appear in color when entered.  See the
   `activeButtonColorKey' resource for details.
 
-- The `Insert' key toggles text insertion mode.  Requires Motif 2.0.
+- Using Motif 2.0, the `Insert' key toggles text insertion mode.
 
 - The function keys F2-F9 are bound to frequently used commands:
 
@@ -217,11 +209,22 @@ Building DDD
 
 - EGCS 1.1 is supported.
 
+- LessTif 0.87 is supported (and recommended).
+
 - Cygwin is supported.
 
-- On AIX, `configure' handles linker TOC overflows.
+- On AIX, `configure' handles linker TOC overflows by adding the flag
+  `-Wl,-bbigtoc' to the linker flags.
 
-- `configure' warns about some risky configurations.
+- On SGI, `configure' works around a bug in the CC C++ I/O library
+  that causes `ostrstream::pcount()' to increase by 1 after
+  `ostrstream::str()' has been called.
+
+- On Solaris, `configure' adds the CC `-xs' flag to executables, such
+  that they can be debugged by DDD.
+
+- `configure' also warns about configurations known to be `risky' -
+  that is, where DDD may not run as expected.
 
 
 
@@ -257,7 +260,7 @@ Bug fixes
 
 - The `Disp *' button dereferences pointers as it should.
 
-- In a separate window setting, data buttons are properly placed.
+- Using separate DDD windows, data buttons are properly placed.
 
 - Several hard-coded limits have been raised, such as the length of
   GDB commands.
@@ -274,11 +277,6 @@ Maintenance
 
 - The `--maintenance' option enables a top-level `Maintenance' menu
   with additional options for maintaining DDD.
-
-- The resources `dumpCore' and `debugCoreDumps' control what DDD
-  should do when receiving a fatal signal.  If `dumpCore' is set, DDD
-  dumps a core file; if `debugCoreDumps' is set, DDD invokes a
-  debugger on itself.
 
 
 
